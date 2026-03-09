@@ -1,149 +1,144 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F2C81465B4;
-	Mon,  9 Mar 2026 14:56:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48C75258EFF;
+	Mon,  9 Mar 2026 15:05:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773068196; cv=none; b=TvdePzBiVR6laSb0yMa7z40Q91Apa+yWFcKLbCBBOAV2KpNDI9BPOkV6tZ/Pa0pUoo6FrljC+AbQv8pnLEQQFZZ/2DDU5z0c2v6af26CqoIxwLFUOF9MaXswxe4/5iDMTvvWFs9MBjXDmfiqRBmygMkB9TWcVEvc4B3KhQMMHlU=
+	t=1773068707; cv=none; b=t+qt+KMbTd5zDLKT8pNElXmFaHHz0vDFjw/1vF0XEvBNRrCaZUIf4ynkWFgzqSHhzqhgqEVzJPU686BLQt3gWCGkaS4GDThqDswKSuUSEAqkARgKXYY2l+hcuCr7jSMqV1iDPj1F6yvn0ybJ0XP2B9gxyX4kJcPtVl7FXLdNvoM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773068196; c=relaxed/simple;
-	bh=PoL/RgNXwrNphLvs7PMzEUNTz2yJHtGScrZkcIXw6Kk=;
+	s=arc-20240116; t=1773068707; c=relaxed/simple;
+	bh=DbnGEpHVevnfQfu6lKr+YEPijas0Ocs85CAyF6ehtvE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=f4j3tm7QRZtRVgxFuXbAcqRbd20w/PHPFcOSkk0oJoIXsgTTiX0FkBvxBW2fOAL7jSmEdrdtulRR+oyM7eUy5yrqwA5qm3ZIYC07v3C3cGBUxKZmhX4hhVC9FeqKfezUaHfdUm+cmmo/WfLePXOjcv2LKsTpQc++Xi8Kx0qEk34=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hENevFAQ; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=GJjwOBhEALddo4wwKLZT9pi2jA7ZABKykDN/qF9x+VynBuVZGDuf9NtbA9mnbMewg2XP0U/CWCJI7J/scZ2mU8VRQ4u68YqKgpWZS6IvufwM2fwIQXenZnrbT79z3NYYC73CPK1ealT5qFBwq2glQii9G10CGVQrQOrCqpohkNM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tE7PP3LN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hENevFAQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773068194; x=1804604194;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=PoL/RgNXwrNphLvs7PMzEUNTz2yJHtGScrZkcIXw6Kk=;
-  b=hENevFAQf8nJJ6vwyADuZAa5Mh1Wqm3bzcZeFuKXVEE+MuZk46E1nXyu
-   cY/bHXcDGdB6Kf2ofKLK3TFsh9OnCm6zcaoSXZayhTm0575F1nj4ee1FX
-   709WPYIWL+gSpjTXW5eOrnbyCrC0zXopGYiF+TxiRuEUBWHEXRx/IYwqO
-   xjjWy2d6kY+3RMAW8Ogy2EnUsrmsQWOyM2LkVtl1wAvIETaEDO6annXlZ
-   PSzAYUtf6auqVOYglmeNyPlNDkkY0Jz0M4ozFJTP5oHwlr12RP+eclqtg
-   7bpRpke+cCQtScUTtuGGMtdE+NV8mBjFDqjAUhnQjneWR6ceON+KXAhIL
-   Q==;
-X-CSE-ConnectionGUID: f51dDY+kQKy9atOFe/H4jA==
-X-CSE-MsgGUID: 7LGrIbi3Sg2NVjbPg7yK9w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11723"; a="99563856"
-X-IronPort-AV: E=Sophos;i="6.23,109,1770624000"; 
-   d="scan'208";a="99563856"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2026 07:56:34 -0700
-X-CSE-ConnectionGUID: NFt3wrsXQPKq6hWDp/kCeg==
-X-CSE-MsgGUID: gLqp2eh/TBizXqUAxt8SBA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,109,1770624000"; 
-   d="scan'208";a="224219446"
-Received: from igk-lkp-server01.igk.intel.com (HELO 9958d990ccf2) ([10.211.93.152])
-  by orviesa004.jf.intel.com with ESMTP; 09 Mar 2026 07:56:30 -0700
-Received: from kbuild by 9958d990ccf2 with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1vzc20-000000002sv-0s97;
-	Mon, 09 Mar 2026 14:56:28 +0000
-Date: Mon, 9 Mar 2026 15:55:54 +0100
-From: kernel test robot <lkp@intel.com>
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-coco@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	kvmarm@lists.linux.dev
-Cc: oe-kbuild-all@lists.linux.dev,
-	"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	Marc Zyngier <maz@kernel.org>, Thomas Gleixner <tglx@kernel.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>
-Subject: Re: [PATCH v3 2/3] swiotlb: dma: its: Enforce host page-size
- alignment for shared buffers
-Message-ID: <202603091555.ZRQIMCqJ-lkp@intel.com>
-References: <20260309102625.2315725-3-aneesh.kumar@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tE7PP3LN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 805BDC4CEF7;
+	Mon,  9 Mar 2026 15:05:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773068706;
+	bh=DbnGEpHVevnfQfu6lKr+YEPijas0Ocs85CAyF6ehtvE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=tE7PP3LN85OCryOOM4Rjm5R25wxF+GBgjw/w+mnHJhC+bsJV6zEfkv+P1ng6YBY8P
+	 //N/QU2ZINvPyzm4beU3jULs5D0roSZbZlI9Ye4QY3EeHg0PpV7OvdNboPhlXya9RC
+	 mKaKxeO4Yk45LH1XeJ2SR1UnMOarje3jQWjrF9MSWX8Nt6kjEmhoXqGGBOrWWTsUh/
+	 kPil8KWOZlttPaIsn8abAACGoMmQeBD0hktJ3FaDWu7gaUvvkvLXKg6hkd8+V8INy7
+	 2iscFQROGrnSLLjvNcD101gDGl//3UDKnHKP/DT++aUdTcEVNwl9u1HQo4g9kfJQWK
+	 jfRttns+JMN4A==
+Date: Mon, 9 Mar 2026 17:05:02 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Petr Tesarik <ptesarik@suse.com>, Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Jason Wang <jasowang@redhat.com>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, virtualization@lists.linux.dev,
+	linux-rdma@vger.kernel.org
+Subject: Re: [PATCH 2/3] dma-mapping: Clarify valid conditions for CPU cache
+ line overlap
+Message-ID: <20260309150502.GX12611@unreal>
+References: <20260307-dma-debug-overlap-v1-0-c034c38872af@nvidia.com>
+ <20260307-dma-debug-overlap-v1-2-c034c38872af@nvidia.com>
+ <20260308181920.GH1687929@ziepe.ca>
+ <20260308184902.GR12611@unreal>
+ <20260308230916.GI1687929@ziepe.ca>
+ <CGME20260309090352eucas1p283a75c78cac495b5ad87df74c79aab07@eucas1p2.samsung.com>
+ <20260309090342.GS12611@unreal>
+ <c1d058f3-f864-4ed7-9f7a-683d6f4bf1ce@samsung.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260309102625.2315725-3-aneesh.kumar@kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <c1d058f3-f864-4ed7-9f7a-683d6f4bf1ce@samsung.com>
 
-Hi Aneesh,
+On Mon, Mar 09, 2026 at 01:30:24PM +0100, Marek Szyprowski wrote:
+> On 09.03.2026 10:03, Leon Romanovsky wrote:
+> > On Sun, Mar 08, 2026 at 08:09:16PM -0300, Jason Gunthorpe wrote:
+> >> On Sun, Mar 08, 2026 at 08:49:02PM +0200, Leon Romanovsky wrote:
+> >>> On Sun, Mar 08, 2026 at 03:19:20PM -0300, Jason Gunthorpe wrote:
+> >>>> On Sat, Mar 07, 2026 at 06:49:56PM +0200, Leon Romanovsky wrote:
+> >>>>
+> >>>>> -This attribute indicates the CPU will not dirty any cacheline overlapping this
+> >>>>> -DMA_FROM_DEVICE/DMA_BIDIRECTIONAL buffer while it is mapped. This allows
+> >>>>> -multiple small buffers to safely share a cacheline without risk of data
+> >>>>> -corruption, suppressing DMA debug warnings about overlapping mappings.
+> >>>>> -All mappings sharing a cacheline should have this attribute.
+> >>>>> +DMA_ATTR_CPU_CACHE_OVERLAP
+> >>>> This is a very specific and well defined use case that allows some cache
+> >>>> flushing behaviors to work only under the promise that the CPU doesn't
+> >>>> touch the memory to cause cache inconsistencies.
+> >>>>
+> >>>>> +Another valid use case is on systems that are CPU-coherent and do not use
+> >>>>> +SWIOTLB, where the caller can guarantee that no cache maintenance operations
+> >>>>> +(such as flushes) will be performed that could overwrite shared cache lines.
+> >>>> This is something completely unrelated.
+> >>> I disagree. The situation is equivalent in that callers guarantee the
+> >>> CPU cache will not be overwritten.
+> >> The RDMA callers do no such thing, they just don't work at all if
+> >> there is non-coherence in the mapping which is why it is not a bug.
+> >>
+> >> virtio looks like it does actually keep the caches clean for different
+> >> mappings (and probably also in practice forced coherent as well given
+> >> qemu is coherent with the VM and VFIO doesn't allow non-coherent DMA
+> >> devices)
+> >>
+> >>>> What I would really like is a new DMA_ATTR_REQUIRE_COHERENT which
+> >>>> fails any mappings requests that would use any SWIOTLB or cache
+> >>>> flushing.
+> >>> You are proposing something orthogonal that operates at a different layer
+> >>> (DMA mapping). However, for DMA debugging, your new attribute will be
+> >>> equivalent to DMA_ATTR_CPU_CACHE_OVERLAP.
+> >> DMA_ATTR is a dma mapping flag, if you want some weird dma debugging
+> >> flag it should be called DMA_ATTR_DEBUGGING_IGNORE_CACHELINES with
+> >> some kind of statement at the user why it is OK.
+> > And this is the issue: the existing DMA_ATTR_CPU_CACHE_CLEAN is essentially
+> > a debug-oriented attribute. The upper layers are already handled through
+> > __dma_from_device_group_begin()/end(), which pad cache lines on
+> > non-coherent systems.
+> >
+> > Marek,
+> >
+> > What do you see as the right path forward here? RDMA has a legitimate use
+> > case where CPU cache lines may overlap. The underlying reason differs from
+> > VirtIO, but the outcome is the same. Should I keep the current name? Should
+> > we rename it to the proposed DMA_ATTR_CPU_CACHE_OVERLAP or
+> > DMA_ATTR_DEBUGGING_IGNORE_CACHELINES? Should we introduce a new
+> > DMA_ATTR_REQUIRE_COHERENT attribute instead? Or do you have another
+> > recommendation?
+> 
+> My question here is if RDMA works on any non-coherent DMA systems? If 
+> not then it should fail early (during init or probe?) to avoid potential 
+> data corruption and new DMA attributes won't help it.
 
-kernel test robot noticed the following build errors:
+Like Jason wrote, our user‑visible API does not work on non‑coherent
+systems, and this is where I'm using the DMA_ATTR_CPU_CACHE_OVERLAP
+attribute.
 
-[auto build test ERROR on arm64/for-next/core]
-[also build test ERROR on tip/irq/core arm/for-next arm/fixes kvmarm/next soc/for-next linus/master v7.0-rc3 next-20260306]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Regarding failure on unsupported systems, I have tried more than once to
+make the RDMA fail when the device is known to take the SWIOTLB path
+in RDMA and cannot operate correctly, but each attempt was met with a
+cold reception:
+https://lore.kernel.org/all/d18c454636bf3cfdba9b66b7cc794d713eadc4a5.1719909395.git.leon@kernel.org/
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Aneesh-Kumar-K-V-Arm/dma-direct-swiotlb-handle-swiotlb-alloc-free-outside-__dma_direct_alloc_pages/20260309-182834
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-next/core
-patch link:    https://lore.kernel.org/r/20260309102625.2315725-3-aneesh.kumar%40kernel.org
-patch subject: [PATCH v3 2/3] swiotlb: dma: its: Enforce host page-size alignment for shared buffers
-config: x86_64-rhel-9.4 (https://download.01.org/0day-ci/archive/20260309/202603091555.ZRQIMCqJ-lkp@intel.com/config)
-compiler: gcc-14 (Debian 14.2.0-19) 14.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260309/202603091555.ZRQIMCqJ-lkp@intel.com/reproduce)
+I'm afraid the outcome will be the same this time as well.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202603091555.ZRQIMCqJ-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
-   In file included from arch/x86/include/asm/processor-flags.h:6,
-                    from arch/x86/include/asm/irqflags.h:5,
-                    from include/linux/irqflags.h:18,
-                    from include/linux/spinlock.h:59,
-                    from include/linux/swait.h:7,
-                    from include/linux/completion.h:12,
-                    from include/linux/crypto.h:15,
-                    from arch/x86/kernel/asm-offsets.c:9:
-   include/linux/mem_encrypt.h: In function 'mem_decrypt_granule_size':
->> include/linux/mem_encrypt.h:60:16: error: 'PAGE_SIZE' undeclared (first use in this function)
-      60 |         return PAGE_SIZE;
-         |                ^~~~~~~~~
-   include/linux/mem_encrypt.h:60:16: note: each undeclared identifier is reported only once for each function it appears in
-   include/linux/mem_encrypt.h: In function 'mem_decrypt_align':
->> include/linux/mem_encrypt.h:66:16: error: implicit declaration of function 'ALIGN' [-Wimplicit-function-declaration]
-      66 |         return ALIGN(size, mem_decrypt_granule_size());
-         |                ^~~~~
-   make[3]: *** [scripts/Makefile.build:184: arch/x86/kernel/asm-offsets.s] Error 1
-   make[3]: Target 'prepare' not remade because of errors.
-   make[2]: *** [Makefile:1333: prepare0] Error 2
-   make[2]: Target 'prepare' not remade because of errors.
-   make[1]: *** [Makefile:248: __sub-make] Error 2
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:248: __sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
-
-
-vim +/PAGE_SIZE +60 include/linux/mem_encrypt.h
-
-    56	
-    57	#ifndef mem_decrypt_granule_size
-    58	static inline size_t mem_decrypt_granule_size(void)
-    59	{
-  > 60		return PAGE_SIZE;
-    61	}
-    62	#endif
-    63	
-    64	static inline size_t mem_decrypt_align(size_t size)
-    65	{
-  > 66		return ALIGN(size, mem_decrypt_granule_size());
-    67	}
-    68	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+> On the other hand, the DMA_ATTR_CPU_CACHE_OVERLAP attribute is a bit more
+> descriptive to me than DMA_ATTR_CPU_CACHE_CLEAN, but this indeed looks
+> like a separate issue from the RDMA case.
+> 
+> Best regards
+> -- 
+> Marek Szyprowski, PhD
+> Samsung R&D Institute Poland
+> 
+> 
