@@ -1,126 +1,145 @@
-Received: from mail-qv1-f48.google.com (mail-qv1-f48.google.com [209.85.219.48])
+Received: from mail-yx1-f46.google.com (mail-yx1-f46.google.com [74.125.224.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 572952288D5
-	for <iommu@lists.linux.dev>; Mon,  9 Mar 2026 15:18:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.48
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773069540; cv=none; b=iQ8WNU/jwr1Vls2asaXkPkWi9EJdr3yxSh1r99mfSBtHMI4cX3330e6eFd5wtzssuhCMMMVui17/d2wnIpjSpPHEcqDPc6nhKEr/87vDr8fsoDZqVI//SGkddHSnaMXrQjuKZIiRWQrX19sQO3n+YElq080Qm3lnwj2zAdwp9PA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773069540; c=relaxed/simple;
-	bh=aW+gGf7B0n0oHC/qjuzmk77UUBB/ftL/cO6l96herO4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oSYpUQlrW0FgE7uLVsvn5ewFVBhqXbShIH7471KR+KK3CLva0yx5AA3Zxhv8ld1lXMWVJGbbjSncWClTkKVaAOCyLwM+/3/89L9BSgxKh8YUaTKjm9OJu7mnvLPq3BwBK7fv5pZa/IF61ZD39vIRt5YPNhNRmDExHKBNPMBZL1k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=C/85+cCK; arc=none smtp.client-ip=209.85.219.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED6403CD8AE
+	for <iommu@lists.linux.dev>; Mon,  9 Mar 2026 15:39:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.46
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773070798; cv=pass; b=eyt762gPMtDOssoqgs97eaGRnox6Oz2cmwmB74DCNrjpk//+BAfjpnI4wqPXukALTJG++Vhw/q9GkSMaROsTMU8j80074kflzcgZjQtMJYCKAWHboZ3ul7z+hZiph9vM6WFMqUm274J5IB7tuJoUW0AyMfMi9cHwoPvaDdqymTY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773070798; c=relaxed/simple;
+	bh=fUiMYtNMvHNYULJIwkoZwWkLFEOGGVApxwthvUYiwWU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=GQG1Sz53o0PhXkjFD8JwOiYiuYbjl9IXsU5HDMmj1kpucwU3txXnismoN3C80zfU4xGEaLd8t+26ToJD57SKw0xTSebm3z5gSE2TU+0elc6peN83U8r+eoLvaf+/iEoMEXMyhgpdrovXmxf+BovEjDEUxJ4iWb6kXTQ9b/79M50=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=kJRjhJ5Y; arc=pass smtp.client-ip=74.125.224.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="C/85+cCK"
-Received: by mail-qv1-f48.google.com with SMTP id 6a1803df08f44-899fc265126so109286766d6.1
-        for <iommu@lists.linux.dev>; Mon, 09 Mar 2026 08:18:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="kJRjhJ5Y"
+Received: by mail-yx1-f46.google.com with SMTP id 956f58d0204a3-64937edbc9eso10752587d50.2
+        for <iommu@lists.linux.dev>; Mon, 09 Mar 2026 08:39:56 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1773070796; cv=none;
+        d=google.com; s=arc-20240605;
+        b=BoMbeY7mG1/YBSBz4L382Dyb+6I2xMWLeh2LU0ddg0M1nd4AYAnVX1HYuhGySZCxeT
+         PlbCZNG7a6R4gk5aKAySz+pRO/JTZOoywca6uUEJUWk21aaF748CbO+bVZeWtJvKHeOD
+         XlrqPzM0uOoJ0GZhNM8ZElF9TjsvBGbeOz7D2SGFEh0nERer/MSykV1fOf+l8rbDRFzq
+         z2VEImh5bY+HhKudMO9nVp7uikoda3X09sPt9MhoC/vR7wK+Gr8N7Mo/1t/Se1ZfiEoc
+         vIFQ3JOyERO4ds91ezDXiZLfTLJjhUx7YjlwggL0iQr/ifoI2nTYF6lKoBOHKGe+OdbJ
+         f5CQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=MvLYcYLZmHSPzURtRpTfKGpAse3rZ5uBdKhXxFZ9chA=;
+        fh=6UMeHXnbeMuo9Zc1TnyGIDdmXk4J+xjMiBAc1uG/liA=;
+        b=JRduk9ejZpvvYeIea1z3KJcEVa+KBv2K9Gzq2PrGRfCDCurHeBpQlJixTZV2wjH6Dv
+         UDFAIjcHcK2+PK8hxr8ZgSp4ZHuGQoLnHBfy1rLPbPzXil9Aj7HmEBfU8xLHR24MMuDT
+         ZT8xlfPvJC2xh359So5B66jc7Iay+BWUhtGFQCcmk7i6S1zpAa5mxvOUO/kpO1vlTS2h
+         4TcUZKtvLUSHKiED2E1TWmgHIFu6TFQArknceMGhdUNrL8h+R0uaioqfXmeFmlLRUGVQ
+         W0zGxN36o8urb34Dm+8SJeSV+M+Wc/bAXtFzsVU7/4U7o8B/OzbweCuYqpA+PGhJVZBK
+         JvMQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1773069538; x=1773674338; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=oQoTcBcgSknYFDDhFBTqv/EpNp1AB8jH1zi0Ovpsfro=;
-        b=C/85+cCKtTHVRF56ZmV5fUiHJnljelkdcwaOIFTteLDBk1pODYv1zDIeoxfI/NsRVy
-         P7a546ojBwqSBP5YEBYS5lC9MPKT25DbytD5qECgHgy1b7+7sPYBuN8332SZRqnyxzl+
-         fIB8rOZyuxILvBfKXsJIplJgm06OPNSL+anyeZQLfrw81Lwk/Vasz9CV+Cv6qNoOA63f
-         W6q5bwsNwi/SsLskmNLz8ODS9Y4HgmTo1xMUQRGFZmMxGyTXTFA5h0D1pEbMSP7VCmt6
-         MHtK4F3xPK15skgDOjcWyC9Nlzm89ibYcQUHlVuATAnsP7odXVAWKnDyAOvwtzh06/Jc
-         SzMA==
+        d=google.com; s=20230601; t=1773070796; x=1773675596; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MvLYcYLZmHSPzURtRpTfKGpAse3rZ5uBdKhXxFZ9chA=;
+        b=kJRjhJ5Y3bDhtQO0zfrZWT6BXzLPrV8i3Swq+0RMpfb/7+qJvC3Rxyp6CYU5Zk4Wqw
+         K6/qxcYrqGRE7AYHj8hGvJ7F53C63lDTokW+lY1HDO3gLNuX1VK9PeyEii4lPItkhFKp
+         37KsDI51oyNURR/aYeTW9I/vMoKpQ4sGaDFkFqlJ1AWpgo6VqEx2fNTS84A5r7CbXIqw
+         4y1gSbu8q57U7sYbqHOW18jzHHRtErupJxydRCIxVx+h+TpNgmge9MNhU2GTPXU0P76S
+         86dHbzTtjFV4bIfIG7HD/caL9LeE/1T9kgQz5d0FfVUPed5Yxw9ujRkZ1CjY2vocY7ul
+         cAbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773069538; x=1773674338;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=oQoTcBcgSknYFDDhFBTqv/EpNp1AB8jH1zi0Ovpsfro=;
-        b=BS1ROXfQpjEt3303GHptvGtj3KE5LM4/rKGwlSpleWk7agaAzh5rwdrdA3LjYa/CL4
-         sHv8yrsjTu8i5ujm7VO6xhnI+00PMD0nI93MOR2d1B9MjmhGP+83vSR1s08iqe0WiIKA
-         kbMad67nkGgKmDu/FvT+t1amLWBZoaVO84sHLp1j68yGoI3jVq1pbPsEJWFQs1dX9jYJ
-         4PeJeefJWvo9p4n19TdXTSzQU5esNy06PWKeQxESsjtK038ngUCYPBEyQT8LEW3eNn3f
-         AkEJaDtHvzlo8K81jRnv5JqKXi+SAwR+mHx5ETa3+EfhiVGEl/CO7wxsAt8rP3MD8aj/
-         g2YA==
-X-Forwarded-Encrypted: i=1; AJvYcCWkbUozrOBqF8aNIWPdZLVbvJODdJSsJt7yLwcJCqjtk5MTB4A4ZRlycCzCCfteuVTkGtOU+g==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx15AGXZiOUwDkbaZKq5CjsPUc4kiefCHVSuiieWMhrJ7ozLAMh
-	VgL8yLWTq+Tj/6y1RS8TQSP1MJySt+C/SSnXgkw/DHA6RFN70Wndrt3Ld3L7bT0BhIzOuQAnlHK
-	YYkUG
-X-Gm-Gg: ATEYQzyXaS5rSgbzVgMQzIH8UL/qFk1jVB98/H6LkMiF2dzXzc/sUal5nN0IsOIzk9A
-	zuCGKUUmvWio4L4pTr5rCHz2JP+xEBALtGDFOlHbWEbw+ljZMzOjp22uiPYoQ1S6zCEejVxUnMH
-	HUkW1nwhYd44RO5pa6yWCEwgSUn3bKzIRRcZjrYLQX/uMEFgFf7qny8fHx888XN8B3eQ0IJe17L
-	RpRMgJ6qWaGP3+NG9ruX6TfrbzDHrUR6ZGVIL7qZNpP4TZ3Xd76tImtZDEmDOvypoYbAUtGEJ1h
-	YrvNyPhR/QdycTiy5bSvRxSyOzxBCohHmprFoCwI4uF6cyJGqvYTIu724FPS7jMGrFFUq8jEpfy
-	6uxAuVcFpUpTPYtS1lJCHxphRWqc3Kd3WMFjsKycWSX1C3IlnhdjDuEdRB+1ERBxR/hSBhTg1mF
-	tkTqq12EufwpXmpO9PZzdrqDZl/am1nJkVD+C3EH4+3bPb909y+h5IcfFOvvnqRW8G2plOrbGQs
-	w1ucWNa
-X-Received: by 2002:a05:6214:3019:b0:89a:502:6054 with SMTP id 6a1803df08f44-89a30a2b5c5mr162839796d6.8.1773069538417;
-        Mon, 09 Mar 2026 08:18:58 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-89a316ec570sm80067436d6.39.2026.03.09.08.18.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Mar 2026 08:18:57 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1vzcNl-0000000Giv6-151p;
-	Mon, 09 Mar 2026 12:18:57 -0300
-Date: Mon, 9 Mar 2026 12:18:57 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Jiri Pirko <jiri@resnulli.us>, dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev,
-	linux-media@vger.kernel.org, sumit.semwal@linaro.org,
-	benjamin.gaignard@collabora.com, Brian.Starkey@arm.com,
-	jstultz@google.com, tjmercier@google.com, christian.koenig@amd.com,
-	m.szyprowski@samsung.com, robin.murphy@arm.com,
-	sean.anderson@linux.dev, ptesarik@suse.com, catalin.marinas@arm.com,
-	aneesh.kumar@kernel.org, suzuki.poulose@arm.com,
-	steven.price@arm.com, thomas.lendacky@amd.com, john.allen@amd.com,
-	ashish.kalra@amd.com, suravee.suthikulpanit@amd.com,
-	linux-coco@lists.linux.dev
-Subject: Re: [PATCH net-next v3 1/2] dma-mapping: introduce
- DMA_ATTR_CC_DECRYPTED for pre-decrypted memory
-Message-ID: <20260309151857.GO1687929@ziepe.ca>
-References: <20260305123641.164164-1-jiri@resnulli.us>
- <20260305123641.164164-2-jiri@resnulli.us>
- <20260308101948.GO12611@unreal>
- <20260309131530.GJ1687929@ziepe.ca>
- <20260309140233.GW12611@unreal>
+        d=1e100.net; s=20230601; t=1773070796; x=1773675596;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=MvLYcYLZmHSPzURtRpTfKGpAse3rZ5uBdKhXxFZ9chA=;
+        b=qOJNnMTCoLD5JUFv0UMc6F/AC3cqA5hmr9qbmUYKxo9/5H1znIXzq7pNl5oag3Yc/y
+         ipvcG8I04UeipMp2jbR55d7Ago5xHfylSfs3dicAnrrx0nrgLuB+TkonbeZ1CodRx1FE
+         2oQ7EJdJNghBa7RcPJz52VxjOn4n2YwNcq/+da0cW3sYaWEKV4JGnPQh/wqvij6OgvON
+         hHEneCGeNdr2lYcCJnr38k0/cKSIWUPZJ2cquhoByqmd13XBKbkbWIPCj+pZuAxVMKjc
+         EkBl6UoIwzzNlypqIqj+CIt2u9G0behhsImEy/9eJzarzc7D8ZSNNqdLNxtyeytJ267S
+         ymLQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWOrLPZlqPiHI/f3gQQh1nosAJWCNYs7wjUHZJLovtYu7ig8R+BaTMj6zyUnMorwMyIh5rUjA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzLpk8lrm58jMKeRKomUu4Or+lrwCcBzWNweeoG09Z2ENSFw3+x
+	k6NxB5AdTCVwNR0jTBqVbxrAOS3Attt0Spo0bKh7ujcUGj/Ft5ilogpxjP5sgd+BHEHhiOtR4Z3
+	O0fcMXcZxOzA0iDH5CHj2YFhcQBisYkP7HKm8JaUf
+X-Gm-Gg: ATEYQzyd6h0TikII+ssIhB/EuM/O5vop1rZVNzRGH0oTsrvAx3EZJ9tTFaz6fZ0O0JT
+	TgClk/tfCMNaHwwTQ+2dIvFuu722Cvnpxntg1ZDZn1h+mvU6Aw2bGnCkwk9fRwQohZpC/8v2VXy
+	Moc8QdnkPZrcF5KjSdw/TnI2XCUcNNoTBXdb/Xj4ryzXeWgZL4fq3F1onhD/5XDP1yU+1ZtFycF
+	pDaauh9gX3r8usrlz7adBeusEWH86eqJjf5t8ECp7P4/HSYyzLG8X7EhGf1E3AikVKEWbIoVI2u
+	xZV5OXGmiqCmHf1cjRF5/eFWfCFviD0T1vRnVDJH5V/Nkh4+
+X-Received: by 2002:a05:690e:16cc:b0:64d:29c6:7974 with SMTP id
+ 956f58d0204a3-64d29c67a27mr3174372d50.11.1773070795335; Mon, 09 Mar 2026
+ 08:39:55 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260309140233.GW12611@unreal>
+References: <20260305123641.164164-1-jiri@resnulli.us> <20260305123641.164164-3-jiri@resnulli.us>
+In-Reply-To: <20260305123641.164164-3-jiri@resnulli.us>
+From: Peter Gonda <pgonda@google.com>
+Date: Mon, 9 Mar 2026 09:39:44 -0600
+X-Gm-Features: AaiRm51h3c_DzKOKsC7CokIZvNyOKydjIyhi9bVIzEGXBlmxcqpV-AFuGedzucs
+Message-ID: <CAMkAt6o_yZ5T-3TRwymjYQZEq-Q_z=DAA3vc61h81X9sQr_CXA@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 2/2] dma-buf: heaps: system: add
+ system_cc_decrypted heap for explicitly decrypted memory
+To: Jiri Pirko <jiri@resnulli.us>
+Cc: dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
+	iommu@lists.linux.dev, linux-media@vger.kernel.org, sumit.semwal@linaro.org, 
+	benjamin.gaignard@collabora.com, Brian.Starkey@arm.com, jstultz@google.com, 
+	tjmercier@google.com, christian.koenig@amd.com, m.szyprowski@samsung.com, 
+	robin.murphy@arm.com, jgg@ziepe.ca, leon@kernel.org, sean.anderson@linux.dev, 
+	ptesarik@suse.com, catalin.marinas@arm.com, aneesh.kumar@kernel.org, 
+	suzuki.poulose@arm.com, steven.price@arm.com, thomas.lendacky@amd.com, 
+	john.allen@amd.com, ashish.kalra@amd.com, suravee.suthikulpanit@amd.com, 
+	linux-coco@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Mar 09, 2026 at 04:02:33PM +0200, Leon Romanovsky wrote:
-> On Mon, Mar 09, 2026 at 10:15:30AM -0300, Jason Gunthorpe wrote:
-> > On Sun, Mar 08, 2026 at 12:19:48PM +0200, Leon Romanovsky wrote:
-> > 
-> > > > +/*
-> > > > + * DMA_ATTR_CC_DECRYPTED: Indicates memory that has been explicitly decrypted
-> > > > + * (shared) for confidential computing guests. The caller must have
-> > > > + * called set_memory_decrypted(). A struct page is required.
-> > > > + */
-> > > > +#define DMA_ATTR_CC_DECRYPTED	(1UL << 12)
-> > > 
-> > > While adding the new attribute is fine, I would expect additional checks in
-> > > dma_map_phys() to ensure the attribute cannot be misused. For example,
-> > > WARN_ON(attrs & (DMA_ATTR_CC_DECRYPTED | DMA_ATTR_MMIO)), along with a check
-> > > that we are taking the direct path only.
-> > 
-> > DECRYPYED and MMIO is something that needs to work, VFIO (inside a
-> > TVM) should be using that combination.
-> 
-> So this sentence "A struct page is required" from the comment above is
-> not accurate.
+Great feature to have thanks Jiri! A couple naive questions.
 
-It would be clearer to say "Unless DMA_ATTR_MMIO is provided a struct
-page is required"
+On Thu, Mar 5, 2026 at 5:38=E2=80=AFAM Jiri Pirko <jiri@resnulli.us> wrote:
+>
+> From: Jiri Pirko <jiri@nvidia.com>
+>
+> Add a new "system_cc_decrypted" dma-buf heap to allow userspace to
+> allocate decrypted (shared) memory for confidential computing (CoCo)
+> VMs.
+>
+> On CoCo VMs, guest memory is encrypted by default. The hardware uses an
+> encryption bit in page table entries (C-bit on AMD SEV, "shared" bit on
+> Intel TDX) to control whether a given memory access is encrypted or
+> decrypted. The kernel's direct map is set up with encryption enabled,
+> so pages returned by alloc_pages() are encrypted in the direct map
+> by default. To make this memory usable for devices that do not support
+> DMA to encrypted memory (no TDISP support), it has to be explicitly
+> decrypted. A couple of things are needed to properly handle
+> decrypted memory for the dma-buf use case:
+>
+> - set_memory_decrypted() on the direct map after allocation:
+>   Besides clearing the encryption bit in the direct map PTEs, this
+>   also notifies the hypervisor about the page state change. On free,
+>   the inverse set_memory_encrypted() must be called before returning
+>   pages to the allocator. If re-encryption fails, pages
+>   are intentionally leaked to prevent decrypted memory from being
+>   reused as private.
+>
+> - pgprot_decrypted() for userspace and kernel virtual mappings:
+>   Any new mapping of the decrypted pages, be it to userspace via
+>   mmap or to kernel vmalloc space via vmap, creates PTEs independent
+>   of the direct map. These must also have the encryption bit cleared,
+>   otherwise accesses through them would see encrypted (garbage) data.
 
-We need to audit if that works properly, IIRC it does, but I don't
-remember.. Jiri?
+So this only works on new mappings? What if there are existing
+mappings to the memory that will be converted to shared?
 
-Jason
+It's also slightly worse than just reading ciphertext. If another
+process writes to the memory with the incorrect mapping it could cause
+corruption on AMD SEV, or an RMP violation on AMD SEV-SNP. Can we
+update the existing mappings?
