@@ -1,97 +1,89 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38E2239283E
-	for <iommu@lists.linux.dev>; Mon,  9 Mar 2026 11:28:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2AEC39B4BA
+	for <iommu@lists.linux.dev>; Mon,  9 Mar 2026 11:48:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773055683; cv=none; b=CXBvyrZ38ba9Q4mFt6MtzKl7WY9OGqQSzbu5uOEardlkzfUpvOyvbTzI2P0ef2FvR9Rwss3IeCSR+0bEf7pHUo2PXar0nO5fCi3Jg0Op259nAznJGQZPcCrovdndqZEyyercMAOXF3vjo+l/q8OVrZRV9g5nxtjhv5w31c0WKs0=
+	t=1773056924; cv=none; b=anb48z3ibR1hoWlDnzBVmJRPJH3KyEoVR40yWQkWXultdPsbNnBs8fwJZtXAUxgYqDbaZ8MjAJCIrbtzGKi4oBn/GPKnbeF4PNeRk4Ydx+k6DWcnIrKULEjQ1uPElg/Q4Ze1N4p7Va6sXbPLz7eSFVPZG5SiKYG/gBqVdAJuoJs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773055683; c=relaxed/simple;
-	bh=Ad4l2ZL1e0oe6iMxHaILa4qa2bycHMZQUcso/Be8Gho=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=h0vfU2MTBazI+/rcP85PDioQApvRUE4+eqNwFYKeWWQ0ykMkX0A0SvA9AXVtZ6EEx0zfJMFt6xZpvIfqbiLrbL2L4eYMxT8feBhELv2UDMoaX8meY3XveYS0gvJAncrpb6OXf53qp3VhhyBgv720sXyQzBevpe1z63hzG70S7/4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MRQyC2HE; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MRQyC2HE"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773055681; x=1804591681;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Ad4l2ZL1e0oe6iMxHaILa4qa2bycHMZQUcso/Be8Gho=;
-  b=MRQyC2HE5HdTULcEpZFQTBZw1o0rh1yBv9XBru5MYurZhlkDmm4j9ojB
-   BEAzNbQREHy055mtiMr3xVvlDJg1rlXVgOj6/sRrUtcQ4MP1L7h4WkB5P
-   E2qY3OGAEax5OjB116a0iE5L8ZjBC2e8P+7F7UcUaHJxVOYCPKbrlqc7g
-   sXSRRf+1Y+JqfLwX/MVXWN8RU0aINg4jSHtJzNDhNf+CBxw21Fg4DqZaM
-   8usmLqNvPc7myhOA++Kgjt1QGEl40CIjKCXF1t8U/01jqSdCedByxN3S2
-   rYj2ysQmfLz4BY1jqxK1mvcDMvOACNyGgS0YjZ6dZOs7P+5MtoXXzi3Ic
-   Q==;
-X-CSE-ConnectionGUID: GgjouKe6TGiEGC8WoCzHvw==
-X-CSE-MsgGUID: Aq7QvF3cSBiXqxFrtj83aw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11723"; a="61644144"
-X-IronPort-AV: E=Sophos;i="6.23,109,1770624000"; 
-   d="scan'208";a="61644144"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2026 04:28:00 -0700
-X-CSE-ConnectionGUID: 7pUrleTiQhWJjr5Prs5z7Q==
-X-CSE-MsgGUID: //Z8YxZXQPuS9At+IRGC+A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,109,1770624000"; 
-   d="scan'208";a="224648872"
-Received: from jkrzyszt-mobl2.ger.corp.intel.com ([10.245.246.243])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2026 04:27:58 -0700
-From: Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: UBSAN: shift-out-of-bounds in drivers/iommu/intel/iommu.h:1101:17
-Date: Mon, 09 Mar 2026 11:57:07 +0100
-Message-ID: <4867153.LvFx2qVVIh@jkrzyszt-mobl2.ger.corp.intel.com>
-Organization: Intel Technology Poland sp. z o.o. - ul. Slowackiego 173,
- 80-298 Gdansk - KRS 101882 - NIP 957-07-52-316
-In-Reply-To: <20260228003405.GP44359@ziepe.ca>
-References:
- <11145826.aFP6jjVeTY@jkrzyszt-mobl2.ger.corp.intel.com>
- <20260228003405.GP44359@ziepe.ca>
+	s=arc-20240116; t=1773056924; c=relaxed/simple;
+	bh=UocW/bVxbkC7JT72bY+HpzTQxEjsiiz6KerJNocdQ6o=;
+	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Tc8zJufTJgQuI4+s8lpF491onb6LO8JIcxmq0i9SP1ez5Nc3TWvNadi0OTRa40GLUyA4npp7wyHC1ZbKR+82zm4nMMs9ILWGfLrJoDt4z/+bhqR4CV9eQDUUXfOUUvYctaJULz1o6pWcPSzMPtyu3uSzqFpRgixIK+eLHAInnfA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.224.107])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTPS id 4fTwHZ4drZzJ46vg;
+	Mon,  9 Mar 2026 19:47:54 +0800 (CST)
+Received: from dubpeml500005.china.huawei.com (unknown [7.214.145.207])
+	by mail.maildlp.com (Postfix) with ESMTPS id 815B940584;
+	Mon,  9 Mar 2026 19:48:37 +0800 (CST)
+Received: from localhost (10.203.177.15) by dubpeml500005.china.huawei.com
+ (7.214.145.207) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.11; Mon, 9 Mar
+ 2026 11:48:36 +0000
+Date: Mon, 9 Mar 2026 11:48:35 +0000
+From: Jonathan Cameron <jonathan.cameron@huawei.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+CC: <jgg@nvidia.com>, <will@kernel.org>, <robin.murphy@arm.com>,
+	<bhelgaas@google.com>, <joro@8bytes.org>, <praan@google.com>,
+	<baolu.lu@linux.intel.com>, <kevin.tian@intel.com>,
+	<miko.lenczewski@arm.com>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<linux-pci@vger.kernel.org>, <dan.j.williams@intel.com>, <vsethi@nvidia.com>,
+	<linux-cxl@vger.kernel.org>
+Subject: Re: [PATCH v3 1/3] PCI: Allow ATS to be always on for CXL.cache
+ capable devices
+Message-ID: <20260309114835.000051c9@huawei.com>
+In-Reply-To: <a0dd3e4cc5260f55bbec5b3ed6791def33028735.1772833963.git.nicolinc@nvidia.com>
+References: <cover.1772833963.git.nicolinc@nvidia.com>
+	<a0dd3e4cc5260f55bbec5b3ed6791def33028735.1772833963.git.nicolinc@nvidia.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: lhrpeml500012.china.huawei.com (7.191.174.4) To
+ dubpeml500005.china.huawei.com (7.214.145.207)
 
-On Saturday, 28 February 2026 01:34:05 CET Jason Gunthorpe wrote:
-> On Tue, Feb 24, 2026 at 12:16:32AM +0100, Janusz Krzysztofik wrote:
-> > Hello,
-> > 
-> > Please have a look at 
-> > https://gitlab.freedesktop.org/drm/i915/kernel/-/issues/15478
-> > 
-> > For me it looks like an IOMMU issue.  I've added there a comment that 
-> > summarizes my findings.
+On Fri, 6 Mar 2026 15:41:15 -0800
+Nicolin Chen <nicolinc@nvidia.com> wrote:
+
+> Controlled by the IOMMU driver, ATS is usually enabled "on demand" when a
+> device requests a translation service from its associated IOMMU HW running
+> on the channel of a given PASID. This is working even when a device has no
+> translation on its RID (i.e., the RID is IOMMU bypassed).
 > 
-> If I recall there are some error flows that will push a 0 length
-> gather to the driver, it is supposed to ignore a gather where
-> start == end
+> However, certain PCIe devices require non-PASID ATS on their RID even when
+> the RID is IOMMU bypassed. Call this "always on".
 > 
-> Do you think that is the issue?
-
-AFAICT I was observing unsuccessful mappings related to OOM conditions, 
-followed by 0 sized unmap requests that were triggering the issue.
-
-Thanks,
-Janusz
-
+> For instance, the CXL spec notes in "3.2.5.13 Memory Type on CXL.cache":
+> "To source requests on CXL.cache, devices need to get the Host Physical
+> Address (HPA) from the Host by means of an ATS request on CXL.io."
 > 
-> Jason
+> In other words, the CXL.cache capability requires ATS; otherwise, it can't
+> access host physical memory.
 > 
+> Introduce a new pci_ats_always_on() helper for the IOMMU driver to scan a
+> PCI device and shift ATS policies between "on demand" and "always on".
+> 
+> Add the support for CXL.cache devices first. Pre-CXL devices will be added
+> in quirks.c file.
+> 
+> Note that pci_ats_always_on() validates against pci_ats_supported(), so we
+> ensure that untrusted devices (e.g. external ports) will not be always on.
+> This maintains the existing ATS security policy regarding potential side-
+> channel attacks via ATS.
+> 
+> Cc: linux-cxl@vger.kernel.org
+> Suggested-by: Vikram Sethi <vsethi@nvidia.com>
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 
-
-
-
+Reviewed-by: Jonathan Cameron <jonathan.cameron@huawei.com>
