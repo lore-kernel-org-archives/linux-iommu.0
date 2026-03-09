@@ -1,146 +1,371 @@
-Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012010.outbound.protection.outlook.com [40.107.200.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD04F354ADB
-	for <iommu@lists.linux.dev>; Mon,  9 Mar 2026 18:49:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.200.10
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773082159; cv=fail; b=rDzeh3jkM5XWDuDJ9GT0o0+RZfqgfcLmdrMIAKGdc96YF7YoNw+1p9TVj4jZZ29kBlmkZmgifzL+XSfuVbm8qTmQFu2qeFbFw4DTNJ8zRqL4gWoYE1iqKNzlXkRODXR8LceH4Gq5NWOzY4lrZg3B2SFnXr4sftjxcgipF9PrAtM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773082159; c=relaxed/simple;
-	bh=pFT8VNwztPTwX29mvoAw+VXWN1OFF2bexMb9V+4KlS8=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jtLb/N9RCnlDLi7CQVFLUSSPlK1jZDg3WoGbR3DRlkEjPMPrJ1g1Hj5NHRLWscJRNxUoP580YcR2o9yTixE1nRSgxT+SVlca3lNFCu8nea45ruHA33n3o1u9PM6ILlFzH/sPEi+NxfK2nrc+3IW4zw2jHpxRqWxJQ316No+KlxU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ZsJ8aav8; arc=fail smtp.client-ip=40.107.200.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B00D238C1B
+	for <iommu@lists.linux.dev>; Mon,  9 Mar 2026 19:46:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773085593; cv=none; b=ZdEUM5RMxT2Y84XBUZOZgsc2Ie5XiWO+nHEJgvbCZb5JX6DsCq1wQPX5AHkXR+kJTLfRJh7Sob+qcVge2EPHF42zYhNotd7vfuLi1/PmszWWXf+IMByXgAPpmJS//M9QuUzYHJiO2PqOs880J63wfXuCfNAD/R19D69il9iRK68=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773085593; c=relaxed/simple;
+	bh=UD3A6lAas5vIRGWKWKe/qKfDmofMyamsc6XjsUDjK04=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=q11W/H4YWBHdsjafmVZJpVk0bmMAwQfywsUUvLS02oTbYb7mP5feC4UwZ+GNWgvB5lSF6pr2D0y5e5o/NC/a1xQI+0RicG9Kx73YEYdQvTsr3t68tT1n0bKCsWrjtl8ZOx3htEthIxeO29Vn9JDsIW4sBBE5tcNv+hWszaLNmGA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=bqhDtS4x; arc=none smtp.client-ip=209.85.214.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ZsJ8aav8"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=UcdDikIVAyvkgxz13LIXq7Ofg6PiWP6niKfnI7AfLe/zqxUTE/So8QIz4pQzEoscL/gsVq+z0orS1wWQFt0HZlr29YjUffZy8GxBGwVOqmjkpbhcfQfiG5Uel2sy2rbOdGEZe0xgl9mWFclU8psSk+9XCrN1A9gb0AuizYkvjJ+NPeBg4ITlep3A23rboFam19LyleoLlWq/i7E8yJMes3sjYfiKIsoVjwpG0LBMH2P7yAUFZDq+vzdC0q5Rc2m4/rBBaelY/JzkUDJaiPQjG3tumigTj70wqgxc4TrOb77db4D8KIQEyEt69YRTcoz+eBK6nC43tyTBxENlsxmUKg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/C5HOj4s+f4jjC2DV4VfpU7e2N9FV8RIJSj9kyBzMOs=;
- b=Lnuno2hFWznVSab0tKvXX8CLO7GL8gnCtOGRe47uObONszsXjTUAyWfFqd3iDkMjGN6UoaJXEWGkH8GOQsTHTqQKiEOi8puy0rKVf7z3eiFgpkMLFcnlt2L3r0GW89Dw24tGRzIK2AqVD2YbpkdEUVL5rZ/1MbWMj/gW9SZGQF8A0p2QMhSxZEg5ZkOvFtuyoag8BLNMDV59D6VVZXx4Taq0s+Xfhlt9muWT0QoVOY1wLnb0uY1X/2oGjMKLxdl1Kbs9oQ+3AudHc32rPeOtmMwRmyFCv24J3gUUxfNdSKPPuy+ZW74ccxMyZ2T4gCgJYD8abB0ymJMdvJruXmKvkQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=linux.ibm.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/C5HOj4s+f4jjC2DV4VfpU7e2N9FV8RIJSj9kyBzMOs=;
- b=ZsJ8aav8oOhQHuOimZXV2EPxEUZGrSQ/XrE04TZDllw0nUdR13aKQv/BnUCcV77+iKk0Rm2O+2cOvpsSNJ9q9fDitx4Tp2+lWbEglTfrNy5rLXVrxSe01mrqMkYQ1jR83dZvs22s63cyAZ6Yeu28DIU1nlJKuD6XPO78Vfp8Ox+n5xPWzZ2AdB8B9cOvWNLuP1keo0yn7sfxvQvtKuEiSkpOKtGI2rFhyEmXVqOpRDSQIMkjsJcbHIavIh5m0VPB6UMMW2bIQpUxZuqgoSajTVOV5VWzpFDPc1BT4XOMsE0skYO7KNXFsC6kdNrgP8wgeYhqYtzNAWhHY0WpNXNOfA==
-Received: from BN1PR14CA0022.namprd14.prod.outlook.com (2603:10b6:408:e3::27)
- by DS0PR12MB8501.namprd12.prod.outlook.com (2603:10b6:8:15d::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9700.11; Mon, 9 Mar
- 2026 18:49:11 +0000
-Received: from BN3PEPF0000B36F.namprd21.prod.outlook.com (2603:10b6:408:e3::4)
- by BN1PR14CA0022.outlook.office365.com (2603:10b6:408:e3::27) with Microsoft
- SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.20.9678.25
- via Frontend Transport; Mon, 9 Mar 2026 18:48:54 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- BN3PEPF0000B36F.mail.protection.outlook.com (10.167.243.166) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9723.1 via Frontend Transport; Mon, 9 Mar 2026 18:49:11 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 9 Mar
- 2026 11:48:46 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 9 Mar
- 2026 11:48:46 -0700
-Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Mon, 9 Mar 2026 11:48:45 -0700
-Date: Mon, 9 Mar 2026 11:48:44 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Nilay Shroff <nilay@linux.ibm.com>
-CC: <iommu@lists.linux.dev>, <linuxppc-dev@lists.ozlabs.org>,
-	<joerg.roedel@amd.com>, <jgg@nvidia.com>, <baolu.lu@linux.intel.com>,
-	<kevin.tian@intel.com>, Madhavan Srinivasan <maddy@linux.ibm.com>,
-	<sbhat@linux.ibm.com>
-Subject: Re: [bug report]: iommu WARNING is observed on powerpc system during
- pci enumeration at boot up
-Message-ID: <aa8WDIhPyPU45VKB@Asurada-Nvidia>
-References: <d5c834ff-4c95-44dd-8bef-57242d63aeee@linux.ibm.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="bqhDtS4x"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2ae49120e97so28085ad.0
+        for <iommu@lists.linux.dev>; Mon, 09 Mar 2026 12:46:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1773085591; x=1773690391; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=XKoz8ym4BVb4IKhg/BYJLcGgQKiJVp7fRx1WC1sp+yQ=;
+        b=bqhDtS4xOSgJAiBxOVvfcyaRzoJNSvhpqLp7XhyYhLoJCRrNCzpQxtNlXBbbx31lWA
+         Fst5U2w1yts0Kwertw2Fdczhqm6IiZRlE2ScJ+JsBwtbRU0IGnyP7pZTfuD/VXc4AbT5
+         ySqOLwJb3Mm0Ooobaus2Df1cUtzlNn6UB8Dkcl2qXSkq0TLn/0KexcZJ3m7RQ4BXydKM
+         b/ql4B6Pt1BK413G5BdJAKhGAvAm7H3elY0ItA12z6RMlfs6QGpxSJxk2FwZN/a/KskD
+         myYHPP6nArm8nuvvJpx9eywAehdb6QRmnDEkg3BDscNSOSyHeboDWhri17wdoVpRo77h
+         tuRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1773085591; x=1773690391;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=XKoz8ym4BVb4IKhg/BYJLcGgQKiJVp7fRx1WC1sp+yQ=;
+        b=mPuO2J2kK1fLLGZfmMKbl6jHuLlwZ7jVfmQ7ohJ/WJJi3FlrRNeD/IX7zGQZlo7HYL
+         1RihCVO4m1xMObOryTknixHzHtJfFHrMAAMaLxIOFCiI4/qFqrAjGkh7gSxGIvLFaeeK
+         FHkSz9bnJfzBBVZytGUZmtmRYRszxjeiS0ADKfeuGi4mi6+jQwayl8rnlBxrpxZZbeE4
+         QpUSqCEkgPVqI6fm+C1lpdmhQQ32Fvyynq1ilcJGetU8em+rV5y5ngj/PyTABd1iG10a
+         q8qjifwMJmOSjzJzA5JVKodkjLwai7tWfkB2dSweM1q2/kqGuQtLsjvOwkTtewvI5GId
+         1Cgg==
+X-Gm-Message-State: AOJu0YwLAFOpFvfxYXKMzMklQwzCE17ilJoJjgGwXhn7ewtv9nDf9n6P
+	VLyXcEKvlzELjJc+Vb5U8IVowFaVMl3GzhhZPRgKQu4r48jdKHx98dRu8N9+5JmgXQ==
+X-Gm-Gg: ATEYQzyU+tDYSamWI3YwqWHjMPlbaWAN/2omWyLjFKpA3/2HCz/6lLc1l8lmR9he4Yt
+	oSO3Fl90whe+g+sXDDA0DJmwchKrz9fSxHf+YIdSy32U8z3G6ktiep398/WyQ0N2JIYlDqThSjk
+	fuhrkkjb6kbYwBpsIhuWmLARofA5oUSof+qKX/F66b8glKOxcydwT78u+TafYkMgZaCXlGVkQr5
+	0EulRDp06zj7nyqqDTAv4yFfGIl3IWEXo6t0k8DsCq0H3oxA2MAuuJQdwn2251/6bkuthPfzSwO
+	vtmbgi7gb2YBy89zDgaKU1QS+8q1TiV6fVW4+ZAI8+2wxNwmQibjugdx8Zpa8MDuyQYw2vnsXyC
+	Irzf3wwdwN2bETeE9wGmv26eB/BdKl+ig6L0J1lEC9EWv4u0s62ru4fJ7YEO5XFpEn19qay+KD9
+	Ax47BQ5JpmJ5Aj260QnGNTMsnuUaxZM7gaI2n3+TWAyazP/iHlZlCWSfcGHQ==
+X-Received: by 2002:a17:903:1cd:b0:2a9:5bfa:54ef with SMTP id d9443c01a7336-2aea30349femr723355ad.10.1773085590624;
+        Mon, 09 Mar 2026 12:46:30 -0700 (PDT)
+Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-829a4635d62sm11505177b3a.5.2026.03.09.12.46.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Mar 2026 12:46:30 -0700 (PDT)
+Date: Mon, 9 Mar 2026 19:46:24 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Daniel Mentz <danielmentz@google.com>
+Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Ashish Mhetre <amhetre@nvidia.com>,
+	Sairaj Kodilkar <sarunkod@amd.com>
+Subject: Re: [PATCH v5 06/10] iommu/arm-smmu-v3: Add a usage counter for cmdq
+Message-ID: <aa8jkLD0l2WqMnyG@google.com>
+References: <20260126151157.3418145-1-praan@google.com>
+ <20260126151157.3418145-7-praan@google.com>
+ <CAE2F3rD0aoTXJBnS4SPHLEEst6cTvoUxNywRZ1RhdgwNA_0JTA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <d5c834ff-4c95-44dd-8bef-57242d63aeee@linux.ibm.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN3PEPF0000B36F:EE_|DS0PR12MB8501:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7b9a4d43-8144-46e9-c220-08de7e0c8d81
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|36860700016|376014|82310400026;
-X-Microsoft-Antispam-Message-Info:
-	5KwmfQ+0N/wztVMQzA6ShIjEDD8yvtm5gMZq+iX2pjAa6kVcBlM9QSuVNLXjUJNVTrKZ/1k4yPVBgl/VK8HFXwsglwOJgfZVhcywC8cokiXG6l/MtXeWoZH6scVqMvNPVErABU+I5zJPFFh9eTQ+6IR0QysB/cXjXMUKUA7FzcqeHOWoVNh171E/EQCpLbDdb6v7ByGDsnQTc+2LWi2DF5EvHJ4BaZQzeDButVXGXOVtK+k//z3dhXJykVH12rXcQ9EBgPviiQm1tzaIHf4eQ7vOZRD4l9MUN0w4DyLqeH9T7+BSJz80uOHokmQhqkXDzAWUzDciwFgSMoSn56sCkiixOtmKSe5O72NmcpiaC8RwPLjW4US+ZcnpxiVTsdsSQqiM5kFJvIv6l2wD2UB1THfqQJPiNPZD5f/ws1FCsFInjgYNkCcUYVwy14vn9dqjdk0TsgFKiUUsATEuCzrKXck0S0uHPtU7PjP57lbsbl1VkrSAC0X1o77HU+goJbEwyp7XxrredNxgHk5JUPQqEKUBAqZtKc2VLj0Q9HPtGqHznR4JuLUj0D+oip6eotSXOWr7NCCDgxqy9o7tpSdfsfJ/Al1cDHNSrw3/0p7A5IPjWMfXIn0RwdlDkWD57MSTZKwx/gnuuAoGDIMfQNUDkOD6KGumlGqapS3ySJXTrqAAf4BgTxsv4lQfDg2kfYNGbHBjklDwlJt6ugRNFBlcXDXQKduJUxkxVuuCslC9FylHBPQJsMF3kMR/Fu17QpYXDjc3aVwjh2B7UyEAE8Xv+w==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(36860700016)(376014)(82310400026);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	Ej0mGbkk5nMX7LTaRHprkqtjHnwT45j8n4GLv1V4PzfLFGN4qfIh1mYqfeKifesyvJ2gJYLUwIqXKspW71HGFxVyIluWGFkLmXMxtTBTgobbo5a3mCgvbIuMPPWy59O02/4WPbpyrvST73F5ZzICVg15H9pit8bOfUJYJ+mRlNYjbNHCbTNNIvBJuzkClZGq+k6AYcuXHZUfFxw4+VOMQf+xEH+9Q3HueoS7JpBW7moTdCMB28Dj5ZkeDLlFcP1soMMQ1CxqC9DCR1jS6BI9jqoY2iUykdixbmnyhpFrKAYAxbh6l9XIB0Dat3mksHM5Kln74GOQni5IFZ1yC/LxqQ2Nf7VtUu7fUbHWT9OdEt1gqXBEBRFow9gpWdqy4Fs2ev9KihAOvtRIWup2r169RFBS9G1T25gwvvy9QLdQUvqjvUDXvQg0HVnwuPIaoB41
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2026 18:49:11.0200
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7b9a4d43-8144-46e9-c220-08de7e0c8d81
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN3PEPF0000B36F.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8501
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAE2F3rD0aoTXJBnS4SPHLEEst6cTvoUxNywRZ1RhdgwNA_0JTA@mail.gmail.com>
 
-On Mon, Mar 09, 2026 at 11:27:42PM +0530, Nilay Shroff wrote:
-> Looking at the warning it seems that this is a regression caused due to
-> commit a75b2be249d6 ("iommu: Add iommu_driver_get_domain_for_dev() helper").
+On Sun, Mar 08, 2026 at 02:23:03PM -0700, Daniel Mentz wrote:
+> On Mon, Jan 26, 2026 at 7:12 AM Pranjal Shrivastava <praan@google.com> wrote:
+> >
+> > Introduce a biased counter to track the number of active cmdq owners as
+> > a preparatory step for the runtime PM implementation.
 > 
-> Any help from the iommu expert would be appreciated. Though I am not expert,
-> it seems the following patch help fix this warning (I encourage the iommu
-> developers to confirm and/or take this forward) :
+> Non-owners waiting for their CMD_SYNC to be consumed also appear to
+> increase this counter.
 > 
-> diff --git a/arch/powerpc/kernel/iommu.c b/arch/powerpc/kernel/iommu.c
-> index 0ce71310b7d9..d122e8447831 100644
-> --- a/arch/powerpc/kernel/iommu.c
-> +++ b/arch/powerpc/kernel/iommu.c
-> @@ -1159,7 +1159,7 @@ spapr_tce_platform_iommu_attach_dev(struct iommu_domain *platform_domain,
->                                     struct device *dev,
->                                     struct iommu_domain *old)
->  {
-> -       struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> +       struct iommu_domain *domain = iommu_driver_get_domain_for_dev(dev);
->         struct iommu_table_group *table_group;
->         struct iommu_group *grp;
+
+Ack, I'll clarify that in the commit message too, any owners or
+non-owners waiting on sync would increment this counter.
+
+> >
+> > The counter will be used to gate command submission, preventing the
+> > submission of new commands while the device is suspended and deferring
+> > suspend while the command submissions are in-flight.
 > 
+> What does command submission mean in this context? I understand that
+> commands are still added to the queue (until the queue is full). It's
+> only the producer index that is not advanced.
 > 
-> Please let me know if any further information is needed.
 
-Yea, that should be the fix.
+Exactly, incrementing the "producer index" is how the command is
+actually submitted to the HW. In case the SMMU is suspended, we'd simply
+add it to the queue but not touch the PROD register in the HW. I can
+clarify this further by saying "preventing the flushing of new commands"
 
-Please submit a "PATCH rc" with:
+> >
+> > The counter is biased to a value of 1 during device reset. A cmdq owner
+> > or a thread issuing cmds with sync, increment it before accessing HW
+> > registers and decrements it with release semantics afterwards.
+> >
+> > A value of 1 represents an idle (but active) state. A suspend operation
+> > will set it to from 1 -> 0 representing the suspended state.
+> >
+> > Signed-off-by: Pranjal Shrivastava <praan@google.com>
+> > ---
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 65 +++++++++++++++++----
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  3 +
+> >  2 files changed, 57 insertions(+), 11 deletions(-)
+> >
+> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > index 91edcd8922a7..3a8d3c2a8d69 100644
+> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > @@ -805,7 +805,7 @@ int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
+> >         u64 cmd_sync[CMDQ_ENT_DWORDS];
+> >         u32 prod;
+> >         unsigned long flags;
+> > -       bool owner;
+> > +       bool owner, has_ref = false;
+> >         struct arm_smmu_ll_queue llq, head;
+> >         int ret = 0;
+> >
+> > @@ -819,8 +819,15 @@ int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
+> >
+> >                 while (!queue_has_space(&llq, n + sync)) {
+> >                         local_irq_restore(flags);
+> > +
+> > +                       if (!atomic_inc_not_zero(&smmu->nr_cmdq_users))
+> > +                               /* Device is suspended, don't wait for space */
+> > +                               return 0;
+> > +
+> 
+> Does this mean that we still accumulate commands until the queue is
+> full while in the suspended state and then have SMMU excecute all of
+> these (now irrelevant) commands when the command queue is re-enabled?
+> One might argue that this is wasteful, but I guess it might be
+> technically correct, because it doesn't hurt either.
+> 
 
-Fixes: a75b2be249d6 ("iommu: Add iommu_driver_get_domain_for_dev() helper")
-Cc: stable@vger.kernel.org
+No, we drop any commands that are issued if the command queue doesn't
+have space while it is suspended. There are two reasons for this:
 
-Thanks!
-Nicolin
+1. The arm_smmu_cmdq_poll_until_not_full below would try to perform an
+MMIO access (read_relaxed(cmdq->q.cons_reg) which shouldn't be allowed
+when the SMMU is suspended.
+
+2. We usually have 3 types of commands in the SMMUv3:
+
+ a) Invalidation commands: We clear the entire TLB during resume, so we
+ don't really need to batch these.
+
+ b) Prefetch commands: Any prefetches are effectively no-ops as when the
+ SMMU is suspended, the resume would effectively read the latest config
+
+ c) Page responses: These are NOT expected to occur while the SMMU is
+ suspended and we shouldn't be batching them anyway. (The page resp
+ handlers handle such situations and avoid queueing-in commands anyway
+ with this series)
+
+Thus, any dropped invalidation / prefetch commands don't harm us if the
+SMMU was suspended.
+ 
+
+> >                         if (arm_smmu_cmdq_poll_until_not_full(smmu, cmdq, &llq))
+> >                                 dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
+> > +
+> > +                       atomic_dec_return_release(&smmu->nr_cmdq_users);
+> >                         local_irq_save(flags);
+> >                 }
+> >
+> > @@ -879,10 +886,35 @@ int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
+> >                 arm_smmu_cmdq_poll_valid_map(cmdq, llq.prod, prod);
+> >
+> >                 /*
+> > -                * d. Advance the hardware prod pointer
+> > +                * d. Advance the hardware prod pointer (if smmu is still active)
+> 
+> Consider "(if command queue is still enabled)". Otherwise, what does
+> "active" mean? SMMU and/or command queue enabled?
+> 
+
+The suspend callback is implemented in a way where we can't have a
+"partial" suspend, i.e. there is no code path where the CMDQ is disabled
+but the SMMU is not. Thus, "active" was supposed to mean The SMMU is
+enabled entirely since there isn't a partial suspend/resume implemented.
+
+Although, I can update the comment to say (if smmu is still enabled) OR
+(if smmu is NOT suspended).
+
+> >                  * Control dependency ordering from the entries becoming valid.
+> >                  */
+> > -               writel_relaxed(prod, cmdq->q.prod_reg);
+> > +               if (atomic_inc_not_zero(&smmu->nr_cmdq_users)) {
+> > +                       writel_relaxed(prod, cmdq->q.prod_reg);
+> > +
+> > +                       if (sync) {
+> > +                               has_ref = true;
+> > +                       } else {
+> > +                               /*
+> > +                                * Use release semantics to enforce ordering without a full barrier.
+> > +                                * This ensures the prior writel_relaxed() is ordered/visible
+> > +                                * before the refcount decrement, avoiding the heavy pipeline
+> > +                                * stall of a full wmb().
+> > +                                *
+> > +                                * We need the atomic_dec_return_release() below and the
+> > +                                * atomic_set_release() in step (e) below doesn't suffice.
+> > +                                *
+> > +                                * Specifically, without release semantics on the decrement,
+> > +                                * the CPU is free to reorder the independent atomic_dec_relaxed()
+> > +                                * before the writel_relaxed().
+> > +                                *
+> > +                                * If this happens, the refcount could drop to zero, allowing the PM
+> > +                                * suspend path (running on another CPU) to disable the SMMU before
+> > +                                * the register write completes, resulting in a bus fault.
+> > +                                */
+> > +                               atomic_dec_return_release(&smmu->nr_cmdq_users);
+> > +                       }
+> > +               }
+> >
+> >                 /*
+> >                  * e. Tell the next owner we're done
+> > @@ -894,14 +926,19 @@ int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
+> >
+> >         /* 5. If we are inserting a CMD_SYNC, we must wait for it to complete */
+> >         if (sync) {
+> > -               llq.prod = queue_inc_prod_n(&llq, n);
+> > -               ret = arm_smmu_cmdq_poll_until_sync(smmu, cmdq, &llq);
+> > -               if (ret) {
+> > -                       dev_err_ratelimited(smmu->dev,
+> > -                                           "CMD_SYNC timeout at 0x%08x [hwprod 0x%08x, hwcons 0x%08x]\n",
+> > -                                           llq.prod,
+> > -                                           readl_relaxed(cmdq->q.prod_reg),
+> > -                                           readl_relaxed(cmdq->q.cons_reg));
+> > +
+> > +               /* If we are not the owner, check if we're suspended */
+> > +               if (has_ref || atomic_inc_not_zero(&smmu->nr_cmdq_users)) {
+> 
+> Can there be a situation, where we execute this branch and the
+> hardware prod pointer has not been updated, in which case
+> arm_smmu_cmdq_poll_until_sync will wait forever (well, actually, until
+> it times out). Imagine the following series of events:
+>  * nr_cmdq_users==0
+>  * hardware prod pointer update is skipped
+>  * nr_cmdq_users becomes 1
+>  * arm_smmu_cmdq_poll_until_sync waits but commands are not executed
+> by SMMU because hardware prod pointer update wasn't updated
+>  * arm_smmu_device_reset() tries to submit CMDQ_OP_CFGI_ALL, but gets
+> stuck because the queue is full.
+>  * cmdq->q.llq.cons is never updated because the shared lock is held.
+> queue_has_space() returns false, and
+> arm_smmu_cmdq_poll_until_not_full() can't get the exclusive lock
+> 
+
+Thanks for catching this! IIUC, you mean a race between the resume and
+this code block can cause a deadlock? Something like the following:
+
+CPU 0					CPU 1
+nr_cmdq_users == 0
+skip hw_prod++
+					->resume cb
+					nr_cmdq_user == 1
+nr_cmdq_users == 1
+in the if (sync) part
+arm_smmu_cmdq_poll_until_sync()
+					CMDQ_OP_CFGI_ALL stuck for space
+
+I guess we could add a check here if (has_ref == false) but
+nr_cmdq_users > 0, then we could write the prod_reg again.. maybe we'd
+need to factor out a helper function here.. I'll think more about this..
+
+I guess the simplest thing would be to bail out much before, something
+like if (nr_cmdq_users == 0 && sync) return;
+
+> > +                       has_ref = true;
+> > +                       llq.prod = queue_inc_prod_n(&llq, n);
+> > +                       ret = arm_smmu_cmdq_poll_until_sync(smmu, cmdq, &llq);
+> 
+> If you skip arm_smmu_cmdq_poll_until_sync() in the nr_cmdq_users==0
+> case, I'm thinking that llq.cons is not updated. If this is the case,
+> is the subsequent WRITE_ONCE(cmdq->q.llq.cons, llq.cons); potentially
+> incorrect?
+> 
+
+The goal here was to "simulate" a successful command submission while 
+the smmu is suspended (as mentioned by Will earlier), we do everything
+except for touching MMIO here. 
+
+Since the commands can be one of the three types mentioned above, we
+don't really miss out on anything with the faux-cmd submission here.
+
+Thus, what if we update llq.prod always and set llq.cons == llq.prod
+condtionally if nr_cmdq_users == 0. 
+
+Ideally, this should also prevent the `queue_full` scenario as all
+commands are faux-issued instantly. Maybe something like:
+
+if (sync) {                                                               
+      llq.prod = queue_inc_prod_n(&llq, n);                               
+                                                                          
+      if (has_ref || atomic_inc_not_zero(&smmu->nr_cmdq_users)) {
+          if (!has_ref) {  
+              /* Repair: We were suspended earlier but now we're active.
+               * Kick the hardware to publish our commands. */
+              has_ref = true;
+	      ... owner logic again ...
+	          ...
+              writel_relaxed(llq.prod, cmdq->q.prod_reg);                 
+          }
+          ret = arm_smmu_cmdq_poll_until_sync(smmu, cmdq, &llq);
+
+           if (ret) {
+               // ...                                      
+           }                                                                   
+       } else {
+           /*
+            * Device is suspended. Fast-forward the consumer pointer in memory 
+            * to "drop" these commands and avoid a full queue deadlock.
+	    * (n + 1 to include the SYNC command)
+            */        
+           llq.cons = queue_inc_prod_n(&llq, n + 1);
+       }                                               
+                                                                       
+       if (!arm_smmu_cmdq_shared_tryunlock(cmdq)) {
+           WRITE_ONCE(cmdq->q.llq.cons, llq.cons);
+           arm_smmu_cmdq_shared_unlock(cmdq);
+       }
+   }
+
+This could still be racy.. I'll give it another thought..
+
+> I'm still trying to get my head around this algorithm, but accorrding
+> to my current understanding, the following rule applies:
+> 
+> Only the cmdq owner may update the hardware prod pointer, and only
+> after arm_smmu_cmdq_poll_valid_map() returned for the relevant range.
+> Does the following instruction in arm_smmu_device_reset() violate this
+> rule?
+> 
+> writel_relaxed(smmu->cmdq.q.llq.prod, smmu->base + ARM_SMMU_CMDQ_PROD);
+> 
+
+Not really as we don't enable the command queue by that point.
+(but it's still racy as you've mentioned in the queue_full scenario
+above)
+
+> I'm wondering if we should just set ARM_SMMU_CMDQ_PROD to
+> smmu->cmdq.q.llq.cons and then have the next owner update the hardware
+> prod pointer.
+
+Hmm.. what if we ensure that the cmdq.q.llq.prod == cons instead? I
+guess that would be racy though?
+
+Thanks,
+Praan
