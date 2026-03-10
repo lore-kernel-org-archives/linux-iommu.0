@@ -1,250 +1,251 @@
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
+Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azon11012021.outbound.protection.outlook.com [40.107.209.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B7A02DC32E
-	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 14:25:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=18.9.28.11
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773152729; cv=none; b=SK7uDJMY4nv9DR+sRlpFV9YYkCOYzKKWSGxIIpMo+7HPeibpuX7eQ3+wxJkG0ZjLfvM8qqhjnOM/Xdfk7p+u7ORSJFWR6cjA/hkzzOxVLbMwHmp/of7dw3PrqenJczGsrCUhf9sRr4Ht/MrTGTuehEjGhRo8iCI8asgAT0ntD3Y=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773152729; c=relaxed/simple;
-	bh=XwidptKIhvR+UF4aaOLrgKMULsgr14IRJkHhby+ViXQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oqVFknlT47IsuhgLybV7wSDbW6ELQ1HJZ1x/RjyQ0C9wy8w1CFx6l7PkHTINP0Vz7w29/Eg5I1nYz1wr7WooX6lRCiZelC2OE+65tQYdjSiZuyhDfzWaZC33xFe/Yq8kFfxe7nyV3JcM1W2gF/rNSGZGf7WdoGKJDXlr9sEF6Gs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mit.edu; spf=pass smtp.mailfrom=mit.edu; dkim=pass (2048-bit key) header.d=mit.edu header.i=@mit.edu header.b=LBScO8Ew; arc=none smtp.client-ip=18.9.28.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mit.edu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mit.edu
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E1292857EA
+	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 14:37:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.209.21
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773153475; cv=fail; b=r9dKaJZaVSDm6DGboutKAwgr5bbppn93RYAvq6nDBrayCEeicG2DyIDbWpfl/xasnC5+NL4MKvAUONcDHRZJ6rWSujwMbdpisGeVWYdPQxBxbnTI1ug4T/hbrqZ9U4SxTamfWp9oe6RSO8JODKTe2A2Do8nN01MunhmFUrTH/ww=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773153475; c=relaxed/simple;
+	bh=qxEZ6InW9qnrQsqtcPgJuwJa6RLSjtZVqPozJ6VeOt0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=eJ2UdoOoRFrlTqvDlIQ8cf7+rdjNxQ5hG0O4nwyjPv3gCm4lVJikCVVoyIvOpLPT0mkmwPSiWU8TuMXtxGuA9oyc5JN7cynv/A5aUay8B2mGusACnfjdzup5Cmr4y+RAVWdw1wiYAJrPXkAVeig83/rNYARZTew3cwFaT9LEp6s=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=MGTAiLJD; arc=fail smtp.client-ip=40.107.209.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mit.edu header.i=@mit.edu header.b="LBScO8Ew"
-Received: from macsyma.thunk.org (pool-173-48-117-133.bstnma.fios.verizon.net [173.48.117.133])
-	(authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-	by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 62AENmJI023255
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 10 Mar 2026 10:23:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-	t=1773152639; bh=4/p8AtxdJ3b4aYgpRIBgOOPVM9R5HZLzlaxPPsEZ2Q4=;
-	h=Date:From:Subject:Message-ID:MIME-Version:Content-Type;
-	b=LBScO8Ewh5j+pvClPuvYJ6dYWu+6WL2ev3A6duJrcxObwFWjC8dgbq1R1jaNAuzD8
-	 1N3QSZ+599jgS5LWqKIvONI9n0DrlV/bhIgTucL1f31tVRWGphyQLoG1P9ldyU2xAy
-	 5HxclsvbqfBvFTqtCNAuPlMheXwVOKZyEuJ33r0JlgL4HScNylkzQj16H9ciOlXPZw
-	 GOi/SKdKtyjuJFISqW7lcvm87iESFGZLsNPOvP7dH6Va+zkOTwCBsrnPVNMrNF7MaI
-	 VGM4um3yd0mf+GQ4rfSGAnefCT4XC/KXug28EdqxTBjdSY5IyF4VkjDB0JxugqwdwX
-	 rwveeKEi+qz0Q==
-Received: by macsyma.thunk.org (Postfix, from userid 15806)
-	id 96A8A5C4FCED; Tue, 10 Mar 2026 10:23:48 -0400 (EDT)
-Date: Tue, 10 Mar 2026 10:23:48 -0400
-From: "Theodore Tso" <tytso@mit.edu>
-To: Philipp Hahn <phahn-oss@avm.de>
-Cc: amd-gfx@lists.freedesktop.org, apparmor@lists.ubuntu.com,
-        bpf@vger.kernel.org, ceph-devel@vger.kernel.org, cocci@inria.fr,
-        dm-devel@lists.linux.dev, dri-devel@lists.freedesktop.org,
-        gfs2@lists.linux.dev, intel-gfx@lists.freedesktop.org,
-        intel-wired-lan@lists.osuosl.org, iommu@lists.linux.dev,
-        kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-cifs@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-erofs@lists.ozlabs.org,
-        linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-mm@kvack.org,
-        linux-modules@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-nfs@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-phy@lists.infradead.org, linux-pm@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org,
-        linux-security-module@vger.kernel.org, linux-sh@vger.kernel.org,
-        linux-sound@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-trace-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        ntfs3@lists.linux.dev, samba-technical@lists.samba.org,
-        sched-ext@lists.linux.dev, target-devel@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net, v9fs@lists.linux.dev,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        Nicolas Palix <nicolas.palix@imag.fr>, Chris Mason <clm@fb.com>,
-        David Sterba <dsterba@suse.com>, Ilya Dryomov <idryomov@gmail.com>,
-        Alex Markuze <amarkuze@redhat.com>,
-        Viacheslav Dubeyko <slava@dubeyko.com>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        Steve French <sfrench@samba.org>, Paulo Alcantara <pc@manguebit.org>,
-        Ronnie Sahlberg <ronniesahlberg@gmail.com>,
-        Shyam Prasad N <sprasad@microsoft.com>, Tom Talpey <tom@talpey.com>,
-        Bharath SM <bharathsm@microsoft.com>,
-        Eric Van Hensbergen <ericvh@kernel.org>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Christian Schoenebeck <linux_oss@crudebyte.com>,
-        Gao Xiang <xiang@kernel.org>, Chao Yu <chao@kernel.org>,
-        Yue Hu <zbestahu@gmail.com>, Jeffle Xu <jefflexu@linux.alibaba.com>,
-        Sandeep Dhavale <dhavale@google.com>,
-        Hongbo Li <lihongbo22@huawei.com>, Chunhai Guo <guochunhai@vivo.com>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
-        Andreas Gruenbacher <agruenba@redhat.com>, Kees Cook <kees@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>, Jan Kara <jack@suse.com>,
-        Phillip Lougher <phillip@squashfs.org.uk>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Tejun Heo <tj@kernel.org>, David Vernet <void@manifault.com>,
-        Andrea Righi <arighi@nvidia.com>, Changwoo Min <changwoo@igalia.com>,
-        Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Luis Chamberlain <mcgrof@kernel.org>, Petr Pavlu <petr.pavlu@suse.com>,
-        Daniel Gomez <da.gomez@kernel.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Aaron Tomlin <atomlin@atomlin.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        Max Filippov <jcmvbkbc@gmail.com>, Paolo Bonzini <pbonzini@redhat.com>,
-        John Johansen <john.johansen@canonical.com>,
-        Paul Moore <paul@paul-moore.com>, James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alasdair Kergon <agk@redhat.com>, Mike Snitzer <snitzer@kernel.org>,
-        Mikulas Patocka <mpatocka@redhat.com>,
-        Benjamin Marzinski <bmarzins@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>, Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Simon Horman <horms@kernel.org>, Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Stanislav Fomichev <sdf@fomichev.me>,
-        Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Xin Long <lucien.xin@gmail.com>, Trond Myklebust <trondmy@kernel.org>,
-        Anna Schumaker <anna@kernel.org>, Chuck Lever <chuck.lever@oracle.com>,
-        Jeff Layton <jlayton@kernel.org>, NeilBrown <neil@brown.name>,
-        Olga Kornievskaia <okorniev@redhat.com>, Dai Ngo <Dai.Ngo@oracle.com>,
-        Jon Maloy <jmaloy@redhat.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Russell King <linux@armlinux.org.uk>, John Crispin <john@phrozen.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Robert Foss <rfoss@kernel.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Zhenyu Wang <zhenyuw.linux@gmail.com>,
-        Zhi Wang <zhi.wang.linux@gmail.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tursulin@ursulin.net>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Sandy Huang <hjc@rock-chips.com>,
-        Heiko =?iso-8859-1?Q?St=FCbner?= <heiko@sntech.de>,
-        Andy Yan <andy.yan@rock-chips.com>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        Andrew Lunn <andrew+netdev@lunn.ch>,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        Michael Chan <mchan@broadcom.com>,
-        Potnuri Bharat Teja <bharat@chelsio.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Przemek Kitszel <przemyslaw.kitszel@intel.com>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
-        Keyur Chudgar <keyur@os.amperecomputing.com>,
-        Quan Nguyen <quan@os.amperecomputing.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, Marc Zyngier <maz@kernel.org>,
-        Thomas Gleixner <tglx@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, Linus Walleij <linusw@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Eduardo Valentin <edubezval@gmail.com>, Keerthy <j-keerthy@ti.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-        Alex Williamson <alex@shazbot.org>,
-        Mark Greer <mgreer@animalcreek.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Kieran Bingham <kieran.bingham@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Lee Jones <lee@kernel.org>,
-        Pavel Machek <pavel@kernel.org>, Dave Penkler <dpenkler@gmail.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>, Long Li <longli@microsoft.com>,
-        Justin Sanders <justin@coraid.com>, Jens Axboe <axboe@kernel.dk>,
-        Georgi Djakov <djakov@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: Re: [PATCH 00/61] treewide: Use IS_ERR_OR_NULL over manual NULL
- check - refactor
-Message-ID: <20260310142348.GA41218@macsyma-wired.lan>
-References: <20260310-b4-is_err_or_null-v1-0-bd63b656022d@avm.de>
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="MGTAiLJD"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=iqWoYnwOzrioXDz+125/BaccW7mr7p8fQTv1vbwCaYLHMR8GJz6F6jguWuTRCKi5s9uOH19Ax5a3r6i64lnSMJ1BVbroYLuHs4WKszhNoeaINnpOiF+Xjk6HOXmwrqI4415UK+WSkfRaBIs2Cw97lxwHsb/VKjg3WV3KGPRo0ts9szPewNmmw0N3+dy5iua30zBpLzSadDGQP5IB2oWDki3zLHZFfqbFErPaa2sljjC3mrc2ZN5/JYlEE6uWZgK2i+kj23o8/sG86jDVUM3B6G2mgk9urAxkly1oifES3WYBwDKWtjbMDoAVV5inDv0rgxLPczpz30dsZivWYMnQJw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DjZZV3U5g6Fzx1PJNmiSVWBQ9ZDh9lQoiBnO09xW+BE=;
+ b=YxWU+xR2aod6cM8Hfg4jT8q6KcknnnbnlHK3UTgKtVfcqgoDNKwQB/yHAy5fAZulY9TNDZptJ0CmbxjbOxqeXojZztbOqvGEzt8Pz+M3VFa1IFmEuGGmtFn2KWPhWBMC7texeq2LsedhxL+4dVnzGcbSf+YA9rtGIYExr1tvYtxQKgd8YUuggfVLAaoVktdACsLXxyt6jOYkrB3G9M0DBZuutTC/zCIibuKIzIpozZAo3POWD2/+KAV0Gm0QbsMioKFIChi/hY+VWhk3rVAlw4SaB6QdavkdXXxJKMhAyvipWsyykAAqOwVJm3/FlQVhjIpz87ZGSUTX+uO5BAoc6g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 198.47.23.195) smtp.rcpttodomain=kernel.org smtp.mailfrom=ti.com; dmarc=pass
+ (p=quarantine sp=none pct=100) action=none header.from=ti.com; dkim=none
+ (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DjZZV3U5g6Fzx1PJNmiSVWBQ9ZDh9lQoiBnO09xW+BE=;
+ b=MGTAiLJDiNBmwQ9iddSYYbsbLnVr/ACBPZCkOIWlUmCgRfzUpNBfEmw8UW2CxnSm96ZyOMVpHHPmwnSmHFuJCrrq0V9PVQd27J5LMQ1B2LSFHkKrGVS/mJiXpOOKJiln53mKX3uLO9nLAt6lu2omvuMHdWmKDBWxXLH6i8o628I=
+Received: from SJ0PR03CA0231.namprd03.prod.outlook.com (2603:10b6:a03:39f::26)
+ by SJ0PR10MB5767.namprd10.prod.outlook.com (2603:10b6:a03:3ef::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9678.25; Tue, 10 Mar
+ 2026 14:37:50 +0000
+Received: from SJ5PEPF000001CD.namprd05.prod.outlook.com
+ (2603:10b6:a03:39f:cafe::54) by SJ0PR03CA0231.outlook.office365.com
+ (2603:10b6:a03:39f::26) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9678.25 via Frontend Transport; Tue,
+ 10 Mar 2026 14:37:37 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 198.47.23.195)
+ smtp.mailfrom=ti.com; dkim=none (message not signed) header.d=none;dmarc=pass
+ action=none header.from=ti.com;
+Received-SPF: Pass (protection.outlook.com: domain of ti.com designates
+ 198.47.23.195 as permitted sender) receiver=protection.outlook.com;
+ client-ip=198.47.23.195; helo=lewvzet201.ext.ti.com; pr=C
+Received: from lewvzet201.ext.ti.com (198.47.23.195) by
+ SJ5PEPF000001CD.mail.protection.outlook.com (10.167.242.42) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9678.18 via Frontend Transport; Tue, 10 Mar 2026 14:37:50 +0000
+Received: from DLEE213.ent.ti.com (157.170.170.116) by lewvzet201.ext.ti.com
+ (10.4.14.104) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 10 Mar
+ 2026 09:37:49 -0500
+Received: from DLEE207.ent.ti.com (157.170.170.95) by DLEE213.ent.ti.com
+ (157.170.170.116) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 10 Mar
+ 2026 09:37:49 -0500
+Received: from lelvem-mr05.itg.ti.com (10.180.75.9) by DLEE207.ent.ti.com
+ (157.170.170.95) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Tue, 10 Mar 2026 09:37:49 -0500
+Received: from [10.249.42.149] ([10.249.42.149])
+	by lelvem-mr05.itg.ti.com (8.18.1/8.18.1) with ESMTP id 62AEbmh63244992;
+	Tue, 10 Mar 2026 09:37:48 -0500
+Message-ID: <c7c1a4dd-dd10-4490-998b-55f9ec5989a7@ti.com>
+Date: Tue, 10 Mar 2026 09:37:48 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260310-b4-is_err_or_null-v1-0-bd63b656022d@avm.de>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 1/6] dma-buf: dma-heap: Keep track of the heap device
+ struct
+To: Albert Esteve <aesteve@redhat.com>, Sumit Semwal
+	<sumit.semwal@linaro.org>, Benjamin Gaignard
+	<benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>,
+	John Stultz <jstultz@google.com>, "T.J. Mercier" <tjmercier@google.com>,
+	=?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, Marek Szyprowski
+	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
+	<robh@kernel.org>, Saravana Kannan <saravanak@kernel.org>
+CC: <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>,
+	<dri-devel@lists.freedesktop.org>, <linaro-mm-sig@lists.linaro.org>,
+	<iommu@lists.linux.dev>, <devicetree@vger.kernel.org>, <mripard@redhat.com>,
+	<echanude@redhat.com>, John Stultz <john.stultz@linaro.org>, Maxime Ripard
+	<mripard@kernel.org>
+References: <20260306-b4-dmabuf-heap-coherent-rmem-v3-0-3d00d36c9bc4@redhat.com>
+ <20260306-b4-dmabuf-heap-coherent-rmem-v3-1-3d00d36c9bc4@redhat.com>
+Content-Language: en-US
+From: Andrew Davis <afd@ti.com>
+In-Reply-To: <20260306-b4-dmabuf-heap-coherent-rmem-v3-1-3d00d36c9bc4@redhat.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-C2ProcessedOrg: 333ef613-75bf-4e12-a4b1-8e3623f5dcea
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ5PEPF000001CD:EE_|SJ0PR10MB5767:EE_
+X-MS-Office365-Filtering-Correlation-Id: c06f6b08-a82b-4511-afaf-08de7eb29b61
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|376014|1800799024|82310400026|36860700016|921020|7053199007|18002099003|22082099003|56012099003;
+X-Microsoft-Antispam-Message-Info:
+	FVYxFAka9Y1KaW34yYzAsCTJ2VQxBbgCOk+yMcpco7ZYnJb5lwfH2UlrXS86RTplJ6LI96vz5+RbSksqotQl+bq6gmhoJWh0r97GcciWm6Yks5RWi2UpNI3NmG7DkwxXFB/uL5x9cYIrW6zStGyT3W9pCP2E2K6aapfuFgT5Fyx4HOKC8THGX9TKhb4v+UCwE6x396Vh2X3wbHPObsDo/ejX3kkSTyUlVk4OMxKh6HHPZ0y6XDFp1dNuAAth4WpnZ/b91PUsM2dNAB6pm1ZpmCtFgklIdF+yknTq1l3C0U/H/ti9oAYdRG6UOIrMsI8xeJ7WX+9mToYmPDRLUSu3M3zdU3VMr0TH9mtVj/Cd8iXOUyBUPj18Gai0tSnXHNMkkO249VE7FM1EOyGikdZwh6myy3g9NG7iai159OYtVt5O/uq2hCd7dXoUGTjTkkZKqGLJHClCL3CtlldtreBzInHJehANmG2MYfzrjtFi0XPl++VeevHSfkoSRiBc44lZ5pGVFiXGO4mDjTg2Y/KNcAqHByjG3wCkhMTDfJMMRe7sRly40C++Z9soOghcGE1teF534ft+CUQpUclA+6ZxKpWs6MYxVQfXRexkw6m81vn7185YjLbVUZXAf2CfQcPpRcWHo+IqfHwQLRIuINs292SzdR3Y41iGHYyoOo4SmxEgU6BCSOn32musiWIbLeOG12YOSuzIEhN0A2JglSSyDsJAEZKxKK+zpQsTrRGD8SV1D4xGzEMdDbeF7SDkm+pwWpAzuYNrMAFVgcHP8RyQTbN6JbvrA3pZD58A+6a9F1alTveOH7VCgCp3Qs0Fb+ez
+X-Forefront-Antispam-Report:
+	CIP:198.47.23.195;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:lewvzet201.ext.ti.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(82310400026)(36860700016)(921020)(7053199007)(18002099003)(22082099003)(56012099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	5Z7BflejH2RwoI3as3cCohbyyY6VyptHfZi2+IBygoneUg2FA502IoL5Jhnr4RvmJx8spHKY6YS3ZYH1sW6xAuMZAfqKDtRQxZEvLUveWOsGlplrFayqwpLhLAWybvp1HsA53SpdH5CYjTKtOY4zBzftrKk+lSCZA6A+Bsin9HVeyHOBTrKEY1IizlBeixxMgxRbJWnIzKUTt3bLrnPZRb/Ltu9p9viyRomfVBdUCFUxztEOEnsP3iOq7XqZ5R8xsJ5P6lCZ+k97LDUxFF6UXQI/pQShrzD35RYqt8s17WMaQH7lrZ12Zr6Yk0oy5y/fhmU4QEcnbm3yCCEZvy9r/GkxTA1rhAHrTxl0ROsAAcH8TO4N6emO2Idr9LOHj0SxCtoRaf7+xOc46m7em4bmTLUR+zdXXuGpNo0D9kGHcEDu9KoULCyHnRUwVddyTcI6
+X-OriginatorOrg: ti.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2026 14:37:50.8055
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c06f6b08-a82b-4511-afaf-08de7eb29b61
+X-MS-Exchange-CrossTenant-Id: e5b49634-450b-4709-8abb-1e2b19b982b7
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=e5b49634-450b-4709-8abb-1e2b19b982b7;Ip=[198.47.23.195];Helo=[lewvzet201.ext.ti.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ5PEPF000001CD.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB5767
 
-On Tue, Mar 10, 2026 at 12:48:26PM +0100, Philipp Hahn wrote:
-> While doing some static code analysis I stumbled over a common pattern,
-> where IS_ERR() is combined with a NULL check. For that there is
-> IS_ERR_OR_NULL().
+On 3/6/26 4:36 AM, Albert Esteve wrote:
+> From: John Stultz <john.stultz@linaro.org>
 > 
-> I've written a Coccinelle patch to find and patch those instances.
-> The patches follow grouped by subsystem.
+> Keep track of the heap device struct.
+> 
+> This will be useful for special DMA allocations
+> and actions.
+> 
+> Signed-off-by: John Stultz <john.stultz@linaro.org>
+> Reviewed-by: Maxime Ripard <mripard@kernel.org>
+> Signed-off-by: Albert Esteve <aesteve@redhat.com>
+> ---
+>   drivers/dma-buf/dma-heap.c | 34 ++++++++++++++++++++++++++--------
+>   include/linux/dma-heap.h   |  2 ++
+>   2 files changed, 28 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/dma-buf/dma-heap.c b/drivers/dma-buf/dma-heap.c
+> index ac5f8685a6494..1124d63eb1398 100644
+> --- a/drivers/dma-buf/dma-heap.c
+> +++ b/drivers/dma-buf/dma-heap.c
+> @@ -31,6 +31,7 @@
+>    * @heap_devt:		heap device node
+>    * @list:		list head connecting to list of heaps
+>    * @heap_cdev:		heap char device
+> + * @heap_dev:		heap device
+>    *
+>    * Represents a heap of memory from which buffers can be made.
+>    */
+> @@ -41,6 +42,7 @@ struct dma_heap {
+>   	dev_t heap_devt;
+>   	struct list_head list;
+>   	struct cdev heap_cdev;
+> +	struct device *heap_dev;
+>   };
+>   
+>   static LIST_HEAD(heap_list);
+> @@ -223,6 +225,19 @@ const char *dma_heap_get_name(struct dma_heap *heap)
+>   }
+>   EXPORT_SYMBOL_NS_GPL(dma_heap_get_name, "DMA_BUF_HEAP");
+>   
+> +/**
+> + * dma_heap_get_dev() - get device struct for the heap
+> + * @heap: DMA-Heap to retrieve device struct from
+> + *
+> + * Returns:
+> + * The device struct for the heap.
+> + */
+> +struct device *dma_heap_get_dev(struct dma_heap *heap)
+> +{
+> +	return heap->heap_dev;
+> +}
+> +EXPORT_SYMBOL_NS_GPL(dma_heap_get_dev, "DMA_BUF_HEAP");
+> +
+>   /**
+>    * dma_heap_add - adds a heap to dmabuf heaps
+>    * @exp_info: information needed to register this heap
+> @@ -230,7 +245,6 @@ EXPORT_SYMBOL_NS_GPL(dma_heap_get_name, "DMA_BUF_HEAP");
+>   struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info)
+>   {
+>   	struct dma_heap *heap, *h, *err_ret;
+> -	struct device *dev_ret;
+>   	unsigned int minor;
+>   	int ret;
+>   
+> @@ -272,14 +286,14 @@ struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info)
+>   		goto err1;
+>   	}
+>   
+> -	dev_ret = device_create(dma_heap_class,
+> -				NULL,
+> -				heap->heap_devt,
+> -				NULL,
+> -				heap->name);
+> -	if (IS_ERR(dev_ret)) {
+> +	heap->heap_dev = device_create(dma_heap_class,
+> +				       NULL,
+> +				       heap->heap_devt,
+> +				       NULL,
+> +				       heap->name);
+> +	if (IS_ERR(heap->heap_dev)) {
+>   		pr_err("dma_heap: Unable to create device\n");
+> -		err_ret = ERR_CAST(dev_ret);
+> +		err_ret = ERR_CAST(heap->heap_dev);
+>   		goto err2;
+>   	}
+>   
+> @@ -295,6 +309,10 @@ struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info)
+>   		}
+>   	}
+>   
+> +	/* Make sure it doesn't disappear on us */
+> +	heap->heap_dev = get_device(heap->heap_dev);
+> +
+> +
 
-I'm going to gently suggest that you *not* try to do this as a
-tree-wide change, since we don't need to change some interface
-requiring a global, flag day change.  This is instead a cleanup, which
-maybe makes the code slightly better, but which also has a the
-downside of breaking lots of inflight development patches by
-potentially causing merge or patch conflicts.
+Is this actually something that matters or could happen? Seems you
+just remove it in the next patch anyway.
 
-So why don't you send it to each subsystem as a separate patch or
-small patch series, instead of spamming a dozen-plus mailing lists,
-are probably hundreds of developers, most of whom aren't going to
-care about changs in some far flung part of the kernel?
+Andrew
 
-Regards,
+>   	/* Add heap to the list */
+>   	list_add(&heap->list, &heap_list);
+>   	mutex_unlock(&heap_list_lock);
+> diff --git a/include/linux/dma-heap.h b/include/linux/dma-heap.h
+> index 648328a64b27e..493085e69b70e 100644
+> --- a/include/linux/dma-heap.h
+> +++ b/include/linux/dma-heap.h
+> @@ -12,6 +12,7 @@
+>   #include <linux/types.h>
+>   
+>   struct dma_heap;
+> +struct device;
+>   
+>   /**
+>    * struct dma_heap_ops - ops to operate on a given heap
+> @@ -43,6 +44,7 @@ struct dma_heap_export_info {
+>   void *dma_heap_get_drvdata(struct dma_heap *heap);
+>   
+>   const char *dma_heap_get_name(struct dma_heap *heap);
+> +struct device *dma_heap_get_dev(struct dma_heap *heap);
+>   
+>   struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info);
+>   
+> 
 
-						- Ted
