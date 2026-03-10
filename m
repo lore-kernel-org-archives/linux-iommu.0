@@ -1,324 +1,407 @@
-Received: from mail-m49206.qiye.163.com (mail-m49206.qiye.163.com [45.254.49.206])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail.avm.de (mail.avm.de [212.42.244.119])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42CFD37F007
-	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 10:53:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.254.49.206
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D4933CD8B2;
+	Tue, 10 Mar 2026 11:55:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.42.244.119
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773140005; cv=none; b=SNex9zFhfnGi7Sz9wIB+mqMOuAAEHB4e6EYGN34FVKedcywN3/AMtO/0G/mWFW9SHZ4bZOyeStF5iWWhdCqwG7/AjeHDUqgSI7yT7wZBKa5qMiO2o4rYE2SAJyc6gLYgRzP7wuzKIs5dQRGL1H6t6Zvwx1AzCpG0Efas7VLV/mc=
+	t=1773143735; cv=none; b=jcTmctn28xx3zu/ApasDTVQqBm6Q8q6uG2orsosoLa1BoGj7p1b3b0Z8ayl13VAvoTpXGnYyjnLv7f2TN9G+HwroPcfIapHU719aCX0nIOw4pMK5E9q6VKjYxCE+wsiQ6GYm+orFPVD7pDyG2Wq1OXqilHGQWD2+63ZNj/v3AUI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773140005; c=relaxed/simple;
-	bh=/31mc99XaPpetfpipAU2jQAXCy4Of4rbwwcZL8VjzF8=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=D9kDBN2dROhmeAj2jkYwUcJJOV7qJYY8oP02Gzg0lnc6iZxtx+0iPKnT9vSGYspgZRXx+e++rRzNWAMu53XlIDwyQ6MBntC7gq0xPrDX18a0ocbmK3/lxTrOoK2gxY/IaUzvTEXCHmjeNbadHBGdwSTTtbd0f7a17j/T5DRRaWs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=WbJpVVU2; arc=none smtp.client-ip=45.254.49.206
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
+	s=arc-20240116; t=1773143735; c=relaxed/simple;
+	bh=LK3zT21XXqhQvbEwg2nItTFGXqZVrRtI29hZHPSW/Rg=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=inR3Yb1KscsU/RhUczh8gG8T9Iw8KsSbAqdpLHryYCXlNDGGEY7GZi91oYd0VhdIZ0s1D3AcHwV9ovi8K3LQoJUz9tmTpSiNS6eo2yQYQ4he0Rt4roOLkaHMFhUD2AxgZm3otXLBH2txI1AhxhrOnc+XEhYVIxJkPikIIUaLQZI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=avm.de; spf=pass smtp.mailfrom=avm.de; dkim=pass (1024-bit key) header.d=avm.de header.i=@avm.de header.b=dZcJYTZu; arc=none smtp.client-ip=212.42.244.119
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=avm.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=avm.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="WbJpVVU2"
-Received: from xxm-vm.localdomain (unknown [58.22.7.114])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 36686f76e;
-	Tue, 10 Mar 2026 18:53:12 +0800 (GMT+08:00)
-From: Simon Xue <xxm@rock-chips.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Heiko Stuebner <heiko@sntech.de>
-Cc: Simon Xue <xxm@rock-chips.com>,
-	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2] iommu/rockchip: Drop global rk_ops in favor of per-device ops
-Date: Tue, 10 Mar 2026 18:53:03 +0800
-Message-Id: <20260310105303.128859-1-xxm@rock-chips.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260310084812.126082-1-xxm@rock-chips.com>
-References: <20260310084812.126082-1-xxm@rock-chips.com>
+	dkim=pass (1024-bit key) header.d=avm.de header.i=@avm.de header.b="dZcJYTZu"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=avm.de; s=mail;
+	t=1773143722; bh=LK3zT21XXqhQvbEwg2nItTFGXqZVrRtI29hZHPSW/Rg=;
+	h=From:Subject:Date:To:Cc:From;
+	b=dZcJYTZuZDA4q/3hNz64Owdc1HJABJYJkt99++PaaLbW7gaZD9g2/iS9O5ENS8TqR
+	 Wd0w2FXgMI0uZVVeVPaP0+G8ebTl5PjkrH+/Un6QvZSpSuAmb2VEM0TmWU3qAXNa/R
+	 B92BBimBzpC3ASCEhSshSATaYHjIa50MBa4pF9SU=
+Received: from [212.42.244.71] (helo=mail.avm.de)
+	by mail.avm.de with ESMTP (eXpurgate 4.55.2)
+	(envelope-from <phahn-oss@avm.de>)
+	id 69b006a9-2367-7f0000032729-7f0000019ca8-1
+	for <multiple-recipients>; Tue, 10 Mar 2026 12:55:22 +0100
+Received: from mail-auth.avm.de (dovecot-mx-01.avm.de [212.42.244.71])
+	by mail.avm.de (Postfix) with ESMTPS;
+	Tue, 10 Mar 2026 12:55:21 +0100 (CET)
+From: Philipp Hahn <phahn-oss@avm.de>
+Subject: [PATCH 00/61] treewide: Use IS_ERR_OR_NULL over manual NULL check
+ - refactor
+Date: Tue, 10 Mar 2026 12:48:26 +0100
+Message-Id: <20260310-b4-is_err_or_null-v1-0-bd63b656022d@avm.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-HM-Tid: 0a9cd7611f0e03ackunm5db21e7c28839d7
-X-HM-MType: 1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFDSUNOT01LS0k3V1ktWUFJV1kPCRoVCBIfWUFZQk9PSlZISh1LTh5KS05KGUJWFRQJFh
-	oXVRMBExYaEhckFA4PWVdZGBILWUFZTkNVSUlVTFVKSk9ZV1kWGg8SFR0UWUFZT0tIVUpLSU9PT0
-	hVSktLVUpCS0tZBg++
-DKIM-Signature: a=rsa-sha256;
-	b=WbJpVVU2o52k5gZrvtQtGAcU1KO+CRrqCrEmQOHJfQ+DpBswyDZIGE17QMjWr/ALVRnQ4WQa/SANX5CBGSr5ES0lFw6JCfeowljdJKfO10ZAd4/t5oTum25LK0HWEhahbbWgHXiEyQ7l3j10QzFtPaVUoiGXvlEzHOqS216S/8E=; s=default; c=relaxed/relaxed; d=rock-chips.com; v=1;
-	bh=gwQYeeSnsqW3zhCs/e1OF97BC/ko+v34AjyPZXvnGWo=;
-	h=date:mime-version:subject:message-id:from;
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAsFsGkC/x3M0QpAMBSA4VfRubYaNsyrSIvt4JRGZ5GSd7dcf
+ hf//0BEJozQZQ8wXhRpDwlFnoFbx7CgIJ8MpSxrWUktJiUoWmS2O9twbpvQxph2bLysnILUHYw
+ z3f+zH973A3+QboxjAAAA
+X-Change-ID: 20260305-b4-is_err_or_null-59998a7d03c4
+To: amd-gfx@lists.freedesktop.org, apparmor@lists.ubuntu.com, 
+ bpf@vger.kernel.org, ceph-devel@vger.kernel.org, cocci@inria.fr, 
+ dm-devel@lists.linux.dev, dri-devel@lists.freedesktop.org, 
+ gfs2@lists.linux.dev, intel-gfx@lists.freedesktop.org, 
+ intel-wired-lan@lists.osuosl.org, iommu@lists.linux.dev, 
+ kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
+ linux-btrfs@vger.kernel.org, linux-cifs@vger.kernel.org, 
+ linux-clk@vger.kernel.org, linux-erofs@lists.ozlabs.org, 
+ linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
+ linux-gpio@vger.kernel.org, linux-hyperv@vger.kernel.org, 
+ linux-input@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-leds@vger.kernel.org, linux-media@vger.kernel.org, 
+ linux-mips@vger.kernel.org, linux-mm@kvack.org, 
+ linux-modules@vger.kernel.org, linux-mtd@lists.infradead.org, 
+ linux-nfs@vger.kernel.org, linux-omap@vger.kernel.org, 
+ linux-phy@lists.infradead.org, linux-pm@vger.kernel.org, 
+ linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org, 
+ linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org, 
+ linux-security-module@vger.kernel.org, linux-sh@vger.kernel.org, 
+ linux-sound@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, 
+ linux-trace-kernel@vger.kernel.org, linux-usb@vger.kernel.org, 
+ linux-wireless@vger.kernel.org, netdev@vger.kernel.org, 
+ ntfs3@lists.linux.dev, samba-technical@lists.samba.org, 
+ sched-ext@lists.linux.dev, target-devel@vger.kernel.org, 
+ tipc-discussion@lists.sourceforge.net, v9fs@lists.linux.dev, 
+ Philipp Hahn <phahn-oss@avm.de>
+Cc: Julia Lawall <Julia.Lawall@inria.fr>, 
+ Nicolas Palix <nicolas.palix@imag.fr>, Chris Mason <clm@fb.com>, 
+ David Sterba <dsterba@suse.com>, Ilya Dryomov <idryomov@gmail.com>, 
+ Alex Markuze <amarkuze@redhat.com>, Viacheslav Dubeyko <slava@dubeyko.com>, 
+ Theodore Ts'o <tytso@mit.edu>, Andreas Dilger <adilger.kernel@dilger.ca>, 
+ Steve French <sfrench@samba.org>, Paulo Alcantara <pc@manguebit.org>, 
+ Ronnie Sahlberg <ronniesahlberg@gmail.com>, 
+ Shyam Prasad N <sprasad@microsoft.com>, Tom Talpey <tom@talpey.com>, 
+ Bharath SM <bharathsm@microsoft.com>, 
+ Eric Van Hensbergen <ericvh@kernel.org>, 
+ Latchesar Ionkov <lucho@ionkov.net>, 
+ Dominique Martinet <asmadeus@codewreck.org>, 
+ Christian Schoenebeck <linux_oss@crudebyte.com>, 
+ Gao Xiang <xiang@kernel.org>, Chao Yu <chao@kernel.org>, 
+ Yue Hu <zbestahu@gmail.com>, Jeffle Xu <jefflexu@linux.alibaba.com>, 
+ Sandeep Dhavale <dhavale@google.com>, Hongbo Li <lihongbo22@huawei.com>, 
+ Chunhai Guo <guochunhai@vivo.com>, Miklos Szeredi <miklos@szeredi.hu>, 
+ Konstantin Komarov <almaz.alexandrovich@paragon-software.com>, 
+ Andreas Gruenbacher <agruenba@redhat.com>, Kees Cook <kees@kernel.org>, 
+ Tony Luck <tony.luck@intel.com>, 
+ "Guilherme G. Piccoli" <gpiccoli@igalia.com>, Jan Kara <jack@suse.com>, 
+ Phillip Lougher <phillip@squashfs.org.uk>, 
+ Alexander Viro <viro@zeniv.linux.org.uk>, 
+ Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>, 
+ Steven Rostedt <rostedt@goodmis.org>, 
+ Masami Hiramatsu <mhiramat@kernel.org>, 
+ Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
+ Tejun Heo <tj@kernel.org>, David Vernet <void@manifault.com>, 
+ Andrea Righi <arighi@nvidia.com>, Changwoo Min <changwoo@igalia.com>, 
+ Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, 
+ Juri Lelli <juri.lelli@redhat.com>, 
+ Vincent Guittot <vincent.guittot@linaro.org>, 
+ Dietmar Eggemann <dietmar.eggemann@arm.com>, 
+ Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>, 
+ Valentin Schneider <vschneid@redhat.com>, 
+ Luis Chamberlain <mcgrof@kernel.org>, Petr Pavlu <petr.pavlu@suse.com>, 
+ Daniel Gomez <da.gomez@kernel.org>, Sami Tolvanen <samitolvanen@google.com>, 
+ Aaron Tomlin <atomlin@atomlin.com>, 
+ Sylwester Nawrocki <s.nawrocki@samsung.com>, 
+ Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, 
+ Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, 
+ Max Filippov <jcmvbkbc@gmail.com>, Paolo Bonzini <pbonzini@redhat.com>, 
+ John Johansen <john.johansen@canonical.com>, 
+ Paul Moore <paul@paul-moore.com>, James Morris <jmorris@namei.org>, 
+ "Serge E. Hallyn" <serge@hallyn.com>, 
+ Andrew Morton <akpm@linux-foundation.org>, Alasdair Kergon <agk@redhat.com>, 
+ Mike Snitzer <snitzer@kernel.org>, Mikulas Patocka <mpatocka@redhat.com>, 
+ Benjamin Marzinski <bmarzins@redhat.com>, 
+ "David S. Miller" <davem@davemloft.net>, David Ahern <dsahern@kernel.org>, 
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, 
+ Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>, 
+ Marcel Holtmann <marcel@holtmann.org>, 
+ Johan Hedberg <johan.hedberg@gmail.com>, 
+ Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
+ Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, 
+ Jesper Dangaard Brouer <hawk@kernel.org>, 
+ John Fastabend <john.fastabend@gmail.com>, 
+ Stanislav Fomichev <sdf@fomichev.me>, Jamal Hadi Salim <jhs@mojatatu.com>, 
+ Jiri Pirko <jiri@resnulli.us>, 
+ Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>, 
+ Xin Long <lucien.xin@gmail.com>, Trond Myklebust <trondmy@kernel.org>, 
+ Anna Schumaker <anna@kernel.org>, Chuck Lever <chuck.lever@oracle.com>, 
+ Jeff Layton <jlayton@kernel.org>, NeilBrown <neil@brown.name>, 
+ Olga Kornievskaia <okorniev@redhat.com>, Dai Ngo <Dai.Ngo@oracle.com>, 
+ Jon Maloy <jmaloy@redhat.com>, Johannes Berg <johannes@sipsolutions.net>, 
+ Catalin Marinas <catalin.marinas@arm.com>, 
+ Russell King <linux@armlinux.org.uk>, John Crispin <john@phrozen.org>, 
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
+ Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, 
+ John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
+ Andrzej Hajda <andrzej.hajda@intel.com>, 
+ Neil Armstrong <neil.armstrong@linaro.org>, Robert Foss <rfoss@kernel.org>, 
+ Laurent Pinchart <Laurent.pinchart@ideasonboard.com>, 
+ Jonas Karlman <jonas@kwiboo.se>, Jernej Skrabec <jernej.skrabec@gmail.com>, 
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+ Zhenyu Wang <zhenyuw.linux@gmail.com>, Zhi Wang <zhi.wang.linux@gmail.com>, 
+ Jani Nikula <jani.nikula@linux.intel.com>, 
+ Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, 
+ Rodrigo Vivi <rodrigo.vivi@intel.com>, 
+ Tvrtko Ursulin <tursulin@ursulin.net>, 
+ Alex Deucher <alexander.deucher@amd.com>, 
+ =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+ Sandy Huang <hjc@rock-chips.com>, 
+ =?utf-8?q?Heiko_St=C3=BCbner?= <heiko@sntech.de>, 
+ Andy Yan <andy.yan@rock-chips.com>, Igor Russkikh <irusskikh@marvell.com>, 
+ Andrew Lunn <andrew+netdev@lunn.ch>, 
+ Pavan Chebbi <pavan.chebbi@broadcom.com>, Michael Chan <mchan@broadcom.com>, 
+ Potnuri Bharat Teja <bharat@chelsio.com>, 
+ Tony Nguyen <anthony.l.nguyen@intel.com>, 
+ Przemek Kitszel <przemyslaw.kitszel@intel.com>, 
+ Taras Chornyi <taras.chornyi@plvision.eu>, 
+ Maxime Coquelin <mcoquelin.stm32@gmail.com>, 
+ Alexandre Torgue <alexandre.torgue@foss.st.com>, 
+ Iyappan Subramanian <iyappan@os.amperecomputing.com>, 
+ Keyur Chudgar <keyur@os.amperecomputing.com>, 
+ Quan Nguyen <quan@os.amperecomputing.com>, 
+ Heiner Kallweit <hkallweit1@gmail.com>, Marc Zyngier <maz@kernel.org>, 
+ Thomas Gleixner <tglx@kernel.org>, Andrew Lunn <andrew@lunn.ch>, 
+ Gregory Clement <gregory.clement@bootlin.com>, 
+ Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, 
+ Vinod Koul <vkoul@kernel.org>, Linus Walleij <linusw@kernel.org>, 
+ Ulf Hansson <ulf.hansson@linaro.org>, Heiko Carstens <hca@linux.ibm.com>, 
+ Vasily Gorbik <gor@linux.ibm.com>, 
+ Alexander Gordeev <agordeev@linux.ibm.com>, 
+ Christian Borntraeger <borntraeger@linux.ibm.com>, 
+ Sven Schnelle <svens@linux.ibm.com>, 
+ "Martin K. Petersen" <martin.petersen@oracle.com>, 
+ Eduardo Valentin <edubezval@gmail.com>, Keerthy <j-keerthy@ti.com>, 
+ "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>, 
+ Lukasz Luba <lukasz.luba@arm.com>, Alex Williamson <alex@shazbot.org>, 
+ Mark Greer <mgreer@animalcreek.com>, 
+ Miquel Raynal <miquel.raynal@bootlin.com>, 
+ Richard Weinberger <richard@nod.at>, Vignesh Raghavendra <vigneshr@ti.com>, 
+ Shuah Khan <skhan@linuxfoundation.org>, 
+ Kieran Bingham <kieran.bingham@ideasonboard.com>, 
+ Mauro Carvalho Chehab <mchehab@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Lee Jones <lee@kernel.org>, Pavel Machek <pavel@kernel.org>, 
+ Dave Penkler <dpenkler@gmail.com>, "K. Y. Srinivasan" <kys@microsoft.com>, 
+ Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>, 
+ Dexuan Cui <decui@microsoft.com>, Long Li <longli@microsoft.com>, 
+ Justin Sanders <justin@coraid.com>, Jens Axboe <axboe@kernel.dk>, 
+ Georgi Djakov <djakov@kernel.org>, 
+ Michael Turquette <mturquette@baylibre.com>, 
+ Stephen Boyd <sboyd@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
+ Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, 
+ x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>, 
+ =?utf-8?q?Pali_Roh=C3=A1r?= <pali@kernel.org>, 
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>
+X-Developer-Signature: v=1; a=openpgp-sha256; l=10360; i=phahn-oss@avm.de;
+ h=from:subject:message-id; bh=LK3zT21XXqhQvbEwg2nItTFGXqZVrRtI29hZHPSW/Rg=;
+ b=kA0DAAoBNC0GU9GsrNsByyZiAGmwBcqh8d5mE3lAkbCCIhk2oWSgNcET++LXgLEGzX+74PInx
+ YkBMwQAAQoAHRYhBDls8G2tYNRwNAKmmDQtBlPRrKzbBQJpsAXKAAoJEDQtBlPRrKzbYqsIAK5d
+ elvBcseQjOmeiD4mSMAZLrcAEl20R9MpPKd4mWL5ml8BfXxNcML8Lnb2x/WwXL0Hqh2kmn+ol5+
+ jwvmVgqFrje1/XM4onDIIomJOYl/rYSo9qoSx+5IKZAy9eiZAEDM2imcIQKtITZKLNjFZpUiemv
+ mdOvazQvY2blxW+Lw4Oka7Gqf4ifxsINodUwI5EJjZnPs1AWGammHryjBSpAgbnOjEtCZ7iJAEM
+ 1l6rZhJZICWoWrt5P/y0CkrMmXMHjvK3or/XW/Oz6/UjFbEuZQMK4Nxx19avU2B1AgjKkKB7gjl
+ xFjM+LS1mYwhLw6sC6tDl2dBVLvscyKlify3SXk=
+X-Developer-Key: i=phahn-oss@avm.de; a=openpgp;
+ fpr=58AF7C2E007CDBE62C59E078F50EFDCF8AD04B1A
+X-purgate-ID: 149429::1773143722-1DCBBF5F-0E465A5B/0/0
+X-purgate-type: clean
+X-purgate-size: 10362
+X-purgate-Ad: Categorized by eleven eXpurgate (R) https://www.eleven.de
+X-purgate: This mail is considered clean (visit https://www.eleven.de for further information)
+X-purgate: clean
 
-The driver currently uses a global rk_ops pointer, forcing all IOMMU
-instances to share the same operations. This restricts the driver from
-supporting SoCs that might integrate different versions of IOMMU hardware.
+While doing some static code analysis I stumbled over a common pattern,
+where IS_ERR() is combined with a NULL check. For that there is
+IS_ERR_OR_NULL().
 
-Since the IOMMU framework passes the master device information to
-iommu_paging_domain_alloc(), the global variable is no longer needed.
+I've written a Coccinelle patch to find and patch those instances.
+The patches follow grouped by subsystem.
 
-Fix this by moving rk_ops into struct rk_iommu and struct rk_iommu_domain.
-Initialize it per-device during probe via of_device_get_match_data(),
-and replace all global references with the instance-specific pointers.
+Patches 55-58 may be dropped as they have a (minor?) semantic change:
+They use WARN_ON() or WARN_ON_ONCE(), but only in the IS_ERR() path, not
+for the NULL check. Iff it is okay to print the warning also for NULL,
+then the patches can be applied.
 
-Signed-off-by: Simon Xue <xxm@rock-chips.com>
+While generating the patch set `checkpatch` complained about mixing
+[un]likely() with IS_ERR_OR_NULL(), which already uses likely()
+internally. I found and fixed several locations, where that combination
+has been used.
+
+Signed-off-by: Philipp Hahn <phahn-oss@avm.de>
 ---
-v2:
- - Remove the one-time-used 'ops' variable in rk_iommu_probe()
+Philipp Hahn (61):
+      Coccinelle: Prefer IS_ERR_OR_NULL over manual NULL check
+      btrfs: Prefer IS_ERR_OR_NULL over manual NULL check
+      ceph: Prefer IS_ERR_OR_NULL over manual NULL check
+      ext4: Prefer IS_ERR_OR_NULL over manual NULL check
+      smb: Prefer IS_ERR_OR_NULL over manual NULl check
+      9p: Prefer IS_ERR_OR_NULL over manual NULL check
+      erofs: Prefer IS_ERR_OR_NULL over manual NULL check
+      fuse: Prefer IS_ERR_OR_NULL over manual NULL check
+      ntfs3: Prefer IS_ERR_OR_NULL over manual NULL check
+      gfs2: Prefer IS_ERR_OR_NULL over manual NULL check
+      pstore: Prefer IS_ERR_OR_NULL over manual NULL check
+      quota: Prefer IS_ERR_OR_NULL over manual NULL check
+      squashfs: Prefer IS_ERR_OR_NULL over manual NULL check
+      seq_file: Prefer IS_ERR_OR_NULL over manual NULL check
+      trace: Prefer IS_ERR_OR_NULL over manual NULL check
+      sched: Prefer IS_ERR_OR_NULL over manual NULL check
+      module: Prefer IS_ERR_OR_NULL over manual NULL check
+      sound: Prefer IS_ERR_OR_NULL over manual NULL check
+      kvm: Prefer IS_ERR_OR_NULL over manual NULL check
+      apparmor: Prefer IS_ERR_OR_NULL over manual NULL check
+      lib/test: Prefer IS_ERR_OR_NULL over manual NULL check
+      md: Prefer IS_ERR_OR_NULL over manual NULL check
+      net/ipv6: Prefer IS_ERR_OR_NULL over manual NULL check
+      net/9p: Prefer IS_ERR_OR_NULL over manual NULL check
+      net/bluetooth: Prefer IS_ERR_OR_NULL over manual NULL check
+      net/core: Prefer IS_ERR_OR_NULL over manual NULL check
+      net/netlink: Prefer IS_ERR_OR_NULL over manual NULL check
+      net/sched: Prefer IS_ERR_OR_NULL over manual NULL check
+      net/sctp: Prefer IS_ERR_OR_NULL over manual NULL check
+      net/sunrpc: Prefer IS_ERR_OR_NULL over manual NULL check
+      net/tipc: Prefer IS_ERR_OR_NULL over manual NULL check
+      net/wireless: Prefer IS_ERR_OR_NULL over manual NULL check
+      mm: Prefer IS_ERR_OR_NULL over manual NULL check
+      arch/arm: Prefer IS_ERR_OR_NULL over manual NULL check
+      arch/mips: Prefer IS_ERR_OR_NULL over manual NULL check
+      arch/sh: Prefer IS_ERR_OR_NULL over manual NULL check
+      drm: Prefer IS_ERR_OR_NULL over manual NULL check
+      net: Prefer IS_ERR_OR_NULL over manual NULL check
+      irqchip: Prefer IS_ERR_OR_NULL over manual NULL check
+      phy: Prefer IS_ERR_OR_NULL over manual NULL check
+      pinctrl: Prefer IS_ERR_OR_NULL over manual NULL check
+      pmdomain: Prefer IS_ERR_OR_NULL over manual NULL check
+      s390: Prefer IS_ERR_OR_NULL over manual NULL check
+      target: Prefer IS_ERR_OR_NULL over manual NULL check
+      thermal: Prefer IS_ERR_OR_NULL over manual NULL check
+      vfio: Prefer IS_ERR_OR_NULL over manual NULL check
+      nfc: Prefer IS_ERR_OR_NULL over manual NULL check
+      mtd: Prefer IS_ERR_OR_NULL over manual NULL check
+      media: Prefer IS_ERR_OR_NULL over manual NULL check
+      iommu: Prefer IS_ERR_OR_NULL over manual NULL check
+      leds: Prefer IS_ERR_OR_NULL over manual NULL check
+      gpib: Prefer IS_ERR_OR_NULL over manual NULL check
+      hyperv: Prefer IS_ERR_OR_NULL over manual NULL check
+      aoe: Prefer IS_ERR_OR_NULL over manual NULL check
+      interconnect: Prefer IS_ERR_OR_NULL over manual NULL check
+      clk: Prefer IS_ERR_OR_NULL over manual NULL check
+      reset: Prefer IS_ERR_OR_NULL over manual NULL check
+      arch/x86: Prefer IS_ERR_OR_NULL over manual NULL check
+      debugobjects: Drop likely() around !IS_ERR_OR_NULL()
+      Input alps: Drop unlikely() around IS_ERR_OR_NULL()
+      file: Drop unlikely() around IS_ERR_OR_NULL()
 
- drivers/iommu/rockchip-iommu.c | 71 ++++++++++++++++------------------
- 1 file changed, 33 insertions(+), 38 deletions(-)
+ arch/arm/common/bL_switcher.c                      |   2 +-
+ arch/mips/lantiq/clk.c                             |   2 +-
+ arch/sh/mm/ioremap.c                               |   2 +-
+ arch/x86/kernel/callthunks.c                       |   2 +-
+ arch/x86/kernel/irq.c                              |   2 +-
+ drivers/block/aoe/aoecmd.c                         |   2 +-
+ drivers/clk/clk.c                                  |   4 +-
+ drivers/clocksource/timer-pxa.c                    |   2 +-
+ drivers/gpib/common/iblib.c                        |   2 +-
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c          |   2 +-
+ drivers/gpu/drm/drm_sysfs.c                        |   2 +-
+ drivers/gpu/drm/i915/gvt/scheduler.c               |   4 +-
+ drivers/gpu/drm/radeon/radeon_test.c               |   2 +-
+ drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c    |   2 +-
+ drivers/hv/mshv_eventfd.c                          |   4 +-
+ drivers/input/mouse/alps.c                         |   2 +-
+ drivers/interconnect/core.c                        |   2 +-
+ drivers/iommu/omap-iommu.c                         |   2 +-
+ drivers/irqchip/irq-gic-v3.c                       |   2 +-
+ drivers/irqchip/irq-mvebu-odmi.c                   |   2 +-
+ drivers/leds/trigger/ledtrig-tty.c                 |   2 +-
+ drivers/md/dm-cache-metadata.c                     |   2 +-
+ drivers/md/dm-crypt.c                              |   4 +-
+ drivers/media/test-drivers/vimc/vimc-streamer.c    |   2 +-
+ drivers/mtd/nand/raw/gpio.c                        |  10 +-
+ drivers/net/ethernet/aquantia/atlantic/aq_ring.c   |   2 +-
+ drivers/net/ethernet/broadcom/tg3.c                |   2 +-
+ .../net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c   |   3 +-
+ drivers/net/ethernet/intel/ice/devlink/devlink.c   |   2 +-
+ .../ethernet/marvell/prestera/prestera_router.c    |   2 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  |   2 +-
+ drivers/net/mdio/mdio-xgene.c                      |   2 +-
+ drivers/net/usb/r8152.c                            |   2 +-
+ drivers/nfc/trf7970a.c                             |   2 +-
+ drivers/phy/phy-core.c                             |   2 +-
+ drivers/pinctrl/core.c                             |   2 +-
+ drivers/pmdomain/rockchip/pm-domains.c             |   2 +-
+ drivers/reset/core.c                               |   2 +-
+ drivers/s390/char/tape_class.c                     |   2 +-
+ drivers/target/target_core_fabric_configfs.c       |   6 +-
+ drivers/thermal/ti-soc-thermal/ti-thermal-common.c |   2 +-
+ drivers/vfio/vfio_main.c                           |   2 +-
+ fs/9p/fid.h                                        |   2 +-
+ fs/btrfs/inode.c                                   |   2 +-
+ fs/btrfs/transaction.c                             |   2 +-
+ fs/btrfs/tree-log.c                                |   2 +-
+ fs/btrfs/uuid-tree.c                               |   2 +-
+ fs/ceph/dir.c                                      |   2 +-
+ fs/ceph/snap.c                                     |   2 +-
+ fs/erofs/zdata.c                                   |   2 +-
+ fs/ext4/fast_commit.c                              |   2 +-
+ fs/ext4/mballoc.c                                  |   2 +-
+ fs/ext4/namei.c                                    |   2 +-
+ fs/ext4/symlink.c                                  |   2 +-
+ fs/fuse/dir.c                                      |   2 +-
+ fs/gfs2/glock.c                                    |   2 +-
+ fs/ntfs3/fsntfs.c                                  |   8 +-
+ fs/pstore/zone.c                                   |   2 +-
+ fs/quota/quota.c                                   |   2 +-
+ fs/seq_file.c                                      |   4 +-
+ fs/smb/client/cifsglob.h                           |   2 +-
+ fs/smb/client/connect.c                            |   2 +-
+ fs/smb/client/readdir.c                            |   2 +-
+ fs/squashfs/cache.c                                |   2 +-
+ include/linux/file.h                               |   2 +-
+ include/net/9p/client.h                            |   2 +-
+ kernel/module/main.c                               |   2 +-
+ kernel/sched/ext.c                                 |   2 +-
+ kernel/trace/fprobe.c                              |   2 +-
+ kernel/trace/kprobe_event_gen_test.c               |   2 +-
+ kernel/trace/trace_events_hist.c                   |   2 +-
+ lib/debugobjects.c                                 |   2 +-
+ lib/test_firmware.c                                |   2 +-
+ lib/test_kmod.c                                    |   4 +-
+ mm/kmemleak.c                                      |  16 +--
+ net/9p/trans_rdma.c                                |   8 +-
+ net/bluetooth/mgmt.c                               |   6 +-
+ net/core/xdp.c                                     |   2 +-
+ net/ipv6/ila/ila_xlat.c                            |   2 +-
+ net/ipv6/ndisc.c                                   |   2 +-
+ net/netlink/af_netlink.c                           |   2 +-
+ net/sched/cls_api.c                                |   6 +-
+ net/sctp/socket.c                                  |   2 +-
+ net/sunrpc/xprtrdma/svc_rdma_transport.c           |  12 +-
+ net/tipc/socket.c                                  |   2 +-
+ net/wireless/reg.c                                 |   2 +-
+ scripts/coccinelle/api/is_err_or_null.cocci        | 125 +++++++++++++++++++++
+ security/apparmor/apparmorfs.c                     |   2 +-
+ sound/soc/samsung/i2s.c                            |   4 +-
+ sound/soc/xtensa/xtfpga-i2s.c                      |   2 +-
+ virt/kvm/eventfd.c                                 |   4 +-
+ 91 files changed, 251 insertions(+), 127 deletions(-)
+---
+base-commit: 1f318b96cc84d7c2ab792fcc0bfd42a7ca890681
+change-id: 20260305-b4-is_err_or_null-59998a7d03c4
 
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 0013cf196c57..4da80136933c 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -82,6 +82,14 @@
-   */
- #define RK_IOMMU_PGSIZE_BITMAP 0x007ff000
- 
-+struct rk_iommu_ops {
-+	phys_addr_t (*pt_address)(u32 dte);
-+	u32 (*mk_dtentries)(dma_addr_t pt_dma);
-+	u32 (*mk_ptentries)(phys_addr_t page, int prot);
-+	u64 dma_bit_mask;
-+	gfp_t gfp_flags;
-+};
-+
- struct rk_iommu_domain {
- 	struct list_head iommus;
- 	u32 *dt; /* page directory table */
-@@ -89,6 +97,7 @@ struct rk_iommu_domain {
- 	spinlock_t iommus_lock; /* lock for iommus list */
- 	spinlock_t dt_lock; /* lock for modifying page directory table */
- 	struct device *dma_dev;
-+	const struct rk_iommu_ops *rk_ops;
- 
- 	struct iommu_domain domain;
- };
-@@ -98,14 +107,6 @@ static const char * const rk_iommu_clocks[] = {
- 	"aclk", "iface",
- };
- 
--struct rk_iommu_ops {
--	phys_addr_t (*pt_address)(u32 dte);
--	u32 (*mk_dtentries)(dma_addr_t pt_dma);
--	u32 (*mk_ptentries)(phys_addr_t page, int prot);
--	u64 dma_bit_mask;
--	gfp_t gfp_flags;
--};
--
- struct rk_iommu {
- 	struct device *dev;
- 	void __iomem **bases;
-@@ -117,6 +118,7 @@ struct rk_iommu {
- 	struct iommu_device iommu;
- 	struct list_head node; /* entry in rk_iommu_domain.iommus */
- 	struct iommu_domain *domain; /* domain to which iommu is attached */
-+	const struct rk_iommu_ops *rk_ops;
- };
- 
- struct rk_iommudata {
-@@ -124,7 +126,6 @@ struct rk_iommudata {
- 	struct rk_iommu *iommu;
- };
- 
--static const struct rk_iommu_ops *rk_ops;
- static struct iommu_domain rk_identity_domain;
- 
- static inline void rk_table_flush(struct rk_iommu_domain *dom, dma_addr_t dma,
-@@ -510,7 +511,7 @@ static int rk_iommu_force_reset(struct rk_iommu *iommu)
- 	 * and verifying that upper 5 (v1) or 7 (v2) nybbles are read back.
- 	 */
- 	for (i = 0; i < iommu->num_mmu; i++) {
--		dte_addr = rk_ops->pt_address(DTE_ADDR_DUMMY);
-+		dte_addr = iommu->rk_ops->pt_address(DTE_ADDR_DUMMY);
- 		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR, dte_addr);
- 
- 		if (dte_addr != rk_iommu_read(iommu->bases[i], RK_MMU_DTE_ADDR)) {
-@@ -551,7 +552,7 @@ static void log_iova(struct rk_iommu *iommu, int index, dma_addr_t iova)
- 	page_offset = rk_iova_page_offset(iova);
- 
- 	mmu_dte_addr = rk_iommu_read(base, RK_MMU_DTE_ADDR);
--	mmu_dte_addr_phys = rk_ops->pt_address(mmu_dte_addr);
-+	mmu_dte_addr_phys = iommu->rk_ops->pt_address(mmu_dte_addr);
- 
- 	dte_addr_phys = mmu_dte_addr_phys + (4 * dte_index);
- 	dte_addr = phys_to_virt(dte_addr_phys);
-@@ -560,14 +561,14 @@ static void log_iova(struct rk_iommu *iommu, int index, dma_addr_t iova)
- 	if (!rk_dte_is_pt_valid(dte))
- 		goto print_it;
- 
--	pte_addr_phys = rk_ops->pt_address(dte) + (pte_index * 4);
-+	pte_addr_phys = iommu->rk_ops->pt_address(dte) + (pte_index * 4);
- 	pte_addr = phys_to_virt(pte_addr_phys);
- 	pte = *pte_addr;
- 
- 	if (!rk_pte_is_page_valid(pte))
- 		goto print_it;
- 
--	page_addr_phys = rk_ops->pt_address(pte) + page_offset;
-+	page_addr_phys = iommu->rk_ops->pt_address(pte) + page_offset;
- 	page_flags = pte & RK_PTE_PAGE_FLAGS_MASK;
- 
- print_it:
-@@ -663,13 +664,13 @@ static phys_addr_t rk_iommu_iova_to_phys(struct iommu_domain *domain,
- 	if (!rk_dte_is_pt_valid(dte))
- 		goto out;
- 
--	pt_phys = rk_ops->pt_address(dte);
-+	pt_phys = rk_domain->rk_ops->pt_address(dte);
- 	page_table = (u32 *)phys_to_virt(pt_phys);
- 	pte = page_table[rk_iova_pte_index(iova)];
- 	if (!rk_pte_is_page_valid(pte))
- 		goto out;
- 
--	phys = rk_ops->pt_address(pte) + rk_iova_page_offset(iova);
-+	phys = rk_domain->rk_ops->pt_address(pte) + rk_iova_page_offset(iova);
- out:
- 	spin_unlock_irqrestore(&rk_domain->dt_lock, flags);
- 
-@@ -730,7 +731,7 @@ static u32 *rk_dte_get_page_table(struct rk_iommu_domain *rk_domain,
- 	if (rk_dte_is_pt_valid(dte))
- 		goto done;
- 
--	page_table = iommu_alloc_pages_sz(GFP_ATOMIC | rk_ops->gfp_flags,
-+	page_table = iommu_alloc_pages_sz(GFP_ATOMIC | rk_domain->rk_ops->gfp_flags,
- 					  SPAGE_SIZE);
- 	if (!page_table)
- 		return ERR_PTR(-ENOMEM);
-@@ -742,13 +743,13 @@ static u32 *rk_dte_get_page_table(struct rk_iommu_domain *rk_domain,
- 		return ERR_PTR(-ENOMEM);
- 	}
- 
--	dte = rk_ops->mk_dtentries(pt_dma);
-+	dte = rk_domain->rk_ops->mk_dtentries(pt_dma);
- 	*dte_addr = dte;
- 
- 	rk_table_flush(rk_domain,
- 		       rk_domain->dt_dma + dte_index * sizeof(u32), 1);
- done:
--	pt_phys = rk_ops->pt_address(dte);
-+	pt_phys = rk_domain->rk_ops->pt_address(dte);
- 	return (u32 *)phys_to_virt(pt_phys);
- }
- 
-@@ -790,7 +791,7 @@ static int rk_iommu_map_iova(struct rk_iommu_domain *rk_domain, u32 *pte_addr,
- 		if (rk_pte_is_page_valid(pte))
- 			goto unwind;
- 
--		pte_addr[pte_count] = rk_ops->mk_ptentries(paddr, prot);
-+		pte_addr[pte_count] = rk_domain->rk_ops->mk_ptentries(paddr, prot);
- 
- 		paddr += SPAGE_SIZE;
- 	}
-@@ -812,7 +813,7 @@ static int rk_iommu_map_iova(struct rk_iommu_domain *rk_domain, u32 *pte_addr,
- 			    pte_count * SPAGE_SIZE);
- 
- 	iova += pte_count * SPAGE_SIZE;
--	page_phys = rk_ops->pt_address(pte_addr[pte_count]);
-+	page_phys = rk_domain->rk_ops->pt_address(pte_addr[pte_count]);
- 	pr_err("iova: %pad already mapped to %pa cannot remap to phys: %pa prot: %#x\n",
- 	       &iova, &page_phys, &paddr, prot);
- 
-@@ -849,7 +850,7 @@ static int rk_iommu_map(struct iommu_domain *domain, unsigned long _iova,
- 	pte_index = rk_iova_pte_index(iova);
- 	pte_addr = &page_table[pte_index];
- 
--	pte_dma = rk_ops->pt_address(dte_index) + pte_index * sizeof(u32);
-+	pte_dma = rk_domain->rk_ops->pt_address(dte_index) + pte_index * sizeof(u32);
- 	ret = rk_iommu_map_iova(rk_domain, pte_addr, pte_dma, iova,
- 				paddr, size, prot);
- 
-@@ -887,7 +888,7 @@ static size_t rk_iommu_unmap(struct iommu_domain *domain, unsigned long _iova,
- 		return 0;
- 	}
- 
--	pt_phys = rk_ops->pt_address(dte);
-+	pt_phys = rk_domain->rk_ops->pt_address(dte);
- 	pte_addr = (u32 *)phys_to_virt(pt_phys) + rk_iova_pte_index(iova);
- 	pte_dma = pt_phys + rk_iova_pte_index(iova) * sizeof(u32);
- 	unmap_size = rk_iommu_unmap_iova(rk_domain, pte_addr, pte_dma, size);
-@@ -945,7 +946,7 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
- 
- 	for (i = 0; i < iommu->num_mmu; i++) {
- 		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR,
--			       rk_ops->mk_dtentries(rk_domain->dt_dma));
-+			       iommu->rk_ops->mk_dtentries(rk_domain->dt_dma));
- 		rk_iommu_base_command(iommu->bases[i], RK_MMU_CMD_ZAP_CACHE);
- 		rk_iommu_write(iommu->bases[i], RK_MMU_INT_MASK, RK_MMU_IRQ_MASK);
- 	}
-@@ -1068,17 +1069,19 @@ static struct iommu_domain *rk_iommu_domain_alloc_paging(struct device *dev)
- 	if (!rk_domain)
- 		return NULL;
- 
-+	iommu = rk_iommu_from_dev(dev);
-+	rk_domain->rk_ops = iommu->rk_ops;
-+
- 	/*
- 	 * rk32xx iommus use a 2 level pagetable.
- 	 * Each level1 (dt) and level2 (pt) table has 1024 4-byte entries.
- 	 * Allocate one 4 KiB page for each table.
- 	 */
--	rk_domain->dt = iommu_alloc_pages_sz(GFP_KERNEL | rk_ops->gfp_flags,
-+	rk_domain->dt = iommu_alloc_pages_sz(GFP_KERNEL | rk_domain->rk_ops->gfp_flags,
- 					     SPAGE_SIZE);
- 	if (!rk_domain->dt)
- 		goto err_free_domain;
- 
--	iommu = rk_iommu_from_dev(dev);
- 	rk_domain->dma_dev = iommu->dev;
- 	rk_domain->dt_dma = dma_map_single(rk_domain->dma_dev, rk_domain->dt,
- 					   SPAGE_SIZE, DMA_TO_DEVICE);
-@@ -1117,7 +1120,7 @@ static void rk_iommu_domain_free(struct iommu_domain *domain)
- 	for (i = 0; i < NUM_DT_ENTRIES; i++) {
- 		u32 dte = rk_domain->dt[i];
- 		if (rk_dte_is_pt_valid(dte)) {
--			phys_addr_t pt_phys = rk_ops->pt_address(dte);
-+			phys_addr_t pt_phys = rk_domain->rk_ops->pt_address(dte);
- 			u32 *page_table = phys_to_virt(pt_phys);
- 			dma_unmap_single(rk_domain->dma_dev, pt_phys,
- 					 SPAGE_SIZE, DMA_TO_DEVICE);
-@@ -1197,7 +1200,6 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	struct rk_iommu *iommu;
- 	struct resource *res;
--	const struct rk_iommu_ops *ops;
- 	int num_res = pdev->num_resources;
- 	int err, i;
- 
-@@ -1211,16 +1213,9 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	iommu->dev = dev;
- 	iommu->num_mmu = 0;
- 
--	ops = of_device_get_match_data(dev);
--	if (!rk_ops)
--		rk_ops = ops;
--
--	/*
--	 * That should not happen unless different versions of the
--	 * hardware block are embedded the same SoC
--	 */
--	if (WARN_ON(rk_ops != ops))
--		return -EINVAL;
-+	iommu->rk_ops = of_device_get_match_data(dev);
-+	if (!iommu->rk_ops)
-+		return -ENOENT;
- 
- 	iommu->bases = devm_kcalloc(dev, num_res, sizeof(*iommu->bases),
- 				    GFP_KERNEL);
-@@ -1286,7 +1281,7 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 			goto err_pm_disable;
- 	}
- 
--	dma_set_mask_and_coherent(dev, rk_ops->dma_bit_mask);
-+	dma_set_mask_and_coherent(dev, iommu->rk_ops->dma_bit_mask);
- 
- 	err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, dev_name(dev));
- 	if (err)
+Best regards,
 -- 
-2.34.1
+Philipp Hahn <phahn-oss@avm.de>
 
