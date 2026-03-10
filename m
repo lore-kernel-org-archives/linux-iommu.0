@@ -1,55 +1,125 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6427A38A719
-	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 13:55:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4F5A38A719;
+	Tue, 10 Mar 2026 13:56:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773150958; cv=none; b=fUSfP+KQ8jJLEVl31ng1K2oXfzJLdYl8kkmKAJ9KKGttOEYzqaD61/62tgMLy7mDHJJWPe5w41Ll/Co0JSIM6pjCUVjyoTETFybMkE9ZvVOVHYHKLeAbNQyQkNhDKUHY3Fx0pWLyBVxqN3oBWH7m0G9xx6M/aJyGYJ7D+ju9VHc=
+	t=1773150971; cv=none; b=A3hntXAbuUm2CjKbcnSCVdneXVQB32LoKaN5I7TJE3bWBKxq2AgxgV6oH7HrYiIXVnmmO4U4kkLlJSKWRieIgGL9TVzFYz0pAFUMwVoHcamgZ+qmJxaJtUIPEyMMopIAzYF7j07r9bUqo8XCiOvW+/ednDF8O6pzm65fjaqEPBo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773150958; c=relaxed/simple;
-	bh=e7NYteQ5BI9gllCVncwSRKMX6uvb3dsirYmr21SRthw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Vy9Xxm0DiB6QdoCpUiZehwYSLbcEUWNidiq6AhaJpSC5XwpYDwIkVPGMCuYQlLKzMImTISEohCFAyVhfw3PsPchoGWMNRnW39AM/oV5h1Z+S078io+gi51JldzKEXcdX/m5skUrpDQKdAUyZG+DrRyV44YJYESWtGi/uCb1V9Ag=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 97DE9169C;
-	Tue, 10 Mar 2026 06:55:50 -0700 (PDT)
-Received: from arm.com (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3D98E3F73B;
-	Tue, 10 Mar 2026 06:55:55 -0700 (PDT)
-Date: Tue, 10 Mar 2026 13:55:52 +0000
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	robin.murphy@arm.com, m.szyprowski@samsung.com, will@kernel.org,
-	maz@kernel.org, suzuki.poulose@arm.com,
-	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Subject: Re: [RFC PATCH 1/2] dma-mapping: Avoid double decrypting with
- DMA_RESTRICTED_POOL
-Message-ID: <abAi6NeKb4m_RbwV@arm.com>
-References: <20260305170335.963568-1-smostafa@google.com>
- <20260305170335.963568-2-smostafa@google.com>
- <abAeSML-7ziLeIvv@arm.com>
+	s=arc-20240116; t=1773150971; c=relaxed/simple;
+	bh=FDMwXaHKDrOM7khDAib7qUUe1UeRwowP+SR16jql6lQ=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=U/Bv8V1NFGT7eebs/KC81rn7H+nY9HGtjCwBSvZAHy4/JtGPmKFud1ZPd5RxkjowylRfbgd30lIIIIItSCkioNbHWxFmULZBpZOxrPEEQJNN+ZsGX3n0tmIu+0EGWBpRqtXhv4CWL0rd96Eca9caoM9DtkKJSybCYHH+uRVrU3M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hadess.net; spf=pass smtp.mailfrom=hadess.net; arc=none smtp.client-ip=217.70.183.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hadess.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hadess.net
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 539B3433BD;
+	Tue, 10 Mar 2026 13:55:53 +0000 (UTC)
+Message-ID: <375c7c30c184d331c199876e45920976030f3cbc.camel@hadess.net>
+Subject: Re: [PATCH 25/61] net/bluetooth: Prefer IS_ERR_OR_NULL over manual
+ NULL check
+From: Bastien Nocera <hadess@hadess.net>
+To: Philipp Hahn <phahn-oss@avm.de>, amd-gfx@lists.freedesktop.org, 
+	apparmor@lists.ubuntu.com, bpf@vger.kernel.org, ceph-devel@vger.kernel.org,
+ 	cocci@inria.fr, dm-devel@lists.linux.dev, dri-devel@lists.freedesktop.org,
+ 	gfs2@lists.linux.dev, intel-gfx@lists.freedesktop.org, 
+	intel-wired-lan@lists.osuosl.org, iommu@lists.linux.dev,
+ kvm@vger.kernel.org, 	linux-arm-kernel@lists.infradead.org,
+ linux-block@vger.kernel.org, 	linux-bluetooth@vger.kernel.org,
+ linux-btrfs@vger.kernel.org, 	linux-cifs@vger.kernel.org,
+ linux-clk@vger.kernel.org, 	linux-erofs@lists.ozlabs.org,
+ linux-ext4@vger.kernel.org, 	linux-fsdevel@vger.kernel.org,
+ linux-gpio@vger.kernel.org, 	linux-hyperv@vger.kernel.org,
+ linux-input@vger.kernel.org, 	linux-kernel@vger.kernel.org,
+ linux-leds@vger.kernel.org, 	linux-media@vger.kernel.org,
+ linux-mips@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, linux-mtd@lists.infradead.org, 
+	linux-nfs@vger.kernel.org, linux-omap@vger.kernel.org, 
+	linux-phy@lists.infradead.org, linux-pm@vger.kernel.org, 
+	linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org, 
+	linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org, 
+	linux-security-module@vger.kernel.org, linux-sh@vger.kernel.org, 
+	linux-sound@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, 
+	linux-trace-kernel@vger.kernel.org, linux-usb@vger.kernel.org, 
+	linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+ ntfs3@lists.linux.dev, 	samba-technical@lists.samba.org,
+ sched-ext@lists.linux.dev, 	target-devel@vger.kernel.org,
+ tipc-discussion@lists.sourceforge.net, 	v9fs@lists.linux.dev
+Cc: Marcel Holtmann <marcel@holtmann.org>, Johan Hedberg
+	 <johan.hedberg@gmail.com>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date: Tue, 10 Mar 2026 14:55:52 +0100
+In-Reply-To: <20260310-b4-is_err_or_null-v1-25-bd63b656022d@avm.de>
+References: <20260310-b4-is_err_or_null-v1-0-bd63b656022d@avm.de>
+	 <20260310-b4-is_err_or_null-v1-25-bd63b656022d@avm.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.3 (3.58.3-1.fc43) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <abAeSML-7ziLeIvv@arm.com>
+X-GND-Sasl: hadess@hadess.net
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddvkeduudelucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefkuffhvfevffgjfhgtgfgfggesthhqredttderjeenucfhrhhomhepuegrshhtihgvnhcupfhotggvrhgruceohhgruggvshhssehhrgguvghsshdrnhgvtheqnecuggftrfgrthhtvghrnhepieffgfehtedtgefgjeeggfffgeeuvdegveekveejfeekkedujeehteffueefffeunecukfhppedvrgdtudemvgefgeemvggtjeefmegtfhdvtdemsggrgeefmegrieejieemtgdvugefmeejrgehfeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvrgdtudemvgefgeemvggtjeefmegtfhdvtdemsggrgeefmegrieejieemtgdvugefmeejrgehfedphhgvlhhopeglkffrvheimedvrgdtudemvgefgeemvggtjeefmegtfhdvtdemsggrgeefmegrieejieemtgdvugefmeejrgehfegnpdhmrghilhhfrhhomhephhgruggvshhssehhrgguvghsshdrnhgvthdpqhhiugepheefleeufeegfeefueffpdhmohguvgepshhmthhpohhuthdpnhgspghrtghpthhtohepheejpdhrtghpthhtohepphhhrghhnhdqohhsshesrghvmhdruggvpdhrtghpthhtoheprghmugdqghhfgieslhhishhtshdrfhhrvggvu
+ ggvshhkthhophdrohhrghdprhgtphhtthhopegrphhprghrmhhorheslhhishhtshdruhgsuhhnthhurdgtohhmpdhrtghpthhtohepsghpfhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopegtvghphhdquggvvhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopegtohgttghisehinhhrihgrrdhfrh
+X-GND-State: clean
+X-GND-Score: -100
 
-On Tue, Mar 10, 2026 at 01:36:08PM +0000, Catalin Marinas wrote:
-> However, it's unclear to me whether we can get encrypted pages when
-> is_swiotlb_for_alloc() == false, remap == true and
-> force_dma_unencrypted() == true in dma_direct_alloc().
-> dma_set_decrypted() is only called on the !remap path.
+On Tue, 2026-03-10 at 12:48 +0100, Philipp Hahn wrote:
+> Prefer using IS_ERR_OR_NULL() over using IS_ERR() and a manual NULL
+> check.
+>=20
+> Change generated with coccinelle.
+>=20
+> To: Marcel Holtmann <marcel@holtmann.org>
+> To: Johan Hedberg <johan.hedberg@gmail.com>
+> To: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+> Cc: linux-bluetooth@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Philipp Hahn <phahn-oss@avm.de>
 
-Ah, I can see Anneesh trying to address this here:
+Reviewed-by: Bastien Nocera <hadess@hadess.net>
 
-https://lore.kernel.org/r/yq5abjjl4o0j.fsf@kernel.org
-
--- 
-Catalin
+> ---
+> =C2=A0net/bluetooth/mgmt.c | 6 +++---
+> =C2=A01 file changed, 3 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+> index
+> a7238fd3b03bb54f39af1afee74dc1acd931c324..06d2da67bbe14e17ee478aa939d
+> e26526c333d91 100644
+> --- a/net/bluetooth/mgmt.c
+> +++ b/net/bluetooth/mgmt.c
+> @@ -4169,7 +4169,7 @@ static void set_default_phy_complete(struct
+> hci_dev *hdev, void *data, int err)
+> =C2=A0		mgmt_phy_configuration_changed(hdev, cmd->sk);
+> =C2=A0	}
+> =C2=A0
+> -	if (skb && !IS_ERR(skb))
+> +	if (!IS_ERR_OR_NULL(skb))
+> =C2=A0		kfree_skb(skb);
+> =C2=A0
+> =C2=A0	mgmt_pending_free(cmd);
+> @@ -5730,7 +5730,7 @@ static void read_local_oob_data_complete(struct
+> hci_dev *hdev, void *data,
+> =C2=A0			=C2=A0 MGMT_STATUS_SUCCESS, &mgmt_rp, rp_size);
+> =C2=A0
+> =C2=A0remove:
+> -	if (skb && !IS_ERR(skb))
+> +	if (!IS_ERR_OR_NULL(skb))
+> =C2=A0		kfree_skb(skb);
+> =C2=A0
+> =C2=A0	mgmt_pending_free(cmd);
+> @@ -8277,7 +8277,7 @@ static void
+> read_local_oob_ext_data_complete(struct hci_dev *hdev, void *data,
+> =C2=A0				 mgmt_rp, sizeof(*mgmt_rp) +
+> eir_len,
+> =C2=A0				 HCI_MGMT_OOB_DATA_EVENTS, cmd->sk);
+> =C2=A0done:
+> -	if (skb && !IS_ERR(skb))
+> +	if (!IS_ERR_OR_NULL(skb))
+> =C2=A0		kfree_skb(skb);
+> =C2=A0
+> =C2=A0	kfree(mgmt_rp);
