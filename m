@@ -1,116 +1,95 @@
-Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 998213D47CA
-	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 12:34:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 759203E3156
+	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 12:44:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773146049; cv=none; b=PIK0iWLZkrXwftq85y3EpdJ25+w8aJLUJJUM1HsyO7eePot+Z2mZiNvl289DMjyLlZ5zjjZaiFcW8uczpteB18dWaG1aAkJiMflwsGzgi8Np/Ka0u8usyWAlsOLHQjckBvhEolOJl45PE1HnNfla3zJ9p4pGcE5sKfu2b+pwjfQ=
+	t=1773146696; cv=none; b=Lu3bkESYdTg0CZKDvBpxywNq4ZYRs9TOa9jcx9Nea56OwSavcnMTfkpCKfnhnc81Ez12uthOXQCQGB4YMRvS3mieg6ZWxwrmBMtLfBZRbu8iB8ueQLHylYXVNFRClwCSx57auqA2dN+LfyqOxGnSOSfTP4uPiptGQAmyjkjxuB8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773146049; c=relaxed/simple;
-	bh=cHUF2XHSTidsSmxJD0bQdgzaHWB25qEwufJ2YTbQfJQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fUc8/4YIrW/k+I5aDam//IGp5pCWsxA2/ljnzMLm/jy1OzWcIDtB8/BEpMIA7EKCAJtd7k4QNcXL5W8ALrn/NFGGbGdizDIQWfxWE6C9lzmRU6PpJZKjWXj1wt2hudj/unRajO0DhZNMpqZRIc8ywcJRaHEL7XscFGswLa/EuGA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=IOdW10L6; arc=none smtp.client-ip=209.85.222.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="IOdW10L6"
-Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-8cd8d97aa2eso238095385a.3
-        for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 05:34:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1773146046; x=1773750846; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=JidrQO5YBoJChSM6WSALz7pLZEnTQpjujRwwjFND6W8=;
-        b=IOdW10L6hWu47yCEy2eykc5Q8E68BolXMY0P3zd1J74lwWui55YtbeLgd67eMUsHTh
-         IYk3YcUMUoStHPg0SZLNudeVqSUc74wxdS1sksZGUefejcpLnO5ACbghnmttF1QgMWzX
-         nqqXN57BEyPZJDTw+l44JYzmytOEjainwTsPsMbq+TTX6mnEZr6hRtZ2yvgAbsfXbq4f
-         GHp0QGk54mPC32NzwyOL26qcVGT1EZ3877I9dzj4rQoZTfZ84RMWX+CX9ZLVdzdv/EZC
-         I3Cm9IKuQsHtPm/Y88IH8uQcIUasBpCioySdIKDawUcjAKw+9aATG/UokvUQsj2jzONS
-         bNvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773146046; x=1773750846;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=JidrQO5YBoJChSM6WSALz7pLZEnTQpjujRwwjFND6W8=;
-        b=oEJ4oIymd5/LoUTDYhgCo9NOlu5o2Wwr7cPthRRN/tnGRT8RHYYwewhrQ20Zc//FY5
-         IUxvw8Rnif2s1CtQqTum6CweFpXCGUuoYVbTIUEXI9ftKygaMJGJjzU+FusS+9K30LlM
-         69Ro9w81dyqgjjP20Vg7a1m8OBhk7sIVzTCeUtp1dkOwo6AgdCmC//sgt3z3eCRSJ8NG
-         3M1nh4+JJ2izS8s2pUpFHlUYsbfCQt+4BC8K5alCZYwk0q0j0pHyzVyOWFTnpOryo2f6
-         Cx+lw4aIWSmR47swT2uJZRI85IMZZTfpUNw+YK4MZqWnNtnFKy8euNipYZWEeMrPPpq2
-         ipEQ==
-X-Forwarded-Encrypted: i=1; AJvYcCV9T/xPgYu4XK+5EwlQKmlBk7w3jaiI8B6UxxwMQQAsfjnOWZB4AV6JFfRAdJVgiIRDYTVsLg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwTOXBQN0p1NM6C5elyoVF8m/Or/DiGOnd8lcr2jTO3p9kNIojO
-	fBva3/f6IDBB+fDVlB3HdChE09Ro2rIDjC6yV36ugZQl2VSpjgDssWKXeUebDCOjY8e/esnbhdU
-	+LcPC
-X-Gm-Gg: ATEYQzzhVntb28PIKg4ewPOi1s6dQPNj4RKfoiyVh2gT3wgVoRUku8fSZungFp8askT
-	EEvqDsSeEUBrQ44DwnQJdh7pKmUv384EFU7KGWhQGca//tKVSg8fkCiGm5rrNrSPNPlixkk02aI
-	YALpEDL3br/5vyg0bGJC0nGe1ns/KjmdFkT7/q04CXCk5hDwlklawyMfc4feEd4ayb1bQZNa4YZ
-	hvdzeBzUp2nFRUnsHqh+RPj02FIdUcNcpXysFp4k/XrZI6a1FYKC0iBHfiEVaArKF6mIIouwqC7
-	I8hnHqfWXpbFhU3Rdl9MDLV/Gm6ZUG19JF5nIXEd+dY/Yk1c29gNmq0gOeB64OZiGY2qRbe8p9O
-	Yu5YEEOm3dAFOD0GRldtY2qi3rWx7IqXoGL1PTJDNjkWQnC+0Ia0tPiYUaJIW8Z8FpYybo44CNl
-	9/rAjQCmXsyTdFP5BVSqViSJAvqqiqA+djjdaECGjASLtLIdGaExU/7i4Z03ceX2EiXemTQ4gUT
-	PMj8NZv
-X-Received: by 2002:a05:620a:4004:b0:8cd:9365:f27f with SMTP id af79cd13be357-8cd9365fb75mr416301385a.51.1773146046495;
-        Tue, 10 Mar 2026 05:34:06 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8cd827a1ebbsm505561785a.8.2026.03.10.05.34.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Mar 2026 05:34:05 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1vzwHl-00000005N1Z-0e7z;
-	Tue, 10 Mar 2026 09:34:05 -0300
-Date: Tue, 10 Mar 2026 09:34:05 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Leon Romanovsky <leon@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Petr Tesarik <ptesarik@suse.com>, Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Jason Wang <jasowang@redhat.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, virtualization@lists.linux.dev,
-	linux-rdma@vger.kernel.org
-Subject: Re: [PATCH 2/3] dma-mapping: Clarify valid conditions for CPU cache
- line overlap
-Message-ID: <20260310123405.GR1687929@ziepe.ca>
-References: <20260307-dma-debug-overlap-v1-2-c034c38872af@nvidia.com>
- <20260308181920.GH1687929@ziepe.ca>
- <20260308184902.GR12611@unreal>
- <20260308230916.GI1687929@ziepe.ca>
- <CGME20260309090352eucas1p283a75c78cac495b5ad87df74c79aab07@eucas1p2.samsung.com>
- <20260309090342.GS12611@unreal>
- <c1d058f3-f864-4ed7-9f7a-683d6f4bf1ce@samsung.com>
- <20260309150502.GX12611@unreal>
- <20260309151356.GN1687929@ziepe.ca>
- <aaebc5b6-2805-46d3-a68e-549c26a3ef03@samsung.com>
+	s=arc-20240116; t=1773146696; c=relaxed/simple;
+	bh=9nwSoyBFb/J+scDlmZ8YZ+1mFs6NH+0TsiNWJNlzMqA=;
+	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=b/NXPPNaS4tGZjlv0cF5uhTKBKP3izyAkiNvQ80a1XT15CybwEhcarcHW7bBeWnvJJ9kYjz1B8bAd6Iz1z/W36FAgEUGcgwCeD8aILrpnaA+4Dzqm/sBeUcKoji38KhBq9Agj0qhRbVIsLY6r/M3NSoRgi7zjM3p5WC/+YeQ2AE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <p.zabel@pengutronix.de>)
+	id 1vzwQv-0006Oq-0m; Tue, 10 Mar 2026 13:43:33 +0100
+Received: from lupine.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::4e] helo=lupine)
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <p.zabel@pengutronix.de>)
+	id 1vzwQr-004hMj-0z;
+	Tue, 10 Mar 2026 13:43:30 +0100
+Received: from pza by lupine with local (Exim 4.98.2)
+	(envelope-from <p.zabel@pengutronix.de>)
+	id 1vzwQs-0000000081v-2556;
+	Tue, 10 Mar 2026 13:43:30 +0100
+Message-ID: <ddaacda48df23fb2c009a8727518300ed2b82cb2.camel@pengutronix.de>
+Subject: Re: [PATCH 57/61] reset: Prefer IS_ERR_OR_NULL over manual NULL
+ check
+From: Philipp Zabel <p.zabel@pengutronix.de>
+To: Philipp Hahn <phahn-oss@avm.de>, amd-gfx@lists.freedesktop.org, 
+	apparmor@lists.ubuntu.com, bpf@vger.kernel.org, ceph-devel@vger.kernel.org,
+ 	cocci@inria.fr, dm-devel@lists.linux.dev, dri-devel@lists.freedesktop.org,
+ 	gfs2@lists.linux.dev, intel-gfx@lists.freedesktop.org, 
+	intel-wired-lan@lists.osuosl.org, iommu@lists.linux.dev,
+ kvm@vger.kernel.org, 	linux-arm-kernel@lists.infradead.org,
+ linux-block@vger.kernel.org, 	linux-bluetooth@vger.kernel.org,
+ linux-btrfs@vger.kernel.org, 	linux-cifs@vger.kernel.org,
+ linux-clk@vger.kernel.org, 	linux-erofs@lists.ozlabs.org,
+ linux-ext4@vger.kernel.org, 	linux-fsdevel@vger.kernel.org,
+ linux-gpio@vger.kernel.org, 	linux-hyperv@vger.kernel.org,
+ linux-input@vger.kernel.org, 	linux-kernel@vger.kernel.org,
+ linux-leds@vger.kernel.org, 	linux-media@vger.kernel.org,
+ linux-mips@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, linux-mtd@lists.infradead.org, 
+	linux-nfs@vger.kernel.org, linux-omap@vger.kernel.org, 
+	linux-phy@lists.infradead.org, linux-pm@vger.kernel.org, 
+	linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org, 
+	linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org, 
+	linux-security-module@vger.kernel.org, linux-sh@vger.kernel.org, 
+	linux-sound@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, 
+	linux-trace-kernel@vger.kernel.org, linux-usb@vger.kernel.org, 
+	linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+ ntfs3@lists.linux.dev, 	samba-technical@lists.samba.org,
+ sched-ext@lists.linux.dev, 	target-devel@vger.kernel.org,
+ tipc-discussion@lists.sourceforge.net, 	v9fs@lists.linux.dev
+Date: Tue, 10 Mar 2026 13:43:30 +0100
+In-Reply-To: <20260310-b4-is_err_or_null-v1-57-bd63b656022d@avm.de>
+References: <20260310-b4-is_err_or_null-v1-0-bd63b656022d@avm.de>
+	 <20260310-b4-is_err_or_null-v1-57-bd63b656022d@avm.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.56.2-0+deb13u1 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aaebc5b6-2805-46d3-a68e-549c26a3ef03@samsung.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: iommu@lists.linux.dev
 
-On Tue, Mar 10, 2026 at 10:45:38AM +0100, Marek Szyprowski wrote:
-> Jason is right. Indeed the rdma/uverbs case needs some extension to 
-> ensure that the coherent mapping is used, what is not possible now. This 
-> however doesn't mean that the DMA_ATTR_CPU_CACHE_OVERLAP is not needed 
-> for that use case too. I'm open to accept both. The only question I have 
-> is which name should we use? We already have DMA_ATTR_CPU_CACHE_CLEAN, 
-> while DMA_ATTR_CPU_CACHE_OVERLAP and 
-> DMA_ATTR_DEBUGGING_IGNORE_CACHELINES were proposed here. The last seems 
-> to be most descriptive.
+Hi Philipp,
 
-If we do DMA_ATTR_REQUIRE_COHERENCE then I imagine it would internally
-also set DMA_ATTR_DEBUGGING_IGNORE_CACHELINES, but I'd prefer that
-detail not leak into the callers.
+On Di, 2026-03-10 at 12:49 +0100, Philipp Hahn wrote:
+> Prefer using IS_ERR_OR_NULL() over using IS_ERR() and a manual NULL
+> check.
+>
+> Semantich change: Previously the code only printed the warning on error,
+> but not when the pointer was NULL. Now the warning is printed in both
+> cases!
 
-Jason
+No, rstc =3D=3D NULL is valid (for optional reset controls) and must not
+throw a warning.
+
+
+regards
+Philipp
