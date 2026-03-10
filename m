@@ -1,143 +1,98 @@
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B15B3C5DAF
-	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 20:04:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8172136B05F
+	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 21:08:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773173063; cv=none; b=oNkCOdN5Yyum1P2YKcbhFgWrsK00Pt2NP0//HG4lgQrw68LBg+PsUUaSpSey8YxG9qimjVWD52gs2gQHOG7ksiEJbSu4LTF17ZkNpMuyzN02U1ZMxvLfTATLTJNf1qkvxzXQL91INLJSN7/YedSMdm09Uo9NC6DiYsxIeUrn7C4=
+	t=1773176930; cv=none; b=CCEWGxPE4Rs51vXPKzQVis+jhVOceDMS4hxXFatTjT3jWo3ihoTLPN0ZOKsMg+yldaDAivAmS0M6r+EqZyX3/HmTSPFBFuFwVpHLRBRjT21k9kALHkDStQLZdrDaoCvkV58Thx2UdOzPp4mttWE5iJ9nB88Vyggk/l8MWIyBSyk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773173063; c=relaxed/simple;
-	bh=GCUo1Xk02JN/TcsFOEXfGC7rEnRqBWxkbpmyl49gUY0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pXg6lq7L36SMsxYyliFRpimS48TTlWxKJc2/7Mf5NaP7ANV1VVGbeSS6wT8bIg9W4D25ePctekVP5AdEiQw/WyYfckT5iMrBl9w4NHFWWiJ8QI4gP34MWMwDQmGm8xLymxrDeaOaQBZEPusLJcsnvIgQ2bJ6FMW4n/U2X2gbpJk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=BgTzP507; arc=none smtp.client-ip=209.85.214.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1773176930; c=relaxed/simple;
+	bh=SxvFwt6RNoWEPsMfWZcfBn5YT6mZDJktqM19xKBdhV8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=tC8ezyuWPXywcGZGqXpeoAandp7KPNjlT1JcYZWu1IsF2UvkTdD96FThI9jyTTdj3LvB3nG0PqfbPi5ZYtyNl6aakDi3G/EO1UbcMCwEXJm6219KgTZMgK58MMm1dlXAClNiZwyJs57En5r6Z3+7TKktRxSM4xyaMF/D7Jb2ii0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=eZ8XyXaP; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="BgTzP507"
-Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2ae49120e97so24185ad.0
-        for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 13:04:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1773173062; x=1773777862; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=pouRMyraIJfJRyRFv87tQoZjJ+P4d5SAB0a9EGBIRqk=;
-        b=BgTzP507UmVW0CQcf0qiLsqKnI0MXsppWd5/Fy4cXEguVzDIDBayTfqcAT0f2u4nEJ
-         q351z0iAZzCTzgTZR1gQJSwzaSwaL6X2G8LIY4u9c3+j05jXz0dKurMzhDVvcCT3xN21
-         ydiJ6Z9AJ+1Zxus0WoXnYLlpsFDmy5yr2rbQl4KpeoKNLUuKIDJCeTo+NP8JkgLE6wk/
-         Y3y6WYPCUIpM873linP86WL5YgAg9i+wFlwYE1/nZNyeUCB0NefIRk9q8RDDha0dTizr
-         WYQpQzXpEc9nRFuzoshXA0rcLAAeeVNyN8+9MJvmtEUKa9B0woMIKG5jbGfC9z8p+p/X
-         5jkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773173062; x=1773777862;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=pouRMyraIJfJRyRFv87tQoZjJ+P4d5SAB0a9EGBIRqk=;
-        b=nqBEeLeKgThZSQIenx7lVFIn/eN7B22nOMdLamyrYne9EAPKKdj85sR56hWLoTQWs8
-         Af2rCxu6LsAzrYyWkipfH+hZMHtzrtGo7i1FXDKmh+kgfOlU+tdp1HOFt8EevkTozY/v
-         LydaOOyjBqT7jzqEC7/0mvkDT+nPxGFlbG9joASvTESIhdkyCY9IoRabTeyzN5PqndR+
-         Wk2wM25AQU4bT6+p1IgMVE9tAXNZ4S0MtzXPIe3/ZYeY3tXHeolQLOMAyu1qMhD3761+
-         YZrVfWyQDtFl62cMyFLkfeYsbbrkeCmcEgEo14kGDYja6enisHzTCzw0NBUCUnlwnn/B
-         eSOg==
-X-Forwarded-Encrypted: i=1; AJvYcCWz3rH5uKx495B8gceID0k3wb7XaRMv1PJTthTbCShIqgR7d8DxKoDT9a6dKz5Oqv/KAs+Ndg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyp5hZwQT3omcZgFMNezThnnmtWg34KBiV9DkTuhvOBCKGf3Zwn
-	pvH0lF2b2rn2jTWzRevs6a8HH8NeTHcrrZ1vcAVBFxC+Bc+/x+3lYg1aEOiPnti5Gw==
-X-Gm-Gg: ATEYQzz2nVnVGBCI8Xky0ovvn5gqjxQU/8RMqyfV/vewB3sS/dWMvPZL80Vy92aMQdU
-	4Wh9E7zuRaRe2gDuWO4nJJbvyDNE994MsK5I9J3fE2CH2HKE8vJG4P6PsmAs9vC0OpsAd5lG2f4
-	HPcIJorkFS8oA4ETYKOO192WCimrbl08FUGcJqkjd1/wj0KGatGvDRA/WJCNFFKigi/PaXRzjb2
-	dBXLwjWW+n9r0oVG7zKEjbl4fSnR0AhG3G2sCDLZXaPTKOp53GFgMevDxcgfkG0c678n8W3RBo+
-	Iu2QT3IGVC4Jwx37O+YeWhYchuVj5ig8/VKPl7FuxzD9e2VyTrQ1VDbFstTnggU6YEYD3Z8HUE1
-	/BwLhzSmb6voyIoQTZA4U14ZQKJtY1SFT8W8UKsJ+8vqckJEDLTF9UoegoPYHqMjmC1L0dBf/1Q
-	iANPrBSqcMzsh3btblF6rPHauRQhNtMgEcLGtF0ijOmBa5i31ye5iTvpseuw==
-X-Received: by 2002:a17:902:cf12:b0:2a7:4151:2c74 with SMTP id d9443c01a7336-2aead3dfdfemr722415ad.16.1773173060930;
-        Tue, 10 Mar 2026 13:04:20 -0700 (PDT)
-Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-359ffdae223sm100059a91.0.2026.03.10.13.04.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Mar 2026 13:04:19 -0700 (PDT)
-Date: Tue, 10 Mar 2026 20:04:14 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, will@kernel.org, robin.murphy@arm.com,
-	joro@8bytes.org, bhelgaas@google.com, rafael@kernel.org,
-	lenb@kernel.org, kees@kernel.org, baolu.lu@linux.intel.com,
-	smostafa@google.com, Alexander.Grest@microsoft.com,
-	kevin.tian@intel.com, miko.lenczewski@arm.com,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-	linux-pci@vger.kernel.org, vsethi@nvidia.com
-Subject: Re: [PATCH v1 2/2] iommu/arm-smmu-v3: Recover ATC invalidate timeouts
-Message-ID: <abB5PsFiBvCOjmnW@google.com>
-References: <ca7ab934bf0f433b62a5c15d42241632c4cb9366.1772686998.git.nicolinc@nvidia.com>
- <20260305153911.GT972761@nvidia.com>
- <aanygWWZLA1htDdQ@Asurada-Nvidia>
- <20260305234158.GB1651202@nvidia.com>
- <aaot8uRsli5jNPzH@Asurada-Nvidia>
- <20260306013347.GD1651202@nvidia.com>
- <aapgyXadT1TEz29u@Asurada-Nvidia>
- <20260306130202.GG1651202@nvidia.com>
- <abBzyKNZRzRykRV5@google.com>
- <abB3qt3QTroym7D+@Asurada-Nvidia>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="eZ8XyXaP"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260310210841euoutp01750d49765e8ebe4321ab50f7bdbdc3d1~blwPW1CJk3106431064euoutp01R
+	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 21:08:41 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260310210841euoutp01750d49765e8ebe4321ab50f7bdbdc3d1~blwPW1CJk3106431064euoutp01R
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1773176921;
+	bh=tGKcv9KXSZ8NeZkMwYhCoqHzYQKa6iNvw2bZS+J/rzE=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=eZ8XyXaPRQAjrmD4tNZ3xUXMKKEX3h1oOCD4TsFqZXdYBieeyb/LtVoxH2f21WRDs
+	 FseqmW6UqV5Wnori+EXSWkMHCW3pnM/7xRBu1chhgHxCLymTyDSRwFQpU7xFOprv5y
+	 rxzqJwl64rsea6rmb5pyIdwHoZqCHAqngy2W2YQE=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20260310210840eucas1p2dc0fce312c0fe458cd71faffb303d0a6~blwPOKs7r3236232362eucas1p2y;
+	Tue, 10 Mar 2026 21:08:40 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20260310210839eusmtip17c631ae9b4a7af8f06cd5dfe1f3e6b7d~blwNydyN01109311093eusmtip1E;
+	Tue, 10 Mar 2026 21:08:39 +0000 (GMT)
+Message-ID: <a61f8814-b896-4ec0-bb83-a8cbd8aca4e8@samsung.com>
+Date: Tue, 10 Mar 2026 22:08:38 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <abB3qt3QTroym7D+@Asurada-Nvidia>
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH 2/3] dma-mapping: Clarify valid conditions for CPU cache
+ line overlap
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Leon Romanovsky <leon@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	"Michael S. Tsirkin" <mst@redhat.com>, Petr Tesarik <ptesarik@suse.com>,
+	Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
+	Jason Wang <jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	=?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+	virtualization@lists.linux.dev, linux-rdma@vger.kernel.org
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20260310123405.GR1687929@ziepe.ca>
+Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20260310210840eucas1p2dc0fce312c0fe458cd71faffb303d0a6
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260309090352eucas1p283a75c78cac495b5ad87df74c79aab07
+X-EPHeader: CA
+X-CMS-RootMailID: 20260309090352eucas1p283a75c78cac495b5ad87df74c79aab07
+References: <20260307-dma-debug-overlap-v1-2-c034c38872af@nvidia.com>
+	<20260308181920.GH1687929@ziepe.ca> <20260308184902.GR12611@unreal>
+	<20260308230916.GI1687929@ziepe.ca>
+	<CGME20260309090352eucas1p283a75c78cac495b5ad87df74c79aab07@eucas1p2.samsung.com>
+	<20260309090342.GS12611@unreal>
+	<c1d058f3-f864-4ed7-9f7a-683d6f4bf1ce@samsung.com>
+	<20260309150502.GX12611@unreal> <20260309151356.GN1687929@ziepe.ca>
+	<aaebc5b6-2805-46d3-a68e-549c26a3ef03@samsung.com>
+	<20260310123405.GR1687929@ziepe.ca>
 
-On Tue, Mar 10, 2026 at 12:57:30PM -0700, Nicolin Chen wrote:
-> On Tue, Mar 10, 2026 at 07:40:56PM +0000, Pranjal Shrivastava wrote:
-> > On Fri, Mar 06, 2026 at 09:02:02AM -0400, Jason Gunthorpe wrote:
-> > > On Thu, Mar 05, 2026 at 09:06:17PM -0800, Nicolin Chen wrote:
-> > > > On Thu, Mar 05, 2026 at 09:33:47PM -0400, Jason Gunthorpe wrote:
-> > > > > On Thu, Mar 05, 2026 at 05:29:22PM -0800, Nicolin Chen wrote:
-> > > > > 
-> > > > > > But arm_smmu_cmdq_issue_cmdlist() doesn't know when to push another
-> > > > > > CMD. In my case where ATC_INV irq occurs, the return value from the
-> > > > > > arm_smmu_cmdq_poll_until_sync() in the Step 5 is 0, and prods/cons
-> > > > > > are also matched. Actually, at this point that NOP ISR has already
-> > > > > > finished.
-> > > > > 
-> > > > > Yes, you'd need a sneaky way to convay the error from the ISR to the
-> > > > > cmdlist code that didn't harm performance. Maybe we could come up with
-> > > > > something, but if it works replacing the NOP with flush sounds fairly
-> > > > > appealing - though can you do a single WORD edit to the STE that will
-> > > > > block translated requests? Zero EATS?
-> > > > 
-> > > > Yea. I can give that a try.
-> > > 
-> > > This also really needs to go after the invalidation changes because it
-> > > is feasible to also edit the lockless RCU invalidation list from the
-> > > ISR and disable the ATC for the failed device too.
-> > > 
-> > > > > Also, will the SMMU start spamming with blocked translation events or
-> > > > > something that will need suppression too?
-> > > > 
-> > > > CD.R=0 can suppress fault records, but we would need to override
-> > > > that in every CD of the device.
-> > > 
-> > > That's too much to do from ISR, but maybe we can do it from a WQ..
-> > > 
-> > 
-> > (Skimming through these, apologies if I'm losing context), shouldn't we
-> > do all that (marking it as an inv STE / abort STE, suppressing the
-> > faults) in the worker instead of trying to reset/recover the device?
-> 
-> EATS should be unset asap to avoid memory corruption. It's best
-> to do in the unmap() context where the page isn't reclaimed yet
-> by the kernel.
-> 
+On 10.03.2026 13:34, Jason Gunthorpe wrote:
+> On Tue, Mar 10, 2026 at 10:45:38AM +0100, Marek Szyprowski wrote:
+>> Jason is right. Indeed the rdma/uverbs case needs some extension to
+>> ensure that the coherent mapping is used, what is not possible now. This
+>> however doesn't mean that the DMA_ATTR_CPU_CACHE_OVERLAP is not needed
+>> for that use case too. I'm open to accept both. The only question I have
+>> is which name should we use? We already have DMA_ATTR_CPU_CACHE_CLEAN,
+>> while DMA_ATTR_CPU_CACHE_OVERLAP and
+>> DMA_ATTR_DEBUGGING_IGNORE_CACHELINES were proposed here. The last seems
+>> to be most descriptive.
+> If we do DMA_ATTR_REQUIRE_COHERENCE then I imagine it would internally
+> also set DMA_ATTR_DEBUGGING_IGNORE_CACHELINES, but I'd prefer that
+> detail not leak into the callers.
 
-Makes sense.
+Why DMA_ATTR_REQUIRE_COHERENCE should imply 
+DMA_ATTR_DEBUGGING_IGNORE_CACHELINES?
 
-> Worker thread will be a bit late, but it is good enough for any
-> further step.
->
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
-Ack.
-Praan
