@@ -1,241 +1,394 @@
 Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5439F3D093C
-	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 21:40:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA02E36B05F
+	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 21:47:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773178842; cv=none; b=k4Ph6O+rTKXNp+xXBglx3th2iNRRBA5ii9t76GGDCMW1saU8nDS/hylASyeThNoigbas1LUz7KFmjVCuKseiPAfsLxM7RWKYvCYw1eiF3xBtQKj2nYLgAEdi4JlrY+7eso6gROHedF0MhonEKh9UgZTcKJoPmVP7KsJG275Sk7w=
+	t=1773179246; cv=none; b=sI6BdDvuVimuuCoKbN7J5pnNJ+yQo88F5aqUeaFkeJLpvXHA9VPTpGdsSuYVelRIiLQ/G6DYngPRPCtblv3Vw8vP9zw6P6JyVTbrR5mgPNsczRaEL9tC7NyaxsLrM3/SDG/or6Bp3muED3xNdF7sktzMbNkusynbAqAhR1cIJYI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773178842; c=relaxed/simple;
-	bh=48QOB9sofWYvCflZkZ5vBGmZ/c4UHyXben4ZxHevJug=;
+	s=arc-20240116; t=1773179246; c=relaxed/simple;
+	bh=mQuTQCXgyBXZGtOv+LuZDeRQk0twCEJR67xLMDOKk44=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=A7BStSfcpOKE9KiGxqC7XgkQUkC9YWp3Bul9hAF1OwTKvC2IAaJNVkmfWEqDUSZa54cZkAsL3JqyBVNyxFx3Kx6PUcDfAkM3/6VvZTVLmFmqR6N9Kwi55rE/cLIikwG9XRRgJ87vsANa1LgPeOenqTvhAqCWdEo8ai/8WIlxY8I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Fga1U+jf; arc=none smtp.client-ip=209.85.214.177
+	 Content-Type:Content-Disposition:In-Reply-To; b=kea/L4NfcWcSuqOBvLhWnvyUl5I34nIlxB/I6DyH38ZLQgHliy85uBc/sXv2kQkkFGxhMHfDlV43FMXDWWq0zcDd7SNQ63VTEZbrcfPiAX0+xQVHrvrfP6a5vjKig0LMM8UmWZAZodOlEcRCoZ0cjqCQ6NL9IFXtQh9lGrTpObo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Y14LOSHk; arc=none smtp.client-ip=209.85.214.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Fga1U+jf"
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2aea4ebb048so15935ad.1
-        for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 14:40:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Y14LOSHk"
+Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2ae3f822163so40485ad.0
+        for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 14:47:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1773178841; x=1773783641; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=WxlF6Qln8uIlY9vgFKxKEV9IkQpFN3vdg3zec7HbEUE=;
-        b=Fga1U+jfcb7n/Qkx0sqT1TW7EHTW0nAIzzgK2r9RlMG8NXhRI8Z3UJxDgzuMruBmGc
-         u/EHJDM1X3g5V84mgzpCGXnTRx0RGO37OhWX4ZszXaWQ+U6W5noN4R/MTvyoafSBpu4u
-         oMYBf9jDBEJYzHGT4gBvGQLCIeyv5g3KTImWA1eg0EyyGgV9BHYGO0kuINyZ7wRADS1v
-         Ds83XO42R/TbKgTQW2HN77KM1ApzQemlkiAgWONMWDUmj7BQDe1gjjdbKx0LYi2/iHlD
-         P9kfarR3nm/uM2A7cp4VDiimNK9XsEl3eoDSGShk0THG1/C9y4JqCkC78Yrib04CqUG4
-         UAsg==
+        d=google.com; s=20230601; t=1773179243; x=1773784043; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=JdVc8T+6UNGh/VsXP1dXf3PthPQA075yGDRasc1aV+I=;
+        b=Y14LOSHk8AFHOBoJxqj2vBlRhM7xReFKTnTkAzz/XBYCGDoS4voQiSKRXhc/MC4OS3
+         QkTuZGH6i8ziQGMEqoDqhOv+1JwcJi0xG4nq0XtVhsOdOTrbPklOZRBTIAQ6u/GPbTw3
+         0Xd24BkkombsBsHUn4z8t8s+cZzm4tL46NyHczbU9W2h6lyyMGgNP6yoz/2WlTkS48g4
+         RcYvfVMH26bpAbbh7gPsTFWYYYoJ2o5FNv7Tr67UqNd35m7ueErt6DP34UkxBSERb65f
+         YnFcJaHATik2kWsNiSsSy0Tg9t9SV/iPOakVXAuvpOGzmE3PmHr4u6kR1Lw3dQIkygx1
+         wTGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773178841; x=1773783641;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WxlF6Qln8uIlY9vgFKxKEV9IkQpFN3vdg3zec7HbEUE=;
-        b=U7ybM9ANzFhI5/RnuHLD+ScHc3mf3Ysg7rJyBllbFyo3uAeAPte2ByfQcq1SyDe4CC
-         cm/9SAjuAcWADoFXMJI8ejpMs/aDyxrSTChKd2Mdynxr0zRYM0Q0ez8lldneb4wOViJO
-         ocm1hXhF2CZQbf1xVsmMa1UEisc3RoP1I0xNzzm1GGc29zOljLQn3WYgnVefErFzq8Oa
-         i3ZFPImS8TfNukbak8UMd8bxLfhCFShG3TTYGgzBEXjGPwXWnhPB84ZQ0lCPb2lq64DW
-         ONSckjzseige/i2wmCKFxUZaeJv097dhgkL0L0LpjClPsk/lOlrYSkCojKD3d3/7WLUH
-         o/VA==
-X-Gm-Message-State: AOJu0Yy11t9YNIzk4oNmAB4syTBHq1muPVgjFEZLjyEu+HmUSlTaM8ND
-	KMbRLvJgeyvI8OLVdvmugRr23Mvt2Gt7n8rL/7xqGQMhGw2Xtl8uYNVH0cNsk0aQuA==
-X-Gm-Gg: ATEYQzyIG2OlKiuRd+V1D3znXUlvLaLx0cuocIDMDpatSoF/H1gqxhV9yPMUPXNDV1O
-	5yHL1vJ3vwXKjmD5wjuM0twlqpKhj96wq/FSqwkdUQlJXEfa9n24wmHVAqlvh72boPHOukH0X7h
-	TdpLuAZC229XfF/72YHLulkYghjBGy82mfdjFBjAadJlZQJj8jrknCwFgnCX9NfKU+Sc6vONzZi
-	3pzZ7DIfOUp8SdiCmPev1+EMfIDv0hwPpstXKyAiGpGQeqaTB4+EEHqlNwWDLf4ImjDlPpvNsPS
-	bvT4IwRTWMo4l0FOcvSenFYGFukeSgura7sdsmyU3HdpEbJOyRAcLRAf3LgOwI6FGwYQ9kEE4TK
-	D07aCtmYYgNjrwwkCLAltujkgHeE1EIzbl97G1hJ1oMZh6ip87+EWw2JB58FtyTiaUQtsm70Ner
-	H52OJKDZSPFsTs+dHwFSH4MMAD4VSll9mhBbvxyngR0WivEHrDaJOcBxaK0wyfEhj97bfz
-X-Received: by 2002:a17:903:2a83:b0:2a0:867c:60e2 with SMTP id d9443c01a7336-2aeae7fc4a2mr367905ad.19.1773178840067;
-        Tue, 10 Mar 2026 14:40:40 -0700 (PDT)
-Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-35a02fca40bsm35147a91.10.2026.03.10.14.40.37
+        d=1e100.net; s=20230601; t=1773179243; x=1773784043;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=JdVc8T+6UNGh/VsXP1dXf3PthPQA075yGDRasc1aV+I=;
+        b=qipr8lpUAiBp7dt+Og226E8mQ7kIZt7ZU/aihHC9D0Iip8LycO9+RY/OA4qFmp8qM/
+         3DLaataoZeXB9kvR8rloIcvRSvxj8Ugm8RG4zviKvPGVyDygU69F4kIT3G0pkySHx+Tr
+         akwTrs11RsHpPexYll3KC5amojVg7wFXWlCtJ7TgWJ/tf02qaVKDpeMlDnVt3d6HpI9O
+         Z7bS0cGwRP0hXvx04vlqZAP7oSs6soO6JUej5xAiYGhfmrG0O4IteSGQuFnV1vPmwcw4
+         S9+uqWCLXNJ6rDBIZsfOJp5sck2kdAWueCiU7WZdRmmqGYBSpxnITBSXB7gHwTlEIbZH
+         BliQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUIHpaT5zD3fUHeSGE6A/N6uJwqGnChwz1mPsmC0VJTzFYj4tjgnV/ksJr66t1K2hhIVjx1+w==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxbpmv6X3S+oFv5HlEmwjlf1/WjD1pAXzAcnHGrvFlOLtGGaxzl
+	JKmAufUBd9WcHaeLmOfSnVIfgJ3BHdCWJ2xO99nCuiyqEErQ30DSBKNirWCwtmuzNg==
+X-Gm-Gg: ATEYQzwvqbASx6CnhBWZLAyL8Rg9FqB07K1DevYxWeKd0lr5+VJeC+46fSjXqC5mO0f
+	RxJZMGukGFP4ASfULttE1NLDOprgGpQHQf3ryfwFZj6XWQThQmJfFiTDx1K2dCU4SfewbqJbOlZ
+	WSO41S62wJbkSNmddthWIyxvP+3+mUCaNY7ErHERS1QE1/jEMCFjDymsvwwkaE7/Wr4JjO89s7l
+	O3frmotHRshjlMNDlIMbTgwJIpyOTrCzObu52focBjONJGCYF7slOBOW+TMhAI/vkhEp5rE2Tnd
+	EassHcjF67MsCIhPhoimsyPCMvRzYYvdQEATwriOFgeJU/pmpDjbMsa/wLug1jfSI58OikiiGQj
+	PWi/LuxRvsX7Mvp0WoxJf5Tng8aurjO9RTUiW3yqEvzfuSxqhh2AdJJ3yiYFy9h2NXz0hrsbp/q
+	rKYlCypYZCdPyV83Tp9c60bksYsVt0JMsCBUWFpcSKGU1FMBnzpZnG3OobsfSDmQ==
+X-Received: by 2002:a17:903:2ca:b0:2ae:5d57:c94f with SMTP id d9443c01a7336-2aead3e31a0mr1133255ad.16.1773179242632;
+        Tue, 10 Mar 2026 14:47:22 -0700 (PDT)
+Received: from google.com (168.136.83.34.bc.googleusercontent.com. [34.83.136.168])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-829f703a7casm213874b3a.59.2026.03.10.14.47.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Mar 2026 14:40:39 -0700 (PDT)
-Date: Tue, 10 Mar 2026 21:40:35 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Daniel Mentz <danielmentz@google.com>
-Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Ashish Mhetre <amhetre@nvidia.com>,
-	Sairaj Kodilkar <sarunkod@amd.com>
-Subject: Re: [PATCH v5 07/10] iommu/arm-smmu-v3: Implement pm_runtime &
- system sleep ops
-Message-ID: <abCP0wLkVvUSUeYI@google.com>
-References: <20260126151157.3418145-1-praan@google.com>
- <20260126151157.3418145-8-praan@google.com>
- <CAE2F3rD-rEpizTpc1fo7Y8fXZfZCF2TGUz8H86rUY6RzTWQDQA@mail.gmail.com>
- <abBNwXk2a8v6Zgbw@google.com>
- <CAE2F3rAqyX_CQaN2Wt2=uTYJqYUV3nbrfmog0YyvPr4pgYU5xQ@mail.gmail.com>
+        Tue, 10 Mar 2026 14:47:22 -0700 (PDT)
+Date: Tue, 10 Mar 2026 21:47:18 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Ankit Soni <Ankit.Soni@amd.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>, 
+	Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, 
+	Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>, 
+	Adithya Jayachandran <ajayachandra@nvidia.com>, Parav Pandit <parav@nvidia.com>, 
+	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
+	Pratyush Yadav <pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
+	David Matlack <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	Chris Li <chrisl@kernel.org>, Pranjal Shrivastava <praan@google.com>, 
+	Vipin Sharma <vipinsh@google.com>, YiFei Zhu <zhuyifei@google.com>
+Subject: Re: [PATCH 08/14] iommu: Restore and reattach preserved domains to
+ devices
+Message-ID: <abCRDTIvY9wkRw8_@google.com>
+References: <20260203220948.2176157-1-skhawaja@google.com>
+ <20260203220948.2176157-9-skhawaja@google.com>
+ <gglhu55vvyqdlunnlpas44trhcijcx3mabk75o4zcc7atvuuyd@sna3cmfaapbh>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAE2F3rAqyX_CQaN2Wt2=uTYJqYUV3nbrfmog0YyvPr4pgYU5xQ@mail.gmail.com>
+In-Reply-To: <gglhu55vvyqdlunnlpas44trhcijcx3mabk75o4zcc7atvuuyd@sna3cmfaapbh>
 
-On Tue, Mar 10, 2026 at 02:16:31PM -0700, Daniel Mentz wrote:
-> On Tue, Mar 10, 2026 at 9:58 AM Pranjal Shrivastava <praan@google.com> wrote:
-> >
-> > On Mon, Mar 09, 2026 at 06:45:09PM -0700, Daniel Mentz wrote:
-> > > On Mon, Jan 26, 2026 at 7:12 AM Pranjal Shrivastava <praan@google.com> wrote:
-> > > >
-> > > > +static int __maybe_unused arm_smmu_runtime_suspend(struct device *dev)
-> > > > +{
-> > > > +       struct arm_smmu_device *smmu = dev_get_drvdata(dev);
-> > > > +       int timeout = ARM_SMMU_SUSPEND_TIMEOUT_US;
-> > > > +       u32 enables;
-> > > > +       int ret;
-> > > > +
-> > > > +       /* Try to suspend the device, wait for in-flight submissions */
-> > > > +       do {
-> > > > +               if (atomic_cmpxchg(&smmu->nr_cmdq_users, 1, 0) == 1)
-> > >
-> > >
-> > > I understand we must follow the rule: do not elide any invalidations
-> > > while SMMU is still enabled. Otherwise, the following sequence of
-> > > events might occur:
-> > >  * The driver clears a table descriptor
-> > >  * The TLBI command is skipped
-> > >  * The driver frees the page that backed the translation table
-> > >  * The page is re-allocated for some unrelated purpose
-> > >  * SMMU performs a table walk and then descends into the page that has
-> > > been reallocated, misinterpreting its contents.
-> > >
-> > > Can you disable SMMU before setting nr_cmdq_users to 0?
-> > >
-> >
-> > No, that'd be racy, if I disable the smmu but nr_cmdq_users != 0 an
-> > "owner" thread might believe that the SMMU is still functional and poll
-> > for consumption.
-> 
-> I assume that SMMU still processes commands if SMMU_CR0.SMMUEN is
-> cleared but SMMU_CR0.CMDQEN is set. The arch spec reads: "When
-> translation is not enabled for a Security state, an SMMU: [...] Can
-> process commands after the relevant queue pointers are initialized and
-> SMMU_(*_)CR0.CMDQEN is enabled." Also, the sequence described under
-> "Arm recommends that software initializing the SMMU performs the
-> following steps:" suggests this behavior. The existing driver code
-> also relies on this when it runs CMDQ_OP_CFGI_ALL before setting
-> SMMU_CR0.SMMUEN.
-> 
-> >
-> > I don't think that the SMMU would perform a walk as we first set the
-> > nr_cmdq_users == 0 to stop command submissions and then immediately set
-> > GBPA to abort. IF a command submission raced with this, we wait for the
-> 
-> To ensure we're on the same page: Setting SMMU_GBPA.ABORT doesn't do
-> anything while SMMU_CR0.SMMUEN is set. SMMU_GBPA only plays a role if
-> SMMU_CR0.SMMUEN is cleared.
-> 
+On Tue, Mar 10, 2026 at 05:16:35AM +0000, Ankit Soni wrote:
+>On Tue, Feb 03, 2026 at 10:09:42PM +0000, Samiullah Khawaja wrote:
+>> Restore the preserved domains by restoring the page tables using restore
+>> IOMMU domain op. Reattach the preserved domain to the device during
+>> default domain setup. While attaching, reuse the domain ID that was used
+>> in the previous kernel. The context entry setup is not needed as that is
+>> preserved during liveupdate.
+>>
+>> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+>> ---
+>>  drivers/iommu/intel/iommu.c  | 40 ++++++++++++++++++------------
+>>  drivers/iommu/intel/iommu.h  |  3 ++-
+>>  drivers/iommu/intel/nested.c |  2 +-
+>>  drivers/iommu/iommu.c        | 47 ++++++++++++++++++++++++++++++++++--
+>>  drivers/iommu/liveupdate.c   | 31 ++++++++++++++++++++++++
+>>  include/linux/iommu-lu.h     |  8 ++++++
+>>  6 files changed, 112 insertions(+), 19 deletions(-)
+>>
+>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+>> index 8acb7f8a7627..83faad53f247 100644
+>> --- a/drivers/iommu/intel/iommu.c
+>> +++ b/drivers/iommu/intel/iommu.c
+>> @@ -1029,7 +1029,8 @@ static bool first_level_by_default(struct intel_iommu *iommu)
+>>  	return true;
+>>  }
+>>
+>> -int domain_attach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu)
+>> +int domain_attach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu,
+>> +			int restore_did)
+>>  {
+>>  	struct iommu_domain_info *info, *curr;
+>>  	int num, ret = -ENOSPC;
+>> @@ -1049,8 +1050,11 @@ int domain_attach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu)
+>>  		return 0;
+>>  	}
+>>
+>> -	num = ida_alloc_range(&iommu->domain_ida, IDA_START_DID,
+>> -			      cap_ndoms(iommu->cap) - 1, GFP_KERNEL);
+>> +	if (restore_did >= 0)
+>> +		num = restore_did;
+>> +	else
+>> +		num = ida_alloc_range(&iommu->domain_ida, IDA_START_DID,
+>> +				      cap_ndoms(iommu->cap) - 1, GFP_KERNEL);
+>>  	if (num < 0) {
+>>  		pr_err("%s: No free domain ids\n", iommu->name);
+>>  		goto err_unlock;
+>> @@ -1321,10 +1325,14 @@ static int dmar_domain_attach_device(struct dmar_domain *domain,
+>>  {
+>>  	struct device_domain_info *info = dev_iommu_priv_get(dev);
+>>  	struct intel_iommu *iommu = info->iommu;
+>> +	struct device_ser *device_ser = NULL;
+>>  	unsigned long flags;
+>>  	int ret;
+>>
+>> -	ret = domain_attach_iommu(domain, iommu);
+>> +	device_ser = dev_iommu_restored_state(dev);
+>> +
+>> +	ret = domain_attach_iommu(domain, iommu,
+>> +				  dev_iommu_restore_did(dev, &domain->domain));
+>>  	if (ret)
+>>  		return ret;
+>>
+>> @@ -1337,16 +1345,18 @@ static int dmar_domain_attach_device(struct dmar_domain *domain,
+>>  	if (dev_is_real_dma_subdevice(dev))
+>>  		return 0;
+>>
+>> -	if (!sm_supported(iommu))
+>> -		ret = domain_context_mapping(domain, dev);
+>> -	else if (intel_domain_is_fs_paging(domain))
+>> -		ret = domain_setup_first_level(iommu, domain, dev,
+>> -					       IOMMU_NO_PASID, NULL);
+>> -	else if (intel_domain_is_ss_paging(domain))
+>> -		ret = domain_setup_second_level(iommu, domain, dev,
+>> -						IOMMU_NO_PASID, NULL);
+>> -	else if (WARN_ON(true))
+>> -		ret = -EINVAL;
+>> +	if (!device_ser) {
+>> +		if (!sm_supported(iommu))
+>> +			ret = domain_context_mapping(domain, dev);
+>> +		else if (intel_domain_is_fs_paging(domain))
+>> +			ret = domain_setup_first_level(iommu, domain, dev,
+>> +						       IOMMU_NO_PASID, NULL);
+>> +		else if (intel_domain_is_ss_paging(domain))
+>> +			ret = domain_setup_second_level(iommu, domain, dev,
+>> +							IOMMU_NO_PASID, NULL);
+>> +		else if (WARN_ON(true))
+>> +			ret = -EINVAL;
+>> +	}
+>>
+>>  	if (ret)
+>>  		goto out_block_translation;
+>> @@ -3630,7 +3640,7 @@ domain_add_dev_pasid(struct iommu_domain *domain,
+>>  	if (!dev_pasid)
+>>  		return ERR_PTR(-ENOMEM);
+>>
+>> -	ret = domain_attach_iommu(dmar_domain, iommu);
+>> +	ret = domain_attach_iommu(dmar_domain, iommu, -1);
+>>  	if (ret)
+>>  		goto out_free;
+>>
+>> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+>> index d7bf63aff17d..057bd6035d85 100644
+>> --- a/drivers/iommu/intel/iommu.h
+>> +++ b/drivers/iommu/intel/iommu.h
+>> @@ -1174,7 +1174,8 @@ void __iommu_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
+>>   */
+>>  #define QI_OPT_WAIT_DRAIN		BIT(0)
+>>
+>> -int domain_attach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu);
+>> +int domain_attach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu,
+>> +			int restore_did);
+>>  void domain_detach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu);
+>>  void device_block_translation(struct device *dev);
+>>  int paging_domain_compatible(struct iommu_domain *domain, struct device *dev);
+>> diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
+>> index a3fb8c193ca6..4fed9f5981e5 100644
+>> --- a/drivers/iommu/intel/nested.c
+>> +++ b/drivers/iommu/intel/nested.c
+>> @@ -40,7 +40,7 @@ static int intel_nested_attach_dev(struct iommu_domain *domain,
+>>  		return ret;
+>>  	}
+>>
+>> -	ret = domain_attach_iommu(dmar_domain, iommu);
+>> +	ret = domain_attach_iommu(dmar_domain, iommu, -1);
+>>  	if (ret) {
+>>  		dev_err_ratelimited(dev, "Failed to attach domain to iommu\n");
+>>  		return ret;
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index c0632cb5b570..8103b5372364 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -18,6 +18,7 @@
+>>  #include <linux/errno.h>
+>>  #include <linux/host1x_context_bus.h>
+>>  #include <linux/iommu.h>
+>> +#include <linux/iommu-lu.h>
+>>  #include <linux/iommufd.h>
+>>  #include <linux/idr.h>
+>>  #include <linux/err.h>
+>> @@ -489,6 +490,10 @@ static int iommu_init_device(struct device *dev)
+>>  		goto err_free;
+>>  	}
+>>
+>> +#ifdef CONFIG_IOMMU_LIVEUPDATE
+>> +	dev->iommu->device_ser = iommu_get_device_preserved_data(dev);
+>> +#endif
+>> +
+>>  	iommu_dev = ops->probe_device(dev);
+>>  	if (IS_ERR(iommu_dev)) {
+>>  		ret = PTR_ERR(iommu_dev);
+>> @@ -2149,6 +2154,13 @@ static int __iommu_attach_device(struct iommu_domain *domain,
+>>  	ret = domain->ops->attach_dev(domain, dev, old);
+>>  	if (ret)
+>>  		return ret;
+>> +
+>> +#ifdef CONFIG_IOMMU_LIVEUPDATE
+>> +	/* The associated state can be unset once restored. */
+>> +	if (dev_iommu_restored_state(dev))
+>> +		WRITE_ONCE(dev->iommu->device_ser, NULL);
+>> +#endif
+>> +
+>>  	dev->iommu->attach_deferred = 0;
+>>  	trace_attach_device_to_domain(dev);
+>>  	return 0;
+>> @@ -3061,6 +3073,34 @@ int iommu_fwspec_add_ids(struct device *dev, const u32 *ids, int num_ids)
+>>  }
+>>  EXPORT_SYMBOL_GPL(iommu_fwspec_add_ids);
+>>
+>> +static struct iommu_domain *__iommu_group_maybe_restore_domain(struct iommu_group *group)
+>> +{
+>> +	struct device_ser *device_ser;
+>> +	struct iommu_domain *domain;
+>> +	struct device *dev;
+>> +
+>> +	dev = iommu_group_first_dev(group);
+>> +	if (!dev_is_pci(dev))
+>> +		return NULL;
+>> +
+>> +	device_ser = dev_iommu_restored_state(dev);
+>> +	if (!device_ser)
+>> +		return NULL;
+>> +
+>> +	domain = iommu_restore_domain(dev, device_ser);
+>> +	if (WARN_ON(IS_ERR(domain)))
+>> +		return NULL;
+>> +
+>> +	/*
+>> +	 * The group is owned by the entity (a preserved iommufd) that provided
+>> +	 * this token in the previous kernel. It will be used to reclaim it
+>> +	 * later.
+>> +	 */
+>> +	group->owner = (void *)device_ser->token;
+>> +	group->owner_cnt = 1;
+>> +	return domain;
+>> +}
+>> +
+>>  /**
+>>   * iommu_setup_default_domain - Set the default_domain for the group
+>>   * @group: Group to change
+>> @@ -3075,8 +3115,8 @@ static int iommu_setup_default_domain(struct iommu_group *group,
+>>  				      int target_type)
+>>  {
+>>  	struct iommu_domain *old_dom = group->default_domain;
+>> +	struct iommu_domain *dom, *restored_domain;
+>>  	struct group_device *gdev;
+>> -	struct iommu_domain *dom;
+>>  	bool direct_failed;
+>>  	int req_type;
+>>  	int ret;
+>> @@ -3120,6 +3160,9 @@ static int iommu_setup_default_domain(struct iommu_group *group,
+>>  	/* We must set default_domain early for __iommu_device_set_domain */
+>>  	group->default_domain = dom;
+>>  	if (!group->domain) {
+>> +		restored_domain = __iommu_group_maybe_restore_domain(group);
+>> +		if (!restored_domain)
+>> +			restored_domain = dom;
+>>  		/*
+>>  		 * Drivers are not allowed to fail the first domain attach.
+>>  		 * The only way to recover from this is to fail attaching the
+>> @@ -3127,7 +3170,7 @@ static int iommu_setup_default_domain(struct iommu_group *group,
+>>  		 * in group->default_domain so it is freed after.
+>>  		 */
+>>  		ret = __iommu_group_set_domain_internal(
+>> -			group, dom, IOMMU_SET_DOMAIN_MUST_SUCCEED);
+>> +			group, restored_domain, IOMMU_SET_DOMAIN_MUST_SUCCEED);
+>>  		if (WARN_ON(ret))
+>>  			goto out_free_old;
+>>  	} else {
+>> diff --git a/drivers/iommu/liveupdate.c b/drivers/iommu/liveupdate.c
+>> index 83eb609b3fd7..6b211436ad25 100644
+>> --- a/drivers/iommu/liveupdate.c
+>> +++ b/drivers/iommu/liveupdate.c
+>> @@ -501,3 +501,34 @@ void iommu_unpreserve_device(struct iommu_domain *domain, struct device *dev)
+>>
+>>  	iommu_unpreserve_locked(iommu->iommu_dev);
+>>  }
+>> +
+>> +struct iommu_domain *iommu_restore_domain(struct device *dev, struct device_ser *ser)
+>> +{
+>> +	struct iommu_domain_ser *domain_ser;
+>> +	struct iommu_lu_flb_obj *flb_obj;
+>> +	struct iommu_domain *domain;
+>> +	int ret;
+>> +
+>> +	domain_ser = __va(ser->domain_iommu_ser.domain_phys);
+>> +
+>> +	ret = liveupdate_flb_get_incoming(&iommu_flb, (void **)&flb_obj);
+>> +	if (ret)
+>> +		return ERR_PTR(ret);
+>> +
+>> +	guard(mutex)(&flb_obj->lock);
+>> +	if (domain_ser->restored_domain)
+>> +		return domain_ser->restored_domain;
+>> +
+>> +	domain_ser->obj.incoming =  true;
+>> +	domain = iommu_paging_domain_alloc(dev);
+>> +	if (IS_ERR(domain))
+>> +		return domain;
+>> +
+>> +	ret = domain->ops->restore(domain, domain_ser);
+>> +	if (ret)
+>
+>'domain' will leak here.
 
-I think you're missing that we *DO* actually set SMMUEN = 0 *with* the
-GBPA abort, please look at this part of the patch:
+Agreed. It should be cleaned here if restore fails. I will fix this in
+the next revision.
+>
+>> +		return ERR_PTR(ret);
+>> +
+>> +	domain->preserved_state = domain_ser;
+>> +	domain_ser->restored_domain = domain;
+>> +	return domain;
+>> +}
+>> diff --git a/include/linux/iommu-lu.h b/include/linux/iommu-lu.h
+>> index 48c07514a776..4879abaf83d3 100644
+>> --- a/include/linux/iommu-lu.h
+>> +++ b/include/linux/iommu-lu.h
+>> @@ -65,6 +65,8 @@ static inline int dev_iommu_restore_did(struct device *dev, struct iommu_domain
+>>  	return -1;
+>>  }
+>>
+>> +struct iommu_domain *iommu_restore_domain(struct device *dev,
+>> +					  struct device_ser *ser);
+>>  int iommu_for_each_preserved_device(iommu_preserved_device_iter_fn fn,
+>>  				    void *arg);
+>>  struct device_ser *iommu_get_device_preserved_data(struct device *dev);
+>> @@ -95,6 +97,12 @@ static inline void *iommu_domain_restored_state(struct iommu_domain *domain)
+>>  	return NULL;
+>>  }
+>>
+>> +static inline struct iommu_domain *iommu_restore_domain(struct device *dev,
+>> +							struct device_ser *ser)
+>> +{
+>> +	return NULL;
+>> +}
+>> +
+>>  static inline int iommu_for_each_preserved_device(iommu_preserved_device_iter_fn fn, void *arg)
+>>  {
+>>  	return -EOPNOTSUPP;
+>> --
+>> 2.53.0.rc2.204.g2597b5adb4-goog
+>>
 
-+	/* Abort all transactions before disable to avoid spurious bypass */
-+	arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
-+
-+	/* Disable the SMMU via CR0.EN and all queues except CMDQ */
-+	enables = CR0_CMDQEN;
-+	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0, ARM_SMMU_CR0ACK);
-+	if (ret) {
-+		dev_err(smmu->dev, "Timed-out while disabling smmu\n");
-+		atomic_set(&smmu->nr_cmdq_users, 1);
-+		return ret;
-+	}
-
-We disable everything except for the CMDQ. Since, everything is disabled
-at this point, any new commands can safely be elided as the SMMU won't
-access any config structures as mentioned by the spec.
-
-> The moment you set nr_cmdq_users == 0, you potentially start eliding
-> TBLIs which means that the TLB entries are at risk of becoming stale.
-
-Not really, the SMMU isn't accessing anything since SMMUEN=0 and GBPA is
-set by this point.
-
-> How about the following sequenc of events:
-> 
-> * suspend handler sets nr_cmdq_users == 0
-> * arm_smmu_cmdq_issue_cmdlist() stops updating the producer index
-> which means that TLBIs are not executed
-> * (sequence described above)
-> 
-> Now that I think more about it: I'm concerned that if we set
-> nr_cmdq_users == 0, the hw prod index will no longer be updated and
-> the arm_smmu_drain_queues() function will wait for ever, because the
-> cons index is not catching up.
-> 
-
-If we go ahead with the suggestion to completely elide a command
-submission, if (nr_users_cmdq == 0) return 0; (as discussed in the other
-thread), then we don't update llq.cons / prod. Then this shouldn't be an
-issue right?
-
-The problem I see in swapping the sequence is::
-
-+	/* Abort all transactions before disable to avoid spurious bypass */
-+	arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
-+
-+	/* Disable the SMMU via CR0.EN and all queues except CMDQ */
-+	enables = CR0_CMDQEN; <-- Tear down everything except CMDQ
-+	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0, ARM_SMMU_CR0ACK);
-+	if (ret) {
-+		dev_err(smmu->dev, "Timed-out while disabling smmu\n");
-+		atomic_set(&smmu->nr_cmdq_users, 1);
-+		return ret;
-+	}
-+	/* Try to suspend the device, wait for in-flight submissions */
-+	do {
-+		if (atomic_cmpxchg(&smmu->nr_cmdq_users, 1, 0) == 1)
-+			break;
-+
-+		udelay(1);
-+	} while (--timeout);
-+
-+	if (!timeout) {
-+		dev_warn(smmu->dev, "SMMU in use, aborting suspend\n"); 
-+		return -EAGAIN; <--- suspend failed, but we already tore down the smmu
-+	}
-+
-+
-+	/*
-+	 * At this point the SMMU is completely disabled and won't access
-+	 * any translation/config structures, even speculative accesses
-+	 * aren't performed as per the IHI0070 spec (section 6.3.9.6).
-+	 */
-+
-+	/* Wait for the CMDQs to be drained to flush any pending commands */
-+	ret = arm_smmu_drain_queues(smmu);
-+	if (ret)
-+		dev_err(smmu->dev, "Draining queues timed-out..forcing suspend\n");
-+
-+	/* Disable everything */
-+	arm_smmu_device_disable(smmu); <---- Note that this still just disables the CMDQ
-+	dev_dbg(dev, "Suspended smmu\n");
-+
-+	return 0;
-+}
-+
-
-In the current implementation we first see if we can suspend only then
-tear down the SMMU (Except for the CMDQ),
-
-I think this would NOT be a problem if we just bail out of issue_cmdlist
-early as discussed on the other thread if (nr_cmdq_users == 0) return 0;
-that way, we don't end up in a "fake command" consumption situation
-which could lead to the cons never catching up while draining the queue.
-
-Thanks
-Praan
+Sami
