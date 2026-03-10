@@ -1,89 +1,102 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D893928504D;
-	Tue, 10 Mar 2026 13:34:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E47DC3A3833
+	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 13:36:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773149642; cv=none; b=Gk9ySCD5/rAR5Gy3RzZ4VZBJ5YdQkLjvYY3CnURVP6azsDNuNLXl67L7AwfaW+kFIVmAg69qVzOEqgj1SgEicJMOH+W8Zq7YP/hG3GghJRlD42iVd8OxXSxWs9zv9sYp0gHdLV4jeOoeLIJgn3eLZThMvzq+Cl9pzD19ix1SKk0=
+	t=1773149775; cv=none; b=tQcaix1fR9NHN5ObVBlaPXAk+5GjNAO+8yA5HPGf4kmPWLUMKpAp0ZGYnwGSjFkuTyY1UEbpP2XCl8Xa1UJq/AHOK/Np8W8pDxt0mCO0SF/jZcFvQvPU2T1APwwrPD0Ghv495I5aD3JUdCObjxy9pkSSHUPDw5nDpR72R6uxfnA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773149642; c=relaxed/simple;
-	bh=1YnmztTcNk3Ff+PgeiUurE/Sk941AjWRBcXze9NtmZ0=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
-	 MIME-Version:Content-Type; b=CTaqG6Qbuu27oteze+zxysGBNFSZ/btmMioft52nvKI7u8kDplNmtazy1wXjbYOnW6IAfyvScHf9HGoQcVC8rXKgOTP1RaAYz/MfYZtaBiOdpXgFIo/Pnx9zFBqS3PnIPl2BT7kNJblGVTah+KTbnSiLxbJ+eXQdz8NNZ0MSxtU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gbboZny9; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gbboZny9"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1338AC19423;
-	Tue, 10 Mar 2026 13:33:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773149641;
-	bh=1YnmztTcNk3Ff+PgeiUurE/Sk941AjWRBcXze9NtmZ0=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-	b=gbboZny9vDD72Pka+n0iXs0baByjKbSZoFC4cppvyGvi6DURLPzP7/PURy6H4x0SE
-	 hZcTDQvWtiIR96dUWEkTSxfg7YW1/icauTRQtPPhn3DjatNJnXXgx9ePr2EFS/J1xE
-	 m2MZHJen8/8vAxVjX4Rh0mvAwOneBCTEICPjlkx0jZOCBN/iedVV5+9QBqwIzFk1vO
-	 tVOWY5YqoR5nPBwka2P8esnXtwU65aqvGrom7R8xo/zbp7HcZsAU1Ct1Z6jDsVgPm9
-	 q6q+cosYNG9tKwHqU9XoTXUFgoVy3XzQYbAwRSYwrOvATdzUAyZiFt5O4W3gYPYlF6
-	 gVdqFVkFvSybA==
-From: Lee Jones <lee@kernel.org>
-To: amd-gfx@lists.freedesktop.org, apparmor@lists.ubuntu.com, 
- bpf@vger.kernel.org, ceph-devel@vger.kernel.org, cocci@inria.fr, 
- dm-devel@lists.linux.dev, dri-devel@lists.freedesktop.org, 
- gfs2@lists.linux.dev, intel-gfx@lists.freedesktop.org, 
- intel-wired-lan@lists.osuosl.org, iommu@lists.linux.dev, 
- kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
- linux-btrfs@vger.kernel.org, linux-cifs@vger.kernel.org, 
- linux-clk@vger.kernel.org, linux-erofs@lists.ozlabs.org, 
- linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
- linux-gpio@vger.kernel.org, linux-hyperv@vger.kernel.org, 
- linux-input@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-leds@vger.kernel.org, linux-media@vger.kernel.org, 
- linux-mips@vger.kernel.org, linux-mm@kvack.org, 
- linux-modules@vger.kernel.org, linux-mtd@lists.infradead.org, 
- linux-nfs@vger.kernel.org, linux-omap@vger.kernel.org, 
- linux-phy@lists.infradead.org, linux-pm@vger.kernel.org, 
- linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org, 
- linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org, 
- linux-security-module@vger.kernel.org, linux-sh@vger.kernel.org, 
- linux-sound@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, 
- linux-trace-kernel@vger.kernel.org, linux-usb@vger.kernel.org, 
- linux-wireless@vger.kernel.org, netdev@vger.kernel.org, 
- ntfs3@lists.linux.dev, samba-technical@lists.samba.org, 
- sched-ext@lists.linux.dev, target-devel@vger.kernel.org, 
- tipc-discussion@lists.sourceforge.net, v9fs@lists.linux.dev, 
- Philipp Hahn <phahn-oss@avm.de>
-Cc: Lee Jones <lee@kernel.org>, Pavel Machek <pavel@kernel.org>
-In-Reply-To: <20260310-b4-is_err_or_null-v1-51-bd63b656022d@avm.de>
-References: <20260310-b4-is_err_or_null-v1-51-bd63b656022d@avm.de>
-Subject: Re: (subset) [PATCH 51/61] leds: Prefer IS_ERR_OR_NULL over manual
- NULL check
-Message-Id: <177314963081.2226692.3105447886678957300.b4-ty@kernel.org>
-Date: Tue, 10 Mar 2026 13:33:50 +0000
+	s=arc-20240116; t=1773149775; c=relaxed/simple;
+	bh=60eeanxdowZD7zyO7QeXvIRXUSiRgiL/8FvNbm6gdbE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hfZzKVss+Ua/TWMqvbuuLtjlicQ68cnSc6j4G2U2tTmvAbUqG8m6yLMsKg3LhUvefVW2aiX+5B6s3sNZ0z2j1kSwTEVZt1y02O6jL0I86tmeX3uBwfaZ8b6XfEx/2X9EKKw7AUWqGE4P1lOuXdH0UORraOWuvmR0vlJINedK8Po=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 38603169C;
+	Tue, 10 Mar 2026 06:36:06 -0700 (PDT)
+Received: from arm.com (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 394CF3F73B;
+	Tue, 10 Mar 2026 06:36:11 -0700 (PDT)
+Date: Tue, 10 Mar 2026 13:36:08 +0000
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	robin.murphy@arm.com, m.szyprowski@samsung.com, will@kernel.org,
+	maz@kernel.org, suzuki.poulose@arm.com
+Subject: Re: [RFC PATCH 1/2] dma-mapping: Avoid double decrypting with
+ DMA_RESTRICTED_POOL
+Message-ID: <abAeSML-7ziLeIvv@arm.com>
+References: <20260305170335.963568-1-smostafa@google.com>
+ <20260305170335.963568-2-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.15-dev-52d38
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260305170335.963568-2-smostafa@google.com>
 
-On Tue, 10 Mar 2026 12:49:17 +0100, Philipp Hahn wrote:
-> Prefer using IS_ERR_OR_NULL() over using IS_ERR() and a manual NULL
-> check.
+On Thu, Mar 05, 2026 at 05:03:34PM +0000, Mostafa Saleh wrote:
+> In case a device have a restricted DMA pool, it will be decrypted.
+> However, in the path of dma_direct_alloc() memory can be allocated
+> from this pool using, __dma_direct_alloc_pages() =>
+> dma_direct_alloc_swiotlb()
 > 
-> Change generated with coccinelle.
+> After that from the same function, it will attempt to decrypt it
+> using dma_set_decrypted() if force_dma_unencrypted().
 > 
+> Which results in the memory being decrypted twice.
 > 
+> It's not clear how the does realm world/hypervisors deal with that,
+> for example:
+> - Clear a bit in the page table and call realm IPA_STATE_SET
+> - TDX: Seems to issue a hypercall also.
+> - pKVM: Which doesn't implement force_dma_unencrypted() at the moment,
+>   uses a share hypercall which is definitely not Idempotent.
+> 
+> This patch will only encrypt/decrypt memory that are not allocated
+> form the restricted dma pools.
+> 
+> Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> ---
+>  kernel/dma/direct.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index 8f43a930716d..27d804f0473f 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -79,7 +79,7 @@ bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
+>  
+>  static int dma_set_decrypted(struct device *dev, void *vaddr, size_t size)
+>  {
+> -	if (!force_dma_unencrypted(dev))
+> +	if (!force_dma_unencrypted(dev) || is_swiotlb_for_alloc(dev))
+>  		return 0;
+>  	return set_memory_decrypted((unsigned long)vaddr, PFN_UP(size));
+>  }
+> @@ -88,7 +88,7 @@ static int dma_set_encrypted(struct device *dev, void *vaddr, size_t size)
+>  {
+>  	int ret;
+>  
+> -	if (!force_dma_unencrypted(dev))
+> +	if (!force_dma_unencrypted(dev) || is_swiotlb_for_alloc(dev))
+>  		return 0;
+>  	ret = set_memory_encrypted((unsigned long)vaddr, PFN_UP(size));
+>  	if (ret)
 
-Applied, thanks!
+I think that's functionally correct for rmem buffers. Normally I'd have
+moved the is_swiotlb_for_alloc() condition in the caller but even
+dma_direct_alloc() doesn't know where the buffer came from, it's hidden
+in __dma_direct_alloc_pages().
 
-[51/61] leds: Prefer IS_ERR_OR_NULL over manual NULL check
-        commit: e68f95a51d1a8c1594b536c4d495cbea38d47561
+However, it's unclear to me whether we can get encrypted pages when
+is_swiotlb_for_alloc() == false, remap == true and
+force_dma_unencrypted() == true in dma_direct_alloc().
+dma_set_decrypted() is only called on the !remap path.
 
---
-Lee Jones [李琼斯]
-
+-- 
+Catalin
