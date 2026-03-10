@@ -1,151 +1,55 @@
-Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B203376BE1;
-	Tue, 10 Mar 2026 13:47:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.189.157.229
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6427A38A719
+	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 13:55:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773150444; cv=none; b=mH+S2OnBWMGU4+RNslP9Jh64Zqnfn6MxtT1JvICMT7YRXVp3mfjcyqu8CV01nJcJsSXO0by0wvvUY/1OTjPf8kgTPB+PabA1UW230JoPi3NoC3rbbgWllrGp0Jtu9yFJJ5yGJ6cp8RKVGg1rLGRwr8LM5hIpqlhG9c6sQ0F4TJk=
+	t=1773150958; cv=none; b=fUSfP+KQ8jJLEVl31ng1K2oXfzJLdYl8kkmKAJ9KKGttOEYzqaD61/62tgMLy7mDHJJWPe5w41Ll/Co0JSIM6pjCUVjyoTETFybMkE9ZvVOVHYHKLeAbNQyQkNhDKUHY3Fx0pWLyBVxqN3oBWH7m0G9xx6M/aJyGYJ7D+ju9VHc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773150444; c=relaxed/simple;
-	bh=JkhE8XRZB+0Xn8XaQBSlw7psFcPor8BTZgZawoRBPkU=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pJ+XTcpvWOAdf3ER7KROpAAvO8ZD64v8jLBM2zAmi+71S4z7XaG8mrensYMR9GzDDpH5Ga9N5RRMGfU8nu5s43noOlxxQZK0AGn7piXf1IIL/+irGvI2UYi+0kGb+M5uwzXu8qkiVP6hNV4RBDHvdLAZoLTSBX3qyBE1BWPQ+t4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=crudebyte.com; spf=pass smtp.mailfrom=crudebyte.com; dkim=pass (4096-bit key) header.d=crudebyte.com header.i=@crudebyte.com header.b=dTpIUmFy; arc=none smtp.client-ip=5.189.157.229
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=crudebyte.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=crudebyte.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key) header.d=crudebyte.com header.i=@crudebyte.com header.b="dTpIUmFy"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-	MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-	Content-ID:Content-Description;
-	bh=aVv/PSZT5NGeZjfHxwg8OpWgNHlsgZDJ/5CMzeiUbdo=; b=dTpIUmFyfV+bP6Hy0ueZpN32tu
-	piiOrm2xYxIB724JO1nPYEvLrwNppM7ldi2VsLNiB9a22ZPzaNJQ0YaGHJwVuraOF2yk5SpAHZold
-	s8t7GSMCpZMXoj2MN+HCYF9oJcPgVF+TLl3oulmGF4t7YrhkwJ3IfsTmzXldUh96w/myd3pDSVX1g
-	/e8bzPXWMBYBNoEloTPI5IYSewDyrYj60Js0etFfclp4hEgkn7HaHPBIdN5mmqp8OC3Z4JyMZY1In
-	us3k02cy2EDC8Yr2DD9TZj2Bfv2JCzi8o1CBU/q/X+4deOd5/tymAnt0Bem3HGOfb0TZNQXc+sRV/
-	1upKIM10UX7QbQ98BeJxn1cHAUt80a13aLlrns2kgX3r4ZD43IvQ3qOgYizweNeHFZvB+bpwBSNFD
-	hlDW1qIdKmIN+wC7qSL6cU7m+YgH+eIF1AeR8pLLvTFBNqmI6qti9D+O96RBcbYAwE/olpfjlTGn5
-	mdLSL9FFfI7mx4Sepl5WAdeD1XVerb2KTcAMA8AXYimzng7DssEnPDbX6u+t3yAcQjc1BrWIujZyx
-	Gao2D20IgKGUx784nxNUpYJ2ZiCkXzoDKyugnEIdTC+VrOwC2OEJanP1Uq3/BrGj0qOrmxYFeI51c
-	48zjYWWU3v40e6itkF189TkI8Acs6/RLaheNlL7MM=;
-From: Christian Schoenebeck <linux_oss@crudebyte.com>
-To: amd-gfx@lists.freedesktop.org, apparmor@lists.ubuntu.com,
- bpf@vger.kernel.org, ceph-devel@vger.kernel.org, cocci@inria.fr,
- dm-devel@lists.linux.dev, dri-devel@lists.freedesktop.org,
- gfs2@lists.linux.dev, intel-gfx@lists.freedesktop.org,
- intel-wired-lan@lists.osuosl.org, iommu@lists.linux.dev, kvm@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-block@vger.kernel.org,
- linux-bluetooth@vger.kernel.org, linux-btrfs@vger.kernel.org,
- linux-cifs@vger.kernel.org, linux-clk@vger.kernel.org,
- linux-erofs@lists.ozlabs.org, linux-ext4@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-hyperv@vger.kernel.org, linux-input@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org,
- linux-media@vger.kernel.org, linux-mips@vger.kernel.org, linux-mm@kvack.org,
- linux-modules@vger.kernel.org, linux-mtd@lists.infradead.org,
- linux-nfs@vger.kernel.org, linux-omap@vger.kernel.org,
- linux-phy@lists.infradead.org, linux-pm@vger.kernel.org,
- linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
- linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org,
- linux-security-module@vger.kernel.org, linux-sh@vger.kernel.org,
- linux-sound@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
- linux-trace-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
- linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
- ntfs3@lists.linux.dev, samba-technical@lists.samba.org,
- sched-ext@lists.linux.dev, target-devel@vger.kernel.org,
- tipc-discussion@lists.sourceforge.net, v9fs@lists.linux.dev,
- Philipp Hahn <phahn-oss@avm.de>, Philipp Hahn <phahn-oss@avm.de>
-Cc: Eric Van Hensbergen <ericvh@kernel.org>,
- Latchesar Ionkov <lucho@ionkov.net>,
- Dominique Martinet <asmadeus@codewreck.org>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Simon Horman <horms@kernel.org>
-Subject:
- Re: [PATCH 24/61] net/9p: Prefer IS_ERR_OR_NULL over manual NULL check
-Date: Tue, 10 Mar 2026 14:47:03 +0100
-Message-ID: <1948861.tdWV9SEqCh@weasel>
-In-Reply-To: <20260310-b4-is_err_or_null-v1-24-bd63b656022d@avm.de>
-References:
- <20260310-b4-is_err_or_null-v1-0-bd63b656022d@avm.de>
- <20260310-b4-is_err_or_null-v1-24-bd63b656022d@avm.de>
+	s=arc-20240116; t=1773150958; c=relaxed/simple;
+	bh=e7NYteQ5BI9gllCVncwSRKMX6uvb3dsirYmr21SRthw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Vy9Xxm0DiB6QdoCpUiZehwYSLbcEUWNidiq6AhaJpSC5XwpYDwIkVPGMCuYQlLKzMImTISEohCFAyVhfw3PsPchoGWMNRnW39AM/oV5h1Z+S078io+gi51JldzKEXcdX/m5skUrpDQKdAUyZG+DrRyV44YJYESWtGi/uCb1V9Ag=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 97DE9169C;
+	Tue, 10 Mar 2026 06:55:50 -0700 (PDT)
+Received: from arm.com (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3D98E3F73B;
+	Tue, 10 Mar 2026 06:55:55 -0700 (PDT)
+Date: Tue, 10 Mar 2026 13:55:52 +0000
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	robin.murphy@arm.com, m.szyprowski@samsung.com, will@kernel.org,
+	maz@kernel.org, suzuki.poulose@arm.com,
+	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+Subject: Re: [RFC PATCH 1/2] dma-mapping: Avoid double decrypting with
+ DMA_RESTRICTED_POOL
+Message-ID: <abAi6NeKb4m_RbwV@arm.com>
+References: <20260305170335.963568-1-smostafa@google.com>
+ <20260305170335.963568-2-smostafa@google.com>
+ <abAeSML-7ziLeIvv@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <abAeSML-7ziLeIvv@arm.com>
 
-On Tuesday, 10 March 2026 12:48:50 CET Philipp Hahn wrote:
-> Prefer using IS_ERR_OR_NULL() over using IS_ERR() and a manual NULL
-> check.
-> 
-> Change generated with coccinelle.
-> 
-> To: Eric Van Hensbergen <ericvh@kernel.org>
-> To: Latchesar Ionkov <lucho@ionkov.net>
-> To: Dominique Martinet <asmadeus@codewreck.org>
-> To: Christian Schoenebeck <linux_oss@crudebyte.com>
-> To: "David S. Miller" <davem@davemloft.net>
-> To: Eric Dumazet <edumazet@google.com>
-> To: Jakub Kicinski <kuba@kernel.org>
-> To: Paolo Abeni <pabeni@redhat.com>
-> To: Simon Horman <horms@kernel.org>
-> Cc: v9fs@lists.linux.dev
-> Cc: netdev@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Philipp Hahn <phahn-oss@avm.de>
-> ---
->  include/net/9p/client.h | 2 +-
->  net/9p/trans_rdma.c     | 8 ++++----
->  2 files changed, 5 insertions(+), 5 deletions(-)
+On Tue, Mar 10, 2026 at 01:36:08PM +0000, Catalin Marinas wrote:
+> However, it's unclear to me whether we can get encrypted pages when
+> is_swiotlb_for_alloc() == false, remap == true and
+> force_dma_unencrypted() == true in dma_direct_alloc().
+> dma_set_decrypted() is only called on the !remap path.
 
-Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
- 
-> diff --git a/include/net/9p/client.h b/include/net/9p/client.h
-> index
-> 838a94218b593f3fb19e6827c472753380193461..4bde6bd716f323c819745e64c7aac0dea
-> 7beb72f 100644 --- a/include/net/9p/client.h
-> +++ b/include/net/9p/client.h
-> @@ -364,7 +364,7 @@ static inline struct p9_fid *p9_fid_get(struct p9_fid
-> *fid)
-> 
->  static inline int p9_fid_put(struct p9_fid *fid)
->  {
-> -	if (!fid || IS_ERR(fid))
-> +	if (IS_ERR_OR_NULL(fid))
->  		return 0;
-> 
->  	if (tracepoint_enabled(9p_fid_ref))
-> diff --git a/net/9p/trans_rdma.c b/net/9p/trans_rdma.c
-> index
-> aa5bd74d333f3b5e6fd1e4344d26bc0201ff7f7f..60461344b536bcb6e94112aace75a88b6
-> a99ad86 100644 --- a/net/9p/trans_rdma.c
-> +++ b/net/9p/trans_rdma.c
-> @@ -252,16 +252,16 @@ static void rdma_destroy_trans(struct p9_trans_rdma
-> *rdma) if (!rdma)
->  		return;
-> 
-> -	if (rdma->qp && !IS_ERR(rdma->qp))
-> +	if (!IS_ERR_OR_NULL(rdma->qp))
->  		ib_destroy_qp(rdma->qp);
-> 
-> -	if (rdma->pd && !IS_ERR(rdma->pd))
-> +	if (!IS_ERR_OR_NULL(rdma->pd))
->  		ib_dealloc_pd(rdma->pd);
-> 
-> -	if (rdma->cq && !IS_ERR(rdma->cq))
-> +	if (!IS_ERR_OR_NULL(rdma->cq))
->  		ib_free_cq(rdma->cq);
-> 
-> -	if (rdma->cm_id && !IS_ERR(rdma->cm_id))
-> +	if (!IS_ERR_OR_NULL(rdma->cm_id))
->  		rdma_destroy_id(rdma->cm_id);
-> 
->  	kfree(rdma);
+Ah, I can see Anneesh trying to address this here:
 
+https://lore.kernel.org/r/yq5abjjl4o0j.fsf@kernel.org
 
+-- 
+Catalin
