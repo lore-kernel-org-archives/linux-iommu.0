@@ -1,102 +1,117 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E47DC3A3833
-	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 13:36:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96FA029B78D;
+	Tue, 10 Mar 2026 13:45:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.189.157.229
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773149775; cv=none; b=tQcaix1fR9NHN5ObVBlaPXAk+5GjNAO+8yA5HPGf4kmPWLUMKpAp0ZGYnwGSjFkuTyY1UEbpP2XCl8Xa1UJq/AHOK/Np8W8pDxt0mCO0SF/jZcFvQvPU2T1APwwrPD0Ghv495I5aD3JUdCObjxy9pkSSHUPDw5nDpR72R6uxfnA=
+	t=1773150338; cv=none; b=p/AMbRR71gTFzmuPbm7wiofwKTPWuJcjhXkdESF7JaJPil8FGCdzDGw/jt/QfYWuwf/Cvr8haCwtox/tB3waz0sGv+MMT71h0Q43eiPxVFgmNBvYZlUqGpfJoL4Z+Kaz8wrLQ4EcTdGpQIjuXZOoW/2YY1JNnoSBBICiDtG53FI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773149775; c=relaxed/simple;
-	bh=60eeanxdowZD7zyO7QeXvIRXUSiRgiL/8FvNbm6gdbE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hfZzKVss+Ua/TWMqvbuuLtjlicQ68cnSc6j4G2U2tTmvAbUqG8m6yLMsKg3LhUvefVW2aiX+5B6s3sNZ0z2j1kSwTEVZt1y02O6jL0I86tmeX3uBwfaZ8b6XfEx/2X9EKKw7AUWqGE4P1lOuXdH0UORraOWuvmR0vlJINedK8Po=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 38603169C;
-	Tue, 10 Mar 2026 06:36:06 -0700 (PDT)
-Received: from arm.com (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 394CF3F73B;
-	Tue, 10 Mar 2026 06:36:11 -0700 (PDT)
-Date: Tue, 10 Mar 2026 13:36:08 +0000
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	robin.murphy@arm.com, m.szyprowski@samsung.com, will@kernel.org,
-	maz@kernel.org, suzuki.poulose@arm.com
-Subject: Re: [RFC PATCH 1/2] dma-mapping: Avoid double decrypting with
- DMA_RESTRICTED_POOL
-Message-ID: <abAeSML-7ziLeIvv@arm.com>
-References: <20260305170335.963568-1-smostafa@google.com>
- <20260305170335.963568-2-smostafa@google.com>
+	s=arc-20240116; t=1773150338; c=relaxed/simple;
+	bh=BpET1FSzK/QYA+eM7BKpT/a7409mmPZXJHCSp+mv7MQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=PLeoOcFKUsvR/7RIO06n9v9Iopf36W9nIyhBrNvzyzi0zHZo+zmYfVeWvDKVfYr5AIX3xmbyJ5vI1sWa5XgrjM1tpH4flr3Qj0/dNyyq5iBD3bAQ19MCwIs/nGj7alGlaZakOqYDflDEPKQv52GjU57Dcn4VI2hiJSdiZhNwrCs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=crudebyte.com; spf=pass smtp.mailfrom=crudebyte.com; dkim=pass (4096-bit key) header.d=crudebyte.com header.i=@crudebyte.com header.b=BSv+5VTS; arc=none smtp.client-ip=5.189.157.229
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=crudebyte.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=crudebyte.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (4096-bit key) header.d=crudebyte.com header.i=@crudebyte.com header.b="BSv+5VTS"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+	MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+	Content-ID:Content-Description;
+	bh=tqNoaL94Dj4pObM+6pGSr4RMsIJmELh6Cj7p3cxJGxE=; b=BSv+5VTSyPyrhpKWnMZVCjZEvG
+	yrk6LWxlGwnUUZjquKMol+ljVUIUp9jBraubgLqBi4cKz4hniKCf9rIQTsThme1FexxEN+zxKvsgC
+	uvMYbDhkYi+shFX+PLCD/IMwmjSpYMDJbZGsateoQvss1ByMiB7n5CokueqpdePTp7697ajozqLcL
+	QNNNvSzTIj5kMR2wUJSupi5THJtiu7VhPmFy8ePRrdnRpYFSOebiyO3IlTbeTGO/MmRM5PEIBBHLD
+	zejwvm6ItsldfqTIXTc6O0Z/soDk0el6lSZ+MrXBoszSWB5pdQE71J71rNLjrXAAIRkB6hWfEOV6d
+	5s2EICAGfy5rFvZnPzPqZQFNMJmMF1OtxV9pY8V9U1rZXYRb0+cWjl6X1xLcFCZOiZcoHLob301cc
+	kRokX7oWqU/2ExVyAy+qxf6eKje0uvqaOqv9hMGZ5ryaSKPC2aKAIJfnAVSBvJS/v1i4KIjPZc3rm
+	OWRlN9QVYisM4o3VWUWhQE9QLOSHJzH7XsIe7kcAxjAHPZYtil03PpuGESYai0z/ycOzdMPXNnK8s
+	RUYQ5R4xdnnK/uIBRJ5tLN+fwlf+9zGkqtXzZ7Db2ibQTV2JC6OBFoQ9ds8aqQ/KGsNN9Qx1u7AAn
+	wqTFHtO0j/nTwkXDvMBIt3or3MQXIgQCujiNGxQ00=;
+From: Christian Schoenebeck <linux_oss@crudebyte.com>
+To: amd-gfx@lists.freedesktop.org, apparmor@lists.ubuntu.com,
+ bpf@vger.kernel.org, ceph-devel@vger.kernel.org, cocci@inria.fr,
+ dm-devel@lists.linux.dev, dri-devel@lists.freedesktop.org,
+ gfs2@lists.linux.dev, intel-gfx@lists.freedesktop.org,
+ intel-wired-lan@lists.osuosl.org, iommu@lists.linux.dev, kvm@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-block@vger.kernel.org,
+ linux-bluetooth@vger.kernel.org, linux-btrfs@vger.kernel.org,
+ linux-cifs@vger.kernel.org, linux-clk@vger.kernel.org,
+ linux-erofs@lists.ozlabs.org, linux-ext4@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-hyperv@vger.kernel.org, linux-input@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org,
+ linux-media@vger.kernel.org, linux-mips@vger.kernel.org, linux-mm@kvack.org,
+ linux-modules@vger.kernel.org, linux-mtd@lists.infradead.org,
+ linux-nfs@vger.kernel.org, linux-omap@vger.kernel.org,
+ linux-phy@lists.infradead.org, linux-pm@vger.kernel.org,
+ linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
+ linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org,
+ linux-security-module@vger.kernel.org, linux-sh@vger.kernel.org,
+ linux-sound@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+ linux-trace-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+ linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+ ntfs3@lists.linux.dev, samba-technical@lists.samba.org,
+ sched-ext@lists.linux.dev, target-devel@vger.kernel.org,
+ tipc-discussion@lists.sourceforge.net, v9fs@lists.linux.dev,
+ Philipp Hahn <phahn-oss@avm.de>, Philipp Hahn <phahn-oss@avm.de>
+Cc: Eric Van Hensbergen <ericvh@kernel.org>,
+ Latchesar Ionkov <lucho@ionkov.net>,
+ Dominique Martinet <asmadeus@codewreck.org>
+Subject: Re: [PATCH 06/61] 9p: Prefer IS_ERR_OR_NULL over manual NULL check
+Date: Tue, 10 Mar 2026 14:45:07 +0100
+Message-ID: <2401874.ElGaqSPkdT@weasel>
+In-Reply-To: <20260310-b4-is_err_or_null-v1-6-bd63b656022d@avm.de>
+References:
+ <20260310-b4-is_err_or_null-v1-0-bd63b656022d@avm.de>
+ <20260310-b4-is_err_or_null-v1-6-bd63b656022d@avm.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260305170335.963568-2-smostafa@google.com>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="utf-8"
 
-On Thu, Mar 05, 2026 at 05:03:34PM +0000, Mostafa Saleh wrote:
-> In case a device have a restricted DMA pool, it will be decrypted.
-> However, in the path of dma_direct_alloc() memory can be allocated
-> from this pool using, __dma_direct_alloc_pages() =>
-> dma_direct_alloc_swiotlb()
+On Tuesday, 10 March 2026 12:48:32 CET Philipp Hahn wrote:
+> Prefer using IS_ERR_OR_NULL() over using IS_ERR() and a manual NULL
+> check.
 > 
-> After that from the same function, it will attempt to decrypt it
-> using dma_set_decrypted() if force_dma_unencrypted().
+> Change generated with coccinelle.
 > 
-> Which results in the memory being decrypted twice.
-> 
-> It's not clear how the does realm world/hypervisors deal with that,
-> for example:
-> - Clear a bit in the page table and call realm IPA_STATE_SET
-> - TDX: Seems to issue a hypercall also.
-> - pKVM: Which doesn't implement force_dma_unencrypted() at the moment,
->   uses a share hypercall which is definitely not Idempotent.
-> 
-> This patch will only encrypt/decrypt memory that are not allocated
-> form the restricted dma pools.
-> 
-> Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> To: Eric Van Hensbergen <ericvh@kernel.org>
+> To: Latchesar Ionkov <lucho@ionkov.net>
+> To: Dominique Martinet <asmadeus@codewreck.org>
+> To: Christian Schoenebeck <linux_oss@crudebyte.com>
+> Cc: v9fs@lists.linux.dev
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Philipp Hahn <phahn-oss@avm.de>
 > ---
->  kernel/dma/direct.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  fs/9p/fid.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+"fs/9p" in the subject on this one, please, not just "9p".
+
+Except of that:
+
+Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
+
+> diff --git a/fs/9p/fid.h b/fs/9p/fid.h
+> index
+> 0d6138bee2a3d1ab565ab2d210c0a3f3bf97e4e3..3bb7ef4380e972a2d9ab67eb4aab6cc5b
+> fe2eea7 100644 --- a/fs/9p/fid.h
+> +++ b/fs/9p/fid.h
+> @@ -27,7 +27,7 @@ static inline struct p9_fid *v9fs_fid_clone(struct dentry
+> *dentry) struct p9_fid *fid, *nfid;
 > 
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 8f43a930716d..27d804f0473f 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -79,7 +79,7 @@ bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
->  
->  static int dma_set_decrypted(struct device *dev, void *vaddr, size_t size)
->  {
-> -	if (!force_dma_unencrypted(dev))
-> +	if (!force_dma_unencrypted(dev) || is_swiotlb_for_alloc(dev))
->  		return 0;
->  	return set_memory_decrypted((unsigned long)vaddr, PFN_UP(size));
->  }
-> @@ -88,7 +88,7 @@ static int dma_set_encrypted(struct device *dev, void *vaddr, size_t size)
->  {
->  	int ret;
->  
-> -	if (!force_dma_unencrypted(dev))
-> +	if (!force_dma_unencrypted(dev) || is_swiotlb_for_alloc(dev))
->  		return 0;
->  	ret = set_memory_encrypted((unsigned long)vaddr, PFN_UP(size));
->  	if (ret)
+>  	fid = v9fs_fid_lookup(dentry);
+> -	if (!fid || IS_ERR(fid))
+> +	if (IS_ERR_OR_NULL(fid))
+>  		return fid;
+> 
+>  	nfid = clone_fid(fid);
 
-I think that's functionally correct for rmem buffers. Normally I'd have
-moved the is_swiotlb_for_alloc() condition in the caller but even
-dma_direct_alloc() doesn't know where the buffer came from, it's hidden
-in __dma_direct_alloc_pages().
 
-However, it's unclear to me whether we can get encrypted pages when
-is_swiotlb_for_alloc() == false, remap == true and
-force_dma_unencrypted() == true in dma_direct_alloc().
-dma_set_decrypted() is only called on the !remap path.
-
--- 
-Catalin
