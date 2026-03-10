@@ -1,61 +1,66 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F0D936495B
-	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 07:58:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 136E83EF0B7
+	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 08:21:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773129494; cv=none; b=QzxpnuHPiEetmBsGZ5J+e0honTtcZQABOc+nIbhn1daX5ELGMNSfS+OZgPa3z4qq5FKbYdELYBvjZvy2ovgEFIezC1u26DV4L94QasV9c+4EYQDsQE2mchvQPdr+0oWDTm8gtHxY2kP/ps6xBrPsoQdX1S9Sll88Du9kf1u2FN4=
+	t=1773130913; cv=none; b=lZFgrTUqURlngL+Bht+yvuZfwREfVq9z0raF7NTWMEzheSnWbQZM87xwwW6AvlcSZRiV4sFFEM6v4UI9fqDR66dfgG1QyH7Fk//MbaLti7gtbGHHkdIoATaqiKecllcikfWKbDLqhSQj4VQgrZjeahtdvtUKxSw+0brL5TgXUhU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773129494; c=relaxed/simple;
-	bh=9rrgTplL9Jyn3YMjwg2ZeOydsNyzxReM6UUAuxh5reM=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Q5tk60Wr4NXCr0ezLa+0d6gK/VgG4Z7JN5rlvx2cyGVnXxZtMQr8ZlGPcWLcPy8XOi46CNJvQr87ik7iW10o11H8cJzNofH35x8kwIwIfRNwoo0ixJataS66/RKxmTTBAxF2Fo8FVNE9WGEjcW5k2Ph6kqTzYDuHKnQrb8Io84o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hEGZLiNh; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1773130913; c=relaxed/simple;
+	bh=zedB3odIixukotnGC0iJ3l+lpRY6hxoMAXLNjfxsuzo=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=JshLTwEBUxbcH+Lt6+O72ZBf24hyiEyV/rXTa1tRfG4pqAgagsa2ezIwO5mgA/cr5r1OiJ/KzddkWNDjiPaCwmRm1DiK/Zrz3UQcYHmxANdYc2huukzh49F2ZRurb/Hv0mTm0kCarNnUue3LTI6t735sd/K38BjxAmw9QTCxeqo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=kDDzB6sj; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hEGZLiNh"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773129493; x=1804665493;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=9rrgTplL9Jyn3YMjwg2ZeOydsNyzxReM6UUAuxh5reM=;
-  b=hEGZLiNhoOwnmyXWfQHDqAXAGHlFz3gkI9z5DPGT3W04x8dDZQDOibUD
-   P2j/aKhei39+OYr1i+9pamISfj+ZIzrjXiWgY6+6cQHeB4m9V786INGbx
-   08y/9GY4ilW9zcfQipWaO74n26kMAORG/rJ01ishoqkJ6q2OhlAPzOnVl
-   ii0Bh1ZYGlUYWSpxawxBBDnOFsm5f+WwDF1siRWosa6jSk5T6CgV91IvS
-   +VdZ2rNN1qvATKtAecwBDhEZi74t/47K1Ab/YefCiiU68WRYSD/2zLQxp
-   Wn+wD/UcuN9fj4CxBKwq4ja3lwCB3LP41bCfh/H63V0NWR1JabIVwopCw
-   g==;
-X-CSE-ConnectionGUID: SsVhmAeiTJGVQ8RNQSBULA==
-X-CSE-MsgGUID: HUBMu3/HQxq1M9eRliB+WA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11724"; a="78045003"
-X-IronPort-AV: E=Sophos;i="6.23,111,1770624000"; 
-   d="scan'208";a="78045003"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2026 00:58:09 -0700
-X-CSE-ConnectionGUID: Y3MHkOYCRJOTQu+Z55BGAA==
-X-CSE-MsgGUID: RgOeO4QgR6S9fb3Et5pDCA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,111,1770624000"; 
-   d="scan'208";a="220066680"
-Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by orviesa008.jf.intel.com with ESMTP; 10 Mar 2026 00:58:07 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	stable@vger.kernel.org
-Subject: [PATCH 1/1] iommu/vt-d: Only handle IOPF for SVA when PRI is supported
-Date: Tue, 10 Mar 2026 15:55:20 +0800
-Message-ID: <20260310075520.295104-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="kDDzB6sj"
+Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 629H1oka1991199;
+	Tue, 10 Mar 2026 08:21:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=pp1; bh=hOTYgg6mAnrJZtsmRXaTdKZxYr1YPaOyUamHM4muK
+	Fo=; b=kDDzB6sjONzwzpZVsE0J+NAIwKKcr8shBV6iUYZIkmGNVrS3DRsVF9Esy
+	E5JqkBbVI24OHniSOcv8V1j0BGSuoG7hcI7cisn3cWyzn74Z5A4p8iTKM+lX29Vq
+	XcbXYnNfrAOL2T/izVL8AvAcS0gfHrTe8ItOcYcHCWv2K/i6Jkl0VEPzNHmYFEg/
+	je37fxEiYlNKAYcoviuMAFz8b5y8CJNdDFzK7qpoDrOQ67uNkOUdj9Qn7CtjhRSX
+	plKZfQuGpq+wA77A5f76GObUdbC+pJ4W1jr0ycJgNXyh8HK00BX/GX3U8fo1JxlW
+	c6mEth0hGNESxNmB/ti3FTC1FHV1g==
+Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4crcywa09k-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 10 Mar 2026 08:21:47 +0000 (GMT)
+Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma23.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 62A5cFMd029850;
+	Tue, 10 Mar 2026 08:21:46 GMT
+Received: from smtprelay07.fra02v.mail.ibm.com ([9.218.2.229])
+	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 4csp6umw53-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 10 Mar 2026 08:21:46 +0000
+Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
+	by smtprelay07.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 62A8LfaZ44433780
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 10 Mar 2026 08:21:42 GMT
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id D6FC62004D;
+	Tue, 10 Mar 2026 08:21:41 +0000 (GMT)
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 4906520043;
+	Tue, 10 Mar 2026 08:21:38 +0000 (GMT)
+Received: from li-a84c74cc-2b13-11b2-a85c-acdd023f0674.ibm.com.com (unknown [9.124.213.198])
+	by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Tue, 10 Mar 2026 08:21:37 +0000 (GMT)
+From: Nilay Shroff <nilay@linux.ibm.com>
+To: iommu@lists.linux.dev, linuxppc-dev@lists.ozlabs.org
+Cc: nicolinc@nvidia.com, joerg.roedel@amd.com, jgg@nvidia.com,
+        baolu.lu@linux.intel.com, kevin.tian@intel.com, maddy@linux.ibm.com,
+        sbhat@linux.ibm.com, Nilay Shroff <nilay@linux.ibm.com>,
+        stable@vger.kernel.org
+Subject: [PATCH] powerpc/iommu: fix lockdep warning during PCI enumeration
+Date: Tue, 10 Mar 2026 13:51:24 +0530
+Message-ID: <20260310082129.3630996-1-nilay@linux.ibm.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -63,57 +68,109 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzEwMDA2NyBTYWx0ZWRfX9zIN52HLKd+M
+ FDuF9gD3N8l9EulZyXFz7g59ci4YfCL5D06JSIKpCG9Sdm6aQzNnh2GoPjD3fQL2IH0g3BtFd3q
+ Y0iwYUAqwVQns+ZUWaVY7DvPCPgQYrhZkB+s5ChGIaiIgTqdzwGxnM8Ig1vQN2zjB8FglMXhYXB
+ iWt8QS6XmpnvGOpL/rlZgiGX9PLmzlrnoyXsFQyP6ln8jiHOtcL/oBiRwl+4u2jb0+enplbZ+VN
+ s0iqL6W28cqy3MH4Tle4VWfdxGKG9yaQImbFM3FQgXGrW1umHzLiA/AdSNoVJL7JZK19kACJ2q5
+ Mgays45JNmPYNepC8qYMeyLB/4/vCkSylVzE6uqlgbw1K/SUW9n92WshPEFD1Q5MJFpEfdRj9qf
+ U0718joUHo7gmgBXHCQzIuxzDtPpSIXFbS8wMuLfeSSyxH1VY/Kfuu0S+3QaN6kcxPJoMT/jCRs
+ fSI63QfOu62WLpRZxSw==
+X-Authority-Analysis: v=2.4 cv=QaVrf8bv c=1 sm=1 tr=0 ts=69afd49b cx=c_pps
+ a=3Bg1Hr4SwmMryq2xdFQyZA==:117 a=3Bg1Hr4SwmMryq2xdFQyZA==:17
+ a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22 a=RnoormkPH1_aCDwRdu11:22
+ a=U7nrCbtTmkRpXpFmAIza:22 a=VwQbUJbxAAAA:8 a=VnNF1IyMAAAA:8
+ a=ekpCZll6AK0GQq_nEskA:9
+X-Proofpoint-GUID: 2Elq3pM91g6BGRAPrlWp0DnOX4jzOR_A
+X-Proofpoint-ORIG-GUID: 2Elq3pM91g6BGRAPrlWp0DnOX4jzOR_A
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-03-10_01,2026-03-09_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 spamscore=0 impostorscore=0 clxscore=1015 adultscore=0
+ bulkscore=0 lowpriorityscore=0 priorityscore=1501 suspectscore=0 phishscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2603100067
 
-In intel_svm_set_dev_pasid(), the driver unconditionally manages the IOPF
-handling during a domain transition. However, commit a86fb7717320
-("iommu/vt-d: Allow SVA with device-specific IOPF") introduced support for
-SVA on devices that handle page faults internally without utilizing the
-PCI PRI. On such devices, the IOMMU-side IOPF infrastructure is not
-required. Calling iopf_for_domain_replace() on these devices is incorrect
-and can lead to unexpected failures during PASID attachment or unwinding.
+Commit a75b2be249d6 ("iommu: Add iommu_driver_get_domain_for_dev()
+helper") introduced iommu_driver_get_domain_for_dev() for driver
+code paths that hold iommu_group->mutex while attaching a device
+to an IOMMU domain.
 
-Add a check for info->pri_supported to ensure that the IOPF queue logic
-is only invoked for devices that actually rely on the IOMMU's PRI-based
-fault handling.
+The same commit also added a lockdep assertion in
+iommu_get_domain_for_dev() to ensure that callers do not hold
+iommu_group->mutex when invoking it.
 
-Fixes: 17fce9d2336d ("iommu/vt-d: Put iopf enablement in domain attach path")
+On powerpc platforms, when PCI device ownership is switched from
+BLOCKED to the PLATFORM domain, the attach callback
+spapr_tce_platform_iommu_attach_dev() still calls
+iommu_get_domain_for_dev(). This happens while iommu_group->mutex
+is held during domain switching, which triggers the lockdep warning
+below during PCI enumeration:
+
+WARNING: drivers/iommu/iommu.c:2252 at iommu_get_domain_for_dev+0x38/0x80, CPU#2: swapper/0/1
+Modules linked in:
+CPU: 2 UID: 0 PID: 1 Comm: swapper/0 Not tainted 7.0.0-rc2+ #35 PREEMPT
+Hardware name: IBM,9105-22A Power11 (architected) 0x820200 0xf000007 of:IBM,FW1120.00 (RB1120_115) hv:phyp pSeries
+NIP:  c000000000c244c4 LR: c00000000005b5a4 CTR: c00000000005b578
+REGS: c00000000a7bf280 TRAP: 0700   Not tainted  (7.0.0-rc2+)
+MSR:  8000000002029033 <SF,VEC,EE,ME,IR,DR,RI,LE>  CR: 22004422  XER: 0000000a
+CFAR: c000000000c24508 IRQMASK: 0
+GPR00: c00000000005b5a4 c00000000a7bf520 c000000001dc8100 0000000000000001
+GPR04: c00000000f972f10 0000000000000000 0000000000000000 0000000000000001
+GPR08: 0000001ffbc60000 0000000000000001 0000000000000000 0000000000000000
+GPR12: c00000000005b578 c000001fffffe480 c000000000011618 0000000000000000
+GPR16: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+GPR20: ffffffffffffefff 0000000000000000 c000000002d30eb0 0000000000000001
+GPR24: c0000000017881f8 0000000000000000 0000000000000001 c00000000f972e00
+GPR28: c00000000bbba0d0 0000000000000000 c00000000bbba0d0 c00000000f972e00
+NIP [c000000000c244c4] iommu_get_domain_for_dev+0x38/0x80
+LR [c00000000005b5a4] spapr_tce_platform_iommu_attach_dev+0x2c/0x98
+Call Trace:
+ iommu_get_domain_for_dev+0x68/0x80 (unreliable)
+ spapr_tce_platform_iommu_attach_dev+0x2c/0x98
+ __iommu_attach_device+0x44/0x220
+ __iommu_device_set_domain+0xf4/0x194
+ __iommu_group_set_domain_internal+0xec/0x228
+ iommu_setup_default_domain+0x5f4/0x6a4
+ __iommu_probe_device+0x674/0x724
+ iommu_probe_device+0x50/0xb4
+ iommu_add_device+0x48/0x198
+ pci_dma_dev_setup_pSeriesLP+0x198/0x4f0
+ pcibios_bus_add_device+0x80/0x464
+ pci_bus_add_device+0x40/0x100
+ pci_bus_add_devices+0x54/0xb0
+ pcibios_init+0xd8/0x140
+ do_one_initcall+0x8c/0x598
+ kernel_init_freeable+0x3ec/0x850
+ kernel_init+0x34/0x270
+ ret_from_kernel_user_thread+0x14/0x1c
+
+Fix this by using iommu_driver_get_domain_for_dev() instead of
+iommu_get_domain_for_dev() in spapr_tce_platform_iommu_attach_dev(),
+which is the appropriate helper for callers holding the group mutex.
+
 Cc: stable@vger.kernel.org
-Suggested-by: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Fixes: a75b2be249d6 ("iommu: Add iommu_driver_get_domain_for_dev() helper")
+Signed-off-by: Nilay Shroff <nilay@linux.ibm.com>
 ---
- drivers/iommu/intel/svm.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ arch/powerpc/kernel/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index fea10acd4f02..57cd1db7207a 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -164,9 +164,12 @@ static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
- 	if (IS_ERR(dev_pasid))
- 		return PTR_ERR(dev_pasid);
+diff --git a/arch/powerpc/kernel/iommu.c b/arch/powerpc/kernel/iommu.c
+index 0ce71310b7d9..d122e8447831 100644
+--- a/arch/powerpc/kernel/iommu.c
++++ b/arch/powerpc/kernel/iommu.c
+@@ -1159,7 +1159,7 @@ spapr_tce_platform_iommu_attach_dev(struct iommu_domain *platform_domain,
+ 				    struct device *dev,
+ 				    struct iommu_domain *old)
+ {
+-	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
++	struct iommu_domain *domain = iommu_driver_get_domain_for_dev(dev);
+ 	struct iommu_table_group *table_group;
+ 	struct iommu_group *grp;
  
--	ret = iopf_for_domain_replace(domain, old, dev);
--	if (ret)
--		goto out_remove_dev_pasid;
-+	/* SVA with non-IOMMU/PRI IOPF handling is allowed. */
-+	if (info->pri_supported) {
-+		ret = iopf_for_domain_replace(domain, old, dev);
-+		if (ret)
-+			goto out_remove_dev_pasid;
-+	}
- 
- 	/* Setup the pasid table: */
- 	sflags = cpu_feature_enabled(X86_FEATURE_LA57) ? PASID_FLAG_FL5LP : 0;
-@@ -181,7 +184,8 @@ static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
- 
- 	return 0;
- out_unwind_iopf:
--	iopf_for_domain_replace(old, domain, dev);
-+	if (info->pri_supported)
-+		iopf_for_domain_replace(old, domain, dev);
- out_remove_dev_pasid:
- 	domain_remove_dev_pasid(domain, dev, pasid);
- 	return ret;
 -- 
-2.43.0
+2.53.0
 
