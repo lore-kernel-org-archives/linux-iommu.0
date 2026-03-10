@@ -1,124 +1,119 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E6E4322B74
-	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 06:46:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F0D936495B
+	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 07:58:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773125219; cv=none; b=AOz/CGxt/m6rFPm/ZbFCRQU7SY4p+GWd/3PRJC09/Qm6qIjh/YjpMylj8luP/4DNsuqKuqUVNdUItrlk86cYxguc4oFATD0+9eEm1kV0REc5zIEG6XTa4R1cOVKNxYGP7eprIP49tJbA67ngIO6q6//myyoeZwbOBwDe0RYh6UI=
+	t=1773129494; cv=none; b=QzxpnuHPiEetmBsGZ5J+e0honTtcZQABOc+nIbhn1daX5ELGMNSfS+OZgPa3z4qq5FKbYdELYBvjZvy2ovgEFIezC1u26DV4L94QasV9c+4EYQDsQE2mchvQPdr+0oWDTm8gtHxY2kP/ps6xBrPsoQdX1S9Sll88Du9kf1u2FN4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773125219; c=relaxed/simple;
-	bh=HsqWOmPMti3rmre9716MYfiT9jCTYR3fveMxOR5Ked8=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=diFk964coqPxQJLhHQ9imzw6vSd/ms8ahB7APE7lB+YDVJf3Gy0ZGCyu3xGGO60MdHfQ8dpxg6s4KecrOpblEh0PUlVsRwPiKSh2NzC9uCj/VedU+2osGHF515wBuWnye23gGFZAeRvJTNofCYx9DUx305FxtZKKy+2wpVWDzFo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bMaIzRDp; arc=none smtp.client-ip=192.198.163.9
+	s=arc-20240116; t=1773129494; c=relaxed/simple;
+	bh=9rrgTplL9Jyn3YMjwg2ZeOydsNyzxReM6UUAuxh5reM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Q5tk60Wr4NXCr0ezLa+0d6gK/VgG4Z7JN5rlvx2cyGVnXxZtMQr8ZlGPcWLcPy8XOi46CNJvQr87ik7iW10o11H8cJzNofH35x8kwIwIfRNwoo0ixJataS66/RKxmTTBAxF2Fo8FVNE9WGEjcW5k2Ph6kqTzYDuHKnQrb8Io84o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hEGZLiNh; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bMaIzRDp"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hEGZLiNh"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773125218; x=1804661218;
-  h=message-id:date:mime-version:subject:from:to:cc:
-   references:in-reply-to:content-transfer-encoding;
-  bh=HsqWOmPMti3rmre9716MYfiT9jCTYR3fveMxOR5Ked8=;
-  b=bMaIzRDpLSzLz36ZuAq09ABXwMjKi4QFdoHs7TLJyUqFNLIjxefxUe+O
-   QWKDn026rcO2SZ34fpPpfw70BZARBpQoCPW3p5kCWNldEIGY/eY35IJ5N
-   +0ZY8zTFtLHgmPGupAnQIu+Qjl2jL7VNOaN7aHospxatFUIu3VUNep4kR
-   6B3stOdekHKMZcJX/UDloVJORJdCDBuaaR4L3AoXKkNi09Q2LUAcxlGEr
-   wa8NYm+SDPT2lZmkPD/5mnSzzK+nDQf9iR1OwPS7UrgSF/OURrO+oGxOO
-   6UDRgSLOJD+IcEmMoH/M0KItTQ3XDteVvdcIrofi4tktocrhwBhBf1/NG
-   A==;
-X-CSE-ConnectionGUID: tAS20LJ8QsSjq4VsibVFDw==
-X-CSE-MsgGUID: UqzMb4sBTxeVVu3DI1K8xQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11724"; a="84873527"
+  t=1773129493; x=1804665493;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=9rrgTplL9Jyn3YMjwg2ZeOydsNyzxReM6UUAuxh5reM=;
+  b=hEGZLiNhoOwnmyXWfQHDqAXAGHlFz3gkI9z5DPGT3W04x8dDZQDOibUD
+   P2j/aKhei39+OYr1i+9pamISfj+ZIzrjXiWgY6+6cQHeB4m9V786INGbx
+   08y/9GY4ilW9zcfQipWaO74n26kMAORG/rJ01ishoqkJ6q2OhlAPzOnVl
+   ii0Bh1ZYGlUYWSpxawxBBDnOFsm5f+WwDF1siRWosa6jSk5T6CgV91IvS
+   +VdZ2rNN1qvATKtAecwBDhEZi74t/47K1Ab/YefCiiU68WRYSD/2zLQxp
+   Wn+wD/UcuN9fj4CxBKwq4ja3lwCB3LP41bCfh/H63V0NWR1JabIVwopCw
+   g==;
+X-CSE-ConnectionGUID: SsVhmAeiTJGVQ8RNQSBULA==
+X-CSE-MsgGUID: HUBMu3/HQxq1M9eRliB+WA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11724"; a="78045003"
 X-IronPort-AV: E=Sophos;i="6.23,111,1770624000"; 
-   d="scan'208";a="84873527"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2026 23:46:57 -0700
-X-CSE-ConnectionGUID: rJ2EUHNYTJSyVuSiUny+0Q==
-X-CSE-MsgGUID: eeQ8VV8hScO09HVjrMNMEw==
+   d="scan'208";a="78045003"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2026 00:58:09 -0700
+X-CSE-ConnectionGUID: Y3MHkOYCRJOTQu+Z55BGAA==
+X-CSE-MsgGUID: RgOeO4QgR6S9fb3Et5pDCA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,111,1770624000"; 
-   d="scan'208";a="250470971"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2026 23:46:55 -0700
-Message-ID: <2993ad99-d118-4719-81e9-862182648301@linux.intel.com>
-Date: Tue, 10 Mar 2026 14:46:07 +0800
+   d="scan'208";a="220066680"
+Received: from allen-box.sh.intel.com ([10.239.159.52])
+  by orviesa008.jf.intel.com with ESMTP; 10 Mar 2026 00:58:07 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	stable@vger.kernel.org
+Subject: [PATCH 1/1] iommu/vt-d: Only handle IOPF for SVA when PRI is supported
+Date: Tue, 10 Mar 2026 15:55:20 +0800
+Message-ID: <20260310075520.295104-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3] iommu/vt-d: fix intel iommu iotlb sync hardlockup and
- retry
-From: Baolu Lu <baolu.lu@linux.intel.com>
-To: "guanghuifeng@linux.alibaba.com" <guanghuifeng@linux.alibaba.com>,
- dwmw2@infradead.org, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
- kevin.tian@intel.com, skhawaja@google.com
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20260306101516.3885775-1-guanghuifeng@linux.alibaba.com>
- <f6af2887-a524-4bb0-8ea8-acdca50e66fe@linux.alibaba.com>
- <889933b2-a707-4632-a96a-f7e1ccc4c8b9@linux.intel.com>
-Content-Language: en-US
-In-Reply-To: <889933b2-a707-4632-a96a-f7e1ccc4c8b9@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 3/10/26 14:02, Baolu Lu wrote:
-> On 3/9/26 17:05, guanghuifeng@linux.alibaba.com wrote:
->> There are some concerns:
->>
->> 1. During the invalid request execution process, the IOMMU first 
->> fetches requests
->>
->>      from the invalid queue to the internal cache.
->>
->>
->> 2. If an ITE timeout occurs during the execution of a request fetched 
->> to the cache in step 1,
->>
->>      the IOMMU driver clears the ITE status, allowing IOMMU to resume 
->> processing requests from the invalid queue.
->>
->>
->> 3. For requests already fetched in step 1 that experience an ITE 
->> timeout, after the IOMMU driver clears the ITE,
->>
->>      will IOMMU directly discard these timed-out/cached requests? or 
->> will it continue to execute these cached requests again?
->>
->>
->> Currently, the IOMMU driver implementation first clears ite to resume 
->> IOMMU execution
->>
->> before setting desc_status to QI_ABORT.
->>
->> If IOMMU will re-execute requests from the cache, then the IOMMU 
->> driver needs to be modified.
-> 
-> You are right.
-> 
-> The driver logic assumes that once an ITE error is cleared, the IOMMU
-> will not resume its previous execution but will instead fetch new
-> descriptors from the queue. This behavior was introduced by commit
-> 6ba6c3a4cacfd ("VT-d: add device IOTLB invalidation support"), which has
-> been part of the driver since 2009.
+In intel_svm_set_dev_pasid(), the driver unconditionally manages the IOPF
+handling during a domain transition. However, commit a86fb7717320
+("iommu/vt-d: Allow SVA with device-specific IOPF") introduced support for
+SVA on devices that handle page faults internally without utilizing the
+PCI PRI. On such devices, the IOMMU-side IOPF infrastructure is not
+required. Calling iopf_for_domain_replace() on these devices is incorrect
+and can lead to unexpected failures during PASID attachment or unwinding.
 
-By the way, section 6.5.2.11 of the spec states:
+Add a check for info->pri_supported to ensure that the IOPF queue logic
+is only invoked for devices that actually rely on the IOMMU's PRI-based
+fault handling.
 
-"
-... At the time ITE field is Set, hardware aborts any inv_wait_dsc
-commands pending in hardware and does not increment the Invalidation
-Queue Head register. When software clears the ITE field in the Fault
-Status Register, hardware fetches descriptor pointed by the Invalidation
-Queue Head register. ...
-"
+Fixes: 17fce9d2336d ("iommu/vt-d: Put iopf enablement in domain attach path")
+Cc: stable@vger.kernel.org
+Suggested-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/svm.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-This implies that the hardware must abort the previous execution and
-restart by fetching new requests.
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index fea10acd4f02..57cd1db7207a 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -164,9 +164,12 @@ static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
+ 	if (IS_ERR(dev_pasid))
+ 		return PTR_ERR(dev_pasid);
+ 
+-	ret = iopf_for_domain_replace(domain, old, dev);
+-	if (ret)
+-		goto out_remove_dev_pasid;
++	/* SVA with non-IOMMU/PRI IOPF handling is allowed. */
++	if (info->pri_supported) {
++		ret = iopf_for_domain_replace(domain, old, dev);
++		if (ret)
++			goto out_remove_dev_pasid;
++	}
+ 
+ 	/* Setup the pasid table: */
+ 	sflags = cpu_feature_enabled(X86_FEATURE_LA57) ? PASID_FLAG_FL5LP : 0;
+@@ -181,7 +184,8 @@ static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
+ 
+ 	return 0;
+ out_unwind_iopf:
+-	iopf_for_domain_replace(old, domain, dev);
++	if (info->pri_supported)
++		iopf_for_domain_replace(old, domain, dev);
+ out_remove_dev_pasid:
+ 	domain_remove_dev_pasid(domain, dev, pasid);
+ 	return ret;
+-- 
+2.43.0
 
-Thanks,
-baolu
