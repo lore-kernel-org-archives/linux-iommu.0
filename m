@@ -1,38 +1,38 @@
-Received: from mail.avm.de (mail.avm.de [212.42.244.94])
+Received: from mail.avm.de (mail.avm.de [212.42.244.119])
 	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0C1947A0B0;
-	Tue, 10 Mar 2026 11:55:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.42.244.94
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9502847B43A;
+	Tue, 10 Mar 2026 11:55:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.42.244.119
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773143753; cv=none; b=DHeEQp+hH8FcQRdMle9r9RHnVuNCja2orv4TpkpRez30Y4jZAdnFf9NIkuiMY32Tg1+a1cBXx29WzfKT0mFPB9DZEE6nxi5l94hqrRgIhZf7sNGzqQ5r8wENq8ewnDwBSEh+vBYYOSX/o4tLkeyTwuwa/eKIKeLqyEIBDjWV5bM=
+	t=1773143753; cv=none; b=F/44Xk5A7fsHXFegFcXpUBw2XMysoACKHQ2w975mxLh/kEZ1VHYNxt9Ow3gpwqRfKGyxnow6vFvrR04ZYqwFZ/FUmAX/IYe/xsdsn4bRXObNMLUkkSmJbP/EQrYVSsCp1XJnkwEYLL/q2uIvDsxuVT/CDkbtT4+OLBJRAj5A6uw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1773143753; c=relaxed/simple;
-	bh=P8RHvB1pDU6Ba6KZR0cIN2NAbDWAknWQIRz8JMX8gns=;
+	bh=aOTa0J99wrUiCJDKciZIBaRSFy8AAIBeipk1P/Ry6Do=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Fhfof9dhzls7zpuFuX5R3NEBj3rb/AO/u6KtMr1KHItWsmwh3rlnJKupXMRsHCd03o3ce+9lXI4Ti/FrtDUkScWXfvOCyiie9j1/1Ns8YoV8srY6opDVoagXS5WEX9cukO6HseAiXZfLQ7WKxEhKMm217VvrxqUxyyyKAQ/qbmQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=avm.de; spf=pass smtp.mailfrom=avm.de; dkim=pass (1024-bit key) header.d=avm.de header.i=@avm.de header.b=Pw5J/ZKa; arc=none smtp.client-ip=212.42.244.94
+	 In-Reply-To:To:Cc; b=mROPffrlSGndXo5kdzX2aRA3zFeTbkWDOD4c9QIV7QMn5quv8n4bBs9tiZ0szJwEkLOvyO8MpupP6D0JYaC6GJg2vJRYCe67j1UIKfKEHREMi3mFbL2QRRZR8BeoUKPLeSXKhr8aIjWFuFROqz3O5kLyAJQOTGmCQ+JArxpGssk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=avm.de; spf=pass smtp.mailfrom=avm.de; dkim=pass (1024-bit key) header.d=avm.de header.i=@avm.de header.b=OzCQWGEP; arc=none smtp.client-ip=212.42.244.119
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=avm.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=avm.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=avm.de header.i=@avm.de header.b="Pw5J/ZKa"
+	dkim=pass (1024-bit key) header.d=avm.de header.i=@avm.de header.b="OzCQWGEP"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=avm.de; s=mail;
-	t=1773143728; bh=P8RHvB1pDU6Ba6KZR0cIN2NAbDWAknWQIRz8JMX8gns=;
+	t=1773143729; bh=aOTa0J99wrUiCJDKciZIBaRSFy8AAIBeipk1P/Ry6Do=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=Pw5J/ZKa7qdOD/KHliFHGAPgoeYPtxmoMsaCQF/FKai+LG5vkmyJowXsEzkD3cPot
-	 34kvrGSUxg1JnjFKHY6NsLgrOVug3M9Be4rVveawRMrk6MR1C1BR6jP8hIlA4X3hU4
-	 jr1s0kl9i2R1ifgZ0ZoS8j1AZYiWtKMhO7fCyfSs=
+	b=OzCQWGEP3xIWg4aft9Gi61CqVxzVTLKLAimjDrWeQqUc3hUkPv1N3tKeXtgO8+TTP
+	 XhmqP+sFetcOut+NsJt0vEBnYbeIs2Hbr8gQtf+aklxbXgaq0RnUqAMfY7Dvjp000Y
+	 AkX7mNRKwyV5huTmoXbZ4xAO9eyZ3soV+HNDBiK0=
 Received: from [2001:bf0:244:244::71] (helo=mail.avm.de)
 	by mail.avm.de with ESMTP (eXpurgate 4.55.2)
 	(envelope-from <phahn-oss@avm.de>)
-	id 69b006af-e21d-7f0000032729-7f000001bab8-1
-	for <multiple-recipients>; Tue, 10 Mar 2026 12:55:28 +0100
+	id 69b006b1-2367-7f0000032729-7f000001ca34-1
+	for <multiple-recipients>; Tue, 10 Mar 2026 12:55:29 +0100
 Received: from mail-auth.avm.de (dovecot-mx-01.avm.de [IPv6:2001:bf0:244:244::71])
 	by mail.avm.de (Postfix) with ESMTPS;
-	Tue, 10 Mar 2026 12:55:27 +0100 (CET)
+	Tue, 10 Mar 2026 12:55:29 +0100 (CET)
 From: Philipp Hahn <phahn-oss@avm.de>
-Date: Tue, 10 Mar 2026 12:49:14 +0100
-Subject: [PATCH 48/61] mtd: Prefer IS_ERR_OR_NULL over manual NULL check
+Date: Tue, 10 Mar 2026 12:49:23 +0100
+Subject: [PATCH 57/61] reset: Prefer IS_ERR_OR_NULL over manual NULL check
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260310-b4-is_err_or_null-v1-48-bd63b656022d@avm.de>
+Message-Id: <20260310-b4-is_err_or_null-v1-57-bd63b656022d@avm.de>
 References: <20260310-b4-is_err_or_null-v1-0-bd63b656022d@avm.de>
 In-Reply-To: <20260310-b4-is_err_or_null-v1-0-bd63b656022d@avm.de>
 To: amd-gfx@lists.freedesktop.org, apparmor@lists.ubuntu.com, 
@@ -71,22 +71,21 @@ To: amd-gfx@lists.freedesktop.org, apparmor@lists.ubuntu.com,
  sched-ext@lists.linux.dev, target-devel@vger.kernel.org, 
  tipc-discussion@lists.sourceforge.net, v9fs@lists.linux.dev, 
  Philipp Hahn <phahn-oss@avm.de>
-Cc: Miquel Raynal <miquel.raynal@bootlin.com>, 
- Richard Weinberger <richard@nod.at>, Vignesh Raghavendra <vigneshr@ti.com>
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1817; i=phahn-oss@avm.de;
- h=from:subject:message-id; bh=P8RHvB1pDU6Ba6KZR0cIN2NAbDWAknWQIRz8JMX8gns=;
- b=kA0DAAoBNC0GU9GsrNsByyZiAGmwBnnIluZqwXeZ26oYYynjfBoy02QQTmlYcSsBV5M99kkBR
- okBMwQAAQoAHRYhBDls8G2tYNRwNAKmmDQtBlPRrKzbBQJpsAZ5AAoJEDQtBlPRrKzbhhQIALOH
- 7GGUb7lDbOgP/8xq1PNX4SyEuog4C5Kqug0EL27yDZ5DTcHtYtEWvTOVFh3DoBIg9oWZIhltbqf
- zQqvypi0p020OQBz5OD/FKYzR1JLtT/NpVkDjTnrh0FIsLPISsJn9k8DorrTpQE5Fk5zPEGhmlk
- HlvpEuSvvQD0MQibzxJjUYSjgq+Ll386Twc/QQfm3hFYZT/c4I4Yb80f4z0CM2WhT7S3udW5nGM
- BjGFdYImnQ9uAgWz45BEBVAwZb3P7349MoFLUJ9ZHvqc+4UOIWn+5d35lrOEZcvkJpfol2G0RFZ
- WFsYepS2AbdMtsza99K9TLlncKCIQLIaXnPIWJM=
+Cc: Philipp Zabel <p.zabel@pengutronix.de>
+X-Developer-Signature: v=1; a=openpgp-sha256; l=968; i=phahn-oss@avm.de;
+ h=from:subject:message-id; bh=aOTa0J99wrUiCJDKciZIBaRSFy8AAIBeipk1P/Ry6Do=;
+ b=owEBbQGS/pANAwAKATQtBlPRrKzbAcsmYgBpsAaYTbMwEnKjO28t4NGQZrm6X1QSq5SK/k8qB
+ qh4VPr1rLCJATMEAAEKAB0WIQQ5bPBtrWDUcDQCppg0LQZT0ays2wUCabAGmAAKCRA0LQZT0ays
+ 21umCACxIKapQYseolYqqyBm7SyLTZbMM7MUu/ruXbxGyc49Ef4ha2YprHG4wuhRGtqa+VJappe
+ JyX0Z9X9KMdJsI/T+BsTdbSpg720pNSAKbSG/WcuoRUIgTiyuqx3+IKJLG0jtFT86FOozZPOWEy
+ PPGiUFAfCi7lTKlHGrGHOhGX9fNEHoC67p+hbdbdmFe+ifTERx6lzSSYvUcvltMUMt2tdHG0fgm
+ mbuvPyYzKrB65Gooayr+TJ6lncMe1eo3kIkCgAS0gJFF08HI7PwP3Atbb7J7YpFYREokazErNBn
+ 540BWDngwOE49h53Z1ngLFPv4fl7uolW05pdRIimfw0qiceA
 X-Developer-Key: i=phahn-oss@avm.de; a=openpgp;
  fpr=58AF7C2E007CDBE62C59E078F50EFDCF8AD04B1A
-X-purgate-ID: 149429::1773143728-90660F2F-3D7E05AD/0/0
+X-purgate-ID: 149429::1773143729-7B4FEE1F-3FF7DD9F/0/0
 X-purgate-type: clean
-X-purgate-size: 1819
+X-purgate-size: 970
 X-purgate-Ad: Categorized by eleven eXpurgate (R) https://www.eleven.de
 X-purgate: This mail is considered clean (visit https://www.eleven.de for further information)
 X-purgate: clean
@@ -94,56 +93,32 @@ X-purgate: clean
 Prefer using IS_ERR_OR_NULL() over using IS_ERR() and a manual NULL
 check.
 
-Change generated with coccinelle.
+Semantich change: Previously the code only printed the warning on error,
+but not when the pointer was NULL. Now the warning is printed in both
+cases!
 
-To: Miquel Raynal <miquel.raynal@bootlin.com>
-To: Richard Weinberger <richard@nod.at>
-To: Vignesh Raghavendra <vigneshr@ti.com>
-Cc: linux-mtd@lists.infradead.org
+Change found with coccinelle.
+
+To: Philipp Zabel <p.zabel@pengutronix.de>
 Cc: linux-kernel@vger.kernel.org
 Signed-off-by: Philipp Hahn <phahn-oss@avm.de>
 ---
- drivers/mtd/nand/raw/gpio.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/reset/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/mtd/nand/raw/gpio.c b/drivers/mtd/nand/raw/gpio.c
-index 69e5e43532a448aa6273f3df79f53145784ccc05..86a8b62fb9e8510d36f925b8b468ec17c77e26d8 100644
---- a/drivers/mtd/nand/raw/gpio.c
-+++ b/drivers/mtd/nand/raw/gpio.c
-@@ -276,9 +276,9 @@ static void gpio_nand_remove(struct platform_device *pdev)
- 	nand_cleanup(chip);
+diff --git a/drivers/reset/core.c b/drivers/reset/core.c
+index fceec45c8afc1e74fe46311bdc023ff257e8d770..649bb4ebabb20a09349ccbfc62f8280621df450e 100644
+--- a/drivers/reset/core.c
++++ b/drivers/reset/core.c
+@@ -715,7 +715,7 @@ EXPORT_SYMBOL_GPL(reset_control_bulk_acquire);
+  */
+ void reset_control_release(struct reset_control *rstc)
+ {
+-	if (!rstc || WARN_ON(IS_ERR(rstc)))
++	if (WARN_ON(IS_ERR_OR_NULL(rstc)))
+ 		return;
  
- 	/* Enable write protection and disable the chip */
--	if (gpiomtd->nwp && !IS_ERR(gpiomtd->nwp))
-+	if (!IS_ERR_OR_NULL(gpiomtd->nwp))
- 		gpiod_set_value(gpiomtd->nwp, 0);
--	if (gpiomtd->nce && !IS_ERR(gpiomtd->nce))
-+	if (!IS_ERR_OR_NULL(gpiomtd->nce))
- 		gpiod_set_value(gpiomtd->nce, 0);
- }
- 
-@@ -358,7 +358,7 @@ static int gpio_nand_probe(struct platform_device *pdev)
- 	platform_set_drvdata(pdev, gpiomtd);
- 
- 	/* Disable write protection, if wired up */
--	if (gpiomtd->nwp && !IS_ERR(gpiomtd->nwp))
-+	if (!IS_ERR_OR_NULL(gpiomtd->nwp))
- 		gpiod_direction_output(gpiomtd->nwp, 1);
- 
- 	/*
-@@ -381,10 +381,10 @@ static int gpio_nand_probe(struct platform_device *pdev)
- 		return 0;
- 
- err_wp:
--	if (gpiomtd->nwp && !IS_ERR(gpiomtd->nwp))
-+	if (!IS_ERR_OR_NULL(gpiomtd->nwp))
- 		gpiod_set_value(gpiomtd->nwp, 0);
- out_ce:
--	if (gpiomtd->nce && !IS_ERR(gpiomtd->nce))
-+	if (!IS_ERR_OR_NULL(gpiomtd->nce))
- 		gpiod_set_value(gpiomtd->nce, 0);
- 
- 	return ret;
+ 	if (reset_control_is_array(rstc))
 
 -- 
 2.43.0
