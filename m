@@ -1,98 +1,203 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8172136B05F
-	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 21:08:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773176930; cv=none; b=CCEWGxPE4Rs51vXPKzQVis+jhVOceDMS4hxXFatTjT3jWo3ihoTLPN0ZOKsMg+yldaDAivAmS0M6r+EqZyX3/HmTSPFBFuFwVpHLRBRjT21k9kALHkDStQLZdrDaoCvkV58Thx2UdOzPp4mttWE5iJ9nB88Vyggk/l8MWIyBSyk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773176930; c=relaxed/simple;
-	bh=SxvFwt6RNoWEPsMfWZcfBn5YT6mZDJktqM19xKBdhV8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=tC8ezyuWPXywcGZGqXpeoAandp7KPNjlT1JcYZWu1IsF2UvkTdD96FThI9jyTTdj3LvB3nG0PqfbPi5ZYtyNl6aakDi3G/EO1UbcMCwEXJm6219KgTZMgK58MMm1dlXAClNiZwyJs57En5r6Z3+7TKktRxSM4xyaMF/D7Jb2ii0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=eZ8XyXaP; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CF2A283FC8
+	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 21:16:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.173
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773177406; cv=pass; b=P+2xs/Bj2rr2oU5tDIf2T2VTSmY/F62U/MhIdWzSsfv0/i6pi8sRcfrwLzSIPVju8HTubxPs9c6V0cyVrLeoMAk7EWmcOoZoIp9HHkm97mUNT6sQEdgFxKfnLY31bZmCU1c8fruxNB7YROImdlrXqHJQC9lJt7LLWoYNgJ8ro/g=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773177406; c=relaxed/simple;
+	bh=rI9Q8F19UFaWfkz60x+UiUsiB3DX/xTXM3RKZzpLYQI=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=DJtKggh5Rqoda9AeGyw8zwnO4t+zfR3R4yGZNvKrHRcBe4tl521VReNJnJ81ZWpJ5oWLosgkP7fygcsqolexlBPzLYdGAbs9yWhwibaeCSMCR0ZgyuOBQFyv9bpHrN88Kke8PUBioAEEcIrcyWCBcK646l8X8cF8DettBIoSVpg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=qFdryGUo; arc=pass smtp.client-ip=209.85.160.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="eZ8XyXaP"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260310210841euoutp01750d49765e8ebe4321ab50f7bdbdc3d1~blwPW1CJk3106431064euoutp01R
-	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 21:08:41 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260310210841euoutp01750d49765e8ebe4321ab50f7bdbdc3d1~blwPW1CJk3106431064euoutp01R
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1773176921;
-	bh=tGKcv9KXSZ8NeZkMwYhCoqHzYQKa6iNvw2bZS+J/rzE=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=eZ8XyXaPRQAjrmD4tNZ3xUXMKKEX3h1oOCD4TsFqZXdYBieeyb/LtVoxH2f21WRDs
-	 FseqmW6UqV5Wnori+EXSWkMHCW3pnM/7xRBu1chhgHxCLymTyDSRwFQpU7xFOprv5y
-	 rxzqJwl64rsea6rmb5pyIdwHoZqCHAqngy2W2YQE=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20260310210840eucas1p2dc0fce312c0fe458cd71faffb303d0a6~blwPOKs7r3236232362eucas1p2y;
-	Tue, 10 Mar 2026 21:08:40 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20260310210839eusmtip17c631ae9b4a7af8f06cd5dfe1f3e6b7d~blwNydyN01109311093eusmtip1E;
-	Tue, 10 Mar 2026 21:08:39 +0000 (GMT)
-Message-ID: <a61f8814-b896-4ec0-bb83-a8cbd8aca4e8@samsung.com>
-Date: Tue, 10 Mar 2026 22:08:38 +0100
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="qFdryGUo"
+Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-50906a98ffeso199351cf.0
+        for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 14:16:45 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1773177404; cv=none;
+        d=google.com; s=arc-20240605;
+        b=DMpO65oBE6UtWyIGAEYK06MSpOj/5eJ3oO5ZRhc04l+ZpwwA2/tbsAExHY/cU7hH4u
+         XbLAe/TBZvMPRisAEIoqfCjkax0xSXBJVNgYELGJsVUD4emBVko4gNwHqO9IJM8s1IIf
+         4q3o/kxUiEuCnY//DIgrticuT2Ws4QRQcYLTUm0oriUY6/fYXvgY8QlgMsKKt4H9ptB+
+         CXcoMyG9GXokRQU3zaIucIXPyZLXQ2HLRkMgQvHbY4HF8Kr28r6uZYlYQ7djQmB4YTD+
+         VyeUF/kgjMkuSbd0azOmz8EiZVuVJzTnZrRMlJQRTGgRSB21ZNPAMdRDKfhlqYtNueCu
+         bzcQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=zizd9ComOIJz7h+1JbtGaDk5qC6/lGb/W/OYH7FplW0=;
+        fh=Cr9Gz+4KxVp4Ci1moPY7g4WpWFGCr0a9bcVWr63STi0=;
+        b=QcP+hGwNWVo09F0/hMw9nsBNoQO8zTbpSvP1P6vDKeVEO4tM+w+H7Q+axif3IGqlEJ
+         EYfRY1Dil3M00bwmE9irvsZLoKcavs4X9MGSLppRjyAM66x4QJVAdXBnn8rnv3EuBuxl
+         JRnGraRcBF4QI53Z8z31WEfd/8nnYp4jiZzZTf2pyaxFLLYFLy5U+yNwTgGOrN2nJ4bx
+         vKN1T2BJrUb5xoSWar2pTxQVY+gND8T599pm8UsNfASyDUD5+aG8vcmySK7cLOHtbyaR
+         EzMhosrZcUwoSNiskBI8QqWqxMZnYV2E5IwMGi5Whf/8GR3du4vbsZprKoGSz1kG3mjb
+         Jf3Q==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1773177404; x=1773782204; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zizd9ComOIJz7h+1JbtGaDk5qC6/lGb/W/OYH7FplW0=;
+        b=qFdryGUotmm3+/5zleSzmIT6gpKbL6KUdmB7n3eaya5Hm2XOlyPzgpS6bOz+EZ7dFa
+         BGakKZ6sfh1P12/1oBjvEhpTrmDmwWezyH/OxJvGnGTPjeo3e9AvijPeU+BuB6p5GLow
+         Y4Hx6dTbEFo9QU3yPvrZMFbpO6qcuQdlb17fCmu/J3wOMzsi02dqfTw66mU5rXiQMU4d
+         yx3EthjvpDOvbdGEjIXIFWmj7BTrWzDpG+xwHEEM2accMsJmBmqBwlTT+z0u0HUBdwj8
+         em2amfICmVKCmTLbtYkrBOZf3Y3xUVsslNyD02NXKTyIAsGdAANUGT8OTXr30dvdehdz
+         CDHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1773177404; x=1773782204;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=zizd9ComOIJz7h+1JbtGaDk5qC6/lGb/W/OYH7FplW0=;
+        b=H3IDO9LZJCD1g829tDO3zytw7QNEX5OirG9/FFn1+uheJ2xcK2p6pKgcyPoRVj3jfY
+         sVfpRggp+SdI/saXA54ZIFjZdyDlT4INMD3ydK0JF2glBxVVMIQIhWM92vICTMyIooHS
+         AYDlxsVNXLnoipobYs5YV+OfiSe8lXrCGN0JvtgIr5BnSHc/nXXgTF8aYwhOTMxwIS2Q
+         kCsME3bTqE1l7Zfepffu7UjY7GOYU11tX4R4Z6WCiQbj5dBG69PSYwou5AYNP7bCtu9v
+         HE1gT5Km3sB29mMR7AIuF4xgqK89ol3O13vmOAvWGRIRog/YvuLovwn5OWkLqf/f8OM5
+         hMQg==
+X-Gm-Message-State: AOJu0Ywp4FRP6k6paoJ/sEcPWgxxtgaThAqcCmAWE1MGp1HjlgJu9e2D
+	IKN5q+uoI/QRA0yPqE/7Hjk4Qs5cB3r1eL+3K95uQWIbkbKVm4+TFuh7byyEv0Ndxpg1ipSKKai
+	RQkkLrbzHwTrrfl/j6EHfq6cGnAznUyOhvn29H+zh
+X-Gm-Gg: ATEYQzyDn0VsHVUXbsF8UORkFrNYY9TeaiWGBzNcZPkhBXXbgJQIcstQBLQhvaKYzk1
+	r52ysLHZDJKOVpotL8PsDSqjWQxZqNWsv0nV6ox75pX8WpAnOVflpayL2nBW3uvD+RG7/3a119+
+	svvvbLGNW+6/ggQ05W9PJUU3ByPSfCxzFWApT/03KKgeDtSV6E24oPXPhsy3fL0MOZ2eIvp9Cz0
+	o3X2DNHDjpgzqB3RFie5iOmDuC8+hR6vzxV7RfA+J4S7Iqx0Vj2TiYwbMOB5PdZOq+MVDK7CisT
+	I1Ss
+X-Received: by 2002:ac8:5ad4:0:b0:4ff:bfd9:dd31 with SMTP id
+ d75a77b69052e-50939a0fdb6mr1414131cf.5.1773177403336; Tue, 10 Mar 2026
+ 14:16:43 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH 2/3] dma-mapping: Clarify valid conditions for CPU cache
- line overlap
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Leon Romanovsky <leon@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	"Michael S. Tsirkin" <mst@redhat.com>, Petr Tesarik <ptesarik@suse.com>,
-	Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
-	Jason Wang <jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	=?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-	virtualization@lists.linux.dev, linux-rdma@vger.kernel.org
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20260310123405.GR1687929@ziepe.ca>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20260310210840eucas1p2dc0fce312c0fe458cd71faffb303d0a6
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260309090352eucas1p283a75c78cac495b5ad87df74c79aab07
-X-EPHeader: CA
-X-CMS-RootMailID: 20260309090352eucas1p283a75c78cac495b5ad87df74c79aab07
-References: <20260307-dma-debug-overlap-v1-2-c034c38872af@nvidia.com>
-	<20260308181920.GH1687929@ziepe.ca> <20260308184902.GR12611@unreal>
-	<20260308230916.GI1687929@ziepe.ca>
-	<CGME20260309090352eucas1p283a75c78cac495b5ad87df74c79aab07@eucas1p2.samsung.com>
-	<20260309090342.GS12611@unreal>
-	<c1d058f3-f864-4ed7-9f7a-683d6f4bf1ce@samsung.com>
-	<20260309150502.GX12611@unreal> <20260309151356.GN1687929@ziepe.ca>
-	<aaebc5b6-2805-46d3-a68e-549c26a3ef03@samsung.com>
-	<20260310123405.GR1687929@ziepe.ca>
+References: <20260126151157.3418145-1-praan@google.com> <20260126151157.3418145-8-praan@google.com>
+ <CAE2F3rD-rEpizTpc1fo7Y8fXZfZCF2TGUz8H86rUY6RzTWQDQA@mail.gmail.com> <abBNwXk2a8v6Zgbw@google.com>
+In-Reply-To: <abBNwXk2a8v6Zgbw@google.com>
+From: Daniel Mentz <danielmentz@google.com>
+Date: Tue, 10 Mar 2026 14:16:31 -0700
+X-Gm-Features: AaiRm52CJJPOUPhMm46BfLDaInsZOYDKuS8CgFZKTfstyLrrTTdBIuSn3Z3bOJA
+Message-ID: <CAE2F3rAqyX_CQaN2Wt2=uTYJqYUV3nbrfmog0YyvPr4pgYU5xQ@mail.gmail.com>
+Subject: Re: [PATCH v5 07/10] iommu/arm-smmu-v3: Implement pm_runtime & system
+ sleep ops
+To: Pranjal Shrivastava <praan@google.com>
+Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, 
+	Nicolin Chen <nicolinc@nvidia.com>, Ashish Mhetre <amhetre@nvidia.com>, 
+	Sairaj Kodilkar <sarunkod@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 10.03.2026 13:34, Jason Gunthorpe wrote:
-> On Tue, Mar 10, 2026 at 10:45:38AM +0100, Marek Szyprowski wrote:
->> Jason is right. Indeed the rdma/uverbs case needs some extension to
->> ensure that the coherent mapping is used, what is not possible now. This
->> however doesn't mean that the DMA_ATTR_CPU_CACHE_OVERLAP is not needed
->> for that use case too. I'm open to accept both. The only question I have
->> is which name should we use? We already have DMA_ATTR_CPU_CACHE_CLEAN,
->> while DMA_ATTR_CPU_CACHE_OVERLAP and
->> DMA_ATTR_DEBUGGING_IGNORE_CACHELINES were proposed here. The last seems
->> to be most descriptive.
-> If we do DMA_ATTR_REQUIRE_COHERENCE then I imagine it would internally
-> also set DMA_ATTR_DEBUGGING_IGNORE_CACHELINES, but I'd prefer that
-> detail not leak into the callers.
+On Tue, Mar 10, 2026 at 9:58=E2=80=AFAM Pranjal Shrivastava <praan@google.c=
+om> wrote:
+>
+> On Mon, Mar 09, 2026 at 06:45:09PM -0700, Daniel Mentz wrote:
+> > On Mon, Jan 26, 2026 at 7:12=E2=80=AFAM Pranjal Shrivastava <praan@goog=
+le.com> wrote:
+> > >
+> > > +static int __maybe_unused arm_smmu_runtime_suspend(struct device *de=
+v)
+> > > +{
+> > > +       struct arm_smmu_device *smmu =3D dev_get_drvdata(dev);
+> > > +       int timeout =3D ARM_SMMU_SUSPEND_TIMEOUT_US;
+> > > +       u32 enables;
+> > > +       int ret;
+> > > +
+> > > +       /* Try to suspend the device, wait for in-flight submissions =
+*/
+> > > +       do {
+> > > +               if (atomic_cmpxchg(&smmu->nr_cmdq_users, 1, 0) =3D=3D=
+ 1)
+> >
+> >
+> > I understand we must follow the rule: do not elide any invalidations
+> > while SMMU is still enabled. Otherwise, the following sequence of
+> > events might occur:
+> >  * The driver clears a table descriptor
+> >  * The TLBI command is skipped
+> >  * The driver frees the page that backed the translation table
+> >  * The page is re-allocated for some unrelated purpose
+> >  * SMMU performs a table walk and then descends into the page that has
+> > been reallocated, misinterpreting its contents.
+> >
+> > Can you disable SMMU before setting nr_cmdq_users to 0?
+> >
+>
+> No, that'd be racy, if I disable the smmu but nr_cmdq_users !=3D 0 an
+> "owner" thread might believe that the SMMU is still functional and poll
+> for consumption.
 
-Why DMA_ATTR_REQUIRE_COHERENCE should imply 
-DMA_ATTR_DEBUGGING_IGNORE_CACHELINES?
+I assume that SMMU still processes commands if SMMU_CR0.SMMUEN is
+cleared but SMMU_CR0.CMDQEN is set. The arch spec reads: "When
+translation is not enabled for a Security state, an SMMU: [...] Can
+process commands after the relevant queue pointers are initialized and
+SMMU_(*_)CR0.CMDQEN is enabled." Also, the sequence described under
+"Arm recommends that software initializing the SMMU performs the
+following steps:" suggests this behavior. The existing driver code
+also relies on this when it runs CMDQ_OP_CFGI_ALL before setting
+SMMU_CR0.SMMUEN.
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+>
+> I don't think that the SMMU would perform a walk as we first set the
+> nr_cmdq_users =3D=3D 0 to stop command submissions and then immediately s=
+et
+> GBPA to abort. IF a command submission raced with this, we wait for the
 
+To ensure we're on the same page: Setting SMMU_GBPA.ABORT doesn't do
+anything while SMMU_CR0.SMMUEN is set. SMMU_GBPA only plays a role if
+SMMU_CR0.SMMUEN is cleared.
+
+The moment you set nr_cmdq_users =3D=3D 0, you potentially start eliding
+TBLIs which means that the TLB entries are at risk of becoming stale.
+How about the following sequenc of events:
+
+* suspend handler sets nr_cmdq_users =3D=3D 0
+* arm_smmu_cmdq_issue_cmdlist() stops updating the producer index
+which means that TLBIs are not executed
+* (sequence described above)
+
+Now that I think more about it: I'm concerned that if we set
+nr_cmdq_users =3D=3D 0, the hw prod index will no longer be updated and
+the arm_smmu_drain_queues() function will wait for ever, because the
+cons index is not catching up.
+
+
+> CMDQ to be drained before doing anything, the owner thread would poll
+> till sync in this case only then the driver would return from the unmap
+> call and get a chance to free the page.
+>
+> > >
+> > > +       /* Disable everything */
+> > > +       arm_smmu_device_disable(smmu);
+> > > +       dev_dbg(dev, "Suspended smmu\n");
+> > > +
+> > > +       return 0;
+> > > +}
+> > > +
+> > > +static int __maybe_unused arm_smmu_runtime_resume(struct device *dev=
+)
+> > > +{
+> > > +       int ret;
+> > > +       struct arm_smmu_device *smmu =3D dev_get_drvdata(dev);
+> > > +
+> > > +       dev_dbg(dev, "Resuming device\n");
+> >
+> >
+> > Try to be consistent with these messages.  Here, it says "Resuming
+> > device" whereas above, it says "Suspended smmu". Also, try to align
+> > new messages with existing messages in the driver. I believe most
+> > other messages start with lowercase characters.
+>
+> Ack. I'll update it in v6.
+>
+> Thanks
+> Praan
