@@ -1,349 +1,137 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fout-a7-smtp.messagingengine.com (fout-a7-smtp.messagingengine.com [103.168.172.150])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 763D634404A
-	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 19:16:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1847734752D
+	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 19:28:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.150
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773170171; cv=none; b=G0WB1cjufPm+qFzA7jo4aCZkk5p10thM7dozMCTSDqUnEyhVXSK/r3BOhy/Ts7vHwADfytiG2KQxGQkgkFXfLkbo7X4NAisTdQRlqK7H4qsrAEuOZ1Oq44INUC51KiQtoupQIe4GLoejPGnORmjJTeD4eF4d4W6MPyxjeb5q0fE=
+	t=1773170893; cv=none; b=DfJFxafv3MjFCYaM9f0+StydTQLaWo3PrDTEhpVPxpebjBIAON/v79R4aXZqOgFoOZ0mkh7CzAeHwuf3WSL4I5GYnFqqpMmPdh1sloKGBNw3aIfulzhfpRhragB6GgLPJPiZOUNCbhoaoXTi+hIzBcJlnFwLBS1YDoGeyDS1H58=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773170171; c=relaxed/simple;
-	bh=9GIY+T26bzqPshiMF0YfDMQu/te7jTtPa94i7QPnMmc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cHfhxWzzoJ1tdrbkUXMy0GjBfO/ntBOGjrHjuxaQIr0wn5caqH+7r+WiD2S0FfpoyuZHuyXpTMGvAlBjhzFduwd8hHmB4/MkoUwtf5ZvVy+4bLxeoDRD1RMIDxPqhFb3mPPw9Kwg5TGD0nQpej4pL5WsQrQi81eIPmDL403w9xk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=rO+bp/aQ; arc=none smtp.client-ip=209.85.214.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1773170893; c=relaxed/simple;
+	bh=holajwu7Me/V2Z9frTGmf2FdR91wLKk42r162OBE9K0=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=uP7dq0a6VHSjBlCKO6/9Sy551zcDecBHrh6Bc1umpykClmxrnaogZAo9F5MT9fzcbftxvDc8gfOJ1AKODP0Fcdcv+mdK2scigeQtfJCxPRB4YC4u2K8Ekbcs4F3mQh8xqdg5BgOpTGEniQo5zdMP6mPZ0tJwNjFNc2637rLNM1Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=sYLbKdA5; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=pHq0wLSe; arc=none smtp.client-ip=103.168.172.150
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="rO+bp/aQ"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2ae3f822163so23125ad.0
-        for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 12:16:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1773170170; x=1773774970; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=aN0nyrbMsrt5Hg63KWcZhSsf/H9up2uegNl8k8ebr10=;
-        b=rO+bp/aQchn2eb2Flz46veFoSW4wpi1uvmwUyKm0mTD6YArugdOjW06HYPTFnouIIe
-         DhvoFCop1CNaYQuhP5XDxSsRwDDR3bNxnlGyPptw81vQdegYxDRZebLefFgTfBvUeHik
-         qIX13ICKFQVnn/C6fyIBmq7kqH+F7So78cWzQqtcglxbcH5JsSf1re6mnSER/euPAcmL
-         3il1JgHFScuWZApnjkeqkjEowLolrnjsAq5zKgJpa7YxgyXRZntI19h/myi6ARwdsXx1
-         Z76bhW6QPvyYwrCZyE89CoDtT7akfdaObavtizbORobucEx7Ct4AWW5Bn2qUvRJx4b9T
-         OJ2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773170170; x=1773774970;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=aN0nyrbMsrt5Hg63KWcZhSsf/H9up2uegNl8k8ebr10=;
-        b=aGy70u8JgdbiOWae+17l6nQi/GN6awP9vxpZsSXjV0vQTuTOdL1pVV5wT9c4p3qOl0
-         Mp+oTmdGsp5EgrnpcFRThqNWuQnEjDbDm0pcyoRQob4JEJQatfGuSlP+MZkcsRkFOpwQ
-         OEMVZ8j1jjsaYy7twlDYx1Wr9D+r7my8O6Q4NMC2oWNsKTXFwJ6Mrt0B5vJ4JcLsr6Xj
-         cWQJLfYoPCko3tWZ24p9aiYCK9tSDgNkE8jDorPsWTTk510g9eGFzK+3WQzBkVbrO8Nh
-         z9GL0u8EaQ369andAeMjMxHsPW7YRERKA/JVC/dzFQNeUuuTjvITaEL1p8BOFKUbOG+a
-         KLHw==
-X-Forwarded-Encrypted: i=1; AJvYcCUnqkarqqHZf4lOpwdrmwOyHGdMtMhBbeu3NEOljL7OcXHsQVBMxS/KzWiiB3PdM4UsVRFIZg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywr5hqB2z1/74YtHrCMS127elqcRYj2bob7lggyKjzicZNg+G5o
-	/ZiQnIyrZK1h0q2aC5Yd8wjrLyfZQZXVekX0vLva7EGrKH+aEHJw0GmbukwZe9tJPg==
-X-Gm-Gg: ATEYQzzSt1y/v3xk6NDCYwHaGVILPrXdOputAZaBvVLs6G5aWzG9NPQ8n8MJSeR8pwI
-	l6aBKrnCnPv64JLVQlC4JU6Kq4MBF1WM3MuJ2YYqEjUwvCQxJjebCT17/JHJETioNCKJPfafDge
-	LwXPy/ZB86WDBo2H5FqI2GKiYvOGvQvK+CyzCyUxTYZt7n5mxjL2hlFpl7Q9zHzrCn4E5cu8nJy
-	mnsK4RQhICZgsAqvVs5N66+6uHxldMOHrhA83Y/VsyOBVUm1oRkM6iUGWXecz+zFKs7+yHSH9ra
-	+6s+5dWW/bKwU0Th3G5giqiExBS19ME4YP8cTWhvtEcmNUedp6ZzSOUfgkf+5lRFa/twSOmQ1eO
-	nLfreSCdqsgclc8wllItKjxEh/haa8GtcsnRR1r3DgzGvCLokMh8LizsoZcxqQsbw6ceVKDF6d+
-	bTHuM8fft3tZjyydGtgnnyJpSqVzOTZCriO2vrOmx/AWz2iqu7IBH+1rZ5/w==
-X-Received: by 2002:a17:903:3d10:b0:2a7:6fd3:c11e with SMTP id d9443c01a7336-2aead3dbf39mr503375ad.18.1773170169056;
-        Tue, 10 Mar 2026 12:16:09 -0700 (PDT)
-Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-829f70396cbsm15505b3a.58.2026.03.10.12.16.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Mar 2026 12:16:08 -0700 (PDT)
-Date: Tue, 10 Mar 2026 19:16:02 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
-	bhelgaas@google.com, jgg@nvidia.com, rafael@kernel.org,
-	lenb@kernel.org, kees@kernel.org, baolu.lu@linux.intel.com,
-	smostafa@google.com, Alexander.Grest@microsoft.com,
-	kevin.tian@intel.com, miko.lenczewski@arm.com,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-	linux-pci@vger.kernel.org, vsethi@nvidia.com
-Subject: Re: [PATCH v1 2/2] iommu/arm-smmu-v3: Recover ATC invalidate timeouts
-Message-ID: <abBt8qj8QpkG-Fwh@google.com>
-References: <cover.1772686998.git.nicolinc@nvidia.com>
- <ca7ab934bf0f433b62a5c15d42241632c4cb9366.1772686998.git.nicolinc@nvidia.com>
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="sYLbKdA5";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="pHq0wLSe"
+Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
+	by mailfout.phl.internal (Postfix) with ESMTP id 5110AEC0B0C;
+	Tue, 10 Mar 2026 15:28:11 -0400 (EDT)
+Received: from phl-imap-02 ([10.202.2.81])
+  by phl-compute-04.internal (MEProxy); Tue, 10 Mar 2026 15:28:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm3; t=1773170891;
+	 x=1773257291; bh=Kafwu2dgrb1DyjbyRl19d7gZA/agfWMZFG+k2/IJewA=; b=
+	sYLbKdA5Ux6mBzH3DzXVndi3T48J5DXNXD1qyxQ73g+bAwttJwoEaoXqqT6m2+lf
+	zKMLQ4XG9+k9MgHc0CO8E3eMDIpb7iSuffg4By1bcXQxRDUrsOAActN8gb3EbWzs
+	xBayN0KmMMaDFcPLE8DViimrYNJJR8aL7BiV/z/6U5gT94oqm3/edDphDn9jTSPM
+	61IcOcKrctsaliFgNZgls8C7FLX2riAh8cX5+2rNQJaO9ID0f6CRCdKeqgtKHpfi
+	byDI3PtFVbrvtp/EgF8RCxSAaf1VVkGDeQwm6sojJSo5N2QagC9zENVKRuz3k5Bs
+	kfkeXKgorq756Fz3q14hfA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1773170891; x=
+	1773257291; bh=Kafwu2dgrb1DyjbyRl19d7gZA/agfWMZFG+k2/IJewA=; b=p
+	Hq0wLSeoaglWw3Jk4HqQUEMMiJ2gi6ESs5KkRMuv5CF/wznDq7ZteRlj6QEw0cZC
+	H2k5KyFBRXMVJ/m4eXfxeaijloBuPQUEOuA3D1NgGSVUQv1JLfSb8Kfr65QxOdHO
+	+HRU31x57hT10acAl1h4TgfJAldS87d9OPnfHw7AaqAiNHgQ+2oVHJWh1XzoroMq
+	8IgTZouFSZdB2MIBlE1oCjCHLu0AwFmgwueFC0r4CqCWzR1lAPegMPYxyATAipk5
+	T89zZaotfHd/nJe7DQHqLtOzI+v480+BxyU0aBFai7zyvGwwLLz6A65kV4IP28VY
+	PCJu9tJv2p+W4Pdbxi1PQ==
+X-ME-Sender: <xms:ynCwaSBZEJKJuhli4t9TXpk3bBdrMThNORfSdln8xXp2eZVwaaDKfA>
+    <xme:ynCwaXWGF6aOPZs14gVkbbkBqriFCRARZ6nJF8x3_ggKMBpGwo3Up9gQ7N3nKoNID
+    I1WZc6BsIys53wKQxTKbv360M8oOFDeBkRYxmqTaDVbWsBqDoY9OUM>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddvkedukeeiucetufdoteggodetrf
+    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
+    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
+    gurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddtnecuhfhrohhmpedftehrnhgu
+    uceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrthhtvg
+    hrnhephfdthfdvtdefhedukeetgefggffhjeeggeetfefggfevudegudevledvkefhvdei
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprghrnh
+    gusegrrhhnuggsrdguvgdpnhgspghrtghpthhtohepuddtpdhmohguvgepshhmthhpohhu
+    thdprhgtphhtthhopehjohhroheskegshihtvghsrdhorhhgpdhrtghpthhtoheprhhosg
+    hinhdrmhhurhhphhihsegrrhhmrdgtohhmpdhrtghpthhtohepshhmohhsthgrfhgrsehg
+    ohhoghhlvgdrtghomhdprhgtphhtthhopegrrhhnugeskhgvrhhnvghlrdhorhhgpdhrtg
+    hpthhtohepthhglhigsehkvghrnhgvlhdrohhrghdprhgtphhtthhopeifihhllheskhgv
+    rhhnvghlrdhorhhgpdhrtghpthhtoheprghkphhmsehlihhnuhigqdhfohhunhgurghtih
+    honhdrohhrghdprhgtphhtthhopehlihhnuhigqdgrrhhmqdhkvghrnhgvlheslhhishht
+    shdrihhnfhhrrgguvggrugdrohhrghdprhgtphhtthhopehiohhmmhhusehlihhsthhsrd
+    hlihhnuhigrdguvghv
+X-ME-Proxy: <xmx:ynCwaVmrHTCA9Lx-SPYooGuaRN2wigd1-Dc0KMm-oHCFuKMGe8e44A>
+    <xmx:ynCwaZD7EQt6vFhy2cyXaFzVHwpNwzxq3t8E2Pk-f0aGhFvJGVcN3Q>
+    <xmx:ynCwaXM-5jB3QILN4qr9x5liGuxec88obwfVA2PVML8iKyD9LsiCiQ>
+    <xmx:ynCwaQNvoFzQeQ-QNDEbaIIC9bBmF6WC9gqqpgMahyovfE3YeuWkZQ>
+    <xmx:y3CwaWuPUM9M1zmV_z5xJGL0m2cefZbo1TrjBzG5ms1vWZYO-HPSp75v>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id 74C24700065; Tue, 10 Mar 2026 15:28:10 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ca7ab934bf0f433b62a5c15d42241632c4cb9366.1772686998.git.nicolinc@nvidia.com>
+X-ThreadId: AVHaR-kDAB-J
+Date: Tue, 10 Mar 2026 20:26:40 +0100
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Will Deacon" <will@kernel.org>, "Arnd Bergmann" <arnd@kernel.org>
+Cc: "Robin Murphy" <robin.murphy@arm.com>, "Joerg Roedel" <joro@8bytes.org>,
+ "Andrew Morton" <akpm@linux-foundation.org>,
+ "Thomas Gleixner" <tglx@kernel.org>, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ "Mostafa Saleh" <smostafa@google.com>
+Message-Id: <3eab12fd-31d3-4a41-a0d9-61b0f6c8ada3@app.fastmail.com>
+In-Reply-To: <abBJj72kLQb0LRJB@willie-the-truck>
+References: <20260203162406.2215716-1-arnd@kernel.org>
+ <20260203162406.2215716-2-arnd@kernel.org>
+ <abBJj72kLQb0LRJB@willie-the-truck>
+Subject: Re: [PATCH 2/2] [RFC] iommu: io-pgtable-arm-v7s: avoid gcc-16.0.1 section
+ mismatch
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-On Wed, Mar 04, 2026 at 09:21:42PM -0800, Nicolin Chen wrote:
-> Currently, when GERROR_CMDQ_ERR occurs, the arm_smmu_cmdq_skip_err() won't
-> do anything for the CMDQ_ERR_CERROR_ATC_INV_IDX.
-> 
-> When a device wasn't responsive to an ATC invalidation request, this often
-> results in constant CMDQ errors:
->   unexpected global error reported (0x00000001), this could be serious
->   CMDQ error (cons 0x0302bb84): ATC invalidate timeout
->   unexpected global error reported (0x00000001), this could be serious
->   CMDQ error (cons 0x0302bb88): ATC invalidate timeout
->   unexpected global error reported (0x00000001), this could be serious
->   CMDQ error (cons 0x0302bb8c): ATC invalidate timeout
->   ...
-> 
-> An ATC invalidation timeout indicates that the device failed to respond to
-> a protocol-critical coherency request, which means that device's internal
-> ATS state is desynchronized from the SMMU.
-> 
-> Furthermore, ignoring the timeout leaves the system in an unsafe state, as
-> the device cache may retain stale ATC entries for memory pages that the OS
-> has already reclaimed and reassigned. This might lead to data corruption.
-> 
-> The only safe recovery action is to issue a PCI reset, which guarantees to
-> flush all internal device caches and recover the device.
-> 
-> Read the ATC_INV command that led to the timeouts, and schedule a recovery
-> worker to reset the device corresponding to the Stream ID. If reset fails,
-> keep the device in the resetting/blocking domain to avoid data corruption.
-> 
-> Though it'd be ideal to block it immediately in the ISR, it cannot be done
-> because an STE update would require another CFIG_STE command that couldn't
+On Tue, Mar 10, 2026, at 17:40, Will Deacon wrote:
+> On Tue, Feb 03, 2026 at 05:24:00PM +0100, Arnd Bergmann wrote:
+>> From: Arnd Bergmann <arnd@arndb.de>
+>> 
+>> gcc-16 has gained some more advanced inlining techniques that enable
+>> it to inline the dummy_tlb_add_page() and dummy_tlb_flush() function
+>> pointers into a specialized version of __arm_v7s_unmap:
+>> 
+>> WARNING: modpost: vmlinux: section mismatch in reference: __arm_v7s_unmap+0x2cc (section: .text) -> dummy_tlb_add_page (section: .init.text)
+>> 
+>> From what I can tell, the transformation is correct, as this
+>> is only called when __arm_v7s_unmap() is called from
+>> arm_v7s_do_selftests(), which is also __init.
+>> 
+>> I have not come up with a good workaround, so this simply marks
+>> dummy_tlb_add_page() as not __init. Since there are currently only two
+>> files where this happens, that may be an easy way out.
+>> 
+>> If anyone has a better idea for how to deal with that, let me know!
+>
+> Can we mark the dummy_* functions as 'noinline' instead? We shouldn't
+> have to keep the selftest code kicking around in memory after boot.
 
-Nit: s/CFIG_STE/CFGI_STE
+I think that would work as well, but I'd have to test it properly,
+as the gcc behavior was already not what I had expected.
 
-> finish in the context of an ISR handling a CMDQ error.
-> 
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |   5 +
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 131 +++++++++++++++++++-
->  2 files changed, 132 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 3c6d65d36164f..8789cf8294504 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -803,6 +803,11 @@ struct arm_smmu_device {
->  
->  	struct rb_root			streams;
->  	struct mutex			streams_mutex;
-> +
-> +	struct {
-> +		struct list_head	list;
-> +		spinlock_t		lock; /* Lock the list */
-> +	} atc_recovery;
->  };
->  
->  struct arm_smmu_stream {
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 4d00d796f0783..de182c27c77c4 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -106,6 +106,8 @@ static const char * const event_class_str[] = {
->  	[3] = "Reserved",
->  };
->  
-> +static struct arm_smmu_master *
-> +arm_smmu_find_master(struct arm_smmu_device *smmu, u32 sid);
->  static int arm_smmu_alloc_cd_tables(struct arm_smmu_master *master);
->  
->  static void parse_driver_options(struct arm_smmu_device *smmu)
-> @@ -174,6 +176,13 @@ static void queue_inc_cons(struct arm_smmu_ll_queue *q)
->  	q->cons = Q_OVF(q->cons) | Q_WRP(q, cons) | Q_IDX(q, cons);
->  }
->  
-> +static u32 queue_prev_cons(struct arm_smmu_ll_queue *q, u32 cons)
-> +{
-> +	u32 idx_wrp = (Q_WRP(q, cons) | Q_IDX(q, cons)) - 1;
-> +
-> +	return Q_OVF(cons) | Q_WRP(q, idx_wrp) | Q_IDX(q, idx_wrp);
-> +}
-> +
->  static void queue_sync_cons_ovf(struct arm_smmu_queue *q)
->  {
->  	struct arm_smmu_ll_queue *llq = &q->llq;
-> @@ -410,6 +419,97 @@ static void arm_smmu_cmdq_build_sync_cmd(u64 *cmd, struct arm_smmu_device *smmu,
->  		u64p_replace_bits(cmd, CMDQ_SYNC_0_CS_NONE, CMDQ_SYNC_0_CS);
->  }
->  
-> +/* ATC recovery upon ATC invalidation timeout */
-> +struct arm_smmu_atc_recovery_param {
-> +	struct arm_smmu_device *smmu;
-> +	struct pci_dev *pdev;
-> +	u32 sid;
-> +
-> +	struct work_struct work;
-> +	struct list_head node;
-> +};
-> +
-> +static void arm_smmu_atc_recovery_worker(struct work_struct *work)
-> +{
-> +	struct arm_smmu_atc_recovery_param *param =
-> +		container_of(work, struct arm_smmu_atc_recovery_param, work);
-> +	struct pci_dev *pdev;
-> +
-> +	scoped_guard(mutex, &param->smmu->streams_mutex) {
-> +		struct arm_smmu_master *master;
-> +
-> +		master = arm_smmu_find_master(param->smmu, param->sid);
-> +		if (!master || WARN_ON(!dev_is_pci(master->dev)))
-> +			goto free_param;
-> +		pdev = to_pci_dev(master->dev);
-> +		pci_dev_get(pdev);
-> +	}
-> +
-> +	scoped_guard(spinlock_irqsave, &param->smmu->atc_recovery.lock) {
-> +		struct arm_smmu_atc_recovery_param *e;
-> +
-> +		list_for_each_entry(e, &param->smmu->atc_recovery.list, node) {
-> +			/* Device is already being recovered */
-> +			if (e->pdev == pdev)
-> +				goto put_pdev;
-> +		}
-> +		param->pdev = pdev;
-> +		list_add(&param->node, &param->smmu->atc_recovery.list);
-> +	}
-> +
-> +	/*
-> +	 * Stop DMA (PCI) and block ATS (IOMMU) immediately, to prevent memory
-> +	 * corruption. This must take pci_dev_lock to prevent any racy unplug.
-> +	 *
-> +	 * If pci_dev_reset_iommu_prepare() fails, pci_reset_function will call
-> +	 * it again internally.
-> +	 */
-> +	pci_dev_lock(pdev);
-> +	pci_clear_master(pdev);
-> +	if (pci_dev_reset_iommu_prepare(pdev))
-> +		pci_err(pdev, "failed to block ATS!\n");
-> +	pci_dev_unlock(pdev);
-> +
-> +	/*
-> +	 * ATC timeout indicates the device has stopped responding to coherence
-> +	 * protocol requests. The only safe recovery is a reset to flush stale
-> +	 * cached translations. Note that pci_reset_function() internally calls
-> +	 * pci_dev_reset_iommu_prepare/done() as well and ensures to block ATS
-> +	 * if PCI-level reset fails.
-> +	 */
-> +	if (!pci_reset_function(pdev)) {
+Another option may be to take this a bit further and do the
+same for the arm_v7s selftest that Mostafa did in the lpae
+selftest with 7e06063a43d3 ("iommu/io-pgtable-arm-selftests:
+Use KUnit") and a3c24b6d7cd6 ("iommu/io-pgtable-arm-selftests:
+Modularize the test").
 
-I'm a little uncomfortable with this, why is an IOMMU driver poking into
-the PCI mechanics? I agree that a reset might be the right thing to do
-here but we wouldn't want the IOMMU driver to trigger it.. Ideally, we'd
-need a mechanism that bubbles up fatal IOMMU faults to the PCI core and
-let it decide/perform the reset. Maybe this could mean adding another op
-to struct pci_error_handlers or something like that?
+I think that would be the most logical step, but it's also
+beyond what I can do as a simple build fix.
 
-> +		/*
-> +		 * If reset succeeds, set BME back. Otherwise, fence the system
-> +		 * from a faulty device, in which case user will have to replug
-> +		 * the device to invoke pci_set_master().
-> +		 */
-> +		pci_dev_lock(pdev);
-
-Why are we using spinlock_irqsave across the worker? Also, why does
-atc_recovery.lock have to be a spinlock? The workers run in process
-context, and I also don't see anyone else take the atc_recovery.lock?
-Why does it need to be irq-safe? If this can somehow run in irq context,
-we also seem to be using pci_dev_lock and streams_mutex across the
-worker? Mixing mutexes with spinlocks is brittle and invites 
-"sleep-while-atomic" bugs in future refactors..
-
-> +		pci_set_master(pdev);
-> +		pci_dev_unlock(pdev);
-> +	}
-> +	scoped_guard(spinlock_irqsave, &param->smmu->atc_recovery.lock)
-> +		list_del(&param->node);
-> +put_pdev:
-> +	pci_dev_put(pdev);
-> +free_param:
-> +	kfree(param);
-> +}
-> +
-> +static int arm_smmu_sched_atc_recovery(struct arm_smmu_device *smmu, u32 sid)
-> +{
-> +	struct arm_smmu_atc_recovery_param *param;
-> +
-> +	param = kzalloc_obj(*param, GFP_ATOMIC);
-> +	if (!param)
-> +		return -ENOMEM;
-> +	param->smmu = smmu;
-> +	param->sid = sid;
-> +
-> +	INIT_WORK(&param->work, arm_smmu_atc_recovery_worker);
-> +	queue_work(system_unbound_wq, &param->work);
-> +	return 0;
-> +}
-> +
->  void __arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu,
->  			      struct arm_smmu_cmdq *cmdq)
->  {
-> @@ -441,11 +541,10 @@ void __arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu,
->  	case CMDQ_ERR_CERROR_ATC_INV_IDX:
->  		/*
->  		 * ATC Invalidation Completion timeout. CONS is still pointing
-> -		 * at the CMD_SYNC. Attempt to complete other pending commands
-> -		 * by repeating the CMD_SYNC, though we might well end up back
-> -		 * here since the ATC invalidation may still be pending.
-> +		 * at the CMD_SYNC. Rewind it to read the ATC_INV command.
->  		 */
-> -		return;
-> +		cons = queue_prev_cons(&q->llq, cons);
-
-What about batched commands? We might never know which command caused
-the timeout? This just fetches the "previous" command and we might end
-up resetting the wrong device if the invalidations were batched?
-
-> +		fallthrough;
->  	case CMDQ_ERR_CERROR_ILL_IDX:
->  	default:
->  		break;
-> @@ -456,6 +555,27 @@ void __arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu,
->  	 * not to touch any of the shadow cmdq state.
->  	 */
->  	queue_read(cmd, Q_ENT(q, cons), q->ent_dwords);
-> +
-> +	if (idx == CMDQ_ERR_CERROR_ATC_INV_IDX) {
-> +		/*
-> +		 * Since commands can be issued in batch making it difficult to
-> +		 * identify which CMDQ_OP_ATC_INV actually timed out, the driver
-> +		 * must ensure only CMDQ_OP_ATC_INV commands for the same device
-> +		 * can be batched.
-> +		 */
-> +		WARN_ON(FIELD_GET(CMDQ_0_OP, cmd[0]) != CMDQ_OP_ATC_INV);
-> +
-> +		/*
-> +		 * If we failed to schedule a recovery worker, we would well end
-> +		 * up back here since the ATC invalidation may still be pending.
-> +		 * This gives us another chance to reschedule a recovery worker.
-> +		 */
-> +		arm_smmu_sched_atc_recovery(smmu,
-> +					    FIELD_GET(CMDQ_ATC_0_SID, cmd[0]));
-
-I guess instead of attempting recovery, could we have the worker
-attempt to mark the STE invalid / ABORT. Once we Ack the Gerror, we
-should be able to issue a CFGI_STE?
-
-> +		return;
-> +	}
-> +
-> +	/* idx == CMDQ_ERR_CERROR_ILL_IDX */
->  	dev_err(smmu->dev, "skipping command in error state:\n");
->  	for (i = 0; i < ARRAY_SIZE(cmd); ++i)
->  		dev_err(smmu->dev, "\t0x%016llx\n", (unsigned long long)cmd[i]);
-> @@ -3942,6 +4062,9 @@ static int arm_smmu_init_structures(struct arm_smmu_device *smmu)
->  {
->  	int ret;
->  
-> +	INIT_LIST_HEAD(&smmu->atc_recovery.list);
-> +	spin_lock_init(&smmu->atc_recovery.lock);
-> +
->  	mutex_init(&smmu->streams_mutex);
->  	smmu->streams = RB_ROOT;
-
-Thanks,
-Praan
+     Arnd
