@@ -1,106 +1,105 @@
-Received: from mail-m19731105.qiye.163.com (mail-m19731105.qiye.163.com [220.197.31.105])
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8003942DFFD
-	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 09:33:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.105
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87A483033F8
+	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 09:45:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773135215; cv=none; b=NOzdMINVbgeYqZnDOeoUFCrLWXQ6mY5etioScQzA93HRIexwf6TJQhE+PflF7k/G1eXKsIF7tditV61nUWFawpRMa4ffHlXNFJ1t3heXiB73cLiRWUiSxrXO5K4TiYN68NlFrrn9B/OgIzUkRoLIY1ukDP93tJqW2rQJAdwQxHs=
+	t=1773135943; cv=none; b=CXFCo2WiNrsWzIscXYHB49sZnP837viZDIsQv3zehfpOW4Ku7yF/wwigCzM23pLidKkH9jmalHPzo/6j4ghWatpTDSvWw840D5EaX0XADHTkpUGEnzqAv3f0ldTX2oDBVB063FXhlcRd5OBeTdSbIOPCtD9H2l8B8/hUTsxPAio=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773135215; c=relaxed/simple;
-	bh=HSVzwIdfC/FJZEROZTHHCdDNg4P077yMQ90rKvarKUo=;
-	h=Cc:Subject:To:References:From:Message-ID:Date:MIME-Version:
-	 In-Reply-To:Content-Type; b=pR33Hc7lQ3IQtl2sQ+/3LpoKOFnXWRd6YehSmpm1zt9DdlbBRA3lkhvNgB2VnwVEcBvNPN9k4CccwMLcxT/6iJ9KXWuKXGuNd4y9kLxZgFYyDJNmdvVEpjRWgpkYOzlJwzqM0SADg27S68pVQSS5EJ3UhiLvqg5U96rFqBc8aQQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=LfN4T1hy; arc=none smtp.client-ip=220.197.31.105
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
+	s=arc-20240116; t=1773135943; c=relaxed/simple;
+	bh=ZLvezuR8s0+OWVqfo92KUk4UlTJ6DqfgkS4fGtPZbTw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=prFcjs1kDZxsM/IAwnjUA3JUu+Ti5cXLg/pPedD4C6KQWaLQRjPrTVkzfVbGssQhwxVhsACFjorNr/8KdU30OqOW652IHkCH2dnzksU45lU1BfUZTAtT4uiiZdYt+QTmUtt/iehK3RGk3Su619weB76foKVa8qopqXtrZ8hiT8w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=DUa33BIc; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="LfN4T1hy"
-Received: from [172.16.12.17] (unknown [58.22.7.114])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 3665d3ef2;
-	Tue, 10 Mar 2026 17:33:22 +0800 (GMT+08:00)
-Cc: shawn.lin@rock-chips.com, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/rockchip: Drop global rk_ops in favor of per-device
- ops
-To: Simon Xue <xxm@rock-chips.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Heiko Stuebner <heiko@sntech.de>
-References: <20260310084812.126082-1-xxm@rock-chips.com>
-From: Shawn Lin <shawn.lin@rock-chips.com>
-Message-ID: <a2719902-e5cb-bd4d-4eb4-a01371a57aed@rock-chips.com>
-Date: Tue, 10 Mar 2026 17:33:18 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="DUa33BIc"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260310094539euoutp02c1ecc6540f5ed6999f8e5a1ea99cbccb~bcb4nwMmi0700707007euoutp02I
+	for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 09:45:39 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260310094539euoutp02c1ecc6540f5ed6999f8e5a1ea99cbccb~bcb4nwMmi0700707007euoutp02I
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1773135939;
+	bh=g4Z4ok96NWqzBgjOcLsFlXJfC/4zjtxkfiYjt2twx7A=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=DUa33BIcjnjYaDcrUwR4b3y4tN6gJrXkmaBcwcJ4p2c4tZGQM9R38aSaC2a0O/Bbo
+	 0xa64kwxr8dc0Yov8gz0+bhz5Z3p5QxpyUFH3txM4dysJYcWw+sParNspVxK2j8cYf
+	 dHSDbRa7PdBI1Opg2OUQSyeLHuC0MQYAqRPXhB3s=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20260310094539eucas1p15d2320cc87bfb317f5be51b359fb08c6~bcb4brfjb0410104101eucas1p1p;
+	Tue, 10 Mar 2026 09:45:39 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20260310094538eusmtip17998daf8f2a16ee4d9b5c8cb775d1e36~bcb3virLM2940529405eusmtip1i;
+	Tue, 10 Mar 2026 09:45:38 +0000 (GMT)
+Message-ID: <aaebc5b6-2805-46d3-a68e-549c26a3ef03@samsung.com>
+Date: Tue, 10 Mar 2026 10:45:38 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20260310084812.126082-1-xxm@rock-chips.com>
-Content-Type: text/plain; charset=gbk; format=flowed
-Content-Transfer-Encoding: 8bit
-X-HM-Tid: 0a9cd718098809cckunm7907381ceb4dc
-X-HM-MType: 1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFDSUNOT01LS0k3V1ktWUFJV1kPCRoVCBIfWUFZGkxKSFZCTUIdSkpCHkpCTxhWFRQJFh
-	oXVRMBExYaEhckFA4PWVdZGBILWUFZTkNVSUlVTFVKSk9ZV1kWGg8SFR0UWUFZT0tIVUpLSU9PT0
-	hVSktLVUpCS0tZBg++
-DKIM-Signature: a=rsa-sha256;
-	b=LfN4T1hyZ7F/Fgc3GdQa6KkyTJsBBYXeMneDyaHtkZD66iT4bIqkSGQ+21SreSvQnHOsDGsZPoyJML87v5z5OGZ3hpaF3rLUmaeCanZdLysYoiEe1/WhuqnTqYue/i9OmmJWrM4Uo+vjt3wmtvTkMaY0A1mI5Ls2sqt30XxO3BY=; c=relaxed/relaxed; s=default; d=rock-chips.com; v=1;
-	bh=mBTi+Diqk25yIasnhVjZ42wpi09vWfP+RtyQmstJvHA=;
-	h=date:mime-version:subject:message-id:from;
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH 2/3] dma-mapping: Clarify valid conditions for CPU cache
+ line overlap
+To: Jason Gunthorpe <jgg@ziepe.ca>, Leon Romanovsky <leon@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, "Michael S. Tsirkin"
+	<mst@redhat.com>, Petr Tesarik <ptesarik@suse.com>, Jonathan Corbet
+	<corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, Jason Wang
+	<jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	=?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+	virtualization@lists.linux.dev, linux-rdma@vger.kernel.org
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20260309151356.GN1687929@ziepe.ca>
+Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20260310094539eucas1p15d2320cc87bfb317f5be51b359fb08c6
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260309090352eucas1p283a75c78cac495b5ad87df74c79aab07
+X-EPHeader: CA
+X-CMS-RootMailID: 20260309090352eucas1p283a75c78cac495b5ad87df74c79aab07
+References: <20260307-dma-debug-overlap-v1-0-c034c38872af@nvidia.com>
+	<20260307-dma-debug-overlap-v1-2-c034c38872af@nvidia.com>
+	<20260308181920.GH1687929@ziepe.ca> <20260308184902.GR12611@unreal>
+	<20260308230916.GI1687929@ziepe.ca>
+	<CGME20260309090352eucas1p283a75c78cac495b5ad87df74c79aab07@eucas1p2.samsung.com>
+	<20260309090342.GS12611@unreal>
+	<c1d058f3-f864-4ed7-9f7a-683d6f4bf1ce@samsung.com>
+	<20260309150502.GX12611@unreal> <20260309151356.GN1687929@ziepe.ca>
 
-Hi Simon,
+On 09.03.2026 16:13, Jason Gunthorpe wrote:
+> On Mon, Mar 09, 2026 at 05:05:02PM +0200, Leon Romanovsky wrote:
+>> Regarding failure on unsupported systems, I have tried more than once to
+>> make the RDMA fail when the device is known to take the SWIOTLB path
+>> in RDMA and cannot operate correctly, but each attempt was met with a
+>> cold reception:
+>> https://lore.kernel.org/all/d18c454636bf3cfdba9b66b7cc794d713eadc4a5.1719909395.git.leon@kernel.org/
+> I think alot of that is the APIs used there. It is hard to determine
+> if SWIOTLB is possible or coherent is possible, I've also hit these
+> things in VFIO and gave up.
+>
+> However, DMA_ATTR_REQUIRE_COHERENCE can be done properly and not leak
+> alot of dangerous APIs to drivers (beyond itself).
+>
+> It is also more important now with CC systems, I think.
 
-在 2026/03/10 星期二 16:48, Simon Xue 写道:
-> The driver currently uses a global rk_ops pointer, forcing all IOMMU
-> instances to share the same operations. This restricts the driver from
-> supporting SoCs that might integrate different versions of IOMMU hardware.
-> 
-> Since the IOMMU framework passes the master device information to
-> iommu_paging_domain_alloc(), the global variable is no longer needed.
-> 
-> Fix this by moving rk_ops into struct rk_iommu and struct rk_iommu_domain.
-> Initialize it per-device during probe via of_device_get_match_data(),
-> and replace all global references with the instance-specific pointers.
-> 
-> Signed-off-by: Simon Xue <xxm@rock-chips.com>
-> ---
+Jason is right. Indeed the rdma/uverbs case needs some extension to 
+ensure that the coherent mapping is used, what is not possible now. This 
+however doesn't mean that the DMA_ATTR_CPU_CACHE_OVERLAP is not needed 
+for that use case too. I'm open to accept both. The only question I have 
+is which name should we use? We already have DMA_ATTR_CPU_CACHE_CLEAN, 
+while DMA_ATTR_CPU_CACHE_OVERLAP and 
+DMA_ATTR_DEBUGGING_IGNORE_CACHELINES were proposed here. The last seems 
+to be most descriptive.
 
-...
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
->   					 SPAGE_SIZE, DMA_TO_DEVICE);
-> @@ -1212,15 +1215,7 @@ static int rk_iommu_probe(struct platform_device *pdev)
->   	iommu->num_mmu = 0;
->   
->   	ops = of_device_get_match_data(dev);
-
-Could you remove this one-time-used ops variable and use iommu->rk_ops
-directly. The other parts make sense to me.
-
-> -	if (!rk_ops)
-> -		rk_ops = ops;
-> -
-> -	/*
-> -	 * That should not happen unless different versions of the
-> -	 * hardware block are embedded the same SoC
-> -	 */
-> -	if (WARN_ON(rk_ops != ops))
-> -		return -EINVAL;
-> +	iommu->rk_ops = ops;
->   
->   	iommu->bases = devm_kcalloc(dev, num_res, sizeof(*iommu->bases),
->   				    GFP_KERNEL);
-> @@ -1286,7 +1281,7 @@ static int rk_iommu_probe(struct platform_device *pdev)
->   			goto err_pm_disable;
->   	}
->   
-> -	dma_set_mask_and_coherent(dev, rk_ops->dma_bit_mask);
-> +	dma_set_mask_and_coherent(dev, iommu->rk_ops->dma_bit_mask);
->   
->   	err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, dev_name(dev));
->   	if (err)
-> 
