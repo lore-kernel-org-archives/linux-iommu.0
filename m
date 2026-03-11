@@ -1,149 +1,330 @@
-Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011065.outbound.protection.outlook.com [40.93.194.65])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22A613E275B
-	for <iommu@lists.linux.dev>; Wed, 11 Mar 2026 16:44:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.194.65
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42CB02ED16D
+	for <iommu@lists.linux.dev>; Wed, 11 Mar 2026 17:27:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.41
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773247452; cv=fail; b=rX1eZ6QAVlRerLoyNKqGmyOY26+RS97paZjU65+qHoIIpdbzmIY5WbvLJfKAuzBK43aFCmerBzGl/8EkjhqJj7VF1MNoDWMdm6u1cjh/gavzRApHtA9aiZmHIXI7bIGf7Mk9lCiDwZGBXklrBI9xSum3JrnheNQpDwScoOsKU+I=
+	t=1773250026; cv=pass; b=XP7gA2AMGG8wtf+pAWOxWc3Zc39WPmG7gUAGn3aZ8tC2s1kWmjK9bLKr3Ra1OmQ8BLko4rer/+ch9FoP/8UjxPcIF78J7eFe7DMATMLYCxSt7MlDKgJnhroHMu8/CY2DRjcBABVa1YSMzD2xMnEplXOckwzBoIFL3v5KHigxhAE=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773247452; c=relaxed/simple;
-	bh=q+sZVh6RW/YU93NVW9TuHGcrU22FqdLVuTX1Yj8kOik=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=pW8XBt7DE4IQdFntLnWeKr6C4LdymrHNlOVX1zJOIQmmvrQKBbOOhNuTjKORTtzv0XICSKPmOKW2/2hTlbJQltRiIQuHWmSSrXah5dj1z6AaNBI4ZoAwNiSuL7bSTV2FUgCBtwHOE4PUvEpfUyGPND8F7gHeXJ19etJN/IaSSwI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=drAYICyu; arc=fail smtp.client-ip=40.93.194.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	s=arc-20240116; t=1773250026; c=relaxed/simple;
+	bh=C2LbRbe/Zk3V027cBTYZEqICuvncHjc3fYe2qi7W2Yo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=jARwC0fmjgRqzFbZa1me5j/6AY//85N5wwY6y5RPRmZkp1DewQEfHDTKWjG9ga544hjPkA3u7tS3E3TQK0po6Tk15Zrh0styrXdlrDr5L2/2tscpAS+5jyRQ8JMYsRqfDqwXXSi3tqGCTmhYzDBkMsMbQJQtfyGBI+6s6+YYi9U=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=0KE4XFbf; arc=pass smtp.client-ip=209.85.208.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="drAYICyu"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=gfnSAakqIgEhFlesOkvoZYbJUOXQYlRBDNotw6T0AVoQdEamJ/QKBXTNvEjRxH+w3KldGwVRBnrPz/R5G/0Oke98kXi2bNCHUVBfRCfls6E9r4iIv3BsjtQv9LSlZMO0lAkxsfl85R074xfEze2iyhRDPSCT3zk8mqJEuBqQ6+UBxOvpkF140Yufcx2jESFPv9KoGh8LlehtSbfwoHywZvyvWfxzmra0OO1r0l1Rge/M/9buCys3J45XWyNDz7z6jtSEzU+TWB6wrwtp4RCy3lOhwkMX8sV2bxxdmdqqRXxGNZFdG5Cog+P7rLFJJy+RNjUUAOPT0JY/4AbNxMSYPQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hwnrUvnhMP/eVT6Bpc7cjSf+r3N4/wYh8rDki+9P15c=;
- b=RRh30o0q/XzSInmCy5fO081Nj0CU6AdBPl3+/VQrLzK9XjDvaEUUUKHqMEuGtgounXmIcl3dasbdqp8wsJ1iOvb2wkm09Qepy0wB88YfAb4zGSha7JyiXJKSKZSynQyNsBx38Ai7YWaWShaBhUJfnpirKl2GHjRevqWp6Ndzrcz9yUCizNnMue78wX2bdJncA3FEQlpK0wTYHsCWSe5CvUgf8iyjHKzw0sXV69fE+5UUlefjpU6vkdkP62zSr0SVK5g6J6N/BXD8AgTUzzc9fsI/iVTs960P5EGEuVgJprpzx0ddi+KFZ+1hWFzSUeK1xqot+isIxZCO5ZX+/WCWzw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hwnrUvnhMP/eVT6Bpc7cjSf+r3N4/wYh8rDki+9P15c=;
- b=drAYICyuSV7QWFwhCajRwVWOlgDaCrulBSIaEo+isn8ASrUA3+fXrFpey00qvSriQ1ppz9IzFCW1uYlzugk43e/1zVTwGf2AxWCOYiD/O6UknhofMJuDtzwjfmSaM4RKw8LFmGm3W18R9zNbDW6mRx9i9AQIzJG0Ztejuy45iGLbS8WpatB8C1uPebwDbqVOu7TIFk7mjBAm1Wya33n1iyHKqrLl+Qasx8sKXWrrKeiupgLFIxxHfAIpN5jUmZ4RoTXDzOu7mt0FASz24fe5qK5STAx0bTpmcur+gbKUx4QDwowIMoWJKckR7JWJig++6st/cdmiLC572/8q8uyTwQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by LV2PR12MB5847.namprd12.prod.outlook.com (2603:10b6:408:174::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9700.11; Wed, 11 Mar
- 2026 16:44:04 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9654.022; Wed, 11 Mar 2026
- 16:44:04 +0000
-Date: Wed, 11 Mar 2026 13:44:03 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: Ankit Soni <Ankit.Soni@amd.com>, iommu@lists.linux.dev,
-	suravee.suthikulpanit@amd.com, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] iommu/amd: Remove PT_FEAT_DYNAMIC_TOP from
- PT_FORCE_ENABLED_FEATURES
-Message-ID: <20260311164403.GC1448102@nvidia.com>
-References: <cover.1773058553.git.Ankit.Soni@amd.com>
- <0e71bed81bd7ce5e40a7fb24e6aab32dfb7de306.1773058553.git.Ankit.Soni@amd.com>
- <ed1715de-951e-4794-932e-577aee2c76f6@amd.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ed1715de-951e-4794-932e-577aee2c76f6@amd.com>
-X-ClientProxiedBy: MN2PR01CA0043.prod.exchangelabs.com (2603:10b6:208:23f::12)
- To LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="0KE4XFbf"
+Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-6628cc1bd69so710a12.1
+        for <iommu@lists.linux.dev>; Wed, 11 Mar 2026 10:27:03 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1773250022; cv=none;
+        d=google.com; s=arc-20240605;
+        b=FX20gKoSYapQCBliuFAsr8wnTWcDxWOXIpvHuf4RJIbhZqEYQNbgRFhg6WIGY44dDI
+         ugN6CLCFsVwLDy/76ATHCO4xRrCZTkRtYlKj3ZCgbUzjLOCqfxiTJ7Zqg9rg7aJsAJqb
+         TQYqSmuIfVCJeF7w6sGb6Zu+ymQtMIJun8u2xUudpfIXpL56cPyTnJj0/tH7WbgkfM+c
+         QxlVB719ynsAgqHSdPwyyn4p6XppEx4UCkA0oKKyX86bSgi1tBa3CouN4/41dWLt61XI
+         dYTA2Tn7988byFxOVm51W3VZFwZoTNnrUxjehpsXHx4ct7Clu1CpSJI0HTapK7NBjm41
+         flmw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=moonpXQJnI1Imfb4yAtK41ZVv/1ss3ArCrfNFMWi70c=;
+        fh=Cr9Gz+4KxVp4Ci1moPY7g4WpWFGCr0a9bcVWr63STi0=;
+        b=P6io7gKYiSfUzIzb3pex52Jlyb56KwLT1snzydTUr45OZa9C0xiZhWCaFbLkgtFf24
+         XCKzmSt+zwrF3FL9nNtSYu2AXQccVpEjeIvQx2RigmrSBuwrsVABkXaqXEpBkzBY4UE7
+         eSsyMgHIAM2wJAdZg4LwQyys2bYJ3TX9eu/MHgkn28CQDptVcWXIP2ZpWo576eQN+e+q
+         TF4kVW0icr7pYFJvZpFq45GVOx8HG3a9ur2Ar1AHjDnCNwIXdLQuAkmJDOh4XpkJxVm5
+         Ko3ymdeBQhKQXLyNsqhCEeLYUH7OJ1/7VOjzSdSacEFVJypU9g4+4miZj0XJbTOcicv8
+         MNuw==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1773250022; x=1773854822; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=moonpXQJnI1Imfb4yAtK41ZVv/1ss3ArCrfNFMWi70c=;
+        b=0KE4XFbfiDgZj84GnDLCRNupD0/+IMsB9Q5d14rnUVQS77eFdrUVUmyvg6H4NG2Z1e
+         d1wV6SUJeGhcvFKVvUK/DHqet6f7RolbsLpaVRk3G38jHtPE7VCBsLd2qsXjIzuOw5h7
+         TFN8TrtXBACGyyAlWSIdOC6xaHjXTgdQd+nP1dDt1jMIwfgI8/WVULhGXRLCRce+acG5
+         rvaQZ4hNvPe1iro1e9BH8neoTbTjal2a/9ORdPTZEJQ1HbBwdf6UAnfNoSrfcSj6hcRj
+         KQBvFRiwBsKuQ/uI95V4YBvy4WF2SisAGxJ7SfH9rP5PHEp7zj5MCwz7t5AF25ZZ+DLS
+         GB0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1773250022; x=1773854822;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=moonpXQJnI1Imfb4yAtK41ZVv/1ss3ArCrfNFMWi70c=;
+        b=KC/K0I1KSrEn87mGNJaP0IBjMMnomyl4+vTZnAoYsa9JfclxnvmUyiHI4WW+gwBrdM
+         IQI1gUcbpX11Pjfci/5GlpalYtzAjXP6cDr1QYCaONlQs+0YHck2pC1M5ZAM/Z5bahpa
+         cikJVvxKlSx247ISyAM8kPhib3F6hQKECjrXA+NPP3h7zGFZ411umWabqx5n4XkgDyDs
+         py/aCoj4f3QSAu1qwUnGflfstSscKQTkBQTZ1dC0C01z0A7RVj3lpU/aHyxn5PIsVQjE
+         6CtvVo4HtMet3U+AXzq0jLjtRPY4GlV2yXGVENXsbYSvlCLpdUTzPbcMqQ2nt+as5/ra
+         iEWA==
+X-Gm-Message-State: AOJu0YwKf0x8AYQcHbuWKz0rE4G0QDCygkBHspR5LsYDFG5WsKi5UuCb
+	ikEVA5yhDAIhUEZEpbnZtOaKSzdatU5g6uuKXGYJvHkOVly5v9m7LDh2YHEQ3eXKb+rMlZx82Uo
+	Uj8HUibA6q2KeDVTqElaIpMwKQdpMDuyVfcl047Ca
+X-Gm-Gg: ATEYQzzXsj9ypJWKwdQdNTHuFCzarMfllXTe1gnkRAoD0ANPiMRMGaMktW4Pfh4HD2e
+	5f2GwvtjZtdL4QWzezF20SLSt5QY5E46wA6c4v0A7z86BEaLMOAE57p7nL2SYr7m3twiE2gE32v
+	UJFl0QpPWkjBtfFe/G5Nla4v8NW8y5uyGtXABSWv6jl74ZJsDItdbr3suJ6/RGR1s0FoKoGCwkV
+	dWPmyDzOkUSpSauXlsD6XyPCcKDVPA6cSpaJHT7NHT5TTP6JTk26OA4VIkK+j57ZMqhTimeJLbY
+	ba4DdJibBwu9DgPuXeAcrK6vzGd6VTv5zlZXMIUVMgJDgS2C
+X-Received: by 2002:a05:6402:a58a:20b0:663:3a01:931d with SMTP id
+ 4fb4d7f45d1cf-6635820d5c8mr797a12.5.1773250021942; Wed, 11 Mar 2026 10:27:01
+ -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|LV2PR12MB5847:EE_
-X-MS-Office365-Filtering-Correlation-Id: 13a85278-81df-48ba-ac8a-08de7f8d67b0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|366016|1800799024|56012099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	mJDORBNV2AYyJfKALto82/mHpYl7QEZOTuVwTSzZWkOMup3MHzasqieuu/88x9owrG05iBJarRgfC9ihvPPnmB0KO8hpOlSFXYsvFI0k/sLc+6pawSDApxDXEdHKm5OnpYTOmVIUpkg+tbhmULvfHqE2zJAzoKm93BIc3Caru7H5lqtJYd7IrxLselQhPAlyy9/0b17BrrHOK0aEZmllTBuiXVQ/KwZIuyVgg0Op95bsPeGqc4YK65ai2eNTCYlNB4le9yYLbFgLiIx2N/FIOYOnCsNexmnQ6IbZLgAb7mvQOg8J/ZbA6jbnCWp/KsOllIU+yzfyYq1vcuGxtn+r5Wm167MRDWfLLFwTfpiTdKWMw7MsxUaCzwKmBMvKM8r8GsxzVuWl0LGkN/XRGN6E3S4HLpO2HxlVYaX0rPduDyqn5HF0wvsg62oeVjUE6BiIns6okBS1QDo5W7+2CoFC6YrZDM5iKDiBH4BRaV485JEr0DFiWSl+cRuKAHwJfx12nHA94zIcXDeyCMUg7p5ynntLVqQVbB6LjhDyqy2wTJjey2qbypABAL3FchloxwEmB6WpduX2stqgPj+KtTNml+Que9Zgpxv1wNghQ++of6PG5s/N9dCpXR/NOadiXDbeB+dco64POMFChR1+dJL7SC9PsTTwJOnJ2n9LHwMidksthfvQxLWMz/5OGXGcD3J6gX7svn2PHr8iLYeU9GLG6sRL9TLhdZwAji8FNgV49gU=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(56012099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?o5hzHF9dDSPo1l+Fa8TAcO6sEuKSJI6KL50S7SCGkkHlKIt2PXq+h/uR6op0?=
- =?us-ascii?Q?iCRj1D6+U32uCFbuPuTCnwhwW0Ozzfzfu1sxloVqe1MnwCffiqRnjTd8a6c6?=
- =?us-ascii?Q?B23mQZE1+XC82py51kfGp+Pm2RhDEaHjfglLVJwcjEFqwUxmsWH2AmFXO32O?=
- =?us-ascii?Q?zDxcPGtk9lMRk8kRN2HaqXV3CTXWH0PFGGJ9DRmhaj+b/XbpWhTp8bC84rpk?=
- =?us-ascii?Q?jHDqJ6a5SC/picekYV8mVVsuurPTGZkaz+lsYu4Txto4QPlavCHyzlO3hrgG?=
- =?us-ascii?Q?+EaMa9CBnODRA7GWZOey14vvvDgIA9sjhzAslci/m4SYZdqy2ydaZonCCWIE?=
- =?us-ascii?Q?RK9AOHkcUsnATCUFtgNMdOv6EVWRG5FH6q6lETOT0CSzva2PJpZ01w7sNicS?=
- =?us-ascii?Q?IY5wVPKBeKlSs0gMxqi0kp3+UwsJcqVMFnpNUM9c2FEqk8dcXLFRMvUu1qLm?=
- =?us-ascii?Q?eoAc6cNkm1SnnKvplKHSDpeXfwU3cHbz8LGoKefi8U0X0aoJmsa2FOEcNz5p?=
- =?us-ascii?Q?IjTMY29J+/XGtz1TayPHnIiJBs2Zofnp0b6S5EftI9fkuBJQy0fnmtINSu3e?=
- =?us-ascii?Q?27mH4QarRoqRZ/roTAbgQYRBWG5fdfuNjQEvDcRQ213dlFJHbWxB9ptL+wdc?=
- =?us-ascii?Q?UpVpSxDxxXGZsvkupNzaaWC+l9Nn0Rrw+8UuCSqP5hVmcxf+od2L+gbyuSYd?=
- =?us-ascii?Q?PCX/yVAWKPLWVLDknEBTqR62m3T4xEUyGRVtN5Uk2VvadMero7y0iVS7wPCP?=
- =?us-ascii?Q?Z1kjJOkYzXMGr9SlYf4C8W0RddOxeqTXgvo6nbzqta9vZam2syYNov9/njxz?=
- =?us-ascii?Q?pwcOvgHs4UvOsLC0pyzb5wq5CgXQ1lI32350vxsriUbJcRyRxOZ2/JPyc3DH?=
- =?us-ascii?Q?wbxgs4tST40pg7jEjWLhlQSCEJZBV/cGgHvAlA+8mcl1IQmRuKdRy4xeywzp?=
- =?us-ascii?Q?Iqf0Yc8WH1N8ik7DorzBsthjBTIlGTfL3MekVyhi63RHfKK1tdULc4KGJIwi?=
- =?us-ascii?Q?iJy3UuQWdO9oqviqJiid4f/Dn5g/pEYvBBcR+2s8dKRzawfOmT4WiToK5BX0?=
- =?us-ascii?Q?0S8BJLVOe3qwxwg+BY1z9abUwhWFZ90w8CqjR1OPFuh4JeyJZATHezYCKQhu?=
- =?us-ascii?Q?VxNzMyqHRmMckZNY8oyvPIRULealXaEPhxRWywd+e/Js3gOW+QZL8A1BNy/z?=
- =?us-ascii?Q?XIOJPMopm1QW0WyOoMYycKW65tIPlZ0UxUIIzjhvPAGn9OAMn+Ou0iMUJ7Ef?=
- =?us-ascii?Q?pQ+DeQfMiTlaRT6EK/fGt/OHTzA99D3ZQGGuQC1TejDhLCgeWyjvw0eSCJ7i?=
- =?us-ascii?Q?O+LC3HR1iUJueRGXQm7IWY1dguaKkz2BgsA0b8uCbbXYXOSXKpPddVdLrlve?=
- =?us-ascii?Q?Vn6lx/LZIiVgPpyow/K6h7LhPMK22v8whWuXgo0EGi1eh9x6Ig5E9iUU9gE/?=
- =?us-ascii?Q?yVXj2v2zeC2Pml2fc5WVbNvI+qLmMddTUCl9JabOFiioTLiGbFP9/unLPBj9?=
- =?us-ascii?Q?57stjIXe/2PQlghstuoq+YttS+miQYtFSl+T8s+Sqr+hVz1de6qD9+E2a9Vs?=
- =?us-ascii?Q?gr3lMfomLecn1lsAtiAYA+8kEsHntqvcI1CGROo0kuL9n1hrJTijY5kS5sp/?=
- =?us-ascii?Q?ViwIY2BMRtiMejn3yn6KftOzrPXgXRUXBAgzHvjSRVaycmoD40LvpdDk2Qbn?=
- =?us-ascii?Q?aqNdBIO0bZKZDDFSRIekjNo+tL1yNJYZrRmHnHDXUo+VfvCPQE2ce48F7QPp?=
- =?us-ascii?Q?v7mIIx+UVw=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 13a85278-81df-48ba-ac8a-08de7f8d67b0
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2026 16:44:04.1695
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rPHfYN+8BS7iqQYfes89SXEOIYeHmP1B2SCLUQkBfw081u95bhMKTUxt75WfEaTd
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5847
+References: <20260126151157.3418145-1-praan@google.com> <20260126151157.3418145-8-praan@google.com>
+ <CAE2F3rD-rEpizTpc1fo7Y8fXZfZCF2TGUz8H86rUY6RzTWQDQA@mail.gmail.com>
+ <abBNwXk2a8v6Zgbw@google.com> <CAE2F3rAqyX_CQaN2Wt2=uTYJqYUV3nbrfmog0YyvPr4pgYU5xQ@mail.gmail.com>
+ <abCP0wLkVvUSUeYI@google.com> <CAE2F3rDbB4RgZLfqKu=AeGdJU6TLdmO=XTCzCb1-yq7VKH0zdw@mail.gmail.com>
+ <abD-Kl0xkfg4tsh4@google.com>
+In-Reply-To: <abD-Kl0xkfg4tsh4@google.com>
+From: Daniel Mentz <danielmentz@google.com>
+Date: Wed, 11 Mar 2026 10:26:49 -0700
+X-Gm-Features: AaiRm51fhErkLiJYDhwFbi5TCUIJaNlnk46IdAPUE8fioadXZG1u6Bw1OdMaZYw
+Message-ID: <CAE2F3rAUfU0+y2C3ro=ApShugU9ujDxnWx3bigZ2wo89xnzvbw@mail.gmail.com>
+Subject: Re: [PATCH v5 07/10] iommu/arm-smmu-v3: Implement pm_runtime & system
+ sleep ops
+To: Pranjal Shrivastava <praan@google.com>
+Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, 
+	Nicolin Chen <nicolinc@nvidia.com>, Ashish Mhetre <amhetre@nvidia.com>, 
+	Sairaj Kodilkar <sarunkod@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Mar 11, 2026 at 09:54:55PM +0530, Vasant Hegde wrote:
-> 
-> + Jason
-> 
-> On 3/9/2026 7:35 PM, Ankit Soni wrote:
-> > Dynamic top is used to grow the page table levels. However, if the VA
-> > size is small and the initial page table level already covers the entire
-> > address space, table growth is not required. In that case, the generic
-> > page table framework clears PT_FEAT_DYNAMIC_TOP, which in turn causes
-> > error -EOPNOTSUPP and leads to domain initialization failure.
-> > 
-> > Remove PT_FEAT_DYNAMIC_TOP from PT_FORCE_ENABLED_FEATURES, since during
-> > domain allocation AMD IOMMU driver explicitly sets PT_FEAT_DYNAMIC_TOP
-> > via cfg.common.features, this keeps normal runtime behavior unchanged.
-> > 
-> 
-> Fixes: 879ced2bab1 ("iommupt: Add the AMD IOMMU v1 page table format")
+On Tue, Mar 10, 2026 at 10:31=E2=80=AFPM Pranjal Shrivastava <praan@google.=
+com> wrote:
+>
+> On Tue, Mar 10, 2026 at 05:12:15PM -0700, Daniel Mentz wrote:
+> > On Tue, Mar 10, 2026 at 2:40=E2=80=AFPM Pranjal Shrivastava <praan@goog=
+le.com> wrote:
+> > >
+> > > On Tue, Mar 10, 2026 at 02:16:31PM -0700, Daniel Mentz wrote:
+> > > > On Tue, Mar 10, 2026 at 9:58=E2=80=AFAM Pranjal Shrivastava <praan@=
+google.com> wrote:
+> > > > >
+> > > > > On Mon, Mar 09, 2026 at 06:45:09PM -0700, Daniel Mentz wrote:
+> > > > > > On Mon, Jan 26, 2026 at 7:12=E2=80=AFAM Pranjal Shrivastava <pr=
+aan@google.com> wrote:
+> > > > > > >
+> > > > > > > +static int __maybe_unused arm_smmu_runtime_suspend(struct de=
+vice *dev)
+> > > > > > > +{
+> > > > > > > +       struct arm_smmu_device *smmu =3D dev_get_drvdata(dev)=
+;
+> > > > > > > +       int timeout =3D ARM_SMMU_SUSPEND_TIMEOUT_US;
+> > > > > > > +       u32 enables;
+> > > > > > > +       int ret;
+> > > > > > > +
+> > > > > > > +       /* Try to suspend the device, wait for in-flight subm=
+issions */
+> > > > > > > +       do {
+> > > > > > > +               if (atomic_cmpxchg(&smmu->nr_cmdq_users, 1, 0=
+) =3D=3D 1)
+> > > > > >
+> > > > > >
+> > > > > > I understand we must follow the rule: do not elide any invalida=
+tions
+> > > > > > while SMMU is still enabled. Otherwise, the following sequence =
+of
+> > > > > > events might occur:
+> > > > > >  * The driver clears a table descriptor
+> > > > > >  * The TLBI command is skipped
+> > > > > >  * The driver frees the page that backed the translation table
+> > > > > >  * The page is re-allocated for some unrelated purpose
+> > > > > >  * SMMU performs a table walk and then descends into the page t=
+hat has
+> > > > > > been reallocated, misinterpreting its contents.
+> > > > > >
+> > > > > > Can you disable SMMU before setting nr_cmdq_users to 0?
+> > > > > >
+> > > > >
+> > > > > No, that'd be racy, if I disable the smmu but nr_cmdq_users !=3D =
+0 an
+> > > > > "owner" thread might believe that the SMMU is still functional an=
+d poll
+> > > > > for consumption.
+> > > >
+> > > > I assume that SMMU still processes commands if SMMU_CR0.SMMUEN is
+> > > > cleared but SMMU_CR0.CMDQEN is set. The arch spec reads: "When
+> > > > translation is not enabled for a Security state, an SMMU: [...] Can
+> > > > process commands after the relevant queue pointers are initialized =
+and
+> > > > SMMU_(*_)CR0.CMDQEN is enabled." Also, the sequence described under
+> > > > "Arm recommends that software initializing the SMMU performs the
+> > > > following steps:" suggests this behavior. The existing driver code
+> > > > also relies on this when it runs CMDQ_OP_CFGI_ALL before setting
+> > > > SMMU_CR0.SMMUEN.
+> > > >
+> > > > >
+> > > > > I don't think that the SMMU would perform a walk as we first set =
+the
+> > > > > nr_cmdq_users =3D=3D 0 to stop command submissions and then immed=
+iately set
+> > > > > GBPA to abort. IF a command submission raced with this, we wait f=
+or the
+> > > >
+> > > > To ensure we're on the same page: Setting SMMU_GBPA.ABORT doesn't d=
+o
+> > > > anything while SMMU_CR0.SMMUEN is set. SMMU_GBPA only plays a role =
+if
+> > > > SMMU_CR0.SMMUEN is cleared.
+> > > >
+> > >
+> > > I think you're missing that we *DO* actually set SMMUEN =3D 0 *with* =
+the
+> > > GBPA abort, please look at this part of the patch:
+> > >
+> > > +       /* Abort all transactions before disable to avoid spurious by=
+pass */
+> > > +       arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
+> > > +
+> > > +       /* Disable the SMMU via CR0.EN and all queues except CMDQ */
+> > > +       enables =3D CR0_CMDQEN;
+> > > +       ret =3D arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0, =
+ARM_SMMU_CR0ACK);
+> > > +       if (ret) {
+> > > +               dev_err(smmu->dev, "Timed-out while disabling smmu\n"=
+);
+> > > +               atomic_set(&smmu->nr_cmdq_users, 1);
+> > > +               return ret;
+> > > +       }
+> > >
+> > > We disable everything except for the CMDQ. Since, everything is disab=
+led
+> > > at this point, any new commands can safely be elided as the SMMU won'=
+t
+> > > access any config structures as mentioned by the spec.
+> > >
+> > > > The moment you set nr_cmdq_users =3D=3D 0, you potentially start el=
+iding
+> > > > TBLIs which means that the TLB entries are at risk of becoming stal=
+e.
+> > >
+> > > Not really, the SMMU isn't accessing anything since SMMUEN=3D0 and GB=
+PA is
+> > > set by this point.
+> >
+> > I believe you are assuming that all these things happen atomically
+> > when they, in fact, happen sequentially. Imagine the CPU takes an
+> > interrupt after setting nr_cmdq_users=3D=3D0 but before clearing
+> > SMMU_CR0.SMMUEN, then we are in a state where nr_cmdq_users=3D=3D0 but
+> > SMMUEN is still set.
+> >
+> > >
+> > > > How about the following sequenc of events:
+> > > >
+> > > > * suspend handler sets nr_cmdq_users =3D=3D 0
+> > > > * arm_smmu_cmdq_issue_cmdlist() stops updating the producer index
+> > > > which means that TLBIs are not executed
+> > > > * (sequence described above)
+> > > >
+> > > > Now that I think more about it: I'm concerned that if we set
+> > > > nr_cmdq_users =3D=3D 0, the hw prod index will no longer be updated=
+ and
+> > > > the arm_smmu_drain_queues() function will wait for ever, because th=
+e
+> > > > cons index is not catching up.
+> > > >
+> > >
+> > > If we go ahead with the suggestion to completely elide a command
+> > > submission, if (nr_users_cmdq =3D=3D 0) return 0; (as discussed in th=
+e other
+> > > thread), then we don't update llq.cons / prod. Then this shouldn't be=
+ an
+> > > issue right?
+> >
+> > I still think we have to clear SMMUEN before setting nr_users_cmdq=3D0
+> >
+> > >
+> > > The problem I see in swapping the sequence is::
+> > >
+> > > +       /* Abort all transactions before disable to avoid spurious by=
+pass */
+> > > +       arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
+> > > +
+> > > +       /* Disable the SMMU via CR0.EN and all queues except CMDQ */
+> > > +       enables =3D CR0_CMDQEN; <-- Tear down everything except CMDQ
+> > > +       ret =3D arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0, =
+ARM_SMMU_CR0ACK);
+> > > +       if (ret) {
+> > > +               dev_err(smmu->dev, "Timed-out while disabling smmu\n"=
+);
+> > > +               atomic_set(&smmu->nr_cmdq_users, 1);
+> > > +               return ret;
+> > > +       }
+> > > +       /* Try to suspend the device, wait for in-flight submissions =
+*/
+> > > +       do {
+> > > +               if (atomic_cmpxchg(&smmu->nr_cmdq_users, 1, 0) =3D=3D=
+ 1)
+> > > +                       break;
+> > > +
+> > > +               udelay(1);
+> > > +       } while (--timeout);
+> > > +
+> > > +       if (!timeout) {
+> > > +               dev_warn(smmu->dev, "SMMU in use, aborting suspend\n"=
+);
+> > > +               return -EAGAIN; <--- suspend failed, but we already t=
+ore down the smmu
+> > > +       }
+> > > +
+> > > +
+> > > +       /*
+> > > +        * At this point the SMMU is completely disabled and won't ac=
+cess
+> > > +        * any translation/config structures, even speculative access=
+es
+> > > +        * aren't performed as per the IHI0070 spec (section 6.3.9.6)=
+.
+> > > +        */
+> > > +
+> > > +       /* Wait for the CMDQs to be drained to flush any pending comm=
+ands */
+> > > +       ret =3D arm_smmu_drain_queues(smmu);
+> > > +       if (ret)
+> > > +               dev_err(smmu->dev, "Draining queues timed-out..forcin=
+g suspend\n");
+> > > +
+> > > +       /* Disable everything */
+> > > +       arm_smmu_device_disable(smmu); <---- Note that this still jus=
+t disables the CMDQ
+> > > +       dev_dbg(dev, "Suspended smmu\n");
+> > > +
+> > > +       return 0;
+> > > +}
+> > > +
+> > >
+> > > In the current implementation we first see if we can suspend only the=
+n
+> > > tear down the SMMU (Except for the CMDQ),
+> >
+> > What do you mean by "if we can suspend"? I think we can clear SMMUEN
+> > even while commands are in-flight.
+> >
+>
+> I mean a race where we set SMMUEN =3D 0 but we get another CMDQ user,
+> since the nr_cmdq_users !=3D 0, we can have multiple users flushing their
+> commands unless it's back to 1. The problem is how long do we wait for
+> nr_users =3D 0 ? If we timeout, we'll have to reset the SMMU as we can't
+> simply re-enable SMMUEN.
 
-No.. There is no bug here.
+Why can't we just re-enable SMMUEN? If we never set nr_cmdq_users to
+0, we never elided any invalidation commands.
 
-I don't really understand why you'd want to do this, the driver still
-sets PT_FEAT_DYNAMIC_TOP, so what is the issue?
+>
+> We can't forcibly set nr_cmdq_user =3D 0 as we don't know where in the
+> issue_cmdlist a thread is, forcibly setting it 0 would cause trouble if
+> a thread is polling on a sync or about to increment the prod_index..
 
-It shouldn't be removed from PT_FORCE_ENABLED_FEATURES, something else
-is wrong.
-
-Jason
+I agree that we can't forcibly set nr_cmdq_user =3D 0. When I wrote set
+nr_cmdq_user to 0, I meant using your atomic_cmpxchg loop.
