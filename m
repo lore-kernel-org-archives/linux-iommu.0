@@ -1,136 +1,121 @@
-Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B02D2DF3F2
-	for <iommu@lists.linux.dev>; Wed, 11 Mar 2026 04:43:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.177
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773204200; cv=pass; b=RX6kqpxIWxyfEaS3LMI7MH9H1NWxifaVRvTqkc8vTNk/ymJQ65KG3OkYhQzMHJa2ZwSOsmjoRT/kxtwl1+sd24p1+sN0C41mUPH4S2yQrpfNWEh7Y69xD9GlAW+uj2jXmXHa8Jrg3W35yU5nsMrU1odHoRG7GQUv/DvgZwlWvrg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773204200; c=relaxed/simple;
-	bh=a8iVo6i4eHgUcnogYdzVithvam2BMdeOEaLsipziq9Y=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=O+2NPWBwKgQ/6NMQhqTUpECXgNx0qjB/7C59x0RdhAo2MvfFyNp09uD+j+G3gLV4BVMlrHOnLY+NEDy+YxvcD9HofrGzRXHNnzBgNrN+htJy0SZ3BZhdgG1qdhQjngKpiUI+Titz8VXRKQevtBNtd/iI0nZinnaiVBAgJwVlPrU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=lFtNvyH0; arc=pass smtp.client-ip=209.85.160.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39A6A23ABA8;
+	Wed, 11 Mar 2026 04:59:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773205159; cv=none; b=AfUOn7Xr22tdivnqiMJmXtugg75clXxy/ixinW+84d9P9bQcU6XygWynS5vcLY1bvg0ClT+/FZLNRV3acp/hmfB7bGKfikZIxgb4DM7rG+GfxYVjjZgSZlcXDJ+WHdNfJlM6MXdJ14xAjKoxZwyPwj2kpc1le2hoxL9iMo6ym0I=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773205159; c=relaxed/simple;
+	bh=hs7h01zebVZ3Cw5TSlyQoCCjwzUa+l8Cgq+3i/i+v4I=;
+	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
+	 Mime-Version:Content-Type; b=d+XpBF8R6hSjSTcMBfmH4ILegC+T+VFU6cnWCeL1UynvVuQvwhGK9HU46EbLxpSuUjgEosLLNlyp/vWQRByhJqvaUVytBWX5j1mOlK0gjr5ZpJ0vTdvEsR3BRMdUbUK3k1H4T5bY1NHCoXs6ClvsiRYESo1PnmzsuR0fJZq8vHc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=R7QWHNq5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="lFtNvyH0"
-Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-50906a98ffeso386341cf.0
-        for <iommu@lists.linux.dev>; Tue, 10 Mar 2026 21:43:18 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1773204197; cv=none;
-        d=google.com; s=arc-20240605;
-        b=a5CXxpWQRteBq1fTFkLgs32tha2KVY5MYsjA5UAHDp3+WgESoDEi3k4ggTocfQgdqv
-         nLkMk2tngg9mDRxhJK6FxYNwKqgEX7FDJdKxqINAucWiGv9FjVe33cCq+XbvLnNB9rUq
-         PJYNzieVprWV4MDcyF/jGOltd9ZNWQVAkE9ViD5myVn1Pfk2DUcPVqpTYJP97APuqJHz
-         3aqyjBeUXcIxL/MahJEMpT0L9QDYL6ywB8DfyWYqG510tywiVcSkDWy1aX0fIWsR77Im
-         CWeisre+54BfrqK4oy9cRxWDnEnNQW9gJ8+ue2PROUNF+ZvLhBi3IVOCJoqOMKriElUL
-         sYSw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=a8iVo6i4eHgUcnogYdzVithvam2BMdeOEaLsipziq9Y=;
-        fh=Cr9Gz+4KxVp4Ci1moPY7g4WpWFGCr0a9bcVWr63STi0=;
-        b=EU590NvEwqQ7ajFKS7NIIUPNsIatnbS32rCSVuhT75/FDlMUIZQwyNoZAACDRLZwyB
-         pqGdZ7rRiYuuxtNb1W5sIitJK7ogBkuZdjzYT+G6H4LCavPFFs9gBBEVcyBvEGDB5GGL
-         jgUWN0TRSutyeqYxrgXYCMj2bn3jBIpOodw+k6djTaqv+h7YG0MDZbOW6yqImqGTdrqD
-         cFXG6xiGSoaRfAXwGHd95BObP79MoaoR8ruM4Zn+CYzUmplx4UPVtXJVQQpOkpZ/llpX
-         qWWCOlwoTMJOOPr/sIEZ2he46fKL8CgNnJGiR41vtgPWmvs+XJiDGkGHbCJQFeRsld4u
-         aJJg==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1773204197; x=1773808997; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=a8iVo6i4eHgUcnogYdzVithvam2BMdeOEaLsipziq9Y=;
-        b=lFtNvyH0tPDPJVTqZxJCZc8Feyy9+YAoG4h1oAE0bCPJ+h78Fwa5ZvpRmvKaZZV8gk
-         +yclOwAbtqCYAb32r1yTjl9iK7oBpSzq3ihghQUW94aFDVpy5WqlZBl9mmvpjFth81Gc
-         fYVr3xYIQehg2VVyFEddSyakcoa/lCXboPrz9RUZKM2a7780K8ePTlvmyFLPO2hNsGuN
-         8/HpTHzV9ByLoVVKKqjU+fxtmQ3bgmFwgAXfiBBBp3PaQiFHROH7Ih4Ts7Tj9sHgaVOc
-         0ywoGbfUEb2zsQQDVGZJ5V0QKjfWTSkfRt57wpdCkm47MSdb6tn9D7sFHShxKQLhvW9y
-         sFPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773204197; x=1773808997;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=a8iVo6i4eHgUcnogYdzVithvam2BMdeOEaLsipziq9Y=;
-        b=b40s6bg5iKO4YHHA6YUPQYhXQj/OPiqj6RS01ZGxXl9AiJiwj98gaOHann32NwBGy7
-         42VsT7/RrWz/zmJDYWTcDdnzjl+sItidXC8DKV4uDB6aPpR3/ON8Q/m3M6PUbwItWWj3
-         aUb+P13DS7458OYp0psv/CHTtjvxpJR/JKzdxCBBUhs+Cix9RJlqdotvUyX8zTkF/tiX
-         Y6hVqkfBIbT1cgiiKykQVjdCt+p5T85bi0qXum5nmbRiKOzjiqLclD9tAkkmqtsSFfSW
-         q3PXSDBe+/rAdQ/ZWIUznbJfefuB0/aGlsCtYtl2UqBwnpKKXXK8Ts4RIFxvlAUrZV60
-         wMdA==
-X-Gm-Message-State: AOJu0Ywr3bmq7ChGdbYVQI0khpfiIUJejDLV7OO/s6gRm5z8AtiOf9sK
-	ErpfMRYI5eugv5gSnSLxKWt9nA7T3I1Yt0bpa1jaKTzpgpy9iYOI7DnSZSHpPZbZlWzZn1Q9MvJ
-	cYKQoaGDIYV3N9rJfUWMEKh4ceTeOPL8BuYnuznr9
-X-Gm-Gg: ATEYQzylhBbjXHNnhL9gA1IurZrTyfQE0JyIRGa9NWEQ1E9D/5UHffCbcdupH+ELlug
-	4VzMdyyKyITjpyq5X/0nisa7n5xZSxahRjUojGHUhnIye1P06CbhwDPFanBorMoqJoJGyLGeav1
-	89pxCxg5rubrgSHNbmr23ZBsVru6aGjgGD0nZyHZfq4OlNayhXxRcAECXr1uUfnf0ae/TNu8GzY
-	+GGOWZLThxpuqfzTHTx0teV2h2SesyGaXquxHAsc8k8L+tJ3xE016dOIK5FaC7BftlbPT2+ZGe0
-	p3Iu
-X-Received: by 2002:a05:622a:c9:b0:509:208f:3876 with SMTP id
- d75a77b69052e-509382cc3e9mr7712341cf.18.1773204196698; Tue, 10 Mar 2026
- 21:43:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="R7QWHNq5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7C9CC4CEF7;
+	Wed, 11 Mar 2026 04:59:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773205158;
+	bh=hs7h01zebVZ3Cw5TSlyQoCCjwzUa+l8Cgq+3i/i+v4I=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=R7QWHNq5KYIpTwVo6Up5GHHSOdSE2gpk5GaKkIBbqjAR4gbzmNPFWIlQW10KkTPof
+	 EwepFELDieEhDwLa7MFg7ekO96kgeq0l/+LlK0SmYNrKgD9B5JFn2p8cKdN19q4bAB
+	 ZH5nM61a+EeP1bfo59H2leGLnAv8MA9DVbVTjKyoY75UQZCsrcqb+6U4ml2aryZAOd
+	 53HkEOSnemZkK807SePgE6JYJ0qIK9ypnQbQrEKCx7cEo9CjlroOKs6BchxOV0buhD
+	 E4Ehzc8FteV6XUFhu9KE6nGI0Pkr7s204WVgcSsEwXmzro7D3LuhuKd0AU39V1R3Ja
+	 2cWkRLISF31UQ==
+Date: Wed, 11 Mar 2026 13:59:11 +0900
+From: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+To: Philipp Hahn <phahn-oss@avm.de>
+Cc: amd-gfx@lists.freedesktop.org, apparmor@lists.ubuntu.com,
+ bpf@vger.kernel.org, ceph-devel@vger.kernel.org, cocci@inria.fr,
+ dm-devel@lists.linux.dev, dri-devel@lists.freedesktop.org,
+ gfs2@lists.linux.dev, intel-gfx@lists.freedesktop.org,
+ intel-wired-lan@lists.osuosl.org, iommu@lists.linux.dev,
+ kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+ linux-btrfs@vger.kernel.org, linux-cifs@vger.kernel.org,
+ linux-clk@vger.kernel.org, linux-erofs@lists.ozlabs.org,
+ linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ linux-gpio@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
+ linux-mips@vger.kernel.org, linux-mm@kvack.org,
+ linux-modules@vger.kernel.org, linux-mtd@lists.infradead.org,
+ linux-nfs@vger.kernel.org, linux-omap@vger.kernel.org,
+ linux-phy@lists.infradead.org, linux-pm@vger.kernel.org,
+ linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
+ linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org,
+ linux-security-module@vger.kernel.org, linux-sh@vger.kernel.org,
+ linux-sound@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+ linux-trace-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+ linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+ ntfs3@lists.linux.dev, samba-technical@lists.samba.org,
+ sched-ext@lists.linux.dev, target-devel@vger.kernel.org,
+ tipc-discussion@lists.sourceforge.net, v9fs@lists.linux.dev, Philipp Zabel
+ <p.zabel@pengutronix.de>
+Subject: Re: [PATCH 57/61] reset: Prefer IS_ERR_OR_NULL over manual NULL
+ check
+Message-Id: <20260311135911.ced50d67e940cdf933a98d1a@kernel.org>
+In-Reply-To: <20260310-b4-is_err_or_null-v1-57-bd63b656022d@avm.de>
+References: <20260310-b4-is_err_or_null-v1-0-bd63b656022d@avm.de>
+	<20260310-b4-is_err_or_null-v1-57-bd63b656022d@avm.de>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-References: <20260126151157.3418145-1-praan@google.com> <20260126151157.3418145-7-praan@google.com>
- <CAE2F3rD0aoTXJBnS4SPHLEEst6cTvoUxNywRZ1RhdgwNA_0JTA@mail.gmail.com>
- <aa8jkLD0l2WqMnyG@google.com> <CAE2F3rBFRSTC7bFCYTCit1-OKrT3jB-fwYGu_UJbwX+7aE65eA@mail.gmail.com>
- <abBMy5MgrrOlofDF@google.com>
-In-Reply-To: <abBMy5MgrrOlofDF@google.com>
-From: Daniel Mentz <danielmentz@google.com>
-Date: Tue, 10 Mar 2026 21:43:05 -0700
-X-Gm-Features: AaiRm51lq5QmG2ufBTfyxBLGgTLikSPASuLqFdCAAQxSL4-PE0bFSyUz0jt5iVE
-Message-ID: <CAE2F3rA_uyYGx2PCHMpFPWD6B4_2WxK-ahpoRHioXfuNf5Mpxw@mail.gmail.com>
-Subject: Re: [PATCH v5 06/10] iommu/arm-smmu-v3: Add a usage counter for cmdq
-To: Pranjal Shrivastava <praan@google.com>
-Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, 
-	Nicolin Chen <nicolinc@nvidia.com>, Ashish Mhetre <amhetre@nvidia.com>, 
-	Sairaj Kodilkar <sarunkod@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Pranjal,
+On Tue, 10 Mar 2026 12:49:23 +0100
+Philipp Hahn <phahn-oss@avm.de> wrote:
 
-I have thought about this further and would like to propose an
-alternative design.
+> Prefer using IS_ERR_OR_NULL() over using IS_ERR() and a manual NULL
+> check.
+> 
+> Semantich change: Previously the code only printed the warning on error,
+> but not when the pointer was NULL. Now the warning is printed in both
+> cases!
+> 
+> Change found with coccinelle.
+> 
+> To: Philipp Zabel <p.zabel@pengutronix.de>
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Philipp Hahn <phahn-oss@avm.de>
+> ---
+>  drivers/reset/core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/reset/core.c b/drivers/reset/core.c
+> index fceec45c8afc1e74fe46311bdc023ff257e8d770..649bb4ebabb20a09349ccbfc62f8280621df450e 100644
+> --- a/drivers/reset/core.c
+> +++ b/drivers/reset/core.c
+> @@ -715,7 +715,7 @@ EXPORT_SYMBOL_GPL(reset_control_bulk_acquire);
+>   */
+>  void reset_control_release(struct reset_control *rstc)
+>  {
+> -	if (!rstc || WARN_ON(IS_ERR(rstc)))
+> +	if (WARN_ON(IS_ERR_OR_NULL(rstc)))
 
-A key difference in this design is that no commands are written to the
-command queue, and the producer index is not updated while the SMMU is
-suspended.
+This changes the behavior when rstc == NULL.
+WARN_ON does not hit when rstc == NULL in the original code.
 
-Similar to the existing CMDQ_PROD_OWNED_FLAG, we could define a new
-flag, CMDQ_PROD_STOP_FLAG, stored in cmdq->q.llq.prod.
+Thanks,
 
-In arm_smmu_cmdq_issue_cmdlist():
-Perform "old = cmpxchg_relaxed(&cmdq->q.llq.val, llq.val, head.val);".
-If CMDQ_PROD_STOP_FLAG is set in the variable named old, return from
-arm_smmu_cmdq_issue_cmdlist() immediately.
+>  		return;
+>  
+>  	if (reset_control_is_array(rstc))
+> 
+> -- 
+> 2.43.0
+> 
+> 
 
-In the Suspend handler:
 
-1. Clear SMMU_CR0.SMMUEN.
-2. Set CMDQ_PROD_STOP_FLAG in cmdq->q.llq.prod.
-3. Wait until CMDQ_PROD_OWNED_FLAG is cleared from cmdq->q.llq.prod.
-4. Wait until cmdq->owner_prod matches cmdq->q.llq.prod (excluding the
-CMDQ_PROD_STOP_FLAG).
-5. Wait until cmdq->lock is 0.
-6. Clear SMMU_CR0.
-
-In the Resume handler:
-Follow the same logic as your patch, but clear CMDQ_PROD_STOP_FLAG in
-cmdq->q.llq.prod instead of setting nr_cmdq_users to 1.
-
-One benefit of this proposal is that it avoids adding a new atomic
-variable that multiple CPU threads might compete for. Instead, we
-reuse existing atomic operations, which should reduce the performance
-impact for server use cases where many CPU threads compete for command
-queue access.
-
-Daniel
+-- 
+Masami Hiramatsu (Google) <mhiramat@kernel.org>
