@@ -1,376 +1,167 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011019.outbound.protection.outlook.com [52.101.52.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 922C2390CB7
-	for <iommu@lists.linux.dev>; Thu, 12 Mar 2026 11:43:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773315792; cv=none; b=MU3Y5/c/731wO4ayLfvJiV+5egaAShJGDylpx7/sPgzoeoJYr4sbgFkxeYlDfA5ISLs0Z5DgTxXsI76KVzaX6PmCvuYhKkoMXaROZbfZt2HFVcg93N/ROt/89kQGBf5V7jjaFyiRcGi5McYeKZfg5OThHun6wW1QE0MwKngFYMU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773315792; c=relaxed/simple;
-	bh=J5rItIOIM0lENJfGiWQDdbQDu2LdQwomu4iLQymPMio=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=glIgVdVDHa3q7bcDZGB+jn2Lp76XmxUIYdBn2xDCjtcmKpaMu8xn1lrY2LZzg4wEwfTFrnSGZ/sytsLODTlUVUyuEy/c4RQMwKqfLg1kXr1VRovHxL5hq0oZvLEtgJGzZniJ3k8qV3eq/3qeUIpNa5z31CmeVs1Ee4795QYEKuk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=cuIgsaPD; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=YqBgtBSm; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C4CE3AD505
+	for <iommu@lists.linux.dev>; Thu, 12 Mar 2026 11:44:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.19
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773315886; cv=fail; b=HYnM5B3vVhNA41Yxj8ls0mDEPa5FVU1AJU3maN4QjNgVb1HNLR/YYdidDAqop+s7VdoTm+vkLoESy/NWu+vXq6qzigKN6h394GvQo3iEMWtN7JLMKYz+qkrSUQtoWqV3ZJgNocp2o1YIEKu8j9LAxQvRleHmsQYFf7esOh0JWzs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773315886; c=relaxed/simple;
+	bh=wxdqHhhsPqkkYKts6QXQdukiblmEzeQK4XUoJKF7d6g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=tfZBh/1oSEYDB/jTfWjd0AA5C4V1jXQsAsMIEbEyycfWK1fCFSOwNEhF06oGFqtgFcebTvbDkTCKKrOx2/W6f+YMEnAb1C8EpdLfjAjrh6i5cq2Jhhz4IkvJJbxsEDq4/44o6R0YkCZgSnmb9c59d6S9vwgGvOhayGnqhszQchQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=i0ae+A1c; arc=fail smtp.client-ip=52.101.52.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="cuIgsaPD";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="YqBgtBSm"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62C7eFmo510100
-	for <iommu@lists.linux.dev>; Thu, 12 Mar 2026 11:43:08 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	pVihyfEVv9KoFRyaGUgwYSBE5ZXMKxbsi+xWvdEgydE=; b=cuIgsaPDCpjPQizt
-	0NHBv5jjn/jXISGW57UxIf1k5Xu0iyORYIMcUYWeJlBRrGKhgI9pL4FmIBwf5DVl
-	3tt9dW7MlCfSbQewK2BKinwVtG7lWXhVA5ZFrESWS8JhlhPNGtLeQxoiYWsgRfhF
-	sPdiL7e/lWx9qs/2aCRoDvzK8fz15IG3gIlIPdt/kFsccxqEy5hNrJWWjZ8GrNnm
-	bNdsjFPw8GqmLOyQxZllHdvttI3qeaEYgEurG3+f/2l7q8Csv+y8bwlOn3soN2cb
-	E2ycM89HWorASgLc2zbrjNBGYojkHubOksbBAUykTaErSiimLefagq23R/1Z3AU5
-	H63GgA==
-Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4cus9w0m9s-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 12 Mar 2026 11:43:08 +0000 (GMT)
-Received: by mail-pl1-f197.google.com with SMTP id d9443c01a7336-2aec6c572fbso9994465ad.1
-        for <iommu@lists.linux.dev>; Thu, 12 Mar 2026 04:43:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1773315788; x=1773920588; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=pVihyfEVv9KoFRyaGUgwYSBE5ZXMKxbsi+xWvdEgydE=;
-        b=YqBgtBSmlhwqsxdS6vERB0n3UfpqcIqWrO7BXk5FaiFqMUR6AWiZ3Z8sA8rbV/l1bV
-         3VfNd0d3W5q68jN0xIP55SiAch6AcuYcBH8W2RWeoxZvtqJ7qYzBglvwGkB9BnTAcMO7
-         TV3A1EW0KlSX78keKWg2DeC/Z/Od2jTY4qELsSjqSiz4PFt7RJYURWlwCyli3T1B5ztF
-         GbMS+etrPujIJarjmlB6qJRMn/srmNf6632/QiYYJr4C4U+A+cmzgOJSxNm7jfmfX5eH
-         yoOIuAocUzX36w1ul53cFbRhZ+8nZ4+2MiXtU+uoGotgYPMQhv3MfKcqhDWutKy5VlSt
-         SEjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773315788; x=1773920588;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=pVihyfEVv9KoFRyaGUgwYSBE5ZXMKxbsi+xWvdEgydE=;
-        b=YTu3gDf4WSiTfdqwLlkLTXm6o0weB9p2nPbe82v9viSDp71i3+9FQuFxqPAXb3j+Pa
-         IQb9IZU9oXPruDzPPvA46tCs03DqNRcDPTg+NwUx0YFCr9Hps/huGIem6BDYTK7a1Itx
-         82hG+Kdv9KR1/q+UQCuHZCF6f2Uz6q6kEAX6OTiuTMYtsh4GFOI1edmaKpV47ZU0s6WT
-         p08XsOm6FzqE3F8HRYGG8xMTMVkAjQerrsf22mq2cK1a/Ca+lLLOHAfzuTbHxW8elXAr
-         o6dwJ/SXGERHp1lz4UO7pso9QymDcamrwTJHct/EaQwndKTsltlUzgbvVD+eJNfPR6uN
-         DlMw==
-X-Forwarded-Encrypted: i=1; AJvYcCXHXnvxrerfXVHlCQkqdRlGUEnWYKVvpIy0IyvVBtlOQgel+0Jze1gbRVcSVxbeuMYb010kaA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxRrmWDtDVBwH3z24I1woNTUPURW5zkbG/Vlb0ruK4G6IiKbipk
-	yvF4UFPzKvL9gpsdXsDjlGZnbHRGz/ZqOdi5tBxuvDeR2O/fYazNNGnGbYkUbw/SOLDJag8kQA4
-	MQWzZVJIqfJ01hKq9HLm0BnL0SYLSjJDf/HSUf8vwsNJL+X8p2u9yaNaFbA==
-X-Gm-Gg: ATEYQzw/M8blVtyV7GBGxFsW9oocg7XeZMHMYJUE3jZsSXAZ4vB3qK4nDPL7CX+zqMO
-	bd3JnRwnFvjDxO9DBI4u4v6HitMV7SMO5ktsPKvFtsFdiEGJpn4hNwvazTj3l9FsiRjlp+b/6mb
-	v257b2751acmgQmK62xSJWlXggmojSDsH8c9EtBNC3vsvq/mX4frctN5zYbm/XtoVZND86dhcNC
-	Tu/VFK+D/FU4o8tUT05bqCJM8oQfnaxDf1iFMWgGOFm5H/51lZvxU73XHxVePkHiR2ge5GHh9uo
-	7Rd5sqvuZG+ECV3hTqBZvXj9tDaB41SUlyPAGIkHp9cLssUNXi1KcdnEAz+1vpnMN9dZNopQu6A
-	PXk99FbMUVL6GLSlU4tV5vOJKsNGepGzeKXGMWbbtuy4XoD3sfIOQlNonDg==
-X-Received: by 2002:a17:902:db11:b0:2ae:59d3:27f8 with SMTP id d9443c01a7336-2aeae7b4ecdmr63852245ad.19.1773315787484;
-        Thu, 12 Mar 2026 04:43:07 -0700 (PDT)
-X-Received: by 2002:a17:902:db11:b0:2ae:59d3:27f8 with SMTP id d9443c01a7336-2aeae7b4ecdmr63851865ad.19.1773315786884;
-        Thu, 12 Mar 2026 04:43:06 -0700 (PDT)
-Received: from [192.168.1.10] ([38.254.186.229])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2aeae25cd67sm56194955ad.38.2026.03.12.04.42.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 Mar 2026 04:43:06 -0700 (PDT)
-Message-ID: <27edd195-b0d3-4214-9df3-74a84da1e3e1@oss.qualcomm.com>
-Date: Thu, 12 Mar 2026 17:12:51 +0530
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="i0ae+A1c"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=LyizwgLZwHf1jEx+GHMKLUBXEGUAAedr6wXKHmUOB7pgiovE6Fl3epP3ETrZGEL4TOPkBQRS23hpmp18v7FSFCVj/eu761oCoCnanPWfCCbthTPEdSwG63VSS4MXhpY56h/FdphcE1D9jk0iFmEIkdnYFpq/Kmg21Z2PcLKZeqvf3T/cxMDXfxgejmIsM/AXRKoXa3uoc8kMX4iOpQjxpzKcPXvFSVFd+Pd2zE6//876FX7BUnDP0CYN1Af7RGUGKC5KbgfoNYctZo6LIqkjF/kKObT6wknkuS5slleaChGEBwXbNPCX0EBecXF1pW9rm58qt7FoJZJ+Fjo0Oro+DQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0NavJ1/6jwMlcWGH2Ty4yPwRU8MH+aKZD62eGg4XWLY=;
+ b=Vz3iZzCT6CfH3Vx6DmtNqNASao8CIyVvbcesr9AdFcr0DahkEXzWV+xo86wigEvQUAFi/UTm745/O2QaxMd3Pj50gyBghqX16GJXQQAVxBCWixH9JhybW4OeFHk8GyguwwZw/tnpGRZ5LxAbtIyjUDGmvoOqfczvnYYw3ZlVfDyHwlhttao0GB3QaMVDveI0szjD7+edcidruAfvjyyWnkvan/DxmQLqx/RvZGIyYJymAIvpvQ3yhx2VBENHm0TaCApcDzSGzcFd3nkgph9RLhgeKIsAmwTBMkpNR0agXhslF6+/7qAx2Rmydpm7ZrSwf1vvuL0hX9Zf7j7iojhC7Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0NavJ1/6jwMlcWGH2Ty4yPwRU8MH+aKZD62eGg4XWLY=;
+ b=i0ae+A1cuEMuIn4ScjKowbwqy7IM+4o2nJWO8qoMHNjH0xWZCtp8ozNlDNDf7fJaOtFkyMnvldQ9s7IEMydJnJNrr20pjPUPHmlrzMjEzkS5Gf1nGcoegdL3YC/HHNJQya7W2w5ilisQshFmz+edAzS9SVjAGEr0ONZLKbs8U2uNHY+AZ7ioAkDuWTMCxShEWxY1sMbntTwYhXpc5WSXXzQN6jwReZo4E3yXGtevENbv8IakqstWXr4kwgkpwIAqqtBFFcZORICY9QeYqSUJaaBVVpjIOCF0rEuKNf8TCVdY2ehSRbbFihEE1VVViuENZMsLCkLM5W2tvR8AqwpxtA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by DS5PPF5C5D42165.namprd12.prod.outlook.com (2603:10b6:f:fc00::64f) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9723.4; Thu, 12 Mar
+ 2026 11:44:39 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9654.022; Thu, 12 Mar 2026
+ 11:44:39 +0000
+Date: Thu, 12 Mar 2026 08:44:38 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Dmytro Maluka <dmaluka@chromium.org>,
+	Samiullah Khawaja <skhawaja@google.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/8] iommu/vt-d: Add entry_sync support for PASID entry
+ updates
+Message-ID: <20260312114438.GG1448102@nvidia.com>
+References: <20260309060648.276762-1-baolu.lu@linux.intel.com>
+ <20260309060648.276762-3-baolu.lu@linux.intel.com>
+ <20260309134116.GE3717316@nvidia.com>
+ <4fbe6dcf-1105-4efc-b755-81a5bfb74090@linux.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4fbe6dcf-1105-4efc-b755-81a5bfb74090@linux.intel.com>
+X-ClientProxiedBy: MN0P223CA0019.NAMP223.PROD.OUTLOOK.COM
+ (2603:10b6:208:52b::34) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v10 2/3] of: factor arguments passed to of_map_id() into a
- struct
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Cc: Nipun Gupta <nipun.gupta@amd.com>,
-        Nikhil Agarwal
- <nikhil.agarwal@amd.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Marc Zyngier <maz@kernel.org>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Thomas Gleixner <tglx@kernel.org>,
-        Saravana Kannan <saravanak@kernel.org>,
-        Richard Zhu <hongxing.zhu@nxp.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Bjorn Helgaas
- <bhelgaas@google.com>, Frank Li <Frank.Li@nxp.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>, Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-        Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>,
-        Rob Herring <robh@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Prakash Gupta <prakash.gupta@oss.qualcomm.com>,
-        Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
-        linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-pci@vger.kernel.org, imx@lists.linux.dev,
-        xen-devel@lists.xenproject.org, linux-arm-msm@vger.kernel.org,
-        Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
-References: <20260309-parse_iommu_cells-v10-0-c62fcaa5a1d8@oss.qualcomm.com>
- <20260309-parse_iommu_cells-v10-2-c62fcaa5a1d8@oss.qualcomm.com>
- <esfzpgpgenydif2sxahsetkglz6kewsgjhkmzr6ulrrkctnkbq@a4zsfdmhbxui>
-Content-Language: en-US
-From: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
-In-Reply-To: <esfzpgpgenydif2sxahsetkglz6kewsgjhkmzr6ulrrkctnkbq@a4zsfdmhbxui>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: ICh71Rd6BZgYTwpltpJ6A57IpJSp7_XU
-X-Authority-Analysis: v=2.4 cv=IIIPywvG c=1 sm=1 tr=0 ts=69b2a6cc cx=c_pps
- a=cmESyDAEBpBGqyK7t0alAg==:117 a=FuYIH7Xx0xzBSkYrynBYgw==:17
- a=IkcTkHD0fZMA:10 a=Yq5XynenixoA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=ZpdpYltYx_vBUK5n70dp:22
- a=EUspDBNiAAAA:8 a=VwQbUJbxAAAA:8 a=tICBgMK4MGcbsJ-UzjAA:9 a=3ZKOabzyN94A:10
- a=QEXdDO2ut3YA:10 a=1OuFwYUASf3TG4hYMiVC:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzEyMDA5MiBTYWx0ZWRfXymamluzZ1yrS
- h+Dsa5aWr72aYjA21bTsAE/v7jKQplqmOAtNbKdhTzY4OlQaHiV2WLcYsdvLj2ZedbutE0oTXXG
- elKj64HDDIadBJWAlnGYyqOI7FPYFK6Qt2uvdRQaXgRGdgS2HXFh34DGpL3hkTGG+8Jb5INCYHF
- lAptR54G4fmMSYAZCDj/kaBiAh7S8ioUQABEIpmUn8B3g+sfSfifRrVSpjZlX/V39iakwH8WzA4
- 69v07EoHvuqKYyBGyQU+MiE7HwQHOvdktHWJJG6MAQJFpaMN5UUhp8e4tq2378jN70pXEXXRv78
- k+ITDV2klxXJdR3CGJZKZqJ4R2icgPE3sK8U38RT/0RCBTte+8bcx38VAtJWb3XFMC9LHZWAl04
- YIj/oB2bnhr+jBAo9fqBoaatg9S2IeQn74ot6c++vO4Ro53x8g44MukLgp9XyAKFAzFXPGbI8mB
- k38Ld7CM8tyD7DTjd5A==
-X-Proofpoint-ORIG-GUID: ICh71Rd6BZgYTwpltpJ6A57IpJSp7_XU
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-03-12_01,2026-03-09_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 bulkscore=0 priorityscore=1501 phishscore=0 lowpriorityscore=0
- clxscore=1015 adultscore=0 impostorscore=0 spamscore=0 malwarescore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2603050001 definitions=main-2603120092
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|DS5PPF5C5D42165:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3c376c27-7fdd-4edd-d611-08de802cbe4c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|1800799024|376014|56012099003|22082099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	Lrd6VfKYhzku8c8ZdN4AzroWA26rpz7uqu85C5GfiN8+WS78vbkW5w/oFQjvQk8nGJPHUgt3NxXNy9wetZifk7IXdFeWz3csPYvt2fc1Tr4g+p5Kj+kZZUD/iJkAR4P4QwNz3Gu0bcrKF0WGs53Uc5Eebjdo/mFN9jqvN6E51FClb6OqYVsGhUWPMGDAjh8Ryip3KLta2J4BX9+cfBM4kesDoy+I39lLtjZT3eAfHoG+Ln1jYsO5RS+29kxGsf+I1J4qN540wkp4k8/x/vzPno5Hyh2/fznHFFMwMGbCNyxwBx8bSSGccL6wS1CasNamI4fUFm56QxBXNF6SA3qvtuonVvWDr6RYQ9FqfR4mdYuSrHTAhmVY2gGx8sXpkQ7wx5lSJVETFmdIKsPqYSKfIde6JqZSMWdd9UIIzNVJwvICAlbVB4P2fYZKQA6sx32muPxczHfoQ7/mvaJkvnPJ3Ta/aait74+ed/WB+Da8GwE2us8/8KRInTs7i5tz7cfRaeyUrCV20ViNBmR1mrDz3oSMqahbxbiTU9qxX2oAqJommrhyIMMnwPrJetbYQb+nxllrw32vFzZK4t+N/lkbF65xxemqO3m40IyWD+Lmp+CW9n6rtno9JoskEBzeUh6TIsQRIimSRoemW2T9D6c6bNinAGs9ygU/p5eoczfOCt5lNWySP3Ch3b44J2otlKDJ3FKLjQKtA/cKsNaI9WWJ/+1EGaUeFCUU8xv0QL480N4=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(56012099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?VFBKGxDTS4VjwzFjjhEmt3FWpFPSFXLnpwcoNKRmwQy7nlrjUlLzXL5Rmvzz?=
+ =?us-ascii?Q?hxmBFe+CNhCmljcQz8qPI9hp3d8IJzmqMMBayZm8gJZ/Fwyh4x0AwtVTZCMM?=
+ =?us-ascii?Q?W2G1+QJbFtCw4+FrdJYJ2HXkNLqyb2tRlcKM71EW74s5oCaAElsxG9vLimwu?=
+ =?us-ascii?Q?yczu347TP6ZAjN2eED0kTM16X4c0AN52IJwrDgfDUaNtx9QkegN27FxOxBmv?=
+ =?us-ascii?Q?xRWD9oHsjVd3wIrwwSLDNp9a1vacv4LAD9MxoRj8hzPod+0VIZ2TiEoYN+VY?=
+ =?us-ascii?Q?n8qPtd/ZYBoqMH34c3aBVYDlAXKlCyyaW140IlJ54XRseb5zjsV2YiydvUGa?=
+ =?us-ascii?Q?2Y19HKb9dqt/qmvD8yn/ydNcWPaSFM74VXF0kRZ7J/Irg/sALTJJXU1/3e9n?=
+ =?us-ascii?Q?G54Z39lJ+sbNvQvdgkfjAw3ZPRxuKQPNuSspULH7TVf93JdQr/eqzZt9Y/V4?=
+ =?us-ascii?Q?A+wX06vq9sguHUQbFfyBlFauEai0/RS53Wk//SR27TbhcBPKENjR+O+e8e37?=
+ =?us-ascii?Q?s9+xACTV/X49OeZ6DboxUULIc4kMr6sd/r4sb3QdsOWnH5Uf3L+pz/w6nECu?=
+ =?us-ascii?Q?H9xUaqkPu+A7rOYY2Job/kFhJpb0EF5UaPcHLqIPXc34lfII0SvXVST4gQaR?=
+ =?us-ascii?Q?k/0J5NYKmXKFDQpTYZ5+wTpbWMPQsCwgyNRr4erobldKbbx4Ozi0BCyIsoyz?=
+ =?us-ascii?Q?SvjalIgCKXGhOIVvocYE2jtQCbTGsbYK22nQcktm0CxI0cdc7M/PrROnIOWk?=
+ =?us-ascii?Q?aFlCS4fJcXfBA6Qxv++E69zA6dOYnZaHSqqVMPtgvYfsGzyYJXd4Ex0wCljD?=
+ =?us-ascii?Q?W3NfnA7UfIjVaiR1UrLqh/FnrGbElQwy2YhQaZpYWn1RftzxLQvSqwaZdkrb?=
+ =?us-ascii?Q?VCOmzSm2DQi/3RydVfHok6vEYxEbeDTmDEEEULvKoG4K6IZPt8xTsWmM0E9B?=
+ =?us-ascii?Q?JM7BSaEDQJwlFLCtR7wi3OF/EQvtCrMo+Ke25LH2mmunKqy727nYJKME29VA?=
+ =?us-ascii?Q?IBlE8ZqQDs3Kupb96mssnT9SwgCKrBTARWYGKHJN1MIvhuop4p4LPJ6fk/Zw?=
+ =?us-ascii?Q?OKt5V0y0QavzYOKNykwdg1OPyd1oA+DaPCaokVzTWV0EYIiKSrQ8VZ59R4Hy?=
+ =?us-ascii?Q?vnH2ZZ7+QDM41F3VYV6GdqlWemLSFnXLehyZpjiV/NDwFWzLNhD6a43Pe//+?=
+ =?us-ascii?Q?ZqnFaU7lCMAXTC/oavrE2VQJsIcAoIuCcEdb1tGEQx+yE47IicBYohbwzTbZ?=
+ =?us-ascii?Q?Xz4fAylMBd3lah+8X7XM/HVW0TIMBYadGp3h89hJl6anHTC/YdtfkD3hLefg?=
+ =?us-ascii?Q?KZSLnvsvHaU9wWO6mjsAWcbrC4Dxp1U6BSNGW5XTnJh/3TPQMmEXjqNdtCC+?=
+ =?us-ascii?Q?lnhmJptucF+dpf+oFz4LEHVkWfaXpSL0QPe73PpF9vbp4+hr38seDtTIeZ50?=
+ =?us-ascii?Q?tf0Y10ztaNDI898T2KS+rzHQOc01qk9jC7uGkVBDMKZhhcARE4rnock5phv9?=
+ =?us-ascii?Q?gPZNTpZCFWzDqXPv+Q9JdaTNxQTzovDXuP+FgDWjFup6StXNgITZxo2k7QvO?=
+ =?us-ascii?Q?wDhV/+gvHysM/QvI4kX48E4Oh8qNK13rmVcx0w+Q5rCa81Ih8BwwQyGxQQKh?=
+ =?us-ascii?Q?BSQ1Jb0aLMjd0JwUJABBVYtuLRzzDxOC7yY7XjiW4FhElbAilUNegblfvcZu?=
+ =?us-ascii?Q?hlq6f6YYssKniNFiYPeD3+MGEfYggcmLdb/6MbncWLL4XzI0u8e/p8rhNuCa?=
+ =?us-ascii?Q?jUjx7OeMHw=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3c376c27-7fdd-4edd-d611-08de802cbe4c
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2026 11:44:39.5393
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: c2ZMUP0kHjFpZoK6cFsLMFhdeZlWZYWWJeKnhj4nVrGcFykFSlYoybAFO0PPkgqr
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS5PPF5C5D42165
 
-
-
-On 3/10/2026 2:53 AM, Dmitry Baryshkov wrote:
-> On Mon, Mar 09, 2026 at 01:03:38AM +0530, Vijayanand Jitta wrote:
->> From: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
->>
->> Change of_map_id() to take a pointer to struct of_phandle_args
->> instead of passing target device node and translated IDs separately.
->> Update all callers accordingly.
->>
->> Subsequent patch will make use of the args_count field in
->> struct of_phandle_args.
->>
->> Suggested-by: Rob Herring (Arm) <robh@kernel.org>
->> Signed-off-by: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
->> Signed-off-by: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
->> ---
->>  drivers/cdx/cdx_msi.c                    |  5 ++-
->>  drivers/iommu/of_iommu.c                 |  2 +-
->>  drivers/irqchip/irq-gic-its-msi-parent.c | 11 ++++--
->>  drivers/of/base.c                        | 63 ++++++++++++++++----------------
->>  drivers/of/irq.c                         |  8 +++-
->>  drivers/pci/controller/dwc/pci-imx6.c    | 16 ++++++--
->>  drivers/pci/controller/pcie-apple.c      |  5 ++-
->>  drivers/xen/grant-dma-ops.c              |  4 +-
->>  include/linux/of.h                       | 12 +++---
->>  9 files changed, 76 insertions(+), 50 deletions(-)
->>
->> diff --git a/drivers/cdx/cdx_msi.c b/drivers/cdx/cdx_msi.c
->> index 63b3544ec997..03232b5ffbca 100644
->> --- a/drivers/cdx/cdx_msi.c
->> +++ b/drivers/cdx/cdx_msi.c
->> @@ -121,6 +121,7 @@ static int cdx_msi_prepare(struct irq_domain *msi_domain,
->>  			   struct device *dev,
->>  			   int nvec, msi_alloc_info_t *info)
->>  {
->> +	struct of_phandle_args msi_spec = { .np = NULL };
+On Thu, Mar 12, 2026 at 03:50:03PM +0800, Baolu Lu wrote:
+> If I understand your remark correctly, the driver should only need the
+> following in the sync callback:
 > 
-> Why do you need to set it? Parse functions ignore passed args, don't
-> they?
+> - clflush (if non-coherent) to ensure the entry is in physical memory.
+> - PASID cache invalidation to force the hardware to re-read the entry.
+
+Yes
+
+> - Device-TLB invalidation to drop local device caches.
+
+I have prefered to keep this outside the entry_set system since it has
+nothing to do with updating the context entry.
+
+There should be only one ATS flush after the new entry is installed.
+
+> > ATC invalidations should always be done after the PASID entry is
+> > written. During a hitless update both translations are unpredictably
+> > combined, this is unavoidable and OK.
 > 
+> The VT-d spec (Sections 6.5.2.5 and 6.5.2.6) explicitly mandates that an
+> IOTLB invalidation must precede the Device-TLB invalidation. If we only
+> do the device-TLB invalidation in the sync callback, we risk the device
+> re-fetching a stale translation from the IOMMU's internal IOTLB.
 
-The parse function does check arg->np on input — if it is non-NULL,
-it is used to match only entries targeting that specific node.
+It is a little weird that is says that, that is worth checking into.
 
-Also, there is this existing path in drivers/pci/msi/irqdomain.c which
-pre-sets the node and passes it as input to of_msi_xlate(), so the node
-pointer is not ignored by the parse code:
+The other text is clear that the IOTLB is cached by DID,PASID only, so
+if the new PASID entry has a DID,PASID which is already coherent in
+the IOTLB it should not need any IOTLB flushing.
 
-u32 pci_msi_domain_get_msi_rid(struct irq_domain *domain, struct pci_dev *pdev)
-{
-        struct device_node *of_node;
-        u32 rid = pci_dev_id(pdev);
+ie flushing the PASID table should immediately change any ATC fetches
+from using DID,old_PASID to DID,new_PASID.
 
-        pci_for_each_dma_alias(pdev, get_msi_id_cb, &rid);
+If there is some issue where the PASID flush doesn't fence everything
+(ie an ATC fetch of DID,old_PASID can be passed by an ATC invalidation)
+then you may need IOTLB invalidations not to manage coherence but to
+manage ordering. That is an important detail if true.
 
-        of_node = irq_domain_get_of_node(domain);
-        rid = of_node ? of_msi_xlate(&pdev->dev, &of_node, rid) :
-                        iort_msi_map_id(&pdev->dev, rid);
-
-        return rid;
-}
-
->>  	struct cdx_device *cdx_dev = to_cdx_device(dev);
->>  	struct device *parent = cdx_dev->cdx->dev;
->>  	struct msi_domain_info *msi_info;
->> @@ -128,11 +129,13 @@ static int cdx_msi_prepare(struct irq_domain *msi_domain,
->>  	int ret;
->>  
->>  	/* Retrieve device ID from requestor ID using parent device */
->> -	ret = of_map_msi_id(parent->of_node, cdx_dev->msi_dev_id, NULL, &dev_id);
->> +	ret = of_map_msi_id(parent->of_node, cdx_dev->msi_dev_id, &msi_spec);
->>  	if (ret) {
->>  		dev_err(dev, "of_map_id failed for MSI: %d\n", ret);
->>  		return ret;
->>  	}
->> +	of_node_put(msi_spec.np);
->> +	dev_id = msi_spec.args[0];
->>  
->>  #ifdef GENERIC_MSI_DOMAIN_OPS
->>  	/* Set the device Id to be passed to the GIC-ITS */
->> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
->> index a511ecf21fcd..d255d0f58e8c 100644
->> --- a/drivers/iommu/of_iommu.c
->> +++ b/drivers/iommu/of_iommu.c
->> @@ -48,7 +48,7 @@ static int of_iommu_configure_dev_id(struct device_node *master_np,
->>  	struct of_phandle_args iommu_spec = { .args_count = 1 };
-> 
-> .args_count = 1 should be set by of_map_iommu_id now (and dropped here).
-> 
-
-Sure, will move it.
-
->>  	int err;
->>  
->> -	err = of_map_iommu_id(master_np, *id, &iommu_spec.np, iommu_spec.args);
->> +	err = of_map_iommu_id(master_np, *id, &iommu_spec);
->>  	if (err)
->>  		return err;
->>  
->> diff --git a/drivers/irqchip/irq-gic-its-msi-parent.c b/drivers/irqchip/irq-gic-its-msi-parent.c
->> index b63343a227a9..729fa2f9f758 100644
->> --- a/drivers/irqchip/irq-gic-its-msi-parent.c
->> +++ b/drivers/irqchip/irq-gic-its-msi-parent.c
->> @@ -152,6 +152,8 @@ static int its_v5_pci_msi_prepare(struct irq_domain *domain, struct device *dev,
->>  static int of_pmsi_get_msi_info(struct irq_domain *domain, struct device *dev, u32 *dev_id,
->>  				phys_addr_t *pa)
->>  {
->> +	struct device_node *msi_ctrl __free(device_node) = NULL;
->> +	struct of_phandle_args msi_spec = { .np = NULL };
->>  	struct of_phandle_iterator it;
->>  	int ret;
->>  
->> @@ -178,9 +180,12 @@ static int of_pmsi_get_msi_info(struct irq_domain *domain, struct device *dev, u
->>  		}
->>  	}
->>  
->> -	struct device_node *msi_ctrl __free(device_node) = NULL;
->> -
->> -	return of_map_msi_id(dev->of_node, dev->id, &msi_ctrl, dev_id);
->> +	ret = of_map_msi_id(dev->of_node, dev->id, &msi_spec);
->> +	if (!ret) {
->> +		msi_ctrl = msi_spec.np;
->> +		*dev_id = msi_spec.args[0];
->> +	}
->> +	return ret;
->>  }
->>  
->>  static int its_pmsi_prepare(struct irq_domain *domain, struct device *dev,
->> diff --git a/drivers/of/base.c b/drivers/of/base.c
->> index 959305a84748..b6e07c5fe715 100644
->> --- a/drivers/of/base.c
->> +++ b/drivers/of/base.c
->> @@ -2102,36 +2102,37 @@ int of_find_last_cache_level(unsigned int cpu)
->>   * @id: device ID to map.
->>   * @map_name: property name of the map to use.
->>   * @map_mask_name: optional property name of the mask to use.
->> - * @target: optional pointer to a target device node.
->> - * @id_out: optional pointer to receive the translated ID.
->> + * @arg: pointer to a &struct of_phandle_args. On input, @arg->np may be
->> + *	set to a target device node to match, or NULL to match any. On
->> + *	success, @arg->np will be set to the matched target node (with a
->> + *	reference held) and @arg->args[0] will contain the translated ID.
-> 
-> Is this part being actually used (and useful)?
-> 
-
-Please refer the above comment. I see there is existing path in
-drivers/pci/msi/irqdomain.c which sets np.
-
-Thanks,
-Vijay
-
->>   *
->>   * Given a device ID, look up the appropriate implementation-defined
->>   * platform ID and/or the target device which receives transactions on that
->> - * ID, as per the "iommu-map" and "msi-map" bindings. Either of @target or
->> - * @id_out may be NULL if only the other is required. If @target points to
->> - * a non-NULL device node pointer, only entries targeting that node will be
->> - * matched; if it points to a NULL value, it will receive the device node of
->> - * the first matching target phandle, with a reference held.
->> + * ID, as per the "iommu-map" and "msi-map" bindings. If @arg->np points to
->> + * a non-NULL device node, only entries targeting that node will be matched;
->> + * if it is NULL, it will receive the device node of the first matching
->> + * target phandle, with a reference held.
->>   *
->>   * Return: 0 on success or a standard error code on failure.
->>   */
->>  int of_map_id(const struct device_node *np, u32 id,
->>  	       const char *map_name, const char *map_mask_name,
->> -	       struct device_node **target, u32 *id_out)
->> +	       struct of_phandle_args *arg)
->>  {
->>  	u32 map_mask, masked_id;
->>  	int map_len;
->>  	const __be32 *map = NULL;
->>  
->> -	if (!np || !map_name || (!target && !id_out))
->> +	if (!np || !map_name || !arg)
->>  		return -EINVAL;
->>  
->>  	map = of_get_property(np, map_name, &map_len);
->>  	if (!map) {
->> -		if (target)
->> +		if (arg->np)
->>  			return -ENODEV;
->>  		/* Otherwise, no map implies no translation */
->> -		*id_out = id;
->> +		arg->args[0] = id;
->>  		return 0;
->>  	}
->>  
->> @@ -2173,18 +2174,15 @@ int of_map_id(const struct device_node *np, u32 id,
->>  		if (!phandle_node)
->>  			return -ENODEV;
->>  
->> -		if (target) {
->> -			if (*target)
->> -				of_node_put(phandle_node);
->> -			else
->> -				*target = phandle_node;
->> +		if (arg->np)
->> +			of_node_put(phandle_node);
->> +		else
->> +			arg->np = phandle_node;
->>  
->> -			if (*target != phandle_node)
->> -				continue;
->> -		}
->> +		if (arg->np != phandle_node)
->> +			continue;
->>  
->> -		if (id_out)
->> -			*id_out = masked_id - id_base + out_base;
->> +		arg->args[0] = masked_id - id_base + out_base;
->>  
->>  		pr_debug("%pOF: %s, using mask %08x, id-base: %08x, out-base: %08x, length: %08x, id: %08x -> %08x\n",
->>  			np, map_name, map_mask, id_base, out_base,
-> 
-
+Jason
