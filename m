@@ -1,85 +1,135 @@
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A72F579DA;
-	Wed, 11 Mar 2026 23:03:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.167.242.64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F0592638BC
+	for <iommu@lists.linux.dev>; Thu, 12 Mar 2026 00:34:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773270229; cv=none; b=roggHObGrMztUhdo4nb5uQuRkPEYZCn5X3QwxcJ7z5Dyv2K6zPgJpNqffR5gaz+VMRA3RXs25ESkVY7wXriRS/ACsiKP/b/Ydy5tNVkqvSBiaeddvZZZAkc/K6AISBrnPy2OBu1ByqoBgPhF9/8k/UFJwSaDxNj5rV5ykcRUkUw=
+	t=1773275652; cv=none; b=DyAQY+TG5CaB6OwmraNp0Lvib7u/N9N+x2SnvWvv/bd72SNoi9iYE0JERyaqezJb9IhzrmOTevGwLoGg+5DrLG//TTWZttUi/qbfB560yjOeV/u4CF5lfW48Kd8/OnK7Ksosr4I8as5nMpAbYpFFHBTx3os6ufYYHBzeiuEvtWU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773270229; c=relaxed/simple;
-	bh=ATo3aRyKmYSXuSYD8x/NeBUp5LJcLKbzHVpozNXQJC0=;
-	h=Content-Type:MIME-Version:In-Reply-To:References:Subject:From:Cc:
-	 To:Date:Message-ID; b=PrqFnIb5a7YHwE4RE6eaxrPHMLCEhV1UmhNlDjtvnxO/j3qF9tAaL0cHFxZqctKaEfyKbmVUdt5eF0Rp4vslLIMe5IoThbCLCSD9qfcST1vt7UbMZIgTTynOeQ7iRGr0bFdYOsCWUBXnhy3F43XbfViPKFuu1FeWRQQccyWeq8c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ideasonboard.com; spf=pass smtp.mailfrom=ideasonboard.com; dkim=fail (1024-bit key) header.d=ideasonboard.com header.i=@ideasonboard.com header.b=WxcdvAR4 reason="signature verification failed"; arc=none smtp.client-ip=213.167.242.64
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ideasonboard.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ideasonboard.com
+	s=arc-20240116; t=1773275652; c=relaxed/simple;
+	bh=Jwj40ySNMYku3d2yjr55Yeih0XswBk9HBherb/fv8B4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MMireyKC9hF/BOoND9V2LZREFit58ZsbAXqNFzrqkOQysztrp4AIwzaiFwM+gzWRaooM9klIr1iWIwjgfoldS6DDFvyEh28V3lUv9ZfCK3albrXpQRrPP+hcY88LICI0i9tiBRBfEgLx9ZmnIqURurwgAdEqjJwedzxrfWvQSL0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=FUbGlaxy; arc=none smtp.client-ip=209.85.222.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=ideasonboard.com header.i=@ideasonboard.com header.b="WxcdvAR4"
-Received: from monstersaurus.ideasonboard.com (cpc89244-aztw30-2-0-cust6594.18-1.cable.virginm.net [86.31.185.195])
-	by perceval.ideasonboard.com (Postfix) with ESMTPSA id CD91E448;
-	Thu, 12 Mar 2026 00:02:28 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-	s=mail; t=1773270149;
-	bh=ATo3aRyKmYSXuSYD8x/NeBUp5LJcLKbzHVpozNXQJC0=;
-	h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-	b=WxcdvAR4zphcUuTNTLXCbLGiiCOKCwemLRMbnRdmW3ARcBHAWQiYVeysDpnfCIDuk
-	 B8rMCjKjDjoWJdgj4Zp0scfHxrPnr5P3xl9hFANY/wyWKZBZYHzyf2qsFxVEe9S31Y
-	 m9r/HjFnopry9bsUUdk6/id/Q3d97jYK/FiMa+Qw=
-Content-Type: text/plain; charset="utf-8"
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="FUbGlaxy"
+Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-8cd847b4b23so39465385a.0
+        for <iommu@lists.linux.dev>; Wed, 11 Mar 2026 17:34:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1773275650; x=1773880450; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=oVlsIEeUlShNo2vVDcti72NQw3N4AQ0tu/N5/EFylTo=;
+        b=FUbGlaxynXG4Gp7BCAjNCao7GEYi39F4fVizF5EPzZU4uWXVfG4iJILSqcKcPIRe2y
+         qVfOQHD6TDFFt2QbyNlfJWbpLjXkFNgGhUiz785smFHv4kVD+gs9nhuf7PEHOahOkOM1
+         ErDusHfc1E1BSzf9231kK8Q8xugQoxwDbOGn6RjVHeFA2NYgAh8OSdHwRGt+ioFm3x+j
+         5JBhGL8afBUlxSTTR5HCldo4WjUA4r1u3q7WsFUMahYcJYhMmguGh4tyrYbf+qf6W06Y
+         S9M4l0w3SVQt58GeAgRqMBFIZ/HYElONWfe6HKEZ+8zAwfMLOh7WjVEgviFym8EtJKws
+         H9EA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1773275650; x=1773880450;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=oVlsIEeUlShNo2vVDcti72NQw3N4AQ0tu/N5/EFylTo=;
+        b=tNZ6FqetoaGxmgD4EtthgyGJ1/eybVZMrRnePaCPZWD7G9FkhA1csN8FRc+T4lFnAx
+         NIsmg575XG6OuNoBDhdToQNIsFdx1NAzQVwIMpL9/vrn8/X52AmfAn8ao84VUTS/6Plg
+         ey+NRSGDPAeSu7onuw0vfa75veIJsD8IaHxSPQ/traqPPruDL3op+zNCzkvw93Z87de6
+         wiEopcvEyIZ2SOJm6o1QTHOr4ziNR/kywz8HpwqPxfkPss0ISeIRMXwVdhdWzLtUPtv7
+         TZE4mDnb3B/uPQzzSm8VbI/FBuzmW7ESe4LY1xFIauf1ZNtYPxTqG++VIMStVSb2SKvi
+         Extg==
+X-Forwarded-Encrypted: i=1; AJvYcCVtsJT6jMRC8JGpII0l6T3f/nMg6VPcloS4DBk3gjFruTSpFfAyZgsIvZfBzWagcDsAwgxZ1w==@lists.linux.dev
+X-Gm-Message-State: AOJu0Ywd93S/l+anSy7btq71GvOP937TYgvxqkI2nxcGKwQdTsFPcD4Q
+	VCaSmkPYvi89MoAIp/ewvraQNQl9PbBrnh6NTkvRE/XlG7TKn/1y1XjMV0/mrcImsVM=
+X-Gm-Gg: ATEYQzx3uACanJxyW8EiFwl7yJqsGhCLjy9DmtAsElgVXYKFmCju8gSO1+vXCf0cBqE
+	xWAiovrFkmbdX4mYudycPuij6pxZDTIHGEAp5956lIGTkYN6fLSfOkA3S6ShAi1FYemNxGT4dT+
+	Wi1ise0TTKClMA1XaK9K1cGswFDQGZJCcr3z9HBbdbjZNAwqklM35deWtNwJmf/W7z/hsJVDYpk
+	em1VvND6styEgTulaE7IRVbpRwbLrX9SkhpLWrV4Ll8CsBmoTS+lHKHsfd/FxehUfc251m6z7RK
+	oEAlzBKmKLWm6k8yu0qnp8+prbrRklVsnBfjYkq0BLV47Gs8yUitGBLwmWo6nkSOQPHQEcW00MZ
+	gydmrgQ0YIlt8X+T3yHcCkbMzzJYg8Vyazeo88ezKBHaSxrQcxQcn9r9Nlip/6zhvu/1sIcF8pa
+	1OYdmd1Ec8HvzDvVRLtFk9TxJ7OamdoTfzbRGKmqqcwmiERPk2lxQxyG+FtjWHsJIDCOJM0agWN
+	kJtLe4I
+X-Received: by 2002:a05:620a:298e:b0:8ca:305b:749b with SMTP id af79cd13be357-8cda1ac2072mr553438885a.60.1773275650360;
+        Wed, 11 Mar 2026 17:34:10 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8cda212cac1sm263453685a.33.2026.03.11.17.34.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Mar 2026 17:34:09 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1w0U08-00000006Zyx-3dXg;
+	Wed, 11 Mar 2026 21:34:08 -0300
+Date: Wed, 11 Mar 2026 21:34:08 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Jiri Pirko <jiri@resnulli.us>
+Cc: Leon Romanovsky <leon@kernel.org>, dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev,
+	linux-media@vger.kernel.org, sumit.semwal@linaro.org,
+	benjamin.gaignard@collabora.com, Brian.Starkey@arm.com,
+	jstultz@google.com, tjmercier@google.com, christian.koenig@amd.com,
+	m.szyprowski@samsung.com, robin.murphy@arm.com,
+	sean.anderson@linux.dev, ptesarik@suse.com, catalin.marinas@arm.com,
+	aneesh.kumar@kernel.org, suzuki.poulose@arm.com,
+	steven.price@arm.com, thomas.lendacky@amd.com, john.allen@amd.com,
+	ashish.kalra@amd.com, suravee.suthikulpanit@amd.com,
+	linux-coco@lists.linux.dev
+Subject: Re: [PATCH net-next v3 1/2] dma-mapping: introduce
+ DMA_ATTR_CC_DECRYPTED for pre-decrypted memory
+Message-ID: <20260312003408.GA1469476@ziepe.ca>
+References: <20260305123641.164164-1-jiri@resnulli.us>
+ <20260305123641.164164-2-jiri@resnulli.us>
+ <20260308101948.GO12611@unreal>
+ <20260309131530.GJ1687929@ziepe.ca>
+ <20260309140233.GW12611@unreal>
+ <20260309151857.GO1687929@ziepe.ca>
+ <phry3e2dtgxzxdqvrnqfuskangp4al64f2auithwme5kwkgepe@7qtftrhgv4l7>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20260310-b4-is_err_or_null-v1-49-bd63b656022d@avm.de>
-References: <20260310-b4-is_err_or_null-v1-0-bd63b656022d@avm.de> <20260310-b4-is_err_or_null-v1-49-bd63b656022d@avm.de>
-Subject: Re: [PATCH 49/61] media: Prefer IS_ERR_OR_NULL over manual NULL check
-From: Kieran Bingham <kieran.bingham@ideasonboard.com>
-Cc: Shuah Khan <skhan@linuxfoundation.org>, Mauro Carvalho Chehab <mchehab@kernel.org>
-To: Philipp Hahn <phahn-oss@avm.de>, amd-gfx@lists.freedesktop.org, apparmor@lists.ubuntu.com, bpf@vger.kernel.org, ceph-devel@vger.kernel.org, cocci@inria.fr, dm-devel@lists.linux.dev, dri-devel@lists.freedesktop.org, gfs2@lists.linux.dev, intel-gfx@lists.freedesktop.org, intel-wired-lan@lists.osuosl.org, iommu@lists.linux.dev, kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org, linux-btrfs@vger.kernel.org, linux-cifs@vger.kernel.org, linux-clk@vger.kernel.org, linux-erofs@lists.ozlabs.org, linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-gpio@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-input@vger.kernel.org, linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org, linux-media@vger.kernel.org, linux-mips@vger.kernel.org, linux-mm@kvack.org, linux-modules@vger.kernel.org, linux-mtd@lists.infradead.org, linux-nfs@vger.kernel.org, linux-omap@vger.kernel.org, linux-phy@lists.infradead.org, lin
- ux-pm@vger.kernel.org, linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org, linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org, linux-security-module@vger.kernel.org, linux-sh@vger.kernel.org, linux-sound@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-trace-kernel@vger.kernel.org, linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org, netdev@vger.kernel.org, ntfs3@lists.linux.dev, samba-technical@lists.samba.org, sched-ext@lists.linux.dev, target-devel@vger.kernel.org, tipc-discussion@lists.sourceforge.net, v9fs@lists.linux.dev
-Date: Wed, 11 Mar 2026 23:03:33 +0000
-Message-ID: <177327021364.3167621.11851238159935183684@ping.linuxembedded.co.uk>
-User-Agent: alot/0.9.1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <phry3e2dtgxzxdqvrnqfuskangp4al64f2auithwme5kwkgepe@7qtftrhgv4l7>
 
-Quoting Philipp Hahn (2026-03-10 11:49:15)
-> Prefer using IS_ERR_OR_NULL() over using IS_ERR() and a manual NULL
-> check.
->=20
-> Change generated with coccinelle.
->=20
-> To: Shuah Khan <skhan@linuxfoundation.org>
-> To: Kieran Bingham <kieran.bingham@ideasonboard.com>
-> To: Mauro Carvalho Chehab <mchehab@kernel.org>
-> Cc: linux-media@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Philipp Hahn <phahn-oss@avm.de>
-> ---
->  drivers/media/test-drivers/vimc/vimc-streamer.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/media/test-drivers/vimc/vimc-streamer.c b/drivers/me=
-dia/test-drivers/vimc/vimc-streamer.c
-> index 15d863f97cbf96b7ca7fbf3d7b6b6ec39fcc8ae3..da5aca50bcb4990c06f28e5a8=
-83eb398606991e9 100644
-> --- a/drivers/media/test-drivers/vimc/vimc-streamer.c
-> +++ b/drivers/media/test-drivers/vimc/vimc-streamer.c
-> @@ -167,7 +167,7 @@ static int vimc_streamer_thread(void *data)
->                 for (i =3D stream->pipe_size - 1; i >=3D 0; i--) {
->                         frame =3D stream->ved_pipeline[i]->process_frame(
->                                         stream->ved_pipeline[i], frame);
-> -                       if (!frame || IS_ERR(frame))
-> +                       if (IS_ERR_OR_NULL(frame))
+On Mon, Mar 09, 2026 at 06:51:21PM +0100, Jiri Pirko wrote:
+> Mon, Mar 09, 2026 at 04:18:57PM +0100, jgg@ziepe.ca wrote:
+> >On Mon, Mar 09, 2026 at 04:02:33PM +0200, Leon Romanovsky wrote:
+> >> On Mon, Mar 09, 2026 at 10:15:30AM -0300, Jason Gunthorpe wrote:
+> >> > On Sun, Mar 08, 2026 at 12:19:48PM +0200, Leon Romanovsky wrote:
+> >> > 
+> >> > > > +/*
+> >> > > > + * DMA_ATTR_CC_DECRYPTED: Indicates memory that has been explicitly decrypted
+> >> > > > + * (shared) for confidential computing guests. The caller must have
+> >> > > > + * called set_memory_decrypted(). A struct page is required.
+> >> > > > + */
+> >> > > > +#define DMA_ATTR_CC_DECRYPTED	(1UL << 12)
+> >> > > 
+> >> > > While adding the new attribute is fine, I would expect additional checks in
+> >> > > dma_map_phys() to ensure the attribute cannot be misused. For example,
+> >> > > WARN_ON(attrs & (DMA_ATTR_CC_DECRYPTED | DMA_ATTR_MMIO)), along with a check
+> >> > > that we are taking the direct path only.
+> >> > 
+> >> > DECRYPYED and MMIO is something that needs to work, VFIO (inside a
+> >> > TVM) should be using that combination.
+> >> 
+> >> So this sentence "A struct page is required" from the comment above is
+> >> not accurate.
+> >
+> >It would be clearer to say "Unless DMA_ATTR_MMIO is provided a struct
+> >page is required"
+> >
+> >We need to audit if that works properly, IIRC it does, but I don't
+> >remember.. Jiri?
+> 
+> How can you do set_memory_decrypted if you don't have page/folio ?
 
-Reviewed-by: Kieran Bingham <kieran.bingham@ideasonboard.com>
+Alot of device MMIO is decrypted by nature and can't be encrypted, so
+you'd have to use both flags. eg in VFIO we'd want to do this.
 
->                                 break;
->                 }
->                 //wait for 60hz
->=20
-> --=20
-> 2.43.0
->
+Jason
+
