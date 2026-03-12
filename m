@@ -1,147 +1,118 @@
-Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F71E3FB7EB
-	for <iommu@lists.linux.dev>; Thu, 12 Mar 2026 16:54:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 623F8386C01;
+	Thu, 12 Mar 2026 17:11:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773334494; cv=none; b=Ir0sjOi/jrIqdML0kRs9Y+aPLYr+941H3J59rpJCafU1BAV/+p2r96AQ+5fDno4BhIWYXRcctbGm1rdKuDyhPnXjSXEEL0zKYdRnKJmWyWtOqnnjCdCFDzw8DrvlvUBOPU5YVRRaLyNVTa61JSzU2+wtPyljSJ4stxC9hSOuoSw=
+	t=1773335490; cv=none; b=Z4K8et2DI57IrjR6VRsRsFQdqkalUn25kqxbGTB8NuoJ195LfBv9tBmOGQxmSVDnv7/VpYS8xRj3ymaPKcDY0StoaT9RgRrfYUjJCj+ola6A8Zjvq5xekwGcpMWLHKgGjEgywpwsye9uje3Bx0+v0EmkNef/96MuqVCC9nr5AGI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773334494; c=relaxed/simple;
-	bh=ENv0+4bH9YdpFLGeURNwJ3+rEUsnNn74RNCtOl26SEA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Re8DwSbBRFrERFcDTIeNUWiTDUKAMchgWnf64eJWGQaaUo8h58ENQpTeANaPZX56LQf9Ao3wy9A9GxILSnD7PRnUbdb2LNUCJoDCyzssZRpRleO+bXsf+k5McxraNhi4e9r/jDXPy6NqyiRMa32zMPOqFnr8U3A5nwGGptxTiyA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=XdvK8Dom; arc=none smtp.client-ip=209.85.160.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="XdvK8Dom"
-Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-509164dce91so11154601cf.1
-        for <iommu@lists.linux.dev>; Thu, 12 Mar 2026 09:54:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1773334491; x=1773939291; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=VQXCfPVu6b6dIVECzm0C8AUD7IL7VvpSkD5+M4S95sw=;
-        b=XdvK8DomXzUZgO6AoDwb+gZ7o/ziIbnIXHeoewfKtBKE5xyNG2Zck6CmNzNDWec1SB
-         l6itnkZH4V9Sxuv0dVfHojcx0ZpqqhGCu/CZ5lz2UxM0wQMexAGfjHJyeFboOcff/WPI
-         JWK+J3NRN2leYxfwrsAMxhrjjfN+/EJv+9htug6y4h/ByTJ80eVLtuuGfD4FwFG/E8H4
-         +uJdLGbU04IwX90inux/pY/ZLtJN3b61jhvP7qTFaBcM7pf3RlEjLXo6caO0csHVqAxz
-         hJgxIdv6OCGWX2aaKuKGlaQjUc3E4H2ah716Fy2ZS8tSsepbC+HgAc1oQbQJOLyGhGnN
-         nYLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773334491; x=1773939291;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=VQXCfPVu6b6dIVECzm0C8AUD7IL7VvpSkD5+M4S95sw=;
-        b=bT+vYu3GdBVdrwnL5360Oa9/fzegGXSMtwbV7Rvl1+o6nppN94Nq84ITQsuDuU8XZx
-         oYRfSo7HdMQlrdaxLi+5hs1vaqqvsFAxdDg2LN0WLRoG1Oy1E+15GQSQetkNjN1tn+1/
-         eUV22XSeZDZwICdNzLogMNVKtj9f/ShcuBs9bIhWBDHBqIpXmxnF/AxdfUOby3g9hJpT
-         5t/xlmV10b5Vm9ja+Tn1db+yLV/5XT0A2dDxNZ8mtZEgc9vK0ap96FMVVXQAmxCaurWf
-         rBYrJ6QS7t6k7iLXkPQcPO1VyFw+/0x9u7zcGljdrGrj0fMER/oGUC8/qPtPBPqsbv4O
-         dYIA==
-X-Forwarded-Encrypted: i=1; AJvYcCVKRxx353amg5pwMSPGpnIoM0joYAcUjBM509/PKEkLBFxjbnTh4m+QgNxPH2honTVC6OAovw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwCi2PqRWaKHG5E1+DMc2vv8W2BBl9G7aJTqLxntV3aOgxML+gg
-	gncTp7r13Yn56JxJgBfZLhG2urX11xiu6+MW3+/LRmrX7x0+metyqIHKk5xEzDZXhVM=
-X-Gm-Gg: ATEYQzyyfJxtw5SD8yDOlzFMIoyimUx4Vazg2MfpprfQraYFDocjpJ11N7vOEk+G8pS
-	+/cXmY/N9HL2mxeJVunIEbDcwxWUlaM+Wsp35NqTh0FI1WH43NRxb7OIuI/nE8TNeGUaFOWNltY
-	dHo08PHzcm+kmnySONvRwkCRPRIi3gMbInMPvnd6xEWjLMng85BFQCXMocNSUzeVDXvo0H95pLG
-	IyFGypPt3pBguEdo/L6UH0l3e/kc4o0RhBi+CSpRFkhFVZCIJvMYUoi3nVUGH1JSiuMtr13XP0C
-	lNifg7hd6aFTAcIjMNwREBEJiJ57QxlkwLjQRpOeSDppbcVjEcKlZsKx+4vyTHsFM6Tb4uRDaXP
-	Zy017V0+OB9eLh5rxFXMUvbCeqh4zG5b0JkN9NwQB95qgSzEAGVdZJY51MorcPEy1ynBL1b8olS
-	TTj5IxTKR/7cf7w4iGBu0vVrfB7oDydWSRHxfc2ZeDBE8rMJAB7Nl/l+w9iGuSVwTDvfK8k5An5
-	2AfLlNZdRf3pTDmS1w=
-X-Received: by 2002:a05:622a:289:b0:509:44c3:5ffa with SMTP id d75a77b69052e-50957e10673mr1403911cf.52.1773334490530;
-        Thu, 12 Mar 2026 09:54:50 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-5093a119602sm36658181cf.28.2026.03.12.09.54.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Mar 2026 09:54:49 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1w0jJA-00000006i8N-40X9;
-	Thu, 12 Mar 2026 13:54:48 -0300
-Date: Thu, 12 Mar 2026 13:54:48 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: James Bottomley <James.Bottomley@hansenpartnership.com>
-Cc: Kuan-Wei Chiu <visitorckw@gmail.com>, Philipp Hahn <phahn-oss@avm.de>,
-	amd-gfx@lists.freedesktop.org, apparmor@lists.ubuntu.com,
-	bpf@vger.kernel.org, ceph-devel@vger.kernel.org, cocci@inria.fr,
-	dm-devel@lists.linux.dev, dri-devel@lists.freedesktop.org,
-	gfs2@lists.linux.dev, intel-gfx@lists.freedesktop.org,
-	intel-wired-lan@lists.osuosl.org, iommu@lists.linux.dev,
-	kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-	linux-btrfs@vger.kernel.org, linux-cifs@vger.kernel.org,
-	linux-clk@vger.kernel.org, linux-erofs@lists.ozlabs.org,
-	linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-	linux-gpio@vger.kernel.org, linux-hyperv@vger.kernel.org,
-	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
-	linux-mips@vger.kernel.org, linux-mm@kvack.org,
-	linux-modules@vger.kernel.org, linux-mtd@lists.infradead.org,
-	linux-nfs@vger.kernel.org, linux-omap@vger.kernel.org,
-	linux-phy@lists.infradead.org, linux-pm@vger.kernel.org,
-	linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
-	linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org,
-	linux-security-module@vger.kernel.org, linux-sh@vger.kernel.org,
-	linux-sound@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-trace-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-	linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-	ntfs3@lists.linux.dev, samba-technical@lists.samba.org,
-	sched-ext@lists.linux.dev, target-devel@vger.kernel.org,
-	tipc-discussion@lists.sourceforge.net, v9fs@lists.linux.dev
-Subject: Re: [PATCH 00/61] treewide: Use IS_ERR_OR_NULL over manual NULL
- check - refactor
-Message-ID: <20260312165448.GN1469476@ziepe.ca>
-References: <20260310-b4-is_err_or_null-v1-0-bd63b656022d@avm.de>
- <abBlpGKO842B3yl9@google.com>
- <20260312125730.GI1469476@ziepe.ca>
- <f5688b895eaebabae6545a0d9baf8f1404e8454e.camel@HansenPartnership.com>
+	s=arc-20240116; t=1773335490; c=relaxed/simple;
+	bh=R19cNSvvuXB++GaxtAyG234DNoeZyrWhzsKTxzSM4uA=;
+	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ZMad4+qmz1BT/w4metxtiWco33AGw5g7IWCJ1Hd+5u/ekc9P/H9TQyzILzBKQBkVK2b5K48GZMu32yfk9pVzsOMSihYJPne7tebeK9RlrDJxF9Oe2PArV5eHdz/bdW10Lc4t6zblqvI+uJib3aUC27NFlkGqD3jFN88VvEQTiRE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.224.107])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTPS id 4fWvKD2vbxzHnGhc;
+	Fri, 13 Mar 2026 01:11:12 +0800 (CST)
+Received: from dubpeml500005.china.huawei.com (unknown [7.214.145.207])
+	by mail.maildlp.com (Postfix) with ESMTPS id 6C9D340584;
+	Fri, 13 Mar 2026 01:11:22 +0800 (CST)
+Received: from localhost (10.203.177.15) by dubpeml500005.china.huawei.com
+ (7.214.145.207) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.11; Thu, 12 Mar
+ 2026 17:11:21 +0000
+Date: Thu, 12 Mar 2026 17:11:20 +0000
+From: Jonathan Cameron <jonathan.cameron@huawei.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <jgg@nvidia.com>,
+	<joro@8bytes.org>, <jpb@kernel.org>, <praan@google.com>,
+	<miko.lenczewski@arm.com>, <smostafa@google.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <patches@lists.linux.dev>
+Subject: Re: [PATCH v3 08/10] iommu/arm-smmu-v3: Allocate
+ INV_TYPE_S2_VMID_VSMMU in arm_vsmmu_init
+Message-ID: <20260312171120.00002356@huawei.com>
+In-Reply-To: <71438f280adcf17dc76d56810e336445fb4bf85d.1771877893.git.nicolinc@nvidia.com>
+References: <cover.1771877893.git.nicolinc@nvidia.com>
+	<71438f280adcf17dc76d56810e336445fb4bf85d.1771877893.git.nicolinc@nvidia.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f5688b895eaebabae6545a0d9baf8f1404e8454e.camel@HansenPartnership.com>
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: lhrpeml500011.china.huawei.com (7.191.174.215) To
+ dubpeml500005.china.huawei.com (7.214.145.207)
 
-On Thu, Mar 12, 2026 at 11:32:37AM -0400, James Bottomley wrote:
-> On Thu, 2026-03-12 at 09:57 -0300, Jason Gunthorpe wrote:
-> > On Wed, Mar 11, 2026 at 02:40:36AM +0800, Kuan-Wei Chiu wrote:
-> > 
-> > > IMHO, the necessity of IS_ERR_OR_NULL() often highlights a
-> > > confusing or flawed API design. It usually implies that the caller
-> > > is unsure whether a failure results in an error pointer or a NULL
-> > > pointer. 
-> > 
-> > +1
-> > 
-> > IS_ERR_OR_NULL() should always be looked on with suspicion. Very
-> > little should be returning some tri-state 'ERR' 'NULL' 'SUCCESS'
-> > pointer. What does the middle condition even mean? IS_ERR_OR_NULL()
-> > implies ERR and NULL are semanticly the same, so fix the things to
-> > always use ERR.
-> 
-> Not in any way supporting the original patch.  However, the pattern
-> ERR, NULL, PTR is used extensively in the dentry code of filesystems. 
-> See the try_lookup..() set of functions in fs/namei.c
-> 
-> The meaning is
-> 
-> PTR - I found it
-> NULL - It definitely doesn't exist
-> ERR - something went wrong during the lookup.
-> 
-> So I don't think you can blanket say this pattern is wrong.
+On Mon, 23 Feb 2026 12:27:44 -0800
+Nicolin Chen <nicolinc@nvidia.com> wrote:
 
-Lots of places also would return ENOENT, I'd argue that is easier to
-use..
+> VMID owned by a vSMMU should be allocated in the viommu_init callback for
+>  - a straightforward lifecycle for a VMID used by a vSMMU
+>  - HW like tegra241-cmdqv needs to setup VINTF with the VMID
+> 
+> Allocate/free a VMID in arm_vsmmu_init/destroy(). This decouples the VMID
+> owned by vSMMU from the VMID living in the S2 parent domain (s2_cfg.vmid).
+> 
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+Hi Nicolin,
 
-But yes, I did use the word "suspicion" not blanket wrong :)
+Not a proper review as I'd need to do a bunch of catch up on how
+this stuff all works. So just one query inline.
 
-Jason
+> ---
+
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+> index a77c60321203c..dc638c38515e4 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+> @@ -406,7 +406,20 @@ int arm_vsmmu_cache_invalidate(struct iommufd_viommu *viommu,
+>  	return ret;
+>  }
+>  
+> +void arm_vsmmu_destroy(struct iommufd_viommu *viommu)
+> +{
+> +	struct arm_vsmmu *vsmmu = container_of(viommu, struct arm_vsmmu, core);
+> +
+> +	guard(mutex)(&arm_smmu_asid_lock);
+> +	/*
+> +	 * arm_smmu_iotlb_tag_free() must have flushed the IOTLB with the VMID,
+> +	 * but it did not free the VMID to align its lifecycle with the vSMMU.
+> +	 */
+> +	ida_free(&vsmmu->smmu->vmid_map, vsmmu->vmid);
+
+I'm being slow today, but why do you need the lock?
+The ida itself doesn't need it according to the docs.
+(it's using the xarray lock underneath)
+
+Likewise of the ida_alloc_range()
+
+
+> +}
+> +
+>  static const struct iommufd_viommu_ops arm_vsmmu_ops = {
+> +	.destroy = arm_vsmmu_destroy,
+>  	.alloc_domain_nested = arm_vsmmu_alloc_domain_nested,
+>  	.cache_invalidate = arm_vsmmu_cache_invalidate,
+>  };
+> @@ -456,14 +469,21 @@ int arm_vsmmu_init(struct iommufd_viommu *viommu,
+>  	struct arm_smmu_device *smmu =
+>  		container_of(viommu->iommu_dev, struct arm_smmu_device, iommu);
+>  	struct arm_smmu_domain *s2_parent = to_smmu_domain(parent_domain);
+> +	int id;
+>  
+>  	if (s2_parent->smmu != smmu)
+>  		return -EINVAL;
+>  
+> +	mutex_lock(&arm_smmu_asid_lock);
+> +	id = ida_alloc_range(&smmu->vmid_map, 1, (1 << smmu->vmid_bits) - 1,
+> +			     GFP_KERNEL);
+> +	mutex_unlock(&arm_smmu_asid_lock);
+
+
