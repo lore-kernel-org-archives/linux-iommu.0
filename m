@@ -1,116 +1,236 @@
-Received: from lamorak.hansenpartnership.com (lamorak.hansenpartnership.com [198.37.111.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5480535B64D;
-	Thu, 12 Mar 2026 15:32:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.37.111.173
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4512A3C65E0
+	for <iommu@lists.linux.dev>; Thu, 12 Mar 2026 15:56:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773329562; cv=none; b=mqHb/DJurcag11SRnS5v0eXKw/B9KYnMFAy3k0LtOleIzyizQQIZGPykWB/Fmk1pYX0+BCwlxnWPlyFL0p4IAqK1AyjV+lTgP5B2vSizwLKg+5GL0Sd0YH7qCbTM9rqMlMY4753DXbwz9x4BcwiR/xWXOdqGvIlauCtTKbZdkZU=
+	t=1773331001; cv=none; b=eoWG7ihTab6/GVVPLC7azDoprrpfyPncIzWu3T9Oh78jsuh35uonftVKZslmIeogoatp+LJT6fg+dXaqJ9xXgyU43xLl0Gg8Crmx8g1ODVF7Ng2XeAL/ac5xJc80o5smbydr2+Gzc7v8vVhcHSbnmtHB/CHj2+YUl1BF1aR0KRs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773329562; c=relaxed/simple;
-	bh=zTDNMMg/o0AbpOakTawLJV8HRHueJx9lUWpbuHSD3BU=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=R5LzA8Ou2FAlfTxruBbGM6k/z0Mz4c/yMKAdYnzLlIPQhgSJuhcbKkZvN1DS4RRkPHUDvwVX2kkuu25gzXZl/1tiNKIgamJTw7JCYSn//2RRSauf0uGJeCv2B6mWEI1AOeDpowYKobPwyLnOI9ONcClsULIU0+ZMOVB4W4VRrAQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=HansenPartnership.com; spf=pass smtp.mailfrom=HansenPartnership.com; dkim=pass (1024-bit key) header.d=hansenpartnership.com header.i=@hansenpartnership.com header.b=pcvJZxMl; arc=none smtp.client-ip=198.37.111.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=HansenPartnership.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=HansenPartnership.com
+	s=arc-20240116; t=1773331001; c=relaxed/simple;
+	bh=jq5qTcsaoCOYsl1jW0F01Uz6kAYc6e2RZaLegbuHqqs=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=Lf29UkjsJjoaSPRHvLJsQWbhvaDyDnXgnUPnCMSl80X+AZgs3HQ/GaVEX+7YtAqJGKeLBDIRLsZCZkZRiOgfvrphiz6p7R9uG3ubdgdrTy+Xuz3suUhFsErIAZTUVRyEiqzWVYeSjwyMP5veefniEEMBRqFzFT05w3N4WrOhcOs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=BJAVaP6J; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hansenpartnership.com header.i=@hansenpartnership.com header.b="pcvJZxMl"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-	d=hansenpartnership.com; s=20151216; t=1773329560;
-	bh=zTDNMMg/o0AbpOakTawLJV8HRHueJx9lUWpbuHSD3BU=;
-	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
-	b=pcvJZxMlUnyDHCQWdoy7oBw4t3ApqjoLShbfu4EGfeRRF/0XvwrUC3nRWEDXXVQdM
-	 hMwbriKe/NL1VZ4m3mEc/Q/oxiEwEcX/NNUV+xlSHstrQ2AykR2/lPVz8ssLEFKVvD
-	 cNP4AXmMocQMY4pE83K1rY1dx5NyhQ9bJbZtUZWw=
-Received: from [IPv6:2601:5c4:4300:d341::a774] (unknown [IPv6:2601:5c4:4300:d341::a774])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by lamorak.hansenpartnership.com (Postfix) with ESMTPSA id 599341C02A4;
-	Thu, 12 Mar 2026 11:32:38 -0400 (EDT)
-Message-ID: <f5688b895eaebabae6545a0d9baf8f1404e8454e.camel@HansenPartnership.com>
-Subject: Re: [PATCH 00/61] treewide: Use IS_ERR_OR_NULL over manual NULL
- check - refactor
-From: James Bottomley <James.Bottomley@HansenPartnership.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>, Kuan-Wei Chiu <visitorckw@gmail.com>
-Cc: Philipp Hahn <phahn-oss@avm.de>, amd-gfx@lists.freedesktop.org, 
- apparmor@lists.ubuntu.com, bpf@vger.kernel.org, ceph-devel@vger.kernel.org,
-  cocci@inria.fr, dm-devel@lists.linux.dev, dri-devel@lists.freedesktop.org,
-  gfs2@lists.linux.dev, intel-gfx@lists.freedesktop.org, 
- intel-wired-lan@lists.osuosl.org, iommu@lists.linux.dev,
- kvm@vger.kernel.org,  linux-arm-kernel@lists.infradead.org,
- linux-block@vger.kernel.org,  linux-bluetooth@vger.kernel.org,
- linux-btrfs@vger.kernel.org,  linux-cifs@vger.kernel.org,
- linux-clk@vger.kernel.org,  linux-erofs@lists.ozlabs.org,
- linux-ext4@vger.kernel.org,  linux-fsdevel@vger.kernel.org,
- linux-gpio@vger.kernel.org,  linux-hyperv@vger.kernel.org,
- linux-input@vger.kernel.org,  linux-kernel@vger.kernel.org,
- linux-leds@vger.kernel.org,  linux-media@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-mm@kvack.org, 
- linux-modules@vger.kernel.org, linux-mtd@lists.infradead.org, 
- linux-nfs@vger.kernel.org, linux-omap@vger.kernel.org, 
- linux-phy@lists.infradead.org, linux-pm@vger.kernel.org, 
- linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org, 
- linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org, 
- linux-security-module@vger.kernel.org, linux-sh@vger.kernel.org, 
- linux-sound@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, 
- linux-trace-kernel@vger.kernel.org, linux-usb@vger.kernel.org, 
- linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
- ntfs3@lists.linux.dev,  samba-technical@lists.samba.org,
- sched-ext@lists.linux.dev,  target-devel@vger.kernel.org,
- tipc-discussion@lists.sourceforge.net,  v9fs@lists.linux.dev
-Date: Thu, 12 Mar 2026 11:32:37 -0400
-In-Reply-To: <20260312125730.GI1469476@ziepe.ca>
-References: <20260310-b4-is_err_or_null-v1-0-bd63b656022d@avm.de>
-	 <abBlpGKO842B3yl9@google.com> <20260312125730.GI1469476@ziepe.ca>
-Autocrypt: addr=James.Bottomley@HansenPartnership.com;
- prefer-encrypt=mutual;
- keydata=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
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.50.3 
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="BJAVaP6J"
+Received: from DESKTOP-0403QTC.corp.microsoft.com (unknown [52.148.138.235])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 3A03420B6F08;
+	Thu, 12 Mar 2026 08:56:39 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 3A03420B6F08
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1773330999;
+	bh=1aYAnL2eR52QY8qJUJRJndthj5NuHcgN66qFz2M8XyQ=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=BJAVaP6JqME4zdg/8KGPnFuoMGvANyUNsZZrk6r0gqsvpcjm2W7RLn0Qyqi/dSr8y
+	 jx4gUCmE8lxvnRIdRtCUF3O0bkLdRVgWwHJ+Dzky9E+96P9zFGLjfZGr3aAgu1nYfq
+	 7KMegAWzVZBs5+qil3PnF7Ct0prsBUhVZjQFcTx0=
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: linux-kernel@vger.kernel.org,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Alex Williamson <alex@shazbot.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	David Matlack <dmatlack@google.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	Yi Liu <yi.l.liu@intel.com>
+Cc: skhawaja@google.com,
+	pasha.tatashin@soleen.com,
+	Will Deacon <will@kernel.org>,
+	Jacob Pan <jacob.pan@linux.microsoft.com>,
+	Baolu Lu <baolu.lu@linux.intel.com>
+Subject: [PATCH V2 01/11] iommufd: Support a HWPT without an iommu driver for noiommu
+Date: Thu, 12 Mar 2026 08:56:27 -0700
+Message-Id: <20260312155637.376854-2-jacob.pan@linux.microsoft.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20260312155637.376854-1-jacob.pan@linux.microsoft.com>
+References: <20260312155637.376854-1-jacob.pan@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-On Thu, 2026-03-12 at 09:57 -0300, Jason Gunthorpe wrote:
-> On Wed, Mar 11, 2026 at 02:40:36AM +0800, Kuan-Wei Chiu wrote:
->=20
-> > IMHO, the necessity of IS_ERR_OR_NULL() often highlights a
-> > confusing or flawed API design. It usually implies that the caller
-> > is unsure whether a failure results in an error pointer or a NULL
-> > pointer.=20
->=20
-> +1
->=20
-> IS_ERR_OR_NULL() should always be looked on with suspicion. Very
-> little should be returning some tri-state 'ERR' 'NULL' 'SUCCESS'
-> pointer. What does the middle condition even mean? IS_ERR_OR_NULL()
-> implies ERR and NULL are semanticly the same, so fix the things to
-> always use ERR.
+From: Jason Gunthorpe <jgg@nvidia.com>
 
-Not in any way supporting the original patch.  However, the pattern
-ERR, NULL, PTR is used extensively in the dentry code of filesystems.=20
-See the try_lookup..() set of functions in fs/namei.c
+Create just a little part of a real iommu driver, enough to
+slot in under the dev_iommu_ops() and allow iommufd to call
+domain_alloc_paging_flags() and fail everything else.
 
-The meaning is
+This allows explicitly creating a HWPT under an IOAS.
 
-PTR - I found it
-NULL - It definitely doesn't exist
-ERR - something went wrong during the lookup.
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+---
+ drivers/iommu/iommufd/Makefile          |  1 +
+ drivers/iommu/iommufd/hw_pagetable.c    | 11 ++-
+ drivers/iommu/iommufd/hwpt_noiommu.c    | 91 +++++++++++++++++++++++++
+ drivers/iommu/iommufd/iommufd_private.h |  2 +
+ 4 files changed, 103 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/iommu/iommufd/hwpt_noiommu.c
 
-So I don't think you can blanket say this pattern is wrong.
-
-Regards,
-
-James
+diff --git a/drivers/iommu/iommufd/Makefile b/drivers/iommu/iommufd/Makefile
+index 71d692c9a8f4..2b1a020b14a6 100644
+--- a/drivers/iommu/iommufd/Makefile
++++ b/drivers/iommu/iommufd/Makefile
+@@ -10,6 +10,7 @@ iommufd-y := \
+ 	vfio_compat.o \
+ 	viommu.o
+ 
++iommufd-$(CONFIG_VFIO_NOIOMMU) += hwpt_noiommu.o
+ iommufd-$(CONFIG_IOMMUFD_TEST) += selftest.o
+ 
+ obj-$(CONFIG_IOMMUFD) += iommufd.o
+diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
+index fe789c2dc0c9..37316d77277d 100644
+--- a/drivers/iommu/iommufd/hw_pagetable.c
++++ b/drivers/iommu/iommufd/hw_pagetable.c
+@@ -8,6 +8,13 @@
+ #include "../iommu-priv.h"
+ #include "iommufd_private.h"
+ 
++static const struct iommu_ops *get_iommu_ops(struct iommufd_device *idev)
++{
++	if (IS_ENABLED(CONFIG_VFIO_NOIOMMU) && !idev->igroup->group)
++		return &iommufd_noiommu_ops;
++	return dev_iommu_ops(idev->dev);
++}
++
+ static void __iommufd_hwpt_destroy(struct iommufd_hw_pagetable *hwpt)
+ {
+ 	if (hwpt->domain)
+@@ -114,7 +121,7 @@ iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+ 				IOMMU_HWPT_ALLOC_DIRTY_TRACKING |
+ 				IOMMU_HWPT_FAULT_ID_VALID |
+ 				IOMMU_HWPT_ALLOC_PASID;
+-	const struct iommu_ops *ops = dev_iommu_ops(idev->dev);
++	const struct iommu_ops *ops = get_iommu_ops(idev);
+ 	struct iommufd_hwpt_paging *hwpt_paging;
+ 	struct iommufd_hw_pagetable *hwpt;
+ 	int rc;
+@@ -229,7 +236,7 @@ iommufd_hwpt_nested_alloc(struct iommufd_ctx *ictx,
+ 			  struct iommufd_device *idev, u32 flags,
+ 			  const struct iommu_user_data *user_data)
+ {
+-	const struct iommu_ops *ops = dev_iommu_ops(idev->dev);
++	const struct iommu_ops *ops = get_iommu_ops(idev);
+ 	struct iommufd_hwpt_nested *hwpt_nested;
+ 	struct iommufd_hw_pagetable *hwpt;
+ 	int rc;
+diff --git a/drivers/iommu/iommufd/hwpt_noiommu.c b/drivers/iommu/iommufd/hwpt_noiommu.c
+new file mode 100644
+index 000000000000..0aa99f581ca3
+--- /dev/null
++++ b/drivers/iommu/iommufd/hwpt_noiommu.c
+@@ -0,0 +1,91 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
++ */
++#include <linux/iommu.h>
++#include <linux/generic_pt/iommu.h>
++#include "iommufd_private.h"
++
++static const struct iommu_domain_ops noiommu_amdv1_ops;
++
++struct noiommu_domain {
++	union {
++		struct iommu_domain domain;
++		struct pt_iommu_amdv1 amdv1;
++	};
++	spinlock_t lock;
++};
++PT_IOMMU_CHECK_DOMAIN(struct noiommu_domain, amdv1.iommu, domain);
++
++static void noiommu_change_top(struct pt_iommu *iommu_table,
++			       phys_addr_t top_paddr, unsigned int top_level)
++{
++}
++
++static spinlock_t *noiommu_get_top_lock(struct pt_iommu *iommupt)
++{
++	struct noiommu_domain *domain =
++		container_of(iommupt, struct noiommu_domain, amdv1.iommu);
++
++	return &domain->lock;
++}
++
++static const struct pt_iommu_driver_ops noiommu_driver_ops = {
++	.get_top_lock = noiommu_get_top_lock,
++	.change_top = noiommu_change_top,
++};
++
++static struct iommu_domain *
++noiommu_alloc_paging_flags(struct device *dev, u32 flags,
++			   const struct iommu_user_data *user_data)
++{
++	struct pt_iommu_amdv1_cfg cfg = {};
++	struct noiommu_domain *dom;
++	int rc;
++
++	if (flags || user_data)
++		return ERR_PTR(-EOPNOTSUPP);
++
++	cfg.common.hw_max_vasz_lg2 = 64;
++	cfg.common.hw_max_oasz_lg2 = 52;
++	cfg.starting_level = 2;
++	cfg.common.features =
++		(BIT(PT_FEAT_DYNAMIC_TOP) | BIT(PT_FEAT_AMDV1_ENCRYPT_TABLES) |
++		 BIT(PT_FEAT_AMDV1_FORCE_COHERENCE));
++
++	dom = kzalloc(sizeof(*dom), GFP_KERNEL);
++	if (!dom)
++		return ERR_PTR(-ENOMEM);
++
++	spin_lock_init(&dom->lock);
++	dom->amdv1.iommu.nid = NUMA_NO_NODE;
++	dom->amdv1.iommu.driver_ops = &noiommu_driver_ops;
++	dom->domain.ops = &noiommu_amdv1_ops;
++
++	/* Use mock page table which is based on AMDV1 */
++	rc = pt_iommu_amdv1_init(&dom->amdv1, &cfg, GFP_KERNEL);
++	if (rc) {
++		kfree(dom);
++		return ERR_PTR(rc);
++	}
++
++	return &dom->domain;
++}
++
++static void noiommu_domain_free(struct iommu_domain *iommu_domain)
++{
++	struct noiommu_domain *domain =
++		container_of(iommu_domain, struct noiommu_domain, domain);
++
++	pt_iommu_deinit(&domain->amdv1.iommu);
++	kfree(domain);
++}
++
++static const struct iommu_domain_ops noiommu_amdv1_ops = {
++	IOMMU_PT_DOMAIN_OPS(amdv1),
++	.free = noiommu_domain_free,
++};
++
++struct iommu_ops iommufd_noiommu_ops = {
++	.domain_alloc_paging_flags = noiommu_alloc_paging_flags,
++};
+diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+index 6ac1965199e9..9c18c5eb1899 100644
+--- a/drivers/iommu/iommufd/iommufd_private.h
++++ b/drivers/iommu/iommufd/iommufd_private.h
+@@ -464,6 +464,8 @@ static inline void iommufd_hw_pagetable_put(struct iommufd_ctx *ictx,
+ 	refcount_dec(&hwpt->obj.users);
+ }
+ 
++extern struct iommu_ops iommufd_noiommu_ops;
++
+ struct iommufd_attach;
+ 
+ struct iommufd_group {
+-- 
+2.34.1
 
