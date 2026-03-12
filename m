@@ -1,93 +1,91 @@
-Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CC82C2EA
-	for <iommu@lists.linux.dev>; Thu, 12 Mar 2026 12:06:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D30EB175A93
+	for <iommu@lists.linux.dev>; Thu, 12 Mar 2026 12:19:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773317170; cv=none; b=lNaO6PEkjkC4Vmly19oVtZZHO/IHvW/GKlUFjPW0UisEkXUIOJ0F9QvmaU7aJ/QbAtoWa4dqzjyIrj98NBoG48oPpZ1R4k8yHoulAkIh3duEKzXQINdGMvf3qS+coImJRHP+sCazhEzulToXABBrt3+E4QMR+zJrCKrWbLybrvs=
+	t=1773317982; cv=none; b=p0cL7V8LsEO9aW14/+2XH4CMgXaioHQoeIf9h9nMeEYyGLzA/4PiHzE1XdpTOUHYrq4OenxYlJoxDWmFolHa99nM8IrCBTH0eve4YxNVk/iTn/xYcd/+2P5f+HKaEJbMAqUNl9EgwHaPxTLedcEMK8ubZDZMdlmm60/YgFSHm9M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773317170; c=relaxed/simple;
-	bh=pLE9KQjABbXYq0V8sOoF2HYf/JGl7DSdVHj+w9thxVk=;
+	s=arc-20240116; t=1773317982; c=relaxed/simple;
+	bh=Oj/7ehc0cCCCDQU/7pS4vL4fF7AXLJnL/YyNxYgW3Og=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=THBb+EM2jyhquG4CTks7/21F/5vxOvDG7yqLkZ40ktZzRLv4YE700/f/MuaIdX3MOY02e4B63tBb81aEg7RzDUG6NbYssAT7NaY1gG3I/kUupX/3ifaqIpU9aMzRZYotGO2/5DyhwieHb5hJxBE/aeLhKN6LNiu2xA/AtuN4OzY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=gAoZ5GMa; arc=none smtp.client-ip=209.85.222.178
+	 Content-Type:Content-Disposition:In-Reply-To; b=VEVaGulSccxCh9sSHv3LWr1nVjKuP0PGMzZ4kY9xeJND6f3rcsu1rDyEaVYbuMPUGkMCAaadKsuq90AmxY0U7lwsk5u5O3rxMNZwXVL62u5UlFxI/IGp9a2/E4DTF5TwYiyXImaxZARKhISCjx4mZN0Ou2PYaCdEa4iZe64kk0c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=D9Mu/2d1; arc=none smtp.client-ip=209.85.222.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="gAoZ5GMa"
-Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-8cd785a8783so100192385a.0
-        for <iommu@lists.linux.dev>; Thu, 12 Mar 2026 05:06:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="D9Mu/2d1"
+Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-8cd7aab92dfso118245685a.0
+        for <iommu@lists.linux.dev>; Thu, 12 Mar 2026 05:19:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1773317168; x=1773921968; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1773317980; x=1773922780; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Pw97G/mFXVE/FuLAkp3lotBvQF2JekIeUS8x5bLQ+LE=;
-        b=gAoZ5GMaTcXUILNehPSyuuy72dfA3pAyr+CAIdKvBcxl/MuwhT0xjOqM2P1OVsarFr
-         OkmTa5Ig+3JMp4hdBJ7pfSv6jaTP9lRczRCd/CCvxSP+DnPXzclvqemm7g9gPOKbJg0f
-         NjJn7J6VTbtHcelxAll/2t1cHACLKrqn3ansMqlrMnlwnHUWxwK4ZohBjS3w7xU2q0V5
-         ZskDA5y88DxDO+2O1CihRC06l3LHZnlygrG6rhjrwkkJRQdnvVs5eJlm1Db/jeEyzEr7
-         bEdcEAFcJFuBe4maZdds7lH3uXoDiQMTlgF0dIaCKXAJNTuP3KtnOHREzjaInqqpjHoF
-         TEJA==
+        bh=0lXptsQPO/2bR1nDOk4C8coAYtgdswQIgAW2nY2lBKk=;
+        b=D9Mu/2d1rI3rO/NLHwvfL6+MnJBWcR9td1nnToy+ohlP1Jpv17K5jc/zLs5tZC3dV2
+         7AyA6wxy7epVHAWeGPKEME2GTDuUrGLPxgl4V4ZGMYB5o+gCil+ut6ALpBedTS0SwWVm
+         NbrOoLhw+dOXe5JMZR2CGUrO7nGHY/RxgZpuuwIPKKW7FuJh/Y2qTIMbEzutooYF66Gf
+         OAzZC5DsYXrsUVg3B/Zj6UU8ESCVUXT0DB4Zfe7iRgZxxwrZlUe5Ipqixu89NGmjgUh8
+         FdV4nvKbTx4BRGDh78Z2+SpCk9wQCyNYfBtG53QwIacYNx/mbYMpg8q+yoMh4QdVaY67
+         GOfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773317168; x=1773921968;
+        d=1e100.net; s=20230601; t=1773317980; x=1773922780;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Pw97G/mFXVE/FuLAkp3lotBvQF2JekIeUS8x5bLQ+LE=;
-        b=ZmVY5mpAEMQ72VSiBigjrJvrjrcqypfGWNqPNjZTpj3SHyObqxO61MhxaZkwj18ZXO
-         9jG4JBUMLTCH7u0YH/JHkRqvUuWdnxIRmRAp2CQJi8Igsts5KTm+yjX792ZtvrOelcgi
-         KHf0HAqi54xsj4Q8mpCcszVc7JnNPHqOjGBJKHomUUbkzySlpwh9wT6ME3BatpjmpBTE
-         JW+csg8MUPb7bX6jNl4dKF5d7bvLCuyi5wAZg2EbXEfRUFzgEu2T8aheSUdjoqW8suWt
-         AbSPS6DFr29yVK/J+fzUmM774zil8eIVcEyNxbydYFAMgBblms5jc7kw2oPN6dK0Us/D
-         zsug==
-X-Forwarded-Encrypted: i=1; AJvYcCUp2V7aWhgUfa1MBnm6tL5GXlyWvC0XZDo1tVza9ipDqSrJYxTR2jiZfh9dbXLTFa+h1jZ70A==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwVymg1ar9NkcMVVc2QS8Mt1oD/X3Y8WfReSmZq1irzZx80O/Uo
-	HjxLL0/lh5bcRn6Q30V19mbY88FdzBN2sO75buN+t9PUrPM05tM4EXw9dv9hTAicDtM=
-X-Gm-Gg: ATEYQzwdnGfhI6idrpiALUGRgOZhNy6LoBO7OIV6lpP4xqfVrRqlt7ImtszZn00PJ11
-	UyaUmlrdiVe+r+yV/ZR5b8HOmEnTooAQiHXoOvvWWPh0ed7ZvnV+l/2es2dPYU5ERCrE6u9897N
-	hHWgv7b7vK9qwiDNQwQWbB76qa7HceEkbiKbhU7hLaR5gvm9OnyqzZNBpn/IZ/5el1ZgSGWU3xI
-	u1XB/mEVsATw6ah60JQUIC0/82xAZivf5J1MkqaNyLuGPGkrBi4DGaaUFvMqRs/vvTubOwYsW71
-	MZwVeHlThJ9ocDXhbi6ldJpuKh3Wo5mIgUCGmR6qHp7VAo+pljzSHwpChyI8vEEbFGoU1Aw7JFY
-	WiQjNJCz/yzEDNOOZnhGSk/CzEg6k1uGfCWl834tztxK7xSkGnZOINF0PB7L7hYUOeIP7z0LmNq
-	cLsTV+aDvvpmgm8jLs5AVjTU/m15F7oiTLFPAD2rUAweC4S0FpXK9jfcRzOmEW/Fcgv7HUFZlCv
-	uCjE5NH
-X-Received: by 2002:a05:620a:4e93:b0:8cd:a4d8:cd8d with SMTP id af79cd13be357-8cda4d8d254mr527718485a.14.1773317168272;
-        Thu, 12 Mar 2026 05:06:08 -0700 (PDT)
+        bh=0lXptsQPO/2bR1nDOk4C8coAYtgdswQIgAW2nY2lBKk=;
+        b=tfdn6ODv5hYnkx3Gv+bbu5Z+OkHSzvDIpJHnWoKKYeHjR74LkqaxGntYiQ0FQxLVtL
+         hkCFmby9BAZRrRuaQrdcvourP9TxTXw4oNKvFQ4JUZ9imzhcI34j1MAQ0DjfvM7A1ELd
+         n/yHZAwnT9AAe51pzPxuvYnD2EJEmcF2w1yaWhPQAUnYWTeib0aRqPOMaBP8ux3kM9A9
+         KtMTFVoY/94Ze1GXfcIjZfZ1tVCvN7lq55nmElAQwSyc2h8xAuShVGKo+jUjYlbzAv8O
+         hhxUANjZjLnqETR3l1JbiUQBTkIlpAQximo9/ozmIym9edr+qGmshMGM7Gbrfls/mGMt
+         S/uw==
+X-Forwarded-Encrypted: i=1; AJvYcCUtOT84ve0rq0weUYCmT22BlB2tR5jawAPqs7QnNjiVOpQSVtq708lQGQXOfBW8Mi8t6axS/A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YytZVI9dmhJKJ2hjKWd1HaAHLl2ARpFkoju1vdFIbehVLAELIRY
+	qHDSwNjt1kX21BMmPR48M6BC66f4wig28pc52fIFtM3jYp3HWrFJBrWPy6Vmh4OAJ9g=
+X-Gm-Gg: ATEYQzyYeY0jbnEqb+RyptbJSRtBKLwMefBKveSMOEAH5O5i21H+gT44yG260fHjB+v
+	APQmIUF8X7Xr1L9KRbzHGmC33EoMgInlCTS/XrY0iUOm+xICbWV7q+HHVWgwzdoPnva+Y0B1zKa
+	n7wEqfuLHJWJ7Ed/FMBBlfeV0HvnKibS2R8rH1EYFl7OTkZ0FOLDYE0MJbbDFvCniObp688YEm1
+	ePZytJSnMp9OaH82qdpo/v2ERPOmqiBZ4EB9UKRDW2ZeEdEpcBfsJMOf1CKx+9CaI6d1TvB3CnG
+	pRdEOoNxP6O5fwWnRc1dTM1ycodFGOyZJEdhRnGq5m/j6BPWE4+ZZQPzPSSqebHvs11QZohTv9l
+	PwJBYHE4Fh2XyNodnJcZKR3pbKms9n9eP5Etq+EvNvndJwh4ckzzIHHVod2wh5V5sRuQlQrtetG
+	VXXf1v7xx+2DVxoCRK5k/SJ28UVZEVgio+f7+81pGVDlhWYLqlvq3k2nut+jz4GiEemQAG3nuFo
+	8XT1iKM
+X-Received: by 2002:a05:620a:4041:b0:8c7:3ff0:d472 with SMTP id af79cd13be357-8cdaa7b6b03mr382866785a.15.1773317979843;
+        Thu, 12 Mar 2026 05:19:39 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8cda1fbcd23sm361027485a.1.2026.03.12.05.06.06
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8cda21346a0sm321675885a.34.2026.03.12.05.19.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Mar 2026 05:06:07 -0700 (PDT)
+        Thu, 12 Mar 2026 05:19:38 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1w0enm-00000006ejP-0ZCe;
-	Thu, 12 Mar 2026 09:06:06 -0300
-Date: Thu, 12 Mar 2026 09:06:06 -0300
+	id 1w0f0r-00000006esN-1WXU;
+	Thu, 12 Mar 2026 09:19:37 -0300
+Date: Thu, 12 Mar 2026 09:19:37 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Jiri Pirko <jiri@resnulli.us>
-Cc: Leon Romanovsky <leon@kernel.org>, dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev,
-	linux-media@vger.kernel.org, sumit.semwal@linaro.org,
-	benjamin.gaignard@collabora.com, Brian.Starkey@arm.com,
-	jstultz@google.com, tjmercier@google.com, christian.koenig@amd.com,
-	m.szyprowski@samsung.com, robin.murphy@arm.com,
-	sean.anderson@linux.dev, ptesarik@suse.com, catalin.marinas@arm.com,
-	aneesh.kumar@kernel.org, suzuki.poulose@arm.com,
-	steven.price@arm.com, thomas.lendacky@amd.com, john.allen@amd.com,
-	ashish.kalra@amd.com, suravee.suthikulpanit@amd.com,
-	linux-coco@lists.linux.dev
-Subject: Re: [PATCH net-next v3 1/2] dma-mapping: introduce
- DMA_ATTR_CC_DECRYPTED for pre-decrypted memory
-Message-ID: <20260312120606.GC1469476@ziepe.ca>
-References: <20260305123641.164164-1-jiri@resnulli.us>
- <20260305123641.164164-2-jiri@resnulli.us>
- <20260308101948.GO12611@unreal>
- <20260309131530.GJ1687929@ziepe.ca>
- <20260309140233.GW12611@unreal>
- <20260309151857.GO1687929@ziepe.ca>
- <phry3e2dtgxzxdqvrnqfuskangp4al64f2auithwme5kwkgepe@7qtftrhgv4l7>
- <20260312003408.GA1469476@ziepe.ca>
- <pmfxzgtazwa7fwz4mx53htdg4jjifwyq3gyzwklc45affy3xrp@57hxan4pqnkx>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Petr Tesarik <ptesarik@suse.com>, Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Jason Wang <jasowang@redhat.com>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+	virtualization@lists.linux.dev, linux-rdma@vger.kernel.org,
+	linux-trace-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH v2 4/8] dma-mapping: Introduce DMA require coherency
+ attribute
+Message-ID: <20260312121937.GD1469476@ziepe.ca>
+References: <20260311-dma-debug-overlap-v2-0-e00bc2ca346d@nvidia.com>
+ <20260311-dma-debug-overlap-v2-4-e00bc2ca346d@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -96,28 +94,69 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <pmfxzgtazwa7fwz4mx53htdg4jjifwyq3gyzwklc45affy3xrp@57hxan4pqnkx>
+In-Reply-To: <20260311-dma-debug-overlap-v2-4-e00bc2ca346d@nvidia.com>
 
-On Thu, Mar 12, 2026 at 10:03:37AM +0100, Jiri Pirko wrote:
-> >Alot of device MMIO is decrypted by nature and can't be encrypted, so
-> >you'd have to use both flags. eg in VFIO we'd want to do this.
+On Wed, Mar 11, 2026 at 09:08:47PM +0200, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
 > 
-> Why both flags? Why MMIO flag is not enough? You still want to hit
-> "if (attrs & DMA_ATTR_MMIO) {" path, don't you?
+> The mapping buffers which carry this attribute require DMA coherent system.
+> This means that they can't take SWIOTLB path, can perform CPU cache overlap
+> and doesn't perform cache flushing.
+> 
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  Documentation/core-api/dma-attributes.rst | 12 ++++++++++++
+>  include/linux/dma-mapping.h               |  7 +++++++
+>  include/trace/events/dma.h                |  3 ++-
+>  kernel/dma/debug.c                        |  3 ++-
+>  kernel/dma/mapping.c                      |  6 ++++++
+>  5 files changed, 29 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/core-api/dma-attributes.rst b/Documentation/core-api/dma-attributes.rst
+> index 48cfe86cc06d7..69d094f144c70 100644
+> --- a/Documentation/core-api/dma-attributes.rst
+> +++ b/Documentation/core-api/dma-attributes.rst
+> @@ -163,3 +163,15 @@ data corruption.
+>  
+>  All mappings that share a cache line must set this attribute to suppress DMA
+>  debug warnings about overlapping mappings.
+> +
+> +DMA_ATTR_REQUIRE_COHERENT
+> +-------------------------
+> +
+> +The mapping buffers which carry this attribute require DMA coherent system. This means
+> +that they can't take SWIOTLB path, can perform CPU cache overlap and doesn't perform
+> +cache flushing.
 
-Because we will eventually have both decrypted and encrypted MMIO.
+DMA mapping requests with the DMA_ATTR_REQUIRE_COHERENT fail on any
+system where SWIOTLB or cache management is required. This should only
+be used to support uAPI designs that require continuous HW DMA
+coherence with userspace processes, for example RDMA and DRM. At a
+minimum the memory being mapped must be userspace memory from
+pin_user_pages() or similar.
 
-> I mean, CC_DECRYPTED says the memory to be mapped was explicitly
-> decrypted before the call. MMIO was not explicitly decrypted, it is
-> decrypted by definition. For me that does not fit the CC_DECRYPTED
-> semantics.
+Drivers should consider using dma_mmap_pages() instead of this
+interface when building their uAPIs, when possible.
 
-I would say CC_DECRYPTED means that pgprot_decrypted must be used to
-form a PTE, and !CC_DECRYPTED means that pgprot_encrypted() was used
+It must never be used in an in-kernel driver that only works with
+kernal memory.
 
-This flag should someday flow down into the vIOMMU driver and set the
-corresponding C bit the IOPTE (for AMD) exactly as the pgprot does.
+> @@ -164,6 +164,9 @@ dma_addr_t dma_map_phys(struct device *dev, phys_addr_t phys, size_t size,
+>  	if (WARN_ON_ONCE(!dev->dma_mask))
+>  		return DMA_MAPPING_ERROR;
+>  
+> +	if (!dev_is_dma_coherent(dev) && (attrs & DMA_ATTR_REQUIRE_COHERENT))
+> +		return DMA_MAPPING_ERROR;
 
-Less about set_memory_encrypted as that is only for DRAM.
+This doesn't capture enough conditions.. is_swiotlb_force_bounce(),
+dma_kmalloc_needs_bounce(), dma_capable(), etc all need to be blocked
+too
+
+So check it inside swiotlb_map() too, and maybe shift the above
+into the existing branches:
+
+        if (!dev_is_dma_coherent(dev) &&
+            !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO)))
+                arch_sync_dma_for_device(phys, size, dir);
 
 Jason
