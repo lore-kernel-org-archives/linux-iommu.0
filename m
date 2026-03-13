@@ -1,221 +1,249 @@
-Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012025.outbound.protection.outlook.com [40.107.200.25])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10B2F245008
-	for <iommu@lists.linux.dev>; Fri, 13 Mar 2026 05:40:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.200.25
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773380410; cv=fail; b=F3eWj9r+ZkQAhc10ss/UsYxCY4gB8CVWLSVre9ZU1yqmbSjpzC3wxfzcbOrb6bBKEZZUmi3tjAmMDTHj0O9afIMXYlGToc8XDuoMegn0eqhfVbz5SWCr8hx3FX5Y7C8UCmXuq2ZJtxslk6un/IlGJZkVtH9uueFcwk3GuFWdi34=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773380410; c=relaxed/simple;
-	bh=0/xHkmUVc1WzZwckvXDx3j8tpfsRpSpmPaY3QAzho7A=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PDzVXH8MzqLUCq0gexGnsNWU79HXhAVHfo4met2OXQnpaUPBbakrN6q9OJdgfLuVCSSf251+8+pJXEK/mJTyn0GQePjNY8agjcLNW/nPgLar42UbUa15/9RElrli6IDw/79TDEyL3sRIhGMvsDGzXOXz1paUsFmto3kL0I7JMdU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ggCODipD; arc=fail smtp.client-ip=40.107.200.25
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E58F3242AB
+	for <iommu@lists.linux.dev>; Fri, 13 Mar 2026 05:41:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773380497; cv=none; b=rUxpXH2bZvRkholRAHiIj+snXyTCKbNySr/qQFh0xCw2dGFeFkiL0ANFN0etz+B5dbuQqPir6lpSVkWFgN3Qw9dk6djFN2vFp5BO2Jrq4C0jMNKGak4QhFhH0H8RJT13mIKC56tp92riCFnmOAj6W5HVEUKl+D4jg3jCkMnSGFw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773380497; c=relaxed/simple;
+	bh=/ikYfKU4tl0ZZh8Y950yOU14Ams80eGEjTAvYzQrKtY=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=eCV5Vx1GqBqzBWmvfuRwKAfM8BIj+pV9G5/fxFIIbH3aExkQY/NoH5Rcdzoq2zQcZCt1gZu401S5qGsroxZ8stf9gsDpRTyRAQtVt05w8bCDcnkvr+xM8ufrQxXHpBC/Jm0IeS/sVBizpM9byHANV92V9urtRsQcKhEuZDsLVFA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=S9/cLiAI; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ggCODipD"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=JD2CuO3bUFxbl/kAar/AiJAhN7DoYaySns9VY3e8CKP4B4JeJDHciCKoRXAg29dvCUoP2ZgPfj/h8aFArU7dHzkeh7gEy/Lng//ukS8vmTAYy0BGfZlDuqjMQgRFjSIkDtKWreEd8F3b8hdGlZEnoxjVOgO2+9SU+FxZpQGvmbU0oaR8oatkT9/38pB5iI+nCDtDXA1TP44IegOuiYyAW43ekrFcK9ZAVmnU6cRPoDGLLbHTLnouNHl2tZWE/7J4uZyraRJ7uj9T6P3yTAegnjaxS/F6esicbW2LttQ3ZI+JMe6dKigdLdSvMpCmyUZsxIiEC8IowbXfW7C4KqkeBA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kjTj995RmvRGZLOx/d51GNQ8RugNnfBTS0eqcyzH3A0=;
- b=ahMGN8MS2ME4po7bqgC+8VFSZHz8XFrQH9drQNvQbWnQFiVKm99hSobT6QmTraFlVabX6dEunUk/IPcwSZTqT+Lvv9/Zuyn2DyvjCiSLKLsC1YlQXaryprPqXPiybsVPEPeCRGzpjf1s59KOB2u0o3o54c1bQMYwuM8ld8CbGjerJibV11ikdNfWZhzYDvxk3Y6FHW0g8QS9+4ucaB4OSFZ9IPn3Co/xQUSrk3v3BOVHdLCedAPtf7oBUZaHqlY1C4KB2jXfA4DiY8UG+enIBIuv9aARoNfmhWpmzlrQGYtEcvix5fIJA9UYHnmrz2mV6eaqdnFhhvhx/Zl4YvA06Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kjTj995RmvRGZLOx/d51GNQ8RugNnfBTS0eqcyzH3A0=;
- b=ggCODipDY7K831Gs+uJHc0bPZ5MTVo5VycBBHD68kAgmVW7s7hw1nwtzR64iJ5OonBFguV/kOt2H13SWDVRWSyjVHacFYD+eI2FuOvdN6XPJ6BGZO096A+9T+DsNDFtuRM7L3IrjvAe1J3w3iNS1VRhrWTPp0r1qi0kZsW7DHBL9sCoeZZlh+uzOZNEheNKjbOGGyNa2mVC5SJYy6ve9LOm+i1OmJ8nVYmvuoqpNSG+6XajeDD1902Wnkc7khV9rxGQgQ6DA52yKJG1vkkDnfjiCqbFaexN4AHslMkNr1wc/fC2eewTC3gJEeEIgPRZKkq1Dq2fayjMg/GgN/4gIvw==
-Received: from PH7P221CA0012.NAMP221.PROD.OUTLOOK.COM (2603:10b6:510:32a::29)
- by MW4PR12MB7261.namprd12.prod.outlook.com (2603:10b6:303:229::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9723.6; Fri, 13 Mar
- 2026 05:40:03 +0000
-Received: from CY4PEPF0000E9CF.namprd03.prod.outlook.com
- (2603:10b6:510:32a:cafe::77) by PH7P221CA0012.outlook.office365.com
- (2603:10b6:510:32a::29) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9678.27 via Frontend Transport; Fri,
- 13 Mar 2026 05:40:01 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- CY4PEPF0000E9CF.mail.protection.outlook.com (10.167.241.134) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9700.17 via Frontend Transport; Fri, 13 Mar 2026 05:40:02 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 12 Mar
- 2026 22:39:51 -0700
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.20; Thu, 12 Mar 2026 22:39:51 -0700
-Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com
- (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Thu, 12 Mar 2026 22:39:50 -0700
-Date: Thu, 12 Mar 2026 22:39:49 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-CC: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Robin
- Murphy" <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, "Jason
- Gunthorpe" <jgg@nvidia.com>, Dmytro Maluka <dmaluka@chromium.org>, "Samiullah
- Khawaja" <skhawaja@google.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/8] iommu: Lift and generalize the STE/CD update code
- from SMMUv3
-Message-ID: <abOjJf4HJ50vCIyg@Asurada-Nvidia>
-References: <20260309060648.276762-1-baolu.lu@linux.intel.com>
- <20260309060648.276762-2-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="S9/cLiAI"
+Received: from pps.filterd (m0356516.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62CEA2NI2303382;
+	Fri, 13 Mar 2026 05:41:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=LipRsW
+	D9Akfezt5RfXCY4x0iEHhZC4fSycBnykKn/fo=; b=S9/cLiAIodcQk5rN/Tl7wi
+	hO4yqz1Cfnrjj6HB8TFUKvkyhw8NtaHeLGEcUS2Itg/FK9CYAy+DIHW8ZiMJ8YcW
+	hKzZ1EW/iXzN8qMDBq4kwEbpJEUej7W80jECUnUbhEgYCwRTzs8C1fb3XzpePOgh
+	KUnI4J7iPEwKY5Gn7cDNPXnFWy25ET1NuXoHYrFkW2Y4wosSmMRNtUYMDu89nAbk
+	fF+qbSWkMVOl8xa+PcfKjOuG7tmJspwF3lTWVzvG4jSIPtCJl80g+9BX4h8x3d0O
+	JMHr8Lvv3mU1BVKVHzstnvWWbPHgt+MHJN4jcxIeGU+hw0mXDVN4mFyJ8BY+2ZrA
+	==
+Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4cuh95x1t9-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 13 Mar 2026 05:41:30 +0000 (GMT)
+Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma11.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 62D5Farx018398;
+	Fri, 13 Mar 2026 05:41:30 GMT
+Received: from smtprelay02.dal12v.mail.ibm.com ([172.16.1.4])
+	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 4cuha85cue-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 13 Mar 2026 05:41:30 +0000
+Received: from smtpav05.wdc07v.mail.ibm.com (smtpav05.wdc07v.mail.ibm.com [10.39.53.232])
+	by smtprelay02.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 62D5fSVb2425400
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 13 Mar 2026 05:41:29 GMT
+Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id B1A5558053;
+	Fri, 13 Mar 2026 05:41:28 +0000 (GMT)
+Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 3DC115805F;
+	Fri, 13 Mar 2026 05:41:25 +0000 (GMT)
+Received: from smtpclient.apple (unknown [9.61.241.43])
+	by smtpav05.wdc07v.mail.ibm.com (Postfix) with ESMTPS;
+	Fri, 13 Mar 2026 05:41:24 +0000 (GMT)
+Content-Type: text/plain;
+	charset=utf-8
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20260309060648.276762-2-baolu.lu@linux.intel.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9CF:EE_|MW4PR12MB7261:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0b765c68-95cc-486a-ffac-08de80c2f921
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|376014|1800799024|36860700016|22082099003|56012099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	BIVulrJdWxEzpS4HEAbMUZd1Exdww1R1DDCadOV7ZTog5Kafpk6Va9UIko2P/yRoNMWTd476ckutN9TpToE+T6LbGznqOyK90ReraOJWK4cXRe5ZklzdqK7vuffu2C25SbrGlLO+xdUsE9E7W1+TpGx5v1gVtvHKAua9xWZSJwg+ILwdMXRgce4wJq1GKh+OUFmwBXnWuS4+CrmhDKr3SeNItm6G83WGOhqSuH//eXBVJKr4MM7+vyQKD19YO3EwT4MiTdXuKachYYSDwWoChW0xYwco4/JIrPS/Z8eH6OSLrFaSvjOWINfreEy3xgdIABbrexyFl8StbkcKdSMmTeIZFh/ncddYeVvl1CDNQ2vX7AmUpitvJ2RSwSDpOC0GSRB0EFrtqa+6qt18OyU/21d8EzvGAuPaHuKDdxu39/cSvzUqeyh5OwEbHkuk0KzgjAF1AnbCw9fT/IRxS6ogjduTk1FchCpcZpICL0kKBeZKnk8TdNz3Z3sqERmHrJ5dJ0tVxaKsXOKBC2sbI30GPIHkLEtH7eJeYClZyLrlWacHoNrBsvDaP2AfrDsrK1jqKpBk0Q0c36g12sA6t39a/Rup+S1eLq5i537Fyyk0bw3qDihj5jYoTmZUrv2HLHVwdGLYzrqzCKYUPauluGJ5Tni8jjDS2u2B1zG7/8G7italFBU0guWkf/OAMxwQ2cjIdqMMdEGOKbCWUpX+XA0NHaspiqIs/AjzYE6YsOU8AT66eOriBqs873NzAPKfdsvDZbqhqkmk3heN7OB0tEno9Q==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(376014)(1800799024)(36860700016)(22082099003)(56012099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	GJNdWVCEvaNCHmJHOIt8pypcsYssFtrxT0B22bEy3ttfIjtPGXyeTK/C3YHBto/h10+XkKMoyHiGJdY7FB5mX/B9mREDXfEzZdVrtHsTN0z7CPXKd7VkTG30mmk+q3Q1NAz/uppW9IIqhPQvcmGQljdczoU88LjCLUJ63x2IRekQmVMefl74MTdajtaAiGPEJIFNUlvGPKLRhIPaqTPZGRy6YS7ScMBNX00meiZI1MCRz9hG+OZDYEGpZY8Zx/wVNI7mWo3GA87v18SObZOwCcAOkgc8SSrqaG/utrEcZkUwWhbQLDP48+2NHRlRe1n8fzo/Htoeb+BapXc8uVVuLIWwyKI/YN6v/1r83u9ZH9J3A9m8CLgMAKFUzBy7cgGKm85YOoj96wpCv1XbQ04gspVhwbTsql3/HIJF5685n4xjB2RL0MwdjIH2GBOZiBe2
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2026 05:40:02.3405
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0b765c68-95cc-486a-ffac-08de80c2f921
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000E9CF.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7261
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3864.300.41.1.7\))
+Subject: Re: [PATCH] powerpc/iommu: fix lockdep warning during PCI enumeration
+From: Venkat <venkat88@linux.ibm.com>
+In-Reply-To: <20260310082129.3630996-1-nilay@linux.ibm.com>
+Date: Fri, 13 Mar 2026 11:11:12 +0530
+Cc: iommu@lists.linux.dev, linuxppc-dev@lists.ozlabs.org, nicolinc@nvidia.com,
+        joerg.roedel@amd.com, jgg@nvidia.com, baolu.lu@linux.intel.com,
+        kevin.tian@intel.com, maddy@linux.ibm.com, sbhat@linux.ibm.com,
+        stable@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <8F038208-0573-42A3-920B-1A74646E8F8F@linux.ibm.com>
+References: <20260310082129.3630996-1-nilay@linux.ibm.com>
+To: Nilay Shroff <nilay@linux.ibm.com>
+X-Mailer: Apple Mail (2.3864.300.41.1.7)
+X-TM-AS-GCONF: 00
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzEzMDA0MiBTYWx0ZWRfX75eeEMrDXGsv
+ eZZW2iZLV2POyXAESjIGAT/Ncx0jlOGvzB7qNLeOhn+cYayj04YL+n94YG/3t9jObKghvFWvmMx
+ zbOu9sC8euaPsMvmCEeFokUjMUTMUBn/qwMvRlVrWMqIdQhluoOPCFbfB1JNUi6f49W7Hk5/ea8
+ 8IG52NQEWodbI8KAWkK6m6CSOrGAmjweBvzuqLBcusvbTjlBQY9pPpFUzlTwe1/Jvx/BJIhZJdI
+ T2aeAPuII4xcUP/CfjGIpnXwRDx4M0LpZp/v2PrNYUeYWdhMT+FOkh75uslXx7I54KDbB4MxBqQ
+ n47XJcxaSvTu5CI8XgH3ML9sCNPLHMa/hWC1MP32o2Vs9W4WYKsTATZGMT5pNdRsbAs2xv5nzQX
+ s79SuqPXLRksvpvdcNQXEMESulEOh0Lflce8UX7RMSil+x9IP71K9rZIUhhd51HaypNZNwLbbZc
+ gksLWR4u6auwbDGt/Wg==
+X-Authority-Analysis: v=2.4 cv=FowIPmrq c=1 sm=1 tr=0 ts=69b3a38a cx=c_pps
+ a=aDMHemPKRhS1OARIsFnwRA==:117 a=aDMHemPKRhS1OARIsFnwRA==:17
+ a=IkcTkHD0fZMA:10 a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=RnoormkPH1_aCDwRdu11:22 a=Y2IxJ9c9Rs8Kov3niI8_:22 a=VnNF1IyMAAAA:8
+ a=VwQbUJbxAAAA:8 a=9Wz3lNwHXGX-eYGAIucA:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-GUID: Sr9DuORW7GXMJevgU0qZ2ycY8Nx_Bo4T
+X-Proofpoint-ORIG-GUID: Sr9DuORW7GXMJevgU0qZ2ycY8Nx_Bo4T
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-03-12_03,2026-03-12_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 clxscore=1011 suspectscore=0 bulkscore=0 impostorscore=0
+ lowpriorityscore=0 adultscore=0 phishscore=0 malwarescore=0
+ priorityscore=1501 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2603050001
+ definitions=main-2603130042
 
-Hi Baolu,
 
-On Mon, Mar 09, 2026 at 02:06:41PM +0800, Lu Baolu wrote:
-> +struct entry_sync_writer_ops64;
-> +struct entry_sync_writer64 {
-> +	const struct entry_sync_writer_ops64 *ops;
-> +	size_t num_quantas;
-> +	size_t vbit_quanta;
-> +};
 
-Though I could guess what the @num_quantas and @vbit_quanta likely
-mean, it'd be nicer to have some notes elaborating them.
+> On 10 Mar 2026, at 1:51=E2=80=AFPM, Nilay Shroff <nilay@linux.ibm.com> =
+wrote:
+>=20
+> Commit a75b2be249d6 ("iommu: Add iommu_driver_get_domain_for_dev()
+> helper") introduced iommu_driver_get_domain_for_dev() for driver
+> code paths that hold iommu_group->mutex while attaching a device
+> to an IOMMU domain.
+>=20
+> The same commit also added a lockdep assertion in
+> iommu_get_domain_for_dev() to ensure that callers do not hold
+> iommu_group->mutex when invoking it.
+>=20
+> On powerpc platforms, when PCI device ownership is switched from
+> BLOCKED to the PLATFORM domain, the attach callback
+> spapr_tce_platform_iommu_attach_dev() still calls
+> iommu_get_domain_for_dev(). This happens while iommu_group->mutex
+> is held during domain switching, which triggers the lockdep warning
+> below during PCI enumeration:
+>=20
+> WARNING: drivers/iommu/iommu.c:2252 at =
+iommu_get_domain_for_dev+0x38/0x80, CPU#2: swapper/0/1
+> Modules linked in:
+> CPU: 2 UID: 0 PID: 1 Comm: swapper/0 Not tainted 7.0.0-rc2+ #35 =
+PREEMPT
+> Hardware name: IBM,9105-22A Power11 (architected) 0x820200 0xf000007 =
+of:IBM,FW1120.00 (RB1120_115) hv:phyp pSeries
+> NIP:  c000000000c244c4 LR: c00000000005b5a4 CTR: c00000000005b578
+> REGS: c00000000a7bf280 TRAP: 0700   Not tainted  (7.0.0-rc2+)
+> MSR:  8000000002029033 <SF,VEC,EE,ME,IR,DR,RI,LE>  CR: 22004422  XER: =
+0000000a
+> CFAR: c000000000c24508 IRQMASK: 0
+> GPR00: c00000000005b5a4 c00000000a7bf520 c000000001dc8100 =
+0000000000000001
+> GPR04: c00000000f972f10 0000000000000000 0000000000000000 =
+0000000000000001
+> GPR08: 0000001ffbc60000 0000000000000001 0000000000000000 =
+0000000000000000
+> GPR12: c00000000005b578 c000001fffffe480 c000000000011618 =
+0000000000000000
+> GPR16: 0000000000000000 0000000000000000 0000000000000000 =
+0000000000000000
+> GPR20: ffffffffffffefff 0000000000000000 c000000002d30eb0 =
+0000000000000001
+> GPR24: c0000000017881f8 0000000000000000 0000000000000001 =
+c00000000f972e00
+> GPR28: c00000000bbba0d0 0000000000000000 c00000000bbba0d0 =
+c00000000f972e00
+> NIP [c000000000c244c4] iommu_get_domain_for_dev+0x38/0x80
+> LR [c00000000005b5a4] spapr_tce_platform_iommu_attach_dev+0x2c/0x98
+> Call Trace:
+> iommu_get_domain_for_dev+0x68/0x80 (unreliable)
+> spapr_tce_platform_iommu_attach_dev+0x2c/0x98
+> __iommu_attach_device+0x44/0x220
+> __iommu_device_set_domain+0xf4/0x194
+> __iommu_group_set_domain_internal+0xec/0x228
+> iommu_setup_default_domain+0x5f4/0x6a4
+> __iommu_probe_device+0x674/0x724
+> iommu_probe_device+0x50/0xb4
+> iommu_add_device+0x48/0x198
+> pci_dma_dev_setup_pSeriesLP+0x198/0x4f0
+> pcibios_bus_add_device+0x80/0x464
+> pci_bus_add_device+0x40/0x100
+> pci_bus_add_devices+0x54/0xb0
+> pcibios_init+0xd8/0x140
+> do_one_initcall+0x8c/0x598
+> kernel_init_freeable+0x3ec/0x850
+> kernel_init+0x34/0x270
+> ret_from_kernel_user_thread+0x14/0x1c
+>=20
+> Fix this by using iommu_driver_get_domain_for_dev() instead of
+> iommu_get_domain_for_dev() in spapr_tce_platform_iommu_attach_dev(),
+> which is the appropriate helper for callers holding the group mutex.
+>=20
+> Cc: stable@vger.kernel.org
+> Fixes: a75b2be249d6 ("iommu: Add iommu_driver_get_domain_for_dev() =
+helper")
+> Signed-off-by: Nilay Shroff <nilay@linux.ibm.com>
+> ---
 
-> +/*
-> + * Figure out if we can do a hitless update of entry to become target. Returns a
-> + * bit mask where 1 indicates that a quanta word needs to be set disruptively.
-> + * unused_update is an intermediate value of entry that has unused bits set to
-> + * their new values.
-> + */
-> +static u8 NS(entry_quanta_diff)(struct entry_sync_writer *writer,
-> +				const quanta_t *entry, const quanta_t *target,
-> +				quanta_t *unused_update, quanta_t *memory)
-> +{
-> +	quanta_t *target_used = memory + writer->num_quantas * 1;
-> +	quanta_t *cur_used = memory + writer->num_quantas * 2;
 
-Should we have a kdoc somewhere mentioning that the two arrays are
-neighbors (IIUIC)?
+Tested-by: Venkat Rao Bagalkote <venkat88@linux.ibm.com>
 
-> +	u8 used_qword_diff = 0;
+This patch fixes the reported issue. No warning is seen, during PICe =
+init.
 
-It seems to me that we want use "quanta" v.s. "qword"? 128 bits can
-be called "dqword" as well though.
+Logs:
 
-> +	unsigned int i;
-> +
-> +	writer->ops->get_used(entry, cur_used);
-> +	writer->ops->get_used(target, target_used);
+[    0.107228] EDAC MC: Ver: 3.0.0
+[    0.108270] NetLabel: Initializing
+[    0.108274] NetLabel:  domain hash size =3D 128
+[    0.108278] NetLabel:  protocols =3D UNLABELED CIPSOv4 CALIPSO
+[    0.108307] NetLabel:  unlabeled traffic allowed by default
+[    0.108362] PCI: Probing PCI hardware
+[    0.108539] PCI host bridge to bus 0019:01
+[    0.108545] pci_bus 0019:01: root bus resource [mem =
+0x40080000000-0x400feffffff] (bus address [0x80000000-0xfeffffff])
+[    0.108552] pci_bus 0019:01: root bus resource [mem =
+0x44000000000-0x47fffffffff 64bit] (bus address =
+[0x6204000000000-0x6207fffffffff])
+[    0.108559] pci_bus 0019:01: root bus resource [bus 01-ff]
+[    0.109223] pci 0019:01:00.0: No hypervisor support for SR-IOV on =
+this device, IOV BARs disabled.
+[    0.123390] IOMMU table initialized, virtual merging enabled
+[    0.123522] pci_bus 0019:01: resource 4 [mem =
+0x40080000000-0x400feffffff]
+[    0.123528] pci_bus 0019:01: resource 5 [mem =
+0x44000000000-0x47fffffffff 64bit]
+[    0.123589] pci 0019:01:00.0: ibm,query-pe-dma-windows(53) 10000 =
+8000000 20000019 returned 0, lb=3D1000000 ps=3D103 wn=3D1
+[    0.123628] pci 0019:01:00.0: Adding to iommu group 0
+[    0.136163] EEH: Capable adapter found: recovery enabled.
+[    0.136393] vgaarb: loaded
+[    0.136708] clocksource: Switched to clocksource timebase
+[    0.139813] VFS: Disk quotas dquot_6.6.0
+[    0.139895] VFS: Dquot-cache hash table entries: 8192 (order 0, 65536 =
+bytes)
+[    0.147370] NET: Registered PF_INET protocol family
+[    0.147545] IP idents hash table entries: 262144 (order: 5, 2097152 =
+bytes, linear)
 
-SMMU has get_update_safe now. Can we take it together?
+Regards,
+Venkat.
+> arch/powerpc/kernel/iommu.c | 2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/arch/powerpc/kernel/iommu.c b/arch/powerpc/kernel/iommu.c
+> index 0ce71310b7d9..d122e8447831 100644
+> --- a/arch/powerpc/kernel/iommu.c
+> +++ b/arch/powerpc/kernel/iommu.c
+> @@ -1159,7 +1159,7 @@ spapr_tce_platform_iommu_attach_dev(struct =
+iommu_domain *platform_domain,
+>    struct device *dev,
+>    struct iommu_domain *old)
+> {
+> - struct iommu_domain *domain =3D iommu_get_domain_for_dev(dev);
+> + struct iommu_domain *domain =3D =
+iommu_driver_get_domain_for_dev(dev);
+> struct iommu_table_group *table_group;
+> struct iommu_group *grp;
+>=20
+> --=20
+> 2.53.0
+>=20
+>=20
 
-> +void NS(entry_sync_write)(struct entry_sync_writer *writer, quanta_t *entry,
-> +			  const quanta_t *target, quanta_t *memory,
-> +			  size_t memory_len)
-> +{
-> +	quanta_t *unused_update = memory + writer->num_quantas * 0;
-> +	u8 used_qword_diff;
-> +
-> +	if (WARN_ON(memory_len !=
-> +		    ENTRY_SYNC_MEMORY_LEN(writer) * sizeof(*memory)))
-> +		return;
-> +
-> +	used_qword_diff = NS(entry_quanta_diff)(writer, entry, target,
-> +						unused_update, memory);
-> +	if (hweight8(used_qword_diff) == 1) {
-> +		/*
-> +		 * Only one quanta needs its used bits to be changed. This is a
-> +		 * hitless update, update all bits the current entry is ignoring
-> +		 * to their new values, then update a single "critical quanta"
-> +		 * to change the entry and finally 0 out any bits that are now
-> +		 * unused in the target configuration.
-> +		 */
-> +		unsigned int critical_qword_index = ffs(used_qword_diff) - 1;
-> +
-> +		/*
-> +		 * Skip writing unused bits in the critical quanta since we'll
-> +		 * be writing it in the next step anyways. This can save a sync
-> +		 * when the only change is in that quanta.
-> +		 */
-> +		unused_update[critical_qword_index] =
-> +			entry[critical_qword_index];
-> +		NS(entry_set)(writer, entry, unused_update, 0,
-> +			      writer->num_quantas);
-> +		NS(entry_set)(writer, entry, target, critical_qword_index, 1);
-> +		NS(entry_set)(writer, entry, target, 0, writer->num_quantas);
-> +	} else if (used_qword_diff) {
-> +		/*
-> +		 * At least two quantas need their inuse bits to be changed.
-> +		 * This requires a breaking update, zero the V bit, write all
-> +		 * qwords but 0, then set qword 0
-> +		 */
-
-Still, it'd be nicer to unify the wording between "quanta" and
-"qword".
-
-[..]
-> +EXPORT_SYMBOL(NS(entry_sync_write));
-
-There is also a KUNIT test coverage in arm-smmu-v3 for all of these
-functions. Maybe we can make that generic as well?
-
-> +#define entry_sync_writer entry_sync_writer64
-> +#define quanta_t __le64
-[..]
-> +#define entry_sync_writer entry_sync_writer128
-> +#define quanta_t u128
-
-u64 can be called 64 too, though we might not have use case for now.
-
-But maybe we could just call them:
-    entry_sync_writer_le64
-    entry_sync_writer_u128
-?
-
-Nicolin
