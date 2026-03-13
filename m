@@ -1,205 +1,127 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17D813A8759
-	for <iommu@lists.linux.dev>; Fri, 13 Mar 2026 15:08:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0063639656C;
+	Fri, 13 Mar 2026 15:16:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773414498; cv=none; b=Qws4Wxa7wug9eDM/2EHhBELHNFdzG3NYNgE0wLUKoDRK6gJsI69UZ3YFPZFhfOd21UF6BaqObnIOVwB7/Ao/IJ0ZGOLem5XbNeTeo68SMO/rwlXIyABmPJvvoHJ5DGwmH8rVRdIU7lLTyRug5XcxfJIBHsxs4AXg5gSHA6PKL5M=
+	t=1773415018; cv=none; b=IERiWONO43nZl/UHdJ37hBm5ZvjszOVuprUMHgcZzpXpkWu6wXYxbEYmdws8WiubKvpTBxg5YXXGZU10ILN6rg+iEt03HKjlG1rsuVhjnkvZx1y0I2EjlWzz7qwaUhLUc2Na+1kt+6Vz7SxbFmV3ZUszVocdeRbnicJSHHRVPGc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773414498; c=relaxed/simple;
-	bh=415QeymUE5SmY7dXt8oQM9rtzP5wJkBAbH2H7BY6nIQ=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:MIME-Version:
-	 Content-Type:References; b=u703rS5qDXEfAgjppt5ZaMl69hMSyD+k6ES5inqdJ7J5UHAE9vLRH9jKFFdd4z6WBm0AUhxYwrQdrX0VIoiEGAjxWrpDr1/l64bjYWrtTCusTCdIFXXHnsXYn3VGMCUBjuQDOD5d08+0Xgdq3odFiXZTlnP8t4n0K/djSCTXyXM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=M+Ahlbkt; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="M+Ahlbkt"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260313150814euoutp02f5188153cb08498a72cb4fd310ddfbca~cbxZHbiKu0098300983euoutp02_
-	for <iommu@lists.linux.dev>; Fri, 13 Mar 2026 15:08:14 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260313150814euoutp02f5188153cb08498a72cb4fd310ddfbca~cbxZHbiKu0098300983euoutp02_
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1773414494;
-	bh=cNRB2bVdaO0e0Tm9fiFGo+z5sEqF/mw7wNSwebObrUM=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=M+AhlbktAAP6vXnQqOHdc6IrEP9wUOjgwkSn5Pxeg6L74TN7ffySVmi01+RS41u8q
-	 uf9mYtDtvr71K1GQyR0jojt9AWBWV0irDY/YbTRIpSWwECB7m+qCGa0g0DvFpSQBJG
-	 YMxq9zd/ny6Q9VOKji09HbvsaFE8SntHxgSUhUIc=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20260313150814eucas1p14203b667c73825e16a3d5d6430e5e7b6~cbxY39fhn2140221402eucas1p1Z;
-	Fri, 13 Mar 2026 15:08:14 +0000 (GMT)
-Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20260313150813eusmtip117becfbcee6e6475d5e56b0134cdcd73~cbxYTOPyE0187001870eusmtip1H;
-	Fri, 13 Mar 2026 15:08:13 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: Saravana Kannan <saravanak@kernel.org>, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux.dev
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Rob Herring
-	<robh@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Oreoluwa Babatunde
-	<oreoluwa.babatunde@oss.qualcomm.com>, Andrew Morton
-	<akpm@linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH 7/7] of: reserved_mem: rework fdt_init_reserved_mem_node()
-Date: Fri, 13 Mar 2026 16:08:02 +0100
-Message-Id: <20260313150802.1121442-8-m.szyprowski@samsung.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260313150802.1121442-1-m.szyprowski@samsung.com>
+	s=arc-20240116; t=1773415018; c=relaxed/simple;
+	bh=rWUAFdCY1qSF25VmcrlVfATp53b/4xR4POxQnrPcejM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=IXiqOHs+6R0mxJ2LkLsVIykbR9z3VuG4ZX5hcvhyjZTFkXYHgi5tlLuVypV81xUvwJ6U/2X0ehEHro4tlyNQMj9Ou66Yuq+NXn//GmJHc3A/GNQVo68fZa3Ty30YhqsQLTF9go22KtwGtkUpgjjU/GvYaD24WDkj9Zr1WW+cVws=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 30BC0165C;
+	Fri, 13 Mar 2026 08:16:50 -0700 (PDT)
+Received: from [10.57.59.200] (unknown [10.57.59.200])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 064863F73B;
+	Fri, 13 Mar 2026 08:16:53 -0700 (PDT)
+Message-ID: <ab632240-f4eb-4bcc-8170-2a9a024c1ce7@arm.com>
+Date: Fri, 13 Mar 2026 15:16:50 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20260313150814eucas1p14203b667c73825e16a3d5d6430e5e7b6
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260313150814eucas1p14203b667c73825e16a3d5d6430e5e7b6
-X-EPHeader: CA
-X-CMS-RootMailID: 20260313150814eucas1p14203b667c73825e16a3d5d6430e5e7b6
-References: <20260313150802.1121442-1-m.szyprowski@samsung.com>
-	<CGME20260313150814eucas1p14203b667c73825e16a3d5d6430e5e7b6@eucas1p1.samsung.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/3] dmaengine: Add multi-buffer support in single DMA
+ transfer
+To: Sumit Kumar <sumit.kumar@oss.qualcomm.com>,
+ Krishna Chaitanya Chundru <krishna.chundru@oss.qualcomm.com>,
+ Veerabhadrarao Badiganti <veerabhadrarao.badiganti@oss.qualcomm.com>,
+ Subramanian Ananthanarayanan
+ <subramanian.ananthanarayanan@oss.qualcomm.com>,
+ Akhil Vinod <akhil.vinod@oss.qualcomm.com>,
+ Manivannan Sadhasivam <mani@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
+ Kishon Vijay Abraham I <kishon@kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>
+Cc: dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-pci@vger.kernel.org, mhi@lists.linux.dev,
+ linux-arm-msm@vger.kernel.org
+References: <20260313-dma_multi_sg-v1-0-8fabb0d1a759@oss.qualcomm.com>
+ <20260313-dma_multi_sg-v1-1-8fabb0d1a759@oss.qualcomm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260313-dma_multi_sg-v1-1-8fabb0d1a759@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Move the content of fdt_reserved_mem_save_node() to
-fdt_init_reserved_mem_node() function. Initialization is no longer
-performed in two steps as it was initially, so
-fdt_reserved_mem_save_node() name is a bit misleading and that function
-actually perform full initialization of the reserved memory region.
+On 2026-03-13 6:49 am, Sumit Kumar wrote:
+> Add dmaengine_prep_batch_sg API for batching multiple independent buffers
+> in a single DMA transaction. Each scatter-gather entry specifies both
+> source and destination addresses. This allows multiple non-contiguous
+> memory regions to be transferred in a single DMA transaction instead of
+> separate operations, significantly reducing submission overhead and
+> interrupt overhead.
+> 
+> Extends struct scatterlist with optional dma_dst_address field
+> and implements support in dw-edma driver.
 
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
----
- drivers/of/of_reserved_mem.c | 58 ++++++++++++++++--------------------
- 1 file changed, 25 insertions(+), 33 deletions(-)
+[...]
+> diff --git a/include/linux/scatterlist.h b/include/linux/scatterlist.h
+> index 29f6ceb98d74b118d08b6a3d4eb7f62dcde0495d..20b65ffcd5e2a65ec5026a29344caf6baa09700b 100644
+> --- a/include/linux/scatterlist.h
+> +++ b/include/linux/scatterlist.h
+> @@ -19,6 +19,9 @@ struct scatterlist {
+>   #ifdef CONFIG_NEED_SG_DMA_FLAGS
+>   	unsigned int    dma_flags;
+>   #endif
+> +#ifdef CONFIG_NEED_SG_DMA_DST_ADDR
+> +	dma_addr_t	dma_dst_address;
+> +#endif
 
-diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
-index 229573d6dacb..7146c1ba6ae1 100644
---- a/drivers/of/of_reserved_mem.c
-+++ b/drivers/of/of_reserved_mem.c
-@@ -102,36 +102,13 @@ static void __init alloc_reserved_mem_array(void)
- 	reserved_mem = new_array;
- }
- 
--static void __init fdt_init_reserved_mem_node(struct reserved_mem *rmem,
--					      unsigned long node);
-+static void fdt_init_reserved_mem_node(unsigned long node, const char *uname,
-+				       phys_addr_t base, phys_addr_t size);
- static int fdt_validate_reserved_mem_node(unsigned long node,
- 					  phys_addr_t *align);
- static int fdt_fixup_reserved_mem_node(unsigned long node,
- 				       phys_addr_t base, phys_addr_t size);
- 
--/*
-- * fdt_reserved_mem_save_node() - save fdt node for second pass initialization
-- */
--static void __init fdt_reserved_mem_save_node(unsigned long node, const char *uname,
--					      phys_addr_t base, phys_addr_t size)
--{
--	struct reserved_mem *rmem = &reserved_mem[reserved_mem_count];
--
--	if (reserved_mem_count == total_reserved_mem_cnt) {
--		pr_err("not enough space for all defined regions.\n");
--		return;
--	}
--
--	rmem->name = uname;
--	rmem->base = base;
--	rmem->size = size;
--
--	/* Call the region specific initialization function */
--	fdt_init_reserved_mem_node(rmem, node);
--
--	reserved_mem_count++;
--}
--
- static int __init early_init_dt_reserve_memory(phys_addr_t base,
- 					       phys_addr_t size, bool nomap)
- {
-@@ -316,12 +293,14 @@ void __init fdt_scan_reserved_mem_late(void)
- 
- 		if (size) {
- 			uname = fdt_get_name(fdt, child, NULL);
--			fdt_reserved_mem_save_node(child, uname, base, size);
-+			fdt_init_reserved_mem_node(child, uname, base, size);
- 		}
- 	}
- 
- 	/* check for overlapping reserved regions */
- 	__rmem_check_for_overlap();
-+
-+
- }
- 
- static int __init __reserved_mem_alloc_size(unsigned long node, const char *uname);
-@@ -515,9 +494,8 @@ static int __init __reserved_mem_alloc_size(unsigned long node, const char *unam
- 	}
- 
- 	fdt_fixup_reserved_mem_node(node, base, size);
-+	fdt_init_reserved_mem_node(node, uname, base, size);
- 
--	/* Save region in the reserved_mem array */
--	fdt_reserved_mem_save_node(node, uname, base, size);
- 	return 0;
- }
- 
-@@ -590,21 +568,31 @@ static int __init __reserved_mem_init_node(struct reserved_mem *rmem,
- 	return ret;
- }
- 
--
- /**
-  * fdt_init_reserved_mem_node() - Initialize a reserved memory region
-- * @rmem: reserved_mem struct of the memory region to be initialized.
-  * @node: fdt node of the initialized region
-  *
-  * This function is used to call the region specific initialization
-- * function for a reserved memory region.
-+ * function for a reserved memory region save all region specific data to
-+ * reserved_mem array to let of_reserved_mem_lookup() function find it.
-  */
--static void __init fdt_init_reserved_mem_node(struct reserved_mem *rmem,
--					      unsigned long node)
-+static void __init fdt_init_reserved_mem_node(unsigned long node, const char *uname,
-+					      phys_addr_t base, phys_addr_t size)
- {
- 	int err = 0;
- 	bool nomap;
- 
-+	struct reserved_mem *rmem = &reserved_mem[reserved_mem_count];
-+
-+	if (reserved_mem_count == total_reserved_mem_cnt) {
-+		pr_err("not enough space for all defined regions.\n");
-+		return;
-+	}
-+
-+	rmem->name = uname;
-+	rmem->base = base;
-+	rmem->size = size;
-+
- 	nomap = of_get_flat_dt_prop(node, "no-map", NULL) != NULL;
- 
- 	err = __reserved_mem_init_node(rmem, node);
-@@ -614,6 +602,7 @@ static void __init fdt_init_reserved_mem_node(struct reserved_mem *rmem,
- 			memblock_clear_nomap(rmem->base, rmem->size);
- 		else
- 			memblock_phys_free(rmem->base, rmem->size);
-+		return;
- 	} else {
- 		phys_addr_t end = rmem->base + rmem->size - 1;
- 		bool reusable =
-@@ -624,7 +613,10 @@ static void __init fdt_init_reserved_mem_node(struct reserved_mem *rmem,
- 			nomap ? "nomap" : "map",
- 			reusable ? "reusable" : "non-reusable",
- 			rmem->name ? rmem->name : "unknown");
-+
- 	}
-+
-+	reserved_mem_count++;
- }
- 
- struct rmem_assigned_device {
--- 
-2.34.1
+Eww, no, what does this even mean? Is the regular dma_addr somehow 
+implicitly a "source" now? How could the single piece of memory 
+represented by page_link/offset/length have two different DMA addresses? 
+How are both the DMA mapping code and users supposed to know which one 
+is relevant in any particular situation?
+
+If you want to bring back DMA_MEMCPY_SG yet again, and you have an 
+actual user this time, then do that (although by now it most likely 
+wants to be a dma_vec version). Don't do whatever this is...
+
+If you want to batch multiple 
+dmaengine_slave_config()/dma_prep_slave_single() operations into some 
+many-to-many variant of dmaengine_prep_peripheral_dma_vec(), then surely 
+that requires actual batching of the config part as well - e.g. passing 
+an explicit vector of distinct dma_slave_configs corresponding to each 
+individual dma_vec - in order to be able to work correctly in general?
+
+Thanks,
+Robin.
+
+>   };
+>   
+>   /*
+> @@ -36,6 +39,10 @@ struct scatterlist {
+>   #define sg_dma_len(sg)		((sg)->length)
+>   #endif
+>   
+> +#ifdef CONFIG_NEED_SG_DMA_DST_ADDR
+> +#define sg_dma_dst_address(sg)	((sg)->dma_dst_address)
+> +#endif
+> +
+>   struct sg_table {
+>   	struct scatterlist *sgl;	/* the list */
+>   	unsigned int nents;		/* number of mapped entries */
+> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+> index 31cfdb6b4bc3e33c239111955d97b3ec160baafa..3539b5b1efe27be7ccbfebb358dbb9cad2868f11 100644
+> --- a/kernel/dma/Kconfig
+> +++ b/kernel/dma/Kconfig
+> @@ -32,6 +32,9 @@ config NEED_SG_DMA_LENGTH
+>   config NEED_DMA_MAP_STATE
+>   	bool
+>   
+> +config NEED_SG_DMA_DST_ADDR
+> +	bool
+> +
+>   config ARCH_DMA_ADDR_T_64BIT
+>   	def_bool 64BIT || PHYS_ADDR_T_64BIT
+>   
+> 
 
