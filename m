@@ -1,107 +1,88 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E20C3B4EAD
-	for <iommu@lists.linux.dev>; Fri, 13 Mar 2026 15:35:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F22023B777E
+	for <iommu@lists.linux.dev>; Fri, 13 Mar 2026 15:36:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773416145; cv=none; b=RufBh9KNVKZ7fsCxg2o/BHX+GVl+6o2yoIfLMXFMLHzKlBqFg26VmW+lLvx1qNV7Dk68zJW9pM+Cx/sGqTjokrUbvqf5CT9RGrcWz5MYQfjXkNijh5WYpZOjZFNfOfbZxRrvSwUVr/UxDnvcqx4aM6yTrl2cNGmqo+JnS1ByY+I=
+	t=1773416208; cv=none; b=tKCynLVuYruqe1J/z2M6wNEj2onGkWkv2qIZ9WzVpcgHYdYa9DNeFO3vPDX2YMrwOjRl1ArnP8f+QP7ssibLj2tTfpBbbuRTo/xuxthgqS1oKlZtqseSbOaZxxUnPO54ryXB1cbrkasNFXdabJsxNLCMHhScV/jlHXxDkZz83wM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773416145; c=relaxed/simple;
-	bh=YJoz91c+q7in7/0KxjZs6mQ9FJ9MYdwGNxoXlFbnDBU=;
+	s=arc-20240116; t=1773416208; c=relaxed/simple;
+	bh=mVJqAoGCdzDxY6EScXWW6YPCOZawlS/f85uqEYbM+Io=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mY0eU8X/VztNBJYMU9WRvIc62UfX9rVKv1gsTptufCDqccskyiREPbGcJXA6Ip5ElBIyNatoTsEpriuhCKIA/AuZgCVcP0l44cXBhWHeTMY33bFqVkRybNu/znOJ/M0ZBCpRXZFCtZdPw9MxlroXuR8z0hDpDo/bSh3wHNWq7ow=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=DCe+ZMdN; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=h+/KxLI2; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=U125buNfkScL9s3pDtBp9HKgxlQFWi5W8UvTbTk7/2gk9NFVM9StMWzKc5VRHgLd/FovouF2WoXCmk1eBEnP4TeTUWrapBk1OufkDiQXZbibxKTNBDtjdMTToQrOHaR+ybT+VBsZ6Rl5Fpt+eGAycidUxuDzuPC9DBTAbJWFFJ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=JK/98vEA; arc=none smtp.client-ip=209.85.214.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="DCe+ZMdN";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="h+/KxLI2"
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62DA7VUm1748804
-	for <iommu@lists.linux.dev>; Fri, 13 Mar 2026 15:35:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=ne/tYUaqy6oEHvVkZv5Q/L0i
-	cxB9L/q8cd0LTS1N8+M=; b=DCe+ZMdNBcGKvv/NoeknePIR1wruYpaEEKRPagPD
-	wu9vE7e4G715qehUMlhjXIq4H9NaQp+0k7jZw+dn+gNpFyxlG6JIeemsz8nzAb1D
-	JfGfEQDH17mMwrBmw4cfZtxI/h+50N+jNOcYUxJ2Jp7EE/cgjwOdH5QmTEqeB0nI
-	ipSDgPxUMaxXh8Mq1vOr6dVqLog8QKKLo6x3M7DU+6RYA/voHq01QaOYP/rnOReV
-	xobPe+LABk98BObYpG9s9WC2Xi0FvOefu+58G/N/9L9X/Q/WkwdmcsKsy4LWd7jG
-	qhs69qyDLrXSe9nggec3hc7ebAn+HYkSWNpRzKErq5rc/Q==
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com [209.85.222.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4cvgj6h336-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Fri, 13 Mar 2026 15:35:41 +0000 (GMT)
-Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-8cd827a356aso1389807685a.3
-        for <iommu@lists.linux.dev>; Fri, 13 Mar 2026 08:35:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="JK/98vEA"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2aeab6ff148so87565ad.1
+        for <iommu@lists.linux.dev>; Fri, 13 Mar 2026 08:36:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1773416133; x=1774020933; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1773416202; x=1774021002; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ne/tYUaqy6oEHvVkZv5Q/L0icxB9L/q8cd0LTS1N8+M=;
-        b=h+/KxLI27RtjuA7idCERNWS88P4KpTQPxaRhCv1seePdYqG/qG67b+BUNeaxQvglpG
-         iUlcyO1HKQ0O1RxbwSC2LQJmiKbCRUWznsehWXasbCGflV8Qimh8kEMlqWJQBTybsfCq
-         ZL9XiZA5pkOHkXsz7qxYVQkn1XiRwYP/EkDA8aqpG2u+UlLos5So2yVxoRyLO5m4n9Kj
-         oAgbeBplO1xqUr390GghxYVvukfRX08t8sgBUMu4Xo7I80BrHG+ZSIIAsXvV7zg9rRSV
-         YbraV+A4jHAGhdNdNOiCVjAQyNCcTduD6ikBMQSCjvf3XIPk8kHiqvtCIyINA65kD0hp
-         2RAw==
+        bh=QnL4RthXjRr5EwbDeuhNCTPnFU8J1byxNF4coj8lpk8=;
+        b=JK/98vEAQkF8sLyEZ9nsBOmc4Mqiq9t2tLGIRJ4wLS/hWZ7xKpQ5Zr8wiiRFn+mK/Q
+         Gmae01lo3ZKtZg/ka+Zm7++eGWP8rMjCVtFzcWb88jmXHP+KD+PXU+3OpwY+iLVS7MgK
+         SAGSMdE7fFoIbCOTPjcJDbfpv8rFF+KesncPSW68dbmL5GaUi3VJWreTf3+nY1RPuksi
+         /t4uMNmI+6so6XA32kNDytxxtofE4iZuQ0gkIPLjncWI0k0dAt6DlRjDW285KcrK5Rjq
+         BlryYBMYZz+JIklIaWC8GJDhfFSzpavuNVvww18FeSsdegKdd2TesxG2UGS4Y/sHa0AH
+         V26w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773416133; x=1774020933;
+        d=1e100.net; s=20251104; t=1773416202; x=1774021002;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=ne/tYUaqy6oEHvVkZv5Q/L0icxB9L/q8cd0LTS1N8+M=;
-        b=UYmeMVZG+inrLYNpTF9uXdb1IA7E6U1hzW3GIA7QIaCdSkFy5ERt/jmWsDizG6b5fa
-         NRStiw8xfBnV/7dUdBuGaGUrOx5U1VVhsun86RjFpTFwB8PsBIROraRG7/DaPB9CXCjS
-         Qx1nqyHDm8dHTIz5dgJXldLRg1GftGWdV0UeX1QddKepCML2N0eocMGnNiK2o94Wd75J
-         AQD+e21gvpDJzmjZonjoZBTLWj/0mKuLnlsJKPhhHtAip5EUzn03ovuAxSM/VSc6OxPo
-         Yf+z5BYjrVdBTAiZGkzmv76iuTK3lKaEMV5I+GX49wBPWQU37F5PIQFamFfSyyvjDn6J
-         J0vA==
-X-Forwarded-Encrypted: i=1; AJvYcCVKazZ2+WokR3osuIyDVrWtjpTsDBW1RvIrhtU33xE8tfWfU3DikyirOo4NnU7pmHxKFdkIfg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YytTnTB/C5st4aZnlwsMRglhpqWEKHhux3y19m/z9pcf3RjYLO7
-	nE2+68OEVRxGoDmll06fcN7uci9/V6ZgTgoGM+xoVZwXdZmCGS8eRmkwLVfzmU5KeNF535ZJW6m
-	dTIbRyky1ymgL1JQQdkru6K8NPW1JcCARk1tqxdn+wmG86i0Tr+0+Mzwmug==
-X-Gm-Gg: ATEYQzzDoBeujHION5UkN4ZVlojtiY1IY4rZm3h89A9sYcOtcbjFmuPU9q64yaqaw3i
-	dd+AHxECHvHttJx0XFRg4QATNoZ/G+osaRkpgodaAxuDWhJJCJXJwDkIwCQMrHCXaPRFZFQq3bI
-	7Ol8Id8yMYX0U0lbt5LA+DUDsPAUlvTI/tNugQphQdUa67cZtpiL3pZNuo3PoYFq3eaGHOyHlLs
-	rvdSxESnd30inTcKh7+mVo5GCi8r8RKEpQyG20XcTNcfviaX7uaMVUwV7m9UbMrIarrL3z16/Op
-	B+jlFrnBVBh5AsN3WcDXymokRqtQZVF5YUtYH4jx4Bi6jaFgi0OqOm4nMkhCUfIzgyIVoGNkSFu
-	/LoMQuY0uTRgQxXOA5BJlNAtGUPBOZEcx0mh5WmA80TvTAqB61TQ2vJAT9j7X9dNtg+LIMLhuh9
-	g2pBwbExSFvmnuuuMolfLPNtSA1/9BAVQe28k=
-X-Received: by 2002:a05:620a:4005:b0:8cd:9938:9803 with SMTP id af79cd13be357-8cdb5a62213mr510791585a.32.1773416132789;
-        Fri, 13 Mar 2026 08:35:32 -0700 (PDT)
-X-Received: by 2002:a05:620a:4005:b0:8cd:9938:9803 with SMTP id af79cd13be357-8cdb5a62213mr510784585a.32.1773416132102;
-        Fri, 13 Mar 2026 08:35:32 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a156366b22sm1561943e87.77.2026.03.13.08.35.30
+        bh=QnL4RthXjRr5EwbDeuhNCTPnFU8J1byxNF4coj8lpk8=;
+        b=PqGb9z3PtQteqo36un3FNosuwF1Ajqf0XOXKQrhNu5ms6NrK9+alfVhJvOBSJ28CGL
+         +CL9FGrhX0bG/5qwQuCoZ1uVkSBpPChBJKOXC49sNPDuhRkNEq7jrxamThowC7U97MbE
+         lMHAwJc6UWJQQcWsckrnOihwobH+huhDg3KrvtgO2hT+c0iLVYmdXypoTPE9E7X2uVCH
+         YM2igHol3mHBWiohLUlSQBJFp0dltyZoqjlLAL2W8BiZKWOyBPxCNhgaCZSg3FGKdyzB
+         Uu+UJajUJ7YmFONeztPF3mMsza3GRfNtK3w4+a7djfotJiaizCOczwM/4QxAZk0yPNpc
+         vzfQ==
+X-Forwarded-Encrypted: i=1; AJvYcCX5TvLYEgmDi8ugYFCW8DKpGbUrMhpLVS/oT1HfgRwyoKT6qizsg67kBlcHtf29ccXH1VnO/g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyvMyke4/cNpw9YIWAVParZdVHiHQano4pCrA/pDTBHY7hQifAZ
+	oo5vRoJE0y0/6L7JQ9EoLfwAEY7ZxJtolsJf5vqvApBC1QyBOwj/B54/exq5qcqQZA==
+X-Gm-Gg: ATEYQzyfp5FrD0vaiK4PNnoV06DX0hh2GPlop6j+CrET/nZyQPCzOV3ox9RO5myLIZT
+	SY6lGnvpYm5/i89aExwXefDVif654O+EjcoZA3LlXi9jYoFEZzCgSCOawWY8BeYmrJOrK9MQXLj
+	wTIVNqtP2Ikli9pULQeJ5NiAwqM6IInbZpySBLU3/1ljBpKmpwYt0C9gmhk9mbf3F5c155opASs
+	VpIYas2tH7xfBLsRNLQvC7PeSUDO1iPAxhUzDnzqTDgqLzkCYCm/4SC0j5LGhfZRoDeWqE4GFwl
+	AvQdt1XWRnN9S+MonslFiJ13XrSZ8PU3IU5O8Fw+jDIfrrFvIfUxSDGuE3cGPYoZEWuFfXwPu+U
+	v/ec9o7MeGF057xEq5wJzKV+7RJqNKuAHyUJBOrVKRblqHsg4TT/PHtVKs/lhMr9ts1uZ+LmJN2
+	ksRhVMQNqHlcOAOAH8hk5neuv6LjSZX4CxjyezI/SIdgRU+h4fmjSvoA3KkRBHXmoR6Wyr
+X-Received: by 2002:a17:902:ec82:b0:2ad:6f9b:7818 with SMTP id d9443c01a7336-2aecd67598fmr2482035ad.23.1773416201213;
+        Fri, 13 Mar 2026 08:36:41 -0700 (PDT)
+Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c73ebb62f0esm2233230a12.17.2026.03.13.08.36.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Mar 2026 08:35:30 -0700 (PDT)
-Date: Fri, 13 Mar 2026 17:35:28 +0200
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-Cc: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Bryan O'Donoghue <bod@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Saravana Kannan <saravanak@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Stefan Schmidt <stefan.schmidt@linaro.org>,
-        Hans Verkuil <hverkuil@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
-        Hans Verkuil <hverkuil+cisco@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev, Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Subject: Re: [PATCH v3 3/7] media: iris: add iris vpu bus support and
- register it with iommu_buses
-Message-ID: <nqsysgx3w7awyfvhiq2t5jgelpmptht3art6bsfsvjz5sq6xkj@3wpkqy4a4c3i>
-References: <20260313-kaanapali-iris-v3-0-9c0d1a67af4b@oss.qualcomm.com>
- <20260313-kaanapali-iris-v3-3-9c0d1a67af4b@oss.qualcomm.com>
+        Fri, 13 Mar 2026 08:36:40 -0700 (PDT)
+Date: Fri, 13 Mar 2026 15:36:33 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Samiullah Khawaja <skhawaja@google.com>
+Cc: David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+	Adithya Jayachandran <ajayachandra@nvidia.com>,
+	Parav Pandit <parav@nvidia.com>,
+	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>,
+	Pratyush Yadav <pratyush@kernel.org>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	David Matlack <dmatlack@google.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Chris Li <chrisl@kernel.org>, Vipin Sharma <vipinsh@google.com>,
+	YiFei Zhu <zhuyifei@google.com>
+Subject: Re: [PATCH 01/14] iommu: Implement IOMMU LU FLB callbacks
+Message-ID: <abQvAY8Ao4acgmk2@google.com>
+References: <20260203220948.2176157-1-skhawaja@google.com>
+ <20260203220948.2176157-2-skhawaja@google.com>
+ <abHZdOKyLmmmHADz@google.com>
+ <abLi5giBpi05_CLn@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -110,170 +91,116 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260313-kaanapali-iris-v3-3-9c0d1a67af4b@oss.qualcomm.com>
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzEzMDEyMyBTYWx0ZWRfX9wRGj2bSmJv8
- gl5BdCwNrkyt90flnBttBa39AIfYiaBsUaxYc8CWtUGaY+3E2cBY+j05EV6CeylPJyDUKSFQ1hq
- coxAyDNJ5jRvut8g9GsI+oFm0ogQWw2apL9+r0N3LK05QoEFWvHqxQA46uVN2WkCO2ixdzbt59r
- fQQliQPyszXDuBkotpqitUOrcv3vbzSXHEBvGo8UnsQDUOvRUE00gFkvyZ64By8IKHGd/7Jmqn+
- Yzf09CYkLmGIIsB/EfvcBYAms/4rcggMAqUzFmEdyLMlzngq2tF9AbGVR2ZQLw7W6rULZKH7vmx
- ZV+iXUvX/sor4rq34jbYDQ9H79iUkVxbGEZ25fvffuiC4Cpv1Qk1JVLDmHc4aVQ+lMs1OCUt+pv
- t7Yar0aiiy0jbP+Ecl47GreBX0q+Bf3VB0cIlSjlGgJbgotZ6xwYBBeVhA5+ei+1JxKbEa1u7VE
- 3pGW+tVarP2T39Y581Q==
-X-Proofpoint-GUID: q-ZC7YRE1iMJSTIzkmRSN8hMvL3gYGz2
-X-Proofpoint-ORIG-GUID: q-ZC7YRE1iMJSTIzkmRSN8hMvL3gYGz2
-X-Authority-Analysis: v=2.4 cv=H+vWAuYi c=1 sm=1 tr=0 ts=69b42ecd cx=c_pps
- a=50t2pK5VMbmlHzFWWp8p/g==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=Yq5XynenixoA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=DJpcGTmdVt4CTyJn9g5Z:22 a=EUspDBNiAAAA:8
- a=z0f7ToGzsUK0FFPo7AcA:9 a=CjuIK1q_8ugA:10 a=IoWCM6iH3mJn3m4BftBB:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-03-13_02,2026-03-13_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 lowpriorityscore=0 phishscore=0 clxscore=1015 malwarescore=0
- adultscore=0 impostorscore=0 priorityscore=1501 bulkscore=0 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2603050001 definitions=main-2603130123
+In-Reply-To: <abLi5giBpi05_CLn@google.com>
 
-On Fri, Mar 13, 2026 at 06:49:37PM +0530, Vikash Garodia wrote:
-> Add iris vpu bus support and hooks the new bus into the iommu_buses
-> list. Iris devices need their own bus so that they can run their own
-> dma_configure() logic.
-> 
-> Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-> ---
->  drivers/iommu/iommu.c                              |  4 +++
->  drivers/media/platform/qcom/iris/Makefile          |  4 +++
->  .../platform/qcom/iris/iris_platform_common.h      |  6 ++++
->  drivers/media/platform/qcom/iris/iris_vpu_bus.c    | 32 ++++++++++++++++++++++
->  include/linux/iris_vpu_bus.h                       | 13 +++++++++
->  5 files changed, 59 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 35db5178095404fec87cd0f18e44ea97cf354e78..fd5fb7c10da22ab548d359ca1f44504acc3d646c 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -13,6 +13,7 @@
->  #include <linux/bug.h>
->  #include <linux/types.h>
->  #include <linux/init.h>
-> +#include <linux/iris_vpu_bus.h>
->  #include <linux/export.h>
->  #include <linux/slab.h>
->  #include <linux/errno.h>
-> @@ -178,6 +179,9 @@ static const struct bus_type * const iommu_buses[] = {
->  #ifdef CONFIG_CDX_BUS
->  	&cdx_bus_type,
->  #endif
-> +#if IS_ENABLED(CONFIG_VIDEO_QCOM_IRIS)
-> +	&iris_vpu_bus_type,
-> +#endif
->  };
->  
->  /*
-> diff --git a/drivers/media/platform/qcom/iris/Makefile b/drivers/media/platform/qcom/iris/Makefile
-> index 2abbd3aeb4af07e52bf372a4b2f352463529c92c..6f4052b98491aeddc299669334d4c93e9a3420e4 100644
-> --- a/drivers/media/platform/qcom/iris/Makefile
-> +++ b/drivers/media/platform/qcom/iris/Makefile
-> @@ -31,3 +31,7 @@ qcom-iris-objs += iris_platform_gen1.o
->  endif
->  
->  obj-$(CONFIG_VIDEO_QCOM_IRIS) += qcom-iris.o
-> +
-> +ifdef CONFIG_VIDEO_QCOM_IRIS
-> +obj-y += iris_vpu_bus.o
-> +endif
-> diff --git a/drivers/media/platform/qcom/iris/iris_platform_common.h b/drivers/media/platform/qcom/iris/iris_platform_common.h
-> index 5a489917580eb10022fdcb52f7321a915e8b239d..2273243d1a80446233dd82dcd77444aa043ad064 100644
-> --- a/drivers/media/platform/qcom/iris/iris_platform_common.h
-> +++ b/drivers/media/platform/qcom/iris/iris_platform_common.h
-> @@ -204,6 +204,12 @@ struct icc_vote_data {
->  	u32 fps;
->  };
->  
-> +struct iris_context_bank {
-> +	char *name;
+On Thu, Mar 12, 2026 at 04:43:00PM +0000, Samiullah Khawaja wrote:
+> On Wed, Mar 11, 2026 at 09:07:00PM +0000, Pranjal Shrivastava wrote:
+> > On Tue, Feb 03, 2026 at 10:09:35PM +0000, Samiullah Khawaja wrote:
+> > > Add liveupdate FLB for IOMMU state preservation. Use KHO preserve memory
+> > > alloc/free helper functions to allocate memory for the IOMMU LU FLB
+> > > object and the serialization structs for device, domain and iommu.
+> > > 
+> > > During retrieve, walk through the preserved objs nodes and restore each
+> > > folio. Also recreate the FLB obj.
+> > > 
+> > > Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+> > > ---
+> > >  drivers/iommu/Kconfig         |  11 +++
+> > >  drivers/iommu/Makefile        |   1 +
+> > >  drivers/iommu/liveupdate.c    | 177 ++++++++++++++++++++++++++++++++++
+> > >  include/linux/iommu-lu.h      |  17 ++++
+> > >  include/linux/kho/abi/iommu.h | 119 +++++++++++++++++++++++
+> > >  5 files changed, 325 insertions(+)
+> > >  create mode 100644 drivers/iommu/liveupdate.c
+> > >  create mode 100644 include/linux/iommu-lu.h
+> > >  create mode 100644 include/linux/kho/abi/iommu.h
+> > > 
+> > > diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> > > index f86262b11416..fdcfbedee5ed 100644
+> > > --- a/drivers/iommu/Kconfig
+> > > +++ b/drivers/iommu/Kconfig
+> > > @@ -11,6 +11,17 @@ config IOMMUFD_DRIVER
+> > >  	bool
+> > >  	default n
+> > > 
 
-const
+[ snip ---- >8 -----]
 
-> +	u32 f_id;
-> +	u32 region_mask;
+> > 
+> > > +enum iommu_lu_type {
+> > > +	IOMMU_INVALID,
+> > > +	IOMMU_INTEL,
+> > > +};
+> > > +
+> > > +struct iommu_obj_ser {
+> > > +	u32 idx;
+> > > +	u32 ref_count;
+> > > +	u32 deleted:1;
+> > > +	u32 incoming:1;
+> > > +} __packed;
+> > > +
+> > > +struct iommu_domain_ser {
+> > > +	struct iommu_obj_ser obj;
+> > > +	u64 top_table;
+> > > +	u64 top_level;
+> > > +	struct iommu_domain *restored_domain;
+> > > +} __packed;
+> > > +
+> > > +struct device_domain_iommu_ser {
+> > > +	u32 did;
+> > > +	u64 domain_phys;
+> > > +	u64 iommu_phys;
+> > > +} __packed;
+> > > +
+> > > +struct device_ser {
+> > > +	struct iommu_obj_ser obj;
+> > > +	u64 token;
+> > > +	u32 devid;
+> > > +	u32 pci_domain;
+> > > +	struct device_domain_iommu_ser domain_iommu_ser;
+> > > +	enum iommu_lu_type type;
+> > > +} __packed;
+> > > +
+> > > +struct iommu_intel_ser {
+> > > +	u64 phys_addr;
+> > > +	u64 root_table;
+> > > +} __packed;
+> > > +
 
-Unused here
+One more thing here, let's add the "intel" stuff with the intel patches
 
-> +};
-> +
->  enum platform_pm_domain_type {
->  	IRIS_CTRL_POWER_DOMAIN,
->  	IRIS_HW_POWER_DOMAIN,
-> diff --git a/drivers/media/platform/qcom/iris/iris_vpu_bus.c b/drivers/media/platform/qcom/iris/iris_vpu_bus.c
-> new file mode 100644
-> index 0000000000000000000000000000000000000000..9e9fdeb6e405aab26ecf5e57ca91fca6b8eda2c5
-> --- /dev/null
-> +++ b/drivers/media/platform/qcom/iris/iris_vpu_bus.c
-> @@ -0,0 +1,32 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (c) Qualcomm Innovation Center, Inc. All rights reserved.
-> + */
-> +
-> +#include <linux/device.h>
-> +#include <linux/of_device.h>
-> +
-> +#include "iris_platform_common.h"
-> +
-> +static int iris_vpu_bus_dma_configure(struct device *dev)
-> +{
-> +	struct iris_context_bank *cb = dev_get_drvdata(dev);
-> +
-> +	if (!cb)
-> +		return -ENODEV;
-> +
-> +	return of_dma_configure_id(dev, dev->parent->of_node, true, &cb->f_id);
-> +}
+Thanks,
+Praan
 
-There is nothing Iris-specific here. Can we please turn this into a
-generic code (ideally also shared with host1x)?
+> > > +struct iommu_ser {
+> > > +	struct iommu_obj_ser obj;
+> > > +	u64 token;
+> > > +	enum iommu_lu_type type;
+> > > +	union {
+> > > +		struct iommu_intel_ser intel;
+> > > +	};
+> > > +} __packed;
+> > > +
+> > > +struct iommu_objs_ser {
+> > > +	u64 next_objs;
+> > > +	u64 nr_objs;
+> > > +} __packed;
+> > > +
+> > > +struct iommus_ser {
+> > > +	struct iommu_objs_ser objs;
+> > > +	struct iommu_ser iommus[];
+> > > +} __packed;
+> > > +
+> > > +struct iommu_domains_ser {
+> > > +	struct iommu_objs_ser objs;
+> > > +	struct iommu_domain_ser iommu_domains[];
+> > > +} __packed;
+> > > +
+> > > +struct devices_ser {
+> > > +	struct iommu_objs_ser objs;
+> > > +	struct device_ser devices[];
+> > > +} __packed;
+> > > +
 
-> +
-> +const struct bus_type iris_vpu_bus_type = {
-> +	.name = "iris-bus",
-> +	.dma_configure = iris_vpu_bus_dma_configure,
-> +};
-> +EXPORT_SYMBOL_GPL(iris_vpu_bus_type);
-> +
-> +static int __init iris_vpu_bus_init(void)
-> +{
-> +	return bus_register(&iris_vpu_bus_type);
-> +}
-> +
-> +postcore_initcall(iris_vpu_bus_init);
-> diff --git a/include/linux/iris_vpu_bus.h b/include/linux/iris_vpu_bus.h
-> new file mode 100644
-> index 0000000000000000000000000000000000000000..422898cdf2f62eb7f4583d970a01c8776dd12164
-> --- /dev/null
-> +++ b/include/linux/iris_vpu_bus.h
-> @@ -0,0 +1,13 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only
-> + *
-> + * Copyright (c) Qualcomm Innovation Center, Inc. All rights reserved.
-> + */
-> +
-> +#ifndef __IRIS_VPU_BUS_H__
-> +#define __IRIS_VPU_BUS_H__
-> +
-> +#if IS_ENABLED(CONFIG_VIDEO_QCOM_IRIS)
-> +extern const struct bus_type iris_vpu_bus_type;
-> +#endif
-> +
-> +#endif /* __IRIS_VPU_BUS_H__ */
-> 
-> -- 
-> 2.34.1
-> 
-
--- 
-With best wishes
-Dmitry
+Thanks,
+Praan
