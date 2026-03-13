@@ -1,68 +1,68 @@
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCB9036166A
-	for <iommu@lists.linux.dev>; Fri, 13 Mar 2026 18:43:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAFF434C123
+	for <iommu@lists.linux.dev>; Fri, 13 Mar 2026 18:46:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773427383; cv=none; b=Y4dviAtXl/zMZ6AufyUoJJEHYnE3G+n9WK5np5mYQAUaEdA1gR0hd6UOQcR4fgxAeeyggLcpGQXU37H/TfCmYsjzrZsbZ6IOUV7e+PQl5nU3RX3UE8uMqpjzw0ZZzuOYW3X8So+z2ByAHsijjZrHVKKNl9l136npV7WyklimePE=
+	t=1773427587; cv=none; b=KaRX0965vbPsabzkhtuM0RmwITxNEfrVrShEY/XUbK7IBZN3Vl0Vfv0u9hQuf5DHsD1ZTze+JRuIVBDMUgWZSZubOt1JvQMBoXynjvL0EmaYu9/bYoTU8vXr/DYe4+WpgAB+F8YzvLjRtkjt8JG1ntrszuzBFYw9K2egrHNncms=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773427383; c=relaxed/simple;
-	bh=qG79F3bBT6jsj5MyZ+DmjyLvwJgCGA1ee7wOQ7HnB2c=;
+	s=arc-20240116; t=1773427587; c=relaxed/simple;
+	bh=igi61PaIIZaH3Qas+vZAstXrvDO675CFw3Ylscc89LI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=P+cJZTFhDNgNKl559aMKKZSbJXjdHOAeZN3DfdpLqL1dh4lFp3J250j9W2v02pwKdeLL2DgyZg9SLO1Tkgr5VQCROxW0NDYoIRbhNwp4BjbSTzLcXhYjjikFhFUg8Q5sv+kL3gSdCYRgwgZtU6yBZL+yYeKKfrgU7rB+drsjcL0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=pP3Gbi7+; arc=none smtp.client-ip=209.85.160.182
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZUTmnlHgr1QViHadPz+GvC8fFTtmT/GAoHJP4lJxDv/BgETDqTToJIBfq1RLR7NEnTOGClXysyPsGXhCMjTTk5V6TIn5FNSlEsccvv5K+nK0Ti4fsmwwvqqOhp4OLg4gpAn7Pi+IWQ0OtRxybBLFNO4eRlRE8nhbfuX4ct/J5so=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=fD7xyly6; arc=none smtp.client-ip=209.85.222.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="pP3Gbi7+"
-Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-50905b779dfso28671981cf.3
-        for <iommu@lists.linux.dev>; Fri, 13 Mar 2026 11:43:01 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="fD7xyly6"
+Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-8cd785a8783so268162485a.0
+        for <iommu@lists.linux.dev>; Fri, 13 Mar 2026 11:46:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1773427381; x=1774032181; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1773427585; x=1774032385; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=33LRHogpGiDAoJ0hSgyq37DznMxJ4ZqKispiDKsO2iw=;
-        b=pP3Gbi7+3LB1/HsiEqbs9EnqFlgC4A/hScjkhjCS0NeSC5c+CjKvw09LTbzQvvwXoG
-         oyNv6EabiwwWfU47h0/7oGbga+SoM5zkWFcFo0UDlZDF2h/TDoIxzqCEHKfCIDXg1WdU
-         Ui3dym7LPVdmHEftkerfUwdK6EYGV0JUi7uoetsXTOHLbkeIctiEQcbkqBYRoyC+/oQb
-         tMfro6+JhBuQwIGZShQicgB5VuFmwdbbqOpqlJzYD8GeSYQxHijmW8FHdSD8jedvtMi6
-         ZGutP+0NjCSo/hkORyfJE+bIJJltzqmAKWC53/ujnlSvpE+oE54ItYppuwbv97+4bVAt
-         j4gg==
+        bh=Zy0pIPV9+PAUwjJhdgFY70jKRdcmmf+kMol++AzSeUw=;
+        b=fD7xyly6FDXud86eA8+dqpvQ9b12U9wAtA/mKxuM0aX0Fv8sRzbsnzD7plX3U82m9K
+         4amAn6lVtp6pjBlSys2fA5Jq0McQ9u1aNr+284bbTzK9Gq2ffzOehg7gcvJQVQsLdULx
+         9j5hXv7ocMlpFQyDJPXLD+FdWG+lyqW7J2yU584Y3ITKqip3L7qkRv0o5J4tOvsMe1ch
+         PTdPoou5nTmtG7vBPXsSnKRpRacO7YV//rrFN8nWgXFeHwg711Oxs1ll07yPSQTiA+zt
+         k0D7wC+q2GVsQNCExZdzq3mindn5e+l+CwTn1MqOzCGgBSI0T6reC/3z0r54xnpU8aLa
+         dPnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773427381; x=1774032181;
+        d=1e100.net; s=20251104; t=1773427585; x=1774032385;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=33LRHogpGiDAoJ0hSgyq37DznMxJ4ZqKispiDKsO2iw=;
-        b=r1pOnJJzLJf3Dfb7VgfYCDjuhHSAz75iFDSwvz41iy/sPMcK9aaw7tt8kkrUNu4ft6
-         EutKk7Q4XZ/E/BXFnGwM66mv1+ZfBqmsWsfBphYkM2JMK89yFG36NLud5O1xiThCz3K+
-         +uUCubZQtUVfELVd+4TxppoZ0KEYl48JQsgoUHHv89M/nzmp2TManZhMey/BIEBDa8d+
-         GXDOi6SVpYvYGy+dLzTA1ABo2wVb6IeTZPu/7xNsTaE8HkX9QsJnI5+zUCEEbS8F7s+u
-         PYYybvH9Pzrbneosh12rgamSFSdWPRbNkVTZVyW6qO452ge2Ml2leOcH/uxkImNGpnkC
-         pICw==
-X-Forwarded-Encrypted: i=1; AJvYcCXPo5AfL2Xi6XrfeIerdTETNqZv7E75gpeK8ot82mwka1qirUhlH2fb1u87CfAp0RjsU5QxqQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxFbuaMzAlLwkinQRjMWO2XXzoc2rI+KG5VLX4icg04Q/FE70ry
-	UUBIl043K2khDmaOCC29upbWd4CmMnLo3QN95uJNAAA86Jm2WjnYOIF4ZcFj8Nxt/FI=
-X-Gm-Gg: ATEYQzyAZ9j7wivGNrZL8YZhNXFHwbJE2a1gMsnfjN34X6OAE4aLwHbj81s1EPgp7yz
-	Hi8aUmO+7XiHMo3Aflg6Ze4XgEEY7uyFQ8167J8CEN7GYr8aRJn80oQuJn9hNYM6uAoO1zzAyR5
-	ApYhfctEczKwYLAC6fjIzlQz6rKdcLxhXSav+h9MkjsCl/i+qff/QYV31QqArtqh1BQ3IMcYcSE
-	oaHh04SxeMfNrnguUtWhyk5kg8zQZ/RnwWkUfCcsYRmqylqi/iifoY7fgvE/Sj4TAokcAeeqs5a
-	iY4DJ8FvRKd9nqeCqdmiPx6uyMP72WeJZTTzMuKhxc/rZrbry9Oo2s4zsQ2VABljUFb9uNPGnED
-	sXGxzuq54gGci4FFw3n+igCw86m2gMTaxbRAazTqCA5yVDtj44VPMWONqYO7boIMxgWcPLKtlbI
-	PkqmGkLp2bC+V+dcN6vod1lBHKbAOXJyUGYD5FYJ4wMToRTLRtQaLUzV1GisXUvy1KHEPLFkDTu
-	oIWG2zh
-X-Received: by 2002:a05:622a:1301:b0:509:2822:6701 with SMTP id d75a77b69052e-50957cc0c69mr54001261cf.28.1773427380808;
-        Fri, 13 Mar 2026 11:43:00 -0700 (PDT)
+        bh=Zy0pIPV9+PAUwjJhdgFY70jKRdcmmf+kMol++AzSeUw=;
+        b=jpHjcQ++BnBuEaohkMOFY4ZblxDMyFD9foCx/gCp3oZENDmVbX4U1+i8+AYTWSxgNW
+         1QqbaSytuH6RnRP7Fo1Cn4ZpOM1bnTmpE1HN3ijqlu9FP4JWHSxDvLwDeDUKT8VY0la7
+         iwak/O7iR2NdiZeasONXU5OyDu9d5LEhvhXUMBZiinH8/I1ty9B9GmRcvJXqeP0KUWuW
+         gUN/AsJ8q6YVuhjHWaRq9erSATkgWn4wmx00V3OLAa4YIF96KrPZgaIRvCkqJ+T1dG+m
+         jTN0Y+TXT9fBtbs0Vr1Zf5WHgL/aoOoxFL+7WcsVRig3zpFfyz/eHsWe+C6vcMN4v50f
+         yWsw==
+X-Forwarded-Encrypted: i=1; AJvYcCU6WY/w3oIJ7vAOYKocsq0V+/9RvyPqFv0nAFSexbvgXha2YCBr6ygGTLb3adbJUDjxopEUbA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyby0XKFaxjZMp6xRAMtkZdfxijuFWI9NL0D2t2lL5jL7vKy23B
+	29xINo+4IMF21lJ9OXC7M1ZMeacCjzWExxIgHlyctU96+Qm86LQVFplP+7YyqMs8v1Y=
+X-Gm-Gg: ATEYQzxrThv6LZF1QqyXr1E0GxbRf9cXs2u1vzDFP2vmNL2CTupcoYUbDcI0MiNWB0m
+	tFUHqv6jdgGSpoR76AkQ3rVgg3WQm/3jXnAmbsUu26aYEMAbiEG/+1qRWvjw36Y/1g+wqu0/a6i
+	54hIn2YGJyZbHEeF5Ds/8LoCUz3CXvDF+Utltk6x7vwZxIHICTPAGJGMZbzHD1kxUPLn6ZrgJee
+	IVS9rWGfv263nHPFpUxeYaCSEz8L2hpsbk7la1sKPQvr+plq5M7vPiMeMhxPeEZ1UxyUS49F2aw
+	rIaurKtJqnBKdI+z9jZ8v5LFLsFJZpNa34mCJssn1i4s8rE750joJHEK/gUbV3K+oUkaNI7cXCW
+	M2ybBB2kw/EcvS2tRD7r9yENCdqYaH0iHtTXi9UT9yjF4RgVlyM28uTofOMirQrnJbgzAAu2DVU
+	Gm455Y4O/9F/26OywBwMlqfcd+NjKXBizN58+2B46m2kpYdRLi5Dq9OBCgD7hxwrg/mTIN58s2N
+	WKwbxqgX206fdwy/Bw=
+X-Received: by 2002:a05:620a:4625:b0:8cd:6175:9b17 with SMTP id af79cd13be357-8cdb5a3f7c2mr586273385a.3.1773427584802;
+        Fri, 13 Mar 2026 11:46:24 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-89a65c071d4sm60555916d6.21.2026.03.13.11.43.00
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8cda1fbcd23sm701747085a.1.2026.03.13.11.46.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Mar 2026 11:43:00 -0700 (PDT)
+        Fri, 13 Mar 2026 11:46:24 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1w17TP-00000007M0D-311H;
-	Fri, 13 Mar 2026 15:42:59 -0300
-Date: Fri, 13 Mar 2026 15:42:59 -0300
+	id 1w17Wh-00000007M3T-2Qkk;
+	Fri, 13 Mar 2026 15:46:23 -0300
+Date: Fri, 13 Mar 2026 15:46:23 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Jonathan Cameron <jonathan.cameron@huawei.com>
 Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
@@ -76,11 +76,11 @@ Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
 	Xu Yilun <yilun.xu@linux.intel.com>,
 	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
 	Steven Price <steven.price@arm.com>
-Subject: Re: [PATCH v2 2/3] iommufd/tsm: add vdevice TSM bind/unbind ioctl
-Message-ID: <20260313184259.GM1704121@ziepe.ca>
+Subject: Re: [PATCH v2 3/3] iommufd/vdevice: add TSM guest request ioctl
+Message-ID: <20260313184623.GN1704121@ziepe.ca>
 References: <20260309111704.2330479-1-aneesh.kumar@kernel.org>
- <20260309111704.2330479-3-aneesh.kumar@kernel.org>
- <20260311213555.00001064@huawei.com>
+ <20260309111704.2330479-4-aneesh.kumar@kernel.org>
+ <20260311214343.00004641@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -89,50 +89,32 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260311213555.00001064@huawei.com>
+In-Reply-To: <20260311214343.00004641@huawei.com>
 
-On Wed, Mar 11, 2026 at 09:35:55PM +0000, Jonathan Cameron wrote:
-> > +int iommufd_vdevice_tsm_op_ioctl(struct iommufd_ucmd *ucmd)
-> > +{
-> > +	int rc;
-> > +	struct kvm *kvm;
-> > +	struct iommufd_vdevice *vdev;
-> > +	struct iommu_vdevice_tsm_op *cmd = ucmd->cmd;
-> > +
-> > +	if (cmd->flags)
-> > +		return -EOPNOTSUPP;
-> > +
+On Wed, Mar 11, 2026 at 09:43:43PM +0000, Jonathan Cameron wrote:
 > > +	vdev = container_of(iommufd_get_object(ucmd->ictx, cmd->vdevice_id,
 > > +					       IOMMUFD_OBJ_VDEVICE),
-> > +			    struct iommufd_vdevice, obj);
 > 
-> I'd be tempted to do something with a helper function to simplify flow.
+> As in previous, can the object be PTR_ERR()?  Maybe not, but I'd
+> be surprised if the static analysis tools are convinced.
+> This might work for now if obj is first element but that's not
+> elegant or matainable.
 
-It is already
+The compiler enforces first element:
 
-static inline struct iommufd_vdevice *
-iommufd_get_vdevice(struct iommufd_ctx *ictx, u32 id)
-{
-        return container_of(iommufd_get_object(ictx, id,
-                                               IOMMUFD_OBJ_VDEVICE),
-                            struct iommufd_vdevice, obj);
-}
+#define __iommufd_object_alloc(ictx, ptr, type, obj)                           \
+        container_of(_iommufd_object_alloc(                                    \
+                             ictx,                                             \
+                             sizeof(*(ptr)) + BUILD_BUG_ON_ZERO(               \
+                                                      offsetof(typeof(*(ptr)), \
+                                                               obj) != 0),     \
+                             type),                                            \
+                     typeof(*(ptr)), obj)
 
-> Then the helper function can do direct returns on errors given the
-> iommfd_object is managed in outer function.
+I have a lovely little series 
 
-Use cleanup.h ? It is not the iommufd style the break things up into
-little functions for error unwind reasons
- 
-> > +	if (!vdev->viommu->kvm_filp) {
-> > +		rc = -ENODEV;
-> > +		goto out_put_vdev;
-> > +	}
-> > +
-> > +	kvm = vdev->viommu->kvm_filp->private_data;
-> > +	if (!kvm) {
+https://github.com/jgunthorpe/linux/commits/container_of/
 
-Ah this I don't think you should be doing. That needs a helper from
-kvm
+For this that I keep meaning to send but then never do
 
 Jason
