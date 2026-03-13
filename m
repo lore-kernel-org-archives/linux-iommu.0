@@ -1,143 +1,199 @@
-Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011015.outbound.protection.outlook.com [52.101.52.15])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98D0B36C0CB
-	for <iommu@lists.linux.dev>; Fri, 13 Mar 2026 06:15:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.15
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773382538; cv=fail; b=PfflSWuOIp7Q8sj0zX+g0ye41S7s6Odv6siFVRcE7dVrnq5ghc+RwElPojTlQ57Wbl46gCqcCoLEO7xLXplB6npXBNWQ3IiGPBNCoMymuTuJ2VsWFpPx19x01CEzzW2IkDg6dWRidgd5OlBEgEkCdKQ41+fAe5er+CjB8MooaiY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773382538; c=relaxed/simple;
-	bh=cbtk/6YZh1W6lbvAZwSLHtYQPzQWd8UU7dznpko991E=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nWVgxXB0TainNe213q/az5QM+AU1kXPcIDi3K05ySvO2J5AQLKdPf59pYiHwPQQkgMUa69g9m6nl/5P4fFCFknClq/OAwahJpiQogddpG7x5apdU4TuGXHWxGO+vDmGLqPHzguE+6LqDA3zVOcb51bYiA3DXu7cMQL39KL5U9ow=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=UwqhZGd9; arc=fail smtp.client-ip=52.101.52.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B621F344D92
+	for <iommu@lists.linux.dev>; Fri, 13 Mar 2026 06:49:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773384577; cv=none; b=OwKhZfxBP79piQIBPezwnyLOHVmIabj6ud6DDddFuTmY/3aMi2hQNdyyQTtf71W3ScH0pb4sgzXMb+jkZ926HaL0NgDEpO+j332bGW09IRNb+dbzLGsx3+5Rt9yDXzik1LdOI06Rz1YWALk3Aht1T55CFgZ5JaJz2mzTM6SKpbg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773384577; c=relaxed/simple;
+	bh=pvlk2gOPkIN+ITxicWXFZ618jc3EqUbu9jfuBJT+Pj8=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=MaadHMBAHVGcB6Pde24qD9r/xgBv3WxRwpnlR3rlHPoS4r4gfs9Pjjo3s/WYCjkhCoQapqgeFc0W/IEz4LK7wImuUN6oaLXezROKSidJE2rYMqEOQI4uyz2c29osXOehL+ANd6Zi+AEXbcMe4wZ/b6VFNnaOklffaftemyCwWdg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=hJLgPv0Z; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=H95uHv+P; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="UwqhZGd9"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=YqAH4sfKh/zcJT1ftIi543pgzumZDUxs33c8CL6qzymdSXeP1rEcT13VAWe/n79lHHXHoEdP/5eUBAM5nfw2Hrq/ErQzb3jCFed1tpmdoBWI4qTAAS4XACmC9D9EpVtNoOMsK0bvzw+UZ347Jxts19r+RH/mt+YBNsPtVcpg5K13njoQ08KlJL98+Dby0gvxN7sOjiNcYG3MQ35qmr82qaFF05vDEY2NfOilitzgAJNpGaBWKWRsjKBGhl1fqzkw8IbiDbTnkyNoOdcnLpGFot1lhehuDNf0zcFyWX40wjbS5ZhTWMXtdLF9SlLIH69WZhc8GhXnQIT2pczaoRSBAw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=udzWFtsE6qTwor2FAZ2/vI1IVqlawgkVRMukh7/+c54=;
- b=fbHv6U+X/YHme0mrcfC1jxIx0N3QDBD7IbhyJ/TpuBEvZOMD8sUoI/zoS+6bCpha9/MSpG3w2ARugnqvqNtt+clyED6jpnSwKm4uMTAAKseJ2mVvvUqNroLgiBIRSE9wXQu7lJDEPPdjojebqla+jnlO0wunRqEW23f7DEWAXX89ySIs4IxJmm0oeXfQXTtimjDYnETOj+9t5HOxZAw+zQWkZ3s+rQgC81ptbffBOknMZ+mewfyjZAcWVnASrqtB1ne5qjqjhYdtmvLoMF2QCnvC8dWxb++P8+zWY03P9Uqmu54weGFBDHYmepmTCGGTgWdp8VfXrq1mNwBYPvdMHg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=udzWFtsE6qTwor2FAZ2/vI1IVqlawgkVRMukh7/+c54=;
- b=UwqhZGd9qRyAmv3zkn6NhqJM3ltzXpYdHYz15f7WFDTc5P18+UTbq6h8x2t8zvs/W14XgntDCAxH2l9JUyIXNq/9XBMrzB1V8oJO/T4Ux5oxVhbQJuyUApeeEVdt0ZdpLXHRTA7nskWPtCzsbquKkog5lWVwc+OK2SpO2AOVMbbqBjQRlOR9XQbrPx2K9bGzvGKevP9W8kmhmrlithPaL4ujJDIXoppa0N6oCPyLj9oyJb0iJgqPEULOWz3N1s7I2c9XaRLEOq6ykLNIvQ0NXF3zEaB0zo0SHtGuFQCihlY/2NKJpVg+D25Lcp55nRyBZnbqPVmFcamzFmQ9lFLOlg==
-Received: from SJ0PR13CA0045.namprd13.prod.outlook.com (2603:10b6:a03:2c2::20)
- by MW4PR12MB6801.namprd12.prod.outlook.com (2603:10b6:303:1e8::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9723.6; Fri, 13 Mar
- 2026 06:15:31 +0000
-Received: from SJ1PEPF000026C9.namprd04.prod.outlook.com
- (2603:10b6:a03:2c2:cafe::86) by SJ0PR13CA0045.outlook.office365.com
- (2603:10b6:a03:2c2::20) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9678.22 via Frontend Transport; Fri,
- 13 Mar 2026 06:15:30 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- SJ1PEPF000026C9.mail.protection.outlook.com (10.167.244.106) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9678.18 via Frontend Transport; Fri, 13 Mar 2026 06:15:31 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 12 Mar
- 2026 23:15:18 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 12 Mar
- 2026 23:15:18 -0700
-Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Thu, 12 Mar 2026 23:15:17 -0700
-Date: Thu, 12 Mar 2026 23:15:16 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<kvm@vger.kernel.org>, Kevin Tian <kevin.tian@intel.com>, Joerg Roedel
-	<joro@8bytes.org>, Will Deacon <will@kernel.org>, Bjorn Helgaas
-	<helgaas@kernel.org>, Jonathan Cameron <Jonathan.Cameron@huawei.com>, "Dan
- Williams" <dan.j.williams@intel.com>, Alexey Kardashevskiy <aik@amd.com>,
-	Samuel Ortiz <sameo@rivosinc.com>, Xu Yilun <yilun.xu@linux.intel.com>,
-	"Jason Gunthorpe" <jgg@ziepe.ca>, Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	"Steven Price" <steven.price@arm.com>
-Subject: Re: [PATCH v2 1/3] iommufd/viommu: Allow associating a KVM VM fd
- with a vIOMMU
-Message-ID: <abOrdFR4L2n334MR@Asurada-Nvidia>
-References: <20260309111704.2330479-1-aneesh.kumar@kernel.org>
- <20260309111704.2330479-2-aneesh.kumar@kernel.org>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="hJLgPv0Z";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="H95uHv+P"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62D5trae1574861
+	for <iommu@lists.linux.dev>; Fri, 13 Mar 2026 06:49:34 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=5AVmFAe9Ik/fE0LX/BsA8E
+	1wHztxhMYSWxglI3gqndc=; b=hJLgPv0Z4qDUBFVMEQHi0DDoGS8X4keR73BE3t
+	RKLGdEhNe7yWwXWndunp/MZkJR+6CSGY4Ke9tdGCng2D68Bpd+vEhsUfqxG2HwO7
+	ZiJlG8zfhLXxIcXG0KTwyNnjL8tF/0S0zdDsl7UKHOB5ZQjJyHvKXLZ2tpbfLglV
+	K8jiGYC0yrdyO0Eu383hfcRUAqPFoDCAHgqcbs8VwrRaFAfN+CoTk/CBnYDnapUC
+	ZXjC6iQnXBdzEhzfYSWasyBpiY2RgaAREBvHW3z9nLk5u70QOCUtywwUci/rU6cr
+	yaveQe29DY55nFQW5Ei5O3g2ASPT61JY3EmJVnHtM6lWJ9bQ==
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4cuh53mudn-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Fri, 13 Mar 2026 06:49:34 +0000 (GMT)
+Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-358e425c261so2061382a91.3
+        for <iommu@lists.linux.dev>; Thu, 12 Mar 2026 23:49:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1773384573; x=1773989373; darn=lists.linux.dev;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=5AVmFAe9Ik/fE0LX/BsA8E1wHztxhMYSWxglI3gqndc=;
+        b=H95uHv+PFW4+58Sgv3OBbWx4j8AgR+OLNWrpw2wWumpWuBBgD0ZUzEBi8XkgQNJw/H
+         98u+HUOMwEep8iU9IsQYT6glsM/L5PuE0+I3cRnHfRfN6yF7DYkZrSeoMOyKNyWy4d84
+         oAkbZ68JT+Gml41V6/Dl1EyqRAq9zVjqjJQP2I+TzXWY4kng7n3O+Ju+Bup64ecsR+5i
+         isRIAXHDr/ATaM56wq8uVV/Y1wJngCbYjr89vz2rZNBvKEyY/WHfJ06LJrdoNfHCZ6uv
+         fEt8T7ptQpFfuwJqICU8u1tE29QNREWdbsmo8D2XLLS68MjPokknxC5HGc7thY1UNR7y
+         EM7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773384573; x=1773989373;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5AVmFAe9Ik/fE0LX/BsA8E1wHztxhMYSWxglI3gqndc=;
+        b=Z7H6u5K91GVNcvjwCPaykaKWhZmL9OYD0+lTz0N/xMXqM1eQiI4k0z+ePbSRmEnHKM
+         CfPWIcf0xNGkiTacuBJx15dWCkGCm07MYir8qi/3gfxJQZMO3EJf8b6X8ZM30OT2BaZ+
+         IowxsmyviVnx7Jq/ATYub4S3mIWmuPN5h6DUagCCcxvo/qiretBEDsgZutOSLAF413KU
+         QhWr383eq2JZRSaWyM9fRSrX5zMl46bk/pqCgZwp12VYwOoU4/WU/sAwXtYrdVDCBEcX
+         s0ehcXnO5N+gkIx6Z6huBYri5ynpluuwUXNfXkcOxbbcmPHuUEkT4HVHoigNHBpd0yYw
+         lB8Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXYjk1YW3L1JkoygR86BG/yDx/QmEk2/mILhBsh3ui7WOc0tx6YD+7OeNn0Hk1YkvOpUgCeJw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxDUuJo188YfatN6JjiHTxptYeGxdyiPiDBaiPG2ly3aBDEFYC7
+	hTW+FWer488u2NGfVzMjfqEt/LsbkNgyN9a0++BAaeKyRt19/v1alOwoZEOwShB78uYxtjwm58c
+	rfG1+mIeA8ytD9Q71vh7N7DcLnjqXu4KGB0LX9nB/G75Xbr8xO7ovO7YnLyGS81Naqw==
+X-Gm-Gg: ATEYQzxIIT8CjEPr52FQHxGJlqb1Tq17CrQeerbANScRCVfRIylypbkA8vVF00iYBDX
+	KZlJJjeYNcj0olH72qRSIMFJIFE12JModLtp4hzUZj0itaxVjr/JO8OMOwP8j8Kipi6jAiQ/Q7h
+	Wqgwv8XC1tSr/jE2uA6V/qooNWDoeXPU+nB6xqIQlrMR8gIn/1fblL9QR16A95ei6AwzEKsNYGe
+	dkaPlX9KS+Nv6PpXhCYh9bxBfsrVNnNS/B95QL/sD9QhccuNTeNS4yhcRmS8XNDEFAxp9UtMatN
+	A01lj2GBWMQe4PtAykNzEy6xotf3vCRjEHg+/gWtGM5/GVvdaUkKzxQ21rW7vbvdttbmiS5/+n+
+	4XwbE9QJbCHsDcuRd9Mcz8BcN5vFzaIxSp5VdToH2tmhZCdo=
+X-Received: by 2002:a05:6a21:6197:b0:398:afdf:3463 with SMTP id adf61e73a8af0-398ece212b3mr1705937637.70.1773384573482;
+        Thu, 12 Mar 2026 23:49:33 -0700 (PDT)
+X-Received: by 2002:a05:6a21:6197:b0:398:afdf:3463 with SMTP id adf61e73a8af0-398ece212b3mr1705918637.70.1773384572883;
+        Thu, 12 Mar 2026 23:49:32 -0700 (PDT)
+Received: from hu-sumk-hyd.qualcomm.com ([202.46.23.25])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c73eb97b41dsm936160a12.5.2026.03.12.23.49.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Mar 2026 23:49:32 -0700 (PDT)
+From: Sumit Kumar <sumit.kumar@oss.qualcomm.com>
+Subject: [PATCH 0/3] dmaengine: Add batched scatter-gather DMA support
+Date: Fri, 13 Mar 2026 12:19:24 +0530
+Message-Id: <20260313-dma_multi_sg-v1-0-8fabb0d1a759@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20260309111704.2330479-2-aneesh.kumar@kernel.org>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF000026C9:EE_|MW4PR12MB6801:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6330ab7f-bd7d-49e4-2861-08de80c7ee1a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|376014|7416014|36860700016|1800799024|13003099007|56012099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	XtfuCB9QBzjSJFMOZ6yipvR2dMrqbhx05fh2fEha+KxHYMfnBm1/7++r63XSeyO9iFhQT3m913WCowO5lesnLSdBQuh9IFCurPqWd5gb6sjYPEmQCQmXOEbxCsbrzxQuH/7joFesqB/ffRpxhM5uBvg0boqAu2XlQJpkJk+q9bHOJtv8qQa+nOvMSiE+mfU1zV5lOrWI/vj7799p4a7GJWUE/RVAHWHLl0/guWkw/hNWTsFJQYedjW2NwoCySfLSTdqVuuUq5zBNGZSai8xJ8jSVvkHXBCbIBqEsp5OTZR5bg0mBPmST0uZmtDcVdB/DliS+sJPPbX9u6HKWEzxjEXiYuFa+GojHRCqDCAtugOROj+yEklkc+ePWr1HKeaLAzYglJdyUq02s7ikd5Lg9IucpcvscVOQ/Qjy+reL6Al15tgEH8dQI639cFv4txl6Q6kcKD/rpgmtl6WPSmYQIeRr8+com9odTSPbuuGnqlrtu9pU/6cJvv7WIj8RyDHhFcWiizrZYtP20XBQWC6FVZWs0NuMccSRa0MrC5MoxHsMaFZ7X0I+xJlXT8icZCcHzjvMZrqkZKDcYzsaSK1Teywn+ClBJExffJ5oyOpdIFAyH3jYvJcI8IfUqAxXIJH8qtKZlwzmoh8XUpoA0IOt+IlLJn6K7PSabn1fEoPvk7kVA/FqYPJMJmdxGvaBFDrta/xM8ofcFgxV9SJ/b2WpqrSfxhFz1zWxYPFGJIRVvIW11x3PY5r4Ar9MRinhUmQEn3WPi0YjPDPg95PWrTKo7Qg==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(376014)(7416014)(36860700016)(1800799024)(13003099007)(56012099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	YtAOJ3n497EgWwcWR9ULhkjeybMDv6EIYKh95h4qte+JKTKaeHg5R0J1owRNPWuUHQM5VYDNDRiWSSFkmnS//uXC7utSpjGGTwmGTFn4iFNJ8TmQ/K3oEg4zh6N/dZ/egBQRCJotGZHRgVnTGjcLWOzK8xezdyvrDwwUwdpFqxuK/9xMkNs0RiIDsz2cntX9dXBUWJS9RDX31ynIdkazYpATpjvRJ0vC65M6V9Uof2JrzQwPpONMqOZublaYTHJEPXn8HEmI7vPiFwbG2LDtv33X27iYSTcOh5Hko9o5sWoNmmRnPOCwsi1+MMfMnPjIR+Dz5NguJv/wOppEQ23t909PS89FD4wwbNKA8eUobuE2lyV3813P3KcX9z+GBrH/pq3mTFTDYa0T0HigDFS2a2DHlWs8ilxD1DqAtpgkAw3suDJX/7hVg9DZyBqrnZxW
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2026 06:15:31.4301
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6330ab7f-bd7d-49e4-2861-08de80c7ee1a
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF000026C9.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB6801
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAHSzs2kC/1WNwQ6CMBBEf4Xs2ZJuUTCe/A9DCJYFNqFUu0A0h
+ H+34snLJG+SebOCUGASuCQrBFpY2I8R8JCA7euxI8VNZDDa5Br1WTWurtw8TFxJp6zBIj/prMi
+ sgTh5BGr5tetuZeSeZfLhvdsX/LY/kdHZv2hBpRUezT2eEBXYXr1I+pzrwXrn0hhQbtv2AQN8W
+ 02vAAAA
+X-Change-ID: 20260108-dma_multi_sg-c217650373c2
+To: Krishna Chaitanya Chundru <krishna.chundru@oss.qualcomm.com>,
+        Veerabhadrarao Badiganti <veerabhadrarao.badiganti@oss.qualcomm.com>,
+        Subramanian Ananthanarayanan <subramanian.ananthanarayanan@oss.qualcomm.com>,
+        Akhil Vinod <akhil.vinod@oss.qualcomm.com>,
+        Manivannan Sadhasivam <mani@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        =?utf-8?q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
+        Kishon Vijay Abraham I <kishon@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Cc: dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, linux-pci@vger.kernel.org, mhi@lists.linux.dev,
+        linux-arm-msm@vger.kernel.org,
+        Sumit Kumar <sumit.kumar@oss.qualcomm.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1773384567; l=2678;
+ i=sumit.kumar@oss.qualcomm.com; s=20250409; h=from:subject:message-id;
+ bh=pvlk2gOPkIN+ITxicWXFZ618jc3EqUbu9jfuBJT+Pj8=;
+ b=CJsyKHGdctf6eMe9FYY1OpAZhEpTLB18Re4kWKHiZ0+TKe0AV4X/h4B2qhl75oyvumt11XvKa
+ T/JaOl/TpY9ArzGxVUQ0/u9VR0ZLcx4FAaInJyDJiUPuxoHqhv3XDfC
+X-Developer-Key: i=sumit.kumar@oss.qualcomm.com; a=ed25519;
+ pk=3cys6srXqLACgA68n7n7KjDeM9JiMK1w6VxzMxr0dnM=
+X-Authority-Analysis: v=2.4 cv=ZN/aWH7b c=1 sm=1 tr=0 ts=69b3b37e cx=c_pps
+ a=UNFcQwm+pnOIJct1K4W+Mw==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
+ a=IkcTkHD0fZMA:10 a=Yq5XynenixoA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_glEPmIy2e8OvE2BGh3C:22
+ a=EUspDBNiAAAA:8 a=f6ynY6_RdjVN_4bGfK8A:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=uKXjsCUrEbL0IQVhDsJ9:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzEzMDA1MiBTYWx0ZWRfX92Nw+PrQe2O+
+ lgOzWUh72IBk9+2zKzpXcIxkBLTE2AH/cDG0t+U1mt4G+16BkrN7jW8pmrAxL5u9f1beP2Kve7a
+ nBolnXooAx4V/t4LQDhSvMWDBTzw4dlMl0YQL/FoHbOoWKl8C7ZSYqaR3H5bc1odtmAG37xrhVE
+ WYShNlBg3QqlG7clCqYrIahG+ntLfeLtRv8Veo1l4O7Ej74wA5wnTm47Ft1j+2Y8GZ7Kcab7j4A
+ JLadmaV2mlfVQP7Cwa3oMAP0Hidbfcr0Z4I09bCXoP+0c9QcKJeGMaZhL69AzWaOatJhJiuB25o
+ H2WCP6i4NstdeVELrFGibpCwXSh+c1KTedb+30kL1fmgd6Tfj4/yflbRbVm2ZBbqkfgIVx64mYg
+ iC+Azd2l4qBV1b9SqZIVi8hXwOfv5ueqDSVUjTLeb30PUMb0sDJxnx4AQp9TAbk1F7mffOLVPB6
+ xa/Xu+g45m+2r8+M/ag==
+X-Proofpoint-GUID: xRihRrH_F5p8QgwFkkyG8T9WkL9CHI8h
+X-Proofpoint-ORIG-GUID: xRihRrH_F5p8QgwFkkyG8T9WkL9CHI8h
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-03-13_01,2026-03-12_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ lowpriorityscore=0 impostorscore=0 phishscore=0 adultscore=0 malwarescore=0
+ bulkscore=0 suspectscore=0 clxscore=1011 priorityscore=1501 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2603050001 definitions=main-2603130052
 
-On Mon, Mar 09, 2026 at 04:47:02PM +0530, Aneesh Kumar K.V (Arm) wrote:
-> Add optional KVM association to IOMMU_VIOMMU_ALLOC by introducing
-> IOMMU_VIOMMU_KVM_FD and iommu_viommu_alloc::kvm_vm_fd.
-> 
-> When the flag is set, iommufd validates that kvm_vm_fd refers to a KVM
-> VM file and stores a referenced struct file in the vIOMMU object, so
-> later iommufd operations can safely resolve the owning VM.
-> 
-> This is preparatory plumbing for subsequent patches that bind TDI state
-> to the associated KVM VM.
-> 
-> The patch also switch file_is_kvm from EXPORT_SYMBOL_FOR_KVM_INTERNAL to
-> EXPORT_SYMBOL_GPL so that iommu module can use that.
+Synopsys DesignWare eDMA IP supports a linked-list (LL) mode where
+each LL item carries independent source and destination addresses. This
+allows multiple independent memory transfers to be described in a single
+linked list and submitted to the hardware as one DMA transaction, without
+any CPU intervention between items. The IP processes LL items strictly
+in order, guaranteeing that scatter-gather entries are never reordered.
 
-struct vfio_device has the kvm pointer already. So, I think it
-could be forwarded from VFIO side v.s. via userspace ioctl.
+This series leverages that hardware capability to introduce a new
+dmaengine API — dmaengine_prep_batch_sg_dma() — for batching multiple
+independent buffers into a single DMA transaction. Each scatter-gather
+entry specifies both its own source (dma_address) and destination
+(dma_dst_address), enabling the eDMA hardware to process them as a
+single linked-list transaction.
 
-Shammer had two patches before and Jason partially reviewed. I
-took those for a side project but haven't sent anywhere. Would
-you please check if they for you?
+The primary use case is MHI endpoint ring caching. When an MHI ring
+wraps around, data spans two non-contiguous memory regions (tail and
+head portions). Previously this required two separate DMA transactions
+with two interrupts. With this series, both regions are submitted as a
+single batched transaction, reducing submission overhead and interrupt
+count.
 
-https://github.com/nicolinc/iommufd/commits/wip/viommu_kvm
+The series includes:
+1. Core DMA engine API and DW eDMA driver implementation
+2. PCI EPF MHI driver support for batched transfers
+3. MHI endpoint ring caching optimization using batched reads
 
-Nicolin
+Performance Benefits:
+--------------------
+- Reduced DMA submission overhead for multiple transfers
+- Better hardware utilization through batched operations
+- Lower latency for ring wraparound scenarios
+
+Signed-off-by: Sumit Kumar <sumit.kumar@oss.qualcomm.com>
+---
+Sumit Kumar (3):
+      dmaengine: Add multi-buffer support in single DMA transfer
+      PCI: epf-mhi: Add batched DMA read support
+      bus: mhi: ep: Use batched read for ring caching
+
+ drivers/bus/mhi/ep/ring.c                    |  43 +++++-----
+ drivers/dma/dw-edma/Kconfig                  |   1 +
+ drivers/dma/dw-edma/dw-edma-core.c           |  40 ++++++++-
+ drivers/dma/dw-edma/dw-edma-core.h           |   3 +-
+ drivers/pci/endpoint/functions/Kconfig       |   1 +
+ drivers/pci/endpoint/functions/pci-epf-mhi.c | 120 +++++++++++++++++++++++++++
+ include/linux/dmaengine.h                    |  29 ++++++-
+ include/linux/mhi_ep.h                       |   3 +
+ include/linux/scatterlist.h                  |   7 ++
+ kernel/dma/Kconfig                           |   3 +
+ 10 files changed, 224 insertions(+), 26 deletions(-)
+---
+base-commit: f0b9d8eb98dfee8d00419aa07543bdc2c1a44fb1
+change-id: 20260108-dma_multi_sg-c217650373c2
+
+Best regards,
+-- 
+Sumit Kumar <sumit.kumar@oss.qualcomm.com>
+
