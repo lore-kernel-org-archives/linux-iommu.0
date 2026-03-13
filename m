@@ -1,80 +1,81 @@
-Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011057.outbound.protection.outlook.com [40.93.194.57])
+Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazon11010021.outbound.protection.outlook.com [52.101.193.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B35CD3DD507
-	for <iommu@lists.linux.dev>; Fri, 13 Mar 2026 19:59:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.194.57
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8236C30BF68
+	for <iommu@lists.linux.dev>; Fri, 13 Mar 2026 20:19:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.193.21
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773431952; cv=fail; b=ZlgvmHc23StJwzGxZJrPxfOKmijxDe+ajkrrsQdwJEtupeoH1oVUVLsWubw+QeAdpTvS/aZYfmXBrG+KWRwRPYKZvDOGCcvNUGMaSqHTHZCxfbGgVyjEybZxsK3HWnLn/bLlsSj35kI2yPS+QJ/7yDnsnfQ4XbDc8lrwQxsE/3I=
+	t=1773433189; cv=fail; b=A3uE3mi05552KW9bUKXd3YcPxRNZz8JBy2VqIFHYkjnDztZpn45u/r9P1Y7YdMGo3F5WwslbMP/PaSecFx5PR5x/po3YagIefRqqorG2Y2b4jr+bO/s4/gGDSjI5Ymfz4H4oASH75SpybwcHoEMLLXD3iPw+T/WHp+SrcTMB6co=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773431952; c=relaxed/simple;
-	bh=OGrZSA0aFg8f7uitP34zPTnpNRR4SRngm6NpoKbAPlY=;
+	s=arc-20240116; t=1773433189; c=relaxed/simple;
+	bh=3+Q/Mh3iWV+AnRRHfwvJ9qubhhW9tgcFpKbRzEpKCmE=;
 	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DFYSaQrEDa4DEslIy1vw6F4+GZmkRPQc+i2BJmUcomVw0mG/5A/Sc2EkcAHI8Ke8+lTScYDW/2/NcrDtWkWJxkz2yW7+jctrnW47Bcqy852fVzCTWXKyDi+xXnzXHKpLYPhS9LKgrHJqBDKyJrvhofktaIKjcrbj9B577s1P9qM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=VeabhZ85; arc=fail smtp.client-ip=40.93.194.57
+	 Content-Type:Content-Disposition:In-Reply-To; b=FV6+aTzrWB8S9Ke/OyKKVWB6b390AE4EcSaM4XuH3pUUrIwzdrMRcaSVGnPeQ0q/RFnqlmqGwtSOSQBCQPL6Rs9taBW3symbEeAsYunFuuI4dLg7rt3e25Mfst/rq7feWr3v26RBTQmpg3aUGjWHMMi0cKxqjKLW+47VsGOImZ8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=qLQPfrSu; arc=fail smtp.client-ip=52.101.193.21
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="VeabhZ85"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="qLQPfrSu"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Ka9+TiKGY6xNt/yUUQmdqIbfEUFRJVyN0YWzpx43aKb9aR91+GdK4GOKHBG15La8pA/VdgPPb94ohnCgoPyFz3MScBBQjgGUwlfaQsZTorzw3F88eJdiHwc07fds5JnA9ywsE/sEjWyxEUyY4cq2vGqglnF8DZ53sFIGtcbmChg0HS2e1b8jYz7WK3R8rqVOVk94s8w0sw3dVS71TlkyXSblUiDx0flA3EbwY+pcm3kciugySSr+oEjlUejYkBj6WaQq2OUF3scFOB1lDtCmdsE/X/B9XFotkfLdkBcekpYylSE66CmB3k2M9zLjvVIm3j5cNmXi0v0OFjt/7wW/gQ==
+ b=ZHLJ/XAmxvGvhSjTrtOEQZoiVPkCHSagvobUoIyT1cl1eIL3p8RiH8GjrXVaTFKKKVBnWbcecFScibDHgoHk6wueDTOhd+f1NvKGvvkPZVK0/h5+AXgDU/+PGh+GDHrMpskKUZ66V9V0kjrsLkIetpFWtPyOsrHAETR89SgCrVZQWAVop0T5BKYfIJ4b9pSslMHOypvjvCDg+Z+WkQS55VLXYZyaGbUEths4eFS0ho9rS/dDb8YpnfWUIiFMcQkuPVgxjdZrYhL/fT0xznujnRuu7XLqb3PL8ifkvvEU4YVmsTtfVEsjIwkLjcfYIQRU2PtWgWCt+LquiQi/8xMqXQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gRzrZeQH5rO5VFXhIYBZ8uXWlUGvc/UkH3tOrEvngSA=;
- b=ExX+qB+Vyude8+tZ/jq+4i+33NPXMEAUMkv9h0W4xsKE/Z4lRuTGU1/OZg9qSqxaNntNTEJXmWrXD45w2Pys/gqsmsKVr6JWzIQKLFUw7jc8OH+XxWFR2f/yO43NFFwg75byK2ae92o2Mc5RTBtw1AieZxxF0tEg/AUfBEjiBuQ6IY1aZGStidTxoxLtHsDfPFWNYtDVDB7gyoCpQiwxIsB1ELyq/mVMzfb236OXrvFaxj6YHqNaJdjZa/GnUkd1uGIx+0vMo8gbceaomWfx92DZAX4RKYTxijkTO7DnQSDNg3BKPPhUioWi+2sQdD1AZbNlehgOREuAP88T2mASiA==
+ bh=x5RPO8EweR+XYYZbjlCPhU3Ks3HUHdWTfIbEh3DDy9Y=;
+ b=SkmBt//lOZKwU6yANlnCiApsc5XMSCpjyG+Zs6zKwUWCk1xo3k3eDsjcY98YqNrEerXSWzQTdrOhD/6jUwVH3/naPaPs09jCO0a7GevSvQWMU0adKHIyLv0+LXLI09crobiq14hZvTfeO2kRYd/XQNQVL/Lr9WA/4zsO3Iy52HfWWxCZhqVXLUUaMd3gnmUbtly+yyb6fimb5EuZ0zJ48yEjqhKByzQQil+/zAQROhKIDNcjaNL40KeDIk4Itubs15Y++kE6GOd0Nb78/e6idVQPpumrgLvm1OX7/mowAYgz0TVgsdpqHIbPC0UzHI36B6nFE1VqK3t0YllaJtnCTA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
+ 216.228.117.160) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gRzrZeQH5rO5VFXhIYBZ8uXWlUGvc/UkH3tOrEvngSA=;
- b=VeabhZ85VrtOTvFgRDaWOnYEI/ouNDDo7g2bQElHwWdiwN3TATDr8uTl8WMupW3w04KmmDMjZyBRNmusslcszQ14FyVnVhq3fxyHoUAFVLxRTgPr1HX5rWTq72dmZrVLifkHaMS7rZTESTm4ZqufzDb0I43D5iLqJ8LDRzqr9p58Z7E+j8cbfTVPrScoiNHczNkAla3CvHLfARkw/m9bs+ehmLFaIt4nUjBNDKV9Hmp8Ov7xBKDDdiCdSD0X+T9OA8vb8zX3MhJQrGtyf6hxMhl/0afklL+7Dg1fRE5O3IJSCByJ1gJEx3VonGF2EriNEe3DtQSGL+vI+bXq6nnjcw==
-Received: from SJ0PR05CA0052.namprd05.prod.outlook.com (2603:10b6:a03:33f::27)
- by MW4PR12MB7165.namprd12.prod.outlook.com (2603:10b6:303:21b::14) with
+ bh=x5RPO8EweR+XYYZbjlCPhU3Ks3HUHdWTfIbEh3DDy9Y=;
+ b=qLQPfrSuV5sHYgU1ZTNVN/SfM41Wekby5vjSdHINGhqKCgBqfJZ29A5qFr+EYHm7lfUgzASsIKM0airoNTFLGN/GiysXJ07IxrOxoZ3BAZ6t4qnvb8mT+X9x3B1QJPVu7wjafE7HkPMpaS5xfnE1G42yOjtu9VkFvNk+kx/zfHkztOgEtEUaWlFiq4dCc8I0JunBR5pAIQKWDBHeSkUP6URsda+pknExiTueXz4j1hSnIcUtLii6peJnY6GYmlNqvfYdg/CrcBbAhumtabZgr4zNBPQRTIwAsELxRQPHwmOxlD8UiFoOTll3zk+u8JADnGF+X8K4Q5vVBwylHGm/tg==
+Received: from CH5P220CA0015.NAMP220.PROD.OUTLOOK.COM (2603:10b6:610:1ef::9)
+ by DS7PR12MB5815.namprd12.prod.outlook.com (2603:10b6:8:77::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9723.8; Fri, 13 Mar
- 2026 19:59:04 +0000
-Received: from SJ1PEPF000026C5.namprd04.prod.outlook.com
- (2603:10b6:a03:33f:cafe::ec) by SJ0PR05CA0052.outlook.office365.com
- (2603:10b6:a03:33f::27) with Microsoft SMTP Server (version=TLS1_3,
+ 2026 20:19:38 +0000
+Received: from DS2PEPF000061C7.namprd02.prod.outlook.com
+ (2603:10b6:610:1ef:cafe::33) by CH5P220CA0015.outlook.office365.com
+ (2603:10b6:610:1ef::9) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.20.9700.17 via Frontend Transport; Fri,
- 13 Mar 2026 19:59:04 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ 13 Mar 2026 20:19:37 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- SJ1PEPF000026C5.mail.protection.outlook.com (10.167.244.102) with Microsoft
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ DS2PEPF000061C7.mail.protection.outlook.com (10.167.23.74) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9700.17 via Frontend Transport; Fri, 13 Mar 2026 19:59:03 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ 15.20.9700.17 via Frontend Transport; Fri, 13 Mar 2026 20:19:36 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 13 Mar
- 2026 12:58:46 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ 2026 13:19:17 -0700
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 13 Mar
- 2026 12:58:46 -0700
-Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.6)
+ 2026 13:19:17 -0700
+Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.8)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Fri, 13 Mar 2026 12:58:45 -0700
-Date: Fri, 13 Mar 2026 12:58:44 -0700
+ Transport; Fri, 13 Mar 2026 13:19:16 -0700
+Date: Fri, 13 Mar 2026 13:19:14 -0700
 From: Nicolin Chen <nicolinc@nvidia.com>
 To: Qinxin Xia <xiaqinxin@huawei.com>
 CC: <will@kernel.org>, <robin.murphy@arm.com>, <jpb@kernel.org>,
 	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
 	<wangzhou1@hisilicon.com>, <prime.zeng@hisilicon.com>,
 	<fanghao11@huawei.com>, <jonathan.cameron@huawei.com>, <linuxarm@huawei.com>
-Subject: Re: [RFC PATCH 1/5] iommu/arm-smmu-v3: Add basic debugfs framework
-Message-ID: <abRsdCYapDe16GtJ@Asurada-Nvidia>
+Subject: Re: [RFC PATCH 3/5] iommu/arm-smmu-v3: Add Stream Table Entry
+ display to debugfs
+Message-ID: <abRxQqNlGGzcbkim@Asurada-Nvidia>
 References: <20260313104351.3502293-1-xiaqinxin@huawei.com>
- <20260313104351.3502293-2-xiaqinxin@huawei.com>
+ <20260313104351.3502293-4-xiaqinxin@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -83,131 +84,113 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20260313104351.3502293-2-xiaqinxin@huawei.com>
+In-Reply-To: <20260313104351.3502293-4-xiaqinxin@huawei.com>
 X-NV-OnPremToCloud: ExternallySecured
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF000026C5:EE_|MW4PR12MB7165:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7e532ffc-8c7a-4378-52b0-08de813af9b9
+X-MS-TrafficTypeDiagnostic: DS2PEPF000061C7:EE_|DS7PR12MB5815:EE_
+X-MS-Office365-Filtering-Correlation-Id: 096461ef-e1be-4282-5c03-08de813dd8e6
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|36860700016|7416014|376014|1800799024|22082099003|18002099003|56012099003;
+	BCL:0;ARA:13230040|376014|7416014|82310400026|1800799024|36860700016|22082099003|56012099003|18002099003;
 X-Microsoft-Antispam-Message-Info:
-	m/gAQkWQM4oXsrI4kAmHzFRjK/KjQ+I4wc0p0Saq7JF7zEXNwHa2uv1MnGcI3Eo9000NERomKfQ8hs3hPZCYOB9gwNRBkJcBP88CvYI7CwOCwgEndIQ3gR/d/Qrwfpc9veUv9pjvrFkVZ+Q9ymVjzEhIMDLyoW3MZo/btokhETWD40xTFL7PtQYs1G+PhXDyjcHNUTt4V4srD3GPz7F0Ad8BvQ4ibrIvvJt+sdSf/d82Sz4KFqcTLXtXJ/dPqSeTHo1+SWLt5YgozHvHMZs/VQqSXC3BaYg8r4NT1Gif67gEno1W2xmbVptHzjHVYsgxD+KoPuL0VBYV2hXNo6MthpJpiSnxU2ZagLeYkzPxpZQ5eyyU2kHN7c4SQQdL4ooQCM/YHwNscIrz6HN1vUh9Cn+W2Y4d3BtU8O2bnUIauzwhBFEqbYWmvRK+57xpFflUlIo7qucCjx+0h+54dTOmR1lgpVF3RpixoX6I4sd3QN1eqLEbKq172UPb6qbE8DQF7ho8T3lYY9ggFswNlBuPu432leZEGKFT9NqoV3eOi0r0Dr0S4MekMGgQn5bdwans49u3d/nKQYcZDxM6lVwO08Sd8kF11uEuWtIiH8D2/PbdCpvDLfuB7tkYkosqo4/1KIlyQCaBMtp+dIJrYnCOPaDfhbOzInTlmL/zOY3BQhYNphjJmiytIUN9u+YmiRwr7qrUb68bMD/uUOKXzfWUMZ0g7XN+dEBaeVJZ+taOKXJI4r479u+NZep7m/JeJJ3viyU/0ADJpPFna1IF1K8Hiw==
+	s+eR0H7EhM+3jThmoNnqULLayC8gtdTAR3hxN9D7tk1mxfb40LBXsAIqfEJORO7rbs9Y5V+qf7UgFo4swEtGLz7FEWMsYvIKBsLHEh+amkZkwGtM57Q2qeFUzwee/rO5lQrbr8G8VPSPDOoWSN0MWfzY6cAWjUsR6DqwKC8oMAEFv55TcXOSzyC9MqPwgi15uI0arm0kVE0a2q9W8N0NrBlT9cD4jL1kW3OP1kv5MsAHtUfXJ3baMGq7EglFhDmMKkmiD0WySDIkO184ww9k0izdJRBbDqDn9zPyU33XY0iwK6PFXeY8Ne3KCtS3Ln3w16FVyRwkVz2yUv1rVsZeB6NGBCFKBDF2eAA5aq38d6BFguJl/h64h7z212FrAwstWeP6E5z5JxKJVv2nYBw58zK+FRg3Iism+9huoLui3Qyld2anWwhUPtR6+1ABxmZ2egn4CZ12cNYAub1Ok1aIb7uYuyp3j9eUa4ycjrt9UvvjVIp/oEtml6zQMSVB718DujU/YKyIi3F4vsW0PA3lIYOMteAfrV/rWl4jodHBOJQyO6az9fn4SrruBBxxCe3LOI+0s+84xI0RDdgDenXDzZgqSpspqpxo22PpAIoWv1BHUt2CRNfcAvuDoeuYbBThD5qFFdajgVu2BDZrIPQ3Oajw1mjw+3XTXSywAAlgzBXIcBxFkDWR/A8uUrgXC2yHQQ8qXptyaKL8l/tKlTEYCYF3YvQ+r2eI4Y+hFqtC3HZP1pmSDaaJHkHHlDvaycusJvlG4FD5NBydPpNCnEGnVQ==
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(36860700016)(7416014)(376014)(1800799024)(22082099003)(18002099003)(56012099003);DIR:OUT;SFP:1101;
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(7416014)(82310400026)(1800799024)(36860700016)(22082099003)(56012099003)(18002099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	3GPGOyZQLgQaKh9jraixyWuLwPyhkaoQhr0UkhAh5QbCs6Jvwa3ZrgYYa3ZyR5CRcn1aWxtXrvpwEKQKwHsLx5MWV+/wWMdMZlGdEhaQqgH9Bh5NJ6Wo2PEq8N46i24HMmz8mOu7tMohjmBltn6rgIjKzX/Xkns9esSjepufVw+ZCDZqnQz19Q8HTfsKGzhQVz7D6J7Rxbh02DQn9j3SIKZxCl1gzRbzY8xOYDEEmwFX9zQftlIrCrAqtUFOLA/nN+teM7xYwOEgLezEwu117Ry5JGkqTZPz+ZnaoJWiV33PbZsi4av4T3CvlS7hJO0+jyADcLomXeWpbaXsX6jm7y5kkKRP+gvU02efIdh8wrzazaeOWpPUQ4NZB+4we5VOBiGW3SmeZfce4mATxiYlqUBUpfMMge94CAXUy4suduwczQK2Q0aMxAc/kSDTCuzV
+	ykANuP5YmN+WePXF4rx0SiiMecQH/YD5Xz8bJbxitLYl3TJPHm/V7HXE7FfFKfPOj7xNJkKKRPgWuWgqsFIMflcyk5hUAod5TwBKv7tTXd95tuMq7UDkKS9fiufTZjUyQ8SOIrWav2CD4YOW6FCvJDDdsk+h7HY2rsliRgDJc09CfmF3q1HxhNQBFjINOvms9G9QBoyiPTbGiX2dqi230XGAD9iXb1lc+P3964LOoW86AsWDEHV1BJ7Jlyb6czOEtOg1RKIf7HqiYSs4MHtKFRplwW+EsrOfJ8dJb4fwmy260Gi+Mnu4BkXo0fzdRstQz6s1syfyEraM/5OaEvflR3uXLUy0X9TXUSuXRbBzCQF/2BKqNSaW2tlghEnLPcfevczp4FfzyI4LRtyjLgLucohey8eDpL88ECxUJ3MpltaZ4V0dFDVjYdunMigUS/A9
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2026 19:59:03.0519
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2026 20:19:36.3627
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7e532ffc-8c7a-4378-52b0-08de813af9b9
+X-MS-Exchange-CrossTenant-Network-Message-Id: 096461ef-e1be-4282-5c03-08de813dd8e6
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF000026C5.namprd04.prod.outlook.com
+	DS2PEPF000061C7.namprd02.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7165
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5815
 
-On Fri, Mar 13, 2026 at 06:43:47PM +0800, Qinxin Xia wrote:
-> +/**
-> + * smmu_debugfs_capabilities_show() - Display SMMU capabilities
-> + * @seq: seq_file to write to
-> + * @v: private data (SMMU device)
+On Fri, Mar 13, 2026 at 06:43:49PM +0800, Qinxin Xia wrote:
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c
+> @@ -43,6 +49,8 @@
+>   */
+>  
+>  #include <linux/debugfs.h>
+> +#include <linux/pci.h>
 
-@v is not used
+It doesn't seem being used (yet).
 
-> +
-> +/**
-> + * arm_smmu_debugfs_setup() - Initialize debugfs for SMMU device
-> + * @smmu: SMMU device to setup debugfs for
-> + * @ioaddr: Physical base address of the SMMU device registers
-> + *
-> + * This function creates the basic debugfs directory structure for a SMMU device.
-
-nit: an SMMU
-
-Or maybe simply "@smmu"
-
-> + *
-> + * Return: 0 on success, negative error code on failure
-> + */
-> +int arm_smmu_debugfs_setup(struct arm_smmu_device *smmu, phys_addr_t ioaddr)
+> +static struct arm_smmu_ste *smmu_get_ste(struct arm_smmu_device *smmu, u32 sid)
 > +{
-> +	struct arm_smmu_debugfs *debugfs;
-> +	struct dentry *smmu_dir;
-> +	char name[32];
-> +	int ret;
+> +	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
 > +
-> +	/* Create root directory if it doesn't exist */
-> +	mutex_lock(&arm_smmu_debugfs_lock);
-> +	if (!smmuv3_root_dir) {
-> +		smmuv3_root_dir = debugfs_create_dir("arm_smmu_v3",
-> +						     iommu_debugfs_dir);
-> +		if (!smmuv3_root_dir) {
-> +			mutex_unlock(&arm_smmu_debugfs_lock);
-> +			return -ENOMEM;
-> +		}
+> +	if (sid >= (1 << smmu->sid_bits))
+> +		return NULL;
+> +
+> +	if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB) {
+> +		u32 l1_idx = arm_smmu_strtab_l1_idx(sid);
+> +		u32 l2_idx = arm_smmu_strtab_l2_idx(sid);
+> +
+> +		if (l1_idx >= cfg->l2.num_l1_ents || !cfg->l2.l2ptrs[l1_idx])
+> +			return NULL;
+> +
+> +		return &cfg->l2.l2ptrs[l1_idx]->stes[l2_idx];
 > +	}
-> +	mutex_unlock(&arm_smmu_debugfs_lock);
 > +
-> +	/* Allocate debugfs structure */
-> +	debugfs = kzalloc(sizeof(*debugfs), GFP_KERNEL);
+> +	return &cfg->linear.table[sid];
+> +}
 
-kzalloc_obj(*debugfs)
+arm_smmu_get_step_for_sid() instead?
 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 4d00d796f078..211a0c87507a 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -33,6 +33,10 @@
->  #include "arm-smmu-v3.h"
->  #include "../../dma-iommu.h"
->  
-> +#ifdef CONFIG_ARM_SMMU_V3_DEBUGFS
-> +static unsigned int arm_smmu_present;
-> +#endif
-
-Unused
-
-> @@ -4909,6 +4913,12 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->  	if (ret)
->  		goto err_disable;
->  
-> +#ifdef CONFIG_ARM_SMMU_V3_DEBUGFS
-> +	ret = arm_smmu_debugfs_setup(smmu, ioaddr);
-> +	if (ret)
-> +		dev_warn(dev, "Failed to create debugfs!\n");
-> +#endif
-> +
->  	/* And we're up. Go go go! */
->  	ret = iommu_device_sysfs_add(&smmu->iommu, dev, NULL,
->  				     "smmu3.%pa", &ioaddr);
-
-Since name is all we wanted, maybe follow iommu_device_sysfs_add()
-by passing in: 
-   "const char *name, ..." instead of "phys_addr_t ioaddr"
-
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 3c6d65d36164..247f27426f6b 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -733,6 +733,15 @@ struct arm_smmu_impl_ops {
->  			  const struct iommu_user_data *user_data);
->  };
->  
-> +#ifdef CONFIG_ARM_SMMU_V3_DEBUGFS
-> +struct arm_smmu_debugfs {
-> +	struct dentry *root_dir;
-
-Unused
-
-> +	struct dentry *smmu_dir;
+> +/**
+> + * smmu_debug_dump_ste() - Dump STE details to seq_file
+> + * @seq: seq_file to write to
+> + * @dev: device associated with the STE
+> + */
+> +static void smmu_debug_dump_ste(struct seq_file *seq, struct device *dev)
+> +{
+> +	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
 > +	struct arm_smmu_device *smmu;
+> +	struct arm_smmu_ste *ste;
+> +	u32 sid, cfg;
+> +	int i;
+> +
+> +	if (!master || !master->smmu) {
+> +		seq_puts(seq, "No SMMU master data\n");
+> +		return;
+> +	}
+> +
+> +	smmu = master->smmu;
+> +
+> +	/* Use first stream ID for debug */
+> +	if (master->num_streams == 0) {
+> +		seq_puts(seq, "No streams configured for device\n");
+> +		return;
+> +	}
+> +	sid = master->streams[0].id;
 
-Unused
+These might race with release_device that would destroy master?
+
+> +
+> +	if (sid >= (1 << smmu->sid_bits)) {
+> +		seq_printf(seq, "Invalid Stream ID: %u (max %u)\n",
+> +			   sid, (1 << smmu->sid_bits) - 1);
+> +		return;
+> +	}
+
+arm_smmu_sid_in_range() instead?
+
+> +/* STE debugfs file operations */
+> +static int smmu_debugfs_ste_show(struct seq_file *seq, void *v)
+> +{
+> +	struct device *dev = seq->private;
+> +
+> +	smmu_debug_dump_ste(seq, dev);
+> +	return 0;
+
+Could unwrap smmu_debug_dump_ste().
 
 Nicolin
