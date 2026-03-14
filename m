@@ -1,69 +1,69 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D44C030B508;
-	Sat, 14 Mar 2026 07:58:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 315FE31E853;
+	Sat, 14 Mar 2026 08:10:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773475107; cv=none; b=oJN8s4PtMcqqvEO7C9iD0r26tY4SipR6NbgK7lt/Zf+evnXuP0dbn+zdYBChk1h/nSzcPWggCAI9cMFt7Q2sfcQCvvCiWiY+FaWkS/xUN3IeqA0smzsqZ6zXJs3Icvn3hXZyHovprZPTmccHNN7n+AoOhJMCBSoYYmqNlXPAg3A=
+	t=1773475806; cv=none; b=ZHpm871LKG3+Sj7+DxHsUiDIg8Ywib8pcw+hoX1TFtJLjss9pA3oLMBOSwmrnKY2HD/kYH4/m3MwuczkSfSVI3bNmx3ZyMUiLufatXEdRi80eH5y9aVDSfIcNCcfV1u7WK7wScKISz1ILX7qVc+UUvqqCWnmUnc7uQJjc70Weso=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773475107; c=relaxed/simple;
-	bh=/4mO55ZscN1eFQLHdQLwOS7Gxe9h8uCnujezTmQwxyE=;
+	s=arc-20240116; t=1773475806; c=relaxed/simple;
+	bh=AlyU0hvkwaYRYsimbN6xKCxmyRYWsUONDRQDR1fUSrQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HCG8UDnWT6ZV7dxZ54WXipSMgyDpTApgRqrPNIhuPHPeXl65SVr27HjK3+aNdj6M/BOJypX0AhjkcckRTWwxFwWD1Qf78rKTYbUkvpzkjiWxNtM0wXYiJGwRp3j8Jwt1YLnfb28cXa5E7PvBOUqkO6XeAXDzca59lxV+n1nsJFA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RwvCe+B7; arc=none smtp.client-ip=192.198.163.16
+	 Content-Type:Content-Disposition:In-Reply-To; b=otEaDKL7jg2acd8/72vnhOKEvSAxI6kHGeZMeFUwR8al0ogaYxJxp7Rcx5CrSjhWPER6gsxVk3oJr50R2fg70LQj5fIXO8VgxRx4W4BuDxlCGZsm5jPg+tXx23MnTXkrcM1O/4q81B9PeFWQXsy2iHnqxpOLPRN2TpLVTHDxliw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Hs/wnLPN; arc=none smtp.client-ip=192.198.163.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RwvCe+B7"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Hs/wnLPN"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773475103; x=1805011103;
+  t=1773475805; x=1805011805;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=/4mO55ZscN1eFQLHdQLwOS7Gxe9h8uCnujezTmQwxyE=;
-  b=RwvCe+B7l5ou0DV1UwUAUNt81Abh37sSNJaIQZPiqRO2CEeHC1Db2n5V
-   O5x72RZSbsX+7/Z9bYdlbfFYwGldRpOqLhVo0TwjvsiEE1wSDwe0iBUrV
-   IybI/fbkJpBUG85aW07Dal3foyjcfQ5oSEkk0rx4tCxG63plIDOLOUny6
-   EhnkdeYoKZ7KfYpXr/wEU9T4RbWPj3gVL6B/O7609EwlhMcOBycV1HWZy
-   F81vN5xDJtKCKapf7I1FH3ls1CkedGndAX5Dtbh7P0Rl3zQQrCid5P2Js
-   TxFoWsmL0eAFk4KN56XEhTcKMjjArRxWGCuSaLp55WHoDY7Rp5FADV7aB
+  bh=AlyU0hvkwaYRYsimbN6xKCxmyRYWsUONDRQDR1fUSrQ=;
+  b=Hs/wnLPNArzcdfmN+XDcTqDzzZ1sEXu/MwX6GaVYSE2KfrPYWrcc4oSR
+   AKociDm8bv8LCh7cqaSYQrklGrkPl/RftbC/yz8f8cHsR3EHN1tWcOMHF
+   CPYo7qdzu+p4uMPhnA5gipTq4fUW0svzv/+3f2M5mpBpnVA+o0sluKVvG
+   ltUM4N/u0Wg5W6mv6oUPZYKTw+2mt8gZODzXc/eb0PPJRNz7b2VKLqycp
+   bvQ8IWR2yds5lxFyNbiLwtnN+os+ApSJqQxws6zS2cRk/MQK/mUNzbPBf
+   FU0IJkJr68N3FGjK0fWxuLw86s+wxKhs5KuRh1sLwJgFddbthD8DcENKj
    g==;
-X-CSE-ConnectionGUID: k12C4VFxSjWqj+pVyHhzXg==
-X-CSE-MsgGUID: 4L9fSt7YQiqOH9psSYkAhQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11728"; a="62140689"
+X-CSE-ConnectionGUID: TbgoWs5KRDC8LuvXjanvmw==
+X-CSE-MsgGUID: MdDGw4PeQcGEfx0WXRc1sA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11728"; a="85276220"
 X-IronPort-AV: E=Sophos;i="6.23,119,1770624000"; 
-   d="scan'208";a="62140689"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2026 00:58:22 -0700
-X-CSE-ConnectionGUID: XV8nd9QKRpqyf1cdyxEXxQ==
-X-CSE-MsgGUID: K3AoNwyMRBOBlrzhjAovxQ==
+   d="scan'208";a="85276220"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2026 01:10:05 -0700
+X-CSE-ConnectionGUID: /+FuZmYJT4iACVDWjkexyg==
+X-CSE-MsgGUID: bqnmYQRgQl2cUPauIHFBSg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,119,1770624000"; 
-   d="scan'208";a="218691536"
-Received: from igk-lkp-server01.igk.intel.com (HELO 9958d990ccf2) ([10.211.93.152])
-  by fmviesa007.fm.intel.com with ESMTP; 14 Mar 2026 00:58:20 -0700
-Received: from kbuild by 9958d990ccf2 with local (Exim 4.98.2)
+   d="scan'208";a="225851485"
+Received: from lkp-server01.sh.intel.com (HELO 418530b1a366) ([10.239.97.150])
+  by orviesa004.jf.intel.com with ESMTP; 14 Mar 2026 01:10:01 -0700
+Received: from kbuild by 418530b1a366 with local (Exim 4.98.2)
 	(envelope-from <lkp@intel.com>)
-	id 1w1Jt3-000000003ld-2H34;
-	Sat, 14 Mar 2026 07:58:17 +0000
-Date: Sat, 14 Mar 2026 08:57:54 +0100
+	id 1w1K4K-000000004qP-3uUK;
+	Sat, 14 Mar 2026 08:09:56 +0000
+Date: Sat, 14 Mar 2026 16:09:52 +0800
 From: kernel test robot <lkp@intel.com>
-To: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Saravana Kannan <saravanak@kernel.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-mm@kvack.org, iommu@lists.linux.dev
-Cc: oe-kbuild-all@lists.linux.dev,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Linux Memory Management List <linux-mm@kvack.org>,
-	Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 7/7] of: reserved_mem: rework fdt_init_reserved_mem_node()
-Message-ID: <202603140843.vdpZ0bgs-lkp@intel.com>
-References: <20260313150802.1121442-8-m.szyprowski@samsung.com>
+To: Jacob Pan <jacob.pan@linux.microsoft.com>, linux-kernel@vger.kernel.org,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Alex Williamson <alex@shazbot.org>, Joerg Roedel <joro@8bytes.org>,
+	David Matlack <dmatlack@google.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>
+Cc: oe-kbuild-all@lists.linux.dev, skhawaja@google.com,
+	pasha.tatashin@soleen.com, Will Deacon <will@kernel.org>,
+	Jacob Pan <jacob.pan@linux.microsoft.com>,
+	Baolu Lu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH V2 08/11] vfio: Enable cdev noiommu mode under iommufd
+Message-ID: <202603141655.DaMKZr7a-lkp@intel.com>
+References: <20260312155637.376854-9-jacob.pan@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -72,40 +72,74 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260313150802.1121442-8-m.szyprowski@samsung.com>
+In-Reply-To: <20260312155637.376854-9-jacob.pan@linux.microsoft.com>
 
-Hi Marek,
+Hi Jacob,
 
-kernel test robot noticed the following build warnings:
+kernel test robot noticed the following build errors:
 
-[auto build test WARNING on robh/for-next]
-[also build test WARNING on akpm-mm/mm-everything next-20260313]
-[cannot apply to tegra/for-next linus/master v6.16-rc1]
+[auto build test ERROR on linus/master]
+[also build test ERROR on v7.0-rc3 next-20260311]
+[cannot apply to awilliam-vfio/next awilliam-vfio/for-linus]
 [If your patch is applied to the wrong git tree, kindly drop us a note.
 And when submitting patch, we suggest to use '--base' as documented in
 https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Marek-Szyprowski/of-reserved_mem-remove-fdt-node-from-the-structure/20260314-023123
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-patch link:    https://lore.kernel.org/r/20260313150802.1121442-8-m.szyprowski%40samsung.com
-patch subject: [PATCH 7/7] of: reserved_mem: rework fdt_init_reserved_mem_node()
-config: x86_64-rhel-9.4-kunit (https://download.01.org/0day-ci/archive/20260314/202603140843.vdpZ0bgs-lkp@intel.com/config)
-compiler: gcc-14 (Debian 14.2.0-19) 14.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260314/202603140843.vdpZ0bgs-lkp@intel.com/reproduce)
+url:    https://github.com/intel-lab-lkp/linux/commits/Jacob-Pan/iommufd-Support-a-HWPT-without-an-iommu-driver-for-noiommu/20260313-182818
+base:   linus/master
+patch link:    https://lore.kernel.org/r/20260312155637.376854-9-jacob.pan%40linux.microsoft.com
+patch subject: [PATCH V2 08/11] vfio: Enable cdev noiommu mode under iommufd
+config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20260314/202603141655.DaMKZr7a-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 15.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260314/202603141655.DaMKZr7a-lkp@intel.com/reproduce)
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202603140843.vdpZ0bgs-lkp@intel.com/
+| Closes: https://lore.kernel.org/oe-kbuild-all/202603141655.DaMKZr7a-lkp@intel.com/
 
-All warnings (new ones prefixed by >>):
+All errors (new ones prefixed by >>):
 
->> Warning: drivers/of/of_reserved_mem.c:580 function parameter 'uname' not described in 'fdt_init_reserved_mem_node'
->> Warning: drivers/of/of_reserved_mem.c:580 function parameter 'base' not described in 'fdt_init_reserved_mem_node'
->> Warning: drivers/of/of_reserved_mem.c:580 function parameter 'size' not described in 'fdt_init_reserved_mem_node'
->> Warning: drivers/of/of_reserved_mem.c:580 function parameter 'uname' not described in 'fdt_init_reserved_mem_node'
->> Warning: drivers/of/of_reserved_mem.c:580 function parameter 'base' not described in 'fdt_init_reserved_mem_node'
->> Warning: drivers/of/of_reserved_mem.c:580 function parameter 'size' not described in 'fdt_init_reserved_mem_node'
+   In file included from drivers/iommu/generic_pt/fmt/iommu_template.h:36,
+                    from drivers/iommu/generic_pt/fmt/iommu_mock.c:10:
+   drivers/iommu/generic_pt/fmt/amdv1.h: In function 'amdv1pt_install_table':
+>> drivers/iommu/generic_pt/fmt/amdv1.h:255:16: error: implicit declaration of function 'pt_table_install64'; did you mean 'pt_table_install32'? [-Wimplicit-function-declaration]
+     255 |         return pt_table_install64(pts, entry);
+         |                ^~~~~~~~~~~~~~~~~~
+         |                pt_table_install32
+
+Kconfig warnings: (for reference only)
+   WARNING: unmet direct dependencies detected for IOMMU_PT_AMDV1
+   Depends on [n]: GENERIC_PT [=y] && IOMMU_PT [=m] && !GENERIC_ATOMIC64 [=y]
+   Selected by [m]:
+   - VFIO_NOIOMMU [=y] && VFIO [=m] && VFIO_GROUP [=y] && IOMMU_SUPPORT [=y]
+
+
+vim +255 drivers/iommu/generic_pt/fmt/amdv1.h
+
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04  236  
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04  237  static inline bool amdv1pt_install_table(struct pt_state *pts,
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04  238  					 pt_oaddr_t table_pa,
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04  239  					 const struct pt_write_attrs *attrs)
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04  240  {
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04  241  	u64 entry;
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04  242  
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04  243  	/*
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04  244  	 * IR and IW are ANDed from the table levels along with the PTE. We
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04  245  	 * always control permissions from the PTE, so always set IR and IW for
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04  246  	 * tables.
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04  247  	 */
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04  248  	entry = AMDV1PT_FMT_PR |
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04  249  		FIELD_PREP(AMDV1PT_FMT_NEXT_LEVEL, pts->level) |
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04  250  		FIELD_PREP(AMDV1PT_FMT_OA,
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04  251  			   log2_div(table_pa, PT_GRANULE_LG2SZ)) |
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04  252  		AMDV1PT_FMT_IR | AMDV1PT_FMT_IW;
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04  253  	if (pts_feature(pts, PT_FEAT_AMDV1_ENCRYPT_TABLES))
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04  254  		entry = __sme_set(entry);
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04 @255  	return pt_table_install64(pts, entry);
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04  256  }
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04  257  #define pt_install_table amdv1pt_install_table
+879ced2bab1ba9 Jason Gunthorpe 2025-11-04  258  
 
 -- 
 0-DAY CI Kernel Test Service
