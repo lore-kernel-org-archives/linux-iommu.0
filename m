@@ -1,127 +1,140 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dl1-f53.google.com (mail-dl1-f53.google.com [74.125.82.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 078E81FFC48;
-	Sat, 14 Mar 2026 15:20:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773501652; cv=none; b=czXfHw5nIAB9n41KqzURvT9RkQs5X1tgXCoDWmnIRHVSeDzUJtMON4T7X6k2RfIJvg4gMw/OL9Fbj65dm3Cu27hYdtOqrviJcIVvPOXTFkTnO59pqXeZWdnuHz1qzvvjAMfZdncXPDMjqnthujiUX/XIJUABgGPRzubm0bbt/zM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773501652; c=relaxed/simple;
-	bh=1FtGcHaPzohD23/qb3jPURbq6HHqLOzLRiH5ow2x+iE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VM39KE2EsEeATu09phiYYhWzEn+DItBeHuZozUSLJBRMbg2siYSYsrVAQD8KV4ysvcGux9BkJ+pPV3UHPycHBibcruevBeCU9Ysaz89o6kEkai5Ra2PDqu8Xgw+TQwXaux+k9hbE4d+A9Ldahh2l5EX6b/FNAdykU/x7+FRtzNE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NrZ+8Tw5; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 463C7347DD
+	for <iommu@lists.linux.dev>; Sat, 14 Mar 2026 18:24:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.53
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773512665; cv=pass; b=OpblnwGc6OzVABRYU5LYiXVhOSBt6KxrijFWKuhabjgQ25GsH9Qi5mvD+B4gY91k8hBW1ftNIB4of3ylXK3G0nJivuf8YugOXf+WmyA/POIOBNwESJFy6C59hM5BSbfTW14tBhLYF2W3S18POUUZUtxUVY8M0QjnXtgl2Al6f3U=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773512665; c=relaxed/simple;
+	bh=RGueu44f3311svWUAZ3Nm2CC7jiHSV/Gihk1oWbAqXA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=claDPePn09NO8HAFZtPAmji1UzT+GBUGwCi4JX7enI8aNbFv+bT9irvt0GkD0k4LmFE2vwkjzA/P9qZfyvXa6B+bYkX/OqLHQ+l3y67Am1teO543XRLBq5DtCk1hf9X9g45jzHIHNJXsSuQcvilPsx3AfBJh/cnIwyEP5pOSFic=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=toxicpanda.com; spf=pass smtp.mailfrom=toxicpanda.com; dkim=pass (2048-bit key) header.d=toxicpanda.com header.i=@toxicpanda.com header.b=qjfG2iwE; arc=pass smtp.client-ip=74.125.82.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=toxicpanda.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=toxicpanda.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NrZ+8Tw5"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773501649; x=1805037649;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=1FtGcHaPzohD23/qb3jPURbq6HHqLOzLRiH5ow2x+iE=;
-  b=NrZ+8Tw52c6j1AgcNiy2ThC7Va7ZKRT6t8r5oyvrGzi4+P5GJBktspKW
-   HGCeAJvFZAxfmS/QugkjcaWgDOVAXnhSYO4ajdgQzisNdvd+oxQY+9LBu
-   5L3rvIaHqMhV+sJ4lB9Njth/ywUn+9uj5W8bPEt3GJ1+YdYBPAg9jczZU
-   eJxy1aCOMoaqK5Nn2oVeTmCdfCft9U1aw9BA8VctQXFaXLhLTss9PaHDd
-   32Sh4/K6rVpuLJ3GEQ7vWsRR0gBcmXJOvbnZTCyuvxGGpdkLpP2PDRB0n
-   MjNdDTKSDBoA3uKudxJN7UJuFwrq6Q+BUfjJfsSrK9ssfsuGOl5cm5fqb
-   w==;
-X-CSE-ConnectionGUID: Z3vg6CA3RZikPNCeArv8vg==
-X-CSE-MsgGUID: fIZNuoBHSNOQeiTobayc4g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11729"; a="78476194"
-X-IronPort-AV: E=Sophos;i="6.23,119,1770624000"; 
-   d="scan'208";a="78476194"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2026 08:20:48 -0700
-X-CSE-ConnectionGUID: qNbf0hHhQhu2DsmAtre4nA==
-X-CSE-MsgGUID: RSSzsBKMTTmMexgmUNZJ8A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,119,1770624000"; 
-   d="scan'208";a="221663544"
-Received: from lkp-server01.sh.intel.com (HELO 418530b1a366) ([10.239.97.150])
-  by orviesa007.jf.intel.com with ESMTP; 14 Mar 2026 08:20:45 -0700
-Received: from kbuild by 418530b1a366 with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1w1QnC-000000005I7-1ruy;
-	Sat, 14 Mar 2026 15:20:42 +0000
-Date: Sat, 14 Mar 2026 23:20:22 +0800
-From: kernel test robot <lkp@intel.com>
-To: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Saravana Kannan <saravanak@kernel.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-mm@kvack.org, iommu@lists.linux.dev
-Cc: oe-kbuild-all@lists.linux.dev,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Linux Memory Management List <linux-mm@kvack.org>,
-	Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 3/7] of: reserved_mem: switch to ops based OF_DECLARE()
-Message-ID: <202603142347.aops46Bf-lkp@intel.com>
-References: <20260313150802.1121442-4-m.szyprowski@samsung.com>
+	dkim=pass (2048-bit key) header.d=toxicpanda.com header.i=@toxicpanda.com header.b="qjfG2iwE"
+Received: by mail-dl1-f53.google.com with SMTP id a92af1059eb24-1273349c56bso4855877c88.0
+        for <iommu@lists.linux.dev>; Sat, 14 Mar 2026 11:24:23 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1773512663; cv=none;
+        d=google.com; s=arc-20240605;
+        b=gUCtL9OUJjtus0PN7elIdkPU+WwbsD7ld5GvLnTE2U8irmf77ROCDPn18dQmBXZ1Ax
+         uU6sGpJhoZ2nrYaLiwm+1gRHYmMFaIxDGjDAf/h7F6n3VWTcR9JMMOf40qAE/jXthY3z
+         7vBe0+TYqnCbG2PI/CZ6/XwxJsGQzla2WVgIGU6m2xmsgs8A63jxm/Tm4W/+xXxzrdBO
+         6V+PYHQRHMR/A22dNlCK/kaf8dLbfdUoJmyFb8JXHC7LG7Wx6Mx6BpoSugKB7DLS/mDg
+         jwIvIh1E9kMqMcLpLWPXl2EoJb9qLzQsCnpKiv72Oooj9PhJ4SoX+FZdxLjdYPkxSHpi
+         bxsg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=fvNl2IYSFSlpzaWdwoGLoNSu2ighwO6e4fTkkZTILus=;
+        fh=UVKm+rF3oo3r2wHS4GqFCro30A855bJ6wzLxQdeVKVI=;
+        b=Uy/DxZZFdpcLR+rak+lNIfy16MejO9doo0QZd0PySPDICCdM9MtP51ogklvZRtMB2O
+         GTzTfgre+wKJQ+x32qAS7AVEv/l8Agv9HyMpFgtIHWUqXNzYOFy8CAvUSExrp4BSKMca
+         FusqZ1JW3FwXkXPuGLoYW2Qp45Q47Z4wH7v739RELh38bIgml6vJUCbBbagsomNEvcF4
+         XuFaU1OznRMNo8owt692qS7cX8LWeLU/72ZNracna2tBB4Db2vRolzqJ9WKNYVB96eZC
+         9bN6zafovEpKTLgXmc5YJEnWw9PiprgXHbUF/1DX0AX95dT1zTs0mpw8eYeVwJfL/zZF
+         jBpA==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=toxicpanda.com; s=google; t=1773512663; x=1774117463; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fvNl2IYSFSlpzaWdwoGLoNSu2ighwO6e4fTkkZTILus=;
+        b=qjfG2iwE0D2mmnFg+4qPGrXWbES2KBUm48IdbDpTRIh9J1PJOxuG8jdvXyAez5gPwY
+         STjSdG7HiGrqrQkT7JpLxZe5PyDmFVHFYGgZ34u3QUJMxU2q2IUkHlQxiijgLa5NQLcL
+         GvbYVcpHuuRMRTez19qNqXIf9Y3ty/Yr7fc3ZLtsgkkodmUTSxONft7P1G3ggLsR1AWK
+         Lo7x/gp/hYQVyzQ40ZbC6uKtEyd/+r98VYo8eXc5z4D19rxOxQbUALSu6Dw8h4XWeZXk
+         YLlysBgSuExsRNjwdbuwhkSnvIELpST5wyBJKCd/XjSKgJEfwExzVIm6nv8rzuPSYNjt
+         uNjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773512663; x=1774117463;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=fvNl2IYSFSlpzaWdwoGLoNSu2ighwO6e4fTkkZTILus=;
+        b=mAUpUqtwEoIOUnNPpdULXtVGCFs1YJhGFFIZpcpN8mTeTxOwlblLyC5IX08I0ojvSs
+         S9HYWvD+P0a1cmuUMSARuYLQRZ9bK4EQyx8k6SK/ZvQxB+BocNq6V6j+8DBXI9+kkRGW
+         MfxehEeT3NQsSM/PtPNKDaR2n0tdRjd7Ed6EhcpLZ7/LZI4v/L1MWOMoi8+n/oCiSRVx
+         3diS3NcG8LLcw9skfDXCaDoOPMMwi0/qfUOJKxlg+FohQL5ysDiXZ1vxwOqch8QaTTeQ
+         ypTEMFrtXJdaqQWExZVD0bcPgHWjZukX8MrJ7WIcCb51G+lF7YhCr9iDFRgTMP9wY7fD
+         zJmA==
+X-Forwarded-Encrypted: i=1; AJvYcCUu5Ct5CKQ9CKA74ogleC7l7/G6itusDYmG1VhzTeiy3ADqNQ6qrEF8Nouoj96bzjhZdqZaDw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxpra9WAO47dEIrg/soZOYnBZ9z2A4eFXS/upeQ9sB3XNkfRjOm
+	85CP/60M1e7ZNAl70+sbEEOJrFrWwAvKNHdWhpxK2JB8gfwNWX9BHwT3waTKPpl2dLNEogErD8H
+	xVT4FIUnOy1tG4xPwYFXHIWc50xgeO3337RR0sc+5dQ==
+X-Gm-Gg: ATEYQzytApIr0qvWnef9f3nxg+LGuAJhILmKwhK0YSd50b3wmcm7GL83Zt/aNqkoam8
+	/w7dk+C8YJhyNAG2hryEfq1Cv8OdJH2ceI4szI4HCnh9F021xBh/aA4DHmcjC9LypwQPCuzkIpo
+	2o+cvtAQAlVUg2pKX2GPR6H2D2kkr6+u1bRtRjAKbfUpb7A9kD4QbeMdjY6tVr8eEs7UI228YMw
+	eCELb20asLsjjsRKRUifBSAdECPDtL+tqFD6mcrDElKev83HgDOaTV2PR5laQ8RVBLBjEJFDyz6
+	ToJh4SAT3Bvig5C2Q24Z1AHW+OwCdvL0l/wPOX//fQ==
+X-Received: by 2002:a05:7022:4186:b0:128:cea1:7e3b with SMTP id
+ a92af1059eb24-128f3dd13a3mr2716046c88.23.1773512662881; Sat, 14 Mar 2026
+ 11:24:22 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260313150802.1121442-4-m.szyprowski@samsung.com>
+References: <ad8652c5e9f8aeee05e2103f4987589cdd4a3fd0.1772659768.git.josef@toxicpanda.com>
+ <20260312134025.GJ1469476@ziepe.ca>
+In-Reply-To: <20260312134025.GJ1469476@ziepe.ca>
+From: Josef Bacik <josef@toxicpanda.com>
+Date: Sat, 14 Mar 2026 14:24:11 -0400
+X-Gm-Features: AaiRm52ccBWuyu-tZMzjnnT5VJAWfzUfSpPntwRU0mPlzJvdhZLstFUq8yI2JNo
+Message-ID: <CAEzrpqeO68eg1dFr2fm8FNXSodJWSxT_9Gk0EHSK=hzRAQgJHQ@mail.gmail.com>
+Subject: Re: [PATCH] amd/iommu: do not split domain flushes when flushing the
+ entire range
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: joro@8bytes.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Marek,
+On Thu, Mar 12, 2026 at 9:40=E2=80=AFAM Jason Gunthorpe <jgg@ziepe.ca> wrot=
+e:
+>
+> On Wed, Mar 04, 2026 at 04:30:03PM -0500, Josef Bacik wrote:
+> > We are hitting the following soft lockup in production on v6.6 and
+> > v6.12, but the bug exists in all versions
+> >
+> > watchdog: BUG: soft lockup - CPU#24 stuck for 31s! [tokio-runtime-w:127=
+4919]
+> > CPU: 24 PID: 1274919 Comm: tokio-runtime-w Not tainted 6.6.105+ #1
+> > Hardware name: Google Google Compute Engine/Google Comput Engine, BIOS =
+Google 10/25/2025
+> > RIP: 0010:__raw_spin_unlock_irqrestore+0x21/0x30
+> > Call Trace:
+> >  <TASK>
+> >  amd_iommu_attach_device+0x69/0x450
+> >  __iommu_device_set_domain+0x7b/0x190
+> >  __iommu_group_set_core_domain+0x61/0xd0
+> >  iommu_detatch_group+0x27/0x40
+> >  vfio_iommu_type1_detach_group+0x157/0x780 [vfio_iommu_type1]
+> >  vfio_group_detach_container+0x59/0x160 [vfio]
+> >  vfio_group_fops_release+0x4d/0x90 [vfio]
+> >  __fput+0x95/0x2a0
+> >  task_work_run+0x93/0xc0
+> >  do_exit+0x321/0x950
+> >  do_group_exit+0x7f/0xa0
+> >  get_signal_0x77d/0x780
+> >  </TASK>
+> >
+> > This occurs because we're a VM and we're splitting up the size
+> > CMD_INV_IOMMU_ALL_PAGES_ADDRESS we get from
+> > amd_iommu_domain_flush_tlb_pde() into a bunch of smaller flushes.
+>
+> This function doesn't exist in the upstream kernel anymore, and the
+> new code doesn't generate CMD_INV_IOMMU_ALL_PAGES_ADDRESS flushes at
+> all, AFAIK.
 
-kernel test robot noticed the following build errors:
+This was based on linus/master as of March 4th, and we get here via
+amd_iommu_flush_tlb_all, which definitely still exists, so what
+specifically are you talking about? Thanks,
 
-[auto build test ERROR on robh/for-next]
-[also build test ERROR on tegra/for-next akpm-mm/mm-everything linus/master v7.0-rc3 next-20260311]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Marek-Szyprowski/of-reserved_mem-remove-fdt-node-from-the-structure/20260314-023123
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-patch link:    https://lore.kernel.org/r/20260313150802.1121442-4-m.szyprowski%40samsung.com
-patch subject: [PATCH 3/7] of: reserved_mem: switch to ops based OF_DECLARE()
-config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20260314/202603142347.aops46Bf-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 15.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260314/202603142347.aops46Bf-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202603142347.aops46Bf-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
-   drivers/memory/tegra/tegra210-emc-table.c: In function 'tegra210_emc_table_init':
->> drivers/memory/tegra/tegra210-emc-table.c:79:22: error: 'tegra210_emc_table_ops' undeclared (first use in this function); did you mean 'tegra210_emc_table_init'?
-      79 |         rmem->ops = &tegra210_emc_table_ops;
-         |                      ^~~~~~~~~~~~~~~~~~~~~~
-         |                      tegra210_emc_table_init
-   drivers/memory/tegra/tegra210-emc-table.c:79:22: note: each undeclared identifier is reported only once for each function it appears in
-
-
-vim +79 drivers/memory/tegra/tegra210-emc-table.c
-
-10de21148f7d28 Joseph Lo        2019-05-29  72  
-6888259214366b Marek Szyprowski 2026-03-13  73  static int tegra210_emc_table_init(unsigned long node,
-6888259214366b Marek Szyprowski 2026-03-13  74  				   struct reserved_mem *rmem)
-10de21148f7d28 Joseph Lo        2019-05-29  75  {
-10de21148f7d28 Joseph Lo        2019-05-29  76  	pr_debug("Tegra210 EMC table at %pa, size %lu bytes\n", &rmem->base,
-10de21148f7d28 Joseph Lo        2019-05-29  77  		 (unsigned long)rmem->size);
-10de21148f7d28 Joseph Lo        2019-05-29  78  
-10de21148f7d28 Joseph Lo        2019-05-29 @79  	rmem->ops = &tegra210_emc_table_ops;
-10de21148f7d28 Joseph Lo        2019-05-29  80  
-10de21148f7d28 Joseph Lo        2019-05-29  81  	return 0;
-10de21148f7d28 Joseph Lo        2019-05-29  82  }
-f954eaa20bd915 Marek Szyprowski 2026-03-13  83  
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Josef
