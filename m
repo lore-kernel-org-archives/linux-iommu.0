@@ -1,140 +1,119 @@
-Received: from mail-dl1-f53.google.com (mail-dl1-f53.google.com [74.125.82.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 463C7347DD
-	for <iommu@lists.linux.dev>; Sat, 14 Mar 2026 18:24:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.53
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773512665; cv=pass; b=OpblnwGc6OzVABRYU5LYiXVhOSBt6KxrijFWKuhabjgQ25GsH9Qi5mvD+B4gY91k8hBW1ftNIB4of3ylXK3G0nJivuf8YugOXf+WmyA/POIOBNwESJFy6C59hM5BSbfTW14tBhLYF2W3S18POUUZUtxUVY8M0QjnXtgl2Al6f3U=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773512665; c=relaxed/simple;
-	bh=RGueu44f3311svWUAZ3Nm2CC7jiHSV/Gihk1oWbAqXA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=claDPePn09NO8HAFZtPAmji1UzT+GBUGwCi4JX7enI8aNbFv+bT9irvt0GkD0k4LmFE2vwkjzA/P9qZfyvXa6B+bYkX/OqLHQ+l3y67Am1teO543XRLBq5DtCk1hf9X9g45jzHIHNJXsSuQcvilPsx3AfBJh/cnIwyEP5pOSFic=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=toxicpanda.com; spf=pass smtp.mailfrom=toxicpanda.com; dkim=pass (2048-bit key) header.d=toxicpanda.com header.i=@toxicpanda.com header.b=qjfG2iwE; arc=pass smtp.client-ip=74.125.82.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=toxicpanda.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=toxicpanda.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B71B427456
+	for <iommu@lists.linux.dev>; Sun, 15 Mar 2026 04:01:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773547311; cv=none; b=Uye/lW8QzuWKbKNadZ8hfDG6qFwkP2249HArdm3F+D+9pEkIeuiSOa++Lp4MPTMPZmEPgLfDjQ26k6aZBzN8IkLivmKm9k+vz5hz8PfWEolXNnsFng2hL7DdTZAB14I6+SdsCt/aYJ7U9xX960G9DX7Vjspg1Cm5uRWDTTg9EXo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773547311; c=relaxed/simple;
+	bh=zsdjG+dysJ2t9fMc7MvqEgAdyle+FxpQUI4droBsN+g=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=gCZBqCEycrMFMTiGMP5Qz9Q3+ClQoM4TXd4sg4gWs8kRkHdDO6wC4W8/QJLEJnAohwcGYDhj966ik884ZXWG9G5ux/ycKirhCcl94NPXOzXk72sBaA0ePIVSbTRJYHoyxXfgup/v40zQOJFepUynyXuaVS71Z+sZOxgmZVXF+Os=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=UofzqzwQ; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=toxicpanda.com header.i=@toxicpanda.com header.b="qjfG2iwE"
-Received: by mail-dl1-f53.google.com with SMTP id a92af1059eb24-1273349c56bso4855877c88.0
-        for <iommu@lists.linux.dev>; Sat, 14 Mar 2026 11:24:23 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1773512663; cv=none;
-        d=google.com; s=arc-20240605;
-        b=gUCtL9OUJjtus0PN7elIdkPU+WwbsD7ld5GvLnTE2U8irmf77ROCDPn18dQmBXZ1Ax
-         uU6sGpJhoZ2nrYaLiwm+1gRHYmMFaIxDGjDAf/h7F6n3VWTcR9JMMOf40qAE/jXthY3z
-         7vBe0+TYqnCbG2PI/CZ6/XwxJsGQzla2WVgIGU6m2xmsgs8A63jxm/Tm4W/+xXxzrdBO
-         6V+PYHQRHMR/A22dNlCK/kaf8dLbfdUoJmyFb8JXHC7LG7Wx6Mx6BpoSugKB7DLS/mDg
-         jwIvIh1E9kMqMcLpLWPXl2EoJb9qLzQsCnpKiv72Oooj9PhJ4SoX+FZdxLjdYPkxSHpi
-         bxsg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=fvNl2IYSFSlpzaWdwoGLoNSu2ighwO6e4fTkkZTILus=;
-        fh=UVKm+rF3oo3r2wHS4GqFCro30A855bJ6wzLxQdeVKVI=;
-        b=Uy/DxZZFdpcLR+rak+lNIfy16MejO9doo0QZd0PySPDICCdM9MtP51ogklvZRtMB2O
-         GTzTfgre+wKJQ+x32qAS7AVEv/l8Agv9HyMpFgtIHWUqXNzYOFy8CAvUSExrp4BSKMca
-         FusqZ1JW3FwXkXPuGLoYW2Qp45Q47Z4wH7v739RELh38bIgml6vJUCbBbagsomNEvcF4
-         XuFaU1OznRMNo8owt692qS7cX8LWeLU/72ZNracna2tBB4Db2vRolzqJ9WKNYVB96eZC
-         9bN6zafovEpKTLgXmc5YJEnWw9PiprgXHbUF/1DX0AX95dT1zTs0mpw8eYeVwJfL/zZF
-         jBpA==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=toxicpanda.com; s=google; t=1773512663; x=1774117463; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=fvNl2IYSFSlpzaWdwoGLoNSu2ighwO6e4fTkkZTILus=;
-        b=qjfG2iwE0D2mmnFg+4qPGrXWbES2KBUm48IdbDpTRIh9J1PJOxuG8jdvXyAez5gPwY
-         STjSdG7HiGrqrQkT7JpLxZe5PyDmFVHFYGgZ34u3QUJMxU2q2IUkHlQxiijgLa5NQLcL
-         GvbYVcpHuuRMRTez19qNqXIf9Y3ty/Yr7fc3ZLtsgkkodmUTSxONft7P1G3ggLsR1AWK
-         Lo7x/gp/hYQVyzQ40ZbC6uKtEyd/+r98VYo8eXc5z4D19rxOxQbUALSu6Dw8h4XWeZXk
-         YLlysBgSuExsRNjwdbuwhkSnvIELpST5wyBJKCd/XjSKgJEfwExzVIm6nv8rzuPSYNjt
-         uNjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773512663; x=1774117463;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=fvNl2IYSFSlpzaWdwoGLoNSu2ighwO6e4fTkkZTILus=;
-        b=mAUpUqtwEoIOUnNPpdULXtVGCFs1YJhGFFIZpcpN8mTeTxOwlblLyC5IX08I0ojvSs
-         S9HYWvD+P0a1cmuUMSARuYLQRZ9bK4EQyx8k6SK/ZvQxB+BocNq6V6j+8DBXI9+kkRGW
-         MfxehEeT3NQsSM/PtPNKDaR2n0tdRjd7Ed6EhcpLZ7/LZI4v/L1MWOMoi8+n/oCiSRVx
-         3diS3NcG8LLcw9skfDXCaDoOPMMwi0/qfUOJKxlg+FohQL5ysDiXZ1vxwOqch8QaTTeQ
-         ypTEMFrtXJdaqQWExZVD0bcPgHWjZukX8MrJ7WIcCb51G+lF7YhCr9iDFRgTMP9wY7fD
-         zJmA==
-X-Forwarded-Encrypted: i=1; AJvYcCUu5Ct5CKQ9CKA74ogleC7l7/G6itusDYmG1VhzTeiy3ADqNQ6qrEF8Nouoj96bzjhZdqZaDw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxpra9WAO47dEIrg/soZOYnBZ9z2A4eFXS/upeQ9sB3XNkfRjOm
-	85CP/60M1e7ZNAl70+sbEEOJrFrWwAvKNHdWhpxK2JB8gfwNWX9BHwT3waTKPpl2dLNEogErD8H
-	xVT4FIUnOy1tG4xPwYFXHIWc50xgeO3337RR0sc+5dQ==
-X-Gm-Gg: ATEYQzytApIr0qvWnef9f3nxg+LGuAJhILmKwhK0YSd50b3wmcm7GL83Zt/aNqkoam8
-	/w7dk+C8YJhyNAG2hryEfq1Cv8OdJH2ceI4szI4HCnh9F021xBh/aA4DHmcjC9LypwQPCuzkIpo
-	2o+cvtAQAlVUg2pKX2GPR6H2D2kkr6+u1bRtRjAKbfUpb7A9kD4QbeMdjY6tVr8eEs7UI228YMw
-	eCELb20asLsjjsRKRUifBSAdECPDtL+tqFD6mcrDElKev83HgDOaTV2PR5laQ8RVBLBjEJFDyz6
-	ToJh4SAT3Bvig5C2Q24Z1AHW+OwCdvL0l/wPOX//fQ==
-X-Received: by 2002:a05:7022:4186:b0:128:cea1:7e3b with SMTP id
- a92af1059eb24-128f3dd13a3mr2716046c88.23.1773512662881; Sat, 14 Mar 2026
- 11:24:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="UofzqzwQ"
+Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62F3TK542985157;
+	Sun, 15 Mar 2026 04:01:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=NRnY2/
+	LgEE/zccs/dGs41ukenTXTHCNJi6tHwKdmXio=; b=UofzqzwQyTEFrikbJrSX/J
+	S0Ma1Rr21eFWoqP1XZiLvZww9ni4Cdz5fRfnUm8j+zJhLtNDPaKsnmdwH48ZL6em
+	BwalEvOmOWnBMJND/t6yCSJbLOwvn0IM6++5NLOYeKSg+E/63r6gtRX34a3EH3U3
+	xboiW3x+qPBKoxk46rWKicEUl4eQvCOoA0cqoM0DXgeNuQ/FA3i/U0yUwt09YajU
+	PdjKbkvkW95FbfHVl/yZFN69ylRPX4Yp0J77cYsPRGQ7oplgEoQ+qtQZ4NgsDJv2
+	h6YafqC/uVsvVzw1/qXGQEqdzBscb7Qs1KchVL+RE+hv75Hr4oOBce6LPZ+qsoPg
+	==
+Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4cvybru27r-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sun, 15 Mar 2026 04:01:39 +0000 (GMT)
+Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma11.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 62F3FLmY028465;
+	Sun, 15 Mar 2026 04:01:39 GMT
+Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
+	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 4cwmq1030a-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sun, 15 Mar 2026 04:01:39 +0000
+Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
+	by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 62F41ZeF17170718
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Sun, 15 Mar 2026 04:01:35 GMT
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 2FFC32007A;
+	Sun, 15 Mar 2026 04:01:35 +0000 (GMT)
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id E02452004D;
+	Sun, 15 Mar 2026 04:01:31 +0000 (GMT)
+Received: from Linuxdev.ibmuc.com (unknown [9.43.97.251])
+	by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Sun, 15 Mar 2026 04:01:31 +0000 (GMT)
+From: Madhavan Srinivasan <maddy@linux.ibm.com>
+To: iommu@lists.linux.dev, linuxppc-dev@lists.ozlabs.org,
+        Nilay Shroff <nilay@linux.ibm.com>
+Cc: nicolinc@nvidia.com, joerg.roedel@amd.com, baolu.lu@linux.intel.com,
+        kevin.tian@intel.com, sbhat@linux.ibm.com, stable@vger.kernel.org,
+        Jason Gunthorpe <jgg@ziepe.ca>
+Subject: Re: [PATCH] powerpc/iommu: fix lockdep warning during PCI enumeration
+Date: Sun, 15 Mar 2026 09:31:30 +0530
+Message-ID: <177354720786.2367911.17952918247021806252.b4-ty@linux.ibm.com>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20260310082129.3630996-1-nilay@linux.ibm.com>
+References: <20260310082129.3630996-1-nilay@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <ad8652c5e9f8aeee05e2103f4987589cdd4a3fd0.1772659768.git.josef@toxicpanda.com>
- <20260312134025.GJ1469476@ziepe.ca>
-In-Reply-To: <20260312134025.GJ1469476@ziepe.ca>
-From: Josef Bacik <josef@toxicpanda.com>
-Date: Sat, 14 Mar 2026 14:24:11 -0400
-X-Gm-Features: AaiRm52ccBWuyu-tZMzjnnT5VJAWfzUfSpPntwRU0mPlzJvdhZLstFUq8yI2JNo
-Message-ID: <CAEzrpqeO68eg1dFr2fm8FNXSodJWSxT_9Gk0EHSK=hzRAQgJHQ@mail.gmail.com>
-Subject: Re: [PATCH] amd/iommu: do not split domain flushes when flushing the
- entire range
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: joro@8bytes.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Authority-Analysis: v=2.4 cv=MMttWcZl c=1 sm=1 tr=0 ts=69b62f24 cx=c_pps
+ a=aDMHemPKRhS1OARIsFnwRA==:117 a=aDMHemPKRhS1OARIsFnwRA==:17
+ a=IkcTkHD0fZMA:10 a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=RnoormkPH1_aCDwRdu11:22 a=uAbxVGIbfxUO_5tXvNgY:22 a=VwQbUJbxAAAA:8
+ a=p2E9MDjRwVkQTcis9DIA:9 a=QEXdDO2ut3YA:10 a=ZXulRonScM0A:10
+X-Proofpoint-ORIG-GUID: bz3SaqE8W-VABnYB_T9OgHu8MYirWbeD
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzE1MDAyNiBTYWx0ZWRfX3ccoNrIK6Up/
+ wpkWoN7U4gzxlU+pac+gYQ+MUgxN/b2oQCjKUDJXog8b40N6+UdW14GT+cmMvnuKcSnCzyUJ/33
+ uxnSL9nyrOIDkCzlBgfjstHU9ogxzC8dXy81mlGESnu7uy6iMEn7zI3VTOEoE7yRjL45b0lOUsR
+ 3WSbIkB663aNLu/KSWspqGVnEYYVDKKDqXNTPzsvBEfB2syrwf3GeUqRqQgBII+UZNM84SFL9Q8
+ RxK24izTCJp0wqM+FA5qxd6WJaNh2/ABed23+ekZTSvVx/Q8U5o9iAwATmRkF9MGtkNTM7yhXfY
+ 4I+lWcaI8BeIE8aNSjdUpIk/YRKbo8PWFcl8TZ6NVf6bVU8ZszP6BMYIAD+HewsfJULi75FUALP
+ M8G9xgkdRkH/7zEjXLpeGyBODrWpU0IPJfxTcjl0E21uyiEbXrrPW63tJSncjd9hpNFISGoXfFh
+ pYFX43zqy3JDdB8t0TQ==
+X-Proofpoint-GUID: bz3SaqE8W-VABnYB_T9OgHu8MYirWbeD
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-03-15_02,2026-03-13_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 lowpriorityscore=0 malwarescore=0 spamscore=0
+ priorityscore=1501 impostorscore=0 adultscore=0 phishscore=0 clxscore=1011
+ bulkscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.22.0-2603050001
+ definitions=main-2603150026
 
-On Thu, Mar 12, 2026 at 9:40=E2=80=AFAM Jason Gunthorpe <jgg@ziepe.ca> wrot=
-e:
->
-> On Wed, Mar 04, 2026 at 04:30:03PM -0500, Josef Bacik wrote:
-> > We are hitting the following soft lockup in production on v6.6 and
-> > v6.12, but the bug exists in all versions
-> >
-> > watchdog: BUG: soft lockup - CPU#24 stuck for 31s! [tokio-runtime-w:127=
-4919]
-> > CPU: 24 PID: 1274919 Comm: tokio-runtime-w Not tainted 6.6.105+ #1
-> > Hardware name: Google Google Compute Engine/Google Comput Engine, BIOS =
-Google 10/25/2025
-> > RIP: 0010:__raw_spin_unlock_irqrestore+0x21/0x30
-> > Call Trace:
-> >  <TASK>
-> >  amd_iommu_attach_device+0x69/0x450
-> >  __iommu_device_set_domain+0x7b/0x190
-> >  __iommu_group_set_core_domain+0x61/0xd0
-> >  iommu_detatch_group+0x27/0x40
-> >  vfio_iommu_type1_detach_group+0x157/0x780 [vfio_iommu_type1]
-> >  vfio_group_detach_container+0x59/0x160 [vfio]
-> >  vfio_group_fops_release+0x4d/0x90 [vfio]
-> >  __fput+0x95/0x2a0
-> >  task_work_run+0x93/0xc0
-> >  do_exit+0x321/0x950
-> >  do_group_exit+0x7f/0xa0
-> >  get_signal_0x77d/0x780
-> >  </TASK>
-> >
-> > This occurs because we're a VM and we're splitting up the size
-> > CMD_INV_IOMMU_ALL_PAGES_ADDRESS we get from
-> > amd_iommu_domain_flush_tlb_pde() into a bunch of smaller flushes.
->
-> This function doesn't exist in the upstream kernel anymore, and the
-> new code doesn't generate CMD_INV_IOMMU_ALL_PAGES_ADDRESS flushes at
-> all, AFAIK.
+On Tue, 10 Mar 2026 13:51:24 +0530, Nilay Shroff wrote:
+> Commit a75b2be249d6 ("iommu: Add iommu_driver_get_domain_for_dev()
+> helper") introduced iommu_driver_get_domain_for_dev() for driver
+> code paths that hold iommu_group->mutex while attaching a device
+> to an IOMMU domain.
+> 
+> The same commit also added a lockdep assertion in
+> iommu_get_domain_for_dev() to ensure that callers do not hold
+> iommu_group->mutex when invoking it.
+> 
+> [...]
 
-This was based on linus/master as of March 4th, and we get here via
-amd_iommu_flush_tlb_all, which definitely still exists, so what
-specifically are you talking about? Thanks,
+Applied to powerpc/fixes.
 
-Josef
+[1/1] powerpc/iommu: fix lockdep warning during PCI enumeration
+      https://git.kernel.org/powerpc/c/82f73ef9c41e0623e0a8bdce4fa44a7237709f0c
+
+cheers
