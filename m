@@ -1,131 +1,159 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59A5923B638
-	for <iommu@lists.linux.dev>; Sun, 15 Mar 2026 08:12:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB17D23817E
+	for <iommu@lists.linux.dev>; Sun, 15 Mar 2026 08:28:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773562357; cv=none; b=EJuJeP30vcOiIizcizaVHKfX99j/SM3FbJHI02Ym9L0HyZ6hPAxJOvvDGmiMD64HKtwPqQU1GtvblMMKuECku6BV54vahzewr2/Ody3Inw/dY7cIdkarlpjv7gW7bZpBg7g/pEs3G2zqaKTRMmqfKQmf4MAfcxhXC4+TQhd9qhc=
+	t=1773563326; cv=none; b=uY8X1N3dnnJ0WAez42StTP3J5sUL6YAS85Ajh0McvWLBbqBQ/bHagbq0yBCPOLH59/hz7UNs5kXhMFM8zAffZsTPKUAIP0OuD/UlPKTAL5FX6rYv06W1bNk0MEtDZlAEjdxxxq8nFwSamFrD1Pqp00HIIEtE+IsBVtYOflcJRI0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773562357; c=relaxed/simple;
-	bh=WOGa+JBsg7DDNyPyTXGhW7Us7QFxbkUGdrt1Cwr7864=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=R/Eue6WSa5oIjHHxP2H9VzU+9OC2Jz6iptzcdPeMgi9FdzEiFFZDXDNKrvDs8hWfhuBoh3lVebczWVl+9bbrC6xjPHvI9eTNeNiJZwZcyDXQaDj7LQ1ANHFPQ8Ma9vPS9d0KUlTULS3c5tnz7oQjcXkUm2WG5ef0PuPrqah0DAQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LnfouWoV; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1773563326; c=relaxed/simple;
+	bh=HFCmm9+lNAJNhfV7fOVO/gE32UV6UExhiS6HRHN+uo0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:content-type; b=PGxbKKKSPEluB+42Lsb7C+SjQXx95d7qHroHkojkodjQAjKzZicUuXxtHkMz//xLaI9z1bn5QL1WLP6Xe0QcG4JtOEWQd58Zz5dwMxkvHOYp8L9zHOabeAGs5KW5AfWAzyla/IEq57H/2/3oHzL8uFiX4P6zOhY/rRT4KSpLsmY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=L6+QwT1I; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LnfouWoV"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773562356; x=1805098356;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=WOGa+JBsg7DDNyPyTXGhW7Us7QFxbkUGdrt1Cwr7864=;
-  b=LnfouWoVu1jk1pfSepDwWexWSi2cCjlLY8sRTlJ8hzmq3/fKLW1WxGBd
-   7bzec31EICcXFBSKTFkvJAbWyX0sRSDQUJb+fZ16MPVJn+VnXEwhd7qW0
-   wEYLJ3ND/++5AfhDl9DDnH1mOSBeDQF8jcwV6inXGr4A5p18oe1feddQ1
-   PUeEXFjGnn2WEDsq5mxK65S4L0VsAxH363my0OuCR3nLuJbUfa+jmjrbw
-   89mVdVrid6Sr67sUZe0oHNK7G2wHkPkqz6uiJVbDlR+iwPfnKKUgfwc1H
-   LscHT2no/ZQBNxde85cGfUxTSW8VjbOqwtatJ7z25/4sOE8I4d6M2H9p3
-   g==;
-X-CSE-ConnectionGUID: 3O5DhztpT3+y4XUZic+Y8A==
-X-CSE-MsgGUID: M2n4O2OdR7GZnfIvm9q0zg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11729"; a="62175520"
-X-IronPort-AV: E=Sophos;i="6.23,119,1770624000"; 
-   d="scan'208";a="62175520"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2026 01:12:35 -0700
-X-CSE-ConnectionGUID: 5ZL6Rq5mTQ2PbMyniYt0QQ==
-X-CSE-MsgGUID: RqCIhMqYSpyRRCa0j26rvw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,119,1770624000"; 
-   d="scan'208";a="259486973"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2026 01:12:33 -0700
-Message-ID: <5c7503bd-e9e8-41b8-b275-3317912cc83c@linux.intel.com>
-Date: Sun, 15 Mar 2026 16:11:36 +0800
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="L6+QwT1I"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1773563323;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=sT1fz+nZNL5Xr4YwRtI6wr1LjR6m/sM+MT7k5Awq2j8=;
+	b=L6+QwT1IOvzkJrgj3gsopm3W42lhtFtC9vlv5cd/hOEYm/+wVGbrCSODq6rIYYA2pDLPQN
+	3RL5nM7TjG2hAdi3u5oeojXf4w3tBX2owDuN1lYmyQaw6b3TZJh4pOB7sguhxbp+4VimSb
+	o+pQeLRnQjDuezu9X6WIMOLb49M1aiQ=
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
+ [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-323-kpJ8T2JBNBOkldirolFx4A-1; Sun, 15 Mar 2026 04:28:42 -0400
+X-MC-Unique: kpJ8T2JBNBOkldirolFx4A-1
+X-Mimecast-MFC-AGG-ID: kpJ8T2JBNBOkldirolFx4A_1773563321
+Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-3595485abbbso3904352a91.2
+        for <iommu@lists.linux.dev>; Sun, 15 Mar 2026 01:28:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773563321; x=1774168121;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=sT1fz+nZNL5Xr4YwRtI6wr1LjR6m/sM+MT7k5Awq2j8=;
+        b=jIrBg0SaqWaEb7j59x2f4DsWFkxiIjg+I5Y3g4eF08o1vX/H5GXBWE6qKR0lHpppCb
+         yPgnS17blcE2E0vJ5v6pwbDSblCvotQSvSO9QorJx2qscixmyiKXEicX6+BZF4Rbt5/Y
+         rZ1B4arGxmiLEJpZerk7w6L5n8LsbEmCzWfeg+RJ+2rROq7FI7zB2lWwyBqk+aQU/rR5
+         b++AW1kSD2EF3D3QGUMg/w4Btm4h5uXSPRAgliYx8XtdeN6tvaCaTcZ91Wo9iHEchiD7
+         m1ZFN/+z3sxyT/9UUN9OJnA9uifHiXVZip3RYiAsvhRZlNBDW0Rm0Q9OibFNy9mTqbNR
+         P08g==
+X-Forwarded-Encrypted: i=1; AJvYcCVFXbatzIV743jOcRtBqaLh90OG+RGGteSgR4nu6yYZj6Ngcid+bPDC+mmwBQ5st3husQN6Ww==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzuUE940s7TF6SSuITrV8Uxzyp7smSXeQHOnR/fjG7uBpZRnXRt
+	joernpVI3yYDv/x92RK4OFYkNGncoWeqZ/43PfQz2vZz7jiQ/JDavqYf7ni644treikyLDWesu6
+	kaf9+gHaBSoaSRasUDDMc4jsp/sKbSkWvT78nnAsrOz24CDqdE3+JWOoF
+X-Gm-Gg: ATEYQzyJjFGWMvXm0weReqvKupt74U8kyYmu4U7ZD599nwd877YygEGRTp3/GsCZhGS
+	D28PBpAXc/budhIO5h1ES8ZXfViuXHahBAj25Buufk1aggenw4kZ15Igr01Kcb9P6WHq05hDR7Z
+	PhvFo5W/l5x9LYboHCgT0IN03uzOpN5EQ5qqfibScFG08R3VMq7YFY20RWPry+rS6z6rMaSiskw
+	A8hz5M+LgFwRjOK927ODi6qHJTZ5Bu1uAIoX+nuKezoXIUmxtFkbd1zcdYPlezwCbOnrM5wXK/m
+	irC+Abamaoi/vqDtfKGzf5FDBGc7Zn9qgmgnA6uX308pb8N8zmg6JeOcGJle2y88W3chWJUCemP
+	1vCEErD/+2eHQirwv8qbbGQcIWZg2CXNCq7mM3xwIUFe2+g==
+X-Received: by 2002:a17:90b:1f8c:b0:359:8d70:c4e6 with SMTP id 98e67ed59e1d1-35a21e485e2mr8227102a91.1.1773563321208;
+        Sun, 15 Mar 2026 01:28:41 -0700 (PDT)
+X-Received: by 2002:a17:90b:1f8c:b0:359:8d70:c4e6 with SMTP id 98e67ed59e1d1-35a21e485e2mr8227093a91.1.1773563320779;
+        Sun, 15 Mar 2026 01:28:40 -0700 (PDT)
+Received: from kernel-devel.tail62cea.ts.net ([240d:1a:c0d:9f00:be24:11ff:fe35:71b3])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-35b95822ca2sm579919a91.4.2026.03.15.01.28.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 15 Mar 2026 01:28:40 -0700 (PDT)
+From: Shigeru Yoshida <syoshida@redhat.com>
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Alexander Potapenko <glider@google.com>
+Cc: Shigeru Yoshida <syoshida@redhat.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] dma: swiotlb: add KMSAN annotations to swiotlb_bounce()
+Date: Sun, 15 Mar 2026 17:27:49 +0900
+Message-ID: <20260315082750.2375581-1-syoshida@redhat.com>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/8] iommu/vt-d: Add entry_sync support for PASID entry
- updates
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Dmytro Maluka <dmaluka@chromium.org>, Samiullah Khawaja
- <skhawaja@google.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20260309060648.276762-1-baolu.lu@linux.intel.com>
- <20260309060648.276762-3-baolu.lu@linux.intel.com>
- <20260309134116.GE3717316@nvidia.com>
- <4fbe6dcf-1105-4efc-b755-81a5bfb74090@linux.intel.com>
- <20260312114438.GG1448102@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20260312114438.GG1448102@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: jZwSdcdFRB4BPLyV1zWUUi9X1EXyoYngx0rUiH_fpRY_1773563321
+X-Mimecast-Originator: redhat.com
+Content-Transfer-Encoding: 8bit
+content-type: text/plain; charset="US-ASCII"; x-default=true
 
-On 3/12/26 19:44, Jason Gunthorpe wrote:
-> On Thu, Mar 12, 2026 at 03:50:03PM +0800, Baolu Lu wrote:
->> If I understand your remark correctly, the driver should only need the
->> following in the sync callback:
->>
->> - clflush (if non-coherent) to ensure the entry is in physical memory.
->> - PASID cache invalidation to force the hardware to re-read the entry.
-> 
-> Yes
-> 
->> - Device-TLB invalidation to drop local device caches.
-> 
-> I have prefered to keep this outside the entry_set system since it has
-> nothing to do with updating the context entry.
-> 
-> There should be only one ATS flush after the new entry is installed.
+When a device performs DMA to a bounce buffer, KMSAN is unaware of
+the write and does not mark the data as initialized.  When
+swiotlb_bounce() later copies the bounce buffer back to the original
+buffer, memcpy propagates the uninitialized shadow to the original
+buffer, causing false positive uninit-value reports.
 
-Okay, I will move the devtlb_invalidation_with_pasid() calls outside of
-the entry_sync system, right after the call to the writer returns.
+Fix this by calling kmsan_unpoison_memory() on the bounce buffer
+before copying it back in the DMA_FROM_DEVICE path, so that memcpy
+naturally propagates initialized shadow to the destination.
 
-> 
->>> ATC invalidations should always be done after the PASID entry is
->>> written. During a hitless update both translations are unpredictably
->>> combined, this is unavoidable and OK.
->>
->> The VT-d spec (Sections 6.5.2.5 and 6.5.2.6) explicitly mandates that an
->> IOTLB invalidation must precede the Device-TLB invalidation. If we only
->> do the device-TLB invalidation in the sync callback, we risk the device
->> re-fetching a stale translation from the IOMMU's internal IOTLB.
-> 
-> It is a little weird that is says that, that is worth checking into.
-> 
-> The other text is clear that the IOTLB is cached by DID,PASID only, so
-> if the new PASID entry has a DID,PASID which is already coherent in
-> the IOTLB it should not need any IOTLB flushing.
-> 
-> ie flushing the PASID table should immediately change any ATC fetches
-> from using DID,old_PASID to DID,new_PASID.
-> 
-> If there is some issue where the PASID flush doesn't fence everything
-> (ie an ATC fetch of DID,old_PASID can be passed by an ATC invalidation)
-> then you may need IOTLB invalidations not to manage coherence but to
-> manage ordering. That is an important detail if true.
+Suggested-by: Alexander Potapenko <glider@google.com>
+Link: https://lore.kernel.org/CAG_fn=WUGta-paG1BgsGRoAR+fmuCgh3xo=R3XdzOt_-DqSdHw@mail.gmail.com/
+Fixes: 7ade4f10779c ("dma: kmsan: unpoison DMA mappings")
+Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
+---
+ kernel/dma/swiotlb.c | 21 +++++++++++++++++++--
+ 1 file changed, 19 insertions(+), 2 deletions(-)
 
-On Intel hardware, the PASID-cache and IOTLB are not inclusive. A PASID-
-cache invalidation forces a re-fetch of the pasid entry, but it does not
-automatically purge downstream IOTLB entries. The spec-mandated IOTLB
-flush serves as a synchronization barrier to ensure that in-flight
-translation requests are drained and the internal IOMMU state is
-consistent before the invalidation request is sent over PCIe to the
-device's ATC.
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index d8e6f1d889d5..9fd73700ddcf 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -30,6 +30,7 @@
+ #include <linux/gfp.h>
+ #include <linux/highmem.h>
+ #include <linux/io.h>
++#include <linux/kmsan-checks.h>
+ #include <linux/iommu-helper.h>
+ #include <linux/init.h>
+ #include <linux/memblock.h>
+@@ -901,10 +902,19 @@ static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size
+ 
+ 			local_irq_save(flags);
+ 			page = pfn_to_page(pfn);
+-			if (dir == DMA_TO_DEVICE)
++			if (dir == DMA_TO_DEVICE) {
++				/*
++				 * Ideally, kmsan_check_highmem_page()
++				 * could be used here to detect infoleaks,
++				 * but callers may map uninitialized buffers
++				 * that will be written by the device,
++				 * causing false positives.
++				 */
+ 				memcpy_from_page(vaddr, page, offset, sz);
+-			else
++			} else {
++				kmsan_unpoison_memory(vaddr, sz);
+ 				memcpy_to_page(page, offset, vaddr, sz);
++			}
+ 			local_irq_restore(flags);
+ 
+ 			size -= sz;
+@@ -913,8 +923,15 @@ static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size
+ 			offset = 0;
+ 		}
+ 	} else if (dir == DMA_TO_DEVICE) {
++		/*
++		 * Ideally, kmsan_check_memory() could be used here to detect
++		 * infoleaks (uninitialized data being sent to device), but
++		 * callers may map uninitialized buffers that will be written
++		 * by the device, causing false positives.
++		 */
+ 		memcpy(vaddr, phys_to_virt(orig_addr), size);
+ 	} else {
++		kmsan_unpoison_memory(vaddr, size);
+ 		memcpy(phys_to_virt(orig_addr), vaddr, size);
+ 	}
+ }
+-- 
+2.52.0
 
-Without this "IOTLB -> Wait Descriptor -> ATC" sequence, there is a risk
-that the device re-populates its ATC from a stale entry still residing
-in the IOMMU's internal IOTLB, even after the PASID entry itself has
-been updated.
-
-Thanks,
-baolu
