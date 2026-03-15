@@ -1,119 +1,131 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B71B427456
-	for <iommu@lists.linux.dev>; Sun, 15 Mar 2026 04:01:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59A5923B638
+	for <iommu@lists.linux.dev>; Sun, 15 Mar 2026 08:12:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773547311; cv=none; b=Uye/lW8QzuWKbKNadZ8hfDG6qFwkP2249HArdm3F+D+9pEkIeuiSOa++Lp4MPTMPZmEPgLfDjQ26k6aZBzN8IkLivmKm9k+vz5hz8PfWEolXNnsFng2hL7DdTZAB14I6+SdsCt/aYJ7U9xX960G9DX7Vjspg1Cm5uRWDTTg9EXo=
+	t=1773562357; cv=none; b=EJuJeP30vcOiIizcizaVHKfX99j/SM3FbJHI02Ym9L0HyZ6hPAxJOvvDGmiMD64HKtwPqQU1GtvblMMKuECku6BV54vahzewr2/Ody3Inw/dY7cIdkarlpjv7gW7bZpBg7g/pEs3G2zqaKTRMmqfKQmf4MAfcxhXC4+TQhd9qhc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773547311; c=relaxed/simple;
-	bh=zsdjG+dysJ2t9fMc7MvqEgAdyle+FxpQUI4droBsN+g=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=gCZBqCEycrMFMTiGMP5Qz9Q3+ClQoM4TXd4sg4gWs8kRkHdDO6wC4W8/QJLEJnAohwcGYDhj966ik884ZXWG9G5ux/ycKirhCcl94NPXOzXk72sBaA0ePIVSbTRJYHoyxXfgup/v40zQOJFepUynyXuaVS71Z+sZOxgmZVXF+Os=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=UofzqzwQ; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	s=arc-20240116; t=1773562357; c=relaxed/simple;
+	bh=WOGa+JBsg7DDNyPyTXGhW7Us7QFxbkUGdrt1Cwr7864=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=R/Eue6WSa5oIjHHxP2H9VzU+9OC2Jz6iptzcdPeMgi9FdzEiFFZDXDNKrvDs8hWfhuBoh3lVebczWVl+9bbrC6xjPHvI9eTNeNiJZwZcyDXQaDj7LQ1ANHFPQ8Ma9vPS9d0KUlTULS3c5tnz7oQjcXkUm2WG5ef0PuPrqah0DAQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LnfouWoV; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="UofzqzwQ"
-Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62F3TK542985157;
-	Sun, 15 Mar 2026 04:01:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=NRnY2/
-	LgEE/zccs/dGs41ukenTXTHCNJi6tHwKdmXio=; b=UofzqzwQyTEFrikbJrSX/J
-	S0Ma1Rr21eFWoqP1XZiLvZww9ni4Cdz5fRfnUm8j+zJhLtNDPaKsnmdwH48ZL6em
-	BwalEvOmOWnBMJND/t6yCSJbLOwvn0IM6++5NLOYeKSg+E/63r6gtRX34a3EH3U3
-	xboiW3x+qPBKoxk46rWKicEUl4eQvCOoA0cqoM0DXgeNuQ/FA3i/U0yUwt09YajU
-	PdjKbkvkW95FbfHVl/yZFN69ylRPX4Yp0J77cYsPRGQ7oplgEoQ+qtQZ4NgsDJv2
-	h6YafqC/uVsvVzw1/qXGQEqdzBscb7Qs1KchVL+RE+hv75Hr4oOBce6LPZ+qsoPg
-	==
-Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4cvybru27r-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sun, 15 Mar 2026 04:01:39 +0000 (GMT)
-Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma11.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 62F3FLmY028465;
-	Sun, 15 Mar 2026 04:01:39 GMT
-Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
-	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 4cwmq1030a-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sun, 15 Mar 2026 04:01:39 +0000
-Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
-	by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 62F41ZeF17170718
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Sun, 15 Mar 2026 04:01:35 GMT
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 2FFC32007A;
-	Sun, 15 Mar 2026 04:01:35 +0000 (GMT)
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id E02452004D;
-	Sun, 15 Mar 2026 04:01:31 +0000 (GMT)
-Received: from Linuxdev.ibmuc.com (unknown [9.43.97.251])
-	by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Sun, 15 Mar 2026 04:01:31 +0000 (GMT)
-From: Madhavan Srinivasan <maddy@linux.ibm.com>
-To: iommu@lists.linux.dev, linuxppc-dev@lists.ozlabs.org,
-        Nilay Shroff <nilay@linux.ibm.com>
-Cc: nicolinc@nvidia.com, joerg.roedel@amd.com, baolu.lu@linux.intel.com,
-        kevin.tian@intel.com, sbhat@linux.ibm.com, stable@vger.kernel.org,
-        Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH] powerpc/iommu: fix lockdep warning during PCI enumeration
-Date: Sun, 15 Mar 2026 09:31:30 +0530
-Message-ID: <177354720786.2367911.17952918247021806252.b4-ty@linux.ibm.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260310082129.3630996-1-nilay@linux.ibm.com>
-References: <20260310082129.3630996-1-nilay@linux.ibm.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LnfouWoV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1773562356; x=1805098356;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=WOGa+JBsg7DDNyPyTXGhW7Us7QFxbkUGdrt1Cwr7864=;
+  b=LnfouWoVu1jk1pfSepDwWexWSi2cCjlLY8sRTlJ8hzmq3/fKLW1WxGBd
+   7bzec31EICcXFBSKTFkvJAbWyX0sRSDQUJb+fZ16MPVJn+VnXEwhd7qW0
+   wEYLJ3ND/++5AfhDl9DDnH1mOSBeDQF8jcwV6inXGr4A5p18oe1feddQ1
+   PUeEXFjGnn2WEDsq5mxK65S4L0VsAxH363my0OuCR3nLuJbUfa+jmjrbw
+   89mVdVrid6Sr67sUZe0oHNK7G2wHkPkqz6uiJVbDlR+iwPfnKKUgfwc1H
+   LscHT2no/ZQBNxde85cGfUxTSW8VjbOqwtatJ7z25/4sOE8I4d6M2H9p3
+   g==;
+X-CSE-ConnectionGUID: 3O5DhztpT3+y4XUZic+Y8A==
+X-CSE-MsgGUID: M2n4O2OdR7GZnfIvm9q0zg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11729"; a="62175520"
+X-IronPort-AV: E=Sophos;i="6.23,119,1770624000"; 
+   d="scan'208";a="62175520"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2026 01:12:35 -0700
+X-CSE-ConnectionGUID: 5ZL6Rq5mTQ2PbMyniYt0QQ==
+X-CSE-MsgGUID: RqCIhMqYSpyRRCa0j26rvw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,119,1770624000"; 
+   d="scan'208";a="259486973"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2026 01:12:33 -0700
+Message-ID: <5c7503bd-e9e8-41b8-b275-3317912cc83c@linux.intel.com>
+Date: Sun, 15 Mar 2026 16:11:36 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Authority-Analysis: v=2.4 cv=MMttWcZl c=1 sm=1 tr=0 ts=69b62f24 cx=c_pps
- a=aDMHemPKRhS1OARIsFnwRA==:117 a=aDMHemPKRhS1OARIsFnwRA==:17
- a=IkcTkHD0fZMA:10 a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=RnoormkPH1_aCDwRdu11:22 a=uAbxVGIbfxUO_5tXvNgY:22 a=VwQbUJbxAAAA:8
- a=p2E9MDjRwVkQTcis9DIA:9 a=QEXdDO2ut3YA:10 a=ZXulRonScM0A:10
-X-Proofpoint-ORIG-GUID: bz3SaqE8W-VABnYB_T9OgHu8MYirWbeD
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzE1MDAyNiBTYWx0ZWRfX3ccoNrIK6Up/
- wpkWoN7U4gzxlU+pac+gYQ+MUgxN/b2oQCjKUDJXog8b40N6+UdW14GT+cmMvnuKcSnCzyUJ/33
- uxnSL9nyrOIDkCzlBgfjstHU9ogxzC8dXy81mlGESnu7uy6iMEn7zI3VTOEoE7yRjL45b0lOUsR
- 3WSbIkB663aNLu/KSWspqGVnEYYVDKKDqXNTPzsvBEfB2syrwf3GeUqRqQgBII+UZNM84SFL9Q8
- RxK24izTCJp0wqM+FA5qxd6WJaNh2/ABed23+ekZTSvVx/Q8U5o9iAwATmRkF9MGtkNTM7yhXfY
- 4I+lWcaI8BeIE8aNSjdUpIk/YRKbo8PWFcl8TZ6NVf6bVU8ZszP6BMYIAD+HewsfJULi75FUALP
- M8G9xgkdRkH/7zEjXLpeGyBODrWpU0IPJfxTcjl0E21uyiEbXrrPW63tJSncjd9hpNFISGoXfFh
- pYFX43zqy3JDdB8t0TQ==
-X-Proofpoint-GUID: bz3SaqE8W-VABnYB_T9OgHu8MYirWbeD
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-03-15_02,2026-03-13_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 lowpriorityscore=0 malwarescore=0 spamscore=0
- priorityscore=1501 impostorscore=0 adultscore=0 phishscore=0 clxscore=1011
- bulkscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.22.0-2603050001
- definitions=main-2603150026
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/8] iommu/vt-d: Add entry_sync support for PASID entry
+ updates
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ Dmytro Maluka <dmaluka@chromium.org>, Samiullah Khawaja
+ <skhawaja@google.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20260309060648.276762-1-baolu.lu@linux.intel.com>
+ <20260309060648.276762-3-baolu.lu@linux.intel.com>
+ <20260309134116.GE3717316@nvidia.com>
+ <4fbe6dcf-1105-4efc-b755-81a5bfb74090@linux.intel.com>
+ <20260312114438.GG1448102@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20260312114438.GG1448102@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, 10 Mar 2026 13:51:24 +0530, Nilay Shroff wrote:
-> Commit a75b2be249d6 ("iommu: Add iommu_driver_get_domain_for_dev()
-> helper") introduced iommu_driver_get_domain_for_dev() for driver
-> code paths that hold iommu_group->mutex while attaching a device
-> to an IOMMU domain.
+On 3/12/26 19:44, Jason Gunthorpe wrote:
+> On Thu, Mar 12, 2026 at 03:50:03PM +0800, Baolu Lu wrote:
+>> If I understand your remark correctly, the driver should only need the
+>> following in the sync callback:
+>>
+>> - clflush (if non-coherent) to ensure the entry is in physical memory.
+>> - PASID cache invalidation to force the hardware to re-read the entry.
 > 
-> The same commit also added a lockdep assertion in
-> iommu_get_domain_for_dev() to ensure that callers do not hold
-> iommu_group->mutex when invoking it.
+> Yes
 > 
-> [...]
+>> - Device-TLB invalidation to drop local device caches.
+> 
+> I have prefered to keep this outside the entry_set system since it has
+> nothing to do with updating the context entry.
+> 
+> There should be only one ATS flush after the new entry is installed.
 
-Applied to powerpc/fixes.
+Okay, I will move the devtlb_invalidation_with_pasid() calls outside of
+the entry_sync system, right after the call to the writer returns.
 
-[1/1] powerpc/iommu: fix lockdep warning during PCI enumeration
-      https://git.kernel.org/powerpc/c/82f73ef9c41e0623e0a8bdce4fa44a7237709f0c
+> 
+>>> ATC invalidations should always be done after the PASID entry is
+>>> written. During a hitless update both translations are unpredictably
+>>> combined, this is unavoidable and OK.
+>>
+>> The VT-d spec (Sections 6.5.2.5 and 6.5.2.6) explicitly mandates that an
+>> IOTLB invalidation must precede the Device-TLB invalidation. If we only
+>> do the device-TLB invalidation in the sync callback, we risk the device
+>> re-fetching a stale translation from the IOMMU's internal IOTLB.
+> 
+> It is a little weird that is says that, that is worth checking into.
+> 
+> The other text is clear that the IOTLB is cached by DID,PASID only, so
+> if the new PASID entry has a DID,PASID which is already coherent in
+> the IOTLB it should not need any IOTLB flushing.
+> 
+> ie flushing the PASID table should immediately change any ATC fetches
+> from using DID,old_PASID to DID,new_PASID.
+> 
+> If there is some issue where the PASID flush doesn't fence everything
+> (ie an ATC fetch of DID,old_PASID can be passed by an ATC invalidation)
+> then you may need IOTLB invalidations not to manage coherence but to
+> manage ordering. That is an important detail if true.
 
-cheers
+On Intel hardware, the PASID-cache and IOTLB are not inclusive. A PASID-
+cache invalidation forces a re-fetch of the pasid entry, but it does not
+automatically purge downstream IOTLB entries. The spec-mandated IOTLB
+flush serves as a synchronization barrier to ensure that in-flight
+translation requests are drained and the internal IOMMU state is
+consistent before the invalidation request is sent over PCIe to the
+device's ATC.
+
+Without this "IOTLB -> Wait Descriptor -> ATC" sequence, there is a risk
+that the device re-populates its ATC from a stale entry still residing
+in the IOMMU's internal IOTLB, even after the PASID entry itself has
+been updated.
+
+Thanks,
+baolu
