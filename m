@@ -1,40 +1,66 @@
-Received: from canpmsgout04.his.huawei.com (canpmsgout04.his.huawei.com [113.46.200.219])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 112C33081A2
-	for <iommu@lists.linux.dev>; Mon, 16 Mar 2026 14:58:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=113.46.200.219
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 715C818DB26
+	for <iommu@lists.linux.dev>; Mon, 16 Mar 2026 14:59:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773673091; cv=none; b=LmkgS0VgwVFT9YFMdp9f+tO937rP+afr5LH7hUctuZVmpCYp4+pb8LPS3oZNnKJSYqlz37FVgiUY3vP94uACjPlXrB0Q0LvmkwnjPla2RiTrT+hBzZ5sgom/TJptLaGnHZ2jqqHxtDQf6la4USX81Cg4kifgmn0mbebkxy3BsNI=
+	t=1773673143; cv=none; b=fNaCNLwGZqEZ2FnGYIy4lY2ra/kQJd/ofzaYkI7YAlxE1ld06WVQ0OSQ6BLZ2d3GMgtkVs3VuCGINAAF8Qvr3A9TuztFNl+V5RQKNZrgI1H4m4gD12JkgcNkYNU6d9Y+4A+RU1TLWr6hFH/ZT9TTld5wQi0HeqP7BY5FQb4EnT0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773673091; c=relaxed/simple;
-	bh=YLp8IBLUB/2oF/TqmmC60PrtnbfGBe44Ec0C/mk28Lw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=sxLSFGpMKpZxQJ6GfjCjeM2YeiY0DtJqorPxx80F3fkoLy7h3Ew0TN+Tt2QnosTyDv3c2JuuaxqfCp2ZFFuF7c1NdRATqYJtyCwpZYYrwh6qd9affsLCZWgosdbxZVnP1VpoUOyhmSEMRKzTp++82u1bRq8+AyxlkiQMBlkHlfg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=JHsT585e; arc=none smtp.client-ip=113.46.200.219
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+	s=arc-20240116; t=1773673143; c=relaxed/simple;
+	bh=wJYyqcB6Eyw+/EhnPhvbw/Bj0ziOpl+uCsmKsvGSW0Y=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=L1vTepa3+hNb5awcsoexqREisg4KOrxVs+02yBWB4clGSFi2t93X03f7flCir/if5I5OJ5U8lR/DWWZ2qHJti+UI5aWthKmZogzV7vBjxc1IJqiB5nHzz2fuZ9/XksTUR6rRjiobEpzXBn03ADtZdDZL+2gUBlnQ799ezM9bPqQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UgwJ1P/W; arc=none smtp.client-ip=209.85.222.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="JHsT585e"
-dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
-	c=relaxed/relaxed; q=dns/txt;
-	h=From;
-	bh=1C0KDzZKnKHSlUkdUXpl5bCbdxQFaILc3VGmf0dTPBc=;
-	b=JHsT585eZKN+MQLHFnoAr95Q107TaXcgix74XdZ3mFwTDbhJFiL00YTeLDV3WbKkMsK6ZW5pL
-	hnzU2RudCHaejI0E5TS70GBqlTN4a2Yp2T55GGLcwozsZzkwOBvJK1vRzNYUoVvVd3ukwWFCZJc
-	08mdsEDeZtsql9CYDXB+GVI=
-Received: from mail.maildlp.com (unknown [172.19.162.140])
-	by canpmsgout04.his.huawei.com (SkyGuard) with ESMTPS id 4fZJ3s0Y8Hz1prNJ;
-	Mon, 16 Mar 2026 22:52:57 +0800 (CST)
-Received: from kwepemj200003.china.huawei.com (unknown [7.202.194.15])
-	by mail.maildlp.com (Postfix) with ESMTPS id CB51A2022B;
-	Mon, 16 Mar 2026 22:57:57 +0800 (CST)
-Received: from [10.67.120.170] (10.67.120.170) by
- kwepemj200003.china.huawei.com (7.202.194.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Mon, 16 Mar 2026 22:57:57 +0800
-Message-ID: <b2a56e70-6555-48f6-bc5e-f1ce98c64cb7@huawei.com>
-Date: Mon, 16 Mar 2026 22:57:56 +0800
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UgwJ1P/W"
+Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-8cd8576a512so596916685a.0
+        for <iommu@lists.linux.dev>; Mon, 16 Mar 2026 07:59:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1773673141; x=1774277941; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=TlEzqxK2YEl3SXEgkPbUbfs0P9bQP+Yj8HFphhFYGSg=;
+        b=UgwJ1P/Wb9vN/BKhXMZOtsGnE05XWvufBnNpLoEqxIngzgcE0Y2m74t0OaHfozrtSZ
+         uxZHeZkAIZC+FWMKSNiRZ1CslAGekRF/ZYa3XZO/gyO8Feuc6Q7RX1ht1rS2wNtFBuIA
+         f6LoJKf2FJmdRC6qiqqk/OysOgVCXGhXXnnGPc8E0cFsHGaZPkpgWwrivJjz+WHhsu7r
+         3/guQVaYBgMMBpaHThXfWoEjiMyH4rVmLERrGhrbHo8cf2Ll7z6pe13vuoem4l++r+Ri
+         8hegiLNWrL+AmwPHhxvX/BPMRObHQteLTFo/Tu0xXl9f3ex/ZHOKSfypiOirZNnirtw2
+         pa7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773673141; x=1774277941;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=TlEzqxK2YEl3SXEgkPbUbfs0P9bQP+Yj8HFphhFYGSg=;
+        b=Se5SlcQGr+Xp4PsQKoUx/WdAFPV2zJKokk+IVIsQ/lcWPyDUe6SISS2J5ylG/EYlHQ
+         AHTZRBObyvINm2u1lhWpyQ5AAzmYRrPNJ0qJek7sYinjq7siJncq0Yx5DgGDX7q0TMtW
+         mD9aCYrkQqIf4jAKztgRwfBHT9FvKKinaT6tMk5l77eykHdkBL+uizZ3isR1OqLNmU+j
+         4M9eHSdrqEKYnru0SE/hsrhMcK4p+9OrdtoFVNLbjJiBhQ37Zz1WEFVj5NpXDZ41yVXJ
+         IchtSQuianXAiqhLqraChKB04sBVtQhSV5POdwpk6hG8BKTpFo4AGHBuCQKI4O05hiaK
+         8mhw==
+X-Forwarded-Encrypted: i=1; AJvYcCXyOuSHwnV55yzOSqd/7NZYXiYDTxzquxnEq+zNvSrvxEkfoxuCy4gFv4VrqFaoT9lTNyH+rg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxziXz3FI4hANv8d36qc/ZVLiJMXXKWShBBf17pEdo3QWnv6/YH
+	pr+CNhOD7tweuxtBE4VqJPxBPt4CdrKLL+3MII4HrHKr+jE4pOeDxaQe
+X-Gm-Gg: ATEYQzzx7WD5JuGd2Ih2PEnmlnme7kgxwvX+jIz0z+r9cvorcIMtlrcYTX2+MxawfmE
+	4lIcFjtmn8rBNzWOJvEuPPymZHFODK6xpAOoqMLEvditij86gObJl5e4Sr0dshC0+L/cIMCa8L/
+	4m/+WZRECYOXjMCxzJseuOGUIEsZsKi1ZMX6yiarec5kwvuRipUOtzYdg8Ge7eZWQMmN+rynO9b
+	3xMOWr0KMLZlP36g9OKE4nLIwukucuQ0+yfL+HPZuGQNyuyHppmhty+B38YXqarWALTDhm0+X5j
+	FqbsfCWfzUlLt/0pAU2VhqFBlDsI6MhnASwmGscHdv407y/g+9Jdx3RiHdVdDREYf0kmNq36J1H
+	HFohXMDbPQ6GQrzJaU71ALQwwIGc22+JfOqvrOxgafLLc5ppGVZkrMFuT2/ewklt3vtKBHyj2sL
+	Ku7KMmhoHdFe8+SSooPzA0XihTzZ0hKI1tNuvEblPUix3BpDNGB2lC5b5VHQ==
+X-Received: by 2002:a05:620a:2913:b0:8cd:94f9:1bbb with SMTP id af79cd13be357-8cdaa870dcamr2022355085a.29.1773673141041;
+        Mon, 16 Mar 2026 07:59:01 -0700 (PDT)
+Received: from [10.100.120.215] ([152.193.78.90])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8cda21100b8sm1232308185a.29.2026.03.16.07.58.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 Mar 2026 07:58:59 -0700 (PDT)
+Message-ID: <fb53b8fd-5d36-4df3-a9e6-fba7c0457e55@gmail.com>
+Date: Mon, 16 Mar 2026 07:58:56 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,141 +68,94 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH 4/5] iommu/arm-smmu-v3: Add stream table directory
- structure to debugfs
-To: Nicolin Chen <nicolinc@nvidia.com>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <jpb@kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<wangzhou1@hisilicon.com>, <prime.zeng@hisilicon.com>,
-	<fanghao11@huawei.com>, <jonathan.cameron@huawei.com>, <linuxarm@huawei.com>
-References: <20260313104351.3502293-1-xiaqinxin@huawei.com>
- <20260313104351.3502293-5-xiaqinxin@huawei.com>
- <abR3QXHGAWz9E6qV@Asurada-Nvidia>
-From: Qinxin Xia <xiaqinxin@huawei.com>
-In-Reply-To: <abR3QXHGAWz9E6qV@Asurada-Nvidia>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Subject: Re: [PATCH RFC/RFT] vfio/pci-quirks: Quirk for ath wireless
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+ Alex Williamson <alex.williamson@redhat.com>
+Cc: qemu-devel@nongnu.org, kvm@vger.kernel.org, quic_bqiang@quicinc.com,
+ kvalo@kernel.org, linux-wireless@vger.kernel.org,
+ ath11k@lists.infradead.org, dwmw2@infradead.org, iommu@lists.linux.dev,
+ kernel@quicinc.com, johannes@sipsolutions.net, jtornosm@redhat.com
+References: <adcb785e-4dc7-4c4a-b341-d53b72e13467@gmail.com>
+ <20240812170045.1584000-1-alex.williamson@redhat.com>
+ <20240813164341.GL1985367@ziepe.ca>
+ <20240813150320.73df43d7.alex.williamson@redhat.com>
+ <20240813233724.GS1985367@ziepe.ca>
+ <20240815105905.19d69576.alex.williamson@redhat.com>
+ <20240815171935.GO3468552@ziepe.ca>
+Content-Language: en-US
+From: James Prestwood <prestwoj@gmail.com>
+In-Reply-To: <20240815171935.GO3468552@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: kwepems200001.china.huawei.com (7.221.188.67) To
- kwepemj200003.china.huawei.com (7.202.194.15)
 
+On 8/15/24 10:19 AM, Jason Gunthorpe wrote:
+> On Thu, Aug 15, 2024 at 10:59:05AM -0600, Alex Williamson wrote:
+>
+>>> This is probably the only way to approach this, trap and emulate the
+>>> places in the device that program additional interrupt sources and do
+>>> a full MSI-like flow to set them up in the kernel.
+>> Your last sentence here seems to agree with this approach, but
+>> everything else suggests disapproval, so I don't know where you're
+>> going here.
+> Trapping and emulating is fine.
+>
+> My concern is really only about skipping SET_IRQ.
+>
+> That works because of the assumption that the IMS sources are going to
+> re-use addr/data pairs setup in the MSI CAP.
+>
+> That assumption is frail, and won't work at all under the proper IMS
+> support Linux now has.
+>
+> I really don't want to go down the road and have someone tell Thomas
+> he can't convert the Linux driver to use irq_domain IMS because it
+> will break this stuff here.
+>
+>> I have no specs for this device, nor any involvement from the device
+>> vendor, so the idea of creating a vfio-pci variant driver to setup an
+>> irq_domain and augment a device specific SET_IRQs ioctls not only sounds
+>> tremendously more complicated (host and VMM), it's simply not possible
+>> with the knowledge we have at hand.
+> It seems like you have reverse engineered alot of the necessary
+> information though??
+>
+> Maybe there is a more generic approach than a variant driver. If you
+> wanted to use IMS from userspace generically you could imagine some
+> kind of IMS focused "SET_IRQ" in generic VFIO. Where we'd create the
+> needed irq_domains and pass the addr/data pair back to userspace?
+>
+>> I observe that the device configures MSI vectors and then writes that
+>> same vector address/data elsewhere into the device.  Whether the device
+>> can trigger those vectors based only on the MSI capability programming
+>> and a secondary source piggybacks on those vectors or if this is just a
+>> hack by Qualcomm to use an MSI capability to acquire some vectors which
+>> are exclusively used by the secondary hardware, I have no idea.
+> Well at least that should be testable - but it seems crazy if the
+> device has registers for an addr/data pair and then somehow doesn't
+> use the values that get put in them??
+>
+> Copying from the MSI is almost certainly a SW hack because IMS support
+> has never really existed in an OS until now. I think your guess for
+> why it is like this is pretty good.
+>
+>> I do not believe that introducing a vfio device feature that disables
+>> virtualization of the MSI address/data _only_ at the vfio interface
+>> (not to a QEMU VM) provides some implicit support of this device
+>> behavior.  These values are already available to a privileged user in
+>> the host and the same is available for an MSI-X use case by directly
+>> reading the MSI-X vector table.
+> To be clear, I'm not really worried about showing the data to
+> userspace.
+>
+> Userspace just shouldn't be using it to implement an IMS technique!
+>
+> Jason
 
+I see this thread went stale. Wondering if there was ever a final 
+conclusion if this could get fixed for ath11k or not. I tried again on a 
+recent kernel, 6.17, and see the same behavior.
 
-On 2026/3/14 04:44:49, Nicolin Chen <nicolinc@nvidia.com> wrote:
-> On Fri, Mar 13, 2026 at 06:43:50PM +0800, Qinxin Xia wrote:
->>    * The capabilities file provides detailed information about:
->>    * - Architecture version and translation stage support (Stage1/Stage2)
->> @@ -324,5 +327,78 @@ static int smmu_debugfs_ste_show(struct seq_file *seq, void *v)
->>   	smmu_debug_dump_ste(seq, dev);
->>   	return 0;
->>   }
->> -
->>   DEFINE_SHOW_ATTRIBUTE(smmu_debugfs_ste);
-> 
-> nit: let's not add that line in the first place
-> 
->> +
->> +/**
->> + * smmu_debugfs_create_stream_table() - Create debugfs entries for stream table
->> + * @dev: device to create entries for
->> + * @smmu: SMMU device
->> + *
->> + * Return: 0 on success, negative error code on failure
->> + */
->> +int smmu_debugfs_create_stream_table(struct device *dev,
->> +				     struct arm_smmu_device *smmu)
->> +{
->> +	struct dentry *stream_dir, *cd_dir, *dev_dir;
->> +	struct dentry *ste_file, *all_cds_file;
->> +	struct iommu_fwspec *fwspec;
->> +	char name[64];
->> +	int i, ret = 0;
->> +
->> +	if (!smmu->debugfs->stream_dir) {
->> +		stream_dir = debugfs_create_dir("stream_table",
->> +						smmu->debugfs->smmu_dir);
->> +		if (!stream_dir)
->> +			return -ENOMEM;
->> +		smmu->debugfs->stream_dir = stream_dir;
->> +	} else {
->> +		stream_dir = smmu->debugfs->stream_dir;
->> +	}
->> +
->> +	fwspec = dev_iommu_fwspec_get(dev);
->> +	if (!fwspec)
->> +		return -ENODEV;
->> +
->> +	for (i = 0; i < fwspec->num_ids; i++) {
->> +		u32 sid = fwspec->ids[i];
->> +
->> +		if (dev_is_pci(dev)) {
->> +			struct pci_dev *pdev = to_pci_dev(dev);
->> +
->> +			snprintf(name, sizeof(name), "%04x:%02x:%02x.%d:%u",
->> +				 pci_domain_nr(pdev->bus), pdev->bus->number,
->> +				 PCI_SLOT(pdev->devfn), PCI_FUNC(pdev->devfn),
->> +				 sid);
-> 
-> Doesn't dev_name(dev) print the BDF numbers as well?
-> 
->> +		} else {
->> +			snprintf(name, sizeof(name), "%s:%u", dev_name(dev),
->> +				 sid);
->> +		}
->> +
->> +		dev_dir = debugfs_create_dir(name, stream_dir);
->> +		if (!dev_dir) {
->> +			ret = -ENOMEM;
->> +			goto cleanup;
->> +		}
-> 
-> A device can have multiple streams. So, dev_dir should be the
-> parent directory?
-> 
-dev_dir is a parent directory and it contains ste info and CD info
-for all streams of this device.
-
-[root@localhost stream_table]# ls
-0000:34:00.0:13312  0000:34:01.0:13320  0000:35:00.0:13568 
-0000:35:00.1:13569  0000:35:00.2:13570  0000:35:00.3:13571
-[root@localhost stream_table]# cd 0000\:34\:00.0\:13312/
-[root@localhost 0000:34:00.0:13312]# ls
-context_descriptors  ste
-[root@localhost 0000:34:00.0:13312]#
->> +
->> +		/* Success for this stream ID, continue to next */
->> +		continue;
->> +
->> +cleanup_dev:
->> +		debugfs_remove_recursive(dev_dir);
->> +cleanup:
->> +		if (ret) {
->> +			debugfs_remove_recursive(stream_dir);
-> 
-> One is the other's parent directory. So it should be good enough
-> with a single debugfs_remove_recursive()?
-> 
->> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> index 211a0c87507a..c57897e5f644 100644
->> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> @@ -3133,6 +3133,9 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev,
->>   
->>   	arm_smmu_attach_commit(&state);
->>   	mutex_unlock(&arm_smmu_asid_lock);
->> +#ifdef CONFIG_ARM_SMMU_V3_DEBUGFS
->> +	smmu_debugfs_create_stream_table(dev, smmu);
->> +#endif
-> 
-> Calling in attach_dev doesn't seem correct to me. And device/master
-> can be unplugged. So, we would need to unwind those dev/stream_dir.
-> 
-> Maybe probe_device/release_device are the places to go?
-> 
-> Nicolin
-> 
-Thanks for your review,
-I will fix these bugs in the next RFC version.
--- 
 Thanks,
-Qinxin
+
+James
 
