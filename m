@@ -1,160 +1,321 @@
-Received: from flow-a3-smtp.messagingengine.com (flow-a3-smtp.messagingengine.com [103.168.172.138])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79AAD139D;
-	Mon, 16 Mar 2026 22:10:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.138
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 323D61DF987
+	for <iommu@lists.linux.dev>; Mon, 16 Mar 2026 22:54:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773699059; cv=none; b=Tn4g6yuQsrdprb0Bsx8F7QrQOodEARd0OnKV3QjRfxK6J6YrJpd21lzvfIzHZRo1o3IGrzoIqfrCL5odl6666mwSYGyf2TFtnrcxxkYYBfEdL78vw6eMID7uyzE63Hoh3B1eN98qirDXQGROu9Dkndtspi1VLDFq3hf+3Do+P7w=
+	t=1773701697; cv=none; b=DzKUoS+qM+fV1ncwFhJlbNVaTYEgcUsAHkvDSuKeARDdpdQV7KXGnG2tqjGLt6l3ZNO40B8COPqefW3Z91E6MUsMNj2ig2AthYTnGZmA64Df8r21nDTGx1BcqOGURkZQ2Om2tR0xAJ+oFeth54D3XjW9ZIVIaZjz4RHmEP8fzhg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773699059; c=relaxed/simple;
-	bh=bR3l1XBxxG0Br6WPViaTYx4jBj801ByLeboUNggNeu4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=IjPn0SMPb4DsgdJfGm14G8xAS4hIDAtI7biL4yhakfHBUxAM83Pb9JhZX6NCaMyu5mbB2wf3tY3MRXQ8FfTOra0ipiwzV1RyIYnPMOSih2WeYsp3aJ0L2Efs4UnUO6wffARmu+dFT2EulyYaRazBEVrfNw5FfnBiBlWhpKTr4LM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org; spf=pass smtp.mailfrom=shazbot.org; dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b=eyO5nsRG; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=guCypQjf; arc=none smtp.client-ip=103.168.172.138
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shazbot.org
+	s=arc-20240116; t=1773701697; c=relaxed/simple;
+	bh=nibhYwiPdt++G6J9J7ria/uZagWKJzcUfGV8vktD+b4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=uyO6NnGJYxG1hftX49kwuoQ5ZT4GfjvA4qTr5TJqrh1Sz5V3WHZgL7MdQHOOxz6Q58BJT7nOiG8RoegENhoYPJvQYgmcQjXof85f9pwEnuwKqUv8OAxyv5muZl6aKiREkdcXFo6LqH7XksMyUqn6ArRHhBdphQ1OWb9Botifwhw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=oNops5j2; arc=none smtp.client-ip=209.85.214.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b="eyO5nsRG";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="guCypQjf"
-Received: from phl-compute-01.internal (phl-compute-01.internal [10.202.2.41])
-	by mailflow.phl.internal (Postfix) with ESMTP id 96E81138028E;
-	Mon, 16 Mar 2026 18:10:56 -0400 (EDT)
-Received: from phl-frontend-04 ([10.202.2.163])
-  by phl-compute-01.internal (MEProxy); Mon, 16 Mar 2026 18:10:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shazbot.org; h=
-	cc:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm3; t=1773699056;
-	 x=1773706256; bh=pZj8f0JboyjKt94J8KB7OLIiCOoml43GOZ4w8rDpLPA=; b=
-	eyO5nsRGgscBaSPTlSrjx8D8qsmxFZTD+YBT90C8JLtkSU+JG9otBsGP68/aDjfq
-	Ip8/CY7pDqj8uLfl6tk9PaoCLmHFx9BmC+OLDsgQIKz5wruWwvglBIFTzX8Bgo1G
-	D7tyDhfcq/yYvbxAZYbPlVlov+W1BUQwVVZx34myYfSzzczy+o0TvO2AJR+dEy1d
-	h9Fy4zA0IHy3AyAu2lJw7cTPeRVsoH7Q9DZJUhPGVmEq8IZ5byXvr46eUf3RwYLV
-	Pd21rN+O2sxo21UD0KoApMpHYwnhY5vI1CKlHqs6nb1Q0ON5mjBcz18/WvPyI4M2
-	g7ed/wORmv3aHNEvlM9NEQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1773699056; x=
-	1773706256; bh=pZj8f0JboyjKt94J8KB7OLIiCOoml43GOZ4w8rDpLPA=; b=g
-	uCypQjfxr+Zi7JxdTC/p3wGQ4VV0q/Wv3rf4QuOSSvRwPZ4hwWoKXSQwRlJppx/A
-	eTD/kX8ytMBkqeeAHXi8QojGoDJPwhemKEl1A5BQyy+VTfQ0kjCklEhRU0D9TNU6
-	QzoouUhJdY7Fi24kVLMS4vkfF5Xif+sxcGuZ+ZH9bmNOAZhg/6jHFnuxjrIUYo4Y
-	sJAjmQ/c58h+MsTVokuL8c2t4xBbVGwnTgXIvKplEwnaY81NNzKXbPGa+zPU58N/
-	vwQ/zZfUYT5zYdyXfBWrfC5sZSkqzhpuD1WACxXIM/TD7Jh2N1ZXy8qS+O1DtSBY
-	h24uS6YuZ9c79L+rKNYRA==
-X-ME-Sender: <xms:73-4aYdtUUIQC679P0YPl8k6UZ10Tz8-qTD319yDZEtXusdBhZuXRA>
-    <xme:73-4aTUav9FvduIIOmc0jldmINr5W_MhUsWQFGzP1fBm1dpf8ggOxSMvCMHniLmCu
-    LbRPk360ujIo39hLA6fsP95YlnCLki5WcrUsiuRyEwh6NcxWlxF>
-X-ME-Received: <xmr:73-4aSY56rJyFtQwMFw-H9dfM29zbbMWxWkWrpi3kYaZ1kbqDyXdf5bHU5U>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddvleelheegucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
-    rghilhhouhhtmecufedttdenucenucfjughrpeffhffvvefukfgjfhfogggtgfesthejre
-    dtredtvdenucfhrhhomheptehlvgigucghihhllhhirghmshhonhcuoegrlhgvgiesshhh
-    rgiisghothdrohhrgheqnecuggftrfgrthhtvghrnhepvdekfeejkedvudfhudfhteekud
-    fgudeiteetvdeukedvheetvdekgfdugeevueeunecuvehluhhsthgvrhfuihiivgeptden
-    ucfrrghrrghmpehmrghilhhfrhhomheprghlvgigsehshhgriigsohhtrdhorhhgpdhnsg
-    gprhgtphhtthhopeehhedpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtohepphhhrghh
-    nhdqohhsshesrghvmhdruggvpdhrtghpthhtoheprghmugdqghhfgieslhhishhtshdrfh
-    hrvggvuggvshhkthhophdrohhrghdprhgtphhtthhopegrphhprghrmhhorheslhhishht
-    shdruhgsuhhnthhurdgtohhmpdhrtghpthhtohepsghpfhesvhhgvghrrdhkvghrnhgvlh
-    drohhrghdprhgtphhtthhopegtvghphhdquggvvhgvlhesvhhgvghrrdhkvghrnhgvlhdr
-    ohhrghdprhgtphhtthhopegtohgttghisehinhhrihgrrdhfrhdprhgtphhtthhopegumh
-    dquggvvhgvlheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopegurhhiqdgu
-    vghvvghlsehlihhsthhsrdhfrhgvvgguvghskhhtohhprdhorhhgpdhrtghpthhtohepgh
-    hfshdvsehlihhsthhsrdhlihhnuhigrdguvghv
-X-ME-Proxy: <xmx:73-4aQltNdDVIdEqvCmz7Mlt0qW50NA4CHgJQUMNlacMN4MGiVKHfA>
-    <xmx:73-4acHdFw15OLpR73_B1AdIXJMG-pYssiD_C0T2dj2N-8ux7fVHFg>
-    <xmx:73-4aU6P6J2BtdvPwSPzfrUNjz9-qYacHOOWBucSAMlha23fXDTcIg>
-    <xmx:73-4aaO5YEqAXlnOLRO88GZx1RbxPW8QtXAeqZQNaqmxlgOL7PgFkQ>
-    <xmx:8H-4abIvs_QYur641c9BpnDuFQ6ssCC-7-o-rPLEHWyRxStBDxJEr6SL>
-Feedback-ID: i03f14258:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 16 Mar 2026 18:10:52 -0400 (EDT)
-Date: Mon, 16 Mar 2026 16:10:50 -0600
-From: Alex Williamson <alex@shazbot.org>
-To: Philipp Hahn <phahn-oss@avm.de>
-Cc: amd-gfx@lists.freedesktop.org, apparmor@lists.ubuntu.com,
- bpf@vger.kernel.org, ceph-devel@vger.kernel.org, cocci@inria.fr,
- dm-devel@lists.linux.dev, dri-devel@lists.freedesktop.org,
- gfs2@lists.linux.dev, intel-gfx@lists.freedesktop.org,
- intel-wired-lan@lists.osuosl.org, iommu@lists.linux.dev,
- kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org,
- linux-btrfs@vger.kernel.org, linux-cifs@vger.kernel.org,
- linux-clk@vger.kernel.org, linux-erofs@lists.ozlabs.org,
- linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
- linux-gpio@vger.kernel.org, linux-hyperv@vger.kernel.org,
- linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-mm@kvack.org,
- linux-modules@vger.kernel.org, linux-mtd@lists.infradead.org,
- linux-nfs@vger.kernel.org, linux-omap@vger.kernel.org,
- linux-phy@lists.infradead.org, linux-pm@vger.kernel.org,
- linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
- linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org,
- linux-security-module@vger.kernel.org, linux-sh@vger.kernel.org,
- linux-sound@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
- linux-trace-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
- linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
- ntfs3@lists.linux.dev, samba-technical@lists.samba.org,
- sched-ext@lists.linux.dev, target-devel@vger.kernel.org,
- tipc-discussion@lists.sourceforge.net, v9fs@lists.linux.dev,
- alex@shazbot.org
-Subject: Re: [PATCH 46/61] vfio: Prefer IS_ERR_OR_NULL over manual NULL
- check
-Message-ID: <20260316161050.01c82973@shazbot.org>
-In-Reply-To: <20260310-b4-is_err_or_null-v1-46-bd63b656022d@avm.de>
-References: <20260310-b4-is_err_or_null-v1-0-bd63b656022d@avm.de>
-	<20260310-b4-is_err_or_null-v1-46-bd63b656022d@avm.de>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="oNops5j2"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2b052562254so36435ad.0
+        for <iommu@lists.linux.dev>; Mon, 16 Mar 2026 15:54:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1773701695; x=1774306495; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=aESMhDv9gp0zMf1EBnN9PJRbyf0p6BUGu73DNh1Qjzg=;
+        b=oNops5j2ON2dOx0LSg0OlgZeXoQU2gwrIMfBrGJGZMfNR1BhQ/7dleSySEU8DeZZl0
+         c26HmpiNecgqvgPCsODU5p9CPT8lVxsSRwKzfmVIVawBDLcBvz5lZqcxTelswySd4wXV
+         ytXPDgRxez5rZqQ8V4n5A3YAQMA4SZFAHUJokdEviywg2DekQQoFM5cJrXH9VjBAGRiF
+         i3lRAUNwo1HZ8qi27Wr7LXiEz16AheIAr1Lu9pPwa5ImKmpzoXnaqkoMloPrMp9E4SRm
+         vDp5HVCBgv2xByQh8RwFUXgDPE3XdasQi43UTEao7d53u7Z4VeAnEK2BEP72GxSViL77
+         jSyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773701695; x=1774306495;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=aESMhDv9gp0zMf1EBnN9PJRbyf0p6BUGu73DNh1Qjzg=;
+        b=Hjcmic3JKFutOn2sZvCxFv7jQdeyP6sg3Z5+uSrFjEG2ThIrHyBsB9wODqfKWqVHux
+         YKOIoppGRvUN7plIMGFAiksecUxet1qNCFgZLT2ffUm17DsuwwFGMT3n+UjDINssyO+7
+         zOjbuEcFZZiD9MLVjDvKne1pq9uRNw7Rg7g7hNd0Gk3avurIKWop6FL105JcQ9R3vStq
+         ZXBCwaziodDmSGt8hn79k3hAz5yjn7COYCnLR8YSASxU3Hme8svnj6KpiB3k8shUB4Pb
+         gg59/8mq/tfFrIkBpro0ywL3hfZi3UZ5X9InySf5aSwLG1NXXvqXs4CKTxJ+rVqd79dl
+         peMA==
+X-Forwarded-Encrypted: i=1; AJvYcCVybqFqWpGHsAolDFSiCw1KmN4h99aIZViDywVQmiY0QNg6hUIIPI6SWk1n+h9LiuuKVmzxNQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwC7s/cl9hy4EvdVdw/oCfNDR4ZbkbKBlWNPAuLkA3I8IQOpuh4
+	nHA/vZ/4tbyPQxQqy2V95zMQJ2Olh0h71i93fAcLfSjxjoH1YUX/JNDVKnOQ5GHEInTXBNhABda
+	CbydMRexP
+X-Gm-Gg: ATEYQzw92JTp8MoTYOf8C5Yah4pk75z1sN824JAT6tfmhcp6OHKs1n9KSYhnN3XtBAb
+	QcyTHOp8kF8u2VCqa+EC1IlqKf3u4znghvvByAH3hu2cciwy3GU//Dk4K3be1zuo+h1yk772JEt
+	XTOpnGMQDiAz6VpNzvKtOdFaa0dghPuANVAMVq7EcXPJ8eQAs6GrOIGOpHtJ1O+t26tXdQWgA6t
+	MFuGDisr49TwIfCO/cBWxqPOpnyciRq3Ypy9BTqQuPis01jt/dmSNsbTHEQ0p8TW4jvpV5TYZl+
+	hdmAD301Zxkaz8IYd5n33HDCxB+XVjF0aNWoGPkknoNwpDjVP3FwK3b0NTPBtlv/932we29ijE8
+	qXoT0nnaka5SodCEuAmOKl8JhzFiGjLK0lyy1D8tb83hb1bhnz/CzDVg4Gd0RCXzEeCjt9wFGe2
+	MsIzOEG2QEu0i8VOykYDrf7NeGKpkh7T9ZUnt2tVbE2UY4RhOa3SepbYAFNQ==
+X-Received: by 2002:a17:902:e54d:b0:2a9:5bfa:54ef with SMTP id d9443c01a7336-2b063ee45a7mr1438565ad.10.1773701694173;
+        Mon, 16 Mar 2026 15:54:54 -0700 (PDT)
+Received: from google.com (60.89.247.35.bc.googleusercontent.com. [35.247.89.60])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82a0725ca0asm17538461b3a.17.2026.03.16.15.54.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Mar 2026 15:54:53 -0700 (PDT)
+Date: Mon, 16 Mar 2026 15:54:50 -0700
+From: Vipin Sharma <vipinsh@google.com>
+To: Samiullah Khawaja <skhawaja@google.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>, 
+	Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, 
+	Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>, 
+	Adithya Jayachandran <ajayachandra@nvidia.com>, Parav Pandit <parav@nvidia.com>, 
+	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
+	Pratyush Yadav <pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
+	David Matlack <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	Chris Li <chrisl@kernel.org>, Pranjal Shrivastava <praan@google.com>, 
+	YiFei Zhu <zhuyifei@google.com>
+Subject: Re: [PATCH 01/14] iommu: Implement IOMMU LU FLB callbacks
+Message-ID: <20260316165018.GA1768676.vipinsh@google.com>
+References: <20260203220948.2176157-1-skhawaja@google.com>
+ <20260203220948.2176157-2-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260203220948.2176157-2-skhawaja@google.com>
 
-On Tue, 10 Mar 2026 12:49:12 +0100
-Philipp Hahn <phahn-oss@avm.de> wrote:
+On Tue, Feb 03, 2026 at 10:09:35PM +0000, Samiullah Khawaja wrote:
+> +config IOMMU_LIVEUPDATE
+> +	bool "IOMMU live update state preservation support"
+> +	depends on LIVEUPDATE && IOMMUFD
+> +	help
+> +	  Enable support for preserving IOMMU state across a kexec live update.
+> +
+> +	  This allows devices managed by iommufd to maintain their DMA mappings
+> +	  during kexec base kernel update.
+> +
+> +	  If unsure, say N.
+> +
 
-> Prefer using IS_ERR_OR_NULL() over using IS_ERR() and a manual NULL
-> check.
-> 
-> Change generated with coccinelle.
-> 
-> To: Alex Williamson <alex@shazbot.org>
-> Cc: kvm@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Philipp Hahn <phahn-oss@avm.de>
-> ---
->  drivers/vfio/vfio_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
-> index 742477546b15d4dbaf9ebcfb2e67627db71521e0..d71922dfde5885967398deddec3e9e04b05adfec 100644
-> --- a/drivers/vfio/vfio_main.c
-> +++ b/drivers/vfio/vfio_main.c
-> @@ -923,7 +923,7 @@ vfio_ioctl_device_feature_mig_device_state(struct vfio_device *device,
->  
->  	/* Handle the VFIO_DEVICE_FEATURE_SET */
->  	filp = device->mig_ops->migration_set_state(device, mig.device_state);
-> -	if (IS_ERR(filp) || !filp)
-> +	if (IS_ERR_OR_NULL(filp))
->  		goto out_copy;
->  
->  	return vfio_ioct_mig_return_fd(filp, arg, &mig);
-> 
+Do we need a separate config? Can't we just use CONFIG_LIVEUPDATE?
 
-As others have expressed in general, this doesn't seem to be cleaner
-and tends to mask that we consider IS_ERR() and NULL as separate cases
-in the goto.  This code looks like it could use some refactoring, and
-likely that refactoring should handle the IS_ERR() and NULL cases
-separately, but conflating them here is not an improvement.  Thanks,
+>  menuconfig IOMMU_SUPPORT
+>  	bool "IOMMU Hardware Support"
+>  	depends on MMU
+> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+> index 0275821f4ef9..b3715c5a6b97 100644
+> --- a/drivers/iommu/Makefile
+> +++ b/drivers/iommu/Makefile
+> @@ -15,6 +15,7 @@ obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
+>  obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
+>  obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE_KUNIT_TEST) += io-pgtable-arm-selftests.o
+>  obj-$(CONFIG_IOMMU_IO_PGTABLE_DART) += io-pgtable-dart.o
+> +obj-$(CONFIG_IOMMU_LIVEUPDATE) += liveupdate.o
 
-Alex
+It seems like there is a sorted order for CONFIG_IOMMU_* in the
+Makefile, lets keep it same if possible.
+
+> +static void iommu_liveupdate_free_objs(u64 next, bool incoming)
+> +{
+> +	struct iommu_objs_ser *objs;
+> +
+> +	while (next) {
+> +		objs = __va(next);
+
+There is also call to phys_to_virt() in other functions in this patch.
+Should we use the same here to be consistent?
+
+> +		next = objs->next_objs;
+> +
+> +		if (!incoming)
+> +			kho_unpreserve_free(objs);
+> +		else
+> +			folio_put(virt_to_folio(objs));
+> +	}
+> +}
+
+Instead of passing boolean, and calling with different arguments, I
+think it will be simpler to just have two functions
+
+- iommu_liveupdate_unpreserve()
+- iommu_liveupdate_folio_put()
+
+> +
+> +static void iommu_liveupdate_flb_free(struct iommu_lu_flb_obj *obj)
+> +{
+> +	if (obj->iommu_domains)
+> +		iommu_liveupdate_free_objs(obj->ser->iommu_domains_phys, false);
+> +
+> +	if (obj->devices)
+> +		iommu_liveupdate_free_objs(obj->ser->devices_phys, false);
+> +
+> +	if (obj->iommus)
+> +		iommu_liveupdate_free_objs(obj->ser->iommus_phys, false);
+> +
+> +	kho_unpreserve_free(obj->ser);
+> +	kfree(obj);
+> +}
+> +
+> +static int iommu_liveupdate_flb_preserve(struct liveupdate_flb_op_args *argp)
+> +{
+> +	struct iommu_lu_flb_obj *obj;
+> +	struct iommu_lu_flb_ser *ser;
+> +	void *mem;
+> +
+> +	obj = kzalloc(sizeof(*obj), GFP_KERNEL);
+> +	if (!obj)
+> +		return -ENOMEM;
+> +
+> +	mutex_init(&obj->lock);
+> +	mem = kho_alloc_preserve(sizeof(*ser));
+> +	if (IS_ERR(mem))
+> +		goto err_free;
+> +
+> +	ser = mem;
+> +	obj->ser = ser;
+> +
+> +	mem = kho_alloc_preserve(PAGE_SIZE);
+> +	if (IS_ERR(mem))
+> +		goto err_free;
+> +
+> +	obj->iommu_domains = mem;
+> +	ser->iommu_domains_phys = virt_to_phys(obj->iommu_domains);
+> +
+> +	mem = kho_alloc_preserve(PAGE_SIZE);
+> +	if (IS_ERR(mem))
+> +		goto err_free;
+> +
+> +	obj->devices = mem;
+> +	ser->devices_phys = virt_to_phys(obj->devices);
+> +
+> +	mem = kho_alloc_preserve(PAGE_SIZE);
+> +	if (IS_ERR(mem))
+> +		goto err_free;
+> +
+> +	obj->iommus = mem;
+> +	ser->iommus_phys = virt_to_phys(obj->iommus);
+> +
+> +	argp->obj = obj;
+> +	argp->data = virt_to_phys(ser);
+> +	return 0;
+> +
+> +err_free:
+> +	iommu_liveupdate_flb_free(obj);
+
+Generally, I have seen in the function goto will call corresponding
+error tags, and free corresponding allocations and all the one which
+happend before. It is easier to read code that way. I know you are
+combining the free call from iommu_liveupdate_flb_unpreserve() also.
+IMHO, code readability will be better this way.
+
+> +	return PTR_ERR(mem);
+> +}
+> +
+> +static void iommu_liveupdate_flb_unpreserve(struct liveupdate_flb_op_args *argp)
+> +{
+> +	iommu_liveupdate_flb_free(argp->obj);
+> +}
+> +
+> +static void iommu_liveupdate_flb_finish(struct liveupdate_flb_op_args *argp)
+> +{
+> +	struct iommu_lu_flb_obj *obj = argp->obj;
+> +
+> +	if (obj->iommu_domains)
+> +		iommu_liveupdate_free_objs(obj->ser->iommu_domains_phys, true);
+
+Can there be the case where obj->iommu_domains is NULL but
+obj->ser->iommu_domains_phys is not? If that is not possible, I will
+just simplify the patch and unconditionally call
+iommu_liveupdate_free_objs()?
+
+> +
+> +static int iommu_liveupdate_flb_retrieve(struct liveupdate_flb_op_args *argp)
+> +{
+> +	struct iommu_lu_flb_obj *obj;
+> +	struct iommu_lu_flb_ser *ser;
+> +
+> +	obj = kzalloc(sizeof(*obj), GFP_ATOMIC);
+> +	if (!obj)
+> +		return -ENOMEM;
+
+Is kzalloc() failure here recoverable whereas iommu_liveupdate_restore_objs()
+below is not? If it is not recoverable should there be a BUG_ON here?
+
+> +
+> +	mutex_init(&obj->lock);
+> +	BUG_ON(!kho_restore_folio(argp->data));
+> +	ser = phys_to_virt(argp->data);
+> +	obj->ser = ser;
+> +
+> +	iommu_liveupdate_restore_objs(ser->iommu_domains_phys);
+> +	obj->iommu_domains = phys_to_virt(ser->iommu_domains_phys);
+
+Can iommu_liveupdate_restore_obj() just return virtual address and we
+can simplify code to:
+
+	obj->iommu_domains = iommu_liveupdate_restore_objs(ser->iommu_domains_phys);
+
+> +
+> +	iommu_liveupdate_restore_objs(ser->devices_phys);
+> +	obj->devices = phys_to_virt(ser->devices_phys);
+> +
+> +	iommu_liveupdate_restore_objs(ser->iommus_phys);
+> +	obj->iommus = phys_to_virt(ser->iommus_phys);
+> +
+> +	argp->obj = obj;
+> +
+> +	return 0;
+> +}
+> +
+> diff --git a/include/linux/iommu-lu.h b/include/linux/iommu-lu.h
+
+I will recommend to use full name and not short "lu". iommu-liveupdate.h
+seems more readable and not too long.
+
+> +#define MAX_IOMMU_SERS ((PAGE_SIZE - sizeof(struct iommus_ser)) / sizeof(struct iommu_ser))
+> +#define MAX_IOMMU_DOMAIN_SERS \
+> +		((PAGE_SIZE - sizeof(struct iommu_domains_ser)) / sizeof(struct iommu_domain_ser))
+> +#define MAX_DEVICE_SERS ((PAGE_SIZE - sizeof(struct devices_ser)) / sizeof(struct device_ser))
+
+This is per page limit, not whole serialization limit. May be we can
+name something like:
+
+- MAX_IOMMU_SERS_PER_PAGE, or
+- MAX_IOMMU_SERS_PAGE_CAPACITY
+
+> +
+> +struct iommu_lu_flb_obj {
+> +	struct mutex lock;
+> +	struct iommu_lu_flb_ser *ser;
+> +
+> +	struct iommu_domains_ser *iommu_domains;
+> +	struct iommus_ser *iommus;
+> +	struct devices_ser *devices;
+> +} __packed;
+> +
+
+I think naming scheme used here is little hard to absorb when we have so
+many individual structs in this header file. Specifically, struct names like:
+
+- iommu_domains_ser vs iommu_domain_ser
+- iommus_ser vs iommu_ser
+- devices_ser vs device_ser
+- iommu_objs_ser vs iommu_obj_ser
+
+First three are showing container and its elements relation, however,
+last one doesn't have that relation but naming is same there.
+
+I will recommend to change the naming scheme of containers to something like:
+
+	struct iommu_domain_ser_[hdr|header|table|arr] {};
+	struct iommu_ser_hdr {}
+	struct device_ser_hdr {}
+
+Individual element of container can be same.
+
+For objs, something like: 
+	iommu_objs_ser -> iommu_hdr_meta
+
