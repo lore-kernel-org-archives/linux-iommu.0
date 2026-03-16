@@ -1,221 +1,239 @@
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CA481A9FA7
-	for <iommu@lists.linux.dev>; Mon, 16 Mar 2026 15:35:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.187
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 520091A9FA7
+	for <iommu@lists.linux.dev>; Mon, 16 Mar 2026 15:36:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773675334; cv=none; b=ap1JIg/0JQfkEGdC0UtACOmy67NP0Vm12PoI8IVbn2rgzqGI0CSCzfH2E7dS9B6MR2XpgkUp1LlvV29g+xE0++pmxdiJT8AuRWpiIlxys0nGuq5ioB88wYoj8rtlLcr3Tefu91P0z9MQ9fjjYjXOtiGWGBdF3A9ogRWCp1c6LoM=
+	t=1773675377; cv=none; b=VuXGyVp9zFni4gCTofHCf50KhQOhZK1OEuvlFLP8UpUDK9Vt2v7XIqdukqeS3ULV45yph1oXIFK6ehwVVnKGdrAWFbBROoA8PpXietKui6r3yZqNCQ2PeFhBDINLUww/K3oLU8ZaYu/8XndOOBXx4AnVMzjGWnjPjKg3cHC5Cks=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773675334; c=relaxed/simple;
-	bh=ebJ9ygksvQNmdkwROJb1NcYGCGzU8kV6Qi1xzXIjVLw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=nwGANmgcSW+V6bW1U7ly0t62uRQajyZBoHyQy36s5NstqmuZ2rOMpNXuDrsdu8Ue3kFU0eBCc6uKN+QuPxa8m9qzwFRIaHuropgHpb06X4POQYPtCZsGbw5MKLdJFem8xw6LNT8X5Aqr6dcbAZtiaJpeKTmlRNV+vQMSuYzKcjM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=pL4trkp5; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=pL4trkp5; arc=none smtp.client-ip=45.249.212.187
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+	s=arc-20240116; t=1773675377; c=relaxed/simple;
+	bh=qGbM3PV0qRLSpKHoLMTse/Jca7QQOcdFkDZ/qYdLofc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OZ8cmyhaWfJ+kHRY8hxjsoJah+DOjSFIET4GwLVQnqxqYCHoNFAvNcn/0MZepHmvBLD3dH9GcQSWX0BtLtq7nK40X5pII7E7bUKLSbScOhi2AQHx25r0jPJKBtQQb3u5C4dAPLmmA3pgIwSe5Z8OSPfxUyBh4nH3lmj4FGSzYtk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=PrkX0/mq; arc=none smtp.client-ip=209.85.214.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="pL4trkp5";
-	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="pL4trkp5"
-dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
-	c=relaxed/relaxed; q=dns/txt;
-	h=From;
-	bh=pk+TV8B8ulOBw6RXpe6xSA9kW9b0vww7DdvuUC2T5S0=;
-	b=pL4trkp5800SX+0IhS5TOwLDf5PfI76ALJQVmfmFm3Z418aQEt6/C3zKeDatamdYXIKpPfrXU
-	jnfUcoJRbMG8DoUWpKsmgqp8kC/S+6BXhwc4YhjSSvPk1BV7qRZukEtfE7/aJbBI/Dlv3oulTRw
-	UIVVG1EsEw4iHksL0y1vd1M=
-Received: from canpmsgout11.his.huawei.com (unknown [172.19.92.148])
-	by szxga01-in.huawei.com (SkyGuard) with ESMTPS id 4fZJzx3cs3z1BFsF
-	for <iommu@lists.linux.dev>; Mon, 16 Mar 2026 23:34:37 +0800 (CST)
-dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
-	c=relaxed/relaxed; q=dns/txt;
-	h=From;
-	bh=pk+TV8B8ulOBw6RXpe6xSA9kW9b0vww7DdvuUC2T5S0=;
-	b=pL4trkp5800SX+0IhS5TOwLDf5PfI76ALJQVmfmFm3Z418aQEt6/C3zKeDatamdYXIKpPfrXU
-	jnfUcoJRbMG8DoUWpKsmgqp8kC/S+6BXhwc4YhjSSvPk1BV7qRZukEtfE7/aJbBI/Dlv3oulTRw
-	UIVVG1EsEw4iHksL0y1vd1M=
-Received: from mail.maildlp.com (unknown [172.19.162.92])
-	by canpmsgout11.his.huawei.com (SkyGuard) with ESMTPS id 4fZJv65Y4fzKm4J;
-	Mon, 16 Mar 2026 23:30:26 +0800 (CST)
-Received: from kwepemj200003.china.huawei.com (unknown [7.202.194.15])
-	by mail.maildlp.com (Postfix) with ESMTPS id E4AC740565;
-	Mon, 16 Mar 2026 23:35:25 +0800 (CST)
-Received: from [10.67.120.170] (10.67.120.170) by
- kwepemj200003.china.huawei.com (7.202.194.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Mon, 16 Mar 2026 23:35:25 +0800
-Message-ID: <1a42d502-a2c4-4c41-ba7e-4dc115159ed6@huawei.com>
-Date: Mon, 16 Mar 2026 23:35:24 +0800
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="PrkX0/mq"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2aeab6ff148so156665ad.1
+        for <iommu@lists.linux.dev>; Mon, 16 Mar 2026 08:36:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1773675376; x=1774280176; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=4e+cBWUiI1u+atb2Wg8Yi2UQPkixRo/hHQFk2zmpkOY=;
+        b=PrkX0/mqHmRHd2RdlJb+JO6RqUPehpKefaJqt5ufG5H8UatlaMKgKmgcYsg2hMNYw/
+         AJ9gz4Ydq3fG00mJ9RE0fKBm3gkw7qPGGtFgqnu+dQurrLB1SHQyBEbs6CM1pGw0pK8i
+         3h0AbEg7iWaGVh4QNReL3lhfssCsS+vAOPxpNsWhj/FNL7Ei4pNgS+465ngrwcqiKi0r
+         YJ35xnlOB6daIFUDFh5o6Bn3VPBIj8S4rguZ51uMyBpQ1M/IPBqjOoiHIxtnieTP3MQp
+         5n/j2uIcitv1IvrXkkr2SbyA1IhCdIArlkzvdJHxuUO404NsIK3e38GUkcv2JNt2KhXN
+         CfDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773675376; x=1774280176;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=4e+cBWUiI1u+atb2Wg8Yi2UQPkixRo/hHQFk2zmpkOY=;
+        b=lav0LbgLiX8D2jlW9NUan//TW4YoR9C3HH4gkMMPciROnApNRvpjbFymWz4/NF0LcK
+         +Nd7Jc8kMU+ExQ7VTBzw+7duUrwgEDaqS+Oc0RtVj4HN2YvhJPPJiB0hqiVDfU/uH4y6
+         s0nn3TD676xhaugYC74a0iVePaqkhZgehCpfbfbNjBG9d7rBgEWqgcpsNRlsRYXm6kxk
+         Jebpk81zfPsYMt19AvSZCY1tpYk3P1S4nSVhhH2Hbb7yoxNXwBH0MEtzSEv5KMsjSVvn
+         m+tQid0CmRcnAPY6jxjEUTGOQRBRW2lOyixPhzIwhI+igJBeOpO+rnMHIBni/jWLo+TW
+         Pi+g==
+X-Gm-Message-State: AOJu0YwGltEsb6Oaghe6g5eJ+K64Dc+cmGsgPPwfpDm1c5xJrd5jtToj
+	3UEhYDwr7GkEKaom6iymgsCqsF8YBWR76PTpI62El+JsUgy8JoexGuRCILo6A8eMig==
+X-Gm-Gg: ATEYQzy7Ou8Y6Ep9CT5AHUmeyLZylc2KTOD2pSpcq8J1BM/mGI7fVKYCaACmVuP4L48
+	8CIM/VvSfCQtnVJQOLp8rOWX9vz3eEn4nMBPrm40Pz25T60DDMAFCEQcxyhL6jC8lEgrM2uTnkj
+	2HwtcwnFYBQVkJLNihmwFUvWZcJArp/H4GPJX94oLrWvv4BQWRpota9o32kkSYeTIWREvH7PHMD
+	wZUOWyBum/w1HbPunkK1T8UoF6RId6F0TqnAAIurbvVz9g9UqGqYgY8fOud4fv7RSRPYBhHO6lv
+	lQ5MbKkG8fDZR1xf5raDXwg02/DIEbCtSwArenKZSuBYKfMqT4imr7jmBUxfVQIkj02OKsJBgJp
+	ivzxjpxXE1NsiCIqU0Exya2aFY8EgQt39Wsgb9O4YpoFN/fe7efjQb9Egr8cOnBKP/iziO2709d
+	QCxssd/5doV2h5wW8qW+j0v+vKSALbC5PbpJzDiILSlUO2W3WPvaAgs+glkA==
+X-Received: by 2002:a17:903:1acd:b0:2ad:6f9b:7818 with SMTP id d9443c01a7336-2b042d8f2f4mr4941305ad.23.1773675375125;
+        Mon, 16 Mar 2026 08:36:15 -0700 (PDT)
+Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2aece56c7b5sm123061125ad.9.2026.03.16.08.36.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Mar 2026 08:36:14 -0700 (PDT)
+Date: Mon, 16 Mar 2026 15:36:10 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Daniel Mentz <danielmentz@google.com>
+Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Ashish Mhetre <amhetre@nvidia.com>,
+	Sairaj Kodilkar <sarunkod@amd.com>
+Subject: Re: [PATCH v5 06/10] iommu/arm-smmu-v3: Add a usage counter for cmdq
+Message-ID: <abgjagJWs19zqL3J@google.com>
+References: <20260126151157.3418145-1-praan@google.com>
+ <20260126151157.3418145-7-praan@google.com>
+ <CAE2F3rD0aoTXJBnS4SPHLEEst6cTvoUxNywRZ1RhdgwNA_0JTA@mail.gmail.com>
+ <aa8jkLD0l2WqMnyG@google.com>
+ <CAE2F3rBFRSTC7bFCYTCit1-OKrT3jB-fwYGu_UJbwX+7aE65eA@mail.gmail.com>
+ <abBMy5MgrrOlofDF@google.com>
+ <CAE2F3rA_uyYGx2PCHMpFPWD6B4_2WxK-ahpoRHioXfuNf5Mpxw@mail.gmail.com>
+ <abFzyWG-ASb1Nv4J@google.com>
+ <CAE2F3rDh4c4KzEqapu-qQw9MWZ3gqPkpawpnToEmnwMXZn1Qpw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH 2/5] iommu/arm-smmu-v3: Add register display to
- debugfs
-To: Robin Murphy <robin.murphy@arm.com>, <will@kernel.org>, <jpb@kernel.org>
-CC: <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<wangzhou1@hisilicon.com>, <prime.zeng@hisilicon.com>,
-	<fanghao11@huawei.com>, <jonathan.cameron@huawei.com>, <linuxarm@huawei.com>
-References: <20260313104351.3502293-1-xiaqinxin@huawei.com>
- <20260313104351.3502293-3-xiaqinxin@huawei.com>
- <68add41b-bafa-4884-be70-c03d6ce851eb@arm.com>
-From: Qinxin Xia <xiaqinxin@huawei.com>
-In-Reply-To: <68add41b-bafa-4884-be70-c03d6ce851eb@arm.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: kwepems500001.china.huawei.com (7.221.188.70) To
- kwepemj200003.china.huawei.com (7.202.194.15)
+In-Reply-To: <CAE2F3rDh4c4KzEqapu-qQw9MWZ3gqPkpawpnToEmnwMXZn1Qpw@mail.gmail.com>
 
-
-
-On 2026/3/16 23:19:53, Robin Murphy <robin.murphy@arm.com> wrote:
-> On 2026-03-13 10:43 am, Qinxin Xia wrote:
->> Add register display functionality to debugfs.This allows reading
->> and displaying key SMMU register values including control registers
->> and queue pointers.
->>
->> The registers file shows:
->> - CR0, CR1, CR2 control registers
->> - Command and Event queue pointers
->>
->> Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
->> ---
->>   .../arm/arm-smmu-v3/arm-smmu-v3-debugfs.c     | 68 ++++++++++++++++++-
->>   1 file changed, 67 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c b/ 
->> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c
->> index 542bd6047f26..f9bf955f3351 100644
->> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c
->> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c
->> @@ -12,11 +12,20 @@
->>    * - Capability reporting covering all major SMMU features and 
->> configuration
->>    * - Extensible architecture designed for adding future debug 
->> functionality
->>    * - Comprehensive error handling and resource cleanup
->> + * - Display of control registers (CR0, CR1, CR2) with bitfield decoding
->> + * - Command and Event queue pointer monitoring (PROD/CONS)
->> + *
->> + * Register Information Displayed:
->> + * - CR0: SMMU global control with enable states and queue enables
->> + * - CR1/CR2: Additional control and configuration registers
->> + * - CMDQ_PROD/CONS: Command queue producer and consumer pointers
->> + * - EVTQ_PROD/CONS: Event queue producer and consumer pointers
->>    *
->>    * Directory Structure:
->>    * /sys/kernel/debug/iommu/arm_smmu_v3/
->>    * └── smmu0/
->> - *     └── capabilities    # SMMU feature capabilities and configuration
->> + *     ├── capabilities    # SMMU feature capabilities and configuration
->> + *     └── registers       # SMMU Key registers
->>    *
->>    * The capabilities file provides detailed information about:
->>    * - Architecture version and translation stage support (Stage1/Stage2)
->> @@ -24,6 +33,11 @@
->>    * - Stream table size and command/event queue depths
->>    * - All feature bits from the SMMU device structure
->>    *
->> + * The register display provides crucial visibility into:
->> + * - SMMU operational state (enabled/disabled)
->> + * - Queue operation and potential stalls
->> + * - Configuration settings affecting all streams
->> + *
->>    * Copyright (C) 2025 HiSilicon Limited.
->>    * Author: Qinxin Xia <xiaqinxin@huawei.com>
->>    */
->> @@ -69,6 +83,54 @@ static int smmu_debugfs_capabilities_show(struct 
->> seq_file *seq, void *v)
->>   }
->>   DEFINE_SHOW_ATTRIBUTE(smmu_debugfs_capabilities);
->> +/**
->> + * smmu_debugfs_registers_show() - Display SMMU register values
->> + * @seq: seq_file to write to
->> + * @v: private data (SMMU device)
->> + *
->> + * Return: 0 on success, negative error code on failure
->> + */
->> +static int smmu_debugfs_registers_show(struct seq_file *seq, void *v)
->> +{
->> +    struct arm_smmu_device *smmu = seq->private;
->> +    void __iomem *base;
->> +
->> +    if (!smmu || !smmu->base) {
->> +        seq_puts(seq, "SMMU not available\n");
->> +        return 0;
->> +    }
->> +
->> +    base = smmu->base;
->> +
->> +    seq_puts(seq, "SMMUv3 Key Registers:\n");
->> +
->> +    /* 32-bit control registers */
->> +    seq_printf(seq, "CR0: 0x%08x [%s%s%s]\n",
->> +           readl_relaxed(base + ARM_SMMU_CR0),
->> +           readl_relaxed(base + ARM_SMMU_CR0) & CR0_SMMUEN ?
->> +           "Enabled " : "Disabled ",
->> +           readl_relaxed(base + ARM_SMMU_CR0) & CR0_EVTQEN ?
->> +           "EventQ " : "",
->> +           readl_relaxed(base + ARM_SMMU_CR0) & CR0_CMDQEN ?
->> +           "CmdQ " : "");
+On Wed, Mar 11, 2026 at 03:56:55PM -0700, Daniel Mentz wrote:
+> On Wed, Mar 11, 2026 at 6:53 AM Pranjal Shrivastava <praan@google.com> wrote:
+> >
+> > On Tue, Mar 10, 2026 at 09:43:05PM -0700, Daniel Mentz wrote:
+> > > Hi Pranjal,
+> > >
+> > > I have thought about this further and would like to propose an
+> > > alternative design.
+> > >
+> > > A key difference in this design is that no commands are written to the
+> > > command queue, and the producer index is not updated while the SMMU is
+> > > suspended.
+> > >
+> > > Similar to the existing CMDQ_PROD_OWNED_FLAG, we could define a new
+> > > flag, CMDQ_PROD_STOP_FLAG, stored in cmdq->q.llq.prod.
+> > >
+> > > In arm_smmu_cmdq_issue_cmdlist():
+> > > Perform "old = cmpxchg_relaxed(&cmdq->q.llq.val, llq.val, head.val);".
+> > > If CMDQ_PROD_STOP_FLAG is set in the variable named old, return from
+> > > arm_smmu_cmdq_issue_cmdlist() immediately.
+> > >
+> > > In the Suspend handler:
+> > >
+> > > 1. Clear SMMU_CR0.SMMUEN.
+> > > 2. Set CMDQ_PROD_STOP_FLAG in cmdq->q.llq.prod.
+> > > 3. Wait until CMDQ_PROD_OWNED_FLAG is cleared from cmdq->q.llq.prod.
+> > > 4. Wait until cmdq->owner_prod matches cmdq->q.llq.prod (excluding the
+> > > CMDQ_PROD_STOP_FLAG).
+> > > 5. Wait until cmdq->lock is 0.
+> > > 6. Clear SMMU_CR0.
+> > >
+> > > In the Resume handler:
+> > > Follow the same logic as your patch, but clear CMDQ_PROD_STOP_FLAG in
+> > > cmdq->q.llq.prod instead of setting nr_cmdq_users to 1.
+> > >
+> > > One benefit of this proposal is that it avoids adding a new atomic
+> > > variable that multiple CPU threads might compete for. Instead, we
+> > > reuse existing atomic operations, which should reduce the performance
+> > > impact for server use cases where many CPU threads compete for command
+> > > queue access.
+> > >
+> >
+> > I like the idea/direction! Although, there could be a few (solvable)
+> > challenges, for example:
+> >
+> > 1. Abandoned Command Batch
+> >   In the SMMUv3 driver, cmdq->q.llq.val is the shared global state in
+> >   RAM. The cmpxchg is the "Point of Commitment." Consider the following
+> >   sequence of events:
+> >
+> >    a. Assume STOP_FLAG is already set. Global prod is 10 | STOP_FLAG.
+> >    b. CPU-A calls issue_cmdlist. It reads the global state:
+> >       llq.val = 10 | STOP_FLAG.
+> >    c. CPU-A calculates its new target:
+> >         head.prod = 14 | STOP_FLAG | OWNED_FLAG.
 > 
-> There's really no point printing these extra strings, since if any of 
-> those were *not* enabled then we'd have already failed probe and never 
-> created the debugfs entry. And if anyone ever were to be trying to 
-> change the driver behaviour at that level, I'd very much expect them to 
-> be able to be able to read the bottom 4 bits of a CR0 value in hex 
-> anyway ;)
+> head.prod is calculated like so, and queue_inc_prod_n() will clear the
+> CMDQ_PROD_STOP_FLAG.
 > 
-> Thanks,
-> Robin.
+> head.prod = queue_inc_prod_n(&llq, n + sync) |
+>      CMDQ_PROD_OWNED_FLAG;
 > 
-
-Since Kunpeng supports ECMDQ(have not been submitted upstream), the
-intention was to check whether the SMMU supports ECMDQ, and the logging
-for other queues was added incidentally. The prints for the event queue
-and command queue indeed seem unnecessary. I will remove them in the
-next version.
-
->> +
->> +    seq_printf(seq, "CR1: 0x%08x\n", readl_relaxed(base + 
->> ARM_SMMU_CR1));
->> +    seq_printf(seq, "CR2: 0x%08x\n", readl_relaxed(base + 
->> ARM_SMMU_CR2));
->> +
->> +    /* 32-bit queue pointer registers */
->> +    seq_printf(seq, "CMDQ_PROD: 0x%08x\n",
->> +           readl_relaxed(base + ARM_SMMU_CMDQ_PROD));
->> +    seq_printf(seq, "CMDQ_CONS: 0x%08x\n",
->> +           readl_relaxed(base + ARM_SMMU_CMDQ_CONS));
->> +    seq_printf(seq, "EVTQ_PROD: 0x%08x\n",
->> +           readl_relaxed(base + ARM_SMMU_EVTQ_PROD));
->> +    seq_printf(seq, "EVTQ_CONS: 0x%08x\n",
->> +           readl_relaxed(base + ARM_SMMU_EVTQ_CONS));
->> +
->> +    return 0;
->> +}
->> +DEFINE_SHOW_ATTRIBUTE(smmu_debugfs_registers);
->> +
->>   /**
->>    * arm_smmu_debugfs_setup() - Initialize debugfs for SMMU device
->>    * @smmu: SMMU device to setup debugfs for
->> @@ -120,6 +182,10 @@ int arm_smmu_debugfs_setup(struct arm_smmu_device 
->> *smmu, phys_addr_t ioaddr)
->>                    &smmu_debugfs_capabilities_fops))
->>           goto err_cleanup;
->> +    if (!debugfs_create_file("registers", 0444, smmu_dir, smmu,
->> +                 &smmu_debugfs_registers_fops))
->> +        goto err_cleanup;
->> +
->>       pr_info("SMMUv3 debugfs initialized for smmu%pa\n", &ioaddr);
->>       return 0;
+> You're bringing up a good point, though. This would clear the
+> CMDQ_PROD_STOP_FLAG which we don't want.
 > 
+> >    d. CPU-A executes: old = cmpxchg(&cmdq->q.llq.val, llq.val, head.val)
+> >       The swap succeeds because the global state was exactly llq.val.
+> >       Global prod is now 14. We have just told the entire system that
+> >       there are 14 commands.
+> >    e. CPU-A now checks the old variable. It sees STOP_FLAG is set and
+> >       returns immediately.
+> >
+> > CPU-A has "reserved" the indices 10, 11, 12, and 13 in the global
+> > producer pointer, but it never wrote the commands to those memory slots.
+> > Indices 10–13 now contain garbage/stale data. When the SMMU resumes and
+> > processes up to index 14, it will execute that garbage cmd leading to a
+> > fault (CERROR_ILL).
+> >
+> > 2. The OWNED_FLAG Deadlock
+> >
+> >    a. The CPU who finds OWNED_FLAG is 0 in the cmpxchg becomes the owner
+> >       Its job is to gather all concurrent work and update the hardware.
+> >    b. Any subsequent CPUs that find OWNED_FLAG is 1 in the cmpxchg. They
+> >       write their commands to RAM and then just wait. They rely on the
+> >       Owner to "kick" the HW for them & to clear the flag for the next
+> >       batch.
+> >
+> >   The Deadlock Scenario:
+> >    a. Suspend Handler: Sets the STOP_FLAG in the global cmdq->q.llq.val.
+> >    b. CPU-A (The Owner): Executes cmpxchg. It moves the global prod from
+> >       10 to 14. Because it was the first in this batch, it does not set
+> >       the OWNED_FLAG.
 > 
+> Everybody sets the OWNED_FLAG in
+> 
+> head.prod = queue_inc_prod_n(&llq, n + sync) |
+>      CMDQ_PROD_OWNED_FLAG;
+> 
+> The OWNED_FLAG is always set when any CPU breaks out of that first
+> do/while loop in arm_smmu_cmdq_issue_cmdlist.
+> 
+> >    c. CPU-B (The Follower): Executes cmpxchg. It moves the global prod
+> >       from 14 to 18. Because it is joining CPU-A's batch, its cmpxchg
+> >       sets the OWNED_FLAG in the global state.
+> >    d. Now, CPU-A checks the old value, sees STOP_FLAG, and returns.
+> >       CPU-B checks the old value, sees STOP_FLAG, and returns.
+> >    e. The Consequence: The global state cmdq->q.llq.prod now has the
+> >       OWNED_FLAG set.
+> >    f. Suspend Handler: Calls Wait until CMDQ_PROD_OWNED_FLAG is cleared
+> >    g. Since the Owner (CPU-A) should clear that flag (it does so at the
+> >       very end of the function). The Suspend Handler will spin on this
+> >       flag forever.
+> >
+> > This can be solved by checking the flag before setting the OWNED_FLAG.
+> 
+> Good point. We should check llq.prod for CMDQ_PROD_STOP_FLAG at the
+> beginning of the do/while loop in arm_smmu_cmdq_issue_cmdlist and
+> return early if it's set. The function arm_smmu_cmdq_issue_cmdlist
+> should never clear CMDQ_PROD_STOP_FLAG.
+> 
+> > While the atomic counter (nr_cmdq_users) used in v5 adds an tomic, I
+> > believe that it provides a cleaner "gate" that prevents CPUs from ever
+> > entering the "Commitment" phase once a suspend is imminent (with fixes).
+> >
+> > However, I agree that the atomic cntr can cause pref drops on servers.
+> 
+> I think another benefit of my approach is that it avoids the problem
+> where a high rate of calls to arm_smmu_cmdq_issue_cmdlist can starve
+> the suspend handler. I'm afraid that with the nr_cmdq_users approach,
+> we might end up in situations where the suspend handler times out
+> because nr_cmdq_users never drops to 1.
+>
 
--- 
-Thanks,
-Qinxin
+I agree.
 
+> > I'm okay to adopt Daniel's direction (it only impacts 2 patches) & post
+> > a v6. However, given we've been working through this for a year now, I'd
+> > want to make sure we have a solid consensus on the design from everyone.
+> > I felt with v4 that we have consensus on the design but it still seems
+> > to be evolving. I’m ready to post v6 once we settle on the path forward.
+> 
+> I think the fastest way forward is to post an updated patch right
+> away. We can then use that as a baseline for discussions.
+
+Agreed. I'll think through this CMDQ_STOP_FLAG approach (addressing the
+issues I've discussed above) and post a new version soon.
+
+Thanks
+Praan
