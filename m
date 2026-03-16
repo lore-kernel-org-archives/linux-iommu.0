@@ -1,40 +1,40 @@
-Received: from canpmsgout01.his.huawei.com (canpmsgout01.his.huawei.com [113.46.200.216])
+Received: from canpmsgout04.his.huawei.com (canpmsgout04.his.huawei.com [113.46.200.219])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6174525BEF8
-	for <iommu@lists.linux.dev>; Mon, 16 Mar 2026 15:12:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=113.46.200.216
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF00139EF23
+	for <iommu@lists.linux.dev>; Mon, 16 Mar 2026 15:14:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=113.46.200.219
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773673945; cv=none; b=h0wxlSjDCJnD0FIMHqBDZOCotERh007Vo+BbCrjU1AMoKX/txFHaAxXOq8FJrWhAG/gpYHurX+2Xe2Txpt793bxCBVHfZTjHZBzPbnnYrIiQAIQYxpiRj/cXjTi83SEl+QxSTUz4qNAj8e72dfyvvakFsCbtobXm5JABOqx695k=
+	t=1773674081; cv=none; b=XctqWK2c4nW7rM3/1EyzCJ1bE7SzYz2PUY9UNzAgk7So19/3oUqFaQpd++hWnLy6mbeMGOigJumDc8K8TmjLWZexll1WqrvB7lBkXH9z1yTMZrBwl85Df7+mzN4NRW/bSd+o9NX/aBmG5qVL9jIxpt1HaGkpW3CmJBHw5PGzmVc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773673945; c=relaxed/simple;
-	bh=cEtOnDHxmt60tW904cckms9HK8yIKSPLwIikKxpI7w4=;
+	s=arc-20240116; t=1773674081; c=relaxed/simple;
+	bh=KgOk9QxcfF8trCN3y59hgctlFe19iKkaXTFnLEBu8jg=;
 	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=lL2zslo0XlRsQP7dS0QfXeF9TMvs/uR/aV14sep+MkJaUxQo/rQyN4ga/0JkaDliTgL8Zrkg6w6Q2f2f6zZjKX4O7odPqxYS7bfOevkcNJfifVGK9K/3lE9O4iEJ5ONURw/qoyCYZuamHiLrSZJroGNnuCuAl3ji2xq5maDZn9Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=kGhFhQks; arc=none smtp.client-ip=113.46.200.216
+	 In-Reply-To:Content-Type; b=HbOrX9KFEdestBqKDIigg7cDPvzTOeC0PUC5lz1lm2rupfvJk0N/OAYQqpHXV1gd060OK0C4S1WeLHfkIJuZvBlwSomfvIjN9Ze4hu80KWRvQ1xfJVVhgOWU0vcr9Q4Bw7a1yvogd66lq3NeWSLsP0ib5CIIcFPp2ROJ4DuXs3Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=ePTVP7UT; arc=none smtp.client-ip=113.46.200.219
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="kGhFhQks"
+	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="ePTVP7UT"
 dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
 	c=relaxed/relaxed; q=dns/txt;
 	h=From;
-	bh=q/0CKGvPOl7BVTBCKbKNZviyVP3Tup7TnwROT2hNFNE=;
-	b=kGhFhQksGC037qL98iFElnN6J4GDIbTEoDJRsTIRpTk70CrjC0SeruGJXybv5vChluYmgXIxz
-	JuGxB0P7xF/8jgQsBKYpKGypfrLi5SAFXl9lvb2Ix4mRmr1LCk03YX9wMO6XfSR9qOqqP8nWUVe
-	imqnqyX2vS64eJyMDpAxB/g=
-Received: from mail.maildlp.com (unknown [172.19.162.223])
-	by canpmsgout01.his.huawei.com (SkyGuard) with ESMTPS id 4fZJN210Zjz1T4GK;
-	Mon, 16 Mar 2026 23:06:58 +0800 (CST)
+	bh=CXrgJ1GDap1aR44wHMv8maP7GiD3gazvQ5TCxA0JKV0=;
+	b=ePTVP7UTKr/u1blYNMIAYCir6lFMeiypDTn3T9F0/R8RGyVS9e88rAr7ltDgUcaMwlPTJj8TW
+	Puin0mabrkwqFd8nv7GgpRHjrnWSTc+MutGgrIf6uesATw8mQtNBNe++ufbVIgG6qZof5X6ocou
+	u+tdMUIqCCxEnJIZ7ikNjwY=
+Received: from mail.maildlp.com (unknown [172.19.163.0])
+	by canpmsgout04.his.huawei.com (SkyGuard) with ESMTPS id 4fZJR15pXSz1prL7;
+	Mon, 16 Mar 2026 23:09:33 +0800 (CST)
 Received: from kwepemj200003.china.huawei.com (unknown [7.202.194.15])
-	by mail.maildlp.com (Postfix) with ESMTPS id E1E5A40561;
-	Mon, 16 Mar 2026 23:12:16 +0800 (CST)
+	by mail.maildlp.com (Postfix) with ESMTPS id 872604056B;
+	Mon, 16 Mar 2026 23:14:34 +0800 (CST)
 Received: from [10.67.120.170] (10.67.120.170) by
  kwepemj200003.china.huawei.com (7.202.194.15) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Mon, 16 Mar 2026 23:12:16 +0800
-Message-ID: <42f9d052-f0df-419f-8aad-ea18e10962d8@huawei.com>
-Date: Mon, 16 Mar 2026 23:12:15 +0800
+ 15.2.1544.11; Mon, 16 Mar 2026 23:14:33 +0800
+Message-ID: <aad9e947-402e-454a-90fc-59c8848a55a0@huawei.com>
+Date: Mon, 16 Mar 2026 23:14:33 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,105 +42,128 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH 5/5] iommu/arm-smmu-v3: Add Context Descriptor display
- to debugfs
+Subject: Re: [RFC PATCH 1/5] iommu/arm-smmu-v3: Add basic debugfs framework
 To: Nicolin Chen <nicolinc@nvidia.com>
 CC: <will@kernel.org>, <robin.murphy@arm.com>, <jpb@kernel.org>,
 	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
 	<wangzhou1@hisilicon.com>, <prime.zeng@hisilicon.com>,
 	<fanghao11@huawei.com>, <jonathan.cameron@huawei.com>, <linuxarm@huawei.com>
 References: <20260313104351.3502293-1-xiaqinxin@huawei.com>
- <20260313104351.3502293-6-xiaqinxin@huawei.com>
- <abR7ys1LYRhJ8Hn6@Asurada-Nvidia>
+ <20260313104351.3502293-2-xiaqinxin@huawei.com>
+ <abRsdCYapDe16GtJ@Asurada-Nvidia>
 From: Qinxin Xia <xiaqinxin@huawei.com>
-In-Reply-To: <abR7ys1LYRhJ8Hn6@Asurada-Nvidia>
+In-Reply-To: <abRsdCYapDe16GtJ@Asurada-Nvidia>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 X-ClientProxiedBy: kwepems500001.china.huawei.com (7.221.188.70) To
  kwepemj200003.china.huawei.com (7.202.194.15)
 
 
 
-On 2026/3/14 05:04:10, Nicolin Chen <nicolinc@nvidia.com> wrote:
-> On Fri, Mar 13, 2026 at 06:43:51PM +0800, Qinxin Xia wrote:
->>    * Directory Structure:
->>    * /sys/kernel/debug/iommu/arm_smmu_v3/
->>    * └── smmu0/
->> @@ -35,6 +42,8 @@
->>    *     └── stream_table
->>    *	   └── 0000:01:00.0:0/                    # PCI device with Stream ID 0
->>    *             ├── ste                           # Stream Table Entry
->> + *             └── context_descriptors/
->> + *                 └── all                       # All Context Descriptors
-> 
-> I wonder if we should do per-RID/PASID v.s. all. Otherwise, cd_dir
-> seems unnecessary, as it could be a file instead?
-> 
-
-That's exactly what I'm thinking about.
-Per-PASID could be better expanded, but now all maybe is enough.
-
+On 2026/3/14 03:58:44, Nicolin Chen <nicolinc@nvidia.com> wrote:
+> On Fri, Mar 13, 2026 at 06:43:47PM +0800, Qinxin Xia wrote:
 >> +/**
->> + * smmu_debug_dump_cd() - Dump Context Descriptor details to seq_file
+>> + * smmu_debugfs_capabilities_show() - Display SMMU capabilities
 >> + * @seq: seq_file to write to
->> + * @dev: device associated with the CD
->> + * @ssid: Substream ID
+>> + * @v: private data (SMMU device)
+> 
+> @v is not used
+> 
+>> +
+>> +/**
+>> + * arm_smmu_debugfs_setup() - Initialize debugfs for SMMU device
+>> + * @smmu: SMMU device to setup debugfs for
+>> + * @ioaddr: Physical base address of the SMMU device registers
+>> + *
+>> + * This function creates the basic debugfs directory structure for a SMMU device.
+> 
+> nit: an SMMU
+> 
+> Or maybe simply "@smmu"
+> 
+>> + *
+>> + * Return: 0 on success, negative error code on failure
 >> + */
->> +static void smmu_debug_dump_cd(struct seq_file *seq, struct device *dev, u32 ssid)
+>> +int arm_smmu_debugfs_setup(struct arm_smmu_device *smmu, phys_addr_t ioaddr)
 >> +{
->> +	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
->> +	struct arm_smmu_cd *cd;
->> +	u64 data;
->> +	int i;
+>> +	struct arm_smmu_debugfs *debugfs;
+>> +	struct dentry *smmu_dir;
+>> +	char name[32];
+>> +	int ret;
 >> +
->> +	if (!master) {
->> +		seq_puts(seq, "No master data\n");
->> +		return;
+>> +	/* Create root directory if it doesn't exist */
+>> +	mutex_lock(&arm_smmu_debugfs_lock);
+>> +	if (!smmuv3_root_dir) {
+>> +		smmuv3_root_dir = debugfs_create_dir("arm_smmu_v3",
+>> +						     iommu_debugfs_dir);
+>> +		if (!smmuv3_root_dir) {
+>> +			mutex_unlock(&arm_smmu_debugfs_lock);
+>> +			return -ENOMEM;
+>> +		}
 >> +	}
+>> +	mutex_unlock(&arm_smmu_debugfs_lock);
 >> +
->> +	cd = arm_smmu_get_cd_ptr(master, ssid);
->> +	if (!cd) {
->> +		seq_printf(seq, "CD not available for SSID %u\n", ssid);
->> +		return;
->> +	}
+>> +	/* Allocate debugfs structure */
+>> +	debugfs = kzalloc(sizeof(*debugfs), GFP_KERNEL);
 > 
-> master->cd_table can be free-ed. We could hit UAF in a race. This
-> very likely needs arm_smmu_asid_lock.
+> kzalloc_obj(*debugfs)
 > 
->> +	seq_printf(seq, "CD for Substream ID %u:\n", ssid);
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> index 4d00d796f078..211a0c87507a 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> @@ -33,6 +33,10 @@
+>>   #include "arm-smmu-v3.h"
+>>   #include "../../dma-iommu.h"
+>>   
+>> +#ifdef CONFIG_ARM_SMMU_V3_DEBUGFS
+>> +static unsigned int arm_smmu_present;
+>> +#endif
+> 
+> Unused
+> 
+>> @@ -4909,6 +4913,12 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>>   	if (ret)
+>>   		goto err_disable;
+>>   
+>> +#ifdef CONFIG_ARM_SMMU_V3_DEBUGFS
+>> +	ret = arm_smmu_debugfs_setup(smmu, ioaddr);
+>> +	if (ret)
+>> +		dev_warn(dev, "Failed to create debugfs!\n");
+>> +#endif
 >> +
->> +	/* CD 0 */
->> +	data = le64_to_cpu(cd->data[0]);
->> +	seq_printf(seq, "  Valid: %s\n", data & CTXDESC_CD_0_V ? "Yes" : "No");
->> +	seq_printf(seq, "  T0SZ: 0x%llx\n", data & CTXDESC_CD_0_TCR_T0SZ);
->> +	seq_printf(seq, "  EPD0: %s\n", data & CTXDESC_CD_0_TCR_EPD0 ? "Yes" : "No");
->> +	seq_printf(seq, "  EPD1: %s\n", data & CTXDESC_CD_0_TCR_EPD1 ? "Yes" : "No");
+>>   	/* And we're up. Go go go! */
+>>   	ret = iommu_device_sysfs_add(&smmu->iommu, dev, NULL,
+>>   				     "smmu3.%pa", &ioaddr);
 > 
-> All these are unnecessary if V=0? Maybe the per-SSID output should
-> depend on V=1 at all. Same might apply to STE.
+> Since name is all we wanted, maybe follow iommu_device_sysfs_add()
+> by passing in:
+>     "const char *name, ..." instead of "phys_addr_t ioaddr"
 > 
-I made this judgment before dump:
-
-		if (cd && (le64_to_cpu(cd->data[0]) & CTXDESC_CD_0_V)) {
-			seq_printf(seq, "\n--- SSID %u ---\n", ssid);
-			smmu_debug_dump_cd(seq, dev, ssid);
-		}
-
-So, the CDs dumped here are valid.
-You remind me that "Valid" print can be omitted here :-)
-
->> +/* All CDs debugfs file operations */
->> +static int smmu_debugfs_all_cds_show(struct seq_file *seq, void *v)
->> +{
->> +	struct device *dev = seq->private;
->> +
->> +	smmu_debug_dump_all_cds(seq, dev);
->> +	return 0;
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+>> index 3c6d65d36164..247f27426f6b 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+>> @@ -733,6 +733,15 @@ struct arm_smmu_impl_ops {
+>>   			  const struct iommu_user_data *user_data);
+>>   };
+>>   
+>> +#ifdef CONFIG_ARM_SMMU_V3_DEBUGFS
+>> +struct arm_smmu_debugfs {
+>> +	struct dentry *root_dir;
 > 
-> Just unwrap the smmu_debug_dump_all_cds().
+> Unused
+> 
+>> +	struct dentry *smmu_dir;
+>> +	struct arm_smmu_device *smmu;
+> 
+> Unused
 > 
 > Nicolin
 > 
+
+I'll delete the unuse variable, but I'll keep this struct there for
+extensions.
 -- 
 Thanks,
 Qinxin
