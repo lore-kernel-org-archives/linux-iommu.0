@@ -1,131 +1,358 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 115E038D019
-	for <iommu@lists.linux.dev>; Mon, 16 Mar 2026 10:55:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A07CE3382FB;
+	Mon, 16 Mar 2026 11:49:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773658507; cv=none; b=n88rADJCyTe65vMc2nA6T+u/0haR+eyUah44adfS921E3tNhMqqyfEbvkJAloc0hQRXu5W4wQeu5JNvASQJzx7FP41RXbHYLxKp86X9I7GaW1hpok1v6jkwVOFI65eAemccCHJFRxsVYwe3PRawv52XNmF/wfFZ3QK/j4J+EC+M=
+	t=1773661748; cv=none; b=WSiJ5jQwC/Z0LziiZldvn9FZxqZmAYdLfaLJbgMmobKN30ij4thK+dvw+OGVCT1tBlfGpxoW3VkxoE6X4DlRI+qqx5ppryiRpR+nzMfAQUdUq/jxREeFxgn7s9sEXrPiRWxZ9jLOYJWmW2NAug8RgqNqyOjbObf/uZb8jT5jwSc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773658507; c=relaxed/simple;
-	bh=PENpEpatLH0WgmJ8nuINA9vJeOA32NMCLpwxPNCjmic=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=SUl1DR7vPGvRAFmUx6aAod4GFpsfNXB2zzjyl196nnKiQAz0vJMRiKyB/llAij+FjnqdePFkwgkOFX/vc1l50aDBKRHQdmOLKMZrYqRHQwm0Gj44cwIYnXD1RhHFNnWTeCjipWA5RtFnJA3+258Ux7J9JDY/NXhpCkrFhnJogng=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=HaGSGGqy; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="HaGSGGqy"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1773658505;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=j/4AllVOKh8z4TecylNv9BZB3czFOIQzZj3H/I9GZN8=;
-	b=HaGSGGqyqNoof3Zy7y+eQNFzjoTXW0vtCtSIvGUpyOha2YVjkbhCCul/gYrsRmYCZ1atdf
-	xQ3XqLxoGgvUkxVkgv0wJeZTNJHvCqWSY3Bs0g2oMXhTCyyAR0E/PdM29OP4I/+JHpDGRD
-	8jzhMTWWrd68PYOpc4IXtzmwkqkgmL8=
-Received: from mail-yw1-f198.google.com (mail-yw1-f198.google.com
- [209.85.128.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-84-B4zO4QxTM2utM3WzC2Q84Q-1; Mon, 16 Mar 2026 06:55:03 -0400
-X-MC-Unique: B4zO4QxTM2utM3WzC2Q84Q-1
-X-Mimecast-MFC-AGG-ID: B4zO4QxTM2utM3WzC2Q84Q_1773658503
-Received: by mail-yw1-f198.google.com with SMTP id 00721157ae682-7983f854288so85361107b3.3
-        for <iommu@lists.linux.dev>; Mon, 16 Mar 2026 03:55:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773658503; x=1774263303;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=j/4AllVOKh8z4TecylNv9BZB3czFOIQzZj3H/I9GZN8=;
-        b=CFPiwX3rsHDyxg/AVSSjMJ6kIpup+s9aFbOApQDkipNKZ6tncRvXq23KoKLzqeg4SY
-         FAhkNJARAqdTOE/WHJAw97KC2rDkGq5muLFJ5D0ur4p0gmD2th+Md/0xTmHY72dHuk4J
-         hy4ToRHryxiym0XpDMp8/WceynQmXWeGSZ6Rb1jcwEEtLVSwCCOEj7Wg5qrdBfylyr+v
-         tOxIsVOiy4ccQCO9pYryCixETuSMxl8Aw7XB08N9FtprcYSbkS/zUTl44PdpifKwkBDc
-         gUaX6dl9jY4RNy3GLQppW3DUHv9q9J6m6pM0cg7k+TvV81KUzgRk8WKdkcg/B2lMwDyQ
-         USKQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUuhL4JARoqFaRRyJaw0qXaqOXBsfnTWwzu8275ESQEw6UKjAT573HFf/Hbrkl8SLRwdNr3kQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxPLNFwbeT4sByX9aGsbAV1xy+piuvUEe0TnXZj/4OFHHvxRd65
-	jYbtEQwNa+FsTN2zvoc9rQsIkrL19eGaM9AUg+TAE6wXoX1Xkq9oehPx7fvHIcWuxGQygpMchD9
-	V1Mtwh2RGoJaHyS0RGH5jcC8vKpbnJoXJvE3rUWN1ecuABEr9CAtyDyX/+MzdULEMBWtEVLc4gG
-	gLrw94UFCxd7Y9BRNqNT4j2alRPsQYXX8=
-X-Gm-Gg: ATEYQzxe0j0guP3/KDEg6RsL9s2IhYN0Wvgf/hIpuvm04o8ivFgHaz+/AXuXbYmkFw3
-	yvo0mzoc4WtUsnrmkQ06r2NBwCBTHm/w/96eDpvc//lT3LB8Vi1sqiUk1Rj7ZY4GLjL+tQouerH
-	4vlCsBe+um+s27bLzAUaDQrTelEdtlo0u6HsE7qIQAuLCGjodawftGfxB+rgXz1GM+9dCKLBZcz
-	w==
-X-Received: by 2002:a05:690e:449a:b0:64a:db50:fab2 with SMTP id 956f58d0204a3-64e630d964emr9195123d50.80.1773658503296;
-        Mon, 16 Mar 2026 03:55:03 -0700 (PDT)
-X-Received: by 2002:a05:690e:449a:b0:64a:db50:fab2 with SMTP id
- 956f58d0204a3-64e630d964emr9195107d50.80.1773658502956; Mon, 16 Mar 2026
- 03:55:02 -0700 (PDT)
+	s=arc-20240116; t=1773661748; c=relaxed/simple;
+	bh=yDwyMIe0jT0uj9BxWLio6iTlR/uGJGGXKfkNbelhLxY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ezcEvvJ6u79PHk93WpNdqkIRqQlCLvMSmrh5OS3LboTxd1RhS9k9QzCpanbPKPRsy053i4woSX5RAijD3OAF9PZrEbhLkDNUIWhb2dbicSz227JJ5R9+T5KUIFrg0TeoVSG82J0aMtLjOKX7p9bn+5LjbAs0VmDwz9Rjfn2X3m4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DA0B01477;
+	Mon, 16 Mar 2026 04:48:59 -0700 (PDT)
+Received: from [10.57.61.116] (unknown [10.57.61.116])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2A63B3F778;
+	Mon, 16 Mar 2026 04:49:01 -0700 (PDT)
+Message-ID: <be41a533-46a8-411b-bf6c-d56b550691a7@arm.com>
+Date: Mon, 16 Mar 2026 11:48:58 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260306-b4-dmabuf-heap-coherent-rmem-v3-0-3d00d36c9bc4@redhat.com>
- <20260306-b4-dmabuf-heap-coherent-rmem-v3-3-3d00d36c9bc4@redhat.com> <20260313230629.GA3603067-robh@kernel.org>
-In-Reply-To: <20260313230629.GA3603067-robh@kernel.org>
-From: Albert Esteve <aesteve@redhat.com>
-Date: Mon, 16 Mar 2026 11:54:51 +0100
-X-Gm-Features: AaiRm51o4lEgIIRwy7J8EQU-dh_zU9bcODR7YayBvstmpxh8vjYCQuobudoxI8I
-Message-ID: <CADSE00JymMjob5J02bh+YSw+2zyjx8OWxks5aEhuM2GX8ZB7=A@mail.gmail.com>
-Subject: Re: [PATCH v3 3/6] of_reserved_mem: add a helper for rmem device_init op
-To: Rob Herring <robh@kernel.org>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>, 
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>, 
-	John Stultz <jstultz@google.com>, "T.J. Mercier" <tjmercier@google.com>, 
-	=?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Saravana Kannan <saravanak@kernel.org>, linux-kernel@vger.kernel.org, 
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev, 
-	devicetree@vger.kernel.org, mripard@redhat.com, echanude@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: cMXlP06ksV4jFGpSRgq0rgA4paYky9BGqRXur6s7tYY_1773658503
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] of/iommu: support multiple iommu-map entries per input
+ ID
+To: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@kernel.org>,
+ Richard Zhu <hongxing.zhu@nxp.com>, Lucas Stach <l.stach@pengutronix.de>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
+ Manivannan Sadhasivam <mani@kernel.org>, Bjorn Helgaas
+ <bhelgaas@google.com>, Frank Li <Frank.Li@nxp.com>,
+ Sascha Hauer <s.hauer@pengutronix.de>,
+ Pengutronix Kernel Team <kernel@pengutronix.de>,
+ Fabio Estevam <festevam@gmail.com>, Marc Zyngier <maz@kernel.org>,
+ Juergen Gross <jgross@suse.com>, Stefano Stabellini
+ <sstabellini@kernel.org>,
+ Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+ Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+ Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>,
+ Conor Dooley <conor+dt@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Prakash Gupta <prakash.gupta@oss.qualcomm.com>,
+ Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+Cc: linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ imx@lists.linux.dev, xen-devel@lists.xenproject.org
+References: <20260315-iommu_multi_map-v2-1-51b98cb79331@oss.qualcomm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260315-iommu_multi_map-v2-1-51b98cb79331@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Sat, Mar 14, 2026 at 12:06=E2=80=AFAM Rob Herring <robh@kernel.org> wrot=
-e:
->
-> On Fri, Mar 06, 2026 at 11:36:34AM +0100, Albert Esteve wrote:
-> > Add a helper function wrapping internal reserved memory
-> > device_init call and expose it externally.
->
-> Why?
->
-> The diff tells us what. The commit msg needs to tell us why. Maybe the
-> rest of the series explains it, but this commit needs to stand on its
-> own.
+On 2026-03-15 5:07 pm, Vijayanand Jitta wrote:
+> When multiple mappings are present for an input ID, linux matches
+> just the first one. There is a usecase [1] where all the mappings
+> are to be maintained in parallel for an iommu-map entry of a same
+> input id.
+> 
+> Add a next_offset iterator parameter to of_map_iommu_id() and
+> refactor of_map_id() internals into a static helper to carry it.
+> Update of_iommu_configure_dev_id() to loop over all matching
+> entries to support this case. All other callers pass NULL and
+> are unaffected.
+> 
+> [1] https://lore.kernel.org/all/20250627-video_cb-v3-0-51e18c0ffbce@quicinc.com/
 
-ACK.
+That series doesn't even reference "iommu-map" though?
 
-This patch prepares for the heap implementation in patch #4, which
-uses the new helper function. I will add the information to the commit
-body.
+Once again, NAK to this - the purpose of "iommu-map"/"msi-map" is to 
+describe a translation from one hardware ID space to another, where a 
+one-to-many mapping of IDs to a single target would never make sense. 
+While it is in principle possible for a single device to map to multiple 
+different *targets*, that is ambiguous as to what it means - is it 
+giving the OS a choice to use whichever one it prefers, or implying they 
+must all be configured identically at all times? - so depending on how 
+you prefer to look at it, we either do not support that, or we have 
+chosen the first option.
 
->
-> >
-> > Use the new helper function within of_reserved_mem_device_init_by_idx()=
-.
-> >
-> > Signed-off-by: Albert Esteve <aesteve@redhat.com>
-> > ---
->
-> Version history?
+> Signed-off-by: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+> ---
+> On Qualcomm kaanapali, the VPU hardware has multiple internal blocks
+> that generate different stream IDs for the same input ID. The device
+> tree encodes them as separate iommu-map entries sharing the same input
+> ID:
 
-You mean track it in the commit body? History is already detailed in
-the cover letter.
+And all that means is that your invented notion of "input IDs" is 
+clearly wrong. Please stop this abuse of common bindings and just come 
+up with a proper way to describe your hardware appropriately for what it 
+actually is and does.
 
->
-> >  drivers/of/of_reserved_mem.c    | 68 ++++++++++++++++++++++++++-------=
---------
-> >  include/linux/of_reserved_mem.h |  8 +++++
-> >  2 files changed, 52 insertions(+), 24 deletions(-)
->
+Thanks,
+Robin.
+
+>    iommu-map = <0x100 &apps_smmu 0x1940 0x1>,
+>                <0x100 &apps_smmu 0x1a20 0x1>, ...
+> 
+> This requires multiple iommu-map entries per device.
+> of_iommu_configure_dev_id() currently stops at the first match,
+> so only one stream ID gets registered with the IOMMU.
+> 
+> The v1 series [1] addressed this with a callback threaded through
+> of_map_id().
+> 
+> This patch uses a next_offset iterator on of_map_iommu_id() instead,
+> keeping of_map_id() unchanged, and updates of_iommu_configure_dev_id()
+> to loop over all matching entries.
+> 
+> This patch also depends on iommu-cells series [4].
+> 
+> Changes since v1:
+>        - Split patches 2/7 [2] and 3/7 [3] out into this standalone series.
+>        - Dropped the callback (of_map_id_cb / of_map_id_arg) entirely.
+>        - Replaced with a next_offset iterator on of_map_iommu_id()
+>      	only; of_map_id() public API is unchanged.
+>        - of_iommu_configure_dev_id() now loops explicitly; no
+>          bus-type heuristic (dev_is_platform()) needed.
+> 
+> [1] https://lore.kernel.org/all/20260126-kaanapali-iris-v1-0-e2646246bfc1@oss.qualcomm.com/
+> [2] https://lore.kernel.org/all/20260126-kaanapali-iris-v1-2-e2646246bfc1@oss.qualcomm.com/
+> [3] https://lore.kernel.org/all/20260126-kaanapali-iris-v1-3-e2646246bfc1@oss.qualcomm.com/
+> [4] https://lore.kernel.org/all/ce25b963-0e8e-4411-a406-7b466eadb1f9@oss.qualcomm.com/
+> 
+> Signed-off-by: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+> ---
+>   drivers/iommu/of_iommu.c              | 20 +++++++----
+>   drivers/of/base.c                     | 65 ++++++++++++++++++++++++++++++-----
+>   drivers/pci/controller/dwc/pci-imx6.c |  2 +-
+>   drivers/pci/controller/pcie-apple.c   |  2 +-
+>   drivers/xen/grant-dma-ops.c           |  2 +-
+>   include/linux/of.h                    |  4 +--
+>   6 files changed, 75 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index a18bb60f6f3d..947eedd9a88b 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -46,14 +46,22 @@ static int of_iommu_configure_dev_id(struct device_node *master_np,
+>   				     const u32 *id)
+>   {
+>   	struct of_phandle_args iommu_spec = {};
+> -	int err;
+> +	int offset = 0, err;
+> +	bool found = false;
+>   
+> -	err = of_map_iommu_id(master_np, *id, &iommu_spec);
+> -	if (err)
+> -		return err;
+> +	while (!(err = of_map_iommu_id(master_np, *id, &iommu_spec, &offset))) {
+> +		err = of_iommu_xlate(dev, &iommu_spec);
+> +		of_node_put(iommu_spec.np);
+> +		iommu_spec.np = NULL;
+> +		if (err)
+> +			return err;
+> +		found = true;
+> +	}
+> +
+> +	/* -ENODEV means all entries exhausted; success if at least one was processed */
+> +	if (err == -ENODEV && found)
+> +		return 0;
+>   
+> -	err = of_iommu_xlate(dev, &iommu_spec);
+> -	of_node_put(iommu_spec.np);
+>   	return err;
+>   }
+>   
+> diff --git a/drivers/of/base.c b/drivers/of/base.c
+> index 9c44eb6d445d..71175e670757 100644
+> --- a/drivers/of/base.c
+> +++ b/drivers/of/base.c
+> @@ -2146,13 +2146,13 @@ static bool of_check_bad_map(const __be32 *map, int len)
+>    *
+>    * Return: 0 on success or a standard error code on failure.
+>    */
+> -int of_map_id(const struct device_node *np, u32 id,
+> -	       const char *map_name, const char *cells_name,
+> -	       const char *map_mask_name,
+> -	       struct of_phandle_args *arg)
+> +static int of_map_id_next(const struct device_node *np, u32 id,
+> +			  const char *map_name, const char *cells_name,
+> +			  const char *map_mask_name,
+> +			  struct of_phandle_args *arg, int *next_offset)
+>   {
+>   	u32 map_mask, masked_id;
+> -	int map_bytes, map_len, offset = 0;
+> +	int map_bytes, map_len, offset = next_offset ? *next_offset : 0;
+>   	bool bad_map = false;
+>   	const __be32 *map = NULL;
+>   
+> @@ -2161,7 +2161,7 @@ int of_map_id(const struct device_node *np, u32 id,
+>   
+>   	map = of_get_property(np, map_name, &map_bytes);
+>   	if (!map) {
+> -		if (arg->np)
+> +		if (arg->np || next_offset)
+>   			return -ENODEV;
+>   		/* Otherwise, no map implies no translation */
+>   		arg->args[0] = id;
+> @@ -2262,9 +2262,16 @@ int of_map_id(const struct device_node *np, u32 id,
+>   		pr_debug("%pOF: %s, using mask %08x, id-base: %08x, out-base: %08x, length: %08x, id: %08x -> %08x\n",
+>   			np, map_name, map_mask, id_base, be32_to_cpup(out_base),
+>   			id_len, id, id_off + be32_to_cpup(out_base));
+> +
+> +		if (next_offset)
+> +			*next_offset = offset;	/* caller resumes from here */
+>   		return 0;
+>   	}
+>   
+> +	/* no (more) matches found in the map */
+> +	if (next_offset)
+> +		return -ENODEV;
+> +
+>   	pr_info("%pOF: no %s translation for id 0x%x on %pOF\n", np, map_name,
+>   		id, arg->np);
+>   
+> @@ -2276,6 +2283,38 @@ int of_map_id(const struct device_node *np, u32 id,
+>   	pr_err("%pOF: Error: Bad %s length: %d\n", np, map_name, map_bytes);
+>   	return -EINVAL;
+>   }
+> +
+> +/**
+> + * of_map_id - Translate an ID through a downstream mapping.
+> + * @np: root complex device node.
+> + * @id: device ID to map.
+> + * @map_name: property name of the map to use.
+> + * @cells_name: property name of target specifier cells.
+> + * @map_mask_name: optional property name of the mask to use.
+> + * @arg: pointer to a &struct of_phandle_args. On input, @arg->np may be
+> + *	set to a target device node to match, or NULL to match any. On
+> + *	success, @arg->np will be set to the matched target node (with a
+> + *	reference held), @arg->args_count will be set to the number of
+> + *	output specifier cells as defined by @cells_name in the target node,
+> + *	and @arg->args[0..args_count-1] will contain the translated output
+> + *	specifier values.
+> + *
+> + * Given a device ID, look up the appropriate implementation-defined
+> + * platform ID and/or the target device which receives transactions on that
+> + * ID, as per the "iommu-map" and "msi-map" bindings. If @arg->np points to
+> + * a non-NULL device node, only entries targeting that node will be matched;
+> + * if it is NULL, it will receive the device node of the first matching
+> + * target phandle, with a reference held.
+> + *
+> + * Return: 0 on success or a standard error code on failure.
+> + */
+> +int of_map_id(const struct device_node *np, u32 id,
+> +	      const char *map_name, const char *cells_name,
+> +	      const char *map_mask_name,
+> +	      struct of_phandle_args *arg)
+> +{
+> +	return of_map_id_next(np, id, map_name, cells_name, map_mask_name, arg, NULL);
+> +}
+>   EXPORT_SYMBOL_GPL(of_map_id);
+>   
+>   /**
+> @@ -2285,15 +2324,23 @@ EXPORT_SYMBOL_GPL(of_map_id);
+>    * @arg: pointer to a &struct of_phandle_args for the result. On success,
+>    *	@arg->np holds a reference to the target node that the caller must
+>    *	release with of_node_put().
+> + * @next_offset: if non-NULL, on success it is set to the map offset just
+> + *	past the matched entry. Pass this value back on the next call to
+> + *	resume scanning from where the previous call left off, allowing all
+> + *	matching entries for the same @id to be iterated. Pass NULL (or a
+> + *	pointer to 0) to find only the first match.
+>    *
+> - * Convenience wrapper around of_map_id() using "iommu-map" and "iommu-map-mask".
+> + * Wrapper around the internal iommu-map scanner using "iommu-map" and
+> + * "iommu-map-mask". When @next_offset is non-NULL, returns -ENODEV once
+> + * all matching entries have been exhausted.
+>    *
+>    * Return: 0 on success or a standard error code on failure.
+>    */
+>   int of_map_iommu_id(const struct device_node *np, u32 id,
+> -		    struct of_phandle_args *arg)
+> +		    struct of_phandle_args *arg, int *next_offset)
+>   {
+> -	return of_map_id(np, id, "iommu-map", "#iommu-cells", "iommu-map-mask", arg);
+> +	return of_map_id_next(np, id, "iommu-map", "#iommu-cells",
+> +			      "iommu-map-mask", arg, next_offset);
+>   }
+>   EXPORT_SYMBOL_GPL(of_map_iommu_id);
+>   
+> diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
+> index 5f8a11774eb5..0d7f5e6d037a 100644
+> --- a/drivers/pci/controller/dwc/pci-imx6.c
+> +++ b/drivers/pci/controller/dwc/pci-imx6.c
+> @@ -1146,7 +1146,7 @@ static int imx_pcie_add_lut_by_rid(struct imx_pcie *imx_pcie, u32 rid)
+>   	u32 sid = 0;
+>   
+>   	target = NULL;
+> -	err_i = of_map_iommu_id(dev->of_node, rid, &iommu_spec);
+> +	err_i = of_map_iommu_id(dev->of_node, rid, &iommu_spec, NULL);
+>   	if (!err_i) {
+>   		target = iommu_spec.np;
+>   		sid_i = iommu_spec.args[0];
+> diff --git a/drivers/pci/controller/pcie-apple.c b/drivers/pci/controller/pcie-apple.c
+> index 2e86f8fd300b..c780e3f9d14d 100644
+> --- a/drivers/pci/controller/pcie-apple.c
+> +++ b/drivers/pci/controller/pcie-apple.c
+> @@ -765,7 +765,7 @@ static int apple_pcie_enable_device(struct pci_host_bridge *bridge, struct pci_d
+>   	dev_dbg(&pdev->dev, "added to bus %s, index %d\n",
+>   		pci_name(pdev->bus->self), port->idx);
+>   
+> -	err = of_map_iommu_id(port->pcie->dev->of_node, rid, &iommu_spec);
+> +	err = of_map_iommu_id(port->pcie->dev->of_node, rid, &iommu_spec, NULL);
+>   	if (err)
+>   		return err;
+>   
+> diff --git a/drivers/xen/grant-dma-ops.c b/drivers/xen/grant-dma-ops.c
+> index 36547d7cf1d6..062beb5825f5 100644
+> --- a/drivers/xen/grant-dma-ops.c
+> +++ b/drivers/xen/grant-dma-ops.c
+> @@ -325,7 +325,7 @@ static int xen_dt_grant_init_backend_domid(struct device *dev,
+>   		struct pci_dev *pdev = to_pci_dev(dev);
+>   		u32 rid = PCI_DEVID(pdev->bus->number, pdev->devfn);
+>   
+> -		if (of_map_iommu_id(np, rid, &iommu_spec)) {
+> +		if (of_map_iommu_id(np, rid, &iommu_spec, NULL)) {
+>   			dev_dbg(dev, "Cannot translate ID\n");
+>   			return -ESRCH;
+>   		}
+> diff --git a/include/linux/of.h b/include/linux/of.h
+> index 953f2dbe0e86..990849f00e74 100644
+> --- a/include/linux/of.h
+> +++ b/include/linux/of.h
+> @@ -467,7 +467,7 @@ int of_map_id(const struct device_node *np, u32 id,
+>   	       struct of_phandle_args *arg);
+>   
+>   int of_map_iommu_id(const struct device_node *np, u32 id,
+> -		    struct of_phandle_args *arg);
+> +		    struct of_phandle_args *arg, int *next_offset);
+>   
+>   int of_map_msi_id(const struct device_node *np, u32 id,
+>   		  struct of_phandle_args *arg);
+> @@ -943,7 +943,7 @@ static inline int of_map_id(const struct device_node *np, u32 id,
+>   }
+>   
+>   static inline int of_map_iommu_id(const struct device_node *np, u32 id,
+> -				  struct of_phandle_args *arg)
+> +				  struct of_phandle_args *arg, int *next_offset)
+>   {
+>   	return -EINVAL;
+>   }
+> 
+> ---
+> base-commit: 9e94742cffb7541f55fa904a40c1ca9d836d303d
+> change-id: 20260315-iommu_multi_map-8c9b78490ace
+> 
+> Best regards,
 
