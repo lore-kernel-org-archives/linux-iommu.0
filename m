@@ -1,181 +1,144 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31F944CB5B
-	for <iommu@lists.linux.dev>; Mon, 16 Mar 2026 01:10:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.16
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773623418; cv=fail; b=sWM3N3+WhdrovhtsVJd3tWleEU3kGt7OQ7aIh9Jxt2KLY+JTtKT0iEMsqVMBmFzQy3XY6HMgq7EeXjZQcyMkln0plHA2HGiqY4Ga2YHjFqAMGtQQ7TSWHMMumBPEaBEF93peO3qUV22q+9GmVjFOD9Bmktt4sETTjgkSduY5gIc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773623418; c=relaxed/simple;
-	bh=oRZcFcfd7ygPPQHSac6XqSqwtkPObxDB0S9E9sL6p24=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=efrvWes9A121sTC4ONmSCOETF2ZAOTVSKM0VjfPnz4A2jQiWPZXe2uBsx63CJdwAFTUCHyhU6qrNptWRJWu4rwvZdGjZsCoCSCyi+0XZkcUsva3SwtZ2F3JFDtgx6EKqTJUFm9uSEq0Oc1YYEG+7u3ycXJpjWIAvUanHqWEbkG0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BWHLsV6T; arc=fail smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4666B78F4A;
+	Mon, 16 Mar 2026 05:47:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773640067; cv=none; b=miSOYz3nxXcEF8eU2btu2CM2sGKl3LVi7ft5mj9VcgS1lV+aDm+Mnr1V+4Dvn3o3UWOBkoTyLl5HYUFPKdYsWolQczOysLE5+8u2+yTtrWh+EJGGt3dMK6KiLuCTA8XgIXJAXV8INPDXSUX/87Wr9dZx7CokNQFCIDX+PyCyUtk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773640067; c=relaxed/simple;
+	bh=+BbWevT0Swja6eb2FmIWQ32cxIjaS3zQmKU+0N869yU=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=FgTYmChsmPEOxiRX2N5TpFFEnOZjDySC5ZUFZ4lpIS2lK6FtbMXtLDRBuyEiGqbmY9PgN1lnvJtNBHquiAMVEAKbrufRuSsxc7cQNXxXIx0qHpxYM126owD/oh0VgdfSNdSR7YoPwv9YjSSPcWeLxfqw9e0ZAIEfzyBJxeoUg6o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QRAZ+9S2; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BWHLsV6T"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773623416; x=1805159416;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=oRZcFcfd7ygPPQHSac6XqSqwtkPObxDB0S9E9sL6p24=;
-  b=BWHLsV6T9utwTuG54KxVW/YOaip2767P6i/gc6ks+slyODTnBMj2ws9X
-   XCLQH+MS6+Qe+TilaJNMyGivomFO9s3tYnc98FsFpSbsvR3wqItn2C/H3
-   CnaH/yUp6h2y2nPiW/wh9UqyCnNIQ+QYQ/yNpXvvqunrUWPJuXZlvtE9y
-   7tpX/AvCY1y8Wj5Bg8la91MxtwbtjxJ9b6I2zt27CvZfPRQri2iW7kWyZ
-   Qd3wGj3+7q+JX4fOHYMAufo6OWiAIV57QqzADSJBhtK7n8LC/hF/HJ8Du
-   q/mHDepMc/C731RH2UQTUvpt+itzvtNH231aCLjiN79QYx6euDuQnjRRL
-   g==;
-X-CSE-ConnectionGUID: 7LNlU6vJSHipYCnWFI/BxA==
-X-CSE-MsgGUID: EamEbkHpRYStIMFC1p9eSw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11730"; a="74825240"
-X-IronPort-AV: E=Sophos;i="6.23,123,1770624000"; 
-   d="scan'208";a="74825240"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2026 18:10:15 -0700
-X-CSE-ConnectionGUID: c/NRRlQVRHWca6eua9/Utw==
-X-CSE-MsgGUID: apDnR2piSxiWqfe8J6/V+Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,123,1770624000"; 
-   d="scan'208";a="221706245"
-Received: from fmsmsx902.amr.corp.intel.com ([10.18.126.91])
-  by orviesa009.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2026 18:10:15 -0700
-Received: from FMSMSX901.amr.corp.intel.com (10.18.126.90) by
- fmsmsx902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Sun, 15 Mar 2026 18:10:14 -0700
-Received: from fmsedg903.ED.cps.intel.com (10.1.192.145) by
- FMSMSX901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Sun, 15 Mar 2026 18:10:14 -0700
-Received: from SA9PR02CU001.outbound.protection.outlook.com (40.93.196.21) by
- edgegateway.intel.com (192.55.55.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Sun, 15 Mar 2026 18:10:13 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ofLVk13L1He+bU151/xTCHZBKYJsjTOFp3m/sI9KnwKX7QBx8tRbz+SAq5F5TPVBCO8HIIxbmuNkmemZeGdOdi7r2ieivjQOJesX3YIjI4hAVPudzRdGo8iAn5ORvwJ4Y7ZFuhzh9ZT7VtUUShSUGQ2JG2evdYlw9+jqmzDwjtAFzBH3D7nL0RWNocHecdRq4qUkSKpaOz0i+4hKB3Mz5jIREtZ3Q3dE7SjDwAeKGEe0tacBS4ESEKFa5duyu9GVUrYXUvdbedGjfso1pkV18K5n6VmW1HuxwWgC4HaYFwU6Nhv5zYt5TPsJuUyl8loeI+041toGdwsbx5dV3CcpVA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oRZcFcfd7ygPPQHSac6XqSqwtkPObxDB0S9E9sL6p24=;
- b=naSuCWjovrgGKt/Gid6IpQyCN9CuEaQbeXkJTa9rq81rhbe2LMMxV/bz3gJCNVf3Q4u5uypDjSiZS/yBKo3qPhrnDr+18S7g7dZ8qZwXN3FsRjxUaABsm1HGDN7GWQDWyj4ftdez/vG+hslgU2ZgJLvc0QJlt3Kya/h89N3x/SP04dXupHaaFyIvSXGOFYn4bkjG4zza4cSdbkb8hoz6nUaBVJvml8pL0ELe9AYRF0uwO0DtXgD2KNuN5ClJ02bB0PVBFhlCaCQYA9Zq5oEHUO3+lkvGChrG1He7o23/y/ABb8Gh+GG4lqoYFGq8GRbaKt4A0+rj+rSJnmpSveky6Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BL1PR11MB5271.namprd11.prod.outlook.com (2603:10b6:208:31a::21)
- by DS0PR11MB7310.namprd11.prod.outlook.com (2603:10b6:8:11d::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9723.14; Mon, 16 Mar
- 2026 01:10:06 +0000
-Received: from BL1PR11MB5271.namprd11.prod.outlook.com
- ([fe80::780e:4379:6988:f48b]) by BL1PR11MB5271.namprd11.prod.outlook.com
- ([fe80::780e:4379:6988:f48b%4]) with mapi id 15.20.9723.014; Mon, 16 Mar 2026
- 01:10:06 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Will
- Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Jason
- Gunthorpe" <jgg@nvidia.com>
-CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: RE: [PATCH 1/1] iommu/vt-d: Only handle IOPF for SVA when PRI is
- supported
-Thread-Topic: [PATCH 1/1] iommu/vt-d: Only handle IOPF for SVA when PRI is
- supported
-Thread-Index: AQHcsGOtw7s/8TWEo0iS768ZRLcbCrWwYl/w
-Date: Mon, 16 Mar 2026 01:10:06 +0000
-Message-ID: <BL1PR11MB527196268E156193385D104C8C40A@BL1PR11MB5271.namprd11.prod.outlook.com>
-References: <20260310075520.295104-1-baolu.lu@linux.intel.com>
-In-Reply-To: <20260310075520.295104-1-baolu.lu@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BL1PR11MB5271:EE_|DS0PR11MB7310:EE_
-x-ms-office365-filtering-correlation-id: b11eccb7-619a-49d8-38fb-08de82f8c2eb
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|376014|366016|38070700021|18002099003|22082099003|56012099003;
-x-microsoft-antispam-message-info: gtE1ZGTyH5eew1HeZ7vKBwS7+1gn4vHWLo0xpi6FY1MC5P9NW9zq32jn79jGg89p+/X0Q6ZEjNC26xqcn1CCCkOaoJDU2t65EWaU7q1gMHZwbiVBGc5h+d7PEOLfA4RZWimbRPT8bY4TOJk6ljKMXMFbC//x39lFdzUUzXdzzUST4EnCqAy1PPVWJi/AyzjuvIZQu2QEvKvyQ5XT4dOPB62RgEhP1Wh+35ocHuAXFSdfUJOZ3NIXCypNoIqoovnEAfiWo6kxNW61HymNMKoUAL5OdpDlYf8E9eNjwZOAcGa7brgJW2CIapUPzcVh5lFH2rNZ5RJfTdJ4iapcsj1a48BVSztkVjb+m96jlwEiSQQpgRki2IAWXmkAXaVL0l8JFbOiupHuQKVYaQllhmxdQ113QnJqI3cIaRqD69ytx0bxRlL+fF4YSWK9bc/IUcfOyRcrhiiCV5hCZewaIGUiNss5vHebddQ2JsWHxeCnuQfkQeSVb9afOobjYnBcZ+o39o0KOjyZOBLx2+P14wAg4okoki7nuUjFa2hg12B5J62Ufi2RF2Wk5Sjrba2NUmFUSmiqadTnnA0EBtqgxMyKlxWkERTmOFcIlp0Z80DZkZqqjYrPfs3YhU4griEYl8v/y+NDdNrxeRwQbr+iHWHT4bcgM38Gjlp9CbWNVfXaCC1D3krU4iFdoli++A3XYbtqRbc6ZhE7GfsfYDaNhTJh5+cFUxsmKBSDKOAyP85varZakqgSSPWsAIO/+q0W/5a0b5fVAdd7p5XLcy4XA40yhIOTRMQbtIpRINGhIrk8jsM=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR11MB5271.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016)(38070700021)(18002099003)(22082099003)(56012099003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?TVYd6bGIIqp1OrkXNAiZuuLxhwNJYdNYuiMxYto0p3pDSiV/eyyOzCNoqvgj?=
- =?us-ascii?Q?o0LSH24/vWQ74JMBA8xKeHLlEnbKaIK4BEBW4qdgcgAXWz3i+g+/xz0wZ+ma?=
- =?us-ascii?Q?t6nD3zGECvWuqN4hIATbgHLn62Vgap1J57x1WIQQlA2Oc0KOuS2a2CkB5Qpm?=
- =?us-ascii?Q?/Sc+v1RmsfoHYBYszo3PiqbAwx7ctf/JpiO7PO31gmaz/Uwao9mysABmCCps?=
- =?us-ascii?Q?4AiqXSAG8IlzDDzdlyLBANyHJbHnX9sD7F/hAqiHmZvUpcbfMG+mnh+qXXWI?=
- =?us-ascii?Q?TnN+yltRfs5PfyB5TymxcZhekhMWL7obDJj5esEgytDId3tVvKGS5Iw8ef6q?=
- =?us-ascii?Q?9wqqIuYRTgZGyDEYTaXfcWVJU33DWfLve0cnWY5R6idTspP1arvJxj842wEJ?=
- =?us-ascii?Q?uVWnC1NGSdWnai4CW4RARIiUF+PPlQzHU7V/0M6plyFC9SbQv23hsgrmWEvP?=
- =?us-ascii?Q?sENqKTO7jNzinwHCHYmCQ87BFy1m0DohfP33esmwX2tyU+r5nA8xEB9Xe/Wl?=
- =?us-ascii?Q?ThIPivQdXfG4yapUIHCd9DnrZu5GaHDG7qhZsssfx0E8fys4wZ2blxMM9ugM?=
- =?us-ascii?Q?W6neJAYn0vDG7lag3lD6+6IAH/JTW8r5XNAtvjdGBVtgSNYA9D742CLydue3?=
- =?us-ascii?Q?4keMyMhh7fbZZSu3ZDMkYzRHf9I/RUTyx7JxyuZkpb5xkB8H+F31r2hKmCu7?=
- =?us-ascii?Q?aOpzRU8bjpR/U9Hw6IQEIG0h2Un2/7jOxkwV8kPuz/pu1D9kjdD4egBa6ZiK?=
- =?us-ascii?Q?/adWnX3aj2WpyuwqdqrNBDnMEgU4dWWwLU4YkFckAQL0oogl6koBqwbJNwap?=
- =?us-ascii?Q?kHVQQXJ8vsEupCP2BAwp72oXDmFIjnWXlGKKYZOy4SpFmHthBKkYqmZpY4xA?=
- =?us-ascii?Q?KuOIL9cXSJvqEBAbJ4akU6Q17WEcZBeshMHyO6N7U5iCaxgcUoRMdG3kw2qc?=
- =?us-ascii?Q?roVXbzijw7j3qMRL45PeeRFaj06G+neohXJHCq8EjbdpYO1JjDytgJafgA85?=
- =?us-ascii?Q?Px/s/n4TPuxHP+fKWpWNv6wFfnNmfrIGddRk9Qz1EMsQeLPKASw5HMC3Xcfs?=
- =?us-ascii?Q?PP3tOCSgrMnCWmaeUKzL0U+gjzyQa+1VKzIX2SYDwRqpgYqw1WE9xbppJ/rw?=
- =?us-ascii?Q?qi4DxNgbK/lHYlJb9yffpycKDFo3XE67hxDMQNj8uhGXwadNGbmvdSAKp685?=
- =?us-ascii?Q?Ur18dzkGEyuphkm0o1SVvIH4mTX/lMEwGfePzbeDDF9xzHW1KW2W2r7cPc2p?=
- =?us-ascii?Q?WH50vrqklB3lY8lMNibrn8q+XA7KmTBLOtyt0eOuX+7z4slHYKyxn/vMpQ58?=
- =?us-ascii?Q?q146YVgQoIjCAE3z5VBreJkrTh0kFUjGCO+ZxZA8kVOelLttHOdS2jjTS/7c?=
- =?us-ascii?Q?A66U5vUYUbPuXULLQRr6hwonCUaaYJVWxNSqpMrbDlmgFe98w+JCZcWxVQ/m?=
- =?us-ascii?Q?uRvphM+jjR5N450blmBTdhRHt0mRMIPCmyH2I3nIi+QbZaXabBirb8Cc8ppf?=
- =?us-ascii?Q?ERhMy25ZQ1nLqJkJQutR3dOoZo5o34fazGuh1X4pewYdEfBR2ArDcpoz3Yib?=
- =?us-ascii?Q?il3Ws2MtktonWdbETu1hz2/QUDhbdgNxAFK5RCgAtvKFnAck+DgpB3GIjqbr?=
- =?us-ascii?Q?SHhLbcVdxqQBq45RQLcjhx0VNIR07Airj+XZA+dN3tQCyeHivYkUrQzsJrCB?=
- =?us-ascii?Q?2wtsPMnJ9Y0V10CPzYaqPUSX7sXYnx+xVJAjRrKTKKnkJEMj/mpWASAaD8Ix?=
- =?us-ascii?Q?dfy0yMBxCQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QRAZ+9S2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C39C5C19425;
+	Mon, 16 Mar 2026 05:47:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773640066;
+	bh=+BbWevT0Swja6eb2FmIWQ32cxIjaS3zQmKU+0N869yU=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=QRAZ+9S2ToIhD4En/rF/Fav+iFK0Gqf7O41v2eKfD6R6JhNM0/fsyMo9wiQxpfuqP
+	 6u+UOBsbpaS9LIPlDF7HEI3LB1HBgxAsNzpPM8j94DvdySmc3/YgupF6x1xqXhR8G6
+	 v6wq0Ds+vY0I4E3Zc+c5wONPJg8wocVg5r9CjojN9XwbTHO5L3KrwzYtsK+vvmELWy
+	 ADkVF0EOK9axLrx4iNl5LRByS5vxPmWx7VVw3/Hw412e4hX9tyMuWsWIYSA+DZGQu8
+	 qDK3kF+j3JZRY5kXRWDai3DG4t2CFgy0y6n4+dL1oyqLhPISIoN8JGpAAYxyN5Bl/b
+	 VDmIaqi5RCFsg==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	kvm@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Bjorn Helgaas <helgaas@kernel.org>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Samuel Ortiz <sameo@rivosinc.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Steven Price <steven.price@arm.com>
+Subject: Re: [PATCH v2 3/3] iommufd/vdevice: add TSM guest request ioctl
+In-Reply-To: <20260313184957.GP1704121@ziepe.ca>
+References: <20260309111704.2330479-1-aneesh.kumar@kernel.org>
+ <20260309111704.2330479-4-aneesh.kumar@kernel.org>
+ <20260313184957.GP1704121@ziepe.ca>
+Date: Mon, 16 Mar 2026 11:17:37 +0530
+Message-ID: <yq5a4img8gw6.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Exchange-RoutingPolicyChecked: LImN3MlrR8V+BL/49K6nvkmT2/oDaVgPlj4qIxjlONx26m+2JUl1rT/i+SBLWILJDvAq2CtP3WF8EsZNNh/Vz638P2Qjbd/WYb6XBg/gTYPRpiz1k4L/HfQSshru2L90R/gERl26hY/05A8U6Sjm67FAVQuf/b9GhJKwuoYwBjJZ4kfTqqlPk1xD8Tc9hAKaQ+hNQwfdAtsXBaLwA5g9IDYrQ3lJnZkovTaNf0TB56NJHl/WeVZSh3t9ripQo13DPwB8ZmiEVmYzNJNiVYFYxW+CxI5p1Uu2zSOKxTwhv5oqqJwuJg2XHz1vw+qGSpQ/xgmSedHD+rEtW3bEJOV+Kw==
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BL1PR11MB5271.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b11eccb7-619a-49d8-38fb-08de82f8c2eb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Mar 2026 01:10:06.6754
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: g++1zN70RMhLV6H1B9/ydDlsxy1N7G+fc3UG+QGj48DZvlQbM+FHLSgDp+rPYhyIAYHVIBLsZT7v6W5otYODlw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB7310
-X-OriginatorOrg: intel.com
+Content-Type: text/plain
 
-> From: Lu Baolu <baolu.lu@linux.intel.com>
-> Sent: Tuesday, March 10, 2026 3:55 PM
->=20
-> In intel_svm_set_dev_pasid(), the driver unconditionally manages the IOPF
-> handling during a domain transition. However, commit a86fb7717320
-> ("iommu/vt-d: Allow SVA with device-specific IOPF") introduced support fo=
-r
-> SVA on devices that handle page faults internally without utilizing the
-> PCI PRI. On such devices, the IOMMU-side IOPF infrastructure is not
-> required. Calling iopf_for_domain_replace() on these devices is incorrect
-> and can lead to unexpected failures during PASID attachment or unwinding.
->=20
-> Add a check for info->pri_supported to ensure that the IOPF queue logic
-> is only invoked for devices that actually rely on the IOMMU's PRI-based
-> fault handling.
->=20
-> Fixes: 17fce9d2336d ("iommu/vt-d: Put iopf enablement in domain attach
-> path")
-> Cc: stable@vger.kernel.org
-> Suggested-by: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Jason Gunthorpe <jgg@ziepe.ca> writes:
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> On Mon, Mar 09, 2026 at 04:47:04PM +0530, Aneesh Kumar K.V (Arm) wrote:
+>> +/**
+>> + * struct iommu_vdevice_tsm_guest_request - ioctl(IOMMU_VDEVICE_TSM_GUEST_REQUEST)
+>> + * @size: sizeof(struct iommu_vdevice_tsm_guest_request)
+>> + * @vdevice_id: vDevice ID the guest request is for
+>> + * @scope: scope of tsm guest request
+>> + * @req_len: the blob size for @req_uptr, filled by guest
+>> + * @resp_len: the blob size for @resp_uptr, filled by guest
+>> + * @req_uptr: request data buffer filled by guest
+>> + * @resp_uptr: response data buffer
+>> + */
+>
+> This needs a much better kdoc.
+>
+> Refer to specs that define this.
+>
+> Explain WTF scope is
+>
+>> +struct iommu_vdevice_tsm_guest_request {
+>> +	__u32 size;
+>> +	__u32 vdevice_id;
+>> +	__u32 scope;
+>> +	__u32 req_len;
+>> +	__u32 resp_len;
+>
+> do not leave implicit padding, add a reserved, and check it is 0
+>
+> Jason
+ 
+How about this change?
+
+modified   drivers/iommu/iommufd/tsm.c
+@@ -94,6 +94,9 @@ int iommufd_vdevice_tsm_guest_request_ioctl(struct iommufd_ucmd *ucmd)
+ 		.resp_len = cmd->resp_len,
+ 	};
+ 
++	if (cmd->__reserved)
++		return -EOPNOTSUPP;
++
+ 	vdev = iommufd_get_vdevice(ucmd->ictx, cmd->vdevice_id);
+ 	if (IS_ERR(vdev))
+ 		return PTR_ERR(vdev);
+modified   include/uapi/linux/iommufd.h
+@@ -1370,11 +1370,27 @@ struct iommu_hw_queue_alloc {
+  * struct iommu_vdevice_tsm_guest_request - ioctl(IOMMU_VDEVICE_TSM_GUEST_REQUEST)
+  * @size: sizeof(struct iommu_vdevice_tsm_guest_request)
+  * @vdevice_id: vDevice ID the guest request is for
+- * @scope: scope of tsm guest request
+- * @req_len: the blob size for @req_uptr, filled by guest
+- * @resp_len: the blob size for @resp_uptr, filled by guest
+- * @req_uptr: request data buffer filled by guest
+- * @resp_uptr: response data buffer
++ * @scope: Scope classification of the guest request, one of enum
++ *         pci_tsm_req_scope values accepted by pci_tsm_guest_req()
++ * @req_len: Size in bytes of the input payload at @req_uptr
++ * @resp_len: Size in bytes of the output buffer at @resp_uptr
++ * @__reserved: Must be 0
++ * @req_uptr: Userspace pointer to the guest-provided request payload
++ * @resp_uptr: Userspace pointer to the guest response buffer
++ *
++ * Forward a guest request to the TSM bound vDevice. This is intended for
++ * guest TSM/TDISP message transport where the host kernel only marshals
++ * bytes between userspace and the TSM implementation.
++ *
++ * @scope limits requests to TDISP state management, or limited debug.
++ * Requests outside the allowed scope are rejected.
++ *
++ * The request payload is read from @req_uptr/@req_len. If a response is
++ * expected, userspace provides @resp_uptr/@resp_len as writable storage for
++ * response bytes returned by the TSM path.
++ *
++ * The ioctl is only suitable for commands and results that the host kernel
++ * has no use, the host is only facilitating guest to TSM communication.
+  */
+ struct iommu_vdevice_tsm_guest_request {
+ 	__u32 size;
+@@ -1382,6 +1398,7 @@ struct iommu_vdevice_tsm_guest_request {
+ 	__u32 scope;
+ 	__u32 req_len;
+ 	__u32 resp_len;
++	__u32 __reserved;
+ 	__aligned_u64 req_uptr;
+ 	__aligned_u64 resp_uptr;
+ };
