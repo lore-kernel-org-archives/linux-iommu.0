@@ -1,103 +1,131 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E27EC37C0F1;
-	Mon, 16 Mar 2026 09:51:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 115E038D019
+	for <iommu@lists.linux.dev>; Mon, 16 Mar 2026 10:55:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773654719; cv=none; b=uU43hS+ivkFdVVT26/h2AoaEaFetClI8xxRcMczV6foDVVAhFFfnn121GKifM6FKohNnvXOXQIk6bM/VBOb6pmd4Sg2q4jJLYN9hFsF/wgKDXunX6EazXlony9GtDAF80wzLv3hJSlBS2j4xOIFv2ZwD7QTcy/auaLRSxu5E7uc=
+	t=1773658507; cv=none; b=n88rADJCyTe65vMc2nA6T+u/0haR+eyUah44adfS921E3tNhMqqyfEbvkJAloc0hQRXu5W4wQeu5JNvASQJzx7FP41RXbHYLxKp86X9I7GaW1hpok1v6jkwVOFI65eAemccCHJFRxsVYwe3PRawv52XNmF/wfFZ3QK/j4J+EC+M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773654719; c=relaxed/simple;
-	bh=dWqTxPEv0rJnbD0A/giMkq8rXWjxwOit5RWD2M0x6Kk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ekgglF+ZyLCSIC06biIpjQgpi9IR//8/VW3F1GvZNkRrDvHTZrupKvoDX7CFnIMUmz1tcY7UoZeCX4wt4OkEn5GMCDhanoWzDay8hIkSX7CIJZ3LsDaKNBnw6mPV8XInxdMeP/RvNHRHTT1Oa1HV7qoVhSk11zXFJ8VULqWyAZE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UfJ7JRHo; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1773658507; c=relaxed/simple;
+	bh=PENpEpatLH0WgmJ8nuINA9vJeOA32NMCLpwxPNCjmic=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=SUl1DR7vPGvRAFmUx6aAod4GFpsfNXB2zzjyl196nnKiQAz0vJMRiKyB/llAij+FjnqdePFkwgkOFX/vc1l50aDBKRHQdmOLKMZrYqRHQwm0Gj44cwIYnXD1RhHFNnWTeCjipWA5RtFnJA3+258Ux7J9JDY/NXhpCkrFhnJogng=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=HaGSGGqy; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UfJ7JRHo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A74F0C19421;
-	Mon, 16 Mar 2026 09:51:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773654718;
-	bh=dWqTxPEv0rJnbD0A/giMkq8rXWjxwOit5RWD2M0x6Kk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=UfJ7JRHo//YxiHNKZxas9fCeACoLF5pyxb79vS82a3/N/IcGjfdsMPPiu1BfQNNVV
-	 XHoQnppZgQDLn9+1wB7kytU8AkfADKa641zIcUKnB7j+8vL5ZGFF3IF+eIk3Y3PLCE
-	 EjZmmz+DykNzNiiD1Pc+Ux7MyC78Aucq1iq6KPZLqSYUiYGE44hGEHsIkULAgtxL7x
-	 4wUqtLhS4Gv69bF+8uQKpiNo+VDjL4ORgwnhOfFkEKVJ2jffKBv3adpJxZo+ftbAB2
-	 +e1KEjzFqVL4lShD4eSeT4jur3l9W1fIJFP9D1zY7Mw5MG1F6oOqltIkVwWs4flCwU
-	 YQfDpJYqabL5Q==
-Date: Mon, 16 Mar 2026 09:51:51 +0000
-From: Will Deacon <will@kernel.org>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Samiullah Khawaja <skhawaja@google.com>, Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
-	Dmytro Maluka <dmaluka@chromium.org>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/8] iommu: Lift and generalize the STE/CD update code
- from SMMUv3
-Message-ID: <abfStwmSjgy--e4H@willie-the-truck>
-References: <20260309060648.276762-1-baolu.lu@linux.intel.com>
- <20260309060648.276762-2-baolu.lu@linux.intel.com>
- <aa9W4ZKYWHr9-UNy@google.com>
- <aa9fQchZJER8QvY0@google.com>
- <61267acf-e42e-4d1e-9942-e241ccffa606@linux.intel.com>
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="HaGSGGqy"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1773658505;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=j/4AllVOKh8z4TecylNv9BZB3czFOIQzZj3H/I9GZN8=;
+	b=HaGSGGqyqNoof3Zy7y+eQNFzjoTXW0vtCtSIvGUpyOha2YVjkbhCCul/gYrsRmYCZ1atdf
+	xQ3XqLxoGgvUkxVkgv0wJeZTNJHvCqWSY3Bs0g2oMXhTCyyAR0E/PdM29OP4I/+JHpDGRD
+	8jzhMTWWrd68PYOpc4IXtzmwkqkgmL8=
+Received: from mail-yw1-f198.google.com (mail-yw1-f198.google.com
+ [209.85.128.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-84-B4zO4QxTM2utM3WzC2Q84Q-1; Mon, 16 Mar 2026 06:55:03 -0400
+X-MC-Unique: B4zO4QxTM2utM3WzC2Q84Q-1
+X-Mimecast-MFC-AGG-ID: B4zO4QxTM2utM3WzC2Q84Q_1773658503
+Received: by mail-yw1-f198.google.com with SMTP id 00721157ae682-7983f854288so85361107b3.3
+        for <iommu@lists.linux.dev>; Mon, 16 Mar 2026 03:55:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773658503; x=1774263303;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=j/4AllVOKh8z4TecylNv9BZB3czFOIQzZj3H/I9GZN8=;
+        b=CFPiwX3rsHDyxg/AVSSjMJ6kIpup+s9aFbOApQDkipNKZ6tncRvXq23KoKLzqeg4SY
+         FAhkNJARAqdTOE/WHJAw97KC2rDkGq5muLFJ5D0ur4p0gmD2th+Md/0xTmHY72dHuk4J
+         hy4ToRHryxiym0XpDMp8/WceynQmXWeGSZ6Rb1jcwEEtLVSwCCOEj7Wg5qrdBfylyr+v
+         tOxIsVOiy4ccQCO9pYryCixETuSMxl8Aw7XB08N9FtprcYSbkS/zUTl44PdpifKwkBDc
+         gUaX6dl9jY4RNy3GLQppW3DUHv9q9J6m6pM0cg7k+TvV81KUzgRk8WKdkcg/B2lMwDyQ
+         USKQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUuhL4JARoqFaRRyJaw0qXaqOXBsfnTWwzu8275ESQEw6UKjAT573HFf/Hbrkl8SLRwdNr3kQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxPLNFwbeT4sByX9aGsbAV1xy+piuvUEe0TnXZj/4OFHHvxRd65
+	jYbtEQwNa+FsTN2zvoc9rQsIkrL19eGaM9AUg+TAE6wXoX1Xkq9oehPx7fvHIcWuxGQygpMchD9
+	V1Mtwh2RGoJaHyS0RGH5jcC8vKpbnJoXJvE3rUWN1ecuABEr9CAtyDyX/+MzdULEMBWtEVLc4gG
+	gLrw94UFCxd7Y9BRNqNT4j2alRPsQYXX8=
+X-Gm-Gg: ATEYQzxe0j0guP3/KDEg6RsL9s2IhYN0Wvgf/hIpuvm04o8ivFgHaz+/AXuXbYmkFw3
+	yvo0mzoc4WtUsnrmkQ06r2NBwCBTHm/w/96eDpvc//lT3LB8Vi1sqiUk1Rj7ZY4GLjL+tQouerH
+	4vlCsBe+um+s27bLzAUaDQrTelEdtlo0u6HsE7qIQAuLCGjodawftGfxB+rgXz1GM+9dCKLBZcz
+	w==
+X-Received: by 2002:a05:690e:449a:b0:64a:db50:fab2 with SMTP id 956f58d0204a3-64e630d964emr9195123d50.80.1773658503296;
+        Mon, 16 Mar 2026 03:55:03 -0700 (PDT)
+X-Received: by 2002:a05:690e:449a:b0:64a:db50:fab2 with SMTP id
+ 956f58d0204a3-64e630d964emr9195107d50.80.1773658502956; Mon, 16 Mar 2026
+ 03:55:02 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <61267acf-e42e-4d1e-9942-e241ccffa606@linux.intel.com>
+References: <20260306-b4-dmabuf-heap-coherent-rmem-v3-0-3d00d36c9bc4@redhat.com>
+ <20260306-b4-dmabuf-heap-coherent-rmem-v3-3-3d00d36c9bc4@redhat.com> <20260313230629.GA3603067-robh@kernel.org>
+In-Reply-To: <20260313230629.GA3603067-robh@kernel.org>
+From: Albert Esteve <aesteve@redhat.com>
+Date: Mon, 16 Mar 2026 11:54:51 +0100
+X-Gm-Features: AaiRm51o4lEgIIRwy7J8EQU-dh_zU9bcODR7YayBvstmpxh8vjYCQuobudoxI8I
+Message-ID: <CADSE00JymMjob5J02bh+YSw+2zyjx8OWxks5aEhuM2GX8ZB7=A@mail.gmail.com>
+Subject: Re: [PATCH v3 3/6] of_reserved_mem: add a helper for rmem device_init op
+To: Rob Herring <robh@kernel.org>
+Cc: Sumit Semwal <sumit.semwal@linaro.org>, 
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>, 
+	John Stultz <jstultz@google.com>, "T.J. Mercier" <tjmercier@google.com>, 
+	=?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Saravana Kannan <saravanak@kernel.org>, linux-kernel@vger.kernel.org, 
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev, 
+	devicetree@vger.kernel.org, mripard@redhat.com, echanude@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: cMXlP06ksV4jFGpSRgq0rgA4paYky9BGqRXur6s7tYY_1773658503
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, Mar 14, 2026 at 04:13:27PM +0800, Baolu Lu wrote:
-> On 3/10/26 08:06, Samiullah Khawaja wrote:
-> > On Mon, Mar 09, 2026 at 11:33:23PM +0000, Samiullah Khawaja wrote:
-> > > On Mon, Mar 09, 2026 at 02:06:41PM +0800, Lu Baolu wrote:
-> > > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > > 
-> > > > Many IOMMU implementations store data structures in host memory that can
-> > > > be quite big. The iommu is able to DMA read the host memory using an
-> > > > atomic quanta, usually 64 or 128 bits, and will read an entry using
-> > > > multiple quanta reads.
-> > > > 
-> > > > Updating the host memory datastructure entry while the HW is
-> > > > concurrently
-> > > > DMA'ing it is a little bit involved, but if you want to do this
-> > > > hitlessly,
-> > > > while never making the entry non-valid, then it becomes quite
-> > > > complicated.
-> > > > 
-> > > > entry_sync is a library to handle this task. It works on the notion of
-> > > > "used bits" which reflect which bits the HW is actually sensitive to and
-> > > > which bits are ignored by hardware. Many hardware specifications say
-> > > > things like 'if mode is X then bits ABC are ignored'.
-> > > > 
-> > > > Using the ignored bits entry_sync can often compute a series of ordered
-> > > > writes and flushes that will allow the entry to be updated while keeping
-> > > > it valid. If such an update is not possible then entry will be made
-> > > > temporarily non-valid.
-> > > > 
-> > > > A 64 and 128 bit quanta version is provided to support existing iommus.
-> > > > 
-> > > > Co-developed-by: Lu Baolu <baolu.lu@linux.intel.com>
-> > > > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> > > > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> > > > ---
-> > > > drivers/iommu/Kconfig               |  14 +++
-> > > > drivers/iommu/Makefile              |   1 +
-> > > > drivers/iommu/entry_sync.h          |  66 +++++++++++++
-> > > > drivers/iommu/entry_sync_template.h | 143 ++++++++++++++++++++++++++++
-> > > > drivers/iommu/entry_sync.c          |  68 +++++++++++++
-> > > > 5 files changed, 292 insertions(+)
-> > > > create mode 100644 drivers/iommu/entry_sync.h
-> > > > create mode 100644 drivers/iommu/entry_sync_template.h
-> > > > create mode 100644 drivers/iommu/entry_sync.c
+On Sat, Mar 14, 2026 at 12:06=E2=80=AFAM Rob Herring <robh@kernel.org> wrot=
+e:
+>
+> On Fri, Mar 06, 2026 at 11:36:34AM +0100, Albert Esteve wrote:
+> > Add a helper function wrapping internal reserved memory
+> > device_init call and expose it externally.
+>
+> Why?
+>
+> The diff tells us what. The commit msg needs to tell us why. Maybe the
+> rest of the series explains it, but this commit needs to stand on its
+> own.
 
-Shouldn't we move the SMMU driver over to this, rather than copy-pasting
-everything? If not, then why is it in generic IOMMU code?
+ACK.
 
-Will
+This patch prepares for the heap implementation in patch #4, which
+uses the new helper function. I will add the information to the commit
+body.
+
+>
+> >
+> > Use the new helper function within of_reserved_mem_device_init_by_idx()=
+.
+> >
+> > Signed-off-by: Albert Esteve <aesteve@redhat.com>
+> > ---
+>
+> Version history?
+
+You mean track it in the commit body? History is already detailed in
+the cover letter.
+
+>
+> >  drivers/of/of_reserved_mem.c    | 68 ++++++++++++++++++++++++++-------=
+--------
+> >  include/linux/of_reserved_mem.h |  8 +++++
+> >  2 files changed, 52 insertions(+), 24 deletions(-)
+>
+
