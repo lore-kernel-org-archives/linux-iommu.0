@@ -1,33 +1,25 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65F353612F7;
-	Tue, 17 Mar 2026 09:18:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DE9A9371CE2
+	for <iommu@lists.linux.dev>; Tue, 17 Mar 2026 09:43:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773739101; cv=none; b=kitAtnItiwZRKoKW5b+GgKpB4h6lFDTEfNLNji1PQl5WDq4sUfdTv4GbqUxDf704rM3JgP3ns1IKdVVB9o7gDtrIPIH56p3b0mXsOKhRbUsNmb8cZp7WeV31ctqhnBzqVnBM9kYh5OiLGM9DnTe597dHiRxbKluYp3XIuQxSHi0=
+	t=1773740634; cv=none; b=rLrwFP0GbzHds8MzN6J1HW95q9OJV4uRo4mWzXI8sp3hyPsMi/SIeQ0Bf5hvUlrUaMQ1KT21Qp1CH0m4b9Qau/KZpG8EbA1OYnyzIfbPobdkYcZdv7yxT0e317LRiZOBNBjQe6UF7O6VHrB1UHg2bB8aZZ4UZFp3XyPNaX334Wo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773739101; c=relaxed/simple;
-	bh=JVhzWvd+OP5LpWAEDYHeSZI2zKfGYGGpl4KO6DbJDYw=;
+	s=arc-20240116; t=1773740634; c=relaxed/simple;
+	bh=Qn5AVh3tqcu7iFHj24GKranHlBGlypwdEnqBioGvC2A=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=bIbVrECXAjNKV9xMEFWRUG2uGXtVZ0vgdZPVaLRGujGByQE5kRWloI/yaGuZf9yntiyOqninRxKC0SUcQTeIUKb3VspwBjfF4uDkVVNSQQtza39UhPhBDTzm6vMeux3iwRO6rKDpLAej1LaNE3z+Z6bQxsKj3qYsdTUeW3kcRPs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=m63nL6my; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="m63nL6my"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85D02C4CEF7;
-	Tue, 17 Mar 2026 09:18:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773739101;
-	bh=JVhzWvd+OP5LpWAEDYHeSZI2zKfGYGGpl4KO6DbJDYw=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=m63nL6myA1RadTZGhd5ji6GgsTOy8knFD/ysjPgUq6YYd/jGsgu+FCAV7ts0SoeQ4
-	 ayzH3nJbPjrASy8NW+UkLWoYQYk8b/a14ZDOhCwZUYjWnjWq9UeNwAMst1p/Z5DtGQ
-	 n3sWi3yEiV9P93Vf7VhQDFTQ21wYMm11n+0hYjekbXWprfC4GX4Fuw1QXnPX6fWhxS
-	 KlP5gjeprvjh5Xlr95l+PZMeeZ1JxE836OhRgW/Ypf/8bVTBxAaE2aZFp7TRlzV1LN
-	 f9ACsw7gl40Hv7QRkGpikizQGMpX7xI45oGSzGNz7KDSRoMBhv+x1aM/jEac7mUPIK
-	 RigvVtyaHimGQ==
-Message-ID: <861b88b8-ba58-4264-8892-282c39194d68@kernel.org>
-Date: Tue, 17 Mar 2026 18:18:17 +0900
+	 In-Reply-To:Content-Type; b=sVSV0mf2a6OkE78JUEGCBvAcPZpEDpXj+OSU3PppBF8e+PXssUkA1JB4dwxrsF6+L0QjQOnpH63Y95UzgjWnWcsqtiKPip0sfrOa3BBNEN9dfa/3ERgf+Ee4Shfs0yXMRdhpjL2jAr1wRGnh4tqCiCP5LZqu/RIE0dwDYYrtNLM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 21CA71476;
+	Tue, 17 Mar 2026 02:43:46 -0700 (PDT)
+Received: from [10.57.60.199] (unknown [10.57.60.199])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7EAB33F778;
+	Tue, 17 Mar 2026 02:43:49 -0700 (PDT)
+Message-ID: <d2e0fe45-31ae-4879-951e-7d0494d764e4@arm.com>
+Date: Tue, 17 Mar 2026 09:43:46 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,84 +27,101 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 0/2] dma: fix dma_opt_mapping_size() returning bogus
- value when no backend hint exists
-To: John Garry <john.g.garry@oracle.com>,
- "Ionut Nechita (Wind River)" <ionut.nechita@windriver.com>,
+Subject: Re: [PATCH v1 1/2] dma: return 0 from dma_opt_mapping_size() when no
+ real hint exists
+To: "Ionut Nechita (Wind River)" <ionut.nechita@windriver.com>,
  m.szyprowski@samsung.com, kbusch@kernel.org, axboe@kernel.dk, hch@lst.de,
  sagi@grimberg.me
-Cc: robin.murphy@arm.com, martin.petersen@oracle.com,
- damien.lemoal@opensource.wdc.com, ahuang12@lenovo.com,
- iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org, ionut_n2001@yahoo.com,
- sunlightlinux@gmail.com
+Cc: martin.petersen@oracle.com, damien.lemoal@opensource.wdc.com,
+ john.g.garry@oracle.com, ahuang12@lenovo.com, iommu@lists.linux.dev,
+ linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org, ionut_n2001@yahoo.com, sunlightlinux@gmail.com
 References: <20260316203956.64515-1-ionut.nechita@windriver.com>
- <8b7706a0-41be-44a2-8247-ebbc33fee937@oracle.com>
-Content-Language: en-US
-From: Damien Le Moal <dlemoal@kernel.org>
-Organization: Western Digital Research
-In-Reply-To: <8b7706a0-41be-44a2-8247-ebbc33fee937@oracle.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ <20260316203956.64515-2-ionut.nechita@windriver.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260316203956.64515-2-ionut.nechita@windriver.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On 3/17/26 18:11, John Garry wrote:
-> On 16/03/2026 20:39, Ionut Nechita (Wind River) wrote:
->> dma_opt_mapping_size() currently returns min(dma_max_mapping_size(),
->> SIZE_MAX) when neither an IOMMU nor a DMA ops opt_mapping_size callback
->> is present.  That value is the DMA maximum, not an optimal transfer
->> size, yet callers treat it as a genuine optimization hint.
->>
->> The concrete problem shows up on SAS controllers (e.g. mpt3sas) running
->> with IOMMU in passthrough mode.  The bogus value propagates through
->> scsi_transport_sas into Scsi_Host.opt_sectors and then into the block
->> device's optimal_io_size.  mkfs.xfs picks it up, computes
->> swidth=4095 / sunit=2, and fails with:
->>
->>    XFS: SB stripe unit sanity check failed
->>
->> making it impossible to create filesystems during system bootstrap.
+On 2026-03-16 8:39 pm, Ionut Nechita (Wind River) wrote:
+> From: Ionut Nechita <ionut.nechita@windriver.com>
 > 
-> For SAS controllers, don't we limit shost->opt_sectors at 
-> shost->max_sectors, and then in sd_revalidate_disk() this value is 
-> ignored as sdkp->opt_xfer_blocks would be smaller, right?
-> 
-> What value are you seeing for max_sectors and opt_sectors? That mpt3sas 
-> driver seems to have many methods to set max_sectors.
+> dma_opt_mapping_size() currently initializes its local size to SIZE_MAX
+> and, when neither an IOMMU nor a DMA ops opt_mapping_size callback is
+> present, returns min(dma_max_mapping_size(dev), SIZE_MAX).  That value
+> is a large but finite number that has nothing to do with an optimal
+> transfer size — it is simply the maximum the DMA layer can map.
 
-And mpi3mr is also very similar.
+No, the current code is correct. dma_opt_mapping_size() represents the 
+largest size that can be mapped without incurring any significant 
+performance penalty (compared to smaller sizes). If the implementation 
+has no such restriction, then the largest "efficient" size is quite 
+obviously just the largest size in total.
 
-> 
-> Thanks,
-> John
-> 
->>
->> Patch 1 changes dma_opt_mapping_size() to return 0 ("no preference")
->> when no backend provides a real hint.
->>
->> Patch 2 adjusts the only other in-tree caller (nvme-pci) to handle the
->> new 0 return value, falling back to its existing default instead of
->> setting max_hw_sectors to 0.
->>
->> Note: the scsi_transport_sas caller (the one that triggers the XFS
->> issue) already handles 0 safely.  It passes the return value through
->> min_t() into shost->opt_sectors, which becomes 0; sd.c then feeds that
->> into min_not_zero() when computing io_opt, so a zero opt_sectors is
->> correctly treated as "no preference" and ignored.
->>
->> Based on linux-next (next-20260316).
->>
->> Ionut Nechita (2):
->>    dma: return 0 from dma_opt_mapping_size() when no real hint exists
->>    nvme-pci: handle dma_opt_mapping_size() returning 0
->>
->>   drivers/nvme/host/pci.c | 15 ++++++++++-----
->>   kernel/dma/mapping.c    | 13 ++++++++-----
->>   2 files changed, 18 insertions(+), 10 deletions(-)
->>
-> 
-> 
+> Callers such as scsi_transport_sas treat the return value as a genuine
+> optimization hint and propagate it into Scsi_Host.opt_sectors, which in
+> turn becomes the block device's optimal_io_size.  On SAS controllers
+> like mpt3sas running with IOMMU in passthrough mode the bogus value
+> (max_sectors << 9 = 16776704, rounded to 16773120) reaches mkfs.xfs,
+> which computes swidth=4095 and sunit=2.  Because 4095 is not a multiple
+> of 2, XFS rejects the geometry with "SB stripe unit sanity check
+> failed", making it impossible to create filesystems during system
+> bootstrap.
 
+And that is obviously a bug. There has never been any guarantee offered 
+about the values returned by either dma_max_mapping_size() or 
+dma_opt_mapping_size() - they could be very large, very small, and 
+certainly do not have to be powers of 2. Say an implementation has some 
+internal data size optimisation that makes U32_MAX its largest 
+"efficient" size, it's free to return that, and then you'll still have 
+the same bug regardless of this bodge.
 
--- 
-Damien Le Moal
-Western Digital Research
+Fix the actual bug, don't break common code in an attempt to paper over 
+it that doesn't even achieve that very well.
+
+Thanks,
+Robin.
+
+> Fix this by returning 0 when no backend provides an optimal mapping size
+> hint.  A return value of 0 unambiguously means "no preference" and lets
+> callers that use min() or min_not_zero() do the right thing without
+> special-casing.
+> 
+> The only other in-tree caller (nvme-pci) is adjusted in the next patch.
+> 
+> Fixes: a229cc14f339 ("dma-mapping: add dma_opt_mapping_size()")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Ionut Nechita <ionut.nechita@windriver.com>
+> ---
+>   kernel/dma/mapping.c | 13 ++++++++-----
+>   1 file changed, 8 insertions(+), 5 deletions(-)
+> 
+> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+> index 78d8b4039c3e6..fffa6a3f191a3 100644
+> --- a/kernel/dma/mapping.c
+> +++ b/kernel/dma/mapping.c
+> @@ -984,14 +984,17 @@ EXPORT_SYMBOL_GPL(dma_max_mapping_size);
+>   size_t dma_opt_mapping_size(struct device *dev)
+>   {
+>   	const struct dma_map_ops *ops = get_dma_ops(dev);
+> -	size_t size = SIZE_MAX;
+>   
+>   	if (use_dma_iommu(dev))
+> -		size = iommu_dma_opt_mapping_size();
+> -	else if (ops && ops->opt_mapping_size)
+> -		size = ops->opt_mapping_size();
+> +		return iommu_dma_opt_mapping_size();
+> +	if (ops && ops->opt_mapping_size)
+> +		return ops->opt_mapping_size();
+>   
+> -	return min(dma_max_mapping_size(dev), size);
+> +	/*
+> +	 * No backend provided an optimal size hint. Return 0 so that
+> +	 * callers can distinguish "no hint" from a real value.
+> +	 */
+> +	return 0;
+>   }
+>   EXPORT_SYMBOL_GPL(dma_opt_mapping_size);
+>   
+
