@@ -1,43 +1,43 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 91ECC3BFE36;
-	Tue, 17 Mar 2026 12:15:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0F4EF3C1979
+	for <iommu@lists.linux.dev>; Tue, 17 Mar 2026 12:21:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773749750; cv=none; b=JHtjVFOpfVDwQsZKifpkON+o+68XLK1vGcnib2EOuKE7hLt1F3/Ua6ztA3bhCHqH8vnfLOcoCSdRCPjm5feWbiV2QASNzB/FReo+7b6BYgUvohIG9gqAHSS6xLHNLJm3JsUqIZsdbGib55BEqKjC3qQFVhLwUdB0Y8u4uamoE6o=
+	t=1773750074; cv=none; b=Qjjn+ZHWnKVD8WttmuHEMIPehln3nOcfUmh0lovjQF/ds4gUYAJWDkqizCdeACiRrR7md5mbnuxQkRBK+1BoQv5XpRRigv0JMSZLlSWE5PaemPh+U9IHyHKogcEfvC78yleDxfP/nvHW3ZXHNNdxSPgcNY4B4myrRr8gdOdsumA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773749750; c=relaxed/simple;
-	bh=x69p62NX3k7xnp6+24OeE4Q9CclvuUZRZXYrHclJLo0=;
+	s=arc-20240116; t=1773750074; c=relaxed/simple;
+	bh=ZLNca8NF7UKms7rrN3KKbFTqbdPs5R1MlXH5THiXRDY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eoCj0L1hPCGQwAEYp6urKZbvQAU5meI3NdYCjugqkg11ElxkcVpEm0SchkvvuZNg0iMRu4cni1EC40/xKhFrlRyUQYJOooHKti4fVGrO9QEEk1XNlXmIecR52Zn352VhixF3m+I7tfhy2CcqQ7pl2k1oBsp9cPVA0kbgM7SvWbM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=zVGZvwak; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=qkuz5lGHjDQHCOYqUxpmU6NPfFAL0Jv5R8v1mmYLJMZMMrEh0AYBYAoL5bI/F68zRrPbC9WKa42thSL0S5BvkbqqD9f2N5lKG50lMhEEUSQuk35V+th8s1z+XcgR7gesXl5qLTTGLtPTjvd7GGvIl4QOv90vRtkXw030TWzEYvg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=nwuj3Cuj; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="zVGZvwak"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="nwuj3Cuj"
 Received: from 8bytes.org (p4ffe051a.dip0.t-ipconnect.de [79.254.5.26])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id BA1871A5929;
-	Tue, 17 Mar 2026 13:15:48 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 12E581A52C5;
+	Tue, 17 Mar 2026 13:21:12 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1773749748;
-	bh=x69p62NX3k7xnp6+24OeE4Q9CclvuUZRZXYrHclJLo0=;
+	s=default; t=1773750072;
+	bh=ZLNca8NF7UKms7rrN3KKbFTqbdPs5R1MlXH5THiXRDY=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=zVGZvwakfCUV8llgZRmqGbUwbEFrAqeg9oMMTSOBfK8n67U6El1vUX8Tjsuy4nJQY
-	 OQUaWXSw1YLtcfBQ+kAxzrcLTMr7EbdicpwZVGdhQbno3BxrjCFDA3YzxWGHzoiWc4
-	 R2szJp9vS6Yagfev0EjW4YTuxx8+BGQLotQZggUj9D3G/SOmuBRVogh1YI/vNS536E
-	 UM7wswZqfH/CAuai8YnES0q9NERdjhCs3UajIB9deDtLq3lG6LJ9J1zixDk1dlrUig
-	 FldGBHjO0+fHNTkqviey5Ck9RXnSgqsnfuOxTaipmHal0rzJKABek2bG/YCyXkhRF4
-	 rPZZhzP49Gnfg==
-Date: Tue, 17 Mar 2026 13:15:47 +0100
+	b=nwuj3CujibP/5NF4tXYq5pMihcOhLfXkVMlc0nxmsnx9GlK+htpZIk71xjt8xMXWw
+	 o8Wo6KCiwhIKzVE/XeMWP5uDkjMtFyjVvvzrfIFGoCLxdakupl2yC0slaLaDrzi0Tb
+	 dbPQc0rKphbyjPUBwG1vbqPb89nnGTmc07yVc0LxmAy4c+BBX5L3ouIKeGi7t3YXDt
+	 /B5mXa1KfFtHBorlooXC3SBHrgVRK5bxv196do6dXIsZNW29XtmaHyEwFYXAkdJj/9
+	 qMJLs0bDG1TFZxWBzsz5ZEJsjkFsumioAiC4PAm1mM99HWJHbtrJZgvjZDWq6wx0RY
+	 YwLJBu+vqMH8A==
+Date: Tue, 17 Mar 2026 13:21:10 +0100
 From: Joerg Roedel <joro@8bytes.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>, 
-	patches@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommupt: Optimize the gather processing for DMA-FQ mode
-Message-ID: <6sqmt6ycp6tapxeqx64jncuw2zosnwvv3zzm2dksg3r2w2rvru@xc3zymvoniiv>
-References: <0-v1-37d146e56632+ce4-iommupt_no_gaps_fq_jgg@nvidia.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Guanghui Feng <guanghuifeng@linux.alibaba.com>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] [PULL REQUEST] iommu/vt-d: Fixes for v7.0-rc
+Message-ID: <pcwvq44z5v4smukknmvxspvgghbeagmsbfpssgfph5zkqr5ifw@3egkrekry72f>
+References: <20260316071640.347227-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -46,25 +46,31 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0-v1-37d146e56632+ce4-iommupt_no_gaps_fq_jgg@nvidia.com>
+In-Reply-To: <20260316071640.347227-1-baolu.lu@linux.intel.com>
 
-On Fri, Feb 27, 2026 at 11:27:02AM -0400, Jason Gunthorpe wrote:
-> In PT_FEAT_FLUSH_RANGE mode the gather was accumulated but never flushed
-> and then the accumulated range was discarded by the dma-iommu code in
-> DMA-FQ mode. This is basically optimal.
+On Mon, Mar 16, 2026 at 03:16:38PM +0800, Lu Baolu wrote:
+> Hi Joerg,
 > 
-> However for PT_FEAT_FLUSH_RANGE_NO_GAPS the page table would push flushes
-> that are redundant with the flush all generated by the DMA-FQ mode.
+> The following fixes have been queued for v7.0-rc. They aim to fix the
+> following issues.
 > 
-> Disable all range accumulation in the gather, and iommu_pt triggered
-> flushing when in iommu_iotlb_gather_queued() indicates it is in DMA-FQ
-> mode.
+> - Abort all pending requests on dev_tlb_inv timeout to avoid hardlockup
+> - Limit IOPF handling to PRI-capable device to avoid SVA attach failure
 > 
-> Reported-by: Robin Murphy <robin.murphy@arm.com>
-> Closes: https://lore.kernel.org/r/794b6121-b66b-4819-b291-9761ed21cd83@arm.com
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/generic_pt/iommu_pt.h | 27 +++++++++++++++++++--------
->  1 file changed, 19 insertions(+), 8 deletions(-)
+> These patches have been reviewed and tested and are ready for merge.
+> Please consider them for v7.0-rc.
+> 
+> Best regards,
+> baolu
+> 
+> Guanghui Feng (1):
+>   iommu/vt-d: Fix intel iommu iotlb sync hardlockup and retry
+> 
+> Lu Baolu (1):
+>   iommu/vt-d: Only handle IOPF for SVA when PRI is supported
+> 
+>  drivers/iommu/intel/dmar.c |  3 +--
+>  drivers/iommu/intel/svm.c  | 12 ++++++++----
+>  2 files changed, 9 insertions(+), 6 deletions(-)
 
-Applied, thanks.
+Applied for -rc, thanks Baolu.
