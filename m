@@ -1,284 +1,125 @@
-Received: from canpmsgout09.his.huawei.com (canpmsgout09.his.huawei.com [113.46.200.224])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F21E1341ACA
-	for <iommu@lists.linux.dev>; Tue, 17 Mar 2026 02:15:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=113.46.200.224
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FF21275B18;
+	Tue, 17 Mar 2026 05:29:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773713705; cv=none; b=d13ruuqk3ZEdGxnI0bkwjnCzqF88mSiCKX0dnPoP8PrzcQaQiqmmJuysEau9obzGi+O7TP6jXBMhBQNi25/N1GeqyAHEdx6I939gq12wx0HwudzJKNbNv0ijLep9UZd0Pr0J6oX1CjWX+WXRMginwZAY+eLbxGD17D0OG+eyno4=
+	t=1773725360; cv=none; b=DxYpA393ClapLnjVrncrjmo4dVHYoB5YlB7B5b+kY1QfRa9U2xWi/8ZENKHe9min2SqENABk/OxuDpkUMTmNwsmJHSwAubZcmn/Z2lqBxhQtCoIlETsXKA5d41bpQWXqcpmdiV5ulhL7OaKzHkLJ1GJikI04iMlkWNbM7HgfuIg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773713705; c=relaxed/simple;
-	bh=SJdNEFe3CoLZ55CiNtsfYUbPjd69lCaJTIyEsfbQTlw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=O5GX1yBK4DSOamjekCjkWCwwuVXq1zCplf9DcIxU/qPJb6YSMp/+pWf6PRGod1XmxZ9Qd9vKTdmQAJv7jcRcqt4i1VDnMaLzOK1MibhkT2XYm22mrz8cSXA/9TVXt7Vsf6mCdPqkURcLqHwYhcJGIg5IhWIqM1zVqm/xcMQMqOg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=L0KtCga+; arc=none smtp.client-ip=113.46.200.224
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+	s=arc-20240116; t=1773725360; c=relaxed/simple;
+	bh=Nf719nA30D8prEus9dGdhnEqiqbPlb11hG6PJJdTEfQ=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=IWSkBrtI/rS8qWNvCjpbJimSNbSzFKL7q5GkRtcrBF2717yy6Y/IUCutHVtDb/VhxCU3LfcNhzmK5ZlPx4dA5QSfcJPzDMyaySeTDqXRo431ZQ33ll0fhmqpPKDumHHDRuxTeagxjWyKYgMLWJLTXmCk1GPkWtWqAZp1YTuslNs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mBBRvNcS; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="L0KtCga+"
-dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
-	c=relaxed/relaxed; q=dns/txt;
-	h=From;
-	bh=QhsVjveTx0d6rHIu6iUQS+9D3tNDGwM+1vUJeV1ara8=;
-	b=L0KtCga+smhiT+Ld83DwulViArXuQMZQ7JI4slbf2KHqdoFvbblJDa3JIz5vEsjUgjZgxDaNC
-	et/hk21ZmTClB16k3r5lFe7N7CRZAc2YMbHqGBzNSjDGIwdMvrCNpzFCuvuy55vVZ6gsPvKAv2y
-	EJekRfcyqk+lHc0yGQGW6FE=
-Received: from mail.maildlp.com (unknown [172.19.163.15])
-	by canpmsgout09.his.huawei.com (SkyGuard) with ESMTPS id 4fZb544bRGz1cyPH;
-	Tue, 17 Mar 2026 10:10:00 +0800 (CST)
-Received: from kwepemj200003.china.huawei.com (unknown [7.202.194.15])
-	by mail.maildlp.com (Postfix) with ESMTPS id 323914056E;
-	Tue, 17 Mar 2026 10:14:59 +0800 (CST)
-Received: from [10.67.120.170] (10.67.120.170) by
- kwepemj200003.china.huawei.com (7.202.194.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Tue, 17 Mar 2026 10:14:58 +0800
-Message-ID: <4ef0460e-8d20-48e1-bcd4-24a3886b39da@huawei.com>
-Date: Tue, 17 Mar 2026 10:14:57 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mBBRvNcS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD1D9C4CEF7;
+	Tue, 17 Mar 2026 05:29:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773725360;
+	bh=Nf719nA30D8prEus9dGdhnEqiqbPlb11hG6PJJdTEfQ=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=mBBRvNcSSEIrX5WbrxOAyAXPcRP6Myb9HARIBq1YwUn/ZBJzCpXxb/JFclPm2DtvD
+	 +frAc7ngcpo6BtUrBehO2jzIOcam88SAvL3OW+8YuBd3Pt75keqCoLZ29dx/sbHJ5P
+	 u8NZ9Vb5hatnC5a/MmeRayQHJ0M/8AHDCrDAnZ2MiDmso1BTZGc99qckvJ+Cm2V3WY
+	 T3T3iiSPxZ4gQrSImHF2Ah71Nv+bg68o5TgofybaUz8y1sVDBV36TZ1emJkm7pAQLF
+	 WzcB/+PEBgoJDFTzXv575s9QqLpbe9+9JmQxt1bwVsJuLDKbRN2bxzZuiyLmwTplt7
+	 anN29qS96ghEA==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Catalin Marinas <catalin.marinas@arm.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, suzuki.poulose@arm.com,
+	steven.price@arm.com
+Subject: Re: [PATCH] arm64: swiotlb: =?utf-8?Q?Don=E2=80=99t?= shrink
+ default buffer when bounce
+ is forced
+In-Reply-To: <cd026591-c278-4f89-9d21-1a2125a85a44@samsung.com>
+References: <20260120070102.182977-1-aneesh.kumar@kernel.org>
+ <aYOVf066Fdr9L-nw@arm.com>
+ <CGME20260206061145eucas1p1917446df9763565b2b5ef829c5350a69@eucas1p1.samsung.com>
+ <yq5a8qd6iep6.fsf@kernel.org>
+ <cd026591-c278-4f89-9d21-1a2125a85a44@samsung.com>
+Date: Tue, 17 Mar 2026 10:59:13 +0530
+Message-ID: <yq5av7ev6n2u.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH 5/5] iommu/arm-smmu-v3: Add Context Descriptor display
- to debugfs
-To: Robin Murphy <robin.murphy@arm.com>, <will@kernel.org>, <jpb@kernel.org>
-CC: <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<wangzhou1@hisilicon.com>, <prime.zeng@hisilicon.com>,
-	<fanghao11@huawei.com>, <jonathan.cameron@huawei.com>, <linuxarm@huawei.com>
-References: <20260313104351.3502293-1-xiaqinxin@huawei.com>
- <20260313104351.3502293-6-xiaqinxin@huawei.com>
- <268c246d-893b-4b50-8fbb-ff82539465aa@arm.com>
-From: Qinxin Xia <xiaqinxin@huawei.com>
-In-Reply-To: <268c246d-893b-4b50-8fbb-ff82539465aa@arm.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: kwepems200002.china.huawei.com (7.221.188.68) To
- kwepemj200003.china.huawei.com (7.202.194.15)
+Content-Type: text/plain
+
+Marek Szyprowski <m.szyprowski@samsung.com> writes:
+
+> On 06.02.2026 07:11, Aneesh Kumar K.V wrote:
+>> Catalin Marinas <catalin.marinas@arm.com> writes:
+>>> On Tue, Jan 20, 2026 at 12:31:02PM +0530, Aneesh Kumar K.V (Arm) wrote:
+>>>> arm64 reduces the default swiotlb size (for unaligned kmalloc()
+>>>> bouncing) when it detects that no swiotlb bouncing is needed.
+>>>>
+>>>> If swiotlb bouncing is explicitly forced via the command line
+>>>> (swiotlb=force), this heuristic must not apply. Add a swiotlb helper to
+>>>> query the forced-bounce state and use it to skip the resize when
+>>>> bouncing is forced.
+>>> I think the logic you proposed in reply to Robin might work better but
+>>> have you actually hit a problem that triggered this patch? Do people
+>>> passing swiotlb=force expect a specific size for the buffer?
+>>>
+>> This issue was observed while implementing swiotlb for a trusted device.
+>> I was testing the protected swiotlb space using the swiotlb=force
+>> option, which causes the device to use swiotlb even in protected mode.
+>> As per Robin, an end user using the swiotlb=force option will also
+>> specify a custom swiotlb size
+>
+> Does the above mean that it works fine when user provides both 
+> swiotlb=force and custom swiotlb size, so no changes in the code are 
+> actually needed?
+>
+
+swiotlb_adjust_size() checks whether the default_nslabs value has
+changed and avoids updating the SWIOTLB size based on different
+subsystem logic.
+
+void __init swiotlb_adjust_size(unsigned long size)
+{
+	/*
+	 * If swiotlb parameter has not been specified, give a chance to
+	 * architectures such as those supporting memory encryption to
+	 * adjust/expand SWIOTLB size for their use.
+	 */
+	if (default_nslabs != IO_TLB_DEFAULT_SIZE >> IO_TLB_SHIFT)
+		return;
 
 
+To handle swiotlb_force alone we can do
 
-On 2026/3/16 23:42:36, Robin Murphy <robin.murphy@arm.com> wrote:
-> On 2026-03-13 10:43 am, Qinxin Xia wrote:
->> Add Context Descriptor (CD) display functionality to debugfs.
->> This allow inspecting CD contents for all Substream IDs including:
->> - CD validity and translation parameters
->> - TTBR0 and TCR configurations
->> - Raw CD data
->>
->> /sys/kernel/debug/iommu/arm_smmu_v3/smmu0/stream_table/
->> └── 0000:01:00.0:0/
->>      ├── ste
->>      └── context_descriptors/
->>          └── all
->>
->> Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
->> ---
->>   .../arm/arm-smmu-v3/arm-smmu-v3-debugfs.c     | 112 ++++++++++++++++++
->>   1 file changed, 112 insertions(+)
->>
->> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c b/ 
->> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c
->> index f62df02847ac..66ae1228c6ad 100644
->> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c
->> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c
->> @@ -27,6 +27,13 @@
->>    * - Context Pointers: Stage 1 and Stage 2 translation context 
->> addresses
->>    * - Raw Data: Complete 64-bit STE words in hexadecimal
->>    *
->> + * CD Information Displayed:
->> + * - Validity: Active state of the context descriptor
->> + * - T0SZ: Input address space size configuration
->> + * - EPD0/EPD1: Stage 1 translation enable flags
->> + * - TTBR0: Stage 1 translation table base address
->> + * - Raw Data: Complete CD structure in hexadecimal format
->> + *
->>    * Directory Structure:
->>    * /sys/kernel/debug/iommu/arm_smmu_v3/
->>    * └── smmu0/
->> @@ -35,6 +42,8 @@
->>    *     └── stream_table
->>    *       └── 0000:01:00.0:0/                    # PCI device with 
->> Stream ID 0
->>    *             ├── ste                           # Stream Table Entry
->> + *             └── context_descriptors/
->> + *                 └── all                       # All Context 
->> Descriptors
->>    *
->>    * The capabilities file provides detailed information about:
->>    * - Architecture version and translation stage support (Stage1/Stage2)
->> @@ -59,6 +68,8 @@
->>   static struct dentry *smmuv3_root_dir;
->>   static DEFINE_MUTEX(arm_smmu_debugfs_lock);
->> +#define MAX_SSIDS    32    /* Reasonable limit for SSID enumeration */
-> 
-> Arbitrarily limiting to only 32 out of a potential 2^20 SSIDs seems odd, 
-> like it's rather more than needed for basic sanity-checking, but far too 
-> few for debugging specific usage.
-> 
-> FWIW I'd imagine it might be more useful to expose the CDs as individual 
-> files by index - and if userspace does want an "all" dump then there's 
-> always `cat`. Whether that would be all of them unconditionally based on 
-> the current STE.S1CDMAX, or just the "active" ones based on PASID 
-> allocations and S1DSS, is probably a question of what people think is 
-> most useful (and/or how fiddly it is to actually implement the latter).
-> 
-
-I think 'active' may cover most debug scenarios.In the next version,
-I'll remove the limit here.
-
->> +
->>   /**
->>    * smmu_debugfs_capabilities_show() - Display SMMU capabilities
->>    * @seq: seq_file to write to
->> @@ -329,6 +340,90 @@ static int smmu_debugfs_ste_show(struct seq_file 
->> *seq, void *v)
->>   }
->>   DEFINE_SHOW_ATTRIBUTE(smmu_debugfs_ste);
->> +/**
->> + * smmu_debug_dump_cd() - Dump Context Descriptor details to seq_file
->> + * @seq: seq_file to write to
->> + * @dev: device associated with the CD
->> + * @ssid: Substream ID
->> + */
->> +static void smmu_debug_dump_cd(struct seq_file *seq, struct device 
->> *dev, u32 ssid)
->> +{
->> +    struct arm_smmu_master *master = dev_iommu_priv_get(dev);
->> +    struct arm_smmu_cd *cd;
->> +    u64 data;
->> +    int i;
->> +
->> +    if (!master) {
->> +        seq_puts(seq, "No master data\n");
->> +        return;
->> +    }
-> 
-> If userspace can read these files racily with devices being removed then:
-> 
-> 1) we should probably return an actual read error if the device has 
-> already disappeared such the file is no longer valid.
-> 
-> 2) how do we know the device isn't going to disappear, and thus "master" 
-> become invalid, immediately *after* this check happens to pass?
-> 
-> Thanks,
-> Robin.
-> 
-Thank you for your review.
-In the next version, I'll use lock protection and check the master again
-in the lock.
-
->> +
->> +    cd = arm_smmu_get_cd_ptr(master, ssid);
->> +    if (!cd) {
->> +        seq_printf(seq, "CD not available for SSID %u\n", ssid);
->> +        return;
->> +    }
->> +
->> +    seq_printf(seq, "CD for Substream ID %u:\n", ssid);
->> +
->> +    /* CD 0 */
->> +    data = le64_to_cpu(cd->data[0]);
->> +    seq_printf(seq, "  Valid: %s\n", data & CTXDESC_CD_0_V ? "Yes" : 
->> "No");
->> +    seq_printf(seq, "  T0SZ: 0x%llx\n", data & CTXDESC_CD_0_TCR_T0SZ);
->> +    seq_printf(seq, "  EPD0: %s\n", data & CTXDESC_CD_0_TCR_EPD0 ? 
->> "Yes" : "No");
->> +    seq_printf(seq, "  EPD1: %s\n", data & CTXDESC_CD_0_TCR_EPD1 ? 
->> "Yes" : "No");
->> +
->> +    /* CD 1 */
->> +    data = le64_to_cpu(cd->data[1]);
->> +    seq_printf(seq, "  TTBR0: 0x%016llx\n", data & 
->> CTXDESC_CD_1_TTB0_MASK);
->> +
->> +    /* Display raw CD data */
->> +    seq_puts(seq, "  Raw Data:\n");
->> +    for (i = 0; i < CTXDESC_CD_DWORDS; i++)
->> +        seq_printf(seq, "    CD[%d]: 0x%016llx\n", i,
->> +               le64_to_cpu(cd->data[i]));
->> +}
->> +
->> +/**
->> + * smmu_debug_dump_all_cds() - Dump all valid Context Descriptors for 
->> a device
->> + * @seq: seq_file to write to
->> + * @dev: target device
->> + */
->> +static void smmu_debug_dump_all_cds(struct seq_file *seq, struct 
->> device *dev)
->> +{
->> +    struct arm_smmu_master *master = dev_iommu_priv_get(dev);
->> +    u32 max_ssids, ssid;
->> +
->> +    if (!master) {
->> +        seq_puts(seq, "No master data\n");
->> +        return;
->> +    }
->> +
->> +    max_ssids = min_t(u32, 1 << master->ssid_bits, MAX_SSIDS);
->> +
->> +    seq_printf(seq, "Context Descriptors for device (max SSIDs: %u):\n",
->> +           max_ssids);
->> +
->> +    for (ssid = 0; ssid < max_ssids; ssid++) {
->> +        struct arm_smmu_cd *cd = arm_smmu_get_cd_ptr(master, ssid);
->> +
->> +        if (cd && (le64_to_cpu(cd->data[0]) & CTXDESC_CD_0_V)) {
->> +            seq_printf(seq, "\n--- SSID %u ---\n", ssid);
->> +            smmu_debug_dump_cd(seq, dev, ssid);
->> +        }
->> +    }
->> +}
->> +
->> +/* All CDs debugfs file operations */
->> +static int smmu_debugfs_all_cds_show(struct seq_file *seq, void *v)
->> +{
->> +    struct device *dev = seq->private;
->> +
->> +    smmu_debug_dump_all_cds(seq, dev);
->> +    return 0;
->> +}
->> +DEFINE_SHOW_ATTRIBUTE(smmu_debugfs_all_cds);
->> +
->>   /**
->>    * smmu_debugfs_create_stream_table() - Create debugfs entries for 
->> stream table
->>    * @dev: device to create entries for
->> @@ -388,9 +483,26 @@ int smmu_debugfs_create_stream_table(struct 
->> device *dev,
->>               goto cleanup_dev;
->>           }
->> +        /* Create CD directory */
->> +        cd_dir = debugfs_create_dir("context_descriptors", dev_dir);
->> +        if (!cd_dir) {
->> +            ret = -ENOMEM;
->> +            goto cleanup_dev;
->> +        }
->> +
->> +        /* Create "all" file to show all valid CDs */
->> +        all_cds_file = debugfs_create_file("all", 0444, cd_dir, dev,
->> +                           &smmu_debugfs_all_cds_fops);
->> +        if (!all_cds_file) {
->> +            ret = -ENOMEM;
->> +            goto cleanup_cd;
->> +        }
->> +
->>           /* Success for this stream ID, continue to next */
->>           continue;
->> +cleanup_cd:
->> +        debugfs_remove(cd_dir);
->>   cleanup_dev:
->>           debugfs_remove_recursive(dev_dir);
->>   cleanup:
-> 
-> 
-
--- 
-Thanks,
-Qinxin
+modified   kernel/dma/swiotlb.c
+@@ -209,6 +209,8 @@ unsigned long swiotlb_size_or_default(void)
+ 
+ void __init swiotlb_adjust_size(unsigned long size)
+ {
++	unsigned long nslabs;
++
+ 	/*
+ 	 * If swiotlb parameter has not been specified, give a chance to
+ 	 * architectures such as those supporting memory encryption to
+@@ -218,7 +220,13 @@ void __init swiotlb_adjust_size(unsigned long size)
+ 		return;
+ 
+ 	size = ALIGN(size, IO_TLB_SIZE);
+-	default_nslabs = ALIGN(size >> IO_TLB_SHIFT, IO_TLB_SEGSIZE);
++	nslabs = ALIGN(size >> IO_TLB_SHIFT, IO_TLB_SEGSIZE);
++	/*
++	 * Don't allow to reduce size if we are forcing swiotlb bounce.
++	 */
++	if (swiotlb_force_bounce && nslabs < default_nslabs)
++		return;
++	default_nslabs = nslabs;
+ 	if (round_up_default_nslabs())
+ 		size = default_nslabs << IO_TLB_SHIFT;
+ 	pr_info("SWIOTLB bounce buffer size adjusted to %luMB", size >> 20);
 
