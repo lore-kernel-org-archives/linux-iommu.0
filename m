@@ -1,28 +1,28 @@
-Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazon11010031.outbound.protection.outlook.com [52.101.61.31])
+Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012000.outbound.protection.outlook.com [40.107.200.0])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C8D333FE0D
-	for <iommu@lists.linux.dev>; Tue, 17 Mar 2026 19:16:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.61.31
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AECE0340D90
+	for <iommu@lists.linux.dev>; Tue, 17 Mar 2026 19:16:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.200.0
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773775003; cv=fail; b=Zr+UDzdpNB85PLSBKqmbF2WYpk8s1Ue12h9eaI+kuVntwv7PCDRQz1F7CnBdlaEbiTqsMETfpE1Ia5x3Tuxd7gdBgTlSZSXpyKlMm7IuqfdYxHEaHr6iAV7z9nY7XVj18FObkpb1M2vyvd/59i0q8m8z9dTGBdv8ihK3yvmH2+w=
+	t=1773775010; cv=fail; b=IYTQAnh5qQTu8cwdYvCV+O0GJn2mJpOdAOgMYFY9LFzA8WJbsf+tDEdLIsH6kvlsM4sTyWobERsaA1myVSMsuw1pEL9OH3eGz4drdkYKQMJiDQwozXSvDnHiIga2rSFH21rlLW7R7uk15kKLplFudLV4Hb3uJHJmCTmm8T+dbBc=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773775003; c=relaxed/simple;
-	bh=auMTp9G2OzurJGsLGt5pqpS9fCw0gu3TYFDdtf4Zsrs=;
+	s=arc-20240116; t=1773775010; c=relaxed/simple;
+	bh=0bmxXQ/7d9HXzfUT++4jjCbYVdXHo2nWvDAuww2WazU=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KIu2k70gixECRWHNSlW8eSwC5FlC4ErEl5h8TNRRDAPGBiZC9mpGp68pcDom7wgaKviaaTIzxz/PQOe47g6cGxklyI3QlCMC9azvD484T8zOOTxk2ZETqD4pqgFms9DxF4xukb6nKz0NjPJ2DBcM0uQ6GksbX2a815yZHvmpImE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=oMytbCuX; arc=fail smtp.client-ip=52.101.61.31
+	 MIME-Version:Content-Type; b=ZagI/B/6AWUbCmz3PDS+mNfUOXrdZ7MjGyU+mfa8B/2MonFi+iWbJkHvlZWu3hSLJYlkrhHICH7+XSwDMKmKkSJPwJzOMFvTum16b10zNkwA6FY4WtpHIVDALzhO4NQ0bO6A4GtNgjeBOdnFb45bJGHwOoMbsksxBmWKdv/kxio=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=TdM5dYo0; arc=fail smtp.client-ip=40.107.200.0
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="oMytbCuX"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="TdM5dYo0"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=aurWpxOxT/ScEQS/5t+Gq3aSVmZ88bxNr1LNZp1muDfMN8QUFXIeyIe71l9579SRPgif30WKwN+LVIk+PjRxJi/Lmhmsp2lkLAQ2UtmO1KA7uqCJgfBIDiRrnpj0rznEpH53t63HHNKShO1YM715zik0PzECFPPpE/989flQ2HMVpt0CNs2TZxo+1Qp2idvDImCyzUjHGk1ytCsyiVfEBjjuhxsCY14tJ1Ws8T42AdFazXn2t6Hv3rGnnJSHyNhUPMsmTEqoamzrE2vPx0zKi1a6MtHogF5Fr5U4a4v49azUD/pKq52Ev5inYo2ujz2C7b1oYEts/27IypQFRiDV+A==
+ b=Of241KZWZE6JwuIXd/duEt+mFeRTEuxqMlHMg4GIy3Yw6JwZ0W/4Fj7qmLT9+2wZnFvsKbtfJn8BphvrwGo+BpK/YNCWDRmjkPlJnUUSBrxDEEh/vjmqZhuCCFvkaOoYr+8zym7HSw1OcZX8nSt9147gw+fmk/b07PjGnB69n1IGJqsD/bMiPlxmLy/YOv/YiP3Jzgku79YZuaErMXrYL5NJryCh9do58+wozOqGG4VmlPI6TYbRriMTIsyqvgXA0gmv/t2/f0GPnODWF+0gLIzjK1s/AQiR9FPFYUZWE3YIEAtZ3jNBuo22/zMTaEzy/+TkVSg2FJ71CZLYzvuU6Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KVWk3sfJaF2Ksf1YdGaLHlvw0naTKX8iYWmZ1jhpkRA=;
- b=ApS7FX7M4XAOVo+nqdabl5lAU0R6Y58BWpxJE3jlpOfYexvG1voRwIe4ujNX8stwnPROZFJxVM0OsYYW5Ui30ADtesX9e177znoFgPk6SIWDFQC1ay92zS3j/tHl2RWMbTAn73VnrLDZQrlhS78ZVyax/Kn8leaDHFn32rpMi7uVn0K70tKBZFf0kvMxI+tK3vqgIH38maKH+3cLk7sktIi4ziLT0PMb1nSUpRsHqA5Z/4PfoFG5XH2BbC5J9DBSo3v10c0vuxXw0gJgHccSoHe/3JQA0fVuMwqvQxsBlzy32RQOym8cYYIO/95PXWp912VpcDo9+5Lu8K/Nt6mSCA==
+ bh=pzBvpWy7T+f0H4mu1AFA1JABq2Xve8FPaI37vGoXRLY=;
+ b=jnHtx1qC03sfG2GlLcISxtV20PgmixHEhAAyWBWdfQ1o6Jr8MABNrYSwo+M/1PY6Q3Y1eDs4BLPGZQby2W9D7iARvUH9m+T5Ew+TvojDGnI3d+ggW8KotwBF4We2mGmo3gFZFdJO/bLl/pWdbM8TjJA7+O8wuSsNgoytWXqzvZNILNb8gvRdXZzB139sG5faJyeAJz9moD3Rk3hWe721pESIM/1tsgW5Y2yHqso7RWmQ+OFUflc0UpsF/sqGmGHslfid1xaousPe/Fydi5lPAcuHt9p72QMsHna0H8g6NdwfH52YEDTcRvyRqHlIp08OjwfgVl/C+AlfSp7p9qRUYA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.160) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -30,18 +30,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KVWk3sfJaF2Ksf1YdGaLHlvw0naTKX8iYWmZ1jhpkRA=;
- b=oMytbCuX787STTXrLUuoABSFR0TN3a8wxYgDRu2eA4HlRO7BYADEZS71CRyYKZ0KrxHf+pOu6lSYAbTcE3OYTCCHX93unoy91cr41+DzQTDXV+ar3DtgBXoRXYCyXEC8QU6XssXVkk6Yfs0915wWvaA+2R2gNZtxx/dCH2HVC5m7OBvIiSvuJ+DheIcFeXRgYocDobIYsQ0wEct66FweXbMXekf9+ATiiEiEayFujdLs7AUB8OidQzxhZGSbCDg5F7QVcR1SN8D24oJmjpY/zcrMSQTrispbEb1pZofMrZ429x8wLKohZ97OOEqbk7RJmT4SswLgy1RTdzCxpVa2Lw==
-Received: from BN9PR03CA0191.namprd03.prod.outlook.com (2603:10b6:408:f9::16)
- by BL1PR12MB5778.namprd12.prod.outlook.com (2603:10b6:208:391::22) with
+ bh=pzBvpWy7T+f0H4mu1AFA1JABq2Xve8FPaI37vGoXRLY=;
+ b=TdM5dYo0S3TRBcPE1Q2UAFSoCpP8YvRh8rQ0sqHTc0Lz2kbJ5DQEOuE0YLWMoUra45RpvyaTBnWQbnvshxvqT1lfQy9FROf/jpOMTUd/4qJldOwXANuvCRabEBh4uAhADZ/Ov/2mUY6MepaIbDhE8+U4Vmgjh9l7piyIr7VXE/YujsudXnMHaFkyNtA213agnCSfr6yp9aB7zQVsh/kOTyy3DkVR5GOB0Eg1la0h4E9/lc+mX5g+WSYxfuIwvgA5GEPhA9rFjqcz7Ut+9JtaIuEbmMdlfw6PTICfMQSQlYmnYpmOAgPjT5DiO9iTOf8ZPl3SgBB2Jov9rBHFPoxaEg==
+Received: from BN0PR03CA0017.namprd03.prod.outlook.com (2603:10b6:408:e6::22)
+ by IA0PR12MB8088.namprd12.prod.outlook.com (2603:10b6:208:409::5) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9723.16; Tue, 17 Mar
- 2026 19:16:34 +0000
-Received: from BN1PEPF0000468D.namprd05.prod.outlook.com
- (2603:10b6:408:f9:cafe::47) by BN9PR03CA0191.outlook.office365.com
- (2603:10b6:408:f9::16) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9723.19; Tue, 17 Mar
+ 2026 19:16:32 +0000
+Received: from BN1PEPF0000468C.namprd05.prod.outlook.com
+ (2603:10b6:408:e6:cafe::ed) by BN0PR03CA0017.outlook.office365.com
+ (2603:10b6:408:e6::22) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.20.9700.24 via Frontend Transport; Tue,
- 17 Mar 2026 19:16:21 +0000
+ 17 Mar 2026 19:16:09 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -49,20 +49,20 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.117.160 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
 Received: from mail.nvidia.com (216.228.117.160) by
- BN1PEPF0000468D.mail.protection.outlook.com (10.167.243.138) with Microsoft
+ BN1PEPF0000468C.mail.protection.outlook.com (10.167.243.137) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9700.17 via Frontend Transport; Tue, 17 Mar 2026 19:16:33 +0000
+ 15.20.9700.17 via Frontend Transport; Tue, 17 Mar 2026 19:16:32 +0000
 Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
  (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 17 Mar
- 2026 12:16:11 -0700
+ 2026 12:16:10 -0700
 Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail203.nvidia.com
  (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 17 Mar
- 2026 12:16:10 -0700
+ 2026 12:16:09 -0700
 Received: from Asurada-Nvidia.nvidia.com (10.127.8.9) by mail.nvidia.com
  (10.129.68.6) with Microsoft SMTP Server id 15.2.2562.20 via Frontend
- Transport; Tue, 17 Mar 2026 12:16:10 -0700
+ Transport; Tue, 17 Mar 2026 12:16:08 -0700
 From: Nicolin Chen <nicolinc@nvidia.com>
 To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
 	<bhelgaas@google.com>, <jgg@nvidia.com>
@@ -72,9 +72,9 @@ CC: <rafael@kernel.org>, <lenb@kernel.org>, <praan@google.com>,
 	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
 	<linux-acpi@vger.kernel.org>, <linux-pci@vger.kernel.org>,
 	<vsethi@nvidia.com>
-Subject: [PATCH v2 7/7] iommu/arm-smmu-v3: Block ATS upon an ATC invalidation timeout
-Date: Tue, 17 Mar 2026 12:15:40 -0700
-Message-ID: <7e21e14faddeb0e3af692356f4fefbae2dfbebda.1773774441.git.nicolinc@nvidia.com>
+Subject: [PATCH v2 6/7] iommu/arm-smmu-v3: Introduce master->ats_broken flag
+Date: Tue, 17 Mar 2026 12:15:39 -0700
+Message-ID: <c101108ad1e52824dbadb5d35a534584be28824b.1773774441.git.nicolinc@nvidia.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1773774441.git.nicolinc@nvidia.com>
 References: <cover.1773774441.git.nicolinc@nvidia.com>
@@ -89,209 +89,129 @@ Content-Type: text/plain
 X-NV-OnPremToCloud: ExternallySecured
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN1PEPF0000468D:EE_|BL1PR12MB5778:EE_
-X-MS-Office365-Filtering-Correlation-Id: 66f86d5f-db41-4f1f-e4b2-08de8459b38a
+X-MS-TrafficTypeDiagnostic: BN1PEPF0000468C:EE_|IA0PR12MB8088:EE_
+X-MS-Office365-Filtering-Correlation-Id: d1dabc28-55bf-44d9-2068-08de8459b30d
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|36860700016|376014|7416014|1800799024|56012099003|22082099003|18002099003;
+	BCL:0;ARA:13230040|36860700016|7416014|82310400026|376014|1800799024|22082099003|56012099003|18002099003;
 X-Microsoft-Antispam-Message-Info:
-	MrCzGpvo5qoVsQY1dK2yha9kaGnizShQu9UWvH24RnxRUBMQT/aCVERPKEnJF0EDX1yWYF8/+CI1bU1JmQQ/xe7AI3kpwSPy46fJjSEPjLJnIWUG56Q+8TYeAKenxPMc/ZLlHpNvwg0hG22/vfC+jnhT0PgKyHw2DVVQmuHMkYvZeUwSW9jnjJXRm5ue0v84EEg66fCdr17MCAGsgGW8rPzCxyxe8zEd3Q5tlGmAE/Tdph6VLvuGnRpRQY6b69EMwScRcNDL7GBy5Pk5C8ctZ8V5xHCkyd0SdW6MSrZBQ3Hm0bi6bkxp65Lr5BoVzibidiOPM6MoJzjwsEKlE1JPLysZeD3SO1vo+HPAOPYHXwx6cXV0QmuHOt9EYihfZzHgy4UMHyX8+368z4SOwnVEBGccJEUoNJVfPXW3UMWg25oL6S+SY3/98CaXGVsix7txBtB/MSFUyPetNS7aHk/DWk6+5bzbVfitmJSLAsgVYQwD+OrPdhQ9m1xsHXSimL6JgRd2mRfmMUU8cRdnvrDUqYik9SyNrculjHSIPnFXu05Sfh/OtvKLVKnod/kAQXDCrw97h2jXIFPvk1Mz7NLaxsZVyb/OF7adNn4RxYbf5GvPxjHyQ2iKm7MM/ZKutE53UCVMx7s77mYwbfF6ajXr10W7LAnMlUqBf3J8+aPlB3MfTv7MfUkX2Dw0dGf5lFDZhvXupsbERYR5dy3xNW5UW/8XOQpdpnWCAlXmUDRx3ZL3GtxZxY89l5/mApCkWv8NgRu6+aeV6Sb+YBeSlwxSRA==
+	tyCkBRYT6OZLrMZhHncpJFnbQZBHR4Nqrf3jxNOZ9fTf7rewDGLpnhsVsCwQuRTcP5Ln3uBikPZoxpCZi7hbbZ5MTuuAycRG3pRFqGvKGTbxcIxf0RNyo+oFxjUcZaR2W1/V0MzyaRykKijwhTzWl4lWOtxuR4s5Wf+J8Rswl1nxNo0mOl6dj6vvJsPRjX4l0DWUMTdSYXrY3In8t01yW+9QV+Ag1AVxYRRhUX45PZjx85OSrl86NoEGmJjbqw81kVuGxbC01EaM2pdEvzt5L+SNpE7RkaMvPaLAxA0OXKU+8FaeHs9hwwwxju5ckbuZRjAG7NBaMg0aA38Gjm24fm7O13OsxCfZfC52qJoJHGiC/gxbM0h7Zlw5rRkzMHpyAJT39Lewe71RfPRAOFa03U7Ad70Xxh2w1xqfXhThKd8jLaBqZb7uL2uFlrqNNHDUPvQ8XUt+BW2jeWbbGE4AHxm/dNz0xlRLex12Jel6InEZOEvEF+gyK/9j9R749hdA8RmNLGjTxzrbZ3qqQ09belUo3sBRrIh9YSOLQOwBStrnzm7Prw2mPtKJ2r7tu+z8iCoRow2Nvpm/vkgU3fH/p/EPTC03EBi3n986DdJ4BSqnEWJsEz7Um9H23RMV0RQjKs9F4zhKDeSVmXxzzq/8se/FG+nEYQKahqjfFv7BUQdOUmWdmyZAAZmpFpXkuMd1YemWLcyOOlRaslCRaij8qN0+pJGME3maZmTl27hhvUrdacrlCSgG47+veFxVkfESLkUt8RDbUwAe0G7TG0HFGA==
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(36860700016)(376014)(7416014)(1800799024)(56012099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(7416014)(82310400026)(376014)(1800799024)(22082099003)(56012099003)(18002099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	oBn2F3nNq2OWFW3epPw3NaDjBuiEsXggcJzf0S6FB8ONjxvF+bKTUtZoQnx0IyAPT63+AYu64CsJap4WLTYsFdpK/j964XjzHqdxGfCTZ0ztC8bFxwbpE5SnfX8cQH02DRPRg9TOAnoHM2zPxjszZyWV43PVIJSwCvpncfjOuev3cSM4Y7yTsK/VnmjratbYHuKsBWZSuUCzPIL9zTO9rFj9mm+VgM7s0y6CtU5iX+tCJgiRlguJonkSn/BP0Njk6AmfxGT0pVRajSkpIZKptlBUmCvKO2BtwMY+uFlPBC0J95TtBFBAm3zvUOEc3H13dXhotcTUtrWQFUhUYBR2KgTf+2Hwyyqakrxje7znywZQQa1N2/+nSGHGLdEsXSccUuwQIF6R9s0BDckV+QgSMOWY+jaiQfHwg7Nv8I/ER4tytuTZjvdgWVVT7HA/XLe3
+	Zkm07m14Zg29K4BBz0uYGlOD4d7exesvoOjpDXQdc0U1iEZduZMTViadGGeX61BHops9x6rLqaYffBSLDcLvmhj1e3ICHUzDVs1EATo1bjYaEznWEWr3GH8VYdFlt1H70vu134Qqc653aJ90qjurmvMLuc2+1C65Um2iy0heB1H2+J05M5KDeFP7JRhpfKo4COk67o9hQynSnQ8JGB8oRcz57B1cV9NyDVNS0i1arWZvMladJsEt/Z01oENeNc93KMy52yRqONrjI1FAGPaqhsJ2zoUzcwVC+0j1RTZDBhxo4Te1rO8I1gvbtRlbVCMIEcnHDXby0vUtF23YKAPl+NP+tGhQXVSe/merNxh4+X3Fe/HJ7JcF1yflpDivspl+ZuzmV03NfJe2u2neQgWPmoSGmu6dAyL3SotIveYCF1ZKZFCp2BOFuOKsqrEDNSCS
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2026 19:16:33.0499
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2026 19:16:32.2306
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 66f86d5f-db41-4f1f-e4b2-08de8459b38a
+X-MS-Exchange-CrossTenant-Network-Message-Id: d1dabc28-55bf-44d9-2068-08de8459b30d
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	BN1PEPF0000468D.namprd05.prod.outlook.com
+	BN1PEPF0000468C.namprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5778
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8088
 
-Currently, when GERROR_CMDQ_ERR occurs, the arm_smmu_cmdq_skip_err() won't
-do anything for the CMDQ_ERR_CERROR_ATC_INV_IDX.
+The flag will be set when IOMMU cannot trust device's ATS function. E.g.,
+when ATC invalidation request to the device times out.
 
-When a device wasn't responsive to an ATC invalidation request, this often
-results in constant CMDQ errors:
-  unexpected global error reported (0x00000001), this could be serious
-  CMDQ error (cons 0x0302bb84): ATC invalidate timeout
-  unexpected global error reported (0x00000001), this could be serious
-  CMDQ error (cons 0x0302bb88): ATC invalidate timeout
-  unexpected global error reported (0x00000001), this could be serious
-  CMDQ error (cons 0x0302bb8c): ATC invalidate timeout
-  ...
+Once it is set, unsupport the ATS feature to prevent data corruption, and
+skip further ATC invalidation commands to avoid new timeouts.
 
-An ATC invalidation timeout indicates that the device failed to respond to
-a protocol-critical coherency request, which means that device's internal
-ATS state is desynchronized from the SMMU.
-
-Furthermore, ignoring the timeout leaves the system in an unsafe state, as
-the device cache may retain stale ATC entries for memory pages that the OS
-has already reclaimed and reassigned. This might lead to data corruption.
-
-Isolate the device that is confirmed to be unresponsive by a surgical STE
-update to unset its EATS bit so as to reject any further ATS transaction,
-which could corrupt the memory.
-
-Also, set the master->ats_broken flag that is revertible after the device
-completes a reset. This flag avoids further ATS requests and invalidations
-from happening.
-
-Finally, report this broken device to the IOMMU core to isolate the device
-in the core level too.
-
-For batched ATC_INV commands, SMMU hardware only reports a timeout at the
-CMD_SYNC, which could follow the batch issued for multiple devices. So, it
-isn't straightforward to identify which command in a batch resulted in the
-timeout. Fortunately, the invs array has a sorted list of ATC entries. So,
-the issued batch must be sorted as well. This makes it possible to bisect
-the batch to retry the command per Stream ID and identify the master.
+Unset the flag when the device finishes a reset for recovery.
 
 Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 92 ++++++++++++++++++++-
- 1 file changed, 89 insertions(+), 3 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 +
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 28 +++++++++++++++++++++
+ 2 files changed, 29 insertions(+)
 
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index cb83ea1f3407f..0a0a88bb60e65 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -941,6 +941,7 @@ struct arm_smmu_master {
+ 	/* Locked by the iommu core using the group mutex */
+ 	struct arm_smmu_ctx_desc_cfg	cd_table;
+ 	unsigned int			num_streams;
++	bool				ats_broken;
+ 	bool				ats_enabled : 1;
+ 	bool				ste_ats_enabled : 1;
+ 	bool				stall_enabled;
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 366d812668011..418ee2f40d96d 100644
+index aa42fe39d66b6..366d812668011 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -107,6 +107,8 @@ static const char * const event_class_str[] = {
- 	[3] = "Reserved",
- };
- 
-+static struct arm_smmu_ste *
-+arm_smmu_get_step_for_sid(struct arm_smmu_device *smmu, u32 sid);
- static int arm_smmu_alloc_cd_tables(struct arm_smmu_master *master);
- 
- static void parse_driver_options(struct arm_smmu_device *smmu)
-@@ -2495,10 +2497,43 @@ arm_smmu_atc_inv_to_cmd(int ssid, unsigned long iova, size_t size,
- 	cmd->atc.size	= log2_span;
- }
- 
-+static void arm_smmu_disable_eats_for_sid(struct arm_smmu_device *smmu,
-+					  struct arm_smmu_cmdq *cmdq, u32 sid)
-+{
-+	struct arm_smmu_cmdq_ent ent = {
-+		.opcode = CMDQ_OP_CFGI_STE,
-+		.cfgi	= {
-+			.sid = sid,
-+			.leaf = true,
-+		},
-+	};
-+	struct arm_smmu_ste *step;
-+	u64 cmd[CMDQ_ENT_DWORDS];
-+
-+	step = arm_smmu_get_step_for_sid(smmu, sid);
-+	WRITE_ONCE(step->data[1],
-+		   READ_ONCE(step->data[1]) & cpu_to_le64(~STRTAB_STE_1_EATS));
-+
-+	arm_smmu_cmdq_build_cmd(cmd, &ent);
-+	arm_smmu_cmdq_issue_cmdlist(smmu, cmdq, cmd, 1, true);
-+}
-+
-+static void arm_smmu_master_disable_ats(struct arm_smmu_master *master,
-+					struct arm_smmu_cmdq *cmdq)
-+{
-+	int i;
-+
-+	for (i = 0; i < master->num_streams; i++)
-+		arm_smmu_disable_eats_for_sid(master->smmu, cmdq,
-+					      master->streams[i].id);
-+	WRITE_ONCE(master->ats_broken, true);
-+	iommu_report_device_broken(master->dev);
-+}
-+
- static int arm_smmu_atc_inv_master(struct arm_smmu_master *master,
- 				   ioasid_t ssid)
- {
--	int i;
-+	int i, ret;
+@@ -2502,6 +2502,10 @@ static int arm_smmu_atc_inv_master(struct arm_smmu_master *master,
  	struct arm_smmu_cmdq_ent cmd;
  	struct arm_smmu_cmdq_batch cmds;
  
-@@ -2514,7 +2549,10 @@ static int arm_smmu_atc_inv_master(struct arm_smmu_master *master,
- 		arm_smmu_cmdq_batch_add(master->smmu, &cmds, &cmd);
++	/* Do not issue ATC_INV that will definitely time out */
++	if (READ_ONCE(master->ats_broken))
++		return 0;
++
+ 	arm_smmu_atc_inv_to_cmd(ssid, 0, 0, &cmd);
+ 
+ 	arm_smmu_cmdq_batch_init(master->smmu, &cmds, &cmd);
+@@ -2708,11 +2712,17 @@ static void __arm_smmu_domain_inv_range(struct arm_smmu_invs *invs,
+ 			arm_smmu_cmdq_batch_add(smmu, &cmds, &cmd);
+ 			break;
+ 		case INV_TYPE_ATS:
++			/* Do not issue ATC_INV that will definitely time out */
++			if (READ_ONCE(cur->master->ats_broken))
++				continue;
+ 			arm_smmu_atc_inv_to_cmd(cur->ssid, iova, size, &cmd);
+ 			cmd.atc.sid = cur->id;
+ 			arm_smmu_cmdq_batch_add(smmu, &cmds, &cmd);
+ 			break;
+ 		case INV_TYPE_ATS_FULL:
++			/* Do not issue ATC_INV that will definitely time out */
++			if (READ_ONCE(cur->master->ats_broken))
++				continue;
+ 			arm_smmu_atc_inv_to_cmd(IOMMU_NO_PASID, 0, 0, &cmd);
+ 			cmd.atc.sid = cur->id;
+ 			arm_smmu_cmdq_batch_add(smmu, &cmds, &cmd);
+@@ -3048,6 +3058,15 @@ void arm_smmu_install_ste_for_dev(struct arm_smmu_master *master,
  	}
- 
--	return arm_smmu_cmdq_batch_submit(master->smmu, &cmds);
-+	ret = arm_smmu_cmdq_batch_submit(master->smmu, &cmds);
-+	if (ret)
-+		arm_smmu_master_disable_ats(master, cmds.cmdq);
-+	return ret;
  }
  
- /* IO_PGTABLE API */
-@@ -2661,6 +2699,53 @@ static inline bool arm_smmu_invs_end_batch(struct arm_smmu_inv *cur,
- 	return false;
- }
- 
-+static void arm_smmu_invs_disable_ats(struct arm_smmu_invs *invs,
-+				      struct arm_smmu_cmdq *cmdq,
-+				      struct arm_smmu_device *smmu, u32 sid)
++static void arm_smmu_reset_device_done(struct device *dev)
 +{
-+	struct arm_smmu_inv *cur;
-+	size_t i;
++	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
 +
-+	arm_smmu_invs_for_each_entry(invs, i, cur) {
-+		if (cur->master->smmu == smmu && arm_smmu_inv_is_ats(cur) &&
-+		    cur->id == sid) {
-+			arm_smmu_master_disable_ats(cur->master, cmdq);
-+			break;
-+		}
-+	}
-+}
-+
-+static void arm_smmu_cmdq_batch_retry(struct arm_smmu_device *smmu,
-+				      struct arm_smmu_invs *invs,
-+				      struct arm_smmu_cmdq_batch *cmds)
-+{
-+	u64 atc[CMDQ_ENT_DWORDS] = {0};
-+	int i;
-+
-+	/* Only a timed out ATC_INV command needs a retry */
-+	if (!invs->has_ats)
++	if (WARN_ON(!master))
 +		return;
-+
-+	for (i = 0; i < cmds->num * CMDQ_ENT_DWORDS; i += CMDQ_ENT_DWORDS) {
-+		struct arm_smmu_cmdq *cmdq = cmds->cmdq;
-+		u32 sid;
-+
-+		/* Only need to retry ATC invalidations */
-+		if (FIELD_GET(CMDQ_0_OP, cmds->cmds[i]) != CMDQ_OP_ATC_INV)
-+			continue;
-+
-+		/* Only need to retry with one ATC_INV per Stream ID (device) */
-+		sid = FIELD_GET(CMDQ_ATC_0_SID, cmds->cmds[i]);
-+		if (atc[0] && sid == FIELD_GET(CMDQ_ATC_0_SID, atc[0]))
-+			continue;
-+
-+		atc[0] = cmds->cmds[i];
-+		atc[1] = cmds->cmds[i + 1];
-+		if (arm_smmu_cmdq_issue_cmdlist(smmu, cmdq, atc, 1, true))
-+			arm_smmu_invs_disable_ats(invs, cmdq, smmu, sid);
-+	}
++	WRITE_ONCE(master->ats_broken, false);
 +}
 +
- static void __arm_smmu_domain_inv_range(struct arm_smmu_invs *invs,
- 					unsigned long iova, size_t size,
- 					unsigned int granule, bool leaf)
-@@ -2739,7 +2824,8 @@ static void __arm_smmu_domain_inv_range(struct arm_smmu_invs *invs,
+ static bool arm_smmu_ats_supported(struct arm_smmu_master *master)
+ {
+ 	struct device *dev = master->dev;
+@@ -3060,6 +3079,14 @@ static bool arm_smmu_ats_supported(struct arm_smmu_master *master)
+ 	if (!(fwspec->flags & IOMMU_FWSPEC_PCI_RC_ATS))
+ 		return false;
  
- 		if (cmds.num &&
- 		    (next == end || arm_smmu_invs_end_batch(cur, next))) {
--			arm_smmu_cmdq_batch_submit(smmu, &cmds);
-+			if (arm_smmu_cmdq_batch_submit(smmu, &cmds))
-+				arm_smmu_cmdq_batch_retry(smmu, invs, &cmds);
- 			cmds.num = 0;
- 		}
- 		cur = next;
++	/*
++	 * Reject any new ATS request because ATC invalidation was timed out.
++	 * The PCI device should go through a recovery (reset) and notify the
++	 * SMMUv3 driver via a reset_device_done callback.
++	 */
++	if (READ_ONCE(master->ats_broken))
++		return false;
++
+ 	return dev_is_pci(dev) && pci_ats_supported(to_pci_dev(dev));
+ }
+ 
+@@ -4392,6 +4419,7 @@ static const struct iommu_ops arm_smmu_ops = {
+ 	.domain_alloc_paging_flags = arm_smmu_domain_alloc_paging_flags,
+ 	.probe_device		= arm_smmu_probe_device,
+ 	.release_device		= arm_smmu_release_device,
++	.reset_device_done	= arm_smmu_reset_device_done,
+ 	.device_group		= arm_smmu_device_group,
+ 	.of_xlate		= arm_smmu_of_xlate,
+ 	.get_resv_regions	= arm_smmu_get_resv_regions,
 -- 
 2.43.0
 
