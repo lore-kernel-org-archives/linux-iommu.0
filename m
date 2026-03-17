@@ -1,279 +1,254 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2CDE3563F6
-	for <iommu@lists.linux.dev>; Tue, 17 Mar 2026 08:26:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773735989; cv=none; b=W7tMhWKpE+JlEa785ZXJZwZlGhx6+Ff+r5XjEz3er7ylUHXzRQPVUEi/G+DXf8EXgw3dPmDPMlNmvpDcX/jswuX4RyaqkJni8Rpqwwq09Tb+wbYkLVWqzg098smHThI9QzBGd9XpA10HCBgC+MNfxlhAcQofy91pXIe1Q1lYTi4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773735989; c=relaxed/simple;
-	bh=0irRjcsn/6mH9qY9dx/psDtVRnHKTVG73clSDMUFvDA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=W7zB18AqD8XLrMG35G6oSRP0PIzFH1mbaFeUE+K+IXFarsbWQs0oDzK7S2Qnzb62ivZs4Kce+nxXcD+uPxr+n4HrHwzfD7d05xn9R2b+BH86es0ZcJsTwuCBOZ2dO50HJLuZwURNuHMUNrMcSAv7+eIvBIYLbVD1n8WLY/MphDE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=resnulli.us; spf=none smtp.mailfrom=resnulli.us; dkim=pass (2048-bit key) header.d=resnulli-us.20230601.gappssmtp.com header.i=@resnulli-us.20230601.gappssmtp.com header.b=ZevpSKfk; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=resnulli.us
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=resnulli.us
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67C2930AAB3
+	for <iommu@lists.linux.dev>; Tue, 17 Mar 2026 08:55:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.177.32
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773737753; cv=fail; b=eqpP07QRbrzMoTgcrqFhcmup/HSyMPR48xRxRem6Q5vR5Q5VsKs/G5I3KP66k8jvucW4WUzY8uNLT4JCM6E/PrBcEgI5Tr7oqPUSLjyLKVh6+wjoMFgjd78HrQNy7fF31SE0TaK6ilMWB7vTuWQQg2+jyQ0iThAtHrZZRxq0cAY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773737753; c=relaxed/simple;
+	bh=vBKLmvuhSXsNmWicJUQLt5jP3ziRpH3vC2V1rjk1Kig=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=So2onqWAWJ/zZWB4CSW3v0i2KY3LcoOutrjcpq2fQbh+Q7auTfZOOVRbrynJloLzEu05H0l+IDlAynOJC3Njfm7Du9ibhV0mRaMXgUSvcoaaFIxLIyJ6oWnrUyffOFUEeNIIpNK11awWfQ5xXGIsOzUAmG9zkoy4WQu/xF8Df0k=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=E0I6/IzT; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=DnMhhbAN; arc=fail smtp.client-ip=205.220.177.32
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=resnulli-us.20230601.gappssmtp.com header.i=@resnulli-us.20230601.gappssmtp.com header.b="ZevpSKfk"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4852afd42ceso46961565e9.2
-        for <iommu@lists.linux.dev>; Tue, 17 Mar 2026 01:26:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="E0I6/IzT";
+	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="DnMhhbAN"
+Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62GNKBE02823123;
+	Tue, 17 Mar 2026 08:55:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=
+	corp-2025-04-25; bh=7KKdYv+/6hRA6LUkZbJZkH0gEsLXOZ26spoZLhTyrdE=; b=
+	E0I6/IzTFQTAUVsUFXXchVXplimij52oPlMQAFNH42QcTLKhhml+rl4ZUHgsNoLb
+	PjhNRmAq4HcKluk0SAmEVqckwhgEKfU3cALAex3GbHaUO72HksNZ+S7XolJQhyc4
+	L6c4KPl9jbhucnI+DIZqybx9pa1RvL1BBDwb6ec9QNoy4whzy0dLuaPNbKB4sxyI
+	6UFUy9LCM4CkF7jtbgLrhvSsJ8VeWCCDGMTpRgYkvJ8rBEDMFNmnDfxdrEjSb6wf
+	zGZdEOkhXVnssOJ+q7GkeL5T1rIB3v5kBDzGn42K/4S3bPLm8BNDkYoByPyrWn1c
+	JxzC5n9svA+W8t4ZvVpXBw==
+Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4cvyqbuqbd-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 17 Mar 2026 08:55:26 +0000 (GMT)
+Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 62H7uIt2030579;
+	Tue, 17 Mar 2026 08:55:25 GMT
+Received: from sn4pr2101cu001.outbound.protection.outlook.com (mail-southcentralusazon11012035.outbound.protection.outlook.com [40.93.195.35])
+	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 4cvx49rt2a-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 17 Mar 2026 08:55:25 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Ot1evdPJPwkTmAAmgmy5LyeQ2nX5Me6B5EldZLsctNsvyhLQ4owT3OV2MtDhUEKSNYPrDO6LC4GvnmFlkIqLrylp5W7CfZvSDbOtpgHrrQRdqin2zgVafWlK36E1fdqwdvFOsXuyF3J0zAI1mXtOJ9txLDuT8d/pfc51B727n4lGxQnJJKtxuWY3xzi6eRKfQaxpVXpmivVDv6nGTUuOWdW38J6ltrfg9hsTry/G90gejlR5QwtGq0Lk4h/QV5+n+qCDfGfo55mrA1EMk9BZKExOa6iTs2TvJh5RmouBsdfRk50uEUwu/tdri0t7Or2m8987g4Ah8WHdKZDW+3Qjtw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7KKdYv+/6hRA6LUkZbJZkH0gEsLXOZ26spoZLhTyrdE=;
+ b=PZYgvASiNYJk+6SG3scUFvMw4eamv/QsuNAw+O7UbKJTD7OSVVaGtu9v/OsESMgwGuA3Y87NQSfS9qBEGWOS5i8MuZxSUqCf+ZZDhjFfsljn7TFY/gABVR4V9Y45C8JU2FoiDMdtoxZN/2WwDBLl+vQs4ZjdUkyVKGaNf8WAt0ERugtmlTm5lSPrwn8ckR/c+DIDVuYjmL5zuXcJgvWiEH4IkfFIzH6k3zPCSAgaD6NF1XmQSuDUhuS6UJhz4NUse/kaBzcvHFBN4X0zb2Vlw6zPr+hZ2bVaITZj8IHK83Eb8KZM0KYdzCgf5oQUIIlJ9BxLQZ3Zxtcm++aJCHXklw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20230601.gappssmtp.com; s=20230601; t=1773735985; x=1774340785; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=xf2CUvi8YSfRB4MbEru11u5aBtMS7TuUP2oF3ZpZ3ic=;
-        b=ZevpSKfkbSucEkhAPiJDMMKQUzlzzlzNm/BQgkQhVUGTf50uVNk9Bo2+kTCHhULfdn
-         yzUxxlqDwHUwNKVe1VDSZCCctORLkrXzSAlVuWfKBSyJAAgw1Sy+hZXqKt9Z1sb+MnLi
-         R2/Caj/miQ7jPbEnur4Zn+k4Ck1mhWuP0GdfiY+pNGUJA/OVZH2TsHJ9HpBuEhjScZNJ
-         wbmQrvK1Ualt8bb+HfCfEifGX3rGiHjDzTZnzwuahO5Kq6QS26vgAgQZmViZhcqRoLkl
-         Uf8NUNdwX68vqBflCggnvQ+u9TXWLEk02WrKEFxY1ZCpwqa80h4S10Jqg2wn6MpKx4Rd
-         yPIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773735985; x=1774340785;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=xf2CUvi8YSfRB4MbEru11u5aBtMS7TuUP2oF3ZpZ3ic=;
-        b=i8+6LFT31a2Xtqve6KgZ79dC4A45jpwFHrwkQi+by1LJ9tNVNn/kgqVN+FLzN3kCa0
-         2E/ASrxqSIQEHoB5/vUBBXK6twzprmM+2lNmXdaKIpq2KU7KPpsB6SIlE50RO1RHtBix
-         taveLnXBteqQWwqSWiKRuaVSnvOhdblI/6SiJ1RC1nGuaFPhl4CGstSZB+fesZV1U1fq
-         HCY+nemJ+FaxnaX6zZuUBxIFdReb+uFsZHTUFPbQaEKMS7VBJ+8GlKXrkSpDT1+llf9n
-         1dXg95Q9YeHH5/b3YNyAfQo7MLXavrMsaVvwJDgQro2O0rzVSWziSCWaUz5zf6DcrUxH
-         09mw==
-X-Forwarded-Encrypted: i=1; AJvYcCV3ljynTKWlcP37gq2LHP/XwKvVKu1ocN5ILoH5zIgBL7a74JmQOD2088oDtw+IyDxbaJb05g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyCutP9bPV7n8YjEUItzNYjeUXvw6PX4k2KM8NTj3AXI/hPjh4t
-	+e5zS4rWEjuj8NdgNTJ6q1O4uz3PG2Ir5nZTLQ7YwNnahLxM89CMI1DPwW9NM1Z0njZART0HkVX
-	r/pQx3A8=
-X-Gm-Gg: ATEYQzzbxfuRlvXFIQpNUebj9FKXistMC4NmZFlkARm98JMY0UQVEIP18O5dED953/1
-	hMFUD45B94g40VsI4yFUVlCuvEvaPt4lq8bigb1BlrsyPqNPrqaaHk0YNiAQZL5A6qLid8MALSG
-	TqBcF/YnrfBwfFipNPsQrA11sPVnfD/MRuZ6NxhNj75hTCErW2M2ZAFv31F0br9jUs4DG+Eyn9Z
-	1NKM2MK53oofidrfibG29Z44iYAAsmM3qqwA5wjhf+S1bWCjje4cEaetgdilEu59ebeegjr6zWu
-	ikUTdPRyzrJW77y1RAYy4y2Az3ATos8f5yzeey7yidIEQ5x3kupBDAfQTX6Ysr6GzoNHjdZmd/5
-	dRfJDkmFlGtROkbGeU+co95I8KnOGiaK+D6ztKyG76Zn0QX72FKNFP4DPCNKZjWLhN1/+OJnFDh
-	84pxsOl+/y3QWbA4bKAAm7Szm5E+gUOM7/PhMqdbVsZ90=
-X-Received: by 2002:a05:600c:c8f:b0:485:3c05:24dc with SMTP id 5b1f17b1804b1-48556710c02mr263331735e9.33.1773735985061;
-        Tue, 17 Mar 2026 01:26:25 -0700 (PDT)
-Received: from FV6GYCPJ69 ([2001:1ae9:6084:ab00:81f8:c391:4972:647b])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4856ea97e8esm52842845e9.5.2026.03.17.01.26.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Mar 2026 01:26:24 -0700 (PDT)
-Date: Tue, 17 Mar 2026 09:26:21 +0100
-From: Jiri Pirko <jiri@resnulli.us>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
-	iommu@lists.linux.dev, linux-media@vger.kernel.org, sumit.semwal@linaro.org, 
-	benjamin.gaignard@collabora.com, Brian.Starkey@arm.com, jstultz@google.com, tjmercier@google.com, 
-	christian.koenig@amd.com, m.szyprowski@samsung.com, jgg@ziepe.ca, leon@kernel.org, 
-	sean.anderson@linux.dev, ptesarik@suse.com, catalin.marinas@arm.com, 
-	aneesh.kumar@kernel.org, suzuki.poulose@arm.com, steven.price@arm.com, 
-	thomas.lendacky@amd.com, john.allen@amd.com, ashish.kalra@amd.com, 
-	suravee.suthikulpanit@amd.com, linux-coco@lists.linux.dev
-Subject: Re: [PATCH v4 1/2] dma-mapping: introduce DMA_ATTR_CC_DECRYPTED for
- pre-decrypted memory
-Message-ID: <lufy3ppgiy7637iravgzabajj67chmqvg22qc3fd2yqe2p33ws@b54vibhehth2>
-References: <20260316125857.617836-1-jiri@resnulli.us>
- <20260316125857.617836-2-jiri@resnulli.us>
- <15fcfa5e-c4b9-4b56-8f84-20dd5f66d643@arm.com>
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7KKdYv+/6hRA6LUkZbJZkH0gEsLXOZ26spoZLhTyrdE=;
+ b=DnMhhbANyzn6dw6q0pDBd2jYXQwS0kF8vpfBJgfoEeX/bLEGRxzZ8eS8KoA2iLS/dfjdLQpqMskBFxPuWOggccTzU8rtxo2WV3To7rkoEJSre333npI7HTl+8Ndu06vMKERl6pk7ZDdiOFUwsIHU9ANfhE9ppqlRrgXexovvE+g=
+Received: from DS4PPFEAFA21C69.namprd10.prod.outlook.com
+ (2603:10b6:f:fc00::d54) by SJ5PPFA8FAAE4F4.namprd10.prod.outlook.com
+ (2603:10b6:a0f:fc02::7c2) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9700.21; Tue, 17 Mar
+ 2026 08:55:19 +0000
+Received: from DS4PPFEAFA21C69.namprd10.prod.outlook.com
+ ([fe80::5266:1601:5598:3f0a]) by DS4PPFEAFA21C69.namprd10.prod.outlook.com
+ ([fe80::5266:1601:5598:3f0a%5]) with mapi id 15.20.9700.022; Tue, 17 Mar 2026
+ 08:55:19 +0000
+Message-ID: <113fed67-e31e-452f-bad2-61a5c16c7a16@oracle.com>
+Date: Tue, 17 Mar 2026 08:55:15 +0000
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 2/2] nvme-pci: handle dma_opt_mapping_size() returning
+ 0
+To: "Ionut Nechita (Wind River)" <ionut.nechita@windriver.com>,
+        m.szyprowski@samsung.com, kbusch@kernel.org, axboe@kernel.dk,
+        hch@lst.de, sagi@grimberg.me
+Cc: robin.murphy@arm.com, martin.petersen@oracle.com,
+        damien.lemoal@opensource.wdc.com, ahuang12@lenovo.com,
+        iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        ionut_n2001@yahoo.com, sunlightlinux@gmail.com
+References: <20260316203956.64515-1-ionut.nechita@windriver.com>
+ <20260316203956.64515-3-ionut.nechita@windriver.com>
+Content-Language: en-US
+From: John Garry <john.g.garry@oracle.com>
+Organization: Oracle Corporation
+In-Reply-To: <20260316203956.64515-3-ionut.nechita@windriver.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: DBBPR09CA0038.eurprd09.prod.outlook.com
+ (2603:10a6:10:d4::26) To DS4PPFEAFA21C69.namprd10.prod.outlook.com
+ (2603:10b6:f:fc00::d54)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <15fcfa5e-c4b9-4b56-8f84-20dd5f66d643@arm.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS4PPFEAFA21C69:EE_|SJ5PPFA8FAAE4F4:EE_
+X-MS-Office365-Filtering-Correlation-Id: 91ee42ba-768a-463b-5342-08de8402ea43
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|1800799024|366016|7053199007|56012099003|22082099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	53QEUFZqHycAlqjMkR0FTMUQb1L3cqjLWsXUMN1pD118TiSAFt6qxKecof5dWMuz6ybTnTXQ1X7rVt4cO+taBzr1Wz0sLeVLGh1Nf0rye5zHvFWTNl2y0Tody/CpkGqBKP+LX+FjP2Uap8DgoOaYWBjKB4xPO/ny1bitOucsCl4xHvOo/xy5aLpaLBTukBFQFL8hDMS+6PjfY5bqq7hIhJvzbl1EZG/vwkAakOgHZIOfo2gk0CrOsl0R9rtMRbQvw/tqVGSRWJYxRdWF9ZP/ripFhBONMDMWarSaSl5qcFxwtTjrfdkhUwoKKePbEvlH1ZxZBwf6uUD+kAHG7wvVpPrK+0rD2HthIqOTVj5mIdAL4PUccbiGRnwqn1R/xjkWs5djMtZDP4ztYqraE7xnsGqlrqHWmZeT5Lza+L1NVs6rnEghX8OXh9M5dwx878VUKUigQsnV8h4xZ6a1GRjPrN8hRKAN+wGANwloCUGjyEY15odpo8Y8u8oK5DcHvhucSmqDY/+FXE1S9BmaWq1EbXylJyWEhvqsfzwPqSu/nrQv6cgM+8i3llmp4vO4+k6AZTBMwBp65uwMZ71hTLp4JK+SIeKPi749TBtvRvYIQXqFFNDKiaHQPeaAkupthCCinMgd1aDIbkLivUsAxRREySwaoi5AXtpNcz/EVs4x7Ct1QidjTVPvj0EcIaiZ4Vh/SPFDXh/RVgS1Sl4dGqlaodQN0207u5bxu3y2vwTsIGI=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS4PPFEAFA21C69.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(366016)(7053199007)(56012099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?b0dubFVoTVd6S3NrdGVpQS9obmFaUmxYMnBFQ2thdEVuK0RRTmdWMDA1SUNI?=
+ =?utf-8?B?SFloU0QvVENob0dycWp2NzVzUVU3K1U0eERCRCtOdG5aTHNXb0VPYTJJeXBh?=
+ =?utf-8?B?RVoyTXBpTUNJMmZJcGJQUURoUDRwSCtWd01lRkxaUmFidk5uWUozNjlWbmtP?=
+ =?utf-8?B?MUx3TFNmWEtod2lRWkx5clZIcTEwNDFLU2k2c1V6Z29vbFR3TzhNbHZSWlEr?=
+ =?utf-8?B?MVNYSXY4cVJ4dlJRNnlkbVRkdVVlSGYwalBkdzl4djZmLzRkWWRSbGl4eFN1?=
+ =?utf-8?B?TVJSUnBybU9YbHlsTi9jMHNhRW9tbWxJTmNQdlVSNU4wNmc1M1Joc1BWc1hp?=
+ =?utf-8?B?T1huNmk0WnM5U1ltN0trSDZWamRMTktkaTVpSTRWL1BQYmZZNjVkQ2dodFly?=
+ =?utf-8?B?QUVmVkpKdFo2S3FFRGY2WVVrS3lKOU5aQkpMdXZ0ZW1id0o3MFh4Sm83WUdx?=
+ =?utf-8?B?NmpteWhvWjkyMloyNWcrRW9WditUUE1Oc0YxQ05Ec082L1Y1MVpLbkxsaXd1?=
+ =?utf-8?B?c1JnQS9kRDluMkFYOGpuR3dwY3c0SUxaeUUxYld2ckpHRDBITTBsbjNleFN0?=
+ =?utf-8?B?VDNqMWo4WjBGTVUvTXR4WlBoa0oxMnlpaWpwbEpiNmNCWitGd1U0YUE1bloy?=
+ =?utf-8?B?eHdCYU16dUxPS1ZyWVFjME4vTlVMYitxRWNTV0liTDB1Y1ZoV1dzdVBaYTQ3?=
+ =?utf-8?B?MVRsZFFqTWU0SmhUcFNjWlFDTE0xc0g2RUdNcUk4WjJXY3RkeG51WFg5YVRr?=
+ =?utf-8?B?T0FQUEZKeFpyN21JS2NoR21EWVc1WEdRdmF4bnkwamVBd05YQUkvZ09OSm53?=
+ =?utf-8?B?blozbWVzV01wWGgwNndQdkhMU3VJVWo3Nys1ekdnYkgzS3gxTStKY1YrcTJJ?=
+ =?utf-8?B?MDJBRWMzQzlHbktZYnMvZjlSR3BTeE1NUnJSbllRdWZYanZuTzJCdlZjVmlp?=
+ =?utf-8?B?MjJSS2tGRkt2ZHRrN2R4TlRDSGx6M0cvUHpJSkd4c3l2N3lMcDk3Z21DRWdI?=
+ =?utf-8?B?SmRPek9ad1RZY0hvdmxaeDVrL0Q0b2ExTXRxc0d3MjlMTUYwN2V4KzZCdTJK?=
+ =?utf-8?B?VUNoQkM2OGVldzJ1M0o5ZEpvSmxpZ0tTUWV3Q2tLNXM2T1ozekZ0Y0U3dUM0?=
+ =?utf-8?B?UlV1K3VQZ0o0azZBSWN4MmpKbHZ5WnJzYTdBL0YyVUtFa0pjNVRGZXFBSEVM?=
+ =?utf-8?B?RHVMakpvcE8xUXliRHA3dXVCMC9IZEt1N1lDSjAvdkNhSEJpVmZBbkZrUDVV?=
+ =?utf-8?B?eFJoV3NMVW51ZkpsV0VQaFRYcWk5dmRHUDhUSzVtVFBCaXFUSTBHUUpXWVVB?=
+ =?utf-8?B?ZjZQbitzZEhOcUN1bDdHRGliQVZITm1hN2JkVHkvd0R0b3pTdDJsUmxhb1oz?=
+ =?utf-8?B?cmJlNE4rN2xnNFVEYXUvYndHRlBmRC9zaC9kTG9qajV0cS8zSDc5Z0hiRXVY?=
+ =?utf-8?B?TDMyYkl0QktMTFVLaURZazVSaG0rbXl4ekNMRnJPRHIzL2ZZelZCRk1VRDVP?=
+ =?utf-8?B?aGE3cVdCb29iNGRoOGdCSVBtNnJyN05LZldFR3Y1Z1VkZjV2eklzREl5NDU3?=
+ =?utf-8?B?K0o0SXVnUlpTTWQrWmFob21GOGhUTVRFVnV1cHVJUFB0VWpmaUMzV3F1RUhj?=
+ =?utf-8?B?TE40RXFBbmoxK1pCSGtOTWRjc1cwNmxjdVdHU0lzd2VHVUJjSCtmQU01am1J?=
+ =?utf-8?B?aW9NRjZONVFRejRFOW83aDJpclZvajY0YmhFemh3dzl3TXMxaWE3ajdwc3BL?=
+ =?utf-8?B?dHptak1sTlkzZjc4V1VMR0R1YThYenBONklZckJRcmNKMkI3NzF0Q3RXMVYw?=
+ =?utf-8?B?dlpTVC81cTlVZ2Y5MzdCbjZlSmxJb21CN1g1R2FUbzA3V2g5TGNubkNYdzlo?=
+ =?utf-8?B?bVVFTGd2WmlNd0NSQk5SOExWeGZwditITHFuNmJzNDhzOGlaTzBTbjVQTGlT?=
+ =?utf-8?B?SEROS1lBcUFicUM0dnN6SkwramM1ZnFJNFphRWVCNW00RlVmQmIzNThKUi9o?=
+ =?utf-8?B?NUNXcGV4Q0dOejF2TW9qQnhleXdyRG9DeWl0Q1oxNTFEa0J5dndIZHA3anVU?=
+ =?utf-8?B?SW92ckVMZHNLZFBNNzZPUTdkK0hxM0RNUERXYXBhZjZ3ZWhEbHkwamRsTHU2?=
+ =?utf-8?B?MG9rdlhwRFVVeE1ocENBMnVFUGxBWTBjc1Q4am9kMStaZ2lnZXNxZDg3OE9i?=
+ =?utf-8?B?LzVQdzhhc0FySVVlOGZ5ZjZWRTIzQnhLVGhZUGZ4N09tK1I5NUlwRXdIYVVV?=
+ =?utf-8?B?SG1NSzY5aGZPNUppUi9RRndyd2FFQ3BmdE5RMkt2L0g2MU1Uck9tZmhGMVlw?=
+ =?utf-8?B?MFBPdVpkTXFSV3pCa0pzVlFOSVdYZG5oY2p6U1NnQnN2YjBGRjF1Zz09?=
+X-Exchange-RoutingPolicyChecked:
+	qgsegilHvcdb5mRJrgrv6yisx7BjeiVCLPHXb4+jSIBHgc5ROLUAE4Wk66KEh7vDMw+AaVXkD6o0fOXdIX3bbnzW8fgoTiX2htY3l1MWviXDMhDdJsgnmSBDGXOCAfsCHjgQp1KGfCWBpmMJa6WIt9M5E8bWR8TY7wwsjkC38fk9dVH06ScGTshyjJvy0qnd8ti3NxJ1yFZmSFNLmcLf5p1C8PjfldoL2yD0oFdsDP7ymVuQT7V+hcMNSauBWJz+e42sLfBLjXWkZw62NwyU563rMk/6drwtjVNz4lP8Zc8GaLyLsHncrvvTpUAiGh2hFvPNsc3wqBnbBO+vcuxEog==
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
+	08Nb6+vIiqtrossjycV2rosVCYw2VnBcB3VFApqW8e35ZnNnwFv2jRlNRz98uWVUmkFiA1HCzGZbzbmFUpJd/eutLLawegvMMdNejICz+fgRfQjKiThB9oyPgYxP5/ysw6eK2yzU6YWtBbzKwYNVgC5UaAp2Xca+YnXaVedGXFRL9rjp60tvWgYC3d1vy7DV8Z2SEqCNfUrXDEADtTjxaFg76u1s1mQdWywnyzsrmGAJjXD1Yz4JaLSOtc6gR4A1zB8nXrED/zy48BfHdslAbiIP6lDIa96C+NEAMI4FsTEayyxJDbeHcq5vlJX8tgD/o0qoLe0IP2KW00kfIxpw+ISyu3Dia/MzxIJIliDCfd/RrSQCemBcoUGOJiPs8LhPYfu/FRi3MT5S3okwO7zTjgWzZRJRzHeW5QjBrkNSGKzLRDSLjK7DemVW3D/oygLKNtk7sIm0u40jCo7O7gJ6dBBzyxu+KewLKLavFrTqBkwEh0Pbh2NmgoQsis1Y24sQ+S18n3BYcQwoPk2K7s/aG5Zn8PWDOB5RLUP7riFC9WShdtbWVCGsJcIpdonDjzVPhkaeFwrYUwI5Hqp++BrUhZVBhn6U7fes8BlbRaRtWoc=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 91ee42ba-768a-463b-5342-08de8402ea43
+X-MS-Exchange-CrossTenant-AuthSource: DS4PPFEAFA21C69.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2026 08:55:19.0872
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: o1sm85NgaxkhsgBSR1g1UxaJsJh86IpVY2fZfxyO8Or4F/S1yKHAsuITJIxcsfWghfyH1JW1RzT1v3Gu035sxg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ5PPFA8FAAE4F4
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-03-17_01,2026-03-16_06,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 mlxlogscore=999 phishscore=0
+ suspectscore=0 spamscore=0 adultscore=0 malwarescore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2603050001
+ definitions=main-2603170078
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzE3MDA3OCBTYWx0ZWRfXxwY4cJrftnqJ
+ 8qCl7tHlY4tGuFJYkF+RKK/Rp0Fp30qt+DWL997T8Icz/ZC3XwKGiJ4/5G4ws/SABphGLMJyyzi
+ 5E2br/jIQA1C5ux81aeE1zImYV3zFWvOQFCz8pOXpQWJL1HO3+sSypTvHBU/l55t9GMqXyB6I8E
+ /NLUIW1+pd+XxukqxFtVFJzOUD0J4z8vS1bJYAMfeO/XGCh7PRx4lrgkum2xpqPUw14abn4ixg6
+ PUcGGwbPmoR5OAp5o+Q70I1gaXNfHvyTVdTBl5BSZdWJ9OwZY1tL4rrx3SEJPs+tlJgHJGsE1ZW
+ DM9UU2FjOLKpdB9tSyxU0WEnD4nvxFvBys9+ZCmbBSpfdbcRzhf+iu6yoEnkOKqq2oJMKW9lSSl
+ G/mbvRgmWtsc7t0mNuEbAxbymcJyHZoHVJ8kJnKgSCt3W33Gg1WjbXHxn5qkvNY44mpkKA/+9To
+ 3RxIYlFhRxsMON4l0Kw==
+X-Authority-Analysis: v=2.4 cv=J8WnLQnS c=1 sm=1 tr=0 ts=69b916fe b=1 cx=c_pps
+ a=WeWmnZmh0fydH62SvGsd2A==:117 a=WeWmnZmh0fydH62SvGsd2A==:17
+ a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19 a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19
+ a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
+ a=Yq5XynenixoA:10 a=GoEa3M9JfhUA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=jiCTI4zE5U7BLdzWsZGv:22 a=BqU2WV_vvsyTyxaotp0D:22 a=t7CeM3EgAAAA:8
+ a=VwQbUJbxAAAA:8 a=u5gZpgB8sjyAWNAkIGcA:9 a=QEXdDO2ut3YA:10
+ a=FdTzh2GWekK77mhwV6Dw:22
+X-Proofpoint-GUID: 5ssykTMWXXw-yrRne-kX7mry2-91jvcI
+X-Proofpoint-ORIG-GUID: 5ssykTMWXXw-yrRne-kX7mry2-91jvcI
 
-Mon, Mar 16, 2026 at 07:25:55PM +0100, robin.murphy@arm.com wrote:
->On 2026-03-16 12:58 pm, Jiri Pirko wrote:
->> From: Jiri Pirko <jiri@nvidia.com>
->> 
->> Current CC designs don't place a vIOMMU in front of untrusted devices.
->> Instead, the DMA API forces all untrusted device DMA through swiotlb
->> bounce buffers (is_swiotlb_force_bounce()) which copies data into
->> decrypted memory on behalf of the device.
->> 
->> When a caller has already arranged for the memory to be decrypted
->> via set_memory_decrypted(), the DMA API needs to know so it can map
->> directly using the unencrypted physical address rather than bounce
->> buffering. Following the pattern of DMA_ATTR_MMIO, add
->> DMA_ATTR_CC_DECRYPTED for this purpose. Like the MMIO case, only the
->> caller knows what kind of memory it has and must inform the DMA API
->> for it to work correctly.
->
->Echoing Jason's point, if the intent of this is to indicate shared memory,
->please call it DMA_ATTR_CC_SHARED. Yes, some of the existing APIs are badly
->named because they conflated intent with implementation details; that is no
->reason to keep wilfully making the same mistake.
->
->At least with Arm CCA, the architecture enforces *confidentiality* pretty
->much orthogonally to encryption - if your threat model excludes physical
->attacks against DRAM, you can still have Realms isolated from each other (and
->of course other execution states) without even implementing the memory
->encryption feature; conversely if you do have it, then even all the
->shared/host memory may still be physically encrypted, it just has its own
->context (key) distinct from the Realm ones. Similarly, while it's not a
->"true" CoCo environment, pKVM has a similar notion of shared vs. private
->which can benefit from piggy-backing off much of the CoCo infrastructure in
->places like the DMA layer, but has nothing whatsoever to do with actual
->encryption.
->
->Furthermore, "shared" is just shorter and more readable, even before I invoke
->the previous discussion of why it should be "unencrypted" rather than
->"decrypted" anyway ;)
+On 16/03/2026 20:39, Ionut Nechita (Wind River) wrote:
+> From: Ionut Nechita <ionut.nechita@windriver.com>
+> 
+> After the previous commit, dma_opt_mapping_size() returns 0 when no DMA
+> backend provides an optimal mapping size hint (e.g. IOMMU in passthrough
+> mode with no ops->opt_mapping_size callback).
+> 
+> The NVMe PCI driver used min_t(u32, NVME_MAX_BYTES >> SECTOR_SHIFT,
+> dma_opt_mapping_size() >> 9) to cap max_hw_sectors.  With a 0 return
+> value this would set max_hw_sectors to 0, which is invalid.
 
-Okay, fair points. I'll rename it to shared for "v5". Thanks!
+With the first patch you have introduced a temporary breakage.
 
+> 
+> Guard the min_t so that max_hw_sectors is only capped when
+> dma_opt_mapping_size() provides a real hint.  When it returns 0, fall
+> back to the existing NVME_MAX_BYTES >> SECTOR_SHIFT default.
+> 
+> Fixes: 3710e2b056cb ("nvme-pci: clamp max_hw_sectors based on DMA optimized limitation")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Ionut Nechita <ionut.nechita@windriver.com>
+> ---
+>   drivers/nvme/host/pci.c | 15 ++++++++++-----
+>   1 file changed, 10 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+> index b78ba239c8ea8..dc148fb6eff28 100644
+> --- a/drivers/nvme/host/pci.c
+> +++ b/drivers/nvme/host/pci.c
+> @@ -3640,6 +3640,7 @@ static struct nvme_dev *nvme_pci_alloc_dev(struct pci_dev *pdev,
+>   {
+>   	unsigned long quirks = id->driver_data;
+>   	int node = dev_to_node(&pdev->dev);
+> +	size_t dma_opt;
+>   	struct nvme_dev *dev;
+>   	struct quirk_entry *qentry;
+>   	int ret = -ENOMEM;
+> @@ -3691,12 +3692,16 @@ static struct nvme_dev *nvme_pci_alloc_dev(struct pci_dev *pdev,
+>   	dma_set_max_seg_size(&pdev->dev, 0xffffffff);
+>   
+>   	/*
+> -	 * Limit the max command size to prevent iod->sg allocations going
+> -	 * over a single page.
+> +	 * Limit the max command size to prevent iod->sg allocations
+> +	 * going over a single page.  Only apply the DMA optimal mapping
+> +	 * size limit when the DMA layer actually provides one (non-zero
+> +	 * return from dma_opt_mapping_size()).
+>   	 */
+> -	dev->ctrl.max_hw_sectors = min_t(u32,
+> -			NVME_MAX_BYTES >> SECTOR_SHIFT,
+> -			dma_opt_mapping_size(&pdev->dev) >> 9);
+> +	dev->ctrl.max_hw_sectors = NVME_MAX_BYTES >> SECTOR_SHIFT;
+> +	dma_opt = dma_opt_mapping_size(&pdev->dev);
+> +	if (dma_opt)
+> +		dev->ctrl.max_hw_sectors =
+> +			min_t(u32, dev->ctrl.max_hw_sectors, dma_opt >> 9); 
 
->
->> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
->> ---
->> v3->v4:
->> - added some sanity checks to dma_map_phys and dma_unmap_phys
->> - enhanced documentation of DMA_ATTR_CC_DECRYPTED attr
->> v1->v2:
->> - rebased on top of recent dma-mapping-fixes
->> ---
->>   include/linux/dma-mapping.h | 10 ++++++++++
->>   include/trace/events/dma.h  |  3 ++-
->>   kernel/dma/direct.h         | 14 +++++++++++---
->>   kernel/dma/mapping.c        | 13 +++++++++++--
->>   4 files changed, 34 insertions(+), 6 deletions(-)
->> 
->> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
->> index 29973baa0581..476964d2b22f 100644
->> --- a/include/linux/dma-mapping.h
->> +++ b/include/linux/dma-mapping.h
->> @@ -85,6 +85,16 @@
->>    * a cacheline must have this attribute for this to be considered safe.
->>    */
->>   #define DMA_ATTR_CPU_CACHE_CLEAN	(1UL << 11)
->> +/*
->> + * DMA_ATTR_CC_DECRYPTED: Indicates the DMA mapping is decrypted (shared) for
->> + * confidential computing guests. For normal system memory the caller must have
->> + * called set_memory_decrypted(), and pgprot_decrypted must be used when
->> + * creating CPU PTEs for the mapping. The same decrypted semantic may be passed
->> + * to the vIOMMU when it sets up the IOPTE. For MMIO use together with
->
->That being "the vIOMMU" that you said doesn't exist, and which is explicitly
->not supported?...
+SECTOR_SHIFT can be used instead of hard-coded '9'
 
-Yeah, I wanted to draw the full picture. I can put a not like "(when it
-is going to be introduced)" or something like that to be clear.
+>   	dev->ctrl.max_segments = NVME_MAX_SEGS;
+>   	dev->ctrl.max_integrity_segments = 1;
+>   	return dev;
 
-
->
->> + * DMA_ATTR_MMIO to indicate decrypted MMIO. Unless DMA_ATTR_MMIO is provided
->> + * a struct page is required.
->> + */
->> +#define DMA_ATTR_CC_DECRYPTED	(1UL << 12)
->>   /*
->>    * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
->> diff --git a/include/trace/events/dma.h b/include/trace/events/dma.h
->> index 33e99e792f1a..b8082d5177c4 100644
->> --- a/include/trace/events/dma.h
->> +++ b/include/trace/events/dma.h
->> @@ -32,7 +32,8 @@ TRACE_DEFINE_ENUM(DMA_NONE);
->>   		{ DMA_ATTR_ALLOC_SINGLE_PAGES, "ALLOC_SINGLE_PAGES" }, \
->>   		{ DMA_ATTR_NO_WARN, "NO_WARN" }, \
->>   		{ DMA_ATTR_PRIVILEGED, "PRIVILEGED" }, \
->> -		{ DMA_ATTR_MMIO, "MMIO" })
->> +		{ DMA_ATTR_MMIO, "MMIO" }, \
->> +		{ DMA_ATTR_CC_DECRYPTED, "CC_DECRYPTED" })
->>   DECLARE_EVENT_CLASS(dma_map,
->>   	TP_PROTO(struct device *dev, phys_addr_t phys_addr, dma_addr_t dma_addr,
->> diff --git a/kernel/dma/direct.h b/kernel/dma/direct.h
->> index e89f175e9c2d..c047a9d0fda3 100644
->> --- a/kernel/dma/direct.h
->> +++ b/kernel/dma/direct.h
->> @@ -84,16 +84,24 @@ static inline dma_addr_t dma_direct_map_phys(struct device *dev,
->>   	dma_addr_t dma_addr;
->>   	if (is_swiotlb_force_bounce(dev)) {
->> -		if (attrs & DMA_ATTR_MMIO)
->> -			return DMA_MAPPING_ERROR;
->> +		if (!(attrs & DMA_ATTR_CC_DECRYPTED)) {
->> +			if (attrs & DMA_ATTR_MMIO)
->> +				return DMA_MAPPING_ERROR;
->> -		return swiotlb_map(dev, phys, size, dir, attrs);
->> +			return swiotlb_map(dev, phys, size, dir, attrs);
->> +		}
->> +	} else if (attrs & DMA_ATTR_CC_DECRYPTED) {
->> +		return DMA_MAPPING_ERROR;
->>   	}
->>   	if (attrs & DMA_ATTR_MMIO) {
->>   		dma_addr = phys;
->>   		if (unlikely(!dma_capable(dev, dma_addr, size, false)))
->>   			goto err_overflow;
->> +	} else if (attrs & DMA_ATTR_CC_DECRYPTED) {
->> +		dma_addr = phys_to_dma_unencrypted(dev, phys);
->> +		if (unlikely(!dma_capable(dev, dma_addr, size, false)))
->> +			goto err_overflow;
->>   	} else {
->>   		dma_addr = phys_to_dma(dev, phys);
->>   		if (unlikely(!dma_capable(dev, dma_addr, size, true)) ||
->> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
->> index 3928a509c44c..abb0c88b188b 100644
->> --- a/kernel/dma/mapping.c
->> +++ b/kernel/dma/mapping.c
->> @@ -157,6 +157,7 @@ dma_addr_t dma_map_phys(struct device *dev, phys_addr_t phys, size_t size,
->>   {
->>   	const struct dma_map_ops *ops = get_dma_ops(dev);
->>   	bool is_mmio = attrs & DMA_ATTR_MMIO;
->> +	bool is_cc_decrypted = attrs & DMA_ATTR_CC_DECRYPTED;
->>   	dma_addr_t addr = DMA_MAPPING_ERROR;
->>   	BUG_ON(!valid_dma_direction(dir));
->> @@ -165,8 +166,11 @@ dma_addr_t dma_map_phys(struct device *dev, phys_addr_t phys, size_t size,
->>   		return DMA_MAPPING_ERROR;
->>   	if (dma_map_direct(dev, ops) ||
->> -	    (!is_mmio && arch_dma_map_phys_direct(dev, phys + size)))
->> +	    (!is_mmio && !is_cc_decrypted &&
->> +	     arch_dma_map_phys_direct(dev, phys + size)))
->>   		addr = dma_direct_map_phys(dev, phys, size, dir, attrs);
->> +	else if (is_cc_decrypted)
->> +		return DMA_MAPPING_ERROR;
->>   	else if (use_dma_iommu(dev))
->
->...although, why *shouldn't* this be allowed with a vIOMMU? (Especially given
->that a vIOMMU for untrusted devices can be emulated by the host VMM without
->the CoCo hypervisor having to care at all - again, at least on Arm and other
->architectures where IOMMUs are regular driver model devices)
-
-Well, when iommu path is able to consume the attr, this restriction
-should be lifted. This is basically a sanity check for the
-dma_map_phys() caller.
-
-
->
->>   		addr = iommu_dma_map_phys(dev, phys, size, dir, attrs);
->>   	else if (ops->map_phys)
->
->Or indeed any other non-direct ops? Obviously all the legacy architectures
->like Alpha are never going to see this or care, but I could imagine Xen and
->possibly PowerPC might.
-
-Same here.
-
-
->
->Thanks,
->Robin.
->
->> @@ -203,11 +207,16 @@ void dma_unmap_phys(struct device *dev, dma_addr_t addr, size_t size,
->>   {
->>   	const struct dma_map_ops *ops = get_dma_ops(dev);
->>   	bool is_mmio = attrs & DMA_ATTR_MMIO;
->> +	bool is_cc_decrypted = attrs & DMA_ATTR_CC_DECRYPTED;
->>   	BUG_ON(!valid_dma_direction(dir));
->> +
->>   	if (dma_map_direct(dev, ops) ||
->> -	    (!is_mmio && arch_dma_unmap_phys_direct(dev, addr + size)))
->> +	    (!is_mmio && !is_cc_decrypted &&
->> +	     arch_dma_unmap_phys_direct(dev, addr + size)))
->>   		dma_direct_unmap_phys(dev, addr, size, dir, attrs);
->> +	else if (is_cc_decrypted)
->> +		return;
->>   	else if (use_dma_iommu(dev))
->>   		iommu_dma_unmap_phys(dev, addr, size, dir, attrs);
->>   	else if (ops->unmap_phys)
->
