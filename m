@@ -1,162 +1,268 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E37EC287253
-	for <iommu@lists.linux.dev>; Tue, 17 Mar 2026 13:37:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E45702857F0
+	for <iommu@lists.linux.dev>; Tue, 17 Mar 2026 13:38:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773754628; cv=none; b=XnyMx4RZ1j8+tQP9QEwAk5pZ6tKAMnG0KWc+4XO6jeXIdRmq82y2q5EacG8QNTCvTHOJHcZk6YywWQLA/kX/+cxEHVGsXaYU7G3SX88QP4+S9byy4LMeTm41WXcqZ7A8qmSYEU6ml7L9UV8SywRDtLempsU+XfHgdIwc1ZiF538=
+	t=1773754695; cv=none; b=Ta5Z0WM5rR1mAud0cod9pKkpQlXz274tnE6HR0OkIpW6OdvoiWp3br1YJNASGbNhSKwwtWEOqFR+sCAILDtxydbfBm7MnkxAn1z7i3LBVxKl8x3xHWM9Myzbcqx0pvNA+gwda1BA5i+aGpm9ZZnjhSBobenjYFjncrixxdUpl6M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773754628; c=relaxed/simple;
-	bh=iibvvbujQ5RRNUoZhe+z5X7/JBkY5cB6lsi4Yp5e/zs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XI5GvJmytzHLQfVHA3uizySkIvp/JMYt9uOMmI9zMS4QWmEDkDmCAPLqYIOKS5AX6WRNlW5/tDG4rDSqyjpnjOdJwESoqLjAQvo9L8F1msv3NaiOiQdPWMDTHnrBe+iMIFhuMd5G+QHlOV/U6kUi5r+ilIo2BBr6ewc+W60THV4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=resnulli.us; spf=none smtp.mailfrom=resnulli.us; dkim=pass (2048-bit key) header.d=resnulli-us.20230601.gappssmtp.com header.i=@resnulli-us.20230601.gappssmtp.com header.b=RpM0/9s/; arc=none smtp.client-ip=209.85.128.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=resnulli.us
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=resnulli.us
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=resnulli-us.20230601.gappssmtp.com header.i=@resnulli-us.20230601.gappssmtp.com header.b="RpM0/9s/"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4852fdb36a8so67324745e9.2
-        for <iommu@lists.linux.dev>; Tue, 17 Mar 2026 06:37:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20230601.gappssmtp.com; s=20230601; t=1773754625; x=1774359425; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=bvyHox0ngaRcTYY5mmOslDzHoAOd+VMSoOGA/5ZJGB4=;
-        b=RpM0/9s/wEZvbxIMg59jKFP5t2LParZSN/AhbIothVI5+/HztISgdmEnVW+CFlwJCw
-         Ur2Dbek0Db+m+M+LBkSWHGWkY4LAkz7h1NyK9J+Pui/uhEjnbt7o8dPvxGzgeIE1UV1P
-         Oo4bRSLg11faKjfLJ+bYvScPiSMIgdlpeOxiBUThjTMTfArNxs0ypRIGwtVlSNMlTk3Z
-         J+QMqRm9ChnNhcbMCrFeegG/SN/ozWA2ghbl8+R/lBG0BPeNcdl9mKpmK0I6DwOgcq0u
-         FiEcG7AOtelbejvU7qwCrZMGZViL1wMR82CT05+0vg5by2IVq2jNdh3v/3shfJ1s/NXu
-         3+Kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773754625; x=1774359425;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=bvyHox0ngaRcTYY5mmOslDzHoAOd+VMSoOGA/5ZJGB4=;
-        b=rpR6p2KHgptZy/laVYhUGnZum9+twpneDR0N4GjtyB3c7PVzPzQhYqKrfCqFFi+QWy
-         I/oRDspOkIHPDUJ5HTLj58jjQC7584TbVb93CDP+0Xei8m8M72YmzrL00qyLM/rWVyGO
-         WLwXeu5+7TrJji4K4Ey1nMSt3Jyj6nr/Pz0gJDGaEYM9WWEekXDyqDX4TGaKAaHZljq1
-         0F7f0arAnpHEsj3dSInjHx6s6WgaDFKghlp2VmS3ApIGorr5Ls/flHktLYN4+1ExNXsv
-         ahPNKGZHiVxmO3u/ejX5Aip2jEhN3eZD/ou9kR7m9WHoImFoIpMbHtntg5StEFxHIEg9
-         Bmyw==
-X-Forwarded-Encrypted: i=1; AJvYcCWVqJsr8o68TQ9bIMzHlnACowvxc+vUB06QotAxLptB6l7Q5m4LHg4qdSfanlEGuBjy9AaLOw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YywamXKgpOa2sFaBsblSQHOLak6J/neRRRjGRG1bEW7CrcOeDnh
-	RolgrPGDTnb0zSqVZh5rf6Mpb1ZPbigWhhg92xiE2Yy5NOSuFo+9/bF2f3X9AR/y53U=
-X-Gm-Gg: ATEYQzzaiwVrjRyz034B8M9K0ZFrAqI/g8gGCl+jrLjOnXz7E22AWJPnHK/CrcMQXnQ
-	i+yLRkIq7LNBwv05lTPfAVrkvEojIWWzdyh0Cr8/RnYe0rvcoFVZLMxfoMd2zAss30fxfvuNAYe
-	XBPi86oJXAQOYsm0APexOYTs9YgPXX9KcD7ck3vxcVjIlpv0pl/KNFsBqOQ4tI61mIZD0gez9WE
-	xFtSmChKZCuNXDLdJDfj5+hV09c8aON68uBZ/zP4hxbpuDij/GyKvjIIsWb1QBY2+MT8vimFzgK
-	KJFhiyJe+CTB2S+ZQvjiI4dF0ya71VV7ShEjNiRUHmRI2LBfzZd33+TxMH7bPNLJLNDnhooRHTn
-	jWWenaQYoV3tPQudj/CDchqcrLnxSps48hQUEINLnnXjyQ/pWAcNqr6VsoRD+xrfc4zBGApcP8L
-	N/g9P1utfhEhkUE9YGdZz6UC1wdfYmOuU=
-X-Received: by 2002:a05:600c:a011:b0:485:6cd3:f7ac with SMTP id 5b1f17b1804b1-4856ce33d33mr90044845e9.20.1773754625122;
-        Tue, 17 Mar 2026 06:37:05 -0700 (PDT)
-Received: from FV6GYCPJ69 ([85.163.81.98])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4856eaa3b66sm76702495e9.11.2026.03.17.06.37.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Mar 2026 06:37:04 -0700 (PDT)
-Date: Tue, 17 Mar 2026 14:37:02 +0100
-From: Jiri Pirko <jiri@resnulli.us>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
-	iommu@lists.linux.dev, linux-media@vger.kernel.org, sumit.semwal@linaro.org, 
-	benjamin.gaignard@collabora.com, Brian.Starkey@arm.com, jstultz@google.com, tjmercier@google.com, 
-	christian.koenig@amd.com, m.szyprowski@samsung.com, robin.murphy@arm.com, jgg@ziepe.ca, 
-	leon@kernel.org, sean.anderson@linux.dev, ptesarik@suse.com, 
-	catalin.marinas@arm.com, aneesh.kumar@kernel.org, suzuki.poulose@arm.com, 
-	steven.price@arm.com, thomas.lendacky@amd.com, john.allen@amd.com, 
-	ashish.kalra@amd.com, suravee.suthikulpanit@amd.com, linux-coco@lists.linux.dev
-Subject: Re: [PATCH net-next v3 0/2] dma-buf: heaps: system: add an option to
- allocate explicitly decrypted memory
-Message-ID: <xdy5anped2koy47cuxbbqocyypisl7lagwvpuokpzpggohk2dp@yilc5ihictph>
-References: <20260305123641.164164-1-jiri@resnulli.us>
- <ablV_f_l7wD2m63E@google.com>
+	s=arc-20240116; t=1773754695; c=relaxed/simple;
+	bh=m4SM5UZPIgtIMDR3UP82V7wWQ5FlutJoCf0YaJi6vTI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Yk75dgfNa6Q5SVJOvj6tmErpOiKpTEHecrp4vejnhlgK0o3uFiQeIWaT8v/RuA6oyP3+u1eSxu8maXwRvoSmX1KOfmBRO6Hv8I02WPURKpG/rlYC4Dl3iMy+EJqf7hYwH3eEZgFfkGbMZCFtQ2LQ2TU7JMsUroztKG7BruYUDnY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 390A91477;
+	Tue, 17 Mar 2026 06:38:07 -0700 (PDT)
+Received: from [10.57.60.199] (unknown [10.57.60.199])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2ADA03F778;
+	Tue, 17 Mar 2026 06:38:12 -0700 (PDT)
+Message-ID: <6ea250dd-ab9f-4abd-8fa8-77560e5dc6ab@arm.com>
+Date: Tue, 17 Mar 2026 13:38:09 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ablV_f_l7wD2m63E@google.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Allocate cmdq_batch on the heap
+To: Pranjal Shrivastava <praan@google.com>,
+ Cheng-Yang Chou <yphbchou0911@gmail.com>
+Cc: will@kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, jserv@ccns.ncku.edu.tw
+References: <20260311094444.3714302-1-yphbchou0911@gmail.com>
+ <abF6un_jrQ8zGZZ4@google.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <abF6un_jrQ8zGZZ4@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Tue, Mar 17, 2026 at 02:24:13PM +0100, smostafa@google.com wrote:
->Hi Jiri,
->
->On Thu, Mar 05, 2026 at 01:36:39PM +0100, Jiri Pirko wrote:
->> From: Jiri Pirko <jiri@nvidia.com>
->> 
->> Confidential computing (CoCo) VMs/guests, such as AMD SEV and Intel TDX,
->> run with encrypted/protected memory which creates a challenge
->> for devices that do not support DMA to it (no TDISP support).
->> 
->> For kernel-only DMA operations, swiotlb bounce buffering provides a
->> transparent solution by copying data through decrypted memory.
->> However, the only way to get this memory into userspace is via the DMA
->> API's dma_alloc_pages()/dma_mmap_pages() type interfaces which limits
->> the use of the memory to a single DMA device, and is incompatible with
->> pin_user_pages().
->> 
->> These limitations are particularly problematic for the RDMA subsystem
->> which makes heavy use of pin_user_pages() and expects flexible memory
->> usage between many different DMA devices.
->> 
->> This patch series enables userspace to explicitly request decrypted
->> (shared) memory allocations from the dma-buf system heap.
->> Userspace can mmap this memory and pass the dma-buf fd to other
->> existing importers such as RDMA or DRM devices to access the
->> memory. The DMA API is improved to allow the dma heap exporter to DMA
->> map the shared memory to each importing device.
->
->I have been looking into a similar problem with restricted-dma[1] and
->the inability of the DMA API to recognize that a block of memory is
->already decrypted.
->
->However, in your case, adding a new attr “DMA_ATTR_CC_DECRYPTED” works
->well as dma-buf owns the memory, and is both responsible for the
->set_memory_decrypted() and passing the DMA attrs.
->
->On the other hand, for restricted-dma, the memory decryption is deep
->in the DMA direct memory allocation and the DMA API callers (for ex
->virtio drivers) are clueless about it and can’t pass any attrs.
->My proposal was specific to restricted-dma and won’t work for your case.
->
->I am wondering if the kernel should have a more solid, unified method
->for identifying already-decrypted memory instead. Perhaps we need a
->way for the DMA API to natively recognize the encryption state of a
->physical page (working alongside force_dma_unencrypted(dev)), rather
->than relying on caller-provided attributes?
+On 2026-03-11 2:22 pm, Pranjal Shrivastava wrote:
+> On Wed, Mar 11, 2026 at 05:44:44PM +0800, Cheng-Yang Chou wrote:
+>> The arm_smmu_cmdq_batch structure is large and was being allocated on
+>> the stack in four call sites, causing stack frame sizes to exceed the
+>> 1024-byte limit:
+>>
+>> - arm_smmu_atc_inv_domain: 1120 bytes
+>> - arm_smmu_atc_inv_master: 1088 bytes
+>> - arm_smmu_sync_cd: 1088 bytes
+>> - __arm_smmu_tlb_inv_range: 1072 bytes
+>>
+>> Move these allocations to the heap using kmalloc_obj() and kfree() to
+>> eliminate the -Wframe-larger-than=1024 warnings and prevent potential
+>> stack overflows.
 
-I actually had it originally implemented probably in the similar way you
-suggest. I had a bit in page/folio struct to indicate the
-"shared/decrypted" state. However I was told that adding such bit is
-basically a no-go. Isn't that right?
+Pro tip: you can also eliminate the warning by setting CONFIG_FRAME_WARN 
+to a larger number, or to 0. The default is 2048, so you're already only 
+getting a warning because you've gone out of your way to ask for a 
+warning. The smaller the number you choose, the more warnings you'll 
+get, but does that alone justify "fixing" them?
 
+It's certainly plausible that we could get to issuing invalidation 
+commands at the bottom of a relatively long callchain through 
+subsystem/client driver/DMA API code, but have you observed a stack 
+overflow in practice? It's not like these functions are re-entrant, or 
+calling out to unknown external code, so while ~1KB is admittedly 
+reasonably big, we can at least reason that there's never going to be 
+much more *beyond* that (basically just whatever 
+arm_smmu_cmdq_issue_cmdlist() uses).
 
->
->[1] https://lore.kernel.org/all/20260305170335.963568-1-smostafa@google.com/
->
->Thanks,
->Mostafa
->
->
->> 
->> Jiri Pirko (2):
->>   dma-mapping: introduce DMA_ATTR_CC_DECRYPTED for pre-decrypted memory
->>   dma-buf: heaps: system: add system_cc_decrypted heap for explicitly
->>     decrypted memory
->> 
->>  drivers/dma-buf/heaps/system_heap.c | 103 ++++++++++++++++++++++++++--
->>  include/linux/dma-mapping.h         |   6 ++
->>  include/trace/events/dma.h          |   3 +-
->>  kernel/dma/direct.h                 |  14 +++-
->>  4 files changed, 117 insertions(+), 9 deletions(-)
->> 
+> Thanks for the patch. I agree that we should address these warnings, but
+> moving these allocations to the heap via kmalloc_obj() in the fast path
+> is problematic. Introducing heap allocation adds unnecessary latency and
+> potential for allocation failure in hot paths.
+> 
+> So, yes, we are using a lot of stack but we're using it to do good
+> things..
+> 
+> IMO, if we really want to address these, instead of kmalloc, we could
+> potentially consider some pre-allocated per-CPU buffers (that's a lot of
+> additional book-keeping though) to keep the data off the stack or
+> something similar following a simple rule: The fast path must be
+> deterministic- no SLAB allocations and no introducing new failure points
+> 
+> The last thing we'd want is a graphic driver's shrinker calling
+> dma-unmaps when the system is already under heavy memory pressure and
+> calling kmalloc leading to a circular dependency or allocation failure
+> exactly when the system needs to perform the unmap the most.
+
+ISTR it's worse than that, and in fact we must not even attempt to 
+allocate in a reclaim path at all, or it risks deadlock. So since the 
+SMMU driver cannot realistically know the context of *why* it's being 
+asked to unmap/invalidate something, I'm not sure it can ever be assumed 
+to be safe.
+
+Thanks,
+Robin.
+
+> 
+> Thanks,
+> Praan
+> 
+>> Signed-off-by: Cheng-Yang Chou <yphbchou0911@gmail.com>
+>> ---
+>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 66 +++++++++++++++------
+>>   1 file changed, 48 insertions(+), 18 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> index 4d00d796f078..734546dc6a78 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> @@ -1281,7 +1281,7 @@ static void arm_smmu_sync_cd(struct arm_smmu_master *master,
+>>   			     int ssid, bool leaf)
+>>   {
+>>   	size_t i;
+>> -	struct arm_smmu_cmdq_batch cmds;
+>> +	struct arm_smmu_cmdq_batch *cmds;
+>>   	struct arm_smmu_device *smmu = master->smmu;
+>>   	struct arm_smmu_cmdq_ent cmd = {
+>>   		.opcode	= CMDQ_OP_CFGI_CD,
+>> @@ -1291,13 +1291,23 @@ static void arm_smmu_sync_cd(struct arm_smmu_master *master,
+>>   		},
+>>   	};
+>>   
+>> -	arm_smmu_cmdq_batch_init(smmu, &cmds, &cmd);
+>> +	cmds = kmalloc_obj(*cmds);
+>> +	if (!cmds) {
+>> +		struct arm_smmu_cmdq_ent cmd_all = { .opcode = CMDQ_OP_CFGI_ALL };
+>> +
+>> +		WARN_ONCE(1, "arm-smmu-v3: failed to allocate cmdq_batch, falling back to full CD invalidation\n");
+>> +		arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd_all);
+>> +		return;
+>> +	}
+>> +
+>> +	arm_smmu_cmdq_batch_init(smmu, cmds, &cmd);
+>>   	for (i = 0; i < master->num_streams; i++) {
+>>   		cmd.cfgi.sid = master->streams[i].id;
+>> -		arm_smmu_cmdq_batch_add(smmu, &cmds, &cmd);
+>> +		arm_smmu_cmdq_batch_add(smmu, cmds, &cmd);
+>>   	}
+>>   
+>> -	arm_smmu_cmdq_batch_submit(smmu, &cmds);
+>> +	arm_smmu_cmdq_batch_submit(smmu, cmds);
+>> +	kfree(cmds);
+>>   }
+>>   
+>>   static void arm_smmu_write_cd_l1_desc(struct arm_smmu_cdtab_l1 *dst,
+>> @@ -2225,31 +2235,37 @@ arm_smmu_atc_inv_to_cmd(int ssid, unsigned long iova, size_t size,
+>>   static int arm_smmu_atc_inv_master(struct arm_smmu_master *master,
+>>   				   ioasid_t ssid)
+>>   {
+>> -	int i;
+>> +	int i, ret;
+>>   	struct arm_smmu_cmdq_ent cmd;
+>> -	struct arm_smmu_cmdq_batch cmds;
+>> +	struct arm_smmu_cmdq_batch *cmds;
+>>   
+>>   	arm_smmu_atc_inv_to_cmd(ssid, 0, 0, &cmd);
+>>   
+>> -	arm_smmu_cmdq_batch_init(master->smmu, &cmds, &cmd);
+>> +	cmds = kmalloc_obj(*cmds);
+>> +	if (!cmds)
+>> +		return -ENOMEM;
+>> +
+>> +	arm_smmu_cmdq_batch_init(master->smmu, cmds, &cmd);
+>>   	for (i = 0; i < master->num_streams; i++) {
+>>   		cmd.atc.sid = master->streams[i].id;
+>> -		arm_smmu_cmdq_batch_add(master->smmu, &cmds, &cmd);
+>> +		arm_smmu_cmdq_batch_add(master->smmu, cmds, &cmd);
+>>   	}
+>>   
+>> -	return arm_smmu_cmdq_batch_submit(master->smmu, &cmds);
+>> +	ret = arm_smmu_cmdq_batch_submit(master->smmu, cmds);
+>> +	kfree(cmds);
+>> +	return ret;
+>>   }
+>>   
+>>   int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain,
+>>   			    unsigned long iova, size_t size)
+>>   {
+>>   	struct arm_smmu_master_domain *master_domain;
+>> -	int i;
+>> +	int i, ret;
+>>   	unsigned long flags;
+>>   	struct arm_smmu_cmdq_ent cmd = {
+>>   		.opcode = CMDQ_OP_ATC_INV,
+>>   	};
+>> -	struct arm_smmu_cmdq_batch cmds;
+>> +	struct arm_smmu_cmdq_batch *cmds;
+>>   
+>>   	if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_ATS))
+>>   		return 0;
+>> @@ -2271,7 +2287,11 @@ int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain,
+>>   	if (!atomic_read(&smmu_domain->nr_ats_masters))
+>>   		return 0;
+>>   
+>> -	arm_smmu_cmdq_batch_init(smmu_domain->smmu, &cmds, &cmd);
+>> +	cmds = kmalloc_obj(*cmds);
+>> +	if (!cmds)
+>> +		return -ENOMEM;
+>> +
+>> +	arm_smmu_cmdq_batch_init(smmu_domain->smmu, cmds, &cmd);
+>>   
+>>   	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+>>   	list_for_each_entry(master_domain, &smmu_domain->devices,
+>> @@ -2294,12 +2314,14 @@ int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain,
+>>   
+>>   		for (i = 0; i < master->num_streams; i++) {
+>>   			cmd.atc.sid = master->streams[i].id;
+>> -			arm_smmu_cmdq_batch_add(smmu_domain->smmu, &cmds, &cmd);
+>> +			arm_smmu_cmdq_batch_add(smmu_domain->smmu, cmds, &cmd);
+>>   		}
+>>   	}
+>>   	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+>>   
+>> -	return arm_smmu_cmdq_batch_submit(smmu_domain->smmu, &cmds);
+>> +	ret = arm_smmu_cmdq_batch_submit(smmu_domain->smmu, cmds);
+>> +	kfree(cmds);
+>> +	return ret;
+>>   }
+>>   
+>>   /* IO_PGTABLE API */
+>> @@ -2334,7 +2356,7 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
+>>   	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>   	unsigned long end = iova + size, num_pages = 0, tg = 0;
+>>   	size_t inv_range = granule;
+>> -	struct arm_smmu_cmdq_batch cmds;
+>> +	struct arm_smmu_cmdq_batch *cmds;
+>>   
+>>   	if (!size)
+>>   		return;
+>> @@ -2362,7 +2384,14 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
+>>   			num_pages++;
+>>   	}
+>>   
+>> -	arm_smmu_cmdq_batch_init(smmu, &cmds, cmd);
+>> +	cmds = kmalloc_obj(*cmds);
+>> +	if (!cmds) {
+>> +		WARN_ONCE(1, "arm-smmu-v3: failed to allocate cmdq_batch, falling back to full TLB invalidation\n");
+>> +		arm_smmu_tlb_inv_context(smmu_domain);
+>> +		return;
+>> +	}
+>> +
+>> +	arm_smmu_cmdq_batch_init(smmu, cmds, cmd);
+>>   
+>>   	while (iova < end) {
+>>   		if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
+>> @@ -2391,10 +2420,11 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
+>>   		}
+>>   
+>>   		cmd->tlbi.addr = iova;
+>> -		arm_smmu_cmdq_batch_add(smmu, &cmds, cmd);
+>> +		arm_smmu_cmdq_batch_add(smmu, cmds, cmd);
+>>   		iova += inv_range;
+>>   	}
+>> -	arm_smmu_cmdq_batch_submit(smmu, &cmds);
+>> +	arm_smmu_cmdq_batch_submit(smmu, cmds);
+>> +	kfree(cmds);
+>>   }
+>>   
+>>   static void arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
 >> -- 
->> 2.51.1
->> 
+>> 2.48.1
+>>
+>>
+
