@@ -1,40 +1,40 @@
-Received: from canpmsgout10.his.huawei.com (canpmsgout10.his.huawei.com [113.46.200.225])
+Received: from canpmsgout09.his.huawei.com (canpmsgout09.his.huawei.com [113.46.200.224])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5521B341050
-	for <iommu@lists.linux.dev>; Tue, 17 Mar 2026 01:44:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=113.46.200.225
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC31A35966
+	for <iommu@lists.linux.dev>; Tue, 17 Mar 2026 02:04:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=113.46.200.224
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773711895; cv=none; b=d5cuY/+fiYjutfzV1Sm1eEguKA6PdT++CIhTHH0RXAZC5U8zOVgU5rnvEfv+UtkpP9pcPIAjM1CzG42Csqj9z1XNe6j8cYgPhfugfKEKMOZSxquaW20klw/4zi5DJ3DH2c2i/8Rp3UwiFQgXpd10eo1nLfD4h0vm7PblQwD713o=
+	t=1773713069; cv=none; b=BpLLkpiU754rTlYt7khKM/6oAin5G9qINoq0PHmleZzsdDJuZVk2PPRMkknb1sXexB9t6M4IGd7vZF2ADlGumJiyTKJUdHGFU99InpSL9wuzMnNmdoBuXDOBUYTnIzqyIa+p2dQzxWHeBtdQY2Zi3t6OlRQWb1SsTYNW0Vqux8g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773711895; c=relaxed/simple;
-	bh=Vbq1ws/jbQLGHr0X9zXe3914N3Caum6ZmPuQlaSH6mk=;
+	s=arc-20240116; t=1773713069; c=relaxed/simple;
+	bh=1fGThtfHieqIL7kPTB88pDTik5oypVkxs99YYd+gxzk=;
 	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=jvrDp4Z4bs8oTFTVZ+H/Nw+47Hmj4awlAWcbZwiSbOP5JFaxxkm1cDSZeY69h8T9P1eAdOMPmJ9LIcoCZo/5Lfr518JeKcVAz280SV5XnrvMSpfzLb5xlOcmJWIaoLz92HHGAjSO7JMmilI7BcwjQj6YwFip+zvrXdJqw74K3ZM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=i6ffHD+1; arc=none smtp.client-ip=113.46.200.225
+	 In-Reply-To:Content-Type; b=eIZWDkj9sd8pe/BPUdDQyTaKKcYp+CAFwDPG8LDkvAILx+foPHrVuJ02O+Zzb6At1kW+7ef1wfeNtJX7rs0S9fgpTACxHhCq4gGw1vs9nt+wZlS0xBKHlrREVIa5K/Fn9QaD/g4g25LT4My/7eNcjaORWC/5Y9CQwpPL7y5lSuA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=MAO4sWhQ; arc=none smtp.client-ip=113.46.200.224
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="i6ffHD+1"
+	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="MAO4sWhQ"
 dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
 	c=relaxed/relaxed; q=dns/txt;
 	h=From;
-	bh=npqisdMt8oIKpuDnHDNfunqQp27m9oVGG0vr418yV5k=;
-	b=i6ffHD+14XlPe5Pv5++xvp1Ty2yClbmxmpXdPj/is9aq+rbv9pJ0tTZxZxW3+4/Rvqrp4H9wm
-	YqAsA27kc5Jh/B/EMs47veicFGoxy2IHfEjCe8MIdlic3v0uuGnEyuaofSPsbm83fgyvmb8up4i
-	eT5t6z4fLDWcKReiY3mIl2c=
-Received: from mail.maildlp.com (unknown [172.19.162.92])
-	by canpmsgout10.his.huawei.com (SkyGuard) with ESMTPS id 4fZZQK11kjz1K96t;
-	Tue, 17 Mar 2026 09:39:53 +0800 (CST)
+	bh=LRL0Yt8d8xETsY3o0SXrc6sREJD9liwpk0hprJ02H7s=;
+	b=MAO4sWhQ51Mk7+aGUJm4fPDxqXsT7LVpkhi4AUyRNdBBIii3Iyh+8MlAuvF0Ze+HStmTCEI7K
+	bm5Nth84J4yx9o8pWLUaAX3lr0g8jWWY8s0sp9YmU9ryEP+Tib6euwRqiN7Lcvwyo6ZWRDr/9lZ
+	0nfmYtdSBQ72OWhhiXcaWSI=
+Received: from mail.maildlp.com (unknown [172.19.163.200])
+	by canpmsgout09.his.huawei.com (SkyGuard) with ESMTPS id 4fZZrm2XFHz1cyrR;
+	Tue, 17 Mar 2026 09:59:20 +0800 (CST)
 Received: from kwepemj200003.china.huawei.com (unknown [7.202.194.15])
-	by mail.maildlp.com (Postfix) with ESMTPS id 95CF740562;
-	Tue, 17 Mar 2026 09:44:49 +0800 (CST)
+	by mail.maildlp.com (Postfix) with ESMTPS id DD08F4055B;
+	Tue, 17 Mar 2026 10:04:18 +0800 (CST)
 Received: from [10.67.120.170] (10.67.120.170) by
  kwepemj200003.china.huawei.com (7.202.194.15) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Tue, 17 Mar 2026 09:44:49 +0800
-Message-ID: <7bf4849c-b220-4bd9-b3a8-f7a16c7acec6@huawei.com>
-Date: Tue, 17 Mar 2026 09:44:48 +0800
+ 15.2.1544.11; Tue, 17 Mar 2026 10:04:18 +0800
+Message-ID: <73609118-bed1-48b8-b649-a23cd445b319@huawei.com>
+Date: Tue, 17 Mar 2026 10:04:17 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,67 +42,199 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH 2/5] iommu/arm-smmu-v3: Add register display to
- debugfs
+Subject: Re: [RFC PATCH 4/5] iommu/arm-smmu-v3: Add stream table directory
+ structure to debugfs
 To: Robin Murphy <robin.murphy@arm.com>, <will@kernel.org>, <jpb@kernel.org>
 CC: <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
 	<wangzhou1@hisilicon.com>, <prime.zeng@hisilicon.com>,
 	<fanghao11@huawei.com>, <jonathan.cameron@huawei.com>, <linuxarm@huawei.com>
 References: <20260313104351.3502293-1-xiaqinxin@huawei.com>
- <20260313104351.3502293-3-xiaqinxin@huawei.com>
- <68add41b-bafa-4884-be70-c03d6ce851eb@arm.com>
- <1a42d502-a2c4-4c41-ba7e-4dc115159ed6@huawei.com>
- <e2fb2f38-2a31-473e-9ab2-efae8e7a0303@arm.com>
+ <20260313104351.3502293-5-xiaqinxin@huawei.com>
+ <497de4f9-193e-4630-b6d6-30519feb27ba@arm.com>
 From: Qinxin Xia <xiaqinxin@huawei.com>
-In-Reply-To: <e2fb2f38-2a31-473e-9ab2-efae8e7a0303@arm.com>
+In-Reply-To: <497de4f9-193e-4630-b6d6-30519feb27ba@arm.com>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: kwepems100001.china.huawei.com (7.221.188.238) To
+X-ClientProxiedBy: kwepems200002.china.huawei.com (7.221.188.68) To
  kwepemj200003.china.huawei.com (7.202.194.15)
 
 
 
-On 2026/3/17 00:26:00, Robin Murphy <robin.murphy@arm.com> wrote:
-> On 2026-03-16 3:35 pm, Qinxin Xia wrote:
->>>> +    /* 32-bit control registers */
->>>> +    seq_printf(seq, "CR0: 0x%08x [%s%s%s]\n",
->>>> +           readl_relaxed(base + ARM_SMMU_CR0),
->>>> +           readl_relaxed(base + ARM_SMMU_CR0) & CR0_SMMUEN ?
->>>> +           "Enabled " : "Disabled ",
->>>> +           readl_relaxed(base + ARM_SMMU_CR0) & CR0_EVTQEN ?
->>>> +           "EventQ " : "",
->>>> +           readl_relaxed(base + ARM_SMMU_CR0) & CR0_CMDQEN ?
->>>> +           "CmdQ " : "");
->>>
->>> There's really no point printing these extra strings, since if any of 
->>> those were *not* enabled then we'd have already failed probe and 
->>> never created the debugfs entry. And if anyone ever were to be trying 
->>> to change the driver behaviour at that level, I'd very much expect 
->>> them to be able to be able to read the bottom 4 bits of a CR0 value 
->>> in hex anyway ;)
->>>
->>> Thanks,
->>> Robin.
->>>
+On 2026/3/17 00:01:50, Robin Murphy <robin.murphy@arm.com> wrote:
+> On 2026-03-13 10:43 am, Qinxin Xia wrote:
+>> Add stream table directory structure creation to debugfs
+>> This organizes debugfs entries by device and stream ID:
 >>
->> Since Kunpeng supports ECMDQ(have not been submitted upstream), the
->> intention was to check whether the SMMU supports ECMDQ, and the logging
->> for other queues was added incidentally. The prints for the event queue
->> and command queue indeed seem unnecessary. I will remove them in the
->> next version.
-> OK, I would make a similar argument that even then, it wouldn't make 
-> sense to expose debugfs entries for ECMDQ_PROD registers that don't 
-> exist or we aren't using. Thus their enabled state should similarly be 
-> inherent in the files being present at all (but again either way, if a 
-> developer couldn't tell the significance of 0x80xxxxxx vs. 0x00xxxxxx 
-> already then I'd have to question their capability to usefully debug any 
-> more subtle ECMDQ behaviour...)
+>> /sys/kernel/debug/iommu/arm_smmu_v3/smmu0/stream_table/
+>> └── 0000:01:00.0:0/
+>>      └─── ste
+> 
+> Similar to my previous comment on CDs (sorry I'm reading out of order), 
+> I wonder if it might not be more useful to expose STEs by index, then 
+> have the name of the associated device as an attribute/link below that. 
+> Or perhaps even have whole cross-linked "by StreamID" and "by device" 
+> hierarchies if you want to get really fancy. From userspace it's not 
+> always easy to know exactly which StreamIDs are owned by which devices, 
+> and I can say from experience that if you do have to debug things at the 
+> STE level, the StreamID is often the thing you're starting from. Plus if 
+> you wanted to, say, check that STEs are correctly disabled after SR-IOV 
+> VF teardown, then there may not even be a device any more.
 > 
 > Thanks,
 > Robin.
 > 
+To quickly obtain the mapping between SIDs and devices, I named the
+directory dev_name+sid. Can we keep this naming mode and add a device
+link to the directory?
 
-You're right.
+According to Nicolin's suggestion, I plan to release the corresponding
+debugfs in release_device in the next version. After VF teardown, users
+cannot view information such as ste and cd anymore.
+
+>> Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
+>> ---
+>>   .../arm/arm-smmu-v3/arm-smmu-v3-debugfs.c     | 80 ++++++++++++++++++-
+>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  3 +
+>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  4 +
+>>   3 files changed, 85 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c b/ 
+>> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c
+>> index d7f3defd94a3..f62df02847ac 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c
+>> @@ -31,7 +31,10 @@
+>>    * /sys/kernel/debug/iommu/arm_smmu_v3/
+>>    * └── smmu0/
+>>    *     ├── capabilities    # SMMU feature capabilities and 
+>> configuration
+>> - *     └── registers       # SMMU Key registers
+>> + *     ├── registers       # SMMU Key registers
+>> + *     └── stream_table
+>> + *       └── 0000:01:00.0:0/                    # PCI device with 
+>> Stream ID 0
+>> + *             ├── ste                           # Stream Table Entry
+>>    *
+>>    * The capabilities file provides detailed information about:
+>>    * - Architecture version and translation stage support (Stage1/Stage2)
+>> @@ -324,5 +327,78 @@ static int smmu_debugfs_ste_show(struct seq_file 
+>> *seq, void *v)
+>>       smmu_debug_dump_ste(seq, dev);
+>>       return 0;
+>>   }
+>> -
+>>   DEFINE_SHOW_ATTRIBUTE(smmu_debugfs_ste);
+>> +
+>> +/**
+>> + * smmu_debugfs_create_stream_table() - Create debugfs entries for 
+>> stream table
+>> + * @dev: device to create entries for
+>> + * @smmu: SMMU device
+>> + *
+>> + * Return: 0 on success, negative error code on failure
+>> + */
+>> +int smmu_debugfs_create_stream_table(struct device *dev,
+>> +                     struct arm_smmu_device *smmu)
+>> +{
+>> +    struct dentry *stream_dir, *cd_dir, *dev_dir;
+>> +    struct dentry *ste_file, *all_cds_file;
+>> +    struct iommu_fwspec *fwspec;
+>> +    char name[64];
+>> +    int i, ret = 0;
+>> +
+>> +    if (!smmu->debugfs->stream_dir) {
+>> +        stream_dir = debugfs_create_dir("stream_table",
+>> +                        smmu->debugfs->smmu_dir);
+>> +        if (!stream_dir)
+>> +            return -ENOMEM;
+>> +        smmu->debugfs->stream_dir = stream_dir;
+>> +    } else {
+>> +        stream_dir = smmu->debugfs->stream_dir;
+>> +    }
+>> +
+>> +    fwspec = dev_iommu_fwspec_get(dev);
+>> +    if (!fwspec)
+>> +        return -ENODEV;
+>> +
+>> +    for (i = 0; i < fwspec->num_ids; i++) {
+>> +        u32 sid = fwspec->ids[i];
+>> +
+>> +        if (dev_is_pci(dev)) {
+>> +            struct pci_dev *pdev = to_pci_dev(dev);
+>> +
+>> +            snprintf(name, sizeof(name), "%04x:%02x:%02x.%d:%u",
+>> +                 pci_domain_nr(pdev->bus), pdev->bus->number,
+>> +                 PCI_SLOT(pdev->devfn), PCI_FUNC(pdev->devfn),
+>> +                 sid);
+>> +        } else {
+>> +            snprintf(name, sizeof(name), "%s:%u", dev_name(dev),
+>> +                 sid);
+>> +        }
+>> +
+>> +        dev_dir = debugfs_create_dir(name, stream_dir);
+>> +        if (!dev_dir) {
+>> +            ret = -ENOMEM;
+>> +            goto cleanup;
+>> +        }
+>> +
+>> +        /* Create STE file */
+>> +        ste_file = debugfs_create_file("ste", 0444, dev_dir, dev,
+>> +                           &smmu_debugfs_ste_fops);
+>> +        if (!ste_file) {
+>> +            ret = -ENOMEM;
+>> +            goto cleanup_dev;
+>> +        }
+>> +
+>> +        /* Success for this stream ID, continue to next */
+>> +        continue;
+>> +
+>> +cleanup_dev:
+>> +        debugfs_remove_recursive(dev_dir);
+>> +cleanup:
+>> +        if (ret) {
+>> +            debugfs_remove_recursive(stream_dir);
+>> +            break;
+>> +        }
+>> +    }
+>> +
+>> +    return ret;
+>> +}
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/ 
+>> iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> index 211a0c87507a..c57897e5f644 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> @@ -3133,6 +3133,9 @@ static int arm_smmu_attach_dev(struct 
+>> iommu_domain *domain, struct device *dev,
+>>       arm_smmu_attach_commit(&state);
+>>       mutex_unlock(&arm_smmu_asid_lock);
+>> +#ifdef CONFIG_ARM_SMMU_V3_DEBUGFS
+>> +    smmu_debugfs_create_stream_table(dev, smmu);
+>> +#endif
+>>       return 0;
+>>   }
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/ 
+>> iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+>> index 247f27426f6b..e9cd24c1ab3c 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+>> @@ -737,9 +737,13 @@ struct arm_smmu_impl_ops {
+>>   struct arm_smmu_debugfs {
+>>       struct dentry *root_dir;
+>>       struct dentry *smmu_dir;
+>> +    struct dentry *stream_dir;
+>>       struct arm_smmu_device *smmu;
+>>   };
+>> +
+>>   int arm_smmu_debugfs_setup(struct arm_smmu_device *smmu, phys_addr_t 
+>> ioaddr);
+>> +int smmu_debugfs_create_stream_table(struct device *dev,
+>> +                    struct arm_smmu_device *smmu);
+>>   #endif
+>>   /* An SMMUv3 instance */
+> 
+> 
+
 -- 
 Thanks,
 Qinxin
