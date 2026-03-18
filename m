@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7F18364043
-	for <iommu@lists.linux.dev>; Wed, 18 Mar 2026 06:14:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9601DDA9
+	for <iommu@lists.linux.dev>; Wed, 18 Mar 2026 06:43:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773814458; cv=none; b=XyRw0rR74mSGkZT/b2Om+QRf6YtwJZ3JCkjP16moRVx6QpkGscre8hOfU/D/j01uD5vE/GW8IXmaQwVVnrxgPlMsWYexmEyZf2goyCY5zc/zUdRPh+qWHnGFcDs5i0A5ebe74n8CMzrCCtlYsmj521zrLvreUPkFqJoqNlcNHF8=
+	t=1773816239; cv=none; b=T5SIq9LuqzhOosIZ9W7qN/O/hmUehA7sh3rMR93gJ+VT1xv00aZSnxeNq3jKw73aiWojDRNIc9MpHDUPhqu8rAlqwhXk2KjR50AjBv5xfcCDZX/NBYDpnQJnwpH9zQrAZV4/xEsmUAfOQSxj94ZFJy3RFaDJAaR4p8TtSTAh2UI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773814458; c=relaxed/simple;
-	bh=DkHUnEo/Buc1iI8h0hzSm7QzwytPckEV+C7X+Kypm6E=;
+	s=arc-20240116; t=1773816239; c=relaxed/simple;
+	bh=k+/aIjON1w3XB49p4mTcj8eoPlBg7zpImJv+IVIjRMc=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=aVFLBNiTr+db66iWk4gNSSYGu2fXT7FNBZlfC+r3gX2s0DzBa1//omqFt8v+npjq4wP0vOjseiF9wTHEE2149Xsnt/MR5kTC3sQjCGkbwdaV1nD1HZ6BqPpRu/7mgVJ/oBFe5Ss5rUn4IlOV38ww2m6AZkAJ9w4We4ajMkXA0Sk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ThU7rf/f; arc=none smtp.client-ip=192.198.163.11
+	 In-Reply-To:Content-Type; b=cXS1kasGawmaKefzhxopRkmsoI2R3v47AOrOkBLrbGBJlVJwdYhq9dLgNXihfMGH+sHzWimBHqkleXQEASrJrV/uyi8M2+qjgbwYuw6rrlpD4rshz7971B0e2A2GPlGIbNDD9Ch80hIXF5ObIH5UC4JW7CT3jG4B7DkL8t+4jl0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QZEjBkAU; arc=none smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ThU7rf/f"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QZEjBkAU"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773814456; x=1805350456;
+  t=1773816237; x=1805352237;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=DkHUnEo/Buc1iI8h0hzSm7QzwytPckEV+C7X+Kypm6E=;
-  b=ThU7rf/f2bbXa3igaTn3wXXepU7XKFXrsrhXxtl9Uz3btRe1TMF9S/zM
-   o+jKxEbKKf1VhIGkBtlBM5vpVuOoLiYRF0uaGG4WpI1FW1dgayx92/KQx
-   bPyzHwtMsjaDvLWYelrcwK53CLAsavpcM4RXTgHp24o+//VwcakPsqv0X
-   YHDJviOQ/Nv+ZvMco81+6iO0S2VLViXNTaLm1kk/gKB2Y/iKE39BIJP8M
-   H1r9+mn+VO4HsH4frKefcI3tOikzTVCIdYbYx1bv+SHRBsuCKKweEXrrS
-   l+5s0pJjTCf/6cgM94TgwO7CSnWUzm6LHfGnJ1Z/+3Y9wbDto751UVbvp
-   w==;
-X-CSE-ConnectionGUID: c6hjUbNsSfuS9+bY0twRog==
-X-CSE-MsgGUID: KUZlR4UFQuelmuA3NG/jFw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11732"; a="85494656"
+  bh=k+/aIjON1w3XB49p4mTcj8eoPlBg7zpImJv+IVIjRMc=;
+  b=QZEjBkAUa3FwXZJm9Uhc1bIfCr9JX6a9gfFZFGZxFHGxID3bPh6CsejK
+   OlzSyOQvBTvxtDSynj4bCkL7Ej4bVSmKjRgUCJM/UaM6VyrdO1L0Ewv97
+   0CvMHobFWwu9siiNY1FXZroXj8BX7fBEbBx6Pj/KWYifUz+/pNwxSfI82
+   TtzN9fz2OiZ3k9mpqiDYHDWyv0FqvriJUEgBTREiHU8kyhQOyUN0YN83p
+   TOMLGKEjPTSXPnHW0v5Y2O4EugkM6TpbEhA7gLpayp9jrDVELLu8h+UNU
+   mvPeudzcbfkiPS0EyA66cLT6LoLq4cernHCfI6WPIHfYRASP31xrSKhCg
+   A==;
+X-CSE-ConnectionGUID: n9fWosQ6TzaENa3P6xJh9Q==
+X-CSE-MsgGUID: TVkQcJSNTU+Ik2QW4JA6OQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11732"; a="97471344"
 X-IronPort-AV: E=Sophos;i="6.23,127,1770624000"; 
-   d="scan'208";a="85494656"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2026 23:14:15 -0700
-X-CSE-ConnectionGUID: Z1FGCetaTSGF++XIxaxXEg==
-X-CSE-MsgGUID: iCZ0jeD2TnyuQZO6sIHcrg==
+   d="scan'208";a="97471344"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2026 23:43:57 -0700
+X-CSE-ConnectionGUID: uG7nyVY4SGu/cL4EV2HQBg==
+X-CSE-MsgGUID: AJyHP0++QdClngc+/2NzzQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,127,1770624000"; 
-   d="scan'208";a="222567515"
+   d="scan'208";a="227199465"
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2026 23:14:11 -0700
-Message-ID: <791a46c7-3129-4438-86bd-b7677e01332a@linux.intel.com>
-Date: Wed, 18 Mar 2026 14:13:09 +0800
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2026 23:43:54 -0700
+Message-ID: <8665ed69-9364-4f8a-9238-6adf9b5590a0@linux.intel.com>
+Date: Wed, 18 Mar 2026 14:42:52 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,163 +52,70 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 3/7] iommu: Add iommu_report_device_broken() to
- quarantine a broken device
-To: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
- robin.murphy@arm.com, joro@8bytes.org, bhelgaas@google.com, jgg@nvidia.com
-Cc: rafael@kernel.org, lenb@kernel.org, praan@google.com,
- xueshuai@linux.alibaba.com, kevin.tian@intel.com,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
- linux-pci@vger.kernel.org, vsethi@nvidia.com
-References: <cover.1773774441.git.nicolinc@nvidia.com>
- <c5390aeaeccfa86a1c79f26d2c0ff5df380940a4.1773774441.git.nicolinc@nvidia.com>
+Subject: Re: Linux error `[DMA Write NO_PASID] Request device [3c:00.0] fault
+ addr 0x0 [fault reason 0x05] PTE Write access is not set`
+To: Paul Menzel <pmenzel@molgen.mpg.de>, Keith Busch <kbusch@kernel.org>,
+ Jens Axboe <axboe@fb.com>, Christoph Hellwig <hch@lst.de>,
+ Sagi Grimberg <sagi@grimberg.me>
+Cc: David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
+ linux-nvme@lists.infradead.org
+References: <88e33b0c-e89f-47a2-9125-d85693d4816f@molgen.mpg.de>
+ <d38a2cda-4b29-43ec-ab08-b55c79714810@linux.intel.com>
+ <311a59f3-10bb-4a43-b86d-2f1ef316a01c@molgen.mpg.de>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <c5390aeaeccfa86a1c79f26d2c0ff5df380940a4.1773774441.git.nicolinc@nvidia.com>
+In-Reply-To: <311a59f3-10bb-4a43-b86d-2f1ef316a01c@molgen.mpg.de>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 3/18/26 03:15, Nicolin Chen wrote:
-> When an IOMMU hardware detects an error due to a faulty device (e.g. an ATS
-> invalidation timeout), IOMMU drivers may quarantine the device by disabling
-> specific hardware features or dropping translation capabilities.
+On 3/16/26 22:54, Paul Menzel wrote:
+>>> On the Intel Kaby Lake laptop Dell XPS 13 9360, Linux logs the error 
+>>> below:
+>>>
+>>>      [17959.189315] ACPI: EC: event unblocked
+>>>      [17959.197876] DMAR: DRHD: handling fault status reg 2
+>>>      [17959.197882] DMAR: [DMA Write NO_PASID] Request device 
+>>> [3c:00.0] fault addr 0x0 [fault reason 0x05] PTE Write access is not set
+>>>      [17959.198366] DMAR: DRHD: handling fault status reg 2
+>>>      [17959.198369] DMAR: [DMA Write NO_PASID] Request device 
+>>> [3c:00.0] fault addr 0x0 [fault reason 0x05] PTE Write access is not set
+>>>      [17959.198923] DMAR: DRHD: handling fault status reg 2
+>>>      [17959.201477] nvme nvme0: 4/0/0 default/read/poll queues
+>>>
+>>> 3c:00.0 is the NVMe controller/device.
+>>>
+>>>      $ lspci -nn -s 3c:00.0
+>>>      3c:00.0 Non-Volatile memory controller [0108]: SK hynix PC300 
+>>> NVMe Solid State Drive 512GB [1c5c:1284]
+>>>
+>>> This seems to happen only *sometimes* when resuming from ACPI S3.
+>>>
+>>> To my knowledge, this is *not* a new problem. Please find the log 
+>>> messages attached. (Ignore the other DMAR error for now.)
+>>
+>> These IOMMU DMA faults are triggered when the NVMe controller attempts
+>> DMA writes to system memory address 0x0. The IOMMU hardware blocked
+>> these accesses because the system software has not granted the device
+>> permission to write to this specific address. It's unlikely a bug or
+>> problem in the iommu driver as far as I can see.
+> I am seeing the same issue on a Dell XPS 15 7590 with Intel NVMe 
+> controller:
 > 
-> However, the core-level states of the faulty device are out of sync, as the
-> device can be still attached to a translation domain or even potentially be
-> moved to a new domain that might overwrite the driver-level quarantine.
+>      $ lspci -nn -s 3d:00.0
+>      3d:00.0 Non-Volatile memory controller [0108]: Intel Corporation 
+> SSD DC P4101/Pro 7600p/760p/E 6100p Series [8086:f1a6] (rev 03)
 > 
-> Given that such an error can be likely an ISR, introduce a broken_work per
-> iommu_group, and add a helper function to allow driver to report the broken
-> device, so as to completely quarantine it in the core.
-> 
-> Use the existing pci_dev_reset_iommu_prepare() function to shift the device
-> to its resetting_domain/blocking_domain. A later pci_dev_reset_iommu_done()
-> call will clear it and move it out of the quarantine.
-> 
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->   include/linux/iommu.h |  2 ++
->   drivers/iommu/iommu.c | 59 +++++++++++++++++++++++++++++++++++++++++++
->   2 files changed, 61 insertions(+)
-> 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 9ba12b2164724..9b5f94e566ff9 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -891,6 +891,8 @@ static inline struct iommu_device *__iommu_get_iommu_dev(struct device *dev)
->   #define iommu_get_iommu_dev(dev, type, member) \
->   	container_of(__iommu_get_iommu_dev(dev), type, member)
->   
-> +void iommu_report_device_broken(struct device *dev);
-> +
->   static inline void iommu_iotlb_gather_init(struct iommu_iotlb_gather *gather)
->   {
->   	*gather = (struct iommu_iotlb_gather) {
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index fcd2902d9e8db..2f297f689a3a3 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -55,6 +55,8 @@ struct iommu_group {
->   	struct list_head devices;
->   	struct xarray pasid_array;
->   	struct mutex mutex;
-> +	struct work_struct broken_work;
-> +	bool requires_reset;
->   	void *iommu_data;
->   	void (*iommu_data_release)(void *iommu_data);
->   	char *name;
-> @@ -146,6 +148,7 @@ static struct group_device *iommu_group_alloc_device(struct iommu_group *group,
->   						     struct device *dev);
->   static void __iommu_group_free_device(struct iommu_group *group,
->   				      struct group_device *grp_dev);
-> +static void iommu_group_broken_worker(struct work_struct *work);
->   static void iommu_domain_init(struct iommu_domain *domain, unsigned int type,
->   			      const struct iommu_ops *ops);
->   
-> @@ -1057,6 +1060,7 @@ struct iommu_group *iommu_group_alloc(void)
->   	if (!group)
->   		return ERR_PTR(-ENOMEM);
->   
-> +	INIT_WORK(&group->broken_work, iommu_group_broken_worker);
->   	group->kobj.kset = iommu_group_kset;
->   	mutex_init(&group->mutex);
->   	INIT_LIST_HEAD(&group->devices);
-> @@ -4031,6 +4035,7 @@ void pci_dev_reset_iommu_done(struct pci_dev *pdev)
->   	if (WARN_ON(!group->blocking_domain))
->   		return;
->   
-> +	WRITE_ONCE(group->requires_reset, false);
->   	/*
->   	 * A PCI device might have been in an error state, so the IOMMU driver
->   	 * had to quarantine the device by disabling specific hardware feature
-> @@ -4062,6 +4067,60 @@ void pci_dev_reset_iommu_done(struct pci_dev *pdev)
->   }
->   EXPORT_SYMBOL_GPL(pci_dev_reset_iommu_done);
->   
-> +static void iommu_group_broken_worker(struct work_struct *work)
-> +{
-> +	struct iommu_group *group =
-> +		container_of(work, struct iommu_group, broken_work);
-> +	struct pci_dev *pdev = NULL;
-> +	struct device *dev;
-> +
-> +	scoped_guard(mutex, &group->mutex) {
-> +		/* Do not block the device again if it has been recovered */
-> +		if (!READ_ONCE(group->requires_reset))
-> +			goto out_put;
-> +		if (list_is_singular(&group->devices)) {
-> +			/* Note: only support group with a single device */
-> +			dev = iommu_group_first_dev(group);
-> +			if (dev_is_pci(dev)) {
-> +				pdev = to_pci_dev(dev);
-> +				pci_dev_get(pdev);
-> +			}
-> +		}
+> Logs from Debian’s Linux 6.19.8:
 
-The current mechanism is designed only for the PCIe devices within
-singleton iommu groups. How about moving the above check to
-iommu_report_device_broken() and emitting a message if it is called for
-unsupported devices?
+Did you see this warning with the v6.18 kernel or earlier?
 
-> +	}
-> +
-> +	if (pdev) {
-> +		/*
-> +		 * Quarantine the device completely. This will be cleared upon
-> +		 * a pci_dev_reset_iommu_done() call indicating the recovery.
-> +		 */
-> +		pci_dev_lock(pdev);
-> +		pci_dev_reset_iommu_prepare(pdev);
-> +		pci_dev_unlock(pdev);
-> +		pci_dev_put(pdev);
-> +	}
-> +out_put:
-> +	iommu_group_put(group);
-> +}
-> +
-> +void iommu_report_device_broken(struct device *dev)
-> +{
-> +	struct iommu_group *group = iommu_group_get(dev);
-> +
-> +	if (!group)
-> +		return;
-> +
-> +	if (READ_ONCE(group->requires_reset)) {
-> +		iommu_group_put(group);
-> +		return;
-> +	}
-> +	WRITE_ONCE(group->requires_reset, true);
-> +
-> +	/* Put the group now or later in iommu_group_broken_worker() */
-> +	if (!schedule_work(&group->broken_work))
-> +		iommu_group_put(group);
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_report_device_broken);
-> +
->   #if IS_ENABLED(CONFIG_IRQ_MSI_IOMMU)
->   /**
->    * iommu_dma_prepare_msi() - Map the MSI page in the IOMMU domain
+> 
+>      [  726.138732] DMAR: DRHD: handling fault status reg 3
+>      [  726.138736] DMAR: [DMA Read NO_PASID] Request device [3d:00.0] 
+> fault addr 0xffffd000 [fault reason 0x06] PTE Read access is not set
+>      [  726.141470] nvme nvme0: 12/0/0 default/read/poll queue
+> 
+> It’d be great if this could be fixed.
 
 Thanks,
 baolu
