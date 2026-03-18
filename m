@@ -1,32 +1,28 @@
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A97D33D1CA8
-	for <iommu@lists.linux.dev>; Wed, 18 Mar 2026 11:45:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBCDA304BBC
+	for <iommu@lists.linux.dev>; Wed, 18 Mar 2026 12:56:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=141.14.17.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773834321; cv=none; b=LBEPTUuNKlMZL14i0nSV1QWHVR5JYdVcGFT6ODgs3K4kwFjDSKKXSzmJpo9ao3lf1ahgbbY7LopXZdseFdfRLiuBTaaOQ774UiAwtF9Y/gM4u1mqFAks9qRkTSPAOKoi9w2pVjti5tb+i5ejiT603vYmnrkimLNHNjvMvnPm7MU=
+	t=1773838612; cv=none; b=jr7Xd/uYq9v9s5USoDKwMA9vQV9yrPZYcsZPmD+uuMRBV/AkkfF6Vj6YxpZs1vBIfgD5WrlRzq/Hia1kKpTvMwHQBVzrhA20CfHhp6cIb2T81cTQFKmRqEsigpx7qjj7UzuwYGIBF/IFXW7Ea1lmRCpSbuP2sUHtB3Yz333HEMs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773834321; c=relaxed/simple;
-	bh=7HTUqEgNoxYYlJYCimlmPf/6F++wW/C+VtXyvOM1RSU=;
+	s=arc-20240116; t=1773838612; c=relaxed/simple;
+	bh=q0Mnn5UyaWx06OAG0Y8p5tN2l+EgUJlrY/WgDUJjqu4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=i8Fn+QDTRDsLwALzyKGSVfpHtTzYTgpfs4jwB28kReIsie3MsGXDFE/yMXUPw9YE4dzZy5Otlb1nr15HjoUQZ3xPAbgtG7cMYMXHA2djOe5U8kJiEGXWuyRWI52jgDb2XtRCd77Ijv4cEy3uyczjn/J1JR/820mQpiZIFGbAWCU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=Gq3qAiA1; arc=none smtp.client-ip=115.124.30.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="Gq3qAiA1"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1773834310; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-	bh=E2NdF1QMWjUu0qtpBR8177AKP0EmQ3nxJJ4E1dUpmQs=;
-	b=Gq3qAiA12mQ1b6y5tzoMs8E+3b0EKEjXq7xMkerEgZMrYL2KJZM+Ekxrfk7+MKQrrtTQHJkytG9/jIkjgYjbgWCWq1pTT/21+sFi3VvP93GC2HZg2nfN/3yCOrc0QqKYYskVcOqBxHXtVVeT3y+l5P9BrlSRLv1ouJP+yKPuKYE=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033032089153;MF=xueshuai@linux.alibaba.com;NM=1;PH=DS;RN=17;SR=0;TI=SMTPD_---0X.EJ6bT_1773834309;
-Received: from 30.246.163.250(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0X.EJ6bT_1773834309 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Wed, 18 Mar 2026 19:45:10 +0800
-Message-ID: <b4085354-93e4-4484-8744-d8c7e7718c57@linux.alibaba.com>
-Date: Wed, 18 Mar 2026 19:45:19 +0800
+	 In-Reply-To:Content-Type; b=ZqbLfuLwvIFukb07/AfkO3TNgHWCTTkzn5S/xNj8aQxpKp+UDg8azt4Gt54OSR97kADzH8fLV4jMUBOcP6p2bmovszzzCz7UPkvg/vTngLgzYKPmdw7soqXUzMpyA2SMjQ3oyiOuWaio/Ql36xfG0adOPIqGub772QKO3jrve1w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=molgen.mpg.de; spf=pass smtp.mailfrom=molgen.mpg.de; arc=none smtp.client-ip=141.14.17.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=molgen.mpg.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=molgen.mpg.de
+Received: from [10.2.102.105] (cbg-alt-client.mpi-cbg.de [141.5.11.254])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: pmenzel)
+	by mx.molgen.mpg.de (Postfix) with ESMTPSA id 533284C4431226;
+	Wed, 18 Mar 2026 13:55:36 +0100 (CET)
+Message-ID: <3a880676-861b-4447-9775-6197ae74ffd3@molgen.mpg.de>
+Date: Wed, 18 Mar 2026 13:55:34 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -34,61 +30,105 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 3/7] iommu: Add iommu_report_device_broken() to
- quarantine a broken device
-To: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
- robin.murphy@arm.com, joro@8bytes.org, bhelgaas@google.com, jgg@nvidia.com
-Cc: rafael@kernel.org, lenb@kernel.org, praan@google.com,
- baolu.lu@linux.intel.com, kevin.tian@intel.com,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
- linux-pci@vger.kernel.org, vsethi@nvidia.com
-References: <cover.1773774441.git.nicolinc@nvidia.com>
- <c5390aeaeccfa86a1c79f26d2c0ff5df380940a4.1773774441.git.nicolinc@nvidia.com>
-From: Shuai Xue <xueshuai@linux.alibaba.com>
-In-Reply-To: <c5390aeaeccfa86a1c79f26d2c0ff5df380940a4.1773774441.git.nicolinc@nvidia.com>
+Subject: Re: Linux error `[DMA Write NO_PASID] Request device [3c:00.0] fault
+ addr 0x0 [fault reason 0x05] PTE Write access is not set`
+To: Baolu Lu <baolu.lu@linux.intel.com>, Keith Busch <kbusch@kernel.org>,
+ Jens Axboe <axboe@fb.com>, Christoph Hellwig <hch@lst.de>,
+ Sagi Grimberg <sagi@grimberg.me>
+Cc: David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
+ linux-nvme@lists.infradead.org
+References: <88e33b0c-e89f-47a2-9125-d85693d4816f@molgen.mpg.de>
+ <d38a2cda-4b29-43ec-ab08-b55c79714810@linux.intel.com>
+ <311a59f3-10bb-4a43-b86d-2f1ef316a01c@molgen.mpg.de>
+ <8665ed69-9364-4f8a-9238-6adf9b5590a0@linux.intel.com>
+Content-Language: en-US
+From: Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <8665ed69-9364-4f8a-9238-6adf9b5590a0@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+
+Dear Baolu,
 
 
+Am 18.03.26 um 07:42 schrieb Baolu Lu:
+> On 3/16/26 22:54, Paul Menzel wrote:
+>>>> On the Intel Kaby Lake laptop Dell XPS 13 9360, Linux logs the error 
+>>>> below:
+>>>>
+>>>>      [17959.189315] ACPI: EC: event unblocked
+>>>>      [17959.197876] DMAR: DRHD: handling fault status reg 2
+>>>>      [17959.197882] DMAR: [DMA Write NO_PASID] Request device [3c:00.0] fault addr 0x0 [fault reason 0x05] PTE Write access is not set
+>>>>      [17959.198366] DMAR: DRHD: handling fault status reg 2
+>>>>      [17959.198369] DMAR: [DMA Write NO_PASID] Request device [3c:00.0] fault addr 0x0 [fault reason 0x05] PTE Write access is not set
+>>>>      [17959.198923] DMAR: DRHD: handling fault status reg 2
+>>>>      [17959.201477] nvme nvme0: 4/0/0 default/read/poll queues
+>>>>
+>>>> 3c:00.0 is the NVMe controller/device.
+>>>>
+>>>>      $ lspci -nn -s 3c:00.0
+>>>>      3c:00.0 Non-Volatile memory controller [0108]: SK hynix PC300 NVMe Solid State Drive 512GB [1c5c:1284]
+>>>>
+>>>> This seems to happen only *sometimes* when resuming from ACPI S3.
+>>>>
+>>>> To my knowledge, this is *not* a new problem. Please find the log 
+>>>> messages attached. (Ignore the other DMAR error for now.)
+>>>
+>>> These IOMMU DMA faults are triggered when the NVMe controller attempts
+>>> DMA writes to system memory address 0x0. The IOMMU hardware blocked
+>>> these accesses because the system software has not granted the device
+>>> permission to write to this specific address. It's unlikely a bug or
+>>> problem in the iommu driver as far as I can see.
+>> 
+>> I am seeing the same issue on a Dell XPS 15 7590 with Intel NVMe 
+>> controller:
+>>
+>>      $ lspci -nn -s 3d:00.0
+>>      3d:00.0 Non-Volatile memory controller [0108]: Intel Corporation SSD DC P4101/Pro 7600p/760p/E 6100p Series [8086:f1a6] (rev 03)
+>>
+>> Logs from Debian’s Linux 6.19.8:
+> 
+> Did you see this warning with the v6.18 kernel or earlier?
 
-On 3/18/26 3:15 AM, Nicolin Chen wrote:
-> When an IOMMU hardware detects an error due to a faulty device (e.g. an ATS
-> invalidation timeout), IOMMU drivers may quarantine the device by disabling
-> specific hardware features or dropping translation capabilities.
-> 
-> However, the core-level states of the faulty device are out of sync, as the
-> device can be still attached to a translation domain or even potentially be
-> moved to a new domain that might overwrite the driver-level quarantine.
-> 
-> Given that such an error can be likely an ISR, introduce a broken_work per
-> iommu_group, and add a helper function to allow driver to report the broken
-> device, so as to completely quarantine it in the core.
-> 
-> Use the existing pci_dev_reset_iommu_prepare() function to shift the device
-> to its resetting_domain/blocking_domain. A later pci_dev_reset_iommu_done()
-> call will clear it and move it out of the quarantine.
-> 
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->   include/linux/iommu.h |  2 ++
->   drivers/iommu/iommu.c | 59 +++++++++++++++++++++++++++++++++++++++++++
->   2 files changed, 61 insertions(+)
-> 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 9ba12b2164724..9b5f94e566ff9 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -891,6 +891,8 @@ static inline struct iommu_device *__iommu_get_iommu_dev(struct device *dev)
->   #define iommu_get_iommu_dev(dev, type, member) \
->   	container_of(__iommu_get_iommu_dev(dev), type, member)
->   
-> +void iommu_report_device_broken(struct device *dev);
-> +
+Yes, I did see it with earlier Linux versions. For the Dell XPS 13 9360 
+with SK hynix controller I found logs with Linux 6.16:
 
-This declaration is inside the #ifdef CONFIG_IOMMU_API section, but
-there's no corresponding stub in the #else block. While current
-callers (arm-smmu-v3) always have CONFIG_IOMMU_API, for API
-completeness, please add a stub.
-Thanks.
-Shuai
+     Okt 14 08:10:02 abreu kernel: Linux version 6.16.11+deb14-amd64 
+(debian-kernel@lists.debian.org) (x86_64-linux-gnu-gcc-14 (Debian 
+14.3.0-8) 14.3.0, GNU ld (GNU Binutils for Debian) 2.45) #1 SMP 
+PREEMPT_DYNAMIC Debian 6.16.11-1 (2025-10-07)
+     […]
+     Okt 15 21:02:49 abreu kernel: DMAR: DRHD: handling fault status reg 2
+     Okt 15 21:02:49 abreu kernel: DMAR: [DMA Write NO_PASID] Request 
+device [3c:00.0] fault addr 0x0 [fault reason 0x05] PTE Write access is 
+not set
+     Okt 15 21:02:49 abreu kernel: DMAR: DRHD: handling fault status reg 2
+     Okt 15 21:02:49 abreu kernel: DMAR: [DMA Write NO_PASID] Request 
+device [3c:00.0] fault addr 0x0 [fault reason 0x05] PTE Write access is 
+not set
+     Okt 15 21:02:49 abreu kernel: DMAR: DRHD: handling fault status reg 2
+     Okt 15 21:02:49 abreu kernel: nvme nvme0: 4/0/0 default/read/poll 
+queues
+
+>>      [  726.138732] DMAR: DRHD: handling fault status reg 3
+>>      [  726.138736] DMAR: [DMA Read NO_PASID] Request device [3d:00.0] fault addr 0xffffd000 [fault reason 0x06] PTE Read access is not set
+>>      [  726.141470] nvme nvme0: 12/0/0 default/read/poll queue
+
+Just for the record, as I missed it, that it’s fault reason 0x05 (PTE 
+*Write* access) on the Dell XPS 13 9360, and 0x06 (PTE *Read* access) on 
+the Dell XPS 15 7590.
+
+>> It’d be great if this could be fixed.
+
+
+Kind regards,
+
+Paul
+
+
+PS: The archive of Linux messages of the project Hardware for Linux [2] 
+contains quite a lot of logs, but most of them are from systems, where 
+no suspend/resume cycle was performed.
+
+
+[1]: https://github.com/linuxhw/Dmesg
+[2]: https://linux-hardware.org/
