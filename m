@@ -1,205 +1,94 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0F9B3C345D;
-	Wed, 18 Mar 2026 11:00:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A97D33D1CA8
+	for <iommu@lists.linux.dev>; Wed, 18 Mar 2026 11:45:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773831610; cv=none; b=rzBuw6TpHc8SsLYIPPR37ybWFSEajPTG4fkgmisCKu9YBAaC4+h59gsbYwap8SvhV+beCIccCPY4PU2rDvkaWgX11o2P+gx4ngInGhxb5IJU39onnmBtBTzmvn36gkI5jbIpAauvVdMMe90yNMwgPu7F0aEzWKZlapzg5r1dWKo=
+	t=1773834321; cv=none; b=LBEPTUuNKlMZL14i0nSV1QWHVR5JYdVcGFT6ODgs3K4kwFjDSKKXSzmJpo9ao3lf1ahgbbY7LopXZdseFdfRLiuBTaaOQ774UiAwtF9Y/gM4u1mqFAks9qRkTSPAOKoi9w2pVjti5tb+i5ejiT603vYmnrkimLNHNjvMvnPm7MU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773831610; c=relaxed/simple;
-	bh=uXF/4wNn5jtAs8jN3yAYT5aUpVgj2iPt6T43Ush51L8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=MDGLHKuXRGuTKbtdOCquq8qhfQhkpTmgIQ6HilOYNJ8A3wtq/b1hvxZMSu3j4M4PpYkM1kUvXXHAHi9q/ovhcFCwxTIwZt9hUTA/2rG2zPfJkoLq2318ETbl443HsiAxlAwX5lAi9UQJgohKQohXfuJBVG72Thl+tFga7uG49kw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Qrp1DZft; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1773834321; c=relaxed/simple;
+	bh=7HTUqEgNoxYYlJYCimlmPf/6F++wW/C+VtXyvOM1RSU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=i8Fn+QDTRDsLwALzyKGSVfpHtTzYTgpfs4jwB28kReIsie3MsGXDFE/yMXUPw9YE4dzZy5Otlb1nr15HjoUQZ3xPAbgtG7cMYMXHA2djOe5U8kJiEGXWuyRWI52jgDb2XtRCd77Ijv4cEy3uyczjn/J1JR/820mQpiZIFGbAWCU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=Gq3qAiA1; arc=none smtp.client-ip=115.124.30.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Qrp1DZft"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E442EC2BCB3;
-	Wed, 18 Mar 2026 10:59:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773831609;
-	bh=uXF/4wNn5jtAs8jN3yAYT5aUpVgj2iPt6T43Ush51L8=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Qrp1DZftNL2mANGaUskZ2ndurPvv1Q5xEZdHwqNMTXTU49FdJOksisWCNrwlXC6Ur
-	 af1XIUzkZN16ANirbz+13SpX4Ycz2NHapzQwFaoBxPeYsZxWBk7kNquGT+gKC0UPal
-	 1odcL5f7nAH1h90rlpECzOJP2yoKQZ8CZiZWUIZGJZhr5om6GULjPnRiyF5QjirbGG
-	 nNG6QPMx1+15rdYzlM0CO+nI6MMsPVBSOXQB4ZINbwOikGfe9GWbWqT3NJ+AtTnIMu
-	 Wq+pDjER0gzCMZLFc44nIa/fO0bSvNdhsToGSVGPjBOVfA+qN49Eqsy8N1SkE37UMo
-	 GOPaLPgqmqj5Q==
-From: Mike Rapoport <rppt@kernel.org>
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Alexander Potapenko <glider@google.com>,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Andreas Larsson <andreas@gaisler.com>,
-	Ard Biesheuvel <ardb@kernel.org>,
-	Borislav Petkov <bp@alien8.de>,
-	Brendan Jackman <jackmanb@google.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Christian Brauner <brauner@kernel.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	David Hildenbrand <david@kernel.org>,
-	Dmitry Vyukov <dvyukov@google.com>,
-	Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Jan Kara <jack@suse.cz>,
-	Johannes Weiner <hannes@cmpxchg.org>,
-	"Liam R. Howlett" <Liam.Howlett@oracle.com>,
-	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Marco Elver <elver@google.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Michal Hocko <mhocko@suse.com>,
-	Mike Rapoport <rppt@kernel.org>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	Rob Herring <robh@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Saravana Kannan <saravanak@kernel.org>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Vlastimil Babka <vbabka@kernel.org>,
-	Will Deacon <will@kernel.org>,
-	Zi Yan <ziy@nvidia.com>,
-	devicetree@vger.kernel.org,
-	iommu@lists.linux.dev,
-	kasan-dev@googlegroups.com,
-	linux-arm-kernel@lists.infradead.org,
-	linux-efi@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org,
-	linux-trace-kernel@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org,
-	sparclinux@vger.kernel.org,
-	x86@kernel.org
-Subject: [PATCH 8/8] memblock: warn when freeing reserved memory before memory map is initialized
-Date: Wed, 18 Mar 2026 12:58:27 +0200
-Message-ID: <20260318105827.1358927-9-rppt@kernel.org>
-X-Mailer: git-send-email 2.51.0
-In-Reply-To: <20260318105827.1358927-1-rppt@kernel.org>
-References: <20260318105827.1358927-1-rppt@kernel.org>
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="Gq3qAiA1"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1773834310; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+	bh=E2NdF1QMWjUu0qtpBR8177AKP0EmQ3nxJJ4E1dUpmQs=;
+	b=Gq3qAiA12mQ1b6y5tzoMs8E+3b0EKEjXq7xMkerEgZMrYL2KJZM+Ekxrfk7+MKQrrtTQHJkytG9/jIkjgYjbgWCWq1pTT/21+sFi3VvP93GC2HZg2nfN/3yCOrc0QqKYYskVcOqBxHXtVVeT3y+l5P9BrlSRLv1ouJP+yKPuKYE=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033032089153;MF=xueshuai@linux.alibaba.com;NM=1;PH=DS;RN=17;SR=0;TI=SMTPD_---0X.EJ6bT_1773834309;
+Received: from 30.246.163.250(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0X.EJ6bT_1773834309 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Wed, 18 Mar 2026 19:45:10 +0800
+Message-ID: <b4085354-93e4-4484-8744-d8c7e7718c57@linux.alibaba.com>
+Date: Wed, 18 Mar 2026 19:45:19 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 3/7] iommu: Add iommu_report_device_broken() to
+ quarantine a broken device
+To: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
+ robin.murphy@arm.com, joro@8bytes.org, bhelgaas@google.com, jgg@nvidia.com
+Cc: rafael@kernel.org, lenb@kernel.org, praan@google.com,
+ baolu.lu@linux.intel.com, kevin.tian@intel.com,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+ linux-pci@vger.kernel.org, vsethi@nvidia.com
+References: <cover.1773774441.git.nicolinc@nvidia.com>
+ <c5390aeaeccfa86a1c79f26d2c0ff5df380940a4.1773774441.git.nicolinc@nvidia.com>
+From: Shuai Xue <xueshuai@linux.alibaba.com>
+In-Reply-To: <c5390aeaeccfa86a1c79f26d2c0ff5df380940a4.1773774441.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: "Mike Rapoport (Microsoft)" <rppt@kernel.org>
 
-When CONFIG_DEFERRED_STRUCT_PAGE_INIT is enabled, freeing of reserved
-memory before the memory map is fully initialized in deferred_init_memmap()
-would cause access to uninitialized struct pages and may crash when
-accessing spurious list pointers, like was recently discovered during
-discussion about memory leaks in x86 EFI code [1].
 
-The trace below is from an attempt to call free_reserved_page() before
-page_alloc_init_late():
+On 3/18/26 3:15 AM, Nicolin Chen wrote:
+> When an IOMMU hardware detects an error due to a faulty device (e.g. an ATS
+> invalidation timeout), IOMMU drivers may quarantine the device by disabling
+> specific hardware features or dropping translation capabilities.
+> 
+> However, the core-level states of the faulty device are out of sync, as the
+> device can be still attached to a translation domain or even potentially be
+> moved to a new domain that might overwrite the driver-level quarantine.
+> 
+> Given that such an error can be likely an ISR, introduce a broken_work per
+> iommu_group, and add a helper function to allow driver to report the broken
+> device, so as to completely quarantine it in the core.
+> 
+> Use the existing pci_dev_reset_iommu_prepare() function to shift the device
+> to its resetting_domain/blocking_domain. A later pci_dev_reset_iommu_done()
+> call will clear it and move it out of the quarantine.
+> 
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>   include/linux/iommu.h |  2 ++
+>   drivers/iommu/iommu.c | 59 +++++++++++++++++++++++++++++++++++++++++++
+>   2 files changed, 61 insertions(+)
+> 
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 9ba12b2164724..9b5f94e566ff9 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -891,6 +891,8 @@ static inline struct iommu_device *__iommu_get_iommu_dev(struct device *dev)
+>   #define iommu_get_iommu_dev(dev, type, member) \
+>   	container_of(__iommu_get_iommu_dev(dev), type, member)
+>   
+> +void iommu_report_device_broken(struct device *dev);
+> +
 
-[    0.076840] BUG: unable to handle page fault for address: ffffce1a005a0788
-[    0.078226] #PF: supervisor read access in kernel mode
-[    0.078226] #PF: error_code(0x0000) - not-present page
-[    0.078226] PGD 0 P4D 0
-[    0.078226] Oops: Oops: 0000 [#1] PREEMPT SMP NOPTI
-[    0.078226] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted 6.12.68-92.123.amzn2023.x86_64 #1
-[    0.078226] Hardware name: Amazon EC2 t3a.nano/, BIOS 1.0 10/16/2017
-[    0.078226] RIP: 0010:__list_del_entry_valid_or_report+0x32/0xb0
-...
-[    0.078226]  __free_one_page+0x170/0x520
-[    0.078226]  free_pcppages_bulk+0x151/0x1e0
-[    0.078226]  free_unref_page_commit+0x263/0x320
-[    0.078226]  free_unref_page+0x2c8/0x5b0
-[    0.078226]  ? srso_return_thunk+0x5/0x5f
-[    0.078226]  free_reserved_page+0x1c/0x30
-[    0.078226]  memblock_free_late+0x6c/0xc0
-
-Currently there are not many callers of free_reserved_area() and they all
-appear to be at the right timings.
-
-Still, in order to protect against problematic code moves or additions of
-new callers add a warning that will inform that reserved pages cannot be
-freed until the memory map is fully initialized.
-
-[1] https://lore.kernel.org/all/e5d5a1105d90ee1e7fe7eafaed2ed03bbad0c46b.camel@kernel.crashing.org/
-
-Signed-off-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
----
- mm/internal.h   | 10 ++++++++++
- mm/memblock.c   |  5 +++++
- mm/page_alloc.c | 10 ----------
- 3 files changed, 15 insertions(+), 10 deletions(-)
-
-diff --git a/mm/internal.h b/mm/internal.h
-index cb0af847d7d9..f60c1edb2e02 100644
---- a/mm/internal.h
-+++ b/mm/internal.h
-@@ -1233,7 +1233,17 @@ static inline void vunmap_range_noflush(unsigned long start, unsigned long end)
- #ifdef CONFIG_DEFERRED_STRUCT_PAGE_INIT
- DECLARE_STATIC_KEY_TRUE(deferred_pages);
- 
-+static inline bool deferred_pages_enabled(void)
-+{
-+	return static_branch_unlikely(&deferred_pages);
-+}
-+
- bool __init deferred_grow_zone(struct zone *zone, unsigned int order);
-+#else
-+static inline bool deferred_pages_enabled(void)
-+{
-+	return false;
-+}
- #endif /* CONFIG_DEFERRED_STRUCT_PAGE_INIT */
- 
- void init_deferred_page(unsigned long pfn, int nid);
-diff --git a/mm/memblock.c b/mm/memblock.c
-index bd5758ff07f2..780e70d4971a 100644
---- a/mm/memblock.c
-+++ b/mm/memblock.c
-@@ -896,6 +896,11 @@ static unsigned long __free_reserved_area(phys_addr_t start, phys_addr_t end,
- {
- 	unsigned long pages = 0, pfn;
- 
-+	if (deferred_pages_enabled()) {
-+		WARN(1, "Cannot free reserved memory because of deferred initialization of the memory map");
-+		return 0;
-+	}
-+
- 	for_each_valid_pfn(pfn, PFN_UP(start), PFN_DOWN(end)) {
- 		struct page *page = pfn_to_page(pfn);
- 		void *direct_map_addr;
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index df3d61253001..9ac47bab2ea7 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -331,11 +331,6 @@ int page_group_by_mobility_disabled __read_mostly;
-  */
- DEFINE_STATIC_KEY_TRUE(deferred_pages);
- 
--static inline bool deferred_pages_enabled(void)
--{
--	return static_branch_unlikely(&deferred_pages);
--}
--
- /*
-  * deferred_grow_zone() is __init, but it is called from
-  * get_page_from_freelist() during early boot until deferred_pages permanently
-@@ -348,11 +343,6 @@ _deferred_grow_zone(struct zone *zone, unsigned int order)
- 	return deferred_grow_zone(zone, order);
- }
- #else
--static inline bool deferred_pages_enabled(void)
--{
--	return false;
--}
--
- static inline bool _deferred_grow_zone(struct zone *zone, unsigned int order)
- {
- 	return false;
--- 
-2.51.0
-
+This declaration is inside the #ifdef CONFIG_IOMMU_API section, but
+there's no corresponding stub in the #else block. While current
+callers (arm-smmu-v3) always have CONFIG_IOMMU_API, for API
+completeness, please add a stub.
+Thanks.
+Shuai
