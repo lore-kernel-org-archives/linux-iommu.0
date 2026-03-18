@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 586D5364020
-	for <iommu@lists.linux.dev>; Wed, 18 Mar 2026 06:01:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7F18364043
+	for <iommu@lists.linux.dev>; Wed, 18 Mar 2026 06:14:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773813667; cv=none; b=T2d+Q29JGASvEXGaQpYDb3kKS1QSWLFvWemdpkpQ2BtYU1MTzCyNzCUNJC8o73A96Xarj09GaHtnRH/clUcUaWm//Wd1h5D1HI83kkeT3ozJ0bA3BzyiQp3lPL5eSYfNqKY9MzdzsHW7iaiYG0NmCLP3uwKpqZdTZ5HwYbaw+FI=
+	t=1773814458; cv=none; b=XyRw0rR74mSGkZT/b2Om+QRf6YtwJZ3JCkjP16moRVx6QpkGscre8hOfU/D/j01uD5vE/GW8IXmaQwVVnrxgPlMsWYexmEyZf2goyCY5zc/zUdRPh+qWHnGFcDs5i0A5ebe74n8CMzrCCtlYsmj521zrLvreUPkFqJoqNlcNHF8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773813667; c=relaxed/simple;
-	bh=QWi6oahhozHMScCb8k498+pC0gcouQ2/wL4RVwYu/w0=;
+	s=arc-20240116; t=1773814458; c=relaxed/simple;
+	bh=DkHUnEo/Buc1iI8h0hzSm7QzwytPckEV+C7X+Kypm6E=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=dgalSLQ1OtwCPWkQ4L7VPiAf047qZRTlKxoG2hhFQvrI3XiT+1f0ijNtrQ8qDDh04uEhC80b19gpYpaWRx53wOdNXY6OxU31l6q70XzQ+Kj3GxM7POF6Zb9p6ZJ+uJEFfBUrHKsQ/V5Cxv5khk+G2k3ssCcyTlDuwOuo1PFbi5A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LzdGXQcg; arc=none smtp.client-ip=198.175.65.12
+	 In-Reply-To:Content-Type; b=aVFLBNiTr+db66iWk4gNSSYGu2fXT7FNBZlfC+r3gX2s0DzBa1//omqFt8v+npjq4wP0vOjseiF9wTHEE2149Xsnt/MR5kTC3sQjCGkbwdaV1nD1HZ6BqPpRu/7mgVJ/oBFe5Ss5rUn4IlOV38ww2m6AZkAJ9w4We4ajMkXA0Sk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ThU7rf/f; arc=none smtp.client-ip=192.198.163.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LzdGXQcg"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ThU7rf/f"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773813665; x=1805349665;
+  t=1773814456; x=1805350456;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=QWi6oahhozHMScCb8k498+pC0gcouQ2/wL4RVwYu/w0=;
-  b=LzdGXQcgs/T0sbNX5j+31Mr21c/FUeH6VTNebQbgtS84ZubK/tyvr+PU
-   FIlUv3pkbT4FEcY5o/4n8VE9gOple6zpFVWVF/8P/fHCMNTE70xAhkJoH
-   hNWhPLV+RE8ROu4aMsaxJMvjRmx0Y5+INYfxR5oIwpa9dMGDINVo8wQWO
-   UaKhdbKuLjXA8d1TdYoj4rUxfrIv/2J+eE+SrT67XINf6aqrwR+1JF02c
-   clKDunwRCpg68+NRUaUBD5LbpX3WMSsH2rVk5+G9PR2hU/8oxcg1TsMep
-   27IuW9Qar2w1T91j91dvTM7IWub5rFAUqwF7zkItByeQkgMnMHdl/1yOW
-   g==;
-X-CSE-ConnectionGUID: 4KtbcOY8TXavENAlRKTYFw==
-X-CSE-MsgGUID: igXA7vKGRfSrd3dt9q+b+Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11732"; a="86333452"
-X-IronPort-AV: E=Sophos;i="6.23,126,1770624000"; 
-   d="scan'208";a="86333452"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2026 23:01:04 -0700
-X-CSE-ConnectionGUID: fufkNcBiT+CBntmgJzz94w==
-X-CSE-MsgGUID: fcvgoaXHTAWlNQB0gyTvMA==
+  bh=DkHUnEo/Buc1iI8h0hzSm7QzwytPckEV+C7X+Kypm6E=;
+  b=ThU7rf/f2bbXa3igaTn3wXXepU7XKFXrsrhXxtl9Uz3btRe1TMF9S/zM
+   o+jKxEbKKf1VhIGkBtlBM5vpVuOoLiYRF0uaGG4WpI1FW1dgayx92/KQx
+   bPyzHwtMsjaDvLWYelrcwK53CLAsavpcM4RXTgHp24o+//VwcakPsqv0X
+   YHDJviOQ/Nv+ZvMco81+6iO0S2VLViXNTaLm1kk/gKB2Y/iKE39BIJP8M
+   H1r9+mn+VO4HsH4frKefcI3tOikzTVCIdYbYx1bv+SHRBsuCKKweEXrrS
+   l+5s0pJjTCf/6cgM94TgwO7CSnWUzm6LHfGnJ1Z/+3Y9wbDto751UVbvp
+   w==;
+X-CSE-ConnectionGUID: c6hjUbNsSfuS9+bY0twRog==
+X-CSE-MsgGUID: KUZlR4UFQuelmuA3NG/jFw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11732"; a="85494656"
+X-IronPort-AV: E=Sophos;i="6.23,127,1770624000"; 
+   d="scan'208";a="85494656"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2026 23:14:15 -0700
+X-CSE-ConnectionGUID: Z1FGCetaTSGF++XIxaxXEg==
+X-CSE-MsgGUID: iCZ0jeD2TnyuQZO6sIHcrg==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,126,1770624000"; 
-   d="scan'208";a="222480812"
+X-IronPort-AV: E=Sophos;i="6.23,127,1770624000"; 
+   d="scan'208";a="222567515"
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2026 23:01:00 -0700
-Message-ID: <566549c9-fab1-43b5-a35b-e3c76f1c285d@linux.intel.com>
-Date: Wed, 18 Mar 2026 13:59:58 +0800
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2026 23:14:11 -0700
+Message-ID: <791a46c7-3129-4438-86bd-b7677e01332a@linux.intel.com>
+Date: Wed, 18 Mar 2026 14:13:09 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,8 +52,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/7] iommu: Add reset_device_done callback for hardware
- fault recovery
+Subject: Re: [PATCH v2 3/7] iommu: Add iommu_report_device_broken() to
+ quarantine a broken device
 To: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
  robin.murphy@arm.com, joro@8bytes.org, bhelgaas@google.com, jgg@nvidia.com
 Cc: rafael@kernel.org, lenb@kernel.org, praan@google.com,
@@ -62,10 +62,10 @@ Cc: rafael@kernel.org, lenb@kernel.org, praan@google.com,
  linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
  linux-pci@vger.kernel.org, vsethi@nvidia.com
 References: <cover.1773774441.git.nicolinc@nvidia.com>
- <3750a106b4ab4235df842fa2b9defbc8226ebbef.1773774441.git.nicolinc@nvidia.com>
+ <c5390aeaeccfa86a1c79f26d2c0ff5df380940a4.1773774441.git.nicolinc@nvidia.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <3750a106b4ab4235df842fa2b9defbc8226ebbef.1773774441.git.nicolinc@nvidia.com>
+In-Reply-To: <c5390aeaeccfa86a1c79f26d2c0ff5df380940a4.1773774441.git.nicolinc@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
@@ -74,82 +74,141 @@ On 3/18/26 03:15, Nicolin Chen wrote:
 > invalidation timeout), IOMMU drivers may quarantine the device by disabling
 > specific hardware features or dropping translation capabilities.
 > 
-> To recover from these states, the IOMMU driver needs a reliable signal that
-> the underlying physical hardware has been cleanly reset (e.g., via PCIe AER
-> or a sysfs Function Level Reset) so as to lift the quarantine.
+> However, the core-level states of the faulty device are out of sync, as the
+> device can be still attached to a translation domain or even potentially be
+> moved to a new domain that might overwrite the driver-level quarantine.
 > 
-> Introduce a reset_device_done callback in struct iommu_ops. Trigger it from
-> the existing pci_dev_reset_iommu_done() path to notify the underlying IOMMU
-> driver that the device's internal state has been sanitized.
+> Given that such an error can be likely an ISR, introduce a broken_work per
+> iommu_group, and add a helper function to allow driver to report the broken
+> device, so as to completely quarantine it in the core.
+> 
+> Use the existing pci_dev_reset_iommu_prepare() function to shift the device
+> to its resetting_domain/blocking_domain. A later pci_dev_reset_iommu_done()
+> call will clear it and move it out of the quarantine.
 > 
 > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 > ---
 >   include/linux/iommu.h |  2 ++
->   drivers/iommu/iommu.c | 12 ++++++++++++
->   2 files changed, 14 insertions(+)
+>   drivers/iommu/iommu.c | 59 +++++++++++++++++++++++++++++++++++++++++++
+>   2 files changed, 61 insertions(+)
 > 
 > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 54b8b48c762e8..9ba12b2164724 100644
+> index 9ba12b2164724..9b5f94e566ff9 100644
 > --- a/include/linux/iommu.h
 > +++ b/include/linux/iommu.h
-> @@ -626,6 +626,7 @@ __iommu_copy_struct_to_user(const struct iommu_user_data *dst_data,
->    * @release_device: Remove device from iommu driver handling
->    * @probe_finalize: Do final setup work after the device is added to an IOMMU
->    *                  group and attached to the groups domain
-> + * @reset_device_done: Notify the driver about the completion of a device reset
->    * @device_group: find iommu group for a particular device
->    * @get_resv_regions: Request list of reserved regions for a device
->    * @of_xlate: add OF master IDs to iommu grouping
-> @@ -683,6 +684,7 @@ struct iommu_ops {
->   	struct iommu_device *(*probe_device)(struct device *dev);
->   	void (*release_device)(struct device *dev);
->   	void (*probe_finalize)(struct device *dev);
-> +	void (*reset_device_done)(struct device *dev);
->   	struct iommu_group *(*device_group)(struct device *dev);
+> @@ -891,6 +891,8 @@ static inline struct iommu_device *__iommu_get_iommu_dev(struct device *dev)
+>   #define iommu_get_iommu_dev(dev, type, member) \
+>   	container_of(__iommu_get_iommu_dev(dev), type, member)
 >   
->   	/* Request/Free a list of reserved regions for a device */
+> +void iommu_report_device_broken(struct device *dev);
+> +
+>   static inline void iommu_iotlb_gather_init(struct iommu_iotlb_gather *gather)
+>   {
+>   	*gather = (struct iommu_iotlb_gather) {
 > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 40a15c9360bd1..fcd2902d9e8db 100644
+> index fcd2902d9e8db..2f297f689a3a3 100644
 > --- a/drivers/iommu/iommu.c
 > +++ b/drivers/iommu/iommu.c
-> @@ -4013,11 +4013,13 @@ EXPORT_SYMBOL_GPL(pci_dev_reset_iommu_prepare);
->   void pci_dev_reset_iommu_done(struct pci_dev *pdev)
->   {
->   	struct iommu_group *group = pdev->dev.iommu_group;
-> +	const struct iommu_ops *ops;
->   	unsigned long pasid;
->   	void *entry;
+> @@ -55,6 +55,8 @@ struct iommu_group {
+>   	struct list_head devices;
+>   	struct xarray pasid_array;
+>   	struct mutex mutex;
+> +	struct work_struct broken_work;
+> +	bool requires_reset;
+>   	void *iommu_data;
+>   	void (*iommu_data_release)(void *iommu_data);
+>   	char *name;
+> @@ -146,6 +148,7 @@ static struct group_device *iommu_group_alloc_device(struct iommu_group *group,
+>   						     struct device *dev);
+>   static void __iommu_group_free_device(struct iommu_group *group,
+>   				      struct group_device *grp_dev);
+> +static void iommu_group_broken_worker(struct work_struct *work);
+>   static void iommu_domain_init(struct iommu_domain *domain, unsigned int type,
+>   			      const struct iommu_ops *ops);
 >   
->   	if (!pci_ats_supported(pdev) || !dev_has_iommu(&pdev->dev))
->   		return;
-> +	ops = dev_iommu_ops(&pdev->dev);
+> @@ -1057,6 +1060,7 @@ struct iommu_group *iommu_group_alloc(void)
+>   	if (!group)
+>   		return ERR_PTR(-ENOMEM);
 >   
->   	guard(mutex)(&group->mutex);
->   
-> @@ -4029,6 +4031,16 @@ void pci_dev_reset_iommu_done(struct pci_dev *pdev)
+> +	INIT_WORK(&group->broken_work, iommu_group_broken_worker);
+>   	group->kobj.kset = iommu_group_kset;
+>   	mutex_init(&group->mutex);
+>   	INIT_LIST_HEAD(&group->devices);
+> @@ -4031,6 +4035,7 @@ void pci_dev_reset_iommu_done(struct pci_dev *pdev)
 >   	if (WARN_ON(!group->blocking_domain))
 >   		return;
 >   
-> +	/*
-> +	 * A PCI device might have been in an error state, so the IOMMU driver
-> +	 * had to quarantine the device by disabling specific hardware feature
-> +	 * or dropping translation capability. Here notify the IOMMU driver as
-> +	 * a reliable signal that the faulty PCI device has been cleanly reset
-> +	 * so now it can lift its quarantine and restore full functionality.
-> +	 */
-> +	if (ops && ops->reset_device_done)
-> +		ops->reset_device_done(&pdev->dev);
-
-Nit: dev_iommu_ops() ensures a valid iommu "ops". There is no need to
-check "ops != NULL" here. Just
-
-	if (ops->reset_device_done)
-		ops->reset_device_done(&pdev->dev);
-
+> +	WRITE_ONCE(group->requires_reset, false);
+>   	/*
+>   	 * A PCI device might have been in an error state, so the IOMMU driver
+>   	 * had to quarantine the device by disabling specific hardware feature
+> @@ -4062,6 +4067,60 @@ void pci_dev_reset_iommu_done(struct pci_dev *pdev)
+>   }
+>   EXPORT_SYMBOL_GPL(pci_dev_reset_iommu_done);
+>   
+> +static void iommu_group_broken_worker(struct work_struct *work)
+> +{
+> +	struct iommu_group *group =
+> +		container_of(work, struct iommu_group, broken_work);
+> +	struct pci_dev *pdev = NULL;
+> +	struct device *dev;
 > +
->   	/* Re-attach RID domain back to group->domain */
->   	if (group->domain != group->blocking_domain) {
->   		WARN_ON(__iommu_attach_device(group->domain, &pdev->dev,
+> +	scoped_guard(mutex, &group->mutex) {
+> +		/* Do not block the device again if it has been recovered */
+> +		if (!READ_ONCE(group->requires_reset))
+> +			goto out_put;
+> +		if (list_is_singular(&group->devices)) {
+> +			/* Note: only support group with a single device */
+> +			dev = iommu_group_first_dev(group);
+> +			if (dev_is_pci(dev)) {
+> +				pdev = to_pci_dev(dev);
+> +				pci_dev_get(pdev);
+> +			}
+> +		}
+
+The current mechanism is designed only for the PCIe devices within
+singleton iommu groups. How about moving the above check to
+iommu_report_device_broken() and emitting a message if it is called for
+unsupported devices?
+
+> +	}
+> +
+> +	if (pdev) {
+> +		/*
+> +		 * Quarantine the device completely. This will be cleared upon
+> +		 * a pci_dev_reset_iommu_done() call indicating the recovery.
+> +		 */
+> +		pci_dev_lock(pdev);
+> +		pci_dev_reset_iommu_prepare(pdev);
+> +		pci_dev_unlock(pdev);
+> +		pci_dev_put(pdev);
+> +	}
+> +out_put:
+> +	iommu_group_put(group);
+> +}
+> +
+> +void iommu_report_device_broken(struct device *dev)
+> +{
+> +	struct iommu_group *group = iommu_group_get(dev);
+> +
+> +	if (!group)
+> +		return;
+> +
+> +	if (READ_ONCE(group->requires_reset)) {
+> +		iommu_group_put(group);
+> +		return;
+> +	}
+> +	WRITE_ONCE(group->requires_reset, true);
+> +
+> +	/* Put the group now or later in iommu_group_broken_worker() */
+> +	if (!schedule_work(&group->broken_work))
+> +		iommu_group_put(group);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_report_device_broken);
+> +
+>   #if IS_ENABLED(CONFIG_IRQ_MSI_IOMMU)
+>   /**
+>    * iommu_dma_prepare_msi() - Map the MSI page in the IOMMU domain
 
 Thanks,
 baolu
