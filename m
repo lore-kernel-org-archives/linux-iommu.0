@@ -1,301 +1,127 @@
-Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AB1C37646B
-	for <iommu@lists.linux.dev>; Wed, 18 Mar 2026 08:02:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.110
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9B0F37700A
+	for <iommu@lists.linux.dev>; Wed, 18 Mar 2026 08:03:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773820926; cv=none; b=Flrlwq5mQ169E7icxtYqzy8uts/wfN7Lqzink28oepq4lXIELbLPav3L9iXmamVbnqd3ZL4AoDsqQEgWoj5ZauS5YPUoMFMAC8L/B0hxRoizUCmS/ktaqRapPiHxmfuxDcvAbBMOsU/Ry3r/GbqG1+udRQbXmTsy47CifSBHa9o=
+	t=1773820992; cv=none; b=VKlkBMU+zOcr1RktbnX5yWFuvPvPrOQPUg4KpAfyEsR7yrTB+EESNGIY8Ejvnvm7w+JGFgX+bPiF+UcV08t9QddoFY6IxOj/k5ns61P/PbJcSDeAMb2hwqo+5WUGz7HWX4Qn+JTD2zeu/xtMvsmIhacRpsFyP0451ASfZlwKu4s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773820926; c=relaxed/simple;
-	bh=WTQRKGCP//07cVuV29t7T8kBwPEeCHpD+DrbqRpoAao=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Yjr7Lxho795sRjsjqR2URM3phO/E4Qn1R+0ITtid8ao2l0/YhDImJgooXqvDuG4QGHQ55qPYpSvIvigpipMKni46RwgCsWUosCdlAjTdtxPEpZDWMJWDV/sgMngo31lOfouJLjH1skl46zDOIrf+yxWpYaNQ6FdHTaZ44bmPfz8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=ypD2OeDf; arc=none smtp.client-ip=115.124.30.110
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	s=arc-20240116; t=1773820992; c=relaxed/simple;
+	bh=KpETAyrs7YIkUM70PUxFjh8e+vMzcwee8eeDvL3R0fo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=mDQoJ2FRje3jTAiOlXZPExDaCnC2MSqqVG7POJeaE4V29C7KPtcy96wI4cKRDQLJQBHz7iZrmLqOTBKO5Da9j0xBZtLhRTjXg0S9mlKvXiOgMFxbqC/unmubJ7Ypkc1EQrCT+dDAs9HN9u0LxR6pAWZqFQTwmkLoc1fVLEKLzMU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=QgHOLe5E; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="ypD2OeDf"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1773820913; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-	bh=yftJcqgrdcE4BI1LW2F6q4cXK+3E/gv6S/e+mSUwzKE=;
-	b=ypD2OeDfznoEJ/u2kJPkJQ8/v34fmOGZdXr/UKQsL+o4Nk3sYUzgs3dP5QDch2hYlpM/tFm5NSZ5BEGhrp2obv36gDcz090bHDj6HEBPnrhSd67UbfZDXM7lpFc3yKSeBTf388cF/6V3kroNVrw2qYq3akkuyW+MTfFr06EDIFQ=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037033178;MF=xueshuai@linux.alibaba.com;NM=1;PH=DS;RN=17;SR=0;TI=SMTPD_---0X.DnRbH_1773820911;
-Received: from 30.246.163.250(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0X.DnRbH_1773820911 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Wed, 18 Mar 2026 16:01:52 +0800
-Message-ID: <8c799be2-1525-4c84-b0ae-389cd0751e4a@linux.alibaba.com>
-Date: Wed, 18 Mar 2026 16:02:01 +0800
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="QgHOLe5E"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260318080302euoutp02c46fe6b89a82564975cf3b6b4dec4f55~d4MklxXjJ1393913939euoutp02i
+	for <iommu@lists.linux.dev>; Wed, 18 Mar 2026 08:03:02 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260318080302euoutp02c46fe6b89a82564975cf3b6b4dec4f55~d4MklxXjJ1393913939euoutp02i
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1773820982;
+	bh=5GOrx/bM09mWS7d4FWSxDkysESa+9H3SzC9X1DevVpM=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=QgHOLe5EykCGGsrBolTj2JuPKhQ1Bki0f6knoOEenxKjutlnI1f1a+IvYzTNANjPB
+	 g3MbC1nXSFcfIo0O8YAnngJsBgO+mlGjP/L4WRyaF1fcYTT5wusxKKB3bQtIBpaz+e
+	 S5X3ZWGOfil6XUIO2rZg9WqmuiJ2qfPQBkCSac3g=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20260318080302eucas1p2c05885afc838bdc98d55972adc31ab96~d4MkRZpJ60631706317eucas1p2v;
+	Wed, 18 Mar 2026 08:03:02 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20260318080300eusmtip289c1a6818cde8d982e474c8d0c9ee8f6~d4Mi2Bedq1876518765eusmtip2G;
+	Wed, 18 Mar 2026 08:03:00 +0000 (GMT)
+Message-ID: <de23ccf6-75ef-48af-8c69-2f416c564f2d@samsung.com>
+Date: Wed, 18 Mar 2026 09:03:00 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/7] iommu: Do not call pci_dev_reset_iommu_done()
- unless reset succeeds
-To: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
- robin.murphy@arm.com, joro@8bytes.org, bhelgaas@google.com, jgg@nvidia.com
-Cc: rafael@kernel.org, lenb@kernel.org, praan@google.com,
- baolu.lu@linux.intel.com, kevin.tian@intel.com,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
- linux-pci@vger.kernel.org, vsethi@nvidia.com
-References: <cover.1773774441.git.nicolinc@nvidia.com>
- <21fa71d59c8ab787c0f3d8cf3e9fc725330fd0d5.1773774441.git.nicolinc@nvidia.com>
-From: Shuai Xue <xueshuai@linux.alibaba.com>
-In-Reply-To: <21fa71d59c8ab787c0f3d8cf3e9fc725330fd0d5.1773774441.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH v3 0/8] RDMA: Enable operation with DMA debug enabled
+To: Leon Romanovsky <leon@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	"Michael S. Tsirkin" <mst@redhat.com>, Petr Tesarik <ptesarik@suse.com>,
+	Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
+	Jason Wang <jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	=?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>, Jason Gunthorpe
+	<jgg@ziepe.ca>, Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu
+	<mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Andrew Morton
+	<akpm@linux-foundation.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, virtualization@lists.linux.dev,
+	linux-rdma@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
+	linux-mm@kvack.org
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20260317190538.GD61385@unreal>
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20260318080302eucas1p2c05885afc838bdc98d55972adc31ab96
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260317190552eucas1p28f3e818f88d252b1e4161332be084177
+X-EPHeader: CA
+X-CMS-RootMailID: 20260317190552eucas1p28f3e818f88d252b1e4161332be084177
+References: <20260316-dma-debug-overlap-v3-0-1dde90a7f08b@nvidia.com>
+	<CGME20260317190552eucas1p28f3e818f88d252b1e4161332be084177@eucas1p2.samsung.com>
+	<20260317190538.GD61385@unreal>
 
+Hi Leon,
 
+On 17.03.2026 20:05, Leon Romanovsky wrote:
+> On Mon, Mar 16, 2026 at 09:06:44PM +0200, Leon Romanovsky wrote:
+>> Add a new DMA_ATTR_REQUIRE_COHERENT attribute to the DMA API to mark
+>> mappings that must run on a DMA‑coherent system. Such buffers cannot
+>> use the SWIOTLB path, may overlap with CPU caches, and do not depend on
+>> explicit cache flushing.
+>>
+>> Mappings using this attribute are rejected on systems where cache
+>> side‑effects could lead to data corruption, and therefore do not need
+>> the cache‑overlap debugging logic. This series also includes fixes for
+>> DMA_ATTR_CPU_CACHE_CLEAN handling.
+>> Thanks.
+> <...>
+>
+>> ---
+>> Leon Romanovsky (8):
+>>        dma-debug: Allow multiple invocations of overlapping entries
+>>        dma-mapping: handle DMA_ATTR_CPU_CACHE_CLEAN in trace output
+>>        dma-mapping: Clarify valid conditions for CPU cache line overlap
+>>        dma-mapping: Introduce DMA require coherency attribute
+>>        dma-direct: prevent SWIOTLB path when DMA_ATTR_REQUIRE_COHERENT is set
+>>        iommu/dma: add support for DMA_ATTR_REQUIRE_COHERENT attribute
+>>        RDMA/umem: Tell DMA mapping that UMEM requires coherency
+>>        mm/hmm: Indicate that HMM requires DMA coherency
+>>
+>>   Documentation/core-api/dma-attributes.rst | 38 ++++++++++++++++++++++++-------
+>>   drivers/infiniband/core/umem.c            |  5 ++--
+>>   drivers/iommu/dma-iommu.c                 | 21 +++++++++++++----
+>>   drivers/virtio/virtio_ring.c              | 10 ++++----
+>>   include/linux/dma-mapping.h               | 15 ++++++++----
+>>   include/trace/events/dma.h                |  4 +++-
+>>   kernel/dma/debug.c                        |  9 ++++----
+>>   kernel/dma/direct.h                       |  7 +++---
+>>   kernel/dma/mapping.c                      |  6 +++++
+>>   mm/hmm.c                                  |  4 ++--
+>>   10 files changed, 86 insertions(+), 33 deletions(-)
+> Marek,
+>
+> Despite the "RDMA ..." tag in the subject, the diffstat clearly shows that
+> you are the appropriate person to take this patch.
 
-On 3/18/26 3:15 AM, Nicolin Chen wrote:
-> IOMMU drivers handle ATC cache maintenance. They may encounter ATC-related
-> errors (e.g., ATC invalidation request timeout), indicating that ATC cache
-> might have stale entries that can corrupt the memory. In this case, IOMMU
-> driver has no choice but to block the device's ATS function and wait for a
-> device recovery.
-> 
-> The pci_dev_reset_iommu_done() called at the end of a reset function could
-> serve as a reliable signal to the IOMMU subsystem that the physical device
-> cache is completely clean. However, the function is called unconditionally
-> even if the reset operation had actually failed, which would re-attach the
-> faulty device back to a normal translation domain. And this will leave the
-> system highly exposed, creating vulnerabilities for data corruption:
->      IOMMU blocks RID/ATS
->      pci_reset_function():
->          pci_dev_reset_iommu_prepare(); // Block RID/ATS
->          __reset(); // Failed (ATC is still stale)
->          pci_dev_reset_iommu_done(); // Unblock RID/ATS (ah-ha)
-> 
-> The simplest fix is to use pci_dev_reset_iommu_done() only on a successful
-> reset:
->      IOMMU blocks RID/ATS
->      pci_reset_function():
->          pci_dev_reset_iommu_prepare(); // Block RID/ATS
->          if (!__reset())
->              pci_dev_reset_iommu_done(); // Unblock RID/ATS
->          else
->              // Keep the device blocked by IOMMU
-> 
-> However, this breaks the symmetric requirement of these reset APIs so that
-> we have to allow a re-entry to pass a second reset attempt:
->      IOMMU blocks RID/ATS
->      pci_reset_function():
->          pci_dev_reset_iommu_prepare(); // Block RID/ATS
->          __reset(); // Failed (ATC is still stale)
->          // Keep the device blocked by IOMMU
->      Second reset:
->          pci_reset_function():
->              pci_dev_reset_iommu_prepare(); // Re-entry (!)
-> 
-> Update the function kdocs and all the existing callers to only unblock ATS
-> when the reset succeeds. Drop the WARN_ON in pci_dev_reset_iommu_prepare()
-> to allow re-entries.
-> 
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->   drivers/iommu/iommu.c  | 16 +++++++++-----
->   drivers/pci/pci-acpi.c | 11 +++++++++-
->   drivers/pci/pci.c      | 50 +++++++++++++++++++++++++++++++++++++-----
->   drivers/pci/quirks.c   | 11 +++++++++-
->   4 files changed, 75 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 35db517809540..40a15c9360bd1 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -3938,8 +3938,10 @@ EXPORT_SYMBOL_NS_GPL(iommu_replace_group_handle, "IOMMUFD_INTERNAL");
->    * IOMMU activity while leaving the group->domain pointer intact. Later when the
->    * reset is finished, pci_dev_reset_iommu_done() can restore everything.
->    *
-> - * Caller must use pci_dev_reset_iommu_prepare() with pci_dev_reset_iommu_done()
-> - * before/after the core-level reset routine, to unset the resetting_domain.
-> + * Caller must use pci_dev_reset_iommu_done() after a successful PCI-level reset
-> + * to unset the resetting_domain. If the reset fails, caller can choose to keep
-> + * the device in the resetting_domain to protect system memory using IOMMU from
-> + * any bad ATS.
+I plan to take the first 2 patches to the dma-mapping-fixes branch 
+(v7.0-rc) and the next to dma-mapping-for-next. Should I also take the 
+RDMA and HMM patches, or do You want a stable branch for merging them 
+via respective subsystem trees?
 
-I think you mean ...to protect system memory from DMA via stale ATC entries.
-
->    *
->    * Return: 0 on success or negative error code if the preparation failed.
->    *
-> @@ -3961,9 +3963,9 @@ int pci_dev_reset_iommu_prepare(struct pci_dev *pdev)
->   
->   	guard(mutex)(&group->mutex);
->   
-> -	/* Re-entry is not allowed */
-> -	if (WARN_ON(group->resetting_domain))
-> -		return -EBUSY;
-> +	/* Already prepared */
-> +	if (group->resetting_domain)
-> +		return 0;
-
-Could you elaborate more on why Re-entry is allowed now? For example:
-
-/*
-  * Allow re-entry: if a previous reset failed, the device remains in
-  * resetting_domain. A subsequent reset attempt must be able to call
-  * prepare() again without failing.
-  */
-
->   
->   	ret = __iommu_group_alloc_blocking_domain(group);
->   	if (ret)
-> @@ -4001,7 +4003,9 @@ EXPORT_SYMBOL_GPL(pci_dev_reset_iommu_prepare);
->    * re-attaching all RID/PASID of the device's back to the domains retained in
->    * the core-level structure.
->    *
-> - * Caller must pair it with a successful pci_dev_reset_iommu_prepare().
-> + * This is a pairing function for pci_dev_reset_iommu_prepare(). Caller should
-> + * use it on a successful PCI-level reset. Otherwise, it's suggested for caller
-> + * to keep the device in the resetting_domain to protect system memory.
->    *
->    * Note that, although unlikely, there is a risk that re-attaching domains might
->    * fail due to some unexpected happening like OOM.
-> diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
-> index 4d0f2cb6c695b..f1a918938242c 100644
-> --- a/drivers/pci/pci-acpi.c
-> +++ b/drivers/pci/pci-acpi.c
-> @@ -16,6 +16,7 @@
->   #include <linux/pci_hotplug.h>
->   #include <linux/module.h>
->   #include <linux/pci-acpi.h>
-> +#include <linux/pci-ats.h>
->   #include <linux/pci-ecam.h>
->   #include <linux/pm_runtime.h>
->   #include <linux/pm_qos.h>
-> @@ -977,7 +978,15 @@ int pci_dev_acpi_reset(struct pci_dev *dev, bool probe)
->   		ret = -ENOTTY;
->   	}
->   
-> -	pci_dev_reset_iommu_done(dev);
-> +	/*
-> +	 * The reset might be invoked to recover a serious error. E.g. when the
-> +	 * ATC failed to invalidate its stale entries, which can result in data
-> +	 * corruption. Thus, do not unblock ATS until a successful reset.
-> +	 */
-> +	if (!ret || !pci_ats_supported(dev))
-> +		pci_dev_reset_iommu_done(dev);
-
-pci_dev_reset_iommu_prepare() already does an early return for non-ATS
-devices, and pci_dev_reset_iommu_done() also early-returns
-when !pci_ats_supported(). So for non-ATS devices, done()
-is always a no-op regardless of whether it's called or not.
-
-Do we really need check pci_ats_supported(dev) here?
-
-> +	else
-> +		pci_warn(dev, "Reset failed. Blocking ATS to protect memory\n");
->   	return ret;
->   }
->   
-> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-> index 8479c2e1f74f1..80c5cf6eeebdc 100644
-> --- a/drivers/pci/pci.c
-> +++ b/drivers/pci/pci.c
-> @@ -4358,7 +4358,15 @@ int pcie_flr(struct pci_dev *dev)
->   
->   	ret = pci_dev_wait(dev, "FLR", PCIE_RESET_READY_POLL_MS);
->   done:
-> -	pci_dev_reset_iommu_done(dev);
-> +	/*
-> +	 * The reset might be invoked to recover a serious error. E.g. when the
-> +	 * ATC failed to invalidate its stale entries, which can result in data
-> +	 * corruption. Thus, do not unblock ATS until a successful reset.
-> +	 */
-> +	if (!ret || !pci_ats_supported(dev))
-> +		pci_dev_reset_iommu_done(dev);
-> +	else
-> +		pci_warn(dev, "Reset failed. Blocking ATS to protect memory\n");
->   	return ret;
->   }
->   EXPORT_SYMBOL_GPL(pcie_flr);
-> @@ -4436,7 +4444,15 @@ static int pci_af_flr(struct pci_dev *dev, bool probe)
->   
->   	ret = pci_dev_wait(dev, "AF_FLR", PCIE_RESET_READY_POLL_MS);
->   done:
-> -	pci_dev_reset_iommu_done(dev);
-> +	/*
-> +	 * The reset might be invoked to recover a serious error. E.g. when the
-> +	 * ATC failed to invalidate its stale entries, which can result in data
-> +	 * corruption. Thus, do not unblock ATS until a successful reset.
-> +	 */
-> +	if (!ret || !pci_ats_supported(dev))
-> +		pci_dev_reset_iommu_done(dev);
-> +	else
-> +		pci_warn(dev, "Reset failed. Blocking ATS to protect memory\n");
->   	return ret;
->   }
->   
-> @@ -4490,7 +4506,15 @@ static int pci_pm_reset(struct pci_dev *dev, bool probe)
->   	pci_dev_d3_sleep(dev);
->   
->   	ret = pci_dev_wait(dev, "PM D3hot->D0", PCIE_RESET_READY_POLL_MS);
-> -	pci_dev_reset_iommu_done(dev);
-> +	/*
-> +	 * The reset might be invoked to recover a serious error. E.g. when the
-> +	 * ATC failed to invalidate its stale entries, which can result in data
-> +	 * corruption. Thus, do not unblock ATS until a successful reset.
-> +	 */
-> +	if (!ret || !pci_ats_supported(dev))
-> +		pci_dev_reset_iommu_done(dev);
-> +	else
-> +		pci_warn(dev, "Reset failed. Blocking ATS to protect memory\n");
->   	return ret;
->   }
->   
-> @@ -4933,7 +4957,15 @@ static int pci_reset_bus_function(struct pci_dev *dev, bool probe)
->   
->   	rc = pci_parent_bus_reset(dev, probe);
->   done:
-> -	pci_dev_reset_iommu_done(dev);
-> +	/*
-> +	 * The reset might be invoked to recover a serious error. E.g. when the
-> +	 * ATC failed to invalidate its stale entries, which can result in data
-> +	 * corruption. Thus, do not unblock ATS until a successful reset.
-> +	 */
-> +	if (!rc || !pci_ats_supported(dev))
-> +		pci_dev_reset_iommu_done(dev);
-> +	else
-> +		pci_warn(dev, "Reset failed. Blocking ATS to protect memory\n");
->   	return rc;
->   }
->   
-> @@ -4978,7 +5010,15 @@ static int cxl_reset_bus_function(struct pci_dev *dev, bool probe)
->   		pci_write_config_word(bridge, dvsec + PCI_DVSEC_CXL_PORT_CTL,
->   				      reg);
->   
-> -	pci_dev_reset_iommu_done(dev);
-> +	/*
-> +	 * The reset might be invoked to recover a serious error. E.g. when the
-> +	 * ATC failed to invalidate its stale entries, which can result in data
-> +	 * corruption. Thus, do not unblock ATS until a successful reset.
-> +	 */
-> +	if (!rc || !pci_ats_supported(dev))
-> +		pci_dev_reset_iommu_done(dev);
-> +	else
-> +		pci_warn(dev, "Reset failed. Blocking ATS to protect memory\n");
->   	return rc;
->   }
-
-cxl_reset_bus_function() calls pci_reset_bus_function() which already
-contains the conditional pci_dev_reset_iommu_done() logic. Then the
-outer function calls done() again. The second call is a no-op because
-resetting_domain has already been cleared, but this is confusing.
-
-Additionally, cxl_reset_bus_function() does its own
-pci_dev_reset_iommu_prepare(), while pci_reset_bus_function() also
-calls prepare() internally. With the re-entry change in this patch,
-the nested prepare() silently succeeds.
-
-Is it a expected behavior?
-
-
-Thanks.
-Shuai
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
