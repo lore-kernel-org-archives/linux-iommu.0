@@ -1,155 +1,128 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 845C22248B3
-	for <iommu@lists.linux.dev>; Thu, 19 Mar 2026 06:07:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9C2B314A9B
+	for <iommu@lists.linux.dev>; Thu, 19 Mar 2026 06:15:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773900464; cv=none; b=HQTsa9jwOErceyFVJ+3L1cmRwJ4QeecKWvSrpCMxNa7L71FH79/4ZiS4I8hhSw1lz1PjcIqQ/P93aFOoPXZOmlUUB/24QRg75uHyWYUdHmbYmn5Bds0EA6LxVc2HPSJUo7N9i3CkqYBKrWeGFg+s4XI7EBz/qQXVBG6bXNLbpjs=
+	t=1773900944; cv=none; b=KQWq992xwfNehc87qCXX7NMq+9imWo89VU8Q+pl43cVaSCDsy/lKHroQDAKIDN66L5/1QFnYKVnIXgehY5m1uULKVyctZlnq3v6kaoJV1qhKASTxvRbPCpLU+yxfHxmQZZ0r3Js3fhbyMseDSlppO9JJogZOXYp8FqFLvrmJcEM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773900464; c=relaxed/simple;
-	bh=SivmnrAFIYwbeUndZBDy0z7NBvVuI7pZ/eqjqvAqOWw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=GDG4xdZHKgySZadTkwNNUBp+m2RxagrFbXTtIg3+t/oK2gz3u6MC99m1HqqGJsLyndIMfG5cqHZoRI5e03FnnrBbk5aPMh0i8SBfUxusDfpCzKzxT3YptdSRpedz+zggRUA/ZY1VvHyXFFB3LvHMCPBKxyfu/c63joXQAkPNCLQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dU2aaGKJ; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1773900944; c=relaxed/simple;
+	bh=OOzh7bxmQsAIOtnX1e9VNZVKWMQ/Xqzul1ueVTyt1c8=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=g2sJGUeMqIDcmBIf/RVMPdOhoAe1ACF/+as82rTmMSjz/kOblpNWUtb9lowuyVm/TZXAF39E2aKPbfIA4WlxiWyjRmnV6skLck4J+44amZmgFiKYArYBYIsAyZrteyH57HUAD7vveifa90r+bwjvCO+mUrE9TguL/fRl6PsJglg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=k7HG+RYd; arc=none smtp.client-ip=209.85.210.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dU2aaGKJ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773900463; x=1805436463;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=SivmnrAFIYwbeUndZBDy0z7NBvVuI7pZ/eqjqvAqOWw=;
-  b=dU2aaGKJY2F2HQVMDTqIdgwyr2i/NYUeCwZ+lEzuVh4JpKIx3HCQSMxd
-   vZkrOK1KpjFuSaE9XeBBGZoj4UD1MRQeVcsoafj3/jNSjNyWbh7jxYTSN
-   msX2DknDXbdH9YxsasZleNTKhunld3J7zaqcd2tuAsmH2rhUmxlllFKmN
-   VZmeJWj7fT1xQ/9Cma/HI3cmIFa8mrpRkAhgsIkBB2mjnXlvFsmPZ461M
-   yjQGFRvdOkb4POp3xPrhTJXC/8NhmPJVgBrAl57Z5xDbE7gnAnkuiu0Y/
-   wrTHb40HsIIdLU807zSnkGOxXr8k1AuDVXw98VWCScDBtB10manArdxNS
-   g==;
-X-CSE-ConnectionGUID: zd52TFPoT5GEpX/Bdx8uRQ==
-X-CSE-MsgGUID: TV3f7vGTS9Cy/9b7plS/7w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11733"; a="77574117"
-X-IronPort-AV: E=Sophos;i="6.23,128,1770624000"; 
-   d="scan'208";a="77574117"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2026 23:07:43 -0700
-X-CSE-ConnectionGUID: Uj6G5AaISgulHqnC05raRg==
-X-CSE-MsgGUID: 9uasM1JKT2uT77r1puqdOA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,128,1770624000"; 
-   d="scan'208";a="218806151"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2026 23:07:41 -0700
-Message-ID: <ef328a7e-59a4-4a74-bc72-aa13951b38ff@linux.intel.com>
-Date: Thu, 19 Mar 2026 14:06:37 +0800
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="k7HG+RYd"
+Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-82989744ee0so733388b3a.2
+        for <iommu@lists.linux.dev>; Wed, 18 Mar 2026 23:15:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1773900942; x=1774505742; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=c7f7WqiVyVqTOxh8ghq9ArjCrLpIG+9mgtrGPDNjc48=;
+        b=k7HG+RYdMiSrQemnWKepm40its0VyUEXbk9wNDUFSCR1/96J0sFm8zNXSHs3Iv6gvy
+         iXYRc4gowYHHCZKL5Prn26RObOLBSj8L3RvoXK7gU/KI7QeWq1C9xAwWDVMFGy1NQNsC
+         eUARvMsCuPzD5KBlIVBHSctZ2ZdHVfYbBpOpcadYtiQRIfZpPA01SNl7Hx55Dzwi3LfY
+         brUMMUe7wRSS0kTJQ/Xom/K/vtgrZDgv4RdiGZ70Kd4Ia/2ZPeynt8aawOSbsxB74h8w
+         URnKJzi/9zbLULGLu1a5qPan91zXVNrSI9hxQ8v14Meff7KOcCJbE8v7Lp616L28Ocn2
+         5SIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773900942; x=1774505742;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=c7f7WqiVyVqTOxh8ghq9ArjCrLpIG+9mgtrGPDNjc48=;
+        b=d04Tq3FADkurD//bwmPh09gXrBF/OoyPGLkleAdZqOf/OjVw/nirz03EeDdikZSooC
+         K5zSTqOEpLrjTjiXhPdUvkrY+LC5SWfx7tdsmcfXf4MewStFolCB9MGVUR61gUMHgSRR
+         CNuRgCy6KRE4iEGlSWgkCdfCiln+qnK+fJlasGPiZbAQpsEy65OU9Kvu8CgRMYCAR/80
+         uH2mN9PT09OVdWmuTVJ760d9DCoF+yAUeApbrLX0eo/YzUHNRmxWgGkQhO+fY07RfpBG
+         ffkrbnnWygngPBHdc/JbqS1Q+RZfQXBK40ImUMEmr1+VQjHdX5Xh74GMl7Qax5I1m23X
+         STCA==
+X-Forwarded-Encrypted: i=1; AJvYcCVb/ywHuudG+n/15ioKoRkj0OySLE9CgnPPO4vtKcRT0fIMxIvCA7OEPVsygn+I7JYGccyHyg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz0BWT8DBsENitZWzQ+OIdemNvqWvpUdpxCi7Cm19X5MiWN+xXi
+	dto0AqiSvPzcJ6anCpwVySkayycNZS0qVZ9Gj5UW47hjBm1nPbDWYbEv
+X-Gm-Gg: ATEYQzzNwi7Jpufo8pYZpo94Qm/wXCnhHSNSwqYVKO8wV4V8bpEn2iDmCjk2a44W5Nl
+	D7I0GoeZvSiH+RKQb5XWIwgcLw7FHLNsHjmsB6/jJ8qXzgr3mz6vU5q//lpPYKXeSVGjFDE47Bc
+	QK2JvQlwFUOyFoDSybN20+5f3f1kBnzHO+AfixmVmniXT1gju7mzh4OQwdY4cVmNJn6uRg2CSOW
+	T3HzQ80C0iYNtgmSux8oP0zxyy1/4j30vgwvKxaC+1vPfd8i6N2G09+aXaJpMQLlYnt/SX2NN8l
+	SxIuozaK1IcXv8rlZFb9mKzX2350FkPpG4V57WnrXaYujU8hoMlHoCNK/4Evsz2Iv42yFRib5Vh
+	RdLWB+Vbrt10svHPLJZJuR04MgUcrm7NDwdELOQcD3v1iJ8P9CCYniBLhlpGQuW78ou8Yfkpw+f
+	Ix9xeWlgym5HaJQWgn5p2B85SyhBkCnwC838IVKUjG1e1Xcv9LdasS2spBhVdIqmT9UxAn17INH
+	Y82la01ztTlVw==
+X-Received: by 2002:a05:6a00:889:b0:82a:7aa3:a2fb with SMTP id d2e1a72fcca58-82a7aa3a618mr2119918b3a.37.1773900942286;
+        Wed, 18 Mar 2026 23:15:42 -0700 (PDT)
+Received: from AHUANG12-3ZHH9X.lenovo.com (61-221-208-111.hinet-ip.hinet.net. [61.221.208.111])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82a6bef5ed8sm5660824b3a.57.2026.03.18.23.15.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Mar 2026 23:15:41 -0700 (PDT)
+From: "Adrian Huang (Lenovo)" <adrianhuang0701@gmail.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	ahuang12@lenovo.com,
+	"Adrian Huang (Lenovo)" <adrianhuang0701@gmail.com>
+Subject: [PATCH 0/2] iommu/amd: Preserve x2APIC and MSI support when amd_iommu=off
+Date: Thu, 19 Mar 2026 14:15:05 +0800
+Message-Id: <20260319061507.541-1-adrianhuang0701@gmail.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: Linux error `[DMA Write NO_PASID] Request device [3c:00.0] fault
- addr 0x0 [fault reason 0x05] PTE Write access is not set`
-To: Paul Menzel <pmenzel@molgen.mpg.de>, Keith Busch <kbusch@kernel.org>,
- Jens Axboe <axboe@fb.com>, Christoph Hellwig <hch@lst.de>,
- Sagi Grimberg <sagi@grimberg.me>
-Cc: David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
- linux-nvme@lists.infradead.org
-References: <88e33b0c-e89f-47a2-9125-d85693d4816f@molgen.mpg.de>
- <d38a2cda-4b29-43ec-ab08-b55c79714810@linux.intel.com>
- <311a59f3-10bb-4a43-b86d-2f1ef316a01c@molgen.mpg.de>
- <8665ed69-9364-4f8a-9238-6adf9b5590a0@linux.intel.com>
- <3a880676-861b-4447-9775-6197ae74ffd3@molgen.mpg.de>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <3a880676-861b-4447-9775-6197ae74ffd3@molgen.mpg.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 3/18/26 20:55, Paul Menzel wrote:
-> 
-> Am 18.03.26 um 07:42 schrieb Baolu Lu:
->> On 3/16/26 22:54, Paul Menzel wrote:
->>>>> On the Intel Kaby Lake laptop Dell XPS 13 9360, Linux logs the 
->>>>> error below:
->>>>>
->>>>>      [17959.189315] ACPI: EC: event unblocked
->>>>>      [17959.197876] DMAR: DRHD: handling fault status reg 2
->>>>>      [17959.197882] DMAR: [DMA Write NO_PASID] Request device 
->>>>> [3c:00.0] fault addr 0x0 [fault reason 0x05] PTE Write access is 
->>>>> not set
->>>>>      [17959.198366] DMAR: DRHD: handling fault status reg 2
->>>>>      [17959.198369] DMAR: [DMA Write NO_PASID] Request device 
->>>>> [3c:00.0] fault addr 0x0 [fault reason 0x05] PTE Write access is 
->>>>> not set
->>>>>      [17959.198923] DMAR: DRHD: handling fault status reg 2
->>>>>      [17959.201477] nvme nvme0: 4/0/0 default/read/poll queues
->>>>>
->>>>> 3c:00.0 is the NVMe controller/device.
->>>>>
->>>>>      $ lspci -nn -s 3c:00.0
->>>>>      3c:00.0 Non-Volatile memory controller [0108]: SK hynix PC300 
->>>>> NVMe Solid State Drive 512GB [1c5c:1284]
->>>>>
->>>>> This seems to happen only *sometimes* when resuming from ACPI S3.
->>>>>
->>>>> To my knowledge, this is *not* a new problem. Please find the log 
->>>>> messages attached. (Ignore the other DMAR error for now.)
->>>>
->>>> These IOMMU DMA faults are triggered when the NVMe controller attempts
->>>> DMA writes to system memory address 0x0. The IOMMU hardware blocked
->>>> these accesses because the system software has not granted the device
->>>> permission to write to this specific address. It's unlikely a bug or
->>>> problem in the iommu driver as far as I can see.
->>>
->>> I am seeing the same issue on a Dell XPS 15 7590 with Intel NVMe 
->>> controller:
->>>
->>>      $ lspci -nn -s 3d:00.0
->>>      3d:00.0 Non-Volatile memory controller [0108]: Intel Corporation 
->>> SSD DC P4101/Pro 7600p/760p/E 6100p Series [8086:f1a6] (rev 03)
->>>
->>> Logs from Debian’s Linux 6.19.8:
->>
->> Did you see this warning with the v6.18 kernel or earlier?
-> 
-> Yes, I did see it with earlier Linux versions. For the Dell XPS 13 9360 
-> with SK hynix controller I found logs with Linux 6.16:
-> 
->      Okt 14 08:10:02 abreu kernel: Linux version 6.16.11+deb14-amd64 
-> (debian-kernel@lists.debian.org) (x86_64-linux-gnu-gcc-14 (Debian 
-> 14.3.0-8) 14.3.0, GNU ld (GNU Binutils for Debian) 2.45) #1 SMP 
-> PREEMPT_DYNAMIC Debian 6.16.11-1 (2025-10-07)
->      […]
->      Okt 15 21:02:49 abreu kernel: DMAR: DRHD: handling fault status reg 2
->      Okt 15 21:02:49 abreu kernel: DMAR: [DMA Write NO_PASID] Request 
-> device [3c:00.0] fault addr 0x0 [fault reason 0x05] PTE Write access is 
-> not set
->      Okt 15 21:02:49 abreu kernel: DMAR: DRHD: handling fault status reg 2
->      Okt 15 21:02:49 abreu kernel: DMAR: [DMA Write NO_PASID] Request 
-> device [3c:00.0] fault addr 0x0 [fault reason 0x05] PTE Write access is 
-> not set
->      Okt 15 21:02:49 abreu kernel: DMAR: DRHD: handling fault status reg 2
->      Okt 15 21:02:49 abreu kernel: nvme nvme0: 4/0/0 default/read/poll 
-> queues
+[Overview]
+This patch series modifies the behavior of the amd_iommu=off kernel
+parameter to ensure that x2APIC and MSI domain allocation remain
+functional, even when DMA translation is disabled.
 
-The error occurs when the NVMe controller attempts to access system
-memory using IOVA 0. The iommu subsystem reserves IOVA 0 and treats it
-as an invalid address; therefore, the Linux driver is unlikely to
-program a device with IOVA 0 for DMA.
+Currently, on AMD systems, specifying amd_iommu=off completely shuts
+down the IOMMU subsystem. This causes the system to disable x2APIC and
+fall back to physical flat mode, which limits the system to 255 APIC
+IDs. On high-core-count systems (e.g., 448 cores), this results in a
+significant number of CPUs failing to bring up. Furthermore, dynamically
+added PCI devices (such as SR-IOV VFs) fail to associate with the
+correct MSI domain, leading to IOMMU fault events and kernel warnings.
 
-An exception is reserved memory used by firmware, where the regions are
-identity-mapped by the iommu core during the probe process. There was a
-recent fix addressing an issue with identity mapping at address 0:
+[Motivation]
+On Intel platforms, intel_iommu=off only disables DMA translation while
+keeping the necessary interrupt remapping infrastructure active to
+support x2APIC and high CPU counts. This series brings the AMD IOMMU
+driver in line with this behavior, ensuring stability on modern,
+large-scale hardware.
 
-https://lore.kernel.org/linux-iommu/20260227080638.208693-1-lkml@antheas.dev/
+[Patch Summary]
+Patch 1: Adjusts the amd_iommu=off semantics to keep x2APIC enabled. It
+ensures that the kernel can bring up all available CPUs on large systems
+by maintaining x2APIC ops instead of falling back to physical flat mode.
 
-Could you please test if this patch helps? It has already been merged
-into the iommu subsystem tree.
+Patch 2: With applying "Patch 1", patch 2 ensures the PCI bus notifier
+is registered even when amd_iommu=off is used. This allows hotplugged
+devices or SR-IOV VFs to be correctly assigned to the IOMMU interrupt
+remapping domain, preventing INVALID_DEVICE_REQUEST faults and MSI
+activation failures.
 
-Thanks,
-baolu
+[Verification]
+Testing was performed on a 448-core Lenovo ThinkSystem server. All 448
+CPUs are successfully initialized; SR-IOV VFs are created and assigned
+interrupts without faults.
+
+Adrian Huang (Lenovo) (2):
+  iommu/amd: Keep x2apic enabled when appending amd_iommu=off
+  iommu/amd: Register PCI bus notifier when appending amd_iommu=off
+
+ drivers/iommu/amd/amd_iommu.h |  1 +
+ drivers/iommu/amd/init.c      | 81 ++++++++++++++++++++++++++++++-----
+ drivers/iommu/amd/iommu.c     | 14 ++++++
+ 3 files changed, 86 insertions(+), 10 deletions(-)
+
+-- 
+2.47.3
+
