@@ -1,73 +1,79 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id ED22D3E558E
-	for <iommu@lists.linux.dev>; Thu, 19 Mar 2026 15:32:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B8553E3165
+	for <iommu@lists.linux.dev>; Thu, 19 Mar 2026 15:50:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773934348; cv=none; b=qiJtfPMbTa5IjBnYxNug7MlPMeOfR0XTsRECDgYDVRjyzAjlUOp61t+KW7ArzHkXsRd3o1f1q8xAPu/c3onWXupfNiaCxGGX4ERvmaCq0jLk8mR4WlAkvnqed6t9AKXUC+sCFXbg9vvUEafCLVIsil/DQYjHRYIqD9jaUP37rgE=
+	t=1773935430; cv=none; b=aN+JcNFmlfoTPb0TPHAAdc1S4/zxFeH39PNTeZu1PbjRL5m+uZtyAoW1w4p9fG1iCbpEMeO/wIFuDviK0TF7u79XnJEyJ0A2OEhWYviNjlWZQ533obSWe33OZ3bF+rtl+hUdenr7Pma1J8DYZ6/a/aa4U1Rpd/P+oB8F+FKcgqU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773934348; c=relaxed/simple;
-	bh=OMf00bxp1dMo08fcsjygvPUMlRjqnEhwnrCIv/r7goQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=XT4/adB0N3uVd5bJ1nMW8srCzZMMxiJF2EWLWTOTScEpzy9q2K+Xs3xv2E7hIwWxC9Do2PSHui2mz0tZTnOB5Rlvt265/Dcl+Wsj9MXzzgsuVAUdLEUIo0rC3NvTIBM49Q/6YqMmt1o5+hccEr47xkrh21V5mGMPDOCPp3VJvU4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 663831A25;
-	Thu, 19 Mar 2026 08:32:20 -0700 (PDT)
-Received: from [10.57.59.172] (unknown [10.57.59.172])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7972A3F778;
-	Thu, 19 Mar 2026 08:32:25 -0700 (PDT)
-Message-ID: <7fe97d37-b6e4-4fe7-a871-b4d67763079a@arm.com>
-Date: Thu, 19 Mar 2026 15:32:22 +0000
+	s=arc-20240116; t=1773935430; c=relaxed/simple;
+	bh=OOiabRzfIU2rkzstMHupJQAL4bYIGNlCquN6bH2HLmA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NSgX1QvZdWAuuXLGqYg3kVBIAgsUqVPMwmPwICp9FCYStZiWau0I+81F1/iV3RL98dHXo2uXBVvMzjXI6gJqTq2Bpy4444Tpns0U5jKiFUOeidFx5ChYiN1i/WBgPfWMEZs8w30At6uS6ZZJmES8v4Dl6jL2DSH/smaxn3snoI8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Vy2p5TPf; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vy2p5TPf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A911C19424;
+	Thu, 19 Mar 2026 15:50:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773935430;
+	bh=OOiabRzfIU2rkzstMHupJQAL4bYIGNlCquN6bH2HLmA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Vy2p5TPfckFpW/r8pn1mfBzmjmPLf3nSoaQvLsdcIPNZYEqNBsyrMpTuxMv/Of0f0
+	 ir9sIQW8LHJeUBtTiOSifjezt2M+2bdF3no3Rq2XnsHEvh6AtjkrdY3eVx2uILAlld
+	 WyE82C14fWCVpXtgHWuuLBKCditeGTQYJ/Ql8VmRd+bwLLGle2lBvplPYEOo7+9BZ/
+	 lLUyCeDpw0XtWAR7zYI+rP+Q5g/NKxJTYJAGCYCanxmZ5LR7JPnfmNyvlgxovQvEnN
+	 AYp3RWnFny4eAU4V0d23x9Id4Qq3f3UxS/AHEZAt29z7YUWoahLO2zX5A1yCfjnsgV
+	 OUC++t35vDKog==
+Date: Thu, 19 Mar 2026 15:50:25 +0000
+From: Will Deacon <will@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: catalin.marinas@arm.com, joro@8bytes.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, daizhiyuan@phytium.com.cn
+Subject: Re: [PATCH 1/3] arm64: errata: Reformat table for IDs
+Message-ID: <abwbQWfV-yRZzkJC@willie-the-truck>
+References: <cover.1772125743.git.robin.murphy@arm.com>
+ <3adc16d4d035cf76803e706e325822b99c13e977.1772125743.git.robin.murphy@arm.com>
+ <abwNg5LY9Ll235vS@willie-the-truck>
+ <7fe97d37-b6e4-4fe7-a871-b4d67763079a@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/3] arm64: errata: Reformat table for IDs
-To: Will Deacon <will@kernel.org>
-Cc: catalin.marinas@arm.com, joro@8bytes.org, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, daizhiyuan@phytium.com.cn
-References: <cover.1772125743.git.robin.murphy@arm.com>
- <3adc16d4d035cf76803e706e325822b99c13e977.1772125743.git.robin.murphy@arm.com>
- <abwNg5LY9Ll235vS@willie-the-truck>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <abwNg5LY9Ll235vS@willie-the-truck>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7fe97d37-b6e4-4fe7-a871-b4d67763079a@arm.com>
 
-On 2026-03-19 2:51 pm, Will Deacon wrote:
-> On Thu, Feb 26, 2026 at 06:10:20PM +0000, Robin Murphy wrote:
->> We have some inconsistency where multiple errata for the same component
->> share the same Kconfig workaround; some are one ID per line, some are
->> smooshed together, and some are entirely separate entries. Standardise
->> on the single entry, one ID per line format so that things render nice
->> and consistently in the HTML docs, and it's simple and clear to add new
->> IDs to existing workarounds without churning the table too much.
->>
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->>   Documentation/arch/arm64/silicon-errata.rst | 44 ++++++++++++---------
->>   1 file changed, 25 insertions(+), 19 deletions(-)
+On Thu, Mar 19, 2026 at 03:32:22PM +0000, Robin Murphy wrote:
+> On 2026-03-19 2:51 pm, Will Deacon wrote:
+> > On Thu, Feb 26, 2026 at 06:10:20PM +0000, Robin Murphy wrote:
+> > > We have some inconsistency where multiple errata for the same component
+> > > share the same Kconfig workaround; some are one ID per line, some are
+> > > smooshed together, and some are entirely separate entries. Standardise
+> > > on the single entry, one ID per line format so that things render nice
+> > > and consistently in the HTML docs, and it's simple and clear to add new
+> > > IDs to existing workarounds without churning the table too much.
+> > > 
+> > > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> > > ---
+> > >   Documentation/arch/arm64/silicon-errata.rst | 44 ++++++++++++---------
+> > >   1 file changed, 25 insertions(+), 19 deletions(-)
+> > 
+> > I think we're better off doing this at -rc1 in the Arm tree, so we avoid
+> > unnecessary cross-tree conflicts for something that doesn't really matter
+> > that much in the grand scheme of things.
+> > 
+> > For now, please can you send the SMMU patch on its own so that I can
+> > pick it up?
 > 
-> I think we're better off doing this at -rc1 in the Arm tree, so we avoid
-> unnecessary cross-tree conflicts for something that doesn't really matter
-> that much in the grand scheme of things.
-> 
-> For now, please can you send the SMMU patch on its own so that I can
-> pick it up?
+> Yeah, that's fair enough, it's not like it's a real dependency that would
+> justify taking the SMMU patch through arm64 either. v2 sent, and if I
+> haven't forgotten all about this by -rc1, I'll rebase and re-send this one
+> then.
 
-Yeah, that's fair enough, it's not like it's a real dependency that 
-would justify taking the SMMU patch through arm64 either. v2 sent, and 
-if I haven't forgotten all about this by -rc1, I'll rebase and re-send 
-this one then.
+Thank you!
 
-(And I did rather expect that patch #3 might end up getting dropped, 
-hence keeping it separate at the end. Oh well, worth a try.)
-
-Cheers,
-Robin.
+Will
