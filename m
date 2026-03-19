@@ -1,194 +1,155 @@
-Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010054.outbound.protection.outlook.com [52.101.46.54])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0620323EABC
-	for <iommu@lists.linux.dev>; Thu, 19 Mar 2026 04:34:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.46.54
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773894892; cv=fail; b=QyhSk7GISkiTc+Fo1aqqqwH+694JWQzO1+y72ukmOP/10KrnVnmieyaWVBNVkMteRsWIDm2w4j49uGtOCSp7mhSe28k/MEe06qy7Q+RLENXB0IAeqcyNjluS7Srdd4tQkWYC7yAE39aO/4xnibF1feVYNJGeZrSwvRYA2DuzsMk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773894892; c=relaxed/simple;
-	bh=mmkNGiSZ/oz+u4HDd5VhyLDs7fJP93wclVps+M343oY=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=tHPJZ/7mKtSSwPj9wI5x3mbCuV9/3F3fLdEBdFkU3DoksvqSqJ6KBTnFpjobjAeW5RgeqVXiRXb651m5ebfQUWQsnebG/8BjfcyM/OtXF0pwtHKSaGv8H+C38eTrY3u7b0wUDOfDRMw+7BEXKYTJi9cZoW1Y27eyOpKB4tSIDpw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=NvENZjpi; arc=fail smtp.client-ip=52.101.46.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 845C22248B3
+	for <iommu@lists.linux.dev>; Thu, 19 Mar 2026 06:07:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773900464; cv=none; b=HQTsa9jwOErceyFVJ+3L1cmRwJ4QeecKWvSrpCMxNa7L71FH79/4ZiS4I8hhSw1lz1PjcIqQ/P93aFOoPXZOmlUUB/24QRg75uHyWYUdHmbYmn5Bds0EA6LxVc2HPSJUo7N9i3CkqYBKrWeGFg+s4XI7EBz/qQXVBG6bXNLbpjs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773900464; c=relaxed/simple;
+	bh=SivmnrAFIYwbeUndZBDy0z7NBvVuI7pZ/eqjqvAqOWw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=GDG4xdZHKgySZadTkwNNUBp+m2RxagrFbXTtIg3+t/oK2gz3u6MC99m1HqqGJsLyndIMfG5cqHZoRI5e03FnnrBbk5aPMh0i8SBfUxusDfpCzKzxT3YptdSRpedz+zggRUA/ZY1VvHyXFFB3LvHMCPBKxyfu/c63joXQAkPNCLQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dU2aaGKJ; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="NvENZjpi"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=x14pRYpn0d2oswqxCwMmlq9Tr3vqySe9oY6fJYQqOYHrkdSDdqb5INvQ/MxIkGHSMkWn4J0sAaB9MzFVDkZI8uh04305KJl91JFtZOGPDfv/cZ3riYIAJbx40y1YaSWoVvwxnBatuOIJkp7mZFmOUZbXSetpUdJM+mp98sT9WVX21xu3jrA/usWpaJjPBO/KIzaz7a3hm/cb26m/pisRGakIgHAJ2kvRUvtSpRFqPDseP9ua4Zzay4NWvGRgfJmAe/yBcNsjCSblguuPUunZybZ/2AwNy78nOeepRVHHMtAEzQxhptoSq5PCa5JrN1FngENK5vxmU/kORFOG5OMRGQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vPj/qWSJQHZr2v2llMYQD9cFvsfJrMdan75N7+kXGJk=;
- b=Z/oJUUWo45nD444Z4qk378wR6IdSY9EFO0d2ysdg1m/zzFzDxKG+vNLKtSKWvaYgoJFg2Rn3SVcttb4lPYAFVCwQ47r0JOa5ZX7hWRTw6X2stV1n9P0HzsO1YEIBsEmaDh5KjBhpV6LkvsGUGEFiaFBJHBd6aaNM869zqHuodZWCA17d/ZzF6FaYV3bWIgTRdjRjA6cEV+t6fRj4yk0EUrZ9wCJrtst0mx2YsJqFmXhEEjy6acegZpTYxgVFT1ZWdnMjwJj0bul98lZBDuqdzf1c+nPEOBH3n+h6o4d05t77d/xUbDpoH180D3SOIcRQOADOSMx5Qvtj816p6oIYrQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=8bytes.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vPj/qWSJQHZr2v2llMYQD9cFvsfJrMdan75N7+kXGJk=;
- b=NvENZjpiKQSlGF7lOW0EoumYX9ZurzrlC4FlvI3WlsqduCc7pNi/uaYRQRHXiU07ue65iQXcMkQXTQEwO3sVI3KgIkkWQ7SMUJaDWdl38wb9bbEh26N2zAzdcFojAYeugpL1mn2kUTX+L5mrFAUhBl1pLjlhQ08ZxCfteexV4yjN8KPMK5VHtGMrJdqpyg8Jw938JxTFwjyNxiSPVxk2pJcsAv1fPbREOYvuGySKIgrwp4F/zCFhjnlCIxCG0Ynq1Yrwe9C/TlnvhFte2Yc70kMYYTS1MXm7ZkFHd/Zh/ZHbew8KDb1+72hvC2eEpgDm+w7bGZ4307qXxhDC0iKN9g==
-Received: from BN0PR02CA0044.namprd02.prod.outlook.com (2603:10b6:408:e5::19)
- by MW4PR12MB7120.namprd12.prod.outlook.com (2603:10b6:303:222::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9723.17; Thu, 19 Mar
- 2026 04:34:46 +0000
-Received: from BN1PEPF0000468A.namprd05.prod.outlook.com
- (2603:10b6:408:e5:cafe::5d) by BN0PR02CA0044.outlook.office365.com
- (2603:10b6:408:e5::19) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9723.19 via Frontend Transport; Thu,
- 19 Mar 2026 04:34:45 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- BN1PEPF0000468A.mail.protection.outlook.com (10.167.243.135) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9723.19 via Frontend Transport; Thu, 19 Mar 2026 04:34:45 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Wed, 18 Mar
- 2026 21:34:33 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.20; Wed, 18 Mar 2026 21:34:33 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.9) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server id 15.2.2562.20 via Frontend
- Transport; Wed, 18 Mar 2026 21:34:32 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <joro@8bytes.org>, <kevin.tian@intel.com>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <baolu.lu@linux.intel.com>,
-	<jgg@nvidia.com>, <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<xueshuai@linux.alibaba.com>
-Subject: [PATCH rc v2] iommu: Fix nested pci_dev_reset_iommu_prepare/done()
-Date: Wed, 18 Mar 2026 21:31:35 -0700
-Message-ID: <20260319043135.1153534-1-nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dU2aaGKJ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1773900463; x=1805436463;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=SivmnrAFIYwbeUndZBDy0z7NBvVuI7pZ/eqjqvAqOWw=;
+  b=dU2aaGKJY2F2HQVMDTqIdgwyr2i/NYUeCwZ+lEzuVh4JpKIx3HCQSMxd
+   vZkrOK1KpjFuSaE9XeBBGZoj4UD1MRQeVcsoafj3/jNSjNyWbh7jxYTSN
+   msX2DknDXbdH9YxsasZleNTKhunld3J7zaqcd2tuAsmH2rhUmxlllFKmN
+   VZmeJWj7fT1xQ/9Cma/HI3cmIFa8mrpRkAhgsIkBB2mjnXlvFsmPZ461M
+   yjQGFRvdOkb4POp3xPrhTJXC/8NhmPJVgBrAl57Z5xDbE7gnAnkuiu0Y/
+   wrTHb40HsIIdLU807zSnkGOxXr8k1AuDVXw98VWCScDBtB10manArdxNS
+   g==;
+X-CSE-ConnectionGUID: zd52TFPoT5GEpX/Bdx8uRQ==
+X-CSE-MsgGUID: TV3f7vGTS9Cy/9b7plS/7w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11733"; a="77574117"
+X-IronPort-AV: E=Sophos;i="6.23,128,1770624000"; 
+   d="scan'208";a="77574117"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2026 23:07:43 -0700
+X-CSE-ConnectionGUID: Uj6G5AaISgulHqnC05raRg==
+X-CSE-MsgGUID: 9uasM1JKT2uT77r1puqdOA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,128,1770624000"; 
+   d="scan'208";a="218806151"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2026 23:07:41 -0700
+Message-ID: <ef328a7e-59a4-4a74-bc72-aa13951b38ff@linux.intel.com>
+Date: Thu, 19 Mar 2026 14:06:37 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: Linux error `[DMA Write NO_PASID] Request device [3c:00.0] fault
+ addr 0x0 [fault reason 0x05] PTE Write access is not set`
+To: Paul Menzel <pmenzel@molgen.mpg.de>, Keith Busch <kbusch@kernel.org>,
+ Jens Axboe <axboe@fb.com>, Christoph Hellwig <hch@lst.de>,
+ Sagi Grimberg <sagi@grimberg.me>
+Cc: David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
+ linux-nvme@lists.infradead.org
+References: <88e33b0c-e89f-47a2-9125-d85693d4816f@molgen.mpg.de>
+ <d38a2cda-4b29-43ec-ab08-b55c79714810@linux.intel.com>
+ <311a59f3-10bb-4a43-b86d-2f1ef316a01c@molgen.mpg.de>
+ <8665ed69-9364-4f8a-9238-6adf9b5590a0@linux.intel.com>
+ <3a880676-861b-4447-9775-6197ae74ffd3@molgen.mpg.de>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <3a880676-861b-4447-9775-6197ae74ffd3@molgen.mpg.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN1PEPF0000468A:EE_|MW4PR12MB7120:EE_
-X-MS-Office365-Filtering-Correlation-Id: b5afdd2e-ea20-4205-30d2-08de8570d8cc
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|376014|1800799024|36860700016|18002099003|56012099003|13003099007;
-X-Microsoft-Antispam-Message-Info:
-	2WQdI28iy5qmw2i8YJJnl/MvEVEYP3U1GZRSPRfOS/75tDHqJcz5Cr8PsHe/0SOod0/2id97IRCOKl1JaAOJJHji36c4Mm0dDiOYyfUlT1jw6ztDYNWYdq9ZRf3FAlMIkZd8L3skkk78/b7zjxRuYgCeo+e3DqXlQr9O5jdskyYTlL8dUiFMMPhqKdtL02RFTYmN78X6ut++r7bGU/3Nu5i8tFMYxDZzu0bNZcYawH3Key9oMZEymUjKrrw3bE5jz5GhvMWkDarWvWAaMNNWbNZdUjbcd77Zz+OgZJAoMJSfbx1zFvjF0LfNxrBB4VXXhtWOdYB2veobtulzBY06VS5vC9quveb+2vvp0N67IBI5bjsBmP0vasGSrF1op+NbLunA+ATXqwVDejhBtux7B8wdZdaabJwc66oXGccNeRGLrX7lUmaZnmb5Ae4POkG1x1HAki9lnjO3c+Our2PIgbJqB+97JbSFkj8rJDtJL0VEIP+4zXHZmvSzD8Z3QdZxz0y9UYt3HAtdN7P+z/dHKx8g2+GYd5iU7PqIrO82p6uomxTkDtglXACzCan/6P3HN7KgSP4yPYwyDvZw4u4SIzqGdBTjjeiSIfQRSb2CjTORZraFBIypPxIBQNrH+WdMP11zI4ZKWVQBX2jk052LQlm+TLsx1hg9nGZI6kvwd18VmCW+Uud9suUbXEL/4IfPVgOiByc6s8YyWJACnFrRR3UzLSVMds4MpRz2Gpu6rk4gxk6oJwtRk1IEfU5Ud8zfDJruwGW7a6g46cUi0jWuww==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(376014)(1800799024)(36860700016)(18002099003)(56012099003)(13003099007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	TQ1RobPKQYSm7LoqWWf3ik2YQGK6DSV/8U3dF3q2/l4LYuuz8icASiEcHsdfOaCqKazSEyvIuKtAdBKH23Yy/WNx1MZH2ovMFVPG4vDYnSYaVdOQuHTh6/NRk4ovZpabPyUbViC4+hdiZgzOvtDnTAwTW9E/ljF+NrMwsHcN6Aahtjw8oksrsODX/JPHJ4r7fEcrBUHzsfmSYfOIzGQOCR551xPb0IlnxvSkc4mRQtpg3SerMqxsxDRYTdomMa0VZgksaArlhZVcShgF/8X7FgKHppTVo0FPViCPmP1hCxxtB8UexseevSuAplK9Rtwup5mvw0D2vnV5kKFizoJ//u9cPa6lxNLQ7/ItaN95qWbyq7fSwu1TNcnx5KvAbSlESIrBxcu9lL2No+VyzSFRraQkhvDvotZMfG8XIY1oJpy+dx0Kyh5vsYlY02JQ8VAX
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Mar 2026 04:34:45.1525
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b5afdd2e-ea20-4205-30d2-08de8570d8cc
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN1PEPF0000468A.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7120
 
-Shuai found that cxl_reset_bus_function() calls pci_reset_bus_function()
-internally while both are calling pci_dev_reset_iommu_prepare/done().
+On 3/18/26 20:55, Paul Menzel wrote:
+> 
+> Am 18.03.26 um 07:42 schrieb Baolu Lu:
+>> On 3/16/26 22:54, Paul Menzel wrote:
+>>>>> On the Intel Kaby Lake laptop Dell XPS 13 9360, Linux logs the 
+>>>>> error below:
+>>>>>
+>>>>>      [17959.189315] ACPI: EC: event unblocked
+>>>>>      [17959.197876] DMAR: DRHD: handling fault status reg 2
+>>>>>      [17959.197882] DMAR: [DMA Write NO_PASID] Request device 
+>>>>> [3c:00.0] fault addr 0x0 [fault reason 0x05] PTE Write access is 
+>>>>> not set
+>>>>>      [17959.198366] DMAR: DRHD: handling fault status reg 2
+>>>>>      [17959.198369] DMAR: [DMA Write NO_PASID] Request device 
+>>>>> [3c:00.0] fault addr 0x0 [fault reason 0x05] PTE Write access is 
+>>>>> not set
+>>>>>      [17959.198923] DMAR: DRHD: handling fault status reg 2
+>>>>>      [17959.201477] nvme nvme0: 4/0/0 default/read/poll queues
+>>>>>
+>>>>> 3c:00.0 is the NVMe controller/device.
+>>>>>
+>>>>>      $ lspci -nn -s 3c:00.0
+>>>>>      3c:00.0 Non-Volatile memory controller [0108]: SK hynix PC300 
+>>>>> NVMe Solid State Drive 512GB [1c5c:1284]
+>>>>>
+>>>>> This seems to happen only *sometimes* when resuming from ACPI S3.
+>>>>>
+>>>>> To my knowledge, this is *not* a new problem. Please find the log 
+>>>>> messages attached. (Ignore the other DMAR error for now.)
+>>>>
+>>>> These IOMMU DMA faults are triggered when the NVMe controller attempts
+>>>> DMA writes to system memory address 0x0. The IOMMU hardware blocked
+>>>> these accesses because the system software has not granted the device
+>>>> permission to write to this specific address. It's unlikely a bug or
+>>>> problem in the iommu driver as far as I can see.
+>>>
+>>> I am seeing the same issue on a Dell XPS 15 7590 with Intel NVMe 
+>>> controller:
+>>>
+>>>      $ lspci -nn -s 3d:00.0
+>>>      3d:00.0 Non-Volatile memory controller [0108]: Intel Corporation 
+>>> SSD DC P4101/Pro 7600p/760p/E 6100p Series [8086:f1a6] (rev 03)
+>>>
+>>> Logs from Debian’s Linux 6.19.8:
+>>
+>> Did you see this warning with the v6.18 kernel or earlier?
+> 
+> Yes, I did see it with earlier Linux versions. For the Dell XPS 13 9360 
+> with SK hynix controller I found logs with Linux 6.16:
+> 
+>      Okt 14 08:10:02 abreu kernel: Linux version 6.16.11+deb14-amd64 
+> (debian-kernel@lists.debian.org) (x86_64-linux-gnu-gcc-14 (Debian 
+> 14.3.0-8) 14.3.0, GNU ld (GNU Binutils for Debian) 2.45) #1 SMP 
+> PREEMPT_DYNAMIC Debian 6.16.11-1 (2025-10-07)
+>      […]
+>      Okt 15 21:02:49 abreu kernel: DMAR: DRHD: handling fault status reg 2
+>      Okt 15 21:02:49 abreu kernel: DMAR: [DMA Write NO_PASID] Request 
+> device [3c:00.0] fault addr 0x0 [fault reason 0x05] PTE Write access is 
+> not set
+>      Okt 15 21:02:49 abreu kernel: DMAR: DRHD: handling fault status reg 2
+>      Okt 15 21:02:49 abreu kernel: DMAR: [DMA Write NO_PASID] Request 
+> device [3c:00.0] fault addr 0x0 [fault reason 0x05] PTE Write access is 
+> not set
+>      Okt 15 21:02:49 abreu kernel: DMAR: DRHD: handling fault status reg 2
+>      Okt 15 21:02:49 abreu kernel: nvme nvme0: 4/0/0 default/read/poll 
+> queues
 
-As pci_dev_reset_iommu_prepare() doesn't support re-entry, the inner call
-will trigger a WARN_ON and return -EBUSY, resulting in failing the entire
-device reset.
+The error occurs when the NVMe controller attempts to access system
+memory using IOVA 0. The iommu subsystem reserves IOVA 0 and treats it
+as an invalid address; therefore, the Linux driver is unlikely to
+program a device with IOVA 0 for DMA.
 
-On the other hand, removing the outer calls in the PCI callers is unsafe.
-As pointed out by Kevin, device-specific quirks like reset_hinic_vf_dev()
-execute custom firmware waits after their inner pcie_flr() completes. If
-the IOMMU protection relies solely on the inner reset, the IOMMU will be
-unblocked prematurely while the device is still resetting.
+An exception is reserved memory used by firmware, where the regions are
+identity-mapped by the iommu core during the probe process. There was a
+recent fix addressing an issue with identity mapping at address 0:
 
-Instead, fix this by making pci_dev_reset_iommu_prepare/done() reentrant.
+https://lore.kernel.org/linux-iommu/20260227080638.208693-1-lkml@antheas.dev/
 
-Introduce a 'reset_cnt' in struct iommu_group. Safely increment/decrement
-the reference counter in the nested calls, ensuring the IOMMU domains are
-only restored when the outermost reset finally completes.
+Could you please test if this patch helps? It has already been merged
+into the iommu subsystem tree.
 
-Fixes: c279e83953d9 ("iommu: Introduce pci_dev_reset_iommu_prepare/done()")
-Cc: stable@vger.kernel.org
-Reported-by: Shuai Xue <xueshuai@linux.alibaba.com>
-Closes: https://lore.kernel.org/all/absKsk7qQOwzhpzv@Asurada-Nvidia/
-Suggested-by: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
-Changelog
- v2:
- * Fix in the helpers by allowing re-entry
- v1:
- https://lore.kernel.org/all/20260318220028.1146905-1-nicolinc@nvidia.com/
-
- drivers/iommu/iommu.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 35db51780954..16155097b27c 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -68,6 +68,7 @@ struct iommu_group {
- 	struct iommu_domain *resetting_domain;
- 	struct iommu_domain *domain;
- 	struct list_head entry;
-+	unsigned int reset_cnt;
- 	unsigned int owner_cnt;
- 	void *owner;
- };
-@@ -3961,9 +3962,10 @@ int pci_dev_reset_iommu_prepare(struct pci_dev *pdev)
- 
- 	guard(mutex)(&group->mutex);
- 
--	/* Re-entry is not allowed */
--	if (WARN_ON(group->resetting_domain))
--		return -EBUSY;
-+	if (group->resetting_domain) {
-+		group->reset_cnt++;
-+		return 0;
-+	}
- 
- 	ret = __iommu_group_alloc_blocking_domain(group);
- 	if (ret)
-@@ -3988,6 +3990,7 @@ int pci_dev_reset_iommu_prepare(struct pci_dev *pdev)
- 				       pasid_array_entry_to_domain(entry));
- 
- 	group->resetting_domain = group->blocking_domain;
-+	group->reset_cnt = 1;
- 	return ret;
- }
- EXPORT_SYMBOL_GPL(pci_dev_reset_iommu_prepare);
-@@ -4021,6 +4024,12 @@ void pci_dev_reset_iommu_done(struct pci_dev *pdev)
- 	if (!group->resetting_domain)
- 		return;
- 
-+	/* Unbalanced done() calls that would underflow the counter */
-+	if (WARN_ON(group->reset_cnt == 0))
-+		return;
-+	if (--group->reset_cnt > 0)
-+		return;
-+
- 	/* pci_dev_reset_iommu_prepare() was not successfully called */
- 	if (WARN_ON(!group->blocking_domain))
- 		return;
--- 
-2.34.1
-
+Thanks,
+baolu
