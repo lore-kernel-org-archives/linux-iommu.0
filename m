@@ -1,62 +1,111 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 501FF2DBF78
-	for <iommu@lists.linux.dev>; Thu, 19 Mar 2026 14:52:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 10B7C3DEAFC
+	for <iommu@lists.linux.dev>; Thu, 19 Mar 2026 15:24:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773931972; cv=none; b=qmEdN43TAKNiuzkumCWbjbZ/g0AvxbMSk4xJKUN29VjInsCPmIHUwhtFJXp2QC2d0thfM3M5ftMZo9geY9ljFfuYlboTxhscoftRWDRSNKmyosgtBimrisfNZJlMMr0vcnCDFrkcqPPVqRx4F1sLB2JcFMxPoLRiW7+AWQ+CD14=
+	t=1773933883; cv=none; b=RFMo+mWLK61Rf+sn3l/5UUcE5aLPFlr8ZmPkBcDTUuGTxkyTc0/fc0phxwWyshpDP40GoS2DSr7xXwuG6EjwqG40fbWUWzh9nhG4UJE21pE9kFaz3YPaTW3vOvvcv5VYvXxZjCCvINRuBl+dUeMWebqfakVQs97And2s4SGeWF4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773931972; c=relaxed/simple;
-	bh=QQwB89gb4izvIOCxDjl4eeppBwj3MyfA1wpkYnHwvlQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lHLkKZd6g08liHGw+kmHQVKhnPieEK60bjimoxy6hXZjO5zViQogDRG1Fyt14XBdgNmkmCtwQ6lxjg5QqTJ5PCDtPD1qyuy28wCy1mgN3ILGsgnCVnUpJpRNu3H6RB/Jnf5/TW8kgAMeNdY6VY+Zq3fLEi5RL489yUGRh+fvjt0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W3mV/lwc; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W3mV/lwc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99655C19424;
-	Thu, 19 Mar 2026 14:52:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773931972;
-	bh=QQwB89gb4izvIOCxDjl4eeppBwj3MyfA1wpkYnHwvlQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=W3mV/lwcjOwNFWnJdS5D2jnG+CrPmyv8He02F44zXCJOhZnhi18d8PXACqHFPYpwY
-	 GdtamTUPW6V/pBRgoGoWzoRS3rhXjeDBnTX5gOFXXJMkj3EHHYF8UZBsheBwT07r+0
-	 rEHQvwckfiEUeS6f+O3qWhO7p+Rb+JNsylA6iU75Sro0ANsGlHkTTN94j4ZX5+ji/X
-	 nh3tv+OGsLgOgdrklydD9cdSBaCheVKh00+M6bvQ4M0fQP9SuVNDvPEjMFI/WcbQiQ
-	 TYNR7Qke6i2xI4zY/8dZwehBVWpjrKi3V3320z7pl4RAnOIRADgat4e10ocNW4ZVJx
-	 Oc7v78s5l98Ag==
-Date: Thu, 19 Mar 2026 14:52:47 +0000
-From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: catalin.marinas@arm.com, joro@8bytes.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, daizhiyuan@phytium.com.cn
-Subject: Re: [PATCH 3/3] arm64: errata: Sort Arm entries
-Message-ID: <abwNv0Gx00fXnQ3x@willie-the-truck>
-References: <cover.1772125743.git.robin.murphy@arm.com>
- <e2af5db2f1f41d052cce68bf4518f3cc1c4ea81e.1772125743.git.robin.murphy@arm.com>
+	s=arc-20240116; t=1773933883; c=relaxed/simple;
+	bh=KvRqE2MZ+E0Z/gxL14gQ5f15Do/UBpfTbDSMAduVpUo=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=SRa9mJZBNEc6I2EbFpWm5HZvcjM6Yr7w9LgxtLEmN8oKGYnCncVMp/hnPXkcl1+AkFL8ZxQFHhNnJ+LrkIsXAMI88BErjSsyop7w9gEyAbqIzWMrEHs2B18jOhgQA5J+AN0PL9COAbxnAoIN7Ap72lZvEVELmIsUlc75wnfUFEs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 510961A25;
+	Thu, 19 Mar 2026 08:24:35 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.85])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 82BC83F778;
+	Thu, 19 Mar 2026 08:24:40 -0700 (PDT)
+From: Robin Murphy <robin.murphy@arm.com>
+To: will@kernel.org,
+	joro@8bytes.org
+Cc: iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	daizhiyuan@phytium.com.cn
+Subject: [PATCH v2] iommu/arm-smmu-v3: Update Arm errata
+Date: Thu, 19 Mar 2026 15:24:34 +0000
+Message-Id: <4c4664b2427cef212a06efdd78a9faa8d9ded302.1773933699.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e2af5db2f1f41d052cce68bf4518f3cc1c4ea81e.1772125743.git.robin.murphy@arm.com>
+Content-Transfer-Encoding: 8bit
 
-On Thu, Feb 26, 2026 at 06:10:22PM +0000, Robin Murphy wrote:
-> The Arm errata entries are in a messy sort-of-consistent-but-not order
-> that's awkward for actual reading, rather than specifically searching.
-> For the sake of sanity, order them consistently by Component (but
-> keeping the distinction of CPU vs. system IP) and Erratum ID.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->  Documentation/arch/arm64/silicon-errata.rst | 64 ++++++++++-----------
->  1 file changed, 32 insertions(+), 32 deletions(-)
+MMU-700 r1p1 has subsequently fixed some of the errata for which we've
+been applying the workarounds unconditionally, so we can now make those
+conditional. However, there have also been some more new cases
+identified where we must rely on range invalidation commands, and thus
+still nominally avoid DVM being inadvertently enabled.
 
-I don't think this is worth the hassle. It's just going to create
-unnecessary friction when backporting errata workarounds.
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+v2: Decouple from unrelated silicon-errata cleanup
 
-Will
+ Documentation/arch/arm64/silicon-errata.rst |  8 +++++++-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 18 ++++++++++++++----
+ 2 files changed, 21 insertions(+), 5 deletions(-)
+
+diff --git a/Documentation/arch/arm64/silicon-errata.rst b/Documentation/arch/arm64/silicon-errata.rst
+index 4c300caad901..c81d7fc2c68c 100644
+--- a/Documentation/arch/arm64/silicon-errata.rst
++++ b/Documentation/arch/arm64/silicon-errata.rst
+@@ -207,8 +207,14 @@ stable kernels.
+ +----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | MMU-600         | #1076982,1209401| N/A                         |
+ +----------------+-----------------+-----------------+-----------------------------+
+-| ARM            | MMU-700         | #2268618,2812531| N/A                         |
++| ARM            | MMU-700         | #2133013,       | N/A                         |
++|                |                 | #2268618,       |                             |
++|                |                 | #2812531,       |                             |
++|                |                 | #3777127        |                             |
+ +----------------+-----------------+-----------------+-----------------------------+
++| ARM            | MMU L1          | #3878312        | N/A                         |
+++----------------+-----------------+-----------------+-----------------------------+
++| ARM            | MMU S3          | #3995052        | N/A                         |
+ +----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | GIC-700         | #2941627        | ARM64_ERRATUM_2941627       |
+ +----------------+-----------------+-----------------+-----------------------------+
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 4d00d796f078..3d816c67508d 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -4308,6 +4308,8 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ #define IIDR_IMPLEMENTER_ARM		0x43b
+ #define IIDR_PRODUCTID_ARM_MMU_600	0x483
+ #define IIDR_PRODUCTID_ARM_MMU_700	0x487
++#define IIDR_PRODUCTID_ARM_MMU_L1	0x48a
++#define IIDR_PRODUCTID_ARM_MMU_S3	0x498
+ 
+ static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
+ {
+@@ -4332,11 +4334,19 @@ static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
+ 				smmu->features &= ~ARM_SMMU_FEAT_NESTING;
+ 			break;
+ 		case IIDR_PRODUCTID_ARM_MMU_700:
+-			/* Arm erratum 2812531 */
++			/* Many errata... */
++			smmu->features &= ~ARM_SMMU_FEAT_BTM;
++			if (variant < 1 || revision < 1) {
++				/* Arm erratum 2812531 */
++				smmu->options |= ARM_SMMU_OPT_CMDQ_FORCE_SYNC;
++				/* Arm errata 2268618, 2812531 */
++				smmu->features &= ~ARM_SMMU_FEAT_NESTING;
++			}
++			break;
++		case IIDR_PRODUCTID_ARM_MMU_L1:
++		case IIDR_PRODUCTID_ARM_MMU_S3:
++			/* Arm errata 3878312/3995052 */
+ 			smmu->features &= ~ARM_SMMU_FEAT_BTM;
+-			smmu->options |= ARM_SMMU_OPT_CMDQ_FORCE_SYNC;
+-			/* Arm errata 2268618, 2812531 */
+-			smmu->features &= ~ARM_SMMU_FEAT_NESTING;
+ 			break;
+ 		}
+ 		break;
+-- 
+2.39.2.101.g768bb238c484.dirty
+
