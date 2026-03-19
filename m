@@ -1,33 +1,32 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA36527FD49;
-	Thu, 19 Mar 2026 11:06:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD8083C1994
+	for <iommu@lists.linux.dev>; Thu, 19 Mar 2026 11:14:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.99
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773918374; cv=none; b=kK1ch+NnATpRSZjk5sviYJzB/pCDn9baAyeScLm8WqnwA3yPOERTMr149Og5ZoLXN0UgK4qu3oypjqlwj/PPe4FOJo5B1msmtbQQkuuHsvn8XBKVF/dUDGwcnGbX+QYim1/E2ltGSb+sTVYRwwCH8pV96CF3SKtHmRqco3t91z0=
+	t=1773918858; cv=none; b=ekJ4s0Mxh3tJQQKBrI9l3JtQ/lw9eY7h0UOAMlOD1fF3b/osPmhekaI4A5GdAU9gVooYg9GZypwa8ZJ5Uv7IA57ET89MGwmKeg4OsOzcKnf2Dn5s2gD6NNjSbDMls5l63LGYl04ESWb9l6Kuh9z+olrDQs2UV1HRQqPegcqKQ+I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773918374; c=relaxed/simple;
-	bh=HtOLA8NR+v9NMav1R6I8Ldubjqi2Fb/1QOf8g53m3XA=;
+	s=arc-20240116; t=1773918858; c=relaxed/simple;
+	bh=b1tM+V5dwKzsd7BnMNYgg6No/d9bOTd4ipJd+ZEuaIs=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=kk2g3HS9ivIKSudCeZd8YGfD/9lN5hGX3tIpdjgaqBCE+HBWQpZMNN+GzJhm9Iol4Jv1O66DwYHunK8+T+tua5SNu3CABQ4J5Nu6DzGvKsxbWtSqPh2AazlQIjd4vLoT1H/Lo2Rjj1u2que83JN4q89kRboQPGj6NhDodDJ5Loc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nYIOxc6w; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=tg76rKS42Sk7S2Og8FMytDnR7f756gywWXjWA+VeBAvHCUzgKaYaGPQokOKPaq4Lm6e2rWeiTdk5TXa7rFARHOCRdQPabpcmiUTVopkCkuv5FDaudfctU1S3T+4vrEv65kGy/uHdhYeezxpG1dBQTF2Gj0JnG3Wo1A0LAIf365Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=AshwTswT; arc=none smtp.client-ip=115.124.30.99
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nYIOxc6w"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DF25C19424;
-	Thu, 19 Mar 2026 11:06:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773918374;
-	bh=HtOLA8NR+v9NMav1R6I8Ldubjqi2Fb/1QOf8g53m3XA=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=nYIOxc6wuiHE1KLRNEIwUIHqRwXsElreuD2+B/6jZqyN4aIdu++mi/L+ZFP6YNh+y
-	 pv+9HlQoSNWZvemE++l3/lT/zSOQ6Bjs+z+TIZoqLHOKA2ThjWNFHlbdE2i/d8NqxP
-	 OafAVmojZqm13lZf5wvFbnu6sW6rMpQvN4ByIusAhKnp6STr84kaBFllVhy2h7AhRL
-	 tm1/xs3SAa1biSxootVlvvXZhBab/8Li/SwuTUuFXbUQx9CLxKmn4yRcM6vQHeKKQP
-	 RyXvw7BxjLLaaSX6u+wTFEDg9v2n7laBP6u4p1xHO9Px9fx994oVeOEU4mq5xXY5rZ
-	 3nEO3+uI7S4Pw==
-Message-ID: <1f370bc0-e547-478b-b60c-8a5c77e7eb2f@kernel.org>
-Date: Thu, 19 Mar 2026 20:06:09 +0900
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="AshwTswT"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1773918851; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+	bh=KziEQjzET2tmGaf79QP1vQNf62aUkhu64wFtz1OLZ7A=;
+	b=AshwTswTh3iyjdLaGw/42Az5k6snL1ZbTegJoLa0JQKj+BRqWv3g235uPNETt3Ni368PzTQsfMs7FgEgugPEu/gmw6/wafdkALS8inufhRCUnv9WfgH4TM4Lohde+z5CkSpphW+eIiuNpgo3OktwELkV1WVpsbuDpMkba71/6DI=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037009110;MF=xueshuai@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0X.IN-cS_1773918850;
+Received: from 30.246.163.250(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0X.IN-cS_1773918850 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Thu, 19 Mar 2026 19:14:11 +0800
+Message-ID: <dd72f3be-16d9-4386-82ac-1b8e06186e3d@linux.alibaba.com>
+Date: Thu, 19 Mar 2026 19:14:21 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,154 +34,120 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4] scsi: sas: skip opt_sectors when DMA reports no real
- optimization hint
-To: "Ionut Nechita (Wind River)" <ionut.nechita@windriver.com>,
- linux-scsi@vger.kernel.org
-Cc: James.Bottomley@HansenPartnership.com, ahuang12@lenovo.com,
- axboe@kernel.dk, damien.lemoal@opensource.wdc.com, hch@lst.de,
- iommu@lists.linux.dev, ionut_n2001@yahoo.com, john.g.garry@oracle.com,
- kbusch@kernel.org, linux-kernel@vger.kernel.org,
- linux-nvme@lists.infradead.org, m.szyprowski@samsung.com,
- martin.petersen@oracle.com, robin.murphy@arm.com, sagi@grimberg.me,
- stable@vger.kernel.org, sunlightlinux@gmail.com
-References: <20260319083954.21056-1-ionut.nechita@windriver.com>
- <20260319083954.21056-2-ionut.nechita@windriver.com>
-Content-Language: en-US
-From: Damien Le Moal <dlemoal@kernel.org>
-Organization: Western Digital Research
-In-Reply-To: <20260319083954.21056-2-ionut.nechita@windriver.com>
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: [PATCH rc v2] iommu: Fix nested
+ pci_dev_reset_iommu_prepare/done()
+To: Nicolin Chen <nicolinc@nvidia.com>, joro@8bytes.org, kevin.tian@intel.com
+Cc: will@kernel.org, robin.murphy@arm.com, baolu.lu@linux.intel.com,
+ jgg@nvidia.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20260319043135.1153534-1-nicolinc@nvidia.com>
+From: Shuai Xue <xueshuai@linux.alibaba.com>
+In-Reply-To: <20260319043135.1153534-1-nicolinc@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 3/19/26 17:39, Ionut Nechita (Wind River) wrote:
-> From: Ionut Nechita <ionut.nechita@windriver.com>
-> 
-> sas_host_setup() unconditionally sets shost->opt_sectors from
-> dma_opt_mapping_size().  When the IOMMU is disabled or in passthrough
-> mode and no DMA ops provide an opt_mapping_size callback,
-> dma_opt_mapping_size() returns min(dma_max_mapping_size(), SIZE_MAX)
-> which equals dma_max_mapping_size() — a hard upper bound, not an
-> optimization hint.
 
-Please reduce the distribution list. This is now a scsi patch. Nothing to do
-with iommu or nvme.
 
+On 3/19/26 12:31 PM, Nicolin Chen wrote:
+> Shuai found that cxl_reset_bus_function() calls pci_reset_bus_function()
+> internally while both are calling pci_dev_reset_iommu_prepare/done().
 > 
-> On a Dell PowerEdge R750 with mpt3sas (Broadcom SAS3816, FW 33.15.00.00)
-> and intel_iommu=off the following values are observed:
+> As pci_dev_reset_iommu_prepare() doesn't support re-entry, the inner call
+> will trigger a WARN_ON and return -EBUSY, resulting in failing the entire
+> device reset.
 > 
->   dma_opt_mapping_size()  = dma_max_mapping_size() (no real hint)
->   shost->max_sectors      = 32767
->   opt_sectors             = min(32767, huge >> 9) = 32767
->   optimal_io_size         = 32767 << 9 = 16776704
->                           → round_down(16776704, 4096) = 16773120
+> On the other hand, removing the outer calls in the PCI callers is unsafe.
+> As pointed out by Kevin, device-specific quirks like reset_hinic_vf_dev()
+> execute custom firmware waits after their inner pcie_flr() completes. If
+> the IOMMU protection relies solely on the inner reset, the IOMMU will be
+> unblocked prematurely while the device is still resetting.
 > 
-> The SAS disk (SAMSUNG MZILT800HBHQ0D3) do not report an
-> Optimal Transfer Length in VPD page B0,so sdkp->opt_xfer_blocks remains 0.
-> sd_revalidate_disk() then uses min_not_zero(0, opt_sectors) = opt_sectors,
-> propagating the bogus value into the block device's optimal_io_size
-> (visible as OPT-IO = 16773120 in lsblk --topology).
+> Instead, fix this by making pci_dev_reset_iommu_prepare/done() reentrant.
 > 
-> mkfs.xfs picks up optimal_io_size and minimum_io_size and computes:
+> Introduce a 'reset_cnt' in struct iommu_group. Safely increment/decrement
+> the reference counter in the nested calls, ensuring the IOMMU domains are
+> only restored when the outermost reset finally completes.
 > 
->   swidth = 16773120 / 4096 = 4095
->   sunit  = 8192 / 4096     = 2
-> 
-> Since 4095 % 2 != 0, XFS rejects the geometry:
-> 
->   SB stripe unit sanity check failed
-> 
-> This makes it impossible to create XFS filesystems (e.g. for
-> /var/lib/docker) during system bootstrap.
-> 
-> Fix this by introducing a sas_dma_opt_sectors() helper that only returns
-> a non-zero opt_sectors when dma_opt_mapping_size() is strictly less than
-> dma_max_mapping_size(), indicating a genuine DMA optimization constraint
-> from an IOMMU or DMA ops backend.  The helper also rounds the value down
-> to a power of two so that filesystem geometry calculations always produce
-> clean results.  When the two DMA values are equal, no backend provided a
-> real hint, so opt_sectors stays at 0 ("no preference").
-> 
-> A WARN_ONCE guards against dma_opt_mapping_size() returning a value
-> larger than dma_max_mapping_size(), which would indicate a driver bug.
-> The return value uses min_t(unsigned int, ...) to avoid any potential
-> overflow when shifting the size_t opt value down to sectors.
-> 
-> Fixes: 4cbfca5f7750 ("scsi: scsi_transport_sas: cap shost opt_sectors according to DMA optimal limit")
+> Fixes: c279e83953d9 ("iommu: Introduce pci_dev_reset_iommu_prepare/done()")
 > Cc: stable@vger.kernel.org
-> Signed-off-by: Ionut Nechita <ionut.nechita@windriver.com>
+> Reported-by: Shuai Xue <xueshuai@linux.alibaba.com>
+> Closes: https://lore.kernel.org/all/absKsk7qQOwzhpzv@Asurada-Nvidia/
+> Suggested-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 > ---
->  drivers/scsi/scsi_transport_sas.c | 40 +++++++++++++++++++++++++++----
->  1 file changed, 36 insertions(+), 4 deletions(-)
+> Changelog
+>   v2:
+>   * Fix in the helpers by allowing re-entry
+>   v1:
+>   https://lore.kernel.org/all/20260318220028.1146905-1-nicolinc@nvidia.com/
 > 
-> diff --git a/drivers/scsi/scsi_transport_sas.c b/drivers/scsi/scsi_transport_sas.c
-> index 12124f9d5ccd0..696627b6fe2c3 100644
-> --- a/drivers/scsi/scsi_transport_sas.c
-> +++ b/drivers/scsi/scsi_transport_sas.c
-> @@ -27,6 +27,7 @@
->  #include <linux/module.h>
->  #include <linux/jiffies.h>
->  #include <linux/err.h>
-> +#include <linux/log2.h>
->  #include <linux/slab.h>
->  #include <linux/string.h>
->  #include <linux/blkdev.h>
-> @@ -222,6 +223,38 @@ static int sas_bsg_initialize(struct Scsi_Host *shost, struct sas_rphy *rphy)
->   * SAS host attributes
->   */
->  
-> +/**
-> + * sas_dma_opt_sectors - derive opt_sectors from DMA optimal mapping size
-> + * @dma_dev: device to query DMA parameters for
-> + * @max_sectors: upper bound from the host adapter
-> + *
-> + * When the DMA layer reports a genuine optimization constraint (i.e.
-> + * dma_opt_mapping_size() < dma_max_mapping_size()), convert it to a
-> + * sector count, round it down to a power of two so that filesystem
-> + * geometry calculations stay sane, and cap it at @max_sectors.
-> + *
-> + * When the two values are equal no backend provided a real hint and
-> + * the function returns 0 ("no preference").
-> + */
-> +static unsigned int sas_dma_opt_sectors(struct device *dma_dev,
-> +					unsigned int max_sectors)
-> +{
-> +	size_t opt = dma_opt_mapping_size(dma_dev);
-> +	size_t max = dma_max_mapping_size(dma_dev);
-> +
-> +	if (WARN_ONCE(opt > max,
-> +		      "dma_opt_mapping_size (%zu) > dma_max_mapping_size (%zu)\n",
-> +		      opt, max))
-> +		return 0;
-> +
-> +	if (opt == max)
-> +		return 0;
-> +
-> +	opt = rounddown_pow_of_two(opt);
-> +
-> +	return min_t(unsigned int, opt >> SECTOR_SHIFT, max_sectors);
-> +}
-> +
->  static int sas_host_setup(struct transport_container *tc, struct device *dev,
->  			  struct device *cdev)
->  {
-> @@ -239,10 +272,9 @@ static int sas_host_setup(struct transport_container *tc, struct device *dev,
->  		dev_printk(KERN_ERR, dev, "fail to a bsg device %d\n",
->  			   shost->host_no);
->  
-> -	if (dma_dev->dma_mask) {
-> -		shost->opt_sectors = min_t(unsigned int, shost->max_sectors,
-> -				dma_opt_mapping_size(dma_dev) >> SECTOR_SHIFT);
-> -	}
-> +	if (dma_dev->dma_mask)
-> +		shost->opt_sectors =
-> +			sas_dma_opt_sectors(dma_dev, shost->max_sectors);
->  
->  	return 0;
->  }
+>   drivers/iommu/iommu.c | 15 ++++++++++++---
+>   1 file changed, 12 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 35db51780954..16155097b27c 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -68,6 +68,7 @@ struct iommu_group {
+>   	struct iommu_domain *resetting_domain;
+>   	struct iommu_domain *domain;
+>   	struct list_head entry;
+> +	unsigned int reset_cnt;
 
 
--- 
-Damien Le Moal
-Western Digital Research
+Nit: consider renaming reset_cnt to reset_depth or
+reset_nesting to better convey that this tracks nesting level,
+not a count of total resets.
+
+>   	unsigned int owner_cnt;
+>   	void *owner;
+>   };
+> @@ -3961,9 +3962,10 @@ int pci_dev_reset_iommu_prepare(struct pci_dev *pdev)
+>   
+>   	guard(mutex)(&group->mutex);
+>   
+> -	/* Re-entry is not allowed */
+> -	if (WARN_ON(group->resetting_domain))
+> -		return -EBUSY;
+> +	if (group->resetting_domain) {
+> +		group->reset_cnt++;
+> +		return 0;
+> +	}
+>   
+>   	ret = __iommu_group_alloc_blocking_domain(group);
+
+pci_dev_reset_iommu_prepare/done() have NO singleton group check.
+They operate on the specific pdev passed in, but use group-wide
+state (resetting_domain, reset_cnt) to track the reset lifecycle.
+
+Interestingly, the broken_worker in patch 3 of the ATC timeout
+series DOES have an explicit singleton check:
+
+   if (list_is_singular(&group->devices)) {
+       /* Note: only support group with a single device */
+
+This reveals an implicit assumption: the entire prepare/done
+mechanism works correctly only for singleton groups. For
+multi-device groups:
+
+   - prepare() only detaches the specific pdev, leaving other
+     devices in the group still attached to the original domain
+   - The group-wide resetting_domain/reset_cnt state can be
+     corrupted by concurrent resets on different devices (as
+     discussed above)
+
+If prepare/done is truly meant only for singleton groups, it
+should enforce this explicitly:
+
+   if (!list_is_singular(&group->devices))
+       return -EOPNOTSUPP;
+
+If it's meant to support multi-device groups, then the per-device
+vs group-wide state mismatch needs to be resolved — either by
+making the state per-device, or by detaching/restoring all
+devices in the group together.
+
+
+Thanks.
+Shuai
+
+
