@@ -1,142 +1,154 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8357739098B
-	for <iommu@lists.linux.dev>; Fri, 20 Mar 2026 10:31:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C4E33806A2
+	for <iommu@lists.linux.dev>; Fri, 20 Mar 2026 11:01:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774002673; cv=none; b=jtCi2rRKN3EbJ5/zmJPhzur5koCZPfOAddfDSi1QzC9s3YB0MLSh5aFseeGILQq98P7IPusxv0L2xUXlVDuZ4j3fT/9AJP/HmOALNftqy+yxyOwkvw7Got2v4Cf3G0qGczYDZxs5awILpHjL7hKUAn4NEFgTw5RAiD9qkidXgUk=
+	t=1774004497; cv=none; b=O2Gilj+T06MM0YXIQK3LonsCm7u/zrTk1sKeG8sVBGc5NYDO6CsgXzEtlCKwbcH5ZNzh20M9xUXyjWFPxXFWXap43EYADGnwsnA+/Ea1ytL3aVq+760VOl9qZ8gAEbGCJXPDe7p5TUIWkieU93SyhDf3lmKan+BXj4woEcgOpDU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774002673; c=relaxed/simple;
-	bh=7iSJHc2eZhYal62FEWMQKE8t7kSYZwpGO3d0BmcUETA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=UZZcNCsT338mve1bWq08ZyBB530ooAVsIVD6Ip1OA4G/7YQC7aroCBL1ja55cYW4L4AS8nAjmvXTkSSz0+BJWjCbYTouxGEIo6fVwNxfej7NTdwq0Fg+8FxAOyrLQoA/BATycyGB+o0Wv+9zpQYeQhkR9T0bUWfWX4XgtQATKxk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=IORWrZ1s; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1774004497; c=relaxed/simple;
+	bh=I+b2MfTUl9PUVONvxyAi7SYFGR42FhHD/i4tetAjZ5s=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UBBfV8hHspl/UCx6J0njSPYCKYTaHwSlRTKVjQYRWLBTM3XAB8x188K8S7wK/6CrZ7fshgvmdx2GrYiM6j86m4x5+cgTj4HBCJQ11Nz3a+GMoEN8yu9vQE66KKPIGQYmKOfpufm7Ii2w7qCFTGo/f7uKN1zmfpFMYT+6NAXCzSw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Wn3QZpQ+; arc=none smtp.client-ip=209.85.214.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="IORWrZ1s"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260320103103euoutp0223564c26b256ee58ea6def121e502349~ehgYQ4sWO0376103761euoutp02L
-	for <iommu@lists.linux.dev>; Fri, 20 Mar 2026 10:31:03 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260320103103euoutp0223564c26b256ee58ea6def121e502349~ehgYQ4sWO0376103761euoutp02L
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1774002663;
-	bh=Je/UP3GHWRUtL4Wy4tCMeLqGWWxZru1icunF6GGNybA=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=IORWrZ1svztVX8Y53yoA7R5vFoFosmTv8fmy8+Xs5hKW4YLJKS6pJo2f+WyOaCBUJ
-	 jY/nPKaVMhwUjWxn9STqZDy2+SCzoPur2EAtnO5JzgfGd4oWzmOqN04Ht1xI2O2Ltw
-	 Zeury3wtYHZDxVmZaOZFDN6KTOy7aV+ZMjeKyVLo=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20260320103103eucas1p13a73695dc5aebe3de444e9aeb8587243~ehgYB5dIl1260012600eucas1p1m;
-	Fri, 20 Mar 2026 10:31:03 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20260320103103eusmtip105cb6edcfb82d61e9017b73e788995c0~ehgXnoB8l0186101861eusmtip1z;
-	Fri, 20 Mar 2026 10:31:03 +0000 (GMT)
-Message-ID: <e351bf79-8a97-4df9-a4ba-17a56c7903a5@samsung.com>
-Date: Fri, 20 Mar 2026 11:31:01 +0100
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Wn3QZpQ+"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2aeab6ff148so60895ad.1
+        for <iommu@lists.linux.dev>; Fri, 20 Mar 2026 04:01:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1774004496; x=1774609296; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=u4IpdhMaTzIZMDXUfszWTAYV9iBNtcbdIph6j1hYbzE=;
+        b=Wn3QZpQ+OsnSJGeotHHncXWlYLWQ9hl3KvhkvUIW8P2FzxtJ99D036CIvHlDA6y3Ob
+         B/YI7UMaxe/OBm8T6eZOvNJv8fl9ar3CIqstkIE7EYn7cuNjh4YIw6U9NY5tObLs5SvQ
+         xlPskEJEjkCsPvt+HVUVnYF1akfdpE3mDmw37dXnlQ7WENpBVUKvYUuLbzgmVDBJF+0l
+         52t1ul+bfr20tz//vYK8cwKWq4VlVoOGTEFqP5Q0wFj/opR5W0BW3uJN9DE7ZXWpMDqX
+         13R5RmWOfLNvYOVrxY730UdD3EemkUtXwL/m6Ax9X87lhdLuH5MR284CkLC7f4IrpDME
+         oGDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774004496; x=1774609296;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=u4IpdhMaTzIZMDXUfszWTAYV9iBNtcbdIph6j1hYbzE=;
+        b=rjcd2cBqj2HZY+KGMhrtTfYs+BbPFLSo9Pza0nCm4a7+4N5oOitPhW6FPLJQ7M/5SI
+         f+XIcBX7iBEwQzMBmqV14IS3cpj7dwSQHNoO67D5xb0/v04wXr6Jw0wJVfRZwF4D/eBE
+         zzJwCSILFvQoQrgnq/1qonojmLD7BZIJZQXZL/OaZSrgMYB89DC/20oZ1g88igP7iM4w
+         qM6AOuLRc3VBQidt2vOh9ixsKjWwj1PbTqOkjDW/K8TXYx4vZpOTyUXfffiYIWvbCAhZ
+         AaWr/vS/k+p/oFYUbFsF4TqWtduH6WPd2J5mA0oMRyARBbVfUuNowYshbiJpCZMVyWRQ
+         Xaiw==
+X-Forwarded-Encrypted: i=1; AJvYcCUKsE6fohUfQE52MhSFE67k0vCP8C37aOD47rj2Imi0Q2/5Tmb+xotuzOYRCy4Tqc/btQVg5w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwObtsEwYg9FYLKB59lxqfyHsnIXTt7TPOqS5Wbu1PJQtqP3AgA
+	8xN61xK7qcKSjk4GzyiFwH+m2rBMoPG0OzbAXCEQzah4WaDw6MCFLD+pHL1Pgthkdw==
+X-Gm-Gg: ATEYQzxf7UWE5sYVVctcftcd+dRSkUcgis/yP0FJ2gBntXMjyq5UjMMTQkaz1fR7yqp
+	bSWplFd4+I/qMyV2idv1ibkfELmRlwYvInPoLydb0at4NMKy6OSkdRgMvxpTGOyeKKPXhnClrAY
+	9oJuxRDL6Z9xYQOb/GbarsqZf5hSl7yFTxpttROUGASgPerrF6ijgfzAIn3sSdbm1ZWXJkDd5MN
+	rdG8mmf3iXQSqp3zK+KtC+q1u/RsNW6BDKZcgoK6kfMel/tBKzR2oXkqGMKvMi/PdI5/mjyYIzE
+	jYxGeRWS7jwEK51oTg3mNeHNZhPHWImTjPl1Ikcky0dUIuvz/Ngfckha0RLiFLlx0cJmY/g+eQ1
+	U60y6Ek1lEjgC9bBsmSU4XAJGVkOUR6xTAqAlHPQf9/PXggpcBiy5jRiqNqQWxcg0JVvIPHecvx
+	sqJ8CwB9eEMaiLA1Ufw5DgRR5vXb2Es0BInzlSDxLt5uhNNYA265wYhjy0oW9t+YwB3xZL
+X-Received: by 2002:a17:902:f68b:b0:2b0:7a9b:82f3 with SMTP id d9443c01a7336-2b0828558dbmr2679785ad.8.1774004495106;
+        Fri, 20 Mar 2026 04:01:35 -0700 (PDT)
+Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82b0410b1bdsm2240439b3a.57.2026.03.20.04.01.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Mar 2026 04:01:34 -0700 (PDT)
+Date: Fri, 20 Mar 2026 11:01:25 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Vipin Sharma <vipinsh@google.com>
+Cc: Samiullah Khawaja <skhawaja@google.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+	Adithya Jayachandran <ajayachandra@nvidia.com>,
+	Parav Pandit <parav@nvidia.com>,
+	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>,
+	Pratyush Yadav <pratyush@kernel.org>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	David Matlack <dmatlack@google.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Chris Li <chrisl@kernel.org>, YiFei Zhu <zhuyifei@google.com>
+Subject: Re: [PATCH 04/14] iommu/pages: Add APIs to
+ preserve/unpreserve/restore iommu pages
+Message-ID: <ab0pBc2-Yr7qo-2G@google.com>
+References: <20260203220948.2176157-1-skhawaja@google.com>
+ <20260203220948.2176157-5-skhawaja@google.com>
+ <20260317202925.GA2582517.vipinsh@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH] dma: swiotlb: add KMSAN annotations to swiotlb_bounce()
-To: Shigeru Yoshida <syoshida@redhat.com>, Robin Murphy
-	<robin.murphy@arm.com>, Andrew Morton <akpm@linux-foundation.org>, Alexander
-	Potapenko <glider@google.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20260315082750.2375581-1-syoshida@redhat.com>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20260320103103eucas1p13a73695dc5aebe3de444e9aeb8587243
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260315082850eucas1p27ecb1059ada2007cf021455e72563f5b
-X-EPHeader: CA
-X-CMS-RootMailID: 20260315082850eucas1p27ecb1059ada2007cf021455e72563f5b
-References: <CGME20260315082850eucas1p27ecb1059ada2007cf021455e72563f5b@eucas1p2.samsung.com>
-	<20260315082750.2375581-1-syoshida@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260317202925.GA2582517.vipinsh@google.com>
 
-On 15.03.2026 09:27, Shigeru Yoshida wrote:
-> When a device performs DMA to a bounce buffer, KMSAN is unaware of
-> the write and does not mark the data as initialized.  When
-> swiotlb_bounce() later copies the bounce buffer back to the original
-> buffer, memcpy propagates the uninitialized shadow to the original
-> buffer, causing false positive uninit-value reports.
->
-> Fix this by calling kmsan_unpoison_memory() on the bounce buffer
-> before copying it back in the DMA_FROM_DEVICE path, so that memcpy
-> naturally propagates initialized shadow to the destination.
->
-> Suggested-by: Alexander Potapenko <glider@google.com>
-> Link: https://lore.kernel.org/CAG_fn=WUGta-paG1BgsGRoAR+fmuCgh3xo=R3XdzOt_-DqSdHw@mail.gmail.com/
-> Fixes: 7ade4f10779c ("dma: kmsan: unpoison DMA mappings")
-> Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
+On Tue, Mar 17, 2026 at 01:59:03PM -0700, Vipin Sharma wrote:
+> On Tue, Feb 03, 2026 at 10:09:38PM +0000, Samiullah Khawaja wrote:
+> > +
 
-Applied to dma-mapping-fixes. Thanks!
+[------- snip >8 --------]
 
-> ---
->   kernel/dma/swiotlb.c | 21 +++++++++++++++++++--
->   1 file changed, 19 insertions(+), 2 deletions(-)
->
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index d8e6f1d889d5..9fd73700ddcf 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -30,6 +30,7 @@
->   #include <linux/gfp.h>
->   #include <linux/highmem.h>
->   #include <linux/io.h>
-> +#include <linux/kmsan-checks.h>
->   #include <linux/iommu-helper.h>
->   #include <linux/init.h>
->   #include <linux/memblock.h>
-> @@ -901,10 +902,19 @@ static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size
->   
->   			local_irq_save(flags);
->   			page = pfn_to_page(pfn);
-> -			if (dir == DMA_TO_DEVICE)
-> +			if (dir == DMA_TO_DEVICE) {
-> +				/*
-> +				 * Ideally, kmsan_check_highmem_page()
-> +				 * could be used here to detect infoleaks,
-> +				 * but callers may map uninitialized buffers
-> +				 * that will be written by the device,
-> +				 * causing false positives.
-> +				 */
->   				memcpy_from_page(vaddr, page, offset, sz);
-> -			else
-> +			} else {
-> +				kmsan_unpoison_memory(vaddr, sz);
->   				memcpy_to_page(page, offset, vaddr, sz);
-> +			}
->   			local_irq_restore(flags);
->   
->   			size -= sz;
-> @@ -913,8 +923,15 @@ static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size
->   			offset = 0;
->   		}
->   	} else if (dir == DMA_TO_DEVICE) {
-> +		/*
-> +		 * Ideally, kmsan_check_memory() could be used here to detect
-> +		 * infoleaks (uninitialized data being sent to device), but
-> +		 * callers may map uninitialized buffers that will be written
-> +		 * by the device, causing false positives.
-> +		 */
->   		memcpy(vaddr, phys_to_virt(orig_addr), size);
->   	} else {
-> +		kmsan_unpoison_memory(vaddr, size);
->   		memcpy(phys_to_virt(orig_addr), vaddr, size);
->   	}
->   }
+> > +EXPORT_SYMBOL_GPL(iommu_unpreserve_pages);
+> > +
+> > +void iommu_restore_page(u64 phys)
+> > +{
+> > +	struct ioptdesc *iopt;
+> > +	struct folio *folio;
+> > +	unsigned long pgcnt;
+> > +	unsigned int order;
+> > +
+> > +	folio = kho_restore_folio(phys);
+> > +	BUG_ON(!folio);
+> > +
+> > +	iopt = folio_ioptdesc(folio);
+> > +
+> > +	order = folio_order(folio);
+> > +	pgcnt = 1UL << order;
+> > +	mod_node_page_state(folio_pgdat(folio), NR_IOMMU_PAGES, pgcnt);
+> > +	lruvec_stat_mod_folio(folio, NR_SECONDARY_PAGETABLE, pgcnt);
+> 
+> Above two functions are also used in other two places in this file, lets
+> create a common function for these two operations.
+> 
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+I was thinking about this, out of the 2 other places one is 
+`__iommu_free_desc` where we are supposed to subtract pgcnt.. but I
+think we can follow the -pgcnt pattern we have currently and add a
+helper `iommu_folio_update_stats(folio, pgcnt)` where we can pass -pgcnt
+to subtract nr_pages? Something like:
 
++static inline void iommu_folio_update_stats(struct folio *folio, long nr_pages)
++{
++	mod_node_page_state(folio_pgdat(folio), NR_IOMMU_PAGES, nr_pages);
++	lruvec_stat_mod_folio(folio, NR_SECONDARY_PAGETABLE, nr_pages);
++}
+
+@@ -86,8 +91,7 @@ static void __iommu_free_desc(struct ioptdesc *iopt)
+ 	if (IOMMU_PAGES_USE_DMA_API)
+ 		WARN_ON_ONCE(iopt->incoherent);
+
+-	mod_node_page_state(folio_pgdat(folio), NR_IOMMU_PAGES, -pgcnt);
+-	lruvec_stat_mod_folio(folio, NR_SECONDARY_PAGETABLE, -pgcnt);
++	iommu_folio_update_stats(folio, -(long)pgcnt);
+ 	folio_put(folio);
+ }
+
+But I'm unsure if passing -(long)pgcnt is a good idea?
+
+> > +}
+> > +EXPORT_SYMBOL_GPL(iommu_restore_page);
+> > +
+
+Thanks,
+Praan
