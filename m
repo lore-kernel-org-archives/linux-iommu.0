@@ -1,63 +1,159 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out-181.mta1.migadu.com (out-181.mta1.migadu.com [95.215.58.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 984F23CF66D;
-	Fri, 20 Mar 2026 17:13:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74AFA3D3494
+	for <iommu@lists.linux.dev>; Fri, 20 Mar 2026 17:24:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774026838; cv=none; b=HbNoigc9I433Slj7ObuErxWPK/Wq7Oo+eIHPCzCJkK+/A7rZJWmKfnFk74c2bK1KieWTJqFhpVN66p9gxYIHsk8PtyscejgPKV21wXc1bRtQyE2GUbOP52HKY3RiYpExOwNqetaKOhH6waGiPAH8UYQrPNFbbj3dm9M4MSeykDc=
+	t=1774027496; cv=none; b=NhXX4C/q6rf8Y9abc4WpWHw8Ryt6wfsAwAN7qbPEetgRxzTBGRRqHz5wWsPDoejnCIT72Z/PPSSQS99mLLprz3+cALrv19kiEJ4Z9/EJ9FykQOSUKAjLN5ALeA8jQAIdD7JMTrPKE7EFTmQjpl0bFd3mwl/y0L37s/y9IRThY+g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774026838; c=relaxed/simple;
-	bh=VOnNdn+AGO9/97A9PIURm57lixP6ZfKuVFSuuub4StU=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=H47I2+Crzm0ygT38ziUj5v835xIOEjYqlZaNZUQ2da75VWPPRHWLUmEXsmRmY2HfV/LBpkw9sNr6maNyf8358Si47w2oZ3XenhDq50n9LnjAtoKC8Mq5MkohAw82CoD5jg/YyyPNvLyeKd4S6/ZaKKjv0Uq9gxY+aT8cdyl8qec=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HxnJaShi; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774027496; c=relaxed/simple;
+	bh=ztWS/lINi8FK1uPkT1X4jXO3zWQ/ITWan3ys5erTRw8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=HsrYSuAoH37BJEPDLexZacKy431CbdEiJqPchmq7M1K29sCRijFzYofauUtt0RRWLYWUL7fzEQyAhTJPpyulUhKCjg8AiqWBE6UyWGjJRWppQo51Ak28erSnF28cWJ27LFFTKyCrbduuOQdVJM+9EPL6IGQ9PvjboDIUxk5QV3Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=kernel.doghat.io; spf=pass smtp.mailfrom=kernel.doghat.io; dkim=pass (2048-bit key) header.d=kernel.doghat.io header.i=@kernel.doghat.io header.b=IYg3KW2n; arc=none smtp.client-ip=95.215.58.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=kernel.doghat.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kernel.doghat.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HxnJaShi"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76E6AC4CEF7;
-	Fri, 20 Mar 2026 17:13:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774026838;
-	bh=VOnNdn+AGO9/97A9PIURm57lixP6ZfKuVFSuuub4StU=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=HxnJaShieRsnaXt0PWZD/zmcBDZI/G6ZOb1ZNmFlXt/4WIrNSQVd4vmuKmcM0d6k4
-	 AvYLG1dhaZJir5CN0lPc1tAp1WlnaPk9A0K0w6AwqD2cIxf5ahURlTwCwTd+CvJtYH
-	 631sZZGxSJlzxJG6VUv4rpq6ujugH6Y8Nk+g8eC0QBIZS9eURjx0EW1NxiVLT+N5rO
-	 ri1GO3jowte49ifkY0vARDYeCxVV5Wl64b7k/70J7MZ5KyXcn4zhqXpo2Pb4A7vAgW
-	 JKCTTzNfEq0VVMLe2BxZXYqQE66OQyNj7/ItS3fO3LtN2vffJOewPVJTib8iT0GLLz
-	 pKHjPbTFWXwOw==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 02F20380820D;
-	Fri, 20 Mar 2026 17:13:50 +0000 (UTC)
-Subject: Re: [git pull] IOMMU Fixes for Linux v7.0-rc4
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <3slk6ukvf622iau2g6ukmmdyfjgw6rqrj2w4maph6ldkixtod7@wddilgwketrj>
-References: <3slk6ukvf622iau2g6ukmmdyfjgw6rqrj2w4maph6ldkixtod7@wddilgwketrj>
-X-PR-Tracked-List-Id: <iommu.lists.linux.dev>
-X-PR-Tracked-Message-Id: <3slk6ukvf622iau2g6ukmmdyfjgw6rqrj2w4maph6ldkixtod7@wddilgwketrj>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v7.0-rc4
-X-PR-Tracked-Commit-Id: ba17de98545d07285d15ce4fe2afe98283338fb0
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 47e231cbd363669eef28dfa97496621e0fc6db88
-Message-Id: <177402682869.2580860.8967822062729738633.pr-tracker-bot@kernel.org>
-Date: Fri, 20 Mar 2026 17:13:48 +0000
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+	dkim=pass (2048-bit key) header.d=kernel.doghat.io header.i=@kernel.doghat.io header.b="IYg3KW2n"
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.doghat.io;
+	s=key1; t=1774027490;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=u7eKUMY3p0d6zwWTo9Aew6PNXcf4M66muaacfTXp3x0=;
+	b=IYg3KW2nkDDgD+4wSRi/S2u0xKhm4xBn7SVgX72CxfQLLH2aeLFjwhDX1nsP8mcYSWWIcg
+	4CRGYmpM7VDoL6cIPQ+A2hbJkIjuSASiELwhVksBCEZxaENpP/QCaoSZtXzLj5ondV5TaQ
+	FnUUrfcdvHL09Rl/m1SI5gjs7GzXYNNbjjmpJosMjxj8y5zuF51/LeInZo5/jxHALJr/w2
+	12bpQ4XoU3BsTBoDSmCEB5wwfNxRrKecbROiZtGX+bSTbBThhhcsFy7oTQcZ2ouqtOztRq
+	9h4gILpBFwfVtoI2ldT7tvcm+hWbvtAsSFJv1wVEPnYdN6CRqkrApaqENMQALQ==
+From: John Hancock <john@kernel.doghat.io>
+To: stable@vger.kernel.org
+Cc: bhelgaas@google.com,
+	manivannan.sadhasivam@oss.qualcomm.com,
+	joro@8bytes.org,
+	linux-pci@vger.kernel.org,
+	iommu@lists.linux.dev,
+	John Hancock <john@kernel.doghat.io>
+Subject: [REGRESSION] PCI: Revert "Enable ACS after configuring IOMMU for OF platforms"
+Date: Fri, 20 Mar 2026 13:23:35 -0400
+Message-ID: <20260320172335.29778-1-john@kernel.doghat.io>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 
-The pull request you sent on Fri, 20 Mar 2026 09:56:12 +0100:
+Commit 7a126c1b6cfa ("PCI: Enable ACS after configuring IOMMU for OF
+platforms") introduced a regression affecting AMD IOMMU group isolation
+on x86 systems, making PCIe passthrough non-functional.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v7.0-rc4
+While the commit addresses a legitimate ordering issue on OF/Device Tree
+platforms, the fix modifies pci_dma_configure(), which executes on all
+platforms regardless of firmware interface. On AMD systems with IOMMU,
+moving pci_enable_acs() from pci_acs_init() to pci_dma_configure() alters
+the point at which ACS is evaluated relative to IOMMU group assignment.
+The result is that devices which previously occupied individual, exclusive
+IOMMU groups are merged into a single group containing both passthrough
+and non-passthrough members, violating IOMMU isolation requirements.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/47e231cbd363669eef28dfa97496621e0fc6db88
+The commit author notes that pci_enable_acs() is now called twice per
+device and that this is "presumably not an issue." On AMD IOMMU hardware
+this assumption does not hold -- the change in call ordering has
+observable and breaking consequences for group topology.
 
-Thank you!
+It is worth noting that this is a stable/LTS series (6.12.y), where
+changes to fundamental PCI initialization ordering carry significant
+risk for production and specialized workloads that depend on stable
+IOMMU behavior across kernel updates. A regression of this nature --
+silently breaking PCIe passthrough without any configuration change on
+the part of the user -- is particularly disruptive in a series that
+users reasonably expect to be conservative.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+This revert restores pci_enable_acs() to pci_acs_init() and marks it
+static again, fully restoring correct IOMMU group topology on affected
+hardware.
+
+Regression introduced in: 6.12.75
+Tested on: 6.12.77 with this revert applied
+
+Hardware:
+  CPU:   AMD Ryzen Threadripper 2990WX (family 23h, Zen+)
+  IOMMU: AMD-Vi
+
+Bisect:
+  6.12.74: GOOD -- IOMMU groups correct, passthrough functional
+  6.12.75: BAD  -- IOMMU groups collapsed, passthrough broken
+  6.12.76: BAD  -- still broken
+  6.12.77: BAD  -- still broken
+
+Fixes: 7a126c1b6cfa ("PCI: Enable ACS after configuring IOMMU for OF platforms")
+Signed-off-by: John Hancock <john@kernel.doghat.io>
+---
+ drivers/pci/pci-driver.c | 8 --------
+ drivers/pci/pci.c        | 8 ++++----
+ drivers/pci/pci.h        | 1 -
+ 3 files changed, 4 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+index 9846ab70c..a00a2ce01 100644
+--- a/drivers/pci/pci-driver.c
++++ b/drivers/pci/pci-driver.c
+@@ -1656,14 +1656,6 @@ static int pci_dma_configure(struct device *dev)
+ 		ret = acpi_dma_configure(dev, acpi_get_dma_attr(adev));
+ 	}
+ 
+-	/*
+-	 * Attempt to enable ACS regardless of capability because some Root
+-	 * Ports (e.g. those quirked with *_intel_pch_acs_*) do not have
+-	 * the standard ACS capability but still support ACS via those
+-	 * quirks.
+-	 */
+-	pci_enable_acs(to_pci_dev(dev));
+-
+ 	pci_put_host_bridge_device(bridge);
+ 
+ 	if (!ret && !driver->driver_managed_dma) {
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index 040c0be2d..3eb878781 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -1072,7 +1072,7 @@ static void pci_std_enable_acs(struct pci_dev *dev, struct pci_acs *caps)
+  * pci_enable_acs - enable ACS if hardware support it
+  * @dev: the PCI device
+  */
+-void pci_enable_acs(struct pci_dev *dev)
++static void pci_enable_acs(struct pci_dev *dev)
+ {
+ 	struct pci_acs caps;
+ 	bool enable_acs = false;
+@@ -3718,6 +3718,14 @@ bool pci_acs_path_enabled(struct pci_dev *start,
+ void pci_acs_init(struct pci_dev *dev)
+ {
+ 	dev->acs_cap = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ACS);
++
++	/*
++	 * Attempt to enable ACS regardless of capability because some Root
++	 * Ports (e.g. those quirked with *_intel_pch_acs_*) do not have
++	 * the standard ACS capability but still support ACS via those
++	 * quirks.
++	 */
++	pci_enable_acs(dev);
+ }
+ 
+ /**
+diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+index b9b97ec0f..b1f393a42 100644
+--- a/drivers/pci/pci.h
++++ b/drivers/pci/pci.h
+@@ -653,7 +653,6 @@ static inline resource_size_t pci_resource_alignment(struct pci_dev *dev,
+ }
+ 
+ void pci_acs_init(struct pci_dev *dev);
+-void pci_enable_acs(struct pci_dev *dev);
+ #ifdef CONFIG_PCI_QUIRKS
+ int pci_dev_specific_acs_enabled(struct pci_dev *dev, u16 acs_cfg);
+ int pci_dev_specific_enable_acs(struct pci_dev *dev);
