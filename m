@@ -1,63 +1,63 @@
-Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
+Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47C843254B2
-	for <iommu@lists.linux.dev>; Fri, 20 Mar 2026 18:27:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 526643C455E
+	for <iommu@lists.linux.dev>; Fri, 20 Mar 2026 18:56:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774031266; cv=none; b=V2LoryrN+c3d0oJX9OZhHWJUlOYPrOOeIHAq23I2yZ6N4vWP3A63V+oe10YmawxeZjcR69XtzHyR3NOWx+IfM9nVv6kqDscw0SYkCPwh+5U6seD78N5mHZ9D1kjOFSt1ty2EXg28esw5tHeopQ/8QqXyvOTXpy09P53hbwgEl28=
+	t=1774033015; cv=none; b=Cd5oddDZMa1PAECpwld68vd7SNQt0w/ZXDyOBeZZEckIyzXN8vgwfn4ynqP4r/Ages9o2UFC5r8aZbbUdsQmMjXkEXDyP/9L4fwdujAgJiykAv9VGyqbW1Ks+ltK24L2dNbtuLQUX1pDmoSUYC0K7+R0xa0Emow/Ddm0QW+8qy0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774031266; c=relaxed/simple;
-	bh=rUJDpu/Tbsmr3Z96uyeTBTqVQmswY1ls9ES7BCAQFPQ=;
+	s=arc-20240116; t=1774033015; c=relaxed/simple;
+	bh=Q5uRXNQyxitxk6w+eL0zYDDaRm1GUZUbF3kikSQDSPM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Wk5FEjhed51Hq1kf/5pQkUMxWmP+TqvTlSRVbXUvEB86ODsc9zQV/vcTnax81sWXq8KfumsvWF16kLErXQdua8UDa7eiLYSYJWIj1o7rpvqZoItYQ7h+xbGlwSpiIBc1TvykM2yw0y3fbxCUkjfPHctFJv/+ys4AmtUGHo2bQ+Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=B0M2bI2g; arc=none smtp.client-ip=209.85.214.176
+	 Content-Type:Content-Disposition:In-Reply-To; b=HIg+CraudG8BbW9NX1IeaUeZ3vFn36sICF+z0fJVomUbNugdiY7RhF3LXgmvjizUhu95IVHQLovJmdoe9jHrpAyspsl82wVJwM9fY0kokaCIFRuKWQI8WUWlNXoAK6NfDrECcsa7Qvg3BRpVHaYnkdAEhryABSbbkVA7sdQM7xY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=sC3k4MlU; arc=none smtp.client-ip=209.85.214.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="B0M2bI2g"
-Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-2b052562254so12905ad.0
-        for <iommu@lists.linux.dev>; Fri, 20 Mar 2026 11:27:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="sC3k4MlU"
+Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2b052562254so16995ad.0
+        for <iommu@lists.linux.dev>; Fri, 20 Mar 2026 11:56:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1774031265; x=1774636065; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1774033014; x=1774637814; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=f8W5cvFUR4VXf+WaiJdKnvQRdmelG4HkMeFFekxFTBY=;
-        b=B0M2bI2gBeQj+QQ/4Dxr+NcU6000gY0C4IFudNggZabUrjAZi2Wpryp8fvIX6JPGvp
-         I1B/cUZNzyavB59QnOfFq4OkjLl6/qEW2lKCJQMiiCxvQcHbOjqfa1m9ELPdkJG1ue13
-         tE+ghht9F1xJocPm5K9iszs0Bn5m+3UTJvWSe6z1c9g72T+ACmm93aPNUrJlYwEG5fvx
-         QaSlEFHv7xqPN04IhLZddoRP/nzw65s0CrjkFn5EBY57WkCQw8VyL89iT/7H5D1EYL08
-         D4s3xT+yaoOoLLxwE0x9r16ciC5rokSvTPrbXOSx07XqQpLJikVi2guuesR9njPEmpDY
-         lNLw==
+        bh=mzX6nj4ei+Q5c66+o1zUOgOGvSVephsLWbWHR4XH47E=;
+        b=sC3k4MlUgRGoK6MTDarnExbvzs87JeUGJBd5wDz8YsG7XyzY8l0dndOxTD0mFYQFCe
+         XpArIkRP9jf/z0eD/FMUtaRl9FgsvGr7fUV0TTWiWvTatNOpOXIc1UaAWC2Uwog33fr8
+         7stAHYdAZd3XoywaqouKWKjniwCNjIk4Nn1URUnNsT7GLP3kMrfXghkcRrdNiACNNMa5
+         BZG0erWOm7y3s/NCgbFw3c8+Na9A+8VsKmObOCdY7q84GxhyZm1IZ+kFQfYkK8Yp+j4x
+         G2HTtbbvT7AZclWh8hf9osunvA58Zqhk6NcVoMKMA6o/gTrEFuL8byUfxQ+i9L7rfrtW
+         XpFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774031265; x=1774636065;
+        d=1e100.net; s=20251104; t=1774033014; x=1774637814;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=f8W5cvFUR4VXf+WaiJdKnvQRdmelG4HkMeFFekxFTBY=;
-        b=gw/eYNZ9IgwOcbKmIqj4/+JjdmdjuvfoXDYbnZ7I9xobJVL0fglqySDUnN4/BO8Kt/
-         608OodHBltAC5W+JDxIiTy3uGN4a4mZ4mEYqlz5a0AvyNvcwJcKs2G10j0KwYRuRQaF5
-         W6xBw4yvKRZG3FxqwyeY3y47LRWTw0+ZGxDln4BFbGYnQp0ilDdR7GaNN8GFBD8DvzeQ
-         GJqh3SK286rPaZaX45xVnHZ5P2wUyECPS4GDU/VahZ0XnCe1tuEHOthct4bgMveNRVsa
-         ZbmfPuCtl3UXdfz/9GI/m4WmKJA4lR5NSvkgr2t3z75avACI7CwQEEiRItCYNtLhcVaE
-         MG+g==
-X-Forwarded-Encrypted: i=1; AJvYcCWV3aETvxFUO3rYabKKR6WsOl0zNIMU0XDtDh6pMPHHnD4StWsGtfPPNHKvQQFIK+9NIKziZA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxkd8d8jsYmhzrHp/idWbhwiL3r8JTsm74lbOYJh/GLnF0ktn1/
-	tkYJ5Th++RxAIVu7AIy0U0VezwO9vanIBd5DQR1ym42vGck5I7o7UWBDbQBmf661/Q==
-X-Gm-Gg: ATEYQzyM0az7z8K4iTcKHt16SVKYsSfQuHWp6veMvubcGJthIBmm1KN428mo1tZYPAv
-	34YRcA8OoEoqAYYkpB+leiMT7KqUasVdB+vOKMRGGXWQmyIbGcESBQc58cOvppa5lS9UZsIzMXC
-	OKLE69clXaq+Ss3hFcDE4K+dJb5BqE1vr+ATjtmeO7LzLNkxrLlVN9R/6qTEsgK2w5A1v/68Fir
-	9GtTeQsG0268KjGAhNl6xCDxwpeCbcp6LsvLlE7peuKZWAGQsvTuHDtwGwStoSwrBumSrVDz1DU
-	nu2jVX9ZQA5PUEscQPCd6AvKec3XxbRP7YeYsCaF3dzxP3ep1xTti4tBfb1otyUsjXQ1uf6Nv2n
-	k7rzUL7cunnue/y2/H1OigPuh3YZfCldnM2FkoUbP8KfNzCNozWVw1Y3KVNMCiaAy3qW4fVZJiD
-	NZzgPGD2eIHxZECBGcqEV0MRL1XFzj/Qv2mkx/It4yghCQrEZSPqwjJfygmMmrcQ==
-X-Received: by 2002:a17:902:f541:b0:2ae:45cc:aeb6 with SMTP id d9443c01a7336-2b08b40ab79mr410815ad.6.1774031264003;
-        Fri, 20 Mar 2026 11:27:44 -0700 (PDT)
+        bh=mzX6nj4ei+Q5c66+o1zUOgOGvSVephsLWbWHR4XH47E=;
+        b=m3Nxftlemx1LxHgcGkXMA+E7w2NZTh3UXJuLgu/EG0aEcwrOHcn0UrPgOOaOCsAPdn
+         BVDj3kv/4F6oPR49t7sV8V+OAMv4sxkeli+v+tWdyCUrA8OESJ02Of3iDs7d832wKVZ3
+         ZY+zm9mXh2oq22c+nLcoC8GD3FdRMSgNH6B5Ml5MA5RVaVpXQN1bgNbiHWbi4If2Yah7
+         0bUTzIMdfUF+0rYDNl4sLl5wnJAXkODCiG+EFG6QZL3Nat10p4AFrzrCG4GyDfPAAw5w
+         gp38jfInud0pzS9b80mMgrd7TfYn5z1KjRHgYKOQElDIHRa8o25WdmPrrJ/4ORY+QXNu
+         YuRQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWsBHaZvTigYBA1ZbzBJ07p7HapxWs9pT4Nc0IZ5xNgrmER/jp0jGjRqZkLnMh9wGc83lSQMw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxZQcsxPIi0TzCdRtUnb4XMx1ltrTVaH7jk50ea39ryZrQ4Jz6i
+	A3H3dWCi3/jynb6WVndh9jubtXF0VhmV1TVMD5UtTv0tSzAED1DspF5Ye+C+152dcA==
+X-Gm-Gg: ATEYQzw8Zn+5JaWW0qgiR94tYtKCtjeEIY4ybCa45kwQqvxqnQp1J8YBQony03PEj3T
+	rv2xpYLMUiLi54aS6r65IFDnuIs8rfxeuLDt0QOBzZv5iWhUI/asWpHIW8eIVT7YTZL7SZmSYDZ
+	uwH60/WaNknRaj8xqCKQvj/DN5eec/5ZEH0jK9UU7TMhLZ54G+gebF5ScibwwESgZiGQVTCF6IX
+	TSajTix/NhraO+TNv5b9VmGccE7qX/KnDLalAquta93JfVne2GY76velGTdpbo19PCcEY2zCPr5
+	bNQ0gfUeznbUwdReJu/eirouPSNhXEVupyy18kOKTS0Qp2a9Ikyy2AwmiOXt7ZW0X9RRniW/j1V
+	YFKPbPcO5rp+NXt31n8YH14ezoi98mY9nFl3w553IpgBeqxl1e4uldZjiLRO+pC9nQPPl2kxy0V
+	dYcRQfwlK/xG14DOzu/CkZmsv5Oal/0bs379bPhvVCxf/ZD2MvOeqGVJ//0Zm9cA==
+X-Received: by 2002:a17:902:cf45:b0:2b0:5193:1212 with SMTP id d9443c01a7336-2b08b40a7b1mr321455ad.4.1774033013040;
+        Fri, 20 Mar 2026 11:56:53 -0700 (PDT)
 Received: from google.com (168.136.83.34.bc.googleusercontent.com. [34.83.136.168])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c743a8176e7sm2212848a12.8.2026.03.20.11.27.43
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c743a8186efsm2341998a12.13.2026.03.20.11.56.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Mar 2026 11:27:43 -0700 (PDT)
-Date: Fri, 20 Mar 2026 18:27:39 +0000
+        Fri, 20 Mar 2026 11:56:52 -0700 (PDT)
+Date: Fri, 20 Mar 2026 18:56:48 +0000
 From: Samiullah Khawaja <skhawaja@google.com>
 To: Pranjal Shrivastava <praan@google.com>
 Cc: Vipin Sharma <vipinsh@google.com>, 
@@ -73,11 +73,11 @@ Cc: Vipin Sharma <vipinsh@google.com>,
 	Chris Li <chrisl@kernel.org>, YiFei Zhu <zhuyifei@google.com>
 Subject: Re: [PATCH 04/14] iommu/pages: Add APIs to
  preserve/unpreserve/restore iommu pages
-Message-ID: <ab2Q_ZH_UIHk0Ne5@google.com>
+Message-ID: <ab2SoJqbwyL4luaw@google.com>
 References: <20260203220948.2176157-1-skhawaja@google.com>
  <20260203220948.2176157-5-skhawaja@google.com>
  <20260317202925.GA2582517.vipinsh@google.com>
- <ab0TPFo2esHZ6RIb@google.com>
+ <ab0pBc2-Yr7qo-2G@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -86,84 +86,73 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <ab0TPFo2esHZ6RIb@google.com>
+In-Reply-To: <ab0pBc2-Yr7qo-2G@google.com>
 
-On Fri, Mar 20, 2026 at 09:28:28AM +0000, Pranjal Shrivastava wrote:
+On Fri, Mar 20, 2026 at 11:01:25AM +0000, Pranjal Shrivastava wrote:
 >On Tue, Mar 17, 2026 at 01:59:03PM -0700, Vipin Sharma wrote:
 >> On Tue, Feb 03, 2026 at 10:09:38PM +0000, Samiullah Khawaja wrote:
 >> > +
->> > +void iommu_unpreserve_pages(struct iommu_pages_list *list, int count)
+>
+>[------- snip >8 --------]
+>
+>> > +EXPORT_SYMBOL_GPL(iommu_unpreserve_pages);
+>> > +
+>> > +void iommu_restore_page(u64 phys)
 >> > +{
 >> > +	struct ioptdesc *iopt;
+>> > +	struct folio *folio;
+>> > +	unsigned long pgcnt;
+>> > +	unsigned int order;
 >> > +
->> > +	if (!count)
->> > +		return;
+>> > +	folio = kho_restore_folio(phys);
+>> > +	BUG_ON(!folio);
 >> > +
->> > +	/* If less than zero then unpreserve all pages. */
->> > +	if (count < 0)
->> > +		count = 0;
+>> > +	iopt = folio_ioptdesc(folio);
 >> > +
->> > +	list_for_each_entry(iopt, &list->pages, iopt_freelist_elm) {
->> > +		kho_unpreserve_folio(ioptdesc_folio(iopt));
->> > +		if (count > 0 && --count ==  0)
->> > +			break;
->> > +	}
+>> > +	order = folio_order(folio);
+>> > +	pgcnt = 1UL << order;
+>> > +	mod_node_page_state(folio_pgdat(folio), NR_IOMMU_PAGES, pgcnt);
+>> > +	lruvec_stat_mod_folio(folio, NR_SECONDARY_PAGETABLE, pgcnt);
+>>
+>> Above two functions are also used in other two places in this file, lets
+>> create a common function for these two operations.
+>>
+>
+>I was thinking about this, out of the 2 other places one is
+>`__iommu_free_desc` where we are supposed to subtract pgcnt.. but I
+>think we can follow the -pgcnt pattern we have currently and add a
+>helper `iommu_folio_update_stats(folio, pgcnt)` where we can pass -pgcnt
+>to subtract nr_pages? Something like:
+>
+>+static inline void iommu_folio_update_stats(struct folio *folio, long nr_pages)
+>+{
+>+	mod_node_page_state(folio_pgdat(folio), NR_IOMMU_PAGES, nr_pages);
+>+	lruvec_stat_mod_folio(folio, NR_SECONDARY_PAGETABLE, nr_pages);
+>+}
+>
+>@@ -86,8 +91,7 @@ static void __iommu_free_desc(struct ioptdesc *iopt)
+> 	if (IOMMU_PAGES_USE_DMA_API)
+> 		WARN_ON_ONCE(iopt->incoherent);
+>
+>-	mod_node_page_state(folio_pgdat(folio), NR_IOMMU_PAGES, -pgcnt);
+>-	lruvec_stat_mod_folio(folio, NR_SECONDARY_PAGETABLE, -pgcnt);
+>+	iommu_folio_update_stats(folio, -(long)pgcnt);
+> 	folio_put(folio);
+> }
+>
+>But I'm unsure if passing -(long)pgcnt is a good idea?
+
+mod_node_page_state() takes last argument as "long" and I can see other
+examples of passing -folio_nr_pages(folio) directly into it. So we can
+just keep it as following:
+
+iommu_folio_update_stats(folio, -pgcnt);
+
+I think it is a good cleanup. I will update this in the next revision.
+>
 >> > +}
->>
->> I see you are trying to have common function for error handling in
->> iommu_preserve_pages() down and unpreserving in the next patch with
->> overloaded meaning of count.
->>
->>  < 0 means unpreserve all of the pages
->>  = 0 means do nothing
->>  > 0 unpreserve these many pages.
->>
->> It seems non-intuitive to me and code also end up having multiple ifs. I
->> will recommend to just have this function go through all of the pages
->> without passing count argument. In iommu_preserve_pages() function down,
->> handle the error case with a "goto err" statement. If this is the way
->> things happen in iommu codebase feel free to ignore this suggestion.
->>
->
->+1 to this. The current version of overloaded count is counter-intuitive
->as it expects a back-handed API contract. Since we're using lists here,
->I'd recommend using the list_for_each_entry_continue_reverse() helper:
-
-Agreed. I will use this approach in next revision.
-
-Thanks,
-Sami
-
->
->+void iommu_unpreserve_pages(struct iommu_pages_list *list)
->+{
->+	struct ioptdesc *iopt;
->+
->+	list_for_each_entry(iopt, &list->pages, iopt_freelist_elm)
->+		kho_unpreserve_folio(ioptdesc_folio(iopt));
->+}
->+EXPORT_SYMBOL_GPL(iommu_unpreserve_pages);
->+
->+int iommu_preserve_pages(struct iommu_pages_list *list)
->+{
->+	struct ioptdesc *iopt;
->+	int ret;
->+
->+	list_for_each_entry(iopt, &list->pages, iopt_freelist_elm) {
->+		ret = kho_preserve_folio(ioptdesc_folio(iopt));
->+		if (ret)
->+			goto err_rollback;
->+	}
->+	return 0;
->+
->+err_rollback:
->+	/* Rollback only the successfully preserved pages */
->+	list_for_each_entry_continue_reverse(iopt, &list->pages, iopt_freelist_elm)
->+		kho_unpreserve_folio(ioptdesc_folio(iopt));
->+	return ret;
->+}
->
->[ ---- snip >8---- ]
+>> > +EXPORT_SYMBOL_GPL(iommu_restore_page);
+>> > +
 >
 >Thanks,
 >Praan
