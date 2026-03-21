@@ -1,109 +1,173 @@
-Received: from smtpbg150.qq.com (smtpbg150.qq.com [18.132.163.193])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECAB530E0F2
-	for <iommu@lists.linux.dev>; Sat, 21 Mar 2026 11:01:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=18.132.163.193
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 527CC31E840
+	for <iommu@lists.linux.dev>; Sat, 21 Mar 2026 13:27:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774090881; cv=none; b=I/MF0+xUBqb7gWb+UB/eRZGoF60LJKk5Pz06zC0aps83nZdV9/ofkxuOccZext0/MJhbMdUfdj5/Qtv/NNsqIZW5Qe4TOt3oq6IAl+UzrGoQ/hNeB4VQK0cvCiq4nHsLx3tdzPCSFiCKRiDFlL8YBhAmJKkFwJV/xmpivcTY6vQ=
+	t=1774099633; cv=none; b=OgjQypHxTCRURiLRiaUOeGcpkFeJNQqHsFL76VUhwu+ZkZCd8slG2fAKPu9K8yUAxxcmtGgQDBaeUmxTcqKX7CYCk9Q4JNoCvNKhWy60zqrAe3xHGX+bzw1pAdqfxHP14cGUDXrcu34bfpUmYfWQ+JwXvyAilHBQ6Cu/9cV0eGM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774090881; c=relaxed/simple;
-	bh=g+uuVo6YxBuA6i59bjslsdwAEN2VPiFp6C5cEMzJQos=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=tigdvprlhn1crBbKxVmMd1WlPOGVWqEmTkkEUrRhmylBb+bAuuwi4BSAIiwFCp9Ln/hoI1qJf1RIQAnJ0v7Ku9empuKFA8+k3qIChDi3luUID88t0gFSOAeKZVCGgQk8xO02jxU67GflETBkxplUQMeh9rnYjnnAxS8oKt3wXvI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn; spf=pass smtp.mailfrom=smail.nju.edu.cn; dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b=oQ7cYtyx; arc=none smtp.client-ip=18.132.163.193
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smail.nju.edu.cn
+	s=arc-20240116; t=1774099633; c=relaxed/simple;
+	bh=pi5Cr+wPz3p8f6WVyTUc6OTVwoqra6jg8txqrOsu920=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=As2SkKiKantbm/4S/2zV9iw3tvh3gdYP7Qct5jcqBgaepvgZ+cOsjrvxmTn34L64GM083Zgwp5cXRAcw7L7wn/OMphn91TfvSgsOrMDWBx6UA9vJ1Mna/eJ5AE3yvBBgko1Fgv+XWxKHnNAKswNRoIkUBc7dYGkCzttpiuZnuS0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=VFFEu4eZ; arc=none smtp.client-ip=209.85.214.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.b="oQ7cYtyx"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smail.nju.edu.cn;
-	s=iohv2404; t=1774090849;
-	bh=arcVQdd5qWDE7k3IhE0LZZWperzfs+0HGppYUGehWyQ=;
-	h=From:To:Subject:Date:Message-Id:MIME-Version;
-	b=oQ7cYtyxIKTZ2aI4CkWAPBOk+8wVnfe9TXpprzP2x3cExqioB1H+M2o4k2mq8FBwf
-	 PYZSSq7ZtXSbXlGtCI74Rs97gmQXYGzQxhjH5peX2Ykt6SyLS5g+DnZByXQv3J2si9
-	 m3bYI65/XGOFPRYvghAGR+aYk62hwukY7bvbw7Bg=
-X-QQ-mid: esmtpgz11t1774090842tbb43ee6a
-X-QQ-Originating-IP: mv5myG0ehU1YlIZvh6KahtgfL6eeQwVXKmoi3TDFisc=
-Received: from localhost.localdomain ( [116.172.93.199])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Sat, 21 Mar 2026 19:00:40 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 4390190608562230099
-EX-QQ-RecipientCnt: 11
-From: Kexin Sun <kexinsun@smail.nju.edu.cn>
-To: jgross@suse.com,
-	sstabellini@kernel.org,
-	oleksandr_tyshchenko@epam.com,
-	xen-devel@lists.xenproject.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Cc: julia.lawall@inria.fr,
-	xutong.ma@inria.fr,
-	kexinsun@smail.nju.edu.cn,
-	yunbolyu@smu.edu.sg,
-	ratnadiraw@smu.edu.sg
-Subject: [PATCH] xen/swiotlb: fix stale reference to swiotlb_unmap_page()
-Date: Sat, 21 Mar 2026 19:00:39 +0800
-Message-Id: <20260321110039.8905-1-kexinsun@smail.nju.edu.cn>
-X-Mailer: git-send-email 2.25.1
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="VFFEu4eZ"
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2aeab6ff148so57785ad.1
+        for <iommu@lists.linux.dev>; Sat, 21 Mar 2026 06:27:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1774099632; x=1774704432; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=H1Fj4N/UpgbJKkAFov6kcwTbNCL5sZLLzanhyYdr1VI=;
+        b=VFFEu4eZ14is6AJwXBezMytRTxz5KVYIzf9aEvoicOYdLRlhb97w8FRvP0To2Bsgol
+         Rhwo4SVVD0z0HlcZLlsKQxvJpsCBj7hV9rrTrkIy1PElhXQMZLttSJXM55aQTg0T4Hqp
+         CDDGGaLixl5kRinWM1cr8bgUaUFYEHNEXu04zPTIa1cLq2MwONKQRF1A6Bim51jxPEwR
+         pRjiwq93QicZuVNqbkiaqsWFHWkRLE/leVybGP23yBpNdhJ001OSzwmd7j5/cY56Jkqd
+         Ww/7Vz4PCvKyso1fj6eKJ+4vgGKxIWVZOuU0ACcakwWPxfoTjs3NNOV+iB0EdjGyNC6X
+         f7jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774099632; x=1774704432;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=H1Fj4N/UpgbJKkAFov6kcwTbNCL5sZLLzanhyYdr1VI=;
+        b=f/3EBp4GjuzRksv+GH0NK1t0zW1kAa5vAShMffvE09Qx+UhPEaMQHXGeT77FvJLPpJ
+         ip06SGvpixX88wwPfdsl9a8QraCeBzrSqsPLRZJLHb6V9kAURAu2FDBs4RS1bPiwuZ+/
+         7uTnbRfK0YtH/C8OMWnBwaBSGvCLogJF1pFnVJe9eUP/Tm+G7eKShgN3Nzei+Suyg/XH
+         gT30Jw/f/TRDTGBlYEDfZ/pL2ZZoPoNwz9RaG7tK/3dkiu6mbobAOJ71C6JiEmG0i9SH
+         AigZn/vhHPq2a/M98zeN8uyElVwF1VkRkFbpxUi2JXtIY1JI6Uc3bqewiadlti/BuR3v
+         hsWQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWq14aqvohvb9qI+b5VV4aTSN1rpd7QjYeO3bd46/e0pIQOYDDxpNb0zOMObrQCGv9j2HzOiA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx9VEedFTd1Zkn83BCoTzKuNvI1yn38s3Jv36aoQ1qEW2blUyaG
+	asyBa6vM7KNPslGknsvAIEh0EffFkgZ/dQdCbzVumBbJCykA+phjpmZzQJpFEZtmRA==
+X-Gm-Gg: ATEYQzwu7qz9aueUqToPTAHqrVT+jegFoTlYcJ8kNhOd74+QMJFlJrdfj7Xz+YT1PhX
+	02jsyO7nyr1P/Loz7Rb4nPqrgZV0kM14ORdNEl17eTQL73sQ9BZD+yHVANacdIoORpC2A1P0Nqt
+	+Uf/6jnE1NCxnQC3Qe4JLN7bsObSEDpbZhj64YRa8Driv6eCX8gKEd27uNFpoEuHOLHasPvGUxK
+	Js4yMeh4cqWkPtOhrVb6l2TTyzjeQ6yBWkZ5YTQOcejxSHjX8Qvj2A6UgzURYnHh3i0kBTP/Cu3
+	N8VBRqXLqBDaijkjBpWnalgZLkleEwz2Usi5THXBrG8NS4RSRYgRaUn/QtpWpo8Y5qkucf2bDJ1
+	QNn6Jl3pJ2jMWvgNKHiOled9BwxQTZh72mvj1sb0uJly4WIWuqQ0IelibahnatDptC72ss+bBAe
+	vFx0w/RCXzNWnXmJsUELC8viNVMfcJHszVNsXPrTOHepmZkAebAeIC3NJkDdHe7WMKx04u
+X-Received: by 2002:a17:902:db0d:b0:2ae:d10c:6382 with SMTP id d9443c01a7336-2b08b4432c2mr2182545ad.20.1774099630892;
+        Sat, 21 Mar 2026 06:27:10 -0700 (PDT)
+Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-35bd26cde44sm1729954a91.4.2026.03.21.06.27.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 Mar 2026 06:27:09 -0700 (PDT)
+Date: Sat, 21 Mar 2026 13:27:00 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Samiullah Khawaja <skhawaja@google.com>
+Cc: David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+	Adithya Jayachandran <ajayachandra@nvidia.com>,
+	Parav Pandit <parav@nvidia.com>,
+	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>,
+	Pratyush Yadav <pratyush@kernel.org>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	David Matlack <dmatlack@google.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Chris Li <chrisl@kernel.org>, Vipin Sharma <vipinsh@google.com>,
+	YiFei Zhu <zhuyifei@google.com>
+Subject: Re: [PATCH 06/14] iommu/vt-d: Implement device and iommu
+ preserve/unpreserve ops
+Message-ID: <ab6cpNWZetBokbG8@google.com>
+References: <20260203220948.2176157-1-skhawaja@google.com>
+ <20260203220948.2176157-7-skhawaja@google.com>
+ <ab3R54-kyHGDEW9L@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: esmtpgz:smail.nju.edu.cn:qybglogicsvrgz:qybglogicsvrgz5b-0
-X-QQ-XMAILINFO: MQYXLRAkMyaepRQYOQpwixejF+q32fFP8BysH9VnPTG/7rQkVgNs2Dqe
-	3DevTitA2Rwupx8sTy8czw5lzItvfbw4EqDnq0zRtdUXRL0cKzmiK/0g7dS5wcyjNbSSJYP
-	z7SBKv8t3dIG+DUPiIGZK9uEBaWAEF38d1AE1+NidD4/0zrH2N2cK2JMvnGpq9pTspDkJpP
-	AMjY0KLVzt971Lk5hJaJB4bQPgUKZkXayxFKaPdGDT/pskSc77pTEmwg19n3MAjiKdTMAg3
-	olmwGKQyrA5sGp3etdnDOFURKcjH673RZROTUyBSgxEYX7f/tBTjsGH/bz6B6FvseFKnUjt
-	bueSpjjBby8fm6O9Oaf+QcGxSCbDeQJG+MW1uALy2EhG4f4PmsbM7wv4/2mGxcmKefGAB7l
-	JswOts48VFqhmRtR/Iu7603L8TeRJ3b38q1BPE6RHdf17SfGEG58UIih2tCWCLu+JnP98vE
-	id+Lapr9GaoAKb1AiFzsplJbL5eoJ/7rX2niQP8WVFjwyR8nfa+Vu0uv3cGeRyr21o3Aj3l
-	fsN8jQD7qHYJXObqeiVy5vhQHEEBz3vV6fm1nhqgQSRN/duO4WfImPoRB383/eunT6k3I8G
-	djJa+XuVymCrC0UCFnvswCOkntdzeyUHLv09tE/6/a5FTfODvB7hbVdCHwe0HU8+RHGWRJx
-	B2fhtixHfYYLrU/sjossO9vYBEuz968aCQ3Q/5QpcWzvZgxEIR7bYrTdtHcOOYWqiYYhH6q
-	I6sgNbfrEV1A1cWtgiRXW/grD/DHfnmiP6pHAmPiOR7V8QduT5JkmXLgWq9OjDLywbdLwo2
-	tDnmrnY5i0BEs9o266LNVUiaOPX/U7Lkl6lT1rLJFqJfHoenHWOWM0oSQXZpizqmBhuOajy
-	Mb7KtT1YJUKCnJw4EdBb6jE4eqT6tMj+Apblzfku/FovJ2z+0r9Ao17psVwtDr6kVtXEJbW
-	dUOqiYeKZIejcar80g+Spml8YaRr1rlAJ7xSmSJyqEMgfFqPj05tZj9ghcWWjBi0/xZFun9
-	NWU4qEdHfrLG/sRkWDSGyT2zr2efIsEHj+V4no9FpzHwjfIUcBmalr2WbR382ReiWz6EUk7
-	t/PSKzpqpvu3+AYdVAtj/wsS53jBubHVQ==
-X-QQ-XMRINFO: NyFYKkN4Ny6FuXrnB5Ye7Aabb3ujjtK+gg==
-X-QQ-RECHKSPAM: 0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ab3R54-kyHGDEW9L@google.com>
 
-Commit af85de5a9f00 ("xen: swiotlb: Switch to physical
-address mapping callbacks") renamed xen_swiotlb_unmap_page()
-to xen_swiotlb_unmap_phys().  The comment in
-xen_swiotlb_unmap_sg() had already been missing the xen_
-prefix (reading swiotlb_unmap_page()), and the rename only
-changed _page to _phys without correcting this, leaving it
-as swiotlb_unmap_phys().  Fix the reference to use the
-correct function name xen_swiotlb_unmap_phys().
+On Fri, Mar 20, 2026 at 11:01:59PM +0000, Pranjal Shrivastava wrote:
+> On Tue, Feb 03, 2026 at 10:09:40PM +0000, Samiullah Khawaja wrote:
+> > Add implementation of the device and iommu presevation in a separate
+> > file. Also set the device and iommu preserve/unpreserve ops in the
+> > struct iommu_ops.
+> > 
+> > During normal shutdown the iommu translation is disabled. Since the root
+> > table is preserved during live update, it needs to be cleaned up and the
+> > context entries of the unpreserved devices need to be cleared.
+> > 
+> > Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+> > ---
+> >  drivers/iommu/intel/Makefile     |   1 +
+> >  drivers/iommu/intel/iommu.c      |  47 ++++++++++-
+> >  drivers/iommu/intel/iommu.h      |  27 +++++++
+> >  drivers/iommu/intel/liveupdate.c | 134 +++++++++++++++++++++++++++++++
+> >  4 files changed, 205 insertions(+), 4 deletions(-)
+> >  create mode 100644 drivers/iommu/intel/liveupdate.c
+> > 
+> > diff --git a/drivers/iommu/intel/Makefile b/drivers/iommu/intel/Makefile
+> > index ada651c4a01b..d38fc101bc35 100644
+> > --- a/drivers/iommu/intel/Makefile
+> > +++ b/drivers/iommu/intel/Makefile
+> > @@ -6,3 +6,4 @@ obj-$(CONFIG_INTEL_IOMMU_DEBUGFS) += debugfs.o
+> >  obj-$(CONFIG_INTEL_IOMMU_SVM) += svm.o
+> >  obj-$(CONFIG_IRQ_REMAP) += irq_remapping.o
+> >  obj-$(CONFIG_INTEL_IOMMU_PERF_EVENTS) += perfmon.o
+> > +obj-$(CONFIG_IOMMU_LIVEUPDATE) += liveupdate.o
+> > diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> > index 134302fbcd92..c95de93fb72f 100644
+> > --- a/drivers/iommu/intel/iommu.c
+> > +++ b/drivers/iommu/intel/iommu.c
+> > @@ -16,6 +16,7 @@
+> >  #include <linux/crash_dump.h>
+> >  #include <linux/dma-direct.h>
+> >  #include <linux/dmi.h>
+> > +#include <linux/iommu-lu.h>
+> >  #include <linux/memory.h>
+> >  #include <linux/pci.h>
+> >  #include <linux/pci-ats.h>
+> > @@ -52,6 +53,8 @@ static int rwbf_quirk;
+> >  
 
-Assisted-by: unnamed:deepseek-v3.2 coccinelle
-Signed-off-by: Kexin Sun <kexinsun@smail.nju.edu.cn>
----
- drivers/xen/swiotlb-xen.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-index ccf25027bec1..4a734ee38994 100644
---- a/drivers/xen/swiotlb-xen.c
-+++ b/drivers/xen/swiotlb-xen.c
-@@ -340,7 +340,7 @@ xen_swiotlb_sync_single_for_device(struct device *dev, dma_addr_t dma_addr,
+[ ---- snip >8 ----- ]
  
- /*
-  * Unmap a set of streaming mode DMA translations.  Again, cpu read rules
-- * concerning calls here are the same as for swiotlb_unmap_phys() above.
-+ * concerning calls here are the same as for xen_swiotlb_unmap_phys() above.
-  */
- static void
- xen_swiotlb_unmap_sg(struct device *hwdev, struct scatterlist *sgl, int nelems,
--- 
-2.25.1
+> > +
+> > +int intel_iommu_preserve(struct iommu_device *iommu_dev, struct iommu_ser *ser)
+> > +{
+> > +	struct intel_iommu *iommu;
+> > +	int ret;
+> > +
+> > +	iommu = container_of(iommu_dev, struct intel_iommu, iommu);
+> > +
+> > +	spin_lock(&iommu->lock);
+> 
+> Minor note: We call this with the session->mutex acquired which is a
+> sleepable/preemptable context whereas spin_lock disables preemption and
+> puts us in an atomic context. 
+> 
+> While iommu_context_addr() happens to be safe here because it uses
+> GFP_ATOMIC & we pass alloc=0, we are heavily relying on the assumption
+> that iommu_context_addr() or other helpers will never sleep or attempt
+> a GFP_KERNEL allocation under the hood.
+> 
+> Given how easy it would be for a future refactor to accidentally
+> introduce a sleeping lock inside any of the other helpers, I'd recommend
+> adding an explicit comment here warning that this runs in an atomic
+> context (same for unpreserve below).
+> 
 
+Thinking a little more about this, I think we shall instead add a
+comment in the core API docs, mentioning that these helpers (like
+iommu_preserve_page etc.) can be called from atomic context and hence
+should not acquire any mutexes as we can't be certain of the context the
+drivers call them in. 
+ 
+Thanks,
+Praan
