@@ -1,63 +1,63 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2A2631F9A0
-	for <iommu@lists.linux.dev>; Sun, 22 Mar 2026 09:24:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E926C18050
+	for <iommu@lists.linux.dev>; Sun, 22 Mar 2026 09:41:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774171487; cv=none; b=IrjzEThnHKDqDsAxWmZHLiP6uVSaTMF7FJh3b31EbZutFUP9BUilHL9xTDdQSpxep2arA26H6jP+mf7F1IRYsufPhMbBBxV55kOumOglyW2jwNEV4w4pwRFTqK0kKNuEAFgGJDF0AT15+a7csegj92xubnZk/mgx/TWtwIGOuAk=
+	t=1774172485; cv=none; b=MfGOzOE/dbOYpX57VwEfwel4EMs8S7gWIgaEeyo9cEg4liUkb6BkYLtF6emDh+kBk9wVWdl8NTL4+ucGL4qb2XC6/qHJCcB8PgiYqXbp6s/rqUs9gBGl+C4/9nTGrBdmy2BAgkIxBEhFgXfMUIydeEZ4TTB3Z7DwZ0hs+rb/b5Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774171487; c=relaxed/simple;
-	bh=n4C3ynhE7jxIrWpriieMpCCDCiYTKr9NecF5HXEHwPw=;
+	s=arc-20240116; t=1774172485; c=relaxed/simple;
+	bh=EozkUR9hJasHXQYFsF9AYzvHEHRQAu0xx+pbMFTVBVQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RYThl4wZVytkubxpb6ZkAApVUmbrj4dv32xRqjanFn5f6MWo5QKuJIoDF6sGHQJS/cufUZOswN6HRiCSFbULZytFyJYwmtD+Y4qIWILMNCIAtvfBPRgvQzMg6B8vrxk6csUG0aTFoP7UPaSMnTR6Q9OTTLqy7bDNDWSe+SrDVxU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=GqGM5itJ; arc=none smtp.client-ip=209.85.128.52
+	 Content-Type:Content-Disposition:In-Reply-To; b=Ie4Ku2t6Sd2dD2yXIWqPuof9k/I2a3dUdOH91i8PxgnV0JxjsFku7lG/OIMQbT75OTEAmvVjBd0bMBb7fmDiWbPbu0JkDDjJkL6bWeRgdQg7Y6s9TJIW1/4noZAbVY4bmAF+XDMF4zkSIm7A+YRc+hTp9ioRKplKa40szzkEpoQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=bs+l0E/y; arc=none smtp.client-ip=209.85.128.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="GqGM5itJ"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-485317b6bd0so67035e9.1
-        for <iommu@lists.linux.dev>; Sun, 22 Mar 2026 02:24:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="bs+l0E/y"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-486fb990b9eso88145e9.0
+        for <iommu@lists.linux.dev>; Sun, 22 Mar 2026 02:41:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1774171483; x=1774776283; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1774172482; x=1774777282; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=GplwjQbx6bBy+YNbaPGexypRaWChzbTAh68wSARB7Z8=;
-        b=GqGM5itJR6ga2AikL1Ei03oLsZuI32BwGwn0rC6pM5J7CihdxkeQVE4FfbBNgpqg72
-         kbvohssdzibWbyLgDOBzszxTTc1q+ngUXPRf4joaAqahJDbuG6E3Z0V2mU4Es7BoalGT
-         MifJbM3kaSPMaQu/i2PxA5s8d1BtuAKEGzcrYNxLUEmGQo2mbzvLzr9Ml2+qAl2w3qpJ
-         9CpJfyxg7rjY8ZZXNJ+mPqGk3mGVi8lCnGKiLWusDuWiUhHUCfw5I+pMv6vy9cy4m0ni
-         9cZPqFOLktmJpsSQ026qBaPbfSOwWhDLi4HSlKVNCrDdzRkq1qoLaYVGJi39FfCHjd7j
-         0ILA==
+        bh=FQXcszglpRn76zyaD4gcsl+CnRRTNeStc1QZosZqFUw=;
+        b=bs+l0E/y8l+7EjgYQIncWUNM+5WYEJNphpVrob5fNyywb19APe5wr1U3301nJlHb/z
+         Ya5SVzvboFvkUvZlmw00/SOAgHPF6J8+gkOzohkZ6qTgdG08jHhTaFpDKN5NicKptcJI
+         HOkDL/KhZGTkZxa9sK0YTkDkkzyPWVWcZoJruAJiqzUYXuW+HsxHep0RmOszdREzk2IC
+         pMqyFZl7P/usOvEBZbjc3A6LxwfcPBxE3H5Yph4uAWtg9vQvQHE/ZrMUfiY8M3fazfy2
+         Fc/z45qc6tfQtktnn5FX47FRgy2YjPo/RhuO3CO0VN7+1RN3RAp9i+n8wGypJ77htJZE
+         LpPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774171483; x=1774776283;
+        d=1e100.net; s=20251104; t=1774172482; x=1774777282;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=GplwjQbx6bBy+YNbaPGexypRaWChzbTAh68wSARB7Z8=;
-        b=ZvntY8IcBuHICHoPFaCQmbolL2OmySY0a2zi+vqrUC/veHNDCVcI/d4PGe/XY5UAcj
-         64CdnXAj8q/7jrPiJVoZDDmwMJFx/LN271cW228Tf4GYTlQwo8Fzf4oKH/4sY6F9BKP6
-         m8vcElvT37h0wWroknfu7SVyJ5IqfwFW2x/1i0ybed/ZxdDu4B4RUr852ahrAjnsCosd
-         OVvfGTxL1Ww9KxLVcy5l3OgxZ05CUf5F9xPKTq+tQH+FffC+MSjdtVi5hvNENjVi88lz
-         9LrMDys6oJF3A3xRePGXwM69Jvez2TGC82t9Qx5AVwesuRwz8eT3E3jrJVTjPRnYiVBy
-         49Vw==
-X-Forwarded-Encrypted: i=1; AJvYcCW0hAEJkLW8QJ9LUfy4+gwRVPhaDumfu0K9BW3e76RGqqZbdync45AsRTRqK+2zLAWgcWYxmA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yya5hQRYny7PcF6isyWRyy1iyWMwyt3oMfE4pOxntBVqCHbMNUK
-	ohA/2OSAggF0vAOO+5mIZrA4S8elFYNzDXwIDX12pfNKD/ikhadslE2oE4s/tbaltg==
-X-Gm-Gg: ATEYQzy+Y3uXZoUYCkoJ/8YmtLavvkzNXP4fKAkOPLVdrVlYkDGHRmSe737I0dIbBFn
-	ztXwlFpY7eIQ80hEfY3HOj6bXXf22O0SJOJdDSszJP/EZkzRUQkjXBpFcQUmuI3BAWuKYlrW3Sz
-	u1XPX6ELfnqfETxtGcgrZom1qHQtYTkuXFEtgfvCPoxyZhLJOuUHa/4eYJ1RFSh1RykgloPy1ml
-	c3wpuJgu8x7wN5Quc1Yt+977E+fFDZ9r6CGGztyAdwvIdTm1L+i3cLvW8afdKc26ircoiiRxh50
-	ntTbqMT2TAcuOMn+BeNwxQ9r47sz1yTaPkc+9Dn3laAD8AKg23gwZEfRgnEspdVrZBeOP3NO32f
-	iJ0/ycJOBnQnEVT8c7Die/LHo85QIeU2Aw7jEDkI+vP0+jeJq65aMlBYOj8NO3jzwXijKPR0aYJ
-	EOg+ThEfa7ogFKo6a666cAVSa12O9fw0qZ05Apb10kTvYX1s39UBLRYFgZxR/Gf8GR8V0=
-X-Received: by 2002:a05:600c:3f1b:b0:47e:dbb0:fbcd with SMTP id 5b1f17b1804b1-487034670bamr1436975e9.6.1774171482699;
-        Sun, 22 Mar 2026 02:24:42 -0700 (PDT)
+        bh=FQXcszglpRn76zyaD4gcsl+CnRRTNeStc1QZosZqFUw=;
+        b=Ea1dud1NZrPNxGzAQxrkdbsuwjHJQa+LmgImBpHSKDV4RRqFG1vcJVDXN4x8mjS0JG
+         cxjq+wtuArD+3oJf35NK59vVVWMUkcObpyGZmsvATcYMorZZzmjXiBfY3URTDtwJPLUY
+         LZIi/mjjK+wZWCg7CkiFb4uw7EnxSmuG4TKvq4NRFWWsDs4DG9mtGWsfwj5rYPP/VLJR
+         GGsNxt2YoCkSWavFXQ1L43SEZXxw/z30zH7Pva6FTI6GH23boYsXmq10J4832rrFvaDa
+         camdCRkn4YKEbR/9Xa/ZbGtLQkY8ldIL25RBeyrBJI8GWPaZ9C6GhAN8hDAzwJvSbzC7
+         n5Aw==
+X-Forwarded-Encrypted: i=1; AJvYcCU+NgLIW1cEecfdf3O0b5PflrFdbcow90bsV5ZkVxH4E8H3tGYDfc49ZVOOomG5f74nUVRHow==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxIYgK5rhpMmrunCbDqfdkVUZOcTRWJtcNdcKts6eYvWlYdUwlF
+	VG4pt7J6cpfkcnrW2f4LK+CdhXE6xbrdXAo6V2hNUn+eT1yGa75QvJpbC01I3EACrA==
+X-Gm-Gg: ATEYQzxAjVa/u71r912UQmnaTuWg58b/IONAZHCsUy4MV9GqHnVG7fPyus7gZWvlaOn
+	27m02twHic4SNxaaYGdsdn9d7Ec0vAgTDw4hQEVj2Y9eCG+pN0RK0WOHK3jpwhIA2V/g14zWzPw
+	RGKmQxnIzH04w6JumURCJa0hlodryweN2An6mqMuicrm8edlH9oD1fupJ/doV70PGDnrNPLIc7B
+	a+fQ22u2m4bwHOPNoRzLb6jUmNT8151WwJDi6HJB8L45fgIda//5pW+zNFoCkqtsbUQoOGd32N8
+	m7pU/f7RFfGLpARl0Yj65xXgZyVa1aWKmTzt7yPkwHhGuiHB8UZ93H2g+DmvQ3+cDrDyEKJ81K0
+	evUCgzWTODxWCRroxa341jwLokIefZ2A7HQOhPKGjhonxLLpsNFP+MlGPeuWjBK3kKhZBxQ9hWU
+	MBfNpggOYniq4TBndhBlpmNec8X3Yu3g96YstIg4KQN64WH/p08bBmmXf0
+X-Received: by 2002:a05:600d:640f:20b0:47e:dc0a:8591 with SMTP id 5b1f17b1804b1-487034330d9mr965975e9.2.1774172482001;
+        Sun, 22 Mar 2026 02:41:22 -0700 (PDT)
 Received: from google.com (54.95.38.34.bc.googleusercontent.com. [34.38.95.54])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43b64703c27sm20799976f8f.18.2026.03.22.02.24.41
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-486f8b322d9sm258723025e9.8.2026.03.22.02.41.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Mar 2026 02:24:41 -0700 (PDT)
-Date: Sun, 22 Mar 2026 09:24:37 +0000
+        Sun, 22 Mar 2026 02:41:21 -0700 (PDT)
+Date: Sun, 22 Mar 2026 09:41:17 +0000
 From: Mostafa Saleh <smostafa@google.com>
 To: Jacob Pan <jacob.pan@linux.microsoft.com>
 Cc: linux-kernel@vger.kernel.org,
@@ -70,11 +70,10 @@ Cc: linux-kernel@vger.kernel.org,
 	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
 	skhawaja@google.com, pasha.tatashin@soleen.com,
 	Will Deacon <will@kernel.org>, Baolu Lu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH V2 01/11] iommufd: Support a HWPT without an iommu driver
- for noiommu
-Message-ID: <ab-1VZshPREYYuI8@google.com>
+Subject: Re: [PATCH V2 02/11] iommufd: Move igroup allocation to a function
+Message-ID: <ab-5PYF8PGew-Uv_@google.com>
 References: <20260312155637.376854-1-jacob.pan@linux.microsoft.com>
- <20260312155637.376854-2-jacob.pan@linux.microsoft.com>
+ <20260312155637.376854-3-jacob.pan@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -83,195 +82,103 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260312155637.376854-2-jacob.pan@linux.microsoft.com>
+In-Reply-To: <20260312155637.376854-3-jacob.pan@linux.microsoft.com>
 
-On Thu, Mar 12, 2026 at 08:56:27AM -0700, Jacob Pan wrote:
+On Thu, Mar 12, 2026 at 08:56:28AM -0700, Jacob Pan wrote:
 > From: Jason Gunthorpe <jgg@nvidia.com>
 > 
-> Create just a little part of a real iommu driver, enough to
-> slot in under the dev_iommu_ops() and allow iommufd to call
-> domain_alloc_paging_flags() and fail everything else.
-> 
-> This allows explicitly creating a HWPT under an IOAS.
+> So it can be reused in the next patch which allows binding to noiommu
+> device.
 > 
 > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
 > ---
->  drivers/iommu/iommufd/Makefile          |  1 +
->  drivers/iommu/iommufd/hw_pagetable.c    | 11 ++-
->  drivers/iommu/iommufd/hwpt_noiommu.c    | 91 +++++++++++++++++++++++++
->  drivers/iommu/iommufd/iommufd_private.h |  2 +
->  4 files changed, 103 insertions(+), 2 deletions(-)
->  create mode 100644 drivers/iommu/iommufd/hwpt_noiommu.c
+>  drivers/iommu/iommufd/device.c | 48 +++++++++++++++++++++-------------
+>  1 file changed, 30 insertions(+), 18 deletions(-)
 > 
-> diff --git a/drivers/iommu/iommufd/Makefile b/drivers/iommu/iommufd/Makefile
-> index 71d692c9a8f4..2b1a020b14a6 100644
-> --- a/drivers/iommu/iommufd/Makefile
-> +++ b/drivers/iommu/iommufd/Makefile
-> @@ -10,6 +10,7 @@ iommufd-y := \
->  	vfio_compat.o \
->  	viommu.o
+> diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+> index 344d620cdecc..54d73016468f 100644
+> --- a/drivers/iommu/iommufd/device.c
+> +++ b/drivers/iommu/iommufd/device.c
+> @@ -30,8 +30,9 @@ static void iommufd_group_release(struct kref *kref)
 >  
-> +iommufd-$(CONFIG_VFIO_NOIOMMU) += hwpt_noiommu.o
->  iommufd-$(CONFIG_IOMMUFD_TEST) += selftest.o
+>  	WARN_ON(!xa_empty(&igroup->pasid_attach));
 >  
->  obj-$(CONFIG_IOMMUFD) += iommufd.o
-> diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
-> index fe789c2dc0c9..37316d77277d 100644
-> --- a/drivers/iommu/iommufd/hw_pagetable.c
-> +++ b/drivers/iommu/iommufd/hw_pagetable.c
-> @@ -8,6 +8,13 @@
->  #include "../iommu-priv.h"
->  #include "iommufd_private.h"
->  
-> +static const struct iommu_ops *get_iommu_ops(struct iommufd_device *idev)
-> +{
-> +	if (IS_ENABLED(CONFIG_VFIO_NOIOMMU) && !idev->igroup->group)
-> +		return &iommufd_noiommu_ops;
-> +	return dev_iommu_ops(idev->dev);
-> +}
-> +
->  static void __iommufd_hwpt_destroy(struct iommufd_hw_pagetable *hwpt)
->  {
->  	if (hwpt->domain)
-> @@ -114,7 +121,7 @@ iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
->  				IOMMU_HWPT_ALLOC_DIRTY_TRACKING |
->  				IOMMU_HWPT_FAULT_ID_VALID |
->  				IOMMU_HWPT_ALLOC_PASID;
-> -	const struct iommu_ops *ops = dev_iommu_ops(idev->dev);
-> +	const struct iommu_ops *ops = get_iommu_ops(idev);
->  	struct iommufd_hwpt_paging *hwpt_paging;
->  	struct iommufd_hw_pagetable *hwpt;
->  	int rc;
-> @@ -229,7 +236,7 @@ iommufd_hwpt_nested_alloc(struct iommufd_ctx *ictx,
->  			  struct iommufd_device *idev, u32 flags,
->  			  const struct iommu_user_data *user_data)
->  {
-> -	const struct iommu_ops *ops = dev_iommu_ops(idev->dev);
-> +	const struct iommu_ops *ops = get_iommu_ops(idev);
->  	struct iommufd_hwpt_nested *hwpt_nested;
->  	struct iommufd_hw_pagetable *hwpt;
->  	int rc;
-> diff --git a/drivers/iommu/iommufd/hwpt_noiommu.c b/drivers/iommu/iommufd/hwpt_noiommu.c
-> new file mode 100644
-> index 000000000000..0aa99f581ca3
-> --- /dev/null
-> +++ b/drivers/iommu/iommufd/hwpt_noiommu.c
-> @@ -0,0 +1,91 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
-> + */
-> +#include <linux/iommu.h>
-> +#include <linux/generic_pt/iommu.h>
-> +#include "iommufd_private.h"
-> +
-> +static const struct iommu_domain_ops noiommu_amdv1_ops;
-> +
-> +struct noiommu_domain {
-> +	union {
-> +		struct iommu_domain domain;
-> +		struct pt_iommu_amdv1 amdv1;
-> +	};
-> +	spinlock_t lock;
-> +};
-> +PT_IOMMU_CHECK_DOMAIN(struct noiommu_domain, amdv1.iommu, domain);
-> +
-> +static void noiommu_change_top(struct pt_iommu *iommu_table,
-> +			       phys_addr_t top_paddr, unsigned int top_level)
-> +{
-> +}
-> +
-> +static spinlock_t *noiommu_get_top_lock(struct pt_iommu *iommupt)
-> +{
-> +	struct noiommu_domain *domain =
-> +		container_of(iommupt, struct noiommu_domain, amdv1.iommu);
-> +
-> +	return &domain->lock;
-> +}
-> +
-> +static const struct pt_iommu_driver_ops noiommu_driver_ops = {
-> +	.get_top_lock = noiommu_get_top_lock,
-> +	.change_top = noiommu_change_top,
-> +};
-> +
-> +static struct iommu_domain *
-> +noiommu_alloc_paging_flags(struct device *dev, u32 flags,
-> +			   const struct iommu_user_data *user_data)
-> +{
-> +	struct pt_iommu_amdv1_cfg cfg = {};
-> +	struct noiommu_domain *dom;
-> +	int rc;
-> +
-> +	if (flags || user_data)
-> +		return ERR_PTR(-EOPNOTSUPP);
-> +
-> +	cfg.common.hw_max_vasz_lg2 = 64;
-> +	cfg.common.hw_max_oasz_lg2 = 52;
-> +	cfg.starting_level = 2;
-> +	cfg.common.features =
-> +		(BIT(PT_FEAT_DYNAMIC_TOP) | BIT(PT_FEAT_AMDV1_ENCRYPT_TABLES) |
-> +		 BIT(PT_FEAT_AMDV1_FORCE_COHERENCE));
-> +
-> +	dom = kzalloc(sizeof(*dom), GFP_KERNEL);
-> +	if (!dom)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	spin_lock_init(&dom->lock);
-> +	dom->amdv1.iommu.nid = NUMA_NO_NODE;
-> +	dom->amdv1.iommu.driver_ops = &noiommu_driver_ops;
-> +	dom->domain.ops = &noiommu_amdv1_ops;
-> +
-> +	/* Use mock page table which is based on AMDV1 */
-> +	rc = pt_iommu_amdv1_init(&dom->amdv1, &cfg, GFP_KERNEL);
-> +	if (rc) {
-> +		kfree(dom);
-> +		return ERR_PTR(rc);
-> +	}
-> +
-> +	return &dom->domain;
-> +}
-> +
-> +static void noiommu_domain_free(struct iommu_domain *iommu_domain)
-> +{
-> +	struct noiommu_domain *domain =
-> +		container_of(iommu_domain, struct noiommu_domain, domain);
-> +
-> +	pt_iommu_deinit(&domain->amdv1.iommu);
-> +	kfree(domain);
-> +}
-> +
-> +static const struct iommu_domain_ops noiommu_amdv1_ops = {
-> +	IOMMU_PT_DOMAIN_OPS(amdv1),
+> -	xa_cmpxchg(&igroup->ictx->groups, iommu_group_id(igroup->group), igroup,
+> -		   NULL, GFP_KERNEL);
+> +	if (igroup->group)
+> +		xa_cmpxchg(&igroup->ictx->groups, iommu_group_id(igroup->group),
+> +			   igroup, NULL, GFP_KERNEL);
 
-I see the appeal of re-using an existing page table implementation to
-keep track of iovas which -as far as I understand- are used as tokens
-for DMA pinned pages later, but maybe at least add some paragraph about
-that, as it is not immediately clear and that's a different design
-from the legacy noiommu VFIO code.
+Is that a separate fix or perhaps belongs to the next patch making
+it possible to have NULL groups.
 
 Thanks,
 Mostafa
 
-> +	.free = noiommu_domain_free,
-> +};
-> +
-> +struct iommu_ops iommufd_noiommu_ops = {
-> +	.domain_alloc_paging_flags = noiommu_alloc_paging_flags,
-> +};
-> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-> index 6ac1965199e9..9c18c5eb1899 100644
-> --- a/drivers/iommu/iommufd/iommufd_private.h
-> +++ b/drivers/iommu/iommufd/iommufd_private.h
-> @@ -464,6 +464,8 @@ static inline void iommufd_hw_pagetable_put(struct iommufd_ctx *ictx,
->  	refcount_dec(&hwpt->obj.users);
+>  	iommu_group_put(igroup->group);
+>  	mutex_destroy(&igroup->lock);
+>  	kfree(igroup);
+> @@ -56,6 +57,30 @@ static bool iommufd_group_try_get(struct iommufd_group *igroup,
+>  	return kref_get_unless_zero(&igroup->ref);
 >  }
 >  
-> +extern struct iommu_ops iommufd_noiommu_ops;
+> +static struct iommufd_group *iommufd_alloc_group(struct iommufd_ctx *ictx,
+> +						 struct iommu_group *group)
+> +{
+> +	struct iommufd_group *new_igroup;
 > +
->  struct iommufd_attach;
+> +	new_igroup = kzalloc(sizeof(*new_igroup), GFP_KERNEL);
+> +	if (!new_igroup)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	kref_init(&new_igroup->ref);
+> +	mutex_init(&new_igroup->lock);
+> +	xa_init(&new_igroup->pasid_attach);
+> +	new_igroup->sw_msi_start = PHYS_ADDR_MAX;
+> +	/* group reference moves into new_igroup */
+> +	new_igroup->group = group;
+> +
+> +	/*
+> +	 * The ictx is not additionally refcounted here becase all objects using
+> +	 * an igroup must put it before their destroy completes.
+> +	 */
+> +	new_igroup->ictx = ictx;
+> +	return new_igroup;
+> +}
+> +
+>  /*
+>   * iommufd needs to store some more data for each iommu_group, we keep a
+>   * parallel xarray indexed by iommu_group id to hold this instead of putting it
+> @@ -87,25 +112,12 @@ static struct iommufd_group *iommufd_get_group(struct iommufd_ctx *ictx,
+>  	}
+>  	xa_unlock(&ictx->groups);
 >  
->  struct iommufd_group {
+> -	new_igroup = kzalloc_obj(*new_igroup);
+> -	if (!new_igroup) {
+> +	new_igroup = iommufd_alloc_group(ictx, group);
+> +	if (IS_ERR(new_igroup)) {
+>  		iommu_group_put(group);
+> -		return ERR_PTR(-ENOMEM);
+> +		return new_igroup;
+>  	}
+>  
+> -	kref_init(&new_igroup->ref);
+> -	mutex_init(&new_igroup->lock);
+> -	xa_init(&new_igroup->pasid_attach);
+> -	new_igroup->sw_msi_start = PHYS_ADDR_MAX;
+> -	/* group reference moves into new_igroup */
+> -	new_igroup->group = group;
+> -
+> -	/*
+> -	 * The ictx is not additionally refcounted here becase all objects using
+> -	 * an igroup must put it before their destroy completes.
+> -	 */
+> -	new_igroup->ictx = ictx;
+> -
+>  	/*
+>  	 * We dropped the lock so igroup is invalid. NULL is a safe and likely
+>  	 * value to assume for the xa_cmpxchg algorithm.
 > -- 
 > 2.34.1
 > 
