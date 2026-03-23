@@ -1,137 +1,117 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 945F921D00A;
-	Mon, 23 Mar 2026 13:52:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 118A03AE18C
+	for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 13:54:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774273973; cv=none; b=N+G0y8Cf6rZxRKSGYyDS4tTT201q4pxaSeaZfTqKJoGZnuYmrPVZFy/CsI/OT5oAlBMZ0IvCpE6xxRwfiyaTSnZokDbvJ8k0/M3X43BLTH3oAeo0u6mKsT2xIUAc47dZUdR3lXHv9rggCHcqzOhGkenRSFm8noaTHApGexbjZkQ=
+	t=1774274058; cv=none; b=e+2VhPNxfB33t3Mq8UPNgBCjDNnPmItHS9uu8nSuoDu0JN350lGA9/toZmLRjQwadisuIUNQgh39SqccDVX9VnJjkkX4fBOdckRcXAcyeEheO+iMxW3jVa+2prYcqp0eezWeUiQwqejte1jE6+S48BYdCzaRcqmBZa+mVgV377E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774273973; c=relaxed/simple;
-	bh=7jiJnoPiC7mzd34UzA0mbtNzWXYVJzwZa57Ijvymt78=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=EsovE6rNGVNEBNE95K2WjDhZcRTPHmgYHRkOtbbpsyhe5rwmehMlzUKRDornXs9ZGYB66SlIDXsTy+t8CE+fVQ4ohum8dkZzEerBj/XzKnQ9KlmSX1GzK1/bIx+qlBFAe1UMQREtjDjQDoxKYkk6L1A7pACcWA4iFl/HsCq7aI8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jiXSiBK1; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774274058; c=relaxed/simple;
+	bh=j8+NLnpYEVro6v3X3zB3ByVB1aVEdc+kKTmLiXnpYfY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZEPKX/4X+Ls3LKyByiK76Z72XPBet3/1rrC6g/2PpQTY+NlFnD4uJBN2vAmseUZp9MY7pasbQpy/ohjyiz47LUwNtH2x6wGOZhIGI5hxsGIHrOhK1k+YTV7aEXrE34xcCToA8QzJY2yCWVvVEle0Sdp2a7u87qnl2VZfakufJrI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Br4mWQIq; arc=none smtp.client-ip=209.85.222.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jiXSiBK1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD45BC4CEF7;
-	Mon, 23 Mar 2026 13:52:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774273973;
-	bh=7jiJnoPiC7mzd34UzA0mbtNzWXYVJzwZa57Ijvymt78=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=jiXSiBK1QppgTl6/vLB9H2UV9uQ3VzRFjylVLGRov5URWxPGikF8RYzBU8sU81r1j
-	 e5/aesdfmYjWK28UOhtXO1QjriCaLqRmHYovbKGwUtwFrLAoaWfiwaYikXJ2G6s5hu
-	 x3THcGuYBrqjdziWwQx7E17Ze/NtNvByZh8XoyaTibSuRMZjzlQSHzrDTKdz2CDmRQ
-	 70+wqO3Go3/1cc0ySV4+WofNkpJhabURRMUj7jvvBJGDXRx53GQO71K7+GoWXZARdx
-	 t3cOeG/YoymTlcbBK7d6fJgLghKpFgBblkfGGHk+2iO1UI7iNz58EV6IVsdQagVHkY
-	 eGUXY/Rh7Gbyg==
-X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: kernel test robot <lkp@intel.com>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-coco@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	Marc Zyngier <maz@kernel.org>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Br4mWQIq"
+Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-8cfbfdabf3fso14549985a.3
+        for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 06:54:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1774274056; x=1774878856; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Cp9nHZf7NvuTaD3ZnAARZsLypmpLx61M2YmeLJUPLk8=;
+        b=Br4mWQIqAvFnsI9MxeClgif0mm10EIJc8EMYbFZ0+7A8/6pFtI5Yqhe9ZYg6duv4m0
+         SesVcq28IeoMBuBvNE99CYZcKCXptt9pEHRqh/eMRrcv9RqHFF/C6kaHakD0NVqDyxuF
+         FNw1zWO5govc8J9gNDpSsm3wqDpMiDI2Ef3qwApN0AFTojYGcdMaQoBHj9R7M+fHGAIU
+         5d9Zq3/3zx99ITNS+3fRWu3UXV4F+9gKKR982K0p5CozCgJNHbb+izU37PxVYBb7hNQ5
+         a4YEkkAM4Fa10m1j2TCNdvaloYGyEJ38sL1zicuwYKpWcTl/2pjGUW0qf/v2lzuPSWjh
+         cyNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774274056; x=1774878856;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Cp9nHZf7NvuTaD3ZnAARZsLypmpLx61M2YmeLJUPLk8=;
+        b=a+U+cRd6u1/JpwTvWXp6OXY1k/zo1YeBh2W+MfAsmRgLiJrL2eCqeiy9Hby0FmStIu
+         wj9uQ5vmAMaEPTE5jkOQUv6BEnQ8g+GolSoMWOqzxIp/K/qW+YYeh9qMCIwEDtX7mFiK
+         8ToZih3ks5REd78hkrCpJS+/LcCrBFB82rGElmM4w2bKQUVdwtoZwrdkmKJtk2w9/56n
+         E8qte2fFTYPQKMwzSd6H5oUhEFYPTnZfuDG2NxXwL6ML7pdL9tzv2izw2/J/yfYglixj
+         SwtdjYRCbhPEAGCp/CM91cFDgAq2rVUHkk0xexoNOonTyLfm6hHtdOiFt7qBbe5nd6+x
+         sbOA==
+X-Forwarded-Encrypted: i=1; AJvYcCU8kaKaq4K22wepixWy2C4hc6+YmPdbzMwbuHdZR0fB0KpYXKaEGGkrDnySIG0A13uWu5UNdg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzDdwrO2q4DlQNyKF9bz5aH92mJGuq+yE+FeT2V5LGuPK7ynO3v
+	PyDfjKFLJo55/NHQC1DHrrsJNJFW0ST05Ammi0AcH/pCYOr5+dWyz4AEI1LmMqKAU/w=
+X-Gm-Gg: ATEYQzwSdjGpLEEj1GJothAcEq46EawgumtiIowh2o5VWz1p6Ii/962TatS8fbpa8oF
+	DiQEbdgEhb+yJq4KKWil8DiT+sgfVwc7tt3tKRCGtsj3sicOAXPHF9ead6DYlB5lyMh+f99ZZgd
+	qU8/wPD9kLnFySl1+RQy9iLus+jEoaVm5llJGnYFewYIYhkvQZNKwScIlWOGmsSoRjCAU2piZpm
+	+tLh1uqX+PviuOEjur6orNR2dly0Ei1Zu54kEuPPId4lJNE48GhGKrdXz/tdij8EvB6z2r1N2Gp
+	81b+8QstymIElbzlG9moQSoZ99tozPeKBdIsfNAfzcpVTzpqe7o/909p0fabPBrLVoGeYX1UO/Z
+	u3L39iiNTTmUzxTMqQzGf48unbX7bsQOVRhcCzBFfls/y5hSGFJ2016R/35XGMNFZqC9U/QAnmc
+	+p1uHOrZovPWw8EpI8jr7woIdzl7FxMnSauuvAUKIX7guQZW7DScrD/oBTPYjitNm66enWnQ==
+X-Received: by 2002:ac8:5cc7:0:b0:509:2ef7:704c with SMTP id d75a77b69052e-50b375d5d24mr169439891cf.72.1774274055870;
+        Mon, 23 Mar 2026 06:54:15 -0700 (PDT)
+Received: from ziepe.ca (mctnnbsa70w-159-2-73-22.dhcp-dynamic.fibreop.nb.bellaliant.net. [159.2.73.22])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-89c8534f9ccsm89564136d6.39.2026.03.23.06.54.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Mar 2026 06:54:15 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1w4fjS-000000004Z9-0f4n;
+	Mon, 23 Mar 2026 10:54:14 -0300
+Date: Mon, 23 Mar 2026 10:54:14 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Tudor Ambarus <tudor.ambarus@linaro.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>
-Subject: Re: [PATCH v3 2/3] swiotlb: dma: its: Enforce host page-size
- alignment for shared buffers
-In-Reply-To: <202603092320.JgtItJg0-lkp@intel.com>
-References: <20260309102625.2315725-3-aneesh.kumar@kernel.org>
- <202603092320.JgtItJg0-lkp@intel.com>
-Date: Mon, 23 Mar 2026 19:22:44 +0530
-Message-ID: <yq5ah5q6odoz.fsf@kernel.org>
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	"Rob Herring (Arm)" <robh@kernel.org>,
+	Joerg Roedel <jroedel@suse.de>, Bjorn Helgaas <bhelgaas@google.com>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	peter.griffin@linaro.org, andre.draszik@linaro.org,
+	willmcvicker@google.com, jyescas@google.com,
+	kernel-team@android.com, stable@vger.kernel.org
+Subject: Re: [PATCH] iommu: Fix bypass of IOMMU readiness check for
+ multi-IOMMU devices
+Message-ID: <20260323135414.GA8437@ziepe.ca>
+References: <20260323-iommu-ready-check-v1-1-5f6fef8f9f59@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260323-iommu-ready-check-v1-1-5f6fef8f9f59@linaro.org>
 
-kernel test robot <lkp@intel.com> writes:
+On Mon, Mar 23, 2026 at 01:09:27PM +0000, Tudor Ambarus wrote:
+> Commit da33e87bd2bf ("iommu: Handle yet another race around
+> registration") introduced a readiness check in `iommu_fwspec_init()` to
+> prevent client drivers from configuring their IOMMUs before
+> `bus_iommu_probe()` has completed.
+> 
+> To optimize the replay path, the readiness check was conditionally
+> gated behind `!dev->iommu`:
+>     if (!dev->iommu && !READ_ONCE(iommu->ready))
+>         return -EPROBE_DEFER;
+> 
+> However, this assumption breaks down for devices that map to multiple
+> IOMMU instances.
 
-> Hi Aneesh,
->
-> kernel test robot noticed the following build errors:
->
-> [auto build test ERROR on arm64/for-next/core]
-> [also build test ERROR on tip/irq/core arm/for-next arm/fixes kvmarm/next soc/for-next linus/master v7.0-rc3 next-20260306]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch#_base_tree_information]
->
-> url:    https://github.com/intel-lab-lkp/linux/commits/Aneesh-Kumar-K-V-Arm/dma-direct-swiotlb-handle-swiotlb-alloc-free-outside-__dma_direct_alloc_pages/20260309-182834
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-next/core
-> patch link:    https://lore.kernel.org/r/20260309102625.2315725-3-aneesh.kumar%40kernel.org
-> patch subject: [PATCH v3 2/3] swiotlb: dma: its: Enforce host page-size alignment for shared buffers
-> config: i386-randconfig-012-20260309 (https://download.01.org/0day-ci/archive/20260309/202603092320.JgtItJg0-lkp@intel.com/config)
-> compiler: clang version 20.1.8 (https://github.com/llvm/llvm-project 87f0227cb60147a26a1eeb4fb06e3b505e9c7261)
-> reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260309/202603092320.JgtItJg0-lkp@intel.com/reproduce)
->
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <lkp@intel.com>
-> | Closes: https://lore.kernel.org/oe-kbuild-all/202603092320.JgtItJg0-lkp@intel.com/
->
-> All errors (new ones prefixed by >>):
->
->    In file included from arch/x86/kernel/asm-offsets.c:9:
->    In file included from include/linux/crypto.h:15:
->    In file included from include/linux/completion.h:12:
->    In file included from include/linux/swait.h:7:
->    In file included from include/linux/spinlock.h:59:
->    In file included from include/linux/irqflags.h:18:
->    In file included from arch/x86/include/asm/irqflags.h:5:
->    In file included from arch/x86/include/asm/processor-flags.h:6:
->>> include/linux/mem_encrypt.h:60:9: error: use of undeclared identifier 'PAGE_SIZE'
->       60 |         return PAGE_SIZE;
->          |                ^
->>> include/linux/mem_encrypt.h:66:9: error: call to undeclared function 'ALIGN'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
->       66 |         return ALIGN(size, mem_decrypt_granule_size());
->          |                ^
->
+?? We don't directly support "multiple IOMMU instances". There is only
+one dev->iommu.
 
-Fixed this by including
+AFAIK if some drivers need to support multiple different instances of
+the same IOMMU driver they must deal with this fully internally and
+present to the core a "single instance" view.
 
-modified   include/linux/mem_encrypt.h
-@@ -11,6 +11,8 @@
- #define __MEM_ENCRYPT_H__
- 
- #ifndef __ASSEMBLY__
-+#include <linux/align.h>
-+#include <vdso/page.h>
- 
- #ifdef CONFIG_ARCH_HAS_MEM_ENCRYPT
- 
+So, your explanation doesn't make sense to me. If dev->iommu is set
+then the driver must be ready, including any multi-instances it has.
 
+If it is not ready then this is really an iommu driver bug, not a core
+bug?
 
-Will include this in the next patch update.
-
-The other alternative is to switch that to a macro 
-
-modified   include/linux/mem_encrypt.h
-@@ -55,16 +55,10 @@
- #endif
- 
- #ifndef mem_decrypt_granule_size
--static inline size_t mem_decrypt_granule_size(void)
--{
--	return PAGE_SIZE;
--}
-+#define mem_decrypt_granule_size()     PAGE_SIZE
- #endif
- 
--static inline size_t mem_decrypt_align(size_t size)
--{
--	return ALIGN(size, mem_decrypt_granule_size());
--}
-+#define mem_decrypt_align(size)        ALIGN((size), mem_decrypt_granule_size())
- 
+Jason
