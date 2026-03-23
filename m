@@ -1,139 +1,267 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FE6137E2E4
-	for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 21:17:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BCC037F006
+	for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 21:34:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774300657; cv=none; b=JTXu+M9l9tg4zOvEFTU/rOD7We6RGqmOWGHZjDR9DqpRSOnMJrlUycX3nJgJxDC6VuVtZIsfb/Dw3g25/iyVPmoVsGIoKDhVSIkly9FUoYdEzH7HOTUtetpy37Wha0NzVWrSatJ0ROy3uSRWqe956cU1iLUbqWzWfpmVhTG4IHY=
+	t=1774301678; cv=none; b=pi42qv4f0PTIdP7M/+iv/yWQ92I+R0V9R95TqIfdt2/t/StiO/midwn+ReU9vcxj3NYgJJ2RgTO0OUHUGbSfuCLs0cuSAiCJPXUP+XACL6DBx437DeGrRufSTkEc35WsAdBCqbxjiEPSj667X1jPRCSCXio2jajY8Z1AB6BKPOA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774300657; c=relaxed/simple;
-	bh=Nm+VZTxnT9qw3EFPipXSMTWJ48lruE6BGIiYuVcKFcM=;
+	s=arc-20240116; t=1774301678; c=relaxed/simple;
+	bh=RsieRZ+VCWLZIXMh2Ozv0KLI7UIr8x0rFUR6Sii/tzc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fVzgxTK+vnwixY4qZfr8+QJkgq1KZQN/M2PStmaq0mlX++qq7mRwkI+YbObRDpC8ASoqS/+OT1iae85pRrxa0UtDy2b9GCOfeSVLZ4h+KT82E70jAgnW6quR5jsnF8azSmlTMm5vc4r0IuX9wqgNZm1u3jw7RCXv8NWoQNOZpvA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=t+6eQbeJ; arc=none smtp.client-ip=209.85.214.172
+	 Content-Type:Content-Disposition:In-Reply-To; b=G58szz2Rj30KodyjmnOXCQh8FGfwcPwP5Rkpo2FSq2PYFlb29K6gJqwjo8L1ejBLwhsaWgfWil5GXmeB6Upj+ZE2C25tiNpXbJCmcmgXiuGZT9e/vqJ9qnn/2uwvQqO4mTx2nUAWkAB3CgIKR2iQMzavhdH9o4JyV2uRFJyN+KI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=T8d1AWDP; arc=none smtp.client-ip=209.85.214.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="t+6eQbeJ"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2b052ec7176so10145ad.1
-        for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 14:17:35 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="T8d1AWDP"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2b052562254so32835ad.0
+        for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 14:34:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1774300654; x=1774905454; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1774301676; x=1774906476; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=layxP6Fhjqp+wTdLPHecG2YnZ/zXdi50jvGwdG06cGQ=;
-        b=t+6eQbeJtig1aSSyuWPqndlE8BlD/Qx80LcPPPTJzdHbHFg+oU2PHYD+1td88LPn8N
-         HoJ7o2ElLIEblzy3YEzRvMmEaY6tFyLqvk2Aw6kvIZfK7PSXHjcK7KcvSTHqPoA89kTz
-         qVYSW0tbKcDu/zd9+nW6yIGHKW0zspunQ0uXtwR1m4YwgYEe1MPEQ3WWS9um5qBvaYu6
-         8mQuV2eeQ1fX/rAfszzVAdnWCWKPhTaUTjXKnA5l1AzaqfBXSg74i6TWst0a8wXoZva4
-         EviWP17IUxKjV9N8YopqBLaL7DeFwb3GLQqw0xvSDswlSNmS+BJ/91WSE1dZWY7c43GL
-         hTWg==
+        bh=FVYWkdGYSoCJ0Jra5vEPuFKgbrIGxBQ8Jn3YEa+aygo=;
+        b=T8d1AWDPMQH2To/cjZv3i8BXxghpaZGxWyRzpgkOX2y1rDjdV53SX3H2BQSe4oVpzL
+         HFTxu/G3gSX+OoytSNwxHmSFmCigVRmB+/cM8XyZ+mYba6IJlA3EdzUX3tS1Yc6ep3so
+         UrPN7W2oVwES78VfLFpkq3BQcRmVS214ZJxC54duOE+ztWJwBfIdTboP0xlmY2G+Aq1K
+         3r2IKbq6alODbZsfjXk3lojmXIbOQ2xmPgPqeq9oA0K+w1IsJo8rGNb+7gl+uNam2i5i
+         BbEPc3K/8Vff7rFYneIE7zqPN5Y3jHhzYiUcgN2kJjlWuDmcl4ReLCJK9Jqj1ZQYy9d3
+         663A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774300654; x=1774905454;
+        d=1e100.net; s=20251104; t=1774301676; x=1774906476;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=layxP6Fhjqp+wTdLPHecG2YnZ/zXdi50jvGwdG06cGQ=;
-        b=QReeb1pcEmmEPhr6qCq5VoNaOKl7h+IJRi35QNjJiHWez0IXhVSiHJCohHUUOw617A
-         aglcDkXztL7b6Q+ZjgRn9YCvhsTv5y6GECG4Wf9oD4Uo8tVFfUhhrGCh91kuRVcG5g1v
-         +QqVjKevtDEs1HlCK1RjoMdyIN6AFdEgRYryFg4x3irkMCsqlhsQYj6B0X+O2xoouXqb
-         wUSQJ5Z7Fqhi0ME2bsJD0NXHE367cphU0qv97GVEOSkCqG4yUcD4Zxvo5p2dQeZZ1V6/
-         uSZuLjRv2tJYfeSrdTuEV8LB7CdQBNhaaN6MXmlAalErvZh7h2KTivn0SICqm+8swUzO
-         Uycw==
-X-Forwarded-Encrypted: i=1; AJvYcCVJ6ihQ+49Vc0kX7zXRkA0xX2m+uhAY/rYMjRGTyysDtbr8DQFM/AIdIy0uAcySsslQWFzVQA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YysjdPEPRYLJWSicRtoA+wuRbS1R/NTy0C7j5+KHyyBwy0vX4/1
-	XglnJTyAOm5Ge6AH1hL2ivX6PGEKzxy6/qKHNXG3r5WOdFKr48AaqEyrSrnuGSPy2Q==
-X-Gm-Gg: ATEYQzx/y6JDcRsAWNSCXRWSIZhhkWpgiNu4mFoV8gGL2AXr/RcK4olCGWBIVzQp5HJ
-	dyZyvzERxvyeiO2iDmu82lR07sLpkY4JxuX8SP6RPHGxtBqcQzlq2MUAdySa18JJkQ2t6n23xHd
-	fqTiCxD8cOU71eTKHE+obq6EenTJ5nLBYTLecT6Pe6xYWa7leer8smJTBYPuWH+r50ppG++/tNt
-	70PxU8nPfpaqg7dL65pz3AV56/e9JNDgtbGk3ZzEIogcS1egIVVmTgIH4W6wjCAB5yPRghRtEC/
-	Cy8N5a+o0mcPK+dE11Dt5OF5yFUP37fzc+Kkq7cHnfL+l6/wKrFrAnfUJdXdSPaEh7WBr/1uF8t
-	6Ftx0JZPUzxSRAkOc8Lwx2MYiSqdSpUQnry050+UZTap+I+NeL5W8tWO6Tetg3QJ80KZLGMIu+Z
-	4+2Hy7GVrIcc8tCSoH5CI1mdZ4NA1FJ3f7RRTSWsEzWrqHrC9/hGPl8YGxOg==
-X-Received: by 2002:a17:902:c943:b0:2a9:5bfa:54ef with SMTP id d9443c01a7336-2b0a540776emr966405ad.10.1774300654128;
-        Mon, 23 Mar 2026 14:17:34 -0700 (PDT)
-Received: from google.com (60.89.247.35.bc.googleusercontent.com. [35.247.89.60])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c76565c35desm1829840a12.15.2026.03.23.14.17.33
+        bh=FVYWkdGYSoCJ0Jra5vEPuFKgbrIGxBQ8Jn3YEa+aygo=;
+        b=PUaV8/gOccFIF/5+sL8IltHuyFpm1V6qHwaNvm/w/w+n2FT11zTDgWma2872YumpVV
+         nVuyQ4zxt2tYtLh/PWUQE5S9n3e5rhAYiyo+9d4jS2OHPeqtPmuUntBmbMGCW/Z5L1ST
+         qk3u4skYJpYcpYzvDeZ3PGx4ElwhSkpmUAkzwYQ4iLKcsoMKrfcjNenc0jgGozFmk+tN
+         0xQbX9+Run/crfSOB0mGhWgPiGDUR/orDlCosxHz3LMgTUDQQTMxLfuavPtBC4sVbJAq
+         I5c9+IEw0lvfo9CmuJWWPypNXf1oJiJ8lveMzd3oEoPkb4c+gkpfguxXZmb7z5nJYDi9
+         eBdg==
+X-Forwarded-Encrypted: i=1; AJvYcCWKDbZz2sNcMoPktae5EOa3Swdl4a1fsP7/AJHHTcuJSvFXzeyF0HEG68DEGiYrFeMGzIleFg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy1KVWyFHVReS42JakJbGwLh7Q+cKlylLE/M6qV3o3untXq5QUs
+	i4uAwl0ybo0ckxC3KUlEAfLY2yzFn1Mc29wuCUc1dwLu5Z+k9inuvkF/7VrDaZA39A==
+X-Gm-Gg: ATEYQzzPYOgzm+Y/IdKRo+7I34OgWsk+WxJeMydLnJqq0VMP5tJTyHoBLceg0LyNrPz
+	knmnRkat4m5SpI2tuXhRLgcPa5jDOpzQlsOT1pgWJquv998BA50NQSi/3FkzGCd4DUtqZn0au6O
+	pUrgo05P4CyjvCaKYl7za72Ja72ryhA+LAFfoaTyTidNUguEgB+zyuHfv4st2scpp+cSd2bCFG+
+	oMUOcx5DlBDh8QYIhOcqC81zbQx5xcoZqr3nMMZvwxtY4Vo6zQM8eVPvT2Yd8HF6nxARkVsY0o3
+	LXP4O9fM3R/q48PFp/oMXKHQxUT8VAnYH1RZX96ZrX7IWI20lSG6FI5UEkeyme9EcORkgrB9WAN
+	KOjApEUz4IkUPTWytectf/CAzXsbzDh6L/lXcJkIRXXs+S4SMBVaBEcVmnD8iCeuwAKbAo2jbYu
+	V9YIIPNVtdy6N9kEOFuC9q7ywPBch4KehxIxE6O23lh5qSXhqSJYnrI/yWJoWHI3FddPnfxZVg
+X-Received: by 2002:a17:902:f712:b0:2ad:ab68:f2c3 with SMTP id d9443c01a7336-2b0a6737893mr333575ad.13.1774301676102;
+        Mon, 23 Mar 2026 14:34:36 -0700 (PDT)
+Received: from google.com (168.136.83.34.bc.googleusercontent.com. [34.83.136.168])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82c38565096sm5283490b3a.51.2026.03.23.14.34.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Mar 2026 14:17:33 -0700 (PDT)
-Date: Mon, 23 Mar 2026 14:17:29 -0700
-From: Vipin Sharma <vipinsh@google.com>
-To: Samiullah Khawaja <skhawaja@google.com>
+        Mon, 23 Mar 2026 14:34:35 -0700 (PDT)
+Date: Mon, 23 Mar 2026 21:34:31 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Vipin Sharma <vipinsh@google.com>
 Cc: David Woodhouse <dwmw2@infradead.org>, 
 	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>, 
-	Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, 
-	Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, YiFei Zhu <zhuyifei@google.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
+	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>, 
 	Adithya Jayachandran <ajayachandra@nvidia.com>, Parav Pandit <parav@nvidia.com>, 
 	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
 	Pratyush Yadav <pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
 	David Matlack <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
-	Chris Li <chrisl@kernel.org>, Pranjal Shrivastava <praan@google.com>, 
-	YiFei Zhu <zhuyifei@google.com>
-Subject: Re: [PATCH 13/14] vfio/pci: Preserve the iommufd state of the vfio
- cdev
-Message-ID: <20260323210111.GB2571566.vipinsh@google.com>
+	Chris Li <chrisl@kernel.org>, Pranjal Shrivastava <praan@google.com>
+Subject: Re: [PATCH 11/14] iommufd-lu: Persist iommu hardware pagetables for
+ live update
+Message-ID: <acGmn35-3F-kLJNf@google.com>
 References: <20260203220948.2176157-1-skhawaja@google.com>
- <20260203220948.2176157-14-skhawaja@google.com>
+ <20260203220948.2176157-12-skhawaja@google.com>
+ <20260320230654.GB659132.vipinsh@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20260203220948.2176157-14-skhawaja@google.com>
+In-Reply-To: <20260320230654.GB659132.vipinsh@google.com>
 
-On Tue, Feb 03, 2026 at 10:09:47PM +0000, Samiullah Khawaja wrote:
-> If the vfio cdev is attached to an iommufd, preserve the state of the
-> attached iommufd also. Basically preserve the iommu state of the device
-> and also the attached domain. The token returned by the preservation API
-> will be used to restore/rebind to the iommufd state after liveupdate.
+On Mon, Mar 23, 2026 at 01:28:13PM -0700, Vipin Sharma wrote:
+>On Tue, Feb 03, 2026 at 10:09:45PM +0000, Samiullah Khawaja wrote:
+>> From: YiFei Zhu <zhuyifei@google.com>
+>>
+>> The caller is expected to mark each HWPT to be preserved with an ioctl
+>> call, with a token that will be used in restore. At preserve time, each
+>> HWPT's domain is then called with iommu_domain_preserve to preserve the
+>
+>Nit: Add () after iommu_domain_preserve, it makes easier to know this is
+>a function.
 
-Lets add token when it is used in restore/rebind patches in future.
+Will do.
+>
+>> diff --git a/drivers/iommu/iommufd/liveupdate.c b/drivers/iommu/iommufd/liveupdate.c
+>> +static int iommufd_save_hwpts(struct iommufd_ctx *ictx,
+>> +			      struct iommufd_lu *iommufd_lu,
+>> +			      struct liveupdate_session *session)
+>> +{
+>> +	struct iommufd_hwpt_paging *hwpt, **hwpts = NULL;
+>
+>We should rename hwpts to something to denote that it is a list.
 
-> diff --git a/drivers/vfio/pci/vfio_pci_liveupdate.c b/drivers/vfio/pci/vfio_pci_liveupdate.c
-> @@ -49,15 +51,32 @@ static int vfio_pci_liveupdate_preserve(struct liveupdate_file_op_args *args)
->  	if (vfio_pci_is_intel_display(pdev))
->  		return -EINVAL;
->  
-> +#if CONFIG_IOMMU_LIVEUPDATE
-> +	/* If iommufd is attached, preserve the underlying domain */
-> +	if (device->iommufd_attached) {
-> +		int err = iommufd_device_preserve(args->session,
-> +						  device->iommufd_device,
-> +						  &token);
-> +		if (err < 0)
-> +			return err;
-> +	}
-> +#endif
-> +
->  	ser = kho_alloc_preserve(sizeof(*ser));
-> -	if (IS_ERR(ser))
-> +	if (IS_ERR(ser)) {
-> +		if (device->iommufd_attached)
-> +			iommufd_device_unpreserve(args->session,
-> +						  device->iommufd_device, token);
-> +
->  		return PTR_ERR(ser);
-> +	}
+Agreed. Will do.
+>
+>> +	struct iommu_domain_ser *domain_ser;
+>> +	struct iommufd_hwpt_lu *hwpt_lu;
+>> +	struct iommufd_object *obj;
+>> +	unsigned int nr_hwpts = 0;
+>> +	unsigned long index;
+>> +	unsigned int i;
+>> +	int rc = 0;
+>> +
+>> +	if (iommufd_lu) {
+>> +		hwpts = kcalloc(iommufd_lu->nr_hwpts, sizeof(*hwpts),
+>> +				GFP_KERNEL);
+>> +		if (!hwpts)
+>> +			return -ENOMEM;
+>> +	}
+>> +
+>> +	xa_lock(&ictx->objects);
+>> +	xa_for_each(&ictx->objects, index, obj) {
+>> +		if (obj->type != IOMMUFD_OBJ_HWPT_PAGING)
+>> +			continue;
+>> +
+>> +		hwpt = container_of(obj, struct iommufd_hwpt_paging, common.obj);
+>> +		if (!hwpt->lu_preserve)
+>> +			continue;
+>> +
+>> +		if (hwpt->ioas) {
+>> +			/*
+>> +			 * Obtain exclusive access to the IOAS and IOPT while we
+>> +			 * set immutability
+>> +			 */
+>> +			mutex_lock(&hwpt->ioas->mutex);
+>> +			down_write(&hwpt->ioas->iopt.domains_rwsem);
+>> +			down_write(&hwpt->ioas->iopt.iova_rwsem);
+>> +
+>> +			hwpt->ioas->iopt.lu_map_immutable = true;
+>
+>It feels odd that this is not cleaned up in this function as a part of
+>its error handling. Now it becomes caller resposibility to handle clean
+>up for the side effect created by this function.
 
-driver/vfio/pci/iommufd.c has all of the code which interacts with
-iommufd in VFIO, I think we should follow the convention and add a
-function there which can be called from here.
+The immutablity is set early during preservation and it might be
+required to unset it in the caller also when error occurs. I have to
+rework this to not acquire a mutex lock in a spin lock, so I think this
+part can also be reworked by doing it in following steps,
 
-> diff --git a/include/linux/kho/abi/vfio_pci.h b/include/linux/kho/abi/vfio_pci.h
-> +/**
-> + * struct vfio_iommufd_ser - Serialized state of the attached iommufd.
-> + *
-> + * @token: The token of the bound iommufd state.
-> + */
-> +struct vfio_iommufd_ser {
-> +	u32 token;
+- Alloc memory for preservation.
+- Mark immutable.
+- Preserve using IOMMU core APIs.
+>
+>IMO, this function should clean up lu_map_immutable instread of callers
+>to make sure they call cleanups. You can also try exploring XA_MARK_*
+>APIs if that can help in cleaning up easily.
 
-This is u32, whereas the token above is u64.
+Agreed. 
+>
+>> +int iommufd_liveupdate_unregister_lufs(void)
+>> +{
+>> +	WARN_ON(iommu_liveupdate_unregister_flb(&iommufd_lu_handler));
+>> +
+>> +	return liveupdate_unregister_file_handler(&iommufd_lu_handler);
+>
+>This seems little insconsistent, iommu_liveupdate_unregister_flb() has
+>WARN_ON and liveupdate_unregister_file_handler() does not.
 
+The error from unregister_file_handler() is propagated to the caller,
+but the error from unregister_flb() is not propagated as need to call
+the unregister_file_handler().
+>
+>Also, refer https://lore.kernel.org/all/20260226160353.6f3371bc@shazbot.org/
 
+Yes. This will need updates according to the new changes in LUO where
+the unregister functions has void return type.
+>
+>> diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
+>> @@ -775,11 +775,21 @@ static int __init iommufd_init(void)
+>>  		if (ret)
+>>  			goto err_misc;
+>>  	}
+>> +
+>> +	if (IS_ENABLED(CONFIG_IOMMU_LIVEUPDATE)) {
+>> +		ret = iommufd_liveupdate_register_lufs();
+>> +		if (ret)
+>> +			goto err_vfio_misc;
+>> +	}
+>> +
+>
+>Do we need IS_ENABLED here? iommufd_private.h is providing definition
+>for both values of CONFIG_IOMMU_LIVEUPDATE.
+>
+>Nit: What is lufs? Should we just rename to iommufd_liveupdate_register()?
+
+Will update both.
+>
+>>  	ret = iommufd_test_init();
+>>  	if (ret)
+>> -		goto err_vfio_misc;
+>> +		goto err_lufs;
+>>  	return 0;
+>>
+>> +err_lufs:
+>> +	if (IS_ENABLED(CONFIG_IOMMU_LIVEUPDATE))
+>> +		iommufd_liveupdate_unregister_lufs();
+>>  err_vfio_misc:
+>>  	if (IS_ENABLED(CONFIG_IOMMUFD_VFIO_CONTAINER))
+>>  		misc_deregister(&vfio_misc_dev);
+>> @@ -791,6 +801,8 @@ static int __init iommufd_init(void)
+>>  static void __exit iommufd_exit(void)
+>>  {
+>>  	iommufd_test_exit();
+>> +	if (IS_ENABLED(CONFIG_IOMMU_LIVEUPDATE))
+>> +		iommufd_liveupdate_unregister_lufs();
+>
+>Same as above.
+
+Will update.
+>
+>> diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
+>> @@ -1427,6 +1429,12 @@ struct iopt_pages *iopt_alloc_file_pages(struct file *file,
+>>  	pages->file = get_file(file);
+>>  	pages->start = start - start_byte;
+>>  	pages->type = IOPT_ADDRESS_FILE;
+>> +
+>> +	pages->seals = 0;
+>
+>This is already 0.
+
+Will update.
+>
+>> +	seals = memfd_get_seals(file);
+>> +	if (seals > 0)
+>> +		pages->seals = seals;
+>> +
+>>  	return pages;
+>>  }
+>>
+>> --- /dev/null
+>> +++ b/include/linux/kho/abi/iommufd.h
+>> +
+>> +struct iommufd_lu {
+>> +	unsigned int nr_hwpts;
+>
+>Should this be u32 or u64?
+>
+>> +	struct iommufd_hwpt_lu hwpts[];
+>> +};
+>> +
+>
+>Should this also be __packed?
+
+Will do both u32 and packed.
+>
+>> +#endif /* _LINUX_KHO_ABI_IOMMUFD_H */
+>> --
+>> 2.53.0.rc2.204.g2597b5adb4-goog
+>>
