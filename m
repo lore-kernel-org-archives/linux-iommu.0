@@ -1,110 +1,133 @@
 Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C11F37F01B;
-	Mon, 23 Mar 2026 08:49:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C1F538A718
+	for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 10:09:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774255778; cv=none; b=EQLxFwwoenha/bg7mThA9yGF9x47yZZW0bSPFECcOPouQsRV7B1nWu3tFd77jVkpMPkPM1oqabQ25kfTUfScg9CUzPrJwAZ6rHiSz9c1qUbx3KjzJNDX76Bt8SP2UQK9K2diFXKKl2M+7+tSKlf5po/p58SqKI8OH66Na6UYDbA=
+	t=1774260552; cv=none; b=fpqwe4czK1kz7EFdO5CvR2k9BTNZpl/qAjIY/GAGfGE5mj5HCjcTGmkXAvzaj2UWI26D0Wx12NOgWxiSkIYGnCVn5VFEDVJkkODc36qOo/fnZua1bjrPI7szuey8bcpOeWyoXgV0WQh0NBU10kJ7ObNFeCO+TdziWQD1TMUk31s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774255778; c=relaxed/simple;
-	bh=apQDKAVtzeWI9NRHQrgtkW1nDuBlvlKb70pvhcicwCI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=f4UIEJhyXhfIZWvOeuIui/BmuQKKqJBcXBVVj1kjm8WuW27MqJJWNEsYW/FmNcJiDY1TEicwd39cqRI7K9PzJVY3Q5ZiuKFu6sAQ3ZpXqVPIcqkh8+K3CW2isoufIyDhLZqHKnbhJ1MlA56284Ff7frHOsgIsUaBbSkS5LLGct4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=qR20M1T8; arc=none smtp.client-ip=210.118.77.12
+	s=arc-20240116; t=1774260552; c=relaxed/simple;
+	bh=CPcTlIJgIyK5T1j0XTj81N/5/UyvrLhYjXjqTIrrO1s=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:MIME-Version:
+	 Content-Type:References; b=oCWuACMpCmHQ5o+dJGyODn3/xbpqbGpFoZnE895csRRykNx6FMKT236CkvpKIZl6RChhnJ8DD5aYt1K3lk1iBs80KROsr/23pCtqXGy1COdmvmf6RfynqxHbwIboHDyJMlRQKr1w0THGV+drXCLaSGJUxV1QvtmxB6pOhPNuHnA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=HXS3Oey5; arc=none smtp.client-ip=210.118.77.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="qR20M1T8"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260323084927euoutp02741697b9873d78530075a5e111d0c62e~fbDhQX7Vx2817128171euoutp02Q;
-	Mon, 23 Mar 2026 08:49:27 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260323084927euoutp02741697b9873d78530075a5e111d0c62e~fbDhQX7Vx2817128171euoutp02Q
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="HXS3Oey5"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260323100909euoutp02bd1dfd03b45b6da956178d73447cd472~fcJHMNtAa2330323303euoutp02X
+	for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 10:09:09 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260323100909euoutp02bd1dfd03b45b6da956178d73447cd472~fcJHMNtAa2330323303euoutp02X
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1774255767;
-	bh=izD245/HWTfY4YvMavmH0UjvQPvQnie+y+bSLStgLq0=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=qR20M1T8vm/bninpWfYJUqD2cujoDpUOWwbtW5EzAYPKXXW/reNN8Na0Z0P22N5Fq
-	 KD9VJ2HiMGpMBAqMkrXfK9sxLV95K7db3i4rPSoQsvdHzljE+ooz9t4d3X72LfLXNP
-	 8uUHazdKV/PWg9ZWyVALYMO1f3Gp3Q87CRMB/Hm0=
+	s=mail20170921; t=1774260549;
+	bh=qDkZBH8D9QGZmacGWO/wLlPET8ve8kNAHImwlz5MpvM=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=HXS3Oey5TnA5+rQRTdN/cvH6JSjyqwrxn7HA6CSMVtlsIh67qFvs6orY9mc7fvpLg
+	 CINXsR5iNEkk+42ywSN77jcAcfdlaHeN+Rh+1uKmH7jShM11Ssq9esrNEu+/eRDFtc
+	 oaKNcsLiM1Sd8G6f20Z0SRRFsRFEHJugn5hUcseQ=
 Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20260323084927eucas1p12614d2febd7dd400e32c691c74e396e2~fbDhDI1aS1911919119eucas1p1N;
-	Mon, 23 Mar 2026 08:49:27 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20260323100909eucas1p20e3bae57f851ea402506f7dbee7ffe3f~fcJG7ohgB3050530505eucas1p2V;
+	Mon, 23 Mar 2026 10:09:09 +0000 (GMT)
+Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
 	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20260323084923eusmtip200157d20bd875804c9aaff92db3a8414~fbDd8kVqg2543925439eusmtip2B;
-	Mon, 23 Mar 2026 08:49:23 +0000 (GMT)
-Message-ID: <1c4e429b-f30c-42a9-8de1-71cb2cbbc114@samsung.com>
-Date: Mon, 23 Mar 2026 09:49:22 +0100
+	20260323100908eusmtip2f7188445ed61b2d39d08c30101273f88~fcJGZFtr60953009530eusmtip2t;
+	Mon, 23 Mar 2026 10:09:08 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-mm@kvack.org, iommu@lists.linux.dev
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Rob Herring
+	<robh@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Oreoluwa Babatunde
+	<oreoluwa.babatunde@oss.qualcomm.com>, Saravana Kannan
+	<saravanak@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Robin
+	Murphy <robin.murphy@arm.com>
+Subject: [PATCH v2 2/7] of: reserved_mem: use -ENODEV instead of -ENOENT
+Date: Mon, 23 Mar 2026 11:08:56 +0100
+Message-Id: <20260323100901.4079171-3-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20260323100901.4079171-1-m.szyprowski@samsung.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v2 0/3] Inline helpers into Rust without full LTO
-To: Miguel Ojeda <ojeda@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Danilo Krummrich <dakr@kernel.org>, Abdiel Janulgue
-	<abdiel.janulgue@gmail.com>, Daniel Almeida <daniel.almeida@collabora.com>,
-	Andreas Hindborg <a.hindborg@kernel.org>, Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux.dev, driver-core@lists.linux.dev, acourbot@nvidia.com,
-	akpm@linux-foundation.org, aliceryhl@google.com,
-	anton.ivanov@cambridgegreys.com, bjorn3_gh@protonmail.com,
-	boqun.feng@gmail.com, david@davidgow.net, gary@garyguo.net,
-	johannes@sipsolutions.net, justinstitt@google.com,
-	linux-arm-kernel@lists.infradead.org, linux-kbuild@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-	linux-um@lists.infradead.org, linux@armlinux.org.uk, llvm@lists.linux.dev,
-	lossin@kernel.org, mark.rutland@arm.com, mmaurer@google.com,
-	morbo@google.com, nathan@kernel.org, nick.desaulniers+lkml@gmail.com,
-	nicolas.schier@linux.dev, nsc@kernel.org, peterz@infradead.org,
-	richard@nod.at, rust-for-linux@vger.kernel.org, tmgross@umich.edu,
-	urezki@gmail.com, will@kernel.org
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20260322194616.89847-1-ojeda@kernel.org>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20260323084927eucas1p12614d2febd7dd400e32c691c74e396e2
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20260323100909eucas1p20e3bae57f851ea402506f7dbee7ffe3f
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260322194701eucas1p1f72625f53e50806fa4f430550f291e76
+X-RootMTR: 20260323100909eucas1p20e3bae57f851ea402506f7dbee7ffe3f
 X-EPHeader: CA
-X-CMS-RootMailID: 20260322194701eucas1p1f72625f53e50806fa4f430550f291e76
-References: <20260322192159.88138-1-ojeda@kernel.org>
-	<CGME20260322194701eucas1p1f72625f53e50806fa4f430550f291e76@eucas1p1.samsung.com>
-	<20260322194616.89847-1-ojeda@kernel.org>
+X-CMS-RootMailID: 20260323100909eucas1p20e3bae57f851ea402506f7dbee7ffe3f
+References: <20260323100901.4079171-1-m.szyprowski@samsung.com>
+	<CGME20260323100909eucas1p20e3bae57f851ea402506f7dbee7ffe3f@eucas1p2.samsung.com>
 
-On 22.03.2026 20:46, Miguel Ojeda wrote:
-> On Sun, 22 Mar 2026 20:21:59 +0100 Miguel Ojeda <ojeda@kernel.org> wrote:
->> I will reply to a couple other bindings in separate emails to avoid
->> spamming people too much.
-> Under UML, I got `-Wstatic-in-inline` for `dma_free_attrs`:
->
->        BINDGEN rust/bindings/bindings_generated.rs - due to target missing
->      In file included from rust/helpers/helpers.c:59:
->      rust/helpers/dma.c:17:2: warning: static function 'dma_free_attrs' is used in an inline function with external linkage [-Wstatic-in-inline]
->         17 |         dma_free_attrs(dev, size, cpu_addr, dma_handle, attrs);
->            |         ^
->      rust/helpers/dma.c:12:1: note: use 'static' to give inline function 'rust_helper_dma_free_attrs' internal linkage
->         12 | __rust_helper void rust_helper_dma_free_attrs(struct device *dev, size_t size,
->            | ^
->            | static
->
-> For some reason, `dma_free_attrs` is not marked `inline` in
-> `include/linux/dma-mapping.h` to begin with, unlike the rest.
->
-> Unless I am missing something and there is a reason for that, it looks
-> like it has just been missing since it was added in commit ed6ccf10f24b
-> ("dma-mapping: properly stub out the DMA API for !CONFIG_HAS_DMA").
->
-> Do you want a patch?
+When given reserved memory region doesn't really support given node,
+return -ENODEV instead of -ENOENT. Then fix __reserved_mem_init_node()
+function to properly propagate error code different from -ENODEV instead
+of silently ignoring it.
 
-Yes please, this looks like an oversight.
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+---
+ drivers/of/of_reserved_mem.c | 7 ++++---
+ kernel/dma/coherent.c        | 2 +-
+ kernel/dma/contiguous.c      | 2 +-
+ 3 files changed, 6 insertions(+), 5 deletions(-)
 
-Best regards
+diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
+index 6705b7afebf0..9aff460a0420 100644
+--- a/drivers/of/of_reserved_mem.c
++++ b/drivers/of/of_reserved_mem.c
+@@ -488,9 +488,10 @@ static int __init __reserved_mem_init_node(struct reserved_mem *rmem,
+ {
+ 	extern const struct of_device_id __reservedmem_of_table[];
+ 	const struct of_device_id *i;
+-	int ret = -ENOENT;
++	int ret = -ENODEV;
+ 
+-	for (i = __reservedmem_of_table; i < &__rmem_of_table_sentinel; i++) {
++	for (i = __reservedmem_of_table; ret == -ENODEV &&
++	     i < &__rmem_of_table_sentinel; i++) {
+ 		reservedmem_of_init_fn initfn = i->data;
+ 		const char *compat = i->compatible;
+ 
+@@ -574,7 +575,7 @@ static void __init fdt_init_reserved_mem_node(struct reserved_mem *rmem,
+ 	nomap = of_get_flat_dt_prop(node, "no-map", NULL) != NULL;
+ 
+ 	err = __reserved_mem_init_node(rmem, node);
+-	if (err != 0 && err != -ENOENT) {
++	if (err != 0 && err != -ENODEV) {
+ 		pr_info("node %s compatible matching fail\n", rmem->name);
+ 		if (nomap)
+ 			memblock_clear_nomap(rmem->base, rmem->size);
+diff --git a/kernel/dma/coherent.c b/kernel/dma/coherent.c
+index 34621acbd3c5..64f9ba618e19 100644
+--- a/kernel/dma/coherent.c
++++ b/kernel/dma/coherent.c
+@@ -370,7 +370,7 @@ static const struct reserved_mem_ops rmem_dma_ops = {
+ static int __init rmem_dma_setup(unsigned long node, struct reserved_mem *rmem)
+ {
+ 	if (of_get_flat_dt_prop(node, "reusable", NULL))
+-		return -EINVAL;
++		return -ENODEV;
+ 
+ #ifdef CONFIG_ARM
+ 	if (!of_get_flat_dt_prop(node, "no-map", NULL)) {
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index 81a2fa4971ee..e6fc6906b5c0 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -483,7 +483,7 @@ static int __init rmem_cma_setup(unsigned long node, struct reserved_mem *rmem)
+ 
+ 	if (!of_get_flat_dt_prop(node, "reusable", NULL) ||
+ 	    of_get_flat_dt_prop(node, "no-map", NULL))
+-		return -EINVAL;
++		return -ENODEV;
+ 
+ 	if (!IS_ALIGNED(rmem->base | rmem->size, CMA_MIN_ALIGNMENT_BYTES)) {
+ 		pr_err("Reserved memory: incorrect alignment of CMA region\n");
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+2.34.1
 
