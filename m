@@ -1,324 +1,139 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012018.outbound.protection.outlook.com [52.101.43.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C323387349
-	for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 23:27:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774308477; cv=none; b=ee6G7KNUuYpZw89tc0HVZiDVqPBfWLq6a/8vI387DxGGiGLbBWOFx6KwMJxlvpgIWGVDWN26kykQb9GmvAhyszTk0Kp443z/37hHQTyrjJF1+yKmag5QzDT2SUZsLKnTF7x85/4GsgDUBAcc9dl3J/ZnaGUxec+sdF1EVSHH4Eg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774308477; c=relaxed/simple;
-	bh=xyTAlm/nDzLtoICM+Sme2HT8wUexULM0SnT44f8iKLs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VqrX3lL48ASkjqHHq84fMYUX6g7oK+G3bxlhEkC73KrH2qnOGaAiapIpcpdY/Dhm8c6hfGfG8eXn8AXM7DV28SAMgtfhb7wOU3QXWn38srtWh48d6/4sjavZOC29qvKX2Ne5Pwl0oroHqKl3wA+OM/0iKlh/vJHFQbO7r5AkRAQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=De0VlBle; arc=none smtp.client-ip=209.85.214.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D24431DF248
+	for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 23:39:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774309169; cv=fail; b=BDSdu+zALDNSI0fV03mSss4mxnJOxTsKAL5DJM7hwDOulotnyqWlBe0zttckB3/TsuruVEJozDF8b3Y2Y+dneAf37CgyxVgo6sGi5ApCz1vIH/VpaU8JF5wetNixh+7NoM6+xRIJAO3Mq4O+U/2bpDB+hqaL5jgOCvg4SxMPQ7g=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774309169; c=relaxed/simple;
+	bh=E75o0yALzhimHVaCl4XySYPAgAaPFYDlgQ25JiDkf6E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=kWNLbCHHn0sSF/QfBrNNZ2JiGvQ7EI4npdCJwmlQD84n7ZuGp7n1+9wKh1BtEWbQuOgDd8/yLTtwdyC9lW6/ZVE4m/K/K4wbJCfSmqkkyaiSixI/OhCduubThhh6LxGHtsLzLyMNZUVusM4MvWIves9jbwWoV6L+Avy+PtEWbqU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=joojDL9E; arc=fail smtp.client-ip=52.101.43.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="De0VlBle"
-Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2b052ec7176so19105ad.1
-        for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 16:27:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1774308475; x=1774913275; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=4ooi+h3bcAW5zP8MJCZDzVnX7Ev9079/RsplLPW5OVU=;
-        b=De0VlBleNhyBwuhgj/+iDNmGmZiwC9WasO2Y3TEy4aCpG7oetAsHwMaf/SAO5ArE2S
-         /gCd3s40/QcogPOAzZOawHy2MLFhWQ0ovJik+1iah0RN7ly9BUurMIWO1DlgE7GnNT2G
-         B00HLKwjVvBD+EkdxAWwJvqnQ5jjUKzmwoli/GbzqEawmGM06JHbkDZDh1TCgZqi9mQz
-         Ng2x9L4ISw6BbYtLLlCTqxQ6ZDuaCuyI6ae4Odrfkyz0evqwzmE9LW2MyPhxNlyPNmBU
-         1R2sHYL9551/RTgrpoFmHE1Eq250UWfgRjIW4v7+ep4vOkwQC7ZrhmipG2wB3Lp6BFXW
-         brxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774308475; x=1774913275;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=4ooi+h3bcAW5zP8MJCZDzVnX7Ev9079/RsplLPW5OVU=;
-        b=Cvrm1E2UNC8uziIfDef7SQSnjKCm01K6oKsD5iTqnqx76Jqq7f/148Y0CCKoOT31bY
-         93n1TjwLr7+YuTe0HqSAZjCoUU6COc7PRetzikXGn52YxMGbLWpKLZ0poWdCHsXAWdCc
-         IoN88RmCBReD+pyKGTlkgvNknFiB7oSb/TGP6/BAyFfB0yx/CbmrA41tM8KMixxza5Pl
-         FAnuFb2uUtAaTlx4+FDaByO/vVYz4sEHiL9u8KsEMxcaFGUkYNyaaMZXRfJIsunb00L+
-         n/OJUrWrDpiT7cjOkZpHHwrDXloBZwKK3JIhUTwwd4BQpjyMtxbxffplu9isf3QwiDHb
-         Rt1w==
-X-Forwarded-Encrypted: i=1; AJvYcCXdrHt3S8vr18KLKfnzkVLcUdET9bYq+LPVpjPDXA+QQX184Q0wcXvPZrJoiYiU4jIHFONKJw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxpZj329dOkgcZL/SrDL5eSm5FvMCI/DeKKz75TWhFXuYEErTK2
-	uVDJ1qTZg/hViyDtkxle3477R32W6CnPxEnwCa9WmNN0KlvRgNvbqAZZJ/s4NOIolg==
-X-Gm-Gg: ATEYQzwQfqYcdemwpeAQXJ3P/+k5uvBtLd2RDNdLlAK6QU5+9bzcl5W2or3bIUxTh+A
-	9RKosv3T6EobSbRcSZnCNtmeGDQIw4vYzYMU50YCeY2AlIkMdw0YADno16uiepNwJtRdaeD1zLa
-	eCC8V885mqcAr4bO6LSArdjieuGQww7k04Xy+p800excxmoasnwL3NYKqa7jG6bSK/kgrw5dxdF
-	c1NLqi0Z8qe9YXxteyaVDBZPdi25KIqDNkVhJeXYPYAmKV5dW+MhmY+5oKCrdmKjGVIBTWxq2Sh
-	kNGdXa2Xk3RApWvINr7CTXX+pc9su2T4Jb3mwwW8c3nzxBo8WggQ+U2lmyDY6FNqXdVEs45CYMT
-	PyIuy9nUzZax5rD4krm8B7znPV0+vhXGpYT3PbnNtoTG1keO1g6tJ7nUX8Y4esNBrBhH7cxNhcj
-	J9rWYNU6o+zaKv2+sR4No4G2h0S3SvLKVjcbkl1Va8Dng5kG0C8jJyOWAeoQ==
-X-Received: by 2002:a17:902:da89:b0:2b0:5193:1212 with SMTP id d9443c01a7336-2b0a5404e00mr1421495ad.4.1774308473977;
-        Mon, 23 Mar 2026 16:27:53 -0700 (PDT)
-Received: from google.com (60.89.247.35.bc.googleusercontent.com. [35.247.89.60])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b083516cb9sm125384965ad.2.2026.03.23.16.27.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Mar 2026 16:27:53 -0700 (PDT)
-Date: Mon, 23 Mar 2026 16:27:48 -0700
-From: Vipin Sharma <vipinsh@google.com>
-To: Samiullah Khawaja <skhawaja@google.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, 
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>, 
-	Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, 
-	Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>, 
-	Adithya Jayachandran <ajayachandra@nvidia.com>, Parav Pandit <parav@nvidia.com>, 
-	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
-	Pratyush Yadav <pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	David Matlack <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
-	Chris Li <chrisl@kernel.org>, Pranjal Shrivastava <praan@google.com>, 
-	YiFei Zhu <zhuyifei@google.com>
-Subject: Re: [PATCH 01/14] iommu: Implement IOMMU LU FLB callbacks
-Message-ID: <20260323223639.GD2571566.vipinsh@google.com>
-References: <20260203220948.2176157-1-skhawaja@google.com>
- <20260203220948.2176157-2-skhawaja@google.com>
- <20260316165018.GA1768676.vipinsh@google.com>
- <abidn8EGmi88wpCr@google.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="joojDL9E"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=cYpOYve4mzlUL3QzegyFOXH7m+8qheP0qiNt1cK/jNYeLYS4mSPsVLcGvK+3I8LF2LtOi68+LydMv9I0U0dAXGMjFGx2h2lfI+iWcOCr981vapUQwxf/3pIJK96LfcQaDI81O1L28YAhWsROVlVcS5F4pPi7Hdxcr8bx4xlf93eXgTZITsFyy2N+OQvR8yvxHE/PCgVyu5RJqN6oh9sfxBGLBo1/yw4PpycivggdFrymOSqlzNaM2CI78Ue6BqG054qao4TQZvUNPhEHUhvTfyJlldnP4Zrij1+IAEcqN31z+g9TosgAal3w4QEK2kWMeNVxR3ktQTzAet61a+6vXg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=YCuxfgLKJao9yLUDaSFwGGWkoQ2g/tJr6VMY3bUvPbM=;
+ b=FTvkSZ/MWDTY25Abrekaepoi2tI0L2BqKbDt77Lly6WD2jc+/vJ4BScV5R9NkH0SABIA2lJqF+hEyQ1il+EIP0qkfQO4GK6Ot9Kzc4rkC7RV1jNzXhmrow0OvWlC/PClowgaNUWWhPwBqKrcOosFiL+00qhHc7IJ4OKgjw09lu8EtLyFyZSYM08ChAAauMYFZJLFZqWXD3LNfpYfXMoTmlOr09IL1Pz3U6juacVZLq1q0kOB6l4+UwI87vvwuQHrcSXXtyAuZjObMqIIEo/ym5dfJecGF2kXoZL50P/vwtopk7tRAChq7r6eGwV06DXSf51ayuR68iqqndgQ5qy9lg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YCuxfgLKJao9yLUDaSFwGGWkoQ2g/tJr6VMY3bUvPbM=;
+ b=joojDL9EIwKjmh3Pmt5PmnBMKvhS5sYcaNJA3OiXQllRM7va+bFBI/eP+Id6D9BnrSvBp2hh9ynK3xBZYZTlzOg1CYM1H9tAyrp4OBOeL58h4H4eg+USXg6NiE9KrVJwLOOWhbeRq9lOi3oEQ6VRhBqh29RA0XQWRomao27u05wAdEi4drMkFix58YfClxATxOiPOEFXSWbHCXhcBC1zHXotwZ/0O7/1hejZPbT5Vmw89Z2MWpMmSfC3zz8EVPCXblwqHDuU4VKQ4K3tkwGATHAyIPvvtZY++nE4bzLNohkAbo+Ku+tMs6g3LtG7CxCKNUgxTFfXDRUQuuX8tXyH9Q==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by MN2PR12MB4486.namprd12.prod.outlook.com (2603:10b6:208:263::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9745.20; Mon, 23 Mar
+ 2026 23:39:24 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9745.019; Mon, 23 Mar 2026
+ 23:39:23 +0000
+Date: Mon, 23 Mar 2026 20:39:22 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] iommu/arm-smmu-v3: Do not continue in
+ __arm_smmu_domain_inv_range()
+Message-ID: <20260323233922.GU7340@nvidia.com>
+References: <20260321225041.11090-1-nicolinc@nvidia.com>
+ <20260321225041.11090-2-nicolinc@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260321225041.11090-2-nicolinc@nvidia.com>
+X-ClientProxiedBy: BLAPR03CA0060.namprd03.prod.outlook.com
+ (2603:10b6:208:32d::35) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <abidn8EGmi88wpCr@google.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|MN2PR12MB4486:EE_
+X-MS-Office365-Filtering-Correlation-Id: beab67ed-9594-4b33-5da2-08de893569e7
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|366016|1800799024|18002099003|56012099003|22082099003|3613699012;
+X-Microsoft-Antispam-Message-Info:
+	XG04As+k7mlPAFIrtQvjIxo7VLadLJuPe5lN5Vlv5kZGHUU0jEtTXdrVrAyaX81Dm2YArWSAV8H+jdHOiTwZGLwiNg0bTid28nSB8R/zu2Dqwd4PBCsmsNVI4AX/XHh8uIcObHlFZawzUKHtEIo0zKvQNVWOjvMERoAl5mfDKESdqqOKxfSYmVUy9OqiZpQH7ARh4Oc4cOC+6tz19g13d0YSuePwvqfIN7PDHBHh+axdZPzPF5TH06zhRBZaDx1XEkUCobrdj01NQVljibfiR8rxEOA4bN2keB1CkT0x6EXdrpARGpS21lHfaJugAAnuYY3Te1Oo0e1tizWDMzhjWwcQWIeGyEX9Yzq5ktgJ1NscDIgT5cKxA3wFVZuzV8amD0r7+dsTDenPrSdWqOeM3ntPfJOuYqX4evetB//0UcdTLSMjIJ5IKlFmJ7hbLunidRUMdws44XWJL/kgb+plV1wfdgwCTLDSmHElRfnUk8njZ4/8mZbBHNzhbzSHh16xES92mIDYSlLpxdVepWfCjnQoJiQRkEWfaXVdVN9JN33XZ30oQ5E0wYoYLuv96F+9+4PBGpKevyui6MX4Tf+fdLAasd/beILVPWp1Ur8thrAZHceVGNYXUudVk10maLxBen5WReBwgfy1XDbvsSTOBf+GkIeBpGSAxs5rRG4dnqDM+v+3PqYY7lSaJJKNWNRHfgSID0aQPwrUwL0YMpPgdnPlR4XK8198QJMV8kfgMqp/JLOARFF/lDw6DAu3WJWp1FEJAJEZWrFkTUSQrUcgoKJUJYfoOvk3fqdzPf8f0Tg=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(18002099003)(56012099003)(22082099003)(3613699012);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?YmaeWMXdexZwLC9jwj3ishbecvBn5E3aeT6HjL2WFwc4Hmrv8rK3sahZNHH0?=
+ =?us-ascii?Q?pbQ0e4w2Ud3LcpcGh3Z+xUjX22H2FZRSlc9dGWxxSQZcGpmFlrWEPkPYNqC7?=
+ =?us-ascii?Q?T/L5Q+pcFj9e2U6vkbnQT3BhioqheNNQwAGVZjuFFw07MZW3UNUKRI1zaSeU?=
+ =?us-ascii?Q?sCVfJdLhg8kdNZcMIConHu1tjZbXN7jabB6/0CFrpfYOFXeDztZVvszsg33a?=
+ =?us-ascii?Q?D0wPNMfE+cWiNdymPPw8xinhvhH9VfEkiC6/N30ry1cjS0g7b4pb+uA2+bVB?=
+ =?us-ascii?Q?VUYn6xH5NyyEjJHs/FOAAUH7BzPX5Q25Vpzz29/I9rx4VAXGC4RtARPAmiW/?=
+ =?us-ascii?Q?1sPe42AjaAd38a6N+GKXrytTVWbwe53f+k7QBKVaa8/TYbmvfFlCEo2Ngm68?=
+ =?us-ascii?Q?Tz1ZLURVx0bSRIPoYdFGbr/KHPY6wa26g3iUUvGJb5mwlQ1xkMwjloQdIU7T?=
+ =?us-ascii?Q?GsvlH2lTDATjv87j+u7tOwwbwRXDhVh1+5Xs1cZ1fLQ9u18p5wQE5NjXCdK4?=
+ =?us-ascii?Q?EsSDjTnqyTY80baidTLV5SmyqRzhWGYalZoywR6W2/JerFeWQh4ScXxYfJSM?=
+ =?us-ascii?Q?2W12FPbbdAtE+Ox0Bjv7IPNCzuYVnWeUkrzrf67OBoiWMjh/EvhUi8U8S44a?=
+ =?us-ascii?Q?YTCbAZwxRZmKzklNRybLfgulj+uxMqVMemmvYYBg7thRkRVwkRv+XUcIYPIB?=
+ =?us-ascii?Q?M2M1kif3ePO+24Y6YSufFqyRIiFxbh8OohTkjgpdMLLqG5KMWW90I7b0xp+c?=
+ =?us-ascii?Q?gxnhucQ9sMygoKB55KFSPSNPut0Chj4T8o6GO5s4jRkgwpAzelQBS02mHTrR?=
+ =?us-ascii?Q?WmhfmrEwBkFtLdr6S369nvDkTLOk+I30InW4WFRFnGHl+zDtT6+lRfgwaeUr?=
+ =?us-ascii?Q?avuivAjt9PBZRxraQFVnTnSbwcZ0Jasex9KUFwGUaWxSiHLjjtDtleQsrz/d?=
+ =?us-ascii?Q?96OsxBcQVb71wxPrrFpcNbEIzuMr7QUhQIJQZCzoeP+GBHGlh0oOicYN5itM?=
+ =?us-ascii?Q?/IlRUmzz2dIAoCQDF+yo/TgAwjAzBC/+gwzFU99f9DtuLg5gwNMnfvYvOg/i?=
+ =?us-ascii?Q?LBpwXeNFUEKKzahGbbxXTR4cDYuC1Yx3pFls2enMhQOIXzJYaXQXs7pda/DO?=
+ =?us-ascii?Q?DJ12N7DhKwnmgkzV4BkNtHpRKLz6b6K86piV/d/gUTfItIuCFNtZRoBxlNXL?=
+ =?us-ascii?Q?DwS0Bd7z5FVmMDcFfF0GR2ObgJ6iN0ro89ybh4hIXQCi2choa1X/aC6wYhdh?=
+ =?us-ascii?Q?T1nKr/ASpj2S4Rt6qFo+E5IDaS7n5EfGhp9QL2wxd4UavctNn2agusCeePm5?=
+ =?us-ascii?Q?r7nU6Z2dDh9Jnaaiwrlu1MwtygCR5NKtFKtDCwLsgqbPvVQSpRpaYBvlA1ME?=
+ =?us-ascii?Q?ybTAOpYUJhtvuEFyE3HYF7POsIkjnTupb37atHAAmI5uXghOr6jHpzMXh2Ox?=
+ =?us-ascii?Q?w13bl1B9IgzXiNGKWGlp7YglINKBmWAD8uaIOTjlTBt3guL5+6nnqTzUQGzD?=
+ =?us-ascii?Q?4OwUELzA3F9RwaQ3M0bRfJQL1WgmaLuRBSZKRDLr7PB9IgPmPytHje6YyGJw?=
+ =?us-ascii?Q?cfWExZvH5+yXoeF+ca9J7bP1LpyKFIMDT0a9QWge+GyMlHS93jbK+JkgaXRQ?=
+ =?us-ascii?Q?kss300C5umkZ8FSOcfFlHTAex/36EIBbsEDOk3IoYK5uDNZo+1Tc5fLWOQ60?=
+ =?us-ascii?Q?LEoyePEonGPCuZWgxgMbq3ibED7OpFBscYLuJxG5oJ3tC9/v?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: beab67ed-9594-4b33-5da2-08de893569e7
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2026 23:39:23.8603
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7sb0q7Clf9nINDj9ac/1TKIkAmoQg6ssTL3hyLqraqRLe3XG+JrNW7J1OmkhDyKq
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4486
 
-On Tue, Mar 17, 2026 at 01:06:34AM +0000, Samiullah Khawaja wrote:
-> On Mon, Mar 16, 2026 at 03:54:50PM -0700, Vipin Sharma wrote:
-> > On Tue, Feb 03, 2026 at 10:09:35PM +0000, Samiullah Khawaja wrote:
-> > > +config IOMMU_LIVEUPDATE
-> > > +	bool "IOMMU live update state preservation support"
-> > > +	depends on LIVEUPDATE && IOMMUFD
-> > > +	help
-> > > +	  Enable support for preserving IOMMU state across a kexec live update.
-> > > +
-> > > +	  This allows devices managed by iommufd to maintain their DMA mappings
-> > > +	  during kexec base kernel update.
-> > > +
-> > > +	  If unsure, say N.
-> > > +
-> > 
-> > Do we need a separate config? Can't we just use CONFIG_LIVEUPDATE?
+On Sat, Mar 21, 2026 at 03:50:40PM -0700, Nicolin Chen wrote:
+> The loop in the __arm_smmu_domain_inv_range() is a while loop, not a for
+> loop. So, using "continue" is wrong that would fail to move the needle.
 > 
-> We have a separate CONFIG here so that the phase 1/2 split for iommu
-> preservation doesn't break the vfio preservation. See following
-> discussion in the RFCv2:
+> Meanwhile, though the current command is skipped, the batch still has to
+> go through arm_smmu_invs_end_batch() to be issued accordingly.
 > 
-> https://lore.kernel.org/all/aYEpHBYxlQxhXrwl@google.com/
-
-Sounds good. 
-
-> > > +static void iommu_liveupdate_free_objs(u64 next, bool incoming)
-> > > +{
-> > > +	struct iommu_objs_ser *objs;
-> > > +
-> > > +	while (next) {
-> > > +		objs = __va(next);
-> > > +		next = objs->next_objs;
-> > > +
-> > > +		if (!incoming)
-> > > +			kho_unpreserve_free(objs);
-> > > +		else
-> > > +			folio_put(virt_to_folio(objs));
-> > > +	}
-> > > +}
-> > 
-> > Instead of passing boolean, and calling with different arguments, I
-> > think it will be simpler to just have two functions
-> > 
-> > - iommu_liveupdate_unpreserve()
-> > - iommu_liveupdate_folio_put()
+> Thus, use "break" to fix the issue.
 > 
-> This is a helper function to free the serialized state without
-> duplicating multiple checks for various type of state (iommu,
-> iommu_domain and devices).
-> 
-> Do you think maybe I should add these two functions and make it call the
-> helper?
+> Fixes: 587bb3e56a2c ("iommu/arm-smmu-v3: Add arm_smmu_invs based arm_smmu_domain_inv_range()")
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Read the next response.
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-> > 
-> > > +
-> > > +static void iommu_liveupdate_flb_free(struct iommu_lu_flb_obj *obj)
-> > > +{
-> > > +	if (obj->iommu_domains)
-> > > +		iommu_liveupdate_free_objs(obj->ser->iommu_domains_phys, false);
-> > > +
-> > > +	if (obj->devices)
-> > > +		iommu_liveupdate_free_objs(obj->ser->devices_phys, false);
-> > > +
-> > > +	if (obj->iommus)
-> > > +		iommu_liveupdate_free_objs(obj->ser->iommus_phys, false);
-> > > +
-> > > +	kho_unpreserve_free(obj->ser);
-> > > +	kfree(obj);
-> > > +}
-> > > +
-> > > +static int iommu_liveupdate_flb_preserve(struct liveupdate_flb_op_args *argp)
-> > > +{
-> > > +	struct iommu_lu_flb_obj *obj;
-> > > +	struct iommu_lu_flb_ser *ser;
-> > > +	void *mem;
-> > > +
-> > > +	obj = kzalloc(sizeof(*obj), GFP_KERNEL);
-> > > +	if (!obj)
-> > > +		return -ENOMEM;
-> > > +
-> > > +	mutex_init(&obj->lock);
-> > > +	mem = kho_alloc_preserve(sizeof(*ser));
-> > > +	if (IS_ERR(mem))
-> > > +		goto err_free;
-> > > +
-> > > +	ser = mem;
-> > > +	obj->ser = ser;
-> > > +
-> > > +	mem = kho_alloc_preserve(PAGE_SIZE);
-> > > +	if (IS_ERR(mem))
-> > > +		goto err_free;
-> > > +
-> > > +	obj->iommu_domains = mem;
-> > > +	ser->iommu_domains_phys = virt_to_phys(obj->iommu_domains);
-> > > +
-> > > +	mem = kho_alloc_preserve(PAGE_SIZE);
-> > > +	if (IS_ERR(mem))
-> > > +		goto err_free;
-> > > +
-> > > +	obj->devices = mem;
-> > > +	ser->devices_phys = virt_to_phys(obj->devices);
-> > > +
-> > > +	mem = kho_alloc_preserve(PAGE_SIZE);
-> > > +	if (IS_ERR(mem))
-> > > +		goto err_free;
-> > > +
-> > > +	obj->iommus = mem;
-> > > +	ser->iommus_phys = virt_to_phys(obj->iommus);
-> > > +
-> > > +	argp->obj = obj;
-> > > +	argp->data = virt_to_phys(ser);
-> > > +	return 0;
-> > > +
-> > > +err_free:
-> > > +	iommu_liveupdate_flb_free(obj);
-> > 
-> > Generally, I have seen in the function goto will call corresponding
-> > error tags, and free corresponding allocations and all the one which
-> > happend before. It is easier to read code that way. I know you are
-> > combining the free call from iommu_liveupdate_flb_unpreserve() also.
-> > IMHO, code readability will be better this way.
-> 
-> I had that originally when I was writing this function, but it gets
-> really cluttered :(. Instead it is more clean without code duplication
-> using this one cleanup function here to free the state on error and also
-> when doing unpreserve. Please consider this a "destroy" function of obj
-> and it can be called from 2 places,
-> 
-> - Error during allocation of internal state.
-> - During unpreserve.
-
-It is removing code duplication in
-
- - iommu_liveupdate_flb_preserve()
- - iommu_liveupdate_flb_unpreserve()
-
-However, there is still duplicate code in iommu_liveupdate_flb_finish().
-Another thing is iommu_liveupdate_free_objs() is doing two different
-things based on current liveupdate state (before or after kexec) passed by a
-bool argument. IMO, it is cleaner if we explicitly write whether we are
-doing unpreserve or just folio put.
-
-I meant something like:
-
-static void iommu_liveupdate_unpreserve_free(u64 next)
-{
-       while (next) {
-               struct iommu_objs_ser *objs = __va(next);
-               next = objs->next_objs;
-               kho_unpreserve_free(objs);
-       }
-}
-
-static void iommu_liveupdate_folio_put(u64 next)
-{
-       while (next) {
-               struct iommu_objs_ser *objs = __va(next);
-               next = objs->next_objs;
-               folio_put(virt_to_folio(objs));
-       }
-}
-
-static int iommu_liveupdate_flb_preserve(struct liveupdate_flb_op_args *argp)
-{
-
-...
-
-err_free_devices:
-	iommu_liveupdate_unpreserve_free(obj->ser->devices_phys);
-err_free_iommu_domains:
-	iommu_liveupdate_unpreserve_free(obj->ser->iommu_domains_phys);
-err_free_ser:
-	kho_unpreserve_free(obj->ser);
-err_free_obj:
-	kfree(obj);
-	return PTR_ERR(mem);
-}
-
-static void iommu_liveupdate_flb_unpreserve(struct liveupdate_flb_op_args *argp)
-{
-	struct iommu_lu_flb_obj *obj = argp->obj;
-
-	iommu_liveupdate_unpreserve_free(obj->ser->iommus_phys);
-	iommu_liveupdate_unpreserve_free(obj->ser->devices_phys);
-	iommu_liveupdate_unpreserve_free(obj->ser->iommu_domains_phys);
-	kho_unpreserve_free(obj->ser);
-	kfree(obj);
-	argp->obj = NULL;
-}
-
-static void iommu_liveupdate_flb_finish(struct liveupdate_flb_op_args *argp)
-{
-	struct iommu_lu_flb_obj *obj = argp->obj;
-
-	iommu_liveupdate_folio_put(obj->ser->iommus_phys);
-	iommu_liveupdate_folio_put(obj->ser->devices_phys);
-	iommu_liveupdate_folio_put(obj->ser->iommu_domains_phys);
-	folio_put(virt_to_folio(obj->ser));
-	kfree(obj);
-	argp->obj = NULL
-}
-
-This way code is pretty explicit and clear what is happening. Let me
-know if you meant something else by cluttered code.
-> > 
-> > > +	return PTR_ERR(mem);
-> > > +}
-> > > +
-> > > +static void iommu_liveupdate_flb_unpreserve(struct liveupdate_flb_op_args *argp)
-> > > +{
-> > > +	iommu_liveupdate_flb_free(argp->obj);
-> > > +}
-> > > +
-> > > +static void iommu_liveupdate_flb_finish(struct liveupdate_flb_op_args *argp)
-> > > +{
-> > > +	struct iommu_lu_flb_obj *obj = argp->obj;
-> > > +
-> > > +	if (obj->iommu_domains)
-> > > +		iommu_liveupdate_free_objs(obj->ser->iommu_domains_phys, true);
-> > 
-> > Can there be the case where obj->iommu_domains is NULL but
-> > obj->ser->iommu_domains_phys is not? If that is not possible, I will
-> > just simplify the patch and unconditionally call
-> > iommu_liveupdate_free_objs()?
-> 
-> Are you suggesting that on flb_finish() the obj->iommu_domains should be
-> non-NULL as flb_retrieve() succeeded? If yes, then that is correct. I
-> will update this to call the free_objs() without checking
-> obj->iommu_domains. I will do same for other types.
-
-Yes. 
-
+Jason
