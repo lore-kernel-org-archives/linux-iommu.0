@@ -1,166 +1,132 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+Received: from mail-yx1-f45.google.com (mail-yx1-f45.google.com [74.125.224.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E25783BD63B
-	for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 17:18:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB5E43C8710
+	for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 17:31:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774286301; cv=none; b=YkHpjLHqnyQ+20eybn1Scnqq9GfcqeUCM1UkUOd5fUEt5PHjaGuj1FP2BIlbxSQZkBtHd894wkpl8keKLbxkkvHH6p6pwd3aCViMKbVv8K3r6Sq3NyyjFfbHEqvh/8vGhDJ7FBbRD5xz1bGxCPoYsJ0xLVj807uTM3v4T7E/4CE=
+	t=1774287104; cv=none; b=XtXfBGzXZy/bxY+aq2BZqUEXGxL2m0s6SlIHUFP1HiXZH0NS4s+IbinilGOOOQV9EIVU+znpNF8K1iZtD9swoihWMJ5vFO64ghKXqBJfiqedEDXe8sl8ADCTE4b/4EbKsfFpjtAn+DUrkBdjMtZszTCP5S5ZhPOTpinvHZetgRg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774286301; c=relaxed/simple;
-	bh=SwZSBJ5dtFN1L7uizFJq7oOv2U7xSNXH+wFesahHWcM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=btLnMmNkVzgMEp1oGQMBVwsu9Sxl+L88sLOOcDmBhoCyk5pcay/uT6aONQbvXi2/i2v4ROfw+lNwLy9yD7NWkgIjrDM2LxIVv7v1tHj3Ky+XUgbevY3QJvcB2PFMnBfRsbZ4KiFem7n0sAhcnKcCGtqbrFSGsL3hJ+U494UnKkA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=ec/oTNGm; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1774287104; c=relaxed/simple;
+	bh=mBhx/iGMR6MnTH62/x8K0OvjgYxObT0PTNXZZqCOHkA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Q/pH2uY2nOVgpZm2ze/uRNGV72TOpktaz6QTOpopfvJGORvn9UoxbWHEusuCwNN6eX4ONspElSoLVtNV/0F1gzoc5qHv1CYzfvwIDlMY8Aco+ty0wBlF4bdQwubMxUa5clumKZf+N/Ty6fr6AYy/7/iYJ4q7Xbn7aEPvOFmuJH8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=VbNXjY1d; arc=none smtp.client-ip=74.125.224.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ec/oTNGm"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-48702d51cd0so29790445e9.2
-        for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 10:18:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="VbNXjY1d"
+Received: by mail-yx1-f45.google.com with SMTP id 956f58d0204a3-64e9f9226a7so3919209d50.2
+        for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 10:31:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1774286296; x=1774891096; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=QEgEB+FhJamQekHHnnzeHBVC3CCx1oLXNDdzh85xf2M=;
-        b=ec/oTNGmCG2Um8F6GIE+KgOb2zAokeONKDDyVWX2+1Z1O1bNBNn4fNzoWQ1fr9HgqI
-         aTbvNZ7D6y1wE9Aegj7iqYnkwClMREJYANVv9vm79X7x+9JNdMywLTg9z9QpQazYKYx2
-         eQm8L3v421Ua9S17OS6xnG6O5G3Nk/Q8RUtIOZVZPJgHDJWFlmOzrwwbtvbAvWDLU9/M
-         sY3OiV/+HJldoPRPxNGLSKXRWIU2tVVVSQ3sLXC4TPPiYawgFzhN9O5POJmXiFHylTbX
-         gvDxNnTY4W0btS0Fuz+QRoRLgRTzF+GHSRp9GyP1PmbKr2FCbtFxUbe1sKt1udLK6o2+
-         kCoQ==
+        d=ziepe.ca; s=google; t=1774287102; x=1774891902; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=L7FawmBPSYeihgLrf84TswLXrZodyF3L+TdguCBeUDA=;
+        b=VbNXjY1d8uKkb2SWV7dmbBKKpRjp41TODq6ndGf+X+ctce8o377CCUECBXZ5hPui9B
+         gujA+Dpy6d8PotFCGXDnrdp1DFW1DL+KazApsqL1TJhJ4Pk9SqxEhlrcwL0z0uMgNLVI
+         l2Hzsr5WrqrTFbIMOmvpV4mZaQIVquyrnhImQqVYwBayczrUD82AE8cim5jtQBF+J33P
+         ujx3dygD5Wpv252Usu7zFYuH1hftSeNb9MYUEcxC3tz4XznE6yfq0P+1xBG0dc/K1nFh
+         D/JpT25BkcNlc5HBXoE05EEgKkSUCMTHjzKOuxKhCjDl9wmD/BBWQmSuHGPdMAH4mEXD
+         l8vg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774286296; x=1774891096;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=QEgEB+FhJamQekHHnnzeHBVC3CCx1oLXNDdzh85xf2M=;
-        b=fdCmNP30rvoadXHqMUx5ahEWYOL1jIbBtmc7uk0zz7Q9Z8pc666UK1OCuK2sB4+ZlE
-         788lFD0HdVRR115TYZofsQqBGmabAnStaKkcD3CHh3E9hNXOHT2N+LvBna0PaiQTeajY
-         1mpYsFb1HtebwSeRecSb84nrsC8KBA7/6xZw0LRyeU85YpcJZKGE6rqMEtHV3FWqGQRk
-         p9Z5GuQSbmybFLvVYkuxxoMRk43EnBqYTTgePc2/UiQ8T9t3P3nPj5MfgsyMBXlMiXQl
-         +Q/sulVBqf3PIYs4tnVjkUhHWEeColKHSFriE44TNkxk5x4x1E/3cRlrRy8QtxkLl5kG
-         AS+Q==
-X-Forwarded-Encrypted: i=1; AJvYcCW4VpK43Mf8r7oT1raSAIAFf9tEwoX5YdzBOIJiy2jO4MoWqaV41CWmrd4a1VAaeXN3wQhSig==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwgWj2KmaJtOsBzRiMCINDp94K3Y+dtcTbgqF8PCIz8jptdUWWf
-	8oKzcMpgYUSiosnh0tt3mcUQXf8pSobXtjmCYTpyEligoW3M5qc4n+vi/gSDtjDKodo=
-X-Gm-Gg: ATEYQzzMGpiwxi339dtkljKio1k1qovQ52mmwSt+MwbPjPC5jaO89IfQt69U/p+5UT+
-	Lf/C6uExP7RKWexLBqccjWf6xbMWNAxHl3nSP6q7a/UoO0l4DAT5LKGh766td5Ok113RJWWmYEK
-	ND2vVzezAhBQfv5KjoiyfBt9JNsGaRkh8AddevWwfSdFDCQG0LvDYiypveIFVm13qW/Mi4FpEbV
-	R55V1cdlyhaldzizBadEATY3nlZZDLT+/GM9W/tF39gI7PGtb2pxJHNXTnU5NbKsVRZDGgWX+7V
-	iMeN2E3AywS6cO6UMKdQvifeZJ6IF1x3/mUzHISJz3gCN+S9zioZscKcKzbFAtzcuOfTeZ5nJP3
-	9tNe8Hge4M1yKdgrwSt+Oq9dCMXvCU6uGs8RTq68+G29DCUIXX5Ab0OGp2p/x3cL6MwfKRot0Sp
-	lD6d6LrWGcXt5F8KOk6DEphLmw8aOaqfI=
-X-Received: by 2002:a05:600c:c083:b0:485:3f72:324d with SMTP id 5b1f17b1804b1-486fee0481amr142927935e9.14.1774286295324;
-        Mon, 23 Mar 2026 10:18:15 -0700 (PDT)
-Received: from [10.11.12.108] ([79.115.63.77])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43b644bf1c5sm33929334f8f.14.2026.03.23.10.18.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Mar 2026 10:18:13 -0700 (PDT)
-Message-ID: <67b32e90-1f60-4bf5-b534-b4a901d5a796@linaro.org>
-Date: Mon, 23 Mar 2026 19:18:08 +0200
+        d=1e100.net; s=20251104; t=1774287102; x=1774891902;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=L7FawmBPSYeihgLrf84TswLXrZodyF3L+TdguCBeUDA=;
+        b=bKgXFwLMqh0FwAtpgk+cAgsRAK6N/mZIPImmZ2aG6wl8Ul15DZQAJPvcZlotnZoxQa
+         rT2h6d42GSCYxNM++bWOIX2ftyWsgRBFTCjDmxOU7X+oz2T1UotWGWZ+8Pz5dvwAhttd
+         JNKww4tnfct+HzhzUyUkteLYXhSYOuJuDmr8OJ1pJbyM0W53T7zjlDUnNf9zkppbaxIn
+         Hhn4hZ/dKGFOcDkZtZOsTZuQ0lTWs5n4fs0eqCnOVGciwmfwvqcuZCbvS9t638vPT/R4
+         iBoRCbjNcMs8AeeRxOw0mV0BBDA5EThNJhrDEx5652xca5d9y/C234PWKKIeoNOGzvii
+         3IFw==
+X-Forwarded-Encrypted: i=1; AJvYcCWbc6DdApDJ6rmZApEJ8Wj90H1iesEz41gYhli3ocrQtRnMj3aYvga3TJ9G98On6weXnpmgtg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwYjyUN3vS8u8aMPBSyv1GoHNy8zz6ZObFgpJNVyPVEmAnUZfxC
+	PnjcKhB1NNUqrEh9ojaJGcvyuXIL51Fp/g2M8IA3xR98RV2z/yNbWIgsqFX1hA98zqQ=
+X-Gm-Gg: ATEYQzzdyazt1V4ckIXiGtoxixF2rU5OGdHTAD0NCP4/CGisvqdjBr8EBhoJ44DGU7s
+	zbqSnPdECv67jjKLgZigXcG2wBE2NnnvbiSUSsCAFdXoe0wvKbdD8bjEzmdfGNm6ssWZiGB98Or
+	ITa8yCWzz/SvABEv9SJLrM/p8UdR5YFxzf/1bklYzfcl8f4txC+Lyti1i/QAsm8KXOKlpvgIImb
+	yRxJMMJRgO4MEJ1Q1Vemjvd0LVKCupT0dAn3zWG7X0jSVJyaKoAmxD6EaasXnrrFGIRAI6Vpi+8
+	yddDxdRI5/H7UTa2A8iiAsNxaFuZzTn74olgduaZIHcOSjD6yd01gOuoCeuvbigGktigIVj5Hak
+	ZbGTirGuFGO/FZAcL2Hzp8v1q3NH0f6chg3SzJ2ADzyA/m2cI2acCO/wru+ZCQPsDPeUo/6ibhF
+	uXFoKrA/qn9VIuGM70zP7L5Z+LEe2ohCkVDDv2J0MuRXtIp32jriklmycXV1fDfUx+PmP/6w==
+X-Received: by 2002:a53:eccf:0:b0:64c:9a6d:66bd with SMTP id 956f58d0204a3-64eaa6a2105mr10583694d50.8.1774287100249;
+        Mon, 23 Mar 2026 10:31:40 -0700 (PDT)
+Received: from ziepe.ca (mctnnbsa70w-159-2-73-22.dhcp-dynamic.fibreop.nb.bellaliant.net. [159.2.73.22])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-50b36d071aasm88833571cf.11.2026.03.23.10.31.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Mar 2026 10:31:39 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1w4j7q-000000006of-48OA;
+	Mon, 23 Mar 2026 14:31:38 -0300
+Date: Mon, 23 Mar 2026 14:31:38 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Tudor Ambarus <tudor.ambarus@linaro.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	"Rob Herring (Arm)" <robh@kernel.org>,
+	Joerg Roedel <jroedel@suse.de>, Bjorn Helgaas <bhelgaas@google.com>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	peter.griffin@linaro.org, andre.draszik@linaro.org,
+	willmcvicker@google.com, jyescas@google.com,
+	kernel-team@android.com, stable@vger.kernel.org
+Subject: Re: [PATCH] iommu: Fix bypass of IOMMU readiness check for
+ multi-IOMMU devices
+Message-ID: <20260323173138.GB8437@ziepe.ca>
+References: <20260323-iommu-ready-check-v1-1-5f6fef8f9f59@linaro.org>
+ <20260323135414.GA8437@ziepe.ca>
+ <1062b66d-e4d0-4eee-8fc2-dbb65491a01b@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/4] iommu: Get DT/ACPI parsing into the proper probe
- path
-To: Robin Murphy <robin.murphy@arm.com>,
- Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo
- <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>,
- Russell King <linux@armlinux.org.uk>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Danilo Krummrich <dakr@kernel.org>, Stuart Yoder <stuyoder@gmail.com>,
- Laurentiu Tudor <laurentiu.tudor@nxp.com>, Nipun Gupta
- <nipun.gupta@amd.com>, Nikhil Agarwal <nikhil.agarwal@amd.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>
-Cc: linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-pci@vger.kernel.org,
- Charan Teja Kalla <quic_charante@quicinc.com>,
- Peter Griffin <peter.griffin@linaro.org>,
- =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>,
- Juan Yescas <jyescas@google.com>, kernel-team@android.com
-References: <e3b191e6fd6ca9a1e84c5e5e40044faf97abb874.1740753261.git.robin.murphy@arm.com>
-Content-Language: en-US
-From: Tudor Ambarus <tudor.ambarus@linaro.org>
-In-Reply-To: <e3b191e6fd6ca9a1e84c5e5e40044faf97abb874.1740753261.git.robin.murphy@arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1062b66d-e4d0-4eee-8fc2-dbb65491a01b@linaro.org>
 
-Hi, Robin,
+On Mon, Mar 23, 2026 at 06:46:39PM +0200, Tudor Ambarus wrote:
 
-On 2/28/25 5:46 PM, Robin Murphy wrote:
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index a3b45b84f42b..1cec7074367a 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -414,9 +414,21 @@ static int iommu_init_device(struct device *dev)
->  	if (!dev_iommu_get(dev))
->  		return -ENOMEM;
->  	/*
-> -	 * For FDT-based systems and ACPI IORT/VIOT, drivers register IOMMU
-> -	 * instances with non-NULL fwnodes, and client devices should have been
-> -	 * identified with a fwspec by this point. Otherwise, we can currently
-> +	 * For FDT-based systems and ACPI IORT/VIOT, the common firmware parsing
-> +	 * is buried in the bus dma_configure path. Properly unpicking that is
-> +	 * still a big job, so for now just invoke the whole thing. The device
-> +	 * already having a driver bound means dma_configure has already run and
-> +	 * either found no IOMMU to wait for, or we're in its replay call right
-> +	 * now, so either way there's no point calling it again.
-> +	 */
-> +	if (!dev->driver && dev->bus->dma_configure) {
-> +		mutex_unlock(&iommu_probe_device_lock);
-> +		dev->bus->dma_configure(dev);
-> +		mutex_lock(&iommu_probe_device_lock);
-> +	}
+> Downstream we have a display controller that's using:
+> 	iommus = <&sysmmu_19840000>, <&sysmmu_19c40000>;
+> 
+> These are 2 distinct platform devices, they probe independently, they
+> each call iommu_device_register() independently.
 
-I was chasing the "something fishy" dev_WARN on a 6.19+ downstream
-android kernel and while looking at the IOMMU code I couldn't help
-myself and ask whether we shall prevent concurrent execution of
-dma_configure().
+Sure, I guessed that is what you ment..
 
-It seems to me that while the IOMMU subsystem is executing
-dma_configure(), the deferred probe workqueue can concurrently pick up
-the same device, enter really_probe(), set dev->driver, and execute
-dma_configure(). Is it worth protecting against this?
+Do you have an example of this in an upstream DTS file?
+ 
+> If I understood you correctly, the downstream driver shall model its
+> architecture and call iommu_device_register() only once after both
+> devices are configured.
 
-I can try to prove it if needed, using a downstream iommu driver (sigh).
+No.. I'm not being so perscriptive, I'm just saying that once
+iommu->ops->probe_device() returns then the device is fully setup and
+dev->iommu will operate all of the iommus described in iommus=<..>
 
-Thanks!
-ta
+probe_device() cannot return some half setup device with only some of
+the iommu instances working.
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index e61927b4d41f..5f0c1a8064b5 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -461,9 +461,19 @@ static int iommu_init_device(struct device *dev)
-         * already having a driver bound means dma_configure has already run and
-         * found no IOMMU to wait for, so there's no point calling it again.
-         */
--       if (!dev->iommu->fwspec && !dev->driver && dev->bus->dma_configure) {
-+       if (!dev->iommu->fwspec && !READ_ONCE(dev->driver) &&
-+           dev->bus->dma_configure) {
-                mutex_unlock(&iommu_probe_device_lock);
--               dev->bus->dma_configure(dev);
-+
-+               /*
-+                * Serialize with really_probe(). Recheck dev->driver in case a
-+                * driver bound while we were waiting for the lock.
-+                */
-+               device_lock(dev);
-+               if (!dev->driver)
-+                       dev->bus->dma_configure(dev);
-+               device_unlock(dev);
-+
-                mutex_lock(&iommu_probe_device_lock);
-                /* If another instance finished the job for us, skip it */
-                if (!dev->iommu || dev->iommu_group)
-(END)
+We don't have any core idea of a half setup result from
+probe_device() today.
+
+> If the core's intent is to strictly enforce a single IOMMU instance,
+> shouldn't iommu_fwspec_init() be checking
+> 	fwspec->iommu_fwnode == iommu_fwnode
+> instead of matching the ops? Because the core currently matches on
+> ops, it permits aggregating multiple physical instances with the
+> same ops into one fwspec.
+
+The driver is responsible to handle this, not the core. It has to hide
+this mess under its covers, not rely on multiple calls to of_xlate or
+however it has been hacked up.
+
+Probably it means something like of_xlate/probe_device has to
+EPROBE_DEFER if all the instances listed in iommus don't exist.
+
+Jason
