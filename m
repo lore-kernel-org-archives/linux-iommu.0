@@ -1,242 +1,136 @@
-Received: from mail-pg1-f182.google.com (mail-pg1-f182.google.com [209.85.215.182])
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAD913AB290
-	for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 15:58:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E69423BA240
+	for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 16:24:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774281503; cv=none; b=gI8bMATXUlZt3KIz5bDmwWUa4GwW1i34211LDUzh5hhrFAtBWQw+nzmjX0CX76jemA5Jtqo0iBlpPbEQFLGHfTsxJ98LyO5EBNBpfnSye+HH0vAid1eK7RSJ4XNDIWIjebNHu6XG2VPK5a4/oy6zyJED407zQNbgi43wAnHiM2I=
+	t=1774283078; cv=none; b=dqjhKgglKrmavxo8spVDwAICNfR35dMjttLnYHVRJGvb8CBjTwDBPcITxf1ArpUJ+zqEpPrsELke1fi3EoFF5gI5KGqPYYrSW8Vzb+ANnViXJrwesXwT1tSeocZSSPJG1ly2PLqAm2mvSoJyueN+7kk8RsXH0ML45c/sefmZpYA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774281503; c=relaxed/simple;
-	bh=GThMTUYv0X2eUWVbc3FKLVom4NcwLXi5gsOn2QtDYgE=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=aBg9351WEX3LGFF2oIPUv4Ovonfl2Ec6aOZE+nlaam0vXU4UEd1pmN0AdRFzft+Ncl58Lhw/K4kMn53vi8IOWhfOgDrFGd3VeH5QJPxSRKQIzHFl3gFTJRKDa/0r/RKKOhW95wqJgEPk2/IL/mOt3ywyDDidkQXrQ2lnjCL3bss=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=F7hhX/ii; arc=none smtp.client-ip=209.85.215.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1774283078; c=relaxed/simple;
+	bh=0yKI8vbPNzHoqkTV0yKxdFRxvj0/LpVoQRkkpisgLuY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UNIHkFm3akH403oQr0rMGH08Ki9HXGRqD/OrPpvmG5Pek9k7lAHXsT7jmpXgJqVYJ/GehPYHEuRC6gzN5/uvJc2m91a8BNIdVvIFeE0DMoiZm+gG/l7O1pYXgdaSG+sl0a30kFFb2Ab/FqHPSdJnugkwesrUbTKTX8TnyusfT+Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=E9ZyqsTV; arc=none smtp.client-ip=209.85.214.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="F7hhX/ii"
-Received: by mail-pg1-f182.google.com with SMTP id 41be03b00d2f7-c6dd5b01e14so116853a12.0
-        for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 08:58:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="E9ZyqsTV"
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-2b052ec7176so176625ad.1
+        for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 09:24:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1774281501; x=1774886301; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=SyPHQzyI0AHwqMlFoboSet59W59Lm/9+xwH2RUG0miE=;
-        b=F7hhX/iiuwpTom4NdxI6YwEW9cgXIS8stbCVjRqgwix8iUjY+xG24tKiqPHlnjNuG1
-         JgfGizz9p/E4D9/wP36Xvm0kD+Me9z9fNp2CFku3fwKyY61gmWxIHaLoQBktddzumxPt
-         5yQj/qiP/S9ttRVcxUrWntFXWa9m4Ritc+JwCjBBNbmceRChBNwXXwCbSsfV6Q92lZRY
-         LjGYywR00xwkQ9zxJ6WBdgZA9YajUKps7/mPeaPS4i1l5RpE3khEVYvCnsWD/F5o8Ban
-         cNQP3ePZuGIHxravGT5jJW1Rbr1vI/x5Hc63ywQj68nhHl9xReT/O9XB10+ExXc4EjPT
-         oJHw==
+        d=google.com; s=20251104; t=1774283076; x=1774887876; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=T3ldqgT6JBnPQmHk8LHvu61BhVbR2PK1lqFwCMwVUO4=;
+        b=E9ZyqsTVuoOpCJc1spy31djC0qQVnpin99bMHO0mhokVWCv9qs2Agp8vRWE0pjgzws
+         jg9GyxwXq6i4FCbrYJOy+W80TVQxT3KKpvBrMCsIFEDbKu1poSEWtOPxfu4hgIgYpjWZ
+         M+VtuJtbL/hHODWfnTVbFGnFNupZ9ljG1GcZOFghqU7Jn4FxmCg0a9lpfVU7nmTjKM9V
+         UN+ZkhygQQYD+bxGqi67nhhUaYATLuf8g+HHK5ZBCIl9bLAQ6RI5lKEtXuC+Qx62NFwp
+         CiBwQHZ5rFNCt1QSCJTrB2fDAx6EvegAWgDzrh2KuOly3q7zyWSzcVeFTFzHwKqdBHvU
+         V2GA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774281501; x=1774886301;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=SyPHQzyI0AHwqMlFoboSet59W59Lm/9+xwH2RUG0miE=;
-        b=aN7pomgBrQjdPA54ktGr6Anrt3G4Ve9rKAr11rVHiFdnq+iIbkgsfyFmsaJxBFaAqQ
-         o5SvF9fQQqA2+1CGxVN/X7s1gA7GnRth/dksl5nqdDZ5gj//UPeXAlMJInWmdTzYlWtO
-         VYeZ0gwmwlWvbRws2OxwGf7sNsQc+OzCYKTzwHlaMqi5Yu9QLbUURS/4woafVIKknaIM
-         hs3xhAtf/yZMj6Pt09mhjs5B065HYSnd5F1E5PqDLMXKCkYbnh77XCqxAE1AGBtwQWPm
-         aeu0+B6DydnsGeYmvvEl6wBU2i6EFSow0omvJZfQk5n/qNXNSaUSUjUvD/yshIJWx+CB
-         Q0dw==
-X-Forwarded-Encrypted: i=1; AJvYcCUs4XmIGueK9qx7VINVvXzvxjiWYpU6XZgQwvziAO7Aoed81sRRH03As0rV2lu9ZloSPHRTyg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz5rM7ybX8uTpiXfaJiVOcgQrCGp3M7JnFbFKb1A6r70pBJtLZj
-	gDcrt383IJGw16gt1jkYbzFXLYcV89kR8rYxJt74WSud1mDN2OheataM
-X-Gm-Gg: ATEYQzwzfDKRqdFwsLHnL7Y0zjbKio3NJw1tmkU3Di+pWs6zTefJiml8frToXCbaeXm
-	Vkc73JY2WHz/8/yEkNeAc+9xk9napoAfNI/o3MMAkoCABAwPmtFSG6YikVOjKL6O5BHVKJTpR8V
-	60shcqpdGtQYohsiouJ2bCw7JaAtiIOStTnpqRxFWGctJl9lrmspFCpFoCDXgG2B/lRUPn5PKfm
-	VSX29ZXpcl4C58Icun7IsZVS13PnKnT3GrVZ232WxvbjkqRaTuyUvXRvwWJcCxjW5K86NRrx/80
-	S1dPNdhcepD47e6FI06GsWZ8FqBH1/9aBuZlu0eEhXc9eV76s16fmGv9jiTl/7nqh5OKyBpYywO
-	3n49lE1mEE1JOtTfouIoZ9JzljIKFy/B32OU5ExZAM4x58QEc45x32A8f7UdDPK/CMRyf3q9Gjo
-	dawHKhROy0lLEFGKzD6EO9Sd2/fn1CD3695AJ4M+zlmJk9Qy+83CAWnP62CD2XeZNLjoqvxcP7q
-	NZzxYfrIw==
-X-Received: by 2002:a05:6a20:a10c:b0:39b:9644:6ea4 with SMTP id adf61e73a8af0-39bce9f0e99mr11959607637.16.1774281500957;
-        Mon, 23 Mar 2026 08:58:20 -0700 (PDT)
-Received: from sean-All-Series.. (1-160-195-162.dynamic-ip.hinet.net. [1.160.195.162])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c743a801701sm8487398a12.4.2026.03.23.08.58.18
+        d=1e100.net; s=20251104; t=1774283076; x=1774887876;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=T3ldqgT6JBnPQmHk8LHvu61BhVbR2PK1lqFwCMwVUO4=;
+        b=E5TXu+7/SFpOFRx7VkE8k9sycpQGO2j83UpsVNgSxAT77i+BfV191BOssI3lmegfzh
+         vzLsz66pigDxhMtkL8+wYvrKQ1cs29omIfqiwvVo+tIUX186LJ6tqo95Ap0mgSbhpYTn
+         qpXUwsNOVpTv2QmzTNR6hTwaD29BToeX31j7Zc39pHxAnLtXUyB+KIbnouga2D0oRkOQ
+         dTlQwCuyAzzVKtyckBCvSOI8x8b5TtZCuUsaL9Eb1C4KPf+QZ0pO9BjDU4ZE2OD95YMi
+         Ib+bjuEnWpCvminn80rk89p2N1zARJ4/7dojle0ekKCB2/ChzVGlhTHVKg7BqFelDlEl
+         ZR6w==
+X-Forwarded-Encrypted: i=1; AJvYcCVNRyyLxZfqBzJetfQHPeIH5thYjQv1DMD6UW25r97evLo2XetoyQqvcQOZKpT3anuM09VgTw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy+UdMzsaLqCYNJGSZD82kXnZLOw7lRTitzbocencY2J6IPaGTT
+	X+Xb+VEby8RA7Mg663lKBJ9sdP5DiObI1XFo7wd5MYn208KbN7H3wiLGEMc3m/Ppwg==
+X-Gm-Gg: ATEYQzyXrDytiLUDm/BAq2RSTCYU6bGoSIoCY8lpYysDpI/Os4taMAfXX7bohDfY9GL
+	QMKciZ/OFghZWCxQBKNetL2pir3iuU1kCvqX6TMXG4Q16bo5DZo6I8ovNFplczdMxiUQwcigEm8
+	8DdgeIJPBft4vFFLSVK/ekbyZEdJjq7CCIwfkhbupEB+kZvw4VZYEj6Tf7Sx1TcpA1PLHfj8TS/
+	ebsVm2OCkg61RnbmEoIIv6PxMgxUcOm2ztR0hKiFg0kvoYnxNxhyJExgS1/eNwNsT1EYk/lgYH1
+	EjTl/8yOMKfc2MRn9DFB9jW9YAXPSDc6FC9kL4gJ+dMBdphKlmlhyB27zGCKaCrm1DYEJc0ldMI
+	j89ZTa2AhABCbNXUZNEdhi7xn8Yri5ccHevWg2/tFm+NeqPVSXGwMZOFHyQ/QdM83TeMijR03c8
+	Yc6KpwHtKp/6SEXj+LuzErRKn2PC97DZwtM+r/cwLyAoCy+LBIh0iUPiB2qUmdLg==
+X-Received: by 2002:a17:902:fc4b:b0:2ae:4e8e:954e with SMTP id d9443c01a7336-2b08c423bcdmr4886495ad.5.1774283075771;
+        Mon, 23 Mar 2026 09:24:35 -0700 (PDT)
+Received: from google.com (168.136.83.34.bc.googleusercontent.com. [34.83.136.168])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-35bc5ff704bsm13278934a91.2.2026.03.23.09.24.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Mar 2026 08:58:20 -0700 (PDT)
-From: Sean Chang <seanwascoding@gmail.com>
-To: tjeznach@rivosinc.com,
-	joro@8bytes.org
-Cc: will@kernel.org,
-	iommu@lists.linux.dev,
-	linux-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Sean Chang <seanwascoding@gmail.com>
-Subject: [PATCH] iommu/riscv: Add DebugFS support for register dump
-Date: Mon, 23 Mar 2026 23:58:06 +0800
-Message-Id: <20260323155806.97130-1-seanwascoding@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Mon, 23 Mar 2026 09:24:35 -0700 (PDT)
+Date: Mon, 23 Mar 2026 16:24:30 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Vipin Sharma <vipinsh@google.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, YiFei Zhu <zhuyifei@google.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
+	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>, 
+	Adithya Jayachandran <ajayachandra@nvidia.com>, Parav Pandit <parav@nvidia.com>, 
+	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
+	Pratyush Yadav <pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
+	David Matlack <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	Chris Li <chrisl@kernel.org>, Pranjal Shrivastava <praan@google.com>
+Subject: Re: [PATCH 10/14] iommufd-lu: Implement ioctl to let userspace mark
+ an HWPT to be preserved
+Message-ID: <acFooviUrdnfudV6@google.com>
+References: <20260203220948.2176157-1-skhawaja@google.com>
+ <20260203220948.2176157-11-skhawaja@google.com>
+ <20260319231331.GB3983821.vipinsh@google.com>
+ <abyU3g-ta6Gg6kEx@google.com>
+ <20260320232634.GC659132.vipinsh@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20260320232634.GC659132.vipinsh@google.com>
 
-Add a DebugFS interface to allow users to dump the internal state of
-the RISC-V IOMMU hardware. This is essential for diagnosing hardware
-initialization issues and debugging driver-hardware communication
-such as Command or Fault queue stalls.
+On Fri, Mar 20, 2026 at 04:34:41PM -0700, Vipin Sharma wrote:
+>On Fri, Mar 20, 2026 at 12:40:44AM +0000, Samiullah Khawaja wrote:
+>> On Thu, Mar 19, 2026 at 04:35:32PM -0700, Vipin Sharma wrote:
+>> > On Tue, Feb 03, 2026 at 10:09:44PM +0000, Samiullah Khawaja wrote:
+>> > > From: YiFei Zhu <zhuyifei@google.com>
+>> > > @@ -374,6 +374,10 @@ struct iommufd_hwpt_paging {
+>> > >  	bool auto_domain : 1;
+>> > >  	bool enforce_cache_coherency : 1;
+>> > >  	bool nest_parent : 1;
+>> > > +#ifdef CONFIG_IOMMU_LIVEUPDATE
+>> > > +	bool lu_preserve : 1;
+>> > > +	u32 lu_token;
+>> >
+>> > Should we use full name i.e. liveupdate here and other places in this
+>> > series?
+>>
+>> I think using full name liveupdate would be too long in other places in
+>> this series. And also there are other examples of "luo" being used as a
+>> short form. Please see:
+>>
+>> https://lore.kernel.org/all/20251125165850.3389713-15-pasha.tatashin@soleen.com/
+>
+>That patch is using "luo" short, which I think is also wrong in saying
+>memfd_luo, as there is nothing related to orchestrator (O of LUO) in
+>that patch. It is saving memfd state for liveupdate. But that ship has
+>sailed.
 
-The implementation exposes a "registers" file under the device's
-debugfs directory. It uses the standard debugfs_regset32 structure
-to dump core registers:
+Yes, I think that makes sense.
+>
+>In the current patch, I don't think it will be too long, and it also
+>easier to read code without someone to know what "lu" is. We have worked
+>on it so we know what "lu" stands for and kind of accepted it but I
+>agree what Greg k-h was also suggesting.
 
-* Global configuration: capabilities, fctl, ddtp
-* Command Queue: cqb, cqh, cqt, cqcsr
-* Fault Queue: fqb, fqh, fqt, fqcsr
-* Interrupts: ipsr, icvec
+Agreed, in this patch it won't be too long. I think for the public API
+being used in other subsystems we can use "liveupdate", but internally
+we can use lu. I will rework this.
+>
+>https://lore.kernel.org/all/2025093023-frantic-sediment-9849@gregkh/
+> - "You have more letters, please use them.  "lu" is too short."
+>
+>Not a hard no from me, just a suggestion.
 
-Signed-off-by: Sean Chang <seanwascoding@gmail.com>
----
- drivers/iommu/riscv/Kconfig   | 11 ++++++++
- drivers/iommu/riscv/Makefile  |  1 +
- drivers/iommu/riscv/debugfs.c | 53 +++++++++++++++++++++++++++++++++++
- drivers/iommu/riscv/iommu.c   |  3 ++
- drivers/iommu/riscv/iommu.h   | 12 ++++++++
- 5 files changed, 80 insertions(+)
- create mode 100644 drivers/iommu/riscv/debugfs.c
-
-diff --git a/drivers/iommu/riscv/Kconfig b/drivers/iommu/riscv/Kconfig
-index b86e5ab94183..c2ba12d97e98 100644
---- a/drivers/iommu/riscv/Kconfig
-+++ b/drivers/iommu/riscv/Kconfig
-@@ -22,3 +22,14 @@ config RISCV_IOMMU_PCI
- 	def_bool y if RISCV_IOMMU && PCI_MSI
- 	help
- 	  Support for the PCIe implementation of RISC-V IOMMU architecture.
-+
-+config RISCV_IOMMU_DEBUGFS
-+    bool "RISC-V IOMMU Debugfs Support"
-+    depends on RISCV_IOMMU
-+    depends on IOMMU_DEBUGFS
-+    help
-+      Expose RISC-V IOMMU internals via debugfs. This includes
-+      register dumps, queue status, and other hardware-specific
-+      information useful for debugging.
-+
-+      If unsure, say N.
-diff --git a/drivers/iommu/riscv/Makefile b/drivers/iommu/riscv/Makefile
-index b5929f9f23e6..9658a10d8b24 100644
---- a/drivers/iommu/riscv/Makefile
-+++ b/drivers/iommu/riscv/Makefile
-@@ -1,3 +1,4 @@
- # SPDX-License-Identifier: GPL-2.0-only
- obj-y += iommu.o iommu-platform.o
- obj-$(CONFIG_RISCV_IOMMU_PCI) += iommu-pci.o
-+obj-$(CONFIG_RISCV_IOMMU_DEBUGFS) += debugfs.o
-diff --git a/drivers/iommu/riscv/debugfs.c b/drivers/iommu/riscv/debugfs.c
-new file mode 100644
-index 000000000000..52dc50a7fa20
---- /dev/null
-+++ b/drivers/iommu/riscv/debugfs.c
-@@ -0,0 +1,53 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+#include <linux/debugfs.h>
-+#include <linux/device.h>
-+#include <linux/kernel.h>
-+
-+#include "iommu.h"
-+
-+static const struct debugfs_reg32 riscv_iommu_regs[] = {
-+	/* --- Global Configuration --- */
-+	{ .name = "capabilities",       .offset = RISCV_IOMMU_REG_CAPABILITIES  },
-+	{ .name = "fctl",               .offset = RISCV_IOMMU_REG_FCTL          },
-+	{ .name = "ddtp",               .offset = RISCV_IOMMU_REG_DDTP          },
-+	/* --- Command Queue --- */
-+	{ .name = "cqb",                .offset = RISCV_IOMMU_REG_CQB           },
-+	{ .name = "cqh",                .offset = RISCV_IOMMU_REG_CQH           },
-+	{ .name = "cqt",                .offset = RISCV_IOMMU_REG_CQT           },
-+	{ .name = "cqcsr",              .offset = RISCV_IOMMU_REG_CQCSR         },
-+	/* --- Fault Queue --- */
-+	{ .name = "fqb",                .offset = RISCV_IOMMU_REG_FQB           },
-+	{ .name = "fqh",                .offset = RISCV_IOMMU_REG_FQH           },
-+	{ .name = "fqt",                .offset = RISCV_IOMMU_REG_FQT           },
-+	{ .name = "fqcsr",              .offset = RISCV_IOMMU_REG_FQCSR         },
-+	/* --- Interrupts --- */
-+	{ .name = "ipsr",               .offset = RISCV_IOMMU_REG_IPSR          },
-+	{ .name = "icvec",              .offset = RISCV_IOMMU_REG_ICVEC         },
-+};
-+
-+void riscv_iommu_debugfs_init(struct riscv_iommu_device *iommu)
-+{
-+	struct debugfs_regset32 *regset;
-+
-+	if (!iommu_debugfs_dir)
-+		return;
-+
-+	iommu->debugfs_dir = debugfs_create_dir(dev_name(iommu->dev), iommu_debugfs_dir);
-+	if (IS_ERR_OR_NULL(iommu->debugfs_dir))
-+		return;
-+
-+	regset = devm_kzalloc(iommu->dev, sizeof(*regset), GFP_KERNEL);
-+	if (!regset)
-+		return;
-+
-+	regset->regs = riscv_iommu_regs;
-+	regset->nregs = ARRAY_SIZE(riscv_iommu_regs);
-+	regset->base = iommu->reg;
-+
-+	debugfs_create_regset32("registers", 0444, iommu->debugfs_dir, regset);
-+}
-+
-+void riscv_iommu_debugfs_remove(struct riscv_iommu_device *iommu)
-+{
-+	debugfs_remove_recursive(iommu->debugfs_dir);
-+}
-diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-index 368f3cbd2d0a..a4fa0307b32a 100644
---- a/drivers/iommu/riscv/iommu.c
-+++ b/drivers/iommu/riscv/iommu.c
-@@ -1466,6 +1466,7 @@ void riscv_iommu_remove(struct riscv_iommu_device *iommu)
- 	riscv_iommu_iodir_set_mode(iommu, RISCV_IOMMU_DDTP_IOMMU_MODE_OFF);
- 	riscv_iommu_queue_disable(&iommu->cmdq);
- 	riscv_iommu_queue_disable(&iommu->fltq);
-+	riscv_iommu_debugfs_remove(iommu);
- }
- 
- int riscv_iommu_init(struct riscv_iommu_device *iommu)
-@@ -1526,6 +1527,8 @@ int riscv_iommu_init(struct riscv_iommu_device *iommu)
- 		goto err_remove_sysfs;
- 	}
- 
-+	riscv_iommu_debugfs_init(iommu);
-+
- 	return 0;
- 
- err_remove_sysfs:
-diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
-index 46df79dd5495..1084e4e77455 100644
---- a/drivers/iommu/riscv/iommu.h
-+++ b/drivers/iommu/riscv/iommu.h
-@@ -60,6 +60,10 @@ struct riscv_iommu_device {
- 	unsigned int ddt_mode;
- 	dma_addr_t ddt_phys;
- 	u64 *ddt_root;
-+
-+#ifdef CONFIG_RISCV_IOMMU_DEBUGFS
-+	struct dentry *debugfs_dir;
-+#endif
- };
- 
- int riscv_iommu_init(struct riscv_iommu_device *iommu);
-@@ -86,4 +90,12 @@ void riscv_iommu_disable(struct riscv_iommu_device *iommu);
- 	readx_poll_timeout(readl_relaxed, (iommu)->reg + (addr), val, cond, \
- 			   delay_us, timeout_us)
- 
-+#ifdef CONFIG_RISCV_IOMMU_DEBUGFS
-+void riscv_iommu_debugfs_init(struct riscv_iommu_device *iommu);
-+void riscv_iommu_debugfs_remove(struct riscv_iommu_device *iommu);
-+#else
-+static inline void riscv_iommu_debugfs_init(struct riscv_iommu_device *iommu) { }
-+static inline void riscv_iommu_debugfs_remove(struct riscv_iommu_device *iommu) { }
-+#endif
-+
- #endif
--- 
-2.34.1
-
+Thanks,
+Sami
