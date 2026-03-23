@@ -1,281 +1,235 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE939364927;
-	Mon, 23 Mar 2026 20:20:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD5BE361DA9
+	for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 20:28:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774297253; cv=none; b=QiALbkXp2B6NcPv3yNfMKPD0OF/UTMJMByurI2t09/6B2DsIi3g0ouHkWuP3tGcMh7D2gib+2jOtLeYkxd1EJ7qg57+seQgMfV0PTRoKG/q7J6XTYMEGwK/dVLAhTZ5flbMRslL+ty1FrIKY5n59dypFRzH6wElHwdDDQtdW3c8=
+	t=1774297701; cv=none; b=uKBEmj4saVMw8gsnA3NagMmv563nUU9eMESmQ42qhzqwMuRupS3E7sFuPB6BZU6k1zOwm+ye78Eecl8pw8DO1nJJxLFQTKjndmpi23bNQcHKMj9Yqs72yMUN9WCbJGoDghPFTT0IPf+T003bKa9FxB0RqoF4n/tzK0RM78aBGbU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774297253; c=relaxed/simple;
-	bh=4V0rUPFg+PlacrcySkEqbCBvm3s6ZnPbzsKpYhUGN+0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=gyIGUFYvke6+6ynlXMm5pPjZh8b6cZfLU6loRlKSJI8i8G1CbbfbzQRvFBwYy7L+T2BI/HkKmNA7vwusid8OtKwZZnNUleeilqPl124w2whGBhh2uJIFUt9osyAzvbXj5eXXxKN9IYOi9A7htir3KnDSSvDToqIQssYmQmVzoEY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aGkDccqF; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774297701; c=relaxed/simple;
+	bh=Z+0+3TcrMrU5Ujk1sHPJMlRXC0Eeq9rMNfbNi+xXmqk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fa8uMVgm9gp19hO542k6SrmQ1ikdKKboEfy3nJnqD9jUQsuh3oev3imF5SPLcaeLAkGnBqrLNp/12cKe4c9Mhd2aztOiqj5OWO/YXanCb46IJs6pAUnVmyIk4XM6oNxkrrrFEpPzAnInzrDF9YJePLN52Hjvu/kEwtAvUnZeF38=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=A7JHmxqU; arc=none smtp.client-ip=209.85.214.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aGkDccqF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E37F7C4CEF7;
-	Mon, 23 Mar 2026 20:20:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774297253;
-	bh=4V0rUPFg+PlacrcySkEqbCBvm3s6ZnPbzsKpYhUGN+0=;
-	h=From:To:Cc:Subject:Date:From;
-	b=aGkDccqFuU8pvU9q1E6EE6iIjTLieHOtln5HvKivaiefGHxQ8oJBVzrbic5OQF6cT
-	 hOIJjN1YOjU/Ukb1EqOy2HmtVWhH2XmNpfmAyQHDa5RrljhbKW2z9JXfFitMRhlciU
-	 iHEmEGVbdmXZ69ZCa15n5OnO4XjJHfRy0ZKdrHZXm4LligB9uKUDzvUop16T44h55I
-	 9cv1otrAn0AH1DCRwVEhx7Ys695z7104LiHj3/Cgtd5YmIlInHWe+nujlBgeyx22mL
-	 ijrblMx3bB6E1oGTVRLPqanG6YLGgTTPTZNLEZDgXa3NJuW0A2i/rtIzxvpNNxyKJR
-	 7GCIiHSGLe9vQ==
-From: Leon Romanovsky <leon@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] dma-debug: ensure mappings are created and released with matching attributes
-Date: Mon, 23 Mar 2026 22:20:37 +0200
-Message-ID: <20260323-dma-attrs-debug-v1-1-6275228ca300@nvidia.com>
-X-Mailer: git-send-email 2.53.0
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="A7JHmxqU"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2b052562254so26795ad.0
+        for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 13:28:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1774297699; x=1774902499; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=EVB+M1ARpuKmS3d+ozVws2Lc23aSqaEdxwdXJm81KT0=;
+        b=A7JHmxqUV5+vjeMnnIubocJObngKAkZYhzg0+tb0UM8ALlhUQXscMQOkOjjx/pdSs8
+         fUohIkdaDl4anZ9iftar+o9UBlZYLxhFP9mkSpltLwveg+Swsu29QXehbQjA+TC04hT5
+         K4xw+caQuuoIHGj40PgiD/AHfKSspiJ768k3BJbz5l3Xp5BMSEkuK8YHzA6j31qJ/mXE
+         gAF3Lv18QbdDrqMDMtvobD2Hr3rlGFtDpxuGTtH5/VgRUEPdNqIfMArW74GamulEO2eR
+         5n/AjoH8fpGr8jc55u4K4gDGJz2OqVo2guFJjh4xjK+Deh/nlp4xu/zdCf9v6CE+nG6M
+         ErkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774297699; x=1774902499;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=EVB+M1ARpuKmS3d+ozVws2Lc23aSqaEdxwdXJm81KT0=;
+        b=nd5xUS7yvRoBS6STWzXuixZuitq5+Fx+Q1g/RRjx6a4MoJkOhWj47EguaiJ+THG/EE
+         cm1i6qRLJ1JO/MTsQV+jX6bhenSSYf2acd9HnyHQe1Vs24gRrx9Bgj3cEVQa3mKkCXTK
+         1B+zz/JIPEbr0J47OWsYo2vF87zoOXrk7MrfM/M1GlkTHg9ZVNcT3rIsLtzycM4SDDiP
+         UDt8YI9yNP+dXbOkp7XKtcf1Lmtbcrjy0VWrog1Q0CA72QSPQx4fX/o+LwgszPBAiEUG
+         HmWB59L/OWiLtd5qYPz6GJd2tYnSmmOpfSlh/znplfL2C0JJtQehapAny2tKKCn6Copq
+         8ijQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXTRgVmoZpUI5EhSHzRan5+8EOqgZr7L5hMUF+/7d/vwRA/UozYadH0FozZFtIf3oan5yP00g==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yzex6/bzYyniT5AzF9h37vCzt2Rnpo9jLCBTEF2YZ9vMwKzxBn0
+	2+14WONQuDYrsEhvBlPvB/KpYZ7BUX1va8EkX7hBUuzaMFrRRgNcoBvmQ/AE+GtCgg==
+X-Gm-Gg: ATEYQzx0vKFjqUar+D/nU1zS0ZElyuZBB1WTCP3FwYkwtEl3w5J3KNK7jEzRU9eQKo1
+	TDJfJaZQbLsKuJ2Zc5PfYkfP86vGzrA9WTHiK2/MJRfPeyjgoxa0bigfX7qkmzZ3G3nEOBK1L6u
+	5v4NJ6Jc+b7OG5eKQc5uWXNdeU2HNsONB0g9UkZxaquLdILcOH52HZkafSGtFS3TQlTzhbPbpGx
+	amfc7IQSBYOqMq1FV9f18r4TivywAE40GshwPlT7rbIMt5pTuEnRUNyNIQPza37CTHrLez6iyuB
+	uo6PhcSomOlLDzg44YIHD79EWHCiWG51HzB/nBSdgVpE2NkxySbWHOw40BI7l3bdr7KHF5u3S8G
+	Azh5KXO1iFkhOE6Omx5ZdIGxosD0nxzOLsNpB8zA8ALdcDe36OJ8v7hMP7pHmA5LJFovDehUuEN
+	2lM5I0vsVrFOdYtPSCI7IGTS/bDoPNAApIsqZscLvFJZDDhStyxAhuULhMGAph
+X-Received: by 2002:a17:902:f787:b0:2a1:3cdc:7720 with SMTP id d9443c01a7336-2b0a68a1461mr106215ad.21.1774297698546;
+        Mon, 23 Mar 2026 13:28:18 -0700 (PDT)
+Received: from google.com (176.13.105.34.bc.googleusercontent.com. [34.105.13.176])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b08353e94asm118298165ad.25.2026.03.23.13.28.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Mar 2026 13:28:17 -0700 (PDT)
+Date: Mon, 23 Mar 2026 13:28:13 -0700
+From: Vipin Sharma <vipinsh@google.com>
+To: Samiullah Khawaja <skhawaja@google.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, YiFei Zhu <zhuyifei@google.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
+	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>, 
+	Adithya Jayachandran <ajayachandra@nvidia.com>, Parav Pandit <parav@nvidia.com>, 
+	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
+	Pratyush Yadav <pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
+	David Matlack <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	Chris Li <chrisl@kernel.org>, Pranjal Shrivastava <praan@google.com>
+Subject: Re: [PATCH 11/14] iommufd-lu: Persist iommu hardware pagetables for
+ live update
+Message-ID: <20260320230654.GB659132.vipinsh@google.com>
+References: <20260203220948.2176157-1-skhawaja@google.com>
+ <20260203220948.2176157-12-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-X-Change-ID: 20260323-dma-attrs-debug-85e282d6f3bb
-X-Mailer: b4 0.15-dev-18f8f
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260203220948.2176157-12-skhawaja@google.com>
 
-From: Leon Romanovsky <leonro@nvidia.com>=0D
-=0D
-The DMA API expects that callers use the same attributes when mapping=0D
-and unmapping. Add tracking to verify this and catch mismatches.=0D
-=0D
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>=0D
----=0D
- kernel/dma/debug.c | 62 +++++++++++++++++++++++++++++++++++++-------------=
-----=0D
- 1 file changed, 43 insertions(+), 19 deletions(-)=0D
-=0D
----=0D
-Marek,=0D
-=0D
-This patch is based on f5ebf241c407 ("mm/hmm: Indicate that HMM requires DM=
-A coherency"),=0D
-just to minimize merge conflicts, but it is definitely for -next. If the=0D
-patch is ok and that f5ebf241c407 commit won't be backmerged to -next, I ca=
-n resend=0D
-it in next cycle. This debug aid helped me to see this case:=0D
-https://lore.kernel.org/all/20260323-umem-dma-attrs-v1-1-d6890f2e6a1e@nvidi=
-a.com/=0D
-=0D
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c=0D
-index 0677918f06a80..6e5e69b8bc4d8 100644=0D
---- a/kernel/dma/debug.c=0D
-+++ b/kernel/dma/debug.c=0D
-@@ -63,7 +63,7 @@ enum map_err_types {=0D
-  * @sg_mapped_ents: 'mapped_ents' from dma_map_sg=0D
-  * @paddr: physical start address of the mapping=0D
-  * @map_err_type: track whether dma_mapping_error() was checked=0D
-- * @is_cache_clean: driver promises not to write to buffer while mapped=0D
-+ * @attrs: dma attributes=0D
-  * @stack_len: number of backtrace entries in @stack_entries=0D
-  * @stack_entries: stack of backtrace history=0D
-  */=0D
-@@ -78,7 +78,7 @@ struct dma_debug_entry {=0D
- 	int		 sg_mapped_ents;=0D
- 	phys_addr_t	 paddr;=0D
- 	enum map_err_types map_err_type;=0D
--	bool		 is_cache_clean;=0D
-+	unsigned long    attrs;=0D
- #ifdef CONFIG_STACKTRACE=0D
- 	unsigned int	stack_len;=0D
- 	unsigned long	stack_entries[DMA_DEBUG_STACKTRACE_ENTRIES];=0D
-@@ -478,6 +478,9 @@ static int active_cacheline_insert(struct dma_debug_ent=
-ry *entry,=0D
- 				   bool *overlap_cache_clean)=0D
- {=0D
- 	phys_addr_t cln =3D to_cacheline_number(entry);=0D
-+	bool is_cache_clean =3D entry->attrs &=0D
-+			      (DMA_ATTR_DEBUGGING_IGNORE_CACHELINES |=0D
-+			       DMA_ATTR_REQUIRE_COHERENT);=0D
- 	unsigned long flags;=0D
- 	int rc;=0D
- =0D
-@@ -495,12 +498,15 @@ static int active_cacheline_insert(struct dma_debug_e=
-ntry *entry,=0D
- 	if (rc =3D=3D -EEXIST) {=0D
- 		struct dma_debug_entry *existing;=0D
- =0D
--		active_cacheline_inc_overlap(cln, entry->is_cache_clean);=0D
-+		active_cacheline_inc_overlap(cln, is_cache_clean);=0D
- 		existing =3D radix_tree_lookup(&dma_active_cacheline, cln);=0D
- 		/* A lookup failure here after we got -EEXIST is unexpected. */=0D
- 		WARN_ON(!existing);=0D
- 		if (existing)=0D
--			*overlap_cache_clean =3D existing->is_cache_clean;=0D
-+			*overlap_cache_clean =3D=0D
-+				existing->attrs &=0D
-+				(DMA_ATTR_DEBUGGING_IGNORE_CACHELINES |=0D
-+				 DMA_ATTR_REQUIRE_COHERENT);=0D
- 	}=0D
- 	spin_unlock_irqrestore(&radix_lock, flags);=0D
- =0D
-@@ -544,12 +550,13 @@ void debug_dma_dump_mappings(struct device *dev)=0D
- 			if (!dev || dev =3D=3D entry->dev) {=0D
- 				cln =3D to_cacheline_number(entry);=0D
- 				dev_info(entry->dev,=0D
--					 "%s idx %d P=3D%pa D=3D%llx L=3D%llx cln=3D%pa %s %s\n",=0D
-+					 "%s idx %d P=3D%pa D=3D%llx L=3D%llx cln=3D%pa %s %s attrs=3D0x%lx\n=
-",=0D
- 					 type2name[entry->type], idx,=0D
- 					 &entry->paddr, entry->dev_addr,=0D
- 					 entry->size, &cln,=0D
- 					 dir2name[entry->direction],=0D
--					 maperr2str[entry->map_err_type]);=0D
-+					 maperr2str[entry->map_err_type],=0D
-+					 entry->attrs);=0D
- 			}=0D
- 		}=0D
- 		spin_unlock_irqrestore(&bucket->lock, flags);=0D
-@@ -575,14 +582,15 @@ static int dump_show(struct seq_file *seq, void *v)=0D
- 		list_for_each_entry(entry, &bucket->list, list) {=0D
- 			cln =3D to_cacheline_number(entry);=0D
- 			seq_printf(seq,=0D
--				   "%s %s %s idx %d P=3D%pa D=3D%llx L=3D%llx cln=3D%pa %s %s\n",=0D
-+				   "%s %s %s idx %d P=3D%pa D=3D%llx L=3D%llx cln=3D%pa %s %s attrs=3D=
-0x%lx\n",=0D
- 				   dev_driver_string(entry->dev),=0D
- 				   dev_name(entry->dev),=0D
- 				   type2name[entry->type], idx,=0D
- 				   &entry->paddr, entry->dev_addr,=0D
- 				   entry->size, &cln,=0D
- 				   dir2name[entry->direction],=0D
--				   maperr2str[entry->map_err_type]);=0D
-+				   maperr2str[entry->map_err_type],=0D
-+				   entry->attrs);=0D
- 		}=0D
- 		spin_unlock_irqrestore(&bucket->lock, flags);=0D
- 	}=0D
-@@ -594,16 +602,14 @@ DEFINE_SHOW_ATTRIBUTE(dump);=0D
-  * Wrapper function for adding an entry to the hash.=0D
-  * This function takes care of locking itself.=0D
-  */=0D
--static void add_dma_entry(struct dma_debug_entry *entry, unsigned long att=
-rs)=0D
-+static void add_dma_entry(struct dma_debug_entry *entry)=0D
- {=0D
-+	unsigned long attrs =3D entry->attrs;=0D
- 	bool overlap_cache_clean;=0D
- 	struct hash_bucket *bucket;=0D
- 	unsigned long flags;=0D
- 	int rc;=0D
- =0D
--	entry->is_cache_clean =3D attrs & (DMA_ATTR_DEBUGGING_IGNORE_CACHELINES |=
-=0D
--					 DMA_ATTR_REQUIRE_COHERENT);=0D
--=0D
- 	bucket =3D get_hash_bucket(entry, &flags);=0D
- 	hash_bucket_add(bucket, entry);=0D
- 	put_hash_bucket(bucket, flags);=0D
-@@ -612,9 +618,10 @@ static void add_dma_entry(struct dma_debug_entry *entr=
-y, unsigned long attrs)=0D
- 	if (rc =3D=3D -ENOMEM) {=0D
- 		pr_err_once("cacheline tracking ENOMEM, dma-debug disabled\n");=0D
- 		global_disable =3D true;=0D
--	} else if (rc =3D=3D -EEXIST &&=0D
--		   !(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&=0D
--		   !(entry->is_cache_clean && overlap_cache_clean) &&=0D
-+	} else if (rc =3D=3D -EEXIST && !(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&=0D
-+		   !(attrs & (DMA_ATTR_DEBUGGING_IGNORE_CACHELINES |=0D
-+			      DMA_ATTR_REQUIRE_COHERENT) &&=0D
-+		     overlap_cache_clean) &&=0D
- 		   !(IS_ENABLED(CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC) &&=0D
- 		     is_swiotlb_active(entry->dev))) {=0D
- 		err_printk(entry->dev, entry,=0D
-@@ -1066,6 +1073,19 @@ static void check_unmap(struct dma_debug_entry *ref)=
-=0D
- 			   type2name[entry->type]);=0D
- 	}=0D
- =0D
-+	/*=0D
-+	 * This may be no bug in reality - but DMA API is still expects=0D
-+	 * that entry is unmapped with same attributes as it was mapped.=0D
-+	 */=0D
-+	if (ref->attrs !=3D entry->attrs) {=0D
-+		err_printk(ref->dev, entry,=0D
-+			   "device driver frees "=0D
-+			   "DMA memory with different attributes "=0D
-+			   "[device address=3D0x%016llx] [size=3D%llu bytes] "=0D
-+			   "[mapped with 0x%lx] [unmapped with 0x%lx]\n",=0D
-+			   ref->dev_addr, ref->size, entry->attrs, ref->attrs);=0D
-+	}=0D
-+=0D
- 	hash_bucket_del(entry);=0D
- 	put_hash_bucket(bucket, flags);=0D
- =0D
-@@ -1249,6 +1269,7 @@ void debug_dma_map_phys(struct device *dev, phys_addr=
-_t phys, size_t size,=0D
- 	entry->size      =3D size;=0D
- 	entry->direction =3D direction;=0D
- 	entry->map_err_type =3D MAP_ERR_NOT_CHECKED;=0D
-+	entry->attrs     =3D attrs;=0D
- =0D
- 	if (!(attrs & DMA_ATTR_MMIO)) {=0D
- 		check_for_stack(dev, phys);=0D
-@@ -1257,7 +1278,7 @@ void debug_dma_map_phys(struct device *dev, phys_addr=
-_t phys, size_t size,=0D
- 			check_for_illegal_area(dev, phys_to_virt(phys), size);=0D
- 	}=0D
- =0D
--	add_dma_entry(entry, attrs);=0D
-+	add_dma_entry(entry);=0D
- }=0D
- =0D
- void debug_dma_mapping_error(struct device *dev, dma_addr_t dma_addr)=0D
-@@ -1344,10 +1365,11 @@ void debug_dma_map_sg(struct device *dev, struct sc=
-atterlist *sg,=0D
- 		entry->direction      =3D direction;=0D
- 		entry->sg_call_ents   =3D nents;=0D
- 		entry->sg_mapped_ents =3D mapped_ents;=0D
-+		entry->attrs          =3D attrs;=0D
- =0D
- 		check_sg_segment(dev, s);=0D
- =0D
--		add_dma_entry(entry, attrs);=0D
-+		add_dma_entry(entry);=0D
- 	}=0D
- }=0D
- =0D
-@@ -1439,8 +1461,9 @@ void debug_dma_alloc_coherent(struct device *dev, siz=
-e_t size,=0D
- 	entry->size      =3D size;=0D
- 	entry->dev_addr  =3D dma_addr;=0D
- 	entry->direction =3D DMA_BIDIRECTIONAL;=0D
-+	entry->attrs     =3D attrs;=0D
- =0D
--	add_dma_entry(entry, attrs);=0D
-+	add_dma_entry(entry);=0D
- }=0D
- =0D
- void debug_dma_free_coherent(struct device *dev, size_t size,=0D
-@@ -1584,8 +1607,9 @@ void debug_dma_alloc_pages(struct device *dev, struct=
- page *page,=0D
- 	entry->size      =3D size;=0D
- 	entry->dev_addr  =3D dma_addr;=0D
- 	entry->direction =3D direction;=0D
-+	entry->attrs     =3D attrs;=0D
- =0D
--	add_dma_entry(entry, attrs);=0D
-+	add_dma_entry(entry);=0D
- }=0D
- =0D
- void debug_dma_free_pages(struct device *dev, struct page *page,=0D
-=0D
----=0D
-base-commit: f5ebf241c407dbf629fcf515015e139fcea2c2f0=0D
-change-id: 20260323-dma-attrs-debug-85e282d6f3bb=0D
-=0D
-Best regards,=0D
---  =0D
-Leon Romanovsky <leonro@nvidia.com>=0D
-=0D
+On Tue, Feb 03, 2026 at 10:09:45PM +0000, Samiullah Khawaja wrote:
+> From: YiFei Zhu <zhuyifei@google.com>
+> 
+> The caller is expected to mark each HWPT to be preserved with an ioctl
+> call, with a token that will be used in restore. At preserve time, each
+> HWPT's domain is then called with iommu_domain_preserve to preserve the
+
+Nit: Add () after iommu_domain_preserve, it makes easier to know this is
+a function.
+
+> diff --git a/drivers/iommu/iommufd/liveupdate.c b/drivers/iommu/iommufd/liveupdate.c
+> +static int iommufd_save_hwpts(struct iommufd_ctx *ictx,
+> +			      struct iommufd_lu *iommufd_lu,
+> +			      struct liveupdate_session *session)
+> +{
+> +	struct iommufd_hwpt_paging *hwpt, **hwpts = NULL;
+
+We should rename hwpts to something to denote that it is a list.
+
+> +	struct iommu_domain_ser *domain_ser;
+> +	struct iommufd_hwpt_lu *hwpt_lu;
+> +	struct iommufd_object *obj;
+> +	unsigned int nr_hwpts = 0;
+> +	unsigned long index;
+> +	unsigned int i;
+> +	int rc = 0;
+> +
+> +	if (iommufd_lu) {
+> +		hwpts = kcalloc(iommufd_lu->nr_hwpts, sizeof(*hwpts),
+> +				GFP_KERNEL);
+> +		if (!hwpts)
+> +			return -ENOMEM;
+> +	}
+> +
+> +	xa_lock(&ictx->objects);
+> +	xa_for_each(&ictx->objects, index, obj) {
+> +		if (obj->type != IOMMUFD_OBJ_HWPT_PAGING)
+> +			continue;
+> +
+> +		hwpt = container_of(obj, struct iommufd_hwpt_paging, common.obj);
+> +		if (!hwpt->lu_preserve)
+> +			continue;
+> +
+> +		if (hwpt->ioas) {
+> +			/*
+> +			 * Obtain exclusive access to the IOAS and IOPT while we
+> +			 * set immutability
+> +			 */
+> +			mutex_lock(&hwpt->ioas->mutex);
+> +			down_write(&hwpt->ioas->iopt.domains_rwsem);
+> +			down_write(&hwpt->ioas->iopt.iova_rwsem);
+> +
+> +			hwpt->ioas->iopt.lu_map_immutable = true;
+
+It feels odd that this is not cleaned up in this function as a part of
+its error handling. Now it becomes caller resposibility to handle clean
+up for the side effect created by this function. 
+
+IMO, this function should clean up lu_map_immutable instread of callers
+to make sure they call cleanups. You can also try exploring XA_MARK_*
+APIs if that can help in cleaning up easily.
+
+> +int iommufd_liveupdate_unregister_lufs(void)
+> +{
+> +	WARN_ON(iommu_liveupdate_unregister_flb(&iommufd_lu_handler));
+> +
+> +	return liveupdate_unregister_file_handler(&iommufd_lu_handler);
+
+This seems little insconsistent, iommu_liveupdate_unregister_flb() has
+WARN_ON and liveupdate_unregister_file_handler() does not.
+
+Also, refer https://lore.kernel.org/all/20260226160353.6f3371bc@shazbot.org/
+
+> diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
+> @@ -775,11 +775,21 @@ static int __init iommufd_init(void)
+>  		if (ret)
+>  			goto err_misc;
+>  	}
+> +
+> +	if (IS_ENABLED(CONFIG_IOMMU_LIVEUPDATE)) {
+> +		ret = iommufd_liveupdate_register_lufs();
+> +		if (ret)
+> +			goto err_vfio_misc;
+> +	}
+> +
+
+Do we need IS_ENABLED here? iommufd_private.h is providing definition
+for both values of CONFIG_IOMMU_LIVEUPDATE.
+
+Nit: What is lufs? Should we just rename to iommufd_liveupdate_register()?
+
+>  	ret = iommufd_test_init();
+>  	if (ret)
+> -		goto err_vfio_misc;
+> +		goto err_lufs;
+>  	return 0;
+>  
+> +err_lufs:
+> +	if (IS_ENABLED(CONFIG_IOMMU_LIVEUPDATE))
+> +		iommufd_liveupdate_unregister_lufs();
+>  err_vfio_misc:
+>  	if (IS_ENABLED(CONFIG_IOMMUFD_VFIO_CONTAINER))
+>  		misc_deregister(&vfio_misc_dev);
+> @@ -791,6 +801,8 @@ static int __init iommufd_init(void)
+>  static void __exit iommufd_exit(void)
+>  {
+>  	iommufd_test_exit();
+> +	if (IS_ENABLED(CONFIG_IOMMU_LIVEUPDATE))
+> +		iommufd_liveupdate_unregister_lufs();
+
+Same as above.
+
+> diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
+> @@ -1427,6 +1429,12 @@ struct iopt_pages *iopt_alloc_file_pages(struct file *file,
+>  	pages->file = get_file(file);
+>  	pages->start = start - start_byte;
+>  	pages->type = IOPT_ADDRESS_FILE;
+> +
+> +	pages->seals = 0;
+
+This is already 0.
+
+> +	seals = memfd_get_seals(file);
+> +	if (seals > 0)
+> +		pages->seals = seals;
+> +
+>  	return pages;
+>  }
+>  
+> --- /dev/null
+> +++ b/include/linux/kho/abi/iommufd.h
+> +
+> +struct iommufd_lu {
+> +	unsigned int nr_hwpts;
+
+Should this be u32 or u64?
+
+> +	struct iommufd_hwpt_lu hwpts[];
+> +};
+> +
+
+Should this also be __packed?
+
+> +#endif /* _LINUX_KHO_ABI_IOMMUFD_H */
+> -- 
+> 2.53.0.rc2.204.g2597b5adb4-goog
+> 
