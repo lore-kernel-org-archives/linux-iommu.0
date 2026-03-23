@@ -1,175 +1,154 @@
-Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazon11010056.outbound.protection.outlook.com [52.101.193.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8CD01E9B3A
-	for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 13:07:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.193.56
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774271230; cv=fail; b=VY2d0QL9ixI9EXvCH2C08CMpwH2VBZOangB0UPgb7r0tuV+xqkmrvYaRYoh8RywL83h3G35Eh7Z+NBc/TnVULZdBuaLOjtF7Nwn5hzDSpPxFo/ezSKQL9Onjp9w0VNffum2V9GMWjk4KzirNjf4rRHl7Ar8IR6AUPtBQ+y42HMI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774271230; c=relaxed/simple;
-	bh=gWkdGVo5GkKGS5gZ+eJYaKWvuEBwyluWNlkNyMmyeyM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=XNS+Msl6Oe5pE3+aYTQqaVf1DqzrEs9kwVlBjRioCTCiZbiPwqSmqdG5UpFnIpxArGRAyLQAtkCcA2D9Rh4ujf/Egz52eSwwy6RnvpwT5zRUDJ2U8rqizm3nFlrP22I7NNGXaQhdHhXmAdUskpEokrtGkbQR6PiSZZoGsLnVyiE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=GDWOMy+P; arc=fail smtp.client-ip=52.101.193.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2B2F199FBA
+	for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 13:09:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774271379; cv=none; b=nk9qvZ+1zGa4hG4pkiMx+mXG+nAg3UtR9AR6MTBJbMqBtrtgitJenQkwaLBJ6NhAbh91F4UYnv+b8rishVQrGFTcVEmSxJ7wZCgqREs4RhnWEGSVe6ECCi1+ubQ/z1s2zkIXioI+K82kgvyvDDdCHeXx0KgLfV7o399N3HV2hMU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774271379; c=relaxed/simple;
+	bh=lTpldD4eL76NbvK555N/Xx2Kd24uIcQoPu7MsvhV6l0=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=Uam6wnU81ddTPCTSO2wyH6L6JFZbZDwSSOqblVJsIr895eYiODK1kUilMj8zQhOQ5JB6yXL1wE7+bhYP4FBhsJvodQUPs2tWcLi2/yQ+8dfarlWJbXQsaazqmK28V2oGHoml6NqN/8jtP1Fqauha+Ad0c5tkPIe2SMO9fcyvVTM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=NVT7ywPo; arc=none smtp.client-ip=209.85.221.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="GDWOMy+P"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=tcj2stC1k6WHaxf8Y3097n6p1sEdadi1uRQBmXC6wFkndeQBGL+Gnr6wggfuX6HSLYr5s36i8zghqzFogUOROPkwGYuQTORYKpfINyIB3YDVVxWqmGc12urtbYqafeqa/5fE7axKzBz947/qCIhxfhTaverDfAhBXIYXWMEfkfUzkl9WQryUdCrdy6yz6cD6fKZYJgbpdJcg4Wuu5CbGL1FYObr2c7Eu15fjsYTi0h0bkdbC622X7LaVwiJhbEdpyDDZboQW0qeMgT+uzBf7tBmjw7QPWuRWheelZepH2hf3tqxBxg41qlkt5faZ3nw/yNr7iKKp9NXRKslBiVjozA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=T+9vb+JEQzHLH7Lp9czUbrrJtru1v3dBv7LI8sp+e+c=;
- b=NTdzXdVoKBpd/iHFPUVL1mSQGGOD7GppNypLUDJGfMMbXFgXxpOIpD5rBNUtXr9gmSvelE/sOLjDIKbqm76sSQBTa1iAP5kY5IPqkwubz1h+b8wkx7sHhJykUaCp+EPrRLIdTkW8nn1eKylqAjshsST8vePmkq39VCQ3c2iO8/QBBaWmZRM4wbhsyPir9MA20ZUwny6PcCxhL4emzZesg/pAqSPczxiWyIv30eTVP1wx2E5An4mM+kE4tWlI4kFTGk6vE3ovwdC4OS6pk7p554315PKV5yugHlquqM94hcZ2ao/SBSxW21CsXNAzpxZHhaGskLezleBpfXXPtlt1PQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=T+9vb+JEQzHLH7Lp9czUbrrJtru1v3dBv7LI8sp+e+c=;
- b=GDWOMy+PwxujlxA3ilIDJuXUu1rkOGFj7W3/rDU9LgXyh0JRWIKgapqvxNqsawY44jdosYuMxDKeZemRHlKd05lU8Cv1Smxuj1Fwp5Y7KhYe0vUXK98KSVQw+bqLGCyvIhXK2V8Q0cpGbux6cMe8Rf4fyrGLA1GKvYajOqad0nRAXAu5UBDkQ3dZIUjX6R2qIsR9nV60aFvm5s7ZuRv3DfxWIBWM+WF2acaByVmlEvO1Q0P6pMB9lQMUgUv+2aLJ+dvtsm7OzXsJLTlSMg0KqZ1RLDybdtAswfKGd9COjvhGRLpE6WR+YL9JmUAfa1XJ2UAKt5XiM9irJtS5MAYglA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by SJ2PR12MB7848.namprd12.prod.outlook.com (2603:10b6:a03:4ca::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9745.15; Mon, 23 Mar
- 2026 13:07:01 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9745.019; Mon, 23 Mar 2026
- 13:07:01 +0000
-Date: Mon, 23 Mar 2026 10:07:00 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Dmytro Maluka <dmaluka@chromium.org>,
-	Samiullah Khawaja <skhawaja@google.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/8] iommu/vt-d: Add entry_sync support for PASID entry
- updates
-Message-ID: <20260323130700.GE7340@nvidia.com>
-References: <20260309060648.276762-1-baolu.lu@linux.intel.com>
- <20260309060648.276762-3-baolu.lu@linux.intel.com>
- <20260309134116.GE3717316@nvidia.com>
- <4fbe6dcf-1105-4efc-b755-81a5bfb74090@linux.intel.com>
- <20260312114438.GG1448102@nvidia.com>
- <5c7503bd-e9e8-41b8-b275-3317912cc83c@linux.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5c7503bd-e9e8-41b8-b275-3317912cc83c@linux.intel.com>
-X-ClientProxiedBy: BL1PR13CA0120.namprd13.prod.outlook.com
- (2603:10b6:208:2b9::35) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="NVT7ywPo"
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-439b9b1900bso1981674f8f.1
+        for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 06:09:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1774271375; x=1774876175; darn=lists.linux.dev;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=NfzC67OFUc9pr0Vnc62IO92SI4BJtFnpHt3IPGw5yvg=;
+        b=NVT7ywPoj0V2emDWGylXL4AeHNvbhZEPA9ovEsNg2GLrG7yToEULKRhEtN8wyHUBAA
+         oODrM51FY1DOa17S8VRTAedfY3g1LZfNX2bJwX/kxwSINct2qAbrqlQiQuTG4zuYiLs2
+         j6KD6o59lZA+Ocu+pIhiCtfYn+RZuyZQsC9lOvAdhSwepv4nW1JolqrQGqDGvEDZrCKn
+         gfkn3hL+5u3feasMhbCX3q9BSceks/gHm7239tlWb6hjmjsILJZYLOn4ugMwkYrB4k82
+         jfXRBRzaoCxUlAMh+B9N4IgxWJXXc0yfM5Fztas21KrnU2xnJNj9nRB/byVZNyCUDf94
+         /6BA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774271375; x=1774876175;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=NfzC67OFUc9pr0Vnc62IO92SI4BJtFnpHt3IPGw5yvg=;
+        b=Cgm9g0L5rw82W6bt6k8y+aGL1aY/vAcQ8q1/368vIGLf0rhqKD3VOZAPhEsWmrZ+ts
+         6DoOnlBK5nfQY6atlLuVJ1OpZKaHRT2gkFEPQtRSPvR3J/qw+L17p8T19u+XvzS2PJCk
+         pAUGe0fB4Q7xsyld8iM+ACLW9xNMO2kainH3V2IsNYS0Ixy3Jv5uvPT3+GTO65dkOx6N
+         zMqNFXwTTDO0r4qMQ2dBZcs9OVNkYbwEYxRBBZhbNNqW6FOdIP1nDzSqYJddmKJc33RM
+         rtLk9QGyovtyUYyBJ61V7tZGTTn5opwk56yhx/k8FUofmYybkJJNiPBkN+dkOYYqcg8h
+         kVUg==
+X-Forwarded-Encrypted: i=1; AJvYcCXmvPvQstlsZQYj24kFW4yc7ma4Rz5Lzq+OfyfkXQpvTqomDOBxEtnQE06u236CKasmUC6lNw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzA5Mz0I5xHt1ZYJXgjwOduVPEg8RJdfC2UownQVqMYM4WAKUo8
+	56gqDOXDroRhB2zO3Q+8VPBxIjUJZ6fyyGJffiA3UZVXSb2Z4qJGUlFJrZpEJfRKyjs=
+X-Gm-Gg: ATEYQzybxYto+P8QQOubnIUi9PgD4sBB1e4nlWIy7c8A0lavqZtmkxzJiSUUURQtx7W
+	EXdJLUAm0pMTlsnIXBueQZR4ijlULO45J8iChEi8H/iiBCwSiWcspzfQLH/L6MzYtYWNbUrZe3x
+	LwN4fB+q11HM+FuCKTIVGtr3AzrfUIKqWc4hz4OKYoafyDm1HAb2TdStMKJRhL9lJDa+gKtfdKU
+	iOYFIhMYCTdXPnbqFa1bGY2cCf1kFYZ86HNsjivcVsSZUzVDIXTsXQ4RtUtxPq5GduQZJKWAxHw
+	ns3EG9P6lQHGMUCUsLtxKoBJ51gaKjYlzZLqfLVDqMrdg9md6Mba5egypVOFR3uGmZeKjLqKjxp
+	dowx2gWZ7fVNE+FDm3KpCIeMEVeN0zcq+pDorjIikXtV/ylwT8efWySVxupkWRZ6v1vHgMtIOh/
+	msZJPPYXWjsY18V0ESMumqJTw4/rfLkCnRqhw9Su5RlxCYrdfZSiS0wE9lr4VMvSLcwMgJekJ8k
+	5/In4UScBvkqxzfqQ==
+X-Received: by 2002:a05:6000:2203:b0:43b:46b6:87aa with SMTP id ffacd0b85a97d-43b64277e1amr18640357f8f.27.1774271375078;
+        Mon, 23 Mar 2026 06:09:35 -0700 (PDT)
+Received: from ta2.c.googlers.com (140.204.78.34.bc.googleusercontent.com. [34.78.204.140])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43b6470c239sm29651241f8f.27.2026.03.23.06.09.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Mar 2026 06:09:34 -0700 (PDT)
+From: Tudor Ambarus <tudor.ambarus@linaro.org>
+Date: Mon, 23 Mar 2026 13:09:27 +0000
+Subject: [PATCH] iommu: Fix bypass of IOMMU readiness check for multi-IOMMU
+ devices
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|SJ2PR12MB7848:EE_
-X-MS-Office365-Filtering-Correlation-Id: 043434f8-3eef-4ff6-a23e-08de88dd1254
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|366016|1800799024|18002099003|56012099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	LYDzXNsQIxOYRQNs8HL8a4R/upC9aAdc92e+WBpHQu+o2lB+h/W7Vgc6mYRoOIVTd3G7Daht8NL3khVmZR+7OeVRaDA9sOBajMXZwixkbfI/9AOHnxoN3fiLl4zHShyrREqFXhS40c44UbQgI2KJeJLOjYrIUX9wJCCvqzC1Bs6fEJ7ggVcDLv/X7TwCivyk5GTQWtyOy3H5eWm2QWaLPYfqjI9D1fYXCVmfMZT9W5raN8jsMOLtjmGfEko4sflmTtk5cZQxC3QK74ipTQ9+jwg/5v80NT+R2hplw4pzwrsa0hph8gXhn4agbavuofv8VFjFtNv8ZHh2OWewDZwF3zxedbeBEhj+vyqR082oHJ+QhuAKp5+z5p4XJTMgxCH7vETs5Z2WQ6NJzU2jadg0HczSFXUov+SfXMT7lk2kJvLkHB8lu0JuEnt51rSQHhuhRoiGoICJLUUgNi0jtZORDjbJrLcfLaZH59RP5LtDNVSwX8za79OIEt4tg9uKz186SQHWie34uiC95WAzXN7P3wyb1DMC72GvKMHqOBfiypQilrpzpk9l2iTrIc5K8c4U0HQs69JrWSs6JzDRCEDF4a5u4ADDePoLe33x6x/RrqkDqfjRecNNJvUBqx3QM9l7R3m/Tf5dOpKNOTis6efhAPSzx9hTtzoaVo1piC8+P9sYTAFO5Yw64jvYV6vDQ8oWTgOvnOe2l/Ci+9jMC8ZFMfO2nNcp45fLShvCEJUvbT8=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(18002099003)(56012099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?T2W944/Ih22YCy7kOb5a2q/Ef9ikxeqdNFLDxhRZXsvR2w1QjUeZ1BpYKMMV?=
- =?us-ascii?Q?NuXih6ofIiNw2Xknt27vKQnSajNr20GQK727uDrkC4UjqhzB+XpbRplGE+d3?=
- =?us-ascii?Q?HmsjXwKhFQgClcLhHD5nJacC8Tv/azMD8wZO4YNwIfTxVHKHsEU75udoM69n?=
- =?us-ascii?Q?6KxkigQX0fPPzeAIQFjmI/KVxCf6hJD7TROZLkFxWVoigzRtkYPwWgpfyrjE?=
- =?us-ascii?Q?SzsKsbaPlBcYbAVzt0IAJdNQfQWnzFdxFED21FEBeFK8gpjL5XgUO6ZuYfsj?=
- =?us-ascii?Q?BpX/S+Hz8rwi9K0scVb28FaLYD383/EiZN+6FeVqYIadOj/QT2IYGRau3ESW?=
- =?us-ascii?Q?yW/tTyor8Of8tu8WcViTGry0k8Zd8uRqb7jX3qvzwNP86gwC257tdWpSbJLp?=
- =?us-ascii?Q?iKHTODeIskzmXZqYl+vi5w90+0ngJc2+6FKSQIYuWqat2n2soTC3YQ8h3Gzp?=
- =?us-ascii?Q?Os9BPn+Ac+8eKuR1IJqNsOGnr+rPHGHESeLqXbt5kV0l8dQMKdwFHmFqxyMe?=
- =?us-ascii?Q?LhooZTThjgOXIxH6EZxsVrZl6TofAlnzQXed3ri6MEjwLrspTsQDWgAEi45y?=
- =?us-ascii?Q?UO+vFm0QE3RFKYv+sCoNSP9oQGQKQl8WV6rnRbkoUdVYDsk2MVUAnmogXlcg?=
- =?us-ascii?Q?PGgDrOEvAqAe7reEyOTrX9bygJiq+jt6OxF1OANqI0pVlJXp2PzWHgLzte4g?=
- =?us-ascii?Q?DXbixZEhrO7coVZ6viEAfsGUZCpwj55e3XbTiuFuYNDyxsxtOMZGsL33UnIC?=
- =?us-ascii?Q?bUvlj7GT1vWuUT91OxZw3pPBfz7TzpuTbsIclA4fZfmK59X7Tegl4ooTZTx5?=
- =?us-ascii?Q?S9pvVl10j77h4RP/go+lkyAE5DgFNaHCarLuiZ+cn9Z1s2eB9+WMdAXTAhun?=
- =?us-ascii?Q?51nkeb09+oYwf9tyGy7D1KIhYzmdQWzC9wwldTsP7AvLcH5w+XXVecc8uPou?=
- =?us-ascii?Q?yCwDP2E/eo3CMc5iuH1vX5hxdH5Bt5gE+2LjrPDqQ3jrtLrOz8m6eQc4bzar?=
- =?us-ascii?Q?3AL4fdRJnYTinCzFPqlBt95L74JXKO6kFEMlsXhvaoDMIsTdHfNIs2e050JP?=
- =?us-ascii?Q?oGGWeTeeLYOs4XwEFQquduPXJ6hyNBOnf5xkeKfS21cb83eM6XCFUYQ14OfG?=
- =?us-ascii?Q?dQ0ab3lc4E/BcxoIZ4hBq6UhYObUoBwPhag4WQ+k+6SeycPX9ug67p/NyawE?=
- =?us-ascii?Q?fQSo0sZ2sDwwvRB0sY62hr05BC4eAKtOpy7656dU36rtRhHUSBezpIYUZFb0?=
- =?us-ascii?Q?4eOdgF9hhabTeo1gT41WvIpRtG1qmKLnOQdsECR155dtAi1Tn1D8jn7Pf8fu?=
- =?us-ascii?Q?qbcC8wd35E2bQhdP2l8ahSiluzMZFX45O5cWLxtQrEesY6dRlO7LIuOnoRek?=
- =?us-ascii?Q?kp4mFbmoqV0KI2du/rpB0Lo/3Bb3bbQBIWStCrgpkFtQwJhh8gMm4taE/hV9?=
- =?us-ascii?Q?TFpINYaBw1kJGVFSm6Ule9pcB8M4cdNw1j8CrfSa5CR17qxl6iagFl6SeXqu?=
- =?us-ascii?Q?CDPqq41oL51bn0XLCecv/OHktJA9Dp989KAFoXIdjBKJGHFtfYM3Ca4kJCOX?=
- =?us-ascii?Q?jMPErS+yutd4Ei/sCRSh6JziN4T6MtFna/rMb1ZmN0wnC6dL+GOw0Um4igj1?=
- =?us-ascii?Q?IhVaAYjHeAFpH4uxZSQ5Vc15U3Td7nyHf2s0bcD/0hbSheWF7+00s9APTCFr?=
- =?us-ascii?Q?MeoY6nEdtXh4AJzZwbeIJhNQQZtp4FcA+RS1/ztnHCcNKPkX?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 043434f8-3eef-4ff6-a23e-08de88dd1254
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2026 13:07:01.2743
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0YOjq5Xr1GUfOz80xVRQ/LNjPVUgPIinBBj4BIUBbNImquqKtdJWFOpFzDSV05X5
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB7848
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260323-iommu-ready-check-v1-1-5f6fef8f9f59@linaro.org>
+X-B4-Tracking: v=1; b=H4sIAIY7wWkC/x3MQQ5AMBBA0avIrE1SRamriIXUYCJU2hDS9O4ay
+ 7f4P4Anx+ShywI4utmzPRKKPAOzjsdCyFMySCGVKKVAtvt+oaNxetGsZDasdKNaVeq6MRJSdzq
+ a+fmf/RDjBy7q+fRjAAAA
+X-Change-ID: 20260320-iommu-ready-check-4976863957c2
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, 
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>, 
+ "Rob Herring (Arm)" <robh@kernel.org>
+Cc: Joerg Roedel <jroedel@suse.de>, Bjorn Helgaas <bhelgaas@google.com>, 
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+ peter.griffin@linaro.org, andre.draszik@linaro.org, willmcvicker@google.com, 
+ jyescas@google.com, kernel-team@android.com, stable@vger.kernel.org, 
+ Tudor Ambarus <tudor.ambarus@linaro.org>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1774271374; l=2378;
+ i=tudor.ambarus@linaro.org; s=20241212; h=from:subject:message-id;
+ bh=lTpldD4eL76NbvK555N/Xx2Kd24uIcQoPu7MsvhV6l0=;
+ b=t55I53gjpaEnmHL4phC4I+QSAaGYecA0xntMB6DObcA3FXm8m3v3G7Z/pZ44CrPmDg4EYupY7
+ 2+TC4ZG5EZUAIYs/zpKafQyyyqzwRsarbQ0Rz4wCnYTwwXlEdzGE9DF
+X-Developer-Key: i=tudor.ambarus@linaro.org; a=ed25519;
+ pk=uQzE0NXo3dIjeowMTOPCpIiPHEz12IA/MbyzrZVh9WI=
 
-On Sun, Mar 15, 2026 at 04:11:36PM +0800, Baolu Lu wrote:
-> > > > ATC invalidations should always be done after the PASID entry is
-> > > > written. During a hitless update both translations are unpredictably
-> > > > combined, this is unavoidable and OK.
-> > > 
-> > > The VT-d spec (Sections 6.5.2.5 and 6.5.2.6) explicitly mandates that an
-> > > IOTLB invalidation must precede the Device-TLB invalidation. If we only
-> > > do the device-TLB invalidation in the sync callback, we risk the device
-> > > re-fetching a stale translation from the IOMMU's internal IOTLB.
-> > 
-> > It is a little weird that is says that, that is worth checking into.
-> > 
-> > The other text is clear that the IOTLB is cached by DID,PASID only, so
-> > if the new PASID entry has a DID,PASID which is already coherent in
-> > the IOTLB it should not need any IOTLB flushing.
-> > 
-> > ie flushing the PASID table should immediately change any ATC fetches
-> > from using DID,old_PASID to DID,new_PASID.
-> > 
-> > If there is some issue where the PASID flush doesn't fence everything
-> > (ie an ATC fetch of DID,old_PASID can be passed by an ATC invalidation)
-> > then you may need IOTLB invalidations not to manage coherence but to
-> > manage ordering. That is an important detail if true.
-> 
-> On Intel hardware, the PASID-cache and IOTLB are not inclusive. A PASID-
-> cache invalidation forces a re-fetch of the pasid entry, but it does not
-> automatically purge downstream IOTLB entries.
+Commit da33e87bd2bf ("iommu: Handle yet another race around
+registration") introduced a readiness check in `iommu_fwspec_init()` to
+prevent client drivers from configuring their IOMMUs before
+`bus_iommu_probe()` has completed.
 
-It doesn't matter, the updated PASID entry will point to a new DID and
-the IOTLB (new DID,PASID) entry will be valid in the IOTLB.
+To optimize the replay path, the readiness check was conditionally
+gated behind `!dev->iommu`:
+    if (!dev->iommu && !READ_ONCE(iommu->ready))
+        return -EPROBE_DEFER;
 
-We don't need to flush the IOTLB, we just need to ensure that all
-lookups done with (old DID,PASID) are completed before sending any
-invalidation.
+However, this assumption breaks down for devices that map to multiple
+IOMMU instances. During the initialization loop over multiple IOMMUs in
+`of_iommu_configure_device()`, the first IOMMU successfully allocates
+`dev->iommu`. When `iommu_fwspec_init()` is called for the second
+IOMMU, `!dev->iommu` evaluates to false, short-circuiting the logic and
+entirely bypassing the `iommu->ready` check.
 
-> The spec-mandated IOTLB flush serves as a synchronization barrier to
-> ensure that in-flight translation requests are drained and the
-> internal IOMMU state is consistent before the invalidation request
-> is sent over PCIe to the device's ATC.
+If the second IOMMU is still executing its `bus_iommu_probe()`
+concurrently, this allows the client driver to proceed prematurely,
+resulting in a late IOMMU probe warning:
+    dev: late IOMMU probe at driver bind, something fishy here!
+    WARNING: drivers/iommu/iommu.c:645 at __iommu_probe_device
 
-A fencing requirement does make sense, but does it have to be done by
-flushing the entire DID,PASID? It is ugly to have to drop the IOTLB
-just because a context entry changed.
+Fix this by making the `iommu->ready` check unconditional, ensuring
+that a device will defer its probe until *all* of its required IOMMUs
+are fully registered and ready.
 
-Can you do a 4k IOVA 0 invalidation and get the same fence?
+Cc: stable@vger.kernel.org
+Fixes: da33e87bd2bf ("iommu: Handle yet another race around registration")
+Fixes: bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe path")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
+---
+The warning was observed using an Android 6.19 tree, using downstream
+drivers (exynos-decon and samsung-sysmmu-v9).
+---
+ drivers/iommu/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Jason
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 78756c3f3c40..e61927b4d41f 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -3042,7 +3042,7 @@ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode)
+ 
+ 	if (!iommu)
+ 		return driver_deferred_probe_check_state(dev);
+-	if (!dev->iommu && !READ_ONCE(iommu->ready))
++	if (!READ_ONCE(iommu->ready))
+ 		return -EPROBE_DEFER;
+ 
+ 	if (fwspec)
+
+---
+base-commit: ca3bbc9287400c1274d87ee57a16e3126ba2969a
+change-id: 20260320-iommu-ready-check-4976863957c2
+
+Best regards,
+-- 
+Tudor Ambarus <tudor.ambarus@linaro.org>
+
