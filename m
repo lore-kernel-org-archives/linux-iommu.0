@@ -1,176 +1,163 @@
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53A9A3BE64A
-	for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 16:46:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C99C73BED2A
+	for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 16:46:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774284399; cv=none; b=tXwtp6cne4LcyrFPSjEnFHLEpwXIGQfzKm8AMtDdGrpZf5q2RJcJ0jgY0170Q95xlBqWMN+sdwzrA/EjwTRU3oK8mHXpXHAAjzi0/ZHbt276F65lMqTYrcEsJYC1bkAzKSHMrFDcN6VvNH1BXhR5/AaR6LBpwDFDOpRJjq/kG2c=
+	t=1774284406; cv=none; b=uLk7vdiPlT/Y3G1pFYykMDTyJpnFLtPMsOZIwg45fS+NAl55mcWyl7QOQ1oY2uk6jVr4SxOQ9JwadAEKjxgbRcF4KZUPeyh0yHBL+n9ec5Cuc65TImnOCIMFRoKoiw9BGJzzGDIJAqxhxu3ofWiX6Z9Jo62I4QGGiiOb8pByAPo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774284399; c=relaxed/simple;
-	bh=HKQDceImfXDgLYjADsrp6O76IrFmWlYgSMQDN99+TQ0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Pl6ffUi0vbZz5yJCveqFHG5j8IwJX4s2x7n43ty6Q+mrl4JpxTw/3Nhbhsyn8nHrUf7YmQUEFkCVuN5GfSH2y+KiVL+14iExvGD3K4ZPhD+f/j3XoCXmziCSf20OmO2adWJ0lw+Sg+G4OFw2s+s8lcLGJT5cJGM2wgpB7tjsX8w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=dKA/9X2k; arc=none smtp.client-ip=209.85.214.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1774284406; c=relaxed/simple;
+	bh=uT6u28q8xN+HvfAicCvlLrLPXdRQ7Bx/s17nGsTFrHA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=bappkS+Eu5rsQI+xDgDa3hkQjzTBGRW+VyBDn+q8NDkgJx7PjZmwS2duMeZ65mtuLFrcdVT3oUErJeNQmO7CoMdpVieXKaxM9rMn33FbKrp1OQt7wyU6K0eGtgiKhGwhxVjQBV06ZW7Dn6Ee8lBZ65ahTEUBLVD+b/Ba02B0U7I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=aQ1ufSgV; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="dKA/9X2k"
-Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2b052562254so4555ad.0
-        for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 09:46:38 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="aQ1ufSgV"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4838c15e3cbso36812195e9.3
+        for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 09:46:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1774284398; x=1774889198; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=T3cHIDiGHIa38vn3Mqr4bq3z4kncPagusqX2rPGm+Ow=;
-        b=dKA/9X2klTPI9+jN1OPNpPUkb1ayp95LssdcGrZCA3ZYbH2NfXO6djmMZwHU0XP0uo
-         2Al48KSI9ZqDkVVtuI/JNs3h89wanicjZyUFFZo4Jgo02bS7q2kpUUn5mE0ZhuJIRDol
-         Ng03Ad4lAV48m7/9K9eegUNao02sF+VyKDbQHNi20oxEt2cF+5fx/qDgCzyQeP4nPc2M
-         StmyT/HEj1Z8vPRzx6Mk4dRufbh+UyPopMN+pIB8YxjSAg6zSnKRzmnFSw7ozok02PRz
-         rt/VjskLCmTk1Do8fVOnQzyjM0WcI0N0x8aoQEZLDHPDnaqwGPcPZU23k2f9G9PNFoeT
-         tbCw==
+        d=linaro.org; s=google; t=1774284403; x=1774889203; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=cMPSjiU3n/bDrZwK2WBMoUe3M4rFzhZbrCZl3W9hGNA=;
+        b=aQ1ufSgVyGLwo8GYcoKz4w5NZMqRcQiXN0ibHaP71/O/TtYZqMiWVVrjCJ8LPCjn61
+         fSX8ym98zijGRbqwzJRLJyAhiG3KFTetOWyD50PhRGabIZMW7ue9fX8/b3CGOIbNdrnY
+         PDP443sX80WxCvPdr9A26P0LrGXpIURQavzCXjyQEEQg2xgZcL6Ud6b/52w8+ANCcWfl
+         RkWXjS2zjBcdJukqRkcMwY159C08pHJeEuDm1S+N2Yxyyphdc/otTxrMX4MOXLyZ4Lsg
+         feN58oiLX0bBfOrsSUVK1kQSY9jBQC6FOlknDO9xWZNd7+vnrAl2jkCr7lGeIPhyb3k1
+         W3AQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774284398; x=1774889198;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=T3cHIDiGHIa38vn3Mqr4bq3z4kncPagusqX2rPGm+Ow=;
-        b=kjTJ4GtHRhN1GZohhThxqvyFKBEJnO8hMTYJzlL1QI4C+XHegSROu2seXDrwMcfy/V
-         gycTwunE6PVKFNxo//cqj9suqyg3+ycxezPEyGH+tvgI1Fl1muD3QmtXBxdYrASI2pkA
-         qprz/WX/Dkd+WhITvPrhaAV4on5XDFu0pUleBxHXBoqBBsaTpyD7EiX7kTxH022a3PLl
-         l2sr8S8COJtWXVTudoM8VFfnFKsxQQn16BmI5Fo9u90fnMOh0Nu4E21OMlb5RhK8wX6W
-         G0qUtnvX/UsKYQmucnfkC00pEJbrU5Yvl8ztwZLAGoHCm5oDHeFiG56I2+fMitIjEu+r
-         mDsg==
-X-Forwarded-Encrypted: i=1; AJvYcCWMBc+9wGTngQsrL3DTBgd4rL3TcKw8q2TZzNwhvijnevUUGHv/e+kVcQEZoylIwjZyhprCcw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx1iNrCHMSTjU7KAADs99ovcawyFrcV2QG2W4Cc2VI3F0xUWvPr
-	RkHWQ4oRsl6C5W2gVUMYpQP1JKvtrcs/qMeM5IFuu0+NpDXL6yYpmE2FyrCrkiCxlA==
-X-Gm-Gg: ATEYQzxQHYNZln8+vjuy6SiK3NTCf8zo6AM/0eEx7aaHpNA6yfCJD3+8XmrCglwPjg5
-	kZLF1mumCxh5skcOKuYTPHo8YclesJyB+4Y5wEF2eIWa3FAvJPwatC6YUfoZ38m75G++WKH1OIA
-	BlFfFr4ttcSfyu9+2Cjm23pkq8GSg7BSrku+edTC2E2yDdmHaUSOvKZdD6b1bY4JqzcVl96c1hS
-	CSOvExuc6B+bUlf4ZzAc14rG0ItB7AJWqgL19ZyHL7F57Sp81MFEPp2PiBXgGl9Mq68KZG9nVvd
-	KhEISiycT2CHeBS0zSMrTG34xOAKf37jF+enzLtz/FoZJqsc/T/nQz3Yroc/3fUyH7DED1wvWmq
-	HwroLYZuccRwqAyTkMc7bmHhCHkTHy/W+duZYMfHenhVM0xOQWWZR8E88KELREHIz9NDdwUKKQ2
-	l91zkMfg2HI7rnNQ80oGl2ulY4RC3Lx+8LN0RfAVJQZs4g3ogXsl9HY0BMObs2hw==
-X-Received: by 2002:a17:902:f541:b0:2ae:45cc:aeb6 with SMTP id d9443c01a7336-2b08b40ab79mr5435895ad.6.1774284397207;
-        Mon, 23 Mar 2026 09:46:37 -0700 (PDT)
-Received: from google.com (168.136.83.34.bc.googleusercontent.com. [34.83.136.168])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82b040da438sm10054500b3a.43.2026.03.23.09.46.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Mar 2026 09:46:36 -0700 (PDT)
-Date: Mon, 23 Mar 2026 16:46:32 +0000
-From: Samiullah Khawaja <skhawaja@google.com>
-To: Jacob Pan <jacob.pan@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, 
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, 
-	Alex Williamson <alex@shazbot.org>, Joerg Roedel <joro@8bytes.org>, 
-	David Matlack <dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Nicolin Chen <nicolinc@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>, 
-	Yi Liu <yi.l.liu@intel.com>, pasha.tatashin@soleen.com, Will Deacon <will@kernel.org>, 
-	Baolu Lu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH V2 02/11] iommufd: Move igroup allocation to a function
-Message-ID: <acFuWXSZiBGnu1vB@google.com>
-References: <20260312155637.376854-1-jacob.pan@linux.microsoft.com>
- <20260312155637.376854-3-jacob.pan@linux.microsoft.com>
+        d=1e100.net; s=20251104; t=1774284403; x=1774889203;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=cMPSjiU3n/bDrZwK2WBMoUe3M4rFzhZbrCZl3W9hGNA=;
+        b=qVUaIcUXx25yYJC4wY0vqojyQhMNngv6wWEO0xga18BxNmV2jbO19G/i5zk09F6h8n
+         2G+Vo1cuU3IrkjieJFWQLfv96QKRE8wM8/gv9nnM5r63+udLQwfzWRx+yElUA74op4PZ
+         Vz3yDIwZNk8u2HrbEhCoMA5edtXpirM8RNavk+E7lsdLVxog7xy2zBJlgRFpjfBTWLza
+         mdLMcYZcvJJ7o9muO5UOzVddt1IWavQsHKk+K1gd4VrFFrT8XFdDfFlf5aSX3s/yEfRd
+         T8brrqPVn7xlybkPUJibqXmgu0Oz7/Sctqo3JKs6rPUDvOlP7RwJJkedHnFHofvikQL9
+         M0qQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUDFYbi3qsWmnHXs+hEjkpQp+99LKFPVo1lGMJfiQgwqIkld75Zo4huPAzPsPBeKnL4wzCJFA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxggqfzK8zEIp/M6RxYjWfW+1sVbcTESi4ew08c/kmheQCN1PcI
+	ClFM4Z/PqyC9jICD5jxJ029P08rtaPmw2EPMLzNL2I5ob2+a1vfYMB0aqYrRUV9yyy0=
+X-Gm-Gg: ATEYQzx4LBSZLdTD6l54sqplooINn0NNVd9lz3ub+D8MYEOw0atkxtOXWIZy97l0KX8
+	DhN4GaiP/iaJuvxH0mzkG4+MCvI0eOlpEiiVOxsV3YNmnh7MyyYJLBisTjNrEvcFpi/6p8HMgyD
+	uVC1DkddcDrvMVz9mlDacMiMbNAzs/NfmQdqUtV6wlTv65OUFwKVPdX827OYjwJOp1b4ay8R3sn
+	KUiLFFZaKh5XU/LCKav74XunlqY321e9d46MIZlmENjTnjsBVGxFdkNa59DSe0ZuBq70ETfXPaJ
+	hcGVaCoCZydUdj4xQV3L0LwPkw6a3IUq28XetYHyFRQZuagD1E/UHgmMIy/OWALy3aP/HbU4EvS
+	WKQ/Y3QltFtaUwfdU6MgJ6j6ZMk4DS2C1C7iPaT4WNbJu5a+1vV2jPacPvX0jZa0r3tiASXnb2G
+	DmWCxto8vV/0vGe9p4zq7ksYqLGdbQCbE=
+X-Received: by 2002:a05:600c:3b1e:b0:480:2521:4d92 with SMTP id 5b1f17b1804b1-486fee1ab10mr180454805e9.24.1774284403113;
+        Mon, 23 Mar 2026 09:46:43 -0700 (PDT)
+Received: from [10.11.12.108] ([79.115.63.77])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-486f8b949e1sm600421655e9.9.2026.03.23.09.46.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 Mar 2026 09:46:42 -0700 (PDT)
+Message-ID: <1062b66d-e4d0-4eee-8fc2-dbb65491a01b@linaro.org>
+Date: Mon, 23 Mar 2026 18:46:39 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20260312155637.376854-3-jacob.pan@linux.microsoft.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu: Fix bypass of IOMMU readiness check for
+ multi-IOMMU devices
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ "Rob Herring (Arm)" <robh@kernel.org>, Joerg Roedel <jroedel@suse.de>,
+ Bjorn Helgaas <bhelgaas@google.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, peter.griffin@linaro.org,
+ andre.draszik@linaro.org, willmcvicker@google.com, jyescas@google.com,
+ kernel-team@android.com, stable@vger.kernel.org
+References: <20260323-iommu-ready-check-v1-1-5f6fef8f9f59@linaro.org>
+ <20260323135414.GA8437@ziepe.ca>
+Content-Language: en-US
+From: Tudor Ambarus <tudor.ambarus@linaro.org>
+In-Reply-To: <20260323135414.GA8437@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Thu, Mar 12, 2026 at 08:56:28AM -0700, Jacob Pan wrote:
->From: Jason Gunthorpe <jgg@nvidia.com>
->
->So it can be reused in the next patch which allows binding to noiommu
->device.
->
->Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
->Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
->---
-> drivers/iommu/iommufd/device.c | 48 +++++++++++++++++++++-------------
-> 1 file changed, 30 insertions(+), 18 deletions(-)
->
->diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
->index 344d620cdecc..54d73016468f 100644
->--- a/drivers/iommu/iommufd/device.c
->+++ b/drivers/iommu/iommufd/device.c
->@@ -30,8 +30,9 @@ static void iommufd_group_release(struct kref *kref)
->
-> 	WARN_ON(!xa_empty(&igroup->pasid_attach));
->
->-	xa_cmpxchg(&igroup->ictx->groups, iommu_group_id(igroup->group), igroup,
->-		   NULL, GFP_KERNEL);
->+	if (igroup->group)
->+		xa_cmpxchg(&igroup->ictx->groups, iommu_group_id(igroup->group),
->+			   igroup, NULL, GFP_KERNEL);
-> 	iommu_group_put(igroup->group);
-> 	mutex_destroy(&igroup->lock);
-> 	kfree(igroup);
->@@ -56,6 +57,30 @@ static bool iommufd_group_try_get(struct iommufd_group *igroup,
-> 	return kref_get_unless_zero(&igroup->ref);
-> }
->
->+static struct iommufd_group *iommufd_alloc_group(struct iommufd_ctx *ictx,
->+						 struct iommu_group *group)
->+{
->+	struct iommufd_group *new_igroup;
->+
->+	new_igroup = kzalloc(sizeof(*new_igroup), GFP_KERNEL);
->+	if (!new_igroup)
->+		return ERR_PTR(-ENOMEM);
->+
->+	kref_init(&new_igroup->ref);
->+	mutex_init(&new_igroup->lock);
->+	xa_init(&new_igroup->pasid_attach);
->+	new_igroup->sw_msi_start = PHYS_ADDR_MAX;
->+	/* group reference moves into new_igroup */
->+	new_igroup->group = group;
->+
->+	/*
->+	 * The ictx is not additionally refcounted here becase all objects using
->+	 * an igroup must put it before their destroy completes.
->+	 */
->+	new_igroup->ictx = ictx;
->+	return new_igroup;
->+}
->+
-> /*
->  * iommufd needs to store some more data for each iommu_group, we keep a
->  * parallel xarray indexed by iommu_group id to hold this instead of putting it
->@@ -87,25 +112,12 @@ static struct iommufd_group *iommufd_get_group(struct iommufd_ctx *ictx,
-> 	}
-> 	xa_unlock(&ictx->groups);
->
->-	new_igroup = kzalloc_obj(*new_igroup);
->-	if (!new_igroup) {
->+	new_igroup = iommufd_alloc_group(ictx, group);
->+	if (IS_ERR(new_igroup)) {
-> 		iommu_group_put(group);
->-		return ERR_PTR(-ENOMEM);
->+		return new_igroup;
-> 	}
->
->-	kref_init(&new_igroup->ref);
->-	mutex_init(&new_igroup->lock);
->-	xa_init(&new_igroup->pasid_attach);
->-	new_igroup->sw_msi_start = PHYS_ADDR_MAX;
->-	/* group reference moves into new_igroup */
->-	new_igroup->group = group;
->-
->-	/*
->-	 * The ictx is not additionally refcounted here becase all objects using
->-	 * an igroup must put it before their destroy completes.
->-	 */
->-	new_igroup->ictx = ictx;
->-
-> 	/*
-> 	 * We dropped the lock so igroup is invalid. NULL is a safe and likely
-> 	 * value to assume for the xa_cmpxchg algorithm.
->-- 
->2.34.1
->
+Hi, Jason,
 
-Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
+On 3/23/26 3:54 PM, Jason Gunthorpe wrote:
+> On Mon, Mar 23, 2026 at 01:09:27PM +0000, Tudor Ambarus wrote:
+>> Commit da33e87bd2bf ("iommu: Handle yet another race around
+>> registration") introduced a readiness check in `iommu_fwspec_init()` to
+>> prevent client drivers from configuring their IOMMUs before
+>> `bus_iommu_probe()` has completed.
+>>
+>> To optimize the replay path, the readiness check was conditionally
+>> gated behind `!dev->iommu`:
+>>     if (!dev->iommu && !READ_ONCE(iommu->ready))
+>>         return -EPROBE_DEFER;
+>>
+>> However, this assumption breaks down for devices that map to multiple
+>> IOMMU instances.
+> 
+> ?? We don't directly support "multiple IOMMU instances". There is only
+> one dev->iommu.
+> 
+> AFAIK if some drivers need to support multiple different instances of
+> the same IOMMU driver they must deal with this fully internally and
+> present to the core a "single instance" view.
+
+Thanks for the quick answer. I may miss a few things, I should have
+marked this as an RFC. Would you please help me understand a little bit
+more on this topic?
+
+Downstream we have a display controller that's using:
+	iommus = <&sysmmu_19840000>, <&sysmmu_19c40000>;
+
+These are 2 distinct platform devices, they probe independently, they
+each call iommu_device_register() independently.
+
+If I understood you correctly, the downstream driver shall model its
+architecture and call iommu_device_register() only once after both
+devices are configured.
+
+My downstream reality is different. Here's what I'm encountering:
+1/ sysmmu_19840000: dev->iommu is NULL. iommu_fwspec_init() correctly
+   evaluates !READ_ONCE(sysmmu_19840000->ready). Assuming it is ready,
+   it allocates dev->iommu.
+
+2/ dev->iommu is now NOT NULL. iommu_fwspec_init() is called for the
+   second physical instance.
+
+3/ Because of the !dev->iommu gate, the evaluation of
+   !READ_ONCE(sysmmu_19c40000->ready) is short-circuited and skipped
+   entirely.
+
+But sysmmu_19c40000 is not ready, its specific bus_iommu_probe() is
+executing asynchronously on another CPU.
+
+If the core's intent is to strictly enforce a single IOMMU instance,
+shouldn't iommu_fwspec_init() be checking
+	fwspec->iommu_fwnode == iommu_fwnode
+instead of matching the ops? Because the core currently matches on
+ops, it permits aggregating multiple physical instances with the
+same ops into one fwspec.
+
+Thanks a ton!
+ta
+
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2940,7 +2940,7 @@ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode)
+ 		return -EPROBE_DEFER;
+ 
+ 	if (fwspec)
+-		return iommu->ops == iommu_fwspec_ops(fwspec) ? 0 : -EINVAL;
++		return fwspec->iommu_fwnode == iommu_fwnode ? 0 : -EINVAL;
+ 
+ 	if (!dev_iommu_get(dev))
+ 		return -ENOMEM;
