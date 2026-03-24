@@ -1,168 +1,122 @@
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73C313F076E
-	for <iommu@lists.linux.dev>; Tue, 24 Mar 2026 17:36:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.169
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774373797; cv=pass; b=ieGb/MPwDlFLZKjKExtbk+v44rKd82MbuNWVc0Hc0axwfu8XcwnQaL99uszg2ll3342LeKp/Ej1kKbfDseqyXlIugwtEkrS79uTnE6LTpD3NHMQV8Zzq4SGwqpXWVli+RArxYo1WOcMSe37wSevrfxIMg5Na5XSy/16SpHB1KWs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774373797; c=relaxed/simple;
-	bh=QKH3FIlHUJB8Q1byrwVmEses+K6AxcmCpK6mo9PTNmI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Okj0d0uzW+ZRfjK0rcOcpuccAB5kcapJwqiKcfAxSjebTaRyiWUfKBwNc56X/KjZb7oL25MFMQzDtNf4SrB+YbbcxDMg99qldUPj24C/YcNtgBp22TkxQ3uQgaDWPb2W4+v51m5lcMyA76V4dnQ2BkwcOBbOZZX7qbPxWJxLkiY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=GYjK2GX+; arc=pass smtp.client-ip=209.85.160.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 094E63E9589
+	for <iommu@lists.linux.dev>; Tue, 24 Mar 2026 17:42:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774374174; cv=none; b=e7iC/IidJr53ol24jhQ/zOQ3kfdNZ8Xi31KcO5MEuNLjm8iNPbQ8jaGioKkkzj7TvT3SEOmlKXcITR1ZFxLVtIxPCm79HIRKGP3VZ94UfXprX75G0uuVC0EEivSge8X9pPD+115AtIKFu9bX3R1Gs+4dTVhx1d2WANBWSbxFAH8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774374174; c=relaxed/simple;
+	bh=QWIkD2dNPOWDG2iaQmcQwa3qfpALdnFK4jzk/uKN3dw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CZvdkHFodmEMimwbhphzo2Feq4CXYGKL9BBHrBah4oox2p7kZK7JvGessjQ3M3+litScwALTPuNNRsHRXmnNOwePyWvoKjHTpyYl13QqxONd8sh8AAYlb4hFJJO8BgGzbn4Bs98MbvfysSBY1xW1KFPDbo4GpVvWW4sgpw5k0/4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=G8XjNVRS; arc=none smtp.client-ip=209.85.214.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="GYjK2GX+"
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-509069a7a7fso42021cf.0
-        for <iommu@lists.linux.dev>; Tue, 24 Mar 2026 10:36:36 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1774373795; cv=none;
-        d=google.com; s=arc-20240605;
-        b=Ab5kDjl8Owq/KXw8h/9iQGuXrTQUtk+pf8w7jDztKKN67wW9qkWBN68ZXbFBHjSybp
-         PrwIRp9HqU5j3rParFgMyoIcjEqTNdYcIQgMgwuEwqMLoCDzU3JzSqsqViqwzY9JTOXW
-         kIxU+REimy9pbyYkgxYo05jBMutP5i+3sGl4GV9tmiAhzzyk4v6FeCld+Z6HWwNASBRU
-         kbQnYlwOD0NxLOyfTo6vPmhpMqqC+jyD2FmqtbwGwynxbNMmFB+esA/ku8XqnpbPhC8U
-         86hTFHhjTkXvtNa9LNmMjKctwIktxFh8CE3ffDtQL26UBB1UKuosbmdba1LHX544xw38
-         nMtg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=T7cRZZnHlvElmV5E4d+ARimoSvXKMR3JQuoEi7NRgdM=;
-        fh=mEdY8+7svGb9tpK2hVffkU8x/k3DV7/0FPFjOQq7YRI=;
-        b=demvvWg5RAvBai/LYUET8kd/ulXTC6Q/ws+Dr/PPNpGNzcZqrgMIrm/tZ142ZHYFVR
-         cj3sQywljJITzf6D/daz8hAL6lEzVxizei07RfkX+iBRufWt2kmEV+jR8fUEAwpMMqk/
-         hy03FHgPH7XZvPI+dscW07T/RnFVoX8e6/dzCwYi9kI69+6iQc3i1p45oxcIpkYuy4Re
-         Ieo1hfQg1DvQmkhJ0XLLb2WVY8VMxS1PtWzCingp0Z+UNhHuaWAy7N6OseStGP3ORA+L
-         oG1GjQbrrrr7qOWGhkFjz0hoNlWLZGUp0ySE47mNXhEVhhWqRBInWBxlR9NVSKozjGLO
-         M/SQ==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="G8XjNVRS"
+Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2b052ec7176so7245ad.1
+        for <iommu@lists.linux.dev>; Tue, 24 Mar 2026 10:42:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1774373795; x=1774978595; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=T7cRZZnHlvElmV5E4d+ARimoSvXKMR3JQuoEi7NRgdM=;
-        b=GYjK2GX+LXIlRx4zjtv6IPyBkm6DbjHr1Aevwm/sUV7EEtg7fhxginGiR99OFAc16G
-         9TqmWvj/6CupkmMmjXQwlLfmE23b001Kwyftn2d8n8TE/c/uSZFX3UZya9YHSt5EGHcm
-         YnwVIbn4GNZUjWXQoORVw1eHMQIkLdZ8Dxge6C1p1+Xe+plLrcj2QQrz3VJgBk/Tus4y
-         U5boXrsm64PAwKNv/QfIL1NHgunXroI6J5BOuzjGewO85jG2cuUWjz1FpekpezlaWbeP
-         Tafh0Y6bJ+cK/OWuwVcQxzEIjFFeZ94Ju0iTxDOpuLqbf+EQMGP1Csw7xSjrbKdNHLaD
-         feSQ==
+        d=google.com; s=20251104; t=1774374172; x=1774978972; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ELBKqo9znGMFulJJKIvGt1/Dgj2lLtKy7Txs2TxgETo=;
+        b=G8XjNVRSVtDlGLWZZn8CKCvGqdo7UJMbq8zzuUNfU4eXeGFQQRxSaJFYygQyYroIkk
+         DRgkljptXyhseTPZipkwZoSPHYsM9KOYPuI55/tksrc1C5flf2LGLunBEFc+3U/bwMAZ
+         Zlt/zcEclXxzxIkVExJpoD2yHQxGUoLaSaB9XxP4pYDGbg2QT/XP2C/JIiwpo1Jd5GT9
+         iRzCgROt30hg+ZKF0NNE0oAF6IgB1pcYnd0uCLIizlwTlXn17E7TOUoYBvuGqzcUeXzD
+         NJyGN3coecQ3ZiaIkfRSSL15FjUjgQ15Vdw/NDcQMq7ZUxYeugtVk5H29JrryW42gTHg
+         Gknw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774373795; x=1774978595;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=T7cRZZnHlvElmV5E4d+ARimoSvXKMR3JQuoEi7NRgdM=;
-        b=QM3Sy66JQT86btjCjKPHLzpxEVYKCFN9KtuuRPwRWxos2/jw18MU6adArM4/whzMtX
-         D9CXFDLewWHh/x1NwO7HVRZyCBsHYItrqLe70hoP8GBoKffBjsMoUvall8fneFffZVXT
-         QtU+586WbltKUPZqF008fsINEh98kC6oACbluM1Gy2ZX/hyzS/a/TyIRSRHmFTn5paZ4
-         dOBDRn5ugUzfc841AlRK9CFiT2Pz1qiOYKd0ory6OTkgyliuuJ+qmiZcvR0QMB0Fqujc
-         ouRHE6Ky2Gy+2ZjWR0j58M/b3zZbxNdLyfzgeFtcCWCM9bn+UrrbSMrg3MEIC2T2X/tA
-         z8Ew==
-X-Forwarded-Encrypted: i=1; AJvYcCXEXAtYl/oJlND8KBTG7rxgt5FvMTYYZWgaiqhNqcuxNC/iI7EkPKYYO60M14z4TKANEkIWOA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyvRIoeP2m3ihk2Xw3OoBA3Jvv0qP0vZI0pqA+56FivENZAoeSh
-	qHuJp3NmwQkUoUUXpSE16VoKyK8kWDr+gQhGSOLcmv5WAC+WPJ3v7vePywloCmXKp5ICB2xzcwu
-	ofpCA9ep+ZQOGUaxMf73IAkf0DDdlBmVxeR5uXGk3
-X-Gm-Gg: ATEYQzwxbWgEtfgGgSiqt+A/C2KyLxxIIKnqQf+Z5vPg3x9U9Gg5/sGuVE3Z+mWYkAd
-	h8sJgszFM8tYl3/GCp+2SttFQKOZWURNM7rjcjm+J52H8tToFpV29rwXMmXdV3RseNlHTcQGBei
-	XdxIPOc1bs6W7MZX17fhHtL2TcAaDDQMA8r9J3L4RBFPnrnaIGwdEbxkgYUPidrgTkq83GEPU4H
-	2slwFFjjLyo2axqSAXJgmiTHqy/eb5/UUHBKAvEMYtXMpUdsVEDVASTnLWnbT7wFuKzjNsCou1X
-	SqXVprqADRhcdlu1t5w53Hkx/RGez3A6IHm0PhQ=
-X-Received: by 2002:ac8:5a41:0:b0:508:fd42:fd05 with SMTP id
- d75a77b69052e-50b823fa2ddmr354431cf.15.1774373794536; Tue, 24 Mar 2026
- 10:36:34 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1774374172; x=1774978972;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ELBKqo9znGMFulJJKIvGt1/Dgj2lLtKy7Txs2TxgETo=;
+        b=Pj89xp6z+xpQq4a68XiCXoN+GRIdo/+VmI/xvXTQprWVZADMhoDtswnXTLh48P3uzV
+         qa0YFXX4haVk5k9yrTu79zF9pr5kfy114T60InMOIOKAl5hizK0kScstnLxqfhbaGC/F
+         OH45b5eF4U3jQEeoCet7vq0RpMEz38jJ0itXnxXRZ3hdm5F3Q1UAXuCEuR9tyhtYEk/H
+         Qnp29MErRVIjOGxitC9rVHID7EoroEzYvsZttVox1MmXsSrkvgSsT5NA2lR2U3L/ukmx
+         cW6PlIpyKVgzgKcmEAi+b8pz9sWmJ2U0OtyG98ua1eeiE47bK72LwNh70cY8HXG3QgvP
+         RJ+A==
+X-Forwarded-Encrypted: i=1; AJvYcCXE9gG7VSzlZ9ipX6B+FvZjDIgE5rtcLObqYl38+d50IhyHIKi2hp0+P+mzpm+IKqNHtbaa4g==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyh0QUREycoN4iEZTKK4sw5j/QxkA35tIlEqvYwMGs+TNZ+xLFk
+	Mlx3T+BafZjHZC2S4GKt3C22xLhgbgW1K/wctDjuxk/9M7z3ET8XrIm2STYeC7qheg==
+X-Gm-Gg: ATEYQzyWLAk/O4eYKkp2roxvxUcDEmD4wo7Bg8O7Wb4C4IA3e3fG0QWUTijoxCwUbup
+	rH7zbWQOxiLkP1BeqS6T0iRxhcbE70SwJKDWS1yMnLAus5+iX8/SuyOGdBY5SXuQbx1idi1bv7z
+	kbNXyAan4Klouiois8g6VVZaFYcbCQFrFri/ADxWoNDk90CGlxPBlCSubNxXXqFBjvLey30xgsk
+	FmnKC1ugEUcHpCiFf89cp2Q0PJJFhuORskrcLJ4/eToALGxexTCnH2n/pm29O+b8hATj/iqySd7
+	uL/Ies+AKBuFOyI9maG5vn2ei5TbF6OBkJ3SZvOzJnpyTOkM6b7klkNGUshB6bjULjnX3O5BAej
+	zvjEyQFkEZAu76kmO77oxe//lnbITlhpUVM04Sf5/mYGziBYTKKC44bkpMW2Q29QoyxRSU68kLL
+	35KqiHRQA8XIXwGRZg0Wq+hr2OzkEHFDQWKzW98L6jmX7L4ziakJsvYXKUBh5fVA==
+X-Received: by 2002:a17:902:e543:b0:2ae:ca87:b1c2 with SMTP id d9443c01a7336-2b0b1568883mr235975ad.8.1774374171614;
+        Tue, 24 Mar 2026 10:42:51 -0700 (PDT)
+Received: from google.com (168.136.83.34.bc.googleusercontent.com. [34.83.136.168])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b0af2e9dabsm8104685ad.69.2026.03.24.10.42.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Mar 2026 10:42:50 -0700 (PDT)
+Date: Tue, 24 Mar 2026 17:42:46 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Jacob Pan <jacob.pan@linux.microsoft.com>, 
+	linux-kernel@vger.kernel.org, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
+	Alex Williamson <alex@shazbot.org>, Joerg Roedel <joro@8bytes.org>, 
+	David Matlack <dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Nicolin Chen <nicolinc@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>, 
+	Yi Liu <yi.l.liu@intel.com>, pasha.tatashin@soleen.com, Will Deacon <will@kernel.org>, 
+	Baolu Lu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH V2 01/11] iommufd: Support a HWPT without an iommu driver
+ for noiommu
+Message-ID: <acLMZtuJ5EEqRCwW@google.com>
+References: <20260312155637.376854-1-jacob.pan@linux.microsoft.com>
+ <20260312155637.376854-2-jacob.pan@linux.microsoft.com>
+ <abrvYSZ425p6a17D@google.com>
+ <20260323131714.GG7340@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260305123641.164164-1-jiri@resnulli.us> <ablV_f_l7wD2m63E@google.com>
- <20260324120057.GC8437@ziepe.ca> <CAFgf54qoFhvVR2yfROGaTJmLcjuLACswVFv=trqgJwGb_DB3zA@mail.gmail.com>
- <20260324122416.GD8437@ziepe.ca>
-In-Reply-To: <20260324122416.GD8437@ziepe.ca>
-From: Mostafa Saleh <smostafa@google.com>
-Date: Tue, 24 Mar 2026 17:36:23 +0000
-X-Gm-Features: AaiRm51PAsNGUjv3vtee5YHklYnd6tfPfqFJtrYrMATN4cWFgoB-kqA4e1zQENQ
-Message-ID: <CAFgf54qwA2D1Xa4rnruJ4Nfp5BsB=T_pB3hzz9HBjh22TL17uA@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 0/2] dma-buf: heaps: system: add an option to
- allocate explicitly decrypted memory
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Jiri Pirko <jiri@resnulli.us>, dri-devel@lists.freedesktop.org, 
-	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev, 
-	linux-media@vger.kernel.org, sumit.semwal@linaro.org, 
-	benjamin.gaignard@collabora.com, Brian.Starkey@arm.com, jstultz@google.com, 
-	tjmercier@google.com, christian.koenig@amd.com, m.szyprowski@samsung.com, 
-	robin.murphy@arm.com, leon@kernel.org, sean.anderson@linux.dev, 
-	ptesarik@suse.com, catalin.marinas@arm.com, aneesh.kumar@kernel.org, 
-	suzuki.poulose@arm.com, steven.price@arm.com, thomas.lendacky@amd.com, 
-	john.allen@amd.com, ashish.kalra@amd.com, suravee.suthikulpanit@amd.com, 
-	linux-coco@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20260323131714.GG7340@nvidia.com>
 
-On Tue, Mar 24, 2026 at 12:24=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca> wro=
-te:
+On Mon, Mar 23, 2026 at 10:17:14AM -0300, Jason Gunthorpe wrote:
+>On Wed, Mar 18, 2026 at 06:38:14PM +0000, Samiullah Khawaja wrote:
 >
-> On Tue, Mar 24, 2026 at 12:14:36PM +0000, Mostafa Saleh wrote:
-> > On Tue, Mar 24, 2026 at 12:01=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca>=
- wrote:
-> > >
-> > > On Tue, Mar 17, 2026 at 01:24:13PM +0000, Mostafa Saleh wrote:
-> > >
-> > > > On the other hand, for restricted-dma, the memory decryption is dee=
-p
-> > > > in the DMA direct memory allocation and the DMA API callers (for ex
-> > > > virtio drivers) are clueless about it and can=E2=80=99t pass any at=
-trs.
-> > > > My proposal was specific to restricted-dma and won=E2=80=99t work f=
-or your case.
-> > >
-> > > How is this any different from CC?
-> > >
-> > > If the device cannot dma to "encrypted" memory, whatever that means
-> > > for you, then the DMA API:
-> > >  - Makes dma alloc coherent return "decrypted" memory, and the built
-> > >    in mapping of coherent memory knows about this
-> > >  - Makes dma_map_xxx use SWIOTLB to bounce to decrypted memory
-> > >
-> > > There is no need for something like virtio drivers to be aware of
-> > > any of this.
-> > >
-> > > On the other hand if the driver deliberately allocates decrypted
-> > > memory without using DMA API alloc coherent then it knows it did it
-> > > and can pass the flag to map it.
-> > >
-> >
-> > The problem is that the DMA API currently gets confused by this; it
-> > can end up double decrypting the memory or using the wrong functions
-> > as mentioned in [1]
+>> > +static const struct iommu_domain_ops noiommu_amdv1_ops = {
+>> > +	IOMMU_PT_DOMAIN_OPS(amdv1),
+>>
+>> I understand that this fits in really well into the iommufd/hwpt
+>> construction, but do we need page tables for this as all the
+>> iova-to-phys information should be available in the IOPT in IOAS?
 >
-> I fully belive there are bugs, but the API design is sound. If you use
-> the coherent allocations from the DMA API then it knows decryption has
-> happened when it generates a dma_addr_t and there should be no issue.
+>Yes we do! That is the whole point.
 >
-> Now, if drivers are using the DMA API wrong, like trying to double map
-> coherent allocations then they are broken. I also would not be
-> surprised to find cases like this.
+>In iommufd once you pin the memory the phys is stored in only two
+>possible ways:
 >
+>1) Inside an xarray if an access is used
+>2) Inside at least one iommu_domain
+>
+>That's it. So to fit noiommu into this scheme, and have it rely on the
+>existing pinning, we either have to make it use an access or make it
+>use an iommu_domain -> a real one that can store phys.
 
-But it's not about drivers in that case, it's about many places
-(SWIOTLB and DMA-direct) calling set_memory_decrypted() without clear
-ownership so in some cases they step on each other's toes, and I don't
-think that will get simpler with yet another caller in this series
+Thanks for the explanation.
 
-I am fine with the API design you mentioned, but I believe that it
-needs clear documentation specifying who is responsible for
-decryption. The code should provide wrappers checking for these cases
-instead of having is_swiotlb_for_alloc() and force_dma_unencrypted()
-everywhere in DMA-direct.
-
-Thanks,
-Mostafa
-
-> Jason
+I missed the part where once pinning is done, the pfns are only
+available in those two places.
+>
+>Maybe a comment is helpful, but using the domain like this to store
+>the pinned phys has been the vfio design from day 1..
+>
+>> get_pa() function introduced in the later patch is only used for noiommu
+>> use-cases, it can use the IOPT to get the physical addresses?
+>
+>No.
+>
+>Jason
