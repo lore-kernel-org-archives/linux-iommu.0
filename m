@@ -1,461 +1,180 @@
-Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazon11010041.outbound.protection.outlook.com [52.101.61.41])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DECA8376490
-	for <iommu@lists.linux.dev>; Tue, 24 Mar 2026 01:41:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.61.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774316481; cv=fail; b=OiUOcfobfXEOVjjWqH8dkdMfB9NOcszZT5+DuJtzo0s7JClKs4uV4KuBNBvvB33gLf7+Zw0CJj1eVo3hA6qS6n4uFt+XVoiIhH2Wjhm0M9yoCABgT4F05eP3jIgNXmKAcdEmxL1gCZizUHz4/1/cce+zD9YnlXOhb8KaeoxeJ8k=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774316481; c=relaxed/simple;
-	bh=evPjTnc4xOhr6wVGS+O8iJdl9cnSgUWim3LMdThcB2U=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=chEJgC1XOmossrpMPp3JTgenDnoPRKkxIAVDc63bhXyHVHBJAmdWV3xugA61aLbHLvtm2HAwky8TvByEKLtaqjzQXT8q/Zr/RiN+cCX5MMwoxFla77iinOAm61r6c0rsJUplEmbO0sZKGgtdDR6LejEW0bQtjvdXNk5n8gsVUM8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=diUdDlld; arc=fail smtp.client-ip=52.101.61.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AA20283FCE
+	for <iommu@lists.linux.dev>; Tue, 24 Mar 2026 05:15:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774329327; cv=none; b=DVc8mhsJ+JBg0fhlMJT8PwJpNLESejxVN74Pb8EppqM3xY0ZUuLJCHOhbasWu/N5eWLOcRuyxwXdoMb4pJIUahjss1UmxuaNBn+/NNsIYugF5NG6kzpIEkUkUyKeKtVmT0LxB4Dtry2JMG5YArLX+AZ7W4uTp6lLx+BjDOXfz+E=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774329327; c=relaxed/simple;
+	bh=mFSN/Scch+iSBbvGZ6JEeuNoSUnRF4fKrQBINnoNrnQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ZErtY13pVlBv25kfrz+PbAt3xZMRCUdAdvk3HSAEaMFOaoaUEayIHqIr+PTB7NRDdxcnEgJS3JnIohWMkEWvHHsACHJnKyiAhp9UHle/giwwmz4jy91MWogOcF/bV6ePLEZndZzPhtLWtkfwfxnJdXH2ibU4Fa7MtHlCxctn1xQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=LKWhIp53; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=C2w1ctlH; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="diUdDlld"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Gw0IHj3VnhTr9EL4piim4JWyerUEIS0H95MX7Bs+Np+TGM6q5VGt4jPu07ko3OdXiLzglwrrEFVOUOfCOcSVxFNuM5xcHmHaUK03d0muVPVmgqrx1ujXBrqLAhQ2aykOtf26kJRYFr42roW96/YSPGNRUFBjA+4ug7fYoiWrjZ4S/ph4ApL/vNVc+3Rez6oyBySQhMQsLMN6wL0eSPyWE4jvYOpWU3PIXc7N0FsEHnWBLQs5j3jPqj0XFQFUARPvaC7KDRBymndDAauN6RH9qapdr/jl6LPBpwCKV6EQB/NExO6klQXqv0/mXaV/G4Hv20FbPzeapr/XSVN2QWQkxA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vT9TsVcK1ms5uoI6Mbq4FO0ywB0h7Kn4nnjFNjRsPBI=;
- b=UyWQM93MsBj66fhEEBKhid2i7Xin3eVfmHXYdaa31fSC88E3nY8tOL46/a+RFxGTqdnPFYgkybDybdbsk0EIl12bHHUFetmsqCG5L00RMXYjr934ZjoirAThA19uI58YSjG1JMroh53EFIK1cSuy94PXr3bpa73KT76yLVlVqleVgK5EYCslyMgNep2FTIeNKDqX5yyH24hXNKnHejdBCZMR1oEN7XAsnA+lkvxnbG15ecK4CjHeoodq/hgpDBlPR1MaeYBnRiEgP0ddHiYnbccIwjjAamg1B/cmf6QKvX64UTXPQTbxPWjY/OaC+/K9BtEJWSNh/LVXzZ7wtUtMMg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=8bytes.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vT9TsVcK1ms5uoI6Mbq4FO0ywB0h7Kn4nnjFNjRsPBI=;
- b=diUdDlldUzdHDilLngksFlx1luXZ2HI2kIIa4QIYn8FiWKa9PZV5vSsr79gJc4jGzIDQaocIM9UJYuLoUr4YvF72UWMFsuUD4gDZ00Lj4lGjNYwUKVFotbFC9GRHiXgoAezMBzRqSSwYZg7kx7kvx3lX03NoDYvt5zlBbUX+Jq14ngRL7lJ8tYVaGxxRG9IfL4u0iyc+CxatOLqq0N7B6YCAqRM8zLiYJQGJzha1gCnIhEy4bpRVMhqLhyNm9Ej0a7v9otaW8RKatGzMDsT72a8c2yE9PU4fUysv7GL6rW+efTwNtXeCmECcRMh1uXomGYv+ZU1p9C+QOotVjFnVDg==
-Received: from SA0PR11CA0178.namprd11.prod.outlook.com (2603:10b6:806:1bb::33)
- by DM4PR12MB5843.namprd12.prod.outlook.com (2603:10b6:8:66::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9745.20; Tue, 24 Mar
- 2026 01:41:10 +0000
-Received: from SA2PEPF00001504.namprd04.prod.outlook.com
- (2603:10b6:806:1bb:cafe::ad) by SA0PR11CA0178.outlook.office365.com
- (2603:10b6:806:1bb::33) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9723.31 via Frontend Transport; Tue,
- 24 Mar 2026 01:41:10 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- SA2PEPF00001504.mail.protection.outlook.com (10.167.242.36) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9723.19 via Frontend Transport; Tue, 24 Mar 2026 01:41:10 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 23 Mar
- 2026 18:41:05 -0700
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.20; Mon, 23 Mar 2026 18:41:04 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.13) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server id 15.2.2562.20 via Frontend
- Transport; Mon, 23 Mar 2026 18:41:04 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <joro@8bytes.org>, <kevin.tian@intel.com>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <baolu.lu@linux.intel.com>,
-	<jgg@nvidia.com>, <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<xueshuai@linux.alibaba.com>
-Subject: [PATCH rc v4] iommu: Fix nested pci_dev_reset_iommu_prepare/done()
-Date: Mon, 23 Mar 2026 18:40:56 -0700
-Message-ID: <20260324014056.36103-1-nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="LKWhIp53";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="C2w1ctlH"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62O39SSG3934869
+	for <iommu@lists.linux.dev>; Tue, 24 Mar 2026 05:15:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	fV7aXshRMXgRNymfOfiTCp/pI6NQFCBxOCj9Tnvy50U=; b=LKWhIp53IeBe/dwx
+	4urY0ObI825FLxF3O8dMSncDZ8V/u23uu/QS9JN2JF5rU4YqGKbMGkKzttcR62r3
+	br9Jt0Fi/OZpglK5hXZr4uWxhfG8l2OQz35eu4nxVoWpviLjURzHjFYI8W+Bccd3
+	mz8mQLFaam8XxQ2FCVfTzykwH0DVQWEt8doRtHz9RFgnC1b8fq2COu4leHEThhLa
+	j7n9X/vQ0cTRSeF/DM0EUsY/0DV0jNEVnYsbcbyAl88EHA6y9bS/hD7qcj7K8Nxx
+	2ofjNGepfdwaRNWxsNZg/CM/C1MmgxXjKb1owNKz/A50DhIBDYYaz340FYBMDDM8
+	kza3ww==
+Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4d37a0jstu-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Tue, 24 Mar 2026 05:15:25 +0000 (GMT)
+Received: by mail-pl1-f198.google.com with SMTP id d9443c01a7336-2b064f043adso70817275ad.0
+        for <iommu@lists.linux.dev>; Mon, 23 Mar 2026 22:15:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1774329325; x=1774934125; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=fV7aXshRMXgRNymfOfiTCp/pI6NQFCBxOCj9Tnvy50U=;
+        b=C2w1ctlHGOohC9/m8d0DhZwRj4v8RwFsyRV+X/DoHnSmJMiSjM2WH4JMM6TElIJ1kY
+         dhEkYaOBicVdkv2X9TA5oMqHZVdbIm67Z/uiNq0r3oWjKIHFZsQUuXBhozhKW4i0pmLk
+         gP/apKcGriI+aBg2ocdmp4PMeoFhZ/K1yjo9gYYjt50425wNYF7r3mLL5xu1supkkFbk
+         GGYodinFGcWOuFnMzH6Obilfaek7FFmYmNb7OKRNrU2qJLdN/Lso8TyAhztHpcPrR/Ph
+         7C0K6xs/AoNBTuHWVezX+/EElt8ZTz5qRk/JULcdIjsx84WI4nerMc4/AlxydxOW3Asg
+         Jzhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774329325; x=1774934125;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=fV7aXshRMXgRNymfOfiTCp/pI6NQFCBxOCj9Tnvy50U=;
+        b=YYM18OfLos6tINl1LlqXGnyByNPLv1W23lTZT4w8fNqij8Im5yIsbDvvD99ugM6eUR
+         h0yhVgIPf3VrQKXi81e6btCkbx8UIb1Gn+mm6r1W48Q8VdauLeHGCb06ph3P1SkwPv58
+         +32hsNkyE6mVuP7aM1hblb+1P63rNOSWG37ZZ8KZHm9lT7VCzyf6Bk3aXPtqlugcLTOk
+         trEk3E7fRthlHOuTlsu8Mi4Dr9jZdrbtBxI1HrCjZDY8+nMxxlTE+joIDxK9H8gNy5/M
+         00K/B4x9PeK+eevd9NGrAR82jBMSv8WUHPL+kUML4veXZFAmM/3aTQtnjgZY1eW6XNKe
+         1Byg==
+X-Forwarded-Encrypted: i=1; AJvYcCX/Meu8Mah4IPToSiR+wmQsPjZfOndBDk0nWkkO1ZT637PLZXMCuq7c0RFWWIW7RbWrVP2QMg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyDPDWNW5uVjWBJjd6klTDtFOkwFf8a+UO0xBiEZO+bx+LDg+41
+	ETpBsNx3lRT/lOMJH370nkia55dp2GnUvetuOdsvXmy65ohmDjy+LZsd+9xEgBBKnxmpXhd9TmP
+	YyWNvgTaJcXIdHMqg+18xofCIK0GrOUIHaAxcIEvdLg/L+LSaXgz/fu3mikIsH6Vfkg==
+X-Gm-Gg: ATEYQzwO6H+SUInuIwzXudGfK+Lg0wcS5vC9M6pZT6iRGYug4osBGWASzD/cHWkLpjU
+	CZl+jOifhm/Q1ytCsHdDFD0QAtB/gwvJY/FqqMa+2GA3Rp2GD9HbFmBWP/o/7VZ+0s87GdKCaf4
+	Vh3M5BZMWXBCD4H4leNoYAAGoMAWGuhoVgLDe0+lXFgC02B8IAgdD9AYNqGLFizpOV+PMSEXA9x
+	4w/dYSjj/Pr9a8dda+oubJgXf+K5XPHLcYMkK+88aQsBNhivg6atb/Lpa+6F1arAj5Zrs6rw8XH
+	XzvoWIPnxmYn6zmzAv+BQuxX+pGp5FIhWt0tESAUhqxbIkKmU7pytz1MW4QkU1x9jaYXUYJppof
+	AoM9yfws6M5oSyriRKnsBWgORiUJsuP8UxgEfy0fLxMIpm+ZCssP+XQ==
+X-Received: by 2002:a17:902:d48a:b0:2ae:6457:3099 with SMTP id d9443c01a7336-2b08277cae4mr133308525ad.26.1774329324523;
+        Mon, 23 Mar 2026 22:15:24 -0700 (PDT)
+X-Received: by 2002:a17:902:d48a:b0:2ae:6457:3099 with SMTP id d9443c01a7336-2b08277cae4mr133308175ad.26.1774329323989;
+        Mon, 23 Mar 2026 22:15:23 -0700 (PDT)
+Received: from [10.0.0.3] ([106.222.233.113])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b08366c74dsm174187005ad.62.2026.03.23.22.15.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 Mar 2026 22:15:23 -0700 (PDT)
+Message-ID: <9fa40f68-54f4-d684-9e80-511c1ab230f2@oss.qualcomm.com>
+Date: Tue, 24 Mar 2026 10:45:16 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SA2PEPF00001504:EE_|DM4PR12MB5843:EE_
-X-MS-Office365-Filtering-Correlation-Id: f447c0c6-98e8-4888-97ce-08de89466d1d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|36860700016|82310400026|376014|13003099007|18002099003|56012099003;
-X-Microsoft-Antispam-Message-Info:
-	HCc5YPUEqHKT/9nK81ko43zCdvsm//VAvjmBsETqAmnfp6JkzPPZdZDOCEDySoVfYTEk9+dQoXZpx2ttIoEqwaPecfUmVKHXXwqEqCwRSRBF2kMsvdVSRkRAu6hBg0xbv7EA9GFRImWEkT9XBIC20Zhf9bncigRcg95kCtRJGN4W8z0qxiyui7uMXd5IuH2Dc6ye2UhRCMKn5rXTVDFFohP/KTDzzf82HKryaujvKTPCK9CCBoYSvd0vePdbhR+C6ZOKpSMVKCXxMfcxrUXWdJJUbx0eif+7+G3CbNBQneakaw58V51OefemRIJ3xxPTrYm7jrSg0BSdXv9F5xeP8mzRycX/V4zrnJtIuYoS7LgC/fxUKf67AqNU6WQXPiDiNjTd/W3Y+h1s67lOMATE/LgUli9O6LX920yltIAuIIR89HEua2Ngxy9VwyUKxnjB2J5Y82LefjFaC/dB/kDpl2kuP6/NuUb6R/Kz9NmA5pG7r5FpNLlvGcdsCfy07hTFue9qCys5jkDoCcwqm5zpO31zAqBp01Dfx0OCkm7YsqBQsrzmbV1N28uxj7zqTqopsTu3ys/knkBW2RS5Nw8kLyIo2o2Rnki6UZj+hWl71Vp3aZDjZPQKHOL2N+5pybb2PWax1i124R4NpL/GJnYpQHJE3dbRjhJ74e7H8UOOUo5c23JmOWhcHQtdXhd5cZDiNKA1ThfXvLodYmQDiiPsQq+P8xcCzQF4RifqUCaQn1suYmDiGYDnA6nQqgMrzjnrUyGdt/3YY5viF4gACq0ACg==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(36860700016)(82310400026)(376014)(13003099007)(18002099003)(56012099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	Mu/EP3o9iKSeYkPtjObF6eyPsGsTL9Gan5XPhCsootRGZkrUP9/JuRk+BvLAAdXPPLVaZT6qWlcZvoXlGWEmMMm2HdCPipf/jhZCQZX+7dOY8FzfWBFEaUgGMHzz+lYVduo+nh30zbEH4TlyN0QFvomjJB8PuEspXXvMoVQso9K7nGHQvfmw5KN+Ql+AJU/Mel+se30kM//0oWBgZsAqx56TLaC2t6OnQr89mDqPta/zVlwG3cHUzkZ4TOR1zU5VGV37WJRo9FnLDmFoR2ft0z2KP0mcLNBb45R/+QGtH57QI/gjBEXLByCSufsk0Eei3xy1av5nrPULHlzriFomOGFlO54CwixYxfsa6BznaXvuayNxliDPJAmnyOHLkld7cmOlYsxaaVqjaO7UouZvHyOpeB9eTzSDIneaRKVpPnoHN78+YgyK6cF257GN6mTl
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2026 01:41:10.3767
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f447c0c6-98e8-4888-97ce-08de89466d1d
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SA2PEPF00001504.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5843
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [PATCH v3 2/7] media: iris: switch to hardware mode after
+ firmware boot
+Content-Language: en-US
+To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Bryan O'Donoghue <bod@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Saravana Kannan <saravanak@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Stefan Schmidt <stefan.schmidt@linaro.org>,
+        Hans Verkuil <hverkuil@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
+        Hans Verkuil <hverkuil+cisco@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+References: <20260313-kaanapali-iris-v3-0-9c0d1a67af4b@oss.qualcomm.com>
+ <20260313-kaanapali-iris-v3-2-9c0d1a67af4b@oss.qualcomm.com>
+From: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>
+In-Reply-To: <20260313-kaanapali-iris-v3-2-9c0d1a67af4b@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Authority-Analysis: v=2.4 cv=GIIF0+NK c=1 sm=1 tr=0 ts=69c21ded cx=c_pps
+ a=MTSHoo12Qbhz2p7MsH1ifg==:117 a=hbzS8gabZINpAvasuVNEhA==:17
+ a=IkcTkHD0fZMA:10 a=Yq5XynenixoA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=DJpcGTmdVt4CTyJn9g5Z:22
+ a=EUspDBNiAAAA:8 a=dE1MpONsbtOZy1RxgbwA:9 a=QEXdDO2ut3YA:10
+ a=GvdueXVYPmCkWapjIL-Q:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzI0MDA0MiBTYWx0ZWRfX3gA803zn0SV3
+ 6TG33Y7fw64wYYe4PnJR/Cbtvw9FzwTCYzxP/Mjr4YJtPfgzsQu4opkgekPYBKXn9m+Qrln+HP5
+ 8mJPaeFJADGw2HbpOWjF7f4KzjyywbI7rhJ3DXLC/xFY67sF/0JKICfH9+XWBBhyCGqyx6cLPQB
+ T94+S4kInVYD8YxQcJjE3A6GTT3mVGlImmNWMLDnoBgdN0uhIMyptAGPRI+xPDx/qCj9S5en+Tg
+ Fxw2CKRoAKYL2yx7FW8mDGdo3w7xF2BtWJIhf6Ux/zf6QI2/HRoJZQgnZ9snb8mCtTr0whQU1o5
+ H22o4vYZGeNy6g2tARX+GouVR4R3aqkpvGC8Gcv3xZHvjm+brSeQceiPeJY08a+HQk3/0H72Css
+ kkHmFhu3OMJVV98FXm2a4qSzUqYFiIy5Macwrhp5TrCF4oyvuWdSqQft9Y+6hT+LNJr32e8sgVD
+ 3KbPsrbf21iEdkDQzlw==
+X-Proofpoint-GUID: zx6jZMydXAmONGZwfDDe4vn-o4n3XuTl
+X-Proofpoint-ORIG-GUID: zx6jZMydXAmONGZwfDDe4vn-o4n3XuTl
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-03-24_01,2026-03-23_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ bulkscore=0 adultscore=0 malwarescore=0 priorityscore=1501 phishscore=0
+ impostorscore=0 lowpriorityscore=0 clxscore=1011 suspectscore=0 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2603050001 definitions=main-2603240042
 
-Shuai found that cxl_reset_bus_function() calls pci_reset_bus_function()
-internally while both are calling pci_dev_reset_iommu_prepare/done().
 
-As pci_dev_reset_iommu_prepare() doesn't support re-entry, the inner call
-will trigger a WARN_ON and return -EBUSY, resulting in failing the entire
-device reset.
 
-On the other hand, removing the outer calls in the PCI callers is unsafe.
-As pointed out by Kevin, device-specific quirks like reset_hinic_vf_dev()
-execute custom firmware waits after their inner pcie_flr() completes. If
-the IOMMU protection relies solely on the inner reset, the IOMMU will be
-unblocked prematurely while the device is still resetting.
+On 3/13/2026 6:49 PM, Vikash Garodia wrote:
+> Currently the driver switches the vcodec GDSC to hardware (HW) mode
+> before firmware load and boot sequence. GDSC can be powered off, keeping
+> in hw mode, thereby the vcodec registers programmed in TrustZone (TZ)
+> carry default (reset) values.
+> Move the transition to HW mode after firmware load and boot sequence.
+> 
+> The bug was exposed with driver configuring different stream ids to
+> different devices via iommu-map. With registers carrying reset values,
+> VPU would not generate desired stream-id, thereby leading to SMMU fault.
+> 
+> For vpu4, when GDSC is switched to HW mode, there is a need to perform
+> the reset operation. Without reset, there are occassional issues of
+> register corruption observed. Hence the vpu GDSC switch also involves
+> the reset.
+> 
+> Fixes: dde659d37036 ("media: iris: Introduce vpu ops for vpu4 with necessary hooks")
+> Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+> ---
+>  drivers/media/platform/qcom/iris/iris_core.c       |  4 ++++
+>  drivers/media/platform/qcom/iris/iris_hfi_common.c |  4 ++++
+>  drivers/media/platform/qcom/iris/iris_vpu2.c       |  1 +
+>  drivers/media/platform/qcom/iris/iris_vpu3x.c      |  9 +++-----
+>  drivers/media/platform/qcom/iris/iris_vpu4x.c      | 24 ++++++++++++----------
+>  drivers/media/platform/qcom/iris/iris_vpu_common.c | 16 +++++++++------
+>  drivers/media/platform/qcom/iris/iris_vpu_common.h |  3 +++
+>  7 files changed, 38 insertions(+), 23 deletions(-)
+> 
 
-Instead, fix this by making pci_dev_reset_iommu_prepare/done() reentrant.
+Reviewed-by: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>
 
-Given the IOMMU core tracks the resetting state per iommu_group while the
-reset is per device, this has to track at the group_device level as well.
-
-Introduce a 'reset_depth' to struct group_device to handle the re-entries
-on the same device. This allows multi-device groups to isolate concurrent
-device resets independently.
-
-Note that iommu_deferred_attach() and iommu_driver_get_domain_for_dev()
-both now check gdev->reset_depth (per-device) instead of a per-group flag
-like "group->resetting_domain". This is actually more precise.
-
-As the reset routine is per gdev, it cannot clear group->resetting_domain
-without iterating over the device list to ensure no other device is being
-reset. Simplify it by replacing the resetting_domain with a 'recovery_cnt'
-in the struct iommu_group.
-
-Since both helpers are now per gdev, call the per-device set_dev_pasid op
-to recover PASID domains.
-
-While fixing the bug, also fix the kdoc for pci_dev_reset_iommu_done().
-
-Fixes: c279e83953d9 ("iommu: Introduce pci_dev_reset_iommu_prepare/done()")
-Cc: stable@vger.kernel.org
-Reported-by: Shuai Xue <xueshuai@linux.alibaba.com>
-Closes: https://lore.kernel.org/all/absKsk7qQOwzhpzv@Asurada-Nvidia/
-Suggested-by: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
-Changelog
- v4:
-  * Rename 'reset_cnt' to 'recovery_cnt'
- v3:
-  https://lore.kernel.org/all/20260321223930.10836-1-nicolinc@nvidia.com/
-  * Turn prepare()/done() to be per-gdev
-  * Use reset_depth to track nested re-entries
-  * Replace group->resetting_domain with a reset_cnt
- v2:
-  https://lore.kernel.org/all/20260319043135.1153534-1-nicolinc@nvidia.com/
-  * Fix in the helpers by allowing re-entry
- v1:
-  https://lore.kernel.org/all/20260318220028.1146905-1-nicolinc@nvidia.com/
-
- drivers/iommu/iommu.c | 125 ++++++++++++++++++++++++++++++------------
- 1 file changed, 91 insertions(+), 34 deletions(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 35db517809540..fbaf4fdd570a7 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -61,14 +61,14 @@ struct iommu_group {
- 	int id;
- 	struct iommu_domain *default_domain;
- 	struct iommu_domain *blocking_domain;
--	/*
--	 * During a group device reset, @resetting_domain points to the physical
--	 * domain, while @domain points to the attached domain before the reset.
--	 */
--	struct iommu_domain *resetting_domain;
- 	struct iommu_domain *domain;
- 	struct list_head entry;
- 	unsigned int owner_cnt;
-+	/*
-+	 * Number of devices in the group undergoing or awaiting recovery.
-+	 * If non-zero, concurrent domain attachments are rejected.
-+	 */
-+	unsigned int recovery_cnt;
- 	void *owner;
- };
- 
-@@ -76,12 +76,27 @@ struct group_device {
- 	struct list_head list;
- 	struct device *dev;
- 	char *name;
-+	unsigned int reset_depth;
- };
- 
- /* Iterate over each struct group_device in a struct iommu_group */
- #define for_each_group_device(group, pos) \
- 	list_for_each_entry(pos, &(group)->devices, list)
- 
-+static struct group_device *__dev_to_gdev(struct device *dev)
-+{
-+	struct iommu_group *group = dev->iommu_group;
-+	struct group_device *gdev;
-+
-+	lockdep_assert_held(&group->mutex);
-+
-+	for_each_group_device(group, gdev) {
-+		if (gdev->dev == dev)
-+			return gdev;
-+	}
-+	return NULL;
-+}
-+
- struct iommu_group_attribute {
- 	struct attribute attr;
- 	ssize_t (*show)(struct iommu_group *group, char *buf);
-@@ -2191,6 +2206,8 @@ EXPORT_SYMBOL_GPL(iommu_attach_device);
- 
- int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
- {
-+	struct group_device *gdev;
-+
- 	/*
- 	 * This is called on the dma mapping fast path so avoid locking. This is
- 	 * racy, but we have an expectation that the driver will setup its DMAs
-@@ -2201,6 +2218,9 @@ int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
- 
- 	guard(mutex)(&dev->iommu_group->mutex);
- 
-+	gdev = __dev_to_gdev(dev);
-+	if (WARN_ON(!gdev))
-+		return -ENODEV;
- 	/*
- 	 * This is a concurrent attach during a device reset. Reject it until
- 	 * pci_dev_reset_iommu_done() attaches the device to group->domain.
-@@ -2208,7 +2228,7 @@ int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
- 	 * Note that this might fail the iommu_dma_map(). But there's nothing
- 	 * more we can do here.
- 	 */
--	if (dev->iommu_group->resetting_domain)
-+	if (gdev->reset_depth)
- 		return -EBUSY;
- 	return __iommu_attach_device(domain, dev, NULL);
- }
-@@ -2265,19 +2285,23 @@ EXPORT_SYMBOL_GPL(iommu_get_domain_for_dev);
- struct iommu_domain *iommu_driver_get_domain_for_dev(struct device *dev)
- {
- 	struct iommu_group *group = dev->iommu_group;
-+	struct group_device *gdev;
- 
- 	lockdep_assert_held(&group->mutex);
-+	gdev = __dev_to_gdev(dev);
-+	if (WARN_ON(!gdev))
-+		return NULL;
- 
- 	/*
- 	 * Driver handles the low-level __iommu_attach_device(), including the
- 	 * one invoked by pci_dev_reset_iommu_done() re-attaching the device to
- 	 * the cached group->domain. In this case, the driver must get the old
--	 * domain from group->resetting_domain rather than group->domain. This
-+	 * domain from group->blocking_domain rather than group->domain. This
- 	 * prevents it from re-attaching the device from group->domain (old) to
- 	 * group->domain (new).
- 	 */
--	if (group->resetting_domain)
--		return group->resetting_domain;
-+	if (gdev->reset_depth)
-+		return group->blocking_domain;
- 
- 	return group->domain;
- }
-@@ -2436,10 +2460,10 @@ static int __iommu_group_set_domain_internal(struct iommu_group *group,
- 		return -EINVAL;
- 
- 	/*
--	 * This is a concurrent attach during a device reset. Reject it until
-+	 * This is a concurrent attach during device recovery. Reject it until
- 	 * pci_dev_reset_iommu_done() attaches the device to group->domain.
- 	 */
--	if (group->resetting_domain)
-+	if (group->recovery_cnt)
- 		return -EBUSY;
- 
- 	/*
-@@ -3567,10 +3591,10 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
- 	mutex_lock(&group->mutex);
- 
- 	/*
--	 * This is a concurrent attach during a device reset. Reject it until
-+	 * This is a concurrent attach during device recovery. Reject it until
- 	 * pci_dev_reset_iommu_done() attaches the device to group->domain.
- 	 */
--	if (group->resetting_domain) {
-+	if (group->recovery_cnt) {
- 		ret = -EBUSY;
- 		goto out_unlock;
- 	}
-@@ -3660,10 +3684,10 @@ int iommu_replace_device_pasid(struct iommu_domain *domain,
- 	mutex_lock(&group->mutex);
- 
- 	/*
--	 * This is a concurrent attach during a device reset. Reject it until
-+	 * This is a concurrent attach during device recovery. Reject it until
- 	 * pci_dev_reset_iommu_done() attaches the device to group->domain.
- 	 */
--	if (group->resetting_domain) {
-+	if (group->recovery_cnt) {
- 		ret = -EBUSY;
- 		goto out_unlock;
- 	}
-@@ -3934,12 +3958,12 @@ EXPORT_SYMBOL_NS_GPL(iommu_replace_group_handle, "IOMMUFD_INTERNAL");
-  * routine wants to block any IOMMU activity: translation and ATS invalidation.
-  *
-  * This function attaches the device's RID/PASID(s) the group->blocking_domain,
-- * setting the group->resetting_domain. This allows the IOMMU driver pausing any
-+ * incrementing the group->recovery_cnt, to allow the IOMMU driver pausing any
-  * IOMMU activity while leaving the group->domain pointer intact. Later when the
-  * reset is finished, pci_dev_reset_iommu_done() can restore everything.
-  *
-  * Caller must use pci_dev_reset_iommu_prepare() with pci_dev_reset_iommu_done()
-- * before/after the core-level reset routine, to unset the resetting_domain.
-+ * before/after the core-level reset routine, to decrement the recovery_cnt.
-  *
-  * Return: 0 on success or negative error code if the preparation failed.
-  *
-@@ -3952,6 +3976,7 @@ EXPORT_SYMBOL_NS_GPL(iommu_replace_group_handle, "IOMMUFD_INTERNAL");
- int pci_dev_reset_iommu_prepare(struct pci_dev *pdev)
- {
- 	struct iommu_group *group = pdev->dev.iommu_group;
-+	struct group_device *gdev;
- 	unsigned long pasid;
- 	void *entry;
- 	int ret;
-@@ -3961,20 +3986,23 @@ int pci_dev_reset_iommu_prepare(struct pci_dev *pdev)
- 
- 	guard(mutex)(&group->mutex);
- 
--	/* Re-entry is not allowed */
--	if (WARN_ON(group->resetting_domain))
--		return -EBUSY;
-+	gdev = __dev_to_gdev(&pdev->dev);
-+	if (WARN_ON(!gdev))
-+		return -ENODEV;
-+
-+	if (gdev->reset_depth++)
-+		return 0;
- 
- 	ret = __iommu_group_alloc_blocking_domain(group);
- 	if (ret)
--		return ret;
-+		goto err_depth;
- 
- 	/* Stage RID domain at blocking_domain while retaining group->domain */
- 	if (group->domain != group->blocking_domain) {
- 		ret = __iommu_attach_device(group->blocking_domain, &pdev->dev,
- 					    group->domain);
- 		if (ret)
--			return ret;
-+			goto err_depth;
- 	}
- 
- 	/*
-@@ -3987,7 +4015,11 @@ int pci_dev_reset_iommu_prepare(struct pci_dev *pdev)
- 		iommu_remove_dev_pasid(&pdev->dev, pasid,
- 				       pasid_array_entry_to_domain(entry));
- 
--	group->resetting_domain = group->blocking_domain;
-+	group->recovery_cnt++;
-+	return ret;
-+
-+err_depth:
-+	gdev->reset_depth--;
- 	return ret;
- }
- EXPORT_SYMBOL_GPL(pci_dev_reset_iommu_prepare);
-@@ -3997,9 +4029,9 @@ EXPORT_SYMBOL_GPL(pci_dev_reset_iommu_prepare);
-  * @pdev: PCI device that has finished a reset routine
-  *
-  * After a PCIe device finishes a reset routine, it wants to restore its IOMMU
-- * IOMMU activity, including new translation as well as cache invalidation, by
-- * re-attaching all RID/PASID of the device's back to the domains retained in
-- * the core-level structure.
-+ * activity, including new translation and cache invalidation, by re-attaching
-+ * all RID/PASID of the device back to the domains retained in the core-level
-+ * structure.
-  *
-  * Caller must pair it with a successful pci_dev_reset_iommu_prepare().
-  *
-@@ -4009,6 +4041,7 @@ EXPORT_SYMBOL_GPL(pci_dev_reset_iommu_prepare);
- void pci_dev_reset_iommu_done(struct pci_dev *pdev)
- {
- 	struct iommu_group *group = pdev->dev.iommu_group;
-+	struct group_device *gdev;
- 	unsigned long pasid;
- 	void *entry;
- 
-@@ -4017,11 +4050,27 @@ void pci_dev_reset_iommu_done(struct pci_dev *pdev)
- 
- 	guard(mutex)(&group->mutex);
- 
--	/* pci_dev_reset_iommu_prepare() was bypassed for the device */
--	if (!group->resetting_domain)
-+	gdev = __dev_to_gdev(&pdev->dev);
-+	if (WARN_ON(!gdev))
- 		return;
- 
--	/* pci_dev_reset_iommu_prepare() was not successfully called */
-+	/* Unbalanced done() calls would underflow the counter */
-+	if (WARN_ON(gdev->reset_depth == 0))
-+		return;
-+	/*
-+	 * Do not decrement reset_depth=1 because other functions can still rely
-+	 * on it, e.g. iommu_driver_get_domain_for_dev().
-+	 */
-+	if (gdev->reset_depth > 1) {
-+		gdev->reset_depth--;
-+		return;
-+	}
-+
-+	/*
-+	 * Leave the counters intact to keep the core state aligned with the HW
-+	 * state. iommu_driver_get_domain_for_dev() still picks blocking_domain.
-+	 * This is an unrecoverable state - the device remains blocked.
-+	 */
- 	if (WARN_ON(!group->blocking_domain))
- 		return;
- 
-@@ -4037,12 +4086,20 @@ void pci_dev_reset_iommu_done(struct pci_dev *pdev)
- 	 * The pasid_array is mostly fenced by group->mutex, except one reader
- 	 * in iommu_attach_handle_get(), so it's safe to read without xa_lock.
- 	 */
--	xa_for_each_start(&group->pasid_array, pasid, entry, 1)
--		WARN_ON(__iommu_set_group_pasid(
--			pasid_array_entry_to_domain(entry), group, pasid,
--			group->blocking_domain));
-+	if (pdev->dev.iommu->max_pasids > 0) {
-+		xa_for_each_start(&group->pasid_array, pasid, entry, 1) {
-+			struct iommu_domain *pasid_dom =
-+				pasid_array_entry_to_domain(entry);
-+
-+			WARN_ON(pasid_dom->ops->set_dev_pasid(
-+				pasid_dom, &pdev->dev, pasid,
-+				group->blocking_domain));
-+		}
-+	}
- 
--	group->resetting_domain = NULL;
-+	if (!WARN_ON(group->recovery_cnt == 0))
-+		group->recovery_cnt--;
-+	gdev->reset_depth = 0;
- }
- EXPORT_SYMBOL_GPL(pci_dev_reset_iommu_done);
- 
--- 
-2.43.0
-
+Thanks,
+Dikshita
