@@ -1,210 +1,133 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12852350A1B
-	for <iommu@lists.linux.dev>; Wed, 25 Mar 2026 09:00:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A06582F3C18;
+	Wed, 25 Mar 2026 09:22:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774429239; cv=none; b=aXK1758lStmqIVskNA4lc6RpVDezpSlNAdrp9ol9yBSdxrgAgvI749VtUPw1oLsM/LStHGyYtfEct9iYRDmRUjJd81dwRzEzWHAEvxTisGU2oeAtx9p6xpJLNs/UIbC4dpgsS6/PoHMMk5hGXLnmveXuX77OEEqazOA4lYwvY4U=
+	t=1774430525; cv=none; b=A1neDcSwIWlGTjtqMudhOK0DOUX8cz17dPxDE6QqaX1NF/cWVaVVH0M5oRAQPNbft8j5cwlaC3YAhjriIbZL0YgN+6QFwjOYlmDpT2u6TbjF23/Zv5Prd6O7cfPO/Twwj9f0LTC6irZ/xVqA0KjHw+MFViXt+mamKIyAb7TI4zk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774429239; c=relaxed/simple;
-	bh=P3AMQcGHZ8YR9ZVybND3kBp0O9Gr5HyF4BZhB4a6bUo=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:MIME-Version:
-	 Content-Type:References; b=kvDBMAkFyUfGVFVpUmdWtW4ZUKvW1BD+31kduUz2GLkMDqqe5mgRy4/xoE7WCfXLdmkaXTZWUCicFhPU2i1Ujxv/ZxwC5w7Sq9Jexrzd6EgW/1sqqKUAWjBktVy2vwZZEJSYzJiLGrhqSVXrwJPzKf9OqklJsiuSs9Zc2D9kvqw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=ivAGQBxD; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1774430525; c=relaxed/simple;
+	bh=Ak+Y2Irbt9Vy7emvnxV1c3MbwGabTZfucRgopnZqMck=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dBufS5m4GeWGF1o8v0mxQshPqba5Kefnmo2Ez+EXzh0ZpDkmX5Ul/cljEqrydpNfyzJCeM/h/br+mX3m6ifLWS+04kBQZDyf8+muwGhnTb1i2QkLL6eEpb+yEB3PmTb8bi3DU/hjPiRx04l31ZzF0Mm3oHUMN/5LerPoJ9gzpi0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NO8wt1yf; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="ivAGQBxD"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260325090034euoutp024e61f7925c7c157cff7b150b11108da9~gCfzh7ZB-0326903269euoutp02g
-	for <iommu@lists.linux.dev>; Wed, 25 Mar 2026 09:00:34 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260325090034euoutp024e61f7925c7c157cff7b150b11108da9~gCfzh7ZB-0326903269euoutp02g
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1774429234;
-	bh=VJvoL7Svez6wRSfUGCmBuRi8m+f/G0Wc/DykecDJV2k=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=ivAGQBxDvj1e/LcGA0Bnu3dhxJuZBzp4M50oH5+6E4DArMz/uHngUdD86AE9LeJHH
-	 OXmv5T08PnWBDe8tdbqg5gTg2SnZvZqDytFG6Kss0aytHGJ6g34RCOiYvl2bJo6kgv
-	 5E2uKEWqIPu7qiux7fKT1zXT+dcmMuXs6s0Ee/zE=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20260325090034eucas1p2fb10744edcc6cf8550e9855973492a00~gCfzU3Jn23169331693eucas1p2i;
-	Wed, 25 Mar 2026 09:00:34 +0000 (GMT)
-Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20260325090034eusmtip15244f1412a032a5a834b55e8229409f2~gCfyy4X3J0318403184eusmtip1m;
-	Wed, 25 Mar 2026 09:00:34 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-mm@kvack.org, iommu@lists.linux.dev
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Rob Herring
-	<robh@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Oreoluwa Babatunde
-	<oreoluwa.babatunde@oss.qualcomm.com>, Saravana Kannan
-	<saravanak@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Robin
-	Murphy <robin.murphy@arm.com>
-Subject: [PATCH v3 7/7] of: reserved_mem: rework
- fdt_init_reserved_mem_node()
-Date: Wed, 25 Mar 2026 10:00:23 +0100
-Message-Id: <20260325090023.3175348-8-m.szyprowski@samsung.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260325090023.3175348-1-m.szyprowski@samsung.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NO8wt1yf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68E6AC4CEF7;
+	Wed, 25 Mar 2026 09:22:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1774430525;
+	bh=Ak+Y2Irbt9Vy7emvnxV1c3MbwGabTZfucRgopnZqMck=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=NO8wt1yfpnT9fh76npBs2P2IAamaEGlYCxXIjQMCoM89o3YFtC5iLVkVlE4Qs1IYj
+	 OCBMXNnpXCdkW/vRnnS6hqLzlPRzgPxIRswguYbWXC6V4Aj8hwqPQ99AJm3JZnvED7
+	 tRZrHROPnumyjAUV9jgpHngj+762dqUt/S58m8TaNaWLxONbMZoOUEbJIH7wYh8Y/5
+	 LECLRTsfN9NNxslRFqVgOZh2gpovrkqXQuR+7SbC1tXUJqgW0QTWDUUPt5RD6C8doR
+	 5o1wanARdfGXQJI7ncu2x2q3Rked/Lp+TAMyMVxi+SsYGp9+CZs+O4A5g/ETNEHWqq
+	 y2GY+EDGZIa9Q==
+Date: Wed, 25 Mar 2026 11:22:00 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Tianyu Lan <ltykernel@gmail.com>
+Cc: kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
+	decui@microsoft.com, longli@microsoft.com, m.szyprowski@samsung.com,
+	robin.murphy@arm.com, Tianyu Lan <tiala@microsoft.com>,
+	iommu@lists.linux.dev, linux-hyperv@vger.kernel.org,
+	linux-kernel@vger.kernel.org, hch@infradead.org, vdso@hexbites.dev,
+	Michael Kelley <mhklinux@outlook.com>
+Subject: Re: [RFC PATCH V3] x86/VMBus: Confidential VMBus for dynamic DMA
+ transfers
+Message-ID: <20260325092200.GQ814676@unreal>
+References: <20260325075649.248241-1-tiala@microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20260325090034eucas1p2fb10744edcc6cf8550e9855973492a00
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260325090034eucas1p2fb10744edcc6cf8550e9855973492a00
-X-EPHeader: CA
-X-CMS-RootMailID: 20260325090034eucas1p2fb10744edcc6cf8550e9855973492a00
-References: <20260325090023.3175348-1-m.szyprowski@samsung.com>
-	<CGME20260325090034eucas1p2fb10744edcc6cf8550e9855973492a00@eucas1p2.samsung.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260325075649.248241-1-tiala@microsoft.com>
 
-Move the content of fdt_reserved_mem_save_node() to
-fdt_init_reserved_mem_node() function. Initialization is no longer
-performed in two steps as it was initially, so
-fdt_reserved_mem_save_node() name is a bit misleading and that function
-now performs full initialization of the reserved memory region.
+On Wed, Mar 25, 2026 at 03:56:49AM -0400, Tianyu Lan wrote:
+> Hyper-V provides Confidential VMBus to communicate between
+> device model and device guest driver via encrypted/private
+> memory in Confidential VM. The device model is in OpenHCL
+> (https://openvmm.dev/guide/user_guide/openhcl.html) that
+> plays the paravisor role.
+> 
+> For a VMBus device, there are two communication methods to
+> talk with Host/Hypervisor. 1) VMBUS Ring buffer 2) Dynamic
+> DMA transfer.
+> 
+> The Confidential VMBus Ring buffer has been upstreamed by
+> Roman Kisel(commit 6802d8af47d1).
+> 
+> The dynamic DMA transition of VMBus device normally goes
+> through DMA core and it uses SWIOTLB as bounce buffer in
+> a CoCo VM.
+> 
+> The Confidential VMBus device can do DMA directly to
+> private/encrypted memory. Because the swiotlb is decrypted
+> memory, the DMA transfer must not be bounced through the
+> swiotlb, so as to preserve confidentiality. This is different
+> from the default for Linux CoCo VMs, so disable the VMBus
+> device's use of swiotlb.
+> 
+> Expose swiotlb_dev_disable() from DMA Core to disable
+> bounce buffer for device.
 
-This also fixes the problem of keeping pointers to the regions, which
-failed to initialize, what might cause issues when such region is
-assigned to the device.
+It feels awkward and like a layering violation to let arbitrary kernel
+drivers manipulate SWIOTLB, which sits beneath the DMA core.
 
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
----
- drivers/of/of_reserved_mem.c | 62 ++++++++++++++++--------------------
- 1 file changed, 28 insertions(+), 34 deletions(-)
+Thanks
 
-diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
-index 037e3d74dde1..8d5777cb5d1b 100644
---- a/drivers/of/of_reserved_mem.c
-+++ b/drivers/of/of_reserved_mem.c
-@@ -102,36 +102,13 @@ static void __init alloc_reserved_mem_array(void)
- 	reserved_mem = new_array;
- }
- 
--static void __init fdt_init_reserved_mem_node(struct reserved_mem *rmem,
--					      unsigned long node);
-+static void fdt_init_reserved_mem_node(unsigned long node, const char *uname,
-+				       phys_addr_t base, phys_addr_t size);
- static int fdt_validate_reserved_mem_node(unsigned long node,
- 					  phys_addr_t *align);
- static int fdt_fixup_reserved_mem_node(unsigned long node,
- 				       phys_addr_t base, phys_addr_t size);
- 
--/*
-- * fdt_reserved_mem_save_node() - save fdt node for second pass initialization
-- */
--static void __init fdt_reserved_mem_save_node(unsigned long node, const char *uname,
--					      phys_addr_t base, phys_addr_t size)
--{
--	struct reserved_mem *rmem = &reserved_mem[reserved_mem_count];
--
--	if (reserved_mem_count == total_reserved_mem_cnt) {
--		pr_err("not enough space for all defined regions.\n");
--		return;
--	}
--
--	rmem->name = uname;
--	rmem->base = base;
--	rmem->size = size;
--
--	/* Call the region specific initialization function */
--	fdt_init_reserved_mem_node(rmem, node);
--
--	reserved_mem_count++;
--}
--
- static int __init early_init_dt_reserve_memory(phys_addr_t base,
- 					       phys_addr_t size, bool nomap)
- {
-@@ -316,7 +293,7 @@ void __init fdt_scan_reserved_mem_late(void)
- 
- 		if (size) {
- 			uname = fdt_get_name(fdt, child, NULL);
--			fdt_reserved_mem_save_node(child, uname, base, size);
-+			fdt_init_reserved_mem_node(child, uname, base, size);
- 		}
- 	}
- 
-@@ -515,9 +492,8 @@ static int __init __reserved_mem_alloc_size(unsigned long node, const char *unam
- 	}
- 
- 	fdt_fixup_reserved_mem_node(node, base, size);
-+	fdt_init_reserved_mem_node(node, uname, base, size);
- 
--	/* Save region in the reserved_mem array */
--	fdt_reserved_mem_save_node(node, uname, base, size);
- 	return 0;
- }
- 
-@@ -619,30 +595,46 @@ static int __init __reserved_mem_init_node(struct reserved_mem *rmem,
- 	return ret;
- }
- 
--
- /**
-  * fdt_init_reserved_mem_node() - Initialize a reserved memory region
-- * @rmem: reserved_mem struct of the memory region to be initialized.
-  * @node: fdt node of the initialized region
-+ * @uname: name of the reserved memory node
-+ * @base: base address of the reserved memory region
-+ * @size: size of the reserved memory region
-  *
-- * This function is used to call the region specific initialization
-- * function for a reserved memory region.
-+ * This function calls the region-specific initialization function for a
-+ * reserved memory region and saves all region-specific data to the
-+ * reserved_mem array to allow of_reserved_mem_lookup() to find it.
-  */
--static void __init fdt_init_reserved_mem_node(struct reserved_mem *rmem,
--					      unsigned long node)
-+static void __init fdt_init_reserved_mem_node(unsigned long node, const char *uname,
-+					      phys_addr_t base, phys_addr_t size)
- {
- 	int err = 0;
- 	bool nomap;
- 
-+	struct reserved_mem *rmem = &reserved_mem[reserved_mem_count];
-+
-+	if (reserved_mem_count == total_reserved_mem_cnt) {
-+		pr_err("not enough space for all defined regions.\n");
-+		return;
-+	}
-+
-+	rmem->name = uname;
-+	rmem->base = base;
-+	rmem->size = size;
-+
- 	nomap = of_get_flat_dt_prop(node, "no-map", NULL) != NULL;
- 
- 	err = __reserved_mem_init_node(rmem, node);
- 	if (err != 0 && err != -ENODEV) {
- 		pr_info("node %s compatible matching fail\n", rmem->name);
-+		rmem->name = NULL;
-+
- 		if (nomap)
- 			memblock_clear_nomap(rmem->base, rmem->size);
- 		else
- 			memblock_phys_free(rmem->base, rmem->size);
-+		return;
- 	} else {
- 		phys_addr_t end = rmem->base + rmem->size - 1;
- 		bool reusable =
-@@ -654,6 +646,8 @@ static void __init fdt_init_reserved_mem_node(struct reserved_mem *rmem,
- 			reusable ? "reusable" : "non-reusable",
- 			rmem->name ? rmem->name : "unknown");
- 	}
-+
-+	reserved_mem_count++;
- }
- 
- struct rmem_assigned_device {
--- 
-2.34.1
-
+> 
+> Suggested-by: Michael Kelley <mhklinux@outlook.com>
+> Signed-off-by: Tianyu Lan <tiala@microsoft.com>
+> ---
+>  drivers/hv/vmbus_drv.c  | 6 +++++-
+>  include/linux/swiotlb.h | 5 +++++
+>  2 files changed, 10 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
+> index 3d1a58b667db..84e6971fc90f 100644
+> --- a/drivers/hv/vmbus_drv.c
+> +++ b/drivers/hv/vmbus_drv.c
+> @@ -2184,11 +2184,15 @@ int vmbus_device_register(struct hv_device *child_device_obj)
+>  	child_device_obj->device.dma_mask = &child_device_obj->dma_mask;
+>  	dma_set_mask(&child_device_obj->device, DMA_BIT_MASK(64));
+>  
+> +	device_initialize(&child_device_obj->device);
+> +	if (child_device_obj->channel->co_external_memory)
+> +		swiotlb_dev_disable(&child_device_obj->device);
+> +
+>  	/*
+>  	 * Register with the LDM. This will kick off the driver/device
+>  	 * binding...which will eventually call vmbus_match() and vmbus_probe()
+>  	 */
+> -	ret = device_register(&child_device_obj->device);
+> +	ret = device_add(&child_device_obj->device);
+>  	if (ret) {
+>  		pr_err("Unable to register child device\n");
+>  		put_device(&child_device_obj->device);
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index 3dae0f592063..7c572570d5d9 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -169,6 +169,11 @@ static inline struct io_tlb_pool *swiotlb_find_pool(struct device *dev,
+>  	return NULL;
+>  }
+>  
+> +static inline bool swiotlb_dev_disable(struct device *dev)
+> +{
+> +	return dev->dma_io_tlb_mem == NULL;
+> +}
+> +
+>  static inline bool is_swiotlb_force_bounce(struct device *dev)
+>  {
+>  	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
+> -- 
+> 2.50.1
+> 
+> 
