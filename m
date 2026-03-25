@@ -1,134 +1,153 @@
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12F243C3453
-	for <iommu@lists.linux.dev>; Wed, 25 Mar 2026 15:16:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E794D2E612E;
+	Wed, 25 Mar 2026 16:36:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774451770; cv=none; b=szkIfy1IcdGTqZcfDSTqM8h045AxNVKGHEJmTARt3CSKRWSiKqMod4DX6F1uKQMg0PzmpIE4A0gPjtlZcGTbn0hXgZ6Pysm5otzi3XfU90Z8KApteOt/4bJWJOFqcQK8/dvLkRK+z+Ztd95kH2zB0gU4RGEKQBN1uIsxcf9jQzE=
+	t=1774456599; cv=none; b=mbFaTOckV6PxZqbwzySQk9/sOV5WPrQEgJ8XPwtivhrjslbqbM1TkYS7XlnXhbms+9vWZJhw6e/ir+nHgQ5yym+A4FeLs51o0Fkp/p25upM5OOkmB6ZUWpif6hXG5DhbXE4uYpoXW2aSVPHkfzscJsKO6XrCdxqPTbgfFTw0g0k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774451770; c=relaxed/simple;
-	bh=/vywv4hZ4+kE2TvgFYQ3L9kVw42zFJldnDoEQi5wZGU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=bVC0Y67DuuTFU+v1TrcvEXqRycjUcsIx2rKpoyN2OJWLWMR+M7wzyFqYCaWRMr0pg5IkDkiJkAAtSduSusrOdPx5P1bEMxFwruluMMf44BY3z/Pa9pIw8WM3+rBBlWBVHQq7MK9mjDdCPaIwrFwwPhgJUD5vpAjqLUmydiDukrY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Lt+SXlxA; arc=none smtp.client-ip=209.85.208.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1774456599; c=relaxed/simple;
+	bh=VhIL6fLjtPzkfyMXrdTOmbzI3y+jzhOEWYMQaJHnKwg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GyFSjvy7kLmwqdLWSOS+o8w9X6wCrJkdaPlCjxwfuV5PS9efrBtXhUOV8/vOds3WtQzH2LhE9upuS760KI1DJZvKTyeaDBp+gLFvs+KjjxONCnY8+kpJ6VeqwS70e4WDqRt5+m3fKtHDJ0+Uix/F7LLmpHcMfAjO3Zj70MaEg+w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mzux6vwX; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Lt+SXlxA"
-Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-66970715adbso7630992a12.3
-        for <iommu@lists.linux.dev>; Wed, 25 Mar 2026 08:16:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1774451767; x=1775056567; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=jeZDmS4QXWBXj1GSyJBXJGYP+hGJySEXWFfrbydgUbc=;
-        b=Lt+SXlxAHj6XCOfpPekHiErOtYSMGHb1ViCJ9fIfQfpcr5DIPFQhhwAkAldZcYIJRg
-         bc2jzcr5VwlU/E1F2SCwX+UQxkc+45zTJe1ibO/5BAHgJVtn2Qwqeo/x0fDBHnOy/nLI
-         d0HAgecoDySzTb8dmfcKjbhAJGw8DS5Yk3BmfBUY9DlLPu6nCELyzxv1elPJsMmMZzWa
-         /c0+M8buE7A3mLuNCKoc8qty+G+oXj/w++qUhB1J6gEz/AGHqwVB0bUIZ7ku7yA4Y1Nn
-         /qSPc8w5zcwvuWjwRSrCCjXtkyv9JJ/iV2MZzQyrt/q7Bx2NmNcd4XWdLuABOFysi1j1
-         n1tQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774451767; x=1775056567;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=jeZDmS4QXWBXj1GSyJBXJGYP+hGJySEXWFfrbydgUbc=;
-        b=Ng6HY68Cya+QU6CJMxQh1L/ZmKPbE7rkpr0O/yhiFrSccKDNf8rEBy1QwTO11Hw/Tv
-         bdlSSANRo9c2sNFvbTd/JKlhPVbhoy763gic9edU5nMYfGMa2Kd9qFrCyj9Foy+CFI1i
-         9gJNNbWMGDkfH47qKCLorgjX9BRKZd2EFi/aZAvP/t12+FyjYfmXE3nLMU39coSwknVB
-         41WKFB4/RNb3S7p1gYFdLY5fMWxzqqTVhLUU/12Uz1VILnT5Di7BF8ame8OIySSWjkzd
-         pCSqwX2pyAAFPqOH+ki3V4j+oc4GLb5+sJlHc1iRuu0DoZ6P3KtuNoQbZj5spyAf0yqo
-         xmwg==
-X-Forwarded-Encrypted: i=1; AJvYcCU285tnwqt6Jqpm4S8/K54uZZuePZETUT0wHegfFGYXz46XFXZ/XvqA4NsNFP/+k8e+8K/sMw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yye3fXpggJbyEq5ywlkCwjL3jWcqIPkB1umec7P0Nm6KQ8qqs4k
-	JdBV1kHy0OBT4OVUGCLE6hBSL0zNOd4alqVO+6I5pxpHKPeGghJw7K11LDmBNy/Rklw=
-X-Gm-Gg: ATEYQzzyPb/T9QNeWKmOhY7p0dzinFYJQJF3+QxtGhNbiPIJWrbal9N89/67qg/ghpV
-	s2QbQKp8+aK4/p4zH4ESLqA14UrhTvr5hWtf1zylRkqyfZTH11S7qDqbJQdHSCxa/yKXb+n0rCK
-	vHHh9pzl8ObJU02JgLsq3asPkAqis1mZ7PqSfn2ncPw5lN55fZIPFbTSYb76Q1VviX/j2YecR6C
-	ypDLpxlSZu1yOv9klDV0a9ZG45EHwT+OQrrr/Ics8UZ7Rw9x0lb0gAXpACpDzCdd05n244VBMYS
-	TWQkcHa4rBw7VjVd2FhVAc4vQFFpVgyZ+F6IjWht6vfusP089OCja94v0uFk3pWbfq60vdIWvNp
-	UgJK1D2Wb0z8WbPMvvwmr4CheujaJEgVDDO9/9dIyJ4G3Zn/ssvYsAwPtAFID4fNDfn0kY+yKq2
-	423s/9WKpa/r0k92cAnICZf05ARLm9V+/HqeOo
-X-Received: by 2002:a17:907:619b:b0:b98:1129:51 with SMTP id a640c23a62f3a-b9a3f1abe69mr195370666b.17.1774451767271;
-        Wed, 25 Mar 2026 08:16:07 -0700 (PDT)
-Received: from [192.168.0.167] ([109.76.163.154])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b9832f440e7sm800025966b.3.2026.03.25.08.16.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Mar 2026 08:16:06 -0700 (PDT)
-Message-ID: <2c5b8402-6036-43b9-bda3-aeee0c6a9d7d@linaro.org>
-Date: Wed, 25 Mar 2026 15:16:03 +0000
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mzux6vwX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5BF4C4CEF7;
+	Wed, 25 Mar 2026 16:36:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1774456598;
+	bh=VhIL6fLjtPzkfyMXrdTOmbzI3y+jzhOEWYMQaJHnKwg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=mzux6vwXHaR7V7neOoTISKQBA9WjUFg4+kBM+feyhHy1v+yuYN5KFjg/2GNiFlhSP
+	 AaRmAAC+/iA8V+IEwsULaogCp1gUs/03o0hmrCBYyh4R3UTN8uQ4MFCM8FdGrAsFFz
+	 qs0KEYkRvuokQghLH2NFYzschFfHJ23Rp1UlJT2rSboD9oYrebRFLk/FwiQq4bCEbl
+	 uBvVPQcc3CkWkKgGlKl1rE+cQu+vMXsTnusbKeqEb/c6H4je5yM9yZ4Bs+a22M/Ztt
+	 wlYGRT8oOUxqMyydZ8l00FrsV694meBoOJ9pjwb78wvLVTmxWE9sNHJMT+P+6S1DN2
+	 FHAkmOh4Fxslw==
+Date: Wed, 25 Mar 2026 16:36:32 +0000
+From: Will Deacon <will@kernel.org>
+To: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Cc: joro@8bytes.org, robin.murphy@arm.com, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
+	nicolas.dufresne@collabora.com, p.zabel@pengutronix.de,
+	mchehab@kernel.org, iommu@lists.linux.dev,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org
+Subject: Re: [PATCH v13 3/6] iommu: Add verisilicon IOMMU driver
+Message-ID: <acQPEEd0hQrghGbw@willie-the-truck>
+References: <20260216095144.107356-1-benjamin.gaignard@collabora.com>
+ <20260216095144.107356-4-benjamin.gaignard@collabora.com>
+ <acKxzGk1Z541yoZ4@willie-the-truck>
+ <e083e933-2746-4b26-ac33-3b32d362b28e@collabora.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/7] media: iris: switch to hardware mode after
- firmware boot
-To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
- Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
- Abhinav Kumar <abhinav.kumar@linux.dev>, Bryan O'Donoghue <bod@kernel.org>,
- Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
- Conor Dooley <conor+dt@kernel.org>, Saravana Kannan <saravanak@kernel.org>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Stefan Schmidt <stefan.schmidt@linaro.org>,
- Hans Verkuil <hverkuil@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>,
- Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
- Hans Verkuil <hverkuil+cisco@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev
-References: <20260313-kaanapali-iris-v3-0-9c0d1a67af4b@oss.qualcomm.com>
- <20260313-kaanapali-iris-v3-2-9c0d1a67af4b@oss.qualcomm.com>
- <7dbf7a23-7a02-4e9e-99c8-6716e3dcf7d9@oss.qualcomm.com>
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Content-Language: en-US
-In-Reply-To: <7dbf7a23-7a02-4e9e-99c8-6716e3dcf7d9@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <e083e933-2746-4b26-ac33-3b32d362b28e@collabora.com>
 
-On 25/03/2026 15:14, Vikash Garodia wrote:
+On Tue, Mar 24, 2026 at 05:28:44PM +0100, Benjamin Gaignard wrote:
 > 
-> On 3/13/2026 6:49 PM, Vikash Garodia wrote:
->> Currently the driver switches the vcodec GDSC to hardware (HW) mode
->> before firmware load and boot sequence. GDSC can be powered off, keeping
->> in hw mode, thereby the vcodec registers programmed in TrustZone (TZ)
->> carry default (reset) values.
->> Move the transition to HW mode after firmware load and boot sequence.
->>
->> The bug was exposed with driver configuring different stream ids to
->> different devices via iommu-map. With registers carrying reset values,
->> VPU would not generate desired stream-id, thereby leading to SMMU fault.
->>
->> For vpu4, when GDSC is switched to HW mode, there is a need to perform
->> the reset operation. Without reset, there are occassional issues of
->> register corruption observed. Hence the vpu GDSC switch also involves
->> the reset.
->>
->> Fixes: dde659d37036 ("media: iris: Introduce vpu ops for vpu4 with 
->> necessary hooks")
->> Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
->> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
->> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
->> ---
+> Le 24/03/2026 à 16:46, Will Deacon a écrit :
+> > On Mon, Feb 16, 2026 at 10:51:35AM +0100, Benjamin Gaignard wrote:
+> > > The Verisilicon IOMMU hardware block can be found in combination
+> > > with Verisilicon hardware video codecs (encoders or decoders) on
+> > > different SoCs.
+> > > Enable it will allow us to use non contiguous memory allocators
+> > > for Verisilicon video codecs.
+> > > If both decoder and this iommu driver are compiled has modules
+> > > there is undefined symboles issues so this iommu driver could
+> > > only be compiled has built-in.
+> > > 
+> > > Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+> > > ---
+> > >   MAINTAINERS               |   8 +
+> > >   drivers/iommu/Kconfig     |  11 +
+> > >   drivers/iommu/Makefile    |   1 +
+> > >   drivers/iommu/vsi-iommu.c | 794 ++++++++++++++++++++++++++++++++++++++
+> > >   include/linux/vsi-iommu.h |  21 +
+> > >   5 files changed, 835 insertions(+)
+> > >   create mode 100644 drivers/iommu/vsi-iommu.c
+> > >   create mode 100644 include/linux/vsi-iommu.h
+> > [...]
+> > 
+> > > +static size_t vsi_iommu_unmap(struct iommu_domain *domain, unsigned long _iova,
+> > > +			      size_t size, size_t count, struct iommu_iotlb_gather *gather)
+> > > +{
+> > > +	struct vsi_iommu_domain *vsi_domain = to_vsi_domain(domain);
+> > > +	dma_addr_t pte_dma, iova = (dma_addr_t)_iova;
+> > > +	unsigned long flags;
+> > > +	phys_addr_t pt_phys;
+> > > +	u32 dte;
+> > > +	u32 *pte_addr;
+> > > +	size_t unmap_size = 0;
+> > > +
+> > > +	spin_lock_irqsave(&vsi_domain->lock, flags);
+> > > +
+> > > +	dte = vsi_domain->dt[vsi_iova_dte_index(iova)];
+> > > +	/* Just return 0 if iova is unmapped */
+> > > +	if (!vsi_dte_is_pt_valid(dte))
+> > > +		goto unlock;
+> > > +
+> > > +	pt_phys = vsi_dte_pt_address(dte);
+> > > +	pte_addr = (u32 *)phys_to_virt(pt_phys) + vsi_iova_pte_index(iova);
+> > > +	pte_dma = pt_phys + vsi_iova_pte_index(iova) * sizeof(u32);
+> > > +	unmap_size = vsi_iommu_unmap_iova(vsi_domain, pte_addr, pte_dma, size);
+> > > +
+> > > +unlock:
+> > > +	spin_unlock_irqrestore(&vsi_domain->lock, flags);
+> > > +
+> > > +	return unmap_size;
+> > > +}
+> > I still think you need TLB invalidation here.
+> > 
+> > I looked at the downstream code that you linked to and it litters the
+> > invalidation in the callers via mpp_iommu_flush_tlb(), which tend to
+> > invalidate _before_ starting an operation. That's very likely buggy and
+> > certainly not something we want upstream.
+> > 
+> > The unmap routine should do the invalidation so that, when it returns,
+> > the pages really are unmapped from the device (assuming strict mode).
+> > 
+> > I know you said that you tried to add invalidation here and it "didn't
+> > work", but that's not something I can really help you with.
 > 
-> Hi Bryan,
-> 
-> Please pull this fix patch, let me know if you need me to resend this 
-> separately.
-> 
-> Regards,
-> Vikash
+> I know you expect the hardware to work like that but that isn't not the
+> case.
 
-np
+The hardware appears to have a register to invalidate the entire TLB.
+We can use that if there's nothing else.
 
----
-bod
+> I spend quite long to try to found hidden bit(s) or an other way to do like
+> you want but I can't find any solution.
+
+Then we can invalidate the entire TLB.
+
+> As you mention the downstream code suggest that the iommu can't invalidate
+> TLB in unmap routine so I don't see how to progress.
+
+The downstream code is a tangled mess; I don't think it suggests anything
+about what the IOMMU hardware is capable of.
+
+> Maybe we should just admit that is how the hardware work.
+
+No.
+
+The upstream kernel isn't a dumping ground for vendor crap. The hardware
+has TLB invalidation functionality and so we should use it. If we don't,
+then we're not giving the IOMMU API what it expects and any callers
+outside of the video codecs will be landed with problems when unmap
+doesn't work as expected.
+
+> This v13 has fixed the documentation so I don't plan to spend more time on this driver.
+
+That's a shame, I'm really not asking for much.
+
+Will
