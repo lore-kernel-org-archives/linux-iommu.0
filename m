@@ -1,63 +1,63 @@
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B60F382F0C
-	for <iommu@lists.linux.dev>; Wed, 25 Mar 2026 20:55:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F9933368AB
+	for <iommu@lists.linux.dev>; Wed, 25 Mar 2026 21:05:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774472115; cv=none; b=Ywi3uRS02YDra8X0BOMVIT4vdAiQ60K4l4l9vcRDze79M3htKHIpv6vQs7Fr/AL7n0mYnLCNRl6PWIrCTp6USxFFk8ouet2O+9SKDP+PDneUEXpUQXfuf3KlmvBYdMHMDbJZqimu00kkjmbNNCBxC2ZF2kDbyGYEu+UvUYv9nfk=
+	t=1774472744; cv=none; b=lx1I4Cg77FDo7Fjl/+PWqY0rUzvIxY/cBrWUglA+GHMsmsP+RZU69fph/c2n3XhBz1DTN8zdkIpSnSGyiCZsqbmkg1dNDLE35Fz2I/AkJb+Aso/TJh9tmx80eAQerSTmdn7BGAmIForxvZIFxKLgiRinyf9IyTp4Rv34EANYQfA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774472115; c=relaxed/simple;
-	bh=+jxPirHWm4GxVwEslObRk9vkViIlq49DC7znSdbetR0=;
+	s=arc-20240116; t=1774472744; c=relaxed/simple;
+	bh=mc3wyFkLdTJ6vlC+vxFo8HArEjVsFIe6IYt/TgRs0ng=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DkLdMqG8uTgoJCDtP5ZiN4L8xlDaY+1b7iRwoA/RBMaw1656Uim5uFEd81LNYkTYVFPeVAnmAiZK+y7duu7NMzkcmj8QuSW+NDkUZ+iJ3Mb2K3TpRu066vG9SRpiEk7LZCQAVhDSd//f3uccVdttezoeYbm9MUn0RE+wQggQJQk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=AvbHE6Rm; arc=none smtp.client-ip=209.85.214.181
+	 Content-Type:Content-Disposition:In-Reply-To; b=m/gd2BWTJROoufylu8UCRXLy/3gF61KMuh4E7Zi1DFYMLp1QsprXrZrCcAWffw6c1Wc8rHzoLoMRP3YqDyMHwK6jS8MhaJPIDO5SWvJ3Jwy7RbgnvxScLPWYuqIW757AnFhkTgtzqOmN7o/Wa5/RvNFi+pRTDF1h5rTBQ4cTNQY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=uqS2EgDE; arc=none smtp.client-ip=209.85.214.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="AvbHE6Rm"
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2b04c9e3eb7so27965ad.0
-        for <iommu@lists.linux.dev>; Wed, 25 Mar 2026 13:55:12 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="uqS2EgDE"
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2b04c9e3eb7so28765ad.0
+        for <iommu@lists.linux.dev>; Wed, 25 Mar 2026 14:05:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1774472112; x=1775076912; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1774472743; x=1775077543; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=jhMIGpIQFcuKvxAcvdtwqtuFZewnUju9lpglG9yLN80=;
-        b=AvbHE6Rm/d8/GRI/UDDtmb7e64wnSh9QK9YaY6mBB9HvK8kOyRyDBjpMGvoN1ECfRx
-         d+XcuCwGpe6yngXs4C1ajl3n9KDnDbGAuw3Jgqz4GzrtLVr6nO4yrW+LtsNb5JuFaRO5
-         0okdEN7VNZVaCmdY2msQGokmQKDARiRN9emk7V2v45y/g1z5ZQv/ni70psz85TEqPq+5
-         3841WCHlxwsfToeHGhlaFqH9qLtdcqeD4u6M2iS1LacO1jHNjWC+I+0lS6eD1Y/P1NnQ
-         iLhig5vDASSrp8yqxgaHymr8NfjFW8MrERFyMiPYV9bK3yxsdVizbdQfnafdk8iJ3EjD
-         1CWA==
+        bh=2ONKcbBIVZipE0oxJX2YmrslP0dc4AILtZ8R0cwg82s=;
+        b=uqS2EgDEHtzQwaJS2zq9bgHJeKhtA180+5YzQFygYHSl+uozar0SfR3o3ho9owVzAC
+         t5crqcnSjkvDorfFJBfo6hnKIYM4CuOSJcHvRPWNR0rn3hQJKh7QL07Sxg/RcxEewkNP
+         JlSnfa3/nBJAs7gwdcUmQa/KF4lvNRJ+OPy2uTyeLeomsZh5WNj1fJ06DxhNSTtUPK7F
+         woK7nSr9mskq5WpH/NCbWoHKl6PBvAojMALiFTOxy2pRet8FAZpmAETeySZUmloD7mUs
+         i94PjqsGKps50QldACj3uu2BGdEgu0zsqQO6vHSWWK5jhv9KpB0OsLeIG92n2dgMCQFL
+         B2Lg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774472112; x=1775076912;
+        d=1e100.net; s=20251104; t=1774472743; x=1775077543;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=jhMIGpIQFcuKvxAcvdtwqtuFZewnUju9lpglG9yLN80=;
-        b=nebt1y0s1xV6V1SmxPwaYzrQrb50/iBrgH3H4vu1eFej3xTLuJnWVcUnev/cVNnF4C
-         D3NGPss3nKFeeSbi5X2d5p3pi2v67NsqiHrOBOAOPwlPIaGnPp0/TGECcoasRHp9Vl93
-         hP956V3gT7SA4kRiuvwdUcrhge0veTF/Y9Ccydpr6MqU5ffA8kUt28x5Z04oJsffvvpr
-         Jfb4HONaarstHA758ZLrSxLuLD3H+uOeMqGLHokLgeJ/gVBSoYYJ4QzyeyTuz+MYFGRv
-         kSg3zdLsBS4tF0CsSLbjvey/cmvhuM8cJRyDVAlNznBXX4s2rRRIyKCPSywDeaBfrpje
-         pRag==
-X-Forwarded-Encrypted: i=1; AJvYcCUGCdCOTeKZkXLvSOBgTdn889Pz9mkUjgF8+KituJ2drnDmmYJz2MODPQdCAqDdjdDa4uqrsg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxJF+dvZFYDaGd0ZQemhsmGZz5tTma/vjVZLgj4mzIfJ4g8Q/EZ
-	GPC+TfelTVN7RbFsO3X7BBXIZNZ1S8dFLB9++/4Ik1eSqzDbx2ngyO0V7Io5ljhV+Q==
-X-Gm-Gg: ATEYQzy16gF0ZgPQm5JZSNXjDeccXW6UeK8NS9gx2RePbZV9ULjkhG1+80QogtbdUSY
-	UiaZCMobn7Uzlksf0/COsKe8ueLCQSikNLYZC2Su9zUJ/lIByskMpT1IG3DlAFRxijdTIN419WU
-	OyJwtEzzR8QNuNj30HTI8dtLelKr+wxmd3vr+EEMubFr3CIPmLzipY5nmGaucmRCTDnsH7dmvwE
-	eo0xzD8JJ0yAiZh5qtAdBS0ohtH7A8I1LJZMKAQejO/SM8ncuBqutrWZizpH8iuw6YHtMhGfg4g
-	xIxsXJ/Fp2Tqa48kDJ14dnw17j4CaZI9/EvFm9QuHbiS4ZmldgMrqf9AN6VjoXF6wp2EgNttea6
-	JG4Qn2tWzKsx19fwUQotnUHTqiHy25KGfJNzYFuRK9CwJ7TJSkTXtNAiMAYP0sVuNAzDLCY/vfH
-	5ppP58XXPfCGj7v7qGohxtmVDriBO958XYcp2yv6NSaxnF4u3cDkuaNsm8oQ==
-X-Received: by 2002:a17:903:22d2:b0:2b0:5683:1cf with SMTP id d9443c01a7336-2b0bfa3715cmr503835ad.13.1774472110165;
-        Wed, 25 Mar 2026 13:55:10 -0700 (PDT)
+        bh=2ONKcbBIVZipE0oxJX2YmrslP0dc4AILtZ8R0cwg82s=;
+        b=NRAZS1TP9IKlxj987Y7GMdqYS+nk+Wk/JuMSKZ3SWY9t6pXeE3Cam/Hq54+6blpOCs
+         O3/QdrZzdDgzzEyO56rGO0wwTjgcJwZZYHo33R4v9EK19ELrilyVQOJCTIikO53jDN6m
+         u+PQlSkyqk/jo2JWj/hYx35thUww0SvnrKHDXar+UzpMo5uYzNKNNKfeZu2J1uyfsk8k
+         H648aD4ULG91z2U4Mtp0MgWB5OcupHhzV0u4jH3HU/KBsuKbyyxFbt9yVkpN+n+J+Xhl
+         2irZq5qh4EQI4VeTcPSNBJitH2CsNbimShA/ZUDQ7FPuxwpKe9yK4/qpaCPHX34j31QN
+         dQ3w==
+X-Forwarded-Encrypted: i=1; AJvYcCXjIvKHiMJWZ9TbebGGRCvkOXTWR1dYGgXXGXycmeXXWqvg/6ZFsWlFCZJ58P9Dksd8g5ZSVw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwO7zdGhjTfolsYysDfFBYAW+hoVkRQ5T3eLh9A5ZPzFILaG+dp
+	n7psDwOVPaXmjgprHpKDbrriC1TQ+tLwf6vG3PLrBItnHxr1AwaFmKLljq/BFnXAXA==
+X-Gm-Gg: ATEYQzyy2gCXtwNbjL7+xDhwcJnbKZlrhh0ydqzoTbfBLSUsZ1A6U3PKPb7w5MC3SvC
+	ilbuG4kKHjEHfdn4qm8K4ffJS52Wt4iqeS/plM/f32etOZ2T0LTxfZ49QO8jDTBjb7CaZtNGw0R
+	Vd7tJbFOLqgoTRtZL6n2aEB5nH/5sbSP2fL948HKenh5yEIfDtmeeMBPCSZdSIEKnpurGYSzcbt
+	GemDC+lBXqwriefXK6ocgd/JLf4nrJBdWngSGx3js17zVGfem6N5U9O8/+H2M08vvS4IoHxlgvR
+	hHS8iBRLiLtrQgILSCG7ze3KXFRiOVxJGT46W+Q7xsMgeefq9mMyvrAkjfyqEOS2Fa5oIGZwDBB
+	F4x0rZ7B3XRZrXfyCTZy5Qxvxl1xxfUIP4u8h6JUWxHCPfNxUnlkdmXccXXNyJZEBwIC2uHXFYR
+	MYmkxzT/LeBitf30MtrcLqaUAxzVyWKoIczWfsP0gIC1BHhZkulsgEpJN0HD3geEEkuDoa
+X-Received: by 2002:a17:902:d48d:b0:2b0:7a9b:82f3 with SMTP id d9443c01a7336-2b0bf525ef0mr164585ad.8.1774472741940;
+        Wed, 25 Mar 2026 14:05:41 -0700 (PDT)
 Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b0bc917b5fsm7349805ad.84.2026.03.25.13.55.04
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b0bc783099sm9870465ad.18.2026.03.25.14.05.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Mar 2026 13:55:09 -0700 (PDT)
-Date: Wed, 25 Mar 2026 20:55:00 +0000
+        Wed, 25 Mar 2026 14:05:41 -0700 (PDT)
+Date: Wed, 25 Mar 2026 21:05:32 +0000
 From: Pranjal Shrivastava <praan@google.com>
 To: Samiullah Khawaja <skhawaja@google.com>
 Cc: David Woodhouse <dwmw2@infradead.org>,
@@ -77,11 +77,11 @@ Cc: David Woodhouse <dwmw2@infradead.org>,
 	Andrew Morton <akpm@linux-foundation.org>,
 	Chris Li <chrisl@kernel.org>, Vipin Sharma <vipinsh@google.com>,
 	YiFei Zhu <zhuyifei@google.com>
-Subject: Re: [PATCH 13/14] vfio/pci: Preserve the iommufd state of the vfio
- cdev
-Message-ID: <acRLpJ2tlr7VCIhi@google.com>
+Subject: Re: [PATCH 14/14] iommufd/selftest: Add test to verify iommufd
+ preservation
+Message-ID: <acROHN5KhJIef0Yd@google.com>
 References: <20260203220948.2176157-1-skhawaja@google.com>
- <20260203220948.2176157-14-skhawaja@google.com>
+ <20260203220948.2176157-15-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -90,137 +90,211 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260203220948.2176157-14-skhawaja@google.com>
+In-Reply-To: <20260203220948.2176157-15-skhawaja@google.com>
 
-On Tue, Feb 03, 2026 at 10:09:47PM +0000, Samiullah Khawaja wrote:
-> If the vfio cdev is attached to an iommufd, preserve the state of the
-> attached iommufd also. Basically preserve the iommu state of the device
-> and also the attached domain. The token returned by the preservation API
-> will be used to restore/rebind to the iommufd state after liveupdate.
+On Tue, Feb 03, 2026 at 10:09:48PM +0000, Samiullah Khawaja wrote:
+> Test iommufd preservation by setting up an iommufd and vfio cdev and
+> preserve it across live update. Test takes VFIO cdev path of a device
+> bound to vfio-pci driver and binds it to an iommufd being preserved. It
+> also preserves the vfio cdev so the iommufd state associated with it is
+> also preserved.
+> 
+> The restore path is tested by restoring the preserved vfio cdev only.
+> Test tries to finish the session without restoring iommufd and confirms
+> that it fails.
 > 
 > Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+> Signed-off-by: YiFei Zhu <zhuyifei@google.com>
 > ---
->  drivers/vfio/pci/vfio_pci_liveupdate.c | 28 +++++++++++++++++++++++++-
->  include/linux/kho/abi/vfio_pci.h       | 10 +++++++++
->  2 files changed, 37 insertions(+), 1 deletion(-)
+>  tools/testing/selftests/iommu/Makefile        |  12 +
+>  .../selftests/iommu/iommufd_liveupdate.c      | 209 ++++++++++++++++++
+>  2 files changed, 221 insertions(+)
+>  create mode 100644 tools/testing/selftests/iommu/iommufd_liveupdate.c
 > 
-> diff --git a/drivers/vfio/pci/vfio_pci_liveupdate.c b/drivers/vfio/pci/vfio_pci_liveupdate.c
-> index c52d6bdb455f..af6fbfb7a65c 100644
-> --- a/drivers/vfio/pci/vfio_pci_liveupdate.c
-> +++ b/drivers/vfio/pci/vfio_pci_liveupdate.c
-> @@ -15,6 +15,7 @@
->  #include <linux/liveupdate.h>
->  #include <linux/errno.h>
->  #include <linux/vfio.h>
-> +#include <linux/iommufd.h>
+> diff --git a/tools/testing/selftests/iommu/Makefile b/tools/testing/selftests/iommu/Makefile
+> index 84abeb2f0949..263195af4d6a 100644
+> --- a/tools/testing/selftests/iommu/Makefile
+> +++ b/tools/testing/selftests/iommu/Makefile
+> @@ -7,4 +7,16 @@ TEST_GEN_PROGS :=
+>  TEST_GEN_PROGS += iommufd
+>  TEST_GEN_PROGS += iommufd_fail_nth
 >  
->  #include "vfio_pci_priv.h"
->  
-> @@ -39,6 +40,7 @@ static int vfio_pci_liveupdate_preserve(struct liveupdate_file_op_args *args)
->  	struct vfio_pci_core_device_ser *ser;
->  	struct vfio_pci_core_device *vdev;
->  	struct pci_dev *pdev;
-> +	u64 token = 0;
->  
->  	vdev = container_of(device, struct vfio_pci_core_device, vdev);
->  	pdev = vdev->pdev;
-> @@ -49,15 +51,32 @@ static int vfio_pci_liveupdate_preserve(struct liveupdate_file_op_args *args)
->  	if (vfio_pci_is_intel_display(pdev))
->  		return -EINVAL;
->  
-> +#if CONFIG_IOMMU_LIVEUPDATE
-
-Did we mean to use #ifdef or #if 
-
-> +	/* If iommufd is attached, preserve the underlying domain */
-> +	if (device->iommufd_attached) {
-> +		int err = iommufd_device_preserve(args->session,
-> +						  device->iommufd_device,
-> +						  &token);
-> +		if (err < 0)
-> +			return err;
-> +	}
-> +#endif
+> +TEST_GEN_PROGS_EXTENDED += iommufd_liveupdate
 > +
->  	ser = kho_alloc_preserve(sizeof(*ser));
-> -	if (IS_ERR(ser))
-> +	if (IS_ERR(ser)) {
-> +		if (device->iommufd_attached)
-> +			iommufd_device_unpreserve(args->session,
-> +						  device->iommufd_device, token);
-
-Few minor things here, we've protected the preserve call above with a
-#ifdef but not the unpreserve here in the clean up path. Also, it looks
-like in the previous patch we wrap both of these functions in #ifdefs
-and define their #else static inline-d versions too?
-
+>  include ../lib.mk
+> +include ../liveupdate/lib/libliveupdate.mk
 > +
->  		return PTR_ERR(ser);
-> +	}
->  
->  	pci_liveupdate_outgoing_preserve(pdev);
->  
->  	ser->bdf = pci_dev_id(pdev);
->  	ser->domain = pci_domain_nr(pdev->bus);
->  	ser->reset_works = vdev->reset_works;
-> +	ser->iommufd_ser.token = token;
->  
->  	args->serialized_data = virt_to_phys(ser);
->  	return 0;
-> @@ -66,6 +85,13 @@ static int vfio_pci_liveupdate_preserve(struct liveupdate_file_op_args *args)
->  static void vfio_pci_liveupdate_unpreserve(struct liveupdate_file_op_args *args)
->  {
->  	struct vfio_device *device = vfio_device_from_file(args->file);
-> +	struct vfio_pci_core_device_ser *ser;
+> +CFLAGS += -I$(top_srcdir)/tools/include
+> +CFLAGS += -MD
+> +CFLAGS += $(EXTRA_CFLAGS)
 > +
-> +	ser = phys_to_virt(args->serialized_data);
-> +	if (device->iommufd_attached)
-> +		iommufd_device_unpreserve(args->session,
-> +					  device->iommufd_device,
-> +					  ser->iommufd_ser.token);
->  
->  	pci_liveupdate_outgoing_unpreserve(to_pci_dev(device->dev));
->  	kho_unpreserve_free(phys_to_virt(args->serialized_data));
-> diff --git a/include/linux/kho/abi/vfio_pci.h b/include/linux/kho/abi/vfio_pci.h
-> index 6c3d3c6dfc09..d01bd58711c2 100644
-> --- a/include/linux/kho/abi/vfio_pci.h
-> +++ b/include/linux/kho/abi/vfio_pci.h
-> @@ -28,6 +28,15 @@
->  
->  #define VFIO_PCI_LUO_FH_COMPATIBLE "vfio-pci-v1"
->  
-> +/**
-> + * struct vfio_iommufd_ser - Serialized state of the attached iommufd.
-> + *
-> + * @token: The token of the bound iommufd state.
+> +$(TEST_GEN_PROGS_EXTENDED): %: %.o $(LIBLIVEUPDATE_O)
+> +	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH) $< $(LIBLIVEUPDATE_O) $(LDLIBS) -static -o $@
+> +
+> +EXTRA_CLEAN += $(LIBLIVEUPDATE_O)
+> diff --git a/tools/testing/selftests/iommu/iommufd_liveupdate.c b/tools/testing/selftests/iommu/iommufd_liveupdate.c
+> new file mode 100644
+> index 000000000000..8b4ea9f2b7e9
+> --- /dev/null
+> +++ b/tools/testing/selftests/iommu/iommufd_liveupdate.c
+> @@ -0,0 +1,209 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +
+> +/*
+> + * Copyright (c) 2025, Google LLC.
+> + * Samiullah Khawaja <skhawaja@google.com>
 > + */
-> +struct vfio_iommufd_ser {
-> +	u32 token;
-> +} __packed;
 > +
->  /**
->   * struct vfio_pci_core_device_ser - Serialized state of a single VFIO PCI
->   * device.
-> @@ -40,6 +49,7 @@ struct vfio_pci_core_device_ser {
->  	u16 bdf;
->  	u16 domain;
->  	u8 reset_works;
-> +	struct vfio_iommufd_ser iommufd_ser;
->  } __packed;
->  
+> +#include <fcntl.h>
+> +#include <sys/ioctl.h>
+> +#include <sys/mman.h>
+> +#include <stdbool.h>
+> +#include <unistd.h>
+> +
+> +#define __EXPORTED_HEADERS__
+> +#include <linux/iommufd.h>
+> +#include <linux/types.h>
+> +#include <linux/vfio.h>
+> +#include <linux/sizes.h>
+> +#include <libliveupdate.h>
+> +
+> +#include "../kselftest.h"
+> +
+> +#define ksft_assert(condition) \
+> +	do { if (!(condition)) \
+> +	ksft_exit_fail_msg("Failed: %s at %s %d: %s\n", \
+> +	#condition, __FILE__, __LINE__, strerror(errno)); } while (0)
+> +
+> +int setup_cdev(const char *vfio_cdev_path)
+> +{
+> +	int cdev_fd;
+> +
+> +	cdev_fd = open(vfio_cdev_path, O_RDWR);
+> +	if (cdev_fd < 0)
+> +		ksft_exit_skip("Failed to open VFIO cdev: %s\n", vfio_cdev_path);
+> +
+> +	return cdev_fd;
+> +}
+> +
+> +int open_iommufd(void)
+> +{
+> +	int iommufd;
+> +
+> +	iommufd = open("/dev/iommu", O_RDWR);
+> +	if (iommufd < 0)
+> +		ksft_exit_skip("Failed to open /dev/iommu. IOMMUFD support not enabled.\n");
+> +
+> +	return iommufd;
+> +}
+> +
+> +int setup_iommufd(int iommufd, int memfd, int cdev_fd, int hwpt_token)
+> +{
+> +	int ret;
+> +
+> +	struct vfio_device_bind_iommufd bind = {
+> +		.argsz = sizeof(bind),
+> +		.flags = 0,
+> +	};
+> +	struct iommu_ioas_alloc alloc_data = {
+> +		.size = sizeof(alloc_data),
+> +		.flags = 0,
+> +	};
+> +	struct iommu_hwpt_alloc hwpt_alloc = {
+> +		.size = sizeof(hwpt_alloc),
+> +		.flags = 0,
+> +	};
+> +	struct vfio_device_attach_iommufd_pt attach_data = {
+> +		.argsz = sizeof(attach_data),
+> +		.flags = 0,
+> +	};
+> +	struct iommu_hwpt_lu_set_preserve set_preserve = {
+> +		.size = sizeof(set_preserve),
+> +		.hwpt_token = hwpt_token,
+> +	};
+> +	struct iommu_ioas_map_file map_file = {
+> +		.size = sizeof(map_file),
+> +		.length = SZ_1M,
+> +		.flags = IOMMU_IOAS_MAP_WRITEABLE | IOMMU_IOAS_MAP_READABLE,
+> +		.iova = SZ_4G,
+> +		.fd = memfd,
+> +		.start = 0,
+> +	};
+> +
+> +	bind.iommufd = iommufd;
+> +	ret = ioctl(cdev_fd, VFIO_DEVICE_BIND_IOMMUFD, &bind);
+> +	ksft_assert(!ret);
+> +
+> +	ret = ioctl(iommufd, IOMMU_IOAS_ALLOC, &alloc_data);
+> +	ksft_assert(!ret);
+> +
+> +	hwpt_alloc.dev_id = bind.out_devid;
+> +	hwpt_alloc.pt_id = alloc_data.out_ioas_id;
+> +	ret = ioctl(iommufd, IOMMU_HWPT_ALLOC, &hwpt_alloc);
+> +	ksft_assert(!ret);
+> +
+> +	attach_data.pt_id = hwpt_alloc.out_hwpt_id;
+> +	ret = ioctl(cdev_fd, VFIO_DEVICE_ATTACH_IOMMUFD_PT, &attach_data);
+> +	ksft_assert(!ret);
+> +
+> +	map_file.ioas_id = alloc_data.out_ioas_id;
+> +	ret = ioctl(iommufd, IOMMU_IOAS_MAP_FILE, &map_file);
+> +	ksft_assert(!ret);
+> +
+> +	set_preserve.hwpt_id = attach_data.pt_id;
+> +	ret = ioctl(iommufd, IOMMU_HWPT_LU_SET_PRESERVE, &set_preserve);
+> +	ksft_assert(!ret);
+> +
+> +	return ret;
+> +}
+> +
+> +static int create_sealed_memfd(size_t size)
+> +{
+> +	int fd, ret;
+> +
+> +	fd = memfd_create("buffer", MFD_ALLOW_SEALING);
+> +	ksft_assert(fd > 0);
+> +
+> +	ret = ftruncate(fd, size);
+> +	ksft_assert(!ret);
+> +
+> +	ret = fcntl(fd, F_ADD_SEALS,
+> +		    F_SEAL_GROW | F_SEAL_SHRINK | F_SEAL_SEAL);
+> +	ksft_assert(!ret);
+> +
+> +	return fd;
+> +}
+> +
+> +int main(int argc, char *argv[])
 
-Another struct alignment geekery: when we update vfio_iommufd_ser.token
-to __u64 (as pointed out by other comments), putting it right after 
-`reset_works` forces an unaligned 8-byte access at offset 5. Ideally, we
-should add explicit padding (e.g. __u8 padding[3]) before iommufd_ser to
-ensure natural alignment.
+The iommufd selftest directory heavily utilizes the standard kselftest
+harness (TEST_F, EXPECT_EQ, ASSERT_EQ), by writing a raw main(), this 
+patch circumvents the standard test reporting structure (like returning 1
+on argc < 2 instead of ksft_exit_skip(), and returning 0 at the end
+instead of ksft_exit_pass() etc.). We should rewrite this cleanly 
+following the existing iommufd test infrastructure using TEST_F blocks.
 
-Because __packed prevents the compiler from automatically aligning 
-fields, placing a 64-bit integer at an odd offset forces the CPU to
-perform an unaligned memory read. While some archs handle this with a 
-performance penalty, other archs could outright fault on unaligned 64-bit
-accesses. Explicit padding guarantees safe, portable access across all
-archs while maintaining the strict memory layout required by the KHO ABI.
+> +{
+> +	int iommufd, cdev_fd, memfd, luo, session, ret;
+> +	const int token = 0x123456;
+> +	const int cdev_token = 0x654321;
+> +	const int hwpt_token = 0x789012;
+> +	const int memfd_token = 0x890123;
+
+Shouldn't these be u64? Defining them as signed int-s undermines that
+contract?
+
+> +
+> +	if (argc < 2) {
+> +		printf("Usage: ./iommufd_liveupdate <vfio_cdev_path>\n");
+> +		return 1;
+> +	}
+> +
+> +	luo = luo_open_device();
+> +	ksft_assert(luo > 0);
+> +
+> +	session = luo_retrieve_session(luo, "iommufd-test");
+
+[ ---- >8 ---- ]
 
 Thanks,
 Praan
