@@ -1,103 +1,101 @@
-Received: from out203-205-221-221.mail.qq.com (out203-205-221-221.mail.qq.com [203.205.221.221])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f47.google.com (mail-qv1-f47.google.com [209.85.219.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A975C3CF04A
-	for <iommu@lists.linux.dev>; Wed, 25 Mar 2026 11:37:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.205.221.221
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C92E3D349A
+	for <iommu@lists.linux.dev>; Wed, 25 Mar 2026 12:35:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774438663; cv=none; b=ST0SiJqAjhTIrkdCdEOW/MOmX5+SghbL3/IzmU4FR1RxF49w6vnRdmaSj/v3Q4zCHjorh6ja6zbOPYNYd6SJusWVh8+8NHO8+iuHWCzmKYdYFVsx5JQtkN1lpdTl2xjUzKwemXE1+kOvYcmqgzdk3NjlHnFJcEppN9hWrq4qrN4=
+	t=1774442140; cv=none; b=qPkKRqzUHWJ2pcrfS6M1/5W/QlngpG8cw8VZCChrrWUMSSaVQBoUbs1/VdTt3o2mHw6SvwNOF4wUqyrwtWvJeWknpVgBqk+9wECfLvZgjaVOnkgrbnIlQOcYw7Nd4O4YctuyqQXfptdGNMO9uQSwJjSYvf3ocUipVb8COYbGW8Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774438663; c=relaxed/simple;
-	bh=OpHMq2Rwk+cHJUi6ucAWHmWHcc8uQgZLnTLd68+v77E=;
-	h=Message-ID:Subject:To:Cc:References:From:Date:MIME-Version:
-	 In-Reply-To:Content-Type; b=KJjyb9DPrF0uN24LDTyKKUEabVC8vo1/RsLR4Qe6uEIKqArUcB3LEHlSbrOIBZybBJ1dKu5MC2gacAK1ziScuQkPkKqeSHCaAYwXlDQkZ8SOkuiC6SSOEpSP+4+XOZdsZMMKcwoMYWBu3L8hOg+DEO1mtiOymhJqLTyxgIMnoqU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com; spf=pass smtp.mailfrom=foxmail.com; dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b=n73F1WCF; arc=none smtp.client-ip=203.205.221.221
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foxmail.com
+	s=arc-20240116; t=1774442140; c=relaxed/simple;
+	bh=N4emNoFTYG3xPp4JxkTQL6Pnqg8ugTJg4RrW4cfKB3k=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=mPcwcjd8AxmaJ9E0DbT0M4fqxwkFQXzmdbGMlpC2Oz9ncZCN4xaI28ac7rJBr2nPkTotzHcVAFXmaVGlQCS9pB67vLAz/yEGfDK9NnLPBPdW0DKrHMOikoFdUXiBO9v1ccimlOhNw/nTJLVjwZLsuT+uHOUIo77fCJ3X66/xkHk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=H2PuIy30; arc=none smtp.client-ip=209.85.219.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b="n73F1WCF"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-	s=s201512; t=1774438653;
-	bh=67Gy+VnN3oFuCNR5UFCTTdcpheVUk88Eke4bfP3m3ds=;
-	h=Subject:To:Cc:References:From:Date:In-Reply-To;
-	b=n73F1WCF49h8GVooxEejrstnALmjhduVS7CsEsd2eJJCZDYwiOx3j9EkocH1vp6MP
-	 4dDcmo5HltOrxL0oL75+OV53xi5MJlYekXCMwebbCSf3S8Uz0pBPE920BQcp0KAZz6
-	 l5Sq1vxiVDV37ZODgHZVuMS45VnI4NPoHDd62mXI=
-Received: from [172.25.24.32] ([175.152.51.41])
-	by newxmesmtplogicsvrszc43-0.qq.com (NewEsmtp) with SMTP
-	id 95E30AD5; Wed, 25 Mar 2026 19:37:30 +0800
-X-QQ-mid: xmsmtpt1774438650thcxh2kcu
-Message-ID: <tencent_EEE4C4F7FAB342FCD386C3DB1F07C12E2205@qq.com>
-X-QQ-XMAILINFO: OIJV+wUmQOUAaMbr5V7GqnugeRPyk237F0py3DV2vm0bbBFQ1WEzz4+2QblzYM
-	 pE0qEqrQvnLSj6ZfC6dQbCVx3IWbegVEqzs754UvKAYBDLi739zHS8+nNVr1Eupm3xKDa/xH3FsR
-	 nCQYVdtwk3QcP1Os+BuWG5QXXzUCZ4gguFLMBbQxY+68ziwx36MSFh/wtndAHxTcHe6LfdIQihIO
-	 Wj4XPjbGR48AZPBeXZHMS/LwgMWcKTiuXNe4x1uErmpLcoViUClG9o44hka1Y5WRz28IrCX3vIvV
-	 2wCPwAuvaA7/YSENDFWVdK5K+7nbaWR5y9uCHxcnbzq8Jb42lrrL2E7+QlSRk74+8iV3Yinis9kS
-	 a2/3EwFI/Saa1Drw9Ob4+JpZcB7b0ym0Z0mlDhpSPQTY8U1JUsDPZP0l8eLJPzMHz/NUwRcEC7OQ
-	 9FRfO9VF4G+xY00vEfHeK9pqYgxVZkHv6cujBxbHnrXy5kouNM+aUCPZWtK/bH8rwo/g9B2YMuyi
-	 rCx6Bf1umczfnxeYAJtee3pKr6cMjWO3cHECMNi/osWaQgHTRQpAzb/fhm8wIaUpmnMeZylvIZeg
-	 ngE7ETL5So+99BWf32AWhvDAcCnNYvnDf+GXpvjQy24448Kur1uueOL8QZ7fAmZ0TY3XtDILT+XW
-	 LOcMiQYbvIr+YDv7zQT6NjLnM882ZcVyPALAN47WhYNZP+HLbnTFd5PTxa/PGGCw/lllt3mq8V4T
-	 jZyZYunn9jqKoKLo11/CSJtmmjwnSyqPtZpCrqSgclTjDdd57Mor7rjoOgDuBs7jHQm93lWaXlK0
-	 h1SsUdGePxD4rN/XxiWNPry18IepQNd/FgLUZ5J7n1VX6adADQkU7/7Qcriu8W0CSIc+/EXeIrTY
-	 vQiDt6Hc2N3f7DTR/lClCh3usgTrfzgqxC+Kodlh4yuyh/oiV38rv+BlhzuQKQkUjUECK7SHdCed
-	 Y/pMXqYL1rLQUc2ftCnNA72owWpXuy5zXKpAYvK+sjGF6TZ3IXhEW5L4U2qC9BKqepWtIw4/fQs4
-	 /DJqogWOOt6XMhycoxAgSWQ0JA4mM4+DfVSlmT6A==
-X-QQ-XMRINFO: M/715EihBoGS47X28/vv4NpnfpeBLnr4Qg==
-Subject: Re: [PATCH v1] iommu/amd: Recognize Hygon southbridge IOAPIC for
- interrupt remapping
-To: Wei Wang <wei.w.wang@hotmail.com>, joro@8bytes.org,
- suravee.suthikulpanit@amd.com, thomas.lendacky@amd.com,
- vasant.hegde@amd.com, aik@amd.com, jgg@nvidia.com, kevin.tian@intel.com,
- xuyongwei@open-hieco.net
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <SI2PR01MB43930F54C5B058A26D768C5FDC49A@SI2PR01MB4393.apcprd01.prod.exchangelabs.com>
- <tencent_EA83212045B49C785F5B55047CD670E8FB0A@qq.com>
- <SI2PR01MB439392D470CAB8EAB472839EDC49A@SI2PR01MB4393.apcprd01.prod.exchangelabs.com>
-From: Pu Wen <pu_wen@foxmail.com>
-X-OQ-MSGID: <a5b0a089-46e1-cc01-32f6-34a9cefbc4ef@foxmail.com>
-Date: Wed, 25 Mar 2026 19:37:30 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="H2PuIy30"
+Received: by mail-qv1-f47.google.com with SMTP id 6a1803df08f44-899fac9caabso27451126d6.1
+        for <iommu@lists.linux.dev>; Wed, 25 Mar 2026 05:35:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1774442138; x=1775046938; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=kX9NQyLC4UDORZ63qgYpumbaN43imiei1/pb2zwHVSU=;
+        b=H2PuIy30Vh+N68/6h6hBBZDLSv8o5IFRjhLhpZ+2exRkDBWJnnbkVnL/Bv4uW3+0jZ
+         Ws6QyccgblH3CiJ/kKEKFPheB1pSStc3nfHMEv5fOpDVvdNkCfXTkWbNr8FHFeHJNsE5
+         MDd9je+XXCR9p67IBbSevdeUAKFtsb5HlhxfxsM8ZKteHIJcyrQGdsJhSCITVWLv04ch
+         wUhSUsHtKhxi8rEAXc1EZSLO6mnynwzywtVf/dzha95u3qoY5D3gMp9GQKfX6q3sFg59
+         ljjXaZfhr1he9/hOIs9KECP9tAMsMOo4NAYEP2wMS4a+Xx8o6aRG1U3LNISy0Ehw9hDR
+         HTxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774442138; x=1775046938;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=kX9NQyLC4UDORZ63qgYpumbaN43imiei1/pb2zwHVSU=;
+        b=Bmc7s8TOYQ8DSbk+nr4VXcImI8o0B2s9qP/yxxt9QO5Igd1zjoqz5qlns0jSppC2cC
+         sB4M1Ihd3MNlOTmOEqcdBzzHXszwM2kfPmA8RzeQe3k6AZ9QhLG/Vg8QynrTtMOWOnJE
+         U1jRl6nb7wsE+O1NsAYRHboVvl10ViJSElfmeayAUdu6dZWHA5q3o+kIr2GE/xGQa1hC
+         yeKRdzxhhFnl6Lpr/UxZi4/WDBuwBZoS9YK6ayxmLEtletlMBtF15loizOl4L7yORQ/P
+         cqxAqrHPcKnIvFZXFCKgHQsyYW7iwbQWqSz6b/bLmWqSkNmlOtmVvC5gFeVTQMJoCVhp
+         MMbA==
+X-Forwarded-Encrypted: i=1; AJvYcCX3Hib2G2rwGyz8ADxIRpcNSifaxV13TQ0zKnmVCc0kPuuHs48exljv8Pwsn4gpU2X17kWKKg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzJ9o/0EXRCPJoO8JYLSaAGZ7hE1n8ZpljgGld1D6BHlCkiDhxd
+	LBhpX8wmTUngHW4GodLkPrvKxIog7uzdDrOTq0V8aWiPLu5JE8GFh7nHSU1SrQkEx7Q=
+X-Gm-Gg: ATEYQzzmtzNicLnZQvkhR8HFx+Ru4fG/J77r5ObxWUVlMboppTm4pNB03B5KgSMOC/V
+	kPG3OdQBQIkP85bW0qKUuU7JqLdmkZiEuZLVTziEM49N7vLpqIASLSBaNHXviFguliR5u5CP3QO
+	sX6K0pt+lmbI2Q0LTb32kywwAd2jvnyEKzvW4CQcUrhdssHr2aQZSYR+vemi/hRKcHpFDFjoDZp
+	v4hmpiiY+IG7EqRzkDl7fnaKoJAkBFL75FMpeVjR0B7v4RZ30NPpKfT0Pi0TxkgKEKjldFtsb/5
+	+w7BynFthQvaVimGdQnYXKEcjyFLCxDIMhmrnS0uetOVeRaGv5eXA33zmTNWjN9RdngBKUUVlQ1
+	eI1lbV69BroZMTN9NOYAHIt0TRCy6bG/ark9Wp36pZhj0K7uin1ppG9l7gz0RThc8BXTuDpCRnT
+	7Mv8q+6gdd398/rZU/vKnCkX7pfxak0NdXjaRAV8qRCRBLDrO48F+1UvYDZhJHEl0IIntU565hR
+	9WeWkrv
+X-Received: by 2002:a05:6214:e84:b0:89a:258:c1d9 with SMTP id 6a1803df08f44-89cc4aebc84mr54299026d6.53.1774442138300;
+        Wed, 25 Mar 2026 05:35:38 -0700 (PDT)
+Received: from ziepe.ca (mctnnbsa70w-159-2-73-22.dhcp-dynamic.fibreop.nb.bellaliant.net. [159.2.73.22])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-89cc42e67a7sm28732036d6.10.2026.03.25.05.35.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Mar 2026 05:35:37 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1w5NSS-00000000SwT-3uAb;
+	Wed, 25 Mar 2026 09:35:36 -0300
+Date: Wed, 25 Mar 2026 09:35:36 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Kexin Sun <kexinsun@smail.nju.edu.cn>
+Cc: kevin.tian@intel.com, joro@8bytes.org, will@kernel.org,
+	robin.murphy@arm.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, julia.lawall@inria.fr,
+	xutong.ma@inria.fr, yunbolyu@smu.edu.sg, ratnadiraw@smu.edu.sg
+Subject: Re: [PATCH] iommufd: update outdated comment for renamed
+ iommufd_hw_pagetable_alloc()
+Message-ID: <20260325123536.GG8437@ziepe.ca>
+References: <20260321105759.6832-1-kexinsun@smail.nju.edu.cn>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <SI2PR01MB439392D470CAB8EAB472839EDC49A@SI2PR01MB4393.apcprd01.prod.exchangelabs.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260321105759.6832-1-kexinsun@smail.nju.edu.cn>
 
-On 2026/3/25 19:23, Wei Wang wrote:
-> On 3/25/26 6:54 PM, Pu Wen wrote:
->> On 2026/3/25 17:39, Wei Wang wrote:
->>> Hygon systems use the AMD IOMMU driver but newer Hygon platforms report
->>> the southbridge IOAPIC at a different PCI device (00:0b.0), whereas AMD
->>> systems use device 00:14.0.
->> ......
->>> +/* SB IOAPIC device IDs */
->>> +#define IOAPIC_SB_DEVID_AMD    ((0x00 << 8) | PCI_DEVFN(0x14, 0))
->>> +#define IOAPIC_SB_DEVID_HYGON    ((0x00 << 8) | PCI_DEVFN(0x0b, 0))
->> These macro definitions is not accurate, old Hygon processor also use
->> device 0x14, as you mentioned device 0xb is only for 'newer Hygon 
->> platforms'.
->>
+On Sat, Mar 21, 2026 at 06:57:59PM +0800, Kexin Sun wrote:
+> The function iommufd_hw_pagetable_alloc() was renamed to
+> iommufd_hwpt_paging_alloc() by commit 89db31635c87
+> ("iommufd: Derive iommufd_hwpt_paging from
+> iommufd_hw_pagetable").  Update the stale reference in
+> iommufd_device_auto_get_domain().
 > 
-> Yes, I noticed that. I mentioned this in the commit log:
-> 
-> Older Hygon systems still use the original AMD device ID (00:14.0) while
-> newer systems use 00:0b.0, so a strict CPU vendor check is insufficient.
-> 
-> That is also why the code uses the logical OR:
-> if (devid == IOAPIC_SB_DEVID_AMD || devid == IOAPIC_SB_DEVID_HYGON)
+> Assisted-by: unnamed:deepseek-v3.2 coccinelle
+> Signed-off-by: Kexin Sun <kexinsun@smail.nju.edu.cn>
+> ---
+>  drivers/iommu/iommufd/device.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-IMO, if only newer Hygon processor will use device 0xb, the macro should
-use a exact name(eg: with a new Hygon family/model), let IOAPIC_SB_DEVID
-as the common macro for AMD and Hygon.
+Applied, thanks
 
--- 
-Regards,
-Pu Wen
-
+Jason
