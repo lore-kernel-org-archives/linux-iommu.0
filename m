@@ -1,153 +1,80 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E794D2E612E;
-	Wed, 25 Mar 2026 16:36:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AD5F2F3C18
+	for <iommu@lists.linux.dev>; Wed, 25 Mar 2026 17:28:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774456599; cv=none; b=mbFaTOckV6PxZqbwzySQk9/sOV5WPrQEgJ8XPwtivhrjslbqbM1TkYS7XlnXhbms+9vWZJhw6e/ir+nHgQ5yym+A4FeLs51o0Fkp/p25upM5OOkmB6ZUWpif6hXG5DhbXE4uYpoXW2aSVPHkfzscJsKO6XrCdxqPTbgfFTw0g0k=
+	t=1774459727; cv=none; b=OfmzlZbMUQ/Bv4RLsXIviTswVo7kFSM9o0QzXKU1G+NKTyYsHOgZeuPViaqE9zGvBaGUK2L95vcBNzW1DCFdY+l5GLWfPRdKkRPhQ464g2a6g4SQT3rEJX7trmJ3sYzyss8xmXKlFdjMAEue9WKtdBNZ4zY1M5Y7v43KUDPyfHA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774456599; c=relaxed/simple;
-	bh=VhIL6fLjtPzkfyMXrdTOmbzI3y+jzhOEWYMQaJHnKwg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GyFSjvy7kLmwqdLWSOS+o8w9X6wCrJkdaPlCjxwfuV5PS9efrBtXhUOV8/vOds3WtQzH2LhE9upuS760KI1DJZvKTyeaDBp+gLFvs+KjjxONCnY8+kpJ6VeqwS70e4WDqRt5+m3fKtHDJ0+Uix/F7LLmpHcMfAjO3Zj70MaEg+w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mzux6vwX; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774459727; c=relaxed/simple;
+	bh=b4rDbPFuXYX2aCAL4uTNJULvKcuDhcMTfQ5o3cTNV2Q=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=iY+YblhIXRnOPAdku6/lsxP7sYgWaJ46uUIC1GGRZqeMsNAmYYkrL9e4H/Wban4H6A8J1IwXPnATC4h2uxqvhcA08It23mUN3hGSsA37pW/Ed5eW0ZE6o52HEY4rqcrF3crBa+BWb6IXrua1H8ucdAkbYfrj+6D1Yth9F/XA8UE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=Ffc4erb4; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mzux6vwX"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5BF4C4CEF7;
-	Wed, 25 Mar 2026 16:36:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774456598;
-	bh=VhIL6fLjtPzkfyMXrdTOmbzI3y+jzhOEWYMQaJHnKwg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=mzux6vwXHaR7V7neOoTISKQBA9WjUFg4+kBM+feyhHy1v+yuYN5KFjg/2GNiFlhSP
-	 AaRmAAC+/iA8V+IEwsULaogCp1gUs/03o0hmrCBYyh4R3UTN8uQ4MFCM8FdGrAsFFz
-	 qs0KEYkRvuokQghLH2NFYzschFfHJ23Rp1UlJT2rSboD9oYrebRFLk/FwiQq4bCEbl
-	 uBvVPQcc3CkWkKgGlKl1rE+cQu+vMXsTnusbKeqEb/c6H4je5yM9yZ4Bs+a22M/Ztt
-	 wlYGRT8oOUxqMyydZ8l00FrsV694meBoOJ9pjwb78wvLVTmxWE9sNHJMT+P+6S1DN2
-	 FHAkmOh4Fxslw==
-Date: Wed, 25 Mar 2026 16:36:32 +0000
-From: Will Deacon <will@kernel.org>
-To: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Cc: joro@8bytes.org, robin.murphy@arm.com, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
-	nicolas.dufresne@collabora.com, p.zabel@pengutronix.de,
-	mchehab@kernel.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org
-Subject: Re: [PATCH v13 3/6] iommu: Add verisilicon IOMMU driver
-Message-ID: <acQPEEd0hQrghGbw@willie-the-truck>
-References: <20260216095144.107356-1-benjamin.gaignard@collabora.com>
- <20260216095144.107356-4-benjamin.gaignard@collabora.com>
- <acKxzGk1Z541yoZ4@willie-the-truck>
- <e083e933-2746-4b26-ac33-3b32d362b28e@collabora.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="Ffc4erb4"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260325172843euoutp0102687612165fc7bd31de07b1e7433238~gJbeBmyrO1911819118euoutp01H
+	for <iommu@lists.linux.dev>; Wed, 25 Mar 2026 17:28:43 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260325172843euoutp0102687612165fc7bd31de07b1e7433238~gJbeBmyrO1911819118euoutp01H
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1774459723;
+	bh=0Gw/S8Zsh+bbwTFI9RM43qyHVS+L9kmOw0jj3MtD/So=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=Ffc4erb4r35TVPRrV7w3UyNldJye36dS5VUD6vgYs1ZUst3YzsJQB1D47gBXNjrAW
+	 DVTI9gNXfcks3+E7Yh3oOoNLJ2mez+mrsgLXwB9NrB5i4UGn0PRrXZIg47JXWFgR8u
+	 8QVhRm0sXdWhZWFy2a7NOVkrDhf2/n6zD4X44Abk=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20260325172842eucas1p207cf816bb965b5db99340ca5b2de580b~gJbdv4AHW2101821018eucas1p2B;
+	Wed, 25 Mar 2026 17:28:42 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20260325172842eusmtip255e290294144e9c703636f74ebb83781~gJbdeoLmn1468314683eusmtip2b;
+	Wed, 25 Mar 2026 17:28:42 +0000 (GMT)
+Message-ID: <6d0eabf8-06c6-4b87-ac73-e6e4136c0691@samsung.com>
+Date: Wed, 25 Mar 2026 18:28:41 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <e083e933-2746-4b26-ac33-3b32d362b28e@collabora.com>
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH] dma-debug: ensure mappings are created and released
+ with matching attributes
+To: Leon Romanovsky <leon@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20260323-dma-attrs-debug-v1-1-6275228ca300@nvidia.com>
+Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20260325172842eucas1p207cf816bb965b5db99340ca5b2de580b
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260323202058eucas1p1946c1763123f2ceb493ebef25165f453
+X-EPHeader: CA
+X-CMS-RootMailID: 20260323202058eucas1p1946c1763123f2ceb493ebef25165f453
+References: <CGME20260323202058eucas1p1946c1763123f2ceb493ebef25165f453@eucas1p1.samsung.com>
+	<20260323-dma-attrs-debug-v1-1-6275228ca300@nvidia.com>
 
-On Tue, Mar 24, 2026 at 05:28:44PM +0100, Benjamin Gaignard wrote:
-> 
-> Le 24/03/2026 à 16:46, Will Deacon a écrit :
-> > On Mon, Feb 16, 2026 at 10:51:35AM +0100, Benjamin Gaignard wrote:
-> > > The Verisilicon IOMMU hardware block can be found in combination
-> > > with Verisilicon hardware video codecs (encoders or decoders) on
-> > > different SoCs.
-> > > Enable it will allow us to use non contiguous memory allocators
-> > > for Verisilicon video codecs.
-> > > If both decoder and this iommu driver are compiled has modules
-> > > there is undefined symboles issues so this iommu driver could
-> > > only be compiled has built-in.
-> > > 
-> > > Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-> > > ---
-> > >   MAINTAINERS               |   8 +
-> > >   drivers/iommu/Kconfig     |  11 +
-> > >   drivers/iommu/Makefile    |   1 +
-> > >   drivers/iommu/vsi-iommu.c | 794 ++++++++++++++++++++++++++++++++++++++
-> > >   include/linux/vsi-iommu.h |  21 +
-> > >   5 files changed, 835 insertions(+)
-> > >   create mode 100644 drivers/iommu/vsi-iommu.c
-> > >   create mode 100644 include/linux/vsi-iommu.h
-> > [...]
-> > 
-> > > +static size_t vsi_iommu_unmap(struct iommu_domain *domain, unsigned long _iova,
-> > > +			      size_t size, size_t count, struct iommu_iotlb_gather *gather)
-> > > +{
-> > > +	struct vsi_iommu_domain *vsi_domain = to_vsi_domain(domain);
-> > > +	dma_addr_t pte_dma, iova = (dma_addr_t)_iova;
-> > > +	unsigned long flags;
-> > > +	phys_addr_t pt_phys;
-> > > +	u32 dte;
-> > > +	u32 *pte_addr;
-> > > +	size_t unmap_size = 0;
-> > > +
-> > > +	spin_lock_irqsave(&vsi_domain->lock, flags);
-> > > +
-> > > +	dte = vsi_domain->dt[vsi_iova_dte_index(iova)];
-> > > +	/* Just return 0 if iova is unmapped */
-> > > +	if (!vsi_dte_is_pt_valid(dte))
-> > > +		goto unlock;
-> > > +
-> > > +	pt_phys = vsi_dte_pt_address(dte);
-> > > +	pte_addr = (u32 *)phys_to_virt(pt_phys) + vsi_iova_pte_index(iova);
-> > > +	pte_dma = pt_phys + vsi_iova_pte_index(iova) * sizeof(u32);
-> > > +	unmap_size = vsi_iommu_unmap_iova(vsi_domain, pte_addr, pte_dma, size);
-> > > +
-> > > +unlock:
-> > > +	spin_unlock_irqrestore(&vsi_domain->lock, flags);
-> > > +
-> > > +	return unmap_size;
-> > > +}
-> > I still think you need TLB invalidation here.
-> > 
-> > I looked at the downstream code that you linked to and it litters the
-> > invalidation in the callers via mpp_iommu_flush_tlb(), which tend to
-> > invalidate _before_ starting an operation. That's very likely buggy and
-> > certainly not something we want upstream.
-> > 
-> > The unmap routine should do the invalidation so that, when it returns,
-> > the pages really are unmapped from the device (assuming strict mode).
-> > 
-> > I know you said that you tried to add invalidation here and it "didn't
-> > work", but that's not something I can really help you with.
-> 
-> I know you expect the hardware to work like that but that isn't not the
-> case.
+On 23.03.2026 21:20, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+>
+>
+> The DMA API expects that callers use the same attributes when mapping
+> and unmapping. Add tracking to verify this and catch mismatches.
+>
+>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 
-The hardware appears to have a register to invalidate the entire TLB.
-We can use that if there's nothing else.
+Applied to dma-mapping-for-next, thanks!
 
-> I spend quite long to try to found hidden bit(s) or an other way to do like
-> you want but I can't find any solution.
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
-Then we can invalidate the entire TLB.
-
-> As you mention the downstream code suggest that the iommu can't invalidate
-> TLB in unmap routine so I don't see how to progress.
-
-The downstream code is a tangled mess; I don't think it suggests anything
-about what the IOMMU hardware is capable of.
-
-> Maybe we should just admit that is how the hardware work.
-
-No.
-
-The upstream kernel isn't a dumping ground for vendor crap. The hardware
-has TLB invalidation functionality and so we should use it. If we don't,
-then we're not giving the IOMMU API what it expects and any callers
-outside of the video codecs will be landed with problems when unmap
-doesn't work as expected.
-
-> This v13 has fixed the documentation so I don't plan to spend more time on this driver.
-
-That's a shame, I'm really not asking for much.
-
-Will
