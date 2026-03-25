@@ -1,157 +1,108 @@
-Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010028.outbound.protection.outlook.com [52.101.56.28])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A504C3DD534
-	for <iommu@lists.linux.dev>; Wed, 25 Mar 2026 14:12:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.28
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774447955; cv=fail; b=cTHrqYSmb2xfuOyPTbOC1IpChqMwHz9uwtMj/aGmPCAtPPRSxWy2SLEYjuPbWKM3UAyv7291WrQgbUzkrs4N54jsXKkQZKdkofrNhTfAVLADhg5zRyNv8Xj2wrw71b5SPT3EF581a7Yf5x47rHcZuYM2lU+zij/Sy3zCb0+eX2o=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774447955; c=relaxed/simple;
-	bh=1tupyw2/5aUkNtOQ9vYNlwJotcRmY7/lfpP2xqr9PZ4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=gCco+W1SvlS+8MKu9k54F98rxtgl5vV3m1sYN57hTbCiMr6JQpgpx1JP7+P0R3e48I7+N0JkNyj5uxBbRuNhyCW90K7rrtg6MUngYFqHPV4oyk9thZhaASz3MtVU2UCaWxe41gd++7Gf9SYUWFGIb6ZyDRhlz7lZxIPsYADXPuY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=K35os7zj; arc=fail smtp.client-ip=52.101.56.28
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E504292B2E;
+	Wed, 25 Mar 2026 14:16:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774448209; cv=none; b=L8bIczU5NwHkpOAFbRL86CvZba9cSLdygCvzkswdspNYsGZ6lcH/cCyzjfmchF3EjE0QW2qzFS46nPfC6ikT23HpHLyo0n4xMvWRvHT2JRSLh+7UYQJfLjA9A0Tc7r/FJU7MoWPsI52UYoD4bdwoLf2JUt5/+G0mijsfgCqaqgc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774448209; c=relaxed/simple;
+	bh=8ngHDk8lWpxvFOPiWfS0KRFxiWHuNBJQ/GDAuJ99gWk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JP8LUpahFfj3A8ihnGIJdgQkq3GXZfCfsOFQ+QkNJxehxu+Um6nSQrDrx2y7aitCEPL6yqzgp/89xDlR4j7eAqilLg7n72C95JM7KcVKhRnE2cjuO3sknQhCiBZpQlYHVNijdnfTsKN1HPSimKJcbsCvcJi1BBbdsWdBL9GAtfE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SbEu0mJ2; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="K35os7zj"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=wcix3eWZrec+nT95W+JLkSwdRVB2NTzMDicglykDwbCH/9/b9fiRzW7ncgxxtl1QFioV0EQMIKQgzBjbEbdPxSlek3CevGGyHl8kBrHBnS1P9SQ8SHqSy3ZjgEJ1bQHCqlx/3HC6ILoUApMTFz5gYDbrMh5yOvNU/sjT/cYBJHW/CdCQkrk1V8P6tNgZt4LQRP9AV0t21EubY9Ddad3wKV6MNZGowclGbhY7kuwDSCgYaNHOYaac6BE7ZJqKeVR1eNEEnv9Np+tMjnY+Wg7h4gwUJHjkH/LanE/EW3JOjby7IiUISq9XxPmKYzphNvkmTgij/+i2w3VnEPrzw5GbpA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OaZZNlwpALKqnIOmCpcXtoxybd3Z4ZmivEBsw9olzeE=;
- b=JwljUWtH2GTK4FSjep3saxJ+MwbX6efxYCd1nEIZOeyDK3Sx1voJ85L9+EJu78CGS0F0cyNgauycqf5ZCpHdrGqj2W+e86pdJqurFQRGR0C0gpWm2njmRc8WjAL+MzWJXQa1NiOsDuekjELAAFPDpejCJgiMQpj9pndtJ613aptkUkWSkBiQF+v80DWG/hAILbgnpOUdcoCETgr/63yDCo0vW/i6vl0accJ8bvYN1h+v/ZhC1zJbbzqUNPGB2eW7O66aQCF9MnGYFYG5zKiDixywBZfyjDVSsYvs07fYV9wCNusRI3axvAjCFy1UDMFURTjfIxiEKIJvs6WISp/DOA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OaZZNlwpALKqnIOmCpcXtoxybd3Z4ZmivEBsw9olzeE=;
- b=K35os7zjmn2Yba1ZP+7lleJzcREnuPQFnRju/0o0TZU8cdF6IMbffB/DV5WtejTIi7O11jcuTAJiGEfD7YHSRmLfbG1sq1soCanulPPRHx3Xzcc+JhIl/YbNpq9wZY6II9sSJknfhfIruoKNaqY49bmKDChaZVkGFGs4kr+CDpaQOC4YAVCdScaQWvlJI6uVkvvh09RjIz0iQt9lqjFIoRcJVb0O7+7Hwu+D4ouH7ZaCMAiIKlSE4a2EQWxHNHGjVxinb5AT82Jb+BbJdRm3YodH0RjJ5rSy89qvlavxjk4Awm9DupsjUK3oLxnqy9GtSWQYv4FD7uzhSh/rCHfyrQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by DM4PR12MB6639.namprd12.prod.outlook.com (2603:10b6:8:be::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9745.20; Wed, 25 Mar
- 2026 14:12:26 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9745.019; Wed, 25 Mar 2026
- 14:12:26 +0000
-Date: Wed, 25 Mar 2026 11:12:24 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, "will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"bhelgaas@google.com" <bhelgaas@google.com>,
-	"rafael@kernel.org" <rafael@kernel.org>,
-	"lenb@kernel.org" <lenb@kernel.org>,
-	"praan@google.com" <praan@google.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"xueshuai@linux.alibaba.com" <xueshuai@linux.alibaba.com>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	Vikram Sethi <vsethi@nvidia.com>
-Subject: Re: [PATCH v2 0/7] iommu/arm-smmu-v3: Quarantine device upon ATC
- invalidation timeout
-Message-ID: <20260325141224.GD67624@nvidia.com>
-References: <cover.1773774441.git.nicolinc@nvidia.com>
- <BN9PR11MB52762F94146776026CA203248C4EA@BN9PR11MB5276.namprd11.prod.outlook.com>
- <absFXmFcpG8O7uNB@Asurada-Nvidia>
- <BN9PR11MB52764771C48B39C09F129F218C4FA@BN9PR11MB5276.namprd11.prod.outlook.com>
- <abtpCXAnqLRnbG1z@Asurada-Nvidia>
- <20260324000321.GX7340@nvidia.com>
- <BN9PR11MB5276DBF0624E0EAEDC54874A8C49A@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276DBF0624E0EAEDC54874A8C49A@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: BN9PR03CA0188.namprd03.prod.outlook.com
- (2603:10b6:408:f9::13) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SbEu0mJ2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C294DC4CEF7;
+	Wed, 25 Mar 2026 14:16:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1774448209;
+	bh=8ngHDk8lWpxvFOPiWfS0KRFxiWHuNBJQ/GDAuJ99gWk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=SbEu0mJ2dvQV/K5tuQS9fLd/5QfQEZJ1AuXyxzFLEGHOPmX5Q5RgBY6Jb9MLmGgtP
+	 KsXdOxp0Un8VMpdkZZOGbRjtlpT/NkkOP82QEqIB2TcMAdq/EqKujVy+tPpPvQIkv5
+	 GbYswH+1Ovsc9ReRSRi3irUbs9cbqZCSAHKsmXELTAWcvrkD9tj6Dw48Cp+Oft1n9j
+	 1oQBHLA5Jew9pc0r+xH8xc93+iTk5hiDatPmX3eECeN8S9hy/8aG+afOr90uhU3zf1
+	 g/CvKeLb54HC8JWQKCb0cTXVUoiXukXE4RvG36Z5jozMro9gcDV3tXQCzc5Yt/a4O4
+	 77Agr73H0j61A==
+Date: Wed, 25 Mar 2026 09:16:48 -0500
+From: Rob Herring <robh@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-mm@kvack.org, iommu@lists.linux.dev,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>,
+	Saravana Kannan <saravanak@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v3 0/7] Refactor reserved memory regions handling code
+Message-ID: <20260325141648.GA2685599-robh@kernel.org>
+References: <CGME20260325090029eucas1p1932917cc4839c3349932aeda37a7125d@eucas1p1.samsung.com>
+ <20260325090023.3175348-1-m.szyprowski@samsung.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|DM4PR12MB6639:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8e30bdb4-e6bf-4cea-c15a-08de8a788a89
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|7416014|366016|1800799024|18002099003|22082099003|56012099003;
-X-Microsoft-Antispam-Message-Info:
-	iG4FJiU+jsnmhau4F0N/IodLn7Be/r3uFkUbLiC/Qp44ddb6VkIfmZsqiQPAkdznmt5zMxyBR42xQNFGABG9dSvf8mGkzwUYvQJUvMm9DYLykOHknO5MCEqsO4rR5gy2Bs6nSS89ed/HDVGcy3Tmz8NLFl2WPg9g/2yT04uvoQp7yt+zuVGjuHyh/a6T6/AVvAHS54P0FI5y/fv2SoIli2SegbKN3WQbRuHUaICyw0adTv9KBl1alo5V9ZySnfiSITf/6SNix2h+fyjFFmxiOgRLf+6n+3cUEjTpoSqZ2J0fKufDnot5ZxmpmXg56yIkaYmI1IuDKtrXpFB5LRZQceTcvAlmuPe5+N4PtLVGA5SCPhT6780x9Dg1liC7birDwxIu7Y3ZLNpLLuzUPFyelRAHkX2Czvr2V/Ze7IC6hxrM1LQo4tVELKAcqUZCAlpWIiiwMAPp3+QNfxlJByfvFEYQ6EuCDuG2uH45wRiPiorZHQhgc3mgEENozPK+GryBf60iVv6Z3ticQxa9FG9pc/IrecABo9tlq2dJ4QM933x+3K1yf5iC1EC2Nv+9IiJ6j+kcsYrxBQyAeWEel/nt/jrWudhtbQ2aDi4AYgMLIKfmYJVITwnlDhfAsst5nktx9nIgLw+CP2pFLzSwOYW56AP+5ikso4zTRcA6iAL0mUUk+bsOqRgEKXQr5YPdp2HFMHndo8g6mDPY1PHleAh4FqNkcWXHTVVulYlLnJe/4Y8=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(1800799024)(18002099003)(22082099003)(56012099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?lTK8mNWRDSe+ytW0BPwqenammNUprh+rr4HxMa6hL7WEZ6xmtenPI+3cNjOC?=
- =?us-ascii?Q?bftaEyJx7j2Z7qANLY08UCghfaPMw/K1k/dfRkfR2nAengwJ36qn9jgq67cl?=
- =?us-ascii?Q?W60ylT9ITMBbuW7JAIoQ6MUwiiKRL0nahLq/vxCc+k8Fl7FCJmE64rklDdn2?=
- =?us-ascii?Q?oUrkitTLPezQcIH+uHGGsIlb8ZrujnMZINTuK50JfBlqOsCOQ3xOOQjsjgZh?=
- =?us-ascii?Q?Jyj3pSnIMaFrlYgqCagbPvK4tKjqG7UVilBhLKhKRZymt74XPnlKjtUwrRm9?=
- =?us-ascii?Q?tuqwf7J7HwESjlZ2mqjq52EQZyfn4NDIoomFc8XX4aUhzlXu0bDJ+xyJGyCr?=
- =?us-ascii?Q?1bHnqHuX4fZFhQEgx2u6rsX30egenUabWEFPgIXzrjtybt9bNxrp4RRvv2ib?=
- =?us-ascii?Q?fGfEeLCMv5U6ljLq3C7FmgOZ2Y3MdtwKzxRhQeh5keSjkyIFBwwaDDPEkF5O?=
- =?us-ascii?Q?6Svu1zPvNGs1lYKIcZ8yj5aod/nLENnZKgAIurBAsTtNCiWM63qzLxMkdsYu?=
- =?us-ascii?Q?BAreKlEvSqXStSLQ10pcYCSCKd8F/+xXAi2Ude0tmoGgfYgguHsr5pt5/SfW?=
- =?us-ascii?Q?8AxKCnxd4bqfuzcd4UW8E1l5XVazTlI/L7qB1xf66T0C9+zUlivyUayxfyP6?=
- =?us-ascii?Q?h/oEm2Z09BdASqWPSq6VepQMjXMdWf/q5wwXNwia1wg/oD0oklNBnU2c05tF?=
- =?us-ascii?Q?jQTDbjiaa37Rg9aDcZnbi/v1LTR0Piy66onGzeOa3/7g2pq82/D75LlRBR8l?=
- =?us-ascii?Q?CgRDeX93hUk21hCP2jMJo3NlxwAk2VO0dDoi47Q19UihYiVDNrdTJZD/UzPp?=
- =?us-ascii?Q?JeMrVIk+HcAQPQKUYXXrdJoDTWs2hTnJ5f+HPVQHH8sxVfx+XTof4J5BM9UG?=
- =?us-ascii?Q?3hmx+OUhFRMrBFGf4Pv/gOf3JtlwPKm2KB6ZTcOUlNfCV8JR8cBOJZJBlyaA?=
- =?us-ascii?Q?ppP+1INIo3DIoFC5TAS+/onb9QbvugdtAhpwlZRwOhvyqayYE5jqCDESrDgx?=
- =?us-ascii?Q?l91Ps2xpBUrPwFFhDsexObSuAPS5RQ/NVK1h3IOK//MvZ3c55UGuZ+8cTqai?=
- =?us-ascii?Q?Gdl8DZaocb+5/mcJ3mNzFJfigs8eE7cRAXQGJpCV06XmtGl780WK8zvnE4p2?=
- =?us-ascii?Q?3A+aaCP7ASfRsjg16MUEJ/1nXGoRp7kTrh27zxozHnFOH93rfnXZz0N0FVAQ?=
- =?us-ascii?Q?WpyQl3IJ1CRS+6NUN5tSYJxHf8InpR2De8MmQGBj62xZ1XCGHOEa0joIrCtn?=
- =?us-ascii?Q?8CHZF+KGfHI0d9vBSr2ZwZ/SevletUsLOlmUaIcTbpP7aWFtI53iJdueiDGr?=
- =?us-ascii?Q?b7BUJ8YApX+pNFXBov5EQfSokl4Z3qx/RGfLt+KvWUmfmSmXM/7O17sw/VGP?=
- =?us-ascii?Q?Q34nO4ujNdZbAF98e3X3jufsdPZqk4jB9UXUG/Y5PNUvZUMNQ3d7W0eM1gaN?=
- =?us-ascii?Q?WSF+5ITVN8eT3JVtPrFLWQ8mRat0QPCfaWcLx5GFoDi1Xt1rGP6l1iCrgS1/?=
- =?us-ascii?Q?f5zy/WCwHKhUarMHUgSa0AYYaei3zD2g0+iROMjI2B1hfYu3KmgQHwR/Flpz?=
- =?us-ascii?Q?8rlcfWNYqP8mOhRKc38YfApX90eR+TkeUzHrHtokubsHsNY77r4j4loC7eQb?=
- =?us-ascii?Q?RKO8JfNe9BwlGfBPavBo5UPTGJ02YWygYr0e6ubK515C0ATgPCT1nLAAhCra?=
- =?us-ascii?Q?ELkiDxrZvqu7sJcTlMNdMQAqm6iTEgnIbUGoF1MeEfjQxpMX?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8e30bdb4-e6bf-4cea-c15a-08de8a788a89
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Mar 2026 14:12:26.1006
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lWArQAiEzetfILr0D7DFF82OcTVHl1yoPBtxat65Iv9StGjWN+SwLRCwmcQdxM6H
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6639
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260325090023.3175348-1-m.szyprowski@samsung.com>
 
-On Wed, Mar 25, 2026 at 06:55:40AM +0000, Tian, Kevin wrote:
-> > I think this is more of a feature (RAS support for SMMUv3) than a
-> > specific fix.
-> > 
+On Wed, Mar 25, 2026 at 10:00:16AM +0100, Marek Szyprowski wrote:
+> Hello,
 > 
-> Not a RAS guy, but below is what I got from AI:
+> The reserved memory regions handling code was reworked to handle
+> unlimited so called "static" memory nodes in commit 00c9a452a235 ("of:
+> reserved_mem: Add code to dynamically allocate reserved_mem array").
 > 
-> "
-> RAS improvements typically involve better error reporting, graceful
-> degradation, or improved recovery - but they usually don't involve
-> scenarios where the system continues operating with compromised
-> security assumptions."
+> The side effect of this rework was a set of bugs fixed later by commits
+> 0fd17e598333 ("of: reserved_mem: Allow reserved_mem framework detect
+> "cma=" kernel param") and 2c223f7239f3 ("of: reserved_mem: Restructure
+> call site for dma_contiguous_early_fixup()"). As a result, the code in
+> drivers/of/of_reserved_mem.c became a mix of generic code and CMA
+> specific fixups.
+> 
+> In this patchset I try to untangle this spaghetti and perform some code
+> cleanup. I hope nothing breaks this time.
+> 
+> Best regards
+> Marek Szyprowski, PhD
+> Samsung R&D Institute Poland
+> 
+> 
+> Changelog:
+> 
+> v3:
+> - fixed more issues pointed by Sashiko in
+>   https://sashiko.dev/#/patchset/20260323100901.4079171-1-m.szyprowski@samsung.com
+>   (restored use of _OF_DECLARE macro, extended some comments and commit
+>   descriptions, the remaining items I consider not relevant)
+> 
+> v2: https://lore.kernel.org/all/20260323100901.4079171-1-m.szyprowski@samsung.com/
+> - added missing ops assignment removal in tegra210-emc-table and swiotlb
+>   drivers
+> - fixed issues pointed by kernel test robot and Sashiko: removed typos,
+>   improved comments
+> - fixed incorrect node passed to fdt_validate_reserved_mem_node() in
+>   fdt_scan_reserved_mem_reg_nodes()
+> 
+> v1: https://lore.kernel.org/all/20260313150802.1121442-1-m.szyprowski@samsung.com/
+> - initial version
+> 
+> 
+> Patch summary:
+> 
+> Marek Szyprowski (7):
+>   of: reserved_mem: remove fdt node from the structure
+>   of: reserved_mem: use -ENODEV instead of -ENOENT
+>   of: reserved_mem: switch to ops based OF_DECLARE()
+>   of: reserved_mem: replace CMA quirks by generic methods
+>   of: reserved_mem: rearrange code a bit
+>   of: reserved_mem: clarify fdt_scan_reserved_mem*() functions
+>   of: reserved_mem: rework fdt_init_reserved_mem_node()
 
-Right, so currently there is no RAS in smmuv3, if it hits this error
-it continues with "compromised security assumptions". Adding RAS
-support is to avoid this.
+I've applied the series, thanks!
 
-Jason
-
+Rob
