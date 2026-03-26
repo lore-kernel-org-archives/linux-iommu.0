@@ -1,171 +1,175 @@
-Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011019.outbound.protection.outlook.com [40.107.208.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 937E91DE8AF
-	for <iommu@lists.linux.dev>; Thu, 26 Mar 2026 12:01:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.19
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774526473; cv=fail; b=rB4fzukFJlmvfGp4BqCnYWneFgA33uydHFfcoZ+r5DxagI32idAl2yb8MFhOGoGWN3X3oroUvK9JrcyQT/7vxaRmH7Ii7gCx2D+Q+gbFY9qZglSjeAOa0ok8hYWu6bk0haHVWzKS4P3WGFI1rQUlCUuyawua9h3bmPSwtoYgtPo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774526473; c=relaxed/simple;
-	bh=P7IlR61nnFzzs75k2GTn67D4uqdeyC8o+AgYLgl9aOM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=JbxeJPcHbnSao1balE+65NsjDzq8bLh/4lMJDsdlXOUD0BrKjlk+7S/TfsgwZURKph8epyzWkjckLJmdR5k/AjaMwQTdinGcqobnutmbNKvcR8fVlGThaus7O/tQokEJxPlOUcIPzxQ4ARuL0l1pKwDx6pPBfMOOAeen7Hc+2lw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=hMC2M/NJ; arc=fail smtp.client-ip=40.107.208.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 27E66396596;
+	Thu, 26 Mar 2026 12:12:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774527155; cv=none; b=NV0tD3W3TzSBmruG7AbY2QQ0LPPGg/kVktQnIq8ep5kp9PX7u/1S/vf3/spMNnu7PmrC7fKm68oNQ6xLxiM+DJKUdgNLzzBw6hJz5MY8OQ0gSWKST2kwNkFkzSBVNdnSlZ6wMdLmpf5280wLnFMxaG4d/kQsHbnQ25bjfEqZspo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774527155; c=relaxed/simple;
+	bh=6As1ZJhRb6x/u6Cg+5qyJyDZ4Vf0rF/ZKNt30A1fiyw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=a8rT6stg4/QdE1zqh3Zg4su7/1eUGwnw4aRKtw27WogW6RTQHagx19ZAdjbMD33P8ZH4ocqy9iUC4fDxGMMq3IuxhfoLKInQ44gHO5XC2yyAc8121FsE3D/vtd6Dv5ghTDf4shWjRVnfSH5lWeNwtfNKqmdKNZaX00qVoXygxvU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=gVaqCYgZ; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="hMC2M/NJ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=W6Pb1a7N34r4eDZDjiDN+l53RtTCOv9KytETKtBQCaQyNH7t9jiRP9fGawRxqs7rZOB18hoOIEeyLuqxCUNCHyI5MbFrErfqVgxTeM8LwHWIt80dCCNG6IVxMAVyc07ZPOSmrD6Edk9ZNQT6GYhb+2dxoB1PgkJpa/+5shZ7oZkL64OHVFhLg4sm64PeFNek8dcjzx7JFc4fsMGavy19gBYG6OzCCfwXLrf3bqu7616gHgWREaSowoMYw+5y64N31qDecDa7ItN+8K04Sb67267KBiNJw1gpcitstr25wnn6hk8c3dbQ1q3FVOQtm3YonX6f3sdhDmaEkYMSy1vNKw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3eGVZ3EyASeKm8Loc0j00rLDMoQc2wa5hM10SuIrcco=;
- b=Lh/YbuT6B1wgqsuZaLvpa2GKsFsx/gUYraBDrhvv2u3xPxTjIi4XI/6t7ZdBFfEM79XlKKPbVHP3ftTFgVCYOnXOKIOlfGlzK0lG0FP9mygDT9YkWAt3tVTDNd3eafKgoKA2fRd7FikNhZHGnAgeAiMP2Hwmzk+QQ34UUIcehkiJ5Zdgz3rFgu6lO0I1gWXFaY56i1lYT7k3fQfz8Xaqdm/EGzT3hBg4DMl079GHd2i13YQQeZDvIxyVzcFhdNhqvvp0M91RJQ1dLr/9gpSV5x0M8hL3e3Bbryc2O6Zj4xAXInVFudVPw0Z9BpHbycuaQNXuwVuJWQsLVJAffcxQFA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3eGVZ3EyASeKm8Loc0j00rLDMoQc2wa5hM10SuIrcco=;
- b=hMC2M/NJ3SDKfcFxv33tcVy8ffl5NeHrTvCugWovQ+qPnCWTCVU18KcKJOuKJqvKG7/vQwJXwH+Ge/aw3+nShrjr2I4cff/3Rw1CSpx0WgW5lSQljw2B9azhhOgZ+7Jbt6CMoZrvc4tydipVmdm9aOr0MINKNe0hrtO96V0FVMTxS02sUvu9Jg2JeqwmYXaeAovlNjx4inX6nDOBbuZbRvXvWK7Drb2LkQgVzAqY0F5rVBcMtuJ3aSVW0/eA106AGn/B7Z/B5tfTKbG5n8iK4MYamtGMKP99fQZI4380FuepgXkg6VGHkXUvndKjVTiXhCcuizF/AoLKZQm+cjBbwA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by CH3PR12MB8851.namprd12.prod.outlook.com (2603:10b6:610:180::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9745.15; Thu, 26 Mar
- 2026 12:01:02 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9745.019; Thu, 26 Mar 2026
- 12:01:02 +0000
-Date: Thu, 26 Mar 2026 09:01:01 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Sherry Yang <sherry.yang@oracle.com>
-Cc: "joerg.roedel@amd.com" <joerg.roedel@amd.com>,
-	"kevin.tian@intel.com" <kevin.tian@intel.com>,
-	"vasant.hegde@amd.com" <vasant.hegde@amd.com>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iommupt/amdv1: avoid GCOV builds triggering FIELD_PREP
- build failure
-Message-ID: <20260326120101.GH67624@nvidia.com>
-References: <20260310163136.1179322-1-sherry.yang@oracle.com>
- <20260310164134.GA1410323@nvidia.com>
- <62EB69AA-FA3E-4820-B268-A207CCA6F23A@oracle.com>
- <20260310175740.GB1410323@nvidia.com>
- <94D79BCA-138D-4CED-995C-E89EF7635C92@oracle.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <94D79BCA-138D-4CED-995C-E89EF7635C92@oracle.com>
-X-ClientProxiedBy: BN9PR03CA0152.namprd03.prod.outlook.com
- (2603:10b6:408:f4::7) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="gVaqCYgZ"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 447AE175A;
+	Thu, 26 Mar 2026 05:12:26 -0700 (PDT)
+Received: from [10.57.76.165] (unknown [10.57.76.165])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 610813FB90;
+	Thu, 26 Mar 2026 05:12:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1774527152; bh=6As1ZJhRb6x/u6Cg+5qyJyDZ4Vf0rF/ZKNt30A1fiyw=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=gVaqCYgZO1uxxmDGD4aysfodjBovNgwu1wU9wJxLST0oWxuZMUOsSi+/JpGuT15Jz
+	 3umGGUJXw6pVkNSKbuG4eRxKEdwy3orLraH/MOzDbyduXr1TVLBCrU1LV5Ru92WC5Y
+	 OabO5hrBTNZXV2z7AYQyCNhkOl7xImeznOXMgppw=
+Message-ID: <ee49dea1-96f6-4991-8095-6920ed88585e@arm.com>
+Date: Thu, 26 Mar 2026 12:12:25 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|CH3PR12MB8851:EE_
-X-MS-Office365-Filtering-Correlation-Id: 118ade89-0823-42a8-50b9-08de8b2f59e9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|1800799024|376014|22082099003|56012099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	kVsmwLFQSs9Uf6g4OWc/pYNDBxcv5qeUFwLucwypLdZqYYNR0K97krAaISDfcRcnd0G2EGWutk5ExeOKKRUUWoJDksiYGATfc48/Maq0olrV823m352lOfUkEkZrTyZV9aEew0fN1ION+5LhenCVtYvy4J2qPjLB7Xt+64vfqIzJqFfDzFEeupOI06QiT/nlwZ+RCD7vKDn4ATH+kkBpxvBqf2Q4GrwWkl7It2PKlzN5+f7m4WKkVSFHMRul60c55IHwVaIPbGO38IctJzqilowdyNSKqyFyyso5mIL0Xj5sXv5mPaIEISMzGsFQK9HTzsGzi+ew8tRaXWQ6ES4kh77fg5ekDjAjBBn6wIMEmx5sPEcqy6N+ZVZiR8/4auaL36nULQBmtUz6zE3bdbr1NLU3rc4f4iCVznK/itpXHSOnjM9YjI1LzMMU/uwiLnIyNkW9oBZEy4Cu0ndW4ivjGkDcH+md3tu5tVbFz/gGL5HvLr8JV3rTWTf0LI60t90WsFlaqSYjibrzDy6+LMHHvEY5XQrBpFwIcbxZ+kUzxuzZvf1yYDqBk7kOgcgcuJVn0CW8vdNs0GepJmRT+RpSpAlaLcKIlt83+pWKGV1QN+9Dlid91d3hqoOa8gpTtfsFszPDiJXZ4G9f/4Mw6/e/qYrJkL9u/zYIt+zImMJdIEBCW+eHHHVOQVfO4JpJNO6psIxtVAD4dzP/rS9+qaRW7svUs/yPXs9gvpNPOuzOUAE=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(22082099003)(56012099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?dGZydTFZNitUcm5KcXRKakxPRHVES3NLQStFT2dBL2loZFJzYUM5ZHpCSTZl?=
- =?utf-8?B?ZnZwRGlCZXNtRnFWTFhGcEMzOXlzajhIR2dndVkzNFpxRGNQd05wK2ZvelZy?=
- =?utf-8?B?Yks4REZKTDR6dWtLdDNBMnU1TXZMajJGODRtbjRkUmVIQ0FKbm5hZkc3OHc1?=
- =?utf-8?B?a2gyYm5qWEVFcWhEWGttYkt2TUhJOW1HdjkxRHk5OWNlUmJjREFWMGwyUEZX?=
- =?utf-8?B?Y0Z0c2lOdUNySDRsMjNZK3pCWlBnek43TTljb1JJM2ZBTmMyeW1KdW5xeWpy?=
- =?utf-8?B?YXNMUzZTR3ZoeFliZGtwZVNuS05GQUUzL3JXRjB0dHZYd3ZXaXVuTCtqd09S?=
- =?utf-8?B?SVdVd01uRmk4Um5vUk1PM3piUGlvaDNtbmZOTVp4L2NzMkswRXIwQUgvNjJq?=
- =?utf-8?B?VnEwLzFiTU1PUE5KejFPbzlJSWk2eTk1d2hWSCtFU1kzdU1OSmxsNVFzMU5n?=
- =?utf-8?B?Y2FlZGY2OFF3eWw3akpaVEphTmxIZUYydTdYZjV1WTh4eE8yeUdpTlZIRVAy?=
- =?utf-8?B?dW1ibytQVmd0QkdDK2Jrd1VxdFM5WEJFNzQ1QSt4R29rZnRzYTRWMk9PUUVl?=
- =?utf-8?B?RTRwUnI0WjZWUmtDZmdFQjhnMnZJakszY1RqY0xSWE5adDRXY3RCSTlrUVZq?=
- =?utf-8?B?aUN1Mit0bEluOWJzaE9GcGx2cEZLdVduTml0ZGFDaVJqVmFON2FHRk5ZZ3Rp?=
- =?utf-8?B?SWlKdTlwR2NEd3FaSEVNVCt0c3BJalVIZElxeUtlcW9XVnVVM0dvNVJ2UEN2?=
- =?utf-8?B?TFo2NDNUendHMXJTTUE2MVgyN2dIYk9ISXcyMVVoQ0tTKzlhR0dpVEtMWklX?=
- =?utf-8?B?MDZCaUt6TEpBaHd5cDYxcUVzTlIvZkx3UUhmMmtVSUllcGlhaktRalQxdWVn?=
- =?utf-8?B?KzRHNVVIdHRna1lFUVYvWEtVTUl2QjBnbE1qWjRtTS94RytJVG1URlhpbHJX?=
- =?utf-8?B?TGtQR1A2WjJ2OVJkaXMzOFVGYnJwNFRvbG4rZk51Q0I3Tjg4YldLS3p6b2tS?=
- =?utf-8?B?SDI4VGdLYlJiZ2drbmxzTXZlQlVSRjhLRnRYK3hSdXY2ay9GYkliMWtYbWhq?=
- =?utf-8?B?RXFxdzRWckNMeFUzdEtmYnJvT1NlT3NWMEN2QUZOQVJzeEtuRm9uYXVUSlNZ?=
- =?utf-8?B?SmkxU0FBZHg2V2NSUjFreFd4amNBQytITE5zY2paNmViMW1ma0k2QTVWTzhp?=
- =?utf-8?B?M3ozQjhUeTlIRGc1allYREU4M0FOd0U3STBzVXVWT0Yrdks0NVozRTVrUDI1?=
- =?utf-8?B?dmlSbjNrRTllNVRxQ3lhZ3ZwVTNqcnhBSXBhWXJMNlhJek41WkJwcVN2N0Mz?=
- =?utf-8?B?VEtySzBYa3N1cDZIVzc1S3UzR0c0NllUSGY2V0dVTWliUTdQMW5sWVEwWmd1?=
- =?utf-8?B?SHR3dnNaVHdpT29Lamp4azZIdHJDeXQyM0huREUxWExiYnpsbTM5dlQyak9H?=
- =?utf-8?B?ZjJQcG9uSmtHMEE4K3RENkpZUWVNS2ZuV0RaeUR0cXpOZlpGdzQ5ZE9MaHZP?=
- =?utf-8?B?ckN3T2M3bURKeC8xY2lBb3lzbFFOT1dxWFUxUkdKY1pQNE55REdadEdnZFpM?=
- =?utf-8?B?KzNac0NqMkRyR292cW95a0xDYzc4Zk5KaDNFRWwwUlZLTEw2WTNFbEZpMlFV?=
- =?utf-8?B?SEpWTzdGZGh5OGxEM2ZpbGw4SkVRQVAvTzBaa2EzMmlTRk1DTGRxUnJ1Nm15?=
- =?utf-8?B?RTlCK21XUlBlVEVJY0NYMHVKZ3BJRG1LWGJzbkNOMWpwd1J6dHFqdXFTc0NU?=
- =?utf-8?B?c3pLYWtJMm85eFAycEJ4UWhoTTRyWitCZzhCNFphczdUWXgwUnQrZ0pzK2Q1?=
- =?utf-8?B?cUc4L1dQOUJNRE5UcW0vT1pvd216enVFT1FaU2kzYWJSWDFrN1I1N3VnREwz?=
- =?utf-8?B?S3VoblJpbnl4UDU2eHJMNFFDWWMzbE0vNWtmT2R5QTZKWVJSQ0FkSXh1VUUx?=
- =?utf-8?B?czJpVzhEUTd6bENGWktvajVXRkZzbnNrNVhVbkFtWVAzYmNZRjZjTHdUbnhP?=
- =?utf-8?B?UlR0UlJJQ1NwZHFxSXJVL2RISUYvYTM3cDZ3N0VuSmZYcmxmb1JXN3RxWUV5?=
- =?utf-8?B?Z1RrVW9RMlg5MFRoVGx6MFgwQVQ5Wnl4cnNFWnMreDM4RHkzR2FHVEZYd2xr?=
- =?utf-8?B?WTZBbFpSTHhNZkpCUFkxMHo3R2kvMkhrK3NWY2JndXJkY0FqTkppSzgrZFdI?=
- =?utf-8?B?blZyWmpFa1l4T053ekRZbjJpM2grbDZLQlhIeGl6eVlqcHNiVzVUWHkxUzAv?=
- =?utf-8?B?azFaT0tnejY3Qm80S1ppelhNcnJVU0t0eVVVUGxVWk9TeVNuSmRZNkw0eWNF?=
- =?utf-8?Q?2Aa1CDfLl/+sZQBPsf?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 118ade89-0823-42a8-50b9-08de8b2f59e9
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2026 12:01:02.2432
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vA79DPBB6RAjuo2nWG8dd+259D+9+dLktNORu0XonoY8R+jT8RbyblQNOQeQFUWY
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8851
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v10 7/7] PCI: endpoint: pci-ep-msi: Add embedded doorbell
+ fallback
+To: Niklas Cassel <cassel@kernel.org>, Koichiro Den <den@valinux.co.jp>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>
+Cc: Frank Li <Frank.li@nxp.com>, Jingoo Han <jingoohan1@gmail.com>,
+ Manivannan Sadhasivam <mani@kernel.org>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
+ Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ Kishon Vijay Abraham I <kishon@kernel.org>, Jon Mason <jdmason@kudzu.us>,
+ Dave Jiang <dave.jiang@intel.com>, Allen Hubbe <allenbh@gmail.com>,
+ Bhanu Seshu Kumar Valluri <bhanuseshukumar@gmail.com>,
+ Marco Crivellari <marco.crivellari@suse.com>,
+ Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>,
+ Manikanta Maddireddy <mmaddireddy@nvidia.com>, linux-pci@vger.kernel.org,
+ linux-kernel@vger.kernel.org, ntb@lists.linux.dev, iommu@lists.linux.dev
+References: <20260302071427.534158-1-den@valinux.co.jp>
+ <20260302071427.534158-8-den@valinux.co.jp>
+ <acGK6rUIyuJP6gF7@lizhi-Precision-Tower-5810>
+ <ksr6hlcwmrkrgrql5jqhtpkaihsugtsztfhxxjbq3au6kz3ksu@mk7hhmwabgsi>
+ <acOJcMt7E8PLHAD6@ryzen>
+ <ec62kljt36zh2autlth5jivdqlojbpdo2gbs43ayob7hobcpre@bpos6hqyuwkv>
+ <acQTxJ75lq4tkszi@ryzen>
+ <i4jgdqzliz2mae6jnl5pycasjy4h5x27negpxdxabhu7so7vcs@mvk6qbkw3j7r>
+ <acUDdigoIj_uusgI@ryzen> <acUJgChL1hypb6ei@ryzen>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <acUJgChL1hypb6ei@ryzen>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Wed, Mar 25, 2026 at 11:39:37PM +0000, Sherry Yang wrote:
+On 2026-03-26 10:25 am, Niklas Cassel wrote:
+> On Thu, Mar 26, 2026 at 10:59:26AM +0100, Niklas Cassel wrote:
+>> On Thu, Mar 26, 2026 at 05:49:13PM +0900, Koichiro Den wrote:
+>>>>
+>>>> The transaction is a write from
+>>>> PCIe bus -> PCIe controller iATU -> internal bus -> IOMMU -> PCIe controller
+>>>> (the same controller as initiated the transaction).
+>>>
+>>> Yes, I think we're on the same page about this path itself.
+>>>
+>>> On my R-Car S4 setup, changing this to DMA_TO_DEVICE consistently triggers an
+>>> IOMMU fault, so at least on this platform the local path used for the doorbell
+>>> mapping is IOMMU-visible. That is the case this dma_map_resource() is intended
+>>> to cover.
+>>>
+>>> For that path, my understanding is that the doorbell access ends up as a local
+>>> write on the EP side, so it needs write permission, hence DMA_FROM_DEVICE.
+>>>
+>>>> Would be interesting why this is not working like normal (when using buffers):
+>>>> "For Networking drivers, it’s a rather simple affair.
+>>>> For transmit packets, map/unmap them with the DMA_TO_DEVICE direction specifier.
+>>>> For receive packets, just the opposite, map/unmap them with the DMA_FROM_DEVICE
+>>>> direction specifier."
+>>>
+>>> I think the closer analogy is RX: the data comes from outside, but the device
+>>> writes to the target, so it needs write permission.
+>>
+>> I think it is from the PoV from the IOMMU, is the transaction a Read by a device
+>> or a Write by a device?
+>>
+>> For a NIC driver:
+>> For a RX packet, the data is coming from the device to the memory.
+>> device is doing a transaction to memory.
+>> For a TX packet, the data is going from the memory to the device.
+>>
+>> In our case, the data is coming from the device, to a device.
+>>
+>> Almost like a P2P DMA, but in our case, both devices are the same, so
+>> using the P2P DMA API like pci_p2pdma_add_resource() seems unnecessary.
+>>
+>> So should it be DMA_BIDIRECTIONAL ? :)
+>>
+>> I understand that for the R-Car S4 Spider IOMMU, it is sufficient to map
+>> it as DMA_FROM_DEVICE. I just want to be sure that on some other IOMMU,
+>> they might consider it sufficient to map this as DMA_TO_DEVICE (because
+>> it is also a transaction going to a device).
+>>
+>> I just want to make sure that the code works on more than one IOMMU.
+>>
+>> Perhaps some IOMMU experts could help chime in.
+>>
+>>
+>> Note that I am happy to merge the code as is, as it obviously works on the
+>> only platform that this has been tested on (R-Car S4 Spider), and if other
+>> platform tries to run this test case, if their IOMMU works differently, it
+>> will scream and they will report it to the list. So all good.
+>>
+>> I'm mostly want to know how the DMA-API is supposed to be used in this
+>> specific scenario (device doing a write transaction to the same device).
 > 
-> > On Mar 10, 2026, at 10:57 AM, Jason Gunthorpe <jgg@nvidia.com> wrote:
-> > 
-> > On Tue, Mar 10, 2026 at 05:17:31PM +0000, Sherry Yang wrote:
-> > 
-> >> Unfortunately, I ran into the FIELD_PREP build failure with
-> >> 98d5110f90ae (“iommupt: Make it clearer to the compiler that
-> >> pts.level == 0 for single page”) already merged, which means it
-> >> doesn’t work for me. I noticed you mentioned clang 18 hit the same
-> >> issue and fixed by the patch. We’re using GCC 14.2.1, looks like GCC
-> >> still constant-folds the contiguous branch despite the change to
-> >> pts.level.
-> > 
-> > This is all a performance path, I'm reluctant to add more code for
-> > everyone just to hide things from GCC bugs.
-> > 
-> > Maybe you can rework this to be only when gcov is on, or maybe you can
-> > fix it by futher enhancing what the other commit does. Perhaps an
-> > always inline annotation is all that is missing?
+> I guess if a device will be reading or writing from this IOVA that is
+> created by IOMMU by the dma_map() call...
 > 
+> The device will only be writing to this IOVA.
+> The device will never be reading from the IOVA (since the physical address
+> is a register in the device itself, we will never supply this IOVA for the
+> device to read from).
 > 
-> Thanks for the pointer — marking amdv1pt_install_leaf_entry() as
-> __always_inline fixes the gcc/gcov build failure for me while keeping
-> the original FIELD_PREP() path intact.
-> 
-> If you’re happy with this approach, I'll send the patch out.
+> DMA_FROM_DEVICE seems correct in all cases. DMA_BIDIRECTIONAL seems wrong
+> since the device will never read from this IOVA. Sorry for the noise.
 
-That sounds good thanks
+DMA_FROM_DEVICE means the device will be sending write requests to the 
+address; DMA_TO_DEVICE means the device will be sending read requests to 
+the address; DMA_BIDIRECTIONAL means the device might send either or 
+both. Never does the *address* try to pull or push data anywhere of its 
+own accord, regardless of whether it's RAM or MMIO or whatever. Hence 
+why we don't have or need DMA_{TO,FROM}_MEMORY either ;)
 
-Jason
+Indeed if the endpoint controller could somehow recognise that an 
+incoming write was a "doorbell" write based on the incoming BAR offset 
+and internally short-circuit that to directly raise its own interrupt 
+*without* propagating a transaction into the rest of the system, then it 
+wouldn't need the DMA mapping. However, if it's just set up to forward 
+ranges of BAR address to ranges of system addresses, and there's an 
+IOMMU in that path (such that the iATU's "system addresses" at that 
+point are actually IOVAs), then all that really matters is what requests 
+the IOMMU is going to see coming out of the iATU, irrespective of 
+whether a particular system address after translation happens to be an 
+MSI controller, and that MSI controller coincidentally happens to live 
+right next to the iATU itself.
+
+(Of course the DMA API itself does also care about the general 
+distinction of the target address being "memory" or "not memory", as 
+implied by dma_map_page/single/sg() vs. dma_map_resource(), but that's 
+mostly just for the software aspects of knowing not to attempt cache 
+maintenance etc. on the "not memory" where it wouldn't be meaningful or 
+valid.)
+
+Thanks,
+Robin.
+
+> 
+> 
+> Kind regards,
+> Niklas
+
