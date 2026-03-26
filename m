@@ -1,175 +1,100 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 27E66396596;
-	Thu, 26 Mar 2026 12:12:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A90C339C011
+	for <iommu@lists.linux.dev>; Thu, 26 Mar 2026 12:13:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774527155; cv=none; b=NV0tD3W3TzSBmruG7AbY2QQ0LPPGg/kVktQnIq8ep5kp9PX7u/1S/vf3/spMNnu7PmrC7fKm68oNQ6xLxiM+DJKUdgNLzzBw6hJz5MY8OQ0gSWKST2kwNkFkzSBVNdnSlZ6wMdLmpf5280wLnFMxaG4d/kQsHbnQ25bjfEqZspo=
+	t=1774527208; cv=none; b=aK/jgHu5NnWu9lnXzG5E17D5WBp7TNreRgOLpbCE2Mp4j7doEkM35zpV+0JuJcfs8GZ84sqiM+pUiXHk2yklfae9KoeR+O98HdQGrxdpUpKm92EFRnQ4guSAziKxv90UNwVNsUY6b2HTuFNB/VjJN41gGOE6Ek5kSRHt6xAvFIc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774527155; c=relaxed/simple;
-	bh=6As1ZJhRb6x/u6Cg+5qyJyDZ4Vf0rF/ZKNt30A1fiyw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=a8rT6stg4/QdE1zqh3Zg4su7/1eUGwnw4aRKtw27WogW6RTQHagx19ZAdjbMD33P8ZH4ocqy9iUC4fDxGMMq3IuxhfoLKInQ44gHO5XC2yyAc8121FsE3D/vtd6Dv5ghTDf4shWjRVnfSH5lWeNwtfNKqmdKNZaX00qVoXygxvU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=gVaqCYgZ; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1774527208; c=relaxed/simple;
+	bh=FwSZ/7OJrnCav6mHeiPYjw7vKNEccgVJalfMDtXgtKM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=szxjWR3NDYmSNSSvbouya1u05LezSK7rggN37lyk+ue6RA1TfLd6aTZbY1wJcUAVrk1a2oqFubW4ha/gcgFNRJxnmCG795JAOBCDCkgEKbVTwTGoMoaCmXdUKbLpL7iqraYnwIjAQqaysRa37Yfc5lAW6ECr/6wt9BKjCfjLjtM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=iXQkhuu9; arc=none smtp.client-ip=209.85.160.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="gVaqCYgZ"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 447AE175A;
-	Thu, 26 Mar 2026 05:12:26 -0700 (PDT)
-Received: from [10.57.76.165] (unknown [10.57.76.165])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 610813FB90;
-	Thu, 26 Mar 2026 05:12:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1774527152; bh=6As1ZJhRb6x/u6Cg+5qyJyDZ4Vf0rF/ZKNt30A1fiyw=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=gVaqCYgZO1uxxmDGD4aysfodjBovNgwu1wU9wJxLST0oWxuZMUOsSi+/JpGuT15Jz
-	 3umGGUJXw6pVkNSKbuG4eRxKEdwy3orLraH/MOzDbyduXr1TVLBCrU1LV5Ru92WC5Y
-	 OabO5hrBTNZXV2z7AYQyCNhkOl7xImeznOXMgppw=
-Message-ID: <ee49dea1-96f6-4991-8095-6920ed88585e@arm.com>
-Date: Thu, 26 Mar 2026 12:12:25 +0000
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="iXQkhuu9"
+Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-5094e1d17d3so9099611cf.3
+        for <iommu@lists.linux.dev>; Thu, 26 Mar 2026 05:13:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1774527206; x=1775132006; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=6i0e8voY0W3VFEIjqKbZCWdQ8TQ9CEZiQ4kRraE3UfE=;
+        b=iXQkhuu9Z/sLV2VDjPzmxb8G8FjvuGyKy9LBmBtBQMbbvwI/ftmlW5Bt0I2MmbOgid
+         Nqyct4Xg02lAinkLYN71CoHsi0f5p3CXfulwVzeRpUyBOwqkv+TQ2WOk6F7mRVsCoXDe
+         aIpn051GBGoMi0+aXz+/G2h0kC2rF6qONF1fcgbjWF3f8tFZWdVGVAeUJe0FzS37vB0t
+         j8V0I6xrYE0jr4y6d36xlkTVB42TfJbvfQ6Helrk2jmbRcyfSUWW/1JQIDzFFvmNjh76
+         gFKIlhAot7/wpYaGOrwl4bCUY9INrSTnISRI4FbpJli3/ALTe/ku+CcTCIBLeluPuRig
+         JAbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774527206; x=1775132006;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=6i0e8voY0W3VFEIjqKbZCWdQ8TQ9CEZiQ4kRraE3UfE=;
+        b=RKHDjtPkGf0pAV9QKuEgFjI2LM5PT6P1WdKodPMfCf6Pjyng9U7HgbfF1+nkzf/V5/
+         Kz8tHEnQ7pBj3NHD/+dnFHOFtaH5nqTKc7NYfyx1bNOnrgwtoDUwqvii4WFkR1LyBCsO
+         lL7st0xco1X9Vai+eWI5uz1VItAEzBbmLiGl81+dmJNmLxFUCK00wmFuZEpL3mOIT9QS
+         gv0fJ0m8wEbXYM5MoS56Ieuhd/qu2V+KSOyTP86ddV3Us1Vym4VM+Vwy4/TUoV6vTBrx
+         8ZcGTnyYNOEaGIpklG2LwvzAFrPp27vltOJzksXOkJhHDfFZ0C0PiX6weEC+lhSGasb3
+         lBmQ==
+X-Gm-Message-State: AOJu0YyngaHdDwPPQJ2kLoLHtXaINqWKrxE94wwYTEszbZs4aOMhfKq2
+	J6fXqtvKCV+BaG3byrsETQMzDVk3EjcSDskk6L3CXzJjEnmndc3yqj/q3bUZpOd31DM=
+X-Gm-Gg: ATEYQzwWs29Qzr92HtjrYW0qkgPIGdg7VoyYz/wxrYYbDR9WpBO56vR3cg41bLaPVtC
+	yo9y2lHX/dqwsEVQv0dwefr5PzQail2RRPozBw6wH5EDAKbqvmbMlxqPQ12AUCCxk1x2ARlF7rd
+	f4AteYaeE6tXJpt3UQMkk4Noz41hNAzQI6zNUBBvvzyB4z1wDKkqkXeHwQERCNuAoKS/ltEL6NC
+	xTAJU8rgPr0Wo1Sei0kMe1Sg9sxCz7Wu8j2gYtfYM4skBm9aVj1BFNQHR7rCdrubslDcRcv9YDa
+	YCM3z4CqHRchit8XcWHuU6A/ntxyXYZpFk0jsL9RdJ0VrXzCSoahHMV8EzKo9ePjUYspBNGqDlG
+	vZlKB+CQJBQ2DTNOP3altI0IkQF1xqpBIraQ4kF7OPOtiHzaVYsEGyzrNhUdxcgdTxemx3ycB+C
+	bN8aebA01+TwcfOI8ai/alM1QeSPWUarQDP98iqA+JuBHFBAWv/5+rq51ZBQbl8MEviTrEo0wSu
+	F4Mr4PP
+X-Received: by 2002:a05:622a:1988:b0:50b:22c2:d7ec with SMTP id d75a77b69052e-50b80e64fa3mr85474361cf.59.1774527206440;
+        Thu, 26 Mar 2026 05:13:26 -0700 (PDT)
+Received: from ziepe.ca (mctnnbsa70w-159-2-73-22.dhcp-dynamic.fibreop.nb.bellaliant.net. [159.2.73.22])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-50b9215a4e1sm23320911cf.10.2026.03.26.05.13.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Mar 2026 05:13:25 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1w5jaX-00000000moc-15LR;
+	Thu, 26 Mar 2026 09:13:25 -0300
+Date: Thu, 26 Mar 2026 09:13:25 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Pranjal Shrivastava <praan@google.com>
+Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>, Ankit Soni <Ankit.Soni@amd.com>,
+	Samiullah Khawaja <skhawaja@google.com>,
+	syzbot+453eb7add07c3767adab@syzkaller.appspotmail.com
+Subject: Re: [PATCH] iommufd/selftest: Add missing driver_ops for AMDV1 mock
+ domain
+Message-ID: <20260326121325.GI8437@ziepe.ca>
+References: <20260325094615.2420522-1-praan@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v10 7/7] PCI: endpoint: pci-ep-msi: Add embedded doorbell
- fallback
-To: Niklas Cassel <cassel@kernel.org>, Koichiro Den <den@valinux.co.jp>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>
-Cc: Frank Li <Frank.li@nxp.com>, Jingoo Han <jingoohan1@gmail.com>,
- Manivannan Sadhasivam <mani@kernel.org>,
- Lorenzo Pieralisi <lpieralisi@kernel.org>,
- =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
- Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
- Kishon Vijay Abraham I <kishon@kernel.org>, Jon Mason <jdmason@kudzu.us>,
- Dave Jiang <dave.jiang@intel.com>, Allen Hubbe <allenbh@gmail.com>,
- Bhanu Seshu Kumar Valluri <bhanuseshukumar@gmail.com>,
- Marco Crivellari <marco.crivellari@suse.com>,
- Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>,
- Manikanta Maddireddy <mmaddireddy@nvidia.com>, linux-pci@vger.kernel.org,
- linux-kernel@vger.kernel.org, ntb@lists.linux.dev, iommu@lists.linux.dev
-References: <20260302071427.534158-1-den@valinux.co.jp>
- <20260302071427.534158-8-den@valinux.co.jp>
- <acGK6rUIyuJP6gF7@lizhi-Precision-Tower-5810>
- <ksr6hlcwmrkrgrql5jqhtpkaihsugtsztfhxxjbq3au6kz3ksu@mk7hhmwabgsi>
- <acOJcMt7E8PLHAD6@ryzen>
- <ec62kljt36zh2autlth5jivdqlojbpdo2gbs43ayob7hobcpre@bpos6hqyuwkv>
- <acQTxJ75lq4tkszi@ryzen>
- <i4jgdqzliz2mae6jnl5pycasjy4h5x27negpxdxabhu7so7vcs@mvk6qbkw3j7r>
- <acUDdigoIj_uusgI@ryzen> <acUJgChL1hypb6ei@ryzen>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <acUJgChL1hypb6ei@ryzen>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260325094615.2420522-1-praan@google.com>
 
-On 2026-03-26 10:25 am, Niklas Cassel wrote:
-> On Thu, Mar 26, 2026 at 10:59:26AM +0100, Niklas Cassel wrote:
->> On Thu, Mar 26, 2026 at 05:49:13PM +0900, Koichiro Den wrote:
->>>>
->>>> The transaction is a write from
->>>> PCIe bus -> PCIe controller iATU -> internal bus -> IOMMU -> PCIe controller
->>>> (the same controller as initiated the transaction).
->>>
->>> Yes, I think we're on the same page about this path itself.
->>>
->>> On my R-Car S4 setup, changing this to DMA_TO_DEVICE consistently triggers an
->>> IOMMU fault, so at least on this platform the local path used for the doorbell
->>> mapping is IOMMU-visible. That is the case this dma_map_resource() is intended
->>> to cover.
->>>
->>> For that path, my understanding is that the doorbell access ends up as a local
->>> write on the EP side, so it needs write permission, hence DMA_FROM_DEVICE.
->>>
->>>> Would be interesting why this is not working like normal (when using buffers):
->>>> "For Networking drivers, it’s a rather simple affair.
->>>> For transmit packets, map/unmap them with the DMA_TO_DEVICE direction specifier.
->>>> For receive packets, just the opposite, map/unmap them with the DMA_FROM_DEVICE
->>>> direction specifier."
->>>
->>> I think the closer analogy is RX: the data comes from outside, but the device
->>> writes to the target, so it needs write permission.
->>
->> I think it is from the PoV from the IOMMU, is the transaction a Read by a device
->> or a Write by a device?
->>
->> For a NIC driver:
->> For a RX packet, the data is coming from the device to the memory.
->> device is doing a transaction to memory.
->> For a TX packet, the data is going from the memory to the device.
->>
->> In our case, the data is coming from the device, to a device.
->>
->> Almost like a P2P DMA, but in our case, both devices are the same, so
->> using the P2P DMA API like pci_p2pdma_add_resource() seems unnecessary.
->>
->> So should it be DMA_BIDIRECTIONAL ? :)
->>
->> I understand that for the R-Car S4 Spider IOMMU, it is sufficient to map
->> it as DMA_FROM_DEVICE. I just want to be sure that on some other IOMMU,
->> they might consider it sufficient to map this as DMA_TO_DEVICE (because
->> it is also a transaction going to a device).
->>
->> I just want to make sure that the code works on more than one IOMMU.
->>
->> Perhaps some IOMMU experts could help chime in.
->>
->>
->> Note that I am happy to merge the code as is, as it obviously works on the
->> only platform that this has been tested on (R-Car S4 Spider), and if other
->> platform tries to run this test case, if their IOMMU works differently, it
->> will scream and they will report it to the list. So all good.
->>
->> I'm mostly want to know how the DMA-API is supposed to be used in this
->> specific scenario (device doing a write transaction to the same device).
+On Wed, Mar 25, 2026 at 09:46:15AM +0000, Pranjal Shrivastava wrote:
+> syzbot found that allocating a mock domain with AMDV1 format could
+> cause a WARN_ON because the selftest enabled DYNAMIC_TOP without
+> providing the required driver_ops.
 > 
-> I guess if a device will be reading or writing from this IOVA that is
-> created by IOMMU by the dma_map() call...
-> 
-> The device will only be writing to this IOVA.
-> The device will never be reading from the IOVA (since the physical address
-> is a register in the device itself, we will never supply this IOVA for the
-> device to read from).
-> 
-> DMA_FROM_DEVICE seems correct in all cases. DMA_BIDIRECTIONAL seems wrong
-> since the device will never read from this IOVA. Sorry for the noise.
+> Initialize a spinlock (top_lock) and dummy callbacks in the mock
+> driver to satisfy the generic PT requirements.
 
-DMA_FROM_DEVICE means the device will be sending write requests to the 
-address; DMA_TO_DEVICE means the device will be sending read requests to 
-the address; DMA_BIDIRECTIONAL means the device might send either or 
-both. Never does the *address* try to pull or push data anywhere of its 
-own accord, regardless of whether it's RAM or MMIO or whatever. Hence 
-why we don't have or need DMA_{TO,FROM}_MEMORY either ;)
+I'm inclined to delete the AMDv1 option entirely, I was thinking about
+extending the sefltest to use it but I don't have time..
 
-Indeed if the endpoint controller could somehow recognise that an 
-incoming write was a "doorbell" write based on the incoming BAR offset 
-and internally short-circuit that to directly raise its own interrupt 
-*without* propagating a transaction into the rest of the system, then it 
-wouldn't need the DMA mapping. However, if it's just set up to forward 
-ranges of BAR address to ranges of system addresses, and there's an 
-IOMMU in that path (such that the iATU's "system addresses" at that 
-point are actually IOVAs), then all that really matters is what requests 
-the IOMMU is going to see coming out of the iATU, irrespective of 
-whether a particular system address after translation happens to be an 
-MSI controller, and that MSI controller coincidentally happens to live 
-right next to the iATU itself.
+Syzkaller is hitting this because it found it can use a parameter that
+the selftest never uses.
 
-(Of course the DMA API itself does also care about the general 
-distinction of the target address being "memory" or "not memory", as 
-implied by dma_map_page/single/sg() vs. dma_map_resource(), but that's 
-mostly just for the software aspects of knowing not to attempt cache 
-maintenance etc. on the "not memory" where it wouldn't be meaningful or 
-valid.)
-
-Thanks,
-Robin.
-
-> 
-> 
-> Kind regards,
-> Niklas
-
+Jason
