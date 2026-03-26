@@ -1,143 +1,120 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f78.google.com (mail-ot1-f78.google.com [209.85.210.78])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDBAE3C13ED;
-	Thu, 26 Mar 2026 10:25:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F4183C9454
+	for <iommu@lists.linux.dev>; Thu, 26 Mar 2026 10:31:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.78
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774520711; cv=none; b=fPrYJsL2P/qEYzKqsMEhS4IQQQsNrg8omPx6uzLI5AYfNE3tliNJPOgKCOO7ZiUvfjTPldHcQlwjv6ZqyO5qYD3QqPkh7IApRVnKxqTz8fKD7UYXh/7RMBgZz1ARkuhwO8vSbMFbKoqedKez+oxCtZuEIiO0TL9DOG+HTeG8SG8=
+	t=1774521084; cv=none; b=XZng1HGOWL4hB1lVmPrSfHZVrvUQdu7hXLZ7pRlS5CF91WMzf3y6/tL80SpjMEM/+Yglrrr7jJKwKfP+cOpapbUHSf2wo6FpyBhxyPVa2BcxfWkd1FJLIZO3Qf6Nqq3T8KMZnkKKJ966lVzkzEZILrA/7EmzGsJofRQOnWoGhq8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774520711; c=relaxed/simple;
-	bh=bBSrAEct7jvBNQzI++UMUNP4+k59JXmlGww3aYemi28=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tGAfp59eOvNL8Ui2Tvukm4mBVEmuGQ7Un3bxpPMbcSigglLRw3R3i5Usxa+KPjlbrSwYn6h03NP2hL6LvlGB2YNGHYQqTG6Hq+pCEPzAv9c1vEZ+DOyfIR9HUR5RrcbDV3FatZqhjWY0Lre4M1/Kb6MAgEjGS0RcQe97Ptz8CXE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iKVa0jMR; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iKVa0jMR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0959C116C6;
-	Thu, 26 Mar 2026 10:25:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774520711;
-	bh=bBSrAEct7jvBNQzI++UMUNP4+k59JXmlGww3aYemi28=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=iKVa0jMRfc3u21sOd4u9Vnwm2R9KSjGrenGK3M6mxfzGJVWnHDgDMgeReQOKdr5Kd
-	 Q8QjNpL5burtvkGXX8IJjRZe4s65OQ/UtlMUfPs3BRZxSKVbg6LmftQqN93lW10hwz
-	 9gARHXpDc/1uqXY7qH5P2w6T50Jj2L9ll5rteRZKsDoJA7ctZRgZVrbDt86oZHLkG2
-	 dbrRUNvD8cLITUeNyPQI5m+zOot5w7KGZA6W1OxG1DyHQdmuoLzKWZigBxfrOUnctL
-	 xPp/nyTCCCTzY9al/qjdZ6hPVWa9DAyuNV5ROGFdC4dIJ+Uxnh8uc/ZxKT2j8y1UOs
-	 kVqfUZcurHlRg==
-Date: Thu, 26 Mar 2026 11:25:04 +0100
-From: Niklas Cassel <cassel@kernel.org>
-To: Koichiro Den <den@valinux.co.jp>, Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-Cc: Frank Li <Frank.li@nxp.com>, Jingoo Han <jingoohan1@gmail.com>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
-	Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
-	Kishon Vijay Abraham I <kishon@kernel.org>,
-	Jon Mason <jdmason@kudzu.us>, Dave Jiang <dave.jiang@intel.com>,
-	Allen Hubbe <allenbh@gmail.com>,
-	Bhanu Seshu Kumar Valluri <bhanuseshukumar@gmail.com>,
-	Marco Crivellari <marco.crivellari@suse.com>,
-	Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>,
-	Manikanta Maddireddy <mmaddireddy@nvidia.com>,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-	ntb@lists.linux.dev, iommu@lists.linux.dev
-Subject: Re: [PATCH v10 7/7] PCI: endpoint: pci-ep-msi: Add embedded doorbell
- fallback
-Message-ID: <acUJgChL1hypb6ei@ryzen>
-References: <20260302071427.534158-1-den@valinux.co.jp>
- <20260302071427.534158-8-den@valinux.co.jp>
- <acGK6rUIyuJP6gF7@lizhi-Precision-Tower-5810>
- <ksr6hlcwmrkrgrql5jqhtpkaihsugtsztfhxxjbq3au6kz3ksu@mk7hhmwabgsi>
- <acOJcMt7E8PLHAD6@ryzen>
- <ec62kljt36zh2autlth5jivdqlojbpdo2gbs43ayob7hobcpre@bpos6hqyuwkv>
- <acQTxJ75lq4tkszi@ryzen>
- <i4jgdqzliz2mae6jnl5pycasjy4h5x27negpxdxabhu7so7vcs@mvk6qbkw3j7r>
- <acUDdigoIj_uusgI@ryzen>
+	s=arc-20240116; t=1774521084; c=relaxed/simple;
+	bh=yxqi3/yFH4IAIjS+smm9Fz81z7itO7TOtYYrTbrwaNo=;
+	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:
+	 Content-Type; b=Ydu4VqH1tBos+5uNIYoa7ibKHQ2l/UvFUsR7egj+6Lbz/N01jZTpw84JhnkY+r8y+ajr2J8oQDH5Sx4XNklfsqNFSuVu6oQSwzrhHVmGjDCWMm2p1cYKthCShdn5FcRmeKK+14P7NX7tKI2KF/sW11cBcXE/0CJcRHN4BODKw3I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.78
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-ot1-f78.google.com with SMTP id 46e09a7af769-7d7f7164b12so1158756a34.1
+        for <iommu@lists.linux.dev>; Thu, 26 Mar 2026 03:31:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774521081; x=1775125881;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=sdCyu3ENC/ipHyqUzoadB5I9NoGEDt4/nKN2d+wJFf0=;
+        b=q1WcG20tD444jbXqZaGCTrECzyJn+gHqzs2lrdG3fju2nDfMJH0GatZzoxE1jd4V3u
+         RIuUrbap5UpLWIZZaMjEaPWz1g9kMgaxGMR1YkH4Qt4AL73qF7HEUhgv/bYTB5tlvzLy
+         rPMJQdI1VKA9CgfcZwG2JDHRCZ2IvUo/sCo7v/PjObs7HoKv/qOnulLuyXnHjhg653G7
+         AzgmjrmcfNoUwRb6S112gZz6PXh91uMMf97pqH/9LgqF/Jt12usC6XlGmecALcyUy9NJ
+         xeFIJbDjAOssPY1CjzBMHLM7LCbplQNCyeAVu9TptqatqSrFeA1Sq634wOTrvUZuA38I
+         Ao5A==
+X-Forwarded-Encrypted: i=1; AJvYcCVWtFniYDsdgrr1vL9O3hC6fUnHv82oLNPS/axgWBosxngPfn+Ofxnl2Y0qGkKY1iuTcSii8A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxgkPv0f1czrVimhainDmAXpfKLfrtY6VPs83OU1tox3Bc9nF1C
+	Fx1CgvuPRUvrvQRAGQbOymtOaL+ddkvCmHtNv7bqdpDfvg6eq1fD8R6Q1sd3utLM/lRsCYSIEFy
+	TmGzMYalcMIu5Uu7A2VhsOpIGuLaFYUOdCWv3u4CNEGn5TsjN3JpXvvVs4uU=
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <acUDdigoIj_uusgI@ryzen>
+X-Received: by 2002:a05:6820:62a:b0:67e:10bb:cd34 with SMTP id
+ 006d021491bc7-67e10cb21e0mr401752eaf.23.1774521081465; Thu, 26 Mar 2026
+ 03:31:21 -0700 (PDT)
+Date: Thu, 26 Mar 2026 03:31:21 -0700
+In-Reply-To: <69c1d50b.a70a0220.3cae05.0001.GAE@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <69c50af9.a70a0220.234938.0086.GAE@google.com>
+Subject: Re: [syzbot] [iommu?] WARNING in pt_iommu_amdv1_init
+From: syzbot <syzbot+453eb7add07c3767adab@syzkaller.appspotmail.com>
+To: ankit.soni@amd.com, iommu@lists.linux.dev, jgg@ziepe.ca, joro@8bytes.org, 
+	kevin.tian@intel.com, linux-kernel@vger.kernel.org, praan@google.com, 
+	robin.murphy@arm.com, skhawaja@google.com, syzkaller-bugs@googlegroups.com, 
+	will@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, Mar 26, 2026 at 10:59:26AM +0100, Niklas Cassel wrote:
-> On Thu, Mar 26, 2026 at 05:49:13PM +0900, Koichiro Den wrote:
-> > > 
-> > > The transaction is a write from
-> > > PCIe bus -> PCIe controller iATU -> internal bus -> IOMMU -> PCIe controller
-> > > (the same controller as initiated the transaction).
-> > 
-> > Yes, I think we're on the same page about this path itself.
-> > 
-> > On my R-Car S4 setup, changing this to DMA_TO_DEVICE consistently triggers an
-> > IOMMU fault, so at least on this platform the local path used for the doorbell
-> > mapping is IOMMU-visible. That is the case this dma_map_resource() is intended
-> > to cover.
-> > 
-> > For that path, my understanding is that the doorbell access ends up as a local
-> > write on the EP side, so it needs write permission, hence DMA_FROM_DEVICE.
-> > 
-> > > Would be interesting why this is not working like normal (when using buffers):
-> > > "For Networking drivers, it’s a rather simple affair.
-> > > For transmit packets, map/unmap them with the DMA_TO_DEVICE direction specifier.
-> > > For receive packets, just the opposite, map/unmap them with the DMA_FROM_DEVICE
-> > > direction specifier."
-> > 
-> > I think the closer analogy is RX: the data comes from outside, but the device
-> > writes to the target, so it needs write permission.
-> 
-> I think it is from the PoV from the IOMMU, is the transaction a Read by a device
-> or a Write by a device?
-> 
-> For a NIC driver:
-> For a RX packet, the data is coming from the device to the memory.
-> device is doing a transaction to memory.
-> For a TX packet, the data is going from the memory to the device.
-> 
-> In our case, the data is coming from the device, to a device.
-> 
-> Almost like a P2P DMA, but in our case, both devices are the same, so
-> using the P2P DMA API like pci_p2pdma_add_resource() seems unnecessary.
-> 
-> So should it be DMA_BIDIRECTIONAL ? :)
-> 
-> I understand that for the R-Car S4 Spider IOMMU, it is sufficient to map
-> it as DMA_FROM_DEVICE. I just want to be sure that on some other IOMMU,
-> they might consider it sufficient to map this as DMA_TO_DEVICE (because
-> it is also a transaction going to a device).
-> 
-> I just want to make sure that the code works on more than one IOMMU.
-> 
-> Perhaps some IOMMU experts could help chime in.
-> 
-> 
-> Note that I am happy to merge the code as is, as it obviously works on the
-> only platform that this has been tested on (R-Car S4 Spider), and if other
-> platform tries to run this test case, if their IOMMU works differently, it
-> will scream and they will report it to the list. So all good.
-> 
-> I'm mostly want to know how the DMA-API is supposed to be used in this
-> specific scenario (device doing a write transaction to the same device).
+syzbot has found a reproducer for the following issue on:
 
-I guess if a device will be reading or writing from this IOVA that is
-created by IOMMU by the dma_map() call...
+HEAD commit:    d2a43e7f89da Merge tag 'hardening-v7.0-rc6' of git://git.k..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=12f4d06a580000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d46eab0cfd31c214
+dashboard link: https://syzkaller.appspot.com/bug?extid=453eb7add07c3767adab
+compiler:       Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12cfa1d6580000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13beecca580000
 
-The device will only be writing to this IOVA.
-The device will never be reading from the IOVA (since the physical address
-is a register in the device itself, we will never supply this IOVA for the
-device to read from).
+Downloadable assets:
+disk image (non-bootable): https://storage.googleapis.com/syzbot-assets/d900f083ada3/non_bootable_disk-d2a43e7f.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/971507ed4baf/vmlinux-d2a43e7f.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/c5926dab5b8b/bzImage-d2a43e7f.xz
 
-DMA_FROM_DEVICE seems correct in all cases. DMA_BIDIRECTIONAL seems wrong
-since the device will never read from this IOVA. Sorry for the noise.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+453eb7add07c3767adab@syzkaller.appspotmail.com
+
+iommufd_mock iommufd_mock0: Adding to iommu group 11
+------------[ cut here ]------------
+!iommu_table->driver_ops || !iommu_table->driver_ops->change_top || !iommu_table->driver_ops->get_top_lock
+WARNING: drivers/iommu/generic_pt/fmt/../iommu_pt.h:1251 at pt_iommu_amdv1_init+0x631/0x9f0 drivers/iommu/generic_pt/iommu_pt.h:1249, CPU#0: syz.0.17/5472
+Modules linked in:
+CPU: 0 UID: 0 PID: 5472 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+RIP: 0010:pt_iommu_amdv1_init+0x631/0x9f0 drivers/iommu/generic_pt/iommu_pt.h:1249
+Code: 48 89 df 44 89 fa e8 de 05 00 00 48 89 c3 48 3d 01 f0 ff ff 72 1e e8 de 77 6f fc eb 5e e8 d7 77 6f fc eb 05 e8 d0 77 6f fc 90 <0f> 0b 90 bb ea ff ff ff eb 47 e8 c0 77 6f fc 43 80 7c 35 00 00 74
+RSP: 0018:ffffc9000e277a20 EFLAGS: 00010293
+RAX: ffffffff855639f9 RBX: 0000000000000000 RCX: ffff8880369c24c0
+RDX: 0000000000000000 RSI: 0000000000000034 RDI: 0000000000000000
+RBP: ffff8880540f4f70 R08: ffff8880540f4f97 R09: 0000000000000000
+R10: ffff8880540f4f68 R11: ffffed100a81e9f3 R12: ffff8880540f4f88
+R13: 1ffff1100a81e9f1 R14: dffffc0000000000 R15: 0000000000000cc0
+FS:  000055558cba0500(0000) GS:ffff88808ca51000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000000 CR3: 0000000037dbd000 CR4: 0000000000352ef0
+Call Trace:
+ <TASK>
+ mock_domain_alloc_pgtable drivers/iommu/iommufd/selftest.c:491 [inline]
+ mock_domain_alloc_paging_flags+0x3ba/0x780 drivers/iommu/iommufd/selftest.c:548
+ iommufd_hwpt_paging_alloc+0x3ab/0x830 drivers/iommu/iommufd/hw_pagetable.c:149
+ iommufd_hwpt_alloc+0x496/0xc10 drivers/iommu/iommufd/hw_pagetable.c:369
+ iommufd_fops_ioctl+0x4b5/0x5d0 drivers/iommu/iommufd/main.c:533
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:597 [inline]
+ __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f7b6999c799
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffd240fb7c8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007f7b69c15fa0 RCX: 00007f7b6999c799
+RDX: 0000200000000200 RSI: 0000000000003b89 RDI: 0000000000000008
+RBP: 00007f7b69a32c99 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f7b69c15fac R14: 00007f7b69c15fa0 R15: 00007f7b69c15fa0
+ </TASK>
 
 
-Kind regards,
-Niklas
+---
+If you want syzbot to run the reproducer, reply with:
+#syz test: git://repo/address.git branch-or-commit-hash
+If you attach or paste a git patch, syzbot will apply it before testing.
