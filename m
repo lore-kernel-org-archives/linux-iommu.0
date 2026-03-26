@@ -1,187 +1,123 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AF67394799;
-	Thu, 26 Mar 2026 16:19:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 50EFC3FD156
+	for <iommu@lists.linux.dev>; Thu, 26 Mar 2026 17:05:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774541999; cv=none; b=Pt17Ym0TTJg0WF63ESf6hP0F6aRLugnspj4p4VT2WXGNPGmifrCozeaPpNbjzh+K5/3bAeUXjR+E4MZ8+QPM51cFx2jA0zzg7dcDM26KFXne1a/cRXzo3NGFEGh8FH9eUYvgY8emqG4TLkXGxohLFC+wZpbVhlSomfnTSIl9jEk=
+	t=1774544718; cv=none; b=U49yiR32L76LmYr0B3W7fN4PWhbAn/m0M3xQn0pMe4nrvb4fBcZvTTNPfvgmmnfqZz5y0sAGa4MUPreEyvQZZNBE5v65ZBP73z47zhU9NtumNrZ0CswVl9+S2VdC//1mZzajsgoIPNw5gaNvkxi5tuGOE2wHUsDswQ8cAsNwM2I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774541999; c=relaxed/simple;
-	bh=HUtRwEpymq8y1tHT5IuCcbjZ8WgelRutIBJgFxgBfwY=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=Nh3GDQ1K/Dlmns3pEiP7iu5pALHQQQhqqwlq4K48jB7ip6yfWThZYwov4EesUDfSL4MEqNqEBP5B/CYHZeoMUnTbWR//heA28XYyZndZi2OYNfN/TsVFu9kqqFYrq4AxmByJIiuSRGk+NOrdcNICw+FFIHK9xIFJuOBkVd/v0x4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F8mHPbZM; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774544718; c=relaxed/simple;
+	bh=4Wu0UTzcOhkVnGPF19/hXiwpzCTdBwtuQrSychL2L3E=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=jIi+rG5fn20lSyUjYwrlOc3JH7CG6qZUrW/gcVpZgdDOjZyJIj55VAzBXqgymSTipDM6M82bzyL09elJ0iErFHC27Pkw6Cr21WoodSvC9me48Ffj16npRQUj9BVJT1UV332xt43ywNUN8AcLMx7wmxdhXWLobd/VYV+A/Y0g9FI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=QQa0oJUj; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F8mHPbZM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58181C116C6;
-	Thu, 26 Mar 2026 16:19:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774541998;
-	bh=HUtRwEpymq8y1tHT5IuCcbjZ8WgelRutIBJgFxgBfwY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=F8mHPbZMLywhR2KPKiO47GUlQve1aWTvrP9jUY2zHBn/GgXJAJ8kIosO6KRmT2xPy
-	 0IOXnbxBuiHeZMvRl+TjIGCZL+xLIklcHleCk7JhPz7DuyprdCRvXeIavUjsvsJn3u
-	 2Q1RhEo14xk900QBnukOrxjvVlgBCi/2LncSYTzSdhsFA5hJ9IBKJY83E/k7nfnIj+
-	 5lTlIF6wm86KROEBrkkqhHauUmxF3ByqGulkPiq2SUiGMalg+b2lo7okZjYoEqA7SE
-	 DQIUYImcIBQS+JZCWgUDtLEZ0SBKAUGmugBagt425A+Pxg6+wxIOHa2m/AYEY0slHj
-	 ZzEGDAJHfpMMw==
-Date: Thu, 26 Mar 2026 11:19:57 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>,
-	Richard Zhu <hongxing.zhu@nxp.com>,
-	Lucas Stach <l.stach@pengutronix.de>
-Cc: Nipun Gupta <nipun.gupta@amd.com>,
-	Nikhil Agarwal <nikhil.agarwal@amd.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Marc Zyngier <maz@kernel.org>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Saravana Kannan <saravanak@kernel.org>,
-	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>, Frank Li <Frank.Li@nxp.com>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>, Juergen Gross <jgross@suse.com>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-	Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>,
-	Rob Herring <robh@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Prakash Gupta <prakash.gupta@oss.qualcomm.com>,
-	Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-	linux-pci@vger.kernel.org, imx@lists.linux.dev,
-	xen-devel@lists.xenproject.org, linux-arm-msm@vger.kernel.org,
-	Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
-Subject: Re: [PATCH v11 2/3] of: Factor arguments passed to of_map_id() into
- a struct
-Message-ID: <20260326161957.GA1324845@bhelgaas>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="QQa0oJUj"
+Received: from [10.17.145.29] (unknown [4.194.122.144])
+	by linux.microsoft.com (Postfix) with ESMTPSA id A64E220B710C;
+	Thu, 26 Mar 2026 10:05:10 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A64E220B710C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1774544716;
+	bh=rbwZ4OO0LsW1b8RWLG2CAH5pF9lzjnZ9lfP+6EK7t1k=;
+	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+	b=QQa0oJUjjaHP32/aBFhPIPDpHZUup4Od8GSDvR1BVN3D4eWzkg03vaIXDEg8JhiMW
+	 deCvh8frz57RAvkZDkZImBqUVIsflI7kFA3VvB7UDjB9spLSpJ6jPdgxMBnWCIlDHm
+	 FzEO5GDRMJrhmZEkOtbzWM7MzCkN+OLafBqtyGvU=
+Message-ID: <75c6dd78-bbae-4f5a-94ef-9de299720d38@linux.microsoft.com>
+Date: Thu, 26 Mar 2026 10:05:06 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260325-parse_iommu_cells-v11-2-1fefa5c0e82c@oss.qualcomm.com>
+User-Agent: Mozilla Thunderbird
+Cc: kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
+ decui@microsoft.com, longli@microsoft.com, m.szyprowski@samsung.com,
+ robin.murphy@arm.com, easwar.hariharan@linux.microsoft.com,
+ Tianyu Lan <tiala@microsoft.com>, iommu@lists.linux.dev,
+ linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+ hch@infradead.org, vdso@hexbites.dev, Michael Kelley <mhklinux@outlook.com>
+Subject: Re: [RFC PATCH V3] x86/VMBus: Confidential VMBus for dynamic DMA
+ transfers
+To: Tianyu Lan <ltykernel@gmail.com>
+References: <20260325075649.248241-1-tiala@microsoft.com>
+From: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+Content-Language: en-US
+In-Reply-To: <20260325075649.248241-1-tiala@microsoft.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-[cc->to: Richard, Lucas for pci-imx6.c question]
-
-On Wed, Mar 25, 2026 at 04:38:23PM +0530, Vijayanand Jitta wrote:
-> From: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+On 3/25/2026 12:56 AM, Tianyu Lan wrote:
+> Hyper-V provides Confidential VMBus to communicate between
+> device model and device guest driver via encrypted/private
+> memory in Confidential VM. The device model is in OpenHCL
+> (https://openvmm.dev/guide/user_guide/openhcl.html) that
+> plays the paravisor role.
 > 
-> Change of_map_id() to take a pointer to struct of_phandle_args
-> instead of passing target device node and translated IDs separately.
-> Update all callers accordingly.
+> For a VMBus device, there are two communication methods to
+> talk with Host/Hypervisor. 1) VMBUS Ring buffer 2) Dynamic
+> DMA transfer.
 > 
-> Add an explicit filter_np parameter to of_map_id() and of_map_msi_id()
-> to separate the filter input from the output. Previously, the target
-> parameter served dual purpose: as an input filter (if non-NULL, only
-> match entries targeting that node) and as an output (receiving the
-> matched node with a reference held). Now filter_np is the explicit
-> input filter and arg->np is the pure output.
+> The Confidential VMBus Ring buffer has been upstreamed by
+> Roman Kisel(commit 6802d8af47d1).
 > 
-> Previously, of_map_id() would call of_node_put() on the matched node
-> when a filter was provided, making reference ownership inconsistent.
-> Remove this internal of_node_put() call so that of_map_id() now always
-> transfers ownership of the matched node reference to the caller via
-> arg->np. Callers are now consistently responsible for releasing this
-> reference with of_node_put(arg->np) when done.
-> ...
-
-Not actually part of *this* patch, and AFAICS this patch is correct
-as-is, but is it necessary to have different logic around
-of_node_put() for imx_pcie_add_lut_by_rid() and
-apple_pcie_enable_device()?
-
-> +++ b/drivers/pci/controller/dwc/pci-imx6.c
-> @@ -1137,6 +1137,8 @@ static void imx_pcie_remove_lut(struct imx_pcie *imx_pcie, u16 rid)
+> The dynamic DMA transition of VMBus device normally goes
+> through DMA core and it uses SWIOTLB as bounce buffer in
+> a CoCo VM.
+> 
+> The Confidential VMBus device can do DMA directly to
+> private/encrypted memory. Because the swiotlb is decrypted
+> memory, the DMA transfer must not be bounced through the
+> swiotlb, so as to preserve confidentiality. This is different
+> from the default for Linux CoCo VMs, so disable the VMBus
+> device's use of swiotlb.
+> 
+> Expose swiotlb_dev_disable() from DMA Core to disable
+> bounce buffer for device.
+> 
+> Suggested-by: Michael Kelley <mhklinux@outlook.com>
+> Signed-off-by: Tianyu Lan <tiala@microsoft.com>
+> ---
+>  drivers/hv/vmbus_drv.c  | 6 +++++-
+>  include/linux/swiotlb.h | 5 +++++
+>  2 files changed, 10 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
+> index 3d1a58b667db..84e6971fc90f 100644
+> --- a/drivers/hv/vmbus_drv.c
+> +++ b/drivers/hv/vmbus_drv.c
+> @@ -2184,11 +2184,15 @@ int vmbus_device_register(struct hv_device *child_device_obj)
+>  	child_device_obj->device.dma_mask = &child_device_obj->dma_mask;
+>  	dma_set_mask(&child_device_obj->device, DMA_BIT_MASK(64));
 >  
->  static int imx_pcie_add_lut_by_rid(struct imx_pcie *imx_pcie, u32 rid)
->  {
-> +	struct of_phandle_args iommu_spec = {};
-> +	struct of_phandle_args msi_spec = {};
->  	struct device *dev = imx_pcie->pci->dev;
->  	struct device_node *target;
->  	u32 sid_i, sid_m;
-> @@ -1144,7 +1146,12 @@ static int imx_pcie_add_lut_by_rid(struct imx_pcie *imx_pcie, u32 rid)
->  	u32 sid = 0;
->  
->  	target = NULL;
-> -	err_i = of_map_iommu_id(dev->of_node, rid, &target, &sid_i);
-> +	err_i = of_map_iommu_id(dev->of_node, rid, &iommu_spec);
-> +	if (!err_i) {
-> +		target = iommu_spec.np;
-> +		sid_i = iommu_spec.args[0];
-> +	}
+> +	device_initialize(&child_device_obj->device);
+> +	if (child_device_obj->channel->co_external_memory)
+> +		swiotlb_dev_disable(&child_device_obj->device);
 > +
->  	if (target) {
->  		of_node_put(target);
-
-Here it's conditional on "target" even though of_node_put() checks
-internally for non-NULL, so it would be safe without the conditional
-here.
-
->  	} else {
-> @@ -1156,8 +1163,11 @@ static int imx_pcie_add_lut_by_rid(struct imx_pcie *imx_pcie, u32 rid)
->  		err_i = -EINVAL;
->  	}
->  
-> -	target = NULL;
-> -	err_m = of_map_msi_id(dev->of_node, rid, &target, &sid_m);
-> +	err_m = of_map_msi_id(dev->of_node, rid, NULL, &msi_spec);
-> +	if (!err_m) {
-> +		target = msi_spec.np;
-> +		sid_m = msi_spec.args[0];
-> +	}
->  
 >  	/*
->  	 *   err_m      target
-
-And here (outside the diff context) we also call of_node_put()
-conditionally:
-
-  ...
-  else if (target)
-    of_node_put(target);
-
-> diff --git a/drivers/pci/controller/pcie-apple.c b/drivers/pci/controller/pcie-apple.c
-> index a0937b7b3c4d..c2cffc0659f4 100644
-> --- a/drivers/pci/controller/pcie-apple.c
-> +++ b/drivers/pci/controller/pcie-apple.c
-> @@ -755,6 +755,7 @@ static int apple_pcie_enable_device(struct pci_host_bridge *bridge, struct pci_d
->  {
->  	u32 sid, rid = pci_dev_id(pdev);
->  	struct apple_pcie_port *port;
-> +	struct of_phandle_args iommu_spec = {};
->  	int idx, err;
+>  	 * Register with the LDM. This will kick off the driver/device
+>  	 * binding...which will eventually call vmbus_match() and vmbus_probe()
+>  	 */
+> -	ret = device_register(&child_device_obj->device);
+> +	ret = device_add(&child_device_obj->device);
+>  	if (ret) {
+>  		pr_err("Unable to register child device\n");
+>  		put_device(&child_device_obj->device);
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index 3dae0f592063..7c572570d5d9 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -169,6 +169,11 @@ static inline struct io_tlb_pool *swiotlb_find_pool(struct device *dev,
+>  	return NULL;
+>  }
 >  
->  	port = apple_pcie_get_port(pdev);
-> @@ -764,10 +765,12 @@ static int apple_pcie_enable_device(struct pci_host_bridge *bridge, struct pci_d
->  	dev_dbg(&pdev->dev, "added to bus %s, index %d\n",
->  		pci_name(pdev->bus->self), port->idx);
->  
-> -	err = of_map_iommu_id(port->pcie->dev->of_node, rid, NULL, &sid);
-> +	err = of_map_iommu_id(port->pcie->dev->of_node, rid, &iommu_spec);
->  	if (err)
->  		return err;
->  
-> +	of_node_put(iommu_spec.np);
+> +static inline bool swiotlb_dev_disable(struct device *dev)
+> +{
+> +	return dev->dma_io_tlb_mem == NULL;
 
-Here we call of_node_put() unconditionally.
+Is there an extra = here?
 
-I think it would be much nicer if imx_pcie_add_lut_by_rid() used the
-same style as apple_pcie_enable_device() and did the of_node_put()
-unconditionally.  That would untangle the function a bit and make it
-easier to analyze.
-
-> +	sid = iommu_spec.args[0];
->  	mutex_lock(&port->pcie->lock);
->  
->  	idx = bitmap_find_free_region(port->sid_map, port->sid_map_sz, 0);
+- Easwar (he/him)
