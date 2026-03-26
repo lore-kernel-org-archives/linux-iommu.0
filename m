@@ -1,123 +1,63 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 50EFC3FD156
-	for <iommu@lists.linux.dev>; Thu, 26 Mar 2026 17:05:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B4DD423A76;
+	Thu, 26 Mar 2026 17:30:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774544718; cv=none; b=U49yiR32L76LmYr0B3W7fN4PWhbAn/m0M3xQn0pMe4nrvb4fBcZvTTNPfvgmmnfqZz5y0sAGa4MUPreEyvQZZNBE5v65ZBP73z47zhU9NtumNrZ0CswVl9+S2VdC//1mZzajsgoIPNw5gaNvkxi5tuGOE2wHUsDswQ8cAsNwM2I=
+	t=1774546259; cv=none; b=RpgmKYUacA5KJ1x7RjIkNWWvefGy+KxohAatzuhvVTqhjBNHUPSBHFRo+o5LTJe1KUbBsjMtVZqTGsY1LEphiOpVUoubrsLAyBeK5hKyRzJj50nBfp1XYDNInm3YH30liK3+5ObOab3i7j/PK5z/erKLGzJAlxGbJ4GWIGh+L4I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774544718; c=relaxed/simple;
-	bh=4Wu0UTzcOhkVnGPF19/hXiwpzCTdBwtuQrSychL2L3E=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=jIi+rG5fn20lSyUjYwrlOc3JH7CG6qZUrW/gcVpZgdDOjZyJIj55VAzBXqgymSTipDM6M82bzyL09elJ0iErFHC27Pkw6Cr21WoodSvC9me48Ffj16npRQUj9BVJT1UV332xt43ywNUN8AcLMx7wmxdhXWLobd/VYV+A/Y0g9FI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=QQa0oJUj; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1774546259; c=relaxed/simple;
+	bh=4EeuRosMZbwH6d8OipWeJaJ57dZ/HpX0mMvnqarsT2I=;
+	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=cEsCccRDQ+H9cnLfjSUfwjaMAZRoyk0wW35VZpQ9HLtuUtflF6VtEpxQu4Q0qvAI2lzF/kTyOl67DiQekwpdXNwvkAEp9jrWHtA7uh6JAux9hYqkKkZ86JntBiTouvtQt/kpI83K8Qp7m5RHvkt6sl0AGTGLrH5VHgvnu/NdJOs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dEMhqzrX; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="QQa0oJUj"
-Received: from [10.17.145.29] (unknown [4.194.122.144])
-	by linux.microsoft.com (Postfix) with ESMTPSA id A64E220B710C;
-	Thu, 26 Mar 2026 10:05:10 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A64E220B710C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1774544716;
-	bh=rbwZ4OO0LsW1b8RWLG2CAH5pF9lzjnZ9lfP+6EK7t1k=;
-	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-	b=QQa0oJUjjaHP32/aBFhPIPDpHZUup4Od8GSDvR1BVN3D4eWzkg03vaIXDEg8JhiMW
-	 deCvh8frz57RAvkZDkZImBqUVIsflI7kFA3VvB7UDjB9spLSpJ6jPdgxMBnWCIlDHm
-	 FzEO5GDRMJrhmZEkOtbzWM7MzCkN+OLafBqtyGvU=
-Message-ID: <75c6dd78-bbae-4f5a-94ef-9de299720d38@linux.microsoft.com>
-Date: Thu, 26 Mar 2026 10:05:06 -0700
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dEMhqzrX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75B36C19423;
+	Thu, 26 Mar 2026 17:30:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1774546258;
+	bh=4EeuRosMZbwH6d8OipWeJaJ57dZ/HpX0mMvnqarsT2I=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=dEMhqzrXfgR3GVgtHLB8QRIG4sxz6g07auvPxK/hD67sWqRgIb3sSSwzxomF1pPi7
+	 1jIviaGE4wvpIUTQCqc27QwVHEVcS4YwfPWxuih8IivUFQAgP8z2EgiJjyUzfVxWww
+	 GJzDFaO6LRZUE/vuMSsRKziE2WKUlTfeGNGI+K0K+qoVgvVKjvCjYl/dbErvRlMTPk
+	 eI1vuPffVGESAKnwfCEIKgGuv3kAloRo9QsR2mLbDW6MU+8w2RNo3rmtgxlNj1moJJ
+	 hUAqHt+0Q+kK3k9ZP3TNib5VU2txA+EHzD0JP3pqgK3gX/H205T358N+3OuT/FKPVO
+	 bnTlA6kmC8nKQ==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 3FD6D39F2037;
+	Thu, 26 Mar 2026 17:30:46 +0000 (UTC)
+Subject: Re: [GIT PULL] second set of dma-mapping fixes for Linux 7.0
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <20260326075200.1751363-1-m.szyprowski@samsung.com>
+References: <CGME20260326075214eucas1p192a7e540eed96bae33f17cdbd3745d9d@eucas1p1.samsung.com> <20260326075200.1751363-1-m.szyprowski@samsung.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20260326075200.1751363-1-m.szyprowski@samsung.com>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-7.0-2026-03-25
+X-PR-Tracked-Commit-Id: 2cdaff22ed26f1e619aa2b43f27bb84f2c6ef8f8
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: dabb83ecf404c74a75469e7694a0b891e71f61b7
+Message-Id: <177454624484.3098378.7934674180683409569.pr-tracker-bot@kernel.org>
+Date: Thu, 26 Mar 2026 17:30:44 +0000
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Shigeru Yoshida <syoshida@redhat.com>, Leon Romanovsky <leon@kernel.org>, Miguel Ojeda <ojeda@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
- decui@microsoft.com, longli@microsoft.com, m.szyprowski@samsung.com,
- robin.murphy@arm.com, easwar.hariharan@linux.microsoft.com,
- Tianyu Lan <tiala@microsoft.com>, iommu@lists.linux.dev,
- linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
- hch@infradead.org, vdso@hexbites.dev, Michael Kelley <mhklinux@outlook.com>
-Subject: Re: [RFC PATCH V3] x86/VMBus: Confidential VMBus for dynamic DMA
- transfers
-To: Tianyu Lan <ltykernel@gmail.com>
-References: <20260325075649.248241-1-tiala@microsoft.com>
-From: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-Content-Language: en-US
-In-Reply-To: <20260325075649.248241-1-tiala@microsoft.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 
-On 3/25/2026 12:56 AM, Tianyu Lan wrote:
-> Hyper-V provides Confidential VMBus to communicate between
-> device model and device guest driver via encrypted/private
-> memory in Confidential VM. The device model is in OpenHCL
-> (https://openvmm.dev/guide/user_guide/openhcl.html) that
-> plays the paravisor role.
-> 
-> For a VMBus device, there are two communication methods to
-> talk with Host/Hypervisor. 1) VMBUS Ring buffer 2) Dynamic
-> DMA transfer.
-> 
-> The Confidential VMBus Ring buffer has been upstreamed by
-> Roman Kisel(commit 6802d8af47d1).
-> 
-> The dynamic DMA transition of VMBus device normally goes
-> through DMA core and it uses SWIOTLB as bounce buffer in
-> a CoCo VM.
-> 
-> The Confidential VMBus device can do DMA directly to
-> private/encrypted memory. Because the swiotlb is decrypted
-> memory, the DMA transfer must not be bounced through the
-> swiotlb, so as to preserve confidentiality. This is different
-> from the default for Linux CoCo VMs, so disable the VMBus
-> device's use of swiotlb.
-> 
-> Expose swiotlb_dev_disable() from DMA Core to disable
-> bounce buffer for device.
-> 
-> Suggested-by: Michael Kelley <mhklinux@outlook.com>
-> Signed-off-by: Tianyu Lan <tiala@microsoft.com>
-> ---
->  drivers/hv/vmbus_drv.c  | 6 +++++-
->  include/linux/swiotlb.h | 5 +++++
->  2 files changed, 10 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
-> index 3d1a58b667db..84e6971fc90f 100644
-> --- a/drivers/hv/vmbus_drv.c
-> +++ b/drivers/hv/vmbus_drv.c
-> @@ -2184,11 +2184,15 @@ int vmbus_device_register(struct hv_device *child_device_obj)
->  	child_device_obj->device.dma_mask = &child_device_obj->dma_mask;
->  	dma_set_mask(&child_device_obj->device, DMA_BIT_MASK(64));
->  
-> +	device_initialize(&child_device_obj->device);
-> +	if (child_device_obj->channel->co_external_memory)
-> +		swiotlb_dev_disable(&child_device_obj->device);
-> +
->  	/*
->  	 * Register with the LDM. This will kick off the driver/device
->  	 * binding...which will eventually call vmbus_match() and vmbus_probe()
->  	 */
-> -	ret = device_register(&child_device_obj->device);
-> +	ret = device_add(&child_device_obj->device);
->  	if (ret) {
->  		pr_err("Unable to register child device\n");
->  		put_device(&child_device_obj->device);
-> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-> index 3dae0f592063..7c572570d5d9 100644
-> --- a/include/linux/swiotlb.h
-> +++ b/include/linux/swiotlb.h
-> @@ -169,6 +169,11 @@ static inline struct io_tlb_pool *swiotlb_find_pool(struct device *dev,
->  	return NULL;
->  }
->  
-> +static inline bool swiotlb_dev_disable(struct device *dev)
-> +{
-> +	return dev->dma_io_tlb_mem == NULL;
+The pull request you sent on Thu, 26 Mar 2026 08:52:00 +0100:
 
-Is there an extra = here?
+> https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-7.0-2026-03-25
 
-- Easwar (he/him)
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/dabb83ecf404c74a75469e7694a0b891e71f61b7
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
