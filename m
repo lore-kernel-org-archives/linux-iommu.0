@@ -1,259 +1,207 @@
-Received: from mout.web.de (mout.web.de [212.227.15.3])
+Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013068.outbound.protection.outlook.com [40.93.196.68])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 466E934A3BC
-	for <iommu@lists.linux.dev>; Fri, 27 Mar 2026 19:55:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.3
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774641352; cv=none; b=d0Wdhlh/8lKK6DVPtf4JNiXRDQVcH/gMzWrGcHRr/TLs8j+3bxQnGPeHIhFvqPtXejb5uNzDsUNdIY4ENodTr5n7uBAwZuzQYuV4jhUZ2jMmjRMq0V724xO2EgsR6Hhb/WkQ55m693Flmeu1z6PVqPEXbZWWkzVtJIkF4OX0DNo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774641352; c=relaxed/simple;
-	bh=tldNhYyB6NHBM2O0eXJiEdZXt6OBt1v42OGFBVXLlLY=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=JDirhuGdotpg4gPBwDLr/8e7/mGnz8+lWan5B+PCc0ayMLnvW3CWgfQKLAMTlrk1Rvj6xGobxHiKzuYL3zku1ST6ONL8MX/Fxu1Z+cubDVLO1DJXK5fnlyTt2RVo9BkNQj+jlLqLr7fFBVXPBX6EEApOrvcY6cVMAYvgD3OLJbA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=spasswolf@web.de header.b=DDBRKOoq; arc=none smtp.client-ip=212.227.15.3
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 901C43932E2
+	for <iommu@lists.linux.dev>; Fri, 27 Mar 2026 21:08:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.68
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774645730; cv=fail; b=Tnw575k9PHLQIzkR0mn7vVNBWQEbmYbgpu3X96Ya2pbHZ0bTetDJcJ6YrMLMPGx+NVg+aPX3SUt6wn/okTWGUeJ485vmsJVcHWyEimwVaC3sF0Jo0iJ+zbF+y9G3XhzJGjkzZRfJ9Df8N6EbAdr9M05NguuxkRxdiLXGXaH4s10=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774645730; c=relaxed/simple;
+	bh=rdv+SMTMScS9iIiEL1xqvqFAx9cgZO7RfnGDlDoJWPM=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kh72v5jI3jHc9H7eo87WmD84fPrcWmmNdRxz8hzyD4n5mF6cdPavBsPxdSNpI7PgS76H+Mm+7KDqsMeDT04cbfKu1Sfkp51bUJCip0S7Giz9pzUqrVX8F/EIySxPEFXfiq+sGkAhHFwc3cWJnw6MzekTufgEUdcVU/htGHI4u4E=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=QgDUvLsm; arc=fail smtp.client-ip=40.93.196.68
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=web.de header.i=spasswolf@web.de header.b="DDBRKOoq"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
-	s=s29768273; t=1774641273; x=1775246073; i=spasswolf@web.de;
-	bh=OZeyCQLimffNyqz4tqPnVuhzcRPTWz8dHxxAUXYVV/I=;
-	h=X-UI-Sender-Class:Message-ID:Subject:From:To:Cc:Date:In-Reply-To:
-	 References:Content-Type:MIME-Version:Content-Transfer-Encoding:cc:
-	 content-transfer-encoding:content-type:date:from:message-id:
-	 mime-version:reply-to:subject:to;
-	b=DDBRKOoqMQVw8IzkPODN2L9JYQ4/fsEcSTm2Hljl3f4esEEFr9GlV+cIHE2wHhNw
-	 anQIgpzH0RK0UxyI7MwXoPEL6xSThpEnBvB8W4BJUT3zYytk4KcoarblY7eFb0wcX
-	 lR0pdC3DSO2YN9JT8tHJxsF+MlbIBmvnL9RA7rjHsZ5ACh1Xx77l41Pmy7nMQ5lQa
-	 bW4oltn8TXmcnk7MCrUDfyidZuyP5eD0ZGKMCorfjT3WmHXri8M0syYILO6qQk6Kg
-	 eDW8zEIHpxfG39PqZbOsMp8QfI0WYZ47tzRCFXGmQkFHnPKJmjUzM3soXeUmeKTf1
-	 Al5f09rq6g7pq8q5WQ==
-X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
-Received: from client.hidden.invalid by smtp.web.de (mrweb006
- [213.165.67.108]) with ESMTPSA (Nemesis) id 1Mvsln-1vDqKE2JAV-0134vi; Fri, 27
- Mar 2026 20:54:33 +0100
-Message-ID: <59508c77abe7605636cde616c8c3b3291c6acf54.camel@web.de>
-Subject: Re: Warning from free_reserved_area() in next-20260325+
-From: Bert Karwatzki <spasswolf@web.de>
-To: Mike Rapoport <rppt@kernel.org>
-Cc: linux-kernel@vger.kernel.org, spasswolf@web.de, Liam.Howlett@oracle.com,
- 	akpm@linux-foundation.org, andreas@gaisler.com, ardb@kernel.org,
- bp@alien8.de, 	brauner@kernel.org, catalin.marinas@arm.com,
- chleroy@kernel.org, 	dave.hansen@linux.intel.com, davem@davemloft.net,
- david@kernel.org, 	devicetree@vger.kernel.org, dvyukov@google.com,
- elver@google.com, 	glider@google.com, hannes@cmpxchg.org, hpa@zytor.com,
- ilias.apalodimas@linaro.org, 	iommu@lists.linux.dev, jack@suse.cz,
- jackmanb@google.com, 	kasan-dev@googlegroups.com,
- linux-arm-kernel@lists.infradead.org, 	linux-efi@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-trace-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
-	lorenzo.stoakes@oracle.com, m.szyprowski@samsung.com, maddy@linux.ibm.com, 
-	mhiramat@kernel.org, mhocko@suse.com, mingo@redhat.com, mpe@ellerman.id.au,
- 	npiggin@gmail.com, robh@kernel.org, robin.murphy@arm.com,
- saravanak@kernel.org, 	sparclinux@vger.kernel.org, surenb@google.com,
- tglx@kernel.org, vbabka@kernel.org, 	viro@zeniv.linux.org.uk,
- will@kernel.org, x86@kernel.org, ziy@nvidia.com
-Date: Fri, 27 Mar 2026 20:54:24 +0100
-In-Reply-To: <aca6blFFWskxAcAr@kernel.org>
-References: <20260323074836.3653702-10-rppt@kernel.org>
-	 <20260327140109.7561-1-spasswolf@web.de> <aca6blFFWskxAcAr@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.56.2-0+deb13u1 
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="QgDUvLsm"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=K+8r5COwLSmyzJD+cSHLcl/nc2Uf1lKdyxiMa3mx+60OoqPAaQBWvPMX/5CmwFvxooAC9Im+CwZ3dlkwbb7McNaFZ+UvdWHdB/iiPVIrXNcNJHDRlQm4V8z0hByCstEYrbfr3LM9ZztkRKxKEy8jztBXo0RJo/gvTrP5vyMpktc4QzCEre14/Mfq3btvzMIf+KQqCV/AACGqq+uUu8HwrYIhiPVxFyHRmSw5WS72R5kVGUqGYveY22ObvU4lbmua9DrRkmXDZi7yDM3fA/C4nx2PtCUFalhe5qLeUcg6+cdJnLt2UTzx9wAPf6szfYCQrr2517ShsSpO9GhJHQYziw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=TzR3Eq953vPl7kYoYD3geieK0QE5uJHaybqOJkgHiD0=;
+ b=d/hvWmUsMK6gacJBvb1kaipLiy4IN3tlDUbiYdkFJapPwEgAn5o6D+t7W9dXEMCulbsK0pGmvorGREdzhmGofsw6+MFXYe+g39fQ4CmFFXZFK+g4i8p3CUGxkFEPGajQ4ZlVbdH5f2LL6XBihQFd4wLcllIdlcUEIZF0Tkhu6TxZfqHfUCRzuYg3XacQLypKUAcVO/4lh7QwCmBC1xle6emYe5KYHyMwn5haWM3FpDb5Ppc3jUe+A9n+4we7fb2qiUvXecZuDRCVuEqegVzfJncKtyPSbiWRyLI594DKHgd7SD3F2reFgzSEOdURAGiwxdfYSB8ryWytpBNhF1X/4A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TzR3Eq953vPl7kYoYD3geieK0QE5uJHaybqOJkgHiD0=;
+ b=QgDUvLsmk33fAs9flhx0mt+YhLjwu9GbDNApz2n3wx2YqXtnBLdZcbwV369gBD7DuWESwFaWbn5nwvQiR/ofqOc6E2US/4iZNBVHBshUVhduywz3uE976Pvj1yMMDE6VwdnoLv136NWRcroABSNtG8kisc2VaysuF8p9BeHKa7bmZrT2rVUOmHuuO8x6eCpU2RpYfDmN7qJA9oqesIWAKAdfnnJ9Rqgh/dkWT/x0klKI1ikYwE9TEdUmAjsXKT5rEvBUGur4COeFkJk5wV+UB9gzdAHckkUy/PmN/aAjMupU2tnPAp5Fp8h/v2vNFjwzgoDJ2/unJz2oY2mcxOcU3w==
+Received: from BL1PR13CA0162.namprd13.prod.outlook.com (2603:10b6:208:2bd::17)
+ by SJ2PR12MB9140.namprd12.prod.outlook.com (2603:10b6:a03:55f::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.8; Fri, 27 Mar
+ 2026 21:08:45 +0000
+Received: from BN2PEPF000044A7.namprd04.prod.outlook.com
+ (2603:10b6:208:2bd:cafe::eb) by BL1PR13CA0162.outlook.office365.com
+ (2603:10b6:208:2bd::17) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9745.22 via Frontend Transport; Fri,
+ 27 Mar 2026 21:08:45 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BN2PEPF000044A7.mail.protection.outlook.com (10.167.243.101) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9745.21 via Frontend Transport; Fri, 27 Mar 2026 21:08:44 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 27 Mar
+ 2026 14:08:36 -0700
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 27 Mar
+ 2026 14:08:35 -0700
+Received: from nvidia.com (10.127.8.10) by mail.nvidia.com (10.129.68.8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Fri, 27 Mar 2026 14:08:33 -0700
+Date: Fri, 27 Mar 2026 14:08:32 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+CC: Shuai Xue <xueshuai@linux.alibaba.com>, "joro@8bytes.org"
+	<joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>, "jgg@nvidia.com" <jgg@nvidia.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH rc v2] iommu: Fix nested
+ pci_dev_reset_iommu_prepare/done()
+Message-ID: <acbx0NYGq6BOiSDl@nvidia.com>
+References: <20260319043135.1153534-1-nicolinc@nvidia.com>
+ <dd72f3be-16d9-4386-82ac-1b8e06186e3d@linux.alibaba.com>
+ <abxr7XrsK1WSmr7T@Asurada-Nvidia>
+ <BN9PR11MB5276A9067B8D8FE3CB899B2F8C57A@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:8yi1QDgpo8UcEnEmdsCrBeIx3476PkZJGVS51Y7ouWzkEFb+7Vb
- iI7H6IplAo1reWJ7m5n87dsOo5WacneML6j1pMJ7rnDwG6x5PC0OEThQVkULLu2jhFoqTwT
- shRnhwwnWC2Y/HQvI3/neDcQfX5Kv+AIV6b80koxpdj7xBv2BCp0VvI1GgwNSQXSp+aLx3d
- 90SEC80yF2L5+2em4BT7A==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:SULYSfaxDo4=;hgo2YyqOeqVK8mnAmq+9xwfLp8d
- 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
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB5276A9067B8D8FE3CB899B2F8C57A@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN2PEPF000044A7:EE_|SJ2PR12MB9140:EE_
+X-MS-Office365-Filtering-Correlation-Id: 472041f8-9c1c-4b6d-144c-08de8c450825
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|376014|36860700016|1800799024|13003099007|56012099003|22082099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	nBYoVtOZ6hAjOA0d71rZBRpZSlwgIaiO6T8TKw5srvmNta8rF1Yh4I1tk9A3NKcSO2s1pxXN3feggxUZjW9XAj+oH2W1HqHT9r13eAUXT4sUgXXgSbhR7+9M09ELMNqmIqlkxJTjLnzSIt6/4KAo5/vDkAWCMaqByZ6n+x0RuC0mX+Qw5NKB80/2bn7SARXnNJtbRBoRjC3fGRWL3Git7j/bT73jVhxJi8Su6IyCvgsVPdIWWKWkIUvk+e6lSbhjnp+WRdPSiK76870ODxUBt8DKGMNRghxM1cbvSFzkzWYnPS+yYQcD9KqIkAqJPq/rurYhByPeEWUJcKTqUlPsSrF41J32tzpSmjcz0N1if3orwJL9GKJJHtWBXPBMfTOnV6xElzGPK8a6zLlcrsQLJvFIb391eYCJw2F6HaU3bwSceijUyKdeGohnuhCPX0A/F49CFZItnUSuFJlDA3KaU4XSvuzh4CB0B1W27jFlAO90BmNqdu0WKmFrvSzYxFpZBPbcn5VawdmuWMw5BY2RvFWLZuMzJ1kGMPMTMfRVsj5tvaIGiA46e0dvT//H7ISdWJ7j88DNBBaNsyUu+FoEyvA++LfhB68UTGoRRujtfs2Okrpd1ea4aIihO84kbU1errCg+6iEOnBU+l8bYeTH9t5XDHcCMv0aWZAK+X0cWISLfdaLgM19/V9reqdWwnOu8E7CFsz49FRqM7QAq6fZWCmaoK6mgecn/SO2zRkCnjFCPnity4So7e14Aw/jTdSKjQP61QAK0uiN2a5DsWsGYQ==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(376014)(36860700016)(1800799024)(13003099007)(56012099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	Lc3KJmKKn2N+mZAV4+qp/PCgC3HsWqo+UBJUe+9nzSwArUil5BsSdI4I2RHZbfXYGPMaGEy4c/2/J5SYGQEj2MedNZlAm5R2jLenvlWXaNwHpU38DBy7E+M6Kgd0Cr8CBPNuelrflPBG6KmrRjbv7UB0F0p8uYKmhrANXnn6GUJBThjQo6/kADNSbFzHGtzigIOQNS+RNJdwzLf7tzj+KpupO1sWyAcjidY68/WfNiYpoy50FoSoMgO0N9xYd3kAC3Pa/tJYUEYIeQSLW++nAJ8tg4FiADWapD3ASqheo79GZwtjqlAJh1v7NCgzpKvUACwrI4/Vnr4QaBb4Au9+8HnFaZg0+nRxCrg14B8M+StTmt5MoTfyEcLz73EdWKzst397WBsnKNETyibOvJV5HOmmGCtsLgR3G8WmSW8p8HN5PtISppJEjCMaPEzF+uVS
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Mar 2026 21:08:44.8575
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 472041f8-9c1c-4b6d-144c-08de8c450825
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN2PEPF000044A7.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB9140
 
-Am Freitag, dem 27.03.2026 um 20:12 +0300 schrieb Mike Rapoport:
-> Hi Bert,
->=20
-> On Fri, Mar 27, 2026 at 03:01:08PM +0100, Bert Karwatzki wrote:
-> > Starting with linux next-20260325 I see the following warning early in=
- the
-> > boot process of a machine running debian stable (trixie) (except for t=
-he kernel):
->=20
-> Thanks for the report!
->=20
-> > [    0.027118] [      T0] ------------[ cut here ]------------
-> > [    0.027118] [      T0] Cannot free reserved memory because of defer=
-red initialization of the memory map
-> > [    0.027119] [      T0] WARNING: mm/memblock.c:904 at __free_reserve=
-d_area+0xa9/0xc0, CPU#0: swapper/0/0
-> > [    0.027122] [      T0] Modules linked in:
-> > [    0.027123] [      T0] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tai=
-nted 7.0.0-rc5-next-20260326-master #385 PREEMPT_RT=20
-> > [    0.027125] [      T0] Hardware name: ASUS System Product Name/ROG =
-STRIX B850-F GAMING WIFI, BIOS 1627 02/05/2026
-> > [    0.027125] [      T0] RIP: 0010:__free_reserved_area+0xa9/0xc0
-> > [    0.027126] [      T0] Code: 48 89 df 48 89 ee e8 06 fe ff ff 48 89=
- c3 48 39 e8 72 a0 5b 4c 89 e8 5d 41 5c 41 5d 41 5e c3 cc cc cc cc 48 8d 3=
-d 97 c2 c6 00 <67> 48 0f b9 3a 45 31 ed eb df 66 66 2e 0f 1f 84 00 00 00 0=
-0 00 66
-> > [    0.027127] [      T0] RSP: 0000:ffffffff9b203e98 EFLAGS: 00010202
-> > [    0.027128] [      T0] RAX: 0000000e91c00001 RBX: ffffffff9b100c0f =
-RCX: 0000000080000001
-> > [    0.027128] [      T0] RDX: 00000000000000cc RSI: 0000000e2d42d000 =
-RDI: ffffffff9b32ef60
-> > [    0.027128] [      T0] RBP: ffff9eeafdd6fbc0 R08: 0000000000000000 =
-R09: 0000000000000001
-> > [    0.027129] [      T0] R10: 0000000000001000 R11: 8000000000000163 =
-R12: 000000000000006f
-> > [    0.027129] [      T0] R13: 0000000000000000 R14: 0000000000000045 =
-R15: 000000005c8a1000
-> > [    0.027129] [      T0] FS:  0000000000000000(0000) GS:ffff9eeb21c05=
-000(0000) knlGS:0000000000000000
-> > [    0.027130] [      T0] CS:  0010 DS: 0000 ES: 0000 CR0: 00000000800=
-50033
-> > [    0.027130] [      T0] CR2: ffff9ee8ad801000 CR3: 0000000e2ce1e000 =
-CR4: 0000000000f50ef0
-> > [    0.027131] [      T0] PKRU: 55555554
-> > [    0.027131] [      T0] Call Trace:
-> > [    0.027132] [      T0]  <TASK>
-> > [    0.027132] [      T0]  free_reserved_area+0x89/0xd0
-> > [    0.027133] [      T0]  alternative_instructions+0xee/0x110
-> > [    0.027136] [      T0]  arch_cpu_finalize_init+0x10f/0x160
-> > [    0.027138] [      T0]  start_kernel+0x686/0x710
-> > [    0.027140] [      T0]  x86_64_start_reservations+0x24/0x30
-> > [    0.027141] [      T0]  x86_64_start_kernel+0xd4/0xe0
-> > [    0.027142] [      T0]  common_startup_64+0x13e/0x141
-> > [    0.027143] [      T0]  </TASK>
-> > [    0.027144] [      T0] ---[ end trace 0000000000000000 ]---
->=20
-> Does this patch fix it for you?
->=20
-> diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative=
-.c
-> index e87da25d1236..62936a3bde19 100644
-> --- a/arch/x86/kernel/alternative.c
-> +++ b/arch/x86/kernel/alternative.c
-> @@ -2448,19 +2448,31 @@ void __init alternative_instructions(void)
->  					    __smp_locks, __smp_locks_end,
->  					    _text, _etext);
->  	}
-> +#endif
-> =20
-> +	restart_nmi();
-> +	alternatives_patched =3D 1;
-> +
-> +	alt_reloc_selftest();
-> +}
-> +
-> +#ifdef CONFIG_SMP
-> +/*
-> + * With CONFIG_DEFERRED_STRUCT_PAGE_INIT enabled we can free_init_pages=
-() only
-> + * after the deferred initialization of the memory map is complete.
-> + */
-> +static int __init free_smp_locks(void)
-> +{
->  	if (!uniproc_patched || num_possible_cpus() =3D=3D 1) {
->  		free_init_pages("SMP alternatives",
->  				(unsigned long)__smp_locks,
->  				(unsigned long)__smp_locks_end);
->  	}
-> -#endif
-> =20
-> -	restart_nmi();
-> -	alternatives_patched =3D 1;
-> -
-> -	alt_reloc_selftest();
-> +	return 0;
->  }
-> +arch_initcall(free_smp_locks);
-> +#endif
-> =20
->  /**
->   * text_poke_early - Update instructions on a live kernel at boot time
-> =20
-> > Bert Karwatzki
+On Fri, Mar 27, 2026 at 08:27:12AM +0000, Tian, Kevin wrote:
+> > From: Nicolin Chen <nicolinc@nvidia.com>
+> > Sent: Friday, March 20, 2026 5:35 AM
+> > 
+> > On Thu, Mar 19, 2026 at 07:14:21PM +0800, Shuai Xue wrote:
+> > > On 3/19/26 12:31 PM, Nicolin Chen wrote:
+> > > > @@ -3961,9 +3962,10 @@ int pci_dev_reset_iommu_prepare(struct
+> > pci_dev *pdev)
+> > > >   	guard(mutex)(&group->mutex);
+> > > > -	/* Re-entry is not allowed */
+> > > > -	if (WARN_ON(group->resetting_domain))
+> > > > -		return -EBUSY;
+> > > > +	if (group->resetting_domain) {
+> > > > +		group->reset_cnt++;
+> > > > +		return 0;
+> > > > +	}
+> > > >   	ret = __iommu_group_alloc_blocking_domain(group);
+> > >
+> > > pci_dev_reset_iommu_prepare/done() have NO singleton group check.
+> > > They operate on the specific pdev passed in, but use group-wide
+> > > state (resetting_domain, reset_cnt) to track the reset lifecycle.
+> > >
+> > > Interestingly, the broken_worker in patch 3 of the ATC timeout
+> > > series DOES have an explicit singleton check:
+> > >
+> > >   if (list_is_singular(&group->devices)) {
+> > >       /* Note: only support group with a single device */
+> > >
+> > > This reveals an implicit assumption: the entire prepare/done
+> > > mechanism works correctly only for singleton groups. For
+> > > multi-device groups:
+> > >
+> > >   - prepare() only detaches the specific pdev, leaving other
+> > >     devices in the group still attached to the original domain
+> 
+> no, attach is per-group. all devices are changed together.
 
-Yes, your patch fixes the issue in next-20260326.
+I think prepare() should use the per-device ops:
+    ops->attach_dev (via __iommu_attach_device)
+    ops->set_dev_pasid
+right?
 
-Tested-By: Bert Karwatzki <spasswolf@web.de>
+And it is intended to limit to the resetting device only. Other
+devices in the group can still stay in the attached domain, but
+they cannot do new attachment (-EBUSY) because that's per-group.
 
-Bert Karwatzki
+> > >   - The group-wide resetting_domain/reset_cnt state can be
+> > >     corrupted by concurrent resets on different devices (as
+> > >     discussed above)
+> > 
+> > That's a phenomenal catch!
+> > 
+> > I think we shall have a reset_ndevs in the group and a reset_depth
+> > in the gdev.
+> > 
+> 
+> I didn't get how the state might be corrupted.
+> 
+> If there are two devices in a group both being reset, you only
+> want to switch back to the original domain after both devices
+> have finished reset.
+> 
+> so a reset_cnt is sufficient to cover both scenarios:
+> 
+> - nested prepare/done in a single device resetting path
+> - concurrent prepare/done in multiple devices resetting paths
+
+Since prepare() is per-device, the per-group reset_cnt wouldn't
+be sufficient if one device is resetting while the other isn't.
+
+iommu_driver_get_domain_for_dev() for example would return the
+blocking_domain for both devices, but physically only the first
+device is attached to blocking_domain.
+
+> v4 is way too complex. Probably it's required in the following
+> ATS timeout series (which I haven't thought about carefully).
+> but for the fix here seems a simple logic like v2 does is ok?
+
+I think v4 is the way to go, unless we fundamentally limit this
+API (and the followup ATS timeout series) to singleton groups.
+
+FWIW, I have the ATS timeout series updated (waiting for some
+finalization of this base patch):
+https://github.com/nicolinc/iommufd/commits/smmuv3_atc_timeout-v3/
+The new iommu_report_device_broken() is changed to per-gdev.
+
+Thanks
+Nicolin
