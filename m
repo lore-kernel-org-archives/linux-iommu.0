@@ -1,374 +1,176 @@
-Received: from mout.web.de (mout.web.de [212.227.15.14])
+Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011050.outbound.protection.outlook.com [40.107.208.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B004227599
-	for <iommu@lists.linux.dev>; Fri, 27 Mar 2026 14:02:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.14
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774620139; cv=none; b=Uu0jBlLDkZnYrYkPerz4YmOqwDQlDDDe9Fq9QgKmen6cuL9f8mSuZxtNkOa8GnD7sPdidl1TSCUvAbSyS8AOt00RTJ1jRzzzo36lZ6wa5cdDrky0tdsebVe/ZfYX1QSld5cjs3YnZpCD2JHUeuIRPrFvBkv/yu32S3kQu61Lk54=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774620139; c=relaxed/simple;
-	bh=IHVzt/pRRcCw1WwDLjZJBkrIoMOeJ2I8DTEcxuGlzEk=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=W3ECPFJvLG5QyFZBkOVEDmSbgQ7UIroWAwIP1PMIRj5NYfdyiCJHlKy81Rt8N32I94+woI2O54xPbpII94wUoerrmdFXDiQM2SJQPUjzt0SUeQg8ZndOBOe8/dDv5xaLYlC8LKKcfzKCsQH4mBioK5nt8hBebM/MsfPyex4qruw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=spasswolf@web.de header.b=F3N7aG1u; arc=none smtp.client-ip=212.227.15.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D92CC322527;
+	Fri, 27 Mar 2026 15:22:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.50
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774624942; cv=fail; b=h2STk45SK/TkJR6DTY4mQXHRiG2OZmV/kbWxYxTpYL0reTSSSHtsS4YThAIdlDTVYzOCcj5iNHR0CHWfQiIpHHS3+eN1jRSlKwaqk9qS/tgf0J/T6GY/o6ekUYWxAkAwIdNDEjocl3ejr79FRGT6TdPptwi7C2X9CkYh0q+8m+k=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774624942; c=relaxed/simple;
+	bh=Tcdx7igcV8iuCNVopxe8PAFF8w/I3VJ1024i2Bz1xZY=;
+	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=mwicxs2ZWgBhXnbr+y0ypX4PxuT1QBIAsiNjDB8hCGQvlbfOYWXxCsP8Hz1zqCWV6uNAbUVYi/vIdjk6+xG7R0SkrcIy/hH8VFc0Ua/xVDGj1bxe0v44hE/csTRigp6T/K3pK3YNDQTXzHu3K4fsAM53pgQgAcBvR4Nu5GNUltk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=WXFKs4DR; arc=fail smtp.client-ip=40.107.208.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=web.de header.i=spasswolf@web.de header.b="F3N7aG1u"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
-	s=s29768273; t=1774620076; x=1775224876; i=spasswolf@web.de;
-	bh=b5WNyX5o+g15xOHk9Vvq0Jm9HTCv4IG83yFDt6da/xw=;
-	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-ID:In-Reply-To:
-	 References:MIME-Version:Content-Transfer-Encoding:cc:
-	 content-transfer-encoding:content-type:date:from:message-id:
-	 mime-version:reply-to:subject:to;
-	b=F3N7aG1uEdfN/GlCkl+MfA8Re5JxMOUE+SE5UxG3QN3kst4g7HE+4G65Uk4n3lOb
-	 LEktcfB2PZbd1upgdIoqYtK4sDD7tS/h7z6m/SAdGcUt6ATd6ERBAsbi6Mfc1Wfyg
-	 /lReru+FT3JPEfFj4UVbAIzuvrwdrOYXob8/IY3yOxomp9wAi4QmzbTW9dEcnrGjx
-	 Z2sScXyT5bc2fKeEhDctS8PyeVjUjwXUNdfLa8bwQE1fM4e2J1HDlwSDSZkXJ1GDn
-	 O7273i4leldfgb4S8y8WhLmr/jwRfKuXWDcVAFGrd+z4swQEwPCRtE+v8RP9/P7Ab
-	 pD9WelTQ4fR816zY5w==
-X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
-Received: from client.hidden.invalid by smtp.web.de (mrweb005
- [213.165.67.108]) with ESMTPSA (Nemesis) id 1MIL0C-1wIGpE1PSG-000jY3; Fri, 27
- Mar 2026 15:01:16 +0100
-From: Bert Karwatzki <spasswolf@web.de>
-To: Mike Rapoport <rppt@kernel.org>
-Cc: Bert Karwatzki <spasswolf@web.de>,
-	linux-kernel@vger.kernel.org,
-	Liam.Howlett@oracle.com,
-	akpm@linux-foundation.org,
-	andreas@gaisler.com,
-	ardb@kernel.org,
-	bp@alien8.de,
-	brauner@kernel.org,
-	catalin.marinas@arm.com,
-	chleroy@kernel.org,
-	dave.hansen@linux.intel.com,
-	davem@davemloft.net,
-	david@kernel.org,
-	devicetree@vger.kernel.org,
-	dvyukov@google.com,
-	elver@google.com,
-	glider@google.com,
-	hannes@cmpxchg.org,
-	hpa@zytor.com,
-	ilias.apalodimas@linaro.org,
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="WXFKs4DR"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=rgS40XO4YJpYwGyTWThMTvli18bOiACq/lxwAwZ9Xnma0VOvGHnblB563ftJJ2hbob+1vnIszqujifjC3w/SvThKU8OvdsHwhCwDmov8EOTOKqUGNIbzk6Oh2/Vbs+pNMyqhk4uLwS/Li8Dj7S/YR6sOiXDN1GpJHlw7Z91GMs5vLafdEjdci8S2hL1rK8HOqzyK8U6W0r93kwvUDbfJxPUcUGMEq0R68vq1sYd6asePg+TvBbEX5+CK7ovP1QrprzjUynEuXYcumiL+fecDgQsxiGlvGRj8++ps9Oyadu1GzB3V5SPp4ZGp1eYYTqkpqhwMCYxQFDE+d/pXC9hQPg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bugBieCFpxf9d71FemlXVLsvdnmyChW3ZG0vbB9Zpo8=;
+ b=UVGRPxewXYLrsXoPa+ZEPNlltgXszmnzwrhkkpYYEAByLHcRWW/y+qCu62a5GEq2LPWuq/BYgFgSFATn0ZyuUTIgDbKXUaPEaOa0GdQxv8sBYcVlYsDjS/Y/NtpplbsxXYND+idu09YSJzHKKwr0oiw1+Fa+KChWzXeEk3vvjOhaNt2sZuqMMbg9XMnOUnF5IS/CmLkghMSNzAX7OSo/dxtmZvMnfnkGoPVvDUCW1VVgKhHZ4kFHIK7K/RIt5CPYGMm1KRYioa0ihh6e7uMZc3fdKnbli0H/IKtdfEpXGTrWF16xnjrQZBlNi0sO+ifjo6REDrrE60B/LcZxeWhQ+g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bugBieCFpxf9d71FemlXVLsvdnmyChW3ZG0vbB9Zpo8=;
+ b=WXFKs4DRP/EqiwcPXFyp6XSISg0eRBytbBePXatoLweijZKmwf6lHn7Oh45USWAtjesiFYnYPTIIbVnRfoxGEDlMfFeboS7kPCxbZn8JnpPjF7DKmErMEIG863QRvFu62OgSfRmCPlsfjeFRzHxK5E+Zz+ooh4yKSWSy86/iUkzmCk0X5TgJFlVx1jDgk8VwrJFLVHkTMFkI6iyFtOcII5d+UA4JhL1NGaft8q/BpUQ04b65G4UcqqFVINYchnKPagLVNOHDJ+FuJXy/T3/GVf3ZuTImZRC+JcGAug4BLn5H903xzmzRPmacVpxOfZsiEi8QDLYKuzr+q/ekY1UGZw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by PH7PR12MB7186.namprd12.prod.outlook.com (2603:10b6:510:202::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.8; Fri, 27 Mar
+ 2026 15:22:11 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9769.006; Fri, 27 Mar 2026
+ 15:22:11 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Alexandre Ghiti <alex@ghiti.fr>,
+	Albert Ou <aou@eecs.berkeley.edu>,
 	iommu@lists.linux.dev,
-	jack@suse.cz,
-	jackmanb@google.com,
-	kasan-dev@googlegroups.com,
-	linux-arm-kernel@lists.infradead.org,
-	linux-efi@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org,
-	linux-mm@kvack.org,
-	linux-trace-kernel@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org,
-	lorenzo.stoakes@oracle.com,
-	m.szyprowski@samsung.com,
-	maddy@linux.ibm.com,
-	mhiramat@kernel.org,
-	mhocko@suse.com,
-	mingo@redhat.com,
-	mpe@ellerman.id.au,
-	npiggin@gmail.com,
-	robh@kernel.org,
-	robin.murphy@arm.com,
-	saravanak@kernel.org,
-	sparclinux@vger.kernel.org,
-	surenb@google.com,
-	tglx@kernel.org,
-	vbabka@kernel.org,
-	viro@zeniv.linux.org.uk,
-	will@kernel.org,
-	x86@kernel.org,
-	ziy@nvidia.com
-Subject: Warning from free_reserved_area() in next-20260325+
-Date: Fri, 27 Mar 2026 15:01:08 +0100
-Message-ID: <20260327140109.7561-1-spasswolf@web.de>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260323074836.3653702-10-rppt@kernel.org> 
-References: 
+	Joerg Roedel <joro@8bytes.org>,
+	linux-riscv@lists.infradead.org,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Paul Walmsley <pjw@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>,
+	Joerg Roedel <jroedel@suse.de>,
+	Palmer Dabbelt <palmer@rivosinc.com>,
+	patches@lists.linux.dev,
+	Tomasz Jeznach <tjeznach@rivosinc.com>,
+	Zong Li <zong.li@sifive.com>
+Subject: [PATCH] iommu/riscv: Remove overflows on the invalidation path
+Date: Fri, 27 Mar 2026 12:22:10 -0300
+Message-ID: <0-v1-0f76ffba5af6+11540-iommupt_inv_riscv_jgg@nvidia.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BN9PR03CA0982.namprd03.prod.outlook.com
+ (2603:10b6:408:109::27) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:jwEpGLTFv6lxOcQdrUyNC0xH05pvVO5X2lpgj2DKPAX3uJursNt
- rMMU5c9UYBeudcXm3uROLBUlLd91P7V68GG4LyDXEcXT6VaLDh0LZ1YG+XCaPdVoYoOLcoM
- 6ALUn81ZBMWLAA1p/4bNmu+esn5JDVrdhOgeNUENyKINGIMiDu1TfLAFkxXs79H5JA1EM2S
- zXdMZt1RvAhW2Infl9yLg==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:a2oYlASDxJ0=;7fSVqPm/9Ziq6pTJ1ad0sJjua3w
- 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
- z9TgiHwdLkEsHl1aKyb16FxJWyRVtIT/A==
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|PH7PR12MB7186:EE_
+X-MS-Office365-Filtering-Correlation-Id: 79ad601c-a26a-402a-519f-08de8c149dd8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|1800799024|7416014|376014|18002099003|56012099003;
+X-Microsoft-Antispam-Message-Info:
+	mxrQHR0FboM7t2XNd4I6htpaXpK333PJjGLv5qNhBcNFGU4alCEJSp5uDZuqoKdACsQP0Fq1GVuuNQpdbRJImPpQaXHX8EEAfA5bj/DlohVm3+A3AjaHmk4VGDZuQ8YJbEduUe7pupcYRxCyI+WMpKi9M2y4bZk4ERXPw5bdBxd8w8ZCERg8+07iKYj2Mqew86oDqRWFYNOHDz/4k/0FKT2FBrcQKV5e93X8DWTBeQk0sh26dYNS/DOfT2JER2f/npPCDiF1yxl3M4m3uI+tuoXUCxF2spcC2hhKGcf27fjtOxWT34uRI1o/GERBcxi2nWaTjbYe4xBq9aPn75I5olT4NvACn2yWdCs7QxAjsgRWqhYixTDyrBIk4+PpzZy5Q8XYsGv2CXMBlhp+wXdG3Pq5N/LScDSkyyzEnkJvFjtpoxunhB954w3VJF+/+8Uj9kzkyMF4DbpDW7t5afDX601SmikGADNiKGow8MXQxvtZJLC9oGQo11GrVBzqw7+rCQ/TxgQN0Ux8Lz5VOsiCk8MQnulkTwZvnncY9Ro1hmv8dMWD8/WxJ4XHBebfJoemKa9pwWOcTbfpsmdEtJUbr2DeZ0Cwn61Em/DEaLZhGiXr5Qp3NRMDhEWMH5Uc16mOwdHJcSlkC7dVkZUTC5icOz+8zH0n5Wo/MsnqT/vibJ7dFaxsRFFzs8MRzFREft4usEX8z/SUbkJ5E5D+h2DxBM5w423lMqRSSVtPyX3skw0=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(7416014)(376014)(18002099003)(56012099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?jh8d64rS2yu6gQCqDXmjo64pDlKJHvsCXA9fvBBRBVpgd/5/G53W4kZVFjCc?=
+ =?us-ascii?Q?uWjDbly1S11SznciqQoFde8oEf9h9zgb6zuLKdcXOXWGoc0be2z8/tl/9UC8?=
+ =?us-ascii?Q?XCqJsLW4J0WJQFyii18wD5QfiJvR+mD5RuwBBR557rCFhM8d0swH/vEIuXMs?=
+ =?us-ascii?Q?xpQOZvIiWBL4GJ1FCx+UMUPPS671IbShB0977hJh1IzXRFMll1mcGb+xU3Ru?=
+ =?us-ascii?Q?axEuzOHcjgAb7GywKCCjLCcZ0AjT/sKv5+mmaZWxsrDJi53m/iLBVfIVoNPW?=
+ =?us-ascii?Q?EjQ9JKzJmWbhMGllQrACRg19E+jY5aEbMrE1wBa/w0o1PgBHmeS7SO5Puks9?=
+ =?us-ascii?Q?gQYVo5v747SpyV9Lafx7MCM89xGecXd/JL4mphvMnm2P3cVfD/tncW8X0GJD?=
+ =?us-ascii?Q?f5OPbxtACJOCTFfuM/tjyiueD7FeQC9AFRyGgZPMBuLXq8vkonM11rgoATs3?=
+ =?us-ascii?Q?xB4kyNewzr+pzWMKquMsrxds6sAOWWJ6MKe3uC/RCgy2sNZuX1eD2BlOxP/5?=
+ =?us-ascii?Q?bRfJAcK23xt/b3neSJ1i4sCLv74akG6bsSGpoucvfm6S/dTAw9IrVLYsObJm?=
+ =?us-ascii?Q?+IPZXYr34TPmhL3qDxscC9HrxS8+EZS7zjzzJZnNfGHlGSSNFpcDNTUlYuOp?=
+ =?us-ascii?Q?Q6KorsGWVs1/EuGlcdcLwy3007HL1WZI4efDqUzFS2HgOd3iJMaTpKhGoD41?=
+ =?us-ascii?Q?jP895zavxQax7naNoEMEpVsFnjSg4IGShg3ctac5wUFpqcXXx4cLtR1ODdLr?=
+ =?us-ascii?Q?e+RgcJHBJ+awEfB1Yme/CE07UCNqb1V9sfv3SlrVrReLF4QL2XRafOIwXJhH?=
+ =?us-ascii?Q?1iu7Rd3aWAxniLds9v0yrqXBT+X7oeSHBmnfmRED4vdtWY/HlPV+Y5U4ppPx?=
+ =?us-ascii?Q?hrh6C8B5WxXu9/3xUkc4qczLOM7kH4I/CZM8HvFz2mRt4mkpWgNDlBHF4noH?=
+ =?us-ascii?Q?7ayCBq3vg2WoM+P9t67ocjBm7pgu4tWHnhC1CPDUOXb1tu8pyWcH/+LQ4e/V?=
+ =?us-ascii?Q?LM1zxIQ7Hd5QOqrDH0aHO/cIXoRZN2T4QYAfqEmSAqatb0OWNNzyzI7izODL?=
+ =?us-ascii?Q?zZS8xvqCTLteQr0EeDt+/CPa5uCGzgb4bdgZGfSuOGlTila1EC/6LMlvbYRN?=
+ =?us-ascii?Q?x2M4YFXGpWmnGGJaOf7zdypDIEz2q5/eRcWfhYNdz3D0ZwLKEsHXVd3ktMIQ?=
+ =?us-ascii?Q?FQj9hSANRtvTUhAbgD+h31+WGWHhkm+KdLehBYepWWvVj0EbzrcQrkrqVW34?=
+ =?us-ascii?Q?DphZPkG2XII/goMn9KxkC2c4T+uhwKzrQ9yQxNWHdPDxNLVZD0HxQnRGJKAy?=
+ =?us-ascii?Q?6y+MA0VKRqj1F0rM7KbMocP7w/A4ictz8k28AM9CFxzUEc+6udTQhAfX/Urr?=
+ =?us-ascii?Q?HqEHN+F3KcYO1rJPkhiIAkR1B2SVrIfOjWnrFruUGGInFoIIwqY1GikdP8o4?=
+ =?us-ascii?Q?cArFPX7ruBKAi9qd8VMdJZ/+ddGcaQYs3kF8pPrG7Ack8rzuKvg8mtn1z/sL?=
+ =?us-ascii?Q?2uh6GpYYBH2YZFZni0tGAGI5K4xRyKdkPwhV1wGxGO8CeuvpgDn93i+b544X?=
+ =?us-ascii?Q?NhklyKWlnc5ZSRZZQPbm7UZqyHIUF4RNLg7fEdUiJqA2Gs5BZHBGIclvX1ZN?=
+ =?us-ascii?Q?lcttkWLr+wSVf4+/yYULj8hf7r5xjMMWVV5VKPS6bLn1zCMGyrRVDECNd9oC?=
+ =?us-ascii?Q?5jpqTJ4vl3aknTl8FP4z9W8eb1NX2CPFISLjA7n5UQZxFwPQ?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 79ad601c-a26a-402a-519f-08de8c149dd8
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Mar 2026 15:22:11.0477
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: MxMP1IEkDqOs0q6QBuERVAtJ4OQTloPpOSuHihHXsc04OqYeXThHFUb4LK6JEjAl
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7186
 
-Starting with linux next-20260325 I see the following warning early in the
-boot process of a machine running debian stable (trixie) (except for the ke=
-rnel):
+Since RISC-V supports a sign extended page table it should support
+a gather->end of ULONG_MAX, but if this happens it will infinite loop
+because of the overflow.
 
-[    0.027118] [      T0] ------------[ cut here ]------------
-[    0.027118] [      T0] Cannot free reserved memory because of deferred i=
-nitialization of the memory map
-[    0.027119] [      T0] WARNING: mm/memblock.c:904 at __free_reserved_are=
-a+0xa9/0xc0, CPU#0: swapper/0/0
-[    0.027122] [      T0] Modules linked in:
-[    0.027123] [      T0] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted =
-7.0.0-rc5-next-20260326-master #385 PREEMPT_RT=20
-[    0.027125] [      T0] Hardware name: ASUS System Product Name/ROG STRIX=
- B850-F GAMING WIFI, BIOS 1627 02/05/2026
-[    0.027125] [      T0] RIP: 0010:__free_reserved_area+0xa9/0xc0
-[    0.027126] [      T0] Code: 48 89 df 48 89 ee e8 06 fe ff ff 48 89 c3 4=
-8 39 e8 72 a0 5b 4c 89 e8 5d 41 5c 41 5d 41 5e c3 cc cc cc cc 48 8d 3d 97 c=
-2 c6 00 <67> 48 0f b9 3a 45 31 ed eb df 66 66 2e 0f 1f 84 00 00 00 00 00 66
-[    0.027127] [      T0] RSP: 0000:ffffffff9b203e98 EFLAGS: 00010202
-[    0.027128] [      T0] RAX: 0000000e91c00001 RBX: ffffffff9b100c0f RCX: =
-0000000080000001
-[    0.027128] [      T0] RDX: 00000000000000cc RSI: 0000000e2d42d000 RDI: =
-ffffffff9b32ef60
-[    0.027128] [      T0] RBP: ffff9eeafdd6fbc0 R08: 0000000000000000 R09: =
-0000000000000001
-[    0.027129] [      T0] R10: 0000000000001000 R11: 8000000000000163 R12: =
-000000000000006f
-[    0.027129] [      T0] R13: 0000000000000000 R14: 0000000000000045 R15: =
-000000005c8a1000
-[    0.027129] [      T0] FS:  0000000000000000(0000) GS:ffff9eeb21c05000(0=
-000) knlGS:0000000000000000
-[    0.027130] [      T0] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    0.027130] [      T0] CR2: ffff9ee8ad801000 CR3: 0000000e2ce1e000 CR4: =
-0000000000f50ef0
-[    0.027131] [      T0] PKRU: 55555554
-[    0.027131] [      T0] Call Trace:
-[    0.027132] [      T0]  <TASK>
-[    0.027132] [      T0]  free_reserved_area+0x89/0xd0
-[    0.027133] [      T0]  alternative_instructions+0xee/0x110
-[    0.027136] [      T0]  arch_cpu_finalize_init+0x10f/0x160
-[    0.027138] [      T0]  start_kernel+0x686/0x710
-[    0.027140] [      T0]  x86_64_start_reservations+0x24/0x30
-[    0.027141] [      T0]  x86_64_start_kernel+0xd4/0xe0
-[    0.027142] [      T0]  common_startup_64+0x13e/0x141
-[    0.027143] [      T0]  </TASK>
-[    0.027144] [      T0] ---[ end trace 0000000000000000 ]---
+Also avoid overflow computing the length by moving the +1 to the other
+side of the <
 
-The Hardware used is this:
+Fixes: 488ffbf18171 ("iommu/riscv: Paging domain support")
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/iommu/riscv/iommu.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-$ cat /proc/cpuinfo
-processor	: 0
-vendor_id	: AuthenticAMD
-cpu family	: 26
-model		: 68
-model name	: AMD Ryzen 9 9950X 16-Core Processor
-stepping	: 0
-microcode	: 0xb404035
-cpu MHz		: 3607.683
-cache size	: 1024 KB
-physical id	: 0
-siblings	: 32
-core id		: 0
-cpu cores	: 16
-apicid		: 0
-initial apicid	: 0
-fpu		: yes
-fpu_exception	: yes
-cpuid level	: 16
-wp		: yes
-flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat =
-pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtsc=
-p lm constant_tsc rep_good amd_lbr_v2 nopl xtopology nonstop_tsc cpuid extd=
-_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 =
-movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_l=
-egacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext p=
-erfctr_core perfctr_nb bpext perfctr_llc mwaitx cpuid_fault cpb cat_l3 cdp_=
-l3 hw_pstate ssbd mba perfmon_v2 ibrs ibpb stibp ibrs_enhanced vmmcall fsgs=
-base tsc_adjust bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a avx512f avx512dq=
- rdseed adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512=
-vl xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_m=
-bm_local user_shstk avx_vnni avx512_bf16 clzero irperf xsaveerptr rdpru wbn=
-oinvd cppc arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasi=
-d decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif x2avic v_=
-spec_ctrl vnmi avx512vbmi umip pku ospke avx512_vbmi2 gfni vaes vpclmulqdq =
-avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid bus_lock_detect movdiri mo=
-vdir64b overflow_recov succor smca fsrm avx512_vp2intersect flush_l1d amd_l=
-br_pmc_freeze
-bugs		: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso spectr=
-e_v2_user vmscape
-bogomips	: 8599.98
-TLB size	: 192 4K pages
-clflush size	: 64
-cache_alignment	: 64
-address sizes	: 48 bits physical, 48 bits virtual
-power management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]
+diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+index 368f3cbd2d0a96..a31f50bbad3535 100644
+--- a/drivers/iommu/riscv/iommu.c
++++ b/drivers/iommu/riscv/iommu.c
+@@ -934,8 +934,6 @@ static void riscv_iommu_iotlb_inval(struct riscv_iommu_domain *domain,
+ 	struct riscv_iommu_bond *bond;
+ 	struct riscv_iommu_device *iommu, *prev;
+ 	struct riscv_iommu_command cmd;
+-	unsigned long len = end - start + 1;
+-	unsigned long iova;
+ 
+ 	/*
+ 	 * For each IOMMU linked with this protection domain (via bonds->dev),
+@@ -978,11 +976,14 @@ static void riscv_iommu_iotlb_inval(struct riscv_iommu_domain *domain,
+ 
+ 		riscv_iommu_cmd_inval_vma(&cmd);
+ 		riscv_iommu_cmd_inval_set_pscid(&cmd, domain->pscid);
+-		if (len && len < RISCV_IOMMU_IOTLB_INVAL_LIMIT) {
+-			for (iova = start; iova < end; iova += PAGE_SIZE) {
++		if (end - start < RISCV_IOMMU_IOTLB_INVAL_LIMIT - 1) {
++			unsigned long iova = start;
++
++			do {
+ 				riscv_iommu_cmd_inval_set_addr(&cmd, iova);
+ 				riscv_iommu_cmd_send(iommu, &cmd);
+-			}
++			} while (!check_add_overflow(iova, PAGE_SIZE, &iova) &&
++				 iova < end);
+ 		} else {
+ 			riscv_iommu_cmd_send(iommu, &cmd);
+ 		}
 
-$ lspci
-00:00.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Rid=
-ge Root Complex
-00:00.2 IOMMU: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge IOM=
-MU
-00:01.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Rid=
-ge Dummy Host Bridge
-00:01.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridg=
-e GPP Bridge
-00:01.2 PCI bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridg=
-e GPP Bridge
-00:02.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Rid=
-ge Dummy Host Bridge
-00:02.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridg=
-e GPP Bridge
-00:03.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Rid=
-ge Dummy Host Bridge
-00:04.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Rid=
-ge Dummy Host Bridge
-00:08.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Rid=
-ge Dummy Host Bridge
-00:08.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridg=
-e Internal GPP Bridge to Bus [C:A]
-00:08.3 PCI bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridg=
-e Internal GPP Bridge to Bus [C:A]
-00:14.0 SMBus: Advanced Micro Devices, Inc. [AMD] FCH SMBus Controller (rev=
- 71)
-00:14.3 ISA bridge: Advanced Micro Devices, Inc. [AMD] FCH LPC Bridge (rev =
-51)
-00:18.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Rid=
-ge Data Fabric; Function 0
-00:18.1 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Rid=
-ge Data Fabric; Function 1
-00:18.2 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Rid=
-ge Data Fabric; Function 2
-00:18.3 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Rid=
-ge Data Fabric; Function 3
-00:18.4 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Rid=
-ge Data Fabric; Function 4
-00:18.5 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Rid=
-ge Data Fabric; Function 5
-00:18.6 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Rid=
-ge Data Fabric; Function 6
-00:18.7 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Rid=
-ge Data Fabric; Function 7
-01:00.0 PCI bridge: Advanced Micro Devices, Inc. [AMD/ATI] Navi 10 XL Upstr=
-eam Port of PCI Express Switch (rev 25)
-02:00.0 PCI bridge: Advanced Micro Devices, Inc. [AMD/ATI] Navi 10 XL Downs=
-tream Port of PCI Express Switch (rev 25)
-03:00.0 VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] N=
-avi 44 [RX 9060 XT] (rev c0)
-03:00.1 Audio device: Advanced Micro Devices, Inc. [AMD/ATI] Navi 48 HDMI/D=
-P Audio Controller
-04:00.0 Non-Volatile memory controller: Samsung Electronics Co Ltd NVMe SSD=
- 9100 PRO [PM9E1]
-05:00.0 PCI bridge: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset P=
-CIe Switch Upstream Port (rev 01)
-06:00.0 PCI bridge: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset P=
-CIe Switch Downstream Port (rev 01)
-06:06.0 PCI bridge: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset P=
-CIe Switch Downstream Port (rev 01)
-06:07.0 PCI bridge: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset P=
-CIe Switch Downstream Port (rev 01)
-06:08.0 PCI bridge: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset P=
-CIe Switch Downstream Port (rev 01)
-06:0c.0 PCI bridge: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset P=
-CIe Switch Downstream Port (rev 01)
-06:0d.0 PCI bridge: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset P=
-CIe Switch Downstream Port (rev 01)
-08:00.0 Ethernet controller: Intel Corporation Ethernet Controller I226-V (=
-rev 06)
-09:00.0 Network controller: MEDIATEK Corp. Device 7925
-0b:00.0 USB controller: Advanced Micro Devices, Inc. [AMD] 800 Series Chips=
-et USB 3.x XHCI Controller (rev 01)
-0c:00.0 SATA controller: Advanced Micro Devices, Inc. [AMD] 600 Series Chip=
-set SATA Controller (rev 01)
-0d:00.0 Non-Essential Instrumentation [1300]: Advanced Micro Devices, Inc. =
-[AMD] Raphael/Granite Ridge PCIe Dummy Function (rev c1)
-0d:00.2 Encryption controller: Advanced Micro Devices, Inc. [AMD] Family 19=
-h PSP/CCP
-0d:00.3 USB controller: Advanced Micro Devices, Inc. [AMD] Raphael/Granite =
-Ridge USB 3.1 xHCI
-0d:00.4 USB controller: Advanced Micro Devices, Inc. [AMD] Raphael/Granite =
-Ridge USB 3.1 xHCI
-0e:00.0 USB controller: Advanced Micro Devices, Inc. [AMD] Raphael/Granite =
-Ridge USB 2.0 xHCI
+base-commit: cbb4dc8cd574b387c7811af91006476c5fa98285
+-- 
+2.43.0
 
-Memory used is 64G:
-$ LANG=3DC free
-               total        used        free      shared  buff/cache   avai=
-lable
-Mem:        65500068     3584080    56709424       70916     5912256    619=
-15988
-Swap:       78125052           0    78125052
-
-
-Bert Karwatzki
