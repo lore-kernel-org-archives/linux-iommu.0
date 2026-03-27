@@ -1,153 +1,150 @@
-Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013068.outbound.protection.outlook.com [40.107.201.68])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A462A331A57;
-	Fri, 27 Mar 2026 15:25:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.201.68
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774625154; cv=fail; b=Zz33MKd29mscJ1W7H2BvZ8WAeN+oVNyR3wzPjXV9SXgnu66fWb69ItWrW2x2KLXbZj5RFo3sMOS1iB7Rj3vqrXg+nnc1rInqLYIqqLNzVfZIm7vBxaty4w4hK3WUVGj6jOTXoFPHkPGiPddfR4YV5/WLv7hSMz/wP5swAOBl2dc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774625154; c=relaxed/simple;
-	bh=LhVyX2JzvyHAQcPk6+EEL9ST7jYylZe5SLadPG7Vi1A=;
-	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=D8KnsMjk3nLzyd7Ejrb0oLwgza0zrRhgVkie1teFwZC5HdIT/894IYW2RT8pvhbL2An2gHV+3lx4EA3irpmg2McuKumjxbKYZRPt1oim/v8SyFSGJFvUdhwiTnuEHANNo2JAzXDlN4tGgpoGpNRlQT+CFMrAQBg6nEqHhq1gUa4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=VSijnqG6; arc=fail smtp.client-ip=40.107.201.68
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3183A263C8C;
+	Fri, 27 Mar 2026 17:12:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774631552; cv=none; b=oV+bUYFmD2YyiAsPSrTTDv99FQu3cgKmpSJAoRMG0c2mg/q7QXT2o1Tt91giJucNkUtUJtVwnXQzMfld+1feEwZy5AJ0jeeSQl8B0jKCaUJBxyozY0CqIok01g340h9z6mIU3umwMpZEs9vf1PII7BpkymgmLXG+IT+kOKb/NLQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774631552; c=relaxed/simple;
+	bh=MvMFqhnsZZr06SdVmhQQ8yFBO4J0YHjtEFCesOzEOVg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GdijukOkXp8MHEwMUGL0sfL21hPr2XcGu2DhQo269YVYnW9drdwIE9krjrsbQxPgY0BpAOWGJr3CtHRsYomKjBMbaCWAmRvmf5RRbkergZ0vOlburq192/emrcrTBiPiMVPrgcgo+rWFcqkpnhYMwIGqZsR3/IcRwkOp/T+kT+A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CBBUkAdN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="VSijnqG6"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=tZZD87OJT/z9WfSUG3bD7K3MYpVkbMnKqxUgVd5hTDFDlHUpWxAkqz15FjJ7pPZ5HNz0/cBVFuwIzpjLQUmVxEK4bZL+RdViWhnyDZt9Gle0XzrW4oUQUnv9K9xyTFeS3VXgNRb32psB8D3ZGmTmr06N4gkDKlJqnyla7qWHv7hZQSuHfWiATrZL7fgxGLVH1mcq1aOnYvivbvzBWeo+oV3aZnWzVy+VLQCXxpVSS/fK6SxwChCnS8fqQGucXVZOwWYq+Ruz+Ve8ZAOO4qMk/letfYAZMxO/XxQ7RR/4AS3NflBnsitcHnG9ahgG/U0yi5RYjmojncS6wR054R8gDA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SNRgrJUYwLD6L0I8ZWAbG6+M8KHDBuMWOwCNq63MFd8=;
- b=dTC4qevlY90jf10k1xF4zifwzLKYm2/5YaE+Io2vBaIBO4pz9i12RcOk4iF+/VTL6T3+mWdZ5/LNkWUFEbhk0PCNe+jspCT0/NxIgjeRJTA8et1FdNa1N/E65WJAZZVM4XRQKeVWEKjgD289JU2GHa2oar/4frEyhlsYzMXclz+sq1Htx+uKC07888TIO8db/rD2lOcQgx30Or3F5f081nG1kUlsII5jT//AhtTxWa5lWVaquNGg6pJRsSuYUZbu5at3MWH77d7OlMEyI8q1uelbnWkDbh+va4YPHmME2+EInjFf3+x1WFl3yrrDv2zQfOihVrQUXwh2uhJ/hJeZjQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SNRgrJUYwLD6L0I8ZWAbG6+M8KHDBuMWOwCNq63MFd8=;
- b=VSijnqG6HQdAUkrCURkfkBF2NI9zbHAVVlxvpb6VSSFil2zgU81bswwduwym5iTibZQswDExERi6Hy1bGkDjmeaa0/AfT/D1tDoTP1BiJixRY9brcOBr+redYp/bCTE32swXRmwe/AksTMSy53yiPRpE8nq01BdRfjVZoYQRh/9fEUmvSDz6nbHruJ434v1nfn5p54Bj5CiNbfz70nGw9PcedZmz5cNc9pK3FUG+cp9zRtuZPH3z88Zl+cJZe8OAHz0h94sIRNgznK22L+mAp3GDy0KZGpsFBaEmlVryNfNdHy0wHAB3O7BoR7V1pwYkAiCOAcmK0gnj9SsB0v0WWg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by PH8PR12MB7182.namprd12.prod.outlook.com (2603:10b6:510:229::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.8; Fri, 27 Mar
- 2026 15:25:41 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9769.006; Fri, 27 Mar 2026
- 15:25:41 +0000
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Will Deacon <will@kernel.org>
-Cc: patches@lists.linux.dev
-Subject: [PATCH 0/4] Improve the invalidation path in VT-d
-Date: Fri, 27 Mar 2026 12:25:33 -0300
-Message-ID: <0-v1-f175e27af136+11647-iommupt_inv_vtd_jgg@nvidia.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BN0PR04CA0014.namprd04.prod.outlook.com
- (2603:10b6:408:ee::19) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CBBUkAdN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0883CC19423;
+	Fri, 27 Mar 2026 17:12:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1774631551;
+	bh=MvMFqhnsZZr06SdVmhQQ8yFBO4J0YHjtEFCesOzEOVg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=CBBUkAdNPfmmIltuHE6pZ6GpwC9m1K+SXX9SsGPrXIW3gJCsavgLlBBFhllhQ8YOV
+	 tt4v86XDdlFoZfXDWWeQB/kZRnJsC72/2SzZfO03eHu3zwjOw/NRJZJdfe7tPOsj/H
+	 xZPsKYg2lEOyHQVDuzvBc3T+oW5ge/Ms1dc/coAeYjdDtxnlJCj3sgd0nOmr6HhLlb
+	 ryVmy9CH86EKbBkS5gNJ82lQSGvFhRoc7XumwqORtvLuF6ft5AuU9wHZOeQVY8tmIJ
+	 ikfw0WPIJMlejTpAQz8wOen8RRrBNWQTRHTEyw9/Q1dMm1o4NegwxmZRKfaj1AEbCW
+	 zcL0eU61oIoEA==
+Date: Fri, 27 Mar 2026 20:12:14 +0300
+From: Mike Rapoport <rppt@kernel.org>
+To: Bert Karwatzki <spasswolf@web.de>
+Cc: linux-kernel@vger.kernel.org, Liam.Howlett@oracle.com,
+	akpm@linux-foundation.org, andreas@gaisler.com, ardb@kernel.org,
+	bp@alien8.de, brauner@kernel.org, catalin.marinas@arm.com,
+	chleroy@kernel.org, dave.hansen@linux.intel.com,
+	davem@davemloft.net, david@kernel.org, devicetree@vger.kernel.org,
+	dvyukov@google.com, elver@google.com, glider@google.com,
+	hannes@cmpxchg.org, hpa@zytor.com, ilias.apalodimas@linaro.org,
+	iommu@lists.linux.dev, jack@suse.cz, jackmanb@google.com,
+	kasan-dev@googlegroups.com, linux-arm-kernel@lists.infradead.org,
+	linux-efi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+	linux-mm@kvack.org, linux-trace-kernel@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org, lorenzo.stoakes@oracle.com,
+	m.szyprowski@samsung.com, maddy@linux.ibm.com, mhiramat@kernel.org,
+	mhocko@suse.com, mingo@redhat.com, mpe@ellerman.id.au,
+	npiggin@gmail.com, robh@kernel.org, robin.murphy@arm.com,
+	saravanak@kernel.org, sparclinux@vger.kernel.org, surenb@google.com,
+	tglx@kernel.org, vbabka@kernel.org, viro@zeniv.linux.org.uk,
+	will@kernel.org, x86@kernel.org, ziy@nvidia.com
+Subject: Re: Warning from free_reserved_area() in next-20260325+
+Message-ID: <aca6blFFWskxAcAr@kernel.org>
+References: <20260323074836.3653702-10-rppt@kernel.org>
+ <20260327140109.7561-1-spasswolf@web.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|PH8PR12MB7182:EE_
-X-MS-Office365-Filtering-Correlation-Id: e67c4f03-bcec-452c-1be6-08de8c151a54
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|366016|376014|18002099003|56012099003;
-X-Microsoft-Antispam-Message-Info:
-	r+6OT8PtzGG3y736b7gpcfzIK+CaD6Cui0+D/AenvDHk2CRy06V2uhUp22RxSB1ubp8c6eJ0O8cPC856n+ZX9lXMhq9Qif5a4KtJ6Xw4TgjHqV2qxwK7UCLFVF9bHnk/1sni/DGl3YcHPt/hKNTxMAkJTewYZw86mv3iy36NdrBTVE5IXaSJzf8RJ6zwrFKZJ/YOT0CbNBWkeYqhBo9neYMRQI8J1MMgsfPUiYtb9tVhiovbcyImUO4Fb/N5M7RDPM6M6LNHuaMtX1DpDd2mzpPpuAncDdLu9kdI0+V7Q077nh2gCAbAYv3WiCKE3/6txA173OcTFB41q2p6zVRDui4eC2/MsFtKwCj7RZ/c27wTR4SB9q42cQzCBYR1IhAAU7SrvWwNPLtBrmWy8ItiMLid6NkUVL98FECNzRflPJg15baWCk4u5K9Qa/XHcNzPqM+DSmClrRyXoDCxvFtxle1Le5nfzTx1sRRlkVnCKqVHxpM7wmj6Fukx4oFW0Pj5nnrCmJYRxIDOfQpAr/E5wXb1hE6EjTyI4Fdcg4ifc20rCuOh0XfoFkoa2n+QUgxR5NHcW7VTva+M77sBGYZL2+Oz3iO3hdhQMcy/IKLnmmJFDaY7AfCoLoJk8SLI3+nl/1QLkYtUpj/GzJ2n3T0EfJyJlM5Z+56aUi+CwX/rJlUE5oY8mSVirLup0GLWUW3WFy561OT1GJ36j1++4iGeO6MpjkOkrlQG5BzYDau4QOw=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(18002099003)(56012099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?WrT8UYF8J8OK25zzoXIKjHQNbnK611Q1jYJB1dMi45D8OgoGsiq7xVxGFoWM?=
- =?us-ascii?Q?E7EQqe4Zx8Cq1fKuOo/7nXOBhPl7gMsKE7vmRZm8dzp4AeJKhyyKfYmGPeFu?=
- =?us-ascii?Q?CV+ERS/sye3qm14ylJw/LKB2X52OgzKtbRgF0jS4ggcN1tk/LOp5423ZcuUT?=
- =?us-ascii?Q?cwtSRY1+BQSowBDwe6gkr5gqOlAql9gDvDdf0NHgc/Jyc0DcNQ47juSeym25?=
- =?us-ascii?Q?a6I4MoLevFFA1E000VZemHmlxjCPIaH/MX9cKT9EInEBOUZXjV+X3FeJgEG+?=
- =?us-ascii?Q?UnPSmNoIw6Ro2POeSJyNwV+mT2tJTUnhi5gjgN/WsUTgjDq1y4swA0sdWV9R?=
- =?us-ascii?Q?kgV/jDaWBlj7p/h0Uwqy15YfRYfwNsKIa2p+qCM3jzgRT4dE9N9eFAQrWFPE?=
- =?us-ascii?Q?QhQrOWS1NyU5G+Nn53Tmn0DWWHnOvLKavZB8By2VFYOfj7chOSNB4hogM7AY?=
- =?us-ascii?Q?juOF2wkPaiYteF50FpsuuIM9Vy4EyyEsROxutvuzGZX6VsD/lHxiTF5FY/Ba?=
- =?us-ascii?Q?LNqtqF7Fs/HP+HXNKaZl5XkFaXGzktBKl0ZKF5Ibr96oF5EjFwEy49Eftbyw?=
- =?us-ascii?Q?Or+WH8AtJNlo5Aerfn5QskPVJVAHPzmXYxECEa9wY5seJh0cTsAsDuLL7nZR?=
- =?us-ascii?Q?DeHloToxZv5Xc94Nezufstkk3XFCpl0re/UM7q04JwTdBc7kzSg35te7Pf8m?=
- =?us-ascii?Q?5ZoPQ4p6jnZZ2KYXIITW0TKSdSrZC/ZlQMVyTUOdgFUmAHlFpZHBmKZzijvE?=
- =?us-ascii?Q?rnPm0+A3y2O6Wb7H/VBTuDuJ6du2ZZv5NyWSFpUMns5ydLkiFNWPjVwY3gI9?=
- =?us-ascii?Q?EL04XvfgqzS5dd30qlhrQA27489pHSJbhyzLvaRNUz8J7ta7uz1Ktacw6Pqm?=
- =?us-ascii?Q?rp0Hto5l3YXHyObeAop5Zyv475M31KtTQ4elRDpKunn2+DJCDdWjJV2cOEod?=
- =?us-ascii?Q?jXurqmSQ72nls7eMvEvKzH1xTPyXjqH0t5sHTtyiYTjjvcc0TkUW6OkYJqpN?=
- =?us-ascii?Q?+lDeu1vIUlMznLzgJLx/mSl+V8bHkpH44SxrHQxHQ3z6WR6dM+z2+IceCq1s?=
- =?us-ascii?Q?GFtMSvwSHy8WezeF7BrTS9DdKqW2zc5O3lJ2jhhZpKMhYnnsDgX3SqkZJbS+?=
- =?us-ascii?Q?t+ez96kUWHjmc9Kiq9dl0AOUJGsAlchsNNbuxGaocMQ/JgonTYIMcYaCd1g0?=
- =?us-ascii?Q?P06AFhzXbe8pRCXMazr0RuEqSA7HfkNd/oYgQkkHZ8X5ODFQmOZPYWJBQMOo?=
- =?us-ascii?Q?uNWjJ7AsdmKhUTqqTPMf7zHrwIz78CxKvvPt3iViFNbwC4UNTW8hkxKrX5WB?=
- =?us-ascii?Q?geYBpt0Lzyr6/46k7SobYEjRX7yQf86zB9vH9P8dcsiCx3XTmOsLcNNqcDxc?=
- =?us-ascii?Q?UZgCM2p8rD6LQR+5KitulgVPMrxr2JRJpGE0aq2HeCIHUoz3NepDpsGdfrdo?=
- =?us-ascii?Q?wXRSbQKpT3g7DC4HlqHl2G0WHNFj0QtenlFcdBFZjUrFhf8KhYp6pjlw5Pfe?=
- =?us-ascii?Q?85Jrv//0Dm1qZ8FOjTczbjOesXAYeLEsG9T89ubUhD7qCiPlV7etUe4K1KiW?=
- =?us-ascii?Q?8elQ68e1PKm61tMdBnfF1DNs6SmYmZsouMI1Q+m+73qPEeAHh9P03QpORiak?=
- =?us-ascii?Q?5NlwiZFMtAZ9HFYeQv+3jjFohVe7B5wIgpcvB2O7JjSjSdLKIrJkRTqKiXgj?=
- =?us-ascii?Q?iN/zzd32oQfa6MkON2qX0/9PIbHpkD6a4IGtmeBc/TMoDWV1?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e67c4f03-bcec-452c-1be6-08de8c151a54
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Mar 2026 15:25:39.8911
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: k2l2UTUJbeApykOzd7EU/186Nzr6eHliINkjs/jqF+a4JRfA4AaOVd3hBYO93U2C
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7182
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260327140109.7561-1-spasswolf@web.de>
 
-Auditing shows a similar unnecessary complexity in the VT-d path as
-AMD, simplify it.
+Hi Bert,
 
-- Don't intermix all and range invalidation flows at the command
-  building phase
-- Don't compute a size or pages for the gather range, stay in the
-  start/last space
-- Use the much simpler fls approach to compute the AM
+On Fri, Mar 27, 2026 at 03:01:08PM +0100, Bert Karwatzki wrote:
+> Starting with linux next-20260325 I see the following warning early in the
+> boot process of a machine running debian stable (trixie) (except for the kernel):
 
-Broadly this removes a bunch of unnecessary logic from the
-invalidation path and makes it simpler and more of a straight line.
+Thanks for the report!
 
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> [    0.027118] [      T0] ------------[ cut here ]------------
+> [    0.027118] [      T0] Cannot free reserved memory because of deferred initialization of the memory map
+> [    0.027119] [      T0] WARNING: mm/memblock.c:904 at __free_reserved_area+0xa9/0xc0, CPU#0: swapper/0/0
+> [    0.027122] [      T0] Modules linked in:
+> [    0.027123] [      T0] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted 7.0.0-rc5-next-20260326-master #385 PREEMPT_RT 
+> [    0.027125] [      T0] Hardware name: ASUS System Product Name/ROG STRIX B850-F GAMING WIFI, BIOS 1627 02/05/2026
+> [    0.027125] [      T0] RIP: 0010:__free_reserved_area+0xa9/0xc0
+> [    0.027126] [      T0] Code: 48 89 df 48 89 ee e8 06 fe ff ff 48 89 c3 48 39 e8 72 a0 5b 4c 89 e8 5d 41 5c 41 5d 41 5e c3 cc cc cc cc 48 8d 3d 97 c2 c6 00 <67> 48 0f b9 3a 45 31 ed eb df 66 66 2e 0f 1f 84 00 00 00 00 00 66
+> [    0.027127] [      T0] RSP: 0000:ffffffff9b203e98 EFLAGS: 00010202
+> [    0.027128] [      T0] RAX: 0000000e91c00001 RBX: ffffffff9b100c0f RCX: 0000000080000001
+> [    0.027128] [      T0] RDX: 00000000000000cc RSI: 0000000e2d42d000 RDI: ffffffff9b32ef60
+> [    0.027128] [      T0] RBP: ffff9eeafdd6fbc0 R08: 0000000000000000 R09: 0000000000000001
+> [    0.027129] [      T0] R10: 0000000000001000 R11: 8000000000000163 R12: 000000000000006f
+> [    0.027129] [      T0] R13: 0000000000000000 R14: 0000000000000045 R15: 000000005c8a1000
+> [    0.027129] [      T0] FS:  0000000000000000(0000) GS:ffff9eeb21c05000(0000) knlGS:0000000000000000
+> [    0.027130] [      T0] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [    0.027130] [      T0] CR2: ffff9ee8ad801000 CR3: 0000000e2ce1e000 CR4: 0000000000f50ef0
+> [    0.027131] [      T0] PKRU: 55555554
+> [    0.027131] [      T0] Call Trace:
+> [    0.027132] [      T0]  <TASK>
+> [    0.027132] [      T0]  free_reserved_area+0x89/0xd0
+> [    0.027133] [      T0]  alternative_instructions+0xee/0x110
+> [    0.027136] [      T0]  arch_cpu_finalize_init+0x10f/0x160
+> [    0.027138] [      T0]  start_kernel+0x686/0x710
+> [    0.027140] [      T0]  x86_64_start_reservations+0x24/0x30
+> [    0.027141] [      T0]  x86_64_start_kernel+0xd4/0xe0
+> [    0.027142] [      T0]  common_startup_64+0x13e/0x141
+> [    0.027143] [      T0]  </TASK>
+> [    0.027144] [      T0] ---[ end trace 0000000000000000 ]---
 
-Jason Gunthorpe (4):
-  iommu/intel: Split piotlb invalidation into range and all
-  iommu/vtd: Pass size_order to qi_desc_piotlb() not npages
-  iommu/vtd: Remove the remaining pages along the invalidation path
-  iommu/vt: Simplify calculate_psi_aligned_address()
+Does this patch fix it for you?
 
- drivers/iommu/intel/cache.c | 100 +++++++++++++++---------------------
- drivers/iommu/intel/dmar.c  |  19 ++-----
- drivers/iommu/intel/iommu.h |  43 +++++++---------
- drivers/iommu/intel/pasid.c |   6 +--
- drivers/iommu/intel/prq.c   |   2 +-
- drivers/iommu/intel/trace.h |  18 +++----
- 6 files changed, 76 insertions(+), 112 deletions(-)
+diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
+index e87da25d1236..62936a3bde19 100644
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -2448,19 +2448,31 @@ void __init alternative_instructions(void)
+ 					    __smp_locks, __smp_locks_end,
+ 					    _text, _etext);
+ 	}
++#endif
+ 
++	restart_nmi();
++	alternatives_patched = 1;
++
++	alt_reloc_selftest();
++}
++
++#ifdef CONFIG_SMP
++/*
++ * With CONFIG_DEFERRED_STRUCT_PAGE_INIT enabled we can free_init_pages() only
++ * after the deferred initialization of the memory map is complete.
++ */
++static int __init free_smp_locks(void)
++{
+ 	if (!uniproc_patched || num_possible_cpus() == 1) {
+ 		free_init_pages("SMP alternatives",
+ 				(unsigned long)__smp_locks,
+ 				(unsigned long)__smp_locks_end);
+ 	}
+-#endif
+ 
+-	restart_nmi();
+-	alternatives_patched = 1;
+-
+-	alt_reloc_selftest();
++	return 0;
+ }
++arch_initcall(free_smp_locks);
++#endif
+ 
+ /**
+  * text_poke_early - Update instructions on a live kernel at boot time
+ 
+> Bert Karwatzki
 
-
-base-commit: cc9c4e71a8dd4f8842b0b958deacc2410ce465bc
 -- 
-2.43.0
-
+Sincerely yours,
+Mike.
