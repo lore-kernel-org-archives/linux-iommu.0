@@ -1,129 +1,153 @@
-Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 391AE3932D8
-	for <iommu@lists.linux.dev>; Fri, 27 Mar 2026 12:10:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF8B01474CC
+	for <iommu@lists.linux.dev>; Fri, 27 Mar 2026 12:42:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774613425; cv=none; b=jM3MqrjeI+EaSoSXpJTXsO47WvXXCir0vmeARdevpoLWybL2zzN6t5/G76l4JCkrOzqMNWFTiIHsKXKs8XKDN5kHcz2Z7/w4RB3+nmT5zbkMj7RqZGpsKwJ/VXyoC6jPImhYLHMiN/0x1JhIR3XEVmKZYD+a6vHfKnex/SdseTg=
+	t=1774615329; cv=none; b=At0nUAu7VlvA8tt6rwcGCrqfFt4uFeMayT9Zu+hpTfFSfIGOFPWJzQW5f/zjGaBzdVKlHETo+aix4w1POU6KdgSlyl2FCra5nnwtVF1kzzOjh8HpP+Gizn6OWXTlIslR8EvkFpHFEh4hqzQfWhPfJ+Em6FON9mlEFMH5AEeX0QE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774613425; c=relaxed/simple;
-	bh=ghZHpLykub1cNN1HjFeRqA1TQ1HWa/ZB0207dvHDd5E=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pvsps3er4WMyAAlc/0+7iM1TPV6r+fhp69YJmp2irJZeoL/W6SD6zSdzOQvG5ejudS3gTwgscDdSY4neuLcUSweiEQKRfYh1dfAEuzdPnHxfmINM1AduBYSyf9yolTYFAbS/ew5/lHNzivxYrAKgMFaC928MB7ZCWE4CVp0CQwE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=J4Y3Ml+P; arc=none smtp.client-ip=209.85.222.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1774615329; c=relaxed/simple;
+	bh=B3tp398WNbwm1ae+gWHLUuGz3BxoORfZ1NVIHaytnAg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=btxP/7SnxYW6Ap4ZrnmVRxguvBjavz1uAvuDyzzppopcEdukKD/DTEGgLmPrWPvcRx2BhVPAbyXoVU0BjNXlvxaPP8IERmDekK4nvZX7A5+fweGjI9JqlfFfQSrQJzzUynKL0U8R/9AWSz2jID3MzI8ZR+X0ORA4BQ541QDKoi0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=klBQ6F/f; arc=none smtp.client-ip=209.85.167.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="J4Y3Ml+P"
-Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-8cb3bae8d3eso210520785a.1
-        for <iommu@lists.linux.dev>; Fri, 27 Mar 2026 05:10:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="klBQ6F/f"
+Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-5a27b5ad832so2325268e87.2
+        for <iommu@lists.linux.dev>; Fri, 27 Mar 2026 05:42:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1774613423; x=1775218223; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=mfIjIsS8DDjImfR7uqLq3DxooHT40pwlydrjxj52iHU=;
-        b=J4Y3Ml+P38SFSU1flktb/4yGjijQhQ2rT4DXAlqr2iNzJkbQ8vUMp6loajYwv2wuU9
-         6Suv036iYmcz4YNaIpE800kHAjwfXFASrlwpPWxiHh2pmhJDZOF48tYZBo0Pn7kTAu5Q
-         upgaXP4LAmhSzrmHje86hJ9Ij+wrh1yPWUwTZv3HnxtZPdassPgREJV0Dd0bQ9Ax4QOL
-         NNy2e0Bn/kaG4cCveCcYuiTfm8aFULoRZwruvg9apa/jxpiumuxxGAEWo6sB64TN6RP1
-         3HBdAdwhseNHHDUOEACrh6Xge90RXWz2e7+qR9sVlDsB3inRHG1F95dW54A+CnGoDw6r
-         +Ftg==
+        d=gmail.com; s=20251104; t=1774615326; x=1775220126; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=vnEhmrhTPA7Nd81/VP3XZfiniWMenGZwrrUyIBlvmYM=;
+        b=klBQ6F/fqTZIwBzIENCQwrS+MpoTKpWg4Cj9GX2O8verSsNQaaS3cZhJjw3Fw3GOOf
+         dLRrNfuclUwzuye+ocPLZInobYTf8GeDIQqXo/QEyb792v2xSa9AtwRVbvkWMBf2DZRS
+         bwdu7CmYzsADa3iWH6RVNz8SQVjK86t3BVW5gBtqVyfhSxSVvnw803FMa1YhLoNfNla9
+         BX2z3b8zU3FM0pt53+zZvsOcO/TCARIwncyBHDXhO9mBc2ITH0hPn97l5u+s1qG76wVj
+         Vy9szC5lpZGo5pLmnAmM//vUcUuCZlhqVuK8dWG64k4gbvrcpKAes5XNXpfuqbJd/T8V
+         SvdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774613423; x=1775218223;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mfIjIsS8DDjImfR7uqLq3DxooHT40pwlydrjxj52iHU=;
-        b=ifHOsoTdjXrBT2ACg9nUBAu5UZD8LnoyhyiRWA+FT7MhplMkvAjC6Bjd00rJL5+2Xh
-         HIwDCUjs83sCb609bcXmNb9a4EXDg2XKVMimaUlgQxum+t163btekXIljVGExBzi3ArV
-         Qyc+MIhU73lqrNNHt3rqUCzTFlwA4F/JEWriYJ8rZnEs7jkxmmw1jRLnSyfGM9KZTjsV
-         dH+HIMqSMbu0Vn7bKbcH0RdCEwCSe2TXtMYxyeCZ95NsZwFC9w1x7ymB2E0tFGEpmxPa
-         STyTuzDT13UdbnHrI/kGnO22UP3g9/CvyirSXQtpoJM4+hw7V003I1myqkV0q01RalLC
-         zVqA==
-X-Forwarded-Encrypted: i=1; AJvYcCV7/9syT8WyM5ILsRTBi8GsroutI8TmbzFZUe5dqZvMsCXbosIaOoKH1Vx5Xh6RDWLXXm9GQA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YywsJQcXbbtGNJEOspNsnXoiiWGfgnPVXnLfol8tHrCwkzWBLPb
-	BQrWEiW2b4t9NoIE0ktlgc9hFDtPLjwCquYqMhwe8Mrm8dp82tsmaMihUsnFD91XFR4=
-X-Gm-Gg: ATEYQzyNKckE2ikVxirlCptqYkR5jVT72M2zBqoqmhBv+m1IFh+ItJ4Sfj241td0UVZ
-	KUmCT6PMlDQXqio63QbE5spOfjOOmPLwVOm8LI4wjIYH9tMqO03+0G5NT9rfcjCzyir1gpKU1xr
-	tuGcyMdDmDsp8t+LsctDWc3Wa1OqheUvkRW3wZGYXhd9NzjdiOXrOs8psYNwlknmhxgqvpA9ARJ
-	ICECsCkAYYLt05A1ucwTjO/VGRBhoUAjiFUyEU5ju0abDJmJW6Q9y85dVj506iAya3WXnybZ4mX
-	bnyGmlhJb0Pyr62dNVQI9+TvTEC7Cb/B4lsaHMmEXyK+q86eHmljNGAXkokWDXpEsQjghlrc46H
-	/LgNIBsRFz7945ujMr8iXKMGslmU/EgzUtH2RzhntqAAE74WNQfHnBeaRjwrCpAY6i5UGp1NEsZ
-	6cAC1RWidLL2vn8f8Aj6zKjtQk7LZwvsBmdgO6K+atemHCWfwWqyYkCQdJyGNYstcBRXehbg==
-X-Received: by 2002:a05:620a:4589:b0:8cd:6175:9b17 with SMTP id af79cd13be357-8d01c5bf3ffmr259778785a.3.1774613423032;
-        Fri, 27 Mar 2026 05:10:23 -0700 (PDT)
-Received: from ziepe.ca (mctnnbsa70w-159-2-73-22.dhcp-dynamic.fibreop.nb.bellaliant.net. [159.2.73.22])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8d00e3c3a0dsm507700285a.13.2026.03.27.05.10.21
+        d=1e100.net; s=20251104; t=1774615326; x=1775220126;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vnEhmrhTPA7Nd81/VP3XZfiniWMenGZwrrUyIBlvmYM=;
+        b=jGW+bzXcKHeKCQfynzFKbj45qGMvCm1a//LmygJmTDjdBFbV/VbN0k0RNdXkr1YTB5
+         bRp8JDxgktrh2SIqqfJLGGh6batgGuI5CoOxz9TERoGTvQOC0r8zPxJfmniCN7LqTvvA
+         W7Vw8PdXl73VPo+czW7xixUYoQeWaFY/quYUoVnT3wU/kxKm6oDO3M/qFtTaXbacA62y
+         iFjvA5nRUsh9hN5QHArT4ju1J3HYRg+Vbg+nMneRtNrI+iqqOwAJbdUf/TqVGKoWRdz0
+         bkVIx8sjs65+6dFEb3CKjiTDz14ADl7l64yNpINUy1iq8u/kso2C2ur90XyPug0XT351
+         ANDA==
+X-Gm-Message-State: AOJu0YzHGyF/wga/UGWMsayWfXNEDfAA3k+w7/lQW0G73PnMTa54XGfO
+	oV+SDEjJyVsfa2i7CI2QpINsXaToW7X/CY82/IhYJeeaBm99GlRHd6zc
+X-Gm-Gg: ATEYQzyGhxzyTxxuIZnoa8MwiMOjyogq0C1kRmHEHbTlS+lYI+MMjU9x2UUn9k+nj7G
+	q8q5nu5D/+EUCDn97kciXtHzzhgIrcl4DqIpgvLfcw4kOx6BZMknkSr6/eppUrSEFeqkuaPcsdF
+	OWq9tiXddHUW45mfX1fZvZMUfbIo/uv59/LDZn257RfeO+yQjJh3aRgfmv0o9NWKgnKBQn1HGZA
+	LlykB8UOYBb/O+3fzHIaA98QWXqgf0UY0cY6To/k7J9Vb+aRJFUk18vdZmSXwvLZCiJO20rVXIi
+	BkgjYcmG2zifn88m77It0qIV813CVMwOvWvfwOdfRDRILrPSreCcXZSxzzn4YtywaFOtjg1fEf0
+	Pi4V+LlrEDR/RNuwB6plI3OXY5/lgiQlxpZou3UoDkaeCYtnfN65A2uTD2JJ7Sne41xvkCXBqTi
+	IdUaQWzNtiJ9+RvNj77SjByz4gcPBW0co0xw==
+X-Received: by 2002:a05:6512:6c8:b0:5a2:5b88:a8a3 with SMTP id 2adb3069b0e04-5a2ab92854fmr1015552e87.31.1774615325628;
+        Fri, 27 Mar 2026 05:42:05 -0700 (PDT)
+Received: from localhost ([188.234.148.119])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a2a063efbasm1336127e87.14.2026.03.27.05.42.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Mar 2026 05:10:22 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1w6617-00000001CcJ-1QAP;
-	Fri, 27 Mar 2026 09:10:21 -0300
-Date: Fri, 27 Mar 2026 09:10:21 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Marek Szyprowski <m.szyprowski@samsung.com>,
-	"T.J. Mercier" <tjmercier@google.com>
-Cc: Jiri Pirko <jiri@resnulli.us>, dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev,
-	linux-media@vger.kernel.org, sumit.semwal@linaro.org,
-	benjamin.gaignard@collabora.com, Brian.Starkey@arm.com,
-	jstultz@google.com, tjmercier@google.com, christian.koenig@amd.com,
-	robin.murphy@arm.com, leon@kernel.org, sean.anderson@linux.dev,
-	ptesarik@suse.com, catalin.marinas@arm.com, aneesh.kumar@kernel.org,
-	suzuki.poulose@arm.com, steven.price@arm.com,
-	thomas.lendacky@amd.com, john.allen@amd.com, ashish.kalra@amd.com,
-	suravee.suthikulpanit@amd.com, linux-coco@lists.linux.dev
-Subject: Re: [PATCH v5 0/2] dma-buf: heaps: system: add an option to allocate
- explicitly shared/decrypted memory
-Message-ID: <20260327121021.GB246076@ziepe.ca>
-References: <CGME20260325192400eucas1p2ae38ff4c2b3ab35a7047cfd680d9fda3@eucas1p2.samsung.com>
- <20260325192352.437608-1-jiri@resnulli.us>
- <f2047cd7-91a8-4f6a-b6b9-0e4f143f6854@samsung.com>
+        Fri, 27 Mar 2026 05:42:04 -0700 (PDT)
+From: Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
+To: m.szyprowski@samsung.com,
+	robin.murphy@arm.com
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-usb@vger.kernel.org,
+	linux-mm@kvack.org,
+	harry@kernel.org,
+	vbabka@kernel.org,
+	akpm@linux-foundation.org,
+	stern@rowland.harvard.edu,
+	linux@roeck-us.net,
+	andy.shevchenko@gmail.com,
+	hch@lst.de,
+	Jeff.kirsher@gmail.com,
+	catalin.marinas@arm.com,
+	Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
+Subject: [PATCH v2] dma-debug: suppress cacheline overlap warning when arch has no DMA alignment requirement
+Date: Fri, 27 Mar 2026 17:41:56 +0500
+Message-ID: <20260327124156.24820-1-mikhail.v.gavrilov@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f2047cd7-91a8-4f6a-b6b9-0e4f143f6854@samsung.com>
+Content-Transfer-Encoding: 8bit
 
-On Fri, Mar 27, 2026 at 10:38:10AM +0100, Marek Szyprowski wrote:
-> On 25.03.2026 20:23, Jiri Pirko wrote:
-> > From: Jiri Pirko <jiri@nvidia.com>
-> >
-> > Confidential computing (CoCo) VMs/guests, such as AMD SEV and Intel TDX,
-> > run with private/encrypted memory which creates a challenge
-> > for devices that do not support DMA to it (no TDISP support).
-> >
-> > For kernel-only DMA operations, swiotlb bounce buffering provides a
-> > transparent solution by copying data through shared memory.
-> > However, the only way to get this memory into userspace is via the DMA
-> > API's dma_alloc_pages()/dma_mmap_pages() type interfaces which limits
-> > the use of the memory to a single DMA device, and is incompatible with
-> > pin_user_pages().
-> >
-> > These limitations are particularly problematic for the RDMA subsystem
-> > which makes heavy use of pin_user_pages() and expects flexible memory
-> > usage between many different DMA devices.
-> >
-> > This patch series enables userspace to explicitly request shared
-> > (decrypted) memory allocations from new dma-buf system_cc_shared heap.
-> > Userspace can mmap this memory and pass the dma-buf fd to other
-> > existing importers such as RDMA or DRM devices to access the
-> > memory. The DMA API is improved to allow the dma heap exporter to DMA
-> > map the shared memory to each importing device.
-> >
-> > Based on dma-mapping-for-next e7442a68cd1ee797b585f045d348781e9c0dde0d
-> 
-> I would like to merge this to dma-mapping-next, but I feel a bit 
-> uncomfortable with my lack of knowledge about CoCo and friends. Could 
-> those who know a bit more about it provide some Reviewed-by tags?
+When CONFIG_DMA_API_DEBUG is enabled, the DMA debug infrastructure
+tracks active mappings per cacheline and warns if two different DMA
+mappings share the same cacheline ("cacheline tracking EEXIST,
+overlapping mappings aren't supported").
 
-I'm confident in the CC stuff, I was hoping to see someone from dmabuf
-heap land ack that the uAPI design is OK.. TJ?
+On x86_64, ARCH_KMALLOC_MINALIGN defaults to 8, so small kmalloc
+allocations (e.g. the 8-byte hub->buffer and hub->status in the USB
+hub driver) frequently land in the same 64-byte cacheline.  When both
+are DMA-mapped, this triggers a false positive warning.
 
-Jason
+This has been reported repeatedly since v5.14 (when the EEXIST check
+was added) across various USB host controllers and devices including
+xhci_hcd with USB hubs, USB audio devices, and USB ethernet adapters.
+
+The cacheline overlap is only a real concern on architectures that
+require DMA buffer alignment to cacheline boundaries (i.e. where
+ARCH_DMA_MINALIGN >= L1_CACHE_BYTES).  On architectures like x86_64
+where dma_get_cache_alignment() returns 1, the hardware is
+cache-coherent and overlapping cacheline mappings are harmless.
+
+Suppress the EEXIST warning when dma_get_cache_alignment() is less
+than L1_CACHE_BYTES, indicating the architecture does not require
+cacheline-aligned DMA buffers.
+
+Verified with a kernel module reproducer that performs two kmalloc(8)
+allocations back-to-back and DMA-maps both:
+
+  Before: allocations share a cacheline, EEXIST fires within ~50 pairs
+  After:  same cacheline pair found, but no warning emitted
+
+Fixes: 2b4bbc6231d7 ("dma-debug: report -EEXIST errors in add_dma_entry")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215740
+Suggested-by: Harry Yoo <harry@kernel.org>
+Tested-by: Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
+Signed-off-by: Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
+---
+
+v1 -> v2:
+  - Moved fix from include/linux/slab.h (ARCH_KMALLOC_MINALIGN)
+    to kernel/dma/debug.c per Harry Yoo's suggestion.
+  - Instead of forcing cacheline-aligned allocations, suppress
+    the warning when the architecture has no DMA alignment
+    requirement (dma_get_cache_alignment() < L1_CACHE_BYTES).
+
+v1: https://lore.kernel.org/all/20260327055846.248829-1-mikhail.v.gavrilov@gmail.com/
+
+Reproducer module that triggers the bug reliably:
+  https://bugzilla.kernel.org/attachment.cgi?id=309769
+
+ kernel/dma/debug.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+index 0677918f06a8..1a725edbbbf6 100644
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -615,6 +615,7 @@ static void add_dma_entry(struct dma_debug_entry *entry, unsigned long attrs)
+ 	} else if (rc == -EEXIST &&
+ 		   !(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+ 		   !(entry->is_cache_clean && overlap_cache_clean) &&
++		   dma_get_cache_alignment() >= L1_CACHE_BYTES &&
+ 		   !(IS_ENABLED(CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC) &&
+ 		     is_swiotlb_active(entry->dev))) {
+ 		err_printk(entry->dev, entry,
+-- 
+2.53.0
+
