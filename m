@@ -1,38 +1,38 @@
-Received: from canpmsgout10.his.huawei.com (canpmsgout10.his.huawei.com [113.46.200.225])
+Received: from canpmsgout11.his.huawei.com (canpmsgout11.his.huawei.com [113.46.200.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82AA237F755
-	for <iommu@lists.linux.dev>; Sat, 28 Mar 2026 10:17:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=113.46.200.225
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33CA0385526
+	for <iommu@lists.linux.dev>; Sat, 28 Mar 2026 10:17:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=113.46.200.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774693033; cv=none; b=mqJYJaSpg/RDxfYWefAfuR7XJAbPTUIVp69TnRykFZ2jGPag/hw0OLNN42kzNH6j/yLJ7Ukg74w7Tq/KgjC7TXN2Kv+2A7VfcY+FYfiPTrIHwvq4RWpSzSHSjns/ZcbEfJUDeVhWM5lhALkC4EAm4I7kILnVsKw90QHBSCFn3Hk=
+	t=1774693033; cv=none; b=auHzKBS1kCPbHHzIk+OSUq91Xtncr1KvIhqU5gXjA0IY1BpZsRCtDyaa069QSweHRL2TZvsyodHy0qe6hd2lK2Ehebmt+i1l8xDjwRI79nflg2Jxx8UQdR9btU5ZqJztZvHcHAG4IGD6rR6/439uOU6j+UtqmxLgx0EmO1EMgr4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1774693033; c=relaxed/simple;
-	bh=rvKrTy8TIj2J967JYqQy24DGSKbUKxs55K3kLTiLdS0=;
+	bh=T4pwAAXEL/D9JNlGRUsoIDXA+8fhJoQFhRs7aNy1V/Q=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=a2FUJ91sasH702px0Kn8FJDawETEcaSg90p0bhlzkLAQcqXzmBDYXavA2czyHUhKDPBuKl02TFyvgL8zyYy75QaDcCGJ+xJm2m7ZRVTg3B0IgGSSD6Dcw3LszjUfJMYumx4AZnqi1kBaKkzB0rla1aOD9M97H60VXPG9b8OJOTQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=mh9GHLGi; arc=none smtp.client-ip=113.46.200.225
+	 MIME-Version:Content-Type; b=sKbYVsvBr1jTm+Iq2Z/RXkUHR8MG0+lFpY16gLU6BZAI/Gfhps++scvUXEXrxYDIlREtbxKkVoehExiSekg8B8WCsvHG3wvJxlbDFzE6yIkWk40avcQQSm+8WB/08t9J67IMnAFa1sEazCNb80UTRUTCCxCawALQhiKv1FiRRDs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=s49vGdAH; arc=none smtp.client-ip=113.46.200.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="mh9GHLGi"
+	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="s49vGdAH"
 dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
 	c=relaxed/relaxed; q=dns/txt;
 	h=From;
-	bh=hK3rN2DXT7UpSz7XNNpD/ir+xO00JejsvsPuYH74cf0=;
-	b=mh9GHLGiUavV2lHmLkEvJ0favYOQtibHH9mkyUbmvw6VoAlxraKyFqMjP+VvE1MMwDHOYnuc7
-	TzRLlo2jkFgrCYCn7LIKk1s0e9H91gFDJ2/kDhpx7a5JPcZEKOd1RVWzkLFzUFLLyQoO9BkUbkU
-	cvCFHQOVpqFvWy55EGvKsYU=
-Received: from mail.maildlp.com (unknown [172.19.163.214])
-	by canpmsgout10.his.huawei.com (SkyGuard) with ESMTPS id 4fjYF30JPgz1K968;
-	Sat, 28 Mar 2026 18:11:03 +0800 (CST)
+	bh=35Vdxw+bGikUGARyshD29d8hmxPEOshopH4zQVVJEkw=;
+	b=s49vGdAHRwvtDhPiphC6xoXo/WG2C5Df4WFVvligxTKt1X6zBh5vr+jG+n7Z+guWwk/9RoNel
+	MvljwNHxvht3ChIOXlBNkn+m6mr44/MOYkxxABpG2vxTAsLpxite/xkdksIG2DoMnSMBhG1xLJB
+	uApiIXqzmtFkytkRb2rItXc=
+Received: from mail.maildlp.com (unknown [172.19.162.92])
+	by canpmsgout11.his.huawei.com (SkyGuard) with ESMTPS id 4fjYF10YtlzKm5B;
+	Sat, 28 Mar 2026 18:11:01 +0800 (CST)
 Received: from kwepemj200003.china.huawei.com (unknown [7.202.194.15])
-	by mail.maildlp.com (Postfix) with ESMTPS id 29A3040561;
-	Sat, 28 Mar 2026 18:17:08 +0800 (CST)
+	by mail.maildlp.com (Postfix) with ESMTPS id 5132940562;
+	Sat, 28 Mar 2026 18:17:10 +0800 (CST)
 Received: from localhost.huawei.com (10.90.31.46) by
  kwepemj200003.china.huawei.com (7.202.194.15) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Sat, 28 Mar 2026 18:17:07 +0800
+ 15.2.1544.11; Sat, 28 Mar 2026 18:17:09 +0800
 From: Qinxin Xia <xiaqinxin@huawei.com>
 To: <robin.murphy@arm.com>, <nicolinc@nvidia.com>, <will@kernel.org>,
 	<jpb@kernel.org>
@@ -40,9 +40,9 @@ CC: <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
 	<xiaqinxin@huawei.com>, <wangzhou1@hisilicon.com>,
 	<prime.zeng@hisilicon.com>, <fanghao11@huawei.com>,
 	<jonathan.cameron@huawei.com>, <wuyifan50@huawei.com>, <linuxarm@huawei.com>
-Subject: [RFC PATCH v2 1/5] iommu/arm-smmu-v3: Add basic debugfs framework
-Date: Sat, 28 Mar 2026 18:17:02 +0800
-Message-ID: <20260328101706.3448655-2-xiaqinxin@huawei.com>
+Subject: [RFC PATCH v2 5/5] iommu/arm-smmu-v3: Add Context Descriptor display to debugfs
+Date: Sat, 28 Mar 2026 18:17:06 +0800
+Message-ID: <20260328101706.3448655-6-xiaqinxin@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20260328101706.3448655-1-xiaqinxin@huawei.com>
 References: <20260328101706.3448655-1-xiaqinxin@huawei.com>
@@ -57,299 +57,149 @@ Content-Transfer-Encoding: 8bit
 X-ClientProxiedBy: kwepems500001.china.huawei.com (7.221.188.70) To
  kwepemj200003.china.huawei.com (7.202.194.15)
 
-Add basic debugfs framework for ARM SMMUv3 driver.This creates the
-root directory structure and provides capability display functionality.
+Add Context Descriptor (CD) display functionality to debugfs.
+This allow inspecting CD contents for all Substream IDs including:
+- CD validity and translation parameters
+- TTBR0 and TCR configurations
+- Raw CD data
 
-The debugfs hierarchy is organized as:
-/sys/kernel/debug/iommu/arm_smmu_v3/
-└── smmu<ioaddr>/
-    └── capabilities
+/sys/kernel/debug/iommu/arm_smmu_v3/smmu0/stream_table/
+└── <sid>/
+    ├─── ste
+    ├─── cd
+    └─── <dev_name>
 
 Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
 ---
- drivers/iommu/Kconfig                         |  11 ++
- drivers/iommu/arm/arm-smmu-v3/Makefile        |   1 +
- .../arm/arm-smmu-v3/arm-smmu-v3-debugfs.c     | 163 ++++++++++++++++++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  15 ++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  15 ++
- 5 files changed, 205 insertions(+)
- create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c
+ .../arm/arm-smmu-v3/arm-smmu-v3-debugfs.c     | 94 +++++++++++++++++++
+ 1 file changed, 94 insertions(+)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index f86262b11416..f28f09adba03 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -93,6 +93,17 @@ config IOMMU_DEBUGFS
- 	  debug/iommu directory, and then populate a subdirectory with
- 	  entries as required.
- 
-+config ARM_SMMU_V3_DEBUGFS
-+	bool "ARM SMMUv3 DebugFS support"
-+	depends on ARM_SMMU_V3 && IOMMU_DEBUGFS
-+	help
-+	  Expose ARM SMMUv3 internal state via debugfs for debugging and
-+	  diagnostics. This creates /sys/kernel/debug/iommu/arm_smmu_v3/
-+	  with detailed information about SMMU configuration, stream tables,
-+	  and context descriptors.
-+
-+	  Say N unless you are debugging SMMU issues.
-+
- choice
- 	prompt "IOMMU default domain type"
- 	depends on IOMMU_API
-diff --git a/drivers/iommu/arm/arm-smmu-v3/Makefile b/drivers/iommu/arm/arm-smmu-v3/Makefile
-index 493a659cc66b..787538fb7054 100644
---- a/drivers/iommu/arm/arm-smmu-v3/Makefile
-+++ b/drivers/iommu/arm/arm-smmu-v3/Makefile
-@@ -4,5 +4,6 @@ arm_smmu_v3-y := arm-smmu-v3.o
- arm_smmu_v3-$(CONFIG_ARM_SMMU_V3_IOMMUFD) += arm-smmu-v3-iommufd.o
- arm_smmu_v3-$(CONFIG_ARM_SMMU_V3_SVA) += arm-smmu-v3-sva.o
- arm_smmu_v3-$(CONFIG_TEGRA241_CMDQV) += tegra241-cmdqv.o
-+arm_smmu_v3-$(CONFIG_ARM_SMMU_V3_DEBUGFS) += arm-smmu-v3-debugfs.o
- 
- obj-$(CONFIG_ARM_SMMU_V3_KUNIT_TEST) += arm-smmu-v3-test.o
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c
-new file mode 100644
-index 000000000000..c764b28e5cfb
---- /dev/null
+index dbcc8fce6d8e..501437432809 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c
-@@ -0,0 +1,163 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * ARM SMMUv3 DebugFS Support
-+ *
-+ * Directory Structure:
-+ * /sys/kernel/debug/iommu/arm_smmu_v3/
-+ * └── smmu<ioaddr>/
-+ *     └── capabilities    # SMMU feature capabilities and configuration
-+ *
-+ * The capabilities file provides detailed information about:
-+ * - translation stage support (Stage1/Stage2)
-+ * - System coherency, ATS, and PRI feature availability
-+ * - Stream table size and command/event queue depths
-+ *
-+ * Copyright (C) 2026 HiSilicon Limited.
-+ * Author: Qinxin Xia <xiaqinxin@huawei.com>
-+ */
+@@ -10,6 +10,7 @@
+  *     └── stream_table
+  *	   └─── <sid>/                                # Stream ID
+  *	       ├─── ste                               # Stream Table Entry
++ *	       ├── cd                                 # Context Descriptor
+  *	       └── <dev_name>                         # Symlink to device sysfs directory
+  *
+  * The capabilities file provides detailed information about:
+@@ -26,6 +27,12 @@
+  * - Stage 1 and Stage 2 context pointers
+  * - Raw STE data
+  *
++ * CD Information Displayed:
++ * - T0SZ: Input address space size configuration
++ * - EPD0/EPD1: Stage 1 translation enable flags
++ * - TTBR0: Stage 1 translation table base address
++ * - Raw Data: Complete CD structure in hexadecimal format
 +
-+#include <linux/cleanup.h>
-+#include <linux/debugfs.h>
-+#include <linux/slab.h>
-+#include "arm-smmu-v3.h"
-+
-+static struct dentry *smmu_debugfs_root;
-+static DEFINE_MUTEX(arm_smmu_debugfs_lock);
-+
+  * Copyright (C) 2026 HiSilicon Limited.
+  * Author: Qinxin Xia <xiaqinxin@huawei.com>
+  */
+@@ -284,6 +291,91 @@ static const struct file_operations smmu_debugfs_ste_fops = {
+ 	.release = smmu_debugfs_ste_release,
+ };
+ 
 +/**
-+ * smmu_debugfs_capabilities_show() - Display SMMU capabilities
++ * smmu_debug_dump_cd() - Dump a single Context Descriptor
 + * @seq: seq_file to write to
-+ *
-+ * Errors are reported via seq_puts, the function always returns 0
++ * @cd: pointer to the Context Descriptor to dump
 + */
-+static int smmu_debugfs_capabilities_show(struct seq_file *seq, void *unused)
++static void smmu_debug_dump_cd(struct seq_file *seq, struct arm_smmu_cd *cd)
 +{
-+	struct arm_smmu_device *smmu = seq->private;
++	u64 data;
++	int i;
 +
-+	if (!smmu) {
-+		seq_puts(seq, "SMMU not available\n");
++	/* CD 0 */
++	data = le64_to_cpu(cd->data[0]);
++	seq_printf(seq, "  T0SZ: 0x%llx\n", data & CTXDESC_CD_0_TCR_T0SZ);
++	seq_printf(seq, "  EPD0: %s\n", data & CTXDESC_CD_0_TCR_EPD0 ? "Yes" : "No");
++	seq_printf(seq, "  EPD1: %s\n", data & CTXDESC_CD_0_TCR_EPD1 ? "Yes" : "No");
++
++	/* CD 1 */
++	data = le64_to_cpu(cd->data[1]);
++	seq_printf(seq, "  TTBR0: 0x%016llx\n", data & CTXDESC_CD_1_TTB0_MASK);
++
++	/* Display raw CD data */
++	seq_puts(seq, "  Raw Data:\n");
++	for (i = 0; i < CTXDESC_CD_DWORDS; i++)
++		seq_printf(seq, "    CD[%d]: 0x%016llx\n", i,
++			   le64_to_cpu(cd->data[i]));
++}
++
++static int smmu_debugfs_cd_show(struct seq_file *seq, void *unused)
++{
++	struct device *dev = seq->private;
++	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
++	u32 max_ssids, ssid;
++
++	if (!master) {
++		seq_puts(seq, "No master data\n");
 +		return 0;
 +	}
 +
-+	seq_puts(seq, "SMMUv3 Capabilities:\n");
-+	seq_printf(seq, "  Stage1 Translation: %s\n",
-+		   smmu->features & ARM_SMMU_FEAT_TRANS_S1 ? "Yes" : "No");
-+	seq_printf(seq, "  Stage2 Translation: %s\n",
-+		   smmu->features & ARM_SMMU_FEAT_TRANS_S2 ? "Yes" : "No");
-+	seq_printf(seq, "  Coherent Walk: %s\n",
-+		   smmu->features & ARM_SMMU_FEAT_COHERENCY ? "Yes" : "No");
-+	seq_printf(seq, "  ATS Support: %s\n",
-+		   smmu->features & ARM_SMMU_FEAT_ATS ? "Yes" : "No");
-+	seq_printf(seq, "  PRI Support: %s\n",
-+		   smmu->features & ARM_SMMU_FEAT_PRI ? "Yes" : "No");
-+	seq_printf(seq, "  Stream Table Size: %d\n", 1 << smmu->sid_bits);
-+	seq_printf(seq, "  Command Queue Depth: %d\n",
-+		   1 << smmu->cmdq.q.llq.max_n_shift);
-+	seq_printf(seq, "  Event Queue Depth: %d\n",
-+		   1 << smmu->evtq.q.llq.max_n_shift);
++	mutex_lock(&arm_smmu_asid_lock);
++	max_ssids = 1 << master->ssid_bits;
++	seq_printf(seq, "Context Descriptors for device (max SSIDs: %u):\n",
++		   max_ssids);
 +
-+	return 0;
-+}
++	for (ssid = 0; ssid < max_ssids; ssid++) {
++		struct arm_smmu_cd *cd = arm_smmu_get_cd_ptr(master, ssid);
 +
-+static int smmu_debugfs_capabilities_open(struct inode *inode, struct file *file)
-+{
-+	struct arm_smmu_device *smmu = inode->i_private;
-+
-+	if (!smmu || !get_device(smmu->dev))
-+		return -ENODEV;
-+
-+	return single_open(file, smmu_debugfs_capabilities_show, smmu);
-+}
-+
-+static int smmu_debugfs_capabilities_release(struct inode *inode, struct file *file)
-+{
-+	struct seq_file *seq = file->private_data;
-+	struct arm_smmu_device *smmu = seq->private;
-+
-+	single_release(inode, file);
-+	if (smmu)
-+		put_device(smmu->dev);
-+
-+	return 0;
-+}
-+
-+static const struct file_operations smmu_debugfs_capabilities_fops = {
-+	.owner   = THIS_MODULE,
-+	.open    = smmu_debugfs_capabilities_open,
-+	.read    = seq_read,
-+	.llseek  = seq_lseek,
-+	.release = smmu_debugfs_capabilities_release,
-+};
-+
-+/**
-+ * arm_smmu_debugfs_setup() - Initialize debugfs for SMMU device
-+ * @smmu: SMMU device to setup debugfs for
-+ * @name: SMMU device name
-+ *
-+ * This function creates the basic debugfs directory structure for an SMMU device.
-+ *
-+ * Return: 0 on success, negative error code on failure
-+ */
-+int arm_smmu_debugfs_setup(struct arm_smmu_device *smmu, const char *name)
-+{
-+	struct arm_smmu_debugfs *debugfs;
-+	struct dentry *smmu_dir;
-+
-+	/* Create root directory if it doesn't exist */
-+	scoped_guard(mutex, &arm_smmu_debugfs_lock) {
-+		if (!smmu_debugfs_root) {
-+			/* Once created, it will not be removed */
-+			smmu_debugfs_root = debugfs_create_dir("arm_smmu_v3",
-+							       iommu_debugfs_dir);
-+			if (!smmu_debugfs_root)
-+				return -ENOMEM;
++		if (cd && (le64_to_cpu(cd->data[0]) & CTXDESC_CD_0_V)) {
++			seq_printf(seq, "\n--- SSID %u ---\n", ssid);
++			smmu_debug_dump_cd(seq, cd);
 +		}
 +	}
 +
-+	/* Allocate debugfs structure */
-+	debugfs = kzalloc_obj(*debugfs);
-+	if (!debugfs)
-+		return -ENOMEM;
-+
-+	/* Create SMMU instance directory */
-+	smmu_dir = debugfs_create_dir(name, smmu_debugfs_root);
-+	if (!smmu_dir) {
-+		kfree(debugfs);
-+		smmu->debugfs = NULL;
-+		return -ENOMEM;
-+	}
-+
-+	debugfs->smmu_dir = smmu_dir;
-+	smmu->debugfs = debugfs;
-+
-+	/* Create capabilities file */
-+	debugfs_create_file("capabilities", 0444, smmu_dir, smmu,
-+			    &smmu_debugfs_capabilities_fops);
-+
-+	dev_dbg(smmu->dev, "debugfs initialized for %s\n", name);
++	mutex_unlock(&arm_smmu_asid_lock);
 +	return 0;
 +}
 +
-+/**
-+ * arm_smmu_debugfs_remove() - Clean up debugfs entries for an SMMU device
-+ * @smmu: SMMU device
-+ *
-+ * This function removes the debugfs directories created by setup.
-+ */
-+void arm_smmu_debugfs_remove(struct arm_smmu_device *smmu)
++static int smmu_debugfs_cd_open(struct inode *inode, struct file *file)
 +{
-+	struct arm_smmu_debugfs *debugfs;
++	struct device *dev = inode->i_private;
 +
-+	scoped_guard(mutex, &arm_smmu_debugfs_lock) {
-+		debugfs = smmu->debugfs;
-+		if (!debugfs)
-+			return;
++	if (!dev || !get_device(dev))
++		return -ENODEV;
 +
-+		/* Remove the entire SMMU instance directory */
-+		debugfs_remove_recursive(debugfs->smmu_dir);
-+
-+		/* Free the debugfs structure */
-+		kfree(debugfs);
-+		smmu->debugfs = NULL;
-+	}
++	return single_open(file, smmu_debugfs_cd_show, dev);
 +}
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 4d00d796f078..cbb3fccc501b 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -4904,6 +4904,15 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	/* Check for RMRs and install bypass STEs if any */
- 	arm_smmu_rmr_install_bypass_ste(smmu);
- 
-+#ifdef CONFIG_ARM_SMMU_V3_DEBUGFS
-+	char name[32];
 +
-+	snprintf(name, sizeof(name), "smmu3.%pa", &ioaddr);
-+	ret = arm_smmu_debugfs_setup(smmu, name);
-+	if (ret)
-+		dev_warn(dev, "Failed to create debugfs!\n");
-+#endif
++static int smmu_debugfs_cd_release(struct inode *inode, struct file *file)
++{
++	struct seq_file *seq = file->private_data;
++	struct device *dev = seq->private;
 +
- 	/* Reset the device */
- 	ret = arm_smmu_device_reset(smmu);
- 	if (ret)
-@@ -4926,6 +4935,9 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- err_free_sysfs:
- 	iommu_device_sysfs_remove(&smmu->iommu);
- err_disable:
-+#ifdef CONFIG_ARM_SMMU_V3_DEBUGFS
-+	arm_smmu_debugfs_remove(smmu);
-+#endif
- 	arm_smmu_device_disable(smmu);
- err_free_iopf:
- 	iopf_queue_free(smmu->evtq.iopf);
-@@ -4938,6 +4950,9 @@ static void arm_smmu_device_remove(struct platform_device *pdev)
- 
- 	iommu_device_unregister(&smmu->iommu);
- 	iommu_device_sysfs_remove(&smmu->iommu);
-+#ifdef CONFIG_ARM_SMMU_V3_DEBUGFS
-+	arm_smmu_debugfs_remove(smmu);
-+#endif
- 	arm_smmu_device_disable(smmu);
- 	iopf_queue_free(smmu->evtq.iopf);
- 	ida_destroy(&smmu->vmid_map);
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 3c6d65d36164..a54d72fb9e07 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -733,6 +733,16 @@ struct arm_smmu_impl_ops {
- 			  const struct iommu_user_data *user_data);
- };
- 
-+#ifdef CONFIG_ARM_SMMU_V3_DEBUGFS
-+struct arm_smmu_debugfs {
-+	struct dentry			*smmu_dir;
-+	/* Reserved for future extensions */
++	single_release(inode, file);
++	if (dev)
++		put_device(dev);
++	return 0;
++}
++
++static const struct file_operations smmu_debugfs_cd_fops = {
++	.owner   = THIS_MODULE,
++	.open    = smmu_debugfs_cd_open,
++	.read    = seq_read,
++	.llseek  = seq_lseek,
++	.release = smmu_debugfs_cd_release,
 +};
 +
-+int arm_smmu_debugfs_setup(struct arm_smmu_device *smmu, const char *name);
-+void arm_smmu_debugfs_remove(struct arm_smmu_device *smmu);
-+#endif
-+
- /* An SMMUv3 instance */
- struct arm_smmu_device {
- 	struct device			*dev;
-@@ -803,6 +813,11 @@ struct arm_smmu_device {
+ /**
+  * arm_smmu_debugfs_create_stream_table() - Create debugfs entries for stream table
+  * @dev: device to create entries for
+@@ -348,6 +440,8 @@ int arm_smmu_debugfs_create_stream_table(struct device *dev,
+ 		}
  
- 	struct rb_root			streams;
- 	struct mutex			streams_mutex;
-+
-+#ifdef CONFIG_ARM_SMMU_V3_DEBUGFS
-+	/* DebugFS Info */
-+	struct arm_smmu_debugfs		*debugfs;
-+#endif
- };
+ 		kfree(path);
++		/* Create CD file to dump all valid Context Descriptors */
++		debugfs_create_file("cd", 0444, dev_dir, dev, &smmu_debugfs_cd_fops);
+ 	}
  
- struct arm_smmu_stream {
+ 	return 0;
 -- 
 2.33.0
 
