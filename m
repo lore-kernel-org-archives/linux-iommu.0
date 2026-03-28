@@ -1,140 +1,200 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43B24334C05
-	for <iommu@lists.linux.dev>; Sat, 28 Mar 2026 16:23:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6594B32F76D
+	for <iommu@lists.linux.dev>; Sat, 28 Mar 2026 21:32:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774715017; cv=none; b=mQmrjwdpEH+Ukqe8Sn0OWcZK5E1EILDOvhp95MJaGXhigemE5D8XKZFGLyO5S4oeqtSIpvylRPFVVWLiOoNj2moNJG6JJs2HOhf9BpFhVj+NWk17liCWXaAoCQQkMReuDA8BZBOW+F5/+i70C2qgNzR0a0UW+NE9BN26GrQdQO0=
+	t=1774733563; cv=none; b=FIb4rZas2PApEJGJL5TyjGP+6Gd/7HcXYUj48okS7LOkh7kNVNi+uwMdTl9fgQ3zGJhAEzTTEiANwpGfz7rHQPGLJJkdcbgbvCgYMXOgRibfacRwNMOggBnx6PXpN+maleA3kcRwvtADVlQQRIrJosf65mIAhx4PVFEf9ZY/khc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774715017; c=relaxed/simple;
-	bh=bz10RpnRFl8RGnsm1XOADROPJLjuB2zjhcKJ61trS84=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=B4/ycl/BOfQOrsXPMv1bx2i0olceXoSVWG7s784JDuYhaSG++lYVcWndb6UsonhB3t9mAjrFu9W3nZcKzHnCe5UXmyeDevY5ykrP89mxSD9hkxomETflUrPgTLmPBh0Ty0u4CGQtXxuAv28VfGdUjXShvu9LDA7NsbFL8pNFnYE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=IIR4Q1C9; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=aYxQ3JLJ; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1774733563; c=relaxed/simple;
+	bh=p9nKXCnB6qgsDcC8CnnwgOuqSJeVhPxO7RZCp/8yaHg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=TF0MQgSLimpsdj4VcOSEdN4DE3OKX+nIkZcA9V5JPMO4fVK87d1/WH699C1gKKiN0UY5/JEGQvhpzsRlvrmCiKyLHkhJfP6HBqNPSFnpZxn4zBp8yNKZr+nZN4SUjetGcI+CBcN/oYQWkCMPi1ykYKJjtfYCNwdvvvj2isGKkcs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cVsAagrG; arc=none smtp.client-ip=209.85.128.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="IIR4Q1C9";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="aYxQ3JLJ"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62S3Z1uw349300
-	for <iommu@lists.linux.dev>; Sat, 28 Mar 2026 16:23:35 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=RA4nBlWgztaz1cG6MHDMjX9F
-	FkozFbtIx4EKomLp8tk=; b=IIR4Q1C9QbVxxc1LXIQj16QxFkq3qHVAkAP47ipW
-	SK2uRVXFtOosAusTjE3EOiD19AfzCUSHv+B1L/12PARBXulOwUCPmPQ4P1hWkA2j
-	cRUX1prM7ngj2faTfzeN6IMrbkO3mYeVAwrhNkXfgbSq3fb1bGYk5lk50YX3OoeF
-	+u7CEOgdzcWO017cWJeWk4PgYNYwQIVweYuDDuBCsaYEIrPVqKeIZ6bv1wsvZUVi
-	qgCmna8VMaCUrSuxgqHzBaWalaOVvJILrAntT8mmDBMrjrVhYEqBpcjMxXvmwj3h
-	/neSBGMawj8zpU0CYrFBKfI/nwutoEC3+qmhS19QeiUmMA==
-Received: from mail-dy1-f199.google.com (mail-dy1-f199.google.com [74.125.82.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4d6771156b-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Sat, 28 Mar 2026 16:23:35 +0000 (GMT)
-Received: by mail-dy1-f199.google.com with SMTP id 5a478bee46e88-2bdc1b30ac8so3950418eec.1
-        for <iommu@lists.linux.dev>; Sat, 28 Mar 2026 09:23:35 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cVsAagrG"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-48704db565eso44169835e9.1
+        for <iommu@lists.linux.dev>; Sat, 28 Mar 2026 14:32:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1774715015; x=1775319815; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=RA4nBlWgztaz1cG6MHDMjX9FFkozFbtIx4EKomLp8tk=;
-        b=aYxQ3JLJZOB0+PxlOMReH+HHgabyKr9ot2tatdqaYlvB94DzdAFJC9Jfr+DTGBTEV6
-         bdNOGEUgT2Jj5GcADBi01o0wbm+hxCTmCbE7rRbmYs9fYJAUdgudRMUJRLHSJXNCxemh
-         QJTM1HL7t6yK1ZbJ8Suw9YoAWhJxRlMBsGwhcqWKy7ahPugWjSYsa35MKu7R+CMD/N3A
-         TAJlJgepREtxOVEVE9wW7BIHntg+YjN72owVHrcQ+Es/TZgilyzMuBK45JRuXGZ2Ne64
-         FuWdjF4pXlLKB32K7ISdXbN37g5vxZjVU4UuY+SxBRvm05d8IPITTk+SUb+tfe5yaiw3
-         B1LQ==
+        d=gmail.com; s=20251104; t=1774733561; x=1775338361; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=/BJ0N9r5LqYCwMEFbnoh31TQxYmD0rO7Mhn/V1aoiaA=;
+        b=cVsAagrGP/tSfk0x7K1qY+3feaSWZ0I1AHz+ZdMg8fdpST/2h/cuRMTfF6bsQFmaA6
+         e3SIBcGcMU6XbBpOXX2gSG2pX9FK+EApRl0br0bSRZfPluxxdtdm1tDDkL4HDo+d+Zz6
+         pqK8U9jzgilTFQSWoqoKr4gQNCjfn65rmHjRj0YJ94SZXwzSFouejXIvVB1CX7SNUdEy
+         219/CdyHwl2PJG2F89rdbtaau3cjtrYiPbEBackLHguv2ScAEA8NeTrzvW2gHrV5j63c
+         xrw4lCmzSF19TATTHRc/HomkGBnNO30b7NdVQ+1zplcZQSst+XCHPALQHnJKY6qgvjX0
+         yzFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774715015; x=1775319815;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=RA4nBlWgztaz1cG6MHDMjX9FFkozFbtIx4EKomLp8tk=;
-        b=SKaddp+wumYiJZV/0eIkJwhkEM8mk1nAShh/MvHJceUm9M5WWs6Fsr4pa6K8xVvLxm
-         AEkh+Fs0E+RRbER9Vab72oAFojVd5iWVI0/UieUxa2ATcK4N+YEOgAxFlyCaFdwYRUPD
-         F2ecB1XIy4JOLJuafnKwZuXEJz6qZ4CFYaAbaQ6lzWEJLkX7kSe8w9qyKB1Rsxo2Q2IO
-         H59WYF4EEHTQnF+wZLbiLSLkTRZOxRNTpT5qDF4A9aS0NtRytRjC80tzzXkGZiUI0tT0
-         ey0A6f8RAByKR6NtJm82I+vGGLnN9psr3hEckTANo3lVlTrmcOqIdP8wyapMlCf8CaCT
-         IGHw==
-X-Forwarded-Encrypted: i=1; AJvYcCUDMA3n0tMNuLgWcaL0qrwMaOrOP7X5X2qqn3gow0MWoclVNUKHch/N4M65ML0Q+tzrp7xl/Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxETms8fBDfUN+EEUrHPfWvJ6T2nCKqpB5QG0ABmuW0TL7cxMqz
-	ly1Q7Lp0/LxREzSHRFI2BNgmSzoqgXzA8F+o85M6TdL83yKTC18nkqnqYwjWARQelPGsx2btSkC
-	1pzXZfkLlqxhTCWUDteX3b93M1iCkaoQl50bI7fLkzccWy9E+JVpgkhS/0w==
-X-Gm-Gg: ATEYQzz9JvieBmMLysXFygwawrHhLrmV7Lah2UNAjZuSFxE0ArnM3LNcd810MYs/joh
-	zYprQhX13kEPGRscDCG2mdnB0u1mZ/Dd5VaWWEt0DYpTRmzH+yoRhNJ+Ss7W4VmOcsNkyD/l/+N
-	s+He6ybMmYCgdgozqqDO+0Npky4fOTc7pmDTyOEHnTii7v92gZH4k+hs2fVtL/6aJGK+jpZBdz+
-	LO1TEkn0p3bY2K3D38a+F3n/9fOrl6HJ5pCHLWA8u0pG2vujvmKCT+hynmHf3dhEVQPR2UVhg16
-	iNAkSRbGcR1L+31654qUD5E8JSoaU17dF+qf70tqR927N5Olqea9HFIiBXXvXO/Cx6ixQTxehsB
-	iV6szQWrTSwtytWRb/x/qt6on8I9oAFQ=
-X-Received: by 2002:a05:7301:541a:b0:2c1:88ea:9c92 with SMTP id 5a478bee46e88-2c188eaa9a6mr2249396eec.8.1774715014871;
-        Sat, 28 Mar 2026 09:23:34 -0700 (PDT)
-X-Received: by 2002:a05:7301:541a:b0:2c1:88ea:9c92 with SMTP id 5a478bee46e88-2c188eaa9a6mr2249385eec.8.1774715014295;
-        Sat, 28 Mar 2026 09:23:34 -0700 (PDT)
-Received: from localhost ([140.82.166.162])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2c3c68b2ff2sm2374188eec.18.2026.03.28.09.23.33
+        d=1e100.net; s=20251104; t=1774733561; x=1775338361;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=/BJ0N9r5LqYCwMEFbnoh31TQxYmD0rO7Mhn/V1aoiaA=;
+        b=oiv4Pq1FUIylaKZp2uEWwL9gDmllnRxQd6y1KqO/ytMhDiRU9VxsboVbIrW6idJZFb
+         jQHh7zO1Tz1p6OeEIVX11mA+brhTIa1ABWnSM0C1xKYc43FmgGIUA1mLTRfjCH8fdpg0
+         Pp9UlMEolEuAWW+oqv8pid6/16smVKCllbC4X3PQdLUjUpN2G9zAwEk4Qye0QNUo3ZdA
+         ZWG0eVbHjVgJaF36ROr694J/4IhuBaKGvPL1R4tPLVDlrHhhaQN8bKoL8Sa07Uk+MP+j
+         uRu2zPQ9fG7EKFaAW3BvMZcxgDND4l9uy4zlRLOOGKPCxcjhDBV2+9SLLlj5Q6750CcW
+         pWkg==
+X-Forwarded-Encrypted: i=1; AJvYcCWyHMW1+Nlse9HO1oksejMJUjgFVgu1pSfToqMdB1dLzdGxgypmJ4DvcUVryTwvn8Rp8s31+A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwlLwzFviwkwJ4UtW6S0dwlptEqDcSyORjoq6vUfCvFcA3aAkv+
+	64b66UymMpSoG7icvEdD74pkUHGPaaVaEXjGxD2fMgZjxTV98tVuAx7O
+X-Gm-Gg: ATEYQzyg7xPs/+IZv20VGExEI/Dc3pWXhIQForo2yBWOFHRgIqwi5D+/YW1jRaYYFlr
+	atmfL53rVO20Y1LjQeZHRn7RhDSh+M89/6J4ZUXyl1ApuYEjZOp4CCY0EiMgHrY5bzMZrdZDo9U
+	c1nc+BHpEKtIf7k6YchXT4ctwoHTGHE7ea84a9Cp3w+tjAHZ9MS8LMnc2syK0olgcObMWZPGaqF
+	hQRF8V6mD2cvHrPgZ+LZHZN+N6Y92NLhyMEVeOlqcMqBnzl/uLN46Foo89IZO/uR+OVwpvpLW43
+	qC70e41UVYOaF6wh9n9CgCHpwDu1+PUK4jIuKNAcn8bQxQ2IxTYi/H2x0/WVkXcub5Hy8Tiwfmc
+	8TKcKWfdjBKtLcip15a5OcUuPAXSL1pMY6/z7ockbI9I7/gy3AztoWhN13E73KO9adzJd+I79K0
+	UUjUMro7SZRE3uW+UH67lHzyXLIIETI5F1tOJEcupbGaBu1DNvyF+nz5FloMSsNfcUZY5rL7doR
+	wdeusAxoi6OSOEIyoaE/nClDWLLoewdTIgc9hM/iX4+60XuG14bRbNRqUzWOL3AnRHP1XGs3cgw
+	1FQIOfdp9fzrGBGmCnxI/H94cn1WnYazjE2e2siJVuFg9a9evXoeV7JEsJI=
+X-Received: by 2002:a05:600c:5303:b0:487:2439:6266 with SMTP id 5b1f17b1804b1-48727ee5445mr119932975e9.30.1774733560373;
+        Sat, 28 Mar 2026 14:32:40 -0700 (PDT)
+Received: from archlinux.kangaroo-newton.ts.net ([185.213.155.209])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48725da0333sm64002595e9.2.2026.03.28.14.32.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Mar 2026 09:23:33 -0700 (PDT)
-Date: Sat, 28 Mar 2026 11:23:32 -0500
-From: Andrew Jones <andrew.jones@oss.qualcomm.com>
+        Sat, 28 Mar 2026 14:32:40 -0700 (PDT)
+From: Christos Longros <chris.longros@gmail.com>
 To: Joerg Roedel <joro@8bytes.org>
-Cc: Ethan Tidmore <ethantidmore06@gmail.com>,
-        Tomasz Jeznach <tjeznach@rivosinc.com>, Will Deacon <will@kernel.org>,
-        Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, Robin Murphy <robin.murphy@arm.com>,
-        Alexandre Ghiti <alex@ghiti.fr>, Yaxing Guo <guoyaxing@bosc.ac.cn>,
-        iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/riscv: Fix signedness bug
-Message-ID: <uhhd56nw64kofhkgkipzhofwhv6vqbh3lrklzyliyysmvxs4fw@nkhiijvf65q5>
-References: <20260319182644.1082740-1-ethantidmore06@gmail.com>
- <gbresi4jgjmt3cydjftumy7f3afrk2ondap4mx6xfjmrtdnvsq@fpv4htqzdcvz>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	iommu@lists.linux.dev,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Christos Longros <chris.longros@gmail.com>
+Subject: [PATCH] iommu/amd: add amd_iommu=relax_unity option for VFIO passthrough
+Date: Sat, 28 Mar 2026 22:32:28 +0100
+Message-ID: <20260328213228.12084-1-chris.longros@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <gbresi4jgjmt3cydjftumy7f3afrk2ondap4mx6xfjmrtdnvsq@fpv4htqzdcvz>
-X-Proofpoint-GUID: dNfz0LuCO11JaWDTVFpe1UH3VgwbFjAY
-X-Authority-Analysis: v=2.4 cv=efYwvrEH c=1 sm=1 tr=0 ts=69c80087 cx=c_pps
- a=cFYjgdjTJScbgFmBucgdfQ==:117 a=cvcws7F5//HeuvjG1O1erQ==:17
- a=kj9zAlcOel0A:10 a=Yq5XynenixoA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22
- a=VwQbUJbxAAAA:8 a=pGLkceISAAAA:8 a=HLK3u_a7HVCP4a0YeuQA:9 a=CjuIK1q_8ugA:10
- a=scEy_gLbYbu1JhEsrz4S:22
-X-Proofpoint-ORIG-GUID: dNfz0LuCO11JaWDTVFpe1UH3VgwbFjAY
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzI4MDEyMCBTYWx0ZWRfX8cI1OrJc47vB
- PL3AnWxITkvbjG6eDkAdtufr6gqFPDn5ZIR3QU4A4HNMW4Ju11xTGNuP8XcOnvkHggwBLdAv8rO
- vJ0AEneeKjAE8zvPY0VCNK60kfYRrGRxkzxdHrfgkr+90jv4IInkEGZOia/l8mOQkOt1ORrhvi6
- rYcV2P7txESpfzVcJpylcHqmQJqOilBtlyVRH6auGGXIfR0RZcwmAb0HwI3zmDCOYYJ4nSFJ4Ls
- x5DOvEaBIeNSyu/Eg2gcDj5VWEiOnQHDCqV9EXcKB11sFQZbjO0Zl7jiE3EOYjzmshrv4lTVPrB
- dNgreg3t7ACAIZslX2ixramaSjSyz9ukMcuQEA3NCdesWJDVl1+5a9D/NiLO3VEEOATuYBdprVU
- cPZ7JaDDJ3UzP7IigfCYZPSKe+mko6DihuyVQbvxSEQ49gk8/cemBBkTDMAaQzSwlYnehHJFNYM
- E4NHIshbOPXzVVFEyVw==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-03-28_02,2026-03-26_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- bulkscore=0 malwarescore=0 adultscore=0 clxscore=1015 spamscore=0
- priorityscore=1501 impostorscore=0 lowpriorityscore=0 phishscore=0
- suspectscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2603050001
- definitions=main-2603280120
+Content-Transfer-Encoding: 8bit
 
-On Fri, Mar 27, 2026 at 09:35:05AM +0100, Joerg Roedel wrote:
-> On Thu, Mar 19, 2026 at 01:26:44PM -0500, Ethan Tidmore wrote:
-> >  drivers/iommu/riscv/iommu-platform.c | 7 +++++--
-> >  1 file changed, 5 insertions(+), 2 deletions(-)
-> 
-> Applied, thanks.
+On some AMD motherboards (Gigabyte B650 Gaming X AX V2, X870E and
+others), VFIO passthrough of any PCI device fails with:
 
-There's a v2 of this patch with the fixes tag fixed
+  "Firmware has requested this device have a 1:1 IOMMU mapping,
+   rejecting configuring the device without a 1:1 mapping."
 
-https://lore.kernel.org/all/20260326175738.750060-1-ethantidmore06@gmail.com/
+These boards' IVRS tables include IVMD type 0x22 (range) entries
+spanning wide device ranges (e.g. devid 0x0000 to 0x0FFF, covering
+PCI buses 0-15).  The entries exist for platform devices like IOAPIC
+and HPET, but they get applied to nearly every IOMMU group on the
+system.  Since commit a48ce36e2786 ("iommu: Prevent RESV_DIRECT
+devices from blocking domains"), any device with IOMMU_RESV_DIRECT
+regions has require_direct=1 set, which prevents VFIO from claiming
+DMA ownership.
 
-Thanks,
-drew
+No PCI device can be passed through on affected boards -- not just
+the platform devices that need the identity mappings, but also
+endpoint devices like network adapters and GPUs.
+
+Intel handles a similar firmware over-specification with
+device_rmrr_is_relaxable(), which marks certain RMRR entries as
+IOMMU_RESV_DIRECT_RELAXABLE so VFIO can claim them.  AMD has no
+equivalent.
+
+Add an opt-in amd_iommu=relax_unity boot parameter.  When set, IVRS
+unity map entries are reported as IOMMU_RESV_DIRECT_RELAXABLE instead
+of IOMMU_RESV_DIRECT.  The IOMMU still creates the identity mappings,
+preserving DMA for platform devices, but VFIO can take ownership of
+individual devices for passthrough.
+
+Tested by passing through an RTL8852CE WiFi adapter to a FreeBSD
+QEMU/KVM guest via vfio-pci.  Without the option, vfio_iommu_type1
+fails to set up the container.  With amd_iommu=relax_unity,
+passthrough works.
+
+Signed-off-by: Christos Longros <chris.longros@gmail.com>
+---
+ Documentation/admin-guide/kernel-parameters.txt | 6 ++++++
+ drivers/iommu/amd/amd_iommu_types.h             | 1 +
+ drivers/iommu/amd/init.c                        | 6 ++++++
+ drivers/iommu/amd/iommu.c                       | 7 ++++++-
+ 4 files changed, 19 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 03a550630..974506ad9 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -441,6 +441,12 @@ Kernel parameters
+ 			force_enable    - Force enable the IOMMU on platforms known
+ 				          to be buggy with IOMMU enabled. Use this
+ 				          option with care.
++			relax_unity     - Mark IVRS unity map entries as relaxable,
++				          allowing VFIO to claim devices that have
++				          firmware-declared identity mappings. Required
++				          on some AMD motherboards where global unity
++				          maps prevent any device passthrough. Use this
++				          option with care.
+ 			pgtbl_v1        - Use v1 page table for DMA-API (Default).
+ 			pgtbl_v2        - Use v2 page table for DMA-API.
+ 			irtcachedis     - Disable Interrupt Remapping Table (IRT) caching.
+diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+index c685d3771..bc35d5016 100644
+--- a/drivers/iommu/amd/amd_iommu_types.h
++++ b/drivers/iommu/amd/amd_iommu_types.h
+@@ -907,6 +907,7 @@ struct unity_map_entry {
+  */
+ 
+ extern bool amd_iommu_force_isolation;
++extern bool amd_iommu_unity_relaxed;
+ 
+ /* Max levels of glxval supported */
+ extern int amd_iommu_max_glx_val;
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index f3fd7f39e..a89120700 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -173,6 +173,9 @@ u64 amd_iommu_efr2;
+ /* Host (v1) page table is not supported*/
+ bool amd_iommu_hatdis;
+ 
++/* Relax unity map entries for VFIO passthrough */
++bool amd_iommu_unity_relaxed __read_mostly;
++
+ /* SNP is enabled on the system? */
+ bool amd_iommu_snp_en;
+ EXPORT_SYMBOL(amd_iommu_snp_en);
+@@ -3676,6 +3679,9 @@ static int __init parse_amd_iommu_options(char *str)
+ 			amd_iommu_pgtable = PD_MODE_V2;
+ 		} else if (strncmp(str, "irtcachedis", 11) == 0) {
+ 			amd_iommu_irtcachedis = true;
++		} else if (strncmp(str, "relax_unity", 11) == 0) {
++			amd_iommu_unity_relaxed = true;
++			pr_warn("AMD IOMMU: unity map relaxation enabled\n");
+ 		} else if (strncmp(str, "nohugepages", 11) == 0) {
+ 			pr_info("Restricting V1 page-sizes to 4KiB");
+ 			amd_iommu_pgsize_bitmap = AMD_IOMMU_PGSIZES_4K;
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 760d5f462..4606fa6a4 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -3070,7 +3070,12 @@ static void amd_iommu_get_resv_regions(struct device *dev,
+ 		if (devid < entry->devid_start || devid > entry->devid_end)
+ 			continue;
+ 
+-		type   = IOMMU_RESV_DIRECT;
++		/*
++		 * When relax_unity is set, mark unity map entries as
++		 * relaxable so VFIO can claim devices for passthrough.
++		 */
++		type = amd_iommu_unity_relaxed ?
++			IOMMU_RESV_DIRECT_RELAXABLE : IOMMU_RESV_DIRECT;
+ 		length = entry->address_end - entry->address_start;
+ 		if (entry->prot & IOMMU_PROT_IR)
+ 			prot |= IOMMU_READ;
+-- 
+2.53.0
+
