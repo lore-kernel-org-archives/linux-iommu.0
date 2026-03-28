@@ -1,38 +1,48 @@
-Received: from canpmsgout05.his.huawei.com (canpmsgout05.his.huawei.com [113.46.200.220])
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9F4D385512
-	for <iommu@lists.linux.dev>; Sat, 28 Mar 2026 10:17:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=113.46.200.220
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7DBF3859D0
+	for <iommu@lists.linux.dev>; Sat, 28 Mar 2026 10:17:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.187
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774693034; cv=none; b=mq1dzsCLTN2TOLZfcxw7TuRlfjpItRF5G+gfLQXq+eS9F7SJb360R5QYUmnWpsYv8zVuD/uGeNHs+6/QitnSRGoFFWoErJgQswjnDdXwRwHosSTDyMr1plHk93F7fpQrmu8EbDtBxmpzalYxfdErtc3BS2AZIfTflkhTlsRvH7A=
+	t=1774693039; cv=none; b=HLf3lEv+loZ/UZA4q70oadlMNh+cKH0xW5GJQeGxlPAWtGuLcuEEBt9qr7fDb/wR+M7563c8HmmYmpY5PQesOkZwtG9j9WPVGxzS3piIcOLFjxpDctaFeGrNrTkkCJcKmPvLUpy4nL/JgUNNVSPPG0RtuFzHqKJ1g4WMeMSxn2Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774693034; c=relaxed/simple;
-	bh=o/YkXcR5vyMXwkxya6PyClgBlH9t5YAY4h3tB58KYgc=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=GhVo2XzK0/4o34ryjCjECj4z8VCiSJ7elBR7NooFlTkvgUX3nCurYZKWHO9kuDpnQQj1GifsEtaUJ4BpXl3YAALOxo7jop9T3tcifjRG7aCggVK+CaGNz94HLIv1GN5K6OGNMjKWTLZ5xvFU2SzHAURuk/gzSuhI0IGPyp97p00=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=cWsDiIDo; arc=none smtp.client-ip=113.46.200.220
+	s=arc-20240116; t=1774693039; c=relaxed/simple;
+	bh=TkrCjlvKxJ2GHd2Al6MZ34CBWN7ZiSxRJeYN99DYv6U=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Nqi3B9YgAFSoOjdd0XCJzMFSnvhCOA4XYI4BJV0EsBBs9LgSNsb5WfOj85XL9OtoyqfbVTX5QPVih2t66zjMJ6HxqWZRjPRrgjPRbMn3Bm0eBFXqfey5eNsPeJ1ZwZ6cYvCG0tvHCaa4rMlsRajc4iJnrMdWG/Qbew0t96rqv60=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=Jf2prgtE; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=Jf2prgtE; arc=none smtp.client-ip=45.249.212.187
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="cWsDiIDo"
+	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="Jf2prgtE";
+	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="Jf2prgtE"
 dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
 	c=relaxed/relaxed; q=dns/txt;
 	h=From;
-	bh=zEfQ2xHD20u2SNJPKNUNUUMLTWyeWszA9wRDOE62vLc=;
-	b=cWsDiIDox67v1VfnLwL3COzpfWl/zHQy+xzjtvGgkgF5nnzZ69dsU/MT5LgpVfsBbXbqEogm1
-	yi+rkN5uJADT2kmyr5E3gdeQitAdEpzq/yul6Z0nefWUnNcLGzKaS+WKXKMof2ZS9LH0tZY1Bef
-	liOWaPfDh1Tqhwehso/utHE=
-Received: from mail.maildlp.com (unknown [172.19.162.144])
-	by canpmsgout05.his.huawei.com (SkyGuard) with ESMTPS id 4fjYFr1Qwgz12LJ1;
-	Sat, 28 Mar 2026 18:11:44 +0800 (CST)
+	bh=4AaMlouoSdoLO09YMstibKmWb5wdcKm3CtKkeSW3Zrc=;
+	b=Jf2prgtEKbtoy5HpZKi3npCtQBHN+jBA+Q09KK0A2nl6mNq/gJEIxHkm0Bwlex7M8Pz4TPj4Q
+	OJ8NNoj5MokDNh9LgyqVksKwdbHNIRZ8NJzCrZmf5U7dcvpYrBJ9c1YKEU5zDMdwsfSHPl9G3qk
+	hV0Sa4eKyGJu7dhToJt7IYo=
+Received: from canpmsgout08.his.huawei.com (unknown [172.19.92.156])
+	by szxga01-in.huawei.com (SkyGuard) with ESMTPS id 4fjYN124rCz1BFq2
+	for <iommu@lists.linux.dev>; Sat, 28 Mar 2026 18:17:05 +0800 (CST)
+dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
+	c=relaxed/relaxed; q=dns/txt;
+	h=From;
+	bh=4AaMlouoSdoLO09YMstibKmWb5wdcKm3CtKkeSW3Zrc=;
+	b=Jf2prgtEKbtoy5HpZKi3npCtQBHN+jBA+Q09KK0A2nl6mNq/gJEIxHkm0Bwlex7M8Pz4TPj4Q
+	OJ8NNoj5MokDNh9LgyqVksKwdbHNIRZ8NJzCrZmf5U7dcvpYrBJ9c1YKEU5zDMdwsfSHPl9G3qk
+	hV0Sa4eKyGJu7dhToJt7IYo=
+Received: from mail.maildlp.com (unknown [172.19.163.163])
+	by canpmsgout08.his.huawei.com (SkyGuard) with ESMTPS id 4fjYDy5d0gzmV6s;
+	Sat, 28 Mar 2026 18:10:58 +0800 (CST)
 Received: from kwepemj200003.china.huawei.com (unknown [7.202.194.15])
-	by mail.maildlp.com (Postfix) with ESMTPS id C2B2D40538;
-	Sat, 28 Mar 2026 18:17:09 +0800 (CST)
+	by mail.maildlp.com (Postfix) with ESMTPS id A04F240565;
+	Sat, 28 Mar 2026 18:17:07 +0800 (CST)
 Received: from localhost.huawei.com (10.90.31.46) by
  kwepemj200003.china.huawei.com (7.202.194.15) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Sat, 28 Mar 2026 18:17:09 +0800
+ 15.2.1544.11; Sat, 28 Mar 2026 18:17:06 +0800
 From: Qinxin Xia <xiaqinxin@huawei.com>
 To: <robin.murphy@arm.com>, <nicolinc@nvidia.com>, <will@kernel.org>,
 	<jpb@kernel.org>
@@ -40,12 +50,10 @@ CC: <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
 	<xiaqinxin@huawei.com>, <wangzhou1@hisilicon.com>,
 	<prime.zeng@hisilicon.com>, <fanghao11@huawei.com>,
 	<jonathan.cameron@huawei.com>, <wuyifan50@huawei.com>, <linuxarm@huawei.com>
-Subject: [RFC PATCH v2 4/5] iommu/arm-smmu-v3: Add device symlink in stream table debugfs
-Date: Sat, 28 Mar 2026 18:17:05 +0800
-Message-ID: <20260328101706.3448655-5-xiaqinxin@huawei.com>
+Subject: [RFC PATCH v2 0/5] Add debugfs support for ARM SMMUv3
+Date: Sat, 28 Mar 2026 18:17:01 +0800
+Message-ID: <20260328101706.3448655-1-xiaqinxin@huawei.com>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20260328101706.3448655-1-xiaqinxin@huawei.com>
-References: <20260328101706.3448655-1-xiaqinxin@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -57,71 +65,67 @@ Content-Transfer-Encoding: 8bit
 X-ClientProxiedBy: kwepems500001.china.huawei.com (7.221.188.70) To
  kwepemj200003.china.huawei.com (7.202.194.15)
 
-Add a symlink named  under each stream table entry directory pointing to
-the sysfs directory of the actual device. This aids debugging
-by providing direct access to device attributes.
-
+Add a comprehensive debugfs framework to the ARM SMMUv3 driver,                                                                                                                                                                                                                                                       
+providing visibility into internal hardware state for debugging
+and performance analysis. The debugfs entries are organized under
+/sys/kernel/debug/iommu/arm_smmu_v3/, with per-SMMU instance directories
+and per-device stream table entries.
+                 
+Each SMMU instance provides:
+- capabilities – static SMMU features and queue sizes.
+- registers – SMMU key registers.
+- stream_table/ – a directory per device with subdirectories per Stream ID. 
+                 
+Each Stream ID subdirectory contains:
+- ste – the Stream Table Entry in decoded and raw format.
+- cd – all valid Context Descriptors (Stage 1 translation tables) associated with the device.
+- a symlink named with the device’s BDF/name pointing to its sysfs directory for easy navigation.
+                 
 /sys/kernel/debug/iommu/arm_smmu_v3/smmu0/stream_table/
-└── <sid>/
-    ├─── ste
+└── <sid>/       
+    ├─── ste  
+    ├─── cd   
     └─── <dev_name>
 
-Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
----
- .../arm/arm-smmu-v3/arm-smmu-v3-debugfs.c     | 19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+Changes since V1:
+  Address the comments from Nicolin:
+  1.Fixed the incorrect comments and replaced 'kzalloc' with 'kzalloc_obj'
+  2.'stream_table_create/stream_table_remove' is called in probe_device/release_device
+  3.Reused some functions in the driver
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c
-index 70623b480d64..dbcc8fce6d8e 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c
-@@ -8,8 +8,9 @@
-  *     ├── capabilities    # SMMU feature capabilities and configuration
-  *     ├── registers	   # SMMU Key registers
-  *     └── stream_table
-- *	   └─── <sid>/                                # Stream ID 0
-- *	       └── ste                                # Stream Table Entry
-+ *	   └─── <sid>/                                # Stream ID
-+ *	       ├─── ste                               # Stream Table Entry
-+ *	       └── <dev_name>                         # Symlink to device sysfs directory
-  *
-  * The capabilities file provides detailed information about:
-  * - translation stage support (Stage1/Stage2)
-@@ -31,6 +32,7 @@
- 
- #include <linux/cleanup.h>
- #include <linux/debugfs.h>
-+#include <linux/kobject.h>
- #include <linux/slab.h>
- #include "arm-smmu-v3.h"
- 
-@@ -295,6 +297,7 @@ int arm_smmu_debugfs_create_stream_table(struct device *dev,
- 	struct dentry *stream_dir, *dev_dir;
- 	struct arm_smmu_master *master;
- 	struct ste_context *ctx;
-+	char *path, *full_path;
- 	char name[64];
- 	u32 sid;
- 	int i;
-@@ -333,6 +336,18 @@ int arm_smmu_debugfs_create_stream_table(struct device *dev,
- 		debugfs_create_file("ste", 0444, dev_dir, ctx,
- 				    &smmu_debugfs_ste_fops);
- 
-+		/* Create a symlink to the device's sysfs directory */
-+		path = kobject_get_path(&dev->kobj, GFP_KERNEL);
-+		if (!path)
-+			continue;
-+
-+		full_path = kasprintf(GFP_KERNEL, "/sys%s", path);
-+		if (full_path) {
-+			debugfs_create_symlink(dev_name(dev), dev_dir, full_path);
-+			kfree(full_path);
-+		}
-+
-+		kfree(path);
- 	}
- 
- 	return 0;
+  Address the comments from Robin:
+  1.Remove unnecessary CR0*EN extra strings
+  2.Remove the limit on ssid
+
+  Address the comments from Robin and Nicolin:
+  1.The directory structure has been changed
+  2.Added lock protection for the ste_show and cd_show
+
+  Others:
+  1.'arm_smmu_debugfs_remove' is added to remove the corresponding debugfs when SMMU device is removed
+  2.'arm_smmu_debugfs_remove_stream_table' is added to remove the corresponding stream_dir when device is removed
+  3.Use scoped_guard for locks that include return
+  4.Added 'open' and 'release' operations to prevent the device from being released during dump
+  5.Merged 'stream_table_create' and 'ste_show' into one patch
+  6.Some other clean code
+
+- Link: https://lore.kernel.org/all/20260313104351.3502293-1-xiaqinxin@huawei.com/
+
+Qinxin Xia (5):
+  iommu/arm-smmu-v3: Add basic debugfs framework
+  iommu/arm-smmu-v3: Add register display to debugfs
+  iommu/arm-smmu-v3: Add Stream Table Entry display to debugfs
+  iommu/arm-smmu-v3: Add device symlink in stream table debugfs
+  iommu/arm-smmu-v3: Add Context Descriptor display to debugfs
+
+ drivers/iommu/Kconfig                         |  11 +
+ drivers/iommu/arm/arm-smmu-v3/Makefile        |   1 +
+ .../arm/arm-smmu-v3/arm-smmu-v3-debugfs.c     | 571 ++++++++++++++++++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  33 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  32 +
+ 5 files changed, 646 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c
+
 -- 
 2.33.0
 
