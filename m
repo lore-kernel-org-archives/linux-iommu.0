@@ -1,200 +1,170 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6594B32F76D
-	for <iommu@lists.linux.dev>; Sat, 28 Mar 2026 21:32:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774733563; cv=none; b=FIb4rZas2PApEJGJL5TyjGP+6Gd/7HcXYUj48okS7LOkh7kNVNi+uwMdTl9fgQ3zGJhAEzTTEiANwpGfz7rHQPGLJJkdcbgbvCgYMXOgRibfacRwNMOggBnx6PXpN+maleA3kcRwvtADVlQQRIrJosf65mIAhx4PVFEf9ZY/khc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774733563; c=relaxed/simple;
-	bh=p9nKXCnB6qgsDcC8CnnwgOuqSJeVhPxO7RZCp/8yaHg=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=TF0MQgSLimpsdj4VcOSEdN4DE3OKX+nIkZcA9V5JPMO4fVK87d1/WH699C1gKKiN0UY5/JEGQvhpzsRlvrmCiKyLHkhJfP6HBqNPSFnpZxn4zBp8yNKZr+nZN4SUjetGcI+CBcN/oYQWkCMPi1ykYKJjtfYCNwdvvvj2isGKkcs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cVsAagrG; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AB87220F49
+	for <iommu@lists.linux.dev>; Sun, 29 Mar 2026 17:01:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774803690; cv=pass; b=IfqMmi0ULlXDmKU2Zp5eXEg1IJNak0ri1DXHMoXfiLL0DKBLAr7evSoax+Dn132xVFwt5XAuk1bjmRWa54x6vwoLU7oKzPJElX91Zt40e5qrCHq00lnWwPjv4C60yVEd4vPHNb1gtTVca5PyGibbd3PTE0DLCmvd7wx0VMipsTA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774803690; c=relaxed/simple;
+	bh=D69gXANH8TBNxZQkgyb8oin9nZ12Y/5FCUwK4Ecf+fo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=JzkgjlcNXcxq5mW7hHQcJwljVVZ/exfNRSs4fPUcjT+g1JwppSeWSlehhmBzSSKkbdaai1PMifqbq8HaUSnitFsK+Eod4UIdOp9E2Gh4c/xREpvpT50gypB5hgX+B9XWt1/mbQsPuecbHKWbrus9unToyedP0J9bdi23Dhw9JB0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b=KW6WRE8G; arc=pass smtp.client-ip=136.143.188.112
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cVsAagrG"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-48704db565eso44169835e9.1
-        for <iommu@lists.linux.dev>; Sat, 28 Mar 2026 14:32:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1774733561; x=1775338361; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=/BJ0N9r5LqYCwMEFbnoh31TQxYmD0rO7Mhn/V1aoiaA=;
-        b=cVsAagrGP/tSfk0x7K1qY+3feaSWZ0I1AHz+ZdMg8fdpST/2h/cuRMTfF6bsQFmaA6
-         e3SIBcGcMU6XbBpOXX2gSG2pX9FK+EApRl0br0bSRZfPluxxdtdm1tDDkL4HDo+d+Zz6
-         pqK8U9jzgilTFQSWoqoKr4gQNCjfn65rmHjRj0YJ94SZXwzSFouejXIvVB1CX7SNUdEy
-         219/CdyHwl2PJG2F89rdbtaau3cjtrYiPbEBackLHguv2ScAEA8NeTrzvW2gHrV5j63c
-         xrw4lCmzSF19TATTHRc/HomkGBnNO30b7NdVQ+1zplcZQSst+XCHPALQHnJKY6qgvjX0
-         yzFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774733561; x=1775338361;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=/BJ0N9r5LqYCwMEFbnoh31TQxYmD0rO7Mhn/V1aoiaA=;
-        b=oiv4Pq1FUIylaKZp2uEWwL9gDmllnRxQd6y1KqO/ytMhDiRU9VxsboVbIrW6idJZFb
-         jQHh7zO1Tz1p6OeEIVX11mA+brhTIa1ABWnSM0C1xKYc43FmgGIUA1mLTRfjCH8fdpg0
-         Pp9UlMEolEuAWW+oqv8pid6/16smVKCllbC4X3PQdLUjUpN2G9zAwEk4Qye0QNUo3ZdA
-         ZWG0eVbHjVgJaF36ROr694J/4IhuBaKGvPL1R4tPLVDlrHhhaQN8bKoL8Sa07Uk+MP+j
-         uRu2zPQ9fG7EKFaAW3BvMZcxgDND4l9uy4zlRLOOGKPCxcjhDBV2+9SLLlj5Q6750CcW
-         pWkg==
-X-Forwarded-Encrypted: i=1; AJvYcCWyHMW1+Nlse9HO1oksejMJUjgFVgu1pSfToqMdB1dLzdGxgypmJ4DvcUVryTwvn8Rp8s31+A==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwlLwzFviwkwJ4UtW6S0dwlptEqDcSyORjoq6vUfCvFcA3aAkv+
-	64b66UymMpSoG7icvEdD74pkUHGPaaVaEXjGxD2fMgZjxTV98tVuAx7O
-X-Gm-Gg: ATEYQzyg7xPs/+IZv20VGExEI/Dc3pWXhIQForo2yBWOFHRgIqwi5D+/YW1jRaYYFlr
-	atmfL53rVO20Y1LjQeZHRn7RhDSh+M89/6J4ZUXyl1ApuYEjZOp4CCY0EiMgHrY5bzMZrdZDo9U
-	c1nc+BHpEKtIf7k6YchXT4ctwoHTGHE7ea84a9Cp3w+tjAHZ9MS8LMnc2syK0olgcObMWZPGaqF
-	hQRF8V6mD2cvHrPgZ+LZHZN+N6Y92NLhyMEVeOlqcMqBnzl/uLN46Foo89IZO/uR+OVwpvpLW43
-	qC70e41UVYOaF6wh9n9CgCHpwDu1+PUK4jIuKNAcn8bQxQ2IxTYi/H2x0/WVkXcub5Hy8Tiwfmc
-	8TKcKWfdjBKtLcip15a5OcUuPAXSL1pMY6/z7ockbI9I7/gy3AztoWhN13E73KO9adzJd+I79K0
-	UUjUMro7SZRE3uW+UH67lHzyXLIIETI5F1tOJEcupbGaBu1DNvyF+nz5FloMSsNfcUZY5rL7doR
-	wdeusAxoi6OSOEIyoaE/nClDWLLoewdTIgc9hM/iX4+60XuG14bRbNRqUzWOL3AnRHP1XGs3cgw
-	1FQIOfdp9fzrGBGmCnxI/H94cn1WnYazjE2e2siJVuFg9a9evXoeV7JEsJI=
-X-Received: by 2002:a05:600c:5303:b0:487:2439:6266 with SMTP id 5b1f17b1804b1-48727ee5445mr119932975e9.30.1774733560373;
-        Sat, 28 Mar 2026 14:32:40 -0700 (PDT)
-Received: from archlinux.kangaroo-newton.ts.net ([185.213.155.209])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48725da0333sm64002595e9.2.2026.03.28.14.32.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Mar 2026 14:32:40 -0700 (PDT)
-From: Christos Longros <chris.longros@gmail.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	iommu@lists.linux.dev,
-	linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Christos Longros <chris.longros@gmail.com>
-Subject: [PATCH] iommu/amd: add amd_iommu=relax_unity option for VFIO passthrough
-Date: Sat, 28 Mar 2026 22:32:28 +0100
-Message-ID: <20260328213228.12084-1-chris.longros@gmail.com>
-X-Mailer: git-send-email 2.53.0
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b="KW6WRE8G"
+ARC-Seal: i=1; a=rsa-sha256; t=1774803681; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=TcyHnaylvk07QRKxitF9wqW7gG6NVSPQX3bnLz2/hjopfBjKnoAPBFoua96wX7uE/F7lF8qg8Vc1PZMb72wjSI6C0L3c+yMWSE30ag9uvco28XpVexNQGZAYah2Ncy8VmtZh1yDWQhsmVI+ivpLCunmnZdXMRzHSAideamxtA3A=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1774803681; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=kdBBo47+/mBAsd9iPiJAysoTiErRL2J2XY5aq4i0hpY=; 
+	b=naNTCj/ftIouV+CVDFatmiyxxPolprzt7NXwS5wKsqsEFDnx7hssS/DKUVJ9yWSU4UlCrQfT0b9p7zv8xQJpHKq1LLruNeMYKFnijMENE01iz7f4k/xmq0dsfcDFaUtff8SVOQiTRGY/DCwqzy9TBtXcZtcXdPOipMOsUGNJf4c=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=benjamin.gaignard@collabora.com;
+	dmarc=pass header.from=<benjamin.gaignard@collabora.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1774803681;
+	s=zohomail; d=collabora.com; i=benjamin.gaignard@collabora.com;
+	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=kdBBo47+/mBAsd9iPiJAysoTiErRL2J2XY5aq4i0hpY=;
+	b=KW6WRE8GxxSw8Xo7Ye4ksZVnyqkFUgx/uA9awoCfs0j3qt0IFJEZRHZOm6rAj9dw
+	Hh6OV7LdtYk/dL+mA20+zMkvabuQxSZ2dbWSOuHWnInkY3cQmTYNG3aO4mc5d7Wu910
+	LtfcyS8bYAeJ+Uc7F19BdKS1k6lsN30uvGqdBvug=
+Received: by mx.zohomail.com with SMTPS id 177480368036818.123364854552847;
+	Sun, 29 Mar 2026 10:01:20 -0700 (PDT)
+Message-ID: <cfec65cb-398f-4f14-8587-2e2911372cda@collabora.com>
+Date: Sun, 29 Mar 2026 19:01:15 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v13 3/6] iommu: Add verisilicon IOMMU driver
+To: Will Deacon <will@kernel.org>
+Cc: joro@8bytes.org, robin.murphy@arm.com, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
+ nicolas.dufresne@collabora.com, p.zabel@pengutronix.de, mchehab@kernel.org,
+ iommu@lists.linux.dev, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org
+References: <20260216095144.107356-1-benjamin.gaignard@collabora.com>
+ <20260216095144.107356-4-benjamin.gaignard@collabora.com>
+ <acKxzGk1Z541yoZ4@willie-the-truck>
+ <e083e933-2746-4b26-ac33-3b32d362b28e@collabora.com>
+ <acQPEEd0hQrghGbw@willie-the-truck>
+Content-Language: en-US
+From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+In-Reply-To: <acQPEEd0hQrghGbw@willie-the-truck>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On some AMD motherboards (Gigabyte B650 Gaming X AX V2, X870E and
-others), VFIO passthrough of any PCI device fails with:
 
-  "Firmware has requested this device have a 1:1 IOMMU mapping,
-   rejecting configuring the device without a 1:1 mapping."
+Le 25/03/2026 à 17:36, Will Deacon a écrit :
+> On Tue, Mar 24, 2026 at 05:28:44PM +0100, Benjamin Gaignard wrote:
+>> Le 24/03/2026 à 16:46, Will Deacon a écrit :
+>>> On Mon, Feb 16, 2026 at 10:51:35AM +0100, Benjamin Gaignard wrote:
+>>>> The Verisilicon IOMMU hardware block can be found in combination
+>>>> with Verisilicon hardware video codecs (encoders or decoders) on
+>>>> different SoCs.
+>>>> Enable it will allow us to use non contiguous memory allocators
+>>>> for Verisilicon video codecs.
+>>>> If both decoder and this iommu driver are compiled has modules
+>>>> there is undefined symboles issues so this iommu driver could
+>>>> only be compiled has built-in.
+>>>>
+>>>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+>>>> ---
+>>>>    MAINTAINERS               |   8 +
+>>>>    drivers/iommu/Kconfig     |  11 +
+>>>>    drivers/iommu/Makefile    |   1 +
+>>>>    drivers/iommu/vsi-iommu.c | 794 ++++++++++++++++++++++++++++++++++++++
+>>>>    include/linux/vsi-iommu.h |  21 +
+>>>>    5 files changed, 835 insertions(+)
+>>>>    create mode 100644 drivers/iommu/vsi-iommu.c
+>>>>    create mode 100644 include/linux/vsi-iommu.h
+>>> [...]
+>>>
+>>>> +static size_t vsi_iommu_unmap(struct iommu_domain *domain, unsigned long _iova,
+>>>> +			      size_t size, size_t count, struct iommu_iotlb_gather *gather)
+>>>> +{
+>>>> +	struct vsi_iommu_domain *vsi_domain = to_vsi_domain(domain);
+>>>> +	dma_addr_t pte_dma, iova = (dma_addr_t)_iova;
+>>>> +	unsigned long flags;
+>>>> +	phys_addr_t pt_phys;
+>>>> +	u32 dte;
+>>>> +	u32 *pte_addr;
+>>>> +	size_t unmap_size = 0;
+>>>> +
+>>>> +	spin_lock_irqsave(&vsi_domain->lock, flags);
+>>>> +
+>>>> +	dte = vsi_domain->dt[vsi_iova_dte_index(iova)];
+>>>> +	/* Just return 0 if iova is unmapped */
+>>>> +	if (!vsi_dte_is_pt_valid(dte))
+>>>> +		goto unlock;
+>>>> +
+>>>> +	pt_phys = vsi_dte_pt_address(dte);
+>>>> +	pte_addr = (u32 *)phys_to_virt(pt_phys) + vsi_iova_pte_index(iova);
+>>>> +	pte_dma = pt_phys + vsi_iova_pte_index(iova) * sizeof(u32);
+>>>> +	unmap_size = vsi_iommu_unmap_iova(vsi_domain, pte_addr, pte_dma, size);
+>>>> +
+>>>> +unlock:
+>>>> +	spin_unlock_irqrestore(&vsi_domain->lock, flags);
+>>>> +
+>>>> +	return unmap_size;
+>>>> +}
+>>> I still think you need TLB invalidation here.
+>>>
+>>> I looked at the downstream code that you linked to and it litters the
+>>> invalidation in the callers via mpp_iommu_flush_tlb(), which tend to
+>>> invalidate _before_ starting an operation. That's very likely buggy and
+>>> certainly not something we want upstream.
+>>>
+>>> The unmap routine should do the invalidation so that, when it returns,
+>>> the pages really are unmapped from the device (assuming strict mode).
+>>>
+>>> I know you said that you tried to add invalidation here and it "didn't
+>>> work", but that's not something I can really help you with.
+>> I know you expect the hardware to work like that but that isn't not the
+>> case.
+> The hardware appears to have a register to invalidate the entire TLB.
+> We can use that if there's nothing else.
 
-These boards' IVRS tables include IVMD type 0x22 (range) entries
-spanning wide device ranges (e.g. devid 0x0000 to 0x0FFF, covering
-PCI buses 0-15).  The entries exist for platform devices like IOAPIC
-and HPET, but they get applied to nearly every IOMMU group on the
-system.  Since commit a48ce36e2786 ("iommu: Prevent RESV_DIRECT
-devices from blocking domains"), any device with IOMMU_RESV_DIRECT
-regions has require_direct=1 set, which prevents VFIO from claiming
-DMA ownership.
+VSI_MMU_BIT_FLUSH ? it discards everything.
+Is there an api to call it when all buffers have been unmapped ?
 
-No PCI device can be passed through on affected boards -- not just
-the platform devices that need the identity mappings, but also
-endpoint devices like network adapters and GPUs.
+>
+>> I spend quite long to try to found hidden bit(s) or an other way to do like
+>> you want but I can't find any solution.
+> Then we can invalidate the entire TLB.
+>
+>> As you mention the downstream code suggest that the iommu can't invalidate
+>> TLB in unmap routine so I don't see how to progress.
+> The downstream code is a tangled mess; I don't think it suggests anything
+> about what the IOMMU hardware is capable of.
 
-Intel handles a similar firmware over-specification with
-device_rmrr_is_relaxable(), which marks certain RMRR entries as
-IOMMU_RESV_DIRECT_RELAXABLE so VFIO can claim them.  AMD has no
-equivalent.
+If you have an other source to tell the hardware capabilities, I will be
+more than happy to read it and fix the driver.
 
-Add an opt-in amd_iommu=relax_unity boot parameter.  When set, IVRS
-unity map entries are reported as IOMMU_RESV_DIRECT_RELAXABLE instead
-of IOMMU_RESV_DIRECT.  The IOMMU still creates the identity mappings,
-preserving DMA for platform devices, but VFIO can take ownership of
-individual devices for passthrough.
+Benjamin
 
-Tested by passing through an RTL8852CE WiFi adapter to a FreeBSD
-QEMU/KVM guest via vfio-pci.  Without the option, vfio_iommu_type1
-fails to set up the container.  With amd_iommu=relax_unity,
-passthrough works.
-
-Signed-off-by: Christos Longros <chris.longros@gmail.com>
----
- Documentation/admin-guide/kernel-parameters.txt | 6 ++++++
- drivers/iommu/amd/amd_iommu_types.h             | 1 +
- drivers/iommu/amd/init.c                        | 6 ++++++
- drivers/iommu/amd/iommu.c                       | 7 ++++++-
- 4 files changed, 19 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 03a550630..974506ad9 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -441,6 +441,12 @@ Kernel parameters
- 			force_enable    - Force enable the IOMMU on platforms known
- 				          to be buggy with IOMMU enabled. Use this
- 				          option with care.
-+			relax_unity     - Mark IVRS unity map entries as relaxable,
-+				          allowing VFIO to claim devices that have
-+				          firmware-declared identity mappings. Required
-+				          on some AMD motherboards where global unity
-+				          maps prevent any device passthrough. Use this
-+				          option with care.
- 			pgtbl_v1        - Use v1 page table for DMA-API (Default).
- 			pgtbl_v2        - Use v2 page table for DMA-API.
- 			irtcachedis     - Disable Interrupt Remapping Table (IRT) caching.
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index c685d3771..bc35d5016 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -907,6 +907,7 @@ struct unity_map_entry {
-  */
- 
- extern bool amd_iommu_force_isolation;
-+extern bool amd_iommu_unity_relaxed;
- 
- /* Max levels of glxval supported */
- extern int amd_iommu_max_glx_val;
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index f3fd7f39e..a89120700 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -173,6 +173,9 @@ u64 amd_iommu_efr2;
- /* Host (v1) page table is not supported*/
- bool amd_iommu_hatdis;
- 
-+/* Relax unity map entries for VFIO passthrough */
-+bool amd_iommu_unity_relaxed __read_mostly;
-+
- /* SNP is enabled on the system? */
- bool amd_iommu_snp_en;
- EXPORT_SYMBOL(amd_iommu_snp_en);
-@@ -3676,6 +3679,9 @@ static int __init parse_amd_iommu_options(char *str)
- 			amd_iommu_pgtable = PD_MODE_V2;
- 		} else if (strncmp(str, "irtcachedis", 11) == 0) {
- 			amd_iommu_irtcachedis = true;
-+		} else if (strncmp(str, "relax_unity", 11) == 0) {
-+			amd_iommu_unity_relaxed = true;
-+			pr_warn("AMD IOMMU: unity map relaxation enabled\n");
- 		} else if (strncmp(str, "nohugepages", 11) == 0) {
- 			pr_info("Restricting V1 page-sizes to 4KiB");
- 			amd_iommu_pgsize_bitmap = AMD_IOMMU_PGSIZES_4K;
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 760d5f462..4606fa6a4 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -3070,7 +3070,12 @@ static void amd_iommu_get_resv_regions(struct device *dev,
- 		if (devid < entry->devid_start || devid > entry->devid_end)
- 			continue;
- 
--		type   = IOMMU_RESV_DIRECT;
-+		/*
-+		 * When relax_unity is set, mark unity map entries as
-+		 * relaxable so VFIO can claim devices for passthrough.
-+		 */
-+		type = amd_iommu_unity_relaxed ?
-+			IOMMU_RESV_DIRECT_RELAXABLE : IOMMU_RESV_DIRECT;
- 		length = entry->address_end - entry->address_start;
- 		if (entry->prot & IOMMU_PROT_IR)
- 			prot |= IOMMU_READ;
--- 
-2.53.0
-
+>
+>> Maybe we should just admit that is how the hardware work.
+> No.
+>
+> The upstream kernel isn't a dumping ground for vendor crap. The hardware
+> has TLB invalidation functionality and so we should use it. If we don't,
+> then we're not giving the IOMMU API what it expects and any callers
+> outside of the video codecs will be landed with problems when unmap
+> doesn't work as expected.
+>
+>> This v13 has fixed the documentation so I don't plan to spend more time on this driver.
+> That's a shame, I'm really not asking for much.
+>
+> Will
+>
