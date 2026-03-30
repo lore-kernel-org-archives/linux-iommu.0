@@ -1,77 +1,78 @@
-Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
+Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B4C8229B38
-	for <iommu@lists.linux.dev>; Mon, 30 Mar 2026 15:06:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44B963242B2
+	for <iommu@lists.linux.dev>; Mon, 30 Mar 2026 15:09:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774883220; cv=none; b=OK3pa+gEuhxKCRYpP472Z739sIJUjx2S1Cwhe8Xx3KaDBU4lPdWdt01fDk1Y5m1HsYqxKzwiSgdnLynf5a5WnRCQd9MJ7WTFMGD9uou3hSLTL+VxwAoFrfHl2aKXY2C2arqI2xCBKU/ddVIxwuNeZsurDlqWi7Bir/mY+o2/RTM=
+	t=1774883347; cv=none; b=E/T9WmTqaBoe7AoxphTJ/uom4BzMcP7C+82Yev71/WhcmdVHnl025SE3mxjOH3GktW98/FK8kaRSKOJP3rBSEUkkXTtU/a+jNFHUJ0aSpmU98Qdlemp/vBdbV+stZ70xBAnzHLa15OiTk4gYbvheTtV+QNvIzd1RUPRhITNWnvY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774883220; c=relaxed/simple;
-	bh=oMFumgtcsviaIMOGVLWdowRzwi9JxPG7CRNRp/XrgAg=;
+	s=arc-20240116; t=1774883347; c=relaxed/simple;
+	bh=i88CYVEiENt/kzJQXr4JV35jWwlwH79Xb4yqqPXeOFQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VMlUKren394BneIu975mzekW8KS3M9bZ8sVLY2T3l6zS6n87x1GEqDncEwCf3JsHyWH6Z8xlB+VDVQDIJJSZR3ACkP3IpzfNKYX1sKjmhidaILb6myZsKJHe648X2WblNe+2sBPCimkFc97bGJw0El6kcdufbBvdi6hgSHA92hc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=oskLDkC9; arc=none smtp.client-ip=209.85.222.170
+	 Content-Type:Content-Disposition:In-Reply-To; b=BDBe3FqmYbGAcDl8BJ9L+lGk/Gwggq7TIIP08Ya9wuQiZfWC6zr62Db+hPHu8TxbXdLRo5SVA6ihk2RJdqOxt0OEI/KTt4eSMo12XJzxCQATFNjM3H+cr1Jr4jIQS/ufdkl1RzgVH7898s9a6+DtBCHuqXUbaIJRYYNq7yRb4aM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=bv1Bs8eD; arc=none smtp.client-ip=209.85.222.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="oskLDkC9"
-Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-8c70b5594f4so544725885a.1
-        for <iommu@lists.linux.dev>; Mon, 30 Mar 2026 08:06:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="bv1Bs8eD"
+Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-8cd90401034so468316685a.0
+        for <iommu@lists.linux.dev>; Mon, 30 Mar 2026 08:09:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1774883216; x=1775488016; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1774883345; x=1775488145; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Vvmm6aMgtMQBn9OgUBPy3rK/Y3NLNwW+81YPPtVWi5U=;
-        b=oskLDkC908aiS9uSYoKSv8bRxkMX3H6nvfsCk3CSJ+fN3/ha5Up1GguvRkNCXn7EdE
-         l0+SHzBvpgfdQuahEK9/0QzO3lMqUnY+IQB94an+C5nrfSARoquwhGt+1tMzQxPiz0Eh
-         qMQt8gpn6pCe28HTmARnv43xM4kCNNazUeSsXfd5Za+xfJsSZH4/zAAaMLyRJqcK4lgk
-         Uzp/YOGTfjli3hhE1NssfC0OX1hsLr9IiK3HzBsMXicR+2LKphme/UNUtGMoslGZ+E/j
-         WQ9TTzO/kEPh58SG7RHx8u3uMxrJu+XuVtTZK4rjXh2y2Nql2Wf+r8LSSrrz6JaX+nTg
-         sG4g==
+        bh=5Z2UbzddjhJ8BWnoL8ir9y2dG2HVaaHYGgPJ41fbwcw=;
+        b=bv1Bs8eDrdPw2MoFAWtMmZEC3DSxvPB8wK5CdhxgEOtO39Uz4ZFkuvERLSJndEq7fg
+         xZVvUIGAoFz0cipSGQB0i/sBEEBRHgdKpDmFNVnF2JF9IjgX9oVEeXvrWt1nadXJAtKD
+         bGAvuwktndbIhFwPdAOOa9D3SO5cRYlSyRqTU6ODPQB6mkxacngamP9MAifsjMQHqR+C
+         1A6Ym5Yjqg8Ji5Im1lKq1QdcKn2DpXvU6G6b4ChpC65ZgiIjFZt9dhpPwBbYq8HrDMBg
+         DLBFnNQFxunffRQA+fO20SofIHLPbGYo0rViwQT+CfGuVrjJztz8q3rTUglWcEwcxRyt
+         dFyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774883216; x=1775488016;
+        d=1e100.net; s=20251104; t=1774883345; x=1775488145;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Vvmm6aMgtMQBn9OgUBPy3rK/Y3NLNwW+81YPPtVWi5U=;
-        b=Xby1Anb6JN4WpcTNeBjPy7crQB4DJEb4ZQNQYUxV9d/ezQqTN6dJWEHOKMEKL6vqsP
-         mX1Tp38SZ1yyOHJiUaEkGCSdkm7DoQZQ053lAN1xPHwzcEE+fBiYSZEwwxxnJK97R8Mf
-         IWOUbp9jHKTzzEUqfEFtRM8N6LHNaot1nd8JiowCArsIqKK/Y/1EHm9NEFNRIqy2RglW
-         cDW2lU6FU9jHa+ftYN2V5kGczbAZQsIVoUN6ynuIHNXohgs6qJDUpqcnqiji51OhhbPV
-         i3nqM05wJBUa9n4VHNkeQbflltgfEkB+KgvJTFteH8LzC51AAmvSJ3PJ/X9l+A4gjrJK
-         WD8Q==
-X-Gm-Message-State: AOJu0Ywd+n5A8JKaxEkhh/6ws2fpJNQc3nL7PiKTi98wYPb8ENReb2rd
-	2owuaU6f7aucTy3vz3tND6du1VFC58AUBqgxs57rjStSaxEfZ88MLkQJ5t5uKa7FmyY=
-X-Gm-Gg: ATEYQzzQ3rsFuAN/+Apq4Hh5muliY4EYzOguSxkxMYFZJWnyYt68awrvp1eOx5Dkco/
-	ldaCiO0CzOHs8Vbui1myKWscywHwWhzJfcuGQjW52yg1cMc5YTIkSWoI8SrO9MWB4jxO0W4OYeN
-	vtgWmKhb04WnYALlnx8V89IUDp+QB5SY58cNbnmBmLBNuwLkyG/PT5veJ0aKvncGwfQXiEDpnW4
-	Omv5MvMwxRnoY/8QxGjii0vqqnIjphXai5FdJf3MIHRcNiN3tenEsKrRuAekvSRonYW12oGCaB3
-	OYzA4oKPin3jSsg9L/G77NmqDc0YJsshZVOBBP3IFcWMLmYn+JnPs+jJelc+5ysOtkmz3xPAIXw
-	EILRiHSYw2F1SWJqPuxCvWAF/22xCPSCfpFbtjJsnBiIsxyoEsUmt8xZq+IXBgifYAwtMwzQVy6
-	snVsyxsDMR4mRnNl+zthyV+C+XlgLNad7PXwUre2pt/mBAw+DFr2FputDD+6/kwA3gQpTBwA==
-X-Received: by 2002:a05:620a:179f:b0:8cd:b6da:7714 with SMTP id af79cd13be357-8d01ce265bcmr1628614085a.18.1774883216113;
-        Mon, 30 Mar 2026 08:06:56 -0700 (PDT)
+        bh=5Z2UbzddjhJ8BWnoL8ir9y2dG2HVaaHYGgPJ41fbwcw=;
+        b=M5jzJwesSMxm7EGLmwMPB+1vQ3PkuJsDKHGqLHM9WVnLCscc9/m37SeVay2rGjOMHD
+         7txG8CJ7eKyPZGdEwhSPnPgejQGncAskOcUOX6TJurtX4zW+ylXiKLQ9z7zjEj+Zto2m
+         fy/ZOcVEOAPrECCGbh8zCfDshX0wu2szYbZqKugVBeuOkkJrKNwsEOhbIMh5BuaTlbBs
+         xQAlQclvZR7/S83BGdTzng0obik3p9u9I8Beqz1ixeY9ciXRGIPsphHt/KG6i9xnJWqU
+         uckpIS6jOk4hcAn3HNRuGwmXbdIlqHBs1CEMoCcD/+ZiTzs8kVfI3un7UsLYQt4Oc+/l
+         +Uzw==
+X-Gm-Message-State: AOJu0Yxl49iigUCOKatqx796rq/2D8nuzWIeWfYURqXHl7PO29MUPCmA
+	RhKhN7T1xeNJboCo02z8U7Yb+NcvHimOMLjjwS8k1Q/kDR3Wf1JfWu/il0P8J82Ovqo=
+X-Gm-Gg: ATEYQzyBfelw+jpyvGuDUvE5bmIVrPuRpygz+4TPvS+GZxXggVvztQwQt+TmP65l4p5
+	NLdv9p5wj6dmqwHv2+tH+xI9OLd401TutScTrLK5CMGYqgAGwgCGUjsQB1KnDjRPxk6MepVk+Ql
+	/LY1W4RygxFRgTkYqyoUMElBOIvWGbtNJy7XhYyVoheXFbrNnMmWNnY4stvuSB7RVjfAJzrLVJa
+	Mbsu14yRoyKnWMbZw9Ww29G61RmXTO8eo5Nze1XOo5NUDbcKcN+GWSR4lTFDy9fkjW35cOD9E7L
+	JJiKNhINWJx7v9SOOkgmpQnfzJBE0tUpRUsAJT4C76ypEfWsut1ygh/QgmUIen10Andp0PqmC4n
+	Ms7UVfH7ozZ/HW7u7h1Kzjzt6zxgVG4Fs+36kJlgRRno0SZOnlGDWKRIHed5g2bfZq3IjLKPiw4
+	yhiWQb755XpI8hb4jgsYY17p1K/JVJiwBWOWCNQLaQYtxTgBasAiLUB5ihgpuytkYzuHD6b/2LS
+	HH4qgxh
+X-Received: by 2002:a05:620a:3187:b0:8cf:c141:435c with SMTP id af79cd13be357-8d01c842f3emr1613475885a.61.1774883344877;
+        Mon, 30 Mar 2026 08:09:04 -0700 (PDT)
 Received: from ziepe.ca (mctnnbsa70w-159-2-73-22.dhcp-dynamic.fibreop.nb.bellaliant.net. [159.2.73.22])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8d02806a37bsm615516085a.34.2026.03.30.08.06.55
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8d02806a36fsm630987085a.35.2026.03.30.08.09.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Mar 2026 08:06:55 -0700 (PDT)
+        Mon, 30 Mar 2026 08:09:04 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1w7ECc-00000003PSU-29gv;
-	Mon, 30 Mar 2026 12:06:54 -0300
-Date: Mon, 30 Mar 2026 12:06:54 -0300
+	id 1w7EEh-00000003Q3a-2aGT;
+	Mon, 30 Mar 2026 12:09:03 -0300
+Date: Mon, 30 Mar 2026 12:09:03 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Mostafa Saleh <smostafa@google.com>
 Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
 	robin.murphy@arm.com, m.szyprowski@samsung.com, will@kernel.org,
 	maz@kernel.org, suzuki.poulose@arm.com, catalin.marinas@arm.com,
 	jiri@resnulli.us, aneesh.kumar@kernel.org
-Subject: Re: [RFC PATCH v2 1/5] dma-mapping: Avoid double decrypting with
- DMA_RESTRICTED_POOL
-Message-ID: <20260330150654.GA809900@ziepe.ca>
+Subject: Re: [RFC PATCH v2 2/5] dma-mapping: Use the correct phys_to_dma()
+ for DMA_RESTRICTED_POOL
+Message-ID: <20260330150903.GB809900@ziepe.ca>
 References: <20260330145043.1586623-1-smostafa@google.com>
- <20260330145043.1586623-2-smostafa@google.com>
+ <20260330145043.1586623-3-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -80,55 +81,47 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260330145043.1586623-2-smostafa@google.com>
+In-Reply-To: <20260330145043.1586623-3-smostafa@google.com>
 
-On Mon, Mar 30, 2026 at 02:50:39PM +0000, Mostafa Saleh wrote:
-> In case a device have a restricted DMA pool, it will be decrypted
-> by default.
+On Mon, Mar 30, 2026 at 02:50:40PM +0000, Mostafa Saleh wrote:
+> As restricted dma pools are always decrypted, in swiotlb.c it uses
+> phys_to_dma_unencrypted() for address conversion.
 > 
-> However, in the path of dma_direct_alloc() memory can be allocated
-> from this pool using, __dma_direct_alloc_pages() =>
-> dma_direct_alloc_swiotlb()
-> 
-> After that from the same function, it will attempt to decrypt it
-> using dma_set_decrypted() if force_dma_unencrypted().
-> 
-> Which results in the memory being decrypted twice.
-> 
-> It's not clear how the does realm world/hypervisors deal with that,
-> for example:
-> - CCA: Clear a bit in the page table and call realm IPA_STATE_SET.
-> - TDX: Issue a hypercall.
-> - pKVM: Which doesn't implement force_dma_unencrypted() at the moment,
->   uses a share hypercall.
-> 
-> Change that to only encrypt/decrypt memory that are not allocated
-> from the restricted dma pools.
+> However, in DMA-direct, calls to phys_to_dma_direct() with
+> force_dma_unencrypted() returning false, will fallback to
+> phys_to_dma() which is inconsistent for memory allocated from
+> restricted dma pools.
 > 
 > Fixes: f4111e39a52a ("swiotlb: Add restricted DMA alloc/free support")
 > Signed-off-by: Mostafa Saleh <smostafa@google.com>
 > ---
->  kernel/dma/direct.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  kernel/dma/direct.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
 > diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 8f43a930716d..27d804f0473f 100644
+> index 27d804f0473f..1a402bb956d9 100644
 > --- a/kernel/dma/direct.c
 > +++ b/kernel/dma/direct.c
-> @@ -79,7 +79,7 @@ bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
->  
->  static int dma_set_decrypted(struct device *dev, void *vaddr, size_t size)
+> @@ -26,7 +26,7 @@ u64 zone_dma_limit __ro_after_init = DMA_BIT_MASK(24);
+>  static inline dma_addr_t phys_to_dma_direct(struct device *dev,
+>  		phys_addr_t phys)
 >  {
-> -	if (!force_dma_unencrypted(dev))
-> +	if (!force_dma_unencrypted(dev) || is_swiotlb_for_alloc(dev))
->  		return 0;
+> -	if (force_dma_unencrypted(dev))
+> +	if (force_dma_unencrypted(dev) || is_swiotlb_for_alloc(dev))
+>  		return phys_to_dma_unencrypted(dev, phys);
 
-This seems really obtuse, I would expect the decryption state of the
-memory to be known by the caller. If dma_direct_alloc_swiotlb() can
-return decrypted or encrypted memory it needs to return a flag saying
-that. It shouldn't be deduced by checking dev flags in random places
-like this.
+Same remark, I think the force_dma_unencrypted() was a hack to make up
+for a flag here. In these lower layers we need to annotate if phys is
+encrypted/decrypted and take the proper action universially.
 
-Double decryption is certainly a bug, I do not expect that to work.
+The force_dma_unencrypted() should only be done way up the call chain
+where we decide to get a phys that is decrypted. Once we have a
+decrypted phys it should be carried with an annotation throughout all
+the other places.
+
+Then this is more like:
+
+if (flags & FLAG_DECRYPTED)
+   	return phys_to_dma_unencrypted(dev, phys);
 
 Jason
