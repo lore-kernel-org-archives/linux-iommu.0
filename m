@@ -1,167 +1,204 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013033.outbound.protection.outlook.com [40.107.201.33])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B3C635DA60;
-	Mon, 30 Mar 2026 08:41:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774860067; cv=none; b=iB5ketH60rcVMqoAo+mvT7DVG8gTThmgbF6SIMsBpSeE86YaE1xPG4ci8B7T6nTgXW/UgVWuHsIavgXsEWGtxyMBXKDgp8wK3MPbM92kGccA5BJLNSNj0W5CI8MDvYaOTHSWlXrSCYtsJgRNMWdwnQXEH4EOF1/pAqngIqaWTJA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774860067; c=relaxed/simple;
-	bh=2NhBgbhDn7ft3rC7LIHth8pNLQZW1E1FdbXxFtQzOIk=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=Qzgf+mTyUPl5DF0XSo5ZT4Vd2sOmX2sXey4CWOp+ao3XlzbBuca0PkKE5e1nLz58glJyR36BY7vJ656a66aQMQZeTMYCCo35I5lQn2neytawLgtlP/XmYfpw1VFQACKbnA/cwJIWUMz1/zR/SPn0WGlkzHLuFMUkAeyGtnxTx2M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fgV3DSs0; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C396F3AE1A0
+	for <iommu@lists.linux.dev>; Mon, 30 Mar 2026 08:42:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.201.33
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774860171; cv=fail; b=A00t8pf0TRuxm/CSZIeTXhY8wldhATm8x426e4yqgjdTjXfDmb+nTaWRXmwZ0qgdMp4u0cWvL2ZGrCncTwhPW8l+T/AdQb9ZP1wPTNtqL8etwGOaqYcFpsbmA+wM9MyjXfK5qfipsiDi1miYw9EXepvXfxK0RL5s+TPzRzEZ9g0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774860171; c=relaxed/simple;
+	bh=N+ThP0wFChho+WFCY0AgB2CsLl2Jx2vL4hHlb1bvMJY=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=inUlJr2VmHGusO1qfQA3fDKoVK7gFWZFYbRDEi0+7PPWfH9rzpKOIIP7OoCqiuFAmbKeWotLlH1p4QLtY8lIhSSznUwaIC2xaoqCcaSG8Y9o3+4gVBpZZ08KCDkL0lDYEP+cuhYeovTFrlB70OwODwpu81LwxzShx/CiFKUR2hQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=Bfw9WdMY; arc=fail smtp.client-ip=40.107.201.33
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fgV3DSs0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F95EC4CEF7;
-	Mon, 30 Mar 2026 08:41:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774860067;
-	bh=2NhBgbhDn7ft3rC7LIHth8pNLQZW1E1FdbXxFtQzOIk=;
-	h=From:Date:Subject:To:Cc:From;
-	b=fgV3DSs0P9RnwmOpMroZPtCWngnSF78jdzY9CQRdJ6xa+dlwDMJF0jX2tL3hZNyHV
-	 USdUFdNzRk6Ki+3/S1+zeRywAQNBkNOGcSx8lMPfTEHBxYMv+SGhjKNQj+8oF/yA90
-	 upF2ahEPlnF7WLEOdv4vP8Y6bcAGyNnRBBTsJ9NRQ7OgtDq1UCiDR/YuX0HRzVVoye
-	 1fd7ApNSIWdGHA62y4eTAghiUhS00+p5z4NOFML/nLr5YtLlKgFvP6eFDnYwbDkIVe
-	 0W8Tf9Ie22qorZvFxYC33PyK3wrYXPkrA3SPO5OmaDA5oGXEJdvjEJPT+f0UVqb9kz
-	 ad9gR1M77CBXg==
-From: Maxime Ripard <mripard@kernel.org>
-Date: Mon, 30 Mar 2026 10:40:56 +0200
-Subject: [PATCH] dma/contiguous: Fix broken build
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="Bfw9WdMY"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=b1Erp8edVpYnpC4vVwQA+22IQSuKX0IpOeKhwTS0zf3OlEnjC147GFn/c4KyeeH5+MJ5r2jRzaTtXvY6wWErMENJpaCiIAPrKjh2Nx5v1O3qmt1bmKuorypsMaYGMq43VYLoueYx1dhFqWdtSFPs+WxVhfmu8NZ+mA7bKR/FeP7tTOIx45WHTbOFdrIB5yR5fXkO05Wozx+dNokljl7cGlLUN4NF9LP3m6AGz7t0wQnbKAYt+flZlG4HYfiPGQUCcu+5pzv7BD0jPSR+VyX5zNz3i57iWILBPsey0XRwqjJIxVkqrgHfo6cZYePM6F2P5hqx6GzWrmCVh+6JtXCwqQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7/Fz+wydhdSkxokoLpFGH7waDgw6XXtNQtu3K2m4yhE=;
+ b=TJaskBjxoxuHjF6yxSWITHNQA/1Ia95XiC+kFYnZngxgcmjHabsJwwTql5rdWbJTA1CVfJPvHronO6VPjkJYA3HHfUw3kSjJVbgkN0mk4fZC467k6GY9B8A+hY4XFW7PRWPbslV5NAhMcq8FefWyrXa9dS3MjXLtxJCFXfCR8878dPOgxt31Dj+TdkXf5zCCAELFQhtBchMQXVA3X+VqvAyzEPYo+1u6IY6+P8fIiy6WCwpC/Mvm1/i8bcCPEJIKj/ALLXQuKYv/d6ZEZGqD/KaX5tOk1NAsG+3H9YQYLl8wXmP+LvyAFgqy41ARPXJ8zg3SD64/bb2pfRyagk/9Wg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7/Fz+wydhdSkxokoLpFGH7waDgw6XXtNQtu3K2m4yhE=;
+ b=Bfw9WdMYgh/6S9fltS4dNQ1uxvapvhmnfWBpUHgyJvoC7De3y8tHTnb+rvwX0zBMHYySb67fLGh6nN8E2w9yICq4VfEfij5AtoPJFjpI9tYnlqyVrDPdAHsxOGJKExQ0HndE5+f8WnmJAsyn6fvD1j2WXqo9jd32s6ZpFSRYWSU=
+Received: from DM6PR08CA0005.namprd08.prod.outlook.com (2603:10b6:5:80::18) by
+ IA0PR12MB8976.namprd12.prod.outlook.com (2603:10b6:208:485::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.15; Mon, 30 Mar
+ 2026 08:42:40 +0000
+Received: from DS1PEPF00017090.namprd03.prod.outlook.com
+ (2603:10b6:5:80:cafe::ae) by DM6PR08CA0005.outlook.office365.com
+ (2603:10b6:5:80::18) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9745.28 via Frontend Transport; Mon,
+ 30 Mar 2026 08:42:40 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ DS1PEPF00017090.mail.protection.outlook.com (10.167.17.132) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9745.21 via Frontend Transport; Mon, 30 Mar 2026 08:42:40 +0000
+Received: from purico-ed03host.amd.com (10.180.168.240) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Mon, 30 Mar
+ 2026 03:42:35 -0500
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<joro@8bytes.org>, <jgg@nvidia.com>
+CC: <yi.l.liu@intel.com>, <kevin.tian@intel.com>, <nicolinc@nvidia.com>,
+	<vasant.hegde@amd.com>, <jon.grimm@amd.com>, <santosh.shukla@amd.com>,
+	<sairaj.arunkodilkar@amd.com>, <jay.chen@amd.com>, <wvw@google.com>,
+	<wnliu@google.com>, <dantuluris@google.com>, <chriscli@google.com>,
+	<kpsingh@google.com>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: [PATCH 00/22] iommu/amd: Introduce AMD Hardware-accelerated Virtualized IOMMU (vIOMMU) Support
+Date: Mon, 30 Mar 2026 08:41:44 +0000
+Message-ID: <20260330084206.9251-1-suravee.suthikulpanit@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260330-dma-build-fix-v1-1-748b64f0d8af@kernel.org>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/x2MQQqAMAzAviI9W6hOFPyKeJiu04JO2VAE2d8tH
- hNIXkgchRP0xQuRb0lyBIWqLGBebVgYxSlDTXVLxhC63eJ0yebQy4MdtbbxPBGTB23OyKr/3zD
- m/AEXVpECXwAAAA==
-X-Change-ID: 20260330-dma-build-fix-706a4feb0e0f
-To: Sumit Semwal <sumit.semwal@linaro.org>, 
- Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
- Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
- "T.J. Mercier" <tjmercier@google.com>, 
- =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
- Marek Szyprowski <m.szyprowski@samsung.com>, 
- Robin Murphy <robin.murphy@arm.com>, Albert Esteve <aesteve@redhat.com>
-Cc: linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, 
- dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
- iommu@lists.linux.dev, Mark Brown <broonie@kernel.org>, 
- Maxime Ripard <mripard@kernel.org>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3399; i=mripard@kernel.org;
- h=from:subject:message-id; bh=2NhBgbhDn7ft3rC7LIHth8pNLQZW1E1FdbXxFtQzOIk=;
- b=owGbwMvMwCmsHn9OcpHtvjLG02pJDJmnzOUn/pgaGTbvc3fF9IXpk7cuD1z0dZatqVDIeYW+q
- UrRee02HVNZGIQ5GWTFFFmeyISdXt6+uMrBfuUPmDmsTCBDGLg4BWAi8ssYa7iOLV6aejOJzfv1
- 4fbTM27dfHH9SO6tpdk7v21Lex97T2/HhR9uL7t0QrZLSWWeiJp6YQ5jw4bUt0aLU7P41wUEz/o
- YeKjxTZCddUvYqqDtn++uDWC1d5i5m8N5EYt9gWzSVf/+rrjVAA==
-X-Developer-Key: i=mripard@kernel.org; a=openpgp;
- fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
+ (10.181.42.216)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS1PEPF00017090:EE_|IA0PR12MB8976:EE_
+X-MS-Office365-Filtering-Correlation-Id: d577c997-5bf0-45e0-74f7-08de8e384dc8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700016|7416014|376014|82310400026|1800799024|13003099007|18002099003|56012099003;
+X-Microsoft-Antispam-Message-Info:
+	aEHjyHQkX/F+yJb3IzorEu+jH+Qd+K1+AVyR9Xyjw5Agg07tKlv7AeWsblQVU9tAJKa2kp6WHWN1xDi8wbzRYSz+3QJdydAeNz+j44fBKWp5uVfzXVfvLXbub+bHhQxJTU9zSzEJeOChZMVT/MNeODRYpSbdsRN+fHT0R2FCykmnyadM5wh0Uh1NbE+xDqqFzqdepfQx8oZKCZ23Usi0jeCpn+f636EqAzsxOaYhQMYV+LmTcFsfo8sjqWiVEdMErDDSz7nWSfA3biEnoCEVErMlkd3tRPM5pSWEBPIMa/QWBDBcboSxiN1lILAeZyqDKErhoDaLNZ+cCID6Tm0zJIRt/cuRDWAr6kpPGAPenKxfXYA7T4swiMG052bRGgtZtYsPXP9ONMAo3Uwc9E4c3WxsGxpnNb1i8FRc7qlI13tH/8QnCF7sgK5GhIJQN6R09DIqT46mWRFLvOH/yGD4siOPqH497Mn0WwFOmLnKYyZxWUwB5HZPlKcn+fId/ThK2aGHkBstYStFhMXYQKrNAvCf4sFbuDLQYCW9MdoeU37gh8Eqqqe1wvip9KaCTPCI6jL8MwDbihV1oeN8EWyBz5CnqcDdYEJE/McfeI/KUSZHbccjw9SeGNTUegfG27et5lIk2yOxIgqM0qDobHYKO3wRMj1UHdJmi9jh1qdmt1q6KpNy+e50n97u/STVaCCHC5QKONkVk+5+8JbCuUzdaZPK1OCqEfC0X3z5IKHIMb4=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(7416014)(376014)(82310400026)(1800799024)(13003099007)(18002099003)(56012099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	iV0kQpdpiGajLtmjgVc+M/1g4y6HrrHp9VbSg4+Sr2+jYON4PsZcb2/6sFMj/05+rF7ERpyf/B9BORHGZ8HoYEzcNOfUQa58+HMDM+zQlKV5k9WFLlSWJ2yZbSdxD+G2Q5GCYmy2MEKUFbJEZysjpO/RJC13LmKXsKVqhaYTTQvue4B9yeGMqBrYvbD8AcHQTI/nMEvBx7+cavMjThYA9dxDqqqY1pcojrZ2XtrgamuYwK9rr7efUjM86lgzWZp1LaOafogrLH2LjpuZoFuA4EUV+QiwYtCotJmlbD3nZvpqRiGzjcWjb7nF7UoGwUV4AESaLx470uliMhGluNuCr55jleBmaF0WRi+ulzsujU7KGY8Ecfg8AppQNsXz22F+2frz/E+VOb3D70IN6iNJPvAbnxXQD6Cy0baO+fdfTpGMnYoUUYNXlbpq4ORaiIop
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2026 08:42:40.6687
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d577c997-5bf0-45e0-74f7-08de8e384dc8
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS1PEPF00017090.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8976
 
-Commit 3a236f6a5cf2 ("dma: contiguous: Turn heap registration logic
-around") didn't remove one last call to dma_heap_cma_register_heap()
-that it removed, thus breaking the build.
+AMD IOMMU introduces the vIOMMU feature, which provides partial hardware acceleration
+when implementing Guest IOMMUs. This feature provides acceleration for guest Command Buffer,
+Event Log, and PPR Log. This eliminates the CPU overhead needed for the supporting HV
+intercepts and reduces the latency of these operations.
 
-That last call is in dma_contiguous_reserve(), to handle the
-registration of the default CMA region heap instance if it's declared in
-the device tree.
+When a guest attempts to access guest IOMMU MMIO registers with offsets between 8KB and 12KB
+(i.e. 3rd 4K region) such as the Command Buffer, Event Log and PPR Log head and tail pointer
+registers, this is serviced directly by the IOMMU. When the IOMMU accesses a Command Buffer,
+PPR Log or a COMPLETION_WAIT store location in memory, it directly accesses guest physical memory.
+The HV/VMM continues trap and to emulate the IOMMU configuration MMIO registers between 0KB
+and 4KB (i.e. 1st 4K region), which are primarily used during initialization.
 
-However, the default CMA region instance is already handled by
-retrieving it through dev_get_cma_area() in the CMA heap driver, so the
-call to dma_heap_cma_register_heap() wasn't actually needed.
+Additionally, the HV must initialize the vIOMMU feature, map MMIO resources between
+the VMs and the IOMMU, manage additional supporting data structures in memory (e.g. GPA->SPA
+translation DTE, Device ID and Domain ID mapping tables), and allocate/map vIOMMU Private Address
+region used as backing storage memory for the IOMMU. Support for new IOMMU command and events
+specifically for vIOMMU are also added.
 
-Let's remove this call, the now unused function definition, its now
-empty header, and all includes of this header.
+Guest IOMMUs are IOMMUs exposed to VMs with additional support from VMM (QEMU) to generate
+guest ACPI IVRS table and define guest PCI topology for IOMMU and pass-through VFIO devices,
+which are not covered by this series.
 
-Fixes: 3a236f6a5cf2 ("dma: contiguous: Turn heap registration logic around")
-Reported-by: Mark Brown <broonie@kernel.org>
-Closes: https://lore.kernel.org/linux-next/acbjaDJ1a-YQC64d@sirena.co.uk/
-Signed-off-by: Maxime Ripard <mripard@kernel.org>
----
- drivers/dma-buf/heaps/cma_heap.c  |  1 -
- include/linux/dma-buf/heaps/cma.h | 16 ----------------
- kernel/dma/contiguous.c           |  5 -----
- 3 files changed, 22 deletions(-)
+For more detail, please section vIOMMU of the AMD IOMMU Specification[1].
 
-diff --git a/drivers/dma-buf/heaps/cma_heap.c b/drivers/dma-buf/heaps/cma_heap.c
-index f8a3d87f3ccee9630383ba28502eb40b10671cc2..cc517ac68a0bec0788abcb338c03f530d169013b 100644
---- a/drivers/dma-buf/heaps/cma_heap.c
-+++ b/drivers/dma-buf/heaps/cma_heap.c
-@@ -12,11 +12,10 @@
- 
- #define pr_fmt(fmt) "cma_heap: " fmt
- 
- #include <linux/cma.h>
- #include <linux/dma-buf.h>
--#include <linux/dma-buf/heaps/cma.h>
- #include <linux/dma-heap.h>
- #include <linux/dma-map-ops.h>
- #include <linux/err.h>
- #include <linux/highmem.h>
- #include <linux/io.h>
-diff --git a/include/linux/dma-buf/heaps/cma.h b/include/linux/dma-buf/heaps/cma.h
-deleted file mode 100644
-index e751479e21e703e24a5f799b4a7fc8bd0df3c1c4..0000000000000000000000000000000000000000
---- a/include/linux/dma-buf/heaps/cma.h
-+++ /dev/null
-@@ -1,16 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--#ifndef DMA_BUF_HEAP_CMA_H_
--#define DMA_BUF_HEAP_CMA_H_
--
--struct cma;
--
--#ifdef CONFIG_DMABUF_HEAPS_CMA
--int dma_heap_cma_register_heap(struct cma *cma);
--#else
--static inline int dma_heap_cma_register_heap(struct cma *cma)
--{
--	return 0;
--}
--#endif // CONFIG_DMABUF_HEAPS_CMA
--
--#endif // DMA_BUF_HEAP_CMA_H_
-diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index ad50512d71d3088a73e4b1ac02d6e6122374888e..9fe001c712339f8388d3f40cca3dfff3f707fcbf 100644
---- a/kernel/dma/contiguous.c
-+++ b/kernel/dma/contiguous.c
-@@ -40,11 +40,10 @@
- #include <asm/page.h>
- 
- #include <linux/memblock.h>
- #include <linux/err.h>
- #include <linux/sizes.h>
--#include <linux/dma-buf/heaps/cma.h>
- #include <linux/dma-map-ops.h>
- #include <linux/cma.h>
- #include <linux/nospec.h>
- 
- #ifdef CONFIG_CMA_SIZE_MBYTES
-@@ -270,14 +269,10 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
- 						  selected_limit,
- 						  &dma_contiguous_default_area,
- 						  fixed);
- 		if (ret)
- 			return;
--
--		ret = dma_heap_cma_register_heap(dma_contiguous_default_area);
--		if (ret)
--			pr_warn("Couldn't register default CMA heap.");
- 	}
- }
- 
- void __weak
- dma_contiguous_early_fixup(phys_addr_t base, unsigned long size)
+This series is implemented on top of IOMMUFD vIOMMU, vDevice, and HW-queue framework.
+It is organized into the following subset of patches:
 
----
-base-commit: f3948c8ed5ea206e87ea2375aebdbabc2064356a
-change-id: 20260330-dma-build-fix-706a4feb0e0f
+  Patch 1-3   : Preparatory patches
+  Patch 4-5   : Introduce IOMMUFD vIOMMU support for AMD
+  Patch 6-8   : Introduce AMD vIOMMU VF MMIO and VFCtrl MMIO
+  Patch 9-13  : Introduce AMD vIOMMU Private Address support
+  Patch 14-16 : Introduce IOMMUFD vDevice support for AMD
+  Patch 17    : Introduce AMD vIOMMU Translation DTE
+  Patch 18-21 : Introduce IOMMUFD hw_queue support for AMD
+  Patch 22    : Enable AMD vIOMMU support
 
-Best regards,
+Upcoming Series:
+  * Add Extended Interrupt Remapping support (for guest Event / PPR log interrupts)
+  * Add Guest Event Injection support
+
+Note:
+  * This series is rebased on top of v6.19. See [2] for git repo.
+
+[1] IOMMU Specification: https://docs.amd.com/v/u/en-US/48882_3.10_PUB
+[2] GIT Repo: https://github.com/AMDESE/linux-iommu/tree/wip/linux-6.19-amd-viommu_upstream_v1
+Thank you,
+Suravee
+
+Suravee Suthikulpanit (22):
+  iommu/amd: Make amd_iommu_completion_wait() non-static
+  iommu/amd: Introduce vIOMMU-specific events and event info
+  iommu/amd: Detect and initialize AMD vIOMMU feature
+  iommu/amd: Introduce IOMMUFD vIOMMU support for AMD
+  iommu/amd: Introduce vIOMMU Guest-ID (GID)
+  iommu/amd: Map vIOMMU VF MMIO and VF Control MMIO regions
+  iommu/amd: Add support for AMD vIOMMU VF MMIO region
+  iommu/amd: Introduce Reset vMMIO Command
+  iommu/amd: Introduce domain for IOMMU Private Address (IPA) region
+  iommu/amd: Assign IOMMU Private Address domain to IOMMU
+  iommu/amd: Allocate and map vIOMMU private regions
+  iommu/amd: Add helper functions to manage private address region for
+    each VM
+  iommu/amd: Add helper functions to manage DevID / DomID mapping tables
+  iommu/amd: Introduce IOMMUFD vDevice support for AMD
+  iommu/amd: Introduce helper function for updating domain ID mapping
+    table
+  iommu/amd: Introduce helper function for updating device ID mapping
+    table
+  iommu/amd: Introduce vIOMMU Translation DTE
+  iommufd: Introduce iommufd_viommu_ops.hw_queue_init
+  iommu/amd: Add support for vIOMMU HW queues initialization
+  iommufd: Introduce vIOMMU option via IOMMU_OPTION ioctl
+  iommu/amd: Handle set/get option for AMD vIOMMU hw_queue
+  iommu/amd: Introduce logic to check and enable vIOMMU feature
+
+ drivers/iommu/amd/Makefile              |   2 +-
+ drivers/iommu/amd/amd_iommu.h           |  26 ++
+ drivers/iommu/amd/amd_iommu_types.h     |  78 ++++
+ drivers/iommu/amd/amd_viommu.h          |  67 ++++
+ drivers/iommu/amd/init.c                |  27 +-
+ drivers/iommu/amd/iommu.c               | 204 ++++++++--
+ drivers/iommu/amd/iommufd.c             | 170 ++++++++
+ drivers/iommu/amd/nested.c              |  18 +
+ drivers/iommu/amd/vfctrl_mmio.c         | 145 +++++++
+ drivers/iommu/amd/viommu.c              | 498 ++++++++++++++++++++++++
+ drivers/iommu/iommufd/ioas.c            |   2 +-
+ drivers/iommu/iommufd/iommufd_private.h |   1 +
+ drivers/iommu/iommufd/main.c            |   6 +-
+ drivers/iommu/iommufd/viommu.c          | 143 +++++--
+ include/linux/iommufd.h                 |  10 +-
+ include/uapi/linux/iommufd.h            |  25 +-
+ 16 files changed, 1343 insertions(+), 79 deletions(-)
+ create mode 100644 drivers/iommu/amd/amd_viommu.h
+ create mode 100644 drivers/iommu/amd/vfctrl_mmio.c
+ create mode 100644 drivers/iommu/amd/viommu.c
+
 -- 
-Maxime Ripard <mripard@kernel.org>
+2.34.1
 
