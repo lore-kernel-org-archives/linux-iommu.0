@@ -1,216 +1,189 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010024.outbound.protection.outlook.com [40.93.198.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7557F8635D;
-	Mon, 30 Mar 2026 11:41:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774870868; cv=none; b=I2mzdOFNI9raajArjkBpxUjtcJRjeWdzF+d4HB/cIeOrvIdQP3IUMvBt4tzJGTu2kNdDzXyNdWzEwp5lnYQn7YZPfwms/mAcdJXJ+sXg2dQKvVY9pYfPoZMtp+FCqxEMnb48J9KxXTzurI1ovzVjahRgtbRzV5B+7F8kBK+ld2M=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774870868; c=relaxed/simple;
-	bh=vk0GNBm38cxPUL8hx1BYmlngLAKrpbaO0Fp6gXCGVh4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QVwVPbVngWXGUkdyJgjgDkq89/xpEaTpXBReg0O00DEqwmRQRl/5o/LQi4QU7Ls4qo0m6ZZYDY0TsFYCRKViqyQaCMgrxRBVnubT5fv6zznKUn9irAMV6VudsHxhjacqUd8XbClbj6Wj9/QgJ+Gfoq0yehY1H31xnF+W3yneXI8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=izHckPnY; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F5F34315F;
+	Mon, 30 Mar 2026 12:05:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.24
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774872308; cv=fail; b=qfTQnExd7gUOMbTGjAQ2MxE0Xh9SaLQ4dGeFM8QaUpT6Lt0Pam2EVPnxDPAFLUzSlbfqFKqaE38byyqija8H1Fq10W2G1fF7JpUdoUvQJrtq0i5yJXAmuKD3YZFLpCdwtE0Gt5/iqWVFw2/M7YwtlLJpQLVQFw7ySGzMoukDg9Q=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774872308; c=relaxed/simple;
+	bh=J3TRTkx7a/spmc8S1DJAML2plhayhWS0V8g2qXFXeDI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=RksXoDpv1hKCNlChi925aNQrC7LBozCr6s1Gzm41kJcOyaB0ZySx2IxPq5bejUibEtGpK+mhFc4Dx7RkDwjN9u8UakzHFFY4t22WAAbUeZOGag9ihS0zg29Oru4ATfhlJy7xXkWjP1IKZT7jFF3Z77RnfY2HJskNVmjhphr7dR0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=mvR0m36a; arc=fail smtp.client-ip=40.93.198.24
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="izHckPnY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7519C2BCB0;
-	Mon, 30 Mar 2026 11:41:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774870868;
-	bh=vk0GNBm38cxPUL8hx1BYmlngLAKrpbaO0Fp6gXCGVh4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=izHckPnYW1xfOIcSwg9GAt25PbGRMGvBIsGYaGbGnrweBGfBRY2vHEf5rdVD6LnwH
-	 2FCxl2BryECaSFHqICoKNgSsY/2ngfwVKChP9wClMA5d4UnhiG/NgPGPdZ70voJc33
-	 2CNWeHCd0ghuwBy9INw4dHgzT/PID/bug/ByBtxVJqYjBnGnyGa96W56k0iZpKwJrr
-	 eDtEkudoXt0yFFWt1nLc/jccK4twXlc3wEyCjGa8I9FxlphkrdP3AaFD7icAAAaF2Y
-	 kdrJHf/9Jg8kbrn6sXloXiK3O5ZcxnI0KU1ueox6ZFZkDxMEYAt3z5B5lP7wrlzSBL
-	 HlI/6mRQAVUdw==
-Date: Mon, 30 Mar 2026 13:41:05 +0200
-From: Maxime Ripard <mripard@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>, 
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>, 
-	John Stultz <jstultz@google.com>, "T.J. Mercier" <tjmercier@google.com>, 
-	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Albert Esteve <aesteve@redhat.com>, linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev, 
-	Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH] dma/contiguous: Fix broken build
-Message-ID: <20260330-glaring-pygmy-dodo-fa06f3@houat>
-References: <CGME20260330084111eucas1p1e7cd5c886e34d0ed41226fe524d2a55a@eucas1p1.samsung.com>
- <20260330-dma-build-fix-v1-1-748b64f0d8af@kernel.org>
- <62b9e47c-1c31-4654-8347-16516faf73f0@samsung.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="mvR0m36a"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=aRWJvgihcF8ABzXIqIjPgj+pgplBByBaEE4HHThdhAB9o1rRDBqxk/vwGWM5O/xSilkhHWudukKXeM9tK+4p8UuI0oNiqN/qbNRYlY16JRXkLETxQdyvKoNaESSfSlJl76DV6w5/4mFTOlvzqgCkI2cGauTQLRR6qgn4e+RzXZoxns+ER45Z3AD7K6Mgr+ySkqptmU05pZTgqJL6jONAjkcFaEzUlQOu3Okf/0mwh9B+d+fjp+RMkaaP2sPPC8d9z0020QIUkU03+GgqtGRlDmLNyxZOhLuLFKPgFiR2rmyb40MUDlDWDpmh3tlEu6zUtfzUmEOyDprJNX8qBT24UQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RAKrwdRWn5HdfBomJj4RmJFAhBHWEkZRg5lgh3rdi2Y=;
+ b=suRWYZyI42zcZ+YkBMr/x4WDlS27YkFzd4Y4DgkhPHyGsqmNqaxEsJqY+mjTFJUBnxiUcaXbKI38W7Hq7uMPT5BnQDuLRhUwkogNU6Ob86fXdrKYSTqvnA/6eciJbzECGvb+CRyCVpQBgoq8IL/J8ZbcbSjwF1xpQ0w91a9uhpeZKLD49j+c4heYdzjT0c5XI/cqlMgxr8LZtarKtAcphnbFq6NSb2WDA8aG7H9WBTDl99D/Cp5bhz4ZvivzDIRqgooLBNm6t1hZi9u04db9y6ADv3LcyZqgA8iXXXr2357E8majUUBMuscVkSUtw9UGFxtP2G9sc3jAFmw+xLOGDg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RAKrwdRWn5HdfBomJj4RmJFAhBHWEkZRg5lgh3rdi2Y=;
+ b=mvR0m36a5itizy4hoF6wuI7h7DqKi6KmJ5jbdkDZx6dULfRKIaTt6JgQF6mUoEocfNwvwSzS0V6x+0+jYShAx5T2cfsPXq9/SSniKA07oO1WxSdHehimvRrQ65OYTD85weV46pZqgymbXuPEgwu/Nf4LnJst3+8mWet1WQecd9LzDCUUtxdE2BdYBUevDJQAyJVjtBT5q/CKGwW3qV8i8SbSV3fvoV2g8DTf4kqquvoqTrt76jcuUSCbPHyHxwjDW2miupWKAdk1gi//EnN4KMr7LXWxLQftA7dsBCFSqMglCvXK6NFCaQHa79Q+JPg49SBsUyGFRgXwIGqPl0Z++w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by PH7PR12MB5653.namprd12.prod.outlook.com (2603:10b6:510:132::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.12; Mon, 30 Mar
+ 2026 12:05:02 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9769.014; Mon, 30 Mar 2026
+ 12:05:02 +0000
+Date: Mon, 30 Mar 2026 09:05:00 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Wei Wang <wei.w.wang@hotmail.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>, patches@lists.linux.dev
+Subject: Re: [PATCH 1/5] iommu/amd: Simplify build_inv_address()
+Message-ID: <20260330120500.GC310919@nvidia.com>
+References: <1-v1-a7b77c25974e+115bf-iommupt_inv_amd_jgg@nvidia.com>
+ <SI2PR01MB439395C17C83A66A3E614470DC52A@SI2PR01MB4393.apcprd01.prod.exchangelabs.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <SI2PR01MB439395C17C83A66A3E614470DC52A@SI2PR01MB4393.apcprd01.prod.exchangelabs.com>
+X-ClientProxiedBy: BL1PR13CA0098.namprd13.prod.outlook.com
+ (2603:10b6:208:2b9::13) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha384;
-	protocol="application/pgp-signature"; boundary="oawew4tnfndq6thp"
-Content-Disposition: inline
-In-Reply-To: <62b9e47c-1c31-4654-8347-16516faf73f0@samsung.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|PH7PR12MB5653:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1fa76dc9-88d6-432e-bc2f-08de8e549247
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|1800799024|376014|56012099003|22082099003|18002099003|3613699012;
+X-Microsoft-Antispam-Message-Info:
+	jwgK+XcrFXwE4HCVBzwmq7TC3PehPJsNczsMveM8pEp1cMGgGlrnPQ1hL7L8BuFvrmKJaZKNvUa1aDwteRbUxz4FWY0BkK4tob2+JIYcjDiSalLwyWsYRPFOCGU1akqmqPggWuQfFeHeiqPfs127OYOR10cywUszrIDPITMorwq6ZB8FLLd8uEeWOuhlv9IaEsjAnAtNp0PZhCOFMfcGK6SD+jIY1OIBZ/DeDEV/rTM14O2uehUpghgzKP2NT8zdmqU7f85pbP6h1U+5wof7X2csjXUip/r1YLGxoe2QwJeG44hi9pcpAZ2Y7cZIqDvxnPaQQZuOJLSI8Z+N/CUSVWQ5OFwOeF6heJD3UOqN1dnxYGnllKLZhIyYAvCgyKa/jSb//vIjWfO+CyseIqkhtbUkPkpLWgRrgeh6YfWnFN+arzxhJerOhvB/Mulcbym+yPbXqiIEjAxeCo8WvleiQHT4lNlpUOjxD6udRFRIvRciaMTp6WqnSi14UTd4C/uG60o6jUvUzylZFMD2o9YOaVd8/7V1vcDBKZiwhHWLrmIsaB7887ZsRJQQc//MjYZmrGvgpst4v1Ee8dUyOdPMvM0wjwiJJhTWFnMe5fB3g2Q9cxjDD0/Uzil65mjeTlmh8G9+Nqr/i9VBkJWjsn/OEkRJqiPiiL3kU7m1J8ZqXVnczk9ah3D0i9jyft3Wv3sKh8cPsn22WZfqB+D8F/aSjhNnTgtVX5GUE6dHsxWwFkNHXvlMi0rTwhtdaAChJkCAcAbBTLbbJ8uUceIkeGZPhWG0rLz9VrUOJtobP9Ectd8=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(56012099003)(22082099003)(18002099003)(3613699012);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?NoREWAernOQmRl49fiZm8QycZEDdgBoMcC1BRzjiOuJDBw9CFIHnsmzkzpJ7?=
+ =?us-ascii?Q?MiyU+UcDOA97EDxovlWKe0LHj8KDTIwAaqJbnGHz1H7YTpqDNzvOLxz+J7ch?=
+ =?us-ascii?Q?Ii/pyxMZbE/iA3IHsri1EJ3mHIZ8KtkaXT6fiidnV1e0hE1V5lLPGUZjyO3N?=
+ =?us-ascii?Q?yPvHyTELqYh4UZMUuSnbyYg7U4VVr6yPNwZo5T4zXKuSAVIA1MKP7PSOnIRJ?=
+ =?us-ascii?Q?63/G7BT4eAiLK/Num6/vk49foUGqeXfvlC5fX7sPYsa6ve/B6DJKftKg0sOf?=
+ =?us-ascii?Q?/ScQSgu5K6QQ5HbXQOcxLOUcgFuTVfowpH93OAUgGNpyNjCLntmfc4PrprCI?=
+ =?us-ascii?Q?n2MXAWgPqZvdcMUv81CF6y2JCgqZzzKDvO9st9sXFW8B4bFwJaCLZAvdCKmU?=
+ =?us-ascii?Q?S0qKHvxsNaMr/VIMbRByEu+0Zo02WNEm4vrkLXl1LPLW53ZD/opPFhBbHS9G?=
+ =?us-ascii?Q?DXyi+zA+mMcWB0QZOhThKvh1kOYG4CfXXPBNsfn7j288EJ2RWKjdpqyfRh72?=
+ =?us-ascii?Q?Z0xVfflyCRW+UTJV99r6Ajzb5BRfXzAk6lkoTGASlTT1bsdgnQguSKqO9qG5?=
+ =?us-ascii?Q?W/65OchSPr7tCeBqzr3n01PJXE3BoFZ1amRdELiF+ysQb5LJ76AAaMI0sBJP?=
+ =?us-ascii?Q?mISc/WZMhsFyGeiDHN4lZLhrsF2Nr4etYN88XsoBf/4hB9Hb+B1pzIbwd/SK?=
+ =?us-ascii?Q?391gGWEH2w8RD898tT5FJthMz9zN0DDSua+8euPoSOv/d0oBdnEP6rDymqDp?=
+ =?us-ascii?Q?OVNh586f2OtfWItZtPA4KS1Idu7H+bccZyAton9HXh81RnFzC8khqatX0E88?=
+ =?us-ascii?Q?t0wOgX0R1l49EljVz+ElhfFuSI71gergCz2TLgr3k9al5mRMxz1puBeqluIa?=
+ =?us-ascii?Q?EPAcb8tWk6N/q6uy++SxQmksQjOip5gjQBfn/cGIsHvg2eifZ4YombD35HmA?=
+ =?us-ascii?Q?al8ldjQ5iHwTzJYc9U175US8kDB+x+KGKWIteY0370fKND/G8z8JS/iK1M7Y?=
+ =?us-ascii?Q?exFBiSzDeMpVaUVMeVIGdSQ65LTB2x8LToyNzEtdNtDVq/732WsYWKeBjTyo?=
+ =?us-ascii?Q?gzb7bagrtmXEEchnksbvaOPLZikxXcNi5nzkrPAaBvaDlV28yLBLMRFDuD9u?=
+ =?us-ascii?Q?SkTf1uotbhpJMPti5tD3LLQX/nO/DyUPDPezUjmH2XSwvkrYGTdBMTAiF+wr?=
+ =?us-ascii?Q?vIFAIYmqEkuzvCwi79OSZX/ErB7zwuAZ0hU3UplxSZzUedWbrjgAU1RDcTO3?=
+ =?us-ascii?Q?eSvTtegI9cOKNgb0dbz9aTDAYAvYmZAuWhJA4tknJIhXpBWzH+mY3P5VFqxe?=
+ =?us-ascii?Q?Z6BvNZZBd6V8rktuh8uvCwrPk45G6Fiph7F7W6tCkENjHs3CIn2ldcz0I2sP?=
+ =?us-ascii?Q?4OkXD8zBwmF0Yk9kABJRUXKUAkFOZ3BSY+u3qHI0mEvUn62bTjmt6Dn0U/4g?=
+ =?us-ascii?Q?bA90KP7M10oVRIsiiyaYBCn+xDMBAmMgHnQ4HeGpJfj+ieTkyk5WkKsI2AyR?=
+ =?us-ascii?Q?ewHzSsYrtgbpQ39f8Fvs9hTmxewrmfCa3hcRQgYtNIaXpprHjkcI7ctVYe9Q?=
+ =?us-ascii?Q?GPaP3k8TK7WRIJ1nqxzuqjckB/FS482NoU5ofPjbRArGp3GrzwhzAQooFKp0?=
+ =?us-ascii?Q?/iOkgcWQoab+ywy6c0SNEBb9h8MoY0srk2qVnyOcU/n/n4tpwWjZQW8al446?=
+ =?us-ascii?Q?80JS/V7ZKIJxSMPklGlZcsl2CHIdFo94ikYHL5ok3v5dH6xd?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1fa76dc9-88d6-432e-bc2f-08de8e549247
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2026 12:05:01.8513
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: OVUbEDHYsccXekLb5LeGANEe8BOB91y2P8MW0Lt+RBvz2lBCNRUZK941unAXh0g8
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5653
 
+On Mon, Mar 30, 2026 at 03:39:16PM +0800, Wei Wang wrote:
 
---oawew4tnfndq6thp
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH] dma/contiguous: Fix broken build
-MIME-Version: 1.0
+> > @@ -1267,39 +1267,37 @@ static void build_inv_dte(struct iommu_cmd *cmd, u16 devid)
+> >    */
+> >   static inline u64 build_inv_address(u64 address, size_t size)
+> >   {
+> > -	u64 pages, end, msb_diff;
+> > +	u64 last = address + size - 1;
+> > +	unsigned int sz_lg2;
+> 
+> Would naming it shift (or order) be more conventional?
 
-On Mon, Mar 30, 2026 at 10:59:48AM +0200, Marek Szyprowski wrote:
-> On 30.03.2026 10:40, Maxime Ripard wrote:
-> > Commit 3a236f6a5cf2 ("dma: contiguous: Turn heap registration logic
-> > around") didn't remove one last call to dma_heap_cma_register_heap()
-> > that it removed, thus breaking the build.
-> >
-> > That last call is in dma_contiguous_reserve(), to handle the
-> > registration of the default CMA region heap instance if it's declared in
-> > the device tree.
-> >
-> > However, the default CMA region instance is already handled by
-> > retrieving it through dev_get_cma_area() in the CMA heap driver, so the
-> > call to dma_heap_cma_register_heap() wasn't actually needed.
-> >
-> > Let's remove this call, the now unused function definition, its now
-> > empty header, and all includes of this header.
-> >
-> > Fixes: 3a236f6a5cf2 ("dma: contiguous: Turn heap registration logic aro=
-und")
-> > Reported-by: Mark Brown <broonie@kernel.org>
-> > Closes: https://lore.kernel.org/linux-next/acbjaDJ1a-YQC64d@sirena.co.u=
-k/
-> > Signed-off-by: Maxime Ripard <mripard@kernel.org>
-> > ---
-> >  drivers/dma-buf/heaps/cma_heap.c  |  1 -
-> >  include/linux/dma-buf/heaps/cma.h | 16 ----------------
-> >  kernel/dma/contiguous.c           |  5 -----
-> >  3 files changed, 22 deletions(-)
-> >
-> > diff --git a/drivers/dma-buf/heaps/cma_heap.c b/drivers/dma-buf/heaps/c=
-ma_heap.c
-> > index f8a3d87f3ccee9630383ba28502eb40b10671cc2..cc517ac68a0bec0788abcb3=
-38c03f530d169013b 100644
-> > --- a/drivers/dma-buf/heaps/cma_heap.c
-> > +++ b/drivers/dma-buf/heaps/cma_heap.c
-> > @@ -12,11 +12,10 @@
-> > =20
-> >  #define pr_fmt(fmt) "cma_heap: " fmt
-> > =20
-> >  #include <linux/cma.h>
-> >  #include <linux/dma-buf.h>
-> > -#include <linux/dma-buf/heaps/cma.h>
-> >  #include <linux/dma-heap.h>
-> >  #include <linux/dma-map-ops.h>
-> >  #include <linux/err.h>
-> >  #include <linux/highmem.h>
-> >  #include <linux/io.h>
-> > diff --git a/include/linux/dma-buf/heaps/cma.h b/include/linux/dma-buf/=
-heaps/cma.h
-> > deleted file mode 100644
-> > index e751479e21e703e24a5f799b4a7fc8bd0df3c1c4..00000000000000000000000=
-00000000000000000
-> > --- a/include/linux/dma-buf/heaps/cma.h
-> > +++ /dev/null
-> > @@ -1,16 +0,0 @@
-> > -/* SPDX-License-Identifier: GPL-2.0 */
-> > -#ifndef DMA_BUF_HEAP_CMA_H_
-> > -#define DMA_BUF_HEAP_CMA_H_
-> > -
-> > -struct cma;
-> > -
-> > -#ifdef CONFIG_DMABUF_HEAPS_CMA
-> > -int dma_heap_cma_register_heap(struct cma *cma);
-> > -#else
-> > -static inline int dma_heap_cma_register_heap(struct cma *cma)
-> > -{
-> > -	return 0;
-> > -}
-> > -#endif // CONFIG_DMABUF_HEAPS_CMA
-> > -
-> > -#endif // DMA_BUF_HEAP_CMA_H_
-> > diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-> > index ad50512d71d3088a73e4b1ac02d6e6122374888e..9fe001c712339f8388d3f40=
-cca3dfff3f707fcbf 100644
-> > --- a/kernel/dma/contiguous.c
-> > +++ b/kernel/dma/contiguous.c
-> > @@ -40,11 +40,10 @@
-> >  #include <asm/page.h>
-> > =20
-> >  #include <linux/memblock.h>
-> >  #include <linux/err.h>
-> >  #include <linux/sizes.h>
-> > -#include <linux/dma-buf/heaps/cma.h>
-> >  #include <linux/dma-map-ops.h>
-> >  #include <linux/cma.h>
-> >  #include <linux/nospec.h>
-> > =20
-> >  #ifdef CONFIG_CMA_SIZE_MBYTES
-> > @@ -270,14 +269,10 @@ void __init dma_contiguous_reserve(phys_addr_t li=
-mit)
-> >  						  selected_limit,
-> >  						  &dma_contiguous_default_area,
-> >  						  fixed);
-> >  		if (ret)
-> >  			return;
-> > -
-> > -		ret =3D dma_heap_cma_register_heap(dma_contiguous_default_area);
-> > -		if (ret)
-> > -			pr_warn("Couldn't register default CMA heap.");
->
-> After this change no dma-buf heap for the default CMA area is=A0created i=
-f it has=A0
-> not been specified in device-tree. This might be especially a problem for=
- the
-> non-dt systems.
+I find that confusing, shift of what exactly? It is size of the
+invalidation encoded in log 2.
 
-I don't think that's the case? My understanding is that
-dma_contiguous_reserve() is called by the arch code, and will create
-that region only if it hasn't be set by the DT (that excerpt above is
-run only if !dma_contiguous_default_area).
+> > -	end = address + size - 1;
+> > +	address &= GENMASK_U64(63, 12);
+> > +	sz_lg2 = fls64(address ^ last);
+> > +	if (sz_lg2 <= 12)
+> 
+> then could use "if (shift < PAGE_SHIFT)" here.
 
-However, for the DT case, dma_contiguous_default_area will be set by
-rmem_cma_setup() a bit below if linux,cma-default is set in the DT.
+PAGE_SHIFT defines the kernel mm configuration, "12" is a hardware
+constant from the iommu spec. They should not be intermixed.
+ 
+> > +		return address;
+> >   	/*
+> > -	 * msb_diff would hold the index of the most significant bit that
+> > -	 * flipped between the start and end.
+> > +	 * Encode sz_lg2 according to Table 14: Example Page Size Encodings
+> > +	 *
+> > +	 * See "Note *":
+> > +	 *   Address bits 51:32 can be used to encode page sizes greater
+> > +	 *   that 4 Gbytes.
+> 
+> "than" (seems a spec typo)
 
-dma_contiguous_reserved() is called (on arm64 at least) through
-bootmem_init(), called as part of setup_arch().
+Yeah, I'll leave it as is.
+ 
+> > +	 * Which we take to mean that the highest page size has bit
+> > +	 *  [51]=0, [50:12]=1
+> > +	 * and that coding happens when sz_lg2 is 52. Fall back to full
+> > +	 * invalidation if the size is too big.
+> > +	 *
+> >   	 */
+> > -	msb_diff = fls64(end ^ address) - 1;
+> > +	if (unlikely(sz_lg2 > 52))
+> > +		return (CMD_INV_IOMMU_ALL_PAGES_ADDRESS & PAGE_MASK) |
+> > +		       CMD_INV_IOMMU_PAGES_SIZE_MASK;
+> 
+> 
+> The spec mentions "Address bits 63:52 are zero-extended.", should we enforce
+> it:
+> 
+> -#define CMD_INV_IOMMU_ALL_PAGES_ADDRESS        0x7ffffffffffff000ULL
+> +#define CMD_INV_IOMMU_ALL_PAGES_ADDRESS        GENMASK_ULL(51, 12)
+> 
+> also for the returned "address"
 
-rmem_cma_setup() is called through RESERVEDMEM_OF_DECLARE, so through
-__reserved_mem_init_node(), so, if we consider only the public
-functions, through:
+2.4.3 specifically calls out 
 
-  * fdt_scan_reserved_mem_reg_nodes(), called by
-    unflatten_device_tree(), called right before bootmem_init() in
-    setup_arch();
+ The IOMMU invalidates all translation
+ information associated with the DomainID for both nested and guest levels when S=1, PDE=1,
+ GN=0, and Address[63:12]=7_FFFF_FFFF_FFFFh.
 
-  * or fdt_scan_reserved_mem() and then
-    early_init_fdt_scan_reserved_mem(), called in arm64_memblock_init(),
-    itself called in setup_arch() earlier than both
-    unflatten_device_tree(), and bootmem_init().
+I wouldn't change it.
 
-Thus, the DT case will run first and set dma_contiguous_default_area if
-relevant on that platform, and if it's not set, the non-DT case will set
-it up. Either way, dma_contiguous_default_area will be set.
-
-The CMA heap runs much later using a regular module_init. It will
-retrieve dma_contiguous_default_area through dev_get_cma_area(), and
-will create a heap instance for the default area.
-
-Am I misunderstanding something?
-Maxime
-
---oawew4tnfndq6thp
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iJUEABMJAB0WIQTkHFbLp4ejekA/qfgnX84Zoj2+dgUCacphSgAKCRAnX84Zoj2+
-dvwdAYCmcyKvMESVpeaaNthy5eoJ9HB7FC2w6O914qcCct0mA3kBFdDvzKV9xSrp
-OpFv8SgBgNJpXNnxa1IQssIl+lW8z1VdQul6SZuorIUoKSuLdAB5lfHsCkMxvdmo
-fLIaKexBEA==
-=PScu
------END PGP SIGNATURE-----
-
---oawew4tnfndq6thp--
+Jason
