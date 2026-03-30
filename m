@@ -1,136 +1,216 @@
-Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11011049.outbound.protection.outlook.com [52.101.62.49])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7256C277C9D
-	for <iommu@lists.linux.dev>; Mon, 30 Mar 2026 11:26:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.62.49
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774869988; cv=fail; b=YCduw8v3e8F7O43QgQMgCmiHcolyou/0F9EmjTErmLd0xyj/iFMYiloCdbXyTA+i0JZgIU3t1lPVdXJwXfvk+qWB5PvSK2nyqpdzye26Q/kK1uWhYlv9T9lFY4tqk0H7qOGx/I6Q8qKKZ96O0yDKosdTc4MKeRiQEpj+DtDapBc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774869988; c=relaxed/simple;
-	bh=hwRAncm6+I8sEW11e1MQ5eKhmZsuCQiVfJVmAiIOTg4=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RnES+XsRYQ7Ipdc73e51Gu2hMOg03xOdSBcignx9ov66UezskOlmDYr/DyJ07WOWUMoCoq4PO+qCsPkDseHYTXVV4rVH+utvOIMUjmQ4HEfTBm2tofV+128ILCae2r5VHJYZSi1eKUiRjgtLFQkbpzEg1IC6EOiZ5oYa4WubOT0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=r6k6sgvH; arc=fail smtp.client-ip=52.101.62.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7557F8635D;
+	Mon, 30 Mar 2026 11:41:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774870868; cv=none; b=I2mzdOFNI9raajArjkBpxUjtcJRjeWdzF+d4HB/cIeOrvIdQP3IUMvBt4tzJGTu2kNdDzXyNdWzEwp5lnYQn7YZPfwms/mAcdJXJ+sXg2dQKvVY9pYfPoZMtp+FCqxEMnb48J9KxXTzurI1ovzVjahRgtbRzV5B+7F8kBK+ld2M=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774870868; c=relaxed/simple;
+	bh=vk0GNBm38cxPUL8hx1BYmlngLAKrpbaO0Fp6gXCGVh4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=QVwVPbVngWXGUkdyJgjgDkq89/xpEaTpXBReg0O00DEqwmRQRl/5o/LQi4QU7Ls4qo0m6ZZYDY0TsFYCRKViqyQaCMgrxRBVnubT5fv6zznKUn9irAMV6VudsHxhjacqUd8XbClbj6Wj9/QgJ+Gfoq0yehY1H31xnF+W3yneXI8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=izHckPnY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="r6k6sgvH"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=P26m6SNSgDqiNpqck9qdK8/B7es0keSWAxFwqWLR+C//3OV7+G7GSrC5l3wMbcZL+lo0ugF+N9s1XrYwSoi/WkKQvHTWHchKxvWKX4AgefagcEiZ6hhaojA4AOixvbwfgDfvPy8CXsp3AncWvT30c4MyBYcgb6/RnXwIl4/41KNp/NWm4OdEKSni3FouoVRsOYLcOn+2cOdS0OKW4fQPkhcRp3wi30ODunaqsUsPz9eaxKx0QkXtRg2z+7Fj64OfV8118PGLFxU32AmnuPyFoKPxm+LHTDKo9DVXK0CzjKN1dTdCEokQWmzQ4OQFtN+ww3u9hJUF1agyoM/aZr5Wzw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ypcS/TE1MXd0BXokJ8aYPxWhHFlU1Zs/rsG9WN/9mcs=;
- b=e2bGnriTjDedhl6tE6Yiqdxpvt+SqOPS0nwyDyjdkNx1af/O0fg+ASqbBCik7ohGBb0e+uN+HqYY3r/CV5jn7GYzZK+iGyiNcJu+tJx8NsDM+VTzRYzfRnaSiF9eQOBCYusTKNLmcphceuSq5K/TNSy+2sRp9lSlEJtSzNoIIkJAFBH3fKawu37dckHGlKm/Ftqt4ZKfwNAwVRnwqc1mUa52qLa0OV5Va3X4FqcAVlwcpRVQKfW+9tNCAnQOw8jP8WgU1sEZN9Po6FgvepAHhNAGcYX8/QJyHqktvKrdT22nurw2IEMATywNQHqzzLnJzJ2ugpL5IG/QFJNZ/cpMnw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ypcS/TE1MXd0BXokJ8aYPxWhHFlU1Zs/rsG9WN/9mcs=;
- b=r6k6sgvH4q7xD0UyO0k8gYheNB6qoISW5EJJ9Ot+mSZU0xJB1l7LegycQ2dH4XKEY+g1Ip1B5MEji22tkOsoOjJEA0tHgWVjxtokren/YEyilAq0x6QpdLmtp48TfcbSnqgIvMIxkeALEHFoquhbXd6Oagh3ZYRcHeYPWaOvnD5Fkc2FftN8vrWXE3MAb8Xi/ceOi2zc/z09F4kQ7rAbIz4jH+VvFTWuiOX5VMqVZbOoFRuTM9tEGo1YwpW/txGFNAHy+00zHDL5LZu+qENbtIjcsrf0kD6wp09XgUTOuldvs/WU/vjRzBeYX/5/iFknRtDyESaV9GjAKE5ltu+IJQ==
-Received: from CYZPR14CA0034.namprd14.prod.outlook.com (2603:10b6:930:a0::19)
- by BY5PR12MB4178.namprd12.prod.outlook.com (2603:10b6:a03:20e::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.15; Mon, 30 Mar
- 2026 11:26:23 +0000
-Received: from CY4PEPF0000E9D6.namprd05.prod.outlook.com
- (2603:10b6:930:a0:cafe::fa) by CYZPR14CA0034.outlook.office365.com
- (2603:10b6:930:a0::19) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9745.28 via Frontend Transport; Mon,
- 30 Mar 2026 11:26:18 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CY4PEPF0000E9D6.mail.protection.outlook.com (10.167.241.69) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9745.21 via Frontend Transport; Mon, 30 Mar 2026 11:26:21 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 30 Mar
- 2026 04:26:06 -0700
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 30 Mar
- 2026 04:26:03 -0700
-Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.129.68.9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Mon, 30 Mar 2026 04:25:59 -0700
-Date: Mon, 30 Mar 2026 04:25:57 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Qinxin Xia <xiaqinxin@huawei.com>
-CC: <robin.murphy@arm.com>, <will@kernel.org>, <jpb@kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<wangzhou1@hisilicon.com>, <prime.zeng@hisilicon.com>,
-	<fanghao11@huawei.com>, <jonathan.cameron@huawei.com>,
-	<wuyifan50@huawei.com>, <linuxarm@huawei.com>
-Subject: Re: [RFC PATCH v2 2/5] iommu/arm-smmu-v3: Add register display to
- debugfs
-Message-ID: <acpdxdjFQl1V0b5k@nvidia.com>
-References: <20260328101706.3448655-1-xiaqinxin@huawei.com>
- <20260328101706.3448655-3-xiaqinxin@huawei.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="izHckPnY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7519C2BCB0;
+	Mon, 30 Mar 2026 11:41:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1774870868;
+	bh=vk0GNBm38cxPUL8hx1BYmlngLAKrpbaO0Fp6gXCGVh4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=izHckPnYW1xfOIcSwg9GAt25PbGRMGvBIsGYaGbGnrweBGfBRY2vHEf5rdVD6LnwH
+	 2FCxl2BryECaSFHqICoKNgSsY/2ngfwVKChP9wClMA5d4UnhiG/NgPGPdZ70voJc33
+	 2CNWeHCd0ghuwBy9INw4dHgzT/PID/bug/ByBtxVJqYjBnGnyGa96W56k0iZpKwJrr
+	 eDtEkudoXt0yFFWt1nLc/jccK4twXlc3wEyCjGa8I9FxlphkrdP3AaFD7icAAAaF2Y
+	 kdrJHf/9Jg8kbrn6sXloXiK3O5ZcxnI0KU1ueox6ZFZkDxMEYAt3z5B5lP7wrlzSBL
+	 HlI/6mRQAVUdw==
+Date: Mon, 30 Mar 2026 13:41:05 +0200
+From: Maxime Ripard <mripard@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Sumit Semwal <sumit.semwal@linaro.org>, 
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>, 
+	John Stultz <jstultz@google.com>, "T.J. Mercier" <tjmercier@google.com>, 
+	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Albert Esteve <aesteve@redhat.com>, linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev, 
+	Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH] dma/contiguous: Fix broken build
+Message-ID: <20260330-glaring-pygmy-dodo-fa06f3@houat>
+References: <CGME20260330084111eucas1p1e7cd5c886e34d0ed41226fe524d2a55a@eucas1p1.samsung.com>
+ <20260330-dma-build-fix-v1-1-748b64f0d8af@kernel.org>
+ <62b9e47c-1c31-4654-8347-16516faf73f0@samsung.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: multipart/signed; micalg=pgp-sha384;
+	protocol="application/pgp-signature"; boundary="oawew4tnfndq6thp"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260328101706.3448655-3-xiaqinxin@huawei.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9D6:EE_|BY5PR12MB4178:EE_
-X-MS-Office365-Filtering-Correlation-Id: 790ab2a4-b729-4915-4b4b-08de8e4f2ba0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|36860700016|82310400026|7416014|376014|22082099003|18002099003|56012099003;
-X-Microsoft-Antispam-Message-Info:
-	lxapYNx1jIcCk16galpgKmTdl2iIK7DjKTpo6ZuvREt5vH8m9MVj57/PcuCC/7Wmr/RUBFM5zCZV78HUnGy5zLPHwc23kVtm7FocQwpGZK1yg5CMyb7MC5sKNyPz90m7lVksoIv28YElq5KPiIGhxvHgWEWh3mAqvzclh6VtxjfJnfTwQ5A25Ma6WOIqXjhFEitBZT8gjqBjMRRFWEDX2s+Q1iGLc3xFJmD1H+X4VDWyMTnWXSDogkkEXLvvMkeaKCs5+TNgh9Ma0GunoNZZA3jyu6HcXI4flEn4crSjbP8ngDEjDVeffpnPw3iMMdmSRmAb/+4oNBGeCjst8pnfp4W2r6rPtwmCrPMsM0fy6KeIyn+k+HdTVpRUBpeYfcNmuOdPlJ43Q01SHLPxCCPU6OnrLcm0Fx29cHYwAxuYOwE7gYS18a18a2b7uyHDZnQg4z4j5ksmEiH8hOK037aC0mY2Hv0VutbNUg9S/d6XAkvoMDEZp40WtDiBnyQnTFWS5JjkoJc3YI6m4gj6uSo1XUHVF9HBrB2UugBNhlFw7H/YeGsKtrOAbzd84jELhWOprUHMH+4SG8nnU7Y6m4jaYn/GvNICOfEA1uR/R/txBsYVXNftyaTMG8/b4chGujkfo7cVeAlFgwMTDoCIa22vUwDRiCbPlYK4HuV0HwW5rgIClQJ+13W+6PIg47NHvS1e7QnqhSqSO+55WalNdH6WTJCDTa62a4FAPzpRKcptJvkRUQnWgTfHUCE9foZofBDBKHXXfr8BRKK+1KIuuUyY8Q==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(36860700016)(82310400026)(7416014)(376014)(22082099003)(18002099003)(56012099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	OTmmrR2hTxbgTS7N0RS1cDgtxG/0AaiMPURoO9pMb4apG3bpMHVY8oWe6aiCXbvZJD9VZnuV/WyLP/+Vm7Rqf4Tkwtzp6QHnk3h0SzpowFuvKo0fS1CnO4OXAPuasczKwnxH0Yz8Udbr0kP0sIui1teLBNviu+UPeWteeXeNFYsP9hSWdSh7Yz89gDf3PT0N3rp95hR7Qs49HVzoVVRnr2Z069KAZ0mlEebH3rJl0DmnIDGQCZqK923SKYEbrM5r9V6+EzBkwVAMs9bP5z2/w18ruB1IoaiiHomo3oX2vDvK48ceuL9zVI8s7pQ77+r1BGtTibDE6h/kfYTQ4yJFYm6oe3S4G5pyzT47BgYlxzzsB4VIraSU4fR/vcYfwsJeZQIGbzUVLj2EFFrhS99oYqKR0/GL49KOwvX5uhCm7HvT9S7qHmBerKP0irSekyUR
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2026 11:26:21.7985
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 790ab2a4-b729-4915-4b4b-08de8e4f2ba0
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000E9D6.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4178
+In-Reply-To: <62b9e47c-1c31-4654-8347-16516faf73f0@samsung.com>
 
-On Sat, Mar 28, 2026 at 06:17:03PM +0800, Qinxin Xia wrote:
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-debugfs.c
-> @@ -5,13 +5,18 @@
->   * Directory Structure:
->   * /sys/kernel/debug/iommu/arm_smmu_v3/
->   * └── smmu<ioaddr>/
-> - *     └── capabilities    # SMMU feature capabilities and configuration
 
-Nit: perhaps the last line in every patch could start with '|-',
-so we wouldn't need to update it every time.
+--oawew4tnfndq6thp
+Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH] dma/contiguous: Fix broken build
+MIME-Version: 1.0
 
-> + *     ├── capabilities    # SMMU feature capabilities and configuration
-> + *     └── registers	   # SMMU Key registers
+On Mon, Mar 30, 2026 at 10:59:48AM +0200, Marek Szyprowski wrote:
+> On 30.03.2026 10:40, Maxime Ripard wrote:
+> > Commit 3a236f6a5cf2 ("dma: contiguous: Turn heap registration logic
+> > around") didn't remove one last call to dma_heap_cma_register_heap()
+> > that it removed, thus breaking the build.
+> >
+> > That last call is in dma_contiguous_reserve(), to handle the
+> > registration of the default CMA region heap instance if it's declared in
+> > the device tree.
+> >
+> > However, the default CMA region instance is already handled by
+> > retrieving it through dev_get_cma_area() in the CMA heap driver, so the
+> > call to dma_heap_cma_register_heap() wasn't actually needed.
+> >
+> > Let's remove this call, the now unused function definition, its now
+> > empty header, and all includes of this header.
+> >
+> > Fixes: 3a236f6a5cf2 ("dma: contiguous: Turn heap registration logic aro=
+und")
+> > Reported-by: Mark Brown <broonie@kernel.org>
+> > Closes: https://lore.kernel.org/linux-next/acbjaDJ1a-YQC64d@sirena.co.u=
+k/
+> > Signed-off-by: Maxime Ripard <mripard@kernel.org>
+> > ---
+> >  drivers/dma-buf/heaps/cma_heap.c  |  1 -
+> >  include/linux/dma-buf/heaps/cma.h | 16 ----------------
+> >  kernel/dma/contiguous.c           |  5 -----
+> >  3 files changed, 22 deletions(-)
+> >
+> > diff --git a/drivers/dma-buf/heaps/cma_heap.c b/drivers/dma-buf/heaps/c=
+ma_heap.c
+> > index f8a3d87f3ccee9630383ba28502eb40b10671cc2..cc517ac68a0bec0788abcb3=
+38c03f530d169013b 100644
+> > --- a/drivers/dma-buf/heaps/cma_heap.c
+> > +++ b/drivers/dma-buf/heaps/cma_heap.c
+> > @@ -12,11 +12,10 @@
+> > =20
+> >  #define pr_fmt(fmt) "cma_heap: " fmt
+> > =20
+> >  #include <linux/cma.h>
+> >  #include <linux/dma-buf.h>
+> > -#include <linux/dma-buf/heaps/cma.h>
+> >  #include <linux/dma-heap.h>
+> >  #include <linux/dma-map-ops.h>
+> >  #include <linux/err.h>
+> >  #include <linux/highmem.h>
+> >  #include <linux/io.h>
+> > diff --git a/include/linux/dma-buf/heaps/cma.h b/include/linux/dma-buf/=
+heaps/cma.h
+> > deleted file mode 100644
+> > index e751479e21e703e24a5f799b4a7fc8bd0df3c1c4..00000000000000000000000=
+00000000000000000
+> > --- a/include/linux/dma-buf/heaps/cma.h
+> > +++ /dev/null
+> > @@ -1,16 +0,0 @@
+> > -/* SPDX-License-Identifier: GPL-2.0 */
+> > -#ifndef DMA_BUF_HEAP_CMA_H_
+> > -#define DMA_BUF_HEAP_CMA_H_
+> > -
+> > -struct cma;
+> > -
+> > -#ifdef CONFIG_DMABUF_HEAPS_CMA
+> > -int dma_heap_cma_register_heap(struct cma *cma);
+> > -#else
+> > -static inline int dma_heap_cma_register_heap(struct cma *cma)
+> > -{
+> > -	return 0;
+> > -}
+> > -#endif // CONFIG_DMABUF_HEAPS_CMA
+> > -
+> > -#endif // DMA_BUF_HEAP_CMA_H_
+> > diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+> > index ad50512d71d3088a73e4b1ac02d6e6122374888e..9fe001c712339f8388d3f40=
+cca3dfff3f707fcbf 100644
+> > --- a/kernel/dma/contiguous.c
+> > +++ b/kernel/dma/contiguous.c
+> > @@ -40,11 +40,10 @@
+> >  #include <asm/page.h>
+> > =20
+> >  #include <linux/memblock.h>
+> >  #include <linux/err.h>
+> >  #include <linux/sizes.h>
+> > -#include <linux/dma-buf/heaps/cma.h>
+> >  #include <linux/dma-map-ops.h>
+> >  #include <linux/cma.h>
+> >  #include <linux/nospec.h>
+> > =20
+> >  #ifdef CONFIG_CMA_SIZE_MBYTES
+> > @@ -270,14 +269,10 @@ void __init dma_contiguous_reserve(phys_addr_t li=
+mit)
+> >  						  selected_limit,
+> >  						  &dma_contiguous_default_area,
+> >  						  fixed);
+> >  		if (ret)
+> >  			return;
+> > -
+> > -		ret =3D dma_heap_cma_register_heap(dma_contiguous_default_area);
+> > -		if (ret)
+> > -			pr_warn("Couldn't register default CMA heap.");
+>
+> After this change no dma-buf heap for the default CMA area is=A0created i=
+f it has=A0
+> not been specified in device-tree. This might be especially a problem for=
+ the
+> non-dt systems.
 
-Maybe replace '\t' with whitespaces? The final file doesn't seem
-to have this line properly aligned with others also.
+I don't think that's the case? My understanding is that
+dma_contiguous_reserve() is called by the arch code, and will create
+that region only if it hasn't be set by the DT (that excerpt above is
+run only if !dma_contiguous_default_area).
 
-Nicolin
+However, for the DT case, dma_contiguous_default_area will be set by
+rmem_cma_setup() a bit below if linux,cma-default is set in the DT.
+
+dma_contiguous_reserved() is called (on arm64 at least) through
+bootmem_init(), called as part of setup_arch().
+
+rmem_cma_setup() is called through RESERVEDMEM_OF_DECLARE, so through
+__reserved_mem_init_node(), so, if we consider only the public
+functions, through:
+
+  * fdt_scan_reserved_mem_reg_nodes(), called by
+    unflatten_device_tree(), called right before bootmem_init() in
+    setup_arch();
+
+  * or fdt_scan_reserved_mem() and then
+    early_init_fdt_scan_reserved_mem(), called in arm64_memblock_init(),
+    itself called in setup_arch() earlier than both
+    unflatten_device_tree(), and bootmem_init().
+
+Thus, the DT case will run first and set dma_contiguous_default_area if
+relevant on that platform, and if it's not set, the non-DT case will set
+it up. Either way, dma_contiguous_default_area will be set.
+
+The CMA heap runs much later using a regular module_init. It will
+retrieve dma_contiguous_default_area through dev_get_cma_area(), and
+will create a heap instance for the default area.
+
+Am I misunderstanding something?
+Maxime
+
+--oawew4tnfndq6thp
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iJUEABMJAB0WIQTkHFbLp4ejekA/qfgnX84Zoj2+dgUCacphSgAKCRAnX84Zoj2+
+dvwdAYCmcyKvMESVpeaaNthy5eoJ9HB7FC2w6O914qcCct0mA3kBFdDvzKV9xSrp
+OpFv8SgBgNJpXNnxa1IQssIl+lW8z1VdQul6SZuorIUoKSuLdAB5lfHsCkMxvdmo
+fLIaKexBEA==
+=PScu
+-----END PGP SIGNATURE-----
+
+--oawew4tnfndq6thp--
