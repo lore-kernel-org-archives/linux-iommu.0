@@ -1,233 +1,233 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from fhigh-a8-smtp.messagingengine.com (fhigh-a8-smtp.messagingengine.com [103.168.172.159])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C90493396E9;
-	Mon, 30 Mar 2026 15:40:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE1B93DC4AA
+	for <iommu@lists.linux.dev>; Mon, 30 Mar 2026 17:26:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.159
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774885245; cv=none; b=F+cvRwRv0AkJD4RhgQnRNlXDHZprW9rgmM8NpUjXC2uzxp7uiHEuaBioNe4RVdmbKpjqnQj3gD0HQF9YfVvfb0KrIRxwG54FY9urFYC7+6ftb59W74kMLhQvKuGdKhfIyaslwa5fsGaSxPn9GLPglDjAriN/NNp5k/SpFyZOX4E=
+	t=1774891615; cv=none; b=JaYUa6edLVBixLRjkd7kd6nD+tdh1Rh3Q6RBLHlRB8QxLzAJWpnDCVZR2zhJFE1ZhERwUWXE3HMyqIiVmbXJein6o9hr0DZvVfU08ZhZIzCjgJnZpVbN6zNrOkLp471ZTk2gwurVjDZ/QRD44ZY2SpSLRlDcBtd9QSbKWFvDHgI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774885245; c=relaxed/simple;
-	bh=osTkFfqCJuN1re/DqBMhRzC3ySPnwXvxFxHFToRldlo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LfS+Sm+HE4yIHSojXDSmnDBnIjaKxKgw/OQestjEXccmsQtDeNy+6gs5B8/kmafO8ZBm0gD1+rOpUBFWo+++8FOU/mDKVJb+IeEvQvKXxpyBjNH3gz8COCDVoFZM8HR/9APmeEOXuyoAh+TCXPa1stjjTxnsL8nZ7KvWHLJ/yKk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kf5OLo18; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774891615; c=relaxed/simple;
+	bh=Xc0re7zSzhjk9nLcdtQctBdHkSwt6POuf8PnYeuCWUg=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=E/qlb2r0SjX6M3VjKhj0e4vjbp+GTyh1/vZ0jWQ0Zlprf2FnV/R9C867H75Tgeoc3UHji/23xuzcAB+oj43qFjWfaw72IHwT99C+Szn1pGjTmXA6IqiuAq4QtWnTu/xXDW7Xz0XRR1Iu6IK5Dh3iNIwU+7izD9TQDrGzhdrY1H4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org; spf=pass smtp.mailfrom=shazbot.org; dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b=ch3J6xe0; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=zvJPbARD; arc=none smtp.client-ip=103.168.172.159
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shazbot.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kf5OLo18"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A16EC4CEF7;
-	Mon, 30 Mar 2026 15:40:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774885245;
-	bh=osTkFfqCJuN1re/DqBMhRzC3ySPnwXvxFxHFToRldlo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=kf5OLo181DAzYAxiyw9DESq93M4X8yvm3mkfYBEgIeNtltZ322hlIjfEyxmE6zsPe
-	 yN/a8764shX+LTnOr5c93nwtbSdgZzuMYQuiKhn4oPEYVx2hWz9l1nMTlNPoKlmuDj
-	 XpW5JFg1Y3WlXBCetqdDtrlxv2sVDwT2HL6vhT4VECKuKAFSlaUxuanOM7sKLLx2z1
-	 ntRcQjn6+LxBPyCI9l0WMbskx9qnIfKswiRk2ifCZxuYv5NPU7bWKRpN97I+o2FKNd
-	 IYokoAvx+bhzNvbveBysImch40LqOOtwu/RgvGwSsxTf8Q1lm3vtwGke5xCLHo5HLY
-	 NJI4qXYoX21dg==
-Date: Mon, 30 Mar 2026 17:40:42 +0200
-From: Maxime Ripard <mripard@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>, 
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>, 
-	John Stultz <jstultz@google.com>, "T.J. Mercier" <tjmercier@google.com>, 
-	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Albert Esteve <aesteve@redhat.com>, linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev, 
-	Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH] dma/contiguous: Fix broken build
-Message-ID: <20260330-fantastic-albatross-of-chaos-aee03f@houat>
-References: <CGME20260330084111eucas1p1e7cd5c886e34d0ed41226fe524d2a55a@eucas1p1.samsung.com>
- <20260330-dma-build-fix-v1-1-748b64f0d8af@kernel.org>
- <62b9e47c-1c31-4654-8347-16516faf73f0@samsung.com>
- <20260330-glaring-pygmy-dodo-fa06f3@houat>
- <ac7fa9bc-e966-4337-ae54-7bb6d8bd6e5a@samsung.com>
+	dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b="ch3J6xe0";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="zvJPbARD"
+Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
+	by mailfhigh.phl.internal (Postfix) with ESMTP id 3780D1400271;
+	Mon, 30 Mar 2026 13:26:52 -0400 (EDT)
+Received: from phl-frontend-04 ([10.202.2.163])
+  by phl-compute-04.internal (MEProxy); Mon, 30 Mar 2026 13:26:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shazbot.org; h=
+	cc:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm1; t=1774891612;
+	 x=1774978012; bh=AcmQN+EKdKBX/zWG5BYq7KzjIhGrfGKXjNQi10BLnZc=; b=
+	ch3J6xe0zliO/u8k5D7Y3vVIqQUAwrWYBS94PKVMjs4q5Y7CLJ3BIvI8iBzlY6T9
+	h/tEagvLTiMz/eXgmn3UI31/pZ2BwjYDcdJQOcmUFSLQBW3eHPAIYn+uFWL6hRUb
+	PZ0OVpALvhZax/FxxpVlTuXHzcSS/ETnF/IoPBHCy42ve+rTeHoyUGvA5vfYOPv4
+	QcOTGeUt0wqtfcdaVf2N52flNoUek9GPLGL1Nuf8Kri6UUSLitWvwbRUMxkj45Gr
+	pR6Ao/p67gIhM20D5ft6MSRctr9n66q6lg5TCLiB1nDkOgy79J1QXJUNetC/Hl6w
+	i2Wx1NKm1sfptapwjSrfTA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1774891612; x=
+	1774978012; bh=AcmQN+EKdKBX/zWG5BYq7KzjIhGrfGKXjNQi10BLnZc=; b=z
+	vJPbARDE91OdhadsoHtO6/EnN0EquxuxTPDs/4LVELdR1lfhlNz4Y/3CpNzOtFDZ
+	qSl9LRa0AXEJDxJzvamTCsbsvvVHtuWsJHAqdzbDLPadb5Vf+B+yYtflL74FeRZy
+	FSGIDnGiB6tIpF2pPT84Xxxne/Emp6+QzGWf7BTNM2IUTfB0KF6XbnVUlkovWcqY
+	bD2sqSdYS16N74C5wioD60RoTTde7vjDneYoq9Qpryc/+K0MWVvzYwX9jvITmM8v
+	GrXHim7GqMyVQ/L+wSA2VsWK0AX0qNKIOjJCbVoMVxeBeMBK0fUNfH04wYx+zQPw
+	1/FSAzqfNAlOHjmYGrkmg==
+X-ME-Sender: <xms:W7LKaQi5k68SX7I6XOP6jD0ps5YhGbMitWdQl9hDDAwnok1c_53vuA>
+    <xme:W7LKaU7LZ_TAawBQIvLGtfh3FT58R37x2TS7FBV0Shr6eCjFO92M-1XpzQ5TxcMSY
+    P-Jlsj7jyNjo9yzkcQeevyuDqchfMDaGlh_FEIiRXg7qj8n-cqn9cQ>
+X-ME-Received: <xmr:W7LKaVG_jDAGrlKVj4b46ObrJ1mtKugB98_TlgTp34c3rxkT9GzSBfGDEcU>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgdeffeelheejucetufdoteggodetrf
+    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
+    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
+    gurhepfffhvfevuffkjghfofggtgfgsehtjeertdertddvnecuhfhrohhmpeetlhgvgicu
+    hghilhhlihgrmhhsohhnuceorghlvgigsehshhgriigsohhtrdhorhhgqeenucggtffrrg
+    htthgvrhhnpedvkeefjeekvdduhfduhfetkedugfduieettedvueekvdehtedvkefgudeg
+    veeuueenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    grlhgvgiesshhhrgiisghothdrohhrghdpnhgspghrtghpthhtohepuddupdhmohguvgep
+    shhmthhpohhuthdprhgtphhtthhopegthhhrihhsrdhlohhnghhrohhssehgmhgrihhlrd
+    gtohhmpdhrtghpthhtohepjhhorhhoseeksgihthgvshdrohhrghdprhgtphhtthhopehs
+    uhhrrghvvggvrdhsuhhthhhikhhulhhprghnihhtsegrmhgurdgtohhmpdhrtghpthhtoh
+    epfihilhhlsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehrohgsihhnrdhmuhhrphhh
+    hiesrghrmhdrtghomhdprhgtphhtthhopegtohhrsggvtheslhifnhdrnhgvthdprhgtph
+    htthhopehskhhhrghnsehlihhnuhigfhhouhhnuggrthhiohhnrdhorhhgpdhrtghpthht
+    ohepihhomhhmuheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehlihhnuh
+    igqdguohgtsehvghgvrhdrkhgvrhhnvghlrdhorhhg
+X-ME-Proxy: <xmx:W7LKaWKmrXmumVIenrzpCFi24Qbl7iUl7xVmN-N_HxBZvc9_43UCBQ>
+    <xmx:W7LKaSgdFfklcvh7724dZCMGkM62AGZTfleQqJX-noZ5qygX1U-fOg>
+    <xmx:W7LKaUmXvckAEtCF7DYnq1e6phgqRfxEMD9gqliY-rnNsKHeuwstlA>
+    <xmx:W7LKaZWWe0fq56oJYTdkhi-A68J5dI-oPe6cWgOsMPYOHze57vdznw>
+    <xmx:XLLKaeX_QK17u9I_yZ_-a8w_mRx8_VZETStf5IhhxTibsPdVjCnhCwL->
+Feedback-ID: i03f14258:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 30 Mar 2026 13:26:50 -0400 (EDT)
+Date: Mon, 30 Mar 2026 11:26:48 -0600
+From: Alex Williamson <alex@shazbot.org>
+To: Christos Longros <chris.longros@gmail.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit
+ <suravee.suthikulpanit@amd.com>, Will Deacon <will@kernel.org>, Robin
+ Murphy <robin.murphy@arm.com>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>, iommu@lists.linux.dev,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, alex@shazbot.org
+Subject: Re: [PATCH] iommu/amd: add amd_iommu=relax_unity option for VFIO
+ passthrough
+Message-ID: <20260330112648.5e447fa9@shazbot.org>
+In-Reply-To: <20260328213228.12084-1-chris.longros@gmail.com>
+References: <20260328213228.12084-1-chris.longros@gmail.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha384;
-	protocol="application/pgp-signature"; boundary="yz4k24ncg52ejfgw"
-Content-Disposition: inline
-In-Reply-To: <ac7fa9bc-e966-4337-ae54-7bb6d8bd6e5a@samsung.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
+On Sat, 28 Mar 2026 22:32:28 +0100
+Christos Longros <chris.longros@gmail.com> wrote:
 
---yz4k24ncg52ejfgw
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH] dma/contiguous: Fix broken build
-MIME-Version: 1.0
+> On some AMD motherboards (Gigabyte B650 Gaming X AX V2, X870E and
+> others), VFIO passthrough of any PCI device fails with:
+> 
+>   "Firmware has requested this device have a 1:1 IOMMU mapping,
+>    rejecting configuring the device without a 1:1 mapping."
+> 
+> These boards' IVRS tables include IVMD type 0x22 (range) entries
+> spanning wide device ranges (e.g. devid 0x0000 to 0x0FFF, covering
+> PCI buses 0-15).  The entries exist for platform devices like IOAPIC
+> and HPET, but they get applied to nearly every IOMMU group on the
+> system.  Since commit a48ce36e2786 ("iommu: Prevent RESV_DIRECT
+> devices from blocking domains"), any device with IOMMU_RESV_DIRECT
+> regions has require_direct=1 set, which prevents VFIO from claiming
+> DMA ownership.
+> 
+> No PCI device can be passed through on affected boards -- not just
+> the platform devices that need the identity mappings, but also
+> endpoint devices like network adapters and GPUs.
+> 
+> Intel handles a similar firmware over-specification with
+> device_rmrr_is_relaxable(), which marks certain RMRR entries as
+> IOMMU_RESV_DIRECT_RELAXABLE so VFIO can claim them.  AMD has no
+> equivalent.
 
-On Mon, Mar 30, 2026 at 02:51:34PM +0200, Marek Szyprowski wrote:
-> On 30.03.2026 13:41, Maxime Ripard wrote:
-> > On Mon, Mar 30, 2026 at 10:59:48AM +0200, Marek Szyprowski wrote:
-> >> On 30.03.2026 10:40, Maxime Ripard wrote:
-> >>> Commit 3a236f6a5cf2 ("dma: contiguous: Turn heap registration logic
-> >>> around") didn't remove one last call to dma_heap_cma_register_heap()
-> >>> that it removed, thus breaking the build.
-> >>>
-> >>> That last call is in dma_contiguous_reserve(), to handle the
-> >>> registration of the default CMA region heap instance if it's declared=
- in
-> >>> the device tree.
-> >>>
-> >>> However, the default CMA region instance is already handled by
-> >>> retrieving it through dev_get_cma_area() in the CMA heap driver, so t=
-he
-> >>> call to dma_heap_cma_register_heap() wasn't actually needed.
-> >>>
-> >>> Let's remove this call, the now unused function definition, its now
-> >>> empty header, and all includes of this header.
-> >>>
-> >>> Fixes: 3a236f6a5cf2 ("dma: contiguous: Turn heap registration logic a=
-round")
-> >>> Reported-by: Mark Brown <broonie@kernel.org>
-> >>> Closes: https://lore.kernel.org/linux-next/acbjaDJ1a-YQC64d@sirena.co=
-=2Euk/
-> >>> Signed-off-by: Maxime Ripard <mripard@kernel.org>
-> >>> ---
-> >>>  drivers/dma-buf/heaps/cma_heap.c  |  1 -
-> >>>  include/linux/dma-buf/heaps/cma.h | 16 ----------------
-> >>>  kernel/dma/contiguous.c           |  5 -----
-> >>>  3 files changed, 22 deletions(-)
-> >>>
-> >>> diff --git a/drivers/dma-buf/heaps/cma_heap.c b/drivers/dma-buf/heaps=
-/cma_heap.c
-> >>> index f8a3d87f3ccee9630383ba28502eb40b10671cc2..cc517ac68a0bec0788abc=
-b338c03f530d169013b 100644
-> >>> --- a/drivers/dma-buf/heaps/cma_heap.c
-> >>> +++ b/drivers/dma-buf/heaps/cma_heap.c
-> >>> @@ -12,11 +12,10 @@
-> >>> =20
-> >>>  #define pr_fmt(fmt) "cma_heap: " fmt
-> >>> =20
-> >>>  #include <linux/cma.h>
-> >>>  #include <linux/dma-buf.h>
-> >>> -#include <linux/dma-buf/heaps/cma.h>
-> >>>  #include <linux/dma-heap.h>
-> >>>  #include <linux/dma-map-ops.h>
-> >>>  #include <linux/err.h>
-> >>>  #include <linux/highmem.h>
-> >>>  #include <linux/io.h>
-> >>> diff --git a/include/linux/dma-buf/heaps/cma.h b/include/linux/dma-bu=
-f/heaps/cma.h
-> >>> deleted file mode 100644
-> >>> index e751479e21e703e24a5f799b4a7fc8bd0df3c1c4..000000000000000000000=
-0000000000000000000
-> >>> --- a/include/linux/dma-buf/heaps/cma.h
-> >>> +++ /dev/null
-> >>> @@ -1,16 +0,0 @@
-> >>> -/* SPDX-License-Identifier: GPL-2.0 */
-> >>> -#ifndef DMA_BUF_HEAP_CMA_H_
-> >>> -#define DMA_BUF_HEAP_CMA_H_
-> >>> -
-> >>> -struct cma;
-> >>> -
-> >>> -#ifdef CONFIG_DMABUF_HEAPS_CMA
-> >>> -int dma_heap_cma_register_heap(struct cma *cma);
-> >>> -#else
-> >>> -static inline int dma_heap_cma_register_heap(struct cma *cma)
-> >>> -{
-> >>> -	return 0;
-> >>> -}
-> >>> -#endif // CONFIG_DMABUF_HEAPS_CMA
-> >>> -
-> >>> -#endif // DMA_BUF_HEAP_CMA_H_
-> >>> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-> >>> index ad50512d71d3088a73e4b1ac02d6e6122374888e..9fe001c712339f8388d3f=
-40cca3dfff3f707fcbf 100644
-> >>> --- a/kernel/dma/contiguous.c
-> >>> +++ b/kernel/dma/contiguous.c
-> >>> @@ -40,11 +40,10 @@
-> >>>  #include <asm/page.h>
-> >>> =20
-> >>>  #include <linux/memblock.h>
-> >>>  #include <linux/err.h>
-> >>>  #include <linux/sizes.h>
-> >>> -#include <linux/dma-buf/heaps/cma.h>
-> >>>  #include <linux/dma-map-ops.h>
-> >>>  #include <linux/cma.h>
-> >>>  #include <linux/nospec.h>
-> >>> =20
-> >>>  #ifdef CONFIG_CMA_SIZE_MBYTES
-> >>> @@ -270,14 +269,10 @@ void __init dma_contiguous_reserve(phys_addr_t =
-limit)
-> >>>  						  selected_limit,
-> >>>  						  &dma_contiguous_default_area,
-> >>>  						  fixed);
-> >>>  		if (ret)
-> >>>  			return;
-> >>> -
-> >>> -		ret =3D dma_heap_cma_register_heap(dma_contiguous_default_area);
-> >>> -		if (ret)
-> >>> -			pr_warn("Couldn't register default CMA heap.");
-> >> After this change no dma-buf heap for the default CMA area is=A0create=
-d if it has=A0
-> >> not been specified in device-tree. This might be especially a problem =
-for the
-> >> non-dt systems.
-> > I don't think that's the case? My understanding is that
-> > dma_contiguous_reserve() is called by the arch code, and will create
-> > that region only if it hasn't be set by the DT (that excerpt above is
-> > run only if !dma_contiguous_default_area).
-> >
-> > However, for the DT case, dma_contiguous_default_area will be set by
-> > rmem_cma_setup() a bit below if linux,cma-default is set in the DT.
-> >
-> > dma_contiguous_reserved() is called (on arm64 at least) through
-> > bootmem_init(), called as part of setup_arch().
-> >
-> > rmem_cma_setup() is called through RESERVEDMEM_OF_DECLARE, so through
-> > __reserved_mem_init_node(), so, if we consider only the public
-> > functions, through:
-> >
-> >   * fdt_scan_reserved_mem_reg_nodes(), called by
-> >     unflatten_device_tree(), called right before bootmem_init() in
-> >     setup_arch();
-> >
-> >   * or fdt_scan_reserved_mem() and then
-> >     early_init_fdt_scan_reserved_mem(), called in arm64_memblock_init(),
-> >     itself called in setup_arch() earlier than both
-> >     unflatten_device_tree(), and bootmem_init().
-> >
-> > Thus, the DT case will run first and set dma_contiguous_default_area if
-> > relevant on that platform, and if it's not set, the non-DT case will set
-> > it up. Either way, dma_contiguous_default_area will be set.
-> >
-> > The CMA heap runs much later using a regular module_init. It will
-> > retrieve dma_contiguous_default_area through dev_get_cma_area(), and
-> > will create a heap instance for the default area.
-> >
-> > Am I misunderstanding something?
->=20
-> The default CMA area is also optional for DT platforms.=A0
->=20
-> If DT doesn't provide such, it will be created based on the kernel
-> cmdline cma=3D parameter or the default configuration defined in the
-> kernel .config (this is also true for the non-dt platforms). I know
-> that for most Android GKI systems the default CMA area will be defined
-> in DT, but I see no reason to disable dma-buf heap support for the
-> default CMA area if it has been instantiated from kernel cmdline or
-> .config.
+The difference is that we have known devices on the Intel platform
+which have these RMRRs for largely historical reasons and we've
+collectively decided it's safe to "relax" the direct mapping
+requirement.  We don't believe there's ongoing post-boot, side-channel
+DMA happening in the background for these devices.
 
-I think I see what you mean now, thanks! Sending a v2.
+That's very different from providing a blind opt-in to ignore the
+platform directive to provide direct mapping for any arbitrary device.
+This is unsafe and difficult to debug.
 
-Maxime
+I think the preferred route here is to contact your motherboard vendor
+to both make them aware of the issue and determine whether they're
+willing to address it.  Thanks,
 
---yz4k24ncg52ejfgw
-Content-Type: application/pgp-signature; name="signature.asc"
+Alex
+ 
+> Add an opt-in amd_iommu=relax_unity boot parameter.  When set, IVRS
+> unity map entries are reported as IOMMU_RESV_DIRECT_RELAXABLE instead
+> of IOMMU_RESV_DIRECT.  The IOMMU still creates the identity mappings,
+> preserving DMA for platform devices, but VFIO can take ownership of
+> individual devices for passthrough.
+> 
+> Tested by passing through an RTL8852CE WiFi adapter to a FreeBSD
+> QEMU/KVM guest via vfio-pci.  Without the option, vfio_iommu_type1
+> fails to set up the container.  With amd_iommu=relax_unity,
+> passthrough works.
+> 
+> Signed-off-by: Christos Longros <chris.longros@gmail.com>
+> ---
+>  Documentation/admin-guide/kernel-parameters.txt | 6 ++++++
+>  drivers/iommu/amd/amd_iommu_types.h             | 1 +
+>  drivers/iommu/amd/init.c                        | 6 ++++++
+>  drivers/iommu/amd/iommu.c                       | 7 ++++++-
+>  4 files changed, 19 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index 03a550630..974506ad9 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -441,6 +441,12 @@ Kernel parameters
+>  			force_enable    - Force enable the IOMMU on platforms known
+>  				          to be buggy with IOMMU enabled. Use this
+>  				          option with care.
+> +			relax_unity     - Mark IVRS unity map entries as relaxable,
+> +				          allowing VFIO to claim devices that have
+> +				          firmware-declared identity mappings. Required
+> +				          on some AMD motherboards where global unity
+> +				          maps prevent any device passthrough. Use this
+> +				          option with care.
+>  			pgtbl_v1        - Use v1 page table for DMA-API (Default).
+>  			pgtbl_v2        - Use v2 page table for DMA-API.
+>  			irtcachedis     - Disable Interrupt Remapping Table (IRT) caching.
+> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+> index c685d3771..bc35d5016 100644
+> --- a/drivers/iommu/amd/amd_iommu_types.h
+> +++ b/drivers/iommu/amd/amd_iommu_types.h
+> @@ -907,6 +907,7 @@ struct unity_map_entry {
+>   */
+>  
+>  extern bool amd_iommu_force_isolation;
+> +extern bool amd_iommu_unity_relaxed;
+>  
+>  /* Max levels of glxval supported */
+>  extern int amd_iommu_max_glx_val;
+> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+> index f3fd7f39e..a89120700 100644
+> --- a/drivers/iommu/amd/init.c
+> +++ b/drivers/iommu/amd/init.c
+> @@ -173,6 +173,9 @@ u64 amd_iommu_efr2;
+>  /* Host (v1) page table is not supported*/
+>  bool amd_iommu_hatdis;
+>  
+> +/* Relax unity map entries for VFIO passthrough */
+> +bool amd_iommu_unity_relaxed __read_mostly;
+> +
+>  /* SNP is enabled on the system? */
+>  bool amd_iommu_snp_en;
+>  EXPORT_SYMBOL(amd_iommu_snp_en);
+> @@ -3676,6 +3679,9 @@ static int __init parse_amd_iommu_options(char *str)
+>  			amd_iommu_pgtable = PD_MODE_V2;
+>  		} else if (strncmp(str, "irtcachedis", 11) == 0) {
+>  			amd_iommu_irtcachedis = true;
+> +		} else if (strncmp(str, "relax_unity", 11) == 0) {
+> +			amd_iommu_unity_relaxed = true;
+> +			pr_warn("AMD IOMMU: unity map relaxation enabled\n");
+>  		} else if (strncmp(str, "nohugepages", 11) == 0) {
+>  			pr_info("Restricting V1 page-sizes to 4KiB");
+>  			amd_iommu_pgsize_bitmap = AMD_IOMMU_PGSIZES_4K;
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index 760d5f462..4606fa6a4 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -3070,7 +3070,12 @@ static void amd_iommu_get_resv_regions(struct device *dev,
+>  		if (devid < entry->devid_start || devid > entry->devid_end)
+>  			continue;
+>  
+> -		type   = IOMMU_RESV_DIRECT;
+> +		/*
+> +		 * When relax_unity is set, mark unity map entries as
+> +		 * relaxable so VFIO can claim devices for passthrough.
+> +		 */
+> +		type = amd_iommu_unity_relaxed ?
+> +			IOMMU_RESV_DIRECT_RELAXABLE : IOMMU_RESV_DIRECT;
+>  		length = entry->address_end - entry->address_start;
+>  		if (entry->prot & IOMMU_PROT_IR)
+>  			prot |= IOMMU_READ;
 
------BEGIN PGP SIGNATURE-----
-
-iJUEABMJAB0WIQTkHFbLp4ejekA/qfgnX84Zoj2+dgUCacqZegAKCRAnX84Zoj2+
-dv/0AYCFbpEzr5IUt0jDlPnwHS/2nJ+4KWwSAt/X9BHtILMTPLX+BF13+K/RZqoq
-ElsOSf8BgK5CYzl1g39YnplBEk8DwBnQTLE0nHIyCZrifAlSX+pDEP9HP7flyh6U
-rxY+NSZubQ==
-=cEer
------END PGP SIGNATURE-----
-
---yz4k24ncg52ejfgw--
