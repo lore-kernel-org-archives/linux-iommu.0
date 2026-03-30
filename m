@@ -1,159 +1,212 @@
-Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012020.outbound.protection.outlook.com [52.101.53.20])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 310473624D4;
-	Mon, 30 Mar 2026 15:31:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.53.20
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774884697; cv=fail; b=ef4lWkb4jdcI77nqeLZkV8rI85fWDzSLV6TApPgEr7A7Zbw7HwMC3YzDF90JQShcSzjQOjZkrOfSBENTFxVya38lh0eOM1AZkRAAgWdLnUsuyIbaGDxp7Rb8ygILhCegy1o9bLXltT4SrxRF5MDcwb4vegnWORuEtUNqm/eRxH4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774884697; c=relaxed/simple;
-	bh=lr5CBRazs/SHnZmXs5cHJBLg/RD63iUvHMv7pvrWv70=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=hQojFgQs8hels7y4caj5+YTqf8bR1tVr/CVOc4Db0trg+qKXG3+7z0Xj4D048lL/MAnnqIhP9qDO9y6o1TdTJlsWDv0PBvESJ0q5DfYWevXUkKctSGn38jr4ndyyj32mtBan8N01wXSubxczCoITzNGXMC6oMyhJtsMXryu5+PQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=on1R1PpT; arc=fail smtp.client-ip=52.101.53.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BFEF36C9CA;
+	Mon, 30 Mar 2026 15:40:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774885216; cv=none; b=pCk0lt2mv9bOiA0rom+sip4wIK88MflBMuJqzruHAwIHF9ITDPVnjF+eFYc00pCEJjedWkkJc0xrRCAi0y12EL+kKYhq5SMo7OvwIW5nonAzGermaj1WaUAZWC9psZCqthxUxGvjfe+x9uBJkkesGxgKyDKPnB7GRcVohToZkf4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774885216; c=relaxed/simple;
+	bh=qHM7oQRzY9ST2dUBFDQhLmzQd4QRKdkAaxvIMcjy50c=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=ew0SL7vBRTsesHWNd/aUu3uwCugVHh++Gd/gkC0AcGpVSyhp55iQutlhfiZ3DBtRy2S1kaVsZAdBWg0vwxwYYfmfuvHTphPnJrkpu2GSaF2WB/+0/GQvYlH1sV/Ah0rShHpxu4EDTPwvZmW8tvphgadGc05vppxBs+lP4urxmvc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=s9kszX8b; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="on1R1PpT"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Yt/G+RKI8p+3M8pbnqqP7AcVdTSD/faiGAMWOI6KW+3aGnAAiOs/AqDuMPC/02eiTd2+e9n2S9YRbNMPXiHMFYR/e3lK2tdaHl+jltIKbPNnJBd05w1soc4oSE2bSEwPDGXBvt/iOz7dw9CkrRzaHyqWEdf1yb5yxYEYNIPvBH9MWafclL0S6WKwPrTe3ony+L5cyJpJ/hnGQmreDI+GDF3/v7eGl4Pl4ReuafoPfVQxWmv05dG0CGWvPtercki13JS5wEtCCaA34bty87dXLQs+Mu4FDZL79gLJfZ2melp72qCNCTT+802XIVnpbdoA0XEiiYsdpXC9/ZYF/AQ/iw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Hdb0xqIv8KV1ncFhGaYqGVJSyjuDc+Skqs2vuVVmOn8=;
- b=ByHnF7W31TPt/ZBZ4ecOGFQ+40vOjctCpUr9eTCpfsNAF4wNcVJ2Jpxy4wBpqzLHdjOa1szXcVTzmdSyS+OF++UdwB/NH2IfNv6kdMdAKhY9JlBK5ohfhdFyYpzcrsiERZDRKp/TypV8w8wqCxdB1XBtfB3FxD1uVouwVLDlCMWm//6y8imOXn9oeOYnNy08VWUQGXrjqRjDXZ4fS/HK1V2XKQR2UKQ+TjmCeB0taAKgt3D0Gku+ejEpXmPa9gTiuwc7fJE2hPkZ+mEz4IstgAUVtXUdbO7KETDNdTJDHmJB0FlIJt560w/nft92pqQk7NjNA1hlsfNXeNPSyZo6zA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Hdb0xqIv8KV1ncFhGaYqGVJSyjuDc+Skqs2vuVVmOn8=;
- b=on1R1PpTF+Xvin+bNp7SFY/gH2QAwemznGR1r9nIX2uh1FEalIGCfBpHZZOF1sDlYHxNvmVUk+fyzFfIIVIOHVN+mk7oIr1V6CJAsqSn3u/4y3Y7zn7SI5OYWNCryQbHCyd9vWDmqCZgKjuYQ/qkM+Mv2a7RdZ/2CDZqwGQ9I8IEatoV0xmEtCEtJEAFl9YqG192HP7O66Rcd7g9OiGgl0RCvY80lQosw5roxTen/c5qMfYf96Fe9opysGR/W4zClgJmpyEm3eS7ZDE4UYCjQ+QLc2k2iJQG73yNTzPi+peBEC3MIrZT1oiueTTJvSmVS+dlo12bK2Q1pa0BRJAGww==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by LV8PR12MB9692.namprd12.prod.outlook.com (2603:10b6:408:295::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.15; Mon, 30 Mar
- 2026 15:31:28 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9769.014; Mon, 30 Mar 2026
- 15:31:27 +0000
-Date: Mon, 30 Mar 2026 12:31:26 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	patches@lists.linux.dev
-Subject: Re: [PATCH 1/4] iommu/intel: Split piotlb invalidation into range
- and all
-Message-ID: <20260330153126.GU310919@nvidia.com>
-References: <1-v1-f175e27af136+11647-iommupt_inv_vtd_jgg@nvidia.com>
- <ef82f6be-fecf-469b-9df0-88a7a004923a@linux.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ef82f6be-fecf-469b-9df0-88a7a004923a@linux.intel.com>
-X-ClientProxiedBy: BLAP220CA0023.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:208:32c::28) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="s9kszX8b"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7773FC4CEF7;
+	Mon, 30 Mar 2026 15:40:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1774885216;
+	bh=qHM7oQRzY9ST2dUBFDQhLmzQd4QRKdkAaxvIMcjy50c=;
+	h=From:Date:Subject:To:Cc:From;
+	b=s9kszX8bGTBslpUJXFL5Lq/D5pP9huMGeBAeBbm7gRqrYjuQut2CQIdrwBHGzaJWV
+	 BbK/5U1snRWILPPWfpCG348z8pmmSQBr07ZAv8X5+XVbsYPCcoWuQ/mxN65vtR+92q
+	 xMRMry2fcHhNBYsRLeQMVUWGtBtDjkfBLV0VcWy5BirZwu1ZQvcLBnR31N24ViNt4M
+	 rIK3mgJuoe23/CahEOA4ry1bTTOi+lN6uwFQuY+Lpm5niVXRWLre/4DTSGM3a0qg1j
+	 Uz+jm33jUr+cxkb3p1VW7B/CtO77UiMIZGekm94DIdgQCl2r8rx2O2Xe9E2sWnY3zc
+	 xlqe4yT1OwjzQ==
+From: Maxime Ripard <mripard@kernel.org>
+Date: Mon, 30 Mar 2026 17:40:07 +0200
+Subject: [PATCH v2] dma/contiguous: Fix broken build
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|LV8PR12MB9692:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3fb79f97-c5c4-433b-bda4-08de8e7168c4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|376014|1800799024|22082099003|18002099003|56012099003;
-X-Microsoft-Antispam-Message-Info:
-	VMooq8pM5PAJc7POvJ70ZTeQeeLrtRoWJj7mtNP7RztW2E4GgG0eTzV+3Wfm9C9xHwc/Vk/SOwC6+Gs/MLHd4J7gWZqlUutOI2a4Igi+r6+JXfSAOD7gxrLDt6Ycsgk8+b81e0PU7ZCK5s0NnDD33kMuOm8wpHXygOReOh1Qxxo4C9bBzQQjNE6bXG+zG00n05LOcSyKK8QBqu98VoEtqI5C36/xyiJw1vt4iI/23VXNa9KqMGY2XVYhEmanFTOFvIBCXCSxoq2zHq1kUEFv7pSjRBFxnM7ehhF38bxkBR8PaX7xKdjqRonIhnlj4XLm+JPdkL7b7l9c/epqhPKWCM4paSIhjukSgVsaJyktRGPwSuUgjyBTqti702Z/GjwWE2hWosAYoYwKueaCNsG6BHMlOP+T1gJmVkfm+Ack1rMDPu6TrqLoIBes/1pJocySxTflC5yBd/bGIFRflUW4vBWqAnSQpt2DDPgLC0kG53fcBFeeyHhf9wJrz02Ehx1HFE7rikcDAM/3BTwSBHrSPcJHJlEzcwx9BwBjYve5+wqchn9SwYH5FI/gdlyqUjNC6ZgnZMaslLa6o9P6p5SQ+JmFM39rTIOiqjO8xbS+ejeHSixSuwPa4D6OiQy9Uk++6lORiM1V3gaFd/0FedVUHu0OKn2TCEo9lJWvI7/TfTaWuY6wBXAj+j8JjOeZmMvQbuGXiO835xXk9ZRMJMf4GcBSCSIWUVkkg//OO4OKyRw=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(22082099003)(18002099003)(56012099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?NIQQMxO0mGGLRgTX4hcl9eSxUxduClZsvHrG/z5yBNTwFXEs95MSo/+3gUpv?=
- =?us-ascii?Q?ZCw/VoQqUTNEBNo/c1ki/FZtpZ5n+RPGuJ/Q2YCKncoW1IxZMxec+qlgTtYt?=
- =?us-ascii?Q?aBCH9tz862icSJpJKTP1Pt81+7lSjF1pWVqztO4EwW0UwQbTdDsmPg/TXo1x?=
- =?us-ascii?Q?89HJOVlh1RlZm3OnXA0I1N3ADJpyHCMxHiLSltPx7mmCjsmfTvHG2FRJzWsU?=
- =?us-ascii?Q?MhJHesga/n4yqwemEv2P3JsNLDs/scTDWrIG61ODvqNpKISuEGLs//iNN3A7?=
- =?us-ascii?Q?x1Lw5BlWMd/YvN7m5CM++NauOJDxpwU5c3xErULOFbNheiWg/uwnZvrOuWOb?=
- =?us-ascii?Q?oJE4WWhGljFWBZ2XSo0j2C/+I1g51FwAb6QzkYR+i5YnncJF+x94NwCxVJHt?=
- =?us-ascii?Q?hGJ+dd6PYkUk7yTY18ZslIwOnwJ/8AOSI5xt86ykwsRenknaBYx1YZccj2PW?=
- =?us-ascii?Q?oSpltrw3Oer4r1nqHT7f2wPkp2FE99RZ1PvHTqSvvMSnwwqEegqjB0bwVeGz?=
- =?us-ascii?Q?9aKsLAag5niO50VkIYsjn5bJMpwrOtzOSOTjx/rHOHTboGgpmp/Iyp6inCO+?=
- =?us-ascii?Q?6SguFeQwnPCBFq29QB8m2N/LOTG5d4cxphOkz7JdIlcwW9XGMN/UL4ta+3HB?=
- =?us-ascii?Q?+4oAGKRojLpNRNmDQTHjb4zxLHGPu4TThOh8blEgjbUB3penCEQYHkGQTWtA?=
- =?us-ascii?Q?Qt4mKTy6ARamdQ9EX3mKDTxdiy/Pc8YK58jPdDSZJz7G+MI1cK9Wja4el4+2?=
- =?us-ascii?Q?LSgAZCDw9yxf9eW2up4GMdUnSp1lT30y3nZ23UMECPcPUAellGNuJFVuRLt4?=
- =?us-ascii?Q?dVwU7JLShhKLig5lihFZ6+MVw1h/S7jVRGNu83o+UoquQ7bLrDuzcdX4ITBc?=
- =?us-ascii?Q?YSxV8iZTH/IJcJQknLyDNeSuRt6tnuq+7vpbKNZvgSVlQ4Gf9aKShWzMJNi5?=
- =?us-ascii?Q?7K+Y2qtoZcDAgfO+1zYqdm52U0XiqQI+fJZ75AmL3W2DDqwVBnoSM0zxJkgq?=
- =?us-ascii?Q?agKOUxr3MMp9/W1k5Za74rFxoPqP2OV6DwjYqAbm7qmJfp0ksH8dZq+GZDNT?=
- =?us-ascii?Q?fGDSKU7liMRx3o2C8EFNu+iQNso0tMtqErMdXd62NTp8xxdWPhJqRBZ33Oge?=
- =?us-ascii?Q?9F3BzUGC6BTolnjRawIr2ldzhWDqoKw4oCBKGaaA8jvxbJBX4DqMzIhED4eN?=
- =?us-ascii?Q?X7lt732CtYJ7EUDFpvGYA6wPBdrvXOZTJ/d5276Y6JJi3uV3WhY8P3VRw0Wy?=
- =?us-ascii?Q?0Qv4bvVu7T5CpLG5kqHnAmd6gTOfqsi3+1eCC6LkMltEhg9ZyDHiX9YkKxkZ?=
- =?us-ascii?Q?U+gjT0BNFp1kkSPPMrlamVUPlg7u+YMv6qGvUVO/vdF5QiMUPxYLKN/mn3Xt?=
- =?us-ascii?Q?dBBy8cawuLxylu9yR7snef+DIxdFmahzl9wx3QCOvOixsWcJGED/whHuaMnR?=
- =?us-ascii?Q?/SVZSe/SWm1X6Ur0iDhzph7UvybGiYOR1TQQMZQPuxZu2d25LV8dng+lJ5zw?=
- =?us-ascii?Q?tiTUICTId+dfQAAJM/g4wwIkEZd+xSQkJCZ11u+xDShon3Q5hI7+pK+Jhplo?=
- =?us-ascii?Q?lr1CpMextEI/DBvRD8VUEvFowzul9I2Z9V+tN+GJUqWGBCH8tVNyn0U2eriM?=
- =?us-ascii?Q?oN9AoOKSg6kE2xqmFHiUFaMM9ke1/8Rh1DEOt3i/ZnKLpbGFPWorGYgawQlh?=
- =?us-ascii?Q?oHI5kEqVX/4i1Y9vgIIc3xQwd8AqQUFPKSMxjqkb+jKJcKbg?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3fb79f97-c5c4-433b-bda4-08de8e7168c4
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2026 15:31:27.5182
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cEZM1BUBtInPT2XxFteXWpnuJTfYV53bLyoWE6qiespQ1Xgyg7KzcdGLtUx/J4Mm
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR12MB9692
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260330-dma-build-fix-v2-1-26d844575815@kernel.org>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/3WMQQ6CMBAAv0L27JptIUA8+Q/DodgtbERqWm00p
+ H+3cvc4k8xsEDkIRzhVGwROEsWvBfShguts1olRbGHQpFuqa0J7Nzi+ZLHo5I0dtaZxPBKTg9I
+ 8Ahe9/y5D4Vni04fPvk/qZ/+dkkKFXdOPbePI9sadbxxWXo4+TDDknL9ie8p0qwAAAA==
+X-Change-ID: 20260330-dma-build-fix-706a4feb0e0f
+To: Sumit Semwal <sumit.semwal@linaro.org>, 
+ Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
+ Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
+ "T.J. Mercier" <tjmercier@google.com>, 
+ =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+ Marek Szyprowski <m.szyprowski@samsung.com>, 
+ Robin Murphy <robin.murphy@arm.com>, Albert Esteve <aesteve@redhat.com>
+Cc: linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, 
+ dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
+ iommu@lists.linux.dev, Mark Brown <broonie@kernel.org>, 
+ Maxime Ripard <mripard@kernel.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5317; i=mripard@kernel.org;
+ h=from:subject:message-id; bh=qHM7oQRzY9ST2dUBFDQhLmzQd4QRKdkAaxvIMcjy50c=;
+ b=owGbwMvMwCmsHn9OcpHtvjLG02pJDJmnZsZYhk7q1tp/3PGvi+Xf/i/dwdNu/16+/pms0YVrP
+ VMM721d1DGVhUGYk0FWTJHliUzY6eXti6sc7Ff+gJnDygQyhIGLUwAmcvsjYzXbvirxL1umLbqk
+ OOG3yJI1n/+lyDL1tr++k7Oi5fGs9nnvmibn1EyfVRIXfjW8+PY2hh2MdQrbnOMttT5zdf4zn7V
+ E6lZPn5doesH856lTV8r/Sbo6Q/TmxY2Lmv8uWvnYsXErR/JuUwA=
+X-Developer-Key: i=mripard@kernel.org; a=openpgp;
+ fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
 
-On Mon, Mar 30, 2026 at 02:39:50PM +0800, Baolu Lu wrote:
-> >   static void qi_batch_add_piotlb(struct intel_iommu *iommu, u16 did, u32 pasid,
-> >   				u64 addr, unsigned long npages, bool ih,
-> >   				struct qi_batch *batch)
-> >   {
-> > -	/*
-> > -	 * npages == -1 means a PASID-selective invalidation, otherwise,
-> > -	 * a positive value for Page-selective-within-PASID invalidation.
-> > -	 * 0 is not a valid input.
-> > -	 */
-> >   	if (!npages)
-> >   		return;
-> 
-> The WARN_ON(!npages) logic is removed from the previous
-> qi_flush_piotlb() (see below ...). Could it be added here to keep the
-> "npages != 0" check?
+Commit 3a236f6a5cf2 ("dma: contiguous: Turn heap registration logic
+around") didn't remove one last call to dma_heap_cma_register_heap()
+that it removed, thus breaking the build.
 
-The later patches remove this check entirely so I don't think we
-should add a WARN_ON then remove it again..
+That last call is in dma_contiguous_reserve(), to handle the
+registration of the default CMA region heap instance.
 
-> > @@ -1168,6 +1166,7 @@ void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
-> >   void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
-> >   			u16 qdep, u64 addr, unsigned mask);
-> > +void qi_flush_piotlb_all(struct intel_iommu *iommu, u16 did, u32 pasid);
-> 
-> [...]
-> 
-> >   void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u32 pasid, u64 addr,
-> >   		     unsigned long npages, bool ih);
-> 
-> qi_flush_piotlb() has been removed by this patch. Therefore above
-> declaration should also be cleaned.
+The default CMA region instance is already somewhat handled by
+retrieving it through the dev_get_cma_area() call in the CMA heap
+driver. However, since commit 854acbe75ff4 ("dma-buf: heaps: Give
+default CMA heap a fixed name"), we will create two heap instances for
+the CMA default region.
 
-Ooops that hunk got into a later patch, I shifted it back
+The first one is always called "default_cma_region", and is the one
+handled by the call to dev_get_cma_area() mentioned earlier. The second
+one is the name it used to have prior to that last commit for backward
+compatibility.
 
-Thanks,
-Jason
+In the case where the default CMA region is defined in the DT, then that
+region is registered through rmem_cma_setup() and that region is added
+to the list of CMA regions to create a CMA heap instance for.
+
+In the case where the default CMA region is not defined in the DT
+though used to be the case covered by the now removed
+dma_heap_cma_register_heap() in dma_contiguous_reserve(). If we only
+remove the call to dma_heap_cma_register_heap(), then the legacy name of
+the CMA heap will not be registered anymore. We thus need to replace
+that call with a call to rmem_cma_insert_area() to make sure we queue
+this instance, if created, to create a heap instance.
+
+Once that call to dma_heap_cma_register_heap() replaced, we can also
+remove the now unused function definition, its now empty header, and all
+includes of this header.
+
+Fixes: 3a236f6a5cf2 ("dma: contiguous: Turn heap registration logic around")
+Reported-by: Mark Brown <broonie@kernel.org>
+Closes: https://lore.kernel.org/linux-next/acbjaDJ1a-YQC64d@sirena.co.uk/
+Signed-off-by: Maxime Ripard <mripard@kernel.org>
+---
+Changes in v2:
+- Fix creation of the CMA heap instance with the legacy name when not
+  declared in the DT. 
+- Link to v1: https://lore.kernel.org/r/20260330-dma-build-fix-v1-1-748b64f0d8af@kernel.org
+---
+ drivers/dma-buf/heaps/cma_heap.c  |  1 -
+ include/linux/dma-buf/heaps/cma.h | 16 ----------------
+ kernel/dma/contiguous.c           | 14 +++++++++++---
+ 3 files changed, 11 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/dma-buf/heaps/cma_heap.c b/drivers/dma-buf/heaps/cma_heap.c
+index 7216a14262b04bb6130ddf26b7d009f7d15b03fd..9a8b36bc929f6daa483a0139a2919d95127e0d23 100644
+--- a/drivers/dma-buf/heaps/cma_heap.c
++++ b/drivers/dma-buf/heaps/cma_heap.c
+@@ -12,11 +12,10 @@
+ 
+ #define pr_fmt(fmt) "cma_heap: " fmt
+ 
+ #include <linux/cma.h>
+ #include <linux/dma-buf.h>
+-#include <linux/dma-buf/heaps/cma.h>
+ #include <linux/dma-heap.h>
+ #include <linux/dma-map-ops.h>
+ #include <linux/err.h>
+ #include <linux/highmem.h>
+ #include <linux/io.h>
+diff --git a/include/linux/dma-buf/heaps/cma.h b/include/linux/dma-buf/heaps/cma.h
+deleted file mode 100644
+index e751479e21e703e24a5f799b4a7fc8bd0df3c1c4..0000000000000000000000000000000000000000
+--- a/include/linux/dma-buf/heaps/cma.h
++++ /dev/null
+@@ -1,16 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef DMA_BUF_HEAP_CMA_H_
+-#define DMA_BUF_HEAP_CMA_H_
+-
+-struct cma;
+-
+-#ifdef CONFIG_DMABUF_HEAPS_CMA
+-int dma_heap_cma_register_heap(struct cma *cma);
+-#else
+-static inline int dma_heap_cma_register_heap(struct cma *cma)
+-{
+-	return 0;
+-}
+-#endif // CONFIG_DMABUF_HEAPS_CMA
+-
+-#endif // DMA_BUF_HEAP_CMA_H_
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index ad50512d71d3088a73e4b1ac02d6e6122374888e..d5d15983060c5c54744d6a63f2b591e1a3455b86 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -40,11 +40,10 @@
+ #include <asm/page.h>
+ 
+ #include <linux/memblock.h>
+ #include <linux/err.h>
+ #include <linux/sizes.h>
+-#include <linux/dma-buf/heaps/cma.h>
+ #include <linux/dma-map-ops.h>
+ #include <linux/cma.h>
+ #include <linux/nospec.h>
+ 
+ #ifdef CONFIG_CMA_SIZE_MBYTES
+@@ -217,10 +216,19 @@ static void __init dma_numa_cma_reserve(void)
+ static inline void __init dma_numa_cma_reserve(void)
+ {
+ }
+ #endif
+ 
++#ifdef CONFIG_OF_RESERVED_MEM
++static int rmem_cma_insert_area(struct cma *cma);
++#else
++static inline int rmem_cma_insert_area(struct cma *cma)
++{
++	return 0;
++}
++#endif
++
+ /**
+  * dma_contiguous_reserve() - reserve area(s) for contiguous memory handling
+  * @limit: End address of the reserved memory (optional, 0 for any).
+  *
+  * This function reserves memory from early allocator. It should be
+@@ -271,13 +279,13 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
+ 						  &dma_contiguous_default_area,
+ 						  fixed);
+ 		if (ret)
+ 			return;
+ 
+-		ret = dma_heap_cma_register_heap(dma_contiguous_default_area);
++		ret = rmem_cma_insert_area(dma_contiguous_default_area);
+ 		if (ret)
+-			pr_warn("Couldn't register default CMA heap.");
++			pr_warn("Couldn't queue default CMA region for heap creation.");
+ 	}
+ }
+ 
+ void __weak
+ dma_contiguous_early_fixup(phys_addr_t base, unsigned long size)
+
+---
+base-commit: 6c683d5b1903a14e362c9f1628ce9fe61eac35e7
+change-id: 20260330-dma-build-fix-706a4feb0e0f
+
+Best regards,
+-- 
+Maxime Ripard <mripard@kernel.org>
+
