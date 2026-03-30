@@ -1,46 +1,46 @@
-Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012015.outbound.protection.outlook.com [40.107.200.15])
+Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012002.outbound.protection.outlook.com [40.107.200.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A873E3AEF42
-	for <iommu@lists.linux.dev>; Mon, 30 Mar 2026 08:44:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.200.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD6BD3AE71D
+	for <iommu@lists.linux.dev>; Mon, 30 Mar 2026 08:44:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.200.2
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774860270; cv=fail; b=lXyUN9ijTVNLQvA4uD67TRFjHM6DP+TblbGsRZsdxqBwXQlD3pQgGzScOlrNTGiRLEIWyPgxRdTvZsJm+h4zcC5Squ39nPPs8bTXDAKoCN+eaEMRLaM/LEniA5mq1bk6w0/Swnn9yLe/25jj69LAufbCePOg2QJLZbecqfz6jms=
+	t=1774860275; cv=fail; b=PcG58dL8ZYV2rKkco51ruOql9HeL3oTXCthvlpzlnIrbYUxqLMxzEWSjGj4f0k/nvdTMO7xoYxR1/tyPCpd0MfrNa6Me7MjWLUQTgZH9Pjw/07iTaAnv2u7DcbaPV0dl4pTifNrR+z6Elw8AbEeHb4yCuPik5zbWJ+JsgF516pY=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774860270; c=relaxed/simple;
-	bh=72rfm6p19vDj5kXAlQlwjCXixutklzU4guHA99KQRMo=;
+	s=arc-20240116; t=1774860275; c=relaxed/simple;
+	bh=fICo+oi8GM/yZsQRUomkjRpalNFsypkrMG9uudc5G9A=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=IhZ8QGAYx2t+/GWsAGF4IuTdUMCGhxcICG58/GNrzNZjkXg7FAclJuyrIvnIZ9m0LnPTnqaNlYZ0EzddZxxHx4ViHiOW2J9FtiiVL4qtnlTDYFJK9210MniriutpDcV47xobiuAyRnNrNd00pvPfEkGBVzELvqbmOSH7bHW8k6c=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=vNfuqe19; arc=fail smtp.client-ip=40.107.200.15
+	 MIME-Version:Content-Type; b=CtGEgxcvDy2S3RtyUBTqp6HGULkCdOG6eUo0z4Ume+3XfPdkf+CEQcoOiZkslOiCLuX/LCs9NysiV3YEgg44anINimeiG8YjeDX0SgnywModmDsmmufpU6qkos6SLu63hYfKAnvH071oJKJlnZLbn4l9VQE9tLnSHwaw+LLb3oU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=iGylTndf; arc=fail smtp.client-ip=40.107.200.2
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="vNfuqe19"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="iGylTndf"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=cXt7jY2lJtYMnXdSKtK5sa/V2zJ4F4JvjvEKoGallyFg1xagnfZKxnAMIfoYf8f6KFI8X59UIGD09lzx7P+D1cmKUuveHmO9KZozJF42gATeEQ/Z6LP+iYakljoak4ob3nSTjyKUUdD3IHkicjtYuDPFEtgC5N0xz+u1cvzLN8Ej0onW6mN9+BIB6XjYu3QLZ+9h/2FG9NV+7eDIyXC5q66meM4lyROFvkA/iCd92Af6ZnYZeHJqyDw+9U9QPbeJ/APUIa2LlMLdPV3JTir4IwO7P1S8s15aQEhc4vbeRQrLkhEaPc4QiEIXPQwLbnRi8kBeyshVCky6oLm/m2iNSw==
+ b=iYwnbVz54ohzkFsFPpawiUr59RI1Xh4o+IUVa439f9txZ8E3316VqaIiOLNFcQbceOISRmaD8k79EAu0tbKIDUhY01T3VR3oMChVmJglFV2e9VU2CIczjfC1CPJJkXy2XFjNFWDW1e+1wr2TdYG5+Nz6BOB1HzXodQEyFZl7vVfN1ZMhTwyEMZaQga+AXadd/m/fvpoloFqi+yLyb4vKtE/N4/5ksdCOFpj/5XdtmLbjhPZHf32NRl7acJXaJWtSl7SmC2rimsxtnnhcwokompHxYGv8Azhjc3QneV2XaueqnXa2wt8NYYfNOgAHlwxrlQtzahsPaz+6aLKSGTUe+w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=E8GFH79h+B9bXlNsPF0JYIllthU9TkffHxweL3wRaMs=;
- b=F0tLYvDyTfPE5W3OGlofBURrkNMbQeKzCZ+Sti/ihlUw1qcMEDbYgOFD5YVR10Es0ymd6Rqw51OI9JTqN3cNgqySKlY/v0FT7SRPGZYePLI9WFbUdPms59GTHY5BKRqhkQSkf7PfCKErWBPb782iuramdIgBt7iBIXTkSnz00flkoCY7a1vSl0bLcrYPUEiPe5RXnkignMK98ZTOH8VzV9rYDq5oL5tO3Xp/oGIwL9qnFzW1Wb5/Hxl9D0ZwDeekXMQLncsVxT8ixHhF4ajq1AdRVd8oY4djDVtOu13DfI/7+R97dgr8IwkVcgw6D/sTMfs6dxuORXBC0NRnW6tkzg==
+ bh=utgS17TVNrDA66Vtl7qtHr1W2MOFtSE7M1309hNq/Cg=;
+ b=dEpeCr2L8GmuLLVMTU2bvTbAiYrQFiTp230vcOkdH9fHwWRFkRszA7W3YBJ1Uzs1cArfEgEcOfk5KBYs32NwrdnFuY+BT+Iz/ptRY9u11eAOfndsA3tA0lr5fBg+ExsnRXaO6XOr55yE1ZLE0YjeMr4ZxgQtJW1igeNA9TXr1BOmdoRn/Lph4w94decicDf1IX3BLRdCyavQpmAW0GCmfa1SFcQ0LxoGq7T8XPcILhDHHuTNjJWTqzC4iZI8duTvOwkxS3r52GByzlQXaqaAcG8iEm00scFeQv7ZKs2XyNdJijT7POqBOfoyYCi1kRUpoU7Uk6Phqj6vMTB/rLFNGw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=E8GFH79h+B9bXlNsPF0JYIllthU9TkffHxweL3wRaMs=;
- b=vNfuqe19LTmA1w4JqlX0NxaH3n/3FyHNJu5e71Jp09G9D/wT17UfTsAgsx7ZLP7TFa86EvVso0t+51/b+tHCb2xxNCZTxfztKLRG4iUvZ6X3c3Yq49aFVUp7/uuCt5GyUQpNa3UR7P5ngMQtv2ABz+/Dd4McEadT5M1LwdYQz/U=
-Received: from DM6PR08CA0002.namprd08.prod.outlook.com (2603:10b6:5:80::15) by
- SA3PR12MB9106.namprd12.prod.outlook.com (2603:10b6:806:37e::14) with
+ bh=utgS17TVNrDA66Vtl7qtHr1W2MOFtSE7M1309hNq/Cg=;
+ b=iGylTndfVS2OEsAOX6FCYoU1joCLH9GU6WAoeib8Sajrjlxn5AutauHs29yMnS+XPwTfwYx9hrXJjHkTgeD8sdb9xLkjgh9bkS2kiL9vkfZbC4+tXHf1XYbL3pNkrpG+Uk40l8neiQIfflmoQjI7V7G+aV9rX4TnNvM0DY8Z9wk=
+Received: from PH7PR13CA0002.namprd13.prod.outlook.com (2603:10b6:510:174::6)
+ by BY5PR12MB4194.namprd12.prod.outlook.com (2603:10b6:a03:210::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.15; Mon, 30 Mar
- 2026 08:44:24 +0000
-Received: from CY4PEPF0000E9D1.namprd03.prod.outlook.com
- (2603:10b6:5:80:cafe::86) by DM6PR08CA0002.outlook.office365.com
- (2603:10b6:5:80::15) with Microsoft SMTP Server (version=TLS1_3,
+ 2026 08:44:28 +0000
+Received: from CY4PEPF0000E9D0.namprd03.prod.outlook.com
+ (2603:10b6:510:174:cafe::6c) by PH7PR13CA0002.outlook.office365.com
+ (2603:10b6:510:174::6) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.20.9745.28 via Frontend Transport; Mon,
- 30 Mar 2026 08:44:25 +0000
+ 30 Mar 2026 08:44:28 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -48,13 +48,13 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
 Received: from satlexmb07.amd.com (165.204.84.17) by
- CY4PEPF0000E9D1.mail.protection.outlook.com (10.167.241.136) with Microsoft
+ CY4PEPF0000E9D0.mail.protection.outlook.com (10.167.241.135) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9745.21 via Frontend Transport; Mon, 30 Mar 2026 08:44:24 +0000
+ 15.20.9745.21 via Frontend Transport; Mon, 30 Mar 2026 08:44:27 +0000
 Received: from purico-ed03host.amd.com (10.180.168.240) by satlexmb07.amd.com
  (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Mon, 30 Mar
- 2026 03:44:11 -0500
+ 2026 03:44:16 -0500
 From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
 	<joro@8bytes.org>, <jgg@nvidia.com>
@@ -63,9 +63,9 @@ CC: <yi.l.liu@intel.com>, <kevin.tian@intel.com>, <nicolinc@nvidia.com>,
 	<sairaj.arunkodilkar@amd.com>, <jay.chen@amd.com>, <wvw@google.com>,
 	<wnliu@google.com>, <dantuluris@google.com>, <chriscli@google.com>,
 	<kpsingh@google.com>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [PATCH 20/22] iommufd: Introduce vIOMMU option via IOMMU_OPTION ioctl
-Date: Mon, 30 Mar 2026 08:42:04 +0000
-Message-ID: <20260330084206.9251-21-suravee.suthikulpanit@amd.com>
+Subject: [PATCH 21/22] iommu/amd: Handle set/get option for AMD vIOMMU hw_queue
+Date: Mon, 30 Mar 2026 08:42:05 +0000
+Message-ID: <20260330084206.9251-22-suravee.suthikulpanit@amd.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260330084206.9251-1-suravee.suthikulpanit@amd.com>
 References: <20260330084206.9251-1-suravee.suthikulpanit@amd.com>
@@ -81,184 +81,278 @@ X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
  (10.181.42.216)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9D1:EE_|SA3PR12MB9106:EE_
-X-MS-Office365-Filtering-Correlation-Id: fa76ff07-7a1b-48a6-9269-08de8e388b92
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9D0:EE_|BY5PR12MB4194:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9723698d-cbeb-4967-fb1d-08de8e388dba
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|36860700016|82310400026|7416014|376014|22082099003|18002099003|56012099003;
+	BCL:0;ARA:13230040|36860700016|82310400026|7416014|376014|1800799024|22082099003|56012099003|18002099003;
 X-Microsoft-Antispam-Message-Info:
-	3IY7uiT3poYkA5zU9yKblPt1kfDg/AODa5oojcqO12lU9BPk9F6iiXHMffDVovW+FWl687i5qJrlagRUqDiqBGnsNJ16G1HAhzdZsAR+H7fMBsQMokehbfkQCKqLY3LgXRMlB3Jv6ZbeFmmfFmjHJkOW6l1n1flpkmXQZx8gQi8ninc62zO+Yj28X3+DtOo6WW3nYY85hExIPkBYpHIZmIttyXYvLVJ9zhQleVesmwr99BBQohJAH2duUaMzW34NPWKtMLZ4PTz0Lw8RVJyAD4jI/xH+xnye7KMdlrNhe6dW7+AQ6MFyX3LSpFZhyMXGI1iFI4U+tdR5VukCpfSO4CdQP6lN5Ct+SuGJ4FLT7Wxn4p9/wMU/ExnJcUcYcrAYuBwCGjB35fonmDgzBZi8ngye8zOQpczCS6JxJuBtpHt2ElC8LHLHHwAjX6f6YyIRW7pwgGmEor658FU7e0QBuRR5xl/ndDqMZlTqCSHlwVyBzlgU8egnUFacBUQhIsovbIhlTG7VbW4GVowmgVKBUOwsh6JWy+xec3OJs/bh1MtmLFK3DKuqmn2vP4kvRVo2MGqnFd2Un6lNstbrL4NTcTv1FMygwUCeBVKzxxsfp2F2U9RhG+GsBDdGMoZX0W8vWIF15kmsMD0ITjBX/AmLBae54tJ+ZmGgpExAAQ2Ff19Bv5Pg1TcSaWbHPzA2Nas3LqFCNr+cQLQRU4QMNsEvXdoU/4rQwNDTLLfG9OA0iGqoYoBPmTdHuuLNUxi1XYlPNQ3JaOd4m/X/0rCpe4s8Nw==
+	z+BldpbD44/xIvf3sj2ZQGcBZZpcPeDIO+PhuhNpLxngo5hGSYGXsOEMNwglxTDqsybWiaZ86Dn9pw/gfgtGKYUAtfeyJRPhp4obuJwY4HiTge5aquMCZI3KFSognj0/2p0jxD5m6069kCzZUnfA6AbrkOkUO7qvbi1ODNhBu4IUAmNMswf4Yyw1xcM5Zd9+/u7ApeB3kthy+udKYl4oiO5rLZup4i8BEL2d1LTpP3WmWQ1wzL6n+qaEBOQ3RyXLw0JvxWVsxekxXqjxh+nhQcR2B+Y86/EODYnkMtBZop8M8AilvzReUslldTws7+Ncvg9VEBAljPlg2yLrU2RKC0VihGSIxOBKHpp8uGd2UJP5rpvg9utdBnfYidwXBl/m1mRvk0/U7WZof+QjeMjKaS9HmwP+1/XZWCzcs1lgQ8nxPNhxvwILdk/cDnLTxB5WrzVx1QY4fS7kj+8CCbcU9GLiN+/ZPxmdkImKy9QzcXxyOiR1UIe5RiPeqhZ3qz9lmYN0T4wgYFPnJOHfyFgJZLrR4+7HG1sGIUxSqHwZ9hqrIg4QGtg79VbZCpvy2MZc4sclNPlhCQGnpJDoxcSBLJb652lA0NXwKAulat5EJvqmRLsgniY+U05jMWnMg9XnDJr21XbvrvMmpQ3BMEqg8uw3Haqcbxns4Dlumwy4eO1lZh5WXvZBbjk+AFZSyyM4E75VF/dC4pUuq6DtzZMlGykisP7YSeP0UzRT2+NaKED0VXV23QOxWXFOAHdmxJbtnSkL6OldXDPtYd0f1PZJjg==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(36860700016)(82310400026)(7416014)(376014)(22082099003)(18002099003)(56012099003);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(82310400026)(7416014)(376014)(1800799024)(22082099003)(56012099003)(18002099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	0bF9wmQhA/P5zyYvRQuWzGyfkq9TUqS208441QuWxR2CP2xUqmTja/CJ6M8vZPOdbcE7Rc3/LNbKMw9+O9XNz7x1ivXdKZRpKcptHLbUkF82QCn0Fdzpdm/R0wiYiSAEbLgPhduxQNdqTCD+7wrBs99LjOcz9od/XRsqYuIQ9oeSyJjvB+X4J/H0zF/qFttSoFm2ej/CMhaZMo0vCc+FTpVIUpMdV+j8C4H3wp2BnPYGViampAFjEGbucpjzYMIuI95Sf7olzS+hFGJKhVHO1Z4v1VCRAD5fy2ibY7s8NHKFGjLIVBXCEOsMQ2jCQHu6Q2OOWQLCLpbRP2VZeUi0eZhAU32ZXw6eLr39gg/d1FiKg5P42i48KjSF4ZzLXcXGRAPwgRlzIersq0HG6gjN3eAtYSDqK+X2L1ZaEJe/XCk7vk3RHuZ8QxlACGdSGRsb
+	bv6UDNCUurlBmhvIE/rx5vVKkqq+J5jMN+M2nnve9qUzBznMvsBSkadHQ/nDhlKZbqCIXiCY3lfptwuaFDLC28d/klpythjH9z0xZ7G+rYOK61Qxnd60LFKlEoH0iKLKf4GGdfIbxRwhMzdoq7d8H7XkYuiDksDBiSeRR3usNA+R1LXnffZQo1nkHwVU/zMFHyUqZMrxP6ybNQ5KXh406owLXUoLm+HxM+ipxTNK1aN7dSoQOCy0IJ0MQTZSGs0X8bO3kgY3zIww8N5QGdHZHi63IIsrtiv/v+KysvjQy2DflYNTdqeerqZ4xB5BYCKGqKDAJi1dexEWnu36c3dzxbA4IGzbSO/fyc6f3ZsbMxY2x2s3NW02vV9ujE79VRn8/qH6mIL8EVApKU8/6mk/Sdb2GB9+senUepEasDUTYnT8JrwGYs4Zg4yF/G9INoHu
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2026 08:44:24.3295
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2026 08:44:27.9441
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fa76ff07-7a1b-48a6-9269-08de8e388b92
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9723698d-cbeb-4967-fb1d-08de8e388dba
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000E9D1.namprd03.prod.outlook.com
+	CY4PEPF0000E9D0.namprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB9106
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4194
 
-Introduce a new iommufd_option enum value, IOMMU_OPTION_VIOMMU, to
-support vIOMMU-specific options. Extend the existing IOMMU_OPTION
-ioctl to accept key-value style input, enabling access to data arrays
-such as hardware registers.
+Guest kernel programs guest Command Buffer, Event Log, and PPR Log
+(a.k.a hardware queue) settings via guest control MMIO register
+(guest MMIO offset 0x18). Accesses to the register is trapped by VMM (QEMU)
+and information is passed as IOMMU_VIOMMU_OPTION to host IOMMU driver via
+struct iommufd_viommu_ops set_option() and get_option().
 
-Additionally, introduce struct iommufd_viommu_ops with set_option
-and get_option callbacks to support IOMMUFD vIOMMU options.
+Provides AMD IOMMU driver hooks to handle set/get operations for the
+guest control MMIO register, which uses key parameter as AMD IOMMU MMIO
+offset. The value parameter contains the value of the corresponding guest
+MMIO register, which is converted to the format of AMD vIOMMU VF Control
+MMIO registers then programed onto the hardware.
 
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 ---
- drivers/iommu/iommufd/ioas.c            |  2 +-
- drivers/iommu/iommufd/iommufd_private.h |  1 +
- drivers/iommu/iommufd/main.c            |  6 +++---
- drivers/iommu/iommufd/viommu.c          | 18 ++++++++++++++++++
- include/linux/iommufd.h                 |  5 +++++
- include/uapi/linux/iommufd.h            |  8 ++++++--
- 6 files changed, 34 insertions(+), 6 deletions(-)
+ drivers/iommu/amd/Makefile          |   2 +-
+ drivers/iommu/amd/amd_iommu_types.h |   5 +
+ drivers/iommu/amd/amd_viommu.h      |  15 +++
+ drivers/iommu/amd/iommufd.c         |   2 +
+ drivers/iommu/amd/vfctrl_mmio.c     | 145 ++++++++++++++++++++++++++++
+ 5 files changed, 168 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/iommu/amd/vfctrl_mmio.c
 
-diff --git a/drivers/iommu/iommufd/ioas.c b/drivers/iommu/iommufd/ioas.c
-index f4721afedadc..95547630fd3a 100644
---- a/drivers/iommu/iommufd/ioas.c
-+++ b/drivers/iommu/iommufd/ioas.c
-@@ -643,7 +643,7 @@ int iommufd_ioas_option(struct iommufd_ucmd *ucmd)
- 	struct iommufd_ioas *ioas;
- 	int rc = 0;
+diff --git a/drivers/iommu/amd/Makefile b/drivers/iommu/amd/Makefile
+index e1e824b9c7b0..a5049fd7f789 100644
+--- a/drivers/iommu/amd/Makefile
++++ b/drivers/iommu/amd/Makefile
+@@ -1,4 +1,4 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ obj-y += iommu.o init.o quirks.o ppr.o pasid.o
+-obj-$(CONFIG_AMD_IOMMU_IOMMUFD) += iommufd.o nested.o viommu.o
++obj-$(CONFIG_AMD_IOMMU_IOMMUFD) += iommufd.o nested.o viommu.o vfctrl_mmio.o
+ obj-$(CONFIG_AMD_IOMMU_DEBUGFS) += debugfs.o
+diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+index 1cd50a4008fb..ff72023fa512 100644
+--- a/drivers/iommu/amd/amd_iommu_types.h
++++ b/drivers/iommu/amd/amd_iommu_types.h
+@@ -194,10 +194,15 @@
+ #define CONTROL_GAM_EN		25
+ #define CONTROL_GALOG_EN	28
+ #define CONTROL_GAINT_EN	29
++#define CONTROL_DUALPPRLOG_EN   30
++#define CONTROL_DUALEVTLOG_EN   32
++#define CONTROL_PPR_AUTO_RSP_EN 39
++#define CONTROL_BLKSTOPMRK_EN   41
+ #define CONTROL_NUM_INT_REMAP_MODE	43
+ #define CONTROL_NUM_INT_REMAP_MODE_MASK	0x03
+ #define CONTROL_NUM_INT_REMAP_MODE_2K	0x01
+ #define CONTROL_EPH_EN		45
++#define CONTROL_PPR_AUTO_RSP_AON 48
+ #define CONTROL_XT_EN		50
+ #define CONTROL_INTCAPXT_EN	51
+ #define CONTROL_GCR3TRPMODE	58
+diff --git a/drivers/iommu/amd/amd_viommu.h b/drivers/iommu/amd/amd_viommu.h
+index 93e44f8b6012..bd4e7481ee0c 100644
+--- a/drivers/iommu/amd/amd_viommu.h
++++ b/drivers/iommu/amd/amd_viommu.h
+@@ -21,6 +21,11 @@ int amd_viommu_domain_id_update(struct amd_iommu *iommu, u16 gid,
  
--	if (cmd->__reserved)
-+	if (cmd->key)
- 		return -EOPNOTSUPP;
+ void amd_viommu_set_device_mapping(struct amd_iommu *iommu, u16 hDevId,
+ 				   u16 guestId, u16 gDevId);
++
++int amd_viommu_guest_mmio_write(struct iommufd_viommu *viommu, u16 offset, u64 value);
++
++int amd_viommu_guest_mmio_read(struct iommufd_viommu *viommu, u16 offset, u64 *value);
++
+ #else
  
- 	ioas = iommufd_get_ioas(ucmd->ictx, cmd->object_id);
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index eb6d1a70f673..0306f2b8236f 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -698,6 +698,7 @@ void iommufd_vdevice_destroy(struct iommufd_object *obj);
- void iommufd_vdevice_abort(struct iommufd_object *obj);
- int iommufd_hw_queue_alloc_ioctl(struct iommufd_ucmd *ucmd);
- void iommufd_hw_queue_destroy(struct iommufd_object *obj);
-+int iommufd_viommu_option(struct iommufd_ucmd *ucmd);
- 
- static inline struct iommufd_vdevice *
- iommufd_get_vdevice(struct iommufd_ctx *ictx, u32 id)
-diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-index 5cc4b08c25f5..ae36a6e8042d 100644
---- a/drivers/iommu/iommufd/main.c
-+++ b/drivers/iommu/iommufd/main.c
-@@ -391,9 +391,6 @@ static int iommufd_option(struct iommufd_ucmd *ucmd)
- 	struct iommu_option *cmd = ucmd->cmd;
- 	int rc;
- 
--	if (cmd->__reserved)
--		return -EOPNOTSUPP;
--
- 	switch (cmd->option_id) {
- 	case IOMMU_OPTION_RLIMIT_MODE:
- 		rc = iommufd_option_rlimit_mode(cmd, ucmd->ictx);
-@@ -401,6 +398,9 @@ static int iommufd_option(struct iommufd_ucmd *ucmd)
- 	case IOMMU_OPTION_HUGE_PAGES:
- 		rc = iommufd_ioas_option(ucmd);
- 		break;
-+	case IOMMU_OPTION_VIOMMU:
-+		rc = iommufd_viommu_option(ucmd);
-+		break;
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-diff --git a/drivers/iommu/iommufd/viommu.c b/drivers/iommu/iommufd/viommu.c
-index 59b31b3e36be..51585337b8e4 100644
---- a/drivers/iommu/iommufd/viommu.c
-+++ b/drivers/iommu/iommufd/viommu.c
-@@ -477,3 +477,21 @@ int iommufd_hw_queue_alloc_ioctl(struct iommufd_ucmd *ucmd)
- 	iommufd_put_object(ucmd->ictx, &viommu->obj);
- 	return rc;
+ static inline int amd_viommu_init(struct amd_iommu *iommu)
+@@ -47,6 +52,16 @@ static inline void amd_viommu_set_device_mapping(struct amd_iommu *iommu, u16 hD
+ {
  }
-+
-+int iommufd_viommu_option(struct iommufd_ucmd *ucmd)
+ 
++static inline int amd_viommu_guest_mmio_write(struct iommufd_viommu *viommu, u16 offset, u64 value)
 +{
-+	int ret = -EOPNOTSUPP;
-+	struct iommu_option *cmd = ucmd->cmd;
-+	struct iommufd_viommu *viommu = iommufd_get_viommu(ucmd, cmd->object_id);
-+
-+	if (cmd->op == IOMMU_OPTION_OP_SET) {
-+		if (!viommu->ops->set_option)
-+			return ret;
-+		ret = viommu->ops->set_option(viommu, cmd->key, cmd->val64);
-+	} else if (cmd->op == IOMMU_OPTION_OP_GET) {
-+		if (!viommu->ops->get_option)
-+			return ret;
-+		ret = viommu->ops->get_option(viommu, cmd->key, &cmd->val64);
-+	}
-+	return ret;
++	return -EOPNOTSUPP;
 +}
-diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-index c0030677e13c..8096b7e59088 100644
---- a/include/linux/iommufd.h
-+++ b/include/linux/iommufd.h
-@@ -183,6 +183,9 @@ struct iommufd_hw_queue {
-  * @hw_queue_init: Similar to hw_queue_init_phys, but driver providing this op
-  *                 indicates that HW accesses the guest queue memory via
-  *                 @hw_queue->baseaddr.
-+ * @set_option: Set the key-value option for the specified vIOMMU.
-+ * @get_option: Get the key-value option for the specified vIOMMU.
-+ *              On success, the value is returned via the provided value.
-  */
- struct iommufd_viommu_ops {
- 	void (*destroy)(struct iommufd_viommu *viommu);
-@@ -198,6 +201,8 @@ struct iommufd_viommu_ops {
- 	int (*hw_queue_init_phys)(struct iommufd_hw_queue *hw_queue, u32 index,
- 				  phys_addr_t base_addr_pa);
- 	int (*hw_queue_init)(struct iommufd_hw_queue *hw_queue, u32 index);
-+	int (*set_option)(struct iommufd_viommu *viommu, u16 key, u64 value);
-+	int (*get_option)(struct iommufd_viommu *viommu, u16 key, u64 *value);
- };
++
++static inline int amd_viommu_guest_mmio_read(struct iommufd_viommu *viommu, u16 offset, u64 *value)
++{
++	return -EOPNOTSUPP;
++}
++
+ #endif /* CONFIG_AMD_IOMMU_IOMMUFD */
  
- #if IS_ENABLED(CONFIG_IOMMUFD)
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index f71a4b979d52..922bb7511045 100644
---- a/include/uapi/linux/iommufd.h
-+++ b/include/uapi/linux/iommufd.h
-@@ -306,10 +306,14 @@ struct iommu_ioas_unmap {
-  *    iommu mappings. Value 0 disables combining, everything is mapped to
-  *    PAGE_SIZE. This can be useful for benchmarking.  This is a per-IOAS
-  *    option, the object_id must be the IOAS ID.
-+ * @IOMMU_KEY_VAL_OPTION_VIOMMU:
-+ *    Specifies key-value option for vIOMMU object. The caller must specify
-+ *    vIOMMU ID for object_id. The allowed ops are set and get.
-  */
- enum iommufd_option {
- 	IOMMU_OPTION_RLIMIT_MODE = 0,
- 	IOMMU_OPTION_HUGE_PAGES = 1,
-+	IOMMU_OPTION_VIOMMU = 2,
+ #endif /* AMD_VIOMMU_H */
+diff --git a/drivers/iommu/amd/iommufd.c b/drivers/iommu/amd/iommufd.c
+index 6f766254a390..b10cbff02288 100644
+--- a/drivers/iommu/amd/iommufd.c
++++ b/drivers/iommu/amd/iommufd.c
+@@ -242,4 +242,6 @@ static const struct iommufd_viommu_ops amd_viommu_ops = {
+ 	.vdevice_init = _amd_viommu_vdevice_init,
+ 	.get_hw_queue_size = _amd_viommu_get_hw_queue_size,
+ 	.hw_queue_init = _amd_viommu_hw_queue_init,
++	.set_option = amd_viommu_guest_mmio_write,
++	.get_option = amd_viommu_guest_mmio_read,
  };
- 
- /**
-@@ -328,7 +332,7 @@ enum iommufd_option_ops {
-  * @size: sizeof(struct iommu_option)
-  * @option_id: One of enum iommufd_option
-  * @op: One of enum iommufd_option_ops
-- * @__reserved: Must be 0
-+ * @key: Option key to match with the value
-  * @object_id: ID of the object if required
-  * @val64: Option value to set or value returned on get
-  *
-@@ -340,7 +344,7 @@ struct iommu_option {
- 	__u32 size;
- 	__u32 option_id;
- 	__u16 op;
--	__u16 __reserved;
-+	__u16 key;
- 	__u32 object_id;
- 	__aligned_u64 val64;
- };
+diff --git a/drivers/iommu/amd/vfctrl_mmio.c b/drivers/iommu/amd/vfctrl_mmio.c
+new file mode 100644
+index 000000000000..1dcccc24e847
+--- /dev/null
++++ b/drivers/iommu/amd/vfctrl_mmio.c
+@@ -0,0 +1,145 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (C) 2023 Advanced Micro Devices, Inc.
++ * Author: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
++ */
++
++#define pr_fmt(fmt)     "AMD-Vi: " fmt
++#define dev_fmt(fmt)    pr_fmt(fmt)
++
++#include <linux/iommu.h>
++#include <linux/amd-iommu.h>
++
++#include <linux/fs.h>
++#include <linux/cdev.h>
++#include <linux/ioctl.h>
++#include <linux/iommufd.h>
++#include <uapi/linux/iommufd.h>
++#include <linux/mem_encrypt.h>
++
++#include <asm/iommu.h>
++#include <asm/set_memory.h>
++
++#include "amd_iommu.h"
++#include "amd_iommu_types.h"
++#include "amd_viommu.h"
++#include "../iommu-pages.h"
++
++#define GET_CTRL_BITS(reg, bit, msk)	(((reg) >> (bit)) & (ULL(msk)))
++#define SET_CTRL_BITS(reg, bit1, bit2, msk) \
++	((((reg) >> (bit1)) & (ULL(msk))) << (bit2))
++
++int amd_viommu_guest_mmio_read(struct iommufd_viommu *viommu, u16 offset, u64 *value)
++{
++	u8 __iomem *vfctrl, *vf;
++	u64 val, tmp = 0;
++	struct amd_iommu_viommu *aviommu = container_of(viommu, struct amd_iommu_viommu, core);
++	struct amd_iommu *iommu = container_of(viommu->iommu_dev, struct amd_iommu, iommu);
++	int gid = aviommu->gid;
++
++	vf = VIOMMU_VF_MMIO_BASE(iommu, gid);
++	vfctrl = VIOMMU_VFCTRL_MMIO_BASE(iommu, gid);
++
++	switch (offset) {
++	case MMIO_CONTROL_OFFSET:
++	{
++		/* VFCTRL offset 20h */
++		val = readq(vfctrl + 0x20);
++		tmp |= SET_CTRL_BITS(val, 8, CONTROL_CMDBUF_EN, 1); // [12]
++		tmp |= SET_CTRL_BITS(val, 9, CONTROL_COMWAIT_EN, 1); // [4]
++
++		/* VFCTRL offset 28h */
++		val = readq(vfctrl + 0x28);
++		tmp |= SET_CTRL_BITS(val, 8, CONTROL_EVT_LOG_EN, 1); // [2]
++		tmp |= SET_CTRL_BITS(val, 9, CONTROL_EVT_INT_EN, 1); // [3]
++		tmp |= SET_CTRL_BITS(val, 10, CONTROL_DUALEVTLOG_EN, 3); // [33:32]
++
++		/* VFCTRL offset 30h */
++		val = readq(vfctrl + 0x30);
++		tmp |= SET_CTRL_BITS(val, 8, CONTROL_PPRLOG_EN, 1); // [13]
++		tmp |= SET_CTRL_BITS(val, 9, CONTROL_PPRINT_EN, 1); // [14]
++		tmp |= SET_CTRL_BITS(val, 10, CONTROL_PPR_EN, 1); // [15]
++		tmp |= SET_CTRL_BITS(val, 11, CONTROL_DUALPPRLOG_EN, 3); // [31:30]
++		tmp |= SET_CTRL_BITS(val, 13, CONTROL_PPR_AUTO_RSP_EN, 1); // [39]
++		tmp |= SET_CTRL_BITS(val, 14, CONTROL_BLKSTOPMRK_EN, 1); // [41]
++		tmp |= SET_CTRL_BITS(val, 15, CONTROL_PPR_AUTO_RSP_AON, 1); // [42]
++
++		*value = tmp;
++		break;
++	}
++	default:
++		WARN_ON(1);
++		break;
++	}
++
++	pr_debug("%s: iommu_devid=%#x, gid=%u, offset=%#x, value=%#llx\n",
++		 __func__, iommu->devid, gid, offset, *value);
++	return 0;
++}
++EXPORT_SYMBOL(amd_viommu_guest_mmio_read);
++
++int amd_viommu_guest_mmio_write(struct iommufd_viommu *viommu, u16 offset, u64 value)
++{
++	u8 __iomem *vfctrl, *vf;
++	u64 val, tmp, ctrl = value;
++	struct amd_iommu_viommu *aviommu = container_of(viommu, struct amd_iommu_viommu, core);
++	struct amd_iommu *iommu = container_of(viommu->iommu_dev, struct amd_iommu, iommu);
++	int gid = aviommu->gid;
++
++	pr_debug("%s: iommu_devid=%#x, gid=%u, offset=%#x, value=%#llx\n",
++		 __func__, iommu->devid, gid, offset, value);
++
++	vf = VIOMMU_VF_MMIO_BASE(iommu, gid);
++	vfctrl = VIOMMU_VFCTRL_MMIO_BASE(iommu, gid);
++
++	switch (offset) {
++	case MMIO_CONTROL_OFFSET:
++	{
++		/* VFCTRL offset 20h */
++		val = readq(vfctrl + 0x20);
++		val &= ~(0x3ULL << 8);
++		tmp = GET_CTRL_BITS(ctrl, CONTROL_CMDBUF_EN, 1); // [12]
++		val |= (tmp << 8);
++		tmp = GET_CTRL_BITS(ctrl, CONTROL_COMWAIT_EN, 1); // [4]
++		val |= (tmp << 9);
++		writeq(val, vfctrl + 0x20);
++
++		/* VFCTRL offset 28h */
++		val = readq(vfctrl + 0x28);
++		val &= ~(0xFULL << 8);
++		tmp = GET_CTRL_BITS(ctrl, CONTROL_EVT_LOG_EN, 1); // [2]
++		val |= (tmp << 8);
++		tmp = GET_CTRL_BITS(ctrl, CONTROL_EVT_INT_EN, 1); // [3]
++		val |= (tmp << 9);
++		tmp = GET_CTRL_BITS(ctrl, CONTROL_DUALEVTLOG_EN, 3); // [33:32]
++		val |= (tmp << 10);
++		writeq(val, vfctrl + 0x28);
++
++		/* VFCTRL offset 30h */
++		val = readq(vfctrl + 0x30);
++		val &= ~(0xFFULL << 8);
++		tmp = GET_CTRL_BITS(ctrl, CONTROL_PPRLOG_EN, 1); // [13]
++		val |= (tmp << 8);
++		tmp = GET_CTRL_BITS(ctrl, CONTROL_PPRINT_EN, 1); // [14]
++		val |= (tmp << 9);
++		tmp = GET_CTRL_BITS(ctrl, CONTROL_PPR_EN, 1); // [15]
++		val |= (tmp << 10);
++		tmp = GET_CTRL_BITS(ctrl, CONTROL_DUALPPRLOG_EN, 3); // [31:30]
++		val |= (tmp << 11);
++		tmp = GET_CTRL_BITS(ctrl, CONTROL_PPR_AUTO_RSP_EN, 1); // [39]
++		val |= (tmp << 13);
++		tmp = GET_CTRL_BITS(ctrl, CONTROL_BLKSTOPMRK_EN, 1); // [41]
++		val |= (tmp << 14);
++		tmp = GET_CTRL_BITS(ctrl, CONTROL_PPR_AUTO_RSP_AON, 1); // [42]
++		val |= (tmp << 15);
++		writeq(val, vfctrl + 0x30);
++		break;
++	}
++	default:
++		WARN_ON(1);
++		break;
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL(amd_viommu_guest_mmio_write);
 -- 
 2.34.1
 
