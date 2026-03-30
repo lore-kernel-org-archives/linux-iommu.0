@@ -1,160 +1,180 @@
-Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012009.outbound.protection.outlook.com [52.101.43.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f74.google.com (mail-wr1-f74.google.com [209.85.221.74])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE9B217C220
-	for <iommu@lists.linux.dev>; Mon, 30 Mar 2026 13:00:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.9
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774875638; cv=fail; b=lpNkhjqFwf2cPxpbuzooCCNqAopjYRoBV2oev9qQnSil9Xjly43luzQi+Wg9NeRnFxJTxHhgVQ/jgZbBa3kv4cS77JblXRywAnC58YJZVV61t9sr4/jBHr6xWB9KSWMzA4radreRSnpBnbe4bedsDW36lZWn5Y93xvEWLdf2/38=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774875638; c=relaxed/simple;
-	bh=wP8qisA1L6PUocnkd3dHv6TnypCRuWcwpISQbkuc6aY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=fax6sidusJSc9U4TJMtqLUwkC7Vkf8igq+oQTWAyJW1vFtzC5b44EZ2bBeTSYwGY3JtriGvenylJvrG/1faTeaDx91UaC2+R5SeHy2QYW04y5PHUf4eJzaw4NLyQWMc3pxIGL+sec7d0ZpoAbL1RVKtakcDYe7g7pGOZ8xG4nfI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=FzSN6uMY; arc=fail smtp.client-ip=52.101.43.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C959325726
+	for <iommu@lists.linux.dev>; Mon, 30 Mar 2026 14:51:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.74
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774882281; cv=none; b=FFhDbnLnCJMTWEDCOSCd65aHAD3WoPtESgriySTu6qLWOcsxfP8oraAlww+EdtUWiqQRCVGw/0BDhMIbK1tdSxq1kVHy8zpEPika2iM5BoOQ7dO+r6jKWjNsC5903jITRkVdj0NT4ZZT0WSMUDihwmFuVZAGet2kWW4mQz/5OhA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774882281; c=relaxed/simple;
+	bh=Ypn7VsJHNmNpvsEiDQXA8hTHZWc8FmimY/PDF1kujJ0=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=CRgA3RCpd0byiMuFvyKqNCYDmrpr8g7FsuEOHWZIa3e9YWy1sQCQATtp0HtU9JGkH6rzeowKpfSg+fufXZMV/WhG0BvOuYMsZgoV2hgAXBC3Up0BWkhSngLgFfDBrzcMPlAA7NensH8GMh7G4odUlPT5GLCfQ22/zm+/Xwo1rVA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=q3mjT2oR; arc=none smtp.client-ip=209.85.221.74
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="FzSN6uMY"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=uYDHhQjzeB3CZIT0HQCQzGRM8F4iPUySIMkJafgDORO8n3ZndA1XHLBYAWOL7pC00McVi1+cP4OV66Xte+S+H5QQY+fLW/4f4NsSNXBIQ+mgiT9Khk+gb04wyWfZgiGQgeKR2ZF0zyjeDxPb2fI35VLgsxc5VeLN0TiI1nO9cjoaII7AT1sozVo+JtemOSAtoWywLl5iAl/YqjCkC2zcvrdu4G7k1Ik8sWCgExc7yWwZJlhOqnSjqkKbqbC9jJ8NOYoD7vqIcTEi/G635ZeU3mGImLWSNbOCJEv+daBMcBV0XTPsZfQIKAdFKEVUnMMs4MwCneQCSky4DVwKB7oquw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YMCo7oFnW3/M+ttbK16dSYK/FUE4cXF3DZZ2E5aLos8=;
- b=eS39oRP8v/9JT+pJP7ln3nZl94VKl+h1Bw/xPUsP8gkqMPh4Esrc/sNhg37J5AWWK94nyhYdXkZxaBcqHlgF8crZSBPuHJjPlWlcCxjmTBxJQTxNiCRLRhjiDkC2V3l5VWjSvc1NG5QM4OcK2KaZQrvRrPu9seQ8B75cawItsMaUr3kPT1kOIRPwsnBhfc5qpjHQOM/ambb6bGfi7me2hn63Ze/UgA0rXZhMbQn4ZI6By3muNoEfOTn75+3YMSn9hCAb8gWylR/urv6EZWvj6vMMxU6lvK6OOwckQDJMJ8W0uNsVFzlMd9KheSwT/vBQ5uBpB430iLcbbMwgHGODfQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YMCo7oFnW3/M+ttbK16dSYK/FUE4cXF3DZZ2E5aLos8=;
- b=FzSN6uMYxncJvjNABjamMi96Fl5ILqraejaBHV+w4sfKwhuxH/u7Qv6fReOqcXidBdppaLKJkT8XsZPuBSMpruwr6OX4CpNMK5rTCwbN72sBCDQNkNsicViOr7V9qYoqA4yIo77H1AmuLsCjxouO0KoxAA4CrF1MeTh2oPO4rtgDLYe+XrNkYCZ3+ZmEkO0TswYSjQWSkZ0FYppeEOis3UdqXChR4pYAsvD7GWhgFjwgclrTqIF74VuHHNmLECoHKdBHfA0Ek4dM7iJoD+ADlCe+PQd6nfeadEOu8V8tWzrjMB7vCqKgw7OEiomAAvMX0fnQiETiq5osObl+g+Wqnw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by CH3PR12MB9343.namprd12.prod.outlook.com (2603:10b6:610:1c0::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.15; Mon, 30 Mar
- 2026 13:00:29 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9769.014; Mon, 30 Mar 2026
- 13:00:26 +0000
-Date: Mon, 30 Mar 2026 10:00:24 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Samiullah Khawaja <skhawaja@google.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Dmytro Maluka <dmaluka@chromium.org>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/8] iommu: Lift and generalize the STE/CD update code
- from SMMUv3
-Message-ID: <20260330130024.GM310919@nvidia.com>
-References: <20260309060648.276762-1-baolu.lu@linux.intel.com>
- <20260309060648.276762-2-baolu.lu@linux.intel.com>
- <aa9W4ZKYWHr9-UNy@google.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aa9W4ZKYWHr9-UNy@google.com>
-X-ClientProxiedBy: BN9P223CA0006.NAMP223.PROD.OUTLOOK.COM
- (2603:10b6:408:10b::11) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="q3mjT2oR"
+Received: by mail-wr1-f74.google.com with SMTP id ffacd0b85a97d-43b9a86b9b0so4655690f8f.0
+        for <iommu@lists.linux.dev>; Mon, 30 Mar 2026 07:51:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1774882278; x=1775487078; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:from:subject:message-id
+         :mime-version:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=AzIiOc6BA0REXre6fSe/SWgZG5Uq5hkiPQ2+ZLc7PMw=;
+        b=q3mjT2oRRsQ7SlyGFxWThmGxSO/ijvaXLV1HHRxg+1lsGXD1f9nMAj4yTrSylnvoIW
+         /VCoNKqfqtFmvHyv3ASlNB00UrMxzbA0MGsa8NMthdKkdepz5RHHLy/K1pbxPc7gBl4B
+         kncUojwnKtKGr558U2pd9nN3M2Bclti+uGhpm8VO+Dh2pjmneoahVQb9Gh1csmS0Z5kU
+         28cEKZGspKJreil2yPR0l7HlWbGPlv4EB817HE7aUpdYOUu3dxkh2oQIRD3Y6IwC/c6k
+         McJpm4vT5WJicfZIgXp3qwpcZZUsP5GEQpSfuzkFNJJBSfpRohSXw9vlLaMG07zbMn7P
+         5+XA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774882278; x=1775487078;
+        h=content-transfer-encoding:cc:to:from:subject:message-id
+         :mime-version:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=AzIiOc6BA0REXre6fSe/SWgZG5Uq5hkiPQ2+ZLc7PMw=;
+        b=BMJ+0JY4bum3M6XYcJMfQWp679MBI3COw0RKhw1LtEmzAUWItCda/A8LakhkVhiMoK
+         VCb1K5r0TFzZEhBuc8M5XBXhwPrGBPz3dF8FwyO+uTKDUHPiNCpcq4CfPeBGzEwUVKXf
+         LOpuOgPBSk7xz+k2RnpPPyuiyW6pEukwxbRZ6ibHWgACstv27GKE04mkHNOHL5C+0w7W
+         5SmOX1573+TllyL3ty+iZ7/j45OkpwpsBWQd7+uODurOUDLTfV5RqbxY+WkYFYMDDods
+         JvyQvbdcH097LjMv4PfaTNAGX1DTzeykKtz6PxshrzR74xAR3z65IsXOs9KsEnm4CHy9
+         OKhw==
+X-Gm-Message-State: AOJu0YzzzubY1ID0q4Imp4HgvJQ4Vn47NJFtflzxXpiW+1c/yVpmHkfy
+	oxczgVCmeypMOfZO47kZjnp2XR8DOAnj5HaMHDSghYn2ptwNpsnxDP45oGkJQjYNCrnwCeN1BaZ
+	7ZZzqkLJYMgkIy4Wmy9XlB9gdbdlG4o4NvpaK6ZlNXKd8g1LsC+OX/curKsxLZY1ijyV+zrHuOo
+	XnmPlcRgTgJRbTzpl4qPh3K79kdXlTXU8MteAAfTO+zTi6DA==
+X-Received: from wmmu1.prod.google.com ([2002:a05:600c:c1:b0:483:7a98:f072])
+ (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:600c:a00b:b0:485:34b3:8587 with SMTP id 5b1f17b1804b1-48727d8ffc5mr222050275e9.10.1774882278308;
+ Mon, 30 Mar 2026 07:51:18 -0700 (PDT)
+Date: Mon, 30 Mar 2026 14:50:38 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|CH3PR12MB9343:EE_
-X-MS-Office365-Filtering-Correlation-Id: 910a6041-9a1d-410b-85be-08de8e5c4fa4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|366016|376014|18002099003|56012099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	DXYB3mQOviTjti0PGT4JiSFbdDB6Rr+uFjqbK2dfSgozwcN9k6ik69GqJFnPmuHSEpLxUNBCp060Ap5LPsUYtOcRhmJbJvK2JKzqkGSt+2+SwWxoUkPJ+faejcADckdGFUnwkaA/IR3SIjDazp00yuucD7IEbV9OVz4J5/5YEGKwEeC8eBv2RbY9oCcUalSYGDuy03fM0Me5CTmNzdp+9RPPBXeiKDxYPjEqIxPE5rHyCHYA5oGluPGOCDbkzGvg9NlxnBYwyMnYCk36m0dkIK5mJpo7qJMIQQbkgtQNgxztaUSzl6lAAXWu1aAmlacRjsncvYnZ+pnIJBk/YzBQSARUoJ6Fm5s7m6GKI+h0ni27FWuKnF7usz4BxS7AFTYKJRV5muq1AD6E1cax006t393+BdEbg+oZPztdLJnQc/XsI+r3BuZH95p/wvoxr5RW0fyYik7NOV90nLdDMWYArgs9MZ4mKohAvVksw63M4MGDkkoImc+jDD0/3K2cZxD5aQg77l/v1a8dSTamzuKKTFSKz3OJupkbolCa1NYfxrZbk48rHjsendU4tth4MjkHOKg7mYfnsDuGsVFOet6Mj7IRYaf41E3/KqaaVuz+OWu7pCkiVWmvUPM2xKntuQTJSNhqFsKZUjIftaSuKDvdl2G24JluWBf6xLuu9vsoN9E7wmMUxhsjuhCPSfxB8h5akRomtWIglk7c3XE8LxWQU8Xr2Oafi1+yM5Q2WAaJCBg=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(18002099003)(56012099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?+3IJ+S6sWwDXSw4CA57l52Bv4NcZ8+m2/SmDPk4maAAjMxCerw0XQJis9vyo?=
- =?us-ascii?Q?B6dt3cXRw514NpPr62Y1KOTPMxRpDOTeRtQTOKNXOdRj0d7TmZhD0d+IFlXT?=
- =?us-ascii?Q?uxQCDMJi5fEeiwtJnMcNv9LnHkUlX1fC/KIs1Dpc0LQK3yI5AqaRXF70nFqn?=
- =?us-ascii?Q?n6/SUstU5r2zbKhCSvgGOPt2pnnRjpCK7x/tqwjNUcjRGWzYxsBe0/kQzine?=
- =?us-ascii?Q?3kioMQv7KRWIsXOYpDXNht2TtSs6Ld2XpflZbghgNDpgn90r9LuakhW0wYRS?=
- =?us-ascii?Q?PV4LmwrZRd6R8CDtG/eg4YfZ23xEyzT2eiXAuJ/vpfq/+Dc5uHZCM2KutJxO?=
- =?us-ascii?Q?NF06Hy29piacqi657c+xkX+3s9/e4bH4XdVNGGQa1RV/gvN15IM9KUZp4LyB?=
- =?us-ascii?Q?pCUO42QKydujU16URFZFNFzucosvY+Hgmr7oW3g/f97fvazPBgoiqJYrdRnm?=
- =?us-ascii?Q?3b0NcZjo+aaehIALPfvzXdvP9s/37HmXDF5hQwxGjqd3Iq/+XAG2q7ELmq1O?=
- =?us-ascii?Q?p2IpRb/PSKogE/DCEcWhVrIErr1th5H6prNf+ccbbwbpPsmJUy0ler/ofP5y?=
- =?us-ascii?Q?RDp2vjPenQC9ey+x/IjZf58o2Rsv7mBcGn4Uv7aW2M2NBNcWQwcha478XYdC?=
- =?us-ascii?Q?up4fEn32QZeaD2Aufo3V5QndpGxy186hVbJPGM9PbmwyE0BYWf43iehI4WdY?=
- =?us-ascii?Q?qoRN2JIJrJHobwYof6fVZ/CUptKBpqkPd3AdB+eyj0Ke0rVQ6EBL7GqObCVI?=
- =?us-ascii?Q?8Yibo4lJr+5EIBS/OIjp+/F84hmdr8A7KpOyIZJ+cRdz4kh1HKSXry0cu2Gw?=
- =?us-ascii?Q?hWj1wcAXdHJfpSd0rIM+BCo0tSo1A2UkEQ1sLhaJZHSk/9j4LjTNVv4mxpgJ?=
- =?us-ascii?Q?Xwh8LWQGIbo0DKQM6L2KuXogQhn6SnZNe3AlHepdvNB1Mt0b8/yEKep/GgD4?=
- =?us-ascii?Q?j5gJq2wq1tqy+LUGeCxzJj05P+NfPg+HBIBwqfkITK2h80zV9h6ermXVj8t9?=
- =?us-ascii?Q?Lc1YOFk2DJmOs2C5fxuqe3AO1fbvawW8V814Iact5UIUtDlBlHNz/ehAV0PL?=
- =?us-ascii?Q?m7yZce6QCZiNh1wrbMJy3PN/Z7VrdKVfbryymZ2p7V+gz0FYUho7g0AHDGir?=
- =?us-ascii?Q?JMB24apZm5X/xLIeveCj1ey/lFBUmVFHJimwOHlHSJFICoEEzFeFd/90TPYM?=
- =?us-ascii?Q?l8irgLsb5axmezNSBTwBtdI0FHSTK1VfwyQn7Bum8SwvqyTfJe07OJEHBudI?=
- =?us-ascii?Q?2Ub8YWilN9/KFrb0LiWfMDYOtYXL2wefrszVHoEZAZTloFAyExDqcde+TI3C?=
- =?us-ascii?Q?+7L91tGd1wGwGujoLBHFnDbJ+hkObzYNf4XvuMPfehdaPdFOQNTIoD7UC0jv?=
- =?us-ascii?Q?XbLrNj9xymBpUm21eiTBnPJpZaYEK3wFJtuMTex5D+wxdiJlWIJTHjiYZ5NH?=
- =?us-ascii?Q?xjPOMV3Z1EOImpAvi4nxdooEwf+JWtJg06XJHDQBsOtMSgC+uAxdwEPGz4NN?=
- =?us-ascii?Q?Xd8AhqwuPl7GlC6r8ukQw5LZIwH/brIRdQhAYukGUcBX9djssgGemCAx1BfZ?=
- =?us-ascii?Q?vUTYZcBdhIeP+fpMRDDTkWLsa72JWWRpsBQKwgBObQvCo1w4fdc2F+YNAZBL?=
- =?us-ascii?Q?yaJq8bgl8RH3AT2wPzwnccb0m54NQtlES61RtjqYi1/WZVAYnWcFi2uKqv6B?=
- =?us-ascii?Q?EuMWf0n9u7g9Vzkru+EUpZID+wNFyMNAx1Ckv7VB+N92eJrE?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 910a6041-9a1d-410b-85be-08de8e5c4fa4
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2026 13:00:25.9809
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Qt65V0GWN4oNNMZZ6NUZ1xQkUadvvaxS9Uj6hsMvNjvYUSw9ejaZd+wCSa62ReRi
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9343
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.53.0.1185.g05d4b7b318-goog
+Message-ID: <20260330145043.1586623-1-smostafa@google.com>
+Subject: [RFC PATCH v2 0/5] dma-mapping: Fixes for memory encryption
+From: Mostafa Saleh <smostafa@google.com>
+To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Cc: robin.murphy@arm.com, m.szyprowski@samsung.com, will@kernel.org, 
+	maz@kernel.org, suzuki.poulose@arm.com, catalin.marinas@arm.com, 
+	jiri@resnulli.us, jgg@ziepe.ca, aneesh.kumar@kernel.org, 
+	Mostafa Saleh <smostafa@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Mar 09, 2026 at 11:33:23PM +0000, Samiullah Khawaja wrote:
-> > +	for (i = 0; i != writer->num_quantas; i++) {
-> > +		/*
-> > +		 * Check that masks are up to date, the make functions are not
-> 
-> nit: "the make functions" looks like a typo.
+Introduction
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+This is the second version of the fixes for direct-dma dealing with
+memory encryption and restricted-dma.
 
-the smmu drivers called all the functions that build STE and CD
-structs 'arm_smmu_make_xxx' So they are the 'make functions'
+In this version, one more fix is included and I go a step further
+and attempt to clean up the code to consolidate it and make it less
+error prone.
 
-> > +	} else if (used_qword_diff) {
-> > +		/*
-> > +		 * At least two quantas need their inuse bits to be changed.
-> > +		 * This requires a breaking update, zero the V bit, write all
-> > +		 * qwords but 0, then set qword 0
-> > +		 */
-> > +		unused_update[writer->vbit_quanta] = 0;
-> > +		NS(entry_set)(writer, entry, unused_update, writer->vbit_quanta, 1);
-> > +
-> > +		if (writer->vbit_quanta != 0)
-> > +			NS(entry_set)(writer, entry, target, 0,
-> > +				      writer->vbit_quanta - 1);
-> 
-> Looking at the definition of the entry_set below, the last argument is
-> length. So if vbit_quanta 1 then it would write zero len. Shouldn't it
-> be writing quantas before the vbit_quanta?
-> > +		if (writer->vbit_quanta != writer->num_quantas)
-> > +			NS(entry_set)(writer, entry, target,
-> > +				      writer->vbit_quanta,
-> > +				      writer->num_quantas - 1);
-> 
-> Sami here, the last argument should not have "- 1".
+Especially with more users coming, such as using decrypted dma-bufs [1]
+which also interacts with dma-direct.
+Lastly I added a new documentation for memory encryption based on my
+conclusion (Documentation/core-api/dma-direct-memory-encryption.rst)
 
-Yeah, I probably botched this when I quickly drafted it
+Background
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+At the moment the following hypervisor guests will need to deal with
+memory encryption:
+- pKVM (ARM): Documentation/virt/kvm/arm/hypercalls.rst
+- ARM CCA: Documentation/arch/arm64/arm-cca.rst
+- Intel TDX: Documentation/arch/x86/tdx.rst
+- AMD SEV: Documentation/arch/x86/amd-memory-encryption.rst
+- PPC SVM: Documentation/arch/powerpc/ultravisor.rst
+- Hyper-V: Documentation/virt/hyperv/coco.rst
 
-Jason
+AFAICT, all (confidential) guests running under those have the memory
+encrypted by default and guests will then explicitly share the memory
+back if needed.
+
+The main use cases for decrypting(sharing) memory are:
+- Sharing memory back to the host through SWIOTLB (for virtio...)
+- Hypervisor specific communication (ex: snp_msg, GHCB, VMBUS...)
+- Shared/emulated resources: VGARAM (x86-SEV), GIC ITS tables (arm64)
+
+While encrypting memory is typically used for reverting the
+set_memory_decrypted() either in error handling or in freeing shared
+resources back to the kernel.
+
+Design
+=3D=3D=3D=3D=3D=3D
+This series focuses mainly on dma-direct interaction with memory
+encryption which is the complicated case.
+At the moment memory encryption and dma-direct interacts in 2 ways:
+1) force_dma_direct(): if true, memory will be decrypted by default
+   on allocation.
+2) Restricted DMA: where memory is pre-decrypted and managed by
+   SWIOTLB.
+
+With a third possible usage on the way [1] where the DMA-API allows
+an attr for decrypted memory.
+
+Instead of open coding many checks with is_swiotlb_for_alloc() and
+force_dma_unencrypted() which doesn=E2=80=99t have the same exact semantics=
+,
+add some helpers to abstract that logic into the code:
+* dma_external_decryption(dev): Returns true if the pages are decrypted
+  but managed externally.
+* dma_owns_decryption(dev): Returns true if the pages need to be
+  explicitly decrypted and managed by the `dma-direct` layer (as the
+  architecture forces unencrypted DMA).
+* is_dma_decrypted(dev): Returns true if the memory being used is in
+  a decrypted state, regardless of who manages it.
+
+Testing
+=3D=3D=3D=3D=3D=3D=3D
+I was able to test this only under pKVM (arm64) as I have no
+access to other systems.
+
+Future work
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+Two other things I am also looking at which are related to restricted
+DMA pools, so they should be a different series.
+1) Private pools: Currently all restricted DMA pools are decrypted
+   (shared) by default. Having private pools would be useful for
+   device assignment when bouncing is needed (as for non-coherent
+   devices)
+2) Optimizations for memory sharing. In some cases, allocations from
+   restricted dma-pools are page aligned. For CoCo cases, that means
+   that it will be cheaper to share memory in-place instead of
+   bouncing.
+
+Both of these add new semantics which need to be done carefully to
+avoid regressions, and might be a good candidate for a topic in the
+next LPC.
+
+Patches
+=3D=3D=3D=3D=3D=3D=3D
+- 1-3 Fixes
+- 4 Refactoring
+- 5 Documentation
+
+v1: https://lore.kernel.org/all/20260305170335.963568-1-smostafa@google.com=
+/
+
+[1] https://lore.kernel.org/all/20260305123641.164164-1-jiri@resnulli.us/
+
+Mostafa Saleh (5):
+  dma-mapping: Avoid double decrypting with DMA_RESTRICTED_POOL
+  dma-mapping: Use the correct phys_to_dma() for DMA_RESTRICTED_POOL
+  dma-mapping: Decrypt memory on remap
+  dma-mapping: Refactor memory encryption usage
+  dma-mapping: Add doc for memory encryption
+
+ .../core-api/dma-direct-memory-encryption.rst | 77 +++++++++++++++++++
+ kernel/dma/direct.c                           | 51 ++++++++----
+ 2 files changed, 114 insertions(+), 14 deletions(-)
+ create mode 100644 Documentation/core-api/dma-direct-memory-encryption.rst
+
+--=20
+2.53.0.1185.g05d4b7b318-goog
+
