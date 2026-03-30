@@ -1,224 +1,176 @@
-Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010068.outbound.protection.outlook.com [52.101.56.68])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74B953AEF57
-	for <iommu@lists.linux.dev>; Mon, 30 Mar 2026 08:44:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.68
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774860280; cv=fail; b=LCNlyzdsZs3aIGRS5vKNmNRwD+PGuYhGgjhbYuvjDPO3F8VmPNCuHxjVS9lpdGkxkxjFGabSgFVq9dMnml0W+2BfdfnD1CJBT1PESK9YgPsmjTdRo7UdjFEDm9zrfGzpAHSe/C0zEYQdN/+xOQ1Jvxbe4sA/J0ZCLxNFKe9iF8k=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774860280; c=relaxed/simple;
-	bh=kpPR+qQcXcA48se40TwKZPWiJchtAd/UD8HZ2uKB9zY=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=tJqRPKbdHoetiQwY/UNVLDSbayRZmppCE2m1KafLZ0MM1OffEWdBh6HwBy1htrdezQUvArNrBmVWVQAwXip/EwJB0N+mVXWd+azolySEpsaEaI7z9NVitF8V29iwoFUA7jrm+DrQRufNuzXAcdbvaZs9KMeTNTZQwQvFWoxGYgo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=4VmXd2y5; arc=fail smtp.client-ip=52.101.56.68
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAD633B47C8
+	for <iommu@lists.linux.dev>; Mon, 30 Mar 2026 08:59:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774861196; cv=none; b=q54ZwtQ88jdtAMAypnbA25fwV9hoeixh4iN9hhQ8hthgoQKpLcZ08mAZkx8phs3XfNQnYoZkXY4nwyBrRDXtNrs3H+6lAW95IXCOp33zpYBL5ez5zAMWG6uPj0oWZZTTBar51QepkrLDjVhbsAv4l3kBBV0ojwW7hdQNbQXnhrs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774861196; c=relaxed/simple;
+	bh=4fEDventmX0qGo5Za/mQHwjJ7mCuukWm9uGdDRkRIow=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=ePeeQIZw/dbHQjaKeIjqt2PdN8Nc9eZQSeIhIdtUR+/QDujIkZm8mdZcYBHLYV267TniUBr+ty8FG0JHys8IAtQ9ck3sIa3WX3KpIe78xYETnGVTbjUQxmFBmIBZWwTDtkWwQHwk8Gkp9PFvKVTtdaU1qbYxIPpAysVRxnbTLsM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=Mbuozpvj; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="4VmXd2y5"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=k6gOZ+7+2IglVOJGSgPflRPOeRWKVMKEYVTyWqk0/gQSdZD+KjBO/3NBBe3i/kHvkZdoUW3BUDcKLUpjtOarGd3qog/s8yqkixiI1urwg2CxiiRmSzb+i2VwaxrT0xR4QECqOZsBpXe76HrdZ27eObWE7lDZ2HRDFoistgINaCmPeBFcBURK7OejuDfFLKF/QxdqXYzEKqAd89joek8KID8fJ0kliYyqzgpxaFLYbbcDjrSVbjamrFhwNkCSub4SGU5NgdX7BoX15mfkaBlmhz1dgm7df66uSvgsWwiVXNYH5uT28Er0TSZrJblHWDKTHqncvP+5FcjB9y3FYpGo+A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YjZc7iz285wm7FOJP0rtxMcKWGew6rMpM6Vz5ZEHhOk=;
- b=yO0FYeAktb2pZCiE7j16+nGyXVhf39S+20vsF00bHg1ZA+09Y7Dmqef5i2X9HkRRu5YoR/VdF3COlMwCZptodNaK/bl2kdoWN06tMHzS2+f1t93PqWyju2Sc3+IxLJ+vnVZUF1QOwyL1RXYlfocrrI307EqYdftBmob5MSFM/1YkA5DY6+oYm7osu6w0o29Mf1L+PQi6EkXmDs93tHlwoMRmUzPb9rwo1jkLDcd3M5r/a8WVcCE9WlF3o1kRLYIlTLDpsxpvqTl1aMT6YL+WYzpqF8rwJiB7q+dGw6x6kWB1GE3LDc8onwyQhP34qKDAnhY+1F1adEDm/WHocWFk+A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YjZc7iz285wm7FOJP0rtxMcKWGew6rMpM6Vz5ZEHhOk=;
- b=4VmXd2y5ttFh93MCcoRE+MlSTfCNIIt5EyHXE0ypbmQudauO0PJNNv6DLebPX+jXxOWz9o6wcFEfe5xKpQBkR9/rx3KQJkkcAsVAdtEmyll4bFO1ncfYQXwuvyQBKG7u+efW884YnHeJrvfbcR/ndeELfKypWlb2RwQrewGVtSQ=
-Received: from PH7PR13CA0004.namprd13.prod.outlook.com (2603:10b6:510:174::25)
- by IA1PR12MB6044.namprd12.prod.outlook.com (2603:10b6:208:3d4::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.15; Mon, 30 Mar
- 2026 08:44:31 +0000
-Received: from CY4PEPF0000E9D0.namprd03.prod.outlook.com
- (2603:10b6:510:174:cafe::f) by PH7PR13CA0004.outlook.office365.com
- (2603:10b6:510:174::25) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9745.28 via Frontend Transport; Mon,
- 30 Mar 2026 08:44:30 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- CY4PEPF0000E9D0.mail.protection.outlook.com (10.167.241.135) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9745.21 via Frontend Transport; Mon, 30 Mar 2026 08:44:30 +0000
-Received: from purico-ed03host.amd.com (10.180.168.240) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Mon, 30 Mar
- 2026 03:44:21 -0500
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<joro@8bytes.org>, <jgg@nvidia.com>
-CC: <yi.l.liu@intel.com>, <kevin.tian@intel.com>, <nicolinc@nvidia.com>,
-	<vasant.hegde@amd.com>, <jon.grimm@amd.com>, <santosh.shukla@amd.com>,
-	<sairaj.arunkodilkar@amd.com>, <jay.chen@amd.com>, <wvw@google.com>,
-	<wnliu@google.com>, <dantuluris@google.com>, <chriscli@google.com>,
-	<kpsingh@google.com>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [PATCH 22/22] iommu/amd: Introduce logic to check and enable vIOMMU feature
-Date: Mon, 30 Mar 2026 08:42:06 +0000
-Message-ID: <20260330084206.9251-23-suravee.suthikulpanit@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260330084206.9251-1-suravee.suthikulpanit@amd.com>
-References: <20260330084206.9251-1-suravee.suthikulpanit@amd.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="Mbuozpvj"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260330085950euoutp01c4862ac1c255cb9e9c62a2eed3fe00e4~hktl1YRQK1457814578euoutp01g
+	for <iommu@lists.linux.dev>; Mon, 30 Mar 2026 08:59:50 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260330085950euoutp01c4862ac1c255cb9e9c62a2eed3fe00e4~hktl1YRQK1457814578euoutp01g
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1774861190;
+	bh=cYvbV9vmk6ZuLyfnM/KH4B2QOnv37WDoJ8hEc+JQuDg=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=MbuozpvjXWHXgzgjWuHC+ySMxMXxaTWV7Sd/Tq080KossBGSyJjExqCDgMFiG8JfX
+	 eL7VwSyau7cyhIx+lHAGVCbHfb5M06r5oiWHa5is7xp0/GV1SYevmTcaYkhB97c0gx
+	 fO581/KMGXd2xcbkYqkiT3PAfMOe7O9FoBaEsFs0=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20260330085950eucas1p1f94b35200e0ca2471baa85be6b85512f~hktlSraz10257402574eucas1p1P;
+	Mon, 30 Mar 2026 08:59:50 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20260330085949eusmtip2f8fb615228f6bf437e97b25c4fd14566~hktknbyTA1554315543eusmtip2h;
+	Mon, 30 Mar 2026 08:59:49 +0000 (GMT)
+Message-ID: <62b9e47c-1c31-4654-8347-16516faf73f0@samsung.com>
+Date: Mon, 30 Mar 2026 10:59:48 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH] dma/contiguous: Fix broken build
+To: Maxime Ripard <mripard@kernel.org>, Sumit Semwal
+	<sumit.semwal@linaro.org>, Benjamin Gaignard
+	<benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>,
+	John Stultz <jstultz@google.com>, "T.J. Mercier" <tjmercier@google.com>,
+	=?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, Robin Murphy
+	<robin.murphy@arm.com>, Albert Esteve <aesteve@redhat.com>
+Cc: linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	iommu@lists.linux.dev, Mark Brown <broonie@kernel.org>
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20260330-dma-build-fix-v1-1-748b64f0d8af@kernel.org>
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
- (10.181.42.216)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9D0:EE_|IA1PR12MB6044:EE_
-X-MS-Office365-Filtering-Correlation-Id: dd61a066-a3b4-4cea-31f7-08de8e388f29
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|36860700016|7416014|376014|82310400026|18002099003|22082099003|56012099003;
-X-Microsoft-Antispam-Message-Info:
-	JyUqFd9LPByWaj12esqNj7Wk3/yJRkunjI3XE0mUXUxbbnnB7TEYC+PTv/WxbPUrHOvtfedl++mIIALbfF9fb+i3g9p0AAPprXz0BMa7sENgPORwqqofkede2MH/fFyJPCn6hXMWhj9z7y5p6QvTkB2taNwyKDgnXGddyKELcwJtMa7yPCYyXYI+wqAspF3MQWBzTatS4pJ24uy6JZYTnQC3Yb/jSGRIp7Mk7pNNsUA3vZk7Ev2CzmNMYc7qdCsx94S0F8lhKWVdcWgH3/Pz08iEk7GKLeMa6iqtGfd5VAOC9kL3glyFefVhxwS+1FTZ7KsWaQsadH/8YldmQnnGqdEqtzE/kOhwnoUtlIQ/GU2POgJIyEN1DBBiWZsQPAbdVxVJW7i3ZYXsCRLE56SedfdbRM0BrAzdeVbOqRIMjXqMVk7ondXHWd4wFbHkj70ghHfGeAYumUcE0YJhrj7Ou/MGdlEzUiWpYc709mfXN7f+3eVNyZsMEuSU2Ux778CLo3zQ98lecrjRjrzwpC+8C87dbXrC82997cmVn18NOfFJVuEEH4PW04d/9sXxkIlvNvMr0gclKI6WlYX3KEzvG4UnKqGyrpVU2q6LE7yU2CAjt9aGS/nGi9i5CtNh8cFuHtOxtpJkfMOLqGkQ9HSkfJ95T7oYbcTchB732lDw0OqZHFhQDJZBR5AKwS2HABXieLKt2qu1rRtgbz1AlUDP9EOcu5ahPPoFY9Hp6Ppb85P0fCNcNGan3/h9Ku1vOGqj37tGLTFKcItuO47PKHV67Q==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(36860700016)(7416014)(376014)(82310400026)(18002099003)(22082099003)(56012099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	f2FibAElNU6aRbPnSgXJV+G24rrmzsNjlayz2u6bSUP6U1HSMHuM4F+aa8sXLu2UecdVthY8XiO8zFbczG6tvG+H3rlWR/IJKT91iI5xn8oqzpNs1QFoci4jMtc1T1t0EHBq26eA652ZaIhR7m0SDA+JcKTa4T4wWP3T0P1BRrJsMhb/wXKZ3POsMjkKCYVH7Cm07N7pScybLm1BG0NZp6YhW7HvWeTXdLqfw+RchmgwpBHdDbzcybmXRqFi4CpU0WHu2lIF2YcAkO4xApFiR4kvZm2kjzUS8MbmY388hvWnSju93QNiimX17upCxBIiCfO7/rigGfH81fJutaB6PxLUth/7zeXJ3AhGZxevGEVwGTgJfwJoLSxH7a+omtb0L0v+56pE7l/WSmubK+xk3pdll4PXfRubHXljiJCk4Gx9BPZ04JXvrgn/brtMddL2
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2026 08:44:30.3466
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: dd61a066-a3b4-4cea-31f7-08de8e388f29
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000E9D0.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6044
+X-CMS-MailID: 20260330085950eucas1p1f94b35200e0ca2471baa85be6b85512f
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260330084111eucas1p1e7cd5c886e34d0ed41226fe524d2a55a
+X-EPHeader: CA
+X-CMS-RootMailID: 20260330084111eucas1p1e7cd5c886e34d0ed41226fe524d2a55a
+References: <CGME20260330084111eucas1p1e7cd5c886e34d0ed41226fe524d2a55a@eucas1p1.samsung.com>
+	<20260330-dma-build-fix-v1-1-748b64f0d8af@kernel.org>
 
-Also switch to enable vIOMMU by default, and provide kernel boot option to
-disable the feature.
+On 30.03.2026 10:40, Maxime Ripard wrote:
+> Commit 3a236f6a5cf2 ("dma: contiguous: Turn heap registration logic
+> around") didn't remove one last call to dma_heap_cma_register_heap()
+> that it removed, thus breaking the build.
+>
+> That last call is in dma_contiguous_reserve(), to handle the
+> registration of the default CMA region heap instance if it's declared in
+> the device tree.
+>
+> However, the default CMA region instance is already handled by
+> retrieving it through dev_get_cma_area() in the CMA heap driver, so the
+> call to dma_heap_cma_register_heap() wasn't actually needed.
+>
+> Let's remove this call, the now unused function definition, its now
+> empty header, and all includes of this header.
+>
+> Fixes: 3a236f6a5cf2 ("dma: contiguous: Turn heap registration logic around")
+> Reported-by: Mark Brown <broonie@kernel.org>
+> Closes: https://lore.kernel.org/linux-next/acbjaDJ1a-YQC64d@sirena.co.uk/
+> Signed-off-by: Maxime Ripard <mripard@kernel.org>
+> ---
+>  drivers/dma-buf/heaps/cma_heap.c  |  1 -
+>  include/linux/dma-buf/heaps/cma.h | 16 ----------------
+>  kernel/dma/contiguous.c           |  5 -----
+>  3 files changed, 22 deletions(-)
+>
+> diff --git a/drivers/dma-buf/heaps/cma_heap.c b/drivers/dma-buf/heaps/cma_heap.c
+> index f8a3d87f3ccee9630383ba28502eb40b10671cc2..cc517ac68a0bec0788abcb338c03f530d169013b 100644
+> --- a/drivers/dma-buf/heaps/cma_heap.c
+> +++ b/drivers/dma-buf/heaps/cma_heap.c
+> @@ -12,11 +12,10 @@
+>  
+>  #define pr_fmt(fmt) "cma_heap: " fmt
+>  
+>  #include <linux/cma.h>
+>  #include <linux/dma-buf.h>
+> -#include <linux/dma-buf/heaps/cma.h>
+>  #include <linux/dma-heap.h>
+>  #include <linux/dma-map-ops.h>
+>  #include <linux/err.h>
+>  #include <linux/highmem.h>
+>  #include <linux/io.h>
+> diff --git a/include/linux/dma-buf/heaps/cma.h b/include/linux/dma-buf/heaps/cma.h
+> deleted file mode 100644
+> index e751479e21e703e24a5f799b4a7fc8bd0df3c1c4..0000000000000000000000000000000000000000
+> --- a/include/linux/dma-buf/heaps/cma.h
+> +++ /dev/null
+> @@ -1,16 +0,0 @@
+> -/* SPDX-License-Identifier: GPL-2.0 */
+> -#ifndef DMA_BUF_HEAP_CMA_H_
+> -#define DMA_BUF_HEAP_CMA_H_
+> -
+> -struct cma;
+> -
+> -#ifdef CONFIG_DMABUF_HEAPS_CMA
+> -int dma_heap_cma_register_heap(struct cma *cma);
+> -#else
+> -static inline int dma_heap_cma_register_heap(struct cma *cma)
+> -{
+> -	return 0;
+> -}
+> -#endif // CONFIG_DMABUF_HEAPS_CMA
+> -
+> -#endif // DMA_BUF_HEAP_CMA_H_
+> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+> index ad50512d71d3088a73e4b1ac02d6e6122374888e..9fe001c712339f8388d3f40cca3dfff3f707fcbf 100644
+> --- a/kernel/dma/contiguous.c
+> +++ b/kernel/dma/contiguous.c
+> @@ -40,11 +40,10 @@
+>  #include <asm/page.h>
+>  
+>  #include <linux/memblock.h>
+>  #include <linux/err.h>
+>  #include <linux/sizes.h>
+> -#include <linux/dma-buf/heaps/cma.h>
+>  #include <linux/dma-map-ops.h>
+>  #include <linux/cma.h>
+>  #include <linux/nospec.h>
+>  
+>  #ifdef CONFIG_CMA_SIZE_MBYTES
+> @@ -270,14 +269,10 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
+>  						  selected_limit,
+>  						  &dma_contiguous_default_area,
+>  						  fixed);
+>  		if (ret)
+>  			return;
+> -
+> -		ret = dma_heap_cma_register_heap(dma_contiguous_default_area);
+> -		if (ret)
+> -			pr_warn("Couldn't register default CMA heap.");
+After this change no dma-buf heap for the default CMA area is created if it has 
+not been specified in device-tree. This might be especially a problem for the
+non-dt systems.
 
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- drivers/iommu/amd/amd_iommu.h       |  1 +
- drivers/iommu/amd/amd_iommu_types.h |  3 +++
- drivers/iommu/amd/init.c            | 14 +++++++++++++-
- drivers/iommu/amd/viommu.c          | 16 ++++++++++++++++
- 4 files changed, 33 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index 38694ebdb083..2b057ab77ce8 100644
---- a/drivers/iommu/amd/amd_iommu.h
-+++ b/drivers/iommu/amd/amd_iommu.h
-@@ -25,6 +25,7 @@ void amd_iommu_restart_ga_log(struct amd_iommu *iommu);
- void amd_iommu_restart_ppr_log(struct amd_iommu *iommu);
- void amd_iommu_set_rlookup_table(struct amd_iommu *iommu, u16 devid);
- void iommu_feature_enable(struct amd_iommu *iommu, u8 bit);
-+bool iommu_feature_enable_and_check(struct amd_iommu *iommu, u8 bit);
- void *__init iommu_alloc_4k_pages(struct amd_iommu *iommu,
- 				  gfp_t gfp, size_t size);
- u8 __iomem * __init iommu_map_mmio_space(u64 address, u64 end);
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index ff72023fa512..4667efcfb8e9 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -204,9 +204,12 @@
- #define CONTROL_EPH_EN		45
- #define CONTROL_PPR_AUTO_RSP_AON 48
- #define CONTROL_XT_EN		50
-+#define CONTROL_VCMD_EN         52
-+#define CONTROL_VIOMMU_EN       53
- #define CONTROL_INTCAPXT_EN	51
- #define CONTROL_GCR3TRPMODE	58
- #define CONTROL_IRTCACHEDIS	59
-+#define CONTROL_GSTBUFFERTRPMODE	60
- #define CONTROL_SNPAVIC_EN	61
- 
- #define CTRL_INV_TO_MASK	7
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 0018ae804ab4..63271f4305de 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -195,7 +195,7 @@ bool amdr_ivrs_remap_support __read_mostly;
- bool amd_iommu_force_isolation __read_mostly;
- 
- /* VIOMMU enabling flag */
--bool amd_iommu_viommu;
-+bool amd_iommu_viommu = true;
- 
- unsigned long amd_iommu_pgsize_bitmap __ro_after_init = AMD_IOMMU_PGSIZES;
- 
-@@ -436,6 +436,16 @@ void iommu_feature_enable(struct amd_iommu *iommu, u8 bit)
- 	iommu_feature_set(iommu, 1ULL, 1ULL, bit);
- }
- 
-+bool iommu_feature_enable_and_check(struct amd_iommu *iommu, u8 bit)
-+{
-+	u64 ctrl;
-+
-+	iommu_feature_enable(iommu, bit);
-+
-+	ctrl = readq(iommu->mmio_base +  MMIO_CONTROL_OFFSET);
-+	return (ctrl & (1ULL << bit));
-+}
-+
- static void iommu_feature_disable(struct amd_iommu *iommu, u8 bit)
- {
- 	iommu_feature_set(iommu, 0ULL, 1ULL, bit);
-@@ -3702,6 +3712,8 @@ static int __init parse_amd_iommu_options(char *str)
- 		} else if (strncmp(str, "v2_pgsizes_only", 15) == 0) {
- 			pr_info("Restricting V1 page-sizes to 4KiB/2MiB/1GiB");
- 			amd_iommu_pgsize_bitmap = AMD_IOMMU_PGSIZES_V2;
-+		} else if (strncmp(str, "viommu_disable", 14) == 0) {
-+			amd_iommu_viommu = false;
- 		} else {
- 			pr_notice("Unknown option - '%s'\n", str);
- 		}
-diff --git a/drivers/iommu/amd/viommu.c b/drivers/iommu/amd/viommu.c
-index 4626134893d6..5c744de729d5 100644
---- a/drivers/iommu/amd/viommu.c
-+++ b/drivers/iommu/amd/viommu.c
-@@ -45,6 +45,18 @@
- 
- LIST_HEAD(viommu_devid_map);
- 
-+static int viommu_enable(struct amd_iommu *iommu)
-+{
-+	/* The GstBufferTRPMode feature is checked by set and test */
-+	if (!iommu_feature_enable_and_check(iommu, CONTROL_GSTBUFFERTRPMODE))
-+		return -EINVAL;
-+
-+	iommu_feature_enable(iommu, CONTROL_VCMD_EN);
-+	iommu_feature_enable(iommu, CONTROL_VIOMMU_EN);
-+
-+	return 0;
-+}
-+
- static int viommu_init_pci_vsc(struct amd_iommu *iommu)
- {
- 	iommu->vsc_offset = pci_find_capability(iommu->dev, PCI_CAP_ID_VNDR);
-@@ -298,6 +310,10 @@ int __init amd_viommu_init(struct amd_iommu *iommu)
- 
- 	set_iommu_dte(iommu);
- 
-+	ret = viommu_enable(iommu);
-+	if (ret)
-+		return ret;
-+
- 	return 0;
- }
- 
+>  	}
+>  }
+>  
+>  void __weak
+>  dma_contiguous_early_fixup(phys_addr_t base, unsigned long size)
+>
+>
+Best regards
 -- 
-2.34.1
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
