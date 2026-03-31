@@ -1,185 +1,176 @@
-Received: from BN8PR05CU002.outbound.protection.outlook.com (mail-eastus2azon11011032.outbound.protection.outlook.com [52.101.57.32])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 115BC3E8C5A;
-	Tue, 31 Mar 2026 15:08:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.57.32
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774969724; cv=fail; b=KqEE0EqVZvPdDOUuMl3MTZzcFtWNzgfnnQ04PNyyvyXXr72yrUZFoFlc+uw8nZcGwqpk1v6Ayrv4fZ/6583xAKplqx7Omv/EqyGnDMSWv9yG48iAF4IbXOOzgYnoLky9rCjd6LRX0pLspYMNv7Be+gIWaCtR6RsLo0Nd1U5C8Wk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774969724; c=relaxed/simple;
-	bh=sXmboTGuLE5OUckajxUXEpSN93dqURsJLWJZxh/JSe0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=X5BfhvxA8nnvv8lxjYie38QBRlnKSgLbDyhH7KKYM+7/iBDDL7YgR7UvBbzPvGiiscVmUYvb4t75ajBV9akW8h/E/W3oCNXPBbZgO/Cf/l/WNavZm7hB1n6HCQfQRtYUxJXRREdI3N8S0+yqw5dUk6j4Do/dz1l4fcrIzJulVxg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=h4xYgvQJ; arc=fail smtp.client-ip=52.101.57.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EC759405AAD
+	for <iommu@lists.linux.dev>; Tue, 31 Mar 2026 15:26:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774970774; cv=none; b=nxRKaInB/RcwBqHFrqaJFGBLAK7MlkFTqSFKYaD3DfYOwMxFNSJFg2giIjpqox+1DU9VgIiLO5TPPEz0amUkNzkEyRlzF+Fch+loVV1W4c54Kc1Pre8TMzZEZylQNksbt8Iw4h9+s8PsTjjQGIVwFR4iFt7uzmELtXXXtU4NwOI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774970774; c=relaxed/simple;
+	bh=DAISVYoms1Zxq5rhE8jzaBHN9WUxfvAS/7zdsmYKfhI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=BsDdvOLqPOXcZuWHwW1TjVy7Zp2FRw1FmlRlofVzmNi65wVSsSebqn90LtEdsL3NIhvR6nOUjyYY/knu9wPMV06pZgQb5ZVzfiDXKg9T9fCaIdI3O8JlYCkdXK9PtMAV/i1IZF5lkVbFSajp1OxKK/6KtFuG9w8tQqRoaQPHc4E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=HbDgOCwt; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="h4xYgvQJ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=eJU8lZCdegbP4rKKVZUU9/ED43SDbrx79AKeMAVA77UAZbgnDtlZsmXXI5I3sXIpw9HpgO+48OkhwkRIQzAOm4Z456crwWrhwN4vqrqHVgvB02pBk1GVIfbgb556a4+QMfk7RgVJmrPU07rTOjz6H8diKURazUsTaDDNqLpvN4lRGIJhwoJb/RKTASnkP5MRYbIMoGQniRoqeO8JORmLYnblWHFZBJeaiM2Gh3pqYc1o7pcy1I6a1e/5XILswB+KPeEdWKVkjq6DGEoR84/qys68V+djrN3D5EcV7icoP2EL0YV75AxLhefVPM8tl+aeWdYh/Hib2pCXgGjDijOUFw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pv4as3gNxdGn6D6th6D7a6C1lJwvFJnzs8/2TjIPxFw=;
- b=ygFiTeQK29iugJTUnV/WenZhfMOMIZtrDxVcxbn9XVQs/izcrTfjyYaJCz7xbAWeqjWTllf43eOTm/nyrDN4AFBAZvnH6NeT7/Nkj/KvP5HqLJ7VG/wyZ1qFq+/7c3EQNdDhxYx3MYlcX/Sv0FJqbSVFdfNJuL2PHg5i5yzBsqzmi+iiWWyCHlH9qoeDzcHtEWSexohj5tD/hGCVre8kNbv2DPgwbmTiZS0lE5ZZthJmRTCOa7HXNmrgBd0BFDhGZix2VNa/ztkgQSuhAhuTMFRgXPby/2TP1Zlz44DPJg1NMreKq0gjT1L3KfQAH0HlH5Zx/mfgI/XR5hoQ360+Hw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pv4as3gNxdGn6D6th6D7a6C1lJwvFJnzs8/2TjIPxFw=;
- b=h4xYgvQJF9j1Dl7jk2LJDQnjwTyXvSrNw5pW0gh6NKMdz9QW0eQgeLlV4EiQ9nBdyUqL89u9M3L1m0Zki7I2x2wuPpC5sTVOeMVnprWJADVY72NAP4DH96i/oEIeubBEAlz0ZMi6IrAo4P82XpifmZgqLJallRPTKnRlvHSw/K+2V9aP/01NzS0ZN2BR9AncaOfKwaFrK6mtYtx2xUngS3SocX2dyd6lJbdPwnW4czdTtzzOtZPoxT2fXPCKzLXCa7Idzxu63RvrvFHIsF/HDJ3sC3nBxbzhsnbryQ8I8VDDSICkjab5Lv+JnfMDhdfGg7LOt+qgLEhS1qYULr/e1A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by LV9PR12MB9805.namprd12.prod.outlook.com (2603:10b6:408:2ee::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.15; Tue, 31 Mar
- 2026 15:08:37 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9769.014; Tue, 31 Mar 2026
- 15:08:37 +0000
-Date: Tue, 31 Mar 2026 12:08:36 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Jiri Pirko <jiri@resnulli.us>
-Cc: dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	iommu@lists.linux.dev, linux-media@vger.kernel.org,
-	sumit.semwal@linaro.org, benjamin.gaignard@collabora.com,
-	Brian.Starkey@arm.com, jstultz@google.com, tjmercier@google.com,
-	christian.koenig@amd.com, m.szyprowski@samsung.com,
-	robin.murphy@arm.com, leon@kernel.org, sean.anderson@linux.dev,
-	ptesarik@suse.com, catalin.marinas@arm.com, aneesh.kumar@kernel.org,
-	suzuki.poulose@arm.com, steven.price@arm.com,
-	thomas.lendacky@amd.com, john.allen@amd.com, ashish.kalra@amd.com,
-	suravee.suthikulpanit@amd.com, linux-coco@lists.linux.dev
-Subject: Re: [PATCH v5 2/2] dma-buf: heaps: system: add system_cc_shared heap
- for explicitly shared memory
-Message-ID: <20260331150836.GB2308548@nvidia.com>
-References: <20260325192352.437608-1-jiri@resnulli.us>
- <20260325192352.437608-3-jiri@resnulli.us>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260325192352.437608-3-jiri@resnulli.us>
-X-ClientProxiedBy: BN9PR03CA0434.namprd03.prod.outlook.com
- (2603:10b6:408:113::19) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="HbDgOCwt"
+Received: from zhangyu-hyperv.mshome.net (unknown [167.220.233.3])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 04FC820B6F01;
+	Tue, 31 Mar 2026 08:26:03 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 04FC820B6F01
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1774970772;
+	bh=uv0h8K+vkDUfK8ImoG8bD+vnM+kcraBl3eM6Ol7J0CM=;
+	h=From:To:Cc:Subject:Date:From;
+	b=HbDgOCwtL5MvQ+OekV8z7uEdYoj4e6lfICw+tc9bJmYg+OLf5OnTxN8Mtf01LCcRe
+	 W0/Bj+uFSnHb0GBhkefahm/tAvE7Z5V4JRx01Z+tnFh5RtzWqhSUr3pDDVWxUtWqpR
+	 o2fZ9ILlyfs6uJDuRJ3bZLAQ8IBBkRKTflhAYWys=
+From: Yu Zhang <zhangyu1@linux.microsoft.com>
+To: iommu@lists.linux.dev
+Cc: Joerg Roedel <joro@8bytes.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Jacob Pan <jacob.pan@linux.microsoft.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iommu/amd: Remove dead code for exclusion ranges in IVMD
+Date: Tue, 31 Mar 2026 23:25:50 +0800
+Message-ID: <20260331152550.479841-1-zhangyu1@linux.microsoft.com>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|LV9PR12MB9805:EE_
-X-MS-Office365-Filtering-Correlation-Id: 396ca46a-1607-4b4d-446f-08de8f3762b9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|7416014|376014|1800799024|22082099003|18002099003|56012099003;
-X-Microsoft-Antispam-Message-Info:
-	xStHTyxc+jLodnwpmZC8XvLDN8pEraxkkwu3vCi5IrGWeTk1jdR4ftEQ6w2kN2HSDJrZwTHwUtucfj0Cqcx0VCiqHI5xESo4PXYfLyv8jgW2Opbq4BzmxXSFZv9S9rok0v9MS1ujFvlZjF0fhe5zlyyTDicHvD0+xarVnWu8FPck9rm3A0sB2BVQS9MHjvHN1rIONQ32fO11LTSsAhCuVQf5X8W6gQaiY5R7Ua2Okx+R5sKchzF5m50RopeXEZwKpMmt9t7FT1NcamDei2zz60ZmMeTfqrmDfJOmTxTNHw/l7a4Q5jUzVo1hRaInv8oKLhfIT9klprR94oBoyBlxkiwNvI2MuO3jO411DpRxas48Pd/+KzAn0WyNdav6yekzdW3Ww9JEFzHCavPQ4k4LoLrDoFnJEKdW/xf569Nayk0i3DUhPNzXKY/xxV78mpqMeQGMDJDvg2txGb301RGaXet+cr68P30CwuaBhXtARECFtuPyhZsK3M2+v3M8kOOqOO2EfLxXktl1XzFZsoLjfh2SBGC9lsQ4t5N0g05V7TwOBXr8TrW8S9lyn0hlUbWIniCE1WN+po+OYAojVT+SIVxX6TrraZWUdNGVSwt7OJZP01ZBfJrpbJcCSmNvYTUt/raGsaLo5GJ/4/Zovo2G1M5cKjg/zfFrFzlKHzXmUKadIgUbkXanSUG9u87HsUjF/BeTb0h2k+KGrlBqMKsMTV0DN0uThATtkgGEjhkf9kE=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024)(22082099003)(18002099003)(56012099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?uGLafNIURNrShXUEYT4lrpAPO91TkPUqpLBKgBeuVySDuW7wQTf0AmsV5MR2?=
- =?us-ascii?Q?Yz7BKmDcy31qmps2ZcLvITR8lWJIGoVfhanx/RVtu09gfoURIDCvgIOjR6X0?=
- =?us-ascii?Q?9v5/ae4c9HNzuXbEFyZqMhHrVvdn/q2S0p8G/bY6l3m4VGILWXO2UR+UouHt?=
- =?us-ascii?Q?OItsfkvZbSj6opDPa7USyFMUNPkILfIB8OTPWLojmRk7zc2s+QS9OpXFeHBS?=
- =?us-ascii?Q?YL1a/kyXMj4aXBesGwvOAUSxlyJpZd2sstegmdJFxFURtS74oTB9HUrbayGn?=
- =?us-ascii?Q?ClsITTGynG187a3uR6GRCJ5ifVVlEB6OZiqX1i4DsSueJMG1lJFYNhso6v+c?=
- =?us-ascii?Q?nzPDrK6uQmRYZkasVt4qcS5jfToCdJFjXZfHj0espMaqORpkLbgcWdhG8pee?=
- =?us-ascii?Q?Wsm0JPa8Y0+qb+GjZxJcq4nPVrdDtXrLWTSCg8oVBIuMLl86s3KEsJAePL2S?=
- =?us-ascii?Q?ZyEOME4eT2zte8cf1XnZCZ8sEpkYEErxRN96RIYbPlWFv1Va9WlsPQ4o8cie?=
- =?us-ascii?Q?Wpr+y4ENCv5ukRywC5VAAZXsVLfYhglno6g4jHCvMnmDFUptWuz55OA3M8qx?=
- =?us-ascii?Q?Z8NPRXfZdLssFTty97too93iRknqvci7Gnw//oqCM/2cY6SL2N1GlZd9f0Qv?=
- =?us-ascii?Q?pVPJ9WVM2yhSw3s7GNJ+l60Q8eWDLAL05fLWudXTqz8vj0nEb//hAfWp7xLo?=
- =?us-ascii?Q?dTCZMbzL3OszfKpFr7buECpMGA91Vyu/2onDK/Gb9ZhwIf4B3gGEjIZ93MBz?=
- =?us-ascii?Q?jSyGrPVfhqviUVR+iioG71Hhv4UlLt1srIwBc0krpYkSwugLY6TnMiF5h/CZ?=
- =?us-ascii?Q?yG3YQNWSL4uTQOYGsM/Ef3VcWXWpH87kq/YDFNkdIP68ruryIm/q3HhTt3O2?=
- =?us-ascii?Q?kFSE2JOQB8oae2T16Phr/u4iZg3GC+Iwp+LP6q/oF2hTTfZPlh6ZrO+kfM4Z?=
- =?us-ascii?Q?kEuDvFFlwSSnR7o5g0e6nrp9WUzTBxgoa5YdNH01M2XQAgz0mIrz4S3js/Hd?=
- =?us-ascii?Q?hlE7XCs7NaSebav1Wj4Ag4fz9cYHWhbBzeEs3O6oMDhbhWnRiKe65nv6Pbzo?=
- =?us-ascii?Q?rKM855Y5tNI2hy/2JDDIwRTuCw5aKiNGdtQckj4V37HNeu8fju4ZKAR9TRW9?=
- =?us-ascii?Q?fVtRS4obhNomG34fizBvg/KanGRDyDjLcNv0bwUxORVSTID4LAi8qcJhEjiN?=
- =?us-ascii?Q?R7d70NT+cNYOh7hYu06EjWq4OP1xDOmGffFnIuu6aPR9A1crPSyGq9Wz+b+T?=
- =?us-ascii?Q?S0+4KfveBskgCMgiuBJPqJFha8FBSKeHkClEOLQ2TQ6CSkoEjbk8jocpkaMM?=
- =?us-ascii?Q?hdsUXS5HwDOcHQCeOpeh1gv97ogMim7mcR10JtV8i0ow6HiVhOzTuQX3T/y6?=
- =?us-ascii?Q?iUvr1glGO287+H3d54beqbLx7Oro3Isb7at75Eq+Ji5DUyE9qCqKVopzi3BI?=
- =?us-ascii?Q?ThcSFNftLcuKht/QrReZvf//8ZsV5P90td4icWnpTDPnr9f/RK19i3yfl+nn?=
- =?us-ascii?Q?wYpdgOrdR0wNUUyqPN0Qv3v5UntJC1KsaUrCT/qDfgTVbRbRzQEjd3HyIKBl?=
- =?us-ascii?Q?rJMSiBXs2hKMYbAglgCtwACYKkMqrb10/j6wOUoBBORQY0i1tYfL9cw/h9dJ?=
- =?us-ascii?Q?gqSe7aiqbX7fVBbqHh9VRvJs5sAJxnRgTeeYZ38FUpVAOfbVGB9TBBS0Jia+?=
- =?us-ascii?Q?qMUqcV7ziIkuRhzVe9qP+GFDRjg97DjP68wNKfK0WsQhK2kF?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 396ca46a-1607-4b4d-446f-08de8f3762b9
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2026 15:08:37.7963
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7hBe0oFJ8AuaY2YghjWqvdD/LTT1pEWJnt21xm8AQRR77KPN1rl43j5T69vgpLP4
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV9PR12MB9805
+Content-Transfer-Encoding: 8bit
 
-On Wed, Mar 25, 2026 at 08:23:52PM +0100, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@nvidia.com>
-> 
-> Add a new "system_cc_shared" dma-buf heap to allow userspace to
-> allocate shared (decrypted) memory for confidential computing (CoCo)
-> VMs.
-> 
-> On CoCo VMs, guest memory is private by default. The hardware uses an
-> encryption bit in page table entries (C-bit on AMD SEV, "shared" bit on
-> Intel TDX) to control whether a given memory access is private or
-> shared. The kernel's direct map is set up as private,
-> so pages returned by alloc_pages() are private in the direct map
-> by default. To make this memory usable for devices that do not support
-> DMA to private memory (no TDISP support), it has to be explicitly
-> shared. A couple of things are needed to properly handle
-> shared memory for the dma-buf use case:
-> 
-> - set_memory_decrypted() on the direct map after allocation:
->   Besides clearing the encryption bit in the direct map PTEs, this
->   also notifies the hypervisor about the page state change. On free,
->   the inverse set_memory_encrypted() must be called before returning
->   pages to the allocator. If re-encryption fails, pages
->   are intentionally leaked to prevent shared memory from being
->   reused as private.
-> 
-> - pgprot_decrypted() for userspace and kernel virtual mappings:
->   Any new mapping of the shared pages, be it to userspace via
->   mmap or to kernel vmalloc space via vmap, creates PTEs independent
->   of the direct map. These must also have the encryption bit cleared,
->   otherwise accesses through them would see encrypted (garbage) data.
-> 
-> - DMA_ATTR_CC_SHARED for DMA mapping:
->   Since the pages are already shared, the DMA API needs to be
->   informed via DMA_ATTR_CC_SHARED so it can map them correctly
->   as unencrypted for device access.
-> 
-> On non-CoCo VMs, the system_cc_shared heap is not registered
-> to prevent misuse by userspace that does not understand
-> the security implications of explicitly shared memory.
-> 
-> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
-> ---
-> v4->v5:
-> - bools renamed: s/decrypted/cc_decrypted/
-> - other renames: s/decrypted/decrypted/ - this included name of the heap
-> v2->v3:
-> - removed couple of leftovers from headers
-> v1->v2:
-> - fixed build errors on s390 by including mem_encrypt.h
-> - converted system heap flag implementation to a separate heap
-> ---
->  drivers/dma-buf/heaps/system_heap.c | 103 ++++++++++++++++++++++++++--
->  1 file changed, 98 insertions(+), 5 deletions(-)
+Exclusion ranges in IVMD are treated as unity mappings with r&w
+permissions since commit 0bbe4ced53e3 ("iommu/amd: Fix the
+overwritten field in IVMD header"), using 1:1 mappings. And IOMMU
+Exclusion Base & Range Limit Registers (0x0020/0x0028) are actually
+no longer used.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+As a result, several definitions and code paths became dead code:
 
-Jason
+ - exclusion_start/exclusion_length in struct amd_iommu are never
+   assigned,
+ - iommu_set_exclusion_range() always returns 0 now.
+ - MMIO_EXCL_ENABLE_MASK & MMIO_EXCL_ALLOW_MASK are only used by
+   the removed iommu_set_exclusion_range().
+ - DEV_ENTRY_EX is no longer set in any DTE.
+ - IOMMU_UNITY_MAP_FLAG_EXCL_RANGE is no longer set, thus the
+   IOMMU_RESV_RESERVED branch in amd_iommu_get_resv_regions() is
+   no longer reachable.
+
+Just remove all of the dead code. No functional change.
+
+Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
+---
+ drivers/iommu/amd/amd_iommu_types.h | 12 ------------
+ drivers/iommu/amd/init.c            | 23 -----------------------
+ drivers/iommu/amd/iommu.c           |  3 ---
+ 3 files changed, 38 deletions(-)
+
+diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+index c685d3771436..a481d8cbd053 100644
+--- a/drivers/iommu/amd/amd_iommu_types.h
++++ b/drivers/iommu/amd/amd_iommu_types.h
+@@ -50,10 +50,6 @@
+ #define MMIO_GET_BUS(x) (((x) & MMIO_RANGE_BUS_MASK) >> MMIO_RANGE_BUS_SHIFT)
+ #define MMIO_MSI_NUM(x)	((x) & 0x1f)
+ 
+-/* Flag masks for the AMD IOMMU exclusion range */
+-#define MMIO_EXCL_ENABLE_MASK 0x01ULL
+-#define MMIO_EXCL_ALLOW_MASK  0x02ULL
+-
+ /* Used offsets into the MMIO space */
+ #define MMIO_DEV_TABLE_OFFSET   0x0000
+ #define MMIO_CMD_BUF_OFFSET     0x0008
+@@ -231,7 +227,6 @@
+ #define DEV_ENTRY_IR            0x3d
+ #define DEV_ENTRY_IW            0x3e
+ #define DEV_ENTRY_NO_PAGE_FAULT	0x62
+-#define DEV_ENTRY_EX            0x67
+ #define DEV_ENTRY_SYSMGT1       0x68
+ #define DEV_ENTRY_SYSMGT2       0x69
+ #define DTE_DATA1_SYSMGT_MASK	GENMASK_ULL(41, 40)
+@@ -384,8 +379,6 @@
+ #define IOMMU_PROT_IR 0x01
+ #define IOMMU_PROT_IW 0x02
+ 
+-#define IOMMU_UNITY_MAP_FLAG_EXCL_RANGE	(1 << 2)
+-
+ /* IOMMU capabilities */
+ #define IOMMU_CAP_IOTLB   24
+ #define IOMMU_CAP_NPCACHE 26
+@@ -680,11 +673,6 @@ struct amd_iommu {
+ 	/* pci domain of this IOMMU */
+ 	struct amd_iommu_pci_seg *pci_seg;
+ 
+-	/* start of exclusion range of that IOMMU */
+-	u64 exclusion_start;
+-	/* length of exclusion range of that IOMMU */
+-	u64 exclusion_length;
+-
+ 	/* command buffer virtual address */
+ 	u8 *cmd_buf;
+ 	u32 cmd_buf_head;
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index f3fd7f39efb4..a33bf3f5ed8a 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -352,28 +352,6 @@ static void iommu_write_l2(struct amd_iommu *iommu, u8 address, u32 val)
+  *
+  ****************************************************************************/
+ 
+-/*
+- * This function set the exclusion range in the IOMMU. DMA accesses to the
+- * exclusion range are passed through untranslated
+- */
+-static void iommu_set_exclusion_range(struct amd_iommu *iommu)
+-{
+-	u64 start = iommu->exclusion_start & PAGE_MASK;
+-	u64 limit = (start + iommu->exclusion_length - 1) & PAGE_MASK;
+-	u64 entry;
+-
+-	if (!iommu->exclusion_start)
+-		return;
+-
+-	entry = start | MMIO_EXCL_ENABLE_MASK;
+-	memcpy_toio(iommu->mmio_base + MMIO_EXCL_BASE_OFFSET,
+-			&entry, sizeof(entry));
+-
+-	entry = limit;
+-	memcpy_toio(iommu->mmio_base + MMIO_EXCL_LIMIT_OFFSET,
+-			&entry, sizeof(entry));
+-}
+-
+ static void iommu_set_cwwb_range(struct amd_iommu *iommu)
+ {
+ 	u64 start = iommu_virt_to_phys((void *)iommu->cmd_sem);
+@@ -2891,7 +2869,6 @@ static void early_enable_iommu(struct amd_iommu *iommu)
+ 	iommu_set_device_table(iommu);
+ 	iommu_enable_command_buffer(iommu);
+ 	iommu_enable_event_buffer(iommu);
+-	iommu_set_exclusion_range(iommu);
+ 	iommu_enable_gt(iommu);
+ 	iommu_enable_ga(iommu);
+ 	iommu_enable_xt(iommu);
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 760d5f4623b5..4e7f5b993c65 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -3076,9 +3076,6 @@ static void amd_iommu_get_resv_regions(struct device *dev,
+ 			prot |= IOMMU_READ;
+ 		if (entry->prot & IOMMU_PROT_IW)
+ 			prot |= IOMMU_WRITE;
+-		if (entry->prot & IOMMU_UNITY_MAP_FLAG_EXCL_RANGE)
+-			/* Exclusion range */
+-			type = IOMMU_RESV_RESERVED;
+ 
+ 		region = iommu_alloc_resv_region(entry->address_start,
+ 						 length, prot, type,
+-- 
+2.52.0
+
