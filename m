@@ -1,216 +1,242 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8555E3C8709
-	for <iommu@lists.linux.dev>; Tue, 31 Mar 2026 07:28:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.18
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774942109; cv=fail; b=UN2dGoXRCKXT/5j31DvBuKAhqdELQNG2uY+1CsSuqrWDvPckL2mYUU4/4xQ9nr3fst95Zjdq8ALUFGu8YFanvNzCghdU64Cvp+J4PKBfatH5xRoBxxYI6kfVikrglx/THBzbPlJWBsOxe3Dx/7lleDfozOwomMtucO8JbkqEsDQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774942109; c=relaxed/simple;
-	bh=OJuuI40P/+IEylAAZJNUkvR8rtVuwQ9kyELXP7w54Wg=;
-	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=dR0dNW6ohHc2JIvqPbSi7Da40tC2Kh2v2IZ94gL9jPIExBqXYweYGG752xl32cflxrYlcDhi/zHwMtFTXijbnHMpYRb5fbEmbk6T3bQLWtfk+qaLa8V5adyJ2IAv0Uf/MDiIxt/jf247DsEGfIpBAycvQgxNgKiRmyIGycSgFa0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VFjRxvjh; arc=fail smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 674E33CAE83;
+	Tue, 31 Mar 2026 07:40:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774942846; cv=none; b=JeAjdZdKfCPm0AUw+VfKcGIL34vCplG7MetzMO2jfGciX57h/JZT0NSYO+lZN1K58sNBE/8N+7rFYby/9uzkCpPFtss+xSpU54nFEuRgDb5FDPnXsjwQW3Jac8PMZTyKxz0flAte5Cx1C3G6LX4wkeFhJ1YGvKTF9vG8dZGhubo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774942846; c=relaxed/simple;
+	bh=WfNIlN+YWXq+c3+ums6HBPz4V6uK2YIWBCQNTjTM5hw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DCYUcIyACeWaJXFNP9Il4mp+2+UpHaZq5N3WSj0eQP0XvV0TfZbVdtRJnRglaK2RdvrLDCl1t0elkGjLc3iCDX9KWgN2sXdOnjIxx2EOnYYi4VYgLpHq22GuawZbVEOTcbo1rqTs5SGcG5oShOPZIS8dJr+rYrnISkCJ7iv1sjI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Rs5Vpcy5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VFjRxvjh"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1774942109; x=1806478109;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=OJuuI40P/+IEylAAZJNUkvR8rtVuwQ9kyELXP7w54Wg=;
-  b=VFjRxvjhs/H4vaDkC8NG/qZxf0h41njFCD0tTLMu4d2haBcdP6fC3dzy
-   kxh6OCWGTcpPlXQ0xT+IA8PG9Egqvq9StlPIQ+FLcm6AJUzCGDd93UVgZ
-   Bky3S/AizJAREvbZ7Ibsj3fT50U1hIgcmC8kF5dw68P0xENcs2alfN45D
-   TX4uHe4SQUl0PiaaM0L/gGrgCsMxW94wIAntj4Cs7fMLxVWCTvgBEUJB4
-   oa038MdeELfnRhFc7tx4R2SZgePtLNhAEyPx7LOv2AyJuWAQt1AnxVkPU
-   2wefQ+NFSjDKBwC1o048KcoVTMv6i6iwiyyy0xA1Xk5bmMbSv4hTv/d4B
-   A==;
-X-CSE-ConnectionGUID: E0Y7L5EURpmFPkHM1+B28A==
-X-CSE-MsgGUID: 9QS8wP1sSgC9dfNQmnD//A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11744"; a="75963482"
-X-IronPort-AV: E=Sophos;i="6.23,151,1770624000"; 
-   d="scan'208";a="75963482"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2026 00:28:29 -0700
-X-CSE-ConnectionGUID: /3RDRWM7RJisYseJLlSvxw==
-X-CSE-MsgGUID: dAQ8qyNBTsm+b7GPpcesuw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,151,1770624000"; 
-   d="scan'208";a="230744354"
-Received: from fmsmsx902.amr.corp.intel.com ([10.18.126.91])
-  by orviesa004.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2026 00:28:28 -0700
-Received: from FMSMSX903.amr.corp.intel.com (10.18.126.92) by
- fmsmsx902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Tue, 31 Mar 2026 00:28:27 -0700
-Received: from fmsedg903.ED.cps.intel.com (10.1.192.145) by
- FMSMSX903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Tue, 31 Mar 2026 00:28:27 -0700
-Received: from PH0PR06CU001.outbound.protection.outlook.com (40.107.208.45) by
- edgegateway.intel.com (192.55.55.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Tue, 31 Mar 2026 00:28:25 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=gGEROojOse0IF6tuGPz5WyPUiiNesEOsniNllJL+37yegD86bqicSGT8PdNoItXyTFCMdYJBDVn4vut72eph4o7x1X1klWBQ5ZFPbmEEsFYI9uH3sbuYDS/shK9whfv2B8J3ifEIHXf9YShrInLpocumPYBHLr4hcn3uIOzEnag9FSkzF19zzg7zGUEz40arQkqlYJB/PGs7j4Dc1dNr718JLF9AX0/zMKMd8dM8Ha1/J6wqGbh+1PFyzmOd/VwkVVsNbsd+ahOEO9p5Hzbf83cCEEfTv4Rk+aqevdwEfa+Bl+T8C9fGBPScKjD7pkijdOwenTZ3D8TpekDJ8Ia2KQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iHawumz6/tHuVWmGWxfhxQ7XllrHiINqt4n4B7eymr8=;
- b=nwMPyz+n6WZII1BGhVcqRk62OqjxwZGQhxrc2NI7e5XndC58mfayoD+8vhZcadTo0jPVemM5ZoszcYDdsZL8WAe8RCO5RcEF6CyBpvE0U7TzvY4+ZraQJznfCaNFCWo89XKrE4PYAzJN9nZashVIp/6raP/Bhy6WiANPkMpY/+3lb+aduJygKamR+Txll90gUp3L6Xw9nTGlrK3SwQe5BhcFtpdZAN2l7m81IKzzD07iMPY2UcdhllCUmD/nUXGIhJ/7lUv2WNUbbHdez9o4WnGGbIYYO6JEfTJMJ4t8X0KWxFnF5cPTUe/zIf3SU3yFRaqJivhGXWcvL6GCKec9RQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV8PR11MB8509.namprd11.prod.outlook.com (2603:10b6:408:1e6::15)
- by SA1PR11MB8812.namprd11.prod.outlook.com (2603:10b6:806:469::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.15; Tue, 31 Mar
- 2026 07:28:23 +0000
-Received: from LV8PR11MB8509.namprd11.prod.outlook.com
- ([fe80::f5bd:4dde:4f2f:20b7]) by LV8PR11MB8509.namprd11.prod.outlook.com
- ([fe80::f5bd:4dde:4f2f:20b7%5]) with mapi id 15.20.9769.014; Tue, 31 Mar 2026
- 07:28:23 +0000
-Message-ID: <2c664395-72b2-4436-b60a-3ba2e73eaf95@intel.com>
-Date: Tue, 31 Mar 2026 15:36:07 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/4] iommu/vt-d: Block PASID attachment to nested
- domain with dirty tracking
-To: Zhenzhong Duan <zhenzhong.duan@intel.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>
-CC: <dwmw2@infradead.org>, <jgg@ziepe.ca>, <kevin.tian@intel.com>,
-	<joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
-	<baolu.lu@linux.intel.com>, <stable@vger.kernel.org>, Joao Martins
-	<joao.m.martins@oracle.com>
-References: <20260330101108.12594-1-zhenzhong.duan@intel.com>
- <20260330101108.12594-2-zhenzhong.duan@intel.com>
-Content-Language: en-US
-From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <20260330101108.12594-2-zhenzhong.duan@intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: TPYP295CA0015.TWNP295.PROD.OUTLOOK.COM
- (2603:1096:7d0:9::10) To LV8PR11MB8509.namprd11.prod.outlook.com
- (2603:10b6:408:1e6::15)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Rs5Vpcy5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56BF8C19423;
+	Tue, 31 Mar 2026 07:40:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1774942845;
+	bh=WfNIlN+YWXq+c3+ums6HBPz4V6uK2YIWBCQNTjTM5hw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Rs5Vpcy5pcfHOE9A+KXyG8zgxaFKfO14AkzL8qri2il77QqmbXPjVdJe2E6Lq/wLm
+	 XyRXBds7lZRpM5IpkJl/IPXzKeFs1hIKgkOeGekcVK8YHodie2TzYRBTYf13LgzYLt
+	 AWGf4LYfanZtqa9aM7SDkUFe3T7OxsjTGQMosB2hiQDl6hYHjxIusBsWuW0scn2f5n
+	 PilzkO6wkuONcP8Pgbw3CxYU2ZuVkOZLSVxxK9voyYvblGSSEhE3jh0sczag1iBhPW
+	 UuhjNNhptW8oOjWbV2gWTXxVm+TYpLnXg948mLw972EHSB9sCA7MbPFrYGIuHz8myY
+	 sluOS9Ua9+u6g==
+Date: Tue, 31 Mar 2026 09:40:42 +0200
+From: Maxime Ripard <mripard@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Sumit Semwal <sumit.semwal@linaro.org>, 
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>, 
+	John Stultz <jstultz@google.com>, "T.J. Mercier" <tjmercier@google.com>, 
+	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Albert Esteve <aesteve@redhat.com>, linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev, 
+	Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH v2] dma/contiguous: Fix broken build
+Message-ID: <20260331-kind-therapeutic-buzzard-8fc55e@houat>
+References: <CGME20260330154021eucas1p1ddf347acd21646c96fda4b266ddfc03b@eucas1p1.samsung.com>
+ <20260330-dma-build-fix-v2-1-26d844575815@kernel.org>
+ <a097600b-0860-495f-b918-adef327bdaec@samsung.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR11MB8509:EE_|SA1PR11MB8812:EE_
-X-MS-Office365-Filtering-Correlation-Id: 572b02b4-c913-4c34-d1a1-08de8ef7172f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|42112799006|1800799024|366016|7416014|376014|56012099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info: crH2eTVpfhoz8oKnytln15H7bA3IgqMOOhbkIfV0zu6n5uYW3MGvs8T79kXfRDBdfEgXT5+Gs9xGFRiPeKFjO/BuVins7gNioEB+8BXnhg3nqfzAcIhGdSBKD2+ih9qYupcgYLovvqqEZ9fOhYmcCChdl38UfdA+rPi43NE3tQWkOtJY2hFJaUMjBuRs77xgH7w2PUVjK5uMYed1UjSTC6YYIQvo0HA5Xah86FHtIlT6QFoxS9lPLEaVfvpwdSR1AP9/F/9lUsJtPgonp87bZwzWnzF4LMso88lDVFQ4OrW8/wT83C/UeS4lrJIaqAPp8guKRQX5S6QjBaRKuUOAIIieLYwHbsfaSM7f+4wEb2xkgTXB9vUbYzLQEV3KztdRKlnVUvQPKvgQ0MpEu9L22F7mvbxqE85gfcTGfxvCXHXK/eF3PzMcMUL0Nuk3Zep6WPmtZIYChIO7meeOX1gjKYHMgcHhnqLUlr2m6JVccwCkTUTBHCjKzCJ67wot3b5l3cdEazgHHDj0tjcwTE5PNL21Bt3CU5A16hDhsU4iYSnaqoLfvgZcNkHZ+l8/rG7he/khwQ+0tDZT8Y9lGZot0Pu2Nyc9AD4/p80kAIkYTggtKOJY3XHngNQssqlCVvBtY9rxXaCdJ9ckze3TkIVV3dxi8wKGFQWzmADJX2Vn76AUmEn30HNZaRvva3oi7eat/tzIFsj8yzEZJJCLq+wFMEI8rJCtUz4vy7/AqSROS+k=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR11MB8509.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(42112799006)(1800799024)(366016)(7416014)(376014)(56012099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?N0VxYkp6eU1SNzd3cVNrdTNBSVhtNmNYODdvTEtvNnFMOGdVNWNaZGJyODN6?=
- =?utf-8?B?Uk1jUUxHWXVsdzdOdkJudUR3R1ZQcGJRUVZsVDNkanlwdWhVTCsrMllzenBx?=
- =?utf-8?B?bmNmdHRObGd4VUhEWURsNUFDSGRGVXI4MUFPUHZTc0hhR2JIcVg0d3lqeGU2?=
- =?utf-8?B?VHFrZnNncU96Tjd6MWlmajFrTGRUclorb2tTTEtHVW5TQ0lJSFJEa2VQZmNy?=
- =?utf-8?B?NU5yb0lBV2RnUzRNWk5obERNN3lxeEdZRFBzMjlFNUJ1aFBaSTRWRXkzL0VY?=
- =?utf-8?B?K1dmSXhKVVNBM1JpcXVockhYSEVYRXJwYnNRSktMOUYwVW14QUYrd2Y1MG9L?=
- =?utf-8?B?UkkwcjhoaVZCTllMYW5BZlp3bEZHa2V4TTM4bFdYdFl0MWJpK2UybU92MkVI?=
- =?utf-8?B?VXMvVzJ0QzQ2RFpGMzlkOEw0eVNjek0xRzl1UWx6NnFKL1pPdFREMWQ2YmdJ?=
- =?utf-8?B?SUxlWHZ0Ylg5R29zQXU3S3BFemRHQ293eEtERjFHT05IQTMwVnFDN1lham9a?=
- =?utf-8?B?RkpnMWpKeUNjUDREUUZiQjQ4ektUYjVZdDF4YTE3ZlhLajI4aGNmcnpLdjBl?=
- =?utf-8?B?Y1J6SnFWbWp6bEdkNkcxQkZPdFRRNkM1QjhUb08yWFoxYmlHTXBYRHQxZThV?=
- =?utf-8?B?RzNCanZOM1FLdWh3YkRXY1pBSFBKanN3emJTbHZsNXUwbHJCYXdkZEUwU1Bk?=
- =?utf-8?B?QVc1RkIzQjBjdWRhaFJneCtRclptd1pvMUZOWTZySG0vb3dnZ1N5aEZ6U3p5?=
- =?utf-8?B?ZElucitjWTJjZUZ2Y0g1Y1VXejl3SkMwSk9uL2dIN3grZG9wR1N3cUM0TjZk?=
- =?utf-8?B?blJQMGplbVNJWTE1YVlmekQ0Znd2VmwvbzZtMHJnRVBZRmRsV3RFR2pxTXJu?=
- =?utf-8?B?Z2lXc3FUNEFLWHpXY0tWMnNxbjNiKzZEWGxHT0lsb3lmbVB1aUdrSzZCZlNa?=
- =?utf-8?B?Tkp4bW5oOENWK3dYZDd5RlZPVmN0QnFKcEJQRjV5ai9LWjNuK09DY3I5ZHVD?=
- =?utf-8?B?NzVXcGxVd3U5clR4ZHVUekVPTmJyLzNXM2Z3cnJDZTNmSVdwdko2bis2djc3?=
- =?utf-8?B?VG8rUDVHUm9STTA3RVlIUy83OEhZZHg2MlJHTnEvekZnSktoYVRHTmU1b2JZ?=
- =?utf-8?B?SzhxUUtCWEwxNjZreWJFODZiaWZKb2lnSGZTcjJnaDM0SlpOOVZSVnZ5eVBz?=
- =?utf-8?B?UjVOcm4yMSs5STBwQVp4bTdQU2lIVTBwOTc5U254V25qUklJSFV4azhTK1N6?=
- =?utf-8?B?VU4weVJZK0ZqdlgvYnJlWnFnc1o3V2wzN0hUb2ZDdHplVEdVMHVRdDVCZTJ2?=
- =?utf-8?B?NjJkUHkvVUFrTmxCU0pIbXJDZUh1SzU0ZE5lNWhFL1k3bG9qS25RZmxkWFVN?=
- =?utf-8?B?T3F4OHdEeUVHTSs4K0FDLy9ZMTl4TkM0eFNZRXJKR2VGUFZBQTNKMXJuNytT?=
- =?utf-8?B?dDYxWTQ3QlByb05mUXl6dkFjSDEwcWJqOHB5aTVQM25zY09qaFFtaExidEp3?=
- =?utf-8?B?UjdyWlgzNGZ2TVBDS2x4RDhQZEY2V1k1TTd6dUlhWUl1TjhtanhYVkg1VFpj?=
- =?utf-8?B?UWxoZnNZME1vT2dQMmtMVkdKV3JOTVR1OVpCODlXY0NjWUFnRUJoM2FpTGdJ?=
- =?utf-8?B?L3FldmRVS1lMNWZMQzQ5djl6aHlTUlBEYjVnREhRSnpOREVzaVV0MWpVV0R6?=
- =?utf-8?B?dGJYVEhFN3hMTHY3TW9lTVdhRHM3blVYSGpBT0NLcm5jWjBMNGlqS1RPSGJm?=
- =?utf-8?B?QzZaWUNrWjVSMFFzV25jKyt0Um9kV1hQZDk1aE9kS0pZam4rZ0tqUnpRZ2ZZ?=
- =?utf-8?B?MVN3WjFOYS9lYmR0d1hXRVY0KzJ1eTBMOVUzc1FXaldjaTdGYWVVMmt5eXJN?=
- =?utf-8?B?dml2alcyZEdvTjd0UWhkZGdIamo2ekVhK1RPVWxOeVY3MXJTcnBGaFJoNnJV?=
- =?utf-8?B?Q3cxMy9TTVltSDdtdnlyNGlzNTlUc1Fod3N2SUthc3NYcjhjQVVtdkJGMCtM?=
- =?utf-8?B?Mm01c21ZcGErS29qdE1GZ1hIZ3ByRU9SMGwrRW9yb2JJZCs4OFAycEpOU3Zi?=
- =?utf-8?B?L3ZGVE13OFp3eXNYRDBvWERMYWlQODVGaGZPZXEzdnl4dnVDeTdPUVg2Nmd3?=
- =?utf-8?B?MzZxQWQ2OVRIcmJpVUdNMXhTTUpiTk5ZcVlIMDFneVNGQUR1TTd2MDk3VTMv?=
- =?utf-8?B?ZVFFUU5zQ01wSmhGWkMwVzV3M044bTNvWitRUEhQSi9kVVJMUnBoemR3dVp2?=
- =?utf-8?B?MlFjTHJlc1kwYnNneVZoSEdyMStaaXZSaCtDRk14L3g3bGJveFBOYWFZd0Nk?=
- =?utf-8?B?SW1CamIzb1Jvd3RuSWdkUHRJeWhKakt0dW1GR0V4Z1hDZWlsd3Y0dz09?=
-X-Exchange-RoutingPolicyChecked: NiJBBG+TEXlgFgClO9Sg27cMAxTD4+qf/ga8Qj6x3F6+GF6hZ201fJn2RPPeMlKsBqGeCXqMqwrNrBFQZzBryjMzvbBvDpLDNKu/XAJ0pJ7cd2r7d0vnCaMBBP90CNRi6WOB/emOthz2d/b61+6z1qgGhA9hYYi4KaJ6SwbL9XG4x5b46UxGmGvx9TDUz2JcuiTzi5Ad3lXnb+ku4F8fAChzn/sNNwlaGHW6RVezAa7KRKyByEAqIXB/SkHRf8r444gCaZdmVodV7X7q3DtZ1UBRa3rzP7gxwH0gze9eb+CZr8Hse05rWhEOQra6p4Hg/7L8RIdU8KinQZrUOoeKpQ==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 572b02b4-c913-4c34-d1a1-08de8ef7172f
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR11MB8509.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2026 07:28:23.1568
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: V6FIm7gRXAE3vBwQyFZtPVF52VY2ZtlAZ0cJTzz8fEa+vTXVtgRE3DnPbUC0SNOejwg7sRfAPR6TlC/G6TfyIg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB8812
-X-OriginatorOrg: intel.com
+Content-Type: multipart/signed; micalg=pgp-sha384;
+	protocol="application/pgp-signature"; boundary="vfivc7udtfzcg6f5"
+Content-Disposition: inline
+In-Reply-To: <a097600b-0860-495f-b918-adef327bdaec@samsung.com>
 
-On 3/30/26 18:11, Zhenzhong Duan wrote:
-> Kernel lacks dirty tracking support on nested domain attached to PASID,
-> fails the attachment early if nesting parent domain is dirty tracking
-> configured, otherwise dirty pages would be lost.
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: f35f22cc760e ("iommu/vt-d: Access/Dirty bit support for SS domains")
-> Suggested-by: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
-> ---
->   drivers/iommu/intel/nested.c | 6 +++++-
->   1 file changed, 5 insertions(+), 1 deletion(-)
 
-Good catch. Just one nit. I think the below fix tag is more accurate. SS
-dirty was merged before PASID attachment. So this fix should be
-backported since the first PASID nested domain attachment.
+--vfivc7udtfzcg6f5
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v2] dma/contiguous: Fix broken build
+MIME-Version: 1.0
 
-Fixes: 67f6f56b5912 ("iommu/vt-d: Add set_dev_pasid callback for nested 
-domain")
+Hi Marek,
 
-Reviewed-by: Yi Liu <yi.l.liu@intel.com>
+On Mon, Mar 30, 2026 at 07:49:26PM +0200, Marek Szyprowski wrote:
+> On 30.03.2026 17:40, Maxime Ripard wrote:
+> > Commit 3a236f6a5cf2 ("dma: contiguous: Turn heap registration logic
+> > around") didn't remove one last call to dma_heap_cma_register_heap()
+> > that it removed, thus breaking the build.
+> >
+> > That last call is in dma_contiguous_reserve(), to handle the
+> > registration of the default CMA region heap instance.
+> >
+> > The default CMA region instance is already somewhat handled by
+> > retrieving it through the dev_get_cma_area() call in the CMA heap
+> > driver. However, since commit 854acbe75ff4 ("dma-buf: heaps: Give
+> > default CMA heap a fixed name"), we will create two heap instances for
+> > the CMA default region.
+> >
+> > The first one is always called "default_cma_region", and is the one
+> > handled by the call to dev_get_cma_area() mentioned earlier. The second
+> > one is the name it used to have prior to that last commit for backward
+> > compatibility.
+> >
+> > In the case where the default CMA region is defined in the DT, then that
+> > region is registered through rmem_cma_setup() and that region is added
+> > to the list of CMA regions to create a CMA heap instance for.
+> >
+> > In the case where the default CMA region is not defined in the DT
+> > though used to be the case covered by the now removed
+> > dma_heap_cma_register_heap() in dma_contiguous_reserve(). If we only
+> > remove the call to dma_heap_cma_register_heap(), then the legacy name of
+> > the CMA heap will not be registered anymore. We thus need to replace
+> > that call with a call to rmem_cma_insert_area() to make sure we queue
+> > this instance, if created, to create a heap instance.
+> >
+> > Once that call to dma_heap_cma_register_heap() replaced, we can also
+> > remove the now unused function definition, its now empty header, and all
+> > includes of this header.
+> >
+> > Fixes: 3a236f6a5cf2 ("dma: contiguous: Turn heap registration logic aro=
+und")
+> > Reported-by: Mark Brown <broonie@kernel.org>
+> > Closes: https://lore.kernel.org/linux-next/acbjaDJ1a-YQC64d@sirena.co.u=
+k/
+> > Signed-off-by: Maxime Ripard <mripard@kernel.org>
+> > ---
+> > Changes in v2:
+> > - Fix creation of the CMA heap instance with the legacy name when not
+> >   declared in the DT.=20
+> > - Link to v1: https://lore.kernel.org/r/20260330-dma-build-fix-v1-1-748=
+b64f0d8af@kernel.org
+> > ---
+> >  drivers/dma-buf/heaps/cma_heap.c  |  1 -
+> >  include/linux/dma-buf/heaps/cma.h | 16 ----------------
+> >  kernel/dma/contiguous.c           | 14 +++++++++++---
+> >  3 files changed, 11 insertions(+), 20 deletions(-)
+> >
+> > diff --git a/drivers/dma-buf/heaps/cma_heap.c b/drivers/dma-buf/heaps/c=
+ma_heap.c
+> > index 7216a14262b04bb6130ddf26b7d009f7d15b03fd..9a8b36bc929f6daa483a013=
+9a2919d95127e0d23 100644
+> > --- a/drivers/dma-buf/heaps/cma_heap.c
+> > +++ b/drivers/dma-buf/heaps/cma_heap.c
+> > @@ -12,11 +12,10 @@
+> > =20
+> >  #define pr_fmt(fmt) "cma_heap: " fmt
+> > =20
+> >  #include <linux/cma.h>
+> >  #include <linux/dma-buf.h>
+> > -#include <linux/dma-buf/heaps/cma.h>
+> >  #include <linux/dma-heap.h>
+> >  #include <linux/dma-map-ops.h>
+> >  #include <linux/err.h>
+> >  #include <linux/highmem.h>
+> >  #include <linux/io.h>
+> > diff --git a/include/linux/dma-buf/heaps/cma.h b/include/linux/dma-buf/=
+heaps/cma.h
+> > deleted file mode 100644
+> > index e751479e21e703e24a5f799b4a7fc8bd0df3c1c4..00000000000000000000000=
+00000000000000000
+> > --- a/include/linux/dma-buf/heaps/cma.h
+> > +++ /dev/null
+> > @@ -1,16 +0,0 @@
+> > -/* SPDX-License-Identifier: GPL-2.0 */
+> > -#ifndef DMA_BUF_HEAP_CMA_H_
+> > -#define DMA_BUF_HEAP_CMA_H_
+> > -
+> > -struct cma;
+> > -
+> > -#ifdef CONFIG_DMABUF_HEAPS_CMA
+> > -int dma_heap_cma_register_heap(struct cma *cma);
+> > -#else
+> > -static inline int dma_heap_cma_register_heap(struct cma *cma)
+> > -{
+> > -	return 0;
+> > -}
+> > -#endif // CONFIG_DMABUF_HEAPS_CMA
+> > -
+> > -#endif // DMA_BUF_HEAP_CMA_H_
+> > diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+> > index ad50512d71d3088a73e4b1ac02d6e6122374888e..d5d15983060c5c54744d6a6=
+3f2b591e1a3455b86 100644
+> > --- a/kernel/dma/contiguous.c
+> > +++ b/kernel/dma/contiguous.c
+> > @@ -40,11 +40,10 @@
+> >  #include <asm/page.h>
+> > =20
+> >  #include <linux/memblock.h>
+> >  #include <linux/err.h>
+> >  #include <linux/sizes.h>
+> > -#include <linux/dma-buf/heaps/cma.h>
+> >  #include <linux/dma-map-ops.h>
+> >  #include <linux/cma.h>
+> >  #include <linux/nospec.h>
+> > =20
+> >  #ifdef CONFIG_CMA_SIZE_MBYTES
+> > @@ -217,10 +216,19 @@ static void __init dma_numa_cma_reserve(void)
+> >  static inline void __init dma_numa_cma_reserve(void)
+> >  {
+> >  }
+> >  #endif
+> > =20
+> > +#ifdef CONFIG_OF_RESERVED_MEM
+> > +static int rmem_cma_insert_area(struct cma *cma);
+> > +#else
+> > +static inline int rmem_cma_insert_area(struct cma *cma)
+> > +{
+> > +	return 0;
+> > +}
+> > +#endif
+> > +
+> >  /**
+> >   * dma_contiguous_reserve() - reserve area(s) for contiguous memory ha=
+ndling
+> >   * @limit: End address of the reserved memory (optional, 0 for any).
+> >   *
+> >   * This function reserves memory from early allocator. It should be
+> > @@ -271,13 +279,13 @@ void __init dma_contiguous_reserve(phys_addr_t li=
+mit)
+> >  						  &dma_contiguous_default_area,
+> >  						  fixed);
+> >  		if (ret)
+> >  			return;
+> > =20
+> > -		ret =3D dma_heap_cma_register_heap(dma_contiguous_default_area);
+> > +		ret =3D rmem_cma_insert_area(dma_contiguous_default_area);
+> >  		if (ret)
+> > -			pr_warn("Couldn't register default CMA heap.");
+> > +			pr_warn("Couldn't queue default CMA region for heap creation.");
+> >  	}
+> >  }
+> > =20
+> >  void __weak
+> >  dma_contiguous_early_fixup(phys_addr_t base, unsigned long size)
+> >
+> > ---
+>=20
+> Huh, this is still not the correct fix to restore the old behavior.
+> When !CONFIG_OF_RESERVED_MEM the default cma area should be still
+> registered as the default cma dma-buf heap.
 
-> diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
-> index 2b979bec56ce..16c82ba47d30 100644
-> --- a/drivers/iommu/intel/nested.c
-> +++ b/drivers/iommu/intel/nested.c
-> @@ -148,6 +148,7 @@ static int intel_nested_set_dev_pasid(struct iommu_domain *domain,
->   {
->   	struct device_domain_info *info = dev_iommu_priv_get(dev);
->   	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-> +	struct iommu_domain *s2_domain = &dmar_domain->s2_domain->domain;
->   	struct intel_iommu *iommu = info->iommu;
->   	struct dev_pasid_info *dev_pasid;
->   	int ret;
-> @@ -155,10 +156,13 @@ static int intel_nested_set_dev_pasid(struct iommu_domain *domain,
->   	if (!pasid_supported(iommu) || dev_is_real_dma_subdevice(dev))
->   		return -EOPNOTSUPP;
->   
-> +	if (s2_domain->dirty_ops)
-> +		return -EINVAL;
-> +
->   	if (context_copied(iommu, info->bus, info->devfn))
->   		return -EBUSY;
->   
-> -	ret = paging_domain_compatible(&dmar_domain->s2_domain->domain, dev);
-> +	ret = paging_domain_compatible(s2_domain, dev);
->   	if (ret)
->   		return ret;
->   
+You're right, but it feels that it's a fundamental flaw in the original
+patch rather than a quick fix for the build now. Can you drop the
+patches you applied entirely? If so, I'll send a new version of that
+series.
 
+Maxime
+
+--vfivc7udtfzcg6f5
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iJUEABMJAB0WIQTkHFbLp4ejekA/qfgnX84Zoj2+dgUCact6dgAKCRAnX84Zoj2+
+dkK2AX0T71T9W5H9rKycxqlZXiCIF0NEd806PwYEHIE/zOkXO6hIGltmDtf4qdac
+ytoY5BwBgMAFkT+z6VfjqmnqMRHx4EOhYUO6b5q3ilMX/TG+byYvn1YL7bp0KDwM
+S+/ujnBT0g==
+=U/Fp
+-----END PGP SIGNATURE-----
+
+--vfivc7udtfzcg6f5--
