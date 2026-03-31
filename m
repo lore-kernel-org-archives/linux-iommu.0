@@ -1,104 +1,140 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0120930BBBF;
-	Tue, 31 Mar 2026 09:19:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1EAC3A16A2;
+	Tue, 31 Mar 2026 10:00:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774948777; cv=none; b=m1CtGM0j4gt1A6evbCBXcjOrUbkUIt3Qu7TumE3tph67hTRaxaH/n8QFfFml795I4seNYCTDzhiXwKC2YErr2ITk8DtctweT+YtuYb4L2N7LIGao6c+nJKg6YzjM38g5j0Gf+qNZ78jdY/X2cjBNXraDAYx90JX/gPUXUZGugJE=
+	t=1774951222; cv=none; b=hb3Cb/dMyZSbkDPEd8XwlEoiZUFtJXsoOm+OGFZLRBPxvHqsGc4tvUcBgD2rgw9xQbUvdm25hKPR4V7vzMk0GHAI+yLrVMzwmnS+LQkZi/cqHqkFr9pTfiJYeMxi/KCFFT71pPdiwTbxqNlwaUOw3rq6m4F3lpymZpPeU4jT4ac=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774948777; c=relaxed/simple;
-	bh=1qhYBKOIdwEKAqXBxUeevZeCOU9ZFE8gnSQsrf9ZPcw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JStjN27Ba+CB8snvHkne/wBY+emWAkxFeI7qQm7vqF0kuhaaH3IZTtf8yVZ2dmdRv/z1fAiO8AktShLWwHsnyNnVmlf6YZIeWk2g3WJCtbZ19gaq+5lDebCpHeQZ/4bUobF48NHnaRb7mRUp1CMdzpEX8azpxg6XriI+q4Py5YM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lagz2h6e; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774951222; c=relaxed/simple;
+	bh=NmPYacRlRMgDK6wlfQdVkWEvsfihThv4t5CQJjQ7Y7I=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=RBWSAm20x0kyXujWTOukKUWJjlM0tu/8eMxU0OfeHTcEN6WjKOqiTNDhNLHK7JKav9DvCSFseVOnCn1cV48bR2ZFzLSzhhxSR7W/hT5j0ptkAKygN4ZiVvHT5+RsJjmtiurTOOoEeMBacy6g/aEvSZDAF/SOikclQHl5z1DKAlU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ss2nXoTT; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lagz2h6e"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E86A4C19423;
-	Tue, 31 Mar 2026 09:19:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ss2nXoTT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE3DBC2BCB0;
+	Tue, 31 Mar 2026 10:00:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774948776;
-	bh=1qhYBKOIdwEKAqXBxUeevZeCOU9ZFE8gnSQsrf9ZPcw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=lagz2h6eGYeissg4UXp4UyVObbavf90h6D8GzyDDXdlcS+D6yfVK+mOWvoViWPdP2
-	 o/5U7kHvteqXm5zTIxs5o99wP5t0k5gT1MbbziaCkkHSdObTI8nWRX0Ztv7ue+hFt4
-	 VeUTMwbYqpEVWAbANSw4sQERI1txFEmucvyutfXEUZbKrlJCJ1wyBBHV9xlipu6sE3
-	 FmteD4E6QaGFLK5leo36eCz0mqkEcYLjVMGzPfEj1V1arQ9cllDDl8n01tMp8uaqt1
-	 A4iOY+ZdXZouIYjmr2BbR1zC3VnzDgsGoy4pwUOoW8AvrPOZUw5tZZjol9Zuh31yW2
-	 nHvjpaiBtTSJQ==
-Date: Tue, 31 Mar 2026 14:49:24 +0530
-From: Manivannan Sadhasivam <mani@kernel.org>
-To: Thorsten Leemhuis <regressions@leemhuis.info>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, 
-	John Hancock <john@kernel.doghat.io>, stable@vger.kernel.org, bhelgaas@google.com, 
-	manivannan.sadhasivam@oss.qualcomm.com, joro@8bytes.org, linux-pci@vger.kernel.org, 
-	iommu@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [REGRESSION] PCI: Revert "Enable ACS after configuring IOMMU for
- OF platforms"
-Message-ID: <5hng5r6q525scbclramuv2h2hphljbcsscwohvrs7teuedgfvl@ncr7tqhr4l4z>
-References: <20260320172335.29778-1-john@kernel.doghat.io>
- <o7nnlvtkmatzafs44um6h5wnqo755msiukfn6kbu2zxdhe45ws@mde5lt2ufusz>
- <fad11c37-5bfb-44fd-b0bf-2a2d15b3382c@arm.com>
- <ovfco6pqzw734flu7navat36avt6yfosruouduhmbti7umunus@ijmu6nhz56l5>
- <99426bd8-32e5-4246-9d3b-772e136bc078@leemhuis.info>
+	s=k20201202; t=1774951221;
+	bh=NmPYacRlRMgDK6wlfQdVkWEvsfihThv4t5CQJjQ7Y7I=;
+	h=From:Subject:Date:To:Cc:From;
+	b=Ss2nXoTTqQTPpFf+vd8KL2TOHaj3gYelQORnJjYSaDskPaCsG/ahwxR5wQyo09pev
+	 QyEsyS4gOFfegOmiVrVX41jQ1kJ8mXgEz1yDMzeH+1LykYYKx4+klu1Dxmxho07FAZ
+	 one1+BWa39lVLE8FS9yHz48EUzN+8WFCQGli65jzK4ESyd09ULQ/ayN+8J1Zgr6s22
+	 Hq1dL/OncUCyQuhVYvy/MACSqKFlizO2SoIp9uFCRVxm6cyOdM5dZ6CrIxwWwaazWW
+	 iARNOAknbGwHy+620T97BwjBbRtB6vLJ3XFlG2X/w88YFvkuNwrGQ9E57OpsA48hGP
+	 sDSIXDEMWJb/g==
+From: Maxime Ripard <mripard@kernel.org>
+Subject: [PATCH v4 0/8] dma-buf: heaps: Turn heaps into modules
+Date: Tue, 31 Mar 2026 12:00:09 +0200
+Message-Id: <20260331-dma-buf-heaps-as-modules-v4-0-e18fda504419@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <99426bd8-32e5-4246-9d3b-772e136bc078@leemhuis.info>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/43OwQ6CMAwG4FcxO1vTdQPEk+9hPIxRZFGBbEI0h
+ Hd3cFFjYjz+Tf+vHUVg7ziI3WoUngcXXNvEoNcrYWvTnBhcGbMgpBSJEiivBoq+gppNF8AEuLZ
+ lf+EAEpUuFNu8IiNivfNcuftCH44x1y7cWv9YLg1ynv6BDhIQSGIetwzmWO7P7Bu+bFp/ErM60
+ LuU/ZAoSjrRhjljTK39ktRLUqh+SGr+SSutt5JshtmHNE3TE6FYwwtVAQAA
+X-Change-ID: 20260225-dma-buf-heaps-as-modules-1034b3ec9f2a
+To: Sumit Semwal <sumit.semwal@linaro.org>, 
+ Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
+ Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
+ "T.J. Mercier" <tjmercier@google.com>, 
+ =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+ Marek Szyprowski <m.szyprowski@samsung.com>, 
+ Robin Murphy <robin.murphy@arm.com>, 
+ Andrew Morton <akpm@linux-foundation.org>, 
+ David Hildenbrand <david@kernel.org>, 
+ Lorenzo Stoakes <lorenzo.stoakes@oracle.com>, 
+ "Liam R. Howlett" <Liam.Howlett@oracle.com>, 
+ Vlastimil Babka <vbabka@suse.cz>, Mike Rapoport <rppt@kernel.org>, 
+ Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>
+Cc: Albert Esteve <aesteve@redhat.com>, linux-media@vger.kernel.org, 
+ dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev, linux-mm@kvack.org, 
+ Maxime Ripard <mripard@kernel.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2731; i=mripard@kernel.org;
+ h=from:subject:message-id; bh=NmPYacRlRMgDK6wlfQdVkWEvsfihThv4t5CQJjQ7Y7I=;
+ b=owGbwMvMwCmsHn9OcpHtvjLG02pJDJmnZ+vtyny391ST68fupKZOXg+LP5MLLv56Wdf4VfGRu
+ aKiLp9Sx1QWBmFOBlkxRZYnMmGnl7cvrnKwX/kDZg4rE8gQBi5OAZjI7jjGhjMPOeZ5mJ7+U1+7
+ xX37xEN5MWZqs+/M9C8X8bm0z/FoLz9j0KvsW/Pit7Gqf5wid2nGZsaGyfNf758uxcDkcvtFq+j
+ R52FKkjJPNM+bFbHOO2xhN0OHoWLtsnPrFVSuunzRmHlE9U0nAA==
+X-Developer-Key: i=mripard@kernel.org; a=openpgp;
+ fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
 
-On Tue, Mar 31, 2026 at 10:23:25AM +0200, Thorsten Leemhuis wrote:
-> On 3/23/26 16:13, Manivannan Sadhasivam wrote:
-> > On Mon, Mar 23, 2026 at 03:06:16PM +0000, Robin Murphy wrote:
-> >> On 23/03/2026 1:54 pm, Manivannan Sadhasivam wrote:
-> >>> On Fri, Mar 20, 2026 at 01:23:35PM -0400, John Hancock wrote:
-> >>>> Commit 7a126c1b6cfa ("PCI: Enable ACS after configuring IOMMU for OF
-> >>>> platforms") introduced a regression affecting AMD IOMMU group isolation
-> >>>> on x86 systems, making PCIe passthrough non-functional.
-> >>> [...]
-> >>> Ouch! Sorry for the breakage.
-> >>> [...]
-> >>> I still haven't investigated this failure deeply, but it is also worth noting
-> >>> that this regression only happens with v6.12 and earlier stable kernels as
-> >>> mentioned in [1].
-> >> Oops, indeed, relying on pci_dma_configure() to be called prior to group
-> >> assignment in iommu_init_device() only works since bcb81ac6ae3c ("iommu: Get
-> >> DT/ACPI parsing into the proper probe path") added that call path in 6.15 -
-> >> thus the backport probably doesn't actually work for OF platforms either.
-> > 
-> > Ah, that makes sense. Thanks for finding the root cause. It might be very
-> > obvious to you, but still... ;)
-> > 
-> >> Dropping this from 6.12.y and earlier stable branches seems like the correct
-> >> action to me (but not a mainline revert, obviously). ACS had essentially
-> >> *never* worked properly on OF platforms prior to 6.15, but that was more
-> >> down to fundamental design flaws in the OF-based IOMMU probe path (dating
-> >> back to 4.12) rather than any easily-fixable bug as such, so realistically I
-> >> think we just leave it that way.
-> > 
-> > That's my opinion as well. I guess I need to send reverts for rest of the older
-> > stable kernels as well.
-> 
-> Mani, did you send those reverts? I could not find any on lore. And the
-> one at the start of the thread likely won't work, as it doesn't state
-> that c41e2fb67e26b0 ("PCI: Enable ACS after configuring IOMMU for OF
-> platforms") needs to be reverted for 6.12.y and all earlier series. So
-> to speed things up:
-> 
-> Greg, Sasha, could you maybe simply revert that backported commit
-> directly in 6.12.y and all earlier series?
-> 
+Hi,
 
-Sorry for the delay. I just sent the reverts for v5.10, v5.15, v6.1 and v6.6.
-This patch is for v6.12, so we've covered all affected stable kernels prior to
-v6.15.
+The recent introduction of heaps in the optee driver [1] made possible
+the creation of heaps as modules.
 
-- Mani
+It's generally a good idea if possible, including for the already
+existing system and CMA heaps.
 
+The system one is pretty trivial, the CMA one is a bit more involved,
+especially since we have a call from kernel/dma/contiguous.c to the CMA
+heap code. This was solved by turning the logic around and making the
+CMA heap call into the contiguous DMA code.
+
+Let me know what you think,
+Maxime
+
+1: https://lore.kernel.org/dri-devel/20250911135007.1275833-4-jens.wiklander@linaro.org/
+
+Signed-off-by: Maxime Ripard <mripard@kernel.org>
+---
+Changes in v4:
+- Fix compilation failure
+- Rework to take into account OF_RESERVED_MEM
+- Fix regression making the default CMA area disappear if not created
+  through the DT
+- Added some documentation and comments
+- Link to v3: https://lore.kernel.org/r/20260303-dma-buf-heaps-as-modules-v3-0-24344812c707@kernel.org
+
+Changes in v3:
+- Squashed cma_get_name and cma_alloc/release patches
+- Fixed typo in Export dev_get_cma_area commit title
+- Fixed compilation failure with DMA_CMA but not OF_RESERVED_MEM
+- Link to v2: https://lore.kernel.org/r/20260227-dma-buf-heaps-as-modules-v2-0-454aee7e06cc@kernel.org
+
+Changes in v2:
+- Collect tags
+- Don't export dma_contiguous_default_area anymore, but export
+  dev_get_cma_area instead
+- Mentioned that heap modules can't be removed
+- Link to v1: https://lore.kernel.org/r/20260225-dma-buf-heaps-as-modules-v1-0-2109225a090d@kernel.org
+
+---
+Maxime Ripard (8):
+      dma: contiguous: Turn heap registration logic around
+      dma: contiguous: Make dev_get_cma_area() a proper function
+      dma: contiguous: Make dma_contiguous_default_area static
+      dma: contiguous: Export dev_get_cma_area()
+      mm: cma: Export cma_alloc(), cma_release() and cma_get_name()
+      dma-buf: heaps: Export mem_accounting parameter
+      dma-buf: heaps: cma: Turn the heap into a module
+      dma-buf: heaps: system: Turn the heap into a module
+
+ drivers/dma-buf/dma-heap.c          |  1 +
+ drivers/dma-buf/heaps/Kconfig       |  4 +--
+ drivers/dma-buf/heaps/cma_heap.c    | 22 +++----------
+ drivers/dma-buf/heaps/system_heap.c |  5 +++
+ include/linux/dma-buf/heaps/cma.h   | 16 ---------
+ include/linux/dma-map-ops.h         | 14 ++++----
+ kernel/dma/contiguous.c             | 66 +++++++++++++++++++++++++++++++++----
+ mm/cma.c                            |  3 ++
+ 8 files changed, 82 insertions(+), 49 deletions(-)
+---
+base-commit: c081b71f11732ad2c443f170ab19c3ebe8a1a422
+change-id: 20260225-dma-buf-heaps-as-modules-1034b3ec9f2a
+
+Best regards,
 -- 
-மணிவண்ணன் சதாசிவம்
+Maxime Ripard <mripard@kernel.org>
+
