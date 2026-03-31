@@ -1,230 +1,170 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F24273C8721
-	for <iommu@lists.linux.dev>; Tue, 31 Mar 2026 07:42:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774942981; cv=none; b=ZqHILiwHDEm59Sc2YgLBOCeeR1OvngFYzBqdxiJx515BUb/GXfyRcFElZwn0C4MtOUXIGFEcq0SneaLxdeptFBjeU0VC1LUtj80q+x6T2thQDlZS5YiDlzG726M47xvc1Yxj0I6+yfEE+UaytMHvX2/DuXNZH7py7fj2371lIVM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774942981; c=relaxed/simple;
-	bh=1jQHpMSbdXM46kVxaRjFHF6qgC6X8BgdJvv64LHqiPo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=DArDc9gF/dvmZLcZQlXC8bviBxfp3nn/43OWxJnUOp4lOmBjAmyR7nvDWh1Czq6avcgV/YaQ2enRwtVha/jZrINcgflAedf2Pft4+wIUNSUXq7oWTfYEaDmnOWu17AwMeNaL8RVwgaH8SsNI8V2qEr6EEeMBmySVcsZNJAIPmBE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=uva1diva; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 464E33CAE85
+	for <iommu@lists.linux.dev>; Tue, 31 Mar 2026 07:46:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.19
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774943219; cv=fail; b=u2hsI+FU22BWMnmRZFnGBeydvtwfZTxIJMex0h0VUSsNyf/F0Csi5cyu8P/dIAOTRqrNjDOGx+KlsLS7r9o4+YzCo3EEFsqQNqTAAXEbiHxVLXCJwtflbfgbZpmCwsqHCOh8S/kf2iEuiHnmHCitsnoX6g73Z+aB1PEEeYgOTKU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774943219; c=relaxed/simple;
+	bh=1OE1EdUAsMxfk5/phBVXm9leBMiE9TM/CxVRkm5/NRA=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=aTu+QKPEpSoqx31nrdKQYUEqvsXb2Nos4RMk0+lVc4/fq1G35dScj5ZrahXrqTfMbrkaMy+AvtRP2pq02Kw/uJOeKR3cjZuCgmB8D0raZJv0ichZTT/7igUxduSpts/5ffPNRjdxAYY5+Yyacn+QtWOfqLP16CrMIurVpsX8h10=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=d+8xOjJP; arc=fail smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="uva1diva"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260331074255euoutp01273a76fdf3b2cac4c44e422dc237e7a8~h3Tt5hole1572915729euoutp01O
-	for <iommu@lists.linux.dev>; Tue, 31 Mar 2026 07:42:55 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260331074255euoutp01273a76fdf3b2cac4c44e422dc237e7a8~h3Tt5hole1572915729euoutp01O
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1774942975;
-	bh=n6XU63OSDlDGmqLMrEtDGpPy3DmkqxntfJ1+FJlHctA=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=uva1divasw/L0LnvvNXqSh4Wm6b9AqbtLPVQWtUbIp/1bh2/Gr5c0VE6nNsxufcmV
-	 unmyOBjWthGNcHBvNP1/rpfrTUVnInX/mrXX/q7AteDLCWnP52f6RB914SiNvu+wOi
-	 XxHIS8p4vCRuUC90yZcpEn+Xbfvv1H1qe4krHElw=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20260331074255eucas1p1bd4e8f4b94051f94cb080e283de744f8~h3Ttipnyj2795927959eucas1p1b;
-	Tue, 31 Mar 2026 07:42:55 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20260331074253eusmtip2ee24dfba73ffe7e4389932ec930dced9~h3TsKWxn_0253302533eusmtip2V;
-	Tue, 31 Mar 2026 07:42:53 +0000 (GMT)
-Message-ID: <69b0e509-c469-4587-87b5-52d8e29e4c1a@samsung.com>
-Date: Tue, 31 Mar 2026 09:42:52 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="d+8xOjJP"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1774943216; x=1806479216;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=1OE1EdUAsMxfk5/phBVXm9leBMiE9TM/CxVRkm5/NRA=;
+  b=d+8xOjJPxuwQzQCefK6CngUMVTwtGj80aOODMEc5HUexqBDiCIRevQhR
+   x8GdgsEoehxUMoSOlsLOBAdJP7KlLMo8qB9M9Z4+FEvJKZb3nZXmXPxzF
+   MAynTdbmB/ciMffy9dUki1RhYVDjCk2QKn14XkW1Ph8ooAoePyH53ndvG
+   j+I5OIOsNSqGPAa05IU7i0FbCeWIJ3eMvgU3TbcHkQREeMiIHCmcKQ4b/
+   prCqP5aK922dlPSRhFfjaRNgzhUGk5NIHsFFzSkxX7H/JQ6ynnbCA9E1C
+   OPWBI+Q+IfUycR+SY2MZVQV2aXt8PNXFHJEvgfqp7Z6vZI/veMvhpfdUs
+   A==;
+X-CSE-ConnectionGUID: VrKkymD9Sy6DmzJgHmvTLA==
+X-CSE-MsgGUID: 8BYEjyUAQlujA3nQsh1zUA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11744"; a="75833156"
+X-IronPort-AV: E=Sophos;i="6.23,151,1770624000"; 
+   d="scan'208";a="75833156"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2026 00:46:55 -0700
+X-CSE-ConnectionGUID: mjG5dhAeTpCjAUbC5j16Mw==
+X-CSE-MsgGUID: uROrQDljQwu9oYBb0zT81A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,151,1770624000"; 
+   d="scan'208";a="221420678"
+Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
+  by fmviesa006.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2026 00:46:55 -0700
+Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Tue, 31 Mar 2026 00:46:54 -0700
+Received: from ORSEDG902.ED.cps.intel.com (10.7.248.12) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37 via Frontend Transport; Tue, 31 Mar 2026 00:46:54 -0700
+Received: from DM1PR04CU001.outbound.protection.outlook.com (52.101.61.38) by
+ edgegateway.intel.com (134.134.137.112) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Tue, 31 Mar 2026 00:46:54 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ZQwT/LLcEF0PemwTyyrJvXKHHM9s/LTaqJcss4hBdqAFKd+u41xc28RcbcOdQFe4XqZoDt8NEh+McV7Q/cIYYMxL8MG/CnDkjTD0K/wiJSJ18eh4PquVO52NWD3UMnPVJFIu0NsICJzXC3OEqQnMxOMnilC/sP2DZ09UiIM3wSj2KPtSs6Kr968ozQfZ+X5rY4VtX9902Nz9oLwMxwZWycgndAUQ8ZAWM+Ee3+XvfyxaZQCZBTX+xP31A1ASThs/nywhFknTvhNDrXyz5jSU/q9P3HfhHauDJzCawnhSbJvU04Ikzh76ALF4z9pXfOQOzigwpw5RzJV2i7RBqGHAUg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1OE1EdUAsMxfk5/phBVXm9leBMiE9TM/CxVRkm5/NRA=;
+ b=LCz0cF532EsRA7mPmyxF89YUWfVpT36tVZcyypWLh4NihmLoh0DrL/oJceS3bGXbO8eXDDJlXoT0SuQa43BsdPxqxWZzSl/3oe57RWYEww61xyL3yVEEDuUL1r4Uy9BtYA5KY55EVl5QQ70W6RtUKCU6IKXtCuABut7fveUs/yU2RA4zdFp2YnMOkC/CcWwPRF84iTTStKsOgRF6xQ5c9+wBGR79H+C+PCUIfE8MFj+K9o6r4ufT2lxa+4rrSPOt3WlZ84xVcbvuT2yDyTKV+gKJMFHUjjkl82eY+F2S2yaZp3xMP0WvL4zJufvMqyhq2mY251rS9XqN4WTV+u1Y1g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by MW4PR11MB7150.namprd11.prod.outlook.com (2603:10b6:303:213::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.15; Tue, 31 Mar
+ 2026 07:46:52 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::f997:762f:f079:134f]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::f997:762f:f079:134f%5]) with mapi id 15.20.9769.014; Tue, 31 Mar 2026
+ 07:46:51 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: "Duan, Zhenzhong" <zhenzhong.duan@intel.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+CC: "jgg@ziepe.ca" <jgg@ziepe.ca>, "joro@8bytes.org" <joro@8bytes.org>,
+	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>, "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: RE: [PATCH] iommufd: Fix return value of iommufd_fault_fops_write()
+Thread-Topic: [PATCH] iommufd: Fix return value of iommufd_fault_fops_write()
+Thread-Index: AQHcv/KFDD2z8fgVjkGhUt2wlkTQsbXIRRYQ
+Date: Tue, 31 Mar 2026 07:46:51 +0000
+Message-ID: <BN9PR11MB5276F4A90BA662066CF4A64D8C53A@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20260330030755.12856-1-zhenzhong.duan@intel.com>
+In-Reply-To: <20260330030755.12856-1-zhenzhong.duan@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|MW4PR11MB7150:EE_
+x-ms-office365-filtering-correlation-id: c351a230-9fd1-4933-12e5-08de8ef9ac1e
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|366016|376014|1800799024|38070700021|22082099003|18002099003|56012099003;
+x-microsoft-antispam-message-info: eeYv3fmV8EIPxyochqrvoC7X6EYoXAROwIvtBfo8tuMtOrON6ykmFJyoD/inCP13LmtfSoQ659zbU1a0HBPGVMPqFsTruYmC+1opkP8oCTODDWYsGRT8N6SYwR7xYlZ3Hj4B/xcHzX+Vg05bCkT6jNqIG0j7EnqOjJXsyGjrZ4+/lJLpPymllwpZluVwc+4anTWO9RFTUzSVRNIghVIW5Q1qwBMiklYcML/FtyINn9XfCefzIXX2LUFa0JdmIb5eGArlrxTQOOlwmHArN78jKZ0iGj/xz8T5591yQ1o74UA+fIsS6cVnQkPHWtXXVtnfywt0pO7abE/NezPHZNcztN5fGrI7Un6NwmmACZdIQMwITDyr0r4D1ye7McfvZH8pHQccDiXehyTEPF8ywz4eHwn5unkid2xpv5aNLHbOPUUy6xdizohm8ozSgVu0936BiXnVRF1kFiPnbf8bkEnT2CACnEXUn0aLmWGrUrg4X3dBgwqSmroRVWf6JkpU/sPVhRbaAXfYe9QXRvjTV2HCEdOxd4u/9Tj6PAAyBc0dX+NDJdWLebK50s/R0VenUOcVfe79roLzJ8kZrLIOWge5aK1Qg02BE1aH3XSFXW/XrTyJcCM5cPSz/1sxhmoL3l1Dc4ltvXFYOFzts8bZ/D4r77zsRWnPqTF/T/Po3wTSTdiA/8IZ+hOV1OjZ5pPbs05TIYJWvejyCQDz2R5vcMF+4qcMzgeb0H8LoSUC0uCL4wei5FREdVLyTVIduq2L8zCYayk1BPp6f1iJO03LbU4UvmxmtrHoSdl7C8JbskeqO9c=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(38070700021)(22082099003)(18002099003)(56012099003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?kIhZq8rBupH+ZtNLOWLHjkBgAu+qWXKA+SD38G/5rq4kl9ojtnfFfCm83CZa?=
+ =?us-ascii?Q?twPXEIhHTCFUkF39v+L0WbPRsy/OuGhi/8fSqBzdXqO4aeLNB8iXFbC7Ublc?=
+ =?us-ascii?Q?ONre77kS+evitgu4ei+6eNNDTqhK+2HM8SNi0l3LLf6A2doAa83QTQ8ZMqt1?=
+ =?us-ascii?Q?A+K4CuVEQ5aaabUpBVUKlSGe3yw1Ojr+hWwo5+edxsHOG4+6wploKJydTerS?=
+ =?us-ascii?Q?AnHSo+Riz2ExAcjTGtTFE5mJqvWaRtmlYZrlPlSEDVKUF7Mp6em4q5SS6NoW?=
+ =?us-ascii?Q?lUtxpjtqGx70zpBPGd51VFNuA3iPTgb7NLkUe4l+uOcyH/NXavJUuopJeCEi?=
+ =?us-ascii?Q?/+pcHiwwVuDbY6Yo6K7lsfV3NiCSNssATSrh4qGLsUlMWM41FP4gyhXmgcI2?=
+ =?us-ascii?Q?XwZ95HYy0z4z8X6YFakNmJxfoPJFaMzB2w3rA7cx3C+kPKbaQqoB1wQ/s8FE?=
+ =?us-ascii?Q?gXjlF7FpQ3+cEd1y0MIwpxn2UqdJFJkjh2YTlhOzflk/cSNhaqjMkvPVzyrg?=
+ =?us-ascii?Q?xtMVTuDkMZsz3w+BIlbsIuYIrWZE37G9NDccm1Gs4pp4U9iMfTDSYw9MSo1C?=
+ =?us-ascii?Q?RGd7qC6pGZoFWxUsakoRGEF1J3fhe6JqfFjznZQ0V7NIr+SbMeBYASHFgSq6?=
+ =?us-ascii?Q?M7gt56Qtmmq9vs6W3w3hbbzGPz4FHYSfoBIfI+jj8w6XFW43+8B1NHMmy5y9?=
+ =?us-ascii?Q?hgVf2ds00ciRbG6mnncM09FKTxYt4L2K8E2S+tdUIbjLK0vyLFJCUB8hMcHN?=
+ =?us-ascii?Q?oGIWEusMWeHugQCj0RMJ5OI1Pg8W2dKDGclr2Q/X/fN+vjlfhfTLliXfiSRz?=
+ =?us-ascii?Q?/R/23usIYXdv57wGpkMcIXwwXXwcs7cXVifcP+Ip2WXmoGmkXC+4/kf2V0f3?=
+ =?us-ascii?Q?AyNOQUg49vzk/ogcNTQYjwBGY5uKe3Eq+yc9PwZt7XYpW7Bz4hHWy5KFN8DT?=
+ =?us-ascii?Q?nQk7yHmqiOx5to+AC1AwuESHAcU57UW3dUQv1SiCmDfYyqdMnyO5Wy9/f7e9?=
+ =?us-ascii?Q?QrAryVB6wCWsw3XdJq0U+mYIUEAIifp5/ntc8oiXXGi9JzOc/50eoNJqEEb1?=
+ =?us-ascii?Q?CEajNBRQXCNO9r3nV7oQRFdaaGXXm6ri9UI6O+1dnK+1lqV4Xe4yRs1voTNQ?=
+ =?us-ascii?Q?72QqH3kFhCxJsuzJiNWTRMEmrAeEhr11XeWv8lHqptdn+sX7f3pzTLA2jl83?=
+ =?us-ascii?Q?ma1f1ctGLrReRKybRaHqkkhj0I5IYys6XJySOVp1H8lsGHq0q3gtThRGWXHy?=
+ =?us-ascii?Q?+W+ytrcBwAPOOrmVcVm/eiZi0r//jT250PzWExuUNBqKYb+7r9ndjdgTAQxe?=
+ =?us-ascii?Q?eGnbM28z8JIwEXvKbL87UZTQVHHarcGGsTtfOJYMM4CtcUbbuNYw+zTDk2Xj?=
+ =?us-ascii?Q?Wse9D1JL9dVW4KxfjkuTNg8SYlLMqgFrhJ2rimWIRNWw/xd6fWz2ufrI0tqN?=
+ =?us-ascii?Q?R7stU4vA7UeKSiXfRNNvb7LPPYBEbTfFdIb8sDz6OdYJcVUkbgzhG4KH8p/z?=
+ =?us-ascii?Q?cFCkhZ6ZrnYpNOhsUYoOJdu+EMQcGOyt1ccEDg7q2rpxSKOwQKStO01DOuDw?=
+ =?us-ascii?Q?jF/vUIEZJgr1lF3ZSD4+OBsaWVpN0qROqmAyaB5PmdhI4/4H11hqWvWNcrCv?=
+ =?us-ascii?Q?M2vNu5j04jVOLs4S79xQv7gJd37YiCmyguscPYxXhE0wcokDBiqWA/b8fdVK?=
+ =?us-ascii?Q?1bZsoUQMsiR3K8+vyK4qwxRKG5aIm86A7hTdODXVrE/roGYJvhXwxwKfyWec?=
+ =?us-ascii?Q?5PLhQvEecg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v2] dma/contiguous: Fix broken build
-To: Maxime Ripard <mripard@kernel.org>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>, Benjamin Gaignard
-	<benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>,
-	John Stultz <jstultz@google.com>, "T.J. Mercier" <tjmercier@google.com>,
-	=?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, Robin Murphy
-	<robin.murphy@arm.com>, Albert Esteve <aesteve@redhat.com>,
-	linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	iommu@lists.linux.dev, Mark Brown <broonie@kernel.org>
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20260331-kind-therapeutic-buzzard-8fc55e@houat>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20260331074255eucas1p1bd4e8f4b94051f94cb080e283de744f8
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260330154021eucas1p1ddf347acd21646c96fda4b266ddfc03b
-X-EPHeader: CA
-X-CMS-RootMailID: 20260330154021eucas1p1ddf347acd21646c96fda4b266ddfc03b
-References: <CGME20260330154021eucas1p1ddf347acd21646c96fda4b266ddfc03b@eucas1p1.samsung.com>
-	<20260330-dma-build-fix-v2-1-26d844575815@kernel.org>
-	<a097600b-0860-495f-b918-adef327bdaec@samsung.com>
-	<20260331-kind-therapeutic-buzzard-8fc55e@houat>
+X-Exchange-RoutingPolicyChecked: UiBYGkZ17FfCwmXBtw5ccHk0OTCfaoBCQAxs8EkmwnpDDARj88aghqd/QqfPkUfdKJdiGigH/ZS/rJi+aNbjWpR/j+7hICcLNTQUVGXrlERUPtmCncxZzoQ4yDcOmUI4qe2PT0164oQCThlJDnZvcMDH3DE0qKVCIhhRxCExfeY4w0eNoZfSr7q5oNUgGNrtEejSQwPI8I+hcwNnOAtl57Jo+KTuUXgKgoTkaarGX7hsbPhMiWD/E4oCVe6VG6GNk4s5ZrodUBR1YpIXH5A3SqKV15/s5cEPsW8rcVxEexQzFCXmOWBAuQp1Jd7cXlamU5H7So0lQviEzeHOniaBsw==
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c351a230-9fd1-4933-12e5-08de8ef9ac1e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Mar 2026 07:46:51.8655
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: l1le5h6pF6zdDZQ8JGrNBWngWWurIta7JEFDr3hfOGDGa8u2SOrWNpl+nZ+bPBoRRMHQ2ahacZgnjmpk1v0B4Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB7150
+X-OriginatorOrg: intel.com
 
-On 31.03.2026 09:40, Maxime Ripard wrote:
-> On Mon, Mar 30, 2026 at 07:49:26PM +0200, Marek Szyprowski wrote:
->> On 30.03.2026 17:40, Maxime Ripard wrote:
->>> Commit 3a236f6a5cf2 ("dma: contiguous: Turn heap registration logic
->>> around") didn't remove one last call to dma_heap_cma_register_heap()
->>> that it removed, thus breaking the build.
->>>
->>> That last call is in dma_contiguous_reserve(), to handle the
->>> registration of the default CMA region heap instance.
->>>
->>> The default CMA region instance is already somewhat handled by
->>> retrieving it through the dev_get_cma_area() call in the CMA heap
->>> driver. However, since commit 854acbe75ff4 ("dma-buf: heaps: Give
->>> default CMA heap a fixed name"), we will create two heap instances for
->>> the CMA default region.
->>>
->>> The first one is always called "default_cma_region", and is the one
->>> handled by the call to dev_get_cma_area() mentioned earlier. The second
->>> one is the name it used to have prior to that last commit for backward
->>> compatibility.
->>>
->>> In the case where the default CMA region is defined in the DT, then that
->>> region is registered through rmem_cma_setup() and that region is added
->>> to the list of CMA regions to create a CMA heap instance for.
->>>
->>> In the case where the default CMA region is not defined in the DT
->>> though used to be the case covered by the now removed
->>> dma_heap_cma_register_heap() in dma_contiguous_reserve(). If we only
->>> remove the call to dma_heap_cma_register_heap(), then the legacy name of
->>> the CMA heap will not be registered anymore. We thus need to replace
->>> that call with a call to rmem_cma_insert_area() to make sure we queue
->>> this instance, if created, to create a heap instance.
->>>
->>> Once that call to dma_heap_cma_register_heap() replaced, we can also
->>> remove the now unused function definition, its now empty header, and all
->>> includes of this header.
->>>
->>> Fixes: 3a236f6a5cf2 ("dma: contiguous: Turn heap registration logic around")
->>> Reported-by: Mark Brown <broonie@kernel.org>
->>> Closes: https://lore.kernel.org/linux-next/acbjaDJ1a-YQC64d@sirena.co.uk/
->>> Signed-off-by: Maxime Ripard <mripard@kernel.org>
->>> ---
->>> Changes in v2:
->>> - Fix creation of the CMA heap instance with the legacy name when not
->>>   declared in the DT. 
->>> - Link to v1: https://lore.kernel.org/r/20260330-dma-build-fix-v1-1-748b64f0d8af@kernel.org
->>> ---
->>>  drivers/dma-buf/heaps/cma_heap.c  |  1 -
->>>  include/linux/dma-buf/heaps/cma.h | 16 ----------------
->>>  kernel/dma/contiguous.c           | 14 +++++++++++---
->>>  3 files changed, 11 insertions(+), 20 deletions(-)
->>>
->>> diff --git a/drivers/dma-buf/heaps/cma_heap.c b/drivers/dma-buf/heaps/cma_heap.c
->>> index 7216a14262b04bb6130ddf26b7d009f7d15b03fd..9a8b36bc929f6daa483a0139a2919d95127e0d23 100644
->>> --- a/drivers/dma-buf/heaps/cma_heap.c
->>> +++ b/drivers/dma-buf/heaps/cma_heap.c
->>> @@ -12,11 +12,10 @@
->>>  
->>>  #define pr_fmt(fmt) "cma_heap: " fmt
->>>  
->>>  #include <linux/cma.h>
->>>  #include <linux/dma-buf.h>
->>> -#include <linux/dma-buf/heaps/cma.h>
->>>  #include <linux/dma-heap.h>
->>>  #include <linux/dma-map-ops.h>
->>>  #include <linux/err.h>
->>>  #include <linux/highmem.h>
->>>  #include <linux/io.h>
->>> diff --git a/include/linux/dma-buf/heaps/cma.h b/include/linux/dma-buf/heaps/cma.h
->>> deleted file mode 100644
->>> index e751479e21e703e24a5f799b4a7fc8bd0df3c1c4..0000000000000000000000000000000000000000
->>> --- a/include/linux/dma-buf/heaps/cma.h
->>> +++ /dev/null
->>> @@ -1,16 +0,0 @@
->>> -/* SPDX-License-Identifier: GPL-2.0 */
->>> -#ifndef DMA_BUF_HEAP_CMA_H_
->>> -#define DMA_BUF_HEAP_CMA_H_
->>> -
->>> -struct cma;
->>> -
->>> -#ifdef CONFIG_DMABUF_HEAPS_CMA
->>> -int dma_heap_cma_register_heap(struct cma *cma);
->>> -#else
->>> -static inline int dma_heap_cma_register_heap(struct cma *cma)
->>> -{
->>> -	return 0;
->>> -}
->>> -#endif // CONFIG_DMABUF_HEAPS_CMA
->>> -
->>> -#endif // DMA_BUF_HEAP_CMA_H_
->>> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
->>> index ad50512d71d3088a73e4b1ac02d6e6122374888e..d5d15983060c5c54744d6a63f2b591e1a3455b86 100644
->>> --- a/kernel/dma/contiguous.c
->>> +++ b/kernel/dma/contiguous.c
->>> @@ -40,11 +40,10 @@
->>>  #include <asm/page.h>
->>>  
->>>  #include <linux/memblock.h>
->>>  #include <linux/err.h>
->>>  #include <linux/sizes.h>
->>> -#include <linux/dma-buf/heaps/cma.h>
->>>  #include <linux/dma-map-ops.h>
->>>  #include <linux/cma.h>
->>>  #include <linux/nospec.h>
->>>  
->>>  #ifdef CONFIG_CMA_SIZE_MBYTES
->>> @@ -217,10 +216,19 @@ static void __init dma_numa_cma_reserve(void)
->>>  static inline void __init dma_numa_cma_reserve(void)
->>>  {
->>>  }
->>>  #endif
->>>  
->>> +#ifdef CONFIG_OF_RESERVED_MEM
->>> +static int rmem_cma_insert_area(struct cma *cma);
->>> +#else
->>> +static inline int rmem_cma_insert_area(struct cma *cma)
->>> +{
->>> +	return 0;
->>> +}
->>> +#endif
->>> +
->>>  /**
->>>   * dma_contiguous_reserve() - reserve area(s) for contiguous memory handling
->>>   * @limit: End address of the reserved memory (optional, 0 for any).
->>>   *
->>>   * This function reserves memory from early allocator. It should be
->>> @@ -271,13 +279,13 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
->>>  						  &dma_contiguous_default_area,
->>>  						  fixed);
->>>  		if (ret)
->>>  			return;
->>>  
->>> -		ret = dma_heap_cma_register_heap(dma_contiguous_default_area);
->>> +		ret = rmem_cma_insert_area(dma_contiguous_default_area);
->>>  		if (ret)
->>> -			pr_warn("Couldn't register default CMA heap.");
->>> +			pr_warn("Couldn't queue default CMA region for heap creation.");
->>>  	}
->>>  }
->>>  
->>>  void __weak
->>>  dma_contiguous_early_fixup(phys_addr_t base, unsigned long size)
->>>
->>> ---
->> Huh, this is still not the correct fix to restore the old behavior.
->> When !CONFIG_OF_RESERVED_MEM the default cma area should be still
->> registered as the default cma dma-buf heap.
-> You're right, but it feels that it's a fundamental flaw in the original
-> patch rather than a quick fix for the build now. Can you drop the
-> patches you applied entirely? If so, I'll send a new version of that
-> series.
+> From: Duan, Zhenzhong <zhenzhong.duan@intel.com>
+> Sent: Monday, March 30, 2026 11:08 AM
+>=20
+> copy_from_user() may return number of bytes failed to copy, we should
+> not pass over this number to user space to cheat that write() succeed.
+> Instead, -EFAULT should be returned.
+>=20
+> Cc: stable@vger.kernel.org
+> Fixes: 07838f7fd529 ("iommufd: Add iommufd fault object")
+> Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-I've dropped the whole branch already.
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
