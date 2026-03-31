@@ -1,112 +1,233 @@
-Received: from mail-m49242.qiye.163.com (mail-m49242.qiye.163.com [45.254.49.242])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9489C3D9DC7
-	for <iommu@lists.linux.dev>; Tue, 31 Mar 2026 07:57:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.254.49.242
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774943866; cv=none; b=m8R7yjHHw8tjnD4o2p6GFAk3XX9PU5H0KPRdQgi2tnXTmYWzP/2MTiyDY9erUqLsibUlL0/Qi2UD6YqdodIo1YhskeOgESUGFBKCETn2yz6d7xQTc/t3Fpf6+p5F84g5PQCIpD0vvqDFr5+2EB57lugQ/yG66n1L6HF2Fw4PVbU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774943866; c=relaxed/simple;
-	bh=9GRPv5yytGjf3DYRtG28HAttACkCAsdrriMUcnOujPo=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=Ap8UAs8U3ICrqzfT2A9/oq6BUEq/9gur6hpMtUwRJZXC+iROYL67qEK4BdMl6SCvwMxToFeG8KewQYD4lwiWxU06qeSnQgvh2KF+Wr9DT+GgZDIn78ftu2DxHreVcs2B/Ph3fVashnRhVBZsNpoNvQnrdFujKn7agmbiFE8+u1Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=FFStyb+B; arc=none smtp.client-ip=45.254.49.242
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF0113DA7D5
+	for <iommu@lists.linux.dev>; Tue, 31 Mar 2026 08:19:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.16
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774945175; cv=fail; b=n2xBR1H3aCIvkn6atJsKf7SiqbZebhl4lbbXThUrYUIAJd7hwKgVtPntAngxRAhiyG5nKGw2NpONTXZaluBsgehUOrnESjHkA2awJuuxx4GW7Sd8zh3hx4wYnNRbCI9Iuk9Nnaen3oqtqyN196iIXbccpOYpyMh8OpojTqv766o=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774945175; c=relaxed/simple;
+	bh=lkwSrrHeaTy0NZEu7oXPfH9QyLMTyoNiK6/SMFIi1jc=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=ghXgkP7eGNSDuxlvOhfiJuYYxSFKoK4wUFM4d8Q87BPaj3fs9Ts1uIEfdBkcIQtiJnm7k8fHsIggYzpTA/TvwOKfvZfZTR+3RNcVp7bK0eHMeJ4gZFKdOyLoRgi1R1YeEYX0mMOOxAODwQxb+8NOfLrZQ6/DoYqRP/HeVXJuEG8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IDJWLFA3; arc=fail smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="FFStyb+B"
-Received: from [172.16.12.17] (unknown [58.22.7.114])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 38f5d4f4e;
-	Tue, 31 Mar 2026 15:57:36 +0800 (GMT+08:00)
-Message-ID: <66305bf3-338b-ee5e-c9ad-3ff5639f5002@rock-chips.com>
-Date: Tue, 31 Mar 2026 15:57:34 +0800
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IDJWLFA3"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1774945173; x=1806481173;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=lkwSrrHeaTy0NZEu7oXPfH9QyLMTyoNiK6/SMFIi1jc=;
+  b=IDJWLFA332dCPckZBTmqusma5esT6d4ayl7dAaQQOo1OaWjQ7vhXwFnQ
+   pvslRKa5ggutE32JCFjhqzilHw/lbRy5HrJh535lPi7CYnm+wxjzdHLS+
+   ojoutGI6LKrZbW/x7Mu5zgHBiF1ANO58bCA+MsdNjvw6Qs6J83He6tx3C
+   on/fgiVpQ8rmi726FRUNmelxYtJ15EoBWtu7uiPw1iOO6bAONoXIBSeIi
+   SuUROkatBiyBlf0Ft3qQfLyPK8wQ6QCUKX7lebrY4ABVja535Sc2NWeS2
+   9bPuDP+oL0AG+aS0PEUNWkG/LOtEypDWR+2cDcURD9e0XCCCMQzoF5qud
+   A==;
+X-CSE-ConnectionGUID: XTwPc55LSgmomZ+DpZv3rQ==
+X-CSE-MsgGUID: Kbpt2jjiRDWWYgn0lr8aDw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11744"; a="76140299"
+X-IronPort-AV: E=Sophos;i="6.23,151,1770624000"; 
+   d="scan'208";a="76140299"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2026 01:19:25 -0700
+X-CSE-ConnectionGUID: rXxFvflZQqmcddiNlFh8FA==
+X-CSE-MsgGUID: rjcav9qSQ6az2DPLZTztQg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,151,1770624000"; 
+   d="scan'208";a="221894366"
+Received: from fmsmsx902.amr.corp.intel.com ([10.18.126.91])
+  by fmviesa010.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2026 01:19:24 -0700
+Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Tue, 31 Mar 2026 01:19:24 -0700
+Received: from fmsedg901.ED.cps.intel.com (10.1.192.143) by
+ FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37 via Frontend Transport; Tue, 31 Mar 2026 01:19:24 -0700
+Received: from DM5PR21CU001.outbound.protection.outlook.com (52.101.62.58) by
+ edgegateway.intel.com (192.55.55.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Tue, 31 Mar 2026 01:19:23 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=O+w0dN6LAOH60VxXY3IXgmSE0tIuWR++iBnW6BrC/vbJlSw5kacguD3xrUsHLTt6M10eMVOr/9FeDl1AMEzrB+lHpIJrUec0teNbEwGOlt+Q0+cH1+5EuSipZY8K22hODZ4WTN9Vld7Gm2DFsSwYwAjM6PbXUzi1dlZR+HDmKOmzlHHL7odXsqsTYGK3JlSMnaf1spF80u/Hdu/yoKoe7fvSvjWacZYAoi+5qfZfno+YbTdGu4YtyXQALvil26iPI189hFEAgHnfC5HMacvY5HyqaPn5SeJ/8EiHsM2/Vq6+mIETQDB73dd9dat/gIkzIu9hWnyZA4uWyCe33l9y1A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lkwSrrHeaTy0NZEu7oXPfH9QyLMTyoNiK6/SMFIi1jc=;
+ b=REHvWzvUkBZ92HiVYZ1KHFnDBafPeLZGhuLUVLI4j6N6hEtmDWigA0U/luUHHaktyYDa3jqcYxUEd7XjUERLyPilIEQfpngxQzkj+2xD/6lNVdO5M1qtZJR4PvTpkhWldVqsVYeZbrf4/L+SARlFNwFHoiZlPMjqYVHZFxZ8W5zLPVNNkYbOZ/aQ7QYHdZSwfrigvMw+WKq2dmIJjrmGd9iz97j+CcsR9YxhymkayCAxph51hKJUD01Sqw8DVGXL5hKSYi9yRuLqQwRokKCdNc9zoHR5rzWG2mVuY6HGnDuyE/5yvVL0X3d97/gOF2HnquvY48dt6Hieb3PmMkBmuA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by DM4PR11MB6191.namprd11.prod.outlook.com (2603:10b6:8:ac::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.15; Tue, 31 Mar
+ 2026 08:19:19 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::f997:762f:f079:134f]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::f997:762f:f079:134f%5]) with mapi id 15.20.9769.014; Tue, 31 Mar 2026
+ 08:19:19 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Nicolin Chen <nicolinc@nvidia.com>, "jgg@nvidia.com" <jgg@nvidia.com>,
+	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>
+CC: "joro@8bytes.org" <joro@8bytes.org>, "praan@google.com"
+	<praan@google.com>, "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"miko.lenczewski@arm.com" <miko.lenczewski@arm.com>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-pci@vger.kernel.org"
+	<linux-pci@vger.kernel.org>, "Williams, Dan J" <dan.j.williams@intel.com>,
+	"jonathan.cameron@huawei.com" <jonathan.cameron@huawei.com>, Vikram Sethi
+	<vsethi@nvidia.com>, "linux-cxl@vger.kernel.org" <linux-cxl@vger.kernel.org>
+Subject: RE: [PATCH v3 1/3] PCI: Allow ATS to be always on for CXL.cache
+ capable devices
+Thread-Topic: [PATCH v3 1/3] PCI: Allow ATS to be always on for CXL.cache
+ capable devices
+Thread-Index: AQHcrcLZlsPpC1aSZEGOkgr6dEwpTbXIca9Q
+Date: Tue, 31 Mar 2026 08:19:19 +0000
+Message-ID: <BN9PR11MB5276A6B1B103C4B0201458348C53A@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <cover.1772833963.git.nicolinc@nvidia.com>
+ <a0dd3e4cc5260f55bbec5b3ed6791def33028735.1772833963.git.nicolinc@nvidia.com>
+In-Reply-To: <a0dd3e4cc5260f55bbec5b3ed6791def33028735.1772833963.git.nicolinc@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|DM4PR11MB6191:EE_
+x-ms-office365-filtering-correlation-id: 8bc76981-b911-40bc-3c96-08de8efe34e5
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|366016|7416014|376014|38070700021|18002099003|56012099003|22082099003;
+x-microsoft-antispam-message-info: K9WYwXPvyZ17fEuP2BGm2teDw2v0UmdLlL0+7Mf169TZYnl1hQp0dZnZb5R51+GHNDB/sq2CWRv5kskXSz6DvHuEZEkZ3yOBfYQ4sdbpr7m8glGD9eh+tCsf/zptwuqxel8+ys7DgMRNGqO43Hs9TA5FI964I1TatEojp/HX7tCUpG8C3K1bBi73o9kb2MlCg9+6CQzqM64jqNI+8Q+bKkcHVxdaV0Z+u37yqNchZhw6zqikvHqo+m08pWhsWc2tGXjWHiMdjwK9W5SPRp9qkpied02UrFfGa1tZNs2ei4pqAGP7A9hrY4bNVYyOeyUgHFpOUxYA4m23KhEktnng0V97f1CLusLK917DLc1EP0cYCzVt2Hdi0lTICKg1IGHyVNQ8s5HEZNZJ3cdiWWm99GrhxeWDax+dr/LuKdKlUt/m94QVB4PKpvJqJKj3rOPP9jTcJOira9rQs233F2mTa4+hIlAJ3znxJllcEhwSNwbuDxUH3Vdn4cXOVx3KOTOy4UtxNrWIblnWryaYTqhvlPLJJXDuhtWOUeZWI1gWAPfzGTVebFKzeKcGf1LrvvyF13Wv6d3MO8ZllCT0kx+tdWq0XlLhlmoYGKhQxiRhh2/ccjDlqgD6DI/Jc2ChesAPOW0wlme4mqfb/UQMbaJNAAvJtDh2tgrZZphZ8lDjCDLLyaIrjiDorLYpMbPq1h9o4EQoAUWYH2dZzp63JbxWtW2MFWOaS6Oj7+9jIT0kYXurv98f/hM2mSq0UIoOkGsISdPH+qqX6lX6M9Y1t99tI+lsbz1HFXrvJ/yXzFr6dFQ=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014)(38070700021)(18002099003)(56012099003)(22082099003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?GMrrEQoDhIcBkWJ7Qzm+VNBb3KHnTxYMXf7eM7wbN1D0X7DlJZ6GIOKWQvkh?=
+ =?us-ascii?Q?Zf/4TRc8VwLumQ5KEim0CHxzjLej5NRVapr5vkQBcITM4ggk+HXoP+TGaTcF?=
+ =?us-ascii?Q?Jgi3gGX125iIsYCRM8mQ7zGlcpShc7BxuHIZEH6483spBtMQSmJDXrI2izEM?=
+ =?us-ascii?Q?KPZ728iN1cu0cJsu3ZXWngHhtpirf2PSWyIWy8nTm9bVAREdMQQVD9/+X/di?=
+ =?us-ascii?Q?rs+Zc6BGT78bcIUlof3bzv0DvQI0YU3DiA/lIGxdTSsVgriq8MXgGJ4pzVFj?=
+ =?us-ascii?Q?uzJdwDxNWqdkvPtJh5z0WjqmO6VvVRgg2a7f0oqEcz3tj7nKB+iiFoulrfzN?=
+ =?us-ascii?Q?zanFbPp4bGbSpyg7V/eLxTPt+b8E3rt+J9lBFsSRBCPTk3RYmPXIK+5nvFuZ?=
+ =?us-ascii?Q?ntcovjPVFtjI4hPLF2XTY3SZ7ZObDjwnNq1FkXyguAIFxSsaoI1fg0q09Y3O?=
+ =?us-ascii?Q?pmaV7FvsAoO/ld9SKCv7U2tGEqAVbSAGnvlftbUZr1cXLRMLxwrGDHQXpcOR?=
+ =?us-ascii?Q?44/QLFEkm6KzEdNDFBF3Ru/AXiuGm6Ey1iwVS4SVX+HS2L4bAghVQo+djP5x?=
+ =?us-ascii?Q?ls3j/adWjl0oxFvqdEySZJtCTO9m4c6Xj1JjteRUfkOkKpcJ/6c0Y2PgzcXB?=
+ =?us-ascii?Q?V/uAHcSPz6C3qxCo5PCGpbAjwRt/RLfQZITpNlUOFWLnaDPMhnbO07oeHi8k?=
+ =?us-ascii?Q?QehSygF2lXflNHOLlAfi0OrFKuKP7s5sEVeGvZ3ItieWUAEOp3230zRc22ni?=
+ =?us-ascii?Q?HknZo9djCXKBUeUoJwwbxxQzwPyo28IgGwHHfRyhZ0WR1GogFfWDzO6uUQlI?=
+ =?us-ascii?Q?v301QDknR9AINtBqVgl2sRVGvR+/q4x+JMx3ykFv3YCZDtoN2r9N76Bd9xgX?=
+ =?us-ascii?Q?xj9uJjLFysjNwOOtmWvz3vsX5Ki3uO408DeC4q1ISTTHu8Jz8IkZKfdKVtgT?=
+ =?us-ascii?Q?y3hyZP9uc9QaCGn2vf0wPMZX8imY0KcvcBbS5/9zOX7cVX13wCRzQs/BKkQY?=
+ =?us-ascii?Q?zTX8jU48C7gJ26KU2P+XL1Dv5QcAbsTDGDG7IEVS11BOO1IIkTEDK6Dm9H5q?=
+ =?us-ascii?Q?luQqcvx5kblUC+Yi511aQHgNpiSyF4SVcu0Trp4xGypQsDVkOGcFwHlCphdJ?=
+ =?us-ascii?Q?VKSiF9wKnpeldg+ZN43d2D1KMYsCuW5dHduK235Ro24ZFaphsl6+D6S0qeJg?=
+ =?us-ascii?Q?EhajoS/dIoERVPK+Heq7gWXkKiTBdqEZpgrt2ivYIP2aWNq4YGj5eLTvUANc?=
+ =?us-ascii?Q?r460DJ9ZSE7uuS9hq277sRzxWqsNqdbWbJB+XLCe/U/ktvDUY6U8HiSJzir5?=
+ =?us-ascii?Q?6/jrLrvGjZnNbnkhGqnJti/3xUVEFA7S3CkYRfpj5yqYDUMnvYJPOyFFkHpf?=
+ =?us-ascii?Q?4RUN+Xwm1hSQ7H8VIt7B1LfhTPxZOLECu4FM8foAQF3W4lsY+rE+KmHz0LNE?=
+ =?us-ascii?Q?HYY67lBWHjG3Pg7UxvMhU5gppFqEaB3PLZBVZZ4Eirdwz43Rrp/2ud3vUgv+?=
+ =?us-ascii?Q?nJ6i53Use6/dN9ds9g5rBRah+Esw0QZ/dJDT0M52sRz79ZRHtl3pAyBdF33L?=
+ =?us-ascii?Q?2x6lg4LLaOSEvUUhN8N+UU10RaX3Fn01fben+dVjOcVq3CYBNDRrQP20xdsO?=
+ =?us-ascii?Q?8GQ/JaI/zrgld/1KUmZSelnp5khXWYWibVrU2pXbczMQMY7plsfs6jhCaiNW?=
+ =?us-ascii?Q?dxzXlt8FFxkd24L10vlKSNzWiADcojnaCENlolR1vbT07+RxoApWS7NcZWx/?=
+ =?us-ascii?Q?7VVAy5rRKw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.1
-Cc: shawn.lin@rock-chips.com, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, heiko@sntech.de, jonas@kwiboo.se,
- linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org, iommu@lists.linux.dev,
- Simon Xue <xxm@rock-chips.com>
-Subject: Re: [PATCH] iommu/rockchip: fix page table allocation flags for v2
- IOMMU
-To: Midgy BALON <midgy971@gmail.com>
-References: <20260331075010.1463-1-midgy971@gmail.com>
-From: Shawn Lin <shawn.lin@rock-chips.com>
-In-Reply-To: <20260331075010.1463-1-midgy971@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-HM-Tid: 0a9d42e5e66709cckunm1531d01ef14156
-X-HM-MType: 1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFDSUNOT01LS0k3V1ktWUFJV1kPCRoVCBIfWUFZGUodGlZLQx5NTE9DTR1CHR1WFRQJFh
-	oXVRMBExYaEhckFA4PWVdZGBILWUFZTkNVSUlVTFVKSk9ZV1kWGg8SFR0UWUFZT0tIVUpLSU9PT0
-	hVSktLVUpCS0tZBg++
-DKIM-Signature: a=rsa-sha256;
-	b=FFStyb+Bi2FuVK7Y0fE88p9wVWjK6i3ztZrv5fl141gBwzGBsSytLS6qGTslX6HwkQvRZs026r2/PvlvrNc12AwPJ8TtdRK20T/pGkYV4+SGmEucUkOkFep1ZUq91aYz4zuFa/P3AK54mO/WVW00SiHrOYchao+O/TNUhLeXIp0=; s=default; c=relaxed/relaxed; d=rock-chips.com; v=1;
-	bh=7DgGO+0Bl7QC0qCoRe3NT49Uq/dkgfuo3K9jkSPj7GE=;
-	h=date:mime-version:subject:message-id:from;
+X-Exchange-RoutingPolicyChecked: drr/bBQQJXOmzM1kjDOzlcWnonI84f3LqH0z6A/xKQID0tAmv2rCDnADT89pPRI1BZJvOcTeieCwnV76ka65f1KQgQuTA2qdpjZjM6avZhj4rKpJ5wVQRoUeZXuZdtwhqXKvJvAZkrgkEmaaP5gnfVKfXwPAXmDSIUl4wCUH0YFvwoqg8Ex9miFEuEE9itWdgZPxJXJDvuDTmmrBEvuhRM9IvmFVOmIY7UoJBe48xtDiQjsFD+PvtiyEhcnrzsN373xIMGxd8/hMIOVDMf8OglxniDPsQsAIc4gX+P2EUn04WJ3lv+V2MIdsXutpDNdlW3Fl8RiqJWw4t8xEapO3fA==
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8bc76981-b911-40bc-3c96-08de8efe34e5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Mar 2026 08:19:19.3101
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: wacubI2SU04eau/0TpfmvdbwELG3T2V4unPB/6PuoXHGtHUuYPNvnY/2bTP+cxIG9/Mdi5pt/POxBUmNLlY+5w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6191
+X-OriginatorOrg: intel.com
 
-+ Simon
+> From: Nicolin Chen <nicolinc@nvidia.com>
+> Sent: Saturday, March 7, 2026 7:41 AM
+>=20
+> Controlled by the IOMMU driver, ATS is usually enabled "on demand" when
+> a
+> device requests a translation service from its associated IOMMU HW runnin=
+g
+> on the channel of a given PASID. This is working even when a device has n=
+o
+> translation on its RID (i.e., the RID is IOMMU bypassed).
 
-在 2026/03/31 星期二 15:50, Midgy BALON 写道:
-> commit 2a7e6400f72b ("iommu: rockchip: Allocate tables from all
-> available memory for IOMMU v2") removed GFP_DMA32 from
-> iommu_data_ops_v2, reasoning that RK356x and RK3588 IOMMU v2 hardware
-> supports up to 40-bit physical addresses for page tables.  However, the
-> RK3568 IOMMU page-table walker uses a 32-bit AXI bus: it cannot access
-> physical addresses above 4 GB regardless of the address encoding range.
-> 
-> On boards with more than 4 GB of RAM (e.g. 8 GB LPDDR4X), removing
-> GFP_DMA32 causes two distinct failure modes:
-> 
-> 1. Direct allocation above 4 GB: iommu_alloc_pages_sz() may return
->     memory above 0x100000000.  The hardware page-table walker issues a
->     bus error trying to dereference those addresses, causing an IOMMU
->     fault on the first DMA transaction.
-> 
-> 2. SWIOTLB bounce-buffer poisoning: without GFP_DMA32, page tables land
->     above the SWIOTLB window.  dma_map_single() with DMA_BIT_MASK(32)
->     then bounces them into a buffer below 4 GB.  rk_dte_get_page_table()
->     returns phys_to_virt() of the bounce buffer address; PTEs are written
->     there; the next dma_sync_single_for_device(DMA_TO_DEVICE) copies the
->     original (zero) data back over the bounce buffer, silently erasing the
->     freshly written PTEs.  The IOMMU faults because every PTE reads as zero.
-> 
-> Restore GFP_DMA32 (and DMA_BIT_MASK(32)) for iommu_data_ops_v2, which
-> currently only serves "rockchip,rk3568-iommu" in mainline.
-> 
-> Tested on Radxa ROCK 3B (RK3568, 8 GB LPDDR4X):
->    - MobileNetV1 via RKNN: 5.8 ms/inference (IOMMU mode)
->    - YOLOv5s 640x640 via RKNN: ~57 ms/inference (IOMMU mode)
->    - No IOMMU faults, correct inference results
-> 
-> Fixes: 2a7e6400f72b ("iommu: rockchip: Allocate tables from all available memory for IOMMU v2")
-> Cc: stable@vger.kernel.org
-> Cc: Jonas Karlman <jonas@kwiboo.se>
-> Signed-off-by: Midgy BALON <midgy971@gmail.com>
-> ---
->   drivers/iommu/rockchip-iommu.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-> index 85f3667e797..8b45db29471 100644
-> --- a/drivers/iommu/rockchip-iommu.c
-> +++ b/drivers/iommu/rockchip-iommu.c
-> @@ -1358,8 +1358,8 @@ static struct rk_iommu_ops iommu_data_ops_v2 = {
->   	.pt_address = &rk_dte_pt_address_v2,
->   	.mk_dtentries = &rk_mk_dte_v2,
->   	.mk_ptentries = &rk_mk_pte_v2,
-> -	.dma_bit_mask = DMA_BIT_MASK(40),
-> -	.gfp_flags = 0,
-> +	.dma_bit_mask = DMA_BIT_MASK(32),
-> +	.gfp_flags = GFP_DMA32,
->   };
->   
->   static const struct of_device_id rk_iommu_dt_ids[] = {
+ATS is usually enabled "on demand" when a given PASID on the device
+is attached to an I/O page table. Above sounds like there will be a softwar=
+e
+action to enable ATS upon a device translation request.
+
+>=20
+> However, certain PCIe devices require non-PASID ATS on their RID even
+> when
+> the RID is IOMMU bypassed. Call this "always on".
+>=20
+> For instance, the CXL spec notes in "3.2.5.13 Memory Type on CXL.cache":
+> "To source requests on CXL.cache, devices need to get the Host Physical
+> Address (HPA) from the Host by means of an ATS request on CXL.io."
+>=20
+> In other words, the CXL.cache capability requires ATS; otherwise, it can'=
+t
+> access host physical memory.
+>=20
+> Introduce a new pci_ats_always_on() helper for the IOMMU driver to scan a
+> PCI device and shift ATS policies between "on demand" and "always on".
+>=20
+> Add the support for CXL.cache devices first. Pre-CXL devices will be adde=
+d
+> in quirks.c file.
+>=20
+> Note that pci_ats_always_on() validates against pci_ats_supported(), so w=
+e
+> ensure that untrusted devices (e.g. external ports) will not be always on=
+.
+> This maintains the existing ATS security policy regarding potential side-
+> channel attacks via ATS.
+>=20
+> Cc: linux-cxl@vger.kernel.org
+> Suggested-by: Vikram Sethi <vsethi@nvidia.com>
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+
+with a nit:
+
+> +/*
+> + * CXL r4.0, sec 3.2.5.13 Memory Type on CXL.cache notes: to source
+> requests on
+> + * CXL.cache, devices need to get the Host Physical Address (HPA) from t=
+he
+> Host
+> + * by means of an ATS request on CXL.io.
+> + *
+> + * In other world, CXL.cache devices cannot access host physical memory
+> without
+> + * ATS.
+> + */
+
+s/world/words/
