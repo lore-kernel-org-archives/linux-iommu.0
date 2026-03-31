@@ -1,184 +1,143 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 58B77425CE6
-	for <iommu@lists.linux.dev>; Tue, 31 Mar 2026 17:29:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp.forwardemail.net (smtp.forwardemail.net [149.28.215.223])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8F1E378D87
+	for <iommu@lists.linux.dev>; Tue, 31 Mar 2026 18:24:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=149.28.215.223
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774978190; cv=none; b=DQO8LAvLDMBIscmJ9CzFV0yknY26SVPVVSMnoAoCM23fjgjXW2EO65XA4v6GVKdadDg9x1qW6Mm73xmE4LB0RpPUNSm4CQYuoXYm34ogGVZfS9RzhsR48KCzVnIoic6skPW837Ru8sacE84Y1wmktvxiMbYC/e2njsEDgq0SxGQ=
+	t=1774981443; cv=none; b=s0n6LQgrThvGdeSmeL7jixRhS/JVK9NwCG/HnqljtcvwZUE1aLxCXW81Mmdbcy7onH3SKHyQQTE4qtFS0GVgEmLcgx0GvOQ2ZWEeXgCu2daD/1eb3+lkgiMi+FhP4C+CzC73ydJ//tc00TNegp6fsjnWzXHpgvGMT+0Z2JA55Dg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774978190; c=relaxed/simple;
-	bh=afVsWC6romX46kha/VBu12xNrAFtVlaO2v0vB2nouaQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=cfmxKqGTU1eHiD3Udikh0FCzp3G31nNby8skhC+TBaZ+9hpCGnw80pqwKd4QQB1SfjLH26clOBkCRE97MNpYUupL86eVfg0M1+mYJKt8HKjSm9U9lx/Cfj5at2TuWn0DRH7QtH15x7bvWOVfHAlYDibbwd49b7VH04HMS8o3xWg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=i19tkGE3; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1774981443; c=relaxed/simple;
+	bh=uT3Wywe2Ye+uMM+gXvvOmQMmNSWzvB1Lp4GHwg0ss/Y=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=XjbfAbGK8POt6c/Q+yXa50WNoILglhjPOiPaUnNgATxoMCdc5JY7YZ5rBBcIyGoxEU2+tmtNKL6Oeo5FHnsOs5qFR7tebha9TEP5SbeBKctHGoBJcOSpBP6zlccoXhUqiUGqsRvZMV18QhfUfd99/499xy/eKnkwvIuwkhxyOtU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=kwiboo.se; spf=pass smtp.mailfrom=fe-bounces.kwiboo.se; dkim=pass (2048-bit key) header.d=kwiboo.se header.i=@kwiboo.se header.b=n2namY+8; arc=none smtp.client-ip=149.28.215.223
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=kwiboo.se
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fe-bounces.kwiboo.se
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="i19tkGE3"
-Received: from localhost (unknown [20.236.10.163])
-	by linux.microsoft.com (Postfix) with ESMTPSA id E0F7E20B6F01;
-	Tue, 31 Mar 2026 10:29:47 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E0F7E20B6F01
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1774978188;
-	bh=Kvk3FSW5Gw7haGBEArO4UciHWuhKops6mpak1udWgH8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=i19tkGE3AK3BwMnpKt9RVyDWEEqULnNiM8h7ZIel1bWfoZhS+pi4XxfOe84OzFlR/
-	 KtVavqZuEYtzTaIOE6QhoE6dB0GK2xq7h+SM8GsM3RnWLQ7lsqA1LeTzz3sSDN4t6M
-	 nhhckzMzQgsFfntLbSC9LrPTRkWEQcezDCcYCS2Q=
-Date: Tue, 31 Mar 2026 10:29:46 -0700
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Yu Zhang <zhangyu1@linux.microsoft.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe
- <jgg@ziepe.ca>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Will
- Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/amd: Remove dead code for exclusion ranges in
- IVMD
-Message-ID: <20260331102946.00004bcc@linux.microsoft.com>
-In-Reply-To: <20260331152550.479841-1-zhangyu1@linux.microsoft.com>
-References: <20260331152550.479841-1-zhangyu1@linux.microsoft.com>
-Organization: LSG
-X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=kwiboo.se header.i=@kwiboo.se header.b="n2namY+8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kwiboo.se;
+ h=Content-Transfer-Encoding: Content-Type: In-Reply-To: From: References:
+ Cc: To: Subject: MIME-Version: Date: Message-ID; q=dns/txt;
+ s=fe-e1b5cab7be; t=1774981440;
+ bh=SGfD5RUo85f+4kW7EBlx3yRh1/KFzFoR81S/pihvcqU=;
+ b=n2namY+8gtWv4eieronZ3/3hfsgsAHEbZ3IBq2/5gSypf8Xb1HNWTu/kY7T0uMkyqX8pk/6zI
+ P+3ldBtBFzblK6ivKhcT5xn82wUhb+UkPOkkur7KQwVWgpMVUrDsXzwe6fBbdFsqnFIIFJPbLB2
+ 73RGVakE1YWBAnfetlH3zTl826/Whf9hYkI4lf+0nBMKOnEU3mltlfUd7MmBLSXFGDENZUfqDQR
+ 0gHTqkXWn8fWTDg8cXJ+Kr72W+Ws1brNtQ82TTGuD4HJ54jUL+watpym4K5cJQogz38gavUrD4S
+ eHpy1/zDfnKwb2T49TEIHkgGm+SNe7rh3F7CSdT8unCw==
+X-Forward-Email-ID: 69cc0ecb650cf26cfd1ee59c
+X-Forward-Email-Sender: rfc822; jonas@kwiboo.se, smtp.forwardemail.net,
+ 149.28.215.223
+X-Forward-Email-Version: 2.6.64
+X-Forward-Email-Website: https://forwardemail.net
+X-Complaints-To: abuse@forwardemail.net
+X-Report-Abuse: abuse@forwardemail.net
+X-Report-Abuse-To: abuse@forwardemail.net
+Message-ID: <3cd63b3d-1c5e-4a11-856e-c4aeb5d97d55@kwiboo.se>
+Date: Tue, 31 Mar 2026 20:13:28 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/rockchip: fix page table allocation flags for v2
+ IOMMU
+To: Midgy BALON <midgy971@gmail.com>
+Cc: Shawn Lin <shawn.lin@rock-chips.com>, Simon Xue <xxm@rock-chips.com>,
+ iommu@lists.linux.dev, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, heiko@sntech.de, linux-arm-kernel@lists.infradead.org,
+ linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+References: <20260331075010.1463-1-midgy971@gmail.com>
+Content-Language: en-US
+From: Jonas Karlman <jonas@kwiboo.se>
+In-Reply-To: <20260331075010.1463-1-midgy971@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-Hi Yu,
+Hi Midgy,
 
-On Tue, 31 Mar 2026 23:25:50 +0800
-Yu Zhang <zhangyu1@linux.microsoft.com> wrote:
-
-> Exclusion ranges in IVMD are treated as unity mappings with r&w
-> permissions since commit 0bbe4ced53e3 ("iommu/amd: Fix the
-> overwritten field in IVMD header"), using 1:1 mappings. And IOMMU
-> Exclusion Base & Range Limit Registers (0x0020/0x0028) are actually
-> no longer used.
+On 3/31/2026 9:50 AM, Midgy BALON wrote:
+> commit 2a7e6400f72b ("iommu: rockchip: Allocate tables from all
+> available memory for IOMMU v2") removed GFP_DMA32 from
+> iommu_data_ops_v2, reasoning that RK356x and RK3588 IOMMU v2 hardware
+> supports up to 40-bit physical addresses for page tables.  However, the
+> RK3568 IOMMU page-table walker uses a 32-bit AXI bus: it cannot access
+> physical addresses above 4 GB regardless of the address encoding range.
 > 
-> As a result, several definitions and code paths became dead code:
+> On boards with more than 4 GB of RAM (e.g. 8 GB LPDDR4X), removing
+> GFP_DMA32 causes two distinct failure modes:
 > 
->  - exclusion_start/exclusion_length in struct amd_iommu are never
->    assigned,
->  - iommu_set_exclusion_range() always returns 0 now.
->  - MMIO_EXCL_ENABLE_MASK & MMIO_EXCL_ALLOW_MASK are only used by
->    the removed iommu_set_exclusion_range().
->  - DEV_ENTRY_EX is no longer set in any DTE.
->  - IOMMU_UNITY_MAP_FLAG_EXCL_RANGE is no longer set, thus the
->    IOMMU_RESV_RESERVED branch in amd_iommu_get_resv_regions() is
->    no longer reachable.
+> 1. Direct allocation above 4 GB: iommu_alloc_pages_sz() may return
+>    memory above 0x100000000.  The hardware page-table walker issues a
+>    bus error trying to dereference those addresses, causing an IOMMU
+>    fault on the first DMA transaction.
 > 
-> Just remove all of the dead code. No functional change.
+> 2. SWIOTLB bounce-buffer poisoning: without GFP_DMA32, page tables land
+>    above the SWIOTLB window.  dma_map_single() with DMA_BIT_MASK(32)
+>    then bounces them into a buffer below 4 GB.  rk_dte_get_page_table()
+>    returns phys_to_virt() of the bounce buffer address; PTEs are written
+>    there; the next dma_sync_single_for_device(DMA_TO_DEVICE) copies the
+>    original (zero) data back over the bounce buffer, silently erasing the
+>    freshly written PTEs.  The IOMMU faults because every PTE reads as zero.
 > 
-> Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
+> Restore GFP_DMA32 (and DMA_BIT_MASK(32)) for iommu_data_ops_v2, which
+> currently only serves "rockchip,rk3568-iommu" in mainline.
+> 
+> Tested on Radxa ROCK 3B (RK3568, 8 GB LPDDR4X):
+>   - MobileNetV1 via RKNN: 5.8 ms/inference (IOMMU mode)
+>   - YOLOv5s 640x640 via RKNN: ~57 ms/inference (IOMMU mode)
+>   - No IOMMU faults, correct inference results
+> 
+> Fixes: 2a7e6400f72b ("iommu: rockchip: Allocate tables from all available memory for IOMMU v2")
+> Cc: stable@vger.kernel.org
+> Cc: Jonas Karlman <jonas@kwiboo.se>
+> Signed-off-by: Midgy BALON <midgy971@gmail.com>
 > ---
->  drivers/iommu/amd/amd_iommu_types.h | 12 ------------
->  drivers/iommu/amd/init.c            | 23 -----------------------
->  drivers/iommu/amd/iommu.c           |  3 ---
->  3 files changed, 38 deletions(-)
+>  drivers/iommu/rockchip-iommu.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iommu/amd/amd_iommu_types.h
-> b/drivers/iommu/amd/amd_iommu_types.h index
-> c685d3771436..a481d8cbd053 100644 ---
-> a/drivers/iommu/amd/amd_iommu_types.h +++
-> b/drivers/iommu/amd/amd_iommu_types.h @@ -50,10 +50,6 @@
->  #define MMIO_GET_BUS(x) (((x) & MMIO_RANGE_BUS_MASK) >>
-> MMIO_RANGE_BUS_SHIFT) #define MMIO_MSI_NUM(x)	((x) & 0x1f)
+> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+> index 85f3667e797..8b45db29471 100644
+> --- a/drivers/iommu/rockchip-iommu.c
+> +++ b/drivers/iommu/rockchip-iommu.c
+> @@ -1358,8 +1358,8 @@ static struct rk_iommu_ops iommu_data_ops_v2 = {
+>  	.pt_address = &rk_dte_pt_address_v2,
+>  	.mk_dtentries = &rk_mk_dte_v2,
+>  	.mk_ptentries = &rk_mk_pte_v2,
+> -	.dma_bit_mask = DMA_BIT_MASK(40),
+> -	.gfp_flags = 0,
+> +	.dma_bit_mask = DMA_BIT_MASK(32),
+> +	.gfp_flags = GFP_DMA32,
+
+This change is wrong because this struct describe the RK IOMMU v2 that
+is capable of 40-bit addressing, used with e.g. RK3568 VOP2 MMU and MMUs
+in other RK35xx SoCs.
+
+What you have discovered is most likely that some IP blocks, e.g. NPU on
+RK3568, is not capable of >32-bit addressing, and/or that such IP blocks
+are still using IOMMU v1 blocks, or some variant with 32-bit limitation.
+
+However, the RK IOMMU driver is currently not capable of supporting
+different IOMMU revisions, if I recall correctly there may have been a
+patch trying to address that already on ML.
+
+Have you seen this issue with a variant of the rockit driver that add
+support for RK3568 or a variant of the downstream rknpu driver forward
+ported to mainline?
+
+If your findings are correct it is likely that the NPU MMU needs to use
+a different compatible, since rockchip,rk3568-iommu describe the IOMMUv2
+that is capable of 40-bit addressing and is also used by other RK35xx
+SoCs.
+
+Regards,
+Jonas
+
+>  };
 >  
-> -/* Flag masks for the AMD IOMMU exclusion range */
-> -#define MMIO_EXCL_ENABLE_MASK 0x01ULL
-> -#define MMIO_EXCL_ALLOW_MASK  0x02ULL
-> -
->  /* Used offsets into the MMIO space */
->  #define MMIO_DEV_TABLE_OFFSET   0x0000
->  #define MMIO_CMD_BUF_OFFSET     0x0008
-> @@ -231,7 +227,6 @@
->  #define DEV_ENTRY_IR            0x3d
->  #define DEV_ENTRY_IW            0x3e
->  #define DEV_ENTRY_NO_PAGE_FAULT	0x62
-> -#define DEV_ENTRY_EX            0x67
->  #define DEV_ENTRY_SYSMGT1       0x68
->  #define DEV_ENTRY_SYSMGT2       0x69
->  #define DTE_DATA1_SYSMGT_MASK	GENMASK_ULL(41, 40)
-> @@ -384,8 +379,6 @@
->  #define IOMMU_PROT_IR 0x01
->  #define IOMMU_PROT_IW 0x02
->  
-> -#define IOMMU_UNITY_MAP_FLAG_EXCL_RANGE	(1 << 2)
-> -
->  /* IOMMU capabilities */
->  #define IOMMU_CAP_IOTLB   24
->  #define IOMMU_CAP_NPCACHE 26
-> @@ -680,11 +673,6 @@ struct amd_iommu {
->  	/* pci domain of this IOMMU */
->  	struct amd_iommu_pci_seg *pci_seg;
->  
-> -	/* start of exclusion range of that IOMMU */
-> -	u64 exclusion_start;
-> -	/* length of exclusion range of that IOMMU */
-> -	u64 exclusion_length;
-> -
->  	/* command buffer virtual address */
->  	u8 *cmd_buf;
->  	u32 cmd_buf_head;
-> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-> index f3fd7f39efb4..a33bf3f5ed8a 100644
-> --- a/drivers/iommu/amd/init.c
-> +++ b/drivers/iommu/amd/init.c
-> @@ -352,28 +352,6 @@ static void iommu_write_l2(struct amd_iommu
-> *iommu, u8 address, u32 val) *
->   ****************************************************************************/
->  
-> -/*
-> - * This function set the exclusion range in the IOMMU. DMA accesses
-> to the
-> - * exclusion range are passed through untranslated
-> - */
-> -static void iommu_set_exclusion_range(struct amd_iommu *iommu)
-> -{
-> -	u64 start = iommu->exclusion_start & PAGE_MASK;
-> -	u64 limit = (start + iommu->exclusion_length - 1) &
-> PAGE_MASK;
-> -	u64 entry;
-> -
-> -	if (!iommu->exclusion_start)
-> -		return;
-> -
-> -	entry = start | MMIO_EXCL_ENABLE_MASK;
-> -	memcpy_toio(iommu->mmio_base + MMIO_EXCL_BASE_OFFSET,
-> -			&entry, sizeof(entry));
-> -
-> -	entry = limit;
-> -	memcpy_toio(iommu->mmio_base + MMIO_EXCL_LIMIT_OFFSET,
-> -			&entry, sizeof(entry));
-> -}
-> -
->  static void iommu_set_cwwb_range(struct amd_iommu *iommu)
->  {
->  	u64 start = iommu_virt_to_phys((void *)iommu->cmd_sem);
-> @@ -2891,7 +2869,6 @@ static void early_enable_iommu(struct amd_iommu
-> *iommu) iommu_set_device_table(iommu);
->  	iommu_enable_command_buffer(iommu);
->  	iommu_enable_event_buffer(iommu);
-> -	iommu_set_exclusion_range(iommu);
->  	iommu_enable_gt(iommu);
->  	iommu_enable_ga(iommu);
->  	iommu_enable_xt(iommu);
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index 760d5f4623b5..4e7f5b993c65 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -3076,9 +3076,6 @@ static void amd_iommu_get_resv_regions(struct
-> device *dev, prot |= IOMMU_READ;
->  		if (entry->prot & IOMMU_PROT_IW)
->  			prot |= IOMMU_WRITE;
-> -		if (entry->prot & IOMMU_UNITY_MAP_FLAG_EXCL_RANGE)
-> -			/* Exclusion range */
-> -			type = IOMMU_RESV_RESERVED;
->  
->  		region =
-> iommu_alloc_resv_region(entry->address_start, length, prot, type,
-Reviewed-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+>  static const struct of_device_id rk_iommu_dt_ids[] = {
+
