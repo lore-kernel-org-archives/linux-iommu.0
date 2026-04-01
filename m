@@ -1,201 +1,272 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from TYPPR03CU001.outbound.protection.outlook.com (mail-japaneastazolkn19012061.outbound.protection.outlook.com [52.103.43.61])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE7181DF73C
-	for <iommu@lists.linux.dev>; Wed,  1 Apr 2026 04:29:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775017761; cv=none; b=emzchk+arO5NaEktOSKcNhTVXCsrs0VWfDXeeBqdOvl4x4u6ZvQi07mrkSOPPO1O73h3s7jYMo0s5X+guMOiysHZydBl5YRkIwdZB0EK8TRHN8bv/pWK+TBaHW6G2usXXF7WVa9qa3F7MUaltwBn5aeiSioJ63rbRL4jDhVpRJQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775017761; c=relaxed/simple;
-	bh=mCB4agtoLpx5/kkP96I8ITEz+gHyWau5Mc/qcKQDows=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=OqIQnwDDG75VUJoCa2aUj5jiPhPOW02c8jR7y34hM2Ubl0v/s70TTPVtuwZ+sck1rb+382cY5bWapxOb7BXgDdBvmM18UrK4eC8nBwacBUHdrpW6JfMEecHgdk8AlKghxYCj7wQWRlqpstzADJ8g8J4FrBqAaeeavIiPa+tDYk8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=GPL/4PlC; arc=none smtp.client-ip=148.163.158.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ABEA2E2850;
+	Wed,  1 Apr 2026 06:33:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.43.61
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775025216; cv=fail; b=bjSW5su1TWVHAWxRC7nykUjsvDu/8ElNWypxArWYJsJ68whaW1FenQiW/UCzioX8mfWPug4hdJyUsBi9McD7IBelWMU6HbyTtWeMupaN2J8WYFIXrm4HOJIxSNH+ixM/I+DMSTG1s+ZAvpy/EqPh6IK1pbwsjfs+NkBR2Uitd28=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775025216; c=relaxed/simple;
+	bh=a5HTZYRHFYMnlaCh4jlFFiW02a0aM2t5Xxesb4m02Ew=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=qRU5pvL/MAom7FRkD6SRghw6aPzE0Kd/Fhq6Lqg3epPllPdAatrgfQk6ProBQmGXzzwCpz9pnj1d9JArQGpl3YX6Fglg4WjuQeKNrBMizuR/Wk4/wHGe5GyXVhCEbPAHxipoa3ZxdnnpS4swicyzbfxANfKvXncZLtHVAD+2Ltc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=hbskU08t; arc=fail smtp.client-ip=52.103.43.61
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hotmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="GPL/4PlC"
-Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62VIFJkL119453;
-	Wed, 1 Apr 2026 04:29:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=ydjx9L
-	uh9uZb5KhbfCOp8RMzdAilCc3c0i9D9Edl4ts=; b=GPL/4PlCW28DlaZ+wlSAMb
-	i+MNzYY4vJARScUp500+JjrUMnu+E92pndn5ab4L/eae9kK53AwozhfodbPcyFXt
-	Xf4Y9qiX0PdwJLUOOB2rWWHpx+2SlsNlKP9tbRLX3TbEle9Ij+pUuDWplQIQ6q5F
-	FPum2ltkkXpWBenU5FOf7a56X3wBK3yNqk95H0icgMwf2P23l9CDEkNkD0ya1VoW
-	hKXbllVXdG2vdBlnJn2sYuMQHSeZ/zKJH90grz5/Jm+jlNmEkRPYar4R67muYcJV
-	6N123Gz9JfnexZ7vetsaLP8LvhlDVLklmBd3igNvO8jaVW0pu4wNiGFrG+K/GgFg
-	==
-Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4d66ms5ss7-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 01 Apr 2026 04:29:10 +0000 (GMT)
-Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma23.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 6311krqR013898;
-	Wed, 1 Apr 2026 04:29:10 GMT
-Received: from smtprelay04.dal12v.mail.ibm.com ([172.16.1.6])
-	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 4d6ttkm0b0-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 01 Apr 2026 04:29:10 +0000
-Received: from smtpav01.dal12v.mail.ibm.com (smtpav01.dal12v.mail.ibm.com [10.241.53.100])
-	by smtprelay04.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 6314T8j419792628
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 1 Apr 2026 04:29:08 GMT
-Received: from smtpav01.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id C377558059;
-	Wed,  1 Apr 2026 04:29:08 +0000 (GMT)
-Received: from smtpav01.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id C7BCA58058;
-	Wed,  1 Apr 2026 04:29:05 +0000 (GMT)
-Received: from [9.43.86.180] (unknown [9.43.86.180])
-	by smtpav01.dal12v.mail.ibm.com (Postfix) with ESMTP;
-	Wed,  1 Apr 2026 04:29:05 +0000 (GMT)
-Message-ID: <fc9d7311-312c-4ab0-8605-23cf47062da7@linux.ibm.com>
-Date: Wed, 1 Apr 2026 09:59:04 +0530
+	dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="hbskU08t"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=n+QiCOIroS6meLj3PgNQTRV01081Y0BWDegRayUrqUOFNGYw5J3IINVEeDjLJEPL3tuCNdL5unpnvWs9EEbja69PHPmNEtmoUmBOzQ0L97z92gUH07mXNAdInVpwD/ks/nv1bg/S4rs4plqg1lFU5TULojyusERKKdyX0KxlgsycZYjFWpylJEir5twcRZ0t6hTJeBVGUahxZELe+dMAtsK4QJof/PfkI7K/rtH06HUeO2KGdUscnAgfpTT87WZt3hSDDwVY1H3pBnnqrpy7GOeBqrHK5mu0xYNU+0TIBsaf6T8OOM8LMp9XlbnfW2k+zYbmMJfd14ruKjdoa1FGjQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=q2gMqLCLe1t4tcW4InnJ/J2JUIltLSlSfguZWL4HQkw=;
+ b=RAVFnU7cXNcvhrgOuwwosbCkHr03YmcYVsft+U4cvhqeRKPPYE3JxANYOgpHgsmMCihJhnTwKz44UYEQtqLY2b1S8CpQoDbIzBp9nKYGRFpu1eJCvqiiQm+oaKAJtUTHVb2k9N41Q7REQl+SaDN8WgKNnHEQNN7WFDTa7eJKn14404KSWMlU+mcb/NBuBbRQYMR13lX+DqUMR4DZtqrPp0A0cHvpGjFCVqVC6zN712OMTQlD0O70yK2z16245X10jRxO08SeKW8+Hdu3B6XMalro+9gwmTZURDNYdcPr/zEu6PkWDM1AksIPfFLXAmJFysCxCDYF5PLQ0+1t1K8vtg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=q2gMqLCLe1t4tcW4InnJ/J2JUIltLSlSfguZWL4HQkw=;
+ b=hbskU08t3sV8qGAGUO6PVQ0qHmjTIh/qnDucr74VDCRvzHN8ym5oSvFUSePEljpG+vEWU9MQ47jxFY0+hj9N0Uzuu0JJ6AF/a7WoiAHTUnvIXVSqMEu4RmEbNLA0J558UdIRAsK92TKzBuCXr9DOxew3aQTCPU13OlzT0pMaAiJtonWHU6dLnXDE15yeoDj2FbpG/6BmOPnaHU5cNX567KBl0zlIwvslkEqLG+bbfoKjzRXN6bCzbXRW4lGe/c1kUVzZdzdcNSDm7rwytThc6V0UfIjxHQi62Vv6L5n+NEz5ioBt4rhdBO79JRjVmvf/kZ3Sj4RjnqZPfyEJE+53VQ==
+Received: from SI2PR01MB4393.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:1b0::7) by SEZPR01MB4447.apcprd01.prod.exchangelabs.com
+ (2603:1096:101:43::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9745.21; Wed, 1 Apr
+ 2026 06:33:31 +0000
+Received: from SI2PR01MB4393.apcprd01.prod.exchangelabs.com
+ ([fe80::c735:fab8:6e3d:6d1c]) by SI2PR01MB4393.apcprd01.prod.exchangelabs.com
+ ([fe80::c735:fab8:6e3d:6d1c%4]) with mapi id 15.20.9745.027; Wed, 1 Apr 2026
+ 06:33:31 +0000
+Message-ID:
+ <SI2PR01MB439371EFE74BE6392774FEB1DC50A@SI2PR01MB4393.apcprd01.prod.exchangelabs.com>
+Date: Wed, 1 Apr 2026 14:33:26 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/5] iommu/amd: Have amd_iommu_domain_flush_pages() use
+ last
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Will Deacon <will@kernel.org>
+Cc: patches@lists.linux.dev
+References: <3-v1-a7b77c25974e+115bf-iommupt_inv_amd_jgg@nvidia.com>
+Content-Language: en-US
+From: Wei Wang <wei.w.wang@hotmail.com>
+In-Reply-To: <3-v1-a7b77c25974e+115bf-iommupt_inv_amd_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: TP0P295CA0046.TWNP295.PROD.OUTLOOK.COM (2603:1096:910:3::9)
+ To SI2PR01MB4393.apcprd01.prod.exchangelabs.com (2603:1096:4:1b0::7)
+X-Microsoft-Original-Message-ID:
+ <4650777c-90c9-4ba6-8785-9ddc8df65c6d@hotmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] powerpc/powernv/iommu: iommu incorrectly bypass DMA APIs
-To: "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
-        Gaurav Batra <gbatra@linux.ibm.com>, linuxppc-dev@lists.ozlabs.org
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-        =?UTF-8?Q?Dan_Hor=C3=A1k?= <dan@danny.cz>,
-        Timothy Pearson <tpearson@raptorengineering.com>,
-        Shivaprasad G Bhat <sbhat@linux.ibm.com>
-References: <20260331223022.47488-1-gbatra@linux.ibm.com>
- <o6k3mqwc.ritesh.list@gmail.com>
-Content-Language: en-US
-From: Madhavan Srinivasan <maddy@linux.ibm.com>
-In-Reply-To: <o6k3mqwc.ritesh.list@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Reinject: loops=2 maxloops=12
-X-Authority-Analysis: v=2.4 cv=J6enLQnS c=1 sm=1 tr=0 ts=69cc9f17 cx=c_pps
- a=3Bg1Hr4SwmMryq2xdFQyZA==:117 a=3Bg1Hr4SwmMryq2xdFQyZA==:17
- a=IkcTkHD0fZMA:10 a=A5OVakUREuEA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=RnoormkPH1_aCDwRdu11:22 a=RzCfie-kr_QcCd8fBx8p:22 a=e5mUnYsNAAAA:8
- a=VwQbUJbxAAAA:8 a=VnNF1IyMAAAA:8 a=pGLkceISAAAA:8 a=6s5eKYM0FkCK758NQkcA:9
- a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=Vxmtnl_E_bksehYqCbjh:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDAxMDAzMyBTYWx0ZWRfX8qS/v/5xCoi3
- ID6Zo//FGtgW76iN+q0ncgiiuztJc3AL2Cvc7F2GxszD4AGj6e12ubMegAkgLqujL/iBD9t6o5s
- wHsnNcJ7lGfJTgJKT5AtwpgNDjXJM7LuXQ9hqTUJv7n+ON9zMpByhXq7yDFYhPKcQyHeH8EnTBw
- riOJWuv2k1O5tiRgR8K0mKtuKCgKeKYoBxqHeN0K+0hoQZc/6T3ARBPQn2ydPE2uz98oN5/5axB
- BwrRCHz8mLBwBL+SZ9cWAuX28GqitfvDtDDLvwrA/n+rF+GnRERHMewiqfqGHv5Yhm2ozQPgLyO
- MdRF9frcIFx5XrVnUTVaA+o7jO/zbFyd+Xvg5JOU0rQ4YqvqCz8BFiMalRV7TamzyyaJl48/8tY
- rtVHclVXge5figH6hYG2rZGq4P/HfWh30ijMpooM+GmMbDrmCofdbSlTuyYkMH3KoKWtSLhsjcW
- DHU5E6nqTl2JlH0RgxQ==
-X-Proofpoint-GUID: ZL9W-IgEwM9qdbmEU6yia0SM9YAEVUBe
-X-Proofpoint-ORIG-GUID: pMThqyg-x3KKzK_I5uWqQEoIjcHHCagy
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-04-01_02,2026-03-31_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 clxscore=1011 adultscore=0 priorityscore=1501 bulkscore=0
- phishscore=0 malwarescore=0 lowpriorityscore=0 spamscore=0 impostorscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2603050001 definitions=main-2604010033
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SI2PR01MB4393:EE_|SEZPR01MB4447:EE_
+X-MS-Office365-Filtering-Correlation-Id: a9222121-fc54-480e-6679-08de8fb896dc
+X-MS-Exchange-SLBlob-MailProps:
+	ScCmN3RHayGKAlIIivN7fIKgPET+ZtPoXCUEP7eaYpZiDyjKfiKRxHjJwex8y+IHSigwg13avay8LfLYmgk3eSrqVNOccLQIBNQRzWeBReg1OHjxM3a4ZNl/3tq0pzc3Yj50k1tljNAu5St+M+r8LQaMB2VjTY/4vqFLJxk9qNsqRV21HmUCitPe/4rfdFGgAMT7vwqOga+Dy22MsIdl7G+AcroYs9y9ZCPYJDgm6cFF9CcW6RWdf/NnN9w82vJg6MQQ5mL2uALQhqj8HvvMCk4MCy6Nofco8x4FXTU03nS0DjxSG8NGlEtW3WmP8rV+ioxtFWRmRF3h473GKrJuDlaQU9eftnpZuiTEho+8waZ3RQxJO4BaMJ4T6QJvfEhK0at+1oALy9F7KpS5nuOSHUMzbTbevQcEAj39iDK3CB/e37eqoedzzbafG5R/YCNZsoQuwCB+poa9l8XUig7BBkpB8Oj7lHPbSYkD9Znq+S/fYkt+0o5DSfMuKN5hByJoM2mcQawtsD31HfLq4QxbgsoOSIHHQ91YeO4/DKeZWGw5Q1FArS+KfkrlwgoSyT3a5197XGZvPuyDsMLo+qbJyguuyByNe7u68dwP3gDRCeFA7rIe/NgIUsqvoo/O+WQRdaImOVoAnKFmIHggjYL/BoGz6g5c+ju7wm0J/jRA4TWd84fECLbBhYIAsGoSLr9UxrJYA1V0J5k4ef213B5pFFOK7porBhZbZjMrbYyYkHI=
+X-Microsoft-Antispam:
+	BCL:0;ARA:14566002|37011999003|12121999013|8060799015|19110799012|7042599007|15080799012|461199028|41001999006|23021999003|51005399006|6090799003|5072599009|26121999003|440099028|3412199025|40105399003;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?ZG5pcWJqRVljcU5rMnFDM212anV3YUQ2V0FJa0Q2UGpIV3d3NWl4WnM2ektw?=
+ =?utf-8?B?ZXE5UVo1UXdNY3B3L01IUklGRzV4VTAvL3BqbUQydFBmUFJKR0Vhb2ZKaTMx?=
+ =?utf-8?B?VjhsMmU5QzVnM2RpM2hTMHZqZ3BseUd2TXovR3FjTW82azhlWTN1bk8wMHIv?=
+ =?utf-8?B?WE9wVml6RUp1TGNtUzRKK2tocGhENUliZTlLYWZ0dmZDQzQyK3ZFSjd6eUhX?=
+ =?utf-8?B?Z0JhM2FQZTdkWVMzYmlma00vTEhlQU93bXlGUEZReVpoWW5oRlBNek93Q1JM?=
+ =?utf-8?B?S25VTm1FMkc0VUpIc29TeTB0M0MxYjBSYUIwZHY5eE9lZG5jQkp6L2R6QmY4?=
+ =?utf-8?B?Sy9ab0lPdGpFYU94bDBuVWZSR3FQYkxHK2d1T21wbkVGUjR3U0tFeGF6VWRj?=
+ =?utf-8?B?QUdiTDlVRjI3ZUQxWEM3U3g0azBBdkVRc2lrclVONkw2bUYrNzlFN0c4VW94?=
+ =?utf-8?B?TzBIZFFuWXFVZCsza1EwM2tIQm0rc3dnUEdKc00zaE5HTjJWaXBEZXpiU0Q5?=
+ =?utf-8?B?MXlabUJjZnF0aU1mVldWek1wWnhmQUZra1JXNXM1Vm1CMmtwZU8yc1dNTFVE?=
+ =?utf-8?B?OHptbGxSWHg1UDFmSXlLaEt6YVZkdUpRaEN4U005SjdhK1F6NnJrSFdaTXhi?=
+ =?utf-8?B?N0xuVUV5TGRMdjlVMkcrRGxpdXdJU0txY3pVTkcySWVEeXo0OXp2RGJpY2Fw?=
+ =?utf-8?B?L0N6ekZhN3lRZTBuQTVGMHErMG1ON2pQd1poMTVZc1ZjTktVWk5hM094TEEy?=
+ =?utf-8?B?U3BLTzA3SlI3NFF6OEtoODI4cDRWbUhZamllelY4MVI2ZTVFdmZNREIwOVVF?=
+ =?utf-8?B?NCtlTWZmZU1wZHNkQWFMMmExRzRRS0k0RUZWVmxLcVVUZ3ozUTFDTE9yckZZ?=
+ =?utf-8?B?NVhzZHcxZWtFWGRsQzVWNkVKTzk5em1ERmxWSExPMDJnK1Vxd0tCWUJTWC9Q?=
+ =?utf-8?B?NWsxcFdrbVlEL2Jnek9vaDdLYU5BWUdCcFlxVy9qTG51K3R3QVo1ZXJob21Y?=
+ =?utf-8?B?UkdsMGJPWGRZNFB3ai9QMjFEd3hBU2ZkOWxMMUNoWTVHczdPUGwyS01NM1Nx?=
+ =?utf-8?B?TnlPOXNpbkh1Q0RYQWM3U1N2a1Q3a1JITjVqbnYvNWZGZmxsSXBuci9sb285?=
+ =?utf-8?B?WUtIUmJsUlowTlhhS1FpNndybmlPeUx2SHc5ckFLQVBwNDFEVEZHNXJlUHRP?=
+ =?utf-8?B?SnhHMENWTEFWSmEwaExRdFZYRVpTLytLMmxxcS9NRHlWdWVOKy9OWkVMY2Iy?=
+ =?utf-8?B?NFJnQU9LdEl0dkZxUnIyWm52dnpzc1pyWXora3lndnBmZTlQQTJudUF2VGlu?=
+ =?utf-8?B?L1JjbkdrSm5mVTBrdXVQMDZrMjV1YTNjVnc4T0VWSjdRN2Z5U0puUDRselZy?=
+ =?utf-8?B?WGFROG50eEFZdUMvUnJyWUlKek1zTTNDR1E1b2xvYXNPbUFESUtJVXp3dzJJ?=
+ =?utf-8?B?UGZwNVh1ZWhHTHJiOHl6OHNkZ0ZWUm9hVUNtMXZ3PT0=?=
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?MExDYmNndHpOTHZoOFRDd3pPKytUR1RlY1NzVUVBelZVTHpuTEdETG9EWDZI?=
+ =?utf-8?B?UE1hS2ZoME81Q2k1WTR4Yzg1Sk1TeitENGg4Yk40U0dnS2VBVE1yRGZaTVg0?=
+ =?utf-8?B?S2JFQUE1SnVPalVPM0U3TFF2N3Nnc3d0TFEzWWFaTmlzQnVTOTNod3lKbDVR?=
+ =?utf-8?B?Zi9hMGpHbHBwL1pUWk5qeFNWNk0yKzhHK2c3YVFsbERSYWFmYjg2MzFOTXo0?=
+ =?utf-8?B?MktvWUxUbUIzUFhGWkk2K2hWNFVZR1ZmcW1HNnN4SWtHSDROVjBEQllqOG9F?=
+ =?utf-8?B?RjJVcGFyVWttQTZkRiswNUdoWThsWGk5cmUxRHE3dE9XSitxSW91SkFCbC9W?=
+ =?utf-8?B?RUdWWWxtTDhyUTRhL1owRjZQYzVSNjliR1lna05NNWg3OTBGWWtWeENJbG0v?=
+ =?utf-8?B?M0tpeEJZdGVKdHlGdG5qRDdHL0lxbjZMbEwyVERMQ3hXRldmSmdqSjZ0akg4?=
+ =?utf-8?B?cUJjL2xQeHMrc1BMUE5jdk5ZVmdOV0FhZXZqL0pQZDE2OHF4R2xsNXZmTHJQ?=
+ =?utf-8?B?UzBhMHI2b1BOYmV5R1MrUzZvZGFrK2cyRG0xeGV3L3crZ2RqVlVDUENJeEt4?=
+ =?utf-8?B?b2p4WTFXckJhellxQ1pOcitGeEtXTXB0aHZCMkpmZXh5blI4cE1VNld6Q1FH?=
+ =?utf-8?B?cXRJbWdaWStYQkEwVHJNN2JiSGd0NTg0eERFUEFsV2pLdXRmTDVWVStzTXBM?=
+ =?utf-8?B?N0xDZ0Nzc01zR1lxbnNxNXAzTlpvV1VmTEtseUJDcFczdE1vS3lpcElwRXY1?=
+ =?utf-8?B?ZGhiUnpWOU5EU01WMVZ4YlJRcllBYnAvT0lJUTFzdDAvU1JuSkVpUEJVcEhN?=
+ =?utf-8?B?S2NPTERpMEtYWUlzaFFCMjJUUTdGbEJydHFqRVVPR0hxNndVQ3QvWlFjNE11?=
+ =?utf-8?B?a3lJV2czSmtrNm9WWFZVRUdXZW5CUzVkcC9LK3dEZlZQSkdCeFJSOExMWkJP?=
+ =?utf-8?B?dDdnTUlLa1JGSkhTQVBtZGZONURUQy9yVEE0RTZqSC9pV09KWWxyOUlLN0VL?=
+ =?utf-8?B?REIySHA4ZUR0aGltaFFEV0hxbXFyVnNoVytXM0UyNTRLcE10ZjNIb1hyRDFS?=
+ =?utf-8?B?Y2hpVU1kcy9jNnBuYXJ0Y3NPblk1MmNmVHBGVWp1ZDdGTFhGMVl1N3RSWnVS?=
+ =?utf-8?B?ZmRiZzIwUmhJbVhGaG0rWEdSVVFxL0N3WWpEbDNrdjUya3ZzM08yNmlSTHZz?=
+ =?utf-8?B?WUptaGFkRERUMXdzWUYyT3FjM1E5dXloVTZJekVhakxMU0pXRXVic3V4UEFo?=
+ =?utf-8?B?STJQcUxMeFgwMGpmZGk3cjY4aTZnRTlNeUxaeC9SaTA5U1lIT20wQzI4M0JN?=
+ =?utf-8?B?Sm5DSUxkN2VpRmdRWlNjZ1ZGdGdjUmF6dWdDQm0rRmRLQ3NOaWlDV2EwaUVJ?=
+ =?utf-8?B?Mit4YkEvcnVkbzJTTXV4bTZNZkd0VEtxdlg2NkJBQXRtM1R2RnJ0RHhBU1N2?=
+ =?utf-8?B?Q1ZjK1ZjeU5WYUpId2VWL045WWlESnRmaXF2aFRWMmY0c2lFQ3Qwb1F2MVo3?=
+ =?utf-8?B?NUxCd2VValRoM01oVnF0NTIzNFd6L3ZmczZIaXZnZnNOTWlZNXJSaVgvWDUw?=
+ =?utf-8?B?WC9HcXFkb1dXTWI4clA3Uy9TbHRUUEZ3SjJzQjZ6U2o3OTNEdWJYc2pUTjRp?=
+ =?utf-8?B?UjRIb2xKV0lUR0hTWEZpaEM4ZmhiemNrNGxHUFcwY0NPOFRIMHVBWjM2N1lZ?=
+ =?utf-8?B?cEc5NGVSSWZCMGM0ZDZPZ2dMZHdsZEVESW5nb3hYOHdUZGRBOWNCeVpvUGU3?=
+ =?utf-8?B?UnpXcXM4MVkxZUl1ZHl2WUYrblVBaUpibU54SlUrSTF4SDNvTU1ITUxkWkt6?=
+ =?utf-8?B?UkE4Qk5DOGNOTkpucmxPZS9DZ2NpeDh3V0U1TWJQanZqd3lVcUtJSjRwMkc3?=
+ =?utf-8?Q?gFZaFB4iTds/U?=
+X-OriginatorOrg: sct-15-20-9412-4-msonline-outlook-3e488.templateTenant
+X-MS-Exchange-CrossTenant-Network-Message-Id: a9222121-fc54-480e-6679-08de8fb896dc
+X-MS-Exchange-CrossTenant-AuthSource: SI2PR01MB4393.apcprd01.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Apr 2026 06:33:31.1049
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEZPR01MB4447
 
+On 3/27/26 11:23 PM, Jason Gunthorpe wrote:
+> Finish clearing out the size/last/end switching by converting
+> amd_iommu_domain_flush_pages() to use last-based logic.
+> 
+> This algorithm is simpler than the previous. Ultimately all this wants
+> to do is select powers of two that are aligned to address and not
+> longer than the distance to last.
+> 
+> The new version is fully safe for size = U64_MAX and last = U64_MAX.
+> 
+> Finally, the gather can be passed through natively without risking an
+> overflow in (gather->end - gather->start + 1).
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>   drivers/iommu/amd/amd_iommu.h |  2 +-
+>   drivers/iommu/amd/iommu.c     | 44 +++++++++++++----------------------
+>   2 files changed, 17 insertions(+), 29 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+> index ef4ebecb003494..67d4daaaf6f0ce 100644
+> --- a/drivers/iommu/amd/amd_iommu.h
+> +++ b/drivers/iommu/amd/amd_iommu.h
+> @@ -88,7 +88,7 @@ int amd_iommu_complete_ppr(struct device *dev, u32 pasid, int status, int tag);
+>    */
+>   void amd_iommu_flush_all_caches(struct amd_iommu *iommu);
+>   void amd_iommu_domain_flush_pages(struct protection_domain *domain,
+> -				  u64 address, size_t size);
+> +				  u64 address, u64 last);
+>   void amd_iommu_dev_flush_pasid_pages(struct iommu_dev_data *dev_data,
+>   				     ioasid_t pasid, u64 address, u64 last);
+>   
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index caab941b531bfe..a3773a145af811 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -1762,12 +1762,13 @@ static void __domain_flush_pages(struct protection_domain *domain,
+>   }
+>   
+>   void amd_iommu_domain_flush_pages(struct protection_domain *domain,
+> -				  u64 address, size_t size)
+> +				  u64 address, u64 last)
+>   {
+>   	lockdep_assert_held(&domain->lock);
+>   
+> -	if (likely(!amd_iommu_np_cache)) {
+> -		__domain_flush_pages(domain, address, address + size - 1);
+> +	if (likely(!amd_iommu_np_cache) ||
+> +	    unlikely(address == 0 && last == U64_MAX)) {
+> +		__domain_flush_pages(domain, address, last);
+>   
+>   		/* Wait until IOMMU TLB and all device IOTLB flushes are complete */
+>   		domain_flush_complete(domain);
+> @@ -1785,28 +1786,17 @@ void amd_iommu_domain_flush_pages(struct protection_domain *domain,
+>   	 * between the natural alignment of the address that we flush and the
+>   	 * greatest naturally aligned region that fits in the range.
+>   	 */
+> -	while (size != 0) {
+> -		int addr_alignment = __ffs(address);
+> -		int size_alignment = __fls(size);
+> -		int min_alignment;
+> -		size_t flush_size;
+> +	while (address <= last) {
+> +		unsigned int sz_lg2 = ilog2(last - address + 1);
+> +		u64 flush_last;
+>   
+> -		/*
+> -		 * size is always non-zero, but address might be zero, causing
+> -		 * addr_alignment to be negative. As the casting of the
+> -		 * argument in __ffs(address) to long might trim the high bits
+> -		 * of the address on x86-32, cast to long when doing the check.
+> -		 */
+> -		if (likely((unsigned long)address != 0))
+> -			min_alignment = min(addr_alignment, size_alignment);
+> -		else
+> -			min_alignment = size_alignment;
+> +		if (likely(address))
+> +			sz_lg2 = min_t(unsigned int, sz_lg2, __ffs64(address));
+>   
+> -		flush_size = 1ul << min_alignment;
+> -
+> -		__domain_flush_pages(domain, address, address + flush_size - 1);
+> -		address += flush_size;
+> -		size -= flush_size;
+> +		flush_last = address + (1ULL << sz_lg2) - 1;
+> +		__domain_flush_pages(domain, address, flush_last);
+> +		if (check_add_overflow(flush_last, 1, &address))
+> +			break;
+>   	}
+>   
+>   	/* Wait until IOMMU TLB and all device IOTLB flushes are complete */
+> @@ -1816,8 +1806,7 @@ void amd_iommu_domain_flush_pages(struct protection_domain *domain,
+>   /* Flush the whole IO/TLB for a given protection domain - including PDE */
+>   static void amd_iommu_domain_flush_all(struct protection_domain *domain)
+>   {
+> -	amd_iommu_domain_flush_pages(domain, 0,
+> -				     CMD_INV_IOMMU_ALL_PAGES_ADDRESS);
+> +	amd_iommu_domain_flush_pages(domain, 0, U64_MAX);
+>   }
+>   
+>   void amd_iommu_dev_flush_pasid_pages(struct iommu_dev_data *dev_data,
+> @@ -2617,7 +2606,7 @@ static int amd_iommu_iotlb_sync_map(struct iommu_domain *dom,
+>   		return 0;
+>   
+>   	spin_lock_irqsave(&domain->lock, flags);
+> -	amd_iommu_domain_flush_pages(domain, iova, size);
+> +	amd_iommu_domain_flush_pages(domain, iova, iova + size - 1);
+>   	spin_unlock_irqrestore(&domain->lock, flags);
+>   	return 0;
+>   }
+> @@ -2639,8 +2628,7 @@ static void amd_iommu_iotlb_sync(struct iommu_domain *domain,
+>   	unsigned long flags;
+>   
+>   	spin_lock_irqsave(&dom->lock, flags);
+> -	amd_iommu_domain_flush_pages(dom, gather->start,
+> -				     gather->end - gather->start + 1);
+> +	amd_iommu_domain_flush_pages(dom, gather->start, gather->end);
+>   	spin_unlock_irqrestore(&dom->lock, flags);
+>   	iommu_put_pages_list(&gather->freelist);
+>   }
 
-On 4/1/26 6:35 AM, Ritesh Harjani (IBM) wrote:
-> ++CC few people who would be interested in this fix.
->
-> Gaurav Batra <gbatra@linux.ibm.com> writes:
->
->> In a PowerNV environment, for devices that supports DMA mask less than
->> 64 bit but larger than 32 bits, iommu is incorrectly bypassing DMA
->> APIs while allocating and mapping buffers for DMA operations.
->>
->> Devices are failing with ENOMEN during probe with the following messages
->>
->> amdgpu 0000:01:00.0: [drm] Detected VRAM RAM=4096M, BAR=4096M
->> amdgpu 0000:01:00.0: [drm] RAM width 128bits GDDR5
->> amdgpu 0000:01:00.0: iommu: 64-bit OK but direct DMA is limited by 0
->> amdgpu 0000:01:00.0: dma_iommu_get_required_mask: returning bypass mask 0xfffffffffffffff
->> amdgpu 0000:01:00.0:  4096M of VRAM memory ready
->> amdgpu 0000:01:00.0:  32570M of GTT memory ready.
->> amdgpu 0000:01:00.0: (-12) failed to allocate kernel bo
->> amdgpu 0000:01:00.0: [drm] Debug VRAM access will use slowpath MM access
->> amdgpu 0000:01:00.0: [drm] GART: num cpu pages 4096, num gpu pages 65536
->> amdgpu 0000:01:00.0: [drm] PCIE GART of 256M enabled (table at 0x000000F4FFF80000).
->> amdgpu 0000:01:00.0: (-12) failed to allocate kernel bo
->> amdgpu 0000:01:00.0: (-12) create WB bo failed
->> amdgpu 0000:01:00.0: amdgpu_device_wb_init failed -12
->> amdgpu 0000:01:00.0: amdgpu_device_ip_init failed
->> amdgpu 0000:01:00.0: Fatal error during GPU init
->> amdgpu 0000:01:00.0: finishing device.
->> amdgpu 0000:01:00.0: probe with driver amdgpu failed with error -12
->> amdgpu 0000:01:00.0:  ttm finalized
->>
->> Fixes: 1471c517cf7d ("powerpc/iommu: bypass DMA APIs for coherent allocations for pre-mapped memory")
->> Reported-by: Dan Horák <dan@danny.cz>
->> Closes: https://gitlab.freedesktop.org/drm/amd/-/work_items/5039
-> We could even add the lore link so that in future people can find the
-> discussion.
-> Closes: https://lore.kernel.org/linuxppc-dev/20260313142351.609bc4c3efe1184f64ca5f44@danny.cz/
->
->> Tested-by: Dan Horak <dan@danny.cz>
->> Signed-off-by: Ritesh Harjani <ritesh.list@gmail.com>
-> Feel free to change this to the following, I mainly only suggested the fix :)
->
-> Suggested-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
->
->
->> Signed-off-by: Gaurav Batra <gbatra@linux.ibm.com>
->> ---
-> Generally this info...
->> I am working on testing the patch in an LPAR with AMDGPU. I will update the
->> results soon.
-> ... goes below the three dashes in here ^^^
-> This is the same place where people also update the patch change log.
->
-> But sure, thanks for updating. As for this patch, it looks good to me.
-> So, feel free to add:
->
-> Reviewed-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
-I will fix the commit message changes and add it to my fixes-test
-since we are at the end of -rc7 window, need to get this out soon
+Looks good to me.
 
-Maddy
-
->
->
->>   arch/powerpc/kernel/dma-iommu.c | 4 ++--
->>   1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/arch/powerpc/kernel/dma-iommu.c b/arch/powerpc/kernel/dma-iommu.c
->> index 73e10bd4d56d..8b4de508d2eb 100644
->> --- a/arch/powerpc/kernel/dma-iommu.c
->> +++ b/arch/powerpc/kernel/dma-iommu.c
->> @@ -67,7 +67,7 @@ bool arch_dma_unmap_sg_direct(struct device *dev, struct scatterlist *sg,
->>   }
->>   bool arch_dma_alloc_direct(struct device *dev)
->>   {
->> -	if (dev->dma_ops_bypass)
->> +	if (dev->dma_ops_bypass && dev->bus_dma_limit)
->>   		return true;
->>   
->>   	return false;
->> @@ -75,7 +75,7 @@ bool arch_dma_alloc_direct(struct device *dev)
->>   
->>   bool arch_dma_free_direct(struct device *dev, dma_addr_t dma_handle)
->>   {
->> -	if (!dev->dma_ops_bypass)
->> +	if (!dev->dma_ops_bypass || !dev->bus_dma_limit)
->>   		return false;
->>   
->>   	return is_direct_handle(dev, dma_handle);
->> -- 
->>
->> I am working on testing the patch in an LPAR with AMDGPU. I will update the
->> results soon.
-> This should go up, as mentioned above.
->
-> -ritesh
+Reviewed-by: Wei Wang <wei.w.wang@hotmail.com>
