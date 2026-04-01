@@ -1,144 +1,189 @@
-Received: from OLAP279CU001.outbound.protection.outlook.com (mail-norwayeastazon11021096.outbound.protection.outlook.com [40.107.157.96])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 115A13DD52B
-	for <iommu@lists.linux.dev>; Wed,  1 Apr 2026 11:38:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.157.96
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775043514; cv=fail; b=koKko5EtbNTxIpnVGbLZ8hfS9AT7+jmtFlQVSxzFX4gRToO9HygEE1KGi6KhFtE/WnqpOt2aPvBsz6Tv4B4g827JqgYSirYIKE1SEhBbemWq3V8FlGdEWWZaDq15CAXpwv2/aQNCZfkW6XvNZlHPZ49XbaGAXlOATJk0vGvWlSM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775043514; c=relaxed/simple;
-	bh=QP2wmnMy6MOrwJZ0H8ZFt21Z+cn7T47pBCyKVtGNvVE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=LYPP3oNoj5ftgESSIdPU4QqDs1Hz5xRebhceyxSod5FudsPFCY4Wpen8CXffiIwgGgTPaUd+wtaSx6TJTTtaZzqjdgUBTUjchQEihBxYrFOx4n2WkDx46XgL/tx4XKIa23VY6ZarrsZe7IbGCJvdj0e4WR4SXuWnFSYyyohxUec=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=dolphinics.com; spf=pass smtp.mailfrom=dolphinics.com; dkim=pass (2048-bit key) header.d=dolphinics.com header.i=@dolphinics.com header.b=F8Kemsm4; arc=fail smtp.client-ip=40.107.157.96
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=dolphinics.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dolphinics.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDA0740756C
+	for <iommu@lists.linux.dev>; Wed,  1 Apr 2026 11:50:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775044206; cv=none; b=fj4RKGPPE8ke9HoplbxCtMEqZTwGn+Edf9vJVgHp42JN7pFmp3zZSwTGieyXfeUjkHI6peN986BOXzLQLRGduWUbUtJTu02bdOO8/q8iRK46skhF+ZpvF9gjOegYd4OXGFdB9KNIXkWQwcaGEgD7BlBTxAIaZ6MoR1t4l3Bp20M=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775044206; c=relaxed/simple;
+	bh=N1+Ri8tyl8Kwm5BhyBgbC2qh62bga6Mp83akJRvVsJA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=A4GHvH1TnB5dY2CxYZ8EcOGYD7eJXKyLI2M8/QUwlDenYxRXRzoCCKSghaA8HlQDR0Ge+RtIaQxok13vBWGwwvYDr/pv9eWF6/f7HbD+vI6/+pC6QNURUVeEMkNFLX11MpPdc3LbJ2aM01gBvOpraoKD+yAAnYq0U39wHlVsAYA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=NX9bMY3z; arc=none smtp.client-ip=209.85.222.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=dolphinics.com header.i=@dolphinics.com header.b="F8Kemsm4"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=e1+3YkG5CMnBbtpPPNy1fPUPSrqYtFwrMeMDCYJImdSlK9J4c0SsIppCgaqwBS3zWkqpwsQBUYFDQ0h6FEDTj7P4Kx+X4X6KYo8vOkutvPwPTthURG3AKkArpiQ4ZAa/GABjKIG7a8SOwLU3HlbYgwHbW9mYgqOo7HSAi192V0QY7bORC+p+2g+qOUfY9oEHPBWe2u6MktS1jgkvpdxyeFKoOdux9p4Cm5M/wRt2fFSpiCcJ/h3uddfkWOXtmo8/zEXAcioLGA+ZpwQqNZ+uNh7hALoZadpmCYenYEKuubC6co2nj6tjFn9HHN4Cd/k5yY9aHePXjXUbY8u3Yl0UWw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QP2wmnMy6MOrwJZ0H8ZFt21Z+cn7T47pBCyKVtGNvVE=;
- b=CmF7wyfFAw68/8zX8uWSH0ZwB80VhLzpeZ9gTZPkAIbaEh7YemKI4a5CBoAj35YYTuj6PHOJrj/1GBkGGvN+TXiCvhlMuKydZtHwxK2wfbAFaYZgf5Nf7HltVb0OaZ3wnqQv3v+G4Z+Ry6S4fnUjY4pv5X05nPVqNEHpI9ohciVn2CtURIB5BTJyLpwz9YdgHtOxbg5ZpbMnmBC8dLMkXvQ883JB6Zm7xBzy7xmtSdvvx5+pxwVekO7FFS51SCiU2kajLKu4FP6gbSc2qlvdjOBVDCEVo8QCgtoURb1QoDD6N38B3kUxbZECI+DiC7AA28ivc1nEhIEWEGkyVuZQWA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dolphinics.com; dmarc=pass action=none
- header.from=dolphinics.com; dkim=pass header.d=dolphinics.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dolphinics.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QP2wmnMy6MOrwJZ0H8ZFt21Z+cn7T47pBCyKVtGNvVE=;
- b=F8Kemsm4bUkqImf/LiHmtgAaMaZqIpZmD7mIEfismmHt5YNgHq99M0IaF2KaLBoMtU3zw83jiZEJ1oIUaFJpRZf0+MBnUWnPDSlg8eNNUFhFXYJBekbD4eaNBuaFrLcZsUOuVs6Qdde21OHekvHgdABO1eWWRTi4MlVLmw5mGggKeJKhcr1KJgdLZ83Pt6e1H0P6L/wP1ZhJEIs7WLl9VCAjo180NkwOQo/q6uJ+WF81pWZV/PVOHSckva1oDjLqLQd79fqEsOyxpcB7SdogO2c6bWElnP4Sdq0Qo6MwK+L7SHSfd3DewqT4UPa7opNZZyU3dVPdllLnKr3xmiKsdg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=dolphinics.com;
-Received: from OLAP279MB0055.NORP279.PROD.OUTLOOK.COM (2603:10a6:e10:2::7) by
- OS5P279MB0959.NORP279.PROD.OUTLOOK.COM (2603:10a6:e10:56::6) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9769.17; Wed, 1 Apr 2026 11:38:28 +0000
-Received: from OLAP279MB0055.NORP279.PROD.OUTLOOK.COM
- ([fe80::c82b:8ba6:653a:2875]) by OLAP279MB0055.NORP279.PROD.OUTLOOK.COM
- ([fe80::c82b:8ba6:653a:2875%3]) with mapi id 15.20.9769.016; Wed, 1 Apr 2026
- 11:38:28 +0000
-From: Magnus Kalland <magnus@dolphinics.com>
-To: vasant.hegde@amd.com
-Cc: DheerajKumar.Srivastava@amd.com,
-	dhsrivas@amd.com,
-	iommu@lists.linux.dev,
-	jonas@dolphinics.com,
-	joro@8bytes.org,
-	larsk@dolphinics.com,
-	linux-kernel@vger.kernel.org,
-	magnus@dolphinics.com,
-	suravee.suthikulpanit@amd.com,
-	torel@simula.no
-Subject: Re: [PATCH v3 3/3] iommu/amd: Invalidate IRT cache for DMA aliases
-Date: Wed,  1 Apr 2026 13:38:10 +0200
-Message-ID: <20260401113820.79881-1-magnus@dolphinics.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <ea4cfd4d-9ad2-4451-a896-9f0435e72a06@amd.com>
-References: <ea4cfd4d-9ad2-4451-a896-9f0435e72a06@amd.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: GV2PEPF000239A0.SWEP280.PROD.OUTLOOK.COM
- (2603:10a6:158:400::18e) To OLAP279MB0055.NORP279.PROD.OUTLOOK.COM
- (2603:10a6:e10:2::7)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="NX9bMY3z"
+Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-8cd80f56b27so627071785a.1
+        for <iommu@lists.linux.dev>; Wed, 01 Apr 2026 04:50:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1775044204; x=1775649004; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=yCRyd9qleOZMVIjgK7RhQpHFpKKn7hN1W8j3Towy8nQ=;
+        b=NX9bMY3znk8AH0otuM+JYN/8tAUQEWYM4z6pWlbZ/JbKp7/jofQyzkZVDLP+ypYW7z
+         TwKaJuYGLLoiExUFdNLJFwNo8iWTOqThmWOLrnpcZCIjimdIRZWmljtmqSt5s1Jh0Iz1
+         tRhq6BZ5ENJ0uKaH5IW02YIpsDepaKAx34l8woVgVlCmefF0oW9Z6NAQGl+AolHRDu09
+         sP9ZbD5fXrPE+mxgp8nsjBMLdHsILK6P6ENHvIOAP9RjLn5BYVA+xiJEGnq4ACQmEr34
+         B+C2gNoZh8Cz/spmA33EcVtHFiJz9jXnNSfQXu6MZsbEUdCKOWFSsl1c1Zq2B6xK1vMf
+         FmNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775044204; x=1775649004;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=yCRyd9qleOZMVIjgK7RhQpHFpKKn7hN1W8j3Towy8nQ=;
+        b=S21E+mX+ipP4gHUj1kp1ewzxE+R/FN/3YETAiMO5pgQbCXWO7kjhNFWgYDPWBH+lGQ
+         njO5BFZbnPolZWtjuIH4XOZhigKHGDRiFnU0qb8u0/vThf6bPtzloWKtGO37Zy25nsBf
+         pWnvpIuWldRSYCkv1VW4caeuBE7ycede3n/tkjSR8zpqIBUSHomIIbmdBKN5cIDBnPyz
+         +e2jbgTanlI/SDTzfQ88DpPdLGjZIZ8WAHD++OBtH/u1tGbNVH6FSX/vNq8RNvyW1KsN
+         7oE3unJZfoCvXSGc11skXETl47bnvvc8SCan/x/PJLR93f1Z6gTqNqLk/dDQYPO+NpdJ
+         jF5w==
+X-Forwarded-Encrypted: i=1; AJvYcCX8fbPsTIqRWoy+X4x83Ax2U09dddcFeotT6baAGwaSs5xYkHU+1bXMU3tFHQ7y0nZfeT9W1w==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yzq3K2Uf321NgSbw9SoAwTH8WVbiDOaNppqSgzCpl/N3gDvqc8T
+	WorimZlLJIwMmv3ZnQ7ZxFXpbx8XDSf3z1CeKqZf+QZiDXbjXzssgV5HaI3+K+kC5/0=
+X-Gm-Gg: ATEYQzzAxO88qjFJ8Gau7VTL3dww+p+exmUKlrYfaYbqh8XTkBK8KE2MuIUiHua0wzr
+	OpqmWrmYNgfZXCXGhKAYXXq+ASllHDwss0tE3Q5qQVpFUlB3sumbVEmSEsSvTsve2KGa6nF/ZdQ
+	xs7WkLlGGNyIGUVZ5WD5dqvtf9J7TGJ7gKDvKKfyMDxsfkCFPSYGG776ZbYu5TD1EhY9y2pQUzr
+	A+fa+7JvBsXKZNRG3CJilZDbvOMqGedy9jzk5makLfTpYTwhDftkb/44hiYIpl8mq2QMDO9aaFo
+	cCEKnc4FGVRAgi7ZmkmbsvpZBhcP+dAYJprSTSXtfmnTKJteFcKyyMHe5dt+hX4RO0wh3nPw7tg
+	wJIFVyBmVPbQVGvhv7l4fR9ScTlgPTEmwuQ9Ti4DqWIv54ZUzJSj3wHHmYmizu6kNSbLMcLbbSk
+	sQzAFpoP1oM8VKTbrY/uWK+IiwEPlaaSo=
+X-Received: by 2002:a05:620a:6910:b0:8cd:b90f:fc16 with SMTP id af79cd13be357-8d1b5c6bf23mr447046685a.68.1775044203818;
+        Wed, 01 Apr 2026 04:50:03 -0700 (PDT)
+Received: from [10.11.12.108] ([79.115.63.48])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8d027db4770sm1309221285a.0.2026.04.01.04.49.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Apr 2026 04:50:03 -0700 (PDT)
+Message-ID: <e011f298-cec4-4c6e-94e8-ce533642a3f8@linaro.org>
+Date: Wed, 1 Apr 2026 14:49:54 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: OLAP279MB0055:EE_|OS5P279MB0959:EE_
-X-MS-Office365-Filtering-Correlation-Id: e58d874e-e121-4fb3-ad4e-08de8fe3317d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|366016|1800799024|10070799003|18002099003|56012099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	P6g3pFgzKcGY9ciN8B9X+6h8MOI9PqJv9UfHNq7/21yUmbXRgydidEEUJ7KM3b3I5TmKsl4mKekTSLFCCjCoFaMXA4Hz1EauTdCnpyZeKpcUT+KuiuGEjrHpEGqiB+/MclL4b7ZShbv6mchSrzhytouvvusKMcV0/OM9tTy+TTDdSBuCu1/V5MAXmFPN29Tnx4dZ5xHaLubwieFMZFtNeaxZCyUrrJ4Trz2xiZP0/VlN0guDnDSbFjTnk0Mqk+msiaj1FtFNm66i0L7iIFyOnbpOq/HYBMJZVvP0SzxJ6ks1Z+MoyGtQfyV2XEaXFrh+YTHoi+342s5fXEvUEvOuVMKUUcdoWtk4JSYVsM+l1M7B+LlhUUtc7iNUKoBmR4j0t7d0lum8NsPHZaXdoA3WgcvpJsM5iDOUqHXDqy5AvKv4kWu4ie4rv/fhdFHkZtE8SKy7iuIV0x6GPgh+G27cFf0dQlTFBhmimRxtOuZOPftaxTl0kKIo75ZeTb5vivQtiWUSFh0cXjyPQ1jW+WRwA3HTKf07F7Qp92J3Hl+RECvi8zLE88uHQ9tr3JV7UCWO+GCdanN47V0K3rEvFLJTkQwZcoct/rduRZ6I0zvzr2jp6I8TyW8b/Lv53yfniwjcGcNXsVOlwRx6NR84KSjVhNBnbp5A+BYn6aVu3fUfnTPrEGlbT902t7/704Nt+toug+H9U4zuNWQorkvcur8MJp1h2eyJ4jymwizvjLcRM1M=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OLAP279MB0055.NORP279.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(10070799003)(18002099003)(56012099003)(22082099003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?MlBPoyBsB8H90sa7Vp1vCl/3yYkoK54DVr85smO0HJp9YPmCBDxHNtPGir/a?=
- =?us-ascii?Q?OcYwUs+cPocPEWFMr5rzOZPf9RT/doz5jG3MFxoQqgDlLcdKigW/y/faf+TR?=
- =?us-ascii?Q?pg9gRZCoDjLnU2TO4ZsvNUE6HDpjhYLvkAxheFlx7XJF3oLnRMxs9MJGi3Yh?=
- =?us-ascii?Q?hsY0pn6hr0ct5nbMYQQmCuwls8B1RFlbo1fS+Z3RJgfjm0giVf0AKRUczblq?=
- =?us-ascii?Q?jYO8Tazo9IwAxRnveFfeGyxm4vtssquLKzeroHt6A0t7N9HVxzciE/LuiJT/?=
- =?us-ascii?Q?HUHv0mJZZfHimzgNdBjdjtP9QNYufFqf0d3WTkcOkuZvHpEkjYd6tx8+qiMR?=
- =?us-ascii?Q?T3yYq50X6feFsAqmzTzu8mGJEOhnJa4OKineqT61R2YkwlRkiM2KUiz8zttn?=
- =?us-ascii?Q?0q+Jj51JkbPRgg2X/Yyz1cYh1SvMmavScfrok0XAJibsRTLCwL9Mdst1miK/?=
- =?us-ascii?Q?RA2d4WjsPhPYqq9ZANzFp8NpyjgR8SVgJlpcItZ6U3KXTcFrSSkms+I+rvle?=
- =?us-ascii?Q?flo3ZO0mkxaQ9HRIMqhOpCX9Wu/blck/MDyF2NjgFZBNr38gGigaMaRu3qjA?=
- =?us-ascii?Q?gFADqgJvXmAANBfwfa0ScVvmMtn6ICzX3T0tXYjwY/wcQU7vTciG4C/MjcQw?=
- =?us-ascii?Q?MfZLTy3MMAspI2JU6gfxeV5Nok9e+ytv8Uxt/g6yH9SvznmOtbJ3wi5K4H/v?=
- =?us-ascii?Q?uWnx7aYAuVELR/QGXISVawfUGm6VcOOxmnvEUv0adKX4X6UCxGQsfsQ4US+E?=
- =?us-ascii?Q?19EPxE7wQLdNHYXHyjAe8+9gK0OChIK+7LTXzGZGkfDhBHOTCGb223Y/CX1w?=
- =?us-ascii?Q?XFnzm1Btv/ZlEkt2rU+xz0smhg08XdM/4fWoroWFpJHD9+a8V9aewtNwWyG9?=
- =?us-ascii?Q?l+78HyxryT4a81nr+8QLbR/GwyCj/PYLpkuSXqVn7j1L8/JBeEpGCEvrTjqH?=
- =?us-ascii?Q?NF+//6NG/4IA9blOkuTdT+3INH2HX9Mzbz9MvfJqSCkZE65D8pOePtAXufwm?=
- =?us-ascii?Q?D6LQtZfNefoVLUwvNvBFJ8DJ67GH0sPr7zwM2DXHstnxLFPpOyLxmBMKjc/4?=
- =?us-ascii?Q?oMqdw0O6mUhN+Awj4oqzeo5YSThilA5oN8U4AtsFom8JIl474HwpHA5bH7pK?=
- =?us-ascii?Q?aRAXb1BGzbDMkjPIgqS9C+si9UpL/2X+TKUjRq7Wreo36WkO3EhsiuL611OE?=
- =?us-ascii?Q?OiWwXGhBPrRH2l/5zBqjlVUvhgiW1PK2voRggS/FzyFiQ79dqtMt3y3g0Dht?=
- =?us-ascii?Q?o3b5W5NgfafLY31DTlxmbEgxLWwkJonQs/HQYF2Xuxu5dZbMe+k56a3Dovkz?=
- =?us-ascii?Q?7gPs+Yy027MP6MRtiYKT0ga8PQJnum3AcbB5yJ6a7D+7x95rPry1troX6A59?=
- =?us-ascii?Q?UKsNMrlYrJcAB7+f8lqNP5ro40n9gCkU+IbZT7ogL4N5Wrt3vAs2u86rTjr/?=
- =?us-ascii?Q?lFhBeSphLNTEvd1JTby4DlpcTXZOOW5wnAPzeGGJfuiOhQPTyy9+e71prZEE?=
- =?us-ascii?Q?QQHfSYAPsi/tTuNwglLIv6giq47sjBrdH9yelbgVOomieY4na9Ped+LvqZ8d?=
- =?us-ascii?Q?a+ftBxEnkzGPkXMmzJgeAq/KlhmhkaWhGmbERkWRu2PvZzsPgQG41Uq3EIVh?=
- =?us-ascii?Q?wTuuPKVP1W+C0CMxIk3iWQziiQefApe+hOBl+55qElpQM1TSlm7uBlIgdusI?=
- =?us-ascii?Q?nfvNgtdVhHASrNpV6x0Jfaa8BxzRT4vt9DgsC5betYqfGSRash9FQSP35X3a?=
- =?us-ascii?Q?FjoUryv806itQdqLrqYtzYhn9Z8KWpXb61ycrEFfWB7tXt5T21zm/Bukho5R?=
-X-MS-Exchange-AntiSpam-MessageData-1: zMG0p83AgieYcg==
-X-OriginatorOrg: dolphinics.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e58d874e-e121-4fb3-ad4e-08de8fe3317d
-X-MS-Exchange-CrossTenant-AuthSource: OLAP279MB0055.NORP279.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Apr 2026 11:38:28.6153
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 7fb89e52-625c-45cc-a50c-adf3af1b0a6c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xjo0CPaMj5AQcM2O1//VhoSbWSuxpbQoWFi9oY8JuePcdMwly0YAil1lfrod59bNL2YIcKvOzD2lwfRe8bCeMA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS5P279MB0959
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 4/4] iommu: Get DT/ACPI parsing into the proper probe
+ path
+To: Robin Murphy <robin.murphy@arm.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo
+ <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>,
+ Russell King <linux@armlinux.org.uk>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Danilo Krummrich <dakr@kernel.org>, Stuart Yoder <stuyoder@gmail.com>,
+ Laurentiu Tudor <laurentiu.tudor@nxp.com>, Nipun Gupta
+ <nipun.gupta@amd.com>, Nikhil Agarwal <nikhil.agarwal@amd.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>
+Cc: linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-pci@vger.kernel.org,
+ Charan Teja Kalla <quic_charante@quicinc.com>,
+ Peter Griffin <peter.griffin@linaro.org>,
+ =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>,
+ Juan Yescas <jyescas@google.com>, kernel-team@android.com
+References: <e3b191e6fd6ca9a1e84c5e5e40044faf97abb874.1740753261.git.robin.murphy@arm.com>
+ <67b32e90-1f60-4bf5-b534-b4a901d5a796@linaro.org>
+ <6c3b506e-8cc4-45ad-a801-326886c694c4@arm.com>
+Content-Language: en-US
+From: Tudor Ambarus <tudor.ambarus@linaro.org>
+In-Reply-To: <6c3b506e-8cc4-45ad-a801-326886c694c4@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Hi Vasant,
+Hi, Robin,
 
-> Nice! Please send v4.
+Thanks a lot for the educative answers!
+And sorry for the late reply, I got sidetracked.
 
-> Also I have sent one more fix. Can you please test that patch in your setup?
+On 3/23/26 10:49 PM, Robin Murphy wrote:
+> On 23/03/2026 5:18 pm, Tudor Ambarus wrote:
+>> Hi, Robin,
+>>
+>> On 2/28/25 5:46 PM, Robin Murphy wrote:
+>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>>> index a3b45b84f42b..1cec7074367a 100644
+>>> --- a/drivers/iommu/iommu.c
+>>> +++ b/drivers/iommu/iommu.c
+>>> @@ -414,9 +414,21 @@ static int iommu_init_device(struct device *dev)
+>>>       if (!dev_iommu_get(dev))
+>>>           return -ENOMEM;
+>>>       /*
+>>> -     * For FDT-based systems and ACPI IORT/VIOT, drivers register IOMMU
+>>> -     * instances with non-NULL fwnodes, and client devices should have been
+>>> -     * identified with a fwspec by this point. Otherwise, we can currently
+>>> +     * For FDT-based systems and ACPI IORT/VIOT, the common firmware parsing
+>>> +     * is buried in the bus dma_configure path. Properly unpicking that is
+>>> +     * still a big job, so for now just invoke the whole thing. The device
+>>> +     * already having a driver bound means dma_configure has already run and
+>>> +     * either found no IOMMU to wait for, or we're in its replay call right
+>>> +     * now, so either way there's no point calling it again.
+>>> +     */
+>>> +    if (!dev->driver && dev->bus->dma_configure) {
+>>> +        mutex_unlock(&iommu_probe_device_lock);
+>>> +        dev->bus->dma_configure(dev);
+>>> +        mutex_lock(&iommu_probe_device_lock);
+>>> +    }
+>>
+>> I was chasing the "something fishy" dev_WARN on a 6.19+ downstream
+>> android kernel and while looking at the IOMMU code I couldn't help
+>> myself and ask whether we shall prevent concurrent execution of
+>> dma_configure().
+>>
+>> It seems to me that while the IOMMU subsystem is executing
+>> dma_configure(), the deferred probe workqueue can concurrently pick up
+>> the same device, enter really_probe(), set dev->driver, and execute
+>> dma_configure(). Is it worth protecting against this?
+> 
+> Yes, it's certainly still possible to hit a false-positive if thread A in iommu_device_register()->bus_iommu_probe() races against thread B attempting to bind, simply because thread B can set dev->driver long before it gets to any point where ends up serialising on iommu_probe_device_lock again, so thread A can observe that even while it is doing the IOMMU probe in the "correct" context. Other than the warning though, it's still functionally OK even if the "wrong" thread does end up finishing the probe, at least after 0c8e9c148e29 ("iommu: Avoid introducing more races").
 
-> https://lore.kernel.org/linux-iommu/20260401080017.117549-1-vasant.hegde@amd.com/
+I confirm I have 0c8e9c148e29 ("iommu: Avoid introducing more races") in
+my tree.
 
-> -Vasant
+If the concurrent execution is functionally safe and the dev->driver
+check is a known source of false positives during async probing, do you
+think it would worth switching the dev_WARN to dev_info? I'm thinking
+dev_WARN is a bit harsh, as it can disrupt CI pipelines that halt on
+warnings.
 
-Tested with the clone_alias fix.
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index e61927b4d41f..5f0c1a8064b5 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -461,9 +461,19 @@ static int iommu_init_device(struct device *dev)
+>>           * already having a driver bound means dma_configure has already run and
+>>           * found no IOMMU to wait for, so there's no point calling it again.
+>>           */
+>> -       if (!dev->iommu->fwspec && !dev->driver && dev->bus->dma_configure) {
+>> +       if (!dev->iommu->fwspec && !READ_ONCE(dev->driver) &&
+>> +           dev->bus->dma_configure) {
+>>                  mutex_unlock(&iommu_probe_device_lock);
+>> -               dev->bus->dma_configure(dev);
+>> +
+>> +               /*
+>> +                * Serialize with really_probe(). Recheck dev->driver in case a
+>> +                * driver bound while we were waiting for the lock.
+>> +                */
+>> +               device_lock(dev);
+>> +               if (!dev->driver)
+>> +                       dev->bus->dma_configure(dev);
+>> +               device_unlock(dev);
+> 
+> Much as I can't wait to get rid of iommu_probe_device_lock, the main reason we still can't rely on device_lock() at the moment is not actually the remaining sketchy replay-dependers per the comment in __iommu_probe_device(), but more fundamentally that for most IOMMU drivers this will deadlock in that same iommu_device_register()->bus_iommu_probe() path, when the bus walk happens to stumble across the IOMMU device itself, which of course is already locked as it's still in the middle of its own driver bind. I couldn't see an easy, clean and reliable way to get around that, so that can got kicked down the road in order to get the "call of_xlate in the right order and make iommu_device_register() actually work" basics landed (and start shaking out all these other problems...)
+> 
 
-v4 sent:
-https://lore.kernel.org/linux-iommu/20260401112021.76806-1-magnus@dolphinics.com/
+Thank you for the detailed explanation. Between the self-deadlock on
+the IOMMU device itself, and the fact that a non-blocking
+device_trylock() would be unsafe (as it could fail due to a simple sysfs
+read, permanently orphaning the device from the bus walk), it's clear
+there is no clean locking fix for this TOCTOU window right now.
 
-Magnus
+Thanks,
+ta
