@@ -1,371 +1,386 @@
-Received: from smtp.forwardemail.net (smtp.forwardemail.net [121.127.44.73])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from OS8PR02CU002.outbound.protection.outlook.com (mail-japanwestazolkn19012054.outbound.protection.outlook.com [52.103.66.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2CCD3AA512
-	for <iommu@lists.linux.dev>; Wed,  1 Apr 2026 08:26:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=121.127.44.73
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775031967; cv=none; b=dg5zvw7KihDg7nLWyuFQUsdJ6ywk4ECb949y+6iIYli4+LRCn0YCgMsUsuWJ+z1q752/xPnUZJqjSjieK3Vsv81/faHMra9eeAoO3pFbykm1vAL5dtsP8PoctrF5ArSU+bNSx1xAxU/8i7hgubpbauzTMK+f2Sb1crQpplhC+n0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775031967; c=relaxed/simple;
-	bh=0F1owP+YtUWX8axWlzS+mRtjWLTq5u9GyhYXzH3SJgY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=psImfs/gWVkVCbDrNzOpH9s+BcxeR8N+aT85nkGW21yCtyp7i1DYN2P4PZmjzM7hcQ7sDBuYBTZjNQGi7c3pRCEv/IJV7kY0oi3d4IYq39flo/cZZlhfHLaVhljE+E+pbqy64TbEQXC8DQ4DVydhH/kBL1kUbSdYxD24V7nr9kM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=kwiboo.se; spf=pass smtp.mailfrom=fe-bounces.kwiboo.se; dkim=pass (2048-bit key) header.d=kwiboo.se header.i=@kwiboo.se header.b=x6x7MV+q; arc=none smtp.client-ip=121.127.44.73
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=kwiboo.se
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fe-bounces.kwiboo.se
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D63563A382E;
+	Wed,  1 Apr 2026 08:52:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.66.54
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775033528; cv=fail; b=IlV+XJM1eR0Ezs9Ob5ajxjT4fBEITZLi6wa6ODUx5FWCLy34tNvW3OfczQcfOXnWP4ZGtjrAtrUYo9jvk5lKuk3tJTNVDx8/K0aTiqQkbnrSIIkBkGD87MGoCVHao8+9dT6u5joWB6wQHBXQY2rpujO2QEDNQ2IdB5lKkN2UBS4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775033528; c=relaxed/simple;
+	bh=d6+34baj7LUeV6CT+8a6DyccGgbd8PsK5ebgEsg8F08=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=dsLKkj8mLOJdWYXUP+znoHCzHWXbHzlIWOCkgrHBpC3s249F0yU2+i0xjpK9Q0KbyJuzOopJRr0Kqspd7U55NUfQJqAAHmd18T/yNL5SZOrhHLCKlLcU89tCDaJcopTHPpyL9kw2vNknPogwCxd63riZSeHg9rzrCzkAumUsRF4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=hRXDLSrs; arc=fail smtp.client-ip=52.103.66.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hotmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kwiboo.se header.i=@kwiboo.se header.b="x6x7MV+q"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kwiboo.se;
- h=Content-Transfer-Encoding: Content-Type: In-Reply-To: From: References:
- Cc: To: Subject: MIME-Version: Date: Message-ID; q=dns/txt;
- s=fe-e1b5cab7be; t=1775031963;
- bh=p0PBCxsueUX4UGv9YP6InaaDYR85o9jiwW8JhqElfeo=;
- b=x6x7MV+qa9xgcaXv6/dmGwmvRLzEKo6XehzC56eKghNd68XlX3Z+RsHE872szWTbiGYeiap9i
- qhN+N0hSihRcDKhH/HUdYb4YIWMvI79UGUgKi64DFLsTap+eVcMm2an0uVcS78M+TzfSGkdydzc
- uz/DdLpfQ/vrT90O5GZvmNkWNQA4VCXoNMD+LqjpYtCzwpsnYO+NRvGthv1DzJu7C9h0Es9bQ4U
- zWoOa8xpSlHwJ7V4Rl3Xvn/rZpWzcGO5WrXfcpFz/lj5NXSPA67t/W+wRnstPRTZJgVcUp4XMTd
- wrn3LlT3wYbKh2t3Er1ogKb2pSQ8/8+dGMvt0/BNCn7Q==
-X-Forward-Email-ID: 69ccd6999fd488f8629e29f7
-X-Forward-Email-Sender: rfc822; jonas@kwiboo.se, smtp.forwardemail.net,
- 121.127.44.73
-X-Forward-Email-Version: 2.6.64
-X-Forward-Email-Website: https://forwardemail.net
-X-Complaints-To: abuse@forwardemail.net
-X-Report-Abuse: abuse@forwardemail.net
-X-Report-Abuse-To: abuse@forwardemail.net
-Message-ID: <8ca0a8d3-aed9-4c2a-89dd-e9029afdd279@kwiboo.se>
-Date: Wed, 1 Apr 2026 10:25:58 +0200
+	dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="hRXDLSrs"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=anRSBU4f2w1Y30/b5W0nSQbFXbn2JjEn/eN8uTVCKhGYBRlF3bpHPDpjDUcpggUpXoo9nRC5+nN1zLot8LqYEj4t5vJc1mroIYhFJZ26K9Kd0hRERgkfjmKxOqy3viDS16ZYktQOZTeeygQDKcAxHManzxKAKA1lvPb/DjEcvoHR059qIRRv3RSTO0LiNbpm18C7kSFzIhp7cTwFNUm6i1CxiOWBE+kafQ1HfPkjvi/oxuWynrLBtk6PyJ79TAMIllwrw38y2DQLtrCMwUVOiPSLIC4KztTIDAfTLvbRvu7imTgDlC8PuGahncKKgdBldvOEI2h9SnKmsoZkhaZt3w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=H4cC6VLiz1KhgeBNmQMIrDEGoh4+QEpKfHka7T5fijg=;
+ b=hcOwGHVzt7G8Sc9CakY2TQ1df4vUXLv1yXwvyQqb67ts6RW7BmgCDdNIgmwZmtDz6SryLfePpdgf+oloPu/5AbXDdtchGKDBR0Yb6jEFoLyCYSI398X5mXPgWgN9TTnVP88MJq/S8YWqmHjgotl010sZem3YrVEKJ2AhE4oAugq+ytFegUJqzfPUN5fpQkO1oARLjk+WVqSYWpCGxYIZQEEsoTkfirEfWxqmzgDszbMH3enp6GDwQbjNj+rQDd4cD1+7cj0Z3uVVnrN70/Z0yeFzThBF2LlkV2oU8eqVmii3JiwgSjPUP/rN/fyYvBzG6TjDsoXgyjkB21ZgOhOGKA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=H4cC6VLiz1KhgeBNmQMIrDEGoh4+QEpKfHka7T5fijg=;
+ b=hRXDLSrsyQvNmAhoOZENchL9otipzBu8I1P3uZqfjBk0BjX2oZGTaZHOYZai7jM4qvfelm0WpRpiCohlAHEEqzGXefkS6+HKKwOri1pub7X0hPLaIPir5gj/WWQe6Tctnc9kuQR/Zo1wAH4uVtweRm/wmFgsuCPj2Xnzs+rfUzZLdV7o7xaj58akFDkhztDFMaDteHNmzJkc+X6KUukpjRckxMRi/ZILA4azydI2IxNc1QRMUEeeq1ngd1JssezBVkwck3/KqQ86LOD4XHkS3nbflA8NH/waxkKHixXbvU+pLQZo1+rllgSv94mdJApsdBRryUms5Itv2L0fmDtgqA==
+Received: from SI2PR01MB4393.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:1b0::7) by TYZPR01MB5056.apcprd01.prod.exchangelabs.com
+ (2603:1096:400:334::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.16; Wed, 1 Apr
+ 2026 08:52:03 +0000
+Received: from SI2PR01MB4393.apcprd01.prod.exchangelabs.com
+ ([fe80::c735:fab8:6e3d:6d1c]) by SI2PR01MB4393.apcprd01.prod.exchangelabs.com
+ ([fe80::c735:fab8:6e3d:6d1c%4]) with mapi id 15.20.9745.027; Wed, 1 Apr 2026
+ 08:52:03 +0000
+Message-ID:
+ <SI2PR01MB4393EA93D66A8E204E357713DC50A@SI2PR01MB4393.apcprd01.prod.exchangelabs.com>
+Date: Wed, 1 Apr 2026 16:51:58 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 5/5] iommu/amd: Control INVALIDATE_IOMMU_PAGES PDE from
+ the gather
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Will Deacon <will@kernel.org>
+Cc: patches@lists.linux.dev
+References: <5-v1-a7b77c25974e+115bf-iommupt_inv_amd_jgg@nvidia.com>
+Content-Language: en-US
+From: Wei Wang <wei.w.wang@hotmail.com>
+In-Reply-To: <5-v1-a7b77c25974e+115bf-iommupt_inv_amd_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: TP0P295CA0060.TWNP295.PROD.OUTLOOK.COM
+ (2603:1096:910:3::15) To SI2PR01MB4393.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:1b0::7)
+X-Microsoft-Original-Message-ID:
+ <824c80ce-5b31-460d-9999-21c625f40728@hotmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iommu/rockchip: Drop global rk_ops in favor of
- per-device ops
-To: Simon Xue <xxm@rock-chips.com>, Shawn Lin <shawn.lin@rock-chips.com>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Heiko Stuebner <heiko@sntech.de>
-References: <20260310084812.126082-1-xxm@rock-chips.com>
- <20260310105303.128859-1-xxm@rock-chips.com>
- <a586dd60-5b9c-4044-3bb1-903df863b587@rock-chips.com>
- <b046ad1c-9cfc-4399-a8df-e4fffff434f9@rock-chips.com>
-Content-Language: en-US
-From: Jonas Karlman <jonas@kwiboo.se>
-In-Reply-To: <b046ad1c-9cfc-4399-a8df-e4fffff434f9@rock-chips.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SI2PR01MB4393:EE_|TYZPR01MB5056:EE_
+X-MS-Office365-Filtering-Correlation-Id: 66075512-e048-412b-6a54-08de8fcbf142
+X-Microsoft-Antispam:
+	BCL:0;ARA:14566002|51005399006|12121999013|5072599009|6090799003|461199028|8060799015|7042599007|19110799012|15080799012|41001999006|23021999003|37011999003|40105399003|440099028|3412199025|12091999003|26121999003;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?NU1jUjZ4Tm10YnRmTThhMENXREtKRVdhTVVDZHJBS0JQN2dPL2IyeW5hL1Vi?=
+ =?utf-8?B?L3FNMnhjS21DaTJ0dFUyZENEVitTRnZvSHd0R2R0N3R2WUxBWHV5bkh4bE02?=
+ =?utf-8?B?TFlIMmpGU1RKdkFKR05zcUdXTmpZMnlhdDVUY08vTXBVY0MyQUwwRzFqeGJw?=
+ =?utf-8?B?SHhyaFV2RU5SaUM2WUVIRXA3Yk5XM29KL2o1cVptSWFqZFlXVzRhMmljbkp2?=
+ =?utf-8?B?Q2k0dStXZ1ZNK2tVbVlsTVg5Nkd0S1AxTmRadGNrR2w3ZUozdTNuM3NOMUlK?=
+ =?utf-8?B?OFk4dDVGQ0t2NXUvbHRoM2FHOGN6VkkxczFTTDAwY09TQklmNlYrQWJPMGxK?=
+ =?utf-8?B?WXoyM01ZTnAxQ3RCQUI1V3o0UGdnQk9Ra0VibGc2Y2Z2cjE3QWJ2QmhnVC9j?=
+ =?utf-8?B?Q2JvSU1ZRUp6elpzb3AwL0k2V3Y3YnQrNmduOThyQ3NwWmRPMG01eENleVcy?=
+ =?utf-8?B?MFJLUyt1ZXNSNTdaZlIyaXVDTkUrV0xSZEVFNEd1R2hCMENEdm9NSTVKZ0Ux?=
+ =?utf-8?B?MDFzdGxOaW5GWUFST01GcU5sVWxyMkJFelQ5UEhTb1FwTlZPZ2dxUE02UjNs?=
+ =?utf-8?B?VCtHa0FmRlQ2a25GNzlvUnMyRDg0RTI1Tm5vbTFEZEFyN3IzZVBSNmZoTDUw?=
+ =?utf-8?B?cG93dXkwN2s1bFZMeGYvVXJCaEIzZThTaXN1dTc1SXRibzYySjQ4Mjh0Q1hQ?=
+ =?utf-8?B?UmdrQ05QZnJENTVTWFNhZStvb05ZWElXbHVQUmdQVEZ1MG03TGZVU3pYdjJP?=
+ =?utf-8?B?RndObDF4cml4MWVtMDl4Z0FEaVJTNWJicW85dnd2MnkzS2s4VUhCeEpOWUNa?=
+ =?utf-8?B?eHltZzFjV3pGS3B5b1VrbkVjd2pqMUFvVUhZcXhRQ1M2UDhyV2tvVTJIREcw?=
+ =?utf-8?B?Vnd2a09rc2xaZWx2U3RFYVJBSkpZYzNmaFFqQWpLdWh6eEs1cEg4R1grRkNv?=
+ =?utf-8?B?UmQ3eDl0ek9HYkI2Q0w0dDZ3QURmRlduczBaYnd0OUNlQStWYnNwWHo5K2xm?=
+ =?utf-8?B?WFZhVUx4elNMTjJuYmNPWGVYd1FsMEFqS0d2S25sc3NqV1oxa0FpTTlzbDkx?=
+ =?utf-8?B?eE1QY01aS1VFdUdKWmNXbWthNnhkQU9HMDA4SDZTemxYcmdBM3E0cWhHZmhx?=
+ =?utf-8?B?eERkRHNGcU91VG8yY0FWZkJPVVpuR2Y1MTRqcDNSdzJzWU1aQXAxUlI0cXVB?=
+ =?utf-8?B?MVF1dVVXRFpqU3VySU8rOTNCQnZyRFhnSmhTdUYyNzQyS0NOc0Rmcko4b2pG?=
+ =?utf-8?B?bWFiSktoWkdkMllvNXB5U3VsZk5PSElLemV1QmRzNlpSVU10Rm9HRnVxV3Vh?=
+ =?utf-8?B?NGhMZmR4bW5salhJVWd3QUFyUXRwcW1jK0ZlUCtZSXRiU0J5eTRXcFpyR3dN?=
+ =?utf-8?B?VlAxYXRuOTlNQmlscklrd25ZaForcEVHQ1hTS0xmMHRRNEkzSjJCL3V4V1BT?=
+ =?utf-8?B?T3RHdGJtN0VabGRrSDkzN3d4aUNHT0IyekVTSXBxRDNMbm8vNUkzdVpyT0Fp?=
+ =?utf-8?Q?mgLvO/8xWQXNth+ZQ8f1mC41aGu?=
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?cVZLSm80dUhMVFQ1cXp6TWZRb2MxZTNNUXdQc3owYng0d3d4aXhHTU5Jak9T?=
+ =?utf-8?B?aUtiQjZHV2w0RTdsRUtNRFdpY1ZOSFBNYmV0MUVldFEwZCtvNkdlV3ZIVzZx?=
+ =?utf-8?B?dEhZenRydGxLV1ozM1E1WEx4S3JLeEZ4VVNQNUordkVERFhNbEcxZHJsYWJl?=
+ =?utf-8?B?MTNGMDAxMEJGUy9yTE12NFFPQ1J0UXh0ZDFLNVgrMEEvWGI2emcyb1I2OVNv?=
+ =?utf-8?B?aC9oaFpwN2dIbXdLN1FnYkowTUpnUEhRWTFSbEhWY1E3L2ZrelcwU2JGTlQ0?=
+ =?utf-8?B?K1hNNGVzcURENFlTU2ZoNkJmYXVWaExGczR4TWhxZG05MmVnSktrTWllR0Fk?=
+ =?utf-8?B?cnZ5eHNxSzBXbjVpY2grRUxBbmFtZnJBdEdBeFdLTGo2WDlsV2hSWEx3VmEz?=
+ =?utf-8?B?RW91YVpnMGRVdGp3SmJzVTJMOFVYTU42Yy9TYUNTcnluaFV0WmEzYlZGOWhO?=
+ =?utf-8?B?UHgyVFlnUXUxY2tyK2VmYlBpdnFmR2xET0dPRGRSZ1dRZGRYU3JheERZQWow?=
+ =?utf-8?B?UzV1S2hJYkozLy9HK2FOcjNvbFJ5YkZIdmlxTnB6aVpxUnRyTWJTZ2FNTUlV?=
+ =?utf-8?B?QmhEMERJQlJPemYrM1EzN0dsZlJwSGtGbDQ0Y2RkSGkzdEhwVlg4U0U4OHlr?=
+ =?utf-8?B?ZzV2OGRhSnN4SlB3TkpZaTQ2TWNkUlBQOXN5V0NaRmFha3ZNWEk2TmVWOFNm?=
+ =?utf-8?B?S3dzL2krcm1nUWFrVTBPVkxaNXJvaGFWUXZXU0RZeWtjMmhUYmNvenUxVUsy?=
+ =?utf-8?B?Y3poNjUyS09kOFJTUysxV3NQSUdOYXA0MS9jZmh4d0pIZTZkWVNhOE9QYVcx?=
+ =?utf-8?B?NTlOOE5temZqcHNPakFob2lVcmRycUI0MC85d0lucUthVDlBbDlYcEQ2d0h0?=
+ =?utf-8?B?bjlRaFFIZG9veVlkcUdHaHI3TWx3dkJNUjZ5aG5XMUVJN3o1NW83OHk3TTFQ?=
+ =?utf-8?B?ditDaEZaS0ZPVVNMV2Q0a2U4U1Vpb3BFaXFheFQrYUNvUFdQMU5Uc3hVUnRC?=
+ =?utf-8?B?MWtnS1E3VkRGY3MxdXNrUk1oVVdMaG9UalYweklSRnQ3OUZnY25xTHFXUlcv?=
+ =?utf-8?B?eldiYnpxVTEzTW9heTYyV1FoeFdVTktwU0JhSjU5b2FQSGZ2MzQ0T016dmRT?=
+ =?utf-8?B?blpCSGJvQlNjYVZvWTFtMVRMMUVJLy9sR21tQTgwQVhyMHNsK2Z6WE0yUkln?=
+ =?utf-8?B?NDNEcnlSL0g2WVRReW1WVTVtVWhkYlZObC9LTi9sSCtIRXYrVmVNSFRYMVlp?=
+ =?utf-8?B?MEtUMEl5N3BXNC9NR1RDNnV3MjV6TkVQNkNYQ29kVjhVamxLNmpSZlhoS2tz?=
+ =?utf-8?B?YTZZZHloWE16azh6dnc5ZEdoOHN4cTZXdTlYYkNaSS8xVEYwUHBkNm5XZ2k3?=
+ =?utf-8?B?MnA2NGdOQ2VnZ0tMVE9Lalp1WituY1pVV0RMSW5haW5mMmxHTkY3NWVjUWtI?=
+ =?utf-8?B?b0N6UFU2QjFhc2JUeTI3RHF0SEprKzFwdDQxQjMvZ3U0dk1JMzVyVW41WU1p?=
+ =?utf-8?B?bkMzR1NydlNPb0tmaVlGelVZaUZvSUNyaVJrTVJXMnAvL3RFK2FHdDZMNHJS?=
+ =?utf-8?B?bDNLRGZWUnY0UC8xbGVUV1dwUGZPQ1E3RkRDaGJsdmJ2bnFpNll0VG4rZGFp?=
+ =?utf-8?B?K1ZaeFl5WXVsQ2JieVVCRUhlc2xBOWdpUFRNak1UcGlOQ25JWUYxYjNMbmZB?=
+ =?utf-8?B?TlVYbEgxek1zUTRrU0tXKzJjcDdmN2tHbkNwdERBcE1HVGJTdlpVWlV0dGpM?=
+ =?utf-8?B?MDlKN1N1THVyQWFGUWhTL3dSc3R5dUZKUWxPaEtlWDhTR2lCd1I2SXNkRnB5?=
+ =?utf-8?B?bmZOSXgvYzhTaXRMODRsUkdkeEZjQi8vams0M0ZWZ1VNcHNJczJrMjVnYXBH?=
+ =?utf-8?Q?7HAmJ9IWsK+KN?=
+X-OriginatorOrg: sct-15-20-9412-4-msonline-outlook-3e488.templateTenant
+X-MS-Exchange-CrossTenant-Network-Message-Id: 66075512-e048-412b-6a54-08de8fcbf142
+X-MS-Exchange-CrossTenant-AuthSource: SI2PR01MB4393.apcprd01.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Apr 2026 08:52:03.1466
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR01MB5056
 
-Hi,
-
-On 4/1/2026 9:59 AM, Simon Xue wrote:
-> Hi all,
+On 3/27/26 11:23 PM, Jason Gunthorpe wrote:
+> Now that AMD uses iommupt, it is easy to make use of the PDE bit. If
+> the gather has no free list then no page directory entries were
+> changed.
 > 
-> A gentle ping on this patch.
+> Pass GN/PDE through the invalidation call chain in a u32 flags field
+> that is OR'd into data[2] and set it properly from the gather.
 > 
-> 在 2026/3/13 17:32, Shawn Lin 写道:
->> 在 2026/03/10 星期二 18:53, Simon Xue 写道:
->>> The driver currently uses a global rk_ops pointer, forcing all IOMMU
->>> instances to share the same operations. This restricts the driver from
->>> supporting SoCs that might integrate different versions of IOMMU 
->>> hardware.
->>>
->>> Since the IOMMU framework passes the master device information to
->>> iommu_paging_domain_alloc(), the global variable is no longer needed.
->>>
->>> Fix this by moving rk_ops into struct rk_iommu and struct 
->>> rk_iommu_domain.
->>> Initialize it per-device during probe via of_device_get_match_data(),
->>> and replace all global references with the instance-specific pointers.
->>>
->>
->> Thanks for the patch, Simon. I've tested it on the RK3576 EVB1 with
->> PCIe1 + IOMMU. NVMe works fine on it, and I also verified the IOVA
->> allocated in the NVMe driver, they look correct as I manually limited
->> the memblock to under 2GB, so here it is:
->>
->> nvme 0001:21:00.0: cq_dma_addr: 0x00000000f7fc7000
->>
->> Tested-by: Shawn Lin <shawn.lin@rock-chips.com>
->> Reviewed-by: Shawn Lin <shawn.lin@rock-chips.com>
->>
->>> Signed-off-by: Simon Xue <xxm@rock-chips.com>
->>> ---
->>> v2:
->>>   - Remove the one-time-used 'ops' variable in rk_iommu_probe()
->>>
->>>   drivers/iommu/rockchip-iommu.c | 71 ++++++++++++++++------------------
->>>   1 file changed, 33 insertions(+), 38 deletions(-)
->>>
->>> diff --git a/drivers/iommu/rockchip-iommu.c 
->>> b/drivers/iommu/rockchip-iommu.c
->>> index 0013cf196c57..4da80136933c 100644
->>> --- a/drivers/iommu/rockchip-iommu.c
->>> +++ b/drivers/iommu/rockchip-iommu.c
->>> @@ -82,6 +82,14 @@
->>>     */
->>>   #define RK_IOMMU_PGSIZE_BITMAP 0x007ff000
->>>   +struct rk_iommu_ops {
->>> +    phys_addr_t (*pt_address)(u32 dte);
->>> +    u32 (*mk_dtentries)(dma_addr_t pt_dma);
->>> +    u32 (*mk_ptentries)(phys_addr_t page, int prot);
->>> +    u64 dma_bit_mask;
->>> +    gfp_t gfp_flags;
->>> +};
->>> +
->>>   struct rk_iommu_domain {
->>>       struct list_head iommus;
->>>       u32 *dt; /* page directory table */
->>> @@ -89,6 +97,7 @@ struct rk_iommu_domain {
->>>       spinlock_t iommus_lock; /* lock for iommus list */
->>>       spinlock_t dt_lock; /* lock for modifying page directory table */
->>>       struct device *dma_dev;
->>> +    const struct rk_iommu_ops *rk_ops;
->>>         struct iommu_domain domain;
->>>   };
->>> @@ -98,14 +107,6 @@ static const char * const rk_iommu_clocks[] = {
->>>       "aclk", "iface",
->>>   };
->>>   -struct rk_iommu_ops {
->>> -    phys_addr_t (*pt_address)(u32 dte);
->>> -    u32 (*mk_dtentries)(dma_addr_t pt_dma);
->>> -    u32 (*mk_ptentries)(phys_addr_t page, int prot);
->>> -    u64 dma_bit_mask;
->>> -    gfp_t gfp_flags;
->>> -};
->>> -
->>>   struct rk_iommu {
->>>       struct device *dev;
->>>       void __iomem **bases;
->>> @@ -117,6 +118,7 @@ struct rk_iommu {
->>>       struct iommu_device iommu;
->>>       struct list_head node; /* entry in rk_iommu_domain.iommus */
->>>       struct iommu_domain *domain; /* domain to which iommu is 
->>> attached */
->>> +    const struct rk_iommu_ops *rk_ops;
-
-Do we really need the rk_ops on both the rk_iommu and rk_iommu_domain?
-
->>>   };
->>>     struct rk_iommudata {
->>> @@ -124,7 +126,6 @@ struct rk_iommudata {
->>>       struct rk_iommu *iommu;
->>>   };
->>>   -static const struct rk_iommu_ops *rk_ops;
->>>   static struct iommu_domain rk_identity_domain;
->>>     static inline void rk_table_flush(struct rk_iommu_domain *dom, 
->>> dma_addr_t dma,
->>> @@ -510,7 +511,7 @@ static int rk_iommu_force_reset(struct rk_iommu 
->>> *iommu)
->>>        * and verifying that upper 5 (v1) or 7 (v2) nybbles are read 
->>> back.
->>>        */
->>>       for (i = 0; i < iommu->num_mmu; i++) {
->>> -        dte_addr = rk_ops->pt_address(DTE_ADDR_DUMMY);
->>> +        dte_addr = iommu->rk_ops->pt_address(DTE_ADDR_DUMMY);
-
-Maybe this patch it trying to do too much at once that makes it harder
-to review? To simplify review maybe one patch just drops the global
-rk_ops and a assigns a local version based on domain/iommu, and a second
-patch changes to use the iommu->rk_ops directly? Just a thought.
-
->>>           rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR, dte_addr);
->>>             if (dte_addr != rk_iommu_read(iommu->bases[i], 
->>> RK_MMU_DTE_ADDR)) {
->>> @@ -551,7 +552,7 @@ static void log_iova(struct rk_iommu *iommu, int 
->>> index, dma_addr_t iova)
->>>       page_offset = rk_iova_page_offset(iova);
->>>         mmu_dte_addr = rk_iommu_read(base, RK_MMU_DTE_ADDR);
->>> -    mmu_dte_addr_phys = rk_ops->pt_address(mmu_dte_addr);
->>> +    mmu_dte_addr_phys = iommu->rk_ops->pt_address(mmu_dte_addr);
->>>         dte_addr_phys = mmu_dte_addr_phys + (4 * dte_index);
->>>       dte_addr = phys_to_virt(dte_addr_phys);
->>> @@ -560,14 +561,14 @@ static void log_iova(struct rk_iommu *iommu, 
->>> int index, dma_addr_t iova)
->>>       if (!rk_dte_is_pt_valid(dte))
->>>           goto print_it;
->>>   -    pte_addr_phys = rk_ops->pt_address(dte) + (pte_index * 4);
->>> +    pte_addr_phys = iommu->rk_ops->pt_address(dte) + (pte_index * 4);
->>>       pte_addr = phys_to_virt(pte_addr_phys);
->>>       pte = *pte_addr;
->>>         if (!rk_pte_is_page_valid(pte))
->>>           goto print_it;
->>>   -    page_addr_phys = rk_ops->pt_address(pte) + page_offset;
->>> +    page_addr_phys = iommu->rk_ops->pt_address(pte) + page_offset;
->>>       page_flags = pte & RK_PTE_PAGE_FLAGS_MASK;
->>>     print_it:
->>> @@ -663,13 +664,13 @@ static phys_addr_t rk_iommu_iova_to_phys(struct 
->>> iommu_domain *domain,
->>>       if (!rk_dte_is_pt_valid(dte))
->>>           goto out;
->>>   -    pt_phys = rk_ops->pt_address(dte);
->>> +    pt_phys = rk_domain->rk_ops->pt_address(dte);
->>>       page_table = (u32 *)phys_to_virt(pt_phys);
->>>       pte = page_table[rk_iova_pte_index(iova)];
->>>       if (!rk_pte_is_page_valid(pte))
->>>           goto out;
->>>   -    phys = rk_ops->pt_address(pte) + rk_iova_page_offset(iova);
->>> +    phys = rk_domain->rk_ops->pt_address(pte) + 
->>> rk_iova_page_offset(iova);
->>>   out:
->>>       spin_unlock_irqrestore(&rk_domain->dt_lock, flags);
->>>   @@ -730,7 +731,7 @@ static u32 *rk_dte_get_page_table(struct 
->>> rk_iommu_domain *rk_domain,
->>>       if (rk_dte_is_pt_valid(dte))
->>>           goto done;
->>>   -    page_table = iommu_alloc_pages_sz(GFP_ATOMIC | rk_ops->gfp_flags,
->>> +    page_table = iommu_alloc_pages_sz(GFP_ATOMIC | 
->>> rk_domain->rk_ops->gfp_flags,
->>>                         SPAGE_SIZE);
->>>       if (!page_table)
->>>           return ERR_PTR(-ENOMEM);
->>> @@ -742,13 +743,13 @@ static u32 *rk_dte_get_page_table(struct 
->>> rk_iommu_domain *rk_domain,
->>>           return ERR_PTR(-ENOMEM);
->>>       }
->>>   -    dte = rk_ops->mk_dtentries(pt_dma);
->>> +    dte = rk_domain->rk_ops->mk_dtentries(pt_dma);
->>>       *dte_addr = dte;
->>>         rk_table_flush(rk_domain,
->>>                  rk_domain->dt_dma + dte_index * sizeof(u32), 1);
->>>   done:
->>> -    pt_phys = rk_ops->pt_address(dte);
->>> +    pt_phys = rk_domain->rk_ops->pt_address(dte);
->>>       return (u32 *)phys_to_virt(pt_phys);
->>>   }
->>>   @@ -790,7 +791,7 @@ static int rk_iommu_map_iova(struct 
->>> rk_iommu_domain *rk_domain, u32 *pte_addr,
->>>           if (rk_pte_is_page_valid(pte))
->>>               goto unwind;
->>>   -        pte_addr[pte_count] = rk_ops->mk_ptentries(paddr, prot);
->>> +        pte_addr[pte_count] = rk_domain->rk_ops->mk_ptentries(paddr, 
->>> prot);
->>>             paddr += SPAGE_SIZE;
->>>       }
->>> @@ -812,7 +813,7 @@ static int rk_iommu_map_iova(struct 
->>> rk_iommu_domain *rk_domain, u32 *pte_addr,
->>>                   pte_count * SPAGE_SIZE);
->>>         iova += pte_count * SPAGE_SIZE;
->>> -    page_phys = rk_ops->pt_address(pte_addr[pte_count]);
->>> +    page_phys = rk_domain->rk_ops->pt_address(pte_addr[pte_count]);
->>>       pr_err("iova: %pad already mapped to %pa cannot remap to phys: 
->>> %pa prot: %#x\n",
->>>              &iova, &page_phys, &paddr, prot);
->>>   @@ -849,7 +850,7 @@ static int rk_iommu_map(struct iommu_domain 
->>> *domain, unsigned long _iova,
->>>       pte_index = rk_iova_pte_index(iova);
->>>       pte_addr = &page_table[pte_index];
->>>   -    pte_dma = rk_ops->pt_address(dte_index) + pte_index * 
->>> sizeof(u32);
->>> +    pte_dma = rk_domain->rk_ops->pt_address(dte_index) + pte_index * 
->>> sizeof(u32);
->>>       ret = rk_iommu_map_iova(rk_domain, pte_addr, pte_dma, iova,
->>>                   paddr, size, prot);
->>>   @@ -887,7 +888,7 @@ static size_t rk_iommu_unmap(struct 
->>> iommu_domain *domain, unsigned long _iova,
->>>           return 0;
->>>       }
->>>   -    pt_phys = rk_ops->pt_address(dte);
->>> +    pt_phys = rk_domain->rk_ops->pt_address(dte);
->>>       pte_addr = (u32 *)phys_to_virt(pt_phys) + rk_iova_pte_index(iova);
->>>       pte_dma = pt_phys + rk_iova_pte_index(iova) * sizeof(u32);
->>>       unmap_size = rk_iommu_unmap_iova(rk_domain, pte_addr, pte_dma, 
->>> size);
->>> @@ -945,7 +946,7 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
->>>         for (i = 0; i < iommu->num_mmu; i++) {
->>>           rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR,
->>> - rk_ops->mk_dtentries(rk_domain->dt_dma));
->>> + iommu->rk_ops->mk_dtentries(rk_domain->dt_dma));
->>>           rk_iommu_base_command(iommu->bases[i], RK_MMU_CMD_ZAP_CACHE);
->>>           rk_iommu_write(iommu->bases[i], RK_MMU_INT_MASK, 
->>> RK_MMU_IRQ_MASK);
->>>       }
->>> @@ -1068,17 +1069,19 @@ static struct iommu_domain 
->>> *rk_iommu_domain_alloc_paging(struct device *dev)
->>>       if (!rk_domain)
->>>           return NULL;
->>>   +    iommu = rk_iommu_from_dev(dev);
->>> +    rk_domain->rk_ops = iommu->rk_ops;
-
-As mentioned above, this seem strange and is possible just a shortcut
-due to current call-paths? Why do we assign "iommu ops" to the domain?
-
-Regards,
-Jonas
-
->>> +
->>>       /*
->>>        * rk32xx iommus use a 2 level pagetable.
->>>        * Each level1 (dt) and level2 (pt) table has 1024 4-byte entries.
->>>        * Allocate one 4 KiB page for each table.
->>>        */
->>> -    rk_domain->dt = iommu_alloc_pages_sz(GFP_KERNEL | 
->>> rk_ops->gfp_flags,
->>> +    rk_domain->dt = iommu_alloc_pages_sz(GFP_KERNEL | 
->>> rk_domain->rk_ops->gfp_flags,
->>>                            SPAGE_SIZE);
->>>       if (!rk_domain->dt)
->>>           goto err_free_domain;
->>>   -    iommu = rk_iommu_from_dev(dev);
->>>       rk_domain->dma_dev = iommu->dev;
->>>       rk_domain->dt_dma = dma_map_single(rk_domain->dma_dev, 
->>> rk_domain->dt,
->>>                          SPAGE_SIZE, DMA_TO_DEVICE);
->>> @@ -1117,7 +1120,7 @@ static void rk_iommu_domain_free(struct 
->>> iommu_domain *domain)
->>>       for (i = 0; i < NUM_DT_ENTRIES; i++) {
->>>           u32 dte = rk_domain->dt[i];
->>>           if (rk_dte_is_pt_valid(dte)) {
->>> -            phys_addr_t pt_phys = rk_ops->pt_address(dte);
->>> +            phys_addr_t pt_phys = rk_domain->rk_ops->pt_address(dte);
->>>               u32 *page_table = phys_to_virt(pt_phys);
->>>               dma_unmap_single(rk_domain->dma_dev, pt_phys,
->>>                        SPAGE_SIZE, DMA_TO_DEVICE);
->>> @@ -1197,7 +1200,6 @@ static int rk_iommu_probe(struct 
->>> platform_device *pdev)
->>>       struct device *dev = &pdev->dev;
->>>       struct rk_iommu *iommu;
->>>       struct resource *res;
->>> -    const struct rk_iommu_ops *ops;
->>>       int num_res = pdev->num_resources;
->>>       int err, i;
->>>   @@ -1211,16 +1213,9 @@ static int rk_iommu_probe(struct 
->>> platform_device *pdev)
->>>       iommu->dev = dev;
->>>       iommu->num_mmu = 0;
->>>   -    ops = of_device_get_match_data(dev);
->>> -    if (!rk_ops)
->>> -        rk_ops = ops;
->>> -
->>> -    /*
->>> -     * That should not happen unless different versions of the
->>> -     * hardware block are embedded the same SoC
->>> -     */
->>> -    if (WARN_ON(rk_ops != ops))
->>> -        return -EINVAL;
->>> +    iommu->rk_ops = of_device_get_match_data(dev);
->>> +    if (!iommu->rk_ops)
->>> +        return -ENOENT;
->>>         iommu->bases = devm_kcalloc(dev, num_res, sizeof(*iommu->bases),
->>>                       GFP_KERNEL);
->>> @@ -1286,7 +1281,7 @@ static int rk_iommu_probe(struct 
->>> platform_device *pdev)
->>>               goto err_pm_disable;
->>>       }
->>>   -    dma_set_mask_and_coherent(dev, rk_ops->dma_bit_mask);
->>> +    dma_set_mask_and_coherent(dev, iommu->rk_ops->dma_bit_mask);
->>>         err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, 
->>> dev_name(dev));
->>>       if (err)
->>>
->>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>   drivers/iommu/amd/amd_iommu.h |  2 +-
+>   drivers/iommu/amd/iommu.c     | 61 +++++++++++++++++++----------------
+>   2 files changed, 35 insertions(+), 28 deletions(-)
 > 
-> _______________________________________________
-> Linux-rockchip mailing list
-> Linux-rockchip@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-rockchip
+> diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+> index 67d4daaaf6f0ce..364878a923edd0 100644
+> --- a/drivers/iommu/amd/amd_iommu.h
+> +++ b/drivers/iommu/amd/amd_iommu.h
+> @@ -88,7 +88,7 @@ int amd_iommu_complete_ppr(struct device *dev, u32 pasid, int status, int tag);
+>    */
+>   void amd_iommu_flush_all_caches(struct amd_iommu *iommu);
+>   void amd_iommu_domain_flush_pages(struct protection_domain *domain,
+> -				  u64 address, u64 last);
+> +				  u64 address, u64 last, u32 flags);
+>   void amd_iommu_dev_flush_pasid_pages(struct iommu_dev_data *dev_data,
+>   				     ioasid_t pasid, u64 address, u64 last);
+>   
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index 4e057fbc20021e..95f7dc6cf67eaf 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -1301,8 +1301,8 @@ static inline u64 build_inv_address(u64 address, u64 last)
+>   }
+>   
+>   static void build_inv_iommu_pages(struct iommu_cmd *cmd, u64 address,
+> -				  u64 last, u16 domid,
+> -				  ioasid_t pasid, bool gn)
+> +				  u64 last, u16 domid, ioasid_t pasid,
+> +				  u32 flags)
+>   {
+>   	u64 inv_address = build_inv_address(address, last);
+>   
+> @@ -1311,12 +1311,9 @@ static void build_inv_iommu_pages(struct iommu_cmd *cmd, u64 address,
+>   	cmd->data[1] |= domid;
+>   	cmd->data[2]  = lower_32_bits(inv_address);
+>   	cmd->data[3]  = upper_32_bits(inv_address);
+> -	/* PDE bit - we want to flush everything, not only the PTEs */
+> -	cmd->data[2] |= CMD_INV_IOMMU_PAGES_PDE_MASK;
+> -	if (gn) {
+> +	cmd->data[2] |= flags;
+> +	if (flags & CMD_INV_IOMMU_PAGES_GN_MASK)
+>   		cmd->data[0] |= pasid;
+> -		cmd->data[2] |= CMD_INV_IOMMU_PAGES_GN_MASK;
+> -	}
+>   	CMD_SET_TYPE(cmd, CMD_INV_IOMMU_PAGES);
+>   }
+>   
+> @@ -1523,7 +1520,8 @@ static void amd_iommu_flush_tlb_all(struct amd_iommu *iommu)
+>   	for (dom_id = 0; dom_id <= last_bdf; ++dom_id) {
+>   		struct iommu_cmd cmd;
+>   		build_inv_iommu_pages(&cmd, 0, U64_MAX,
+> -				      dom_id, IOMMU_NO_PASID, false);
+> +				      dom_id, IOMMU_NO_PASID,
+> +				      CMD_INV_IOMMU_PAGES_PDE_MASK);
+>   		iommu_queue_command(iommu, &cmd);
+>   	}
+>   
+> @@ -1535,13 +1533,15 @@ static void amd_iommu_flush_tlb_domid(struct amd_iommu *iommu, u32 dom_id)
+>   	struct iommu_cmd cmd;
+>   
+>   	build_inv_iommu_pages(&cmd, 0, U64_MAX,
+> -			      dom_id, IOMMU_NO_PASID, false);
+> +			      dom_id, IOMMU_NO_PASID,
+> +			      CMD_INV_IOMMU_PAGES_PDE_MASK);
+>   	iommu_queue_command(iommu, &cmd);
+>   
+>   	iommu_completion_wait(iommu);
+>   }
+>   
+> -static int iommu_flush_pages_v1_hdom_ids(struct protection_domain *pdom, u64 address, u64 last)
+> +static int iommu_flush_pages_v1_hdom_ids(struct protection_domain *pdom,
+> +					 u64 address, u64 last, u32 flags)
+>   {
+>   	int ret = 0;
+>   	struct amd_iommu_viommu *aviommu;
+> @@ -1559,7 +1559,7 @@ static int iommu_flush_pages_v1_hdom_ids(struct protection_domain *pdom, u64 add
+>   			pr_debug("%s: iommu=%#x, hdom_id=%#x\n", __func__,
+>   				 iommu->devid, gdom_info->hdom_id);
+>   			build_inv_iommu_pages(&cmd, address, last, gdom_info->hdom_id,
+> -					      IOMMU_NO_PASID, false);
+> +					      IOMMU_NO_PASID, flags);
+>   			ret |= iommu_queue_command(iommu, &cmd);
+>   		}
+>   		xa_unlock(&aviommu->gdomid_array);
+> @@ -1674,7 +1674,7 @@ static int device_flush_dte(struct iommu_dev_data *dev_data)
+>   }
+>   
+>   static int domain_flush_pages_v2(struct protection_domain *pdom,
+> -				 u64 address, u64 last)
+> +				 u64 address, u64 last, u32 flags)
+>   {
+>   	struct iommu_dev_data *dev_data;
+>   	struct iommu_cmd cmd;
+> @@ -1685,8 +1685,9 @@ static int domain_flush_pages_v2(struct protection_domain *pdom,
+>   		struct amd_iommu *iommu = get_amd_iommu_from_dev(dev_data->dev);
+>   		u16 domid = dev_data->gcr3_info.domid;
+>   
+> -		build_inv_iommu_pages(&cmd, address, last,
+> -				      domid, IOMMU_NO_PASID, true);
+> +		build_inv_iommu_pages(&cmd, address, last, domid,
+> +				      IOMMU_NO_PASID,
+> +				      flags | CMD_INV_IOMMU_PAGES_GN_MASK);
+>   
+>   		ret |= iommu_queue_command(iommu, &cmd);
+>   	}
+> @@ -1695,7 +1696,7 @@ static int domain_flush_pages_v2(struct protection_domain *pdom,
+>   }
+>   
+>   static int domain_flush_pages_v1(struct protection_domain *pdom,
+> -				 u64 address, u64 last)
+> +				 u64 address, u64 last, u32 flags)
+>   {
+>   	struct pdom_iommu_info *pdom_iommu_info;
+>   	struct iommu_cmd cmd;
+> @@ -1705,7 +1706,7 @@ static int domain_flush_pages_v1(struct protection_domain *pdom,
+>   	lockdep_assert_held(&pdom->lock);
+>   
+>   	build_inv_iommu_pages(&cmd, address, last,
+> -			      pdom->id, IOMMU_NO_PASID, false);
+> +			      pdom->id, IOMMU_NO_PASID, flags);
+>   
+>   	xa_for_each(&pdom->iommu_array, i, pdom_iommu_info) {
+>   		/*
+> @@ -1724,7 +1725,7 @@ static int domain_flush_pages_v1(struct protection_domain *pdom,
+>   	 * See drivers/iommu/amd/nested.c: amd_iommu_alloc_domain_nested()
+>   	 */
+>   	if (!list_empty(&pdom->viommu_list))
+> -		ret |= iommu_flush_pages_v1_hdom_ids(pdom, address, last);
+> +		ret |= iommu_flush_pages_v1_hdom_ids(pdom, address, last, flags);
+>   
+>   	return ret;
+>   }
+> @@ -1734,7 +1735,7 @@ static int domain_flush_pages_v1(struct protection_domain *pdom,
+>    * It flushes range of PTEs of the domain.
+>    */
+>   static void __domain_flush_pages(struct protection_domain *domain,
+> -				 u64 address, u64 last)
+> +				 u64 address, u64 last, u32 flags)
+>   {
+>   	struct iommu_dev_data *dev_data;
+>   	int ret = 0;
+> @@ -1745,9 +1746,9 @@ static void __domain_flush_pages(struct protection_domain *domain,
+>   
+>   	if (pdom_is_v2_pgtbl_mode(domain)) {
+>   		gn = true;
+> -		ret = domain_flush_pages_v2(domain, address, last);
+> +		ret = domain_flush_pages_v2(domain, address, last, flags);
+>   	} else {
+> -		ret = domain_flush_pages_v1(domain, address, last);
+> +		ret = domain_flush_pages_v1(domain, address, last, flags);
+>   	}
+>   
+>   	list_for_each_entry(dev_data, &domain->dev_list, list) {
+> @@ -1762,13 +1763,13 @@ static void __domain_flush_pages(struct protection_domain *domain,
+>   }
+>   
+>   void amd_iommu_domain_flush_pages(struct protection_domain *domain,
+> -				  u64 address, u64 last)
+> +				  u64 address, u64 last, u32 flags)
+>   {
+>   	lockdep_assert_held(&domain->lock);
+>   
+>   	if (likely(!amd_iommu_np_cache) ||
+>   	    unlikely(address == 0 && last == U64_MAX)) {
+> -		__domain_flush_pages(domain, address, last);
+> +		__domain_flush_pages(domain, address, last, flags);
+>   
+>   		/* Wait until IOMMU TLB and all device IOTLB flushes are complete */
+>   		domain_flush_complete(domain);
+> @@ -1794,7 +1795,7 @@ void amd_iommu_domain_flush_pages(struct protection_domain *domain,
+>   			sz_lg2 = min_t(unsigned int, sz_lg2, __ffs64(address));
+>   
+>   		flush_last = address + (1ULL << sz_lg2) - 1;
+> -		__domain_flush_pages(domain, address, flush_last);
+> +		__domain_flush_pages(domain, address, flush_last, flags);
+>   		if (check_add_overflow(flush_last, 1, &address))
+>   			break;
+>   	}
+> @@ -1806,7 +1807,8 @@ void amd_iommu_domain_flush_pages(struct protection_domain *domain,
+>   /* Flush the whole IO/TLB for a given protection domain - including PDE */
+>   static void amd_iommu_domain_flush_all(struct protection_domain *domain)
+>   {
+> -	amd_iommu_domain_flush_pages(domain, 0, U64_MAX);
+> +	amd_iommu_domain_flush_pages(domain, 0, U64_MAX,
+> +				     CMD_INV_IOMMU_PAGES_PDE_MASK);
+>   }
+>   
+>   void amd_iommu_dev_flush_pasid_pages(struct iommu_dev_data *dev_data,
+> @@ -1816,7 +1818,9 @@ void amd_iommu_dev_flush_pasid_pages(struct iommu_dev_data *dev_data,
+>   	struct amd_iommu *iommu = get_amd_iommu_from_dev(dev_data->dev);
+>   
+>   	build_inv_iommu_pages(&cmd, address, last,
+> -			      dev_data->gcr3_info.domid, pasid, true);
+> +			      dev_data->gcr3_info.domid, pasid,
+> +			      CMD_INV_IOMMU_PAGES_GN_MASK |
+> +			      CMD_INV_IOMMU_PAGES_PDE_MASK);
+>   	iommu_queue_command(iommu, &cmd);
+>   
+>   	if (dev_data->ats_enabled)
+> @@ -2606,7 +2610,8 @@ static int amd_iommu_iotlb_sync_map(struct iommu_domain *dom,
+>   		return 0;
+>   
+>   	spin_lock_irqsave(&domain->lock, flags);
+> -	amd_iommu_domain_flush_pages(domain, iova, iova + size - 1);
+> +	amd_iommu_domain_flush_pages(domain, iova, iova + size - 1,
+> +				     CMD_INV_IOMMU_PAGES_PDE_MASK);
+>   	spin_unlock_irqrestore(&domain->lock, flags);
+>   	return 0;
+>   }
+> @@ -2628,7 +2633,9 @@ static void amd_iommu_iotlb_sync(struct iommu_domain *domain,
+>   	unsigned long flags;
+>   
+>   	spin_lock_irqsave(&dom->lock, flags);
+> -	amd_iommu_domain_flush_pages(dom, gather->start, gather->end);
+> +	amd_iommu_domain_flush_pages(dom, gather->start, gather->end,
+> +				     iommu_pages_list_empty(&gather->freelist) ?
+> +				     0 : CMD_INV_IOMMU_PAGES_PDE_MASK);
+>   	spin_unlock_irqrestore(&dom->lock, flags);
+>   	iommu_put_pages_list(&gather->freelist);
+>   }
+
+
+The logic for checking the gather freelist to conditionally set the PDE 
+bit is a nice optimization.
+
+Reviewed-by: Wei Wang <wei.w.wang@hotmail.com>
+
 
