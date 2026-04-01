@@ -1,155 +1,339 @@
-Received: from BYAPR05CU005.outbound.protection.outlook.com (mail-westusazon11010057.outbound.protection.outlook.com [52.101.85.57])
+Received: from mail-m49248.qiye.163.com (mail-m49248.qiye.163.com [45.254.49.248])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F5BC38B14D
-	for <iommu@lists.linux.dev>; Wed,  1 Apr 2026 08:00:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.85.57
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775030447; cv=fail; b=IoGMd/Y0piKTgAGJC1sgB5Q7ZHWxTU9zG3Fxgh9ipftb+fGkcK/LUud6RiFw4oMtmgQfZ3VGjAIkE92rAAPkXh/aRzBOVbe0ZqE+BSP1dx+oppCj7WEvhhBOp/CrOiZYJKXh/I/9ceTa4B5/eCNys5emVNAHJCXhmD4ZSrDxrQM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775030447; c=relaxed/simple;
-	bh=R59Mcw1a6re0REqBlRr/FaUeEldURX2CWjgryjDoM2c=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=MBr1fv9D4yTBlMtNGuMratO6uldqUk46UqxG7ugwJ401Bdx9g6Q4E0obPJP9aq+m/WYTN7P7b1/P1CONxA0uqKgisOvhU05JiMAKIPqSmTKm2cm/FXL7h1jjs3fkPC3Y2lLQLySexNUjTQ24Q8bHVIC3XEj5DYZhTjqiFetg8Gc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=JtI3aErm; arc=fail smtp.client-ip=52.101.85.57
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51634372ECC
+	for <iommu@lists.linux.dev>; Wed,  1 Apr 2026 08:05:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.254.49.248
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775030719; cv=none; b=Jl0zQZZFp/jwuxXaw5Jn+3qNMvLHUrAezH39aebxXH5qQTVunOGP50Q0feLjr6ExtuBQ2AIurkxMeENzjCX5GiBMd8HQ2oydt+z+GLkoZW6Iiu6wLrU+mGFWnIyVvk4uFO1hwYUhqRkgaQtlNyHZ/tuWiWOgBVK81yBM57E+hCI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775030719; c=relaxed/simple;
+	bh=zBHlnDjsv1u9qv+kLLafGJjNhDB3l67AWW5OoKHmZ/8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ESFAWEzUPqIMur8gc/uu5fOWGm9pWQ9d2V5HVAE5fG51kgYDC1758oCA3sdC723PoierA63UsXYGM5pCKOiq5tvVNPpX/wZdnovZUVTM6Twre7OAWNQSZGhX3KKhWI+a6Jn5smz2GdPKMP26SLFqpEBz8NvQ1QlBJauwt8PbRAM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=aiB2qFQM; arc=none smtp.client-ip=45.254.49.248
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="JtI3aErm"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=YG5cY41j4KAWzwDDtYN5eK3OUcNStpYaajQDd/eSNKSqG7N+08dEgvbORfJEdiupKyQaOhq4Tzg+hPUsuLdz7AQU3vpxkELiDpPw8ZaOncrOYF6kvvoaX1kVKnoS2R8Ga6V+FTnoAbgqb9q2JbO1jXQC37ueAYVmqLAGTqET1TUzNhSgdD2guQwXKOlo21Sh6FHPVOWc0TiamoMcEcPAIuaDEPTmTfcS9Wo8kwS1cLZ6bX/sfvvE81x1bs2Q3wX9WUZ+YKH3nPEIgZ46YnY2V3ReH4MmdQGfLQIh92VbhLTpB5plgMWiNIQIydaYFWi6K47/flFUMDcu7OkPdAsNbA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=eimQEgzHKIOBIyYBcbQF3WI+iQ1zpUb4dh60uzzU04k=;
- b=o7i1iRPzziVIIAunSYHhiKOPmbsPyJNyBtj+kp+6z21g3Z9NPawRoxSi/8FhavBSr8qwUUyoV1au1Crcc2NUitf6K6mzWHHTzz699Qce+SzuFamQcuMdjwJuXcH4lhFKgaIacHh7nuPm7/mD+lcQp/RABoa2DVy3mcbYXTrdUbreHzfR08dBwlP8CSlKTmM18eOFUxKfo/JZL/f05TVTUl1kLwXOniLmsgdZCC9FjMnxu01xvKMutxSS40H0eD+TcZG1Q2WaGSvxFgf83Oedofkf5wL1l7i7qIv7jnc4Y5fPvciDw7FgHRt1NF3FPJXzDJPaEkd4+BxFnzyo5HWfkw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eimQEgzHKIOBIyYBcbQF3WI+iQ1zpUb4dh60uzzU04k=;
- b=JtI3aErmBoOSxRIIF0365KUt8Gv3XBekV3Uyvx88lPJD+5hdlaktlYU2BZoEj7XSBVGX7Xly4YvsQY08dmCZKIrWaoAZyy2hRHPnvCfVM8EvwltMTbswvQRqsQE8OBQYQ/pbF4FyvHm//Zl9rg+h6ivboBYl0EXbQFwjSLoDSlU=
-Received: from CH5P223CA0001.NAMP223.PROD.OUTLOOK.COM (2603:10b6:610:1f3::27)
- by CY3PR12MB9553.namprd12.prod.outlook.com (2603:10b6:930:109::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.17; Wed, 1 Apr
- 2026 08:00:43 +0000
-Received: from DS3PEPF0000C37A.namprd04.prod.outlook.com
- (2603:10b6:610:1f3:cafe::b6) by CH5P223CA0001.outlook.office365.com
- (2603:10b6:610:1f3::27) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9745.30 via Frontend Transport; Wed,
- 1 Apr 2026 08:00:46 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- DS3PEPF0000C37A.mail.protection.outlook.com (10.167.23.4) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9769.17 via Frontend Transport; Wed, 1 Apr 2026 08:00:43 +0000
-Received: from kali.amd.com (10.180.168.240) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Wed, 1 Apr
- 2026 03:00:40 -0500
-From: Vasant Hegde <vasant.hegde@amd.com>
-To: <iommu@lists.linux.dev>, <joro@8bytes.org>
-CC: <will@kernel.org>, <robin.murphy@arm.com>,
-	<suravee.suthikulpanit@amd.com>, <magnus@dolphinics.com>, Vasant Hegde
-	<vasant.hegde@amd.com>
-Subject: [PATCH] iommu/amd: Fix clone_alias() to use the original device's devid
-Date: Wed, 1 Apr 2026 08:00:17 +0000
-Message-ID: <20260401080017.117549-1-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="aiB2qFQM"
+Received: from [192.168.31.31] (gy-adaptive-ssl-proxy-3-entmail-virt135.gy.ntes [58.22.7.114])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 39202ed86;
+	Wed, 1 Apr 2026 15:59:52 +0800 (GMT+08:00)
+Message-ID: <b046ad1c-9cfc-4399-a8df-e4fffff434f9@rock-chips.com>
+Date: Wed, 1 Apr 2026 15:59:52 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iommu/rockchip: Drop global rk_ops in favor of
+ per-device ops
+To: Shawn Lin <shawn.lin@rock-chips.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Heiko Stuebner <heiko@sntech.de>
+References: <20260310084812.126082-1-xxm@rock-chips.com>
+ <20260310105303.128859-1-xxm@rock-chips.com>
+ <a586dd60-5b9c-4044-3bb1-903df863b587@rock-chips.com>
+From: Simon Xue <xxm@rock-chips.com>
+In-Reply-To: <a586dd60-5b9c-4044-3bb1-903df863b587@rock-chips.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: satlexmb08.amd.com (10.181.42.217) To satlexmb07.amd.com
- (10.181.42.216)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS3PEPF0000C37A:EE_|CY3PR12MB9553:EE_
-X-MS-Office365-Filtering-Correlation-Id: 65d55978-7bc8-4ddf-c7b4-08de8fc4c642
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|36860700016|1800799024|376014|56012099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	OKt+0Jy+lAUoULC1Wg0DwSwHisjJIAJAh7jWpXhJa6JrlMT2HoRaeeloDwOEGbEGTNKv10PBPKurfQyrCRVnhTjEDIG0BI04ZjLs1aC41rfkx1IeOcoR6yurek0fL9JQWPrG0nvAPDdyTa5ZW1AUeikqETFrJCk0peQqXs1g7vxnhuthcxnU+59mPKX1o3/cPSYKFslCQLK0wVozM0n+CgnVd9ypGUAewvSJIdKMKAoYNcAZBhNy4q7i8UY0K80ezsMUsnpeZf12uVILGQWicY8h6o7CSSuwpzZ4xLeRHb0uE4IGtMDIg7Ywk8VODVySRwJeAKhxBHsof4VCwrthvQ1yuudiJTLKwNhtmv2UFFmw3aVU1ROLvFpW/4rjRMgDOlCCKjUApBI5xxo2C1xZI+siKv4z81Qj3hc3AdETASbnIuWY6Oj6CePcXoUgTcBH6cxoW1D0+mNrhX2Mn0bvjxzdLxkIuqQSaYr/76cMZPybZGz0esBiR6fPNwi+70TobElhqP8bv9bLTfWXjlyNnBno9V+2qwgOj5oCoLokkofG2R29cnfzGdDf2BM4psG8gXX+RHCbT9W0kED0WR3JTdNdUc4ofENILlguBM/a1vEHpSI3+AgBu8WrDS7bOVXaPPd0TN7sCHw1puatJ71NAtoji11Aq8pCS4zRrizpRXC9KJ2LLIbsh5O3doqvmurf8WEbnd8VWtpOt7ki7Yg6bArn6h4wIyTaz9g7UIjAUl9JSg4ygOaPMiouQNZXjducc2K5bpf2Uc1p6TfOkEwu4g==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(36860700016)(1800799024)(376014)(56012099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	uRWnnO0ApTc0H4s4MA2HrrtcrOD9HWzwFYrkcp1meDNU4GfA2cVTcQ1jn4/GSeUGl/QdITJhqe0wLs8NzCO6GmH0JlJSij/V91NsldtbQGNm35A7xGo13DZXnHMZ0C7DuuXM8FD3KiMrqnn6Zd3bdhOZP/r+xxtaJfZjf6J/lnFPk00VO2BE3PCpc8NOzjfiLFfl3krMcTRmWRS2tq11D8QHXupma4/vhR+ho5a1zk1sUjPorvT4aLhe5OStPoS1Bfy97p6waWW+GF3iV3IRLCnd7b0yC1oU9HTfAsRNrm8yW/QSBAfikvOF6VR8m8c1/OEHsv2fINEKwFX1Lr1cbNfyz8snCZAVy0UxbsWCpbbCxn+aU6EQBLAPZX21KkCUl35zYGYA63LsvzcVPooMqxGDa97R2gGBkbR3z8Y2dpOAGErcYBbs4ujV5xTFCeqa
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Apr 2026 08:00:43.5010
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 65d55978-7bc8-4ddf-c7b4-08de8fc4c642
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DS3PEPF0000C37A.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY3PR12MB9553
+X-HM-Tid: 0a9d480e54be03ackunmd1c762ac2a903b9
+X-HM-MType: 1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFDSUNOT01LS0k3V1ktWUFJV1kPCRoVCBIfWUFZGUhNHVYeSEsfQhgaTE1OSUhWFRQJFh
+	oXVRMBExYaEhckFA4PWVdZGBILWUFZTkNVSUlVTFVKSk9ZV1kWGg8SFR0UWUFZT0tIVUJCSU5LVU
+	pLS1VKQktCWQY+
+DKIM-Signature: a=rsa-sha256;
+	b=aiB2qFQMkBGb1dStT//KY8NZODb/t+dcf5HA909jLw3APgMEBxqKcAKCjFzPqyzG0myZNldbhel9oH528N812yPuOFKdh12YxNzlCLn1w/l6lqpiJBVIWM3H4RvvwngEquuOy8WWffyPQ5WVKA/7gR6wlISqYIfmr+D04TrX4Cc=; c=relaxed/relaxed; s=default; d=rock-chips.com; v=1;
+	bh=wBenShtp3JxSvc7NBfSYeMEQTo7nbS/NWHgiOkthdpA=;
+	h=date:mime-version:subject:message-id:from;
 
-Currently clone_alias() assumes first argument (pdev) is always the
-original device pointer. This function is called by
-pci_for_each_dma_alias() which based on topology decides to send
-original or alias device details in first argument.
+Hi all,
 
-This meant that the source devid used to look up and copy the DTE
-may be incorrect, leading to wrong or stale DTE entries being
-propagated to alias device.
+A gentle ping on this patch.
 
-Fix this by passing the original pdev as the opaque data argument to
-both the direct clone_alias() call and pci_for_each_dma_alias(). Inside
-clone_alias(), retrieve the original device from data and compute devid
-from it.
-
-Fixes: 3332364e4ebc ("iommu/amd: Support multiple PCI DMA aliases in device table")
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
----
- drivers/iommu/amd/iommu.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 760d5f4623b5..6dfd942c76ce 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -403,11 +403,12 @@ struct iommu_dev_data *search_dev_data(struct amd_iommu *iommu, u16 devid)
- 	return NULL;
- }
- 
--static int clone_alias(struct pci_dev *pdev, u16 alias, void *data)
-+static int clone_alias(struct pci_dev *pdev_origin, u16 alias, void *data)
- {
- 	struct dev_table_entry new;
- 	struct amd_iommu *iommu;
- 	struct iommu_dev_data *dev_data, *alias_data;
-+	struct pci_dev *pdev = data;
- 	u16 devid = pci_dev_id(pdev);
- 	int ret = 0;
- 
-@@ -454,9 +455,9 @@ static void clone_aliases(struct amd_iommu *iommu, struct device *dev)
- 	 * part of the PCI DMA aliases if it's bus differs
- 	 * from the original device.
- 	 */
--	clone_alias(pdev, iommu->pci_seg->alias_table[pci_dev_id(pdev)], NULL);
-+	clone_alias(pdev, iommu->pci_seg->alias_table[pci_dev_id(pdev)], pdev);
- 
--	pci_for_each_dma_alias(pdev, clone_alias, NULL);
-+	pci_for_each_dma_alias(pdev, clone_alias, pdev);
- }
- 
- static void setup_aliases(struct amd_iommu *iommu, struct device *dev)
--- 
-2.31.1
-
+在 2026/3/13 17:32, Shawn Lin 写道:
+> 在 2026/03/10 星期二 18:53, Simon Xue 写道:
+>> The driver currently uses a global rk_ops pointer, forcing all IOMMU
+>> instances to share the same operations. This restricts the driver from
+>> supporting SoCs that might integrate different versions of IOMMU 
+>> hardware.
+>>
+>> Since the IOMMU framework passes the master device information to
+>> iommu_paging_domain_alloc(), the global variable is no longer needed.
+>>
+>> Fix this by moving rk_ops into struct rk_iommu and struct 
+>> rk_iommu_domain.
+>> Initialize it per-device during probe via of_device_get_match_data(),
+>> and replace all global references with the instance-specific pointers.
+>>
+>
+> Thanks for the patch, Simon. I've tested it on the RK3576 EVB1 with
+> PCIe1 + IOMMU. NVMe works fine on it, and I also verified the IOVA
+> allocated in the NVMe driver, they look correct as I manually limited
+> the memblock to under 2GB, so here it is:
+>
+> nvme 0001:21:00.0: cq_dma_addr: 0x00000000f7fc7000
+>
+> Tested-by: Shawn Lin <shawn.lin@rock-chips.com>
+> Reviewed-by: Shawn Lin <shawn.lin@rock-chips.com>
+>
+>> Signed-off-by: Simon Xue <xxm@rock-chips.com>
+>> ---
+>> v2:
+>>   - Remove the one-time-used 'ops' variable in rk_iommu_probe()
+>>
+>>   drivers/iommu/rockchip-iommu.c | 71 ++++++++++++++++------------------
+>>   1 file changed, 33 insertions(+), 38 deletions(-)
+>>
+>> diff --git a/drivers/iommu/rockchip-iommu.c 
+>> b/drivers/iommu/rockchip-iommu.c
+>> index 0013cf196c57..4da80136933c 100644
+>> --- a/drivers/iommu/rockchip-iommu.c
+>> +++ b/drivers/iommu/rockchip-iommu.c
+>> @@ -82,6 +82,14 @@
+>>     */
+>>   #define RK_IOMMU_PGSIZE_BITMAP 0x007ff000
+>>   +struct rk_iommu_ops {
+>> +    phys_addr_t (*pt_address)(u32 dte);
+>> +    u32 (*mk_dtentries)(dma_addr_t pt_dma);
+>> +    u32 (*mk_ptentries)(phys_addr_t page, int prot);
+>> +    u64 dma_bit_mask;
+>> +    gfp_t gfp_flags;
+>> +};
+>> +
+>>   struct rk_iommu_domain {
+>>       struct list_head iommus;
+>>       u32 *dt; /* page directory table */
+>> @@ -89,6 +97,7 @@ struct rk_iommu_domain {
+>>       spinlock_t iommus_lock; /* lock for iommus list */
+>>       spinlock_t dt_lock; /* lock for modifying page directory table */
+>>       struct device *dma_dev;
+>> +    const struct rk_iommu_ops *rk_ops;
+>>         struct iommu_domain domain;
+>>   };
+>> @@ -98,14 +107,6 @@ static const char * const rk_iommu_clocks[] = {
+>>       "aclk", "iface",
+>>   };
+>>   -struct rk_iommu_ops {
+>> -    phys_addr_t (*pt_address)(u32 dte);
+>> -    u32 (*mk_dtentries)(dma_addr_t pt_dma);
+>> -    u32 (*mk_ptentries)(phys_addr_t page, int prot);
+>> -    u64 dma_bit_mask;
+>> -    gfp_t gfp_flags;
+>> -};
+>> -
+>>   struct rk_iommu {
+>>       struct device *dev;
+>>       void __iomem **bases;
+>> @@ -117,6 +118,7 @@ struct rk_iommu {
+>>       struct iommu_device iommu;
+>>       struct list_head node; /* entry in rk_iommu_domain.iommus */
+>>       struct iommu_domain *domain; /* domain to which iommu is 
+>> attached */
+>> +    const struct rk_iommu_ops *rk_ops;
+>>   };
+>>     struct rk_iommudata {
+>> @@ -124,7 +126,6 @@ struct rk_iommudata {
+>>       struct rk_iommu *iommu;
+>>   };
+>>   -static const struct rk_iommu_ops *rk_ops;
+>>   static struct iommu_domain rk_identity_domain;
+>>     static inline void rk_table_flush(struct rk_iommu_domain *dom, 
+>> dma_addr_t dma,
+>> @@ -510,7 +511,7 @@ static int rk_iommu_force_reset(struct rk_iommu 
+>> *iommu)
+>>        * and verifying that upper 5 (v1) or 7 (v2) nybbles are read 
+>> back.
+>>        */
+>>       for (i = 0; i < iommu->num_mmu; i++) {
+>> -        dte_addr = rk_ops->pt_address(DTE_ADDR_DUMMY);
+>> +        dte_addr = iommu->rk_ops->pt_address(DTE_ADDR_DUMMY);
+>>           rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR, dte_addr);
+>>             if (dte_addr != rk_iommu_read(iommu->bases[i], 
+>> RK_MMU_DTE_ADDR)) {
+>> @@ -551,7 +552,7 @@ static void log_iova(struct rk_iommu *iommu, int 
+>> index, dma_addr_t iova)
+>>       page_offset = rk_iova_page_offset(iova);
+>>         mmu_dte_addr = rk_iommu_read(base, RK_MMU_DTE_ADDR);
+>> -    mmu_dte_addr_phys = rk_ops->pt_address(mmu_dte_addr);
+>> +    mmu_dte_addr_phys = iommu->rk_ops->pt_address(mmu_dte_addr);
+>>         dte_addr_phys = mmu_dte_addr_phys + (4 * dte_index);
+>>       dte_addr = phys_to_virt(dte_addr_phys);
+>> @@ -560,14 +561,14 @@ static void log_iova(struct rk_iommu *iommu, 
+>> int index, dma_addr_t iova)
+>>       if (!rk_dte_is_pt_valid(dte))
+>>           goto print_it;
+>>   -    pte_addr_phys = rk_ops->pt_address(dte) + (pte_index * 4);
+>> +    pte_addr_phys = iommu->rk_ops->pt_address(dte) + (pte_index * 4);
+>>       pte_addr = phys_to_virt(pte_addr_phys);
+>>       pte = *pte_addr;
+>>         if (!rk_pte_is_page_valid(pte))
+>>           goto print_it;
+>>   -    page_addr_phys = rk_ops->pt_address(pte) + page_offset;
+>> +    page_addr_phys = iommu->rk_ops->pt_address(pte) + page_offset;
+>>       page_flags = pte & RK_PTE_PAGE_FLAGS_MASK;
+>>     print_it:
+>> @@ -663,13 +664,13 @@ static phys_addr_t rk_iommu_iova_to_phys(struct 
+>> iommu_domain *domain,
+>>       if (!rk_dte_is_pt_valid(dte))
+>>           goto out;
+>>   -    pt_phys = rk_ops->pt_address(dte);
+>> +    pt_phys = rk_domain->rk_ops->pt_address(dte);
+>>       page_table = (u32 *)phys_to_virt(pt_phys);
+>>       pte = page_table[rk_iova_pte_index(iova)];
+>>       if (!rk_pte_is_page_valid(pte))
+>>           goto out;
+>>   -    phys = rk_ops->pt_address(pte) + rk_iova_page_offset(iova);
+>> +    phys = rk_domain->rk_ops->pt_address(pte) + 
+>> rk_iova_page_offset(iova);
+>>   out:
+>>       spin_unlock_irqrestore(&rk_domain->dt_lock, flags);
+>>   @@ -730,7 +731,7 @@ static u32 *rk_dte_get_page_table(struct 
+>> rk_iommu_domain *rk_domain,
+>>       if (rk_dte_is_pt_valid(dte))
+>>           goto done;
+>>   -    page_table = iommu_alloc_pages_sz(GFP_ATOMIC | rk_ops->gfp_flags,
+>> +    page_table = iommu_alloc_pages_sz(GFP_ATOMIC | 
+>> rk_domain->rk_ops->gfp_flags,
+>>                         SPAGE_SIZE);
+>>       if (!page_table)
+>>           return ERR_PTR(-ENOMEM);
+>> @@ -742,13 +743,13 @@ static u32 *rk_dte_get_page_table(struct 
+>> rk_iommu_domain *rk_domain,
+>>           return ERR_PTR(-ENOMEM);
+>>       }
+>>   -    dte = rk_ops->mk_dtentries(pt_dma);
+>> +    dte = rk_domain->rk_ops->mk_dtentries(pt_dma);
+>>       *dte_addr = dte;
+>>         rk_table_flush(rk_domain,
+>>                  rk_domain->dt_dma + dte_index * sizeof(u32), 1);
+>>   done:
+>> -    pt_phys = rk_ops->pt_address(dte);
+>> +    pt_phys = rk_domain->rk_ops->pt_address(dte);
+>>       return (u32 *)phys_to_virt(pt_phys);
+>>   }
+>>   @@ -790,7 +791,7 @@ static int rk_iommu_map_iova(struct 
+>> rk_iommu_domain *rk_domain, u32 *pte_addr,
+>>           if (rk_pte_is_page_valid(pte))
+>>               goto unwind;
+>>   -        pte_addr[pte_count] = rk_ops->mk_ptentries(paddr, prot);
+>> +        pte_addr[pte_count] = rk_domain->rk_ops->mk_ptentries(paddr, 
+>> prot);
+>>             paddr += SPAGE_SIZE;
+>>       }
+>> @@ -812,7 +813,7 @@ static int rk_iommu_map_iova(struct 
+>> rk_iommu_domain *rk_domain, u32 *pte_addr,
+>>                   pte_count * SPAGE_SIZE);
+>>         iova += pte_count * SPAGE_SIZE;
+>> -    page_phys = rk_ops->pt_address(pte_addr[pte_count]);
+>> +    page_phys = rk_domain->rk_ops->pt_address(pte_addr[pte_count]);
+>>       pr_err("iova: %pad already mapped to %pa cannot remap to phys: 
+>> %pa prot: %#x\n",
+>>              &iova, &page_phys, &paddr, prot);
+>>   @@ -849,7 +850,7 @@ static int rk_iommu_map(struct iommu_domain 
+>> *domain, unsigned long _iova,
+>>       pte_index = rk_iova_pte_index(iova);
+>>       pte_addr = &page_table[pte_index];
+>>   -    pte_dma = rk_ops->pt_address(dte_index) + pte_index * 
+>> sizeof(u32);
+>> +    pte_dma = rk_domain->rk_ops->pt_address(dte_index) + pte_index * 
+>> sizeof(u32);
+>>       ret = rk_iommu_map_iova(rk_domain, pte_addr, pte_dma, iova,
+>>                   paddr, size, prot);
+>>   @@ -887,7 +888,7 @@ static size_t rk_iommu_unmap(struct 
+>> iommu_domain *domain, unsigned long _iova,
+>>           return 0;
+>>       }
+>>   -    pt_phys = rk_ops->pt_address(dte);
+>> +    pt_phys = rk_domain->rk_ops->pt_address(dte);
+>>       pte_addr = (u32 *)phys_to_virt(pt_phys) + rk_iova_pte_index(iova);
+>>       pte_dma = pt_phys + rk_iova_pte_index(iova) * sizeof(u32);
+>>       unmap_size = rk_iommu_unmap_iova(rk_domain, pte_addr, pte_dma, 
+>> size);
+>> @@ -945,7 +946,7 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
+>>         for (i = 0; i < iommu->num_mmu; i++) {
+>>           rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR,
+>> - rk_ops->mk_dtentries(rk_domain->dt_dma));
+>> + iommu->rk_ops->mk_dtentries(rk_domain->dt_dma));
+>>           rk_iommu_base_command(iommu->bases[i], RK_MMU_CMD_ZAP_CACHE);
+>>           rk_iommu_write(iommu->bases[i], RK_MMU_INT_MASK, 
+>> RK_MMU_IRQ_MASK);
+>>       }
+>> @@ -1068,17 +1069,19 @@ static struct iommu_domain 
+>> *rk_iommu_domain_alloc_paging(struct device *dev)
+>>       if (!rk_domain)
+>>           return NULL;
+>>   +    iommu = rk_iommu_from_dev(dev);
+>> +    rk_domain->rk_ops = iommu->rk_ops;
+>> +
+>>       /*
+>>        * rk32xx iommus use a 2 level pagetable.
+>>        * Each level1 (dt) and level2 (pt) table has 1024 4-byte entries.
+>>        * Allocate one 4 KiB page for each table.
+>>        */
+>> -    rk_domain->dt = iommu_alloc_pages_sz(GFP_KERNEL | 
+>> rk_ops->gfp_flags,
+>> +    rk_domain->dt = iommu_alloc_pages_sz(GFP_KERNEL | 
+>> rk_domain->rk_ops->gfp_flags,
+>>                            SPAGE_SIZE);
+>>       if (!rk_domain->dt)
+>>           goto err_free_domain;
+>>   -    iommu = rk_iommu_from_dev(dev);
+>>       rk_domain->dma_dev = iommu->dev;
+>>       rk_domain->dt_dma = dma_map_single(rk_domain->dma_dev, 
+>> rk_domain->dt,
+>>                          SPAGE_SIZE, DMA_TO_DEVICE);
+>> @@ -1117,7 +1120,7 @@ static void rk_iommu_domain_free(struct 
+>> iommu_domain *domain)
+>>       for (i = 0; i < NUM_DT_ENTRIES; i++) {
+>>           u32 dte = rk_domain->dt[i];
+>>           if (rk_dte_is_pt_valid(dte)) {
+>> -            phys_addr_t pt_phys = rk_ops->pt_address(dte);
+>> +            phys_addr_t pt_phys = rk_domain->rk_ops->pt_address(dte);
+>>               u32 *page_table = phys_to_virt(pt_phys);
+>>               dma_unmap_single(rk_domain->dma_dev, pt_phys,
+>>                        SPAGE_SIZE, DMA_TO_DEVICE);
+>> @@ -1197,7 +1200,6 @@ static int rk_iommu_probe(struct 
+>> platform_device *pdev)
+>>       struct device *dev = &pdev->dev;
+>>       struct rk_iommu *iommu;
+>>       struct resource *res;
+>> -    const struct rk_iommu_ops *ops;
+>>       int num_res = pdev->num_resources;
+>>       int err, i;
+>>   @@ -1211,16 +1213,9 @@ static int rk_iommu_probe(struct 
+>> platform_device *pdev)
+>>       iommu->dev = dev;
+>>       iommu->num_mmu = 0;
+>>   -    ops = of_device_get_match_data(dev);
+>> -    if (!rk_ops)
+>> -        rk_ops = ops;
+>> -
+>> -    /*
+>> -     * That should not happen unless different versions of the
+>> -     * hardware block are embedded the same SoC
+>> -     */
+>> -    if (WARN_ON(rk_ops != ops))
+>> -        return -EINVAL;
+>> +    iommu->rk_ops = of_device_get_match_data(dev);
+>> +    if (!iommu->rk_ops)
+>> +        return -ENOENT;
+>>         iommu->bases = devm_kcalloc(dev, num_res, sizeof(*iommu->bases),
+>>                       GFP_KERNEL);
+>> @@ -1286,7 +1281,7 @@ static int rk_iommu_probe(struct 
+>> platform_device *pdev)
+>>               goto err_pm_disable;
+>>       }
+>>   -    dma_set_mask_and_coherent(dev, rk_ops->dma_bit_mask);
+>> +    dma_set_mask_and_coherent(dev, iommu->rk_ops->dma_bit_mask);
+>>         err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, 
+>> dev_name(dev));
+>>       if (err)
+>>
+>
