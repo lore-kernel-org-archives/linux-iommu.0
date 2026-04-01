@@ -1,41 +1,33 @@
-Received: from smtp.forwardemail.net (smtp.forwardemail.net [121.127.44.66])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAADB3C7E05
-	for <iommu@lists.linux.dev>; Wed,  1 Apr 2026 12:01:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=121.127.44.66
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B2A013914EE
+	for <iommu@lists.linux.dev>; Wed,  1 Apr 2026 12:11:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775044908; cv=none; b=Ndvef1yVVGX3FJkbYKDbgVKJ/KQ1RmiDUlG2E3jIoAkWD6gkIGMjdyX9rz7As9eX/vXKWwlxHTRMMrfC2fkdKL4S20XccIg0cnHJwiDFLkPUGaTI6BYxm+lnuFKZSC3eF9WkmMbXVJf+5hBLn4GsLyrSsELPA+lcSpZEm2E7U58=
+	t=1775045494; cv=none; b=CICNEKOCs3c0mupxp3VJuRg9IasYvDN4fXZRyhRyi87SuMODGE6cS+9Usurq7pFcrK9yL2gaseykJex9cUAN5a6tMzAFtEYEoogQyfdaZ6ZdcoZKQZ5UZjp8CTALbK2zLof+Oqmt4r8KQy1Toq/JJ01p99as9y8Gq4YW3ftEDfM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775044908; c=relaxed/simple;
-	bh=pvVv7D8UQ2G4Mw/nmqu8vkM8+Pe0lRNW4/kqqhlVXbE=;
+	s=arc-20240116; t=1775045494; c=relaxed/simple;
+	bh=BE5/nPRKaHRs63cPfmGPfBklsCc8yJVyXPy273mNLyk=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uF4UgB11y3bjz9OULyHhAXIJsLhivvtK21wCRpuzmJB+i3knZ4p/uRXFxuK+ucz9Xmx9N1zO6tGMvCOZNzglKZwTBUR/+/IxA6Z8kmf9Pgr/0kHSuE42tGiHnyBwIJBB/8mftukh8GlS2eIlWKN7X+X5dQBodNOLFFEyhboYBzg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=kwiboo.se; spf=pass smtp.mailfrom=fe-bounces.kwiboo.se; dkim=pass (2048-bit key) header.d=kwiboo.se header.i=@kwiboo.se header.b=h77EyTLn; arc=none smtp.client-ip=121.127.44.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=kwiboo.se
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fe-bounces.kwiboo.se
+	 In-Reply-To:Content-Type; b=GJ+uGiIVDy7J+1BLbFDZjAXULjzvwkw9NmDKLEMy9CNVUDsYg6G/ax9iqEhqQ/di+Q5fMidcp5BO55jw7RrRN/j+lPNEGbDolv0c892nd/+NqnwHusyJxCfX69eWlI10/tUh7PvEUAQ545R6R813ecTfZLUM8F0zyoGlpBePCzU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=FNDsTbVE; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kwiboo.se header.i=@kwiboo.se header.b="h77EyTLn"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kwiboo.se;
- h=Content-Transfer-Encoding: Content-Type: In-Reply-To: From: References:
- Cc: To: Subject: MIME-Version: Date: Message-ID; q=dns/txt;
- s=fe-e1b5cab7be; t=1775044903;
- bh=SqAh8+J+p74P/kyDkkVzKjpnfMDd7XwXqLzKDtTGffs=;
- b=h77EyTLn3yo5NqYd/571d+UQlvBEnTHNv7HmkuxN+2dHiwnarRIcEzhCjSNA+Dg5lkFkISGXl
- 7ebBdsNvjKShc4ezNd6q3lGK/h3+YvY5pGYxAED6DgsWkDh+T5FBvjg6YwewnaP7469VB1rsKQq
- x/gY/oHz/cvzzwKtp1/Y30mhbwa2h59BqiADjJXWwSAm1ai4bSHHjvg/YsIappNtZ/04b0LUhdn
- ZJiBsTgse1EVAivspUdMTpt9MCCq0oqU2RJZtSUU7T5MA/ajYMODGR3dzU0W0iL+ZV6TDPw8O5N
- gep2UyglFTW/DDsyRgqdlFxp/OlgdQ8fD3j2JNRjPjTw==
-X-Forward-Email-ID: 69ccda55842394fec82951f9
-X-Forward-Email-Sender: rfc822; jonas@kwiboo.se, smtp.forwardemail.net,
- 121.127.44.66
-X-Forward-Email-Version: 2.6.64
-X-Forward-Email-Website: https://forwardemail.net
-X-Complaints-To: abuse@forwardemail.net
-X-Report-Abuse: abuse@forwardemail.net
-X-Report-Abuse-To: abuse@forwardemail.net
-Message-ID: <e622cc9e-8fb0-454a-b88e-dc13cf2ff507@kwiboo.se>
-Date: Wed, 1 Apr 2026 10:41:54 +0200
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="FNDsTbVE"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 429D31BB0;
+	Wed,  1 Apr 2026 05:11:26 -0700 (PDT)
+Received: from [10.57.77.192] (unknown [10.57.77.192])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 610EF3F915;
+	Wed,  1 Apr 2026 05:11:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1775045492; bh=BE5/nPRKaHRs63cPfmGPfBklsCc8yJVyXPy273mNLyk=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=FNDsTbVE+dEiFbJpw+3tElXCfZHMBObNS/5oxU0uSjGMnwgeMM/5I47NhEc/4WPmB
+	 PnE2ghf/jR8nTm2Dhd2kAQ2b2dWvFR/wyB1eCJYRdAgCyC0HUEbNE3bbZmtG/lGOpQ
+	 2XRAycjpy4vEjbPShbCiHyksZ605KXgFH187AaO4=
+Message-ID: <c9ded35b-fc10-47d8-bfaa-cecb4fa91add@arm.com>
+Date: Wed, 1 Apr 2026 13:11:20 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -43,104 +35,108 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/rockchip: fix page table allocation flags for v2
- IOMMU
-To: Simon <xxm@rock-chips.com>, Midgy BALON <midgy971@gmail.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, heiko@sntech.de, linux-arm-kernel@lists.infradead.org,
- linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-References: <20260331075010.1463-1-midgy971@gmail.com>
- <0f285782-b12a-4abd-bca7-b6c549bed59f@rock-chips.com>
-Content-Language: en-US
-From: Jonas Karlman <jonas@kwiboo.se>
-In-Reply-To: <0f285782-b12a-4abd-bca7-b6c549bed59f@rock-chips.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] dma-debug: suppress cacheline overlap warning when
+ arch has no DMA alignment requirement
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+ Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-usb@vger.kernel.org, linux-mm@kvack.org, harry@kernel.org,
+ vbabka@kernel.org, akpm@linux-foundation.org, stern@rowland.harvard.edu,
+ linux@roeck-us.net, andy.shevchenko@gmail.com, hch@lst.de,
+ Jeff.kirsher@gmail.com, catalin.marinas@arm.com
+References: <CGME20260327124211eucas1p10425a28f67736d2043e7e4dd77d58e72@eucas1p1.samsung.com>
+ <20260327124156.24820-1-mikhail.v.gavrilov@gmail.com>
+ <6270d4f0-85e4-496d-8db4-87ccb791ca4d@samsung.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <6270d4f0-85e4-496d-8db4-87ccb791ca4d@samsung.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Simon,
+On 2026-03-30 8:44 am, Marek Szyprowski wrote:
+> On 27.03.2026 13:41, Mikhail Gavrilov wrote:
+>> When CONFIG_DMA_API_DEBUG is enabled, the DMA debug infrastructure
+>> tracks active mappings per cacheline and warns if two different DMA
+>> mappings share the same cacheline ("cacheline tracking EEXIST,
+>> overlapping mappings aren't supported").
+>>
+>> On x86_64, ARCH_KMALLOC_MINALIGN defaults to 8, so small kmalloc
+>> allocations (e.g. the 8-byte hub->buffer and hub->status in the USB
+>> hub driver) frequently land in the same 64-byte cacheline.  When both
+>> are DMA-mapped, this triggers a false positive warning.
+>>
+>> This has been reported repeatedly since v5.14 (when the EEXIST check
+>> was added) across various USB host controllers and devices including
+>> xhci_hcd with USB hubs, USB audio devices, and USB ethernet adapters.
+>>
+>> The cacheline overlap is only a real concern on architectures that
+>> require DMA buffer alignment to cacheline boundaries (i.e. where
+>> ARCH_DMA_MINALIGN >= L1_CACHE_BYTES).  On architectures like x86_64
+>> where dma_get_cache_alignment() returns 1, the hardware is
+>> cache-coherent and overlapping cacheline mappings are harmless.
+>>
+>> Suppress the EEXIST warning when dma_get_cache_alignment() is less
+>> than L1_CACHE_BYTES, indicating the architecture does not require
+>> cacheline-aligned DMA buffers.
 
-On 4/1/2026 9:48 AM, Simon wrote:
-> Hi Midgy,
+Really the value of this check is for mappings of structure members or 
+array elements which have no inherent guarantee of being individually 
+aligned to ARCH_DMA_MINALIGN, and while x86 can also get away with that, 
+it represents a genuine issue for non-coherent architectures. USB's 
+mapping of a dedicated tiny allocation is, if anything, rather the 
+special case.
+
+TBH I'd be inclined to have CONFIG_DMA_DEBUG raise ARCH_DMA_MINALIGN as 
+appropriate such that genuine false-positives can't happen, rather than 
+effectively defeat the whole check, but I suppose that might carry a 
+risk of tripping up arch code that doesn't expect it... Oh well.
+
+Thanks,
+Robin.
+
+>> Verified with a kernel module reproducer that performs two kmalloc(8)
+>> allocations back-to-back and DMA-maps both:
+>>
+>>    Before: allocations share a cacheline, EEXIST fires within ~50 pairs
+>>    After:  same cacheline pair found, but no warning emitted
+>>
+>> Fixes: 2b4bbc6231d7 ("dma-debug: report -EEXIST errors in add_dma_entry")
+>> Link: https://bugzilla.kernel.org/show_bug.cgi?id=215740
+>> Suggested-by: Harry Yoo <harry@kernel.org>
+>> Tested-by: Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
+>> Signed-off-by: Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
 > 
-> 在 2026/3/31 15:50, Midgy BALON 写道:
->> commit 2a7e6400f72b ("iommu: rockchip: Allocate tables from all
->> available memory for IOMMU v2") removed GFP_DMA32 from
->> iommu_data_ops_v2, reasoning that RK356x and RK3588 IOMMU v2 hardware
->> supports up to 40-bit physical addresses for page tables.  However, the
->> RK3568 IOMMU page-table walker uses a 32-bit AXI bus: it cannot access
->> physical addresses above 4 GB regardless of the address encoding range.
->>
->> On boards with more than 4 GB of RAM (e.g. 8 GB LPDDR4X), removing
->> GFP_DMA32 causes two distinct failure modes:
->>
->> 1. Direct allocation above 4 GB: iommu_alloc_pages_sz() may return
->>     memory above 0x100000000.  The hardware page-table walker issues a
->>     bus error trying to dereference those addresses, causing an IOMMU
->>     fault on the first DMA transaction.
->
-> Which IP block is hitting this? We'd like to take a look on our end.
-
-I have seen reports that the NPU MMU on RK3568/RK3566 is having some
-issue using DTE/PTE with >32-bit addresses, maybe it uses a different
-MMU hw revision or has some hw errata?
-
-From my own testing at least the VOP2 MMU on RK3568 (and RK3588) was
-able to handle 40-bit addressable DTE/PTE, hence the original commit
-2a7e6400f72b ("iommu: rockchip: Allocate tables from all available
-memory for IOMMU v2").
-
-As also mentioned in my reply at [1], maybe the NPU MMU has some hw
-limitation or errata and may need to use a different compatible.
-
-[1] https://lore.kernel.org/r/3cd63b3d-1c5e-4a11-856e-c4aeb5d97d55@kwiboo.se/
-
-Regards,
-Jonas
-
->
->> 2. SWIOTLB bounce-buffer poisoning: without GFP_DMA32, page tables land
->>     above the SWIOTLB window.  dma_map_single() with DMA_BIT_MASK(32)
->>     then bounces them into a buffer below 4 GB.  rk_dte_get_page_table()
->>     returns phys_to_virt() of the bounce buffer address; PTEs are written
->>     there; the next dma_sync_single_for_device(DMA_TO_DEVICE) copies the
->>     original (zero) data back over the bounce buffer, silently erasing the
->>     freshly written PTEs.  The IOMMU faults because every PTE reads as zero.
->
-> This probably need a separate patch. One way to fix it would be to track the
-> original L2 page table base addresses in struct rk_iommu_domain,
-> then have rk_dte_get_page_table() return the tracked address instead of
-> deriving it from the DTE.
->
->> Restore GFP_DMA32 (and DMA_BIT_MASK(32)) for iommu_data_ops_v2, which
->> currently only serves "rockchip,rk3568-iommu" in mainline.
->>
->> Tested on Radxa ROCK 3B (RK3568, 8 GB LPDDR4X):
->>    - MobileNetV1 via RKNN: 5.8 ms/inference (IOMMU mode)
->>    - YOLOv5s 640x640 via RKNN: ~57 ms/inference (IOMMU mode)
->>    - No IOMMU faults, correct inference results
->>
->> Fixes: 2a7e6400f72b ("iommu: rockchip: Allocate tables from all available memory for IOMMU v2")
->> Cc: stable@vger.kernel.org
->> Cc: Jonas Karlman <jonas@kwiboo.se>
->> Signed-off-by: Midgy BALON <midgy971@gmail.com>
+> Applied to dma-mapping-fixes. Thanks!
+> 
 >> ---
->>   drivers/iommu/rockchip-iommu.c | 4 ++--
->>   1 file changed, 2 insertions(+), 2 deletions(-)
 >>
->> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
->> index 85f3667e797..8b45db29471 100644
->> --- a/drivers/iommu/rockchip-iommu.c
->> +++ b/drivers/iommu/rockchip-iommu.c
->> @@ -1358,8 +1358,8 @@ static struct rk_iommu_ops iommu_data_ops_v2 = {
->>   	.pt_address = &rk_dte_pt_address_v2,
->>   	.mk_dtentries = &rk_mk_dte_v2,
->>   	.mk_ptentries = &rk_mk_pte_v2,
->> -	.dma_bit_mask = DMA_BIT_MASK(40),
->> -	.gfp_flags = 0,
->> +	.dma_bit_mask = DMA_BIT_MASK(32),
->> +	.gfp_flags = GFP_DMA32,
->>   };
->>   
->>   static const struct of_device_id rk_iommu_dt_ids[] = {
+>> v1 -> v2:
+>>    - Moved fix from include/linux/slab.h (ARCH_KMALLOC_MINALIGN)
+>>      to kernel/dma/debug.c per Harry Yoo's suggestion.
+>>    - Instead of forcing cacheline-aligned allocations, suppress
+>>      the warning when the architecture has no DMA alignment
+>>      requirement (dma_get_cache_alignment() < L1_CACHE_BYTES).
+>>
+>> v1: https://lore.kernel.org/all/20260327055846.248829-1-mikhail.v.gavrilov@gmail.com/
+>>
+>> Reproducer module that triggers the bug reliably:
+>>    https://bugzilla.kernel.org/attachment.cgi?id=309769
+>>
+>>   kernel/dma/debug.c | 1 +
+>>   1 file changed, 1 insertion(+)
+>>
+>> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+>> index 0677918f06a8..1a725edbbbf6 100644
+>> --- a/kernel/dma/debug.c
+>> +++ b/kernel/dma/debug.c
+>> @@ -615,6 +615,7 @@ static void add_dma_entry(struct dma_debug_entry *entry, unsigned long attrs)
+>>   	} else if (rc == -EEXIST &&
+>>   		   !(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+>>   		   !(entry->is_cache_clean && overlap_cache_clean) &&
+>> +		   dma_get_cache_alignment() >= L1_CACHE_BYTES &&
+>>   		   !(IS_ENABLED(CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC) &&
+>>   		     is_swiotlb_active(entry->dev))) {
+>>   		err_printk(entry->dev, entry,
+> 
+> Best regards
 
