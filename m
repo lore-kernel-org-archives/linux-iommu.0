@@ -1,235 +1,378 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mail-m15588.qiye.163.com (mail-m15588.qiye.163.com [101.71.155.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37E873CE4AC
-	for <iommu@lists.linux.dev>; Wed,  1 Apr 2026 09:02:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.18
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775034182; cv=fail; b=J7H13cvaErfKXAP1io6xGMLoQLg6ZRky1v/DPPZpd0SpsJknhNZ/v0lhH/sLR3yamKZcUgOKbkXGbhN05VWuUBNrdn/qk8vLwN13wR/lTyX4GhGF03VGT7UStCx7IMAYLvfmZYjFxR/fMOMrjshSGyN3GfiZJdkllhkPYrEP8lY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775034182; c=relaxed/simple;
-	bh=dSKom2dLB0Jv15z3cmQjNbLWze1geEpuM9y3wqkNEgg=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=gROfY0ezfLAEKCLUzKpdY5x2hJnhT1SKufaX4C64C/a8etF+9gbLiv6h7dgm7HEe/d5JCXVugfbdCwbgJX08RAF/S4Hl+CRUGfUV4rU/EnxDJu1i+maqgJTiAGS6oOXHn3H2iPpL6J9p6yDc+q2h2jmA4sQT7ie7wOqNnGPSq4k=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=R6aJ1i7k; arc=fail smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B8833A8753
+	for <iommu@lists.linux.dev>; Wed,  1 Apr 2026 09:26:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=101.71.155.88
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775035599; cv=none; b=i806yIfdZY3jb7EPmwe+JK/ZJr+mO4ta1q4k5wOVwzRQa1Dvw7uJrQxcQ1OPIP2Ar6492JKH/X27kvwbNa1ja9lFvaya1d83oh+3srYXiouH8DCHOQ7/PSm2+aY8ON0jNfebwJjBkVDDl3VLKkXCvQcXPvqgwtUaGdN/ieK3Y7Q=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775035599; c=relaxed/simple;
+	bh=RZKEjqBL4q7GCNAYxQ1VOF5lnvHFEl0fuCdwAzQ7NYA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=TCPIq1gX99ilQMStMOnjQYDRnVZdXQTvJ6LqwcX/79VH39dDwtpsVW+VO/XkkjsrXEhO4pAm1jKA+0i/PcKlWJVgnCx1LwJoSqP2xxba4uxFCEaVT3gyTLPIQJhwZsMT8lZepUUkwDesy6wu65PI3TRw7DeFHAGGkL4vCTnFO34=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=Jt+2kfwe; arc=none smtp.client-ip=101.71.155.88
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="R6aJ1i7k"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1775034177; x=1806570177;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=dSKom2dLB0Jv15z3cmQjNbLWze1geEpuM9y3wqkNEgg=;
-  b=R6aJ1i7kXs0bWARI0pku7UdH3i86VZNMTIHEOW4v8oFMW1Qms9UKo/Vh
-   on3iOH+puReRXWkEg9y9EAMiwOt5/Sx8kg1dE+1F8On1srSc3cTv9BeaB
-   dwLtDKBQEg+3mPusfD4BKZaClOPBGlHz2NtVimE6s0IcdE+YGZ0l3YWnG
-   u21TSaK2Y0feCsrTaG5wDlTR9JX1d2/tC1c/YtpYG+PyFLAMCwJZgwpZ5
-   2tIi1tqIhVW25mn6w01ppL/vMJg40A2yfYw9K01jPBLljmdiKdPs8Nhhz
-   /peO7kXj3yxUPJ4N81MYi6kCMPCtZR22qMrXZ3RPUkZivyj0xUntfyghV
-   A==;
-X-CSE-ConnectionGUID: c68KrzBMTRK9azjaZTJGyQ==
-X-CSE-MsgGUID: FT+nSPSFRf6DKGDcxA0ouw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11745"; a="75237986"
-X-IronPort-AV: E=Sophos;i="6.23,153,1770624000"; 
-   d="scan'208";a="75237986"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2026 02:02:56 -0700
-X-CSE-ConnectionGUID: lA/liTR+TPKkEb3Z/ngD3w==
-X-CSE-MsgGUID: zfv4B/iSQCujbMm2GtBqrw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,153,1770624000"; 
-   d="scan'208";a="264548812"
-Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
-  by orviesa001.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2026 02:02:56 -0700
-Received: from ORSMSX903.amr.corp.intel.com (10.22.229.25) by
- ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Wed, 1 Apr 2026 02:02:55 -0700
-Received: from ORSEDG902.ED.cps.intel.com (10.7.248.12) by
- ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Wed, 1 Apr 2026 02:02:55 -0700
-Received: from PH7PR06CU001.outbound.protection.outlook.com (52.101.201.51) by
- edgegateway.intel.com (134.134.137.112) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Wed, 1 Apr 2026 02:02:52 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=TQZ+YV9lZbFckfaOyYzUsqCczzFzG3d31SumtM7lBfeqKV28w5AFFqumLrIriSG0vOYVHTJlX43MOExM6NY3g3At40tLbXW6wA/4OsFQe9/aO2axAN0cmoW3PY9ZgL/g3mSogowmmOkhKh1zLFwJFZ1JZB5WhCjZXFn6qG7Myj7940uXocq+zwsFh2TcTUic8UupkHdoorfJNYQ9NcCpKpVAQiWIvPiNbkCyfyNMl3PAaPCiSQHyvFB9aeSuabk9aoWLf41qIu4V9Yk00ZgUNCdgucwN9cWlHoP80AigRkI4syxOCWcbRIu30j1NjuvGNiZWAklBkFVKrS4rjG+B4A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/vlkRb01YPTKzxybumB0nfxBLcZisv4HS81hB0P6p38=;
- b=SE60ojo1GMwx4RUXIIFKjhNV2ylZcade7sDPEGisM2fBKOtqXX31nECHi8yYehLQM/4ffdrteYs6ahcjUYJB0WYBXGk5jXhv94Nc/Ea7qRc8Q4NsqQKbTpQR1PXtYXo/AXXAHj6E9O4J4lFWckrPlBLReCJVKW2q3qFo5a5S0xhYXm8nV43KTu5JU/QvMkYenBmgzb/gjEKjGEQOjy0bYoJxMy1DspDuYTY2/x1gsAMSUEmH48mpeoznCpiYKWycKoyxzYA3I//pLN7Eg1P3skId6LrbYYHreB+0SfL8tQg/UAbPzQZtANiRq6I1ZsD3N+Sx+tTNZXfIFhs6wSwD2A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from IA3PR11MB9136.namprd11.prod.outlook.com (2603:10b6:208:574::12)
- by CY8PR11MB7778.namprd11.prod.outlook.com (2603:10b6:930:76::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.16; Wed, 1 Apr
- 2026 09:02:45 +0000
-Received: from IA3PR11MB9136.namprd11.prod.outlook.com
- ([fe80::37b4:37a9:4f3:518b]) by IA3PR11MB9136.namprd11.prod.outlook.com
- ([fe80::37b4:37a9:4f3:518b%5]) with mapi id 15.20.9769.011; Wed, 1 Apr 2026
- 09:02:45 +0000
-From: "Duan, Zhenzhong" <zhenzhong.duan@intel.com>
-To: "Liu, Yi L" <yi.l.liu@intel.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-CC: "dwmw2@infradead.org" <dwmw2@infradead.org>, "jgg@ziepe.ca"
-	<jgg@ziepe.ca>, "Tian, Kevin" <kevin.tian@intel.com>, "joro@8bytes.org"
-	<joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "baolu.lu@linux.intel.com"
-	<baolu.lu@linux.intel.com>, "stable@vger.kernel.org"
-	<stable@vger.kernel.org>, Joao Martins <joao.m.martins@oracle.com>
-Subject: RE: [PATCH v2 1/4] iommu/vt-d: Block PASID attachment to nested
- domain with dirty tracking
-Thread-Topic: [PATCH v2 1/4] iommu/vt-d: Block PASID attachment to nested
- domain with dirty tracking
-Thread-Index: AQHcwC2TWknzYZj1oU+OjBg9H+IVFbXIQbeAgAGcnlA=
-Date: Wed, 1 Apr 2026 09:02:45 +0000
-Message-ID: <IA3PR11MB91369A30961F34A25A5E1EC69250A@IA3PR11MB9136.namprd11.prod.outlook.com>
-References: <20260330101108.12594-1-zhenzhong.duan@intel.com>
- <20260330101108.12594-2-zhenzhong.duan@intel.com>
- <2c664395-72b2-4436-b60a-3ba2e73eaf95@intel.com>
-In-Reply-To: <2c664395-72b2-4436-b60a-3ba2e73eaf95@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: IA3PR11MB9136:EE_|CY8PR11MB7778:EE_
-x-ms-office365-filtering-correlation-id: c4969a51-60fe-4419-c919-08de8fcd70da
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|366016|1800799024|7416014|376014|38070700021|56012099003|18002099003|22082099003;
-x-microsoft-antispam-message-info: CCByTp2Hyo7JfNFMUGFBOiKknL6WyYDk4LPtgEAeSwlULuc99fjJhejQLEIxcjijOaGPmZelJ7zFAXINQJMV65hFpBY5mV8ycLqhTc+D8ssk585JgmyioUykyFcwwo0L7kLGC0Pdij4zv4eVRevDVJTLZ3eOd5pDxt38PacTY4GusMS/hxP9dzqaRd/cXmz6KAgK8xqzL922keyADhm9uH9qY/4KCMgEIAAeyb10b5fBaTk9iaxPgJpIO2R4NHZ8zAqCHhJuRHYZjF0h8eDlisK34QhKtqUDM5g6aXElo6/w3FgD58GWCz5x5kKDiEskX2EDES8/XirmNc+yby3K1BKoi+x4TvAmxLSjAW5BgNpHsYZqWOr+j3SU2Kc5AwGUokvbOTToNGlZ8blp4lhwTQUwrQnzrON+//UsNhjQ1Zj8fly9B4zjzJC7SHKFeoHdclaTVwRNq/22clwjXnR+P7WayfwkwjwX2u9UBDizEztyxCpntKJDvuZgVboSjG0lHamhpHUcz/RfrM786UBf2b7O749uU6tjMbFjRFSi66I+Flyla+2XrN0WKo52sv6qooEKXmHuIhQDh+eVdDQ7TWOy9PN6E1IzBQ7WMiw8xdCC9Gk5bER2JfWs1Gl+YEbFw3cGp158xr17PMQU2E2AtUb5ZWRKboBeBgN3ihQnvZAgSEnbYGxLULEETCNiRajNS4n3D8xBAV/8ybKYH/vN1aksD2JQf9wiUxMVwOIzg7D7PUM8wfNSsWSxAYFALZYcrlq7NrqafzfgPZzrrgm7jd1NmYnGrcrawJTlgpGYvEE=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA3PR11MB9136.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(7416014)(376014)(38070700021)(56012099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?FXMsKRToYA5uUu4Kh2c7SjxyJm2mDUhJP6wBO84X5AM1/Oea9ckwpz1YF2Gt?=
- =?us-ascii?Q?8Jv8ODP3pWkZn+ZIewrj+83gybvIEliGVE490TtebHDPPoK1H1AKKTmxSaYx?=
- =?us-ascii?Q?pOPYRAGJ+8vaHoI3ugj/IqyZivweg38dakDfZI0D5jH9yY+HNPHdaaSTWylh?=
- =?us-ascii?Q?rOhwTzis4JPxC7531UfDF113fNJN/r4PgIuEvinpX1oKeSCtsvbiG87FKLks?=
- =?us-ascii?Q?fIBKj7kpgxq9OfKooit+LxLTXiZhuyNoy3QMEmbSgZng4BYOlFANRGcWUPGv?=
- =?us-ascii?Q?8NwBTq7wZfwpNSv5++EGWbxZwnlk5dG4EQLGaOmAbcekRbCetWNp78BUPIlY?=
- =?us-ascii?Q?TIyXY68GWQLe9abPBBK+jcgBWIXzQLQ7mBplHLvH+FHkhVXyDX0YBD2VvWq9?=
- =?us-ascii?Q?/+0CYinhIDM/jgEybt9+RhpNmuO9mBOSArZEBhUz6/x/pif06vQ/ZEdM+qaa?=
- =?us-ascii?Q?7esEycZSC8fazZugbfAdtQMWisBeDKj8yokAgYh81hVAQqPO9aiGESzWcuEZ?=
- =?us-ascii?Q?1kMSxMaX4RXHfLqEVyLLb75U8giChFEul56MLeb0CYY/qZRtlxJdVb0xVMlO?=
- =?us-ascii?Q?P5UgrTW1QRl0m1b1tQLu1sq8FIpEJq2cvWnbM1DlIVqudZGshuwNnp/ofAsW?=
- =?us-ascii?Q?Z4xC3+IAKkbTlw+zzFf6OCqLP8czVg5D6XupBwfxDaMrw/IBChGhIPT9G7MW?=
- =?us-ascii?Q?FnOY7x2d40aH9RldtJXfF6d/VHoUBD/QY6GsPPimwY1EG9RGPM8cVT14OcVy?=
- =?us-ascii?Q?s8acmk2Tgtam8tNTwl09h+pvk+KL2WiORDGscILhIcWAv17oXcSrFFe6wvpq?=
- =?us-ascii?Q?mZXchOtbeLfkUxulFSPnM0oF37Fo3FJPbsEVmctWm7ABUoasyj4OJQn7hc2l?=
- =?us-ascii?Q?fOM6MNXCNzbjVkXEl7YnUn2YWcdDHyeiekOjnP8kBNMl2WzjN+rTqfAUssgG?=
- =?us-ascii?Q?JsrUBxi1ZfJ2HzIQVVTjroO7wBIlUOaZz39u/bAppKlS1ViRQl5iDAk6F2mZ?=
- =?us-ascii?Q?f3Gky8WpxtNGqCwsymc5gWCIiD60sNTLPYzJ8TOCblhKH1JaQu5+UBcoxYRs?=
- =?us-ascii?Q?KI0jwvzs0ljM+oQmaOCWv7d0N8iPg9wf0QUTZd/izkSn5qOTF6OlZwLq0u73?=
- =?us-ascii?Q?3KrTzuarYYAKLYUxtMFlcxqHr/IrfnkOPwZFF5se/sSvyP3yITUmoAMwS+op?=
- =?us-ascii?Q?uIHi1+O34rsE+DB4Zk5cTMghiIyVqOeYAP3r0xOvVvo/2xsaNuYbDrYrsiaW?=
- =?us-ascii?Q?FeIMJIu/matV4RFsWtzumg1wotO5IsoaFSHsR1sI1WGFjWmpl7deUQ7QyoR/?=
- =?us-ascii?Q?AuUxkwA4P4ziuhVD3TK90OdS9MmdAno9eYFELGZVbu+ONwmIsDXiEwxSrRnx?=
- =?us-ascii?Q?rcRbyZVRJ1Qn15zwVJCWm8sY4QCLzz8utg5Om4Gch2lymHJKfAvvM2lLHzNP?=
- =?us-ascii?Q?cOizy+Sh9FAojCyRiUOPQQGs8Ev/Xv9S0LPTEOhHTCu2IeYe5tHH2xokH7Gh?=
- =?us-ascii?Q?VkW8IhSLI1s7FdBpBxukAMaJexx4B1S25HsrDCOgm0iaOImqw7C2biXQpop7?=
- =?us-ascii?Q?rHDzC/cnmpDKDCMis0Whja8EEvjBagQ1zO7AwpPulP1jiOookcbA6UrG7QNu?=
- =?us-ascii?Q?itUewoh7YSmbEfN1w3bGjbLFgXlg6nGjvULgP4+Gjq7hFCpopMDKZdix2R4P?=
- =?us-ascii?Q?DvR4FdM1HgmXg95rLFyq5PcNLCuiIJ/AvYPu2U5ZDE3Nk21S8V4wwdEjOifp?=
- =?us-ascii?Q?aUp7Vgl9eQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="Jt+2kfwe"
+Received: from [192.168.31.31] (gy-adaptive-ssl-proxy-3-entmail-virt135.gy.ntes [58.22.7.114])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 3924261a7;
+	Wed, 1 Apr 2026 17:26:28 +0800 (GMT+08:00)
+Message-ID: <571079ed-a1e3-4fa0-a42a-28cd39864c22@rock-chips.com>
+Date: Wed, 1 Apr 2026 17:26:28 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Exchange-RoutingPolicyChecked: cMJQ1vJMyhlxC0HSl9y8steXkvNXEqy1Fvy/41z2BW1ZqPaS8A19SiOcmJIhRxFd+9GWeIbpLkliSbpGAuagEGI4vxK0aiEf0H8oNjWFDhqLYY2CopIShaanR82eok8EnNxBczUd72ykQbRNxzNI6KQBWln0Gqy3gsOYS35KNbmJqgXSgxvz7+RMSal9ykLHB5BwQkukzBsidV3lkv+VNjIRkXnJxtl5NswfVznw39FBriOA1SS/BeARm3GQYs/0Ln7PN05HudaObJ62DsN9r9AKOGDcSUOiu8JncHsEpZCS/yfsokIFi7GTq+3+vGQ/zS2PrgdmPCgBX0i4SRJ3lg==
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: IA3PR11MB9136.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c4969a51-60fe-4419-c919-08de8fcd70da
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Apr 2026 09:02:45.7579
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: p1HnquRBnDnW6E10spCVR0nxOIrKq9Ejaxw4NdzmfqGqx2+zGt113IzoDhV4hmRN41NtXUzbLvM994S5/kKDpbqDJanxXPJzJAlBvOb+u4o=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB7778
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iommu/rockchip: Drop global rk_ops in favor of
+ per-device ops
+To: Jonas Karlman <jonas@kwiboo.se>, Shawn Lin <shawn.lin@rock-chips.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Heiko Stuebner <heiko@sntech.de>
+References: <20260310084812.126082-1-xxm@rock-chips.com>
+ <20260310105303.128859-1-xxm@rock-chips.com>
+ <a586dd60-5b9c-4044-3bb1-903df863b587@rock-chips.com>
+ <b046ad1c-9cfc-4399-a8df-e4fffff434f9@rock-chips.com>
+ <8ca0a8d3-aed9-4c2a-89dd-e9029afdd279@kwiboo.se>
+From: Simon Xue <xxm@rock-chips.com>
+In-Reply-To: <8ca0a8d3-aed9-4c2a-89dd-e9029afdd279@kwiboo.se>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-HM-Tid: 0a9d485d9f4f03ackunmcabf1e6a2ac0554
+X-HM-MType: 1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFDSUNOT01LS0k3V1ktWUFJV1kPCRoVCBIfWUFZGU8ZSVYdQ05DHkhITk0fGEtWFRQJFh
+	oXVRMBExYaEhckFA4PWVdZGBILWUFZTkNVSUlVTFVKSk9ZV1kWGg8SFR0UWUFZT0tIVUJCSU5LVU
+	pLS1VKQktCWQY+
+DKIM-Signature: a=rsa-sha256;
+	b=Jt+2kfweWEwxes0sBj7HSXd9JCL3FN2m69A+IQyV71t3yOGMQE3utUNp0av7cbf9WefbFWcfCXueu2/uLBDiLczXJSTaORfaFlaNkhU+WuFMORIMw4Emd+VC8Qj/QFRzcQDfW+buGb3JhrUK98UDI9iB2MM487U/NHJOwcaDcys=; c=relaxed/relaxed; s=default; d=rock-chips.com; v=1;
+	bh=b9sUdNfaZ3PRLrdJkysMaTf4aAlb6n1SWYaSIoqHMio=;
+	h=date:mime-version:subject:message-id:from;
 
+Hi Jonas，
 
+Thanks for the  review.
 
->-----Original Message-----
->From: Liu, Yi L <yi.l.liu@intel.com>
->Subject: Re: [PATCH v2 1/4] iommu/vt-d: Block PASID attachment to nested
->domain with dirty tracking
+在 2026/4/1 16:25, Jonas Karlman 写道:
+> Hi,
 >
->On 3/30/26 18:11, Zhenzhong Duan wrote:
->> Kernel lacks dirty tracking support on nested domain attached to PASID,
->> fails the attachment early if nesting parent domain is dirty tracking
->> configured, otherwise dirty pages would be lost.
+> On 4/1/2026 9:59 AM, Simon Xue wrote:
+>> Hi all,
 >>
->> Cc: stable@vger.kernel.org
->> Fixes: f35f22cc760e ("iommu/vt-d: Access/Dirty bit support for SS domain=
-s")
->> Suggested-by: Kevin Tian <kevin.tian@intel.com>
->> Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
->> ---
->>   drivers/iommu/intel/nested.c | 6 +++++-
->>   1 file changed, 5 insertions(+), 1 deletion(-)
->
->Good catch. Just one nit. I think the below fix tag is more accurate. SS
->dirty was merged before PASID attachment. So this fix should be
->backported since the first PASID nested domain attachment.
-
-Oh, I see, thanks for sharing the history.
-
->
->Fixes: 67f6f56b5912 ("iommu/vt-d: Add set_dev_pasid callback for nested
->domain")
-
-I'll leave it to Baolu to decide if he want a respin or will pick this dire=
-ctly.
-
-BRs,
-Zhenzhong
-
->
->Reviewed-by: Yi Liu <yi.l.liu@intel.com>
->
->> diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
->> index 2b979bec56ce..16c82ba47d30 100644
->> --- a/drivers/iommu/intel/nested.c
->> +++ b/drivers/iommu/intel/nested.c
->> @@ -148,6 +148,7 @@ static int intel_nested_set_dev_pasid(struct
->iommu_domain *domain,
->>   {
->>   	struct device_domain_info *info =3D dev_iommu_priv_get(dev);
->>   	struct dmar_domain *dmar_domain =3D to_dmar_domain(domain);
->> +	struct iommu_domain *s2_domain =3D &dmar_domain->s2_domain-
->>domain;
->>   	struct intel_iommu *iommu =3D info->iommu;
->>   	struct dev_pasid_info *dev_pasid;
->>   	int ret;
->> @@ -155,10 +156,13 @@ static int intel_nested_set_dev_pasid(struct
->iommu_domain *domain,
->>   	if (!pasid_supported(iommu) || dev_is_real_dma_subdevice(dev))
->>   		return -EOPNOTSUPP;
+>> A gentle ping on this patch.
 >>
->> +	if (s2_domain->dirty_ops)
->> +		return -EINVAL;
->> +
->>   	if (context_copied(iommu, info->bus, info->devfn))
->>   		return -EBUSY;
->>
->> -	ret =3D paging_domain_compatible(&dmar_domain->s2_domain->domain,
->dev);
->> +	ret =3D paging_domain_compatible(s2_domain, dev);
->>   	if (ret)
->>   		return ret;
->>
+>> 在 2026/3/13 17:32, Shawn Lin 写道:
+>>> 在 2026/03/10 星期二 18:53, Simon Xue 写道:
+>>>> The driver currently uses a global rk_ops pointer, forcing all IOMMU
+>>>> instances to share the same operations. This restricts the driver from
+>>>> supporting SoCs that might integrate different versions of IOMMU
+>>>> hardware.
+>>>>
+>>>> Since the IOMMU framework passes the master device information to
+>>>> iommu_paging_domain_alloc(), the global variable is no longer needed.
+>>>>
+>>>> Fix this by moving rk_ops into struct rk_iommu and struct
+>>>> rk_iommu_domain.
+>>>> Initialize it per-device during probe via of_device_get_match_data(),
+>>>> and replace all global references with the instance-specific pointers.
+>>>>
+>>> Thanks for the patch, Simon. I've tested it on the RK3576 EVB1 with
+>>> PCIe1 + IOMMU. NVMe works fine on it, and I also verified the IOVA
+>>> allocated in the NVMe driver, they look correct as I manually limited
+>>> the memblock to under 2GB, so here it is:
+>>>
+>>> nvme 0001:21:00.0: cq_dma_addr: 0x00000000f7fc7000
+>>>
+>>> Tested-by: Shawn Lin <shawn.lin@rock-chips.com>
+>>> Reviewed-by: Shawn Lin <shawn.lin@rock-chips.com>
+>>>
+>>>> Signed-off-by: Simon Xue <xxm@rock-chips.com>
+>>>> ---
+>>>> v2:
+>>>>    - Remove the one-time-used 'ops' variable in rk_iommu_probe()
+>>>>
+>>>>    drivers/iommu/rockchip-iommu.c | 71 ++++++++++++++++------------------
+>>>>    1 file changed, 33 insertions(+), 38 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iommu/rockchip-iommu.c
+>>>> b/drivers/iommu/rockchip-iommu.c
+>>>> index 0013cf196c57..4da80136933c 100644
+>>>> --- a/drivers/iommu/rockchip-iommu.c
+>>>> +++ b/drivers/iommu/rockchip-iommu.c
+>>>> @@ -82,6 +82,14 @@
+>>>>      */
+>>>>    #define RK_IOMMU_PGSIZE_BITMAP 0x007ff000
+>>>>    +struct rk_iommu_ops {
+>>>> +    phys_addr_t (*pt_address)(u32 dte);
+>>>> +    u32 (*mk_dtentries)(dma_addr_t pt_dma);
+>>>> +    u32 (*mk_ptentries)(phys_addr_t page, int prot);
+>>>> +    u64 dma_bit_mask;
+>>>> +    gfp_t gfp_flags;
+>>>> +};
+>>>> +
+>>>>    struct rk_iommu_domain {
+>>>>        struct list_head iommus;
+>>>>        u32 *dt; /* page directory table */
+>>>> @@ -89,6 +97,7 @@ struct rk_iommu_domain {
+>>>>        spinlock_t iommus_lock; /* lock for iommus list */
+>>>>        spinlock_t dt_lock; /* lock for modifying page directory table */
+>>>>        struct device *dma_dev;
+>>>> +    const struct rk_iommu_ops *rk_ops;
+>>>>          struct iommu_domain domain;
+>>>>    };
+>>>> @@ -98,14 +107,6 @@ static const char * const rk_iommu_clocks[] = {
+>>>>        "aclk", "iface",
+>>>>    };
+>>>>    -struct rk_iommu_ops {
+>>>> -    phys_addr_t (*pt_address)(u32 dte);
+>>>> -    u32 (*mk_dtentries)(dma_addr_t pt_dma);
+>>>> -    u32 (*mk_ptentries)(phys_addr_t page, int prot);
+>>>> -    u64 dma_bit_mask;
+>>>> -    gfp_t gfp_flags;
+>>>> -};
+>>>> -
+>>>>    struct rk_iommu {
+>>>>        struct device *dev;
+>>>>        void __iomem **bases;
+>>>> @@ -117,6 +118,7 @@ struct rk_iommu {
+>>>>        struct iommu_device iommu;
+>>>>        struct list_head node; /* entry in rk_iommu_domain.iommus */
+>>>>        struct iommu_domain *domain; /* domain to which iommu is
+>>>> attached */
+>>>> +    const struct rk_iommu_ops *rk_ops;
+> Do we really need the rk_ops on both the rk_iommu and rk_iommu_domain?
+>
+>>>>    };
+>>>>      struct rk_iommudata {
+>>>> @@ -124,7 +126,6 @@ struct rk_iommudata {
+>>>>        struct rk_iommu *iommu;
+>>>>    };
+>>>>    -static const struct rk_iommu_ops *rk_ops;
+>>>>    static struct iommu_domain rk_identity_domain;
+>>>>      static inline void rk_table_flush(struct rk_iommu_domain *dom,
+>>>> dma_addr_t dma,
+>>>> @@ -510,7 +511,7 @@ static int rk_iommu_force_reset(struct rk_iommu
+>>>> *iommu)
+>>>>         * and verifying that upper 5 (v1) or 7 (v2) nybbles are read
+>>>> back.
+>>>>         */
+>>>>        for (i = 0; i < iommu->num_mmu; i++) {
+>>>> -        dte_addr = rk_ops->pt_address(DTE_ADDR_DUMMY);
+>>>> +        dte_addr = iommu->rk_ops->pt_address(DTE_ADDR_DUMMY);
+> Maybe this patch it trying to do too much at once that makes it harder
+> to review? To simplify review maybe one patch just drops the global
+> rk_ops and a assigns a local version based on domain/iommu, and a second
+> patch changes to use the iommu->rk_ops directly? Just a thought.
 
+1. I think it's hard to split this patch safely.
+
+Once the global rk_ops is removed, domain-only paths 
+(map/unmap/iova_to_phys/domain_free)
+
+still need SoC-specific helpers, while they only receive struct 
+iommu_domain *.
+
+2. Looking up ops from an attached IOMMU at call time may not reliable.
+
+So keeping rk_ops in both rk_domain and rk_iommu is reasonable.
+
+>
+>>>>            rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR, dte_addr);
+>>>>              if (dte_addr != rk_iommu_read(iommu->bases[i],
+>>>> RK_MMU_DTE_ADDR)) {
+>>>> @@ -551,7 +552,7 @@ static void log_iova(struct rk_iommu *iommu, int
+>>>> index, dma_addr_t iova)
+>>>>        page_offset = rk_iova_page_offset(iova);
+>>>>          mmu_dte_addr = rk_iommu_read(base, RK_MMU_DTE_ADDR);
+>>>> -    mmu_dte_addr_phys = rk_ops->pt_address(mmu_dte_addr);
+>>>> +    mmu_dte_addr_phys = iommu->rk_ops->pt_address(mmu_dte_addr);
+>>>>          dte_addr_phys = mmu_dte_addr_phys + (4 * dte_index);
+>>>>        dte_addr = phys_to_virt(dte_addr_phys);
+>>>> @@ -560,14 +561,14 @@ static void log_iova(struct rk_iommu *iommu,
+>>>> int index, dma_addr_t iova)
+>>>>        if (!rk_dte_is_pt_valid(dte))
+>>>>            goto print_it;
+>>>>    -    pte_addr_phys = rk_ops->pt_address(dte) + (pte_index * 4);
+>>>> +    pte_addr_phys = iommu->rk_ops->pt_address(dte) + (pte_index * 4);
+>>>>        pte_addr = phys_to_virt(pte_addr_phys);
+>>>>        pte = *pte_addr;
+>>>>          if (!rk_pte_is_page_valid(pte))
+>>>>            goto print_it;
+>>>>    -    page_addr_phys = rk_ops->pt_address(pte) + page_offset;
+>>>> +    page_addr_phys = iommu->rk_ops->pt_address(pte) + page_offset;
+>>>>        page_flags = pte & RK_PTE_PAGE_FLAGS_MASK;
+>>>>      print_it:
+>>>> @@ -663,13 +664,13 @@ static phys_addr_t rk_iommu_iova_to_phys(struct
+>>>> iommu_domain *domain,
+>>>>        if (!rk_dte_is_pt_valid(dte))
+>>>>            goto out;
+>>>>    -    pt_phys = rk_ops->pt_address(dte);
+>>>> +    pt_phys = rk_domain->rk_ops->pt_address(dte);
+>>>>        page_table = (u32 *)phys_to_virt(pt_phys);
+>>>>        pte = page_table[rk_iova_pte_index(iova)];
+>>>>        if (!rk_pte_is_page_valid(pte))
+>>>>            goto out;
+>>>>    -    phys = rk_ops->pt_address(pte) + rk_iova_page_offset(iova);
+>>>> +    phys = rk_domain->rk_ops->pt_address(pte) +
+>>>> rk_iova_page_offset(iova);
+>>>>    out:
+>>>>        spin_unlock_irqrestore(&rk_domain->dt_lock, flags);
+>>>>    @@ -730,7 +731,7 @@ static u32 *rk_dte_get_page_table(struct
+>>>> rk_iommu_domain *rk_domain,
+>>>>        if (rk_dte_is_pt_valid(dte))
+>>>>            goto done;
+>>>>    -    page_table = iommu_alloc_pages_sz(GFP_ATOMIC | rk_ops->gfp_flags,
+>>>> +    page_table = iommu_alloc_pages_sz(GFP_ATOMIC |
+>>>> rk_domain->rk_ops->gfp_flags,
+>>>>                          SPAGE_SIZE);
+>>>>        if (!page_table)
+>>>>            return ERR_PTR(-ENOMEM);
+>>>> @@ -742,13 +743,13 @@ static u32 *rk_dte_get_page_table(struct
+>>>> rk_iommu_domain *rk_domain,
+>>>>            return ERR_PTR(-ENOMEM);
+>>>>        }
+>>>>    -    dte = rk_ops->mk_dtentries(pt_dma);
+>>>> +    dte = rk_domain->rk_ops->mk_dtentries(pt_dma);
+>>>>        *dte_addr = dte;
+>>>>          rk_table_flush(rk_domain,
+>>>>                   rk_domain->dt_dma + dte_index * sizeof(u32), 1);
+>>>>    done:
+>>>> -    pt_phys = rk_ops->pt_address(dte);
+>>>> +    pt_phys = rk_domain->rk_ops->pt_address(dte);
+>>>>        return (u32 *)phys_to_virt(pt_phys);
+>>>>    }
+>>>>    @@ -790,7 +791,7 @@ static int rk_iommu_map_iova(struct
+>>>> rk_iommu_domain *rk_domain, u32 *pte_addr,
+>>>>            if (rk_pte_is_page_valid(pte))
+>>>>                goto unwind;
+>>>>    -        pte_addr[pte_count] = rk_ops->mk_ptentries(paddr, prot);
+>>>> +        pte_addr[pte_count] = rk_domain->rk_ops->mk_ptentries(paddr,
+>>>> prot);
+>>>>              paddr += SPAGE_SIZE;
+>>>>        }
+>>>> @@ -812,7 +813,7 @@ static int rk_iommu_map_iova(struct
+>>>> rk_iommu_domain *rk_domain, u32 *pte_addr,
+>>>>                    pte_count * SPAGE_SIZE);
+>>>>          iova += pte_count * SPAGE_SIZE;
+>>>> -    page_phys = rk_ops->pt_address(pte_addr[pte_count]);
+>>>> +    page_phys = rk_domain->rk_ops->pt_address(pte_addr[pte_count]);
+>>>>        pr_err("iova: %pad already mapped to %pa cannot remap to phys:
+>>>> %pa prot: %#x\n",
+>>>>               &iova, &page_phys, &paddr, prot);
+>>>>    @@ -849,7 +850,7 @@ static int rk_iommu_map(struct iommu_domain
+>>>> *domain, unsigned long _iova,
+>>>>        pte_index = rk_iova_pte_index(iova);
+>>>>        pte_addr = &page_table[pte_index];
+>>>>    -    pte_dma = rk_ops->pt_address(dte_index) + pte_index *
+>>>> sizeof(u32);
+>>>> +    pte_dma = rk_domain->rk_ops->pt_address(dte_index) + pte_index *
+>>>> sizeof(u32);
+>>>>        ret = rk_iommu_map_iova(rk_domain, pte_addr, pte_dma, iova,
+>>>>                    paddr, size, prot);
+>>>>    @@ -887,7 +888,7 @@ static size_t rk_iommu_unmap(struct
+>>>> iommu_domain *domain, unsigned long _iova,
+>>>>            return 0;
+>>>>        }
+>>>>    -    pt_phys = rk_ops->pt_address(dte);
+>>>> +    pt_phys = rk_domain->rk_ops->pt_address(dte);
+>>>>        pte_addr = (u32 *)phys_to_virt(pt_phys) + rk_iova_pte_index(iova);
+>>>>        pte_dma = pt_phys + rk_iova_pte_index(iova) * sizeof(u32);
+>>>>        unmap_size = rk_iommu_unmap_iova(rk_domain, pte_addr, pte_dma,
+>>>> size);
+>>>> @@ -945,7 +946,7 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
+>>>>          for (i = 0; i < iommu->num_mmu; i++) {
+>>>>            rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR,
+>>>> - rk_ops->mk_dtentries(rk_domain->dt_dma));
+>>>> + iommu->rk_ops->mk_dtentries(rk_domain->dt_dma));
+>>>>            rk_iommu_base_command(iommu->bases[i], RK_MMU_CMD_ZAP_CACHE);
+>>>>            rk_iommu_write(iommu->bases[i], RK_MMU_INT_MASK,
+>>>> RK_MMU_IRQ_MASK);
+>>>>        }
+>>>> @@ -1068,17 +1069,19 @@ static struct iommu_domain
+>>>> *rk_iommu_domain_alloc_paging(struct device *dev)
+>>>>        if (!rk_domain)
+>>>>            return NULL;
+>>>>    +    iommu = rk_iommu_from_dev(dev);
+>>>> +    rk_domain->rk_ops = iommu->rk_ops;
+> As mentioned above, this seem strange and is possible just a shortcut
+> due to current call-paths? Why do we assign "iommu ops" to the domain?
+>
+> Regards,
+> Jonas
+>
+>>>> +
+>>>>        /*
+>>>>         * rk32xx iommus use a 2 level pagetable.
+>>>>         * Each level1 (dt) and level2 (pt) table has 1024 4-byte entries.
+>>>>         * Allocate one 4 KiB page for each table.
+>>>>         */
+>>>> -    rk_domain->dt = iommu_alloc_pages_sz(GFP_KERNEL |
+>>>> rk_ops->gfp_flags,
+>>>> +    rk_domain->dt = iommu_alloc_pages_sz(GFP_KERNEL |
+>>>> rk_domain->rk_ops->gfp_flags,
+>>>>                             SPAGE_SIZE);
+>>>>        if (!rk_domain->dt)
+>>>>            goto err_free_domain;
+>>>>    -    iommu = rk_iommu_from_dev(dev);
+>>>>        rk_domain->dma_dev = iommu->dev;
+>>>>        rk_domain->dt_dma = dma_map_single(rk_domain->dma_dev,
+>>>> rk_domain->dt,
+>>>>                           SPAGE_SIZE, DMA_TO_DEVICE);
+>>>> @@ -1117,7 +1120,7 @@ static void rk_iommu_domain_free(struct
+>>>> iommu_domain *domain)
+>>>>        for (i = 0; i < NUM_DT_ENTRIES; i++) {
+>>>>            u32 dte = rk_domain->dt[i];
+>>>>            if (rk_dte_is_pt_valid(dte)) {
+>>>> -            phys_addr_t pt_phys = rk_ops->pt_address(dte);
+>>>> +            phys_addr_t pt_phys = rk_domain->rk_ops->pt_address(dte);
+>>>>                u32 *page_table = phys_to_virt(pt_phys);
+>>>>                dma_unmap_single(rk_domain->dma_dev, pt_phys,
+>>>>                         SPAGE_SIZE, DMA_TO_DEVICE);
+>>>> @@ -1197,7 +1200,6 @@ static int rk_iommu_probe(struct
+>>>> platform_device *pdev)
+>>>>        struct device *dev = &pdev->dev;
+>>>>        struct rk_iommu *iommu;
+>>>>        struct resource *res;
+>>>> -    const struct rk_iommu_ops *ops;
+>>>>        int num_res = pdev->num_resources;
+>>>>        int err, i;
+>>>>    @@ -1211,16 +1213,9 @@ static int rk_iommu_probe(struct
+>>>> platform_device *pdev)
+>>>>        iommu->dev = dev;
+>>>>        iommu->num_mmu = 0;
+>>>>    -    ops = of_device_get_match_data(dev);
+>>>> -    if (!rk_ops)
+>>>> -        rk_ops = ops;
+>>>> -
+>>>> -    /*
+>>>> -     * That should not happen unless different versions of the
+>>>> -     * hardware block are embedded the same SoC
+>>>> -     */
+>>>> -    if (WARN_ON(rk_ops != ops))
+>>>> -        return -EINVAL;
+>>>> +    iommu->rk_ops = of_device_get_match_data(dev);
+>>>> +    if (!iommu->rk_ops)
+>>>> +        return -ENOENT;
+>>>>          iommu->bases = devm_kcalloc(dev, num_res, sizeof(*iommu->bases),
+>>>>                        GFP_KERNEL);
+>>>> @@ -1286,7 +1281,7 @@ static int rk_iommu_probe(struct
+>>>> platform_device *pdev)
+>>>>                goto err_pm_disable;
+>>>>        }
+>>>>    -    dma_set_mask_and_coherent(dev, rk_ops->dma_bit_mask);
+>>>> +    dma_set_mask_and_coherent(dev, iommu->rk_ops->dma_bit_mask);
+>>>>          err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL,
+>>>> dev_name(dev));
+>>>>        if (err)
+>>>>
+>> _______________________________________________
+>> Linux-rockchip mailing list
+>> Linux-rockchip@lists.infradead.org
+>> http://lists.infradead.org/mailman/listinfo/linux-rockchip
+>
