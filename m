@@ -1,33 +1,33 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8A3A535CB8C
-	for <iommu@lists.linux.dev>; Wed,  1 Apr 2026 15:47:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C11F79DA;
+	Wed,  1 Apr 2026 16:01:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775058428; cv=none; b=JLgGGM4cL21GVI1Ahu6vI/TRQTD5ncqHYq5qRxax7yvXIChpD+8OE/dJanWRSCR0DOaa8GMY7GSJbi/wcOHQ9fVukOKuvyPpg2t7w18esHHWUO+Nke7IkXDeSU4+TV09r5Zsyohf2ZCqp2w1ldSsL9Bx/DxQyPNvAAwvFI/ihF8=
+	t=1775059290; cv=none; b=V+ZOZIrPVH23fzodq9yw8otej0XfzIoDCdw4LBpYlORSlFpm/2JgFrEHf18f5BE5wH94ZVZHHfcJsOlhE2W1SqqcmOkZeKbQMI0WRiXVTOxPr4hRcVLdM4IcgCCYT+94kqE3vbsVxQGqsvgPROOUCeA8+u18m6TJQTwVLNcRl9g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775058428; c=relaxed/simple;
-	bh=8dMR3DwiWfgzIxrJ4WVswaBuD1QhoWwqym933cMW1M8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=Au6vU8+Wgbw/AqTcoxThxl5kHxhQAf+6nB+IktEh2m9eSdREHKzNo1r/Vq6cAb2kJr90d0zb+FsFAQ0fglSs3dss490pLnGTaRAami2RSio09yYZbQ175tv0SMrjq0hrqdnhL2BtxS+tuHcy6ose4GbFMzmli9vTgGXjoKQGNCA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=qbOmoulj; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1775059290; c=relaxed/simple;
+	bh=W9qx/b89lLAH5xKATjSr4FjoF8xSzZzboxnb+4KLYY8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=L4NbGopkMKp6W/wnA+CeVfgPsh/85XEWW4ZC2qE6hcRFEmcOC+vxOPU62v38jd7ovn+ZC/n4X7r2Rn0hFKFssOv4YIVJluhl1LEbfg/15i6uKt//m1RBhfXkA5J7grY/ZJocuFoIoZ0WzUhAyVX8gcpRywQyA8S3VBqrKjTJPjg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gKwgVmSA; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="qbOmoulj"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 10AEA32AB;
-	Wed,  1 Apr 2026 08:47:00 -0700 (PDT)
-Received: from [10.57.77.192] (unknown [10.57.77.192])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C759C3F641;
-	Wed,  1 Apr 2026 08:47:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1775058425; bh=8dMR3DwiWfgzIxrJ4WVswaBuD1QhoWwqym933cMW1M8=;
-	h=Date:Subject:To:References:From:In-Reply-To:From;
-	b=qbOmouljKGVWk8kBNj87GxKmW7kygJBvCElJU3htQkJdHDaikoGxFVhRTsbnvl9mt
-	 XcmIpwGyJvvEB2M7KIcEPVu19st34xU3s+ETzUQgWRvU3Vb+UY9+ts5X6Ayc9yd0tc
-	 Ihh3GMrfeicfOD+9mfH26uhlXmh9RbrAOhxxEWy0=
-Message-ID: <d2a61b82-4577-4d16-bfb7-b6dd8e36e180@arm.com>
-Date: Wed, 1 Apr 2026 16:47:02 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gKwgVmSA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E304CC19423;
+	Wed,  1 Apr 2026 16:01:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1775059290;
+	bh=W9qx/b89lLAH5xKATjSr4FjoF8xSzZzboxnb+4KLYY8=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=gKwgVmSAxxvBbw1CPLzmPJv7PtM7inQR8cZwoafTWDdo4dBnnR87DPqffL+itfKia
+	 jLGAooi36YLbRnOlZDk4cfJkhQ70pO4Y86FtHaYjtr6IVn78mKX71s3sBGlNhPgVfG
+	 ziq9gdKcEDwgBcmTp0E18lygeAR3rk5K2WKN/2nRQ7PyqfA+eKN4FAJKBKRLZTtLnr
+	 oIBzTon1i40EZHvzz3GO0xpnaN4Crt7W9DVWwzKRyQzxha85dZAJOD/SJhCFpnm7pO
+	 BqRFv9sXOXsUigZ/ZhYC9HbVHD9HkaSeYly7cBvhskECynru7k7o036e3LI0JumiYc
+	 FpuYi+9bF5/xg==
+Message-ID: <b64a71fc-9a3f-49c0-a035-be6fe2a1ea4d@kernel.org>
+Date: Wed, 1 Apr 2026 18:01:20 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,152 +35,139 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: =?UTF-8?B?UmU6IOetlOWkjTogW+WklumDqOmCruS7tl0gUmU6IFtQQVRDSF0gaW9t?=
- =?UTF-8?Q?mu/amd=3A_Default_to_passthrough_mode_for_improved_performance?=
-To: "Li,Rongqing(ACG CCN)" <lirongqing@baidu.com>,
- Joerg Roedel <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20260326093801.2213-1-lirongqing@baidu.com>
- <ee12aa71-b5ea-4364-be36-5d902ef035f2@arm.com>
- <8b3c148f40434e32bfcfa8525063dd59@baidu.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <8b3c148f40434e32bfcfa8525063dd59@baidu.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: [PATCH v12 2/3] of: Factor arguments passed to of_map_id() into a
+ struct
+To: Frank Li <Frank.li@nxp.com>,
+ Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+Cc: Nipun Gupta <nipun.gupta@amd.com>, Nikhil Agarwal
+ <nikhil.agarwal@amd.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Marc Zyngier <maz@kernel.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ Thomas Gleixner <tglx@kernel.org>, Saravana Kannan <saravanak@kernel.org>,
+ Richard Zhu <hongxing.zhu@nxp.com>, Lucas Stach <l.stach@pengutronix.de>,
+ =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
+ Manivannan Sadhasivam <mani@kernel.org>, Bjorn Helgaas
+ <bhelgaas@google.com>, Sascha Hauer <s.hauer@pengutronix.de>,
+ Pengutronix Kernel Team <kernel@pengutronix.de>,
+ Fabio Estevam <festevam@gmail.com>, Juergen Gross <jgross@suse.com>,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+ Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+ Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>,
+ Rob Herring <robh@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Prakash Gupta <prakash.gupta@oss.qualcomm.com>,
+ Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+ linux-pci@vger.kernel.org, imx@lists.linux.dev,
+ xen-devel@lists.xenproject.org, linux-arm-msm@vger.kernel.org,
+ Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+References: <20260331-parse_iommu_cells-v12-0-decfd305eea9@oss.qualcomm.com>
+ <20260331-parse_iommu_cells-v12-2-decfd305eea9@oss.qualcomm.com>
+ <acvdqQvcitLTCZbm@lizhi-Precision-Tower-5810>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 a/A=
+In-Reply-To: <acvdqQvcitLTCZbm@lizhi-Precision-Tower-5810>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 2026-03-27 9:25 am, Li,Rongqing(ACG CCN) wrote:
-> 
-> 
->>> On x86 platforms, AMD IOMMU is typically enabled by default. When the
->>> kernel is compiled with CONFIG_IOMMU_DEFAULT_DMA_LAZY, the IOMMU
->>> operates in translated mode with deferred TLB flushing. While this
->>> provides a security layer, it introduces measurable performance
->>> overhead compared to Intel systems where the IOMMU often defaults to a
->>> disabled state.
->>>
->>> To optimize out-of-the-box performance for AMD users, shift the
->>> default to passthrough mode when the following conditions are met:
->>> 1. No explicit IOMMU mode was requested via the command line.
->>> 2. The kernel was configured to use 'lazy' DMA remapping by default.
->>> 3. Memory encryption (SME/SEV) is not active, as these features
->>>      require translation for security.
->>>
->>> This change allows standard DMA operations to bypass remapping
->>> overhead while maintaining the ability for users to explicitly enable
->>> translation if required.
->>>
->>> To support this, export iommu_dma_is_user_configured() from the IOMMU
->>> core to allow vendor drivers to check if the DMA API configuration was
->>> overridden by the user.
+On 31/03/2026 16:43, Frank Li wrote:
+> On Tue, Mar 31, 2026 at 07:34:47PM +0530, Vijayanand Jitta wrote:
+>> From: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
 >>
->> Frankly, no. CONFIG_IOMMU_DEFAULT_PASSTHROUGH already exists for
->> users who want that behaviour. IF you want an equivalent of
->> CONFIG_INTEL_IOMMU_DEFAULT_ON which prevents the IOMMU being used
->> at all then implement that (however I imagine a lot of VFIO users would be
->> unhappy about changing the default of that at this point). You can't just
->> completely break CONFIG_IOMMU_DEFAULT_DMA_LAZY for all the users
->> who do want its particular behaviour.
+>> Change of_map_id() to take a pointer to struct of_phandle_args
+>> instead of passing target device node and translated IDs separately.
+>> Update all callers accordingly.
 >>
-> 
-> However, CONFIG_IOMMU_DEFAULT_DMA_LAZY is a kernel default.
-
-Sure, it's what x86 defconfig sets, so if you want to change the default 
-x86 behaviour to passthrough, send a patch to x86 defconfig to make it 
-select IOMMU_DEFAULT_DMA_PASSTHROUGH instead (and I guess also move 
-IOMMU_DEFAULT_DMA_LAZY to hardening.config to preserve expectations 
-there). Don't just vandalise one driver such that IOMMU_DEFAULT_DMA_LAZY 
-cannot even work properly at all.
-
-> On AMD CPUs, this causes a drop in networking and I/O performance, and many manuals to recommend setting iommu=pt. Why can't passthrough be the default? and IOMMU is disabled by default on Intel CPUs, why is security considered a non-issue for Intel but a concern for AMD?"
-> 
-> And I understand that setting iommu to PT should not affect the usage of VFIO.
-
-Indeed it wouldn't, but if you're trying to argue for parity with 
-INTEL_IOMMU_DEFAULT_ON=n, then what that would actually be is applying 
-the "amd_iommu=off" behaviour by default, not passthrough.
-
-Thanks,
-Robin.
-
-> 
-> [Li,Rongqing]
-> 
-> 
-> 
->> Note that "lazy" mode does still represent nearly all of the security/memory
->> safety functionality offered by the IOMMU, so it does have significant value -
->> strict mode only adds protection for use-after-free of memory which _was_
->> already a legitimate DMA buffer for the given device at one point. A better
->> title for this patch would be "Silently make AMD systems less secure unless
->> users go out of their way to add command-line arguments to work around
->> this change"...
+>> Add an explicit filter_np parameter to of_map_id() and of_map_msi_id()
+>> to separate the filter input from the output. Previously, the target
+>> parameter served dual purpose: as an input filter (if non-NULL, only
+>> match entries targeting that node) and as an output (receiving the
+>> matched node with a reference held). Now filter_np is the explicit
+>> input filter and arg->np is the pure output.
 >>
->> There may well also still be some performance difference between the
->> IOMMU being enabled in passthrough, and being truly disabled - I seem to
->> recall the Intel GPU folks saying that was significant enough to care about at
->> least on some older Intel systems.
+>> Previously, of_map_id() would call of_node_put() on the matched node
+>> when a filter was provided, making reference ownership inconsistent.
+>> Remove this internal of_node_put() call so that of_map_id() now always
+>> transfers ownership of the matched node reference to the caller via
+>> arg->np. Callers are now consistently responsible for releasing this
+>> reference with of_node_put(arg->np) when done.
 >>
->> Thansk,
->> Robin.
+>> Suggested-by: Rob Herring (Arm) <robh@kernel.org>
+>> Suggested-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+>> Signed-off-by: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+>> Signed-off-by: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+>> ---
+>>  drivers/cdx/cdx_msi.c                    |  7 ++--
+>>  drivers/iommu/of_iommu.c                 |  4 +-
+>>  drivers/irqchip/irq-gic-its-msi-parent.c | 11 ++++--
+>>  drivers/of/base.c                        | 68 +++++++++++++++++---------------
+>>  drivers/of/irq.c                         | 10 ++++-
+>>  drivers/pci/controller/dwc/pci-imx6.c    | 32 +++++++--------
 >>
->>> Signed-off-by: Li RongQing <lirongqing@baidu.com>
->>> ---
->>>    drivers/iommu/amd/init.c | 9 +++++++++
->>>    drivers/iommu/iommu.c    | 6 ++++++
->>>    include/linux/iommu.h    | 1 +
->>>    3 files changed, 16 insertions(+)
->>>
->>> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c index
->>> f3fd7f3..e89a5ce 100644
->>> --- a/drivers/iommu/amd/init.c
->>> +++ b/drivers/iommu/amd/init.c
->>> @@ -3619,6 +3619,15 @@ void __init amd_iommu_detect(void)
->>>    	amd_iommu_detected = true;
->>>    	iommu_detected = 1;
->>>    	x86_init.iommu.iommu_init = amd_iommu_init;
->>> +
->>> +	if (!iommu_dma_is_user_configured()) {
->>> +		if (!cc_platform_has(CC_ATTR_MEM_ENCRYPT) &&
->>> +				IS_ENABLED(CONFIG_IOMMU_DEFAULT_DMA_LAZY)) {
->>> +			pr_info("Defaulting to Passthrough mode for performance\n");
->>> +			iommu_set_default_passthrough(false);
->>> +		}
->>> +	}
->>> +
->>>    	return;
->>>
->>>    disable_snp:
->>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c index
->>> 50718ab..a950dbb 100644
->>> --- a/drivers/iommu/iommu.c
->>> +++ b/drivers/iommu/iommu.c
->>> @@ -4091,3 +4091,9 @@ int iommu_dma_prepare_msi(struct msi_desc
->> *desc, phys_addr_t msi_addr)
->>>    	return ret;
->>>    }
->>>    #endif /* CONFIG_IRQ_MSI_IOMMU */
->>> +
->>> +bool iommu_dma_is_user_configured(void)
->>> +{
->>> +	return !!(iommu_cmd_line & IOMMU_CMD_LINE_DMA_API); }
->>> +EXPORT_SYMBOL_GPL(iommu_dma_is_user_configured);
->>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h index
->>> 54b8b48..c3ff8a9 100644
->>> --- a/include/linux/iommu.h
->>> +++ b/include/linux/iommu.h
->>> @@ -967,6 +967,7 @@ int iommu_set_pgtable_quirks(struct
->> iommu_domain *domain,
->>>    		unsigned long quirks);
->>>
->>>    void iommu_set_dma_strict(void);
->>> +bool iommu_dma_is_user_configured(void);
->>>
->>>    extern int report_iommu_fault(struct iommu_domain *domain, struct
->> device *dev,
->>>    			      unsigned long iova, int flags);
-> 
+>> for imx part.
+>>
+>> Reviewed-by: Frank Li <Frank.Li@nxp.com>
 
+So that's an Ack. Leaving a Rb tag for a tiny tiny piece of big patch
+will give impression that everything is reviewed on v13. And the patch
+was not reviewed by you.
+
+If you cannot certify the reviewers statement of oversight then use acked
+
+"For instance, maintainers may use it to signify that they are OK with a
+patch landing, but they may not have reviewed it as thoroughly as if a
+Reviewed-by: was provided."
+
+"For example, if a patch affects multiple subsystems and has an
+Acked-by: from one subsystem maintainer then this usually indicates
+acknowledgement of *just the part which affects that maintainer's code.*"
+
+
+Best regards,
+Krzysztof
