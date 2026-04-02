@@ -1,208 +1,156 @@
-Received: from DUZPR83CU001.outbound.protection.outlook.com (mail-northeuropeazon11012005.outbound.protection.outlook.com [52.101.66.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42D953DCD82;
-	Thu,  2 Apr 2026 09:53:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.66.5
-ARC-Seal:i=3; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775123633; cv=fail; b=ebAxota8fm++HJSpufA1oUnFgmmVMSE2UGB/ee6uo1PLdJrKBAO4tp5gfrVOaKOCAYrwlnFd2fxYrPk/DwQC+I0mgzytqLS7EiJ+aa0SdtbSCFOS3m9NOIlTeLpH+77U+HUDXl/Z2wkIfpo0SGtbeSEjZO5MjQKEA7mqT1d6zLw=
-ARC-Message-Signature:i=3; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775123633; c=relaxed/simple;
-	bh=ugIPSqRf27S5yZ9i/2sMLODiQDddDSxi3fQZxsPlkQE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=Oypop0wysf3KbCOeBWor41uu0wKk4D9NLaFDn/whjd56Ol97PdbP+2+JJFxRz1hqjZY2k/G/YQHFkWZzrVzpmyyt26+p4tP4a5/doudF6VNxL9Fg361Syd9aLz0bVb+3AxZWZN1DqYZRFyZ9P1toVn70vPSNkOqtBm0F+hdOaE0=
-ARC-Authentication-Results:i=3; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=ankHA/3y; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=ankHA/3y; arc=fail smtp.client-ip=52.101.66.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C08F3CA4AB
+	for <iommu@lists.linux.dev>; Thu,  2 Apr 2026 11:26:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775129172; cv=none; b=hh8RYAR9bSuQyOFpVQaBK8P6TAg+hubJgwCmwDjfxE+JP0MidBxb2BrETgUwaB1cNNlabcuIJdiE7NP5R+ZsuzCD4OYFn5llyzAUApOFBo02kDfTy7mFtbSL3TSxLlaJhW6jhXMAFApuI+/ReJGOPchDXHNW1I/8gomnofqIGFU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775129172; c=relaxed/simple;
+	bh=M6U4j/NLiQ+/4aHjkSTAmvKfIhe8Sr7hjNTZaZUG7ts=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=okdq+ZXVDdeJIQZCgQ+m68wxJlncI3gD6K99kg3MUxlzzdo8SLA3BMVZJTYHy7POgBaJCbug2ulZVfAHCdFR3wKRIyFlEZQzqbtWPWfB+6PzD0TrS3MunOO7E4vcCdZaltEaCqRwXHlbU5p1Siud/AQJcZkQwpajBUlwPJO/kag=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Sz2ypk6x; arc=none smtp.client-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="ankHA/3y";
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="ankHA/3y"
-ARC-Seal: i=2; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=pass;
- b=MXUVYBZIqt3ZO73tyslvtqQYJK9HnQbB6UZWRxXQDufQy8HsALFHNZgesczH6dd6VL8r1QFm1ElWmp5/sOsm+T1rTk+4Nh/nTW6Ed+fRscO3cVlYj+sWvcdKWWonjEmJBAep8lN7Obn8oXI4s2uSen8GBimslj1yGPKnz98e9rCj3PWMEPpwk/maNsM8ORy1ObPrg0ErCVsSJc6bE6g8MZ+iUIH5lWThURaFL5gOgiuHBWkZUgafpLKDTzmQGPY9h3vVrSUdZQqmpRoNq8wXcLUDFS4FqrdPvKDER3h845qaybWaZSMo2nkz4lJKRApCnPbG6kSiNmPgJgQo8eTbew==
-ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xQFXj5GbtCy5VmyzqVbACKsvZRZaxmg9OvpIYmMVr6E=;
- b=k+O/V2WrHUDc13mnFSz9M8095hhjZ0u22p7ojXhwQIdjv7nMgtf0+7B1MH9LMtuZTuPNKaGZ1aXR8CgBOeu5Yd9fvMSlAAm3uVD2xo+OyoLhChRbyEIuk1C11wBl5p1hAw1/qHKERQekxi8OO7GcD8IPkTZbKuiavmfCUFpFG3IMBUP0L9WvGllFlRQDkcOqwh5QmYHAKFQ/LOlOO8NJywjP650woDwtE+HYTlRILwxVpG8d45lrKf7reTpA+G657JaSsQ0NWUz0esScoR6N0yiSF2Foc+MNwXcjMGgWjPm0YQ9TdSYnzldRVx0d+XTXUjQ1uxx6WH096nVrCPTPYw==
-ARC-Authentication-Results: i=2; mx.microsoft.com 1; spf=pass (sender ip is
- 4.158.2.129) smtp.rcpttodomain=resnulli.us smtp.mailfrom=arm.com; dmarc=pass
- (p=none sp=none pct=100) action=none header.from=arm.com; dkim=pass
- (signature was verified) header.d=arm.com; arc=pass (0 oda=1 ltdi=1
- spf=[1,1,smtp.mailfrom=arm.com] dkim=[1,1,header.d=arm.com]
- dmarc=[1,1,header.from=arm.com])
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arm.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xQFXj5GbtCy5VmyzqVbACKsvZRZaxmg9OvpIYmMVr6E=;
- b=ankHA/3y45MgeGu7rwxzIWFk+BiUGIkADYHEvmHlBsuwrY7/Gyp8MvOxfZUhzdFIUjCb0w46pPd9cO7c+E48rhXSmPFisGX5cgZvDCCssE+oYRWo1lA2yGGaNSCsOu7y51fYVBcMupMbyCWzpcGyknAEtrsdJHQn9looEySyV98=
-Received: from DUZPR01CA0282.eurprd01.prod.exchangelabs.com
- (2603:10a6:10:4b9::17) by DBBPR08MB5882.eurprd08.prod.outlook.com
- (2603:10a6:10:200::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.18; Thu, 2 Apr
- 2026 09:53:43 +0000
-Received: from DB1PEPF000509F7.eurprd02.prod.outlook.com
- (2603:10a6:10:4b9:cafe::d0) by DUZPR01CA0282.outlook.office365.com
- (2603:10a6:10:4b9::17) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9769.18 via Frontend Transport; Thu,
- 2 Apr 2026 09:53:43 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 4.158.2.129)
- smtp.mailfrom=arm.com; dkim=pass (signature was verified)
- header.d=arm.com;dmarc=pass action=none header.from=arm.com;
-Received-SPF: Pass (protection.outlook.com: domain of arm.com designates
- 4.158.2.129 as permitted sender) receiver=protection.outlook.com;
- client-ip=4.158.2.129; helo=outbound-uk1.az.dlp.m.darktrace.com; pr=C
-Received: from outbound-uk1.az.dlp.m.darktrace.com (4.158.2.129) by
- DB1PEPF000509F7.mail.protection.outlook.com (10.167.242.153) with Microsoft
- SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.20.9769.17
- via Frontend Transport; Thu, 2 Apr 2026 09:53:42 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Uk5P2wcTzbwyCtV5NAuB17k9S/vCKOlEVUPRB5yDcELjeCSq2AGrG8bDGF8X+PtWe/BIB9Hd0VLtk5UssQn6ywZloKarr1jn9fkTePwBeVL+0g0YeSBm/KK8YXsAAf3NO8uy42gBCk1wvtIukQ7jGsf1sRvZdc4wkigMhLF62vnDEbNybvwtkdttc0lv7qGVn7E1UlepBenQ0UHF6twV6bJEwtAfV0YoCDmlEiyFJh8tWlI3aWoR2rUhT6T/AC3hKWv+sinJofg8ZajCmc2rXoNmb4VZooiHg4tfi3+vHfz/kyObcf167GIp2bnFL9bKs+b+3ilS4nJzsgJbZWK+0A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xQFXj5GbtCy5VmyzqVbACKsvZRZaxmg9OvpIYmMVr6E=;
- b=LBh72o8bjPt8bRQCUUVD7YdbZ3gg2Hfn8rIN3J5K1bAAkwzYDpL0hKO8vRJOITny1f5PAblfKloSccUapP+Sxu6Ib4PnFaRxHp9HiEA/Q7mG1Hm+iSPK9sXVz0Drfr1QsuTkzjmynQrileuKtaVBf8EaP1sv0zzDUnTurgD+oqojQzPrb48LbbiLfoXRVTTmy85nfvchYUGCepNNAnxMG47va5HBNnabWdufrP2BapiNBX+5q3nUrTt/pC6O3zpcQSbqWZ5DvFq0c0IbnqFVehucE0shYMlujZBDtKvVA/NCnkqyUAuO/g8ds94DhYMWz2GGoFw1N5WQB/nvz+ErFQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
- header.d=arm.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arm.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xQFXj5GbtCy5VmyzqVbACKsvZRZaxmg9OvpIYmMVr6E=;
- b=ankHA/3y45MgeGu7rwxzIWFk+BiUGIkADYHEvmHlBsuwrY7/Gyp8MvOxfZUhzdFIUjCb0w46pPd9cO7c+E48rhXSmPFisGX5cgZvDCCssE+oYRWo1lA2yGGaNSCsOu7y51fYVBcMupMbyCWzpcGyknAEtrsdJHQn9looEySyV98=
-Authentication-Results-Original: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=arm.com;
-Received: from VI0PR08MB11822.eurprd08.prod.outlook.com
- (2603:10a6:800:312::10) by PAXPR08MB6574.eurprd08.prod.outlook.com
- (2603:10a6:102:12d::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.18; Thu, 2 Apr
- 2026 09:52:37 +0000
-Received: from VI0PR08MB11822.eurprd08.prod.outlook.com
- ([fe80::bbe2:97f2:3aed:5e4e]) by VI0PR08MB11822.eurprd08.prod.outlook.com
- ([fe80::bbe2:97f2:3aed:5e4e%6]) with mapi id 15.20.9769.016; Thu, 2 Apr 2026
- 09:52:37 +0000
-Date: Thu, 2 Apr 2026 10:52:34 +0100
-From: Brian Starkey <brian.starkey@arm.com>
-To: Jiri Pirko <jiri@resnulli.us>
-Cc: dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
-	iommu@lists.linux.dev, linux-media@vger.kernel.org, sumit.semwal@linaro.org, 
-	benjamin.gaignard@collabora.com, jstultz@google.com, tjmercier@google.com, 
-	christian.koenig@amd.com, m.szyprowski@samsung.com, robin.murphy@arm.com, jgg@ziepe.ca, 
-	leon@kernel.org, sean.anderson@linux.dev, ptesarik@suse.com, 
-	catalin.marinas@arm.com, aneesh.kumar@kernel.org, suzuki.poulose@arm.com, 
-	steven.price@arm.com, thomas.lendacky@amd.com, john.allen@amd.com, 
-	ashish.kalra@amd.com, suravee.suthikulpanit@amd.com, linux-coco@lists.linux.dev, 
-	nd@arm.com
-Subject: Re: [PATCH v5 0/2] dma-buf: heaps: system: add an option to allocate
- explicitly shared/decrypted memory
-Message-ID: <4s75rtsmdfrze4rscbqzyrjyrko7n6sehe7agrngqag2cna5bz@eflmf4kwjocj>
-References: <20260325192352.437608-1-jiri@resnulli.us>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260325192352.437608-1-jiri@resnulli.us>
-X-ClientProxiedBy: PR1P264CA0196.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:102:34d::7) To VI0PR08MB11822.eurprd08.prod.outlook.com
- (2603:10a6:800:312::10)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Sz2ypk6x"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4888cfa003fso6036945e9.0
+        for <iommu@lists.linux.dev>; Thu, 02 Apr 2026 04:26:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1775129159; x=1775733959; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=r5JQGdVakt/jSwsp5LQgcZLl+3LElhn2BfzsSs+MpKc=;
+        b=Sz2ypk6xl2T70eipXGk7KPwVTCfoSZhB8wNx5GMazAhgWoglRHJ9dFQU3Cs/9yR1QL
+         xNP+tHqRtQbQ5pc7OWwwvgYokJi4pPp2GkdCdb9/NVCSdYoFYOP61rc2UDL2VKzDNMEb
+         oZEr+cWi/Xv8XDKxMX9outLLS+Icm6R60jYSLJyWaZXIOcrlY760ScZIGXOhBe4qeCxY
+         05gPhSoTlkfFE98eRG6G8V9w+KLn6DYjaqT+Y4ulObnyxiDAIDGSz84x0JZ37jbuVK75
+         BiLx0NGKqtDmm1Uz4mKPkjyhQXr/WIOD+dTzscFWOBzgJAjQONTGNVZLtN/um3uYFMle
+         rSdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775129159; x=1775733959;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=r5JQGdVakt/jSwsp5LQgcZLl+3LElhn2BfzsSs+MpKc=;
+        b=m4BwPzOybIDv3za32httBHFxZAxwd5ads2hKfM5emRWbv7JWVIv3WYCba638ux0R/X
+         YprhgCM647ytbDUsIRYGg6cGOp4g8OYMlOnhw7zjP0Ic1mzcSZpzk14H4u638HXFhP7/
+         dmzAUu76BuL0Un4sM2tqZqDBF9g+sW98p0MOY6O+AzeYxr98CE1qhZO6GDETy2hxw4HX
+         PsiGazJRTrZEzzrXiITEvkv/FfnekyrsVSJat7kh1SUabMVvggZ8RxtHifqH3tdv5MLK
+         eB0+8wX+DeatiZh4suavDvBmDKvHpwnV/qfnCVm0PcYMijIDiPKQBA96Y61PR1vWKd2r
+         6Cag==
+X-Forwarded-Encrypted: i=1; AJvYcCWL7L3mrNoUFeyLxYVkCQ55rQutslAkEsMN6RLzRrcnk3Cs9D9y0QL1WyirVxfNY7iZiArxCg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzTIs8PVQFSW4F0bqFB+B16mtQhylSFptilnh3pgafAqYJKA70m
+	8WBeJAipYQj8w+CyELeRX6ujt7MrvRiMe7WPsnZKRdF9GGv3tNoo/E/u5vra/IB3hhE=
+X-Gm-Gg: ATEYQzy3QB5oYN43D2qDxpLGXq0GT5gyVYKsBXGrYNxo0KjwHwf0p+KpVpC7TzgceMY
+	KCXTOwZLp3xmSd8x6bf1IzwnYiMRrrxceCP5HusGBfjbnf7gMTO0Q4eaoxH+xE+u4AWiGlKygXH
+	E0M2uMwkj9EgE7JhX1gifOEpY9VsRJGHPtWpbf8AsaysiqCg7IKce06hCYUt2b7fafc3qczKcGC
+	ceAQ6ry3sYMyURdhWaeXqiK5m5YuOcYOhTLSVMCiQ7Wn8uWL5I8UJKK2q3mRbToVuaGwLneBZoX
+	NOkxrT9qoThp79Vdm9+5pONEAMb4QSeGIpDdUfsX6WZgLT0TlMFZGbbOKgWhvjjLRPF+eQuEhH4
+	OBTfeB26bvbaSCHL3atuH8g+jWTEW3g/RIFyZlbgDtjwDDhtzub1WXrJNE+rtkAzA/WvXjWgE97
+	Raz7+MxzZmIalTxAn8Im782110SvhoP5TAs6oh7pqWNQ==
+X-Received: by 2002:a05:600c:4744:b0:485:30d4:6b9e with SMTP id 5b1f17b1804b1-48883591f01mr121033965e9.21.1775129158565;
+        Thu, 02 Apr 2026 04:25:58 -0700 (PDT)
+Received: from [10.11.12.108] ([79.115.63.48])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4887ad1cd86sm65951315e9.5.2026.04.02.04.25.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Apr 2026 04:25:58 -0700 (PDT)
+Message-ID: <9892a17b-022e-41df-af1c-a2d684aa8db1@linaro.org>
+Date: Thu, 2 Apr 2026 14:25:54 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-TrafficTypeDiagnostic:
-	VI0PR08MB11822:EE_|PAXPR08MB6574:EE_|DB1PEPF000509F7:EE_|DBBPR08MB5882:EE_
-X-MS-Office365-Filtering-Correlation-Id: d03d066c-8524-4c5c-eb95-08de909db943
-X-LD-Processed: f34e5979-57d9-4aaa-ad4d-b122a662184d,ExtAddr,ExtAddr
-x-checkrecipientrouted: true
-NoDisclaimer: true
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam-Untrusted:
- BCL:0;ARA:13230040|376014|7416014|366016|1800799024|56012099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info-Original:
- U2oWXbR27dZdIONisHNe6Re0DdqwRTpN7nPyO1z1c0UYpmT6Z2IOncYIMoGQPxiaE69inNV9OF5A2MP8GaC/vXo7UL6ShZ2BBqEWXBrVyug0BhhF2/MmW9Wru2LPrPp3N9fmLpFA31aO67AcM+u/xFYeqJNN4P+zfRYbwpnTbxVGTg8CAVmdTO2mRCIVvIDtkcOy91aHEu+/PUePyI8MRFg88RkXpX//UcSVwWIh3CZ1EmbLQEyBynRUrRf7bBrGvgyh59FK6Tu2snqNrYnWodJjiwQcyDoVJAiFgDXPw8vreDcpLdM1kufRqsn9aVLJJ9Oa3FlCsS/dhtFyLcYrnB6uUadlTq107gYXAs3U8JjR2/a73uXpRxzutN2/LO/x1AVAAtKPbNVRLA1Vn+Pxl5WjJLIKjA+mfgJPZK0qHFOfRA6SjmjxT2B9Ut/Wwe4LNhEGAV2v7yldoyYwAnuhaKqLmBxoNiocfvVzYgUKBty8weE9mmhCCX22dGXe/yIFX2Iq/B6sScjSp/d8seSVYBvpMYRVF20Kls5qEbWJE5mBnQfotNrhRnVS31edQN5F/ipwjh2kh1tzR+kAkJyi5g0r4LHhQfyxTuVCeZVBB31VlO8Gt44mfl7ABHzgvEsnBQI9smlgov9liL2h6/P6eSvmnszBBBoDbVG5YUB2KJIVPdwuls+QRXDg5V1KIcvS6QQA8L+SFx+pFE2ZvRZSUkhQgvWWvEqoafwbBEk9BKU=
-X-Forefront-Antispam-Report-Untrusted:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI0PR08MB11822.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(1800799024)(56012099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-Exchange-RoutingPolicyChecked:
- eVL5NiKBK7TULnwzqk3bI5gxpSWIESAe5TKHVq1V5uoWq8kUPR+9MXeW76m9uHaOC8TaVnpjGI699U0nxzqYo/vrCaKLZ+zHiPnx5VuY8sLw/mP1a6sNZK6ot3jpu9rsnPLg8BCCeJrxJAGoX/ubQ1BTE6Dp2u8bDWo5t1TTuyO1NA01vtVJI4CAqavRYzR74pytZfqx3C8Ut8kou7iuJp6QT3NSdZ7KFdcYkfvBRllQeDBjTajTsuuGBa+HRNf5id4WlrrFCEPoPX97ygISi4eYWZmeSANJgC909vwDT1ukJ1SA4kFdOJKiT4AcLSY4cKZzRXvWIcQu1sphp7cfDA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR08MB6574
-X-EOPAttributedMessage: 0
-X-MS-Exchange-Transport-CrossTenantHeadersStripped:
- DB1PEPF000509F7.eurprd02.prod.outlook.com
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id-Prvs:
-	338df8ba-08cc-495e-3531-08de909d91fc
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|14060799003|82310400026|36860700016|376014|7416014|35042699022|1800799024|56012099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	zaQcjOReH12oTyCwhXrZZPbLoHrxkLRz9lrm2X2w15/BrmPhqcwS2JfEC6nVsXuIKRWmKHcuoWuwvKpI3hgdMHpU8tv/FwEM/eBHe00q6TSgnz3+EWvMI1kZ2e9TyvYaMRdbYi4E6qRVjJtgY7AQ/V4N67ZSV0S57aIoll2Kk+pTceVIc75QOBWDPeZcW6fgY8BSasd4k0yQOuSXGAtFLTrMr5yhXro0HkZdBt3DPNb/M5sAn2jwGji74y9io2SuPFusA+K0o2/tJrb6V+cqEgjEEK4/uwiuel8InP8AHh7wn/HXVV4STmM7ylAiqHJ4qxASwjyozkShEXTK6TbX+VGIXkIvYrlrK+bPv0sI6LGl4tYsM673LRHTLnZqwQ+WtCd2OnJQzG9qU8qhW+ZfvoTbYWIzf3mJtkAdMtDajdO9Km+kg3Y5mG5dbxrrLV4TBmE2my62YMBg4ND/6fU/lpPhBUgBRT9DEAYX56yh7cnV2sWtCZf38YoOVkuNaaq7KA66hmgpq/a6OsBNO85niIlGW6m3Ni+cyj772LHMcPJpm7TzTU9uP52QdIK+jfABdu7GGNevxx0fiM7dDL9DqX8yXdzRwGusEt7qsis3syHWb5Xj9eSj9XQN/UcngNO3X/wBuG1TbP5r65NzSaJ58d+evu7rFpou9O+tE3yhFHJQFxJQ/y2oZvhSZrGA++GBmnP+SQcZxL6HlyC9vmuZcHyqvRig6pZKwg04LUiAIZpFssmLpnpRRicbXLDNON8MMcdn8oDaG8Yzown1MUGhUQ==
-X-Forefront-Antispam-Report:
-	CIP:4.158.2.129;CTRY:GB;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:outbound-uk1.az.dlp.m.darktrace.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(14060799003)(82310400026)(36860700016)(376014)(7416014)(35042699022)(1800799024)(56012099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	iQMLY0xoiTGu6wXNfSeTAg7C+zNcCFCNZYIRENfXQK5DXtN8N4BP0u6RmOvYG5+A4ozUbO0OU5110otjFcysr74ZgPrlZqid/DTYJCZOF/L0/JQzVHGefSVmQ7QK/lDop8YLeR65OGLgroAacKgHo6/T6n4JIki0ssb1ag6v+Fvbq//YK54kdpplhlEpwPEUzhpsPoo05VA5/PgCmdNuFkDI/ZKI90BbpMwyK22hHART1adOHrJwt6c7OfltKug3ze5212qapoTOQfdwlL34K6m2hdEeOSmOreyCgHLLCdpy28FEEDV0o5l5aDO06UFdgZ0ui7J5FqwgUEfyO7uouj6nr9c1h7QE4IUBNWo+syY9J643YRml+WqSeBGiW8Fwt4lWI/4fi3pBZKcdWkU/0q9wJQbaw4l3pDj+NyNbE1EftmsJvAg/7OR6XuN+RLWM
-X-OriginatorOrg: arm.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Apr 2026 09:53:42.4692
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d03d066c-8524-4c5c-eb95-08de909db943
-X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d;Ip=[4.158.2.129];Helo=[outbound-uk1.az.dlp.m.darktrace.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DB1PEPF000509F7.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR08MB5882
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu: Fix bypass of IOMMU readiness check for
+ multi-IOMMU devices
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ "Rob Herring (Arm)" <robh@kernel.org>, Joerg Roedel <jroedel@suse.de>,
+ Bjorn Helgaas <bhelgaas@google.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, peter.griffin@linaro.org,
+ andre.draszik@linaro.org, willmcvicker@google.com, jyescas@google.com,
+ kernel-team@android.com, stable@vger.kernel.org
+References: <20260323-iommu-ready-check-v1-1-5f6fef8f9f59@linaro.org>
+ <20260323135414.GA8437@ziepe.ca>
+ <1062b66d-e4d0-4eee-8fc2-dbb65491a01b@linaro.org>
+ <20260323173138.GB8437@ziepe.ca>
+Content-Language: en-US
+From: Tudor Ambarus <tudor.ambarus@linaro.org>
+In-Reply-To: <20260323173138.GB8437@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi,
+Hi, Jason,
 
-I know I'm late to the party here...
+On 3/23/26 7:31 PM, Jason Gunthorpe wrote:
+> On Mon, Mar 23, 2026 at 06:46:39PM +0200, Tudor Ambarus wrote:
+> 
+>> Downstream we have a display controller that's using:
+>> 	iommus = <&sysmmu_19840000>, <&sysmmu_19c40000>;
+>>
+>> These are 2 distinct platform devices, they probe independently, they
+>> each call iommu_device_register() independently.
+> 
+> Sure, I guessed that is what you ment..
+> 
+> Do you have an example of this in an upstream DTS file?
 
-Like John, I'm also not very close to this stuff any more, but I agree
-with the other discussions: makes sense for this to be a separate
-heap, and cc_shared makes sense too.
+Yes, Exynos multimedia blocks use this upstream For example, in
+arch/arm64/boot/dts/exynos/exynos5433.dtsi, the `decon` and `decon_tv`
+nodes route through multiple sysmmus:
+iommus = <&sysmmu_decon0x>, <&sysmmu_decon1x>;
 
-I'm not clear why the heap depends on !CONFIG_HIGHMEM, but I also
-don't know anything about SEV/TDX.
+Looking at the upstream exynos-iommu.c driver, it doesn't return
+-EPROBE_DEFER if all the instances listed in iommus doesn't exist.
 
--Brian
+It seems it survives the race though, but only because of the
+core_initcall ordering. In downstream the IOMMU is forced to be a
+module which exposes this gap.
 
-On Wed, Mar 25, 2026 at 08:23:50PM +0000, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@nvidia.com>
+>  
+>> If I understood you correctly, the downstream driver shall model its
+>> architecture and call iommu_device_register() only once after both
+>> devices are configured.
 > 
-> Confidential computing (CoCo) VMs/guests, such as AMD SEV and Intel TDX,
-> run with private/encrypted memory which creates a challenge
-> for devices that do not support DMA to it (no TDISP support).
+> No.. I'm not being so perscriptive, I'm just saying that once
+> iommu->ops->probe_device() returns then the device is fully setup and
+> dev->iommu will operate all of the iommus described in iommus=<..>
 > 
-> For kernel-only DMA operations, swiotlb bounce buffering provides a
-> transparent solution by copying data through shared memory.
-> However, the only way to get this memory into userspace is via the DMA
-> API's dma_alloc_pages()/dma_mmap_pages() type interfaces which limits
-> the use of the memory to a single DMA device, and is incompatible with
-> pin_user_pages().
+> probe_device() cannot return some half setup device with only some of
+> the iommu instances working.
 > 
-> These limitations are particularly problematic for the RDMA subsystem
-> which makes heavy use of pin_user_pages() and expects flexible memory
-> usage between many different DMA devices.
+> We don't have any core idea of a half setup result from
+> probe_device() today.
 > 
-> This patch series enables userspace to explicitly request shared
-> (decrypted) memory allocations from new dma-buf system_cc_shared heap.
-> Userspace can mmap this memory and pass the dma-buf fd to other
-> existing importers such as RDMA or DRM devices to access the
-> memory. The DMA API is improved to allow the dma heap exporter to DMA
-> map the shared memory to each importing device.
+>> If the core's intent is to strictly enforce a single IOMMU instance,
+>> shouldn't iommu_fwspec_init() be checking
+>> 	fwspec->iommu_fwnode == iommu_fwnode
+>> instead of matching the ops? Because the core currently matches on
+>> ops, it permits aggregating multiple physical instances with the
+>> same ops into one fwspec.
 > 
-> Based on dma-mapping-for-next e7442a68cd1ee797b585f045d348781e9c0dde0d
+> The driver is responsible to handle this, not the core. It has to hide
+> this mess under its covers, not rely on multiple calls to of_xlate or
+> however it has been hacked up.
 > 
-> Jiri Pirko (2):
->   dma-mapping: introduce DMA_ATTR_CC_SHARED for shared memory
->   dma-buf: heaps: system: add system_cc_shared heap for explicitly
->     shared memory
+> Probably it means something like of_xlate/probe_device has to
+> EPROBE_DEFER if all the instances listed in iommus don't exist.
 > 
->  drivers/dma-buf/heaps/system_heap.c | 103 ++++++++++++++++++++++++++--
->  include/linux/dma-mapping.h         |  10 +++
->  include/trace/events/dma.h          |   3 +-
->  kernel/dma/direct.h                 |  14 +++-
->  kernel/dma/mapping.c                |  13 +++-
->  5 files changed, 132 insertions(+), 11 deletions(-)
-> 
-> -- 
-> 2.51.1
-> 
+I can probably track whether all instances are ready, and defer if any
+is not ready, but then I'll force the iommu clients to use the sketchy
+replay path, which seems like a bad idea, according to Robin's feedback.
+
+I haven't seen functional problems with the races, just the "something
+fishy" dev_WARN. Maybe we shall downgrade that to dev_info.
+
+Thanks!
+ta
