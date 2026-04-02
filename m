@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6C6737E2F2
-	for <iommu@lists.linux.dev>; Thu,  2 Apr 2026 07:00:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6D4A37EFF3
+	for <iommu@lists.linux.dev>; Thu,  2 Apr 2026 07:00:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775113224; cv=none; b=tzb9unbqWFXLMWsXORvtOvKwZE409xzgAHZSpqMdrZl8D/GiwGigi2tyAPDlJFFbC/oQc70nTV4wBwZPePv9QQP9t8e/ahW5/D70scpAJUJSKIXEFsBl64ZD4iQVKewc7zX1eaMIE9rwDRUjxk5138vMT/2vBCZ7xNhEFjCT0y8=
+	t=1775113224; cv=none; b=gpUnkPQO3tzvAIUB7DBOZ3sFV3SoQUibvBw/y+dwO7MHeSo2Y2nm4MWROTQkPI/9D63tVWKuHOIuPB/bX23VFDbo6s0K6Tc4t9Q3GL079qBF75xtt+W+LfWwWnmrmJ1yURO61zOF/IcA+WvWodmfGG8Zgq04+7jRGQWvjibIrAE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1775113224; c=relaxed/simple;
-	bh=AJgbjTMo4uteJP2yu4rYIFseJzFeYRWEjPiRIt6mV6U=;
+	bh=OJiauhQR66O8hZXOeW3tDAxY6+HVNLBVnn4W0wiKYEA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=qdjmfPrlVHcD+0c1gipKkMNiHlk4YvqA2lxt+Vbi/MoCaATQmpgtyQFY6BoKc+pVd6iie6V0sMRkISVsFLFjfoMV8BxD8pt0p7nQE7Rt7AIPIW1sPtzh0LjSk84SJOPMb32wS63OXKcX6+dbtlH4sSq8KeqHXTMJVpu8Ad44SEo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=X+bqB9gd; arc=none smtp.client-ip=198.175.65.21
+	 MIME-Version; b=oCRJwYWyXbtuS7tiLfnK2LvbE+mscUifjX4dZJsbZaXQqVk50WYiQu/xbXMbo9hIaRlG4MUeahNDAWHxLIVQuQOxV57cIc1gDds+uoYpGuAj+xjFPyp8dWZC6seHEBFbF9U4x7kpRE4/HQbp4W76qZ4twl8+OYFiUZqgXEZgTNQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ggxBjlLH; arc=none smtp.client-ip=198.175.65.21
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="X+bqB9gd"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ggxBjlLH"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1775113223; x=1806649223;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=AJgbjTMo4uteJP2yu4rYIFseJzFeYRWEjPiRIt6mV6U=;
-  b=X+bqB9gd/eHWIetS+K+NAGffAGMgKr7SLk63a/oqc6VFxQ3129BWdbgh
-   diT+qDoLUX0Opqy9txgnAYIXV1nKAu/MsPeJNZP5GD7n8tkRNQ5juV8Jt
-   SCvVLaC1yd8eixeSw8wT66X1gWLyxqqJWVHWCGedSibiP3FuAQQt1NlVT
-   /y4amENFsfcELS2g+HEVWpxVBnIT7hGL8EhnQ0lkbckASeDzNCAM/shUy
-   N3zvbeZYSBwn5A4TDAnO8uQaggiWjocXIHoZrq/7hLTVAZdqoIG+ZS6bq
-   GyWU5cydXv9ic8nRkmdRk4/H15Q1mjxflgjSHIsUtF6zvCCwrX/QLl8AM
+  bh=OJiauhQR66O8hZXOeW3tDAxY6+HVNLBVnn4W0wiKYEA=;
+  b=ggxBjlLHy5+5Rc5miYdh2A/CMOeCb7T2t6wFzw4DG9jm5p4lYFVNF1oo
+   izBBDCTFQ9FXT4rQmmFHDTdIVLP0pVBWfIZfGk9Vcn3jbrg8gEuM+/7BV
+   GHhZY8TREM7SeUpgy+48HtDcQSAt3i/wwBSLMIjMQbCvTFqiTpX0xNRXI
+   HDQJQN/X9RIrCF11gPgvf1yV5h8IxYWIlFmG9gfDywOBiARvnbTrT62+J
+   mADuPC7f80LKmbIpKMiUg6z/onHFdNYDp9mwoVRwz0U6iSluJIdy9ighy
+   4HYha6ABDwP4ktNoJpy22a8Eymi0Fd6tTEhU0qt3Dq07YMvBaRSEXeNIj
    Q==;
-X-CSE-ConnectionGUID: LtK4K1afSZCUaKZOsqQWWg==
-X-CSE-MsgGUID: Cax0cGqFSmWLE7FfxJrfOg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11746"; a="76053638"
+X-CSE-ConnectionGUID: UBdEBlAvQBmd4pBN0VBPwQ==
+X-CSE-MsgGUID: sw7TP3x9SCK0S/ZIuUlX8w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11746"; a="76053645"
 X-IronPort-AV: E=Sophos;i="6.23,155,1770624000"; 
-   d="scan'208";a="76053638"
+   d="scan'208";a="76053645"
 Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2026 00:00:20 -0700
-X-CSE-ConnectionGUID: /NsrcIFmTnOkee3ADfUz7A==
-X-CSE-MsgGUID: DnwYh4I5Qh6MLBB7G8v+IQ==
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2026 00:00:22 -0700
+X-CSE-ConnectionGUID: 6QyVxAajT9+fqZb6hHlrLw==
+X-CSE-MsgGUID: 4Y9HVd/MRp2wI+rIvFTLyQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,155,1770624000"; 
-   d="scan'208";a="231847841"
+   d="scan'208";a="231847864"
 Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by orviesa005.jf.intel.com with ESMTP; 02 Apr 2026 00:00:20 -0700
+  by orviesa005.jf.intel.com with ESMTP; 02 Apr 2026 00:00:21 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: Zhenzhong Duan <zhenzhong.duan@intel.com>,
@@ -50,9 +50,9 @@ Cc: Zhenzhong Duan <zhenzhong.duan@intel.com>,
 	Jason Gunthorpe <jgg@nvidia.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 04/10] iommufd/selftest: Test dirty tracking on PASID
-Date: Thu,  2 Apr 2026 14:57:27 +0800
-Message-ID: <20260402065734.1687476-5-baolu.lu@linux.intel.com>
+Subject: [PATCH 05/10] iommu/vt-d: Remove dmar_readl() and dmar_readq()
+Date: Thu,  2 Apr 2026 14:57:28 +0800
+Message-ID: <20260402065734.1687476-6-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260402065734.1687476-1-baolu.lu@linux.intel.com>
 References: <20260402065734.1687476-1-baolu.lu@linux.intel.com>
@@ -64,59 +64,377 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Zhenzhong Duan <zhenzhong.duan@intel.com>
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-Add test case for dirty tracking on a domain attached to PASID, also
-confirm attachment to PASID fail if device doesn't support dirty tracking.
+dmar_readl() and dmar_readq() do nothing other than expand to the generic
+readl() and readq(), and the dmar_read*() wrappers are used inconsistently.
 
-Suggested-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
-Reviewed-by: Yi Liu <yi.l.liu@intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Link: https://lore.kernel.org/r/20260330101108.12594-5-zhenzhong.duan@intel.com
+Remove the dmar_read*() wrappers and use readl() and readq() directly.
+
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
+Link: https://lore.kernel.org/r/20260217214438.3395039-2-bhelgaas@google.com
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- tools/testing/selftests/iommu/iommufd.c | 27 +++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+ drivers/iommu/intel/iommu.h         |  2 --
+ drivers/iommu/intel/debugfs.c       | 18 +++++++++---------
+ drivers/iommu/intel/dmar.c          | 22 +++++++++++-----------
+ drivers/iommu/intel/iommu.c         | 10 +++++-----
+ drivers/iommu/intel/irq_remapping.c |  2 +-
+ drivers/iommu/intel/perfmon.c       | 28 ++++++++++++++--------------
+ drivers/iommu/intel/prq.c           | 12 ++++++------
+ 7 files changed, 46 insertions(+), 48 deletions(-)
 
-diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index dadad277f4eb..d1fe5dbc2813 100644
---- a/tools/testing/selftests/iommu/iommufd.c
-+++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -2275,6 +2275,33 @@ TEST_F(iommufd_dirty_tracking, set_dirty_tracking)
- 	test_ioctl_destroy(hwpt_id);
- }
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 599913fb65d5..dbd8d196d154 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -148,9 +148,7 @@
  
-+TEST_F(iommufd_dirty_tracking, pasid_set_dirty_tracking)
-+{
-+	uint32_t stddev_id, ioas_id, hwpt_id, pasid = 100;
-+	uint32_t dev_flags = MOCK_FLAGS_DEVICE_PASID;
-+
-+	/* Regular case */
-+	test_cmd_hwpt_alloc(self->idev_id, self->ioas_id,
-+			    IOMMU_HWPT_ALLOC_PASID | IOMMU_HWPT_ALLOC_DIRTY_TRACKING,
-+			    &hwpt_id);
-+	test_cmd_mock_domain_flags(hwpt_id, dev_flags, &stddev_id, NULL, NULL);
-+	ASSERT_EQ(0, _test_cmd_pasid_attach(self->fd, stddev_id, pasid, hwpt_id));
-+	test_cmd_set_dirty_tracking(hwpt_id, true);
-+	test_cmd_set_dirty_tracking(hwpt_id, false);
-+	ASSERT_EQ(0, _test_cmd_pasid_detach(self->fd, stddev_id, pasid));
-+
-+	test_ioctl_destroy(stddev_id);
-+
-+	/* IOMMU device does not support dirty tracking */
-+	dev_flags |= MOCK_FLAGS_DEVICE_NO_DIRTY;
-+	test_ioctl_ioas_alloc(&ioas_id);
-+	test_cmd_mock_domain_flags(ioas_id, dev_flags, &stddev_id, NULL, NULL);
-+	EXPECT_ERRNO(EINVAL, _test_cmd_pasid_attach(self->fd, stddev_id, pasid, hwpt_id));
-+
-+	test_ioctl_destroy(stddev_id);
-+	test_ioctl_destroy(hwpt_id);
-+}
-+
- TEST_F(iommufd_dirty_tracking, device_dirty_capability)
+ #define OFFSET_STRIDE		(9)
+ 
+-#define dmar_readq(a) readq(a)
+ #define dmar_writeq(a,v) writeq(v,a)
+-#define dmar_readl(a) readl(a)
+ #define dmar_writel(a, v) writel(v, a)
+ 
+ #define DMAR_VER_MAJOR(v)		(((v) & 0xf0) >> 4)
+diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.c
+index 617fd81a80f0..21e4e465ca58 100644
+--- a/drivers/iommu/intel/debugfs.c
++++ b/drivers/iommu/intel/debugfs.c
+@@ -133,13 +133,13 @@ static int iommu_regset_show(struct seq_file *m, void *unused)
+ 		 */
+ 		raw_spin_lock_irqsave(&iommu->register_lock, flag);
+ 		for (i = 0 ; i < ARRAY_SIZE(iommu_regs_32); i++) {
+-			value = dmar_readl(iommu->reg + iommu_regs_32[i].offset);
++			value = readl(iommu->reg + iommu_regs_32[i].offset);
+ 			seq_printf(m, "%-16s\t0x%02x\t\t0x%016llx\n",
+ 				   iommu_regs_32[i].regs, iommu_regs_32[i].offset,
+ 				   value);
+ 		}
+ 		for (i = 0 ; i < ARRAY_SIZE(iommu_regs_64); i++) {
+-			value = dmar_readq(iommu->reg + iommu_regs_64[i].offset);
++			value = readq(iommu->reg + iommu_regs_64[i].offset);
+ 			seq_printf(m, "%-16s\t0x%02x\t\t0x%016llx\n",
+ 				   iommu_regs_64[i].regs, iommu_regs_64[i].offset,
+ 				   value);
+@@ -247,7 +247,7 @@ static void ctx_tbl_walk(struct seq_file *m, struct intel_iommu *iommu, u16 bus)
+ 		tbl_wlk.ctx_entry = context;
+ 		m->private = &tbl_wlk;
+ 
+-		if (dmar_readq(iommu->reg + DMAR_RTADDR_REG) & DMA_RTADDR_SMT) {
++		if (readq(iommu->reg + DMAR_RTADDR_REG) & DMA_RTADDR_SMT) {
+ 			pasid_dir_ptr = context->lo & VTD_PAGE_MASK;
+ 			pasid_dir_size = get_pasid_dir_size(context);
+ 			pasid_dir_walk(m, pasid_dir_ptr, pasid_dir_size);
+@@ -285,7 +285,7 @@ static int dmar_translation_struct_show(struct seq_file *m, void *unused)
+ 
+ 	rcu_read_lock();
+ 	for_each_active_iommu(iommu, drhd) {
+-		sts = dmar_readl(iommu->reg + DMAR_GSTS_REG);
++		sts = readl(iommu->reg + DMAR_GSTS_REG);
+ 		if (!(sts & DMA_GSTS_TES)) {
+ 			seq_printf(m, "DMA Remapping is not enabled on %s\n",
+ 				   iommu->name);
+@@ -364,13 +364,13 @@ static int domain_translation_struct_show(struct seq_file *m,
+ 		if (seg != iommu->segment)
+ 			continue;
+ 
+-		sts = dmar_readl(iommu->reg + DMAR_GSTS_REG);
++		sts = readl(iommu->reg + DMAR_GSTS_REG);
+ 		if (!(sts & DMA_GSTS_TES)) {
+ 			seq_printf(m, "DMA Remapping is not enabled on %s\n",
+ 				   iommu->name);
+ 			continue;
+ 		}
+-		if (dmar_readq(iommu->reg + DMAR_RTADDR_REG) & DMA_RTADDR_SMT)
++		if (readq(iommu->reg + DMAR_RTADDR_REG) & DMA_RTADDR_SMT)
+ 			scalable = true;
+ 		else
+ 			scalable = false;
+@@ -538,8 +538,8 @@ static int invalidation_queue_show(struct seq_file *m, void *unused)
+ 		raw_spin_lock_irqsave(&qi->q_lock, flags);
+ 		seq_printf(m, " Base: 0x%llx\tHead: %lld\tTail: %lld\n",
+ 			   (u64)virt_to_phys(qi->desc),
+-			   dmar_readq(iommu->reg + DMAR_IQH_REG) >> shift,
+-			   dmar_readq(iommu->reg + DMAR_IQT_REG) >> shift);
++			   readq(iommu->reg + DMAR_IQH_REG) >> shift,
++			   readq(iommu->reg + DMAR_IQT_REG) >> shift);
+ 		invalidation_queue_entry_show(m, iommu);
+ 		raw_spin_unlock_irqrestore(&qi->q_lock, flags);
+ 		seq_putc(m, '\n');
+@@ -620,7 +620,7 @@ static int ir_translation_struct_show(struct seq_file *m, void *unused)
+ 		seq_printf(m, "Remapped Interrupt supported on IOMMU: %s\n",
+ 			   iommu->name);
+ 
+-		sts = dmar_readl(iommu->reg + DMAR_GSTS_REG);
++		sts = readl(iommu->reg + DMAR_GSTS_REG);
+ 		if (iommu->ir_table && (sts & DMA_GSTS_IRES)) {
+ 			irta = virt_to_phys(iommu->ir_table->base);
+ 			seq_printf(m, " IR table address:%llx\n", irta);
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index 69222dbd2af0..ae8b5ed70f22 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -899,8 +899,8 @@ dmar_validate_one_drhd(struct acpi_dmar_header *entry, void *arg)
+ 		return -EINVAL;
+ 	}
+ 
+-	cap = dmar_readq(addr + DMAR_CAP_REG);
+-	ecap = dmar_readq(addr + DMAR_ECAP_REG);
++	cap = readq(addr + DMAR_CAP_REG);
++	ecap = readq(addr + DMAR_ECAP_REG);
+ 
+ 	if (arg)
+ 		iounmap(addr);
+@@ -982,8 +982,8 @@ static int map_iommu(struct intel_iommu *iommu, struct dmar_drhd_unit *drhd)
+ 		goto release;
+ 	}
+ 
+-	iommu->cap = dmar_readq(iommu->reg + DMAR_CAP_REG);
+-	iommu->ecap = dmar_readq(iommu->reg + DMAR_ECAP_REG);
++	iommu->cap = readq(iommu->reg + DMAR_CAP_REG);
++	iommu->ecap = readq(iommu->reg + DMAR_ECAP_REG);
+ 
+ 	if (iommu->cap == (uint64_t)-1 && iommu->ecap == (uint64_t)-1) {
+ 		err = -EINVAL;
+@@ -1017,8 +1017,8 @@ static int map_iommu(struct intel_iommu *iommu, struct dmar_drhd_unit *drhd)
+ 		int i;
+ 
+ 		for (i = 0; i < DMA_MAX_NUM_ECMDCAP; i++) {
+-			iommu->ecmdcap[i] = dmar_readq(iommu->reg + DMAR_ECCAP_REG +
+-						       i * DMA_ECMD_REG_STEP);
++			iommu->ecmdcap[i] = readq(iommu->reg + DMAR_ECCAP_REG +
++						  i * DMA_ECMD_REG_STEP);
+ 		}
+ 	}
+ 
+@@ -1239,8 +1239,8 @@ static const char *qi_type_string(u8 type)
+ 
+ static void qi_dump_fault(struct intel_iommu *iommu, u32 fault)
  {
- 	uint32_t caps = 0;
+-	unsigned int head = dmar_readl(iommu->reg + DMAR_IQH_REG);
+-	u64 iqe_err = dmar_readq(iommu->reg + DMAR_IQER_REG);
++	unsigned int head = readl(iommu->reg + DMAR_IQH_REG);
++	u64 iqe_err = readq(iommu->reg + DMAR_IQER_REG);
+ 	struct qi_desc *desc = iommu->qi->desc + head;
+ 
+ 	if (fault & DMA_FSTS_IQE)
+@@ -1321,7 +1321,7 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
+ 		 * SID field is valid only when the ITE field is Set in FSTS_REG
+ 		 * see Intel VT-d spec r4.1, section 11.4.9.9
+ 		 */
+-		iqe_err = dmar_readq(iommu->reg + DMAR_IQER_REG);
++		iqe_err = readq(iommu->reg + DMAR_IQER_REG);
+ 		ite_sid = DMAR_IQER_REG_ITESID(iqe_err);
+ 
+ 		writel(DMA_FSTS_ITE, iommu->reg + DMAR_FSTS_REG);
+@@ -1980,8 +1980,8 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
+ 			source_id = dma_frcd_source_id(data);
+ 
+ 			pasid_present = dma_frcd_pasid_present(data);
+-			guest_addr = dmar_readq(iommu->reg + reg +
+-					fault_index * PRIMARY_FAULT_REG_LEN);
++			guest_addr = readq(iommu->reg + reg +
++					   fault_index * PRIMARY_FAULT_REG_LEN);
+ 			guest_addr = dma_frcd_page_addr(guest_addr);
+ 		}
+ 
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 26135ff3a289..4cb39000cd91 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -769,7 +769,7 @@ static void __iommu_flush_context(struct intel_iommu *iommu,
+ 
+ 	/* Make sure hardware complete it */
+ 	IOMMU_WAIT_OP(iommu, DMAR_CCMD_REG,
+-		dmar_readq, (!(val & DMA_CCMD_ICC)), val);
++		readq, (!(val & DMA_CCMD_ICC)), val);
+ 
+ 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
+ }
+@@ -811,7 +811,7 @@ void __iommu_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
+ 
+ 	/* Make sure hardware complete it */
+ 	IOMMU_WAIT_OP(iommu, tlb_offset + 8,
+-		dmar_readq, (!(val & DMA_TLB_IVT)), val);
++		readq, (!(val & DMA_TLB_IVT)), val);
+ 
+ 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
+ 
+@@ -1533,7 +1533,7 @@ static int copy_translation_tables(struct intel_iommu *iommu)
+ 	int bus, ret;
+ 	bool new_ext, ext;
+ 
+-	rtaddr_reg = dmar_readq(iommu->reg + DMAR_RTADDR_REG);
++	rtaddr_reg = readq(iommu->reg + DMAR_RTADDR_REG);
+ 	ext        = !!(rtaddr_reg & DMA_RTADDR_SMT);
+ 	new_ext    = !!sm_supported(iommu);
+ 
+@@ -4188,7 +4188,7 @@ int ecmd_submit_sync(struct intel_iommu *iommu, u8 ecmd, u64 oa, u64 ob)
+ 
+ 	raw_spin_lock_irqsave(&iommu->register_lock, flags);
+ 
+-	res = dmar_readq(iommu->reg + DMAR_ECRSP_REG);
++	res = readq(iommu->reg + DMAR_ECRSP_REG);
+ 	if (res & DMA_ECMD_ECRSP_IP) {
+ 		ret = -EBUSY;
+ 		goto err;
+@@ -4204,7 +4204,7 @@ int ecmd_submit_sync(struct intel_iommu *iommu, u8 ecmd, u64 oa, u64 ob)
+ 	dmar_writeq(iommu->reg + DMAR_ECEO_REG, ob);
+ 	dmar_writeq(iommu->reg + DMAR_ECMD_REG, ecmd | (oa << DMA_ECMD_OA_SHIFT));
+ 
+-	IOMMU_WAIT_OP(iommu, DMAR_ECRSP_REG, dmar_readq,
++	IOMMU_WAIT_OP(iommu, DMAR_ECRSP_REG, readq,
+ 		      !(res & DMA_ECMD_ECRSP_IP), res);
+ 
+ 	if (res & DMA_ECMD_ECRSP_IP) {
+diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
+index 1cd2101610df..21e54e40a17f 100644
+--- a/drivers/iommu/intel/irq_remapping.c
++++ b/drivers/iommu/intel/irq_remapping.c
+@@ -422,7 +422,7 @@ static int iommu_load_old_irte(struct intel_iommu *iommu)
+ 	u64 irta;
+ 
+ 	/* Check whether the old ir-table has the same size as ours */
+-	irta = dmar_readq(iommu->reg + DMAR_IRTA_REG);
++	irta = readq(iommu->reg + DMAR_IRTA_REG);
+ 	if ((irta & INTR_REMAP_TABLE_REG_SIZE_MASK)
+ 	     != INTR_REMAP_TABLE_REG_SIZE)
+ 		return -EINVAL;
+diff --git a/drivers/iommu/intel/perfmon.c b/drivers/iommu/intel/perfmon.c
+index fec51b6036b6..3f75f567f210 100644
+--- a/drivers/iommu/intel/perfmon.c
++++ b/drivers/iommu/intel/perfmon.c
+@@ -307,7 +307,7 @@ static void iommu_pmu_event_update(struct perf_event *event)
+ 
+ again:
+ 	prev_count = local64_read(&hwc->prev_count);
+-	new_count = dmar_readq(iommu_event_base(iommu_pmu, hwc->idx));
++	new_count = readq(iommu_event_base(iommu_pmu, hwc->idx));
+ 	if (local64_xchg(&hwc->prev_count, new_count) != prev_count)
+ 		goto again;
+ 
+@@ -340,7 +340,7 @@ static void iommu_pmu_start(struct perf_event *event, int flags)
+ 	hwc->state = 0;
+ 
+ 	/* Always reprogram the period */
+-	count = dmar_readq(iommu_event_base(iommu_pmu, hwc->idx));
++	count = readq(iommu_event_base(iommu_pmu, hwc->idx));
+ 	local64_set((&hwc->prev_count), count);
+ 
+ 	/*
+@@ -496,7 +496,7 @@ static void iommu_pmu_counter_overflow(struct iommu_pmu *iommu_pmu)
+ 	 * Two counters may be overflowed very close. Always check
+ 	 * whether there are more to handle.
+ 	 */
+-	while ((status = dmar_readq(iommu_pmu->overflow))) {
++	while ((status = readq(iommu_pmu->overflow))) {
+ 		for_each_set_bit(i, (unsigned long *)&status, iommu_pmu->num_cntr) {
+ 			/*
+ 			 * Find the assigned event of the counter.
+@@ -518,7 +518,7 @@ static irqreturn_t iommu_pmu_irq_handler(int irq, void *dev_id)
+ {
+ 	struct intel_iommu *iommu = dev_id;
+ 
+-	if (!dmar_readl(iommu->reg + DMAR_PERFINTRSTS_REG))
++	if (!readl(iommu->reg + DMAR_PERFINTRSTS_REG))
+ 		return IRQ_NONE;
+ 
+ 	iommu_pmu_counter_overflow(iommu->pmu);
+@@ -555,7 +555,7 @@ static int __iommu_pmu_register(struct intel_iommu *iommu)
+ static inline void __iomem *
+ get_perf_reg_address(struct intel_iommu *iommu, u32 offset)
+ {
+-	u32 off = dmar_readl(iommu->reg + offset);
++	u32 off = readl(iommu->reg + offset);
+ 
+ 	return iommu->reg + off;
+ }
+@@ -574,7 +574,7 @@ int alloc_iommu_pmu(struct intel_iommu *iommu)
+ 	if (!cap_ecmds(iommu->cap))
+ 		return -ENODEV;
+ 
+-	perfcap = dmar_readq(iommu->reg + DMAR_PERFCAP_REG);
++	perfcap = readq(iommu->reg + DMAR_PERFCAP_REG);
+ 	/* The performance monitoring is not supported. */
+ 	if (!perfcap)
+ 		return -ENODEV;
+@@ -617,8 +617,8 @@ int alloc_iommu_pmu(struct intel_iommu *iommu)
+ 	for (i = 0; i < iommu_pmu->num_eg; i++) {
+ 		u64 pcap;
+ 
+-		pcap = dmar_readq(iommu->reg + DMAR_PERFEVNTCAP_REG +
+-				  i * IOMMU_PMU_CAP_REGS_STEP);
++		pcap = readq(iommu->reg + DMAR_PERFEVNTCAP_REG +
++			     i * IOMMU_PMU_CAP_REGS_STEP);
+ 		iommu_pmu->evcap[i] = pecap_es(pcap);
+ 	}
+ 
+@@ -651,9 +651,9 @@ int alloc_iommu_pmu(struct intel_iommu *iommu)
+ 	 * Width.
+ 	 */
+ 	for (i = 0; i < iommu_pmu->num_cntr; i++) {
+-		cap = dmar_readl(iommu_pmu->cfg_reg +
+-				 i * IOMMU_PMU_CFG_OFFSET +
+-				 IOMMU_PMU_CFG_CNTRCAP_OFFSET);
++		cap = readl(iommu_pmu->cfg_reg +
++			    i * IOMMU_PMU_CFG_OFFSET +
++			    IOMMU_PMU_CFG_CNTRCAP_OFFSET);
+ 		if (!iommu_cntrcap_pcc(cap))
+ 			continue;
+ 
+@@ -675,9 +675,9 @@ int alloc_iommu_pmu(struct intel_iommu *iommu)
+ 
+ 		/* Override with per-counter event capabilities */
+ 		for (j = 0; j < iommu_cntrcap_egcnt(cap); j++) {
+-			cap = dmar_readl(iommu_pmu->cfg_reg + i * IOMMU_PMU_CFG_OFFSET +
+-					 IOMMU_PMU_CFG_CNTREVCAP_OFFSET +
+-					 (j * IOMMU_PMU_OFF_REGS_STEP));
++			cap = readl(iommu_pmu->cfg_reg + i * IOMMU_PMU_CFG_OFFSET +
++				    IOMMU_PMU_CFG_CNTREVCAP_OFFSET +
++				    (j * IOMMU_PMU_OFF_REGS_STEP));
+ 			iommu_pmu->cntr_evcap[i][iommu_event_group(cap)] = iommu_event_select(cap);
+ 			/*
+ 			 * Some events may only be supported by a specific counter.
+diff --git a/drivers/iommu/intel/prq.c b/drivers/iommu/intel/prq.c
+index ff63c228e6e1..c28fbd5c14a7 100644
+--- a/drivers/iommu/intel/prq.c
++++ b/drivers/iommu/intel/prq.c
+@@ -81,8 +81,8 @@ void intel_iommu_drain_pasid_prq(struct device *dev, u32 pasid)
+ 	 */
+ prq_retry:
+ 	reinit_completion(&iommu->prq_complete);
+-	tail = dmar_readq(iommu->reg + DMAR_PQT_REG) & PRQ_RING_MASK;
+-	head = dmar_readq(iommu->reg + DMAR_PQH_REG) & PRQ_RING_MASK;
++	tail = readq(iommu->reg + DMAR_PQT_REG) & PRQ_RING_MASK;
++	head = readq(iommu->reg + DMAR_PQH_REG) & PRQ_RING_MASK;
+ 	while (head != tail) {
+ 		struct page_req_dsc *req;
+ 
+@@ -208,8 +208,8 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 	 */
+ 	writel(DMA_PRS_PPR, iommu->reg + DMAR_PRS_REG);
+ 
+-	tail = dmar_readq(iommu->reg + DMAR_PQT_REG) & PRQ_RING_MASK;
+-	head = dmar_readq(iommu->reg + DMAR_PQH_REG) & PRQ_RING_MASK;
++	tail = readq(iommu->reg + DMAR_PQT_REG) & PRQ_RING_MASK;
++	head = readq(iommu->reg + DMAR_PQH_REG) & PRQ_RING_MASK;
+ 	handled = (head != tail);
+ 	while (head != tail) {
+ 		req = &iommu->prq[head / sizeof(*req)];
+@@ -268,8 +268,8 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 	if (readl(iommu->reg + DMAR_PRS_REG) & DMA_PRS_PRO) {
+ 		pr_info_ratelimited("IOMMU: %s: PRQ overflow detected\n",
+ 				    iommu->name);
+-		head = dmar_readq(iommu->reg + DMAR_PQH_REG) & PRQ_RING_MASK;
+-		tail = dmar_readq(iommu->reg + DMAR_PQT_REG) & PRQ_RING_MASK;
++		head = readq(iommu->reg + DMAR_PQH_REG) & PRQ_RING_MASK;
++		tail = readq(iommu->reg + DMAR_PQT_REG) & PRQ_RING_MASK;
+ 		if (head == tail) {
+ 			iopf_queue_discard_partial(iommu->iopf_queue);
+ 			writel(DMA_PRS_PRO, iommu->reg + DMAR_PRS_REG);
 -- 
 2.43.0
 
