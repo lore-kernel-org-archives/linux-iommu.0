@@ -1,42 +1,42 @@
 Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27B62175A92
-	for <iommu@lists.linux.dev>; Thu,  2 Apr 2026 05:35:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 297AA330647
+	for <iommu@lists.linux.dev>; Thu,  2 Apr 2026 06:52:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775108142; cv=none; b=p9Rw5Y/PERwVrjXkpfsKRfk6dDd35kxBzcFetwgAt5D7GoV3Op3S1ZyaDq/TD9x2Q8qHBKul3S9uqcsa47p06KhOdxKA3YwNRdZOrkzn/xyZBOi+OEm6pe2obWdO1KsCq2OHwsPiyXDOoy1qkli5KhlG6XpJysQLRs507Vannak=
+	t=1775112768; cv=none; b=fQuyC0s0mJEdif3eCIHbvIMUPuRZgC0bcEjPU9FC+b3x7QrdftIWiBUGfK8ahlEvG/icByG4CqG6VFnSNUzdNPMV84SSIsX/6VT7ZOJ887X2RnPyptBvi75bS0SJ4LYn1DyED8BRfFMTtZxygtjY5Yj5k7oAsPFEZCcdKQIm4Ts=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775108142; c=relaxed/simple;
-	bh=Jsp3hvzWZmL04lh2Nu+ptJjapaIB0FyHUdyBhiCrUe0=;
+	s=arc-20240116; t=1775112768; c=relaxed/simple;
+	bh=ntxbhzrvVPLpB37ChB11jjkFBlUbdUl1raHBJC0jfYU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=iQTgUzrWmXbVAolvUpVvkRUzjXmLYWTKxeoszIBIncIpnhJ/CQoMVi7CuybKRhhtoVMRLcDmns5tJ6X4hs17mgpgaLp4DXeIJuvcOT2XnU9vTdC2XBrABA6rVVbqMAD6XPIpyp3WkpndvXYYdtkTcUAJ15buwHqbqW/D7OC/5D4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=p8XIiW60; arc=none smtp.client-ip=210.118.77.11
+	 Content-Type:References; b=uQJRQ7p9HD1R/gZiwGazI0GcycoDXtV4G3I87NPnkiceYIDYQPf2NfCmwmRYhBhVgZmmU1Ehy3aR/y9oV0bO30UhbrJvNAViOdQsiCO9QMmvG+QyTbsClDCoDXVpMkcdvYQqhT4vX4VPYMn+GVZ8oyVT8mXy+0pAuk78Knh3X+c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=c7KoBj+H; arc=none smtp.client-ip=210.118.77.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="p8XIiW60"
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="c7KoBj+H"
 Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260402053531euoutp01395fde9c54cb57cf14937abf6cd98cd4~ic3C0Tx-P1349313493euoutp014
-	for <iommu@lists.linux.dev>; Thu,  2 Apr 2026 05:35:31 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260402053531euoutp01395fde9c54cb57cf14937abf6cd98cd4~ic3C0Tx-P1349313493euoutp014
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260402065241euoutp01937196651e1d31e1a86d997560ae759f~id6brM5dC0214102141euoutp018
+	for <iommu@lists.linux.dev>; Thu,  2 Apr 2026 06:52:41 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260402065241euoutp01937196651e1d31e1a86d997560ae759f~id6brM5dC0214102141euoutp018
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1775108131;
-	bh=a2ALkW+kbFi61LCOo/jIn51RH7T6kZmUYLT9OKC04kY=;
+	s=mail20170921; t=1775112761;
+	bh=JqJnKEECHMM1x06qmTO+uD6JrQrf2ZS4nGeqK+WTZzo=;
 	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=p8XIiW60yygB4duGaUeoZzDfligbEwHtpLxRKPqjeP2cqMQWJ+aTAA2Z0f9PB4ogv
-	 WDtvy6XPjlMBFeX6dzvhvNPWVy42IetKV0iqUCf17GbTcsP+CcfJqQS7K4Q0Ue+mmb
-	 7tV4tDH1JCgqUAho30DqQ2/fTx8iM0loupZzjumw=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20260402053530eucas1p1f0754eb1edb4acdb0d52b31d9ff6c4f9~ic3B75IsG1210612106eucas1p1C;
-	Thu,  2 Apr 2026 05:35:30 +0000 (GMT)
+	b=c7KoBj+HLoJ9sWu1hkYtLUUIevwDXI6D3RK20LI8rvG29JUKJiiiahbBwF5EWYT81
+	 YYsa2S2U6wfC9v9jKmDjGDjAFUqu4hVrc1o0CJnhBLOgrBBNI4u98esBReAXz7NbdN
+	 5HZRhHlKS0NnclWLjqBiY2m961MOpr6oaC9+k1Eo=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20260402065241eucas1p26fe08801bf816ff198a0361e0e00aa7d~id6bQM3u42082120821eucas1p2Q;
+	Thu,  2 Apr 2026 06:52:41 +0000 (GMT)
 Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20260402053528eusmtip1ac753cbaaed704e10d0c4a64bfd0adad~ic3A3bQA60232302323eusmtip1d;
-	Thu,  2 Apr 2026 05:35:28 +0000 (GMT)
-Message-ID: <f6de2c2d-132c-4344-9b58-6e6ef1eb15a6@samsung.com>
-Date: Thu, 2 Apr 2026 07:35:28 +0200
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20260402065238eusmtip2465f475377dc393f8274ea72cd5e5991~id6YxQUhd3266432664eusmtip2A;
+	Thu,  2 Apr 2026 06:52:38 +0000 (GMT)
+Message-ID: <7fc83a05-b392-4fc9-8ddb-1c169c698870@samsung.com>
+Date: Thu, 2 Apr 2026 08:52:37 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -44,63 +44,121 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v5 0/2] dma-buf: heaps: system: add an option to
- allocate explicitly shared/decrypted memory
-To: Sumit Semwal <sumit.semwal@linaro.org>, Jiri Pirko <jiri@resnulli.us>
-Cc: dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	iommu@lists.linux.dev, linux-media@vger.kernel.org,
-	benjamin.gaignard@collabora.com, Brian.Starkey@arm.com, jstultz@google.com,
-	tjmercier@google.com, christian.koenig@amd.com, robin.murphy@arm.com,
-	jgg@ziepe.ca, leon@kernel.org, sean.anderson@linux.dev, ptesarik@suse.com,
-	catalin.marinas@arm.com, aneesh.kumar@kernel.org, suzuki.poulose@arm.com,
-	steven.price@arm.com, thomas.lendacky@amd.com, john.allen@amd.com,
-	ashish.kalra@amd.com, suravee.suthikulpanit@amd.com,
-	linux-coco@lists.linux.dev
+Subject: Re: [PATCH v3 5/6] dma-buf: heaps: Add Coherent heap to dmabuf
+ heaps
+To: Maxime Ripard <mripard@redhat.com>, Andrew Davis <afd@ti.com>
+Cc: Albert Esteve <aesteve@redhat.com>, Sumit Semwal
+	<sumit.semwal@linaro.org>, Benjamin Gaignard
+	<benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>,
+	John Stultz <jstultz@google.com>, "T.J. Mercier" <tjmercier@google.com>,
+	=?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, Robin Murphy
+	<robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, Saravana Kannan
+	<saravanak@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev,
+	devicetree@vger.kernel.org, echanude@redhat.com
 Content-Language: en-US
 From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <CAO_48GEUXpcFBiyJAMgTcGPSq56-mZ0qnO3FrFRM2LoGd8W6HA@mail.gmail.com>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20260402053530eucas1p1f0754eb1edb4acdb0d52b31d9ff6c4f9
+In-Reply-To: <20260316-cherubic-eel-of-philosophy-10ef2b@houat>
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20260402065241eucas1p26fe08801bf816ff198a0361e0e00aa7d
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260402044147eucas1p25971b90eb6aa1ef03a2a1136d812f039
+X-RootMTR: 20260316120911eucas1p26492fa73abe29d02bb7f5da73f047abc
 X-EPHeader: CA
-X-CMS-RootMailID: 20260402044147eucas1p25971b90eb6aa1ef03a2a1136d812f039
-References: <20260325192352.437608-1-jiri@resnulli.us>
-	<CGME20260402044147eucas1p25971b90eb6aa1ef03a2a1136d812f039@eucas1p2.samsung.com>
-	<CAO_48GEUXpcFBiyJAMgTcGPSq56-mZ0qnO3FrFRM2LoGd8W6HA@mail.gmail.com>
+X-CMS-RootMailID: 20260316120911eucas1p26492fa73abe29d02bb7f5da73f047abc
+References: <20260306-b4-dmabuf-heap-coherent-rmem-v3-0-3d00d36c9bc4@redhat.com>
+	<20260306-b4-dmabuf-heap-coherent-rmem-v3-5-3d00d36c9bc4@redhat.com>
+	<e8dd476f-1be8-46fa-bf56-65fe0bfe29a1@ti.com>
+	<CADSE00+-SQr3wGdgBmLowHPWE5bGxoyO4o20jZs4ma-71aOxUA@mail.gmail.com>
+	<1afc696a-9afb-48af-887d-2a209680784e@ti.com>
+	<CGME20260316120911eucas1p26492fa73abe29d02bb7f5da73f047abc@eucas1p2.samsung.com>
+	<20260316-cherubic-eel-of-philosophy-10ef2b@houat>
 
-On 02.04.2026 06:41, Sumit Semwal wrote:
-> On Thu, 26 Mar 2026 at 00:53, Jiri Pirko <jiri@resnulli.us> wrote:
->> From: Jiri Pirko <jiri@nvidia.com>
+On 16.03.2026 13:08, Maxime Ripard wrote:
+> On Wed, Mar 11, 2026 at 08:18:28AM -0500, Andrew Davis wrote:
+>> On 3/11/26 5:19 AM, Albert Esteve wrote:
+>>> On Tue, Mar 10, 2026 at 4:34 PM Andrew Davis <afd@ti.com> wrote:
+>>>> On 3/6/26 4:36 AM, Albert Esteve wrote:
+>>>>> Expose DT coherent reserved-memory pools ("shared-dma-pool"
+>>>>> without "reusable") as dma-buf heaps, creating one heap per
+>>>>> region so userspace can allocate from the exact device-local
+>>>>> pool intended for coherent DMA.
+>>>>>
+>>>>> This is a missing backend in the long-term effort to steer
+>>>>> userspace buffer allocations (DRM, v4l2, dma-buf heaps)
+>>>>> through heaps for clearer cgroup accounting. CMA and system
+>>>>> heaps already exist; non-reusable coherent reserved memory
+>>>>> did not.
+>>>>>
+>>>>> The heap binds the heap device to each memory region so
+>>>>> coherent allocations use the correct dev->dma_mem, and
+>>>>> it defers registration until module_init when normal
+>>>>> allocators are available.
+>>>>>
+>>>>> Signed-off-by: Albert Esteve <aesteve@redhat.com>
+>>>>> ---
+>>>>>     drivers/dma-buf/heaps/Kconfig         |   9 +
+>>>>>     drivers/dma-buf/heaps/Makefile        |   1 +
+>>>>>     drivers/dma-buf/heaps/coherent_heap.c | 414 ++++++++++++++++++++++++++++++++++
+>>>>>     3 files changed, 424 insertions(+)
+>>>>>
+>>>>> (...)
+>>>> You are doing this DMA allocation using a non-DMA pseudo-device (heap_dev).
+>>>> This is why you need to do that dma_coerce_mask_and_coherent(64) nonsense, you
+>>>> are doing a DMA alloc for the CPU itself. This might still work, but only if
+>>>> dma_map_sgtable() can handle swiotlb/iommu for all attaching devices at map
+>>>> time.
+>>> The concern is valid. We're allocating via a synthetic device, which
+>>> ties the allocation to that device's DMA domain. I looked deeper into
+>>> this trying to address the concern.
+>>>
+>>> The approach works because dma_map_sgtable() handles both
+>>> dma_map_direct and use_dma_iommu cases in __dma_map_sg_attrs(). For
+>>> each physical address in the sg_table (extracted via sg_phys()), it
+>>> creates device-specific DMA mappings:
+>>> - For direct mapping: it checks if the address is directly accessible
+>>> (dma_capable()), and if not, it falls back to swiotlb.
+>>> - For IOMMU: it creates mappings that allow the device to access
+>>> physical addresses.
+>>>
+>>> This means every attached device gets its own device-specific DMA
+>>> mapping, properly handling cases where the physical addresses are
+>>> inaccessible or have DMA constraints.
+>>>
+>> While this means it might still "work" it won't always be ideal. Take
+>> the case where the consuming device(s) have a 32bit address restriction,
+>> if the allocation was done using the real devices then the backing buffer
+>> itself would be allocated in <32bit mem. Whereas here the allocation
+>> could end up in >32bit mem, as the CPU/synthetic device supports that.
+>> Then each mapping device would instead get a bounce buffer.
 >>
->> Confidential computing (CoCo) VMs/guests, such as AMD SEV and Intel TDX,
->> run with private/encrypted memory which creates a challenge
->> for devices that do not support DMA to it (no TDISP support).
+>> (this example might not be great as we usually know the address of
+>> carveout/reserved memory regions, but substitute in whatever restriction
+>> makes more sense)
 >>
->> For kernel-only DMA operations, swiotlb bounce buffering provides a
->> transparent solution by copying data through shared memory.
->> However, the only way to get this memory into userspace is via the DMA
->> API's dma_alloc_pages()/dma_mmap_pages() type interfaces which limits
->> the use of the memory to a single DMA device, and is incompatible with
->> pin_user_pages().
+>> These non-reusable carveouts tend to be made for some specific device, and
+>> they are made specifically because that device has some memory restriction.
+>> So we might run into the situation above more than one would expect.
 >>
->> These limitations are particularly problematic for the RDMA subsystem
->> which makes heavy use of pin_user_pages() and expects flexible memory
->> usage between many different DMA devices.
->>
->> This patch series enables userspace to explicitly request shared
->> (decrypted) memory allocations from new dma-buf system_cc_shared heap.
->> Userspace can mmap this memory and pass the dma-buf fd to other
->> existing importers such as RDMA or DRM devices to access the
->> memory. The DMA API is improved to allow the dma heap exporter to DMA
->> map the shared memory to each importing device.
-> Thank you for the patch series, it looks good to me.
+>> Not a blocker here, but just something worth thinking on.
+> As I detailed in the previous version [1] the main idea behind that work
+> is to allow to get rid of dma_alloc_attrs for framework and drivers to
+> allocate from the heaps instead.
 >
-> Marek, if you are ok, please could you take it through your tree, with my
-> Acked-by: Sumit Semwal <sumit.semwal@linaro.org>
+> Robin was saying he wasn't comfortable with exposing this heap to
+> userspace, and we're saying here that maybe this might not always work
+> anyway (or at least that we couldn't test it fully).
+>
+> Maybe the best thing is to defer this series until we are at a point
+> where we can start enabling the "heap allocations" in frameworks then?
+> Hopefully we will have hardware to test it with by then, and we might
+> not even need to expose it to userspace at all but only to the kernel.
+>
+> What do you think?
 
-I've applied both patches to dma-mapping-for-next. Thanks!
+IMHO a good idea. Maybe in-kernel heap for the coherent allocations will 
+be just enough.
 
 Best regards
 -- 
