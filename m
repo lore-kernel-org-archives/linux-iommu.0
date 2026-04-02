@@ -1,141 +1,254 @@
-Received: from SVZP279CU002.outbound.protection.outlook.com (mail-norwaywestazon11020109.outbound.protection.outlook.com [52.101.180.109])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E68D3890F0
-	for <iommu@lists.linux.dev>; Thu,  2 Apr 2026 07:52:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.180.109
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775116373; cv=fail; b=qhG6a90uh9QO94gz+jUlJaSEiZndVfsjUu1S2Ot48VKvuQk2Py1V+fnHdN1PmxyFOU7ZolUZBU0kREXtFcdS/X/Rl3/wH5PDRCIc9kHU8c55i4i8UYSAbQ3GkkquQrwUo7e6dgY7Rgyzupfx5ge1ZiDBrWxc0z7gtUdIzzjPBe0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775116373; c=relaxed/simple;
-	bh=ZDyk97Nw3giDQdk/LFcm6pVrVzeHEhXYnUfbWSJg2uc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=TopH3siM2s9eDKnkSFdYI5JWnyS1R6w+gE1A589ZQYfjs7szy4kBR6nYtIn1aPMt5luMZnYvfPzDILR2BIeEWAekvTm5rB0Ht+zGvf70b2QYl/F9kHVdSR0rw2Ns9C7GXr6xx0wySvzHAheJ3OPgqxeLTNv7/hHuAQHuECZOg5w=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=dolphinics.com; spf=pass smtp.mailfrom=dolphinics.com; dkim=pass (2048-bit key) header.d=dolphinics.com header.i=@dolphinics.com header.b=vXH2LWY+; arc=fail smtp.client-ip=52.101.180.109
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=dolphinics.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dolphinics.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E15E2396B85
+	for <iommu@lists.linux.dev>; Thu,  2 Apr 2026 08:36:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775118973; cv=none; b=uCTG54Sd8lF4FnqzIW7kawZ4KFBmewc6VQcgwq+Qy6+GgNJV4SiW3zTSr6ialuNpi6f8IUreEZK3tVJbj+JIKorDRsVKsZuYhTKcZvPJj73rT1MbiF2mKqhwKQ3WB80YGtR1/I22P9V31zGqTm5KSB7kMv8CUxNtpLPfJcj65L4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775118973; c=relaxed/simple;
+	bh=efq6KExaXloGlu4W+o6XXI3jit5Ma9jZElLXNdRwpoM=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=KBxRG1Lub4x3UCFRWV9QsHmP72EsspTvNDQyeqZSqsTkbsHO6FOEIUxC9QWRyqMjcmOrJbmghjpZy4kcmgTQ8sUfz9ez33BwnlwivahbqZ87mrW1bGMuJohPHqZwiQXCueb14bCQYfdcLfhoNlzih5/uL5eSY5LSmYgOT03gj4o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=RHma4SsO; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=Fx08YEb1; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=dolphinics.com header.i=@dolphinics.com header.b="vXH2LWY+"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=n44hFxWweFfi9t3UDkF4CXse8P2IMt9DpryahEeA391B4pwBEp4MNN33obNTxv8xHBzqdPWgjDJVwAFHayqXilUcOYqmrDR1S0Y3XTaslh/dzINIUr8KmEjqo7xjOZh8N7Brgz4U0GFE3EHbZbuFrZuYmZh3Vi0M6VCUmHDygiy9VhW/eycQrQUnBsdxhjoKrEzpSEVPwxNX4ZQKerCstNnuiuCNGwkKB0nBKy50BYLS3NGEOmRqLwnWExfdFlxylZFSN78TDhIQTbqPBkasHbQ8nPh3RQAGtTutl7cXK1GWrrWqmED1tIz8oypBdd/OXtfKiDgEvQsudJOWMyD/WA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZDyk97Nw3giDQdk/LFcm6pVrVzeHEhXYnUfbWSJg2uc=;
- b=IkmLTMVlhSrBeboUfnJxSNATBJg2W05Sow/zY+QVOdX3vgEY65anNdjoLbt92viM8gUh3nxwosjs95bjMD0Hmi1x8Pa0x3Mg6TPAubMZba42sTacGtn0qDkj617wMo02N5ba1gSOLZhVk6su3SsZLZorjmF3T02tJeYDIDH7aqxQFFae5NujRHOioWexPlfXQc8LjnNG3s72zNE/Wp8WdoON48AK18GM43248PSRPpYR3eUlhpMdCv6jO9Rf8bGZALPRpRTjb43D8R0JzkyT4WVjNTIbyOSMuuUez76U8g++IpDlf3ucqgF71swBMaxB4X0+db8wpD9bfzZre/zb0g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dolphinics.com; dmarc=pass action=none
- header.from=dolphinics.com; dkim=pass header.d=dolphinics.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dolphinics.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZDyk97Nw3giDQdk/LFcm6pVrVzeHEhXYnUfbWSJg2uc=;
- b=vXH2LWY+9LrCbZ587ZDi+iVLznq0dfXW6YwmWKypFBijreLQB7e/Z/a0ZW0QzJ71rk0d1w38hgRzbJ+EZ4QLl6U852LGb1AMyKP62QHzgF3EzHqN83mOn8TTlMQ5WH0HEIG8JRJnM5lUYM9EXpleXftDgnR0OadXtmwp1p1+0e0beaXfDOzeQmz9ud3GtTtdPk3rQV5XWlH2c/M0wgYPxS/PQUOTkpPOULSBhmeJ4kRXZhYAHRqJN1QS3o7dRSbcxTgMjynEPN21KjydJ8c22jmBIQ44GZLpknAMNkrmbpyFkpwQ2fBpJk7fL0cI1pVSHl2gzmL7fwIIens2mMnOcg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=dolphinics.com;
-Received: from OLAP279MB0055.NORP279.PROD.OUTLOOK.COM (2603:10a6:e10:2::7) by
- SVZP279MB0856.NORP279.PROD.OUTLOOK.COM (2603:10a6:f10:28::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9769.17; Thu, 2 Apr 2026 07:52:47 +0000
-Received: from OLAP279MB0055.NORP279.PROD.OUTLOOK.COM
- ([fe80::c82b:8ba6:653a:2875]) by OLAP279MB0055.NORP279.PROD.OUTLOOK.COM
- ([fe80::c82b:8ba6:653a:2875%3]) with mapi id 15.20.9769.017; Thu, 2 Apr 2026
- 07:52:47 +0000
-From: Magnus Kalland <magnus@dolphinics.com>
-To: joro@8bytes.org
-Cc: dhsrivas@amd.com,
-	iommu@lists.linux.dev,
-	jonas@dolphinics.com,
-	larsk@dolphinics.com,
-	linux-kernel@vger.kernel.org,
-	magnus@dolphinics.com,
-	suravee.suthikulpanit@amd.com,
-	torel@simula.no,
-	vasant.hegde@amd.com
-Subject: Re: [PATCH v4] iommu/amd: Invalidate IRT cache for DMA aliases
-Date: Thu,  2 Apr 2026 09:51:24 +0200
-Message-ID: <20260402075239.19851-1-magnus@dolphinics.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <zloboj7ie2nlkchbqkq67d4zoolbn4lvp7ah2hmluznnov5tnv@a76hwaajlted>
-References: <zloboj7ie2nlkchbqkq67d4zoolbn4lvp7ah2hmluznnov5tnv@a76hwaajlted>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: OL1P279CA0054.NORP279.PROD.OUTLOOK.COM
- (2603:10a6:e10:14::23) To OLAP279MB0055.NORP279.PROD.OUTLOOK.COM
- (2603:10a6:e10:2::7)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="RHma4SsO";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="Fx08YEb1"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63276CVJ3955887
+	for <iommu@lists.linux.dev>; Thu, 2 Apr 2026 08:36:11 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	nZz3msypn/iPTQp7pBZHHsP/2F3PYJPj/B+Z6Rd1qmE=; b=RHma4SsOd/81yQFQ
+	xAx6QCQAEfsXUYd1eiP/9KcSKt05B/8+nzzL65Ik3f6iUQz9+9v40os1eMNUM4Om
+	IS9+3uV9M7/lJ0a6VZGq6psD7b30MCA+yw5iTekmwvuLomU4AkZYSi58G9jG5Mpa
+	iOp2Y8QzPE972/fofH+xbDT6h1kVAjUtirRtXOJD/iBWVX/JGnpdt+p1fi87apVD
+	1BHkr0w3slGvST99Bky9/WwAq3wJu5E2rRTGZuY1HvKgHB9TediDxYiK2oU1nnOM
+	VB+ogu469E8DK5gDXnhY4WdZGMdplI6U/29ywBKz1Vr1nrk+2NFbY0oyylNTCK//
+	s0HIyQ==
+Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com [209.85.214.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4d9aw5j7rr-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Thu, 02 Apr 2026 08:36:10 +0000 (GMT)
+Received: by mail-pl1-f200.google.com with SMTP id d9443c01a7336-2b2489af602so6627915ad.1
+        for <iommu@lists.linux.dev>; Thu, 02 Apr 2026 01:36:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1775118970; x=1775723770; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=nZz3msypn/iPTQp7pBZHHsP/2F3PYJPj/B+Z6Rd1qmE=;
+        b=Fx08YEb1V2qkfyt19LgDUT7Xx/nleYNrPeB6NZ+S9KtQFfce6RU1LUAPXceYC8pF7H
+         6YYvwfKEhU+8Jzha8UWSJebCJrAfHHn0XrHmFKgEjooqE7bjYHWz5uA8pUlwoiYKQKVY
+         tgZFVg6TR9Bzl8whwDIndQMn9U2XqPjH7RbHAPyArIicdBM2KaHMN1yQVxXTl1ewPAgy
+         80/tOjz62cSp1NhqRABa+V1SFwBkFcegE1OZ1cWC9In7aiUyJaWJiBN1CsKaGrQKigWP
+         m0U/0/l8G/syG72mxBB0Oaz5XmUyZhEV7VSAraqhVsv6wB2AhUQPLZpiGRH4jEXpdIEA
+         6W2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775118970; x=1775723770;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=nZz3msypn/iPTQp7pBZHHsP/2F3PYJPj/B+Z6Rd1qmE=;
+        b=Kd6knGZzQFOXpXZGJFiRvBIf9UNeZKY0/x/6ukYNnkaPSRXO5rKH/TQJESnc12i3d+
+         HBuvwemYfOQObNZgYI0HQdBwEHfcKxvn4x5DinAmMITrPRx9rKqt4cFOh/yA5zZks2pm
+         LMG8p1+whv2Q+nT6FqUh65rdwZM4eXy9s2s3KXQE+ifFd9qsupwyYcv7QqzQMqNwV64e
+         lkxEhTQTyk/cK9FvCTQiSosXXKjK34GVKC7N0E202dzXOgPjWnXGmumASxceIVIoAnOb
+         knkrjiiDeASBUsP/FvJJ+EMbdsNdMTdgnvtw30CrP6KjkqpRXWdSeFlrfsQoNKbRJJ0n
+         C3rA==
+X-Forwarded-Encrypted: i=1; AJvYcCWivCkPcLd4o7rBedeebEoKJGkU2Usn8o6wx7840E5QCJhbXEdXEpf9nJr4CDhgVWhGDIrWsw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwVgghS073ndWHszuoMOoxob3AnES6peufM4kuPXTruw2+tD/Sd
+	yGgboghAcoSZmXb9QK4owCX0zT1Z5c6fxmhFi4+fZgzywIi6gJ7w/QO/dNx9GsKXQmlhay15/q7
+	KoRgVfhxJi8SFml3VeNXMTadcCeML6hxw0rDcakXtIm9qMopVt4EM5OR9VQ==
+X-Gm-Gg: AeBDieugcmPbYkOhg/lKgAt1aept6Ax0lYSHQojn/WHF4OsV9JoTMHWodsejgv7PJ+D
+	vLnT1FZNlgWKcnlMOOZ09e9fSG8ilUOpVv2/J9Qm5oh87paxA65P9uoIqtjEJp4bJzD8L2jJb/J
+	hTsPfc/Q6vUCetHMyC7BiyKC2v9kYDvXvVY3Bx1y2pGfGuLU0SwfQtgxHLAG5g+eIscOeKVB6Lr
+	zoKve+Y4S0EHNJ88KvKUeeXEFFS6oSWUxBHcBotnBTTCDWCFsX6L1LVvaUSeTngMp+CJFGIqUQI
+	wwf0A7yI5EW4SZSL/S3LOGy79I1xDiIb/GL+pgFSOzIoynBVGHiErgBEi5sJG16geWFfnJCOksv
+	fn2vOxVFJa4lw7orvOErZdJ06RH4riZH67imxtmgJP7G9jKMKVc3R
+X-Received: by 2002:a17:902:db12:b0:2b2:4c30:e6e2 with SMTP id d9443c01a7336-2b277e256c0mr15094725ad.16.1775118969719;
+        Thu, 02 Apr 2026 01:36:09 -0700 (PDT)
+X-Received: by 2002:a17:902:db12:b0:2b2:4c30:e6e2 with SMTP id d9443c01a7336-2b277e256c0mr15094325ad.16.1775118969177;
+        Thu, 02 Apr 2026 01:36:09 -0700 (PDT)
+Received: from [192.168.1.14] ([110.225.167.58])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b2749e2e97sm27595375ad.82.2026.04.02.01.36.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Apr 2026 01:36:08 -0700 (PDT)
+Message-ID: <998ce121-e027-441d-a3f4-2f3e41e10830@oss.qualcomm.com>
+Date: Thu, 2 Apr 2026 14:06:00 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: OLAP279MB0055:EE_|SVZP279MB0856:EE_
-X-MS-Office365-Filtering-Correlation-Id: fd445c25-c8a3-4f45-56f1-08de908cd4a8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|10070799003|366016|56012099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	I13+R4KzfCHSQz3VoxeGqkworln6TEc2gwJuFMBMBKRrGgQrojmcelrp3AkWNjoxMpHoIYZHzKy1AyFuDQDQ7ftH9THP5+TYWxnpH7ruCFHJ0S8uxIZ9HA9UAWa8ACLHNj1jVlWjnG444ziJxZYX0E1Q17QUvrrPUpRP/gEORZwaWu69RmsAdr0Vr9W1uCbZV18a3PpOyuynqHhE/MpTT2JF4z2ygwi6WCnDXyEatiMceOZZMJGdPSfZ2eWPpCh36TZnOFW2gglJkzArHdc3dd1BydoeDkJfxFFE9Ei2cEX6cEKUjnDcAfUZvoogS9jYXLZutieIRxuZlohtSlUsqKEO7/OCN52wdgHpoCABMVVN6kdPFhkvfv0HLniHETs12SITOlR2ytLp8oNgj/yZdNmgg0UMTAaS/oVywzCCBs81/ulDcbmkvzXRHwAI0HOxCG5+9yHLjwKfXxAYALBxOjVWWihdI5XAQtslU3MpozD8RcucOcDZNWMGhXSsZk8dHAEfwqFXzdRp00fWGVGj8PugEQQukhsYmTN/Qq9HdDDkPhjqkhb/nk02uIculG78n25ZW5tFZqHku1H6no9OoYfDsE4PUnjDSHK7I2W4Zv3FPeB0g8Wf7vsE4mdk4KXWPPrGmlt3alOoTDDkKGOd/MG988qc+d2StX1tdXZtLOkV59FQvDNSgk08XBzfaL80KXjlBMwhsYAt+VoJ1CAqqPZyFxyEPbxrQWDHQCtqs6g=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OLAP279MB0055.NORP279.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(10070799003)(366016)(56012099003)(18002099003)(22082099003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?b+bdZ79k+y1neMwukSuaMHLUX7w4oLriuvIKWcTnfi6pwW451unxrbT41KCw?=
- =?us-ascii?Q?7o9Hyd89Wny1iNmMK0K2+vTpUPSCXL9hPdFMPiMNsSpYzO2ApyTzgnn+CtIY?=
- =?us-ascii?Q?olFvbaXbYMoNWZaqZ6Z540lOGEGbdLbs1jlGmYuCpfgDJ2O5BecGmeEgBOek?=
- =?us-ascii?Q?azYmpjIotfjXFM4xlzDDwkv2I+0HxguDOtI7///XVnoGH2wmrHXDw1iPPvFD?=
- =?us-ascii?Q?hZP6vQ7DSydbzUg0i+QEXM55L/1gi/cdqdW12qU5JojaOr/D+ckD5LRUG2Y9?=
- =?us-ascii?Q?Qe6vfE/McqCWaynYxu+qL/GM97DshYubowKtZCv6pZpp1ZWkFYZu5fPZcd65?=
- =?us-ascii?Q?FIDAlzArNLme4br7lUJj0NrVAPwmf7ZJ/16kxCT0jVRlQrZyttFqpNmbmGzw?=
- =?us-ascii?Q?g1H5/PnPgGnld2S+X2+LQ5Z+9Lxv1fJQf2R6V4b0lZSGyVRTKqxpA5RDDZGK?=
- =?us-ascii?Q?bVcLZKnQ25Apu8PtyDGjkJKgINxjfty+QNR4c5yB2AaU+yd/bjor2WPZmmui?=
- =?us-ascii?Q?KShddRen8aExZfj409hwS9uDUzExEKTAMtkLKL8jIDhK2GxgR4iCjXtiIuMZ?=
- =?us-ascii?Q?r+JGRvY3piftD65YcK4cF9TUjo7wxy6/Qoewjx0x8YFq19G/PZdxk94kBgDm?=
- =?us-ascii?Q?FQbw9FNTdAT03pGmjMoJ6M8saQuE1sMIq0RQ7kiuPECg+76jDfibyibjWM+w?=
- =?us-ascii?Q?4XXc7SlPJeDj1ltojVx8IcjIhluJRsbMJqfjQB6N0WaSk6quNAbmfceFDqBi?=
- =?us-ascii?Q?4aBtrXGFfk6eP+7MEBEPAN/UqC0gnUQr8KKvYDfDTdegmv/w2bCygfVRHxzW?=
- =?us-ascii?Q?5mAjOhLe6dgG6UPMSsj6IKJVFe/pvkPuxJCi3+tHydDa8rC412keADKUMR1t?=
- =?us-ascii?Q?vxf1y5nILvSMUmQHdXLTCHECSnIsOaMeSciOXwL1/6C7VSntUbZI0b/IyJsZ?=
- =?us-ascii?Q?3fHXKVSJS6iY+/Qqn2QkFfOZbvwQTsNoeMEYHMtvnc0dpbCyuLwnjFH3EznZ?=
- =?us-ascii?Q?TuHQHuq44h0i5TTdXIXZ76tvB4B2T0D2YreIYrroN+ymIBheCh5NwNom3szA?=
- =?us-ascii?Q?RBiYgXA6AsAG9Gf4WUHfMg7vsNOCu8+3JyMGGVWSnQMHx4odMnMs3AWE3veJ?=
- =?us-ascii?Q?GHf/qKti7X1TVy5NVfN1AlD4/KGLA07FeIx2Ncxy+vZuah1p6UVYv7XCZ7hX?=
- =?us-ascii?Q?cLm/rLaGlaQzvwfT7KDFuGHEFwpt7D3FDfmG1nSD9WbAg8HUS5RdxeSGjNJ/?=
- =?us-ascii?Q?40o/sEuB7OLQFmCX/pTCeyGhSqO2C/cb0Do+XHWV/FEFy9j81CZuZVniANjU?=
- =?us-ascii?Q?uM+X3FU4xllH82OI26HEhkosI0GmCzy1hFT/QTeE6UJG0N0VKQhhg+pRhCnu?=
- =?us-ascii?Q?sKIyilchD3u4MCqXFqEyJ4v0SlSuet2SNRaxGSsV7NoRZFigO1Y6eKW75Tqt?=
- =?us-ascii?Q?M1WKdosprjgMO5z8r7IpKOLalASLp7x2YSJqEv2kiJZ10Drpn/E1SqE+rI15?=
- =?us-ascii?Q?F1v31P187E5H57Oq7+wrIHvxuKXrkjLJstD+njDwlgraFPwABIAuRl8jp9aD?=
- =?us-ascii?Q?EM64KcWmI/t6NrqeEyNm4MR1BzHvpSnuQbmIO8xu23vT4Dfvi8liOIL2NuMO?=
- =?us-ascii?Q?Wyr+QBa3mfSFsXDPtRd4vwp5FwEgRrmekmMq/TVyAbmJaa8Lh5sxu3Xu6+lm?=
- =?us-ascii?Q?pmjP86Dgdb0jmFukoWy4V6vTz2xQEBvfIUNobZDceCAstM4sWzvju6EJySis?=
- =?us-ascii?Q?oayyp1qH8LLkGAS0S7R/xud32Eh0fPRxSeIuV8d59gpuL0SIu7KNyCCTyDUi?=
-X-MS-Exchange-AntiSpam-MessageData-1: Q4zN2vX4R9lSVw==
-X-OriginatorOrg: dolphinics.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fd445c25-c8a3-4f45-56f1-08de908cd4a8
-X-MS-Exchange-CrossTenant-AuthSource: OLAP279MB0055.NORP279.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Apr 2026 07:52:47.2996
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 7fb89e52-625c-45cc-a50c-adf3af1b0a6c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gqgtAu41YRFQbzyKPdX3irZn+ideNqeqfBN75LSlvSHFhr6TVPVSjRfVjx0jjAklifu8FdeuBfCQFj5b3QDNTw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SVZP279MB0856
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC 12/18] accel/qda: Add PRIME dma-buf import support
+From: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+To: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+        Shuah Khan <skhan@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Sumit Semwal <sumit.semwal@linaro.org>
+Cc: dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        iommu@lists.linux.dev, linux-media@vger.kernel.org,
+        linaro-mm-sig@lists.linaro.org,
+        Srinivas Kandagatla <srinivas.kandagatla@oss.qualcomm.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+        Bharath Kumar <quic_bkumar@quicinc.com>,
+        Chenna Kesava Raju <quic_chennak@quicinc.com>
+References: <20260224-qda-firstpost-v1-0-fe46a9c1a046@oss.qualcomm.com>
+ <20260224-qda-firstpost-v1-12-fe46a9c1a046@oss.qualcomm.com>
+ <e87c0c1d-82f1-4a03-9a56-9bf3e03273cf@amd.com>
+ <29f9bb45-5c3f-4847-a629-21cef540f38b@oss.qualcomm.com>
+Content-Language: en-US
+In-Reply-To: <29f9bb45-5c3f-4847-a629-21cef540f38b@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Authority-Analysis: v=2.4 cv=Q9jfIo2a c=1 sm=1 tr=0 ts=69ce2a7a cx=c_pps
+ a=IZJwPbhc+fLeJZngyXXI0A==:117 a=GstQyB7T1i92F5dDEt+vJw==:17
+ a=IkcTkHD0fZMA:10 a=A5OVakUREuEA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
+ a=_EeEMxcBAAAA:8 a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=yv3-IXtlHroiPP0bXpQA:9
+ a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=czjwGCTIUPoA:10
+ a=uG9DUKGECoFWVXl0Dc02:22
+X-Proofpoint-GUID: TFCDI-k-qcNuTSvDW5DXGrXCtkpXGFwG
+X-Proofpoint-ORIG-GUID: TFCDI-k-qcNuTSvDW5DXGrXCtkpXGFwG
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDAyMDA3NiBTYWx0ZWRfXz9wHlXXJnEr0
+ /lDoG3UbQNHlICaXcj+4Tg04W+zDUB5W/C7lVpNdyNqmj/mXDfz5nkJsl0gMAcsimrO133x9dSb
+ qtLJ9qL0axS3Z6G/FsrnwlZ0KtN+GD74qCPqLBZ0ixp5yLwouAnhCp/CLgYaVHveJR5vqs3IAlv
+ Drmsq1img3j+YegEhUSNU/EQgMy+E6zmBuMJAAbQeaCxFxos6fDp3Cau3pvyvWg4E9P7LR48ps2
+ XNzWaP97R/84KRsxiwHMAp+H7qyd772V/tSxnvyLHei0kRSIuGz+DgKGTETzhXnLNm1R/1C+hFG
+ +WsizLnDuNtjVAs04KTWSZzNynOxaqxTcq6yEJx5vnj4AOZFGZstvh72s0UqDWZ/jEdVFyN4zzN
+ /tg2C5qGBZdCjsKrfC5vBa6eeumkZVOzWiD47xzWgpUty+73K5mX+UTKJiNRpanIv76NfVqePtg
+ FFW+xpKN+MV0MpVnILA==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-04-02_01,2026-04-02_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 bulkscore=0 malwarescore=0 spamscore=0 phishscore=0
+ priorityscore=1501 lowpriorityscore=0 adultscore=0 suspectscore=0
+ impostorscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2603050001
+ definitions=main-2604020076
 
-Hi Joerg,
 
-> > drivers/iommu/amd/iommu.c | 30 +++++++++++++++++++++++-------
-> > 1 file changed, 23 insertions(+), 7 deletions(-)
 
-> Applied, thanks.
+On 3/9/2026 12:29 PM, Ekansh Gupta wrote:
+>
+> On 2/24/2026 2:42 PM, Christian König wrote:
+>> On 2/23/26 20:09, Ekansh Gupta wrote:
+>>> [Sie erhalten nicht häufig E-Mails von ekansh.gupta@oss.qualcomm.com. Weitere Informationen, warum dies wichtig ist, finden Sie unter https://aka.ms/LearnAboutSenderIdentification ]
+>>>
+>>> Add PRIME dma-buf import support for QDA GEM buffer objects and integrate
+>>> it with the existing per-process memory manager and IOMMU device model.
+>>>
+>>> The implementation extends qda_gem_obj to represent imported dma-bufs,
+>>> including dma_buf references, attachment state, scatter-gather tables
+>>> and an imported DMA address used for DSP-facing book-keeping. The
+>>> qda_gem_prime_import() path handles reimports of buffers originally
+>>> exported by QDA as well as imports of external dma-bufs, attaching them
+>>> to the assigned IOMMU device
+>> That is usually an absolutely clear NO-GO for DMA-bufs. Where exactly in the code is that?
+> dma_buf_attach* to comute-cb iommu devices are critical for DSPs to access the buffer.
+> This is needed if the buffer is exported by anyone other than QDA(say system heap). If this is not
+> the correct way, what should be the right way here? On the current fastrpc driver also,
+> the DMABUF is getting attached with iommu device[1] due to the same requirement.
+>
+> [1] https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/drivers/misc/fastrpc.c#n779
 
-I just sent a v5 addressing the requested changes from v4 from Vasant.
+Hi Christian,
 
-Please apply v5 instead.
+Do you have any suggestions for the shared requirements?
 
-v5: https://lore.kernel.org/linux-iommu/20260402074255.18415-1-magnus@dolphinics.com/
+I'm reworking on the next version and currently I don't see any other way
+to handle dma_buf_attach* cases.
 
-Magnus
+//Ekansh
+
+>>> and mapping them through the memory manager
+>>> for DSP access. The GEM free path is updated to unmap and detach
+>>> imported buffers while preserving the existing behaviour for locally
+>>> allocated memory.
+>>>
+>>> The PRIME fd-to-handle path is implemented in qda_prime_fd_to_handle(),
+>>> which records the calling drm_file in a driver-private import context
+>>> before invoking the core DRM helpers. The GEM import callback retrieves
+>>> this context to ensure that an IOMMU device is assigned to the process
+>>> and that imported buffers follow the same per-process IOMMU selection
+>>> rules as natively allocated GEM objects.
+>>>
+>>> This patch prepares the driver for interoperable buffer sharing between
+>>> QDA and other dma-buf capable subsystems while keeping IOMMU mapping and
+>>> lifetime handling consistent with the existing GEM allocation flow.
+>>>
+>>> Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+>> ...
+>>
+>>> @@ -15,23 +16,29 @@ static int validate_gem_obj_for_mmap(struct qda_gem_obj *qda_gem_obj)
+>>>                 qda_err(NULL, "Invalid GEM object size\n");
+>>>                 return -EINVAL;
+>>>         }
+>>> -       if (!qda_gem_obj->iommu_dev || !qda_gem_obj->iommu_dev->dev) {
+>>> -               qda_err(NULL, "Allocated buffer missing IOMMU device\n");
+>>> -               return -EINVAL;
+>>> -       }
+>>> -       if (!qda_gem_obj->iommu_dev->dev) {
+>>> -               qda_err(NULL, "Allocated buffer missing IOMMU device\n");
+>>> -               return -EINVAL;
+>>> -       }
+>>> -       if (!qda_gem_obj->virt) {
+>>> -               qda_err(NULL, "Allocated buffer missing virtual address\n");
+>>> -               return -EINVAL;
+>>> -       }
+>>> -       if (qda_gem_obj->dma_addr == 0) {
+>>> -               qda_err(NULL, "Allocated buffer missing DMA address\n");
+>>> -               return -EINVAL;
+>>> +       if (qda_gem_obj->is_imported) {
+>> Absolutely clear NAK to that. Imported buffers *can't* be mmaped through the importer!
+>>
+>> Userspace needs to mmap() them through the exporter.
+>>
+>> If you absolutely have to map them through the importer for uAPI backward compatibility then there is dma_buf_mmap() for that, but this is clearly not the case here.
+>>
+>> ...
+> Okay, the requirement is slightly different here. Any buffer which is not allocated using the
+> QDA GEM interface needs to be attached to the iommu device for that particular process to
+> enable DSP for the access. I should not call it `mmap` instead it should be called importing the
+> buffer to a particular iommu context bank. With this definition, is it fine to keep it this way? Or
+> should the dma_buf_attach* calls be moved to some other place?
+>>> +static int qda_memory_manager_map_imported(struct qda_memory_manager *mem_mgr,
+>>> +                                          struct qda_gem_obj *gem_obj,
+>>> +                                          struct qda_iommu_device *iommu_dev)
+>>> +{
+>>> +       struct scatterlist *sg;
+>>> +       dma_addr_t dma_addr;
+>>> +       int ret = 0;
+>>> +
+>>> +       if (!gem_obj->is_imported || !gem_obj->sgt || !iommu_dev) {
+>>> +               qda_err(NULL, "Invalid parameters for imported buffer mapping\n");
+>>> +               return -EINVAL;
+>>> +       }
+>>> +
+>>> +       gem_obj->iommu_dev = iommu_dev;
+>>> +
+>>> +       sg = gem_obj->sgt->sgl;
+>>> +       if (sg) {
+>>> +               dma_addr = sg_dma_address(sg);
+>>> +               dma_addr += ((u64)iommu_dev->sid << 32);
+>>> +
+>>> +               gem_obj->imported_dma_addr = dma_addr;
+>> Well that looks like you are only using the first DMA address from the imported sgt. What about the others?
+> I might have a proper appach for this now, will update in the next spin.
+>> Regards,
+>> Christian.
+
