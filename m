@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7023D37CD46
-	for <iommu@lists.linux.dev>; Thu,  2 Apr 2026 07:00:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 546523803C7
+	for <iommu@lists.linux.dev>; Thu,  2 Apr 2026 07:00:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775113226; cv=none; b=gos9MBHMG+J02T5Wu6/hDfLQ8wd92dgSg274ZbJzKuJDLnJA8eO72kqVp8cu5M13Q6MOw3L2erD6suhrr9fAbF2JxIaAvJQCie1dJsDVGbfj9OXD70/Ydu4ZAL8FpGKWkZfFpAC0o/8X9l4tcSnsOBWCINBLgd6KavUAUP2AWYs=
+	t=1775113227; cv=none; b=SegCArOl+dSbJTg2dMcvQ7fsLTzObnrdDiTfDcDVxyXnuouBS+5ptZqefhO2XtIljNQBgKx3v2JApErXj/mhsNObFr7FyYkazIBRohYNA5bzq++OKkl7P+J/cT/KfuAnbQvjLGgnASv4+O+EP+zwSTXJmoV8dTr2XaJx95JM4nc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775113226; c=relaxed/simple;
-	bh=r3nyFCWQlBFbexJdHzJvghbchhPXTHeSh6JtQNWO8Tg=;
+	s=arc-20240116; t=1775113227; c=relaxed/simple;
+	bh=yRFnE8moetnPMcdJVGduldHRDRbg3T7wjDxla15vrSY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Otc5ZMGWivSqdaBIvHbQTDeA6Uz6yd2ixv/p7eAG2ONxELWzzz7x1zFznwcWdusdBU5aiFI+knAFgu6aizNOzg3PirmuVWnlNSdF5F5wGIz37rTi520jgphB0o72Kjvt30MfG6Q63TLOkuiLZ8wKOGb0Ccf1IfCTPlGtK0q7//Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ds5FXmL/; arc=none smtp.client-ip=198.175.65.21
+	 MIME-Version; b=Iz9qZjO5sGuvlIHixWH756Q44zAV19TmpmCrpndQ2Zn5BF/fOTAvE8notdjptGG1h3ljP4N4RU4NPPEaanqPGwkyLb5zbDRXCJ4rgt12r7fgJwH/IM7DK77OP1PVi4eEAuQMq83etn5jFQ8wwxEdRsIwCxyYKnNcDxMsZrn4Q4o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WKzQl/FO; arc=none smtp.client-ip=198.175.65.21
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ds5FXmL/"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WKzQl/FO"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1775113224; x=1806649224;
+  t=1775113226; x=1806649226;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=r3nyFCWQlBFbexJdHzJvghbchhPXTHeSh6JtQNWO8Tg=;
-  b=Ds5FXmL/0LfJTzo9p5qsnR/zAK8d0bQvzQ5uFQRX62qyXcXIoY4OvKc/
-   oTPQRgGb2vL/vTfJbSKGRqDaSndf//j2Ds/TkSb2OPXQEAtbecA5XIfPB
-   laXU4swOErI3KNi6dfiMhULwqh4LfM8L/rQXW78q9ghHQw/Lr3zyg8EFB
-   D0v4nCCar+PPSxyty0Gm4nkfo2BpWTd1ALNb2CwUVCB+mTrdT6YRmya9j
-   owXjCTQGFxm/eVRjRHs0aZtcH9wOiiExs3h7df7Fy0ndKRXAHvbxgEZ4u
-   sypEHnO+uaIGvKhaJ1w/tNxOEMVLV56zwMH2rMlUqykq2ieuaRyJEOGNp
-   w==;
-X-CSE-ConnectionGUID: t5nsmy5gSEiINImhaVJpNQ==
-X-CSE-MsgGUID: dl9qoU7oQ6q73npq8F6jug==
-X-IronPort-AV: E=McAfee;i="6800,10657,11746"; a="76053652"
+  bh=yRFnE8moetnPMcdJVGduldHRDRbg3T7wjDxla15vrSY=;
+  b=WKzQl/FOXrV69KNaddBtNObUPNUbl0VosvPGa2rx67a2dJqlKxdz6/1p
+   8hnYsJ2JIfotyLsrqHMsH4ZkPHrQd/zQGQosW47w6Y1wmfBOdp8KR7iX6
+   LizxEEFf1NOyxI08JDNVNTOdHGwbivolYNXkF8I+w2tufyAiky8WJmHNd
+   fNLR6F7kwvgT5rDuoy1JFjR1ChRDvhib6opVrzf8JDhgPktfnFJ25NNcm
+   P17ivZnw9TF6u2mu5mDlwcbtceZzOIr5SnvkvUWw2OKaSTLxtz8Ocn0kY
+   e9lFt1VfDJYZC0pwzsPb99vsByHlFBvrDHUBcf3B2HLLsv9FXWMZp9cW1
+   A==;
+X-CSE-ConnectionGUID: UAMxFGB2RWqMAk5xc8ovRA==
+X-CSE-MsgGUID: gKF5YTpNSEWxGPdy39uTAg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11746"; a="76053658"
 X-IronPort-AV: E=Sophos;i="6.23,155,1770624000"; 
-   d="scan'208";a="76053652"
+   d="scan'208";a="76053658"
 Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2026 00:00:24 -0700
-X-CSE-ConnectionGUID: m4ZeuaxHQxilYY7rqznPGg==
-X-CSE-MsgGUID: //SQA9lbSoGsyO1Nrlk0Iw==
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2026 00:00:26 -0700
+X-CSE-ConnectionGUID: iIXsLdPBRqq6cSnPEvdrpQ==
+X-CSE-MsgGUID: 4kHoOkBeQTqMThF+a/HHxg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,155,1770624000"; 
-   d="scan'208";a="231847875"
+   d="scan'208";a="231847883"
 Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by orviesa005.jf.intel.com with ESMTP; 02 Apr 2026 00:00:23 -0700
+  by orviesa005.jf.intel.com with ESMTP; 02 Apr 2026 00:00:25 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: Zhenzhong Duan <zhenzhong.duan@intel.com>,
@@ -50,9 +50,9 @@ Cc: Zhenzhong Duan <zhenzhong.duan@intel.com>,
 	Jason Gunthorpe <jgg@nvidia.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 06/10] iommu/vt-d: Remove dmar_writel() and dmar_writeq()
-Date: Thu,  2 Apr 2026 14:57:29 +0800
-Message-ID: <20260402065734.1687476-7-baolu.lu@linux.intel.com>
+Subject: [PATCH 07/10] iommu/vt-d: Split piotlb invalidation into range and all
+Date: Thu,  2 Apr 2026 14:57:30 +0800
+Message-ID: <20260402065734.1687476-8-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260402065734.1687476-1-baolu.lu@linux.intel.com>
 References: <20260402065734.1687476-1-baolu.lu@linux.intel.com>
@@ -64,212 +64,209 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+From: Jason Gunthorpe <jgg@nvidia.com>
 
-dmar_writel() and dmar_writeq() do nothing other than expand to the generic
-writel() and writeq(), and the dmar_write*() wrappers are used
-inconsistently.
+Currently these call chains are muddled up by using npages=-1, but only
+one caller has the possibility to do both options.
 
-Remove the dmar_write*() wrappers and use writel() and writeq() directly.
+Simplify qi_flush_piotlb() to qi_flush_piotlb_all() since all callers
+pass npages=-1.
 
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
-Link: https://lore.kernel.org/r/20260217214438.3395039-3-bhelgaas@google.com
+Split qi_batch_add_piotlb() into qi_batch_add_piotlb_all() and related
+helpers.
+
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Link: https://lore.kernel.org/r/1-v1-f175e27af136+11647-iommupt_inv_vtd_jgg@nvidia.com
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel/iommu.h         |  3 ---
- drivers/iommu/intel/dmar.c          |  2 +-
- drivers/iommu/intel/iommu.c         | 12 ++++++------
- drivers/iommu/intel/irq_remapping.c |  4 ++--
- drivers/iommu/intel/perfmon.c       | 22 +++++++++++-----------
- drivers/iommu/intel/prq.c           | 14 +++++++-------
- 6 files changed, 27 insertions(+), 30 deletions(-)
+ drivers/iommu/intel/iommu.h | 39 +++++++++++++++++--------------------
+ drivers/iommu/intel/cache.c | 20 ++++++++++++-------
+ drivers/iommu/intel/dmar.c  | 19 ++++--------------
+ drivers/iommu/intel/pasid.c |  6 +++---
+ drivers/iommu/intel/prq.c   |  2 +-
+ 5 files changed, 39 insertions(+), 47 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index dbd8d196d154..10331364c0ef 100644
+index 10331364c0ef..9b193bbcfd58 100644
 --- a/drivers/iommu/intel/iommu.h
 +++ b/drivers/iommu/intel/iommu.h
-@@ -148,9 +148,6 @@
+@@ -1077,31 +1077,29 @@ static inline void qi_desc_dev_iotlb(u16 sid, u16 pfsid, u16 qdep, u64 addr,
+ 	desc->qw3 = 0;
+ }
  
- #define OFFSET_STRIDE		(9)
++/* PASID-selective IOTLB invalidation */
++static inline void qi_desc_piotlb_all(u16 did, u32 pasid, struct qi_desc *desc)
++{
++	desc->qw0 = QI_EIOTLB_PASID(pasid) | QI_EIOTLB_DID(did) |
++		    QI_EIOTLB_GRAN(QI_GRAN_NONG_PASID) | QI_EIOTLB_TYPE;
++	desc->qw1 = 0;
++}
++
++/* Page-selective-within-PASID IOTLB invalidation */
+ static inline void qi_desc_piotlb(u16 did, u32 pasid, u64 addr,
+ 				  unsigned long npages, bool ih,
+ 				  struct qi_desc *desc)
+ {
+-	if (npages == -1) {
+-		desc->qw0 = QI_EIOTLB_PASID(pasid) |
+-				QI_EIOTLB_DID(did) |
+-				QI_EIOTLB_GRAN(QI_GRAN_NONG_PASID) |
+-				QI_EIOTLB_TYPE;
+-		desc->qw1 = 0;
+-	} else {
+-		int mask = ilog2(__roundup_pow_of_two(npages));
+-		unsigned long align = (1ULL << (VTD_PAGE_SHIFT + mask));
++	int mask = ilog2(__roundup_pow_of_two(npages));
++	unsigned long align = (1ULL << (VTD_PAGE_SHIFT + mask));
  
--#define dmar_writeq(a,v) writeq(v,a)
--#define dmar_writel(a, v) writel(v, a)
--
- #define DMAR_VER_MAJOR(v)		(((v) & 0xf0) >> 4)
- #define DMAR_VER_MINOR(v)		((v) & 0x0f)
+-		if (WARN_ON_ONCE(!IS_ALIGNED(addr, align)))
+-			addr = ALIGN_DOWN(addr, align);
++	if (WARN_ON_ONCE(!IS_ALIGNED(addr, align)))
++		addr = ALIGN_DOWN(addr, align);
+ 
+-		desc->qw0 = QI_EIOTLB_PASID(pasid) |
+-				QI_EIOTLB_DID(did) |
+-				QI_EIOTLB_GRAN(QI_GRAN_PSI_PASID) |
+-				QI_EIOTLB_TYPE;
+-		desc->qw1 = QI_EIOTLB_ADDR(addr) |
+-				QI_EIOTLB_IH(ih) |
+-				QI_EIOTLB_AM(mask);
+-	}
++	desc->qw0 = QI_EIOTLB_PASID(pasid) | QI_EIOTLB_DID(did) |
++		    QI_EIOTLB_GRAN(QI_GRAN_PSI_PASID) | QI_EIOTLB_TYPE;
++	desc->qw1 = QI_EIOTLB_ADDR(addr) | QI_EIOTLB_IH(ih) |
++		    QI_EIOTLB_AM(mask);
+ }
+ 
+ static inline void qi_desc_dev_iotlb_pasid(u16 sid, u16 pfsid, u32 pasid,
+@@ -1163,8 +1161,7 @@ void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
+ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
+ 			u16 qdep, u64 addr, unsigned mask);
+ 
+-void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u32 pasid, u64 addr,
+-		     unsigned long npages, bool ih);
++void qi_flush_piotlb_all(struct intel_iommu *iommu, u16 did, u32 pasid);
+ 
+ void qi_flush_dev_iotlb_pasid(struct intel_iommu *iommu, u16 sid, u16 pfsid,
+ 			      u32 pasid, u16 qdep, u64 addr,
+diff --git a/drivers/iommu/intel/cache.c b/drivers/iommu/intel/cache.c
+index 249ab5886c73..3ae0d21ecb9f 100644
+--- a/drivers/iommu/intel/cache.c
++++ b/drivers/iommu/intel/cache.c
+@@ -330,15 +330,17 @@ static void qi_batch_add_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid
+ 	qi_batch_increment_index(iommu, batch);
+ }
+ 
++static void qi_batch_add_piotlb_all(struct intel_iommu *iommu, u16 did,
++				    u32 pasid, struct qi_batch *batch)
++{
++	qi_desc_piotlb_all(did, pasid, &batch->descs[batch->index]);
++	qi_batch_increment_index(iommu, batch);
++}
++
+ static void qi_batch_add_piotlb(struct intel_iommu *iommu, u16 did, u32 pasid,
+ 				u64 addr, unsigned long npages, bool ih,
+ 				struct qi_batch *batch)
+ {
+-	/*
+-	 * npages == -1 means a PASID-selective invalidation, otherwise,
+-	 * a positive value for Page-selective-within-PASID invalidation.
+-	 * 0 is not a valid input.
+-	 */
+ 	if (!npages)
+ 		return;
+ 
+@@ -378,8 +380,12 @@ static void cache_tag_flush_iotlb(struct dmar_domain *domain, struct cache_tag *
+ 	u64 type = DMA_TLB_PSI_FLUSH;
+ 
+ 	if (intel_domain_use_piotlb(domain)) {
+-		qi_batch_add_piotlb(iommu, tag->domain_id, tag->pasid, addr,
+-				    pages, ih, domain->qi_batch);
++		if (pages == -1)
++			qi_batch_add_piotlb_all(iommu, tag->domain_id,
++						tag->pasid, domain->qi_batch);
++		else
++			qi_batch_add_piotlb(iommu, tag->domain_id, tag->pasid,
++					    addr, pages, ih, domain->qi_batch);
+ 		return;
+ 	}
  
 diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index ae8b5ed70f22..cd04c3f56eec 100644
+index cd04c3f56eec..d33c119a935e 100644
 --- a/drivers/iommu/intel/dmar.c
 +++ b/drivers/iommu/intel/dmar.c
-@@ -1661,7 +1661,7 @@ static void __dmar_enable_qi(struct intel_iommu *iommu)
- 	/* write zero to the tail reg */
- 	writel(0, iommu->reg + DMAR_IQT_REG);
- 
--	dmar_writeq(iommu->reg + DMAR_IQA_REG, val);
-+	writeq(val, iommu->reg + DMAR_IQA_REG);
- 
- 	iommu->gcmd |= DMA_GCMD_QIE;
- 	writel(iommu->gcmd, iommu->reg + DMAR_GCMD_REG);
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 4cb39000cd91..297415fe726d 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -697,7 +697,7 @@ static void iommu_set_root_entry(struct intel_iommu *iommu)
- 		addr |= DMA_RTADDR_SMT;
- 
- 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
--	dmar_writeq(iommu->reg + DMAR_RTADDR_REG, addr);
-+	writeq(addr, iommu->reg + DMAR_RTADDR_REG);
- 
- 	writel(iommu->gcmd | DMA_GCMD_SRTP, iommu->reg + DMAR_GCMD_REG);
- 
-@@ -765,7 +765,7 @@ static void __iommu_flush_context(struct intel_iommu *iommu,
- 	val |= DMA_CCMD_ICC;
- 
- 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
--	dmar_writeq(iommu->reg + DMAR_CCMD_REG, val);
-+	writeq(val, iommu->reg + DMAR_CCMD_REG);
- 
- 	/* Make sure hardware complete it */
- 	IOMMU_WAIT_OP(iommu, DMAR_CCMD_REG,
-@@ -806,8 +806,8 @@ void __iommu_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
- 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
- 	/* Note: Only uses first TLB reg currently */
- 	if (val_iva)
--		dmar_writeq(iommu->reg + tlb_offset, val_iva);
--	dmar_writeq(iommu->reg + tlb_offset + 8, val);
-+		writeq(val_iva, iommu->reg + tlb_offset);
-+	writeq(val, iommu->reg + tlb_offset + 8);
- 
- 	/* Make sure hardware complete it */
- 	IOMMU_WAIT_OP(iommu, tlb_offset + 8,
-@@ -4201,8 +4201,8 @@ int ecmd_submit_sync(struct intel_iommu *iommu, u8 ecmd, u64 oa, u64 ob)
- 	 * - It's not invoked in any critical path. The extra MMIO
- 	 *   write doesn't bring any performance concerns.
- 	 */
--	dmar_writeq(iommu->reg + DMAR_ECEO_REG, ob);
--	dmar_writeq(iommu->reg + DMAR_ECMD_REG, ecmd | (oa << DMA_ECMD_OA_SHIFT));
-+	writeq(ob, iommu->reg + DMAR_ECEO_REG);
-+	writeq(ecmd | (oa << DMA_ECMD_OA_SHIFT), iommu->reg + DMAR_ECMD_REG);
- 
- 	IOMMU_WAIT_OP(iommu, DMAR_ECRSP_REG, readq,
- 		      !(res & DMA_ECMD_ECRSP_IP), res);
-diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
-index 21e54e40a17f..25c26f706984 100644
---- a/drivers/iommu/intel/irq_remapping.c
-+++ b/drivers/iommu/intel/irq_remapping.c
-@@ -465,8 +465,8 @@ static void iommu_set_irq_remapping(struct intel_iommu *iommu, int mode)
- 
- 	raw_spin_lock_irqsave(&iommu->register_lock, flags);
- 
--	dmar_writeq(iommu->reg + DMAR_IRTA_REG,
--		    (addr) | IR_X2APIC_MODE(mode) | INTR_REMAP_TABLE_REG_SIZE);
-+	writeq((addr) | IR_X2APIC_MODE(mode) | INTR_REMAP_TABLE_REG_SIZE,
-+	       iommu->reg + DMAR_IRTA_REG);
- 
- 	/* Set interrupt-remapping table pointer */
- 	writel(iommu->gcmd | DMA_GCMD_SIRTP, iommu->reg + DMAR_GCMD_REG);
-diff --git a/drivers/iommu/intel/perfmon.c b/drivers/iommu/intel/perfmon.c
-index 3f75f567f210..eb1df7a9b3c7 100644
---- a/drivers/iommu/intel/perfmon.c
-+++ b/drivers/iommu/intel/perfmon.c
-@@ -99,20 +99,20 @@ IOMMU_PMU_ATTR(filter_page_table,	"config2:32-36",	IOMMU_PMU_FILTER_PAGE_TABLE);
- #define iommu_pmu_set_filter(_name, _config, _filter, _idx, _econfig)		\
- {										\
- 	if ((iommu_pmu->filter & _filter) && iommu_pmu_en_##_name(_econfig)) {	\
--		dmar_writel(iommu_pmu->cfg_reg + _idx * IOMMU_PMU_CFG_OFFSET +	\
--			    IOMMU_PMU_CFG_SIZE +				\
--			    (ffs(_filter) - 1) * IOMMU_PMU_CFG_FILTERS_OFFSET,	\
--			    iommu_pmu_get_##_name(_config) | IOMMU_PMU_FILTER_EN);\
-+		writel(iommu_pmu_get_##_name(_config) | IOMMU_PMU_FILTER_EN,	\
-+		       iommu_pmu->cfg_reg + _idx * IOMMU_PMU_CFG_OFFSET +	\
-+		       IOMMU_PMU_CFG_SIZE +					\
-+		       (ffs(_filter) - 1) * IOMMU_PMU_CFG_FILTERS_OFFSET);	\
- 	}									\
+@@ -1550,23 +1550,12 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
+ 	qi_submit_sync(iommu, &desc, 1, 0);
  }
  
- #define iommu_pmu_clear_filter(_filter, _idx)					\
- {										\
- 	if (iommu_pmu->filter & _filter) {					\
--		dmar_writel(iommu_pmu->cfg_reg + _idx * IOMMU_PMU_CFG_OFFSET +	\
--			    IOMMU_PMU_CFG_SIZE +				\
--			    (ffs(_filter) - 1) * IOMMU_PMU_CFG_FILTERS_OFFSET,	\
--			    0);							\
-+		writel(0,							\
-+		       iommu_pmu->cfg_reg + _idx * IOMMU_PMU_CFG_OFFSET +	\
-+		       IOMMU_PMU_CFG_SIZE +					\
-+		       (ffs(_filter) - 1) * IOMMU_PMU_CFG_FILTERS_OFFSET);	\
- 	}									\
+-/* PASID-based IOTLB invalidation */
+-void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u32 pasid, u64 addr,
+-		     unsigned long npages, bool ih)
++/* PASID-selective IOTLB invalidation */
++void qi_flush_piotlb_all(struct intel_iommu *iommu, u16 did, u32 pasid)
+ {
+-	struct qi_desc desc = {.qw2 = 0, .qw3 = 0};
++	struct qi_desc desc = {};
+ 
+-	/*
+-	 * npages == -1 means a PASID-selective invalidation, otherwise,
+-	 * a positive value for Page-selective-within-PASID invalidation.
+-	 * 0 is not a valid input.
+-	 */
+-	if (WARN_ON(!npages)) {
+-		pr_err("Invalid input npages = %ld\n", npages);
+-		return;
+-	}
+-
+-	qi_desc_piotlb(did, pasid, addr, npages, ih, &desc);
++	qi_desc_piotlb_all(did, pasid, &desc);
+ 	qi_submit_sync(iommu, &desc, 1, 0);
  }
  
-@@ -411,7 +411,7 @@ static int iommu_pmu_assign_event(struct iommu_pmu *iommu_pmu,
- 	hwc->idx = idx;
+diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+index 9d30015b8940..89541b74ab8c 100644
+--- a/drivers/iommu/intel/pasid.c
++++ b/drivers/iommu/intel/pasid.c
+@@ -282,7 +282,7 @@ void intel_pasid_tear_down_entry(struct intel_iommu *iommu, struct device *dev,
+ 	pasid_cache_invalidation_with_pasid(iommu, did, pasid);
  
- 	/* config events */
--	dmar_writeq(iommu_config_base(iommu_pmu, idx), hwc->config);
-+	writeq(hwc->config, iommu_config_base(iommu_pmu, idx));
+ 	if (pgtt == PASID_ENTRY_PGTT_PT || pgtt == PASID_ENTRY_PGTT_FL_ONLY)
+-		qi_flush_piotlb(iommu, did, pasid, 0, -1, 0);
++		qi_flush_piotlb_all(iommu, did, pasid);
+ 	else
+ 		iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
  
- 	iommu_pmu_set_filter(requester_id, event->attr.config1,
- 			     IOMMU_PMU_FILTER_REQUESTER_ID, idx,
-@@ -510,7 +510,7 @@ static void iommu_pmu_counter_overflow(struct iommu_pmu *iommu_pmu)
- 			iommu_pmu_event_update(event);
- 		}
+@@ -308,7 +308,7 @@ static void pasid_flush_caches(struct intel_iommu *iommu,
  
--		dmar_writeq(iommu_pmu->overflow, status);
-+		writeq(status, iommu_pmu->overflow);
+ 	if (cap_caching_mode(iommu->cap)) {
+ 		pasid_cache_invalidation_with_pasid(iommu, did, pasid);
+-		qi_flush_piotlb(iommu, did, pasid, 0, -1, 0);
++		qi_flush_piotlb_all(iommu, did, pasid);
+ 	} else {
+ 		iommu_flush_write_buffer(iommu);
  	}
- }
+@@ -342,7 +342,7 @@ static void intel_pasid_flush_present(struct intel_iommu *iommu,
+ 	 *      Addr[63:12]=0x7FFFFFFF_FFFFF) to affected functions
+ 	 */
+ 	pasid_cache_invalidation_with_pasid(iommu, did, pasid);
+-	qi_flush_piotlb(iommu, did, pasid, 0, -1, 0);
++	qi_flush_piotlb_all(iommu, did, pasid);
  
-@@ -524,7 +524,7 @@ static irqreturn_t iommu_pmu_irq_handler(int irq, void *dev_id)
- 	iommu_pmu_counter_overflow(iommu->pmu);
- 
- 	/* Clear the status bit */
--	dmar_writel(iommu->reg + DMAR_PERFINTRSTS_REG, DMA_PERFINTRSTS_PIS);
-+	writel(DMA_PERFINTRSTS_PIS, iommu->reg + DMAR_PERFINTRSTS_REG);
- 
- 	return IRQ_HANDLED;
+ 	devtlb_invalidation_with_pasid(iommu, dev, pasid);
  }
 diff --git a/drivers/iommu/intel/prq.c b/drivers/iommu/intel/prq.c
-index c28fbd5c14a7..1460b57db129 100644
+index 1460b57db129..586055e51bb2 100644
 --- a/drivers/iommu/intel/prq.c
 +++ b/drivers/iommu/intel/prq.c
-@@ -259,7 +259,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 		head = (head + sizeof(*req)) & PRQ_RING_MASK;
+@@ -113,7 +113,7 @@ void intel_iommu_drain_pasid_prq(struct device *dev, u32 pasid)
+ 		qi_desc_dev_iotlb(sid, info->pfsid, info->ats_qdep, 0,
+ 				  MAX_AGAW_PFN_WIDTH, &desc[2]);
+ 	} else {
+-		qi_desc_piotlb(did, pasid, 0, -1, 0, &desc[1]);
++		qi_desc_piotlb_all(did, pasid, &desc[1]);
+ 		qi_desc_dev_iotlb_pasid(sid, info->pfsid, pasid, info->ats_qdep,
+ 					0, MAX_AGAW_PFN_WIDTH, &desc[2]);
  	}
- 
--	dmar_writeq(iommu->reg + DMAR_PQH_REG, tail);
-+	writeq(tail, iommu->reg + DMAR_PQH_REG);
- 
- 	/*
- 	 * Clear the page request overflow bit and wake up all threads that
-@@ -325,9 +325,9 @@ int intel_iommu_enable_prq(struct intel_iommu *iommu)
- 		       iommu->name);
- 		goto free_iopfq;
- 	}
--	dmar_writeq(iommu->reg + DMAR_PQH_REG, 0ULL);
--	dmar_writeq(iommu->reg + DMAR_PQT_REG, 0ULL);
--	dmar_writeq(iommu->reg + DMAR_PQA_REG, virt_to_phys(iommu->prq) | PRQ_ORDER);
-+	writeq(0ULL, iommu->reg + DMAR_PQH_REG);
-+	writeq(0ULL, iommu->reg + DMAR_PQT_REG);
-+	writeq(virt_to_phys(iommu->prq) | PRQ_ORDER, iommu->reg + DMAR_PQA_REG);
- 
- 	init_completion(&iommu->prq_complete);
- 
-@@ -348,9 +348,9 @@ int intel_iommu_enable_prq(struct intel_iommu *iommu)
- 
- int intel_iommu_finish_prq(struct intel_iommu *iommu)
- {
--	dmar_writeq(iommu->reg + DMAR_PQH_REG, 0ULL);
--	dmar_writeq(iommu->reg + DMAR_PQT_REG, 0ULL);
--	dmar_writeq(iommu->reg + DMAR_PQA_REG, 0ULL);
-+	writeq(0ULL, iommu->reg + DMAR_PQH_REG);
-+	writeq(0ULL, iommu->reg + DMAR_PQT_REG);
-+	writeq(0ULL, iommu->reg + DMAR_PQA_REG);
- 
- 	if (iommu->pr_irq) {
- 		free_irq(iommu->pr_irq, iommu);
 -- 
 2.43.0
 
