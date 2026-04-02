@@ -1,155 +1,242 @@
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013068.outbound.protection.outlook.com [40.93.201.68])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCA3C365A1B
-	for <iommu@lists.linux.dev>; Thu,  2 Apr 2026 04:41:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A65503537F0
+	for <iommu@lists.linux.dev>; Thu,  2 Apr 2026 05:00:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.201.68
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775104904; cv=pass; b=dX1+Hd/1+0XpZZghAW5KcATlsjQk8lW2wi+Az2xQJ01e47WHRGSS3mlndLj+3ibv8y683AI3vMWweA67hRoErdeBXyWeUsw8TUTComz/chiqyA41t2yUJIUECHLd9e18u+vcCyP+ELzSZqA2NZme8mzwK15L2xtEkxUPpTRnT9g=
+	t=1775106008; cv=fail; b=O+VpMQMiwleoxFASkIQ1SHFAuhuWtSEF7jQi0SyJ8WtdIZk54KQvaOk8TJrzMH+OXL4ks52bxgy/ZEhWy2G9P5kRfuDkLusL5WzZr6tdfz3eNCfxo7NNhPBe2f3Oaz9D5aiNNy3gNfOXozBJwv5r4/Qlyv+IFQCszQeoKEliYbE=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775104904; c=relaxed/simple;
-	bh=8M0uK/dY9UfmR0xcTfEk17ugbKg+8eIoSDrEidIpkIc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=lMAx5Oo9YZ2EOQWYr0vWvb/2hKu2yak71lwtaXlsbjF3A/cALNPnulg+3CdCcb+aPu5Y816Nv+YxtlpiavOlP6iJL2/zgzauTtMdIoihWbXpvpZvN5B5xKkAmdJGT7jADBXvs06NSs072TUsvKkWrIdbxSeFnGKS5JCKrCOu4eQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=bAkA1lFS; arc=pass smtp.client-ip=209.85.218.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1775106008; c=relaxed/simple;
+	bh=irfvQZN3zLZIRel8yTBtsBolkKRcOcBB+B1JpIzRT6Y=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=B8dkqwqsO7GmsHzhulLfUKvRbBOVzIf9TEixHAkW2vdfRPerNuUIN5VXctlMXUxlkBbBZ5SalMw+/8z4tyQB6QiGzrU7uAYYZLsNq/BodNOdVtsVwFAbp1W4iIiBdptiPBZTNUYHOHXIQdY2SwcQmoWoo3w4I8u9+yWrFAI1Yp0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=rFG8uQPC; arc=fail smtp.client-ip=40.93.201.68
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="bAkA1lFS"
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-b9a0762ed5fso64694966b.1
-        for <iommu@lists.linux.dev>; Wed, 01 Apr 2026 21:41:42 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1775104901; cv=none;
-        d=google.com; s=arc-20240605;
-        b=TvfC9hUN292Wa+jtEMMepqfhLKcKAencV0WT62urmQ7DaQTGW2YBJXom9W51V3OtvI
-         24qNvi+iI2Lh+dzmtJVwcPkZ6UUnD+ahf20O15PdIleq7A2VkeVPUtmxOOi27kFN4a0b
-         JazxOYSwZA3SyHIlomdw7gNvcfLM6a31ZKRQ+QGJtBZacpwUYJ5NwIZI9YBbhIQPFYxi
-         T8S//Qe/CUfp4znbzV1XcD5WCdSxWbFrFU7YDpN+s6jrA8xeez/jxb1/yts4496iAIVZ
-         BemW0Z3MurmavrLpL+7mVDOCGwjCGqESFiGPcyxO6n/TpSQ3B+Wjqfee89CrGbh6SeIb
-         PZ8w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=MsqizXttng34qJSYG1+nQy1RthHCf+vtWgekNCi7+qE=;
-        fh=wTZX6HLpJONa8w5FGjcpeWJmDb4/nAUd4kFjTHiK30Q=;
-        b=HgXnVmti722eny7V6ZKK2ZKYoF4tlGFOIMsCuH/5QYnKb8oQRfru1pNpZpzJxAeiOg
-         aXyz/FcVRRM7M6wUmzmzEEY1pwjpr4sW3QZjSYFQTRWK8V3i8OKaPaWRZ1iApb4Ub1y1
-         eMWYZPm7LIh9/yJeeQPaYuXkbHerpkhXjBLa8XSBnhvUkZuhVu1w+ITvpqYreuye/Ldz
-         RN16qVNbkxAVSSx8tCufPflAfJZgEgWDZ1bOdVNw4ev0cjTOJC0g4kxTSxz5jhgPExc0
-         S8Lss0Wh5uGFVxt31GKdQryuAD2JVxGkVa2Itj8aM5woA+HfNCRYGFwW5td/YepurPNY
-         m1mA==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1775104901; x=1775709701; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=MsqizXttng34qJSYG1+nQy1RthHCf+vtWgekNCi7+qE=;
-        b=bAkA1lFSIdqefpMgJ8gLEiUfxvU+W0yJECb/eEtUaCSEH2+HJQwKOBvhWVf0sf6WeV
-         SLfp9mAMV5HxbbLogy+3rwwalVM7JZ2cPfYG770STZFnwrBP36gZP006xFN6ffHtLEb+
-         rNwsOXUEJdgu+i3tMRWGeXLchFW3emmhdJI60fcsWoixF1erS5u3tl5vJKcX+DG8RG/A
-         nr87VhPryhj0T4c5cgKCyWJ6t0hSW6NKy0AQe2xGeKKI9/cuHfVGfmgK8ZLtK3fLdrXJ
-         Yv7C4n6raODhKNgJM2VNgDnzn8WC9/R35bYinncMBkzaP1T/uLz2O74KyvLZAQHzlGqT
-         argg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775104901; x=1775709701;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MsqizXttng34qJSYG1+nQy1RthHCf+vtWgekNCi7+qE=;
-        b=VYOs8bIkupAm6vji08AwUj5Uf184QOAOQcz87n5IoEvffNcuTfLgUs/qiOa87zOeLs
-         qlOZ8iXnUIROCnSO+Cgs6FLSgOzniq8bscz6M0hLpP6ebMpLXfCKqIskCazLhgUyqRvs
-         HdmWupkfx7kHpoLGvGiXitX9sDlklMusd5JV+li4ITYcnzDrZYYIM8fKnCeLWFVfOGGJ
-         j9fD1kAV7BFbN0R4HS5UE879XLNlf9fVbM3g/RqvvkubEUP7x72cy5uFkZhHpo/NVzg/
-         jZ9qUYqflmacsWw8ZK7m8A8ad/DagEqvIijq/tNCiN5LHQUq+H7xfMYxhwLOYltCxK8/
-         c31w==
-X-Forwarded-Encrypted: i=1; AJvYcCXA08hsbcCVnERMulN/63YujmCLPxb6SE2v26eh6o0a1yqqIhP4tPphbzFGazHpE1qaniXnbQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyMnQ8M2iGLIvw4dXLd/rxqlxX08D7+/p/4+UCrNsi+zPrFr3Fs
-	2SYH7a6PzhGlZ6CyGnxUWV4q4bFO38P4GcAcuJmoXwGyqsvSVWVcAPrfpJda/eRcce1lu/KFy4r
-	3esBySxScNRWO2tVGY6KAY2MIoOY9VP2qADSqZpFNhQ==
-X-Gm-Gg: ATEYQzy9sXHV1+nbu1dWA2//k3h0+1t+Q7xrO07Bt4u/7nVqCsQlm8bnvXPtSD/ME/c
-	vnRzhg/yj8n3YOaxFiZQ7Yd6U/28Y3cj3j6KHK/FA19c0yFsl44Hv71pGnPNTE94Tq0OqEx72Qn
-	0ev8IWpZcpV9m75Nx2Y9UTnJqi79hTFoMDkxIx1mXtx8FJz28898TDrRmufU5H08xbya3GOQ6++
-	rwy+i6cg17peNScVQTT0gtyCq2WpNq+9NP5GVsRMqjMnO1zOle29YEYqm5kFcPD20v8CjIUivKV
-	3ULrJuKGdCGL82itsTQz6aIf86ynaYtKAGTBiUY=
-X-Received: by 2002:a17:907:8694:b0:b93:8275:795a with SMTP id
- a640c23a62f3a-b9c46fedc2cmr44691666b.15.1775104901064; Wed, 01 Apr 2026
- 21:41:41 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="rFG8uQPC"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=HK37k6rrKef2BopbdyfvDEbanUw2FByz3c8t7ULmEg4Kt5zKbQlbXj0QbekuFxz/Y5nCYZFBsIK3EsQE70TgCLASK2hMizjho8DZWti3piCCRkrCJGSttSDUl7+HXIwu1KQPOzpmETyBJuOz6Hrym+TcqblnJHzPc7k2PK/41uZtvWrWNsoe1JdeChg1sUaWCSvek6SBOdTQ7tljeqsjRGPQVBmpfYnkuqaCGEReVPno6CBVmOqqYZbs1hy71G9gMyQn3EtAxd8kf5YZqe8qqMPKuZraA/o8MySd+GtqcJpxKwzqJHaYBiEoxBhH3x+xNJufN1mvXzewWm9LkZgC3A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jKsHu8sOJOuqDqO2q5ziNdVT/TGb6qIiEIlVQOSoOpo=;
+ b=igAK6bA8DEYM+ZruhC7jKzfAamvVzo5gm/rMN1khveebZGSbzVyOMDOQwyxu3BsIgJoQooyvvNojdYsaf7OnoEKL0QpELTHBruZnk1EjCIAP5yt+GPElKb+oFQcKIgePoE2D/SoMicbvCO2fJwC1pwiH2dgX9R4L+beairC1XD1f804pdo0mVaXdra+f+d4PHrX11g+3sAAlVOCtjXwU1R92au9eRjpI3BdcIrpprUCN4wtLcCtnGxB7MjLhOd3ugcbcRlsuwrll4enFPysMEII4qJ0aGyN6RrNGT7t4iXmMwzomuz77Mo3PV/4lTUujVEje43Ot5w6qz1fTb6XGtA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jKsHu8sOJOuqDqO2q5ziNdVT/TGb6qIiEIlVQOSoOpo=;
+ b=rFG8uQPCmGUhpUbJgaa+UiV3QXO2ut1cWGVBKbBZ+VbWyNRmTsgqGx/WGkpz7DS5XGa7fHwlXhst9F0SUuKhd+K3JB0Ib1fP3pLvWjk7F1eEltYXuf3cOqmHx52rHOdiMYK7nmjkLwkUdkTE1XF5DtrTgvTwkrwkm24JnaZ1pHc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from PH7SPRMB0143.namprd12.prod.outlook.com (2603:10b6:510:201::21)
+ by SA1PR12MB6774.namprd12.prod.outlook.com (2603:10b6:806:259::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.17; Thu, 2 Apr
+ 2026 05:00:00 +0000
+Received: from PH7SPRMB0143.namprd12.prod.outlook.com
+ ([fe80::a6b4:32ff:a323:b46f]) by PH7SPRMB0143.namprd12.prod.outlook.com
+ ([fe80::a6b4:32ff:a323:b46f%3]) with mapi id 15.20.9769.014; Thu, 2 Apr 2026
+ 05:00:00 +0000
+Message-ID: <9204da81-f821-4034-b8ad-501e43383b56@amd.com>
+Date: Thu, 2 Apr 2026 10:29:53 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4] iommu/amd: Invalidate IRT cache for DMA aliases
+To: Magnus Kalland <magnus@dolphinics.com>, iommu@lists.linux.dev,
+ joro@8bytes.org, linux-kernel@vger.kernel.org, suravee.suthikulpanit@amd.com
+Cc: dhsrivas@amd.com, jonas@dolphinics.com, larsk@dolphinics.com,
+ torel@simula.no
+References: <20260401112021.76806-1-magnus@dolphinics.com>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <20260401112021.76806-1-magnus@dolphinics.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MA5PR01CA0207.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a01:1b0::6) To PH7SPRMB0143.namprd12.prod.outlook.com
+ (2603:10b6:510:201::21)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260325192352.437608-1-jiri@resnulli.us>
-In-Reply-To: <20260325192352.437608-1-jiri@resnulli.us>
-From: Sumit Semwal <sumit.semwal@linaro.org>
-Date: Thu, 2 Apr 2026 10:11:29 +0530
-X-Gm-Features: AQROBzCoqOVd8w8IT8q-wzhadg7W4rdnhn-HGLlu-Tm0fuk9WqMGP5WDrs9ZghY
-Message-ID: <CAO_48GEUXpcFBiyJAMgTcGPSq56-mZ0qnO3FrFRM2LoGd8W6HA@mail.gmail.com>
-Subject: Re: [PATCH v5 0/2] dma-buf: heaps: system: add an option to allocate
- explicitly shared/decrypted memory
-To: Jiri Pirko <jiri@resnulli.us>
-Cc: dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
-	iommu@lists.linux.dev, linux-media@vger.kernel.org, 
-	benjamin.gaignard@collabora.com, Brian.Starkey@arm.com, jstultz@google.com, 
-	tjmercier@google.com, christian.koenig@amd.com, m.szyprowski@samsung.com, 
-	robin.murphy@arm.com, jgg@ziepe.ca, leon@kernel.org, sean.anderson@linux.dev, 
-	ptesarik@suse.com, catalin.marinas@arm.com, aneesh.kumar@kernel.org, 
-	suzuki.poulose@arm.com, steven.price@arm.com, thomas.lendacky@amd.com, 
-	john.allen@amd.com, ashish.kalra@amd.com, suravee.suthikulpanit@amd.com, 
-	linux-coco@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH7SPRMB0143:EE_|SA1PR12MB6774:EE_
+X-MS-Office365-Filtering-Correlation-Id: 56a085b8-983c-43e3-dbaa-08de9074b173
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|1800799024|376014|18002099003|22082099003|56012099003;
+X-Microsoft-Antispam-Message-Info:
+	OkatCyqF4/g60b35zotZCdfqr8Pzs+PS6P7hL/rKbflz9DMuCXrDggqBnDJv8Luey44fS4XpG8pVYXC2lzMdTnagbveRy3FIQMZFzQKHszqFGSFRTItjnnnBOpI1ksxEA4wJhaFcgY24jXuoPKDhUi2zMNtO+LJNSghMP4lQumzPV1bOPsHrqAmsuAR2C3YoPXXgcofMePUI11fo7e5gAaXgjQ1Eo8/gpTHZQWU8AUt0AmvJFAhPiiuzrzGpCvFAevVSeJ2v7qTrt3o6hqg9fPvooSvHj4htg7slwOcMLvGnFgCEyC1Sfe6tTeLeFyjxCZs8RNAwDRAS4eKyusAMkDx8Y2735LXN1LQptz8JojXb57ymUdy17WNg9rqmGg7IK2vtVnrOPjwvrJLDNMF8DAT0Z4VucKlTQkJXrJNLYavnus5f6hCQ9yD6b1I5gM8ChlYfx5/QW//InUa4OujbU1H/RO0/HEPZOCv+gRdlOn+NYMN3EjqyyynX3LZiaU7h1tKQK2PE8nM6Lm/8lx9Y/tzCTjUBDjL2iPXKhp4QT+vuLEPnofA6gBkgu0t6lKpCzLoxiWP2APWR+yYRR3MOCpSMbrtQNdY4FQ+KqBlFMmEHjjLWK1YxFpFMat9QqdVtq2Q1c8dOHTnI/UoWKLNUSMnI+sGBq3bTE1kun+d0IhArtxpfSBO5Rama7PloWPgY
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7SPRMB0143.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(18002099003)(22082099003)(56012099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?Z21kOXBJcnBwTU4vQm41SXY2OHFOTG9MK3FTL1dBdnlTdVBMYTVkQmI0SWo2?=
+ =?utf-8?B?QXVaSWJqZHdSWFJEaEtyOGlyVGxEN3pNazI1ZVB2a0F5TzJPZjdteGJUV0p4?=
+ =?utf-8?B?THhidlpEM3BoTEJUalBTNUtTMnlzbk14enlLSVZyV1VncmNEL05oSFRsdVEz?=
+ =?utf-8?B?dUVPVWxOOTJwdFF3UTJTVzZkR3dzdXBJNU5FdlE0ejZvdHRhYXBKWm5NdlZk?=
+ =?utf-8?B?eXE1NHp5bVJUUHppaFVnZmtoNWh4djBzV0l2cS9LMkpjRDNTOUZSbndUeENF?=
+ =?utf-8?B?bWVtWnRSL2pqZnZQTXZtQXRhK2FienVjZXp2dWo4cXdBT1loY3V1NkRJR1BX?=
+ =?utf-8?B?TXJ3aFVSSGNWNmlrUEFuMjRqL1FsaHNTZU1XN3h3Y1ptdWJGWG9sbGttVjIw?=
+ =?utf-8?B?QTV6SHdZd1BJRXdLazQrNFhZclVIVmw1VWZ1a0EvT3dNemxqS2VCZkJ3akxF?=
+ =?utf-8?B?ckdER3pqd1N6Z2t6bStIeVlVZ2x1OHJkbVlISXpHNTR2NkJVbTJqZGdlUVhv?=
+ =?utf-8?B?ckRBR0RzMXM4c1cwd0JHYzNGR2VGUlJZakJNbXYraUV4MUREd1ZscVZSTXFH?=
+ =?utf-8?B?ZkM4N090OE8xVmdZQW1pOGoxY3FDUmljWk9ONG41VEZZaitJNXp1TnNmWVk3?=
+ =?utf-8?B?eFF2ZHVhMDBmazNnbSs1NGlENCs0Mjhxako2LysxZS9MZGx6Q3UxdnR0eksx?=
+ =?utf-8?B?dm91cDZCTk81VHFpQWFLRmkvRy9mSlNpQjM5UU44dk9CMzNtRnIraFBuZjBL?=
+ =?utf-8?B?R2NuYm95bThzS3JaYkpKdGhqdUFjREIvRXZHY2dobWhRZk1DWjQva1RYdmdv?=
+ =?utf-8?B?b0labi9GanhGdlFSY3Rsc1FsMUV5dzhQL1o5UnJFRHhnVTRmb0YwVXVZQUxK?=
+ =?utf-8?B?RzJkYjBvck44djJ6MXluejZLSVFVckovaytLNVltcUYzT28yS1lqQlB1TnNh?=
+ =?utf-8?B?Mi8rM0ljVW8raGY1cDdPeU1LV1FPTDF0WWEzS3ZFNi9JYUlQRWREbnhLSWEy?=
+ =?utf-8?B?ZmJxUHNYZkdaVUluOWhpb1BKemlJSEtpRHhscFZxb283OExaTEdzM08zZWxJ?=
+ =?utf-8?B?T2YvVzJNVlpnNTdiRFhsS0VXTnhuaEFIRFNYdHNnWUJtRm1TcnJwUExlU3hJ?=
+ =?utf-8?B?ZnJGaERKUkRic01ZdXgyd3lRa0Y5Nlc0Z29BL1NBbVZlOG0xdFlBdXZzdGNM?=
+ =?utf-8?B?YVU5Unc1SHArckt3aEJsQWtRMjBWaS9NT0VJMkh6OGpEdlJucHRSQk1HcE9R?=
+ =?utf-8?B?ZHRLMzlTN2h3K0kzUFFvWjM4RmdCZWZrZ2xyc3I4bjZWL2xxbHhFV1BwNjBG?=
+ =?utf-8?B?ZjZxQW5ZQldQb0xhN2FrS1d5OXE3RTdrRHlhNUNoOTBncU5qS1hqOUlISWdq?=
+ =?utf-8?B?WEQzQllNcDY3ZnRxTTBlajlSVWpxRU54SjcxUVpsWC9nYWppWDlFZEU1Smk1?=
+ =?utf-8?B?NU0rVHMzYms1U2k2YWJFVnRsYW8yVVVoWHFFT1pta3VwQVNURGdzU05SR1J2?=
+ =?utf-8?B?eXY2a2dVekZmNnM5MWRDSVQ5RytYZWpmenUzbkxYdDNTZjRLTzRqQ245Tjk2?=
+ =?utf-8?B?bWZLTkw2cnJoM1p4eWo2aUJEazQ0N1hKWWRvUWN0MGRJUTNIbEozdCtCcnVO?=
+ =?utf-8?B?MFJBUG9uc1I5czhNR0QzR1BpcWhsWnlWOVZkanpHcHZ3aTBRbFhHYU1HMUxi?=
+ =?utf-8?B?amFWdVU4cWFhZ2RyVkpHRXphU1F6ZkZ4M3hpQzEyVDY4YSs3MDBISE9naytV?=
+ =?utf-8?B?MUR3QXpyT2d2bHZOMU8xQVpvOUV0dGZlc1hxbEdTVDgyMTRITFp3YXlkZXp6?=
+ =?utf-8?B?MnNZajBPNHhIbXFUUWxwdTUzTm5xdlFFVUNTU2UvbmgwMHVHVUIvUWtabzZ1?=
+ =?utf-8?B?UmdDZVpBbUhYNEloMG5Pc0dDS2N0WXJQVkJkN1BHYVFPdTJPT1RCcmR5VmVZ?=
+ =?utf-8?B?bCtQZGJOeFRObGczOXBiZXNIc0RoZW94bGZoY3lxMWVHSVVNd21sb0RuTUFS?=
+ =?utf-8?B?UUIvTFZzUUpSOVpvM3BYdEd3WGkrT2U1R1lXQUM1Rzk3STMvNHdNdHVuQzJV?=
+ =?utf-8?B?YlQ0REVHYnZmZ3lSbWlGRFFCRkJ3Zy9PTSt1Z1h2U1AxQmZvdG9xNjZDdmtO?=
+ =?utf-8?B?ZWVJa1huZzBKbldWMGtneXNmWXFTQVBTdVh0S2RqOGlueWsxVHpFV1N4a3JP?=
+ =?utf-8?B?Zk5IMDY1cjhERWdGb3JRQ0hZRDExaWU3L2pzUU05dXBYazk5eForNzBFdWY1?=
+ =?utf-8?B?WXlpZENlUkN6UldBUC82L2tTWW5KT1lmUS9JUVNTa2c3eEpnZ1VBa3l4K0RJ?=
+ =?utf-8?B?M3lBdWxuWjhTMDBuNWRKK3VWc01FR1IrTXN2QVhHUDNmblNDUnF2QT09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 56a085b8-983c-43e3-dbaa-08de9074b173
+X-MS-Exchange-CrossTenant-AuthSource: PH7SPRMB0143.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Apr 2026 05:00:00.2267
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: iH9q/VNQUL2pfZo3Xcbe2OwToF0Dx5FTwF8VhK08Go71AHhbMPm5B427mdBGejCl9GqIMkN/ffvau4wwywcaWw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB6774
 
-Hello Jiri,
+Magnus,
 
-On Thu, 26 Mar 2026 at 00:53, Jiri Pirko <jiri@resnulli.us> wrote:
->
-> From: Jiri Pirko <jiri@nvidia.com>
->
-> Confidential computing (CoCo) VMs/guests, such as AMD SEV and Intel TDX,
-> run with private/encrypted memory which creates a challenge
-> for devices that do not support DMA to it (no TDISP support).
->
-> For kernel-only DMA operations, swiotlb bounce buffering provides a
-> transparent solution by copying data through shared memory.
-> However, the only way to get this memory into userspace is via the DMA
-> API's dma_alloc_pages()/dma_mmap_pages() type interfaces which limits
-> the use of the memory to a single DMA device, and is incompatible with
-> pin_user_pages().
->
-> These limitations are particularly problematic for the RDMA subsystem
-> which makes heavy use of pin_user_pages() and expects flexible memory
-> usage between many different DMA devices.
->
-> This patch series enables userspace to explicitly request shared
-> (decrypted) memory allocations from new dma-buf system_cc_shared heap.
-> Userspace can mmap this memory and pass the dma-buf fd to other
-> existing importers such as RDMA or DRM devices to access the
-> memory. The DMA API is improved to allow the dma heap exporter to DMA
-> map the shared memory to each importing device.
 
-Thank you for the patch series, it looks good to me.
+On 4/1/2026 4:49 PM, Magnus Kalland wrote:
+> DMA aliasing causes interrupt remapping table entries (IRTEs) to be shared
+> between multiple device IDs. See commit 3c124435e8dd
+> ("iommu/amd: Support multiple PCI DMA aliases in IRQ Remapping") for more
+> information on this. However, the AMD IOMMU driver currently invalidates
+> IRTE cache entries on a per-device basis whenever an IRTE is updated, not
+> for each alias.
+> 
+> This approach leaves stale IRTE cache entries when an IRTE is cached under
+> one DMA alias but later updated and invalidated through a different alias.
+> In such cases, the original device ID is never invalidated, since it is
+> programmed via aliasing.
+> 
+> This incoherency bug has been observed when IRTEs are cached for one
+> Non-Transparent Bridge (NTB) DMA alias, later updated via another.
+> 
+> Fix this by invalidating the interrupt remapping table cache for all DMA
+> aliases when updating an IRTE.
+> 
+> Changes since v3:
+>  - Revert back to using pci_for_each_dma_alias (v2), but look up pdev with
+>    search_dev_data instead of pci_get_domain_bus_and_slot (lockdep). This
+>    avoids changing any locks
+>  - Rebased on iommu next
+>  - Tested atop
+> https://lore.kernel.org/linux-iommu/20260401080017.117549-1-vasant.hegde@amd.com/
+> 
+> Link to v2:
+> https://lore.kernel.org/linux-iommu/26cfa307-6c33-41f9-a7a0-fbf202b38a00@amd.com/
 
-Marek, if you are ok, please could you take it through your tree, with my
-Acked-by: Sumit Semwal <sumit.semwal@linaro.org>
+Next time please move the changelog after "---" so that it gets discarded
+automatically when applying patches.
 
-Best,
-Sumit.
->
-> Based on dma-mapping-for-next e7442a68cd1ee797b585f045d348781e9c0dde0d
->
-> Jiri Pirko (2):
->   dma-mapping: introduce DMA_ATTR_CC_SHARED for shared memory
->   dma-buf: heaps: system: add system_cc_shared heap for explicitly
->     shared memory
->
->  drivers/dma-buf/heaps/system_heap.c | 103 ++++++++++++++++++++++++++--
->  include/linux/dma-mapping.h         |  10 +++
->  include/trace/events/dma.h          |   3 +-
->  kernel/dma/direct.h                 |  14 +++-
->  kernel/dma/mapping.c                |  13 +++-
->  5 files changed, 132 insertions(+), 11 deletions(-)
->
-> --
-> 2.51.1
->
+> 
+> Co-developed-by: Lars B. Kristiansen <larsk@dolphinics.com>
+> Signed-off-by: Lars B. Kristiansen <larsk@dolphinics.com>
+> Co-developed-by: Jonas Markussen <jonas@dolphinics.com>
+> Signed-off-by: Jonas Markussen <jonas@dolphinics.com>
+> Co-developed-by: Tore H. Larsen <torel@simula.no>
+> Signed-off-by: Tore H. Larsen <torel@simula.no>
+> Signed-off-by: Magnus Kalland <magnus@dolphinics.com>
+> Link: https://lore.kernel.org/linux-iommu/ea4cfd4d-9ad2-4451-a896-9f0435e72a06@amd.com/
+
+Overall it looks good. One minor comment (see below).
+
+Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+
+
+> 
+> ---
+>  drivers/iommu/amd/iommu.c | 30 +++++++++++++++++++++++-------
+>  1 file changed, 23 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index f22a7e9ecfdb..217da630d847 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -3186,26 +3186,42 @@ const struct iommu_ops amd_iommu_ops = {
+>  static struct irq_chip amd_ir_chip;
+>  static DEFINE_SPINLOCK(iommu_table_lock);
+>  
+> +static int iommu_flush_dev_irt(struct pci_dev *unused, u16 devid, void *data)
+> +{
+> +	int ret;
+> +	struct iommu_cmd cmd;
+> +	struct amd_iommu *iommu = data;
+> +
+> +	build_inv_irt(&cmd, devid);
+> +	ret = __iommu_queue_command_sync(iommu, &cmd, true);
+> +	return ret;
+> +}
+> +
+>  static void iommu_flush_irt_and_complete(struct amd_iommu *iommu, u16 devid)
+>  {
+>  	int ret;
+>  	u64 data;
+>  	unsigned long flags;
+> -	struct iommu_cmd cmd, cmd2;
+> +	struct iommu_cmd cmd;
+> +	struct pci_dev *pdev = NULL;
+> +	struct iommu_dev_data *dev_data = search_dev_data(iommu, devid);
+>  
+>  	if (iommu->irtcachedis_enabled)
+>  		return;
+>  
+> -	build_inv_irt(&cmd, devid);
+> +	if (dev_data && dev_data->dev && dev_is_pci(dev_data->dev))
+> +		pdev = to_pci_dev(dev_data->dev);
+>  
+>  	raw_spin_lock_irqsave(&iommu->lock, flags);
+>  	data = get_cmdsem_val(iommu);
+> -	build_completion_wait(&cmd2, iommu, data);
+> +	build_completion_wait(&cmd, iommu, data);
+>  
+> -	ret = __iommu_queue_command_sync(iommu, &cmd, true);
+> -	if (ret)
+> -		goto out_err;
+> -	ret = __iommu_queue_command_sync(iommu, &cmd2, false);
+> +	if (pdev)
+> +		ret = pci_for_each_dma_alias(pdev, iommu_flush_dev_irt, iommu);
+> +	else
+> +		ret = iommu_flush_dev_irt(NULL, devid, iommu);
+> +
+
+if (ret)
+	goto out_err;
+
+-Vasant
+
