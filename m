@@ -1,99 +1,162 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BB5632F5337
-	for <iommu@lists.linux.dev>; Wed,  1 Apr 2026 22:17:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from canpmsgout01.his.huawei.com (canpmsgout01.his.huawei.com [113.46.200.216])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87B9135F185
+	for <iommu@lists.linux.dev>; Thu,  2 Apr 2026 03:51:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=113.46.200.216
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775081846; cv=none; b=hC/B4k+9PHW3Q+8hyPmma19ewqgNbyry8WTEppq4hikCypGkvbqXUQ2VU36reT78xB+SG8/DjdqihBaBPJooD22Mrz8xU0Hhj6jADZmPzNyp8rwj3K8OoetkVv8Iju4YhlOkb018JoZZnD5sZ261cz2oSZo7GeGIW+RFE2J+sow=
+	t=1775101869; cv=none; b=MlxYvcI8BNqT3cXBW5TE2LWigantUV3Q4tMfnISQ3lE3qDoHtpCYBrhYfZkdX7Rjfc7B25euOsHj2f6ESToU/0Qqhvr/jrfFFx+LP8BnORK9KxtjeLWEeljtBi1gP6/F6tsdqKzuetDlV9xMXae55CtGchoViAOcah5o2VpK1wU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775081846; c=relaxed/simple;
-	bh=6vQfUmV5OzbVBiX3ZizG+KV5njVJAbXAZglQRd28UU8=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=GOD+DgqzN4MuzxyFSf+vER7OzgvxKVIp52hoHZ9OTrmwI29GwNZ8NsdFWeWb8Lj3bePdJ2MAylbLbE9gbEZQLvrVk+qUHqWLNqbL1eaeShQu4m38vrxxOTVUiZ70WdU8koWMgWfBg0Ag7kqLLtImcVCwVSUjFOKi12pBGrMc8jI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=lwcej/yy; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1775101869; c=relaxed/simple;
+	bh=lt+zP9As4Yq+Wde10tJ1btezopsYQ1iFQzRQ5ny3Aro=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=kxlU7bcISfEtFFIbI5BDOAR+MnZ1n4jynA7eQbMD3/1KudYsmGW1uyZIy/Y7TCk57yAHPsaSLgoviJhYXhuujA371lwKUTWMbDAcImdRT0PlJ5nLrhRPp7KxaDdDhmH92jW8H81UiGeFHrzLS1OqdlLT3QWD9wc+v1+JyK+iDj8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=CcFoy4tx; arc=none smtp.client-ip=113.46.200.216
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="lwcej/yy"
-Received: from localhost (unknown [20.236.10.206])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 64BC220B710C;
-	Wed,  1 Apr 2026 15:17:25 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 64BC220B710C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1775081845;
-	bh=nnuG3H44tpXaLVq66f7koFUd85UcpULY8qNe88SzwEY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=lwcej/yybQ1bOdxQPOtINUKpa7jSEGr3F29FP5g/WTgs1jzOfzuryWwo31gfZHnDM
-	 wcO84nAS1yr3/S8cKsG2Ucb5uQQ/wF12mC3Gza/OaFzVg4QjOf6Rsm/AlEpnAx1VOp
-	 2xg+52EYeV6ERbmHjnsSLb+T0mGqyJwVwmMEeGXg=
-Date: Wed, 1 Apr 2026 15:17:23 -0700
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: linux-kernel@vger.kernel.org, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Alex Williamson
- <alex@shazbot.org>, Joerg Roedel <joro@8bytes.org>, David Matlack
- <dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen
- <nicolinc@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
- <yi.l.liu@intel.com>, skhawaja@google.com, pasha.tatashin@soleen.com, Will
- Deacon <will@kernel.org>, Baolu Lu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH V2 07/11] vfio: Update noiommu device detection logic
- for cdev
-Message-ID: <20260401151723.00006610@linux.microsoft.com>
-In-Reply-To: <ab--s13iPc6X8jIx@google.com>
-References: <20260312155637.376854-1-jacob.pan@linux.microsoft.com>
-	<20260312155637.376854-8-jacob.pan@linux.microsoft.com>
-	<ab--s13iPc6X8jIx@google.com>
-Organization: LSG
-X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="CcFoy4tx"
+dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
+	c=relaxed/relaxed; q=dns/txt;
+	h=From;
+	bh=j98bfMfsCWtDp07VFYlUTyTLZgSB6CElM/PsxDfAV+0=;
+	b=CcFoy4txwoulWUG9kwcJTkGrJpGJbgeSNPUpkz2j+7RRjr5AvKrumdOHsMMcM484IG9mihcx8
+	5BbFNwL4vXB2hkUFd2hOy1EK3ivSlTG1f98p/S/alHQR88Ya6gYo2ZJY8zhGFsoQjKDDCgXcwmr
+	Fo+G9i7d+7fztiVkZvnsR2o=
+Received: from mail.maildlp.com (unknown [172.19.162.197])
+	by canpmsgout01.his.huawei.com (SkyGuard) with ESMTPS id 4fmSRY4fXWz1T4L2;
+	Thu,  2 Apr 2026 11:45:13 +0800 (CST)
+Received: from kwepemj200003.china.huawei.com (unknown [7.202.194.15])
+	by mail.maildlp.com (Postfix) with ESMTPS id 9C27E40569;
+	Thu,  2 Apr 2026 11:50:55 +0800 (CST)
+Received: from [10.67.120.170] (10.67.120.170) by
+ kwepemj200003.china.huawei.com (7.202.194.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Thu, 2 Apr 2026 11:50:54 +0800
+Message-ID: <b0e67dac-a95f-4b8f-b4c6-3e992b66a780@huawei.com>
+Date: Thu, 2 Apr 2026 11:50:54 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH v2 1/5] iommu/arm-smmu-v3: Add basic debugfs framework
+To: Nicolin Chen <nicolinc@nvidia.com>
+CC: <robin.murphy@arm.com>, <will@kernel.org>, <jpb@kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<wangzhou1@hisilicon.com>, <prime.zeng@hisilicon.com>,
+	<fanghao11@huawei.com>, <jonathan.cameron@huawei.com>,
+	<wuyifan50@huawei.com>, <linuxarm@huawei.com>
+References: <20260328101706.3448655-1-xiaqinxin@huawei.com>
+ <20260328101706.3448655-2-xiaqinxin@huawei.com> <acpUoZ7wx9gdT5BG@nvidia.com>
+From: Qinxin Xia <xiaqinxin@huawei.com>
+In-Reply-To: <acpUoZ7wx9gdT5BG@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: kwepems200001.china.huawei.com (7.221.188.67) To
+ kwepemj200003.china.huawei.com (7.202.194.15)
 
-Hi Mostafa,
 
-On Sun, 22 Mar 2026 10:04:35 +0000
-Mostafa Saleh <smostafa@google.com> wrote:
 
-> On Thu, Mar 12, 2026 at 08:56:33AM -0700, Jacob Pan wrote:
-> > Rework vfio_device_is_noiommu() to derive noiommu mode based on
-> > device, group type, and configurations.
-> > 
-> > Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
-> > ---
-> >  drivers/vfio/vfio.h | 9 +++++++--
-> >  1 file changed, 7 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/vfio/vfio.h b/drivers/vfio/vfio.h
-> > index 838c08077ce2..c5541967ef9b 100644
-> > --- a/drivers/vfio/vfio.h
-> > +++ b/drivers/vfio/vfio.h
-> > @@ -127,8 +127,13 @@ static inline bool
-> > vfio_null_group_allowed(void) 
-> >  static inline bool vfio_device_is_noiommu(struct vfio_device *vdev)
-> >  {
-> > -	return IS_ENABLED(CONFIG_VFIO_NOIOMMU) &&
-> > -	       vdev->group->type == VFIO_NO_IOMMU;
-> > +	if (!IS_ENABLED(CONFIG_VFIO_NOIOMMU))
-> > +		return false;
-> > +
-> > +	if (vfio_null_group_allowed())
-> > +		return vdev->noiommu;
-> > +
-> > +	return vdev->group->type == VFIO_NO_IOMMU;  
+On 2026/3/30 18:46:57, Nicolin Chen <nicolinc@nvidia.com> wrote:
+> On Sat, Mar 28, 2026 at 06:17:02PM +0800, Qinxin Xia wrote:
+>> Add basic debugfs framework for ARM SMMUv3 driver.This creates the
 > 
-> I see that noiommu is set for both, can this just be simplified to:
+> Needs a space after "."
 > 
-> 	return IS_ENABLED(CONFIG_VFIO_NOIOMMU) && vdev->noiommu;
+>> +static int smmu_debugfs_capabilities_show(struct seq_file *seq, void *unused)
+>> +{
+>> +	struct arm_smmu_device *smmu = seq->private;
+>> +
+>> +	if (!smmu) {
+>> +		seq_puts(seq, "SMMU not available\n");
+>> +		return 0;
+>> +	}
+>> +
+>> +	seq_puts(seq, "SMMUv3 Capabilities:\n");
+>> +	seq_printf(seq, "  Stage1 Translation: %s\n",
+>> +		   smmu->features & ARM_SMMU_FEAT_TRANS_S1 ? "Yes" : "No");
+>> +	seq_printf(seq, "  Stage2 Translation: %s\n",
+>> +		   smmu->features & ARM_SMMU_FEAT_TRANS_S2 ? "Yes" : "No");
+>> +	seq_printf(seq, "  Coherent Walk: %s\n",
+>> +		   smmu->features & ARM_SMMU_FEAT_COHERENCY ? "Yes" : "No");
+>> +	seq_printf(seq, "  ATS Support: %s\n",
+>> +		   smmu->features & ARM_SMMU_FEAT_ATS ? "Yes" : "No");
+>> +	seq_printf(seq, "  PRI Support: %s\n",
+>> +		   smmu->features & ARM_SMMU_FEAT_PRI ? "Yes" : "No");
+>> +	seq_printf(seq, "  Stream Table Size: %d\n", 1 << smmu->sid_bits);
+>> +	seq_printf(seq, "  Command Queue Depth: %d\n",
+>> +		   1 << smmu->cmdq.q.llq.max_n_shift);
+>> +	seq_printf(seq, "  Event Queue Depth: %d\n",
+>> +		   1 << smmu->evtq.q.llq.max_n_shift);
 > 
-Good point, no need to check group now. will do.
+> Nit: should we do all sizes or all depths? Any good reason to mix
+> them here?
+>
 
-Sorry for the late response.
+Stream Table is a table, not a queue, so 'Size' is more appropriate; 
+queues use 'Depth'. But I can change to unify if preferred.
 
+>> +/**
+>> + * arm_smmu_debugfs_remove() - Clean up debugfs entries for an SMMU device
+>> + * @smmu: SMMU device
+>> + *
+>> + * This function removes the debugfs directories created by setup.
+>> + */
+>> +void arm_smmu_debugfs_remove(struct arm_smmu_device *smmu)
+>> +{
+>> +	struct arm_smmu_debugfs *debugfs;
+>> +
+>> +	scoped_guard(mutex, &arm_smmu_debugfs_lock) {
+> 
+> It could be just normal guard().
+> 
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> index 4d00d796f078..cbb3fccc501b 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> @@ -4904,6 +4904,15 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>>   	/* Check for RMRs and install bypass STEs if any */
+>>   	arm_smmu_rmr_install_bypass_ste(smmu);
+>>   
+>> +#ifdef CONFIG_ARM_SMMU_V3_DEBUGFS
+>> +	char name[32];
+> 
+> This could be moved to the top, as iommu_device_sysfs_add() can use
+> it, whether CONFIG_ARM_SMMU_V3_DEBUGFS=y or =n.
+> 
+>> +	snprintf(name, sizeof(name), "smmu3.%pa", &ioaddr);
+> 
+> And this could be moved after ioaddr gets a copy from res->start.
+> 
+>>   
+>> +#ifdef CONFIG_ARM_SMMU_V3_DEBUGFS
+>> +struct arm_smmu_debugfs {
+>> +	struct dentry			*smmu_dir;
+> 
+> A personal preference: for new structures, maybe drop those tabs?
+> 
+>>   /* An SMMUv3 instance */
+>>   struct arm_smmu_device {
+>>   	struct device			*dev;
+>> @@ -803,6 +813,11 @@ struct arm_smmu_device {
+>>   
+>>   	struct rb_root			streams;
+>>   	struct mutex			streams_mutex;
+>> +
+>> +#ifdef CONFIG_ARM_SMMU_V3_DEBUGFS
+>> +	/* DebugFS Info */
+> 
+> Doesn't seem very useful. I'd drop it.
+> 
+>> +	struct arm_smmu_debugfs		*debugfs;
+>> +#endif
+>   
+> Nicolin
+> 
+-- 
 Thanks,
-
-Jacob
+Qinxin
 
