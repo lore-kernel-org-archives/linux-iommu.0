@@ -1,33 +1,32 @@
 Received: from relay.virtuozzo.com (relay.virtuozzo.com [130.117.225.111])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93CF33E63A8;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93D7F3E63B5;
 	Thu,  2 Apr 2026 14:10:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=130.117.225.111
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775139022; cv=none; b=pTCfElj2glFJs+ul1UJyuCcp+51HMDk2mQTmfcz+3UX9Kw9NwuaquUdQ6YoBLjPrxSemDdjNWpKljH4Ui+S9vluoSa4bPjGyuRA3xpL7TvETO59d5n0YfW+GHQLcJV9Nu4/6/lUWHoi6XUsvU9RdM3hiTfRqFOwTH0cBYC0vGus=
+	t=1775139022; cv=none; b=hd6vETr0kfYS9ly+bMmiuZmmGPPYtsqdgHDroAPinTxFjBbEkHa+0rd9iR5EARpUf9rE+7tVQiWjANlOWKf8bedpwNcT5KZwE8ImTYlWD/Nf2g2QJ8peb+u90aJRGq0d6AfSKUnqNx18z/4Ge6d8KmHmOu8AXxpQ1mjo9++/T+k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1775139022; c=relaxed/simple;
-	bh=zr3uTfhPH3QtRE32YMAmmvNm7KPCBEKBLFvyenoXaxQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=nx+5fUn+OOGc/wM/tmNBBo/5lVsehkRI0+0xluCodrGAmSNUuo2Etj+432FL0NOxJJ1Kjrx5gYJb3GaIsCr7T+G3+0qTBpu9lRN5+LV4qYAKSHpchHDGWb4LFOeYdmnuM0m0HLmRCz8AKkwGtBoppLD0EpOrovQ0MiWaUKU4efU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=virtuozzo.com; spf=pass smtp.mailfrom=virtuozzo.com; dkim=pass (2048-bit key) header.d=virtuozzo.com header.i=@virtuozzo.com header.b=QMHQW3mK; arc=none smtp.client-ip=130.117.225.111
+	bh=8brzf5A+FvWM7R/Q7YNgWCGTTGP/GbuuEYjC7v5UOyM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=dueDlbrKmXOlIdZh1j+UyY5AKJaGG+ypAzPsJvLJWCurP8XGyofLvCYioKW8aYVuOcjfO27kpGydOy10QW4HsyePr9qT8P9SIUHf+/7PDfMZ3Ube/8kroDgQs9RNi3CFxnlMvaezJ9TA1okK7gIY1RATBzOU8ehI+DhOrC4e8Qc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=virtuozzo.com; spf=pass smtp.mailfrom=virtuozzo.com; dkim=pass (2048-bit key) header.d=virtuozzo.com header.i=@virtuozzo.com header.b=eNlANrDF; arc=none smtp.client-ip=130.117.225.111
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=virtuozzo.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=virtuozzo.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=virtuozzo.com header.i=@virtuozzo.com header.b="QMHQW3mK"
+	dkim=pass (2048-bit key) header.d=virtuozzo.com header.i=@virtuozzo.com header.b="eNlANrDF"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=virtuozzo.com; s=relay; h=MIME-Version:Message-ID:Date:Subject:From:
-	Content-Type; bh=2kje2VmbWw88L2r+Ky1VorX3CfR9qKWy8zIczpZ54pM=; b=QMHQW3mKG9ke
-	o65ts7NEpYedXJCHP365nvjcTI/hB7pl3IMgLWWieDccI3hItkux2/t/xkvF8/o2ycwEF8pr9qXXi
-	Nk+n1eWFg2JqqYXscDwKQ0EOAL/NS6Hza71Va/EzQR8/u7AWhYr3xcIAiyhPxjug443yH2L64omQS
-	6F3QWR6rNPvFmW0hPvCQeqf6q5fJR9NMS6XP3H35EnWRKx/o5Ow00kdT7G7CcdNPF4Ffx1ghON7Rr
-	98umTrwCoS9cLlkL8CsdtEtQpPa24VNWQkI+rmIQhwo2gH6V5xBGF2kyz2Soi509kyQjPizQm+Kn+
-	M0+P2dXtJ/evu3DM/fyC/Q==;
+	Content-Type; bh=H8rYmpR2EZNJ5xxxY6hPVligaaugQMrbVRFiPy2K7pg=; b=eNlANrDFOiLZ
+	/wT/NogWorp8UVnjyZFVXKS45EY/yFcdBK2rrbMJNp1tmYZt8SJj15fVsb0vyA8zn1UIIGEK5dryq
+	LiK5gRfmvp0J7An1z9T//6Eg4aIBGV4AQX0ExVFz+fYXnkftQpZqjLKt9V7OHfxVRyMWFmbpr4s80
+	4yyE+8AA1N7sK+yP3sLQI6yfRSiES/Fjxmaogr7ksdDb6EPamwf7IINfM3Jt7HGzOa5VZ2h+dti1N
+	hjavUE0/f5o8aA1JUCq8QYReptpMlXajvxqI5fQhhPlZjR+qk2yzgT5TuZOTsgK4TAPRDMWBfmj40
+	n+fCgPlGRHYug1O5V4H8bw==;
 Received: from [130.117.225.5] (helo=finist-alma9.vzint.dev)
 	by relay.virtuozzo.com with esmtp (Exim 4.96)
 	(envelope-from <khorenko@virtuozzo.com>)
-	id 1w8IiE-003T55-1I;
+	id 1w8IiE-003T55-16;
 	Thu, 02 Apr 2026 16:10:10 +0200
 From: Konstantin Khorenko <khorenko@virtuozzo.com>
 To: Joerg Roedel <joro@8bytes.org>,
@@ -43,12 +42,10 @@ Cc: Robin Murphy <robin.murphy@arm.com>,
 	Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
 	Vasileios Almpanis <vasileios.almpanis@virtuozzo.com>,
 	=?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>
-Subject: [PATCH] iommu/generic_pt: disable GCOV for iommu_amdv1.o
-Date: Thu,  2 Apr 2026 17:10:12 +0300
-Message-ID: <20260402141012.1437095-2-khorenko@virtuozzo.com>
+Subject: [PATCH 0/1] iommu/generic_pt: disable GCOV for iommu_amdv1.o
+Date: Thu,  2 Apr 2026 17:10:11 +0300
+Message-ID: <20260402141012.1437095-1-khorenko@virtuozzo.com>
 X-Mailer: git-send-email 2.43.5
-In-Reply-To: <20260402141012.1437095-1-khorenko@virtuozzo.com>
-References: <20260402141012.1437095-1-khorenko@virtuozzo.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -57,37 +54,31 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-With -fprofile-update=atomic in global CFLAGS_GCOV, GCC cannot
-constant-fold FIELD_PREP() expressions inside deeply inlined page table
-walker functions.  GCC creates .constprop clones of the inline level
-functions, which get their own GCOV instrumentation that prevents
-constant evaluation of compile-time checks.
+This patch fixes a build failure in drivers/iommu/generic_pt/fmt/iommu_amdv1.o
+when -fprofile-update=atomic is added to global CFLAGS_GCOV.
 
-__no_profile cannot be used here because the entire call chain is
-__always_inline functions generated by PT_MAKE_LEVELS() macro, and GCC's
-constprop cloning creates new profiled function bodies that bypass the
-attribute.
+This is part of a larger effort to add -fprofile-update=atomic to
+global CFLAGS_GCOV to fix GCOV counter races that cause crashes on SMP
+(posted earlier as a combined series):
+  https://lore.kernel.org/lkml/20260401142020.1434243-1-khorenko@virtuozzo.com/T/#t
 
-Disable GCOV for iommu_amdv1.o to allow BUILD_BUG_ON / FIELD_PREP
-compile-time checks to succeed.
+That combined series was split per subsystem as requested by reviewers.
+The companion patches are:
 
-Signed-off-by: Konstantin Khorenko <khorenko@virtuozzo.com>
----
+ - net: fix skb_ext BUILD_BUG_ON failures (sent to netdev)
+ - gcov: add -fprofile-update=atomic globally (sent to gcov/kbuild
+   maintainers, depends on this patch and the net patches)
+
+FIELD_PREP() compile-time checks fail because the entire call chain is
+__always_inline functions generated by PT_MAKE_LEVELS(), and GCC's
+.constprop cloning creates new profiled function bodies that bypass
+__no_profile.  Disabling GCOV for the file is the only viable fix.
+
+Konstantin Khorenko (1):
+  iommu/generic_pt: disable GCOV for iommu_amdv1.o
+
  drivers/iommu/generic_pt/fmt/Makefile | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iommu/generic_pt/fmt/Makefile b/drivers/iommu/generic_pt/fmt/Makefile
-index 976b49ec97dc..0305f7fb9e35 100644
---- a/drivers/iommu/generic_pt/fmt/Makefile
-+++ b/drivers/iommu/generic_pt/fmt/Makefile
-@@ -1,5 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
- 
-+GCOV_PROFILE_iommu_amdv1.o := n
-+
- iommu_pt_fmt-$(CONFIG_IOMMU_PT_AMDV1) += amdv1
- iommu_pt_fmt-$(CONFIG_IOMMUFD_TEST) += mock
- 
 -- 
 2.43.5
-
