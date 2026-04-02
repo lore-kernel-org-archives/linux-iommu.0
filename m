@@ -1,103 +1,118 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31A8C3C5DC1
-	for <iommu@lists.linux.dev>; Thu,  2 Apr 2026 12:58:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 940191F1304;
+	Thu,  2 Apr 2026 13:12:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775134707; cv=none; b=ecVLgj4QHTNoS4i5p24k2nU+v3zXXUABngArY7jSFAKhb7J0nJu/CfB35MbWZ5Dt19UIT7vHWFKFyb9ccsl+wn1MZZ7cvgJgS+fFi8XVlhk4h5jkqa7+lddh9yVPDOsTHKsW9qvLHQznKydWJPWo874kn3FGcadPbTKlyZT6Vu4=
+	t=1775135522; cv=none; b=UFturqizcqv1DA1CeckIRrXLulCnUUMO47kZ7cGSFXdzG03V/WZ0Lr7z7PbLcJIGEFrSBbS2vJAVXNVCCP2QGxQYcoq1p9suL/V6ZOeyil3LjxG+Jef34zSJh43Ry6L5W9FO7bCblxNurZf4ZbNe6rDslYbJ0Gwf3nP8cvq4WQk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775134707; c=relaxed/simple;
-	bh=UzYbx1sEpC0M+peXKDrwMMEQ4PJH/E0owphKLjh5Vw8=;
+	s=arc-20240116; t=1775135522; c=relaxed/simple;
+	bh=a7x/ysTtVW24aU35eMPirkt+sO+v8dpDAEKDhxuDe60=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MKb9e+lozVZBdqzrNe8TuQmZEuPeJi5mgnT28J1ct7ccfd9GrxVbF24Gal/wbkH9IfY5d+SrDV2x3r1zDHDCwJ/3/BVY5odHq0T777WY1vujFPl8jY2PbgJAD1hP0v0l4WNDK8IxYZXVC4SK4A59mHpdqEDCpkS5RsUOG64Rgd8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=resnulli.us; spf=none smtp.mailfrom=resnulli.us; dkim=pass (2048-bit key) header.d=resnulli-us.20230601.gappssmtp.com header.i=@resnulli-us.20230601.gappssmtp.com header.b=Q18IMElE; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=resnulli.us
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=resnulli.us
+	 Content-Type:Content-Disposition:In-Reply-To; b=H8+9JkBz5LW1a+yy99lkP3ZvM5gaHglIkZVq0cGRwkBsFRMcynu2jz9PRmgDsk2eoOlWMFT+CexT/UTEghE5xBFXJIhQFGVawPSvhkxXiMi2mKf4389ZptblpFJ5HQooRspjLDpsYEuRW1/w7laiwoEgvobpUw1Kl7rh2W6Cuek=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WSszUspE; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=resnulli-us.20230601.gappssmtp.com header.i=@resnulli-us.20230601.gappssmtp.com header.b="Q18IMElE"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-48704db565eso9097505e9.1
-        for <iommu@lists.linux.dev>; Thu, 02 Apr 2026 05:58:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20230601.gappssmtp.com; s=20230601; t=1775134699; x=1775739499; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=UzYbx1sEpC0M+peXKDrwMMEQ4PJH/E0owphKLjh5Vw8=;
-        b=Q18IMElE0+V+sBv9VWIPtFM6ihKsjM8slUqWo0zGE2p2FCNG1kBhEii+MsFtQujzrm
-         b7AEPXN1avE0BrVD5dfCtgr8RWUHQnPjdK5Pne9U6KeXMIVivuWFTVzWVh3X+qkFuF5a
-         Ia2cmS8a77bKNbwdnNfzxuHR/sYiU0QJi72vkEJ4IhqOhb7dMG6gzO9ef5yzMdiodq3U
-         KfDY0PDlF51nsf3lJRgwNg0njddB5AYRCKdKs63HrKPCwDViBMYcokOkEgI4I4uif0at
-         M8S9jkN+I1wttd2LzRJSVXl9LvdoBIQOXPJ0eScET8wWrQvjeVmoz+9alucd4/ggpVe7
-         rNVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775134699; x=1775739499;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=UzYbx1sEpC0M+peXKDrwMMEQ4PJH/E0owphKLjh5Vw8=;
-        b=E74qxCZ0pjhBeokgJBxgGE+m5QPiW1+AHWP1TjwVPC2yP7kbsvaJPzTV6BRxyHeH1K
-         fZ7Hghi9afr9iH3bFD6R59ALScds4cL7TThHUQyf8fStXLYx5FAzx/xKqlZ6RefDTYWW
-         VxfMprXNuI42BC7U4QNFpbdGsjzI5cbD2x0/tBSuCgSXlMOzTZoJdSatfoKMgQdaeZwz
-         +1B7SDO2a/P4UK7KlP+Hfg87aDYNF3eDVvcX7Fc1M4kunPrTvKb9CXevPx3cirGn2dF6
-         0dPir8lPFJGJbh5eOIF80+TUyRkfJ5ufh84LRnBKD5FipakoeoEZz8vf+fPFJTEYnu2g
-         v8Bw==
-X-Forwarded-Encrypted: i=1; AJvYcCWYTzGe2lfPFderowjKLBpt5C52tcf205qWYJ5XTqxr0R8LUzsJnoGR4Ip5Nd4Z5s4LTdpDgA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxJMZ+HuKq35aXrH1HHmC0E+UwuInz0i8TQxQpwTUU9Zu2qj0Ko
-	TBUpeuCvJT6SXv3eMwqCbRfueKFVTAZLUrTOHc41UXV3BGwb5XSkyyx6qnwXiNU7Cc0=
-X-Gm-Gg: ATEYQzwhBVqaBk5RfMz5MCVD5EY4mCeol/3st9Ca+IgDtumCDZVwzGdkqVeYyUHfUDP
-	a86tO8mvf6JDtWO3ikY5+4AKjyb7uF5KiDGNY8U8pFV7vy8MgsLNelWl1TbFuqZ7tau4dKQYINQ
-	MMfdPfczuCvmiM5yejO0lYXjig/QflnbHPe9pwDO/YxltIAPQ6ONCHf6oUMMeuvb/bbd00jVim/
-	B2Ydrf+oiYYFym4wZFwkxylss/M3+BKuX5uDiCS2XpZRSw+wx9ApUonsjqM/5lxsfrTimFEZzWF
-	bDK2/6Jot0Y8u+5NUcuEUm+0WxEl4pmDae+jpPuypBlFgkv0j7hD3Gw1WV2NSCCLVdR7y7rC2ct
-	HvDigMncxs8gnvnU+7sFIfA6E5vsiJxFs6WCxPsRFlvYVXnGEcg0oIIqUQkGPcon4n7wPcNtuQr
-	0dO+paTyNWcWPugipZCr38fTacOa6D5i3mmf7VY7rCVA==
-X-Received: by 2002:a05:600c:1f93:b0:480:1d0b:2d32 with SMTP id 5b1f17b1804b1-4888b7130f3mr58915525e9.12.1775134698707;
-        Thu, 02 Apr 2026 05:58:18 -0700 (PDT)
-Received: from FV6GYCPJ69 ([208.127.45.21])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4887c884f77sm62829225e9.20.2026.04.02.05.58.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Apr 2026 05:58:18 -0700 (PDT)
-Date: Thu, 2 Apr 2026 14:58:15 +0200
-From: Jiri Pirko <jiri@resnulli.us>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Brian Starkey <brian.starkey@arm.com>, dri-devel@lists.freedesktop.org, 
-	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev, linux-media@vger.kernel.org, 
-	sumit.semwal@linaro.org, benjamin.gaignard@collabora.com, jstultz@google.com, 
-	tjmercier@google.com, christian.koenig@amd.com, m.szyprowski@samsung.com, 
-	robin.murphy@arm.com, leon@kernel.org, sean.anderson@linux.dev, ptesarik@suse.com, 
-	catalin.marinas@arm.com, aneesh.kumar@kernel.org, suzuki.poulose@arm.com, 
-	steven.price@arm.com, thomas.lendacky@amd.com, john.allen@amd.com, 
-	ashish.kalra@amd.com, suravee.suthikulpanit@amd.com, linux-coco@lists.linux.dev, 
-	nd@arm.com
-Subject: Re: [PATCH v5 0/2] dma-buf: heaps: system: add an option to allocate
- explicitly shared/decrypted memory
-Message-ID: <l26gcpagdhabj6w66hhxzgwkwqlybontqtbf7f6lu2fic6pnu6@crh3rt3j3alm>
-References: <20260325192352.437608-1-jiri@resnulli.us>
- <4s75rtsmdfrze4rscbqzyrjyrko7n6sehe7agrngqag2cna5bz@eflmf4kwjocj>
- <20260402120254.GB2551565@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WSszUspE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2097EC116C6;
+	Thu,  2 Apr 2026 13:12:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1775135522;
+	bh=a7x/ysTtVW24aU35eMPirkt+sO+v8dpDAEKDhxuDe60=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=WSszUspE9dzXyP1vG2gMcdzvhWi9nAi5ipcnGtuyZonB7RZAGmX1hwDPduMtfEj0f
+	 lW2LoRIl2ShIjcyVDeuG1hlvOO/zqpCeA0Z146DRKKA0duBquAvj+fJQT/uscVbkZe
+	 2wg5nQmX87424MYUc//sb0M9cOh0Ho+XSCi8NXobJRbr+fliundDiCPi1S/NRwsAeC
+	 kc4nITLm01qhH8H8Sxex1i7X4/hTzJrnBqisiAgNMciIgTmVqODXmYgxMjwhE4MTBg
+	 w18ZXyGoeIRDg6/g/t6PcP82CKsFc0A1CC7A5a4HCiyOTIneD54u7brrQ1GJ5SK+vp
+	 +XGiv48Yu5boA==
+Date: Thu, 2 Apr 2026 15:11:59 +0200
+From: Maxime Ripard <mripard@kernel.org>
+To: Sumit Semwal <sumit.semwal@linaro.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>, 
+	John Stultz <jstultz@google.com>, "T.J. Mercier" <tjmercier@google.com>, 
+	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, David Hildenbrand <david@kernel.org>, 
+	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>, "Liam R. Howlett" <Liam.Howlett@oracle.com>, 
+	Vlastimil Babka <vbabka@suse.cz>, Mike Rapoport <rppt@kernel.org>, 
+	Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, 
+	Albert Esteve <aesteve@redhat.com>, linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+	linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-mm@kvack.org
+Subject: Re: [PATCH v4 0/8] dma-buf: heaps: Turn heaps into modules
+Message-ID: <20260402-burrowing-fine-bloodhound-afcebc@houat>
+References: <CGME20260331100026eucas1p19bdc2aaca4c9a48c6f6ac8fec71478d8@eucas1p1.samsung.com>
+ <20260331-dma-buf-heaps-as-modules-v4-0-e18fda504419@kernel.org>
+ <46397de2-eedf-4e09-a83a-3b683d154fe7@samsung.com>
+ <CAO_48GEFQE_FJjuq1UqP=DC6LJE8jjE3C+4FdAyB4uEZDsnFJw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha384;
+	protocol="application/pgp-signature"; boundary="me4gicdwmutl43x6"
 Content-Disposition: inline
-In-Reply-To: <20260402120254.GB2551565@ziepe.ca>
+In-Reply-To: <CAO_48GEFQE_FJjuq1UqP=DC6LJE8jjE3C+4FdAyB4uEZDsnFJw@mail.gmail.com>
 
-Thu, Apr 02, 2026 at 02:02:54PM +0200, jgg@ziepe.ca wrote:
->On Thu, Apr 02, 2026 at 10:52:34AM +0100, Brian Starkey wrote:
->> I'm not clear why the heap depends on !CONFIG_HIGHMEM, but I also
->> don't know anything about SEV/TDX.
->
->It is because the CC apis, set_memory_decrypted()/etc are slightly
->mis-designed. They take in a vaddr to represent the address instead of
->a phys_addr_t or a page *
->
->This means the user has to use page_address() and then the whole thing
->is incompatible with highmem.
->
->Which is fine, highmem and CC are never turned on together.
 
-Yeah, I was wondering if it is worth sanitizing it, but decided to be on
-the safe side, for unlikely oddities future may bring sake :)
+--me4gicdwmutl43x6
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v4 0/8] dma-buf: heaps: Turn heaps into modules
+MIME-Version: 1.0
+
+On Thu, Apr 02, 2026 at 10:36:48AM +0530, Sumit Semwal wrote:
+> Hello Maxime,
+>=20
+> On Tue, 31 Mar 2026 at 18:24, Marek Szyprowski <m.szyprowski@samsung.com>=
+ wrote:
+> >
+> > On 31.03.2026 12:00, Maxime Ripard wrote:
+> > > The recent introduction of heaps in the optee driver [1] made possible
+> > > the creation of heaps as modules.
+> > >
+> > > It's generally a good idea if possible, including for the already
+> > > existing system and CMA heaps.
+> > >
+> > > The system one is pretty trivial, the CMA one is a bit more involved,
+> > > especially since we have a call from kernel/dma/contiguous.c to the C=
+MA
+> > > heap code. This was solved by turning the logic around and making the
+> > > CMA heap call into the contiguous DMA code.
+> > >
+> > > Let me know what you think,
+> > > Maxime
+> > >
+> > > 1: https://lore.kernel.org/dri-devel/20250911135007.1275833-4-jens.wi=
+klander@linaro.org/
+> > >
+> > > Signed-off-by: Maxime Ripard <mripard@kernel.org>
+>=20
+> Thank you for this patch series; now that it is needed by more folks,
+> I think we can merge this.
+>=20
+> Marek, I'll coordinate with you on this - thank you!
+
+If Marek plans on sending it during the next merge window, maybe the
+best thing to do for us is just to wait for -rc1 and apply the rest of
+the patches. Otherwise, we can merge the branch in drm-misc.
+
+Maxime
+
+--me4gicdwmutl43x6
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iJUEABMJAB0WIQTkHFbLp4ejekA/qfgnX84Zoj2+dgUCac5rGAAKCRAnX84Zoj2+
+drvAAX9Gv+TrbX5Ru5iTuTfrjby3dUGZF6Vd9/L4HY+x15swwQBj44P2X43WwAnM
+cMhPq+8Bf00cagtlOIBhV4Hse29yKk8z2Is7iRaewRIPe/yQho7wdJK8x1cnDkbD
+NQuA+jE9OQ==
+=+ZbZ
+-----END PGP SIGNATURE-----
+
+--me4gicdwmutl43x6--
