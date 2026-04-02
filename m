@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 634B537DEAA
-	for <iommu@lists.linux.dev>; Thu,  2 Apr 2026 07:00:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E870C37FF61
+	for <iommu@lists.linux.dev>; Thu,  2 Apr 2026 07:00:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775113219; cv=none; b=gOEWbL27RloVXnCax7/cTnXLor9FNqwcbBZN9W3xb8ZJM+/MhFzPw7oe6J4WOE2/XzIyUc+g8Rar7xmcN1wAWDa36S5TRJpXzfk1yjgYsp3dfhT8fnh8pQt300HvEvPmAWlVTC95Qc461USMP08R61qkPkVLcCUHnbB7BesXXLs=
+	t=1775113222; cv=none; b=df30MGln170Qc78oM9RicIrjstfjITTGBjgmjBfgIDYZQueUF4CRTJl100A6/gRTjzN2RrZC0UCAkkfOIE8eWdtSwIbXMN9Y5umLr/V8ui8Zx16dv41rQ5mFUlf7UmETgv35K+sRLPomtjq748LvScF0v+RpUn5seMidPB3EBNs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775113219; c=relaxed/simple;
-	bh=OW+PrEwsLVEU0efOoj7WtDoXBUo87EItuQU8Q9Pt4BA=;
+	s=arc-20240116; t=1775113222; c=relaxed/simple;
+	bh=xStoa0Ey6WylcAN2CcgxQJ47ZYn/QFSaqt1J12896QY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ln5BmyLhihX2JNPEd3742oQQQ3AW9TsSXvG5Vqp/wsE0LEd3gIQMkt+oeCRHfuSf+GhnCpzO+ZO0H5Pkj18Vc7o19Elh/m6QQp+PcyGCDc4Zkif3bYwX71l5iAIym8l8aF4DgbZHjQcNpYkVfFIrEogF6rZ3vybCqIyMOyT1xrA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DZ5Tyc99; arc=none smtp.client-ip=198.175.65.21
+	 MIME-Version; b=uHhmmca9df24JDsgjIg1jJCVJmrq7Ooy3X8FpZDQmG2LCzr9XudAawVsIqUourI0Z9SMZvSDJ3C+T0gyLoAEPYgwhJJM21TUVRE8RIdnUGQzFb5hB59Wy9htuKWQvC9q/Co1JcJ96TMOaGSt9jk3KuISmkjW+KrGEX3IuWWPApE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OrI5pkha; arc=none smtp.client-ip=198.175.65.21
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DZ5Tyc99"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OrI5pkha"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1775113217; x=1806649217;
+  t=1775113219; x=1806649219;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=OW+PrEwsLVEU0efOoj7WtDoXBUo87EItuQU8Q9Pt4BA=;
-  b=DZ5Tyc99ytWgDLcC9c0TFCcE2InOogo23/8rqm9G8W3LVQrscMARrRIE
-   J1ncgSRdcp1awUuJoO2oQvOHlpkJXZ57GOOJNzFTar+ByRfW7IHc9LBn3
-   RG8oKcKBmINddLTi7cQLt7++6wDQ3AI08td0KBqu1gkkVXEAiTp5QgfoY
-   /Y7+9yGwibu/5ka7FupG9Fwlpt9r463GMweMTmiPON9vGNCAvPlRGADOn
-   psK6PdfutLJ6rnktRacD8vvxz8qHG3urqS1tDF53h852250srR6R5cF6A
-   h5bkfPm66gkXydZKm/luLIHH7TAZ5+qDEOhR9CR8iaOOxYB7K2enitStq
-   w==;
-X-CSE-ConnectionGUID: aQDn61eJRhWcvwo1YVb/wg==
-X-CSE-MsgGUID: M1wWWqimQ1210X7WQScUfA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11746"; a="76053627"
+  bh=xStoa0Ey6WylcAN2CcgxQJ47ZYn/QFSaqt1J12896QY=;
+  b=OrI5pkha2qyJ2ilkMRW+9rWT8/EbjCUvymlbOUvZvYElHu/Ix2oqNGWX
+   mM/zkB3kqN54WtOXxTgQyO89rYX/b2A6KmNXZroiu2OblC8QNqI/FAdVg
+   S65l3CsGOCALqaqK6Tzpwdbi6Ey/1H8/7/EElbdcySrADnXiGJur1l7Ot
+   F8RrJSNTkP9WWr4n1r7R9r50mB4lN5W3vphdinDcHU6PYKvwV+dSZSkxB
+   B01EBz1PvcvW8S9OdOlJItPF3wjxnNazAgucbVtBFDvauVi8UBZjmofD2
+   D03jDPeaAbj2g4a3f8jA3FSUN2eaKSJaJWpY/ZpZy0KrjpFXTA6yIEZTz
+   Q==;
+X-CSE-ConnectionGUID: JfvqnWrERHKx0N0pFDdwww==
+X-CSE-MsgGUID: iXQnZMZnQlGvwtAX7OyjCw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11746"; a="76053633"
 X-IronPort-AV: E=Sophos;i="6.23,155,1770624000"; 
-   d="scan'208";a="76053627"
+   d="scan'208";a="76053633"
 Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2026 00:00:17 -0700
-X-CSE-ConnectionGUID: 5slHzRZrTiu7DHvqOFhLIg==
-X-CSE-MsgGUID: OzNk9ko2TqiiKU5gY0UZJQ==
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2026 00:00:19 -0700
+X-CSE-ConnectionGUID: T4MpjILjSBC/1qLdiRJKNw==
+X-CSE-MsgGUID: +O+6x2juQqy8iYjqKVgpaw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,155,1770624000"; 
-   d="scan'208";a="231847780"
+   d="scan'208";a="231847803"
 Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by orviesa005.jf.intel.com with ESMTP; 02 Apr 2026 00:00:16 -0700
+  by orviesa005.jf.intel.com with ESMTP; 02 Apr 2026 00:00:18 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: Zhenzhong Duan <zhenzhong.duan@intel.com>,
@@ -50,9 +50,9 @@ Cc: Zhenzhong Duan <zhenzhong.duan@intel.com>,
 	Jason Gunthorpe <jgg@nvidia.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 02/10] iommu/vt-d: Rename device_set_dirty_tracking() and pass dmar_domain pointer
-Date: Thu,  2 Apr 2026 14:57:25 +0800
-Message-ID: <20260402065734.1687476-3-baolu.lu@linux.intel.com>
+Subject: [PATCH 03/10] iommu/vt-d: Support dirty tracking on PASID
+Date: Thu,  2 Apr 2026 14:57:26 +0800
+Message-ID: <20260402065734.1687476-4-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260402065734.1687476-1-baolu.lu@linux.intel.com>
 References: <20260402065734.1687476-1-baolu.lu@linux.intel.com>
@@ -66,88 +66,90 @@ Content-Transfer-Encoding: 8bit
 
 From: Zhenzhong Duan <zhenzhong.duan@intel.com>
 
-device_set_dirty_tracking() sets dirty tracking on all devices attached to
-a domain, also on all PASIDs attached to same domain in subsequent patch.
+In order to support passthrough device with PASID capability in QEMU,
+e.g., DSA device, kernel needs to support attaching PASID to a domain.
 
-So rename it as domain_set_dirty_tracking() and pass dmar_domain pointer
-to better align to what it does.
+But attaching is not allowed if the domain is a second stage domain or
+nested domain with dirty tracking.
 
-No functional changes intended.
+The reason is kernel lacking support for dirty tracking on such domain
+attached to PASID. By adding dirty tracking on PASID, the check can be
+removed.
 
-Suggested-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
 Reviewed-by: Yi Liu <yi.l.liu@intel.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Link: https://lore.kernel.org/r/20260330101108.12594-3-zhenzhong.duan@intel.com
+Link: https://lore.kernel.org/r/20260330101108.12594-4-zhenzhong.duan@intel.com
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel/iommu.c | 21 +++++++++------------
- 1 file changed, 9 insertions(+), 12 deletions(-)
+ drivers/iommu/intel/iommu.c  | 12 +++++++++---
+ drivers/iommu/intel/nested.c |  6 +-----
+ 2 files changed, 10 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index ef7613b177b9..965e0330ec4b 100644
+index 965e0330ec4b..26135ff3a289 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -3684,16 +3684,15 @@ static void *intel_iommu_hw_info(struct device *dev, u32 *length,
- 	return vtd;
- }
+@@ -3618,9 +3618,6 @@ static int intel_iommu_set_dev_pasid(struct iommu_domain *domain,
+ 	if (!pasid_supported(iommu) || dev_is_real_dma_subdevice(dev))
+ 		return -EOPNOTSUPP;
  
--/*
-- * Set dirty tracking for the device list of a domain. The caller must
-- * hold the domain->lock when calling it.
-- */
--static int device_set_dirty_tracking(struct list_head *devices, bool enable)
-+/* Set dirty tracking for the devices that the domain has been attached. */
-+static int domain_set_dirty_tracking(struct dmar_domain *domain, bool enable)
+-	if (domain->dirty_ops)
+-		return -EINVAL;
+-
+ 	if (context_copied(iommu, info->bus, info->devfn))
+ 		return -EBUSY;
+ 
+@@ -3688,6 +3685,7 @@ static void *intel_iommu_hw_info(struct device *dev, u32 *length,
+ static int domain_set_dirty_tracking(struct dmar_domain *domain, bool enable)
  {
  	struct device_domain_info *info;
++	struct dev_pasid_info *dev_pasid;
  	int ret = 0;
  
--	list_for_each_entry(info, devices, link) {
-+	lockdep_assert_held(&domain->lock);
-+
-+	list_for_each_entry(info, &domain->devices, link) {
+ 	lockdep_assert_held(&domain->lock);
+@@ -3695,6 +3693,14 @@ static int domain_set_dirty_tracking(struct dmar_domain *domain, bool enable)
+ 	list_for_each_entry(info, &domain->devices, link) {
  		ret = intel_pasid_setup_dirty_tracking(info->iommu, info->dev,
  						       IOMMU_NO_PASID, enable);
++		if (ret)
++			return ret;
++	}
++
++	list_for_each_entry(dev_pasid, &domain->dev_pasids, link_domain) {
++		info = dev_iommu_priv_get(dev_pasid->dev);
++		ret = intel_pasid_setup_dirty_tracking(info->iommu, info->dev,
++						       dev_pasid->pasid, enable);
  		if (ret)
-@@ -3713,7 +3712,7 @@ static int parent_domain_set_dirty_tracking(struct dmar_domain *domain,
- 	spin_lock(&domain->s1_lock);
- 	list_for_each_entry(s1_domain, &domain->s1_domains, s2_link) {
- 		spin_lock_irqsave(&s1_domain->lock, flags);
--		ret = device_set_dirty_tracking(&s1_domain->devices, enable);
-+		ret = domain_set_dirty_tracking(s1_domain, enable);
- 		spin_unlock_irqrestore(&s1_domain->lock, flags);
- 		if (ret)
- 			goto err_unwind;
-@@ -3724,8 +3723,7 @@ static int parent_domain_set_dirty_tracking(struct dmar_domain *domain,
- err_unwind:
- 	list_for_each_entry(s1_domain, &domain->s1_domains, s2_link) {
- 		spin_lock_irqsave(&s1_domain->lock, flags);
--		device_set_dirty_tracking(&s1_domain->devices,
--					  domain->dirty_tracking);
-+		domain_set_dirty_tracking(s1_domain, domain->dirty_tracking);
- 		spin_unlock_irqrestore(&s1_domain->lock, flags);
+ 			break;
  	}
- 	spin_unlock(&domain->s1_lock);
-@@ -3742,7 +3740,7 @@ static int intel_iommu_set_dirty_tracking(struct iommu_domain *domain,
- 	if (dmar_domain->dirty_tracking == enable)
- 		goto out_unlock;
+diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
+index 16c82ba47d30..2b979bec56ce 100644
+--- a/drivers/iommu/intel/nested.c
++++ b/drivers/iommu/intel/nested.c
+@@ -148,7 +148,6 @@ static int intel_nested_set_dev_pasid(struct iommu_domain *domain,
+ {
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+-	struct iommu_domain *s2_domain = &dmar_domain->s2_domain->domain;
+ 	struct intel_iommu *iommu = info->iommu;
+ 	struct dev_pasid_info *dev_pasid;
+ 	int ret;
+@@ -156,13 +155,10 @@ static int intel_nested_set_dev_pasid(struct iommu_domain *domain,
+ 	if (!pasid_supported(iommu) || dev_is_real_dma_subdevice(dev))
+ 		return -EOPNOTSUPP;
  
--	ret = device_set_dirty_tracking(&dmar_domain->devices, enable);
-+	ret = domain_set_dirty_tracking(dmar_domain, enable);
+-	if (s2_domain->dirty_ops)
+-		return -EINVAL;
+-
+ 	if (context_copied(iommu, info->bus, info->devfn))
+ 		return -EBUSY;
+ 
+-	ret = paging_domain_compatible(s2_domain, dev);
++	ret = paging_domain_compatible(&dmar_domain->s2_domain->domain, dev);
  	if (ret)
- 		goto err_unwind;
+ 		return ret;
  
-@@ -3759,8 +3757,7 @@ static int intel_iommu_set_dirty_tracking(struct iommu_domain *domain,
- 	return 0;
- 
- err_unwind:
--	device_set_dirty_tracking(&dmar_domain->devices,
--				  dmar_domain->dirty_tracking);
-+	domain_set_dirty_tracking(dmar_domain, dmar_domain->dirty_tracking);
- 	spin_unlock(&dmar_domain->lock);
- 	return ret;
- }
 -- 
 2.43.0
 
