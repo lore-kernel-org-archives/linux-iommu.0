@@ -1,167 +1,112 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 297AA330647
-	for <iommu@lists.linux.dev>; Thu,  2 Apr 2026 06:52:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E65937CD2F
+	for <iommu@lists.linux.dev>; Thu,  2 Apr 2026 07:00:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775112768; cv=none; b=fQuyC0s0mJEdif3eCIHbvIMUPuRZgC0bcEjPU9FC+b3x7QrdftIWiBUGfK8ahlEvG/icByG4CqG6VFnSNUzdNPMV84SSIsX/6VT7ZOJ887X2RnPyptBvi75bS0SJ4LYn1DyED8BRfFMTtZxygtjY5Yj5k7oAsPFEZCcdKQIm4Ts=
+	t=1775113214; cv=none; b=P+yhodj711E2ubGYi3orbmELmcQShzkKiKgMgAJRsnFHYo+WFQQruJ7IVgNwA2I7X6ksq0OFoKUPkWL8KgYkHErlrqYVnSi4AnHPzJFl/fPUEX8BPl9YVcSAS+MLbm5FwKCAZRMCH7DvZjhMrP+EuIR+JVXm5hgpI/dg9yvVfyU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775112768; c=relaxed/simple;
-	bh=ntxbhzrvVPLpB37ChB11jjkFBlUbdUl1raHBJC0jfYU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=uQJRQ7p9HD1R/gZiwGazI0GcycoDXtV4G3I87NPnkiceYIDYQPf2NfCmwmRYhBhVgZmmU1Ehy3aR/y9oV0bO30UhbrJvNAViOdQsiCO9QMmvG+QyTbsClDCoDXVpMkcdvYQqhT4vX4VPYMn+GVZ8oyVT8mXy+0pAuk78Knh3X+c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=c7KoBj+H; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1775113214; c=relaxed/simple;
+	bh=SeUFqBqhnZNSyGmCd8YnVCEfmD6tSnYcrkiYRDzBzKY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=GRqYivlU734fjAh3xNlUKCJ8FOPR2H3ZbucdwrSVnM3yW87wW63gV3aDs0L1sOaToB7dSkXQW0l6W5zm735J/Dmt3bvM83eUaQRV4iWdULxVpeU2NkxuvMcNLZ0ZKaYcOv/UIyZPCbTSuOwWUBYv8ZH0LZvYY0uoMJPdL7a0ruE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=F5DxdIY3; arc=none smtp.client-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="c7KoBj+H"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260402065241euoutp01937196651e1d31e1a86d997560ae759f~id6brM5dC0214102141euoutp018
-	for <iommu@lists.linux.dev>; Thu,  2 Apr 2026 06:52:41 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260402065241euoutp01937196651e1d31e1a86d997560ae759f~id6brM5dC0214102141euoutp018
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1775112761;
-	bh=JqJnKEECHMM1x06qmTO+uD6JrQrf2ZS4nGeqK+WTZzo=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=c7KoBj+HLoJ9sWu1hkYtLUUIevwDXI6D3RK20LI8rvG29JUKJiiiahbBwF5EWYT81
-	 YYsa2S2U6wfC9v9jKmDjGDjAFUqu4hVrc1o0CJnhBLOgrBBNI4u98esBReAXz7NbdN
-	 5HZRhHlKS0NnclWLjqBiY2m961MOpr6oaC9+k1Eo=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20260402065241eucas1p26fe08801bf816ff198a0361e0e00aa7d~id6bQM3u42082120821eucas1p2Q;
-	Thu,  2 Apr 2026 06:52:41 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20260402065238eusmtip2465f475377dc393f8274ea72cd5e5991~id6YxQUhd3266432664eusmtip2A;
-	Thu,  2 Apr 2026 06:52:38 +0000 (GMT)
-Message-ID: <7fc83a05-b392-4fc9-8ddb-1c169c698870@samsung.com>
-Date: Thu, 2 Apr 2026 08:52:37 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="F5DxdIY3"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1775113213; x=1806649213;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=SeUFqBqhnZNSyGmCd8YnVCEfmD6tSnYcrkiYRDzBzKY=;
+  b=F5DxdIY3SfvlILpsEzyrttcFgAsKZfga2ged39Ryo1n/PlwOuUVKrFYb
+   sX2X9S6oRclo+qUrKiGUaRfA1G/sgK1RRlCeUvOlo1Gp1L+ZHyHqEdHro
+   8Q4rhtq7c8Nn/ewZt2NRFIMECwzxdgMtuSdCsF/bvm8sUT1HZCQy6aN3M
+   9Bz/Gz/iUnSEWr1I25cq6Rh8YMINgFCUSRHg/2CTIR4jsHM7B5J9uIX3c
+   8npBB/x6uoLE4a5TkQFMdl6e5GjeG986AQIGC8UO7VclqIeGrs+xGhAuM
+   3h4Z7Tc1SUsXeC2A65Cu8IOdkj8cQ76WkxZu2mMNVO1Co7BpS9xLhBYdo
+   Q==;
+X-CSE-ConnectionGUID: 7yLvjygnS0SXYLlYCmhEnw==
+X-CSE-MsgGUID: 3sNbzIhfTUqzAjjhzELl8g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11746"; a="76053611"
+X-IronPort-AV: E=Sophos;i="6.23,155,1770624000"; 
+   d="scan'208";a="76053611"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2026 00:00:13 -0700
+X-CSE-ConnectionGUID: NkVTMhB7Sy2ZGiZwePrpdQ==
+X-CSE-MsgGUID: rTjwJ4SnQKa+l1Mso7qJ+w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,155,1770624000"; 
+   d="scan'208";a="231847666"
+Received: from allen-box.sh.intel.com ([10.239.159.52])
+  by orviesa005.jf.intel.com with ESMTP; 02 Apr 2026 00:00:12 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Zhenzhong Duan <zhenzhong.duan@intel.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 00/10] [PULL REQUEST] Intel IOMMU updates for v7.1
+Date: Thu,  2 Apr 2026 14:57:23 +0800
+Message-ID: <20260402065734.1687476-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v3 5/6] dma-buf: heaps: Add Coherent heap to dmabuf
- heaps
-To: Maxime Ripard <mripard@redhat.com>, Andrew Davis <afd@ti.com>
-Cc: Albert Esteve <aesteve@redhat.com>, Sumit Semwal
-	<sumit.semwal@linaro.org>, Benjamin Gaignard
-	<benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>,
-	John Stultz <jstultz@google.com>, "T.J. Mercier" <tjmercier@google.com>,
-	=?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, Robin Murphy
-	<robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, Saravana Kannan
-	<saravanak@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, echanude@redhat.com
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20260316-cherubic-eel-of-philosophy-10ef2b@houat>
 Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20260402065241eucas1p26fe08801bf816ff198a0361e0e00aa7d
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260316120911eucas1p26492fa73abe29d02bb7f5da73f047abc
-X-EPHeader: CA
-X-CMS-RootMailID: 20260316120911eucas1p26492fa73abe29d02bb7f5da73f047abc
-References: <20260306-b4-dmabuf-heap-coherent-rmem-v3-0-3d00d36c9bc4@redhat.com>
-	<20260306-b4-dmabuf-heap-coherent-rmem-v3-5-3d00d36c9bc4@redhat.com>
-	<e8dd476f-1be8-46fa-bf56-65fe0bfe29a1@ti.com>
-	<CADSE00+-SQr3wGdgBmLowHPWE5bGxoyO4o20jZs4ma-71aOxUA@mail.gmail.com>
-	<1afc696a-9afb-48af-887d-2a209680784e@ti.com>
-	<CGME20260316120911eucas1p26492fa73abe29d02bb7f5da73f047abc@eucas1p2.samsung.com>
-	<20260316-cherubic-eel-of-philosophy-10ef2b@houat>
 
-On 16.03.2026 13:08, Maxime Ripard wrote:
-> On Wed, Mar 11, 2026 at 08:18:28AM -0500, Andrew Davis wrote:
->> On 3/11/26 5:19 AM, Albert Esteve wrote:
->>> On Tue, Mar 10, 2026 at 4:34 PM Andrew Davis <afd@ti.com> wrote:
->>>> On 3/6/26 4:36 AM, Albert Esteve wrote:
->>>>> Expose DT coherent reserved-memory pools ("shared-dma-pool"
->>>>> without "reusable") as dma-buf heaps, creating one heap per
->>>>> region so userspace can allocate from the exact device-local
->>>>> pool intended for coherent DMA.
->>>>>
->>>>> This is a missing backend in the long-term effort to steer
->>>>> userspace buffer allocations (DRM, v4l2, dma-buf heaps)
->>>>> through heaps for clearer cgroup accounting. CMA and system
->>>>> heaps already exist; non-reusable coherent reserved memory
->>>>> did not.
->>>>>
->>>>> The heap binds the heap device to each memory region so
->>>>> coherent allocations use the correct dev->dma_mem, and
->>>>> it defers registration until module_init when normal
->>>>> allocators are available.
->>>>>
->>>>> Signed-off-by: Albert Esteve <aesteve@redhat.com>
->>>>> ---
->>>>>     drivers/dma-buf/heaps/Kconfig         |   9 +
->>>>>     drivers/dma-buf/heaps/Makefile        |   1 +
->>>>>     drivers/dma-buf/heaps/coherent_heap.c | 414 ++++++++++++++++++++++++++++++++++
->>>>>     3 files changed, 424 insertions(+)
->>>>>
->>>>> (...)
->>>> You are doing this DMA allocation using a non-DMA pseudo-device (heap_dev).
->>>> This is why you need to do that dma_coerce_mask_and_coherent(64) nonsense, you
->>>> are doing a DMA alloc for the CPU itself. This might still work, but only if
->>>> dma_map_sgtable() can handle swiotlb/iommu for all attaching devices at map
->>>> time.
->>> The concern is valid. We're allocating via a synthetic device, which
->>> ties the allocation to that device's DMA domain. I looked deeper into
->>> this trying to address the concern.
->>>
->>> The approach works because dma_map_sgtable() handles both
->>> dma_map_direct and use_dma_iommu cases in __dma_map_sg_attrs(). For
->>> each physical address in the sg_table (extracted via sg_phys()), it
->>> creates device-specific DMA mappings:
->>> - For direct mapping: it checks if the address is directly accessible
->>> (dma_capable()), and if not, it falls back to swiotlb.
->>> - For IOMMU: it creates mappings that allow the device to access
->>> physical addresses.
->>>
->>> This means every attached device gets its own device-specific DMA
->>> mapping, properly handling cases where the physical addresses are
->>> inaccessible or have DMA constraints.
->>>
->> While this means it might still "work" it won't always be ideal. Take
->> the case where the consuming device(s) have a 32bit address restriction,
->> if the allocation was done using the real devices then the backing buffer
->> itself would be allocated in <32bit mem. Whereas here the allocation
->> could end up in >32bit mem, as the CPU/synthetic device supports that.
->> Then each mapping device would instead get a bounce buffer.
->>
->> (this example might not be great as we usually know the address of
->> carveout/reserved memory regions, but substitute in whatever restriction
->> makes more sense)
->>
->> These non-reusable carveouts tend to be made for some specific device, and
->> they are made specifically because that device has some memory restriction.
->> So we might run into the situation above more than one would expect.
->>
->> Not a blocker here, but just something worth thinking on.
-> As I detailed in the previous version [1] the main idea behind that work
-> is to allow to get rid of dma_alloc_attrs for framework and drivers to
-> allocate from the heaps instead.
->
-> Robin was saying he wasn't comfortable with exposing this heap to
-> userspace, and we're saying here that maybe this might not always work
-> anyway (or at least that we couldn't test it fully).
->
-> Maybe the best thing is to defer this series until we are at a point
-> where we can start enabling the "heap allocations" in frameworks then?
-> Hopefully we will have hardware to test it with by then, and we might
-> not even need to expose it to userspace at all but only to the kernel.
->
-> What do you think?
+Hi Joerg,
 
-IMHO a good idea. Maybe in-kernel heap for the coherent allocations will 
-be just enough.
+The following changes are queued for v7.1-rc1. This update introduces a
+new feature and several refactorings, including:
 
-Best regards
+- Support for dirty tracking on domains attached to PASID.
+- Removal of unnecessary read*()/write*() wrappers.
+- Improvements to the invalidation paths.
+
+These patches are based on v7.0-rc6. Please consider them for the
+iommu/vt-d branch.
+
+Best regards,
+baolu
+
+Bjorn Helgaas (2):
+  iommu/vt-d: Remove dmar_readl() and dmar_readq()
+  iommu/vt-d: Remove dmar_writel() and dmar_writeq()
+
+Jason Gunthorpe (4):
+  iommu/vt-d: Split piotlb invalidation into range and all
+  iommu/vt-d: Pass size_order to qi_desc_piotlb() not npages
+  iommu/vt-d: Remove the remaining pages along the invalidation path
+  iommu/vt-d: Simplify calculate_psi_aligned_address()
+
+Zhenzhong Duan (4):
+  iommu/vt-d: Block PASID attachment to nested domain with dirty
+    tracking
+  iommu/vt-d: Rename device_set_dirty_tracking() and pass dmar_domain
+    pointer
+  iommu/vt-d: Support dirty tracking on PASID
+  iommufd/selftest: Test dirty tracking on PASID
+
+ drivers/iommu/intel/iommu.h             |  47 +++++------
+ drivers/iommu/intel/trace.h             |  18 ++---
+ drivers/iommu/intel/cache.c             | 100 ++++++++++--------------
+ drivers/iommu/intel/debugfs.c           |  18 ++---
+ drivers/iommu/intel/dmar.c              |  43 ++++------
+ drivers/iommu/intel/iommu.c             |  55 +++++++------
+ drivers/iommu/intel/irq_remapping.c     |   6 +-
+ drivers/iommu/intel/pasid.c             |   6 +-
+ drivers/iommu/intel/perfmon.c           |  50 ++++++------
+ drivers/iommu/intel/prq.c               |  28 +++----
+ tools/testing/selftests/iommu/iommufd.c |  27 +++++++
+ 11 files changed, 193 insertions(+), 205 deletions(-)
+
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+2.43.0
 
