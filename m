@@ -1,162 +1,155 @@
-Received: from canpmsgout01.his.huawei.com (canpmsgout01.his.huawei.com [113.46.200.216])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87B9135F185
-	for <iommu@lists.linux.dev>; Thu,  2 Apr 2026 03:51:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=113.46.200.216
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775101869; cv=none; b=MlxYvcI8BNqT3cXBW5TE2LWigantUV3Q4tMfnISQ3lE3qDoHtpCYBrhYfZkdX7Rjfc7B25euOsHj2f6ESToU/0Qqhvr/jrfFFx+LP8BnORK9KxtjeLWEeljtBi1gP6/F6tsdqKzuetDlV9xMXae55CtGchoViAOcah5o2VpK1wU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775101869; c=relaxed/simple;
-	bh=lt+zP9As4Yq+Wde10tJ1btezopsYQ1iFQzRQ5ny3Aro=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=kxlU7bcISfEtFFIbI5BDOAR+MnZ1n4jynA7eQbMD3/1KudYsmGW1uyZIy/Y7TCk57yAHPsaSLgoviJhYXhuujA371lwKUTWMbDAcImdRT0PlJ5nLrhRPp7KxaDdDhmH92jW8H81UiGeFHrzLS1OqdlLT3QWD9wc+v1+JyK+iDj8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=CcFoy4tx; arc=none smtp.client-ip=113.46.200.216
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCA3C365A1B
+	for <iommu@lists.linux.dev>; Thu,  2 Apr 2026 04:41:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.54
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775104904; cv=pass; b=dX1+Hd/1+0XpZZghAW5KcATlsjQk8lW2wi+Az2xQJ01e47WHRGSS3mlndLj+3ibv8y683AI3vMWweA67hRoErdeBXyWeUsw8TUTComz/chiqyA41t2yUJIUECHLd9e18u+vcCyP+ELzSZqA2NZme8mzwK15L2xtEkxUPpTRnT9g=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775104904; c=relaxed/simple;
+	bh=8M0uK/dY9UfmR0xcTfEk17ugbKg+8eIoSDrEidIpkIc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=lMAx5Oo9YZ2EOQWYr0vWvb/2hKu2yak71lwtaXlsbjF3A/cALNPnulg+3CdCcb+aPu5Y816Nv+YxtlpiavOlP6iJL2/zgzauTtMdIoihWbXpvpZvN5B5xKkAmdJGT7jADBXvs06NSs072TUsvKkWrIdbxSeFnGKS5JCKrCOu4eQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=bAkA1lFS; arc=pass smtp.client-ip=209.85.218.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="CcFoy4tx"
-dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
-	c=relaxed/relaxed; q=dns/txt;
-	h=From;
-	bh=j98bfMfsCWtDp07VFYlUTyTLZgSB6CElM/PsxDfAV+0=;
-	b=CcFoy4txwoulWUG9kwcJTkGrJpGJbgeSNPUpkz2j+7RRjr5AvKrumdOHsMMcM484IG9mihcx8
-	5BbFNwL4vXB2hkUFd2hOy1EK3ivSlTG1f98p/S/alHQR88Ya6gYo2ZJY8zhGFsoQjKDDCgXcwmr
-	Fo+G9i7d+7fztiVkZvnsR2o=
-Received: from mail.maildlp.com (unknown [172.19.162.197])
-	by canpmsgout01.his.huawei.com (SkyGuard) with ESMTPS id 4fmSRY4fXWz1T4L2;
-	Thu,  2 Apr 2026 11:45:13 +0800 (CST)
-Received: from kwepemj200003.china.huawei.com (unknown [7.202.194.15])
-	by mail.maildlp.com (Postfix) with ESMTPS id 9C27E40569;
-	Thu,  2 Apr 2026 11:50:55 +0800 (CST)
-Received: from [10.67.120.170] (10.67.120.170) by
- kwepemj200003.china.huawei.com (7.202.194.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Thu, 2 Apr 2026 11:50:54 +0800
-Message-ID: <b0e67dac-a95f-4b8f-b4c6-3e992b66a780@huawei.com>
-Date: Thu, 2 Apr 2026 11:50:54 +0800
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="bAkA1lFS"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-b9a0762ed5fso64694966b.1
+        for <iommu@lists.linux.dev>; Wed, 01 Apr 2026 21:41:42 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1775104901; cv=none;
+        d=google.com; s=arc-20240605;
+        b=TvfC9hUN292Wa+jtEMMepqfhLKcKAencV0WT62urmQ7DaQTGW2YBJXom9W51V3OtvI
+         24qNvi+iI2Lh+dzmtJVwcPkZ6UUnD+ahf20O15PdIleq7A2VkeVPUtmxOOi27kFN4a0b
+         JazxOYSwZA3SyHIlomdw7gNvcfLM6a31ZKRQ+QGJtBZacpwUYJ5NwIZI9YBbhIQPFYxi
+         T8S//Qe/CUfp4znbzV1XcD5WCdSxWbFrFU7YDpN+s6jrA8xeez/jxb1/yts4496iAIVZ
+         BemW0Z3MurmavrLpL+7mVDOCGwjCGqESFiGPcyxO6n/TpSQ3B+Wjqfee89CrGbh6SeIb
+         PZ8w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=MsqizXttng34qJSYG1+nQy1RthHCf+vtWgekNCi7+qE=;
+        fh=wTZX6HLpJONa8w5FGjcpeWJmDb4/nAUd4kFjTHiK30Q=;
+        b=HgXnVmti722eny7V6ZKK2ZKYoF4tlGFOIMsCuH/5QYnKb8oQRfru1pNpZpzJxAeiOg
+         aXyz/FcVRRM7M6wUmzmzEEY1pwjpr4sW3QZjSYFQTRWK8V3i8OKaPaWRZ1iApb4Ub1y1
+         eMWYZPm7LIh9/yJeeQPaYuXkbHerpkhXjBLa8XSBnhvUkZuhVu1w+ITvpqYreuye/Ldz
+         RN16qVNbkxAVSSx8tCufPflAfJZgEgWDZ1bOdVNw4ev0cjTOJC0g4kxTSxz5jhgPExc0
+         S8Lss0Wh5uGFVxt31GKdQryuAD2JVxGkVa2Itj8aM5woA+HfNCRYGFwW5td/YepurPNY
+         m1mA==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1775104901; x=1775709701; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=MsqizXttng34qJSYG1+nQy1RthHCf+vtWgekNCi7+qE=;
+        b=bAkA1lFSIdqefpMgJ8gLEiUfxvU+W0yJECb/eEtUaCSEH2+HJQwKOBvhWVf0sf6WeV
+         SLfp9mAMV5HxbbLogy+3rwwalVM7JZ2cPfYG770STZFnwrBP36gZP006xFN6ffHtLEb+
+         rNwsOXUEJdgu+i3tMRWGeXLchFW3emmhdJI60fcsWoixF1erS5u3tl5vJKcX+DG8RG/A
+         nr87VhPryhj0T4c5cgKCyWJ6t0hSW6NKy0AQe2xGeKKI9/cuHfVGfmgK8ZLtK3fLdrXJ
+         Yv7C4n6raODhKNgJM2VNgDnzn8WC9/R35bYinncMBkzaP1T/uLz2O74KyvLZAQHzlGqT
+         argg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775104901; x=1775709701;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MsqizXttng34qJSYG1+nQy1RthHCf+vtWgekNCi7+qE=;
+        b=VYOs8bIkupAm6vji08AwUj5Uf184QOAOQcz87n5IoEvffNcuTfLgUs/qiOa87zOeLs
+         qlOZ8iXnUIROCnSO+Cgs6FLSgOzniq8bscz6M0hLpP6ebMpLXfCKqIskCazLhgUyqRvs
+         HdmWupkfx7kHpoLGvGiXitX9sDlklMusd5JV+li4ITYcnzDrZYYIM8fKnCeLWFVfOGGJ
+         j9fD1kAV7BFbN0R4HS5UE879XLNlf9fVbM3g/RqvvkubEUP7x72cy5uFkZhHpo/NVzg/
+         jZ9qUYqflmacsWw8ZK7m8A8ad/DagEqvIijq/tNCiN5LHQUq+H7xfMYxhwLOYltCxK8/
+         c31w==
+X-Forwarded-Encrypted: i=1; AJvYcCXA08hsbcCVnERMulN/63YujmCLPxb6SE2v26eh6o0a1yqqIhP4tPphbzFGazHpE1qaniXnbQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyMnQ8M2iGLIvw4dXLd/rxqlxX08D7+/p/4+UCrNsi+zPrFr3Fs
+	2SYH7a6PzhGlZ6CyGnxUWV4q4bFO38P4GcAcuJmoXwGyqsvSVWVcAPrfpJda/eRcce1lu/KFy4r
+	3esBySxScNRWO2tVGY6KAY2MIoOY9VP2qADSqZpFNhQ==
+X-Gm-Gg: ATEYQzy9sXHV1+nbu1dWA2//k3h0+1t+Q7xrO07Bt4u/7nVqCsQlm8bnvXPtSD/ME/c
+	vnRzhg/yj8n3YOaxFiZQ7Yd6U/28Y3cj3j6KHK/FA19c0yFsl44Hv71pGnPNTE94Tq0OqEx72Qn
+	0ev8IWpZcpV9m75Nx2Y9UTnJqi79hTFoMDkxIx1mXtx8FJz28898TDrRmufU5H08xbya3GOQ6++
+	rwy+i6cg17peNScVQTT0gtyCq2WpNq+9NP5GVsRMqjMnO1zOle29YEYqm5kFcPD20v8CjIUivKV
+	3ULrJuKGdCGL82itsTQz6aIf86ynaYtKAGTBiUY=
+X-Received: by 2002:a17:907:8694:b0:b93:8275:795a with SMTP id
+ a640c23a62f3a-b9c46fedc2cmr44691666b.15.1775104901064; Wed, 01 Apr 2026
+ 21:41:41 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH v2 1/5] iommu/arm-smmu-v3: Add basic debugfs framework
-To: Nicolin Chen <nicolinc@nvidia.com>
-CC: <robin.murphy@arm.com>, <will@kernel.org>, <jpb@kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<wangzhou1@hisilicon.com>, <prime.zeng@hisilicon.com>,
-	<fanghao11@huawei.com>, <jonathan.cameron@huawei.com>,
-	<wuyifan50@huawei.com>, <linuxarm@huawei.com>
-References: <20260328101706.3448655-1-xiaqinxin@huawei.com>
- <20260328101706.3448655-2-xiaqinxin@huawei.com> <acpUoZ7wx9gdT5BG@nvidia.com>
-From: Qinxin Xia <xiaqinxin@huawei.com>
-In-Reply-To: <acpUoZ7wx9gdT5BG@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: kwepems200001.china.huawei.com (7.221.188.67) To
- kwepemj200003.china.huawei.com (7.202.194.15)
+References: <20260325192352.437608-1-jiri@resnulli.us>
+In-Reply-To: <20260325192352.437608-1-jiri@resnulli.us>
+From: Sumit Semwal <sumit.semwal@linaro.org>
+Date: Thu, 2 Apr 2026 10:11:29 +0530
+X-Gm-Features: AQROBzCoqOVd8w8IT8q-wzhadg7W4rdnhn-HGLlu-Tm0fuk9WqMGP5WDrs9ZghY
+Message-ID: <CAO_48GEUXpcFBiyJAMgTcGPSq56-mZ0qnO3FrFRM2LoGd8W6HA@mail.gmail.com>
+Subject: Re: [PATCH v5 0/2] dma-buf: heaps: system: add an option to allocate
+ explicitly shared/decrypted memory
+To: Jiri Pirko <jiri@resnulli.us>
+Cc: dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
+	iommu@lists.linux.dev, linux-media@vger.kernel.org, 
+	benjamin.gaignard@collabora.com, Brian.Starkey@arm.com, jstultz@google.com, 
+	tjmercier@google.com, christian.koenig@amd.com, m.szyprowski@samsung.com, 
+	robin.murphy@arm.com, jgg@ziepe.ca, leon@kernel.org, sean.anderson@linux.dev, 
+	ptesarik@suse.com, catalin.marinas@arm.com, aneesh.kumar@kernel.org, 
+	suzuki.poulose@arm.com, steven.price@arm.com, thomas.lendacky@amd.com, 
+	john.allen@amd.com, ashish.kalra@amd.com, suravee.suthikulpanit@amd.com, 
+	linux-coco@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
+Hello Jiri,
 
-
-On 2026/3/30 18:46:57, Nicolin Chen <nicolinc@nvidia.com> wrote:
-> On Sat, Mar 28, 2026 at 06:17:02PM +0800, Qinxin Xia wrote:
->> Add basic debugfs framework for ARM SMMUv3 driver.This creates the
-> 
-> Needs a space after "."
-> 
->> +static int smmu_debugfs_capabilities_show(struct seq_file *seq, void *unused)
->> +{
->> +	struct arm_smmu_device *smmu = seq->private;
->> +
->> +	if (!smmu) {
->> +		seq_puts(seq, "SMMU not available\n");
->> +		return 0;
->> +	}
->> +
->> +	seq_puts(seq, "SMMUv3 Capabilities:\n");
->> +	seq_printf(seq, "  Stage1 Translation: %s\n",
->> +		   smmu->features & ARM_SMMU_FEAT_TRANS_S1 ? "Yes" : "No");
->> +	seq_printf(seq, "  Stage2 Translation: %s\n",
->> +		   smmu->features & ARM_SMMU_FEAT_TRANS_S2 ? "Yes" : "No");
->> +	seq_printf(seq, "  Coherent Walk: %s\n",
->> +		   smmu->features & ARM_SMMU_FEAT_COHERENCY ? "Yes" : "No");
->> +	seq_printf(seq, "  ATS Support: %s\n",
->> +		   smmu->features & ARM_SMMU_FEAT_ATS ? "Yes" : "No");
->> +	seq_printf(seq, "  PRI Support: %s\n",
->> +		   smmu->features & ARM_SMMU_FEAT_PRI ? "Yes" : "No");
->> +	seq_printf(seq, "  Stream Table Size: %d\n", 1 << smmu->sid_bits);
->> +	seq_printf(seq, "  Command Queue Depth: %d\n",
->> +		   1 << smmu->cmdq.q.llq.max_n_shift);
->> +	seq_printf(seq, "  Event Queue Depth: %d\n",
->> +		   1 << smmu->evtq.q.llq.max_n_shift);
-> 
-> Nit: should we do all sizes or all depths? Any good reason to mix
-> them here?
+On Thu, 26 Mar 2026 at 00:53, Jiri Pirko <jiri@resnulli.us> wrote:
 >
+> From: Jiri Pirko <jiri@nvidia.com>
+>
+> Confidential computing (CoCo) VMs/guests, such as AMD SEV and Intel TDX,
+> run with private/encrypted memory which creates a challenge
+> for devices that do not support DMA to it (no TDISP support).
+>
+> For kernel-only DMA operations, swiotlb bounce buffering provides a
+> transparent solution by copying data through shared memory.
+> However, the only way to get this memory into userspace is via the DMA
+> API's dma_alloc_pages()/dma_mmap_pages() type interfaces which limits
+> the use of the memory to a single DMA device, and is incompatible with
+> pin_user_pages().
+>
+> These limitations are particularly problematic for the RDMA subsystem
+> which makes heavy use of pin_user_pages() and expects flexible memory
+> usage between many different DMA devices.
+>
+> This patch series enables userspace to explicitly request shared
+> (decrypted) memory allocations from new dma-buf system_cc_shared heap.
+> Userspace can mmap this memory and pass the dma-buf fd to other
+> existing importers such as RDMA or DRM devices to access the
+> memory. The DMA API is improved to allow the dma heap exporter to DMA
+> map the shared memory to each importing device.
 
-Stream Table is a table, not a queue, so 'Size' is more appropriate; 
-queues use 'Depth'. But I can change to unify if preferred.
+Thank you for the patch series, it looks good to me.
 
->> +/**
->> + * arm_smmu_debugfs_remove() - Clean up debugfs entries for an SMMU device
->> + * @smmu: SMMU device
->> + *
->> + * This function removes the debugfs directories created by setup.
->> + */
->> +void arm_smmu_debugfs_remove(struct arm_smmu_device *smmu)
->> +{
->> +	struct arm_smmu_debugfs *debugfs;
->> +
->> +	scoped_guard(mutex, &arm_smmu_debugfs_lock) {
-> 
-> It could be just normal guard().
-> 
->> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> index 4d00d796f078..cbb3fccc501b 100644
->> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> @@ -4904,6 +4904,15 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->>   	/* Check for RMRs and install bypass STEs if any */
->>   	arm_smmu_rmr_install_bypass_ste(smmu);
->>   
->> +#ifdef CONFIG_ARM_SMMU_V3_DEBUGFS
->> +	char name[32];
-> 
-> This could be moved to the top, as iommu_device_sysfs_add() can use
-> it, whether CONFIG_ARM_SMMU_V3_DEBUGFS=y or =n.
-> 
->> +	snprintf(name, sizeof(name), "smmu3.%pa", &ioaddr);
-> 
-> And this could be moved after ioaddr gets a copy from res->start.
-> 
->>   
->> +#ifdef CONFIG_ARM_SMMU_V3_DEBUGFS
->> +struct arm_smmu_debugfs {
->> +	struct dentry			*smmu_dir;
-> 
-> A personal preference: for new structures, maybe drop those tabs?
-> 
->>   /* An SMMUv3 instance */
->>   struct arm_smmu_device {
->>   	struct device			*dev;
->> @@ -803,6 +813,11 @@ struct arm_smmu_device {
->>   
->>   	struct rb_root			streams;
->>   	struct mutex			streams_mutex;
->> +
->> +#ifdef CONFIG_ARM_SMMU_V3_DEBUGFS
->> +	/* DebugFS Info */
-> 
-> Doesn't seem very useful. I'd drop it.
-> 
->> +	struct arm_smmu_debugfs		*debugfs;
->> +#endif
->   
-> Nicolin
-> 
--- 
-Thanks,
-Qinxin
+Marek, if you are ok, please could you take it through your tree, with my
+Acked-by: Sumit Semwal <sumit.semwal@linaro.org>
 
+Best,
+Sumit.
+>
+> Based on dma-mapping-for-next e7442a68cd1ee797b585f045d348781e9c0dde0d
+>
+> Jiri Pirko (2):
+>   dma-mapping: introduce DMA_ATTR_CC_SHARED for shared memory
+>   dma-buf: heaps: system: add system_cc_shared heap for explicitly
+>     shared memory
+>
+>  drivers/dma-buf/heaps/system_heap.c | 103 ++++++++++++++++++++++++++--
+>  include/linux/dma-mapping.h         |  10 +++
+>  include/trace/events/dma.h          |   3 +-
+>  kernel/dma/direct.h                 |  14 +++-
+>  kernel/dma/mapping.c                |  13 +++-
+>  5 files changed, 132 insertions(+), 11 deletions(-)
+>
+> --
+> 2.51.1
+>
