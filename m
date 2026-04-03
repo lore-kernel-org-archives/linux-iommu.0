@@ -1,107 +1,277 @@
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from outbound.qs.icloud.com (qs-2007i-snip4-2.eps.apple.com [57.103.84.213])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCF34346FA6
-	for <iommu@lists.linux.dev>; Fri,  3 Apr 2026 16:07:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F8DE3CCFC4
+	for <iommu@lists.linux.dev>; Fri,  3 Apr 2026 16:45:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=57.103.84.213
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775232454; cv=none; b=LmMICXpTukP03lha2Uw37iWLlZcd68omQVclyvzh8HBOEa+DOyROojwPOtEmSXDgBEQhqNeKpETsObMENJne/JFAOdXbvq2vzra/8KftKZgehnRNZxglpquYlSzQwiNDVzXfZ2+K+aTiN9UEKlVIpkNy2HNuuMTGYgI05CuM4cw=
+	t=1775234750; cv=none; b=AMU9l2GyGywQUr9R+FwRdBvJxkqh079BLSREE0+pGIqkH4MhGm1JtTy6Ul/SZV9lUrMK3nKdGqNHufvMZRkZwcgGwSzo+V86NSW2Jqy29vMPYSw1x78hIVW6wk2LYfSRtr+i86klbeiR+ep5DviYm6pLeA9qNhtF+uI59QBVbKk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775232454; c=relaxed/simple;
-	bh=9//i/l/99yq+vnARHHYnQK2GDVb2B+L5A462BYB1OAQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TYqL25h9ayicWdzjMs3Nie+UJT6EbevnF2xVQHrXwTsDVHu10tyWpQffIyhSnWQksv1BHPNgSTr15b5pCb8I472WkhjnN3cwqRo2sM7gY5Xq65/F4FBrJvZ0JWkqgREwoD1QC68+LaWb2ZOWREuhMYqlG4nJ/fY3yjs21szvjDI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=PCiebmmn; arc=none smtp.client-ip=209.85.160.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1775234750; c=relaxed/simple;
+	bh=i+cu2XfJ0/VipmrjHQXx+UuvAVk0AeKwy6wL7Cjrk/8=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=qkzmnMLGk++Npso2W2UOW7eceeFNAYRPH4HpI0kgj0Vc/l13dUugFXSkbwKoW2zdgGpJyFqxoOeYubY8QV+wncQA73hkt6rqVAJmbvkcHMmG5lf+nOqX3txFRlMha9YecP1sWZecywqa/mGqNr6zefGQBQ7CAIk904HHSPwGErU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com; spf=pass smtp.mailfrom=icloud.com; dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b=EahlqkMm; arc=none smtp.client-ip=57.103.84.213
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=icloud.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="PCiebmmn"
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-50d6144877aso13311541cf.3
-        for <iommu@lists.linux.dev>; Fri, 03 Apr 2026 09:07:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1775232451; x=1775837251; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=GoRjrzwsrBkq63H71O5T18FssH5et47xTHlFEqom36Q=;
-        b=PCiebmmndASvG2Ev54xcQmy+5VICsr/DkGggwJC4KW3zjkaqAImGHkmCtCi8jXxlUd
-         yy7TcIn4vqzx4fGHJXlHqlqYYO1ngzAlmDOOfASbVtHhAV6A6o36p5xbaActnECGfu9w
-         jU4JjLSmy73xSDKXWSd6hhTPrn27jbXfmkfjrzf6F2W8JspIQqrKWQlj3NL6sqDKaCim
-         9wAf6fwUQQkSo4kVK+U3Rg3n2PHRO/agrQXKdIdNkX758e+kK3NBPUOFgpNZX7caMei2
-         xlozcTI9v5IM5J8xArkiDZz3w3QQZ9mlgThNi9E+uRbf+129LjaRmlZLAt3ITYAwitsu
-         GvpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775232451; x=1775837251;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=GoRjrzwsrBkq63H71O5T18FssH5et47xTHlFEqom36Q=;
-        b=VLQBtW9G+E/BQr8zqGSUVx1mgklQ2mukAkqrp4wukaP/fnrRctiDMchabW42DgP7ut
-         dxdBbcqziae2gCmaKxLqQoP5PUd0wpUZMlYX3yxoPQoKieh9TSh15QjMPEsFdM53IGnr
-         6j4+mvbrCwUxJqn4npZ/kbkKQ9nTPdNJSaiKS2CsltMlVwXpcGgUp0btNyzzl3WZ+Xea
-         +i6hd2Y12RRAA6nTEKm3vyeWXvWZKqeGEnJqLPRKw5OFDkhORn17fYHQu/qmQ8FC507L
-         Ulpn5vBiAI4GfNYYXE9FXZX4K2HYK31jwGxipwTzwYJ0PSr0Hc03Ybii7Ojj3jR/bZYw
-         sLHw==
-X-Forwarded-Encrypted: i=1; AJvYcCWyE+OU5Ujpos2kF5lkHK4SqLTz14vu6BNHkCl7I0pj7b1ixTs4N0AuQhMPZdcAnDzVP23brA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw1kPvm6+/hvujDn1gPrjEreDMO7OlegneJ3f3Y9dGEe2Rm6adu
-	6vhP9Rax35k9oDzTbBbtOQtlYeeY/dyaC1Dce7oorP6deUe7GyowWfjcw6yI5fL+x4w=
-X-Gm-Gg: ATEYQzytse6X/mY0H8bu54w/HUfg4Hov36dD9u1LoH0ZfqiCMoDYQ1LA1jFN88D2iaf
-	QJPJZiue4x2q/0v2Clo66oGX+nwEXGWqdvsvXSQUDuVbkVk/kOO79jIdGyQih61UTDjzYNtvN2i
-	NE9SpaIUv5dqMOSgEhyHHA53U72UIiL2MQdq1CsbHU25N+J07RDM1EbvMqVcLk5fiUQdJ4drt5f
-	xX8U0SyZ7sXUOfmou5NRTB23G+N2wZhknrWOxASTH6P1Sobe0m7Ur+3GUqFR0aWQpFcXKJqjVSo
-	Qaqt6sMLXL1+L9FiHx2OxUds/6toGsFxA4QAPutfk6Rx/aLS1ONZy71mY+iMxlMsL6HDnaZTXna
-	KkIZzd41ieAv5xONEEL2E7wsslBl0ryHb6Apso7vSZX2BKgDhcsyLXwCXTWx2rrYoxYr9JHg+Cr
-	LgChYiXSMN+HYxLW1Ksh+6Spz/HBHt52PDUU+7GggSn7qM0DC7PZi/vGbV/FCEaa1PbOR9Xg==
-X-Received: by 2002:ac8:5f90:0:b0:509:3257:c050 with SMTP id d75a77b69052e-50d6278f405mr52196981cf.24.1775232451465;
-        Fri, 03 Apr 2026 09:07:31 -0700 (PDT)
-Received: from ziepe.ca (mctnnbsa70w-159-2-73-22.dhcp-dynamic.fibreop.nb.bellaliant.net. [159.2.73.22])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-50d4b1a739dsm48217621cf.1.2026.04.03.09.07.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Apr 2026 09:07:30 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1w8h3R-0000000Cnh8-3mSR;
-	Fri, 03 Apr 2026 13:07:29 -0300
-Date: Fri, 3 Apr 2026 13:07:29 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Konstantin Khorenko <khorenko@virtuozzo.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Peter Oberparleiter <oberpar@linux.ibm.com>,
-	Mikhail Zaslonko <zaslonko@linux.ibm.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
-	Vasileios Almpanis <vasileios.almpanis@virtuozzo.com>,
-	Thomas =?utf-8?Q?Wei=C3=9Fschuh?= <linux@weissschuh.net>
-Subject: Re: [PATCH] iommu/generic_pt: disable GCOV for iommu_amdv1.o
-Message-ID: <20260403160729.GC2551565@ziepe.ca>
-References: <20260402141012.1437095-1-khorenko@virtuozzo.com>
- <20260402141012.1437095-2-khorenko@virtuozzo.com>
+	dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b="EahlqkMm"
+Received: from outbound.qs.icloud.com (unknown [127.0.0.2])
+	by p00-icloudmta-asmtp-us-east-2d-100-percent-8 (Postfix) with ESMTPS id B53F51800367;
+	Fri, 03 Apr 2026 16:45:43 +0000 (UTC)
+Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=icloud.com; s=1a1hai; t=1775234747; x=1777826747; bh=l6n1Sz4zU7ZCL1MFiNRAjvokkEmLKWXQQsKV7JYXJfA=; h=Content-Type:Mime-Version:Subject:From:Date:Message-Id:To:x-icloud-hme; b=EahlqkMm93mFqyQKDcjDd5GoX2oIPIGRG+bupjvhSlEm3nzXSdObBR2HI6U+d+gvyi4/v/El/ULh+4FCEJI/AnxMGoo3UXl+o8UiSbA/aLCP0Maf+a9oRAs2iJAf9cj66Y8NMDthbB7mvn70bnXmeWJ/6S54GTRYu64Uo9scp9fsAh++PB+b6W5vGTHL4tabnFKMWoqwW736Z4Wdoe0LXFmByLGI7nryw8bRGExHHbbEBH0yF6gRXWOTamj7J3vOe5SIWa5EsKbfIGoRmbgq/9jAXKhM8WorsucaD8MqGgSwQ3xnydj7vHlSpMHEG00kacUIPepO/CpvywryZ/v64A==
+Received: from smtpclient.apple (unknown [17.57.155.37])
+	by p00-icloudmta-asmtp-us-east-2d-100-percent-8 (Postfix) with ESMTPSA id DB877180014B;
+	Fri, 03 Apr 2026 16:45:41 +0000 (UTC)
+Content-Type: text/plain;
+	charset=utf-8
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260402141012.1437095-2-khorenko@virtuozzo.com>
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3864.300.41.1.7\))
+Subject: Regression Re: [PATCH v3 1/4] PCI: Enable ACS only after configuring
+ IOMMU for OF platforms
+From: Jon Kohler <jonmkohler@icloud.com>
+In-Reply-To: <20260102-pci_acs-v3-1-72280b94d288@oss.qualcomm.com>
+Date: Fri, 3 Apr 2026 12:45:29 -0400
+Cc: Bjorn Helgaas <bhelgaas@google.com>,
+ linux-pci@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev,
+ Naresh Kamboju <naresh.kamboju@linaro.org>,
+ Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+ Xingang Wang <wangxingang5@huawei.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>,
+ Manivannan Sadhasivam <mani@kernel.org>,
+ sashal@kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <B4914F2A-B2AC-4C3E-B4D2-F9C32527FDC3@icloud.com>
+References: <20260102-pci_acs-v3-0-72280b94d288@oss.qualcomm.com>
+ <20260102-pci_acs-v3-1-72280b94d288@oss.qualcomm.com>
+To: manivannan.sadhasivam@oss.qualcomm.com
+X-Mailer: Apple Mail (2.3864.300.41.1.7)
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDAzMDE0OSBTYWx0ZWRfXxbGiZEEOhN4a
+ RTnoy71nU1FeHf2UYjTuXcsLezsYgdGSAFvX0YfcApTVrMZsSp0XK3LHqtKDe48POyZyIj23HYP
+ 8tSpVubb8WuGOXaRN1iXRV4oCtkRsgCx5dcwFO0FDZ35w75sMQc9LneAq6VsF5kS5M+iggWt0FE
+ LrZ47O+st1h3u0boMPEtMehDuXWPMltnTZ4o5atU+cMk5/tpX2H22biQsJsgbhOz/TdsqQaNtJa
+ KKZBUCep9DAQVV+HGE4cx/cUc66D0q5OZ+QTk9rcL88c8AO2zxxoEGbyarorfZzpoaZK4RnUeit
+ v7OiJRV3fvZy2UUb0DLs/u8PEmvlPi8C4tRGCCieGxHil1dFZFZPev7kGvr91c=
+X-Authority-Info-Out: v=2.4 cv=CNgnnBrD c=1 sm=1 tr=0 ts=69cfeeb9
+ cx=c_apl:c_pps:t_out a=bsP7O+dXZ5uKcj+dsLqiMw==:117
+ a=bsP7O+dXZ5uKcj+dsLqiMw==:17 a=IkcTkHD0fZMA:10 a=A5OVakUREuEA:10
+ a=x7bEGLp0ZPQA:10 a=azN_SmmUUI8A:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=hD80L64hAAAA:8 a=KKAkSRfTAAAA:8
+ a=XAu3VhzttILKBu_4kTwA:9 a=QEXdDO2ut3YA:10 a=cvBusfyB2V15izCimMoJ:22
+X-Proofpoint-GUID: ZIRTZ7pcuX0hD3sj4RsbJL4LCzeXnyUh
+X-Proofpoint-ORIG-GUID: ZIRTZ7pcuX0hD3sj4RsbJL4LCzeXnyUh
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-04-03_05,2026-04-03_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0
+ spamscore=0 mlxlogscore=999 mlxscore=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 lowpriorityscore=0 clxscore=1011 classifier=spam
+ authscore=0 adjust=0 reason=mlx scancount=1 engine=8.22.0-2601150000
+ definitions=main-2604030149
 
-On Thu, Apr 02, 2026 at 05:10:12PM +0300, Konstantin Khorenko wrote:
-> With -fprofile-update=atomic in global CFLAGS_GCOV, GCC cannot
-> constant-fold FIELD_PREP() expressions inside deeply inlined page table
-> walker functions.  GCC creates .constprop clones of the inline level
-> functions, which get their own GCOV instrumentation that prevents
-> constant evaluation of compile-time checks.
 
-That's hasn't been the issue here. gcc gets confused where it thinks a
-value is constant so the builtin_constant checks inside FIELD_PREP
-trigger, but if the value is constant then control flow leading up to
-it excludes that path ever happening.
 
-Somehow gcov is breaking the elimination of the impossible branch, and
-I think this is all just compiler bugs.
+> On Jan 2, 2026, at 10:34=E2=80=AFAM, Manivannan Sadhasivam via B4 =
+Relay <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org> wrote:
+>=20
+> From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+>=20
+> For enabling ACS without the cmdline params, the platform drivers are
+> expected to call pci_request_acs() API which sets a static flag,
+> 'pci_acs_enable' in drivers/pci/pci.c. And this flag is used to enable =
+ACS
+> in pci_enable_acs() helper, which gets called during pci_acs_init(), =
+as per
+> this call stack:
+>=20
+> -> pci_device_add()
+> -> pci_init_capabilities()
+> -> pci_acs_init()
+> /* check for pci_acs_enable */
+> -> pci_enable_acs()
+>=20
+> For the OF platforms, pci_request_acs() is called during
+> of_iommu_configure() during device_add(), as per this call stack:
+>=20
+> -> device_add()
+> -> iommu_bus_notifier()
+> -> iommu_probe_device()
+> -> pci_dma_configure()
+> -> of_dma_configure()
+> -> of_iommu_configure()
+> /* set pci_acs_enable */
+> -> pci_request_acs()
+>=20
+> As seen from both call stacks, pci_enable_acs() is called way before =
+the
+> invocation of pci_request_acs() for the OF platforms. This means,
+> pci_enable_acs() will not enable ACS for the first device that gets
+> enumerated, which is usally the Root Port device. But since the static
+> flag, 'pci_acs_enable' is set *afterwards*, ACS will be enabled for =
+the
+> ACS capable devices enumerated later.
+>=20
+> To fix this issue, do not call pci_enable_acs() from pci_acs_init(), =
+but
+> only from pci_dma_configure() after calling of_dma_configure(). This =
+makes
+> sure that pci_enable_acs() only gets called after the IOMMU framework =
+has
+> called pci_request_acs(). The ACS enablement flow now looks like:
+>=20
+> -> pci_device_add()
+> -> pci_init_capabilities()
+> /* Just store the ACS cap */
+> -> pci_acs_init()
+> -> device_add()
+> ...
+> -> pci_dma_configure()
+> -> of_dma_configure()
+> -> pci_request_acs()
+> -> pci_enable_acs()
+>=20
+> For the ACPI platforms, pci_request_acs() is called during ACPI
+> initialization time itself, independent of the IOMMU framework.
+>=20
+> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Tested-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+> Signed-off-by: Manivannan Sadhasivam =
+<manivannan.sadhasivam@oss.qualcomm.com>
+> ---
+> drivers/pci/pci-driver.c | 8 ++++++++
+> drivers/pci/pci.c        | 8 --------
+> drivers/pci/pci.h        | 1 +
+> 3 files changed, 9 insertions(+), 8 deletions(-)
+>=20
+> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+> index 7c2d9d596258..301a9418e38e 100644
+> --- a/drivers/pci/pci-driver.c
+> +++ b/drivers/pci/pci-driver.c
+> @@ -1650,6 +1650,14 @@ static int pci_dma_configure(struct device =
+*dev)
+> ret =3D acpi_dma_configure(dev, acpi_get_dma_attr(adev));
+> }
+>=20
+> + /*
+> + * Attempt to enable ACS regardless of capability because some Root
+> + * Ports (e.g. those quirked with *_intel_pch_acs_*) do not have
+> + * the standard ACS capability but still support ACS via those
+> + * quirks.
+> + */
+> + pci_enable_acs(to_pci_dev(dev));
+> +
+> pci_put_host_bridge_device(bridge);
+>=20
+> /* @drv may not be valid when we're called from the IOMMU layer */
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index 13dbb405dc31..2c3d0a2d6973 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -3648,14 +3648,6 @@ bool pci_acs_path_enabled(struct pci_dev =
+*start,
+> void pci_acs_init(struct pci_dev *dev)
+> {
+> dev->acs_cap =3D pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ACS);
+> -
+> - /*
+> - * Attempt to enable ACS regardless of capability because some Root
+> - * Ports (e.g. those quirked with *_intel_pch_acs_*) do not have
+> - * the standard ACS capability but still support ACS via those
+> - * quirks.
+> - */
+> - pci_enable_acs(dev);
+> }
+>=20
+> /**
+> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+> index 0e67014aa001..4592ede0ebcc 100644
+> --- a/drivers/pci/pci.h
+> +++ b/drivers/pci/pci.h
+> @@ -939,6 +939,7 @@ static inline resource_size_t =
+pci_resource_alignment(struct pci_dev *dev,
+> }
+>=20
+> void pci_acs_init(struct pci_dev *dev);
+> +void pci_enable_acs(struct pci_dev *dev);
+> #ifdef CONFIG_PCI_QUIRKS
+> int pci_dev_specific_acs_enabled(struct pci_dev *dev, u16 acs_flags);
+> int pci_dev_specific_enable_acs(struct pci_dev *dev);
+>=20
+> --=20
+> 2.48.1
+>=20
 
-Also, I thought this was fixed by adding the always_inline?
+Howdy folks,
+Writing to report a regression from this patch. While attempting to
+rebase our 6.12.y-based internal tree past 6.12.75, we encountered a
+behavior change in our internal systems, wherein we have a platform
+that uses vfio-pci passthrough for a series of PCIe devices (SAS HBAs,
+NVMe SSDs, NIC passthrough, etc) to a given service VM.
 
-Jason
+On some, but not all, of these systems, we noticed that the iommu
+group topology completely changes with this commit. Before this commit,
+a given system may have ~90-ish iommu groups. After this commit, we see
+~60-ish iommu groups.
+
+The net result is that some of the devices marked for passthrough get
+clubbed together with devices that are not marked for passthrough. As
+such, libvirt refuses to start the VM, like so:=20
+
+[root@demo-system-here ~]# virsh start demo-service-vm
+error: Failed to start domain 'demo-service-vm'
+2026-04-02T03:52:17.098998Z qemu-kvm: -device =
+{"driver":"vfio-pci","host":"0000:41:00.0","id":"ua-cb173399-0c46-5b7a-b3e=
+6-fe2fb5f9509c","bus":"pci.0","addr":"0x7","rombar":0}: vfio =
+0000:41:00.0: group 8 is not viable
+Please ensure all devices within the iommu_group are bound to their vfio =
+bus driver.
+
+[root@demo-system-here ~]# lspci |grep 41:00
+...
+41:00.0 Serial Attached SCSI controller: Broadcom / LSI Fusion-MPT =
+12GSAS/PCIe Secure SAS38xx
+Subsystem: Super Micro Computer Inc AOC-S3816L-L16iT (NI22) Storage =
+Adapter
+Kernel driver in use: vfio-pci
+Kernel modules: mpt3sas=20
+
+[root@demo-system-here ~]# ls -l /sys/kernel/iommu_groups/8/devices
+total 0
+lrwxrwxrwx. 1 root root 0 Apr 2 07:33 0000:40:01.0 -> =
+../../../../devices/pci0000:40/0000:40:01.0
+lrwxrwxrwx. 1 root root 0 Apr 2 07:33 0000:40:01.1 -> =
+../../../../devices/pci0000:40/0000:40:01.1
+lrwxrwxrwx. 1 root root 0 Apr 2 07:33 0000:40:01.2 -> =
+../../../../devices/pci0000:40/0000:40:01.2
+lrwxrwxrwx. 1 root root 0 Apr 2 07:33 0000:41:00.0 -> =
+../../../../devices/pci0000:40/0000:40:01.1/0000:41:00.0
+lrwxrwxrwx. 1 root root 0 Apr 2 07:33 0000:42:00.0 -> =
+../../../../devices/pci0000:40/0000:40:01.2/0000:42:00.0
+
+The tricky bit here is 41 is the SAS controller we're trying to pass
+through, and 42 is the local NVMe m.2 boot disk that the server itself
+is booting off of.
+
+Before this patch, they are put in separate groups, and there is not
+a problem.
+
+I=E2=80=99ve only tried this on our 6.12.y tree, but not yet our 6.18 =
+and 6.6
+trees, so I=E2=80=99m not sure if this problem exists there yet, but =
+this
+commit is in those trees in general in 6.18.16 and 6.6.128 respectively
+
+Happy to provide any other details you might like, as this is 100%
+reproducible on a variety of systems here.
+
+Thanks,
+Jon
+
