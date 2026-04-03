@@ -1,29 +1,30 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6821C309EFC
-	for <iommu@lists.linux.dev>; Fri,  3 Apr 2026 05:11:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 218D5359A67
+	for <iommu@lists.linux.dev>; Fri,  3 Apr 2026 05:11:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775193119; cv=none; b=EOyPR+l0OoNDnkvDgEnLcXzoNKxbF9EIW0rrnTZFtAI+2oVPD6/g46JiwgvE61g7efwrOa0ziCLeu3vF++zCGNujSzFQlYFhVaOAdCL1t5noolIGIZy+sFX3DYMlLqmJWTKNFyIDgkfAN5mbj+cQXAkdvNeRwrCjVsCbbdv6D68=
+	t=1775193119; cv=none; b=MxcyOK7V6wuRfbwruqHXPMyutgMOEywnTpB/1XCaf+In2mGf1jUYm7PcziWZTiiU/P8EFB0bFH12f89xmsYX7I436NageYiELTOP7v1DMgaTGtDJuqE/6KWaFd2Qinmt/9wmEbbsiHV5zNH+9PcXE6stS+grEPFS2RghgA8xD4M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1775193119; c=relaxed/simple;
-	bh=bNxAIe49H1dNLV6T4r9WiKilo/bS1aHWttr5zfLMjsw=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=SrfVF7LMdZG47M0q9snzhna6kiJmxR0k0zQc+tOqddLdd3mJErCBxa/c28V7uIjZ1aRUSvUKRBjyOJ+ZenibOl6m0+i+D2e2lnuIIu3niLkKotxGT+vks4iAwik0+VDggAnlhPHzMXnAZMzPNRBDGU9Ir/t7+q2doOqwOouyG+c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=NU4e6te8; arc=none smtp.client-ip=13.77.154.182
+	bh=P82U9b1A4HStqPYDnOm9GD+DzgbwLf1lAwUYP1ER5wg=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=PBFKw+14qJX9zY72o8ANInVSBWNGuqnzBmcehKlagrSHXKPCftTZa9zbg1oz+14aBTzR1U5SXK8YPMCRUgLQARrsJaxUscUVRb7MFW5WJz85qFAVcjVCHdS/K0GO1dKuRtt7IfZOB7iHNU+tIOixzrKkeX641Ny8+Xy9qaFc/EU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=lgZs0rOo; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="NU4e6te8"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="lgZs0rOo"
 Received: from DESKTOP-0403QTC.corp.microsoft.com (unknown [52.148.171.5])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 3A0F520B710C;
-	Thu,  2 Apr 2026 22:11:47 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 3A0F520B710C
+	by linux.microsoft.com (Postfix) with ESMTPSA id 72D4C20B7135;
+	Thu,  2 Apr 2026 22:11:50 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 72D4C20B7135
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1775193107;
-	bh=6+CSjXwxjwDn+rG8TrNjdN7I54Cgaex3HcFj52wYnEI=;
-	h=From:To:Cc:Subject:Date:From;
-	b=NU4e6te8urghd8mbywxPUvLF1HOpdPWQlZ93lCUE/aBZM3mV24tfLFmO9EOZ8HSa5
-	 qHtfzLCbvyf7yw/0k+y1MopmiFQKaH8H60wXEOhtx2oNLYAlc4Fg3H7wOc3UHC5ekj
-	 7ZRWGlSj3fH+FB15RBi/DT54oJDQKldIOmEAB66Q=
+	s=default; t=1775193111;
+	bh=iwqcK02WLd+CWksCwPDzhz12+1Xn7Wqds38ku7rZIyY=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=lgZs0rOoXHMywrKBxtvzmo/eQ6h5janT8JdoDaFJLVOLyxkTrJKebV4FXKgr/+Q3y
+	 WaiuAIu15DqYyLQwgy5NnssYOP8fVkZwfOMQYpovwq4iFWcIqJfLWmmH89oHSMNVRI
+	 1Pm6kFqLJ1L3VlgET3Hk16WAHsr6jxz7xUEfuYDg=
 From: Jacob Pan <jacob.pan@linux.microsoft.com>
 To: linux-kernel@vger.kernel.org,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
@@ -41,10 +42,12 @@ Cc: skhawaja@google.com,
 	Will Deacon <will@kernel.org>,
 	Jacob Pan <jacob.pan@linux.microsoft.com>,
 	Baolu Lu <baolu.lu@linux.intel.com>
-Subject: 
-Date: Thu,  2 Apr 2026 22:11:36 -0700
-Message-Id: <20260403051146.10210-1-jacob.pan@linux.microsoft.com>
+Subject: [PATCH V3 02/10] iommufd: Move igroup allocation to a function
+Date: Thu,  2 Apr 2026 22:11:38 -0700
+Message-Id: <20260403051146.10210-3-jacob.pan@linux.microsoft.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20260403051146.10210-1-jacob.pan@linux.microsoft.com>
+References: <20260403051146.10210-1-jacob.pan@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,117 +56,86 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From da51b9fedb4a9da22d33ee30ef6d871282e449a0 Mon Sep 17 00:00:00 2001
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-Date: Thu, 2 Apr 2026 21:52:05 -0700
-Subject: [PATCH V3 00/10] iommufd: Enable noiommu mode for cdev
+From: Jason Gunthorpe <jgg@nvidia.com>
 
-VFIO's unsafe_noiommu_mode has long provided a way for userspace drivers
-to operate on platforms lacking a hardware IOMMU. Today, IOMMUFD also
-supports No-IOMMU mode for group-based devices under vfio_compat mode.
-However, IOMMUFD's native character device (cdev) does not yet support
-No-IOMMU mode, which is the purpose of this patch.
+So it can be reused in the next patch which allows binding to noiommu
+device.
 
-In summary, we have:
+Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
 
-|-------------------------+------+---------------|
-| Device access mode      | VFIO | IOMMUFD       |
-|-------------------------+------+---------------|
-| group /dev/vfio/$GROUP  | Yes  | Yes           |
-|-------------------------+------+---------------|
-| cdev /dev/vfio/devices/ | No   | This patch    |
-|-------------------------+------+---------------|
+---
+v3:
+   - Moved null group check out to the next patch (Mostafa)
+---
+ drivers/iommu/iommufd/device.c | 43 +++++++++++++++++++++-------------
+ 1 file changed, 27 insertions(+), 16 deletions(-)
 
-Beyond enabling cdev for IOMMUFD, this patch also addresses the following
-deficiencies in the current No-IOMMU mode suggested by Jason[1]:
-- Devices operating under No-IOMMU mode are limited to device-level UAPI
-  access, without container or IOAS-level capabilities. Consequently,
-  user-space drivers lack structured mechanisms for page pinning and often
-  resort to mlock(), which is less robust than pin_user_pages() used for
-  devices backed by a physical IOMMU. For example, mlock() does not prevent
-  page migration.
-- There is no architectural mechanism for obtaining physical addresses for
-  DMA. As a workaround, user-space drivers frequently rely on /proc/pagemap
-  tricks or hardcoded values.
-
-By allowing noiommu device access to IOMMUFD IOAS and HWPT objects, this
-patch brings No-IOMMU mode closer to full citizenship within the IOMMU
-subsystem. In addition to addressing the two deficiencies mentioned above,
-the expectation is that it will also enable No-IOMMU devices to seamlessly
-participate in live update sessions via KHO [2].
-
-Furthermore, these devices will use the IOMMUFD-based ownership checking model for
-VFIO_DEVICE_PCI_HOT_RESET, eliminating the need for an iommufd_access object
-as required in a previous attempt [3].
-
-ChangeLog:
-V3:
-- Improve error handling [3/10] (Mostafa)
-- Simplify vfio_device_is_noiommu logic and merged in [6/10] (Mostafa)
-- Fix build dependency on !GENERIC_ATOMIC64
-- Add comment to explain the design difference over the legacy noiommu
-  VFIO code.[1/10]
-
-V2:
-- Fix build dependency by adding IOMMU_SUPPORT in [8/11]
-- Add an optimization to scan beyond the first page for a contiguous physical
-  address range and return its length instead of a single page.[4/11]
-
-Since RFC[4]:
-- Abandoned dummy iommu driver approach as patch 1-3 absorbed the
-  changes into iommufd.
-
-[1] https://lore.kernel.org/linux-iommu/20250603175403.GA407344@nvidia.com/
-[2] https://lore.kernel.org/linux-pci/20251027134430.00007e46@linux.microsoft.com/
-[3] https://lore.kernel.org/kvm/20230522115751.326947-1-yi.l.liu@intel.com/
-[4] https://lore.kernel.org/linux-iommu/20251201173012.18371-1-jacob.pan@linux.microsoft.com/
-
-Thanks,
-
-Jacob
-
-
-
-
-Jacob Pan (7):
-  iommufd: Add an ioctl IOMMU_IOAS_GET_PA to query PA from IOVA
-  vfio: Allow null group for noiommu without containers
-  vfio: Introduce and set noiommu flag on vfio_device
-  vfio: Enable cdev noiommu mode under iommufd
-  vfio:selftest: Handle VFIO noiommu cdev
-  selftests/vfio: Add iommufd noiommu mode selftest for cdev
-  Documentation: Update VFIO NOIOMMU mode
-
-Jason Gunthorpe (3):
-  iommufd: Support a HWPT without an iommu driver for noiommu
-  iommufd: Move igroup allocation to a function
-  iommufd: Allow binding to a noiommu device
-
- Documentation/driver-api/vfio.rst             |  45 +-
- drivers/iommu/iommufd/Makefile                |   1 +
- drivers/iommu/iommufd/device.c                | 169 ++++--
- drivers/iommu/iommufd/hw_pagetable.c          |  11 +-
- drivers/iommu/iommufd/hwpt_noiommu.c          | 102 ++++
- drivers/iommu/iommufd/io_pagetable.c          |  60 ++
- drivers/iommu/iommufd/ioas.c                  |  25 +
- drivers/iommu/iommufd/iommufd_private.h       |   5 +
- drivers/iommu/iommufd/main.c                  |   3 +
- drivers/vfio/Kconfig                          |   8 +-
- drivers/vfio/group.c                          |  35 +-
- drivers/vfio/iommufd.c                        |   7 -
- drivers/vfio/vfio.h                           |  28 +-
- drivers/vfio/vfio_main.c                      |  22 +-
- include/linux/vfio.h                          |  10 +
- include/uapi/linux/iommufd.h                  |  25 +
- tools/testing/selftests/vfio/Makefile         |   1 +
- .../lib/include/libvfio/vfio_pci_device.h     |   1 +
- .../selftests/vfio/lib/vfio_pci_device.c      |  32 +-
- .../vfio/vfio_iommufd_noiommu_test.c          | 549 ++++++++++++++++++
- .../vfio/vfio_pci_liveupdate_kexec_test.c     |   9 +
- 21 files changed, 1054 insertions(+), 94 deletions(-)
- create mode 100644 drivers/iommu/iommufd/hwpt_noiommu.c
- create mode 100644 tools/testing/selftests/vfio/vfio_iommufd_noiommu_test.c
-
+diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+index 344d620cdecc..2f30ea069f66 100644
+--- a/drivers/iommu/iommufd/device.c
++++ b/drivers/iommu/iommufd/device.c
+@@ -56,6 +56,30 @@ static bool iommufd_group_try_get(struct iommufd_group *igroup,
+ 	return kref_get_unless_zero(&igroup->ref);
+ }
+ 
++static struct iommufd_group *iommufd_alloc_group(struct iommufd_ctx *ictx,
++						 struct iommu_group *group)
++{
++	struct iommufd_group *new_igroup;
++
++	new_igroup = kzalloc(sizeof(*new_igroup), GFP_KERNEL);
++	if (!new_igroup)
++		return ERR_PTR(-ENOMEM);
++
++	kref_init(&new_igroup->ref);
++	mutex_init(&new_igroup->lock);
++	xa_init(&new_igroup->pasid_attach);
++	new_igroup->sw_msi_start = PHYS_ADDR_MAX;
++	/* group reference moves into new_igroup */
++	new_igroup->group = group;
++
++	/*
++	 * The ictx is not additionally refcounted here becase all objects using
++	 * an igroup must put it before their destroy completes.
++	 */
++	new_igroup->ictx = ictx;
++	return new_igroup;
++}
++
+ /*
+  * iommufd needs to store some more data for each iommu_group, we keep a
+  * parallel xarray indexed by iommu_group id to hold this instead of putting it
+@@ -87,25 +111,12 @@ static struct iommufd_group *iommufd_get_group(struct iommufd_ctx *ictx,
+ 	}
+ 	xa_unlock(&ictx->groups);
+ 
+-	new_igroup = kzalloc_obj(*new_igroup);
+-	if (!new_igroup) {
++	new_igroup = iommufd_alloc_group(ictx, group);
++	if (IS_ERR(new_igroup)) {
+ 		iommu_group_put(group);
+-		return ERR_PTR(-ENOMEM);
++		return new_igroup;
+ 	}
+ 
+-	kref_init(&new_igroup->ref);
+-	mutex_init(&new_igroup->lock);
+-	xa_init(&new_igroup->pasid_attach);
+-	new_igroup->sw_msi_start = PHYS_ADDR_MAX;
+-	/* group reference moves into new_igroup */
+-	new_igroup->group = group;
+-
+-	/*
+-	 * The ictx is not additionally refcounted here becase all objects using
+-	 * an igroup must put it before their destroy completes.
+-	 */
+-	new_igroup->ictx = ictx;
+-
+ 	/*
+ 	 * We dropped the lock so igroup is invalid. NULL is a safe and likely
+ 	 * value to assume for the xa_cmpxchg algorithm.
 -- 
 2.34.1
 
