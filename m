@@ -1,213 +1,306 @@
-Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013058.outbound.protection.outlook.com [40.93.196.58])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFAA02BD0B;
-	Fri,  3 Apr 2026 12:41:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.58
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F66C3AC0E6
+	for <iommu@lists.linux.dev>; Fri,  3 Apr 2026 14:00:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.47
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775220087; cv=fail; b=soFl+hZ6a4E5xZ/UPG5wesZcrHW8W4pUb1FxsiBP4XXQ2/l820btS4K7+a6DkdF2nY7dHNIYBec28EXqreMYmWKyDeZmgQ3CA76QG59dJUH40ZmzmCuOY5yfPyz8uJo4lS3/8pktbrNnEeJ12qlEVwaS7w75bEGumsULfC0Wv5Q=
+	t=1775224831; cv=pass; b=oneK90E4QlhmM0E05sUNZBXEFbe3oFKNKtdXAiE/iqmJe7Wjgrl7FV0s/2Bd9p4m/vNeirtdukvvWB6ctGja6UHVnJxc92vcmjmSfEQtqX91/0yxEPTmy0GQcHXb7f0BzNOyC5pikmIFU8OE316oHrSK6Ezwe5+uFPTY0Q7zUvc=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775220087; c=relaxed/simple;
-	bh=OwSuL2Mw4OASpBGNMeMx74jIryZPb1lTJP8uNWZlMuw=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=nPm0ZpBqqZRCJw0sCTaAETTzQhf2kf+4VBa6Df7JhiakxvgdYYHnwrFoC9DwpsM1P0UKc0IuNig8o8kg9IPfu475piglXAspN0FoJh629BXvNEeZY4X+ILxbcEN8gsfqk0tTUUs7Hr/QzCn8uYk7lP/2mkPureuyTVz7SGXe1bI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=kALetQyU; arc=fail smtp.client-ip=40.93.196.58
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	s=arc-20240116; t=1775224831; c=relaxed/simple;
+	bh=ICrRvlzJ7grzfWZQnrb2ZUVpkcjJ8wGbkxRLDrmId8k=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Oz6btDgY93O/TF/bTgSWOieESyZU4uli2gXGt8iqQ62RLXkp8+fji9WLXb00vKgWAHhPYFvxYQFdB048iYac5mKezxSd7FH3ew04syKewcgDgomRWDbpBqmN+DI1h1hRNblt8zf3xNUOu67UMKkPmtVpVMKJy86eT48vtvpTWJo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nut3tVH2; arc=pass smtp.client-ip=209.85.208.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="kALetQyU"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=TDkNv4rCjLYfiw8EIN0kjC2/Q2yvpicQ0PQ7zHjRKl2uy+eFM/JZz9kQioUReOcikc6ChSSp/vo/a6REEmXD9ECUae0YT0DPrXJ1j4FDDYMdhcyosohEEG4Z69s8pK4GSqlsn1L5dV5Thf3gfPSjHdYTTOsqUV48TrkxVg7PvldpCksH1Yw/ZqSQZFOz6zt2fx0vwpZfCtxVU6kOvDhnex/b1fkfRz1Seennnr9A+YFSWtmV0Y+PFxQ0ULZZ3tQhLuJWEIFaZJnwiBaoJS1URfN5u64mfUrjKk1iaRihd01htvadx94ANBl9l4vwQP7HMCdrgVBfPNcIb+7xLyUv6w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Kts5Pmj9D8kJHwQAvagqZE0PLkEokojA9BNrv31oxpI=;
- b=t/6hwaB7MQhciZsYL1lHcRTTkf1wEY3YBoyCjr19kDKw5ctY62yQM3d6d4NHQGpj+uEDag//AJ5f/9x4Sf23irQ7CGBOBLccKVVije50B+A0lm3hbJOb8vIpZsz1I1Zyd/yzZfpyPgMF0Uex8nu7ds1q7X53QK7Dv9gr0IbDWRhjAfX2v5FHRg/0Mtv0G9vsX8MZttnfyEmz2NXuzJmVl1dVnZ0AIhBVq9aRPFlegiGJaD+RwCW5hJD+gfPgz8Lq4RE1U3x2r6za1e2IBBey9yJntUkjidYwiMSO1bN82biPXYKEHm7JpcD+VQ/cW/HViOgjEI3FjIguVg5B7QBQUw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Kts5Pmj9D8kJHwQAvagqZE0PLkEokojA9BNrv31oxpI=;
- b=kALetQyULFCASFZ+OxhtZblGJjW+aZbPrnxMWpyQGtT3Pion0Rv80Y0xgbks0FLOp2fNUNF0v8PYUX93gAqygynOe1XBJSiTfh5jys2eCZCwgm8AAgUu9fBxiIeQQnC6/Y3gRQ4G9M/DRfom7fSOTx0ABiNH2I3xEmCiePe/aMM=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from CH3PR12MB9194.namprd12.prod.outlook.com (2603:10b6:610:19f::7)
- by PH7PR12MB7281.namprd12.prod.outlook.com (2603:10b6:510:208::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.16; Fri, 3 Apr
- 2026 12:41:17 +0000
-Received: from CH3PR12MB9194.namprd12.prod.outlook.com
- ([fe80::1e6b:ca8b:7715:6fee]) by CH3PR12MB9194.namprd12.prod.outlook.com
- ([fe80::1e6b:ca8b:7715:6fee%6]) with mapi id 15.20.9769.016; Fri, 3 Apr 2026
- 12:41:17 +0000
-Message-ID: <074633eb-103a-4452-9aec-6cd61e82f0cb@amd.com>
-Date: Fri, 3 Apr 2026 23:40:52 +1100
-User-Agent: Mozilla Thunderbird Beta
-Subject: Re: [PATCH kernel 4/9] dma/swiotlb: Stop forcing SWIOTLB for TDISP
- devices
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: dan.j.williams@intel.com, Robin Murphy <robin.murphy@arm.com>,
- x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
- linux-pci@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Dave Hansen <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>,
- Sean Christopherson <seanjc@google.com>, Paolo Bonzini
- <pbonzini@redhat.com>, Andy Lutomirski <luto@kernel.org>,
- Peter Zijlstra <peterz@infradead.org>, Bjorn Helgaas <bhelgaas@google.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Catalin Marinas <catalin.marinas@arm.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Mike Rapoport <rppt@kernel.org>,
- Tom Lendacky <thomas.lendacky@amd.com>, Ard Biesheuvel <ardb@kernel.org>,
- Neeraj Upadhyay <Neeraj.Upadhyay@amd.com>,
- Ashish Kalra <ashish.kalra@amd.com>, Stefano Garzarella
- <sgarzare@redhat.com>, Melody Wang <huibo.wang@amd.com>,
- Seongman Lee <augustus92@kaist.ac.kr>, Joerg Roedel <joerg.roedel@amd.com>,
- Nikunj A Dadhania <nikunj@amd.com>, Michael Roth <michael.roth@amd.com>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Andi Kleen <ak@linux.intel.com>,
- Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>,
- Tony Luck <tony.luck@intel.com>, David Woodhouse <dwmw@amazon.co.uk>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Denis Efremov <efremov@linux.com>, Geliang Tang <geliang@kernel.org>,
- Piotr Gregor <piotrgregor@rsyncme.org>, "Michael S. Tsirkin"
- <mst@redhat.com>, Alex Williamson <alex@shazbot.org>,
- Arnd Bergmann <arnd@arndb.de>, Jesse Barnes <jbarnes@virtuousgeek.org>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>, Yinghai Lu <yinghai@kernel.org>,
- Kevin Brodsky <kevin.brodsky@arm.com>,
- Jonathan Cameron <jonathan.cameron@huawei.com>,
- "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
- Xu Yilun <yilun.xu@linux.intel.com>, Herbert Xu
- <herbert@gondor.apana.org.au>, Kim Phillips <kim.phillips@amd.com>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Stefano Stabellini <sstabellini@kernel.org>,
- Claire Chang <tientzu@chromium.org>, linux-coco@lists.linux.dev,
- iommu@lists.linux.dev
-References: <20260225053806.3311234-1-aik@amd.com>
- <20260225053806.3311234-5-aik@amd.com>
- <699f238873ae7_1cc5100b6@dwillia2-mobl4.notmuch>
- <04b06a53-769c-44f1-a157-34591b9f8439@arm.com>
- <699f621daab02_2f4a1008f@dwillia2-mobl4.notmuch>
- <20260228002808.GO44359@ziepe.ca>
- <69a622e92cccf_6423c10092@dwillia2-mobl4.notmuch>
- <20260303001911.GA964116@ziepe.ca> <20260303124306.GA1002356@nvidia.com>
- <5d669086-a5c8-4e55-8108-a9fff41cf094@amd.com>
- <20260304124316.GL972761@nvidia.com>
-From: Alexey Kardashevskiy <aik@amd.com>
-Content-Language: en-US
-In-Reply-To: <20260304124316.GL972761@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SYBPR01CA0121.ausprd01.prod.outlook.com
- (2603:10c6:10:5::13) To CH3PR12MB9194.namprd12.prod.outlook.com
- (2603:10b6:610:19f::7)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nut3tVH2"
+Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-66b2f6e983bso3174217a12.0
+        for <iommu@lists.linux.dev>; Fri, 03 Apr 2026 07:00:23 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1775224822; cv=none;
+        d=google.com; s=arc-20240605;
+        b=VcFzgXLtUqyygNjd9o4OWAh2nq4bfG4XgfQQaWRwHAjEOWBXQg8zsQcV/Axs9GmRJE
+         6El0mKrjRcCVIpUjuWkqeFMSIhoeECg3fU29UJXOuBUXjsPyk/86dHc/d5SaccTet9aF
+         vI70rKZquhVYfspr2iRxMhVoUSejDFEQssVlp3V2iUzOrZFIp/FLTrsqSsR+jjYpgdYe
+         J/hjkuJvD8o8YLGSfucMxwjN+Q0v52CuCn0jUfg46tjpkkuFO412f4j2biuAOVdRFBYM
+         AAYukiBEOrDIsUk/U9I5ixLjjeP4BkI3+gPFpFx1/FwxO882aMIA/vgvP1Shasxs8tDX
+         w53w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=GZJMb8BpsQsC5OCqpX0KvnetYnrUPrII+wbhqXuacG4=;
+        fh=YE1ACRN3YlpN5XYbBvGT02V9J4yShCDiYrRFJHTpkDw=;
+        b=kVQ4v97ADAaqJpUEp6GBmn0rQpsPCv+c7yrzALZpRJIHojv3g7E6OwIHQx5fXkhdUX
+         0QLWiUPNy307R92c5TJM1IPuzmFIyXu8aoUUXdq+2J2l8AIVIIADW2a7Wf04zLZ5YtbR
+         tqpWAP5RblERBXEGYAXp5SxHtK9g2QmYpYwyDGe9Cqh+QOq/LLgGsbcj3h7dmXI+8EeN
+         PUptmSQ5SwWBS98M3zhZCy7ELIv+XJYcz1vpNNJ1ol65YJMc42MplRZwko9vJnohFmMx
+         JSJPuAYUZ2ITs0ONDXuP/dXYaAVmUXT0Hk4fVZNT5EwIYJaGV6Sa+tQT66ndUXDUl1Jq
+         ytCw==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1775224822; x=1775829622; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=GZJMb8BpsQsC5OCqpX0KvnetYnrUPrII+wbhqXuacG4=;
+        b=nut3tVH2umMfE6eWMhO1V/lJ6VkZP3bWYXJL21uWmmxhbYfVJrTlOxwVOxguUXAhU7
+         y40rrYkQMSypCSL7qB9PrWZ+SQOiCf1R54MJU29c9HohH1jZChqDelkV7rIen8M5w66s
+         MIf9GLddIypjBfz1O/rn/tJvQ5a6FVJN+gmnf+b3LkjxB7g33tlwiOV2x2ICnJaCeLJj
+         FDdlXs2+btDet6/ugAr+joF08JWtGVdlRObKYLnnUfy4uKWbp2L30kpAuLg3Fes//6ep
+         x4ipdqSrvUE9veq8g9g1P4x2kvjeOi5ONQd+ivg+7RTx4Fgzrnfgcmt0b7nLJjmcPXLh
+         4HJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775224822; x=1775829622;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=GZJMb8BpsQsC5OCqpX0KvnetYnrUPrII+wbhqXuacG4=;
+        b=k26Dv6MXuYgsQv9/Id5vSu5xTw4rGxqEXdNij2ZN2VTWBLmQ0IlTXbH29DM0Ccdn2C
+         behsMGlNo4FYZDQZr2oGcEt6iBeuoXiSTY0SJ8FnK+IMpCAERaAkajNrJ1D6lcgVkwT5
+         UQUgjypPaWXakBX8B8xjocUK7AYFhRyqQ5O3DjY1PK4QV5/5a8jA2v717oQHWuKqct4T
+         Qbn8vBvsldlFhVa6YwiePRQQDk+FiZDMUZF3FaTat0JvImBlKnocy/ob6D5v9b+KZ/Hk
+         1njCE+miDyYQJMuek9ZvHPiPzmuSncBDu16PmCYEdzjiSYk2rE3FmQ5z+IAkPlp4yHMV
+         ATZQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWkE7v4RWKL9j3EA+SH0dZLxg4bwyprbljezViJeJedHtPuHVajblX1GDvMcY4QmHt1xWKc2w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YypAud3XeYUuJfOPjEWObvK4rUptS2TqgqfLOlUQ5ZZ9V6qdWaP
+	FslN/Tm1Mdrpcq/k/sJ8IZNuPhikl3VEcnLsTzvK/i8sEHgiofqzBffhVaixtqK2va4nPgHjJuz
+	A7ufjPNu+B1L+sT0dci63OGHaUqsvvaE=
+X-Gm-Gg: AeBDiesCG3IGNcIi9bQ84hzcKHqUmKbXOBCkL6oUZ1gBdJKLnWcJcKEUyfWCemY1ohf
+	l3F23YFmA/IKfXCHSo0RKwdEBBfmZ/bZA67fgis7ewymFNLDoCGCsSpMQBUtIqTyPrjHU2QZ1m9
+	LOCcfWunXbB7VtZaNEb0yjaaMu1GSoyTG6TRhTbrjitM7arYuOwpd0OkdzgYqc3Sw4W+NNmd19W
+	YX5B0c+L2RdzfmwPSrYRFeRfiDWYBuj3iS/8NIP9Ol3zEh6i9+bUrWVAjf+6foaA4L913cbirSy
+	07YRUMMpdlxL6iG27A==
+X-Received: by 2002:a05:6402:5241:b0:668:50ef:427d with SMTP id
+ 4fb4d7f45d1cf-66e3f70d42cmr1446085a12.21.1775224821948; Fri, 03 Apr 2026
+ 07:00:21 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB9194:EE_|PH7PR12MB7281:EE_
-X-MS-Office365-Filtering-Correlation-Id: a3eaf4da-a1d9-4c8e-78f6-08de917e4c5d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|1800799024|376014|7416014|56012099003|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	BHib03mp20R9R1O4pXzb8KnCRzbaeHJJmyVQuop4OflKhwyf3Jnx2fIvssLPdyAIWA4J6GZBG5qDCWVCz7T1TK5+rrT75I9a1b3CUuS1FE3KMW/F2USdBXOh4OrGhYX0MNFO3/83EuM7M0otBmeBU8ReR/6sRoRfrS+zfI4qMU8N0kv7qxf/ROHpvgY9Ahp9+AxXcigl6TJfet7LbDSFTpEZAdjGU4Y/YV7/Y5FdTthlclBT2Ie7pcn7YidWlbfs1LFKa/Re0URJwzzMVDz5C5X/1OvXoLEocS6UbOGcz5zUUeHeffKdlIt/EwBJPwn8VSaiosRJdibs5cJ/nbbA4ZHTIOCuCDloLgVi+mfYKGoxDelsLRQizDPhQNu99M5PYHevrZKHON7K764QMp18Xtl3sJost0CfzqUrDNhcp/Mpz9hIaQxGDMUJ6+2oxJ1EDRCJiHpq0/VKFOhLHBf8qOpYOJdvUBI19/8uBlAtAlX7pW+Oq85FdRGw5N7qZdpPY3ZX32ZRVtCe2t7iB9V6yKODi21LgNUogMDJXkTNI0cqEU/AhNH6abCZXTkO5ELWG/hXKpbCYsC4lM76tIDCikx6uzD3CyWklGqTRZ24R0s1NKQ2Rdr/72Tf9PPVzz64pTkaczkFgpj8WCkEAYVSD2V6AgWd3PiL3NZE5QmUO3RNpWalo4ojWGLqPKXmGTx0qO54Q618XSofo1fBTJWyKl6phuDLAHAwiEWUqjZmhpW+rRlLHLSxaqeob8gfAyMK
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB9194.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014)(56012099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WFRwQWJac2ZWUUJHTnR6T09RaVgwZFJzR2ZZdThwTi9WSjlMajRxSm1nT3pG?=
- =?utf-8?B?enNCVDBSVlB4cXBrK3hselZ0K3RySUpwTjRGbEVqMUtFbEtWUFRjT3JyNmRU?=
- =?utf-8?B?d2p5QnEwL0VKTkdmVlI2bWtraFNpWkhqZEI2dGVsUzNHRk45UUZDbmhzNVJW?=
- =?utf-8?B?MnlhQ0VlQlJhUG41RXRERjc4WVNEZmNYYWEwbmt6SlViUGVzNW5kVUNJRnNu?=
- =?utf-8?B?ckxhNXNXNEFMU3pSaU5paTVTbnl6U2ZqMGkxeko3UmFGckpuMTNhWFVUbi9s?=
- =?utf-8?B?S3dyczlacVdjek8zVktRcXYzTHE2ejRkQjl0MzkrQWdwY2VUWFBkbXJRR1ht?=
- =?utf-8?B?VkIzMWltUnpZcnVmbHY4V2hwZDVDVGo3TUsvNXJBeC9XakpZK0FId242TVN0?=
- =?utf-8?B?WlVNREQvYWRoa3Z5S0ZFZ2twN2oxVUdFc043Q0RTZXh0YWFUYTVNSnFYN1RI?=
- =?utf-8?B?dWNTUTkxa0JXMDhUK0NCbkVmNVFJN2pnM3dodHZMbHBwUkhjb3dVbGpmVXBa?=
- =?utf-8?B?Y2g4T3I3Z1JJNVNmTDJ2SmY2SFpXamluelN1SnpoSHM2c2VxMThDQ3ZEKzdy?=
- =?utf-8?B?eC9tV0FIam50djZxUmhTQTh2NlFQS1VCYVlQZ0dSQVdhbGgra3MvS1pLWjZL?=
- =?utf-8?B?T1FsM2lOMEI5aG9uRmFUN2NKWEo4V1IxbUZjMHB6M09wb0JBWVlIeHJ0Ni9l?=
- =?utf-8?B?d0d6YmsxQmpwYXhVdHBYcDNLb2ZZOXFZWXd6czkxUVVtajhtMnhyUnREbHFs?=
- =?utf-8?B?SDNsaUdrN1M2U1JaTkE0NXdYUk9nWmladENGZ2ZIdWFMY2VTaEZiWFd3N21Z?=
- =?utf-8?B?RVRFaGZ6TEZpVEh4ZlFIZ2I5eFQ5bStwcTk4WFJyYStSWWltSWd0N3M0VjFj?=
- =?utf-8?B?THlKbmUvb2lwZDNkUGRrckNvZUltSEZRVEJLT3E0bm16TStrVWJhajJGUGF1?=
- =?utf-8?B?VEJ6ZVh6OW10NHQ2eXhISTEwM3BWVFhJaW9WOWFyc291QzY0Q3hDRTdCaWgv?=
- =?utf-8?B?a3R5dGhDZUhtU1hCRGxHMDBPMDZNRGlHY3FqLzZsRkhyOWVSbjd1Y0c4TWlR?=
- =?utf-8?B?YVRkNFVxNDFTSGswREdIK3diY05ISjZXSjhjRS81Y1pmcktaZWhRREkrS3ZW?=
- =?utf-8?B?Wld3WlkzdVg1aU9NaEFiYnAvak5IeHQrY25kYy81Z1ZkNUhTZXczeE5iblJj?=
- =?utf-8?B?c1VsZFo3WHFWS0dBTlBJYkhvNW5nd2JHYVU0NEt1RWRjdWxyOElxS05NYnFi?=
- =?utf-8?B?S3BzRHVxZXF2aUxtOS9VYnVGRGhOY1E2TWJEbnR5NGpUUkUyMEZFdEhwOVVZ?=
- =?utf-8?B?SU91OEFXL1ZqL2gwRFVGa0RxVnhPVVNUbTVtdW12T2JSL3AyZmZMdWgwVUZI?=
- =?utf-8?B?c3pvM09zZmQ2YlFPQ0FZUUJuMTl1SFpCTUF1M3JmaXVtSzRNeU9JaWY1ZXlS?=
- =?utf-8?B?RHgvOGxqSm54SWNSUGNtR1ZmbmZDQ3BGK21XOHhHdlZ6NTZ3RFJCNUx4eFBh?=
- =?utf-8?B?dHQrcFh2OSthZFVha28ySTc5NnROR2lMNXQ4dVdTcGZoOVNMWUo4SkhQaWE0?=
- =?utf-8?B?OXJDSTJLTXp4VjFoZnE5NUZpNXlmc3AydE5aMUdCYVEvTW5iQy9nUjBQek82?=
- =?utf-8?B?R0UzVmFQbS9SejRCbEhNWkhDTGxialhMTzMrTzkvQ2dBZjdyRThEeWJUdlhZ?=
- =?utf-8?B?MEl4alJFQ3hUeFhQaHJQTHRwYTBmcDYxb01LMkxRc3Nwa0s4UkdNeWp0MFcy?=
- =?utf-8?B?Nk4vcy9yR0p0cmk1K3pUaU9qcGJzaVZqR2plWitVNE0wdzMyTFB6WldndWZW?=
- =?utf-8?B?dlh4SDFhL05sdmZDSFNzQWVVekZpenFCeVBzSlNzeGJxUVI2akZnMDFHK3A1?=
- =?utf-8?B?WEdyQ1lxS3pwaFkzQ3kxOHh2WVFtQlM4akZ0Sy9TZm1neWxQVDNDVTk2dGg5?=
- =?utf-8?B?cHR0dFpSQ2V0NitlWnBCMW5sbDZINVlUb2FIa2N5a2pQd0tCd21IU0RWcUFx?=
- =?utf-8?B?ZHdPODB4TXNJb3AyenJVQldEMTNpOU95N1dTVzZ3Q1dYd0pqOWVHNUhwY2ZH?=
- =?utf-8?B?TlhFZUczczlxN1VHOHgxaDVCTUlBcW5uVnh6RmU5akZ4WkVMY05jVTVtbGZD?=
- =?utf-8?B?N2pzWDRiM1AwMlRpck44Y0RrMHMzVG5BbTdvL21ZZVNPUnpmVW5oYVh6RzBk?=
- =?utf-8?B?YURFbkRGclU2ei9VVFFXSzJkRkk4bEUzTDk3WnRnSzMyVXZXaDB5K1c0dUtp?=
- =?utf-8?B?MjZvNWlMb0RpOGtkODhuZ3hndzZvUXVUTnZ2bCtZQTlROW5sWFF0eDExU3Bp?=
- =?utf-8?Q?RL7Sh2/p2qau1rtmgg?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a3eaf4da-a1d9-4c8e-78f6-08de917e4c5d
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB9194.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Apr 2026 12:41:16.9807
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uqsq1r3HLirSk7SU8IsPwTT3jGRDB+4sRYyuCuvhhiP/H9nAKUPo8aKoSBJoMmtWONpudIGIYP73LQ1S+6fI8Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7281
+References: <20260331075010.1463-1-midgy971@gmail.com> <0f285782-b12a-4abd-bca7-b6c549bed59f@rock-chips.com>
+ <e622cc9e-8fb0-454a-b88e-dc13cf2ff507@kwiboo.se> <89ed223d-1a2c-447d-9f21-76969e668855@rock-chips.com>
+ <5663593b-2c53-4632-ad2c-db9efa8e9ab2@rock-chips.com>
+In-Reply-To: <5663593b-2c53-4632-ad2c-db9efa8e9ab2@rock-chips.com>
+From: Midgy Balon <midgy971@gmail.com>
+Date: Fri, 3 Apr 2026 16:02:02 +0200
+X-Gm-Features: AQROBzC2wzA0RbJXoNrMzE6k6aC5-WfVfCFoYB3Sb0oM_n_1ycoKvDZTyy5IIMA
+Message-ID: <CA+GS1Y3K=N3emYYC-4KAZ27MO7W7ZPgczbk8xPtWC+cYm-5F1w@mail.gmail.com>
+Subject: Re: [PATCH] iommu/rockchip: fix page table allocation flags for v2 IOMMU
+To: Simon Xue <xxm@rock-chips.com>
+Cc: Jonas Karlman <jonas@kwiboo.se>, iommu@lists.linux.dev, joro@8bytes.org, 
+	will@kernel.org, robin.murphy@arm.com, Heiko Stuebner <heiko@sntech.de>, 
+	linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+ From: Midgy BALON <midgy971@gmail.com>
+ To: Simon Xue <xxm@rock-chips.com>
+ Cc: Jonas Karlman <jonas@kwiboo.se>, iommu@lists.linux.dev,
+     joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+     heiko@sntech.de, linux-arm-kernel@lists.infradead.org,
+     linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+     stable@vger.kernel.org
+ In-Reply-To: <5663593b-2c53-4632-ad2c-db9efa8e9ab2@rock-chips.com>
+ References: <20260331075010.1463-1-midgy971@gmail.com>
+             <0f285782-b12a-4abd-bca7-b6c549bed59f@rock-chips.com>
+             <e622cc9e-8fb0-454a-b88e-dc13cf2ff507@kwiboo.se>
+             <89ed223d-1a2c-447d-9f21-76969e668855@rock-chips.com>
+             <5663593b-2c53-4632-ad2c-db9efa8e9ab2@rock-chips.com>
+ Subject: Re: [PATCH] iommu/rockchip: fix page table allocation flags
+for v2 IOMMU
 
+ On 4/3/2026, Simon Xue wrote:
+ > We internally checked that the RK356x SoCs integrate two different
+ > IOMMU versions (v1.0 and v2.0), like NPU and ISP use the v1.0 IOMMU.
+ >
+ > Both versions can map 40-bit physical pages, but v1.0 does not support
+ > placing the first-level page table above 4 GB.
+ >
+ > To fix this, I think we need to land this patch first:
+ > https://lore.kernel.org/all/20260310105303.128859-1-xxm@rock-chips.com/
+ >
+ > Then on top of that, we can add a new compatible string to distinguish
+ > the IOMMU versions.
 
-On 4/3/26 23:43, Jason Gunthorpe wrote:
-> On Wed, Mar 04, 2026 at 05:45:31PM +1100, Alexey Kardashevskiy wrote:
-> 
->>> I suspect AMD needs to use their vTOM feature to allow shared memory
->>> to remain available to TDISP RUN with a high/low address split.
->>
->> I could probably do something about it bit I wonder what is the real
->> live use case which requires leaking SME mask, have a live example
->> which I could try recreating?
-> 
-> We need shared memory allocated through a DMABUF heap:
-> 
-> https://lore.kernel.org/all/20260223095136.225277-1-jiri@resnulli.us/
-> 
-> To work with all PCI devices in the system, TDISP or not.
-> 
-> Without this the ability for a TDISP device to ingest (encrypted) data
-> requires all kinds of memcpy..
-> 
-> So the DMA API should see the DMA_ATTR_CC_DECRYPTED and setup the
-> correct dma_dddr_t either by choosing the shared alias for the TDISP
-> device's vTOM, or setting the C bit in a vIOMMU S1.
+ Thank you Simon and Jonas for the internal investigation. This explains
+ exactly what I observed.
 
-Something like that?
+ To answer Simon's earlier question: the IP block hitting both failure
+ modes is the NPU IOMMU (rknpu_mmu, at 0xfde4b000), currently bound
+ to "rockchip,rk3568-iommu" in rk356x-base.dtsi. Both the downstream
+ rknpu driver and the upstream Rocket accel driver (drivers/accel/rocket/)
+ use this IOMMU.
 
-https://github.com/AMDESE/linux-kvm/commit/266a41a1ea746557eb63debce886ce2c98820667
+ The v1.0 first-level page table constraint explains both failure modes.
+ On boards with more than 4 GB of RAM the DTE table can be allocated
+ above 0x100000000, and the v1.0 hardware silently truncates or errors
+ on that address. The SWIOTLB bounce-buffer path is a consequence of
+ the same root cause: with DMA_BIT_MASK(32) on the NPU device, bounce
+ buffers land below 4 GB, phys_to_virt() of the bounce address is then
+ used as the PTE write target, and the subsequent
+ dma_sync_single_for_device(DMA_TO_DEVICE) overwrites those PTEs with
+ zeros from the original buffer.
 
-With some little hacks I can make this tree do TDISP DMA to private or shared (swiotlb) memory by steering via this vTOM thing. Thanks,
+ Please consider my original patch withdrawn. Modifying iommu_data_ops_v2
+ was too broad and would have incorrectly constrained VOP2 MMU and all
+ other v2 IOMMU users.
 
+ I agree fully with the two-step approach. On top of your per-device-ops
+ patch [1], I plan to send:
 
+   [1/2] iommu/rockchip: Add "rockchip,rk3568-iommu-v1" compatible
+         for IOMMU v1.0 blocks (NPU, ISP/VICAP) on RK3568
+         =E2=80=94 ops with .gfp_flags =3D GFP_DMA32,
+                .dma_bit_mask =3D DMA_BIT_MASK(40)
+         (v1.0 can still map 40-bit physical pages; only the DTE
+         table base must be below 4 GB)
+   [2/2] arm64: dts: rockchip: rk356x: Use "rockchip,rk3568-iommu-v1"
+         for rknpu_mmu (0xfde4b000) and vicap_mmu (0xfdfe0800)
 
-> 
-> Jason
+ One note on the SWIOTLB issue: with GFP_DMA32 in the new ops, page
+ table allocations never reach SWIOTLB, so the "track L2 base addresses"
+ approach you suggested should not be necessary =E2=80=94 GFP_DMA32 prevent=
+s the
+ bounce-buffer poisoning at the source. Happy to be corrected if there
+ is another path where it is still needed.
 
--- 
-Alexey
+ I am happy to add Tested-by to your per-device-ops patch [1].
 
+ [1] https://lore.kernel.org/all/20260310105303.128859-1-xxm@rock-chips.com=
+/
+
+ Regards,
+ Midgy BALON
+
+Le ven. 3 avr. 2026 =C3=A0 06:40, Simon Xue <xxm@rock-chips.com> a =C3=A9cr=
+it :
+>
+>
+> =E5=9C=A8 2026/4/1 18:22, Simon Xue =E5=86=99=E9=81=93:
+> > Hi Jonas,
+> >
+> > =E5=9C=A8 2026/4/1 16:41, Jonas Karlman =E5=86=99=E9=81=93:
+> >> Hi Simon,
+> >>
+> >> On 4/1/2026 9:48 AM, Simon wrote:
+> >>> Hi Midgy,
+> >>>
+> >>> =E5=9C=A8 2026/3/31 15:50, Midgy BALON =E5=86=99=E9=81=93:
+> >>>> commit 2a7e6400f72b ("iommu: rockchip: Allocate tables from all
+> >>>> available memory for IOMMU v2") removed GFP_DMA32 from
+> >>>> iommu_data_ops_v2, reasoning that RK356x and RK3588 IOMMU v2 hardwar=
+e
+> >>>> supports up to 40-bit physical addresses for page tables. However, t=
+he
+> >>>> RK3568 IOMMU page-table walker uses a 32-bit AXI bus: it cannot acce=
+ss
+> >>>> physical addresses above 4 GB regardless of the address encoding
+> >>>> range.
+> >>>>
+> >>>> On boards with more than 4 GB of RAM (e.g. 8 GB LPDDR4X), removing
+> >>>> GFP_DMA32 causes two distinct failure modes:
+> >>>>
+> >>>> 1. Direct allocation above 4 GB: iommu_alloc_pages_sz() may return
+> >>>>      memory above 0x100000000.  The hardware page-table walker
+> >>>> issues a
+> >>>>      bus error trying to dereference those addresses, causing an IOM=
+MU
+> >>>>      fault on the first DMA transaction.
+> >>> Which IP block is hitting this? We'd like to take a look on our end.
+> >> I have seen reports that the NPU MMU on RK3568/RK3566 is having some
+> >> issue using DTE/PTE with >32-bit addresses, maybe it uses a different
+> >> MMU hw revision or has some hw errata?
+> >>
+> >>  From my own testing at least the VOP2 MMU on RK3568 (and RK3588) was
+> >> able to handle 40-bit addressable DTE/PTE, hence the original commit
+> >> 2a7e6400f72b ("iommu: rockchip: Allocate tables from all available
+> >> memory for IOMMU v2").
+> >>
+> >> As also mentioned in my reply at [1], maybe the NPU MMU has some hw
+> >> limitation or errata and may need to use a different compatible.
+> >
+> > Yes,  We are checking internally whether different IOMMU versions
+> > integrated.
+> >
+> > I will share what we find once we have results.
+> >
+> We internally checked that the RK356x SoCs integrate two different IOMMU
+> versions (v1.0 and v2.0), like NPU and ISP use the v1.0 IOMMU.
+>
+> Both versions can map 40-bit physical pages, but v1.0 does not support
+> placing the first-level page table above 4 GB.
+>
+> To fix this, I think we need to land this patch first:
+> https://lore.kernel.org/all/20260310105303.128859-1-xxm@rock-chips.com/
+>
+> Then on top of that, we can add a new compatible string to distinguish
+> the IOMMU versions.
+>
+> >> [1]
+> >> https://lore.kernel.org/r/3cd63b3d-1c5e-4a11-856e-c4aeb5d97d55@kwiboo.=
+se/
+> >>
+> >> Regards,
+> >> Jonas
+> >>
+> >>>> 2. SWIOTLB bounce-buffer poisoning: without GFP_DMA32, page tables
+> >>>> land
+> >>>>      above the SWIOTLB window.  dma_map_single() with DMA_BIT_MASK(3=
+2)
+> >>>>      then bounces them into a buffer below 4 GB.
+> >>>> rk_dte_get_page_table()
+> >>>>      returns phys_to_virt() of the bounce buffer address; PTEs are
+> >>>> written
+> >>>>      there; the next dma_sync_single_for_device(DMA_TO_DEVICE)
+> >>>> copies the
+> >>>>      original (zero) data back over the bounce buffer, silently
+> >>>> erasing the
+> >>>>      freshly written PTEs.  The IOMMU faults because every PTE
+> >>>> reads as zero.
+> >>> This probably need a separate patch. One way to fix it would be to
+> >>> track the
+> >>> original L2 page table base addresses in struct rk_iommu_domain,
+> >>> then have rk_dte_get_page_table() return the tracked address instead =
+of
+> >>> deriving it from the DTE.
+> >>>
+> >>>> Restore GFP_DMA32 (and DMA_BIT_MASK(32)) for iommu_data_ops_v2, whic=
+h
+> >>>> currently only serves "rockchip,rk3568-iommu" in mainline.
+> >>>>
+> >>>> Tested on Radxa ROCK 3B (RK3568, 8 GB LPDDR4X):
+> >>>>     - MobileNetV1 via RKNN: 5.8 ms/inference (IOMMU mode)
+> >>>>     - YOLOv5s 640x640 via RKNN: ~57 ms/inference (IOMMU mode)
+> >>>>     - No IOMMU faults, correct inference results
+> >>>>
+> >>>> Fixes: 2a7e6400f72b ("iommu: rockchip: Allocate tables from all
+> >>>> available memory for IOMMU v2")
+> >>>> Cc: stable@vger.kernel.org
+> >>>> Cc: Jonas Karlman <jonas@kwiboo.se>
+> >>>> Signed-off-by: Midgy BALON <midgy971@gmail.com>
+> >>>> ---
+> >>>>    drivers/iommu/rockchip-iommu.c | 4 ++--
+> >>>>    1 file changed, 2 insertions(+), 2 deletions(-)
+> >>>>
+> >>>> diff --git a/drivers/iommu/rockchip-iommu.c
+> >>>> b/drivers/iommu/rockchip-iommu.c
+> >>>> index 85f3667e797..8b45db29471 100644
+> >>>> --- a/drivers/iommu/rockchip-iommu.c
+> >>>> +++ b/drivers/iommu/rockchip-iommu.c
+> >>>> @@ -1358,8 +1358,8 @@ static struct rk_iommu_ops iommu_data_ops_v2 =
+=3D {
+> >>>>        .pt_address =3D &rk_dte_pt_address_v2,
+> >>>>        .mk_dtentries =3D &rk_mk_dte_v2,
+> >>>>        .mk_ptentries =3D &rk_mk_pte_v2,
+> >>>> -    .dma_bit_mask =3D DMA_BIT_MASK(40),
+> >>>> -    .gfp_flags =3D 0,
+> >>>> +    .dma_bit_mask =3D DMA_BIT_MASK(32),
+> >>>> +    .gfp_flags =3D GFP_DMA32,
+> >>>>    };
+> >>>>       static const struct of_device_id rk_iommu_dt_ids[] =3D {
+> >>
