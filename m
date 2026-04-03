@@ -1,139 +1,171 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail-m10118.netease.com (mail-m10118.netease.com [154.81.10.118])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B45DA346AC4
-	for <iommu@lists.linux.dev>; Fri,  3 Apr 2026 02:28:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37D3E3090C5
+	for <iommu@lists.linux.dev>; Fri,  3 Apr 2026 04:40:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=154.81.10.118
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775183304; cv=none; b=fNN9SKxtbsqmoAhsc4KhJMR7d0XbArfWMibtUT0UkMdGuzhzyhcpfT8PxRjnUYBhgMZA84h527IqmBWUn06s42+9RmXPjf/ue4dWBhnGG5tXjzrxYbCKiMTDUMW7nTaiUKCXbLxZjv0ZWiGLiDiCkqodxl1VlbQhMni3VXHHpyk=
+	t=1775191237; cv=none; b=kK2G//tkQn57hGfhRmy6LZe7KW4O0GB9FLZH8IMWjkdlQQA1U3vKeN0q0XKHD+amdM/pULcu36IufWtnrl7G4jnqAtiSbEShnIpGbOj2zasGSR8SjEQasG/5sBRpJNFaOzE7KTGwToL+q2HS/l8QVh4OBs+iwZ8pjzKgHbBUQkI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775183304; c=relaxed/simple;
-	bh=AYdOen/ZkumBkvzxVN16QDwCr+cFHVnINwn0hlRF9/o=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WQhU81Rm8+N7ZzCjMUpopZ3ZQ0EiU45s2CB9g/ODD/SWAg+vqn+0G96Uhj8/5QtYMF/5h9fi1t1d7bWDMS8sFKrAgRNRqUTP1YjvWojJ/zu7b6kqnLH0IVoigQTltNg1S85ZJyPcgt67xJjtuzFhZGPa0wPmhz7pMPODXWxHqPs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=PMKnMtAF; arc=none smtp.client-ip=209.85.214.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1775191237; c=relaxed/simple;
+	bh=XWbRImVlIpDXJ5lG0dFit47Vincmu/Ou/t1pwB7/yqY=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=Hi58lxEUE2fx2wT3VA/m8UnNMoX9ycf4C+KnGqnLR2Wh07U08UA9cDhYSzhzQuEE+ZYa3d/dRZu3exZbkra/NIa77zV1TsHwcS8rj2/2EAWzf1gz9Eo6g/PVpTMiDQ5rzgpQfnnG18kG6kMzK8hN/MyYB2np/hAP/o5ibzUb5jk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=g0Q2Ypis; arc=none smtp.client-ip=154.81.10.118
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="PMKnMtAF"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2b0c12be0ecso49355ad.0
-        for <iommu@lists.linux.dev>; Thu, 02 Apr 2026 19:28:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1775183303; x=1775788103; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=9F4Hc1NxXYsYxfPtoZfVmSu26aBhFkkTpUXoCZNtth4=;
-        b=PMKnMtAFBgwN+LCCC32GGkoqL0VrWb+lSw02cj18JA121rU0PKHEkAvSnMMG2Ao8i+
-         Aiyc4yfAgfaOjkeoqpU1LmcVmRt41fBkhKe4HnLZxZh8yfB0UA1iTLFBNYG0zQFNhG2R
-         eAfibvt9uezP7M2el7Uww+TlZS503qoJuIssw5w8I+I525VvYs0vTAPwd5smf8T874kb
-         lQorcT1YHbxYZ+siwqD8RTbK1PsqRo7wJewjJ/GW4eHu4+iR91XJf9ex+dO4gg+hDNwF
-         fM4QKtqLfO/AniB1ox6Vkgxvyc8Jl0IYtPfJw3Oy6zLCGXTeWbuENLLZ+TMJHJc5dUfC
-         WQ0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775183303; x=1775788103;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=9F4Hc1NxXYsYxfPtoZfVmSu26aBhFkkTpUXoCZNtth4=;
-        b=h9eYuwr3O29EsghB3MiUm4TohHbdDiNoBoXZt/m+UNiWqXQBJ0IfA2cBJqssBBAmmO
-         18Dh2L5vyLI5hAeTFMc3Zgv6b1A/LgLBEiOTEWjQr1TmVQ+SljMJ6CbgyeNscbUH5WPE
-         VAX9CtVeNuRyGdS9PriaUJUp2gPmaPPo0qtd4RBeJ+SrbnIeZCUUOXIEEJuX8IZcW39g
-         EvYiFOoR+4OljBsNI7L9CqyfkGXxRIgBitFZxMeNNekAGH6Qf8SjTJ4E0G+b3oYA0L0u
-         7y/dAQHmG2cMrWjb7auM1i9ICLKVYj3Kdzg7sjss9DbIFoTSmsVwpasN7ivjJJ2AAJQa
-         Qokg==
-X-Forwarded-Encrypted: i=1; AJvYcCU21dI5dk3zp8W7c81MBi32hbJ1FTiNVHDcYJMdLg9J6RtbjCWdUvalMA4aEstDb/Eg0acR9w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwO8hvAVcBn5wg7HK1vCPXJbKGWGh9xJp309gaeRJIAEl3ylG49
-	SBLr4ee1N3ikAE7U0umCSAsvM5Rf3yfxzL2u5bJNlgesNRRu7mEtTxXbeZWh/uLDag==
-X-Gm-Gg: AeBDieuPTz1LaOsiWp+bX0MulMeVM6IntcR/zZ6oQ7uf1+9nM7jD4+n5mJ1kYnDb8dy
-	PIwi0SjMCi0hEi9JXCMegMCNFjH0TlhlQAs/AuCdxof7BDvi35sWqUXRHz7J2hZQ4kcH3Pwg5yx
-	C19XLUFzXrtt+iudDNIMhNJbsWKFek/xQkD+/D7rHO3nd+hLksYLOjuxBsCpTv7Pi2CX+X98nOr
-	uK6em0keZ5t5iFUHPlCXSK9gkPAHun129oTJ9TdmeP4sCt5zotsyfoMcjKhSchBSb3QtzRmsZsq
-	bo8I64xj12+ndQFUVPM8UaRWV06YKpsKYHuQzTD5rzWlb5seStPM1s+YsZnB2E5vLl3x4/KqC4W
-	QrSZwI5mTZqrld9SWiG4faM4YrTEraeXma47VOyVRvgG5BOu+kxOAqCoK0idkqH6rvVAu/hftb8
-	FbpWWqZCc4638IshXDPhOA9Gxba4kUOA8KyMqb+LMReVAkEHPAKFCDES82Fw==
-X-Received: by 2002:a17:903:46c4:b0:2b0:5cc5:9405 with SMTP id d9443c01a7336-2b283f04ae8mr724965ad.1.1775183302570;
-        Thu, 02 Apr 2026 19:28:22 -0700 (PDT)
-Received: from google.com (10.129.124.34.bc.googleusercontent.com. [34.124.129.10])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c76c6475b56sm3991678a12.1.2026.04.02.19.28.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Apr 2026 19:28:22 -0700 (PDT)
-Date: Fri, 3 Apr 2026 02:28:17 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nafees Ahmed Abdul <nafeabd@amazon.com>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH] iommu: Default to lazy DMA mode on ARM64
-Message-ID: <ac8lwTT0oQNT-JaL@google.com>
-References: <20260402195913.32084-1-nafeabd@amazon.com>
+	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="g0Q2Ypis"
+Received: from [192.168.31.31] (gy-adaptive-ssl-proxy-1-entmail-virt204.gy.ntes [58.22.7.114])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 396864e74;
+	Fri, 3 Apr 2026 12:40:27 +0800 (GMT+08:00)
+Message-ID: <5663593b-2c53-4632-ad2c-db9efa8e9ab2@rock-chips.com>
+Date: Fri, 3 Apr 2026 12:40:27 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260402195913.32084-1-nafeabd@amazon.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/rockchip: fix page table allocation flags for v2
+ IOMMU
+From: Simon Xue <xxm@rock-chips.com>
+To: Jonas Karlman <jonas@kwiboo.se>, Midgy BALON <midgy971@gmail.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, heiko@sntech.de, linux-arm-kernel@lists.infradead.org,
+ linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+References: <20260331075010.1463-1-midgy971@gmail.com>
+ <0f285782-b12a-4abd-bca7-b6c549bed59f@rock-chips.com>
+ <e622cc9e-8fb0-454a-b88e-dc13cf2ff507@kwiboo.se>
+ <89ed223d-1a2c-447d-9f21-76969e668855@rock-chips.com>
+In-Reply-To: <89ed223d-1a2c-447d-9f21-76969e668855@rock-chips.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-HM-Tid: 0a9d51a47baa03ackunm789b51092f4f36d
+X-HM-MType: 1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFDSUNOT01LS0k3V1ktWUFJV1kPCRoVCBIfWUFZGh9OGlZLT0IaGEJLGh1NTE5WFRQJFh
+	oXVRMBExYaEhckFA4PWVdZGBILWUFZTkNVSUlVTFVKSk9ZV1kWGg8SFR0UWUFZT0tIVUJCSU5LVU
+	pLS1VKQktCWQY+
+DKIM-Signature: a=rsa-sha256;
+	b=g0Q2Ypis5R4cjDFjKLDJBYsfm8rOI3Yghsqwhne/+vJr51C2y0lEGJuoCIS+2jqmbXmQDmt1Qtm73P0DZ/An+3jA5o8AdaBlZrjPAYlGvu8LvlHWoJ0WGnSMtPisgmX20DFwzko0CCTHzD1PTFEcvc1ia4gT6ks6UFToCioYjO0=; c=relaxed/relaxed; s=default; d=rock-chips.com; v=1;
+	bh=eYBzo3C1Cf7sqGeYKJ1qwNvqGxve4byxZgH3FVKfsJM=;
+	h=date:mime-version:subject:message-id:from;
 
-Hi Nafees,
 
-On Thu, Apr 02, 2026 at 07:59:13PM +0000, Nafees Ahmed Abdul wrote:
-> ARM64 currently falls through to IOMMU_DEFAULT_DMA_STRICT, while
-> X86 defaults to IOMMU_DEFAULT_DMA_LAZY. On ARM64 bare-metal
-> systems with the ARM SMMU, strict mode causes synchronous TLBI
-> + CMD_SYNC on every DMA unmap, resulting in significant
-> throughput degradation for network-intensive workloads.
-> 
-> Benchmarked on an ARM64 bare-metal system (AWS m8g.metal-24xl)
-> running Debian 13 with kernel 6.12.74, using iperf3:
-> 
->   STRICT (default): 14.9 Gbps
->   LAZY:             39.8 Gbps
-> 
-> This is a 2.67x throughput improvement simply by switching the
-> IOMMU default domain mode.
-> 
-> Distributions that do not explicitly override this Kconfig
-> choice (e.g., Debian, SLES) silently get STRICT on ARM64,
-> causing this regression on bare-metal systems. Changing the
-> upstream default avoids the need for each distribution to
-> independently carry this override.
-> 
+在 2026/4/1 18:22, Simon Xue 写道:
+> Hi Jonas,
+>
+> 在 2026/4/1 16:41, Jonas Karlman 写道:
+>> Hi Simon,
+>>
+>> On 4/1/2026 9:48 AM, Simon wrote:
+>>> Hi Midgy,
+>>>
+>>> 在 2026/3/31 15:50, Midgy BALON 写道:
+>>>> commit 2a7e6400f72b ("iommu: rockchip: Allocate tables from all
+>>>> available memory for IOMMU v2") removed GFP_DMA32 from
+>>>> iommu_data_ops_v2, reasoning that RK356x and RK3588 IOMMU v2 hardware
+>>>> supports up to 40-bit physical addresses for page tables. However, the
+>>>> RK3568 IOMMU page-table walker uses a 32-bit AXI bus: it cannot access
+>>>> physical addresses above 4 GB regardless of the address encoding 
+>>>> range.
+>>>>
+>>>> On boards with more than 4 GB of RAM (e.g. 8 GB LPDDR4X), removing
+>>>> GFP_DMA32 causes two distinct failure modes:
+>>>>
+>>>> 1. Direct allocation above 4 GB: iommu_alloc_pages_sz() may return
+>>>>      memory above 0x100000000.  The hardware page-table walker 
+>>>> issues a
+>>>>      bus error trying to dereference those addresses, causing an IOMMU
+>>>>      fault on the first DMA transaction.
+>>> Which IP block is hitting this? We'd like to take a look on our end.
+>> I have seen reports that the NPU MMU on RK3568/RK3566 is having some
+>> issue using DTE/PTE with >32-bit addresses, maybe it uses a different
+>> MMU hw revision or has some hw errata?
+>>
+>>  From my own testing at least the VOP2 MMU on RK3568 (and RK3588) was
+>> able to handle 40-bit addressable DTE/PTE, hence the original commit
+>> 2a7e6400f72b ("iommu: rockchip: Allocate tables from all available
+>> memory for IOMMU v2").
+>>
+>> As also mentioned in my reply at [1], maybe the NPU MMU has some hw
+>> limitation or errata and may need to use a different compatible.
+>
+> Yes,  We are checking internally whether different IOMMU versions 
+> integrated.
+>
+> I will share what we find once we have results.
+>
+We internally checked that the RK356x SoCs integrate two different IOMMU 
+versions (v1.0 and v2.0), like NPU and ISP use the v1.0 IOMMU.
 
-Thanks for the patch and the benchmarks.
+Both versions can map 40-bit physical pages, but v1.0 does not support 
+placing the first-level page table above 4 GB.
 
-However, I'm not sure why should we change the compile-time default for
-all ARM64 systems? Currently, users can already achieve this behavior by
-using the `iommu.strict=0` boot parameter.
+To fix this, I think we need to land this patch first: 
+https://lore.kernel.org/all/20260310105303.128859-1-xxm@rock-chips.com/
 
-Since IOMMU_DEFAULT_DMA_STRICT provides a higher security guarantee 
-(preventing sub-page aliasing and potential "use-after-unmap" attacks),
-keeping it as the default and allowing users to opt-in via the kernel cmd
-line seems like the safer path, in my opinion. 
+Then on top of that, we can add a new compatible string to distinguish 
+the IOMMU versions.
 
-Additionally, distributions like Debian can also set this via their 
-GRUB configurations for performance.
-
-> Add ARM64 to the LAZY default to align with X86 behavior.
-> 
-> Signed-off-by: Nafees Ahmed Abdul <nafeabd@amazon.com>
-> ---
->  drivers/iommu/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index f86262b11..2822aba75 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -96,7 +96,7 @@ config IOMMU_DEBUGFS
->  choice
->  	prompt "IOMMU default domain type"
->  	depends on IOMMU_API
-> -	default IOMMU_DEFAULT_DMA_LAZY if X86 || S390
-> +	default IOMMU_DEFAULT_DMA_LAZY if X86 || S390 || ARM64
->  	default IOMMU_DEFAULT_DMA_STRICT
->  	help
->  	  Choose the type of IOMMU domain used to manage DMA API usage by
- 
-Thanks,
-Praan
+>> [1] 
+>> https://lore.kernel.org/r/3cd63b3d-1c5e-4a11-856e-c4aeb5d97d55@kwiboo.se/
+>>
+>> Regards,
+>> Jonas
+>>
+>>>> 2. SWIOTLB bounce-buffer poisoning: without GFP_DMA32, page tables 
+>>>> land
+>>>>      above the SWIOTLB window.  dma_map_single() with DMA_BIT_MASK(32)
+>>>>      then bounces them into a buffer below 4 GB. 
+>>>> rk_dte_get_page_table()
+>>>>      returns phys_to_virt() of the bounce buffer address; PTEs are 
+>>>> written
+>>>>      there; the next dma_sync_single_for_device(DMA_TO_DEVICE) 
+>>>> copies the
+>>>>      original (zero) data back over the bounce buffer, silently 
+>>>> erasing the
+>>>>      freshly written PTEs.  The IOMMU faults because every PTE 
+>>>> reads as zero.
+>>> This probably need a separate patch. One way to fix it would be to 
+>>> track the
+>>> original L2 page table base addresses in struct rk_iommu_domain,
+>>> then have rk_dte_get_page_table() return the tracked address instead of
+>>> deriving it from the DTE.
+>>>
+>>>> Restore GFP_DMA32 (and DMA_BIT_MASK(32)) for iommu_data_ops_v2, which
+>>>> currently only serves "rockchip,rk3568-iommu" in mainline.
+>>>>
+>>>> Tested on Radxa ROCK 3B (RK3568, 8 GB LPDDR4X):
+>>>>     - MobileNetV1 via RKNN: 5.8 ms/inference (IOMMU mode)
+>>>>     - YOLOv5s 640x640 via RKNN: ~57 ms/inference (IOMMU mode)
+>>>>     - No IOMMU faults, correct inference results
+>>>>
+>>>> Fixes: 2a7e6400f72b ("iommu: rockchip: Allocate tables from all 
+>>>> available memory for IOMMU v2")
+>>>> Cc: stable@vger.kernel.org
+>>>> Cc: Jonas Karlman <jonas@kwiboo.se>
+>>>> Signed-off-by: Midgy BALON <midgy971@gmail.com>
+>>>> ---
+>>>>    drivers/iommu/rockchip-iommu.c | 4 ++--
+>>>>    1 file changed, 2 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iommu/rockchip-iommu.c 
+>>>> b/drivers/iommu/rockchip-iommu.c
+>>>> index 85f3667e797..8b45db29471 100644
+>>>> --- a/drivers/iommu/rockchip-iommu.c
+>>>> +++ b/drivers/iommu/rockchip-iommu.c
+>>>> @@ -1358,8 +1358,8 @@ static struct rk_iommu_ops iommu_data_ops_v2 = {
+>>>>        .pt_address = &rk_dte_pt_address_v2,
+>>>>        .mk_dtentries = &rk_mk_dte_v2,
+>>>>        .mk_ptentries = &rk_mk_pte_v2,
+>>>> -    .dma_bit_mask = DMA_BIT_MASK(40),
+>>>> -    .gfp_flags = 0,
+>>>> +    .dma_bit_mask = DMA_BIT_MASK(32),
+>>>> +    .gfp_flags = GFP_DMA32,
+>>>>    };
+>>>>       static const struct of_device_id rk_iommu_dt_ids[] = {
+>>
