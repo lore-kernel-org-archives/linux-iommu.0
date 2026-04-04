@@ -1,506 +1,275 @@
-Received: from mail-dl1-f51.google.com (mail-dl1-f51.google.com [74.125.82.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D27D16F288
-	for <iommu@lists.linux.dev>; Sat,  4 Apr 2026 00:07:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E10F035893
+	for <iommu@lists.linux.dev>; Sat,  4 Apr 2026 03:53:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775261262; cv=none; b=hRC2iYYCfd0BmbEaraQBi7HmoILVeAbWqYOXPK88q5XrzJEBlkEA0uRrvo0xKNdwksOIwN/K5JR1H7i0UcBZojw+nU4QNTxK7xEyJMtUPBF51v0u4lHcH5m9rQ98MFMbaPoD+gxO9bKMWNli/E+MW3aSufGCH1yYK1fw4Yg2tHA=
+	t=1775274803; cv=none; b=GQ7X28elvE0HCJj/AyHhL6jh5b0uh6u+kvuHGZ5huV4Vtd0Fxc5qj4Q1rrEs1vVW54MyKuS6unyFuj7xSTcfa6XiW6ycBw+M73KtpRBZSU1YoqjNIxCvO92/UPETPwo1rZKMmjObK+r1HKbYNXDXtW2iiaNWVuHWK5zoz+dmqgQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775261262; c=relaxed/simple;
-	bh=pgtEOoXk5qYTTG7hDMtZ8J76x8eZHoBKGHYOR2BacFI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=tEc4RoxY1dRu+fEMFBvEb5iS2zOdyb4bwMqOqGRL3Cvoq2Lb0fpZFuMUI9O8yWGmh3R1qjkjeo5+QoE32mEqrvfPatMX6lzBoA5M0ECYBAW5DlM95CrCnkrlYQqosOthfqjPRIzzcnhdSiwb9wmd5FDDtaW0Y1goFXgTlGzbeCo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=b2elXnqH; arc=none smtp.client-ip=74.125.82.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1775274803; c=relaxed/simple;
+	bh=QbbsnQcxANakF3cg972p8TiHWccXxn3HPCTKfkez0nU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=DS9eV/V1gRF3M4qsmkO/BSV9oBYL75OAvtAwfzbGywPtGljyziyGPXjz7CG2Y4puae/c34OEcU9YoYAADHMbEjfuFS+TdKz9XQpKHVMfN/ox5+R6Frq2eyMAtXHbtWlXZv+/a+4bU/ZXv1/lX4Kj21loG2R4BcBYMiQ0dK8RQ2s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=jo6PsDjY; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="b2elXnqH"
-Received: by mail-dl1-f51.google.com with SMTP id a92af1059eb24-1273349c56bso2910980c88.0
-        for <iommu@lists.linux.dev>; Fri, 03 Apr 2026 17:07:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1775261260; x=1775866060; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=pcmabhgoUijh3Cpj42DFAN00fMUT4ppReLQYE5Q7FAg=;
-        b=b2elXnqH4eNWcVTtyKoIQBVuayVsnvbavXgvnL7Wlx7XsTfTKo/9oVgP7BDRGYSrzs
-         X+je9LbxVZxZZ+4NCbOBOHT5XpyBxepDK5X0VHnuyDpD4M+kdvl8zeg9zuak3pmp5AXz
-         JbcF2MKJCJqVA7wrsAB6u8KjhyIkHgWCQZL34=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775261260; x=1775866060;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=pcmabhgoUijh3Cpj42DFAN00fMUT4ppReLQYE5Q7FAg=;
-        b=Y5/kJoaBMnv6wFI46Pn8poRDlNFjWHYRFktnByHT6u6HJqXvsbZ+LjD5vXen9A/QwY
-         L97FZvK8Gl7ITVN0/MPXjXGRWA6JxNRiW2VtOEJnWWNqVxRun1gw8bkTQ9HpkU5Ks5Zo
-         rjmoEngFaU9q57Eolf8R/8pdsiMzz2pfvUklPvYSXHXaKxGeBBtAjhknzxpwNb93dyVu
-         QBc229dQxhwnoU84vFuEDkBkO3ps1/a4hVkbipRgoy4zbLZk8TuIy2+rECNTt006VBHG
-         5QIGLPS/NtzQwfIHSTPAnpggNyXRcT1YCka664S0ENnMPI6lbT8SkZhuWR8MMXOQ+biI
-         KMlQ==
-X-Forwarded-Encrypted: i=1; AJvYcCU/TQY6a2adaarKg0ASwuMmoB8UnC7xdnaFZl9uJV7fLS42qT35jxLI7Dunt2P1d0jJKG4lfQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzB2ZPuxZl+1B3YBJbSd5RJPLiuRV3Zl4rwgjlVFWDMcOZenUSg
-	eQHqcKKMhBp2sWM5ix4GAAu8KIxLG2O0SzM+TRkCTP6e07VX6VY2RxbFD5mvaLaF8g==
-X-Gm-Gg: ATEYQzxsGE3yxU8Vt+RPD8Kt00SMQ1SK/uSbM1QXdH84KqXukqVSp2Z2t76ZOyXxTxv
-	jv0Pdvew2b710adNngRGJa9CezJsXDQq+SNFIvkW/ZTQDD9GtQxce1Um0C4Pt03xgp3x4Rjv66P
-	HVfRxy6IvRsJDEhsVwRV/Az9VmpatZp4jm8O8SaUAhmBueWz1/wp6bDW80YlbMSZg/e8o3wJMyb
-	k4rVaWK/buYTs3zwUtl7p3iVQ054gNvWqfOtzcYlMfKx3ddKhr36WQnfBsQ+vvgBl3RjNsb3Ujv
-	cbAH8taGaVA5v+KNoC9/sZpZIyPUneLeezOqv7mQ9CNyD5LHe99FPAlokCVw6TloFOrQ6kLktyF
-	2vSCkIVdhPqWsilR9CghZHlx1Ci8N09AtNtq0v0ZzlyT+WOvJGa/igsSe4jwF5qGHfH5NEHrdm3
-	5/Y7OU36TQ4gspHiWDQC7KGCLEIuchDqXQL9Wxba1OuhmztwmXvAuphNiMEm79ZThrRr2opKS5X
-	8gnU+ZHVkk=
-X-Received: by 2002:a05:7022:ec17:b0:123:3488:899f with SMTP id a92af1059eb24-12bfb776e08mr1990633c88.32.1775261259525;
-        Fri, 03 Apr 2026 17:07:39 -0700 (PDT)
-Received: from dianders.sjc.corp.google.com ([2a00:79e0:2e7c:8:a8b6:55b2:3eb6:2c0e])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2ca79e1d93bsm6520716eec.12.2026.04.03.17.07.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Apr 2026 17:07:38 -0700 (PDT)
-From: Douglas Anderson <dianders@chromium.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Alan Stern <stern@rowland.harvard.edu>
-Cc: Saravana Kannan <saravanak@kernel.org>,
-	Christoph Hellwig <hch@lst.de>,
-	Eric Dumazet <edumazet@google.com>,
-	Johan Hovold <johan@kernel.org>,
-	Leon Romanovsky <leon@kernel.org>,
-	Alexander Lobakin <aleksander.lobakin@intel.com>,
-	Alexey Kardashevskiy <aik@ozlabs.ru>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Douglas Anderson <dianders@chromium.org>,
-	Frank.Li@kernel.org,
-	alex@ghiti.fr,
-	andre.przywara@arm.com,
-	andrew@lunn.ch,
-	aou@eecs.berkeley.edu,
-	catalin.marinas@arm.com,
-	dmaengine@vger.kernel.org,
-	driver-core@lists.linux.dev,
-	gregory.clement@bootlin.com,
-	iommu@lists.linux.dev,
-	jgg@ziepe.ca,
-	kees@kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-mips@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	linux-snps-arc@lists.infradead.org,
-	linux@armlinux.org.uk,
-	m.szyprowski@samsung.com,
-	palmer@dabbelt.com,
-	peter.ujfalusi@gmail.com,
-	pjw@kernel.org,
-	sebastian.hesselbarth@gmail.com,
-	tsbogend@alpha.franken.de,
-	vgupta@kernel.org,
-	vkoul@kernel.org,
-	will@kernel.org,
-	willy@infradead.org
-Subject: [PATCH v4 7/9] driver core: Replace dev->dma_coherent with dev_dma_coherent()
-Date: Fri,  3 Apr 2026 17:05:01 -0700
-Message-ID: <20260403170432.v4.7.If839f6dde98979fce177f70c6c74689a1904ee76@changeid>
-X-Mailer: git-send-email 2.53.0.1213.gd9a14994de-goog
-In-Reply-To: <20260404000644.522677-1-dianders@chromium.org>
-References: <20260404000644.522677-1-dianders@chromium.org>
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="jo6PsDjY"
+Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6342xNPm3075880;
+	Sat, 4 Apr 2026 03:53:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=f47cv8
+	eJ2vAWPqWOjgcHGI9ehOdzsd6V72e/yqDS4mg=; b=jo6PsDjYNbtdaZdg4aifzb
+	z72EhHbDVgQIeBehVxCg0Bqlgw/DxG4f1myFBuvwXwq8MdOod5Th0V9raRR6JQXq
+	D13OSrp8avsDdSxiz4V8TarOTamqbiexu++2JZNu5VVPrnnkFnaER9DWGXKYt+av
+	CLqt5jmrL76yJqg0jRKcwXutEvJ3fF0Afjl0SzJj67qkwwlSXVvG6r4wmWemEWHL
+	yqxJKncImHm6pXNFYjAbGu5bxYQqpdbJwMiHNE2UmnyRxvzioUEXwiYNYqMmDft2
+	1cCZ4CLMY66VFQ28oqNfqK6RHhUsE/5W+khSK+BPENdNF8K3Kfn3JgIg6cPWIBKA
+	==
+Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4datap03e6-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 04 Apr 2026 03:53:18 +0000 (GMT)
+Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma11.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 6342VaND008732;
+	Sat, 4 Apr 2026 03:53:17 GMT
+Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
+	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 4d6v1205am-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 04 Apr 2026 03:53:17 +0000
+Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
+	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 6343rDc815204696
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Sat, 4 Apr 2026 03:53:13 GMT
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id E8C2A20040;
+	Sat,  4 Apr 2026 03:53:10 +0000 (GMT)
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id ED4A420043;
+	Sat,  4 Apr 2026 03:53:08 +0000 (GMT)
+Received: from [9.124.211.17] (unknown [9.124.211.17])
+	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Sat,  4 Apr 2026 03:53:08 +0000 (GMT)
+Message-ID: <1bfca7b8-58f6-4670-b0ac-f448ae22bd43@linux.ibm.com>
+Date: Sat, 4 Apr 2026 09:23:07 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] powerpc/powernv/iommu: iommu incorrectly bypass DMA APIs
+To: Gaurav Batra <gbatra@linux.ibm.com>, linuxppc-dev@lists.ozlabs.org
+Cc: maddy@linux.ibm.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+        =?UTF-8?Q?Dan_Hor=C3=A1k?= <dan@danny.cz>,
+        "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
+        Timothy Pearson <tpearson@raptorengineering.com>,
+        vaibhav@linux.ibm.com, balbirs@nvidia.com
+References: <20260331223022.47488-1-gbatra@linux.ibm.com>
+ <o6k3mqwc.ritesh.list@gmail.com>
+Content-Language: en-US
+From: Shivaprasad G Bhat <sbhat@linux.ibm.com>
+In-Reply-To: <o6k3mqwc.ritesh.list@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Reinject: loops=2 maxloops=12
+X-Authority-Analysis: v=2.4 cv=Bp+QAIX5 c=1 sm=1 tr=0 ts=69d08b2e cx=c_pps
+ a=aDMHemPKRhS1OARIsFnwRA==:117 a=aDMHemPKRhS1OARIsFnwRA==:17
+ a=IkcTkHD0fZMA:10 a=A5OVakUREuEA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=RnoormkPH1_aCDwRdu11:22 a=uAbxVGIbfxUO_5tXvNgY:22 a=e5mUnYsNAAAA:8
+ a=VwQbUJbxAAAA:8 a=VnNF1IyMAAAA:8 a=pGLkceISAAAA:8 a=Ikd4Dj_1AAAA:8
+ a=40Wu3GLdS-AkG9vhGqcA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=Vxmtnl_E_bksehYqCbjh:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDA0MDAyOSBTYWx0ZWRfX0waeVr8e4dU8
+ m7D3oWcUFndjhT/cvsSpCy0/KDC3wzc/13MQYtI4LCxVxXSxTs4BC63EZt2SCwbPJ0MBmd3S+Ve
+ OdH+g2n5va2UnWuodtlI1gSMRtF+ahduHsMTBEKfLnOriGI8pSyVg6qqodkoHsh6Soj2d7A1pQp
+ 7OhegQnBFjzu9OOjl4MTiMH+emCgRoUzZuocd2nqRsqEqoAfZWbYh9wYE6nQI/FZflLwH7doWAX
+ FvvGy5V5LWE571BUVXO0d+mywhCTWS1seozlMtjVVvSsa1AGyGlOJuzeWPG0r3JRXwbY4rzsh6i
+ +x/pzx/y1Am1dHoKWqEr1bHeTwH+BNCUxS1XAunQk1lUClBeAfbLfIh9n5ojOreWwDJfsoCeKZ+
+ Dan1hsGoZS79HPZ1sgOAok5ECPPnRv/9H3mmdHgCPKCXErR2RI9xCxjZzp2OBoAgN5VQmawsPr/
+ eh78V3C94YJlQgSnzgg==
+X-Proofpoint-GUID: pt4PlvLC926CnHID0gLGLaN7mtF31glh
+X-Proofpoint-ORIG-GUID: if1hMCpsJxuJgRKshqsHYKn0KAqrZYIB
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-04-03_07,2026-04-03_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 malwarescore=0 suspectscore=0 adultscore=0 impostorscore=0
+ spamscore=0 priorityscore=1501 lowpriorityscore=0 bulkscore=0 clxscore=1011
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2603050001 definitions=main-2604040029
 
-In C, bitfields are not necessarily safe to modify from multiple
-threads without locking. Switch "dma_coherent" over to the "flags"
-field so modifications are safe.
+On 4/1/26 6:35 AM, Ritesh Harjani (IBM) wrote:
+> ++CC few people who would be interested in this fix.
+>
+> Gaurav Batra <gbatra@linux.ibm.com> writes:
+>
+>> In a PowerNV environment, for devices that supports DMA mask less than
+>> 64 bit but larger than 32 bits, iommu is incorrectly bypassing DMA
+>> APIs while allocating and mapping buffers for DMA operations.
+>>
+>> Devices are failing with ENOMEN during probe with the following messages
+>>
+>> amdgpu 0000:01:00.0: [drm] Detected VRAM RAM=4096M, BAR=4096M
+>> amdgpu 0000:01:00.0: [drm] RAM width 128bits GDDR5
+>> amdgpu 0000:01:00.0: iommu: 64-bit OK but direct DMA is limited by 0
+>> amdgpu 0000:01:00.0: dma_iommu_get_required_mask: returning bypass mask 0xfffffffffffffff
+>> amdgpu 0000:01:00.0:  4096M of VRAM memory ready
+>> amdgpu 0000:01:00.0:  32570M of GTT memory ready.
+>> amdgpu 0000:01:00.0: (-12) failed to allocate kernel bo
+>> amdgpu 0000:01:00.0: [drm] Debug VRAM access will use slowpath MM access
+>> amdgpu 0000:01:00.0: [drm] GART: num cpu pages 4096, num gpu pages 65536
+>> amdgpu 0000:01:00.0: [drm] PCIE GART of 256M enabled (table at 0x000000F4FFF80000).
+>> amdgpu 0000:01:00.0: (-12) failed to allocate kernel bo
+>> amdgpu 0000:01:00.0: (-12) create WB bo failed
+>> amdgpu 0000:01:00.0: amdgpu_device_wb_init failed -12
+>> amdgpu 0000:01:00.0: amdgpu_device_ip_init failed
+>> amdgpu 0000:01:00.0: Fatal error during GPU init
+>> amdgpu 0000:01:00.0: finishing device.
+>> amdgpu 0000:01:00.0: probe with driver amdgpu failed with error -12
+>> amdgpu 0000:01:00.0:  ttm finalized
+>>
+>> Fixes: 1471c517cf7d ("powerpc/iommu: bypass DMA APIs for coherent allocations for pre-mapped memory")
+>> Reported-by: Dan Horák <dan@danny.cz>
+>> Closes: https://gitlab.freedesktop.org/drm/amd/-/work_items/5039
+> We could even add the lore link so that in future people can find the
+> discussion.
+> Closes: https://lore.kernel.org/linuxppc-dev/20260313142351.609bc4c3efe1184f64ca5f44@danny.cz/
+>
+>> Tested-by: Dan Horak <dan@danny.cz>
+>> Signed-off-by: Ritesh Harjani <ritesh.list@gmail.com>
+> Feel free to change this to the following, I mainly only suggested the fix :)
+>
+> Suggested-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
+>
+>
+>> Signed-off-by: Gaurav Batra <gbatra@linux.ibm.com>
+>> ---
+> Generally this info...
+>> I am working on testing the patch in an LPAR with AMDGPU. I will update the
+>> results soon.
+> ... goes below the three dashes in here ^^^
+> This is the same place where people also update the patch change log.
+>
+> But sure, thanks for updating. As for this patch, it looks good to me.
+> So, feel free to add:
+>
+> Reviewed-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
+>
+>
+>>   arch/powerpc/kernel/dma-iommu.c | 4 ++--
+>>   1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/arch/powerpc/kernel/dma-iommu.c b/arch/powerpc/kernel/dma-iommu.c
+>> index 73e10bd4d56d..8b4de508d2eb 100644
+>> --- a/arch/powerpc/kernel/dma-iommu.c
+>> +++ b/arch/powerpc/kernel/dma-iommu.c
+>> @@ -67,7 +67,7 @@ bool arch_dma_unmap_sg_direct(struct device *dev, struct scatterlist *sg,
+>>   }
+>>   bool arch_dma_alloc_direct(struct device *dev)
+>>   {
+>> -	if (dev->dma_ops_bypass)
+>> +	if (dev->dma_ops_bypass && dev->bus_dma_limit)
+>>   		return true;
+>>   
+>>   	return false;
+>> @@ -75,7 +75,7 @@ bool arch_dma_alloc_direct(struct device *dev)
+>>   
+>>   bool arch_dma_free_direct(struct device *dev, dma_addr_t dma_handle)
+>>   {
+>> -	if (!dev->dma_ops_bypass)
+>> +	if (!dev->dma_ops_bypass || !dev->bus_dma_limit)
+>>   		return false;
 
-Cc: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
----
-Not fixing any known bugs; problem is theoretical and found by code
-inspection. Change is done somewhat manually and only lightly tested
-(mostly compile-time tested).
 
-NOTE: even though previously we only took up a bit if
-CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE, CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU,
-or CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL, in this change I reserve the
-bit unconditionally.  While we could get the "dynamic" behavior by
-changing the flags definition to be an "enum", it doesn't seem worth
-it at this point.
+While this works, looking more on why the 1471c517cf7dae needed 
+arch_dma_[alloc|free]_direct()
 
-Changes in v4:
-- Use accessor functions for flags
+functions was because dev->bus_dma_limit being not updated when the new 
+memory pages were
 
-Changes in v3:
-- New
+getting added in add_pages() case leading to the can_map_direct() checks 
+failing later when needed.
 
- arch/arc/mm/dma.c                 |  4 ++--
- arch/arm/mach-highbank/highbank.c |  2 +-
- arch/arm/mach-mvebu/coherency.c   |  2 +-
- arch/arm/mm/dma-mapping-nommu.c   |  4 ++--
- arch/arm/mm/dma-mapping.c         | 28 ++++++++++++++--------------
- arch/arm64/mm/dma-mapping.c       |  2 +-
- arch/mips/mm/dma-noncoherent.c    |  2 +-
- arch/riscv/mm/dma-noncoherent.c   |  2 +-
- drivers/base/core.c               |  2 +-
- drivers/dma/ti/k3-udma-glue.c     |  6 +++---
- drivers/dma/ti/k3-udma.c          |  6 +++---
- include/linux/device.h            | 11 ++++-------
- include/linux/dma-map-ops.h       |  2 +-
- 13 files changed, 35 insertions(+), 38 deletions(-)
+Looks like these functions were modeled after 
+arch_dma_[map|unmap]_phys_direct() which were
 
-diff --git a/arch/arc/mm/dma.c b/arch/arc/mm/dma.c
-index 6b85e94f3275..9b9adb02b4c5 100644
---- a/arch/arc/mm/dma.c
-+++ b/arch/arc/mm/dma.c
-@@ -98,8 +98,8 @@ void arch_setup_dma_ops(struct device *dev, bool coherent)
- 	 * DMA buffers.
- 	 */
- 	if (is_isa_arcv2() && ioc_enable && coherent)
--		dev->dma_coherent = true;
-+		dev_set_dma_coherent(dev);
- 
- 	dev_info(dev, "use %scoherent DMA ops\n",
--		 dev->dma_coherent ? "" : "non");
-+		 dev_dma_coherent(dev) ? "" : "non");
- }
-diff --git a/arch/arm/mach-highbank/highbank.c b/arch/arm/mach-highbank/highbank.c
-index 47335c7dadf8..8b7d0929dac4 100644
---- a/arch/arm/mach-highbank/highbank.c
-+++ b/arch/arm/mach-highbank/highbank.c
-@@ -98,7 +98,7 @@ static int highbank_platform_notifier(struct notifier_block *nb,
- 	if (of_property_read_bool(dev->of_node, "dma-coherent")) {
- 		val = readl(sregs_base + reg);
- 		writel(val | 0xff01, sregs_base + reg);
--		dev->dma_coherent = true;
-+		dev_set_dma_coherent(dev);
- 	}
- 
- 	return NOTIFY_OK;
-diff --git a/arch/arm/mach-mvebu/coherency.c b/arch/arm/mach-mvebu/coherency.c
-index fa2c1e1aeb96..7234d487ff39 100644
---- a/arch/arm/mach-mvebu/coherency.c
-+++ b/arch/arm/mach-mvebu/coherency.c
-@@ -95,7 +95,7 @@ static int mvebu_hwcc_notifier(struct notifier_block *nb,
- 
- 	if (event != BUS_NOTIFY_ADD_DEVICE)
- 		return NOTIFY_DONE;
--	dev->dma_coherent = true;
-+	dev_set_dma_coherent(dev);
- 
- 	return NOTIFY_OK;
- }
-diff --git a/arch/arm/mm/dma-mapping-nommu.c b/arch/arm/mm/dma-mapping-nommu.c
-index fecac107fd0d..c6a70686507b 100644
---- a/arch/arm/mm/dma-mapping-nommu.c
-+++ b/arch/arm/mm/dma-mapping-nommu.c
-@@ -42,11 +42,11 @@ void arch_setup_dma_ops(struct device *dev, bool coherent)
- 		 * enough to check if MPU is in use or not since in absence of
- 		 * MPU system memory map is used.
- 		 */
--		dev->dma_coherent = cacheid ? coherent : true;
-+		dev_assign_dma_coherent(dev, cacheid ? coherent : true);
- 	} else {
- 		/*
- 		 * Assume coherent DMA in case MMU/MPU has not been set up.
- 		 */
--		dev->dma_coherent = (get_cr() & CR_M) ? coherent : true;
-+		dev_assign_dma_coherent(dev, (get_cr() & CR_M) ? coherent : true);
- 	}
- }
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index f304037d1c34..f9bc53b60f99 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -1076,7 +1076,7 @@ static void *arm_iommu_alloc_attrs(struct device *dev, size_t size,
- 	pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL);
- 	struct page **pages;
- 	void *addr = NULL;
--	int coherent_flag = dev->dma_coherent ? COHERENT : NORMAL;
-+	int coherent_flag = dev_dma_coherent(dev) ? COHERENT : NORMAL;
- 
- 	*handle = DMA_MAPPING_ERROR;
- 	size = PAGE_ALIGN(size);
-@@ -1124,7 +1124,7 @@ static int arm_iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
- 	if (vma->vm_pgoff >= nr_pages)
- 		return -ENXIO;
- 
--	if (!dev->dma_coherent)
-+	if (!dev_dma_coherent(dev))
- 		vma->vm_page_prot = __get_dma_pgprot(attrs, vma->vm_page_prot);
- 
- 	err = vm_map_pages(vma, pages, nr_pages);
-@@ -1141,7 +1141,7 @@ static int arm_iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
- static void arm_iommu_free_attrs(struct device *dev, size_t size, void *cpu_addr,
- 	dma_addr_t handle, unsigned long attrs)
- {
--	int coherent_flag = dev->dma_coherent ? COHERENT : NORMAL;
-+	int coherent_flag = dev_dma_coherent(dev) ? COHERENT : NORMAL;
- 	struct page **pages;
- 	size = PAGE_ALIGN(size);
- 
-@@ -1202,7 +1202,7 @@ static int __map_sg_chunk(struct device *dev, struct scatterlist *sg,
- 		phys_addr_t phys = page_to_phys(sg_page(s));
- 		unsigned int len = PAGE_ALIGN(s->offset + s->length);
- 
--		if (!dev->dma_coherent && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-+		if (!dev_dma_coherent(dev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
- 			arch_sync_dma_for_device(sg_phys(s), s->length, dir);
- 
- 		prot = __dma_info_to_prot(dir, attrs);
-@@ -1304,7 +1304,7 @@ static void arm_iommu_unmap_sg(struct device *dev,
- 		if (sg_dma_len(s))
- 			__iommu_remove_mapping(dev, sg_dma_address(s),
- 					       sg_dma_len(s));
--		if (!dev->dma_coherent && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-+		if (!dev_dma_coherent(dev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
- 			arch_sync_dma_for_cpu(sg_phys(s), s->length, dir);
- 	}
- }
-@@ -1323,7 +1323,7 @@ static void arm_iommu_sync_sg_for_cpu(struct device *dev,
- 	struct scatterlist *s;
- 	int i;
- 
--	if (dev->dma_coherent)
-+	if (dev_dma_coherent(dev))
- 		return;
- 
- 	for_each_sg(sg, s, nents, i)
-@@ -1345,7 +1345,7 @@ static void arm_iommu_sync_sg_for_device(struct device *dev,
- 	struct scatterlist *s;
- 	int i;
- 
--	if (dev->dma_coherent)
-+	if (dev_dma_coherent(dev))
- 		return;
- 
- 	for_each_sg(sg, s, nents, i)
-@@ -1371,7 +1371,7 @@ static dma_addr_t arm_iommu_map_phys(struct device *dev, phys_addr_t phys,
- 	dma_addr_t dma_addr;
- 	int ret, prot;
- 
--	if (!dev->dma_coherent &&
-+	if (!dev_dma_coherent(dev) &&
- 	    !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO)))
- 		arch_sync_dma_for_device(phys, size, dir);
- 
-@@ -1412,7 +1412,7 @@ static void arm_iommu_unmap_phys(struct device *dev, dma_addr_t handle,
- 	if (!iova)
- 		return;
- 
--	if (!dev->dma_coherent &&
-+	if (!dev_dma_coherent(dev) &&
- 	    !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO))) {
- 		phys_addr_t phys = iommu_iova_to_phys(mapping->domain, iova);
- 
-@@ -1431,7 +1431,7 @@ static void arm_iommu_sync_single_for_cpu(struct device *dev,
- 	unsigned int offset = handle & ~PAGE_MASK;
- 	phys_addr_t phys;
- 
--	if (dev->dma_coherent || !iova)
-+	if (dev_dma_coherent(dev) || !iova)
- 		return;
- 
- 	phys = iommu_iova_to_phys(mapping->domain, iova);
-@@ -1446,7 +1446,7 @@ static void arm_iommu_sync_single_for_device(struct device *dev,
- 	unsigned int offset = handle & ~PAGE_MASK;
- 	phys_addr_t phys;
- 
--	if (dev->dma_coherent || !iova)
-+	if (dev_dma_coherent(dev) || !iova)
- 		return;
- 
- 	phys = iommu_iova_to_phys(mapping->domain, iova);
-@@ -1701,13 +1701,13 @@ static void arm_teardown_iommu_dma_ops(struct device *dev) { }
- void arch_setup_dma_ops(struct device *dev, bool coherent)
- {
- 	/*
--	 * Due to legacy code that sets the ->dma_coherent flag from a bus
--	 * notifier we can't just assign coherent to the ->dma_coherent flag
-+	 * Due to legacy code that sets the dma_coherent flag from a bus
-+	 * notifier we can't just assign coherent to the dma_coherent flag
- 	 * here, but instead have to make sure we only set but never clear it
- 	 * for now.
- 	 */
- 	if (coherent)
--		dev->dma_coherent = true;
-+		dev_set_dma_coherent(dev);
- 
- 	/*
- 	 * Don't override the dma_ops if they have already been set. Ideally
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index b2b5792b2caa..dc1fce939451 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -48,7 +48,7 @@ void arch_setup_dma_ops(struct device *dev, bool coherent)
- 		   dev_driver_string(dev), dev_name(dev),
- 		   ARCH_DMA_MINALIGN, cls);
- 
--	dev->dma_coherent = coherent;
-+	dev_assign_dma_coherent(dev, coherent);
- 
- 	xen_setup_dma_ops(dev);
- }
-diff --git a/arch/mips/mm/dma-noncoherent.c b/arch/mips/mm/dma-noncoherent.c
-index ab4f2a75a7d0..30ef3e247eb7 100644
---- a/arch/mips/mm/dma-noncoherent.c
-+++ b/arch/mips/mm/dma-noncoherent.c
-@@ -139,6 +139,6 @@ void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
- #ifdef CONFIG_ARCH_HAS_SETUP_DMA_OPS
- void arch_setup_dma_ops(struct device *dev, bool coherent)
- {
--	dev->dma_coherent = coherent;
-+	dev_assign_dma_coherent(dev, coherent);
- }
- #endif
-diff --git a/arch/riscv/mm/dma-noncoherent.c b/arch/riscv/mm/dma-noncoherent.c
-index cb89d7e0ba88..a1ec2d71d1c9 100644
---- a/arch/riscv/mm/dma-noncoherent.c
-+++ b/arch/riscv/mm/dma-noncoherent.c
-@@ -140,7 +140,7 @@ void arch_setup_dma_ops(struct device *dev, bool coherent)
- 		   "%s %s: device non-coherent but no non-coherent operations supported",
- 		   dev_driver_string(dev), dev_name(dev));
- 
--	dev->dma_coherent = coherent;
-+	dev_assign_dma_coherent(dev, coherent);
- }
- 
- void riscv_noncoherent_supported(void)
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index 0986051a6f14..531f02a5469a 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -3173,7 +3173,7 @@ void device_initialize(struct device *dev)
- #if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
-     defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
-     defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
--	dev->dma_coherent = dma_default_coherent;
-+	dev_assign_dma_coherent(dev, dma_default_coherent);
- #endif
- 	swiotlb_dev_init(dev);
- }
-diff --git a/drivers/dma/ti/k3-udma-glue.c b/drivers/dma/ti/k3-udma-glue.c
-index f87d244cc2d6..686dc140293e 100644
---- a/drivers/dma/ti/k3-udma-glue.c
-+++ b/drivers/dma/ti/k3-udma-glue.c
-@@ -312,7 +312,7 @@ k3_udma_glue_request_tx_chn_common(struct device *dev,
- 
- 	if (xudma_is_pktdma(tx_chn->common.udmax)) {
- 		/* prepare the channel device as coherent */
--		tx_chn->common.chan_dev.dma_coherent = true;
-+		dev_set_dma_coherent(&tx_chn->common.chan_dev);
- 		dma_coerce_mask_and_coherent(&tx_chn->common.chan_dev,
- 					     DMA_BIT_MASK(48));
- 	}
-@@ -1003,7 +1003,7 @@ k3_udma_glue_request_rx_chn_priv(struct device *dev, const char *name,
- 
- 	if (xudma_is_pktdma(rx_chn->common.udmax)) {
- 		/* prepare the channel device as coherent */
--		rx_chn->common.chan_dev.dma_coherent = true;
-+		dev_set_dma_coherent(&rx_chn->common.chan_dev);
- 		dma_coerce_mask_and_coherent(&rx_chn->common.chan_dev,
- 					     DMA_BIT_MASK(48));
- 	}
-@@ -1104,7 +1104,7 @@ k3_udma_glue_request_remote_rx_chn_common(struct k3_udma_glue_rx_channel *rx_chn
- 
- 	if (xudma_is_pktdma(rx_chn->common.udmax)) {
- 		/* prepare the channel device as coherent */
--		rx_chn->common.chan_dev.dma_coherent = true;
-+		dev_set_dma_coherent(&rx_chn->common.chan_dev);
- 		dma_coerce_mask_and_coherent(&rx_chn->common.chan_dev,
- 					     DMA_BIT_MASK(48));
- 		rx_chn->single_fdq = false;
-diff --git a/drivers/dma/ti/k3-udma.c b/drivers/dma/ti/k3-udma.c
-index c964ebfcf3b6..1cf158eb7bdb 100644
---- a/drivers/dma/ti/k3-udma.c
-+++ b/drivers/dma/ti/k3-udma.c
-@@ -428,18 +428,18 @@ static void k3_configure_chan_coherency(struct dma_chan *chan, u32 asel)
- 		/* No special handling for the channel */
- 		chan->dev->chan_dma_dev = false;
- 
--		chan_dev->dma_coherent = false;
-+		dev_clear_dma_coherent(chan_dev);
- 		chan_dev->dma_parms = NULL;
- 	} else if (asel == 14 || asel == 15) {
- 		chan->dev->chan_dma_dev = true;
- 
--		chan_dev->dma_coherent = true;
-+		dev_set_dma_coherent(chan_dev);
- 		dma_coerce_mask_and_coherent(chan_dev, DMA_BIT_MASK(48));
- 		chan_dev->dma_parms = chan_dev->parent->dma_parms;
- 	} else {
- 		dev_warn(chan->device->dev, "Invalid ASEL value: %u\n", asel);
- 
--		chan_dev->dma_coherent = false;
-+		dev_clear_dma_coherent(chan_dev);
- 		chan_dev->dma_parms = NULL;
- 	}
- }
-diff --git a/include/linux/device.h b/include/linux/device.h
-index a1d59ff9702c..fca986cef2ed 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -481,6 +481,8 @@ struct device_physical_location {
-  * @DEV_FLAG_STATE_SYNCED: The hardware state of this device has been synced to
-  *		match the software state of this device by calling the
-  *		driver/bus sync_state() callback.
-+ * @DEV_FLAG_DMA_COHERENT: This particular device is dma coherent, even if the
-+ *		architecture supports non-coherent devices.
-  */
- enum struct_device_flags {
- 	DEV_FLAG_READY_TO_PROBE = 0,
-@@ -489,6 +491,7 @@ enum struct_device_flags {
- 	DEV_FLAG_DMA_SKIP_SYNC = 3,
- 	DEV_FLAG_DMA_OPS_BYPASS = 4,
- 	DEV_FLAG_STATE_SYNCED = 5,
-+	DEV_FLAG_DMA_COHERENT = 6,
- 
- 	DEV_FLAG_COUNT
- };
-@@ -572,8 +575,6 @@ enum struct_device_flags {
-  * @offline:	Set after successful invocation of bus type's .offline().
-  * @of_node_reused: Set if the device-tree node is shared with an ancestor
-  *              device.
-- * @dma_coherent: this particular device is dma coherent, even if the
-- *		architecture supports non-coherent devices.
-  * @flags:	DEV_FLAG_XXX flags. Use atomic bitfield operations to modify.
-  *
-  * At the lowest level, every device in a Linux system is represented by an
-@@ -681,11 +682,6 @@ struct device {
- 	bool			offline_disabled:1;
- 	bool			offline:1;
- 	bool			of_node_reused:1;
--#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
--    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
--    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
--	bool			dma_coherent:1;
--#endif
- 
- 	DECLARE_BITMAP(flags, DEV_FLAG_COUNT);
- };
-@@ -718,6 +714,7 @@ __create_dev_flag_accessors(dma_iommu, DEV_FLAG_DMA_IOMMU);
- __create_dev_flag_accessors(dma_skip_sync, DEV_FLAG_DMA_SKIP_SYNC);
- __create_dev_flag_accessors(dma_ops_bypass, DEV_FLAG_DMA_OPS_BYPASS);
- __create_dev_flag_accessors(state_synced, DEV_FLAG_STATE_SYNCED);
-+__create_dev_flag_accessors(dma_coherent, DEV_FLAG_DMA_COHERENT);
- 
- /**
-  * struct device_link - Device link representation.
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index edd7de60a957..44dd9035b4fe 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -230,7 +230,7 @@ int dma_direct_set_offset(struct device *dev, phys_addr_t cpu_start,
- extern bool dma_default_coherent;
- static inline bool dev_is_dma_coherent(struct device *dev)
- {
--	return dev->dma_coherent;
-+	return dev_dma_coherent(dev);
- }
- #else
- #define dma_default_coherent true
--- 
-2.53.0.1213.gd9a14994de-goog
+introduced for handing a similar need.
+
+
+Do we get iommu_mem_notifier() call for action MEM_GOING_ONLINE in 
+device memory being
+
+made online case? If yes, we can just update the bus_dma_limit for each 
+device in the iommu
+
+group to include the new max_pfn. This makes it sound wrong as the pages 
+though configured
+
+as system memory, are still  device private and the memory notifiers are 
+for the real memory
+
+hotplug/unplug cases.
+
+
+In the commit 7170130e4c below, Balibir does point this out to be a 
+problem and prevents updating
+
+max_pfn for device private memory. He has mentioned it to be considered 
+for PPC too.
+
+The dma_addressing_limited() of x86 is same as PPC can_map_direct() and 
+we know why
+
+arch_dma_[alloc|free]_direct() would not be needed anymore.
+
+
+commit 7170130e4c72ce0caa0cb42a1627c635cc262821
+Author: Balbir Singh <balbirs@nvidia.com>
+Date:   Tue Apr 1 11:07:52 2025 +1100
+
+     x86/mm/init: Handle the special case of device private pages in 
+add_pages(), to not increase max_pfn and trigger 
+dma_addressing_limited() bounce buffers
+
+So, I think we need to bring the changes from 7170130e4c72ce0c into PPC.
+
+
+With that, the original hunk setting the bypass unconditionally in 
+1471c517cf7dae can be
+
+changed like below, and remove the redundant 
+arch_dma_[alloc|free]_direct() functions.
+
+
+diff --git a/arch/powerpc/kernel/dma-iommu.c 
+b/arch/powerpc/kernel/dma-iommu.c
+index aa3689d61917..120800b962cf 100644
+--- a/arch/powerpc/kernel/dma-iommu.c
++++ b/arch/powerpc/kernel/dma-iommu.c
+@@ -150,7 +150,7 @@ int dma_iommu_dma_supported(struct device *dev, u64 
+mask)
+                  * 1:1 mapping but it is somehow limited.
+                  * ibm,pmemory is one example.
+                  */
+-               dev->dma_ops_bypass = dev->bus_dma_limit == 0;
++               dev->dma_ops_bypass = (dev->bus_dma_limit == 0) || 
+(min_not_zero(mask, dev->bus_dma_limit) >= 
+dma_direct_get_required_mask(dev));
+                 if (!dev->dma_ops_bypass)
+                         dev_warn(dev,
+                                  "iommu: 64-bit OK but direct DMA is 
+limited by %llx\n",
+
+Suggested-by: Shivaprasad G Bhat <sbhat@linux.ibm.com>
+
+
+Thanks,
+
+Shivaprasad
 
