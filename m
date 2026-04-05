@@ -1,248 +1,126 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012016.outbound.protection.outlook.com [52.101.53.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18077331A4C
-	for <iommu@lists.linux.dev>; Sat,  4 Apr 2026 17:12:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775322733; cv=none; b=qkgsrbCLIeAaZVtPNuPsuAHlGrtN3gTamIxHRTSXmwDgc9hmUmLD4NzrvaJ3C9uznaW0cmAeHkHE216w6Wiv9m4CdgiTGcyHrHZWBat56CmlEhGsKiN/sPT3OjcX47Sfnl/gVm/Fk1wf8DYJt5EFlofhxsQAw0Ux2FWQ7/ZYM5Y=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775322733; c=relaxed/simple;
-	bh=6HWbdXTvY5ARCKQw/mJejk6jJkYYvhLGzuFZu/CMKrk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=F7A4fJ8oEKf0IzH5VEkWikK9jZJ+ZqGLKHVQ5WwAQPkyRZxGAZmTiT0e2Rqc4xBvE7TAvBcUBPt7Igi8LiP3pK08HihINIbVJHkifK6+OAhnIqINxp91qyyCIuvcb+ZPb1s2aMKtMGCWdEa0oQ1aRa68o35W4BL0PJv0vuoRa0M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l24Zqoay; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9697F2EDD6C
+	for <iommu@lists.linux.dev>; Sun,  5 Apr 2026 00:55:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.53.16
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775350560; cv=fail; b=AtPSveQXb1VsU+ZWjAzUYA6lHfYV0R9KwxjdrqjbFQxGB4D3EILb3QHtzukaaJl9oWG41w7BDIdIs9oDxWcBYQkFQvqttDafqFkYihxVrlHG8Hh64rLvWEhJN+p+gabDZSakx01L+X8Ol1HhFamaQrhpQxsldQmkbn3ZS6iLZVs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775350560; c=relaxed/simple;
+	bh=31EkdG5e2S4ym79TTufzAUraKbe85wa7quEzyYY4VwA=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MDhN2CRzTw10PE/bmLOSSfJ5cW2mfFqtPq+LDGB79rjSHoDXbXu9qxNl3iXusQlGWBk0MuWrTSPNDdt/chMojLUB1cDLX1CIOmOlEkreNQn/5CFqyEeh+EEpQstF6nNG8f5HZX+bPQZdsOmEcUYHENqsrSuwMkkS9cVwEKF5ZJ8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=K53sdIpD; arc=fail smtp.client-ip=52.101.53.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l24Zqoay"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0084C2BCB0
-	for <iommu@lists.linux.dev>; Sat,  4 Apr 2026 17:12:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1775322732;
-	bh=6HWbdXTvY5ARCKQw/mJejk6jJkYYvhLGzuFZu/CMKrk=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=l24ZqoayMC0xXGNQJsL1cczZw+VJ7tydZVENUQoFBihS5d0jJ67r8PkLWJbt7LO9X
-	 nNEDpcOuw7tthiYq0W7ZllEXSxo1P0nmWkteU2AW/A7FTMB1eKiec9rAGl/eCan8xY
-	 cuG+x8njyYuOQVmOLYoW96ZXXvFkJbdIJ3bSrizrTqBsUnV5NqWT9CmoPEJSZT/A6T
-	 r5TzM/5f+0qceH5JHMLsipBwEFTxPAxgKYIZJkysfbQQD4BlPelJVwSHHuqi7q9ITh
-	 PB7cR/Biqc2lujS5dbZrpsEBHzOGjFI+k/3wAx1GIyCMqHCsgfCso8EOVfFUYrU5xg
-	 hCnONTBJ0i0Nw==
-Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-40ede943bf0so1601767fac.2
-        for <iommu@lists.linux.dev>; Sat, 04 Apr 2026 10:12:12 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCUy4libLLMr5IFpW8vbKrBPABChT0QRy0bHp0+JEYbEcrvMyVpmQic5O11Xj8TLjc0I1oq/bQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YySJR35Y+jQn7cS6+r1GSYvbLWXEwp59LaavkyJ0BQkeAb+x2sQ
-	yFt0zJAzCPKyV8k765slbNvjhtwp9RCFj5G18EcyqTynR+PD6inh9goQkRnOB9XbR+UjERITNUz
-	zHIvP9cVgIdhycKoRnIcOYYm482GtBK0=
-X-Received: by 2002:a05:6871:581e:b0:422:cd76:929d with SMTP id
- 586e51a60fabf-4230fd2d9e4mr3996409fac.18.1775322730928; Sat, 04 Apr 2026
- 10:12:10 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="K53sdIpD"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=MkqpY7/4W/7pMeCPbZIj4E0fssTKTgO18t3mNYChfyQ0sblOW7EaHBOqMIUgNebgJrcwjrCLHeE2DGh6YG0HFoEmZrAyC9AqH76By3irCggDSgAOqpl8Rm+bqizjYYsLU7TsmDjq/leQh28bf4slXxKQ7lzcHxp3zPKCM5T3DnlOqHqATSA1j9oeT9/H++IKXv/2XXP0b2t/CqnQ6AAJSKRj1drHq8QH+hvugD96RF3JE2WUyOdU+oiK1a5URnmOOunsPxz0rYsNqroSCM+CBaJeeGMLM2HETGAikYQZK8BdeHHVz4PQ1bxj1ZE4rGxuCUGTi9PRv96B0bEwnYlAOQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=NquU+lQuWEwpavlURv6sal1qCSBNX26lSwZ/xsIybWA=;
+ b=WlX2okCGl2EHZQaTOk7YVxyDuVBKGxE8rOq4eyAKx03DnDfR4NH34Ny6WxN0A6JDu/zmuCc4NDsKhZwPe4GgV7iiX64MiYXRHtsH2/ntW1lUp6ZCuMycjG7FYEH9xtNjURA9ondeaRaEitLtxwQWHKXORBVHIPTUbmfzzu9sCSX9bToPUSaP5zwtnhfpurotOUUIz7bSK8R0CqaImFL9XP1zBaH1+YxQMrQGcLfVYHeimOMzHi3plOcgFGZeulwSraQzTdiFz38tmihWGV90ATsXL0zr/9uRPaMJeC02+6XWwxgro/onuSN+GmLqeUzz03y6qDBUxgal5+2XfjswiQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=8bytes.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NquU+lQuWEwpavlURv6sal1qCSBNX26lSwZ/xsIybWA=;
+ b=K53sdIpDfRGBGBH8Fylsdz4BjQpe4AZs34A501mLTgQgtTk8/K0rrQ6e/UIJldcJRA3XO27fvJ/XGLnVyS3HQN1GBXixNp4A9p5Cg0KHnrlHRz6eqF4eCrma1fumu2WR4G6Vunmt+Et5vmP2GR7jhjrsyyu/+EHvum9Hk3cMrj9eVi90blpjamWvbjTdawOesH+j9Mqe0BUCnLQ4iyACQiCmrTQFTDAnlbZ8MaBgQ3j6B8xl594/coB/gYViV8zBlcd1cKESENPUoCQqlUaYTeWyeFZSqOFsfZE9B2YIt1FyNIcycg8hpnrsndySIBguxTv+7SlQpyK8o/113n/Seg==
+Received: from PH8P221CA0065.NAMP221.PROD.OUTLOOK.COM (2603:10b6:510:349::13)
+ by DS7PR12MB5768.namprd12.prod.outlook.com (2603:10b6:8:77::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.17; Sun, 5 Apr
+ 2026 00:55:52 +0000
+Received: from CY4PEPF0000EE32.namprd05.prod.outlook.com
+ (2603:10b6:510:349:cafe::e1) by PH8P221CA0065.outlook.office365.com
+ (2603:10b6:510:349::13) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9769.31 via Frontend Transport; Sun,
+ 5 Apr 2026 00:55:53 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CY4PEPF0000EE32.mail.protection.outlook.com (10.167.242.38) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9769.17 via Frontend Transport; Sun, 5 Apr 2026 00:55:51 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Sat, 4 Apr
+ 2026 17:55:41 -0700
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Sat, 4 Apr
+ 2026 17:55:40 -0700
+Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.129.68.8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Sat, 4 Apr 2026 17:55:38 -0700
+Date: Sat, 4 Apr 2026 17:55:35 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <joro@8bytes.org>, <kevin.tian@intel.com>, <jgg@nvidia.com>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <baolu.lu@linux.intel.com>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<xueshuai@linux.alibaba.com>
+Subject: Re: [PATCH rc v5] iommu: Fix nested
+ pci_dev_reset_iommu_prepare/done()
+Message-ID: <adGzB1qLGQqTJgi/@nvidia.com>
+References: <20260404050243.141366-1-nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260404000644.522677-1-dianders@chromium.org>
-In-Reply-To: <20260404000644.522677-1-dianders@chromium.org>
-From: "Rafael J. Wysocki" <rafael@kernel.org>
-Date: Sat, 4 Apr 2026 19:11:59 +0200
-X-Gmail-Original-Message-ID: <CAJZ5v0hRKyPesMGKGoDZEMDCX-GVw6Z-dxMLhNhwy6Kjz=7MCQ@mail.gmail.com>
-X-Gm-Features: AQROBzCS1sK1yep87rT-2xolltVfQ4j4qlt-9lHai0wQJnu4V3tzUHOX8_7jVCo
-Message-ID: <CAJZ5v0hRKyPesMGKGoDZEMDCX-GVw6Z-dxMLhNhwy6Kjz=7MCQ@mail.gmail.com>
-Subject: Re: [PATCH v4 0/9] driver core: Fix some race conditions
-To: Douglas Anderson <dianders@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, 
-	Danilo Krummrich <dakr@kernel.org>, Alan Stern <stern@rowland.harvard.edu>, 
-	Saravana Kannan <saravanak@kernel.org>, Christoph Hellwig <hch@lst.de>, Eric Dumazet <edumazet@google.com>, 
-	Johan Hovold <johan@kernel.org>, Leon Romanovsky <leon@kernel.org>, 
-	Alexander Lobakin <aleksander.lobakin@intel.com>, Alexey Kardashevskiy <aik@ozlabs.ru>, 
-	Robin Murphy <robin.murphy@arm.com>, Andrew Morton <akpm@linux-foundation.org>, Frank.Li@kernel.org, 
-	Jason Gunthorpe <jgg@ziepe.ca>, alex@ghiti.fr, alexander.stein@ew.tq-group.com, 
-	andre.przywara@arm.com, andrew@codeconstruct.com.au, andrew@lunn.ch, 
-	andriy.shevchenko@linux.intel.com, aou@eecs.berkeley.edu, ardb@kernel.org, 
-	bhelgaas@google.com, brgl@kernel.org, broonie@kernel.org, 
-	catalin.marinas@arm.com, chleroy@kernel.org, davem@davemloft.net, 
-	david@kernel.org, devicetree@vger.kernel.org, dmaengine@vger.kernel.org, 
-	driver-core@lists.linux.dev, gbatra@linux.ibm.com, 
-	gregory.clement@bootlin.com, hkallweit1@gmail.com, iommu@lists.linux.dev, 
-	jirislaby@kernel.org, joel@jms.id.au, joro@8bytes.org, kees@kernel.org, 
-	kevin.brodsky@arm.com, kuba@kernel.org, lenb@kernel.org, lgirdwood@gmail.com, 
-	linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-aspeed@lists.ozlabs.org, linux-cxl@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-mm@kvack.org, 
-	linux-pci@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	linux-serial@vger.kernel.org, linux-snps-arc@lists.infradead.org, 
-	linux-usb@vger.kernel.org, linux@armlinux.org.uk, 
-	linuxppc-dev@lists.ozlabs.org, m.szyprowski@samsung.com, maddy@linux.ibm.com, 
-	mani@kernel.org, maz@kernel.org, miko.lenczewski@arm.com, mpe@ellerman.id.au, 
-	netdev@vger.kernel.org, npiggin@gmail.com, osalvador@suse.de, 
-	oupton@kernel.org, pabeni@redhat.com, palmer@dabbelt.com, 
-	peter.ujfalusi@gmail.com, peterz@infradead.org, pjw@kernel.org, 
-	robh@kernel.org, sebastian.hesselbarth@gmail.com, tglx@kernel.org, 
-	tsbogend@alpha.franken.de, vgupta@kernel.org, vkoul@kernel.org, 
-	will@kernel.org, willy@infradead.org, yangyicong@hisilicon.com, 
-	yeoreum.yun@arm.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20260404050243.141366-1-nicolinc@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000EE32:EE_|DS7PR12MB5768:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0a4e4c73-6383-4789-533c-08de92ae15bc
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|376014|82310400026|36860700016|18002099003|22082099003|56012099003;
+X-Microsoft-Antispam-Message-Info:
+	iq4CfcWNMfy7WWUcPSs1b/K7ehEIsQ1Cz9Jykzp8lr6FBEbpEdRJ0G3ovvm/RO8DpwZRNpv9wlo2TppLo7EYNIy9IElYv1cL0C5K1bKr1lCpfGGOAA52v4LRpAC/hwpqXyXg5WfzpWkbes+2yTxrek+Wu1qK1CRMYdatwb3JYb8QZ8FMiThtIt7c4seeKaUroZOuJDz/4hkgjYUAO1WzQB0bhgF1ecw7ZNYLa/Sr4eRMo5gPR8yFwf3gZXfY/UCIbgnhJWedcnJYJxJ1X7H5wJFEbuzNOXXwIAw5wAJQ+ma/DdKZm9s8uUPGO2/XUTDpCW2t3BjRS2SgfCj+Gilky1fn2tvitQDqLVupnJv7fvCaTWD9G+UGDTaGalXKdHfyDd8KebiTkKcoGhwFlMxAvvEr+ggcV/BGFc3qdsMduSQy/fnWCki5dfGqW3E4osYMSKgy/eAa/i8G4AfuR8dgWDPlx+Glb0/dkP6VmTJVEbzJWIiT6cIA8tZNSPl/GoUwo1olVp0BxLxokcbISzoRWTTf4dY4veJ09u6EAe7QxpCv05JHsKA2xWgOuHmb40J6vsac4+hyCkMzFdlCKwrcdRnEXY9qFzH39se7a6dXsSpbTYtLQsxa+MC7jeoGU1LCXAo+9yofD4jeaYT3m2AvcK4WS82OvzgsorzcyYOLulDza2igMP3hsBDp+oVyPJ25sxy0rydgZkn4cmBFoVklLoDUpo81oi73ZPUv0mL5dN9Bnaalf8ChCWfNeI9tBcFxkgm5yy6Lh9JBuIHNKP8x9A==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(376014)(82310400026)(36860700016)(18002099003)(22082099003)(56012099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	NPRIJuOTr7nnSSQ5EcCWjmsAgGOWZYx2ICNrUYXyN/G+Zyw6FTyV2dhH6tWJYnyyDJDHp66n9zk5J2/PYEypqF2S48FGDL1lN2/J6zmzN2PjdJ1Cn1g2KkI3e6UofEC+4pGvNPtfQwcyUZojvI58sB3xYSX7i+fGkK6zVrmP4U3+qfiHBxi2KHm7NzA8YRfMSUw1VxF7zvcRJ14OlUh/Brq/cL08HPgIbCEjoXecG9odB7lUkSz5xTa/H4itMhYxBEKXpwsWcwa9Sl0qFh8UnwzKHEM//7YzTecdyGqVYxIAI5tNn8cyuCNU7gYLA2talqe/ycFhb/Wml8HtHqitegp44vBucx0Bn2XIZq2/3tKE5Gw2ibJAv3rtDaBN0phWNYBdxbECkM9y5Yl9RZqKTo6/gAz8/vq87qkHlSrCh1IAp6Yk46AnYfyOieL8tv3z
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2026 00:55:51.8613
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0a4e4c73-6383-4789-533c-08de92ae15bc
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000EE32.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5768
 
-On Sat, Apr 4, 2026 at 2:07=E2=80=AFAM Douglas Anderson <dianders@chromium.=
-org> wrote:
->
-> The main goal of this series is to fix the observed bug talked about
-> in the first patch ("driver core: Don't let a device probe until it's
-> ready"). That patch fixes a problem that has been observed in the real
-> world and could land even if the rest of the patches are found
-> unacceptable or need to be spun.
->
-> That said, during patch review Danilo correctly pointed out that many
-> of the bitfield accesses in "struct device" are unsafe. I added a
-> bunch of patches in the series to address each one.
->
-> Danilo said he's most worried about "can_match", so I put that one
-> first. After that, I tried to transition bitfields to flags in reverse
-> order to when the bitfield was added.
->
-> Even if transitioning from bitfields to flags isn't truly needed for
-> correctness, it seems silly (and wasteful of space in struct device)
-> to have some in bitfields and some as flags. Thus I didn't spend time
-> for each bitfield showing that it's truly needed for correctness.
->
-> Transition was done semi manually. Presumably someone skilled at
-> coccinelle could do a better job, but I just used sed in a heavy-
-> handed manner and then reviewed/fixed the results, undoing anything my
-> script got wrong. My terrible/ugly script was:
->
-> var=3Dcan_match
-> caps=3D"${var^^}"
-> for f in $(git grep -l "[>\.]${var}[^1-9_a-zA-Z\[]"); do
->   echo $f
->   sed -i~ -e "s/\([a-zA-Z_0-9\.>()-][a-zA-Z_0-9\.>()-]*\)->${var} =3D tru=
-e/set_bit(DEV_FLAG_${caps}, \&\\1->flags)/" "$f"
->   sed -i~ -e "s/\([a-zA-Z_0-9\.>()-][a-zA-Z_0-9\.>()-]*\)\.${var} =3D tru=
-e/dev_set_${caps}(\&\\1)/" "$f"
->   sed -i~ -e "s/\([a-zA-Z_0-9\.>()-][a-zA-Z_0-9\.>()-]*\)->${var} =3D fal=
-se/clear_bit(DEV_FLAG_${caps}, \&\\1->flags)/" "$f"
->   sed -i~ -e "s/\([a-zA-Z_0-9\.>()-][a-zA-Z_0-9\.>()-]*\)\.${var} =3D fal=
-se/dev_clear_${caps}(\&\\1)/" "$f"
->   sed -i~ -e "s/\([a-zA-Z_0-9\.>()-][a-zA-Z_0-9\.>()-]*\)->${var} =3D \([=
-^;]*\)/assign_bit(DEV_FLAG_${caps}, \&\\1->flags, \\2)/" "$f"
->   sed -i~ -e "s/\([a-zA-Z_0-9\.>()-][a-zA-Z_0-9\.>()-]*\)\.${var} =3D \([=
-^;]*\)/dev_assign_${caps}(\&\\1, \\2)/" "$f"
->   sed -i~ -e "s/\([a-zA-Z_0-9\.>()-][a-zA-Z_0-9\.>()-]*\)->${var}\([^1-9_=
-a-zA-Z\[]\)/test_bit(DEV_FLAG_${caps}, \&\\1->flags)\\2/" "$f"
->   sed -i~ -e "s/\([a-zA-Z_0-9\.>()-][a-zA-Z_0-9\.>()-]*\)\.${var}\([^1-9_=
-a-zA-Z\[]\)/dev_${caps}(\&\\1)\\2/" "$f"
-> done
->
-> From v3 to v4, I transitioned to accessor functions with another ugly
-> sed script. I had git format the old patches, then transformed them
-> with:
->
-> for f in *.patch; do
->   echo $f
->   sed -i~ -e "s/test_and_set_bit(DEV_FLAG_\([^,]*\), \&\(.*\)->flags)/dev=
-_test_and_set_\\L\\1(\\2)/" "$f"
->   sed -i~ -e "s/test_and_set_bit(DEV_FLAG_\([^,]*\), \(.*\)\.flags)/dev_t=
-est_and_set_\\L\\1(\\2)/" "$f"
->   sed -i~ -e "s/test_bit(DEV_FLAG_\([^,]*\), \&\(.*\)->flags)/dev_\\L\\1(=
-\\2)/" "$f"
->   sed -i~ -e "s/test_bit(DEV_FLAG_\([^,]*\), \(.*\)\.flags)/dev_\\L\\1(\\=
-2)/" "$f"
->   sed -i~ -e "s/set_bit(DEV_FLAG_\([^,]*\), \&\(.*\)->flags)/dev_set_\\L\=
-\1(\\2)/" "$f"
->   sed -i~ -e "s/set_bit(DEV_FLAG_\([^,]*\), \(.*\)\.flags)/dev_set_\\L\\1=
-(\\2)/" "$f"
->   sed -i~ -e "s/clear_bit(DEV_FLAG_\([^,]*\), \&\(.*\)->flags)/dev_clear_=
-\\L\\1(\\2)/" "$f"
->   sed -i~ -e "s/clear_bit(DEV_FLAG_\([^,]*\), \(.*\)\.flags)/dev_clear_\\=
-L\\1(\\2)/" "$f"
->   sed -i~ -e "s/assign_bit(DEV_FLAG_\([^,]*\), \&\(.*\)->flags, \(.*\))/d=
-ev_assign_\\L\\1(\\2, \\3)/" "$f"
->   sed -i~ -e "s/assign_bit(DEV_FLAG_\([^,]*\), \(.*\)\.flags, \(.*\))/dev=
-_assign_\\L\\1(\\2, \\3)/" "$f"
-> done
->
-> ...and then did a few manual touchups for spacing.
->
-> NOTE: one potentially "controversial" choice I made in some patches
-> was to always reserve a flag ID even if a flag is only used under
-> certain CONFIG_ settings. This is a change from how things were
-> before. Keeping the numbering consistent and allowing easy
-> compile-testing of both CONFIG settings seemed worth it, especially
-> since it won't take up any extra space until we've added a lot more
-> flags.
->
-> I only marked the first patch as a "Fix" since it is the only one
-> fixing observed problems. Other patches could be considered fixes too
-> if folks want.
->
-> I tested the first patch in the series backported to kernel 6.6 on the
-> Pixel phone that was experiencing the race. I added extra printouts to
-> make sure that the problem was hitting / addressed. The rest of the
-> patches are tested with allmodconfig with arm32, arm64, ppc, and
-> x86. I boot tested on an arm64 Chromebook running mainline.
->
-> Changes in v4:
-> - Use accessor functions for flags
->
-> Changes in v3:
-> - Use a new "flags" bitfield
-> - Add missing \n in probe error message
->
-> Changes in v2:
-> - Instead of adjusting the ordering, use "ready_to_probe" flag
->
-> Douglas Anderson (9):
->   driver core: Don't let a device probe until it's ready
->   driver core: Replace dev->can_match with dev_can_match()
->   driver core: Replace dev->dma_iommu with dev_dma_iommu()
->   driver core: Replace dev->dma_skip_sync with dev_dma_skip_sync()
->   driver core: Replace dev->dma_ops_bypass with dev_dma_ops_bypass()
->   driver core: Replace dev->state_synced with dev_state_synced()
->   driver core: Replace dev->dma_coherent with dev_dma_coherent()
->   driver core: Replace dev->of_node_reused with dev_of_node_reused()
->   driver core: Replace dev->offline + ->offline_disabled with accessors
->
->  arch/arc/mm/dma.c                             |   4 +-
->  arch/arm/mach-highbank/highbank.c             |   2 +-
->  arch/arm/mach-mvebu/coherency.c               |   2 +-
->  arch/arm/mm/dma-mapping-nommu.c               |   4 +-
->  arch/arm/mm/dma-mapping.c                     |  28 ++--
->  arch/arm64/kernel/cpufeature.c                |   2 +-
->  arch/arm64/mm/dma-mapping.c                   |   2 +-
->  arch/mips/mm/dma-noncoherent.c                |   2 +-
->  arch/powerpc/kernel/dma-iommu.c               |   8 +-
->  .../platforms/pseries/hotplug-memory.c        |   4 +-
->  arch/riscv/mm/dma-noncoherent.c               |   2 +-
->  drivers/acpi/scan.c                           |   2 +-
->  drivers/base/core.c                           |  53 +++++---
->  drivers/base/cpu.c                            |   4 +-
->  drivers/base/dd.c                             |  28 ++--
->  drivers/base/memory.c                         |   2 +-
->  drivers/base/pinctrl.c                        |   2 +-
->  drivers/base/platform.c                       |   2 +-
->  drivers/dma/ti/k3-udma-glue.c                 |   6 +-
->  drivers/dma/ti/k3-udma.c                      |   6 +-
->  drivers/iommu/dma-iommu.c                     |   9 +-
->  drivers/iommu/iommu.c                         |   5 +-
->  drivers/net/pcs/pcs-xpcs-plat.c               |   2 +-
->  drivers/of/device.c                           |   6 +-
->  drivers/pci/of.c                              |   2 +-
->  drivers/pci/pwrctrl/core.c                    |   2 +-
->  drivers/regulator/bq257xx-regulator.c         |   2 +-
->  drivers/regulator/rk808-regulator.c           |   2 +-
->  drivers/tty/serial/serial_base_bus.c          |   2 +-
->  drivers/usb/gadget/udc/aspeed-vhub/dev.c      |   2 +-
->  include/linux/device.h                        | 120 ++++++++++++------
->  include/linux/dma-map-ops.h                   |   6 +-
->  include/linux/dma-mapping.h                   |   2 +-
->  include/linux/iommu-dma.h                     |   3 +-
->  kernel/cpu.c                                  |   4 +-
->  kernel/dma/mapping.c                          |  12 +-
->  mm/hmm.c                                      |   2 +-
->  37 files changed, 206 insertions(+), 142 deletions(-)
->
-> --
+On Fri, Apr 03, 2026 at 10:02:43PM -0700, Nicolin Chen wrote:
+> @@ -76,12 +76,28 @@ struct group_device {
+>  	struct list_head list;
+>  	struct device *dev;
+>  	char *name;
+> +	bool blocked;
+> +	unsigned int reset_depth;
 
-For the whole set
+Perhaps I should have mentioned that this "blocked" will be useful
+when shared with the followup series to flag the device blocked by
+an ongoing/failed reset or quarantine.
 
-Reviewed-by: Rafael J. Wysocki (Intel) <rafael@kernel.org>
+Nicolin
