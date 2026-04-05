@@ -1,139 +1,161 @@
-Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com [209.85.161.46])
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FCE82C234A
-	for <iommu@lists.linux.dev>; Sun,  5 Apr 2026 17:40:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.161.46
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775410803; cv=pass; b=emrhgxwb9cGK5gjHRNhoL0G2iUlI3eZ0uDL4bdZBHOah0AVhev53H51PnXvaMcqpQ3CW7BpLsjOE+x7CWiaCg6y187w7SwI8HucXR/xxOouhKovSlwuVSBOGRtU51fXn2vfMWD11RkSdKMMTMVI7rUiZi/LOnMfEA08RicKlhtY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775410803; c=relaxed/simple;
-	bh=HPsLt/BA7weGZLf0EXmME6ubSVLx0GGTj00O/QCLtvY=;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E81B1382F3E
+	for <iommu@lists.linux.dev>; Sun,  5 Apr 2026 22:49:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775429383; cv=none; b=Irsey0XNvnkm2y9y3WmlbsD7p3XaygaDlfHm1Ze9aEwZ7hcjuidk6rUacJzeX5sl/pJ2xTrpeAIdi6e/MsPNNYRbhow6VrFzJjG3Heg4J0NUpWADhWE1mlrXhFsVo/yG+wj82mOoW5/FN1u1tJ+QzGCfBr1bXXYS5UZnDjpf7f4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775429383; c=relaxed/simple;
+	bh=zzMy5NtaL7AD5tUyCQ9LrBMAHeKvVDbZmilsbp1EV5w=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=PisNXZ2U1UWsIOqELrmb7BA4BgmhZVBrVKzdF7/1I4ySgRUMtKISKXdLrtaTVeuEFzW1RvCTj3UHAWwdAKV7JynHhjg6WA5T571jdIH4Jm1ZMAqTe58KUPTrcmRkVDif1hs9+UleM+T7m5eLGq2eQCuCkqi1pDw7BDnPuSONc0c=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jV75TeBQ; arc=pass smtp.client-ip=209.85.161.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 To:Cc:Content-Type; b=DDjb2yS3eUneTJUzlyue9xzi0tHM5rcTV1VgSdHzn4n3UCwbfY179W36Xsq/hJi/kaNbPecWRVYrevzwK+21m9N7Z+eXwjpHLai0xVsL8+rHPqBZuT6Byq3JvR3wnXHk/a6PXgldoYe+wuEUNgm8O/jj0vR5UTSGWDSxRp6kd/0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=FUXqqE+V; arc=none smtp.client-ip=209.85.218.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jV75TeBQ"
-Received: by mail-oo1-f46.google.com with SMTP id 006d021491bc7-682baaa9f1aso491868eaf.3
-        for <iommu@lists.linux.dev>; Sun, 05 Apr 2026 10:40:01 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1775410801; cv=none;
-        d=google.com; s=arc-20240605;
-        b=E82buumAX/l4A8Ee0f4UvhVF3ZXzh69hGwflT/QMU6wq9NZ/R/GFcmUlXkTKgtz5Rw
-         xDNxJ4dos9vApBfP0ptpnSRUraQbnAoAYMwuS+0J3ySlzB/Ar4V3n6/Xx9caXKqDu7HC
-         ALy09EQc4Uo1V7vFyoYv59iLUUEKzEF5+a8WxCRKJBJBLIB/4A6YU5ib1yvWhkRjHWhW
-         aQIBnSgkAxAUFNSAtBjBdUdv/naFNs+LWeHc10Rno5UcuS/Fk8WwaXWUqb9TzaGYmocc
-         vdoV3ho/87Cnu55hIiDunfKuQIrp/IMYizysZ9K6yd1LhzU5knIjzVILWXUxuHnzgVZs
-         HaCA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=HPsLt/BA7weGZLf0EXmME6ubSVLx0GGTj00O/QCLtvY=;
-        fh=CTGwdfOi2+Swx3J9nDkCn6KkiEPEqKvYc+l8+Dz5dP0=;
-        b=TNYB79ecVlzuCb46w4SsRTvvtw6xlK+tK787K57Sum0Zt5CPlDwG1wwlXhr/5r0ih3
-         MdSSen2DhVOVAoPxofg4eKkxV4K6gOVUUL0pllsQht0RVhZTJbBbRf9kzR6/eH29Q/GB
-         Xn6AZ2qysgNZ4xLf9sDVhAJ2eSzuBgncH9PPIOce9ddDLySF6rZsMoz46Oi48YkaJSBf
-         Nikq9cfnV1a1TLxvPY9Zz2A3ergtEdj4GKTYOPTFZttQ/5OwEFWenJKhLNwA/KtF8423
-         tGjYM64TbG3OatvVxwV7OVyyUPboHt7PHg7JuJRsLa+kEY9v3BBuwaf9kB0ke5/y60ut
-         AHPw==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="FUXqqE+V"
+Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-b9c1da7ac63so594225866b.0
+        for <iommu@lists.linux.dev>; Sun, 05 Apr 2026 15:49:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775410801; x=1776015601; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=HPsLt/BA7weGZLf0EXmME6ubSVLx0GGTj00O/QCLtvY=;
-        b=jV75TeBQ2+pKJlTm5htVQ3TUaAKnByxm/LlWf+34B9GthuUBnnG/fjoqtBLRX76BLy
-         5a46MXAsn9Mvl2vv9m2GiQZWZaX5xhyVjDLoDeuLcqM6Kp6W3E1fS3TBOcyZVOH1RUvm
-         l4lJPV/l/jDZi31SHluM76jVVozJh2Tl8GE44pV2+5SfFzEKt1M6hoW4aJYTZIoE6gWQ
-         UwZzhs6r3bS91P8KgAjdOuG16kGP9SHVddQRKOyShpnUQ0Qhblur02vTMYVoNC6e6g51
-         YKmLviqHZLz8Qg+Gig4o/DWe6N6Li+Wcu6aSO06osdvaC0JvRJT3B81M/V5j/2V1OSKk
-         jibQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775410801; x=1776015601;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=chromium.org; s=google; t=1775429380; x=1776034180; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=HPsLt/BA7weGZLf0EXmME6ubSVLx0GGTj00O/QCLtvY=;
-        b=jEnfssGNJvlzDYJWVoRiflkcEpr5eMKbof5I4jgd+53vEg5EhVsNrgaFCjdJcA1Cky
-         bAk6fzQg+KoiTN1xZ2Rf1jnUGg468wUBES5zds2lZL5It8bkgkC3ifq3yEVwRYY4AJ0P
-         tmRYU8O+eBJgBBVmzSWargGJmCFh9nx2C7rea4amRkjwNaSzRFbHpgMGRas9XxAC+Pok
-         9ygTbVUlhaAlWudHhaDXLTH34T87NWO8fNUbQTHi7O9pH84PspmJu8X4O4scF0wBY4e3
-         b9y4g0z/TI1yQouw6IlMJKLLekv34zlFvOiC6T5o8KKsCS1vK7Magzmgb6o9PF8RIlEE
-         YzgA==
-X-Forwarded-Encrypted: i=1; AJvYcCWQzSQXoyaJn31Ko5ig8jCn6XwzrYUw/4BUpWfAC5DuOWUqdTfRzuAm8gSlDQ1XpJlvYykc1A==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz/u7MUG8a/XFN9fY5YSz7zJE9dJzOILWSGS5H46EsDgOj57K0j
-	x1o4jCqewjGWzoin8rtciYc1GuwOQt5Ti5mgwjXdi42BzAIK1xo/o0o0jXUu47oOUjxVI2183tT
-	UYSXBVFZNrlAR8GioOFRv/hNZVbQDQqQ=
-X-Gm-Gg: AeBDievqf7/5c7MdXi+BaTQm8ckbGEITcrnCRplZnYqZVk2vQrWTTIiVrXKYZtCvyg6
-	+qhdKvpLAWNV0A95chrmeSO85V4THeVyJpvma6md+M5viO0F7qFXrqhMoTT6ztyxEGeZl5GJVZ+
-	qKsLwbCxnW+Z9sOjnuCkjLLkUvpFhCDDchqj1uKo8T/op+B0ehmJviW2gV6zbFLyGmT30eLUIk6
-	FrMRcECP0bm2pesgW30q+KcqiaDJs6MtmA0pe9FD2rblTa4lhMELz/nFahLRYn5q1SK96cFxF0P
-	CoII87g=
-X-Received: by 2002:a05:6820:1c83:b0:67e:42ca:bf0 with SMTP id
- 006d021491bc7-68220d45366mr5394961eaf.39.1775410800634; Sun, 05 Apr 2026
- 10:40:00 -0700 (PDT)
+        bh=jzjlDiAhhtCwD9FkXK7yFaosCzkOtMCSogVYlSJljQY=;
+        b=FUXqqE+ViWM+NjmskvBF6c4oofZ5iLvbVD9AhU9L7Wk7AuVZUVMOmrs14zIfgXyPli
+         9Xtv5w7HJGBAGsX8Tm9uHyZEpTheSb82NZy4+JrDL2LUYlePhXujwIKo5nlMXeu6a87X
+         fY4PckdyCQ1CQEFKes4tNXdP8SBxavoI3XbXM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775429380; x=1776034180;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=jzjlDiAhhtCwD9FkXK7yFaosCzkOtMCSogVYlSJljQY=;
+        b=Xl0fnce9cK3TkzA8uAbsDcLAc496jkZRm9hLDUejz5E0RUgmSwO9nxJ8ynpsdfjTTt
+         TTKq5P8wX1svVBx82Q1eZVRsJnU55NjS3ZxMuDl1HVJO03VrKGSKZ0oGdz+7QngzHb0b
+         +4lyBiW+bWjydNjBcY3ia2gm1KQQO9S0ujyH9JBrpzTdJZoT69hsR9Ad9GT0CHqAY2ui
+         0DpReD3oA3+9vU/S/+Bev1AJKvmVWvQEkZU+SmK4IDIvH3/9HHHOt5UyMtJdHCzwC9Xm
+         iTggDDNfON6YM3WkXYxGovb8XqeeBGFx9S+PeXVZmVMNLh4fpI+qU+dFkT44/iOyfHBf
+         FsIw==
+X-Forwarded-Encrypted: i=1; AJvYcCWj6T9w98uGYvUN2keMoEoJTJPyZCx4C+bViZ+PWfEuWIDMwJXN1Oa3EF9rFAqaZsRctrcwTQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxhvPx6+QZL2z+sKlX5Y1opZ+dH7jh0tg889D8gDPOs58C5TlI7
+	jPpdGthZjUkIgezzb4dLeyVpvmmBLjlkb8JnlnfJHiZGqN0EbrwfzBBm6ZS//M9GzjjmeQsm5e6
+	Eul2yNlx/
+X-Gm-Gg: AeBDiesd6XezBVa2CtjYrFeNANCoFe1E0tpOdixsHR/fLmthddWT/2ru9WtdYvTofvf
+	rI6ewpxNKdCxV9TlTi0T5j9ILpWvXadrtiVkOTqFcxFf4FKKUZDu13Fif5D300egAD32k3ydaIW
+	FnG7UI5wdq155+OsA6pYaYMsnDHwaRc4vl4yJfnUxp4YRhrxYucusz4VOURWjD/WuLqVcyxIaDb
+	Lk9PCzzdkzyoKj2Ur9CFfBCobQetQCOAJWOkNBFFdHVd3/drv3ppxW5ulhnqEbdiTsz+qgr1Bkk
+	STWUENm2X0tyGYAVD0qOsR1lSpyllEnnLVXfR/OodZiziuUn1bkz6PC2es3ID4hUdPYX5R9GxSr
+	uWHY4ZVxn3enW7XFApCpLSh+T4GCnXLCiGtxfe9n9D7EcDv50Uf3qRlb2/F7faPhumZKZR8wyQl
+	gKAdRXcIHbpeNHtJFAKlUa85hNGazOjsUlD4Sd9EgkJrFu9UUd3vku0u618W//uA==
+X-Received: by 2002:a17:906:c38c:b0:b9c:12b0:2e38 with SMTP id a640c23a62f3a-b9c6742fc63mr376505966b.1.1775429379785;
+        Sun, 05 Apr 2026 15:49:39 -0700 (PDT)
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com. [209.85.218.46])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b9c3c99fc14sm430799066b.19.2026.04.05.15.49.39
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 05 Apr 2026 15:49:39 -0700 (PDT)
+Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-b9c3e2cf3c0so544388466b.1
+        for <iommu@lists.linux.dev>; Sun, 05 Apr 2026 15:49:39 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCX5D7UGldeoFcFJFo+tjL390IanWBlSj4VItsyRj8DENj9A3rEmQE0teP92HVm50X36nzUDdA==@lists.linux.dev
+X-Received: by 2002:a5d:5889:0:b0:43b:47ee:4586 with SMTP id
+ ffacd0b85a97d-43d292d34e1mr14051064f8f.29.1775429026066; Sun, 05 Apr 2026
+ 15:43:46 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CADvBJZm8nqbpNRvB=WheP6QhWDXMbtcKff3R7F93Ffy5NBOUWQ@mail.gmail.com>
- <CADvBJZmWHUX_3mtFBU8AQ_C12Os3TSRYD0jjRb2p2755-qne6Q@mail.gmail.com> <ec71ed01-1ec1-4e3d-9724-a51db8e10c0a@leemhuis.info>
-In-Reply-To: <ec71ed01-1ec1-4e3d-9724-a51db8e10c0a@leemhuis.info>
-From: Elisabetta Bruno <artisticdesign@gmail.com>
-Date: Sun, 5 Apr 2026 18:39:51 +0100
-X-Gm-Features: AQROBzDdA5Bzt5K-zmMbC6JQ7cZBEHvc4eL1vFEHFzvuoFBQwhdnKvYvDcuaKjQ
-Message-ID: <CADvBJZk4atjZHTGJjnOkaJkGXaRRT7CAoNxmgaJRewikvKNXhg@mail.gmail.com>
-Subject: Re: Re[PATCH v1] iommu: Skip mapping at address 0x0 if it already exists
-To: Thorsten Leemhuis <regressions@leemhuis.info>
-Cc: "lkml@antheas.dev" <lkml@antheas.dev>, 
-	"Mario.Limonciello@amd.com" <Mario.Limonciello@amd.com>, 
-	"alejandro.j.jimenez@oracle.com" <alejandro.j.jimenez@oracle.com>, "dnaim@cachyos.org" <dnaim@cachyos.org>, 
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "jgg@ziepe.ca" <jgg@ziepe.ca>, 
-	"joro@8bytes.org" <joro@8bytes.org>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "vasant.hegde@amd.com" <vasant.hegde@amd.com>, 
-	"will@kernel.org" <will@kernel.org>
+References: <20260404000644.522677-1-dianders@chromium.org> <2026040539-sponge-publisher-2b42@gregkh>
+In-Reply-To: <2026040539-sponge-publisher-2b42@gregkh>
+From: Doug Anderson <dianders@chromium.org>
+Date: Sun, 5 Apr 2026 15:43:34 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=X6DRHV6k7G=p5Mno22na75G-69F-EzMkisSxMoxuvJcQ@mail.gmail.com>
+X-Gm-Features: AQROBzBHjVedWun0AWH98b5RajBbraAAaRvLQSenEhaNEY8p1Czch8mAczvPiQQ
+Message-ID: <CAD=FV=X6DRHV6k7G=p5Mno22na75G-69F-EzMkisSxMoxuvJcQ@mail.gmail.com>
+Subject: Re: [PATCH v4 0/9] driver core: Fix some race conditions
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "Rafael J . Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>, 
+	Alan Stern <stern@rowland.harvard.edu>, Saravana Kannan <saravanak@kernel.org>, 
+	Christoph Hellwig <hch@lst.de>, Eric Dumazet <edumazet@google.com>, Johan Hovold <johan@kernel.org>, 
+	Leon Romanovsky <leon@kernel.org>, Alexander Lobakin <aleksander.lobakin@intel.com>, 
+	Alexey Kardashevskiy <aik@ozlabs.ru>, Robin Murphy <robin.murphy@arm.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Frank.Li@kernel.org, 
+	Jason Gunthorpe <jgg@ziepe.ca>, alex@ghiti.fr, alexander.stein@ew.tq-group.com, 
+	andre.przywara@arm.com, andrew@codeconstruct.com.au, andrew@lunn.ch, 
+	andriy.shevchenko@linux.intel.com, aou@eecs.berkeley.edu, ardb@kernel.org, 
+	bhelgaas@google.com, brgl@kernel.org, broonie@kernel.org, 
+	catalin.marinas@arm.com, chleroy@kernel.org, davem@davemloft.net, 
+	david@kernel.org, devicetree@vger.kernel.org, dmaengine@vger.kernel.org, 
+	driver-core@lists.linux.dev, gbatra@linux.ibm.com, 
+	gregory.clement@bootlin.com, hkallweit1@gmail.com, iommu@lists.linux.dev, 
+	jirislaby@kernel.org, joel@jms.id.au, joro@8bytes.org, kees@kernel.org, 
+	kevin.brodsky@arm.com, kuba@kernel.org, lenb@kernel.org, lgirdwood@gmail.com, 
+	linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-aspeed@lists.ozlabs.org, linux-cxl@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-mm@kvack.org, 
+	linux-pci@vger.kernel.org, linux-riscv@lists.infradead.org, 
+	linux-serial@vger.kernel.org, linux-snps-arc@lists.infradead.org, 
+	linux-usb@vger.kernel.org, linux@armlinux.org.uk, 
+	linuxppc-dev@lists.ozlabs.org, m.szyprowski@samsung.com, maddy@linux.ibm.com, 
+	mani@kernel.org, maz@kernel.org, miko.lenczewski@arm.com, mpe@ellerman.id.au, 
+	netdev@vger.kernel.org, npiggin@gmail.com, osalvador@suse.de, 
+	oupton@kernel.org, pabeni@redhat.com, palmer@dabbelt.com, 
+	peter.ujfalusi@gmail.com, peterz@infradead.org, pjw@kernel.org, 
+	robh@kernel.org, sebastian.hesselbarth@gmail.com, tglx@kernel.org, 
+	tsbogend@alpha.franken.de, vgupta@kernel.org, vkoul@kernel.org, 
+	will@kernel.org, willy@infradead.org, yangyicong@hisilicon.com, 
+	yeoreum.yun@arm.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, 5 Apr 2026 at 18:14, Thorsten Leemhuis
-<regressions@leemhuis.info> wrote:
+Hi,
+
+On Sat, Apr 4, 2026 at 10:28=E2=80=AFPM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
 >
-> On 4/5/26 17:02, Elisabetta Bruno wrote:
-> > On Sun, 22 Feb 2026 00:50:50 +0100 Antheas Kapenekakis <lkml@antheas.dev> wrote:
-> >> Commit 789a5913b29c ("iommu/amd: Use the generic iommu page table")
-> >> introduces the shared iommu page table for AMD IOMMU. Some bioses
-> >> contain an identity mapping for address 0x0, which is not parsed
-> >> properly (e.g., certain Strix Halo devices). This causes the DMA
-> >> components of the device to fail to initialize (e.g., the NVMe SSD
-> >> controller), leading to a failed post.
-> > [...]
-> >> Closes: https://www.reddit.com/r/cachyos/comments/1r5sgr6/
-> >> freeze_on_boot_after_kernel_update_to_619_fixed/
-> >> Fixes: 789a5913b29c ("iommu/amd: Use the generic iommu page table")
-> >> Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
+> On Fri, Apr 03, 2026 at 05:04:54PM -0700, Douglas Anderson wrote:
+> > NOTE: one potentially "controversial" choice I made in some patches
+> > was to always reserve a flag ID even if a flag is only used under
+> > certain CONFIG_ settings. This is a change from how things were
+> > before. Keeping the numbering consistent and allowing easy
+> > compile-testing of both CONFIG settings seemed worth it, especially
+> > since it won't take up any extra space until we've added a lot more
+> > flags.
+>
+> Nah, this is fine, I don't see any problems with this as the original
+> code kind of was doing the same thing with the "hole" in the structure
+> if those options were not enabled.
+>
+> > I only marked the first patch as a "Fix" since it is the only one
+> > fixing observed problems. Other patches could be considered fixes too
+> > if folks want.
 > >
-> > As I am seeing this still marked as pending fix, hopefully some real
-> > world testing might help.
+> > I tested the first patch in the series backported to kernel 6.6 on the
+> > Pixel phone that was experiencing the race. I added extra printouts to
+> > make sure that the problem was hitting / addressed. The rest of the
+> > patches are tested with allmodconfig with arm32, arm64, ppc, and
+> > x86. I boot tested on an arm64 Chromebook running mainline.
 >
-> I lost track here, but from a quick look I suspect 0a4d00e2e99a39
-> ("iommu: Fix mapping check for 0x0 to avoid re-mapping it") [v7.0-rc5,
-> v6.19.10] fixed this;
-> https://lore.kernel.org/all/20260227080638.208693-1-lkml@antheas.dev/
-> and the links there have more details.
->
-> And if I'm wrong, please yell!
->
-> Ciao, Thorsten
+> I'm guessing your tests passed?  :)
 
-Hello!
+Yup, all the tests that I've run have passed. I also threw in an
+"allnoconfig" compile test just for good measure.
 
-I hopped on my secondary drive, fired up NixOS and put it on 6.19.10
-and it worked without the iommu=pt workaround.
 
-Sorry I missed it was merged.
+> Anyway, this looks great, unless there are any objections, other than
+> the "needs to be undefined", which a follow-on patch can handle, I'll
+> queue them up next week for 7.1-rc1.
 
-Thanks for all you Devs do and take care.
+Thanks. As per the other thread, I'm happy if you or Danilo want to
+apply it, and I'm happy if you want to make minor fixups when
+applying.
+
+When I see the patches applied, I'll send a followup patch to address
+the "needs to be undefined" comment, unless Danilo makes that change
+himself when applying.
+
+-Doug
