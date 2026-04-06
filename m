@@ -1,149 +1,130 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1814136358
-	for <iommu@lists.linux.dev>; Mon,  6 Apr 2026 20:20:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9FAC2E6CC8
+	for <iommu@lists.linux.dev>; Mon,  6 Apr 2026 22:00:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.171
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775506849; cv=pass; b=cM9crHx3we5LAfcXRdWJZ+Y9AxMlgBgflO6JekZpPpimamDX+kZhAwP0/yL3k6qaXSQ4yG/aRlHT6EMCorviOvC5beq9G1Cto3DJIiy0PPAEr9JeUwNZdAyJzj0P8S6KX4maSRHsFKgAo6fQVGVbiSocJS9huKES4VwKhxph/Gw=
+	t=1775512848; cv=pass; b=kQ1P/GhisZ5RJiuhDYzQrCRnmyAJOn5fzKZK/Y76auq6M3afgp9oGHmFEMbAdNeeSzbyP5UKX14b+2dHluVA5aXmvPDDGcUZ5kQUUfUGjPhpLJaIjMVacxrMqVcHhKLv0cTX0qZmiMi8lY1UOR+GRcstBGtcVQf0R+w+s8qg7SY=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775506849; c=relaxed/simple;
-	bh=Io1U+2H98QfGuSNNSPp+Om8lrtZl2OSidEXkxdnTsLU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Im40s0VTQCmhHOj/fxqwrvh4RNxbMAZuLGs6L58Uvq3qG3RB+8vDQv7DDe7gDwUF8LEczv/EXyxSAzlmbfywkAzujq0buZP8XJPLnww6qJBcYrQzHAUasKYXsxE0x60mFEIRKsPly0eMuRyG4f0rV9Y7vZiMD3BnNZ0vW5oYjrs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=WHNWpX/I; arc=pass smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1775512848; c=relaxed/simple;
+	bh=AhRF60yZ5wlYEHmbfH7z43ugDhTw4ErR0cp+/TsXLy4=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=e8n1J+P+IcauuGplHT2q3th9IjOrARrzvPXtl8vM7LwVHT7RigiA3lpXzcaGqg3J8D4QH81raC7HmfPt1iI4GK2IDCjPhe0MzXG77E5LQhWNZ56kQj9Ofr9nNaVu/Oi+FbTBqUEVDo19giXFJ/Jvrp9m+HcdQd9dnVasspLba5Q=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=openai.com; spf=pass smtp.mailfrom=openai.com; dkim=pass (1024-bit key) header.d=openai.com header.i=@openai.com header.b=AWCVjSR2; arc=pass smtp.client-ip=209.85.128.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=openai.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=openai.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="WHNWpX/I"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-488940ccfa6so199755e9.1
-        for <iommu@lists.linux.dev>; Mon, 06 Apr 2026 13:20:47 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1775506846; cv=none;
+	dkim=pass (1024-bit key) header.d=openai.com header.i=@openai.com header.b="AWCVjSR2"
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-79ee5037d44so58582387b3.0
+        for <iommu@lists.linux.dev>; Mon, 06 Apr 2026 15:00:47 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1775512847; cv=none;
         d=google.com; s=arc-20240605;
-        b=WNcFXH/6jdH8jRWyAsA/HyOWbuer0TArhN2N3CkFx7yCYC6hj8Snzf36zLgn/KxYN4
-         OXGq+3F4LqI+SgirHDRL2yG+5xkbIDIOfpxFevquEU2AAsnJP8UMhg6tR4vVtemNV2ub
-         48r9/qiiMfIUouqhzvZ/QqN+lwOSw+a7M7CxrzU1safA4z39H5E24MDU5b6rQLCZFmfr
-         4NLJzGND1oWyfmZtoBChb0B8F4SgGQ7v5738kEcEyxUd31JoVjjrA2oM+/j16twU/aE5
-         wCdtqoMMcnbyhIv0yzldjfNU2d0T6nS1bBaw5zfTPMPaL3iltw+5mCn2l+iRP26xBK9g
-         oYsw==
+        b=CTaMdFLRBLiCePFhvE9HfOvARG/5y/oW9K1FIKKTWzTGj1Subq1I7JkF6b2jgTJOrJ
+         8SNSdCI/10T93kRHz5bOZxmb20inZ/dSi8BIdznayx7seYjE+7Qci/XrGHTeppATayj1
+         jN7BNoJex+FfD5/A+sBFWcbhjBiCUrsRbjUS8VgQg/woufHvgXT/b0ChizHHd32HcsxD
+         gQRx8DugRZllLVXwRgVVOxWzrrqbDO8aSEoWgHjZpo1+Ko/G2lyNowaHO3z4gr6TdwJE
+         R6n8G2uPfoJDf8WS2kMQo8Jsn5oZd3QNc7Fdzw/htEMLQ7PzNoistXkgRFMbHwUgYnOu
+         ozxw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=DAq+hiOQoaI832cP+7lQvu5renHjvWZOnK9BIt/n8bg=;
-        fh=nCuNE8s+9WTRgbd1O0MQYPvM37ZFnaRozb0/pFioVDo=;
-        b=aFj9dYpoBVFsGnnOBl47r/eWALdqzIxn6N2rkDPu5E/PTgyK4mGMu+PDZg9TlzB1cY
-         3Vt9nO7CakPo4bxmnR2jLCpHakWYizVGGet7T+ulFk8C5sAy6Rd/mgMDcuCz+zY6tMGG
-         4ABjciRkETHH7B11HGGyVa1kibsV5myIArGP6tAsh0B17FvrQtlvzLSNXR6m/QrigvKY
-         2GPKDZvW+ffTpjR2fOh+IoSB/eFFktuqNYmFvDX1XlT+upn88kbIbSKLF3rBKpuqSkaU
-         k85lvfYLnG7zdzWVTMPmmZXdnMxPXMfqBpQ1mtDY9avopR0mvDMCUJusNRwf+mpKdZU6
-         fPFQ==;
+        h=cc:to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=IrXmhlnDFDN3/y/XfnM5ZPPgKttgJY7jZg+IfQOG2j0=;
+        fh=cI8AGPINiUsFaPjgV8oxDD8ISv0XH4pyElfWI5xjzI0=;
+        b=hD5BbhpuxJA0SMXz0R4XsvmvIslhcNpE0x8rUmnpM9HInhXQx3eXLz2PbazRTGAB1B
+         HFdQKyANuT4BHcqNAfRAWAmxSI+FbGfzspo6rKtZOXXR9/PSpHRCkBJPI9HuxrcHha7K
+         6bDkcbCACN36TFmpi1i3LT0+fCW4hpDM124cy61AVPo0Xpctl6YCtUTruTafXPeB0XiB
+         8ZWmNJG+7LHg011XczijesMUUgtJsnZtav6yqLp4S0P6lZhLWPtYu6MGpBK/Pb9BaZuC
+         tSctxl8Oqsu70po1q4QoUHW2YTvDxVTmUsjRp7E4pggmC5WO+GMNI7/yk1Qzj52o91y7
+         ERqw==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1775506846; x=1776111646; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=DAq+hiOQoaI832cP+7lQvu5renHjvWZOnK9BIt/n8bg=;
-        b=WHNWpX/II57I/OHGOky863sAzLjJHU1C7hjGlvVqP50IQpsrBUWdIKXUKSS/2vCb3P
-         i6oXUGczBjHLIRFG+zE/sdyj2xXNu00aJg27DA2DV8AXyDIZ1Ud5+SbOeLEgmYx43xk4
-         r8sx1ul68sa2Vuj749zi6bJeYY53Yz0svIsMvFQogpqMjgzHyi9pAB6uPejw5PpCv8RL
-         ynq5uPUejdPgIZlDZN5nbc7ko2gIVDp5eSSq9d92iwLEnzs9/7tT3VZ8JB/WUYb2DqCw
-         rLJJVbX8q4pJhvd4KOeP9cjAZDVIhzkkjNzNHk3u/kOV1FRbCg27oh30SUbGUM2IUs8W
-         5iHg==
+        d=openai.com; s=google; t=1775512847; x=1776117647; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=IrXmhlnDFDN3/y/XfnM5ZPPgKttgJY7jZg+IfQOG2j0=;
+        b=AWCVjSR2z92RiAwqcBJooWg21DHdFP2kyfK4O2eUY7dhRJjCHgHWDH0HxJt8e7HwPG
+         C/uxKYiudfe8tC5c+umHuHNFZ7ITx2RGAyrw8POnzf4JYn3X1NNUS/aC/c+h7RLxxt7i
+         kC1lAWF2CZIk8fhcun6PkKxQQzKjI97LXJmA8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775506846; x=1776111646;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=DAq+hiOQoaI832cP+7lQvu5renHjvWZOnK9BIt/n8bg=;
-        b=R6D1BHo88TrFz6SzutObxhcyfPemlht8JmXdRi2nu9ZRo6mtKGNyH1n7wVIzfjAhbw
-         xeYg72Xjzh4gYlzEjlyiwXOd90pJEsSZ7HPCAGGTOQGx6Ziym2xBcsrBmbADNWduxysb
-         5gG1DHcxscqNFxrVPlPjivEF34StdEYE/ASyIfmRLdu6hPbFxsbNnZZ8d7iRztaq5vC6
-         R5VpKuDrUab5HXnWM6kNy5Bz6rj7OSgfUHdcxvkSjpX+sMXqq8nPBAiIaMp8Cq1wC48Q
-         7ADR71ZGoxq/DjAnfXqTE287rasgrVjJsn/tJOeDvTiCJxFa8EjlVYxkI2zWSf4lJSHd
-         9Q1Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWk6TOWocjcu2tODW/aZZGEZg4JsBDnrMqpVgAwblGOS4b2HW3ou59d3s+rtq4pPlPcj3FeyQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx+X45/BCDZSg/WufiBYYDfx+vDBxRaEMxZH4Z02Qvn9LJwWeUx
-	TRk2XnXOluEOJ2Uf1/PeWiumUbdmVR7Iyknat2wV4qlJRt//vBXkTwj4j9wH2QIN4TNWhDCfqb0
-	q621o9KwAnlSbWB+lLNJPdIdB1C4zIpw2ZbiVxjq9
-X-Gm-Gg: AeBDieuqsjD2c5XVdRJyO3eXRD8M/WoFd9HrWTQrYgIBjowu+sR3z81xFbDWHQ4Sqa5
-	l9p7KtmI8Ztcl8p2EZZoYxGLu6if23H07Ay3Vpd52krgm+ApGdcRoYf/wXUQY/nV6dt/R++BQfO
-	Jdx7vtm4fC/il+OwtZzsqZOQkTatcOGoD0UXgq5BFMoBVzM7RCgPum5o6C0zDfh0gxEe2iprcUl
-	MZWyzbRrpB8n9ttBNVmUHxA9bXFyreFGSHkNelDQ7PPTjR5c1CEaZq+aKYlP6pq1ON0hvwEhOEa
-	NTx1aiiFrYu/GHnEmSt0WCVAu+dS+7f1F4ELTg==
-X-Received: by 2002:a05:600c:6b19:b0:477:86fd:fb47 with SMTP id
- 5b1f17b1804b1-4889a458061mr2963095e9.8.1775506845674; Mon, 06 Apr 2026
- 13:20:45 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1775512847; x=1776117647;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=IrXmhlnDFDN3/y/XfnM5ZPPgKttgJY7jZg+IfQOG2j0=;
+        b=MsQHqfyL9hBYu/yXmAJMyIt/kkORTo92PZRoquYjg7NDE70lYAt51yHWNPa8HIexke
+         VdC7ZxIZ8lapkZG8dz77zwPEQ+NYfv5jeoRFHA1d1rssx0aV7/10dHDk+9TzbWHKsJRF
+         RUUkw98kfvpQIdoabyvorADPouwMSzbmrjp8dYbKeMSSOffuQv52z/IGP0nU8EMPVytx
+         U/L/xdyXrSOPNTSh4Y6b3l6m9IKxWvawhG0Z4Z+2HY5G0QBb5mhY147DxLJI9Obr+uL2
+         WD+HIN9d2ftXQT+OvllbapQfp4+Kod4b3fVn0ch2PforHdoGF2DRoj9Bf6/yZ1hhIRHZ
+         nnqg==
+X-Forwarded-Encrypted: i=1; AJvYcCXcS3JFdHTX+UmpoCix5ZIAjZrQxIUG/AFynTYbOfpNbBVQsRQkjWmIowxkduPpELHctfHddg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxst0JBlmfbkhvlA0pfoh5Bm5122Ihffw/nhg5u0cTopbCpLDUy
+	KCa5ICv47Ybrzj52+EPmo2QUubpw/evwwMlKjq6XKR9keYKaWjnvNiKOlhspE2nXs6SmZSXdLrT
+	QUHAP4/UT1xXxMpRft6esvJ4sHiJx3zcZlhLpYaOJgg==
+X-Gm-Gg: AeBDiesv3dYnswgvntQ5Ff+YG1zV9RL7H/l9yq32rwGNYGgUln/5pStVxMZsTgLa9QV
+	Fi81IyQZtnZXSHjj5mcp1L1WnRbwlCJdFZ2G/D3z1Yar/KenxXJP9w0/we0VpJgHS8VZ/Auk/eA
+	FnulR03XdpXNSTyFOSa+Dchfmji8gpxAZMiLsOqJRtkdvIILTbMBxHC5pnAAjHYV08kOP5jTXF0
+	WWIFfyZk7zttA6Z7K1mh0jlXriqLdjKglRuZyr/R3WYEitqBo5kqvlXSx7bXqOgFxp06j8eFCpr
+	Mmozq/goudzEaDuN3R0j442xy6OVxxAAq6ss+6jtziN9KOobY9XUi3hvhZbr4oD4sSZWTZqayCr
+	JhQDGLpTmOmU68CC6NGSRaUX8EDC9H8lp+XOxfF0boB17JHKKmvUpfYT0hTADJd0povvd9BUH6A
+	==
+X-Received: by 2002:a05:690c:9c0a:b0:79a:b409:b5e0 with SMTP id
+ 00721157ae682-7a3b8501632mr145564957b3.0.1775512846515; Mon, 06 Apr 2026
+ 15:00:46 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260402141103.598495-1-jiri@resnulli.us>
-In-Reply-To: <20260402141103.598495-1-jiri@resnulli.us>
-From: "T.J. Mercier" <tjmercier@google.com>
-Date: Mon, 6 Apr 2026 13:20:33 -0700
-X-Gm-Features: AQROBzBphM-pvVrX6rS78TlEjxwdox4kg-mNa-24N1cUfIDHIUevXFcYB-smPLY
-Message-ID: <CABdmKX3N70j8ZZs5DNhx6fhRi=Aa_+2xY1JHcW+uDoaV2+Sngw@mail.gmail.com>
-Subject: Re: [PATCH] dma-buf: heaps: system: document system_cc_shared heap
-To: Jiri Pirko <jiri@resnulli.us>
-Cc: dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
-	iommu@lists.linux.dev, linux-media@vger.kernel.org, sumit.semwal@linaro.org, 
-	benjamin.gaignard@collabora.com, Brian.Starkey@arm.com, jstultz@google.com, 
-	christian.koenig@amd.com, m.szyprowski@samsung.com, robin.murphy@arm.com, 
-	jgg@ziepe.ca, leon@kernel.org, sean.anderson@linux.dev, ptesarik@suse.com, 
-	catalin.marinas@arm.com, aneesh.kumar@kernel.org, suzuki.poulose@arm.com, 
-	steven.price@arm.com, thomas.lendacky@amd.com, john.allen@amd.com, 
-	ashish.kalra@amd.com, suravee.suthikulpanit@amd.com, 
-	linux-coco@lists.linux.dev
+From: Sina Hassani <sina@openai.com>
+Date: Mon, 6 Apr 2026 15:00:36 -0700
+X-Gm-Features: AQROBzDj1uhH1bQgWEj0c8LOPX5fqDnQKRUjEk5oKgfET8whs1RVLalE8TLXmm4
+Message-ID: <CAAJpGJTzJZ0OgEU8NhyJ3dR1Y1V5x6CwbBjLW_kYLu+FTt9woQ@mail.gmail.com>
+Subject: [PATCH] Fixes a race in iopt_unmap_iova_range
+To: jgg@ziepe.ca
+Cc: kevin.tian@intel.com, joro@8bytes.org, will@kernel.org, 
+	robin.murphy@arm.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Aaron Wisner <awiz@openai.com>, Sina Hassani <sina@openai.com>, stable@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Thu, Apr 2, 2026 at 7:11=E2=80=AFAM Jiri Pirko <jiri@resnulli.us> wrote:
->
-> From: Jiri Pirko <jiri@nvidia.com>
->
-> Document the system_cc_shared dma-buf heap that was introduced
-> recently. Describe its purpose, availability conditions and
-> relation to confidential computing VMs.
->
-> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
-> ---
->  Documentation/userspace-api/dma-buf-heaps.rst | 8 ++++++++
->  1 file changed, 8 insertions(+)
->
-> diff --git a/Documentation/userspace-api/dma-buf-heaps.rst b/Documentatio=
-n/userspace-api/dma-buf-heaps.rst
-> index 05445c83b79a..591732393e7d 100644
-> --- a/Documentation/userspace-api/dma-buf-heaps.rst
-> +++ b/Documentation/userspace-api/dma-buf-heaps.rst
-> @@ -16,6 +16,14 @@ following heaps:
->
->   - The ``system`` heap allocates virtually contiguous, cacheable, buffer=
-s.
->
-> + - The ``system_cc_shared`` heap allocates virtually contiguous, cacheab=
-le,
-> +   buffers using shared (decrypted) memory. It is only present on
-> +   confidential computing (CoCo) VMs where memory encryption is active
-> +   (e.g., AMD SEV, Intel TDX). The allocated pages have the encryption
-> +   bit cleared, making them accessible for device DMA without TDISP
-> +   support. On non-CoCo VMs configurations, this heap is
+Bug: iopt_unmap_iova_range releases the lock on iova_rwsem inside the loop
+body when getting to the more expensive unmap operations. This is fine on
+its own except the loop condition is based on the first area that matches
+the unmap address range. If a concurrent call to map picks an area that was
+unmapped in the previous iterations, this loop will try to mistakenly unmap
+them.
 
-"non-CoCo VM configurations"
+How to reproduce: I was able to reproduce this by having one userspace
+thread mapping buffers and passing them to another thread that maps
+them. The problem easily shows up as ebusy errors if you use single page
+mappings.
 
-> +   not registered.
+The fix: A simple fix that I implemented here is to advance the start
+pointer after we unmap an area. That way we are only looking at the
+IOVA range that is mapped and hence guaranteed to not have any overlaps
+in each iteration.
 
-Doesn't seem like you need to wrap this line.
+Test: I tested this against the repro mentioned above and it works fine.
 
-with that: Reviewed-by: T.J.Mercier <tjmercier@google.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Sina Hassani <sina@openai.com>
+---
+ drivers/iommu/iommufd/io_pagetable.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> +
->   - The ``default_cma_region`` heap allocates physically contiguous,
->     cacheable, buffers. Only present if a CMA region is present. Such a
->     region is usually created either through the kernel commandline
+diff --git a/drivers/iommu/iommufd/io_pagetable.c
+b/drivers/iommu/iommufd/io_pagetable.c
+index ee003bb2f647..965fa23df103 100644
+--- a/drivers/iommu/iommufd/io_pagetable.c
++++ b/drivers/iommu/iommufd/io_pagetable.c
+@@ -812,6 +812,7 @@ static int iopt_unmap_iova_range(struct
+io_pagetable *iopt, unsigned long start,
+                iopt_put_pages(pages);
 
-Each paragraph starting with '-' confused me for a second there. Those
-aren't part of the diff. :)
+                unmapped_bytes += area_last - area_first + 1;
++               start = area_last + 1;
+
+                down_write(&iopt->iova_rwsem);
+        }
+--
+2.43.0
