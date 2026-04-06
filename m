@@ -1,115 +1,137 @@
-Received: from mail-pg1-f202.google.com (mail-pg1-f202.google.com [209.85.215.202])
+Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B88432692B
-	for <iommu@lists.linux.dev>; Mon,  6 Apr 2026 23:05:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.202
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775516713; cv=none; b=Nfi9Lvq/cOy7hiTuuj5zhpuuAd02AJYjR/b8TiUwy/WKMHky9RsT6JBSvek/7CWAIN6IxPzJMKHNxmp4hJUHQDgctiiAc23QyMkMJn2ftQjHHLTuH9wSNkiTcypxGdhspG8OKywsi8tZ8F2hNjrLcmEFBEiqigv7P1qjYHIwc4w=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775516713; c=relaxed/simple;
-	bh=ybU40crsJbgKRM+lolfywi67b9/Q/ZY7FuGF+CQZn98=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Content-Type; b=apjK4dZwn4XaGXkF0QQ24j5TNTMO+Uskdlt2vMfrcWoH8Wk2k/Z9+HEMTM+WyBRrBlTt44qKPRWDVhS1yuWnqGZV94JC2Ptph5MLe5NjqH77jgOt7KlXGcIWAH2mI9ZY8GtO3h8jokQnn24r9wRRW4jgYfeJUfSwH5tDE7nwj98=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=hjhhetPo; arc=none smtp.client-ip=209.85.215.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85CA52D12F3
+	for <iommu@lists.linux.dev>; Mon,  6 Apr 2026 23:07:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.172
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775516834; cv=pass; b=MqPbFPdPdtK9O2425ZkkSBdsxSd0JtUgj3/Jffajep3pMHhWGIGA1+em9MlO5yANlXT8VFHXbjxobXNzZxEdsts5oB/k7RPVFqfzKbMfhc9NVc/utxmFqLF1rOmZXoa0s2ic5cCDkPC8uIxcYrkwh0IOSSg/ScEi214U5ghlmA0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775516834; c=relaxed/simple;
+	bh=CbERZQC17/1PoShTGE/NPjrUpQC94UvYfWpdVNsODS8=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=ggh5CBjYEnAsvjW4bp8q5uv4kFmk9tPrfC49E0dpRKwJjNN8uYJJPjaKRWjU+cEfm7LxXXMGXJKugUXGZHYq8/bmH6ofEBerb6HvoXSsJwe0+gDA8QRZEFj92e8COFPpO6H6l4Z/M3+KUVQvPlds8QIznXTRZJcY7wAfHRggEO4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=openai.com; spf=pass smtp.mailfrom=openai.com; dkim=pass (1024-bit key) header.d=openai.com header.i=@openai.com header.b=Ca0Zf/4V; arc=pass smtp.client-ip=209.85.128.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=openai.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=openai.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="hjhhetPo"
-Received: by mail-pg1-f202.google.com with SMTP id 41be03b00d2f7-b630b4d8d52so2543082a12.3
-        for <iommu@lists.linux.dev>; Mon, 06 Apr 2026 16:05:11 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=openai.com header.i=@openai.com header.b="Ca0Zf/4V"
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-79db5e18ac6so49251367b3.1
+        for <iommu@lists.linux.dev>; Mon, 06 Apr 2026 16:07:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1775516832; cv=none;
+        d=google.com; s=arc-20240605;
+        b=BhdmBSMN8K0JEyCImKqbr58qSyzVRQ/PuVfGLCWOfRhAkGhTpTtT1PdnxgiHm8qrCw
+         zN/S8q0wDiUdNUQ8GWQ6ghAKiitpe1s3s5X8zxRVPw7lgCkC0hL0SmpskOXwnHXnJyan
+         EA1j4t1kMGCEw7uw+gUfYzA9WqbDcIq7/gYxmZYPlk0DZSN2nQcb8KmDAsD8laZxa4ch
+         29sDSIF+l4jP9+G5XB24eAPc/pTjICXk/DixFywdY9pYxmE14gGr/b0gR9aNMCp7cL2D
+         7YAiI55kxaymtNNRXzE+IxL+SO0rDUn08LRNsvWnGkn/qmMdd9ilV4XxlUNoz9/6hGUH
+         nmKg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=L3Od81lft/9iTZV5t8cEzGB2LzR86DDU9DJfU96Ox18=;
+        fh=afyatCoU4klsvvYQbnULTT1yPPOgCERQCqYoaIpjOwY=;
+        b=fgcJeP+L7UIHsU9Bwiyb9lx4biDWkGVBSBX/yYZgEVFyyyrEZKlR6T1ldfXpL092O/
+         yCeWjJ6X/aLeL9PEEOuDpU5FEa0upCv+0i12Kjkws6FM49fk7Kxs6gT0ST6TaEWQWwL8
+         vJfZ7PKox0AHjlnxQUOIV2YF+k+C/uZ9nGyTn5DdnmUAnvZBMW4d3ppMJI0ACeDuRciI
+         pl5PTUlVEKmQUC0XfMtqghctjwHhZDkbOow2iEqpSQ66rcVL3QwhQjO6317OE2Zd42Tm
+         jal6qHPYWa/aQbrJXnza/EfOVlhAq4sx8TWbGTPkipgqRaSEBcXNxwt/cDOtnXCDY1Le
+         ubCA==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1775516711; x=1776121511; darn=lists.linux.dev;
-        h=to:from:subject:message-id:references:mime-version:in-reply-to:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=8U6D1Uqq+dz9m7XIvKQ1cp57uujuAzr1lxBVyWDa42Q=;
-        b=hjhhetPonKhh+CHW4cYXEAjwG0uT5cfxp64PGiVkYX3VpRwxM8YDMMMij5Bz8YtEII
-         c+DHnFrKB2dERewRVs/+bWU0Y22CtrtIfun25JcbgWUzL/qywlXe0la+1TRHixXrRgKO
-         ZnutGIWzstq9sNR9RN6SpH6zuTEwL9xp4yc7Sa+0L6mLVAN5G8ylXV1QwhCI3wSQvUoi
-         qHoBNpl9Jy1AUVjx1jVjv3Hhm1TJtgi+tE01tqRALWPdtXbzCBdW6rgOf6yT4bIXPCCI
-         tAXOIWSSae7qliWGuCYalQjbgGSXCyz9OM0XxfX0WLsM4MntUiGD/47rwRPT/W7/GPSO
-         VeRw==
+        d=openai.com; s=google; t=1775516832; x=1776121632; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=L3Od81lft/9iTZV5t8cEzGB2LzR86DDU9DJfU96Ox18=;
+        b=Ca0Zf/4VujasCqbRwF0yVI+KFneQ1A4IIbgRIwO6t1ZlOBqJ+Re2l3untG+UHmxahZ
+         5Sy9x5HfVFNj23seqAshlZdSf4Yr2ovTM5eIvcOp9FOKLE3fep0sIt2Tc8cI2Gy3jgPY
+         2cZL7YXqhFUYgorRz3jMxwjD6PzihvvIMV2Co=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775516711; x=1776121511;
-        h=to:from:subject:message-id:references:mime-version:in-reply-to:date
+        d=1e100.net; s=20251104; t=1775516832; x=1776121632;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8U6D1Uqq+dz9m7XIvKQ1cp57uujuAzr1lxBVyWDa42Q=;
-        b=gXqqs3iH98RyrXW3SSjLs65UBjvCz6tKjN/p4wXvAUMJVHbx9Q7rKnJx+CMGv8PhfU
-         lnZrk3pjL1OWpUep7ICW87Vs55g3R9RbRX6NFKb+uipf+iM95B1ePWCq1BDYbucqRG48
-         TgDr/VUjHuckIOWzHWLrTZEe9MzG0/L+zVz8IsNSpS9K9+UfH9ogim2DH94Fsts8ekcD
-         PLEIdZ6mHZb9Hlwkx2dl1D0S9/7rBNGwGtlatY9qK6A4q1SHC6f7Azf+d/DhuAnvBZeU
-         lWUKJLmydBGfGx/07AJ2no2WyZaqSiH8E0p/OiuvB2I9pJJ4tMutfai00eyKal6ckalU
-         jVgg==
-X-Forwarded-Encrypted: i=1; AJvYcCXbg8O1h0hI5uMDTIA6ISxhhdtN9PFQVWH5Vcp6YHy+2HH8GugcGYIGkvjDNngilfJstzyf2w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxhwT770ichUsMLkwU0cIGkuUxFvhSft+om4760gjuZne/AflPy
-	yQIEs1TUN/BwNzH+c/FdLnFioybJiSCtePyOvUJFP83o9Jqj2Jc55w85rAv1jZRkz5LMYpoxCBp
-	FVOAHiA==
-X-Received: from pffk2.prod.google.com ([2002:aa7:88c2:0:b0:82c:d5a8:7271])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:ab84:b0:82c:225e:63c5
- with SMTP id d2e1a72fcca58-82d0da4cdf1mr13212073b3a.18.1775516711309; Mon, 06
- Apr 2026 16:05:11 -0700 (PDT)
-Date: Mon, 6 Apr 2026 16:05:09 -0700
-In-Reply-To: <20250315030928.2373250-1-seanjc@google.com>
+        bh=L3Od81lft/9iTZV5t8cEzGB2LzR86DDU9DJfU96Ox18=;
+        b=DPgrsom+iWSlB3RfQ2J2vwOEQcROJ5JL8e7jlNJFrNaSa+AwCwZzaiBL1GwU7QY+kW
+         0KA0C260U5/sgcyNW2fbeTguR3eWFXR4qpNgUr9Sn4IDf3f0Xagx8mcxDwZBNsdr1IkM
+         we2k3lAqmN6Fl6V6ipg2LlCk2MUTlGyrg/O+rjphnAamJYtw+s6vmuqUpA/EfmB3MNIF
+         qXWWwZn2uPEI0koggmr4YeC4S1FzT3Xpwi5jBGCC5UT27hWeIF+KC+2DkGQCOx3rw67g
+         hT9uNKzMkiMpnn0OM/OOBzm7rfQQeiUbI6ylMhchgB9eBtpoxWI8i5zQKzN4XxH4KELl
+         BkFQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXABPAt7142Z7qqTgPhHXr6R4jaZlSHMmxCmEU7eIQoka6Fyc9QTRMLvCeABl1zaJ09pbCCeQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw0Z7er8TRaDKrh3Rmctgnh5KSdh695X6svuZeS5+GS6PUhoYI4
+	kYX14iPKUaOYDLMpVCzIayWvWhJ6g8M7TOMqjtZ7o50GsV5iDDiLfbLzLbB6rRyve1VCNEN4gwe
+	qkkV8SbSAWjrCWNOcTOecctN1cHiKr45d1YNuOfwylQ==
+X-Gm-Gg: AeBDiesfM4Bpao4/LqAC5YbKg4mFKE3dTreTOj1bl8WSEt9KH0KFSWTRQ4MFgZAGq0A
+	gbVx3XhV+cFbLIZ4iHDkJxNGcoYEUiA52sm3h1VhJag5v5AYg9iW2CPnZOR/mGwodbrbVK2zFl0
+	0qYm06gVR1MGtzEiV0ugFhk6INGCFkR2MHhHMOcuRq0Lb8L6psQMJco0a1RKaPyt/AMEDmFMmm+
+	+Q4C+URwcFBhmzQPN37knrGuX+jOP+hHjne7kwBGbNfRaD8GWhkcTg24uU4UXd7dcsgUKJam2ep
+	wRXhzBSU/apizGv5q1U9/7WIvNObl0t0nOBmhdSU1Me/A3D+r9nh9jYOO5YfGmZuRQPILHaVss3
+	tjXEW7yALQWoX0LCdNHV4J+xySCvVKxX+bgB+fJAw50PsYKdsEkE2mpL1k5sE3Rg=
+X-Received: by 2002:a05:690c:f06:b0:79b:82b2:f284 with SMTP id
+ 00721157ae682-7a3bdd8177bmr137403337b3.17.1775516832586; Mon, 06 Apr 2026
+ 16:07:12 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20250315030928.2373250-1-seanjc@google.com>
-Message-ID: <adQ8JeCu4c1dzpL8@google.com>
-Subject: Re: [PATCH] iommu/amd: Explicitly bail from enable_iommus_vapic()
- when in legacy mode
-From: Sean Christopherson <seanjc@google.com>
-To: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+From: Sina Hassani <sina@openai.com>
+Date: Mon, 6 Apr 2026 16:07:01 -0700
+X-Gm-Features: AQROBzD2O2l_CHT8-ax6fGxbh3AX0FfbqXbleB2YomgxanwhD99Y69vm8oR3hmM
+Message-ID: <CAAJpGJTztK=BTvr6s_e4epJffKchmXmqba82wxE_SOXUN6FWYg@mail.gmail.com>
+Subject: [PATCH v2] Fixes a race in iopt_unmap_iova_range
+To: jgg@ziepe.ca
+Cc: kevin.tian@intel.com, joro@8bytes.org, will@kernel.org, 
+	robin.murphy@arm.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Aaron Wisner <awiz@openai.com>, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, Mar 14, 2025, Sean Christopherson wrote:
-> Bail early from enable_iommus_vapic() if IOMMUs are configured for either
-> of the legacy modes, as it's absurdly difficult to see that
-> iommu_ga_log_enable() is guaranteed to fail because iommu_init_ga_log()
-> skips allocating the ga_log.
-> 
-> Opportunistically have iommu_ga_log_enable() WARN if it's called without
-> IOMMUs being configured to support AVIC/vAPIC.
-> 
-> Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
->  drivers/iommu/amd/init.c | 10 ++++++----
->  1 file changed, 6 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-> index cb536d372b12..05c568da589a 100644
-> --- a/drivers/iommu/amd/init.c
-> +++ b/drivers/iommu/amd/init.c
-> @@ -931,8 +931,8 @@ static int iommu_ga_log_enable(struct amd_iommu *iommu)
->  
->  static int iommu_init_ga_log(struct amd_iommu *iommu)
->  {
-> -	if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir))
-> -		return 0;
-> +	if (WARN_ON_ONCE(!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir)))
-> +		return -EINVAL;
->  
->  	iommu->ga_log = iommu_alloc_pages(GFP_KERNEL, get_order(GA_LOG_SIZE));
->  	if (!iommu->ga_log)
-> @@ -2863,8 +2863,10 @@ static void enable_iommus_vapic(void)
->  			return;
->  	}
->  
-> -	if (AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir) &&
-> -	    !check_feature(FEATURE_GAM_VAPIC)) {
-> +	if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir))
-> +		return;
-> +
-> +	if (!check_feature(FEATURE_GAM_VAPIC)) {
->  		amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_LEGACY_GA;
->  		return;
->  	}
-> 
-> base-commit: ea9bd29a9c0d757b3384ae3e633e6bbaddf00725
-> -- 
+Bug: iopt_unmap_iova_range releases the lock on iova_rwsem inside the loop
+body when getting to the more expensive unmap operations. This is fine on
+its own except the loop condition is based on the first area that matches
+the unmap address range. If a concurrent call to map picks an area that was
+unmapped in the previous iterations, this loop will try to mistakenly unmap
+them.
 
-Another ping.  This too still applies.
+How to reproduce: I was able to reproduce this by having one userspace
+thread mapping buffers and passing them to another thread that maps
+them. The problem easily shows up as ebusy errors if you use single page
+mappings.
+
+The fix: A simple fix that I implemented here is to advance the start
+pointer after we unmap an area. That way we are only looking at the
+IOVA range that is mapped and hence guaranteed to not have any overlaps
+in each iteration.
+
+Test: I tested this against the repro mentioned above and it works fine.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Sina Hassani <sina@openai.com>
+---
+ drivers/iommu/iommufd/io_pagetable.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/drivers/iommu/iommufd/io_pagetable.c
+b/drivers/iommu/iommufd/io_pagetable.c
+index ee003bb2f647..c69af341219a 100644
+--- a/drivers/iommu/iommufd/io_pagetable.c
++++ b/drivers/iommu/iommufd/io_pagetable.c
+@@ -814,6 +814,15 @@ static int iopt_unmap_iova_range(struct
+io_pagetable *iopt, unsigned long start,
+                unmapped_bytes += area_last - area_first + 1;
+
+                down_write(&iopt->iova_rwsem);
++
++               /* Do not reconsider things already unmapped in case of
++                * concurrent allocation */
++               start = area_last + 1;
++               if (start < area_last) {
++                       /* Overflow. IOVA ranges do not wrap around so we can
++                        * exit here */
++                       break;
++               }
+        }
+
+ out_unlock_iova:
+--
+2.43.0
