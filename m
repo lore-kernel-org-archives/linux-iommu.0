@@ -1,128 +1,122 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1E2C3A3E9F
-	for <iommu@lists.linux.dev>; Tue,  7 Apr 2026 09:26:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 861953563DD
+	for <iommu@lists.linux.dev>; Tue,  7 Apr 2026 11:25:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775553982; cv=none; b=JA9MMNdMWOmdqdje6HCJR11j4NcdReESmzPBs37ttbEfWjNMkP4JAvPjsShPwo2l0f79jE5r9AsF2uPWAIIRyszSULwm8aq9GZd8YIqmLifERJqdmTL2gx3z5spyOpDNvSxkqOf4An6bre+WjqW8ycXud9RqGZk/E5WxIK0vcFI=
+	t=1775561150; cv=none; b=dn0QPkEjEfnP4jHOFMsC7MTYxVwkdjIG/3G5ROwDpH6r1VlX1cLnRMjgwX8VWC7ZsPKhs3vc2vnw/h/BDlZ7EC+xY5YVtNhiXk0rUgMEFfaChIVPrlTiSAVjGvd+D7rY7NQyHXYSlawHDp/8L7NXWX38W+HkzfF7RhGq8QrsLFs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775553982; c=relaxed/simple;
-	bh=310agd/8XO4BgwQg8W/cFgXuQDf81Aa7ia7xyYtrlGk=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=TDB+MODCmLKTLSSiFL14PVCG3BI7tdbg0r4EYWFOue8/JA4eWjCVp1nJyCXwwgx6g+5vR6lJ43CRnyfTV0sXnF2tvlyonq1Z6l/afAQ2OneSoPgDfBp/aL52uRg8ofAdIV9Ycmm3Ett2w90ZHvZ67WG0pFbvWROenwBpY+KNnZo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=resnulli.us; spf=none smtp.mailfrom=resnulli.us; dkim=pass (2048-bit key) header.d=resnulli-us.20251104.gappssmtp.com header.i=@resnulli-us.20251104.gappssmtp.com header.b=KRHcJZN+; arc=none smtp.client-ip=209.85.128.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=resnulli.us
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=resnulli.us
+	s=arc-20240116; t=1775561150; c=relaxed/simple;
+	bh=FkONyWkAkz6WrhJw6afrxrztFOvZU3mchf+WabC4/Ag=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=X1YVaApSf1aVxKW3oEP2ksnk2ickHVeRD8aRBWvzcTZRWNzdnzOy1xeslpoQQvtQeLJgYB9o2eleGdn/qiEyK6HUGeqxzk93rt92Jryk4IkSGWc8rXpGF+bOozqezZQgGtTNDyy4ReX4ldXo0rPMHqZw5UPfbi8ZA5G8MTXIK6Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=lNqnUbfJ; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=resnulli-us.20251104.gappssmtp.com header.i=@resnulli-us.20251104.gappssmtp.com header.b="KRHcJZN+"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4889e045bc6so30810655e9.2
-        for <iommu@lists.linux.dev>; Tue, 07 Apr 2026 02:26:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20251104.gappssmtp.com; s=20251104; t=1775553979; x=1776158779; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=4JppuW+8jHhiWrz5kQ42R8XjkKGXIqfSYDySDPjjqyw=;
-        b=KRHcJZN+/wyBzy8fvhWynoxmE97sqWGaE4bHWWRyzTw4lOgvUirsYXSUkAq+qN1hkn
-         R5OjLfaOhpsLvX/Gg9QXHB8R6WLPD381gaXiSgBbk0szbo3YK6QPhW8cSyIb3LovmW4T
-         O8Qfen/iDm5uAuE3wT4gLEvaIXrmcQpK4COb64aLcE77/n0JtV+UViGwL61CwVHW5NWJ
-         uEN5wNnTG/0YcT4y5K5acS5DpSCLvxf2BsALL/IcmCUkqOAbIW5U9a17vLc5S0n7fKp8
-         f+Jfb5YXuSkvoLZZh4co4P5SB7ORkzFIGyXrAkes2/9gqmGjLI2vggcrz6iwZt+adzsu
-         e7Vw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775553979; x=1776158779;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4JppuW+8jHhiWrz5kQ42R8XjkKGXIqfSYDySDPjjqyw=;
-        b=aPu65ETEhny54ApOHBBgvPA0xbwF2qyDmTIr+FGfUq4Bb0r59P0VkT/y6+jtwIsqmJ
-         jw0FoA90NJDdm/zlE6voA1tiR+Ao+7bCjJmWL0G6r10WODjX9oLyH5YMxiFJy0HR6Gyf
-         ujYviBGsepX1UG07QD9t9m0o7+a84UEzUxiw36wlP4zacyEb8x6FtPBXp98l1rPvMFp6
-         Qp1qzYapXr+4APu5/kmygO2pfX76SAJWMXnERzZ52Csz/CzlBmh002HPETOBNqWZjPSk
-         3S/uY2M1MMxzLvhaNWDl8Fu9SqoBi6HSrfVJCXyOBN+gXgpnJHqftLSCKDGDP25WnD+E
-         QxKA==
-X-Forwarded-Encrypted: i=1; AJvYcCUElXzdHPKO/xtvwKexx9M1GHAfZ6o4buY/I55dYyD3EDex/YFV+oEZVnd+6a6Msf1kF+jSQw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyXmUixy0uBacAvVlzeHV7f1VT1+KQRqEpgQk+QhR87wEb8fMks
-	dNpRvbAxJ1aRZf0ehtifZKyDb3Py42Fah3HX1oCeLtrlct/PQFxFqAoPgkztr0+KgoA=
-X-Gm-Gg: AeBDievdPVopLrwm4LiwmEaJAG0DiDs4yH57GcKVM9Hc2owy5OtVHKk3UK9gFbySUFb
-	LxoU+3e5QO8g9ce0RnCapnCEZ4i1YDRKptBqZWwWxGKTgzUYcslBnwtjY2ZBwTpFi1hCye3LmgD
-	spzztcGWApcVOl/OmSOzgRxd2CmQ3CCXlJEIYxGxAVJ7mZhbk+d1NHFC4hAQDswIhE94v//nxjm
-	SniCPAbpcjBth27CBw1H0uATb4kJkAijjqipQiTAzJ0r7gvNiv09eYbfsGm8aFESJU82DWYvhvb
-	XJDSLJ9tPOjbLhOBuPCCkR67R+00d3WKCa32HY3CAtqiXnqj3+TmjlhSA5Wso8cpsp9n+3d/QoE
-	LeEGNL7SR1Sb3rQg1fS5HmMtExUqCeU6SGqyDC1rrAdMTwgblh36CbCC49pRHxjMUD1BUuOEsvX
-	oebZSODQ+WEKlSxw==
-X-Received: by 2002:a05:600c:6098:b0:488:9fb7:376d with SMTP id 5b1f17b1804b1-4889fb73b1amr196429615e9.28.1775553978818;
-        Tue, 07 Apr 2026 02:26:18 -0700 (PDT)
-Received: from localhost ([85.163.81.98])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488a91686f9sm268832955e9.10.2026.04.07.02.26.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Apr 2026 02:26:18 -0700 (PDT)
-From: Jiri Pirko <jiri@resnulli.us>
-To: dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org,
-	iommu@lists.linux.dev,
-	linux-media@vger.kernel.org
-Cc: sumit.semwal@linaro.org,
-	benjamin.gaignard@collabora.com,
-	Brian.Starkey@arm.com,
-	jstultz@google.com,
-	tjmercier@google.com,
-	christian.koenig@amd.com,
-	m.szyprowski@samsung.com,
-	robin.murphy@arm.com,
-	jgg@ziepe.ca,
-	leon@kernel.org,
-	ptesarik@suse.com,
-	catalin.marinas@arm.com,
-	aneesh.kumar@kernel.org,
-	suzuki.poulose@arm.com,
-	steven.price@arm.com,
-	thomas.lendacky@amd.com,
-	john.allen@amd.com,
-	ashish.kalra@amd.com,
-	suravee.suthikulpanit@amd.com,
-	linux-coco@lists.linux.dev
-Subject: [PATCH v2] dma-buf: heaps: system: document system_cc_shared heap
-Date: Tue,  7 Apr 2026 11:26:17 +0200
-Message-ID: <20260407092617.635223-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.51.1
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="lNqnUbfJ"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CDF011BB0;
+	Tue,  7 Apr 2026 04:25:40 -0700 (PDT)
+Received: from [10.1.196.85] (e121345-lin.cambridge.arm.com [10.1.196.85])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 846883F7D8;
+	Tue,  7 Apr 2026 04:25:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1775561146; bh=FkONyWkAkz6WrhJw6afrxrztFOvZU3mchf+WabC4/Ag=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=lNqnUbfJgeBVinCZwGV/HeW4R34tvIWn1l3By+SL9cynEhaGUo7nUmW00kKz7dwE4
+	 V6TqIn9PghBw/vcBDqOH30VM0IsA2BYHb6T5dyJQZpJAr0jOCGqngOT0CLZmv8Jdus
+	 hcYg8GKdC2ktaClXl3bqb/lvdwsDlzd7+WjSBb0o=
+Message-ID: <1ad94dfb-2fab-41c8-b792-9274f213dfb2@arm.com>
+Date: Tue, 7 Apr 2026 12:25:38 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH] iommu: Default to lazy DMA mode on ARM64
+To: Nafees Ahmed Abdul <nafeabd@amazon.com>, joro@8bytes.org, will@kernel.org
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20260402195913.32084-1-nafeabd@amazon.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260402195913.32084-1-nafeabd@amazon.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Jiri Pirko <jiri@nvidia.com>
+On 02/04/2026 8:59 pm, Nafees Ahmed Abdul wrote:
+> ARM64 currently falls through to IOMMU_DEFAULT_DMA_STRICT, while
+> X86 defaults to IOMMU_DEFAULT_DMA_LAZY. On ARM64 bare-metal
+> systems with the ARM SMMU, strict mode causes synchronous TLBI
+> + CMD_SYNC on every DMA unmap, resulting in significant
+> throughput degradation for network-intensive workloads.
+> 
+> Benchmarked on an ARM64 bare-metal system (AWS m8g.metal-24xl)
+> running Debian 13 with kernel 6.12.74, using iperf3:
+> 
+>    STRICT (default): 14.9 Gbps
+>    LAZY:             39.8 Gbps
+> 
+> This is a 2.67x throughput improvement simply by switching the
+> IOMMU default domain mode.
+> 
+> Distributions that do not explicitly override this Kconfig
+> choice (e.g., Debian, SLES) silently get STRICT on ARM64,
+> causing this regression on bare-metal systems.
 
-Document the system_cc_shared dma-buf heap that was introduced
-recently. Describe its purpose, availability conditions and
-relation to confidential computing VMs.
+It is not a "regression", it has always been this way since the 
+beginning of IOMMU support on arm64. For many years, we didn't even have 
+such a thing as lazy mode.
 
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
-Reviewed-by: T.J.Mercier <tjmercier@google.com>
----
- Documentation/userspace-api/dma-buf-heaps.rst | 7 +++++++
- 1 file changed, 7 insertions(+)
+> Changing the
+> upstream default avoids the need for each distribution to
+> independently carry this override.
 
-diff --git a/Documentation/userspace-api/dma-buf-heaps.rst b/Documentation/userspace-api/dma-buf-heaps.rst
-index 05445c83b79a..f56b743cdb36 100644
---- a/Documentation/userspace-api/dma-buf-heaps.rst
-+++ b/Documentation/userspace-api/dma-buf-heaps.rst
-@@ -16,6 +16,13 @@ following heaps:
- 
-  - The ``system`` heap allocates virtually contiguous, cacheable, buffers.
- 
-+ - The ``system_cc_shared`` heap allocates virtually contiguous, cacheable,
-+   buffers using shared (decrypted) memory. It is only present on
-+   confidential computing (CoCo) VMs where memory encryption is active
-+   (e.g., AMD SEV, Intel TDX). The allocated pages have the encryption
-+   bit cleared, making them accessible for device DMA without TDISP
-+   support. On non-CoCo VM configurations, this heap is not registered.
-+
-  - The ``default_cma_region`` heap allocates physically contiguous,
-    cacheable, buffers. Only present if a CMA region is present. Such a
-    region is usually created either through the kernel commandline
--- 
-2.51.1
+...while equally *creating* that need for all the distros/users who do 
+value security/robustness above performance. Who's to say what matters 
+most? Besides, defconfig is never meant to be a distro config; distros 
+*should* maintain their own configs, and if they're not delivering the 
+options that the majority of their users want, that's between the 
+distros and their users.
+
+The numbers game goes both ways too - the sheer quantity of arm64 
+systems where strict vs. lazy makes no noticeable performance 
+difference, but does offer that small robustness benefit (i.e. 
+embedded/mobile) is many orders of magnitude more the number of arm64 
+systems capable of 50GbE. Even your own data are suggesting this is 
+actually a pretty niche case, if even 10GbE systems would still have 
+plenty of headroom to keep up in strict mode - if anything that's 
+actually pretty impressive!
+
+> Add ARM64 to the LAZY default to align with X86 behavior.
+
+But the other side of that is that the x86 (and S390) behaviour is a 
+20-year-old legacy which arguably only looks more and more anachronistic 
+in today's post-Spectre/etc. security-conscious world. Wouldn't an even 
+better alignment argument be to start cleaning up such legacy, rather 
+than spread it further onto more modern architectures which never even 
+had it?
+
+Thanks,
+Robin.
+
+> Signed-off-by: Nafees Ahmed Abdul <nafeabd@amazon.com>
+> ---
+>   drivers/iommu/Kconfig | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index f86262b11..2822aba75 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -96,7 +96,7 @@ config IOMMU_DEBUGFS
+>   choice
+>   	prompt "IOMMU default domain type"
+>   	depends on IOMMU_API
+> -	default IOMMU_DEFAULT_DMA_LAZY if X86 || S390
+> +	default IOMMU_DEFAULT_DMA_LAZY if X86 || S390 || ARM64
+>   	default IOMMU_DEFAULT_DMA_STRICT
+>   	help
+>   	  Choose the type of IOMMU domain used to manage DMA API usage by
 
