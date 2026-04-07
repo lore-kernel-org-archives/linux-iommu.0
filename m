@@ -1,67 +1,67 @@
 Received: from mail-dl1-f74.google.com (mail-dl1-f74.google.com [74.125.82.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D02138A715
-	for <iommu@lists.linux.dev>; Tue,  7 Apr 2026 07:01:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA7131C3BF7
+	for <iommu@lists.linux.dev>; Tue,  7 Apr 2026 07:20:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775545311; cv=none; b=Unrq7RH0P1xlf5Odyz4gh8tmKNI/g7iNKdFODZ6c9qkpWKLPlBKFWsJQJWToWHmzgn2g7Eg7bqeDtUihxqQFDcAL6c8wgYgvHOlmAXC1UXX0qPgHB4PL7NLkRGLTROlo2jJDmBDuSEZVPix1lVQnvPZA3SrJPSiSidP+SV8J6pY=
+	t=1775546405; cv=none; b=eXDoNZFQ4QjJ5AIuwPBV5V9EQlu6tn9NWzEVas6Hnwi8QFEAcahSqs9S2hmWrwsHnhjpeBQf/vs2+cYeVxQZTHtn3mWG9lyeHkGZRsAqk8uHkgxSYiuGguZxZ6TsHGQ/ut7Ou8Hk9vj1tH4wdU+i/gxnYZF/jrc/T/Udi0IRhIg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775545311; c=relaxed/simple;
-	bh=LgMDXZ4GK4gUbkGIBcd9NILffyv+J3lpYgdlg9rdSws=;
+	s=arc-20240116; t=1775546405; c=relaxed/simple;
+	bh=VGXIjtQ+zcgpDmjQnxagz2doQwln72F27aRoSrmUNjQ=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=NrpFX0E1gP7HDHHMxxSj7Ck71wRZn1jyUxozckQkK9/e5dLdApWjn+wpe3gkDjz7cc/vbh6Z3USOGXmpeRjSyjD+aHjYFXQAoy6GnI6mT8p31jfPRy+XrGDpePA8I2xfpHcWgzqHmlGrTh9rXXDlBEWJje7FYgjNpr4L7sYwkfc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=X0+71yqq; arc=none smtp.client-ip=74.125.82.74
+	 To:Cc:Content-Type; b=r+WNHv+Sd2m8z/nDJGKVd/PXxMczdyWgpRSIz28c4/tnbQV6A+4HCWGqWiNUUUXIEi9DBKAu6c8/lgObjgWiFFz9LNXiM/pXnX6cYI77Or/qIX+Fm0TjdPqvwKF2bVFrcKefI1o7e2yUXHtuzte+MPx+yYjJgkqn1bqVSdNaams=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=lUYgV56S; arc=none smtp.client-ip=74.125.82.74
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="X0+71yqq"
-Received: by mail-dl1-f74.google.com with SMTP id a92af1059eb24-12bf9974587so21212465c88.0
-        for <iommu@lists.linux.dev>; Tue, 07 Apr 2026 00:01:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="lUYgV56S"
+Received: by mail-dl1-f74.google.com with SMTP id a92af1059eb24-1270dcd11c1so8072056c88.0
+        for <iommu@lists.linux.dev>; Tue, 07 Apr 2026 00:20:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1775545309; x=1776150109; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1775546404; x=1776151204; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:from:subject:message-id:references
          :mime-version:in-reply-to:date:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=hUkEmaMr7BpHU4t93vCaBp7W3akZnYAFHA0KA5khyIM=;
-        b=X0+71yqq2F7zOjyhe5cZFQFgPKx+ne31ENsEu9YCXqdvOQ16Ko3r0M3+Tw2ztB9MwC
-         uoO33rZKbbmnK3zfxQH/amsziQSX4iwCEcTr46kao/E+v/i2FbMoW+3tTvgmzoEhoqZv
-         QULvogLwXaSz6HR7MLk2j9XgSs1BzF3Yy6ULypuoILOCA7v+CgLiHDNJDJw07e+DdRYh
-         PXL0gUFOllUQMaFPJqWXhSfmBd8pD/Il4J60LIqoYoc7bSjmO/5itoQjnnPfsctJSitU
-         TFnDAWdWslnEUSXBnpO+dkGBmfTg1wwnnYXErSCW7sGwGjPeZLVkmUaXiznZse/cr5co
-         H1iQ==
+        bh=VGXIjtQ+zcgpDmjQnxagz2doQwln72F27aRoSrmUNjQ=;
+        b=lUYgV56SmtKwvkbXzc94Ynp5jrNKaDzHTCEgC21P7b2mvI7MbXC4GKc/ZlpSu21DKt
+         YSFfpuj7eNRUF1W2p3lCkCyNJwngdbnxYgPM/EWm2tPxo3bG9kI8rTWW0govxfp3vPkT
+         +ymZSSZlRTfHy1tArX/HrsPximj91dKGWxAXf7avziF4qneBkTKLAfjHkNYWTKj2tOBX
+         FxgFX0amS7rFQX8Y3U3IF6GEOa+ixDluJF1/gQZ+Kwf38362OrlNmQRSLWj8EgFhNCsV
+         eabXcbdJUaG/JCAbOdlpicnBpD4m9Y4hXlQCgIEsga4u40oN8A7NPBZZK0HaD3YhhbTK
+         Rgsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775545309; x=1776150109;
+        d=1e100.net; s=20251104; t=1775546404; x=1776151204;
         h=content-transfer-encoding:cc:to:from:subject:message-id:references
          :mime-version:in-reply-to:date:x-gm-message-state:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=hUkEmaMr7BpHU4t93vCaBp7W3akZnYAFHA0KA5khyIM=;
-        b=N5Fxt4+dOLpPrx6NkAuh5GqeOMPkIxXLYPi3G5uz3BVdN4smdsRDlkTqYwXYYU9X5P
-         IqLOe9Cvx6zewKfIjkzW/DkixJZk6dsyJJUjvQbLtvz4wAQAmuwyBXQ6mG/KhflJwTcB
-         0ofeo906zhunwX7Z/KehwCJzKrPKDhaBecB6zaNXNKtztDK8gvClnqQfaz2dokStM0A9
-         2HvgF2s6/TqzrhRoPXYSrmtfSfv2mh49sATmfXahrbn1SczdxS5IYpf8gFLmlGv9RIHw
-         gr+pqVjPsD04cMRO9pTrPORgKlk1NWbKlzZb3XGxAXZVQ7bPW6VXY+XgBlZdoaRceR48
-         SNIA==
-X-Forwarded-Encrypted: i=1; AJvYcCXEG0c0f5Crx+WeWnCdem8XOYf044/NjvfmsXNuT1QdY/N2EH6JAYLwS/AvQl2T3rSzQ7yYpg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwgHjrUdcSc+w/vOKlLUvc/2DHk81gg8Q5rFhKA/pDIo7hijne6
-	1q2nNVXbdcLvzTvJK9y6OJu79gyp5KZvMPeKAAICjajt2CPDTYHEh7XdKuYAc2yK4uDn2m0YSq0
-	nBA==
-X-Received: from dlbtp9.prod.google.com ([2002:a05:7022:3b89:b0:128:ee08:8c14])
- (user=wnliu job=prod-delivery.src-stubby-dispatcher) by 2002:a05:7022:ec17:b0:12b:ebb8:e421
- with SMTP id a92af1059eb24-12bfb777fc2mr7760400c88.35.1775545308935; Tue, 07
- Apr 2026 00:01:48 -0700 (PDT)
-Date: Tue,  7 Apr 2026 07:01:46 +0000
-In-Reply-To: <20260330084206.9251-6-suravee.suthikulpanit@amd.com>
+        bh=VGXIjtQ+zcgpDmjQnxagz2doQwln72F27aRoSrmUNjQ=;
+        b=tXsY5qxyIY68Naku/Kb8h5u1m4CjwMN5kuIBZiiYk5LfEdxDSziqo70BdDTmc4xbTW
+         8RdkD0OEGv6vV4VI08N6Wred5S3bEU+7EVslLDaDxUsg+clwKXc2wR0IrU9WMse7RC2t
+         6XnZX5NVh3bY7zAwyIFDLyhb8qOk6HaTU2WjBJvOZ3fFU/4KG8RtCFx3ieESIrVdvnuC
+         r6htHSXXPtwJ+R7U/MO/CmtJX2A9uZHo3QeNrxJDvEaXb2BXwyhzVzwZTH3wKTzA7/0t
+         SBTp7RUXzPfAYwCrOFds6ZqS/o05YZ2WxaM2X3OCx4LMprLCe78I04kp47tSPMAwkU4p
+         3QnQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXXiUpHvejYYHzmFCDRIwhH4tbaWIV+R9ObY2Fss5jO7draKTqsa5Lvaauo3qWdIKYv+Vz3aA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwpxWieGh1g0j058FkcYWwjbXqdR3Jcb3tKvimqajXHn1mX3TQC
+	TipdKJLSZSz/OYxM3+b73MtPwygCXulpGy4b1+Id6eWtyrwLvp3tCiZwR8YNQt1XdfA7ezkOERS
+	2yA==
+X-Received: from dlbvs3.prod.google.com ([2002:a05:7022:3f03:b0:12a:7a40:ea24])
+ (user=wnliu job=prod-delivery.src-stubby-dispatcher) by 2002:a05:7022:6997:b0:128:cf75:42a3
+ with SMTP id a92af1059eb24-12bfb745b32mr7158994c88.21.1775546403614; Tue, 07
+ Apr 2026 00:20:03 -0700 (PDT)
+Date: Tue,  7 Apr 2026 07:20:01 +0000
+In-Reply-To: <20260330084206.9251-9-suravee.suthikulpanit@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
-References: <20260330084206.9251-6-suravee.suthikulpanit@amd.com>
+References: <20260330084206.9251-9-suravee.suthikulpanit@amd.com>
 X-Mailer: git-send-email 2.53.0.1213.gd9a14994de-goog
-Message-ID: <20260407070147.623349-1-wnliu@google.com>
-Subject: Re: [PATCH 05/22] iommu/amd: Introduce vIOMMU Guest-ID (GID)
+Message-ID: <20260407072001.638812-1-wnliu@google.com>
+Subject: Re: [PATCH 8/22] iommu/amd: Introduce Reset vMMIO Command
 From: Weinan Liu <wnliu@google.com>
 To: suravee.suthikulpanit@amd.com
 Cc: chriscli@google.com, dantuluris@google.com, iommu@lists.linux.dev, 
@@ -74,21 +74,9 @@ Content-Transfer-Encoding: quoted-printable
 
 On Mon, Mar 30, 2026 at 1:43=E2=80=AFAM Suravee Suthikulpanit <suravee.suth=
 ikulpanit@amd.com> wrote:
-
-> diff --git a/drivers/iommu/amd/iommufd.c b/drivers/iommu/amd/iommufd.c
-> index e7ffa7e8915b..6fba5d9b1310 100644
-> --- a/drivers/iommu/amd/iommufd.c
-> +++ b/drivers/iommu/amd/iommufd.c
-> @@ -43,13 +43,35 @@ size_t amd_iommufd_get_viommu_size(struct device *dev=
-, enum iommu_viommu_type vi
-> =C2=A0int amd_iommufd_viommu_init(struct iommufd_viommu *viommu, struct i=
-ommu_domain *parent,
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 const struct iommu_user_data *user_data)
-> =C2=A0{
-> + =C2=A0 =C2=A0 =C2=A0 aviommu->gid =3D amd_iommu_gid_alloc();
-Since the gid is defined as a u16, the return value from amd_iommu_gid_allo=
-c()  will cast any negative
-error  codes to a large positive value.
-> + =C2=A0 =C2=A0 =C2=A0 if (aviommu->gid < 0)
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return aviommu->gid;
+>
+> Introduce new IOMMU commands for vIOMMU to reset
+> virtualized MMIO registers of a particular guest.
+>
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Reviewed-by: Weinan Liu <wnliu@google.com>
