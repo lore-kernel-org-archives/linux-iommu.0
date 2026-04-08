@@ -1,54 +1,54 @@
-Received: from mail-wm1-f73.google.com (mail-wm1-f73.google.com [209.85.128.73])
+Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9D7D3815E3
-	for <iommu@lists.linux.dev>; Wed,  8 Apr 2026 19:47:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1854A3815F2
+	for <iommu@lists.linux.dev>; Wed,  8 Apr 2026 19:48:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775677682; cv=none; b=jE2MzctYX7fIJeZt/Z8/M2QEfv4b+RRYp0J5AcFHRHiek8J4S8qIchaEm3Gp77ksvo/a8FNrwNRVBikAkZbi3TuYvc1pRlW3JeUocyIX1emphP+GUhOrFc5b1/9im7rQVQCDkB8clC6gI/E3rJrIxC8HSzVNLZ6vaeIvNhUzsz4=
+	t=1775677685; cv=none; b=tt1VEGeM9bYKZzeFAv8Dozzo+XoZYJ7hlU1XOVacS6djPRyDOO2IPJ6hZIBqSMiF6/2X6B4Ax6DdwX5IGLEf4aZuTvVagLJDh0o7Jd+kyfswJrqMkAEbgGcXr9UDD7w+q6hKloAO1rjCJZkhlez37GYABFEYshF8Sizm0A286pc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775677682; c=relaxed/simple;
-	bh=ljnywAXYuD9yVasMcE6vMsdXOxIf5S7KW0HfwwIoGA4=;
+	s=arc-20240116; t=1775677685; c=relaxed/simple;
+	bh=c5G7I4UDifLrETkTh7TKGEdYvvLFqIwAGOJBOKM1n6c=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=bsozyqTfMTVjIO2p5nh2MOsmNjVP5zfpBagTeEd2HfEVcLHNWv3xivsWdequ18/0dmvIFHvIi5VC7RmAaGnMYDdF1/3t+zVFdrdeBCK76LDNoMgzOJfQ4BehaVsD1nfkW0AdHSGNmZS+i7PlS/RiIna8cAqXXsoHYVF0sLRt+Kg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=TDo92xuw; arc=none smtp.client-ip=209.85.128.73
+	 To:Cc:Content-Type; b=ZOizB5bl5Wy+y1p/GwohNTHZeaIxGyeF99s6ea+1msVsnVX/QlJJX+FDxahLETS5x+UwlDs/X7Ep2l6OCZKDIXV6fMAWdu61dXpmPjQuZoZ9B2MEh6MwR5+uuQQ+e5MnIb7uGln4UFL59Y3Juicx8RhcXITf8nxIu1UuYgwjMyk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=IwfcCXgv; arc=none smtp.client-ip=209.85.128.74
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="TDo92xuw"
-Received: by mail-wm1-f73.google.com with SMTP id 5b1f17b1804b1-486fa07f2bbso343495e9.2
-        for <iommu@lists.linux.dev>; Wed, 08 Apr 2026 12:47:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="IwfcCXgv"
+Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-48887ff8b73so454475e9.2
+        for <iommu@lists.linux.dev>; Wed, 08 Apr 2026 12:48:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1775677678; x=1776282478; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1775677679; x=1776282479; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=0HFQ1jpsIj20Rmmvy6mz/JJ67LDNNDb4EoQDQuxQbic=;
-        b=TDo92xuwa/HT84o4i6vBDKIz1xMx4RmDCLVlrtuatBoKfuvRZjnsBgo8J6lBvxcxXU
-         4y2LeHyI8xng4Mw5R0ZEJVYbrowf4asBqRTS+jX9e0FH6bxNE1Dk1mZJhAmHVCUvnksS
-         bnmxzFXdgU2TZCb0SZBGiw91FS1p58JBuZfjXFQBkFAyDdzFNs2HhpXKvI05CKqGUlTZ
-         ZLcHLZamS4+XTSuy9HZ2LDa7MrBxyOpYnsYttpwX5k6tKEBGdQJp4LF5+E+OoX6pg/62
-         ITxtkdYX4nwgONYr0BCbMAMoR+YbzjzA5QlE+ByNXZqmIDTssrvoTrABEaqC1q7tk130
-         fXuA==
+        bh=I8Ii68uqF49RZqdN3es99368zeVz3d5ax63VAcg1ZH4=;
+        b=IwfcCXgvQi9F3DM0HcWqMMvLO3mJdN12PDlTquco6qn8NJMhiKmr72S5MVJUUjshFE
+         dpPUYTf81s6YA++d6B6sxA5iNtVmHd1vEqBOl2RPZdNdNvmQIjELjd5jFR/yxa9E12a2
+         XFU2bFYdLPAhoFdbwzM/LFPUOqvAh2AJxhzKUBmDZeu87X0F7VCybMaFliIudoXsQJNh
+         aqYnpvg0jDRNE2SGi9UE8ng8ZGTFz2XIbZ10qfpJ20UErbZZWYXFCunmHBD8Dv0maWii
+         PD6DLMwD251PZZ9H7KRJD08TBTtK3I2RbPyeuBLMTHy4G45cmhtkvGAoAloehsaG34XH
+         oX7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775677678; x=1776282478;
+        d=1e100.net; s=20251104; t=1775677679; x=1776282479;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0HFQ1jpsIj20Rmmvy6mz/JJ67LDNNDb4EoQDQuxQbic=;
-        b=YpbpChoLa7rNQQojUShvpRZcbOe4GGogex6w+39LlNatZNKFCq+VV0fOLIRWY8JKFv
-         3GIi2cun5HOuzoNXvtj3CFIydfVLdmRZw3d2zJCFU3gXRRQBTSLlRoDPgwSErmKcWv7L
-         vKACRfhb8Jbf7D6rzJnDwUei3YYvTrAFp8ST1z4lslGQSBf03yRuBnUqb2BwsDSaswkO
-         BH6fZYRrb0huNbZWFUOF4Remvk0SFWApxfer5+l8EEDE+oijgOkZw4QnEJCREasYCsPC
-         lRkc2wWh3XnSm4jEa7Jhr36iWfRtAUfD2TcAWIfeRHrpmF4GDEh+HlnxjiUfj55IEWh3
-         tiMQ==
-X-Gm-Message-State: AOJu0Yz36Ky/9wb7Mey2uazVeVC4SXbiwnqLjfYiO5HwskgFCyIwOs6w
-	CV11LX/ftWGnyL3mmTRhGf0acYja23bI2GrR2SQyOTH9/ZB/8VkR/smoVGeDjoutulQ+x55ePlh
-	UtWHi0Qd7nOXcxOcjytrltMzPbJJIZCJBTfwtVZqwYz+Ejbglpsr3di85b8QWLwDPvkW2LqiyLy
-	fJBQJv+Y2Y6XmTyew7cfOOCJlxz9aZm3ScdwTkLTaz9bXoAw==
-X-Received: from wrbgl27-n2.prod.google.com ([2002:a05:6000:299b:20b0:43c:f8a2:96a5])
+        bh=I8Ii68uqF49RZqdN3es99368zeVz3d5ax63VAcg1ZH4=;
+        b=SLoRdG3Z0WkoF06SOrO4dQt+Ezq0mLaNDZ0xijIn+Q6GeC3RZBf5xfpc9Q4Q4HFpXZ
+         FSdS7UTXsk7aPiVRn8aKwf5tG3abWBlWOEsGnqCxXEQtdPvXRUsmMMtFeNQ1wfOmldL2
+         s6iHQb7pzXluwqJRS5uFBHrR6Vhw/L9mgkkJSPQKiYm/xbVgU3XonksKLXbubDIKp/fG
+         GtJDOHLMDDZxHmFrAe7RYMyVnMUb5BjeErvJIX0tnH9SXXywY6+Jd6BZUTjN2tGvJFDU
+         aYD3FCXJHIo1UI22Oo61il3+O6B3dLSxcfKS3i7Uk6KgqWk4xdPAfenuLsKGWC7hzO5A
+         D5Sg==
+X-Gm-Message-State: AOJu0YzkfVoLsupvC3Ms+SdzmIrbH5ESZhxNqf9Qkf2qi9yUego/DFxw
+	jfAfJnB2mFUgXHqjMqCr+g/zqmb5kSj8LraRmbAnCsTqmbq6M4vr1O5TgDB2rFBe+e9SZ3WgVZ0
+	tJEFSCZbVxUgpkiNcfsbU6KcLAKnuZ7xvJ1OIVYTtCdwgKQhq3JeIWHoHF4/gEsqMQoQr1hMcVm
+	I5hHIiXBdCFg93Q12i2FRHx70agRaTCA5e7JAR6ykOpSb14w==
+X-Received: from wmdd5.prod.google.com ([2002:a05:600c:a205:b0:488:9a47:9aa0])
  (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:600c:8710:b0:488:c40b:c8a4 with SMTP id 5b1f17b1804b1-488ccf3a129mr15045395e9.1.1775677678033;
- Wed, 08 Apr 2026 12:47:58 -0700 (PDT)
-Date: Wed,  8 Apr 2026 19:47:41 +0000
+ 2002:a05:600c:3549:b0:485:41c4:e2e4 with SMTP id 5b1f17b1804b1-488997d2ccemr289069375e9.23.1775677679080;
+ Wed, 08 Apr 2026 12:47:59 -0700 (PDT)
+Date: Wed,  8 Apr 2026 19:47:42 +0000
 In-Reply-To: <20260408194750.2280873-1-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -58,8 +58,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20260408194750.2280873-1-smostafa@google.com>
 X-Mailer: git-send-email 2.53.0.1213.gd9a14994de-goog
-Message-ID: <20260408194750.2280873-5-smostafa@google.com>
-Subject: [RFC PATCH v3 4/5] dma-mapping: Encapsulate memory state during allocation
+Message-ID: <20260408194750.2280873-6-smostafa@google.com>
+Subject: [RFC PATCH v3 5/5] dma-mapping: Fix memory decryption issues
 From: Mostafa Saleh <smostafa@google.com>
 To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
 Cc: robin.murphy@arm.com, m.szyprowski@samsung.com, will@kernel.org, 
@@ -68,155 +68,177 @@ Cc: robin.murphy@arm.com, m.szyprowski@samsung.com, will@kernel.org,
 	Mostafa Saleh <smostafa@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Introduce a new dma-direct internal type dma_page which is
-"struct page" and a bit indicate whether the memory has been decrypted
-or not.
-This is useful to pass such information encapsulated through
-allocation functions, which is currently set from swiotlb_alloc().
+Fix 2 existing issues:
+1) In case a device have a restricted DMA pool, memory will be
+decrypted (which is now returned in the state from swiotlb_alloc().
 
-No functional changes.
+Later the main function  will attempt to decrypt the memory if
+force_dma_unencrypted() is true.
 
+Which results in the memory being decrypted twice.
+Change that to only encrypt/decrypt memory that is not already
+decrypted as indicated in the new dma_page struct.
+
+2) Using phys_to_dma_unencrypted() is not enlighted about already
+decrypted memory and will use the wrong functions for that.
+
+Fixes: f4111e39a52a ("swiotlb: Add restricted DMA alloc/free support")
 Signed-off-by: Mostafa Saleh <smostafa@google.com>
 ---
- kernel/dma/direct.c | 58 +++++++++++++++++++++++++++++++++++----------
- 1 file changed, 46 insertions(+), 12 deletions(-)
+ kernel/dma/direct.c | 41 ++++++++++++++++++++++++++++-------------
+ 1 file changed, 28 insertions(+), 13 deletions(-)
 
 diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index de63e0449700..204bc566480c 100644
+index 204bc566480c..26611d5e5757 100644
 --- a/kernel/dma/direct.c
 +++ b/kernel/dma/direct.c
-@@ -16,6 +16,33 @@
- #include <linux/pci-p2pdma.h>
- #include "direct.h"
+@@ -43,6 +43,11 @@ static inline struct page *dma_page_to_page(struct dma_page dma_page)
+ 	return (struct page *)(dma_page.val & ~DMA_PAGE_DECRYPTED_FLAG);
+ }
  
-+/*
-+ * Represent DMA allocation and 1 bit flag for it's state
-+ */
-+struct dma_page {
-+	unsigned long val;
-+};
-+
-+#define DMA_PAGE_DECRYPTED_FLAG		BIT(0)
-+
-+#define DMA_PAGE_NULL ((struct dma_page){ .val = 0 })
-+
-+static inline struct dma_page page_to_dma_page(struct page *page, bool decrypted)
++static inline bool is_dma_page_decrypted(struct dma_page dma_page)
 +{
-+	struct dma_page dma_page;
-+
-+	dma_page.val = (unsigned long)page;
-+	if (decrypted)
-+		dma_page.val |= DMA_PAGE_DECRYPTED_FLAG;
-+
-+	return dma_page;
-+}
-+
-+static inline struct page *dma_page_to_page(struct dma_page dma_page)
-+{
-+	return (struct page *)(dma_page.val & ~DMA_PAGE_DECRYPTED_FLAG);
++	return dma_page.val & DMA_PAGE_DECRYPTED_FLAG;
 +}
 +
  /*
   * Most architectures use ZONE_DMA for the first 16 Megabytes, but some use
   * it for entirely different regions. In that case the arch code needs to
-@@ -103,20 +130,21 @@ static void __dma_direct_free_pages(struct device *dev, struct page *page,
+@@ -51,9 +56,9 @@ static inline struct page *dma_page_to_page(struct dma_page dma_page)
+ u64 zone_dma_limit __ro_after_init = DMA_BIT_MASK(24);
+ 
+ static inline dma_addr_t phys_to_dma_direct(struct device *dev,
+-		phys_addr_t phys)
++					    phys_addr_t phys, bool already_decrypted)
+ {
+-	if (force_dma_unencrypted(dev))
++	if (already_decrypted || force_dma_unencrypted(dev))
+ 		return phys_to_dma_unencrypted(dev, phys);
+ 	return phys_to_dma(dev, phys);
+ }
+@@ -67,7 +72,7 @@ static inline struct page *dma_direct_to_page(struct device *dev,
+ u64 dma_direct_get_required_mask(struct device *dev)
+ {
+ 	phys_addr_t phys = (phys_addr_t)(max_pfn - 1) << PAGE_SHIFT;
+-	u64 max_dma = phys_to_dma_direct(dev, phys);
++	u64 max_dma = phys_to_dma_direct(dev, phys, false);
+ 
+ 	return (1ULL << (fls64(max_dma) - 1)) * 2 - 1;
+ }
+@@ -96,7 +101,7 @@ static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 *phys_limit)
+ 
+ bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
+ {
+-	dma_addr_t dma_addr = phys_to_dma_direct(dev, phys);
++	dma_addr_t dma_addr = phys_to_dma_direct(dev, phys, false);
+ 
+ 	if (dma_addr == DMA_MAPPING_ERROR)
+ 		return false;
+@@ -122,11 +127,14 @@ static int dma_set_encrypted(struct device *dev, void *vaddr, size_t size)
+ static void __dma_direct_free_pages(struct device *dev, struct page *page,
+ 				    size_t size, bool encrypt)
+ {
+-	if (encrypt && dma_set_encrypted(dev, page_address(page), size))
++	bool keep_encrypted = swiotlb_is_decrypted(dev, page, size);
++
++	if (!keep_encrypted && encrypt && dma_set_encrypted(dev, page_address(page), size))
+ 		return;
+ 
+ 	if (swiotlb_free(dev, page, size))
+ 		return;
++
  	dma_free_contiguous(dev, page, size);
  }
  
--static struct page *dma_direct_alloc_swiotlb(struct device *dev, size_t size)
-+static struct dma_page dma_direct_alloc_swiotlb(struct device *dev, size_t size)
- {
--	struct page *page = swiotlb_alloc(dev, size, NULL);
-+	enum swiotlb_page_state state;
-+	struct page *page = swiotlb_alloc(dev, size, &state);
- 
- 	if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
- 		swiotlb_free(dev, page, size);
--		return NULL;
-+		return DMA_PAGE_NULL;
- 	}
- 
--	return page;
-+	return page_to_dma_page(page, state == SWIOTLB_PAGE_DECRYPTED);
- }
- 
--static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
--		gfp_t gfp, bool allow_highmem)
-+static struct dma_page __dma_direct_alloc_pages(struct device *dev, size_t size,
-+						gfp_t gfp, bool allow_highmem)
- {
- 	int node = dev_to_node(dev);
- 	struct page *page;
-@@ -132,7 +160,7 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 	if (page) {
- 		if (dma_coherent_ok(dev, page_to_phys(page), size) &&
- 		    (allow_highmem || !PageHighMem(page)))
--			return page;
-+			return page_to_dma_page(page, false);
- 
- 		dma_free_contiguous(dev, page, size);
- 	}
-@@ -148,10 +176,10 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 		else if (IS_ENABLED(CONFIG_ZONE_DMA) && !(gfp & GFP_DMA))
- 			gfp = (gfp & ~GFP_DMA32) | GFP_DMA;
- 		else
--			return NULL;
-+			return DMA_PAGE_NULL;
- 	}
- 
--	return page;
-+	return page_to_dma_page(page, false);
- }
- 
- /*
-@@ -184,9 +212,11 @@ static void *dma_direct_alloc_from_pool(struct device *dev, size_t size,
- static void *dma_direct_alloc_no_mapping(struct device *dev, size_t size,
- 		dma_addr_t *dma_handle, gfp_t gfp)
- {
-+	struct dma_page dma_page;
- 	struct page *page;
- 
--	page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO, true);
-+	dma_page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO, true);
-+	page = dma_page_to_page(dma_page);
+@@ -205,7 +213,7 @@ static void *dma_direct_alloc_from_pool(struct device *dev, size_t size,
+ 	page = dma_alloc_from_pool(dev, size, &ret, gfp, dma_coherent_ok);
  	if (!page)
  		return NULL;
+-	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
++	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page), false);
+ 	return ret;
+ }
  
-@@ -203,6 +233,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
- 		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
+@@ -225,7 +233,8 @@ static void *dma_direct_alloc_no_mapping(struct device *dev, size_t size,
+ 		arch_dma_prep_coherent(page, size);
+ 
+ 	/* return the page pointer as the opaque cookie */
+-	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
++	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page),
++					 is_dma_page_decrypted(dma_page));
+ 	return page;
+ }
+ 
+@@ -234,6 +243,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
  {
  	bool remap = false, set_uncached = false, decrypt = force_dma_unencrypted(dev);
-+	struct dma_page dma_page;
+ 	struct dma_page dma_page;
++	bool already_decrypted;
  	struct page *page;
  	void *ret;
  
-@@ -253,7 +284,8 @@ void *dma_direct_alloc(struct device *dev, size_t size,
- 	 * we always manually zero the memory once we are done, and only allow
- 	 * high mem if pages doesn't need decryption.
- 	 */
--	page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO, !decrypt);
-+	dma_page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO, !decrypt);
-+	page = dma_page_to_page(dma_page);
+@@ -289,6 +299,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
  	if (!page)
  		return NULL;
  
-@@ -352,13 +384,15 @@ void dma_direct_free(struct device *dev, size_t size,
- struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
++	already_decrypted = is_dma_page_decrypted(dma_page);
+ 	/*
+ 	 * dma_alloc_contiguous can return highmem pages depending on a
+ 	 * combination the cma= arguments and per-arch setup.  These need to be
+@@ -299,12 +310,13 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 		set_uncached = false;
+ 	}
+ 
+-	if (decrypt && dma_set_decrypted(dev, page_address(page), size))
++	if (!already_decrypted && decrypt &&
++	    dma_set_decrypted(dev, page_address(page), size))
+ 		goto out_leak_pages;
+ 	if (remap) {
+ 		pgprot_t prot = dma_pgprot(dev, PAGE_KERNEL, attrs);
+ 
+-		if (decrypt)
++		if (decrypt || already_decrypted)
+ 			prot = pgprot_decrypted(prot);
+ 
+ 		/* remove any dirty cache lines on the kernel alias */
+@@ -328,11 +340,11 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 			goto out_encrypt_pages;
+ 	}
+ 
+-	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
++	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page), already_decrypted);
+ 	return ret;
+ 
+ out_encrypt_pages:
+-	__dma_direct_free_pages(dev, page, size, decrypt);
++	__dma_direct_free_pages(dev, page, size, decrypt && !already_decrypted);
+ 	return NULL;
+ out_leak_pages:
+ 	return NULL;
+@@ -385,6 +397,7 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
  		dma_addr_t *dma_handle, enum dma_data_direction dir, gfp_t gfp)
  {
-+	struct dma_page dma_page;
+ 	struct dma_page dma_page;
++	bool already_decrypted;
  	struct page *page;
  	void *ret;
  
- 	if (force_dma_unencrypted(dev) && dma_direct_use_pool(dev, gfp))
- 		return dma_direct_alloc_from_pool(dev, size, dma_handle, gfp);
- 
--	page = __dma_direct_alloc_pages(dev, size, gfp, false);
-+	dma_page = __dma_direct_alloc_pages(dev, size, gfp, false);
-+	page = dma_page_to_page(dma_page);
+@@ -396,11 +409,13 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
  	if (!page)
  		return NULL;
  
++	already_decrypted = is_dma_page_decrypted(dma_page);
+ 	ret = page_address(page);
+-	if (force_dma_unencrypted(dev) && dma_set_decrypted(dev, ret, size))
++	if (!already_decrypted && force_dma_unencrypted(dev) &&
++	    dma_set_decrypted(dev, ret, size))
+ 		goto out_leak_pages;
+ 	memset(ret, 0, size);
+-	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
++	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page), already_decrypted);
+ 	return page;
+ out_leak_pages:
+ 	return NULL;
 -- 
 2.53.0.1213.gd9a14994de-goog
 
