@@ -1,244 +1,175 @@
-Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [78.32.30.218])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1854A3815F2
-	for <iommu@lists.linux.dev>; Wed,  8 Apr 2026 19:48:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABA99376BDE
+	for <iommu@lists.linux.dev>; Wed,  8 Apr 2026 19:52:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.32.30.218
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775677685; cv=none; b=tt1VEGeM9bYKZzeFAv8Dozzo+XoZYJ7hlU1XOVacS6djPRyDOO2IPJ6hZIBqSMiF6/2X6B4Ax6DdwX5IGLEf4aZuTvVagLJDh0o7Jd+kyfswJrqMkAEbgGcXr9UDD7w+q6hKloAO1rjCJZkhlez37GYABFEYshF8Sizm0A286pc=
+	t=1775677962; cv=none; b=giUStSZQjfTCE0QXT2ndKVGYiTxBJj6Xs3Jh2wW5QmWsJ/FNrmuzExfc6rJ7KNPeDDeeHmiQlR/q1WgIo0UOguTRvg+szbFkDPFY+U5RHD/40+cUrMkgv4C54Qx6PC6h4AZH+Mm1EyrjqQ2gWmN784fFtxQOSKQYhXxM3+qR7X4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775677685; c=relaxed/simple;
-	bh=c5G7I4UDifLrETkTh7TKGEdYvvLFqIwAGOJBOKM1n6c=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=ZOizB5bl5Wy+y1p/GwohNTHZeaIxGyeF99s6ea+1msVsnVX/QlJJX+FDxahLETS5x+UwlDs/X7Ep2l6OCZKDIXV6fMAWdu61dXpmPjQuZoZ9B2MEh6MwR5+uuQQ+e5MnIb7uGln4UFL59Y3Juicx8RhcXITf8nxIu1UuYgwjMyk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=IwfcCXgv; arc=none smtp.client-ip=209.85.128.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
+	s=arc-20240116; t=1775677962; c=relaxed/simple;
+	bh=9mqb4UmtbkwxmOKBN82oecxyPuZOukRhEtgO/Lh2Y5g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=mH1WbG/0v6kA/ovolR9EvuTI4lRkOKDH7m8Ef2DSpS7h4mbKdI6IrMQfG11kdzG5rBZRXqj8aHkOtQlJq4zULT9Rd9TIPC9DSa6XPMyDoeYxcySwlm/QkvZ/wA9F38E6lnwlV/r0cB1nR5Ev6wzU203AZz8+PniUi2ncMwzZ034=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=armlinux.org.uk; spf=none smtp.mailfrom=armlinux.org.uk; dkim=pass (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b=HbONVFG6; arc=none smtp.client-ip=78.32.30.218
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=armlinux.org.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=armlinux.org.uk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="IwfcCXgv"
-Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-48887ff8b73so454475e9.2
-        for <iommu@lists.linux.dev>; Wed, 08 Apr 2026 12:48:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1775677679; x=1776282479; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=I8Ii68uqF49RZqdN3es99368zeVz3d5ax63VAcg1ZH4=;
-        b=IwfcCXgvQi9F3DM0HcWqMMvLO3mJdN12PDlTquco6qn8NJMhiKmr72S5MVJUUjshFE
-         dpPUYTf81s6YA++d6B6sxA5iNtVmHd1vEqBOl2RPZdNdNvmQIjELjd5jFR/yxa9E12a2
-         XFU2bFYdLPAhoFdbwzM/LFPUOqvAh2AJxhzKUBmDZeu87X0F7VCybMaFliIudoXsQJNh
-         aqYnpvg0jDRNE2SGi9UE8ng8ZGTFz2XIbZ10qfpJ20UErbZZWYXFCunmHBD8Dv0maWii
-         PD6DLMwD251PZZ9H7KRJD08TBTtK3I2RbPyeuBLMTHy4G45cmhtkvGAoAloehsaG34XH
-         oX7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775677679; x=1776282479;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=I8Ii68uqF49RZqdN3es99368zeVz3d5ax63VAcg1ZH4=;
-        b=SLoRdG3Z0WkoF06SOrO4dQt+Ezq0mLaNDZ0xijIn+Q6GeC3RZBf5xfpc9Q4Q4HFpXZ
-         FSdS7UTXsk7aPiVRn8aKwf5tG3abWBlWOEsGnqCxXEQtdPvXRUsmMMtFeNQ1wfOmldL2
-         s6iHQb7pzXluwqJRS5uFBHrR6Vhw/L9mgkkJSPQKiYm/xbVgU3XonksKLXbubDIKp/fG
-         GtJDOHLMDDZxHmFrAe7RYMyVnMUb5BjeErvJIX0tnH9SXXywY6+Jd6BZUTjN2tGvJFDU
-         aYD3FCXJHIo1UI22Oo61il3+O6B3dLSxcfKS3i7Uk6KgqWk4xdPAfenuLsKGWC7hzO5A
-         D5Sg==
-X-Gm-Message-State: AOJu0YzkfVoLsupvC3Ms+SdzmIrbH5ESZhxNqf9Qkf2qi9yUego/DFxw
-	jfAfJnB2mFUgXHqjMqCr+g/zqmb5kSj8LraRmbAnCsTqmbq6M4vr1O5TgDB2rFBe+e9SZ3WgVZ0
-	tJEFSCZbVxUgpkiNcfsbU6KcLAKnuZ7xvJ1OIVYTtCdwgKQhq3JeIWHoHF4/gEsqMQoQr1hMcVm
-	I5hHIiXBdCFg93Q12i2FRHx70agRaTCA5e7JAR6ykOpSb14w==
-X-Received: from wmdd5.prod.google.com ([2002:a05:600c:a205:b0:488:9a47:9aa0])
- (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:600c:3549:b0:485:41c4:e2e4 with SMTP id 5b1f17b1804b1-488997d2ccemr289069375e9.23.1775677679080;
- Wed, 08 Apr 2026 12:47:59 -0700 (PDT)
-Date: Wed,  8 Apr 2026 19:47:42 +0000
-In-Reply-To: <20260408194750.2280873-1-smostafa@google.com>
+	dkim=pass (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b="HbONVFG6"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=siH4dWUpa1bG3+ZxEQfIrP5wIqLbPeNz587asx6iEtM=; b=HbONVFG6DRgrSygkw950meAgfH
+	FLTLo7BxXvMxVYn1N3O9aPUiz3woyCupXzqlJQWKrMvzQLmTmBdI6FEku+H9GKYgnuT3VLPpCo9f+
+	6UDXAtge8QqbJsZepg2gz1o0r8ZWvTGoK5cuNO5b+6T7SGJHaGQ1dJN34J2aho4Bw1hyZTnIeNaC4
+	Poq5/q05n5j5v6Xxsm05218oh5ixACNea6eFktDlpcOoW2BJjsL2Wd0AjuMGd6wqOP2v1ksNxubFr
+	y9J3KuLltt3yfobkIvJuBFwB/mpTyjhKQzrWzf7bSihFoYIWM5TQZmnfgoZQm6ZHigZ83vVG3EqUO
+	pkUdBNyg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44908)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.98.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1wAYx1-000000002jw-3Ojf;
+	Wed, 08 Apr 2026 20:52:35 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.98.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1wAYwy-000000003cC-3cPP;
+	Wed, 08 Apr 2026 20:52:32 +0100
+Date: Wed, 8 Apr 2026 20:52:32 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-ext4@vger.kernel.org,
+	Linus Torvalds <torvalds@linux-foundation.org>,
+	dmaengine@vger.kernel.org,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Theodore Ts'o <tytso@mit.edu>,
+	Andreas Dilger <adilger.kernel@dilger.ca>,
+	Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>
+Subject: Re: BUG: net-next (7.0-rc6 based and later) fails to boot on Jetson
+ Xavier NX
+Message-ID: <adayAMR_dEA6W5vW@shell.armlinux.org.uk>
+References: <adZTGOjjJrVJOcT8@shell.armlinux.org.uk>
+ <adZfTi3R6jtsjXx-@shell.armlinux.org.uk>
+ <adZ9grUg71f518Fg@shell.armlinux.org.uk>
+ <adZ_ZmjcE8S22vR1@shell.armlinux.org.uk>
+ <3a1d0520-3402-47b2-9d7b-4e14a3cd07a4@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20260408194750.2280873-1-smostafa@google.com>
-X-Mailer: git-send-email 2.53.0.1213.gd9a14994de-goog
-Message-ID: <20260408194750.2280873-6-smostafa@google.com>
-Subject: [RFC PATCH v3 5/5] dma-mapping: Fix memory decryption issues
-From: Mostafa Saleh <smostafa@google.com>
-To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc: robin.murphy@arm.com, m.szyprowski@samsung.com, will@kernel.org, 
-	maz@kernel.org, suzuki.poulose@arm.com, catalin.marinas@arm.com, 
-	jiri@resnulli.us, jgg@ziepe.ca, aneesh.kumar@kernel.org, 
-	Mostafa Saleh <smostafa@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3a1d0520-3402-47b2-9d7b-4e14a3cd07a4@arm.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 
-Fix 2 existing issues:
-1) In case a device have a restricted DMA pool, memory will be
-decrypted (which is now returned in the state from swiotlb_alloc().
+On Wed, Apr 08, 2026 at 05:40:48PM +0100, Robin Murphy wrote:
+> On 2026-04-08 5:16 pm, Russell King (Oracle) wrote:
+> > On Wed, Apr 08, 2026 at 05:08:34PM +0100, Russell King (Oracle) wrote:
+> > > The rebase is still progressing, but it's landed on:
+> > > 
+> > > c7d812e33f3e dmaengine: xilinx: xilinx_dma: Fix unmasked residue subtraction
+> 
+> FWIW I don't see a Tegra having the Xilinx IP in it anyway - judging by the
+> DT it has their own tegra-gpcdma engine...
+> 
+> There's a fair chance this could be 90c5def10bea ("iommu: Do not call
+> drivers for empty gathers"), which JonH also reported causing boot issues on
+> Tegras - in short, SMMU TLB maintenance may not be completed properly which
+> could lead to recycled DMA addresses causing exactly this kind of random
+> memory corruption. I CC'd you on a patch:
+> 
+> https://lore.kernel.org/linux-iommu/20260408162846.GE3357077@nvidia.com/T/#t
 
-Later the main function  will attempt to decrypt the memory if
-force_dma_unencrypted() is true.
+Okay, bisect complete, and... no idea. It seems to suggest that 7.0-rc6
+is actually fine - it ended up blaming Linus' tagging of 7.0-rc6 which
+only changed the makefile. So, my assumption that because rc6 was merged
+into net-next last Thursday which fails, net-next+rc7 fails, rc7 also
+fails, that rc6 would also fail seems to be false.
 
-Which results in the memory being decrypted twice.
-Change that to only encrypt/decrypt memory that is not already
-decrypted as indicated in the new dma_page struct.
+Right, rc7 built with the same .config that rc6 was built with
+definitely fails, this time with:
 
-2) Using phys_to_dma_unencrypted() is not enlighted about already
-decrypted memory and will use the wrong functions for that.
+Root device found: PARTUUID=741c0777-391a-4bce-a222-455e180ece2a
+depmod: ERROR: could not open directory /lib/modules/7.0.0-rc7-bisect: No such file or directory
+depmod: FATAL: could not search modules: No such file or directory
+usb 2-3: new SuperSpeed Plus Gen 2x1 USB device number 2 using tegra-xusb
+hub 2-3:1.0: USB hub found
+hub 2-3:1.0: 4 ports detected
+usb 1-3: new full-speed USB device number 3 using tegra-xusb
+EXT4-fs (mmcblk0p1): VFS: Can't find ext4 filesystem
+mount: /mnt: wrong fs type, bad option, bad superblock on /dev/mmcblk0p1, missing codepage or helper program, or other error.
+mount: /mnt/: can't find PARTUUID=741c0777-391a-4bce-a222-455e180ece2a.
+get_swap_device: Bad swap file entry 1800c00008
+get_swap_device: Bad swap file entry 1800c00008
+get_swap_device: Bad swap file entry 1800c00008
 
-Fixes: f4111e39a52a ("swiotlb: Add restricted DMA alloc/free support")
-Signed-off-by: Mostafa Saleh <smostafa@google.com>
----
- kernel/dma/direct.c | 41 ++++++++++++++++++++++++++++-------------
- 1 file changed, 28 insertions(+), 13 deletions(-)
+So, it seems rc6 -> rc7 => fails
+net-next with rc5 -> net-next with rc6 => fails
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 204bc566480c..26611d5e5757 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -43,6 +43,11 @@ static inline struct page *dma_page_to_page(struct dma_page dma_page)
- 	return (struct page *)(dma_page.val & ~DMA_PAGE_DECRYPTED_FLAG);
- }
- 
-+static inline bool is_dma_page_decrypted(struct dma_page dma_page)
-+{
-+	return dma_page.val & DMA_PAGE_DECRYPTED_FLAG;
-+}
-+
- /*
-  * Most architectures use ZONE_DMA for the first 16 Megabytes, but some use
-  * it for entirely different regions. In that case the arch code needs to
-@@ -51,9 +56,9 @@ static inline struct page *dma_page_to_page(struct dma_page dma_page)
- u64 zone_dma_limit __ro_after_init = DMA_BIT_MASK(24);
- 
- static inline dma_addr_t phys_to_dma_direct(struct device *dev,
--		phys_addr_t phys)
-+					    phys_addr_t phys, bool already_decrypted)
- {
--	if (force_dma_unencrypted(dev))
-+	if (already_decrypted || force_dma_unencrypted(dev))
- 		return phys_to_dma_unencrypted(dev, phys);
- 	return phys_to_dma(dev, phys);
- }
-@@ -67,7 +72,7 @@ static inline struct page *dma_direct_to_page(struct device *dev,
- u64 dma_direct_get_required_mask(struct device *dev)
- {
- 	phys_addr_t phys = (phys_addr_t)(max_pfn - 1) << PAGE_SHIFT;
--	u64 max_dma = phys_to_dma_direct(dev, phys);
-+	u64 max_dma = phys_to_dma_direct(dev, phys, false);
- 
- 	return (1ULL << (fls64(max_dma) - 1)) * 2 - 1;
- }
-@@ -96,7 +101,7 @@ static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 *phys_limit)
- 
- bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
- {
--	dma_addr_t dma_addr = phys_to_dma_direct(dev, phys);
-+	dma_addr_t dma_addr = phys_to_dma_direct(dev, phys, false);
- 
- 	if (dma_addr == DMA_MAPPING_ERROR)
- 		return false;
-@@ -122,11 +127,14 @@ static int dma_set_encrypted(struct device *dev, void *vaddr, size_t size)
- static void __dma_direct_free_pages(struct device *dev, struct page *page,
- 				    size_t size, bool encrypt)
- {
--	if (encrypt && dma_set_encrypted(dev, page_address(page), size))
-+	bool keep_encrypted = swiotlb_is_decrypted(dev, page, size);
-+
-+	if (!keep_encrypted && encrypt && dma_set_encrypted(dev, page_address(page), size))
- 		return;
- 
- 	if (swiotlb_free(dev, page, size))
- 		return;
-+
- 	dma_free_contiguous(dev, page, size);
- }
- 
-@@ -205,7 +213,7 @@ static void *dma_direct_alloc_from_pool(struct device *dev, size_t size,
- 	page = dma_alloc_from_pool(dev, size, &ret, gfp, dma_coherent_ok);
- 	if (!page)
- 		return NULL;
--	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
-+	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page), false);
- 	return ret;
- }
- 
-@@ -225,7 +233,8 @@ static void *dma_direct_alloc_no_mapping(struct device *dev, size_t size,
- 		arch_dma_prep_coherent(page, size);
- 
- 	/* return the page pointer as the opaque cookie */
--	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
-+	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page),
-+					 is_dma_page_decrypted(dma_page));
- 	return page;
- }
- 
-@@ -234,6 +243,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
- {
- 	bool remap = false, set_uncached = false, decrypt = force_dma_unencrypted(dev);
- 	struct dma_page dma_page;
-+	bool already_decrypted;
- 	struct page *page;
- 	void *ret;
- 
-@@ -289,6 +299,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
- 	if (!page)
- 		return NULL;
- 
-+	already_decrypted = is_dma_page_decrypted(dma_page);
- 	/*
- 	 * dma_alloc_contiguous can return highmem pages depending on a
- 	 * combination the cma= arguments and per-arch setup.  These need to be
-@@ -299,12 +310,13 @@ void *dma_direct_alloc(struct device *dev, size_t size,
- 		set_uncached = false;
- 	}
- 
--	if (decrypt && dma_set_decrypted(dev, page_address(page), size))
-+	if (!already_decrypted && decrypt &&
-+	    dma_set_decrypted(dev, page_address(page), size))
- 		goto out_leak_pages;
- 	if (remap) {
- 		pgprot_t prot = dma_pgprot(dev, PAGE_KERNEL, attrs);
- 
--		if (decrypt)
-+		if (decrypt || already_decrypted)
- 			prot = pgprot_decrypted(prot);
- 
- 		/* remove any dirty cache lines on the kernel alias */
-@@ -328,11 +340,11 @@ void *dma_direct_alloc(struct device *dev, size_t size,
- 			goto out_encrypt_pages;
- 	}
- 
--	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
-+	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page), already_decrypted);
- 	return ret;
- 
- out_encrypt_pages:
--	__dma_direct_free_pages(dev, page, size, decrypt);
-+	__dma_direct_free_pages(dev, page, size, decrypt && !already_decrypted);
- 	return NULL;
- out_leak_pages:
- 	return NULL;
-@@ -385,6 +397,7 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
- 		dma_addr_t *dma_handle, enum dma_data_direction dir, gfp_t gfp)
- {
- 	struct dma_page dma_page;
-+	bool already_decrypted;
- 	struct page *page;
- 	void *ret;
- 
-@@ -396,11 +409,13 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
- 	if (!page)
- 		return NULL;
- 
-+	already_decrypted = is_dma_page_decrypted(dma_page);
- 	ret = page_address(page);
--	if (force_dma_unencrypted(dev) && dma_set_decrypted(dev, ret, size))
-+	if (!already_decrypted && force_dma_unencrypted(dev) &&
-+	    dma_set_decrypted(dev, ret, size))
- 		goto out_leak_pages;
- 	memset(ret, 0, size);
--	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
-+	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page), already_decrypted);
- 	return page;
- out_leak_pages:
- 	return NULL;
+However, before I test anything else, I've just built the same rc7
+which failed above with your patch applied - and that boots fine.
+
+Now, each Thursday, net-next gets updated as that's the day that the
+net tree gets sent for merging into mainline. This causes net-next's
+version to increase. So something in current net-next plus in rc7 is
+causing this problem.
+
+The commit you claim needs fixing is:
+
+$ git describe --contains 90c5def10bea
+v7.0-rc7~29^2~2
+
+which I had assumed wouldn't be in net-next.
+
+Now, mainline had this on Thursday:
+
+commit f8f5627a8aeab15183eef8930bf75ba88a51622f
+Merge: 4c2c526b5adf ec7067e66119
+Author: Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu Apr 2 09:57:06 2026 -0700
+
+    Merge tag 'net-7.0-rc7' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net
+
+commit 4c2c526b5adfb580bd95316bf179327d5ee26da8
+Merge: 2ec9074b28a0 8b72aa5704c7
+Author: Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu Apr 2 09:53:16 2026 -0700
+
+    Merge tag 'iommu-fixes-v7.0-rc6' of git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux
+
+and merging iommu-fixes-v7.0-rc6 introduced the buggy 90c5def10bea
+commit into -rc7.
+
+However, as soon as Linus merged net-7.0-rc7, netdev maintainers merged
+that exact commit back into net-next:
+
+commit 8ffb33d7709b59ff60560f48960a73bd8a55be95
+Merge: 269389ba5398 f8f5627a8aea
+Author: Jakub Kicinski <kuba@kernel.org>
+Date:   Thu Apr 2 10:57:09 2026 -0700
+
+    Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net
+
+Thereby bringing in that buggy commit into net-next, but with net-next
+identifying itself as 7.0-rc6.
+
+That's... confusing, but explains why current net-next which reports
+itself as 7.0-rc6 _and_ rc7 both fail, but rc6 itself does not. It
+also means I've wasted an entire afternoon running a useless bisect
+between rc5 and rc6 due to the version numbers in net-next being
+meaningless.
+
+What's the status on the iommu fix? Is it merged into mainline yet?
+If it isn't already, that means net-next remains unbootable going
+into the merge window without manually carrying the fix locally.
+
 -- 
-2.53.0.1213.gd9a14994de-goog
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
