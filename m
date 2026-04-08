@@ -1,107 +1,264 @@
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [78.32.30.218])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3AF53803C2
-	for <iommu@lists.linux.dev>; Wed,  8 Apr 2026 19:55:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.32.30.218
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 905D233345A
+	for <iommu@lists.linux.dev>; Wed,  8 Apr 2026 20:21:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775678126; cv=none; b=X7dm/1ULFcNMzffedPur1biH+Z+8fELYMtf3gyObHuPK+vH1kPSJ78TuL0jL0JPr3lAWBYwha0HKfaqbTqhMquLhBAYKsx8SSifJYjl2VaqVHz1j2FfBxmQEKF1+WcLaOVgI3XPctFoilIngjA3iiovmZlz2iWtmPj4RCkJV8S4=
+	t=1775679675; cv=none; b=dIBesZqCVD4g6CHOu75CCRe0pAfI5n0iUzib3PB+24IpGNvstA6Xzb2uJu+CNA6csTA9gefR8b7hG9sDaPgVNQhXCPOIcVIQI/8akuJd9QqE+mb8t+Yd0b2wNA7pn/l5sqWg8TBqYy8TTuQ5RkgmCaIvdzmCfarC75tUVYkonWU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775678126; c=relaxed/simple;
-	bh=hP0DBz2MnfHgUl3vIzfFDjwQPis63gKAesI6MjWY1NM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pD8CNDPOcR+nwAViYrXfeUqWhs6LSmlhteP2Gi9HRC9z4HfF9tbu15p3x8ID9IX9zdXopnJfds5+nVn19SwevGyyydgS2akLVlBJ+bn3Bi5loGFaERN4KcNusRorbstkLN9ULosFychqN+/3C2zSDvjYLDjUSJPXXVLCspO8eME=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=armlinux.org.uk; spf=none smtp.mailfrom=armlinux.org.uk; dkim=pass (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b=qFu40S34; arc=none smtp.client-ip=78.32.30.218
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=armlinux.org.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=armlinux.org.uk
+	s=arc-20240116; t=1775679675; c=relaxed/simple;
+	bh=vmgJA28U4oEYXCV1uPCwl7E69UiNhgMrVSZD1Icewes=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=hBbYiXRjI610gYDzvBN5Vt3QKhzaeSQ/Vyp28wiabmyrktAma6RQvD7exE2vMxENR042UTkLKwxSdL0jblYyuUiIWKLMlCX501TxxPDNEeSfWqOsjbpBdrAb117EAkGk23c8i4JAyhKFyxdyU/9oiJeYj4o7MhNL/fNwqTgozCs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=VMmQlBqh; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b="qFu40S34"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=kDGfj+dIHPPPtxem43wBR54tdlI5WONO4yOnjDFCHo8=; b=qFu40S34x3LPTlvHlJxgPpP1VE
-	5lcrapFLgKvUE5BdnKOsWZgZqznw3hd7hv/+YTmZLtc7DK0lveb5mHqcKDjVlYJSu7/D8mi2ul7E+
-	Lts+VGGD58x68+/ZE/xIWfP+d/MA16VoVwOvK8V/yrGjzdqVJOcO97zbX1rWd/NvHYZjKqfc0CkmY
-	M8GrxwLH4sLTBU1TG0kfa37TDUJQxDPwGAy/gIWFAAY3Jj2oTtV4fXrcmJB3mzLXLlj0QWHRH8nfG
-	Qj+cI5ctSa0AxCeMYOR7WyYSJS8eN+JDqUPhYrL/oSRnRreXppPbmQ0iRDehJwNeh4i6tn41QZG8P
-	S7PklMcg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34022)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.98.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1wAYzg-000000002kI-0bnN;
-	Wed, 08 Apr 2026 20:55:20 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.98.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1wAYze-000000003cL-2mUf;
-	Wed, 08 Apr 2026 20:55:18 +0100
-Date: Wed, 8 Apr 2026 20:55:18 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Jon Hunter <jonathanh@nvidia.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org,
-	jgg@nvidia.com, iommu@lists.linux.dev, linux-tegra@vger.kernel.org
-Subject: Re: [PATCH] iommu: Ensure .iotlb_sync is called correctly
-Message-ID: <adayppUjhjNZNSeY@shell.armlinux.org.uk>
-References: <8982e3412563cf91e106d59228dfb6115024c75e.1775659257.git.robin.murphy@arm.com>
- <bdad8adc-5c20-4fb5-90b0-b7ca4199a7a8@nvidia.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="VMmQlBqh"
+Received: from [10.17.145.186] (unknown [4.194.122.162])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 2CC5B20B710C;
+	Wed,  8 Apr 2026 13:21:02 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 2CC5B20B710C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1775679672;
+	bh=eC6YQa1wGfGRjmh3YlDhhWauLUlilIwy3f2460KCSmU=;
+	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+	b=VMmQlBqhlgIdTdlILC4Vgofeh7QQRbGCvBn0mjur9dm7GW8RBLZ/OT7jUbxrFcYIE
+	 BEeFlkHDYNNoG/nUmpPZDyyUg3KMFFklByalhC0jKsDuA4qetc3zSzgni9aFQ4L8hG
+	 hewNOv+SL7mfpgNv1JkLaT8SkuP/NclL3C3V6D4E=
+Message-ID: <2dabc1b8-0cf0-4fc8-9cd4-cce60adfc05e@linux.microsoft.com>
+Date: Wed, 8 Apr 2026 13:20:59 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bdad8adc-5c20-4fb5-90b0-b7ca4199a7a8@nvidia.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+User-Agent: Mozilla Thunderbird
+Cc: easwar.hariharan@linux.microsoft.com,
+ Yu Zhang <zhangyu1@linux.microsoft.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+ "kys@microsoft.com" <kys@microsoft.com>,
+ "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
+ "wei.liu@kernel.org" <wei.liu@kernel.org>,
+ "decui@microsoft.com" <decui@microsoft.com>,
+ "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+ "kwilczynski@kernel.org" <kwilczynski@kernel.org>,
+ "mani@kernel.org" <mani@kernel.org>, "robh@kernel.org" <robh@kernel.org>,
+ "bhelgaas@google.com" <bhelgaas@google.com>, "arnd@arndb.de"
+ <arnd@arndb.de>, "joro@8bytes.org" <joro@8bytes.org>,
+ "will@kernel.org" <will@kernel.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "jacob.pan@linux.microsoft.com" <jacob.pan@linux.microsoft.com>,
+ "nunodasneves@linux.microsoft.com" <nunodasneves@linux.microsoft.com>,
+ "mrathor@linux.microsoft.com" <mrathor@linux.microsoft.com>,
+ "peterz@infradead.org" <peterz@infradead.org>,
+ "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>
+Subject: Re: [RFC v1 1/5] PCI: hv: Create and export hv_build_logical_dev_id()
+To: Michael Kelley <mhklinux@outlook.com>
+References: <20251209051128.76913-1-zhangyu1@linux.microsoft.com>
+ <20251209051128.76913-2-zhangyu1@linux.microsoft.com>
+ <SN6PR02MB41570FC0D7EA1364FB48CD1ED485A@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <162c901f-69a7-420a-9148-a469d5a8ca4f@linux.microsoft.com>
+ <SN6PR02MB4157098A14BE63FCA8C0A70ED480A@SN6PR02MB4157.namprd02.prod.outlook.com>
+From: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+Content-Language: en-US
+In-Reply-To: <SN6PR02MB4157098A14BE63FCA8C0A70ED480A@SN6PR02MB4157.namprd02.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Wed, Apr 08, 2026 at 06:28:55PM +0100, Jon Hunter wrote:
+On 1/11/2026 9:36 AM, Michael Kelley wrote:
+> From: Easwar Hariharan <easwar.hariharan@linux.microsoft.com> Sent: Friday, January 9, 2026 10:41 AM
+>>
+>> On 1/8/2026 10:46 AM, Michael Kelley wrote:
+>>> From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Monday, December 8, 2025 9:11 PM
+>>>>
+>>>> From: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+>>>>
+>>>> Hyper-V uses a logical device ID to identify a PCI endpoint device for
+>>>> child partitions. This ID will also be required for future hypercalls
+>>>> used by the Hyper-V IOMMU driver.
+>>>>
+>>>> Refactor the logic for building this logical device ID into a standalone
+>>>> helper function and export the interface for wider use.
+>>>>
+>>>> Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+>>>> Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
+>>>> ---
+>>>>  drivers/pci/controller/pci-hyperv.c | 28 ++++++++++++++++++++--------
+>>>>  include/asm-generic/mshyperv.h      |  2 ++
+>>>>  2 files changed, 22 insertions(+), 8 deletions(-)
+>>>>
+>>>> diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
+>>>> index 146b43981b27..4b82e06b5d93 100644
+>>>> --- a/drivers/pci/controller/pci-hyperv.c
+>>>> +++ b/drivers/pci/controller/pci-hyperv.c
+>>>> @@ -598,15 +598,31 @@ static unsigned int hv_msi_get_int_vector(struct irq_data *data)
+>>>>
+>>>>  #define hv_msi_prepare		pci_msi_prepare
+>>>>
+>>>> +/**
+>>>> + * Build a "Device Logical ID" out of this PCI bus's instance GUID and the
+>>>> + * function number of the device.
+>>>> + */
+>>>> +u64 hv_build_logical_dev_id(struct pci_dev *pdev)
+>>>> +{
+>>>> +	struct pci_bus *pbus = pdev->bus;
+>>>> +	struct hv_pcibus_device *hbus = container_of(pbus->sysdata,
+>>>> +						struct hv_pcibus_device, sysdata);
+>>>> +
+>>>> +	return (u64)((hbus->hdev->dev_instance.b[5] << 24) |
+>>>> +		     (hbus->hdev->dev_instance.b[4] << 16) |
+>>>> +		     (hbus->hdev->dev_instance.b[7] << 8)  |
+>>>> +		     (hbus->hdev->dev_instance.b[6] & 0xf8) |
+>>>> +		     PCI_FUNC(pdev->devfn));
+>>>> +}
+>>>> +EXPORT_SYMBOL_GPL(hv_build_logical_dev_id);
+>>>
+>>> This change is fine for hv_irq_retarget_interrupt(), it doesn't help for the
+>>> new IOMMU driver because pci-hyperv.c can (and often is) built as a module.
+>>> The new Hyper-V IOMMU driver in this patch series is built-in, and so it can't
+>>> use this symbol in that case -- you'll get a link error on vmlinux when building
+>>> the kernel. Requiring pci-hyperv.c to *not* be built as a module would also
+>>> require that the VMBus driver not be built as a module, so I don't think that's
+>>> the right solution.
+>>>
+>>> This is a messy problem. The new IOMMU driver needs to start with a generic
+>>> "struct device" for the PCI device, and somehow find the corresponding VMBus
+>>> PCI pass-thru device from which it can get the VMBus instance ID. I'm thinking
+>>> about ways to do this that don't depend on code and data structures that are
+>>> private to the pci-hyperv.c driver, and will follow-up if I have a good suggestion.
+>>
+>> Thank you, Michael. FWIW, I did try to pull out the device ID components out of
+>> pci-hyperv into include/linux/hyperv.h and/or a new include/linux/pci-hyperv.h
+>> but it was just too messy as you say.
 > 
-> On 08/04/2026 15:40, Robin Murphy wrote:
-> > Many drivers have no reason to use the iotlb_gather mechanism, but do
-> > still depend on .iotlb_sync being called to properly complete an unmap.
-> > Since the core code is now relying on the gather to detect when there
-> > is legitimately something to sync, it should also take care of encoding
-> > a successful unmap when the driver does not touch the gather itself.
-> > 
-> > Fixes: 90c5def10bea ("iommu: Do not call drivers for empty gathers")
-> > Reported-by: Jon Hunter <jonathanh@nvidia.com>
-> > Closes: https://lore.kernel.org/r/8800a38b-8515-4bbe-af15-0dae81274bf7@nvidia.com
-> > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> > ---
-> >   drivers/iommu/iommu.c | 6 ++++++
-> >   1 file changed, 6 insertions(+)
-> > 
-> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > index 50718ab810a4..ee83850c7060 100644
-> > --- a/drivers/iommu/iommu.c
-> > +++ b/drivers/iommu/iommu.c
-> > @@ -2717,6 +2717,12 @@ static size_t __iommu_unmap(struct iommu_domain *domain,
-> >   		pr_debug("unmapped: iova 0x%lx size 0x%zx\n",
-> >   			 iova, unmapped_page);
-> > +		/*
-> > +		 * If the driver itself isn't using the gather, make sure
-> > +		 * it looks non-empty so iotlb_sync will still be called.
-> > +		 */
-> > +		if (iotlb_gather->start >= iotlb_gather->end)
-> > +			iommu_iotlb_gather_add_range(iotlb_gather, iova, size);
-> >   		iova += unmapped_page;
-> >   		unmapped += unmapped_page;
+> Yes, the current approach for getting the device ID wanders through struct
+> hv_pcibus_device (which is private to the pci-hyperv driver), and through
+> struct hv_device (which is a VMBus data structure). That makes the linkage
+> between the PV IOMMU driver and the pci-hyperv and VMBus drivers rather
+> substantial, which is not good.
+
+Hi Michael,
+
+I missed this, or made a mental note to follow up but forgot. Either way, Yu reminded
+me about this email chain and I started looking at it this week.
+
 > 
+> But here's an idea for an alternate approach. The PV IOMMU driver doesn't
+> have to generate the logical device ID on-the-fly by going to the dev_instance
+> field of struct hv_device. Instead, the pci-hyperv driver can generate the logical
+> device ID in hv_pci_probe(), and put it somewhere that's easy for the IOMMU
+> driver to access. The logical device ID doesn't change while Linux is running, so
+> stashing another copy somewhere isn't a problem.
+
+In my exploration and consulting with Dexuan, I realized that one of the components of
+the logical device ID, the PCI function number is set only in pci_scan_device(), well into
+pci_scan_root_bus_bridge() that you call out as the point by which the communication must
+have occurred.
+
+But then, Dexuan also pointed me to hv_pci_assign_slots() with its call to wslot_to_devfn() and I'm
+honestly confused how these two interact. With the current approach, it looks like whatever
+devfn pci_scan_device() set is the correct function number to use for the logical device
+ID, in which case, the best I can do with your suggested approach below is to inform the
+pvIOMMU driver of the GUID, rather than the logical device ID itself.
+
+Perhaps with your history, you can clarify the interaction, and/or share your thoughts
+on the above?
+
 > 
-> Tested-by: Jon Hunter <jonathanh@nvidia.com>
+> So have the Hyper-V PV IOMMU driver provide an EXPORTed function to accept
+> a PCI domain ID and the related logical device ID. The PV IOMMU driver is
+> responsible for storing this data in a form that it can later search. hv_pci_probe()
+> calls this new function when it instantiates a new PCI pass-thru device. Then when
+> the IOMMU driver needs to attach a new device, it can get the PCI domain ID
+> from the struct pci_dev (or struct pci_bus), search for the related logical device
+> ID in its own data structure, and use it. The pci-hyperv driver has a dependency
+> on the IOMMU driver, but that's a dependency in the desired direction. The
+> PCI domain ID and logical device ID are just integers, so no data structures are
+> shared.
 
-Tested-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+In a previous reply on this thread, you raised the uniqueness issue of bytes 4 and 5
+of the GUID being used to create the domain number. I thought this approach could
+help with that too, but as I coded it up, I realized that using the domain number 
+(not guaranteed to be unique) to search for the bus instance GUID (guaranteed to be unique)
+is the wrong way around. It is unfortunately the only available key in the pci_dev
+handed to the pvIOMMU driver in this approach though...
 
-I think the commit message needs to spell out that the blamed commit
-causes random memory corruption which leads to data corruption and
-kernel oopses.
+Do you think that's a fatal flaw?
 
-Thanks!
+> 
+> Note that the pci-hyperv must inform the PV IOMMU driver of the logical
+> device ID *before* create_root_hv_pci_bus() calls pci_scan_root_bus_bridge().
+> The latter function eventually invokes hv_iommu_attach_dev(), which will
+> need the logical device ID. See example stack trace. [1]
+> 
+> I don't think the pci-hyperv driver even needs to tell the IOMMU driver to
+> remove the information if a PCI pass-thru device is unbound or removed, as
+> the logical device ID will be the same if the device ever comes back. At worst,
+> the IOMMU driver can simply replace an existing logical device ID if a new one
+> is provided for the same PCI domain ID.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+As above, replacing a unique GUID when a result is found for a non-unique
+key value may be prone to failure if it happens that the device that came "back"
+is not in fact the same device (or class of device) that went away and just happens
+to, either due to bytes 4 and 5 being identical, or due to collision in the
+pci_domain_nr_dynamic_ida, have the same domain number. 
+
+Thanks,
+Easwar (he/him)
+
+> 
+> An include file must provide a stub for the new function if
+> CONFIG_HYPERV_PVIOMMU is not defined, so that the pci-hyperv driver still
+> builds and works.
+> 
+> I haven't coded this up, but it seems like it should be pretty clean.
+> 
+> Michael
+> 
+> [1] Example stack trace, starting with vmbus_add_channel_work() as a
+> result of Hyper-V offering the PCI pass-thru device to the guest.
+> hv_pci_probe() runs, and ends up in the generic Linux code for adding
+> a PCI device, which in turn sets up the IOMMU.
+> 
+> [    1.731786]  hv_iommu_attach_dev+0xf0/0x1d0
+> [    1.731788]  __iommu_attach_device+0x21/0xb0
+> [    1.731790]  __iommu_device_set_domain+0x65/0xd0
+> [    1.731792]  __iommu_group_set_domain_internal+0x61/0x120
+> [    1.731795]  iommu_setup_default_domain+0x3a4/0x530
+> [    1.731796]  __iommu_probe_device.part.0+0x15d/0x1d0
+> [    1.731798]  iommu_probe_device+0x81/0xb0
+> [    1.731799]  iommu_bus_notifier+0x2c/0x80
+> [    1.731800]  notifier_call_chain+0x66/0xe0
+> [    1.731802]  blocking_notifier_call_chain+0x47/0x70
+> [    1.731804]  bus_notify+0x3b/0x50
+> [    1.731805]  device_add+0x631/0x850
+> [    1.731807]  pci_device_add+0x2db/0x670
+> [    1.731809]  pci_scan_single_device+0xc3/0x100
+> [    1.731810]  pci_scan_slot+0x97/0x230
+> [    1.731812]  pci_scan_child_bus_extend+0x3b/0x2f0
+> [    1.731814]  pci_scan_root_bus_bridge+0xc0/0xf0
+> [    1.731816]  hv_pci_probe+0x398/0x5f0
+> [    1.731817]  vmbus_probe+0x42/0xa0
+> [    1.731819]  really_probe+0xe5/0x3e0
+> [    1.731822]  __driver_probe_device+0x7e/0x170
+> [    1.731823]  driver_probe_device+0x23/0xa0
+> [    1.731824]  __device_attach_driver+0x92/0x130
+> [    1.731826]  bus_for_each_drv+0x8c/0xe0
+> [    1.731828]  __device_attach+0xc0/0x200
+> [    1.731830]  device_initial_probe+0x4c/0x50
+> [    1.731831]  bus_probe_device+0x32/0x90
+> [    1.731832]  device_add+0x65b/0x850
+> [    1.731836]  device_register+0x1f/0x30
+> [    1.731837]  vmbus_device_register+0x87/0x130
+> [    1.731840]  vmbus_add_channel_work+0x139/0x1a0
+> [    1.731841]  process_one_work+0x19f/0x3f0
+> [    1.731843]  worker_thread+0x188/0x2f0
+> [    1.731845]  kthread+0x119/0x230
+> [    1.731852]  ret_from_fork+0x1b4/0x1e0
+> [    1.731854]  ret_from_fork_asm+0x1a/0x30
+> 
+>>
