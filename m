@@ -1,191 +1,257 @@
-Received: from PA4PR04CU001.outbound.protection.outlook.com (mail-francecentralazon11013015.outbound.protection.outlook.com [40.107.162.15])
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [78.32.30.218])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AA0C3CF674
-	for <iommu@lists.linux.dev>; Wed,  8 Apr 2026 13:45:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.162.15
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775655910; cv=fail; b=qIKT/fgjquJDdHRhUCANqDjwEtD29GsxcIRqEPaz48coGG6/u1SV5KKA8QV2D9MbyPHcy0jZIw14/0zEyj295mW6zcWTboKI3CBdSYUt9K7A6eiDqAkRPNUKDgt3Kywp7yTzG42d5q3oTKp7reoSjCCz4vffTheh/TEYml6v5nE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775655910; c=relaxed/simple;
-	bh=7Ew0YPQ1N/f06rKAR+EBYHM2O/fNjLVmTRnscKrS1zk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=DIKf9yXrt7v4QA4rJijbuy7UO/hZHXCJoZYpLNghqfTh8oA66wzdcpm6o/6OpakKb7z+jp8lho2PPcxd6NRKrv7PuBH0CIYrSadSv8i9NQwjOlIrM1/3o7irFvSKgX88CwbkcUkb7byYada/NZkrtkVXRf/EsFNDF4deVtgApdU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=olLUChIw; arc=fail smtp.client-ip=40.107.162.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CAD32F3C3E
+	for <iommu@lists.linux.dev>; Wed,  8 Apr 2026 13:59:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.32.30.218
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775656790; cv=none; b=SyYjgSAuyKDesMNzBWNGT/IrXZrdSjcaRm87L3e3I+FX26IKmMTpc9zeTqDxCNh1/WxsLCWV86y2ZLditcTv/Jbp+Hk1qASsh9yQAgHELHqNira2mqtiFEEMQ9Oc6he8lDHT7f2TCggVOZf/iiUyZgG9sKFwi4tgex+bWegNY1g=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775656790; c=relaxed/simple;
+	bh=GyJUc3N6NWWNKKLxNrsleuUP8JTaJD+tetQyslUbM8E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=uKK7b/YRYbNo1v7wpbqBrmuv9CapOuvpD11NWvT4duIUCV+2nS9VdTs35+Q2zz8BahqOliWkbN7Fx1cHj1j6ddJMRkWgIFn61VN5sN8R9CbEsgSVtx/grsTbebDWxBYqCHLbgkJAmyiEsD8koXfxzOvXP9zlGv4+AmPk595pzJU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=armlinux.org.uk; spf=none smtp.mailfrom=armlinux.org.uk; dkim=pass (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b=DcouKc/n; arc=none smtp.client-ip=78.32.30.218
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=armlinux.org.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=armlinux.org.uk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="olLUChIw"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=HPNpxeJr0asuPgsEQQxmfSYDkdcH/kdWMWz66PvvoyMjjOHAkVfpBFXUsNLjM0TApeGMpzHA0ulrcpzen8xuaDKLjCBWflHieM6zVyLKeR9/odvF5pkZDKCy95Xnd0EIw/ptHQKy+NV7W7BqxFjEMYkLXYiLSbOGn4x7FZJJfiWtm2TemnepKlHBSMCTlHvL4wdMPh/W6zsvqPtcAzBc5x0TY8uKIex5uaGMJzw9HwWqp+30yEwWKP65hxPzZGI2yp0F5D3OvOXfcvLJyVC9jtik7X8pJ5g+sKu+hrdpw8hdwBGGC0qVV+5RemwhKBeqDMJZ89Zl/7am2FR5gxUxVA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KGe52JVsv6Bz9kq0V8YIVWMrfrjEu1GAA3AFEROxN3E=;
- b=xlXb5oB5CPoAn0Z7yYzkW9XxOROmo1UKdmCvDxDJOl98Fpb9HvC235WbRiSHEAb9vqzFeFb8L3crRC/AanXXvpogFW9KD0GnnwJgEcVUWGq4MpQ9++BxNRq1CjEnyKSEBBveiyYHaTVeyR6xl4kLNs1tVHWRoslJ0g+GgFQL5FkZDoBLVxK77zPqXM+qRbYRPiqD3jULaB6NVx265r2v9s8p02sk2GXWmIfzvPyhoRYsfjQOrR6NFRUrmxT+vVGxcChKvHpXii5jZN7/i/yfw/2Hr9C5GBLE7ijQrmfCxlJSNkFUQb02XppxQl48m4H1cyCu3ccQYMrk7GHVLanZjg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector1-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KGe52JVsv6Bz9kq0V8YIVWMrfrjEu1GAA3AFEROxN3E=;
- b=olLUChIw0cSG3MfDmUP/fbK8ZMkW6shdDnO00fbpB0stFIaY6tPI0pwM98UFeIaqkkrAK+qbkC6x7ol9UdF8x/M4zvaLwEj4EqHbL+f+OfVhPl//fmkMFWyOz7OAytaUoQFgyVTJv3u50ndrcy1eZIdMkffHg787m3Kn0I65yi2fB8Rrg/plhnURuYs7u/GC7YrbKtb6dyIPiRool+vSNK9rs+Zvkfgks29J+dkGXqO9ozBJ0g2tOImmO/y5WaX6U0cH95h/Vj6FovxUELQZRDYuy+B835zDkBfiNBC5iJU7kqLCH0H8F+gut0I0O0h7mjjXKyWykLlhSOeyPLG4gQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from PAXPR04MB8459.eurprd04.prod.outlook.com (2603:10a6:102:1da::15)
- by AM9PR04MB8570.eurprd04.prod.outlook.com (2603:10a6:20b:435::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.15; Wed, 8 Apr
- 2026 13:45:03 +0000
-Received: from PAXPR04MB8459.eurprd04.prod.outlook.com
- ([fe80::4972:7eaa:b9f6:7b5e]) by PAXPR04MB8459.eurprd04.prod.outlook.com
- ([fe80::4972:7eaa:b9f6:7b5e%3]) with mapi id 15.20.9723.030; Wed, 8 Apr 2026
- 13:45:02 +0000
-Date: Wed, 8 Apr 2026 21:47:20 +0800
-From: Peng Fan <peng.fan@oss.nxp.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-perf-users@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH 0/3] arm-smmu-v3: Add PMCG child support and update PMU
- MMIO mapping
-Message-ID: <adZcaEKm3vIYSy3N@shlinux89>
-References: <20260408-smmu-perf-v1-0-d75dac96e828@nxp.com>
- <2c1a1694-9597-400d-b441-714225b5377b@arm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2c1a1694-9597-400d-b441-714225b5377b@arm.com>
-X-ClientProxiedBy: MA1PR01CA0183.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:a01:d::6) To PAXPR04MB8459.eurprd04.prod.outlook.com
- (2603:10a6:102:1da::15)
+	dkim=pass (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b="DcouKc/n"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=4AadTub10MGWkBz4tJiImSeHY4CdK+UwO4p/zkUVfFg=; b=DcouKc/nXhCJV+GEv81CeaeLg5
+	FfL0YnyG74Od21KSGoBwV8VlMZ05KDq1KPwErHynr3bIq3iOM4xAmGgkAP5wdmtK4F10YT1NJU9cx
+	ag3ckjqJNHjsdKYc9hSoTJPcEbbiMp8vQU2LMmdyFlzsVGRVrrisZJB6atqv0+9kaYC6DZHgxzEQD
+	44aDr2Xw5aVu8MP/D6K3taeGW0GRGND24amruDAr7m6C1eLdrrAt0oeynmshW+m6HnEmf8M53Ppbw
+	IY2+Ve3SzeFSn2DesLQMLNwh8JUx91IrkeMnKFanLXssymXhGIrljEwhS7fa3QazQxkxT3LdpSJFF
+	3rk8E70A==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55844)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.98.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1wATRZ-000000002Qg-2i88;
+	Wed, 08 Apr 2026 14:59:45 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.98.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1wATRW-000000003Nv-0uLv;
+	Wed, 08 Apr 2026 14:59:42 +0100
+Date: Wed, 8 Apr 2026 14:59:42 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-ext4@vger.kernel.org,
+	Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, Theodore Ts'o <tytso@mit.edu>,
+	Andreas Dilger <adilger.kernel@dilger.ca>
+Subject: Re: BUG: net-next (7.0-rc6 based and later) fails to boot on Jetson
+ Xavier NX
+Message-ID: <adZfTi3R6jtsjXx-@shell.armlinux.org.uk>
+References: <adZTGOjjJrVJOcT8@shell.armlinux.org.uk>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PAXPR04MB8459:EE_|AM9PR04MB8570:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8566f197-44c7-4a6f-5513-08de957508d4
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|19092799006|1800799024|366016|7416014|376014|52116014|38350700014|22082099003|18002099003|56012099003;
-X-Microsoft-Antispam-Message-Info:
-	ouGIJTl64hqTpReoQRaXtgI3PrRWPO0SAU5Wjl116DknOc+2IXCwUudkts6PKg6JrKOylZvjV0gyTpvpL4o5DATIms8DFF6BuFHr6Ih577nTDyCgcJtB1nllxC+GWD0UFkbreIEcNrNO2crILdrVZUnMkXg+zwGRHGQUFDMktnrP+KtaxWC5NP59EGk/LdH32zmnbhVd2Cf7TKrb+piZYHJ9Kc+BvsliTtkZ36LgDrhsGWLx636ruAmHRqRxCo8Mi9bNQQ7pwhjcSV8FtHWNqG5rX2VpVJyDX6TsGJe2HNr6lLRYDSby2nTzFB7fCnzB67Zqd0TP19QZwjZTbJJKLhfcXRlf6L6UlXfX5KB8uWW598Ba3yIUOoT+CcyOrcjGYmHSiMg/6RYAbRW3crWLMgOLUM7Fkq7BEKGg8Rs7A5XZugwcfJLO/YZ3EvGdlyjiwxSTFKMxqSCX+DoyyP2KygHudmI3HY5B0Cr84fYCYvDRw+rI+ePCAVfxVCGWu5t+DW+z25VKSGmV9F8i2tGSp3Hmt5kNrMw8D60T/e38l8W8djMlIsTM5mqWMb2Sukd5YF3sSbPDV67iM0pyYulwHWW0xokKEX9e0MzEDOAmXS0vhYzmw7V1/Z81q/gB5TJGFAXt1ipN9J7ku4XeOIzHE3wPbJhhkJmvh1eJJIEXq0lfGSU9xYsyYsbrMmiKz30DOfYcX5iZrBVQoxvQG5Yge1m83hIx7vyH2f7ohjeenPu+CscNgiubFME2xnwnFiSK6YwBHcMUZoNzS/20xA51G9381qd3g/2Q1sYgh2N170I=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB8459.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(19092799006)(1800799024)(366016)(7416014)(376014)(52116014)(38350700014)(22082099003)(18002099003)(56012099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?/Pft1uz+V18nSpfOb7hCuQPYFJ8CK6j3+0dJUpHi/o2IY5yiMdlaNopo1MWK?=
- =?us-ascii?Q?KLAHIg4CO04BPe/j7ZrpdWXhPQ4OMSHC1o8vqWewRQm5efMx+dJPPjDhE4Gb?=
- =?us-ascii?Q?2R0hmziO7+iw2EGOXLVeb7KhI7hE3i3GribkGv7JmeKLHhFxHgHOjbs3bQP2?=
- =?us-ascii?Q?1ZZIzEw0lbSM2EDujkpS92qAQXxYMN5g1Ab0gA764pZZOOk3rLNF7HCFH/Cj?=
- =?us-ascii?Q?zd00tnpxRaQg+Ifc7LOhv9ZAKED4HPLkBRB2LWnnjbw0QqbH/OhaIE3DsocO?=
- =?us-ascii?Q?d07grmKKwNVu+HOJDPkFWFFVmuLZHncAcUc0MyCQ6u+IWa8nIEJYvm00HW0s?=
- =?us-ascii?Q?coIKE/bUTk1PNz5gbvBrdD5ZciyR29e2xxaHYHKkd6hVzKaZD2FQAgmQgRcq?=
- =?us-ascii?Q?b2yv8sVzRks6JNE9gaX76/6WfvOCNCluPTypgXFDuZ0OgdG8NllBc6GqdJc2?=
- =?us-ascii?Q?ic5kN3u4BnNY6aYsn3096SLEYcKjbnATIJe2YCRtvDqeGv+IyCCihG/Mp+RO?=
- =?us-ascii?Q?R1N/06C9KSpu6I8eK8fS+23ZDYo060GDbPHGc+jglE/1RUCEjpWsGI9j6cs1?=
- =?us-ascii?Q?apvWz8UDnaC0z182OOJc6uNf4TZhndN4id9dz3jXwaQoWHMGkdPReGYwBUej?=
- =?us-ascii?Q?yxpYa8i1UmSmy+kZr5hcpPATEZb0xWEJ6tWkmxjTi+wUTfo+QeNBVDNeTTXY?=
- =?us-ascii?Q?zjxaJXKF9lw8DlI+RuKr8wGWabBgk/txkD7VkGARb7AKC2rzwbRg+Jq4p1jH?=
- =?us-ascii?Q?6Iimo19aYB37pqywC+KVXSjy7gfYjL6f7EEQ6iH3mL45002yUKqoH+SM2Wun?=
- =?us-ascii?Q?3tLPsDCncj9Ri+vMeFV4T7wuUAnMVqQoG8LmUjiWoDCHUC2SKu3/+0ebiNwW?=
- =?us-ascii?Q?ke6+D2mAcjwi4iogQNv4iDKDknpxPsJtpEcpeDsLzm/2WYnNApIQblGNd04W?=
- =?us-ascii?Q?UTXpXIpzTgy/DTgwnQkNIuPIUUVZvSWATf0sIBZ+VQjmMifeEK6cuOJUHVP7?=
- =?us-ascii?Q?VemYypnCDM6tb+bLU5kQ0AaeCz72XbweTmptXsmfA1uafSfuxrz3cG05BYnt?=
- =?us-ascii?Q?QRRt6m4fhsXM8f2GY4ECvgT/hMa8NuxylMpJ1nklfjkfJmbvPF+bAEykjgm1?=
- =?us-ascii?Q?MPsbGVdeOxehhByRxK1QzwN95l6RG4n/9YNPEuq+2raUNRY7rXy2dPsHAfq5?=
- =?us-ascii?Q?bcsVtylkcrX1cUfaT8yschMeMi0dEzXk4NbTi11/FWj5A1Eolu7xFpS9dnH4?=
- =?us-ascii?Q?3NRnAhUzI6BBncXX6Po8H9NyOJoUOIzZVaAQLoWe7nBcXI5ripbC0wXfiYbv?=
- =?us-ascii?Q?k9Ag37L3vbeGyDCWo1UC+ZbCoCzXXeR/6pImJoWheifJdHQZ/venWdPy3PHm?=
- =?us-ascii?Q?VvSaBFeEIskU1yjHF0uFdXZ3vkqyEem5m5j2tm5r8H+mauumFeExWf3Z0oUx?=
- =?us-ascii?Q?9cuTcjW7jLzUG3NMQiaxC0gFRV55dHBNacc+K7zsv27hK5dAzYMpa4uHz7Bm?=
- =?us-ascii?Q?/DaI/ukv/1xIDIDAl5/nJSo/2p+DOEzhEP3RNXONoXWWp68TSKOWe7/u+NsN?=
- =?us-ascii?Q?utMal0TG1RyEZN0cc+7i5xja2qBYHU5WyzSETbmm1ZnipOHhf8ty7T+WQLoe?=
- =?us-ascii?Q?W+1UY8vuJsyBAS1Hp2Qa9m47TGUeUQAGBMb0twVBmrD/4MDXtNK7o/KAILIZ?=
- =?us-ascii?Q?a2DT/usqunezypWlz8ueLYFiu6jm3iiIBMnjU/TfbYHEAlJ3OMro29Xxkfqo?=
- =?us-ascii?Q?0qzxPzzeuA=3D=3D?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8566f197-44c7-4a6f-5513-08de957508d4
-X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB8459.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2026 13:45:02.9063
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AIOevKqM3/tKj8A2lRBlxAM7aXCyf5GYhzu8Fhcuh/YytjG+ejP84Awvkg1f5aKZ4GGrj0JiN+juH8skIIcsDA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8570
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <adZTGOjjJrVJOcT8@shell.armlinux.org.uk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 
-On Wed, Apr 08, 2026 at 12:15:31PM +0100, Robin Murphy wrote:
->On 2026-04-08 8:51 am, Peng Fan (OSS) wrote:
->> This patch series adds proper support for describing and probing the
->> Arm SMMU v3 PMCG (Performance Monitor Control Group) as a child node of
->> the SMMU in Devicetree, and updates the relevant drivers accordingly.
->> 
->> The SMMU v3 architecture allows an optional PMCG block, typically
->> associated with TCUs, to be implemented within the SMMU register
->> address space. For example, mmu700 PMCG is at the offset 0x2000 of the
->> TCU page 0.
->
->But what's wrong with the existing binding? Especially given that it even has
->an upstream user already:
->
->https://git.kernel.org/torvalds/c/aef9703dcbf8
->
->> Patch 1 updates the SMMU v3 Devicetree binding to allow PMCG child nodes,
->> referencing the existing arm,smmu-v3-pmcg binding.
->> 
->> Patch 2 updates the arm-smmu-v3 driver to populate platform devices for
->> child nodes described in DT once the SMMU probe succeeds.
->> 
->> Patch 3 updates the SMMUv3 PMU driver to correctly handle MMIO mapping when
->> PMCG is described as a child node. The PMCG registers occupy a sub-region
->> of the parent SMMU MMIO window, which is already requested by the SMMU
->
->That has not been the case since 52f3fab0067d ("iommu/arm-smmu-v3: Don't
->reserve implementation defined register space") nearly 6 years ago, where the
->whole purpose was to support Arm's PMCG implementation properly. What kernel
->is this based on?
+On Wed, Apr 08, 2026 at 02:07:36PM +0100, Russell King (Oracle) wrote:
+> Hi,
+> 
+> Just a heads-up that current net-next (v7.0-rc6 based) fails to boot on
+> my nVidia Jetson Xavier platform. v7.0-rc5 and v6.14 based net-next both
+> boot fine. This is an arm64 platform.
+> 
+> The problem appears to be completely random in terms of its symptoms,
+> and looks like severe memory corruption - every boot seems to produce
+> a different problem. The common theme is, although the kernel gets to
+> userspace, it never gets anywhere close to a login prompt before
+> failing in some way.
+> 
+> The last net-next+ boot (which is currently v7.0-rc6 based) resulted
+> in:
+> 
+> tegra-mc 2c00000.memory-controller: xusb_hostw: secure write @0x00000003ffffff00: VPR violation ((null))
+> ...
+> irq 91: nobody cared (try booting with the "irqpoll" option)
+> ...
+> depmod: ERROR: could not open directory /lib/modules/7.0.0-rc6-net-next+: No such file or directory
+> ...
+> Unable to handle kernel paging request at virtual address 0003201fd50320cf
+> 
+> 
+> A previous boot of the exact same kernel didn't oops, but was unable
+> to find the block device to mount for /mnt via block UUID.
+> 
+> A previous boot to that resulted in an oops.
+> 
+> 
+> The intersting thing is - the depmod error above is incorrect:
+> 
+> root@tegra-ubuntu:~# ls -ld /lib/modules/7.0.0-rc6-net-next+
+> drwxrwxr-x 3 root root 4096 Apr  8 10:23 /lib/modules/7.0.0-rc6-net-next+
+> 
+> The directory is definitely there, and is readable - checked after
+> booting back into net-next based on 7.0-rc5. In some of these boots,
+> stmmac hasn't probed yet, which rules out my changes.
+> 
+> Rootfs is ext4, and it seems there were a lot of ext4 commits merged
+> between rc5 and rc6, but nothing for rc7.
+> 
+> My current net-next head is dfecb0c5af3b. Merging rc7 on top also
+> fails, I suspect also randomly, with that I just got:
+> 
+> EXT4-fs (mmcblk0p1): VFS: Can't find ext4 filesystem
+> mount: /mnt: wrong fs type, bad option, bad superblock on /dev/mmcblk0p1, missing codepage or helper program, or other error.
+> mount: /mnt/: can't find PARTUUID=741c0777-391a-4bce-a222-455e180ece2a.
+> Unable to handle kernel paging request at virtual address f9bf0011ac0fb893
+> Mem abort info:
+>   ESR = 0x0000000096000004
+>   EC = 0x25: DABT (current EL), IL = 32 bits
+>   SET = 0, FnV = 0
+>   EA = 0, S1PTW = 0
+>   FSC = 0x04: level 0 translation fault
+> Data abort info:
+>   ISV = 0, ISS = 0x00000004, ISS2 = 0x00000000
+>   CM = 0, WnR = 0, TnD = 0, TagAccess = 0
+>   GCS = 0, Overlay = 0, DirtyBit = 0, Xs = 0
+> [f9bf0011ac0fb893] address between user and kernel address ranges
+> Internal error: Oops: 0000000096000004 [#1]  SMP
+> Modules linked in:
+> CPU: 1 UID: 0 PID: 936 Comm: mount Not tainted 7.0.0-rc7-net-next+ #649 PREEMPT
+> Hardware name: NVIDIA NVIDIA Jetson Xavier NX Developer Kit/Jetson, BIOS 6.0-37391689 08/28/2024
+> pstate: 20400009 (nzCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> pc : refill_objects+0x298/0x5ec
+> lr : refill_objects+0x1f0/0x5ec
+> 
+> ...
+> 
+> Call trace:
+>  refill_objects+0x298/0x5ec (P)
+>  __pcs_replace_empty_main+0x13c/0x3a8
+>  kmem_cache_alloc_noprof+0x324/0x3a0
+>  alloc_iova+0x3c/0x290
+>  alloc_iova_fast+0x168/0x2d4
+>  iommu_dma_alloc_iova+0x84/0x154
+>  iommu_dma_map_sg+0x2c4/0x538
+>  __dma_map_sg_attrs+0x124/0x2c0
+>  dma_map_sg_attrs+0x10/0x20
+>  sdhci_pre_dma_transfer+0xb8/0x164
+>  sdhci_pre_req+0x38/0x44
+>  mmc_blk_mq_issue_rq+0x3dc/0x920
+>  mmc_mq_queue_rq+0x104/0x2b0
+>  __blk_mq_issue_directly+0x38/0xb0
+>  blk_mq_request_issue_directly+0x54/0xb4
+>  blk_mq_issue_direct+0x84/0x180
+>  blk_mq_dispatch_queue_requests+0x1a8/0x2e0
+>  blk_mq_flush_plug_list+0x60/0x140
+>  __blk_flush_plug+0xe0/0x11c
+>  blk_finish_plug+0x38/0x4c
+>  read_pages+0x158/0x260
+>  page_cache_ra_unbounded+0x158/0x3e0
+>  force_page_cache_ra+0xb0/0xe4
+>  page_cache_sync_ra+0x88/0x480
+>  filemap_get_pages+0xd8/0x850
+>  filemap_read+0xdc/0x3d8
+>  blkdev_read_iter+0x84/0x198
+>  vfs_read+0x208/0x2d8
+>  ksys_read+0x58/0xf4
+>  __arm64_sys_read+0x1c/0x28
+>  invoke_syscall.constprop.0+0x50/0xe0
+>  do_el0_svc+0x40/0xc0
+>  el0_svc+0x48/0x2a0
+>  el0t_64_sync_handler+0xa0/0xe4
+>  el0t_64_sync+0x19c/0x1a0
+> Code: 54000189 f9000022 aa0203e4 b9402ae3 (f8634840)
+> ---[ end trace 0000000000000000 ]---
+> Kernel panic - not syncing: Oops: Fatal exception
+> 
+> Looking at the changes between rc5 and rc6, there's one drivers/block
+> change for zram (which is used on this platform), one change in
+> drivers/base for regmap, nothing for drivers/mmc, but plenty for
+> fs/ext4. There are five DMA API changes.
+> 
+> Now building straight -rc7. If that also fails, my plan is to start
+> bisecting rc5..rc6, which will likely take most of the rest of the
+> day. So, in the mean time I'm sending this as a heads-up that rc6
+> and onwards has a problem.
 
-Seems I am wrong. I thought PMCG is in page 0, so there were resource
-conflicts. I just retest without this patchset, all goes well.
+Plain -rc7 fails (another random oops):
 
-But from dt perspective, should the TCU PMCG node be child node of
-SMMU node?
+Root device found: PARTUUID=741c0777-391a-4bce-a222-455e180ece2a
+depmod: ERROR: could not open directory /lib/modules/7.0.0-rc7-net-next+: No such file or directory
+depmod: FATAL: could not search modules: No such file or directory
+usb 2-3: new SuperSpeed Plus Gen 2x1 USB device number 2 using tegra-xusb
+hub 2-3:1.0: USB hub found
+hub 2-3:1.0: 4 ports detected
+usb 1-3: new full-speed USB device number 3 using tegra-xusb
+Unable to handle kernel paging request at virtual address 0003201fd50320cf
+Mem abort info:
+  ESR = 0x0000000096000004
+  EC = 0x25: DABT (current EL), IL = 32 bits
+  SET = 0, FnV = 0
+  EA = 0, S1PTW = 0
+  FSC = 0x04: level 0 translation fault
+Data abort info:
+  ISV = 0, ISS = 0x00000004, ISS2 = 0x00000000
+  CM = 0, WnR = 0, TnD = 0, TagAccess = 0
+  GCS = 0, Overlay = 0, DirtyBit = 0, Xs = 0
+[0003201fd50320cf] address between user and kernel address ranges
+Internal error: Oops: 0000000096000004 [#1]  SMP
+Modules linked in:
+CPU: 1 UID: 0 PID: 917 Comm: mount Not tainted 7.0.0-rc7-net-next+ #649 PREEMPT
+Hardware name: NVIDIA NVIDIA Jetson Xavier NX Developer Kit/Jetson, BIOS 6.0-37391689 08/28/2024
+pstate: 20400009 (nzCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+pc : refill_objects+0x298/0x5ec
+lr : refill_objects+0x1f0/0x5ec
+sp : ffff80008606b500
+x29: ffff80008606b500 x28: 0000000000000001 x27: fffffdffc20e6200
+x26: 0000000000000006 x25: 0000000000000000 x24: 000000000000003c
+x23: ffff0000809e4840 x22: ffff0000809dba00 x21: ffff80008606b5a0
+x20: ffff000081133820 x19: fffffdffc20e6220 x18: 0000000000000000
+x17: 0000000000000000 x16: 0000000000000100 x15: 0000000000000000
+x14: 0000000000000000 x13: 0000000000000000 x12: ffff800081e5faa8
+x11: ffff800082192c70 x10: ffff8000814074dc x9 : 0000000000000050
+x8 : ffff80008606b490 x7 : ffff000083988b40 x6 : ffff80008606b4a0
+x5 : 000000080015000f x4 : d503201fd503201f x3 : 00000000000000b0
+x2 : d503201fd503201f x1 : ffff000081133828 x0 : d503201fd503201f
+Call trace:
+ refill_objects+0x298/0x5ec (P)
+ __pcs_replace_empty_main+0x13c/0x3a8
+ kmem_cache_alloc_noprof+0x324/0x3a0
+ mempool_alloc_slab+0x1c/0x28
+ mempool_alloc_noprof+0x98/0xe0
+ bio_alloc_bioset+0x160/0x3e0
+ do_mpage_readpage+0x3d0/0x618
+ mpage_readahead+0xb8/0x144
+ blkdev_readahead+0x18/0x24
+ read_pages+0x58/0x260
+ page_cache_ra_unbounded+0x158/0x3e0
+ force_page_cache_ra+0xb0/0xe4
+ page_cache_sync_ra+0x88/0x480
+ filemap_get_pages+0xd8/0x850
+ filemap_read+0xdc/0x3d8
+ blkdev_read_iter+0x84/0x198
+ vfs_read+0x208/0x2d8
+ ksys_read+0x58/0xf4
+ __arm64_sys_read+0x1c/0x28
+ invoke_syscall.constprop.0+0x50/0xe0
+ do_el0_svc+0x40/0xc0
+ el0_svc+0x48/0x2a0
+ el0t_64_sync_handler+0xa0/0xe4
+ el0t_64_sync+0x19c/0x1a0
+Code: 54000189 f9000022 aa0203e4 b9402ae3 (f8634840)
+---[ end trace 0000000000000000 ]---
 
-Thanks,
-Peng
+Now starting the bisect between 7.0-rc5 and 7.0-rc6.
 
->
->Thanks,
->Robin.
->
->> Signed-off-by: Peng Fan <peng.fan@nxp.com>
->> ---
->> Peng Fan (3):
->>        dt-bindings: iommu: arm-smmu-v3: Allow PMU child nodes
->>        iommu/arm-smmu-v3: Populate PMU child devices from Devicetree
->>        perf/arm-smmuv3: Avoid double-requesting shared SMMU MMIO for PMCG
->> 
->>   .../devicetree/bindings/iommu/arm,smmu-v3.yaml        | 10 ++++++++++
->>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c           |  3 +++
->>   drivers/perf/arm_smmuv3_pmu.c                         | 19 ++++++++++++++++---
->>   3 files changed, 29 insertions(+), 3 deletions(-)
->> ---
->> base-commit: f3e6330d7fe42b204af05a2dbc68b379e0ad179e
->> change-id: 20260408-smmu-perf-754367fe66c8
->> 
->> Best regards,
->
->
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
