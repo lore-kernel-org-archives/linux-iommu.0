@@ -1,63 +1,52 @@
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [78.32.30.218])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABA99376BDE
-	for <iommu@lists.linux.dev>; Wed,  8 Apr 2026 19:52:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3AF53803C2
+	for <iommu@lists.linux.dev>; Wed,  8 Apr 2026 19:55:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.32.30.218
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775677962; cv=none; b=giUStSZQjfTCE0QXT2ndKVGYiTxBJj6Xs3Jh2wW5QmWsJ/FNrmuzExfc6rJ7KNPeDDeeHmiQlR/q1WgIo0UOguTRvg+szbFkDPFY+U5RHD/40+cUrMkgv4C54Qx6PC6h4AZH+Mm1EyrjqQ2gWmN784fFtxQOSKQYhXxM3+qR7X4=
+	t=1775678126; cv=none; b=X7dm/1ULFcNMzffedPur1biH+Z+8fELYMtf3gyObHuPK+vH1kPSJ78TuL0jL0JPr3lAWBYwha0HKfaqbTqhMquLhBAYKsx8SSifJYjl2VaqVHz1j2FfBxmQEKF1+WcLaOVgI3XPctFoilIngjA3iiovmZlz2iWtmPj4RCkJV8S4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775677962; c=relaxed/simple;
-	bh=9mqb4UmtbkwxmOKBN82oecxyPuZOukRhEtgO/Lh2Y5g=;
+	s=arc-20240116; t=1775678126; c=relaxed/simple;
+	bh=hP0DBz2MnfHgUl3vIzfFDjwQPis63gKAesI6MjWY1NM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mH1WbG/0v6kA/ovolR9EvuTI4lRkOKDH7m8Ef2DSpS7h4mbKdI6IrMQfG11kdzG5rBZRXqj8aHkOtQlJq4zULT9Rd9TIPC9DSa6XPMyDoeYxcySwlm/QkvZ/wA9F38E6lnwlV/r0cB1nR5Ev6wzU203AZz8+PniUi2ncMwzZ034=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=armlinux.org.uk; spf=none smtp.mailfrom=armlinux.org.uk; dkim=pass (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b=HbONVFG6; arc=none smtp.client-ip=78.32.30.218
+	 Content-Type:Content-Disposition:In-Reply-To; b=pD8CNDPOcR+nwAViYrXfeUqWhs6LSmlhteP2Gi9HRC9z4HfF9tbu15p3x8ID9IX9zdXopnJfds5+nVn19SwevGyyydgS2akLVlBJ+bn3Bi5loGFaERN4KcNusRorbstkLN9ULosFychqN+/3C2zSDvjYLDjUSJPXXVLCspO8eME=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=armlinux.org.uk; spf=none smtp.mailfrom=armlinux.org.uk; dkim=pass (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b=qFu40S34; arc=none smtp.client-ip=78.32.30.218
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=armlinux.org.uk
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=armlinux.org.uk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b="HbONVFG6"
+	dkim=pass (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b="qFu40S34"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
 	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
 	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=siH4dWUpa1bG3+ZxEQfIrP5wIqLbPeNz587asx6iEtM=; b=HbONVFG6DRgrSygkw950meAgfH
-	FLTLo7BxXvMxVYn1N3O9aPUiz3woyCupXzqlJQWKrMvzQLmTmBdI6FEku+H9GKYgnuT3VLPpCo9f+
-	6UDXAtge8QqbJsZepg2gz1o0r8ZWvTGoK5cuNO5b+6T7SGJHaGQ1dJN34J2aho4Bw1hyZTnIeNaC4
-	Poq5/q05n5j5v6Xxsm05218oh5ixACNea6eFktDlpcOoW2BJjsL2Wd0AjuMGd6wqOP2v1ksNxubFr
-	y9J3KuLltt3yfobkIvJuBFwB/mpTyjhKQzrWzf7bSihFoYIWM5TQZmnfgoZQm6ZHigZ83vVG3EqUO
-	pkUdBNyg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44908)
+	bh=kDGfj+dIHPPPtxem43wBR54tdlI5WONO4yOnjDFCHo8=; b=qFu40S34x3LPTlvHlJxgPpP1VE
+	5lcrapFLgKvUE5BdnKOsWZgZqznw3hd7hv/+YTmZLtc7DK0lveb5mHqcKDjVlYJSu7/D8mi2ul7E+
+	Lts+VGGD58x68+/ZE/xIWfP+d/MA16VoVwOvK8V/yrGjzdqVJOcO97zbX1rWd/NvHYZjKqfc0CkmY
+	M8GrxwLH4sLTBU1TG0kfa37TDUJQxDPwGAy/gIWFAAY3Jj2oTtV4fXrcmJB3mzLXLlj0QWHRH8nfG
+	Qj+cI5ctSa0AxCeMYOR7WyYSJS8eN+JDqUPhYrL/oSRnRreXppPbmQ0iRDehJwNeh4i6tn41QZG8P
+	S7PklMcg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34022)
 	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.98.2)
 	(envelope-from <linux@armlinux.org.uk>)
-	id 1wAYx1-000000002jw-3Ojf;
-	Wed, 08 Apr 2026 20:52:35 +0100
+	id 1wAYzg-000000002kI-0bnN;
+	Wed, 08 Apr 2026 20:55:20 +0100
 Received: from linux by shell.armlinux.org.uk with local (Exim 4.98.2)
 	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1wAYwy-000000003cC-3cPP;
-	Wed, 08 Apr 2026 20:52:32 +0100
-Date: Wed, 8 Apr 2026 20:52:32 +0100
+	id 1wAYze-000000003cL-2mUf;
+	Wed, 08 Apr 2026 20:55:18 +0100
+Date: Wed, 8 Apr 2026 20:55:18 +0100
 From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-ext4@vger.kernel.org,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	dmaengine@vger.kernel.org,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Theodore Ts'o <tytso@mit.edu>,
-	Andreas Dilger <adilger.kernel@dilger.ca>,
-	Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>
-Subject: Re: BUG: net-next (7.0-rc6 based and later) fails to boot on Jetson
- Xavier NX
-Message-ID: <adayAMR_dEA6W5vW@shell.armlinux.org.uk>
-References: <adZTGOjjJrVJOcT8@shell.armlinux.org.uk>
- <adZfTi3R6jtsjXx-@shell.armlinux.org.uk>
- <adZ9grUg71f518Fg@shell.armlinux.org.uk>
- <adZ_ZmjcE8S22vR1@shell.armlinux.org.uk>
- <3a1d0520-3402-47b2-9d7b-4e14a3cd07a4@arm.com>
+To: Jon Hunter <jonathanh@nvidia.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org,
+	jgg@nvidia.com, iommu@lists.linux.dev, linux-tegra@vger.kernel.org
+Subject: Re: [PATCH] iommu: Ensure .iotlb_sync is called correctly
+Message-ID: <adayppUjhjNZNSeY@shell.armlinux.org.uk>
+References: <8982e3412563cf91e106d59228dfb6115024c75e.1775659257.git.robin.murphy@arm.com>
+ <bdad8adc-5c20-4fb5-90b0-b7ca4199a7a8@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -66,109 +55,52 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3a1d0520-3402-47b2-9d7b-4e14a3cd07a4@arm.com>
+In-Reply-To: <bdad8adc-5c20-4fb5-90b0-b7ca4199a7a8@nvidia.com>
 Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 
-On Wed, Apr 08, 2026 at 05:40:48PM +0100, Robin Murphy wrote:
-> On 2026-04-08 5:16 pm, Russell King (Oracle) wrote:
-> > On Wed, Apr 08, 2026 at 05:08:34PM +0100, Russell King (Oracle) wrote:
-> > > The rebase is still progressing, but it's landed on:
-> > > 
-> > > c7d812e33f3e dmaengine: xilinx: xilinx_dma: Fix unmasked residue subtraction
+On Wed, Apr 08, 2026 at 06:28:55PM +0100, Jon Hunter wrote:
 > 
-> FWIW I don't see a Tegra having the Xilinx IP in it anyway - judging by the
-> DT it has their own tegra-gpcdma engine...
+> On 08/04/2026 15:40, Robin Murphy wrote:
+> > Many drivers have no reason to use the iotlb_gather mechanism, but do
+> > still depend on .iotlb_sync being called to properly complete an unmap.
+> > Since the core code is now relying on the gather to detect when there
+> > is legitimately something to sync, it should also take care of encoding
+> > a successful unmap when the driver does not touch the gather itself.
+> > 
+> > Fixes: 90c5def10bea ("iommu: Do not call drivers for empty gathers")
+> > Reported-by: Jon Hunter <jonathanh@nvidia.com>
+> > Closes: https://lore.kernel.org/r/8800a38b-8515-4bbe-af15-0dae81274bf7@nvidia.com
+> > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> > ---
+> >   drivers/iommu/iommu.c | 6 ++++++
+> >   1 file changed, 6 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> > index 50718ab810a4..ee83850c7060 100644
+> > --- a/drivers/iommu/iommu.c
+> > +++ b/drivers/iommu/iommu.c
+> > @@ -2717,6 +2717,12 @@ static size_t __iommu_unmap(struct iommu_domain *domain,
+> >   		pr_debug("unmapped: iova 0x%lx size 0x%zx\n",
+> >   			 iova, unmapped_page);
+> > +		/*
+> > +		 * If the driver itself isn't using the gather, make sure
+> > +		 * it looks non-empty so iotlb_sync will still be called.
+> > +		 */
+> > +		if (iotlb_gather->start >= iotlb_gather->end)
+> > +			iommu_iotlb_gather_add_range(iotlb_gather, iova, size);
+> >   		iova += unmapped_page;
+> >   		unmapped += unmapped_page;
 > 
-> There's a fair chance this could be 90c5def10bea ("iommu: Do not call
-> drivers for empty gathers"), which JonH also reported causing boot issues on
-> Tegras - in short, SMMU TLB maintenance may not be completed properly which
-> could lead to recycled DMA addresses causing exactly this kind of random
-> memory corruption. I CC'd you on a patch:
 > 
-> https://lore.kernel.org/linux-iommu/20260408162846.GE3357077@nvidia.com/T/#t
+> Tested-by: Jon Hunter <jonathanh@nvidia.com>
 
-Okay, bisect complete, and... no idea. It seems to suggest that 7.0-rc6
-is actually fine - it ended up blaming Linus' tagging of 7.0-rc6 which
-only changed the makefile. So, my assumption that because rc6 was merged
-into net-next last Thursday which fails, net-next+rc7 fails, rc7 also
-fails, that rc6 would also fail seems to be false.
+Tested-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-Right, rc7 built with the same .config that rc6 was built with
-definitely fails, this time with:
+I think the commit message needs to spell out that the blamed commit
+causes random memory corruption which leads to data corruption and
+kernel oopses.
 
-Root device found: PARTUUID=741c0777-391a-4bce-a222-455e180ece2a
-depmod: ERROR: could not open directory /lib/modules/7.0.0-rc7-bisect: No such file or directory
-depmod: FATAL: could not search modules: No such file or directory
-usb 2-3: new SuperSpeed Plus Gen 2x1 USB device number 2 using tegra-xusb
-hub 2-3:1.0: USB hub found
-hub 2-3:1.0: 4 ports detected
-usb 1-3: new full-speed USB device number 3 using tegra-xusb
-EXT4-fs (mmcblk0p1): VFS: Can't find ext4 filesystem
-mount: /mnt: wrong fs type, bad option, bad superblock on /dev/mmcblk0p1, missing codepage or helper program, or other error.
-mount: /mnt/: can't find PARTUUID=741c0777-391a-4bce-a222-455e180ece2a.
-get_swap_device: Bad swap file entry 1800c00008
-get_swap_device: Bad swap file entry 1800c00008
-get_swap_device: Bad swap file entry 1800c00008
-
-So, it seems rc6 -> rc7 => fails
-net-next with rc5 -> net-next with rc6 => fails
-
-However, before I test anything else, I've just built the same rc7
-which failed above with your patch applied - and that boots fine.
-
-Now, each Thursday, net-next gets updated as that's the day that the
-net tree gets sent for merging into mainline. This causes net-next's
-version to increase. So something in current net-next plus in rc7 is
-causing this problem.
-
-The commit you claim needs fixing is:
-
-$ git describe --contains 90c5def10bea
-v7.0-rc7~29^2~2
-
-which I had assumed wouldn't be in net-next.
-
-Now, mainline had this on Thursday:
-
-commit f8f5627a8aeab15183eef8930bf75ba88a51622f
-Merge: 4c2c526b5adf ec7067e66119
-Author: Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu Apr 2 09:57:06 2026 -0700
-
-    Merge tag 'net-7.0-rc7' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net
-
-commit 4c2c526b5adfb580bd95316bf179327d5ee26da8
-Merge: 2ec9074b28a0 8b72aa5704c7
-Author: Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu Apr 2 09:53:16 2026 -0700
-
-    Merge tag 'iommu-fixes-v7.0-rc6' of git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux
-
-and merging iommu-fixes-v7.0-rc6 introduced the buggy 90c5def10bea
-commit into -rc7.
-
-However, as soon as Linus merged net-7.0-rc7, netdev maintainers merged
-that exact commit back into net-next:
-
-commit 8ffb33d7709b59ff60560f48960a73bd8a55be95
-Merge: 269389ba5398 f8f5627a8aea
-Author: Jakub Kicinski <kuba@kernel.org>
-Date:   Thu Apr 2 10:57:09 2026 -0700
-
-    Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net
-
-Thereby bringing in that buggy commit into net-next, but with net-next
-identifying itself as 7.0-rc6.
-
-That's... confusing, but explains why current net-next which reports
-itself as 7.0-rc6 _and_ rc7 both fail, but rc6 itself does not. It
-also means I've wasted an entire afternoon running a useless bisect
-between rc5 and rc6 due to the version numbers in net-next being
-meaningless.
-
-What's the status on the iommu fix? Is it merged into mainline yet?
-If it isn't already, that means net-next remains unbootable going
-into the merge window without manually carrying the fix locally.
+Thanks!
 
 -- 
 RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
