@@ -1,146 +1,137 @@
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11011061.outbound.protection.outlook.com [52.101.62.61])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D9032F12D4
-	for <iommu@lists.linux.dev>; Wed,  8 Apr 2026 16:22:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775665369; cv=none; b=ikU52IPrBPDEorZkVEtn9oAxQx7yZZb5o53MmTXB33zKFtnWmmqWREhQxmLEVDouzWuCZ04i6bQxCzE6dCZeV05wHeXrHYSP6r175gTzP8gSyj+qyPTJIll02YIIB94/yz25zZT0+LwJ8atPlu/jExISmfLKlyz4CB7KpvG2FYw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775665369; c=relaxed/simple;
-	bh=MbK2EhOyylLAxU2Q/eHjdaz1ad4dnrnqpmOeagl6cGE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=IXcKTKzicFt8Tj8Q0ha/1S47wvKktYmB+p9k0HbsxqeBW5a2xAjntSUtaPL/VmzNvXLyzR2LFbtwiBzFUYQnBFHg03i1Z02aU1uy8B57IA+oq5sMdLreD3ojJzuCn6ePynKOZUS3b7Vtxpi9bsizmcvu6FXRyFYteDeLHJBR84U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=fqs6cJHc; arc=none smtp.client-ip=209.85.218.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E8BB34AB06
+	for <iommu@lists.linux.dev>; Wed,  8 Apr 2026 16:28:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.62.61
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775665734; cv=fail; b=gVtAqu6j/1XGM5OjpqVs4YhBtv5rJQ8lkNd5hpvzS689AT12xBNnSxIzZSkKwlkoLFeXBDO+OlKQAEcFjumk3/RzDp/3MKCt3zvWa6B6/LzoV4iAbbGYU25fH5EiJabbFm3O2/nxB7tJ6q/0uzMYR038LwWUNx96nJgfgl6sRBs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775665734; c=relaxed/simple;
+	bh=XFV7Jka4SDoxmkHCerqxO7dX5HeXIkEZHk7kV4eA/MY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=peuVuybOz9pNXr4wb6bzjuwrv2HmDKAMHF9qZeEzJIMgdH9aLjDbP814/hPrqdypQzwvUsWkOsSHSlXGCORDfJHnvIqUhXIfAVxP0AqrmtkuXLSzNiYqdxhMVXoqfoeOWS/VbUufaBvgd7da8dFtKFZjYmVUYY1vHgz5wbuVERo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=onrITpeZ; arc=fail smtp.client-ip=52.101.62.61
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="fqs6cJHc"
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-b980b35534eso188878766b.1
-        for <iommu@lists.linux.dev>; Wed, 08 Apr 2026 09:22:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1775665365; x=1776270165; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=FrJr1968WuvXLCx5E+q3h8WCNbUNL7Em2uQzgCx18+c=;
-        b=fqs6cJHc5VCltZYsvtXZFABXTIUOGLt2/IQVHkxQpRp6QHX/vDUqXIgfmemnlGaSJD
-         bsdnOL8CFR+lrfTHeQU0opZgbv59ClaFwebbz0o8maoADffvepk1ix3DtAwpVAgLXBv3
-         09k0KT4p5XgToLVAHzZa4kzjdNRre2MCDoVF8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775665365; x=1776270165;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=FrJr1968WuvXLCx5E+q3h8WCNbUNL7Em2uQzgCx18+c=;
-        b=LO+DtSKg+YYYVsp7yd6ZGeKq7ffZ3fUiztud53qUZ3FHA5zBY+qaEPBdwuuSYkWfZu
-         2oAKNwIlz5CChqqm4wNB1zabQIy5DT6HNgyjbgCi+9qZBQx2lPTzTmUTT9sD0TONVMeh
-         92BIoLpkdAcZAirCRFLC+/GXA9wyZB/+PhmZq0sgqAPTit84q5CwaLSuaSqUBGm6Ap1w
-         ya9W/jvRjlc2mYPpFImdURKSo6JW4kAO4cMIPgQGv7Mr7rk0Awzmq7ROBTu4T1IFg093
-         4aqD9brpJ/YN8xxSWn4hfKPgvsNX5iT4NyXiZqEcwWwS4w71QDVB/IfBwkAIRLZ/SYq2
-         Q3vg==
-X-Forwarded-Encrypted: i=1; AJvYcCUufjAkWzp8Oh2+8Jk1Bu+fdmhnTRFAi8+HMq5idYYpPEx1wEiuGFuobYrvmw+0x+aPNkyv/A==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwF44e4kwj3QvlFe9VgoKAdGZ6r6oTayJll1ZR19Fd17SUPg3il
-	5BAF3iQkJ2QtaAlVAOOsArAv5EgPwsbE3ZvEiWxw/v51uyYUg3FefF0/bH+cHTHI5TO4DsXe6kT
-	cMrLVArY=
-X-Gm-Gg: AeBDies0x/h1pTro9FOJWSR3bKkImeyn7e+Mb03vvSI+ug/qWfswpbgmYrsYU4Yxhrw
-	0eMBxqD70sWEVzEezCNhdnvvRtPYG6p7/oG1wpC1/3AlZbzNi89wyA8aOuo4F26VwXEN8r6m3OS
-	OTVdewcvGklp4cCHCeAb1hj0qwPwJ4WjgId/QTldgJqkYX4mq9JGpWxcjsWC7epffsB2f9vSO/b
-	atDmaNE9wu2ZjFXSaWH583N1R5spuzz0Hhjj8jT6d6Ts/3f3Z4Hgl0FR7ww9PGTWufhChEQbGea
-	OwFYWIQJdJISBfNRFqEVhfRAFL1upodx8LXjct/sNnM67tMYpapUucmSH4+PBN2JnGJ7sr0r5PG
-	30IXLeVUt6fbdJsWgNGc7anuZYTzxKPW+o4YZItUUxUgZN+gJdlm+l90zEHVsoJhxZ6yhJUObZv
-	4Dp/sCg2HmOvewus7Q8Z7c9a9xj6xRgr6R+nwu+ipH3vymRwEvag1odrOXAkHskpxp3mJ5GbTr
-X-Received: by 2002:a17:907:d06:b0:b9d:14e9:d06d with SMTP id a640c23a62f3a-b9d46062179mr9110166b.8.1775665365525;
-        Wed, 08 Apr 2026 09:22:45 -0700 (PDT)
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com. [209.85.208.54])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b9c3ca9abb2sm665341966b.24.2026.04.08.09.22.44
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Apr 2026 09:22:44 -0700 (PDT)
-Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-66d65646c65so60975a12.1
-        for <iommu@lists.linux.dev>; Wed, 08 Apr 2026 09:22:44 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWBALa9i5p4vmc/aB6rB1Dt2fKdxJ7SfPRQx7tQPonij4ibP9Nxiys2+7Ud7/5tztzdKm2aiQ==@lists.linux.dev
-X-Received: by 2002:aa7:da5a:0:b0:669:cbc5:db7e with SMTP id
- 4fb4d7f45d1cf-6700a57ee26mr52955a12.6.1775665364063; Wed, 08 Apr 2026
- 09:22:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="onrITpeZ"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=kaoPTOaKybP1O8CXl2o0DHc4W4A4Nj7P069PyIDR8HV9LQ/hUhgOG7MZYxdLa50iPtVQ6DRM5cyTGJZ93z43Uw+tdnHJP4tQ0+6w542KNvC8wcq5R6TWs1DIq0sTAFY+O0hJmQ9rv4lv9KIBEpE0fCt9iL2GF8v4C+4w+KbH9dPRr/vaxgMBc1ib13s7zAKjf/SEkCi4BEMMkvrw4sh1JEWwGo7/Ir0yP8prP4VkyqloS1nqDfCZzktMMZP3F7x3ZcyMSC01yTM/uM1Dkhbh54h+pUnLeEmDIQSOEhwaoKTH5Gp8lm1i+Z3uE2VB/VDOLU5p2/MkQRi7F++8dXL9iA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bQGCqPJfPJwO+txCoVipv7aorf/CHq32Pau5jsk5tYo=;
+ b=Hrwkmu7r9KMiTH3dNA2VM3nFCkgtgseckG+y2dlEUZQKM9woDac4BcoiAiOFvIgmEHCWbQa7TuReaKE5sBWkSbUzmwqfE8r2vju0lypF3E89mqy161XiMM/+/VfJgd9Y3c6Fs/viqcvez84nhn1JDPNg3Yd7y5O8RxmnYaLMOz/9WUav/BZIYxqH153vbnSwahZOU9ZAYqeAA/l/tHYkwaDaZEcYwfizUTrNhxRJi+PF93wRmUneBSa/M23eV5TYHAztIqfCBWlg49srmXMM9NEniNxDFpQu/F0eaSxkK6SfnAjY980ocy3XQPRKM89uHIaNqNLofVY1pkp1/qJeKw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bQGCqPJfPJwO+txCoVipv7aorf/CHq32Pau5jsk5tYo=;
+ b=onrITpeZZpcBxb2HSPNWBAxQSaeBe5iprCweWGAMyyLU7mGt6BMxr0fxqzOG0K7SGYDzSegKlJ6/AvdoTdil/Cgm2hq/LzrlasuQI4MT23hTjBrzPLhww/Sz2gGLyn9CJ4cbv+lA2gi0m4p+0s9Zh40zQ+FSZVRTeKmP+XVnIHlNZHXQRecVSBcuzm86ASj4CNrPyNRyJXDEsNjwJj17i4N+fFk4IU6xzBlf2WtPMgdNFmXya2JqrwOl92ahDo6DgKJzsARtUO9k3FNtNWN9Jn5axB+ie1l+1ECSF2XjOydGruzXJreZTgSmM2eIt8vq4VCT8WyKWD4CH1KZzDbmVQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by DM3PR12MB9328.namprd12.prod.outlook.com (2603:10b6:0:44::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.17; Wed, 8 Apr
+ 2026 16:28:48 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9769.017; Wed, 8 Apr 2026
+ 16:28:48 +0000
+Date: Wed, 8 Apr 2026 13:28:46 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, will@kernel.org, linux@armlinux.org.uk,
+	iommu@lists.linux.dev, linux-tegra@vger.kernel.org,
+	Jon Hunter <jonathanh@nvidia.com>
+Subject: Re: [PATCH] iommu: Ensure .iotlb_sync is called correctly
+Message-ID: <20260408162846.GE3357077@nvidia.com>
+References: <8982e3412563cf91e106d59228dfb6115024c75e.1775659257.git.robin.murphy@arm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8982e3412563cf91e106d59228dfb6115024c75e.1775659257.git.robin.murphy@arm.com>
+X-ClientProxiedBy: BL1PR13CA0406.namprd13.prod.outlook.com
+ (2603:10b6:208:2c2::21) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <adZTGOjjJrVJOcT8@shell.armlinux.org.uk> <adZfTi3R6jtsjXx-@shell.armlinux.org.uk>
- <adZ9grUg71f518Fg@shell.armlinux.org.uk>
-In-Reply-To: <adZ9grUg71f518Fg@shell.armlinux.org.uk>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Wed, 8 Apr 2026 09:22:27 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgvBPt8b204E49qUfK5F3otKzV==4t8Z=6_wXO6vgWqHw@mail.gmail.com>
-X-Gm-Features: AQROBzAZ_qhfjZYeQTD5IRVziYmZuTFOofH8RWcCNS0y3LUoXT4zBJ_T9EYFJb0
-Message-ID: <CAHk-=wgvBPt8b204E49qUfK5F3otKzV==4t8Z=6_wXO6vgWqHw@mail.gmail.com>
-Subject: Re: BUG: net-next (7.0-rc6 based and later) fails to boot on Jetson
- Xavier NX
-To: "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc: netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-ext4@vger.kernel.org, dmaengine@vger.kernel.org, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
-	"Theodore Ts'o" <tytso@mit.edu>, Andreas Dilger <adilger.kernel@dilger.ca>, Vinod Koul <vkoul@kernel.org>, 
-	Frank Li <Frank.Li@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|DM3PR12MB9328:EE_
+X-MS-Office365-Filtering-Correlation-Id: 024020ca-b2e8-49a7-a15a-08de958be949
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|366016|1800799024|18002099003|22082099003|56012099003;
+X-Microsoft-Antispam-Message-Info:
+	m0CejDfb7aFWKXuRq1RoyxQktKV1/LHVjS+NMU8btc5270EVhmiSppeyaLYxMH+TcOs35jD53nVWKlbp3MolMpIg6xc848mUyiQFoj8yXSi2maX4OoJ0SdFeXRFY1oBziNoGk0XEtk383z7P7F7QBTTS5G1nLsoSjv/taQ4kNiR2aaBbcDa5s2Juvhv3ERiSVUAmHI1Gz5ellqTytArNNWKTGbGjp/7uQo2bOXgEFT0IhuCdq9Ktf5KuBn6Vd30MtKewX9p2PB4s3EhkLefxAROtMCAI3y3M1C/Pb5hofvB2ShaNy17D3G5ppZluuRbdl4kjd2FbVy/lY97Kd8qwmkziQ/IBIKG26xMcxpxjzwauygsDRmPwg8XE65B3yGSdHxcy3ve4/ZvR7sUMCBmZyq75DI7I2f8KS5uzW7esMVMV3o3XqS0xgI7Icggaz5R/b3GLqrieE0e0s8Jcny7zX4Jrp65XnZBmEguWpT8Hmg3/C3EGaBpb06GQGU7bwFWPpA+3PlneiZI73FLjkMWYLA4bOXlPYGq9qYAJRJJcbWUuXGeTIBHwHyCNzWUhjZccxiVVWy/bqHd2ZLg9/pXClMb/hdKzbfnThVdZCsz6BIJvUl933iuif421pyD2FTtLW9OC5w6lVd9d8vg4d+fF9mNGjYhzdETZJKaACNZ9oRe1t4cb5qTJ9/lv3enCphuwP//94w6Z+0Asrsx8BF4JF3Lv3YUvm9lU6n153l7kQ/Q=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(18002099003)(22082099003)(56012099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?PLRcL9PUwsAjPIz2JW9Xnrr2VM2+GJYQ9/FvVbqIcPsdKfX28yhxfggpnEQs?=
+ =?us-ascii?Q?ysvSW51vAvY0ZfUkbvrGKAhtZ/5fUetK34wYl6rvP3D3RQ0Rs5oxz/0F9kO3?=
+ =?us-ascii?Q?86oMs8Xfa93IU3o+imrrmcjhHRk5KweTCWOfiyb0v+c7RgIHwuFbtokuY386?=
+ =?us-ascii?Q?7NHnO9RsRpWv6QVq0ejpiRh90gGt0JxByZiSJfJdPhvqyUM+1qA3EZTpluyN?=
+ =?us-ascii?Q?yR9CX+hWveuCjBrbsPWTU3BTHfNh0IZV86G/TJvLXpJV63ZsNFKhcFPZW8WU?=
+ =?us-ascii?Q?+p5zBCTHmEaTpa2iTXrxHfDsPEx4jgVc6bBLM7rUaV0oYZm0qw1EEKyWsszt?=
+ =?us-ascii?Q?ODaxt+iS9f8MrzUmNXcwiVRsVI42rJst0ZPCKWgn70iGd5th/xDZDd7qZt9D?=
+ =?us-ascii?Q?MFXMtLVlIXbBTdKkmck4FV1cgX8RDwVrrb8IZ+wJkgaYxqpKb+NxA37NuZlN?=
+ =?us-ascii?Q?Q+TGX7HzqdCu+IxIit6gDHPRxUWhQACtM0ZUPBSZcvtSKu0Bx2zS9E26hZ8I?=
+ =?us-ascii?Q?p0LvcabM1P8pMfBmXypmjUjfSFr+oIIVzYQqXc7H0b8S0XgR71X8YgLtwVuE?=
+ =?us-ascii?Q?xMLwxKA2GzqHrVo+lFXnqvDjBIjoTEiO6Alsz3c4XMPjJUp7/Prnaln4KH0g?=
+ =?us-ascii?Q?XVGVGPT0eOnpKUvLv32W7rGdtqzNHVctryEi8eD7pAKDtLBQ2j+YyMbIPpOM?=
+ =?us-ascii?Q?c8k2wHvCRBpyAgzD5eQDo3qECYpKK3LJrxSzXNDDXmevDzOC3rcnoMcLC3kb?=
+ =?us-ascii?Q?cT18iGoABGVdTiMcqDykKJ/0XEr9X6ffvKDru2e4r2wzBuuqwk0oe6/aY8/x?=
+ =?us-ascii?Q?E4ItOviSF5PqLw5lw19gRNlH7eR319oz+wv0ssp8dXqgDyRV9582q1eEXFjS?=
+ =?us-ascii?Q?TOEF6qPjDYvqBqgOoym0LoFO4OzFxworWyc2ouqbuoZuulrZTpOFHWnJGqfi?=
+ =?us-ascii?Q?dJWtKJxl4rCR74WowiIyiWj6k6Y7ga1gQO5xPE4REO4pjpcaBbO6a9+qD3Rl?=
+ =?us-ascii?Q?fSnD9uXhn1YphTu957zoz5Jt7TFAGYbjXtfm7DMyEZEX06BGZ+vYBMQ50ozU?=
+ =?us-ascii?Q?lL2crGyneZKXmn2x7AUIqH8L61Ca5ZsO4Sz0V5eUj+OChIoe8PuOtC3AKWla?=
+ =?us-ascii?Q?QoAkEZlX/AaYF+1INRTb/tR6mMzVKf6fdDSKz0WS0FaLbOO6TYHTM8i2cAt0?=
+ =?us-ascii?Q?fTrdOsPDaVqYNf6qKr7zlM7NH50fLILNsNfARt3XsJ5UV5hdNYqFPkCQ4eKl?=
+ =?us-ascii?Q?DWzKpOUAHss3oiQPfUmhveHIuqtRFL13oV71lOzJZmAlNNFDJ1cK2sXdkp+o?=
+ =?us-ascii?Q?4h2BhIW5ays2sJ1iKDCAxfx12WJDdZn+IVBwR/Roa5TMBKCoS/vTw5ufVrJ1?=
+ =?us-ascii?Q?r5fYObc8xLk4ET+gtyqfhgzZFaSz4mMpPaYUDBl4caUH3l0YURAkiFlPhnbs?=
+ =?us-ascii?Q?3rsENOE22gPER3sRFdqYLMOaVxoYdBRWJuA0Wqx82bW07rx+AWTnjbQ4CgaJ?=
+ =?us-ascii?Q?5fJIRE0KJN7nfUwD0g1Prnx4ACd2KsIEdQreDvQSAQyLgfbQcoDc5xomwv4Q?=
+ =?us-ascii?Q?9f8xoyNrqB5kdahK1j6syV655NRXX/HyQTykb5FI4JW5TcSFPls3WVLneht5?=
+ =?us-ascii?Q?2jDPbHerZAwA7sEMdmUs+BssiScwHuloXTICfS4pPS/rZV2YM0l3lN+Jj5Q2?=
+ =?us-ascii?Q?3PrXjwxsjd5AUkUEVE6Neb/6Oyq8ELNOdTLPO+squeLJY9Bm?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 024020ca-b2e8-49a7-a15a-08de958be949
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2026 16:28:48.2226
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2m0ba3smGaKfa6orUBLlSC2BAKI/EDi9UhWAh2a6Jq0n679enAaJ9sOMVVGYYrOZ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM3PR12MB9328
 
-On Wed, 8 Apr 2026 at 09:08, Russell King (Oracle)
-<linux@armlinux.org.uk> wrote:
->
-> The rebase is still progressing, but it's landed on:
->
-> c7d812e33f3e dmaengine: xilinx: xilinx_dma: Fix unmasked residue subtraction
+On Wed, Apr 08, 2026 at 03:40:57PM +0100, Robin Murphy wrote:
+> Many drivers have no reason to use the iotlb_gather mechanism, but do
+> still depend on .iotlb_sync being called to properly complete an unmap.
+> Since the core code is now relying on the gather to detect when there
+> is legitimately something to sync, it should also take care of encoding
+> a successful unmap when the driver does not touch the gather itself.
+> 
+> Fixes: 90c5def10bea ("iommu: Do not call drivers for empty gathers")
+> Reported-by: Jon Hunter <jonathanh@nvidia.com>
+> Closes: https://lore.kernel.org/r/8800a38b-8515-4bbe-af15-0dae81274bf7@nvidia.com
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>  drivers/iommu/iommu.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
 
-Well, that commit looks completely bogus.
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-The explanation is just garbage: when subtracting two values that may
-have random crud in the top bits, it's actually likely *better* to do
-the masking *after* the subtraction.
-
-The subtract of bogus upper bits will only affect upper bits. The
-carry-chain only works upwards, not downwards.
-
-So the old code that did
-
-                       residue += (cdma_hw->control - cdma_hw->status) &
-                                  chan->xdev->max_buffer_len;
-
-would correctly mask out the upper bits, and the result of the
-subtraction would be done "modulo mac_buffer_len". Which is rather
-reasonable.
-
-The code was changed to
-
-                       residue += (cdma_hw->control &
-chan->xdev->max_buffer_len) -
-                                  (cdma_hw->status &
-chan->xdev->max_buffer_len);
-
-and now it does obviously still mask out the upper bits on each of the
-values), but then the subtraction is done "modulo the arithmetic C
-type" (which is 'u32')
-
-In particular, if the status bits are bigger than the control bits,
-that residue addition will now add a *huge* 32-bit number. It used to
-add a number that was limited by the  max_buffer_len mask.
-
-So the "interference from those top bits" stated in the commit message
-is simply NOT TRUE. It's just complete rambling garbage.
-
-Instead, the commit purely changes the final modulus of the
-subtraction - which has nothing to do with any upper bits, and
-everything to do with what kind of answer you want.
-
-I think that commit is just very very wrong. At least the commit
-message is wrong. And see above why I think the changed arithmetic is
-likely wrong too.
-
-It's very possible that the 'residue' is now a random 32-bit number
-with the high bits set, and you get DMA corruption.
-
-That would explain why this happens on Jetson but I haven't seen other reports.
-
-                    Linus
+Jason
