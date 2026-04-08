@@ -1,191 +1,196 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazon11010062.outbound.protection.outlook.com [52.101.193.62])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 066F32E1F11
-	for <iommu@lists.linux.dev>; Wed,  8 Apr 2026 13:08:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775653718; cv=none; b=TumDNvN0dmhJbl3d1jZY8xFetbCHzjodAAmabtQASnOf5gZV185L7Dz4LBdvrML5JU8fzKaaUY+smMtbsKVj1t/VwA0X+e0IqTfBnthwQUZgkfix0q8+NLclFfD/j+jYWJpRK9OxdQcCg/jI6PrPmQ50S5YqwOhgPFmnL8j7Puw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775653718; c=relaxed/simple;
-	bh=KQwk0Mdce+W21y7dALQ2Q9dpKAvtJUjSQiWHRa+1mjk=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=pEERyU1f9keiFSKT+DaC4MOc6Gp6UXiQb23p558kWbdcImSK7O3TmxWeNF1uPt46PV4C8glR1UBxGKcXqVCdi+DT2OJQDHlW7FRSZaej8A2VO6oeF84X+//DYn3Lt2DfvX8Q/RV+jV0aDye6ldNkG7s7tQMtb2bsFPc+F90qLZI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=hOQLOC4P; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=j1tQrJ4Z; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B5BB3B8D78;
+	Wed,  8 Apr 2026 13:35:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.193.62
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775655317; cv=fail; b=NnHNyMGjptgvTxIS4w/HjDUo1Ocv58dQoBjqgqPJA5K3jBytjZ2Bb/S4pcYPQS0r6s1Am2l4jMzhjElfV3iTg8kHxZ+csWI6ghGc8IyFiQ9aLiZMnDVzaaqVrc0pLIz3gZIC2qQxNDX7kmd/FsinYldajz4o3EL6r5fC5r74yk0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775655317; c=relaxed/simple;
+	bh=ZdL6zC5U+KwV0WvsjYnbuA55N4AEd1314qKQ9stdRvA=;
+	h=Message-ID:Date:Subject:From:To:Cc:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=jXUSGkfJjdVUEUjByLeiLA8kuqUJsTVsW5Q95H21+2a6HW31J0gidVXWFT730F/+Z48lT3Ks+XgeV2o3bUODrliUfHJnbfZcDrrs/Wbjpme6KrUztUmIbmll0gWBYLHhEoietQUBhpUOQmhH9PgoQhXi3OcabwUy6/IsLDLDgbk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=JhRMrSjb; arc=fail smtp.client-ip=52.101.193.62
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="hOQLOC4P";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="j1tQrJ4Z"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 638ABDU53362760
-	for <iommu@lists.linux.dev>; Wed, 8 Apr 2026 13:08:35 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=qcppdkim1; bh=HntEs+8pzBI+y7qt7t4W2U
-	rvZTm4MrVZ9wGejJw7xFA=; b=hOQLOC4Pqd9JJMAXOHmewoVLftRrhHPEDd1v17
-	/ttW0cuJGyHHlKIj/bbk+ZTexlZVNa2np9A3PRrbFSU3YhqVR0i3MiOZXWMHEfit
-	h9KX0UiWjHrhZC2Q+JkbpfmXD/okIiIO/wT6vEXmhY1lHzQRBErd5+OJJ8qXfNAA
-	xX19ydjn5RP8VNfeyjmV/wZiumJntxPwCloADOXELg3GV/wiN/26ztsnXu2uZEWc
-	zSLjdeBnjVLqwQmzDfdLKMLgvma6LK72EgL3s4R9cellB0Ss2jAXjhNbPVmHfR2s
-	NbG50WP8K8M9ZJJX6Wdqg4vtX9vI+ORk6JJsXF3lm4QM7HMw==
-Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com [209.85.210.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4dd7tkkg2p-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Wed, 08 Apr 2026 13:08:35 +0000 (GMT)
-Received: by mail-pf1-f199.google.com with SMTP id d2e1a72fcca58-82c63f85c84so3619590b3a.2
-        for <iommu@lists.linux.dev>; Wed, 08 Apr 2026 06:08:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1775653715; x=1776258515; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=HntEs+8pzBI+y7qt7t4W2UrvZTm4MrVZ9wGejJw7xFA=;
-        b=j1tQrJ4ZkguS5rZNJO6GUHhlpyYvwqx/HutsN+7K24mvIvIj7rxrnSHe24tcY6YBO5
-         sGIiKcFBNYYyjSzaCf6HKCdDaAGlKbR72Ga1GIRngNZHV5YT1yM38D5pkuQsWZSipok/
-         szFBr4RbMDvKSVAiWbyGfBJB48fbRXMx3dcQCMCfj22oO+rdjAvN6x+0vRUzlzSIUgWv
-         NMNFNb0POPi4mYT2bJxbteMZuqbhD8n2hAnhQLqerwnaYqCLziuG3PnBYLCILQ55a3Wd
-         /q2KN8Ojn6A58Kvqy4XDe2iZjwYLQYfzhWJHVbN/QUXwnkOAQYBo19hHTVy7IfFweduE
-         7iQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775653715; x=1776258515;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=HntEs+8pzBI+y7qt7t4W2UrvZTm4MrVZ9wGejJw7xFA=;
-        b=lm4RhETs15ZJyXd+tuT4G5E34J5rg4FIXm6xuEtu1CbnEoEIzblsua2tT/HCKMiLDR
-         5rNyG/woLkcOE5m9aNcVjqdjs46DLCDMk5i0gWOIeYjBWCR6NWG2Kt07bMTxfuJBczl5
-         RZ+vah4biR/oeUdywLUhqf229BfbAWiGLuNeWelc5WGPrzsHyjS5tFgsZ+VKpssX0E22
-         SYN+nazTXbxA0qXjPrNEUD5fkFd6lXLwFUI90kPGcIpjrXeOzDrN5KtSiE+petmkI2/I
-         1RzKai1dGm4tCkURlVrWOEYODDMOTR7hYpnECT0Apu0i+FusJMDaJGf6cmknXJV5+uhp
-         bQNg==
-X-Forwarded-Encrypted: i=1; AJvYcCVxj5oiPTcDQ80paPrcK1Cc2gChbesowLh3uhhurEO5OXNegfyJxqLLImkoqVm5UgokOwcCTA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzMYr2xXfQ41GDkXygO0mK8V5MIDjUurKe/qXdDijrv44AmMCuq
-	RIkTFZa9msHo8rqn3poUStDo9Hxx0WJgw7t022rubAU/SCeaXQW50bLhOVGTygZUF6I+b3IqH3v
-	e1pE0PsR6Gjw4a6y/GrGyo3u6UqendWHWhWTIUf0r0pKX3nUydNQKUtTikA==
-X-Gm-Gg: AeBDievSZkRZlTMItqgFn3sk1HZRY3Q0SGoo3iYN6XkB6bVNMzO2W8tkFNckIuHmAoP
-	TaU8mBVHJq0pDVagGwrHUjImym2LTSIcPQyNPCsLiE34Cx9BT9gWpJpRRb2FGCt3hPaSbw+a6d9
-	CbR9JpGg8qQap6l91S9jyLxenpfFLa/g2rMIA73gPIhcI0zWokFyn67x8sqQUQofag33Ve4ilw/
-	7S5818bi+Z07sZT/UaDEtJq9Omn4vePeRzYwN2A99zYv+pRuz/LVsLnyGH+1O+bBJ8v1Wp7SY0i
-	5aA3DIo7TezLbPezZE24+zUa6F+BIBKA3KecRVadvi+haSuHzhIM8HK2YSnlND1Bhkg5lWXQLd9
-	nHoQLvyFCPEL7bwBc1YIR/0gF3uBhn38dKkTOIlPa6No1+dxLs92U
-X-Received: by 2002:a05:6a00:2e85:b0:81f:3fbd:ccf with SMTP id d2e1a72fcca58-82d0da9dca4mr19823929b3a.23.1775653714528;
-        Wed, 08 Apr 2026 06:08:34 -0700 (PDT)
-X-Received: by 2002:a05:6a00:2e85:b0:81f:3fbd:ccf with SMTP id d2e1a72fcca58-82d0da9dca4mr19823878b3a.23.1775653714032;
-        Wed, 08 Apr 2026 06:08:34 -0700 (PDT)
-Received: from hu-bibekkum-hyd.qualcomm.com ([202.46.22.19])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82cf9c4126bsm20426192b3a.36.2026.04.08.06.08.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Apr 2026 06:08:33 -0700 (PDT)
-From: bibek.patro@oss.qualcomm.com
-To: Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>
-Cc: Dmitry Baryshkov <lumag@kernel.org>, iommu@lists.linux.dev,
-        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, srinivas.kandagatla@oss.qualcomm.com,
-        Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
-Subject: [PATCH] iommu/arm-smmu-qcom: Fix fastrpc compatible string in ACTLR client match table
-Date: Wed,  8 Apr 2026 18:38:25 +0530
-Message-Id: <20260408130825.3268733-1-bibek.patro@oss.qualcomm.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="JhRMrSjb"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=quJgtmrjcBeWP1QQsEygpk8GTy3xVRajeTDh/YJMG78JGnSdutB23CLAPO/M4qIxvY0hIiVCawzM6Ae1/nxljyh2uMTnXCIxFPRYBKku9Y60yD/a/QKqhY7bnIMOaw8vuahdIbSQCtGgus6v2l5z0tQYjITvvLFZVUU0kjyaSBJcRXRpm3YxnNqoZZJYaDgnrzlhplcg5ZNNUvNicybz0yE7PJ5GJcXqbBBipTU2gHWFmj4bCtYmbQb+jLYnOrRgE5J4y7FSGc8XG8hXAjiKsolom51KRBemODwbbRObupFkrmN5U+pCIjqdbTdbuREStcT/NGPioXejX1aL8wuSBA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cRf8y/Xbm93UF9VirZ7Uem2Y/sAkeJtabHXYdoa+wis=;
+ b=QRnA1YvfY15LmzZNvI3N0KZ6SM2olBz9YoOx9NwmNDbuItQuApD/iuIYrEYLnfFV7IedRZr6nkGxGRN+1zabLJ5/kU9RP6HZYmtbCvugOGF7K5HbyzUkK0vtwpFEnXw6cZC8i+8hgehbSmPUgpAEpgZNI73hZ7HZhYvlyDH0J1YmgKsk1nwFhD/Msd77sf33u+7bU9T6iXftEjevqqam8Id6J/qSGIM/+OPwwCu60O5PtQVMOcEaeP11T2GUU3+N4kcXlMxtKYf381yNphJw5ZD5P22A+U5spUylatD20Qqe/QBn3PMG8FzJWjoTQdEa8/B5THd0HfK9nVkoRKgbpA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cRf8y/Xbm93UF9VirZ7Uem2Y/sAkeJtabHXYdoa+wis=;
+ b=JhRMrSjbashxHJZS2P96XecdZlyzQZVbi3uER+E5tWHeYkPNkBrrSNiOzxY0qBY2GBq+06tsDszAvYKQYWla8UHFVaTtmDqVXpOsT+YVoX1UahZdGSh8bvRYk00qfaSRMSecwHYMqtVVujrtCyz1UoPHrM732pgaiwNLYTtNfFjq7Xkuc3x5Rtepha3907irTX4N6gSe9/X41qnth5tdod/1tGCTwJQOlNwavVaxL2acO0cTQ6lDd/htIff+IslS/j65xxB2OddcwLPQuIhR39ppPvWv/n01y8vV3gpEFvhgDsvoQkEIF4BVb9oZBgeEcL5RGy3toTdGEUwTSpJL5w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DS2PR12MB9750.namprd12.prod.outlook.com (2603:10b6:8:2b0::12)
+ by MW4PR12MB7167.namprd12.prod.outlook.com (2603:10b6:303:225::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.17; Wed, 8 Apr
+ 2026 13:35:09 +0000
+Received: from DS2PR12MB9750.namprd12.prod.outlook.com
+ ([fe80::56a8:d6bf:e24c:b391]) by DS2PR12MB9750.namprd12.prod.outlook.com
+ ([fe80::56a8:d6bf:e24c:b391%6]) with mapi id 15.20.9769.016; Wed, 8 Apr 2026
+ 13:35:09 +0000
+Message-ID: <56559431-b73b-4e3b-8554-7a72d78e2b67@nvidia.com>
+Date: Wed, 8 Apr 2026 14:34:59 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu: Always fill in gather when unmapping
+From: Jon Hunter <jonathanh@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>
+Cc: Alexandre Ghiti <alex@ghiti.fr>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev,
+ Baolin Wang <baolin.wang@linux.alibaba.com>, iommu@lists.linux.dev,
+ Janne Grunau <j@jannau.net>, Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Joerg Roedel <joro@8bytes.org>, Jean-Philippe Brucker <jpb@kernel.org>,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
+ linux-riscv@lists.infradead.org, linux-sunxi@lists.linux.dev,
+ Matthias Brugger <matthias.bgg@gmail.com>, Neal Gompa <neal@gompa.dev>,
+ Orson Zhai <orsonzhai@gmail.com>, Palmer Dabbelt <palmer@dabbelt.com>,
+ Paul Walmsley <pjw@kernel.org>, Samuel Holland <samuel@sholland.org>,
+ Sven Peter <sven@kernel.org>, virtualization@lists.linux.dev,
+ Chen-Yu Tsai <wens@kernel.org>, Will Deacon <will@kernel.org>,
+ Yong Wu <yong.wu@mediatek.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
+ Lu Baolu <baolu.lu@linux.intel.com>,
+ Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>,
+ Joerg Roedel <joerg.roedel@amd.com>, patches@lists.linux.dev,
+ Samiullah Khawaja <skhawaja@google.com>, stable@vger.kernel.org,
+ Vasant Hegde <vasant.hegde@amd.com>,
+ "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+References: <0-v1-664d3acaabb9+78b-iommu_gather_always_jgg@nvidia.com>
+ <ee2c2044-e329-4cdd-ac35-9365824d3677@arm.com>
+ <20260401173650.GD310919@nvidia.com>
+ <ec51ef14-e360-43a6-ae62-44a939ec8027@arm.com>
+ <20260402225121.GI310919@nvidia.com>
+ <94576121-d4ff-47fd-9ff8-2a00ff4c5c2a@nvidia.com>
+Content-Language: en-US
+In-Reply-To: <94576121-d4ff-47fd-9ff8-2a00ff4c5c2a@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: PR1P264CA0171.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:102:347::17) To DS2PR12MB9750.namprd12.prod.outlook.com
+ (2603:10b6:8:2b0::12)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Authority-Analysis: v=2.4 cv=drPrzVg4 c=1 sm=1 tr=0 ts=69d65353 cx=c_pps
- a=WW5sKcV1LcKqjgzy2JUPuA==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
- a=IkcTkHD0fZMA:10 a=A5OVakUREuEA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=YMgV9FUhrdKAYTUUvYB2:22
- a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=bCvnzbEyROO2_-PIDOgA:9 a=3ZKOabzyN94A:10
- a=QEXdDO2ut3YA:10 a=OpyuDcXvxspvyRM73sMx:22
-X-Proofpoint-ORIG-GUID: LJvgxqEPbr3yfPuuxec0W7RgiTfYjRAv
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDA4MDEyMSBTYWx0ZWRfX5umc+vrFgFp/
- G1RmEhfy3oY5XBIdTejDfl88Dc/zrxCkogOu8OuCkCHY2X9LzQJlDTFS32RFnsXFZNVf4BalXfa
- HmOwpDltE9DIZ8m9TIOfx1pxJGiCPscM4H410dMWwKQgVRJ/EnBaTQhNGAUBsgEuKmRHazMRnGe
- Y/WkjthiLSpJ7Lm3h+n+5e9d6sMg3W4KTxEYWuQ2TWl/FaWfhh7hAeF/Qu53Ya+09LeynNW42eW
- AnQHwEvCbIUDHfX+QWn11gt8QKTgzxcKaUDW6fOzdDdSSiSo7TniBdQQCKqSBZD96D9HRYEwSWv
- 3kaZcD5aOhhSRjVBk5RYHHQF649v9vFAOjSLZB1o2JbhC1yJl80iGRcvNJi4N1EMMl4g4sgHg5N
- Ajc2P9CCJwPx3C0MS6N7A17EuP5JAxdVgxyT0AFZ5Cgy+rKWWl5tSFO1ya+X6LvCEqiPC0BMpP5
- /H6LUwAUf9qp9Lg47LA==
-X-Proofpoint-GUID: LJvgxqEPbr3yfPuuxec0W7RgiTfYjRAv
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-04-08_04,2026-04-08_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- adultscore=0 lowpriorityscore=0 spamscore=0 clxscore=1015 malwarescore=0
- bulkscore=0 impostorscore=0 phishscore=0 priorityscore=1501 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2604010000 definitions=main-2604080121
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS2PR12MB9750:EE_|MW4PR12MB7167:EE_
+X-MS-Office365-Filtering-Correlation-Id: c543b95d-558b-42da-372f-08de9573a709
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|10070799003|1800799024|7416014|366016|376014|56012099003|22082099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	Tm7EMfjbnelwIwQTP7uon7RLSSgXMZFyNxaAeMsjfJhrxdlTSRAEaeNNN7LNCNpHAoQT5YqWft8wUnflYuXdfDvQ3vGt+UlvtHN6EFJCngRQbvV5QprHGwCEp6ay4vW43bvO//jzqdjzEOR9+nQIXaCouTQiVMR36UerTIgf516caLOrKrqeNCJ3l3V+vDJXvM/8J8FHzatx8fLRgY1ZlI/0Z9OgcJCo7hgPjYlZ3CjdsZmR0Boq3ZQLinIPLE6qpyxPkgSCo8dk9OZFhCP3Q12gi3lWR83aIKlPY2L6YLcZJjrGtt2RbJDZDfCYgkGbnsHZRaRwpcGqfsdTACRHGivRYHKhstyRgdP8s6VSqvDM76MyMwyeOJBZaWwTwANOEUw3NRc/vB+awR1+ojP2osH3jVRAkRfpG6L0cLyfLodOjR7s/jM9RY0FS7rLwhW0cnrSdRy4q3JxxRNHXPZJFX0TsHzuRpwRfzOho9rmrDVPq5a5sA+l9MD6IECUXHyYG63U1WGzuqmfeHdgWUS4332dlCXCv5k1K0wVZyCnbHhcFOuZs99tGwlHPz7iv8rx9gkpLTN0eYPMhPJIdDz3Ovyh1Cu32fNiPZCoBxU2aHhRxKaZd2pszdumCBzUzlmro7L7bonS7UUeT5BdTFASiaOYom3xMLyS0q2krinNDNjb+uVAgPp3AoO3UbizIR9tEF59XIBO4h/EWQGSN66sht9yngCj1vtDPM3wxEvJ5pc=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS2PR12MB9750.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(10070799003)(1800799024)(7416014)(366016)(376014)(56012099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?ZXZHcHRDeWUrcXdrK1kzRlpYNENPNUR3bzlFSlRZZk1uZE9MMWFxcjJleDRQ?=
+ =?utf-8?B?UXR2NGxDRDBZdFJLNWY0YktraFNKR0QzR0lZM04zdkFGY1U1V1QyU2NBOVVJ?=
+ =?utf-8?B?Q3dTRXh4NWlod1EvL045ZjJiVENxRWxzRjdaQVUzTzlGMUtDZU00L3dvOFk5?=
+ =?utf-8?B?WmpxQ1hYak85ZzczMy95enRNSHIyUUxiZmZJUUU1cWlrZ0tMR282aUFWTXBR?=
+ =?utf-8?B?eDJJejNYb04vNUpVVUptVjRjbE5SUHVTbGRPRCtNRHF4dmoyczJCNDI1WDdU?=
+ =?utf-8?B?b0ttM21Db0E1Z3VEYXNKV3dWbHIrQ1hpNUtvaW5PMk1OMzIzZ2IxMU9NZWFs?=
+ =?utf-8?B?YTFYZFZLcUJEaWQzbVhzUmlaOVFrdmRJeXZFUzZYMFZLQ0xicnpvaFJZeXRI?=
+ =?utf-8?B?OVZndzBTeWJUODk4cjBjMWMyVXQrb3dJT0tkK1FkWlhrTFFSVHZndk40WFp0?=
+ =?utf-8?B?dFgrd3JvS2hoemZsL2o5TlBXeTJiWnAxV3JYa2xZM0ZxVHBkbGFsa2VZK0R2?=
+ =?utf-8?B?OGlLSFg3cFZKZnlMMzJZNlJ2eUVFRVVtUVVSRnBsVVg3b1NRRGMwMDgxS3Y0?=
+ =?utf-8?B?UGh5K0pENFp2N1MyMlNWWDFoMXhvUjhXQS9PM1hhbitNd1BWVXVHUERpcUJp?=
+ =?utf-8?B?Um9CNXFlR2ticTJFNXc5MjJ1R2oxSjdGSDhBVTFkQjJwV0thTmpoR2ZzdnM1?=
+ =?utf-8?B?VmFDaTlsY2QvWUhnV3BsSHJJRDRPS2dZOTJCeUJEd2RsaS9TQTArbFBUdkg1?=
+ =?utf-8?B?VDQwN1FheDhrZ3lYbEVQU29JQ3VudjlxSC9rK0N0YXYxSXZhWFEwUi9KUEFK?=
+ =?utf-8?B?RGNwV1huSmFTQTNtQlJEZU9BWFlvajFTYVJmaVA0dDdONXk3L0ZzU0txcmR1?=
+ =?utf-8?B?WjluWXZ0UHJmZURVR0pNcUVibkhzcGc1ZEpucGtzbUJMeDlYZUQ5K1kzRG0z?=
+ =?utf-8?B?VmtaNGt1cFBFYWR4SEM1a3ZBdmQ2aHVPUy9Da3dZZE1PWkx5TmcxbUZwZ0NU?=
+ =?utf-8?B?NmZxUHZ5L3FrZUVCNEFPeFYwR2lHRnlUcFpudWhrUkNNeXRmUW5leHhKNEJO?=
+ =?utf-8?B?SWJaOEdOZUg0Z3RvYjRjVmtUdnYwaiswNkwvVFM3eHJBbnIrbk5DSkhtcFZX?=
+ =?utf-8?B?YVNEM0l3eGYwSmlwQ1ViVFFqcWdTNGIzdUkvVlRKd1V5elM5eHlyZ0sxNXFJ?=
+ =?utf-8?B?dGJyaHhrYVZ3RWhSSUQ0UUFrVGdvTHZKTnhOWVF0Nk1zenYwYkZvSHdoZGlG?=
+ =?utf-8?B?NThMdFdjZFBGcnR2R3Fzdk5za2ZkemJzWXQ0eVRjamJ2SHVVNFZPVXhjWTVG?=
+ =?utf-8?B?U3NrcGYyY2NRMEJzcDNSQVVDRkdkVmpwZnBKZktnM2EzVDc5dHFBcmJ0QVF5?=
+ =?utf-8?B?SzJTRlZ6QnBmbEx1YWxBOUhBdjJhSHExK0dLVzVLblAxRE9KcE1Bb0VPdEQr?=
+ =?utf-8?B?VEVjOUxtczNxN0xNU0hsTEhSYk5seEIxZzhFMGhWdTlweUdNdmRJQVJ2THAw?=
+ =?utf-8?B?K2dkVkYwdzYxaSt5a1BXS3FwbUJGSjVaeXl0US94SGFDZDVOaXVZdVN6K3d4?=
+ =?utf-8?B?VDNNc3ExSmh0TFdrRXRyeThPK0dNUDRDUzUvUWtXMVFFQ0NHNVhmQXhDdkVj?=
+ =?utf-8?B?SkxkMVBiSGhmZElLbDFiY2ZnVUpCcXEzaHhvSDIxR0hpWjRsL211bDFCZE1O?=
+ =?utf-8?B?bXlOZjQxTkJuVWw3Und2QlA4RVRWVmhVUzJNbXVjb3lDbUJVMjU5UzVmMWxY?=
+ =?utf-8?B?SDNaMEt5emMxVzgyTHRNM05KNXZHRytNOEgzNFZ3VGZiQ09VMEk4cmlhcnkx?=
+ =?utf-8?B?Vm9paWlIZDZPOWxVeFNqS284K2d3ZlZOUVJZK2tmRUFXWVZIYXBGTzA1RVVL?=
+ =?utf-8?B?WnRJYlVwTGJ3b0xBUWRjbWRhYzloTkhHM0VMVUc4UmdzaWRWV2hmSk9OelYv?=
+ =?utf-8?B?U1Bzd000QUJBa0pzZ0w2VzVhR3dxZjZLRHZ2T0ttSTQvZTlsODVOMFI2cmJL?=
+ =?utf-8?B?dkZiOWk1UXpka2NEenZoZ0VUOEJ4dUNiSFk0TU9aZXE2czlhZWhvemZsTCt5?=
+ =?utf-8?B?aHlMM1Rhb2V3aXRuK25qNnlETUIzMUYvVGNQUldqRXZFdGdDcUlYUGJDQlRO?=
+ =?utf-8?B?bWQyV01DTnVIemN6VFRXUUhrZjM2L29zZE1zMzBETkFuV0IvWmsrSUZDN2Rr?=
+ =?utf-8?B?SEZVVVNqdStya1RtSjRrWCtNSWUzZkNOampSRC9OMnhGNmxQRkN6aWtaMG5T?=
+ =?utf-8?B?VTBPMVloVzhQcmhQMzZ3ZWY5UFZVQVFPTkxLaHpmQ3h5NDJBVWxWVnZ3NFhH?=
+ =?utf-8?B?VG9FOHloUktIN3VvaHYrMjVDNkJER2N6VEthcG1KTUgvNmtDQVg0eXBRVHdk?=
+ =?utf-8?Q?iV3QGXTYjM05+xpap8g3ywG5ALzpriTRMu+hjWiH6wArC?=
+X-MS-Exchange-AntiSpam-MessageData-1: o/lzCtSQbflfQQ==
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c543b95d-558b-42da-372f-08de9573a709
+X-MS-Exchange-CrossTenant-AuthSource: DS2PR12MB9750.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2026 13:35:09.0642
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9b47sY4jdmCqlJU4n7Y9abunpuQpWxLeCyU8+5R2q+Uxe0G40ZjegUeezD2iUQQYjVIV8lBd6jBpXNEGxJolvA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7167
 
-From: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
 
-The qcom_smmu_actlr_client_of_match table contained "qcom,fastrpc" as
-the compatible string for applying ACTLR prefetch settings to FastRPC
-devices. However, "qcom,fastrpc" is the compatible string for the parent
-rpmsg channel node, which is not an IOMMU client — it carries no
-"iommus" property in the device tree and is never attached to an SMMU
-context bank.
+On 08/04/2026 09:42, Jon Hunter wrote:
+> Hi Robin, Jason,
+> 
+> On 02/04/2026 23:51, Jason Gunthorpe wrote:
+>> On Thu, Apr 02, 2026 at 07:11:13PM +0100, Robin Murphy wrote:
+>>>>> @@ -2714,6 +2714,10 @@ static size_t __iommu_unmap(struct 
+>>>>> iommu_domain *domain,
+>>>>>            pr_debug("unmapped: iova 0x%lx size 0x%zx\n",
+>>>>>                 iova, unmapped_page);
+>>>>> +        /* If the driver itself isn't using the gather, mark it 
+>>>>> used */
+>>>>> +        if (iotlb_gather->end <= iotlb_gather->start)
+>>>>> +            iommu_iotlb_gather_add_range(&iotlb_gather, iova, 
+>>>>> unmapped_page);
+>>>>
+>>>> The gathers can be joined across unmaps and now we are inviting subtly
+>>>> ill-formed gathers as only the first unmap will get included.
+>>
+>>>> We do have error cases where the gather is legitimately empty, and
+>>>> this would squash that, it probably needs to check unmapped_page for 0
+>>>> too, at least.
+>>>
+>>> Maybe try looking at the rest of the code around these lines...
+>>
+>> Okay, well lets do this one, do you want to send it since it is your
+>> idea?
+> 
+> 
+> Any update on this? Boot is still broken on a couple of our boards.
 
-The actual IOMMU clients are the compute context bank (CB) child nodes,
-which use the compatible string "qcom,fastrpc-compute-cb". These nodes
-carry the "iommus" property and are probed by fastrpc_cb_driver via
-fastrpc_cb_probe(), which sets up the DMA mask and IOMMU mappings for
-each FastRPC session. The device tree structure is:
 
-  fastrpc {
-      compatible = "qcom,fastrpc";        /* rpmsg channel, no iommus */
-      ...
-      compute-cb@3 {
-          compatible = "qcom,fastrpc-compute-cb";
-          iommus = <&apps_smmu 0x1823 0x0>;  /* actual IOMMU client */
-      };
-  };
+I just noticed that this is now broken on mainline as well as -next. Can 
+we get a fix in place before v7.0 is released?
 
-Since qcom_smmu_set_actlr_dev() calls of_match_device() against the
-device being attached to the SMMU context bank, the "qcom,fastrpc"
-entry was never matching any device. As a result, the ACTLR prefetch
-settings (PREFETCH_DEEP | CPRE | CMTLB) were silently never applied
-for FastRPC compute context banks.
+Thanks
+Jon
 
-Fix this by replacing "qcom,fastrpc" with "qcom,fastrpc-compute-cb"
-in the match table so that the ACTLR settings are correctly applied
-to the compute CB devices that are the true IOMMU clients.
-
-Assisted-by: Anthropic:claude-4-6-sonnet
-Fixes: 3e35c3e725de ("iommu/arm-smmu: Add ACTLR data and support for qcom_smmu_500")
-Signed-off-by: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
----
-
-While there is an ongoing discussion [1] on how to differentiate ACTLR
-prefetch settings between compute DSP and audio DSP fastrpc devices, it
-is necessary to first fix the compatible string to "qcom,fastrpc-compute-cb".
-Both compute DSP and audio DSP fastrpc nodes use this compatible string,
-so both will receive the ACTLR settings after this fix. However, for
-audio DSP devices the effect remains the same as the current
-state since they do not actively use prefetch — the write is effectively
-a NOP for them. The fix is meaningful for compute DSP devices, which
-actively use prefetch and were previously being silently skipped.
-
-[1]: https://lore.kernel.org/all/9b4c895a-c822-40e6-bb92-8fdcd09c82d3@oss.qualcomm.com/
-
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index edd41b5a3b6a..2d006049dd61 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -39,7 +39,7 @@ static const struct of_device_id qcom_smmu_actlr_client_of_match[] = {
- 			.data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
- 	{ .compatible = "qcom,adreno-smmu",
- 			.data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
--	{ .compatible = "qcom,fastrpc",
-+	{ .compatible = "qcom,fastrpc-compute-cb",
- 			.data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
- 	{ .compatible = "qcom,qcm2290-mdss",
- 			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
---
-2.34.1
+-- 
+nvpublic
 
