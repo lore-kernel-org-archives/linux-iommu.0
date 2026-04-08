@@ -1,187 +1,191 @@
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [78.32.30.218])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B22612DB790
-	for <iommu@lists.linux.dev>; Wed,  8 Apr 2026 13:07:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.32.30.218
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 066F32E1F11
+	for <iommu@lists.linux.dev>; Wed,  8 Apr 2026 13:08:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775653666; cv=none; b=kZclgadXzWYsKJIqe6JB7Q3HPv9d8YDipOogfZKaP4W7bmWChGX5PePECKiDpllIC8RS4wlVX/BZRe/7WA/XygTMj2y30puR7kMhAKnYBnAb3TXMVCm7ZesYcafxk51fLdddgUc71Z8MCtR5f3DeiBJWmtK/LEBptaoelYBBLtw=
+	t=1775653718; cv=none; b=TumDNvN0dmhJbl3d1jZY8xFetbCHzjodAAmabtQASnOf5gZV185L7Dz4LBdvrML5JU8fzKaaUY+smMtbsKVj1t/VwA0X+e0IqTfBnthwQUZgkfix0q8+NLclFfD/j+jYWJpRK9OxdQcCg/jI6PrPmQ50S5YqwOhgPFmnL8j7Puw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775653666; c=relaxed/simple;
-	bh=qzzmyovrtrzp1o2tZ4GbzmbIUbnliJkltIybOfk2jVQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=fPp8ZtjQMBz2Sgj5XXv3Q90z+8xdHy6gqAO4UOlLhO59MaWE8oIr13p09ns3kVgVRvFL/aGQczyE+mbR5N/GQ8KshCK8SOSY1GfNXPIXoAFHwE9KiubaJ5lED1LQdQMuXigpkrFTrUNwaZutQLlPWdX3k/QT8sxrRU3DmK3qdvg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=armlinux.org.uk; spf=none smtp.mailfrom=armlinux.org.uk; dkim=pass (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b=YKDi7ouQ; arc=none smtp.client-ip=78.32.30.218
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=armlinux.org.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=armlinux.org.uk
+	s=arc-20240116; t=1775653718; c=relaxed/simple;
+	bh=KQwk0Mdce+W21y7dALQ2Q9dpKAvtJUjSQiWHRa+1mjk=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=pEERyU1f9keiFSKT+DaC4MOc6Gp6UXiQb23p558kWbdcImSK7O3TmxWeNF1uPt46PV4C8glR1UBxGKcXqVCdi+DT2OJQDHlW7FRSZaej8A2VO6oeF84X+//DYn3Lt2DfvX8Q/RV+jV0aDye6ldNkG7s7tQMtb2bsFPc+F90qLZI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=hOQLOC4P; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=j1tQrJ4Z; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b="YKDi7ouQ"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=LJcb5JzkrNworeoIACd17sSdMyXcwWbNruEp7hbByvY=; b=YKDi7ouQsw5Cu03ml+uU76eoBT
-	cgP2CCjRK2+s2prwZyfnXFtKKE4NFMBsIAlmoIVZmGL2WJ5NmQq6nIw92y9Q7aePEANaCJbzzmNgE
-	bbUFs1F4mHXa50huAMGsp8i1smCXHQZwBt8VhgiJ4wps6laxkUkVDtTwu+RYTAM7dgq+ba1aGZEv1
-	GXg//hmFB3e0TIGQToBSRBUc3YQrwII0ZVKJuE8cYs9d4aj1WPw8nZG6+P4BTbXsbeb0no/lI8ndt
-	yI6EhTetwtnx6T6nhCqrqvFfR5Sc1KRyxFcmspXPLopQDKs3bciGVScUldjr29jywAgBhu2HnE/g+
-	n8hXNDXA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34780)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.98.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1wASdA-000000002Lz-2XUB;
-	Wed, 08 Apr 2026 14:07:40 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.98.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1wASd6-000000003Ln-3HCb;
-	Wed, 08 Apr 2026 14:07:36 +0100
-Date: Wed, 8 Apr 2026 14:07:36 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-ext4@vger.kernel.org,
-	Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, Theodore Ts'o <tytso@mit.edu>,
-	Andreas Dilger <adilger.kernel@dilger.ca>
-Subject: BUG: net-next (7.0-rc6 based and later) fails to boot on Jetson
- Xavier NX
-Message-ID: <adZTGOjjJrVJOcT8@shell.armlinux.org.uk>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="hOQLOC4P";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="j1tQrJ4Z"
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 638ABDU53362760
+	for <iommu@lists.linux.dev>; Wed, 8 Apr 2026 13:08:35 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=HntEs+8pzBI+y7qt7t4W2U
+	rvZTm4MrVZ9wGejJw7xFA=; b=hOQLOC4Pqd9JJMAXOHmewoVLftRrhHPEDd1v17
+	/ttW0cuJGyHHlKIj/bbk+ZTexlZVNa2np9A3PRrbFSU3YhqVR0i3MiOZXWMHEfit
+	h9KX0UiWjHrhZC2Q+JkbpfmXD/okIiIO/wT6vEXmhY1lHzQRBErd5+OJJ8qXfNAA
+	xX19ydjn5RP8VNfeyjmV/wZiumJntxPwCloADOXELg3GV/wiN/26ztsnXu2uZEWc
+	zSLjdeBnjVLqwQmzDfdLKMLgvma6LK72EgL3s4R9cellB0Ss2jAXjhNbPVmHfR2s
+	NbG50WP8K8M9ZJJX6Wdqg4vtX9vI+ORk6JJsXF3lm4QM7HMw==
+Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com [209.85.210.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4dd7tkkg2p-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 08 Apr 2026 13:08:35 +0000 (GMT)
+Received: by mail-pf1-f199.google.com with SMTP id d2e1a72fcca58-82c63f85c84so3619590b3a.2
+        for <iommu@lists.linux.dev>; Wed, 08 Apr 2026 06:08:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1775653715; x=1776258515; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=HntEs+8pzBI+y7qt7t4W2UrvZTm4MrVZ9wGejJw7xFA=;
+        b=j1tQrJ4ZkguS5rZNJO6GUHhlpyYvwqx/HutsN+7K24mvIvIj7rxrnSHe24tcY6YBO5
+         sGIiKcFBNYYyjSzaCf6HKCdDaAGlKbR72Ga1GIRngNZHV5YT1yM38D5pkuQsWZSipok/
+         szFBr4RbMDvKSVAiWbyGfBJB48fbRXMx3dcQCMCfj22oO+rdjAvN6x+0vRUzlzSIUgWv
+         NMNFNb0POPi4mYT2bJxbteMZuqbhD8n2hAnhQLqerwnaYqCLziuG3PnBYLCILQ55a3Wd
+         /q2KN8Ojn6A58Kvqy4XDe2iZjwYLQYfzhWJHVbN/QUXwnkOAQYBo19hHTVy7IfFweduE
+         7iQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775653715; x=1776258515;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=HntEs+8pzBI+y7qt7t4W2UrvZTm4MrVZ9wGejJw7xFA=;
+        b=lm4RhETs15ZJyXd+tuT4G5E34J5rg4FIXm6xuEtu1CbnEoEIzblsua2tT/HCKMiLDR
+         5rNyG/woLkcOE5m9aNcVjqdjs46DLCDMk5i0gWOIeYjBWCR6NWG2Kt07bMTxfuJBczl5
+         RZ+vah4biR/oeUdywLUhqf229BfbAWiGLuNeWelc5WGPrzsHyjS5tFgsZ+VKpssX0E22
+         SYN+nazTXbxA0qXjPrNEUD5fkFd6lXLwFUI90kPGcIpjrXeOzDrN5KtSiE+petmkI2/I
+         1RzKai1dGm4tCkURlVrWOEYODDMOTR7hYpnECT0Apu0i+FusJMDaJGf6cmknXJV5+uhp
+         bQNg==
+X-Forwarded-Encrypted: i=1; AJvYcCVxj5oiPTcDQ80paPrcK1Cc2gChbesowLh3uhhurEO5OXNegfyJxqLLImkoqVm5UgokOwcCTA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzMYr2xXfQ41GDkXygO0mK8V5MIDjUurKe/qXdDijrv44AmMCuq
+	RIkTFZa9msHo8rqn3poUStDo9Hxx0WJgw7t022rubAU/SCeaXQW50bLhOVGTygZUF6I+b3IqH3v
+	e1pE0PsR6Gjw4a6y/GrGyo3u6UqendWHWhWTIUf0r0pKX3nUydNQKUtTikA==
+X-Gm-Gg: AeBDievSZkRZlTMItqgFn3sk1HZRY3Q0SGoo3iYN6XkB6bVNMzO2W8tkFNckIuHmAoP
+	TaU8mBVHJq0pDVagGwrHUjImym2LTSIcPQyNPCsLiE34Cx9BT9gWpJpRRb2FGCt3hPaSbw+a6d9
+	CbR9JpGg8qQap6l91S9jyLxenpfFLa/g2rMIA73gPIhcI0zWokFyn67x8sqQUQofag33Ve4ilw/
+	7S5818bi+Z07sZT/UaDEtJq9Omn4vePeRzYwN2A99zYv+pRuz/LVsLnyGH+1O+bBJ8v1Wp7SY0i
+	5aA3DIo7TezLbPezZE24+zUa6F+BIBKA3KecRVadvi+haSuHzhIM8HK2YSnlND1Bhkg5lWXQLd9
+	nHoQLvyFCPEL7bwBc1YIR/0gF3uBhn38dKkTOIlPa6No1+dxLs92U
+X-Received: by 2002:a05:6a00:2e85:b0:81f:3fbd:ccf with SMTP id d2e1a72fcca58-82d0da9dca4mr19823929b3a.23.1775653714528;
+        Wed, 08 Apr 2026 06:08:34 -0700 (PDT)
+X-Received: by 2002:a05:6a00:2e85:b0:81f:3fbd:ccf with SMTP id d2e1a72fcca58-82d0da9dca4mr19823878b3a.23.1775653714032;
+        Wed, 08 Apr 2026 06:08:34 -0700 (PDT)
+Received: from hu-bibekkum-hyd.qualcomm.com ([202.46.22.19])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82cf9c4126bsm20426192b3a.36.2026.04.08.06.08.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Apr 2026 06:08:33 -0700 (PDT)
+From: bibek.patro@oss.qualcomm.com
+To: Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>
+Cc: Dmitry Baryshkov <lumag@kernel.org>, iommu@lists.linux.dev,
+        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, srinivas.kandagatla@oss.qualcomm.com,
+        Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
+Subject: [PATCH] iommu/arm-smmu-qcom: Fix fastrpc compatible string in ACTLR client match table
+Date: Wed,  8 Apr 2026 18:38:25 +0530
+Message-Id: <20260408130825.3268733-1-bibek.patro@oss.qualcomm.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Authority-Analysis: v=2.4 cv=drPrzVg4 c=1 sm=1 tr=0 ts=69d65353 cx=c_pps
+ a=WW5sKcV1LcKqjgzy2JUPuA==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
+ a=IkcTkHD0fZMA:10 a=A5OVakUREuEA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=YMgV9FUhrdKAYTUUvYB2:22
+ a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=bCvnzbEyROO2_-PIDOgA:9 a=3ZKOabzyN94A:10
+ a=QEXdDO2ut3YA:10 a=OpyuDcXvxspvyRM73sMx:22
+X-Proofpoint-ORIG-GUID: LJvgxqEPbr3yfPuuxec0W7RgiTfYjRAv
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDA4MDEyMSBTYWx0ZWRfX5umc+vrFgFp/
+ G1RmEhfy3oY5XBIdTejDfl88Dc/zrxCkogOu8OuCkCHY2X9LzQJlDTFS32RFnsXFZNVf4BalXfa
+ HmOwpDltE9DIZ8m9TIOfx1pxJGiCPscM4H410dMWwKQgVRJ/EnBaTQhNGAUBsgEuKmRHazMRnGe
+ Y/WkjthiLSpJ7Lm3h+n+5e9d6sMg3W4KTxEYWuQ2TWl/FaWfhh7hAeF/Qu53Ya+09LeynNW42eW
+ AnQHwEvCbIUDHfX+QWn11gt8QKTgzxcKaUDW6fOzdDdSSiSo7TniBdQQCKqSBZD96D9HRYEwSWv
+ 3kaZcD5aOhhSRjVBk5RYHHQF649v9vFAOjSLZB1o2JbhC1yJl80iGRcvNJi4N1EMMl4g4sgHg5N
+ Ajc2P9CCJwPx3C0MS6N7A17EuP5JAxdVgxyT0AFZ5Cgy+rKWWl5tSFO1ya+X6LvCEqiPC0BMpP5
+ /H6LUwAUf9qp9Lg47LA==
+X-Proofpoint-GUID: LJvgxqEPbr3yfPuuxec0W7RgiTfYjRAv
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-04-08_04,2026-04-08_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ adultscore=0 lowpriorityscore=0 spamscore=0 clxscore=1015 malwarescore=0
+ bulkscore=0 impostorscore=0 phishscore=0 priorityscore=1501 suspectscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2604010000 definitions=main-2604080121
 
-Hi,
+From: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
 
-Just a heads-up that current net-next (v7.0-rc6 based) fails to boot on
-my nVidia Jetson Xavier platform. v7.0-rc5 and v6.14 based net-next both
-boot fine. This is an arm64 platform.
+The qcom_smmu_actlr_client_of_match table contained "qcom,fastrpc" as
+the compatible string for applying ACTLR prefetch settings to FastRPC
+devices. However, "qcom,fastrpc" is the compatible string for the parent
+rpmsg channel node, which is not an IOMMU client — it carries no
+"iommus" property in the device tree and is never attached to an SMMU
+context bank.
 
-The problem appears to be completely random in terms of its symptoms,
-and looks like severe memory corruption - every boot seems to produce
-a different problem. The common theme is, although the kernel gets to
-userspace, it never gets anywhere close to a login prompt before
-failing in some way.
+The actual IOMMU clients are the compute context bank (CB) child nodes,
+which use the compatible string "qcom,fastrpc-compute-cb". These nodes
+carry the "iommus" property and are probed by fastrpc_cb_driver via
+fastrpc_cb_probe(), which sets up the DMA mask and IOMMU mappings for
+each FastRPC session. The device tree structure is:
 
-The last net-next+ boot (which is currently v7.0-rc6 based) resulted
-in:
+  fastrpc {
+      compatible = "qcom,fastrpc";        /* rpmsg channel, no iommus */
+      ...
+      compute-cb@3 {
+          compatible = "qcom,fastrpc-compute-cb";
+          iommus = <&apps_smmu 0x1823 0x0>;  /* actual IOMMU client */
+      };
+  };
 
-tegra-mc 2c00000.memory-controller: xusb_hostw: secure write @0x00000003ffffff00: VPR violation ((null))
-...
-irq 91: nobody cared (try booting with the "irqpoll" option)
-...
-depmod: ERROR: could not open directory /lib/modules/7.0.0-rc6-net-next+: No such file or directory
-...
-Unable to handle kernel paging request at virtual address 0003201fd50320cf
+Since qcom_smmu_set_actlr_dev() calls of_match_device() against the
+device being attached to the SMMU context bank, the "qcom,fastrpc"
+entry was never matching any device. As a result, the ACTLR prefetch
+settings (PREFETCH_DEEP | CPRE | CMTLB) were silently never applied
+for FastRPC compute context banks.
 
+Fix this by replacing "qcom,fastrpc" with "qcom,fastrpc-compute-cb"
+in the match table so that the ACTLR settings are correctly applied
+to the compute CB devices that are the true IOMMU clients.
 
-A previous boot of the exact same kernel didn't oops, but was unable
-to find the block device to mount for /mnt via block UUID.
+Assisted-by: Anthropic:claude-4-6-sonnet
+Fixes: 3e35c3e725de ("iommu/arm-smmu: Add ACTLR data and support for qcom_smmu_500")
+Signed-off-by: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
+---
 
-A previous boot to that resulted in an oops.
+While there is an ongoing discussion [1] on how to differentiate ACTLR
+prefetch settings between compute DSP and audio DSP fastrpc devices, it
+is necessary to first fix the compatible string to "qcom,fastrpc-compute-cb".
+Both compute DSP and audio DSP fastrpc nodes use this compatible string,
+so both will receive the ACTLR settings after this fix. However, for
+audio DSP devices the effect remains the same as the current
+state since they do not actively use prefetch — the write is effectively
+a NOP for them. The fix is meaningful for compute DSP devices, which
+actively use prefetch and were previously being silently skipped.
 
+[1]: https://lore.kernel.org/all/9b4c895a-c822-40e6-bb92-8fdcd09c82d3@oss.qualcomm.com/
 
-The intersting thing is - the depmod error above is incorrect:
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-root@tegra-ubuntu:~# ls -ld /lib/modules/7.0.0-rc6-net-next+
-drwxrwxr-x 3 root root 4096 Apr  8 10:23 /lib/modules/7.0.0-rc6-net-next+
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index edd41b5a3b6a..2d006049dd61 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -39,7 +39,7 @@ static const struct of_device_id qcom_smmu_actlr_client_of_match[] = {
+ 			.data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
+ 	{ .compatible = "qcom,adreno-smmu",
+ 			.data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
+-	{ .compatible = "qcom,fastrpc",
++	{ .compatible = "qcom,fastrpc-compute-cb",
+ 			.data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
+ 	{ .compatible = "qcom,qcm2290-mdss",
+ 			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
+--
+2.34.1
 
-The directory is definitely there, and is readable - checked after
-booting back into net-next based on 7.0-rc5. In some of these boots,
-stmmac hasn't probed yet, which rules out my changes.
-
-Rootfs is ext4, and it seems there were a lot of ext4 commits merged
-between rc5 and rc6, but nothing for rc7.
-
-My current net-next head is dfecb0c5af3b. Merging rc7 on top also
-fails, I suspect also randomly, with that I just got:
-
-EXT4-fs (mmcblk0p1): VFS: Can't find ext4 filesystem
-mount: /mnt: wrong fs type, bad option, bad superblock on /dev/mmcblk0p1, missing codepage or helper program, or other error.
-mount: /mnt/: can't find PARTUUID=741c0777-391a-4bce-a222-455e180ece2a.
-Unable to handle kernel paging request at virtual address f9bf0011ac0fb893
-Mem abort info:
-  ESR = 0x0000000096000004
-  EC = 0x25: DABT (current EL), IL = 32 bits
-  SET = 0, FnV = 0
-  EA = 0, S1PTW = 0
-  FSC = 0x04: level 0 translation fault
-Data abort info:
-  ISV = 0, ISS = 0x00000004, ISS2 = 0x00000000
-  CM = 0, WnR = 0, TnD = 0, TagAccess = 0
-  GCS = 0, Overlay = 0, DirtyBit = 0, Xs = 0
-[f9bf0011ac0fb893] address between user and kernel address ranges
-Internal error: Oops: 0000000096000004 [#1]  SMP
-Modules linked in:
-CPU: 1 UID: 0 PID: 936 Comm: mount Not tainted 7.0.0-rc7-net-next+ #649 PREEMPT
-Hardware name: NVIDIA NVIDIA Jetson Xavier NX Developer Kit/Jetson, BIOS 6.0-37391689 08/28/2024
-pstate: 20400009 (nzCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-pc : refill_objects+0x298/0x5ec
-lr : refill_objects+0x1f0/0x5ec
-
-...
-
-Call trace:
- refill_objects+0x298/0x5ec (P)
- __pcs_replace_empty_main+0x13c/0x3a8
- kmem_cache_alloc_noprof+0x324/0x3a0
- alloc_iova+0x3c/0x290
- alloc_iova_fast+0x168/0x2d4
- iommu_dma_alloc_iova+0x84/0x154
- iommu_dma_map_sg+0x2c4/0x538
- __dma_map_sg_attrs+0x124/0x2c0
- dma_map_sg_attrs+0x10/0x20
- sdhci_pre_dma_transfer+0xb8/0x164
- sdhci_pre_req+0x38/0x44
- mmc_blk_mq_issue_rq+0x3dc/0x920
- mmc_mq_queue_rq+0x104/0x2b0
- __blk_mq_issue_directly+0x38/0xb0
- blk_mq_request_issue_directly+0x54/0xb4
- blk_mq_issue_direct+0x84/0x180
- blk_mq_dispatch_queue_requests+0x1a8/0x2e0
- blk_mq_flush_plug_list+0x60/0x140
- __blk_flush_plug+0xe0/0x11c
- blk_finish_plug+0x38/0x4c
- read_pages+0x158/0x260
- page_cache_ra_unbounded+0x158/0x3e0
- force_page_cache_ra+0xb0/0xe4
- page_cache_sync_ra+0x88/0x480
- filemap_get_pages+0xd8/0x850
- filemap_read+0xdc/0x3d8
- blkdev_read_iter+0x84/0x198
- vfs_read+0x208/0x2d8
- ksys_read+0x58/0xf4
- __arm64_sys_read+0x1c/0x28
- invoke_syscall.constprop.0+0x50/0xe0
- do_el0_svc+0x40/0xc0
- el0_svc+0x48/0x2a0
- el0t_64_sync_handler+0xa0/0xe4
- el0t_64_sync+0x19c/0x1a0
-Code: 54000189 f9000022 aa0203e4 b9402ae3 (f8634840)
----[ end trace 0000000000000000 ]---
-Kernel panic - not syncing: Oops: Fatal exception
-
-Looking at the changes between rc5 and rc6, there's one drivers/block
-change for zram (which is used on this platform), one change in
-drivers/base for regmap, nothing for drivers/mmc, but plenty for
-fs/ext4. There are five DMA API changes.
-
-Now building straight -rc7. If that also fails, my plan is to start
-bisecting rc5..rc6, which will likely take most of the rest of the
-day. So, in the mean time I'm sending this as a heads-up that rc6
-and onwards has a problem.
-
-I'll update when I have a potential commit located.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
