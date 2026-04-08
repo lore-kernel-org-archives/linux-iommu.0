@@ -1,264 +1,140 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 905D233345A
-	for <iommu@lists.linux.dev>; Wed,  8 Apr 2026 20:21:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775679675; cv=none; b=dIBesZqCVD4g6CHOu75CCRe0pAfI5n0iUzib3PB+24IpGNvstA6Xzb2uJu+CNA6csTA9gefR8b7hG9sDaPgVNQhXCPOIcVIQI/8akuJd9QqE+mb8t+Yd0b2wNA7pn/l5sqWg8TBqYy8TTuQ5RkgmCaIvdzmCfarC75tUVYkonWU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775679675; c=relaxed/simple;
-	bh=vmgJA28U4oEYXCV1uPCwl7E69UiNhgMrVSZD1Icewes=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=hBbYiXRjI610gYDzvBN5Vt3QKhzaeSQ/Vyp28wiabmyrktAma6RQvD7exE2vMxENR042UTkLKwxSdL0jblYyuUiIWKLMlCX501TxxPDNEeSfWqOsjbpBdrAb117EAkGk23c8i4JAyhKFyxdyU/9oiJeYj4o7MhNL/fNwqTgozCs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=VMmQlBqh; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013028.outbound.protection.outlook.com [40.93.201.28])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 084AE25776
+	for <iommu@lists.linux.dev>; Wed,  8 Apr 2026 23:49:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.201.28
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775692184; cv=fail; b=CKK8LAk5THC6UnPvfTK5ACW53F1Xz3s4H62GrVNdZLaiSRzImkjEpSpH3fkyu7M9KrkhyQKKub/zDvKkwo96MPZSPq+eRX0RTcK3NPSZZYBn4JYJcBcl3m/OR1pRbylORxB8AdqpEhV5ho5/DuowoyxUazw7t25qI7LJd7lnnFE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775692184; c=relaxed/simple;
+	bh=gXH0baV0Q49QlKUfmUNZH0DiACaVGYy9O4r+POgFYxQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=qPZjNUYXsiYLJhhHqy/1UGOhy5eDEsXh+gOGYNDd+aX2EtFTFzqF9ZW1wD95FhtMYbcXWPVTTj5NOLyW5Uso8CbSRAF/SBmpLXF+FG5KNnVBat5fUyFhES+WyWi9ytVK0c7LVI36gf67Cha7ChRl+gsFIIi6l+t8DuooZ6wPXnQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ulfGRGXm; arc=fail smtp.client-ip=40.93.201.28
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="VMmQlBqh"
-Received: from [10.17.145.186] (unknown [4.194.122.162])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 2CC5B20B710C;
-	Wed,  8 Apr 2026 13:21:02 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 2CC5B20B710C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1775679672;
-	bh=eC6YQa1wGfGRjmh3YlDhhWauLUlilIwy3f2460KCSmU=;
-	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-	b=VMmQlBqhlgIdTdlILC4Vgofeh7QQRbGCvBn0mjur9dm7GW8RBLZ/OT7jUbxrFcYIE
-	 BEeFlkHDYNNoG/nUmpPZDyyUg3KMFFklByalhC0jKsDuA4qetc3zSzgni9aFQ4L8hG
-	 hewNOv+SL7mfpgNv1JkLaT8SkuP/NclL3C3V6D4E=
-Message-ID: <2dabc1b8-0cf0-4fc8-9cd4-cce60adfc05e@linux.microsoft.com>
-Date: Wed, 8 Apr 2026 13:20:59 -0700
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ulfGRGXm"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=XpXVx9W07Ft4huSZXxHeFlFTP4N2FSXuWtMYFa6ljFcTCvjgVzf2Q0+lymz0rpV8CuKRpui/JltWnyXkxbZuu1Y//17LUPDRjZRLzLN+TlMIA2ucdJy7+0rFeG1M/NCJBWuSatmznYmHzc2NhpZrxjOjATI6H0aquYUyC68Mdup1u2STktnBUbeMXugyTVfTXUjK2gLZYkpWE3DUvglirjx6cLEipO6MrBnYfqoNfhmDnyAfpFn8auyVKWgNTYeUb8cgPU6tjckVtL4kg4iJky6XiV4dHw7fmkISUa3UFlLrwKR9fnjYdNgtlHXaTPyxVZzN7LlPRo3OXfoH6punTw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IO+TGV5O2j7Vh7uyukSrv9jZtVniAC9k4XPeHR9Ok/Y=;
+ b=CYbI2186p70si3QdQ4O3MZlJAgaFtS3VDoZ7w6jvI0mFhmqH8YAI8EBQBws6dizAHFffAmRJ5ZbqdeLxADaFB4DCxbs9cOoYXfZlPt0mgX/j+5w2JHPy7Xlsm/YG3GpjiPj+gyVC7zy658pDbgbmuIC42JMfdSXYz9Avep6LGqYIrQx/92YBRqX+EOtvbfHUPWMQLROpuHzLAo++kcMLBlb4GiS/5Hl4AMAst1awKgVLwW/IUNx4diuysM/jlB+r6Q6AQlg3ncjKUu8RCV1Hvg7qdt+ygfragXr5i8ga20jAQx7cPs6jTbYEz8pYmUjWDqW1vCWJFh+R5IOeAriMaA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IO+TGV5O2j7Vh7uyukSrv9jZtVniAC9k4XPeHR9Ok/Y=;
+ b=ulfGRGXmdkewDRVi9xPi/CiS/8jLlcXqGEd525QZzKxA84NRj/ayswRRoWT/Db+fzvf5gwle6mrZhNWh3Thw2Rc/bX7ORCZo0OFBvfPOtpwUTcsiW4GLlDJf8rDfY7KbpvQdRAagK3njKgsGmL4Hn8LYITg0Ca8kyocMKad5Vd1mYkMPBjKXT2rtJ74bq+ToiveBI6FOEAH0ijD+bz2AzZwpEGZw+Ya5KSbMcd2b1F2BZ55Td6DFZbGDzbdxnYmzfaQgV0zR/wqLm/Gyh4Be+uyeRkRlMIzJdkXHEBg+iTONHOLUOStJCs95lGes7vrirBW4z92+VCMyeazVeq0Llg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by CH3PR12MB8404.namprd12.prod.outlook.com (2603:10b6:610:12d::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.20; Wed, 8 Apr
+ 2026 23:49:39 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9769.017; Wed, 8 Apr 2026
+ 23:49:39 +0000
+Date: Wed, 8 Apr 2026 20:49:38 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Alex Williamson <alex.williamson@nvidia.com>, joro@8bytes.org
+Cc: baolu.lu@linux.intel.com, kevin.tian@intel.com, robin.murphy@arm.com,
+	will@kernel.org, iommu@lists.linux.dev
+Subject: Re: [PATCH] iommu/vt-d: Restore IOMMU_CAP_CACHE_COHERENCY
+Message-ID: <20260408234938.GH3357077@nvidia.com>
+References: <20260408184443.3077333-1-alex.williamson@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260408184443.3077333-1-alex.williamson@nvidia.com>
+X-ClientProxiedBy: YT1PR01CA0126.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:2c::35) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: easwar.hariharan@linux.microsoft.com,
- Yu Zhang <zhangyu1@linux.microsoft.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
- "kys@microsoft.com" <kys@microsoft.com>,
- "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
- "wei.liu@kernel.org" <wei.liu@kernel.org>,
- "decui@microsoft.com" <decui@microsoft.com>,
- "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
- "kwilczynski@kernel.org" <kwilczynski@kernel.org>,
- "mani@kernel.org" <mani@kernel.org>, "robh@kernel.org" <robh@kernel.org>,
- "bhelgaas@google.com" <bhelgaas@google.com>, "arnd@arndb.de"
- <arnd@arndb.de>, "joro@8bytes.org" <joro@8bytes.org>,
- "will@kernel.org" <will@kernel.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "jacob.pan@linux.microsoft.com" <jacob.pan@linux.microsoft.com>,
- "nunodasneves@linux.microsoft.com" <nunodasneves@linux.microsoft.com>,
- "mrathor@linux.microsoft.com" <mrathor@linux.microsoft.com>,
- "peterz@infradead.org" <peterz@infradead.org>,
- "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>
-Subject: Re: [RFC v1 1/5] PCI: hv: Create and export hv_build_logical_dev_id()
-To: Michael Kelley <mhklinux@outlook.com>
-References: <20251209051128.76913-1-zhangyu1@linux.microsoft.com>
- <20251209051128.76913-2-zhangyu1@linux.microsoft.com>
- <SN6PR02MB41570FC0D7EA1364FB48CD1ED485A@SN6PR02MB4157.namprd02.prod.outlook.com>
- <162c901f-69a7-420a-9148-a469d5a8ca4f@linux.microsoft.com>
- <SN6PR02MB4157098A14BE63FCA8C0A70ED480A@SN6PR02MB4157.namprd02.prod.outlook.com>
-From: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-Content-Language: en-US
-In-Reply-To: <SN6PR02MB4157098A14BE63FCA8C0A70ED480A@SN6PR02MB4157.namprd02.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|CH3PR12MB8404:EE_
+X-MS-Office365-Filtering-Correlation-Id: 51a3b329-abfa-429e-26ec-08de95c97f6f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|1800799024|376014|22082099003|18002099003|56012099003;
+X-Microsoft-Antispam-Message-Info:
+	lE9fSv9w+oTNWNmDPYafQfz4fECZ/Vcm6GTxYsHpF8H3PBgA8cIwCnM4uRi9XrDEXd/BQfIAA/ub1ZT/LL97Slg+6mqUfv52h6RBgcETEDJ4V6XCWbuF9uiGrFvLVZdd6KH6nsZnxkAVtw9ZwhriwA/Y9jiAoeUgwryFTqrPhrB7kJqwoA6bH9JGEneFFmymlLnw5pBROZ1ZK/rLaLGuNHNwhHvaIcKZUycLMcJJL8Blxw2Xm6S8s+91mYJXacbb8SQ0awQO0xci90e0vyQjE9RtP7B/GxUopaBnEk9Y8YDQH19Is3RRDM/mFE+XSQdz9xqYQNvQlAlvDhXh3AYhewaZcV5Zxbh+6JRF1sR8f2TB+qEI4Q//MF6Olr67fcP0Y5Gt1X3PIqkuP9AYYm01gm1Rt8dzshc1BZq548kQOIpcjk+1UlOC7HLUKkKaEZr+pYgd3uEsvQoKPqRKC1PfdVCzBG2006m6mkBjU/FFT7kFN4VguzwKceA0ctgEmurevMlGj3PAoucCCqUCnBhGe+dbcYyFw1q+q2Oec78K2Ybr5r8hnyNb5yzjN4YtGvce4+Mxcajj+27IBhZ3VbS4VVkyxDR88RpR4k7CxAyFDKRAkxTkgq46/intUj/PwFEtWIKaPb5a7VEI25iwv2OH9aGN+vJ4m1M38pYgLYgXg4NS214mXMcGn3GDHcoE57gYw7fvLf0oqHL5w4gRHZziuzDfBIwGGMU1vzpWXtpap2I=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(22082099003)(18002099003)(56012099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?cW3M2rsofaj/QYfSOO2JTr8JtUgoBsUdcaFfXx8tf0aTOnoTQXbfCgz9ajgP?=
+ =?us-ascii?Q?5AxF9LuKwmnV5YdlR7xnCPtyYd5mJngBMMEyxiA8l+54zoLnLe1ZS95hsW/V?=
+ =?us-ascii?Q?q2M2e4ZtNN/K6UbcrrGQy/rF8VDDsPq8+NTpvZmesyMjE5I5A6Lsx5dfk+8G?=
+ =?us-ascii?Q?hHvTngIDGP2cHZ44rF6+wjBbrB9toVgCHP5A/iSjpWw1U1RBM9H18x56xvkb?=
+ =?us-ascii?Q?V1hZ4dLfcanA1eRuG9KdvfU2Ky9FBTAqHA444G11luNqhgC2d9xydvcNnthP?=
+ =?us-ascii?Q?dsydJYFEnUsdpTJjsRa7WYhDI2Xhu2CGO/yF/H604/9OOgSw4udif9tMMUDW?=
+ =?us-ascii?Q?0+o/2vZwaVXRq3oNDnr1JZ7+d6husPUhDntEyhFjNjEwfOWfkhgAmZmGp1sx?=
+ =?us-ascii?Q?fHLT7ew4xPx8k9QoKO/wSex59DxyC+7ti2SnfJf9LKxolll0CAk97E2anHd8?=
+ =?us-ascii?Q?TE63JT9HZsQmlEYPYVw8vcTcfn9+xEmA3K05l12fAWJC4NP3EKQJpDsgasxW?=
+ =?us-ascii?Q?AnZe8r5IdQW8mX9KACfSJQ7E5avrrP83+QA+9uRxqoGUdTBBD74RCCxreypD?=
+ =?us-ascii?Q?sYcOE4CiQj1M4CNWrr+tukGxA9qTZhDdHD70t6R9ld1JXsHH+zf1Zebtp8KN?=
+ =?us-ascii?Q?/MBOy64019P9ZX373esAjSPzyioe0n6kKdzK9txuK3SuqpkjiXRGOffHEsPx?=
+ =?us-ascii?Q?bnex//ia9zUPO+jAVulcNaNLJ+SNjIKG7GLJtx5NnCm27TgMLrD5en5rEEJK?=
+ =?us-ascii?Q?Fjht+ieWjHE/+bOKQ4FZV8GuyA8kXeZ6k47TnLnc2gcpV3hYfsP5C4lr0G6T?=
+ =?us-ascii?Q?wBsCe05j09Daj39LYH+MAjEthCWOxlOCseyPTVwUAeyixn7UKo6RuEJdbwce?=
+ =?us-ascii?Q?eXyOrkEGXyedfRRj2TqBNPq/zVEmc17cFyMmgJffRfYADO6enQnniExLKQmu?=
+ =?us-ascii?Q?c6sc1bZrGWmcVlvbecAO9gPMvVYidElmqLuV5HX/qYq+GCJskepUs1Z3CKP2?=
+ =?us-ascii?Q?0RkS2iIDIKdBphFgzapQE+MEIEFdnr1KzITWKQPYxrqhGmkSoPYhkZRTxmyX?=
+ =?us-ascii?Q?b4q8olerhFPAIS8WCLEBjYWMtvwCoFoy6FzzjCUqt8GxmhuPkco7SgIcO7s6?=
+ =?us-ascii?Q?TFkxrPfU2vGEOzv6Ujll7pn2LiQQV0+ziN9kt0f8hhffmjWqINMqbLdnEHS6?=
+ =?us-ascii?Q?HBj14H4GhnFrcuKFDjK+IlfbaH+jfN6rZ0nfPx5rEa+7X/goMV73FRFN9QS6?=
+ =?us-ascii?Q?lM6DW44bGn8t2wtWX2cjFveJebj7IyRYlR1+qjM0J9zgQd8mg4iAd/z3TuBH?=
+ =?us-ascii?Q?9H9fxgNlcjx8kpxV+LQtNCF2e9puebTUlJ61fOLi0Ct3QiO4Kv1q0WBYCC7f?=
+ =?us-ascii?Q?BOvEM1J0/R+Catj6DjO9dAjEfhc2rsUTBpXuB9OlBTn/slHmLeCcFMUv7DEN?=
+ =?us-ascii?Q?a0e6ZGToQdscPx+no9nh3bkGRQD8bUStkl1F/EYsJa7bngknbOW8iGlL2kJm?=
+ =?us-ascii?Q?hf34D7cukbirVn3TchN4vLFuvOKEp08bQq+36xA/7MaXHmYO2WbVtnJN475R?=
+ =?us-ascii?Q?qbPAbwcWUEA64piZ3Kl/+/dsfA2hS2qloMLSlKKds+QR7N0vAiCaKeHMMAAh?=
+ =?us-ascii?Q?GGWalM6na7FnNKr2kxIXMcH6scRariNHIeq25QjCeCK27CPZbByjMVsdgy8w?=
+ =?us-ascii?Q?F2h1vdo3BgxSQhZ3tN/4GmH8Rc0SvrqFkpxfj1mEl3x9M5Kt?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 51a3b329-abfa-429e-26ec-08de95c97f6f
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2026 23:49:39.5147
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: C551vZsPQ9d6MTj+QwjaSwvhtSn1iNSaHqDFWpX9JsXZGmhI3c3y1cIiToh4TAMp
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8404
 
-On 1/11/2026 9:36 AM, Michael Kelley wrote:
-> From: Easwar Hariharan <easwar.hariharan@linux.microsoft.com> Sent: Friday, January 9, 2026 10:41 AM
->>
->> On 1/8/2026 10:46 AM, Michael Kelley wrote:
->>> From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Monday, December 8, 2025 9:11 PM
->>>>
->>>> From: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
->>>>
->>>> Hyper-V uses a logical device ID to identify a PCI endpoint device for
->>>> child partitions. This ID will also be required for future hypercalls
->>>> used by the Hyper-V IOMMU driver.
->>>>
->>>> Refactor the logic for building this logical device ID into a standalone
->>>> helper function and export the interface for wider use.
->>>>
->>>> Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
->>>> Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
->>>> ---
->>>>  drivers/pci/controller/pci-hyperv.c | 28 ++++++++++++++++++++--------
->>>>  include/asm-generic/mshyperv.h      |  2 ++
->>>>  2 files changed, 22 insertions(+), 8 deletions(-)
->>>>
->>>> diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
->>>> index 146b43981b27..4b82e06b5d93 100644
->>>> --- a/drivers/pci/controller/pci-hyperv.c
->>>> +++ b/drivers/pci/controller/pci-hyperv.c
->>>> @@ -598,15 +598,31 @@ static unsigned int hv_msi_get_int_vector(struct irq_data *data)
->>>>
->>>>  #define hv_msi_prepare		pci_msi_prepare
->>>>
->>>> +/**
->>>> + * Build a "Device Logical ID" out of this PCI bus's instance GUID and the
->>>> + * function number of the device.
->>>> + */
->>>> +u64 hv_build_logical_dev_id(struct pci_dev *pdev)
->>>> +{
->>>> +	struct pci_bus *pbus = pdev->bus;
->>>> +	struct hv_pcibus_device *hbus = container_of(pbus->sysdata,
->>>> +						struct hv_pcibus_device, sysdata);
->>>> +
->>>> +	return (u64)((hbus->hdev->dev_instance.b[5] << 24) |
->>>> +		     (hbus->hdev->dev_instance.b[4] << 16) |
->>>> +		     (hbus->hdev->dev_instance.b[7] << 8)  |
->>>> +		     (hbus->hdev->dev_instance.b[6] & 0xf8) |
->>>> +		     PCI_FUNC(pdev->devfn));
->>>> +}
->>>> +EXPORT_SYMBOL_GPL(hv_build_logical_dev_id);
->>>
->>> This change is fine for hv_irq_retarget_interrupt(), it doesn't help for the
->>> new IOMMU driver because pci-hyperv.c can (and often is) built as a module.
->>> The new Hyper-V IOMMU driver in this patch series is built-in, and so it can't
->>> use this symbol in that case -- you'll get a link error on vmlinux when building
->>> the kernel. Requiring pci-hyperv.c to *not* be built as a module would also
->>> require that the VMBus driver not be built as a module, so I don't think that's
->>> the right solution.
->>>
->>> This is a messy problem. The new IOMMU driver needs to start with a generic
->>> "struct device" for the PCI device, and somehow find the corresponding VMBus
->>> PCI pass-thru device from which it can get the VMBus instance ID. I'm thinking
->>> about ways to do this that don't depend on code and data structures that are
->>> private to the pci-hyperv.c driver, and will follow-up if I have a good suggestion.
->>
->> Thank you, Michael. FWIW, I did try to pull out the device ID components out of
->> pci-hyperv into include/linux/hyperv.h and/or a new include/linux/pci-hyperv.h
->> but it was just too messy as you say.
+On Wed, Apr 08, 2026 at 12:44:42PM -0600, Alex Williamson wrote:
+> In removing IOMMU_CAP_DEFERRED_FLUSH, the below referenced commit
+> was over-eager in removing the return, resulting in the test for
+> IOMMU_CAP_CACHE_COHERENCY falling through to an irrelevant option.
 > 
-> Yes, the current approach for getting the device ID wanders through struct
-> hv_pcibus_device (which is private to the pci-hyperv driver), and through
-> struct hv_device (which is a VMBus data structure). That makes the linkage
-> between the PV IOMMU driver and the pci-hyperv and VMBus drivers rather
-> substantial, which is not good.
-
-Hi Michael,
-
-I missed this, or made a mental note to follow up but forgot. Either way, Yu reminded
-me about this email chain and I started looking at it this week.
-
+> Restore dropped return.
 > 
-> But here's an idea for an alternate approach. The PV IOMMU driver doesn't
-> have to generate the logical device ID on-the-fly by going to the dev_instance
-> field of struct hv_device. Instead, the pci-hyperv driver can generate the logical
-> device ID in hv_pci_probe(), and put it somewhere that's easy for the IOMMU
-> driver to access. The logical device ID doesn't change while Linux is running, so
-> stashing another copy somewhere isn't a problem.
+> Fixes: 1c18a1212c77 ("iommu/dma: Always allow DMA-FQ when iommupt provides the iommu_domain")
+> Signed-off-by: Alex Williamson <alex.williamson@nvidia.com>
 
-In my exploration and consulting with Dexuan, I realized that one of the components of
-the logical device ID, the PCI function number is set only in pci_scan_device(), well into
-pci_scan_root_bus_bridge() that you call out as the point by which the communication must
-have occurred.
+I didn't think this was merged - I didn't get an email about it? Joerg
+I've noticed alot of silent merges from you lately is that deliberate
+or is something wrong?
 
-But then, Dexuan also pointed me to hv_pci_assign_slots() with its call to wslot_to_devfn() and I'm
-honestly confused how these two interact. With the current approach, it looks like whatever
-devfn pci_scan_device() set is the correct function number to use for the logical device
-ID, in which case, the best I can do with your suggested approach below is to inform the
-pvIOMMU driver of the GUID, rather than the logical device ID itself.
+But yes this is right:
 
-Perhaps with your history, you can clarify the interaction, and/or share your thoughts
-on the above?
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-> 
-> So have the Hyper-V PV IOMMU driver provide an EXPORTed function to accept
-> a PCI domain ID and the related logical device ID. The PV IOMMU driver is
-> responsible for storing this data in a form that it can later search. hv_pci_probe()
-> calls this new function when it instantiates a new PCI pass-thru device. Then when
-> the IOMMU driver needs to attach a new device, it can get the PCI domain ID
-> from the struct pci_dev (or struct pci_bus), search for the related logical device
-> ID in its own data structure, and use it. The pci-hyperv driver has a dependency
-> on the IOMMU driver, but that's a dependency in the desired direction. The
-> PCI domain ID and logical device ID are just integers, so no data structures are
-> shared.
-
-In a previous reply on this thread, you raised the uniqueness issue of bytes 4 and 5
-of the GUID being used to create the domain number. I thought this approach could
-help with that too, but as I coded it up, I realized that using the domain number 
-(not guaranteed to be unique) to search for the bus instance GUID (guaranteed to be unique)
-is the wrong way around. It is unfortunately the only available key in the pci_dev
-handed to the pvIOMMU driver in this approach though...
-
-Do you think that's a fatal flaw?
-
-> 
-> Note that the pci-hyperv must inform the PV IOMMU driver of the logical
-> device ID *before* create_root_hv_pci_bus() calls pci_scan_root_bus_bridge().
-> The latter function eventually invokes hv_iommu_attach_dev(), which will
-> need the logical device ID. See example stack trace. [1]
-> 
-> I don't think the pci-hyperv driver even needs to tell the IOMMU driver to
-> remove the information if a PCI pass-thru device is unbound or removed, as
-> the logical device ID will be the same if the device ever comes back. At worst,
-> the IOMMU driver can simply replace an existing logical device ID if a new one
-> is provided for the same PCI domain ID.
-
-As above, replacing a unique GUID when a result is found for a non-unique
-key value may be prone to failure if it happens that the device that came "back"
-is not in fact the same device (or class of device) that went away and just happens
-to, either due to bytes 4 and 5 being identical, or due to collision in the
-pci_domain_nr_dynamic_ida, have the same domain number. 
+Kevin and I both missed it!!
 
 Thanks,
-Easwar (he/him)
-
-> 
-> An include file must provide a stub for the new function if
-> CONFIG_HYPERV_PVIOMMU is not defined, so that the pci-hyperv driver still
-> builds and works.
-> 
-> I haven't coded this up, but it seems like it should be pretty clean.
-> 
-> Michael
-> 
-> [1] Example stack trace, starting with vmbus_add_channel_work() as a
-> result of Hyper-V offering the PCI pass-thru device to the guest.
-> hv_pci_probe() runs, and ends up in the generic Linux code for adding
-> a PCI device, which in turn sets up the IOMMU.
-> 
-> [    1.731786]  hv_iommu_attach_dev+0xf0/0x1d0
-> [    1.731788]  __iommu_attach_device+0x21/0xb0
-> [    1.731790]  __iommu_device_set_domain+0x65/0xd0
-> [    1.731792]  __iommu_group_set_domain_internal+0x61/0x120
-> [    1.731795]  iommu_setup_default_domain+0x3a4/0x530
-> [    1.731796]  __iommu_probe_device.part.0+0x15d/0x1d0
-> [    1.731798]  iommu_probe_device+0x81/0xb0
-> [    1.731799]  iommu_bus_notifier+0x2c/0x80
-> [    1.731800]  notifier_call_chain+0x66/0xe0
-> [    1.731802]  blocking_notifier_call_chain+0x47/0x70
-> [    1.731804]  bus_notify+0x3b/0x50
-> [    1.731805]  device_add+0x631/0x850
-> [    1.731807]  pci_device_add+0x2db/0x670
-> [    1.731809]  pci_scan_single_device+0xc3/0x100
-> [    1.731810]  pci_scan_slot+0x97/0x230
-> [    1.731812]  pci_scan_child_bus_extend+0x3b/0x2f0
-> [    1.731814]  pci_scan_root_bus_bridge+0xc0/0xf0
-> [    1.731816]  hv_pci_probe+0x398/0x5f0
-> [    1.731817]  vmbus_probe+0x42/0xa0
-> [    1.731819]  really_probe+0xe5/0x3e0
-> [    1.731822]  __driver_probe_device+0x7e/0x170
-> [    1.731823]  driver_probe_device+0x23/0xa0
-> [    1.731824]  __device_attach_driver+0x92/0x130
-> [    1.731826]  bus_for_each_drv+0x8c/0xe0
-> [    1.731828]  __device_attach+0xc0/0x200
-> [    1.731830]  device_initial_probe+0x4c/0x50
-> [    1.731831]  bus_probe_device+0x32/0x90
-> [    1.731832]  device_add+0x65b/0x850
-> [    1.731836]  device_register+0x1f/0x30
-> [    1.731837]  vmbus_device_register+0x87/0x130
-> [    1.731840]  vmbus_add_channel_work+0x139/0x1a0
-> [    1.731841]  process_one_work+0x19f/0x3f0
-> [    1.731843]  worker_thread+0x188/0x2f0
-> [    1.731845]  kthread+0x119/0x230
-> [    1.731852]  ret_from_fork+0x1b4/0x1e0
-> [    1.731854]  ret_from_fork_asm+0x1a/0x30
-> 
->>
+Jason
