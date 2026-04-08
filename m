@@ -1,137 +1,136 @@
-Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11011061.outbound.protection.outlook.com [52.101.62.61])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E8BB34AB06
-	for <iommu@lists.linux.dev>; Wed,  8 Apr 2026 16:28:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.62.61
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775665734; cv=fail; b=gVtAqu6j/1XGM5OjpqVs4YhBtv5rJQ8lkNd5hpvzS689AT12xBNnSxIzZSkKwlkoLFeXBDO+OlKQAEcFjumk3/RzDp/3MKCt3zvWa6B6/LzoV4iAbbGYU25fH5EiJabbFm3O2/nxB7tJ6q/0uzMYR038LwWUNx96nJgfgl6sRBs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775665734; c=relaxed/simple;
-	bh=XFV7Jka4SDoxmkHCerqxO7dX5HeXIkEZHk7kV4eA/MY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=peuVuybOz9pNXr4wb6bzjuwrv2HmDKAMHF9qZeEzJIMgdH9aLjDbP814/hPrqdypQzwvUsWkOsSHSlXGCORDfJHnvIqUhXIfAVxP0AqrmtkuXLSzNiYqdxhMVXoqfoeOWS/VbUufaBvgd7da8dFtKFZjYmVUYY1vHgz5wbuVERo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=onrITpeZ; arc=fail smtp.client-ip=52.101.62.61
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B3146349B1F
+	for <iommu@lists.linux.dev>; Wed,  8 Apr 2026 16:40:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775666453; cv=none; b=qW6C/iqfGS94etZXL+M7Lbr3Y4JhQrJc59WTOI6CI64l5qKwtUjIowvzPL4B2Ied8e/gq8IpK0eti5gmlx426u3wVdyD4JxO7/GKcu7lmAFQ49XP7zTA504gGqzZNsPA72Zf4bDUafPep8lqLPP7Hy2J5pXYN1gckedAyzuSV0k=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775666453; c=relaxed/simple;
+	bh=X7uwi1mTnlblHvnMF6Xvi2utMBucdMig04mZXn3jTOw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=arRaT6MF/SbKqOJ3Nh/71oV8YFibmMMZoczljNU5jUqPWDcHPSMFqwyDppSlKbH+zPV4V1j3pUish14Wb14LKAl4IJYV+vISdyf2usAZ0gTA0ZSst9oZ3QlGIJC+QiL31ZTh7dfrYobeiAm+rdwvdlr3dOeTv43uYPITBMRsk64=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=F849nA4U; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="onrITpeZ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=kaoPTOaKybP1O8CXl2o0DHc4W4A4Nj7P069PyIDR8HV9LQ/hUhgOG7MZYxdLa50iPtVQ6DRM5cyTGJZ93z43Uw+tdnHJP4tQ0+6w542KNvC8wcq5R6TWs1DIq0sTAFY+O0hJmQ9rv4lv9KIBEpE0fCt9iL2GF8v4C+4w+KbH9dPRr/vaxgMBc1ib13s7zAKjf/SEkCi4BEMMkvrw4sh1JEWwGo7/Ir0yP8prP4VkyqloS1nqDfCZzktMMZP3F7x3ZcyMSC01yTM/uM1Dkhbh54h+pUnLeEmDIQSOEhwaoKTH5Gp8lm1i+Z3uE2VB/VDOLU5p2/MkQRi7F++8dXL9iA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bQGCqPJfPJwO+txCoVipv7aorf/CHq32Pau5jsk5tYo=;
- b=Hrwkmu7r9KMiTH3dNA2VM3nFCkgtgseckG+y2dlEUZQKM9woDac4BcoiAiOFvIgmEHCWbQa7TuReaKE5sBWkSbUzmwqfE8r2vju0lypF3E89mqy161XiMM/+/VfJgd9Y3c6Fs/viqcvez84nhn1JDPNg3Yd7y5O8RxmnYaLMOz/9WUav/BZIYxqH153vbnSwahZOU9ZAYqeAA/l/tHYkwaDaZEcYwfizUTrNhxRJi+PF93wRmUneBSa/M23eV5TYHAztIqfCBWlg49srmXMM9NEniNxDFpQu/F0eaSxkK6SfnAjY980ocy3XQPRKM89uHIaNqNLofVY1pkp1/qJeKw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bQGCqPJfPJwO+txCoVipv7aorf/CHq32Pau5jsk5tYo=;
- b=onrITpeZZpcBxb2HSPNWBAxQSaeBe5iprCweWGAMyyLU7mGt6BMxr0fxqzOG0K7SGYDzSegKlJ6/AvdoTdil/Cgm2hq/LzrlasuQI4MT23hTjBrzPLhww/Sz2gGLyn9CJ4cbv+lA2gi0m4p+0s9Zh40zQ+FSZVRTeKmP+XVnIHlNZHXQRecVSBcuzm86ASj4CNrPyNRyJXDEsNjwJj17i4N+fFk4IU6xzBlf2WtPMgdNFmXya2JqrwOl92ahDo6DgKJzsARtUO9k3FNtNWN9Jn5axB+ie1l+1ECSF2XjOydGruzXJreZTgSmM2eIt8vq4VCT8WyKWD4CH1KZzDbmVQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by DM3PR12MB9328.namprd12.prod.outlook.com (2603:10b6:0:44::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.17; Wed, 8 Apr
- 2026 16:28:48 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9769.017; Wed, 8 Apr 2026
- 16:28:48 +0000
-Date: Wed, 8 Apr 2026 13:28:46 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, will@kernel.org, linux@armlinux.org.uk,
-	iommu@lists.linux.dev, linux-tegra@vger.kernel.org,
-	Jon Hunter <jonathanh@nvidia.com>
-Subject: Re: [PATCH] iommu: Ensure .iotlb_sync is called correctly
-Message-ID: <20260408162846.GE3357077@nvidia.com>
-References: <8982e3412563cf91e106d59228dfb6115024c75e.1775659257.git.robin.murphy@arm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8982e3412563cf91e106d59228dfb6115024c75e.1775659257.git.robin.murphy@arm.com>
-X-ClientProxiedBy: BL1PR13CA0406.namprd13.prod.outlook.com
- (2603:10b6:208:2c2::21) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="F849nA4U"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0A6E62BC4;
+	Wed,  8 Apr 2026 09:40:45 -0700 (PDT)
+Received: from [10.57.85.157] (unknown [10.57.85.157])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 952A73F632;
+	Wed,  8 Apr 2026 09:40:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1775666450; bh=X7uwi1mTnlblHvnMF6Xvi2utMBucdMig04mZXn3jTOw=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=F849nA4URN+RFi4j0f5jgoLpZlywmk3Pu6hMnA0qQncicSUV1k8+YOOGBYJZSzaWa
+	 WMsa+sEqQWvwY50XlMrAdxLbQ+BeLEJsklz01UjQB01Siqe8pKdIb3MTS2FbTKw0vy
+	 rIz0XlbsMeH2E12h1gNYQj8sc9EisZyfYvo/NbKo=
+Message-ID: <3a1d0520-3402-47b2-9d7b-4e14a3cd07a4@arm.com>
+Date: Wed, 8 Apr 2026 17:40:48 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|DM3PR12MB9328:EE_
-X-MS-Office365-Filtering-Correlation-Id: 024020ca-b2e8-49a7-a15a-08de958be949
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|366016|1800799024|18002099003|22082099003|56012099003;
-X-Microsoft-Antispam-Message-Info:
-	m0CejDfb7aFWKXuRq1RoyxQktKV1/LHVjS+NMU8btc5270EVhmiSppeyaLYxMH+TcOs35jD53nVWKlbp3MolMpIg6xc848mUyiQFoj8yXSi2maX4OoJ0SdFeXRFY1oBziNoGk0XEtk383z7P7F7QBTTS5G1nLsoSjv/taQ4kNiR2aaBbcDa5s2Juvhv3ERiSVUAmHI1Gz5ellqTytArNNWKTGbGjp/7uQo2bOXgEFT0IhuCdq9Ktf5KuBn6Vd30MtKewX9p2PB4s3EhkLefxAROtMCAI3y3M1C/Pb5hofvB2ShaNy17D3G5ppZluuRbdl4kjd2FbVy/lY97Kd8qwmkziQ/IBIKG26xMcxpxjzwauygsDRmPwg8XE65B3yGSdHxcy3ve4/ZvR7sUMCBmZyq75DI7I2f8KS5uzW7esMVMV3o3XqS0xgI7Icggaz5R/b3GLqrieE0e0s8Jcny7zX4Jrp65XnZBmEguWpT8Hmg3/C3EGaBpb06GQGU7bwFWPpA+3PlneiZI73FLjkMWYLA4bOXlPYGq9qYAJRJJcbWUuXGeTIBHwHyCNzWUhjZccxiVVWy/bqHd2ZLg9/pXClMb/hdKzbfnThVdZCsz6BIJvUl933iuif421pyD2FTtLW9OC5w6lVd9d8vg4d+fF9mNGjYhzdETZJKaACNZ9oRe1t4cb5qTJ9/lv3enCphuwP//94w6Z+0Asrsx8BF4JF3Lv3YUvm9lU6n153l7kQ/Q=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(18002099003)(22082099003)(56012099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?PLRcL9PUwsAjPIz2JW9Xnrr2VM2+GJYQ9/FvVbqIcPsdKfX28yhxfggpnEQs?=
- =?us-ascii?Q?ysvSW51vAvY0ZfUkbvrGKAhtZ/5fUetK34wYl6rvP3D3RQ0Rs5oxz/0F9kO3?=
- =?us-ascii?Q?86oMs8Xfa93IU3o+imrrmcjhHRk5KweTCWOfiyb0v+c7RgIHwuFbtokuY386?=
- =?us-ascii?Q?7NHnO9RsRpWv6QVq0ejpiRh90gGt0JxByZiSJfJdPhvqyUM+1qA3EZTpluyN?=
- =?us-ascii?Q?yR9CX+hWveuCjBrbsPWTU3BTHfNh0IZV86G/TJvLXpJV63ZsNFKhcFPZW8WU?=
- =?us-ascii?Q?+p5zBCTHmEaTpa2iTXrxHfDsPEx4jgVc6bBLM7rUaV0oYZm0qw1EEKyWsszt?=
- =?us-ascii?Q?ODaxt+iS9f8MrzUmNXcwiVRsVI42rJst0ZPCKWgn70iGd5th/xDZDd7qZt9D?=
- =?us-ascii?Q?MFXMtLVlIXbBTdKkmck4FV1cgX8RDwVrrb8IZ+wJkgaYxqpKb+NxA37NuZlN?=
- =?us-ascii?Q?Q+TGX7HzqdCu+IxIit6gDHPRxUWhQACtM0ZUPBSZcvtSKu0Bx2zS9E26hZ8I?=
- =?us-ascii?Q?p0LvcabM1P8pMfBmXypmjUjfSFr+oIIVzYQqXc7H0b8S0XgR71X8YgLtwVuE?=
- =?us-ascii?Q?xMLwxKA2GzqHrVo+lFXnqvDjBIjoTEiO6Alsz3c4XMPjJUp7/Prnaln4KH0g?=
- =?us-ascii?Q?XVGVGPT0eOnpKUvLv32W7rGdtqzNHVctryEi8eD7pAKDtLBQ2j+YyMbIPpOM?=
- =?us-ascii?Q?c8k2wHvCRBpyAgzD5eQDo3qECYpKK3LJrxSzXNDDXmevDzOC3rcnoMcLC3kb?=
- =?us-ascii?Q?cT18iGoABGVdTiMcqDykKJ/0XEr9X6ffvKDru2e4r2wzBuuqwk0oe6/aY8/x?=
- =?us-ascii?Q?E4ItOviSF5PqLw5lw19gRNlH7eR319oz+wv0ssp8dXqgDyRV9582q1eEXFjS?=
- =?us-ascii?Q?TOEF6qPjDYvqBqgOoym0LoFO4OzFxworWyc2ouqbuoZuulrZTpOFHWnJGqfi?=
- =?us-ascii?Q?dJWtKJxl4rCR74WowiIyiWj6k6Y7ga1gQO5xPE4REO4pjpcaBbO6a9+qD3Rl?=
- =?us-ascii?Q?fSnD9uXhn1YphTu957zoz5Jt7TFAGYbjXtfm7DMyEZEX06BGZ+vYBMQ50ozU?=
- =?us-ascii?Q?lL2crGyneZKXmn2x7AUIqH8L61Ca5ZsO4Sz0V5eUj+OChIoe8PuOtC3AKWla?=
- =?us-ascii?Q?QoAkEZlX/AaYF+1INRTb/tR6mMzVKf6fdDSKz0WS0FaLbOO6TYHTM8i2cAt0?=
- =?us-ascii?Q?fTrdOsPDaVqYNf6qKr7zlM7NH50fLILNsNfARt3XsJ5UV5hdNYqFPkCQ4eKl?=
- =?us-ascii?Q?DWzKpOUAHss3oiQPfUmhveHIuqtRFL13oV71lOzJZmAlNNFDJ1cK2sXdkp+o?=
- =?us-ascii?Q?4h2BhIW5ays2sJ1iKDCAxfx12WJDdZn+IVBwR/Roa5TMBKCoS/vTw5ufVrJ1?=
- =?us-ascii?Q?r5fYObc8xLk4ET+gtyqfhgzZFaSz4mMpPaYUDBl4caUH3l0YURAkiFlPhnbs?=
- =?us-ascii?Q?3rsENOE22gPER3sRFdqYLMOaVxoYdBRWJuA0Wqx82bW07rx+AWTnjbQ4CgaJ?=
- =?us-ascii?Q?5fJIRE0KJN7nfUwD0g1Prnx4ACd2KsIEdQreDvQSAQyLgfbQcoDc5xomwv4Q?=
- =?us-ascii?Q?9f8xoyNrqB5kdahK1j6syV655NRXX/HyQTykb5FI4JW5TcSFPls3WVLneht5?=
- =?us-ascii?Q?2jDPbHerZAwA7sEMdmUs+BssiScwHuloXTICfS4pPS/rZV2YM0l3lN+Jj5Q2?=
- =?us-ascii?Q?3PrXjwxsjd5AUkUEVE6Neb/6Oyq8ELNOdTLPO+squeLJY9Bm?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 024020ca-b2e8-49a7-a15a-08de958be949
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2026 16:28:48.2226
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2m0ba3smGaKfa6orUBLlSC2BAKI/EDi9UhWAh2a6Jq0n679enAaJ9sOMVVGYYrOZ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM3PR12MB9328
+User-Agent: Mozilla Thunderbird
+Subject: Re: BUG: net-next (7.0-rc6 based and later) fails to boot on Jetson
+ Xavier NX
+To: "Russell King (Oracle)" <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-ext4@vger.kernel.org,
+ Linus Torvalds <torvalds@linux-foundation.org>, dmaengine@vger.kernel.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Theodore Ts'o
+ <tytso@mit.edu>, Andreas Dilger <adilger.kernel@dilger.ca>,
+ Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>
+References: <adZTGOjjJrVJOcT8@shell.armlinux.org.uk>
+ <adZfTi3R6jtsjXx-@shell.armlinux.org.uk>
+ <adZ9grUg71f518Fg@shell.armlinux.org.uk>
+ <adZ_ZmjcE8S22vR1@shell.armlinux.org.uk>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <adZ_ZmjcE8S22vR1@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Apr 08, 2026 at 03:40:57PM +0100, Robin Murphy wrote:
-> Many drivers have no reason to use the iotlb_gather mechanism, but do
-> still depend on .iotlb_sync being called to properly complete an unmap.
-> Since the core code is now relying on the gather to detect when there
-> is legitimately something to sync, it should also take care of encoding
-> a successful unmap when the driver does not touch the gather itself.
+On 2026-04-08 5:16 pm, Russell King (Oracle) wrote:
+> On Wed, Apr 08, 2026 at 05:08:34PM +0100, Russell King (Oracle) wrote:
+>> The rebase is still progressing, but it's landed on:
+>>
+>> c7d812e33f3e dmaengine: xilinx: xilinx_dma: Fix unmasked residue subtraction
+
+FWIW I don't see a Tegra having the Xilinx IP in it anyway - judging by 
+the DT it has their own tegra-gpcdma engine...
+
+There's a fair chance this could be 90c5def10bea ("iommu: Do not call 
+drivers for empty gathers"), which JonH also reported causing boot 
+issues on Tegras - in short, SMMU TLB maintenance may not be completed 
+properly which could lead to recycled DMA addresses causing exactly this 
+kind of random memory corruption. I CC'd you on a patch:
+
+https://lore.kernel.org/linux-iommu/20260408162846.GE3357077@nvidia.com/T/#t
+
+Thanks,
+Robin.
+
+>>
+>> and while this boots to a login prompt, it spat out a BUG():
+>>
+>> BUG: sleeping function called from invalid context at kernel/locking/mutex.c:591
+>> in_atomic(): 0, irqs_disabled(): 1, non_block: 0, pid: 56, name: kworker/u24:3
+>> preempt_count: 0, expected: 0
+>> RCU nest depth: 0, expected: 0
+>> 3 locks held by kworker/u24:3/56:
+>>   #0: ffff000080042148 ((wq_completion)events_unbound#2){+.+.}-{0:0}, at: process_one_work+0x184/0x780
+>>   #1: ffff80008299bdf8 (deferred_probe_work){+.+.}-{0:0}, at: process_one_work+0x1ac/0x780
+>>   #2: ffff0000808b48f8 (&dev->mutex){....}-{4:4}, at: __device_attach+0x2c/0x188
+>> irq event stamp: 10872
+>> hardirqs last  enabled at (10871): [<ffff80008013a410>] ktime_get+0x130/0x180
+>> hardirqs last disabled at (10872): [<ffff800080d61ac8>] _raw_spin_lock_irqsave+0x84/0x88
+>> softirqs last  enabled at (9216): [<ffff80008002807c>] fpsimd_save_and_flush_current_state+0x3c/0x80
+>> softirqs last disabled at (9214): [<ffff800080028098>] fpsimd_save_and_flush_current_state+0x58/0x80
+>> CPU: 5 UID: 0 PID: 56 Comm: kworker/u24:3 Not tainted 7.0.0-rc1-bisect+ #654 PREEMPT
+>> Hardware name: NVIDIA NVIDIA Jetson Xavier NX Developer Kit/Jetson, BIOS 6.0-37391689 08/28/2024
+>> Workqueue: events_unbound deferred_probe_work_func
+>> Call trace:
+>>   show_stack+0x18/0x30 (C)
+>>   dump_stack_lvl+0x6c/0x94
+>>   dump_stack+0x18/0x24
+>>   __might_resched+0x154/0x220
+>>   __might_sleep+0x48/0x80
+>>   __mutex_lock+0x48/0x800
+>>   mutex_lock_nested+0x24/0x30
+>>   pinmux_disable_setting+0x9c/0x180
+>>   pinctrl_commit_state+0x5c/0x260
+>>   pinctrl_pm_select_idle_state+0x4c/0xa0
+>>   tegra_i2c_runtime_suspend+0x2c/0x3c
+>>   pm_generic_runtime_suspend+0x2c/0x44
+>>   __rpm_callback+0x48/0x1ec
+>>   rpm_callback+0x74/0x80
+>>   rpm_suspend+0xec/0x630
+>>   rpm_idle+0x2c0/0x420
+>>   __pm_runtime_idle+0x44/0x160
+>>   tegra_i2c_probe+0x2e4/0x640
+>>   platform_probe+0x5c/0xa4
+>>   really_probe+0xbc/0x2c0
+>>   __driver_probe_device+0x78/0x120
+>>   driver_probe_device+0x3c/0x160
+>>   __device_attach_driver+0xbc/0x160
+>>   bus_for_each_drv+0x70/0xb8
+>>   __device_attach+0xa4/0x188
+>>   device_initial_probe+0x50/0x54
+>>   bus_probe_device+0x38/0xa4
+>>   deferred_probe_work_func+0x90/0xcc
+>>   process_one_work+0x204/0x780
+>>   worker_thread+0x1c8/0x36c
+>>   kthread+0x138/0x144
+>>   ret_from_fork+0x10/0x20
+>>
+>> This is reproducible.
 > 
-> Fixes: 90c5def10bea ("iommu: Do not call drivers for empty gathers")
-> Reported-by: Jon Hunter <jonathanh@nvidia.com>
-> Closes: https://lore.kernel.org/r/8800a38b-8515-4bbe-af15-0dae81274bf7@nvidia.com
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->  drivers/iommu/iommu.c | 6 ++++++
->  1 file changed, 6 insertions(+)
+> I've just realised that it's the Tegra I2C bug that is already known
+> about, but took ages to be fixed in mainline - it's unrelated to the
+> memory corruption, so can be ignored. Sorry for the noise.
+> 
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-
-Jason
