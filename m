@@ -1,122 +1,103 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 797533B95E0
-	for <iommu@lists.linux.dev>; Wed,  8 Apr 2026 10:08:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CE9C713777E
+	for <iommu@lists.linux.dev>; Wed,  8 Apr 2026 11:15:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775642918; cv=none; b=DE/vbbi01H6ZcQbntmpgktsZGhxB3reKvNSK4qU1XQxq+hJPhRh49lHoL8Eig4QHF6P5zVzeBjmlPN5FtEsJsZYWjDUn4JRF8L9hFfZzHg3GVIY8hsiS+G7TtG59a/kNgrOGsdB2163ofep6OFUmc7umI7cdUUXv4Q8xnWeECwU=
+	t=1775646939; cv=none; b=nGSuw9dzgvCqOvt5KHLIYiBNuhwxM3cPjencllBXk1qIk1B9CqfBLgFrpOE1QPMirv8QJrpd5z3K+APBNsQRDJO4Kj6Lz6v9W+XsoeiaTSfeoCWLRnU0wRItbXbhulZKx4tPo6Lv/O8Ve162UBo7Y1iZulUUHWimMyAGu6EVgA0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775642918; c=relaxed/simple;
-	bh=E3/giysvz5CnXAqEhtSOJDq9Jkv2a9jCXNPHxh3BiWg=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:content-type; b=lgqj5xHdsxkPxl44W7JIr1baTDTzutV6cHVHBD72OR65+YBndnYs9ToQpfVedyYpLHJ745kLCylb7Mb+7RBuFIG06ew8IjHE844gFtqJxPEeLFTLGswyRwWexZJfVY9kNokeizE9QLK7GygpJXU4upe+vZ6r0688kVwb/HERp5k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=ergUMxKY; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1775646939; c=relaxed/simple;
+	bh=igR4tf9tvQIXuyv1BNumq6EyMN3XRctwsRk0w2FJVXM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=FqtHYpy4oFOlsT+Y+f2NfS9z4hc4RA2e2qnHoIgK2xMjnYZ3tGU17vRFGbDbeeQvWs9YvYWbiioYwBySUCcUdGs0oLMCC/AepcOwVtwifs+XKUW4/i4cXWBEDrBNx4wLXMbb7eTMs6iaK8vpJrPfMSc7RdHNPfBhcOTBxQKpZMA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=vmSjwA7D; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ergUMxKY"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1775642908;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=r5Lp+7Mw/0AHH1tOuKEmXQ29IHEsWc1KXfBemJVlEFc=;
-	b=ergUMxKYm86cZfRm/VN9+NAAKwu7GzT1sKn+grb0ypwo4AO1Ndu/94q2VV1rTa4ZyBhkdp
-	KdMibfQchYTxWI3HKi7rETDag1rsbFWbyBkW9rmqwLcGLPzmyCf3JLJln1Vf+yU79jsglQ
-	ffqj/1MA2pT6s2c4vyCxLm+pRb9ETJw=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-147-g3jIAepxOmyLi77jAfh6vw-1; Wed, 08 Apr 2026 06:08:26 -0400
-X-MC-Unique: g3jIAepxOmyLi77jAfh6vw-1
-X-Mimecast-MFC-AGG-ID: g3jIAepxOmyLi77jAfh6vw_1775642906
-Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-43b8c472f3eso4593063f8f.0
-        for <iommu@lists.linux.dev>; Wed, 08 Apr 2026 03:08:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775642905; x=1776247705;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=r5Lp+7Mw/0AHH1tOuKEmXQ29IHEsWc1KXfBemJVlEFc=;
-        b=m2ivtRTXcxW3vyeZmMTt8+DMnk0jTIHztRudTIr4agUDiU0pFb48H8olNKVQ7+0FHk
-         BQzmgIh2icGZ1QcZSbRRWTzyu6hbo01hRBzyd/Onv/nFMNYJ0J1aEWhYDMzD3LZ6TrQl
-         +K1mliO3/sxlZLep+mvsH5Ocm5x2uwc8GAVnusP6Q012NBwbrjMK0oLuAPcwizTTHDuz
-         iAT6s3SDErIZU6Hg44/KBwvisOnbEY64FPbm9ZGDSxvip+HY0SNXP5nNKwoogoUIhdbK
-         Ywawb/DtipcejeFOsENTENkltVp9M3RikevfITs7VZy3LEFMW+m2PQ9N03ws1b3HmwRI
-         zObg==
-X-Forwarded-Encrypted: i=1; AJvYcCUoG1zpjzR6V0shJDDJAJMYj6dK3aAYuWOGpKb4PcfuXvrC+AhNAFsjwG13xlR1ax5iZlcKRQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx4d8GhkykAdkFyXydhmNAK2C91V0gz+uVtfcXEphGcUPqsGj1s
-	LPsuPdqbs338yyWiDJZuYZWPucn/7vs4xI+wRt8FSZf0TrNNQ4NwVF0FwcQBU1Lgmw5PxDcVc7N
-	fcr5mH5BAZTwhcfIhn9AOIYmeKdqeFA+sokfLt8ihJn5LLn3m5wDtsQTr
-X-Gm-Gg: AeBDiet/mtU4ocT+GMOKLRVTUuq3McuF58bhAbuEWiPLY0Cxs6gYeCt04MkzgO4XcKn
-	LenGYHGawykQROOz1/8gERx03hRpCyPEQZZU2Lo70mCEG5GX82BkdtV22G+quXzkp6o7/dlAOX2
-	D20MDy7zk5QyG/txBW7wRgTSiZ9UMs+mh/pgs0ud8BFLyvu2kwpVAVd4f7Emy7/8Pm6ifj1O3sU
-	W8TssOY9mzdL53sEsrgYGv4vg6CAMj97K5tMsf0TQro63/c6JEnTi8gL0jNswM1sbgH3Sypn2Ey
-	33HFs+wBE1/8wen6tPR/ycaT6mUuV2qORsljPk1vw0EnqpKLNT7ou+vcj8E56Ls/PWyJCKV2iUf
-	OPRBXsJVLQsWRb8pXdBvI04SmMbLbP9Ktx2cAposyVoZu9XnUK7TBMH+5iAlvYeVU5fsSxeE=
-X-Received: by 2002:a05:6000:2388:b0:43d:b99:bdc4 with SMTP id ffacd0b85a97d-43d292d32d9mr29056697f8f.30.1775642905551;
-        Wed, 08 Apr 2026 03:08:25 -0700 (PDT)
-X-Received: by 2002:a05:6000:2388:b0:43d:b99:bdc4 with SMTP id ffacd0b85a97d-43d292d32d9mr29056639f8f.30.1775642905099;
-        Wed, 08 Apr 2026 03:08:25 -0700 (PDT)
-Received: from lbulwahn-thinkpadx1carbongen12.rmtde.csb ([2a02:810d:7e01:ef00:1622:5a48:afdc:799f])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43d1e4e52a0sm54935557f8f.30.2026.04.08.03.08.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Apr 2026 03:08:24 -0700 (PDT)
-From: Lukas Bulwahn <lbulwahn@redhat.com>
-X-Google-Original-From: Lukas Bulwahn <lukas.bulwahn@redhat.com>
-To: Maxime Ripard <mripard@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev
-Cc: Sumit Semwal <sumit.semwal@linaro.org>,
-	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-	kernel-janitors@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Lukas Bulwahn <lukas.bulwahn@redhat.com>
-Subject: [PATCH] MAINTAINERS: Remove obsolete file entry in DMA BUFFER SHARING FRAMEWORK
-Date: Wed,  8 Apr 2026 12:08:19 +0200
-Message-ID: <20260408100819.458347-1-lukas.bulwahn@redhat.com>
-X-Mailer: git-send-email 2.53.0
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="vmSjwA7D"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7A5603161;
+	Wed,  8 Apr 2026 04:15:31 -0700 (PDT)
+Received: from [10.57.86.179] (unknown [10.57.86.179])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 65DE03F641;
+	Wed,  8 Apr 2026 04:15:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1775646937; bh=igR4tf9tvQIXuyv1BNumq6EyMN3XRctwsRk0w2FJVXM=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=vmSjwA7DZY/mrvzmHWRHTxc8XRQEDtjI/NSPo+eCaom6KcIlEdJNksO3Ug2p32frD
+	 bmssI77hNNjyHZbmiXYcj6Z+SnjoN3yx4TSxtECLlBIK9kTaVScZIcg+SWNq9WCl9l
+	 ei7sqx3WBZdUfzeW3vdvTzF2MEUrE172T8LpGmog=
+Message-ID: <2c1a1694-9597-400d-b441-714225b5377b@arm.com>
+Date: Wed, 8 Apr 2026 12:15:31 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: mT_dyVF_QezvgGg4AasWc5mrDcCYTVphcKJCf1JWLrI_1775642906
-X-Mimecast-Originator: redhat.com
-Content-Transfer-Encoding: 8bit
-content-type: text/plain; charset="US-ASCII"; x-default=true
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 0/3] arm-smmu-v3: Add PMCG child support and update PMU
+ MMIO mapping
+To: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, Will Deacon <will@kernel.org>,
+ Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-perf-users@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
+References: <20260408-smmu-perf-v1-0-d75dac96e828@nxp.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260408-smmu-perf-v1-0-d75dac96e828@nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Lukas Bulwahn <lukas.bulwahn@redhat.com>
+On 2026-04-08 8:51 am, Peng Fan (OSS) wrote:
+> This patch series adds proper support for describing and probing the
+> Arm SMMU v3 PMCG (Performance Monitor Control Group) as a child node of
+> the SMMU in Devicetree, and updates the relevant drivers accordingly.
+> 
+> The SMMU v3 architecture allows an optional PMCG block, typically
+> associated with TCUs, to be implemented within the SMMU register
+> address space. For example, mmu700 PMCG is at the offset 0x2000 of the
+> TCU page 0.
 
-Commit 25bd73562941 ("dma: contiguous: Turn heap registration logic
-around") removes the file include/linux/dma-buf/heaps/cma.h, which is the
-only file in include/linux/dma-buf/.
+But what's wrong with the existing binding? Especially given that it 
+even has an upstream user already:
 
-Hence, there is no file matching the file entry include/linux/dma-buf/ in
-the MAINTAINERS section DMA BUFFER SHARING FRAMEWORK.
+https://git.kernel.org/torvalds/c/aef9703dcbf8
 
-Remove this obsolete file entry in DMA BUFFER SHARING FRAMEWORK.
+> Patch 1 updates the SMMU v3 Devicetree binding to allow PMCG child nodes,
+> referencing the existing arm,smmu-v3-pmcg binding.
+> 
+> Patch 2 updates the arm-smmu-v3 driver to populate platform devices for
+> child nodes described in DT once the SMMU probe succeeds.
+> 
+> Patch 3 updates the SMMUv3 PMU driver to correctly handle MMIO mapping when
+> PMCG is described as a child node. The PMCG registers occupy a sub-region
+> of the parent SMMU MMIO window, which is already requested by the SMMU
 
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@redhat.com>
----
- MAINTAINERS | 1 -
- 1 file changed, 1 deletion(-)
+That has not been the case since 52f3fab0067d ("iommu/arm-smmu-v3: Don't 
+reserve implementation defined register space") nearly 6 years ago, 
+where the whole purpose was to support Arm's PMCG implementation 
+properly. What kernel is this based on?
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 10d12b51b1f6..77c0fc7ede03 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7561,7 +7561,6 @@ F:	Documentation/userspace-api/dma-buf-alloc-exchange.rst
- F:	drivers/dma-buf/
- F:	include/linux/*fence.h
- F:	include/linux/dma-buf.h
--F:	include/linux/dma-buf/
- F:	include/linux/dma-resv.h
- F:	rust/helpers/dma-resv.c
- K:	\bdma_(?:buf|fence|resv)\b
--- 
-2.53.0
+Thanks,
+Robin.
+
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> ---
+> Peng Fan (3):
+>        dt-bindings: iommu: arm-smmu-v3: Allow PMU child nodes
+>        iommu/arm-smmu-v3: Populate PMU child devices from Devicetree
+>        perf/arm-smmuv3: Avoid double-requesting shared SMMU MMIO for PMCG
+> 
+>   .../devicetree/bindings/iommu/arm,smmu-v3.yaml        | 10 ++++++++++
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c           |  3 +++
+>   drivers/perf/arm_smmuv3_pmu.c                         | 19 ++++++++++++++++---
+>   3 files changed, 29 insertions(+), 3 deletions(-)
+> ---
+> base-commit: f3e6330d7fe42b204af05a2dbc68b379e0ad179e
+> change-id: 20260408-smmu-perf-754367fe66c8
+> 
+> Best regards,
 
