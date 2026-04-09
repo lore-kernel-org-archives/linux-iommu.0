@@ -1,38 +1,50 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B823A2E7F39;
-	Thu,  9 Apr 2026 14:09:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A885D3D9DC4
+	for <iommu@lists.linux.dev>; Thu,  9 Apr 2026 14:41:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775743750; cv=none; b=WpWnjzHhnudQRf2GCWLw+LCPA+WAMShkaRjax1Ry9VaL3vfQj2BfQ7Bbwz6ItUARTYyL3KSWESoDp1qQkDQSbs8nHrFjYEvo5LT0JcOfz6g9rNLDJfHah/C0l+usSJT39tL+SpHKZG8Yz/0zcVV2OOx4ud4zs3Wsw7DI/GsPU6o=
+	t=1775745679; cv=none; b=htgEVXB0mu9zgJMTjB9KCUVazjNP+t/h/pfwHcpmTDCAOdffZDeKFz64jcjqU3ssBoaw4OuIubCnUh/Ao+8uqGDZ76E8shqCeS4MdkSLo5xzRjkhpIoxUOZnPCjie1umDvN/9kfyK5qjJ0vBbmQu1Gb7ocFR5U3CyKDrcHujcXM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775743750; c=relaxed/simple;
-	bh=solfwnQ+j/IyIEvEzwK5SXldPVKSwmu/ZqozUA8j+os=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=pywwC7OXfl4s/HCI6eRvQIYGXmiAR3Rbn3/DlT0bEcyfHkVNUTRsm6CC9RF9P3DREnqxEdAUizWD5s00LCxpBj9S0OAdfPaLBFjXXryPguE6SvIAB/QZvbw49zMtG+cvpyjC3w7xgpzdQQaJ6qZ5e9VIHYcB0o+8tzzUvYtYLLE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QsfNn4ja; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1775745679; c=relaxed/simple;
+	bh=TVQS0ZOj5zcUDt4Wump+4Wn42R2VUViqJwrKgOQK2Tg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GDSu9S8fP0JW4ndkRZfqwkDHRkSPonVctb4PlMoRbHopLRCydVvfwx0YnBRjgjCkWihErNAOvZvFsN9vQWwjsT2WpZROFCssQjTFY5vwzJOT72HZcL40bIl7BZbOmkEF7+5EJ0gUt59Q8qL+HOs2O/mKasyF5rT1zIGdZA0QY2A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=iyTp/+V3; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QsfNn4ja"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A048DC19424;
-	Thu,  9 Apr 2026 14:09:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1775743750;
-	bh=solfwnQ+j/IyIEvEzwK5SXldPVKSwmu/ZqozUA8j+os=;
-	h=Date:From:To:Cc:Subject:From;
-	b=QsfNn4jaVlZALnblWyqHfmGaxawDV8L39rq3psY5X7uKEHBNeTsWOzS5w+kWO4sys
-	 +1c/JigwTBZY/DWWYGJVJUVNoAy/m+assucaD2hwe1tLUNiVaAEuj4/3TNMqpq9cuz
-	 UZPSSuXK3gdJYsVdm3eIwvja3YjK4XGBf7rBeIIEI6pO3Wm5FQd/YlgGBwBOj8Secr
-	 Iud4HwU92IiwlqUsp8ZxV2pKt/AslP9XGCzFmcVxKoHXvcr8xINFPynVrL54tMT4cg
-	 m1fEUublwMH2zAMB7ndcswzNtM5o8szdCBeFwwtiDE6jrAaXA/dH2xfTbcgKZr++Q7
-	 zbFzSMJLm+qaw==
-Date: Thu, 9 Apr 2026 15:09:03 +0100
-From: Will Deacon <will@kernel.org>
-To: torvalds@linux-foundation.org
-Cc: joro@8bytes.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	robin.murphy@arm.com, jgg@nvidia.com
-Subject: [GIT PULL] IOMMU Fix for Linux v7.0
-Message-ID: <adey_8n4Ux1qhZrL@willie-the-truck>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="iyTp/+V3"
+Received: from skinsburskii.localdomain (c-98-225-44-182.hsd1.wa.comcast.net [98.225.44.182])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 6C26F20B710C;
+	Thu,  9 Apr 2026 07:41:15 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6C26F20B710C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1775745676;
+	bh=me5YO/Z98Xo/CnJEc58EgRSQPAwm8XJvQ17AhbPdrgA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=iyTp/+V3zug1H1eKD8Y+lqErBGhVzyZqiXJvVdC5BNnw4e6X/hzd27rqaaDkrvcX2
+	 iXSe8ig/44rWzZANK4AaFJXUBGzYFW5AnwrCbIKgEuPTDF3ur5xB+WTGM+F7sD6B7L
+	 HVysnLWmifu4NpQwPkS5atVyXedHP7VyIvA4xTbA=
+Date: Thu, 9 Apr 2026 07:41:13 -0700
+From: Stanislav Kinsburskii <skinsburskii@linux.microsoft.com>
+To: Mukesh R <mrathor@linux.microsoft.com>
+Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+	kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
+	decui@microsoft.com, longli@microsoft.com, catalin.marinas@arm.com,
+	will@kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+	dave.hansen@linux.intel.com, hpa@zytor.com, joro@8bytes.org,
+	lpieralisi@kernel.org, kwilczynski@kernel.org, mani@kernel.org,
+	robh@kernel.org, bhelgaas@google.com, arnd@arndb.de,
+	nunodasneves@linux.microsoft.com, mhklinux@outlook.com,
+	romank@linux.microsoft.com
+Subject: Re: [PATCH v0 06/15] mshv: Implement mshv bridge device for VFIO
+Message-ID: <ade6iYUcODxEjl0Q@skinsburskii.localdomain>
+References: <20260120064230.3602565-1-mrathor@linux.microsoft.com>
+ <20260120064230.3602565-7-mrathor@linux.microsoft.com>
+ <aW-oniY3VpagQMPb@skinsburskii.localdomain>
+ <c30ede65-46c4-02b1-756a-868f9a265cf1@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -41,44 +53,286 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <c30ede65-46c4-02b1-756a-868f9a265cf1@linux.microsoft.com>
 
-Hi Linus,
+On Tue, Apr 07, 2026 at 10:41:12AM -0700, Mukesh R wrote:
+> On 1/20/26 08:09, Stanislav Kinsburskii wrote:
+> > On Mon, Jan 19, 2026 at 10:42:21PM -0800, Mukesh R wrote:
+> > > From: Mukesh Rathor <mrathor@linux.microsoft.com>
+> > > 
+> > > Add a new file to implement VFIO-MSHV bridge pseudo device. These
+> > > functions are called in the VFIO framework, and credits to kvm/vfio.c
+> > > as this file was adapted from it.
+> > > 
+> > > Original author: Wei Liu <wei.liu@kernel.org>
+> > > (Slightly modified from the original version).
+> > > 
+> > 
+> > There is a Linux standard for giving credits when code is adapted from.
+> > This doesn't follow that standard. Please fix.
+> > 
+> > > Signed-off-by: Mukesh Rathor <mrathor@linux.microsoft.com>
+> > > ---
+> > >   drivers/hv/Makefile    |   3 +-
+> > >   drivers/hv/mshv_vfio.c | 210 +++++++++++++++++++++++++++++++++++++++++
+> > >   2 files changed, 212 insertions(+), 1 deletion(-)
+> > >   create mode 100644 drivers/hv/mshv_vfio.c
+> > > 
+> > > diff --git a/drivers/hv/Makefile b/drivers/hv/Makefile
+> > > index a49f93c2d245..eae003c4cb8f 100644
+> > > --- a/drivers/hv/Makefile
+> > > +++ b/drivers/hv/Makefile
+> > > @@ -14,7 +14,8 @@ hv_vmbus-y := vmbus_drv.o \
+> > >   hv_vmbus-$(CONFIG_HYPERV_TESTING)	+= hv_debugfs.o
+> > >   hv_utils-y := hv_util.o hv_kvp.o hv_snapshot.o hv_utils_transport.o
+> > >   mshv_root-y := mshv_root_main.o mshv_synic.o mshv_eventfd.o mshv_irq.o \
+> > > -	       mshv_root_hv_call.o mshv_portid_table.o mshv_regions.o
+> > > +	       mshv_root_hv_call.o mshv_portid_table.o mshv_regions.o \
+> > > +               mshv_vfio.o
+> > >   mshv_vtl-y := mshv_vtl_main.o
+> > >   # Code that must be built-in
+> > > diff --git a/drivers/hv/mshv_vfio.c b/drivers/hv/mshv_vfio.c
+> > > new file mode 100644
+> > > index 000000000000..6ea4d99a3bd2
+> > > --- /dev/null
+> > > +++ b/drivers/hv/mshv_vfio.c
+> > > @@ -0,0 +1,210 @@
+> > > +// SPDX-License-Identifier: GPL-2.0-only
+> > > +/*
+> > > + * VFIO-MSHV bridge pseudo device
+> > > + *
+> > > + * Heavily inspired by the VFIO-KVM bridge pseudo device.
+> > > + */
+> > > +#include <linux/errno.h>
+> > > +#include <linux/file.h>
+> > > +#include <linux/list.h>
+> > > +#include <linux/module.h>
+> > > +#include <linux/mutex.h>
+> > > +#include <linux/slab.h>
+> > > +#include <linux/vfio.h>
+> > > +
+> > > +#include "mshv.h"
+> > > +#include "mshv_root.h"
+> > > +
+> > > +struct mshv_vfio_file {
+> > > +	struct list_head node;
+> > > +	struct file *file;	/* list of struct mshv_vfio_file */
+> > > +};
+> > > +
+> > > +struct mshv_vfio {
+> > > +	struct list_head file_list;
+> > > +	struct mutex lock;
+> > > +};
+> > > +
+> > > +static bool mshv_vfio_file_is_valid(struct file *file)
+> > > +{
+> > > +	bool (*fn)(struct file *file);
+> > > +	bool ret;
+> > > +
+> > > +	fn = symbol_get(vfio_file_is_valid);
+> > > +	if (!fn)
+> > > +		return false;
+> > > +
+> > > +	ret = fn(file);
+> > > +
+> > > +	symbol_put(vfio_file_is_valid);
+> > > +
+> > > +	return ret;
+> > > +}
+> > > +
+> > > +static long mshv_vfio_file_add(struct mshv_device *mshvdev, unsigned int fd)
+> > > +{
+> > > +	struct mshv_vfio *mshv_vfio = mshvdev->device_private;
+> > > +	struct mshv_vfio_file *mvf;
+> > > +	struct file *filp;
+> > > +	long ret = 0;
+> > > +
+> > > +	filp = fget(fd);
+> > > +	if (!filp)
+> > > +		return -EBADF;
+> > > +
+> > > +	/* Ensure the FD is a vfio FD. */
+> > > +	if (!mshv_vfio_file_is_valid(filp)) {
+> > > +		ret = -EINVAL;
+> > > +		goto out_fput;
+> > > +	}
+> > > +
+> > > +	mutex_lock(&mshv_vfio->lock);
+> > > +
+> > > +	list_for_each_entry(mvf, &mshv_vfio->file_list, node) {
+> > > +		if (mvf->file == filp) {
+> > > +			ret = -EEXIST;
+> > > +			goto out_unlock;
+> > > +		}
+> > > +	}
+> > > +
+> > > +	mvf = kzalloc(sizeof(*mvf), GFP_KERNEL_ACCOUNT);
+> > > +	if (!mvf) {
+> > > +		ret = -ENOMEM;
+> > > +		goto out_unlock;
+> > > +	}
+> > > +
+> > > +	mvf->file = get_file(filp);
+> > > +	list_add_tail(&mvf->node, &mshv_vfio->file_list);
+> > > +
+> > > +out_unlock:
+> > > +	mutex_unlock(&mshv_vfio->lock);
+> > > +out_fput:
+> > > +	fput(filp);
+> > > +	return ret;
+> > > +}
+> > > +
+> > > +static long mshv_vfio_file_del(struct mshv_device *mshvdev, unsigned int fd)
+> > > +{
+> > > +	struct mshv_vfio *mshv_vfio = mshvdev->device_private;
+> > > +	struct mshv_vfio_file *mvf;
+> > > +	long ret;
+> > > +
+> > > +	CLASS(fd, f)(fd);
+> > > +
+> > > +	if (fd_empty(f))
+> > > +		return -EBADF;
+> > > +
+> > > +	ret = -ENOENT;
+> > > +	mutex_lock(&mshv_vfio->lock);
+> > > +
+> > > +	list_for_each_entry(mvf, &mshv_vfio->file_list, node) {
+> > > +		if (mvf->file != fd_file(f))
+> > > +			continue;
+> > > +
+> > > +		list_del(&mvf->node);
+> > > +		fput(mvf->file);
+> > > +		kfree(mvf);
+> > > +		ret = 0;
+> > > +		break;
+> > > +	}
+> > > +
+> > > +	mutex_unlock(&mshv_vfio->lock);
+> > > +	return ret;
+> > > +}
+> > > +
+> > > +static long mshv_vfio_set_file(struct mshv_device *mshvdev, long attr,
+> > > +			      void __user *arg)
+> > > +{
+> > > +	int32_t __user *argp = arg;
+> > > +	int32_t fd;
+> > > +
+> > > +	switch (attr) {
+> > > +	case MSHV_DEV_VFIO_FILE_ADD:
+> > > +		if (get_user(fd, argp))
+> > > +			return -EFAULT;
+> > > +		return mshv_vfio_file_add(mshvdev, fd);
+> > > +
+> > > +	case MSHV_DEV_VFIO_FILE_DEL:
+> > > +		if (get_user(fd, argp))
+> > > +			return -EFAULT;
+> > > +		return mshv_vfio_file_del(mshvdev, fd);
+> > > +	}
+> > > +
+> > > +	return -ENXIO;
+> > > +}
+> > > +
+> > > +static long mshv_vfio_set_attr(struct mshv_device *mshvdev,
+> > > +			      struct mshv_device_attr *attr)
+> > > +{
+> > > +	switch (attr->group) {
+> > > +	case MSHV_DEV_VFIO_FILE:
+> > > +		return mshv_vfio_set_file(mshvdev, attr->attr,
+> > > +					  u64_to_user_ptr(attr->addr));
+> > > +	}
+> > > +
+> > > +	return -ENXIO;
+> > > +}
+> > > +
+> > > +static long mshv_vfio_has_attr(struct mshv_device *mshvdev,
+> > > +			      struct mshv_device_attr *attr)
+> > > +{
+> > > +	switch (attr->group) {
+> > > +	case MSHV_DEV_VFIO_FILE:
+> > > +		switch (attr->attr) {
+> > > +		case MSHV_DEV_VFIO_FILE_ADD:
+> > > +		case MSHV_DEV_VFIO_FILE_DEL:
+> > > +			return 0;
+> > > +		}
+> > > +
+> > > +		break;
+> > > +	}
+> > > +
+> > > +	return -ENXIO;
+> > > +}
+> > > +
+> > > +static long mshv_vfio_create_device(struct mshv_device *mshvdev, u32 type)
+> > > +{
+> > > +	struct mshv_device *tmp;
+> > > +	struct mshv_vfio *mshv_vfio;
+> > > +
+> > > +	/* Only one VFIO "device" per VM */
+> > > +	hlist_for_each_entry(tmp, &mshvdev->device_pt->pt_devices,
+> > > +			     device_ptnode)
+> > > +		if (tmp->device_ops == &mshv_vfio_device_ops)
+> > > +			return -EBUSY;
+> > > +
+> > > +	mshv_vfio = kzalloc(sizeof(*mshv_vfio), GFP_KERNEL_ACCOUNT);
+> > > +	if (mshv_vfio == NULL)
+> > > +		return -ENOMEM;
+> > > +
+> > > +	INIT_LIST_HEAD(&mshv_vfio->file_list);
+> > > +	mutex_init(&mshv_vfio->lock);
+> > > +
+> > > +	mshvdev->device_private = mshv_vfio;
+> > > +
+> > > +	return 0;
+> > > +}
+> > > +
+> > > +/* This is called from mshv_device_fop_release() */
+> > > +static void mshv_vfio_release_device(struct mshv_device *mshvdev)
+> > > +{
+> > > +	struct mshv_vfio *mv = mshvdev->device_private;
+> > > +	struct mshv_vfio_file *mvf, *tmp;
+> > > +
+> > > +	list_for_each_entry_safe(mvf, tmp, &mv->file_list, node) {
+> > > +		fput(mvf->file);
+> > 
+> > This put must be sync as device must be detached from domain before
+> > attempting partition destruction.
+> 
+> Like I said in 6.6 PR, this does not attach or detach devices.
+> 
 
-Joerg is on hols this week, so I'm helping out with the IOMMU tree. I
-wasn't expecting anything at this stage of the release cycle but, sadly,
-one of the fixes for -rc7 introduced a regression of its own.
+You are mistaken. It absolutely does.
 
-Thankfully, Robin and Jason were on top of it and Russell and Jon both
-confirmed that it fixes the horrible issues they were seeing.
+Thanks,
+Stanislav
 
-Summary in the tag, please pull.
-
-Will
-
---->8
-
-The following changes since commit 8b72aa5704c77380742346d4ac755b074b7f9eaa:
-
-  iommupt/amdv1: mark amdv1pt_install_leaf_entry as __always_inline (2026-03-27 09:41:48 +0100)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v7.0-rc7
-
-for you to fetch changes up to 7e0548525abd2bff9694e016b6a469ccd2d5a053:
-
-  iommu: Ensure .iotlb_sync is called correctly (2026-04-09 13:07:13 +0100)
-
-----------------------------------------------------------------
-IOMMU Fix for Linux v7.0-rc7
-
-- Fix regression introduced by the empty MMU gather fix in -rc7, where
-  the ->iotlb_sync() callback can be elided incorrectly, resulting in
-  boot failures (hangs), crashes and potential memory corruption.
-
-----------------------------------------------------------------
-Robin Murphy (1):
-      iommu: Ensure .iotlb_sync is called correctly
-
- drivers/iommu/iommu.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+> > This was explicitly mentioned in the patch originated this code.
+> > Please fix, add a comment and credits to the commit message.
+> 
+> That was ".detstroy" hook which is gone.
+> 
+> Thanks,
+> -Mukesh
+> 
+> 
+> > Thanks,
+> > Stanislav
+> > 
+> > 
+> > > +		list_del(&mvf->node);
+> > > +		kfree(mvf);
+> > > +	}
+> > > +
+> > > +	kfree(mv);
+> > > +	kfree(mshvdev);
+> > > +}
+> > > +
+> > > +struct mshv_device_ops mshv_vfio_device_ops = {
+> > > +	.device_name = "mshv-vfio",
+> > > +	.device_create = mshv_vfio_create_device,
+> > > +	.device_release = mshv_vfio_release_device,
+> > > +	.device_set_attr = mshv_vfio_set_attr,
+> > > +	.device_has_attr = mshv_vfio_has_attr,
+> > > +};
+> > > -- 
+> > > 2.51.2.vfs.0.1
+> > > 
+> 
