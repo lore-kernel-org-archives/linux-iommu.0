@@ -1,91 +1,94 @@
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [78.32.30.218])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC8E23BBA0B
-	for <iommu@lists.linux.dev>; Thu,  9 Apr 2026 16:17:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.32.30.218
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 317843BE17A
+	for <iommu@lists.linux.dev>; Thu,  9 Apr 2026 16:27:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775751433; cv=none; b=hTdgaywgUYkNgSV32TsaImMus/ldE6zENTxvFmqpvZnITdZpJkR+54ZgU/2BrNWA4KTO2akQZRigjri0Eu9z2ebwqYzBEt8TtrGzM7tfyqrFr42/4nHGaySA+TaG6yazk+cOdnaIN+loCcA5ksrAxzV8bhug6n7208kP3zkYG6w=
+	t=1775752039; cv=none; b=Q+tr5pfLLNidum2N4Szu553CuTcQ4juZC3eF4tkxPzkqno3Pr4SN0iRJGn4jQiJD0Q37JYmW0lXV7yITXILiVFwXhrPrvLTxPXH0RbuS0QQ/m8ZGx5Ai7ZRQUj3E0WXB7yDcib0bsVQOEvbBLqECL0rnhJZ3o+V2UXuW4/+y150=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775751433; c=relaxed/simple;
-	bh=Xy3uObCZ3K3Ccz73l5AsCbY040gCK80nzaz1QNDHoe4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=k+UyojDoA1iErrg7dhynUQwubq7/fpmmEClTBWtLFtXwhJZU3W9Fi05K+XlcVQrpG+fpfsSGDEWkbHXlRvfkTaW5Cng9AMEf0ZHMbPOgdKmvKxtgktMQUKAP+nWus3EnyX29YtMP25fBff3yjnu/8E44GAY3GiGQ6zOsGigxkmE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=armlinux.org.uk; spf=none smtp.mailfrom=armlinux.org.uk; dkim=pass (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b=lzseZNXA; arc=none smtp.client-ip=78.32.30.218
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=armlinux.org.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=armlinux.org.uk
+	s=arc-20240116; t=1775752039; c=relaxed/simple;
+	bh=dQh+ICDxgU3jEBt/9EkeIXTgeKPJg/we3iq0UjMAvNg=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 References; b=EOOTRZ4tUnBha+uHPPOxQ0zYVCYHLZbBGq0FB2p+UiT3l05+QfbwM851HgkLV5nfKhd1/aQAs/ghGhlC1iF4oV2AM8TyTmtirccS84bYX4qd2QNVqLDcoLzomZCpB+Kuti8Dil80z2urcF+4qbuTm0/ayUBpER/PTlWajOuhRCs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=kXM78Yp2; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b="lzseZNXA"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=Dd++4tKmdtMOvBBnnnoIYGKrXxRrKVRPTAqrEQXWV6w=; b=lzseZNXAHNB8VGospEKU+WILFk
-	sYd2bdEtrFdshGRKyzaYgpQpxiHtaRuC7qIiBSZ7cBGCBZEzEGvcVYdbaN3U0IndulheHaQqJLGKl
-	ZijNKS80e8Sz8pi3LZDRboXSmA9X7V/c+WQAsrHljmdsGa1gMhu81vlTFO605XcSec7J+OKQXQKX3
-	AmSnCO0TLxIUmPqhmJmax/aHPMXw/vptQ5efr1LG1hLyr5MAY7J/wlyRN4y6ZBVkVcKynvyLkK6Y6
-	Bc8z1VVZwnTXNQXvKHCG1QqeV+pFKrmHBMNwFVy6BVChKmKlgfYbPkJHJXKY6mGOpivm9giPrIVbL
-	reicNc8A==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:51834)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.98.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1wAs3z-000000003rq-3Ub9;
-	Thu, 09 Apr 2026 17:17:03 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.98.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1wAs3v-000000004Ys-2ghu;
-	Thu, 09 Apr 2026 17:16:59 +0100
-Date: Thu, 9 Apr 2026 17:16:59 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="kXM78Yp2"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260409162707euoutp01e1eaafe77e170e851cb62042c29efe16~kvQ91000a2868228682euoutp01h
+	for <iommu@lists.linux.dev>; Thu,  9 Apr 2026 16:27:07 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260409162707euoutp01e1eaafe77e170e851cb62042c29efe16~kvQ91000a2868228682euoutp01h
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1775752027;
+	bh=6J1qyqLUBDHDg/Ha6SGgGKDIFjScNUYlnRBxiyazWDg=;
+	h=From:To:Cc:Subject:Date:References:From;
+	b=kXM78Yp2O/K8hcQxGsNBfJkhXY/7ojip0nlu8kMT4E8xLqYKcnnoJ3zb265Ns2SnX
+	 gSzXnovFwRfwFgANmwjn3Ublnps20CQuLCpZyzcqF54AuvqsbTYhts7/uetpBHlRMk
+	 OInJAlNLMckEpKmdRi0VYcuM2OsnfyU7THrNrHgk=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20260409162706eucas1p1823b4c676d51c8c9875fbba53e3a4db5~kvQ9gEDPt2918129181eucas1p13;
+	Thu,  9 Apr 2026 16:27:06 +0000 (GMT)
+Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20260409162706eusmtip2b5bbc441a7f3ce9769f9d40526f07aa0~kvQ9LhZrZ2199021990eusmtip2B;
+	Thu,  9 Apr 2026 16:27:06 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
 To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-ext4@vger.kernel.org, dmaengine@vger.kernel.org,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Theodore Ts'o <tytso@mit.edu>,
-	Andreas Dilger <adilger.kernel@dilger.ca>,
-	Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>
-Subject: Re: BUG: net-next (7.0-rc6 based and later) fails to boot on Jetson
- Xavier NX
-Message-ID: <adfQ-44bKs2I4FrN@shell.armlinux.org.uk>
-References: <adZTGOjjJrVJOcT8@shell.armlinux.org.uk>
- <adZfTi3R6jtsjXx-@shell.armlinux.org.uk>
- <adZ9grUg71f518Fg@shell.armlinux.org.uk>
- <adZ_ZmjcE8S22vR1@shell.armlinux.org.uk>
- <3a1d0520-3402-47b2-9d7b-4e14a3cd07a4@arm.com>
- <adayAMR_dEA6W5vW@shell.armlinux.org.uk>
- <adeaiSAnkaggqPsA@willie-the-truck>
- <CAHk-=whO3F1u+nme4cnYMy5baYmb7CH=wE63dcNaPLWD0vKaew@mail.gmail.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski
+	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Mikhail
+	Gavrilov <mikhail.v.gavrilov@gmail.com>
+Subject: [GIT PULL] last dma-mapping fix for Linux 7.0
+Date: Thu,  9 Apr 2026 18:27:01 +0200
+Message-Id: <20260409162701.3657907-1-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=whO3F1u+nme4cnYMy5baYmb7CH=wE63dcNaPLWD0vKaew@mail.gmail.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20260409162706eucas1p1823b4c676d51c8c9875fbba53e3a4db5
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260409162706eucas1p1823b4c676d51c8c9875fbba53e3a4db5
+X-EPHeader: CA
+X-CMS-RootMailID: 20260409162706eucas1p1823b4c676d51c8c9875fbba53e3a4db5
+References: <CGME20260409162706eucas1p1823b4c676d51c8c9875fbba53e3a4db5@eucas1p1.samsung.com>
 
-On Thu, Apr 09, 2026 at 08:37:53AM -0700, Linus Torvalds wrote:
-> On Thu, 9 Apr 2026 at 05:24, Will Deacon <will@kernel.org> wrote:
-> >
-> > On Wed, Apr 08, 2026 at 08:52:32PM +0100, Russell King (Oracle) wrote:
-> > > What's the status on the iommu fix? Is it merged into mainline yet?
-> > > If it isn't already, that means net-next remains unbootable going
-> > > into the merge window without manually carrying the fix locally.
-> >
-> > I'll pick it up for 7.0 in the iommu tree.
-> 
-> ... and now it's in my tree.
+The following changes since commit 2cdaff22ed26f1e619aa2b43f27bb84f2c6ef8f8:
 
-Thanks, I see you merged it prior to the net tree, which should mean
-the fix finds its way into net-next! Yay! Double thanks for that!
+  dma-mapping: add missing `inline` for `dma_free_attrs` (2026-03-25 08:01:21 +0100)
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-7.0-2026-04-09
+
+for you to fetch changes up to 3d48c9fd78dd0b1809669ec49c4d0997b8127512:
+
+  dma-debug: suppress cacheline overlap warning when arch has no DMA alignment requirement (2026-03-30 09:41:18 +0200)
+
+----------------------------------------------------------------
+last dma-mapping fix for Linux 7.0
+
+A fix for DMA-mapping subsystem, which hides annoying, false-positive
+warnings from DMA-API debug on coherent platforms like x86_64 (Mikhail
+Gavrilov).
+
+----------------------------------------------------------------
+Mikhail Gavrilov (1):
+      dma-debug: suppress cacheline overlap warning when arch has no DMA alignment requirement
+
+ kernel/dma/debug.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+----------------------------------------------------------------
+
+Thanks!
+
+Best regards
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
