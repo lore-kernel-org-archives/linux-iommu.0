@@ -1,63 +1,91 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [78.32.30.218])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39448368946;
-	Thu,  9 Apr 2026 15:39:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC8E23BBA0B
+	for <iommu@lists.linux.dev>; Thu,  9 Apr 2026 16:17:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.32.30.218
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775749191; cv=none; b=OL7MH5z2Xr4H4ZWKEQxIVEQKukoU0wotYiFvUM2X0IX4CiN2bIKHrzPiLRzTEib3VSYPdYdk1aqRdXTVVQh7zVeISGF69rABpXeUS3lsYZbmGJKgUkGLF4BIIfUMpJLer3/VepzmaBXEzoiB9vwsa0djRzbt56ip6Bz9HdaGz40=
+	t=1775751433; cv=none; b=hTdgaywgUYkNgSV32TsaImMus/ldE6zENTxvFmqpvZnITdZpJkR+54ZgU/2BrNWA4KTO2akQZRigjri0Eu9z2ebwqYzBEt8TtrGzM7tfyqrFr42/4nHGaySA+TaG6yazk+cOdnaIN+loCcA5ksrAxzV8bhug6n7208kP3zkYG6w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775749191; c=relaxed/simple;
-	bh=3eBozNsG+/HQGY8c2P5RCiNiyYERSi75c5lmma9lt90=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=rAP9OwQ645zk3sDqjw8e3GPFyJggnHb0MMfxJryWURJztDm6+XUIFrMuad9zmNHgxZJWvDYvj1pGwloouCmWX556/GW1hhot/y2fJl8R84V1b1EG5yvHmTOlDEluoRWfT2sR+FAmEemZyKzRFxTL5poJ1kFDHMEC7aFnjOwVTJ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ndt8Dy+q; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1775751433; c=relaxed/simple;
+	bh=Xy3uObCZ3K3Ccz73l5AsCbY040gCK80nzaz1QNDHoe4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=k+UyojDoA1iErrg7dhynUQwubq7/fpmmEClTBWtLFtXwhJZU3W9Fi05K+XlcVQrpG+fpfsSGDEWkbHXlRvfkTaW5Cng9AMEf0ZHMbPOgdKmvKxtgktMQUKAP+nWus3EnyX29YtMP25fBff3yjnu/8E44GAY3GiGQ6zOsGigxkmE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=armlinux.org.uk; spf=none smtp.mailfrom=armlinux.org.uk; dkim=pass (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b=lzseZNXA; arc=none smtp.client-ip=78.32.30.218
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=armlinux.org.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=armlinux.org.uk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ndt8Dy+q"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19B00C4CEF7;
-	Thu,  9 Apr 2026 15:39:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1775749191;
-	bh=3eBozNsG+/HQGY8c2P5RCiNiyYERSi75c5lmma9lt90=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=ndt8Dy+qzLO7TJaXZXXxBQizO0IsgFae6bcijGNDrgF5NncverB+nCZNNMnyZIODP
-	 moueD6nHtaXPdZS/NHS13qrMIcGR2gJvKOTCLc83SRl/OIIQFBGPpt5fCawJOzhvXH
-	 LpJKXzb/qPGSRQbz2UHpfrDxBHMrCDkwPpgWEPVFH4/2wOyNAu9+WyAXTnQe2/Ykf3
-	 qHHYz0y3kT6jNeoOh73YwSFP1Pz7+sdOCOOj1DWWHVRF+Mlu2vbvmw07zTQ9aKpFt0
-	 ar04yvUjnUaRpFjP7Fi3g4+wLeul/FTDaVgZheghKn9hrIznX0xNTqVT4OG7yynHIB
-	 OM6uY8e7XrmWg==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 02D0B3930899;
-	Thu,  9 Apr 2026 15:39:28 +0000 (UTC)
-Subject: Re: [GIT PULL] IOMMU Fix for Linux v7.0
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <adey_8n4Ux1qhZrL@willie-the-truck>
-References: <adey_8n4Ux1qhZrL@willie-the-truck>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <adey_8n4Ux1qhZrL@willie-the-truck>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v7.0-rc7
-X-PR-Tracked-Commit-Id: 7e0548525abd2bff9694e016b6a469ccd2d5a053
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 8b02520ec5f7b0d976e8bbc072242275acd472d0
-Message-Id: <177574916659.1617900.4142392589364400492.pr-tracker-bot@kernel.org>
-Date: Thu, 09 Apr 2026 15:39:26 +0000
-To: Will Deacon <will@kernel.org>
-Cc: torvalds@linux-foundation.org, joro@8bytes.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, robin.murphy@arm.com, jgg@nvidia.com
+	dkim=pass (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b="lzseZNXA"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=Dd++4tKmdtMOvBBnnnoIYGKrXxRrKVRPTAqrEQXWV6w=; b=lzseZNXAHNB8VGospEKU+WILFk
+	sYd2bdEtrFdshGRKyzaYgpQpxiHtaRuC7qIiBSZ7cBGCBZEzEGvcVYdbaN3U0IndulheHaQqJLGKl
+	ZijNKS80e8Sz8pi3LZDRboXSmA9X7V/c+WQAsrHljmdsGa1gMhu81vlTFO605XcSec7J+OKQXQKX3
+	AmSnCO0TLxIUmPqhmJmax/aHPMXw/vptQ5efr1LG1hLyr5MAY7J/wlyRN4y6ZBVkVcKynvyLkK6Y6
+	Bc8z1VVZwnTXNQXvKHCG1QqeV+pFKrmHBMNwFVy6BVChKmKlgfYbPkJHJXKY6mGOpivm9giPrIVbL
+	reicNc8A==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:51834)
+	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.98.2)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1wAs3z-000000003rq-3Ub9;
+	Thu, 09 Apr 2026 17:17:03 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.98.2)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1wAs3v-000000004Ys-2ghu;
+	Thu, 09 Apr 2026 17:16:59 +0100
+Date: Thu, 9 Apr 2026 17:16:59 +0100
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-ext4@vger.kernel.org, dmaengine@vger.kernel.org,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Theodore Ts'o <tytso@mit.edu>,
+	Andreas Dilger <adilger.kernel@dilger.ca>,
+	Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>
+Subject: Re: BUG: net-next (7.0-rc6 based and later) fails to boot on Jetson
+ Xavier NX
+Message-ID: <adfQ-44bKs2I4FrN@shell.armlinux.org.uk>
+References: <adZTGOjjJrVJOcT8@shell.armlinux.org.uk>
+ <adZfTi3R6jtsjXx-@shell.armlinux.org.uk>
+ <adZ9grUg71f518Fg@shell.armlinux.org.uk>
+ <adZ_ZmjcE8S22vR1@shell.armlinux.org.uk>
+ <3a1d0520-3402-47b2-9d7b-4e14a3cd07a4@arm.com>
+ <adayAMR_dEA6W5vW@shell.armlinux.org.uk>
+ <adeaiSAnkaggqPsA@willie-the-truck>
+ <CAHk-=whO3F1u+nme4cnYMy5baYmb7CH=wE63dcNaPLWD0vKaew@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=whO3F1u+nme4cnYMy5baYmb7CH=wE63dcNaPLWD0vKaew@mail.gmail.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 
-The pull request you sent on Thu, 9 Apr 2026 15:09:03 +0100:
+On Thu, Apr 09, 2026 at 08:37:53AM -0700, Linus Torvalds wrote:
+> On Thu, 9 Apr 2026 at 05:24, Will Deacon <will@kernel.org> wrote:
+> >
+> > On Wed, Apr 08, 2026 at 08:52:32PM +0100, Russell King (Oracle) wrote:
+> > > What's the status on the iommu fix? Is it merged into mainline yet?
+> > > If it isn't already, that means net-next remains unbootable going
+> > > into the merge window without manually carrying the fix locally.
+> >
+> > I'll pick it up for 7.0 in the iommu tree.
+> 
+> ... and now it's in my tree.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v7.0-rc7
-
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/8b02520ec5f7b0d976e8bbc072242275acd472d0
-
-Thank you!
+Thanks, I see you merged it prior to the net tree, which should mean
+the fix finds its way into net-next! Yay! Double thanks for that!
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
