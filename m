@@ -1,338 +1,126 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A885D3D9DC4
-	for <iommu@lists.linux.dev>; Thu,  9 Apr 2026 14:41:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mail-yx1-f47.google.com (mail-yx1-f47.google.com [74.125.224.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3002D3DCD81
+	for <iommu@lists.linux.dev>; Thu,  9 Apr 2026 15:16:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775745679; cv=none; b=htgEVXB0mu9zgJMTjB9KCUVazjNP+t/h/pfwHcpmTDCAOdffZDeKFz64jcjqU3ssBoaw4OuIubCnUh/Ao+8uqGDZ76E8shqCeS4MdkSLo5xzRjkhpIoxUOZnPCjie1umDvN/9kfyK5qjJ0vBbmQu1Gb7ocFR5U3CyKDrcHujcXM=
+	t=1775747763; cv=none; b=gz6k5jZXx7vTsNUlFCdIEoRM+hhzCcBiI40pjKMcbq5tGdMbFbyhp0R81n0A6plPrfeBH2LXqaCuv78ddJ2oTfzwfq8hE/KfAjQlCX8V1FG91aYNkc9wtoCssZLBnjjFIDl9w0x+H1YjvX74SEuHlJ7SGK7FxrAF5loqN+LQ+4M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775745679; c=relaxed/simple;
-	bh=TVQS0ZOj5zcUDt4Wump+4Wn42R2VUViqJwrKgOQK2Tg=;
+	s=arc-20240116; t=1775747763; c=relaxed/simple;
+	bh=lPGV8AFmLuXxJZ6gD+bLN7/Il/AxPMIpR2Jc3CtNGME=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GDSu9S8fP0JW4ndkRZfqwkDHRkSPonVctb4PlMoRbHopLRCydVvfwx0YnBRjgjCkWihErNAOvZvFsN9vQWwjsT2WpZROFCssQjTFY5vwzJOT72HZcL40bIl7BZbOmkEF7+5EJ0gUt59Q8qL+HOs2O/mKasyF5rT1zIGdZA0QY2A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=iyTp/+V3; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=UdyQ95GadW8TIzLap0j60A3a/6Y454bqs5tYA4BphYgGwClJwLB/DQL4OgZjAVXe3V6Ub4/UE0FToLVTp2LaVuJ66eykQL53eEIOS8CO+ioXkzaxExa8qoyM0gUPv0KofqvTVwVzi4sAwYi2Za4Qs30TEBUmoPYVa52/BJydElE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=I2kPSELv; arc=none smtp.client-ip=74.125.224.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="iyTp/+V3"
-Received: from skinsburskii.localdomain (c-98-225-44-182.hsd1.wa.comcast.net [98.225.44.182])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 6C26F20B710C;
-	Thu,  9 Apr 2026 07:41:15 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6C26F20B710C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1775745676;
-	bh=me5YO/Z98Xo/CnJEc58EgRSQPAwm8XJvQ17AhbPdrgA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=iyTp/+V3zug1H1eKD8Y+lqErBGhVzyZqiXJvVdC5BNnw4e6X/hzd27rqaaDkrvcX2
-	 iXSe8ig/44rWzZANK4AaFJXUBGzYFW5AnwrCbIKgEuPTDF3ur5xB+WTGM+F7sD6B7L
-	 HVysnLWmifu4NpQwPkS5atVyXedHP7VyIvA4xTbA=
-Date: Thu, 9 Apr 2026 07:41:13 -0700
-From: Stanislav Kinsburskii <skinsburskii@linux.microsoft.com>
-To: Mukesh R <mrathor@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-	kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
-	decui@microsoft.com, longli@microsoft.com, catalin.marinas@arm.com,
-	will@kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-	dave.hansen@linux.intel.com, hpa@zytor.com, joro@8bytes.org,
-	lpieralisi@kernel.org, kwilczynski@kernel.org, mani@kernel.org,
-	robh@kernel.org, bhelgaas@google.com, arnd@arndb.de,
-	nunodasneves@linux.microsoft.com, mhklinux@outlook.com,
-	romank@linux.microsoft.com
-Subject: Re: [PATCH v0 06/15] mshv: Implement mshv bridge device for VFIO
-Message-ID: <ade6iYUcODxEjl0Q@skinsburskii.localdomain>
-References: <20260120064230.3602565-1-mrathor@linux.microsoft.com>
- <20260120064230.3602565-7-mrathor@linux.microsoft.com>
- <aW-oniY3VpagQMPb@skinsburskii.localdomain>
- <c30ede65-46c4-02b1-756a-868f9a265cf1@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="I2kPSELv"
+Received: by mail-yx1-f47.google.com with SMTP id 956f58d0204a3-6501d242e2fso1079811d50.3
+        for <iommu@lists.linux.dev>; Thu, 09 Apr 2026 08:16:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1775747761; x=1776352561; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=hPQPBOBgtkvcgYqzt6x5wusYckTuQGEX69sblOJCEYc=;
+        b=I2kPSELvoeKDThHetUs0RggmNn9sEwy0LonOmTETamBk620amGjzV8PcmMqG4PQnBm
+         do8vpf7+wUBFt0lLCX3NpBu/UAwNVwY/zqakffq93hCc53uva50SdEB+ld7tgxaEcZ9M
+         iyEaEM//ICAvcAb5bubeO1cHiG+Hi578Zc4ZtklRv4HnPgkXPxDeFlqbbL9Pv6fcZ7SP
+         EFPMbwiAIPKWDCKSmTthAy9JB9eHF2dw8CiHSRpUCugwoJDR0N5XKNJ8RBXiep9UToWm
+         Ctq7E5VYYKklXMqYZp4puxqjTPFzBv8SHYD9TMKAmdntqmPsWvFenqKCOr4ednHv5Yrf
+         1wpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775747761; x=1776352561;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=hPQPBOBgtkvcgYqzt6x5wusYckTuQGEX69sblOJCEYc=;
+        b=XeYmaKT5yZCEItoUUNMcA6vor5NZeE+MEwAJEIFULaUUhZxcmpiAqEpND1vuUEZj7c
+         dTmhbVUc2/slmDNXRiG9d+wDTPblIVrW4iZIotAcWBFHIidq4Tk5OKVpB7vJoIjpmRnJ
+         iFS1WEB71hXBAHoeJEBS6Z8B5GbvUJz5CLN1eHz4VqS4rYCfWP6hMziFTH34A5JjZYy3
+         9zsfQxxwVcPoe+3zly5X7lUvj2Q68wZ7iiRZX26dzIPrRLGMo9To3LK+riwliG8x5g7z
+         nP8q/pv+679a1R3Qc5ov+2qz1u44cqSGToB3JAB+yMBp0dCM/wdHFb+mJ4vjsSqEQBAf
+         ulYQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWV7otl40PWB0Dysr3DMNBnHMIh2nzlT+Clp2bacgKMVfyRECPa2IhOXqclDNrcihz7166+Uw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzSm4o/0ftNmaS2GmdNdCFpU+JQ6hIPWf0JF6mHuJSnVmSYqxH5
+	S8QGF3BYujI1fqWP1tAGUbz3ZvaTq7txpgMtBGlI0JDkq/peBk+K/3mikIwKzc0NC8E=
+X-Gm-Gg: AeBDievDNyGQ9kZN55d72hY1PCHcwFCK5JAP20Axu37BGiLtLxpH/1baW8+CfKW4CWv
+	gP/zzx5o6latNK7AcD0uSI7fqsKDmqid3dabUc7U6UHKhyZOrOQBl5hgkLtHpthDZ4k0mu0eLD+
+	nUdcHN7HfMLITZQdA2m3tJ+8HNp92tZwo6fcZ5Ee2vofM9fNNKiCnM6kqy7h7InH8Mv6VwyzDfF
+	poI7vkUo7Ed2V0+SuMLgY+MCAYXB8aMlag3I6O8TBvrTo+cBJ0DvQ90F1KFFOz9svNoOgdNNdP8
+	3VfuP2KZ+XxF9thPy239OJZd754sYraFkOmAMoJQpxe5UbX/yxyzvvCuvQIC6kdrTPu1zs4xjAj
+	C81akaNL89TqjEeyzfvbHnH0a0pu0RPR8lFZxGXEzNvzVxilKeYtKVlGJPJtoy5Vak6mBiCaWf1
+	T+oyPhw00yy2k2KpMxp0stUWTbbUIbvZNllEtLpntID9w/xyK1g0xDH/exIXzTwz0tpFMTiQ==
+X-Received: by 2002:a05:690e:43d1:b0:650:8c3:8df2 with SMTP id 956f58d0204a3-650488afacemr17793279d50.62.1775747760893;
+        Thu, 09 Apr 2026 08:16:00 -0700 (PDT)
+Received: from ziepe.ca (mctnnbsa70w-159-2-73-22.dhcp-dynamic.fibreop.nb.bellaliant.net. [159.2.73.22])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8d2a8067c73sm1700572085a.24.2026.04.09.08.16.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Apr 2026 08:16:00 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wAr6t-00000008Ihi-0wvj;
+	Thu, 09 Apr 2026 12:15:59 -0300
+Date: Thu, 9 Apr 2026 12:15:59 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Sina Hassani <sina@openai.com>
+Cc: kevin.tian@intel.com, joro@8bytes.org, will@kernel.org,
+	robin.murphy@arm.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Aaron Wisner <awiz@openai.com>,
+	stable@vger.kernel.org
+Subject: Re: [PATCH v2] Fixes a race in iopt_unmap_iova_range
+Message-ID: <20260409151559.GR2551565@ziepe.ca>
+References: <CAAJpGJTztK=BTvr6s_e4epJffKchmXmqba82wxE_SOXUN6FWYg@mail.gmail.com>
+ <20260407011210.GM2551565@ziepe.ca>
+ <CAAJpGJQXnMjhC4C7Z6bAQJN5y48fsbiwPd3YF5vft+1MBNFLVQ@mail.gmail.com>
+ <20260407012726.GN2551565@ziepe.ca>
+ <CAAJpGJTNKxCfcZxgDj_sZYUozrOe=vxbWUUi4PVwdfvGx=WEfg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <c30ede65-46c4-02b1-756a-868f9a265cf1@linux.microsoft.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAAJpGJTNKxCfcZxgDj_sZYUozrOe=vxbWUUi4PVwdfvGx=WEfg@mail.gmail.com>
 
-On Tue, Apr 07, 2026 at 10:41:12AM -0700, Mukesh R wrote:
-> On 1/20/26 08:09, Stanislav Kinsburskii wrote:
-> > On Mon, Jan 19, 2026 at 10:42:21PM -0800, Mukesh R wrote:
-> > > From: Mukesh Rathor <mrathor@linux.microsoft.com>
-> > > 
-> > > Add a new file to implement VFIO-MSHV bridge pseudo device. These
-> > > functions are called in the VFIO framework, and credits to kvm/vfio.c
-> > > as this file was adapted from it.
-> > > 
-> > > Original author: Wei Liu <wei.liu@kernel.org>
-> > > (Slightly modified from the original version).
-> > > 
-> > 
-> > There is a Linux standard for giving credits when code is adapted from.
-> > This doesn't follow that standard. Please fix.
-> > 
-> > > Signed-off-by: Mukesh Rathor <mrathor@linux.microsoft.com>
-> > > ---
-> > >   drivers/hv/Makefile    |   3 +-
-> > >   drivers/hv/mshv_vfio.c | 210 +++++++++++++++++++++++++++++++++++++++++
-> > >   2 files changed, 212 insertions(+), 1 deletion(-)
-> > >   create mode 100644 drivers/hv/mshv_vfio.c
-> > > 
-> > > diff --git a/drivers/hv/Makefile b/drivers/hv/Makefile
-> > > index a49f93c2d245..eae003c4cb8f 100644
-> > > --- a/drivers/hv/Makefile
-> > > +++ b/drivers/hv/Makefile
-> > > @@ -14,7 +14,8 @@ hv_vmbus-y := vmbus_drv.o \
-> > >   hv_vmbus-$(CONFIG_HYPERV_TESTING)	+= hv_debugfs.o
-> > >   hv_utils-y := hv_util.o hv_kvp.o hv_snapshot.o hv_utils_transport.o
-> > >   mshv_root-y := mshv_root_main.o mshv_synic.o mshv_eventfd.o mshv_irq.o \
-> > > -	       mshv_root_hv_call.o mshv_portid_table.o mshv_regions.o
-> > > +	       mshv_root_hv_call.o mshv_portid_table.o mshv_regions.o \
-> > > +               mshv_vfio.o
-> > >   mshv_vtl-y := mshv_vtl_main.o
-> > >   # Code that must be built-in
-> > > diff --git a/drivers/hv/mshv_vfio.c b/drivers/hv/mshv_vfio.c
-> > > new file mode 100644
-> > > index 000000000000..6ea4d99a3bd2
-> > > --- /dev/null
-> > > +++ b/drivers/hv/mshv_vfio.c
-> > > @@ -0,0 +1,210 @@
-> > > +// SPDX-License-Identifier: GPL-2.0-only
-> > > +/*
-> > > + * VFIO-MSHV bridge pseudo device
-> > > + *
-> > > + * Heavily inspired by the VFIO-KVM bridge pseudo device.
-> > > + */
-> > > +#include <linux/errno.h>
-> > > +#include <linux/file.h>
-> > > +#include <linux/list.h>
-> > > +#include <linux/module.h>
-> > > +#include <linux/mutex.h>
-> > > +#include <linux/slab.h>
-> > > +#include <linux/vfio.h>
-> > > +
-> > > +#include "mshv.h"
-> > > +#include "mshv_root.h"
-> > > +
-> > > +struct mshv_vfio_file {
-> > > +	struct list_head node;
-> > > +	struct file *file;	/* list of struct mshv_vfio_file */
-> > > +};
-> > > +
-> > > +struct mshv_vfio {
-> > > +	struct list_head file_list;
-> > > +	struct mutex lock;
-> > > +};
-> > > +
-> > > +static bool mshv_vfio_file_is_valid(struct file *file)
-> > > +{
-> > > +	bool (*fn)(struct file *file);
-> > > +	bool ret;
-> > > +
-> > > +	fn = symbol_get(vfio_file_is_valid);
-> > > +	if (!fn)
-> > > +		return false;
-> > > +
-> > > +	ret = fn(file);
-> > > +
-> > > +	symbol_put(vfio_file_is_valid);
-> > > +
-> > > +	return ret;
-> > > +}
-> > > +
-> > > +static long mshv_vfio_file_add(struct mshv_device *mshvdev, unsigned int fd)
-> > > +{
-> > > +	struct mshv_vfio *mshv_vfio = mshvdev->device_private;
-> > > +	struct mshv_vfio_file *mvf;
-> > > +	struct file *filp;
-> > > +	long ret = 0;
-> > > +
-> > > +	filp = fget(fd);
-> > > +	if (!filp)
-> > > +		return -EBADF;
-> > > +
-> > > +	/* Ensure the FD is a vfio FD. */
-> > > +	if (!mshv_vfio_file_is_valid(filp)) {
-> > > +		ret = -EINVAL;
-> > > +		goto out_fput;
-> > > +	}
-> > > +
-> > > +	mutex_lock(&mshv_vfio->lock);
-> > > +
-> > > +	list_for_each_entry(mvf, &mshv_vfio->file_list, node) {
-> > > +		if (mvf->file == filp) {
-> > > +			ret = -EEXIST;
-> > > +			goto out_unlock;
-> > > +		}
-> > > +	}
-> > > +
-> > > +	mvf = kzalloc(sizeof(*mvf), GFP_KERNEL_ACCOUNT);
-> > > +	if (!mvf) {
-> > > +		ret = -ENOMEM;
-> > > +		goto out_unlock;
-> > > +	}
-> > > +
-> > > +	mvf->file = get_file(filp);
-> > > +	list_add_tail(&mvf->node, &mshv_vfio->file_list);
-> > > +
-> > > +out_unlock:
-> > > +	mutex_unlock(&mshv_vfio->lock);
-> > > +out_fput:
-> > > +	fput(filp);
-> > > +	return ret;
-> > > +}
-> > > +
-> > > +static long mshv_vfio_file_del(struct mshv_device *mshvdev, unsigned int fd)
-> > > +{
-> > > +	struct mshv_vfio *mshv_vfio = mshvdev->device_private;
-> > > +	struct mshv_vfio_file *mvf;
-> > > +	long ret;
-> > > +
-> > > +	CLASS(fd, f)(fd);
-> > > +
-> > > +	if (fd_empty(f))
-> > > +		return -EBADF;
-> > > +
-> > > +	ret = -ENOENT;
-> > > +	mutex_lock(&mshv_vfio->lock);
-> > > +
-> > > +	list_for_each_entry(mvf, &mshv_vfio->file_list, node) {
-> > > +		if (mvf->file != fd_file(f))
-> > > +			continue;
-> > > +
-> > > +		list_del(&mvf->node);
-> > > +		fput(mvf->file);
-> > > +		kfree(mvf);
-> > > +		ret = 0;
-> > > +		break;
-> > > +	}
-> > > +
-> > > +	mutex_unlock(&mshv_vfio->lock);
-> > > +	return ret;
-> > > +}
-> > > +
-> > > +static long mshv_vfio_set_file(struct mshv_device *mshvdev, long attr,
-> > > +			      void __user *arg)
-> > > +{
-> > > +	int32_t __user *argp = arg;
-> > > +	int32_t fd;
-> > > +
-> > > +	switch (attr) {
-> > > +	case MSHV_DEV_VFIO_FILE_ADD:
-> > > +		if (get_user(fd, argp))
-> > > +			return -EFAULT;
-> > > +		return mshv_vfio_file_add(mshvdev, fd);
-> > > +
-> > > +	case MSHV_DEV_VFIO_FILE_DEL:
-> > > +		if (get_user(fd, argp))
-> > > +			return -EFAULT;
-> > > +		return mshv_vfio_file_del(mshvdev, fd);
-> > > +	}
-> > > +
-> > > +	return -ENXIO;
-> > > +}
-> > > +
-> > > +static long mshv_vfio_set_attr(struct mshv_device *mshvdev,
-> > > +			      struct mshv_device_attr *attr)
-> > > +{
-> > > +	switch (attr->group) {
-> > > +	case MSHV_DEV_VFIO_FILE:
-> > > +		return mshv_vfio_set_file(mshvdev, attr->attr,
-> > > +					  u64_to_user_ptr(attr->addr));
-> > > +	}
-> > > +
-> > > +	return -ENXIO;
-> > > +}
-> > > +
-> > > +static long mshv_vfio_has_attr(struct mshv_device *mshvdev,
-> > > +			      struct mshv_device_attr *attr)
-> > > +{
-> > > +	switch (attr->group) {
-> > > +	case MSHV_DEV_VFIO_FILE:
-> > > +		switch (attr->attr) {
-> > > +		case MSHV_DEV_VFIO_FILE_ADD:
-> > > +		case MSHV_DEV_VFIO_FILE_DEL:
-> > > +			return 0;
-> > > +		}
-> > > +
-> > > +		break;
-> > > +	}
-> > > +
-> > > +	return -ENXIO;
-> > > +}
-> > > +
-> > > +static long mshv_vfio_create_device(struct mshv_device *mshvdev, u32 type)
-> > > +{
-> > > +	struct mshv_device *tmp;
-> > > +	struct mshv_vfio *mshv_vfio;
-> > > +
-> > > +	/* Only one VFIO "device" per VM */
-> > > +	hlist_for_each_entry(tmp, &mshvdev->device_pt->pt_devices,
-> > > +			     device_ptnode)
-> > > +		if (tmp->device_ops == &mshv_vfio_device_ops)
-> > > +			return -EBUSY;
-> > > +
-> > > +	mshv_vfio = kzalloc(sizeof(*mshv_vfio), GFP_KERNEL_ACCOUNT);
-> > > +	if (mshv_vfio == NULL)
-> > > +		return -ENOMEM;
-> > > +
-> > > +	INIT_LIST_HEAD(&mshv_vfio->file_list);
-> > > +	mutex_init(&mshv_vfio->lock);
-> > > +
-> > > +	mshvdev->device_private = mshv_vfio;
-> > > +
-> > > +	return 0;
-> > > +}
-> > > +
-> > > +/* This is called from mshv_device_fop_release() */
-> > > +static void mshv_vfio_release_device(struct mshv_device *mshvdev)
-> > > +{
-> > > +	struct mshv_vfio *mv = mshvdev->device_private;
-> > > +	struct mshv_vfio_file *mvf, *tmp;
-> > > +
-> > > +	list_for_each_entry_safe(mvf, tmp, &mv->file_list, node) {
-> > > +		fput(mvf->file);
-> > 
-> > This put must be sync as device must be detached from domain before
-> > attempting partition destruction.
+On Mon, Apr 06, 2026 at 06:40:05PM -0700, Sina Hassani wrote:
+> On Mon, Apr 6, 2026 at 6:27 PM Jason Gunthorpe <jgg@ziepe.ca> wrote:
+> >
+> > On Mon, Apr 06, 2026 at 06:17:24PM -0700, Sina Hassani wrote:
+> > > On Mon, Apr 6, 2026 at 6:12 PM Jason Gunthorpe <jgg@ziepe.ca> wrote:
+> > > >
+> > > > On Mon, Apr 06, 2026 at 04:07:01PM -0700, Sina Hassani wrote:
+> > > >
+> > > > > io_pagetable *iopt, unsigned long start,
+> > > > >                 unmapped_bytes += area_last - area_first + 1;
+> > > > >
+> > > > >                 down_write(&iopt->iova_rwsem);
+> > > > > +
+> > > > > +               /* Do not reconsider things already unmapped in case of
+> > > > > +                * concurrent allocation */
+> > > > > +               start = area_last + 1;
+> > > >
+> > > > area_last can be ULONG_MAX so this literally overflows to 0. It is why
+> > > > I formed the suggestion I gave as I did
+> > > >
+> > > Yes, in which case the  if (start < area_last) that follows will catch
+> > > it. Are you suggesting I compare against ULONG_MAX instead?
+> >
+> > iommufd does not have any overflows to 0 and rely on it tricks like
+> > this. You should just compare to the existing iteration last
+> >
+> Just to confirm that I understand correctly, like this?
 > 
-> Like I said in 6.6 PR, this does not attach or detach devices.
-> 
+> +               if (area_last >= last) {
+> +                       break;
+> +.              } else {
+> +.                      start = area_last + 1;
+> +               }
 
-You are mistaken. It absolutely does.
+Yeah that looks Ok
 
-Thanks,
-Stanislav
-
-> > This was explicitly mentioned in the patch originated this code.
-> > Please fix, add a comment and credits to the commit message.
-> 
-> That was ".detstroy" hook which is gone.
-> 
-> Thanks,
-> -Mukesh
-> 
-> 
-> > Thanks,
-> > Stanislav
-> > 
-> > 
-> > > +		list_del(&mvf->node);
-> > > +		kfree(mvf);
-> > > +	}
-> > > +
-> > > +	kfree(mv);
-> > > +	kfree(mshvdev);
-> > > +}
-> > > +
-> > > +struct mshv_device_ops mshv_vfio_device_ops = {
-> > > +	.device_name = "mshv-vfio",
-> > > +	.device_create = mshv_vfio_create_device,
-> > > +	.device_release = mshv_vfio_release_device,
-> > > +	.device_set_attr = mshv_vfio_set_attr,
-> > > +	.device_has_attr = mshv_vfio_has_attr,
-> > > +};
-> > > -- 
-> > > 2.51.2.vfs.0.1
-> > > 
-> 
+Jason
