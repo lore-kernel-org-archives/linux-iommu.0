@@ -1,48 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C231C277029
-	for <iommu@lists.linux.dev>; Thu,  9 Apr 2026 13:01:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1FB13C345F;
+	Thu,  9 Apr 2026 13:01:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775739692; cv=none; b=LCeQpHYNzFOWAoBtzsHSu+qS76aVkkm8DOEzuACJw9LGMu6rfCyoomN2NhsKlQp9Wnlin4qTvKG3X78CNLM/IHZadZtxQonuE24H0hvPeig4S72tSJJJPH7mfnrOC+8xHJculCnaxFyD6iAP+ZpAeuqXi0gA5iT6KFtHsWDQMlg=
+	t=1775739699; cv=none; b=qeHgpV6opLsGUm2ljmMiZ/i6uSJ2CZRIQyDQ53txGSveCx714//wLJ9VGlJpW+v1rqwI+VwmE04kyxWGNanVW3HrP9WL0eJnwwACuxZlmTQOXH4Z5CPILfcTVqjJT98VFY3B26lRevfAMKojadpz+vfBJxIX2X1XeGoQKKGbNoY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775739692; c=relaxed/simple;
-	bh=6W3U3VDlCLbpzTV99TmeDK4srJSBiDwBi01VNiPA8OE=;
+	s=arc-20240116; t=1775739699; c=relaxed/simple;
+	bh=ErkqhB3XTMjrXF4/gzU2lN8NYsLR+G/xAykedOQYTWQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WcTWuSDPUuvR0khm4DVC6XMqhfVlju/NrrUKBO3n9VgPDboZxfZFJMC/jp70bvXMsz8mtz52dxMrVNeG2N9ARKpDMcTb1EVqrJ26jAuREi4DMRRGcZs9R53HlyobUbHDVYeMph93M2zn4tAKMKKZdvz5u8ihxGdOOVZR0qPI5JM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BNTx5PgE; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=XNB1dldEmbuNXnOYagHWCtzZT91fyZ9zIt5/ccrxJjkmT6hbQOFlkJ8ZfWziACcaA4mXOl+m5qCTdW8LHsI4k+aFKLbQNAXj+7rukKPZ8SFwHsC8+CkEEZBSb2csXYz9lUDFVKJsqB4N2FpYcq8WMdGjvktrnSOJb1encsoxij4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oj9lkDOg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BNTx5PgE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB90CC2BC87;
-	Thu,  9 Apr 2026 13:01:26 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oj9lkDOg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A923C4CEF7;
+	Thu,  9 Apr 2026 13:01:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1775739692;
-	bh=6W3U3VDlCLbpzTV99TmeDK4srJSBiDwBi01VNiPA8OE=;
+	s=k20201202; t=1775739698;
+	bh=ErkqhB3XTMjrXF4/gzU2lN8NYsLR+G/xAykedOQYTWQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=BNTx5PgE72sQM0XhFtMiKA4lNNGkqsIJjPwS6keyIF2JG5iaKexAh/5vH3Sg1MIhA
-	 iNXdUiqxotpZP9upWTJhDFnMKdBW+84GXhCJm/TsMVfqpjjecBKwVPBtCNBIVthyyy
-	 hL/QgT5gyTrh4PpiupXhjw4xb8VskxkxKUSwPJDouEtxEeOjmQXXwPhDsDYu/1ukjq
-	 0o2yiKwYjyfQh5I0l7SDfWFBmtaZjrLuS1R6XnHd5xU0lA5gJ7UI+tH5KC4Igvz9qQ
-	 bZEi/cpyFh+Siq4etcU+Y54IV+bttIGayQJ9P3H34nvLJjZ89RpAIuIW1jx3R1cxls
-	 wvSgHwUyjEyCA==
+	b=oj9lkDOggpSM+xgiDGOL6MqaD8/1lWr2YS8pZKVJ1zkE/btZcxKND9Jf8EnMcnl8P
+	 UdnB9dxBSUahU1bFvvYEo6UxXzyrQEGbq+6f57whWhaPFI0OON4+ptSzB9c6+mMQig
+	 NG0Ljdxnm8MQ7aGq6PuRy3GJjmKpULO1N1bE2pkef6UzYM/vS/qXRRYrO46R05XImu
+	 lT/gjPwDKB1KhMcv81FVtkzpWCOrVgS8CRuYqhsQOsTMy8zRzz0C+qX946kf+LC7hW
+	 b/KNbLWRQtv9/X8XHDVt2iAng2F8dS3QJKdJaApO7iV9MzLppJ5nqqbfSDNujOIalU
+	 IdDcpph9uA6Dw==
 From: Will Deacon <will@kernel.org>
 To: joro@8bytes.org,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Alex Williamson <alex.williamson@nvidia.com>
+	Robin Murphy <robin.murphy@arm.com>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
-	baolu.lu@linux.intel.com,
-	kevin.tian@intel.com,
-	robin.murphy@arm.com,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH] iommu/vt-d: Restore IOMMU_CAP_CACHE_COHERENCY
-Date: Thu,  9 Apr 2026 14:01:17 +0100
-Message-ID: <177573616112.3407083.9116162770642904970.b4-ty@kernel.org>
+	linux@armlinux.org.uk,
+	iommu@lists.linux.dev,
+	linux-tegra@vger.kernel.org,
+	Jon Hunter <jonathanh@nvidia.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>
+Subject: Re: [PATCH] iommu: Ensure .iotlb_sync is called correctly
+Date: Thu,  9 Apr 2026 14:01:18 +0100
+Message-ID: <177573643352.3408469.5575202206607092720.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260408184443.3077333-1-alex.williamson@nvidia.com>
-References: <20260408184443.3077333-1-alex.williamson@nvidia.com>
+In-Reply-To: <8982e3412563cf91e106d59228dfb6115024c75e.1775659257.git.robin.murphy@arm.com>
+References: <8982e3412563cf91e106d59228dfb6115024c75e.1775659257.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,20 +52,20 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Wed, 08 Apr 2026 12:44:42 -0600, Alex Williamson wrote:
-> In removing IOMMU_CAP_DEFERRED_FLUSH, the below referenced commit
-> was over-eager in removing the return, resulting in the test for
-> IOMMU_CAP_CACHE_COHERENCY falling through to an irrelevant option.
-> 
-> Restore dropped return.
+On Wed, 08 Apr 2026 15:40:57 +0100, Robin Murphy wrote:
+> Many drivers have no reason to use the iotlb_gather mechanism, but do
+> still depend on .iotlb_sync being called to properly complete an unmap.
+> Since the core code is now relying on the gather to detect when there
+> is legitimately something to sync, it should also take care of encoding
+> a successful unmap when the driver does not touch the gather itself.
 > 
 > 
 > [...]
 
-Applied to iommu (core), thanks!
+Applied to iommu (fixes), thanks!
 
-[1/1] iommu/vt-d: Restore IOMMU_CAP_CACHE_COHERENCY
-      https://git.kernel.org/iommu/c/ebfaf2bcc190
+[1/1] iommu: Ensure .iotlb_sync is called correctly
+      https://git.kernel.org/iommu/c/7e0548525abd
 
 Cheers,
 -- 
