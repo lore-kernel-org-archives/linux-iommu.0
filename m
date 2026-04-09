@@ -1,149 +1,91 @@
-Received: from mail-dl1-f73.google.com (mail-dl1-f73.google.com [74.125.82.73])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6339338F94C
-	for <iommu@lists.linux.dev>; Thu,  9 Apr 2026 08:12:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6042A35B632;
+	Thu,  9 Apr 2026 08:17:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775722350; cv=none; b=jljtHngbx0gX2Av9eVgEcYMx5DLJiTouSSyliLSqqQB2TfJmgd1GB5HlytUZe1w55kYE4CTD1JgWzkyHqvcodxBxqgJopPIKqZEkPu71bilNcSsGwS+Q839QjLuNV0Sj4D+Nc33rvVQcHfQ88IYWZC3x3PpwYIA8gfbOA6MwScM=
+	t=1775722627; cv=none; b=Mb89FyQSF6palKaGciscKSwN9tQ5+5ZigaViqklYRWjl8FcaAAlPAucApU9uXiqs8xukHqt0lZYybKPZzXPF6+I/FrUD47lVpicUtjLpcgx5oFV+4D9fdYGQ1SrPA2DTICRdqPjZzwH3Hk29tk4OzYL66ZP5ZNQMh4eX5N/uTwI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775722350; c=relaxed/simple;
-	bh=Q7JCNytAYQjuPIy49hsOruJYEQOQeo30nyLQr9lJSc0=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=RLVzWLbb9WXw5UnVmIQVUPdXP0xs1aYauEVWQkk+w5ztYCNt7bC2PKsUzpTUiy+BtTwNK8xtTYdiTNndx71TxpmvkeTeIfCB72ZCki99kyfxoQlgvyoaXqisDcaaqxr8HPbgMTB4AhSL7ZrGxT1s8B7cU53XoS3wVNcUladCMeI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ElqQIajq; arc=none smtp.client-ip=74.125.82.73
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com
+	s=arc-20240116; t=1775722627; c=relaxed/simple;
+	bh=0oFL4EmIO/g4ucpjyFy/e+LXyDriJV8hGcGegpTlORY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NbxoQDOIb1AB5kSNbRZUlqoai7vxG8zQONGaGtQM6SQ01zcIA7rAuZclsx4rU5/DLVHj26MoFGXO/BhE88rGNBGzMz41nNRozYny4zAqaWZmRpVcNKnoCwFNosRhbJSw4fvAoBuNcaICjdpm/Dh9iRAIcJTyG7gmEpmqM1iEKvg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tHnSI4bf; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ElqQIajq"
-Received: by mail-dl1-f73.google.com with SMTP id a92af1059eb24-1275c6fc58aso532105c88.0
-        for <iommu@lists.linux.dev>; Thu, 09 Apr 2026 01:12:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1775722348; x=1776327148; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:references
-         :mime-version:in-reply-to:date:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=xVeVfPITjwb8p8pHbgvmu2KbZC7o/feW4gic9JCSv60=;
-        b=ElqQIajqo2080caMGInqwVmJLjQG5NrWvNVErAv2F1WtJAgVrV1sy3PajA/8OXOEc6
-         XF2u4mbXLoPFIch/ms/AdYCLTu5fd0T1EotWoGFOh0lnzinJMwB3S+uHs8A2Zk6OjDPo
-         h6lxScpDZKJgZWDy4sNcahZkEBcTW/JK+ZeLm5T0OmEoc4KovmL+QPpJpspQCG/+nhvj
-         iOYGZ9LJPmV7BpYosAQs/8SSdoV7clDOFXwsXL78uq8ZqxaLN5U1hdRqOiIrixBSfhL1
-         bhj4zXnisHqKORNkDVoKpNIlO0OcfqKf9K0lXXBZ10GJVSBiqjAp4sTWxBwcpb+XYeLF
-         EKvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775722348; x=1776327148;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:references
-         :mime-version:in-reply-to:date:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=xVeVfPITjwb8p8pHbgvmu2KbZC7o/feW4gic9JCSv60=;
-        b=aB4TZkcu+45N+8zh04j+EjkSPC0M257rh9fgXg4a7SkecpJNF12+StixBDjoI7Pvu/
-         lL+oI1M+AczpZQc9D2m1FUEO7LyC00RhY2+8G7RjbwVJeI4DXHZq/Zpuu3Uy3uAAP7nP
-         57XDNjhmvYI+HLuNRSbKdbEssTfhK2/OyCwSJ3iw2VpE5vLXbhLuuFAeLQvRXUqWVywP
-         01j2MG9OJuYATiOkiznJvevEtGMrPUbfbNY6DK3gdsOatmEmOqlaBi5k3j57k0kij8XV
-         whJQ3bXShZQxkjXSUpdV+2WAPSImqYJhh7yRPMZW8ikDX7njdYOyuWS9+zCX/PdlVnyU
-         EPog==
-X-Gm-Message-State: AOJu0YxROAtshgPpv5tuQ46yH5G/Co1naPFkuyTR5itVQgNupUaPZBRH
-	2VuK4NBR0ACN9CEZ6E3a2Q7xAPjJ7YN7LZGl8JWBN+48SVzqTr58G24ZPLXuuOPGi5lcul43nyh
-	oVQ==
-X-Received: from dlag15.prod.google.com ([2002:a05:701b:250f:b0:12a:77b3:9893])
- (user=wnliu job=prod-delivery.src-stubby-dispatcher) by 2002:a05:7022:51b:b0:12a:6c4b:9d01
- with SMTP id a92af1059eb24-12c28b80147mr1404191c88.7.1775722348287; Thu, 09
- Apr 2026 01:12:28 -0700 (PDT)
-Date: Thu,  9 Apr 2026 08:12:25 +0000
-In-Reply-To: <20260326220512.GA245789@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tHnSI4bf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B372CC4CEF7;
+	Thu,  9 Apr 2026 08:17:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1775722627;
+	bh=0oFL4EmIO/g4ucpjyFy/e+LXyDriJV8hGcGegpTlORY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=tHnSI4bf+gkyoYAoZhtP9efvv9rDdW/+BojMrGT2iXBjsUGNH+a8zzCpjjwEBWLxf
+	 kIkVAP4ANTxj8vTP8O88Y8EQwZQTVRP/72Ub1cjc7N1XEUGpWp+mejqt8adzHvbkj7
+	 G0rQuhBIJxwP7pu6XvO+HQL0TC90uDFACu7XXo7Lps0hFscxmfXQffwvSq0XiVVpBU
+	 bHR80SeYQ6hta2CxGoloAGkm2hgVYJWXSMjcOTRPT59qfHIWTleOEX8zQnZAvS7jqL
+	 P2qe7n0QJEJFf1ZOEZ/GmnY2CDbDoXf6AunDJEpxcF18j6M+KixDH5g5p6QEbA/JVA
+	 OIe8SaVyHIbnQ==
+Date: Thu, 9 Apr 2026 10:16:52 +0200
+From: Maxime Ripard <mripard@kernel.org>
+To: Lukas Bulwahn <lbulwahn@redhat.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, Sumit Semwal <sumit.semwal@linaro.org>, 
+	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Lukas Bulwahn <lukas.bulwahn@redhat.com>
+Subject: Re: [PATCH] MAINTAINERS: Remove obsolete file entry in DMA BUFFER
+ SHARING FRAMEWORK
+Message-ID: <20260409-jolly-lime-cockatoo-c9eb4d@penduick>
+References: <20260408100819.458347-1-lukas.bulwahn@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20260326220512.GA245789@ziepe.ca>
-X-Mailer: git-send-email 2.53.0.1213.gd9a14994de-goog
-Message-ID: <20260409081227.2149181-1-wnliu@google.com>
-Subject: Re: [PATCH] amd/iommu: do not split domain flushes when flushing the
- entire range
-From: Weinan Liu <wnliu@google.com>
-To: jgg@ziepe.ca
-Cc: iommu@lists.linux.dev, joro@8bytes.org, josef@toxicpanda.com, 
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org, kpsingh@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha384;
+	protocol="application/pgp-signature"; boundary="tigaibqixmft6ovu"
+Content-Disposition: inline
+In-Reply-To: <20260408100819.458347-1-lukas.bulwahn@redhat.com>
+
+
+--tigaibqixmft6ovu
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH] MAINTAINERS: Remove obsolete file entry in DMA BUFFER
+ SHARING FRAMEWORK
+MIME-Version: 1.0
 
-> On Thu, Mar 26, 2026 19:05:12 -0300 Jason Gunthorpe <jgg@ziepe.ca> wrote:
-> > On Sat, Mar 14, 2026 at 02:24:11PM -0400, Josef Bacik wrote:
-> > On Thu, Mar 12, 2026 at 9:40=E2=80=AFAM Jason Gunthorpe <jgg@ziepe.ca> =
-wrote:
-> > >
-> > > On Wed, Mar 04, 2026 at 04:30:03PM -0500, Josef Bacik wrote:
-> > > > We are hitting the following soft lockup in production on v6.6 and
-> > > > v6.12, but the bug exists in all versions
-> > > >
-> > > > watchdog: BUG: soft lockup - CPU#24 stuck for 31s! [tokio-runtime-w=
-:1274919]
-> > > > CPU: 24 PID: 1274919 Comm: tokio-runtime-w Not tainted 6.6.105+ #1
-> > > > Hardware name: Google Google Compute Engine/Google Comput Engine, B=
-IOS Google 10/25/2025
-> > > > RIP: 0010:__raw_spin_unlock_irqrestore+0x21/0x30
-> > > > Call Trace:
-> > > >  <TASK>
-> > > >  amd_iommu_attach_device+0x69/0x450
-> > > >  __iommu_device_set_domain+0x7b/0x190
-> > > >  __iommu_group_set_core_domain+0x61/0xd0
-> > > >  iommu_detatch_group+0x27/0x40
-> > > >  vfio_iommu_type1_detach_group+0x157/0x780 [vfio_iommu_type1]
-> > > >  vfio_group_detach_container+0x59/0x160 [vfio]
-> > > >  vfio_group_fops_release+0x4d/0x90 [vfio]
-> > > >  __fput+0x95/0x2a0
-> > > >  task_work_run+0x93/0xc0
-> > > >  do_exit+0x321/0x950
-> > > >  do_group_exit+0x7f/0xa0
-> > > >  get_signal_0x77d/0x780
-> > > >  </TASK>
-> > > >
-> > > > This occurs because we're a VM and we're splitting up the size
-> > > > CMD_INV_IOMMU_ALL_PAGES_ADDRESS we get from
-> > > > amd_iommu_domain_flush_tlb_pde() into a bunch of smaller flushes.
-> > >
-> > > This function doesn't exist in the upstream kernel anymore, and the
-> > > new code doesn't generate CMD_INV_IOMMU_ALL_PAGES_ADDRESS flushes at
-> > > all, AFAIK.
-> >=20
-> > This was based on linus/master as of March 4th, and we get here via
-> > amd_iommu_flush_tlb_all, which definitely still exists, so what
-> > specifically are you talking about? Thanks,
+On Wed, Apr 08, 2026 at 12:08:19PM +0200, Lukas Bulwahn wrote:
+> From: Lukas Bulwahn <lukas.bulwahn@redhat.com>
 >=20
-> $ git grep amd_iommu_domain_flush_tlb_pde | wc -l
-> 0
+> Commit 25bd73562941 ("dma: contiguous: Turn heap registration logic
+> around") removes the file include/linux/dma-buf/heaps/cma.h, which is the
+> only file in include/linux/dma-buf/.
 >=20
-> The entire page table logic was rewritten. The stuff that caused these
-> issues is gone and the new stuff doesn't appear to have this bug of
-> passing size =3D=3D CMD_INV_IOMMU_ALL_PAGES_ADDRESS.
+> Hence, there is no file matching the file entry include/linux/dma-buf/ in
+> the MAINTAINERS section DMA BUFFER SHARING FRAMEWORK.
 >=20
-> If it does please explain it in terms of the new stuff without
-> referencing deleted functions.
+> Remove this obsolete file entry in DMA BUFFER SHARING FRAMEWORK.
 >=20
-> I don't know how you get something like this into -stable.
+> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@redhat.com>
 
-I believe the function Josef is referring to on linux/master is amd_iommu_d=
-omain_flush_all().
-https://elixir.bootlin.com/linux/v7.0-rc7/source/drivers/iommu/amd/iommu.c#=
-L1820
+Acked-by: Maxime Ripard <mripard@kernel.org>
 
-The potential call sequence appears to be:
-```
-blocked_domain_attach_device() or amd_iommu_attach_device()
-  -> detach_device()
-    -> amd_iommu_domain_flush_all()
-      ->amd_iommu_domain_flush_pages(...,
-		CMD_INV_IOMMU_ALL_PAGES_ADDRESS);
-```
+Thanks!
+Maxime
 
-Based on the code in build_inv_address()[1], it doesn't make sense to break=
-=20
-the entire cache size into smaller sizes to perform multiple flushes for a =
-chunk size
-larger than 1 << 51(full flush)
+--tigaibqixmft6ovu
+Content-Type: application/pgp-signature; name="signature.asc"
 
-[1] https://elixir.bootlin.com/linux/v7.0-rc7/source/drivers/iommu/amd/iomm=
-u.c#L1289
+-----BEGIN PGP SIGNATURE-----
 
+iJUEABMJAB0WIQTkHFbLp4ejekA/qfgnX84Zoj2+dgUCaddgdAAKCRAnX84Zoj2+
+dhHZAYC54+og7nzGG9mEtXnGL9r7LlvPX+bsMZiPGFO4VCAkpkmw1Z+XDZsmFcVa
+YNmN9y4BgOMFpuP7lGhy2T/qJnHCW+vlxw6EVJPbB8Rp/RatJ1modb5XtEqSzU7p
+cojAMLyy4Q==
+=WP1F
+-----END PGP SIGNATURE-----
+
+--tigaibqixmft6ovu--
