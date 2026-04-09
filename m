@@ -1,40 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFDE43C7E0C;
-	Thu,  9 Apr 2026 13:18:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B823A2E7F39;
+	Thu,  9 Apr 2026 14:09:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775740702; cv=none; b=BxBHfM8jjAWA2m4bQ1MJUU77tbKVzQcvqpWQStsCPE6lsM1LTXywSP9jIJilEfFlakWLA6V0SUr6sPrSQE+9FselWPKW9LhiywKXa0Voi7n91VvfwRDL9IrKosg4Qs6vdsXvVLzS3e5J8dnNxsCj3PA8Mj1g/j5bhB1gT0Xu94Q=
+	t=1775743750; cv=none; b=WpWnjzHhnudQRf2GCWLw+LCPA+WAMShkaRjax1Ry9VaL3vfQj2BfQ7Bbwz6ItUARTYyL3KSWESoDp1qQkDQSbs8nHrFjYEvo5LT0JcOfz6g9rNLDJfHah/C0l+usSJT39tL+SpHKZG8Yz/0zcVV2OOx4ud4zs3Wsw7DI/GsPU6o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775740702; c=relaxed/simple;
-	bh=GDPcSa8tnotnEXke8Dmj/8tOBXd3u80we22k4SktPrE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GVpP345dtH4kU8TVmUBQxQGymEqdXugwpA4zh/PU+A+dmz9kofXmN996zr07a51QTmuWjiW1NyAMJJIjqiu4EiKT/JFS9nqRoxPmdsTB+4oFyDRicE+PR7feDnW/C1V39MlBMfIT2eGbpkVk0QIDNsw4ss2fi3zm8ZGXJXEAVtY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jldMy/Rg; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1775743750; c=relaxed/simple;
+	bh=solfwnQ+j/IyIEvEzwK5SXldPVKSwmu/ZqozUA8j+os=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=pywwC7OXfl4s/HCI6eRvQIYGXmiAR3Rbn3/DlT0bEcyfHkVNUTRsm6CC9RF9P3DREnqxEdAUizWD5s00LCxpBj9S0OAdfPaLBFjXXryPguE6SvIAB/QZvbw49zMtG+cvpyjC3w7xgpzdQQaJ6qZ5e9VIHYcB0o+8tzzUvYtYLLE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QsfNn4ja; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jldMy/Rg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C9DAC4CEF7;
-	Thu,  9 Apr 2026 13:18:20 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QsfNn4ja"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A048DC19424;
+	Thu,  9 Apr 2026 14:09:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1775740702;
-	bh=GDPcSa8tnotnEXke8Dmj/8tOBXd3u80we22k4SktPrE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=jldMy/RgQ9PoozOj7YSNL+9E9O7hoCjMuQfN084OAqb/Ed2tYi5G3TsdvN1xHyAzJ
-	 frymBq+0+imGMDTptONjjPU4FIBYYMecrHJGOZGY7llLM2YHAnh4G5SAaxAd3GONPr
-	 2SiiHHKwNyfL6oQIJeOXbISJAp6S9YaUwyVa1LMXjeleRK7StisZ87kfeB8R9+T5HB
-	 g9cbqGJG+NRcBwq2XxT3PoddRJyQ3papcMYNkZ3NMbxx91zwqRq1TcxSV9HN7Qp6xm
-	 u8IAnhLNUwy69CeVhY+Ti1+EuEjNGu77NYk0kw0/dCITFb3PwSquz0VWGlwQfeP86i
-	 5r+DV3RZpR65w==
-Date: Thu, 9 Apr 2026 14:18:17 +0100
+	s=k20201202; t=1775743750;
+	bh=solfwnQ+j/IyIEvEzwK5SXldPVKSwmu/ZqozUA8j+os=;
+	h=Date:From:To:Cc:Subject:From;
+	b=QsfNn4jaVlZALnblWyqHfmGaxawDV8L39rq3psY5X7uKEHBNeTsWOzS5w+kWO4sys
+	 +1c/JigwTBZY/DWWYGJVJUVNoAy/m+assucaD2hwe1tLUNiVaAEuj4/3TNMqpq9cuz
+	 UZPSSuXK3gdJYsVdm3eIwvja3YjK4XGBf7rBeIIEI6pO3Wm5FQd/YlgGBwBOj8Secr
+	 Iud4HwU92IiwlqUsp8ZxV2pKt/AslP9XGCzFmcVxKoHXvcr8xINFPynVrL54tMT4cg
+	 m1fEUublwMH2zAMB7ndcswzNtM5o8szdCBeFwwtiDE6jrAaXA/dH2xfTbcgKZr++Q7
+	 zbFzSMJLm+qaw==
+Date: Thu, 9 Apr 2026 15:09:03 +0100
 From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, iommu@lists.linux.dev, linux-tegra@vger.kernel.org,
-	Jon Hunter <jonathanh@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>,
-	Russell King <rmk+kernel@armlinux.org.uk>
-Subject: Re: [PATCH v2] iommu: Ensure .iotlb_sync is called correctly
-Message-ID: <adenGd5d9BxNq_cR@willie-the-truck>
-References: <3eed961d41d3a81460031dee9f1db066f1d2e111.1775739433.git.robin.murphy@arm.com>
+To: torvalds@linux-foundation.org
+Cc: joro@8bytes.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	robin.murphy@arm.com, jgg@nvidia.com
+Subject: [GIT PULL] IOMMU Fix for Linux v7.0
+Message-ID: <adey_8n4Ux1qhZrL@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -43,31 +41,44 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3eed961d41d3a81460031dee9f1db066f1d2e111.1775739433.git.robin.murphy@arm.com>
 
-On Thu, Apr 09, 2026 at 01:59:41PM +0100, Robin Murphy wrote:
-> Many drivers have no reason to use the iotlb_gather mechanism, but do
-> still depend on .iotlb_sync being called to properly complete an unmap.
-> Missing or incomplete TLB maintenance at this point can then wreak all
-> kinds of havoc, particularly in strict DMA mode where IOVAs may be
-> reused right away, if DMA traffic for a subsequent new mapping hits a
-> stale TLB entry and goes to the wrong physical address.
-> 
-> Since the core code is now relying on the gather to detect when there
-> is legitimately something to sync, it should also take care of encoding
-> a successful unmap when the driver does not touch the gather itself.
-> 
-> Fixes: 90c5def10bea ("iommu: Do not call drivers for empty gathers")
-> Reported-by: Jon Hunter <jonathanh@nvidia.com>
-> Closes: https://lore.kernel.org/r/8800a38b-8515-4bbe-af15-0dae81274bf7@nvidia.com
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Tested-by: Jon Hunter <jonathanh@nvidia.com>
-> Tested-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
-> v2: Add tags, clarify implications in commit message [rmk]
+Hi Linus,
 
-Sorry, this raced with me queuing the v1 but I have included some
-commentary about the implications in the tag.
+Joerg is on hols this week, so I'm helping out with the IOMMU tree. I
+wasn't expecting anything at this stage of the release cycle but, sadly,
+one of the fixes for -rc7 introduced a regression of its own.
+
+Thankfully, Robin and Jason were on top of it and Russell and Jon both
+confirmed that it fixes the horrible issues they were seeing.
+
+Summary in the tag, please pull.
 
 Will
+
+--->8
+
+The following changes since commit 8b72aa5704c77380742346d4ac755b074b7f9eaa:
+
+  iommupt/amdv1: mark amdv1pt_install_leaf_entry as __always_inline (2026-03-27 09:41:48 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v7.0-rc7
+
+for you to fetch changes up to 7e0548525abd2bff9694e016b6a469ccd2d5a053:
+
+  iommu: Ensure .iotlb_sync is called correctly (2026-04-09 13:07:13 +0100)
+
+----------------------------------------------------------------
+IOMMU Fix for Linux v7.0-rc7
+
+- Fix regression introduced by the empty MMU gather fix in -rc7, where
+  the ->iotlb_sync() callback can be elided incorrectly, resulting in
+  boot failures (hangs), crashes and potential memory corruption.
+
+----------------------------------------------------------------
+Robin Murphy (1):
+      iommu: Ensure .iotlb_sync is called correctly
+
+ drivers/iommu/iommu.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
