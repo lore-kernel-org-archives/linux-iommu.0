@@ -1,93 +1,131 @@
-Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C6883DB648
-	for <iommu@lists.linux.dev>; Fri, 10 Apr 2026 16:16:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 21DC63DE44D
+	for <iommu@lists.linux.dev>; Fri, 10 Apr 2026 16:51:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775837801; cv=none; b=UwGF4NC2aqzPagzHZaewQ/grxgdQ8iJvkV3pAnPJYSpHY84FmqJmikoK8JWylTTnSl1ezKSXDcUtvkENop7KIc73dkxoE+A8Lrv7RaFCvSE2XgMhmA3kNtXQcH7erVKKKLRVHFEGkLq+tX2e12jDfRSQ0FCKSBIELsm3G10pq2s=
+	t=1775839875; cv=none; b=p6ynotjI+mFH1cShrCE3WVHD3ijbukeXyueJPRnbBZwmjPC16zZT0yPD+1oa+ZzTzujiA+Jc9tExmEY89P1/u/Qt1pDfa+1AEVrsvmZCLJ+f44lBwkOrED/Gvlc4XnDdzRQxN/xgrLaWEiAWTeHwbeydDPXqqupH9T40LT1TqAc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775837801; c=relaxed/simple;
-	bh=heP25xDBCVEvHfawA5GItZKYTRc9WkwcxkO9qM2grtM=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=unCE/ybjf7QyewyfYYMgaQ/9FLOaE9hY3YN45g7FKrtI6mBReRxSR7HV8JIIGWAeupMpGHyeFBpb4B+HK7UJ8GMvKd2mdUT2d3/VLnKi+8mBwUDImFkxo6ZcrMlTvXr+GoFKTuTFjK7zwL8is2PfIEs7icyotMTK8VvhoCNVp7c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=naval.cat; spf=pass smtp.mailfrom=naval.cat; dkim=pass (2048-bit key) header.d=naval.cat header.i=@naval.cat header.b=fvkppFad; arc=none smtp.client-ip=178.21.23.139
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=naval.cat
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=naval.cat
+	s=arc-20240116; t=1775839875; c=relaxed/simple;
+	bh=K4YKxR435vjV3a9hQfXcImKV+g+MUGe/BvdNgRcJixY=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=jY1e6Jrp7befCicMQeuYDudHyWehY0rY2g1hUXzXcaPNmGtJyiGQU5kr1LOMvRiqkIfj4eQSuptYVdQA3VEw4QAPM3gMtK5LqnNGocosDrzDsIsv/7T7MBo02WYJSdUEF0fRIni5TC6iZP0fb5TLXWHr1Aqp2OVuH8gY/jVa7C4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=WMYN+DXi; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=naval.cat header.i=@naval.cat header.b="fvkppFad"
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-	by disroot.org (Postfix) with ESMTP id 85B9F263D7;
-	Fri, 10 Apr 2026 18:16:31 +0200 (CEST)
-X-Virus-Scanned: SPAM Filter at disroot.org
-Received: from layka.disroot.org ([127.0.0.1])
- by localhost (disroot.org [127.0.0.1]) (amavis, port 10024) with ESMTP
- id IRpnkGISFLvz; Fri, 10 Apr 2026 18:16:30 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=naval.cat; s=mail;
-	t=1775837790; bh=heP25xDBCVEvHfawA5GItZKYTRc9WkwcxkO9qM2grtM=;
-	h=From:To:Cc:Subject:Date;
-	b=fvkppFadRPWa548Bq68W2LxOjQN4SmueKWE+8M4LaQJ/JnulH3KJcV8g4kvfzhhuR
-	 5WJKtblnomwZoDfCFY96hgvGmgFJ9x1mVm27K7c+YnvMPXQaxHjDIuvmkL08dNNDrE
-	 4pzSW3VGesiv1qP0rMgida6axKg/nkp/TBbkOCqUJvNW4WAFrEL0VhGsUJwzuwmJJy
-	 LgWqteBeSLCfm+B94pe6xW28bl0uU03aM0erzLYEUlw/PSfyg3239zAHBZA96cjTPW
-	 8lGB5I42S5mrF8JhvbQAoRWnHjIM8tENpGxmOPFYIdayDPKeTAjJrTTCfn2rcXHl4L
-	 gZkZRTOqIUAhQ==
-From: =?UTF-8?q?Naval=20Alcal=C3=A1?= <ari@naval.cat>
-To: 
-Cc: =?UTF-8?q?Naval=20Alcal=C3=A1?= <ari@naval.cat>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev (open list:INTEL IOMMU (VT-d)),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] iommu/vt-d: Disable DMAR for Intel Q35 IGFX
-Date: Fri, 10 Apr 2026 18:16:17 +0200
-Message-ID: <20260410161622.13549-1-ari@naval.cat>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="WMYN+DXi"
+Received: from localhost (unknown [52.148.140.42])
+	by linux.microsoft.com (Postfix) with ESMTPSA id DB0F220B710C;
+	Fri, 10 Apr 2026 09:51:09 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com DB0F220B710C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1775839870;
+	bh=rdaut57OSPBJt/B8jKMqxOStWeQz7715GCEYdz9sGUc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=WMYN+DXieGD7J/5AtEAz49OoBmB6Gp/CX+UpXICr+TBZ/gLC1QuEXFK99oSLhuKMT
+	 Jdm+ZcjtPa26N1oASkVWHLsh+N853H4yCCvjRMYIpMgze7WbzS5Gla+1Xzqp3UICqP
+	 1fS8Mi2wSmZ8yuHz//Z7xBqsR0vnlZKdZrm90ftw=
+Date: Fri, 10 Apr 2026 09:51:08 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: linux-kernel@vger.kernel.org, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Alex Williamson <alex@shazbot.org>, Joerg Roedel
+ <joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>, David Matlack
+ <dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen
+ <nicolinc@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
+ <yi.l.liu@intel.com>, skhawaja@google.com, pasha.tatashin@soleen.com, Will
+ Deacon <will@kernel.org>, Baolu Lu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH V3 03/10] iommufd: Allow binding to a noiommu device
+Message-ID: <20260410095108.000006a0@linux.microsoft.com>
+In-Reply-To: <20260409170657.GM3357077@nvidia.com>
+References: <20260403051146.10210-1-jacob.pan@linux.microsoft.com>
+	<20260403051146.10210-4-jacob.pan@linux.microsoft.com>
+	<20260409170657.GM3357077@nvidia.com>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Intel Q35 integrated graphics (8086:29b2) exhibits broken DMAR
-behaviour similar to other G4x/GM45 devices for which DMAR is
-already disabled via quirks.
+Hi Jason,
 
-When DMAR is enabled, the system may hard lock up during boot or
-early device initialization, requiring a reset.
+On Thu, 9 Apr 2026 14:06:57 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-This issue has been reported multiple times and remains
-unresolved:
-Link: https://lore.kernel.org/linux-iommu/20161205215841.GA20819@beast/
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=201185
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216064
+> On Thu, Apr 02, 2026 at 10:11:39PM -0700, Jacob Pan wrote:
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > 
+> > Allow iommufd to bind devices without an IOMMU (noiommu mode) by
+> > creating a dummy IOMMU group for such devices and skipping hwpt
+> > operations.
+> > 
+> > This enables noiommu devices to operate through the same iommufd
+> > API as IOMMU- capable devices.
+> > 
+> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> > Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+> > 
+> > ---
+> > v3:
+> >    - handle new error cases iommufd_device_bind. (Mostafa)
+> > ---
+> >  drivers/iommu/iommufd/device.c | 126
+> > +++++++++++++++++++++++---------- 1 file changed, 87 insertions(+),
+> > 39 deletions(-)  
+> 
+> 
+> > @@ -294,11 +334,10 @@ struct iommufd_device
+> > *iommufd_device_bind(struct iommufd_ctx *ictx, *id = idev->obj.id;
+> >  	return idev;
+> >  
+> > -out_release_owner:
+> > -	iommu_device_release_dma_owner(dev);
+> > -out_group_put:
+> > -	iommufd_put_group(igroup);
+> > +err_out:
+> > +	iommufd_object_abort_and_destroy(ictx, &idev->obj);
+> >  	return ERR_PTR(rc);  
+> 
+> I fed this to Sashiko and it pointed out the abort flow here will call
+> iommufd_device_destroy() bit it isn't prepared to handle a partially
+> initialized idev. It looks like igroup is only set once it is
+> sufficiently initialized so:
+> 
+> @@ -211,6 +211,8 @@ void iommufd_device_destroy(struct iommufd_object
+> *obj) struct iommufd_device *idev =
+>                 container_of(obj, struct iommufd_device, obj);
+>  
+> +       if (!idev->igroup)
+> +               return;
+>         if (!is_vfio_noiommu(idev))
+>                 iommu_device_release_dma_owner(idev->dev);
+>         iommufd_put_group(idev->igroup);
+> 
+> Should fix it, but lets add a comment because it is pretty fragile:
+> 
+> @@ -335,6 +337,10 @@ struct iommufd_device
+> *iommufd_device_bind(struct iommufd_ctx *ictx, return idev;
+>  
+>  err_out:
+> +       /*
+> +        * Be careful that iommufd_device_destroy() can handle partial
+> +        * initialization.
+> +        */
+>         iommufd_object_abort_and_destroy(ictx, &idev->obj);
+>         return ERR_PTR(rc);
+Yeah, will add to the next version.
 
-Add the missing PCI ID to the existing quirk list to disable
-DMAR for this device.
+Tested the error path by faking a failed group allocation, works as
+expected.
+#  RUN           vfio_noiommu.device_bind_iommufd ...
+vfio_iommufd_noiommu_test.c:265:device_bind_iommufd:Expected 0 )
+# device_bind_iommufd: Test terminated by assertion
+#          FAIL  vfio_noiommu.device_bind_iommufd
+not ok 17 vfio_noiommu.device_bind_iommufd
 
-Signed-off-by: Naval Alcalá <ari@naval.cat>
----
- drivers/iommu/intel/iommu.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index ef7613b177b9..8df0692e1fed 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -3933,6 +3933,9 @@ static void quirk_iommu_igfx(struct pci_dev *dev)
- 	disable_igfx_iommu = 1;
- }
- 
-+/* Q35 integrated gfx dmar support is totally busted. */
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x29b2, quirk_iommu_igfx);
-+
- /* G4x/GM45 integrated gfx dmar support is totally busted. */
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2a40, quirk_iommu_igfx);
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e00, quirk_iommu_igfx);
--- 
-2.51.0
 
