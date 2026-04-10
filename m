@@ -1,164 +1,181 @@
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012034.outbound.protection.outlook.com [52.101.53.34])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B5543E024F
-	for <iommu@lists.linux.dev>; Fri, 10 Apr 2026 18:33:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC9A741C71
+	for <iommu@lists.linux.dev>; Fri, 10 Apr 2026 18:52:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.53.34
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775845993; cv=pass; b=HGPc82sbg5UrcsIJW9877yLBAguaM87Na8IUFEdk8dNxnB3LBmTpcLMHFsn6w9ijzYEK88rVvEILMB6vmWr6lt6WzfE44Ifz7OAFe7ugtB/FxKcOWteEeImjdoO4Mw0+vN2R0V4/UHXed21vjihpXcoRKc0s80YJSI8YuAJtGWY=
+	t=1775847152; cv=fail; b=l0Pguvuhy/emyrnRZ3yUCNXSpZHc5DcdmVmA3gZBKMEnOPU1RhAKz4dfVzknUpKUINqomY5QuKTG0RA7+oDF/JMhKTgXp0fpJsbpBDulWX0LXaoOgRuRSFQo1txM7v+G61BTFGc3yidmc9M9Ed75+DYnb6yc4Uqh7qlgknKsDYg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775845993; c=relaxed/simple;
-	bh=bjLxVnOZzU/qm7UB5DlwY9dDfszNtgL7RNt+HQuKZ4w=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=EwskB0DKf2MBXGuA4F+r/6NDgfqvknzHFp8zarzhqAqkdVzDXOv/6xT2w8GIVSo9L6VOQ9zv3YMaeO4EufKlWsIfevvxF9UjIg83MVRGqs+rIyxPYlcvLeOGUtXMNWi7nbClc3iyT82RM6HU0fyPlUe0T/oKTNHhMOgj2GfmVlY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=openai.com; spf=pass smtp.mailfrom=openai.com; dkim=pass (1024-bit key) header.d=openai.com header.i=@openai.com header.b=B0MSVteD; arc=pass smtp.client-ip=209.85.128.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=openai.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=openai.com
+	s=arc-20240116; t=1775847152; c=relaxed/simple;
+	bh=bSi7mfKOy1pluSaDFX3GDc7X3/BkgZdo77nO+isVugQ=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=EWP0hdPrWrlbHRUc84dshYruPfKL5j75TnIpau0ZiKbpV8RZA1UrDDxlXttPdgEWf+CEaiVmKvzapo5g9QlD5X+iBndnT66dYyRgn5sD2ToW0B3SY+a6uC8JQWyEP8K/RQDa3IHyfg2npAzwJIZax5bV1QUO0o3peuMclFRsoLY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=KYBXPDIA; arc=fail smtp.client-ip=52.101.53.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=openai.com header.i=@openai.com header.b="B0MSVteD"
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-79a46260385so27617467b3.3
-        for <iommu@lists.linux.dev>; Fri, 10 Apr 2026 11:33:11 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1775845991; cv=none;
-        d=google.com; s=arc-20240605;
-        b=EEBV1yurB8c4MKsQD/l0G45KC4jpHJkXfZmh3wgXOFoak33a7zGrx5iRc+PF3419s4
-         FVj8L0S2RtwKu1btj03rNABPCGchzs1hbhcI6xD4wAqze8qVTWqL8DGYwprteRD0CLaO
-         Oxhkg5w2iDERigzF1XLEPwvvSlRKa1TUTlmr9vXb4FN5Bkp+3jhrbHxuP4bi095Zzeq0
-         0aWFwwG4x1iJpOw//Ai1cIONjcQF9YjejZqWdhk9tZ1Kdx08YUwapa0AjAHhfDyBfQBO
-         z3CQA3UMpy4GWieEtNfr2nN4Lw17Y5Kwl8TGzQEiVmAO80NP1ikCPUoKjUx7tZv2NlVz
-         SgvQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=LmZVgx4du5Y8gMF1xPyxrDio1rDedaQrWT161jIwWcU=;
-        fh=IfZxgRTT1JWNeycjSwYBJ0Wj/Aw4XiaEaFzW/d9jb8k=;
-        b=BfNrgaCjbMHEK9Sj4Pv6kzQZjfaauclF5Ysx7yXrk8zsd4uZrfuyBoRL+ux3/s1kFF
-         uXfM14hVVSIFkxIYD7MF9PD+VQfBTifjm0xf5UyHQk4FyDjdlmefq2E6XMS5TZay5aug
-         qoDll9n6Gb8GGKg9Vpx7iI6z/fdAiQQ5QcWkJDn6ovP8Fi8TDqOrmfKkssnZWkUUfWIM
-         VqjKhH3f0/91nfLK9WgZeE9QnZTK4ZKUlpFNw2jJQqKLztK4GHizLmoOKt5VqThYK+Ps
-         L1e7PJmcrHb0nNJUdoX0BIw8zipBH57cqqCID/OYXZcEE20JeiWJS5PB5HE4veQKHpdQ
-         gEBg==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=openai.com; s=google; t=1775845991; x=1776450791; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LmZVgx4du5Y8gMF1xPyxrDio1rDedaQrWT161jIwWcU=;
-        b=B0MSVteDAz+dUWCCMdZItjpzPmoneubzTVhd6kWFBsjFwLsFyhffKuuI31Oi8uGk2H
-         CnU+4DFKDvUUSL40m+/HDG7pAtIXvZ6/GART/2fjDvI49HjdiGjkzyxqaRNck6nbF9i0
-         nxzR1sw2ujJ0U9Bq0VI5s+bxuVSJWhbEmEQMM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775845991; x=1776450791;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=LmZVgx4du5Y8gMF1xPyxrDio1rDedaQrWT161jIwWcU=;
-        b=h1ymYWwe82TlDrL/DOaxibiH6L8o8NzWAyh25PwR7XeJzrOziagZojKbSWVFuVrGdU
-         3U03FVD3HOs+wmUVgIyFZ/p4VnAmL+rQ8CGmxPZBNW+zFfakETfiUWqgP+frWnYC206R
-         YgiLRuLuMOJGFgAoZYCCh7vOc5DvN0gfAVGGqaxpZMoerRxRsZiIpfCVhIrxGME/+kKn
-         NEoIceLm7XXs87LR6BuokvICoqOzod/mrYGwwiwnA+Jee+RffG09ewEkWdR5Hh+urUYD
-         xg/VZzFlXI3M7+4OMFpGERWTcJZKXp8rYmTOyc1N6yIrTs2OeOfoCd+7F91ZC9ho+Ykm
-         SL4w==
-X-Forwarded-Encrypted: i=1; AJvYcCXLqkEFlvb+FP/0Oznbw7F7eywoPwEVjxJ+VJt0C8vykAtKGtIOSg0y36YLNN3GRrtz7aKLAQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx6BaytG8jXzPRH4yqy5jSRL+eLa0st+16IvIVaJdXDRGWv2v4U
-	iyjW/m2/90gNzwhBz7Aade93BDrZkoTCVdDkBEBc04dt7sUsMRgZ97AmFpl4w8Wdc+4SFziS/YH
-	kL/5cNpQsfz1mFctKodAPOp8AdptCl8sFBsWAlbBFMg==
-X-Gm-Gg: AeBDieuP31PX4Evd7PpyVX5Y/ZPih4od5XWXEPHjtJZQdlXM9oj+ljFraVO19BsVGDs
-	hul7yOy0188u9Q5VFWorSJLknvqytlzL05MeDgwgj92/JxR/5h+3SG3FCTGM+ENlnuxRTIr6S7S
-	mRPabK1dwStwwIOmXad4Q063I/b2mG0+WHE8fdG9mp0Q4LX2WFGwUcinTGI7NiKC/1cgSPa1t7s
-	MY4q0kxJbnqvsMyQgPFcKxj0qk3NT6xG18i7VCuwF/8TQ7BRWNIqMCovbJBEqLtUqKQHOU0fY/M
-	geSrVLlmmAhvXGe3pBWd8VhrqblasVXqKkCGxDqvnt+lr8a1raDT/n3RFJl24j2zD6mR7Fmc07b
-	RWm5DrrvbkfgLOdf9o1nMFR3yyK11Qhvb3nyxn7ekSFK/b0SNlEbvEQU4wrc5vjFERX8/MY4KUQ
-	==
-X-Received: by 2002:a05:690c:dd4:b0:79b:dd37:69b4 with SMTP id
- 00721157ae682-7af6f8094ddmr45213367b3.13.1775845991067; Fri, 10 Apr 2026
- 11:33:11 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="KYBXPDIA"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=DTeeX7D6HzAsie/oZ+tnFQzNNFMlV1/6ZhHfNWGEUnBxYhz4mtbD5yw+28RuTzdEt5alcqF4layGoHlKLNUwmZdVROxke/ERj8pOPTM5MX0oRZeuL+WGvQAH+/oSdpXWU0vPsrJXV+LAZwCNupmQLaBALPbdmmENhxNEZxh37wvgZewoMQ4+C+CdTaZHUyFKywd//O2/gAilN5wyXI2UN/Rm0WticgguSSUUr+acAStTMm/m9/hQwzbDCYMTI7CPdWVwq9BfSyo5HmU3AyL/9zNusUlmpczMyt4lpJr7qbKhxASrdPI0We1whPevRGFQtwL/oOIpDH4KGIGZ/dUiWQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=r6+TjvvR3D3VhzQM/y8dlB60anVcqwqs0oyCKUYVjwo=;
+ b=SVLve5s5s2jLxsJOkVuElsbk6mnGYEObpneeDTXpojXyzK8UtwuS0rCqo+rgfsAdW97fGW4rI1KXg1ZL6w8MCAASDOyoUfN4C+TgMLGaqkCyEcP8Q3aEel3yhMnnRc1514PpsBMaY8KUv02BqhjIWV+gYhcJlCWTgT7kKTPODHDFCyyetHcDcm33tAsJve0JRwCxKdc466La7OY1P/R5Bd3A1q+Dskvilw8/bGz4dpqNJKcJPBkZh55NeH9TjZVyjFPbW4QEI11QSLnQxujNyMR62tdUsykPMjq++kEHVaN3sDXtIaEQU5hFjuu9cEOQaOe5JiOiVqoNpqGUGgHJWA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=r6+TjvvR3D3VhzQM/y8dlB60anVcqwqs0oyCKUYVjwo=;
+ b=KYBXPDIAsvV1QKI0dX1EsIi8EM80n3EIjj6KPtvBTxp1UXVbtqQ4psxPIMIoA4DYFlSyTK1oZlR/Lxh8kisHouV5KYr1LwqdSppJHcMX538ITG/ZYU2h7Tfc9wc58wS8ZYfPYDUupoPpHrhTgwN94BALo0Sl2Wc1jpIMaKsoKQwza9X2ZI3N6gDyRC73PUXgLHbt8FSxY8nLKVs8A8QrXd+mKylh5JA15RnBcCy4x9ETlLaN5qkhnjt+PNblB7J7Sjez/0k2mMxI3Td3iw+ZftDykWejdJXb/ZsAjsO97BlnHYVUUtzZq0UqfdExMzgOr4zg/69R8i0f4dQAMiY+Cg==
+Received: from DS7PR03CA0251.namprd03.prod.outlook.com (2603:10b6:5:3b3::16)
+ by CH3PR12MB8234.namprd12.prod.outlook.com (2603:10b6:610:125::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9791.34; Fri, 10 Apr
+ 2026 18:52:23 +0000
+Received: from CY4PEPF0000EDD0.namprd03.prod.outlook.com
+ (2603:10b6:5:3b3:cafe::70) by DS7PR03CA0251.outlook.office365.com
+ (2603:10b6:5:3b3::16) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9769.38 via Frontend Transport; Fri,
+ 10 Apr 2026 18:52:22 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ CY4PEPF0000EDD0.mail.protection.outlook.com (10.167.241.196) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9769.17 via Frontend Transport; Fri, 10 Apr 2026 18:52:22 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 10 Apr
+ 2026 11:52:03 -0700
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.20; Fri, 10 Apr 2026 11:52:03 -0700
+Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com
+ (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Fri, 10 Apr 2026 11:52:02 -0700
+Date: Fri, 10 Apr 2026 11:52:01 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+	<jpb@kernel.org>, <praan@google.com>, <smostafa@google.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <linux-tegra@vger.kernel.org>,
+	<jonathan.cameron@huawei.com>
+Subject: Re: [PATCH v4 03/10] iommu/arm-smmu-v3: Store IOTLB cache tags in
+ struct arm_smmu_attach_state
+Message-ID: <adlG0QTAzdh9vA4M@Asurada-Nvidia>
+References: <cover.1773949042.git.nicolinc@nvidia.com>
+ <ceb8150f229ee7bd355ec42d23e422ae2185492e.1773949042.git.nicolinc@nvidia.com>
+ <20260409234223.GX3357077@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAAJpGJQ4VyeaZyVwh0Y-tanUCAqiY8v=rmiGr8cp_XmFph=SGQ@mail.gmail.com>
- <BL1PR11MB52718837B34DB23713CEC2978C592@BL1PR11MB5271.namprd11.prod.outlook.com>
-In-Reply-To: <BL1PR11MB52718837B34DB23713CEC2978C592@BL1PR11MB5271.namprd11.prod.outlook.com>
-From: Sina Hassani <sina@openai.com>
-Date: Fri, 10 Apr 2026 11:33:00 -0700
-X-Gm-Features: AQROBzCwnHPksNb0jtEzoTvVsAsoVyPLtOpmO6_Mi6ZtDuZiNJaDZ1zSwIh3Rkg
-Message-ID: <CAAJpGJTeCs8x52ruotE1bLnmY1HGnaBeqcHeGKCfUt25NWN2UA@mail.gmail.com>
-Subject: Re: [PATCH v3] Fixes a race in iopt_unmap_iova_range
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>, 
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Aaron Wisner <awiz@openai.com>, 
-	"stable@vger.kernel.org" <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20260409234223.GX3357077@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000EDD0:EE_|CH3PR12MB8234:EE_
+X-MS-Office365-Filtering-Correlation-Id: 89f7a7b9-7b2c-49f0-154c-08de97324cef
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700016|7416014|376014|82310400026|1800799024|18002099003|22082099003|56012099003;
+X-Microsoft-Antispam-Message-Info:
+	DUf+DcM8mfjE/TiCKExRZOSduYfsWlRakRABRIELcQDRs5bau7+SwuKm9wdOshrEcZvYRq2r69xaI1v9QqEU+EciZafAKM6SUAf/7veOqOUaqUG8oQKR/L/UmUl/5yjszc3CvC9ydoIGgam/byLU0zSkjd5KywsuaMOATJVos/5RSEPUdmHo+egctld781CBTg7sb/nEiu3xdKEk7sTsPCjkIU7igQqVdq3uf1hosGgiVPJEFzdNIjMdGo/sFDFybrBpHymx+YI6xJ+VcFRzy0atv71J+1f6/FSHYO8Z06TN1tZKsFLEjGCzHFL7BfN0OPOlCQFN7Nf4DsEeHJGBjo/lnQ+C+JBKhbDQ6VY875u103Vzbp6WupY/NpkF4XLP0979zTEz9HzBWzPgvGCDNR4MELn6FTVfV6vrMbKXdFeQOg3emxkp9XB5Z3S6rKlp29KhtMUR/E+NRGYFWVNQw9FcQ0lGMQ/cg7Ca6nX7g9zf7JigCGyRoB8mG/y12VNa/O6KUFcyx6fIT5DLYrbSSO44tCe7eTwJqEPIaD8fdX0+c74yjLgEjmg/G/vczJXKuhy+lIECjVUxzxq+63DtYeDGPCbyF/phsAv+5r9j/o5eKB/78JRaa9suY0VtWlOrqENmuj0vkeLj/22OGGkj9Hg9kGLAX0Xl0Eto38ZmkcxMRC0/f6wDzho1wBvuO3C1Q1t6nj4+oYUbTr2GBv0gjZu+z2gNZJ4C1VUyFc7ME9gScMF98GkFulGt9XPwEkK4M6KHQknPlKxdQX7LenGjBw==
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(7416014)(376014)(82310400026)(1800799024)(18002099003)(22082099003)(56012099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	TZOAgE5qrIiA0Igx9vypCEarRhhs6VN1lbYGRAnV9BY8hRfPszPiu4UTyUnSGvyLmW8irkzzjTmDj9ELE0q7k3BfCfZ0lU7WpMd7Hsu7NbpNn1olfw+leBO1flc5Tp5TcD/FGp3m/4FFq3II/LI8/Veo2c5z26cNJSiohKgnCQcX47fxk2v1G+Bolztr7LhX+K2M9FDnedcMRKrhUx0Fb7SJvpjjjRX3KwwspDOQngYSL5WroIdH5MUSONQ1JObqeOhZhutRlzVRNT0Ksv+dnoznR8LLf499Vx7Lbecy/GJbERegDFhYLFENTDRPo0JpQnyl6dYHAjrwE5Sih41PFhaRdy65IwWchN6d22yfoS8lOZxCrsAPWGo1Q13sQCZ6ZoiazoeUtuwWBz3RuY+LAlKxuml0A1NhVxvoeYKTQaQ8fF3N8bhqcxd2A2+KEQUS
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Apr 2026 18:52:22.6776
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 89f7a7b9-7b2c-49f0-154c-08de97324cef
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000EDD0.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8234
 
-On Thu, Apr 9, 2026 at 8:28=E2=80=AFPM Tian, Kevin <kevin.tian@intel.com> w=
-rote:
->
-> > From: Sina Hassani <sina@openai.com>
-> > Sent: Friday, April 10, 2026 6:10 AM
-> >
-> > Bug: iopt_unmap_iova_range releases the lock on iova_rwsem inside the
-> > loop
-> > body when getting to the more expensive unmap operations. This is fine =
-on
-> > its own except the loop condition is based on the first area that match=
-es
-> > the unmap address range. If a concurrent call to map picks an area that=
- was
-> > unmapped in the previous iterations, this loop will try to mistakenly u=
-nmap
-> > them.
-> >
-> > How to reproduce: I was able to reproduce this by having one userspace
-> > thread mapping buffers and passing them to another thread that unmaps
-> > them. The problem easily shows up as ebusy errors if you use single pag=
-e
-> > mappings.
-> >
-> > The fix: A simple fix that I implemented here is to advance the start
-> > pointer after we unmap an area. That way we are only looking at the
-> > IOVA range that is mapped and hence guaranteed to not have any overlaps
-> > in each iteration.
-> >
-> > Test: I tested this against the repro mentioned above and it works fine=
-.
-> >
-> > Cc: stable@vger.kernel.org
-> > Signed-off-by: Sina Hassani <sina@openai.com>
-> > ---
-> >  drivers/iommu/iommufd/io_pagetable.c | 8 ++++++++
-> >  1 file changed, 8 insertions(+)
-> >
-> > diff --git a/drivers/iommu/iommufd/io_pagetable.c
-> > b/drivers/iommu/iommufd/io_pagetable.c
-> > index ee003bb2f647..e306871de06d 100644
-> > --- a/drivers/iommu/iommufd/io_pagetable.c
-> > +++ b/drivers/iommu/iommufd/io_pagetable.c
-> > @@ -814,6 +814,14 @@ static int iopt_unmap_iova_range(struct
-> > io_pagetable *iopt, unsigned long start,
-> >                 unmapped_bytes +=3D area_last - area_first + 1;
-> >
-> >                 down_write(&iopt->iova_rwsem);
+On Thu, Apr 09, 2026 at 08:42:23PM -0300, Jason Gunthorpe wrote:
+> On Thu, Mar 19, 2026 at 12:51:49PM -0700, Nicolin Chen wrote:
+> > So far, an IOTLB tag (ASID or VMID) has been stored in the arm_smmu_domain
+> > +static int __arm_smmu_domain_find_iotlb_tag(struct arm_smmu_domain *smmu_domain,
+> > +					    struct arm_smmu_inv *tag)
+> > +{
+> > +	struct arm_smmu_invs *invs = rcu_dereference_protected(
+> > +		smmu_domain->invs, lockdep_is_held(&arm_smmu_asid_lock));
+> > +	size_t i;
 > > +
-> > +               /* Do not reconsider things already unmapped in case of
-> > +                * concurrent allocation */
-> > +               if (area_last >=3D last) {
-> > +                       break;
-> > +               } else {
-> > +                       start =3D area_last + 1;
-> > +               }
-> >         }
->
-> this could simply be:
->
->         if (area_last >=3D last)
->                 break;
->         start =3D area_last + 1;
-done
->
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> > +	arm_smmu_inv_assert_iotlb_tag(tag);
+> > +
+> > +	for (i = 0; i != invs->num_invs; i++) {
+> > +		if (invs->inv[i].type == tag->type &&
+> > +		    invs->inv[i].smmu == tag->smmu &&
+> > +		    READ_ONCE(invs->inv[i].users)) {
+> > +			*tag = invs->inv[i];
+> 
+> This users thing has become to hard to understand and it isn't how it
+> should be.
+> 
+> All writers *with the possibility of concurrent access* need to use
+> WRITE_ONCE since there is a RCU reader. IIRC that is just
+> arm_smmu_invs_unref()
+> 
+> The one in arm_smmu_invs_merge() is just writing to newly allocated
+> memory so it shouldn't be marked.
+> 
+> Only readers *with the possibility of concurrent access* should be
+> marked with READ_ONCE. IIRC this is just the invalidation walker.
+
+I added a cleanup patch to the beginning of the series and corrected
+all the new reads/writes too.
+
+> Places like this have to be protected by a lock or the whole thing is
+> wrong, so it should have a lockdep annoation.
+
+Hmm, is the lockdep_is_held() in rcu_dereference_protected() enough?
+
+> Now what is the locking supposed to be? It looks wrong, it probably
+> wants to be arm_smmu_asid_lock, but arm_smmu_mm_release() doesn't grab
+> it.
+> 
+> But why does arm_smmu_mm_release() need a tag in the first place? ASID
+> isn't going to be used when EPD0|EPD1 is set, so the tag can just be
+> 0. Probably make a patch with that change early on..
+
+I see. I added a cleanup patch.
+
+> All the locking is important because this:
+> 
+> > +/* Find an existing IOTLB cache tag in smmu_domain->invs (users counter != 0) */
+> 
+> Must be held as an invarient into the caller, meaning the caller must
+> hold arm_smmu_asid_lock while it has an active tag on the stack, and
+> that should be documented here. As well as a lockdep of course.
+> 
+> From what I can tell the final result is correct (aside from
+> arm_smmu_mm_release), just under documented.
+
+Re-checking the locking in these functions and updating the kdocs.
+
+Thanks
+Nicolin
