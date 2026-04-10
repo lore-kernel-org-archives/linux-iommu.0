@@ -1,374 +1,96 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 630EF3C5550;
-	Fri, 10 Apr 2026 12:20:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1D513DEAE0
+	for <iommu@lists.linux.dev>; Fri, 10 Apr 2026 12:20:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775823648; cv=none; b=bTFDZtI8i58c22GB7ZrRDbexW7De0cGka7T6cZ37WG+VG3LDigvctN96ERTHK0o5PnosNRvxJfUtRiq1Ukz0nRpyGwJ6Jd1PDSznPEdZ42UxoCKcRHx+Y4NguAAYyMxBBLZKjH7aMsvZ6QzkVPxixCAwB7Os1V74iAhmYcV1Srw=
+	t=1775823653; cv=none; b=SqxjRDLSyAkOFMuel8eCI9CQKlsvSeOw7iArISfKpmbNfKC/5E+7XN3bNBV1A0rUcSyUZlmry1kZalIwPBYPrzKv5I7lPrYSLMMXugIakVyfKoc3XvTBRMR6COLXOQOcsdo43vJKSd61QAr0Gpj/lUWsltzeq/clZFHvpntbKqc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775823648; c=relaxed/simple;
-	bh=Rixu9UkxBpBa/pCcYjAm91Mos3e7PJEWty4VuN8Giko=;
-	h=Date:Message-ID:From:To:Subject:References:MIME-Version:
-	 Content-Type:cc; b=R6q77D8xnCvZgJUekh19PkL3f1qAfRHkUeGlQkxTqUSaySS9Fe871v6lDDLZQqWbltMIQ7l9X5dWK0/0PGSjzvZE3a8js4pFgnI3sBxgKj6yCtKoRq6GrUeQExtya0BgJCkWB94pKKl7zRsvWfVLqr6yuLNd2UMvrvqvJKzCB2A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e2TX+7hq; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1775823653; c=relaxed/simple;
+	bh=51YK6I53KlWTkGpTMwW2r2N8AZPPMihRKqkSq8enjS0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=quoqEX24SAS1TMRfkRsk/QUaAah63fbT+yXB78az+lu1k8IIa45rjIEsfxq3Pu48CXa3+SHSZqm4gvZdG8ReqJbHdiyhs8aTt5uLRNOBlefOy9/A5j+dbTyYyw4uMzEutld/flOEJku/o+l1Z7fsD62vVTyphfk8GVlqt3OQDh0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=NqtE3ZUG; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e2TX+7hq"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9315FC19425;
-	Fri, 10 Apr 2026 12:20:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1775823648;
-	bh=Rixu9UkxBpBa/pCcYjAm91Mos3e7PJEWty4VuN8Giko=;
-	h=Date:From:To:Subject:References:cc:From;
-	b=e2TX+7hqQyBiWzo8NI5NRXrCTX+aQLO1om6YbdKnBp1t6r+3gdVVwFgSRp0YguQNn
-	 Jlc+qQUu+TDLRhNxs0vDUgKc/64bw4Xr/nrLXGcr9x8N+WxcYYAWKz/hetumLTTXiH
-	 IOZQe6vf3JeallzAbQOuDlVku9VS3q2KBCLecHsxJ+DIPpUILukw8IDg9/7PZ2ubbz
-	 C8W0nQsdyxy0TL4ubCO16dsYj5itsv1q3iQDjbYKDrJAHUzFBqI36jq5cjES+sc4w7
-	 L7ELcmmojjtISrbWTN6OaCnE72An4bb94Nrrp4eO37cDQXx+zCdhzTRuhaN3nbGiT3
-	 axWFURoe64Leg==
-Date: Fri, 10 Apr 2026 14:20:45 +0200
-Message-ID: <20260410120319.462206386@kernel.org>
-User-Agent: quilt/0.68
-From: Thomas Gleixner <tglx@kernel.org>
-To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch 28/38] mips: Select ARCH_HAS_RANDOM_ENTROPY
-References: <20260410120044.031381086@kernel.org>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="NqtE3ZUG"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260410122049euoutp014389cc58939f4e3cbf90970c6cc97433~k-jNeCuTH1906719067euoutp015
+	for <iommu@lists.linux.dev>; Fri, 10 Apr 2026 12:20:49 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260410122049euoutp014389cc58939f4e3cbf90970c6cc97433~k-jNeCuTH1906719067euoutp015
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1775823649;
+	bh=lN5zWO6+anmGDngLkOfFZEph7VAV3nISscwbspgkQFg=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=NqtE3ZUGhjK5b+8l3UJojriJ5nrit/EwmaDAMcMN1Br+4xN1xUNTVGwRO9rgOuFEb
+	 Bx2jTuJ8f+oN9wlq+XE/SWAFwLerZjUb96fqzAMZHDkFsEJdpJG3ASlCz+YzeKizNO
+	 GJFKrCnlGUMsKgU/vRZdu0YCgkUV/c9nFfJj/i48=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20260410122049eucas1p2207046638096d1540b23f0a14d6169ac~k-jNEfoaG3206132061eucas1p2p;
+	Fri, 10 Apr 2026 12:20:49 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20260410122047eusmtip17c8b02f981e525f46be03f8d2d0e134f~k-jLa09If3110231102eusmtip1Z;
+	Fri, 10 Apr 2026 12:20:47 +0000 (GMT)
+Message-ID: <9e3f7066-f147-4854-b662-9027fa7d3c80@samsung.com>
+Date: Fri, 10 Apr 2026 14:20:46 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-cc: Arnd Bergmann <arnd@arndb.de>,
- x86@kernel.org,
- Lu Baolu <baolu.lu@linux.intel.com>,
- iommu@lists.linux.dev,
- Michael Grzeschik <m.grzeschik@pengutronix.de>,
- netdev@vger.kernel.org,
- linux-wireless@vger.kernel.org,
- Herbert Xu <herbert@gondor.apana.org.au>,
- linux-crypto@vger.kernel.org,
- Vlastimil Babka <vbabka@kernel.org>,
- linux-mm@kvack.org,
- David Woodhouse <dwmw2@infradead.org>,
- Bernie Thompson <bernie@plugable.com>,
- linux-fbdev@vger.kernel.org,
- "Theodore Tso" <tytso@mit.edu>,
- linux-ext4@vger.kernel.org,
- Andrew Morton <akpm@linux-foundation.org>,
- Uladzislau Rezki <urezki@gmail.com>,
- Marco Elver <elver@google.com>,
- Dmitry Vyukov <dvyukov@google.com>,
- kasan-dev@googlegroups.com,
- Andrey Ryabinin <ryabinin.a.a@gmail.com>,
- Thomas Sailer <t.sailer@alumni.ethz.ch>,
- linux-hams@vger.kernel.org,
- "Jason A. Donenfeld" <Jason@zx2c4.com>,
- Richard Henderson <richard.henderson@linaro.org>,
- linux-alpha@vger.kernel.org,
- Russell King <linux@armlinux.org.uk>,
- linux-arm-kernel@lists.infradead.org,
- Catalin Marinas <catalin.marinas@arm.com>,
- Huacai Chen <chenhuacai@kernel.org>,
- loongarch@lists.linux.dev,
- Geert Uytterhoeven <geert@linux-m68k.org>,
- linux-m68k@lists.linux-m68k.org,
- Dinh Nguyen <dinguyen@kernel.org>,
- Jonas Bonn <jonas@southpole.se>,
- linux-openrisc@vger.kernel.org,
- Helge Deller <deller@gmx.de>,
- linux-parisc@vger.kernel.org,
- Michael Ellerman <mpe@ellerman.id.au>,
- linuxppc-dev@lists.ozlabs.org,
- Paul Walmsley <pjw@kernel.org>,
- linux-riscv@lists.infradead.org,
- Heiko Carstens <hca@linux.ibm.com>,
- linux-s390@vger.kernel.org,
- "David S. Miller" <davem@davemloft.net>,
- sparclinux@vger.kernel.org
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH v2] dma-buf: heaps: system: document system_cc_shared
+ heap
+To: Sumit Semwal <sumit.semwal@linaro.org>, Jiri Pirko <jiri@resnulli.us>
+Cc: dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	iommu@lists.linux.dev, linux-media@vger.kernel.org,
+	benjamin.gaignard@collabora.com, Brian.Starkey@arm.com, jstultz@google.com,
+	tjmercier@google.com, christian.koenig@amd.com, robin.murphy@arm.com,
+	jgg@ziepe.ca, leon@kernel.org, ptesarik@suse.com, catalin.marinas@arm.com,
+	aneesh.kumar@kernel.org, suzuki.poulose@arm.com, steven.price@arm.com,
+	thomas.lendacky@amd.com, john.allen@amd.com, ashish.kalra@amd.com,
+	suravee.suthikulpanit@amd.com, linux-coco@lists.linux.dev
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <CAO_48GFt21rv0PJd2Csa0O4OEpN053_p__4Zux+m7jQdHSagEg@mail.gmail.com>
+Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20260410122049eucas1p2207046638096d1540b23f0a14d6169ac
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260410121457eucas1p1450d22bb1d09d9978fe68e801d8c2a58
+X-EPHeader: CA
+X-CMS-RootMailID: 20260410121457eucas1p1450d22bb1d09d9978fe68e801d8c2a58
+References: <20260407092617.635223-1-jiri@resnulli.us>
+	<CGME20260410121457eucas1p1450d22bb1d09d9978fe68e801d8c2a58@eucas1p1.samsung.com>
+	<CAO_48GFt21rv0PJd2Csa0O4OEpN053_p__4Zux+m7jQdHSagEg@mail.gmail.com>
 
-The only remaining usage of get_cycles() is to provide random_get_entropy().
+On 10.04.2026 14:14, Sumit Semwal wrote:
+> On Tue, 7 Apr 2026 at 14:56, Jiri Pirko <jiri@resnulli.us> wrote:
+>> From: Jiri Pirko <jiri@nvidia.com>
+>>
+>> Document the system_cc_shared dma-buf heap that was introduced
+>> recently. Describe its purpose, availability conditions and
+>> relation to confidential computing VMs.
+>>
+>> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+>> Reviewed-by: T.J.Mercier <tjmercier@google.com>
+> Thank you for the patch!
+>
+> Marek: Since you're taking the dependent patches through your tree,
+> could you please use:
+> Acked-by: Sumit Semwal <sumit.semwal@linaro.org>
+>
+> and take this as well?
 
-Switch mips over to the new scheme of selecting ARCH_HAS_RANDOM_ENTROPY
-and providing random_get_entropy() in asm/random.h.
+Yes, sure. Applied to dma-mapping-for-next. Thanks!
 
-As a consequence this unearthed a nasty include dependency hell because
-arbitrary code relies on a magic include of asm/timex.h. Including the
-headers in asm/random.h turned out to be impossible as well.
-
-The only solution for now is to uninline random_get_entropy().  Fix up all
-other dependencies on the content of asm/timex.h in those files which
-really depend on it.
-
-Remove asm/timex.h as it has no functionality anymore.
-
-Signed-off-by: Thomas Gleixner <tglx@kernel.org>
----
- arch/mips/Kconfig              |    1 
- arch/mips/generic/init.c       |    1 
- arch/mips/include/asm/random.h |    7 +++
- arch/mips/include/asm/timex.h  |   92 -----------------------------------------
- arch/mips/kernel/pm-cps.c      |    1 
- arch/mips/kernel/proc.c        |    1 
- arch/mips/kernel/relocate.c    |    1 
- arch/mips/kernel/time.c        |   53 +++++++++++++++++++++++
- arch/mips/lib/dump_tlb.c       |    1 
- arch/mips/mm/cache.c           |    1 
- 10 files changed, 66 insertions(+), 93 deletions(-)
-
---- a/arch/mips/Kconfig
-+++ b/arch/mips/Kconfig
-@@ -19,6 +19,7 @@ config MIPS
- 	select ARCH_HAS_TICK_BROADCAST if GENERIC_CLOCKEVENTS_BROADCAST
- 	select ARCH_HAS_UBSAN
- 	select ARCH_HAS_GCOV_PROFILE_ALL
-+	select ARCH_HAS_RANDOM_ENTROPY
- 	select ARCH_KEEP_MEMBLOCK
- 	select ARCH_USE_BUILTIN_BSWAP
- 	select ARCH_USE_CMPXCHG_LOCKREF if 64BIT
---- a/arch/mips/generic/init.c
-+++ b/arch/mips/generic/init.c
-@@ -12,6 +12,7 @@
- #include <linux/of_fdt.h>
- 
- #include <asm/bootinfo.h>
-+#include <asm/cpu-type.h>
- #include <asm/fw/fw.h>
- #include <asm/irq_cpu.h>
- #include <asm/machine.h>
---- /dev/null
-+++ b/arch/mips/include/asm/random.h
-@@ -0,0 +1,7 @@
-+/* SPDX-License-Identifier: GPL-v2.0-only */
-+#ifndef _ASM_RANDOM_H
-+#define _ASM_RANDOM_H
-+
-+unsigned long random_get_entropy(void);
-+
-+#endif /*  _ASM_RANDOM_H */
---- a/arch/mips/include/asm/timex.h
-+++ /dev/null
-@@ -1,92 +0,0 @@
--/*
-- * This file is subject to the terms and conditions of the GNU General Public
-- * License.  See the file "COPYING" in the main directory of this archive
-- * for more details.
-- *
-- * Copyright (C) 1998, 1999, 2003 by Ralf Baechle
-- * Copyright (C) 2014 by Maciej W. Rozycki
-- */
--#ifndef _ASM_TIMEX_H
--#define _ASM_TIMEX_H
--
--#ifdef __KERNEL__
--
--#include <linux/compiler.h>
--
--#include <asm/cpu.h>
--#include <asm/cpu-features.h>
--#include <asm/mipsregs.h>
--#include <asm/cpu-type.h>
--
--/*
-- * Standard way to access the cycle counter.
-- * Currently only used on SMP for scheduling.
-- *
-- * Only the low 32 bits are available as a continuously counting entity.
-- * But this only means we'll force a reschedule every 8 seconds or so,
-- * which isn't an evil thing.
-- *
-- * We know that all SMP capable CPUs have cycle counters.
-- */
--
--/*
-- * On R4000/R4400 an erratum exists such that if the cycle counter is
-- * read in the exact moment that it is matching the compare register,
-- * no interrupt will be generated.
-- *
-- * There is a suggested workaround and also the erratum can't strike if
-- * the compare interrupt isn't being used as the clock source device.
-- * However for now the implementation of this function doesn't get these
-- * fine details right.
-- */
--static inline int can_use_mips_counter(unsigned int prid)
--{
--	int comp = (prid & PRID_COMP_MASK) != PRID_COMP_LEGACY;
--
--	if (__builtin_constant_p(cpu_has_counter) && !cpu_has_counter)
--		return 0;
--	else if (__builtin_constant_p(cpu_has_mips_r) && cpu_has_mips_r)
--		return 1;
--	else if (likely(!__builtin_constant_p(cpu_has_mips_r) && comp))
--		return 1;
--	/* Make sure we don't peek at cpu_data[0].options in the fast path! */
--	if (!__builtin_constant_p(cpu_has_counter))
--		asm volatile("" : "=m" (cpu_data[0].options));
--	if (likely(cpu_has_counter &&
--		   prid > (PRID_IMP_R4000 | PRID_REV_ENCODE_44(15, 15))))
--		return 1;
--	else
--		return 0;
--}
--
--static inline cycles_t get_cycles(void)
--{
--	if (can_use_mips_counter(read_c0_prid()))
--		return read_c0_count();
--	else
--		return 0;	/* no usable counter */
--}
--#define get_cycles get_cycles
--
--/*
-- * Like get_cycles - but where c0_count is not available we desperately
-- * use c0_random in an attempt to get at least a little bit of entropy.
-- */
--static inline unsigned long random_get_entropy(void)
--{
--	unsigned int c0_random;
--
--	if (can_use_mips_counter(read_c0_prid()))
--		return read_c0_count();
--
--	if (cpu_has_3kex)
--		c0_random = (read_c0_random() >> 8) & 0x3f;
--	else
--		c0_random = read_c0_random() & 0x3f;
--	return (random_get_entropy_fallback() << 6) | (0x3f - c0_random);
--}
--#define random_get_entropy random_get_entropy
--
--#endif /* __KERNEL__ */
--
--#endif /*  _ASM_TIMEX_H */
---- a/arch/mips/kernel/pm-cps.c
-+++ b/arch/mips/kernel/pm-cps.c
-@@ -13,6 +13,7 @@
- #include <asm/asm-offsets.h>
- #include <asm/cacheflush.h>
- #include <asm/cacheops.h>
-+#include <asm/cpu-type.h>
- #include <asm/idle.h>
- #include <asm/mips-cps.h>
- #include <asm/mipsmtregs.h>
---- a/arch/mips/kernel/proc.c
-+++ b/arch/mips/kernel/proc.c
-@@ -11,6 +11,7 @@
- #include <asm/bootinfo.h>
- #include <asm/cpu.h>
- #include <asm/cpu-features.h>
-+#include <asm/cpu-type.h>
- #include <asm/idle.h>
- #include <asm/mipsregs.h>
- #include <asm/processor.h>
---- a/arch/mips/kernel/relocate.c
-+++ b/arch/mips/kernel/relocate.c
-@@ -13,7 +13,6 @@
- #include <asm/fw/fw.h>
- #include <asm/sections.h>
- #include <asm/setup.h>
--#include <asm/timex.h>
- #include <linux/elf.h>
- #include <linux/kernel.h>
- #include <linux/libfdt.h>
---- a/arch/mips/kernel/time.c
-+++ b/arch/mips/kernel/time.c
-@@ -2,6 +2,7 @@
- /*
-  * Copyright 2001 MontaVista Software Inc.
-  * Author: Jun Sun, jsun@mvista.com or jsun@junsun.net
-+ * Copyright (C) 1998, 1999, 2003 by Ralf Baechle
-  * Copyright (c) 2003, 2004  Maciej W. Rozycki
-  *
-  * Common time service routines for MIPS machines.
-@@ -21,9 +22,12 @@
- #include <linux/cpufreq.h>
- #include <linux/delay.h>
- 
-+#include <asm/cpu.h>
- #include <asm/cpu-features.h>
- #include <asm/cpu-type.h>
- #include <asm/div64.h>
-+#include <asm/mipsregs.h>
-+#include <asm/random.h>
- #include <asm/time.h>
- 
- #ifdef CONFIG_CPU_FREQ
-@@ -150,6 +154,55 @@ static __init int cpu_has_mfc0_count_bug
- 	return 0;
- }
- 
-+
-+/*
-+ * On R4000/R4400 an erratum exists such that if the cycle counter is
-+ * read in the exact moment that it is matching the compare register,
-+ * no interrupt will be generated.
-+ *
-+ * There is a suggested workaround and also the erratum can't strike if
-+ * the compare interrupt isn't being used as the clock source device.
-+ * However for now the implementation of this function doesn't get these
-+ * fine details right.
-+ */
-+static inline int can_use_mips_counter(unsigned int prid)
-+{
-+	int comp = (prid & PRID_COMP_MASK) != PRID_COMP_LEGACY;
-+
-+	if (__builtin_constant_p(cpu_has_counter) && !cpu_has_counter)
-+		return 0;
-+	else if (__builtin_constant_p(cpu_has_mips_r) && cpu_has_mips_r)
-+		return 1;
-+	else if (likely(!__builtin_constant_p(cpu_has_mips_r) && comp))
-+		return 1;
-+	/* Make sure we don't peek at cpu_data[0].options in the fast path! */
-+	if (!__builtin_constant_p(cpu_has_counter))
-+		asm volatile("" : "=m" (cpu_data[0].options));
-+	if (likely(cpu_has_counter &&
-+		   prid > (PRID_IMP_R4000 | PRID_REV_ENCODE_44(15, 15))))
-+		return 1;
-+	else
-+		return 0;
-+}
-+
-+/*
-+ * Like get_cycles - but where c0_count is not available we desperately
-+ * use c0_random in an attempt to get at least a little bit of entropy.
-+ */
-+unsigned long random_get_entropy(void)
-+{
-+	unsigned int c0_random;
-+
-+	if (can_use_mips_counter(read_c0_prid()))
-+		return read_c0_count();
-+
-+	if (cpu_has_3kex)
-+		c0_random = (read_c0_random() >> 8) & 0x3f;
-+	else
-+		c0_random = read_c0_random() & 0x3f;
-+	return (random_get_entropy_fallback() << 6) | (0x3f - c0_random);
-+}
-+
- void __init time_init(void)
- {
- 	plat_time_init();
---- a/arch/mips/lib/dump_tlb.c
-+++ b/arch/mips/lib/dump_tlb.c
-@@ -8,6 +8,7 @@
- #include <linux/kernel.h>
- #include <linux/mm.h>
- 
-+#include <asm/cpu-type.h>
- #include <asm/hazards.h>
- #include <asm/mipsregs.h>
- #include <asm/mmu_context.h>
---- a/arch/mips/mm/cache.c
-+++ b/arch/mips/mm/cache.c
-@@ -22,6 +22,7 @@
- #include <asm/processor.h>
- #include <asm/cpu.h>
- #include <asm/cpu-features.h>
-+#include <asm/cpu-type.h>
- #include <asm/setup.h>
- #include <asm/pgtable.h>
- 
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
