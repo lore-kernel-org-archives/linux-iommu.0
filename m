@@ -1,105 +1,149 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3BD0638D6B8
-	for <iommu@lists.linux.dev>; Fri, 10 Apr 2026 12:07:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775822864; cv=none; b=Ou45SNO7jXPDE90X3mHUMf+Jierc6Wb0vYY/S/skCkv+7RvpelbCuujue2fpPnQ6k4lEX/9Qq6uHycEpUnE7nlOYS2iA5iF0PxDFyc2xnzU1T2Z92lDH29CYEi5ctHmh4t1YWULh3LrDtzs/I5GswXwOc0xOw2rxxAHdhjzsSk4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775822864; c=relaxed/simple;
-	bh=PBPEIkPfiCepOPjFH4e7wRaebjN5PVqKZxeWMBytThY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=RDf4t2TOyvXXKlEl/CyG6BO31p/8swXZn3IdD8fFI+Bo6i33f1B69a9DTmvPK9P1y7HXOeJMxyEO0e9JzhhwvsHznlbbMzUZTrZJtGNg8jZblE9KFOg5gwDFKrD+HRQKkQbEJ99OU13eXnv+5To8ol/ehPOpQ+zQTCHPJVVQMII=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=MWxTRcCu; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B2623BD25D
+	for <iommu@lists.linux.dev>; Fri, 10 Apr 2026 12:14:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775823298; cv=pass; b=N2Pdi30rKMKAANDhMRngorrAQJz6ZAX0WOxCJ0pGhDUB0iLRw4CF+n18GRFs2Z6DU44LACOhdEi9xWQrH4e1t0R0oX/+yBwjrdXuJJDMNV53d948ShGWuNmmtcsdW/bj/ujzVCvBxK+qeGWOqkPlNOYbkBL41H8Pa+wz5imjfOg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775823298; c=relaxed/simple;
+	bh=HZs2dOQHfZyros26cAcHpBbRttnvDk74t3XJQ4JrVHQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=LbEWB9Emr+adFQ5nf+E9Pi+2e4+4p0lSsEpSqRaDp7v1vmrT+qI5WKEmxLcCKhwAwXnXhZI7rLkpKXRvWjE8WD/p/VnY8T7DEQVwzED/Zj8ceZUtKmCo73VCUSEjHBxRhdNqgEa3dN/O8vUTUKF46M3eoFcbj/vj21HaSWkWCkM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Tagehaz9; arc=pass smtp.client-ip=209.85.218.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="MWxTRcCu"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F253F1DB5;
-	Fri, 10 Apr 2026 05:07:36 -0700 (PDT)
-Received: from [10.1.196.85] (e121345-lin.cambridge.arm.com [10.1.196.85])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A43533F632;
-	Fri, 10 Apr 2026 05:07:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1775822862; bh=PBPEIkPfiCepOPjFH4e7wRaebjN5PVqKZxeWMBytThY=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=MWxTRcCuppU6dzrIFN6G/jMv8zUovaPZLaizogO1XSuzRTKsKhTzqcPgkSkwCYi0e
-	 hardPVlJK7OcUHDj8mLXeulGlOgawyIE/hmNe1PSfLr4+umktS5kKT37WPjdRuo4RO
-	 SbO2iH1TVJcEMghygqBS0UZdTc+SAMciAFgNUy6E=
-Message-ID: <65629411-0e1c-4c9c-bc9f-6488097bd77f@arm.com>
-Date: Fri, 10 Apr 2026 13:07:29 +0100
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Tagehaz9"
+Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-b8f97c626aaso321134066b.2
+        for <iommu@lists.linux.dev>; Fri, 10 Apr 2026 05:14:56 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1775823295; cv=none;
+        d=google.com; s=arc-20240605;
+        b=N/L4S/62jK6/xxJ7NvsCkO7CLSvND60RCRix1F4umyLv2sOij8W+vHtCPrDPfd1TyK
+         hn+Ze+Y+UUwrm3ZHHdu880A/wwLWOsmnBQLCvwyt/vaNyUHtsOn5P7+tQFNkHL7NbIwz
+         t0l6di+3PqORCLH4h6aiVU8aKVX+ZqX293xsip88OQlLrjBcoeaiXydAxuxYusi8xk4e
+         kXCrv/l5IEmTlOX8+kyZYGiIcPSktuoyL7Wuxq/jQOfd2QcLATFppyxsSUyrjrLoDdPa
+         GzKcZj2mtsyK9nd+5TbkDhY6hBhycAg6W8+YYfeb+G+i+xTUQR5QpW4UFU1ZhBllTLBw
+         ZBuw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=7jIY/1++oar4yAYBTP2iQ0v5rOvIuL4pDsKGubLCfjE=;
+        fh=g5VSjKdsDqafqn3ESIrSJJdr7vge9QY7RRsZO1WhXgA=;
+        b=cfWJxY5fGFTjucxV/3vpRhjbGdNuXf/rtwQuVVCZOdlnt+4osXdk1HWsixojZX3jbH
+         KbsPzzAvpgsIrF2aBdWqLP/037LK0JbALUu0vvZWUjR9onCRSqj1vrjWIdHcPr/3E8/N
+         NtTZEhYNQZKsboyNMn3ziCd5sfbvTUcizjMv+t5XNOAZNIG6mGFsUTyV4KzVrlQM9zDA
+         OfJiftkhAWS7TUnJ9cmxyaX8DOfwGPKWixlU19fiUKzZRuhCik+HS37zZQXGbqZPa6vt
+         +8Xf4HYD9a0D7ZyOMFzT89Ly7uzH1bGxKIGUmuYJVF985svk8fYKXlvtKwqqorTlsS6o
+         TKnA==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1775823295; x=1776428095; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=7jIY/1++oar4yAYBTP2iQ0v5rOvIuL4pDsKGubLCfjE=;
+        b=Tagehaz9HlME4u20P+H5W4mlkfgoLMPA0fEQbiheix5b0lmJbAZ77wo02Ksz0a6CRf
+         YVu6pS8gtw+XXobjbBrfRhyAAgbUDmRfmmjiXz4mcLPGDjhz2eKYk1t0dbrVe2DTVy2T
+         GQC1v44EG1KeVfPMQSLi5jdl3U2O+9oszp5VcWt6NGOMz00ilVT9wopLouuuuGcgaQRc
+         DIgTdzmbXTWb9PLXkTGFiFfrv18bZ+GjkOzdARvaevzO6+OxzEUrrDTWz9tZIOhc8hR6
+         ke/r9Pe5acRWrPoUG6H64Zj1cgMOStK1LNTku1RvcCO9oft0UiGilRPSxXeVi5G4zuGI
+         bFNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775823295; x=1776428095;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7jIY/1++oar4yAYBTP2iQ0v5rOvIuL4pDsKGubLCfjE=;
+        b=mjSJDDGNpVMxwHSpLpPWtYVGi7nEDcdwBMWiCBhEj79q1+PaClFSm7NMOBf6qKo/pJ
+         SZAO/EBu0SU1TrvuaHjkjMhM5mtNEHeXtOSp1vnTmvjccVBHe3KLb5p+Z4i18eH7/JB+
+         6AKPEqCVgja9Y5ShueULgn4HJcG3jsxUufZo1qKRHU3/tkUMZl/obF/RgLLJzSQ+il+I
+         P6KmherKfTzXOjdfICBJrhwgzfRMeJMwtfP8CRmnfoOurUvbcf1JI7T9DXnR1rvEgBsc
+         mlA1+IMXM5akIdfA3xQh4QDLWbomMMLuL8GOR3Bw9zTyk3w+kTLVnBZtLhgV21M8bm+x
+         t2tA==
+X-Forwarded-Encrypted: i=1; AJvYcCXwR4VMX1fJugo9LsIwZUrIRtTxVzOpDpt3Mj4zGOg4wX8oWnk/ZkAZOTzrs2PU9ih+sKvNAA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwIBWCDftIVybKiKpg39LR+e+jkkLq93Zo3nKCg+IJKDyfNrCTy
+	g91saHent8uOyllPFkLZIA1V2RX+RvfS28iME3xk+q3ZuAPb9r/C9UjEIc8UDCfZz4C70+L++Zl
+	e3V/O+rZl8Zz4w8RkeLmx9Y6yWG7awQJrfHZjXPwm1g==
+X-Gm-Gg: AeBDiesbUtXqt3aqR6opsrwq1uuriKnwAE9Uc1khZ5Hz2TjdfWWgxXM/zNEz7afcVGV
+	Bcy9cXAW6o4Tjm3aE+P8s137x/Rq1pqeZDW8OqJM/TroESF980caFCxUVUd2FgOaeFEx6Ai+nfH
+	y3yh5DhaAyiRABbWOIBFvKwKx5MRuE9495EiIN/oW19JhVY0cl52zHQqUsC4AzFbeNqqoHMe7sH
+	CEBEb89lME1j+RQTttchLoULkHCrWFZnzQgMrWO8shn/DXzHlpQTk+RzfHhRXE1z4N31wYu+D9d
+	rN/6yyLTWdslekGypGXflIYJrlsc5MUSylkSNDc=
+X-Received: by 2002:a17:907:e102:b0:b83:95c8:15d0 with SMTP id
+ a640c23a62f3a-b9d7279bb78mr130310166b.52.1775823294707; Fri, 10 Apr 2026
+ 05:14:54 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/3] arm-smmu-v3: Add PMCG child support and update PMU
- MMIO mapping
-To: Peng Fan <peng.fan@oss.nxp.com>
-Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-perf-users@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
-References: <20260408-smmu-perf-v1-0-d75dac96e828@nxp.com>
- <2c1a1694-9597-400d-b441-714225b5377b@arm.com> <adZcaEKm3vIYSy3N@shlinux89>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <adZcaEKm3vIYSy3N@shlinux89>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20260407092617.635223-1-jiri@resnulli.us>
+In-Reply-To: <20260407092617.635223-1-jiri@resnulli.us>
+From: Sumit Semwal <sumit.semwal@linaro.org>
+Date: Fri, 10 Apr 2026 17:44:43 +0530
+X-Gm-Features: AQROBzADFveULcyZjtNgjI9rBi4aeeX0JzC3AEXYi9kt8DQW2Z9q1-iXZwCoelw
+Message-ID: <CAO_48GFt21rv0PJd2Csa0O4OEpN053_p__4Zux+m7jQdHSagEg@mail.gmail.com>
+Subject: Re: [PATCH v2] dma-buf: heaps: system: document system_cc_shared heap
+To: Jiri Pirko <jiri@resnulli.us>
+Cc: dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
+	iommu@lists.linux.dev, linux-media@vger.kernel.org, 
+	benjamin.gaignard@collabora.com, Brian.Starkey@arm.com, jstultz@google.com, 
+	tjmercier@google.com, christian.koenig@amd.com, m.szyprowski@samsung.com, 
+	robin.murphy@arm.com, jgg@ziepe.ca, leon@kernel.org, ptesarik@suse.com, 
+	catalin.marinas@arm.com, aneesh.kumar@kernel.org, suzuki.poulose@arm.com, 
+	steven.price@arm.com, thomas.lendacky@amd.com, john.allen@amd.com, 
+	ashish.kalra@amd.com, suravee.suthikulpanit@amd.com, 
+	linux-coco@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On 08/04/2026 2:47 pm, Peng Fan wrote:
-> On Wed, Apr 08, 2026 at 12:15:31PM +0100, Robin Murphy wrote:
->> On 2026-04-08 8:51 am, Peng Fan (OSS) wrote:
->>> This patch series adds proper support for describing and probing the
->>> Arm SMMU v3 PMCG (Performance Monitor Control Group) as a child node of
->>> the SMMU in Devicetree, and updates the relevant drivers accordingly.
->>>
->>> The SMMU v3 architecture allows an optional PMCG block, typically
->>> associated with TCUs, to be implemented within the SMMU register
->>> address space. For example, mmu700 PMCG is at the offset 0x2000 of the
->>> TCU page 0.
->>
->> But what's wrong with the existing binding? Especially given that it even has
->> an upstream user already:
->>
->> https://git.kernel.org/torvalds/c/aef9703dcbf8
->>
->>> Patch 1 updates the SMMU v3 Devicetree binding to allow PMCG child nodes,
->>> referencing the existing arm,smmu-v3-pmcg binding.
->>>
->>> Patch 2 updates the arm-smmu-v3 driver to populate platform devices for
->>> child nodes described in DT once the SMMU probe succeeds.
->>>
->>> Patch 3 updates the SMMUv3 PMU driver to correctly handle MMIO mapping when
->>> PMCG is described as a child node. The PMCG registers occupy a sub-region
->>> of the parent SMMU MMIO window, which is already requested by the SMMU
->>
->> That has not been the case since 52f3fab0067d ("iommu/arm-smmu-v3: Don't
->> reserve implementation defined register space") nearly 6 years ago, where the
->> whole purpose was to support Arm's PMCG implementation properly. What kernel
->> is this based on?
-> 
-> Seems I am wrong. I thought PMCG is in page 0, so there were resource
-> conflicts. I just retest without this patchset, all goes well.
-> 
-> But from dt perspective, should the TCU PMCG node be child node of
-> SMMU node?
+Hello Jiri,
 
-No. PMCGs can be used entirely independently of the SMMU itself, and 
-while most of the events do relate to SMMU translation and thus aren't 
-necessarily meaningful if it's not in use, there are still some which 
-can be useful for basic traffic counting, monitoring GPT/translation 
-activity from _other_ security states (if observation is delegated to 
-Non-Secure) and possibly other things, even if the "main" Non-Secure 
-SMMU interface isn't advertised at all. It would be unreasonable to 
-require the SMMU node to be present and enabled *and* have a driver to 
-populate PMCGs, to monitor events which are outside the scope of that 
-driver.
+On Tue, 7 Apr 2026 at 14:56, Jiri Pirko <jiri@resnulli.us> wrote:
+>
+> From: Jiri Pirko <jiri@nvidia.com>
+>
+> Document the system_cc_shared dma-buf heap that was introduced
+> recently. Describe its purpose, availability conditions and
+> relation to confidential computing VMs.
+>
+> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+> Reviewed-by: T.J.Mercier <tjmercier@google.com>
 
-Thanks,
-Robin.
+Thank you for the patch!
+
+Marek: Since you're taking the dependent patches through your tree,
+could you please use:
+Acked-by: Sumit Semwal <sumit.semwal@linaro.org>
+
+and take this as well?
+
+Thanks and Best regards,
+Sumit.
+> ---
+>  Documentation/userspace-api/dma-buf-heaps.rst | 7 +++++++
+>  1 file changed, 7 insertions(+)
+>
+> diff --git a/Documentation/userspace-api/dma-buf-heaps.rst b/Documentation/userspace-api/dma-buf-heaps.rst
+> index 05445c83b79a..f56b743cdb36 100644
+> --- a/Documentation/userspace-api/dma-buf-heaps.rst
+> +++ b/Documentation/userspace-api/dma-buf-heaps.rst
+> @@ -16,6 +16,13 @@ following heaps:
+>
+>   - The ``system`` heap allocates virtually contiguous, cacheable, buffers.
+>
+> + - The ``system_cc_shared`` heap allocates virtually contiguous, cacheable,
+> +   buffers using shared (decrypted) memory. It is only present on
+> +   confidential computing (CoCo) VMs where memory encryption is active
+> +   (e.g., AMD SEV, Intel TDX). The allocated pages have the encryption
+> +   bit cleared, making them accessible for device DMA without TDISP
+> +   support. On non-CoCo VM configurations, this heap is not registered.
+> +
+>   - The ``default_cma_region`` heap allocates physically contiguous,
+>     cacheable, buffers. Only present if a CMA region is present. Such a
+>     region is usually created either through the kernel commandline
+> --
+> 2.51.1
+>
