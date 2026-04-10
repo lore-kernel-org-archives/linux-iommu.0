@@ -1,217 +1,135 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E34AA3C73C8;
-	Fri, 10 Apr 2026 12:21:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14408397E89
+	for <iommu@lists.linux.dev>; Fri, 10 Apr 2026 12:56:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775823696; cv=none; b=gCLxS3SFMdzlWqbunr9JsYJTBGnObla0V2moFCkQmN7IpF2Hq9sxOdriaxb2qEviRTVxIgqU5UwTAeTdVdSHrnn6eqi617pBTAyOB7e57zWIGZ4Xl9YMi8gTlc0J3J7FwbG4hkgQ/+repvfPiOiiLp41qR0pyZXH9AR69XAZAJY=
+	t=1775825781; cv=none; b=jytHo4XHPLt9mpUHpyWfYuwGR4SwmuwRZI4lB4+L+gxpbFQXj/NfFq0cIzigYDY7QYheP4PKLt8rgta5+SYruaDcwbEDc8VrdV5nerKM3rfUYQYUnfvn5WjjTElfwcxiTB99C8FqZTaHaG2Un0pGhc7OasBTBG0SP/ica3tX2TY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775823696; c=relaxed/simple;
-	bh=pY4Ba+JrP/xTQAmwvt4Sblvq53DUrPINRCnMdCBk5qo=;
-	h=Date:Message-ID:From:To:Subject:References:MIME-Version:
-	 Content-Type:cc; b=Q7PujOg8YnLh3Fqzxaaz5tzgVPkMwhi+zzPyMnCIrA+goKnPvcQNQ8Ydhsp3ygwyx7a5GAPOGaD8oJ1j2x6hTn8uxA2Htqu8sjm85hhrQHySzVQM+nOjAr2Cw9oQibHXp8BmJIQ59nRzKttlCpOsjfIj0yeppLyk8+2gI5G5ksk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HDyFrce5; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1775825781; c=relaxed/simple;
+	bh=jQ0D9YP29owC0fujodI0kwK6Vi7Aoh6n+jNjA5ohHZ4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:content-type; b=Qb5BIaPgYVsV8LxZDjZd3TfD9PD2h1QmSeDNzS43cZ4ULKXw8R8NHMb5oleNGpxwxr6pr6h+fK8RD7P7eTZOK9pLOSeKlx69Stk6T7sNddzZ+6A70oAtNacoqczHPGUInrvtH1tZhfWLMFrkkRGl8jlCxfc3sgiMAixwsNG9u7g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=JAsHH75q; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HDyFrce5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08AD5C2BC87;
-	Fri, 10 Apr 2026 12:21:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1775823695;
-	bh=pY4Ba+JrP/xTQAmwvt4Sblvq53DUrPINRCnMdCBk5qo=;
-	h=Date:From:To:Subject:References:cc:From;
-	b=HDyFrce5AOq/EGfeY1UdoV8DNpMgAy18kWHJM1sjAR8gGlb0lGVL/86T8A9JdQ406
-	 geoVdL2hWTrXGNOfAnq/kY6NSEK4TpMk9WMO+y1nQNH3tMz9xsxHfqX6syvZMUj1PK
-	 bzYUHDgCtqjEJkHt2pwcVZ7pxbRQ83NKHdjXp0R8JD++ws1pIDJb+QbVlpuQaSrK3+
-	 elCptYV6iuLAdTbeeR+RbymhnVAR5noANk7G5ygRae6T0lvFrKQfmBeUjBXUKx1VNg
-	 KMOPQf2nxfU/JqhQvoUzqUAfK3BjbJR+sYA7dzOFGZqkM+hZZWPxeRIyaCeQdbvVoP
-	 M9E/X3gApmxpw==
-Date: Fri, 10 Apr 2026 14:21:32 +0200
-Message-ID: <20260410120320.163559629@kernel.org>
-User-Agent: quilt/0.68
-From: Thomas Gleixner <tglx@kernel.org>
-To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch 38/38] treewide: Remove asm/timex.h includes from generic code
-References: <20260410120044.031381086@kernel.org>
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="JAsHH75q"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1775825777;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=rQok3OB45+l4fCfg+tNaYuiwZC4TiksQDUZba1BoN2I=;
+	b=JAsHH75qCCoeijMHRg0DNtXOqFSlEBXENGXQ1Nf44BpMfrJdW2izIBPhilLQL0YO0azVOh
+	dlm4jQMHVOrgHbq/ZWn6YtQ9MEIsnSG9emiHKOghwAOdY+T/uu2JRgBgAPjf1I4BJZVAq1
+	vYOWzDMI3lpOYTn9JCjSJlyPxuagONc=
+Received: from mx-prod-mc-08.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-35-165-154-97.us-west-2.compute.amazonaws.com [35.165.154.97]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-572-P0xdzv9YMdqDyi2Pbcy56A-1; Fri,
+ 10 Apr 2026 08:56:11 -0400
+X-MC-Unique: P0xdzv9YMdqDyi2Pbcy56A-1
+X-Mimecast-MFC-AGG-ID: P0xdzv9YMdqDyi2Pbcy56A_1775825768
+Received: from mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.12])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-08.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 46F98180044D;
+	Fri, 10 Apr 2026 12:56:08 +0000 (UTC)
+Received: from ezulian-p1gen7.rmtde.csb (unknown [10.44.48.169])
+	by mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id A350B1955F2E;
+	Fri, 10 Apr 2026 12:56:05 +0000 (UTC)
+From: Eder Zulian <ezulian@redhat.com>
+To: joro@8bytes.org,
+	suravee.suthikulpanit@amd.com,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: Eder Zulian <ezulian@redhat.com>
+Subject: [PATCH] iommu/amd: Remove latent out-of-bounds access in IOMMU debugfs
+Date: Fri, 10 Apr 2026 14:55:50 +0200
+Message-ID: <20260410125550.187398-1-ezulian@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-cc: Arnd Bergmann <arnd@arndb.de>,
- x86@kernel.org,
- Lu Baolu <baolu.lu@linux.intel.com>,
- iommu@lists.linux.dev,
- Michael Grzeschik <m.grzeschik@pengutronix.de>,
- netdev@vger.kernel.org,
- linux-wireless@vger.kernel.org,
- Herbert Xu <herbert@gondor.apana.org.au>,
- linux-crypto@vger.kernel.org,
- Vlastimil Babka <vbabka@kernel.org>,
- linux-mm@kvack.org,
- David Woodhouse <dwmw2@infradead.org>,
- Bernie Thompson <bernie@plugable.com>,
- linux-fbdev@vger.kernel.org,
- "Theodore Tso" <tytso@mit.edu>,
- linux-ext4@vger.kernel.org,
- Andrew Morton <akpm@linux-foundation.org>,
- Uladzislau Rezki <urezki@gmail.com>,
- Marco Elver <elver@google.com>,
- Dmitry Vyukov <dvyukov@google.com>,
- kasan-dev@googlegroups.com,
- Andrey Ryabinin <ryabinin.a.a@gmail.com>,
- Thomas Sailer <t.sailer@alumni.ethz.ch>,
- linux-hams@vger.kernel.org,
- "Jason A. Donenfeld" <Jason@zx2c4.com>,
- Richard Henderson <richard.henderson@linaro.org>,
- linux-alpha@vger.kernel.org,
- Russell King <linux@armlinux.org.uk>,
- linux-arm-kernel@lists.infradead.org,
- Catalin Marinas <catalin.marinas@arm.com>,
- Huacai Chen <chenhuacai@kernel.org>,
- loongarch@lists.linux.dev,
- Geert Uytterhoeven <geert@linux-m68k.org>,
- linux-m68k@lists.linux-m68k.org,
- Dinh Nguyen <dinguyen@kernel.org>,
- Jonas Bonn <jonas@southpole.se>,
- linux-openrisc@vger.kernel.org,
- Helge Deller <deller@gmx.de>,
- linux-parisc@vger.kernel.org,
- Michael Ellerman <mpe@ellerman.id.au>,
- linuxppc-dev@lists.ozlabs.org,
- Paul Walmsley <pjw@kernel.org>,
- linux-riscv@lists.infradead.org,
- Heiko Carstens <hca@linux.ibm.com>,
- linux-s390@vger.kernel.org,
- "David S. Miller" <davem@davemloft.net>,
- sparclinux@vger.kernel.org
+X-Scanned-By: MIMEDefang 3.0 on 10.30.177.12
+X-Mimecast-MFC-PROC-ID: xP45jUnsd3IYQTK5RZ67od_dfuqAvGIB7eiGb6bJSBA_1775825768
+X-Mimecast-Originator: redhat.com
+Content-Transfer-Encoding: 8bit
+content-type: text/plain; charset="US-ASCII"; x-default=true
 
-asm/timex.h does not provide any functionality for non-architecture code
-anymore.
+In iommu_mmio_write() and iommu_capability_write(), the variables
+dbg_mmio_offset and dbg_cap_offset are declared as int. However, they
+are populated using kstrtou32_from_user(). If a user provides a
+sufficiently large value, it can become a negative integer.
 
-Remove the asm-generic fallback and all references in include and source
-files along with the random_get_entropy() #ifdeffery in timex.h.
+Prior to this patch, the AMD IOMMU debugfs implementation was already
+protected by different mechanisms.
 
-Signed-off-by: Thomas Gleixner <tglx@kernel.org>
+1. #define OFS_IN_SZ 8 ensures the user string <= 8 bytes, so
+   e.g. 0xffffffff isn't a valid input.
+
+  if (cnt > OFS_IN_SZ)
+     return -EINVAL;
+
+2. Implicit type promotion in iommu_mmio_write(), dbg_mmio_offset is int
+   and iommu->mmio_phys_end is u64
+
+  if (dbg_mmio_offset > iommu->mmio_phys_end - sizeof(u64))
+      return -EINVAL;
+
+3. The show handlers would currently catch the negative number and
+   refuse to perform the read.
+
+Replace kstrtou32_from_user() with kstrtos32_from_user() to parse the
+input, and check for negative values to explicitly prevent out-of-bounds
+memory accesses directly in iommu_mmio_write() and
+iommu_capability_write().
+
+Signed-off-by: Eder Zulian <ezulian@redhat.com>
 ---
- include/asm-generic/Kbuild  |    1 -
- include/asm-generic/timex.h |   15 ---------------
- include/linux/random.h      |    3 +++
- include/linux/timex.h       |   26 --------------------------
- kernel/time/timer.c         |    1 -
- lib/interval_tree_test.c    |    1 -
- lib/rbtree_test.c           |    1 -
- 7 files changed, 3 insertions(+), 45 deletions(-)
+ drivers/iommu/amd/debugfs.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
---- a/include/asm-generic/Kbuild
-+++ b/include/asm-generic/Kbuild
-@@ -56,7 +56,6 @@ mandatory-y += shmparam.h
- mandatory-y += simd.h
- mandatory-y += softirq_stack.h
- mandatory-y += switch_to.h
--mandatory-y += timex.h
- mandatory-y += tlbflush.h
- mandatory-y += topology.h
- mandatory-y += trace_clock.h
---- a/include/asm-generic/timex.h
-+++ /dev/null
-@@ -1,15 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--#ifndef __ASM_GENERIC_TIMEX_H
--#define __ASM_GENERIC_TIMEX_H
--
--/*
-- * If you have a cycle counter, return the value here.
-- */
--#ifndef get_cycles
--static inline cycles_t get_cycles(void)
--{
--	return 0;
--}
--#endif
--
--#endif /* __ASM_GENERIC_TIMEX_H */
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -1,3 +1,4 @@
-+
- /* SPDX-License-Identifier: GPL-2.0 */
+diff --git a/drivers/iommu/amd/debugfs.c b/drivers/iommu/amd/debugfs.c
+index 4e66473d7cea..4c53b6361314 100644
+--- a/drivers/iommu/amd/debugfs.c
++++ b/drivers/iommu/amd/debugfs.c
+@@ -31,11 +31,12 @@ static ssize_t iommu_mmio_write(struct file *filp, const char __user *ubuf,
+ 	if (cnt > OFS_IN_SZ)
+ 		return -EINVAL;
  
- #ifndef _LINUX_RANDOM_H
-@@ -152,6 +153,8 @@ unsigned long random_get_entropy_fallbac
-  */
- #ifdef CONFIG_ARCH_HAS_RANDOM_ENTROPY
- #include <asm/random.h>
-+#else
-+#define random_get_entropy()	random_get_entropy_fallback()
- #endif
+-	ret = kstrtou32_from_user(ubuf, cnt, 0, &dbg_mmio_offset);
++	ret = kstrtos32_from_user(ubuf, cnt, 0, &dbg_mmio_offset);
+ 	if (ret)
+ 		return ret;
  
- #endif /* _LINUX_RANDOM_H */
---- a/include/linux/timex.h
-+++ b/include/linux/timex.h
-@@ -62,32 +62,6 @@
- #include <linux/types.h>
- #include <linux/param.h>
+-	if (dbg_mmio_offset > iommu->mmio_phys_end - sizeof(u64))
++	if (dbg_mmio_offset < 0 || dbg_mmio_offset >
++			iommu->mmio_phys_end - sizeof(u64))
+ 		return -EINVAL;
  
--unsigned long random_get_entropy_fallback(void);
--
--#include <asm/timex.h>
--
--#ifndef CONFIG_ARCH_HAS_RANDOM_ENTROPY
--#ifndef random_get_entropy
--/*
-- * The random_get_entropy() function is used by the /dev/random driver
-- * in order to extract entropy via the relative unpredictability of
-- * when an interrupt takes places versus a high speed, fine-grained
-- * timing source or cycle counter.  Since it will be occurred on every
-- * single interrupt, it must have a very low cost/overhead.
-- *
-- * By default we use get_cycles() for this purpose, but individual
-- * architectures may override this in their asm/timex.h header file.
-- * If a given arch does not have get_cycles(), then we fallback to
-- * using random_get_entropy_fallback().
-- */
--#ifdef get_cycles
--#define random_get_entropy()	((unsigned long)get_cycles())
--#else
--#define random_get_entropy()	random_get_entropy_fallback()
--#endif
--#endif
--#endif
--
- /*
-  * SHIFT_PLL is used as a dampening factor to define how much we
-  * adjust the frequency correction for a given offset in PLL mode.
---- a/kernel/time/timer.c
-+++ b/kernel/time/timer.c
-@@ -48,7 +48,6 @@
- #include <linux/uaccess.h>
- #include <asm/unistd.h>
- #include <asm/div64.h>
--#include <asm/timex.h>
- #include <asm/io.h>
+ 	iommu->dbg_mmio_offset = dbg_mmio_offset;
+@@ -71,12 +72,12 @@ static ssize_t iommu_capability_write(struct file *filp, const char __user *ubuf
+ 	if (cnt > OFS_IN_SZ)
+ 		return -EINVAL;
  
- #include "tick-internal.h"
---- a/lib/interval_tree_test.c
-+++ b/lib/interval_tree_test.c
-@@ -4,7 +4,6 @@
- #include <linux/interval_tree.h>
- #include <linux/prandom.h>
- #include <linux/slab.h>
--#include <asm/timex.h>
- #include <linux/bitmap.h>
- #include <linux/maple_tree.h>
+-	ret = kstrtou32_from_user(ubuf, cnt, 0, &dbg_cap_offset);
++	ret = kstrtos32_from_user(ubuf, cnt, 0, &dbg_cap_offset);
+ 	if (ret)
+ 		return ret;
  
---- a/lib/rbtree_test.c
-+++ b/lib/rbtree_test.c
-@@ -4,7 +4,6 @@
- #include <linux/rbtree_augmented.h>
- #include <linux/prandom.h>
- #include <linux/slab.h>
--#include <asm/timex.h>
+ 	/* Capability register at offset 0x14 is the last IOMMU capability register. */
+-	if (dbg_cap_offset > 0x14)
++	if (dbg_cap_offset < 0 || dbg_cap_offset > 0x14)
+ 		return -EINVAL;
  
- #define __param(type, name, init, msg)		\
- 	static type name = init;		\
+ 	iommu->dbg_cap_offset = dbg_cap_offset;
+-- 
+2.53.0
 
