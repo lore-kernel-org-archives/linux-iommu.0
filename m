@@ -1,199 +1,134 @@
-Received: from mail-qv1-f52.google.com (mail-qv1-f52.google.com [209.85.219.52])
+Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 466F43C0635
-	for <iommu@lists.linux.dev>; Fri, 10 Apr 2026 18:05:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.52
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775844309; cv=none; b=JFPGVHHuluSWoYScc/MxyN9aQ+NV7/PyskZvbQAhDJvtKLjfcPsGI+YbuLerZwrjXo5pzcSOdmIz3uwURZy7reltCs2Y14UwGoCP6plQTMMr5+r67Mkr2L9f2055mK/YErkp7jetHa9PJQc3al8T+33rqYzJUE3UOKVWxgCcjYg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775844309; c=relaxed/simple;
-	bh=usWOYWnYcX1AbQl2wC2HZ47sqdaQ/cZVDz0+E3wJc2E=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AHwchIwI8zE9kiVLhbPjLJ7DESW9b5zgCtcDvwqEhQXGwot1B6KY0dccezzm9IGGPf7/whwisM5d6Yw1Jw3L94I9rMG5NTzF/nh+/jSjOzpwN90Azk5BYQjklaqaaGShoOy9S38EkiBodyGu/SWl/cM90nEdCwrddn2BKo8gs20=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=EiBvXcHL; arc=none smtp.client-ip=209.85.219.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 841892D1931
+	for <iommu@lists.linux.dev>; Fri, 10 Apr 2026 18:32:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.180
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775845977; cv=pass; b=uqmceyfcHTlex5uLahBJQ6mt/kk7X66Xiq8Gu2Pq+2lBXE7DpKeqqBrHPl4BR2sC+iMkEH21kDTXG2aA0UhOy4FN7EjBUiB6tNnH+YW0lLEsq13Pv1Bz+U2PZzgxk0J5FkG97qkXCGmhSzZI7A5LpCFdTa9Zl/nJ9hWSMiXhSIU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775845977; c=relaxed/simple;
+	bh=wuYI0RLFVZ45HYeDNdgJJ6D8GwLuqkaCkFsDbEpgJpg=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=iKuFGJneZh93s5iu+FV4WhQ3xZ8NhILjynWkOWRBgt/VRg7dmINBfCak6UVlh/I1cHpoi9jwMMLlE/10cEI3c9kW4qqHvQlodrQUf53j5i2sKq7CP5xn4eB5grMp0ZmSvGtCdtBL6vMRJV5wdQF6ofA2Y09obNJEvb2sgjFsWXE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=openai.com; spf=pass smtp.mailfrom=openai.com; dkim=pass (1024-bit key) header.d=openai.com header.i=@openai.com header.b=e7crVh6m; arc=pass smtp.client-ip=209.85.128.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=openai.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=openai.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="EiBvXcHL"
-Received: by mail-qv1-f52.google.com with SMTP id 6a1803df08f44-8a154cc6a48so25250826d6.0
-        for <iommu@lists.linux.dev>; Fri, 10 Apr 2026 11:05:07 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=openai.com header.i=@openai.com header.b="e7crVh6m"
+Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-7986e0553bdso24321457b3.2
+        for <iommu@lists.linux.dev>; Fri, 10 Apr 2026 11:32:56 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1775845975; cv=none;
+        d=google.com; s=arc-20240605;
+        b=ju1BGvxJVvpezKVT210b431cFnt6p5OZFYVBi+Osn7jEUqjU6zD3oCcpHlieQ24KuX
+         kT6TntRn89AEkikqqjVs70/FqBBiRiiGQvLY0/oD15Wm5d8R15pfiTAKDEpJUpZpiivg
+         GtA1wJk+BAcZXL9GTxJ7gqtE9Zb/knBrKzmd2Yf6DsJx5pIq9ZHleqkbIEQDPtbJHt9y
+         jPpg/4IBOpos3jXhlyz+uXoj/SMfpIgfQPRD2/K87pM3m2axq3jJ/IV8iqninMTtYWKg
+         vAX3wGpWeYO6U/PB+WC/vIOjGoiNUfYmA15q4q9vnl9+8pRkIjWPnPfLF+Y0WNSL8nI1
+         CuxQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=ja5DFvBssG/HcQK4svdiTesOu+yaQKgasZ8owUN2Nvc=;
+        fh=FniPRImiwRlzpulo+QsEFy11X09wDOJlxlduS/ECmqo=;
+        b=ReuXxTlVcQ2lk9O9yQi0MlclVXlNanIp0yyK0HmLxsQZx8Iaij6SB9k9mgx7wcujSK
+         sWUbG4dxes81RwlspIbd3rc4sT0OcyR75xd369muSUx8z4ZSSD7/KqwWmMBaJvsGYh9C
+         wofurxKr+PAykIJ1ZTDJ+UE3QiVs4/8LF9a/vwDL3DXFAGdxc46T8RDeKTW6HKMRrLbU
+         jqSDomhQOC/FQlotYUf6UpVxnDdnSti+oTdrjhMsxgdfwYmAeKXXJbv2FnTxTGpU0GKe
+         nV4IzFPo7M7UqKGBTpBseT1Oe+qQ6AySX8zBC/RA0hYCmhzk/zzGzkHIQmCePMokCN3W
+         wEKQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1775844306; x=1776449106; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=DMIIkOGUTTrV8K244TmXAqc0Sap7K8R5PskuCUGSVEE=;
-        b=EiBvXcHLXTlTCfMIhyaRe9SM+TZPMUb5G/XYzn37uoolkcZUlHuWhOhpd/CVoeGP95
-         ChWQHFO9VFfcmpx6/2074y6E3+l+dzmiQEBCotGWI4cXs21Gm0g7MnE58BgcV+HVdMrz
-         0TpMYxyVJBzWO8K6jZvYu+RxdxUE/I9qLzi0Gv0zzbZG9XuePlFNZ8sLETHKLysNpKMo
-         9hagM59cejv5ntLqs4wxvXsdXIP/5MM/hf726Oc7xD49VTXYgBk7MIXxdMbBA56B8/sf
-         31cCv9Z1NODVY7sDJkR4atVFmf1aiE5HS5jIR5MBfafFsj++I0XsbSxg3B2Q4gpQPUEG
-         5P+w==
+        d=openai.com; s=google; t=1775845975; x=1776450775; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=ja5DFvBssG/HcQK4svdiTesOu+yaQKgasZ8owUN2Nvc=;
+        b=e7crVh6mVOhisnqj63obQGkYGoDCpuTrrdClGhtoTfYNd7BBfoGShYJfkMcy/I3MzB
+         OP/mD4N4O+NN2c5xnpIMvAvVw4QYbfS/EYX6aZUcj+k3Am2bPPlWpSe+7sTw6gz1M29y
+         Zee21tasOLbKL6Nf+FWn4NEXboS5E4WfHTb7o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775844306; x=1776449106;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=DMIIkOGUTTrV8K244TmXAqc0Sap7K8R5PskuCUGSVEE=;
-        b=hoqtN13YUNL/7dcNQwQK738b+7FkBPCVLBNv9RGszioTRc2zxxPUh82Qw3bkiPcHQf
-         d9582tM5nBocmEd/McV3mQBI/S1RvvZGmCnkrQQ3KUYcChmSioyqi6tkcNTWzKTsXP8y
-         METfgGScdwUwIerEzxew22r8RGFW7MkQ2yBF4cu8MVLnWxxzJGrB3OUOfy40oGm2mgBx
-         PL4P8FSih/v0UrDXzFTVq2vzKTEhnYokXCz11ZGeKgUkXwUUAcfAAxkJv1oxTO5katQK
-         7qEc03QlF/uPtLEZF25vIEEny8BrWVcHSxBR0UPOC674+plfryiwk+jGM7vJlrYP88tv
-         jW4A==
-X-Gm-Message-State: AOJu0YxKcXCJQE5SffKtNUzlDVBwfAOJvOruzmYay/AYCaTFHAqyrVuk
-	KYXMBptiOG82FNBLG6TjEHIBnZTqCXzOHg8ff/j1+O2U0pKtFELDn+0Av+/GxGD+Iuk=
-X-Gm-Gg: AeBDievb8pfUuVm9r0h1ujKolwexQ/xeWx5d2SJakk7Iea2QDI7xq8I8zpCdAy/juhw
-	Dd3djOtdWdIjgBpP9u41kwQE5T36KTQZjXKjv30V1VDsOUdMkR0C6cs/cQz3TfGidz38AMHFhkq
-	IJCMOMtDv0ygud5C/qXBjFYX9LTfRWN5UXQ7J59zxyIolGTuNO3nsTwOBMomCwHB8wJHKN6WmZG
-	cFGFsYoUpSMmCJamL1SxO+C+m2+d/PiYQJtoHWBQOlvzTlXd0BjD914fBc/gDaWT891gwtDlr8i
-	rfwwCEr8YoqGIxPOgiO5Ol7O0pcsY3NC+yUA4guH2dmyiG92iXrO8uRXSeCqKaohQHJ4TmAGxla
-	OWUu1bdMAVcD8QaRKSODThSWF3Ice7+7vndfrAxyK5bEh//Mzmpy1dcEHMKcMFSjCsorr5/3484
-	GJ+TZrexdKiD56O9Z9OwDpkgVqlvFa/ND1aFWSIlce7KNp462xstlqRnJQBYnDPtetXYSYDXbhV
-	NxIASq0
-X-Received: by 2002:ad4:5ecd:0:b0:899:f845:a29a with SMTP id 6a1803df08f44-8ac86299318mr67584926d6.41.1775844306091;
-        Fri, 10 Apr 2026 11:05:06 -0700 (PDT)
-Received: from ziepe.ca (mctnnbsa70w-159-2-73-22.dhcp-dynamic.fibreop.nb.bellaliant.net. [159.2.73.22])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8ac849dbb32sm29585576d6.6.2026.04.10.11.05.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Apr 2026 11:05:05 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wBGE4-0000000FO91-401J;
-	Fri, 10 Apr 2026 15:05:04 -0300
-Date: Fri, 10 Apr 2026 15:05:04 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	robin.murphy@arm.com, m.szyprowski@samsung.com, will@kernel.org,
-	maz@kernel.org, suzuki.poulose@arm.com, catalin.marinas@arm.com,
-	jiri@resnulli.us, aneesh.kumar@kernel.org
-Subject: Re: [RFC PATCH v3 4/5] dma-mapping: Encapsulate memory state during
- allocation
-Message-ID: <20260410180504.GE2551565@ziepe.ca>
-References: <20260408194750.2280873-1-smostafa@google.com>
- <20260408194750.2280873-5-smostafa@google.com>
+        d=1e100.net; s=20251104; t=1775845975; x=1776450775;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ja5DFvBssG/HcQK4svdiTesOu+yaQKgasZ8owUN2Nvc=;
+        b=H3b7p0ZSxBOHWIw+5tT4zKkNv1iJ2dzBHKKBZAoYu1TcQmJedZARcys4/M66JEmxTV
+         ZxzCpBZDJdT1xHg7wtO/+CrWaXHRJyDKJjZ3fgJlue1sgRo00VISa4pn4Czq5/hxlOEe
+         8pg2depPIFxAZEk5B/e7s23G1UXDXXDrKlM8IWyG5rRgjIV1BWH/3yirK4EZ11HFDiAN
+         LoAVA/MUZhEjKnFTqX6ZznV+FWFw7OnJJPiBO8ol6Ac2zfdGNF9XFqwZZljeVO0P250g
+         e1r+RTcuV921LhjS1xt9qD23lKXFYVXreC9WlmsgHz3h9qorIODYxRLo0/4wyYiX1zLm
+         phAg==
+X-Forwarded-Encrypted: i=1; AJvYcCXBjDnXco5Z+2XJN6x86YNOsB3gFCHNmyzTuTS7NgwdY4WsyWQ+Xh1RjYYs43PU8yft1BABQg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwxEAsASB2RkTI/P+Te/s/T9I4VjPAWDRmpBbIlGmAbZvt3nu+M
+	jO2lk0eFCQ6rnOl9bEZUBq9UpJIhMrAQ8xAlE1ysINZkKKcHTRc2+YL204xzl2jMx3cb//tUgB+
+	jBaCv4bzp+iD+lL4RHSzS8EEYiv2jd7tMgChteIQG8w==
+X-Gm-Gg: AeBDietbTDbxkhjNyydc6fm/rk/pe+qBEEil5Mh0/hQ4PfhgwtA4huin9u85WbomgnU
+	MrAX2MIoBicR0DvbzNYSMuHyzADTZrHX3i/xr1aLcbcUzGXjgpYb0xkMt2s+u0ZpL/lMNoCHWBL
+	pp5zjCO1WCUQswpP6RJv5vWwcOmWwQ1Jbrpm+xA/HFSJnd/e2EwK/6Z0gqOnTEzg/PpgsV+KFP1
+	kj4VaUYL9iu9W4F+HUg/gCUnHeSIVWDg2oTK7Ef6E07OJRmSzMlqHpz8CK9RJb1hAXjdPG15RWN
+	1X2mjucYQzqlMOC2wl9BxUQS6ORp9wJaA3eWtAs9vFL4LlWhMLTyCCSh+/nvCGguQUOyTq4owe5
+	AC7OOd+c60r6KD4JZ8gyXx1HYedD8U/p8Y0myYuW0p929Hb8Un4aPSZU91d1Zaog=
+X-Received: by 2002:a05:690c:386:b0:79a:c396:bfd with SMTP id
+ 00721157ae682-7af7282e484mr46611397b3.53.1775845975495; Fri, 10 Apr 2026
+ 11:32:55 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260408194750.2280873-5-smostafa@google.com>
+From: Sina Hassani <sina@openai.com>
+Date: Fri, 10 Apr 2026 11:32:44 -0700
+X-Gm-Features: AQROBzC0kt-YXtizzhgXbBbxbP2jPMd7-xT0-_zTfAyjyTIg0aNxYbMeqSKenFY
+Message-ID: <CAAJpGJSR4r_ds1JOjmkqHtsBPyxu8GntoeW08Sk5RNQPmgi+tg@mail.gmail.com>
+Subject: [PATCH v4] Fixes a race in iopt_unmap_iova_range
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: kevin.tian@intel.com, joro@8bytes.org, will@kernel.org, 
+	robin.murphy@arm.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Aaron Wisner <awiz@openai.com>, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, Apr 08, 2026 at 07:47:41PM +0000, Mostafa Saleh wrote:
-> Introduce a new dma-direct internal type dma_page which is
-> "struct page" and a bit indicate whether the memory has been decrypted
-> or not.
-> This is useful to pass such information encapsulated through
-> allocation functions, which is currently set from swiotlb_alloc().
-> 
-> No functional changes.
-> 
-> Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> ---
->  kernel/dma/direct.c | 58 +++++++++++++++++++++++++++++++++++----------
->  1 file changed, 46 insertions(+), 12 deletions(-)
-> 
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index de63e0449700..204bc566480c 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -16,6 +16,33 @@
->  #include <linux/pci-p2pdma.h>
->  #include "direct.h"
->  
-> +/*
-> + * Represent DMA allocation and 1 bit flag for it's state
-> + */
+Bug: iopt_unmap_iova_range releases the lock on iova_rwsem inside the loop
+body when getting to the more expensive unmap operations. This is fine on
+its own except the loop condition is based on the first area that matches
+the unmap address range. If a concurrent call to map picks an area that was
+unmapped in the previous iterations, this loop will try to mistakenly unmap
+them.
 
-I'd explain this wrappers a pointer and uses the low PAGE_SHIFT bits
-for flags..
+How to reproduce: I was able to reproduce this by having one userspace
+thread mapping buffers and passing them to another thread that unmaps
+them. The problem easily shows up as ebusy errors if you use single page
+mappings.
 
-> +struct dma_page {
-> +	unsigned long val;
+The fix: A simple fix that I implemented here is to advance the start
+pointer after we unmap an area. That way we are only looking at the
+IOVA range that is mapped and hence guaranteed to not have any overlaps
+in each iteration.
 
-unintptr_t ?
+Test: I tested this against the repro mentioned above and it works fine.
 
-> @@ -103,20 +130,21 @@ static void __dma_direct_free_pages(struct device *dev, struct page *page,
->  	dma_free_contiguous(dev, page, size);
->  }
->  
-> -static struct page *dma_direct_alloc_swiotlb(struct device *dev, size_t size)
-> +static struct dma_page dma_direct_alloc_swiotlb(struct device *dev, size_t size)
->  {
-> -	struct page *page = swiotlb_alloc(dev, size, NULL);
-> +	enum swiotlb_page_state state;
-> +	struct page *page = swiotlb_alloc(dev, size, &state);
->  
->  	if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
->  		swiotlb_free(dev, page, size);
-> -		return NULL;
-> +		return DMA_PAGE_NULL;
->  	}
->  
-> -	return page;
-> +	return page_to_dma_page(page, state == SWIOTLB_PAGE_DECRYPTED);
+Cc: stable@vger.kernel.org
+Signed-off-by: Sina Hassani <sina@openai.com>
+---
+ drivers/iommu/iommufd/io_pagetable.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Should the struct dma_page have been introduced earlier instead of the
-swiotlb_page_state ? Seems a bit odd to have both
+diff --git a/drivers/iommu/iommufd/io_pagetable.c
+b/drivers/iommu/iommufd/io_pagetable.c
+index ee003bb2f647..355f7227305a 100644
+--- a/drivers/iommu/iommufd/io_pagetable.c
++++ b/drivers/iommu/iommufd/io_pagetable.c
+@@ -814,6 +814,12 @@ static int iopt_unmap_iova_range(struct
+io_pagetable *iopt, unsigned long start,
+                unmapped_bytes += area_last - area_first + 1;
 
-If these are actually internally allocated struct pages, could you use
-the struct page memory itself to record the decrypted state? That
-would require more significant changes to the allocator calls.
+                down_write(&iopt->iova_rwsem);
++
++               /* Do not reconsider things already unmapped in case of
++                * concurrent allocation */
++               if (area_last >= last)
++                       break;
++               start = area_last + 1;
+        }
 
-> @@ -184,9 +212,11 @@ static void *dma_direct_alloc_from_pool(struct device *dev, size_t size,
->  static void *dma_direct_alloc_no_mapping(struct device *dev, size_t size,
->  		dma_addr_t *dma_handle, gfp_t gfp)
->  {
-> +	struct dma_page dma_page;
->  	struct page *page;
->  
-> -	page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO, true);
-> +	dma_page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO, true);
-> +	page = dma_page_to_page(dma_page);
->  	if (!page)
->  		return NULL;
-
-I would expect to see more usage of the dma_page here..
-
-Like I don't think this is really right:
-
-        *dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
-
-Does page_to_phys(page) really work on decrypted memory? On CCA it
-will return the protected alias which doesn't seem like something
-useful?
-
-static inline dma_addr_t phys_to_dma_direct(struct device *dev,
-                phys_addr_t phys)
-{
-        if (force_dma_unencrypted(dev))
-                return phys_to_dma_unencrypted(dev, phys);
-        return phys_to_dma(dev, phys);
-
-Above is all nonsense now that you have a direct indication of the
-address is decrypted memory or not, it should also be used right here
-directly.
-
-if (is_dma_page_decrypted(dma_page))
-   *dma_handle = phys_to_dma_unencrypted(..)
-else
-   *dma_handle = phys_to_dma(..);
-
-The later patch just makes it worse by adding even more confusing
-flags to phys_to_dma_direct().
-
-I think it should work out that everyone already knows what memory
-type they are working with before they call down to
-phys_to_dma_direct() - the calls to force_dma_unecrypted() here are
-just hacks because it previously did not.
-
-Anyhow, I think this series is alot better than the previous one. If
-you work a little harder to make it so there is only one
-force_dma_unecrypted() per high level DMA API call that would be
-perfect.
-
-Jason
+ out_unlock_iova:
+--
+2.43.0
