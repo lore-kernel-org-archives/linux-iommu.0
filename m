@@ -1,95 +1,94 @@
-Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD90326A1B9
-	for <iommu@lists.linux.dev>; Sat, 11 Apr 2026 16:52:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.210.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D0D32DEA64
+	for <iommu@lists.linux.dev>; Sat, 11 Apr 2026 16:52:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.210.48
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775926327; cv=pass; b=TdkNsvT5sr5k0F8a5YqUGKxPfKE7060quayuUMJE5DXELsYtZhUXsvk/Ys4MpetV6gxksP5L0Qye1zSBQrk2EgeGw4uIK2gYsqbaBw/LMBVz5o/NDprZSuBJA54O5jzb4UJumrrMCWb3PUrGTwT3Av335oB6kZqP+mHCfkXfQAg=
+	t=1775926331; cv=pass; b=jBe8azV5qtsHVRKu/3dYp87h64AiY3wm+ucHaSAE+tcrDvPBjWAYFPcIoL4VP7YM1pP+wqKqIDv3YccOV8WSN4Qyye2xdBe22q34rVmD2byNwkMtwnVYqwzSkjbkOyJXOcD+F4GjE2UUpQ7dmwaDA1uMVoK6vXe0F9VhTA9aGUA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775926327; c=relaxed/simple;
-	bh=JmvSAPjRk/HsUkomgtLWfH9iDYh0FonlK9ZcVwDVddc=;
+	s=arc-20240116; t=1775926331; c=relaxed/simple;
+	bh=zNrkKOpKqfxopkFq4JWTH/REP5Hr2OcHJ+4QW9d0hvs=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=cE5WnioI8EdI/59FHdN11445iDCFc3NGK9qkAuiJrayOCfcnX65skfcwcOyJDol3dph5xJzf2dzt7k5ah/D31BIWCjraOSGDG0rOK6tZinPUFnMUKY2tAM6J2Kohwr8eElkUi+b+dvdEzy0U+O2vaetAmb1aK4zKFuz5Ivjz0Rs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=brainfault.org; spf=none smtp.mailfrom=brainfault.org; dkim=pass (2048-bit key) header.d=brainfault-org.20251104.gappssmtp.com header.i=@brainfault-org.20251104.gappssmtp.com header.b=Qu3kysSb; arc=pass smtp.client-ip=209.85.210.50
+	 To:Cc:Content-Type; b=W1xe3VpJiqppQ88UFgAe2Nu57f0E+FNOy7dWBTiDL/JAAIjVfKFUsgNI8/d+Eem0c60v0q4mTJFtaFCEDcoWDVaveLWFv9Y67nSOAf9RoWyxBvWVFWI6GimBhKA05Gu+jFn9Wbn+wEDjbL/DhB6rO6jCeuXmUyGTjsEZjBvpUzk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=brainfault.org; spf=none smtp.mailfrom=brainfault.org; dkim=pass (2048-bit key) header.d=brainfault-org.20251104.gappssmtp.com header.i=@brainfault-org.20251104.gappssmtp.com header.b=tU4P03qm; arc=pass smtp.client-ip=209.85.210.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=brainfault.org
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=brainfault.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=brainfault-org.20251104.gappssmtp.com header.i=@brainfault-org.20251104.gappssmtp.com header.b="Qu3kysSb"
-Received: by mail-ot1-f50.google.com with SMTP id 46e09a7af769-7dbcd92eda5so2303456a34.2
-        for <iommu@lists.linux.dev>; Sat, 11 Apr 2026 09:52:05 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1775926325; cv=none;
+	dkim=pass (2048-bit key) header.d=brainfault-org.20251104.gappssmtp.com header.i=@brainfault-org.20251104.gappssmtp.com header.b="tU4P03qm"
+Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-7dbdcb85067so2649090a34.1
+        for <iommu@lists.linux.dev>; Sat, 11 Apr 2026 09:52:10 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1775926329; cv=none;
         d=google.com; s=arc-20240605;
-        b=gbdEEFaqytDTQiCdoadBIvcFBDSIX7duoOSBFt+drrvefqIzY1t6akru8jJSzWzv7y
-         +tnqUp/dceLP/XJnGZAp2PmoFjEDF1XbXFb8NcffM6VsLmXzZsPvNRhi44TY/gIX6kX7
-         xoIizyrxqXZPCJAQh5jsXJDe3mnZVCFEUknfgl5+UcQPWwgzRU0K5ij1noW8XlLkWznC
-         PfkigTVLX/Zl+cfvC2N5ILDw9lg+riK+6oX9yAA3hofCSxv5ohzcFCItyQlHWXaHtduB
-         ZIQW+/Hlv5pughWuA/g0x5sesQnpjLLXloyrQz4uwXq/4qRHIWKNIrjN1MUoByh86qSx
-         IN4g==
+        b=KBU91ZdZLEIb5R/Mvf2MKhhcsmXqZNRkQAeHC+5HkumNS4e5HlKvNqqXmsKMPqQ6mS
+         TIMDdUApTmhTz5E2KfjhO28OC2m1gjDfus6bWT05WgwpCT/L/g+AdjXnvC7TalpSs+HY
+         fPrVMbaiFverQpFwZTgS9/We0B07BoSQeUGmm4K/HgHrwDUnOTdWFkc2cRxY4s6ZO8Jg
+         GuenaLtj4nvC5bmqXopHpJUbH5HL1/H2LN9d1BQkOkit2p8XndotYH7IT/s0CDmeM6tw
+         fkpgoXsQDMqz7ZkOJZyoTHv9z/BYnfuWNYz9kNr02t2BNoBHpvEQnps3t7gAIYFP/Gde
+         CS0A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=wqSJZdgJoODeu8kv1hRE+cGfzsSFkA9szelcDJzZHDc=;
-        fh=5yyv9CgcVhcSgeZVcYT7zJGcDgX3VxrabmXFNW0sHyA=;
-        b=lC/kNTspxk2Zp4uUZPiV5hbbNChSiquxNVkxT9GkIjc8Rn6jrcbdBs9lGRcAYfSGlZ
-         5baf1v5xfZbZmOktzILwME/eKo+l5C6MYrCkUZBBAiWxoORysRYc24l4+ByqrdgGZn3O
-         elBsTpNbHxtbRKZP8aGfXdyb+nAtrxUU2VPu0SRmPiLBlwcO0ChwN0KN4HPKnGKOF0QW
-         i2U2Cl3rOUWr/82CIDGEjDz82IwwyCBE/9bvuZ/yN1MrJTfWH/Hd+mwzK4CRm82xOUKd
-         0T5IKXb9e8A3NRRUymyUpP2pnF6vLfLsabjUGj5JtoXGrXmTGeTbwlVH9766B7pQ6O4z
-         bdGA==;
+        bh=FX/lULpKSMagkle3KXgfcJbERn4/bCQpLyp4j5tdJGs=;
+        fh=vX5AdrTA+7R0ALA62UfyN85y68i2h5q9U+rMfKQv7oM=;
+        b=FRM4gMe2HhSEjqz5VVjmx7V4LZIsE6Gba0T4qxFMwBOK1aFjFZSRVriwclr2Lw2g7V
+         7MTDBHIGkooccgnu6IdXIXQ5/xoProqJuBz2aBFIwdZmapJhkeQ+vRWo3dU3yyB/fhw6
+         rMhBeyq2fjPZHZzbhA/k+IywpRbkuf248pb5m6GRURSBNKhiTJhntdeJhO88rvBDE2+F
+         tF0y+UcF3bzqG+s+edCRkH6HN5GpliDsBWTob+/h4fHRfdbdAnp1NshRPi4LZdQH2ldU
+         FM2+O0UGwP7TVdYidki3h0p+VyPzttHC4HcOMjPsLeJBZ+TicNR+Oj6C8bhHL5yCt+rN
+         /NKA==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20251104.gappssmtp.com; s=20251104; t=1775926325; x=1776531125; darn=lists.linux.dev;
+        d=brainfault-org.20251104.gappssmtp.com; s=20251104; t=1775926329; x=1776531129; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=wqSJZdgJoODeu8kv1hRE+cGfzsSFkA9szelcDJzZHDc=;
-        b=Qu3kysSbUinzz9gjm6Wkw8PEBvJlLca/NvGX2UrkqURX7L+mHnZyXYXosXweaykbCZ
-         0lNAAYN7u+47O5x2U7Qjav9pPR4/8KHXQx+b0q3gmivR11xm0pvNR3tqKEKjA8DNlJoL
-         1moD/aM0zrgCi0NGbzFEphTP1zy7F1+9bX6lDbpakX6VaOACbhW/A0eIjW8/jx9hCd88
-         joKH5ZIbc6jdkZ2jb+CkxJITsVmizxJLqSC+7y05IhoGkfCcKX/QpmWVCoyHkgUvT29L
-         l1+CXJ+dW3pSG0gNm0M+vIihPnYdB6LnIeA3yHd+nDtBOY20DUSL3fGMGq7xssXuXbL4
-         dDEg==
+        bh=FX/lULpKSMagkle3KXgfcJbERn4/bCQpLyp4j5tdJGs=;
+        b=tU4P03qmBAAGVbwxcl3X04A1bFdfdX3hZ28ihlh76PRkVvGFYXSCWt69s72/B6Jv0Q
+         WFkVm7Ya0zIcGqspaPkmRwV++cGQiXopknuLjg2VgcBHjNti0DCRKvdXQztJYNq794O+
+         8oa5OtFuMwZKXUt/6O2cHXDHwNiNF+j30SElwSLoG+AlqWUHlRLEct2VaJzxBDeznYY4
+         EG0SaVlP2unGsGa8+vyXP2s8nntAATKH+IkECQFH6QFuC67A8hgTZZ9rXRwk4vlkex7F
+         g66o1ar+8JvFuUwffUPiA9sWVG1nhazQnofCO7VSjs6XkuzhY6SXJXX3rCLBEbc7X2im
+         ncxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775926325; x=1776531125;
+        d=1e100.net; s=20251104; t=1775926329; x=1776531129;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=wqSJZdgJoODeu8kv1hRE+cGfzsSFkA9szelcDJzZHDc=;
-        b=SuFPmv5xyEvbqLmwc0EUTMkjA79d9v3xhlsqL+kwnwiWvkpSqkb82fmoPRDZ0LloAd
-         5O620ybtn84qeh7DAzvfObpxG8yGHcVMpPCEMSMNWV37dHBvj0pZALDGJdgUznAPE9MM
-         /3XctUAvMyEksFXxN1P2y0BVz3cfRbYCQ0eVxlBR27NH39q6xtdbwXDNPN6zAsJl9Qys
-         SnaffxBfFrLa727BmItcrowIfTW9+ToMinriHYP9iljpox1y72ZjzRp//sb5swpjFLuK
-         7vE4m2/Ft2+AgcZOoS3CdTkZwTxA3o4X2GmOrNGp6ti+cMyfmQmLJCRCSR4wjlAKdrvU
-         emQg==
-X-Forwarded-Encrypted: i=1; AJvYcCWGxGCLFBLw/IQ73lFrI8gnArN8ieVMGZNsjZPEgCDZhn2j33SiKqwVGe/8wwbUyLtOyi6WnA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywu2ZEKPqjglrS5h88V4YQMXnHZz/ZjIoXSAlSY6wgtIxoNxDqN
-	Doem1zu+TXsM7Fa5XixZxZZGUAgMObe9Ha23oJlghwDfym5QWX78B0wrDufeLy39SpAVxJEJ8Po
-	oCdw10mRMl3N2rlfzR0NLgosz5hRcCnVqHJYASb6TdQ==
-X-Gm-Gg: AeBDieveur4C08J5zBZtATDbyz6NhX4F7oqBPh0U10ddqtUcxJ/pLsv+B2thmfJqJnH
-	NXyYKaeDHBfPNUqOyn1UaIXf7pIjfbmyBv1xlNjvT+71KBkRErwSQ9rmSHnLnTT7/GXxQUVDvIU
-	UjnlNzDsTPqwOnRVL7C2gq8wvGN5lBxJLwOEvXVu4y7bDU1Rxp9w5smKzNvhbpEk9yrIMUeeRhV
-	gxIh46pUs17dlGV+kzNzN6s+ozreP19zGxU/jVQnbRJ4GM+M0oXU9DlUNqatdNXACxBnH7P1mCk
-	RoyaIa/t+KFGaodJ1I5UXqKd96effaP80zUhWqBbEhk81QRpIXESWWL9PvclIhYO+xyT+rzCH9X
-	UVakra0Vxp3n290LrmqcuzHVtUL8=
-X-Received: by 2002:a05:6820:8183:b0:67e:1c67:ebd8 with SMTP id
- 006d021491bc7-68be7ee1b88mr3330520eaf.40.1775926324573; Sat, 11 Apr 2026
- 09:52:04 -0700 (PDT)
+        bh=FX/lULpKSMagkle3KXgfcJbERn4/bCQpLyp4j5tdJGs=;
+        b=dJHOU4PYEaCeKPdYf/07llTgY7GaUK/mnYJh1stTy/IHmGFc3qoUix2nQUlsUvnbQv
+         tfrOiMFMJfeSghU7tQxhCspO5Wyy/+dEOnirpQvl4Jc+WXPF4cC2+IkVCwrcy6KIoixX
+         vArlXhJKSOQpUm8Lks3alXA3ZHVae1D/tRujNeg4rOFcnilp8Ml7/YmGQk0L60mz1byQ
+         SzS/oSFLEAZ1/XHhoQ8rc85CTajb8xTvX5DNrwVgFjjQ4MmSN1bvLN/g3ZZk0dvFX11P
+         9I4YurYz4TOssVMfwVMiMk6G2U7D0RJNbfkFikGroPDWYStn6lYAAt/TAgwL6PspKBzY
+         aZUg==
+X-Forwarded-Encrypted: i=1; AJvYcCUWTcN0qD7TLTmw3dlhSiuJzd/Y/KtjY0/8AWuKDNITeD61F1y0lqo1yeDSVaJRnpeBOgGPKA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw9hwkgNKZlTg7pgjJMsRm38zbsqkSQWQfvm+nVN33Z8xlomC8t
+	LyQwlTaRTC+TWgED/jAvu2Wq3pXLAtf5lLGJopmev8KOzicHoFe8MuccAAtTQXTUqYP3wiRAYVm
+	ByOWd//DMiz80L3Qbcss6rwht3s8ykLLYr3YvLOpAlg==
+X-Gm-Gg: AeBDietIQTp2k6Pz2NDRYN8n3zD3Ezc62Dfhnxl/+oVUbufKhYR50nkdvebpdj3rnp7
+	F+WCwm6PovydpF1AnZ9eAhw5FgdkydjRHq5R/BwPy55gPGbyPiCEvgP+VM5VbjGs+jAunOIPrNz
+	iKzrewA5XRi34ocrhnhy73dbzVc0oDte6KxqQM5J6htXl/uT17CBSFfwcHhWlDeOOBFb3VjA0jl
+	2q01o+oBlG1QaO9IX0mPYwas1001AZJDxqYIEloj6G0pxO1cSMDa4GFaqpa1mPyW59pk/ZGbPQ8
+	GzTouzcQk9W3gxdyf5RJ4yz1wnGgN3GBzGf1lDO8VuEamH2soC/Q8HtKflTa60NUzKGGXEXWEjJ
+	mo/5XRE45DXSFtpjnevHU9qdhLzFFXOCc3rYfnA==
+X-Received: by 2002:a05:6820:62a:b0:67e:313e:22c4 with SMTP id
+ 006d021491bc7-68be85d32e6mr4077914eaf.47.1775926329262; Sat, 11 Apr 2026
+ 09:52:09 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260411022223.91029-1-fangyu.yu@linux.alibaba.com> <20260411022223.91029-3-fangyu.yu@linux.alibaba.com>
-In-Reply-To: <20260411022223.91029-3-fangyu.yu@linux.alibaba.com>
+References: <20260411022223.91029-1-fangyu.yu@linux.alibaba.com> <20260411022223.91029-2-fangyu.yu@linux.alibaba.com>
+In-Reply-To: <20260411022223.91029-2-fangyu.yu@linux.alibaba.com>
 From: Anup Patel <anup@brainfault.org>
-Date: Sat, 11 Apr 2026 22:21:53 +0530
-X-Gm-Features: AQROBzC78r2FyJGwEr-mo33bIJuUYfyNgNHxCIGcYlLjmwSOUrGfuQso79gUj30
-Message-ID: <CAAhSdy3EdaQaPpBCWj9AP0nmB4XP_ApqC6E9XMuJZuH19j3fPg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] iommupt: Encode IOMMU_MMIO/IOMMU_CACHE via RISC-V
- Svpbmt bits
+Date: Sat, 11 Apr 2026 22:21:57 +0530
+X-Gm-Features: AQROBzBrpzfznEAFbbO-vdp8iuvh-4Q6CVGLr2K3uMPPDNj279HD1Tp5_HAL7qw
+Message-ID: <CAAhSdy3azZ2hiO_zEC4-eu3EfHYeWJh5D5LfihYRkw-2XyYbQw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] iommu/riscv: Advertise Svpbmt support to generic page table
 To: fangyu.yu@linux.alibaba.com
 Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, pjw@kernel.org, 
 	palmer@dabbelt.com, aou@eecs.berkeley.edu, alex@ghiti.fr, 
@@ -105,16 +104,10 @@ On Sat, Apr 11, 2026 at 7:52=E2=80=AFAM <fangyu.yu@linux.alibaba.com> wrote=
 >
 > From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 >
-> When the RISC-V IOMMU page table format support Svpbmt, PBMT provides
-> a way to tag mappings with page-based memory types. Encode memory type
-> via PBMT in RISC-V IOMMU PTEs:
->
->   - IOMMU_MMIO   -> PBMT=3DIO
->   - !IOMMU_CACHE -> PBMT=3DNC
->   - otherwise    -> PBMT=3DNormal (PBMT=3D0)
->
-> Clear the PBMT field before applying the selected encoding, and only
-> touch PBMT when PT_FEAT_RISCV_SVPBMT is advertised.
+> The RISC-V IOMMU can optionally support Svpbmt page-based memory types
+> in its page table format. When present,the generic page table code can
+> use this capability to encode memory attributes (e.g. MMIO vs normal
+> memory) in PTEs.
 >
 > Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 
@@ -127,39 +120,38 @@ Anup
 
 
 > ---
->  drivers/iommu/generic_pt/fmt/riscv.h | 9 +++++++++
->  1 file changed, 9 insertions(+)
+>  drivers/iommu/riscv/iommu.c       | 2 ++
+>  include/linux/generic_pt/common.h | 1 +
+>  2 files changed, 3 insertions(+)
 >
-> diff --git a/drivers/iommu/generic_pt/fmt/riscv.h b/drivers/iommu/generic=
-_pt/fmt/riscv.h
-> index a7fef6266a36..02051bb3c6e5 100644
-> --- a/drivers/iommu/generic_pt/fmt/riscv.h
-> +++ b/drivers/iommu/generic_pt/fmt/riscv.h
-> @@ -58,6 +58,8 @@ enum {
->         RISCVPT_G =3D BIT(5),
->         RISCVPT_A =3D BIT(6),
->         RISCVPT_D =3D BIT(7),
-> +       RISCVPT_NC =3D BIT(61),
-> +       RISCVPT_IO =3D BIT(62),
->         RISCVPT_RSW =3D GENMASK(9, 8),
->         RISCVPT_PPN32 =3D GENMASK(31, 10),
+> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+> index c7d0342aa747..e53883935563 100644
+> --- a/drivers/iommu/riscv/iommu.c
+> +++ b/drivers/iommu/riscv/iommu.c
+> @@ -1194,6 +1194,8 @@ static struct iommu_domain *riscv_iommu_alloc_pagin=
+g_domain(struct device *dev)
+>         cfg.common.features =3D BIT(PT_FEAT_SIGN_EXTEND) |
+>                               BIT(PT_FEAT_FLUSH_RANGE) |
+>                               BIT(PT_FEAT_RISCV_SVNAPOT_64K);
+> +       if (iommu->caps & RISCV_IOMMU_CAPABILITIES_SVPBMT)
+> +               cfg.common.features |=3D BIT(PT_FEAT_RISCV_SVPBMT);
+>         domain->riscvpt.iommu.nid =3D dev_to_node(iommu->dev);
+>         domain->domain.ops =3D &riscv_iommu_paging_domain_ops;
 >
-> @@ -237,6 +239,13 @@ static inline int riscvpt_iommu_set_prot(struct pt_c=
-ommon *common,
->                 pte |=3D RISCVPT_R;
->         if (!(iommu_prot & IOMMU_NOEXEC))
->                 pte |=3D RISCVPT_X;
-> +       if (common->features & BIT(PT_FEAT_RISCV_SVPBMT)) {
-> +               pte &=3D ~RISCVPT_PBMT;
-> +               if (iommu_prot & IOMMU_MMIO)
-> +                       pte |=3D RISCVPT_IO;
-> +               else if (!(iommu_prot & IOMMU_CACHE))
-> +                       pte |=3D RISCVPT_NC;
-> +       }
+> diff --git a/include/linux/generic_pt/common.h b/include/linux/generic_pt=
+/common.h
+> index fc5d0b5edadc..dfadf8a5752a 100644
+> --- a/include/linux/generic_pt/common.h
+> +++ b/include/linux/generic_pt/common.h
+> @@ -188,6 +188,7 @@ enum {
+>          * Support the 64k contiguous page size following the Svnapot ext=
+ension.
+>          */
+>         PT_FEAT_RISCV_SVNAPOT_64K =3D PT_FEAT_FMT_START,
+> +       PT_FEAT_RISCV_SVPBMT,
 >
->         /* Caller must specify a supported combination of flags */
->         if (unlikely((pte & (RISCVPT_X | RISCVPT_W | RISCVPT_R)) =3D=3D 0=
-))
+>  };
+>
 > --
 > 2.50.1
 >
