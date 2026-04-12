@@ -1,115 +1,145 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 545FC27FB1C
-	for <iommu@lists.linux.dev>; Sun, 12 Apr 2026 13:04:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775999048; cv=none; b=HPlHuH9566stlt+bwE8VFNfZCe2wtbltZnZYkKTkuNyxEHIKt6EaNwog6L8YubpV5zUG0XJXdxSmgIVjItDduLxZ6o4txvNFJw39Nk3wndxVSUN2OSvs5PyBWkZ3BexdasIaVLyY+JC3osF8N887zbwL2x/1uZ50sKuYU9h/RvE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775999048; c=relaxed/simple;
-	bh=5Bqrbn2k9TOdsiAH38KQq4JwdpFH359AVe8NrWa9IHY=;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32A4437C926
+	for <iommu@lists.linux.dev>; Sun, 12 Apr 2026 13:23:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776000188; cv=pass; b=NdddlL14tECoMYpKqXC/AOpq2JsysG9vhkD7ay9Lz9F6QCwBoAv7UHof5dEphYwDlKfw5NldiG+F4vkuD/iJNUVo2jXDa3+9ix6G27uDHkYiA1Px73MAYuGWJWT1gGQEQCQkeNBb6/No+raaQpVJZ4WDBlXq6mPkex06PUC50sE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776000188; c=relaxed/simple;
+	bh=1p6x7PvyQL+5PGqdAnx23TY8v0cVXdqCOnUZdmPD2Po=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=TT1Ubrdx/Cge2IGc6+frokM6mBsp3mJypOPJ2nIDN2u+MPip41SjNlqF6KYrYR08Y0s366fRnOala8JKki1gcNI35dbUjzwadQD5mLfa7Io9SgzelM2//hQZxYWC53OLGccd2nVK+w++DDpAaHBCAKL9twKdJtgthSqPLSJ8Hqg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=acUj9fiO; arc=none smtp.client-ip=10.30.226.201
+	 To:Cc:Content-Type; b=K3G1bkxJCBx6Jzb5/KUJVDWxGskEy49ReyW5OARjycUHa9TI+PRt+rVvwFGsDxrvbZgS59LspWYDk/aKxaBwsZqxUvCTT8TCDoY7Pq36P2OmcP+RrWmDqyDxYz72spiDMJYXbhu777txFnUsdbkqdDRC6QRHrJh1TvRqg1W35pw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=X5/cDF1v; arc=pass smtp.client-ip=209.85.208.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="acUj9fiO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3DB4C2BCC7
-	for <iommu@lists.linux.dev>; Sun, 12 Apr 2026 13:04:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1775999047;
-	bh=5Bqrbn2k9TOdsiAH38KQq4JwdpFH359AVe8NrWa9IHY=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=acUj9fiOeaIPYUxTvtPLJcosDRTm64YAp4LKVYnU4ri5zy7WTcjd2zHdmtfSeqz6G
-	 B/6KLCdyGRhgHC0C7ICkJK2fEBM1vUdyVXT5DDDgng6T0/vVKvMueSnux7qIaVV/4B
-	 jXGmaIKJprr7yrzN+81/1mRNTsuJt5xtdfyqcZp99kTEpEA0NAvmlVPPFSzGQRdt+2
-	 /XhB4xA5ZMZBshCh55mJ9on1Ni1ADrnXhstPusW/FVNiYAaDa+m3JZQKF0SdQtHskK
-	 lk7bm9vTbHq55ODDzZTisrnaunnZTs8K+do0It33t/wk21RWGK4QN1b6mc+sPJ96Iw
-	 07DJoT/hP6qBg==
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-43d03db7f87so2250184f8f.3
-        for <iommu@lists.linux.dev>; Sun, 12 Apr 2026 06:04:07 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ+SyhJrOj50s67Q5tfGIsKkl6A1Iv3Kb3JiNdb7HW/GRgWK0eqIyrXzgBKEG4cK8jOO5v0AJw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy4wIXwF2udz3EKTyF0yw/TG+uJqA+Wn/efcO9HoCN/Nk4UeJwm
-	NudmNmhIfbrcLjb85Bmi3M4ymNrmx7scmqNdzpqXNE57tl14+5P2m/2+Ir1mlrVtJKjzlMBWOoG
-	K8qw9sYIum84YNB+8emHknCFfroZzVD0=
-X-Received: by 2002:a05:6000:26cf:b0:43d:613:4036 with SMTP id
- ffacd0b85a97d-43d642be547mr13803956f8f.37.1775999046355; Sun, 12 Apr 2026
- 06:04:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="X5/cDF1v"
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-6717ead1d6aso229992a12.0
+        for <iommu@lists.linux.dev>; Sun, 12 Apr 2026 06:23:04 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1776000183; cv=none;
+        d=google.com; s=arc-20240605;
+        b=c5EiY7I/s1xklfYvltJLRwbK6p+DmV3yjNQolOeNAHz5sIHcTyzddNksnG7HQicG91
+         f/mSIHh5dZE4+4urP2mVacVpvD8pDhQWZIdbeK489KICsaV8bADorucbL/Lml3EMkGf7
+         6NJbRXYE6PZGUkJSHvXxy/czMn4K3SNfREnh6/+lKmdev/sfXPmJ59ZzU4xUQ3CcqyPy
+         Foew4EfhKLRlALBdbaRzi1KfZO3Cu0XrdihQVms7s9fPMARi4cJlqTPxsyn/TUyZ137R
+         Kva4wGPaMjwGPxhD2yGrF+1jjoT1J3E+fuJkUGj5Pz6o/Zus0nEACfcY6wb5y7kkxTTk
+         R5UQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=gDdA9vu4Fz00bgurrj0mXlyC2hJ8rRfiuCUxuR8xwe8=;
+        fh=MP5rsbKmdky+gvQcqVGZ89p1YmUIZnttk6UcFjBIfNU=;
+        b=JNzEUtgO65VOTl+nVeBfz91Tvp4ZDYOu3dnohzHe3zFPlottwLOzcqoJCDy+tDgQim
+         rF6XXM2VHyti9jbkg+9DTVBTS686kTp8+Kp67G+aRa9xgEZKs4i2h7rUb/C8xV+ckCJo
+         s2En5bgD5Nr7IFtYkEmw6Ojc9Vf4tdlor/71RDQ89FQ6OTn8gexcSyBgp2TL0jSza8iD
+         QPm45odgGeuvF2yUiP6OYHVK2y9YLU+gcKUUwaz5BG1HQqJQnnBg/6LnR7a/C4kTFBFz
+         3a+aBsUssy1FBYdbWBI9ULqBK0tT3oqtfA0FDhKYQ3m1sbQ0I+K0oElj7g7F6J21oE5N
+         JL0w==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776000183; x=1776604983; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gDdA9vu4Fz00bgurrj0mXlyC2hJ8rRfiuCUxuR8xwe8=;
+        b=X5/cDF1vlPO3SRArCCvdx9L191BAbqdDJW/GnFDOwD8F6oyzeqRAZdo9dTWXlUlEHF
+         +xNxJtujaNqf51jGhTv0i5MHpVMtm88KUy/HeKH6C2vRbMtkAhSAZPtQTDT6xNPTkROk
+         MCO/GJU96foyd16u630qrjayud9Nw+OizbVW6f3v5wCnF43kQxqTjLtHiuxGsHSg88Zi
+         UpFHMHn4AsbCPAiSCSkic8/ClkyvXOBfuO1oRE77K41NTlP8fQUApaoJjqnCQTWJj2nf
+         BDyPwAWpsC2bWF41cmztu4V2Wc+TyI8gjb04/K8gZcUMBeyEjFEucd3ajlboWd2/Qxor
+         HIkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776000183; x=1776604983;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=gDdA9vu4Fz00bgurrj0mXlyC2hJ8rRfiuCUxuR8xwe8=;
+        b=J4fAcDIn1FR4/BnrccAxRpfyEGtfAXYzlJk7n7fq59nH7J+27NBHxhwZPsjBzWj+VO
+         hzqKeYskzGUAHX/TZ+29KxesscY4GuomQxNuL11XDr53jX7l9gfgbbtqaY3hm2jhHnCt
+         1JaiEaMUkzApWAPFJvyyWbl8RwbH8TUo4ZQEmQvnpYX8j3uVqIMd8+lMv8yuflfZJF+X
+         H6ULtKyMoO3pUcrHioX/xgCRwwBKxD6mBh5h0YdCs+KIei15VZWtGoCtxmbeZBaOP0zE
+         jj8v6DuJNcxZFy6OuoZO7mdx3pqetgoaJf6hnug2EHJAOMTDQxpr3Qr04R38NzSlcVq1
+         bIOA==
+X-Forwarded-Encrypted: i=1; AJvYcCXNgS4OLW68u7+Lzug5XdWPWC6oqf0ehiFb4eYJwq+82AjDeeTlYX6BXoRwNVgyQrCCsJsGlQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyhwHlLC89Hl+xApA9DHHVns0P4eY+CU8Ese8PK7JQuixC08KBx
+	xUdgeqRlApCPTVOvkdCOjSWuREcHmh0J95T+IGqHmN5WMBbJkQgDz2k3t3qzCgjRAj6hvh6xboM
+	W07rEfTe5cfzUnA7ICdQ3NZRaHMjhL64=
+X-Gm-Gg: AeBDies+wd05Ii+2gJHedCFHZnl2oDljMeSfu9jZls5JTd2aYtL5dZAT4dLE2k+LMB3
+	utSZ5zqczKoJLwf4CmeQnxCOHR0EvaRDoNvtLtVeDSlAh0/hTHgonFsfci88NLcpQOegyVXB0Yc
+	eSzaX8Lo9c2pfgGqpsB0anobXoOZoPcFHUTlhNAOwbdb/Y7nR7+fe1/Rhg4FU45Y/d0Be3YVcwq
+	nszchBJ5ODTrVUL5kFSRyNPotqhPTf621Ldc2r5IxYQwLXtX9wozJ63Db0z9d7Ap+0IRDxBO194
+	cm67SLUaCV5Z3jDlqpazQ1qxlo8ksB9ggwnaEGlD
+X-Received: by 2002:a17:907:e113:b0:b9c:6ef1:ed18 with SMTP id
+ a640c23a62f3a-b9d727aa4fdmr352963766b.25.1776000183133; Sun, 12 Apr 2026
+ 06:23:03 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260411022223.91029-1-fangyu.yu@linux.alibaba.com> <20260411022223.91029-2-fangyu.yu@linux.alibaba.com>
-In-Reply-To: <20260411022223.91029-2-fangyu.yu@linux.alibaba.com>
-From: Guo Ren <guoren@kernel.org>
-Date: Sun, 12 Apr 2026 21:03:54 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTSXnUA2nAnVE=wMvW-=rcKj6a8f8DFTaSs+uEu6YfLgLA@mail.gmail.com>
-X-Gm-Features: AQROBzA6Z2M_85dwJnKtYOBK9MfzLI4lmy3tM3YGVlERgho4gFxSwFBRusnFW8A
-Message-ID: <CAJF2gTSXnUA2nAnVE=wMvW-=rcKj6a8f8DFTaSs+uEu6YfLgLA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] iommu/riscv: Advertise Svpbmt support to generic page table
-To: fangyu.yu@linux.alibaba.com
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, pjw@kernel.org, 
-	palmer@dabbelt.com, aou@eecs.berkeley.edu, alex@ghiti.fr, 
-	tjeznach@rivosinc.com, jgg@ziepe.ca, kevin.tian@intel.com, 
-	baolu.lu@linux.intel.com, vasant.hegde@amd.com, iommu@lists.linux.dev, 
-	kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org, 
-	linux-kernel@vger.kernel.org
+References: <20260410120044.031381086@kernel.org> <20260410120319.131582521@kernel.org>
+In-Reply-To: <20260410120319.131582521@kernel.org>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Sun, 12 Apr 2026 15:22:51 +0200
+X-Gm-Features: AQROBzAeMsaeSVePCJ__tEd4f2rWAY6MixXzp_fii2b8vyUpLt4xjSbtYzENFaw
+Message-ID: <CA+=Fv5S68wZQapeaYTspOfsuGk=nBj60sx-ojHBSqrxV59Q+ZA@mail.gmail.com>
+Subject: Re: [patch 23/38] alpha: Select ARCH_HAS_RANDOM_ENTROPY
+To: Thomas Gleixner <tglx@kernel.org>
+Cc: LKML <linux-kernel@vger.kernel.org>, 
+	Richard Henderson <richard.henderson@linaro.org>, linux-alpha@vger.kernel.org, 
+	Arnd Bergmann <arnd@arndb.de>, x86@kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, 
+	iommu@lists.linux.dev, Michael Grzeschik <m.grzeschik@pengutronix.de>, netdev@vger.kernel.org, 
+	linux-wireless@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>, 
+	linux-crypto@vger.kernel.org, Vlastimil Babka <vbabka@kernel.org>, linux-mm@kvack.org, 
+	David Woodhouse <dwmw2@infradead.org>, Bernie Thompson <bernie@plugable.com>, linux-fbdev@vger.kernel.org, 
+	Theodore Tso <tytso@mit.edu>, linux-ext4@vger.kernel.org, 
+	Andrew Morton <akpm@linux-foundation.org>, Uladzislau Rezki <urezki@gmail.com>, 
+	Marco Elver <elver@google.com>, Dmitry Vyukov <dvyukov@google.com>, kasan-dev@googlegroups.com, 
+	Andrey Ryabinin <ryabinin.a.a@gmail.com>, Thomas Sailer <t.sailer@alumni.ethz.ch>, 
+	linux-hams@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>, 
+	Russell King <linux@armlinux.org.uk>, linux-arm-kernel@lists.infradead.org, 
+	Catalin Marinas <catalin.marinas@arm.com>, Huacai Chen <chenhuacai@kernel.org>, 
+	loongarch@lists.linux.dev, Geert Uytterhoeven <geert@linux-m68k.org>, 
+	linux-m68k@lists.linux-m68k.org, Dinh Nguyen <dinguyen@kernel.org>, 
+	Jonas Bonn <jonas@southpole.se>, linux-openrisc@vger.kernel.org, 
+	Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org, 
+	Michael Ellerman <mpe@ellerman.id.au>, linuxppc-dev@lists.ozlabs.org, 
+	Paul Walmsley <pjw@kernel.org>, linux-riscv@lists.infradead.org, 
+	Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org, 
+	"David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Apr 11, 2026 at 10:22=E2=80=AFAM <fangyu.yu@linux.alibaba.com> wrot=
-e:
+On Fri, Apr 10, 2026 at 2:36=E2=80=AFPM Thomas Gleixner <tglx@kernel.org> w=
+rote:
 >
-> From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+> The only remaining usage of get_cycles() is to provide
+> random_get_entropy().
 >
-> The RISC-V IOMMU can optionally support Svpbmt page-based memory types
-> in its page table format. When present,the generic page table code can
-> use this capability to encode memory attributes (e.g. MMIO vs normal
-> memory) in PTEs.
+> Switch alpha over to the new scheme of selecting ARCH_HAS_RANDOM_ENTROPY
+> and providing random_get_entropy() in asm/random.h.
 >
-> Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+> Remove asm/timex.h as it has no functionality anymore.
+>
+> Signed-off-by: Thomas Gleixner <tglx@kernel.org>
+> Cc: Richard Henderson <richard.henderson@linaro.org>
+> Cc: linux-alpha@vger.kernel.org
 > ---
->  drivers/iommu/riscv/iommu.c       | 2 ++
->  include/linux/generic_pt/common.h | 1 +
->  2 files changed, 3 insertions(+)
->
-> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-> index c7d0342aa747..e53883935563 100644
-> --- a/drivers/iommu/riscv/iommu.c
-> +++ b/drivers/iommu/riscv/iommu.c
-> @@ -1194,6 +1194,8 @@ static struct iommu_domain *riscv_iommu_alloc_pagin=
-g_domain(struct device *dev)
->         cfg. common.features =3D BIT(PT_FEAT_SIGN_EXTEND) |
->                               BIT(PT_FEAT_FLUSH_RANGE) |
->                               BIT(PT_FEAT_RISCV_SVNAPOT_64K);
-> +       if (iommu->caps & RISCV_IOMMU_CAPABILITIES_SVPBMT)
-> +               cfg.common.features |=3D BIT(PT_FEAT_RISCV_SVPBMT);
->         domain->riscvpt.iommu.nid =3D dev_to_node(iommu->dev);
->         domain->domain.ops =3D &riscv_iommu_paging_domain_ops;
->
-> diff --git a/include/linux/generic_pt/common.h b/include/linux/generic_pt=
-/common.h
-> index fc5d0b5edadc..dfadf8a5752a 100644
-> --- a/include/linux/generic_pt/common.h
-> +++ b/include/linux/generic_pt/common.h
-> @@ -188,6 +188,7 @@ enum {
->          * Support the 64k contiguous page size following the Svnapot ext=
-ension.
->          */
->         PT_FEAT_RISCV_SVNAPOT_64K =3D PT_FEAT_FMT_START,
-> +       PT_FEAT_RISCV_SVPBMT,
->
->  };
->
-> --
-> 2.50.1
->
+>  arch/alpha/Kconfig              |    1 +
+>  arch/alpha/include/asm/random.h |   14 ++++++++++++++
+>  arch/alpha/include/asm/timex.h  |   26 --------------------------
+>  3 files changed, 15 insertions(+), 26 deletions(-)
 
-Reviewed-by: Guo Ren <guoren@kernel.org>
+Hi,
 
+The Alpha side looks fine to me.
 
---
-Best Regards
- Guo Ren
+I've applied this patch on top of v7.0-rc7, built a kernel successfully,
+boot-tested it on an Alpha UP2000+ (SMP) without issues.
+
+Acked-by: Magnus Lindholm <linmag7@gmail.com>
+Tested-by: Magnus Lindholm <linmag7@gmail.com>
