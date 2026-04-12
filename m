@@ -1,81 +1,115 @@
-Received: from mail-07.mail-europe.com (mail-0701.mail-europe.com [51.83.17.38])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9506A611E
-	for <iommu@lists.linux.dev>; Sun, 12 Apr 2026 11:25:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=51.83.17.38
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 545FC27FB1C
+	for <iommu@lists.linux.dev>; Sun, 12 Apr 2026 13:04:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775993155; cv=none; b=H10n5m9JNbJY9AOk15yzRlZQb9ByqFJff3adM+sczrEYOzPEbVyEY8jd48VYgb5JCrPHpte9wnaN6sABw/71IR6BHa7hE0W93ovfInpYHTiImBh0cXAd669c9E+z4SYkdiaR8Kr5lBbba/uAUOTtyMsBHNXp5fT0Mf8J/0ZbMbg=
+	t=1775999048; cv=none; b=HPlHuH9566stlt+bwE8VFNfZCe2wtbltZnZYkKTkuNyxEHIKt6EaNwog6L8YubpV5zUG0XJXdxSmgIVjItDduLxZ6o4txvNFJw39Nk3wndxVSUN2OSvs5PyBWkZ3BexdasIaVLyY+JC3osF8N887zbwL2x/1uZ50sKuYU9h/RvE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775993155; c=relaxed/simple;
-	bh=XPzIPlFhXf6fmRUvCLaUIiWU6MLIEfddP+HG2LJ0Jrs=;
-	h=Date:To:From:Cc:Subject:Message-ID:MIME-Version:Content-Type; b=j++MpiTSCOdyiLSX8hCDMUZttzvI9Q0sbiXjQy/XQAxXfxNzvpyH4duT4mcpIIO/ec8y8V9u/KgDnIWI6miw46qoBDgLNOEG6z9Io2wSNBxOOAXCf5ZkS1U5oibgf2qUhkLL/cvHLEEbUmV6sBG+mfYhFZniQoVB4oeQF9ItTKw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com; spf=fail smtp.mailfrom=protonmail.com; dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b=hdN0cOWA; arc=none smtp.client-ip=51.83.17.38
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=protonmail.com
+	s=arc-20240116; t=1775999048; c=relaxed/simple;
+	bh=5Bqrbn2k9TOdsiAH38KQq4JwdpFH359AVe8NrWa9IHY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=TT1Ubrdx/Cge2IGc6+frokM6mBsp3mJypOPJ2nIDN2u+MPip41SjNlqF6KYrYR08Y0s366fRnOala8JKki1gcNI35dbUjzwadQD5mLfa7Io9SgzelM2//hQZxYWC53OLGccd2nVK+w++DDpAaHBCAKL9twKdJtgthSqPLSJ8Hqg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=acUj9fiO; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b="hdN0cOWA"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-	s=protonmail3; t=1775993138; x=1776252338;
-	bh=XPzIPlFhXf6fmRUvCLaUIiWU6MLIEfddP+HG2LJ0Jrs=;
-	h=Date:To:From:Cc:Subject:Message-ID:Feedback-ID:From:To:Cc:Date:
-	 Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=hdN0cOWAy8xzQWID1epLPwrW6+eTN37SazUymeBha/uoxN5bJw2EXsKXYH+VujiH9
-	 BSVKW3CmzycG5HC/ilhIGkQzyrcx+QnD41kID+Jd+riWm3mIcolaq9ta0WdSzNVDgZ
-	 bnPygeW+O9IeJRz1qx/QBkIb+EV9PRIZM2a+QtQVidELAtX7iruQPPZ6ytVe/ihYjS
-	 2k5r+2Jia/sFdQaqAmH6LA2bo0rRDJSee8kBfdAKGOrH/uBeJomnlQopXj1/MWFlEM
-	 2csRUVQpFQicm6WfmsM4jO2eswAqra8o5D8f6tW2sj/yZwv+xcUPSSqw3Um53yF6ul
-	 taPY2v6ZLQsfg==
-Date: Sun, 12 Apr 2026 11:25:34 +0000
-To: "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-From: 70sp <70sp@protonmail.com>
-Cc: "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-Subject: [REGRESSION] GPU passes into VM improperly after c376a3456d8b or a98db518dde2
-Message-ID: <HYhMd0Klo0XE_yiVY7XmsgyKKFDwKHfKRy22KrycLcYd0V_ykA4xdbBMJXkA07YX3os6qK-NhMIVi6ITo-CkNIIF0e-GcI0UwwZmdDhAJ0I=@protonmail.com>
-Feedback-ID: 144929603:user:proton
-X-Pm-Message-ID: 26f8abaf4b873fdaaf68ec791466805a3e97048a
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="acUj9fiO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3DB4C2BCC7
+	for <iommu@lists.linux.dev>; Sun, 12 Apr 2026 13:04:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1775999047;
+	bh=5Bqrbn2k9TOdsiAH38KQq4JwdpFH359AVe8NrWa9IHY=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=acUj9fiOeaIPYUxTvtPLJcosDRTm64YAp4LKVYnU4ri5zy7WTcjd2zHdmtfSeqz6G
+	 B/6KLCdyGRhgHC0C7ICkJK2fEBM1vUdyVXT5DDDgng6T0/vVKvMueSnux7qIaVV/4B
+	 jXGmaIKJprr7yrzN+81/1mRNTsuJt5xtdfyqcZp99kTEpEA0NAvmlVPPFSzGQRdt+2
+	 /XhB4xA5ZMZBshCh55mJ9on1Ni1ADrnXhstPusW/FVNiYAaDa+m3JZQKF0SdQtHskK
+	 lk7bm9vTbHq55ODDzZTisrnaunnZTs8K+do0It33t/wk21RWGK4QN1b6mc+sPJ96Iw
+	 07DJoT/hP6qBg==
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-43d03db7f87so2250184f8f.3
+        for <iommu@lists.linux.dev>; Sun, 12 Apr 2026 06:04:07 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ+SyhJrOj50s67Q5tfGIsKkl6A1Iv3Kb3JiNdb7HW/GRgWK0eqIyrXzgBKEG4cK8jOO5v0AJw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy4wIXwF2udz3EKTyF0yw/TG+uJqA+Wn/efcO9HoCN/Nk4UeJwm
+	NudmNmhIfbrcLjb85Bmi3M4ymNrmx7scmqNdzpqXNE57tl14+5P2m/2+Ir1mlrVtJKjzlMBWOoG
+	K8qw9sYIum84YNB+8emHknCFfroZzVD0=
+X-Received: by 2002:a05:6000:26cf:b0:43d:613:4036 with SMTP id
+ ffacd0b85a97d-43d642be547mr13803956f8f.37.1775999046355; Sun, 12 Apr 2026
+ 06:04:06 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+References: <20260411022223.91029-1-fangyu.yu@linux.alibaba.com> <20260411022223.91029-2-fangyu.yu@linux.alibaba.com>
+In-Reply-To: <20260411022223.91029-2-fangyu.yu@linux.alibaba.com>
+From: Guo Ren <guoren@kernel.org>
+Date: Sun, 12 Apr 2026 21:03:54 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTSXnUA2nAnVE=wMvW-=rcKj6a8f8DFTaSs+uEu6YfLgLA@mail.gmail.com>
+X-Gm-Features: AQROBzA6Z2M_85dwJnKtYOBK9MfzLI4lmy3tM3YGVlERgho4gFxSwFBRusnFW8A
+Message-ID: <CAJF2gTSXnUA2nAnVE=wMvW-=rcKj6a8f8DFTaSs+uEu6YfLgLA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] iommu/riscv: Advertise Svpbmt support to generic page table
+To: fangyu.yu@linux.alibaba.com
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, pjw@kernel.org, 
+	palmer@dabbelt.com, aou@eecs.berkeley.edu, alex@ghiti.fr, 
+	tjeznach@rivosinc.com, jgg@ziepe.ca, kevin.tian@intel.com, 
+	baolu.lu@linux.intel.com, vasant.hegde@amd.com, iommu@lists.linux.dev, 
+	kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hello,
+On Sat, Apr 11, 2026 at 10:22=E2=80=AFAM <fangyu.yu@linux.alibaba.com> wrot=
+e:
+>
+> From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+>
+> The RISC-V IOMMU can optionally support Svpbmt page-based memory types
+> in its page table format. When present,the generic page table code can
+> use this capability to encode memory attributes (e.g. MMIO vs normal
+> memory) in PTEs.
+>
+> Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+> ---
+>  drivers/iommu/riscv/iommu.c       | 2 ++
+>  include/linux/generic_pt/common.h | 1 +
+>  2 files changed, 3 insertions(+)
+>
+> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+> index c7d0342aa747..e53883935563 100644
+> --- a/drivers/iommu/riscv/iommu.c
+> +++ b/drivers/iommu/riscv/iommu.c
+> @@ -1194,6 +1194,8 @@ static struct iommu_domain *riscv_iommu_alloc_pagin=
+g_domain(struct device *dev)
+>         cfg. common.features =3D BIT(PT_FEAT_SIGN_EXTEND) |
+>                               BIT(PT_FEAT_FLUSH_RANGE) |
+>                               BIT(PT_FEAT_RISCV_SVNAPOT_64K);
+> +       if (iommu->caps & RISCV_IOMMU_CAPABILITIES_SVPBMT)
+> +               cfg.common.features |=3D BIT(PT_FEAT_RISCV_SVPBMT);
+>         domain->riscvpt.iommu.nid =3D dev_to_node(iommu->dev);
+>         domain->domain.ops =3D &riscv_iommu_paging_domain_ops;
+>
+> diff --git a/include/linux/generic_pt/common.h b/include/linux/generic_pt=
+/common.h
+> index fc5d0b5edadc..dfadf8a5752a 100644
+> --- a/include/linux/generic_pt/common.h
+> +++ b/include/linux/generic_pt/common.h
+> @@ -188,6 +188,7 @@ enum {
+>          * Support the 64k contiguous page size following the Svnapot ext=
+ension.
+>          */
+>         PT_FEAT_RISCV_SVNAPOT_64K =3D PT_FEAT_FMT_START,
+> +       PT_FEAT_RISCV_SVPBMT,
+>
+>  };
+>
+> --
+> 2.50.1
+>
 
-I have been dealing with a regression launching a Windows QEMU/KVM virtual =
-machine with a GPU passed through.
+Reviewed-by: Guo Ren <guoren@kernel.org>
 
-The issue consists of launching a QEMU/KVM VM, which gets stuck for about 2=
- minutes on booting with a white screen and then having NVIDIA=E2=80=99s co=
-de 43 in Windows.
 
-I=E2=80=99m certain, that the issue is not caused by anything in Windows or=
- related software in Linux, because I tried reinstalling my whole PC includ=
-ing the Windows VM. I tried to reproduce the bug on an out-of-the-box Arch =
-Linux install and the bug is still present.
-
-The first bad commit is either a98db518dde246e01ead53617dc0a30d6aaa3752 or =
-c376a3456d8bef43ec556a98c0a04c35086c2737. I don=E2=80=99t know for sure whi=
-ch one introduced it, because during bisection I had to skip a98db518dde246=
-e01ead53617dc0a30d6aaa3752 due to it being unable to launch the virtual mac=
-hine resulting in a different error (didn=E2=80=99t even start booting). In=
- kernels before these commits, the VM works flawlessly.
-
-I have tested it on latest mainline kernel and the issue is still present. =
-I have been experiencing the issue since kernel 6.13, so I just switched to=
- the 6.12 LTS kernel instead which doesn=E2=80=99t have this issue.
-
-Configuration of my Linux install and hardware: https://pastebin.com/rcsyyY=
-iK
-.config: https://pastebin.com/RTQCBduD
-dmesg errors: https://pastebin.com/84jPP81E
-lspci: https://pastebin.com/qi29BSWi
-
-#regzbot introduced: a98db518dde246e01ead53617dc0a30d6aaa3752..c376a3456d8b=
-ef43ec556a98c0a04c35086c2737
-
-Best Regards,
-=C5=A0imon Posp=C3=ADchal
+--
+Best Regards
+ Guo Ren
