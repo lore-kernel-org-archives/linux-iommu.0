@@ -1,90 +1,176 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EE0EC33C51A
-	for <iommu@lists.linux.dev>; Mon, 13 Apr 2026 22:43:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from pidgin.makrotopia.org (pidgin.makrotopia.org [185.142.180.65])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76BE039185F
+	for <iommu@lists.linux.dev>; Mon, 13 Apr 2026 23:27:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.142.180.65
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776120203; cv=none; b=AND5AWjpa8fTsk/ycVKtwES/pk5Y8Hbp55cUjlW+T2XLRqW7WCfDULek9lBCEJRV38HoHj5KzV8rgxFc7hoPoN7qNnmmwA1emZDIqaga9cwaGuY4IaZjG/fFnWhdl4z3aqVKxjaEgVwb1sNLYLCAXszRDhfe6ELiVhXbRc7cpuU=
+	t=1776122845; cv=none; b=ADWu+99IMQ+A2eYPxF0gmjvoGzS2QFd02tRjRgw87nXpJSSCKd/iXgXC/l5D3MW9+jemQXa5ulHDEnyWh7tK4GB5dvK8A8FS08FlKe6YbgBD+tPj4dRp6uAbV3PjgmFHlGmbFZKJKZLb2kShuolSCZwdtyEjtZ82DLXgteFOo2Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776120203; c=relaxed/simple;
-	bh=uFZMH/83QRRjaYzwGFL8IrOq9KJCcfTa9NMYG9IZSSs=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=dgA/MoH+yk244Y6D/L+aSnw2SPIU8IAfqWaCtBNSm33tkL+P9AcQiSC+b6O52D49E1FJO0qlFKJ5SHFHL338lZE04DzM5ge3EpMd9PEWqXwwQhUmzCCv88Cu9gDYOybw+0rrjk7udKcFdSqS67uQ5Z2xMvSYv6+hHq0CW6/L+9U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=ZrAyZTvi; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="ZrAyZTvi"
-Received: from localhost (unknown [20.236.10.120])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 2EDE920B7129;
-	Mon, 13 Apr 2026 15:43:20 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 2EDE920B7129
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1776120200;
-	bh=2VYcIkjOqV8vgXd+X6vztTl04zOP4/7CpqjReOMxfLc=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=ZrAyZTvibj6DjZ7nyxSRU0jG2IzUvNGLq39TozEXGcXz19fw5ZddPfYJm4mM7DUC8
-	 GnFdnqG2USn/1QyytXATJ0WHr6Nog1c/fhPNSyEpsFhWOIP0yCo9ytJDCTPryY+x3I
-	 bHKG9Ox8iwjGE5RFh/LNyL11us7IFCs6af5INPzY=
-Date: Mon, 13 Apr 2026 15:43:18 -0700
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: linux-kernel@vger.kernel.org, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Alex Williamson <alex@shazbot.org>, Joerg Roedel
- <joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>, David Matlack
- <dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen
- <nicolinc@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
- <yi.l.liu@intel.com>, skhawaja@google.com, pasha.tatashin@soleen.com, Will
- Deacon <will@kernel.org>, Baolu Lu <baolu.lu@linux.intel.com>, Jacob Pan
- <jacob.pan@linux.microsoft.com>
-Subject: Re: [PATCH V3 07/10] vfio: Enable cdev noiommu mode under iommufd
-Message-ID: <20260413154318.000043cf@linux.microsoft.com>
-In-Reply-To: <20260409184841.GP3357077@nvidia.com>
-References: <20260403051146.10210-1-jacob.pan@linux.microsoft.com>
-	<20260403051146.10210-8-jacob.pan@linux.microsoft.com>
-	<20260409184841.GP3357077@nvidia.com>
-Organization: LSG
-X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+	s=arc-20240116; t=1776122845; c=relaxed/simple;
+	bh=sKtjr55PtoM9USMx0AA9JHeaSfVhUSHii1KBWCiw1hE=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=MOD54TMfMdAFcgV2qn2YSdje7wPfFiNDaaCuoGn/pHj4Mi9EanE+6Y4bXi245ak5oKQtZu8GpBGWi2/LoWImMdZngSrbtqaRtzUF9dngiUWyuuE4ghw8JNVuiuFEIWP7I9Zc4i3QtkGlmMPvizvWmGN1thZFxCxRZ1U6Y37Na4c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=makrotopia.org; spf=pass smtp.mailfrom=makrotopia.org; arc=none smtp.client-ip=185.142.180.65
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=makrotopia.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=makrotopia.org
+Received: from local
+	by pidgin.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+	 (Exim 4.99)
+	(envelope-from <daniel@makrotopia.org>)
+	id 1wCQgS-000000005f7-2ncU;
+	Mon, 13 Apr 2026 23:27:12 +0000
+Date: Tue, 14 Apr 2026 00:27:08 +0100
+From: Daniel Golle <daniel@makrotopia.org>
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Bjorn Helgaas <bhelgaas@google.com>, Rob Herring <robh@kernel.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>, iommu@lists.linux.dev,
+	linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH] iommu/mediatek-v1: add .of_xlate and defer
+ arm_iommu_create_mapping()
+Message-ID: <e258b2fa7990bc8dac6f9dcbd5848ccf9dc9de1a.1776122765.git.daniel@makrotopia.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Hi Jason,
+Since commit bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper
+probe path") the iommu core populates the device's iommu_fwspec via
+of_iommu_xlate() -> ops->of_xlate() before calling ops->probe_device().
+mtk_iommu_v1 did not provide .of_xlate and instead parsed the "iommus"
+property itself from probe_device(); with the new flow of_iommu_xlate()
+returns -ENODEV, the fwspec is never populated, probe_device() is never
+called, and the device_link from consumers (disp-ovl, disp-rdma, ...)
+to their smi-larb supplier is never created. As a result the larb is
+never runtime-resumed, its SMI clocks are gated by clk_disable_unused(),
+and display and GPU DMA through the SMI bus fabric hang as soon as
+unused clocks are disabled at late_initcall_sync.
 
-On Thu, 9 Apr 2026 15:48:41 -0300
-Jason Gunthorpe <jgg@nvidia.com> wrote:
+Register mtk_iommu_v1_of_xlate() as .of_xlate and simplify
+mtk_iommu_v1_probe_device() to just consume the already-populated
+fwspec. arm_iommu_create_mapping() cannot run from the of_xlate path
+because it eventually calls iommu_paging_domain_alloc() ->
+dev_has_iommu(), which returns -ENODEV while the device is still in
+the middle of its iommu setup and not yet attached to an iommu_group.
+Move the mapping creation to probe_finalize(), which runs once the
+iommu group has been set up for the device.
 
-> On Thu, Apr 02, 2026 at 10:11:43PM -0700, Jacob Pan wrote:
-> > @@ -392,6 +398,16 @@ void vfio_unregister_group_dev(struct
-> > vfio_device *device) bool interrupted = false;
-> >  	long rc;
-> >  
-> > +	/*
-> > +	 * For noiommu devices without a container, thus no dummy
-> > group,
-> > +	 * simply delete and unregister to balance refcount.
-> > +	 */
-> > +	if (device->noiommu && !vfio_device_has_group(device)) {
-> > +		vfio_device_del(device);
-> > +		vfio_device_put_registration(device);
-> > +		return;
-> > +	}
-> > +  
-> 
-> Sashiko points out this can't just skip the waiting even for no-iommu
-> mode, it isn't linked to groups and containers but the lifecylce of
-> the open FD.
-> 
-> Maybe just stick a !group inside vfio_device_group_unregister() is
-> sufficient?
-Yes, will do.
+Fixes: bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe path")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+---
+ drivers/iommu/mtk_iommu_v1.c | 58 +++++++++++++-----------------------
+ 1 file changed, 20 insertions(+), 38 deletions(-)
 
-Thanks,
-
-Jacob
-
-
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index ac97dd2868d4b..e33e123fedc7b 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -413,12 +413,10 @@ static const struct iommu_ops mtk_iommu_v1_ops;
+  * MTK generation one iommu HW only support one iommu domain, and all the client
+  * sharing the same iova address space.
+  */
+-static int mtk_iommu_v1_create_mapping(struct device *dev,
+-				       const struct of_phandle_args *args)
++static int mtk_iommu_v1_of_xlate(struct device *dev,
++				 const struct of_phandle_args *args)
+ {
+-	struct mtk_iommu_v1_data *data;
+ 	struct platform_device *m4updev;
+-	struct dma_iommu_mapping *mtk_mapping;
+ 	int ret;
+ 
+ 	if (args->args_count != 1) {
+@@ -442,47 +440,17 @@ static int mtk_iommu_v1_create_mapping(struct device *dev,
+ 		put_device(&m4updev->dev);
+ 	}
+ 
+-	ret = iommu_fwspec_add_ids(dev, args->args, 1);
+-	if (ret)
+-		return ret;
+-
+-	data = dev_iommu_priv_get(dev);
+-	mtk_mapping = data->mapping;
+-	if (!mtk_mapping) {
+-		/* MTK iommu support 4GB iova address space. */
+-		mtk_mapping = arm_iommu_create_mapping(dev, 0, 1ULL << 32);
+-		if (IS_ERR(mtk_mapping))
+-			return PTR_ERR(mtk_mapping);
+-
+-		data->mapping = mtk_mapping;
+-	}
+-
+-	return 0;
++	return iommu_fwspec_add_ids(dev, args->args, 1);
+ }
+ 
+ static struct iommu_device *mtk_iommu_v1_probe_device(struct device *dev)
+ {
+-	struct iommu_fwspec *fwspec = NULL;
+-	struct of_phandle_args iommu_spec;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct mtk_iommu_v1_data *data;
+-	int err, idx = 0, larbid, larbidx;
++	int idx, larbid, larbidx;
+ 	struct device_link *link;
+ 	struct device *larbdev;
+ 
+-	while (!of_parse_phandle_with_args(dev->of_node, "iommus",
+-					   "#iommu-cells",
+-					   idx, &iommu_spec)) {
+-
+-		err = mtk_iommu_v1_create_mapping(dev, &iommu_spec);
+-		of_node_put(iommu_spec.np);
+-		if (err)
+-			return ERR_PTR(err);
+-
+-		/* dev->iommu_fwspec might have changed */
+-		fwspec = dev_iommu_fwspec_get(dev);
+-		idx++;
+-	}
+-
+ 	if (!fwspec)
+ 		return ERR_PTR(-ENODEV);
+ 
+@@ -516,9 +484,22 @@ static struct iommu_device *mtk_iommu_v1_probe_device(struct device *dev)
+ 
+ static void mtk_iommu_v1_probe_finalize(struct device *dev)
+ {
+-	__maybe_unused struct mtk_iommu_v1_data *data = dev_iommu_priv_get(dev);
++	struct mtk_iommu_v1_data *data = dev_iommu_priv_get(dev);
++	struct dma_iommu_mapping *mtk_mapping;
+ 	int err;
+ 
++	mtk_mapping = data->mapping;
++	if (!mtk_mapping) {
++		/* MTK iommu supports 4GB iova address space. */
++		mtk_mapping = arm_iommu_create_mapping(dev, 0, 1ULL << 32);
++		if (IS_ERR(mtk_mapping)) {
++			dev_err(dev, "Failed to create IOMMU mapping: %ld\n",
++				PTR_ERR(mtk_mapping));
++			return;
++		}
++		data->mapping = mtk_mapping;
++	}
++
+ 	err = arm_iommu_attach_device(dev, data->mapping);
+ 	if (err)
+ 		dev_err(dev, "Can't create IOMMU mapping - DMA-OPS will not work\n");
+@@ -585,6 +566,7 @@ static const struct iommu_ops mtk_iommu_v1_ops = {
+ 	.probe_finalize = mtk_iommu_v1_probe_finalize,
+ 	.release_device	= mtk_iommu_v1_release_device,
+ 	.device_group	= generic_device_group,
++	.of_xlate	= mtk_iommu_v1_of_xlate,
+ 	.owner          = THIS_MODULE,
+ 	.default_domain_ops = &(const struct iommu_domain_ops) {
+ 		.attach_dev	= mtk_iommu_v1_attach_device,
+-- 
+2.53.0
