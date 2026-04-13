@@ -1,94 +1,193 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 306A338AC72;
-	Mon, 13 Apr 2026 07:19:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60217396B73;
+	Mon, 13 Apr 2026 07:59:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776064781; cv=none; b=hXPFuEYE8mcJqV4sCY3m3EjC+rZIHq/U9kxdGCBqmpxNCQYRcZeHzgVgiRCaiEAjtTu34f94hXj3yE6BrIAJdasZfhEc0PC9YIFln7/WxJh18JE7O6yJhspfQ1w44FwerOmKJDX7Z9QBUMJf15pW5s+f929h8xrEb8c6k0gfois=
+	t=1776067142; cv=none; b=mwl5JWeertl0/gsLkuJhUFiD/4pFkMbuu1YAx66BnaaHh0xM3vW7B5nuvKYeeYycgQhrlECdYiSPDDUvTjCjz8WGBdJ5FQqMHmDPfWm68Dc/tEiKj9zaFJVmHJMdTkXt2Y46jn+qRWPpKQ36tlP8aPz+KqPZMazxYVK287sR45E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776064781; c=relaxed/simple;
-	bh=rv3Q9Laozuj6itSDtWQA8UKp3uRgVzFFcFM1jyTTMkw=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=VYldiq7UVY7XEz0t6H+7bOJWCr40wRzkuxNZZi5bjK0tF8hTre7ha4p0oUehlA+nhHNFKpRWhZMS6Qd1ZKSuSbctoM8l9ABYsOhRcdUeof2FCyIIE1ddtg0FX/MooANsn1GZvPi8zHj7RXiwWPAy8vAaPjNgCMsgl5s2ECpnJhI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dgZ3qd+u; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1776067142; c=relaxed/simple;
+	bh=XHj3Sl5zLIaiozQdeiIMCMFRZIyOS3dN0hw7WTARA40=;
+	h=Date:From:To:Cc:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=o5Yy4LGd4QYVJp16vTLLNEu6pFIPQOqsaBE/s5GlxjBieSH7nqN5V9DzN1lBKj+ARWJKEd8uIs8XnYd/tS3ePR3atwpKF9Z0HERwePpnYoHD+JiCxf9IsiRsr8b002FusBcBkCZgtcc6Kvv8W9mqLm7JvCKukmzXI7KK/zz/3lg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aInXVTZD; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dgZ3qd+u"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA92AC116C6;
-	Mon, 13 Apr 2026 07:19:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aInXVTZD"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98E82C2BCB1;
+	Mon, 13 Apr 2026 07:59:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776064781;
-	bh=rv3Q9Laozuj6itSDtWQA8UKp3uRgVzFFcFM1jyTTMkw=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=dgZ3qd+uo9RyzvJD6VX09uztG+qtGirSANw/cY0gfMwL+tue9qoACLZYw6vvn8JDG
-	 K4naP+H9QB4l72fqu0d45q2clmcTQeU5oyGmS6g/X0RP/P1s8Pv7bIiZ0lG4ZcJhhA
-	 uW+8XYkn/9DCcEiHH5F6jHB75q2Cn4KGeYoPyJHnYyKFN6qZ0BG/JfQcmDxwJpD6aQ
-	 N6IAxMrDE+HRVQIs3C2bmS6aRA2EMmvwNEo1Ya7EPBAd1gBXwqOhWSKdzjE48rVUEj
-	 eOnFCLPh9y+8TQksHvK1Frqma8NaspTJ9MMtwOmCSvlj5UboT+DZCWWYGbRp7HinNn
-	 ZZuzhrPdlbsNQ==
-X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Cc: robin.murphy@arm.com, m.szyprowski@samsung.com, will@kernel.org,
-	maz@kernel.org, suzuki.poulose@arm.com, catalin.marinas@arm.com,
-	jiri@resnulli.us, jgg@ziepe.ca,
-	Mostafa Saleh <smostafa@google.com>
-Subject: Re: [RFC PATCH v3 5/5] dma-mapping: Fix memory decryption issues
-In-Reply-To: <20260408194750.2280873-6-smostafa@google.com>
-References: <20260408194750.2280873-1-smostafa@google.com>
- <20260408194750.2280873-6-smostafa@google.com>
-Date: Mon, 13 Apr 2026 12:49:34 +0530
-Message-ID: <yq5a5x5vba49.fsf@kernel.org>
+	s=k20201202; t=1776067142;
+	bh=XHj3Sl5zLIaiozQdeiIMCMFRZIyOS3dN0hw7WTARA40=;
+	h=Date:From:To:Cc:From;
+	b=aInXVTZDoMoSfHiM/ZTxpP0dqJp8rPTOhRsc0Vuegjf9eP1zvaDTJ+apxlgIuhj5m
+	 uymEbEu/UHOJWJ6lw7U0YrRJbLNQJR/o8436sUmQyyIJnGd5I57C1MKi19QSG24eX9
+	 h2iGOBKURBUQkPE+zITLtqcSezi5jonPS8m9wlnnrbrXoKcavVutGZS3YzVK/HoBVS
+	 ZTBks8Urt9YUD0fN0O3n/+VePDQcDLPvpr8M3UALf3YN6/WXTllw86HLQ5q1c3ADYE
+	 YbRf8iuI5QEq4lS/pfjIFvTCKsJMm3+e/VB0lwWLoC4lQj8qW8Sg2xkFLYg/qNqpkL
+	 OEuPIqPS+wyIg==
+Date: Mon, 13 Apr 2026 16:58:59 +0900
+From: "Harry Yoo (Oracle)" <harry@kernel.org>
+To: Thomas Gleixner <tglx@kernel.org>
+Cc: LKML <linux-kernel@vger.kernel.org>,
+	Vlastimil Babka <vbabka@kernel.org>, linux-mm@kvack.org,
+	Arnd Bergmann <arnd@arndb.de>, x86@kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev,
+	Michael Grzeschik <m.grzeschik@pengutronix.de>,
+	netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	linux-crypto@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>,
+	Bernie Thompson <bernie@plugable.com>, linux-fbdev@vger.kernel.org,
+	Theodore Tso <tytso@mit.edu>, linux-ext4@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Uladzislau Rezki <urezki@gmail.com>, Marco Elver <elver@google.com>,
+	Dmitry Vyukov <dvyukov@google.com>, kasan-dev@googlegroups.com,
+	Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+	Thomas Sailer <t.sailer@alumni.ethz.ch>, linux-hams@vger.kernel.org,
+	"Jason A. Donenfeld" <Jason@zx2c4.com>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	linux-alpha@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+	linux-arm-kernel@lists.infradead.org,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Huacai Chen <chenhuacai@kernel.org>, loongarch@lists.linux.dev,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	linux-m68k@lists.linux-m68k.org, Dinh Nguyen <dinguyen@kernel.org>,
+	Jonas Bonn <jonas@southpole.se>, linux-openrisc@vger.kernel.org,
+	Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	linuxppc-dev@lists.ozlabs.org, Paul Walmsley <pjw@kernel.org>,
+	linux-riscv@lists.infradead.org, Heiko Carstens <hca@linux.ibm.com>,
+	linux-s390@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+	sparclinux@vger.kernel.org, Hao Li <hao.li@linux.dev>,
+	Christoph Lameter <cl@gentwo.org>,
+	David Rientjes <rientjes@google.com>,
+	Roman Gushchin <roman.gushchin@linux.dev>,
+	Shengming Hu <hu.shengming@zte.com.cn>
+Message-ID: <adyiQy_DP_vldg1r@hyeyoo>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Mostafa Saleh <smostafa@google.com> writes:
+Bcc: 
+Subject: Re: [patch 14/38] slub: Use prandom instead of get_cycles()
+Reply-To: 
+In-Reply-To: <20260410120318.525653921@kernel.org>
 
-> Fix 2 existing issues:
-> 1) In case a device have a restricted DMA pool, memory will be
-> decrypted (which is now returned in the state from swiotlb_alloc().
->
-> Later the main function  will attempt to decrypt the memory if
-> force_dma_unencrypted() is true.
->
-> Which results in the memory being decrypted twice.
-> Change that to only encrypt/decrypt memory that is not already
-> decrypted as indicated in the new dma_page struct.
->
+On Fri, Apr 10, 2026 at 02:19:37PM +0200, Thomas Gleixner wrote:
+> The decision whether to scan remote nodes is based on a 'random' number
+> retrieved via get_cycles(). get_cycles() is about to be removed.
+> 
+> There is already prandom state in the code, so use that instead.
+> 
+> Signed-off-by: Thomas Gleixner <tglx@kernel.org>
+> Cc: Vlastimil Babka <vbabka@kernel.org>
+> Cc: linux-mm@kvack.org
+> ---
 
-As discussed in the v2 email thread, we should address this by deciding
-whether, for now, we treat all allocations from swiotlb pools as
-unencrypted
+Acked-by: Harry Yoo (Oracle) <harry@kernel.org>
 
-https://lore.kernel.org/all/yq5aeckjbdrt.fsf@kernel.org
+Is this for this merge window?
 
->
-> 2) Using phys_to_dma_unencrypted() is not enlighted about already
-> decrypted memory and will use the wrong functions for that.
->
+This may conflict with upcoming changes on freelist shuffling [1]
+(not queued for slab/for-next yet though), but it should be easy to
+resolve.
 
-Can you split this into a separate patch? I=E2=80=99m finding it difficult =
-to
-understand what the issue is here. Adding the unencrypted flag multiple
-times to an address is not a problem in itself. Even so, I still do not
-follow when we would end up doing that.
+[Cc'ing Shengming and SLAB ALLOCATOR folks]
 
-At the interface level:
-phys_to_dma should always return an encrypted address.
-phys_to_dma_unencrypted should always return an unencrypted address.
-phys_to_dma_direct should depend on the device state.
+[1] https://lore.kernel.org/linux-mm/20260409204352095kKWVYKtZImN59ybO6iRNj@zte.com.cn
 
+-- 
+Cheers,
+Harry / Hyeonggon
 
-> Fixes: f4111e39a52a ("swiotlb: Add restricted DMA alloc/free support")
-> Signed-off-by: Mostafa Saleh <smostafa@google.com>
->
-
--aneesh
-
+>  mm/slub.c |   37 +++++++++++++++++++++++--------------
+>  1 file changed, 23 insertions(+), 14 deletions(-)
+> 
+> --- a/mm/slub.c
+> +++ b/mm/slub.c
+> @@ -3302,6 +3302,25 @@ static inline struct slab *alloc_slab_pa
+>  	return slab;
+>  }
+>  
+> +#if defined(CONFIG_SLAB_FREELIST_RANDOM) || defined(CONFIG_NUMA)
+> +static DEFINE_PER_CPU(struct rnd_state, slab_rnd_state);
+> +
+> +static unsigned int slab_get_prandom_state(unsigned int limit)
+> +{
+> +	struct rnd_state *state;
+> +	unsigned int res;
+> +
+> +	/*
+> +	 * An interrupt or NMI handler might interrupt and change
+> +	 * the state in the middle, but that's safe.
+> +	 */
+> +	state = &get_cpu_var(slab_rnd_state);
+> +	res = prandom_u32_state(state) % limit;
+> +	put_cpu_var(slab_rnd_state);
+> +	return res;
+> +}
+> +#endif
+> +
+>  #ifdef CONFIG_SLAB_FREELIST_RANDOM
+>  /* Pre-initialize the random sequence cache */
+>  static int init_cache_random_seq(struct kmem_cache *s)
+> @@ -3365,8 +3384,6 @@ static void *next_freelist_entry(struct
+>  	return (char *)start + idx;
+>  }
+>  
+> -static DEFINE_PER_CPU(struct rnd_state, slab_rnd_state);
+> -
+>  /* Shuffle the single linked freelist based on a random pre-computed sequence */
+>  static bool shuffle_freelist(struct kmem_cache *s, struct slab *slab,
+>  			     bool allow_spin)
+> @@ -3383,15 +3400,7 @@ static bool shuffle_freelist(struct kmem
+>  	if (allow_spin) {
+>  		pos = get_random_u32_below(freelist_count);
+>  	} else {
+> -		struct rnd_state *state;
+> -
+> -		/*
+> -		 * An interrupt or NMI handler might interrupt and change
+> -		 * the state in the middle, but that's safe.
+> -		 */
+> -		state = &get_cpu_var(slab_rnd_state);
+> -		pos = prandom_u32_state(state) % freelist_count;
+> -		put_cpu_var(slab_rnd_state);
+> +		pos = slab_get_prandom_state(freelist_count);
+>  	}
+>  
+>  	page_limit = slab->objects * s->size;
+> @@ -3882,7 +3891,7 @@ static void *get_from_any_partial(struct
+>  	 * with available objects.
+>  	 */
+>  	if (!s->remote_node_defrag_ratio ||
+> -			get_cycles() % 1024 > s->remote_node_defrag_ratio)
+> +	    slab_get_prandom_state(1024) > s->remote_node_defrag_ratio)
+>  		return NULL;
+>  
+>  	do {
+> @@ -7102,7 +7111,7 @@ static unsigned int
+>  
+>  	/* see get_from_any_partial() for the defrag ratio description */
+>  	if (!s->remote_node_defrag_ratio ||
+> -			get_cycles() % 1024 > s->remote_node_defrag_ratio)
+> +	    slab_get_prandom_state(1024) > s->remote_node_defrag_ratio)
+>  		return 0;
+>  
+>  	do {
+> @@ -8421,7 +8430,7 @@ void __init kmem_cache_init_late(void)
+>  	flushwq = alloc_workqueue("slub_flushwq", WQ_MEM_RECLAIM | WQ_PERCPU,
+>  				  0);
+>  	WARN_ON(!flushwq);
+> -#ifdef CONFIG_SLAB_FREELIST_RANDOM
+> +#if defined(CONFIG_SLAB_FREELIST_RANDOM) || defined(CONFIG_NUMA)
+>  	prandom_init_once(&slab_rnd_state);
+>  #endif
+>  }
+> 
+> 
