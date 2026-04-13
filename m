@@ -1,137 +1,141 @@
-Received: from flow-b2-smtp.messagingengine.com (flow-b2-smtp.messagingengine.com [202.12.124.137])
+Received: from BYAPR05CU005.outbound.protection.outlook.com (mail-westusazon11010061.outbound.protection.outlook.com [52.101.85.61])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BADB23E25B;
-	Mon, 13 Apr 2026 14:45:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.137
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776091527; cv=none; b=jEpmMv242epzyH/UoOrl0RWfHe2J69igRZRYTlVRxi6hoSjqrJno7hW0EhaaKvaTI9r4plHGbAJ3BIeQWctCPTJo01bvc6RIGqzMiLS/wRMbbUiSiCFPGLY10LYGkp2WB+puH67Imbjb/2OcyI79m8Gi0galJNwy51fiP4o9Cbo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776091527; c=relaxed/simple;
-	bh=iEIJ4F5yrIkdMIyp14uCfyRaDhqYaE+/0qk0wW7NqVg=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=mnuMJXEw68uIH8g0h3yvWSr/RqfOG8poIKk23V4D+6lfyvnOtBGHPu5RGEHv+hgj95Zxgs3xUDcZUfaUgAc1TK21nYkvSDvahfh1BFNcCk9Ha3MJmTJ1U0rNwtF37fP0sBxNmIKBbxrP86voR7RhK+m6bww8wDKQkC3/CMLTaag=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=VAzPN0Q8; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=qocQPWN5; arc=none smtp.client-ip=202.12.124.137
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A193E3E022F
+	for <iommu@lists.linux.dev>; Mon, 13 Apr 2026 14:45:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.85.61
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776091542; cv=fail; b=MwfRKe/OorBmdMNAdzSRkiMXlZ4J9e/teh+eICIHdMN2nsCMi1CpMoBHBkgW8DBczuMjO20UZ2kRji1Wk9dDMMh0HZ9Uc8z5QFUuERyED0CijohMFMzW2sTtpRSZIgv+ZY5QOPdY/BMfq9Gb9GF0fiYu71PKO1N+RlFSU+Hueec=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776091542; c=relaxed/simple;
+	bh=dNfIJMybI1hQCbhDtXKE8iIsIHj0EV5C6qN4PfT+bUw=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=O+uNe2AZTiEWYnB9BZzBPGoa0hSw3jp+VKVLPWBkaGJV/UBs2DNxB//k+OGiuRb6sdI70I4PtSPMcyY+LbLbhij9qZmDLhwyTM/pg2rE2nPTsjxThVhxcX2GbI+9EOlnm93c91v2YjORxhnoJeP2e+/bj+9To1fVIvAR36/qfDw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=t2v5raro; arc=fail smtp.client-ip=52.101.85.61
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="VAzPN0Q8";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="qocQPWN5"
-Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
-	by mailflow.stl.internal (Postfix) with ESMTP id 63FD713004A2;
-	Mon, 13 Apr 2026 10:45:23 -0400 (EDT)
-Received: from phl-imap-02 ([10.202.2.81])
-  by phl-compute-04.internal (MEProxy); Mon, 13 Apr 2026 10:45:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm1; t=1776091523;
-	 x=1776098723; bh=I+t/kQciCWPYQ9TuTtwE8ePqtDE4emYgbGk8M0JrxkM=; b=
-	VAzPN0Q8M06ZrISBiijyTlSN7zZjXii1iyjsU0Nd55Go1hDvnVgLbRCBducupWL/
-	I7xPJiEoPevkjLJ80mYbEW/a8BVGP+DZJqRCjUfrjm3tX4hey3YtL6Qx00JZuF8v
-	WjI3i2GDGrKOX6lfMDr3NkI8PTwxLuJCiP0sOV4NGpZgf3fzkLLYGy+I5Zeauesx
-	Pa7bVz5nZwM+gS/NQ9njvgK3O3s/OSp/mqYNiLR905iGGN0vAev7wD2BsAy/ZN5n
-	HSi20BHM/ZKZ23MgIDcWnPLPjukDeFEfSjoTKa2sxYcORDHf2CMGKzIaSruFiqz+
-	oZNoQZjdZwrcCPF2MdR51w==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1776091523; x=
-	1776098723; bh=I+t/kQciCWPYQ9TuTtwE8ePqtDE4emYgbGk8M0JrxkM=; b=q
-	ocQPWN5vz5eOrV7RW4YLt61EpInPDUzfRCh54wFp6y2Qkmlnv6ZW6xi1Aoq7RlzZ
-	r6AxqNsae7V2QoCSPbuAl0ssOCnVNF+Nwe1zzee6gqmSKirEjbwPzN/lznn6IgkI
-	jFNhpABUlOOZaUVrUhHeH/vSP+NehNFWpty8kiiS8k4XWDW1V04VNj0ojxWNDsG/
-	IfeL1IDdAfa9wVDrNQg30BEe1ROTtYd65N72SkxvxptAHs7jfN3985PGHUPTFvJI
-	wKmIau3hzR296XeSLQyJhwIMCCxcc2mnbgbKz8VUFGlqAJo5mE6KGja1OZI6dhmy
-	PrqiKmwzjhsEhLvP09Hgg==
-X-ME-Sender: <xms:ggHdaTXgJGelzz_lzrVxB1-qyO567-GVmNc01ydITgap5FTeQTDzsg>
-    <xme:ggHdaWbojY5ZlN23wxAxRcQ_6Dhj9KvjWf-KNsyKBcK8W8C_Dp62np5kJfJ8b515H
-    9E3UwX-YmVDxTygAoDQVAtNvx28yeQKuUCb0K1tX4I6jWCY1o3q>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefhedrtddtgdefkeehtdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpuffrtefokffrpgfnqfghnecuuegr
-    ihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjug
-    hrpefoggffhffvvefkjghfufgtgfesthejredtredttdenucfhrhhomhepfdetrhhnugcu
-    uegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrghtthgvrh
-    hnpefhtdfhvddtfeehudekteeggffghfejgeegteefgffgvedugeduveelvdekhfdvieen
-    ucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrhhnug
-    esrghrnhgusgdruggvpdhnsggprhgtphhtthhopeegkedpmhhouggvpehsmhhtphhouhht
-    pdhrtghpthhtohepthdrshgrihhlvghrsegrlhhumhhnihdrvghthhiirdgthhdprhgtph
-    htthhopegtrghtrghlihhnrdhmrghrihhnrghssegrrhhmrdgtohhmpdhrtghpthhtohep
-    lhhinhhugiesrghrmhhlihhnuhigrdhorhhgrdhukhdprhgtphhtthhopegurghvvghmse
-    gurghvvghmlhhofhhtrdhnvghtpdhrtghpthhtohepmhhpvgesvghllhgvrhhmrghnrdhi
-    ugdrrghupdhrtghpthhtoheprhihrggsihhnihhnrdgrrdgrsehgmhgrihhlrdgtohhmpd
-    hrtghpthhtohepuhhrvgiikhhisehgmhgrihhlrdgtohhmpdhrtghpthhtohepuggvlhhl
-    vghrsehgmhigrdguvgdprhgtphhtthhopehhvghrsggvrhhtsehgohhnughorhdrrghprg
-    hnrgdrohhrghdrrghu
-X-ME-Proxy: <xmx:ggHdaWvF06daWzpSpjs739v0aJtN6iuik26sDQBaw3w5gAf8SR2C_A>
-    <xmx:ggHdaZ9awg7nUXhN5OpyKRMUZCbM9osYFN5RNP6GaSqeakIU3Racag>
-    <xmx:ggHdacmWL1YHAZe8ol6oPFOZFwQU0SOjOVhuke7wt-o0cNx1zs0O2w>
-    <xmx:ggHdaXZVfqhFVoJvGmfQg_vToEFHdnDFmb_H9i_ab2aUXdlRPO64dg>
-    <xmx:gwHdabAQPN9OqlO9_5-GhrI_SeY-FYfEJ9AFMKsVeX_HsRytcY0IapPu>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id 88869700065; Mon, 13 Apr 2026 10:45:22 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="t2v5raro"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=gALtX4rlkYreJt/PRyiFgH51EWp5RHU/pZUxYOd/T6naZgQBdZuNfsQr2SeganSH1C76wxZ/yik+fVMKoss/+bDtOfJUNCO29dugEylUUSRsUFgWp2aWZCrm77vX/JYWM1mtErUUsbAqQIr+N9wzV6NSrbhWNiE2J4Ok4rMobJ8CHUCKtZ2nVHlEh1Uaj5laNl7yG81tU3vkLFZrD9JSR0WWEQSk4l/QHH3ZxnpQ0tcGx9YYQunVee+/ypOu144zOD8r2MQUndmujg7fd9V5e2W66h2Meh4JVjS1C9BqV+1+kSXT+gEn/e1OPOJvHDzoHv32/b+mAGTMU/9GcrRS4g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dIZAJ/Zx2kqWZlz6ayMO44c4HU+1X+3RpqruIm7Y8s0=;
+ b=xEYCVJpChbO/L28QtcRn1QMtZO+6nOkd8Njis1dRRWgc9EEBCaQYJK6UEI0qiM8QNxLc0A1O/cpWoJ9mqgScG9wxsTUvB2red6TEKPeEQrsrkJ8xL1Cviev9YSTwB/ax8On8Z9i9EtcnSH1c71IeR2yrSaa6H9w2yJXnx/2X+6o/RhUnmFht9QYKk3PeNp25zykTlzUYGrA/Tq4Pf/pi2A26WBtE//mkUeW+sOj/JRIseHWtVECMMfLkhxtEVE/ayH4ODMkX7g3VvMsl5w66iUtrcmxiriKQQpzsKEK0H6FnIi/miXp9rUJBzHfLqR8VfOCyhw0StEXRPahu+vErAg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dIZAJ/Zx2kqWZlz6ayMO44c4HU+1X+3RpqruIm7Y8s0=;
+ b=t2v5raroQyX1rL4envXoZkA/CfNVTbpXw1LWOdcCHDkx2xSq8H/0jLyp1WZG1dfIcZ4JggsLIQOkLWg5KiacsYnMh1CDwWZDrKrD+oIgyLRDyDRYUuSK2b3j9pPKF4AMcOsq5dWtVjc4LvA3hWHKP9Ci1S3QX76Xt+UC72znvFw=
+Received: from CH0PR04CA0066.namprd04.prod.outlook.com (2603:10b6:610:74::11)
+ by DS0PR12MB7875.namprd12.prod.outlook.com (2603:10b6:8:14d::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9818.20; Mon, 13 Apr
+ 2026 14:45:36 +0000
+Received: from CH3PEPF00000016.namprd21.prod.outlook.com
+ (2603:10b6:610:74:cafe::ae) by CH0PR04CA0066.outlook.office365.com
+ (2603:10b6:610:74::11) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9769.48 via Frontend Transport; Mon,
+ 13 Apr 2026 14:45:36 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ CH3PEPF00000016.mail.protection.outlook.com (10.167.244.121) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9846.0 via Frontend Transport; Mon, 13 Apr 2026 14:45:36 +0000
+Received: from BLRANKISONI.amd.com (10.180.168.240) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Mon, 13 Apr
+ 2026 09:45:31 -0500
+From: Ankit Soni <Ankit.Soni@amd.com>
+To: <iommu@lists.linux.dev>
+CC: <vasant.hegde@amd.com>, <suravee.suthikulpanit@amd.com>,
+	<joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
+	<linux-kernel@vger.kernel.org>, <jgg@ziepe.ca>
+Subject: [PATCH v5 0/4] Respect VASIZE for address limits
+Date: Mon, 13 Apr 2026 14:45:17 +0000
+Message-ID: <cover.1776075533.git.Ankit.Soni@amd.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-ThreadId: APG-r6FMkt-Z
-Date: Mon, 13 Apr 2026 16:45:01 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Thomas Gleixner" <tglx@kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Cc: x86@kernel.org, "Baolu Lu" <baolu.lu@linux.intel.com>,
- iommu@lists.linux.dev, "Michael Grzeschik" <m.grzeschik@pengutronix.de>,
- Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
- "Herbert Xu" <herbert@gondor.apana.org.au>, linux-crypto@vger.kernel.org,
- "Vlastimil Babka (SUSE)" <vbabka@kernel.org>, linux-mm@kvack.org,
- "David Woodhouse" <dwmw2@infradead.org>,
- "Bernie Thompson" <bernie@plugable.com>, linux-fbdev@vger.kernel.org,
- "Theodore Ts'o" <tytso@mit.edu>, linux-ext4@vger.kernel.org,
- "Andrew Morton" <akpm@linux-foundation.org>,
- "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
- "Marco Elver" <elver@google.com>, "Dmitry Vyukov" <dvyukov@google.com>,
- kasan-dev@googlegroups.com, "Andrey Ryabinin" <ryabinin.a.a@gmail.com>,
- "Thomas Sailer" <t.sailer@alumni.ethz.ch>, linux-hams@vger.kernel.org,
- "Jason A . Donenfeld" <Jason@zx2c4.com>,
- "Richard Henderson" <richard.henderson@linaro.org>,
- linux-alpha@vger.kernel.org, "Russell King" <linux@armlinux.org.uk>,
- linux-arm-kernel@lists.infradead.org,
- "Catalin Marinas" <catalin.marinas@arm.com>,
- "Huacai Chen" <chenhuacai@kernel.org>, loongarch@lists.linux.dev,
- "Geert Uytterhoeven" <geert@linux-m68k.org>,
- linux-m68k@lists.linux-m68k.org, "Dinh Nguyen" <dinguyen@kernel.org>,
- "Jonas Bonn" <jonas@southpole.se>,
- "linux-openrisc@vger.kernel.org" <linux-openrisc@vger.kernel.org>,
- "Helge Deller" <deller@gmx.de>, linux-parisc@vger.kernel.org,
- "Michael Ellerman" <mpe@ellerman.id.au>, linuxppc-dev@lists.ozlabs.org,
- "Paul Walmsley" <pjw@kernel.org>, linux-riscv@lists.infradead.org,
- "Heiko Carstens" <hca@linux.ibm.com>, linux-s390@vger.kernel.org,
- "David S . Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org
-Message-Id: <0166c8e1-b19a-44f8-aab6-f8f161c8542b@app.fastmail.com>
-In-Reply-To: <20260410120320.163559629@kernel.org>
-References: <20260410120044.031381086@kernel.org>
- <20260410120320.163559629@kernel.org>
-Subject: Re: [patch 38/38] treewide: Remove asm/timex.h includes from generic code
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: satlexmb08.amd.com (10.181.42.217) To satlexmb07.amd.com
+ (10.181.42.216)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PEPF00000016:EE_|DS0PR12MB7875:EE_
+X-MS-Office365-Filtering-Correlation-Id: d7f2fb4c-8f86-428f-4f43-08de996b52ca
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|36860700016|376014|1800799024|56012099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	HcnileEZSCbKGNdI0i2hdhn6SSLPUSE+NR9PXA2w61+GmJsooxWwQ6Bvf4M/KD9xWEguoGhw4esSOFp+o+Z+o7sryIhlLdrskSMACFsds0mkAlxZn8RAPa+nrhyUaa1nrSFh/kTilWD0sluBEX75Tn/Eht7JsgoRmT824zMbB3hZgb9msP6TfxaZyCdWhQqsmRmcl6IKd9irsIn87B7Tz8htsbgshjSuVXBPWZoM/48FSDBQcUcMz5G6BRhg/DjpmNRgkzHuUJ+ByEsD+Z86T220+uoIUTQfJgFlXZI4PzDUKJcUtlBVIV69pNDBHr9u5mJsOdeyWpMStm4m2rkqPyUsrs/nblVjIJdOYdsX/uGkDf5ACclJcdOmlL6NaTAAns5vM0mxXbNyuREsloXO6bul3c+69V+4hOdz4g3P/L4T1KAXHXBCAVu9Woztoeafeew1qdjRd6GBs/Vma4x32isZxrsPUxfvKGJqUZGO9o6ylGHvrVYWj5zlOEJ35ENuGHmtMpzx1yhzKu6sjixIZVLwEtIS0zvVNbnXsHGGyehII+mvaBmpDjQ8V+lzKRbxBP9PrkjN9ySVg5xy/6zsMT0kHH/uCOCQDKC5q7YJAl6cLiSTqKLpXgRh2nY9bDuRu7COPDVMSz7JVYBwE+fe6uZzTqGIm6FVkV5sdNBiHC253wOMBaWvJf0BkVXT6eDCrVvYkKplaAm+Z0vgM4SObrqX/CjDPgcwkR9cmZx1bCFOC8HrOPzL3BYwRI4DqINpzpmR/jQGSEc8wuUYdE6WkQ==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(36860700016)(376014)(1800799024)(56012099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	lfwdbLsArUbtV1cYfWMr3HvLuukNUiSL3CzYWfRnCXV0KKhAv0k+HS/Y3f0XUKDUP7SiNuess3oyhgCUzjE7b4OA4YqgOCnbYi3lVYBvbztRSZhsktuIudqq2Hm5hAqzojNq3Rjo0vFs3TsYRP14XDSDH3K5G4GPk14ssFa1XtEmeJ+eCZ8fM/+EZBYGVlq+dOjxqV/EDVdcyEPCx8cqFGdQI1Fn15bRbcUFK7N9AllMibBnfHLnZRAvVAB1Dfs8W7bmmlBQ60YE0NEUAuXN6iFlq1wi2H36TZ30c0R5YBARTXBHgLf5oaO6Yims/lz0K758ogQ+FWb0VgrioxhQFK4COcev9RB+YVgaAcFCOruDwYFzIEMxjy55hMhR+jDoLIEPdEuiOJ796wn4Y+TMX6iCa+EQHAN2Oy5DlGsSjen8qKzah73SOsy2ATr7qlp3
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2026 14:45:36.2198
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d7f2fb4c-8f86-428f-4f43-08de996b52ca
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CH3PEPF00000016.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7875
 
-On Fri, Apr 10, 2026, at 14:21, Thomas Gleixner wrote:
-> asm/timex.h does not provide any functionality for non-architecture code
-> anymore.
->
-> Remove the asm-generic fallback and all references in include and source
-> files along with the random_get_entropy() #ifdeffery in timex.h.
->
-> Signed-off-by: Thomas Gleixner <tglx@kernel.org>
-> ---
->  include/asm-generic/Kbuild  |    1 -
->  include/asm-generic/timex.h |   15 ---------------
->  include/linux/random.h      |    3 +++
->  include/linux/timex.h       |   26 --------------------------
+The AMD IOMMU driver was only using EFR[HATS] to derive the VA size,
+ignoring the IVINFO[VASIZE] limit. This could create domains that
+exceed the bounds advertised by hypervisor. With this series, driver
+respects IVINFO[VASIZE] when determining the addressable VA range.
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+For a small VA size, domain initialization in the generic page table
+framework can fail with -EOPNOTSUPP. This happens because the page table
+clears the dynamic top feature from the force enabled feature set, as no
+page table growth is needed beyond the current level.
+This series also fixes this issue and adds KUnit test coverage for the
+32-bit VA configuration.
+
+Changes:
+v5: - Added Jason's suggestion for modifying get_info().
+v4: - Remove PT_FEAT_DYNAMIC_TOP check from pt_init_common().
+    - Add test coverage in amdv1 for 32bit va size.
+v3: - Remove specific value checking for vasize.
+    - Add patch for PT_FORCE_ENABLED_FEATURES.
+v2: - Mark ivinfo_vasize_bits() as __init.
+
+Ankit Soni (4):
+  iommu_pt: Fix pgsize_bitmap calculation in get_info for smaller vasz's
+  iommu_pt: support small VA for AMDv1
+  iommu_pt: add kunit config for 32-bit VA (amdv1_cfg_1)
+  iommu/amd: Adhere to IVINFO[VASIZE] for address limits
+
+ drivers/iommu/amd/amd_iommu.h               |  2 +-
+ drivers/iommu/amd/amd_iommu_types.h         |  1 +
+ drivers/iommu/amd/init.c                    | 13 +++++++++----
+ drivers/iommu/amd/iommu.c                   |  3 +--
+ drivers/iommu/generic_pt/fmt/amdv1.h        |  1 +
+ drivers/iommu/generic_pt/iommu_pt.h         | 12 ++++++------
+ drivers/iommu/generic_pt/kunit_generic_pt.h | 10 +++++++---
+ drivers/iommu/generic_pt/kunit_iommu_pt.h   |  5 +++--
+ 8 files changed, 29 insertions(+), 18 deletions(-)
+
+-- 
+2.43.0
+
