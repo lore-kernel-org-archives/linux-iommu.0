@@ -1,120 +1,100 @@
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
+Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0480282F1C
-	for <iommu@lists.linux.dev>; Mon, 13 Apr 2026 16:10:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0CC728314C
+	for <iommu@lists.linux.dev>; Mon, 13 Apr 2026 16:11:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776096611; cv=none; b=OwR1TY7T7sJRAZihwX/xd6iTLN2xXtLcJpmgaUvV6GC69ueDzVaP82hUq7Ch/I+oz+6J3X6Uz9xLQVnXeKN1ovJgzILG8XDCgSF6LVYSNI0zdfXwYtSE35AJuiEVK4+19poM0l27mRZOlNJb3mBQ5eP+lfhY18zBuJ1TaLDxRBQ=
+	t=1776096688; cv=none; b=tP6u5flqAG0moWvc2jY00aKlu6AzY2gVQlAmZljUs2NX9mqj6UT3U1zqQ4xN9/C4Bdv+gTGS020tFO+NF5eWBww/05jTBYnQDz9WFF+IGq04E07Z9mUHe5l7+rhMTrhkKyPZLlrI4dKH2wJcE8TmYSbqlBDG4VxpTnD89j0J2F0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776096611; c=relaxed/simple;
-	bh=C/3T9f7YFyndjPxorE6yY5t66bwUWgJKRml4J+HvRhw=;
+	s=arc-20240116; t=1776096688; c=relaxed/simple;
+	bh=0+aEo6g21+mDwpsOYPVua1ixp0m5RsYOM5Hdjnj5Nag=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UEMTkuuQYAv212zuJ6szxkmF3M5tOrdJOgp9+M4+dKpl9Z1ZqMhX0qyKOhX62QjQnM7IIbTlGLsJ0Kwj6di1lrA851r4jJ5q1yNzZaCuCIvCIF0B9X0SvFiU6dgbj7gL5hASZiznnTL+/fqcjWlSjG5zhOsG+5WqEFVmCKftz68=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=oeVx5u+J; arc=none smtp.client-ip=209.85.222.172
+	 Content-Type:Content-Disposition:In-Reply-To; b=eSWvbvU56NdIwdXROrBhXOFGa7mx6hbV+PPNl4NlJorTAmFTAG1tUKeyVwGdbA6lTuIXK/k6KHBD4M/NUBza1Uesl+iUVCfuwOCXeNI1xd0c7MkAR5QgGzfB27+N0Kp4SuTHwaqMP3N/3M684PxH21v7xvubmHSIqwip+k4BHp4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=IjXIkMcQ; arc=none smtp.client-ip=209.85.219.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="oeVx5u+J"
-Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-8cfc085395fso439783885a.2
-        for <iommu@lists.linux.dev>; Mon, 13 Apr 2026 09:10:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="IjXIkMcQ"
+Received: by mail-qv1-f51.google.com with SMTP id 6a1803df08f44-8a032383008so51304966d6.1
+        for <iommu@lists.linux.dev>; Mon, 13 Apr 2026 09:11:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1776096609; x=1776701409; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=miwNbJxKhSdJiq79jVr6441KfZMZND8Kh74V7hAFm/U=;
-        b=oeVx5u+JhlfpJvt2TsURfNTRB7lazqBcizMt45RA3bcRsGME3574YE4EEzPkHkkCSO
-         8oh6KrRa2rDlKG82ewMGCR0Ymj0AYdAX0FhmnsSc/daMA3LO/utZUWjPDtuAYnkWadOA
-         4S8nKdMNm1SeBVjQnn+V7OQxPgulO8gfbF2gL9eaL4FVA1MOG5W7Ajj74mZIXNjuE+WG
-         KFh0nykU6zBzpCuvJ0VZ7lEu+QoLtamM1JVqIa+2+M5u52SLUbeu4Q0gGcAWnssYij4v
-         tzt0114zv4+nDLdrWtrRPQttXt6yWuVGbmECXMr7tSJcPRRKdwHvKgpVaAkTBUeEMW+F
-         YhCg==
+        d=ziepe.ca; s=google; t=1776096686; x=1776701486; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=B66qnCfZuTZvYHAq9XoYo1sQPpTobN+iPDeo3QnFTCM=;
+        b=IjXIkMcQhGDI+dvauYdlRGPaTGy6cu005Ug43PlQTKM3p0YykMwclFybOgf5kz0xju
+         iQMKMsGmDElHQsXomSc7vhJTwtL0Osk8LtvZraaHTb7DMvWMXmVaSahZFR34gHdJROPC
+         I+nf0I3nQQUcn9zRgo13N7XU49b6D7J4npW11gwrGkblK9E5G/mbG+LbW4APIDbMUqzn
+         YngzLHro2qaem3KIR0RmS/Dr1x7DptYoH7ZDjKFzuIw8JLU7VZGguclYxD2ggLXiyi5C
+         9ce9GTOdq++MRbjJ6TOdeVPxnejP1l4QRHg9YJdzOjb0fCvhAd24/Z0FPIrOIvDFa2R7
+         Lz+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776096609; x=1776701409;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=miwNbJxKhSdJiq79jVr6441KfZMZND8Kh74V7hAFm/U=;
-        b=gF6WGbd4KQGHf/uZlH9YpHs/Q4BN1zSQMizpkUx6lrDWuptL3F9Hy/LKEHkOrahAN5
-         +YN7TOr5Eu/HpneG0AGcHZDJm8p9Ig6kdQKuqnDHlYGm3RPOoZPkpZwtVflOvWSZbY+T
-         +9WwHkIbO4MaRidQMp4WxgMBlv0BDlye1Tbokny1SFKH7nkFm0RiiwhKElJTNTlxZzcy
-         gaOOPzwZQxiRpSD9lR1DSXiIfwL00Z8iCdxdxd9dXXzdEqO0MH2I3lP7fUKG31bVEnil
-         qJVWTZDyrYrp+flwUiRDLmDKjNgxlrBK/vGsAwpsvHZq40wyl+dX6Od0fJH6OL1yuT4I
-         40iA==
-X-Forwarded-Encrypted: i=1; AFNElJ/esLx/twsDw2AW46YigedMHfDfsXT+36c1rwnDGv3Wi9LvvNQbcoUpZuDWJ1QXj9fp+/1P5Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzovXv6OfydUIcRjwP+0O5xxF1jh4sEMHB4WkpsPT+clAJZwkmL
-	NkoqrjX+Fj5p80sDBcOE85ZbwoKV9Y/aAT0jrtx8rzIp0wjNb4X00GuYLIUYRmlDjNU=
-X-Gm-Gg: AeBDietn/HFmuWyIkH4BtNOnh+gH/VROx63tckIV1D9uYvWFGYX4fCQqZT+jOtSWcg4
-	CUNiU4oN6NhqTQ9t6BaHxeXibtu8lZktoIAhzruFfXV00dQAvQ52KwBMv7/k3d2tlpuI295sGKZ
-	hM7T7J87xjwpg3kfZAZ2uGzLUzQNm2zc31mR3fVvUK9NYzw+Fqw0BtrzdMbJACptXTS/KSBPAJX
-	UJeV0q9h4FU9rcon3RU1yAmGHc7flgjgd/8jb+fbFnpXltQvK8q3VuFWa0JkGY7kCa0B6tckltc
-	5TN5IZbuSikSKTWWt2K4HxiBkZ7szc+uUnCrkdgSJKuNaJgV/mLLW0Ti1eCN25JCo3hSnfjY4tO
-	v9rJ5g+BoedXUq4ByaicTfJJRiATqIrfMI67zlvP/TktmjV8x3GuyslAuODRrkcgeG6+k2Oz6qF
-	5nB7N9Ii3lRL/qUsIJI1ZCmNambAbqQeVyB2Rx7oXvXMrXpfGcBZWdlr7JRJezVyaUu3QAj/T6e
-	QSV22tDV5B9Gs0y
-X-Received: by 2002:a0c:f089:0:b0:89c:3f22:c89e with SMTP id 6a1803df08f44-8ac861fd45amr187179046d6.24.1776096608349;
-        Mon, 13 Apr 2026 09:10:08 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1776096686; x=1776701486;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=B66qnCfZuTZvYHAq9XoYo1sQPpTobN+iPDeo3QnFTCM=;
+        b=Dj9rHv1wkYuVhtPnxkdmf+8ywdz4Q2Nr/+w22/Cb95pVHziX3nHn4YldCIHP2BtdqF
+         Q+HgTGaEFPTyA8iy6k+x84frQMDOqQpMAeo8EXFUjLyPoE2pPgr2XUQ7NIVVm5zR1xxr
+         iqS9Enh7i9TlqoMV73UZbhq8WVn0XD6vbHpkNy1v27jDOFc7yt5V9lKvZ0oSVxacUNa7
+         ZEzRwhyUvjm6nh7uCdrD7zcBlFAVCUorDYDdUnVnJDnhXXRmnZpZOPzHNm+BwMC2FrRK
+         0obYcqOm9cMjU1nIlP/JxmdC0PaY89v9zunB74xybIQO+J136w3wLNim6hwESmnFAiSK
+         O+jw==
+X-Gm-Message-State: AOJu0YxiyY7pYJhKnDGKj+Z2t+hmvEN48iSIg8K8hXw2PBxDP90Whfrv
+	26BOn4rZxLC9OI1B+SiOfWyMcdC5Lykg3sOKZgPiVa45q+G3LXI5XpBZ1q3NemyxdLs=
+X-Gm-Gg: AeBDiesq0UmgyQ7OLNppQIcZ2nMyvfLIm1vWcTmfcQauO4hV6AEFkC9MncuxyMEcz/I
+	3ECTSaiLDUhFsbgiAKKKco4CmTu5FOZrbTLX5CqN6c0RoHlDKVaNxGfjXdR9eicZhPpQVNeSyPY
+	+cJKNvhCsOBeu9y4TGdAVq45rULBQnjSY02nJwtwDJpZSGwM/JNIHzvf11ILWubukdxgE4TyXrI
+	DmXnV1ZzXFs8/AlTunVYtbOYw0tS9mOpP3j76fgwLLip3P/Iba9qOvvAwz4++Kksm5Eq4oVfdSH
+	++DwCNtbxJV+2871Omh2dRLLNFLugKkos8APMNTXiRG/+N6+d6A8IRehob5AqG3Bb+r54wurtN3
+	+MKLL9GZp35PajlZbSSR6D1lLtpYbAfEqWEv2P+C/kK/Mbl+A1102pzSFKu3ce7wnqUHVPJAI2h
+	s6bZWzPm7yDthXR8IVx9HvNdtni9O9hsu40OR35BYjUjtIFyN3gax2LuTe3kUQGLbtATXUc/8Lx
+	jdCKNxqR/rAW25+
+X-Received: by 2002:a05:6214:449e:b0:89c:d424:aceb with SMTP id 6a1803df08f44-8ac8641cf44mr205493686d6.31.1776096686549;
+        Mon, 13 Apr 2026 09:11:26 -0700 (PDT)
 Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8ac84a10e7esm99025496d6.16.2026.04.13.09.10.06
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8ac849e35afsm125548836d6.3.2026.04.13.09.11.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Apr 2026 09:10:07 -0700 (PDT)
+        Mon, 13 Apr 2026 09:11:25 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1wCJrS-00000005PqT-111F;
-	Mon, 13 Apr 2026 13:10:06 -0300
-Date: Mon, 13 Apr 2026 13:10:06 -0300
+	id 1wCJsj-00000005QA8-0eVh;
+	Mon, 13 Apr 2026 13:11:25 -0300
+Date: Mon, 13 Apr 2026 13:11:25 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Cc: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com,
-	m.szyprowski@samsung.com, will@kernel.org, maz@kernel.org,
-	suzuki.poulose@arm.com, catalin.marinas@arm.com, jiri@resnulli.us
-Subject: Re: [RFC PATCH v2 1/5] dma-mapping: Avoid double decrypting with
- DMA_RESTRICTED_POOL
-Message-ID: <20260413161006.GM3694781@ziepe.ca>
-References: <20260330145043.1586623-1-smostafa@google.com>
- <20260330145043.1586623-2-smostafa@google.com>
- <20260330150654.GA809900@ziepe.ca>
- <acrgYotBExJhEJkK@google.com>
- <yq5aeckjbdrt.fsf@kernel.org>
- <20260413123559.GI3694781@ziepe.ca>
- <yq5azf36anmf.fsf@kernel.org>
+To: Ankit Soni <Ankit.Soni@amd.com>
+Cc: iommu@lists.linux.dev, vasant.hegde@amd.com,
+	suravee.suthikulpanit@amd.com, joro@8bytes.org, will@kernel.org,
+	robin.murphy@arm.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 1/4] iommu_pt: Fix pgsize_bitmap calculation in
+ get_info for smaller vasz's
+Message-ID: <20260413161125.GN3694781@ziepe.ca>
+References: <cover.1776075533.git.Ankit.Soni@amd.com>
+ <eb325bcc51b7e5ce98ade6e5838137285738bd9f.1776075533.git.Ankit.Soni@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <yq5azf36anmf.fsf@kernel.org>
+In-Reply-To: <eb325bcc51b7e5ce98ade6e5838137285738bd9f.1776075533.git.Ankit.Soni@amd.com>
 
-On Mon, Apr 13, 2026 at 08:55:28PM +0530, Aneesh Kumar K.V wrote:
-> Jason Gunthorpe <jgg@ziepe.ca> writes:
+On Mon, Apr 13, 2026 at 02:45:18PM +0000, Ankit Soni wrote:
+> To properly enforce the domain VA limit, clamp pgsize_bitmap using the
+> requested max_vasz_lg2 in get_info().
+> Apply the same VA limit as get_info() in the kunit possible_sizes test so
+> assertions stay consistent with the domain bitmap.
 > 
-> > On Mon, Apr 13, 2026 at 11:30:38AM +0530, Aneesh Kumar K.V wrote:
-> >
-> >> I know there is a v3, but I’m commenting here to check whether we really
-> >> need to do this now. In my opinion, we can keep this much simpler by
-> >> treating all swiotlb allocations as decrypted allocations. 
-> >
-> > That's not going to work when we get to supporting T=1 devices that
-> > may still want SWIOTLB for encrypted memory.
-> >
-> 
-> Earlier discussions indicated that a T=1 device would not require a
-> bounce buffer. On ARM, we require such devices to support 64-bit DMA so
-> they can operate with an unprotected IPA.
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Ankit Soni <Ankit.Soni@amd.com>
+> ---
+>  drivers/iommu/generic_pt/iommu_pt.h         |  8 ++++++--
+>  drivers/iommu/generic_pt/kunit_generic_pt.h | 10 +++++++---
+>  2 files changed, 13 insertions(+), 5 deletions(-)
 
-That was somewhat different. To have a sane system a T=1 device should
-be able to access unprotected memory and there is no *requirement*
-that bounce buffering is used.
-
-That is very different from saying that SWIOTLB in the kernel is
-completely broken and unworking on T=1 devices. We should not do that,
-it should work correctly and we should have a sensible architecture
-here. It is just something that would never/rarely be triggered.
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
 Jason
