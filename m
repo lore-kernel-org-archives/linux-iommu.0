@@ -1,42 +1,79 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EE6D83DDDB8
-	for <iommu@lists.linux.dev>; Tue, 14 Apr 2026 11:38:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776166734; cv=none; b=konTmEkJx8z/zPOA8ZJzR2xEskgNJ1dkFUGe5vY7pBhA9NBKkz57QVnfDSItSOxr7Sf7knTJAXAAgO5rC/RvCSTBSeHA8NkEQcfDXmGvifarT5+HpByoRllXlPZ44JY0IzD3xAUrLO+kmNDH3rycad2nl2Uyib5zovCNGl1VoLs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776166734; c=relaxed/simple;
-	bh=9eHyk0cvUhTkrAspjWtt5sHAyf6ixgoGCCqPtt415NQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=LYiw0onpsaBK3uYsciF+vxyWgrk9xaS8DJW4RlosUcvaNGT2Jfs1lFjXi1jDou52TV05sNk9w0tDau9983AyhfhZUX2eOF3oZdptJBJVXMjgexQ8bNALBLwh+WBB3plxvnvgpoaYg08wIc6aWZubI8j4ausFeZYiZ9U3akw5LZU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=eHdDp6xZ; arc=none smtp.client-ip=85.214.250.239
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="eHdDp6xZ"
-Received: from 8bytes.org (p4ffe051a.dip0.t-ipconnect.de [79.254.5.26])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id A911D1C26C4;
-	Tue, 14 Apr 2026 13:38:43 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1776166723;
-	bh=9eHyk0cvUhTkrAspjWtt5sHAyf6ixgoGCCqPtt415NQ=;
-	h=Date:From:To:Cc:Subject:From;
-	b=eHdDp6xZCH81qXy+TZfsp3/i96Vj9h7wuw4D/H4Tn3P82pnMjRlpYycxv9BANYG5r
-	 dhd3DhG4jirPI9syFe4xoS+Sp2WkBHpzfYEmLRVPDDovp6jR0DW5zFMrNscXsMclAx
-	 oCagpwUQH5PAAazo5txO/3qWGzC0mCdW3dOuVPmW+6BlvDEeQIzxvGq7rEyFvFNNmE
-	 12DlNzhQR+7v8YfwVuV9FKvrJTGOwUlJF5TwZkwSdbtAOXWCvUvAuK4Hr4Vgmr5TsA
-	 HESkNsLGTi59hhpkOMoY9JiIxlNDD4Ri7BRKCbecq/4/mgaVMf2z+pgaWH8Y7EtNoI
-	 8xbsVYR/ebltg==
-Date: Tue, 14 Apr 2026 13:38:42 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev
-Subject: [git pull] IOMMU Updates for Linux v7.1
-Message-ID: <256dnfavvrodzkhib4d2vy3irictbb62umjdw2uh2hwm3u7zua@7wwea7jpebxi>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17CA830B533
+	for <iommu@lists.linux.dev>; Tue, 14 Apr 2026 12:22:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776169331; cv=none; b=I584fXEBTouor5tALL4v1h1GbluERUszo7jMcAcrkNS4EsS4bDolmezUJiIEMY5DMKSACYtb9aDsuTL6WgsESRhrHjjQ4Uxz+3SyEvbYBHV9rT9QMc7gNFMEEQPADy3H6/G6YjcZ8tDnLSp3ze5LQyY2C4HanM5ZT2IuXfHG78w=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776169331; c=relaxed/simple;
+	bh=VB0PmZFz0Vpuj5FR1mGyq3uVzRofYi2J+yXFOeK9leM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hcWCjCT4gzz7uFWaI8NPPyg0KyaII9lVDwyNuYdZY1ZodbcZQ/21f6xwqyBRkSmj6bxEYyPWHgVonIoX/rLiiGhip/pp9DWSGaLQVdOC470oQp4ipiTpPksLhYCTU+kdslLXsyT0zKE4QGSfZISgBKlU94EiIIPgVi2p9M7LMIs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=kfQIum/h; arc=none smtp.client-ip=209.85.222.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="kfQIum/h"
+Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-8d68bcf50fdso625871685a.2
+        for <iommu@lists.linux.dev>; Tue, 14 Apr 2026 05:22:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1776169329; x=1776774129; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Jh0v0yqrIW3OeDFAvE5gZz9hJrlkiEewWWiSN7R/yBg=;
+        b=kfQIum/hz9vgvB+T7QfHLUxOZbERhzF/JRoHE0s0ADCwLtWUyCLBmXDBuAsmW+q8sT
+         Z3ibHILQXgTXsnW7EU/DyQISX1m9wX1Wzr1pep3821l5prjmvFll+jVpRz1/uaPojQdB
+         eD+VWF3Oim/v/P2DQZf0z9lehLdmXxt8yVoRGjGP5Nd9rEyotMKqHj6gSc42ycSRD3sJ
+         RfituwoCLswjhg0uhw8g/qx3N5kk0C2XM5asIQICoGQHBSC58yop7jvxmIcwt9vDSe7n
+         CoDg1J2UfdDQxlEaFvYojA2+1TnnzAzrI4HPNappCOSS4w5B59jxphg8CvTXlgXWrCf2
+         kSUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776169329; x=1776774129;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Jh0v0yqrIW3OeDFAvE5gZz9hJrlkiEewWWiSN7R/yBg=;
+        b=nKOom0hsfNSEk4FWVUCEjFmnCmtbgCWnhy7hjIQP0tN/7ZXT0F9L6+uimUoHqt3gmm
+         jqhoJH0VfgxSR/gzx6FeCYeuiCDigJc1djhCpGxWRj2mpLoYHSdAcF2AvTavey7TWZ9r
+         92zjhPJ4yBhamyLchH1U+bwdv8jEBBPMGAMYcZNnw32RvoWnwlmNiWYpNxJUaozoTzvz
+         MTYSGeQA8axUKBsU0mpACNnP29ofOF/KfNZGpirF4i/Lxq0tdSrGUfQnTRcSQBekLngO
+         LP2oyjqdvC6gszrhpNq4mceTXPDWOEro0AJkfZUzioC0hRcdOZQG/Ux5HF/vzsnraeFD
+         WT0A==
+X-Forwarded-Encrypted: i=1; AFNElJ8eBnvppWezrzpV0r4WgYP3WDdPM7+VwWWJyClb2izNS933qDwYnDl5FMYElUvWi7HG7HL3pA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwmLvKT5CCZ0xcpnzNGOZ8kIuO9IPVx/yVUB6+gtuZPs1zdE8RR
+	xMTakBDlfkVEBQR6+eMKt/icR3PoPVZM7p4Yj5vhuh6z1BLhY4d7pcbyglJ8qZXeZG8=
+X-Gm-Gg: AeBDietudGwH6QJPfyH6ASCCcm0o2UUQU5xRXS5QNsLDF2uRokkF7uRvBNj7hNo3w1l
+	luO1lxq7dBLe0/7hheglxZtGJ4+YYBymmff3Rsw+w3Cf5F20yWAy9QpA2gXIWpn7EOcEWyLPeyJ
+	VpwT/HtANM3BSaYu8siVcyD9wlx+722Hyb03nM8JNQZH+T8QCoNwiijMZNxGpEX071TqkRn+zji
+	Scoye5V2yKSVrJFC/YTZalHDp1bQNfRQdzGjcAWnlnjTyQ+C1Ui5sy2YHt/F0DWKrRuUAiLxQSi
+	hEcgq72EtdWTpuNLuUW5MkcJM7k05NrC0CDr9132irv3fYNlVvJN4Bscl/rjbNXdKHxmbyMm5fa
+	wK1PXJ0m+qFVFuw5QVjrbv9n0yynpveiFEFCyX1I6WnizJyFwpVbRlb222Ho5fLgfJ8QlEqDuvW
+	HHBiZhaF+jX4n2vtHTLVFTnlTBe9vmxBsLnA+beJ6eIYgNO6ksX7GOnHJVZ45r7qdzMG2wDqZTd
+	UBmOw==
+X-Received: by 2002:a05:6214:528b:b0:8ac:b70c:8ed7 with SMTP id 6a1803df08f44-8acb70c918cmr77953846d6.49.1776169329091;
+        Tue, 14 Apr 2026 05:22:09 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8ac849dd312sm121604836d6.9.2026.04.14.05.22.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Apr 2026 05:22:08 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wCcmO-0000000AdeU-0XZ8;
+	Tue, 14 Apr 2026 09:22:08 -0300
+Date: Tue, 14 Apr 2026 09:22:08 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+Cc: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, robin.murphy@arm.com,
+	m.szyprowski@samsung.com, will@kernel.org, maz@kernel.org,
+	suzuki.poulose@arm.com, catalin.marinas@arm.com, jiri@resnulli.us
+Subject: Re: [RFC PATCH v3 3/5] dma-mapping: Decrypt memory on remap
+Message-ID: <20260414122208.GV3694781@ziepe.ca>
+References: <20260408194750.2280873-1-smostafa@google.com>
+ <20260408194750.2280873-4-smostafa@google.com>
+ <yq5atstdanx8.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -45,206 +82,21 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <yq5atstdanx8.fsf@kernel.org>
 
-Hi Linus,
+On Tue, Apr 14, 2026 at 03:01:15PM +0530, Aneesh Kumar K.V wrote:
+> Mostafa Saleh <smostafa@google.com> writes:
+> 
+> > In case memory needs to be remapped on systems with
+> > force_dma_unencrypted(), where this memory is not allocated
+> > from a restricted-dma pool, this was currently ignored, while only
+> > setting the decrypted pgprot in the remapped alias.
+> >
+> > The memory still needs to be decrypted in that case.
+> >
+> 
+> For ARM CCA, we cannot mark a vmap address as decrypted.
 
-A quick note: The next branch which this pull-request uses is based on
-v7.0-rc6, so some of the patches below are already in your tree. With that in
-mind, please consider:
+Why not? pgprot_decrypted is passed to vmap, why can't it work?
 
-The following changes since commit 7aaa8047eafd0bd628065b15757d9b48c5f9c07d:
-
-  Linux 7.0-rc6 (2026-03-29 15:40:00 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-updates-v7.1
-
-for you to fetch changes up to f8d5e7066d846c92ecac245134baf8a207becb65:
-
-  Merge branches 'fixes', 'arm/smmu/updates', 'arm/smmu/bindings', 'riscv', 'intel/vt-d', 'amd/amd-vi' and 'core' into next (2026-04-09 13:18:27 +0100)
-
-----------------------------------------------------------------
-IOMMU Updates for Linux v7.1:
-
-Including:
-
-	- Core:
-	  - Support for RISC-V IO-page-table format in generic iommupt
-	    code
-
-	- ARM-SMMU Updates:
-
-	  - Introduction of an "invalidation array" for SMMUv3, which enables
-	    future scalability work and optimisations for devices with a large
-	    number of SMMUv3 instances.
-
-	  - Update the conditions under which the SMMUv3 driver works around
-	    hardware errata for invalidation on MMU-700 implementations.
-
-	  - Fix broken command filtering for the host view of NVIDIA's "cmdqv"
-	    SMMUv3 extension.
-
-	  - MMU-500 device-tree binding additions for Qualcomm Eliza & Hawi SoCs.
-
-	- Intel VT-d:
-
-	  - Support for dirty tracking on domains attached to PASID
-	  - Removal of unnecessary read*()/write*() wrappers
-	  - Improvements to the invalidation paths
-
-	- AMD Vi:
-
-	  - Race-condition fixed in debugfs code
-	  - Make log buffer allocation NUMA aware
-
-	- RISC-V:
-
-	  - IO-TLB flushing improvements
-	  - Minor fixes
-
-----------------------------------------------------------------
-Abel Vesa (1):
-      dt-bindings: arm-smmu: Add compatible for Eliza SoC
-
-Alex Williamson (1):
-      iommu/vt-d: Restore IOMMU_CAP_CACHE_COHERENCY
-
-Bjorn Helgaas (2):
-      iommu/vt-d: Remove dmar_readl() and dmar_readq()
-      iommu/vt-d: Remove dmar_writel() and dmar_writeq()
-
-Ethan Tidmore (1):
-      iommu/riscv: Fix signedness bug
-
-Fangyu Yu (2):
-      iommu/riscv: Add IOTINVAL after updating DDT/PDT entries
-      iommu/riscv: Stop polling when CQCSR reports an error
-
-Guanghui Feng (2):
-      iommu/amd: Fix illegal device-id access in IOMMU debugfs
-      iommu/amd: Fix illegal cap/mmio access in IOMMU debugfs
-
-Jason Gunthorpe (17):
-      iommupt: Add the RISC-V page table format
-      iommu/riscv: Disable SADE
-      iommu/riscv: Use the generic iommu page table
-      iommu/riscv: Enable SVNAPOT support for contiguous ptes
-      iommu/riscv: Add missing GENERIC_MSI_IRQ
-      iommu/riscv: Allow RISC_VIOMMU to COMPILE_TEST
-      iommupt: Optimize the gather processing for DMA-FQ mode
-      iommupt: Directly call iommupt's unmap_range()
-      iommupt: Avoid rewalking during map
-      iommu/arm-smmu-v3: Introduce a per-domain arm_smmu_invs array
-      iommu: Do not call drivers for empty gathers
-      iommupt: Fix short gather if the unmap goes into a large mapping
-      iommu/dma: Always allow DMA-FQ when iommupt provides the iommu_domain
-      iommu/vt-d: Split piotlb invalidation into range and all
-      iommu/vt-d: Pass size_order to qi_desc_piotlb() not npages
-      iommu/vt-d: Remove the remaining pages along the invalidation path
-      iommu/riscv: Remove overflows on the invalidation path
-
-Li RongQing (1):
-      iommu/amd: Add NUMA node affinity for IOMMU log buffers
-
-Magnus Kalland (1):
-      iommu/amd: Invalidate IRT cache for DMA aliases
-
-Mukesh Ojha (1):
-      dt-bindings: arm-smmu: qcom: Add compatible for Hawi SoC
-
-Nicolin Chen (11):
-      iommu/arm-smmu-v3: Add a missing dma_wmb() for hitless STE update
-      iommu/arm-smmu-v3: Explicitly set smmu_domain->stage for SVA
-      iommu/arm-smmu-v3: Add an inline arm_smmu_domain_free()
-      iommu/arm-smmu-v3: Pre-allocate a per-master invalidation array
-      iommu/arm-smmu-v3: Populate smmu_domain->invs when attaching masters
-      iommu/arm-smmu-v3: Add arm_smmu_invs based arm_smmu_domain_inv_range()
-      iommu/arm-smmu-v3: Perform per-domain invalidations using arm_smmu_invs
-      iommu/arm-smmu-v3: Do not continue in __arm_smmu_domain_inv_range()
-      iommu/arm-smmu-v3: Fix typos introduced by arm_smmu_invs
-      iommu/tegra241-cmdqv: Set supports_cmd op in tegra241_vcmdq_hw_init()
-      iommu/tegra241-cmdqv: Update uAPI to clarify HYP_OWN requirement
-
-Robin Murphy (2):
-      iommu/arm-smmu-v3: Update Arm errata
-      iommu: Ensure .iotlb_sync is called correctly
-
-Shameer Kolothum (2):
-      iommu: Add device ATS supported capability
-      iommufd: Report ATS not supported status via IOMMU_GET_HW_INFO
-
-Sherry Yang (1):
-      iommupt/amdv1: mark amdv1pt_install_leaf_entry as __always_inline
-
-Vasant Hegde (1):
-      iommu/amd: Fix clone_alias() to use the original device's devid
-
-Will Deacon (1):
-      Merge branches 'fixes', 'arm/smmu/updates', 'arm/smmu/bindings', 'riscv', 'intel/vt-d', 'amd/amd-vi' and 'core' into next
-
-Yaxing Guo (1):
-      iommu/riscv: Skip IRQ count check when using MSI interrupts
-
-Zhenzhong Duan (4):
-      iommu/vt-d: Block PASID attachment to nested domain with dirty tracking
-      iommu/vt-d: Rename device_set_dirty_tracking() and pass dmar_domain pointer
-      iommu/vt-d: Support dirty tracking on PASID
-      iommufd/selftest: Test dirty tracking on PASID
-
-lynn (1):
-      iommu/iova: Add NULL check in iova_magazine_free()
-
- Documentation/arch/arm64/silicon-errata.rst        |   8 +-
- .../devicetree/bindings/iommu/arm,smmu.yaml        |   2 +
- drivers/iommu/amd/debugfs.c                        |  63 +-
- drivers/iommu/amd/init.c                           |   9 +-
- drivers/iommu/amd/iommu.c                          |  43 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c    |  35 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c   | 135 +++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        | 954 +++++++++++++++++----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h        | 142 ++-
- drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c     |   7 +-
- drivers/iommu/dma-iommu.c                          |  13 +-
- drivers/iommu/generic_pt/.kunitconfig              |   1 +
- drivers/iommu/generic_pt/Kconfig                   |  11 +
- drivers/iommu/generic_pt/fmt/Makefile              |   2 +
- drivers/iommu/generic_pt/fmt/amdv1.h               |   2 +-
- drivers/iommu/generic_pt/fmt/defs_riscv.h          |  29 +
- drivers/iommu/generic_pt/fmt/iommu_riscv64.c       |  11 +
- drivers/iommu/generic_pt/fmt/riscv.h               | 313 +++++++
- drivers/iommu/generic_pt/iommu_pt.h                | 191 +++--
- drivers/iommu/generic_pt/kunit_generic_pt.h        |  12 +
- drivers/iommu/generic_pt/pt_iter.h                 |  22 +
- drivers/iommu/intel/cache.c                        |  53 +-
- drivers/iommu/intel/debugfs.c                      |  18 +-
- drivers/iommu/intel/dmar.c                         |  43 +-
- drivers/iommu/intel/iommu.c                        |  58 +-
- drivers/iommu/intel/iommu.h                        |  47 +-
- drivers/iommu/intel/irq_remapping.c                |   6 +-
- drivers/iommu/intel/pasid.c                        |   6 +-
- drivers/iommu/intel/perfmon.c                      |  50 +-
- drivers/iommu/intel/prq.c                          |  28 +-
- drivers/iommu/intel/trace.h                        |  18 +-
- drivers/iommu/iommu.c                              |  72 +-
- drivers/iommu/iommufd/device.c                     |   4 +
- drivers/iommu/iova.c                               |   3 +-
- drivers/iommu/riscv/Kconfig                        |   8 +-
- drivers/iommu/riscv/iommu-bits.h                   |   4 +-
- drivers/iommu/riscv/iommu-platform.c               |  17 +-
- drivers/iommu/riscv/iommu.c                        | 386 +++------
- include/linux/generic_pt/common.h                  |  16 +
- include/linux/generic_pt/iommu.h                   |  80 +-
- include/linux/iommu.h                              |   6 +-
- include/uapi/linux/iommufd.h                       |   9 +
- tools/testing/selftests/iommu/iommufd.c            |  27 +
- 43 files changed, 2166 insertions(+), 798 deletions(-)
- create mode 100644 drivers/iommu/generic_pt/fmt/defs_riscv.h
- create mode 100644 drivers/iommu/generic_pt/fmt/iommu_riscv64.c
- create mode 100644 drivers/iommu/generic_pt/fmt/riscv.h
-
-Please pull.
-
-Thanks,
-
-	Joerg
+Jason
