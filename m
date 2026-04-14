@@ -1,29 +1,30 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DC5E137EFFA
-	for <iommu@lists.linux.dev>; Tue, 14 Apr 2026 21:14:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8AFC3361DB0
+	for <iommu@lists.linux.dev>; Tue, 14 Apr 2026 21:14:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776201256; cv=none; b=CQeUtb1rxdDxen+02AqrTFjzhnKNlqx2qIoPbQ31Zw/pDBQMfR+auEUA8FDInD+kay2E1VVupJW2qRk332db6UqmGEiMVP3MDaV2Ly68Xq4yeB4pbhJaTpfu1EIHhjKZ6fVhDW/KrXPMvlqGFnqMVgLnUS5Jm/mLL+LmVTVegWg=
+	t=1776201257; cv=none; b=Yo91XW8tMsilpeCPnPsMpUtzcGefDqAvY2q0PHAyvHqWBYCY+rfXrV55W332iun9orKE3BsIpsCTp/OUhwLISa9fduzH/fAsO034v9XItcC256aJKi7xIzw3LPb83iK8RcbpxLEIg0RiS5aWYIIZmvadke3ppfs/CqhnWwhZNmM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776201256; c=relaxed/simple;
-	bh=a03dfvBDnjCIeZxAl25YvfWZamrx0OHLwY0Hdpk5i5I=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=dACU90gjdeB58BnlPpgnIUyqvoWzW+boRyedwf/I2RW+Wwxa2Zw418w1ueQlutPmAstXIkqY1s208N4O9Pm3nM/JRV3omdWR9BL7Bu48tI2HizJhOx6Dt2n6zHV6Sn7n39JyfTIXK0CqGbnSGYh2YM12EVH+vAzrEyboEZP1J1c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=bl96z0C3; arc=none smtp.client-ip=13.77.154.182
+	s=arc-20240116; t=1776201257; c=relaxed/simple;
+	bh=Lhuq5xAlpwVPJn07YR/Cag2fu1WPE3u3MTdnXtAAdOY=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=i/5c46/FOzHbNxVVr9KPMzwzwTFhNg6u2wu//ytV5Qb3kf41yxUlqKMO+mH9kLiHuCMjGoGF7CQljuBHPgEx/DqN82qs4oXlr8iawgBVCwjlI1/g1FhNxqhfmR+TOFVfdyWJhDWLhp+QzH/N9WiB7+yNIhd3/DS1B8+1qbiZVCk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=MlRp2nCR; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="bl96z0C3"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="MlRp2nCR"
 Received: from DESKTOP-0403QTC.corp.microsoft.com (unknown [20.191.74.188])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 1EED420B6F01;
+	by linux.microsoft.com (Postfix) with ESMTPSA id CE4D120B6F08;
 	Tue, 14 Apr 2026 14:14:14 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 1EED420B6F01
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com CE4D120B6F08
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1776201254;
-	bh=J+x8M7kZoay7wmXk4X4HYJDWsyg39BlXt9aAiFwn3cI=;
-	h=From:To:Cc:Subject:Date:From;
-	b=bl96z0C3FeLlAuOoURC7jEtKeWzagbS3K2HEKHX6qPraFT42UCamKNUIxSOoZBYaC
-	 Mm4n156z8pvcgNaiy8Koa+ErPgEVTnNuTIWM3HcZTXI1FHzkL9DRgMDMys3sdpXWgP
-	 qgrc8VKfRhNyLAnib1uXvcKjUkr45dPzzxS5/4xg=
+	s=default; t=1776201255;
+	bh=DueQqGsTeBZ5f9epBqPjmXrmVIT9Xztuh7ie4O7QWxY=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=MlRp2nCRMjo3p5MuVZNqNBiIb4zcwNBqx6YZY56JszJAra5mlEdnyczHLzhI7BwNr
+	 BYZZGQhx9ygYjAzNLC1MhyMmlHa0iJ0lKDJwsNhRLGoBgcmY5sm5MgnaOfhobRCnyh
+	 ISP19pgS8GAqHBKUh/GiG7T4441XWm2dbIe3Iiok=
 From: Jacob Pan <jacob.pan@linux.microsoft.com>
 To: linux-kernel@vger.kernel.org,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
@@ -41,10 +42,12 @@ Cc: skhawaja@google.com,
 	Will Deacon <will@kernel.org>,
 	Jacob Pan <jacob.pan@linux.microsoft.com>,
 	Baolu Lu <baolu.lu@linux.intel.com>
-Subject: [PATCH V4 00/10] iommufd: Enable noiommu mode for cdev
-Date: Tue, 14 Apr 2026 14:14:02 -0700
-Message-Id: <20260414211412.2729-1-jacob.pan@linux.microsoft.com>
+Subject: [PATCH V4 01/10] iommufd: Support a HWPT without an iommu driver for noiommu
+Date: Tue, 14 Apr 2026 14:14:03 -0700
+Message-Id: <20260414211412.2729-2-jacob.pan@linux.microsoft.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20260414211412.2729-1-jacob.pan@linux.microsoft.com>
+References: <20260414211412.2729-1-jacob.pan@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,117 +56,202 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-VFIO's unsafe_noiommu_mode has long provided a way for userspace drivers
-to operate on platforms lacking a hardware IOMMU. Today, IOMMUFD also
-supports No-IOMMU mode for group-based devices under vfio_compat mode.
-However, IOMMUFD's native character device (cdev) does not yet support
-No-IOMMU mode, which is the purpose of this patch.
+From: Jason Gunthorpe <jgg@nvidia.com>
 
-In summary, we have:
+Create just a little part of a real iommu driver, enough to
+slot in under the dev_iommu_ops() and allow iommufd to call
+domain_alloc_paging_flags() and fail everything else.
 
-|-------------------------+------+---------------|
-| Device access mode      | VFIO | IOMMUFD       |
-|-------------------------+------+---------------|
-| group /dev/vfio/$GROUP  | Yes  | Yes           |
-|-------------------------+------+---------------|
-| cdev /dev/vfio/devices/ | No   | This patch    |
-|-------------------------+------+---------------|
+This allows explicitly creating a HWPT under an IOAS.
 
-Beyond enabling cdev for IOMMUFD, this patch also addresses the following
-deficiencies in the current No-IOMMU mode suggested by Jason[1]:
-- Devices operating under No-IOMMU mode are limited to device-level UAPI
-  access, without container or IOAS-level capabilities. Consequently,
-  user-space drivers lack structured mechanisms for page pinning and often
-  resort to mlock(), which is less robust than pin_user_pages() used for
-  devices backed by a physical IOMMU. For example, mlock() does not prevent
-  page migration.
-- There is no architectural mechanism for obtaining physical addresses for
-  DMA. As a workaround, user-space drivers frequently rely on /proc/pagemap
-  tricks or hardcoded values.
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
 
-By allowing noiommu device access to IOMMUFD IOAS and HWPT objects, this
-patch brings No-IOMMU mode closer to full citizenship within the IOMMU
-subsystem. In addition to addressing the two deficiencies mentioned above,
-the expectation is that it will also enable No-IOMMU devices to seamlessly
-participate in live update sessions via KHO [2].
+---
+v4:
+   - Make iommufd_noiommu_ops const
+v3:
+   - Add comment to explain the design difference over the
+     legacy noiommu VFIO code.
 
-Furthermore, these devices will use the IOMMUFD-based ownership checking model for
-VFIO_DEVICE_PCI_HOT_RESET, eliminating the need for an iommufd_access object
-as required in a previous attempt [3].
-
-
-ChangeLog:
-
-V4:
-- Fix various corner cases pointed out by (Sashiko)
-  Details in each patch changelog.
-
-V3:
-- Improve error handling [3/10] (Mostafa)
-- Simplify vfio_device_is_noiommu logic and merged in [6/10] (Mostafa)
-- Fix build dependency on !GENERIC_ATOMIC64
-- Add comment to explain the design difference over the legacy noiommu
-  VFIO code.[1/10]
-
-V2:
-- Fix build depenency by adding IOMMU_SUPPORT in [8/11]
-- Add an optimization to scan beyond the first page for a contiguous physical
-  address range and return its length instead of a single page.[4/11]
-
-Since RFC[4]:
-- Abandoned dummy iommu driver approach as patch 1-3 absorbed the
-  changes into iommufd.
-
-[1] https://lore.kernel.org/linux-iommu/20250603175403.GA407344@nvidia.com/
-[2] https://lore.kernel.org/linux-pci/20251027134430.00007e46@linux.microsoft.com/
-[3] https://lore.kernel.org/kvm/20230522115751.326947-1-yi.l.liu@intel.com/
-[4] https://lore.kernel.org/linux-iommu/20251201173012.18371-1-jacob.pan@linux.microsoft.com/
-
-Thanks,
-
-Jacob
-
-
-
-Jacob Pan (7):
-  iommufd: Add an ioctl IOMMU_IOAS_GET_PA to query PA from IOVA
-  vfio: Allow null group for noiommu without containers
-  vfio: Introduce and set noiommu flag on vfio_device
-  vfio: Enable cdev noiommu mode under iommufd
-  vfio:selftest: Handle VFIO noiommu cdev
-  selftests/vfio: Add iommufd noiommu mode selftest for cdev
-  Documentation: Update VFIO NOIOMMU mode
-
-Jason Gunthorpe (3):
-  iommufd: Support a HWPT without an iommu driver for noiommu
-  iommufd: Move igroup allocation to a function
-  iommufd: Allow binding to a noiommu device
-
- Documentation/driver-api/vfio.rst             |  45 +-
- drivers/iommu/iommufd/Makefile                |   1 +
- drivers/iommu/iommufd/device.c                | 175 ++++--
- drivers/iommu/iommufd/hw_pagetable.c          |  11 +-
- drivers/iommu/iommufd/hwpt_noiommu.c          | 102 ++++
- drivers/iommu/iommufd/io_pagetable.c          |  60 ++
- drivers/iommu/iommufd/ioas.c                  |  25 +
- drivers/iommu/iommufd/iommufd_private.h       |   5 +
- drivers/iommu/iommufd/main.c                  |   3 +
- drivers/vfio/Kconfig                          |   8 +-
- drivers/vfio/group.c                          |  41 +-
- drivers/vfio/iommufd.c                        |   7 -
- drivers/vfio/vfio.h                           |  28 +-
- drivers/vfio/vfio_main.c                      |  12 +-
- include/linux/vfio.h                          |  10 +
- include/uapi/linux/iommufd.h                  |  25 +
- tools/testing/selftests/vfio/Makefile         |   1 +
- .../lib/include/libvfio/vfio_pci_device.h     |   1 +
- .../selftests/vfio/lib/vfio_pci_device.c      |  32 +-
- .../vfio/vfio_iommufd_noiommu_test.c          | 567 ++++++++++++++++++
- .../vfio/vfio_pci_liveupdate_kexec_test.c     |   9 +
- 21 files changed, 1074 insertions(+), 94 deletions(-)
+fix const hwpt
+---
+ drivers/iommu/iommufd/Makefile          |   1 +
+ drivers/iommu/iommufd/hw_pagetable.c    |  11 ++-
+ drivers/iommu/iommufd/hwpt_noiommu.c    | 102 ++++++++++++++++++++++++
+ drivers/iommu/iommufd/iommufd_private.h |   2 +
+ 4 files changed, 114 insertions(+), 2 deletions(-)
  create mode 100644 drivers/iommu/iommufd/hwpt_noiommu.c
- create mode 100644 tools/testing/selftests/vfio/vfio_iommufd_noiommu_test.c
 
+diff --git a/drivers/iommu/iommufd/Makefile b/drivers/iommu/iommufd/Makefile
+index 71d692c9a8f4..2b1a020b14a6 100644
+--- a/drivers/iommu/iommufd/Makefile
++++ b/drivers/iommu/iommufd/Makefile
+@@ -10,6 +10,7 @@ iommufd-y := \
+ 	vfio_compat.o \
+ 	viommu.o
+ 
++iommufd-$(CONFIG_VFIO_NOIOMMU) += hwpt_noiommu.o
+ iommufd-$(CONFIG_IOMMUFD_TEST) += selftest.o
+ 
+ obj-$(CONFIG_IOMMUFD) += iommufd.o
+diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
+index fe789c2dc0c9..37316d77277d 100644
+--- a/drivers/iommu/iommufd/hw_pagetable.c
++++ b/drivers/iommu/iommufd/hw_pagetable.c
+@@ -8,6 +8,13 @@
+ #include "../iommu-priv.h"
+ #include "iommufd_private.h"
+ 
++static const struct iommu_ops *get_iommu_ops(struct iommufd_device *idev)
++{
++	if (IS_ENABLED(CONFIG_VFIO_NOIOMMU) && !idev->igroup->group)
++		return &iommufd_noiommu_ops;
++	return dev_iommu_ops(idev->dev);
++}
++
+ static void __iommufd_hwpt_destroy(struct iommufd_hw_pagetable *hwpt)
+ {
+ 	if (hwpt->domain)
+@@ -114,7 +121,7 @@ iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+ 				IOMMU_HWPT_ALLOC_DIRTY_TRACKING |
+ 				IOMMU_HWPT_FAULT_ID_VALID |
+ 				IOMMU_HWPT_ALLOC_PASID;
+-	const struct iommu_ops *ops = dev_iommu_ops(idev->dev);
++	const struct iommu_ops *ops = get_iommu_ops(idev);
+ 	struct iommufd_hwpt_paging *hwpt_paging;
+ 	struct iommufd_hw_pagetable *hwpt;
+ 	int rc;
+@@ -229,7 +236,7 @@ iommufd_hwpt_nested_alloc(struct iommufd_ctx *ictx,
+ 			  struct iommufd_device *idev, u32 flags,
+ 			  const struct iommu_user_data *user_data)
+ {
+-	const struct iommu_ops *ops = dev_iommu_ops(idev->dev);
++	const struct iommu_ops *ops = get_iommu_ops(idev);
+ 	struct iommufd_hwpt_nested *hwpt_nested;
+ 	struct iommufd_hw_pagetable *hwpt;
+ 	int rc;
+diff --git a/drivers/iommu/iommufd/hwpt_noiommu.c b/drivers/iommu/iommufd/hwpt_noiommu.c
+new file mode 100644
+index 000000000000..1c8cae02beec
+--- /dev/null
++++ b/drivers/iommu/iommufd/hwpt_noiommu.c
+@@ -0,0 +1,102 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
++ */
++#include <linux/iommu.h>
++#include <linux/generic_pt/iommu.h>
++#include "iommufd_private.h"
++
++static const struct iommu_domain_ops noiommu_amdv1_ops;
++
++struct noiommu_domain {
++	union {
++		struct iommu_domain domain;
++		struct pt_iommu_amdv1 amdv1;
++	};
++	spinlock_t lock;
++};
++PT_IOMMU_CHECK_DOMAIN(struct noiommu_domain, amdv1.iommu, domain);
++
++static void noiommu_change_top(struct pt_iommu *iommu_table,
++			       phys_addr_t top_paddr, unsigned int top_level)
++{
++}
++
++static spinlock_t *noiommu_get_top_lock(struct pt_iommu *iommupt)
++{
++	struct noiommu_domain *domain =
++		container_of(iommupt, struct noiommu_domain, amdv1.iommu);
++
++	return &domain->lock;
++}
++
++static const struct pt_iommu_driver_ops noiommu_driver_ops = {
++	.get_top_lock = noiommu_get_top_lock,
++	.change_top = noiommu_change_top,
++};
++
++static struct iommu_domain *
++noiommu_alloc_paging_flags(struct device *dev, u32 flags,
++			   const struct iommu_user_data *user_data)
++{
++	struct pt_iommu_amdv1_cfg cfg = {};
++	struct noiommu_domain *dom;
++	int rc;
++
++	if (flags || user_data)
++		return ERR_PTR(-EOPNOTSUPP);
++
++	cfg.common.hw_max_vasz_lg2 = 64;
++	cfg.common.hw_max_oasz_lg2 = 52;
++	cfg.starting_level = 2;
++	cfg.common.features =
++		(BIT(PT_FEAT_DYNAMIC_TOP) | BIT(PT_FEAT_AMDV1_ENCRYPT_TABLES) |
++		 BIT(PT_FEAT_AMDV1_FORCE_COHERENCE));
++
++	dom = kzalloc(sizeof(*dom), GFP_KERNEL);
++	if (!dom)
++		return ERR_PTR(-ENOMEM);
++
++	spin_lock_init(&dom->lock);
++	dom->amdv1.iommu.nid = NUMA_NO_NODE;
++	dom->amdv1.iommu.driver_ops = &noiommu_driver_ops;
++	dom->domain.ops = &noiommu_amdv1_ops;
++
++	/* Use mock page table which is based on AMDV1 */
++	rc = pt_iommu_amdv1_init(&dom->amdv1, &cfg, GFP_KERNEL);
++	if (rc) {
++		kfree(dom);
++		return ERR_PTR(rc);
++	}
++
++	return &dom->domain;
++}
++
++static void noiommu_domain_free(struct iommu_domain *iommu_domain)
++{
++	struct noiommu_domain *domain =
++		container_of(iommu_domain, struct noiommu_domain, domain);
++
++	pt_iommu_deinit(&domain->amdv1.iommu);
++	kfree(domain);
++}
++
++/*
++ * AMDV1 is used as a dummy page table for no-IOMMU mode, similar to the
++ * iommufd selftest mock page table.
++ * Unlike legacy VFIO no-IOMMU mode, where no container level APIs are
++ * supported, this allows IOAS and hwpt objects to exist without hardware
++ * IOMMU support. IOVAs are used only for IOVA-to-PA lookups not for
++ * hardware translation in DMA.
++ *
++ * This is only used with iommufd and cdev-based interfaces and does not
++ * apply to legacy VFIO group-container based noiommu mode.
++ */
++static const struct iommu_domain_ops noiommu_amdv1_ops = {
++	IOMMU_PT_DOMAIN_OPS(amdv1),
++	.free = noiommu_domain_free,
++};
++
++const struct iommu_ops iommufd_noiommu_ops = {
++	.domain_alloc_paging_flags = noiommu_alloc_paging_flags,
++};
+diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+index 6ac1965199e9..2682b5baa6e9 100644
+--- a/drivers/iommu/iommufd/iommufd_private.h
++++ b/drivers/iommu/iommufd/iommufd_private.h
+@@ -464,6 +464,8 @@ static inline void iommufd_hw_pagetable_put(struct iommufd_ctx *ictx,
+ 	refcount_dec(&hwpt->obj.users);
+ }
+ 
++extern const struct iommu_ops iommufd_noiommu_ops;
++
+ struct iommufd_attach;
+ 
+ struct iommufd_group {
 -- 
 2.34.1
 
