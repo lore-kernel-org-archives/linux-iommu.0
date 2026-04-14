@@ -1,194 +1,271 @@
-Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010013.outbound.protection.outlook.com [52.101.46.13])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3AB73E6DF7
-	for <iommu@lists.linux.dev>; Tue, 14 Apr 2026 14:21:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.46.13
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776176465; cv=fail; b=dej6J41p88kPIj0JXmpDYWwMh7thYVZcrvqhHZ0Z+VJWOjYFLl1+Ph3qAjZ4UsF8t3dBI+i+2W50N2Wxjl6BUiubWHCdBgGgT5RWNW+nS5uRNOMJ/pqEd8pjs4skkkRd2T0fFjcQrpg1tS/7wvoDOxfxDvElSrcacA3gpNd7r4Q=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776176465; c=relaxed/simple;
-	bh=gKmBef+nm6zf1NlDDm9Jc8vdMjKwuC1YQLkGwESLllM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=X8DUpWqdx7F8CdRMf6R9inBxoA5QEUzWLzssvPFIRw9Z8RJJyci12dt9sz+tKGUGaQXEzAcs00viLajyR3YY9HPtWFsOmv9vrDyhnnUSyuZwGbE9OpZJuHXxkQaqAVGC3AFtiIS0TlGcoEczYStQ39/XHGtpuxO+Q9tcZ/Yx//M=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=tGCvGboa; arc=fail smtp.client-ip=52.101.46.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF82B3E715C
+	for <iommu@lists.linux.dev>; Tue, 14 Apr 2026 15:14:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776179685; cv=none; b=VExYAZ1EVdAvG0lzGVNE9Wu1akiX1cT6X9CQlUyd3+4sxzC8esC3+Dv3anpIULC7FHr+cOai87zxJxzLQ+fhal5+RpQesXHu229LHHcT65rbUGnGGqmHmSlsjtMPKP3BSihTx4g3m0XujPBXuOuqGIhxJ1XTacAitlZBbISA3r4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776179685; c=relaxed/simple;
+	bh=kz5rVB37M5fxScKGUAVyVpMiRJhrFFk1kH1C6GoH3mM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=f/EqhvjFiipWtahyPy4swe/o6bFGw9EEzsNs0IGBqTkP2910/xR7cNytSxU16PCBzLaI/oMJs3OhHZCOIt4IREuzESO7/pkyv4eaoVjb2h6gZCsxXybM9urtbNYldWpokFSqyjStZ2F6obk05SKymK0x2XRL/9r5cQnd/5SVybA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=BVigGB5D; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=NOG5s8F2; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="tGCvGboa"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Bv1hesu3IRhU8pU3c2tPe8hAuaL1aPMXBNNOmCeHk6/wJrhfxIyPmN3S8y+LQxKqxa93Mh5+dU8suQ33eeCnGzITtz24Drad+DWcRZ2ggWomCXsAtxWDU5wXNMaF0+pLVmo3M8r1vCNFmW1F4D5N2UOUrCh1o3xPq4BeLEawetLYyR5bXJssljiV7MZATY5i8JSWLuS+sczinNIUOUrAUQXS2RqPN/RwUroF2+ddlUfNEuVLoadq/HSQujCX7lV15qOATbcdoLMlxRqxB0lBposnb1rZcasq+Jg8Ure7ACQhnVe4RNr0VBRVrH8mjl/mOTXLQGHDQZTXoYUoKfoqQQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BECVdri7H93GrC8TPSdrOphMJfU4YLTUy77oz29Oz8g=;
- b=T+SZ5jau0TLRtoNqpGJmzLPbc6qnM4jEg6J1NIlwn2/XRZtiuLrR2/W/nNhYhpxkezc/ZJZxQBb2dcoNmeR31dr0wQZg4e2YFVRhq8OA/qHZ/wQFKegGAlcQvpcd9Dw8U1dD6hQez0bh37EYd/Gmwn8IwppRRTTByFkx7sGTumi28ky+4j9CPpwhy3sZmWqrgDecddw5GQjAr0ZcA3sxxvF9pnvHWqOBMpNuwKLJPGj7cK2bOl/DIzgS5mmUjbgCNaB7Y27DPbTAWUGEPgIVCw/KEbZdfF0ke2l4PcV3F3WP8qT3e0X7dde4gW1MuJKHUW4hnAB7DersoCvEq9in3A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BECVdri7H93GrC8TPSdrOphMJfU4YLTUy77oz29Oz8g=;
- b=tGCvGboaleRdPC35kxuoAiOTIkWRBYrEArFMP3pbHgbal5a9ourE7Vd4BuvnbS/mr2zS6UxB/KmJ3I568C+FzpiVHdqGQ8veu25PWwpvI7Pp27DwKCabKr3Fp1c+T8B0x0k/28bucaRPYkhejGGBjqzWk1kKl493vOMlKUATVWhuCAgdfzLNXYNwIm0vCI5irnIWFJxJQDhpYl9gB7lAko572F+eW9wyP5xbvlb1zyUx6Geq4SxxwwZo1JwZKtaTq0HEB/9gd1J/1z7cEmD/q4FMVsCIlEw/gzFL0rxuOlzsy3/+J9afYQWtH1U4/dmZ1WePGkDU/2fREhOhmQFJtA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY1PR12MB9601.namprd12.prod.outlook.com (2603:10b6:930:107::16)
- by DS0PR12MB9323.namprd12.prod.outlook.com (2603:10b6:8:1b3::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9818.20; Tue, 14 Apr
- 2026 14:20:59 +0000
-Received: from CY1PR12MB9601.namprd12.prod.outlook.com
- ([fe80::cd76:b497:475f:4de3]) by CY1PR12MB9601.namprd12.prod.outlook.com
- ([fe80::cd76:b497:475f:4de3%5]) with mapi id 15.20.9818.017; Tue, 14 Apr 2026
- 14:20:59 +0000
-Date: Tue, 14 Apr 2026 11:20:57 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: joro@8bytes.org, kevin.tian@intel.com, will@kernel.org,
-	robin.murphy@arm.com, baolu.lu@linux.intel.com,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	xueshuai@linux.alibaba.com
-Subject: Re: [PATCH rc v6] iommu: Fix nested
- pci_dev_reset_iommu_prepare/done()
-Message-ID: <20260414142057.GA2643091@nvidia.com>
-References: <20260407194644.171304-1-nicolinc@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260407194644.171304-1-nicolinc@nvidia.com>
-X-ClientProxiedBy: BLAP220CA0025.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:208:32c::30) To CY1PR12MB9601.namprd12.prod.outlook.com
- (2603:10b6:930:107::16)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="BVigGB5D";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="NOG5s8F2"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63EBUJrF2386374
+	for <iommu@lists.linux.dev>; Tue, 14 Apr 2026 15:14:43 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=G4aks4H+FpBEhHapfREL4acD
+	uXkNuXLZB9iHD5QRayk=; b=BVigGB5DQCUAuMqT9N8E7MhX51L6Wpm34hRvStzt
+	589YH7R1IhsGrQaDAu5OSwdVorLtvYLlEhb4n+hVbo+D67SB8f1Q337qvxM/3xMA
+	wqakA9SLntF3lCYj4Y84QT9nKrSSDo5/rJpSLRL7MdexfE3T9ju51Z1DbWg1I2kr
+	i8LBKfG2EZJobaPtrXcnAuEm4ODWqIbmzHJ3t8/LH8Pn5zj+MeAtnmxbxVwovATY
+	K0Xj8WEZSkFReiDDmGHLP16QDW/mGMArrntaV31Wlk1Y8+795ERgxnKo+HgZ6umc
+	1qLUTVrMiDCjVrLvR1ZYona1CoGDvfg4I7Zz4Gr4I2dnRg==
+Received: from mail-vs1-f69.google.com (mail-vs1-f69.google.com [209.85.217.69])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4dh86w3au2-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Tue, 14 Apr 2026 15:14:42 +0000 (GMT)
+Received: by mail-vs1-f69.google.com with SMTP id ada2fe7eead31-605c1beb746so4396486137.2
+        for <iommu@lists.linux.dev>; Tue, 14 Apr 2026 08:14:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1776179682; x=1776784482; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=G4aks4H+FpBEhHapfREL4acDuXkNuXLZB9iHD5QRayk=;
+        b=NOG5s8F2Rl1HUDltR7HXxmpfxHxrosya7sPYmoAA0Ss7PrOK7/T6i0mDEbJXlZvp93
+         WV0QknaPky4iRbITVbGva5NMMjEO0DPg74DiVIDngl/wheATwJOaCnIFvXsleQc+FnvX
+         e4tFgN3Eo8Ce6Y9MdNNUHjF5Eeb6c+Nq1Go7UGIEDlyY4gOz/LQV0KIGSeqqltd7qqHv
+         UXZk+E4HAjSh6nMVIBMb++iF5hGz1rzNy9x3ZGCWVK/e7C8Pn32eCmaB7+Jset+WEjbM
+         3zcuvoflWqeCYSnDw5oE5T2RhJUNBNSBoh/vmpZn4i4FMokXXkdPjsVM1db/80XWjtIl
+         W7tw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776179682; x=1776784482;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=G4aks4H+FpBEhHapfREL4acDuXkNuXLZB9iHD5QRayk=;
+        b=hkpIXzbOu85dnf7wHvptqGenO2YN3q/6sQlse7edyUuXvN/o+cHnundsN0O8qDH2oz
+         8lCt5EwbPXdnDlBDGmHL89puKg047hENv24gkXHgxCqHhcvJ8b5n73HAFEMMLUhhj/Sg
+         lF4h9vVp/hko6L3yI7aKy153lrqED4h6SSixIXuVmka5QJuO7ztPmp0EOwZpbrIr37Ah
+         a7Bnxap1qTtmEuHKmWcFj5lXj7wgRZRiwmLj0kOqxHGEzsNOTAajBaDO2/rX90JNpXP8
+         vTWCG6lLiT6noD1ocd6YHUwYeYEC2OLtae6687vQAGVoz83bYB6Nx4os1jR9RnAbd7E8
+         6AFg==
+X-Forwarded-Encrypted: i=1; AFNElJ+JVj4KZnMkaKYIQ6ooXvGPHaDgFOAKpLeeelI1si/ZDg+EY/bEsX4em3VRcIMzyYBhT5580Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0Ywv1kPkc1iprxq9h/qYgEBoy8LsBF+ZD7oUd3aTO6+0CE2EsEqG
+	//mHWwZalGyDON3ASShVmDDxAkUL0ttH6f5MevuiGEEULo8DRtm83MAAyCQF8qlL+uzKurpuQkg
+	17ZdR8rAknaORW5L1bi4nxKSEdImqbxyjxjn/3LhiOlyQjI/uAbIqc7DB2g==
+X-Gm-Gg: AeBDieuXiPhKradGGXUoCoih2J6+wnCvuJ2FzNspljIIFZSNxf6RNcbPdrg/lZZyobh
+	4WlLfL+SQWvx6T4Ga5sMuUoMiBFhDd/36zUQHvKN9ILF4nYrO1XeJNuKC0Chqv335fpxjkfiJhX
+	yhhx0tK5FECxll80CINb9JSkSI2q0NstMoTB9Krjvq2wXsfUEpXW0Z9OeS40qyUw9SBL6CCPLBf
+	nH/ZGlycswFu/XIX5Lbey1wSfEV0iT4ow6HrmllidCp+hJCB8HxWj01cL4ohQ2MN4EYG1IOdLLU
+	A2pS/jwNVJH7l512Fbvn8wULEIaBg74STGyL8e3Jcm3zC7KpTO4wopwvhctKWFedpiIirwHEqxs
+	6UQii/i1SecWj0bmRfRpihNXcuk77iZyCaMVl56gfpPIhNmj80e1FSStukvtTDGia53T72r4O3O
+	P/RAMQrefVbOKUTGHu0Z2h7eJUQAkZAZK7B3EPIkU5IEd1hA==
+X-Received: by 2002:a05:6102:441b:b0:609:4d86:77b with SMTP id ada2fe7eead31-60a00f39005mr8189076137.24.1776179681659;
+        Tue, 14 Apr 2026 08:14:41 -0700 (PDT)
+X-Received: by 2002:a05:6102:441b:b0:609:4d86:77b with SMTP id ada2fe7eead31-60a00f39005mr8189005137.24.1776179681134;
+        Tue, 14 Apr 2026 08:14:41 -0700 (PDT)
+Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-38e492702f7sm31782441fa.9.2026.04.14.08.14.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Apr 2026 08:14:39 -0700 (PDT)
+Date: Tue, 14 Apr 2026 18:14:38 +0300
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+To: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+Cc: Bryan O'Donoghue <bod@kernel.org>,
+        Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
+        Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Stefan Schmidt <stefan.schmidt@linaro.org>,
+        Hans Verkuil <hverkuil@kernel.org>, linux-media@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Subject: Re: [PATCH 02/11] media: iris: Add iris vpu bus support and register
+ it with iommu_buses
+Message-ID: <eqxeib5ci42ox4o7l45yjwgsjwjyhekojiigpxj6s5npjw5cwq@ggbtohqh3pip>
+References: <20260414-glymur-v1-0-7d3d1cf57b16@oss.qualcomm.com>
+ <20260414-glymur-v1-2-7d3d1cf57b16@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY1PR12MB9601:EE_|DS0PR12MB9323:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1408c0cc-6989-4770-165c-08de9a310cc6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|366016|376014|22082099003|18002099003|56012099003;
-X-Microsoft-Antispam-Message-Info:
-	a4a6cOuu1iCiYfWXqgDO/2EeXGt+syzq3T1utQNFOibln8ObNjgl2d5IrKouDxYiqrvQ0darE2MBTBu0H/y1vVFOap1hZS1kvh5pMlts4bRNc/nKG2cPkcOLzJqK9c5FWAJa4Lc1n4THMwgLlYxXNkVBkRfx6siKsDpM0mEq7KwNsWSmjFpWiFGxnEkNv5R6OH+5y/2ibzck3vrXmRjYHYot4tgmmiWpA6/n9VvXoxmiBOlM+zTth1lt+lpcWyxyeTaYPwaw84RijLpLOYGjqF6bE/FyA28I0mAp2++cfoKjmTxleLxzYomrf32fs1pu8AEHrYUYsln96XtcjIuBlbMATzrChN6a8hKL6KVLocVQKsAVmbHdnXVWNJhkwSnEYSaCVqXc3tW5O/VsdTmoEu8u8qPhan+XoYY+LTOEwSEWM383vOKzoAEKPJAKmqCahOliEtc2ZhCtvUlOIlvBqv/vj2G3nlgjEcy6/EXca7jqXUdbkejjAzL99lE3igH9ks77kYCGlhzUd61ZLqyahEGRGbRxpwV+EdTP4AJ2T49efODoz86PvvoLk7sNiG1WxEe+NqBOww9hP1rycDqM5X8RzGMRxjWDxyeO2EX2K6NyWOqKEOetU4U2fnT7sM2xcwNerZbisuXacLFizI4rsY3ahPumQa89IlF5+sspLD283N3eN6OPhOh1DIuEtCXLgbu+zHi32SQix2vV0hK1rhBBG8o+97PXrsaQv6DbiRg=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY1PR12MB9601.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(22082099003)(18002099003)(56012099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?0XKQJq/QjMu8uukzp2VzgnmpYy009W6r+9XfkrfaM0N4Rid2VrWHtCUKuAAj?=
- =?us-ascii?Q?HDh7N1MzIy0chlbtrRzU5oH1Fdh6AH94v77BPh9biJ2DR0M4evqahYi23O2x?=
- =?us-ascii?Q?BAmVMk706CfQ0RtOBvfmFW88YZ4D4fM9CExdW2PFzaRov+0gKBVVjfdyLoUa?=
- =?us-ascii?Q?/4x4JKDE+gU+6xzfDKancQDAgPXeZS4KZCe622D8QyUIqpwroUwQ4gXJcSuu?=
- =?us-ascii?Q?1lFo443CJHnAULDyUZZXw+5CzxpNr1avQ/K9otaaWsiRoYY8sFmrt4ptugoT?=
- =?us-ascii?Q?bIN2KN3EpDg5y7hdm6NOzAVzgeqNPSCPMKlOmI5a+U9JpzvqLztpMDY8RZrw?=
- =?us-ascii?Q?gTrzE5fgVESK9KMsQtiJrE1tZ5MO/MuG9q7RpNFayNgJLqSvZjnIvTyIQtCc?=
- =?us-ascii?Q?2gqgS8kiEzljYx88umHoYajmjf85+766k2jsWMhnitlSi2uc6uEn6pxARvg3?=
- =?us-ascii?Q?WI1s3S8cn2lTBAPC4xuM8nq3fzr36SkHGsucETVzporRPX9EREgrg6KBygCm?=
- =?us-ascii?Q?x8x2DCVaKk0rXUnXX2rDkU+dlm422/eEWFTTy3i+A3KBxkpU6I/aiMtkmo9N?=
- =?us-ascii?Q?JShEVB93bJ7NkkCHMxvV4MuxLNXQtjATym1Bdb6CPQ88epar5wlNiU8vCtEA?=
- =?us-ascii?Q?eAJ05kyx+rZmfXz2Zep+QmHRwqwqNA7NtIfJ0wWaIOAt019fY0UVoXSj5PKD?=
- =?us-ascii?Q?oIBDYT7+u22DxrozOsFqYiMpE6vmD4NJx8x0LVdDHXwON4B8q78zFdiBX9au?=
- =?us-ascii?Q?rhcBF//1qonZIPHf4TXyKtLNQ9e2ALKUTL2HA1MfuzIL016hVZODD+oXrtDK?=
- =?us-ascii?Q?rYbyG0+Q0bdPt2BH36s/ifDMT4HHNcb6N+ylmYZRLm/B9vM2gABciCMutGXk?=
- =?us-ascii?Q?4R/o5yEsu58RB6DVNqE04ED99/dxxnOd1JliNjQObdtcUJtm4J/VubhhK8i6?=
- =?us-ascii?Q?sADpwkDG2vymkMS+/cWo66WTzLYoqyxIB0SYdix5sLrG5z9+rINsBLWIAB+F?=
- =?us-ascii?Q?L2k02/hj1t4EMRCqmYnNeSaJsXPWZiiQ47i0c3LCaf81grOWh60AGdfjI6DY?=
- =?us-ascii?Q?VPfZWW6I0LfnovgiEx7krh27bux+33MMPRqSW/PxkOx8PnSTY9bmPcxeA5Nc?=
- =?us-ascii?Q?tFe5ppdqhO+B6Q3dYz0mOos2O1YOL07cdLMyVIHBFlvWZeTkwRx+o8eCeM+V?=
- =?us-ascii?Q?NHqHjzoafM8x5RWVgufSFS/N7VfEcqnvL/AFUkRfhoOzpumFjtSRwZU8435A?=
- =?us-ascii?Q?Lhkk116glYuD4nUf7j7DqDjYgUSmbq3/3Z+SEYeh7VegJbXf/fwOhPT+YfkS?=
- =?us-ascii?Q?X/bVUC7fETi+PTa9rY8lz0n/N/EHZN+ftTSr6s53ryXkeYs8g0wqABQZiKF8?=
- =?us-ascii?Q?gVgCPqqbdMpaX58ChXkoNnIEt9yk/COmsc+GgosSy528rk45rJ8e3DQUsA4E?=
- =?us-ascii?Q?4UCdMo/rGekifNSoxSgNLe20jH1RSI4iazEviUTN4D+su5E6A1wrY1DbYdjX?=
- =?us-ascii?Q?LwNcffivepUt9RohgLtvO+eLVFFcUt+FjWF6/WYg2RRH/Ek9pe7Gniah4qF8?=
- =?us-ascii?Q?JxTnD2IRduN3VRZKWKU5Zo5xXy4QA+iIoJRWb7P9N2aacM8HpCnksrePgv/U?=
- =?us-ascii?Q?lH1ceo+eA2BaCNJDZ/uAbwUF5oNEUr78KahY9lBQ3cxaDOJAwwlb4inFkk+H?=
- =?us-ascii?Q?OZLQpWks+EQgAjjcyogWvoRLs99bAqPvqAeKgNjXZIc94w0J?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1408c0cc-6989-4770-165c-08de9a310cc6
-X-MS-Exchange-CrossTenant-AuthSource: CY1PR12MB9601.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2026 14:20:59.3647
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8vo3st3s8+pS5YgM0IqV3PYb8JNhD4roNr2VEEiS80TGskMRwv/1FCAt9zkSI+Hs
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB9323
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260414-glymur-v1-2-7d3d1cf57b16@oss.qualcomm.com>
+X-Proofpoint-ORIG-GUID: Q3f2QXhuJF77SbqvNi14j2wbcuBL1NWS
+X-Authority-Analysis: v=2.4 cv=HKfz0Itv c=1 sm=1 tr=0 ts=69de59e2 cx=c_pps
+ a=5HAIKLe1ejAbszaTRHs9Ug==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
+ a=A5OVakUREuEA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=eoimf2acIAo5FJnRuUoq:22 a=EUspDBNiAAAA:8
+ a=A7GDoH_M6FUROJucG8cA:9 a=CjuIK1q_8ugA:10 a=gYDTvv6II1OnSo0itH1n:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDE0MDE0MyBTYWx0ZWRfXzlATDKaun7N/
+ BMiZkajN6IXKNVHVCgqekNTa0SgTpjiIPJ7roMqbjZ3ArTo+PHV2bpWY63gOGKE9mo4XBuPAIsU
+ i43RjBwUDiluctaxxM1eQCQS+wEW8z7HHn2R7mYUgDFskblY/5r3SiMqloV/bHfB96PzlkB4660
+ FDkAQPzMvDW3WAZpDTaOfCKHhtx4d6V5SaAw2BwBRB1a58cubPLBUxBTN9Mg+YfLS2CfWfiELBj
+ WEzig9/cQYHGfIBycROLcp7IWo4oBim66uUKfxvMd0g0jh9oNLwMR39okCQjHW/OKAIR+cDGc0d
+ xVgFrNj7pEF92HI4i11ryTLVPbjB1i1GvqM4KR2/sdC/C0rMRMfCwSF29nrvQ6Cy/aGZ4db+FiX
+ rz5P+VPuhEEeDLj5RG+zR6Z/gKqMQZjU2KMtooJpYv6rJt/zPdZkDxsFXEWtSW1aiN2hqKWBuA5
+ AbWhKkdHCdkeHafU9hQ==
+X-Proofpoint-GUID: Q3f2QXhuJF77SbqvNi14j2wbcuBL1NWS
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-04-14_03,2026-04-13_04,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 spamscore=0 lowpriorityscore=0 adultscore=0 priorityscore=1501
+ clxscore=1015 bulkscore=0 phishscore=0 suspectscore=0 impostorscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2604070000 definitions=main-2604140143
 
-On Tue, Apr 07, 2026 at 12:46:44PM -0700, Nicolin Chen wrote:
-> Shuai found that cxl_reset_bus_function() calls pci_reset_bus_function()
-> internally while both are calling pci_dev_reset_iommu_prepare/done().
+On Tue, Apr 14, 2026 at 10:29:58AM +0530, Vishnu Reddy wrote:
+> From: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
 > 
-> As pci_dev_reset_iommu_prepare() doesn't support re-entry, the inner call
-> will trigger a WARN_ON and return -EBUSY, resulting in failing the entire
-> device reset.
+> Add a dedicated iris VPU bus type and register it into the iommu_buses
+> list. Iris devices require their own bus so that each device can run its
+> own dma_configure() logic.
+
+This really tells nothing, unless one has full context about the Iris
+needs. Start by describing the issue (that the device needs to have
+multiple devices talking to describe IOMMUs / VAs for several hardware
+functions), then continue by describing what is needed from the IOMMU
+subsys.
+
 > 
-> On the other hand, removing the outer calls in the PCI callers is unsafe.
-> As pointed out by Kevin, device-specific quirks like reset_hinic_vf_dev()
-> execute custom firmware waits after their inner pcie_flr() completes. If
-> the IOMMU protection relies solely on the inner reset, the IOMMU will be
-> unblocked prematurely while the device is still resetting.
-> 
-> Instead, fix this by making pci_dev_reset_iommu_prepare/done() reentrant.
-> 
-> Given the IOMMU core tracks the resetting state per iommu_group while the
-> reset is per device, this has to track at the group_device level as well.
-> 
-> Introduce a 'reset_depth' and a 'blocked' flag to struct group_device, to
-> handle the re-entries on the same device. This allows multi-device groups
-> to isolate concurrent device resets independently.
-> 
-> Note that iommu_deferred_attach() and iommu_driver_get_domain_for_dev()
-> both now check the per-device 'gdev->blocked' flag instead of a per-group
-> flag like 'group->resetting_domain'. This is actually more precise. Also,
-> this 'gdev->blocked' will be useful in the future work to flag the device
-> blocked by an ongoing/failed reset or quarantine.
-> 
-> As the reset routine is per gdev, it cannot clear group->resetting_domain
-> without iterating over the device list to ensure no other device is being
-> reset. Simplify it by replacing the resetting_domain with a 'recovery_cnt'
-> in the struct iommu_group.
-> 
-> Since both helpers are now per gdev, call the per-device set_dev_pasid op
-> to recover PASID domains. And add 'max_pasids > 0' checks in both helpers.
-> 
-> Fixes: c279e83953d9 ("iommu: Introduce pci_dev_reset_iommu_prepare/done()")
-> Cc: stable@vger.kernel.org
-> Reported-by: Shuai Xue <xueshuai@linux.alibaba.com>
-> Closes: https://lore.kernel.org/all/absKsk7qQOwzhpzv@Asurada-Nvidia/
-> Suggested-by: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
 > ---
-> Changelog
->  v6:
->   * Update inline comments and commit message
->   * Add "max_pasids > 0" condition in both helpers
->  v5:
->   https://lore.kernel.org/all/20260404050243.141366-1-nicolinc@nvidia.com/
->   * Add 'blocked' to fix iommu_driver_get_domain_for_dev() return.
->  v4:
->   https://lore.kernel.org/all/20260324014056.36103-1-nicolinc@nvidia.com/
->   * Rename 'reset_cnt' to 'recovery_cnt'
->  v3:
->   https://lore.kernel.org/all/20260321223930.10836-1-nicolinc@nvidia.com/
->   * Turn prepare()/done() to be per-gdev
->   * Use reset_depth to track nested re-entries
->   * Replace group->resetting_domain with a reset_cnt
->  v2:
->   https://lore.kernel.org/all/20260319043135.1153534-1-nicolinc@nvidia.com/
->   * Fix in the helpers by allowing re-entry
->  v1:
->   https://lore.kernel.org/all/20260318220028.1146905-1-nicolinc@nvidia.com/
+>  drivers/iommu/iommu.c                           |  4 ++++
+>  drivers/media/platform/qcom/iris/Makefile       |  4 ++++
+>  drivers/media/platform/qcom/iris/iris_vpu_bus.c | 32 +++++++++++++++++++++++++
+>  include/linux/iris_vpu_bus.h                    | 13 ++++++++++
+
+How are you supposed to merge this? Through IOMMU tree? Through venus
+tree? Can we add one single bus to the IOMMU code and use it for Iris,
+Venus, FastRPC, host1x and all other device drivers which require
+per-device DMA configuration?
+
+Your colleagues from the FastRPC team posted a very similar code few
+weeks ago and got exactly the same feedback. Is there a reason why your
+teams don't sync on the IOMMU parts at all?
+
+>  4 files changed, 53 insertions(+)
 > 
->  drivers/iommu/iommu.c | 148 +++++++++++++++++++++++++++++++-----------
->  1 file changed, 110 insertions(+), 38 deletions(-)
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 61c12ba78206..d8ed6ef70ecd 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -13,6 +13,7 @@
+>  #include <linux/bug.h>
+>  #include <linux/types.h>
+>  #include <linux/init.h>
+> +#include <linux/iris_vpu_bus.h>
+>  #include <linux/export.h>
+>  #include <linux/slab.h>
+>  #include <linux/errno.h>
+> @@ -179,6 +180,9 @@ static const struct bus_type * const iommu_buses[] = {
+>  #ifdef CONFIG_CDX_BUS
+>  	&cdx_bus_type,
+>  #endif
+> +#if IS_ENABLED(CONFIG_VIDEO_QCOM_IRIS)
+> +	&iris_vpu_bus_type,
+> +#endif
+>  };
+>  
+>  /*
+> diff --git a/drivers/media/platform/qcom/iris/Makefile b/drivers/media/platform/qcom/iris/Makefile
+> index 2abbd3aeb4af..6f4052b98491 100644
+> --- a/drivers/media/platform/qcom/iris/Makefile
+> +++ b/drivers/media/platform/qcom/iris/Makefile
+> @@ -31,3 +31,7 @@ qcom-iris-objs += iris_platform_gen1.o
+>  endif
+>  
+>  obj-$(CONFIG_VIDEO_QCOM_IRIS) += qcom-iris.o
+> +
+> +ifdef CONFIG_VIDEO_QCOM_IRIS
+> +obj-y += iris_vpu_bus.o
+> +endif
+> diff --git a/drivers/media/platform/qcom/iris/iris_vpu_bus.c b/drivers/media/platform/qcom/iris/iris_vpu_bus.c
+> new file mode 100644
+> index 000000000000..b51bb4b82b0e
+> --- /dev/null
+> +++ b/drivers/media/platform/qcom/iris/iris_vpu_bus.c
+> @@ -0,0 +1,32 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (c) Qualcomm Innovation Center, Inc. All rights reserved.
+> + */
+> +
+> +#include <linux/device.h>
+> +#include <linux/of_device.h>
+> +
+> +#include "iris_platform_common.h"
+> +
+> +static int iris_vpu_bus_dma_configure(struct device *dev)
+> +{
+> +	const u32 *f_id = dev_get_drvdata(dev);
+> +
+> +	if (!f_id)
+> +		return -ENODEV;
+> +
+> +	return of_dma_configure_id(dev, dev->parent->of_node, true, f_id);
 
-This looks reasonable to me.
+I think it was discussed that this is not enough. Some of devices need
+multiple function IDs.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> +}
+> +
+> +const struct bus_type iris_vpu_bus_type = {
+> +	.name = "iris-vpu-bus",
+> +	.dma_configure = iris_vpu_bus_dma_configure,
+> +};
+> +EXPORT_SYMBOL_GPL(iris_vpu_bus_type);
+> +
+> +static int __init iris_vpu_bus_init(void)
+> +{
+> +	return bus_register(&iris_vpu_bus_type);
+> +}
+> +
+> +postcore_initcall(iris_vpu_bus_init);
+> diff --git a/include/linux/iris_vpu_bus.h b/include/linux/iris_vpu_bus.h
+> new file mode 100644
+> index 000000000000..5704b226f7d6
+> --- /dev/null
+> +++ b/include/linux/iris_vpu_bus.h
+> @@ -0,0 +1,13 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/*
+> + * Copyright (c) Qualcomm Innovation Center, Inc. All rights reserved.
+> + */
+> +
+> +#ifndef __IRIS_VPU_BUS_H__
+> +#define __IRIS_VPU_BUS_H__
+> +
+> +#if IS_ENABLED(CONFIG_VIDEO_QCOM_IRIS)
+> +extern const struct bus_type iris_vpu_bus_type;
+> +#endif
+> +
+> +#endif /* __IRIS_VPU_BUS_H__ */
+> 
+> -- 
+> 2.34.1
+> 
 
-Jason
+-- 
+With best wishes
+Dmitry
