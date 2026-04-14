@@ -1,134 +1,101 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E699D28CF4A;
-	Tue, 14 Apr 2026 16:31:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFA462253EC;
+	Tue, 14 Apr 2026 16:50:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776184281; cv=none; b=PrUiBhdal3tXDKAAdXKsXg32SrmHbjRC4+XqoQomvPMRLTFmtSsCeNOlnc9KR/YziURHh716fvR7L+x8keUegmZ5auc6eTkRkud8agHipLtgMVVUHVBppEXcJlNkQlmQXsB2sMo8Rw4eALfKQVxjykBrhlqb/FAMo1Wuj3iOepg=
+	t=1776185405; cv=none; b=SFWSUHYj/F/21jmZvg/gM7em7WlvfeVsvL2k11kyVywHmN8FBWrLZVrEhGm6e1/JUVfBrPYTvN8EUvPFSLCxjsZNDHGgy/MhxgMgkt+oQ7/lHJQ/i1sa0/EYIY9eT66jbJtDXY4Lcg+yT7fAylASXd/Somql2Wka746gn0wZXhA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776184281; c=relaxed/simple;
-	bh=gNqdE9d81DRyUjeuqyd3JZqlKkL8O3oEZBn4pvoKquI=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=hAq43hgCJMvUBQRXfAJvfl8OtMppeqeaSfc4Okwv6GJF7E9ilqGtYA5LL9ouqaVifuLbrThmKMjAQpNcYfN6DKtw06mjiOXdzSVVwAZyLV47mRHN7iXr5fJnu+GVvub/TITUymGuMN5q+BSuuzuCz8bpdY11Ux7QuA+YBKYp9og=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=A+JL0elu; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1776185405; c=relaxed/simple;
+	bh=Dge0DCS/QYtIgyrk1+RNGXNQhBsk1R+oQTAvvrTBHr0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=QgBrcqtMHNUbz6oO1y+FuO2pqpQB33U3rMeoyVtZEsKVnhYi9xFTMRdm6VG1ap59S+Xt8zYYWsOHGXWehPQTIL4ES1xGmHytQkanf4YMgnnNE7pIWrbtyMc9v9JKFVPDcvc4PkYpyQ5KOY56vDRTIW7hu/0oGuk2bLFRdObpN38=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=qLFpEGvN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="A+JL0elu"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5E285C19425;
-	Tue, 14 Apr 2026 16:31:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776184280;
-	bh=gNqdE9d81DRyUjeuqyd3JZqlKkL8O3oEZBn4pvoKquI=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=A+JL0eluU8YhIaTg9TVLcFGK6AaI6NWA8iV8RdB5LAie5AE4Tj8N8vWVSWz0/AAyg
-	 TsztY8nxACWFQ70K/mdmRl08JzP6x9Wc/xTJbHrhcL2CGVFUzS6ATo4iYvPDkwKnnd
-	 LEMsorVqoZY16SqhRbYn3aR34yLlNZ7JGwKv5vb1n6phC66iFe9Vjta2fOOYotaTCj
-	 XyEBM/bsg3oNQE86A5m8KB2NJ7LJctVDMxLTF8NtUpR002wXFmMakuRjssdtfFxhqi
-	 6Jb3Vfb+iZ9vgyoKMo/Ighkls5jNFyanvzUcKlkpvc3kfeLeZLwxQR2f2MEYrQh5g3
-	 Gjga8N+Z85RzA==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47ED0F9D0DC;
-	Tue, 14 Apr 2026 16:31:20 +0000 (UTC)
-From: Ekansh Gupta via B4 Relay <devnull+ekansh.gupta.oss.qualcomm.com@kernel.org>
-Subject: [PATCH 0/3] Introduce generic context device bus for IOMMU context
- isolation
-Date: Tue, 14 Apr 2026 22:01:14 +0530
-Message-Id: <20260414-computebus-v1-0-4d904d40926a@oss.qualcomm.com>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="qLFpEGvN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5F30C19425;
+	Tue, 14 Apr 2026 16:50:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1776185405;
+	bh=Dge0DCS/QYtIgyrk1+RNGXNQhBsk1R+oQTAvvrTBHr0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=qLFpEGvNOn2J0c3amth0T/BSS+qAPInX3J/3HfeiAHDkONa2ZuJWdBe2JmaB48Vsy
+	 8yH51OyTrvDIOmka54WHeVakebbJVkeAn5lSkClMKw5rdVnpJMF7H8+02i/sxwXgCD
+	 4co+tT3gSWcz22dRr8rE1irOoT5huoJmemctg5mA=
+Date: Tue, 14 Apr 2026 18:49:35 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: ekansh.gupta@oss.qualcomm.com
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Mikko Perttunen <mperttunen@nvidia.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Arnd Bergmann <arnd@arndb.de>,
+	Srinivas Kandagatla <srini@kernel.org>,
+	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+	Bharath Kumar <quic_bkumar@quicinc.com>,
+	Chenna Kesava Raju <quic_chennak@quicinc.com>,
+	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
+	dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org,
+	iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH 1/3] drivers: base: Add generic context device bus
+Message-ID: <2026041418-volley-composer-6363@gregkh>
+References: <20260414-computebus-v1-0-4d904d40926a@oss.qualcomm.com>
+ <20260414-computebus-v1-1-4d904d40926a@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIANJr3mkC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDIzMDE0MT3eT83ILSktSk0mLdVAtTozRLS5PUVCNTJaCGgqLUtMwKsGHRsbW
- 1AE2VhC1cAAAA
-X-Change-ID: 20260414-computebus-e852f994ee25
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>, 
- Thierry Reding <thierry.reding@kernel.org>, 
- Mikko Perttunen <mperttunen@nvidia.com>, David Airlie <airlied@gmail.com>, 
- Simona Vetter <simona@ffwll.ch>, Joerg Roedel <joro@8bytes.org>, 
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
- Arnd Bergmann <arnd@arndb.de>, Srinivas Kandagatla <srini@kernel.org>, 
- Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
- Bharath Kumar <quic_bkumar@quicinc.com>, 
- Chenna Kesava Raju <quic_chennak@quicinc.com>
-Cc: linux-kernel@vger.kernel.org, driver-core@lists.linux.dev, 
- dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org, 
- iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
- Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1776184278; l=2594;
- i=ekansh.gupta@oss.qualcomm.com; s=20260223; h=from:subject:message-id;
- bh=gNqdE9d81DRyUjeuqyd3JZqlKkL8O3oEZBn4pvoKquI=;
- b=baxjKIj5uScDYrCIYv1qYvM3a63CPT0wbgKn65lPfsAUxTA/AlgOpd2u7suXXwN600FcGRQqF
- 3nuqpzm5lmqBrQTEYy04WW8GTzfnkrDDDEQwfOQK54jlvxWaVJzVsAz
-X-Developer-Key: i=ekansh.gupta@oss.qualcomm.com; a=ed25519;
- pk=n0SepARizye+pYjhjg1RA5J+Nq4+IJbyRcBybU+/ERQ=
-X-Endpoint-Received: by B4 Relay for ekansh.gupta@oss.qualcomm.com/20260223
- with auth_id=647
-X-Original-From: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
-Reply-To: ekansh.gupta@oss.qualcomm.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260414-computebus-v1-1-4d904d40926a@oss.qualcomm.com>
 
-This series introduces a generic context device bus to replace driver-specific
-implementations and enable proper IOMMU handling of synthetic context bank
-devices used by accelerator and GPU drivers.
+On Tue, Apr 14, 2026 at 10:01:15PM +0530, Ekansh Gupta via B4 Relay wrote:
+> From: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+> 
+> Introduce a new generic bus type for synthetic context bank devices
+> that require IOMMU context isolation. This bus provides a shared
+> infrastructure for accelerator and GPU drivers that create virtual
+> devices representing IOMMU context banks.
+> 
+> Currently, drivers like host1x implement their own bus types for
+> context devices. This generic implementation allows multiple drivers
+> to share the same bus infrastructure, simplifying the IOMMU subsystem
+> integration and reducing code duplication.
+> 
+> Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+> ---
+>  drivers/base/Kconfig        |  3 +++
+>  drivers/base/Makefile       |  1 +
+>  drivers/base/context_bus.c  | 24 ++++++++++++++++++++++++
+>  include/linux/context_bus.h | 15 +++++++++++++++
+>  4 files changed, 43 insertions(+)
+> 
+> diff --git a/drivers/base/Kconfig b/drivers/base/Kconfig
+> index f7d385cbd3ba..479bc4bb442b 100644
+> --- a/drivers/base/Kconfig
+> +++ b/drivers/base/Kconfig
+> @@ -4,6 +4,9 @@ menu "Generic Driver Options"
+>  config AUXILIARY_BUS
+>  	bool
+>  
+> +config CONTEXT_DEVICE_BUS
+> +	bool
 
-Background:
------------
-During review of the fastrpc driver changes [1], it was pointed out that using
-a platform driver for compute bank (CB) devices was incorrect since these are
-synthetic IOMMU context banks, not real platform devices. The platform driver
-approach also had a race condition where device nodes were created before
-channel resources were initialized, and probe was async, allowing applications
-to open devices before sessions were available.
+So this is a context-free bus?  I.e. no documentation?
 
-The reviewer suggested following the pattern used in host1x_memory_context_list_init()
-and creating devices manually. During review of the QDA driver [2], it was
-further suggested to create a generic bus type that could be shared across
-multiple drivers rather than having each driver implement its own bus.
+:)
 
-This series implements that suggestion by:
-1. Creating a generic context_device_bus_type in drivers/base/
-2. Migrating the existing host1x driver to use it
-3. Converting fastrpc to use it, fixing the race condition in the process
+This feels really odd, this "bus" isn't doing anything at all.  So why
+do you need it and can't use auxbus or faux?  
 
-References:
------------
-[1] Fastrpc platform driver review:
-    https://lore.kernel.org/all/golcrcr6voafr3fqsnihyjyut36sii55vzws4josfhkjjg3nie@ur43qq2kvlsv/
+You say something about an iommu, but yet this has no information about
+an iommu at all, so why are they somehow special?
 
-[2] QDA driver review requesting generic bus:
-    https://lore.kernel.org/all/en5tdgemre7vq5qihe6wnkbrro24vtzwfxwqrpnrrmugxoszs7@x2ox64zeznvd/
+You need to provide a lot more information here, sorry.
 
-Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
----
-Ekansh Gupta (3):
-      drivers: base: Add generic context device bus
-      gpu: host1x: Migrate to generic context device bus
-      misc: fastrpc: Use context device bus for compute banks
-
- drivers/base/Kconfig             |   3 +
- drivers/base/Makefile            |   1 +
- drivers/base/context_bus.c       |  24 ++++++
- drivers/gpu/host1x/Kconfig       |   5 +-
- drivers/gpu/host1x/Makefile      |   1 -
- drivers/gpu/host1x/context.c     |   2 +-
- drivers/gpu/host1x/context.h     |   3 +-
- drivers/gpu/host1x/context_bus.c |  26 ------
- drivers/iommu/iommu.c            |   6 +-
- drivers/misc/Kconfig             |   1 +
- drivers/misc/fastrpc.c           | 180 +++++++++++++++++++++++++++------------
- include/linux/context_bus.h      |  15 ++++
- 12 files changed, 174 insertions(+), 93 deletions(-)
----
-base-commit: 1c7cc4904160c6fc6377564140062d68a3dc93a0
-change-id: 20260414-computebus-e852f994ee25
-
-Best regards,
--- 
-Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
-
-
+greg k-h
