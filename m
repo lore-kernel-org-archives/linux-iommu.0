@@ -1,30 +1,29 @@
-Received: from out30-124.freemail.mail.aliyun.com (out30-124.freemail.mail.aliyun.com [115.124.30.124])
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD7453D7D70
-	for <iommu@lists.linux.dev>; Tue, 14 Apr 2026 11:02:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDA2F3537C4
+	for <iommu@lists.linux.dev>; Tue, 14 Apr 2026 11:02:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776164548; cv=none; b=bvvt4HvLWlxnOnnDQevByFPxd5prrUbA13QkngwQmouGVAx45PHk9uE8m5fn4f4JPX0CXp0jSs7nGyh3y4Cudfg3i6rOj0kgzgYZd1SX32D7JXVUvKP9pAg05BqQuAxSTxlGMGx1yQ04mJ0hAzbQ3JYuPcmzBR0RTjdp1CmcAJY=
+	t=1776164549; cv=none; b=jKtvMKSHSiZBQPZvnH8BgTFT02Xl53elf6AyQP4CD1MGH2TIelE1mTy8/F/+wF0MDpZy4ft3JpDzabEjQpatTtt9q1hb0To1Vr3bGv01r43ZR5w4izms28/QJ8FkVTZF7j8Inkmbiuo3hJMUer2yf0vnN6V+8lX7BDukI9MQX9U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776164548; c=relaxed/simple;
-	bh=V0gvljcvlAkXKyjaCXYyFK1TSQNGNz4yQzf51HrIbGY=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Nk88sQh3CinMoKwMbJF/8qqkNi4KQvIq5UVOqdNsF43KWs97h3cjXzkJU5gW3bmISivaPO1YB6BMtgjyR/h6NFJZ5S3onyZoiVaGoeOLQapiN73TvVVmFEp0032R9KXn4VySv+qmZTKsiyRf7jkNAOWitpLZEQa3MS7L9q/WZno=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=BZ69NpEv; arc=none smtp.client-ip=115.124.30.124
+	s=arc-20240116; t=1776164549; c=relaxed/simple;
+	bh=bUZjuwRqxe0zG75VdEd4j9GQcZjsplatMJu7LC7SuF4=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Kj6OXHQndGNdIyyPhXSw3f29fx3Z3cPcqRAJedwDgsPogzE0dfmI1QqOKYdJoby43OiPzzxDftjCp7L8H/jduGO/PhuRJid46C3a2GQKmPh6rXq0ChsB/1y7RQChbSHW1Qb6/hdwreOI/G11H+aQrtrfXMhrtccQDXCQWAPLfYc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=EphP+C9A; arc=none smtp.client-ip=115.124.30.133
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="BZ69NpEv"
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="EphP+C9A"
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
-	t=1776164539; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=rfB7a0xDWMYyCV9WZVJBD2hFjqsh3+EdQUgOYTQc0+w=;
-	b=BZ69NpEvwEYbdS5QBb0TUCFitfgzLw9VR7a/aomZghCbSl17sOVcUTjeiyv9r7itXvAxHbS4PZqIP+s6xFyO+uAVMGurA7BYseTsA6uIV/6nVttgtyHGPzDwV2CrXqnL0Li6OS0lflvDJrZJ/BCDcVMBxuHmK4a/2eCvPgLWVoY=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037033178;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0X11DRT3_1776164537;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X11DRT3_1776164537 cluster:ay36)
+	t=1776164538; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=nQO0WEe8PRJEZNBo6ma9yL1pusW/StlSU4Ir3Mof4CQ=;
+	b=EphP+C9ABrK2oP7xBJsPD/yuECum1ltzxm417J43klgX5i8ytUm3yKmGqKnIpG585AVeJu9CqJxCe01DCE1CrFR0E7vCCuXG5XgT5X3hdl7WFW1TGOqoVlLDiAyLHEtyaKIEcoKK65K/Q80o83aRuXu+VUwsog5yOxirwDfaEGc=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R751e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045098064;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0X11DRSf_1776164534;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X11DRSf_1776164534 cluster:ay36)
           by smtp.aliyun-inc.com;
-          Tue, 14 Apr 2026 19:02:18 +0800
+          Tue, 14 Apr 2026 19:02:16 +0800
 From: fangyu.yu@linux.alibaba.com
 To: joro@8bytes.org,
 	will@kernel.org,
@@ -47,12 +46,10 @@ Cc: guoren@kernel.org,
 	linux-riscv@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
 	Fangyu Yu <fangyu.yu@linux.alibaba.com>
-Subject: [PATCH v2 1/2] iommu/riscv: Advertise Svpbmt support to generic page table
-Date: Tue, 14 Apr 2026 19:02:11 +0800
-Message-Id: <20260414110212.79526-2-fangyu.yu@linux.alibaba.com>
+Subject: [PATCH v2 0/2] iommu/riscv: Support Svpbmt memory types in generic_pt
+Date: Tue, 14 Apr 2026 19:02:10 +0800
+Message-Id: <20260414110212.79526-1-fangyu.yu@linux.alibaba.com>
 X-Mailer: git-send-email 2.39.3 (Apple Git-146)
-In-Reply-To: <20260414110212.79526-1-fangyu.yu@linux.alibaba.com>
-References: <20260414110212.79526-1-fangyu.yu@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -63,50 +60,33 @@ Content-Transfer-Encoding: 8bit
 
 From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 
-The RISC-V IOMMU can optionally support Svpbmt page-based memory types
-in its page table format. When present,the generic page table code can
-use this capability to encode memory attributes (e.g. MMIO vs normal
-memory) in PTEs.
+RISC-V Svpbmt adds page-based memory types (PBMT) to PTEs, allowing
+mappings to be tagged as e.g. normal memory, non-cacheable memory, or
+I/O.
 
-Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Anup Patel <anup@brainfault.org>
-Reviewed-by: Guo Ren <guoren@kernel.org>
-Reviewed-by: Nutty Liu <nutty.liu@hotmail.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+This series wires the RISC-V IOMMU Svpbmt capability into generic_pt
+and uses PBMT to encode device memory attributes for IOMMU mappings.
+
+This series builds on top of the new RISC-V IOMMU page table patches:
+https://patch.msgid.link/r/0-v3-9dbf0a72a51c+302-iommu_pt_riscv_jgg@nvidia.com
+
 ---
- drivers/iommu/riscv/iommu.c       | 2 ++
- include/linux/generic_pt/common.h | 4 ++++
- 2 files changed, 6 insertions(+)
+Changes in v2:
+    - Add a comment for PT_FEAT_RISCV_SVPBMT (per Kevin and Jason).
+    - Clarify PBMT encoding condition, sort PBMT-related bits by
+      position, and drop the redundant PBMT clear(per Kevin).
+    - Link to v1:
+      https://lore.kernel.org/linux-iommu/20260411022223.91029-1-fangyu.yu@linux.alibaba.com/
 
-diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-index c7d0342aa747..e53883935563 100644
---- a/drivers/iommu/riscv/iommu.c
-+++ b/drivers/iommu/riscv/iommu.c
-@@ -1194,6 +1194,8 @@ static struct iommu_domain *riscv_iommu_alloc_paging_domain(struct device *dev)
- 	cfg.common.features = BIT(PT_FEAT_SIGN_EXTEND) |
- 			      BIT(PT_FEAT_FLUSH_RANGE) |
- 			      BIT(PT_FEAT_RISCV_SVNAPOT_64K);
-+	if (iommu->caps & RISCV_IOMMU_CAPABILITIES_SVPBMT)
-+		cfg.common.features |= BIT(PT_FEAT_RISCV_SVPBMT);
- 	domain->riscvpt.iommu.nid = dev_to_node(iommu->dev);
- 	domain->domain.ops = &riscv_iommu_paging_domain_ops;
- 
-diff --git a/include/linux/generic_pt/common.h b/include/linux/generic_pt/common.h
-index fc5d0b5edadc..2683e5b38998 100644
---- a/include/linux/generic_pt/common.h
-+++ b/include/linux/generic_pt/common.h
-@@ -188,6 +188,10 @@ enum {
- 	 * Support the 64k contiguous page size following the Svnapot extension.
- 	 */
- 	PT_FEAT_RISCV_SVNAPOT_64K = PT_FEAT_FMT_START,
-+	/*
-+	 * Support Svpbmt extension: encode page-based memory type (PBMT) in PTEs.
-+	 */
-+	PT_FEAT_RISCV_SVPBMT,
- 
- };
- 
+Fangyu Yu (2):
+  iommu/riscv: Advertise Svpbmt support to generic page table
+  iommupt: Encode IOMMU_MMIO/IOMMU_CACHE via RISC-V Svpbmt bits
+
+ drivers/iommu/generic_pt/fmt/riscv.h | 8 ++++++++
+ drivers/iommu/riscv/iommu.c          | 2 ++
+ include/linux/generic_pt/common.h    | 4 ++++
+ 3 files changed, 14 insertions(+)
+
 -- 
 2.50.1
 
