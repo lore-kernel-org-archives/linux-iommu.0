@@ -1,30 +1,30 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CFB1937F8B9
-	for <iommu@lists.linux.dev>; Tue, 14 Apr 2026 21:14:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C4CB8382290
+	for <iommu@lists.linux.dev>; Tue, 14 Apr 2026 21:14:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776201264; cv=none; b=dm5wN8ZelIG5TQYExSRZTrnk4Kb/NIDVLlzj23EXZhKiDZHwtDbQchjI9L2cWcVkLai45SEzrK53DwyEBpGRLHpjkJS4UvBhQFaNudmqWfsbKPCCIZHihBI+TGJo5xF7ngMTdRCYJNVOg+uwI/V6m8M6sFCekRB/hGtH6IGqzGQ=
+	t=1776201264; cv=none; b=IXIsewjFJe1HHz5OLc4IaRU7Xc6egzSj6vPAF0rqs4Xsv/GzRzFJr74XD+/JAVLggACjA+QJUr5RUK9c87XjH68KNTeBN1sviu+o8BqwmEvJf5GyeYTFvME70vpaOzl5sggeMImKBhuMDi0YTrn4p3HPAGHUP0jy3yptEpntWyA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1776201264; c=relaxed/simple;
-	bh=V31Q3Af4wdCYq4VTT4ChM3OKL1fBC/ih/e2pbKE1f2M=;
+	bh=WurGjAPySDnxSs87Rz7to6pBVzCWRroBMaf7/9rmgL8=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=g8qodUMvT+cDHbur1N7kTv1IK7fnHG1+4EIGITCdoyJ5S7Vmddxtil0lpTJuJn7M0KcJiV6psfMgJGA5AQXCh8YHhJhpu8ZtX8cknwRbC4LbR0OoDPxd2lNwVk8I387TkVXlXd8/RfVlPjiVc/3sXpACj1hVCv9ayHld+gRMOMA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=F1wmVuWX; arc=none smtp.client-ip=13.77.154.182
+	 MIME-Version; b=huryRbcR8uqbXLNGdGBpnlhGQSrBhMDB/c19xtovxFGJM5924ZnE53CUT2A8H2HRDtuygEoYi6t4VEClW8EaAXLaXulmxeI10j9Iw6LoVmqJA/xTQsjYsacxx2Hf0F28Gl+n82EEMGQkUjuegmlXgB6S0i8Pu4zGvNeCUlYCIys=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=l+3rwstd; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="F1wmVuWX"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="l+3rwstd"
 Received: from DESKTOP-0403QTC.corp.microsoft.com (unknown [20.191.74.188])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 5ECEF20B6F1F;
-	Tue, 14 Apr 2026 14:14:20 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5ECEF20B6F1F
+	by linux.microsoft.com (Postfix) with ESMTPSA id 4685920B6F1B;
+	Tue, 14 Apr 2026 14:14:22 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 4685920B6F1B
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1776201260;
-	bh=Kwjfymmh3pQiKj6OmsaX+cYDKLyC7WNs0YCS0m8B5TQ=;
+	s=default; t=1776201262;
+	bh=5Pty+EK/52Y89Hf1Y5QloHTVW8bXBevk8NFrPi8hG1k=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=F1wmVuWXfx5tm/UhFRMafzxjMkqpKCtjX3JXVEYqtZmqOnLg9E13mC+FcpOe55pnQ
-	 WCO0J/pVCOAYpLfr/5G5yhsJlVFBsxXM+XH9LhW0FYJnS8YO1E8c+IJezB6EaF/AMD
-	 nHGerkeCopHEoH6lIC3dtOEY+61QCz6LPIWnggz4=
+	b=l+3rwstd9KDpXKl12D6liRYRGrQPHZOoGaeQESopXizr4hMMrq4cKZReORqETw01V
+	 4yQ5gVb141uXUL+J6kApQXqf4moT8eCvvDc2LX6Co60DEBM4sGaCGxhnrydONKfZQ9
+	 jYKz+2dX23jIvAMqH7xXJQV1srcsM00m129ayJqo=
 From: Jacob Pan <jacob.pan@linux.microsoft.com>
 To: linux-kernel@vger.kernel.org,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
@@ -42,9 +42,9 @@ Cc: skhawaja@google.com,
 	Will Deacon <will@kernel.org>,
 	Jacob Pan <jacob.pan@linux.microsoft.com>,
 	Baolu Lu <baolu.lu@linux.intel.com>
-Subject: [PATCH V4 08/10] vfio:selftest: Handle VFIO noiommu cdev
-Date: Tue, 14 Apr 2026 14:14:10 -0700
-Message-Id: <20260414211412.2729-9-jacob.pan@linux.microsoft.com>
+Subject: [PATCH V4 10/10] Documentation: Update VFIO NOIOMMU mode
+Date: Tue, 14 Apr 2026 14:14:12 -0700
+Message-Id: <20260414211412.2729-11-jacob.pan@linux.microsoft.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260414211412.2729-1-jacob.pan@linux.microsoft.com>
 References: <20260414211412.2729-1-jacob.pan@linux.microsoft.com>
@@ -56,115 +56,77 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-With unsafe DMA noiommu mode, the vfio devices are prefixed with
-noiommu-, e.g.
-/dev/vfio/
-|-- devices
-|   `-- noiommu-vfio0
-|-- noiommu-0
-`-- vfio
-Let vfio tests, such as luo kexec test, accommodate the noiommu device
-files.
+Document the NOIOMMU mode with newly added cdev support under iommufd.
 
+Cc: Jonathan Corbet <corbet@lwn.net>
 Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
 ---
- .../lib/include/libvfio/vfio_pci_device.h     |  1 +
- .../selftests/vfio/lib/vfio_pci_device.c      | 32 ++++++++++++++++---
- .../vfio/vfio_pci_liveupdate_kexec_test.c     |  9 ++++++
- 3 files changed, 38 insertions(+), 4 deletions(-)
+ Documentation/driver-api/vfio.rst | 45 +++++++++++++++++++++++++++++--
+ 1 file changed, 43 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/vfio/lib/include/libvfio/vfio_pci_device.h b/tools/testing/selftests/vfio/lib/include/libvfio/vfio_pci_device.h
-index 2389c7698335..e2721e36b37e 100644
---- a/tools/testing/selftests/vfio/lib/include/libvfio/vfio_pci_device.h
-+++ b/tools/testing/selftests/vfio/lib/include/libvfio/vfio_pci_device.h
-@@ -124,6 +124,7 @@ static inline bool vfio_pci_device_match(struct vfio_pci_device *device,
- }
+diff --git a/Documentation/driver-api/vfio.rst b/Documentation/driver-api/vfio.rst
+index 2a21a42c9386..da6f77414c3b 100644
+--- a/Documentation/driver-api/vfio.rst
++++ b/Documentation/driver-api/vfio.rst
+@@ -275,8 +275,6 @@ in a VFIO group.
+ With CONFIG_VFIO_DEVICE_CDEV=y the user can now acquire a device fd
+ by directly opening a character device /dev/vfio/devices/vfioX where
+ "X" is the number allocated uniquely by VFIO for registered devices.
+-cdev interface does not support noiommu devices, so user should use
+-the legacy group interface if noiommu is wanted.
  
- const char *vfio_pci_get_cdev_path(const char *bdf);
-+int vfio_pci_noiommu_mode_enabled(void);
+ The cdev only works with IOMMUFD.  Both VFIO drivers and applications
+ must adapt to the new cdev security model which requires using
+@@ -370,6 +368,49 @@ IOMMUFD IOAS/HWPT to enable userspace DMA::
  
- /* Low-level routines for setting up a struct vfio_pci_device */
- struct vfio_pci_device *vfio_pci_device_alloc(const char *bdf, struct iommu *iommu);
-diff --git a/tools/testing/selftests/vfio/lib/vfio_pci_device.c b/tools/testing/selftests/vfio/lib/vfio_pci_device.c
-index 66ee268110e2..1ba81d169208 100644
---- a/tools/testing/selftests/vfio/lib/vfio_pci_device.c
-+++ b/tools/testing/selftests/vfio/lib/vfio_pci_device.c
-@@ -225,11 +225,14 @@ void vfio_pci_group_setup(struct vfio_pci_device *device)
- 	struct vfio_group_status group_status = {
- 		.argsz = sizeof(group_status),
- 	};
--	char group_path[32];
-+	char group_path[64];
- 	int group;
+ 	/* Other device operations as stated in "VFIO Usage Example" */
  
- 	group = vfio_pci_get_group_from_dev(device->bdf);
--	snprintf(group_path, sizeof(group_path), "/dev/vfio/%d", group);
-+	if (vfio_pci_noiommu_mode_enabled())
-+		snprintf(group_path, sizeof(group_path), "/dev/vfio/noiommu-%d", group);
-+	else
-+		snprintf(group_path, sizeof(group_path), "/dev/vfio/%d", group);
- 
- 	device->group_fd = open(group_path, O_RDWR);
- 	VFIO_ASSERT_GE(device->group_fd, 0, "open(%s) failed\n", group_path);
-@@ -294,6 +297,24 @@ static void vfio_pci_device_setup(struct vfio_pci_device *device)
- 		device->msi_eventfds[i] = -1;
- }
- 
++VFIO NOIOMMU mode
++-------------------------------------------------------------------------------
++VFIO also supports a no-IOMMU mode, intended for usages where unsafe DMA can
++be performed by userspace drivers w/o physical IOMMU protection. This mode
++is controlled by the parameter:
 +
-+int vfio_pci_noiommu_mode_enabled(void)
-+{
-+	const char *path = "/sys/module/vfio/parameters/enable_unsafe_noiommu_mode";
-+	FILE *f;
-+	int c;
++/sys/module/vfio/parameters/enable_unsafe_noiommu_mode
 +
-+	f = fopen(path, "re");
-+	if (!f)
-+		return 0;
++Upon enabling this mode, with an assigned device, the user will be presented
++with a VFIO group and device file, e.g.::
 +
-+	c = fgetc(f);
-+	fclose(f);
-+	if (c == 'Y' || c == 'y')
-+		return 1;
-+	return 0;
-+}
++  /dev/vfio/
++  |-- devices
++  |   `-- noiommu-vfio0	/* VFIO device cdev */
++  |-- noiommu-0		/* VFIO group */
++  `-- vfio
 +
- const char *vfio_pci_get_cdev_path(const char *bdf)
- {
- 	char dir_path[PATH_MAX];
-@@ -310,8 +331,11 @@ const char *vfio_pci_get_cdev_path(const char *bdf)
- 	VFIO_ASSERT_NOT_NULL(dir, "Failed to open directory %s\n", dir_path);
++The capabilities vary depending on the device programming interface and kernel
++configuration used. The following table summarizes the differences:
++
+++-------------------+---------------------+----------------------+
++| Feature           | VFIO group          | VFIO device cdev     |
+++===================+=====================+======================+
++| VFIO device UAPI  | Yes                 | Yes                  |
+++-------------------+---------------------+----------------------+
++| VFIO container    | No                  | No                   |
+++-------------------+---------------------+----------------------+
++| IOMMUFD IOAS      | No                  | Yes*                 |
+++-------------------+---------------------+----------------------+
++
++Note that the VFIO container case includes IOMMUFD provided VFIO compatibility
++interfaces when either CONFIG_VFIO_CONTAINER or CONFIG_IOMMUFD_VFIO_CONTAINER is
++enabled.
++
++* IOMMUFD UAPI is available for VFIO device cdev to pin and map user memory with
++  the ability to retrieve physical addresses for DMA command submission.
++
++A new IOMMUFD ioctl IOMMU_IOAS_GET_PA is added to retrieve the physical address
++for a given user virtual address. Note that IOMMU_IOAS_MAP_FIXED_IOVA flag is
++ignored in no-IOMMU mode since there is no physical DMA remapping hardware.
++tools/testing/selftests/vfio/vfio_iommufd_noiommu_test.c provides an example of
++using this ioctl in no-IOMMU mode.
++
+ VFIO User API
+ -------------------------------------------------------------------------------
  
- 	while ((entry = readdir(dir)) != NULL) {
--		/* Find the file that starts with "vfio" */
--		if (strncmp("vfio", entry->d_name, 4))
-+		/* Find the file that starts with "noiommu-vfio" or "vfio" */
-+		if (vfio_pci_noiommu_mode_enabled()) {
-+			if (strncmp("noiommu-vfio", entry->d_name, strlen("noiommu-vfio")))
-+				continue;
-+		} else if (strncmp("vfio", entry->d_name, 4))
- 			continue;
- 
- 		snprintf(cdev_path, PATH_MAX, "/dev/vfio/devices/%s", entry->d_name);
-diff --git a/tools/testing/selftests/vfio/vfio_pci_liveupdate_kexec_test.c b/tools/testing/selftests/vfio/vfio_pci_liveupdate_kexec_test.c
-index 36bddfbb88ed..d72f6a58e3e6 100644
---- a/tools/testing/selftests/vfio/vfio_pci_liveupdate_kexec_test.c
-+++ b/tools/testing/selftests/vfio/vfio_pci_liveupdate_kexec_test.c
-@@ -159,6 +159,15 @@ static void check_open_vfio_device_fails(void)
- 	VFIO_ASSERT_EQ(errno, EBUSY);
- 	free((void *)cdev_path);
- 
-+	/*
-+	 * In no-IOMMU mode the group lives at /dev/vfio/noiommu-<N> and
-+	 * cannot be added to a Type1 IOMMU container, so the container-based
-+	 * access check below doesn't apply.  The cdev check above already
-+	 * covers that the device is inaccessible in this mode.
-+	 */
-+	if (vfio_pci_noiommu_mode_enabled())
-+		return;
-+
- 	for (i = 0; i < nr_iommu_modes; i++) {
- 		if (!iommu_modes[i].container_path)
- 			continue;
 -- 
 2.34.1
 
