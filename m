@@ -1,102 +1,122 @@
-Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17CA830B533
-	for <iommu@lists.linux.dev>; Tue, 14 Apr 2026 12:22:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2FD8A230BDB
+	for <iommu@lists.linux.dev>; Tue, 14 Apr 2026 12:32:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776169331; cv=none; b=I584fXEBTouor5tALL4v1h1GbluERUszo7jMcAcrkNS4EsS4bDolmezUJiIEMY5DMKSACYtb9aDsuTL6WgsESRhrHjjQ4Uxz+3SyEvbYBHV9rT9QMc7gNFMEEQPADy3H6/G6YjcZ8tDnLSp3ze5LQyY2C4HanM5ZT2IuXfHG78w=
+	t=1776169937; cv=none; b=LU0oUvR6nQv3WCILYC/BzaUqACPEUhehgBxnRkl1kt8G9a9sGJTZQYLngJATJ/iErmU0Twy/mMJOgWl1p9A4DJcCZn334KJIXGJDHdrk4vtgNhjJgDuIBetaPH6PtxGygJ+p0ITRxhbxrw4TKI5e2GGzpXQl+c7vZcz1UvIGbZI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776169331; c=relaxed/simple;
-	bh=VB0PmZFz0Vpuj5FR1mGyq3uVzRofYi2J+yXFOeK9leM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hcWCjCT4gzz7uFWaI8NPPyg0KyaII9lVDwyNuYdZY1ZodbcZQ/21f6xwqyBRkSmj6bxEYyPWHgVonIoX/rLiiGhip/pp9DWSGaLQVdOC470oQp4ipiTpPksLhYCTU+kdslLXsyT0zKE4QGSfZISgBKlU94EiIIPgVi2p9M7LMIs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=kfQIum/h; arc=none smtp.client-ip=209.85.222.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1776169937; c=relaxed/simple;
+	bh=VZvVyMhOmvhEi2GK+M0VS6jtUaAMnHvXiIDqIjg3+PQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=rZcGDzKL2VU0mLpWGt38M8AwH3zkAILehqPa9qnh0tNf+h25F0Ld5rE3OodABPnRDVVz82KYg3FyYCezuzwk+xZdJ3SI2CSlcEphiEm0a4wkOd8xV4FTyS8I8jDM0jjuaXH7xKA11D8zwjl0EIe19KoC9jM5jjgbEu8nNfAkiQw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=FnLy3+JE; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="kfQIum/h"
-Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-8d68bcf50fdso625871685a.2
-        for <iommu@lists.linux.dev>; Tue, 14 Apr 2026 05:22:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1776169329; x=1776774129; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Jh0v0yqrIW3OeDFAvE5gZz9hJrlkiEewWWiSN7R/yBg=;
-        b=kfQIum/hz9vgvB+T7QfHLUxOZbERhzF/JRoHE0s0ADCwLtWUyCLBmXDBuAsmW+q8sT
-         Z3ibHILQXgTXsnW7EU/DyQISX1m9wX1Wzr1pep3821l5prjmvFll+jVpRz1/uaPojQdB
-         eD+VWF3Oim/v/P2DQZf0z9lehLdmXxt8yVoRGjGP5Nd9rEyotMKqHj6gSc42ycSRD3sJ
-         RfituwoCLswjhg0uhw8g/qx3N5kk0C2XM5asIQICoGQHBSC58yop7jvxmIcwt9vDSe7n
-         CoDg1J2UfdDQxlEaFvYojA2+1TnnzAzrI4HPNappCOSS4w5B59jxphg8CvTXlgXWrCf2
-         kSUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776169329; x=1776774129;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Jh0v0yqrIW3OeDFAvE5gZz9hJrlkiEewWWiSN7R/yBg=;
-        b=nKOom0hsfNSEk4FWVUCEjFmnCmtbgCWnhy7hjIQP0tN/7ZXT0F9L6+uimUoHqt3gmm
-         jqhoJH0VfgxSR/gzx6FeCYeuiCDigJc1djhCpGxWRj2mpLoYHSdAcF2AvTavey7TWZ9r
-         92zjhPJ4yBhamyLchH1U+bwdv8jEBBPMGAMYcZNnw32RvoWnwlmNiWYpNxJUaozoTzvz
-         MTYSGeQA8axUKBsU0mpACNnP29ofOF/KfNZGpirF4i/Lxq0tdSrGUfQnTRcSQBekLngO
-         LP2oyjqdvC6gszrhpNq4mceTXPDWOEro0AJkfZUzioC0hRcdOZQG/Ux5HF/vzsnraeFD
-         WT0A==
-X-Forwarded-Encrypted: i=1; AFNElJ8eBnvppWezrzpV0r4WgYP3WDdPM7+VwWWJyClb2izNS933qDwYnDl5FMYElUvWi7HG7HL3pA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwmLvKT5CCZ0xcpnzNGOZ8kIuO9IPVx/yVUB6+gtuZPs1zdE8RR
-	xMTakBDlfkVEBQR6+eMKt/icR3PoPVZM7p4Yj5vhuh6z1BLhY4d7pcbyglJ8qZXeZG8=
-X-Gm-Gg: AeBDietudGwH6QJPfyH6ASCCcm0o2UUQU5xRXS5QNsLDF2uRokkF7uRvBNj7hNo3w1l
-	luO1lxq7dBLe0/7hheglxZtGJ4+YYBymmff3Rsw+w3Cf5F20yWAy9QpA2gXIWpn7EOcEWyLPeyJ
-	VpwT/HtANM3BSaYu8siVcyD9wlx+722Hyb03nM8JNQZH+T8QCoNwiijMZNxGpEX071TqkRn+zji
-	Scoye5V2yKSVrJFC/YTZalHDp1bQNfRQdzGjcAWnlnjTyQ+C1Ui5sy2YHt/F0DWKrRuUAiLxQSi
-	hEcgq72EtdWTpuNLuUW5MkcJM7k05NrC0CDr9132irv3fYNlVvJN4Bscl/rjbNXdKHxmbyMm5fa
-	wK1PXJ0m+qFVFuw5QVjrbv9n0yynpveiFEFCyX1I6WnizJyFwpVbRlb222Ho5fLgfJ8QlEqDuvW
-	HHBiZhaF+jX4n2vtHTLVFTnlTBe9vmxBsLnA+beJ6eIYgNO6ksX7GOnHJVZ45r7qdzMG2wDqZTd
-	UBmOw==
-X-Received: by 2002:a05:6214:528b:b0:8ac:b70c:8ed7 with SMTP id 6a1803df08f44-8acb70c918cmr77953846d6.49.1776169329091;
-        Tue, 14 Apr 2026 05:22:09 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8ac849dd312sm121604836d6.9.2026.04.14.05.22.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Apr 2026 05:22:08 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wCcmO-0000000AdeU-0XZ8;
-	Tue, 14 Apr 2026 09:22:08 -0300
-Date: Tue, 14 Apr 2026 09:22:08 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Cc: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com,
-	m.szyprowski@samsung.com, will@kernel.org, maz@kernel.org,
-	suzuki.poulose@arm.com, catalin.marinas@arm.com, jiri@resnulli.us
-Subject: Re: [RFC PATCH v3 3/5] dma-mapping: Decrypt memory on remap
-Message-ID: <20260414122208.GV3694781@ziepe.ca>
-References: <20260408194750.2280873-1-smostafa@google.com>
- <20260408194750.2280873-4-smostafa@google.com>
- <yq5atstdanx8.fsf@kernel.org>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="FnLy3+JE"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EA1C24424;
+	Tue, 14 Apr 2026 05:32:09 -0700 (PDT)
+Received: from [10.1.196.85] (e121345-lin.cambridge.arm.com [10.1.196.85])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 987833F641;
+	Tue, 14 Apr 2026 05:32:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1776169935; bh=VZvVyMhOmvhEi2GK+M0VS6jtUaAMnHvXiIDqIjg3+PQ=;
+	h=Date:Subject:To:References:From:In-Reply-To:From;
+	b=FnLy3+JEWLyFMbQMoMUSNPcw+QkSkEiWrLU8EHS0Y0/wlV5Ln2WEGUJkHVx5lJ+Jb
+	 I0ZVWCcslfiTJ1+H1Jp4QFtL7c2UuuoTJMJ9ZVntHf+ucD3bRqW4mojMipW65TKpqj
+	 3smyuGd1CzLyL6sGj4h67/YGOd6IOeJYtMk2Iqu8=
+Message-ID: <dbe5ceb4-cf2a-4742-a706-dac64611998c@arm.com>
+Date: Tue, 14 Apr 2026 13:32:11 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <yq5atstdanx8.fsf@kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1] dma-contiguous: try local node first for
+ dma_alloc_contiguous()
+To: Feng Tang <feng.tang@linux.alibaba.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Christoph Hellwig <hch@lst.de>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20260414090310.92055-1-feng.tang@linux.alibaba.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260414090310.92055-1-feng.tang@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Apr 14, 2026 at 03:01:15PM +0530, Aneesh Kumar K.V wrote:
-> Mostafa Saleh <smostafa@google.com> writes:
+On 14/04/2026 10:03 am, Feng Tang wrote:
+> There was a bug report on a multi-numa-nodes ARM server that when
+> IOMMU is disabled, the dma_alloc_coherent() function always returns
+> memory from node 0 even for devices attaching to other nodes, while
+> they can get local dma memory when IOMMU is on with the same API.
 > 
-> > In case memory needs to be remapped on systems with
-> > force_dma_unencrypted(), where this memory is not allocated
-> > from a restricted-dma pool, this was currently ignored, while only
-> > setting the decrypted pgprot in the remapped alias.
-> >
-> > The memory still needs to be decrypted in that case.
-> >
+> The reason is, when IOMMU is disabled, the dma_alloc_coherent() will
+> go the direct way and call dma_alloc_contiguous(). The system doesn't
+> have any explicit cma setting (like per-numa cma), and only has a
+> default 64MB cma reserved area (on node 0), where kernel will try
+> first to allocate memory from.
 > 
-> For ARM CCA, we cannot mark a vmap address as decrypted.
+> Make the dma allocation more locality friendly by trying first the
+> numa aware allocation alloc_pages_node() before falling back to the
+> reserved cma area.
+> 
+> One more thought is to check the node of the reserved cma area and
+> only call alloc_pages_nodes() when it isn't the same node that the
+> device attaches to.
 
-Why not? pgprot_decrypted is passed to vmap, why can't it work?
+Frankly, no. We literally have a feature specifically created for this 
+use-case already - if you care about NUMA locality of DMA allocations 
+then enable DMA_NUMA_CMA. Or if you don't need CMA at all, then 
+disabling CMA would be even better for the overall performance of your 
+system.
 
-Jason
+Thanks,
+Robin.
+
+> Signed-off-by: Feng Tang <feng.tang@linux.alibaba.com>
+> ---
+>   kernel/dma/contiguous.c | 12 ++++++++++--
+>   1 file changed, 10 insertions(+), 2 deletions(-)
+> 
+> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+> index c56004d314dc..0180f40f094e 100644
+> --- a/kernel/dma/contiguous.c
+> +++ b/kernel/dma/contiguous.c
+> @@ -371,8 +371,9 @@ static struct page *cma_alloc_aligned(struct cma *cma, size_t size, gfp_t gfp)
+>    */
+>   struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
+>   {
+> -#ifdef CONFIG_DMA_NUMA_CMA
+> +#ifdef CONFIG_NUMA
+>   	int nid = dev_to_node(dev);
+> +	struct page *page;
+>   #endif
+>   
+>   	/* CMA can be used only in the context which permits sleeping */
+> @@ -386,7 +387,6 @@ struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
+>   #ifdef CONFIG_DMA_NUMA_CMA
+>   	if (nid != NUMA_NO_NODE && !(gfp & (GFP_DMA | GFP_DMA32))) {
+>   		struct cma *cma = dma_contiguous_pernuma_area[nid];
+> -		struct page *page;
+>   
+>   		if (cma) {
+>   			page = cma_alloc_aligned(cma, size, gfp);
+> @@ -402,6 +402,14 @@ struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
+>   		}
+>   	}
+>   #endif
+> +
+> +#ifdef CONFIG_NUMA
+> +	/* Try first to allocate memory on the same node as the device */
+> +	page = alloc_pages_node(nid, gfp, get_order(size));
+> +	if (page)
+> +		return page;
+> +#endif
+> +
+>   	if (!dma_contiguous_default_area)
+>   		return NULL;
+>   
+
