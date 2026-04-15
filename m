@@ -1,75 +1,76 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C90F382F33
-	for <iommu@lists.linux.dev>; Wed, 15 Apr 2026 20:31:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F3A43845D9
+	for <iommu@lists.linux.dev>; Wed, 15 Apr 2026 20:43:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776285086; cv=none; b=O7W+CLyYh1uU6u3QUIPy+Zn/+E9GoQrzC3vEzdiYthoqpmrkPbA0Emavxmh9kiq1wKeM7ejtLfXb36QkBJW8QDgTLJQDxliBLLLn1dBsWkoXGWUUOmX5pLzf9jg3/F3keVOQYzBACz4ggCx3k/10fLf2xFfRseWTYBkqyHHrl40=
+	t=1776285793; cv=none; b=cRZDS6kCMprFbIQVEqj1KHvK7xNhNuisyb0eqqoKxXiLdX59UC1zSTIWCa3Ev4xj9nCCnuO7MQcyQO80+76aEcXNSPS7rIuotmVEBQvWUtsH/6m+EGr7BPbXsezqpn2lJhLutyqfPdE7QDXAwHnyaDivbLqvKkMgLP0/PmDLTBY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776285086; c=relaxed/simple;
-	bh=J4JAh0k8ECvYiDro/BanJC1prOJ+uW424pa2aQLT0ro=;
+	s=arc-20240116; t=1776285793; c=relaxed/simple;
+	bh=vfi6Q1Mu41b5c1Pr+FpKRKl3TJAWTCn0dsYCuTL07Ko=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kNUv+YlU71e7AxRHDjCaIzahz9j0GSCqmuvRefEoOVppzeffC0B6r+AjEJISoEmfl2ZQvwfMQsZaPQStrOpm7PIfOaJi056d/ngHhQrSQJ6e9kM52qhxzH1qPJ5I3oCAHvva9fHh8vtWbD+fgMiq7C6rcPLfA0CKRdxAUSlQMHA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=aEXdDqfk; arc=none smtp.client-ip=209.85.128.41
+	 Content-Type:Content-Disposition:In-Reply-To; b=BAMEguiRGa9CZo7xGlQlYZjdVptwNoh/BkBXAj/uRZ4cEZjnzkwqrigBaGFOspC/iSZx3XB2P0MWeGsm8Oe2LEYLM9GoFJqK3Sj6i5l8aYVotwjF1sA+sF+TFSWCmCmSHEuqQ+hz0iZTCys0iKmCRj2xGAZVoti/DZ/MeC6HRio=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=fgDvW3YJ; arc=none smtp.client-ip=209.85.128.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="aEXdDqfk"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-488940ccfa6so23125e9.1
-        for <iommu@lists.linux.dev>; Wed, 15 Apr 2026 13:31:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="fgDvW3YJ"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-488a62b7372so25815e9.1
+        for <iommu@lists.linux.dev>; Wed, 15 Apr 2026 13:43:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1776285083; x=1776889883; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1776285790; x=1776890590; darn=lists.linux.dev;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=dA240JTANsz7Fy6selVjd2W4K7WhqmCNOmhAF00iECU=;
-        b=aEXdDqfk+L5h/sU2UvukkhkG6DY3WsY2z7rMLZBPswzweFmTZcibWpU2HtzdJjXhIi
-         /ULTJ64bgLswZcAtqtuXj5Bn3y6Suoqut6bBrxhGsqjLl8/SCa36bxIjOlCx7enkZkJW
-         K6meM2vkBz3QFZyrJ2PTOpgZkji7tiwBjEzHmq4rvtkjT9ZFEStlMbLz3x433FMzdOHC
-         GzH779sQEY9cAC9perPLkRf4n6gmkwx6ZmOlGy3JwgWOQljcEAEb2XZNBEmrU8dWFOdN
-         EmZVOdHlhoP9E7sEvV1hgHHkEJbBCIYHF2qD+/y/NWIHNjnpIrH803odAwZMQ9DY6J4Z
-         mIMA==
+        bh=4YRQzWoS4RDEswHnpylQeJ+99oJ3JUS+eOagFQY/XkM=;
+        b=fgDvW3YJVrEiIB41TcTmO/eVhgMVfw3nHmg56eMhw/UNlHqpFafVHL94o9J6AeL4iR
+         3mikQzjvAKP0ZXO1B3qTCQ1hY7HZ9TfVmvaN+ck8R2wioaN2Hbs66fm8jQlRBSvBTMI9
+         dQUnMvinStLeW9EjK+GhC/13/8m2+eIJhcAFqzCBcr8ad4K425bLMhwkapsWQOgJHJJt
+         0kbr5Otk3KQTJTNuDZLOPZhJLeA7xUz2a0GF/OBFfZeFX3TFjfcuGI70lfeGTbm1wKMy
+         uI/pzInR3WJX2IQyCdOGzYezS1lMvI7UO7NJ7EbqiCTmdkeAOtyNhDssMDJu24OprL7L
+         iAPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776285083; x=1776889883;
+        d=1e100.net; s=20251104; t=1776285790; x=1776890590;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=dA240JTANsz7Fy6selVjd2W4K7WhqmCNOmhAF00iECU=;
-        b=peT7dZCXUR817GU6Gqt+vxxv7J6CmY72LBBfdingkD+sYGlt3uGqgLJp+jEHfg+bwj
-         6KWDP9OEQEmiT7xXmL9m3mcsEM5fcigpRphsnctuAcLT/ZI/rHS+jGg8rQBGxSJUoFVi
-         2zAYN4yuzQkELYk7hTiMGeYLGblI+SJyjjjb5rdaQ7mC8ERqhS+5ILwmOMb5iFkr+Jf1
-         0wGbZZbz6rO2RKKuU5Zkf/1TLCRckQAwktwiEp4ekjkEvQqygF4aPGVhbSCekgn7d1Qw
-         GdrEJ1k2sONbmd3hm2UwxA0jocOeZbCzsRYjbw74yr4/DvW8EhLHGxn+CXFxErgXO/bY
-         +v5w==
-X-Gm-Message-State: AOJu0Yy563MRCAu1rSlPxL1XeZgI1Fw0fxcBlakPNf7ohAoB+jZAKzn+
-	anZeiWEgfkyKPjHqmVqUZJ/OKDbgQmRLAu3Qn9KdApg8fEp0CL9ricz1Dp8WsYUVVg==
-X-Gm-Gg: AeBDiesxylxaQ0bOYaOZjPEtrPdmvwiuav9YKq5sI/kFmqIRYfam12Ccftz7cwFEf6Q
-	+FTMiEjeR9Ub1JlzeVz6hd6NQ6TjRBu5ur5WEjb5uHZIPMzkY02ysOtwge1sfBvjIO5lo+ArmSu
-	PP6gccVlXOSMOrXUNQVygRQj2Fo2ZqWJrh46Bwhfvpd05XBCk8BIxzOxDz8ZaIl4XdrQ/SVy+yv
-	zQiBLQPg4NgdNwObRwUdog+Nt8WeyZye+9/Dy2ZR/HMzc17MmQui+w38+QsVxPQuZDPgpOwSOyH
-	uWK2RteFwVI5vV4eQgP9v0Sw3ksTDLJAwGr/0uT+iFRfFrrdk3nkbuSyGjr3TtdvPdrlC4PaCH1
-	Tn9FOr9+ypbEq83fiQKCnBs4X5X6ib9+vUG5Y7ZiotIgSPwotFSQKd1BiLpCWvT8qx22NBq5HKa
-	XdPcP9QWMPfJQpu/uIPILuoei8oQyoiodiGt1hxroOPMpDP0J50vZ4DwcYp2EOKPMGpMig1+awQ
-	e5hfw==
-X-Received: by 2002:a05:600d:8445:20b0:485:32b7:5b87 with SMTP id 5b1f17b1804b1-488f4aaae31mr152765e9.14.1776285082458;
-        Wed, 15 Apr 2026 13:31:22 -0700 (PDT)
+        bh=4YRQzWoS4RDEswHnpylQeJ+99oJ3JUS+eOagFQY/XkM=;
+        b=BgAYx1HzAwv8mOas2mZvzuJuQSgDys7Bqsp6hOLPnRNlVvWmFPMK38+ijrMJaHYz0j
+         Atff9GrEUZuL6Y6Q3BJJAaK0eJSMAH1faoScmPiEF+ON3+Aa68yRwH8p+UDEPIYA0dSZ
+         DfiQE8rkJLX1OSaPgZ+zOqSc+0qW6SlauGe7wCi/XLzsMfOyrLRdhxkC15sWCc3wb5Qv
+         CXcQJfEtgYjVXgxFYPbp7D9aLNYE/42VHmBJBc7CjO2SB9yfAZQUvu4VJtf843bGA190
+         qx5A3XPuQamYgtZW6So4OMrBNQ20Dm4hvF3+iN7HyHTJn3jIB97QumevuQxinBMHrVhc
+         VBSw==
+X-Gm-Message-State: AOJu0YyXSS9LCQkroB+V5V58tsmXzSwogBCGP/21olANsp9P4INTTOkN
+	dpqh6SZwdwjzVwjA8v3aBEQ8T/mK4CZBCSksvlHy1Mmte3jSZMvvHLZOtPhJNQSXPw==
+X-Gm-Gg: AeBDiet1Apkx4x9DdmRlyPfEGVDChLkmfwvKnpqk6W42opAkN1R8o9qvnZ0wQgIZE4v
+	VltletIDIB/pcKVI0In/uAtmf9sbGpvjQX3Bd5zQsdvdATweNi+p5Dl2BAZcuAGrK8XVwT5torQ
+	VoEKCGkgK+w5sYium7Yo0MhhDOGPAu4UKJFifOybeLLhxQFpoDKpZwaSD+7T1qqxuZLMDe4Tkci
+	zhNOza0Rs31StJYhlzMrqPwohXNmsq6ynoPwuBGH7ZK6UPFSdcRZsankTq3QpuwbPmek5mG7qS1
+	tNHoAO10dQGI1UKfHHlFtHmivCPTKFtbqDdb0D6aaNz4O3ETRqyaWK8V7VxN/Ch667CqlJtauhV
+	Pl81rMupC8y6WMYMuIEIyfdmPQScfu0fm6Vt1KhBga55i+1Ks3XRiDiMm+rlGsXaXxoQiaVTZzU
+	7RqMhwAcFMvoDvUY/dxAPKJC2OL1eMazxJcj6KkuIDAN59rH5Q1NGBzePQfufrXYGFO01nyWlSI
+	VNzhH4abD4T3aUC
+X-Received: by 2002:a05:600d:1b:b0:486:fe1d:a60e with SMTP id 5b1f17b1804b1-488f4d77023mr103595e9.0.1776285790115;
+        Wed, 15 Apr 2026 13:43:10 -0700 (PDT)
 Received: from google.com (8.181.38.34.bc.googleusercontent.com. [34.38.181.8])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43ead3d5f06sm8126874f8f.17.2026.04.15.13.31.21
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488ede1e05bsm257930935e9.6.2026.04.15.13.43.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Apr 2026 13:31:21 -0700 (PDT)
-Date: Wed, 15 Apr 2026 20:31:18 +0000
+        Wed, 15 Apr 2026 13:43:09 -0700 (PDT)
+Date: Wed, 15 Apr 2026 20:43:06 +0000
 From: Mostafa Saleh <smostafa@google.com>
 To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
 Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
 	robin.murphy@arm.com, m.szyprowski@samsung.com, will@kernel.org,
 	maz@kernel.org, suzuki.poulose@arm.com, catalin.marinas@arm.com,
 	jiri@resnulli.us, jgg@ziepe.ca
-Subject: Re: [RFC PATCH v2 3/5] dma-mapping: Decrypt memory on remap
-Message-ID: <ad_1lhk44pr6wsSl@google.com>
-References: <20260330145043.1586623-1-smostafa@google.com>
- <20260330145043.1586623-4-smostafa@google.com>
- <yq5a8qarbcpg.fsf@kernel.org>
+Subject: Re: [RFC PATCH v3 1/5] swiotlb: Return state of memory from
+ swiotlb_alloc()
+Message-ID: <ad_4WtW5uEZlDdLU@google.com>
+References: <20260408194750.2280873-1-smostafa@google.com>
+ <20260408194750.2280873-2-smostafa@google.com>
+ <yq5awly9ao6q.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -79,124 +80,62 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <yq5a8qarbcpg.fsf@kernel.org>
+In-Reply-To: <yq5awly9ao6q.fsf@kernel.org>
 
-On Mon, Apr 13, 2026 at 11:53:39AM +0530, Aneesh Kumar K.V wrote:
+On Tue, Apr 14, 2026 at 02:55:33PM +0530, Aneesh Kumar K.V wrote:
 > Mostafa Saleh <smostafa@google.com> writes:
 > 
-> > In case memory needs to be remapped on systems with
-> > force_dma_unencrypted(), where this memory is not allocated
-> > from a restricted-dma pool, this was currently ignored, while only
-> > setting the decrypted pgprot in the remapped alias.
+> > Make swiotlb_alloc() return the state of the allocated memory, at
+> > the moment all the pools are decrypted but that would change soon.
+> > In the next patches dma-direct will use the returned state to
+> > determine whether to decrypt the memory and use the proper memory
+> > decryption/encryption related functions.
 > >
-> > The memory still needs to be decrypted in that case.
+> > Also, add swiotlb_is_decrypted(), that will be used before calling
+> > swiotlb_free() to check whether the memory needs to be encrypted
+> > by the caller.
 > >
-> > With memory decryption, don't allow highmem allocations, but that
-> > shouldn't be a problem on such modern systems.
-> >
-> > Reported-by: Catalin Marinas <catalin.marinas@arm.com>
-> > Fixes: f3c962226dbe ("dma-direct: clean up the remapping checks in dma_direct_alloc")
 > > Signed-off-by: Mostafa Saleh <smostafa@google.com>
 > > ---
-> >  kernel/dma/direct.c | 16 +++++++++++-----
-> >  1 file changed, 11 insertions(+), 5 deletions(-)
+> >  include/linux/swiotlb.h | 25 +++++++++++++++++++++++--
+> >  kernel/dma/direct.c     |  2 +-
+> >  kernel/dma/swiotlb.c    | 23 ++++++++++++++++++++++-
+> >  3 files changed, 46 insertions(+), 4 deletions(-)
 > >
-> > diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> > index 1a402bb956d9..a4260689bcc8 100644
-> > --- a/kernel/dma/direct.c
-> > +++ b/kernel/dma/direct.c
-> > @@ -203,6 +203,7 @@ static void *dma_direct_alloc_no_mapping(struct device *dev, size_t size,
-> >  void *dma_direct_alloc(struct device *dev, size_t size,
-> >  		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
-> >  {
-> > +	bool allow_highmem = !force_dma_unencrypted(dev);
-> >  	bool remap = false, set_uncached = false;
-> >  	struct page *page;
-> >  	void *ret;
-> > @@ -251,7 +252,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
-> >  		return dma_direct_alloc_from_pool(dev, size, dma_handle, gfp);
-> >  
-> >  	/* we always manually zero the memory once we are done */
-> > -	page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO, true);
-> > +	page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO, allow_highmem);
-> >  	if (!page)
-> >  		return NULL;
-> >  
-> > @@ -265,6 +266,9 @@ void *dma_direct_alloc(struct device *dev, size_t size,
-> >  		set_uncached = false;
-> >  	}
-> >  
-> > +	if (dma_set_decrypted(dev, page_address(page), size))
-> > +		goto out_leak_pages;
-> > +
-> >  	if (remap) {
-> >  		pgprot_t prot = dma_pgprot(dev, PAGE_KERNEL, attrs);
-> >  
-> > @@ -278,11 +282,9 @@ void *dma_direct_alloc(struct device *dev, size_t size,
-> >  		ret = dma_common_contiguous_remap(page, size, prot,
-> >  				__builtin_return_address(0));
-> >  		if (!ret)
-> > -			goto out_free_pages;
-> > +			goto out_encrypt_pages;
-> >  	} else {
-> >  		ret = page_address(page);
-> > -		if (dma_set_decrypted(dev, ret, size))
-> > -			goto out_leak_pages;
-> >  	}
-> >  
-> >  	memset(ret, 0, size);
-> > @@ -300,7 +302,6 @@ void *dma_direct_alloc(struct device *dev, size_t size,
-> >  out_encrypt_pages:
-> >  	if (dma_set_encrypted(dev, page_address(page), size))
-> >  		return NULL;
-> > -out_free_pages:
-> >  	__dma_direct_free_pages(dev, page, size);
-> >  	return NULL;
-> >  out_leak_pages:
-> > @@ -339,7 +340,12 @@ void dma_direct_free(struct device *dev, size_t size,
-> >  		return;
-> >  
-> >  	if (is_vmalloc_addr(cpu_addr)) {
-> > +		void *vaddr = page_address(dma_direct_to_page(dev, dma_addr));
-> > +
-> >  		vunmap(cpu_addr);
-> > +
-> > +		if (dma_set_encrypted(dev, vaddr, size))
-> > +			return;
+> > diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> > index 3dae0f592063..24be65494ce8 100644
+> > --- a/include/linux/swiotlb.h
+> > +++ b/include/linux/swiotlb.h
+> > @@ -63,6 +63,7 @@ extern void __init swiotlb_update_mem_attributes(void);
+> >   * @area_nslabs: Number of slots in each area.
+> >   * @areas:	Array of memory area descriptors.
+> >   * @slots:	Array of slot descriptors.
+> > + * @decrypted:	Whether the pool was decrypted or left in default state.
+> >   * @node:	Member of the IO TLB memory pool list.
+> >   * @rcu:	RCU head for swiotlb_dyn_free().
+> >   * @transient:  %true if transient memory pool.
+> > @@ -77,6 +78,7 @@ struct io_tlb_pool {
+> >  	unsigned int area_nslabs;
+> >  	struct io_tlb_area *areas;
+> >  	struct io_tlb_slot *slots;
+> > +	bool decrypted;
+> >  #ifdef CONFIG_SWIOTLB_DYNAMIC
+> >  	struct list_head node;
+> >  	struct rcu_head rcu;
+> > @@ -281,16 +283,31 @@ static inline void swiotlb_sync_single_for_cpu(struct device *dev,
+> >
 > 
-> 
-> Right now, a remap is required under two conditions:
-> 
-> 1. HighMem — I assume we are avoiding this for devices that require memory decryption.
-> 2. The device is not DMA-coherent.
-> 
-> Can we assume that condition (2) will also not be supported alongside
-> memory encryption/decryption? That would allow us to simplify all of
-> this. We would then only need to carry the patch that disables HighMem
-> for devices requiring unencrypted DMA buffers.
-> 
-> I did post a patch along similar lines some time back. There is also the
-> challenge of presenting a vmap address as decrypted on ARM.
-> https://lore.kernel.org/all/20260102155037.2551524-1-aneesh.kumar@kernel.org
+> Should this be a property of struct io_tlb_mem ? 
 
-In v3, I prevent highmem allocations for devices that need decryption,
-I believe that modern systems with CCA won’t have a problem with that.
-
-With pKVM, it’s possible to have non-coherent devices, but they always
-have an IOMMU, so direct-dma is only used for virtualized devices
-which are coherent. So, this case is not important.
-This is a theoretical bug, I am not sure if any systems are impacted
-by, it but I included since Catalin mentioned it on v1 as I am
-already including other fixes. But I am happy to drop it or just add
-an assertion that it never happens.
+I envisioned that this would be mainly used by restricted-dma so in
+that case it doesn’t seem to matter.
+But generally, I guess it would depend on the discovery mechanism of
+this memory property and I can imagine a memory allocator that has
+multiple pools with different attributes. So propably it's better to
+be per pool.
 
 Thanks,
 Mostafa
 
 > 
-> 
-> >  	} else {
-> >  		if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_CLEAR_UNCACHED))
-> >  			arch_dma_clear_uncached(cpu_addr, size);
-> > -- 
-> > 2.53.0.1185.g05d4b7b318-goog
+> -aneesh
