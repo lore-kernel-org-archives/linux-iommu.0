@@ -1,225 +1,477 @@
-Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11010059.outbound.protection.outlook.com [52.101.84.59])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0ED9B3D75B7
-	for <iommu@lists.linux.dev>; Wed, 15 Apr 2026 15:06:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.84.59
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776265596; cv=fail; b=lz6klMV03NchsjPHfLtae6gC23vDdSoiAExsthw6kUj1GXLmfr3wTP2HAjsWqUYSZeBkPOkBdpCRgcwgg2zTq/FIen7olb9A1lX09VbEMvAWOajkpHL6VUSFpL0CEV+TW8+Eag4L1fXUaQ7HM0CImFaZyy6Dh+nc2uJPbq4i3yg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776265596; c=relaxed/simple;
-	bh=2XE/B5gmtPEXcMHVBXN6Sz1ANWHR5AlQxtw6eBnLZh4=;
-	h=From:Date:Subject:Content-Type:Message-Id:To:Cc:MIME-Version; b=hH4EWfKTnlwM9t8oW0+z37DMb1HvXL9+mKL3J3e9X4RKsAnl/ert54vHMR+1s9wsh9pbGYGc4gU/8jkdadIP0WncojcTvVyAHTcmqoZ3egVmWIQbAPh2ns+iKCDjFbb58T5uugRwOxB9py2wD9eLSsLNfiPyK3moRu5j9bzemvI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=XbdyP+DV; arc=fail smtp.client-ip=52.101.84.59
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18D243E3C67
+	for <iommu@lists.linux.dev>; Wed, 15 Apr 2026 16:06:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776269167; cv=none; b=SWTxXS3K9QUcjwn5MOgRXd9M47Vr9e0LRnEWekCdciYFL7iucpIZmt/Dh+JS7tew70Z+LNKHHOx/YD04YeShAMdZo2HwBEbZIC5lSS4kZkCWi0+3YjlbX0n0OEJaPJoUiatESqqA32UGyWahFHRHghdPIu9A9yxUGXegvvDTdkk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776269167; c=relaxed/simple;
+	bh=aTZGaS3RCzhxhdYXeo0xMF9Um6LGF2ryflC+g+vfgHk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=l33CflNsb8EVfFdibM2Cj/MIF53FD9gwrQJv5ClWlYysxwbRp+DAYcdGlXX2BcllMo/GddEyL6+GnESga/xsRdlCJzURLa3Xff68CTjrhXsXXvHzHUvYHYQP1cUwVUkMFQ7rc1MaCztcMmuLGcjksX8qyGd8AYRe71+N3MKfsXw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=W2sBM/VG; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=Wkg7M9YA; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="XbdyP+DV"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=G/YegBjGjvFF6v1M2n/hBabdRgNfRarK31AZDLhxa0FEHM3EBHGBc8NCRpOeeVWQY1KCvjvY9GbcIYW+k/Di8Q5+tPY0POJznBSL/lxTZgqWUbp+0VvTrqaME38iP/XM5IoE2wAGhhYFRSkj520jW8INpd+nU9Bvvk9JJ80/atMf4CjM1Vy/EVf0tHAKT0JMvArhVlgOYpQ0q0RhT3LkoAxNPyRQ7GzRUdRQuTkKvUl/B5jetVKCBihDURBsS6+kivh6OlBvyzzzOsedeIqWJ1hLl3FVxGrnA0o+BP/VndP4GuwQoj8GpccFw4etuVjSAvG+U+uqq7L648B34qic1Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fmcvVWSkK3QeMTcIF/V8g/ybVObIa+ABL+fgg4jkOUY=;
- b=N1mMycjWO3sl6YOOdwvc6DgsSMNADFO4aK0K4U+NCCBrWXSCJdmxt5Mx/ACGH4CGBKrDI+NDqoy+YUpE93q+nTeT/kP1mahslfaEmXhpWJgIDH94CSCDyfyGyVUMWXDNLFFT8Kqztv94lCc7gdSwSXWNz2UaytX92t3xt8Z2e9gYJ9Ks+bWxhyBDC40aCorEkCQaDYVVe1lWdpATSjMFl3h3eHwQ17LoPyw7PTe7Zxdjj8zhGJxa76tFEHhrNfUTO7t5alA60RHL/nE8jYu/+ZKO9NcqjsO9tX2DaN+TKhGAmPt6VXRoMvtEXcjb1dsF+pmJmhDR1NR3C9Es1mKnQw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector1-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fmcvVWSkK3QeMTcIF/V8g/ybVObIa+ABL+fgg4jkOUY=;
- b=XbdyP+DV3mu9iZx/XFaF7SIvBA2pehw3uUd5aa9SNL4V7ZZXrOyTkiqKpWV6g2kipioadIYeW40VrppYixT6P/mR96MQh9la276Omfx5MRgwobrYtCTP94Z0Fh4+/6P3pLFzZBezmSDI0OyQVr0nWxMkKyntILFHPl2B6/4SDTZXUIEHp3vpQfOeYY3TC2EV5jQSetZoX/Rwow0HZCmjowmhFrST48YSxLGw01oF/6sJCJrbMmZMkJ+4e/F+cjmVvV6mH9onRHO4WjM6/BrueoV7/YqzJrRMgKj+ar1t+DGHp0DG0HN2D4ZJ1WP+4xPfdnU8ug+Q3YsBlqU3EZP8IA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from DB9PR04MB8461.eurprd04.prod.outlook.com (2603:10a6:10:2cf::20)
- by PAXPR04MB9470.eurprd04.prod.outlook.com (2603:10a6:102:2b3::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.48; Wed, 15 Apr
- 2026 15:06:28 +0000
-Received: from DB9PR04MB8461.eurprd04.prod.outlook.com
- ([fe80::21f6:947a:1f40:18af]) by DB9PR04MB8461.eurprd04.prod.outlook.com
- ([fe80::21f6:947a:1f40:18af%6]) with mapi id 15.20.9769.046; Wed, 15 Apr 2026
- 15:06:28 +0000
-From: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Date: Wed, 15 Apr 2026 23:08:36 +0800
-Subject: [PATCH RFC] xen/swiotlb: avoid arch_sync_dma_* on per-device DMA
- memory
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260415-xen-swiotlb-v1-1-de24eda3c0fd@nxp.com>
-X-B4-Tracking: v=1; b=H4sIAPOp32kC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDIzMDE0NT3YrUPN3i8sz8kpwkXWOTRENLiySzZMMUMyWgjoKi1LTMCrBp0Up
- Bbs5KsbW1AJtHq/JiAAAA
-X-Change-ID: 20260415-xen-swiotlb-34a198b6c1d6
-To: Juergen Gross <jgross@suse.com>, 
- Stefano Stabellini <sstabellini@kernel.org>, 
- Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-Cc: xen-devel@lists.xenproject.org, iommu@lists.linux.dev, 
- linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
-X-Mailer: b4 0.14.2
-X-ClientProxiedBy: MA5P287CA0226.INDP287.PROD.OUTLOOK.COM
- (2603:1096:a01:1b4::11) To DB9PR04MB8461.eurprd04.prod.outlook.com
- (2603:10a6:10:2cf::20)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="W2sBM/VG";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="Wkg7M9YA"
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63FC4iTa2772631
+	for <iommu@lists.linux.dev>; Wed, 15 Apr 2026 16:05:58 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	tQW0eEGW+Vs3+ziZBjvpnZbzVVRN9l8GWBiHRdZSINg=; b=W2sBM/VGNBFbzByu
+	naOwg9ccStAEP15ZPidH60Q4Pk9z0KCJGQKvFy7h37+jvHsFHXgbelh8kxf1SEYM
+	gkaSCCHccl4NU2H+QPjQBWThh76yDJIlSgSmaqS8SZGTSqGbr1Bbkg6zIhXxWCqn
+	ynJ0RueGvCWojQwqoUoA3UpYz9I6Ei8AGJ16B5ueB0tyApaag65X3F7POmFGS7os
+	Abqm1a3e9LvE7/wTT7tcS8elfm6bsZ3zHVv415Vi5iMSyE2Gz2TA3ilh4svcf+uM
+	g94m/Nb320I3JQSDWjnzX83pJt6Z6TEbCyICgKqhVAh0hVWY/euVpMznqpQpLu0f
+	2FVbXw==
+Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com [209.85.210.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4dj50v26wm-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 15 Apr 2026 16:05:58 +0000 (GMT)
+Received: by mail-pf1-f197.google.com with SMTP id d2e1a72fcca58-82f0e12d375so3058158b3a.1
+        for <iommu@lists.linux.dev>; Wed, 15 Apr 2026 09:05:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1776269158; x=1776873958; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=tQW0eEGW+Vs3+ziZBjvpnZbzVVRN9l8GWBiHRdZSINg=;
+        b=Wkg7M9YAOzsOonN4P56+QT/yYE91xw2Wl5ox8P5lphpzSvLaIrrVe3TjUvdaHS1VT2
+         /5X4u2QPhclBJGIZmkfrJ7clfuz6PtiFk+mAmycoL6FO+xRQ61FnWeWpiEsl2oPYPQYy
+         DZxyrCNka8foaqQmT0pCp23ZeK8FH86xGk5BJ+Nbxqc8hr099faT629nSafyYwkPq11z
+         vbPSn07E2vbRA/fiKoaa20cVgJKdzonWJc7pxDCI9sXsrWV3+eGvw90QqNfhV3oCzhLk
+         fWD4rKHCrGu5IE3WgZwr1jR/R71TKsJ2qfltU9275SRjXWhTO4xSuK9SUjHhgfQvh/Pg
+         XT7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776269158; x=1776873958;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=tQW0eEGW+Vs3+ziZBjvpnZbzVVRN9l8GWBiHRdZSINg=;
+        b=pGS2+umH02UcWDJ0YKlJizkkucFLi0skwpjQnzwzXddUYIPhA1tAHrjCLEjcfVlzGz
+         XNuVnwgTjZuEofQLCnaT1x+vopT+Au6xWU0idapRzjaWerup2y4SpdnGl3BU5WOePtlq
+         QCw/VTvfdDFQxcjrrlOtSg12RCJlcmX3Ea4nYJHxN4S/EkxLn3PGwnaHurJjK0TfOfF0
+         KjTc+A+TD5rLjVr9fFvnKY1byQQ6a5W8fNKVp1GKh1ABeip9uetuQDgAVrLg7zBKuATt
+         jAn5chsh9hLZGRdWRdg5Qed/FzwDwQ8NgRvtAChK+B4MQ3beIhjMcRM4WyuzLpJIXcLD
+         7LBQ==
+X-Forwarded-Encrypted: i=1; AFNElJ9lAPuj8D4gnEQJ6Uqvc/L6K7Zgv0G7Ng+xhQV4TarRJSQGDsYST0wuv45LYTSPLXQy3f16dw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzfFENLE+Xv6QuAoG0Je9Jp/UloDOULgOApCxbhBTeCDG0DnrtD
+	dmWEjtFgVPtmWAbLJRbY43uBH1rEpTbL3YGrkxziFNlxfSaonljyd44o0RqzvunPHUiuzvogHSA
+	mjsctkCEXVbgfWLQs4ekv4A1h6tAgPvpPTJJIux8EsVToXEA9rhtIRUZPng==
+X-Gm-Gg: AeBDiesT2DCyfo8y8CHLlbnG+oXw9QH8GMC1ok6DZFtPUcF+G8IjVXyxO3e8rswiqfj
+	lUsCbGuWkHDpwOPV3dlk1ORZuQVp48+Npp6cs2yOpcIL4qVjJD0uIp45fO15y4SHAVUhJxhPKku
+	EH93Dz9q9Heubb7/THQHXAL4pge7+BgsEgp3Sa10JjMgMDCGXONKbxPfcWsL/Ka56yPKrOJLkdy
+	pmQufKU5XnCKb0cDkXxZ/+H+f5dyUWBoPjJA1lie3GeI3Ql3o9pUG0nIjSpCmCpKy3KFVJ7Khnh
+	oO41p1U+uP3dV8zi0jHXudSTeOmKnaOQTFEoH2mQA9dbeYBu3fBEshHhZnK7o0A637KnB+LQo5i
+	EvQRIN3viSS/ZSr5UmLQuTwZOWByutvk4tqCwDPZvBBOfBu35mrx04g==
+X-Received: by 2002:a05:6a00:300c:b0:82c:7767:5bb2 with SMTP id d2e1a72fcca58-82f0c27b21amr19942937b3a.21.1776269157533;
+        Wed, 15 Apr 2026 09:05:57 -0700 (PDT)
+X-Received: by 2002:a05:6a00:300c:b0:82c:7767:5bb2 with SMTP id d2e1a72fcca58-82f0c27b21amr19942895b3a.21.1776269156847;
+        Wed, 15 Apr 2026 09:05:56 -0700 (PDT)
+Received: from [10.206.105.200] ([202.46.23.25])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82f67476a5fsm2550003b3a.60.2026.04.15.09.05.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Apr 2026 09:05:56 -0700 (PDT)
+Message-ID: <cc90c55d-c93a-2789-f313-aaa5e4090be2@oss.qualcomm.com>
+Date: Wed, 15 Apr 2026 21:35:47 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DB9PR04MB8461:EE_|PAXPR04MB9470:EE_
-X-MS-Office365-Filtering-Correlation-Id: 389c48ec-d835-4f4f-9c53-08de9b0091b2
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|52116014|376014|366016|19092799006|1800799024|18002099003|38350700014|56012099003;
-X-Microsoft-Antispam-Message-Info:
-	6ZjO6FFmkIuqO3Zki60YObNpRN0M9BMGRrNX5m5cSn38ed1JJuzkfs/R/9KqmB+BCyoAZ5RTfnccrJlu9oLEXXLKzm1fLYjSk1AlBkNwjOboxpfl3sYE6vplOLkWukNg0CW4Xq9WkLYwu+654IJG2cKmW1DjaHGpWFDmKYOVFBMCbXsQZNKNJMPsNb2dTLl2y4yULESD4sbm9EuljnZJBVO4ixkIRcaBc1lhPMrz+j+NMoIfEpOnkL71557ZBjrC4Qx3eWRpaKlmyQI2/cevQ4SgJz0EhUi0Wj72JOxUqqBNdpqiY4JpeBoC9D/aTsLEvvh+Va0/VJR/M2PCijzC9+wV5TQwBYDaGuHROuQ79L9WJQvFU9U5vh5aMtF6Ybg8hW6fBoBMdZ5WySj/aWxRXu3XHKSwcCB3sQTt9ulcYoNCkj6I9MOT3UKzrVJaFVZY9c4DxpMoUjsThjouirz6wy9BuQbPKfUSKroU79RwQ2M6ge5j01IH7/BAbIXTE/SROxzH5+XvUtLLIdSInJLj/MBpWjkbhYR4w6KL7grESFbTE9u1Ft9HJca7SZ4a3HYZfR5USmfUo21iDtF7SxQSgkA+OuiKvp0Xetxc11STzqe5R9m0oYzqxqGJq5MiBgf1jxPgPn13d4JhRBWxBU+xgfu6iYySkSHTC0/8F1xjOXkYQpe+v9Re3Df////KF5Hxjmbzpd/y6jIhjfqOsR9Y5evIPBPuwTGY+0wyxDGsYGWzLDAsGOISWOOrJAhcdZOfvAqYgPXYplqrkdEad1mgcum7CNQNwTTA7wGmxC5tz9k=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8461.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(52116014)(376014)(366016)(19092799006)(1800799024)(18002099003)(38350700014)(56012099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?My9MZjNLZHB0Umhmakc4MExSYTRkUDFKeW8wSE5YR0JtSFk1Lzd0Vm5LN3Iz?=
- =?utf-8?B?NkRYYVMrMkVjTlF1QWxkdFBXVHBlOGFXTFNvRzF2ZHoyV0l4M2V3TzU4d0Zq?=
- =?utf-8?B?K2RQSWlqcG5UNzhsdFhEZEoxZGJMaFNaNlZEUmpIOTd2c1h6UTNWa1MrNDhU?=
- =?utf-8?B?aGdwY0RsUG9Pem8vUElHdTVhMHpTczhqN20vM0sxYXBHKzJiNWJoaHRObDhY?=
- =?utf-8?B?RGYrMnhKa1ZGblhDdHZQTVIwQ2pTQjQ4WFBjRnBNdkJzSjN0QnJwWkZ2YnUw?=
- =?utf-8?B?NnRJN0l0eWVabGVoK0QxSTY3bktibnNjVDRsRmZHNTJWb3g4R050ODJ5aHJZ?=
- =?utf-8?B?eENFSzZvME1SczJUMHZJSUtjakpva1ZrOFNxQndIS21oOXphWWpSeW9Gb1ZO?=
- =?utf-8?B?R0ZNY2NVSzNHUWQwVWJZWUlLMFNwYU5HL2poNU9paW9XQlRyRzZNSVF6RDk2?=
- =?utf-8?B?UFNRZWRBQWJjVjNEcm81a0ppU2JKR2NyRDRJZUc0OFhlV1ErWTdvK3hqU2M5?=
- =?utf-8?B?THg5bmI2ZTl1cHNseitWYXBLeWpscDNycnE5QTFhTEN4bGJQVXR4a0FSZ1FX?=
- =?utf-8?B?bE81VlVmRHM5dzY1bnhLRDNOMjlsRnAxeWN6eTFCY0VSdGpxQWp0VlNKMndt?=
- =?utf-8?B?aGJFRC85cnAwNXd6UWxydm1rVENPajZ2L3hMZStkaHlGUzRxTXlPdDlTeFNB?=
- =?utf-8?B?ZGxvR3RzZTY4QnhIaW53U3hVRG9LTCtvR0VzaUt5M0syYy9RbVk5b2pxb0ZF?=
- =?utf-8?B?M0w4N2ZoWWYxMXd2NWNFYk1tNjVPU01Pa3oyeUxmMGpZL3c4UE56c0pONXJu?=
- =?utf-8?B?L0JQRVpoQm50cWR5bUFtOXlEdVhWWTBRWGtlT2xHaEVzZ3VzZ3RSdWxlekQr?=
- =?utf-8?B?L2ZWaDQ3eUE5eU5tYldrRVJubE9aUHJHQlp1bGxXZHRQcmRXaFh2ZWZvT1RR?=
- =?utf-8?B?SDB1UzhrSTdxWG1McTQxVitCRUk5N3JTRGRrc2loNjRLbUFZN0dwWFFIOENa?=
- =?utf-8?B?VGtzcEJ4OVFrd3pLTitremhNYkI3enhTRWZEMERsVzN4VkJMdjJ3aTFnanhj?=
- =?utf-8?B?MTVhQUJ3VHFzQis5eVRZY09YaDNReUdQUmpHMjI4WGkwZktYWWtwbktZbHh4?=
- =?utf-8?B?bXpwVzFzamtFajdKWE9rQitqNlhRRlJVdnVtOFBuWlJiRm9XSHZkei9zMWM4?=
- =?utf-8?B?UUFUU2RFV2VZUFJsQU84eGlNNzNIRFJjRVo2QVhBbGJucExXc3FRekRnV05V?=
- =?utf-8?B?cWZoVlJNdzB6aklKSER0bzdLWjMzZUVrcWdkbGJMNmRPR251ZUNxWjhMQnJV?=
- =?utf-8?B?QXdSYytlbEh6OW81bmlISDhLeFoybjR4TmtPRnRIeGlzcGMvblBiK0srUWFD?=
- =?utf-8?B?Qm5IYWtaSjRXd0VwYUNYWllHSVVwSnZmczlrZm8vOHo2ZjZlMFVQZVg1eSs0?=
- =?utf-8?B?bVRKT3JYbHF0SmhZUEZyYjBsNVhPeHVCYkZ2d2dLbkhNdWVXc0hUREZ2VVdE?=
- =?utf-8?B?eEJQWHNOUDJHdVVETkZQd0hiTFJuaDQ0VElhbGhnanN5a3RKc2hWdjJ6cVpw?=
- =?utf-8?B?OWwvYTBZbW1maFMyYWUzSjdBOHkrbGl1cGlXMmJhczI4MTVoVEkvUkdVRHlJ?=
- =?utf-8?B?RDQ3SGk5aFhwZTVQaVFvMytoNlRMQ29CNmRKQi8xWldIdUczN0pkVTV6aVY3?=
- =?utf-8?B?Z1NhV0FDOWh5R3pCcUtwVFB6VGJ1b2wwZnVxbXlaQ0huV3B4OTRxclJDZFVV?=
- =?utf-8?B?eENQZDE2L3dUTU9yaHEzRFMrUU5wMS9PTnYyU2tFd01tUllRc01Zd0Nqb2Uv?=
- =?utf-8?B?SHZ2OFZ4elhPaUxsRVB6dGsycURwMVhRTFlqck1RbXRhTVJSM1F4alI0QlVB?=
- =?utf-8?B?ZUYwcStlVHB0djVZcGRYR05oOVR0bWdndDNMYWxnK2xzNXhVUEV4MGNNWWNX?=
- =?utf-8?B?QzdlMmcySjRWaFkybmtoTXI2YTd6azJJblB0U0RmeFMzMW50RHpkNHZSSnMv?=
- =?utf-8?B?T3BubkpFWnNNSjh6OUlXZGVLbjdzYkpjMWtIT3BpZUd0MVN0cG95dGxOZTU0?=
- =?utf-8?B?T2RyNXh3UTgxY0RycDVFY0dVNnF5K0d0SVRLaHVISDZFbHJXM0o4d242VlR2?=
- =?utf-8?B?MVE3UkFvN0NENDRQcHJBMVBkaEpzdkhhaVZoYWlkbHZhTWVkTU5PWUZyYWNZ?=
- =?utf-8?B?dHRhTG9rZm9keEtHOWJaZlVRVVpSMHVGSGVXc0hjNGNMUzdrYlJjLzVnbG1I?=
- =?utf-8?B?NHFDckdzRlBhcTZKSXY3VWdodFY3NG1pZE1iNGJJT3J5TGpZcmpJeXBBKytY?=
- =?utf-8?B?YWhFeTFYYmhhU3hTSGxhc1B1RXF1U2t6dDNBSTZkN2VqL28wRmpLUT09?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 389c48ec-d835-4f4f-9c53-08de9b0091b2
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8461.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Apr 2026 15:06:28.2062
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2xNfQ/kYJg/5HWIFG6LcqcUDkOI5eHnBOxSU9LqS9k/P7BJgjW1QhrrWmKNX7t1VnImQdaJQZrE87fD7+o900w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB9470
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH 3/3] misc: fastrpc: Use context device bus for compute
+ banks
+Content-Language: en-US
+To: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Danilo Krummrich <dakr@kernel.org>,
+        Thierry Reding <thierry.reding@kernel.org>,
+        Mikko Perttunen <mperttunen@nvidia.com>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Arnd Bergmann <arnd@arndb.de>,
+        Srinivas Kandagatla <srini@kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+        Bharath Kumar <quic_bkumar@quicinc.com>,
+        Chenna Kesava Raju <quic_chennak@quicinc.com>,
+        Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+Cc: linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
+        dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org,
+        iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org
+References: <20260414-computebus-v1-0-4d904d40926a@oss.qualcomm.com>
+ <20260414-computebus-v1-3-4d904d40926a@oss.qualcomm.com>
+From: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+In-Reply-To: <20260414-computebus-v1-3-4d904d40926a@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-GUID: 2DeFHii0gPazl5XcPIzhk8LRbzOHh2Vg
+X-Authority-Analysis: v=2.4 cv=eLMjSnp1 c=1 sm=1 tr=0 ts=69dfb766 cx=c_pps
+ a=rEQLjTOiSrHUhVqRoksmgQ==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
+ a=IkcTkHD0fZMA:10 a=A5OVakUREuEA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22
+ a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=7CQSdrXTAAAA:8 a=eP6CfP3hHy5NNNlF4cwA:9
+ a=QEXdDO2ut3YA:10 a=2VI0MkxyNR6bbpdq8BZq:22 a=a-qgeE7W1pNrGK8U0ZQC:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDE1MDE1MCBTYWx0ZWRfXwY+/0v6RzHFS
+ P770Xv+DXEm+IwhCmkyP3ISf0tqh+zcpCUb7fDkv6jShQJvMC0ZojmPNT5Ynv7bj5aTdhQtNoCY
+ XXfnzxzqTOZcVny8bBwlM7tPp9yNTPrRXdkFT8nPIk8VXnb2WCAFHaFMHJVSBzuw/6ntOpmuRvW
+ zz6t3m5RycyL90LqNjSyQX483hOf0xN67MqLtG3gZEdZiiGr/6dnDdtDzfP8NzJGXlfb1QOqrns
+ wQ612htVA6Ad9G2c33bq7cf7v1Y/D+e3Jspr8ZbaUEeTn5bmYLn372vrd92zkBHKp3iqmo/LrVI
+ 4J6SjB6HubSE/NGqtrj6EkhcxKpBpaCadujMyy5FEPg9sCVXdLjVY+vlgGB+EruHDZxTuEuZ9vi
+ itDFCOv9hl2ziZKdOUDG14C2V6qPQ1YwSSz/LmgP7w/pWj9rfaqD3XALf8TySEP1Gx0o4iWKOCD
+ LxTX9YTSzOaV1KKsQRA==
+X-Proofpoint-ORIG-GUID: 2DeFHii0gPazl5XcPIzhk8LRbzOHh2Vg
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-04-15_01,2026-04-13_04,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ adultscore=0 clxscore=1015 bulkscore=0 lowpriorityscore=0 impostorscore=0
+ suspectscore=0 malwarescore=0 priorityscore=1501 spamscore=0 phishscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2604070000 definitions=main-2604150150
 
-From: Peng Fan <peng.fan@nxp.com>
 
-On ARM64, arch_sync_dma_for_{cpu,device}() assumes that the
-physical address passed in refers to normal RAM that is part of the
-kernel linear(direct) mapping, as it unconditionally derives a CPU
-virtual address via phys_to_virt().
 
-With Xen swiotlb, devices may use per-device coherent DMA memory,
-such as reserved-memory regions described by 'shared-dma-pool',
-which are assigned to dev->dma_mem. These regions may be marked
-no-map in DT and therefore are not part of the kernel linear map.
-In such cases, pfn_valid() still returns true, but phys_to_virt()
-is not valid and cache maintenance via arch_sync_dma_* will fault.
+On 4/14/2026 10:01 PM, Ekansh Gupta wrote:
+> Replace the platform driver approach for compute bank (CB) devices
+> with the generic context_device_bus_type. Compute bank devices are
+> synthetic IOMMU context banks, not real platform devices, so using
+> the context device bus provides a more accurate representation in
+> the device model.
+> 
+> Currently, fastrpc used of_platform_populate() to create platform
+> devices for each "qcom,fastrpc-compute-cb" DT node, with a platform
+> driver (fastrpc_cb_driver) to handle probe/remove. This approach
+> had a race condition: device nodes were created before channel
+> resources (like spin_lock) were initialized, and probe was async,
+> so applications could open the device before sessions were available.
+> 
+> This patch addresses the race by manually creating and configuring
+> CB devices synchronously during fastrpc_rpmsg_probe(), after all
+> channel resources are initialized. The approach follows the pattern
+> used in host1x_memory_context_list_init().
+> 
+> Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+> ---
+>   drivers/misc/Kconfig   |   1 +
+>   drivers/misc/fastrpc.c | 180 ++++++++++++++++++++++++++++++++++---------------
+>   2 files changed, 125 insertions(+), 56 deletions(-)
+> 
+> diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+> index 00683bf06258..b501462a4548 100644
+> --- a/drivers/misc/Kconfig
+> +++ b/drivers/misc/Kconfig
+> @@ -304,6 +304,7 @@ config QCOM_FASTRPC
+>   	depends on RPMSG
+>   	select DMA_SHARED_BUFFER
+>   	select QCOM_SCM
+> +	select CONTEXT_DEVICE_BUS
+>   	help
+>   	  Provides a communication mechanism that allows for clients to
+>   	  make remote method invocations across processor boundary to
+> diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
+> index 1080f9acf70a..f66fd3eea5fa 100644
+> --- a/drivers/misc/fastrpc.c
+> +++ b/drivers/misc/fastrpc.c
+> @@ -13,9 +13,9 @@
+>   #include <linux/module.h>
+>   #include <linux/of_address.h>
+>   #include <linux/of.h>
+> -#include <linux/platform_device.h>
+> +#include <linux/of_device.h>
+>   #include <linux/sort.h>
+> -#include <linux/of_platform.h>
+> +#include <linux/context_bus.h>
+>   #include <linux/rpmsg.h>
+>   #include <linux/scatterlist.h>
+>   #include <linux/slab.h>
+> @@ -250,6 +250,18 @@ struct fastrpc_invoke_ctx {
+>   	struct fastrpc_channel_ctx *cctx;
+>   };
+>   
+> +/**
+> + * struct fastrpc_cb_device - Compute bank device wrapper
+> + * @dev: Device structure
+> + * @sess: Back-pointer to the session context
+> + */
+> +struct fastrpc_cb_device {
+> +	struct device dev;
+> +	struct fastrpc_session_ctx *sess;
+> +};
+> +
+> +#define to_fastrpc_cb_device(d) container_of(d, struct fastrpc_cb_device, dev)
+> +
+>   struct fastrpc_session_ctx {
+>   	struct device *dev;
+>   	int sid;
+> @@ -2190,92 +2202,156 @@ static const struct file_operations fastrpc_fops = {
+>   	.compat_ioctl = fastrpc_device_ioctl,
+>   };
+>   
+> -static int fastrpc_cb_probe(struct platform_device *pdev)
+> +static void fastrpc_cb_dev_release(struct device *dev)
+> +{
+> +	struct fastrpc_cb_device *cb_dev = to_fastrpc_cb_device(dev);
+> +
+> +	of_node_put(dev->of_node);
+> +	kfree(cb_dev);
+> +}
+> +
+> +static int fastrpc_create_cb_device(struct fastrpc_channel_ctx *cctx,
+> +				    struct device *parent,
+> +				    struct device_node *cb_node)
+>   {
+> -	struct fastrpc_channel_ctx *cctx;
+>   	struct fastrpc_session_ctx *sess;
+> -	struct device *dev = &pdev->dev;
+> -	int i, sessions = 0;
+> +	struct fastrpc_cb_device *cb_dev;
+>   	unsigned long flags;
+> -	int rc;
+> -	u32 dma_bits;
+> -
+> -	cctx = dev_get_drvdata(dev->parent);
+> -	if (!cctx)
+> -		return -EINVAL;
+> +	int i, sessions = 0, rc;
+> +	u32 dma_bits, sid = 0;
+>   
+> -	of_property_read_u32(dev->of_node, "qcom,nsessions", &sessions);
+> +	/* Read SID early so it can be used in the device name */
+> +	of_property_read_u32(cb_node, "reg", &sid);
+> +	of_property_read_u32(cb_node, "qcom,nsessions", &sessions);
+>   
+>   	spin_lock_irqsave(&cctx->lock, flags);
+>   	if (cctx->sesscount >= FASTRPC_MAX_SESSIONS) {
+> -		dev_err(&pdev->dev, "too many sessions\n");
+> +		dev_err(parent, "too many sessions\n");
+>   		spin_unlock_irqrestore(&cctx->lock, flags);
+>   		return -ENOSPC;
+>   	}
+>   	dma_bits = cctx->soc_data->dma_addr_bits_default;
+> +	if (cctx->domain_id == CDSP_DOMAIN_ID)
+> +		dma_bits = cctx->soc_data->dma_addr_bits_cdsp;
+> +
+>   	sess = &cctx->session[cctx->sesscount++];
+>   	sess->used = false;
+>   	sess->valid = true;
+> -	sess->dev = dev;
+> -	dev_set_drvdata(dev, sess);
+> +	sess->sid = sid;
+> +	spin_unlock_irqrestore(&cctx->lock, flags);
+>   
+> -	if (cctx->domain_id == CDSP_DOMAIN_ID)
+> -		dma_bits = cctx->soc_data->dma_addr_bits_cdsp;
+> +	cb_dev = kzalloc_obj(*cb_dev);
+> +	if (!cb_dev)
+> +		return -ENOMEM;
+>   
+> -	if (of_property_read_u32(dev->of_node, "reg", &sess->sid))
+> -		dev_info(dev, "FastRPC Session ID not specified in DT\n");
+> +	cb_dev->sess = sess;
+>   
+> -	if (sessions > 0) {
+> -		struct fastrpc_session_ctx *dup_sess;
+> +	device_initialize(&cb_dev->dev);
+> +	cb_dev->dev.parent = parent;
+> +	cb_dev->dev.bus = &context_device_bus_type;
+> +	cb_dev->dev.release = fastrpc_cb_dev_release;
+> +	cb_dev->dev.of_node = of_node_get(cb_node);
+> +	cb_dev->dev.dma_mask = &cb_dev->dev.coherent_dma_mask;
+> +	cb_dev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
+> +	dev_set_name(&cb_dev->dev, "%s:compute-cb@%u", dev_name(parent), sid);
+>   
+> +	rc = device_add(&cb_dev->dev);
 
-Prevent this by excluding devices with a private DMA memory pool
-(dev->dma_mem) from the arch_sync_dma_* fast path, and always
-fall back to xen_dma_sync_* for those devices to avoid invalid
-phys_to_virt() conversions for no-map DMA memory while preserving the
-existing fast path for normal, linear-mapped RAM.
+device_initialize() and device_add() can be replaced with single 
+device_register() call. You can refer the below patch,
 
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
----
- drivers/xen/swiotlb-xen.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+https://lore.kernel.org/all/20260313-kaanapali-iris-v3-4-9c0d1a67af4b@oss.qualcomm.com/
 
-diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-index 2cbf2b588f5b20cfbf9e83a8339dc22092c9559a..b1445df99d9a8f1d18a83b8c413bada6e5579209 100644
---- a/drivers/xen/swiotlb-xen.c
-+++ b/drivers/xen/swiotlb-xen.c
-@@ -195,6 +195,11 @@ xen_swiotlb_free_coherent(struct device *dev, size_t size, void *vaddr,
- }
- #endif /* CONFIG_X86 */
- 
-+static inline bool dev_has_private_dma_pool(struct device *dev)
-+{
-+	return dev && dev->dma_mem;
-+}
-+
- /*
-  * Map a single buffer of the indicated size for DMA in streaming mode.  The
-  * physical address to use is returned.
-@@ -262,7 +267,8 @@ static dma_addr_t xen_swiotlb_map_phys(struct device *dev, phys_addr_t phys,
- 
- done:
- 	if (!dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)) {
--		if (pfn_valid(PFN_DOWN(dma_to_phys(dev, dev_addr)))) {
-+		if (pfn_valid(PFN_DOWN(dma_to_phys(dev, dev_addr))) &&
-+		    !dev_has_private_dma_pool(dev)) {
- 			arch_sync_dma_for_device(phys, size, dir);
- 			arch_sync_dma_flush();
- 		} else {
-@@ -289,7 +295,8 @@ static void xen_swiotlb_unmap_phys(struct device *hwdev, dma_addr_t dev_addr,
- 	BUG_ON(dir == DMA_NONE);
- 
- 	if (!dev_is_dma_coherent(hwdev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)) {
--		if (pfn_valid(PFN_DOWN(dma_to_phys(hwdev, dev_addr)))) {
-+		if (pfn_valid(PFN_DOWN(dma_to_phys(hwdev, dev_addr))) &&
-+		    !dev_has_private_dma_pool(hwdev)) {
- 			arch_sync_dma_for_cpu(paddr, size, dir);
- 			arch_sync_dma_flush();
- 		} else {
-@@ -312,7 +319,8 @@ xen_swiotlb_sync_single_for_cpu(struct device *dev, dma_addr_t dma_addr,
- 	struct io_tlb_pool *pool;
- 
- 	if (!dev_is_dma_coherent(dev)) {
--		if (pfn_valid(PFN_DOWN(dma_to_phys(dev, dma_addr)))) {
-+		if (pfn_valid(PFN_DOWN(dma_to_phys(dev, dma_addr))) &&
-+		    !dev_has_private_dma_pool(dev)) {
- 			arch_sync_dma_for_cpu(paddr, size, dir);
- 			arch_sync_dma_flush();
- 		} else {
-@@ -337,7 +345,8 @@ xen_swiotlb_sync_single_for_device(struct device *dev, dma_addr_t dma_addr,
- 		__swiotlb_sync_single_for_device(dev, paddr, size, dir, pool);
- 
- 	if (!dev_is_dma_coherent(dev)) {
--		if (pfn_valid(PFN_DOWN(dma_to_phys(dev, dma_addr)))) {
-+		if (pfn_valid(PFN_DOWN(dma_to_phys(dev, dma_addr))) &&
-+		    !dev_has_private_dma_pool(dev)) {
- 			arch_sync_dma_for_device(paddr, size, dir);
- 			arch_sync_dma_flush();
- 		} else {
+> +	if (rc) {
+> +		dev_err(parent, "failed to add CB device: %d\n", rc);
+> +		goto err_put;
+> +	}
+> +
+> +	rc = of_dma_configure(&cb_dev->dev, cb_node, true);
 
----
-base-commit: 66672af7a095d89f082c5327f3b15bc2f93d558e
-change-id: 20260415-xen-swiotlb-34a198b6c1d6
+Specific dma configuration should be done via .dma_configure callback, 
+as suggested by Robin earlier in the discussion,
 
-Best regards,
--- 
-Peng Fan <peng.fan@nxp.com>
+https://lore.kernel.org/all/02b3d0f5-f94c-43cd-93af-97cfcf7751b1@arm.com/
 
+> +	if (rc) {
+> +		dev_err(parent, "of_dma_configure failed for CB device: %d\n", rc);
+> +		goto err_del;
+> +	}
+> +
+> +	rc = dma_set_mask(&cb_dev->dev, DMA_BIT_MASK(dma_bits));
+
+Can this be set during device configuration and avoid explict 
+dma_set_mask call?
+
+> +	if (rc) {
+> +		dev_err(parent, "%u-bit DMA enable failed\n", dma_bits);
+> +		goto err_del;
+> +	}
+> +
+> +	sess->dev = &cb_dev->dev;
+> +
+> +	if (sessions > 0) {
+> +		spin_lock_irqsave(&cctx->lock, flags);
+>   		for (i = 1; i < sessions; i++) {
+> +			struct fastrpc_session_ctx *dup_sess;
+> +
+>   			if (cctx->sesscount >= FASTRPC_MAX_SESSIONS)
+>   				break;
+>   			dup_sess = &cctx->session[cctx->sesscount++];
+>   			memcpy(dup_sess, sess, sizeof(*dup_sess));
+>   		}
+> -	}
+> -	spin_unlock_irqrestore(&cctx->lock, flags);
+> -	rc = dma_set_mask(dev, DMA_BIT_MASK(dma_bits));
+> -	if (rc) {
+> -		dev_err(dev, "%u-bit DMA enable failed\n", dma_bits);
+> -		return rc;
+> +		spin_unlock_irqrestore(&cctx->lock, flags);
+>   	}
+>   
+>   	return 0;
+> +
+> +err_del:
+> +	device_del(&cb_dev->dev);
+> +err_put:
+> +	of_node_put(cb_dev->dev.of_node);
+> +	put_device(&cb_dev->dev);
+> +	return rc;
+>   }
+>   
+> -static void fastrpc_cb_remove(struct platform_device *pdev)
+> +static void fastrpc_depopulate_cb_devices(struct fastrpc_channel_ctx *cctx)
+>   {
+> -	struct fastrpc_channel_ctx *cctx = dev_get_drvdata(pdev->dev.parent);
+> -	struct fastrpc_session_ctx *sess = dev_get_drvdata(&pdev->dev);
+>   	unsigned long flags;
+> -	int i;
+> +	int i, j;
+>   
+>   	spin_lock_irqsave(&cctx->lock, flags);
+>   	for (i = 0; i < FASTRPC_MAX_SESSIONS; i++) {
+> -		if (cctx->session[i].sid == sess->sid) {
+> +		if (cctx->session[i].valid) {
+>   			cctx->session[i].valid = false;
+>   			cctx->sesscount--;
+>   		}
+>   	}
+>   	spin_unlock_irqrestore(&cctx->lock, flags);
+> +
+> +	for (i = 0; i < FASTRPC_MAX_SESSIONS; i++) {
+> +		struct device *dev = cctx->session[i].dev;
+> +
+> +		if (!dev)
+> +			continue;
+> +
+> +		/* Unregister the device once */
+> +		device_unregister(dev);
+> +
+> +		/* Clear this dev pointer from all sessions that share it */
+> +		for (j = i; j < FASTRPC_MAX_SESSIONS; j++) {
+> +			if (cctx->session[j].dev == dev)
+> +				cctx->session[j].dev = NULL;
+> +		}
+> +	}
+>   }
+>   
+> -static const struct of_device_id fastrpc_match_table[] = {
+> -	{ .compatible = "qcom,fastrpc-compute-cb", },
+> -	{}
+> -};
+> +static int fastrpc_populate_cb_devices(struct fastrpc_channel_ctx *cctx,
+> +					struct device *parent,
+> +					struct device_node *parent_node)
+> +{
+> +	struct device_node *child;
+> +	int ret = 0;
+>   
+> -static struct platform_driver fastrpc_cb_driver = {
+> -	.probe = fastrpc_cb_probe,
+> -	.remove = fastrpc_cb_remove,
+> -	.driver = {
+> -		.name = "qcom,fastrpc-cb",
+> -		.of_match_table = fastrpc_match_table,
+> -		.suppress_bind_attrs = true,
+> -	},
+> -};
+> +	for_each_child_of_node(parent_node, child) {
+> +		if (!of_device_is_compatible(child, "qcom,fastrpc-compute-cb"))
+> +			continue;
+> +
+> +		ret = fastrpc_create_cb_device(cctx, parent, child);
+> +		if (ret) {
+> +			dev_err(parent, "failed to create CB device for %s: %d\n",
+> +				child->name, ret);
+> +			of_node_put(child);
+> +			fastrpc_depopulate_cb_devices(cctx);
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	return 0;
+> +}
+>   
+>   static int fastrpc_device_register(struct device *dev, struct fastrpc_channel_ctx *cctx,
+>   				   bool is_secured, const char *domain)
+> @@ -2441,7 +2517,7 @@ static int fastrpc_rpmsg_probe(struct rpmsg_device *rpdev)
+>   	data->domain_id = domain_id;
+>   	data->rpdev = rpdev;
+>   
+> -	err = of_platform_populate(rdev->of_node, NULL, NULL, rdev);
+> +	err = fastrpc_populate_cb_devices(data, rdev, rdev->of_node);
+>   	if (err)
+>   		goto err_deregister_fdev;
+>   
+> @@ -2496,7 +2572,7 @@ static void fastrpc_rpmsg_remove(struct rpmsg_device *rpdev)
+>   	if (cctx->remote_heap)
+>   		fastrpc_buf_free(cctx->remote_heap);
+>   
+> -	of_platform_depopulate(&rpdev->dev);
+> +	fastrpc_depopulate_cb_devices(cctx);
+>   
+>   	fastrpc_channel_ctx_put(cctx);
+>   }
+> @@ -2558,16 +2634,9 @@ static int fastrpc_init(void)
+>   {
+>   	int ret;
+>   
+> -	ret = platform_driver_register(&fastrpc_cb_driver);
+> -	if (ret < 0) {
+> -		pr_err("fastrpc: failed to register cb driver\n");
+> -		return ret;
+> -	}
+> -
+>   	ret = register_rpmsg_driver(&fastrpc_driver);
+>   	if (ret < 0) {
+>   		pr_err("fastrpc: failed to register rpmsg driver\n");
+> -		platform_driver_unregister(&fastrpc_cb_driver);
+>   		return ret;
+>   	}
+>   
+> @@ -2577,7 +2646,6 @@ module_init(fastrpc_init);
+>   
+>   static void fastrpc_exit(void)
+>   {
+> -	platform_driver_unregister(&fastrpc_cb_driver);
+>   	unregister_rpmsg_driver(&fastrpc_driver);
+>   }
+>   module_exit(fastrpc_exit);
+> 
