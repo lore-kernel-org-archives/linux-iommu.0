@@ -1,151 +1,225 @@
-Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11010059.outbound.protection.outlook.com [52.101.84.59])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26A613B3BFE
-	for <iommu@lists.linux.dev>; Wed, 15 Apr 2026 13:53:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.169
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776261209; cv=none; b=fShcIHaUq4kU4OhiJT1Jbeuh/hjF85zN/82qt5WFKgttuvtGmD7JKKUsLnMns/LCXkNm4O7VmFxpK6Atbj81hGNqAkov2OLfAPv256jEBVtNcYs2eiELtocvle9mGwEQ7FrhhxI2hF//xxBXhuC/LIKl4SfiIeNnPE8iY4ZQusk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776261209; c=relaxed/simple;
-	bh=NjZRi6F3kjPLu2FB2YM0Y5WGi5mzKqvcdzvdrqVjHjY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=q2i1RgTn3NyQ9wp+idrJb9gnnv/T2yeGMZR7zVAgV7mFX2T+XW1SG9yDJuUnIhdiZOPR4ZNaa+gxHIFYqLysrzPKOv1KYfVZ2KlaU369Qf3a8HvXxbOrTLnhc9bxU2WJ9PzetAxtvG43f1zaICZDhFaHASc+IsiHIPRXS9kLsc0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=QjTwsWea; arc=none smtp.client-ip=209.85.222.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0ED9B3D75B7
+	for <iommu@lists.linux.dev>; Wed, 15 Apr 2026 15:06:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.84.59
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776265596; cv=fail; b=lz6klMV03NchsjPHfLtae6gC23vDdSoiAExsthw6kUj1GXLmfr3wTP2HAjsWqUYSZeBkPOkBdpCRgcwgg2zTq/FIen7olb9A1lX09VbEMvAWOajkpHL6VUSFpL0CEV+TW8+Eag4L1fXUaQ7HM0CImFaZyy6Dh+nc2uJPbq4i3yg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776265596; c=relaxed/simple;
+	bh=2XE/B5gmtPEXcMHVBXN6Sz1ANWHR5AlQxtw6eBnLZh4=;
+	h=From:Date:Subject:Content-Type:Message-Id:To:Cc:MIME-Version; b=hH4EWfKTnlwM9t8oW0+z37DMb1HvXL9+mKL3J3e9X4RKsAnl/ert54vHMR+1s9wsh9pbGYGc4gU/8jkdadIP0WncojcTvVyAHTcmqoZ3egVmWIQbAPh2ns+iKCDjFbb58T5uugRwOxB9py2wD9eLSsLNfiPyK3moRu5j9bzemvI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=XbdyP+DV; arc=fail smtp.client-ip=52.101.84.59
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="QjTwsWea"
-Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-8d00cf835b7so823025785a.1
-        for <iommu@lists.linux.dev>; Wed, 15 Apr 2026 06:53:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1776261207; x=1776866007; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=1ky21GsOcS92v/0GOErqE5gWkmJLAC8Aqv1PqW+bexE=;
-        b=QjTwsWeaBzZDuMsV1TBjDWFA7p4K2QScN7jCWsTkgpC90jQ0muCa/1L92+Lu2R1XdF
-         UW61hPAQiB9t8uaxFBCjHuEKPao+0zjBs5vJILFNijl93hVBq/ocLP5iKpvqSdKrQlsN
-         jdE2SLiRY+LVDYRi0D07f4h/Pr7vcdPOyo/wDCniALqAzzAe/sdq33Kkz+VFoysdOOXB
-         94beIVR45YU1XYX859fR+hglNb4atynU+gA1nPpL1b6TijTHGyx1g9TQvrr6MpIIFKDZ
-         L+SioaxD0tcgyQV+w1164VtJZdmCYbuvB6pPVQ7ezGCfffZUXoMi9nxSTs/CMasVP19t
-         mY1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776261207; x=1776866007;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=1ky21GsOcS92v/0GOErqE5gWkmJLAC8Aqv1PqW+bexE=;
-        b=fyslDG2e3Y1+qH4T7p/0jmQ74i+9A06x6sP1EmNBVm5iFh34RqBPBOUax0kO3bolwo
-         u3pV2YrzhNsi2KGOwsCP61Lbcb7dJsCpf2nfBwUpsSqJpRcDxdMPB7TxNfX4eQME8vVR
-         oMOb0X8mDQRtjg1N6Vr0B8dkaok26t2MlZ8/jIksvYViKqMqeHb7c87KrT5jhcejIjaG
-         kSfqq4/MvpSksiWaCFhPPCZsG6kFI2OXioBQ5ARb93nMcqO9L5PJ/ykdGTHpmp6YF3Ut
-         7aWjKgUrNvcjDgzKN3Ox6s1UKO2YhPBYAT98rXEfr5mjuIiMeLNxKv7F5+ivwo4zpnsj
-         fKCw==
-X-Forwarded-Encrypted: i=1; AFNElJ8Ax+G7n0NotayFekW65GTUYaY/pYkSt+btCO1B5OaT4BgYiuraIGcTkRwfQgB8l+u1V5mPeg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyme/PPRupqoNlu/+NQPnftApTAnnGqeJMuZcqQdm2zF8bMFAMo
-	VCpKmOayBYiZVqXD94sneSbJ8VufnAP2ifjtfFLFD9/oNPH1+2LVGCRI/IYaKjW+7fw=
-X-Gm-Gg: AeBDiesfqWsHcOaKVVOSb/nK6ZLD39lshClTJ+0+dH7jNCAggyytuTFBZaWg8gZKH6A
-	jKA+55IgQMQSj27aAORf3AkRujm8SeaNTw43FlZjrWYLVAiw8sWVgBTCuD6lr/owio+l0+IYDE1
-	BBde+daZ882Ii6lAHT/WkI7nPtyciYAAS2fU174ZdN9PsuqF+btQSEt2ZADvKeEheHlk4Wc0jJa
-	dUOcHZ7APCdDVEK4ea7690klsv2ZQraKg0HC/GvCKvFCbaIok01qNUq+u8Cmv2MotTY75K7Eg8s
-	Hz/tpJl5Hkl691P+X6oXgMasCbxT7Etej6YEpOn61PTcWzDtpDPTaAeLmsUPAESR+PP8rh0nxPz
-	TpgIt0uvJRv3EULxYqFDKOsMLfIKRQazoUWxdFhQxA8apC9/11guBkT4/QHBFzfa6IPrCHgFy/f
-	xh2cfwMcuybjEI0p7t1P/oTkT5MXmp3NMFy/yZS8FUTOXdczV1e4frBK3G5pl9rSKkgIVV9ih7I
-	3D1mwj5qvZ9Icf6
-X-Received: by 2002:a05:620a:40c9:b0:8cd:94a5:2f32 with SMTP id af79cd13be357-8ddcd8f429dmr3139685385a.27.1776261206957;
-        Wed, 15 Apr 2026 06:53:26 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8e4f243a4d4sm117991085a.30.2026.04.15.06.53.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Apr 2026 06:53:26 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wD0gH-00000000HDH-2vuh;
-	Wed, 15 Apr 2026 10:53:25 -0300
-Date: Wed, 15 Apr 2026 10:53:25 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Cc: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com,
-	m.szyprowski@samsung.com, will@kernel.org, maz@kernel.org,
-	suzuki.poulose@arm.com, catalin.marinas@arm.com, jiri@resnulli.us
-Subject: Re: [RFC PATCH v3 5/5] dma-mapping: Fix memory decryption issues
-Message-ID: <20260415135325.GH2577880@ziepe.ca>
-References: <20260408194750.2280873-1-smostafa@google.com>
- <20260408194750.2280873-6-smostafa@google.com>
- <yq5a5x5vba49.fsf@kernel.org>
- <20260413124248.GJ3694781@ziepe.ca>
- <yq5aldeo9yxm.fsf@kernel.org>
+	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="XbdyP+DV"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=G/YegBjGjvFF6v1M2n/hBabdRgNfRarK31AZDLhxa0FEHM3EBHGBc8NCRpOeeVWQY1KCvjvY9GbcIYW+k/Di8Q5+tPY0POJznBSL/lxTZgqWUbp+0VvTrqaME38iP/XM5IoE2wAGhhYFRSkj520jW8INpd+nU9Bvvk9JJ80/atMf4CjM1Vy/EVf0tHAKT0JMvArhVlgOYpQ0q0RhT3LkoAxNPyRQ7GzRUdRQuTkKvUl/B5jetVKCBihDURBsS6+kivh6OlBvyzzzOsedeIqWJ1hLl3FVxGrnA0o+BP/VndP4GuwQoj8GpccFw4etuVjSAvG+U+uqq7L648B34qic1Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fmcvVWSkK3QeMTcIF/V8g/ybVObIa+ABL+fgg4jkOUY=;
+ b=N1mMycjWO3sl6YOOdwvc6DgsSMNADFO4aK0K4U+NCCBrWXSCJdmxt5Mx/ACGH4CGBKrDI+NDqoy+YUpE93q+nTeT/kP1mahslfaEmXhpWJgIDH94CSCDyfyGyVUMWXDNLFFT8Kqztv94lCc7gdSwSXWNz2UaytX92t3xt8Z2e9gYJ9Ks+bWxhyBDC40aCorEkCQaDYVVe1lWdpATSjMFl3h3eHwQ17LoPyw7PTe7Zxdjj8zhGJxa76tFEHhrNfUTO7t5alA60RHL/nE8jYu/+ZKO9NcqjsO9tX2DaN+TKhGAmPt6VXRoMvtEXcjb1dsF+pmJmhDR1NR3C9Es1mKnQw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector1-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fmcvVWSkK3QeMTcIF/V8g/ybVObIa+ABL+fgg4jkOUY=;
+ b=XbdyP+DV3mu9iZx/XFaF7SIvBA2pehw3uUd5aa9SNL4V7ZZXrOyTkiqKpWV6g2kipioadIYeW40VrppYixT6P/mR96MQh9la276Omfx5MRgwobrYtCTP94Z0Fh4+/6P3pLFzZBezmSDI0OyQVr0nWxMkKyntILFHPl2B6/4SDTZXUIEHp3vpQfOeYY3TC2EV5jQSetZoX/Rwow0HZCmjowmhFrST48YSxLGw01oF/6sJCJrbMmZMkJ+4e/F+cjmVvV6mH9onRHO4WjM6/BrueoV7/YqzJrRMgKj+ar1t+DGHp0DG0HN2D4ZJ1WP+4xPfdnU8ug+Q3YsBlqU3EZP8IA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from DB9PR04MB8461.eurprd04.prod.outlook.com (2603:10a6:10:2cf::20)
+ by PAXPR04MB9470.eurprd04.prod.outlook.com (2603:10a6:102:2b3::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9769.48; Wed, 15 Apr
+ 2026 15:06:28 +0000
+Received: from DB9PR04MB8461.eurprd04.prod.outlook.com
+ ([fe80::21f6:947a:1f40:18af]) by DB9PR04MB8461.eurprd04.prod.outlook.com
+ ([fe80::21f6:947a:1f40:18af%6]) with mapi id 15.20.9769.046; Wed, 15 Apr 2026
+ 15:06:28 +0000
+From: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+Date: Wed, 15 Apr 2026 23:08:36 +0800
+Subject: [PATCH RFC] xen/swiotlb: avoid arch_sync_dma_* on per-device DMA
+ memory
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260415-xen-swiotlb-v1-1-de24eda3c0fd@nxp.com>
+X-B4-Tracking: v=1; b=H4sIAPOp32kC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIzMDE0NT3YrUPN3i8sz8kpwkXWOTRENLiySzZMMUMyWgjoKi1LTMCrBp0Up
+ Bbs5KsbW1AJtHq/JiAAAA
+X-Change-ID: 20260415-xen-swiotlb-34a198b6c1d6
+To: Juergen Gross <jgross@suse.com>, 
+ Stefano Stabellini <sstabellini@kernel.org>, 
+ Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Cc: xen-devel@lists.xenproject.org, iommu@lists.linux.dev, 
+ linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
+X-Mailer: b4 0.14.2
+X-ClientProxiedBy: MA5P287CA0226.INDP287.PROD.OUTLOOK.COM
+ (2603:1096:a01:1b4::11) To DB9PR04MB8461.eurprd04.prod.outlook.com
+ (2603:10a6:10:2cf::20)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <yq5aldeo9yxm.fsf@kernel.org>
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DB9PR04MB8461:EE_|PAXPR04MB9470:EE_
+X-MS-Office365-Filtering-Correlation-Id: 389c48ec-d835-4f4f-9c53-08de9b0091b2
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|52116014|376014|366016|19092799006|1800799024|18002099003|38350700014|56012099003;
+X-Microsoft-Antispam-Message-Info:
+	6ZjO6FFmkIuqO3Zki60YObNpRN0M9BMGRrNX5m5cSn38ed1JJuzkfs/R/9KqmB+BCyoAZ5RTfnccrJlu9oLEXXLKzm1fLYjSk1AlBkNwjOboxpfl3sYE6vplOLkWukNg0CW4Xq9WkLYwu+654IJG2cKmW1DjaHGpWFDmKYOVFBMCbXsQZNKNJMPsNb2dTLl2y4yULESD4sbm9EuljnZJBVO4ixkIRcaBc1lhPMrz+j+NMoIfEpOnkL71557ZBjrC4Qx3eWRpaKlmyQI2/cevQ4SgJz0EhUi0Wj72JOxUqqBNdpqiY4JpeBoC9D/aTsLEvvh+Va0/VJR/M2PCijzC9+wV5TQwBYDaGuHROuQ79L9WJQvFU9U5vh5aMtF6Ybg8hW6fBoBMdZ5WySj/aWxRXu3XHKSwcCB3sQTt9ulcYoNCkj6I9MOT3UKzrVJaFVZY9c4DxpMoUjsThjouirz6wy9BuQbPKfUSKroU79RwQ2M6ge5j01IH7/BAbIXTE/SROxzH5+XvUtLLIdSInJLj/MBpWjkbhYR4w6KL7grESFbTE9u1Ft9HJca7SZ4a3HYZfR5USmfUo21iDtF7SxQSgkA+OuiKvp0Xetxc11STzqe5R9m0oYzqxqGJq5MiBgf1jxPgPn13d4JhRBWxBU+xgfu6iYySkSHTC0/8F1xjOXkYQpe+v9Re3Df////KF5Hxjmbzpd/y6jIhjfqOsR9Y5evIPBPuwTGY+0wyxDGsYGWzLDAsGOISWOOrJAhcdZOfvAqYgPXYplqrkdEad1mgcum7CNQNwTTA7wGmxC5tz9k=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8461.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(52116014)(376014)(366016)(19092799006)(1800799024)(18002099003)(38350700014)(56012099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?My9MZjNLZHB0Umhmakc4MExSYTRkUDFKeW8wSE5YR0JtSFk1Lzd0Vm5LN3Iz?=
+ =?utf-8?B?NkRYYVMrMkVjTlF1QWxkdFBXVHBlOGFXTFNvRzF2ZHoyV0l4M2V3TzU4d0Zq?=
+ =?utf-8?B?K2RQSWlqcG5UNzhsdFhEZEoxZGJMaFNaNlZEUmpIOTd2c1h6UTNWa1MrNDhU?=
+ =?utf-8?B?aGdwY0RsUG9Pem8vUElHdTVhMHpTczhqN20vM0sxYXBHKzJiNWJoaHRObDhY?=
+ =?utf-8?B?RGYrMnhKa1ZGblhDdHZQTVIwQ2pTQjQ4WFBjRnBNdkJzSjN0QnJwWkZ2YnUw?=
+ =?utf-8?B?NnRJN0l0eWVabGVoK0QxSTY3bktibnNjVDRsRmZHNTJWb3g4R050ODJ5aHJZ?=
+ =?utf-8?B?eENFSzZvME1SczJUMHZJSUtjakpva1ZrOFNxQndIS21oOXphWWpSeW9Gb1ZO?=
+ =?utf-8?B?R0ZNY2NVSzNHUWQwVWJZWUlLMFNwYU5HL2poNU9paW9XQlRyRzZNSVF6RDk2?=
+ =?utf-8?B?UFNRZWRBQWJjVjNEcm81a0ppU2JKR2NyRDRJZUc0OFhlV1ErWTdvK3hqU2M5?=
+ =?utf-8?B?THg5bmI2ZTl1cHNseitWYXBLeWpscDNycnE5QTFhTEN4bGJQVXR4a0FSZ1FX?=
+ =?utf-8?B?bE81VlVmRHM5dzY1bnhLRDNOMjlsRnAxeWN6eTFCY0VSdGpxQWp0VlNKMndt?=
+ =?utf-8?B?aGJFRC85cnAwNXd6UWxydm1rVENPajZ2L3hMZStkaHlGUzRxTXlPdDlTeFNB?=
+ =?utf-8?B?ZGxvR3RzZTY4QnhIaW53U3hVRG9LTCtvR0VzaUt5M0syYy9RbVk5b2pxb0ZF?=
+ =?utf-8?B?M0w4N2ZoWWYxMXd2NWNFYk1tNjVPU01Pa3oyeUxmMGpZL3c4UE56c0pONXJu?=
+ =?utf-8?B?L0JQRVpoQm50cWR5bUFtOXlEdVhWWTBRWGtlT2xHaEVzZ3VzZ3RSdWxlekQr?=
+ =?utf-8?B?L2ZWaDQ3eUE5eU5tYldrRVJubE9aUHJHQlp1bGxXZHRQcmRXaFh2ZWZvT1RR?=
+ =?utf-8?B?SDB1UzhrSTdxWG1McTQxVitCRUk5N3JTRGRrc2loNjRLbUFZN0dwWFFIOENa?=
+ =?utf-8?B?VGtzcEJ4OVFrd3pLTitremhNYkI3enhTRWZEMERsVzN4VkJMdjJ3aTFnanhj?=
+ =?utf-8?B?MTVhQUJ3VHFzQis5eVRZY09YaDNReUdQUmpHMjI4WGkwZktYWWtwbktZbHh4?=
+ =?utf-8?B?bXpwVzFzamtFajdKWE9rQitqNlhRRlJVdnVtOFBuWlJiRm9XSHZkei9zMWM4?=
+ =?utf-8?B?UUFUU2RFV2VZUFJsQU84eGlNNzNIRFJjRVo2QVhBbGJucExXc3FRekRnV05V?=
+ =?utf-8?B?cWZoVlJNdzB6aklKSER0bzdLWjMzZUVrcWdkbGJMNmRPR251ZUNxWjhMQnJV?=
+ =?utf-8?B?QXdSYytlbEh6OW81bmlISDhLeFoybjR4TmtPRnRIeGlzcGMvblBiK0srUWFD?=
+ =?utf-8?B?Qm5IYWtaSjRXd0VwYUNYWllHSVVwSnZmczlrZm8vOHo2ZjZlMFVQZVg1eSs0?=
+ =?utf-8?B?bVRKT3JYbHF0SmhZUEZyYjBsNVhPeHVCYkZ2d2dLbkhNdWVXc0hUREZ2VVdE?=
+ =?utf-8?B?eEJQWHNOUDJHdVVETkZQd0hiTFJuaDQ0VElhbGhnanN5a3RKc2hWdjJ6cVpw?=
+ =?utf-8?B?OWwvYTBZbW1maFMyYWUzSjdBOHkrbGl1cGlXMmJhczI4MTVoVEkvUkdVRHlJ?=
+ =?utf-8?B?RDQ3SGk5aFhwZTVQaVFvMytoNlRMQ29CNmRKQi8xWldIdUczN0pkVTV6aVY3?=
+ =?utf-8?B?Z1NhV0FDOWh5R3pCcUtwVFB6VGJ1b2wwZnVxbXlaQ0huV3B4OTRxclJDZFVV?=
+ =?utf-8?B?eENQZDE2L3dUTU9yaHEzRFMrUU5wMS9PTnYyU2tFd01tUllRc01Zd0Nqb2Uv?=
+ =?utf-8?B?SHZ2OFZ4elhPaUxsRVB6dGsycURwMVhRTFlqck1RbXRhTVJSM1F4alI0QlVB?=
+ =?utf-8?B?ZUYwcStlVHB0djVZcGRYR05oOVR0bWdndDNMYWxnK2xzNXhVUEV4MGNNWWNX?=
+ =?utf-8?B?QzdlMmcySjRWaFkybmtoTXI2YTd6azJJblB0U0RmeFMzMW50RHpkNHZSSnMv?=
+ =?utf-8?B?T3BubkpFWnNNSjh6OUlXZGVLbjdzYkpjMWtIT3BpZUd0MVN0cG95dGxOZTU0?=
+ =?utf-8?B?T2RyNXh3UTgxY0RycDVFY0dVNnF5K0d0SVRLaHVISDZFbHJXM0o4d242VlR2?=
+ =?utf-8?B?MVE3UkFvN0NENDRQcHJBMVBkaEpzdkhhaVZoYWlkbHZhTWVkTU5PWUZyYWNZ?=
+ =?utf-8?B?dHRhTG9rZm9keEtHOWJaZlVRVVpSMHVGSGVXc0hjNGNMUzdrYlJjLzVnbG1I?=
+ =?utf-8?B?NHFDckdzRlBhcTZKSXY3VWdodFY3NG1pZE1iNGJJT3J5TGpZcmpJeXBBKytY?=
+ =?utf-8?B?YWhFeTFYYmhhU3hTSGxhc1B1RXF1U2t6dDNBSTZkN2VqL28wRmpLUT09?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 389c48ec-d835-4f4f-9c53-08de9b0091b2
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8461.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Apr 2026 15:06:28.2062
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2xNfQ/kYJg/5HWIFG6LcqcUDkOI5eHnBOxSU9LqS9k/P7BJgjW1QhrrWmKNX7t1VnImQdaJQZrE87fD7+o900w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB9470
 
-On Wed, Apr 15, 2026 at 06:13:17PM +0530, Aneesh Kumar K.V wrote:
-> Jason Gunthorpe <jgg@ziepe.ca> writes:
-> 
-> > On Mon, Apr 13, 2026 at 12:49:34PM +0530, Aneesh Kumar K.V wrote:
-> >> > 2) Using phys_to_dma_unencrypted() is not enlighted about already
-> >> > decrypted memory and will use the wrong functions for that.
-> >> 
-> >> Can you split this into a separate patch? I’m finding it difficult to
-> >> understand what the issue is here. Adding the unencrypted flag multiple
-> >> times to an address is not a problem in itself. Even so, I still do not
-> >> follow when we would end up doing that.
-> >
-> > I think my comments show how to address it right..
-> >
-> >> phys_to_dma_direct should depend on the device state.
-> >
-> > No, it depends on what state the CPU address is, which in some flows
-> > would have depended on the device state, but by the time you get to
-> > generating a dma_addr_t it should be based 100% on the current state
-> > of the phys_addr and nothing else.
-> >
-> > Assuming that a T=0 device must be presented unencrypted memory is an
-> > easy hack but it doesn't work when we get to T=1 devices that can
-> > handle both encryped and decrypted memory. Then we need to track it
-> > explicitly.
-> >
-> > The only places we we should check the device state for T=0 is at the
-> > very top when we decide if we force it to swiotlb and inside swiotlb
-> > when we decide if the allocation should be decrypted. Everything else
-> > should flow from tracking the phy's state, and be tied into the new
-> > DMA ATTR UNENCRYPTED.
-> >
-> 
-> For things like
-> 
-> #define dma_map_single(d, a, s, r) dma_map_single_attrs(d, a, s, r, 0)
-> 
-> Where do you suggest DMA_ATTR_CC_DECRYPTED be set?
+From: Peng Fan <peng.fan@nxp.com>
 
-dma_map_single() assumes that a is encrypted.
+On ARM64, arch_sync_dma_for_{cpu,device}() assumes that the
+physical address passed in refers to normal RAM that is part of the
+kernel linear(direct) mapping, as it unconditionally derives a CPU
+virtual address via phys_to_virt().
 
-If the caller passes an a that it decrypted then it must pass
-DMA_ATTR_CC_DECRYPTED.
+With Xen swiotlb, devices may use per-device coherent DMA memory,
+such as reserved-memory regions described by 'shared-dma-pool',
+which are assigned to dev->dma_mem. These regions may be marked
+no-map in DT and therefore are not part of the kernel linear map.
+In such cases, pfn_valid() still returns true, but phys_to_virt()
+is not valid and cache maintenance via arch_sync_dma_* will fault.
 
-It is NOT directly derived from force_dma_unencrypted().
+Prevent this by excluding devices with a private DMA memory pool
+(dev->dma_mem) from the arch_sync_dma_* fast path, and always
+fall back to xen_dma_sync_* for those devices to avoid invalid
+phys_to_virt() conversions for no-map DMA memory while preserving the
+existing fast path for normal, linear-mapped RAM.
 
-If attr says encrypted and force_dma_unencrypted(), then we have to do
-swiotlb, we get a new address and we track the decrypted state of the
-new address along with it.
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
+---
+ drivers/xen/swiotlb-xen.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-Lower levels always receive an address and a 'is decrypted' flag to
-make their decisions.
+diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+index 2cbf2b588f5b20cfbf9e83a8339dc22092c9559a..b1445df99d9a8f1d18a83b8c413bada6e5579209 100644
+--- a/drivers/xen/swiotlb-xen.c
++++ b/drivers/xen/swiotlb-xen.c
+@@ -195,6 +195,11 @@ xen_swiotlb_free_coherent(struct device *dev, size_t size, void *vaddr,
+ }
+ #endif /* CONFIG_X86 */
+ 
++static inline bool dev_has_private_dma_pool(struct device *dev)
++{
++	return dev && dev->dma_mem;
++}
++
+ /*
+  * Map a single buffer of the indicated size for DMA in streaming mode.  The
+  * physical address to use is returned.
+@@ -262,7 +267,8 @@ static dma_addr_t xen_swiotlb_map_phys(struct device *dev, phys_addr_t phys,
+ 
+ done:
+ 	if (!dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)) {
+-		if (pfn_valid(PFN_DOWN(dma_to_phys(dev, dev_addr)))) {
++		if (pfn_valid(PFN_DOWN(dma_to_phys(dev, dev_addr))) &&
++		    !dev_has_private_dma_pool(dev)) {
+ 			arch_sync_dma_for_device(phys, size, dir);
+ 			arch_sync_dma_flush();
+ 		} else {
+@@ -289,7 +295,8 @@ static void xen_swiotlb_unmap_phys(struct device *hwdev, dma_addr_t dev_addr,
+ 	BUG_ON(dir == DMA_NONE);
+ 
+ 	if (!dev_is_dma_coherent(hwdev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)) {
+-		if (pfn_valid(PFN_DOWN(dma_to_phys(hwdev, dev_addr)))) {
++		if (pfn_valid(PFN_DOWN(dma_to_phys(hwdev, dev_addr))) &&
++		    !dev_has_private_dma_pool(hwdev)) {
+ 			arch_sync_dma_for_cpu(paddr, size, dir);
+ 			arch_sync_dma_flush();
+ 		} else {
+@@ -312,7 +319,8 @@ xen_swiotlb_sync_single_for_cpu(struct device *dev, dma_addr_t dma_addr,
+ 	struct io_tlb_pool *pool;
+ 
+ 	if (!dev_is_dma_coherent(dev)) {
+-		if (pfn_valid(PFN_DOWN(dma_to_phys(dev, dma_addr)))) {
++		if (pfn_valid(PFN_DOWN(dma_to_phys(dev, dma_addr))) &&
++		    !dev_has_private_dma_pool(dev)) {
+ 			arch_sync_dma_for_cpu(paddr, size, dir);
+ 			arch_sync_dma_flush();
+ 		} else {
+@@ -337,7 +345,8 @@ xen_swiotlb_sync_single_for_device(struct device *dev, dma_addr_t dma_addr,
+ 		__swiotlb_sync_single_for_device(dev, paddr, size, dir, pool);
+ 
+ 	if (!dev_is_dma_coherent(dev)) {
+-		if (pfn_valid(PFN_DOWN(dma_to_phys(dev, dma_addr)))) {
++		if (pfn_valid(PFN_DOWN(dma_to_phys(dev, dma_addr))) &&
++		    !dev_has_private_dma_pool(dev)) {
+ 			arch_sync_dma_for_device(paddr, size, dir);
+ 			arch_sync_dma_flush();
+ 		} else {
 
-The place we check force_dma_unencrypted() is while branching to
-swiotlb.
+---
+base-commit: 66672af7a095d89f082c5327f3b15bc2f93d558e
+change-id: 20260415-xen-swiotlb-34a198b6c1d6
 
-swiotlb might re-use DMA_ATTR_CC_DECRYPTED, or it might use the
-dma_page idea, but logically the address and a matching flag flow
-together through the call chains.
+Best regards,
+-- 
+Peng Fan <peng.fan@nxp.com>
 
-Jason
