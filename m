@@ -1,179 +1,280 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from fhigh-b3-smtp.messagingengine.com (fhigh-b3-smtp.messagingengine.com [202.12.124.154])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C0192DEA9B
-	for <iommu@lists.linux.dev>; Thu, 16 Apr 2026 20:44:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 593C937B03F
+	for <iommu@lists.linux.dev>; Thu, 16 Apr 2026 20:49:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.154
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776372254; cv=none; b=CJvMY9fjpXMfnCg30UhhzwGl/2DzHUN/qw4W48rErH9shDxJ3U8E804Bmup0BFKUl+LON1DMcammHloS+BGAo85faTih68KLohTyD9R8ht+Ao3JVoJTjnX95+7UZ/n6aJro7v9mxouW0u+LKZ1+8V9Lxd198Js7wuOI4C/soEQU=
+	t=1776372564; cv=none; b=deKsNRX7U+n3pymygOJarm9k9NqSImrVvgBbHEX1txynwS52E7HnnWBl2F/jXwT3XuPiU88SvpPKbyCb/6Tw+ruy56CJPNHLqrxk2hs/bNsKXsqBgdyUSmLAdJnn+9oDIeE9hESDYUVLDkxkqZKaZtfRWaxVz1Ii9ZgUaLyeqOE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776372254; c=relaxed/simple;
-	bh=TyoseHGmSTD5tP+xnWFmibp/t+Pc9emQUq7Fahgmb24=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type:
-	 References; b=U8PUfF5zop2luEKw+sgs9TIIpixJZgwM+riO2FtwkMZVd4A/yeCNiFnBp3O2VE6+ur9OWJk4j1fanb0lVQGgZMxHxmjsBOm/wdgGtxk1Vo9e70Zr+JrDourXrUFX5noLtFH+5zZRN0J3CqkL6sg3AlsTipo5mc4myBgdBdcsWmw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=WspTQUFK; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1776372564; c=relaxed/simple;
+	bh=xiSLy8tBZNAprCbmgmeTBgqVzO4u9DEkxHiYtQj6nIs=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Nn0bM1um5N91C11FcxX9GvGyTfKOxjLgV1M3QFRIc8k29O7WYrMfhF2FzP3rBHDWNiDtB68qeWf5e04vUh9fwCLzMkwvjm1wwPvnM3s1uN1PYuJTii5XneSehKDmdhKfBOL578sjQxMglmdcvyF/798Rq2eCm4/C6NFYGjAhQAs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org; spf=pass smtp.mailfrom=shazbot.org; dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b=DQk0Mvwq; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=Bbt75yDw; arc=none smtp.client-ip=202.12.124.154
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shazbot.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="WspTQUFK"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260416204409euoutp02780ae9f8afbca98ba0f389a08de293a5~m8SZB52th1299212992euoutp02F
-	for <iommu@lists.linux.dev>; Thu, 16 Apr 2026 20:44:09 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260416204409euoutp02780ae9f8afbca98ba0f389a08de293a5~m8SZB52th1299212992euoutp02F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1776372249;
-	bh=VZJ6W06i5LDR2f3jir/iDTzQE38GCIMoEYbZYfGERD0=;
-	h=From:To:Cc:Subject:Date:References:From;
-	b=WspTQUFKMn2tIj+I5lj/Eu01DmI3+IWAMKUGmBYVSswXMdIuALedxQJ8iTBIoAJHM
-	 VWkVGj9chpiR/Fh7W9CCIb5FvnijW2MzKE/HyPHcE6h8TR7Zw3OI7DhMiyr6d9SJIA
-	 D9MnqjcvwJzLuZmaSMatpJ8kHyMqD2Usv426uV/I=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20260416204408eucas1p28659d11a64b12e1d26ee341afca0b897~m8SX7ubVk1247212472eucas1p22;
-	Thu, 16 Apr 2026 20:44:08 +0000 (GMT)
-Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20260416204407eusmtip23299ad1d429077d07eb489df8759a4fe~m8SXdD1Ni2294022940eusmtip2L;
-	Thu, 16 Apr 2026 20:44:07 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski
-	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Barry Song
-	<baohua@kernel.org>, Jiri Pirko <jiri@resnulli.us>, Rob Herring
-	<robh@kernel.org>, Maxime Ripard <mripard@kernel.org>, Qinxin Xia
-	<xiaqinxin@huawei.com>
-Subject: [GIT PULL] dma-mapping updates for Linux 7.1
-Date: Thu, 16 Apr 2026 22:43:59 +0200
-Message-Id: <20260416204359.3030425-1-m.szyprowski@samsung.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b="DQk0Mvwq";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="Bbt75yDw"
+Received: from phl-compute-06.internal (phl-compute-06.internal [10.202.2.46])
+	by mailfhigh.stl.internal (Postfix) with ESMTP id F04557A02F6;
+	Thu, 16 Apr 2026 16:49:19 -0400 (EDT)
+Received: from phl-frontend-04 ([10.202.2.163])
+  by phl-compute-06.internal (MEProxy); Thu, 16 Apr 2026 16:49:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shazbot.org; h=
+	cc:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm1; t=1776372559;
+	 x=1776458959; bh=qygA9tpZwdt1526WMy4tGe0KgWbfleZUGPI3rouuvHI=; b=
+	DQk0Mvwq3jHD6MXjppgAn1B/4pH8I1InroQI3kvwqgN4X+aJoUWzyQtjm58fKosQ
+	Rv+EOG8iQ/23FnjlJmsPFasoY+B8+tOwj8aXqenIuDWPZm3X3d0PCu316+JIGZdq
+	kpPejjbOoz3LSfPxcC7o2OFfliXQOG7+0bbVMSFPGmvUvolY1oAr5V0uNQDg7dGw
+	GIwvO2VG20V43omhr8awXGKK6qtdgEbn7WGeNobJcAliFQ+bG74OZOMiQVVdSXaS
+	DEYyRnnKCLJ9KHudCPmVF6Bat3S+B4PoESOF7klqu9lTLF5sXyz1IRm8gQem1sbU
+	Qz6O94N+VOsG2dUyKSfbcQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1776372559; x=
+	1776458959; bh=qygA9tpZwdt1526WMy4tGe0KgWbfleZUGPI3rouuvHI=; b=B
+	bt75yDwwUh8fcQeJccVmC5fwIPM36nsdwxkK2pGKeObZLv1FdurikURz5qhvus0H
+	8wG5Q1Awz2FxFZD+Vn7oMQp0378KsyP/xENmAAuEdR/90s81obsxJd6I+6H7hg6Y
+	qDnwmoPZfvaalvFzZWyKtXXp/2lY2sQLhgCb0PZjBkm5t6ldv1Hlv+ZmtDBuleRE
+	MQcq0C1ky1r/uoPrVQ1gS+eqGMMB3THRCo7WW69w9lA3CoNik39n+T+U86aPu0Wr
+	bMZyxmG/lQSxtrWcx1ibUUeZ+o8L/Xg/S+3CqqiAuWmum1fi1v7HjHmYS+lvm5hy
+	Goeq43iQl9I/JbqAyon4A==
+X-ME-Sender: <xms:Tkvhabp3cbwOsay4t3f0YaQSwOfxXiAuB93hnVXsCZvObxE8KypPfQ>
+    <xme:TkvhaUJU37hKwESIx2eOfTr2bhqQUG0iXAD6pS296m956yY4iflgFC5pV44b5naHg
+    Otl9iaMu-lX7oC0kAViFTsVvXN3lfrxWb8qy_srqwlk2iZRbw0W>
+X-ME-Received: <xmr:TkvhafBHnrswkTi68JjcJ6-YTMBUp18XPurpwZxe7HGYtyG-WF0BZNZ4wv4>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefhedrtddtgdegkedttdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpuffrtefokffrpgfnqfghnecuuegr
+    ihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjug
+    hrpeffhffvvefukfgjfhfogggtgfesthejredtredtvdenucfhrhhomheptehlvgigucgh
+    ihhllhhirghmshhonhcuoegrlhgvgiesshhhrgiisghothdrohhrgheqnecuggftrfgrth
+    htvghrnhephfeghfetveffvdegudfhgefftedtkefgkeethffhuefggeegieevheefudel
+    feffnecuffhomhgrihhnpehgrdguvghvnecuvehluhhsthgvrhfuihiivgeptdenucfrrg
+    hrrghmpehmrghilhhfrhhomheprghlvgigsehshhgriigsohhtrdhorhhgpdhnsggprhgt
+    phhtthhopeduiedpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtohepjhgrtghosgdrph
+    grnheslhhinhhugidrmhhitghrohhsohhfthdrtghomhdprhgtphhtthhopehlihhnuhig
+    qdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehiohhmmh
+    husehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepjhhgghesnhhvihguihgr
+    rdgtohhmpdhrtghpthhtohepjhhorhhoseeksgihthgvshdrohhrghdprhgtphhtthhope
+    hsmhhoshhtrghfrgesghhoohhglhgvrdgtohhmpdhrtghpthhtohepughmrghtlhgrtghk
+    sehgohhoghhlvgdrtghomhdprhgtphhtthhopehrohgsihhnrdhmuhhrphhhhiesrghrmh
+    drtghomhdprhgtphhtthhopehnihgtohhlihhntgesnhhvihguihgrrdgtohhm
+X-ME-Proxy: <xmx:Tkvhae6MrFl-__NBHWdPTmsY47JCn1YrGdhf64Lgqqqpz5eHGncvdQ>
+    <xmx:TkvhaTETfVRNCJlmIVEV79GoVkCq3FhjRx9cQHyQI0Xm7iRf_WACFA>
+    <xmx:TkvhaRSw48MXw7EPv6VMhygmJtvPrpGUDuDBRK7PZXwIMa1CdfS0aw>
+    <xmx:TkvhaVf2QIGXiyxy3qNKBye5N2GKOcImUfI42FtRMYrBkNwbr6QOgQ>
+    <xmx:T0vhaZE2etcJAUh7oMspKkWoYNduo095_vsjLnhqn-UQgZhrku2ZunuQ>
+Feedback-ID: i03f14258:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 16 Apr 2026 16:49:17 -0400 (EDT)
+Date: Thu, 16 Apr 2026 14:49:15 -0600
+From: Alex Williamson <alex@shazbot.org>
+To: Jacob Pan <jacob.pan@linux.microsoft.com>
+Cc: linux-kernel@vger.kernel.org, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel
+ <joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>, David Matlack
+ <dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen
+ <nicolinc@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
+ <yi.l.liu@intel.com>, skhawaja@google.com, pasha.tatashin@soleen.com, Will
+ Deacon <will@kernel.org>, Baolu Lu <baolu.lu@linux.intel.com>,
+ alex@shazbot.org
+Subject: Re: [PATCH V4 07/10] vfio: Enable cdev noiommu mode under iommufd
+Message-ID: <20260416144915.4fe38481@shazbot.org>
+In-Reply-To: <20260414211412.2729-8-jacob.pan@linux.microsoft.com>
+References: <20260414211412.2729-1-jacob.pan@linux.microsoft.com>
+	<20260414211412.2729-8-jacob.pan@linux.microsoft.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20260416204408eucas1p28659d11a64b12e1d26ee341afca0b897
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260416204408eucas1p28659d11a64b12e1d26ee341afca0b897
-X-EPHeader: CA
-X-CMS-RootMailID: 20260416204408eucas1p28659d11a64b12e1d26ee341afca0b897
-References: <CGME20260416204408eucas1p28659d11a64b12e1d26ee341afca0b897@eucas1p2.samsung.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-The following changes since commit 2cdaff22ed26f1e619aa2b43f27bb84f2c6ef8f8:
+On Tue, 14 Apr 2026 14:14:09 -0700
+Jacob Pan <jacob.pan@linux.microsoft.com> wrote:
 
-  dma-mapping: add missing `inline` for `dma_free_attrs` (2026-03-25 08:01:21 +0100)
+> Now that devices under noiommu mode can bind with IOMMUFD and perform
+> IOAS operations, lift restrictions on cdev from VFIO side.
+> 
+> No IOMMU cdevs are explicitly named with noiommu prefix. e.g.
+> 
+>     /dev/vfio/
+>     |-- 7
+>     |-- devices
+>     |   `-- noiommu-vfio0
+>     `-- vfio
 
-are available in the Git repository at:
+The group interface already does this, so the "7" is not
+representative.  In fact, since the no-iommu groups are created as
+device are bound, chances are they'd be in sync for a single device, so
+this would be 'noiommu-0'.  NB. it's correctly represented in the
+subsequent patches.
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-7.1-2026-04-16
+> 
+> Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+> 
+> ---
+> v4:
+>    - Move vfio_device_has_group() related out to 5/10
+>    - Keep wait loop in vfio_unregister_group_dev (Jason)
+> v3:
+>    - Add explict dependency on !GENERIC_ATOMIC64
+> v2:
+>    - Fix build dependency on IOMMU_SUPPORT
+> ---
+>  drivers/vfio/Kconfig     |  8 ++++++--
+>  drivers/vfio/iommufd.c   |  7 -------
+>  drivers/vfio/vfio.h      |  8 +-------
+>  drivers/vfio/vfio_main.c | 20 ++++++--------------
+>  4 files changed, 13 insertions(+), 30 deletions(-)
+> 
+> diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
+> index ceae52fd7586..c013255bf7f1 100644
+> --- a/drivers/vfio/Kconfig
+> +++ b/drivers/vfio/Kconfig
+> @@ -22,8 +22,7 @@ config VFIO_DEVICE_CDEV
+>  	  The VFIO device cdev is another way for userspace to get device
+>  	  access. Userspace gets device fd by opening device cdev under
+>  	  /dev/vfio/devices/vfioX, and then bind the device fd with an iommufd
+> -	  to set up secure DMA context for device access.  This interface does
+> -	  not support noiommu.
+> +	  to set up secure DMA context for device access.
+>  
+>  	  If you don't know what to do here, say N.
+>  
+> @@ -63,6 +62,11 @@ endif
+>  config VFIO_NOIOMMU
+>  	bool "VFIO No-IOMMU support"
+>  	depends on VFIO_GROUP
+> +	depends on !GENERIC_ATOMIC64 # IOMMU_PT_AMDV1 requires cmpxchg64
+> +	select GENERIC_PT
+> +	select IOMMU_PT
+> +	select IOMMU_PT_AMDV1
+> +	depends on IOMMU_SUPPORT
 
-for you to fetch changes up to 15818b2cd42df3cc886f4cc46acfab4d072dcacc:
+Cosmetic nit, group the depends together.
 
-  dma-buf: heaps: system: document system_cc_shared heap (2026-04-10 14:20:01 +0200)
+Noting my previous concern about why we keep group support for
+non-container builds, what about making VFIO_GROUP_NOIOMMU and
+VFIO_CDEV_NOIOMMU?
 
-----------------------------------------------------------------
-dma-mapping updates for Linux 7.0:
+Also, vfio no-iommu is traditionally gated on CAP_SYS_RAWIO, but those
+tests are all in the vfio group code and not replicated here for cdev,
+afaict.  That would relax the usage requirements quite significantly.
+Thanks,
 
-- added support for batched cache sync, what improves performance of
-  dma_map/unmap_sg() operations on ARM64 architecture (Barry Song)
+Alex
 
-- introduced DMA_ATTR_CC_SHARED attribute for explicitly shared memory
-  used in confidential computing (Jiri Pirko)
-
-- refactored spaghetti-like code in drivers/of/of_reserved_mem.c and its
-  clients (Marek Szyprowski, shared branch with device-tree updates to
-  avoid merge conflicts)
-
-- prepared Contiguous Memory Allocator related code for making dma-buf
-  drivers modularized (Maxime Ripard)
-
-- added support for benchmarking dma_map_sg() calls to tools/dma utility
-  (Qinxin Xia)
-
-----------------------------------------------------------------
-Barry Song (5):
-      arm64: Provide dcache_by_myline_op_nosync helper
-      arm64: Provide dcache_clean_poc_nosync helper
-      arm64: Provide dcache_inval_poc_nosync helper
-      dma-mapping: Separate DMA sync issuing and completion waiting
-      dma-mapping: Support batch mode for dma_direct_{map,unmap}_sg
-
-Jiri Pirko (3):
-      dma-mapping: introduce DMA_ATTR_CC_SHARED for shared memory
-      dma-buf: heaps: system: add system_cc_shared heap for explicitly shared memory
-      dma-buf: heaps: system: document system_cc_shared heap
-
-Kit Dallege (1):
-      dma-mapping: fix false kernel-doc comment marker
-
-Marek Szyprowski (10):
-      Merge tag 'dma-mapping-7.0-2026-03-25' into dma-mapping-for-next
-      of: reserved_mem: remove fdt node from the structure
-      of: reserved_mem: use -ENODEV instead of -ENOENT
-      of: reserved_mem: switch to ops based OF_DECLARE()
-      of: reserved_mem: replace CMA quirks by generic methods
-      of: reserved_mem: rearrange code a bit
-      of: reserved_mem: clarify fdt_scan_reserved_mem*() functions
-      of: reserved_mem: rework fdt_init_reserved_mem_node()
-      Merge branch 'dt-reserved-mem-cleanups' into dma-mapping-for-next
-      Merge branch 'dma-contig-for-7.1-modules-prep-v4' into dma-mapping-for-next
-
-Maxime Ripard (5):
-      dma: contiguous: Turn heap registration logic around
-      dma: contiguous: Make dev_get_cma_area() a proper function
-      dma: contiguous: Make dma_contiguous_default_area static
-      dma: contiguous: Export dev_get_cma_area()
-      mm: cma: Export cma_alloc(), cma_release() and cma_get_name()
-
-Qinxin Xia (3):
-      dma-mapping: benchmark: modify the framework to adapt to more map modes
-      dma-mapping: benchmark: add support for dma_map_sg
-      tools/dma: Add dma_map_sg support
-
- Documentation/userspace-api/dma-buf-heaps.rst |   7 +
- arch/arm64/Kconfig                            |   1 +
- arch/arm64/include/asm/assembler.h            |  25 +-
- arch/arm64/include/asm/cache.h                |   5 +
- arch/arm64/include/asm/cacheflush.h           |   2 +
- arch/arm64/kernel/relocate_kernel.S           |   3 +-
- arch/arm64/mm/cache.S                         |  57 ++++-
- arch/arm64/mm/dma-mapping.c                   |   4 +-
- drivers/dma-buf/heaps/cma_heap.c              |  19 +-
- drivers/dma-buf/heaps/system_heap.c           | 103 ++++++++-
- drivers/iommu/dma-iommu.c                     |  35 ++-
- drivers/memory/tegra/tegra210-emc-table.c     |  19 +-
- drivers/of/fdt.c                              |   2 +-
- drivers/of/of_private.h                       |   2 +-
- drivers/of/of_reserved_mem.c                  | 320 +++++++++++++++-----------
- drivers/xen/swiotlb-xen.c                     |  24 +-
- include/linux/cma.h                           |  10 -
- include/linux/dma-buf/heaps/cma.h             |  16 --
- include/linux/dma-map-ops.h                   |  23 +-
- include/linux/dma-mapping.h                   |  12 +-
- include/linux/of_reserved_mem.h               |  16 +-
- include/trace/events/dma.h                    |   3 +-
- include/uapi/linux/map_benchmark.h            |  13 +-
- kernel/dma/Kconfig                            |   3 +
- kernel/dma/coherent.c                         |  19 +-
- kernel/dma/contiguous.c                       | 144 +++++++++---
- kernel/dma/direct.c                           |  23 +-
- kernel/dma/direct.h                           |  35 ++-
- kernel/dma/map_benchmark.c                    | 246 ++++++++++++++++++--
- kernel/dma/mapping.c                          |  19 +-
- kernel/dma/swiotlb.c                          |  26 ++-
- mm/cma.c                                      |   3 +
- tools/dma/dma_map_benchmark.c                 |  23 +-
- 33 files changed, 917 insertions(+), 345 deletions(-)
- delete mode 100644 include/linux/dma-buf/heaps/cma.h
-
-----------------------------------------------------------------
-
-Thanks!
-
-Best regards
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+>  	help
+>  	  VFIO is built on the ability to isolate devices using the IOMMU.
+>  	  Only with an IOMMU can userspace access to DMA capable devices be
+> diff --git a/drivers/vfio/iommufd.c b/drivers/vfio/iommufd.c
+> index a38d262c6028..26c9c3068c77 100644
+> --- a/drivers/vfio/iommufd.c
+> +++ b/drivers/vfio/iommufd.c
+> @@ -25,10 +25,6 @@ int vfio_df_iommufd_bind(struct vfio_device_file *df)
+>  
+>  	lockdep_assert_held(&vdev->dev_set->lock);
+>  
+> -	/* Returns 0 to permit device opening under noiommu mode */
+> -	if (vfio_device_is_noiommu(vdev))
+> -		return 0;
+> -
+>  	return vdev->ops->bind_iommufd(vdev, ictx, &df->devid);
+>  }
+>  
+> @@ -58,9 +54,6 @@ void vfio_df_iommufd_unbind(struct vfio_device_file *df)
+>  
+>  	lockdep_assert_held(&vdev->dev_set->lock);
+>  
+> -	if (vfio_device_is_noiommu(vdev))
+> -		return;
+> -
+>  	if (vdev->ops->unbind_iommufd)
+>  		vdev->ops->unbind_iommufd(vdev);
+>  }
+> diff --git a/drivers/vfio/vfio.h b/drivers/vfio/vfio.h
+> index 9e25605da564..ad9e09f6d095 100644
+> --- a/drivers/vfio/vfio.h
+> +++ b/drivers/vfio/vfio.h
+> @@ -376,19 +376,13 @@ void vfio_init_device_cdev(struct vfio_device *device);
+>  
+>  static inline int vfio_device_add(struct vfio_device *device)
+>  {
+> -	/* cdev does not support noiommu device */
+> -	if (vfio_device_is_noiommu(device))
+> -		return device_add(&device->device);
+>  	vfio_init_device_cdev(device);
+>  	return cdev_device_add(&device->cdev, &device->device);
+>  }
+>  
+>  static inline void vfio_device_del(struct vfio_device *device)
+>  {
+> -	if (vfio_device_is_noiommu(device))
+> -		device_del(&device->device);
+> -	else
+> -		cdev_device_del(&device->cdev, &device->device);
+> +	cdev_device_del(&device->cdev, &device->device);
+>  }
+>  
+>  int vfio_device_fops_cdev_open(struct inode *inode, struct file *filep);
+> diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
+> index 5d7c2d014689..3ae3d34c21cc 100644
+> --- a/drivers/vfio/vfio_main.c
+> +++ b/drivers/vfio/vfio_main.c
+> @@ -332,13 +332,15 @@ static int __vfio_register_dev(struct vfio_device *device,
+>  	if (!device->dev_set)
+>  		vfio_assign_device_set(device, device);
+>  
+> -	ret = dev_set_name(&device->device, "vfio%d", device->index);
+> +	ret = vfio_device_set_group(device, type);
+>  	if (ret)
+>  		return ret;
+>  
+> -	ret = vfio_device_set_group(device, type);
+> +	/* Just to be safe, expose to user explicitly noiommu cdev node */
+> +	ret = dev_set_name(&device->device, "%svfio%d",
+> +					   device->noiommu ? "noiommu-" : "", device->index);
+>  	if (ret)
+> -		return ret;
+> +		goto err_out;
+>  
+>  	/*
+>  	 * VFIO always sets IOMMU_CACHE because we offer no way for userspace to
+> @@ -359,7 +361,7 @@ static int __vfio_register_dev(struct vfio_device *device,
+>  	refcount_set(&device->refcount, 1);
+>  
+>  	/* noiommu device w/o container may have NULL group */
+> -	if (!vfio_device_has_group(device))
+> +	if (vfio_device_is_noiommu(device) && !vfio_device_has_group(device))
+>  		return 0;
+>  
+>  	vfio_device_group_register(device);
+> @@ -396,16 +398,6 @@ void vfio_unregister_group_dev(struct vfio_device *device)
+>  	bool interrupted = false;
+>  	long rc;
+>  
+> -	/*
+> -	 * For noiommu devices without a container, thus no dummy group,
+> -	 * simply delete and unregister to balance refcount.
+> -	 */
+> -	if (!vfio_device_has_group(device)) {
+> -		vfio_device_del(device);
+> -		vfio_device_put_registration(device);
+> -		return;
+> -	}
+> -
+>  	/*
+>  	 * Prevent new device opened by userspace via the
+>  	 * VFIO_GROUP_GET_DEVICE_FD in the group path.
 
