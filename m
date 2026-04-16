@@ -1,228 +1,183 @@
-Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11011047.outbound.protection.outlook.com [40.107.130.47])
+Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011068.outbound.protection.outlook.com [52.101.52.68])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E61B1DBB3A
-	for <iommu@lists.linux.dev>; Thu, 16 Apr 2026 16:50:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.47
-ARC-Seal:i=3; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776358240; cv=fail; b=SbAjaDW1jCVCqY4BXc9L1QKyZwao/mD3vWe77Er/0QoficrLG+uryp+jP6DmjsLA47IgjmYAlqDJAzEUbY45ULBtV0BjB7MO0+z1WRUQ0mYwhNmIFVzjhsJJ16CwBT6fi8+VVxHzxNGVRjQBth/C9AZhmOBNcJQYZTtAe7OwWio=
-ARC-Message-Signature:i=3; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776358240; c=relaxed/simple;
-	bh=j2sLIhMPN1vsOCXyBE4UDxgQeOmIgFJQUOuNsPuLS3A=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=fgPMj72RaJKwMj0RnQosxMwf90DELKMD55LszR0oWpFtznEK1/rK2SraXa9S9CGy8YLcIe/6Z5CaeS0v3XYGcNt9+IiQaI4frjtWS3Rapnv2z1hi1JUUZLM3dZdWwJWkB6bP2EJ4f0E1ofBDr9526hz0tclBSPKmjiRhSTA4HNw=
-ARC-Authentication-Results:i=3; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=mEruZxD8; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=mEruZxD8; arc=fail smtp.client-ip=40.107.130.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D901325495
+	for <iommu@lists.linux.dev>; Thu, 16 Apr 2026 17:20:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.68
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776360013; cv=fail; b=mxZmslJManlfy5jx48H6nHD1hzvo8Yn4zRJGv6Y6+BnsUpUhAwRyB+3RvwAlwLq+kSLgvfXMWbQiBTQNZNAmhaAJnjed2v7ousiSLKt6H8KI6mcAhjsQyWeuu3Gme+zkEXm6/4V7nS0e0qH0a8kNsxmlaEV2CQ4zxcADlWQhPtE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776360013; c=relaxed/simple;
+	bh=qZcAjS6d3Ply+wFttR+Tvfnz7rfysfcxVpn0kVP1seo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=fPKuviGG86xBsDwoCRSh7t1+kU5F4jP15fOp++7P2NKniyCzsdSvuqPF0OQFUx4hgDGz90xBaGA3S3cvB2PXkW3m/DsIDSOPSKqJh5svtKu3KOyVWHYO0vQXUlOUhKVMSbRwKVuvKNqjzFFrrbjeDhyETMyjaRFubnTRqpoGDU4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=EBrMU9w8; arc=fail smtp.client-ip=52.101.52.68
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="mEruZxD8";
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="mEruZxD8"
-ARC-Seal: i=2; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=pass;
- b=Ox5dq1W88yhLTE1FLj5+lKaGOvHiRDvbJBC3G2PBfqvcgTmP9ggdCJU97IDNv7oo2w9dooRHr/6t9j0LRQiIHMYnRnmK1061px4ziLJqoFgmo1VwmM5AnCKXq58DBw0cB/UdyEfV/o3/ubeljzgnF+ay4fthKY1fitdQxxQiq2fPbvxq3UXKc3SaUdmHGa+iZ9QYDuYIbKuRssiGCqBVLh1N2RRCGX9zUUVE1Y2P5FGwJHy03y/bIzVMlRkC7v8cP9MuBIdeh1pNJptVmDFlfsvXkVUhoOL7x7FXcnuZyeYt6GDG7aQqOQL6/UwJMyxb0tNSbEwFO1sxdjovu3V9qQ==
-ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zHc+lSM+avvTfjnF92yUxie4jq3JL7nq0ITM4D+8vKs=;
- b=tF8lZ1zURsyFj5vLcKJuhwsAn/apmV/8m6+3NaaJB5gHUGpfgX34iVbjL5p+webK9R5LbWw16kWG6G4igaxkBaDGizh8X3NV+brcqJZsOxKWfZDYMSRmKfB+0/Q8laxprGwmXZW4/jiL8ZfA3FLo1OhbhnSm3esTl+aBc2FVNRf+EwMgNjM7rPbhuCm13GKQOuMzu4Dp8tMEo/lg4cE/0F73C6f7/2+eiu9EzSkJeTVUZuteBh4YoUY5v+WULk0ZpPB88BuLgjit2BoavihEZtPElb4/e+tj9c/WyCxWmzb+OnjNJNfcTeIh4f6iXVDOISmti7qHmzm1zYvpDjdi7Q==
-ARC-Authentication-Results: i=2; mx.microsoft.com 1; spf=pass (sender ip is
- 4.158.2.129) smtp.rcpttodomain=nvidia.com smtp.mailfrom=arm.com; dmarc=pass
- (p=none sp=none pct=100) action=none header.from=arm.com; dkim=pass
- (signature was verified) header.d=arm.com; arc=pass (0 oda=1 ltdi=1
- spf=[1,1,smtp.mailfrom=arm.com] dkim=[1,1,header.d=arm.com]
- dmarc=[1,1,header.from=arm.com])
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arm.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zHc+lSM+avvTfjnF92yUxie4jq3JL7nq0ITM4D+8vKs=;
- b=mEruZxD8R3N03f6Aykt+AI+xrMSREw+aM/kA3yioYm6KDSJEtQFrD0lLGwLL+GYTJ2ravg+ta+5sg7phj9RyX649LYRQFkI2ysJ54QVv2KJKSRWKM1dqZLQMYJL9h1jGkXbeIgG0O8vQD+DaQa1V2ZKLei55SxC5c6YMuQMIfXE=
-Received: from DUZPR01CA0081.eurprd01.prod.exchangelabs.com
- (2603:10a6:10:46a::6) by VI0PR08MB11353.eurprd08.prod.outlook.com
- (2603:10a6:800:2fd::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9818.25; Thu, 16 Apr
- 2026 16:50:33 +0000
-Received: from DB1PEPF000509E9.eurprd03.prod.outlook.com
- (2603:10a6:10:46a:cafe::bb) by DUZPR01CA0081.outlook.office365.com
- (2603:10a6:10:46a::6) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9769.51 via Frontend Transport; Thu,
- 16 Apr 2026 16:50:33 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 4.158.2.129)
- smtp.mailfrom=arm.com; dkim=pass (signature was verified)
- header.d=arm.com;dmarc=pass action=none header.from=arm.com;
-Received-SPF: Pass (protection.outlook.com: domain of arm.com designates
- 4.158.2.129 as permitted sender) receiver=protection.outlook.com;
- client-ip=4.158.2.129; helo=outbound-uk1.az.dlp.m.darktrace.com; pr=C
-Received: from outbound-uk1.az.dlp.m.darktrace.com (4.158.2.129) by
- DB1PEPF000509E9.mail.protection.outlook.com (10.167.242.59) with Microsoft
- SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.20.9769.17
- via Frontend Transport; Thu, 16 Apr 2026 16:50:32 +0000
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="EBrMU9w8"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=qLq+cIc+pJ8gwjkiWD+JY7G5COvOnIb1hJ7kulzILXVLMF23XLcHgNXqzelhOrBNHf02BhQPOW1RXU5/y2QHiX3sm5nabh4ywCaUs1K/CJRdaQ1x82ql5UFddoI+fgN7fc2da0kpn+T5Lo2zcO2kCtFo03mA/nwsVjp7aBPrUTcSCCi7K5il/HlgdbMb8dw6zAONuLeUGfV2BqMQWo9MnRTjMRWQKC3arP4mRmiEkOH8YtgBHVf9mbaPvvec+NCf7nxaGi1U822rQRkIE75UNK/GTe+kxHt4m/P+XD601fREbuHiDRpR6IGIgHIYfqLxy5z8grGuLWbJSXan1RlAtg==
+ b=QKzKsXt1xWybhi8Ex8xjJVqU1U+aA05qBrkUlCizure4bA96cIiS62NQ9rDNO4TNrdstTXR3PHrmCeYfErs5up44TuLQnMvDhkyVFOYSRpjcIet/lQBpE/PRjWvGoIRqJNILXJNhk9BDQdUZ8JYIbr1WRr2DhkVGaQVaC2wgEi4LhIpae0RRAdGh47SekCYaectl0CpGuHLqFhIzuzNo4Qpwh1tPHV7AOxlhgZRM5/ey17N31234fjaJOqZMPO7NmjXfk60NT+Ew96lwN4wjt/gXsKu0hfC4AKLKXZvPyFPC6pj3OpZ3QqD5KhWtHbHjj3t7Bza/odYEdKUB/exZbA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zHc+lSM+avvTfjnF92yUxie4jq3JL7nq0ITM4D+8vKs=;
- b=JqmhsmMtVZtEy/W3M4ju9cm/CbtmOFb09kpsJWWLjB6+R6zrlX/gvHJ6Za47UER/udhQAHj9ptZIK4gHOeIw+kA1ciGTdQziKpGvZFjaRhXfAEuhVDyS1Rhey/t/hGZjs20BlMeiBch4nGnP4PQEpTN8I8mX0xObTgSptHiiaOZLA12c0COLg+aUB3v01PlqFm+iw1sJ/y0ktMdF9xQ36P0PJKP3fCCcbM8KUU6IORP/OjpT/MfCs7kMXfYcjhIPTJKzvelrpDv9SRigiWrFwWSOtdc1Lqjj97bTIXb6Sn+zKgqUI66r/Ly5nRfZnNipPITAzZ48z97CzibL46NKDg==
+ bh=EynX7LWe0jADze8xwwyGtRY20HODjvbHdumAOUoPCFI=;
+ b=fDTpp+102OvlG9/RXk/nnYVPrhqji5x5RwgZI63AWVDcUS02SPV4+x26ZTml2M63ffGUQ6dQFXSQFMja/1KnVd2JBdRTgorlJoe175xmaYyit/j3e6OBTxTgPH9IuebbdV1dWWq/RH6Qjvk/u1Dym0K+/Yqa2nGVbPZ5pXhAQsUqB3LC4I1pqLy50CHeoNWjPYBKap1gF19TwAWGSxLDtbo7K6u2X3TV255j52c2GhpZNl+t/hSIbTtSNQ7HNBKwdBhKt18EtwAoHSAPcdyHiTXGTSVLckiz2iUlRtrjLLRHTRjjA1/zjcugiyog0H2cY9ZSn/YCUcwItydoKhxc+w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
- header.d=arm.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arm.com; s=selector1;
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zHc+lSM+avvTfjnF92yUxie4jq3JL7nq0ITM4D+8vKs=;
- b=mEruZxD8R3N03f6Aykt+AI+xrMSREw+aM/kA3yioYm6KDSJEtQFrD0lLGwLL+GYTJ2ravg+ta+5sg7phj9RyX649LYRQFkI2ysJ54QVv2KJKSRWKM1dqZLQMYJL9h1jGkXbeIgG0O8vQD+DaQa1V2ZKLei55SxC5c6YMuQMIfXE=
-Authentication-Results-Original: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=arm.com;
-Received: from GV1PR08MB8451.eurprd08.prod.outlook.com (2603:10a6:150:83::17)
- by DB5PR08MB9969.eurprd08.prod.outlook.com (2603:10a6:10:48d::16) with
+ bh=EynX7LWe0jADze8xwwyGtRY20HODjvbHdumAOUoPCFI=;
+ b=EBrMU9w8h/rMynGF1teTb9Fj3xfH7cAdjddAd5xqhJAYZ3Pl1nViQb3i1u5spqjfFTsTr38jJZI7YmAibe1FYKm192Qx5YJMXYI0mPm7QV74hdvBoHhZfsiFdf+1lvwXt6DOdxZvlv24trGn50VOrMDQQnCsVMcT8C2QPbMTbf4nJl/qAZzVRn6WTzgovZSpQco+UKaaJBXFS9rTISWYOEJkSNgCNs/eIgyp8PvfDmLuNuUt9/s+ctwTr/ke0ANQzbmutB/8uDr9FeELmsYC8Bh2qzro/Rqxe9tgYZ2XLbqvRmWEztORTq1DMYBStYW1ovuNlG8whbkbANtRYROhog==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by IA0PPF84D37DD5C.namprd12.prod.outlook.com (2603:10b6:20f:fc04::bd6) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9818.25; Thu, 16 Apr
- 2026 16:49:29 +0000
-Received: from GV1PR08MB8451.eurprd08.prod.outlook.com
- ([fe80::bfc2:bb63:61bc:7be6]) by GV1PR08MB8451.eurprd08.prod.outlook.com
- ([fe80::bfc2:bb63:61bc:7be6%5]) with mapi id 15.20.9769.046; Thu, 16 Apr 2026
- 16:49:29 +0000
-Message-ID: <3eaf217f-8e1e-4d64-983a-6b888886f157@arm.com>
-Date: Thu, 16 Apr 2026 17:49:24 +0100
-User-Agent: Mozilla Thunderbird
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9818.20; Thu, 16 Apr
+ 2026 17:20:07 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9818.017; Thu, 16 Apr 2026
+ 17:20:07 +0000
+Date: Thu, 16 Apr 2026 14:20:05 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
+	kevin.tian@intel.com, joro@8bytes.org, praan@google.com,
+	baolu.lu@linux.intel.com, miko.lenczewski@arm.com,
+	smostafa@google.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org, jamien@nvidia.com
 Subject: Re: [PATCH rc v2 0/5] iommu/arm-smmu-v3: Fix device crash on kdump
  kernel
-To: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org, jgg@nvidia.com,
- kevin.tian@intel.com
-Cc: joro@8bytes.org, praan@google.com, baolu.lu@linux.intel.com,
- miko.lenczewski@arm.com, smostafa@google.com,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org, jamien@nvidia.com
+Message-ID: <20260416172005.GB761338@nvidia.com>
 References: <cover.1776286352.git.nicolinc@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <cover.1776286352.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PR1P264CA0024.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:102:19f::11) To GV1PR08MB8451.eurprd08.prod.outlook.com
- (2603:10a6:150:83::17)
+ <3eaf217f-8e1e-4d64-983a-6b888886f157@arm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3eaf217f-8e1e-4d64-983a-6b888886f157@arm.com>
+X-ClientProxiedBy: MN0PR05CA0018.namprd05.prod.outlook.com
+ (2603:10b6:208:52c::30) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-TrafficTypeDiagnostic:
-	GV1PR08MB8451:EE_|DB5PR08MB9969:EE_|DB1PEPF000509E9:EE_|VI0PR08MB11353:EE_
-X-MS-Office365-Filtering-Correlation-Id: 483cadce-0b4b-4cea-1fd4-08de9bd84668
-x-checkrecipientrouted: true
-NoDisclaimer: true
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|IA0PPF84D37DD5C:EE_
+X-MS-Office365-Filtering-Correlation-Id: 78f5cb78-4da9-41b3-41a4-08de9bdc67bb
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam-Untrusted:
- BCL:0;ARA:13230040|1800799024|7416014|376014|366016|56012099003|18002099003|22082099003|18096099003;
-X-Microsoft-Antispam-Message-Info-Original:
- 7opSwe+yBT9dIU+5nTYAwZNRTiGckQv9mt9uJnTTBLUOztwG9qX4g7unGR9LShImiOEsZGAuaG9yjK5Qrc679rmJn8QwcbEDhgC+r6vXLI4GdIvJ2vDS7G2/OSiCI6ridasClBDyG0XKUV4G3H+cD8FhIa2F7e3i9ZfRpfaLzV79lyK592EkWmYPkgVNA8Mckz+lQ8JGX+9vceoE5xSpq0PDdz/KyionMJ6AdcKUfoNBdeH8NBmsuZmZH6modxrggMYp7m3UdcFtKx6/PGo6069ZU9AwVfvqds13tN35PfJYbygodCXCMuEMICVbkPIGb4cMBw7m7NR07MpyPBAuUCXzOoUvLsiZyh4z9btKW7k7Z82+a8nwL4NY4IfLmpGdO7RG7RWQD/lxZR+dvbcHKhGv+m/AxQ4dLL4J8VsutCpn2PcK1WB4fz/3wkcvX6oPXH9l8g7tAMs+O+/3uiVnjI+LB9Drv25DJ554AnZdWjGrtXfxuFe+Js1NW+8VNUP47aiE6bmavlqXxs5z7kSRuwUYqcerwoITylHOx9f5+41NxSF9cFqx/4ttzMKljcd3xhDvkJReopCUnayxxXYToKKL4qGmNDOd4B6MawZUqHj/Udp508R3WNG/w7aoqK/jSKvMOsh2AQ8X8LCn7FSvwkVhLk+7B7wMPUKAg7+hNYK6V+mxhgwUlJRQjO86lb4upikNqPAcNN1ufljDV62SY9xsHKlBIx6CZf8l2X5kRN/G99fickWN8PyDOwj0inud
-X-Forefront-Antispam-Report-Untrusted:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV1PR08MB8451.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016)(56012099003)(18002099003)(22082099003)(18096099003);DIR:OUT;SFP:1101;
-X-Exchange-RoutingPolicyChecked:
- mYvT/yM8SZ7Eb41nAhkURus8cXfG76vTJ8jnfvLHsG0bxpE6jYRSF0+H/CtnBeOPPnOIAZT1scref8fcmCAA2l9OhQ6lAZ9M5qlHRz6mpElERywJNQ/ZT7GurzO6M4S+e3uX0tufsRPEIHar/z5VBeSQX19YCcruTP5dtF0MTwl3R4qiADBXI7LHy+rqSmbPY38PMGM3Z9be02ydRfwx4odDB91KphoHZH8+YlEqWBrHX3STGB4uvqtLPWMGmEWlZfeZzQhvlrPivSM71qS4dHLYt3bFCyX4KQeu3EdB7xtuTKtQl5jSaEadGftq9k4kDq3QHVBTj9j4P79EjWGnBQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB5PR08MB9969
-X-EOPAttributedMessage: 0
-X-MS-Exchange-Transport-CrossTenantHeadersStripped:
- DB1PEPF000509E9.eurprd03.prod.outlook.com
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id-Prvs:
-	6b1c40ca-cd73-4a29-3eca-08de9bd8201e
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|82310400026|14060799003|7416014|35042699022|376014|36860700016|13003099007|56012099003|18096099003|22082099003|18002099003;
+	BCL:0;ARA:13230040|7416014|376014|366016|1800799024|56012099003|22082099003|18002099003|18096099003;
 X-Microsoft-Antispam-Message-Info:
-	26I0Ra/pxuqRiP0kb6UEGC5Kvv9q/paDqpHU4YB6SS3r8zgQzHcX8NCfBqtHVWOz7TxD9wFJBStqHbGNIDkNW5p6vmTxEoD8etJnHVHkQeks/Xb8o2iXf/yBYa3WnOkQ47whW3IOp5c5hGBBCbUMu/oSCOkfF2V3ZNnNGgjUYxL2Ck+eiO9B5aLVFzKl82el0LDx1mC/fZtkEunFIkk5R/L84TMaIm9pZ9/57llrA9XZTRWt4nwSUJDIaGhF8ygfS7Odhgu3zJ0Tw40uIbkvN2nzioIsj/t4Ut2yDcWlKjGjQaYmMGxQ3bVtg9XkCZ/qfK+wu/sWlla+sx70O5RwYgZIvK/c56nrmUyiCvuKVsH1GrNJaPuJs/d8rK375F2t6UC08nUoMzrAHgPIqYjmiRqT6aWLOsmelUjRy+89gjbwB83lxMHx3gV3sM5pL9xOKcVlG/dOy7dohTUvz2dQNM8Uak+Szh2KIizFJTu4+iE5YLk9E7u86FkYEgRlGcreKKz/IiiXkCVaLBha+qyFSEOMZ7jMyGLD55yMgkDDo3gS3xe+rQCRpV3eyS8qC9tAFkdFgsYk3aLpfWvngg0pRX8k+GmD97Axds2+cN/55PEUN04Lo3XnDHYIse3ZNEG79TD4yLERVWBZ9/2gdyYZVL1mJ/QXSWWO5YXAL7HocHWCOEDJ5zjBWV7/klAXZ02qmcPcgYU44vWHW0TkA+hub0v4aydA4/AGyXlsHHYMk2vV/Rhp8LK8yeEyixF+L1j3GrW0AMQVuGnDlJRrmt2QfNdvMecfR0VOInyKaksVyc8=
+	G5OemyOQyGyzLvIRlr+edWqnSwlp8g1O5YyKmmnrTwKTdU9txF5s8oYWjQYkWCigA1oA6Vgn43pja29bZ1B2B02cpQZfg6/a8OX6Msa4iNEsGckp7uV/W3wBkKxT6u9ukYfOl5pC6lX4B6H7/PwlcrDRoR2uz+BIS4oxzLbCsCZgs3yfAeujKyghZJ3LN2kpgS+avV8AP2w6I4iyigdrpSGQKXpd5WXSpkZ3KWCCi1ReLdin5lhyL7PMBmdReSri78bpcC4zYDuewRZ3CjmXyWByjl6TLyXn+EIg7AUyQrazlUQsNFWwMn95TNSR7BpqJwMf+awg8p08SUzgyp6aWt4f3NGO8IYOT4B+prpDmS+oBER4wKeIf8/sMbuJB1wFVaJc8VarXxU7CjFHhVx+zeWefejGyvL6VTY39/D1BbRIYknK6/O1ZiaW3zdGwQqH63clRKFg475V/4/MxVoywBYsXYL8zI3SrSCdtViz8eJRTEmQB5rNbxWdpe6meZbwCrvGpzqpWtrtaUDdO+CNCiCLagpjB7yn29Fj82ZfudUEwXLdYoPs2YlJex1rdViOMfgepeaCKP2VbpeKlSO8qav9gEXsrkrALmzTj13dkq1J09GPCghsxVLAemzEgqxguT3+c/9zYGz447pb1SsH9uiMHQ5XM18AOSu/Y2Muxh3x+eNZoMywGNMhYC3A/UJqJ9wX9QXqfxpMxlfgoK50R6yyhbYwdIBVjdXiuknOhys=
 X-Forefront-Antispam-Report:
-	CIP:4.158.2.129;CTRY:GB;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:outbound-uk1.az.dlp.m.darktrace.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(14060799003)(7416014)(35042699022)(376014)(36860700016)(13003099007)(56012099003)(18096099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024)(56012099003)(22082099003)(18002099003)(18096099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	xTAr1uD75z2giqyyY0/toAPi50gOy6WRUwecv/0GCod44SuGoE7anqu1E8Q/MLRHKXdmTcf9i2RvlRbKLA80MqHNfUdAtbP1vMoZk8qZOM7/UJaPL8Q8QFzccXu9BZfu7Ghy965HygakoQVEoqOU4TJVFoDQin3vf9t/TcxQOjsGsUVkM3J7w4Nc62ZVpcnyaqqEl3t2evbuSYZZkqmU4VHWutoyHHMq2QbDM3UvUjDMjjGhcTAzsEaIj4RYv1P7CaVrKSCWtS7bS6lSl5wePktTSpqB0wLdu+8EXWJlm+X6I5q6QUJqDKeb6ymcHENAgb0CfDExfMhPf+YE7nOl+EjOwi04onY2gfimPOcTaxZ+2uvXRbGAljcIS/vD7VSWUjHsz+o0eS8lsiFmHlvHJYPhrqTPuD/8lO74E/zMNW5Ue4y1iX95jmqBgzby6fEh
-X-OriginatorOrg: arm.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Apr 2026 16:50:32.8671
+	=?us-ascii?Q?Sd77nMoFRN8mXODcPmQhY7umLB1xjyHzfWXHyi+AsszQgb5y/lUtzdRv+2Cg?=
+ =?us-ascii?Q?bVLTyG6CutPdSgcEeShk8q0OuwCRsyEMiPXfQSehby/CErx6h3G7xgsd8o8U?=
+ =?us-ascii?Q?MhqC/XKQl1L9KQxhhkfJA2kFwKkO9Od69UAQFa5dJKiQHMVsrG/eDrTtRxhw?=
+ =?us-ascii?Q?MgJh9XUBD0Zr709UPTNva4IFtFM9G7B9UicaoyZrnKEK0VTevol6D76uWMEE?=
+ =?us-ascii?Q?MUyPH9sezQMygMGbIGQxrAifdHzWbX5Mg4gtj9loTIOADZZuiOhkvZMVotLP?=
+ =?us-ascii?Q?ZB1Ey6Gro9zJy2KKyphOluOEfb+/Hfo+4b5KcrNpi9UpwjV+XBCrPafbSOkg?=
+ =?us-ascii?Q?1Xw8cXOAwjfoFoVi+6HCILwJS3vODBZo/73nodP1JNz5XZcC6bO5GsniCTvY?=
+ =?us-ascii?Q?JERQZfb9Zalc+zzM9+SCuGMkfnGsBgJHlG8GCxvNAAj33U9zd3xfYJi80c1W?=
+ =?us-ascii?Q?0C0YJGxkT7aOcPfn8M0BjQoxHtndScZ6wQM/wz0ri5CUmsT+nIiMkVbp0H5R?=
+ =?us-ascii?Q?y9M9kvHFg3jm9p/es4NMwXCQg3Rtd4hEj7Zx00a4NeDc+gD4IIvFsUSkSsWL?=
+ =?us-ascii?Q?x4I5Ar2o9vK/kTMGSHnKG4gl57DCuICEqhpLqYMIufFeTdbp/T0APho04fnU?=
+ =?us-ascii?Q?HENUI98R5fdyEaKuIifAwkHq+6VV3fv2XWlCR62dlVtGw/f25hiy1LNpqHlV?=
+ =?us-ascii?Q?2Uw/WoGep+cfhGlVAK87TLge4Il5hA84HM+FAQMg5c+8RKqH40pbB7+eRq+T?=
+ =?us-ascii?Q?FGqoicvlHGYYpIjH4ydeLIY/075YoMWq2eJyCYe3nXngZDEcmbcaJOFsQo24?=
+ =?us-ascii?Q?7z7U16kmEStQ/ZPFdiLVVyR1SECUmsyT8Kys03q1kYwndeot/YGrOwKOgrDN?=
+ =?us-ascii?Q?5VamwaUEhjVR4e9PW4L7+oqqIb8rEXWR9cuVELFjyQtWnJp1VvaEd2bHBFPA?=
+ =?us-ascii?Q?68ZJUO+zNJABs6LbAqsOLGg2xxK/avkUW6UcDbYnnaJdeaGe0RbCMsmb+4e5?=
+ =?us-ascii?Q?qwT+VvU4yswpkISIka/+bYGhtq7imI6ukrHmKNao1/Lha47caE8H8IUq1ISI?=
+ =?us-ascii?Q?3bbpAO4piwSAy3UAygJxS+qwBfBwaEoAxnigmqu0Xido/WQ6AgmWQlEqdU/P?=
+ =?us-ascii?Q?IhrSmnAw5h1bWvZNsstvHyS+jd+d0GuNwTjO853XULf9TvEOPF2A0AF9hCKe?=
+ =?us-ascii?Q?hxlLpQKOzkhYKTon2JhkOEMq5FvmpHygxu69+gLhanSqygfMmVR/VoL0WvlE?=
+ =?us-ascii?Q?4HFJCOn4O2bRl6JnRTd8HDgM9KFODMsqZHe9TP16Q9/HT+IR4I82cVbzabho?=
+ =?us-ascii?Q?OlyG6otoY9k4sgbpW9Hfgukro/3ClcTkGOtJzvwgvb0/DB07YwKqEtIed6QS?=
+ =?us-ascii?Q?VTuutIdJl+u5kY/rDY8b6O2jI6zRb1so1lxPl/yAN3F/a74ZuFc+dNxzRNNK?=
+ =?us-ascii?Q?l+R/u+vkx/trXo9u7znfU54QIqoueyDAuF9WmQSg3LznQtoHxs+hSNxr/grh?=
+ =?us-ascii?Q?nYxKPkFxiV1tc3fFLby2mEoA1P3kBuV374VD35ZR00lIDLW9G4/QLOZs+sWn?=
+ =?us-ascii?Q?RGpYNY7gvF4+El6X6AmTSOewgXYG5skcMuWCbW6pqqDeOrVawXwVG5vFn8CR?=
+ =?us-ascii?Q?ELROtPTOMobRBOJ80NO831oui+Ik6sYsI6fiM3kXu9WEZbn5OwsdMNsBYFeB?=
+ =?us-ascii?Q?uFM9s4ToCxptB0A7Mcdb7eznqgp2VbMBzEGvqPaohN8U1M6Y?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 78f5cb78-4da9-41b3-41a4-08de9bdc67bb
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Apr 2026 17:20:06.9795
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 483cadce-0b4b-4cea-1fd4-08de9bd84668
-X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d;Ip=[4.158.2.129];Helo=[outbound-uk1.az.dlp.m.darktrace.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DB1PEPF000509E9.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI0PR08MB11353
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: e8t5EXH5rXXLcUdOecMx72Jh5RL4YDdMC63pI90Ff3tjWT4Z2mILOlzxXmqtayEg
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PPF84D37DD5C
 
-On 15/04/2026 10:17 pm, Nicolin Chen wrote:
-> When transitioning to a kdump kernel, the primary kernel might have crashed
-> while endpoint devices were actively bus-mastering DMA. Currently, the SMMU
-> driver aggressively resets the hardware during probe by clearing CR0_SMMUEN
-> and setting the Global Bypass Attribute (GBPA) to ABORT.
+On Thu, Apr 16, 2026 at 05:49:24PM +0100, Robin Murphy wrote:
+> On 15/04/2026 10:17 pm, Nicolin Chen wrote:
+> > When transitioning to a kdump kernel, the primary kernel might have crashed
+> > while endpoint devices were actively bus-mastering DMA. Currently, the SMMU
+> > driver aggressively resets the hardware during probe by clearing CR0_SMMUEN
+> > and setting the Global Bypass Attribute (GBPA) to ABORT.
+> > 
+> > In a kdump scenario, this aggressive reset is highly destructive:
+> > a) If GBPA is set to ABORT, in-flight DMA will be aborted, generating fatal
+> >     PCIe AER or SErrors that may panic the kdump kernel
+> > b) If GBPA is set to BYPASS, in-flight DMA targeting some IOVAs will bypass
+> >     the SMMU and corrupt the physical memory at those 1:1 mapped IOVAs.
 > 
-> In a kdump scenario, this aggressive reset is highly destructive:
-> a) If GBPA is set to ABORT, in-flight DMA will be aborted, generating fatal
->     PCIe AER or SErrors that may panic the kdump kernel
-> b) If GBPA is set to BYPASS, in-flight DMA targeting some IOVAs will bypass
->     the SMMU and corrupt the physical memory at those 1:1 mapped IOVAs.
+> But wasn't that rather the point? Th kdump kernel doesn't know the scope of
+> how much could have gone wrong (including potentially the SMMU configuration
+> itself), so it just blocks everything, resets and reenables the devices it
+> cares about, and ignores whatever else might be on fire.
 
-But wasn't that rather the point? Th kdump kernel doesn't know the scope 
-of how much could have gone wrong (including potentially the SMMU 
-configuration itself), so it just blocks everything, resets and 
-reenables the devices it cares about, and ignores whatever else might be 
-on fire.
+The purpose of kdump is to have the maximum chance to capture a dump
+from the blown up kernel.
 
-If AER can panic a kdump kernel, that seems like a failing of the kdump 
-kernel itself more than anything else (especially given the likelihood 
-that additional AER events could follow from whatever initial 
-crash/failure triggered kdump to begin with). And frankly if some device 
-getting a translation fault could directly SError the whole system, then 
-I'd say that system is pretty doomed in general, kdump or not.
+Yes, on a perfect platform aborting the entire SMMU should improve the
+chance of getting that dump.
 
-Thanks,
-Robin.
+But sadly there are so many busted up platforms where if you start
+messing with the IOMMU they will explode and blow up the kdump. x86
+and "firmware first" error handling systems are particularly notorious
+for nasty behavior like this.
 
-> To safely absorb in-flight DMA, the kdump kernel must leave SMMUEN=1 intact
-> and avoid modifying STRTAB_BASE. This allows HW to continue translating in-
-> flight DMA using the crashed kernel's page tables until the endpoint device
-> drivers probe and quiesce their respective hardware.
-> 
-> However, the ARM SMMUv3 architecture specification states that updating the
-> SMMU_STRTAB_BASE register while SMMUEN == 1 is UNPREDICTABLE or ignored.
-> 
-> This leaves a kdump kernel no choice but to adopt the stream table from the
-> crashed kernel.
-> 
-> In this series:
->   - Introduce an ARM_SMMU_OPT_KDUMP
->   - Skip SMMUEN and STRTAB_BASE resets in arm_smmu_device_reset()
->   - Map the crashed kernel's stream tables into the kdump kernel [*]
->   - Defer any default domain attachment to retain STEs until device drivers
->     explicitly request it.
-> 
-> [*] This is implemented via memremap, which only works on a coherent SMMU.
-> 
-> Note that the entire series requires Jason's work that was merged in v6.12:
-> 85196f54743d ("iommu/arm-smmu-v3: Reorganize struct arm_smmu_strtab_cfg").
-> I have a backported version that is verified with a v6.8 kernel. I can send
-> if we see a strong need after this version is accepted.
-> 
-> This is on Github:
-> https://github.com/nicolinc/iommufd/commits/smmuv3_kdump-v2
-> 
-> Changelog
-> v2
->   * Add warning in non-coherent SMMU cases
->   * Keep eventq/priq disabled v.s. enabling-and-disabling-later
->   * Check KDUMP option in the beginning of arm_smmu_device_reset()
->   * Validate STRTAB format matches HW capability instead of forcing flags
-> v1:
->   https://lore.kernel.org/all/cover.1775763475.git.nicolinc@nvidia.com/
-> 
-> Nicolin Chen (5):
->    iommu/arm-smmu-v3: Add arm_smmu_adopt_strtab() for kdump
->    iommu/arm-smmu-v3: Implement is_attach_deferred() for kdump
->    iommu/arm-smmu-v3: Retain CR0_SMMUEN during kdump device reset
->    iommu/arm-smmu-v3: Skip EVTQ/PRIQ setup in kdump kernel
->    iommu/arm-smmu-v3: Detect ARM_SMMU_OPT_KDUMP in
->      arm_smmu_device_hw_probe()
-> 
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |   1 +
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 225 ++++++++++++++++++--
->   2 files changed, 207 insertions(+), 19 deletions(-)
-> 
+Seems like there are now ARM systems too. :(
 
+So, the iommu drivers have been preserving the IOMMU and not
+disrupting the DMAs on x86 for a long time. This is established kdump
+practice.
+
+> If AER can panic a kdump kernel, that seems like a failing of the kdump
+> kernel itself more than anything else (especially given the likelihood that
+> additional AER events could follow from whatever initial crash/failure
+> triggered kdump to begin with).
+
+Probably the kdump wasn't triggered by AER. You want kdump to not
+trigger more RAS events that might blow up the kdump while it is
+trying to run.. That increases the chance of success
+
+> And frankly if some device getting a
+> translation fault could directly SError the whole system, then I'd say that
+> system is pretty doomed in general, kdump or not.
+
+Aborting the SMMU while ATS is enabled also fails all ATS and
+translated requests which is a catastrophic event for a CXL type
+device that a correct OS should never trigger. The catastrophic
+explosion of the CXL device also unplugs all it's RAM from the system
+and the kdump kernel just cannot handle the resulting cascade of RAS
+failures. Plus you loose all that CXL RAM you may have wanted to dump..
+
+Regardless, the platform has this flaw and to make kdump work it has
+to avoid triggering these errors like x86 does.
+
+Jason
