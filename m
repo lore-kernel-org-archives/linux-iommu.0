@@ -1,74 +1,74 @@
-Received: from mail-vs1-f42.google.com (mail-vs1-f42.google.com [209.85.217.42])
+Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com [209.85.221.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4D1B3A6EF6
-	for <iommu@lists.linux.dev>; Thu, 16 Apr 2026 11:22:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E613639D6FE
+	for <iommu@lists.linux.dev>; Thu, 16 Apr 2026 11:22:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776338545; cv=none; b=GALcXB8d6PRD/vzsZg+5FWJPMY4HY/yCoUYS9ftn1tGwFbPwUB7fEVWGF0KZeOAUZaMTVW+Aiacmn6ecKYuD+3CAip5VUnMO81ZGcvcYCElbvzJpSLbFHvmaFtOBtEyFwmI8WKaDv8qrz2eTkn/2+7cXn3MaSCIZ7d+/uXVo6AE=
+	t=1776338554; cv=none; b=VhYqGWC22gLlRkBK/BSLVI73/bfiUEKmlFAmyd8Drctw0BNfE24V0e4EHluibiO129xCKipn1ZgkxJVHJDWW0le9ZpuZL+hgiw6DZ0A4RzPhExP5+DXtkUnCLgwmn/knC8q21QR3vpjv0x+aHDV6EqsZuR9wBjms6JC4nf7YKlg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776338545; c=relaxed/simple;
-	bh=onL90hyVAUlPY0ASaWQwK2lX8QEYr5m106IAfPoIE0U=;
+	s=arc-20240116; t=1776338554; c=relaxed/simple;
+	bh=5RcGmn3E6IkK/4PLTUVN24XJ2jAiV11BodM4t9S5uGE=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MvKvwSbzliqujrHNz1BOP+oKxaH1oG/NJvQiwbRGdt517DIGuc1VSk/awCeKJpk18gBbqEAdNA3m3jTO9kmeaLmlv66/z8djZl8SXLy4HmPKe1jqiOCUFsnF1GDk7EYAfTuzocM8Ottvg2N0AhSrnFkJvPrbToH1Ekm4Duv/irQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.217.42
+	 To:Cc:Content-Type; b=E/DeNVoZT2R4jeVUWwe6DBv3AKb7zaWUaNQK6TH52h4UqeYKdA4mHmNlzQZkzs9enwYqNHUi5YQradXDUM2HnsaYd09tR9ufdRlpQhFYLxAwHG44LSpG+Qj0rSGU29bbAhqJcBgQobum6QVdrreMiaMPu4N3Ex2NVlcZ/Nt4luA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vs1-f42.google.com with SMTP id ada2fe7eead31-61399bdd395so403419137.2
-        for <iommu@lists.linux.dev>; Thu, 16 Apr 2026 04:22:22 -0700 (PDT)
+Received: by mail-vk1-f181.google.com with SMTP id 71dfb90a1353d-56a9a7e762bso5891045e0c.3
+        for <iommu@lists.linux.dev>; Thu, 16 Apr 2026 04:22:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776338541; x=1776943341;
+        d=1e100.net; s=20251104; t=1776338547; x=1776943347;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=0N28AiHhMQm9a3ncbvMl4jwXcNZbOrN6OiiJm2DjJOE=;
-        b=OskXENe1BrglV4kkMUSOCuHon6/Xk4n87RVaeaTnMi72tZth7xfnMOuuWxf3bQmLeu
-         OK508f7ebROzZ7qGGe/Z0GHLyUbkRDEnjw5M+K550ydZWg4ik04jB14Govsy3PgqwnCf
-         PRNVhveGmV1V0gBT8xxrnIFgzzwkah5tPUi42ZyCzXqWPldIl39lQGSZHECSsAKZhLKK
-         uYaL1ioSdLuyXEKBPTGkkFuLx9kWzDZioryOqbq7cugFR6sHQK0BKM8mrY37sPQJhRih
-         uagpMcU7w5kXdaYEwjQxzZZfmwietmPFWgTtLUcdgp0wcFG8JyaXJn5JFriKQ7n5dfFs
-         em8A==
-X-Forwarded-Encrypted: i=1; AFNElJ+WScGEHnVHFmpaN/q+JrX/ltt/pweU+4P+9OYdpAkfMbh8qjAMaBgDzi98cl+2K3+qQrFhyg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwjXJ7iQwtx+srg0RXkVkQ2zDZqDtl+bkLQhnQM6f3tt/h7oFiZ
-	klsD3jrklIasU1/k9XuyPa57WeGS5xQhQootlEymtG2fQBE+VuurgJEstjW2Qrwe
-X-Gm-Gg: AeBDiesEpkUMbv74xbT9q/y4lfBSz+kWybchccKJOx9B5Y2HpNan6mBAVTUj6eiYdKx
-	ZdBHDG+HekMh8HquWCVJieW9JabsX3Hg6ndC4TYbS+g86wayj16Bjw8nS3Kxdc4Yd4F1849XHol
-	Aw0PqSbOG0o+pMJkT8vJ0kwPrCXNI8R37Y0yCmuVeTKBP074jtJxKT/DXlaV8y/y3K5tDSB6Vki
-	GkrKEHxuf/GNgCAdniZme/Ho3UvaecjhsrcuUchDdiQPYC500dDc2c0GBi7ST07HEco9XP/kiFn
-	WMi5EAyRfYM/md3x0GfzVkOlH3eEPE5ulAbaOvuW0gbnB8j+ZXoVeS+jd1uKL9ULArJjr5wujJa
-	R5tRWorLAQWZhTuk3+NLfMRXZhtz2jKZs1lx9yBopC4TV5qQBd4AQWPbO+ZO7lXZUKExAzwTq9h
-	n8eOJzxY6znhHHYaLJjrmSbPnwTdfJUYkunp7hEC+5Cdq4GjJ3Ed1sZ8wAibXuosFATmVXYb4=
-X-Received: by 2002:a05:6102:ccd:b0:612:529c:abae with SMTP id ada2fe7eead31-612529cca48mr3856042137.31.1776338541287;
-        Thu, 16 Apr 2026 04:22:21 -0700 (PDT)
-Received: from mail-ua1-f46.google.com (mail-ua1-f46.google.com. [209.85.222.46])
-        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-612ccb2498dsm2238762137.1.2026.04.16.04.22.21
+        bh=I6jqlHRyBmHp78NPQbVn/INUSPCxYZ/sUXVIyq1nXfE=;
+        b=JI8InOqGTHxyspWcMeVTFAugHLHFeslwjIFdm1breSdT8vTG10S0vfJZBf8FW2EbOA
+         soMH/wku3FG5MI9jOMtjxkcPdqOVaxHffq0eX31lCR4AhJtKqJAqoLbCuOWJQ5Wu9JBl
+         MDRa3KY6iybhMvU+xIk8zWpZb8MoQ9iErywog9BXzUShZwoxfiaUrCaNwihmTx/0j/MA
+         5PhWY2m/LieysN3bbGnVyXT1MDhkXvG+P4+3sayvgOyoe6yOBwD8YXMKKCLqEDpHKLlv
+         rkYasAwhgn4s39Qq40CKnzTE7ozRBlVXIV2LNv240JMJf5NdkzVOoU1hJHNsN6gIMjCr
+         ZtZg==
+X-Forwarded-Encrypted: i=1; AFNElJ8cFLYrhwM90DADq2GjnIwmgLdVIgHhpMIQ6R9xRGaUEl3Co1NJIhRrQAcklxj6V1seD58v5Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxRfsMOW44GtH2d7Jn023jQS3OkJFKHYZThos9RcXHEO+4nl/Nj
+	qS0HWbbiLSInK1a96GGIcw0x2QlWncWe44tI0/Ini0XVoT2VDmIwS0HUdGaxwq78
+X-Gm-Gg: AeBDiestccUdxfygeh5bs9XRLaz8vjztgUxDTQWhQDnOeuTpHC5t3tNr3jIuL5oFMpf
+	DwtzWQIjVeniP/yQY3Hh1Ejq8CHmmEODUTivWzhKdJcp/LmKylshWOIEkybar2QBdtTXX9Xn1Yf
+	ReVtEA/1kEc5tZKIpIRgT6qkrvnBvcFnk0sCHmNrbs+DbJzQfK0gu+uPrEE+vTjpWMVUk1vV1+m
+	3on7vp2Y/xHOdNsgQJE/obysrucB2Oj1t1NMliHwOxrhMiIa/6vMMyyyzGQganKhMn8AW3MJyH1
+	OUK8TuRmpT0QOv58KT58liQhBb7H1U6WyU4darCkC8X5mSpaz77/bTV9OSauS3GrA8d165mlCh/
+	WuZNT9fJYy1VRRhFszYixHguarA1xUjQh7WLoiR+u2czhtac4Z+uA61PCNhPLW4VN4GlNNXp+UB
+	uMYLt8YnQc84r/UaQ/lmBOibq25cY0v797MTtNrsqvZBj63p1G+rstfzZHEj9WVXLUB7lICfU=
+X-Received: by 2002:a05:6122:65a1:b0:56d:b337:4709 with SMTP id 71dfb90a1353d-56f3bc536f7mr12697514e0c.6.1776338547652;
+        Thu, 16 Apr 2026 04:22:27 -0700 (PDT)
+Received: from mail-vs1-f46.google.com (mail-vs1-f46.google.com. [209.85.217.46])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-56f8a007d0csm2864187e0c.16.2026.04.16.04.22.27
         for <iommu@lists.linux.dev>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Apr 2026 04:22:21 -0700 (PDT)
-Received: by mail-ua1-f46.google.com with SMTP id a1e0cc1a2514c-95673f7b5baso1463196241.1
-        for <iommu@lists.linux.dev>; Thu, 16 Apr 2026 04:22:21 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ+KqIY5FOGW9GUvDn62f77DCs19wleGim/YAnoGeXAUFGMLMUk1ovLWnVY6f4AdJsZsF87HEA==@lists.linux.dev
-X-Received: by 2002:a05:6102:3fa2:b0:608:1b6e:f4dc with SMTP id
- ada2fe7eead31-609ff0c50e9mr11028119137.11.1776338540828; Thu, 16 Apr 2026
- 04:22:20 -0700 (PDT)
+        Thu, 16 Apr 2026 04:22:27 -0700 (PDT)
+Received: by mail-vs1-f46.google.com with SMTP id ada2fe7eead31-6137374b106so812556137.1
+        for <iommu@lists.linux.dev>; Thu, 16 Apr 2026 04:22:27 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ8YJqyGeez8Um/BZAWDLYFt0k93bbLw1hiRqXTe2txOCBvbZxfg4uD66RuH4gnU8xapeElIdw==@lists.linux.dev
+X-Received: by 2002:a05:6102:6044:b0:5ff:c64d:2283 with SMTP id
+ ada2fe7eead31-60a0157295cmr11348128137.30.1776338547396; Thu, 16 Apr 2026
+ 04:22:27 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260410120044.031381086@kernel.org> <20260410120318.045532623@kernel.org>
-In-Reply-To: <20260410120318.045532623@kernel.org>
+References: <20260410120044.031381086@kernel.org> <20260410120319.397219631@kernel.org>
+In-Reply-To: <20260410120319.397219631@kernel.org>
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Thu, 16 Apr 2026 13:22:09 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXtR7T62Wf+yDM=J0+96C64qRws=ffX_xXbfzfbS0Xz8g@mail.gmail.com>
-X-Gm-Features: AQROBzCyA8BqoTVnHFn7fWQMKVWyMF2wrQlYn44P8f0X0RsdCOwGnnxui8decDA
-Message-ID: <CAMuHMdXtR7T62Wf+yDM=J0+96C64qRws=ffX_xXbfzfbS0Xz8g@mail.gmail.com>
-Subject: Re: [patch 07/38] treewide: Consolidate cycles_t
+Date: Thu, 16 Apr 2026 13:22:16 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVoo_6i9=2oQj-=yjW7nK8eL4og08bdYvk_EGj=_cQvQA@mail.gmail.com>
+X-Gm-Features: AQROBzCJ6rVnwwfhi99PI36wWXAFQ5DEgo1zw3RhVwYNSXoxkTYAcgIxt5Z0K1g
+Message-ID: <CAMuHMdVoo_6i9=2oQj-=yjW7nK8eL4og08bdYvk_EGj=_cQvQA@mail.gmail.com>
+Subject: Re: [patch 27/38] m68k: Select ARCH_HAS_RANDOM_ENTROPY
 To: Thomas Gleixner <tglx@kernel.org>
-Cc: LKML <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, x86@kernel.org, 
-	Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev, 
-	Michael Grzeschik <m.grzeschik@pengutronix.de>, netdev@vger.kernel.org, 
+Cc: LKML <linux-kernel@vger.kernel.org>, linux-m68k@lists.linux-m68k.org, 
+	Arnd Bergmann <arnd@arndb.de>, x86@kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, 
+	iommu@lists.linux.dev, Michael Grzeschik <m.grzeschik@pengutronix.de>, netdev@vger.kernel.org, 
 	linux-wireless@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>, 
 	linux-crypto@vger.kernel.org, Vlastimil Babka <vbabka@kernel.org>, linux-mm@kvack.org, 
 	David Woodhouse <dwmw2@infradead.org>, Bernie Thompson <bernie@plugable.com>, linux-fbdev@vger.kernel.org, 
@@ -89,27 +89,19 @@ Cc: LKML <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, x86@kern
 	"David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-On Fri, 10 Apr 2026 at 14:19, Thomas Gleixner <tglx@kernel.org> wrote:
-> Most architectures define cycles_t as unsigned long execpt:
+On Fri, 10 Apr 2026 at 14:20, Thomas Gleixner <tglx@kernel.org> wrote:
+> The only remaining usage of get_cycles() is to provide
+> random_get_entropy().
 >
->  - x86 requires it to be 64-bit independent of the 32-bit/64-bit build.
+> Switch m68k over to the new scheme of selecting ARCH_HAS_RANDOM_ENTROPY and
+> providing random_get_entropy() in asm/random.h.
 >
->  - parisc and mips define it as unsigned int
->
->    parisc has no real reason to do so as there are only a few usage sites
->    which either expand it to a 64-bit value or utilize only the lower
->    32bits.
->
->    mips has no real requirement either.
->
-> Move the typedef to types.h and provide a config switch to enforce the
-> 64-bit type for x86.
+> Remove asm/timex.h as it has no functionality anymore.
 >
 > Signed-off-by: Thomas Gleixner <tglx@kernel.org>
 
->  arch/m68k/include/asm/timex.h      |    2 --
-
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org> # m68k
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
 Gr{oetje,eeting}s,
 
