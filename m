@@ -1,291 +1,179 @@
-Received: from fhigh-b3-smtp.messagingengine.com (fhigh-b3-smtp.messagingengine.com [202.12.124.154])
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D670E38D686
-	for <iommu@lists.linux.dev>; Thu, 16 Apr 2026 20:06:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.154
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C0192DEA9B
+	for <iommu@lists.linux.dev>; Thu, 16 Apr 2026 20:44:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776369975; cv=none; b=rnhZ7KmcLu5y817ci9bx8HeTGUl5tMN6yxsTQeFNyMaef5+Ga/W+2awGvMRUiOQ04304osutzkdejEsk5KTj1zJkuekrkeKL5mIgXdWk+HQ/ztbfZzNoAxLAqMDBYS04yjvkcd+lMnhIsqMe9wamRwZ6z4gHxqZK+755GMFVbFg=
+	t=1776372254; cv=none; b=CJvMY9fjpXMfnCg30UhhzwGl/2DzHUN/qw4W48rErH9shDxJ3U8E804Bmup0BFKUl+LON1DMcammHloS+BGAo85faTih68KLohTyD9R8ht+Ao3JVoJTjnX95+7UZ/n6aJro7v9mxouW0u+LKZ1+8V9Lxd198Js7wuOI4C/soEQU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776369975; c=relaxed/simple;
-	bh=5RB1vzOT5LDGmHa9fkCg+39mdw1IyES6vbyHtekUY+o=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=LDNzbEMyfnP7LqRIPCCTujHqiKvG/8xAQN/F5FsQ7/SgxnFhOkGkYTBuMICOS+2p2/SXJHmNCdQ8M65njfvv9F1OCOo3iWDy8lnHV2Rqx9ZqStrA8j5ZtXJIY8K/AgETn10gE9lN2ZXqdMN5agmKn5uPEfsS9KPFffDOfnHBvus=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org; spf=pass smtp.mailfrom=shazbot.org; dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b=romMaOjB; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=NfXrVeRA; arc=none smtp.client-ip=202.12.124.154
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shazbot.org
+	s=arc-20240116; t=1776372254; c=relaxed/simple;
+	bh=TyoseHGmSTD5tP+xnWFmibp/t+Pc9emQUq7Fahgmb24=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 References; b=U8PUfF5zop2luEKw+sgs9TIIpixJZgwM+riO2FtwkMZVd4A/yeCNiFnBp3O2VE6+ur9OWJk4j1fanb0lVQGgZMxHxmjsBOm/wdgGtxk1Vo9e70Zr+JrDourXrUFX5noLtFH+5zZRN0J3CqkL6sg3AlsTipo5mc4myBgdBdcsWmw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=WspTQUFK; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b="romMaOjB";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="NfXrVeRA"
-Received: from phl-compute-05.internal (phl-compute-05.internal [10.202.2.45])
-	by mailfhigh.stl.internal (Postfix) with ESMTP id D0DB27A0185;
-	Thu, 16 Apr 2026 16:06:05 -0400 (EDT)
-Received: from phl-frontend-04 ([10.202.2.163])
-  by phl-compute-05.internal (MEProxy); Thu, 16 Apr 2026 16:06:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shazbot.org; h=
-	cc:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm1; t=1776369965;
-	 x=1776456365; bh=/bsGkyiHwKqz6ql+lERRB98HHGEurnOzngJlowfRcMo=; b=
-	romMaOjBo8Smz/+rwjY1iUhJxw7Wvh4LaooE1mj+LjMbsZaMOrUeK5X2z3z2M+aC
-	XNWeetiRvurTVrV0X+NF2BRhZD/6AjoSE3RldBySFeOVqEOtDC8lFK90H98jyKu9
-	Q6aTnBghptve3Odi+5GCYjEhR6xj4U7IXo60z9z00ERxBDuQ6/k27G3udVsWrY+D
-	8rCYDYnRwNcKfcmEosWYaMhMwhz6R91J9SF29DBFwrDnqDdaW+CjYDezY0KixKAk
-	WzSt0ruvduat3j2y6Awl5Mn7XQLR2pzC+XYk8V45qWz4NSt3WtZMLqyYZ+AzLuVn
-	xzG2NNnK27UKpqkh8JU5jw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1776369965; x=
-	1776456365; bh=/bsGkyiHwKqz6ql+lERRB98HHGEurnOzngJlowfRcMo=; b=N
-	fXrVeRA53aCakOxncgqXVv3Q09KY5aS4cTF5TtMBBUFUJXT6nINSav6cae0+77oJ
-	GmvNT4MlcnUNZHLCXcIJpTh+NgsGH1T1n3tMz3VV0hPAtVTE4RRTRvVTvsChhHFG
-	1VKClFWJzeLs+/Z6fNYsTohdgMLgrTqnyQSPqk4vFDQ4ehgwMtJIDh8XBZjXL5it
-	8FwxEedXY5S2pDPh3WikFmC5mxZ9tATZpctyBeX2XL/sLjTlsIt7eoo1DCNVoaQf
-	NOCdmNv/UzDqMfdpfhyI3bA+/qfVDw7CvMNKxToLhss6OVqLi94as68A2+Zuh6pX
-	vMcmzU36mmoBqwrggXgAA==
-X-ME-Sender: <xms:LEHhadn9GnqskULVEjW1GacNhjN7PHVxUDidDdGy6wSjQLDoieeOYQ>
-    <xme:LEHhaXVJIU_woiPM6MjQDD3qz79SVMzFhNJX0pNXrvggA4hWT9CvxMm47nlWs_Ncs
-    ey_QK8Tgvjf_t_gaaEJWZMvOjuNviJb5MBw_HycKbFbWQb7AO9bHg>
-X-ME-Received: <xmr:LEHhaaeAAz2KHvYH2m3tO383j5DCRkdNyvjwM5qFvSg2Vbqg41iJsllFReQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefhedrtddtgdegjeelvdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpuffrtefokffrpgfnqfghnecuuegr
-    ihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjug
-    hrpeffhffvvefukfgjfhfogggtgfesthejredtredtvdenucfhrhhomheptehlvgigucgh
-    ihhllhhirghmshhonhcuoegrlhgvgiesshhhrgiisghothdrohhrgheqnecuggftrfgrth
-    htvghrnhepvdekfeejkedvudfhudfhteekudfgudeiteetvdeukedvheetvdekgfdugeev
-    ueeunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
-    hlvgigsehshhgriigsohhtrdhorhhgpdhnsggprhgtphhtthhopeduiedpmhhouggvpehs
-    mhhtphhouhhtpdhrtghpthhtohepjhgrtghosgdrphgrnheslhhinhhugidrmhhitghroh
-    hsohhfthdrtghomhdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhk
-    vghrnhgvlhdrohhrghdprhgtphhtthhopehiohhmmhhusehlihhsthhsrdhlihhnuhigrd
-    guvghvpdhrtghpthhtohepjhhgghesnhhvihguihgrrdgtohhmpdhrtghpthhtohepjhho
-    rhhoseeksgihthgvshdrohhrghdprhgtphhtthhopehsmhhoshhtrghfrgesghhoohhglh
-    gvrdgtohhmpdhrtghpthhtohepughmrghtlhgrtghksehgohhoghhlvgdrtghomhdprhgt
-    phhtthhopehrohgsihhnrdhmuhhrphhhhiesrghrmhdrtghomhdprhgtphhtthhopehnih
-    gtohhlihhntgesnhhvihguihgrrdgtohhm
-X-ME-Proxy: <xmx:LEHhadkcbl36GaEe3PrDjTlM5BEp-xugq76l8EI8m1ISNgI-XfEnQg>
-    <xmx:LEHhaUB82EsOm3goCX3lFryJDfZA7_EIhb7XiekFWm-YHLquBch9cA>
-    <xmx:LEHhaXflBhJjNv5wH_LqtUKHv-4FG2m5tV8KsSVMluH7_klROw5RnA>
-    <xmx:LEHhaX6jeXktWqEeM1DZGqGb8n02hfommbaQWXsI0sDxhSEB2vsazQ>
-    <xmx:LUHhaRRCOcYjfbPbgzNZD2EjKPVtAhAaMEgGnaevcbd1psgTgX1BGarA>
-Feedback-ID: i03f14258:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 16 Apr 2026 16:06:03 -0400 (EDT)
-Date: Thu, 16 Apr 2026 14:06:01 -0600
-From: Alex Williamson <alex@shazbot.org>
-To: Jacob Pan <jacob.pan@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel
- <joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>, David Matlack
- <dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen
- <nicolinc@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
- <yi.l.liu@intel.com>, skhawaja@google.com, pasha.tatashin@soleen.com, Will
- Deacon <will@kernel.org>, Baolu Lu <baolu.lu@linux.intel.com>,
- alex@shazbot.org
-Subject: Re: [PATCH V4 05/10] vfio: Allow null group for noiommu without
- containers
-Message-ID: <20260416140601.255ec031@shazbot.org>
-In-Reply-To: <20260414211412.2729-6-jacob.pan@linux.microsoft.com>
-References: <20260414211412.2729-1-jacob.pan@linux.microsoft.com>
-	<20260414211412.2729-6-jacob.pan@linux.microsoft.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="WspTQUFK"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260416204409euoutp02780ae9f8afbca98ba0f389a08de293a5~m8SZB52th1299212992euoutp02F
+	for <iommu@lists.linux.dev>; Thu, 16 Apr 2026 20:44:09 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260416204409euoutp02780ae9f8afbca98ba0f389a08de293a5~m8SZB52th1299212992euoutp02F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1776372249;
+	bh=VZJ6W06i5LDR2f3jir/iDTzQE38GCIMoEYbZYfGERD0=;
+	h=From:To:Cc:Subject:Date:References:From;
+	b=WspTQUFKMn2tIj+I5lj/Eu01DmI3+IWAMKUGmBYVSswXMdIuALedxQJ8iTBIoAJHM
+	 VWkVGj9chpiR/Fh7W9CCIb5FvnijW2MzKE/HyPHcE6h8TR7Zw3OI7DhMiyr6d9SJIA
+	 D9MnqjcvwJzLuZmaSMatpJ8kHyMqD2Usv426uV/I=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20260416204408eucas1p28659d11a64b12e1d26ee341afca0b897~m8SX7ubVk1247212472eucas1p22;
+	Thu, 16 Apr 2026 20:44:08 +0000 (GMT)
+Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20260416204407eusmtip23299ad1d429077d07eb489df8759a4fe~m8SXdD1Ni2294022940eusmtip2L;
+	Thu, 16 Apr 2026 20:44:07 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski
+	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Barry Song
+	<baohua@kernel.org>, Jiri Pirko <jiri@resnulli.us>, Rob Herring
+	<robh@kernel.org>, Maxime Ripard <mripard@kernel.org>, Qinxin Xia
+	<xiaqinxin@huawei.com>
+Subject: [GIT PULL] dma-mapping updates for Linux 7.1
+Date: Thu, 16 Apr 2026 22:43:59 +0200
+Message-Id: <20260416204359.3030425-1-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20260416204408eucas1p28659d11a64b12e1d26ee341afca0b897
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260416204408eucas1p28659d11a64b12e1d26ee341afca0b897
+X-EPHeader: CA
+X-CMS-RootMailID: 20260416204408eucas1p28659d11a64b12e1d26ee341afca0b897
+References: <CGME20260416204408eucas1p28659d11a64b12e1d26ee341afca0b897@eucas1p2.samsung.com>
 
-On Tue, 14 Apr 2026 14:14:07 -0700
-Jacob Pan <jacob.pan@linux.microsoft.com> wrote:
+The following changes since commit 2cdaff22ed26f1e619aa2b43f27bb84f2c6ef8f8:
 
-> In case of noiommu mode is enabled for VFIO cdev without VFIO container
-> nor IOMMUFD provided compatibility container, there is no need to
-> create a dummy group. Update the group operations to tolerate null group
-> pointer.
-> 
-> Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
-> 
-> ---
-> v4: (Jason)
->    - Avoid null pointer deref in error unwind
->    - Add null group check in vfio_device_group_unregister
->    - repartition to include vfio_device_has_group() in this patch
-> ---
->  drivers/vfio/group.c     | 20 ++++++++++++++++++++
->  drivers/vfio/vfio.h      | 17 +++++++++++++++++
->  drivers/vfio/vfio_main.c | 14 ++++++++++++++
->  include/linux/vfio.h     |  9 +++++++++
->  4 files changed, 60 insertions(+)
-> 
-> diff --git a/drivers/vfio/group.c b/drivers/vfio/group.c
-> index 0fa9761b13d3..451e49d851f8 100644
-> --- a/drivers/vfio/group.c
-> +++ b/drivers/vfio/group.c
-> @@ -390,6 +390,9 @@ int vfio_device_block_group(struct vfio_device *device)
->  	struct vfio_group *group = device->group;
->  	int ret = 0;
->  
-> +	if (vfio_null_group_allowed() && !group)
-> +		return 0;
+  dma-mapping: add missing `inline` for `dma_free_attrs` (2026-03-25 08:01:21 +0100)
 
-I think this comes down to the fact that at the end of this series,
-VFIO_NOIOMMU still depends on VFIO_GROUP.  vfio_null_group_allowed()
-can only return true if CONTAINER support is entirely disabled.  Why do
-we still select VFIO_GROUP for VFIO_NOIOMMU and build group.s when
-there's no container support to use it?
+are available in the Git repository at:
 
-Also note that vfio_noiommu is S_IWUSR, so it is mutable at runtime.
-Thanks,
+  https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-7.1-2026-04-16
 
-Alex
+for you to fetch changes up to 15818b2cd42df3cc886f4cc46acfab4d072dcacc:
 
-> +
->  	mutex_lock(&group->group_lock);
->  	if (group->opened_file) {
->  		ret = -EBUSY;
-> @@ -407,6 +410,9 @@ void vfio_device_unblock_group(struct vfio_device *device)
->  {
->  	struct vfio_group *group = device->group;
->  
-> +	if (vfio_null_group_allowed() && !group)
-> +		return;
-> +
->  	mutex_lock(&group->group_lock);
->  	group->cdev_device_open_cnt--;
->  	mutex_unlock(&group->group_lock);
-> @@ -598,6 +604,14 @@ static struct vfio_group *vfio_noiommu_group_alloc(struct device *dev,
->  	struct vfio_group *group;
->  	int ret;
->  
-> +	/*
-> +	 * With noiommu enabled under cdev interface only, there is no need to
-> +	 * create a vfio_group if the group based containers are not enabled.
-> +	 * The cdev interface is exclusively used for iommufd.
-> +	 */
-> +	if (vfio_null_group_allowed())
-> +		return NULL;
-> +
->  	iommu_group = iommu_group_alloc();
->  	if (IS_ERR(iommu_group))
->  		return ERR_CAST(iommu_group);
-> @@ -705,6 +719,9 @@ void vfio_device_remove_group(struct vfio_device *device)
->  	struct vfio_group *group = device->group;
->  	struct iommu_group *iommu_group;
->  
-> +	if (!group)
-> +		return;
-> +
->  	if (group->type == VFIO_NO_IOMMU || group->type == VFIO_EMULATED_IOMMU)
->  		iommu_group_remove_device(device->dev);
->  
-> @@ -756,6 +773,9 @@ void vfio_device_group_register(struct vfio_device *device)
->  
->  void vfio_device_group_unregister(struct vfio_device *device)
->  {
-> +	if (!device->group)
-> +		return;
-> +
->  	mutex_lock(&device->group->device_lock);
->  	list_del(&device->group_next);
->  	mutex_unlock(&device->group->device_lock);
-> diff --git a/drivers/vfio/vfio.h b/drivers/vfio/vfio.h
-> index 8fcc98cf9577..db1530bb1716 100644
-> --- a/drivers/vfio/vfio.h
-> +++ b/drivers/vfio/vfio.h
-> @@ -114,6 +114,18 @@ bool vfio_device_has_container(struct vfio_device *device);
->  int __init vfio_group_init(void);
->  void vfio_group_cleanup(void);
->  
-> +/*
-> + * With noiommu enabled and no containers are supported, allow devices that
-> + * don't have a dummy group.
-> + */
-> +static inline bool vfio_null_group_allowed(void)
-> +{
-> +	if (vfio_noiommu && (!IS_ENABLED(CONFIG_VFIO_CONTAINER) && !IS_ENABLED(CONFIG_IOMMUFD_VFIO_CONTAINER)))
-> +		return true;
-> +
-> +	return false;
-> +}
-> +
->  static inline bool vfio_device_is_noiommu(struct vfio_device *vdev)
->  {
->  	return IS_ENABLED(CONFIG_VFIO_NOIOMMU) &&
-> @@ -190,6 +202,11 @@ static inline void vfio_group_cleanup(void)
->  {
->  }
->  
-> +static inline bool vfio_null_group_allowed(void)
-> +{
-> +	return false;
-> +}
-> +
->  static inline bool vfio_device_is_noiommu(struct vfio_device *vdev)
->  {
->  	return false;
-> diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
-> index e5886235cad4..5d7c2d014689 100644
-> --- a/drivers/vfio/vfio_main.c
-> +++ b/drivers/vfio/vfio_main.c
-> @@ -358,6 +358,10 @@ static int __vfio_register_dev(struct vfio_device *device,
->  	/* Refcounting can't start until the driver calls register */
->  	refcount_set(&device->refcount, 1);
->  
-> +	/* noiommu device w/o container may have NULL group */
-> +	if (!vfio_device_has_group(device))
-> +		return 0;
-> +
->  	vfio_device_group_register(device);
->  	vfio_device_debugfs_init(device);
->  
-> @@ -392,6 +396,16 @@ void vfio_unregister_group_dev(struct vfio_device *device)
->  	bool interrupted = false;
->  	long rc;
->  
-> +	/*
-> +	 * For noiommu devices without a container, thus no dummy group,
-> +	 * simply delete and unregister to balance refcount.
-> +	 */
-> +	if (!vfio_device_has_group(device)) {
-> +		vfio_device_del(device);
-> +		vfio_device_put_registration(device);
-> +		return;
-> +	}
-> +
->  	/*
->  	 * Prevent new device opened by userspace via the
->  	 * VFIO_GROUP_GET_DEVICE_FD in the group path.
-> diff --git a/include/linux/vfio.h b/include/linux/vfio.h
-> index 7384965d15d7..ceb5034c3a2e 100644
-> --- a/include/linux/vfio.h
-> +++ b/include/linux/vfio.h
-> @@ -328,6 +328,10 @@ struct iommu_group *vfio_file_iommu_group(struct file *file);
->  #if IS_ENABLED(CONFIG_VFIO_GROUP)
->  bool vfio_file_is_group(struct file *file);
->  bool vfio_file_has_dev(struct file *file, struct vfio_device *device);
-> +static inline bool vfio_device_has_group(struct vfio_device *device)
-> +{
-> +	return device->group;
-> +}
->  #else
->  static inline bool vfio_file_is_group(struct file *file)
->  {
-> @@ -338,6 +342,11 @@ static inline bool vfio_file_has_dev(struct file *file, struct vfio_device *devi
->  {
->  	return false;
->  }
-> +
-> +static inline bool vfio_device_has_group(struct vfio_device *device)
-> +{
-> +	return false;
-> +}
->  #endif
->  bool vfio_file_is_valid(struct file *file);
->  bool vfio_file_enforced_coherent(struct file *file);
+  dma-buf: heaps: system: document system_cc_shared heap (2026-04-10 14:20:01 +0200)
+
+----------------------------------------------------------------
+dma-mapping updates for Linux 7.0:
+
+- added support for batched cache sync, what improves performance of
+  dma_map/unmap_sg() operations on ARM64 architecture (Barry Song)
+
+- introduced DMA_ATTR_CC_SHARED attribute for explicitly shared memory
+  used in confidential computing (Jiri Pirko)
+
+- refactored spaghetti-like code in drivers/of/of_reserved_mem.c and its
+  clients (Marek Szyprowski, shared branch with device-tree updates to
+  avoid merge conflicts)
+
+- prepared Contiguous Memory Allocator related code for making dma-buf
+  drivers modularized (Maxime Ripard)
+
+- added support for benchmarking dma_map_sg() calls to tools/dma utility
+  (Qinxin Xia)
+
+----------------------------------------------------------------
+Barry Song (5):
+      arm64: Provide dcache_by_myline_op_nosync helper
+      arm64: Provide dcache_clean_poc_nosync helper
+      arm64: Provide dcache_inval_poc_nosync helper
+      dma-mapping: Separate DMA sync issuing and completion waiting
+      dma-mapping: Support batch mode for dma_direct_{map,unmap}_sg
+
+Jiri Pirko (3):
+      dma-mapping: introduce DMA_ATTR_CC_SHARED for shared memory
+      dma-buf: heaps: system: add system_cc_shared heap for explicitly shared memory
+      dma-buf: heaps: system: document system_cc_shared heap
+
+Kit Dallege (1):
+      dma-mapping: fix false kernel-doc comment marker
+
+Marek Szyprowski (10):
+      Merge tag 'dma-mapping-7.0-2026-03-25' into dma-mapping-for-next
+      of: reserved_mem: remove fdt node from the structure
+      of: reserved_mem: use -ENODEV instead of -ENOENT
+      of: reserved_mem: switch to ops based OF_DECLARE()
+      of: reserved_mem: replace CMA quirks by generic methods
+      of: reserved_mem: rearrange code a bit
+      of: reserved_mem: clarify fdt_scan_reserved_mem*() functions
+      of: reserved_mem: rework fdt_init_reserved_mem_node()
+      Merge branch 'dt-reserved-mem-cleanups' into dma-mapping-for-next
+      Merge branch 'dma-contig-for-7.1-modules-prep-v4' into dma-mapping-for-next
+
+Maxime Ripard (5):
+      dma: contiguous: Turn heap registration logic around
+      dma: contiguous: Make dev_get_cma_area() a proper function
+      dma: contiguous: Make dma_contiguous_default_area static
+      dma: contiguous: Export dev_get_cma_area()
+      mm: cma: Export cma_alloc(), cma_release() and cma_get_name()
+
+Qinxin Xia (3):
+      dma-mapping: benchmark: modify the framework to adapt to more map modes
+      dma-mapping: benchmark: add support for dma_map_sg
+      tools/dma: Add dma_map_sg support
+
+ Documentation/userspace-api/dma-buf-heaps.rst |   7 +
+ arch/arm64/Kconfig                            |   1 +
+ arch/arm64/include/asm/assembler.h            |  25 +-
+ arch/arm64/include/asm/cache.h                |   5 +
+ arch/arm64/include/asm/cacheflush.h           |   2 +
+ arch/arm64/kernel/relocate_kernel.S           |   3 +-
+ arch/arm64/mm/cache.S                         |  57 ++++-
+ arch/arm64/mm/dma-mapping.c                   |   4 +-
+ drivers/dma-buf/heaps/cma_heap.c              |  19 +-
+ drivers/dma-buf/heaps/system_heap.c           | 103 ++++++++-
+ drivers/iommu/dma-iommu.c                     |  35 ++-
+ drivers/memory/tegra/tegra210-emc-table.c     |  19 +-
+ drivers/of/fdt.c                              |   2 +-
+ drivers/of/of_private.h                       |   2 +-
+ drivers/of/of_reserved_mem.c                  | 320 +++++++++++++++-----------
+ drivers/xen/swiotlb-xen.c                     |  24 +-
+ include/linux/cma.h                           |  10 -
+ include/linux/dma-buf/heaps/cma.h             |  16 --
+ include/linux/dma-map-ops.h                   |  23 +-
+ include/linux/dma-mapping.h                   |  12 +-
+ include/linux/of_reserved_mem.h               |  16 +-
+ include/trace/events/dma.h                    |   3 +-
+ include/uapi/linux/map_benchmark.h            |  13 +-
+ kernel/dma/Kconfig                            |   3 +
+ kernel/dma/coherent.c                         |  19 +-
+ kernel/dma/contiguous.c                       | 144 +++++++++---
+ kernel/dma/direct.c                           |  23 +-
+ kernel/dma/direct.h                           |  35 ++-
+ kernel/dma/map_benchmark.c                    | 246 ++++++++++++++++++--
+ kernel/dma/mapping.c                          |  19 +-
+ kernel/dma/swiotlb.c                          |  26 ++-
+ mm/cma.c                                      |   3 +
+ tools/dma/dma_map_benchmark.c                 |  23 +-
+ 33 files changed, 917 insertions(+), 345 deletions(-)
+ delete mode 100644 include/linux/dma-buf/heaps/cma.h
+
+----------------------------------------------------------------
+
+Thanks!
+
+Best regards
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
 
