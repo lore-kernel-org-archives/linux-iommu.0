@@ -1,79 +1,46 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 141203126B2
-	for <iommu@lists.linux.dev>; Thu, 16 Apr 2026 08:35:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B498C1EB5E3;
+	Thu, 16 Apr 2026 08:53:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776328520; cv=none; b=qTc8hHEljc/8IDTdgQ08tKuTNbOU61aZH07VD6SAyMRZgCfM4pZ7Y5iqHnMyeNXjqhofkQPsDOU3Td6C+pOekkzNO6jtLOihifMXS7PDPRGtd5+OU1XhGmrilUzpLs/zwZt7gG9UznqVXIZ7IPZQ4ihhHDAVaTFqyrfSR4pOsGQ=
+	t=1776329594; cv=none; b=QXtLqoMzScppkax5xbI+o0VQAu7dUg1RzcN4E6TY8qNJfc1W/uTZcpzJ/dXQ/N+TFFdYB/ZHsw5lUIyUGtebJGj0gpdiQFHYT6Hn/oIKnJFfzQAQf4HTo12ShaQg+BapaC+MQqr6lXzuD2oiTkoyxsHQq0A4i8e0WcuF0ImPws0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776328520; c=relaxed/simple;
-	bh=QVuygGU1ff2sGxNC8lLE1OKZw6HwO9c7JdEGE3NC6jU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HtqEzcXwqUjtcEW6/KOIYGdPrCduOPQkVeQl7PT2Hi7OKfqKrE7TN4B7eRPU37FzF79QOKkgxd4c0cM0+mpJeYk+M9jY45KyQaD7e0y/65p0kJEpM5/EsI16Z/CVJJUIe/VJHY4ngbsmjIPoCdkK3YmJIvZMAgVMhR3+odA1icw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ds0fQLi+; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1776329594; c=relaxed/simple;
+	bh=jdNjLZ6hHmaZsDcc17CfQFw1yshlagxIJr7bRP63jKs=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=nJqIOBKknPxKXI23hMe+WO3dEhHK7uN13xZG4cMLlHs6749cCqzDnR3K+TkB4TGsRfvt2QLpBvbvMF9fCICtyygrGLz0TmIGPD5HHMpxK9f6zBhgxCWG+AGOdGqwf8HlyEK6DQ1Nmp+ZriIN5IEMQp1T5qqK2WS9VXAYwLH5v3U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iaucGoyJ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ds0fQLi+"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4887ec3d8e7so63485e9.0
-        for <iommu@lists.linux.dev>; Thu, 16 Apr 2026 01:35:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1776328517; x=1776933317; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=Dj+m4YQEsurZA/e5WVnm4SkE+PtyoD5FKV7SijMxVME=;
-        b=ds0fQLi+DeKdoI8P0wPENcPuXpAEVF074gehBBgkLRYZJXzNKcfQGRgXVtlLDqgHBT
-         yqszkJJVhQpyeDtGU+zMp0SyIiP/hC/X9uF40gXofPD7j6BdrxEQfdGSJi+PEGnV8Sax
-         8ujSXG/4pCTrJcRgLe6+gMVt0cRRtT5iyv1zvJ0XfkjSy8IrEXWV2fU13ujPJsDvZMZL
-         UXFTbOHxhfgrZQqoymHZQ//cOKz5a+DpNwguyywSxsgi/fmIyvyIZ5v7Jp4VeZbsTjL/
-         tAj08f1CQqiFpw7FzlvbuzT54u095KdZtzd0FY4+9wPBA0bTW477ZyxRpE4U1xii6w+9
-         LmYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776328517; x=1776933317;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Dj+m4YQEsurZA/e5WVnm4SkE+PtyoD5FKV7SijMxVME=;
-        b=TNJnPIdmyLuujy+qNkristGfAeYfu/A0hs3SpYdvk+ghvxuLM5fop6t7mecXd75xS9
-         I61pA4Rx50rz6sOHEvjck5wj2jCatGGsAAlV5l8ZiNGix/Kpi1EjXdFKx7lhj4aDul1D
-         RTf/U28oS1ZzOSA0tPRSDVHfkaQmsShmbOAYks8M4RxULSbROzvTpS8aK2P9irtkF/Ht
-         /SbtYk/9CAx2j1eLreithiMWLnsk1wMDsH9nsuKVhtNYVq+nj/zT9LrM5rDettBETW85
-         VoIYxFZyDiTPDVWcP8TZpXzMuSxufs25Q+JhKxavFQj9RN62v99jO4iDIe0uwNi9YxwJ
-         Xbxg==
-X-Gm-Message-State: AOJu0YxwKv0p63+b3b/asvJzl81EDHAjMMCpvCMkD7mGxR/lAQ6wYES1
-	x1qeQYtBo0ksSx3JVyidQI0lPOKlFvYHkB2xT1Qc2fzLjzkkuyo6hpRsb9jbztjtfz6rUGD5/hz
-	SKlBCpg==
-X-Gm-Gg: AeBDieuIr14/IGjerqivB6lWAXaeFAMP/LxQBFgBsPgGt5yz/g7QGZGy0qx72qKgviY
-	AQcxVhe4f/nhM68X1vMJEpftXv/ah9Ra8JrrfNGuEeRrCxQpbbwilYndT+phZadRMJD+TVeQR6R
-	6aKUDZLbe3IqEP1ynhqr9C+xwmqesDMWlQ5WpHZIH1Yz15yqt5kPC7J+T7Z/65AAE8b8/KTlQvy
-	/fBG6FFX6pI2QPs3eFE/SF3GGOUaBrQMRGakkz4444chmLxTF1Z39FaeenVQpiP7BaqUOdrE2v0
-	owBzwMVo+jQ33OSuLSi6cq7EU0Xu44ou8gmIMGu12ip3Tto8ng/kKGo5o7I5h1engQTKeAAZwxV
-	5lyf9a9DlKRjoSB+OVRcb9pU3Rw9gu6KPfBtGJxt+//jwR+e6w0mIQFuJLy65qqm5hGVUnaezBt
-	4s4YlzBhzMmu+Qsyv2u2B7k+Gs1hD85VmElRCEHLBKHHca6VmGHIx9CEpHM7RpWAzniJvQrlvtS
-	Io1kchvW33z+ifO
-X-Received: by 2002:a05:600d:640f:10b0:47e:dbb0:fbcd with SMTP id 5b1f17b1804b1-488f4ad95f8mr433145e9.6.1776328517140;
-        Thu, 16 Apr 2026 01:35:17 -0700 (PDT)
-Received: from google.com (8.181.38.34.bc.googleusercontent.com. [34.38.181.8])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488f581652csm37377315e9.3.2026.04.16.01.35.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Apr 2026 01:35:16 -0700 (PDT)
-Date: Thu, 16 Apr 2026 08:35:12 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iaucGoyJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D47CC2BCAF;
+	Thu, 16 Apr 2026 08:53:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1776329594;
+	bh=jdNjLZ6hHmaZsDcc17CfQFw1yshlagxIJr7bRP63jKs=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=iaucGoyJyTf49sFd/blOSNRldLD1EKIpvohYWIAcDlAPP+sqts8tRka+wSjt3MHA6
+	 XTLqfjqtqUImHAw0nH94PHCjsjoozFkEafzAH+VPAZ7nO9vaqoHpu9YjnLf76fjF+2
+	 Lw12p9QwWqgghgv3FQ1E+lyq1C7xZG8ugil0YNFUhNJZwiD8HMuRxJlhEnVHCfBruI
+	 GlOKgRSBqRYT9wVSmj4JgemYRLmAvG8NdzfCEoJjXhWjGQ0V6YP6LK/ZC7HRxi6z0G
+	 RQW1h8FRtQai3029OzDFcsbG8ZCTu/MV1RiS53GTCVEuMtZPP5sPvavD76lCPgMUUo
+	 rbDvs+uRBjp4g==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Mostafa Saleh <smostafa@google.com>
 Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
 	robin.murphy@arm.com, m.szyprowski@samsung.com, will@kernel.org,
 	maz@kernel.org, suzuki.poulose@arm.com, catalin.marinas@arm.com,
 	jiri@resnulli.us, jgg@ziepe.ca
-Subject: Re: [RFC PATCH v2 2/5] dma-mapping: Use the correct phys_to_dma()
- for DMA_RESTRICTED_POOL
-Message-ID: <aeCfQNI4IEiK1fx2@google.com>
-References: <20260330145043.1586623-1-smostafa@google.com>
- <20260330145043.1586623-3-smostafa@google.com>
- <yq5abjfnbdej.fsf@kernel.org>
- <ad_0pqI0uWZH7D8k@google.com>
- <yq5ah5pb9z6m.fsf@kernel.org>
+Subject: Re: [RFC PATCH v3 1/5] swiotlb: Return state of memory from
+ swiotlb_alloc()
+In-Reply-To: <ad_4WtW5uEZlDdLU@google.com>
+References: <20260408194750.2280873-1-smostafa@google.com>
+ <20260408194750.2280873-2-smostafa@google.com>
+ <yq5awly9ao6q.fsf@kernel.org> <ad_4WtW5uEZlDdLU@google.com>
+Date: Thu, 16 Apr 2026 14:23:08 +0530
+Message-ID: <yq5aeckf9thn.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -81,68 +48,91 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <yq5ah5pb9z6m.fsf@kernel.org>
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Apr 16, 2026 at 12:20:09PM +0530, Aneesh Kumar K.V wrote:
-> Mostafa Saleh <smostafa@google.com> writes:
-> 
-> > On Mon, Apr 13, 2026 at 11:38:36AM +0530, Aneesh Kumar K.V wrote:
-> >> Mostafa Saleh <smostafa@google.com> writes:
-> >> 
-> >> > As restricted dma pools are always decrypted, in swiotlb.c it uses
-> >> > phys_to_dma_unencrypted() for address conversion.
-> >> >
-> >> > However, in DMA-direct, calls to phys_to_dma_direct() with
-> >> > force_dma_unencrypted() returning false, will fallback to
-> >> > phys_to_dma() which is inconsistent for memory allocated from
-> >> > restricted dma pools.
-> >> >
-> >> > Fixes: f4111e39a52a ("swiotlb: Add restricted DMA alloc/free support")
-> >> > Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> >> > ---
-> >> >  kernel/dma/direct.c | 2 +-
-> >> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >> >
-> >> > diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> >> > index 27d804f0473f..1a402bb956d9 100644
-> >> > --- a/kernel/dma/direct.c
-> >> > +++ b/kernel/dma/direct.c
-> >> > @@ -26,7 +26,7 @@ u64 zone_dma_limit __ro_after_init = DMA_BIT_MASK(24);
-> >> >  static inline dma_addr_t phys_to_dma_direct(struct device *dev,
-> >> >  		phys_addr_t phys)
-> >> >  {
-> >> > -	if (force_dma_unencrypted(dev))
-> >> > +	if (force_dma_unencrypted(dev) || is_swiotlb_for_alloc(dev))
-> >> >  		return phys_to_dma_unencrypted(dev, phys);
-> >> >
-> >> 
-> >> So what kind of device is this? Is it a trusted device that needs to use
-> >> swiotlb in unencrypted form?(is that a valid use case?) Can we add additional comment
-> >> explaining the type of device for which we are allocating the DMA
-> >> buffer?
-> >
-> > That’s used for devices that use restricted-dma pools which are
-> > currently always decrypted, typically virtio devices that are emulated
-> > by the untrusted host.
-> >
-> 
-> Why would those devices not force unencrypted DMA? Sorry, I may not be
-> following all the details. The pool itself is decrypted by default, but
-> the device does not force unencrypted DMA?”
-> 
+Mostafa Saleh <smostafa@google.com> writes:
 
-That’s the case at the moment for pKVM guests; that doesn’t use
-force_dma_unencrypted(), and just rely on swiotlb.
-When I was trying to enable that, I ended up with the double
-encryption issue fixed in this series.
-I believe that swiotlb and force_dma_unencrypted() are completely
-independent and the code shouldn’t make any assumptions about those,
-ideally force_dma_unencrypted() is a property of the device in a
-protected guest and swiotlb is per pool.
+> On Tue, Apr 14, 2026 at 02:55:33PM +0530, Aneesh Kumar K.V wrote:
+>> Mostafa Saleh <smostafa@google.com> writes:
+>>=20
+>> > Make swiotlb_alloc() return the state of the allocated memory, at
+>> > the moment all the pools are decrypted but that would change soon.
+>> > In the next patches dma-direct will use the returned state to
+>> > determine whether to decrypt the memory and use the proper memory
+>> > decryption/encryption related functions.
+>> >
+>> > Also, add swiotlb_is_decrypted(), that will be used before calling
+>> > swiotlb_free() to check whether the memory needs to be encrypted
+>> > by the caller.
+>> >
+>> > Signed-off-by: Mostafa Saleh <smostafa@google.com>
+>> > ---
+>> >  include/linux/swiotlb.h | 25 +++++++++++++++++++++++--
+>> >  kernel/dma/direct.c     |  2 +-
+>> >  kernel/dma/swiotlb.c    | 23 ++++++++++++++++++++++-
+>> >  3 files changed, 46 insertions(+), 4 deletions(-)
+>> >
+>> > diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+>> > index 3dae0f592063..24be65494ce8 100644
+>> > --- a/include/linux/swiotlb.h
+>> > +++ b/include/linux/swiotlb.h
+>> > @@ -63,6 +63,7 @@ extern void __init swiotlb_update_mem_attributes(voi=
+d);
+>> >   * @area_nslabs: Number of slots in each area.
+>> >   * @areas:	Array of memory area descriptors.
+>> >   * @slots:	Array of slot descriptors.
+>> > + * @decrypted:	Whether the pool was decrypted or left in default stat=
+e.
+>> >   * @node:	Member of the IO TLB memory pool list.
+>> >   * @rcu:	RCU head for swiotlb_dyn_free().
+>> >   * @transient:  %true if transient memory pool.
+>> > @@ -77,6 +78,7 @@ struct io_tlb_pool {
+>> >  	unsigned int area_nslabs;
+>> >  	struct io_tlb_area *areas;
+>> >  	struct io_tlb_slot *slots;
+>> > +	bool decrypted;
+>> >  #ifdef CONFIG_SWIOTLB_DYNAMIC
+>> >  	struct list_head node;
+>> >  	struct rcu_head rcu;
+>> > @@ -281,16 +283,31 @@ static inline void swiotlb_sync_single_for_cpu(s=
+truct device *dev,
+>> >
+>>=20
+>> Should this be a property of struct io_tlb_mem ?=20
+>
+> I envisioned that this would be mainly used by restricted-dma so in
+> that case it doesn=E2=80=99t seem to matter.
+> But generally, I guess it would depend on the discovery mechanism of
+> this memory property and I can imagine a memory allocator that has
+> multiple pools with different attributes. So propably it's better to
+> be per pool.
+>
 
-Thanks,
-Mostafa
+If we are going to make this generic, we may not be able to look at only
+restricted-dma. Instead, we will have to consider other SWIOTLB code
+paths as well, such as swiotlb_map(), swiotlb_alloc_pool() etc. For
+example, in swiotlb_dyn_alloc(), how do we determine whether to use
+decrypted or encrypted memory? I am thinking we want to use struct
+io_tlb_mem.decrypted field to determine that
 
-> -aneesh
+	struct io_tlb_mem *mem =3D
+		container_of(work, struct io_tlb_mem, dyn_alloc);
+
+	pool =3D swiotlb_alloc_pool(NULL, IO_TLB_MIN_SLABS, default_nslabs,
+				  default_nareas, mem->phys_limit, mem->decrypted,
+				  GFP_KERNEL);
+
+
+Also, for things like swiotlb_tbl_map_single(), we might want to =E2=80=A6
+
+	struct io_tlb_mem *mem =3D dev->dma_io_tlb_mem;
+
+	/* if phys addr attribute is encrypted but the device is forcing an encryp=
+ted dma addr */
+	if (!(attrs & DMA_ATTR_CC_DECRYPTED) && force_dma_unencrypted(dev))
+		require_decrypted =3D true;
+
+	if (require_decrypted !=3D mem->decrypted)
+		return (phys_addr_t)DMA_MAPPING_ERROR;
+
+-aneesh
