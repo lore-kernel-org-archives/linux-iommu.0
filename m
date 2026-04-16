@@ -1,116 +1,155 @@
-Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com [209.85.221.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E613639D6FE
-	for <iommu@lists.linux.dev>; Thu, 16 Apr 2026 11:22:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C69337C924;
+	Thu, 16 Apr 2026 12:25:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776338554; cv=none; b=VhYqGWC22gLlRkBK/BSLVI73/bfiUEKmlFAmyd8Drctw0BNfE24V0e4EHluibiO129xCKipn1ZgkxJVHJDWW0le9ZpuZL+hgiw6DZ0A4RzPhExP5+DXtkUnCLgwmn/knC8q21QR3vpjv0x+aHDV6EqsZuR9wBjms6JC4nf7YKlg=
+	t=1776342318; cv=none; b=BxN9ADopjT0HG67ERqv27hTKoTqduufKYyqNQQVEskErZusc7h4cHqQrNDfWE/SFLyKX16g5jXT54Xde2HaMrxPV4Q6gUQOSGC3FPPnSWxfIbdpoGLYoNnXoowfaZAPpalMqUekDmhLyuprL40HoH41iMxukcXlhldI0BRF2E7s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776338554; c=relaxed/simple;
-	bh=5RcGmn3E6IkK/4PLTUVN24XJ2jAiV11BodM4t9S5uGE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=E/DeNVoZT2R4jeVUWwe6DBv3AKb7zaWUaNQK6TH52h4UqeYKdA4mHmNlzQZkzs9enwYqNHUi5YQradXDUM2HnsaYd09tR9ufdRlpQhFYLxAwHG44LSpG+Qj0rSGU29bbAhqJcBgQobum6QVdrreMiaMPu4N3Ex2NVlcZ/Nt4luA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vk1-f181.google.com with SMTP id 71dfb90a1353d-56a9a7e762bso5891045e0c.3
-        for <iommu@lists.linux.dev>; Thu, 16 Apr 2026 04:22:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776338547; x=1776943347;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=I6jqlHRyBmHp78NPQbVn/INUSPCxYZ/sUXVIyq1nXfE=;
-        b=JI8InOqGTHxyspWcMeVTFAugHLHFeslwjIFdm1breSdT8vTG10S0vfJZBf8FW2EbOA
-         soMH/wku3FG5MI9jOMtjxkcPdqOVaxHffq0eX31lCR4AhJtKqJAqoLbCuOWJQ5Wu9JBl
-         MDRa3KY6iybhMvU+xIk8zWpZb8MoQ9iErywog9BXzUShZwoxfiaUrCaNwihmTx/0j/MA
-         5PhWY2m/LieysN3bbGnVyXT1MDhkXvG+P4+3sayvgOyoe6yOBwD8YXMKKCLqEDpHKLlv
-         rkYasAwhgn4s39Qq40CKnzTE7ozRBlVXIV2LNv240JMJf5NdkzVOoU1hJHNsN6gIMjCr
-         ZtZg==
-X-Forwarded-Encrypted: i=1; AFNElJ8cFLYrhwM90DADq2GjnIwmgLdVIgHhpMIQ6R9xRGaUEl3Co1NJIhRrQAcklxj6V1seD58v5Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxRfsMOW44GtH2d7Jn023jQS3OkJFKHYZThos9RcXHEO+4nl/Nj
-	qS0HWbbiLSInK1a96GGIcw0x2QlWncWe44tI0/Ini0XVoT2VDmIwS0HUdGaxwq78
-X-Gm-Gg: AeBDiestccUdxfygeh5bs9XRLaz8vjztgUxDTQWhQDnOeuTpHC5t3tNr3jIuL5oFMpf
-	DwtzWQIjVeniP/yQY3Hh1Ejq8CHmmEODUTivWzhKdJcp/LmKylshWOIEkybar2QBdtTXX9Xn1Yf
-	ReVtEA/1kEc5tZKIpIRgT6qkrvnBvcFnk0sCHmNrbs+DbJzQfK0gu+uPrEE+vTjpWMVUk1vV1+m
-	3on7vp2Y/xHOdNsgQJE/obysrucB2Oj1t1NMliHwOxrhMiIa/6vMMyyyzGQganKhMn8AW3MJyH1
-	OUK8TuRmpT0QOv58KT58liQhBb7H1U6WyU4darCkC8X5mSpaz77/bTV9OSauS3GrA8d165mlCh/
-	WuZNT9fJYy1VRRhFszYixHguarA1xUjQh7WLoiR+u2czhtac4Z+uA61PCNhPLW4VN4GlNNXp+UB
-	uMYLt8YnQc84r/UaQ/lmBOibq25cY0v797MTtNrsqvZBj63p1G+rstfzZHEj9WVXLUB7lICfU=
-X-Received: by 2002:a05:6122:65a1:b0:56d:b337:4709 with SMTP id 71dfb90a1353d-56f3bc536f7mr12697514e0c.6.1776338547652;
-        Thu, 16 Apr 2026 04:22:27 -0700 (PDT)
-Received: from mail-vs1-f46.google.com (mail-vs1-f46.google.com. [209.85.217.46])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-56f8a007d0csm2864187e0c.16.2026.04.16.04.22.27
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Apr 2026 04:22:27 -0700 (PDT)
-Received: by mail-vs1-f46.google.com with SMTP id ada2fe7eead31-6137374b106so812556137.1
-        for <iommu@lists.linux.dev>; Thu, 16 Apr 2026 04:22:27 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ8YJqyGeez8Um/BZAWDLYFt0k93bbLw1hiRqXTe2txOCBvbZxfg4uD66RuH4gnU8xapeElIdw==@lists.linux.dev
-X-Received: by 2002:a05:6102:6044:b0:5ff:c64d:2283 with SMTP id
- ada2fe7eead31-60a0157295cmr11348128137.30.1776338547396; Thu, 16 Apr 2026
- 04:22:27 -0700 (PDT)
+	s=arc-20240116; t=1776342318; c=relaxed/simple;
+	bh=gECMS4EGrtN1lWkNcMdqV1cQaJPbxrgRQTXN3zouHSg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Qdy/3MK0MwfEslDJpUvmQ3NbrxoYe4MuYEDd5I/0hg/Nklg/98f/WeraW+0hZjOYR3ll5HB/lln9Vf/aNZ/P5qvUZTryMZaQMBekQrlZ6d0uvRI+GqT9D3Ogs1R7/zYBLCu6V41SnsfnNkoGkdpGsPaklv/lrlL6JXwJhjAW5P8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GQGv29sX; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GQGv29sX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4797C2BCB3;
+	Thu, 16 Apr 2026 12:25:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1776342318;
+	bh=gECMS4EGrtN1lWkNcMdqV1cQaJPbxrgRQTXN3zouHSg=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=GQGv29sXj5S5z7UPKnXaUJAuD1qc92DQaWs8UXQ6wwBCK62RBOeMuB3RtNcxzLs+n
+	 PPcHL7L8pFqT/h2G0bvvPkUySB8nqp1hX+g8DsxNBEPpxoa8+yXm1bMdZVixBjqxgs
+	 n60V3osh+8lSW6pt2nDmsfqoDHDW6Auv9CDrXKgdtoPlM9Xla54AXl1OSAYSKpcXrA
+	 NmL+fSV7Qk/BTzx5WK8y+vV+U+fxOTS5SiuiemUg0UByoPARoWSlKdZYhXUYnMvTFf
+	 DgJsTYvf1ogHE4V/gC2FO90mA6aK9sVcz0Z1Cm9dDcGVpaCAj1nCKENYb7/YBcL1F4
+	 1oc9q29NjGBrg==
+Message-ID: <1fd72d1b-f5cd-447f-ae11-6f4d4426b8e8@kernel.org>
+Date: Thu, 16 Apr 2026 14:24:57 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260410120044.031381086@kernel.org> <20260410120319.397219631@kernel.org>
-In-Reply-To: <20260410120319.397219631@kernel.org>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Thu, 16 Apr 2026 13:22:16 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVoo_6i9=2oQj-=yjW7nK8eL4og08bdYvk_EGj=_cQvQA@mail.gmail.com>
-X-Gm-Features: AQROBzCJ6rVnwwfhi99PI36wWXAFQ5DEgo1zw3RhVwYNSXoxkTYAcgIxt5Z0K1g
-Message-ID: <CAMuHMdVoo_6i9=2oQj-=yjW7nK8eL4og08bdYvk_EGj=_cQvQA@mail.gmail.com>
-Subject: Re: [patch 27/38] m68k: Select ARCH_HAS_RANDOM_ENTROPY
-To: Thomas Gleixner <tglx@kernel.org>
-Cc: LKML <linux-kernel@vger.kernel.org>, linux-m68k@lists.linux-m68k.org, 
-	Arnd Bergmann <arnd@arndb.de>, x86@kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, 
-	iommu@lists.linux.dev, Michael Grzeschik <m.grzeschik@pengutronix.de>, netdev@vger.kernel.org, 
-	linux-wireless@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>, 
-	linux-crypto@vger.kernel.org, Vlastimil Babka <vbabka@kernel.org>, linux-mm@kvack.org, 
-	David Woodhouse <dwmw2@infradead.org>, Bernie Thompson <bernie@plugable.com>, linux-fbdev@vger.kernel.org, 
-	Theodore Tso <tytso@mit.edu>, linux-ext4@vger.kernel.org, 
-	Andrew Morton <akpm@linux-foundation.org>, Uladzislau Rezki <urezki@gmail.com>, 
-	Marco Elver <elver@google.com>, Dmitry Vyukov <dvyukov@google.com>, kasan-dev@googlegroups.com, 
-	Andrey Ryabinin <ryabinin.a.a@gmail.com>, Thomas Sailer <t.sailer@alumni.ethz.ch>, 
-	linux-hams@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>, 
-	Richard Henderson <richard.henderson@linaro.org>, linux-alpha@vger.kernel.org, 
-	Russell King <linux@armlinux.org.uk>, linux-arm-kernel@lists.infradead.org, 
-	Catalin Marinas <catalin.marinas@arm.com>, Huacai Chen <chenhuacai@kernel.org>, 
-	loongarch@lists.linux.dev, Dinh Nguyen <dinguyen@kernel.org>, 
-	Jonas Bonn <jonas@southpole.se>, linux-openrisc@vger.kernel.org, 
-	Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org, 
-	Michael Ellerman <mpe@ellerman.id.au>, linuxppc-dev@lists.ozlabs.org, 
-	Paul Walmsley <pjw@kernel.org>, linux-riscv@lists.infradead.org, 
-	Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org, 
-	"David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 55/61] interconnect: Prefer IS_ERR_OR_NULL over manual
+ NULL check
+To: Philipp Hahn <phahn-oss@avm.de>, amd-gfx@lists.freedesktop.org,
+ apparmor@lists.ubuntu.com, bpf@vger.kernel.org, ceph-devel@vger.kernel.org,
+ cocci@inria.fr, dm-devel@lists.linux.dev, dri-devel@lists.freedesktop.org,
+ gfs2@lists.linux.dev, intel-gfx@lists.freedesktop.org,
+ intel-wired-lan@lists.osuosl.org, iommu@lists.linux.dev,
+ kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+ linux-btrfs@vger.kernel.org, linux-cifs@vger.kernel.org,
+ linux-clk@vger.kernel.org, linux-erofs@lists.ozlabs.org,
+ linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ linux-gpio@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
+ linux-mips@vger.kernel.org, linux-mm@kvack.org,
+ linux-modules@vger.kernel.org, linux-mtd@lists.infradead.org,
+ linux-nfs@vger.kernel.org, linux-omap@vger.kernel.org,
+ linux-phy@lists.infradead.org, linux-pm@vger.kernel.org,
+ linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
+ linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org,
+ linux-security-module@vger.kernel.org, linux-sh@vger.kernel.org,
+ linux-sound@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+ linux-trace-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+ linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+ ntfs3@lists.linux.dev, samba-technical@lists.samba.org,
+ sched-ext@lists.linux.dev, target-devel@vger.kernel.org,
+ tipc-discussion@lists.sourceforge.net, v9fs@lists.linux.dev
+Cc: Georgi Djakov <djakov@kernel.org>
+References: <20260310-b4-is_err_or_null-v1-0-bd63b656022d@avm.de>
+ <20260310-b4-is_err_or_null-v1-55-bd63b656022d@avm.de>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 a/A=
+In-Reply-To: <20260310-b4-is_err_or_null-v1-55-bd63b656022d@avm.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Fri, 10 Apr 2026 at 14:20, Thomas Gleixner <tglx@kernel.org> wrote:
-> The only remaining usage of get_cycles() is to provide
-> random_get_entropy().
->
-> Switch m68k over to the new scheme of selecting ARCH_HAS_RANDOM_ENTROPY and
-> providing random_get_entropy() in asm/random.h.
->
-> Remove asm/timex.h as it has no functionality anymore.
->
-> Signed-off-by: Thomas Gleixner <tglx@kernel.org>
+On 10/03/2026 12:49, Philipp Hahn wrote:
+> Prefer using IS_ERR_OR_NULL() over using IS_ERR() and a manual NULL
+> check.
+> 
+> Semantich change: Previously the code only printed the warning on error,
+> but not when the pointer was NULL. Now the warning is printed in both
+> cases!
 
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+NAK, read the code
 
-Gr{oetje,eeting}s,
+> 
+> Change found with coccinelle.
+> 
+> To: Georgi Djakov <djakov@kernel.org>
+> Cc: linux-pm@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Philipp Hahn <phahn-oss@avm.de>
+> ---
+>  drivers/interconnect/core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/interconnect/core.c b/drivers/interconnect/core.c
+> index 8569b78a18517b33abeafac091978b25cbc1acc7..22e92b30f73853d5bd2e05b4f52cb5aa22556468 100644
+> --- a/drivers/interconnect/core.c
+> +++ b/drivers/interconnect/core.c
+> @@ -790,7 +790,7 @@ void icc_put(struct icc_path *path)
+>  	size_t i;
+>  	int ret;
+>  
+> -	if (!path || WARN_ON(IS_ERR(path)))
+> +	if (WARN_ON(IS_ERR_OR_NULL(path)))
 
-                        Geert
+IS_ERR_OR_NULL is simply discouraged, but beside of code preference, you
+just added bug here. This is clearly not equivalent and you emit warn on
+perfectly valid case!
 
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Best regards,
+Krzysztof
