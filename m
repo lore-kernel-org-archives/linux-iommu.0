@@ -1,63 +1,233 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16BDA35CB7F;
-	Fri, 17 Apr 2026 04:28:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776400087; cv=none; b=KUjZKKLdKaNFKLPZJ+OjflGHPnF7c69cqo0TOATP8YjwYwyid7E17IhQ7Uoa4Fsy91BUrKRQ9j8On83jxIgr+adoH0UInHLW7DXc/1rPXVNfJgdFwgHjfA5tm2/7oGT9PCE1+cBSTj6J7P2jy8iGELb4zXLNldyV252DQjHY7l0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776400087; c=relaxed/simple;
-	bh=nNb+WguxsOJPUuWzUS5QN6kre8vCM9zkGqeOxhqd0aE=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=YktIWNDgUYh1JTj3vXfFAXA9xHB7Mh46JP0ywzXqXKlam4nf295zgi0nugi4eFIK1gk5IecgZVJXdbq5aKPwKbsAIiicJLu1104lmT8Py2JP/ZC17z/LxdhC4cWuD3DRZ+7n1TA8W1aHjP9xRGvY01Ro4TSZO6+JNs7l4xwsqKw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LQMggwzi; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B5C2344D95
+	for <iommu@lists.linux.dev>; Fri, 17 Apr 2026 07:48:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.10
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776412143; cv=fail; b=iqu5lSA3m8PobPEz8c3DFhrDm9f5adJitAHx0k0MSCLMqAfxxU4U4g1n06d5/OTfhETxjogeZPnMMElE94nPKfCafHvUSgXTTPjPtxRqehFjJMrQN8q66dJciyolhDJiIgjappPL1z81SoK6HPiGbnuA0wwCfaw55tBbwtU6Kmk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776412143; c=relaxed/simple;
+	bh=MbtHiKAP6jhUFRpSINvwmRN/OFPwwB1emiRO3ThdBj0=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=KEQBhUjWo83h+a/phOXIfzC4SKQ+rqQ0r3UZjg+SaI61CNyEWrzfVPY2yK8FKbHuN33NAr/drxqooPtd/GwQpxQFiDQXqzbhFfgiR51phJ7WbGOFxUd3DSZp66GYmz8qod0FW6L2gfCilhM2fyPO1e9qj6q7XqbV1N6zDTb+uxI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DWNkni6S; arc=fail smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LQMggwzi"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84169C19425;
-	Fri, 17 Apr 2026 04:28:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776400086;
-	bh=nNb+WguxsOJPUuWzUS5QN6kre8vCM9zkGqeOxhqd0aE=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=LQMggwzirkz6Jooiq8hyViSomJrAwgSJqHqW/JYyAz4LfJ6ETYlJDQGbNAZZbu7yE
-	 pvSUZLBAWjCijvcBg499V6UwrjMX/S90u570/kmP39GQXz7RrCb4ioFt35Ii4spGFH
-	 /u7BmtkYlB2LVShzPkN4fxv1CzYcNG2Ydq0rATf0kjgtIOtXMZcTwfTzH1GvQz9Acn
-	 rG/IUxBNcNWwzh34W9qc2MC4sB3u3plbQhDHtVoaB/YmJOU1ZdYls0YjpiPj2zMn+d
-	 QsD01eS1xype2QyEqHLZHVY7JyMl8NrwQDAnmm7D/Zc9FWr3KjYAnyshDgNsvxY88M
-	 +YVsEKHQ02ybQ==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id BA09A380AA78;
-	Fri, 17 Apr 2026 04:27:35 +0000 (UTC)
-Subject: Re: [GIT PULL] Please pull IOMMUFD subsystem changes
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <20260416173317.GA1886788@nvidia.com>
-References: <20260416173317.GA1886788@nvidia.com>
-X-PR-Tracked-List-Id: <kvm.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20260416173317.GA1886788@nvidia.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
-X-PR-Tracked-Commit-Id: 8602018b1f17fbdaa5e5d79f4c8603ad20640c12
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 43cfbdda5af60ffc6272a7b8c5c37d1d0a181ca9
-Message-Id: <177640005445.3538458.8942534581938076468.pr-tracker-bot@kernel.org>
-Date: Fri, 17 Apr 2026 04:27:34 +0000
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DWNkni6S"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1776412137; x=1807948137;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=MbtHiKAP6jhUFRpSINvwmRN/OFPwwB1emiRO3ThdBj0=;
+  b=DWNkni6SDcuQXVhIkbcuToJkWZ1PjxXvCM7MCoYoo32mOESGX6suFY15
+   583Mi5/tUykEE7Ek2mGeuEdY+ZfwXhieDELjIPby/1GGUMSEsALx9qYOA
+   yXDxVKCwewJy/XD5Kyo0alUegWKLBihPOtiicQJex4s7ets5CXqcZecJ4
+   LuzTVgsliLPUKP4LToWZ/GLqf/AyWxezwxuuiE66ibkBemBULKhxekoKs
+   d0ifIvwaK+l5VtsUZ6qc3of4N6oqBiwdch1Tkdw+Eu7dMnLVzihG39t10
+   sZjHC1VXHrxkQXz7plBb4TpzqSVgo7MnJV7oyrgAmawc10TGl+nn3dIaw
+   w==;
+X-CSE-ConnectionGUID: VHtoc8cwTEGXPOpjYZsJiQ==
+X-CSE-MsgGUID: N8TwTmgORFiwqc31pbavNA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11761"; a="88806885"
+X-IronPort-AV: E=Sophos;i="6.23,183,1770624000"; 
+   d="scan'208";a="88806885"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2026 00:48:54 -0700
+X-CSE-ConnectionGUID: 8Dsj+vdvQdqvWJn5d9n9jA==
+X-CSE-MsgGUID: 9rZRqAf8RKuLz9xxPNdIMg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,183,1770624000"; 
+   d="scan'208";a="226614478"
+Received: from fmsmsx902.amr.corp.intel.com ([10.18.126.91])
+  by fmviesa010.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2026 00:48:54 -0700
+Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Fri, 17 Apr 2026 00:48:53 -0700
+Received: from fmsedg903.ED.cps.intel.com (10.1.192.145) by
+ FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37 via Frontend Transport; Fri, 17 Apr 2026 00:48:53 -0700
+Received: from DM1PR04CU001.outbound.protection.outlook.com (52.101.61.45) by
+ edgegateway.intel.com (192.55.55.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Fri, 17 Apr 2026 00:48:53 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=LpYhAzFi4HlN1MJzwM36eun6/oXihEkGRsQ6S5P2LVmRKOZTa/2KbABSZxPhZwcFxi6gL3Klg0j+hgucMPDH8WQUI5L0mcPSYt212dGmP3GQICODk5fW/qaCTp+L0OPX0R2BzAKuRcweqWSLr274B5+lR2XqrQFHbNd0O/h7IXUuVv7ywuLVtkBBaFb/O0W7fw8SGUAkcdXi6tWHTgNSzhhENya1vbEvbdTKrCO6MhU2PdPm/3s+tK3BnttDz2toVACrvqn+XgHdXNbKGzQ2kcL7mX++1WYTqUv2Fl6aUyfW2a6zmQBr4r699ZYN4cWAAXYhUb2GNBhnsmBge0if9Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9Zed2KxeqHQf/hqIIsV4OPmOshq6obcm/zwz5gfMF4I=;
+ b=n8Sw2DriBDg+jfdNsYVew85tSzYGf1/MqnXm5DWOlpfHA+QQ2/yQmcwJC7bS8xQsrj38r83J0pWvXqP01uLsyA4iSRbHQFwp/9r/YgLe0W7P6tqKxOP8oVNSId610jvNgmpDBD6Dq1MwS9BMQ/qRzqRNdKN6XUtC4Xso0NNi8+mPTZvBWh6Db6Lmq9jTEZF2c1mGPu3AFS2BPvCD3wYpu/45tC67aMqKR5PGVJjeMKHtJ2trLiRBsdEipWIQ2WNFSkPzvjCSckUmx13WQffCEdlcI7/5v3qcMuVOGHJk+6Y8Uk5BW6uYVVja9iYOKQhOBpWZERwMOF9lxgHRaBGgOQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by DM3PR11MB8714.namprd11.prod.outlook.com (2603:10b6:0:b::18) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9818.25; Fri, 17 Apr 2026 07:48:46 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::f997:762f:f079:134f]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::f997:762f:f079:134f%5]) with mapi id 15.20.9818.023; Fri, 17 Apr 2026
+ 07:48:46 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>
+CC: Nicolin Chen <nicolinc@nvidia.com>, "will@kernel.org" <will@kernel.org>,
+	"joro@8bytes.org" <joro@8bytes.org>, "praan@google.com" <praan@google.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"miko.lenczewski@arm.com" <miko.lenczewski@arm.com>, "smostafa@google.com"
+	<smostafa@google.com>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "stable@vger.kernel.org"
+	<stable@vger.kernel.org>, "jamien@nvidia.com" <jamien@nvidia.com>
+Subject: RE: [PATCH rc v2 0/5] iommu/arm-smmu-v3: Fix device crash on kdump
+ kernel
+Thread-Topic: [PATCH rc v2 0/5] iommu/arm-smmu-v3: Fix device crash on kdump
+ kernel
+Thread-Index: AQHczR1sEKPCjS3ZBU6Ku3g92e0vebXh57oAgAAIk4CAAPA4cA==
+Date: Fri, 17 Apr 2026 07:48:46 +0000
+Message-ID: <BN9PR11MB5276A13A8014C5C6403FB4EC8C202@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <cover.1776286352.git.nicolinc@nvidia.com>
+ <3eaf217f-8e1e-4d64-983a-6b888886f157@arm.com>
+ <20260416172005.GB761338@nvidia.com>
+In-Reply-To: <20260416172005.GB761338@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|DM3PR11MB8714:EE_
+x-ms-office365-filtering-correlation-id: 0c476944-a06b-4d55-6e88-08de9c55c148
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|376014|7416014|366016|1800799024|38070700021|18096099003|18002099003|56012099003|22082099003;
+x-microsoft-antispam-message-info: htDw75oAmD//x09Ii4ge/B4EP/3RVQ84dgtQzsa06cpdhQy8XzxhXHKt9KdvbkoVUbr94Ei5w34QGxpM/B4YYRTdqXk2FGDBr1J8b7wSqxV+1AZO7QySiR6zw9CMfvGS83fNxUYB+vi0QZ+PqiN/6FvXL/oa7sza7gK9Ufi3ePdWF83YylgxFc/BEjZhHBBmnc2ZZxif2nxaBE0NCohaJ+bD5pg63dWHkuJFBhRlwSIgTG2tlFxZ8vrwRWco+MBNSlZvXhqEvdXhQMsvF7zMU/Rx+iYik+xiEnJifr9IE8l8XSAmB+g+hw50Pot+08aH4DN9rbQG5mq1B+gISIDP72zw55OwMh+POJF8SHnckDgxWQE5I37Lv9c2THVGVybIXuQ66YFnHsgiPa4Lf76pELvJ46hrlxzLVLKJY13vG46PsTRJTOzKqelLmXw6zkHJmD+1svbpVJy7lf4qUolROfeiXTnhvFC3J7uucLU3xCQCEOzIdxh0Kdg4edLHrg7dvh687IGF+bT3w5ZeQ/Kx2gX6EtfocRWBCZ0MSnke3DxWTIOlKmVKWS6NX8gpStWN6EI0UbrS8oRBY+MxypLDotvCAVBvTltBY1E2WAtcTBZNWWadwxEXsT5mCDIZKcQjEw1iiWxzgoRtUK31gvY0MxPAp6fs7VGROC7BU5ufdriJUHLJoKrBd0A30wzcnKrmt4jqbha9CGtK4O2jN+cul5ZL1YbXpk1Zf8hTS3duawKYn+IduerkmdnpClCjlAi+aHID7gjFr31tolOUkdNNEQyJF9UkbekW5t0Wrpdycag=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(1800799024)(38070700021)(18096099003)(18002099003)(56012099003)(22082099003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?jHM7AzQ+0JOd9Gv8R36BKt2qtTzhfRdvzXbYn4/mKM6WiGRR1m9orMb94mx7?=
+ =?us-ascii?Q?I4ynNtLBkLQrVxnhRyn0XKCXNhOeUuqGl9QLdHOr42h8sqmtHkbRbpyD8wd2?=
+ =?us-ascii?Q?8hDsRmFFW5C/UkTS47/I1K5/jInHibnQmVdOrGQsVbCXfpSTm+AkrkKkcM+W?=
+ =?us-ascii?Q?TtfthWTWIP/YmyXTx4otcaXMx3rwy55PvEy9eZ4EllxBroO5uSata16ujzrw?=
+ =?us-ascii?Q?Rw1KwpkvJMpxFqAUpP4Zzfd7xGuGTk+ubs8G2SabyigLmOOMf3Eqt5h5MfiU?=
+ =?us-ascii?Q?nH0xjzdkxeFQlauGgNMsmfHA6g+YOpmahyXczo/opKFtoUpq2+n2wEm5yr5e?=
+ =?us-ascii?Q?0BN4sViD6WkMo/hLB4i5H/p0zQvmQAy9ldX9DMbjQjZmBjJJwRskaHfyCJM5?=
+ =?us-ascii?Q?ydgRf/hhsh75kqVU9e49XYR0RsrDoYZjRtLG1tqBWad7BvN9DHzkhj/MmZdl?=
+ =?us-ascii?Q?1WCosA/gtxG5kaP8GxaVHYbd9UftC/TEXmr+mz0oEoSUMjgOr6xrGKiP8LNd?=
+ =?us-ascii?Q?alTwaQ3DR8btsP8dRNZLUQllVw4Y/8Ox8/rsGjRcl0Bf51G7lv2UQ+p07Xad?=
+ =?us-ascii?Q?Dlj8Z91+C0akddUXC6S6R/3j1/MeGIowvaVhLqGlIvGRBwVEunq8nTLGbUrn?=
+ =?us-ascii?Q?xUX0GAEJMFPQChIPtBvF/yp29wlHvIi/1A2MJ+EH/TUlpWJxxqEOq7RoHuS8?=
+ =?us-ascii?Q?sBXhNdikwqnoiZIjJy82z8DKKGeyt7waB4AEMliGBLAV9pzLxR7hWVzdfkeS?=
+ =?us-ascii?Q?DiTkah764KpVsWliw4RNmLj5tzB7D7xztN2FnoEsvbpMuJaxs5d7kQ1svPQe?=
+ =?us-ascii?Q?kqE471s7mluQwWp5UXEd7A9/78FHokrbFDCWqeUUaGkHJN+Zg4Qi+j/Q5Vfq?=
+ =?us-ascii?Q?lrit+El7vDBlewff2BejePoUKeZq/2iKsGLmB6vFALAZVTTH/1IbPAeZ5+MO?=
+ =?us-ascii?Q?9Wf5ZzPKwbxA12CmAkJjxXgXan2mlNLZkINpkMCtuY4TwPzbqtHdDbqkS5sN?=
+ =?us-ascii?Q?GKR68i2CgHL+h4ePLARJFBNyRJjBULFZxnBkhTfxIq6vrszW2YtuaKLOcKxJ?=
+ =?us-ascii?Q?WbVPZhRYvTxgcpblNOaWlN1uhjCZ17ls1J9RVgR34XjmC7Eri9rvftN8uWpC?=
+ =?us-ascii?Q?SxBGvl6zeYlO1o3U5+WWE0qnFVN9tLj4+PcQipjOnUJ6G1uUOilH7LZ1nl1X?=
+ =?us-ascii?Q?MTZwFb/C2NrtdVD7yOVI94j4BPAjD6oEq5nY5+WzUE/1tfYuI1UxjO8bq4M5?=
+ =?us-ascii?Q?TSiRMxPWPCiMBMfunRIKA+jSaZbH2BFxT38640CDozScJO2yt8foxUH76WKQ?=
+ =?us-ascii?Q?G69X6yf4ErMpzALOobWiCU8Y4t3hGp8pEDUHegS7uIEXpmDZ2QDxyZnMVMDo?=
+ =?us-ascii?Q?dy5SD2YR9ySjx5SN2kxij6Pqjc3i+zfr08wMLcnTh3J90jI5uLJUCCufrbMP?=
+ =?us-ascii?Q?FQF+78+vfz74R+pdR5mUcr0/w0RhWHUKs+wf/he24bG7kMOjgAJXb+cwlTLD?=
+ =?us-ascii?Q?1Jp5EBoe1eIiOXUwIYlCcM/zng9Vk0lzdVE6pqzj8ahkx/dVzYRqEgNoRiNZ?=
+ =?us-ascii?Q?UN2sK8XlX+mZpuN0yfWaWwwUDx96UtnKm2LiTMLdmj9cXANky2CmCcvKBmkA?=
+ =?us-ascii?Q?Jm41BxXDhQPnQfLBn1iZHLS6WPkJvkZTjRxkYGX6TVFBD+ip/VwsAi4b9pBB?=
+ =?us-ascii?Q?iyD4mOm5/3PXNywaflpkfL0XZoVycLyG/8mpOik5Yu3z1SNO?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+X-Exchange-RoutingPolicyChecked: VqWGMYXYrbzf3huA4175pDiBTkSNWQbhIiKC36r/go1Bl4QbRF2kIYKM2+rmyrjslqoM42hEuFRJirZ51iXYm1GkB/qqv4BQoLIuhV5ucdf7eLk3jXGf2yHxgoe4nxQ2rqK14wzmc8d4cIPQsgvbOgVgd8eIuY4sAkY4Q1LUZaZcM7Xgyab0rDPRBM765x6WB5kAadDJGzmvBn2DNClEXVcebXIcbZqcYJcnJIHTDFDwEpnQl8tq8BMLeI99qtBesOB7mNAOhVIIqKqdB0Bdn+waeGB3Ge0BIjLxfNlfh+kKFQKEHBFsQGPYB7+K6dyGablYKAccrO+RiL5cIBSK7w==
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0c476944-a06b-4d55-6e88-08de9c55c148
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Apr 2026 07:48:46.1600
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: hlZgb46WkJiuJZafruJnM0T8RiMrI+c9zMeJwOu2DIzvmDheVeq5VaWRMlazSiap9KOZwRl+vStlYC/VcH8yQg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM3PR11MB8714
+X-OriginatorOrg: intel.com
 
-The pull request you sent on Thu, 16 Apr 2026 14:33:17 -0300:
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Friday, April 17, 2026 1:20 AM
+>=20
+> On Thu, Apr 16, 2026 at 05:49:24PM +0100, Robin Murphy wrote:
+> > On 15/04/2026 10:17 pm, Nicolin Chen wrote:
+> > > When transitioning to a kdump kernel, the primary kernel might have
+> crashed
+> > > while endpoint devices were actively bus-mastering DMA. Currently, th=
+e
+> SMMU
+> > > driver aggressively resets the hardware during probe by clearing
+> CR0_SMMUEN
+> > > and setting the Global Bypass Attribute (GBPA) to ABORT.
+> > >
+> > > In a kdump scenario, this aggressive reset is highly destructive:
+> > > a) If GBPA is set to ABORT, in-flight DMA will be aborted, generating=
+ fatal
+> > >     PCIe AER or SErrors that may panic the kdump kernel
+> > > b) If GBPA is set to BYPASS, in-flight DMA targeting some IOVAs will
+> bypass
+> > >     the SMMU and corrupt the physical memory at those 1:1 mapped
+> IOVAs.
+> >
+> > But wasn't that rather the point? Th kdump kernel doesn't know the scop=
+e
+> of
+> > how much could have gone wrong (including potentially the SMMU
+> configuration
+> > itself), so it just blocks everything, resets and reenables the devices=
+ it
+> > cares about, and ignores whatever else might be on fire.
+>=20
+> The purpose of kdump is to have the maximum chance to capture a dump
+> from the blown up kernel.
+>=20
+> Yes, on a perfect platform aborting the entire SMMU should improve the
+> chance of getting that dump.
+>=20
+> But sadly there are so many busted up platforms where if you start
+> messing with the IOMMU they will explode and blow up the kdump. x86
+> and "firmware first" error handling systems are particularly notorious
+> for nasty behavior like this.
+>=20
+> Seems like there are now ARM systems too. :(
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
+is there any report on such systems? It might be informational to include
+a link to the report so it's clear that this series fixes real issues inste=
+ad of
+a preparation for coming systems...
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/43cfbdda5af60ffc6272a7b8c5c37d1d0a181ca9
+>=20
+> So, the iommu drivers have been preserving the IOMMU and not
+> disrupting the DMAs on x86 for a long time. This is established kdump
+> practice.
+>=20
+> > If AER can panic a kdump kernel, that seems like a failing of the kdump
+> > kernel itself more than anything else (especially given the likelihood =
+that
+> > additional AER events could follow from whatever initial crash/failure
+> > triggered kdump to begin with).
+>=20
+> Probably the kdump wasn't triggered by AER. You want kdump to not
+> trigger more RAS events that might blow up the kdump while it is
+> trying to run.. That increases the chance of success
+>=20
 
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+btw the DMA is allowed after the previous kernel is hung til the point
+where smmu driver blocks it. In cases where in-fly DMAs are considered
+dangerous to kdump, this series just make it worse instead of creating
+a new issue. While for majority other failures not related to DMAs,=20
+unblocking then increases the chance of success...
