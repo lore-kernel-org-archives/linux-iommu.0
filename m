@@ -1,212 +1,238 @@
-Received: from fhigh-b3-smtp.messagingengine.com (fhigh-b3-smtp.messagingengine.com [202.12.124.154])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EAA81F03DE
-	for <iommu@lists.linux.dev>; Fri, 17 Apr 2026 23:04:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.154
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B17302BD11
+	for <iommu@lists.linux.dev>; Sat, 18 Apr 2026 00:20:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776467098; cv=none; b=tgMHPx9Hhqazkru32Jwpo6TnPNr0VrQAB2bdE87sISXXgsSZtyd3A3IvR5v3kCsXOH+3AHKjsRKx4ypoRZaNZUe1jVA31faCseQslS1NRYsBggn8CUJaN4qPkJubZMYDbdmfjUa3NCPETvLh7kPmYBLhBBYZGK/K7PuLVg568CU=
+	t=1776471660; cv=none; b=qdVY3fVSndz7PziCfO77ce8zNo6yRVCZ5/w+f5YtyaqLB9h6OXt9eOCYED5kdpVQbMoKQebrcbg4KBdSyFvTisE3Mogi5mRjqHjJsV989MueiRQSIXRuhQW8+C7h4d2b5TktUuGJJ4ZuK6bxtoNrL/2QHe7LF1aVcrO5K9jxdKI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776467098; c=relaxed/simple;
-	bh=bkfcyGBP+L544g1cGjx51AxtTZqgEP0keRH+RYiDUZw=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=OIaTYBgIIeJ2Uf6oBBbv2xfF7fEeo9HZQMZDBjQu/D2hMTBN4SI4Kx9sthPDvrsqijfn4AExVXAfOMvOHyvSpaJBQ0RlnTRL4wrrE885E/MccScOLSTJn/0HMQdlGXr+/8QITOKCTI/Bxiy9Or0ANKUl696+bovBFsGSkKVKsho=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org; spf=pass smtp.mailfrom=shazbot.org; dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b=ZUxjObzu; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=Lo+5id/e; arc=none smtp.client-ip=202.12.124.154
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shazbot.org
+	s=arc-20240116; t=1776471660; c=relaxed/simple;
+	bh=54HzNelDzBSSQvthwgLiprleLLldcu1fhR4OCJOh4bc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=lihIyq2jtwKKDJ2dxEOcAvhjsMpJwNXC22peeP0LuUlKoC65cBjM2onnWTwkj//ZdN+iMh20NJDNzRBP26ldInxtZIVFTlJmjw6ehPh6bzwBcFBknPlbnMmHdmVmG3uqBK1ncj27gtw1j0Sbxd2cTeQKz8++te9/UxA7YVlZjfE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=dYT9ZNDu; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b="ZUxjObzu";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="Lo+5id/e"
-Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
-	by mailfhigh.stl.internal (Postfix) with ESMTP id B66257A00D5;
-	Fri, 17 Apr 2026 19:04:53 -0400 (EDT)
-Received: from phl-frontend-04 ([10.202.2.163])
-  by phl-compute-04.internal (MEProxy); Fri, 17 Apr 2026 19:04:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shazbot.org; h=
-	cc:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm1; t=1776467093;
-	 x=1776553493; bh=M9Muqnw/JqGvJZEoZVKMdWQjK3505PcZ7Hk7U4+H85c=; b=
-	ZUxjObzu1Vj/dVCmXrpn3LF526iGjXmNKyhELbo0R7p+M0OmtX/DibCovnjG65HN
-	WHREE6iQH8Jeu/JTQVL/hlUCEabI5wfAkZraBpHEPUABQReClsQ5sCxIT8FQy36c
-	jNy7YZbCnfHrjo1rLlTJVwM6+B5UsP0NpiRpek4mYOO3iXiJNEhp8OAMhaLkHdU7
-	e3w+zoiQEMKjC2H2A8GybKFsyyimug2hiD9Mm9BUKiBu8JtfKH39pITBm2QQsLgD
-	OKo9w/spl2vFK1Gf/gqNeAOD/G7pgn7UFY3pBv1vXUaEmpqQFeeM7lpRoduT6o7x
-	Od1CYh6b4W8BVRbp3Zl7OA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1776467093; x=
-	1776553493; bh=M9Muqnw/JqGvJZEoZVKMdWQjK3505PcZ7Hk7U4+H85c=; b=L
-	o+5id/ea9SliaYVIUxWQp0JrGFg4Q8IZxMWkocm2xowAAjwTgaIvqqkjr436CWjs
-	s4lDJzCpLBeTzTBxHFWESq5An+kVNP49XFnjP8RDlAnqXDnqpdB704dGT1fkaF8S
-	Ibmjc2u0vOQub1OvshI1iyZ9xl463YCR6cYkZOX8cJJt3O8YirtMFKhGlXq9xB50
-	fJN/lhkICVUzcoNBCG3lvsNtK5P9M9DROp/BBk2WGJxe7CjL1GZKTPwmGMH0I8jV
-	JD2cZdDqSa4VkzP4o57iBfaKFTVGIZmxEdlK62cAyDSsJIn4vCUJCPf+70tB2bLm
-	SKXtx4wrTuTQv++aZsZpw==
-X-ME-Sender: <xms:lLziacv-4iFGdpzjOke0cGoDQuH_NJrLqowTtCsB2T-qHXEGgSRlOA>
-    <xme:lLziaX8cOyv_qTlo8a869HYfpjmo9ILt-jeqA2aa2l_MHRjgYUQiSglyVjK5aR3Zq
-    qzYj41iWUvqXekFjdJz0rj7mAU7qd5brFUzVbTOxcjP28L9SVsmOw>
-X-ME-Received: <xmr:lLziaelX1WBGxK_LO_55043Z3GWD-t881RUbSQilNjNsQiSwMjlM00KyIZw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefhedrtddtgdehudduhecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpuffrtefokffrpgfnqfghnecuuegr
-    ihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjug
-    hrpeffhffvvefukfgjfhfogggtgfesthhqredtredtjeenucfhrhhomheptehlvgigucgh
-    ihhllhhirghmshhonhcuoegrlhgvgiesshhhrgiisghothdrohhrgheqnecuggftrfgrth
-    htvghrnhepgeduvefhjeeufeevudeiueeuieeftedtkeevkefhgfdvteefleeuhefgtdeh
-    fffhnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
-    hlvgigsehshhgriigsohhtrdhorhhgpdhnsggprhgtphhtthhopeduiedpmhhouggvpehs
-    mhhtphhouhhtpdhrtghpthhtohepjhgrtghosgdrphgrnheslhhinhhugidrmhhitghroh
-    hsohhfthdrtghomhdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhk
-    vghrnhgvlhdrohhrghdprhgtphhtthhopehiohhmmhhusehlihhsthhsrdhlihhnuhigrd
-    guvghvpdhrtghpthhtohepjhhgghesnhhvihguihgrrdgtohhmpdhrtghpthhtohepjhho
-    rhhoseeksgihthgvshdrohhrghdprhgtphhtthhopehsmhhoshhtrghfrgesghhoohhglh
-    gvrdgtohhmpdhrtghpthhtohepughmrghtlhgrtghksehgohhoghhlvgdrtghomhdprhgt
-    phhtthhopehrohgsihhnrdhmuhhrphhhhiesrghrmhdrtghomhdprhgtphhtthhopehnih
-    gtohhlihhntgesnhhvihguihgrrdgtohhm
-X-ME-Proxy: <xmx:lLziafMPBNLE_Yt30yPY9RznaWTdNpu-WCpcpMivIZMe11vYyR2Mfg>
-    <xmx:lLziaVJaElD2GimNQtaxOo27_-njlX0jNQLoLIeWdtZ_9M5QTcY-6Q>
-    <xmx:lLziaSGfxjDq4d3bUtgUmMmZu4TKNPvvz0ehgHWGIJt1zfKj9pzuYg>
-    <xmx:lLziaeBsomZdydQGR-ZLusL3XAyQII17zwmMwKiVQZ7cO5WmX7M43A>
-    <xmx:lbziaXOlNtyKnd4wkiuNxrCoZu_En4ZnN1x_P7nDF52qhq5Ohel_VvS6>
-Feedback-ID: i03f14258:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 17 Apr 2026 19:04:51 -0400 (EDT)
-Date: Fri, 17 Apr 2026 17:04:50 -0600
-From: Alex Williamson <alex@shazbot.org>
-To: Jacob Pan <jacob.pan@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel
- <joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>, David Matlack
- <dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen
- <nicolinc@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
- <yi.l.liu@intel.com>, skhawaja@google.com, pasha.tatashin@soleen.com, Will
- Deacon <will@kernel.org>, Baolu Lu <baolu.lu@linux.intel.com>,
- alex@shazbot.org
-Subject: Re: [PATCH V4 05/10] vfio: Allow null group for noiommu without
- containers
-Message-ID: <20260417170450.00e1d8ba@shazbot.org>
-In-Reply-To: <20260417100609.00004775@linux.microsoft.com>
-References: <20260414211412.2729-1-jacob.pan@linux.microsoft.com>
-	<20260414211412.2729-6-jacob.pan@linux.microsoft.com>
-	<20260416140601.255ec031@shazbot.org>
-	<20260417100609.00004775@linux.microsoft.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="dYT9ZNDu"
+Received: from [192.168.0.88] (192-184-212-33.fiber.dynamic.sonic.net [192.184.212.33])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 3B96520B7128;
+	Fri, 17 Apr 2026 17:20:58 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 3B96520B7128
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1776471659;
+	bh=GVHuT39vJFq3z9p9Y8P4lQnO5Ygvg1D3+qSvKG01gbY=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=dYT9ZNDuycE39Rmok1I6PkVn+1fRDnnVG7AQULHoh8ka9lRpuZZfVcN3GE476KHCm
+	 7q9IKowPidbuXTYdIZorG3mFjFlT9roQFkhQcwZt5HmGQogAfGL0LjONAQykbCKjkF
+	 8HrR1mr46rqVdmR18Z3suICKceYTvClPyPCcdPKY=
+Message-ID: <ffe33ce4-0a1b-44af-9e17-7f641fef9339@linux.microsoft.com>
+Date: Fri, 17 Apr 2026 17:20:57 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.1
+Subject: Re: [PATCH v0 07/15] mshv: Add ioctl support for MSHV-VFIO bridge
+ device
+Content-Language: en-US
+To: Stanislav Kinsburskii <skinsburskii@linux.microsoft.com>
+Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-pci@vger.kernel.org, linux-arch@vger.kernel.org, kys@microsoft.com,
+ haiyangz@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
+ longli@microsoft.com, catalin.marinas@arm.com, will@kernel.org,
+ tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, hpa@zytor.com, joro@8bytes.org,
+ lpieralisi@kernel.org, kwilczynski@kernel.org, mani@kernel.org,
+ robh@kernel.org, bhelgaas@google.com, arnd@arndb.de,
+ nunodasneves@linux.microsoft.com, mhklinux@outlook.com,
+ romank@linux.microsoft.com
+References: <20260120064230.3602565-1-mrathor@linux.microsoft.com>
+ <20260120064230.3602565-8-mrathor@linux.microsoft.com>
+ <aW-pw7GlQdFv-lf5@skinsburskii.localdomain>
+From: Mukesh R <mrathor@linux.microsoft.com>
+In-Reply-To: <aW-pw7GlQdFv-lf5@skinsburskii.localdomain>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, 17 Apr 2026 10:06:09 -0700
-Jacob Pan <jacob.pan@linux.microsoft.com> wrote:
+On 1/20/26 08:13, Stanislav Kinsburskii wrote:
+> On Mon, Jan 19, 2026 at 10:42:22PM -0800, Mukesh R wrote:
+>> From: Mukesh Rathor <mrathor@linux.microsoft.com>
+>>
+>> Add ioctl support for creating MSHV devices for a paritition. At
+>> present only VFIO device types are supported, but more could be
+>> added. At a high level, a partition ioctl to create device verifies
+>> it is of type VFIO and does some setup for bridge code in mshv_vfio.c.
+>> Adapted from KVM device ioctls.
+>>
+>> Credits: Original author: Wei Liu <wei.liu@kernel.org>
+>> NB: Slightly modified from the original version.
+>>
+>> Signed-off-by: Mukesh Rathor <mrathor@linux.microsoft.com>
+>> ---
+>>   drivers/hv/mshv_root_main.c | 126 ++++++++++++++++++++++++++++++++++++
+>>   1 file changed, 126 insertions(+)
+>>
+>> diff --git a/drivers/hv/mshv_root_main.c b/drivers/hv/mshv_root_main.c
+>> index 83c7bad269a0..27313419828d 100644
+>> --- a/drivers/hv/mshv_root_main.c
+>> +++ b/drivers/hv/mshv_root_main.c
+>> @@ -1551,6 +1551,129 @@ mshv_partition_ioctl_initialize(struct mshv_partition *partition)
+>>   	return ret;
+>>   }
+>>   
+>> +static long mshv_device_attr_ioctl(struct mshv_device *mshv_dev, int cmd,
+>> +				   ulong uarg)
+>> +{
+>> +	struct mshv_device_attr attr;
+>> +	const struct mshv_device_ops *devops = mshv_dev->device_ops;
+>> +
+>> +	if (copy_from_user(&attr, (void __user *)uarg, sizeof(attr)))
+>> +		return -EFAULT;
+>> +
+>> +	switch (cmd) {
+>> +	case MSHV_SET_DEVICE_ATTR:
+>> +		if (devops->device_set_attr)
+>> +			return devops->device_set_attr(mshv_dev, &attr);
+>> +		break;
+>> +	case MSHV_HAS_DEVICE_ATTR:
+>> +		if (devops->device_has_attr)
+>> +			return devops->device_has_attr(mshv_dev, &attr);
+>> +		break;
+>> +	}
+>> +
+>> +	return -EPERM;
+>> +}
+>> +
+>> +static long mshv_device_fop_ioctl(struct file *filp, unsigned int cmd,
+>> +				  ulong uarg)
+>> +{
+>> +	struct mshv_device *mshv_dev = filp->private_data;
+>> +
+>> +	switch (cmd) {
+>> +	case MSHV_SET_DEVICE_ATTR:
+>> +	case MSHV_HAS_DEVICE_ATTR:
+>> +		return mshv_device_attr_ioctl(mshv_dev, cmd, uarg);
+>> +	}
+>> +
+>> +	return -ENOTTY;
+>> +}
+>> +
+>> +static int mshv_device_fop_release(struct inode *inode, struct file *filp)
+>> +{
+>> +	struct mshv_device *mshv_dev = filp->private_data;
+>> +	struct mshv_partition *partition = mshv_dev->device_pt;
+>> +
+>> +	if (mshv_dev->device_ops->device_release) {
+>> +		mutex_lock(&partition->pt_mutex);
+>> +		hlist_del(&mshv_dev->device_ptnode);
+>> +		mshv_dev->device_ops->device_release(mshv_dev);
+>> +		mutex_unlock(&partition->pt_mutex);
+>> +	}
+>> +
+>> +	mshv_partition_put(partition);
+>> +	return 0;
+>> +}
+>> +
+>> +static const struct file_operations mshv_device_fops = {
+>> +	.owner = THIS_MODULE,
+>> +	.unlocked_ioctl = mshv_device_fop_ioctl,
+>> +	.release = mshv_device_fop_release,
+>> +};
+>> +
+>> +long mshv_partition_ioctl_create_device(struct mshv_partition *partition,
+>> +					void __user *uarg)
+>> +{
+>> +	long rc;
+>> +	struct mshv_create_device devargk;
+>> +	struct mshv_device *mshv_dev;
+>> +	const struct mshv_device_ops *vfio_ops;
+>> +	int type;
+>> +
+>> +	if (copy_from_user(&devargk, uarg, sizeof(devargk))) {
+>> +		rc = -EFAULT;
+>> +		goto out;
+>> +	}
+>> +
+>> +	/* At present, only VFIO is supported */
+>> +	if (devargk.type != MSHV_DEV_TYPE_VFIO) {
+>> +		rc = -ENODEV;
+>> +		goto out;
+>> +	}
+>> +
+>> +	if (devargk.flags & MSHV_CREATE_DEVICE_TEST) {
+>> +		rc = 0;
+>> +		goto out;
+>> +	}
+>> +
+>> +	mshv_dev = kzalloc(sizeof(*mshv_dev), GFP_KERNEL_ACCOUNT);
+>> +	if (mshv_dev == NULL) {
+>> +		rc = -ENOMEM;
+>> +		goto out;
+>> +	}
+>> +
+>> +	vfio_ops = &mshv_vfio_device_ops;
+>> +	mshv_dev->device_ops = vfio_ops;
+>> +	mshv_dev->device_pt = partition;
+>> +
+>> +	rc = vfio_ops->device_create(mshv_dev, type);
+>> +	if (rc < 0) {
+>> +		kfree(mshv_dev);
+>> +		goto out;
+>> +	}
+>> +
+>> +	hlist_add_head(&mshv_dev->device_ptnode, &partition->pt_devices);
+>> +
+>> +	mshv_partition_get(partition);
+>> +	rc = anon_inode_getfd(vfio_ops->device_name, &mshv_device_fops,
+>> +			      mshv_dev, O_RDWR | O_CLOEXEC);
+>> +	if (rc < 0) {
+>> +		mshv_partition_put(partition);
+>> +		hlist_del(&mshv_dev->device_ptnode);
+>> +		vfio_ops->device_release(mshv_dev);
+>> +		goto out;
+>> +	}
+>> +
+>> +	devargk.fd = rc;
+>> +	rc = 0;
+>> +
+>> +	if (copy_to_user(uarg, &devargk, sizeof(devargk))) {
+> 
+> Shouldn't the partition be put here?
 
-> Hi Alex,
->=20
-> On Thu, 16 Apr 2026 14:06:01 -0600
-> Alex Williamson <alex@shazbot.org> wrote:
->=20
-> > From: Alex Williamson <alex@shazbot.org>
-> > To: Jacob Pan <jacob.pan@linux.microsoft.com>
-> > Cc: linux-kernel@vger.kernel.org, "iommu@lists.linux.dev"
-> > <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Joerg
-> > Roedel  <joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>, David
-> > Matlack  <dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>,
-> > Nicolin Chen  <nicolinc@nvidia.com>, "Tian, Kevin"
-> > <kevin.tian@intel.com>, Yi Liu  <yi.l.liu@intel.com>,
-> > skhawaja@google.com, pasha.tatashin@soleen.com, Will  Deacon
-> > <will@kernel.org>, Baolu Lu <baolu.lu@linux.intel.com>,
-> > alex@shazbot.org Subject: Re: [PATCH V4 05/10] vfio: Allow null group
-> > for noiommu without  containers Date: Thu, 16 Apr 2026 14:06:01 -0600
-> > X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
-> >=20
-> > On Tue, 14 Apr 2026 14:14:07 -0700
-> > Jacob Pan <jacob.pan@linux.microsoft.com> wrote:
-> >  =20
-> > > In case of noiommu mode is enabled for VFIO cdev without VFIO
-> > > container nor IOMMUFD provided compatibility container, there is no
-> > > need to create a dummy group. Update the group operations to
-> > > tolerate null group pointer.
-> > >=20
-> > > Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
-> > >=20
-> > > ---
-> > > v4: (Jason)
-> > >    - Avoid null pointer deref in error unwind
-> > >    - Add null group check in vfio_device_group_unregister
-> > >    - repartition to include vfio_device_has_group() in this patch
-> > > ---
-> > >  drivers/vfio/group.c     | 20 ++++++++++++++++++++
-> > >  drivers/vfio/vfio.h      | 17 +++++++++++++++++
-> > >  drivers/vfio/vfio_main.c | 14 ++++++++++++++
-> > >  include/linux/vfio.h     |  9 +++++++++
-> > >  4 files changed, 60 insertions(+)
-> > >=20
-> > > diff --git a/drivers/vfio/group.c b/drivers/vfio/group.c
-> > > index 0fa9761b13d3..451e49d851f8 100644
-> > > --- a/drivers/vfio/group.c
-> > > +++ b/drivers/vfio/group.c
-> > > @@ -390,6 +390,9 @@ int vfio_device_block_group(struct vfio_device
-> > > *device) struct vfio_group *group =3D device->group;
-> > >  	int ret =3D 0;
-> > > =20
-> > > +	if (vfio_null_group_allowed() && !group)
-> > > +		return 0;   =20
-> >=20
-> > I think this comes down to the fact that at the end of this series,
-> > VFIO_NOIOMMU still depends on VFIO_GROUP.  vfio_null_group_allowed()
-> > can only return true if CONTAINER support is entirely disabled.  Why
-> > do we still select VFIO_GROUP for VFIO_NOIOMMU and build group.s when
-> > there's no container support to use it? =20
-> If we solve this in Kconfig, I think the dependency should be
-> config VFIO_GROUP
->         bool "Support for the VFIO group /dev/vfio/$group_id"
-> +       depends on !(VFIO_NOIOMMU && !(VFIO_CONTAINER ||
->   IOMMUFD_VFIO_CONTAINER))
-> But this causes circular dependency in that
->        symbol VFIO_NOIOMMU depends on VFIO_GROUP
->        symbol VFIO_GROUP depends on VFIO_NOIOMMU
->=20
-> If we cannot force VFIO_GROUP=3Dn when container is entirely disabled and
-> NOIOMMU & cdev is enabled, then user is free to set VFIO_GROUP=3Dy, which
-> creates a VFIO_GROUP that cannot be used due to lack of container.
-> There is no functional issue but less clean.
-> i.e.
-> #  tree /dev/vfio/   =20
-> /dev/vfio/           =20
-> |-- devices          =20
-> |   `-- noiommu-vfio0=20
-> `-- noiommu-0         //not usable
-> # ls /sys/class/vfio
-> noiommu-0          =20
->=20
-> Maybe there is a way to force VFIO_GROUP=3Dn w/o the circular dependency?
+No. anon_inode_getfd was successful and so it installed the fd already..
+As a result the cleanup will happen in the file op release.
 
-What I'm trying to point out is that vfio_null_group_allowed() is being
-used in a scenario in group.c that shouldn't exist.  If all container
-support is disabled, all group support should also be disabled,
-regardless of no-iommu.  Otherwise we get into the scenario you show
-above.  No-iommu is a feature, currently only a feature of the
-group/container model, but that's what we're trying to address here.
+Thanks,
+-Mukesh
 
-I'm not sure what the Kconfig looks like to achieve that.
+> Thanks,
+> Stanislav
+> 
+>> +		rc = -EFAULT;
+>> +		goto out;
+>> +	}
+>> +out:
+>> +	return rc;
+>> +}
+>> +
+>>   static long
+>>   mshv_partition_ioctl(struct file *filp, unsigned int ioctl, unsigned long arg)
+>>   {
+>> @@ -1587,6 +1710,9 @@ mshv_partition_ioctl(struct file *filp, unsigned int ioctl, unsigned long arg)
+>>   	case MSHV_ROOT_HVCALL:
+>>   		ret = mshv_ioctl_passthru_hvcall(partition, true, uarg);
+>>   		break;
+>> +	case MSHV_CREATE_DEVICE:
+>> +		ret = mshv_partition_ioctl_create_device(partition, uarg);
+>> +		break;
+>>   	default:
+>>   		ret = -ENOTTY;
+>>   	}
+>> -- 
+>> 2.51.2.vfs.0.1
+>>
 
-> > Also note that vfio_noiommu is S_IWUSR, so it is mutable at runtime. =20
-> Good point, maybe we can make it a one-way latch? i.e.
->  - echo 1 > .../enable_unsafe_noiommu_mode =E2=80=94 works (n=E2=86=92y)
->  - echo 0 > .../enable_unsafe_noiommu_mode =E2=80=94 returns -EPERM (y=E2=
-=86=92n blocked)
->  - Boot param vfio.enable_unsafe_noiommu_mode=3D1 =E2=80=94 works
->  - Writing 1 when already 1 =E2=80=94 no-op, succeeds
-
-It's a question of whether you'll break anyone.  IIRC, group-based
-no-iommu works that you can enabled it, create a no-iommu group,
-disabled it, and the no-iommu group continues to work.  Is it useful,
-does anyone use it... I dunno.  Thanks,
-
-Alex
