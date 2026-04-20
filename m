@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A64CA382394;
-	Mon, 20 Apr 2026 06:15:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8FFF38236B;
+	Mon, 20 Apr 2026 06:15:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776665703; cv=none; b=BcZ3E3M1mA1gdrWU2LsssnpV9KHFAtqMjDpXdPKHbdxOPbdj/4GRJztOA6W2atP30omoBYJRnm8gtSdCJG1Wm8PBk8JiXQ5caq3/YlykzKvIrbfSpgO3kFOO0aKhrFa360/S7sQQ20JewdBhFhny9kl1QHgVk2kiKsmnHIrsTFA=
+	t=1776665708; cv=none; b=dUUYYLprBtCX1kIWTOtnYz06IWnTo9pbfyxiPdTZAhK5W85sAn4E2JMJHq6tsytgg1pG6LDTRPj/PssN1OGNyZ+58atTrAyOiFSmQMT32dsM3XPSXuhLnLUEOopAIqJ9iJwqPI0Y2sbxSfeWX1CpnZpgOo83UPNqGLhBfi7TGHQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776665703; c=relaxed/simple;
-	bh=3eMn2u2YEN6En5447o5RZhZklJlk3dOyuwVq1PI0vqg=;
+	s=arc-20240116; t=1776665708; c=relaxed/simple;
+	bh=BfBFs2nd1SxIKCxVd/f6c5GmBlgNuhGKhyywXCeZMnw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=U5FAWMkR/cf63USC4YHdjQkvOIUiUM8JJEyhDsp7aLOzpUoXuhulBuMtskahpNHb3xzEBubXo7o/3RaN/wv1Om6oWmWK/IMjje45ASA0kJkjq3aP3+dptjj8brTiV+09+VuEPaOLdkpYFjLplAGax1It53jtguIAmje220nMb90=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fZtir5u5; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=Iir1+KKythya8sc4mzHqZ3E+uzgjrMzJpXD5smSH/Of8CSzCHu7o5Xv6e7HBy3x3gCrZP22ivnNAY3aSHQKZy9DUEzzLbFF92RHrIgOwCSuYGtC5f/oNQsp8YEHmQ7hT+52IQi/SIkS5EClXbDgZ1fw2nArneYfEbFsvrQ48wTA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BhLoV4Jr; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fZtir5u5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DF1FC19425;
-	Mon, 20 Apr 2026 06:14:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BhLoV4Jr"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE59DC19425;
+	Mon, 20 Apr 2026 06:15:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776665703;
-	bh=3eMn2u2YEN6En5447o5RZhZklJlk3dOyuwVq1PI0vqg=;
+	s=k20201202; t=1776665707;
+	bh=BfBFs2nd1SxIKCxVd/f6c5GmBlgNuhGKhyywXCeZMnw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=fZtir5u5me2V49coOeNhc//fHF32hm46phYjWiTdCSfh7T3f/4O8hAyyCgXoXc+wS
-	 dnIeFsWVOyfUd0HunEQKAUNhLVf4Y5uDuURr0QjOdzn7cITgQQoE/wUE08ZGNmkrkf
-	 oiCl9j4agLcpqHrezSV2zYkAilwSE5rCAbzsOIeyPSn4rqTDnoAiJNeZHVG818EIHW
-	 QvxbCwwmUl0XIekoUn/gmOGmYLuW4dK4NTHSrMgW54KNjc83uWMQFzZBrCzKmyRllD
-	 8rz+1etgtH5SwRsxZUHr6zbDGdV6ZKM9FWHpEsighoJOEhHfsVBqsXQ6zUI+YPRvVS
-	 lkU2bqi1yy+wg==
+	b=BhLoV4JrMXQ4BLgaUm9/lbYWAqx9sQXKUKUI0Io5+WC6VTtrYR366B9R8FN3c7eV4
+	 khfKcK7WJSSOI4Fn2mDsJHiwsqJR0kEa8ThwUkERxavIET0P68OEIZg7YcTTXVVFmU
+	 FLRuFClVSOpImSmb6rXgXpXaLLKsviD3O3Tmuwei+B1Elc+yZoAi9DfiBfaEziRcEm
+	 CzgYoa5mFPWOIa2xlThjFSfHr0W6mtrGImLehiO6tFYAuz3VIw9QtnkJ16fAw2PBN2
+	 tNxtwaCtgbuQi9wg453+IVcsjXqhassTL27TSl9eK8N+qeN910rO5F8q5A2unWbnLY
+	 KheziMFwvaPDQ==
 From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
 To: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
@@ -39,9 +39,9 @@ Cc: robin.murphy@arm.com,
 	jgg@ziepe.ca,
 	aneesh.kumar@kernel.org,
 	Mostafa Saleh <smostafa@google.com>
-Subject: [PATCH v2 6/8] dma-direct: make dma_direct_map_phys() honor DMA_ATTR_CC_SHARED
-Date: Mon, 20 Apr 2026 11:44:13 +0530
-Message-ID: <20260420061415.3650870-7-aneesh.kumar@kernel.org>
+Subject: [PATCH v2 7/8] dma-direct: set decrypted flag for remapped DMA allocations
+Date: Mon, 20 Apr 2026 11:44:14 +0530
+Message-ID: <20260420061415.3650870-8-aneesh.kumar@kernel.org>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260420061415.3650870-1-aneesh.kumar@kernel.org>
 References: <20260420061415.3650870-1-aneesh.kumar@kernel.org>
@@ -53,67 +53,98 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Teach dma_direct_map_phys() to select the DMA address encoding based on
-DMA_ATTR_CC_SHARED.
+Devices that are DMA non-coherent and require a remap were skipping
+dma_set_decrypted(), leaving DMA buffers encrypted even when the device
+requires unencrypted access. Move the call after the if (remap) branch
+so that both the direct and remapped allocation paths correctly mark the
+allocation as decrypted (or fail cleanly) before use.
 
-Use phys_to_dma_unencrypted() for decrypted mappings and
-phys_to_dma_encrypted() otherwise. If a device requires unencrypted DMA
-but the source physical address is still encrypted, force the mapping
-through swiotlb so the DMA address and backing memory attributes remain
-consistent.
+Architectures such as arm64 cannot mark vmap addresses as decrypted, and
+highmem pages necessarily require a vmap remap. As a result, such
+allocations cannot be safely used for unencrypted DMA. Therefore, when
+an unencrypted DMA buffer is requested, avoid allocating high PFNs from
+__dma_direct_alloc_pages().
 
+Other architectures (e.g. x86) do not have this limitation. However,
+rather than making this architecture-specific, apply the restriction
+only when the device requires unencrypted DMA access, for simplicity.
+
+Fixes: f3c962226dbe ("dma-direct: clean up the remapping checks in dma_direct_alloc")
 Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 ---
- kernel/dma/direct.h | 25 ++++++++++++++-----------
- 1 file changed, 14 insertions(+), 11 deletions(-)
+ kernel/dma/direct.c | 30 +++++++++++++++++++++++++++---
+ 1 file changed, 27 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/dma/direct.h b/kernel/dma/direct.h
-index 7140c208c123..928671ef01e9 100644
---- a/kernel/dma/direct.h
-+++ b/kernel/dma/direct.h
-@@ -86,9 +86,14 @@ static inline dma_addr_t dma_direct_map_phys(struct device *dev,
- 		phys_addr_t phys, size_t size, enum dma_data_direction dir,
- 		unsigned long attrs, bool flush)
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index a4aa7e1df2bb..63a7b7bfff97 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -204,6 +204,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
  {
-+	bool force_swiotlb_map = false;
- 	dma_addr_t dma_addr;
+ 	bool remap = false, set_uncached = false;
+ 	bool mark_mem_decrypt = false;
++	bool allow_highmem = true;
+ 	struct page *page;
+ 	void *ret;
  
--	if (is_swiotlb_force_bounce(dev)) {
-+	/* if phys addr attribute is encrypted but the device is forcing an encrypted dma addr */
-+	if (!(attrs & DMA_ATTR_CC_SHARED) && force_dma_unencrypted(dev))
-+		force_swiotlb_map = true;
-+
-+	if (is_swiotlb_force_bounce(dev) || force_swiotlb_map) {
- 		if (!(attrs & DMA_ATTR_CC_SHARED)) {
- 			if (attrs & (DMA_ATTR_MMIO | DMA_ATTR_REQUIRE_COHERENT))
- 				return DMA_MAPPING_ERROR;
-@@ -105,18 +110,16 @@ static inline dma_addr_t dma_direct_map_phys(struct device *dev,
- 			goto err_overflow;
- 	} else if (attrs & DMA_ATTR_CC_SHARED) {
- 		dma_addr = phys_to_dma_unencrypted(dev, phys);
--		if (unlikely(!dma_capable(dev, dma_addr, size, false)))
--			goto err_overflow;
- 	} else {
--		dma_addr = phys_to_dma(dev, phys);
--		if (unlikely(!dma_capable(dev, dma_addr, size, true)) ||
--		    dma_kmalloc_needs_bounce(dev, size, dir)) {
--			if (is_swiotlb_active(dev) &&
--			    !(attrs & DMA_ATTR_REQUIRE_COHERENT))
--				return swiotlb_map(dev, phys, size, dir, attrs);
-+		dma_addr = phys_to_dma_encrypted(dev, phys);
-+	}
- 
--			goto err_overflow;
--		}
-+	if (unlikely(!dma_capable(dev, dma_addr, size, true)) ||
-+	    dma_kmalloc_needs_bounce(dev, size, dir)) {
-+		if (is_swiotlb_active(dev) &&
-+		    !(attrs & DMA_ATTR_REQUIRE_COHERENT))
-+			return swiotlb_map(dev, phys, size, dir, attrs);
-+		goto err_overflow;
+@@ -222,6 +223,15 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 		mark_mem_decrypt = true;
  	}
  
- 	if (!dev_is_dma_coherent(dev) &&
++	if (attrs & DMA_ATTR_CC_SHARED)
++		/*
++		 * Unencrypted/shared DMA requires a linear-mapped buffer
++		 * address to look up the PFN and set architecture-required PFN
++		 * attributes. This is not possible with HighMem. Avoid HighMem
++		 * allocation.
++		 */
++		allow_highmem = false;
++
+ 	size = PAGE_ALIGN(size);
+ 	if (attrs & DMA_ATTR_NO_WARN)
+ 		gfp |= __GFP_NOWARN;
+@@ -280,7 +290,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 	}
+ 
+ 	/* we always manually zero the memory once we are done */
+-	page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO, true);
++	page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO, allow_highmem);
+ 	if (!page)
+ 		return NULL;
+ 
+@@ -308,7 +318,13 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 			goto out_free_pages;
+ 	} else {
+ 		ret = page_address(page);
+-		if (mark_mem_decrypt && dma_set_decrypted(dev, ret, size))
++	}
++
++	if (mark_mem_decrypt) {
++		void *lm_addr;
++
++		lm_addr = page_address(page);
++		if (set_memory_decrypted((unsigned long)lm_addr, PFN_UP(size)))
+ 			goto out_leak_pages;
+ 	}
+ 
+@@ -384,8 +400,16 @@ void dma_direct_free(struct device *dev, size_t size,
+ 	} else {
+ 		if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_CLEAR_UNCACHED))
+ 			arch_dma_clear_uncached(cpu_addr, size);
+-		if (mark_mem_encrypted && dma_set_encrypted(dev, cpu_addr, size))
++	}
++
++	if (mark_mem_encrypted) {
++		void *lm_addr;
++
++		lm_addr = phys_to_virt(dma_to_phys(dev, dma_addr));
++		if (set_memory_encrypted((unsigned long)lm_addr, PFN_UP(size))) {
++			pr_warn_ratelimited("leaking DMA memory that can't be re-encrypted\n");
+ 			return;
++		}
+ 	}
+ 
+ 	__dma_direct_free_pages(dev, dma_direct_to_page(dev, dma_addr), size);
 -- 
 2.43.0
 
