@@ -1,135 +1,101 @@
-Received: from pdx-out-014.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-014.esa.us-west-2.outbound.mail-perimeter.amazon.com [35.83.148.184])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0909130E85C
-	for <iommu@lists.linux.dev>; Mon, 20 Apr 2026 12:32:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=35.83.148.184
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F15539F173
+	for <iommu@lists.linux.dev>; Mon, 20 Apr 2026 12:40:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776688364; cv=none; b=n3rk1s3ddYzjBo4LzltJzcdTlKsCFCVF2+G2ZPrYeiL6Sd6gmqf7M5h+vR91cf3knjFk7P5yVanvtF7pQCDw83mt5y4W/+1aiB3xfQ6lucU65r9niSB9RgkJhRB5heH1LuSjvTU+GjAfAjJ0XiIJ3Oc2doO3wLOCg4WI8O8Hfxo=
+	t=1776688838; cv=none; b=HCwDmkKCiI0M3zb9ot24RHm4lB1v+3Y87DL4neoMzU0iXoDEDyBf3xwgcuGJ3hNpXHgNpqYzXydjRIxrZDgT4Uz2gHKW8B8+hysMw3fn4V3nL3uJ5n8Z8F760oeqej9KhRA1cGqNpOI/wUVAL6QQo/My3CYS1Q6LcfO8eZ0z7kI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776688364; c=relaxed/simple;
-	bh=hfKn1gWu02ox0fBAB+Xii6DppfzcdbaZuM3tWxbUDvQ=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=bzTTc/bKl30hVluFcg/rY/EKvgT3H1JQyntRPzcesyd30n2wv2C+bUxWfGqFLKDnW2aXVZ7ZHOTgNKB/xNWJrf9KJgBBxJmzpIW3vrvuXGljEYdLBVd1htZyZi4gSiMMvjuJkpgJKA23ME8wcf0zhSZVMXDOvlP0uBmWU+YkR8s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.de; spf=pass smtp.mailfrom=amazon.de; dkim=pass (2048-bit key) header.d=amazon.de header.i=@amazon.de header.b=W8Zz/2CX; arc=none smtp.client-ip=35.83.148.184
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.de
+	s=arc-20240116; t=1776688838; c=relaxed/simple;
+	bh=MpQEfPFZauRSR6Cbgz1wZrnHn1gDlI9cOlm+kknSO9o=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DlOFV9VejTGccDUVTZ1gsUsWE3hyRW/mA2fztTiDysqSQcVcXws6WQ9sh1mVhn+ogILH7CaOkDwhKS5ZCYGb6IFfH239SB0jbbtjclcFo8cKjlKW6eHjaHq7V41pa7I5Zgje0Fcub0RbhvIVRabErxwaDQ1eiaYxTHqs/S3AlFo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=bicrNLzC; arc=none smtp.client-ip=209.85.222.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=amazon.de header.i=@amazon.de header.b="W8Zz/2CX"
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="bicrNLzC"
+Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-8d68bcf50fdso358272685a.2
+        for <iommu@lists.linux.dev>; Mon, 20 Apr 2026 05:40:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazoncorp2;
-  t=1776688362; x=1808224362;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=syaahfr1AvjeTrgpecRtNBtBP+GrrbQJ3jcGHB9nAds=;
-  b=W8Zz/2CX+22M46XWq/Q7Zpc8bKwmuYkTtOsdd1bovnAvrbWzE0ANmUXi
-   mb3JPOQpi6q0Q/NjOqMMWP3ETnVq5c4FWSfgnfAXn5LxiQmLJT4LpBa79
-   ZMubmm5gsjmunJQEYDbgIXv24k1xuyS+hg1FkaBr+siUpBKCqPB4V8rLv
-   x3bGSROakAuSEML4RA8952HbOanyMlYJOI+KtDAf/9gaqOuI8413+Fu7k
-   yu6qyLM2CHD8vfT6u5MC7adrVMJO/ly5MH+ldZoLrL0r0fAjayatGLssq
-   VI6pdXPifKRUCZOsKk8f0JdvqQbVvEKI3QZpu7MZ0agyl7LHw1QalpGJU
-   w==;
-X-CSE-ConnectionGUID: QzW1fbjyTASzVH90g2euCQ==
-X-CSE-MsgGUID: TT2won87QKSxh/RpnfGOUw==
-X-IronPort-AV: E=Sophos;i="6.23,189,1770595200"; 
-   d="scan'208";a="17503804"
-Received: from ip-10-5-0-115.us-west-2.compute.internal (HELO smtpout.naws.us-west-2.prod.farcaster.email.amazon.dev) ([10.5.0.115])
-  by internal-pdx-out-014.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 12:32:38 +0000
-Received: from EX19MTAUWB001.ant.amazon.com [205.251.233.51:30295]
- by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.29.81:2525] with esmtp (Farcaster)
- id 057c323d-5e62-472c-83db-4447edd78fdd; Mon, 20 Apr 2026 12:32:38 +0000 (UTC)
-X-Farcaster-Flow-ID: 057c323d-5e62-472c-83db-4447edd78fdd
-Received: from EX19D001UWA001.ant.amazon.com (10.13.138.214) by
- EX19MTAUWB001.ant.amazon.com (10.250.64.248) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.37;
- Mon, 20 Apr 2026 12:32:37 +0000
-Received: from dev-dsk-epetron-1c-1d4d9719.eu-west-1.amazon.com
- (10.253.109.105) by EX19D001UWA001.ant.amazon.com (10.13.138.214) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.37; Mon, 20 Apr 2026
- 12:32:35 +0000
-From: Evangelos Petrongonas <epetron@amazon.de>
-To: Will Deacon <will@kernel.org>
-CC: Evangelos Petrongonas <epetron@amazon.de>, Robin Murphy
-	<robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe
-	<jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>, Pranjal Shrivastava
-	<praan@google.com>, Lu Baolu <baolu.lu@linux.intel.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <nh-open-source@amazon.com>, Zeev Zilberman
-	<zeev@amazon.com>
-Subject: [PATCH] iommu/arm-smmu-v3: Allow disabling Stage 1 translation
-Date: Mon, 20 Apr 2026 12:32:01 +0000
-Message-ID: <20260420123221.20801-1-epetron@amazon.de>
-X-Mailer: git-send-email 2.47.3
+        d=ziepe.ca; s=google; t=1776688834; x=1777293634; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=9++LeQrcwEH0Gt4SV/wFhWstBdymLBpMFcQFo0yngto=;
+        b=bicrNLzC26zNjaxZpS5Lsl7tLjPMGm+lEI5W7Xf73/slEsN/LamPiBS8dnlVC2mLvJ
+         wwedzjMwBh3yYaxBNDShAt9o81oukuzHSlEGY9pYAGYRbjD5AvUXDXj0FMkpMuTuuTRl
+         v50b7mRbO0yqyPZ4m1JBI6irV6Ez9Db6m/erMRcPCBG7MNXTDNr8nGBRQ+D8c1SC2kP8
+         KeBzkybTfj9SGt/E0RHgUD9hY95kDL8jpyQ0Hvxi7nteiUu/jwvSASaEHk4rfxJtVHSt
+         YyDe/JkLvM8iPaEPbo+pqGY1ngHaIwksGC8JCblVJRVxVCY2oq0cheF7oIebzxDyYO2+
+         vmMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776688834; x=1777293634;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=9++LeQrcwEH0Gt4SV/wFhWstBdymLBpMFcQFo0yngto=;
+        b=KumaEGz6LJNqh2kxw4oLJ1c9O8SXtYQfx7b05NWbDzelF8WCkVBMiNua/80i26Sf9v
+         OXCmD1g83fA/t+baRiDKmf56fvyi1ljduvbEEe/WEbBYDSOCUn3mS0rYZVQchFbejlwG
+         7OlDs7klr8Pu1Gi1RKZME+OyomH1enQw2sStoAdYojGMXukuARE1G/ukILtgKIhOZvMm
+         VAgNYnbFrPmRSodFH0XcojAPqDCsiRWzLXD6ce5Kbk/IVG8UFzfhXTDTu6rlgYkPsxBt
+         UOf+HpmkDAHsp3jlf4XcL2h1EuS4KOor1KNhZqaoMPYZz7IAjqvzVC2fUiMvAXsaOnYH
+         YqrA==
+X-Forwarded-Encrypted: i=1; AFNElJ97Rv/83cvNZCxQpAte2KyfTaNamDBjkEm5jeMN3yYmnuJO9BASX8SNUmQrxGH/+HI9v6TEWg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxFUEP1c0Wlh8N13/QXrgThX2aAFQVeIJ1OGQvLItJz0ouOXJHi
+	tpYdwEExJYey8iLSVM/aIpUwldU0WUKgT11FBgVEhDCrXmVyiXeqxA+tRixEYtgyFBU=
+X-Gm-Gg: AeBDiesp6sryqzswJFaQFzHIteYPOjEzpnw+d4KePvIMyNgRjSlISbbFEuEdtG53fWg
+	n7PU+u6BYmeGvVe8ThIJz3N5oC/VWrCgySVq330ClpXfQoBdDNksxLv2IOJc+dxmHtdbUweaWMQ
+	6rC8g+PIknK2PmqcbYNB8wBhYbs6BCN+CpZXLlzE2gmtbmaansh4SpFdZu3wxN3MoUIDQxSpokW
+	I07kf6mXBBCbHFf1c0D5Y2zVIwQc2Y+A5LWRMSB5btagel4T/4MDHYk4/o8QkDaI9HYx9YrFqGy
+	vNEcgolPIcNSQ7EZ8olOdY6EXqgkUY78Gwwz9XjOYlkDR1zjc9kbNHNnBIOpEmX+wniU0mDAVzL
+	LXrFV9Wntq5Rmivu4NW6SjotbnVvNvSASUTN2hNX55Ve08fHm6qa4URHNbOt+5g7SgZ03vzX6wj
+	gAjecE/A83M/uBEKP+rmh1+ariV1Hy/+OBP4ULil/ea/UQOzA6jQyEex0tnabDEpsxtDd8gKGDX
+	E+WaQZ8uWMjF9xc
+X-Received: by 2002:a05:620a:489b:b0:8cf:d804:4569 with SMTP id af79cd13be357-8e7900157dbmr1922464985a.23.1776688834482;
+        Mon, 20 Apr 2026 05:40:34 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8ed54eb91a0sm52800285a.47.2026.04.20.05.40.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Apr 2026 05:40:33 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wEnvU-0000000CImY-0bzn;
+	Mon, 20 Apr 2026 09:40:32 -0300
+Date: Mon, 20 Apr 2026 09:40:32 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Evangelos Petrongonas <epetron@amazon.de>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Nicolin Chen <nicolinc@nvidia.com>,
+	Pranjal Shrivastava <praan@google.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, nh-open-source@amazon.com,
+	Zeev Zilberman <zeev@amazon.com>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Allow disabling Stage 1 translation
+Message-ID: <20260420124032.GO2577880@ziepe.ca>
+References: <20260420123221.20801-1-epetron@amazon.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-ClientProxiedBy: EX19D032UWA004.ant.amazon.com (10.13.139.56) To
- EX19D001UWA001.ant.amazon.com (10.13.138.214)
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260420123221.20801-1-epetron@amazon.de>
 
-When the hardware advertises both Stage 1 and Stage 2 translation, the
-driver prefers Stage 1 for DMA domain allocation and only falls back to
-Stage 2 if Stage 1 is not supported.
+On Mon, Apr 20, 2026 at 12:32:01PM +0000, Evangelos Petrongonas wrote:
+> When the hardware advertises both Stage 1 and Stage 2 translation, the
+> driver prefers Stage 1 for DMA domain allocation and only falls back to
+> Stage 2 if Stage 1 is not supported.
+> 
+> Some configurations may want to force Stage 2 translation even when the
+> hardware supports Stage 1. 
 
-Some configurations may want to force Stage 2 translation even when the
-hardware supports Stage 1. Introduce a module parameter 'disable_s1'
-that, when set, prevents the driver from advertising
-ARM_SMMU_FEAT_TRANS_S1, causing all DMA domains to use Stage 2 instead.
+Why? You really need to explain why for a patch like this.
 
-Co-developed-by: Zeev Zilberman <zeev@amazon.com>
-Signed-off-by: Zeev Zilberman <zeev@amazon.com>
-Signed-off-by: Evangelos Petrongonas <epetron@amazon.de>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+If there really is some HW issue I think it is more appropriate to get
+an IORT flag or IDR detection that the HW has a problem.
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index e8d7dbe495f0..afb21c210e24 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -39,6 +39,11 @@ module_param(disable_msipolling, bool, 0444);
- MODULE_PARM_DESC(disable_msipolling,
- 	"Disable MSI-based polling for CMD_SYNC completion.");
- 
-+static bool disable_s1;
-+module_param(disable_s1, bool, 0444);
-+MODULE_PARM_DESC(disable_s1,
-+	"Disable Stage 1 translation even if supported by hardware.");
-+
- static const struct iommu_ops arm_smmu_ops;
- static struct iommu_dirty_ops arm_smmu_dirty_ops;
- 
-@@ -5087,13 +5092,13 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 		smmu->features |= ARM_SMMU_FEAT_STALLS;
- 	}
- 
--	if (reg & IDR0_S1P)
-+	if ((reg & IDR0_S1P) && !disable_s1)
- 		smmu->features |= ARM_SMMU_FEAT_TRANS_S1;
- 
- 	if (reg & IDR0_S2P)
- 		smmu->features |= ARM_SMMU_FEAT_TRANS_S2;
- 
--	if (!(reg & (IDR0_S1P | IDR0_S2P))) {
-+	if (!(smmu->features & (ARM_SMMU_FEAT_TRANS_S1 | ARM_SMMU_FEAT_TRANS_S2))) {
- 		dev_err(smmu->dev, "no translation support!\n");
- 		return -ENXIO;
- 	}
--- 
-2.47.3
-
-
-
-
-Amazon Web Services Development Center Germany GmbH
-Tamara-Danz-Str. 13
-10243 Berlin
-Geschaeftsfuehrung: Christof Hellmis, Andreas Stieger
-Eingetragen am Amtsgericht Charlottenburg unter HRB 257764 B
-Sitz: Berlin
-Ust-ID: DE 365 538 597
-
+Jason
