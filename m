@@ -1,44 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C88093D9DA6;
-	Mon, 20 Apr 2026 13:23:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2DD93E51E9;
+	Mon, 20 Apr 2026 13:24:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776691439; cv=none; b=l96HWn/+yf0PWIXHgQkuibc5akWpB+YnTOfN/IrU6zJsiPxjeeb1skZE4f1MHqaGYJ3PFmqA5jEnRm99LA8Ay07bddNFJ96byTAVhTR0pl+PKHtTCES0+QOEdMegAOhfE10AjbQ1lypc4mGtOU66rk1XyTKLgdyZqGfpAEefOTs=
+	t=1776691491; cv=none; b=UMjLUGU+V0c6+6Ig6XfGvhXzd5AKu9VljcoWMqmCnGtxicKDe9Xc5QVWzngzOGpHvuR+TX+cw9pPN9HtXPkAA2w5ASP8/ggxwWB/o6tQHM7lkCcATbVaLIG0xLmhWDThpwzCyJBfmdUGp+POVhBYMxwppZQzFnH10fwaIyBHkF0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776691439; c=relaxed/simple;
-	bh=1igANYwOjFPNj7Lw7WtB+Ul5mELciDGyTlwt3dskh0I=;
+	s=arc-20240116; t=1776691491; c=relaxed/simple;
+	bh=KiBV/iGyjBs+vwGxJU1esMIoCY6yYQX0oecXeTUCedI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=feCpSaw+JrMFwUNPtCN/2cBod/uN/trrTJ/eWlITDc+4wlnp7qbMxah7wWc0NOgUx8DKMS3OilLiEDElp7EQnRG6bM9UyFwmkW4hOS6cDdRGmKiY0C5LvwHzRb3r+PgyjpO4Uft0/qQE8BW/M63CQLSI8gu1PwnwG70yhl+m2bA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ii6xnI4d; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=kX9bxXTG4IJpdNjLPmSAHoUvjw965TPuThUsSzknESJ2ARp+UAddG+Br5PFnLnrlCdJdTiSqjLsFzk2POarZ4RuuWH2j8Otyuer5v2u4wz9x8R9KL9e142o5zOSV+cpuyvnGJXzR46HigFutZzG39lPuPxhAYhCNClog5wQhm6I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=V4XU4ud+; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ii6xnI4d"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCDCEC2BCB4;
-	Mon, 20 Apr 2026 13:23:58 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="V4XU4ud+"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2570C19425;
+	Mon, 20 Apr 2026 13:24:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776691439;
-	bh=1igANYwOjFPNj7Lw7WtB+Ul5mELciDGyTlwt3dskh0I=;
+	s=k20201202; t=1776691491;
+	bh=KiBV/iGyjBs+vwGxJU1esMIoCY6yYQX0oecXeTUCedI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=ii6xnI4dUwpL0UH1Jk3q0RR32zalfacsLGnq+1hurN3G8Uoa91iYIY63Os2c2dbv0
-	 Z3letXlQviS4+Zj8Vx0nwCZeiN9Xh/sN4fZcI8OVdo8Zj3kuLZP3j9x5MN5WjXKO01
-	 Fz8PJIboy9s9xdoWmYvaYkPiQo0WLAjyQ0UaP/PjtNQgNxYSopkRD3j0y/01tN1q9H
-	 m4F/QHQxJFU/kmG83FBzTUYDvlFKcnu8w+OHlb961V5LUwHwLMATLgZiUUBZowNivw
-	 YqAi3w5+CTcqg1o+YEqiz9TLpYWquRUtnaDun8dbH+6er1xdm1bFmEG+Ag3ir5R7Vq
-	 7B9Jt96t7W2TA==
+	b=V4XU4ud+P5EgJ6BuQYhW8GA3izHYXHlE6OnnsMWY3xLLMeL6B8LzVezdFMtMqQt9x
+	 2Vw++2My3aA25/BFu9tHm6OLoVsj6llx6nNsrBoc0uFElKYNzEyfhr5v1/j/ggMOUs
+	 S07IvwfmlNeLZM8BAr5xfAwgg4HmnWgYeTM0rXF2RbHJATs3KV2XqoY/0jm5eNG6Mc
+	 eqZGZgtyoE2V4aeOwj6jmXHTwYGHakYJq+P/7nnq9WMgbVba+M4WKW+/vII4Fn5OZE
+	 AEEuLM2zyHcj2gGCLHHZwsLgo+9k0ffDG9e2RZ4GVeE/X2qGErgcK+c7kzkxQ7qB0F
+	 z35fx6khMvTsw==
 From: Sasha Levin <sashal@kernel.org>
 To: patches@lists.linux.dev,
 	stable@vger.kernel.org
-Cc: Guanghui Feng <guanghuifeng@linux.alibaba.com>,
+Cc: lynn <liulynn@google.com>,
 	Joerg Roedel <joerg.roedel@amd.com>,
 	Sasha Levin <sashal@kernel.org>,
+	robin.murphy@arm.com,
 	joro@8bytes.org,
 	will@kernel.org,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH AUTOSEL 7.0-6.18] iommu/amd: Fix illegal device-id access in IOMMU debugfs
-Date: Mon, 20 Apr 2026 09:17:02 -0400
-Message-ID: <20260420132314.1023554-28-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 7.0-6.12] iommu/iova: Add NULL check in iova_magazine_free()
+Date: Mon, 20 Apr 2026 09:17:35 -0400
+Message-ID: <20260420132314.1023554-61-sashal@kernel.org>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260420132314.1023554-1-sashal@kernel.org>
 References: <20260420132314.1023554-1-sashal@kernel.org>
@@ -53,35 +54,27 @@ X-Patchwork-Hint: Ignore
 X-stable-base: Linux 7.0
 Content-Transfer-Encoding: 8bit
 
-From: Guanghui Feng <guanghuifeng@linux.alibaba.com>
+From: lynn <liulynn@google.com>
 
-[ Upstream commit e4172c5b53fba04fa48b13bc3afde809d0087a7f ]
+[ Upstream commit fa8fb60d36375ca3166a60589a624f0d0bc9ddb5 ]
 
-In the current AMD IOMMU debugFS, when multiple processes use the IOMMU
-debugFS process simultaneously, illegal access issues can occur in the
-following execution flow:
+When iova_domain_init_rcaches() fails to allocate an iova_magazine
+during the initialization of per-cpu rcaches, it jumps to out_err and
+calls free_iova_rcaches() for cleanup.
 
-1. CPU1: Sets a valid sbdf via devid_write, then checks the sbdf's
-validity in execution flows such as devid_show, iommu_devtbl_show,
-and iommu_irqtbl_show.
+In free_iova_rcaches(), the code iterates through all possible CPUs to
+free both cpu_rcache->loaded and cpu_rcache->prev. However, if the
+original allocation failed mid-way through the CPU loop, the pointers
+for the remaining CPUs remain NULL.
 
-2. CPU2: Sets an invalid sbdf via devid_write, at which point the sbdf
-value is -1.
+Since kmem_cache_free() does not explicitly handle NULL pointers like
+kfree() does, passing these NULL pointers leads to a kernel paging
+request fault.
 
-3. CPU1: accesses the IOMMU device table, IRQ table, based on the
-invalid SBDF value of -1, resulting in illegal access.
+Add a NULL check in iova_magazine_free() to safely handle partially
+initialized rcaches in error paths.
 
-This is especially problematic in monitoring scripts, where multiple
-scripts may access debugFS simultaneously, and some scripts may
-unexpectedly set invalid values, which triggers illegal access in
-debugfs.
-
-This patch modifies the execution flow of devid_show,
-iommu_devtbl_show, and iommu_irqtbl_show to ensure that these
-processes determine the validity and access based on the
-same device-id, thus guaranteeing correctness and robustness.
-
-Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
+Signed-off-by: lynn <liulynn@google.com>
 Signed-off-by: Joerg Roedel <joerg.roedel@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
@@ -95,384 +88,354 @@ compile the findings.
 
 ## PHASE 1: COMMIT MESSAGE FORENSICS
 
-### Step 1.1: Subject Line
-- **Subsystem:** iommu/amd
-- **Action verb:** "Fix" (explicit bug fix)
-- **Summary:** Fixes illegal device-id access in IOMMU debugfs caused by
-  a race condition on the global `sbdf` variable
+**Step 1.1: Subject Line**
+- Subsystem: `iommu/iova`
+- Action verb: "Add" (NULL check)
+- Summary: Adds a NULL check in `iova_magazine_free()` to prevent crash
+  on partially initialized rcaches during error cleanup.
 
-### Step 1.2: Tags
-- **Signed-off-by:** Guanghui Feng <guanghuifeng@linux.alibaba.com>
-  (author)
-- **Signed-off-by:** Joerg Roedel <joerg.roedel@amd.com> (AMD IOMMU
-  maintainer, applied the patch)
-- No Fixes: tag, no Reported-by, no Cc: stable -- all expected for
-  candidate review
-- No syzbot involvement
+Record: [iommu/iova] [Add NULL check] [Prevent kernel crash when
+kmem_cache_free receives NULL during error cleanup]
 
-### Step 1.3: Commit Body Analysis
-The commit message clearly describes a TOCTOU race condition:
-1. CPU1 checks `sbdf >= 0` (valid), then proceeds to use `sbdf` as an
-   index
-2. CPU2 concurrently calls `devid_write()` which sets `sbdf = -1`
-3. CPU1 reads `sbdf` again to extract `devid`, now gets -1, causing
-   illegal access
+**Step 1.2: Tags**
+- `Signed-off-by: lynn <liulynn@google.com>` - Author (Google engineer)
+- `Signed-off-by: Joerg Roedel <joerg.roedel@amd.com>` - IOMMU subsystem
+  maintainer (strong indicator of review)
+- No Fixes: tag (expected for manually reviewed commits)
+- No Reported-by, Tested-by, or Reviewed-by tags
+- No Link: tags
 
-The commit mentions this is triggered by monitoring scripts accessing
-debugfs simultaneously. The failure mode is **illegal memory access**
-(out-of-bounds array indexing).
+Record: Author from Google, accepted by IOMMU subsystem maintainer
+directly.
 
-Record: Race condition on global `sbdf` variable. TOCTOU bug. Illegal
-access when `sbdf` changes between validity check and use. Triggered by
-concurrent debugfs access.
+**Step 1.3: Commit Body**
+The message clearly describes:
+- **Bug**: `iova_domain_init_rcaches()` can fail mid-way through the
+  per-CPU loop
+- **Mechanism**: Jumps to `out_err` which calls `free_iova_rcaches()`
+- **Problem**: `free_iova_rcaches()` iterates ALL possible CPUs, but
+  uninitialized CPUs have NULL `loaded`/`prev` pointers
+- **Crash**: `kmem_cache_free()` does NOT handle NULL pointers (unlike
+  `kfree()`)
+- **Result**: "kernel paging request fault" (crash)
 
-### Step 1.4: Hidden Bug Fix Detection
-This is explicitly labeled as a fix and clearly IS a fix. No hiding.
+Record: Real bug on error path causing kernel crash (NULL pointer to
+kmem_cache_free).
 
----
+**Step 1.4: Hidden Bug Fix Detection**
+This is explicitly described as a bug fix - no hidden meaning needed.
+
+Record: Explicit bug fix, not hidden.
 
 ## PHASE 2: DIFF ANALYSIS
 
-### Step 2.1: Inventory
-- **Files changed:** 1 (`drivers/iommu/amd/debugfs.c`)
-- **Lines:** +12/-9 (net +3 lines)
-- **Functions modified:** `devid_show`, `iommu_devtbl_show`,
-  `iommu_irqtbl_show`
-- **Scope:** Single-file surgical fix
+**Step 2.1: Inventory**
+- Single file: `drivers/iommu/iova.c`
+- 2 lines added, 1 line removed (net +1 line)
+- Function modified: `iova_magazine_free()`
 
-### Step 2.2: Code Flow Change
-In each of the three functions, the pattern is identical:
+Record: [drivers/iommu/iova.c: +2/-1] [iova_magazine_free()] [Single-
+file surgical fix]
 
-**Before:** The global `sbdf` is read multiple times -- once for
-validity check, then again for extracting segment and device ID. Between
-reads, another thread can change the value.
+**Step 2.2: Code Flow Change**
 
-**After:** A local `sbdf_shadow = sbdf` snapshot is taken at function
-entry. All subsequent operations use `sbdf_shadow`, ensuring the
-validity check and the actual access operate on the same value.
+```612:615:drivers/iommu/iova.c
+static void iova_magazine_free(struct iova_magazine *mag)
+{
+        kmem_cache_free(iova_magazine_cache, mag);
+}
+```
 
-### Step 2.3: Bug Mechanism
-**Category:** Race condition / TOCTOU (Time-of-Check-Time-of-Use)
+Before: Unconditionally calls `kmem_cache_free()` with `mag`, which
+crashes if `mag` is NULL.
+After: Guards with `if (mag)` before calling `kmem_cache_free()`.
 
-When `sbdf` becomes -1 between check and use:
-- `PCI_SBDF_TO_DEVID(-1)` = `(-1) & 0xffff` = `0xFFFF` = 65535
-- This value is then used to index into `rlookup_table[devid]`,
-  `dev_table[devid]`, and `irq_lookup_table[devid]`
-- These arrays are allocated with `last_bdf + 1` entries. If `last_bdf <
-  0xFFFF`, this is an **out-of-bounds access**
+Record: Before=unconditional kmem_cache_free (crashes on NULL),
+After=guarded with NULL check.
 
-### Step 2.4: Fix Quality
-- **Obviously correct:** Yes -- standard pattern of snapshotting a
-  shared variable into a local
-- **Minimal/surgical:** Yes -- only adds 3 local variables and
-  substitutes references
-- **Regression risk:** Essentially zero. Local variable shadowing does
-  not change any semantics when there is no concurrent modification
-- **No red flags**
+**Step 2.3: Bug Mechanism**
+Category: **NULL pointer dereference** causing kernel crash.
 
----
+The error path in `iova_domain_init_rcaches()`:
+
+```737:747:drivers/iommu/iova.c
+                for_each_possible_cpu(cpu) {
+                        cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches,
+cpu);
+
+                        spin_lock_init(&cpu_rcache->lock);
+                        cpu_rcache->loaded =
+iova_magazine_alloc(GFP_KERNEL);
+                        cpu_rcache->prev =
+iova_magazine_alloc(GFP_KERNEL);
+                        if (!cpu_rcache->loaded || !cpu_rcache->prev) {
+                                ret = -ENOMEM;
+                                goto out_err;
+                        }
+                }
+```
+
+When allocation fails, `free_iova_rcaches()` is called:
+
+```886:891:drivers/iommu/iova.c
+                for_each_possible_cpu(cpu) {
+                        cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches,
+cpu);
+                        iova_magazine_free(cpu_rcache->loaded);
+                        iova_magazine_free(cpu_rcache->prev);
+                }
+                free_percpu(rcache->cpu_rcaches);
+```
+
+I verified that `__alloc_percpu` zero-initializes memory (line 1893 in
+`mm/percpu.c`: `memset(..., 0, size)`), so uninitialized CPUs have NULL
+`loaded`/`prev`.
+
+Record: [NULL pointer dereference] [kmem_cache_free(NULL) crashes,
+unlike kfree(NULL)]
+
+**Step 2.4: Fix Quality**
+- Obviously correct: adding a NULL guard before a function that can't
+  handle NULL
+- Minimal: 2-line change
+- No regression risk: the `if (mag)` guard only skips the free when the
+  pointer is NULL, which is the correct behavior (nothing to free)
+- Standard kernel pattern for `kmem_cache_free` wrappers
+
+Record: Excellent quality. Obviously correct, minimal, zero regression
+risk.
 
 ## PHASE 3: GIT HISTORY INVESTIGATION
 
-### Step 3.1: Blame
-The buggy code was introduced by three commits, all by Dheeraj Kumar
-Srivastava on July 2, 2025:
-- `2e98940f123d9` - "Add support for device id user input" (introduced
-  `devid_show` and the global `sbdf`)
-- `b484577824452` - "Add debugfs support to dump device table"
-  (introduced `iommu_devtbl_show`)
-- `349ad6d5263a6` - "Add debugfs support to dump IRT Table" (introduced
-  `iommu_irqtbl_show`)
+**Step 3.1: Blame**
+The current `iova_magazine_free()` body was last changed by commit
+`84e6f56be9c68b` (Pasha Tatashin, Feb 2024), which changed `kfree(mag)`
+to `kmem_cache_free(iova_magazine_cache, mag)`. The function structure
+dates to `9257b4a206fc02` (Omer Peleg, April 2016).
 
-All three commits exist in the 7.0 stable tree.
+Record: Bug introduced by `84e6f56be9c68b` (v6.9-rc1), present since
+~v6.9.
 
-### Step 3.2: Fixes Tag
-No Fixes: tag present (expected for candidate review).
+**Step 3.2: The Bug Introduction Chain**
+The bug is the result of two commits:
+1. `a390bde707545` (v6.1 era, Sep 2022): Removed NULL checks from
+   related magazine functions (but `iova_magazine_free()` was still
+   using `kfree()` which handles NULL).
+2. `84e6f56be9c68b` (v6.9-rc1, Feb 2024): Changed from `kfree()` to
+   `kmem_cache_free()` without adding a NULL check. **This is the bug-
+   introducing commit.**
 
-### Step 3.3: File History
-The file has had 9 total commits, with the most recent being
-`a0c7005333f9a` (a separate OOB fix for the mmio_show function -- same
-class of bug). The file is relatively new and the buggy code has been
-present since its introduction.
+The `Fixes:` tag should point to `84e6f56be9c68b`.
 
-### Step 3.4: Author Context
-Guanghui Feng has 4 commits in this tree, all fixing real bugs (UAF,
-softlockup, incorrect checks, and this race). They are not the subsystem
-maintainer but the fix was reviewed by Vasant Hegde (AMD IOMMU co-
-maintainer).
+Record: Bug introduced by 84e6f56be9c68b (v6.9-rc1). Present in v6.9+.
 
-### Step 3.5: Dependencies
-This is patch 1/2 of a series but is fully standalone. Patch 2/2 fixes
-the same class of bug in `iommu_mmio_show` and `iommu_capability_show`
-(different functions). Each patch is independent.
+**Step 3.3: Related Changes**
+Recent iova.c changes since v6.9 are mostly minor (typo fix,
+MODULE_DESCRIPTION, kmemleak fix, kmalloc_obj conversion). No related
+fix has been applied.
 
----
+Record: No prior fix for this issue. Standalone fix, no prerequisites.
+
+**Step 3.4: Author**
+Author `lynn <liulynn@google.com>` - Google engineer, not the subsystem
+maintainer. However, the patch was signed off by Joerg Roedel, the IOMMU
+subsystem maintainer.
+
+Record: External contributor, accepted by IOMMU subsystem maintainer.
+
+**Step 3.5: Dependencies**
+The fix is self-contained. It only requires that `iova_magazine_free()`
+exists and uses `kmem_cache_free()`, which is the case since v6.9.
+
+Record: No dependencies. Fully standalone.
 
 ## PHASE 4: MAILING LIST RESEARCH
 
-### Step 4.1: Original Discussion
-Found at: https://yhbt.net/lore/lkml/20260319073754.651998-1-
-guanghuifeng@linux.alibaba.com/T/
+**Step 4.1-4.5: Mailing List Discussion**
+Web searches for the exact patch title did not find it on
+lore.kernel.org (the patch may be too recent for indexing, or the bot
+protection on lore blocked the search). However, web search results did
+reveal relevant historical context:
 
-Key findings:
-- **Joerg Roedel** (AMD IOMMU maintainer) applied it and explicitly
-  said: **"this patch-set fixes pretty serious issues"**
-- He asked Vasant Hegde to further review AMD IOMMU debugfs for
-  robustness/security
-- Only v1 was submitted; no revisions needed
+- A 2023 discussion (RESEND PATCH 1/2) by Zhang Zekun proposed adding
+  NULL checks in `free_iova_rcaches()` for `cpu_rcache->loaded` and
+  `cpu_rcache->prev`. Maintainer Robin Murphy noted `kfree(NULL)` is
+  valid. **At that time it was `kfree()`, so the concern was
+  dismissed.** But the subsequent change to `kmem_cache_free()`
+  reintroduced the same concern.
 
-### Step 4.2: Reviewers
-- **Vasant Hegde** (AMD, IOMMU co-maintainer): Reviewed-by: for both
-  patches
-- **Joerg Roedel** (AMD, IOMMU maintainer): Applied the series
-- Appropriate maintainers and mailing lists (iommu, linux-kernel) were
-  CC'd
-
-### Step 4.3: Bug Report
-No external bug report linked; the author discovered this through
-analysis of monitoring scripts accessing debugfs concurrently.
-
-### Step 4.4: Series Context
-2-patch series. Patch 1/2 is self-contained. Patch 2/2 fixes same
-pattern in mmio/capability functions (would also be beneficial but is
-independent).
-
-### Step 4.5: Stable Discussion
-No explicit stable nomination found on the mailing list. No known reason
-it was excluded.
-
----
+Record: Prior discussion acknowledged the NULL path existed but
+dismissed it because kfree handles NULL. The later change to
+kmem_cache_free reopened the issue.
 
 ## PHASE 5: CODE SEMANTIC ANALYSIS
 
-### Step 5.1: Functions Modified
-- `devid_show()` -- called when reading
-  `/sys/kernel/debug/iommu/amd/devid`
-- `iommu_devtbl_show()` -- called when reading
-  `/sys/kernel/debug/iommu/amd/devtbl`
-- `iommu_irqtbl_show()` -- called when reading
-  `/sys/kernel/debug/iommu/amd/irqtbl`
+**Step 5.1: Functions Modified**
+Only `iova_magazine_free()` is modified.
 
-### Step 5.2: Callers
-All three are seq_file show functions, invoked via the VFS `read` path
-when userspace reads the debugfs files. They are reachable from any
-root-level process (debugfs default permissions).
+**Step 5.2: Callers**
+All callers of `iova_magazine_free()` in iova.c:
+1. `iova_depot_work_func()` (line 708) - depot pop, always non-NULL
+2. `__iova_rcache_get()` (line 841) - swapping from depot, always non-
+   NULL
+3. `free_iova_rcaches()` (lines 888-889) - **CAN BE NULL on error path**
+4. `free_iova_rcaches()` (line 894) - depot pop, always non-NULL
+5. `free_global_cached_iovas()` (line 936) - depot pop, always non-NULL
 
-### Step 5.3-5.4: Call Chain
-`open(debugfs_file)` -> `seq_open` -> `read()` -> `seq_read_iter()` ->
-`devid_show()` / `iommu_devtbl_show()` / `iommu_irqtbl_show()` ->
-accesses `rlookup_table[devid]`, `dev_table[devid]`,
-`irq_lookup_table[devid]`
+Record: The NULL case only occurs at lines 888-889 in
+`free_iova_rcaches()`, which is the error cleanup path.
 
-The buggy path is reachable from userspace (root or debugfs-accessible
-user).
+**Step 5.3-5.4: Call Chain**
+`iova_domain_init_rcaches()` is called during IOMMU DMA domain setup,
+which happens during device probing (very common path). Error in this
+path = IOMMU initialization failure = device cannot do DMA.
 
-### Step 5.5: Similar Patterns
-The same TOCTOU pattern exists in `iommu_mmio_show` and
-`iommu_capability_show` (fixed by patch 2/2 of the series, not this
-commit).
+Record: Reachable during device probing. Triggered by memory allocation
+failure (OOM or fault injection).
 
----
+**Step 5.5: Similar Patterns**
+The kernel widely uses NULL-guarded wrappers for `kmem_cache_free` when
+a pointer can be NULL. This is a well-established pattern.
 
 ## PHASE 6: STABLE TREE ANALYSIS
 
-### Step 6.1: Does the Buggy Code Exist?
-Yes. Verified via `git blame`: the three buggy functions were all
-introduced in commits from July 2025, well before the 7.0 release. The
-code is identical in HEAD and v7.0-rc7 with no diff.
+**Step 6.1: Buggy Code in Stable Trees**
+- `84e6f56be9c68b` first appeared in v6.9-rc1
+- Active LTS/stable trees: 6.12.y has the bug. 6.6.y and older do NOT
+  (they still use `kfree`).
 
-### Step 6.2: Backport Complications
-The fix should apply **cleanly** to the 7.0 stable tree. The file
-content at HEAD matches exactly what the patch expects to modify.
+Record: Bug exists in 6.12.y (and later). NOT in 6.6.y or older.
 
-### Step 6.3: Related Fixes Already in Stable
-Only `a0c7005333f9a` (mmio OOB fix) is in the tree, which fixes a
-different function. No fix for this specific race has been applied.
+**Step 6.2: Backport Complications**
+The patch is a trivial 2-line change to a function that hasn't changed
+since v6.9. Clean apply expected for 6.12.y.
 
----
+Record: Clean apply expected.
+
+**Step 6.3: Related Fixes in Stable**
+No related fixes found.
 
 ## PHASE 7: SUBSYSTEM CONTEXT
 
-### Step 7.1: Subsystem and Criticality
-- **Subsystem:** IOMMU (drivers/iommu/amd/) -- IMPORTANT
-- AMD IOMMU is used on all AMD server and desktop platforms
-- debugfs is a debugging interface, but an OOB access can crash the
-  kernel regardless of the interface
+**Step 7.1: Subsystem**
+IOMMU subsystem (`drivers/iommu/`) - IOVA allocator is used by all DMA-
+capable devices when using IOMMU. This is IMPORTANT criticality (affects
+all systems with IOMMUs, i.e., most modern servers and many desktops).
 
-### Step 7.2: Activity
-Moderately active -- 9 commits total to this file, all relatively recent
-(2025-2026).
-
----
+**Step 7.2: Activity**
+Moderately active. The IOVA allocator is mature but receives periodic
+improvements and fixes.
 
 ## PHASE 8: IMPACT AND RISK ASSESSMENT
 
-### Step 8.1: Who is Affected
-Users with AMD IOMMU hardware who access the IOMMU debugfs. This
-includes monitoring scripts and debugging tools running on AMD
-platforms.
+**Step 8.1: Affected Users**
+All systems using IOMMU for DMA (most modern x86 servers, many desktops,
+ARM platforms).
 
-### Step 8.2: Trigger Conditions
-- Two or more processes concurrently accessing IOMMU debugfs files
-- One process writes an invalid device ID while another reads
-  devtbl/irqtbl
-- **Realistic trigger:** Monitoring scripts that poll debugfs, or
-  simultaneous debugging sessions
-- Requires root access (debugfs), so not directly a privilege escalation
-  vector
+**Step 8.2: Trigger Conditions**
+- Requires memory allocation failure during `iova_domain_init_rcaches()`
+- Can happen under memory pressure
+- Can be triggered by fault injection (CONFIG_FAILSLAB)
+- Relatively uncommon in practice but possible
 
-### Step 8.3: Failure Mode Severity
-- **Out-of-bounds array access:** Using index 0xFFFF on arrays sized to
-  `last_bdf + 1`
-- Result: **kernel crash (oops/panic)** or potential **information
-  disclosure** from reading arbitrary kernel memory
-- Severity: **HIGH** (kernel crash from root-triggerable path)
+**Step 8.3: Failure Mode Severity**
+When triggered: **kernel paging request fault** = kernel oops/crash.
+Severity: **CRITICAL** (system crash).
 
-### Step 8.4: Risk-Benefit Ratio
-- **Benefit:** HIGH -- prevents kernel crash from a realistic concurrent
-  access pattern; maintainer called it "pretty serious"
-- **Risk:** VERY LOW -- 12 lines added, 9 removed; trivially correct
-  local variable shadowing; zero regression risk
-- **Ratio:** Strongly favorable for backport
-
----
+**Step 8.4: Risk-Benefit Ratio**
+- BENEFIT: Prevents kernel crash on IOMMU initialization error path
+- RISK: Extremely low. A 2-line NULL guard with zero chance of
+  regression
+- Ratio: **Very favorable**
 
 ## PHASE 9: FINAL SYNTHESIS
 
-### Step 9.1: Evidence
-**FOR backporting:**
-- Fixes a real TOCTOU race leading to out-of-bounds array access
-  (potential kernel crash)
-- AMD IOMMU maintainer (Joerg Roedel) called it "pretty serious"
-- Reviewed-by from Vasant Hegde (AMD IOMMU co-maintainer)
-- Tiny, surgical fix (12 insertions, 9 deletions, single file)
-- Obviously correct -- standard local variable snapshot pattern
-- Buggy code exists in 7.0 stable tree
-- Applies cleanly with no modifications needed
-- Self-contained (no dependencies on other patches)
+**Step 9.1: Evidence**
 
-**AGAINST backporting:**
-- debugfs is root-only, limiting exposure
-- No syzbot/reproducer report
-- No Fixes: tag (expected for candidates)
+FOR backporting:
+- Fixes a real kernel crash (NULL pointer to kmem_cache_free -> paging
+  fault)
+- 2-line change, obviously correct, minimal scope
+- Accepted by IOMMU subsystem maintainer (Joerg Roedel)
+- IOMMU subsystem affects all DMA-capable devices
+- Standard NULL-guard pattern used throughout the kernel
+- Zero regression risk
 
-### Step 9.2: Stable Rules Checklist
-1. **Obviously correct and tested?** YES -- reviewed by AMD maintainer,
-   applied by subsystem maintainer
-2. **Fixes a real bug?** YES -- race condition leading to out-of-bounds
-   access
-3. **Important issue?** YES -- kernel crash (HIGH severity per
-   maintainer assessment)
-4. **Small and contained?** YES -- 3 lines of logic change across 3
-   functions in 1 file
-5. **No new features or APIs?** Correct -- no new features
-6. **Can apply to stable trees?** YES -- applies cleanly
+AGAINST backporting:
+- Requires OOM during initialization to trigger (uncommon but real)
+- No Reported-by tag (may not have been hit in the wild yet)
 
-### Step 9.3: Exception Categories
-Not applicable -- this is a standard bug fix, not an exception category.
+**Step 9.2: Stable Rules Checklist**
+1. Obviously correct and tested? **YES** - trivial NULL check, signed by
+   maintainer
+2. Fixes a real bug? **YES** - kernel crash on error path
+3. Important issue? **YES** - kernel crash (paging fault)
+4. Small and contained? **YES** - 2 lines, single function
+5. No new features? **YES** - pure fix
+6. Can apply to stable? **YES** - clean apply expected for 6.12.y
 
-### Step 9.4: Decision
-The fix is small, surgical, obviously correct, reviewed and approved by
-the subsystem maintainers, and fixes a real race condition that can
-cause out-of-bounds memory access (kernel crash). It meets all stable
-kernel criteria.
+**Step 9.3: Exception Categories**
+Not applicable (this is a straightforward bug fix, not an exception
+case).
 
----
+**Step 9.4: Decision**
+This is a clear YES. The fix prevents a kernel crash caused by passing
+NULL to `kmem_cache_free()` during error cleanup. It's a 2-line,
+obviously correct fix with zero regression risk, accepted by the
+subsystem maintainer.
 
 ## Verification
 
-- [Phase 1] Parsed tags: Signed-off-by from author (Guanghui Feng) and
-  maintainer (Joerg Roedel). No Fixes: or Cc: stable (expected).
-- [Phase 2] Diff analysis: 3 functions each get `int sbdf_shadow =
-  sbdf;` local snapshot. All subsequent sbdf uses replaced with
-  sbdf_shadow. +12/-9 lines.
-- [Phase 2] Verified `PCI_SBDF_TO_DEVID(-1)` = `0xFFFF` via macro
-  definition in `amd_iommu_types.h:443`
-- [Phase 2] Verified arrays are sized to `last_bdf + 1`
-  (init.c:662-663), so devid=0xFFFF can be OOB
-- [Phase 3] git blame: buggy code introduced by `2e98940f123d9`,
-  `b484577824452`, `349ad6d5263a6` (all July 2025)
-- [Phase 3] git show for all three introducing commits confirmed they
-  are in the 7.0 tree
-- [Phase 3] git log confirms no prior fix for this specific race in the
-  tree
-- [Phase 4] Lore thread found at yhbt.net mirror. Joerg Roedel said
-  "fixes pretty serious issues". Vasant Hegde gave Reviewed-by.
-- [Phase 4] Only v1 submitted, no revisions needed. Series is 2 patches,
-  this is patch 1 (standalone).
-- [Phase 5] Functions are debugfs seq_file show callbacks, reachable
-  from userspace read() on debugfs files
-- [Phase 6] `git diff v7.0-rc7 HEAD -- drivers/iommu/amd/debugfs.c` is
-  empty -- file is identical to current HEAD, patch applies cleanly
-- [Phase 8] OOB array access -> kernel oops/crash, severity HIGH.
-  Maintainer confirmed seriousness.
+- [Phase 1] Parsed tags: Signed-off-by from author (liulynn@google.com)
+  and IOMMU maintainer (Joerg Roedel)
+- [Phase 2] Diff analysis: 2 lines added to `iova_magazine_free()`, adds
+  NULL guard before `kmem_cache_free()`
+- [Phase 3] git blame: `kmem_cache_free` introduced by commit
+  `84e6f56be9c68b` (v6.9-rc1), replacing safe `kfree()`
+- [Phase 3] git show `84e6f56be9c68b`: Confirmed it changed `kfree(mag)`
+  to `kmem_cache_free(iova_magazine_cache, mag)` without NULL guard
+- [Phase 3] git show `a390bde707545`: Confirmed it removed NULL checks
+  from related functions (but iova_magazine_free was still kfree-based
+  at that time)
+- [Phase 3] git describe --contains `84e6f56be9c68b`: v6.9-rc1~153 -
+  confirmed bug introduced in v6.9
+- [Phase 3] git log v6.6..v6.12: Confirmed 84e6f56be9c68b is between
+  v6.6 and v6.12
+- [Phase 4] Web search: Found 2023 discussion where same NULL concern
+  was dismissed because kfree handles NULL
+- [Phase 5] Grep callers: 6 call sites, only `free_iova_rcaches()` lines
+  888-889 can pass NULL
+- [Phase 5] Verified `__alloc_percpu` zero-initializes memory
+  (mm/percpu.c line 1893: `memset(..., 0, size)`)
+- [Phase 5] Traced error path: `iova_domain_init_rcaches()` -> `goto
+  out_err` -> `free_iova_rcaches()` -> `iova_magazine_free(NULL)` ->
+  crash
+- [Phase 6] git tag --contains: Bug exists in v6.10+, active stable
+  6.12.y is affected; 6.6.y not affected
+- [Phase 8] Failure mode: kernel paging request fault (crash), severity
+  CRITICAL
+- UNVERIFIED: Could not access lore.kernel.org discussion thread
+  directly (bot protection); relied on web search for historical context
 
 **YES**
 
- drivers/iommu/amd/debugfs.c | 21 ++++++++++++---------
- 1 file changed, 12 insertions(+), 9 deletions(-)
+ drivers/iommu/iova.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/amd/debugfs.c b/drivers/iommu/amd/debugfs.c
-index 20b04996441d6..0b03e0622f67e 100644
---- a/drivers/iommu/amd/debugfs.c
-+++ b/drivers/iommu/amd/debugfs.c
-@@ -197,10 +197,11 @@ static ssize_t devid_write(struct file *filp, const char __user *ubuf,
- static int devid_show(struct seq_file *m, void *unused)
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index f9cd18316d16b..021daf6528de1 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -611,7 +611,8 @@ static struct iova_magazine *iova_magazine_alloc(gfp_t flags)
+ 
+ static void iova_magazine_free(struct iova_magazine *mag)
  {
- 	u16 devid;
-+	int sbdf_shadow = sbdf;
+-	kmem_cache_free(iova_magazine_cache, mag);
++	if (mag)
++		kmem_cache_free(iova_magazine_cache, mag);
+ }
  
--	if (sbdf >= 0) {
--		devid = PCI_SBDF_TO_DEVID(sbdf);
--		seq_printf(m, "%04x:%02x:%02x.%x\n", PCI_SBDF_TO_SEGID(sbdf),
-+	if (sbdf_shadow >= 0) {
-+		devid = PCI_SBDF_TO_DEVID(sbdf_shadow);
-+		seq_printf(m, "%04x:%02x:%02x.%x\n", PCI_SBDF_TO_SEGID(sbdf_shadow),
- 			   PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid));
- 	} else
- 		seq_puts(m, "No or Invalid input provided\n");
-@@ -237,13 +238,14 @@ static int iommu_devtbl_show(struct seq_file *m, void *unused)
- {
- 	struct amd_iommu_pci_seg *pci_seg;
- 	u16 seg, devid;
-+	int sbdf_shadow = sbdf;
- 
--	if (sbdf < 0) {
-+	if (sbdf_shadow < 0) {
- 		seq_puts(m, "Enter a valid device ID to 'devid' file\n");
- 		return 0;
- 	}
--	seg = PCI_SBDF_TO_SEGID(sbdf);
--	devid = PCI_SBDF_TO_DEVID(sbdf);
-+	seg = PCI_SBDF_TO_SEGID(sbdf_shadow);
-+	devid = PCI_SBDF_TO_DEVID(sbdf_shadow);
- 
- 	for_each_pci_segment(pci_seg) {
- 		if (pci_seg->id != seg)
-@@ -336,19 +338,20 @@ static int iommu_irqtbl_show(struct seq_file *m, void *unused)
- {
- 	struct amd_iommu_pci_seg *pci_seg;
- 	u16 devid, seg;
-+	int sbdf_shadow = sbdf;
- 
- 	if (!irq_remapping_enabled) {
- 		seq_puts(m, "Interrupt remapping is disabled\n");
- 		return 0;
- 	}
- 
--	if (sbdf < 0) {
-+	if (sbdf_shadow < 0) {
- 		seq_puts(m, "Enter a valid device ID to 'devid' file\n");
- 		return 0;
- 	}
- 
--	seg = PCI_SBDF_TO_SEGID(sbdf);
--	devid = PCI_SBDF_TO_DEVID(sbdf);
-+	seg = PCI_SBDF_TO_SEGID(sbdf_shadow);
-+	devid = PCI_SBDF_TO_DEVID(sbdf_shadow);
- 
- 	for_each_pci_segment(pci_seg) {
- 		if (pci_seg->id != seg)
+ static void
 -- 
 2.53.0
 
