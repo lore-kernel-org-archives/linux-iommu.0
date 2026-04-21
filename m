@@ -1,84 +1,120 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7178D3C457D
-	for <iommu@lists.linux.dev>; Tue, 21 Apr 2026 12:54:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-pj1-f65.google.com (mail-pj1-f65.google.com [209.85.216.65])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C315386C39
+	for <iommu@lists.linux.dev>; Tue, 21 Apr 2026 13:47:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.65
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776776097; cv=none; b=Uh43uXb8+ywLsCJg4lOcjFKvMDcGJoRsMNF9dmsK7o0C2MPJ5QTwXVKWE9FbuiMltT1Fv+eCQjplorsgumqnHgeRSeHnPCF139rgKupTDHbuqbVWnXPDi0W6MtEi0U18XKRpRI8pS/YiqaAFjs/QLSLWmXvzfTegsIx8ztml0EA=
+	t=1776779255; cv=none; b=r92RNIXtN8nlDzOFK/jJZVfM2w9u5ny+lq9z0dD5y/fNQhKh7mN6avEqiN48CrAHfCZX5AGTjm93YTsXezKC3auoWgzs9ells6o7PEBJKUS0RCIkCLRlM0c8cDSNH5Vid97o+vEXU0Crl9Z7SBc+rYtTnBYWyfufNNn8M/q11OE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776776097; c=relaxed/simple;
-	bh=fodvftv33ebpx4wJKdHyNpCWMGGrih5vKtq5237bJL0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Z+qqI8lhAo0LTx3NUTHN0wJCPsDuF/HSvnAmTcZPF6SMnVAEMyvUMjksrIDxWtJn/EkMJiv4A3BY0BjDiS1CfLvvYIJU1JmAmkMMvTIqenIXjZKkj32ulTNG2NdmCO+cTYHZIPc8TYuCQrcFbX6x5cjG38cZgTuSpyXkKrs9Ggo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=Fqm2ws5X; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1776779255; c=relaxed/simple;
+	bh=s15RL/I1MS/3imuLtkC2xq7uTBGavm8FT9td9CFmlIs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=U6DDRACaM2RIiAMypw+n5PeQBZAgn8EQyqE+LJAvYurm9N/5NCoOO21pZJMCatJXvE7rze38CwpgrbLYxZ62u6vdWUnq05vRWDdmVV2kWm0hGU8NxHl4GKN3qolOBlDti+duVZgNBYnqyLmJENovnYLH21Av1WvBYfJrHq8OuFs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=J+0RhbPp; arc=none smtp.client-ip=209.85.216.65
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="Fqm2ws5X"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5A1C925DC;
-	Tue, 21 Apr 2026 05:54:50 -0700 (PDT)
-Received: from [10.57.20.50] (unknown [10.57.20.50])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0B83B3FE76;
-	Tue, 21 Apr 2026 05:54:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1776776095; bh=fodvftv33ebpx4wJKdHyNpCWMGGrih5vKtq5237bJL0=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Fqm2ws5XKWUo4weToB3fmpoY24dHZjI5DSdM7S9M0Vqd4mKMG2ogls8rcE/HRf+yL
-	 whP3OGTN89sJGr7x0kaucC6RkMydZaKjuyigGorl1Ot7ofPRucNV+u+ka+rlzOobyE
-	 HOPy/ut9f7o7wJaxxiASIesEo49PhrIB54lHmGII=
-Message-ID: <d83e00a6-6c01-4640-bd69-e10daeedeeae@arm.com>
-Date: Tue, 21 Apr 2026 13:54:52 +0100
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="J+0RhbPp"
+Received: by mail-pj1-f65.google.com with SMTP id 98e67ed59e1d1-35d965648a2so3634052a91.0
+        for <iommu@lists.linux.dev>; Tue, 21 Apr 2026 06:47:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776779253; x=1777384053; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Ks2vHMRh0my4MpDz0dclabjbLc7A4OosqiA6OhNyWHQ=;
+        b=J+0RhbPpoer4WIAC7e1RiPZ+1Cd7SDgNQZjvFYkbwmDIZiTaWzHWSg1uIZSaFq0LKi
+         MgOp/a0WTyjJ+yUuwBGxBq3CZE5Bxf6DpI1SX3uPTurPLgD+whyGTpU0wwj1RjHGxz4W
+         5PPTKfh74PXE2/nw+GtpeLbQL4Gz3ZWU7Qc6rUkUogMrJikEWBbwB5MOXs37YbV3Ad8z
+         zLlVhnCLsrRkL8nAE13+TzKAhXlsNiOrCxpq8L9eZFj7XFhbHyEjkbhr2KalwycOF0na
+         Xu68QegUiB0nFknFUu9d6waHhLzwhg17uDb+8vkr/RRicyb5rbAQL8Seg0mT19IXOFR2
+         NWqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776779253; x=1777384053;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Ks2vHMRh0my4MpDz0dclabjbLc7A4OosqiA6OhNyWHQ=;
+        b=dRipNhFE4LtO5xOJhzmX1z9fmDiw3jcwhq+h5BTQRgMDqrSTmBk1EXBnZ/HE/SV00c
+         orQs4ok5MDO35yKM6IjQwmkMfyO1j118R0KXXUKHwqR5fjeSm0QjqrzpnzO083tpYwwK
+         MYkCfK66p7+UBnK2fUWBAuQDWMhI7F1OhCK1EnQZGdIYA215F319yldZ1bE3SqtfllhT
+         J2rlEqJ6zvqtUsCBQnA8fmrmoiszuIetqLu7vrzvcoB8qGoz6urY+ly6OYXm3H12V2VI
+         8MgOcGQQUpqiGDU/0Hh19U64PNKyOH+Q1ZkcEXXNwND/VxFHyVB85E9vILWwdlJDtSC3
+         WGDg==
+X-Forwarded-Encrypted: i=1; AFNElJ8tk2mKp04n/yyyxs8mfEbIhGQ3a8n3ixqbK+SubH9Z0E1ubgbCGux34VUxydz3Bklm+dqjXQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxF2//6uhoUO/hRws56N2gtz23jX0+6Gp+/3svcgU9E1vI3BKT3
+	0sdiYG/L1LhkF8z316FiaqAZo+QSxHIvCNGvCreC4koe2qyZP7GW/DKp
+X-Gm-Gg: AeBDieusPS9OS3uoNiSP2EkmB9A1HEma7vRwh2vwL9Xdb1YpAMlXf3wvtCt1BkYdH3u
+	zKM3djIIo+TM5q+WPaZjfJ9n0lCLyMWeJFZ/q+kxqrqAYWBdoJTa5sGaZCh/HYPtjyuEaqdFMQ3
+	g5JL46Ehf2BnnpXwlPbV4HYNkfu3Y0xG/zDUIrs4XNBJIhE91145zu78xJmTUT73BFGNagEJurm
+	g/QJ0nhtjlHNthQoFE++JMIkf8Uu0+VbTqAYvixBOdYd/0591e7mZIec5virkJUi7w2nCuCYmMw
+	YLCSNYF0Vz17FJzJr7wgb1xAmw6tftPuoOw4DxYQEhDnhg6RB+tap1aze/0NZkgWFjgAxqaArqm
+	wJ/VgOP3Zv5qcNiN8+1pDIi2N8G2Cvw6bW0AJukr3QY7p3p5/04JL1ETxBghuJ8up1AaDu00Zh2
+	5StzceGoK7r1j/+NQEavt4fQR+y2baAfyDk+WlUl72Cpm9t+J3XyjCjOc=
+X-Received: by 2002:a17:90b:2e41:b0:35d:aeb2:25b2 with SMTP id 98e67ed59e1d1-361404aeddcmr19957529a91.27.1776779252761;
+        Tue, 21 Apr 2026 06:47:32 -0700 (PDT)
+Received: from LAPTOP-1HUHJV8R.localdomain ([2408:8642:893:d2da:c016:592:ddae:fe0d])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-362bbf963c9sm3630056a91.16.2026.04.21.06.47.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Apr 2026 06:47:32 -0700 (PDT)
+From: l1za0.sec@gmail.com
+To: jgg@ziepe.ca,
+	kevin.tian@intel.com
+Cc: joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iommufd: fix slab-use-after-free read in iommufd_ioas_unmap
+Date: Tue, 21 Apr 2026 21:47:05 +0800
+Message-ID: <20260421134719.33801-1-l1za0.sec@gmail.com>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 7/8] dma-direct: set decrypted flag for remapped DMA
- allocations
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@ziepe.ca>,
- "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- robin.murphy@arm.com, m.szyprowski@samsung.com, will@kernel.org,
- maz@kernel.org, catalin.marinas@arm.com, jiri@resnulli.us,
- Mostafa Saleh <smostafa@google.com>
-References: <20260420061415.3650870-1-aneesh.kumar@kernel.org>
- <20260420061415.3650870-8-aneesh.kumar@kernel.org>
- <20260421123419.GC3611611@ziepe.ca>
-From: Suzuki K Poulose <suzuki.poulose@arm.com>
-In-Reply-To: <20260421123419.GC3611611@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 21/04/2026 13:34, Jason Gunthorpe wrote:
-> On Mon, Apr 20, 2026 at 11:44:14AM +0530, Aneesh Kumar K.V (Arm) wrote:
->> Devices that are DMA non-coherent and require a remap were skipping
->> dma_set_decrypted(), leaving DMA buffers encrypted even when the device
->> requires unencrypted access. Move the call after the if (remap) branch
->> so that both the direct and remapped allocation paths correctly mark the
->> allocation as decrypted (or fail cleanly) before use.
->>
->> Architectures such as arm64 cannot mark vmap addresses as decrypted, and
->> highmem pages necessarily require a vmap remap.
-> 
-> I don't think I saw an aswer for this, why can't arm accept
-> pgprot_decrypted() for vmap? It really should, I don't think we should
-> have these minor pointless arch differences.
-> 
-> Suzuki? You mentioned it, can you elaborate?
+From: Haocheng Yu <l1za0.sec@gmail.com>
 
-We can accept pgprot_decrypted(), but this must be done carefully
-as the backing pages must be first converted to "decrypted" in the
-linear map (set_memory_decrypted()).
+A KASAN: slab-use-after-free read in iommufd_ioas_unmap is reported
+by a modified Syzkaller-based kernel fuzzing tool we developed.
 
-With that in place, it should be fine. It is, 
-set_memory_decrypted(vmalloc_address) is we don't support.
+This issue is caused by a race condition between iommufd_destroy()
+and iommufd_put_object(). Thread A first enters iommufd_put_object(),
+which is called by iommufd_ioas_umap(), and executes
+`refcount_dec(&obj->users);`, but before executing
+`up_read(&obj->destroy_rwsem);`, thread B happens to enter
+iommufd_destroy() and destroy the object. Later, when A wants to
+release the lock, it accesses this already destroyed object,
+causing a use-after-free error.
 
-Cheers
-Suzuki
+To fix this issue, before executing the destroy statement in
+iommufd_destroy(), a write lock is acquired using down_write() to
+ensure that up_read() has finished executing before destroy,
+thus avoiding the UAF problem.
 
-> 
-> Jason
+Signed-off-by: Haocheng Yu <l1za0.sec@gmail.com>
+---
+ drivers/iommu/iommufd/main.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
+index e71523cbd0de..a1f0b591c412 100644
+--- a/drivers/iommu/iommufd/main.c
++++ b/drivers/iommu/iommufd/main.c
+@@ -212,6 +212,8 @@ static int iommufd_destroy(struct iommufd_ucmd *ucmd)
+ 	obj = iommufd_object_remove(ucmd->ictx, cmd->id, false);
+ 	if (IS_ERR(obj))
+ 		return PTR_ERR(obj);
++	down_write(&obj->destroy_rwsem);
++	up_write(&obj->destroy_rwsem);
+ 	iommufd_object_ops[obj->type].destroy(obj);
+ 	kfree(obj);
+ 	return 0;
+
+base-commit: ffc253263a1375a65fa6c9f62a893e9767fbebfa
+-- 
+2.51.0
 
