@@ -1,258 +1,382 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D65B1925BC
-	for <iommu@lists.linux.dev>; Tue, 21 Apr 2026 07:41:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.12
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776757269; cv=fail; b=d7981rIAZtcreguXPguSo4GorEsMIivMJmq1nvUvXcNgrM+fEoAicVAJDTUXUkcc8QEZPLkfYqcjtJqV2SrwluUAeEd2Xd5S9qRoHAnu67l0WK8A/qhfqdibhqDyJSSEcEBjir2NwtfxlD0I5vWN4g8Q/AKHGTMIWBU8WaEOq3Y=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776757269; c=relaxed/simple;
-	bh=1d7RjR2AVEifp2E4H1VyX2YZyulYEN4bvLj54Lrj2BU=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=TnZ/sSPvU5PYs9hgSWUQ/dIGplzzx8RJunYFITQz0x/hkXmNFdLBg47xecSDoRkYMpsUd6oqXCvH0XRDC5jeFmZkM9n+r9jbWwu0kRgCWeZaPOhq2MfRh8/w/YNmtoKpMtpvrSLYBYfCqBxA1Z0qcCoXRfJwVy765scNdeQH/wI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PPdFfRsx; arc=fail smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C3DF1FB1
+	for <iommu@lists.linux.dev>; Tue, 21 Apr 2026 07:48:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776757685; cv=none; b=kd0CsVQp/02Nqkj8oGMYHXZ9HQB9LTi5OfpMw3R6+60dn+btgohON0Ufb5BZvt0TSHp34qySeB5ZIF5GXdQwaUxTsREKo7MQb/N0AcP2nX269RlO0vTWrNAmivZcQhGi1lfZisnKIdkhq4BQfutWOgh3mRfvycL4eafCUW3tCRk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776757685; c=relaxed/simple;
+	bh=eRTKLnLtLXkmNerM66kPvDnNPuXAQPh9wE1hbZ6mJDg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=gBlOj+q2ZXaF/0mwioxoFAG92oCSzRZVMIH2H1mv/OJj95DOOrr505yCUXI65IJbbBgYh6UiPP75ZmrmZrqMQkgJ5c7f7j3dNu+lG4Jhdzd87MvgxtIwDgRV/j6D9XWnirs6C/Te3l4eKagR6P96XO86s+lOC8T4uZfsVQkXGGs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Kfbh7Q+4; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=cA1I/mhM; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PPdFfRsx"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776757268; x=1808293268;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=1d7RjR2AVEifp2E4H1VyX2YZyulYEN4bvLj54Lrj2BU=;
-  b=PPdFfRsxWjUk/WzsAaM1aaWZYm2syqkmNqyZ6S6SqcH70jMMadfpVnGn
-   2QNAf7CaOu8p+lJW3+yMlxP/702KZNsn88mBcgTuP/bvW6Zig9QKolev9
-   z+TY1VP3Iz7fAWBP/fZH0UAsF+K39e5QCKsY0JJm/We26TzCcRsisZST/
-   7+mENWlvo6PgI7h/9HEF6HayOjGoqs5FTwggP3TrVJzex7QM50uwqqyWM
-   1ebgtDmtr38qfXN74I5uaOliS2sBgZn+ksw5uvpLfxajo1Bld89g2riCE
-   t/4F1Y4jcuY7q9lmZKQ5N1XdYzNdbJpJ1Xcb8zh0ga984iKMKPClYawBM
-   A==;
-X-CSE-ConnectionGUID: pKsDwm7tRzaiWkppm6x0dQ==
-X-CSE-MsgGUID: suT449ORS5aIdQqZlV9KCw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11762"; a="89155458"
-X-IronPort-AV: E=Sophos;i="6.23,191,1770624000"; 
-   d="scan'208";a="89155458"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2026 00:41:07 -0700
-X-CSE-ConnectionGUID: 2NgZpE2vRwS89Jx0xAoOdw==
-X-CSE-MsgGUID: 0XGnCSYyRPCKsIMDk8B8ng==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,191,1770624000"; 
-   d="scan'208";a="231835349"
-Received: from fmsmsx903.amr.corp.intel.com ([10.18.126.92])
-  by orviesa009.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2026 00:41:06 -0700
-Received: from FMSMSX903.amr.corp.intel.com (10.18.126.92) by
- fmsmsx903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Tue, 21 Apr 2026 00:41:06 -0700
-Received: from fmsedg903.ED.cps.intel.com (10.1.192.145) by
- FMSMSX903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Tue, 21 Apr 2026 00:41:06 -0700
-Received: from BN1PR04CU002.outbound.protection.outlook.com (52.101.56.19) by
- edgegateway.intel.com (192.55.55.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Tue, 21 Apr 2026 00:41:05 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=WGNfwMh0aY8lSCuXV67mwqaHCnD5YUIG0jkbUNMyRlX1IWX8yhcU0ycf8JGGL0ZHk2PXE3F2LxiK8EjsTfmyiv1WKl7kPjyiZEjV8uMY9DAIMN9hb5yQ1K0FsxjEzpc+C3vMgjrI+r3MOTsQ0+r56EZbgwNzevEnw4btHXHKXNA+MFE18LufSQgOLdqiSDNKbpiAC2EliP7QkKkGoeMBnei61/AIE72zRxcVQLRjhFcjYxRWb8GuPcUHPf6NRsqFZuh4JsHMaB9/yyaAdDVgKVRdrDucwSeOfy9vG6eXw+UWgifYzo68aLKusH/6rhXWkIf2BzGTtVsVlxDl2YIViQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rc+Da4Ks2pU2qdZ60qfeqvQHGkqISiECpMLi9/7IwMo=;
- b=ibVPMDeDtK6+BiwmO9ERu8bvI3F7h4XPjIp1IUqi5uWjkd6RmNMucKTqmG2t+EKlrMb6oJxhnw98m/14oRWJSEZy87+yQk9wZJnMowttfuCs8tmh5p/q0Y9yHofAk7cnSgNVQjJ0q5yGNKkXjkZHiU6r2/ZgZ1a7Il9LbERvTo1jT4xeiKdGyVhi5nhEib8MhIMClmQsqsfWtt8ifetb27mweC7VhDK/2Jr4ER56jl8LL0AYEXSbAvE637ll8/Lz/EVwkrBy2BJXKxKjeB/e/a7MW3O0ojrmNzw2p3xwhu5F9kOdEBCWJ+jnltfQGWdivPKhTc9GtzlDdwZNvl8tkw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by CH3PR11MB7251.namprd11.prod.outlook.com (2603:10b6:610:147::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9846.15; Tue, 21 Apr
- 2026 07:41:03 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::f997:762f:f079:134f]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::f997:762f:f079:134f%5]) with mapi id 15.20.9846.016; Tue, 21 Apr 2026
- 07:41:03 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Nicolin Chen <nicolinc@nvidia.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"jgg@nvidia.com" <jgg@nvidia.com>
-CC: "will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
-	<robin.murphy@arm.com>, "baolu.lu@linux.intel.com"
-	<baolu.lu@linux.intel.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"xueshuai@linux.alibaba.com" <xueshuai@linux.alibaba.com>
-Subject: RE: [PATCH rc v7 6/6] iommu: Fix UAF in pci_dev_reset_iommu_done()
- due to concurrent detach
-Thread-Topic: [PATCH rc v7 6/6] iommu: Fix UAF in pci_dev_reset_iommu_done()
- due to concurrent detach
-Thread-Index: AQHcz40BheYeargagUmdr0A7c4I0KbXpHnTQ
-Date: Tue, 21 Apr 2026 07:41:03 +0000
-Message-ID: <BN9PR11MB5276B1F1CF1BA54FE69B8D968C2C2@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <cover.1776551790.git.nicolinc@nvidia.com>
- <96a8ab981d365bdedc5dc705df10414ccf578c9d.1776551790.git.nicolinc@nvidia.com>
-In-Reply-To: <96a8ab981d365bdedc5dc705df10414ccf578c9d.1776551790.git.nicolinc@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|CH3PR11MB7251:EE_
-x-ms-office365-filtering-correlation-id: 85c2c8ee-7ed2-48e1-ee06-08de9f795737
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|366016|376014|38070700021|22082099003|18002099003|56012099003;
-x-microsoft-antispam-message-info: pvwtzM/too/4ll1Oti8kbTutdWmH8fdMoqQTIKzVCWO1uBOe/RzA2ZhNm7pJCyi4GR1H8ML/EZEsXSuMMOdEW7DrWYeMgTy1S/100QpibJg6NYugDss3P6nadWYqiwLEL2wvzsNWAiBlJ5SYvmIflPknmfasxAAA9fXLmcCjefDGqJivqOP8eQmzcVuh9bpSU+Y27Ma9rYktQCdIww9eOYFBwo9knObI1zDotJ7ZoB0uW/lstjxJt8pCv6rljZI+UrbOW7Y4TnLzu3+AGMb1qNaXx+1eY4oB3OSjbq+KcjKUzBNZPQ1qFXhrpY+25pH67zQu5Nkw7suOkebipvCqXMi6kzJ4P0QPaMS8o+VKxexlCQ0Ht0mAP3ux8mLIcFqR/xnL2VURHyHkCmKpZo0s1MWdIZ5abUyYa9+vE9U6bvTUYZhOt77PC0nF+5/v3zATTMK2+TveJDfzIugP7idzir4Jo0S5xaqQa5+m38Q6imypsbVXSjGRDuqCna5catr/AaJjCh6wqZoOv4UZRAr4QCKEUaxy6ozGbbXDHshQHaTd0co2dnpqD/NkdGLCEeyfgE+I/1HDR0ZILtrDk/5noRFj6kInjEiv0a0WNeY92YkClQbyEWVzXgP3LYD1sOmIDFRvsO6rP2mwAjPxPCWg6SVusyfxBAYcCbzvHn6EeAp8dZQAuDQOC5QtqxYwUyfzj32p3AL9cSLrXkp1eQzUBY9Ez2LCiZ63EW7Rk5daVZE=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(38070700021)(22082099003)(18002099003)(56012099003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?3HOLSWbR60haLsIdgRklyzARAyIIc/4CpTxMjR/1eSy+6VolTm7lAhbC5bcR?=
- =?us-ascii?Q?gJNa9p7Z4+TTWmhnCyAbiaJ6alW0qD0O6tGSNKQBg+/Z0JE3GHL4sXE287EV?=
- =?us-ascii?Q?bE4mrhOk3IrmS0JbzTSn6AkODvvJdfwA79fP28fUPs1oZ9jL2H60vPWvBeCw?=
- =?us-ascii?Q?r5uGUvVeBmw8RQ8TJ0AiUHbBT4lHBY6wqDlsuzr4JenKhjDFbDlNL0EwY++n?=
- =?us-ascii?Q?gjYgnnu7PTyg4bY5fNX1Y0hiaLUsDuTAqEtzQkRgl9pye3hI6Q7Q8tm64p+0?=
- =?us-ascii?Q?2TZmwtRChdLo2YFU9FkKEgD03valOH/f2GjZwBjBIgZngZvOZmzfAXyzJScz?=
- =?us-ascii?Q?69okDd7l/lMgNF0x8/f+PQxdiVdxNxIbQrVV/Aa1ZjrfFr/+CR2nVQ2FA87C?=
- =?us-ascii?Q?R1WDBzZPNPNZGqIcWq4bozedqpKzfbPU4Sm6yPYVC3hqlKfJHIoEhwVoqfFS?=
- =?us-ascii?Q?njUdkatIC5DhRhnIqRG7Pdr8X7CWhYdAP2NkjckLZsRY3mFFZCBSTuAWNKj8?=
- =?us-ascii?Q?jzYQtSka7s7aeit3cxIYpzIQdrIELOZXuec4UnQs77bXvKsCyLEHIsnDxDeZ?=
- =?us-ascii?Q?HpUi3TLRMFNUluHv4jg8k34A/hsWZKNIRXDDPDvKGFw2JPlFewWHl2N0X5OT?=
- =?us-ascii?Q?PTXvNwLLseMfQycv9SmdrmSIqTyx7knLmTO4tvcLic6WKendXchI8dXSDMDM?=
- =?us-ascii?Q?LUCAbJWpC0JjmThmNAxl0DRZrcgfhYaeo8xZMtrJIo3/70/iKn4ApLXlMgyh?=
- =?us-ascii?Q?bMgzXx6M7xMuibd/Ym2j9UdUXb+/ZkwRjB1B8pchEg4Hu7VxQgxX2g4JvFUq?=
- =?us-ascii?Q?C47ADJEhExj0TUg0M43B8mcDzwpo3MmcmUmkC49qC6yHERVLeS9z3ElSDL0X?=
- =?us-ascii?Q?QnqazNGorBCli0O0fLLnXIjY7PiJHVRE5OCxsHMh8YBtH21ZtnyYIZl1FiZU?=
- =?us-ascii?Q?9JXR5NUh3LOAbYycH2v+93lxbovNvSwmWwMTfHRci7l2vdrC6cDgOdG6gUVX?=
- =?us-ascii?Q?lKXzTV2qJ+gBXKDEIA6LlptpQyoXyZYUDotOHHeucJlsCUovBrWCmjX0ursv?=
- =?us-ascii?Q?zr0XnOw0hi0hxhaUlvfRIcjfX9MTfezNZilYm60cvBOtulWg/erZN2C3lMtu?=
- =?us-ascii?Q?6xJAOW1HAuT/zGBgAAFH01Q9RP+o2wTiuRhw81SE+ax9BJb9hoQ1+tGKozWA?=
- =?us-ascii?Q?ubD/m/oDu4kB8eiRSZqxUSTUWr3f+v4TeGSA+fh8F2l7oI3rDzZ4eXFwlPVP?=
- =?us-ascii?Q?IbviTG6aVXLcmE/DaOjhhN7l+V1az13CNH0P6z4CBs7nlhWsX2o/6bEFSV/B?=
- =?us-ascii?Q?j3pNjD4fQVWFp1TN0EeAYDQyvrg846SSG285Yfro42bHlb6mSn04EV6k3DYB?=
- =?us-ascii?Q?gM8O/3v34zia92s/ZPd8ymh9WlXcw8EhvmojSgIVg5AQRYIcpdyjSf66+pd6?=
- =?us-ascii?Q?9QPW4a0WvHeE7YkS0eFuVAhHAl4zJht+TaJ6D7DGs7Al1YxPC+EXYBPtlOhk?=
- =?us-ascii?Q?CVjQGgagrFE/KqzxT5aDNERVyQBH3l3I8Xwb4+vPcuOr1WU/AttsNRrJ2gPu?=
- =?us-ascii?Q?o1Esod/vDIsMCKIBUw8oEVdub4fnH+vpmBcDjA0fIIN6NNUeiJM1ngxsrRid?=
- =?us-ascii?Q?K5Sh3ZWnymjm9EPH+y7NaB74/wWDFNBtY38gvCbj2TmPxQZrzQzsI7FAVYK/?=
- =?us-ascii?Q?lLTrHIg/uyYEg4gLWcRt3b22XJ1XT1MMt4fYNrRIYqxeNId6?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Kfbh7Q+4";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="cA1I/mhM"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63L5fjuq3455978
+	for <iommu@lists.linux.dev>; Tue, 21 Apr 2026 07:48:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	LRiTo12BdDvwLAp8x610f1HuZUrz/WqZhS+sKP93ieY=; b=Kfbh7Q+4HjjJvoKj
+	9/CpJeHcTEAZmL0h8kY0d77/Iw3u9jQcVoai3Ubx53eIOX5ZWb8qCVGx9atdCy4C
+	fp6VG6prt0/bezE7s03PXPqMyNaJPjovSwauOoA5ltxNGMoaEmWB1xo56rrx6X1F
+	w6MkLQc6uQXeB9Ofp+D6iV2TUI5uIiQe7nibZc4+kaPpXhZSuXMEjySOK49bG6Ip
+	RDVAcf6Da04jPLp4limSiWIz9QmMgCDgxDmWvV0wFKcybPl8d7OFbKk090o8Gdeu
+	MA5fUU5OIWIc0T203R0ekiUWd4ldHPSfMQPCMXCrgqG8Wahl0yQ+rRilGqAMMjPk
+	W9RzHg==
+Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com [209.85.214.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4dnfvjvyjh-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Tue, 21 Apr 2026 07:48:02 +0000 (GMT)
+Received: by mail-pl1-f199.google.com with SMTP id d9443c01a7336-2b2eba42b8dso36373025ad.0
+        for <iommu@lists.linux.dev>; Tue, 21 Apr 2026 00:48:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1776757682; x=1777362482; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=LRiTo12BdDvwLAp8x610f1HuZUrz/WqZhS+sKP93ieY=;
+        b=cA1I/mhMSdfiCFUL5DMobqOYDz5NL1815HB0DvhMqPGpmuCxsolqja9ucKFB36nQgC
+         tNUD1qHuXctjNYCTl4RcZC1p+vmJYXphsQ4rECtrSd8SJwlRkEIVM8jWYn0XlljHLT7V
+         irVH9344w908vSsG/K14gtMIoAC+ia28d4GqNENi1bafmT7DcYR7o2l99nk+XfKqukX1
+         6g6MwLU4uTpH0sMC7HVjSq44aN1DVJYVlJJA3VyeA5bi8Lkx9HHo+V7yQ1zWErzibC8n
+         ar7TNM5EZadN9b0QRkdXaX98ew1r8lm/l/pRFMFDnZB4PKQkt1RZKEmLHrP/OHkxhWCd
+         PmkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776757682; x=1777362482;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=LRiTo12BdDvwLAp8x610f1HuZUrz/WqZhS+sKP93ieY=;
+        b=A+CfdyUQW4GpbRUCwogZm9AN4Lnk716KUh/+rBmKskFo6Be0WNc8onusX/MwebrQsP
+         MMuHJkvGkyNtpSPeWyXRgZWifX6ndj2V6no+3geKFzDhC4l8vT27P84felqY+FwcgBz4
+         eFW+gvJkJ/c8RoMKpQNA5dM/Hz2+SoyIKQt1ETecTt7bl922+cw9ZbhPAObn4+pwh5hX
+         3lO7a6MYEg0n/cYQWACIp2vMeCCRYOE8XezIzjrSlPdXhj69RBtyLSKVNIuSqCZowdb9
+         SeEoWn0BrFDHdq0jLsI0FQl6zkG46OW8rDK445YGHX2X+x9i8mD56Cj4DZMDqadGRf1H
+         BOAg==
+X-Forwarded-Encrypted: i=1; AFNElJ8rcoyIVguMbYxIxI+m0ONBNmR1Tm69H5oz8KZu51+yunhDJwlFJmLGqCN/Bk7+6rXaklLG7w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzZ43Mjv0PHr52mhBTRbLIZVrzK47QQZgGLtMymItndgOHvraG8
+	MOTHuSItAzZz7LChQ/z6UyJY2k6GJiPNhgvXzR2mvf8udr13BOlSQfG4CIQ2gQGjz86fdJLnLxW
+	z27lDw6JJ4atNiOEm39V2ioN3uFIO3VMRai5IUpDPiVtNRGwag523BOWRTg==
+X-Gm-Gg: AeBDietPSSwd5LYfotd3cXrv4o2/vV3LDwQLRDx/ZO35Gc+RDm0044/n2qvgpdf62Fy
+	uu+dg5x8zr8Isq9g7hC063Jwu1mi8uDoko9eGA23uSfzKsfL91W0LTpAWWplVGmBuRYjuOIqYDc
+	Bx7Hh87pS2Bf0mSmdRXVx3R0NDJba/qtBYFbBKO8RPhpPXPEStCb+i9hTKVHpRAP27TKSPkyOBs
+	11IAYsh5Y3aBK70qHoOt5E9VYjLN83Tzn8RoVg3tBdZuLRUY4LlR9oycXdGf5G+ZP6jxQdq1suk
+	5WoYaV6fXQVurQT7lKmKE85EjjZReo/mAR64sAA7q/QI38He12MQGypoYqxMLe1q2QVJmwWG+Dn
+	22IP7hf6O3u2FrxsAM7LJGWO2NC6ma+KigAznwKY32NtNhIRd+lHarO094e6Epg==
+X-Received: by 2002:a17:902:f54d:b0:2b4:5b1a:d09c with SMTP id d9443c01a7336-2b5f9edb4cbmr183222105ad.15.1776757681948;
+        Tue, 21 Apr 2026 00:48:01 -0700 (PDT)
+X-Received: by 2002:a17:902:f54d:b0:2b4:5b1a:d09c with SMTP id d9443c01a7336-2b5f9edb4cbmr183221615ad.15.1776757681364;
+        Tue, 21 Apr 2026 00:48:01 -0700 (PDT)
+Received: from [10.219.57.87] ([202.46.23.19])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b5fab0cb92sm121375995ad.50.2026.04.21.00.47.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Apr 2026 00:48:00 -0700 (PDT)
+Message-ID: <ee552fdc-e35b-4132-b8c5-35bf409adec0@oss.qualcomm.com>
+Date: Tue, 21 Apr 2026 13:17:55 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Exchange-RoutingPolicyChecked: SgzLIlHS7+sfP0mFxOlCAktk1HKnPrUzU/BndskUNQ+yrtPF9vf/AKs6QdepTvJhIlEpv17qIlZFatsrfDsBsC/798aeaX5zRhdvITAGUHJn7QWk58YZb54/H+1TtXI+mDS2CMmru9U4OmbbMGmFMBTDAY1VI6l9YCHyNdVUsEAAycVd4k6JBW+eDXLTvCjPKxwZnkM6Ri4IVJy4ZMSFtY8LhnVzkcAwl2JFeXEpLvQYXkYFJAsQJ0+pb3HbPXYhVS65QGbE8QqoC5q0OU6rvyO5F39E1LRhBDTz4q27pRYKQO5a+XH3PhG+ovQx82jFjjeVYwb/gQsBCn7DlWKUJQ==
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 85c2c8ee-7ed2-48e1-ee06-08de9f795737
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Apr 2026 07:41:03.6131
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: NWPNWM5f/MONUbRb+sAOc/ZOGnwOZlHw1q5QtDuSZkDr9bUrJRCqOtAJPDGFdMNhOxJ+EeS6dit5FYRW6zuGAg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB7251
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iommu/arm-smmu: Use pm_runtime in fault handlers
+To: Pranjal Shrivastava <praan@google.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Rob Clark <robin.clark@oss.qualcomm.com>,
+        Connor Abbott <cwabbott0@gmail.com>, linux-arm-msm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org,
+        Akhil P Oommen <akhilpo@oss.qualcomm.com>,
+        Pratyush Brahma <pratyush.brahma@oss.qualcomm.com>
+References: <20260313-smmu-rpm-v2-1-8c2236b402b0@oss.qualcomm.com>
+ <ac8j1jlFNxgZWzzK@google.com>
+Content-Language: en-US
+From: Prakash Gupta <prakash.gupta@oss.qualcomm.com>
+In-Reply-To: <ac8j1jlFNxgZWzzK@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-ORIG-GUID: ISn5PzZSjXJ2t-yS4nWDtW8cCrUFJAdu
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDIxMDA3NCBTYWx0ZWRfX9yRjUaBw3XFf
+ Yg/gh6iG5zyTkI7GRTaYKHTzsfoMlVkLAJGY078ZJTin/V/MvJrbF1MrnRerPuZ7M6q0k0jWdzr
+ X2ID0TEaLYFTEBQVqH7zNFg9Gq3PvyKp99WYnDnA6KINRLY3u2Lx2/DAc1gdatQtfbgah2XfLfT
+ muIhT2rPvhpuUWb7wqtOpxm+MiMuBSvdLMvvrlnHRIY8b05jz6r/S7hvW5Xvkb3aK7Vtn/pT4Qg
+ a/yCnR+vqyrN/FGJ1ROcDLyDha5lUSrmvGhKfLkYlMDLOF6HmNyU85cuVag7Ro49RWh0uVbSBji
+ yiCy4P2nXSOjAuiK+u5gU1z6ZgobDIlRmEiIgLqiJsTxluaJbq+pqdssi5W3w//MYJmhvw4eYP5
+ 4x7Rl/eU2t+WWHvP2wXZowPOl+dD2Eea+RQNn7HMsrDRC9LXdlnrQRyP1Xyo/yBefBpKSgWMHHw
+ vo/kHspC6qHrShovZhQ==
+X-Authority-Analysis: v=2.4 cv=XNMAjwhE c=1 sm=1 tr=0 ts=69e72bb3 cx=c_pps
+ a=JL+w9abYAAE89/QcEU+0QA==:117 a=j4ogTh8yFefVWWEFDRgCtg==:17
+ a=IkcTkHD0fZMA:10 a=A5OVakUREuEA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=gowsoOTTUOVcmtlkKump:22
+ a=bC-a23v3AAAA:8 a=EUspDBNiAAAA:8 a=X3pBVciGceusgIsGFAAA:9 a=QEXdDO2ut3YA:10
+ a=324X-CrmTo6CU4MGRt3R:22 a=FO4_E8m0qiDe52t0p3_H:22
+X-Proofpoint-GUID: ISn5PzZSjXJ2t-yS4nWDtW8cCrUFJAdu
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-04-21_01,2026-04-20_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ bulkscore=0 adultscore=0 impostorscore=0 suspectscore=0 clxscore=1011
+ phishscore=0 malwarescore=0 lowpriorityscore=0 priorityscore=1501 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2604070000 definitions=main-2604210074
 
-> From: Nicolin Chen <nicolinc@nvidia.com>
-> Sent: Sunday, April 19, 2026 7:42 AM
->=20
-> In __iommu_group_set_domain_internal(), concurrent domain attachments
-> are
-> rejected when any device in the group is recovering. This is necessary to
-> fence concurrent attachments to a multi-device group where devices might
-> share the same RID due to PCI DMA alias quirks.
->=20
-> However, IOMMU_SET_DOMAIN_MUST_SUCCEED callers (detach/teardown
-> paths such
-> as __iommu_group_set_core_domain and
-> __iommu_release_dma_ownership) should
-> not be rejected, as the domain would be free-ed anyway in this nofail pat=
-h
-> while group->domain is still pointing to it. So pci_dev_reset_iommu_done(=
-)
-> could trigger a UAF when re-attaching group->domain.
 
-As I noted in my reply to v6, a WARN_ON will be triggered before any UAF:
 
-static void __iommu_group_set_domain_nofail(struct iommu_group *group,
-                                            struct iommu_domain *new_domain=
-)
-{
-        WARN_ON(__iommu_group_set_domain_internal(
-                group, new_domain, IOMMU_SET_DOMAIN_MUST_SUCCEED));
-}
+On 4/3/2026 7:50 AM, Pranjal Shrivastava wrote:
+> On Fri, Mar 13, 2026 at 03:53:53PM +0530, Prakash Gupta wrote:
+>> Commit d4a44f0750bb ("iommu/arm-smmu: Invoke pm_runtime across the driver")
+>> enabled pm_runtime for the arm-smmu device. On systems where the SMMU
+>> sits in a power domain, all register accesses must be done while the
+>> device is runtime active to avoid unclocked register reads and
+>> potential NoC errors.
+>>
+>> So far, this has not been an issue for most SMMU clients because
+>> stall-on-fault is enabled by default. While a translation fault is
+>> being handled, the SMMU stalls further translations for that context
+>> bank, so the fault handler would not race with a powered-down
+>> SMMU.
+>>
+>> Adreno SMMU now disables stall-on-fault in the presence of fault
+>> storms to avoid saturating SMMU resources and hanging the GMU. With
+>> stall-on-fault disabled, the SMMU can generate faults while its power
+>> domain may no longer be enabled, which makes unclocked accesses to
+>> fault-status registers in the SMMU fault handlers possible.
+>>
+>> Guard the context and global fault handlers with pm_runtime_get_if_active()
+>> and pm_runtime_put_autosuspend() so that all SMMU fault register accesses
+>> are done with the SMMU powered. In case pm_runtime is not active we can
+>> safely ignore the fault as for pm runtime resume the smmu device is
+>> reset and fault registers are cleared.
+>>
+>> Fixes: b13044092c1e ("drm/msm: Temporarily disable stall-on-fault after a page fault")
+>> Co-developed-by: Pratyush Brahma <pratyush.brahma@oss.qualcomm.com>
+>> Signed-off-by: Pratyush Brahma <pratyush.brahma@oss.qualcomm.com>
+>> Signed-off-by: Prakash Gupta <prakash.gupta@oss.qualcomm.com>
+>> ---
+>> Changes in v2:
+>> - Switched from arm_smmu_rpm_get()/arm_smmu_rpm_put() wrappers to
+>>   pm_runtime_get_if_active()/pm_runtime_put_autosuspend() APIs
+>> - Added support for smmu->impl->global_fault callback in global fault handler
+>> - Remove threaded irq context fault restriction to allow modifying stall
+>>   mode for adreno smmu
+>> - Link to v1: https://patch.msgid.link/20260127-smmu-rpm-v1-1-2ef2f4c85305@oss.qualcomm.com
+>> ---
+>>  drivers/iommu/arm/arm-smmu/arm-smmu.c | 60 +++++++++++++++++++++++------------
+>>  1 file changed, 39 insertions(+), 21 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>> index 5e690cf85ec9..f4c46491a03d 100644
+>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>> @@ -462,10 +462,20 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+>>  	int idx = smmu_domain->cfg.cbndx;
+>>  	int ret;
+>>  
+>> +	if (!pm_runtime_get_if_active(smmu->dev))
+> 
+> Note that the pm_runtime_get_if_active(dev) only returns a positive
+> value if the device state is exactly RPM_ACTIVE. If the device is in the
+> middle of its runtime_suspend callback, its state is RPM_SUSPENDING.
+> 
+> Thus, if a fault races with the suspend callback, we'll return IRQ_NONE
+> and the suspend callback doesn't seem to be disabling interrupts.
+> 
+> This isn't any better if we're in a fault-storm caused by
+> level-triggered interrupts, we'd simply keep entering this handler and
+> return.
+> 
+> I believe we should clear / handle any pending faults/interrupts or
+> atleast mask interrupt in the suspend handler to avoid this situation.
+> 
 
-> __iommu_group_set_domain_internal(struct iommu_group *group,
->  	/*
->  	 * This is a concurrent attach during device recovery. Reject it until
->  	 * pci_dev_reset_iommu_done() attaches the device to group-
-> >domain.
-> +	 *
-> +	 * Note: still allow MUST_SUCCEED callers (detach/teardown)
-> through to
-> +	 * avoid UAF on domain release paths.
->  	 */
-> -	if (group->recovery_cnt)
-> +	if (group->recovery_cnt && !(flags &
-> IOMMU_SET_DOMAIN_MUST_SUCCEED))
->  		return -EBUSY;
+Sorry for late response.
 
-MUST_SUCCEED are used in other places too:
+Thanks for feedback, I see the issue with level trigger causing
+interrupt storm here.
 
-- iommu_setup_default_domain()
-- error handling=20
+I don't see how we can meaningfully handle all context bank faults in
+suspend path. We can clear it, but the idea was that smmu device is
+going to be suspended, and shouldn't have any active transactions at
+this point. Any remaining fault is expected to be stale, which will be
+cleared in resume. I think it would be better to just mask the
+interrupts in suspend path to avoid interrupt storm.
 
-I'd just remove "(detach/teardown)" here.
+Will address this in next patch.
 
->=20
->  	/*
-> @@ -2482,6 +2485,13 @@ static int
-> __iommu_group_set_domain_internal(struct iommu_group *group,
->  	 */
->  	result =3D 0;
->  	for_each_group_device(group, gdev) {
-> +		/*
-> +		 * Device under recovery is attached to group-
-> >blocking_domain.
-> +		 * Don't change that. pci_dev_reset_iommu_done() will re-
-> attach
-> +		 * its domain to the updated group->domain, after the
-> recovery.
-> +		 */
-> +		if (gdev->blocked)
-> +			continue;
+>> +		return IRQ_NONE;
+>> +
+> 
+> Maybe we could add another wrapped-helper to maintain consistency:
+> 
+> static inline int arm_smmu_rpm_get_if_active(struct arm_smmu_device *smmu)
+> {
+>      if (!pm_runtime_enabled(smmu->dev))
+>          return 1; // Assume active/powered if RPM is not used
+>      return pm_runtime_get_if_active(smmu->dev);
+> }
+> 
+> This returns -EINVAL otherwise which isn't a problem for the if
+> condition but slightly cleaner.
+> 
+>> +	if (smmu->impl && smmu->impl->context_fault) {
+>> +		ret = smmu->impl->context_fault(irq, dev);
+>> +		goto out_power_off;
+>> +	}
+>> +
+> 
 
-This reminds me one thing. Ideally the blocked device really doesn't care
-whether group->domain is the one before resetting or a different one
-changed in middle. It's blocked then doesn't refer to any non-blocking
-domains. After reset is done it's re-attached to whatever group->domain
-is at that time.=20
+Ack. Will update in next patch.
 
-Then sounds there is no reason to block attach/replace too. Just skip
-the blocked device and update group->domain then it will be picked up
-later at reset done, just like done here for detach.
+> We've moved impl-specific handlers here, I don't see a functional change.
+> This looks fine.
+> 
+>>  	arm_smmu_read_context_fault_info(smmu, idx, &cfi);
+>>  
+>> -	if (!(cfi.fsr & ARM_SMMU_CB_FSR_FAULT))
+>> -		return IRQ_NONE;
+>> +	if (!(cfi.fsr & ARM_SMMU_CB_FSR_FAULT)) {
+>> +		ret = IRQ_NONE;
+>> +		goto out_power_off;
+>> +	}
+>>  
+>>  	ret = report_iommu_fault(&smmu_domain->domain, NULL, cfi.iova,
+>>  		cfi.fsynr & ARM_SMMU_CB_FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ);
+>> @@ -480,7 +490,12 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+>>  				  ret == -EAGAIN ? 0 : ARM_SMMU_RESUME_TERMINATE);
+>>  	}
+>>  
+>> -	return IRQ_HANDLED;
+>> +	ret = IRQ_HANDLED;
+>> +
+>> +out_power_off:
+>> +	pm_runtime_put_autosuspend(smmu->dev);
+> 
+> Nit: Please use arm_smmu_rpm_put() here.. while at it, I guess we can
+> also bring back pm_runtime_put_autosuspend() in arm_smmu_rpm_put() since
+> it is updated now to also mark last busy.
 
-Did I overlook anything? btw even if it makes sense, I'm not suggesting
-to change that logic in this series. It's more an enhancement rather than
-a bug fix.
+Ack. Will update in next patch.
 
-Sashiko [1] gave another interesting comment about dma aliasing caused
-by PCIe to PCI/PCI-X bridge - devices behind the bridge share a same
-RID (then same device/context entry in IOMMU). In this case unblocking
-devA could prematurely unblock devB which is actively undergoing a reset.
+> 
+>> +
+>> +	return ret;
+>>  }
+>>  
+>>  static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
+>> @@ -489,14 +504,25 @@ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
+>>  	struct arm_smmu_device *smmu = dev;
+>>  	static DEFINE_RATELIMIT_STATE(rs, DEFAULT_RATELIMIT_INTERVAL,
+>>  				      DEFAULT_RATELIMIT_BURST);
+>> +	int ret;
+>> +
+>> +	if (!pm_runtime_get_if_active(smmu->dev))
+>> +		return IRQ_NONE;
+>> +
+> 
+> Same here.
+> 
+>> +	if (smmu->impl && smmu->impl->global_fault) {
+>> +		ret = smmu->impl->global_fault(irq, dev);
+>> +		goto out_power_off;
+>> +	}
+>>  
+>>  	gfsr = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_sGFSR);
+>>  	gfsynr0 = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_sGFSYNR0);
+>>  	gfsynr1 = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_sGFSYNR1);
+>>  	gfsynr2 = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_sGFSYNR2);
+>>  
+>> -	if (!gfsr)
+>> -		return IRQ_NONE;
+>> +	if (!gfsr) {
+>> +		ret = IRQ_NONE;
+>> +		goto out_power_off;
+>> +	}
+>>  
+>>  	if (__ratelimit(&rs)) {
+>>  		if (IS_ENABLED(CONFIG_ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT) &&
+>> @@ -513,7 +539,11 @@ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
+>>  	}
+>>  
+>>  	arm_smmu_gr0_write(smmu, ARM_SMMU_GR0_sGFSR, gfsr);
+>> -	return IRQ_HANDLED;
+>> +	ret = IRQ_HANDLED;
+>> +
+>> +out_power_off:
+>> +	pm_runtime_put_autosuspend(smmu->dev);
+>> +	return ret;
+>>  }
+>>  
+>>  static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+>> @@ -683,7 +713,6 @@ static int arm_smmu_init_domain_context(struct arm_smmu_domain *smmu_domain,
+>>  	enum io_pgtable_fmt fmt;
+>>  	struct iommu_domain *domain = &smmu_domain->domain;
+>>  	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+>> -	irqreturn_t (*context_fault)(int irq, void *dev);
+>>  
+>>  	mutex_lock(&smmu_domain->init_mutex);
+>>  	if (smmu_domain->smmu)
+>> @@ -850,19 +879,14 @@ static int arm_smmu_init_domain_context(struct arm_smmu_domain *smmu_domain,
+>>  	 */
+>>  	irq = smmu->irqs[cfg->irptndx];
+>>  
+>> -	if (smmu->impl && smmu->impl->context_fault)
+>> -		context_fault = smmu->impl->context_fault;
+>> -	else
+>> -		context_fault = arm_smmu_context_fault;
+>> -
+>>  	if (smmu->impl && smmu->impl->context_fault_needs_threaded_irq)
+>>  		ret = devm_request_threaded_irq(smmu->dev, irq, NULL,
+>> -						context_fault,
+>> +						arm_smmu_context_fault,
+>>  						IRQF_ONESHOT | IRQF_SHARED,
+>>  						"arm-smmu-context-fault",
+>>  						smmu_domain);
+>>  	else
+>> -		ret = devm_request_irq(smmu->dev, irq, context_fault, IRQF_SHARED,
+>> +		ret = devm_request_irq(smmu->dev, irq, arm_smmu_context_fault, IRQF_SHARED,
+>>  				       "arm-smmu-context-fault", smmu_domain);
+>>  
+>>  	if (ret < 0) {
+>> @@ -2125,7 +2149,6 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>>  	struct device *dev = &pdev->dev;
+>>  	int num_irqs, i, err;
+>>  	u32 global_irqs, pmu_irqs;
+>> -	irqreturn_t (*global_fault)(int irq, void *dev);
+>>  
+>>  	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
+>>  	if (!smmu) {
+>> @@ -2205,18 +2228,13 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>>  		smmu->num_context_irqs = smmu->num_context_banks;
+>>  	}
+>>  
+>> -	if (smmu->impl && smmu->impl->global_fault)
+>> -		global_fault = smmu->impl->global_fault;
+>> -	else
+>> -		global_fault = arm_smmu_global_fault;
+>> -
+>>  	for (i = 0; i < global_irqs; i++) {
+>>  		int irq = platform_get_irq(pdev, i);
+>>  
+>>  		if (irq < 0)
+>>  			return irq;
+>>  
+>> -		err = devm_request_irq(dev, irq, global_fault, IRQF_SHARED,
+>> +		err = devm_request_irq(dev, irq, arm_smmu_global_fault, IRQF_SHARED,
+>>  				       "arm-smmu global fault", smmu);
+>>  		if (err)
+>>  			return dev_err_probe(dev, err,
+>>
+> 
+> Thanks,
+> Praan
 
-[1] https://sashiko.dev/#/patchset/cover.1776551790.git.nicolinc%40nvidia.c=
-om
-
-Honestly speaking I don't know whether such configuration exists today
-(having an ATS capable device in a PCI/PCI-X bus). Probably for robustness
-pci_enable_ats() could add a check to prevent it. But given it's niche and
-this series already fixes several real issues, I'm OK as it is now.
-
-So:
-
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
