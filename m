@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61D863AE6FD;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61E223AE701;
 	Tue, 21 Apr 2026 09:45:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776764713; cv=none; b=kOr/XDdhRpDpukC16vTDMo7wHzoGPyCFtRruNNb67LGnF6/a/OA2rcq38wRQ5uXKYPqpslR0mMu+3WJ6ycaIopcPJPSso1g55mhP9+7GpHxPZMfGIfeUdshgD4LfKZl0qTTfE8pTaZ4e5seNVUvksnLaIg3elBgnM5U8NWwgjgA=
+	t=1776764713; cv=none; b=AFXvAZmRq5SCsrWFM+y0Pulo0WgMYIi8iTXQSY6Ujb9djEdn03V1AY6oJObQld4vFOPOtZUFHKCv/khdQ2dIIoG6jejOQAOYiqFOlodOsplkxoOVjF43cI6ingukmJPZ3aMaNki61mVFwKy3WoM43Clz8zwxCwYNuEVWBlF1Yu8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1776764713; c=relaxed/simple;
-	bh=CHhHEb5sgQt9z+DgNHdyFkJRxxQ8BX3aIo7SXeKph/w=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=tSdRIYLzFlpvLL+8bREum9Z9CbNHtaAQ5VU3/sfkfExJNeWlQ9BfmyqHWR5hU1XA8Ft6HP8H3P+7Q5xtaVvHuywwFbGh7i8TveE+7edvTzWMZv/t8uRpVds+G7RWolUxsOBx2cmkNR+4vJ1PT0qT8Y00W0hyHNRAa7qBnpcqNco=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eY/JHEyu; arc=none smtp.client-ip=10.30.226.201
+	bh=mG/Qyz88Z3mO9PPd9omIUWPB3gHWwYXqU0j2fzy+loE=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=f7vZVntejVoTE+cHP05qjr6WodTxU8UpH+3WDEGHC1SXH77NFHNJNZQtlnW3qm6hz7yyfxkbcsQacQO/f+jY+EEaVQ1avKctHhFnvQvlhzooVFOcsW1zTRyA203y0dt/qRIaCIdtnfHdOdpCyBKuEjErndVumjeDJvvZzwva03o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RM5fYeP9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eY/JHEyu"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F256CC2BCB5;
-	Tue, 21 Apr 2026 09:45:12 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RM5fYeP9"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1EC6FC2BCB6;
+	Tue, 21 Apr 2026 09:45:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1776764713;
-	bh=CHhHEb5sgQt9z+DgNHdyFkJRxxQ8BX3aIo7SXeKph/w=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=eY/JHEyu1Y0/NaBk5nBLOhd71CVVRGZl5J0kW0jqC4HdmTxv9I/SW15VQgRQmC7mM
-	 /FjjIjZk4qqs3ZM4hRSpscyka9yOtHeYnxZdbHWNi1WjPJOiKPErRD5xwHPcA1aVr/
-	 YLJ18GEGtCKaYwdneM4pYugayerJLODVC22cRZSed0GB6su98zqNTX4SoAuWM1AM0l
-	 yYtCc6wcbP8dimKOjFmtiIuSsa5Mt0xA5ih5IScRDyEMHzTRF7OKZu0TELhonlAD6t
-	 9rG9p0Zt5V6zAsC23B/DVXOMPHXewLi3KZckPmdo03QRXumfng49GsjM0N+Ceth/l4
-	 WDUEP1wA4nhPQ==
+	bh=mG/Qyz88Z3mO9PPd9omIUWPB3gHWwYXqU0j2fzy+loE=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=RM5fYeP9XFFrdmr9o54G2n1HKaZw+T+fR/cbvoLPfFtV/vlig2haosy7EPN5We2v0
+	 FZP+hA8ODzufNChX6RieqXxk9qguS/+X9zghcL7ji4cWOjuXz4ERgxslqls6YT3WgW
+	 FQP14JtjX1SvjOy/jcqzhWQRQCh22quzI4jQBtwGfSXz/kijRrrk/doSHyNtGGJPwd
+	 TLdo40penudfqseEoPhPJSwVJYnyMDi6GPp96q4kFf6CmKc1KdEH5O0tJwvY92XnUE
+	 pN21GJFgwsOO6n+HuE/DwgjF31ozAMmhbKq2b4gTM0loG8H1xoq1JsVYCs9yOaExJq
+	 hM/cMjzRc/GRg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DED9BF327CE;
-	Tue, 21 Apr 2026 09:45:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D1BEF327D0;
+	Tue, 21 Apr 2026 09:45:13 +0000 (UTC)
 From: Alexandre MINETTE via B4 Relay <devnull+contact.alex-min.fr@kernel.org>
-Subject: [PATCH 0/8] Add Samsung Galaxy S4 support
-Date: Tue, 21 Apr 2026 11:45:06 +0200
-Message-Id: <20260421-mainline-send-v1-sending-v1-0-bcb0857724de@alex-min.fr>
+Date: Tue, 21 Apr 2026 11:45:08 +0200
+Subject: [PATCH 2/8] dt-bindings: extcon: qcom,pm8941-misc: Add PM8921
+ compatible
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,9 +41,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIACJH52kC/x2MwQqAIBAFfyX23EJKhPUr0SH0ZQu1hUIE0b8nn
- YY5zDyUkQSZhuqhhEuyHFrE1BX5ddYIllCcbGO7prWG91l0EwVnaODL/BSNbF0P3zt0wRsq+Zm
- wyP2vx+l9P3sOLCFqAAAA
+Message-Id: <20260421-mainline-send-v1-sending-v1-2-bcb0857724de@alex-min.fr>
+References: <20260421-mainline-send-v1-sending-v1-0-bcb0857724de@alex-min.fr>
+In-Reply-To: <20260421-mainline-send-v1-sending-v1-0-bcb0857724de@alex-min.fr>
 To: Bjorn Andersson <andersson@kernel.org>, 
  Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, 
  Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -57,11 +58,11 @@ Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, 
  iommu@lists.linux.dev, Alexandre MINETTE <contact@alex-min.fr>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1776764711; l=1782;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1776764711; l=1686;
  i=contact@alex-min.fr; s=20260421; h=from:subject:message-id;
- bh=CHhHEb5sgQt9z+DgNHdyFkJRxxQ8BX3aIo7SXeKph/w=;
- b=iLRPlGSXT3LnuC/vB7tE1btiUBFHxZZnZ+LvfrLycTACCo+OS6a2vvYLdkKQsuG9cOyMxs5+b
- F6NC3gyqJaLCMRltTFLGAw+y/MvfM6X1fnMaIY3YEcAFP7MejT00bI2
+ bh=hnBPQnGAcRm1YlYzJFFtxlKkl+dmNElxuaA7vF8baSw=;
+ b=CRcV/R56i6XTribBVeGZbxaFa+SPjHPDS2TRI+isQpII8DbEnT5A7G4mqZYF3L6l0QpY+ldXb
+ Fgv5vZRXPPIB5zxTqTQBek7Z5bCmA/IAUoCLaUErYfm7knyDvMCMa64
 X-Developer-Key: i=contact@alex-min.fr; a=ed25519;
  pk=KOCaxY4v16ptaT0uk1FRkuaDF2n1JhmnYwLiqWD76M4=
 X-Endpoint-Received: by B4 Relay for contact@alex-min.fr/20260421 with
@@ -69,44 +70,66 @@ X-Endpoint-Received: by B4 Relay for contact@alex-min.fr/20260421 with
 X-Original-From: Alexandre MINETTE <contact@alex-min.fr>
 Reply-To: contact@alex-min.fr
 
-Add initial mainline support for the Samsung Galaxy S4, codenamed jflte.
+From: Alexandre MINETTE <contact@alex-min.fr>
 
-This series adds the devicetree binding and board DTS, together with the
-small driver and common DTS changes needed to boot the device with working
-USB peripheral mode.
+PM8921 exposes USB ID state through the same interrupt-based logic as
+PM8941, so it can use the same Qualcomm PMIC misc extcon binding.
 
-Tested on a Samsung Galaxy S4 GT-I9505. With this series the device boots
-and supports UART, USB peripheral mode with USB networking, the front
-notification LED and the physical buttons.
+Unlike PM8941, PM8921 does not need a register resource for this use
+case, so allow qcom,pm8921-misc without requiring reg.
 
 Signed-off-by: Alexandre MINETTE <contact@alex-min.fr>
 ---
-Alexandre MINETTE (8):
-      dt-bindings: arm: qcom: Add Samsung Galaxy S4
-      dt-bindings: extcon: qcom,pm8941-misc: Add PM8921 compatible
-      pinctrl: qcom: Register functions before enabling pinctrl
-      iommu/msm: Look up masters per IOMMU instance
-      extcon: qcom-spmi-misc: Add PM8921 compatible
-      ARM: dts: qcom: apq8064: Fix USB controller clocks
-      ARM: dts: qcom: pm8921: Add USB ID extcon
-      ARM: dts: qcom: Add Samsung Galaxy S4
+ .../devicetree/bindings/extcon/qcom,pm8941-misc.yaml    | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
- Documentation/devicetree/bindings/arm/qcom.yaml    |   1 +
- .../bindings/extcon/qcom,pm8941-misc.yaml          |  17 +-
- arch/arm/boot/dts/qcom/Makefile                    |   1 +
- arch/arm/boot/dts/qcom/pm8921.dtsi                 |   7 +
- .../boot/dts/qcom/qcom-apq8064-samsung-jflte.dts   | 484 +++++++++++++++++++++
- arch/arm/boot/dts/qcom/qcom-apq8064.dtsi           |  18 +-
- drivers/extcon/extcon-qcom-spmi-misc.c             |   1 +
- drivers/iommu/msm_iommu.c                          |  28 +-
- drivers/pinctrl/qcom/pinctrl-msm.c                 |  15 +-
- 9 files changed, 545 insertions(+), 27 deletions(-)
----
-base-commit: b4e07588e743c989499ca24d49e752c074924a9a
-change-id: 20260421-mainline-send-v1-sending-289ec98e6dc1
+diff --git a/Documentation/devicetree/bindings/extcon/qcom,pm8941-misc.yaml b/Documentation/devicetree/bindings/extcon/qcom,pm8941-misc.yaml
+index 6b80518cbf62..4e3d0aadb83c 100644
+--- a/Documentation/devicetree/bindings/extcon/qcom,pm8941-misc.yaml
++++ b/Documentation/devicetree/bindings/extcon/qcom,pm8941-misc.yaml
+@@ -4,7 +4,7 @@
+ $id: http://devicetree.org/schemas/extcon/qcom,pm8941-misc.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+-title: Qualcomm Technologies, Inc. PM8941 USB ID Extcon device
++title: Qualcomm Technologies, Inc. PMIC USB ID Extcon device
+ 
+ maintainers:
+   - Guru Das Srinagesh <quic_gurus@quicinc.com>
+@@ -15,8 +15,9 @@ description: |
+ 
+ properties:
+   compatible:
+-    items:
+-      - const: qcom,pm8941-misc
++    enum:
++      - qcom,pm8921-misc
++      - qcom,pm8941-misc
+ 
+   reg:
+     maxItems: 1
+@@ -37,10 +38,18 @@ properties:
+           - const: usb_vbus
+ required:
+   - compatible
+-  - reg
+   - interrupts
+   - interrupt-names
+ 
++allOf:
++  - if:
++      properties:
++        compatible:
++          const: qcom,pm8941-misc
++    then:
++      required:
++        - reg
++
+ additionalProperties: false
+ 
+ examples:
 
-Best regards,
 -- 
-Alexandre MINETTE <contact@alex-min.fr>
+2.43.0
 
 
