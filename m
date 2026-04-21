@@ -1,196 +1,140 @@
-Received: from TYPPR03CU001.outbound.protection.outlook.com (mail-japaneastazolkn19012060.outbound.protection.outlook.com [52.103.43.60])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD3E233EF;
-	Tue, 21 Apr 2026 05:02:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.43.60
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776747766; cv=fail; b=PJKBPnPZHQnF2mC/vQqbBGHTN8dmXmkCQ+FwnPO+j/9yGh5+/qTMUd572rKX+MeLIqzX1tAhO9NIc0qlskBN+W9A9L3wDVolveK+NcB3RxnjqG1vSb5eYyhXjFyA2Xm92DF7nk3622FZTTcCSe4+je8G7CXAqjwhthJi8aifi04=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776747766; c=relaxed/simple;
-	bh=cjsLCF5wJgNtIFUoWtVumfZqz7tzBO1hxMs7gvmYhic=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=AjR8iq2+3OMv2rLfEY7UO89UQN0d/QlfDxa/mrPXbaWwifMtmK5WocAUGE6ol+X6S6GweFlot+PxLX9EepgT56Pj6vWL+DEyqzuah6DxsWrAxuLMfI+jSltAMZM+JSor7fNchjTT/RKmVPVpfNPApcx6rBYIuQ7ZO0tKTe9zTeE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=gWi3rFOo; arc=fail smtp.client-ip=52.103.43.60
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hotmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 129E613D638
+	for <iommu@lists.linux.dev>; Tue, 21 Apr 2026 06:49:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776754155; cv=none; b=YU1dyGL43Ju4Dey27svPQnwev+vJ4EYz97nwvHH5WkOCHTV501K+qHChDX2LGoojxCcmifu8Jxia5N81aAZCRD+fvkYeCjD/BQ4QRHo8Oq9XUomIs7CVy0qcEbAOvI6p929/1CO7Muqg5HrlvqxrXBjQ6+Soa+/wX6I/PyIpIR8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776754155; c=relaxed/simple;
+	bh=am3smhs96M1Iz0Y0JDciE1ZjrAK1dDbEC7UccjVq/eg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=sAYYHJcGKw/5Y5AbxKEfKWEqROoyz6rpXIlR7DPTAaRGGudrc8VLYMEMPGvcJ75kNCNqcYq0zUXG2cDwTSjE9CqbA2MF5YF5aitOhXt+n7XR5x9Ae1+/N7zmcF77qTRsMCXMO6tmm+0o0A+gvO7tNp7lbXAEIlh2hw7IQTlftJI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iTf9S6+9; arc=none smtp.client-ip=209.85.216.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="gWi3rFOo"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=eHLpt7OdcBERWoA9Pxd0N+5R4bvbimfDC1itPyXymSkXwgErH575TOD+i7aBwVA9VwtPi7lAJjOQG8o9Hi/3RdQohZrIkKsECU31wkyUmHNRSIKt29elF9BEzXkjExrlSD+JeStvlnKoH5f0wLTLQyXXZ18c8Ey7IfkQz831ZfyR36zfgdy12rXyYwLmx7TEQhFBQ3BsBLW1lOobzckE4+yXpmBhZVJyJ2lE/23Pb/tYVLI9hJsimjDemuTWQ+p+kgQArFufF2v0AJ3tdtLiKGXwlUk49beYaPRcPKG/H/kIkv3OM5Tbad/atuioUmS01CjAR1+AXMXYgVZiagBDRA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Qrpbf+KzWEPY10LFN9as5Snsfihzp8k4ec8oxV/9tbk=;
- b=EVHPIi4fnuGVYKEnDRK0xtC6FWqIo3tmyz8pxA68FviBvXh361HaXK7WM88Fg2/oIPuF9FqqyN/dmgVyFnNpw+RbW+rUxJgwNAWn1bQ+wtot9t2fPZP9Px7CCXu3cwsAtN1styBrU+q0kZbfmfPne9SNHCCOzeeXsPMZvO5Vrh2Yzds+czbByH9dOCH3Q0SPo+AuCAlHMjDkGr7sq+nuVANNNIkXWAvehncS8Bob653WGJJ7FTRisD/s+mV4qbOqXS+24sWFpCissXc9cQhNMxJIoKwS9raguzBGz5Mf47bftaIuWEAjIM8hners/tTSUQfb6bmd6+YxHgVmsiyxjw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Qrpbf+KzWEPY10LFN9as5Snsfihzp8k4ec8oxV/9tbk=;
- b=gWi3rFOoGnZnEJdlq57yinXicl/obi9c4+8hER1hrunwS97JFB4Qelz8oQG72RbqLh4ptA/ejQysd2/lgi4xbHQujFrJccpyOicOiNoxjeCjp0l0FhAXHHxpvXNvuKxKqaZf86V9DWv08sVNssnOx8pafmZll2B3XUMB5Jqe4bfQAbwNZPeJY/RJP6vnAg3NVRfIWl2MzB3LI1i0GGS/88YyFbAww7VO3QL/3INNOREnr80JJY/LHuLR3gXJd6XF5TiTpkN+PtH0sKE8BRV2KSrGArXDMQebN28d/Qh1Wg843Aw48uP6paX937UzclMzr5RqxdJHuT/oVByqHJoJPA==
-Received: from SI2PR01MB4393.apcprd01.prod.exchangelabs.com
- (2603:1096:4:1b0::7) by SI2PR01MB4419.apcprd01.prod.exchangelabs.com
- (2603:1096:4:1b2::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9818.33; Tue, 21 Apr
- 2026 05:02:40 +0000
-Received: from SI2PR01MB4393.apcprd01.prod.exchangelabs.com
- ([fe80::c735:fab8:6e3d:6d1c]) by SI2PR01MB4393.apcprd01.prod.exchangelabs.com
- ([fe80::c735:fab8:6e3d:6d1c%4]) with mapi id 15.20.9818.033; Tue, 21 Apr 2026
- 05:02:40 +0000
-Message-ID:
- <SI2PR01MB4393F7664EC3684BC5D3B241DC2C2@SI2PR01MB4393.apcprd01.prod.exchangelabs.com>
-Date: Tue, 21 Apr 2026 13:02:34 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 1/1] iommu/amd: Don't split flush for
- amd_iommu_domain_flush_all()
-To: Weinan Liu <wnliu@google.com>, jgg@nvidia.com
-Cc: iommu@lists.linux.dev, joro@8bytes.org, josef@toxicpanda.com,
- kpsingh@kernel.org, patches@lists.linux.dev, robin.murphy@arm.com,
- suravee.suthikulpanit@amd.com, will@kernel.org
-References: <20260414233607.GK2588311@nvidia.com>
- <20260415003046.2275802-1-wnliu@google.com>
-Content-Language: en-US
-From: Wei Wang <wei.w.wang@hotmail.com>
-In-Reply-To: <20260415003046.2275802-1-wnliu@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: TPYP295CA0024.TWNP295.PROD.OUTLOOK.COM
- (2603:1096:7d0:a::13) To SI2PR01MB4393.apcprd01.prod.exchangelabs.com
- (2603:1096:4:1b0::7)
-X-Microsoft-Original-Message-ID:
- <7a2bcb3d-5d5d-46b6-9d8b-499f264caa3d@hotmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iTf9S6+9"
+Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-356337f058aso2502936a91.2
+        for <iommu@lists.linux.dev>; Mon, 20 Apr 2026 23:49:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776754153; x=1777358953; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=VdNywBu7apdyTFV9cnt3GZxXLndr1pBULjY0WptzCm8=;
+        b=iTf9S6+9hFXzg1jlHt0V8wcJG7W9VDJeNaOBZ0KiOn5/FP1rCmcUnvBkZvlmvkx3VT
+         E1+LAklYbjdVFoq04a3RQdgHWyH1VfNPHc6iKWpuYe8Fqzoszd7niO+g1pOrJKfax3ny
+         rput8vmmbtzYu86QzWbQexix107YrXxKhzdVE5mHXREHAMehZb/jJ2iu+3o9A81+QshZ
+         jJv2pIbk07KyQYFs7akLMWPM33BqHliI4kyhsByAqsSA+jB9oqGTAlwfjjNt2glo+apl
+         uDmaEZWVbkIZFGbJ1ZZ6QC+JvJLZcdxjbFrP0CSFaiCJlpTO8kSrNLvP8oqQuFOa8/nA
+         7Ndg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776754153; x=1777358953;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=VdNywBu7apdyTFV9cnt3GZxXLndr1pBULjY0WptzCm8=;
+        b=r0DbvFaZAqks0dvoYl+K/mH6Mw7Y9FBBV1JN3DnK5aIai2JG0Uyy8HEIn/EvANSb1M
+         4cTgy5HWhksUXRIaxcQO2H/wpZ4evHjl+yriY1SBp5IPAEVFK/EJMQEn3MKDDEHWOdGr
+         0ZjpgPsuv13ApyZJZGxiQL37oLunzL/fnBlLU0S0Ot333i5RumnYnkjtvbHIt387MoXF
+         z74JQf4HMT7OY+kfhxEHZGyx0HeILNY+U/HP6i/0T16/D73McXzy1QkSRHHsMPvwlUR2
+         eXnOQ5yUeSsi42k8ot4bqE+KwxvYjxwZB0hJh2IR6uaDXP1v/Qmb1FX7Nxsd9FEsMBVc
+         YfVw==
+X-Forwarded-Encrypted: i=1; AFNElJ/mbDzZz63Mb8tbiaNto6zmYcI1P4CZj476XZXtwoVCWm6F7vhUJisAI7PP3c0SqMkDqHlc9Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxOZnYI6PIhIXzi3U3hmpA/qE7CEYgrOLW0BjEHGQnlZI0N2chm
+	ct9w7S4KEbZuPP/CUmPg5yd3LUw3SARfN2LuA8vNmjbAgzqTaE0fivN1
+X-Gm-Gg: AeBDietLFFjn2qpYhv7zu58uEX0oTjd2OyqaCd1IRZPgK6u25HE2xFUgl4d+VSNTohm
+	r6kZ/czmFRRzJMe6zNkbgw3XNkVtpwnZcB/NshY9/NT8e16wUu9+HHBUr7rw4+vd5Eq9GQM6ZZG
+	Xb/Sqs2BtIoavmsD0N3gdRyYKqH/PVg18XgJZwSApuncHl/L27JrMFYauOH7h85YM/M+hUzPtrI
+	0hJGdzNZuQc5bmCBmkPRXX2nsflyS/dzfrgfQERn8Q0cnoqTLV+/5jWh2ts7ft2dyDB6UiIxZKv
+	1onqFho12OJ0ZntPx8NCA2cFXXT437qgtgJEQEvU6+w9+HJ0S+ng+xYRF8w4fyePmyhS0xUjZE7
+	AWl/0ohFixIajbGqDTU1r6oghyZ2l6Yh1xQ7YXyNChed0xJ8Ek37r2595RTplwUiWagAnRegcg/
+	syMADaMxF26bdP+tMKnZesSLckgaOBpIeDSnABq1Y7DEP9C3HODlYrlV0paVhqPZ1UumrrRcNY3
+	R/mZJJUmvjjHGFR
+X-Received: by 2002:a17:90a:dfd0:b0:35e:30bc:96ed with SMTP id 98e67ed59e1d1-36140402361mr16891174a91.10.1776754153374;
+        Mon, 20 Apr 2026 23:49:13 -0700 (PDT)
+Received: from li-1a3e774c-28e4-11b2-a85c-acc9f2883e29.ibm.com ([129.41.58.4])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3614195a8f0sm12278674a91.12.2026.04.20.23.48.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Apr 2026 23:49:13 -0700 (PDT)
+Date: Tue, 21 Apr 2026 12:18:55 +0530
+From: Mukesh Kumar Chaurasiya <mkchauras@gmail.com>
+To: Thomas Gleixner <tglx@kernel.org>
+Cc: LKML <linux-kernel@vger.kernel.org>, 
+	Michael Ellerman <mpe@ellerman.id.au>, linuxppc-dev@lists.ozlabs.org, Arnd Bergmann <arnd@arndb.de>, 
+	x86@kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev, 
+	Michael Grzeschik <m.grzeschik@pengutronix.de>, netdev@vger.kernel.org, linux-wireless@vger.kernel.org, 
+	Herbert Xu <herbert@gondor.apana.org.au>, linux-crypto@vger.kernel.org, 
+	Vlastimil Babka <vbabka@kernel.org>, linux-mm@kvack.org, David Woodhouse <dwmw2@infradead.org>, 
+	Bernie Thompson <bernie@plugable.com>, linux-fbdev@vger.kernel.org, Theodore Tso <tytso@mit.edu>, 
+	linux-ext4@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, 
+	Uladzislau Rezki <urezki@gmail.com>, Marco Elver <elver@google.com>, 
+	Dmitry Vyukov <dvyukov@google.com>, kasan-dev@googlegroups.com, 
+	Andrey Ryabinin <ryabinin.a.a@gmail.com>, Thomas Sailer <t.sailer@alumni.ethz.ch>, 
+	linux-hams@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>, 
+	Richard Henderson <richard.henderson@linaro.org>, linux-alpha@vger.kernel.org, 
+	Russell King <linux@armlinux.org.uk>, linux-arm-kernel@lists.infradead.org, 
+	Catalin Marinas <catalin.marinas@arm.com>, Huacai Chen <chenhuacai@kernel.org>, loongarch@lists.linux.dev, 
+	Geert Uytterhoeven <geert@linux-m68k.org>, linux-m68k@lists.linux-m68k.org, 
+	Dinh Nguyen <dinguyen@kernel.org>, Jonas Bonn <jonas@southpole.se>, linux-openrisc@vger.kernel.org, 
+	Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org, Paul Walmsley <pjw@kernel.org>, 
+	linux-riscv@lists.infradead.org, Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org, 
+	"David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org
+Subject: Re: [patch 32/38] powerpc/spufs: Use mftb() directly
+Message-ID: <aecdpyvTLJOjCdFp@li-1a3e774c-28e4-11b2-a85c-acc9f2883e29.ibm.com>
+References: <20260410120044.031381086@kernel.org>
+ <20260410120319.723429844@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SI2PR01MB4393:EE_|SI2PR01MB4419:EE_
-X-MS-Office365-Filtering-Correlation-Id: 73c67595-b442-44a6-2368-08de9f633608
-X-Microsoft-Antispam:
-	BCL:0;ARA:14566002|41001999006|461199028|19110799012|8060799015|51005399006|15080799012|37011999003|5072599009|23021999003|6090799003|7042599007|40105399003|440099028|3412199025;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?WVBtZStRTlVRMHpkeVIyNGp1bTlLUE1QQ3l3YkVER2JsY3BmQnNpa0h5R1FP?=
- =?utf-8?B?WEVTVzlQSXgyR09uM2ZPUHRRY2pya1FqcktjRHF5aFh4Tk8rNkFCcTFVeStj?=
- =?utf-8?B?SHlzcGMrT2hGcXBZK0JxUkN1c1BhMElaanltSHZpVnZkcjBSRFk3c0prazVr?=
- =?utf-8?B?QU9MYU1PUWluaTYwblJJSHhiK0h4QWpkV2JHQThrdHRkZDY5aVZKS01GL2Iw?=
- =?utf-8?B?VnIydFJLYXNLTStBNWdZRmxKdGpnbWs0OEgxYVVmTFZoVEl4d3A3eUFPUWt6?=
- =?utf-8?B?eFl5OUdRVWZHRE5paUVMbWhmbzdBb2ZyT3c3VldvMTI2T2dUdlUvZDg5aWZu?=
- =?utf-8?B?Z3ErS3docEhQdXZETjh2VnE4UEVpd3RKWEV4bWlMVWRDc2xJTC94SiszVjFD?=
- =?utf-8?B?QndYWTNvNEM4aDN1U2VFS3RER05Vb0k2MHoySEkvdU01MEgrUlo2ZFIzdG9p?=
- =?utf-8?B?MmplZWNBc0VEMkRDTlV5ZWhUdjN4ZWdiakZoSkZrOVIxVSt3OXNwZVdLTGY1?=
- =?utf-8?B?RlFKZmlQd3gyZ2tWVU1jc0JNbDM2QnRJbWNjdm5Pditpb1l0R082V1BVTU1J?=
- =?utf-8?B?cVh2RFZxTFpITG1nVGJWUFBLZlhraU5tdTZYMGp6VlpuR1NMUldjT3QxOEFw?=
- =?utf-8?B?UmNvdDlobisrOFdEZEwzcmFTYmxjYkRNMGV6ak9UV2xyZmk5NEY4Vi80SG9j?=
- =?utf-8?B?d3dVa1JmNVNxNWw2dkUzQXJtNktrUEZDcG5nOFFIRDlxblFhZldMYWl4dHg3?=
- =?utf-8?B?UUZ2czJtdGw2REs5bVk4anVPQXhKd3JkQXJkOVI3d0F1aXYyY25qSXBMeS9l?=
- =?utf-8?B?OWZsaTZGQzcwQkZhVDY3OHY5bERSN092OHVkRGRNSTJvelVsTzlCVW8zd2dh?=
- =?utf-8?B?Zk1JVURPQm40OUdrRFRIR0FwRG1QRlFlOTZVaXZzQjl2eXJpbER6UnNLMnJ3?=
- =?utf-8?B?Nml6cUxxQm5pSENxQy9pbUU5WGtySUIyanRrbjR5VC9pOTFoT2xTR3ZwblNY?=
- =?utf-8?B?TUN2V0h5Umk5bTNGU0lKOGRkOG0wNCt5Q2lJSzlDNkVJZGpxWklkQmF3czJT?=
- =?utf-8?B?bXlJZEpaaVZmRTRYVThZUFE2OVcySGhUV2drek04ZitMZkJGWVRJZUpMU1F5?=
- =?utf-8?B?d21XSlplbU9OT3JWZjQ4OW5kVmhPRnNOOHdCeVFJaFJKNEZ5TU5BTXpTUm8y?=
- =?utf-8?B?aDRzaVZzcmFtWTBLQmcva0VtSysyQkZmKzBHYXpxazV5V3NKZ1cxL0t3NDds?=
- =?utf-8?B?bFdwcnRsVERpUkF2UHpQZFZ4VHpxQ0R4VVl2L1pmODBzTkdBV25ETHRubW9m?=
- =?utf-8?B?dXpNVm1pYkFoNG5JWWVYQjdOODIrMjR1ZW9jb2k1djJ6eDZTeGxzbzErVkU5?=
- =?utf-8?B?aEdnMUsvdG15NXc9PQ==?=
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?TE1kUjJlTmo2OWZ1a1FwcDYvOTc5NFhHUXNZQVZIWFJwZ0F2NEVOSkVkM0hK?=
- =?utf-8?B?VjRNWFdWRHZIQ0ZkNXk4WTQ0a09uTkJObWcvbHJCcTFNb3lvaW5pVVVEU2hr?=
- =?utf-8?B?NEdOL0EyOEl0V1BtUWFJK3FhZmZnbjJiSkRwZUg5UTIxYUpWdFNVS2hLdDd5?=
- =?utf-8?B?N3owQ1QyQXdHb2NvcFNHQkhhMFVrN2UwN3hOY0M1MFZyd3JKSWVDZ3NuakpC?=
- =?utf-8?B?L3RxTjdoM2RzeTBnUWhNY2UxWGhGZk4xSGM1aDBOZVptQ2h5SEt5cDZLckNx?=
- =?utf-8?B?QncwRlRPMUVDVXNkMlNSbndDOHg1Yy9PWFBhY0NFNFViK0NPUm9iOEU2ZGxJ?=
- =?utf-8?B?Ull3dGNvWStqbkIxS1ZzRnVjRFRTWWRWRm1mZGhOVnplMmN2WVNPbzBnVkRq?=
- =?utf-8?B?VFVqUm1MT1hhYThtaWpqSElOU3Q1R3YvTXprc1orWXhLVDFXRFo3eE1tY3h0?=
- =?utf-8?B?NCt1aEdTaWhXMnkyS2R3b1Ria1ZqU2xIYW1jeE9ZNS9wdTZyYXFMeS8wOHlx?=
- =?utf-8?B?Y2FtQS9MVEEwSGxtVUZpUmViMlk4dHRZM1hEZkZsV29pNHowZnNMY3pzLzd4?=
- =?utf-8?B?TnVFODVWTE4zSGxtMzc0ZG5LYUpYdFBOdjJxVDFlbHYrQ2phbE9PeFVqSUtr?=
- =?utf-8?B?MEgyRTVpYjlOTTFQTnMwcFgrNVE5TmxyUmtOVXF5aTZhRHA0QktoQlNIZUtx?=
- =?utf-8?B?SlZIdlNudEE2QysxRG43OERlaGlYVXhlM2Q3amMwM1NmWlAxZS8vMDh0Y2JR?=
- =?utf-8?B?SGVxTjFsNUU4V3prZm9aUS9WRVl6djQ4c01NRFFhRi9jZElSTmloMm9JU0xs?=
- =?utf-8?B?YjY4WUdrMGFsR1FhN0dXUk03bkdydEt1dTJEdHU3SGEyczA4Tis2Q25JU3Ay?=
- =?utf-8?B?Z1pGcU8zVERicDl0NWZSVzZXbGlidlFDcnRBSTd4SUlIRW42bHZWTXR5V1BT?=
- =?utf-8?B?ZXBEV29jSWRTaXV5MnczdTF0TEkvcnE1aVA0OG8zNFBWeWlseTNkRlJvSnNO?=
- =?utf-8?B?cU8zNnlyOUZpeFNEMTRYRGdINThDeXdRaml0NlpkMVk1RWpINzVPOC9xMS9S?=
- =?utf-8?B?bUJ1V2FHWmtvNGVIN0FFUzNNUS9YY2twS2c2QzlJbHNOT2RuajFqMHNrVVNI?=
- =?utf-8?B?VEFRbGJCUGNVNTNiczNYT1RXSUx3Qk9iSy9qUWIvdkxGeW9JWUNxenh1THFj?=
- =?utf-8?B?Nm5hWGx0cWNLdi91Tm5abkNOU0Y3MG9xYUFyOVd5aDBabnpKL3U2RGhEcnQ2?=
- =?utf-8?B?eUlSc0loc0tqVCt2MlRiNkNJbkV2VG45cU1nOFFEWTMrQVdLVFpjZVhZRzBi?=
- =?utf-8?B?MUg0dy9yWEsvM0NTWm56ZUdzUXE2S2EwbDVEMUdCK1J1MkRYSDBUcXpxUnZt?=
- =?utf-8?B?S1ZXZzhkNVhiSFhobFFaZTRRUUxpTXdVS1FLdjN6Vy9vN0JGUGswNnF1MTZx?=
- =?utf-8?B?QUNCbWRTNHZEQ1dTejcwY1JCTDRLNjhKODNkaWtEOFNYU3Z4b1JwdDRLWmh1?=
- =?utf-8?B?WTBzTTBPbjVwRGhaY0NiV0pxbXIxRlpRb2FkUjVIUU1DV3NYT2NoOWRxb1lM?=
- =?utf-8?B?QWxDY0NEUis4Qi9MSWp6aUhmQWQ0RlBLQm84TUU4ajN4Sm9ONkdSYUFSM1hm?=
- =?utf-8?B?Ynl5U3pQbWRERmdIZTdKUXRVZTYvc1pFZGpXOVZMMHpETXhTZkF5YjZlTVVT?=
- =?utf-8?B?YWZVYU9qdFhvTUJYdGx3THlEdFdwemdUZCtmKzJlM0FqengrdmhNSk9IaSto?=
- =?utf-8?B?K0NKNjVaTjlmSm1HTmFzTUdhbFppMzNLclJMa1gxT09LU01Vd3dVVkl2YmUv?=
- =?utf-8?B?ckl0RmNmd2dtbVpyZHlXYmNubWE1RU0ybmZ4Qm10VzVNR3duUnlCbDNBL3JJ?=
- =?utf-8?Q?MQJ/mhFwQQU1V?=
-X-OriginatorOrg: sct-15-20-9412-4-msonline-outlook-3e488.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: 73c67595-b442-44a6-2368-08de9f633608
-X-MS-Exchange-CrossTenant-AuthSource: SI2PR01MB4393.apcprd01.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Apr 2026 05:02:39.8231
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
-	00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SI2PR01MB4419
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260410120319.723429844@kernel.org>
 
-On 4/15/26 8:30 AM, Weinan Liu wrote:
-> We have observed multiple full invalidations occurring during device
-> detach when we are done using the vfio-device.
+On Fri, Apr 10, 2026 at 02:21:04PM +0200, Thomas Gleixner wrote:
+> There is no reason to indirect via get_cycles(), which is about to be
+> removed.
 > 
-> blocked_domain_attach_device()
->    -> detach_device()
->      -> amd_iommu_domain_flush_all()
->        -> amd_iommu_domain_flush_pages(..., CMD_INV_IOMMU_ALL_PAGES_ADDRESS)
+> Use mftb() directly.
 > 
->        	while (size != 0) {
-> 
->            -> __domain_flush_pages( flush_size /* power of 2 flush_size */)
->              -> domain_flush_pages_v1()
->                -> build_inv_iommu_pages()
->                  -> build_inv_address()
-> 
->           }
-> 
-> build_inv_address() will trigger a full invalidation  if the chunk
-> size > (1 << 51). Consequently, the guest will issue multiple full
-> invalidations for a single call to  amd_iommu_domain_flush_all()
-> 
-> Without this patch, we will see 10 time instead of 1 time full
-> invalidations for every amd_iommu_domain_flush_all().
-> 
-> Fixes: a270be1b3fdf ("iommu/amd: Use only natural aligned flushes in a VM")
-> 
-> Suggested-by: Josef Bacik <josef@toxicpanda.com>
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Weinan Liu <wnliu@google.com>
+> Signed-off-by: Thomas Gleixner <tglx@kernel.org>
+> Cc: Michael Ellerman <mpe@ellerman.id.au>
+> Cc: linuxppc-dev@lists.ozlabs.org
 > ---
->   drivers/iommu/amd/iommu.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
+>  arch/powerpc/platforms/cell/spufs/switch.c |    5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index 760d5f4623b5..59650a44ab50 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -1769,7 +1769,8 @@ void amd_iommu_domain_flush_pages(struct protection_domain *domain,
->   {
->   	lockdep_assert_held(&domain->lock);
->   
-> -	if (likely(!amd_iommu_np_cache)) {
-> +	if (likely(!amd_iommu_np_cache) ||
-> +		size >= (1ULL<<52)) {
->   		__domain_flush_pages(domain, address, size);
->   
->   		/* Wait until IOMMU TLB and all device IOTLB flushes are complete */
-
-Reviewed-by: Wei Wang <wei.w.wang@hotmail.com>
+> --- a/arch/powerpc/platforms/cell/spufs/switch.c
+> +++ b/arch/powerpc/platforms/cell/spufs/switch.c
+> @@ -34,6 +34,7 @@
+>  #include <asm/spu_priv1.h>
+>  #include <asm/spu_csa.h>
+>  #include <asm/mmu_context.h>
+> +#include <asm/time.h>
+>  
+>  #include "spufs.h"
+>  
+> @@ -279,7 +280,7 @@ static inline void save_timebase(struct
+>  	 *    Read PPE Timebase High and Timebase low registers
+>  	 *    and save in CSA.  TBD.
+>  	 */
+> -	csa->suspend_time = get_cycles();
+> +	csa->suspend_time = mftb();
+>  }
+>  
+>  static inline void remove_other_spu_access(struct spu_state *csa,
+> @@ -1261,7 +1262,7 @@ static inline void setup_decr(struct spu
+>  	 *     in LSCSA.
+>  	 */
+>  	if (csa->priv2.mfc_control_RW & MFC_CNTL_DECREMENTER_RUNNING) {
+> -		cycles_t resume_time = get_cycles();
+> +		cycles_t resume_time = mftb();
+>  		cycles_t delta_time = resume_time - csa->suspend_time;
+>  
+>  		csa->lscsa->decr_status.slot[0] = SPU_DECR_STATUS_RUNNING;
+> 
+Reviewed-by: Mukesh Kumar Chaurasiya (IBM) <mkchauras@gmail.com>
