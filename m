@@ -1,229 +1,162 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B49618AE3
-	for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 06:15:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7FE541C6A;
+	Wed, 22 Apr 2026 06:16:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776838557; cv=none; b=MMWqzRpNS40jrfcS9w/vbg31lGZX+z0fRTuACkWbZR0vWVRTts29dwolNHH6N9lhhXJIq58l2AthuSaLveBMp0dYjJLINfAmcBvgkndySGL/7bfUZiQCSQAsScfqxFTkHT6OUYgk1i3VhmiEkWx2XmztSxIXWPVFaUGaJeC5zWs=
+	t=1776838574; cv=none; b=mSthDEVJcN/LkWEeVXpTeFPAPIYNLM5t6sG/uDAwbVtW5BIsGvg1Fk27MQtfrb25oMgLAzP1d4uzTWy2kSFVvc+fA36vVY844nbukJiAji7JFg357LEX1CpFqwgfkIy6eAy9O7YCp1M7cdqd0shU5lTFUFrQRB7GV3sMFJyY+bA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776838557; c=relaxed/simple;
-	bh=wNW80J9+6cZEODBKEuNJBOLTJ4Is+qz3rHCTGu+9o+w=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=RJZTrzexTogo7Ru3LiuFk0wv7pW6eQhRP9IqmTWUP05lMjxja/XZwk10Q4wW77tEbIFatB652ZyxRwuALfxRdc0qKJXUgcAbt29ncnt9OXbN2ZZFya8zTBIJvS2q/fp83PzsJuGMHua/lcLaOA0VgTaXvAUSqmp5f23YZoBJluw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=D511bxnO; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1776838574; c=relaxed/simple;
+	bh=Az/SRLagWhk2eoHT8hpQtxhZZFEPeW2DL5Fe+qecieg=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=OkAV+kayHrf5A2k+Uz++BHZr85G6SQJTvGz2r4eTLQANVkoB07RvTqvELtDJRSTr5SQDIlk/yKqvN4aZ/uWCC43LIo+J49FbrbXc6BwXbUtWETWCVR7LjCxRoMttonCGAGCJeF3XqRrHm4XhaJEcNX9k1IjlKUWpFBTjnQHiuWw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Vu3JtGvR; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="D511bxnO"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776838556; x=1808374556;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=wNW80J9+6cZEODBKEuNJBOLTJ4Is+qz3rHCTGu+9o+w=;
-  b=D511bxnO+G3dKFEjkzI88SGLVlzh7wSN4qGMgd/OtwVnasKefAx+JcJh
-   AH0bzEbcBL5AzLMeLNuY9ZO5VY7spSKVPYYzX/iX9pYD0kr4SuzPFCWO2
-   VAubcGnISSh8cs2KijSYr+GJiSbsL4LEu7I3XQA0B35SnhLQ30oeiwCkW
-   oXTv9u87d0PTDf8Djyipo2VTVbf85vW2bVTm4X+Rj0TgdnST16pq84Vf1
-   WxoHYyTAJWKljBpWFNxICCpJyaPXTE5DwzpySa81I4EwrBHAlYdP0TqLd
-   nnE+myWcPNwSJ+3Tag48GAoWLyZa7fdj0pk54sMKtQFVa+UY0Nz3KmOZm
-   w==;
-X-CSE-ConnectionGUID: 0OwzdM7HRI22uIjnTuALOg==
-X-CSE-MsgGUID: CYwR+8f1RRKfSRF85J6A5A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11763"; a="77765895"
-X-IronPort-AV: E=Sophos;i="6.23,192,1770624000"; 
-   d="scan'208";a="77765895"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2026 23:15:55 -0700
-X-CSE-ConnectionGUID: 2R1ctoaSQaaYdcrEGlRJGA==
-X-CSE-MsgGUID: RYB6JcRSSRyoZ6TmdWoRfg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,192,1770624000"; 
-   d="scan'208";a="227926992"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2026 23:15:52 -0700
-Message-ID: <cbcbea4e-c857-4b75-a55d-ba3f89cdf22d@linux.intel.com>
-Date: Wed, 22 Apr 2026 14:13:49 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vu3JtGvR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7DA5C19425;
+	Wed, 22 Apr 2026 06:16:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1776838574;
+	bh=Az/SRLagWhk2eoHT8hpQtxhZZFEPeW2DL5Fe+qecieg=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=Vu3JtGvRG5Dxx1dUfh1zcFGSfOa54HD0D3qlmh+6IqCuWJlZOaqEHAIABFKaxkfgn
+	 BZEok/5epnf/bsDud42ksnjIXTCJj6dPEds6Y2qLNTwnfXDNkYOCMZ29Gd1bnEyZa5
+	 LYcDKNUr4JYiMlbnVRZW4900VRgIKLSqhJBMopWWebr0lxOu7tcLWOu6mAVnVvAYFp
+	 OIFh3X2JIepX4+PyYwBajW9CHQDY++WApZdEkTf2C2VaPKLtsYIUwJSIZtSXiWbNKa
+	 icekQYgHkaTwCLywU8t/y750dE0Aw79nNl3t3VqbqG4k0YPBWY7kaVqZ7aw1pr3zAx
+	 irgHlyreV8eNA==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	robin.murphy@arm.com, m.szyprowski@samsung.com, will@kernel.org,
+	maz@kernel.org, suzuki.poulose@arm.com, catalin.marinas@arm.com,
+	jiri@resnulli.us, Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH v2 6/8] dma-direct: make dma_direct_map_phys() honor
+ DMA_ATTR_CC_SHARED
+In-Reply-To: <yq5apl3rczmj.fsf@kernel.org>
+References: <20260420061415.3650870-1-aneesh.kumar@kernel.org>
+ <20260420061415.3650870-7-aneesh.kumar@kernel.org>
+ <20260421122924.GB3611611@ziepe.ca> <yq5apl3rczmj.fsf@kernel.org>
+Date: Wed, 22 Apr 2026 11:46:06 +0530
+Message-ID: <yq5amryvcyft.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 01/11] PCI: Propagate FLR return values to callers
-To: Nicolin Chen <nicolinc@nvidia.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: "Rafael J . Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>,
- Pranjal Shrivastava <praan@google.com>, Mostafa Saleh <smostafa@google.com>,
- Kevin Tian <kevin.tian@intel.com>, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, vsethi@nvidia.com,
- Shuai Xue <xueshuai@linux.alibaba.com>
-References: <cover.1776381841.git.nicolinc@nvidia.com>
- <8bc784e505dc04ca81582307c4a70babbf58eca0.1776381841.git.nicolinc@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <8bc784e505dc04ca81582307c4a70babbf58eca0.1776381841.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
-On 4/17/26 07:28, Nicolin Chen wrote:
-> A reset failure implies that the device might be unreliable. E.g. its ATC
-> might still retain stale entries. Thus, the IOMMU layer cannot trust this
-> device to resume its ATS function that can lead to memory corruption. So,
-> the pci_dev_reset_iommu_done() won't recover the device's IOMMU pathway if
-> the device reset fails.
-> 
-> Those functions in the pci_dev_reset_methods array invoke pcie_flr(), but
-> do not check the return value. Propagate them correctly.
-> 
-> Given that these functions have been running okay, and the return values
-> will be only needed for an incoming work. This is not treated as bug fix.
-> 
-> Suggested-by: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->   drivers/pci/quirks.c | 22 ++++++++++++----------
->   1 file changed, 12 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-> index 48946cca4be72..05ce12b6b2f76 100644
-> --- a/drivers/pci/quirks.c
-> +++ b/drivers/pci/quirks.c
-> @@ -3957,7 +3957,7 @@ static int reset_intel_82599_sfp_virtfn(struct pci_dev *dev, bool probe)
->   	 * supported.
->   	 */
->   	if (!probe)
-> -		pcie_flr(dev);
-> +		return pcie_flr(dev);
->   	return 0;
->   }
->   
-> @@ -4015,6 +4015,7 @@ static int reset_chelsio_generic_dev(struct pci_dev *dev, bool probe)
->   {
->   	u16 old_command;
->   	u16 msix_flags;
-> +	int ret;
->   
->   	/*
->   	 * If this isn't a Chelsio T4-based device, return -ENOTTY indicating
-> @@ -4060,7 +4061,7 @@ static int reset_chelsio_generic_dev(struct pci_dev *dev, bool probe)
->   				      PCI_MSIX_FLAGS_ENABLE |
->   				      PCI_MSIX_FLAGS_MASKALL);
->   
-> -	pcie_flr(dev);
-> +	ret = pcie_flr(dev);
+Aneesh Kumar K.V <aneesh.kumar@kernel.org> writes:
 
-It makes more sense to return early here on failure. There is no need to
-perform the subsequent steps if pcie_flr() fails. Would something like
-the following work?
-
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 757a296eae41..9e0f29ac9f95 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -4015,6 +4015,7 @@ static int reset_chelsio_generic_dev(struct 
-pci_dev *dev, bool probe)
-  {
-         u16 old_command;
-         u16 msix_flags;
-+       int ret;
-
-         /*
-          * If this isn't a Chelsio T4-based device, return -ENOTTY 
-indicating
-@@ -4060,7 +4061,9 @@ static int reset_chelsio_generic_dev(struct 
-pci_dev *dev, bool probe)
-                                       PCI_MSIX_FLAGS_ENABLE |
-                                       PCI_MSIX_FLAGS_MASKALL);
-
--       pcie_flr(dev);
-+       ret = pcie_flr(dev);
-+       if (ret)
-+               return ret;
-
-         /*
-          * Restore the configuration information (BAR values, etc.) 
-including
-
->   
->   	/*
->   	 * Restore the configuration information (BAR values, etc.) including
-> @@ -4069,7 +4070,7 @@ static int reset_chelsio_generic_dev(struct pci_dev *dev, bool probe)
->   	 */
->   	pci_restore_state(dev);
->   	pci_write_config_word(dev, PCI_COMMAND, old_command);
-> -	return 0;
-> +	return ret;
->   }
->   
->   #define PCI_DEVICE_ID_INTEL_82599_SFP_VF   0x10ed
-> @@ -4152,9 +4153,7 @@ static int nvme_disable_and_flr(struct pci_dev *dev, bool probe)
->   
->   	pci_iounmap(dev, bar);
->   
-> -	pcie_flr(dev);
-> -
-> -	return 0;
-> +	return pcie_flr(dev);
->   }
->   
->   /*
-> @@ -4166,14 +4165,16 @@ static int nvme_disable_and_flr(struct pci_dev *dev, bool probe)
->    */
->   static int delay_250ms_after_flr(struct pci_dev *dev, bool probe)
->   {
-> +	int ret;
-> +
->   	if (probe)
->   		return pcie_reset_flr(dev, PCI_RESET_PROBE);
->   
-> -	pcie_reset_flr(dev, PCI_RESET_DO_RESET);
-> +	ret = pcie_reset_flr(dev, PCI_RESET_DO_RESET);
->   
->   	msleep(250);
-
-The same there, ...
-
->   
-> -	return 0;
-> +	return ret;
->   }
->   
->   #define PCI_DEVICE_ID_HINIC_VF      0x375E
-> @@ -4189,6 +4190,7 @@ static int reset_hinic_vf_dev(struct pci_dev *pdev, bool probe)
->   	unsigned long timeout;
->   	void __iomem *bar;
->   	u32 val;
-> +	int ret;
->   
->   	if (probe)
->   		return 0;
-> @@ -4209,7 +4211,7 @@ static int reset_hinic_vf_dev(struct pci_dev *pdev, bool probe)
->   	val = val | HINIC_VF_FLR_PROC_BIT;
->   	iowrite32be(val, bar + HINIC_VF_OP);
->   
-> -	pcie_flr(pdev);
-> +	ret = pcie_flr(pdev);
+> Jason Gunthorpe <jgg@ziepe.ca> writes:
+>
+>> On Mon, Apr 20, 2026 at 11:44:13AM +0530, Aneesh Kumar K.V (Arm) wrote:
+>>> Teach dma_direct_map_phys() to select the DMA address encoding based on
+>>> DMA_ATTR_CC_SHARED.
+>>> 
+>>> Use phys_to_dma_unencrypted() for decrypted mappings and
+>>> phys_to_dma_encrypted() otherwise. If a device requires unencrypted DMA
+>>> but the source physical address is still encrypted, force the mapping
+>>> through swiotlb so the DMA address and backing memory attributes remain
+>>> consistent.
+>>> 
+>>> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+>>> ---
+>>>  kernel/dma/direct.h | 25 ++++++++++++++-----------
+>>>  1 file changed, 14 insertions(+), 11 deletions(-)
+>>> 
+>>> diff --git a/kernel/dma/direct.h b/kernel/dma/direct.h
+>>> index 7140c208c123..928671ef01e9 100644
+>>> --- a/kernel/dma/direct.h
+>>> +++ b/kernel/dma/direct.h
+>>> @@ -86,9 +86,14 @@ static inline dma_addr_t dma_direct_map_phys(struct device *dev,
+>>>  		phys_addr_t phys, size_t size, enum dma_data_direction dir,
+>>>  		unsigned long attrs, bool flush)
+>>>  {
+>>> +	bool force_swiotlb_map = false;
+>>>  	dma_addr_t dma_addr;
+>>>  
+>>> -	if (is_swiotlb_force_bounce(dev)) {
+>>> +	/* if phys addr attribute is encrypted but the device is forcing an encrypted dma addr */
+>>> +	if (!(attrs & DMA_ATTR_CC_SHARED) && force_dma_unencrypted(dev))
+>>> +		force_swiotlb_map = true;
+>>
+>> continuing my prior email.. This is really in the wrong spot, it
+>> should be in dma_capable()
+>>
+>>> +	if (is_swiotlb_force_bounce(dev) || force_swiotlb_map) {
+>>>  		if (!(attrs & DMA_ATTR_CC_SHARED)) {
+>>>  			if (attrs & (DMA_ATTR_MMIO | DMA_ATTR_REQUIRE_COHERENT))
+>>>  				return DMA_MAPPING_ERROR;
+>>> @@ -105,18 +110,16 @@ static inline dma_addr_t dma_direct_map_phys(struct device *dev,
+>>>  			goto err_overflow;
+>>>  	} else if (attrs & DMA_ATTR_CC_SHARED) {
+>>>  		dma_addr = phys_to_dma_unencrypted(dev, phys);
+>>> -		if (unlikely(!dma_capable(dev, dma_addr, size, false)))
+>>> -			goto err_overflow;
+>>>  	} else {
+>>> -		dma_addr = phys_to_dma(dev, phys);
+>>> -		if (unlikely(!dma_capable(dev, dma_addr, size, true)) ||
+>>> -		    dma_kmalloc_needs_bounce(dev, size, dir)) {
+>>
+>> here.
+>>
+>> swiotlb because the device can't reach a high address and swiotlb
+>> because the device doesn't have T=1 are really the same thing and
+>> should have the same code flow.
+>>
+>> Add attrs to dma_capable() and check force_dma_unencrypted(dev)
+>> inside.
+>>
+>
+> will update in the next revision
+>
+>>
+>>> -			if (is_swiotlb_active(dev) &&
+>>> -			    !(attrs & DMA_ATTR_REQUIRE_COHERENT))
+>>> -				return swiotlb_map(dev, phys, size, dir, attrs);
+>>> +		dma_addr = phys_to_dma_encrypted(dev, phys);
+>>> +	}
+>>>  
+>>> -			goto err_overflow;
+>>> -		}
+>>> +	if (unlikely(!dma_capable(dev, dma_addr, size, true)) ||
+>>> +	    dma_kmalloc_needs_bounce(dev, size, dir)) {
+>>> +		if (is_swiotlb_active(dev) &&
+>>> +		    !(attrs & DMA_ATTR_REQUIRE_COHERENT))
+>>> +			return swiotlb_map(dev, phys, size, dir, attrs);
+>>> +		goto err_overflow;
+>>>  	}
+>>
+>> Then this movement shouldn't be needed?
+>
+> I am still not clear about the use of DMA_ATTR_CC_SHARED here. If the
+> resulting DMA address is not dma_capable, I was expecting that we should
+> fall back to swiotlb_map(). That was the intention behind this change.
+> However, the other email thread suggests that DMA_ATTR_CC_SHARED is
+> always used with swiotlb_force_bounce(). I think we should address that.
+> If we do, the goal here would be to check dma_capable for both shared
+> and private addresses.
+>
+> For private/protected addresses, swiotlb_map() will currently fail with
+> DMA_MAPPING_ERROR because the default io_tlb_mem (dev->dma_io_tlb_mem)
+> is decrypted by default
 
 
-... and here.
+Also note that if a DMA_ATTR_CC_SHARED DMA address is not dma_capable,
+then swiotlb_map() will most likely fail as well. We do check the
+resulting SWIOTLB-mapped address again in swiotlb_map(). That is, if a
+DMA_ATTR_CC_SHARED physical address fails because the resulting DMA
+address exceeds the DMA mask (due to phys_to_dma_unencrypted() adding
+the top bit), then the SWIOTLB-mapped DMA address will likely fail the
+capability check for the same reason, as it would also include the top
+bit.
 
->   
->   	/*
->   	 * The device must recapture its Bus and Device Numbers after FLR
-> @@ -4236,7 +4238,7 @@ static int reset_hinic_vf_dev(struct pci_dev *pdev, bool probe)
->   reset_complete:
->   	pci_iounmap(pdev, bar);
->   
-> -	return 0;
-> +	return ret;
->   }
->   
->   static const struct pci_dev_reset_methods pci_dev_reset_methods[] = {
+So, if we want, we could avoid moving that if condition. However, IMHO,
+we could make it more generic to indicate that if any address is not
+DMA-capable, and if a SWIOTLB is active, we should attempt swiotlb_map()
 
-Thanks,
-baolu
+-aneesh
