@@ -1,30 +1,30 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7E4CD37DEB2
-	for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 02:33:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A6BE3381AF9
+	for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 02:33:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776825236; cv=none; b=oWZmrEE5hXcN3maWwmCiRSLq85ZzG5kEAJMrh2sWDgWLTgkPvoq5M2SBWeLWs434jFeohvrte6bBTEBcy15Ek7vrfsJUflUesjKryInNNLdDmMd6VnBJ00DIsgkYXGVSP+HiERCstX5k9gX2gI/TO5EGBt2FICypgZM2FBozGuw=
+	t=1776825239; cv=none; b=iA7UbmJ/CkPZoPjRw2AG3sPDcCqxtQ2uaA12ENQZ6T4lzKQmZ2yh70XShBJkCVWTtVQlGJTXTwmwI7M2mGmCiCsrRu0D8HnrcnGBXWXJFIFzZmURe2HuXccPVHQr4fUpQ8HhTcDn4Gv2dScmt6KHa4i6fDa1lLHWa5cKn6VOr1E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776825236; c=relaxed/simple;
-	bh=aZ5nQ4kWLyHURBZkrlbygyaJvL1p2ds7QkhsVlbg7P4=;
+	s=arc-20240116; t=1776825239; c=relaxed/simple;
+	bh=jYrebEGyLACqbZL/w3y9a7O0xWgw6FHchfvbYBMKEM0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Jd2n2MnhM2vHd57+/HKLJoeUcJewX3wgWICkuUkU+N5R380ATu7SysVDxO7dzCoeWAbG/cXk+s4vddH1k6QCqyTx48bHkct3TbXnHMBf37yfdpBkVzPZZvhZwFXZ8d6HS5fuBW9eutNDbHSQ91f7lAAfC4n7g0sNpwK3AROaZjw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=KKA6qZW5; arc=none smtp.client-ip=13.77.154.182
+	 MIME-Version; b=dLYHEyl0ctj+rkHs/RBNgQncis5Tfctl5Ct0DxxeGIQEcnjtLrjn4DinhKjluH69hV6/ZfAP4KO1Isp8/0RW+Zi7+PRvD1WuNeh+x6zfXsbDxCf9rqqAxCSrBBm0aPVcTZ8/e0104wo3ntsCfTpzd/4zjI9cLvokyQ8TnsttPpI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=GgLzpdJZ; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="KKA6qZW5"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="GgLzpdJZ"
 Received: from mrdev.corp.microsoft.com (192-184-212-33.fiber.dynamic.sonic.net [192.184.212.33])
-	by linux.microsoft.com (Postfix) with ESMTPSA id E897520B6F0C;
-	Tue, 21 Apr 2026 19:33:38 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E897520B6F0C
+	by linux.microsoft.com (Postfix) with ESMTPSA id 4F8A320B6F1F;
+	Tue, 21 Apr 2026 19:33:44 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 4F8A320B6F1F
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1776825219;
-	bh=/FJ9bsIxu/JI3kZjnk9v7T9zslA2gv7h8SLu9mSngSI=;
+	s=default; t=1776825225;
+	bh=YnF+uI+QwqeYTK6oQpqBg7HAiFmqfGlkyQt6D84StzY=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=KKA6qZW5BjTGetTHaXr1H8yflRGSL50UrgxIwpnE1ji/CbxmlmQ2lYeHJZ6lF3qeF
-	 E5VhCdLpQ8kJNyFLS1ku5GfIrK7k35JBcqlwOBGGqu9ai1FDNXcgts90myQ4H+0XQ5
-	 qupbxfCETPcRTSgtEui/pD/BAuxy0B1D6+OP/UqQ=
+	b=GgLzpdJZ9nmTE/p4NZSlFoqA8wfROdvtb29VmC5gy4u/g+sAFKx15pHMNK0ZG8yfE
+	 ZZXvc8Tcv/AFHSLs7vfDcTEqxfvehzsr5Ba8763F99tj78RMpsTTOAbzlpVQ1i8sAI
+	 YdWhJVQ0mYd+YLMldvIq5xIVa5h4ubRqYaMgZAfk=
 From: Mukesh R <mrathor@linux.microsoft.com>
 To: hpa@zytor.com,
 	robin.murphy@arm.com,
@@ -56,9 +56,9 @@ Cc: kys@microsoft.com,
 	kwilczynski@kernel.org,
 	bhelgaas@google.com,
 	arnd@arndb.de
-Subject: [PATCH V1 02/13] x86/hyperv: cosmetic changes in irqdomain.c for readability
-Date: Tue, 21 Apr 2026 19:32:28 -0700
-Message-ID: <20260422023239.1171963-3-mrathor@linux.microsoft.com>
+Subject: [PATCH V1 06/13] mshv: Implement mshv bridge device for VFIO
+Date: Tue, 21 Apr 2026 19:32:32 -0700
+Message-ID: <20260422023239.1171963-7-mrathor@linux.microsoft.com>
 X-Mailer: git-send-email 2.51.2.vfs.0.1
 In-Reply-To: <20260422023239.1171963-1-mrathor@linux.microsoft.com>
 References: <20260422023239.1171963-1-mrathor@linux.microsoft.com>
@@ -70,433 +70,263 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Make cosmetic changes:
- o Rename struct pci_dev *dev to *pdev since there are cases of
-   struct device *dev in the file and all over the kernel
- o Rename hv_build_pci_dev_id to hv_build_devid_type_pci in anticipation
-   of building different types of device ids
- o Fix checkpatch.pl issues with return and extraneous printk
- o Replace spaces with tabs
- o Rename struct hv_devid *xxx to struct hv_devid *hv_devid given code
-   paths involve many types of device ids
- o Fix indentation in a large if block by using goto.
+Add a new file to implement VFIO-MSHV bridge pseudo device. These
+functions are called in the VFIO framework, and credits to kvm/vfio.c
+as this file was adapted from it.
 
-There are no functional changes.
-
-Reviewed-by: Anirudh Rayabharam (Microsoft) <anirudh@anirudhrb.com>
+Co-developed-by: Wei Liu <wei.liu@kernel.org>
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
 ---
- arch/x86/hyperv/irqdomain.c | 198 +++++++++++++++++++-----------------
- 1 file changed, 104 insertions(+), 94 deletions(-)
+ drivers/hv/Makefile       |   3 +-
+ drivers/hv/mshv_vfio.c    | 211 ++++++++++++++++++++++++++++++++++++++
+ include/uapi/linux/mshv.h |   1 +
+ 3 files changed, 214 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/hv/mshv_vfio.c
 
-diff --git a/arch/x86/hyperv/irqdomain.c b/arch/x86/hyperv/irqdomain.c
-index 365e364268d9..b3ad50a874dc 100644
---- a/arch/x86/hyperv/irqdomain.c
-+++ b/arch/x86/hyperv/irqdomain.c
-@@ -1,5 +1,4 @@
- // SPDX-License-Identifier: GPL-2.0
--
- /*
-  * Irqdomain for Linux to run as the root partition on Microsoft Hypervisor.
-  *
-@@ -14,8 +13,8 @@
- #include <linux/irqchip/irq-msi-lib.h>
- #include <asm/mshyperv.h>
- 
--static int hv_map_interrupt(union hv_device_id device_id, bool level,
--		int cpu, int vector, struct hv_interrupt_entry *entry)
-+static int hv_map_interrupt(union hv_device_id hv_devid, bool level,
-+		int cpu, int vector, struct hv_interrupt_entry *ret_entry)
- {
- 	struct hv_input_map_device_interrupt *input;
- 	struct hv_output_map_device_interrupt *output;
-@@ -32,7 +31,7 @@ static int hv_map_interrupt(union hv_device_id device_id, bool level,
- 	intr_desc = &input->interrupt_descriptor;
- 	memset(input, 0, sizeof(*input));
- 	input->partition_id = hv_current_partition_id;
--	input->device_id = device_id.as_uint64;
-+	input->device_id = hv_devid.as_uint64;
- 	intr_desc->interrupt_type = HV_X64_INTERRUPT_TYPE_FIXED;
- 	intr_desc->vector_count = 1;
- 	intr_desc->target.vector = vector;
-@@ -44,7 +43,7 @@ static int hv_map_interrupt(union hv_device_id device_id, bool level,
- 
- 	intr_desc->target.vp_set.valid_bank_mask = 0;
- 	intr_desc->target.vp_set.format = HV_GENERIC_SET_SPARSE_4K;
--	nr_bank = cpumask_to_vpset(&(intr_desc->target.vp_set), cpumask_of(cpu));
-+	nr_bank = cpumask_to_vpset(&intr_desc->target.vp_set, cpumask_of(cpu));
- 	if (nr_bank < 0) {
- 		local_irq_restore(flags);
- 		pr_err("%s: unable to generate VP set\n", __func__);
-@@ -61,7 +60,7 @@ static int hv_map_interrupt(union hv_device_id device_id, bool level,
- 
- 	status = hv_do_rep_hypercall(HVCALL_MAP_DEVICE_INTERRUPT, 0, var_size,
- 			input, output);
--	*entry = output->interrupt_entry;
-+	*ret_entry = output->interrupt_entry;
- 
- 	local_irq_restore(flags);
- 
-@@ -71,21 +70,19 @@ static int hv_map_interrupt(union hv_device_id device_id, bool level,
- 	return hv_result_to_errno(status);
- }
- 
--static int hv_unmap_interrupt(u64 id, struct hv_interrupt_entry *old_entry)
-+static int hv_unmap_interrupt(u64 id, struct hv_interrupt_entry *irq_entry)
- {
- 	unsigned long flags;
- 	struct hv_input_unmap_device_interrupt *input;
--	struct hv_interrupt_entry *intr_entry;
- 	u64 status;
- 
- 	local_irq_save(flags);
- 	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
- 
- 	memset(input, 0, sizeof(*input));
--	intr_entry = &input->interrupt_entry;
- 	input->partition_id = hv_current_partition_id;
- 	input->device_id = id;
--	*intr_entry = *old_entry;
-+	input->interrupt_entry = *irq_entry;
- 
- 	status = hv_do_hypercall(HVCALL_UNMAP_DEVICE_INTERRUPT, input, NULL);
- 	local_irq_restore(flags);
-@@ -115,67 +112,71 @@ static int get_rid_cb(struct pci_dev *pdev, u16 alias, void *data)
- 	return 0;
- }
- 
--static union hv_device_id hv_build_pci_dev_id(struct pci_dev *dev)
-+static union hv_device_id hv_build_devid_type_pci(struct pci_dev *pdev)
- {
--	union hv_device_id dev_id;
-+	int pos;
-+	union hv_device_id hv_devid;
- 	struct rid_data data = {
- 		.bridge = NULL,
--		.rid = PCI_DEVID(dev->bus->number, dev->devfn)
-+		.rid = PCI_DEVID(pdev->bus->number, pdev->devfn)
- 	};
- 
--	pci_for_each_dma_alias(dev, get_rid_cb, &data);
-+	pci_for_each_dma_alias(pdev, get_rid_cb, &data);
- 
--	dev_id.as_uint64 = 0;
--	dev_id.device_type = HV_DEVICE_TYPE_PCI;
--	dev_id.pci.segment = pci_domain_nr(dev->bus);
-+	hv_devid.as_uint64 = 0;
-+	hv_devid.device_type = HV_DEVICE_TYPE_PCI;
-+	hv_devid.pci.segment = pci_domain_nr(pdev->bus);
- 
--	dev_id.pci.bdf.bus = PCI_BUS_NUM(data.rid);
--	dev_id.pci.bdf.device = PCI_SLOT(data.rid);
--	dev_id.pci.bdf.function = PCI_FUNC(data.rid);
--	dev_id.pci.source_shadow = HV_SOURCE_SHADOW_NONE;
-+	hv_devid.pci.bdf.bus = PCI_BUS_NUM(data.rid);
-+	hv_devid.pci.bdf.device = PCI_SLOT(data.rid);
-+	hv_devid.pci.bdf.function = PCI_FUNC(data.rid);
-+	hv_devid.pci.source_shadow = HV_SOURCE_SHADOW_NONE;
- 
--	if (data.bridge) {
--		int pos;
-+	if (data.bridge == NULL)
-+		goto out;
- 
--		/*
--		 * Microsoft Hypervisor requires a bus range when the bridge is
--		 * running in PCI-X mode.
--		 *
--		 * To distinguish conventional vs PCI-X bridge, we can check
--		 * the bridge's PCI-X Secondary Status Register, Secondary Bus
--		 * Mode and Frequency bits. See PCI Express to PCI/PCI-X Bridge
--		 * Specification Revision 1.0 5.2.2.1.3.
--		 *
--		 * Value zero means it is in conventional mode, otherwise it is
--		 * in PCI-X mode.
--		 */
-+	/*
-+	 * Microsoft Hypervisor requires a bus range when the bridge is
-+	 * running in PCI-X mode.
-+	 *
-+	 * To distinguish conventional vs PCI-X bridge, we can check
-+	 * the bridge's PCI-X Secondary Status Register, Secondary Bus
-+	 * Mode and Frequency bits. See PCI Express to PCI/PCI-X Bridge
-+	 * Specification Revision 1.0 5.2.2.1.3.
-+	 *
-+	 * Value zero means it is in conventional mode, otherwise it is
-+	 * in PCI-X mode.
-+	 */
- 
--		pos = pci_find_capability(data.bridge, PCI_CAP_ID_PCIX);
--		if (pos) {
--			u16 status;
-+	pos = pci_find_capability(data.bridge, PCI_CAP_ID_PCIX);
-+	if (pos) {
-+		u16 status;
- 
--			pci_read_config_word(data.bridge, pos +
--					PCI_X_BRIDGE_SSTATUS, &status);
-+		pci_read_config_word(data.bridge, pos + PCI_X_BRIDGE_SSTATUS,
-+				     &status);
- 
--			if (status & PCI_X_SSTATUS_FREQ) {
--				/* Non-zero, PCI-X mode */
--				u8 sec_bus, sub_bus;
-+		if (status & PCI_X_SSTATUS_FREQ) {
-+			/* Non-zero, PCI-X mode */
-+			u8 sec_bus, sub_bus;
- 
--				dev_id.pci.source_shadow = HV_SOURCE_SHADOW_BRIDGE_BUS_RANGE;
-+			hv_devid.pci.source_shadow =
-+					     HV_SOURCE_SHADOW_BRIDGE_BUS_RANGE;
- 
--				pci_read_config_byte(data.bridge, PCI_SECONDARY_BUS, &sec_bus);
--				dev_id.pci.shadow_bus_range.secondary_bus = sec_bus;
--				pci_read_config_byte(data.bridge, PCI_SUBORDINATE_BUS, &sub_bus);
--				dev_id.pci.shadow_bus_range.subordinate_bus = sub_bus;
--			}
-+			pci_read_config_byte(data.bridge, PCI_SECONDARY_BUS,
-+					     &sec_bus);
-+			hv_devid.pci.shadow_bus_range.secondary_bus = sec_bus;
-+			pci_read_config_byte(data.bridge, PCI_SUBORDINATE_BUS,
-+					     &sub_bus);
-+			hv_devid.pci.shadow_bus_range.subordinate_bus = sub_bus;
- 		}
- 	}
- 
--	return dev_id;
-+out:
-+	return hv_devid;
- }
- 
--/**
-- * hv_map_msi_interrupt() - "Map" the MSI IRQ in the hypervisor.
+diff --git a/drivers/hv/Makefile b/drivers/hv/Makefile
+index 888a748cc7cb..9ab6fc254c38 100644
+--- a/drivers/hv/Makefile
++++ b/drivers/hv/Makefile
+@@ -14,7 +14,8 @@ hv_vmbus-y := vmbus_drv.o \
+ hv_vmbus-$(CONFIG_HYPERV_TESTING)	+= hv_debugfs.o
+ hv_utils-y := hv_util.o hv_kvp.o hv_snapshot.o hv_utils_transport.o
+ mshv_root-y := mshv_root_main.o mshv_synic.o mshv_eventfd.o mshv_irq.o \
+-	       mshv_root_hv_call.o mshv_portid_table.o mshv_regions.o
++	       mshv_root_hv_call.o mshv_portid_table.o mshv_regions.o  \
++               mshv_vfio.o
+ mshv_root-$(CONFIG_DEBUG_FS) += mshv_debugfs.o
+ mshv_root-$(CONFIG_TRACEPOINTS) += mshv_trace.o
+ mshv_vtl-y := mshv_vtl_main.o
+diff --git a/drivers/hv/mshv_vfio.c b/drivers/hv/mshv_vfio.c
+new file mode 100644
+index 000000000000..00a97920e25b
+--- /dev/null
++++ b/drivers/hv/mshv_vfio.c
+@@ -0,0 +1,211 @@
++// SPDX-License-Identifier: GPL-2.0-only
 +/*
-+ * hv_map_msi_interrupt() - Map the MSI IRQ in the hypervisor.
-  * @data:      Describes the IRQ
-  * @out_entry: Hypervisor (MSI) interrupt entry (can be NULL)
-  *
-@@ -188,22 +189,23 @@ int hv_map_msi_interrupt(struct irq_data *data,
- {
- 	struct irq_cfg *cfg = irqd_cfg(data);
- 	struct hv_interrupt_entry dummy;
--	union hv_device_id device_id;
-+	union hv_device_id hv_devid;
- 	struct msi_desc *msidesc;
--	struct pci_dev *dev;
-+	struct pci_dev *pdev;
- 	int cpu;
- 
- 	msidesc = irq_data_get_msi_desc(data);
--	dev = msi_desc_to_pci_dev(msidesc);
--	device_id = hv_build_pci_dev_id(dev);
-+	pdev = msi_desc_to_pci_dev(msidesc);
-+	hv_devid = hv_build_devid_type_pci(pdev);
- 	cpu = cpumask_first(irq_data_get_effective_affinity_mask(data));
- 
--	return hv_map_interrupt(device_id, false, cpu, cfg->vector,
-+	return hv_map_interrupt(hv_devid, false, cpu, cfg->vector,
- 				out_entry ? out_entry : &dummy);
- }
- EXPORT_SYMBOL_GPL(hv_map_msi_interrupt);
- 
--static inline void entry_to_msi_msg(struct hv_interrupt_entry *entry, struct msi_msg *msg)
-+static void entry_to_msi_msg(struct hv_interrupt_entry *entry,
-+			     struct msi_msg *msg)
- {
- 	/* High address is always 0 */
- 	msg->address_hi = 0;
-@@ -211,17 +213,19 @@ static inline void entry_to_msi_msg(struct hv_interrupt_entry *entry, struct msi
- 	msg->data = entry->msi_entry.data.as_uint32;
- }
- 
--static int hv_unmap_msi_interrupt(struct pci_dev *dev, struct hv_interrupt_entry *old_entry);
-+static int hv_unmap_msi_interrupt(struct pci_dev *pdev,
-+				  struct hv_interrupt_entry *irq_entry);
++ * VFIO-MSHV bridge pseudo device
++ *
++ * Heavily inspired by the VFIO-KVM bridge pseudo device.
++ */
++#include <linux/errno.h>
++#include <linux/file.h>
++#include <linux/list.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/slab.h>
++#include <linux/vfio.h>
++#include <asm/mshyperv.h>
 +
- static void hv_irq_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
- {
- 	struct hv_interrupt_entry *stored_entry;
- 	struct irq_cfg *cfg = irqd_cfg(data);
- 	struct msi_desc *msidesc;
--	struct pci_dev *dev;
-+	struct pci_dev *pdev;
- 	int ret;
- 
- 	msidesc = irq_data_get_msi_desc(data);
--	dev = msi_desc_to_pci_dev(msidesc);
-+	pdev = msi_desc_to_pci_dev(msidesc);
- 
- 	if (!cfg) {
- 		pr_debug("%s: cfg is NULL", __func__);
-@@ -240,7 +244,7 @@ static void hv_irq_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
- 		stored_entry = data->chip_data;
- 		data->chip_data = NULL;
- 
--		ret = hv_unmap_msi_interrupt(dev, stored_entry);
-+		ret = hv_unmap_msi_interrupt(pdev, stored_entry);
- 
- 		kfree(stored_entry);
- 
-@@ -249,10 +253,8 @@ static void hv_irq_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
- 	}
- 
- 	stored_entry = kzalloc_obj(*stored_entry, GFP_ATOMIC);
--	if (!stored_entry) {
--		pr_debug("%s: failed to allocate chip data\n", __func__);
-+	if (!stored_entry)
- 		return;
--	}
- 
- 	ret = hv_map_msi_interrupt(data, stored_entry);
- 	if (ret) {
-@@ -262,18 +264,21 @@ static void hv_irq_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
- 
- 	data->chip_data = stored_entry;
- 	entry_to_msi_msg(data->chip_data, msg);
--
--	return;
- }
- 
--static int hv_unmap_msi_interrupt(struct pci_dev *dev, struct hv_interrupt_entry *old_entry)
-+static int hv_unmap_msi_interrupt(struct pci_dev *pdev,
-+				  struct hv_interrupt_entry *irq_entry)
- {
--	return hv_unmap_interrupt(hv_build_pci_dev_id(dev).as_uint64, old_entry);
-+	union hv_device_id hv_devid;
++#include "mshv.h"
++#include "mshv_root.h"
 +
-+	hv_devid = hv_build_devid_type_pci(pdev);
-+	return hv_unmap_interrupt(hv_devid.as_uint64, irq_entry);
- }
- 
--static void hv_teardown_msi_irq(struct pci_dev *dev, struct irq_data *irqd)
-+/* NB: during map, hv_interrupt_entry is saved via data->chip_data */
-+static void hv_teardown_msi_irq(struct pci_dev *pdev, struct irq_data *irqd)
- {
--	struct hv_interrupt_entry old_entry;
-+	struct hv_interrupt_entry irq_entry;
- 	struct msi_msg msg;
- 
- 	if (!irqd->chip_data) {
-@@ -281,13 +286,13 @@ static void hv_teardown_msi_irq(struct pci_dev *dev, struct irq_data *irqd)
- 		return;
- 	}
- 
--	old_entry = *(struct hv_interrupt_entry *)irqd->chip_data;
--	entry_to_msi_msg(&old_entry, &msg);
-+	irq_entry = *(struct hv_interrupt_entry *)irqd->chip_data;
-+	entry_to_msi_msg(&irq_entry, &msg);
- 
- 	kfree(irqd->chip_data);
- 	irqd->chip_data = NULL;
- 
--	(void)hv_unmap_msi_interrupt(dev, &old_entry);
-+	(void)hv_unmap_msi_interrupt(pdev, &irq_entry);
- }
++struct mshv_vfio_file {
++	struct list_head node;
++	struct file *file;	/* list of struct mshv_vfio_file */
++};
++
++struct mshv_vfio {
++	struct list_head file_list;
++	struct mutex lock;
++};
++
++static bool mshv_vfio_file_is_valid(struct file *file)
++{
++	bool (*fn)(struct file *file);
++	bool ret;
++
++	fn = symbol_get(vfio_file_is_valid);
++	if (!fn)
++		return false;
++
++	ret = fn(file);
++
++	symbol_put(vfio_file_is_valid);
++
++	return ret;
++}
++
++static long mshv_vfio_file_add(struct mshv_device *mshvdev, unsigned int fd)
++{
++	struct mshv_vfio *mshv_vfio = mshvdev->device_private;
++	struct mshv_vfio_file *mvf;
++	struct file *filp;
++	long ret = 0;
++
++	filp = fget(fd);
++	if (!filp)
++		return -EBADF;
++
++	/* Ensure the FD is a vfio FD. */
++	if (!mshv_vfio_file_is_valid(filp)) {
++		ret = -EINVAL;
++		goto out_fput;
++	}
++
++	mutex_lock(&mshv_vfio->lock);
++
++	list_for_each_entry(mvf, &mshv_vfio->file_list, node) {
++		if (mvf->file == filp) {
++			ret = -EEXIST;
++			goto out_unlock;
++		}
++	}
++
++	mvf = kzalloc(sizeof(*mvf), GFP_KERNEL_ACCOUNT);
++	if (!mvf) {
++		ret = -ENOMEM;
++		goto out_unlock;
++	}
++
++	mvf->file = get_file(filp);
++	list_add_tail(&mvf->node, &mshv_vfio->file_list);
++
++out_unlock:
++	mutex_unlock(&mshv_vfio->lock);
++out_fput:
++	fput(filp);
++	return ret;
++}
++
++static long mshv_vfio_file_del(struct mshv_device *mshvdev, unsigned int fd)
++{
++	struct mshv_vfio *mshv_vfio = mshvdev->device_private;
++	struct mshv_vfio_file *mvf;
++	long ret;
++
++	CLASS(fd, f)(fd);
++
++	if (fd_empty(f))
++		return -EBADF;
++
++	ret = -ENOENT;
++	mutex_lock(&mshv_vfio->lock);
++
++	list_for_each_entry(mvf, &mshv_vfio->file_list, node) {
++		if (mvf->file != fd_file(f))
++			continue;
++
++		list_del(&mvf->node);
++		fput(mvf->file);
++		kfree(mvf);
++		ret = 0;
++		break;
++	}
++
++	mutex_unlock(&mshv_vfio->lock);
++	return ret;
++}
++
++static long mshv_vfio_set_file(struct mshv_device *mshvdev, long attr,
++			      void __user *arg)
++{
++	int32_t __user *argp = arg;
++	int32_t fd;
++
++	switch (attr) {
++	case MSHV_DEV_VFIO_FILE_ADD:
++		if (get_user(fd, argp))
++			return -EFAULT;
++		return mshv_vfio_file_add(mshvdev, fd);
++
++	case MSHV_DEV_VFIO_FILE_DEL:
++		if (get_user(fd, argp))
++			return -EFAULT;
++		return mshv_vfio_file_del(mshvdev, fd);
++	}
++
++	return -ENXIO;
++}
++
++static long mshv_vfio_set_attr(struct mshv_device *mshvdev,
++			      struct mshv_device_attr *attr)
++{
++	switch (attr->group) {
++	case MSHV_DEV_VFIO_FILE:
++		return mshv_vfio_set_file(mshvdev, attr->attr,
++					  u64_to_user_ptr(attr->addr));
++	}
++
++	return -ENXIO;
++}
++
++static long mshv_vfio_has_attr(struct mshv_device *mshvdev,
++			      struct mshv_device_attr *attr)
++{
++	switch (attr->group) {
++	case MSHV_DEV_VFIO_FILE:
++		switch (attr->attr) {
++		case MSHV_DEV_VFIO_FILE_ADD:
++		case MSHV_DEV_VFIO_FILE_DEL:
++			return 0;
++		}
++
++		break;
++	}
++
++	return -ENXIO;
++}
++
++static long mshv_vfio_create_device(struct mshv_device *mshvdev)
++{
++	struct mshv_device *tmp;
++	struct mshv_vfio *mshv_vfio;
++
++	/* Only one VFIO "device" per VM */
++	hlist_for_each_entry(tmp, &mshvdev->device_pt->pt_devices,
++			     device_ptnode)
++		if (tmp->device_ops == &mshv_vfio_device_ops)
++			return -EBUSY;
++
++	mshv_vfio = kzalloc(sizeof(*mshv_vfio), GFP_KERNEL_ACCOUNT);
++	if (mshv_vfio == NULL)
++		return -ENOMEM;
++
++	INIT_LIST_HEAD(&mshv_vfio->file_list);
++	mutex_init(&mshv_vfio->lock);
++
++	mshvdev->device_private = mshv_vfio;
++
++	return 0;
++}
++
++/* This is called from mshv_device_fop_release() */
++static void mshv_vfio_release_device(struct mshv_device *mshvdev)
++{
++	struct mshv_vfio *mv = mshvdev->device_private;
++	struct mshv_vfio_file *mvf, *tmp;
++
++	list_for_each_entry_safe(mvf, tmp, &mv->file_list, node) {
++		fput(mvf->file);
++		list_del(&mvf->node);
++		kfree(mvf);
++	}
++
++	kfree(mv);
++	kfree(mshvdev);
++}
++
++struct mshv_device_ops mshv_vfio_device_ops = {
++	.device_name = "mshv-vfio",
++	.device_create = mshv_vfio_create_device,
++	.device_release = mshv_vfio_release_device,
++	.device_set_attr = mshv_vfio_set_attr,
++	.device_has_attr = mshv_vfio_has_attr,
++};
+diff --git a/include/uapi/linux/mshv.h b/include/uapi/linux/mshv.h
+index 4373a8243951..6404e8a98237 100644
+--- a/include/uapi/linux/mshv.h
++++ b/include/uapi/linux/mshv.h
+@@ -254,6 +254,7 @@ struct mshv_root_hvcall {
+ #define MSHV_GET_GPAP_ACCESS_BITMAP	_IOWR(MSHV_IOCTL, 0x06, struct mshv_gpap_access_bitmap)
+ /* Generic hypercall */
+ #define MSHV_ROOT_HVCALL		_IOWR(MSHV_IOCTL, 0x07, struct mshv_root_hvcall)
++#define MSHV_CREATE_DEVICE             _IOWR(MSHV_IOCTL, 0x08, struct mshv_create_device)
  
  /*
-@@ -302,7 +307,8 @@ static struct irq_chip hv_pci_msi_controller = {
- };
- 
- static bool hv_init_dev_msi_info(struct device *dev, struct irq_domain *domain,
--				 struct irq_domain *real_parent, struct msi_domain_info *info)
-+				 struct irq_domain *real_parent,
-+				 struct msi_domain_info *info)
- {
- 	struct irq_chip *chip = info->chip;
- 
-@@ -317,7 +323,8 @@ static bool hv_init_dev_msi_info(struct device *dev, struct irq_domain *domain,
- }
- 
- #define HV_MSI_FLAGS_SUPPORTED	(MSI_GENERIC_FLAGS_MASK | MSI_FLAG_PCI_MSIX)
--#define HV_MSI_FLAGS_REQUIRED	(MSI_FLAG_USE_DEF_DOM_OPS | MSI_FLAG_USE_DEF_CHIP_OPS)
-+#define HV_MSI_FLAGS_REQUIRED	(MSI_FLAG_USE_DEF_DOM_OPS |	\
-+				 MSI_FLAG_USE_DEF_CHIP_OPS)
- 
- static struct msi_parent_ops hv_msi_parent_ops = {
- 	.supported_flags	= HV_MSI_FLAGS_SUPPORTED,
-@@ -329,14 +336,14 @@ static struct msi_parent_ops hv_msi_parent_ops = {
- 	.init_dev_msi_info	= hv_init_dev_msi_info,
- };
- 
--static int hv_msi_domain_alloc(struct irq_domain *d, unsigned int virq, unsigned int nr_irqs,
--			       void *arg)
-+/* Allocate nr_irqs IRQs for the given irq domain */
-+static int hv_msi_domain_alloc(struct irq_domain *d, unsigned int virq,
-+			       unsigned int nr_irqs, void *arg)
- {
- 	/*
--	 * TODO: The allocation bits of hv_irq_compose_msi_msg(), i.e. everything except
--	 * entry_to_msi_msg() should be in here.
-+	 * TODO: The allocation bits of hv_irq_compose_msi_msg(), i.e.
-+	 *	 everything except entry_to_msi_msg() should be in here.
- 	 */
--
- 	int ret;
- 
- 	ret = irq_domain_alloc_irqs_parent(d, virq, nr_irqs, arg);
-@@ -344,13 +351,15 @@ static int hv_msi_domain_alloc(struct irq_domain *d, unsigned int virq, unsigned
- 		return ret;
- 
- 	for (int i = 0; i < nr_irqs; ++i) {
--		irq_domain_set_info(d, virq + i, 0, &hv_pci_msi_controller, NULL,
--				    handle_edge_irq, NULL, "edge");
-+		irq_domain_set_info(d, virq + i, 0, &hv_pci_msi_controller,
-+				    NULL, handle_edge_irq, NULL, "edge");
- 	}
-+
- 	return 0;
- }
- 
--static void hv_msi_domain_free(struct irq_domain *d, unsigned int virq, unsigned int nr_irqs)
-+static void hv_msi_domain_free(struct irq_domain *d, unsigned int virq,
-+			       unsigned int nr_irqs)
- {
- 	for (int i = 0; i < nr_irqs; ++i) {
- 		struct irq_data *irqd = irq_domain_get_irq_data(d, virq);
-@@ -362,6 +371,7 @@ static void hv_msi_domain_free(struct irq_domain *d, unsigned int virq, unsigned
- 
- 		hv_teardown_msi_irq(to_pci_dev(desc->dev), irqd);
- 	}
-+
- 	irq_domain_free_irqs_top(d, virq, nr_irqs);
- }
- 
-@@ -394,25 +404,25 @@ struct irq_domain * __init hv_create_pci_msi_domain(void)
- 
- int hv_unmap_ioapic_interrupt(int ioapic_id, struct hv_interrupt_entry *entry)
- {
--	union hv_device_id device_id;
-+	union hv_device_id hv_devid;
- 
--	device_id.as_uint64 = 0;
--	device_id.device_type = HV_DEVICE_TYPE_IOAPIC;
--	device_id.ioapic.ioapic_id = (u8)ioapic_id;
-+	hv_devid.as_uint64 = 0;
-+	hv_devid.device_type = HV_DEVICE_TYPE_IOAPIC;
-+	hv_devid.ioapic.ioapic_id = (u8)ioapic_id;
- 
--	return hv_unmap_interrupt(device_id.as_uint64, entry);
-+	return hv_unmap_interrupt(hv_devid.as_uint64, entry);
- }
- EXPORT_SYMBOL_GPL(hv_unmap_ioapic_interrupt);
- 
- int hv_map_ioapic_interrupt(int ioapic_id, bool level, int cpu, int vector,
- 		struct hv_interrupt_entry *entry)
- {
--	union hv_device_id device_id;
-+	union hv_device_id hv_devid;
- 
--	device_id.as_uint64 = 0;
--	device_id.device_type = HV_DEVICE_TYPE_IOAPIC;
--	device_id.ioapic.ioapic_id = (u8)ioapic_id;
-+	hv_devid.as_uint64 = 0;
-+	hv_devid.device_type = HV_DEVICE_TYPE_IOAPIC;
-+	hv_devid.ioapic.ioapic_id = (u8)ioapic_id;
- 
--	return hv_map_interrupt(device_id, level, cpu, vector, entry);
-+	return hv_map_interrupt(hv_devid, level, cpu, vector, entry);
- }
- EXPORT_SYMBOL_GPL(hv_map_ioapic_interrupt);
+  ********************************
 -- 
 2.51.2.vfs.0.1
 
