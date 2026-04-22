@@ -1,191 +1,315 @@
-Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010069.outbound.protection.outlook.com [52.101.46.69])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC27B3E715A
-	for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 13:13:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.46.69
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776863629; cv=fail; b=HHr+TV6bINXaokbaJvEo3hQpamc25pchYppCToSPOYnloQfnBbzREybZsMrJtEUuoKtoz+B0GVXOK9ZcyfF4WqM8jSiFPx5vrN1Zaura3coddbWVyI5mXW32gJwJtsw2RsmCBYhCfcAdZAAqGGJUZBbJEYu5xE+z3rkFuGpuws0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776863629; c=relaxed/simple;
-	bh=by9hGXBTYqMF9TUNBdVhlm8gjz5b0dZvQqrcMUgURgs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=EZLqpZvx+UvvT0FBmygrYdpMdjOTTyWVksj0nKfHz/mUdLqjkrJYeo03z+ZXloXjJLVQtkWrNYTzSQVgRISwUVF/DbIzQ1Ymk24tjUDtzlUxJzeaj0lS6c0YE120/aW7t/E2bZBTz7CSaa4ttdlPowV6eMKrz81JnFhaNFbQQ7w=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=s8lASLao; arc=fail smtp.client-ip=52.101.46.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E29025A2C9
+	for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 13:41:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776865262; cv=none; b=K7GBjV2HJZFZqecIa7bPbmXV2wiuaVuj7mF83NNn31pgXczaa16UjCcr4a2sgILpbsxf5ja0Ex2gTWtEk32fZ+filf5TZfzRBVZqudDWJLBfrlH9p5eA/zk51GvuY3He4/Cc32daQQ5oaDMHJHoPmHgAvcoJr0nUlEviRIETP84=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776865262; c=relaxed/simple;
+	bh=gw5v3+crEmfzQnSNuUqqCn/Sxpu02qUaTHvp8hMRf5M=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=AxPu44bJ9ZZlAyMsd5StF/p0aCCCcNFp556INHZwoWiPwganbBUBdln43J+tyRev93pzrvSApbxtu7ZveitH3uFBm9oj446IUxWk4L3rzWg2sK9f8hhZVemCFFHLbZ2aDqm81s0yboUFzfMI0Ugntk35R4DtvG9b8TOhThQcldE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ofDbWSZM; arc=none smtp.client-ip=209.85.214.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="s8lASLao"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Rlc3RILa2ziO+1FZpahA+dVEZTAWgWPAs27Gu+f38SN7FM3hNuiF88chXoeFeXJ5zS/5X+0MV/itgfJmiKEUBd1xrbntyApUYpPMk9T3A3RfsfFLT7C6kb9MQ3yLwEzhwPPe5BwoWI1yBjbgJSDdPaOhXddfNWUa7Tbynx6OQTzHs68qWVfLfJhLNvpOXKyRvQYndUqcVkbMNW9r+51xqRqBmzJQglyeqCopoInsCltttgr/ulPEQvLD1poNNEWDMEX1lo/8vTTxz+RuPUaO6AjRc4N/ANEbCrBNyU9UBlzFbaZjGNdWaLSF14xYXbjJfsq+eXoWLUDXJ4AnSISHNA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pbdQ4Oon2/UIiFXS7sv16rW4AiBiu4pllSVmm7EkSxc=;
- b=tOEkjZqSQOJd/wLqcmw9mKRGRuQiacsaFkih1D3RQ0ccG2pKUbh6fg7TW1JtVP5NTbSo+eCOkxw7VVg1PV3mqpSr5Sla2NpjDk5AQr8uio980LlXlKY6TkXzav4Qey737BRk23NSvtUncVxBf0pvOgpZ2G4NOnBzl128X1k4cVxIDSrlCjX0QglDc+IW9+uCUdlyiuxodsZfxe75X7h1PLOkBUkjMBeQFwasbiKP/MihpHB325y0F1Uo/db8z5H0p9Jiv+5Owm221SvTvZNx4ZaCaKXMZnGqDcHE7jzIFa2pW65uCWCiQpxEotWhhQHmN798fc0YhSGtOiSrVdKfCA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pbdQ4Oon2/UIiFXS7sv16rW4AiBiu4pllSVmm7EkSxc=;
- b=s8lASLaoml8ngJ6EzRoYVuFBh5f9iWmiu6w3CdBlzzu2vlmfUur7UAUgfPjDtbBEhIHHjFBoxEqEGC1elc+A0fUKPvOsY9vayRdJbKpMg/h1pJzHHHEnb8lFWLUcagajdtM3cFegXJMocNBANvtff42VDwC5YJkVAqPgZL9ejxpWxGDnq3cCLziTZt5NoIqI2sAkwZ4lpFB6rpJHVghIJgbHPgUefdGJlNNXkA5z3FS4fsDrkjdPvA2V+z31tXBWwvbWMbXpQagWji45UEJKvYer3tsrAZdp7qXmYPvLbu7ie+Ne4uIMyoQ9eH7w0njaSewiKfgl/l+gdrH2NUiNiQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by IA0PPFA8EB66EE9.namprd12.prod.outlook.com (2603:10b6:20f:fc04::bde) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9846.18; Wed, 22 Apr
- 2026 13:13:39 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9846.019; Wed, 22 Apr 2026
- 13:13:39 +0000
-Date: Wed, 22 Apr 2026 10:13:37 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
-Cc: Dongwon Kim <dongwon.kim@intel.com>, dri-devel@lists.freedesktop.org,
-	intel-xe@lists.freedesktop.org, iommu@lists.linux.dev,
-	Kevin Tian <kevin.tian@intel.com>,
-	Leon Romanovsky <leonro@nvidia.com>, linaro-mm-sig@lists.linaro.org,
-	linux-media@vger.kernel.org,
-	Matthew Brost <matthew.brost@intel.com>,
-	Simona Vetter <simona.vetter@ffwll.ch>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Thomas Hellstrom <thomas.hellstrom@linux.intel.com>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>
-Subject: Re: [PATCH RFC 21/26] dma-buf: Add the Physical Address List DMA
- mapping type
-Message-ID: <20260422131337.GJ3199414@nvidia.com>
-References: <21-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
- <c413710b-4c28-4ed8-88ec-aeb8c4482011@amd.com>
- <20260413121628.GE2588311@nvidia.com>
- <f6d38a08-009c-4efe-9dc3-6bcf00ac35f7@amd.com>
- <20260422115306.GI3199414@nvidia.com>
- <fd8065ce-fd0e-4df5-9c80-8e9603657cfe@amd.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <fd8065ce-fd0e-4df5-9c80-8e9603657cfe@amd.com>
-X-ClientProxiedBy: MN2PR20CA0057.namprd20.prod.outlook.com
- (2603:10b6:208:235::26) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ofDbWSZM"
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2b2591757fbso402445ad.0
+        for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 06:41:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1776865260; x=1777470060; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=VzKXwVfUSfykpKMrHTFpIqQQhsh/iJBi+8cyETJcLNA=;
+        b=ofDbWSZMmIPXB5D9mWrf7e1tV0TqLFI87gi5Z87D5SJbahwvsinWbeZljRYKIinc38
+         Iw/o3HlUHqDeuokD1AZhiuc8DMFuoUptqMhRzqMcpIVq85J93WKuFZWk1h7LxLJdgLSn
+         RiHDQfyBLlOLMo6bN5dbHrlFWeW9cje5fS4lRNLdB/Vy2FzsuYFNLx7i+Jksyf7MVY+X
+         +3Xl7lRbTtU0l09PUFPLpEP/y7Soaogholnhs6GwlyvhhoQj1pwLAVPSNHCZztM+6niD
+         FONfm9TRYbBnfqlB6UqwVHXC2WBTf7cllHlzyGpemHTyixEmh1aJktQiQLDlZwNgvdbv
+         lcXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776865260; x=1777470060;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=VzKXwVfUSfykpKMrHTFpIqQQhsh/iJBi+8cyETJcLNA=;
+        b=MKmeTYxqyL4ElVpbBgKH2CO3+Fbarbe3F+Zk4N9TJEQk/yEjqjp3t22SGb7C0Wz+PR
+         NkWzv9n45Idn/SvKrB5Vvna8FUQcsjtrSHOGJAuywrg44I9tQW7jwXA5m0/xox95z9ve
+         UO6fuoXFByV9xEGL0kMIwXTaVKxtKHZF1Wps36TQg3QWpmSZpVGOwbwEXMhU00OsIBOh
+         8C0sRWf5lmPLnL0Dz2hc6+XgALlyu+AKeyZVoYprXuwzAdJlNTs2Mpu/klHE2ATeth97
+         W0wSvpdrkRsTo5M9kkkAEpfGPyRDHebvvmywLI51xDxYB96sb0COQ6HfVmQ6Jv343Skg
+         YJBA==
+X-Gm-Message-State: AOJu0YxjUpc51zfFwiO17xswKyFiDHpLXy93/UO6TEygg+KUum9XpulX
+	hEpJVGwR6LvEoazL3Rj6OfGGvhOuQSGld4Aep8j1R4DfBKw079aSr1HEqIBMLdRXWw==
+X-Gm-Gg: AeBDieuisqPpUAgzCT2bPk6B3s36RQM4ivWW1unjB3ANwUy6a1rD3F7P9fRHOVHWI23
+	0Jz/gg9BkSnolbgGqgdqUQWwqnQGoMuJ81ja3c9uj1SkApHvHRCtC2pCz5YZ/zauYjSyfUT5n0F
+	+pXpjNQiyTc+Brt9zKo4/XnrPvISbpasVbpmLCODvLEogG9CbFBk0w+QMbAXi9UaAqw/Nvx3YBC
+	f2HQ0jt+hf0nDCq+G26KU8JQqr512Ri5iMktLqvqmtRZEDljXnsX0CczClgnnAoNr2+KSt/abVj
+	s4JQsB3ng81gqz13h05GdBkTpmrzwp+0WS+zcUuc2A8/5BTHvKvpLBAg1eD/6d1v/lVYrW1+v0S
+	qiI4hmvPGvLGW/hgW96+O9ifpeUVklT33oj+K7FLm2l3ytYgEpVbvDn1qe0hQ5BCVPTbb25x47X
+	GI27UAnGt07R/3bsnLY13HsofzoLCGFn4egGuZIeNfrew2eIzS5QQHDqnz/GU6S+/MDTN6yRh8C
+	roFX1k=
+X-Received: by 2002:a17:903:28f:b0:2b0:be7d:a25e with SMTP id d9443c01a7336-2b603072ea9mr13147645ad.18.1776865259645;
+        Wed, 22 Apr 2026 06:40:59 -0700 (PDT)
+Received: from google.com (174.188.87.34.bc.googleusercontent.com. [34.87.188.174])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-36140fc5d94sm22025583a91.2.2026.04.22.06.40.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Apr 2026 06:40:59 -0700 (PDT)
+Date: Wed, 22 Apr 2026 13:40:53 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Daniel Mentz <danielmentz@google.com>
+Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Ashish Mhetre <amhetre@nvidia.com>
+Subject: Re: [PATCH v6 07/10] iommu/arm-smmu-v3: Implement pm_runtime &
+ system sleep ops
+Message-ID: <aejP5Yk72_FtZnIo@google.com>
+References: <20260414194702.1229094-1-praan@google.com>
+ <20260414194702.1229094-8-praan@google.com>
+ <CAE2F3rCaBWtRruBbZcedrsLnkkETSniTWoxxYn+Lkac9ttsshQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|IA0PPFA8EB66EE9:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1e83959d-5582-407c-7cee-08dea070f7d4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|1800799024|366016|22082099003|18002099003|56012099003;
-X-Microsoft-Antispam-Message-Info:
-	elEBSodNLqkwKYw1fIQEg+FXcVgdTXEKTsFLeOIN2v28I7UHUtLgmVauoZYOK41s+7rC5IJtPFgPoRjcUCw2QvrJmgslPkPorWngRNG8oVQaWggEmgn29Q18Pi17FgRuMQ+AWUdWAsAMYL/+duUmGW2t1GF1UEOQP+6EJbdT/q6Z76+e3W6NT4gD/3qug9Bu9QQJGAFRDoY+4WsDc9DYOOVwjffArMjw0Pv1GSURA3fS6vshN/AozDI4QtvOpWLSmML8Tt9CP5tpFq09h4Q3W6wlh2Hrf/tUpE+YjbJD4WXm87yVfOtV89mXQn+G8mCy8Dp9WDm3f4NC/3zylaz4J4f+XuQY6YMdeqZRwXILVlFTUb5oMYWTb0UF0w40F0GjXslIXWMXsay9CeZuuiOwSJ+BaMgHyck9d9iV4wOuwZMPygMsU53/3fA57ivtifaVc7+MlN9G3ZZ8yclEKYdpzeew8haGzdi5PPvCMAuKoYOVDi7+kbSJlXOzLb91jwOhK7Y5Woe1/CWCPqO6Y2JyQN+34WJBG0AC7b5RxsXgSYLE5Y5iERKm7TMlRKbecjN6gMULFdB1pxvh10Mod3XdCwqwHO7M4l9KrLH1vVe7xjbBLChoDGTuidah3b0K8S2uQMyd3yGMTy+e101ZmlQSl1tc0kE2GUBTHTfx4Org1KnKAS01s72iTvvmCK73c2ltwrCCpn/B0JWa1DuVuRYHKycXfS6jzwupfg4Jv4ZoKwo=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(366016)(22082099003)(18002099003)(56012099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?bXQ2aUtobmlZN3Y3MlhheW95cW9JcWo4azNCWDlWTUNzVmZEMm1KME9IQ2xW?=
- =?utf-8?B?R0VLUnJBRk9zaWZUbExVV2ZxVmQ5T3J0RHVKNlh0aHlzSEsxYXlhbjFaU1hY?=
- =?utf-8?B?TFZHTjZKZzNobXFtOVhJZGRsNHNwUnV4ZHRyZmt5bzNwZlpkWUcvYnlQNnBC?=
- =?utf-8?B?alZUMjZ0RitMSnZ5RXdHS2NYbENJQ0JjN3ZVTzRsYTNFNk01MFlwaGtwbDVr?=
- =?utf-8?B?dFFaV2Y1MC9mLzlRNE91ZmwycG5GQ0JjQXhGNUxsN1dLQUhKLzNpbDdFNUov?=
- =?utf-8?B?L21tZy9sTFZUWWdRRTJxVHRVOTBURlR4TjNLblZTcUxYVFNsQUFVbXY5MjBz?=
- =?utf-8?B?N25CenVpS2lhYkNDV1ZIWUlwN1krQTlTcWJnUDY1QWJJVWtLYzhCSHhzZDZN?=
- =?utf-8?B?d3hDcVdUbTVhU3dCV3lFMVFyNG9zN3VZRTlSYmhwQk41WEw3M21WRUZBRnJi?=
- =?utf-8?B?TTBEQnBBOFNOTFllbWExRXJPaTFMWDAwdUl0bDdNcGxSazZTRnZoSGRVUE9s?=
- =?utf-8?B?VC9Fai9KTWt5WlVQemtKVHpuS0RvWEw3MkphRmZBQ3FHRWIyaUtKQUR1c0hL?=
- =?utf-8?B?Y2xsNjQ1dVluZFFDNUFlU1JFUHFJaXp4K01heExFbHZmWjRhdEhEK3ZTNGJp?=
- =?utf-8?B?MGUwcUVQUmE0VEJ2QXNjLzlmZlBrR0QzUEo5WGluWkVTcU9VRzJ5NFNreTlM?=
- =?utf-8?B?Y1pObndCWCtzblVNSFFlaEFsQUlxTThMWXh3K1NOd2REK2pPYWZjU09GYlJ2?=
- =?utf-8?B?R1RqSjlmNUVLcDBiTjF6QjF1aUhHK1c4WkhSbmpybEgzek93SzJGRituQTNJ?=
- =?utf-8?B?ZVRQOHVTUzJQL2FnVFpIK1dwVDdVM2l0eEhkMkI5ZGtIdmRPbEdlT2tHTWU3?=
- =?utf-8?B?WmtvMTM5MkdXV3dTTWNjekZZSmJEalE2WkpCcFBwZlljQVRGM0liMjF1TVZJ?=
- =?utf-8?B?UzQ1T0ZkT05FS0x1SE5aR08xaXY4dXpEdUdVcFpFS0VMdGRZY09hbFhhRy94?=
- =?utf-8?B?Ritsb3pBYjlEVlh1VzlMNGlHWDIxajROUlFEQ3c1eVVEWkJYTUNIR25oMWVm?=
- =?utf-8?B?RDRKd280OUVEN1N2QjI3K0dmMXFVVkNpZFllYU5XcnVtelgwYzhxb1JSU0g4?=
- =?utf-8?B?L2pTOTBoSmRlUFp3R2F4SWhjcUdjaEsvMFdZdjg2eS8vUlF4aUhiY2lTamVH?=
- =?utf-8?B?ZFpyZFdYQlJyVXRrcEZNMUg4MTFFR1pOaEhFc2NGWGVTNnp3enI5Z0ZyM1BY?=
- =?utf-8?B?Q2JwY0Z1cUdjYklWNHFPSkhzYUZLUGpmcGlTQ21OVm9qc0IwNEJ1eDBodk9w?=
- =?utf-8?B?cWgrWDcrdlBBOUk1R0xLd0tpTG9XRXRjb1N3OWhaeXlJaXhKRFdpdWY5Ky9p?=
- =?utf-8?B?MWUvOFBPc0FwWjhJZEdsR3djT05xVHd2K0paOXEzZjQxa0hZM050eG9lWmtE?=
- =?utf-8?B?NWN1Q3ROd2JiR2cwNisrNjBJZm5KUm9MVzlPajBHc1FQczhUVXd3bWh1NkN6?=
- =?utf-8?B?NEkxTkxMcDBvd29ZVS81bERhdXorUHlvUG5hUDIwbm9iTzdyNnJyL0dQUXNT?=
- =?utf-8?B?WHNlNGlHZ3V0ckVzNVpta2FjNHJGUHhaMnFqcUhVejRncEtjdlVvR05aTEl4?=
- =?utf-8?B?K0IyRnpYZjJRc1ErUVhNOHluV1VrUmUzMHMwR2UxM1RZZUpPdlhlNnNieXo3?=
- =?utf-8?B?eml5Tk9UajhheXloOW5UemM0QVFKWUNKMEZyYnhZckFUeDZoOVZjL0ZvNXhq?=
- =?utf-8?B?aHl2L1ZSakRwZGJNSnYzR0l1MUx2TVEyNWh5TnBrYTJ6d3YrTVBnQ21jN3ND?=
- =?utf-8?B?NUl0N29HeTBISTJLWEhJNXFNTGZXdlZ4Qllvb3BobElHeHNZbjRURERwRFor?=
- =?utf-8?B?YTBsOWg1azFSUXNGRUZvMXk2dGI2U1pXZlJ5WXBFcFIyR2NINzJvTlR6elpn?=
- =?utf-8?B?MmtoRTVqYnc3SW9CbWJoQmUyd0xZSmFUa2VYWmhIUlhSVjdlUFFKU1RIa3Fp?=
- =?utf-8?B?NUpWZFJaQTVOdzVDQWsyeVhreTBNcXZsTER5TTE0VzBERmQzbFZ0ODkwblFT?=
- =?utf-8?B?aDBSaklVbkVzYk1WRGJYeGFyU2k1Y3U5dG8zUW5XRTlzZStSRkI5b3Yrb0Vl?=
- =?utf-8?B?MTdlaGcyL1FWVy85T0p3dFdhQWF3d043WWRRL0tOb2pnanR5WnBFS2paV0pE?=
- =?utf-8?B?K1cxVWkvUzhjaTYxZHhpb050eTJIQ2ZLRFQwVFl4YnN1ZlF5TnJsMTZ0UFcw?=
- =?utf-8?B?NVl4WmhGUm5oYmZ0K3NRN2J3QVluSkN3YXAxa3I4UzByb3ZjeEROSmZpVy9o?=
- =?utf-8?Q?48y3zmp53sGMpECnS7?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1e83959d-5582-407c-7cee-08dea070f7d4
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2026 13:13:38.9575
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: u+cJtViCSkXXQmrbzln+k0BCYjqAPmGzkOGIwwmf0KgwWmRhwvqj58Si74E+CFrB
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PPFA8EB66EE9
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAE2F3rCaBWtRruBbZcedrsLnkkETSniTWoxxYn+Lkac9ttsshQ@mail.gmail.com>
 
-On Wed, Apr 22, 2026 at 02:39:16PM +0200, Christian König wrote:
-> > Can you be more specific please, I still have no idea what you are
-> > thinking in terms of an acceptable implementation.
+On Tue, Apr 21, 2026 at 09:25:12PM -0700, Daniel Mentz wrote:
+> On Tue, Apr 14, 2026 at 12:47 PM Pranjal Shrivastava <praan@google.com> wrote:
+> > +/* Runtime PM helpers */
+> > +__maybe_unused static int arm_smmu_rpm_get(struct arm_smmu_device *smmu)
 > 
-> Let me try to describe it differently:
+> Please be consistent about placing the __maybe_unused attribute. I
+> believe that in the other functions, the placement is between the
+> return type and the function name.
 > 
-> The iommufd deals with iommu_domain structures which userspace can map different things into.
+
+Ack.
+
+> > +
+> > +/*
+> > + * This should always return true if devlinks are setup correctly
+> > + * and the client using the SMMU is active.
+> > + */
+> > +__maybe_unused bool arm_smmu_rpm_get_if_active(struct arm_smmu_device *smmu)
+> > +{
+> > +       if (!arm_smmu_is_active(smmu))
+> > +               return false;
 > 
-> So of hand I would say that an interface to map DMA-buf into such an
-> iommu_domain should look something like this:
+> I'm wondering if this check is redundant. What would happen if we removed it?
 > 
-> dma_buf_map_attachment_iommu(struct dma_buf_attachment *attachment,
->    struct iommu_domain *domain, unsigned long iova, unsigned long
->    offset, size_t size, ...);
->
-> The DMA buf exporter then maps the its data into the iommu_domain at
-> iova starting with offset from within the buffer and size number of
-> bytes.
 
-Well, my first reaction is very negative, this suggestion is leaking
-deep internal details like iommu_domain out of the single place that
-needs them - iommufd - into about 6 exporter drivers. Not nice. I have
-the mirror of your concern that I don't trust DRM drivers not to abuse
-the iommu_domain pointer in some very creative way.
+You're right that pm_runtime_get_if_active() shall suffice. However, I
+added the arm_smmu_is_active() check as a lockless fast path for unmaps
 
-However. With a suitable helper we can largely isolate this to a
-single function and yeah I can see making this functional.
+Consider a scneario where there're high-frequency unmaps (unmap-storm)
+while the SMMU is suspended. Without this check, every thread would 
+contend for the dev->power.lock spinlock inside the RPM core 
+(pm_runtime_get_if_active) just to discover the device is not active.
 
-Not sure how this can work for KVM, but I'm getting the feeling the
-way forward here is to "live and learn" together.
+This check allows CPUs to elide the command immediately without
+contending for the dev->power.lock spinlock inside the RPM core
+(get_if_active call) and avoids unnecessary cacheline bouncing when the
+SMMU is suspended.
 
-So, in the context of this series, your proposal is an iommu_domain
-mapping type, to replace PAL. Yes?
+> > +
+> > +       if (pm_runtime_enabled(smmu->dev))
+> > +               return pm_runtime_get_if_active(smmu->dev) > 0;
+> > +
+> > +       return true;
+> > +}
+> 
+> > +static int __maybe_unused arm_smmu_runtime_suspend(struct device *dev)
+> > +{
+> > +       struct arm_smmu_device *smmu = dev_get_drvdata(dev);
+> > +       struct arm_smmu_cmdq *cmdq = &smmu->cmdq;
+> > +       struct arm_smmu_ll_queue llq, head;
+> > +       int timeout = ARM_SMMU_SUSPEND_TIMEOUT_US;
+> > +       u32 enables, target;
+> > +       u64 old;
+> > +       int ret;
+> > +
+> > +       /* Abort all transactions before disable to avoid spurious bypass */
+> > +       arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
+> > +
+> > +       /* Disable the SMMU via CR0.EN and all queues except CMDQ */
+> > +       enables = CR0_CMDQEN;
+> > +       ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0, ARM_SMMU_CR0ACK);
+> > +       if (ret) {
+> > +               dev_err(smmu->dev, "failed to disable SMMUEN\n");
+> 
+> "failed to disable SMMU". "EN" is redundant.
+> 
 
-Do you have a positive feeling about the general mapping type system
-from the earlier patches?
+Ack. I attempted to be verbose highlighting that the attempt was to
+disable non-CMDQ stuff but I don't think that's needed. I'll update this
 
-I think if you want these kinds of APIs there are going to be several
-mapping types required to exchange their very narrowly defined
-details: scatterlist, scatterlist-ng, iommu_domain, the Intel vfio
-thing, UALink, driver private interconnects, and whatever KVM needs.
+> > +               return ret;
+> > +       }
+> > +
+> > +       /*
+> > +        * At this point the SMMU is completely disabled and won't access
+> > +        * any translation/config structures, even speculative accesses
+> > +        * aren't performed as per the IHI0070 spec (section 6.3.9.6).
+> > +        */
+> > +
+> > +       /* Mark the CMDQ to stop */
+> > +       llq.val = READ_ONCE(cmdq->q.llq.val);
+> > +       do {
+> > +               head = llq;
+> > +               head.prod |= CMDQ_PROD_STOP_FLAG;
+> > +
+> > +               old = cmpxchg_relaxed(&cmdq->q.llq.val, llq.val, head.val);
+> > +               if (old == llq.val)
+> > +                       break;
+> > +
+> > +               llq.val = old;
+> > +       } while (1);
+> > +
+> > +       /* Wait for the last committed owner to reach the hardware */
+> > +       target = head.prod & ~CMDQ_PROD_STOP_FLAG;
+> > +       while (atomic_read(&cmdq->owner_prod) != target && --timeout)
+> > +               udelay(1);
+> 
+> Should we just use the following line from arm_smmu_cmdq_issue_cmdlist()?
+> 
+> atomic_cond_read_relaxed(&cmdq->owner_prod, VAL == target);
+> 
 
-Thus I think this is making a stronger case that we should have this
-formal negotiation protocol between exporter and importer for the
-mapping types. 
+I did consider atomic_cond_read_relaxed() but didn't go for it as it
+doesn't have a timeout, we could wait here indefinitely.. (it's a
+while(1) loop)
+
+> > +
+> > +       /*
+> > +        * Entering suspend implies no active clients. A race or timeout here
+> > +        * indicates a broken RPM or devlink dependency. We proceed anyway to
+> > +        * prioritize memory safety (avoiding stale TLBs) over bus faults.
+> 
+> Can you elaborate on how broken dependencies will result in a stuck
+> cmdq->owner_prod?
+> 
+
+I believe you are right, this comment needs to be updated.
+With the CMDQ_PROD_STOP_FLAG gating mechanism, concurrent submissions are
+handled safely even if device links are broken (they either complete if
+committed before the flag, or bail out if they arrive after). A timeout
+here would actually indicate something like a CMDQ stall rather than just
+a missing device link. I will update the comment to reflect this.
+
+> > +        */
+> > +       if (!timeout)
+> > +               dev_err(smmu->dev, "cmdq owner wait timeout, (check runtime PM + devlinks)\n");
+> > +
+> > +       /* Drain the CMDQs */
+> > +       ret = arm_smmu_drain_queues(smmu);
+> > +       if (ret)
+> > +               dev_warn(smmu->dev, "failed to drain queues, forcing suspend\n");
+> > +
+> > +       /* Wait for cmdq->lock == 0 to ensure last CMDQ_CONS_REG is written */
+> > +       timeout = ARM_SMMU_SUSPEND_TIMEOUT_US;
+> > +       while (atomic_read(&cmdq->lock) != 0 && --timeout)
+> 
+> Can we use
+> 
+> atomic_cond_read_relaxed(&cmdq->lock, VAL == 0);
+> 
+
+Same as above, worried about a lockup due to CMDQ Stalls.
+
+> > +               udelay(1);
+> > +
+> > +       /* Timing out here implies misconfigured Runtime PM or broken devlinks */
+> > +       if (!timeout)
+> > +               dev_err(smmu->dev, "cmdq lock != 0, forcing suspend. Polling CPUs may fault.\n");
+> > +
+> > +       /* Disable everything */
+> > +       arm_smmu_device_disable(smmu);
+> > +
+> > +       /* Handle any pending gerrors before powering down */
+> > +       arm_smmu_handle_gerror(smmu);
+> > +
+> > +       dev_dbg(dev, "suspended smmu\n");
+> > +
+> > +       return 0;
+> > +}
+> > +
+> > +static int __maybe_unused arm_smmu_runtime_resume(struct device *dev)
+> > +{
+> > +       int ret;
+> > +       struct arm_smmu_device *smmu = dev_get_drvdata(dev);
+> > +       struct arm_smmu_cmdq *cmdq = &smmu->cmdq;
+> > +       struct arm_smmu_ll_queue llq;
+> > +
+> > +       /* Clear the STOP FLAG to allow CMDQ Submissions */
+> 
+> Clearing the STOP flag here seems premature. I propose the following sequence:
+> 
+> * Set up command queue (SMMU_CR1, SMMU_CMDQ_BASE etc.)
+> * Enable command queue
+> * Clear STOP flag
+> * Enable SMMU
+> 
+> By clearing the STOP flag, you allow arm_smmu_cmdq_issue_cmdlist() to
+> write to SMMU_CMDQ_PROD which then races against
+> arm_smmu_device_reset() which also writes to SMMU_CMDQ_PROD.
+> 
+
+I agree, IIUC you're suggesting to clear the stop flag before the
+TLBI_ALL and CFGI_ALL commands are issued by device_reset? We'll need
+to clear the flag before device_reset issues the  TLBI_ALL AND CFGI_ALL.
+Thus the sequence should be:
+
+* Set up CMDQ
+* Enable CMDQ
+* Clear STOP flag
+* Issue TLBI_ALL + CFGI_ALL
+* Enable SMMU
+
+Right?
+
+> > +       llq.val = READ_ONCE(cmdq->q.llq.val);
+> > +       while (1) {
+> > +               u64 old_val;
+> > +               struct arm_smmu_ll_queue head = llq;
+> > +
+> > +               if (!(head.prod & CMDQ_PROD_STOP_FLAG))
+> > +                       break;
+> > +
+> > +               head.prod &= ~CMDQ_PROD_STOP_FLAG;
+> > +               old_val = cmpxchg_relaxed(&cmdq->q.llq.val, llq.val, head.val);
+> > +               if (old_val == llq.val)
+> > +                       break;
+> > +               llq.val = old_val;
+> > +       }
+> > +
+> > +       /* Re-configure MSIs */
+> > +       arm_smmu_resume_msis(smmu);
+> > +
+> > +       ret = arm_smmu_device_reset(smmu);
+> > +       if (ret)
+> > +               dev_err(dev, "failed to reset during resume operation: %d\n", ret);
+> > +
+> > +       dev_dbg(dev, "resumed device\n");
+> 
+> arm_smmu_runtime_suspend() prints "resumed smmu" (not "device"). Try
+> to be consistent with the language used in messages.
+> 
+
+Ack. I'll update it to dev_dbg(dev, "resumed smmu\n");
+
+> > +
+> > +       return ret;
+> > +}
 
 Thanks,
-Jason
+Praan
