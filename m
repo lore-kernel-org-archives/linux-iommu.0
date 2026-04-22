@@ -1,176 +1,167 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11011046.outbound.protection.outlook.com [52.101.62.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90E1A346AF8
-	for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 15:44:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776872682; cv=none; b=ZvXx7bv2X2QKMMN9c6/jDAR5iZfXEarmoihw4WJH1qAPyiQJ86UW8C4nnAjFvGTvw/BKipMp8drQCCK+uqSn9qE25x1g2SZ82QfM1o+aFLFb+1FZE/tcp4Ia9tUVGRMmFDDBh5TSciRiF82t3gA35tzKKe5c6JwoG6jvEfsimxg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776872682; c=relaxed/simple;
-	bh=avnk4GU77eJdWBqpzi1y776H5v2VdhpFnM8ByuUntY4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eiQ7705QnRkjxbtHjYdzi4NM7lwSiMaLfQxHyHiHibLJdm1H5xCABkYb4IS7AvTYe8XRemgaPkl4srVfCz+i2KTy91Zl2YHA+hTqtGSOUqfK8rJM/JX+JgQ/cOUjXqJm8lExsNas1SbtMHD21i4/14iu6mCz7o/4/8hwGh64Dto=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=KiMpyOuq; arc=none smtp.client-ip=209.85.214.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD746373C1E
+	for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 16:03:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.62.46
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776873801; cv=fail; b=Jzrqqvm7LHE+Nlrvv3bk34Hxq8w1mj4LjY0xbyB8X+uUTn539IzHRd65lJzWrkULtcofXaRmTvEY7G1jPgccX3kbt+PmCmOd3c33GLPKSsFkmE2NXwKzZ/QCA8pFWd+vdhicVbBFTuKTX1VZxqRiJZX6iEGCogRr2mYbRREzvak=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776873801; c=relaxed/simple;
+	bh=o/5vqdhctu52fF0ccl5wMc7NFRwILYGNZFT9dR4vU1Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=KROWCko5vUR4X9GVCh6pxbjXFgOT4Vbg4zVsgw0e3r4YC8at2aH1s/GG9wcxarueSMYq163M6xAEpu9F9vgqnIgC49hsQYq3gIp/Cl29hCwmmA2mh29f6C7DQC/c9uz0AiloWZeym5WBEORaaP2SGPZJFkFGbNRslamU3GbZAq0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=CGLunqkX; arc=fail smtp.client-ip=52.101.62.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="KiMpyOuq"
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2b2591757fbso9995ad.0
-        for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 08:44:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1776872681; x=1777477481; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=3/bQL7TanDi+LGxlRj56HG2qI4sxsGUbPbeeZiNiay8=;
-        b=KiMpyOuq5JjbEuzdgw0+lrKcIAI8IyNxpkE+NSWQKYGu2AK4oF5ri4/0eIjBeCIXp3
-         Q7kWEFKu6Wb+GqzJvXQe98dR1koWH2ApyYi6yS2BAApw3wkCI0w5WDcG0JukdZpaIGQk
-         4NU28q0+3I0RFjBrCg2DPasDSI2gaqcAasgpT4ouPhKbcrhv7kOg3Ynmqls33jUalBhl
-         eclTAkoSMbisKYbnqj4YxR+xP4222FbY+z1bucWDt58i2eGNbBrOISbYJwPyBiKN5aeW
-         2zithZuZTBHBgoKwp8ekVG0VA9xQGZzBPbmWyR2B74BjvZv5Nghyz/kVVxlbQczKI68P
-         2KOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776872681; x=1777477481;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=3/bQL7TanDi+LGxlRj56HG2qI4sxsGUbPbeeZiNiay8=;
-        b=KaNk6n5H4nH2pFMCMo2uffxggIfmS/9SSoGbCLPzRXWiWD1Bzsh4+448n1d0V6J5tX
-         mButQbEDeuwhG7aE1jT9uMSA2I63VGKrcTpyAPk4BAe/RqdN4b+c0h6Bd6y+xWIHDwFO
-         vranURYbe75DlpWNtWll608CYUEoIaxU6kPMC/BQw6rU6CH6fbDFcofCaWYFjEbiG97E
-         y0G1M1AT8Tb4oEspOAMYHmlQcRYaO9oeOs9Vr2pmuJF8ZnuwusE2q+ZpI8fYN0XvwWHi
-         Z5x2o5oqYjvLaZ+vF6qPyb8Lgupik6MvSFM/hLFWPQxr+6/+/2wF16/lQfUmBJXAr08r
-         kj3w==
-X-Forwarded-Encrypted: i=1; AFNElJ8m5VqGzyJTJC4OlhvXm4M2e48Bu7G5KFAPmRPB5PTaeabCw3w3KdYwjRJd41eZtTETf/LOnQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzdXvG0zN+7o5YrvirWqsbcrBxVbCbkA6wVz36VK/+dERsTexgg
-	JDoWcPl00+WsqcLzfrvsdYZaNtgydVcU79ENTfWuoDYBXhtU64kVbJBLsxr28cnWOA==
-X-Gm-Gg: AeBDiesk1BQcsUHV68Lu0T3PzFAeUpuCz+420ayR/bxkaevJYMpSBkvaWdQosQyumXp
-	qn1o7LTIr2w2F9V5PiS+gaNoSQ/cjY8MJRImp8hZDe+FWT0zslz4PMGbyngOXKy95cJLI4UwKkb
-	3O9RkjEQ5pKYmMMb+faqWT1WEKSCZ8CJb++Z28/V7jRlXX5e/JA+icuF+QVlPI07hCigbLnCHdh
-	TOu/Niq3JWqDBUJeOZFVGDYS2IRAKoVX2Q5oNDHtyEKwVWt/m7NDJHUNUQ7ZDCzBaswpo4/DxFZ
-	8kfxncHFVFVAT2LG+zQ/OXoGkRJZTP5xSFbvR4UxXHrx519bDgKGJ79/NBoK2Vov6DYbZ+7rKWB
-	mD1q2s+K/RxSAFKm1cp1QnD3eYPucnPf7vRodaKajiH7+cE3h0XI/F1Czyf/4mFI+8TiVLjfZtd
-	CDfpnogUP8rlU+XTV6cTY2HV3Nm1LOieGZVXLRN0/j/IyFFT3iHJ3jIsSOV8lZQsgRXGUQ9x1q6
-	0+wDZU=
-X-Received: by 2002:a17:903:2f10:b0:2ae:4e8e:954e with SMTP id d9443c01a7336-2b603f3d6demr6173345ad.5.1776872680351;
-        Wed, 22 Apr 2026 08:44:40 -0700 (PDT)
-Received: from google.com (174.188.87.34.bc.googleusercontent.com. [34.87.188.174])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b60003ffd7sm152803975ad.80.2026.04.22.08.44.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Apr 2026 08:44:39 -0700 (PDT)
-Date: Wed, 22 Apr 2026 15:44:33 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Evangelos Petrongonas <epetron@amazon.de>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="CGLunqkX"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=e5YwyPepSAmLtkdYvXY8KvRhhSo0apDnzd1wdbfhIfHqbi2Zm6HtrHJ0BINDmSRvGm7TtdN7p1NxmDW5SQ0uSuEUPOJohcGEY8G/SJZg9stfMa/63JAq3J2U8jJdqh+i9btMPHVYfmlRCRAf6bkhi8/NdcwDQt5mm5WzNijfUbF84S+wg/wnq7rKAjilxsi713f1sDA8MAL2tNjvW4z/AQcOIF/zAtFWnUs0JWpSoJbySkvZuZ0LR1wC5VVb93GmhKU75+3quPWKsEhschx6hEllbPaG9XBHZoyHkgusdpQby1vH5tAcu4mtUwuWgNIGclbtOgxD015ijKlrbIPZrw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=AsJ3Hil7gxBHhAEWlOZm7t/0fxVBWng/X0BR9nzJlwM=;
+ b=Ks+f8Gj9xJNeG8mSJmFFKmCEneb5bZuy4J9aN47om1TwBLV+Dt4x++xCmWinO6Yj1qYTO0fRW+ylyznV0+OJCpozvmX04Mn67OCm1ThHnZD7/lyI3OKzm6nRQHmt9PsJj4bRO5fngnLHG4LIsyN1zW+cPQEDveiV2BWpG4G6GU0Af40CYJtv61MZ7+BUZ58tMjppcDHVeYRTbudO2BLLgglwBpB5+xactWTZsQzPdeUK3pUAfagS+6zBcglDHUXI8PyEGwTMMOmDggs0uk1uHxqn5L5fDPDpNAvnb4ubcksgnZD6a2//dFSBtmTx+JvNg4vmPlCEhzJqTifvBlc+WQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AsJ3Hil7gxBHhAEWlOZm7t/0fxVBWng/X0BR9nzJlwM=;
+ b=CGLunqkXsb3jSpk1jNoOSEYeux+WUiaOFLEPGn3w2U6t4w/aonzDQFCkwzg0lRoAxEdX26kt8zMd5QDwm0YydOvq6vwd+UmDlcZbujy335r86XI1+Cr2bQGndpbAz6rItP8xd5SisCh0HGZoqj4ls/PovSIAgI/JIFyfokSC8vEg4dqtPfLXSsKIyluTGgf5VdGrwumLFw9FsNx/M5fjFHl+75RBgQK9sc8weBm6R/fK8VutwC6VzP4Crczo8Zh5V0ASwHAbPEWpOkSgCAHXj45f6P1s25mCobFCH6rhGibffutOuY6Xvs5eAfmQzdIsdY+ByCNy+JIEE7pfJfEaFw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by SN7PR12MB7834.namprd12.prod.outlook.com (2603:10b6:806:34d::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9846.20; Wed, 22 Apr
+ 2026 16:03:16 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9846.019; Wed, 22 Apr 2026
+ 16:03:16 +0000
+Date: Wed, 22 Apr 2026 13:03:15 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Jacob Pan <jacob.pan@linux.microsoft.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Alex Williamson <alex@shazbot.org>, Joerg Roedel <joro@8bytes.org>,
+	Mostafa Saleh <smostafa@google.com>,
+	David Matlack <dmatlack@google.com>,
+	Robin Murphy <robin.murphy@arm.com>,
 	Nicolin Chen <nicolinc@nvidia.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, nh-open-source@amazon.com,
-	Zeev Zilberman <zeev@amazon.com>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Allow disabling Stage 1 translation
-Message-ID: <aejs4So33q0PoghS@google.com>
-References: <20260420123221.20801-1-epetron@amazon.de>
- <20260420124032.GO2577880@ziepe.ca>
- <20260422064431.GA49867@dev-dsk-epetron-1c-1d4d9719.eu-west-1.amazon.com>
+	"Liu, Yi L" <yi.l.liu@intel.com>,
+	"skhawaja@google.com" <skhawaja@google.com>,
+	"pasha.tatashin@soleen.com" <pasha.tatashin@soleen.com>,
+	Will Deacon <will@kernel.org>, Baolu Lu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH V4 01/10] iommufd: Support a HWPT without an iommu driver
+ for noiommu
+Message-ID: <20260422160315.GL3199414@nvidia.com>
+References: <20260414211412.2729-1-jacob.pan@linux.microsoft.com>
+ <20260414211412.2729-2-jacob.pan@linux.microsoft.com>
+ <BL1PR11MB52710F2441FB52E2D94D37868C232@BL1PR11MB5271.namprd11.prod.outlook.com>
+ <20260417145946.00004418@linux.microsoft.com>
+ <BN9PR11MB5276DB15491F949DA7D8F0A78C2D2@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB5276DB15491F949DA7D8F0A78C2D2@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-ClientProxiedBy: YT4PR01CA0341.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:fc::27) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260422064431.GA49867@dev-dsk-epetron-1c-1d4d9719.eu-west-1.amazon.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|SN7PR12MB7834:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1bd08981-fccc-452a-9766-08dea088aa47
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|366016|1800799024|18002099003|22082099003|56012099003;
+X-Microsoft-Antispam-Message-Info:
+	F+Vk5kpGoTUguk1DqKEaSJhweajaVbllySoRfHu7/rVDrchCujscgrARHX/NQptXVOaYGraOsogLR1af4UqTbBKYAJ/kSJG1lLrswmBQik2Y+gGrsavhcrgXPXhSlQ1D+Dir/K/JO5X0zj8fF6H1tueJuQb33DCx0XcWgsb4BJgcBGdzWdDZpW5CrZ6Rbl9USf43w0T/yrG649WwlH2W2HDYqc7u1De3e6b2l284KmQIQBRHLNkM5IqNPxaObqsFeDwQFr/s1et2CfpUXmyq7BjOcG2qwnwrNxN9unN4gl6kXg5aFbkZ9py5ZUDWp9jD+CjNVOUNKdX2anN964YKI2b2CVgGzNCTkSFzAoSFY+59M1Z+vZGuwm53kVoOR8Z7ubdSB+YsDK3ZapeYd3UBE8dmFDeRCSnFyhxDVBsrhR/Yr25Vn4tGDZZK7lgDQEwHT9C+f70kYpAqedlNdVW+gDQiAHuD+8OWJCeYcevUUR17Xk6cwOyZoEy0laSHtKqSFt+/ywv7fy6l43Ri5wWuetRh21RUpE/F8Fgdh06sb6e+Of+nbWbHjxHlZzdk8lwequhCtVb8CAzBGBd7wp+wVum12KvSEaGDZxBOKQtTvVkbKYUCucsN3/UMfHIoWLPRp0E6S/zIsxQTYk1KA6IcYte2B9Td+XG/P4GHFmSbC1fdhYM4sjW8MWWnMJD7TRGRwIanBMW9nyMerBnmJ7q+RLsW2xJNpByNkiomoKQ0lts=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(1800799024)(18002099003)(22082099003)(56012099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?CVRvh5Tc6JPZfvyB+Y/l1DokRQghF22Md9nGGxQNXeZBAFC/N2PbBzyeOk5N?=
+ =?us-ascii?Q?I1dwr0tUQ7NnBVIJDGAk0GupPMxZJtvIP9TIGkjtiA0JYJ7Am4shIN956NKC?=
+ =?us-ascii?Q?kIeDxsvfg8PMLjDXgcfXn2nFTdsoP9/1uAs8m4j89jpM3ChAxbdtA3zM6tqm?=
+ =?us-ascii?Q?TT2Vldcn+/9F07s4HsdMS/wtvcHBv/lUIyXDxw/VUeA00hMcNKAiSt1j4cVd?=
+ =?us-ascii?Q?MysczvzQbTlgA4Ass2fbO9/h68IRLe6GnGQQ+0i2ot678wdwqkI0Q9x0HKOi?=
+ =?us-ascii?Q?xMOtoK17L+E8Sj7BUtwezAZULgmV3S5PlTFxZR8O0tkHcn4jdrx8bv0zGaDj?=
+ =?us-ascii?Q?CEo76/w1JiqHju/JocNexsDKJjyHEfG6zitEhA3azkfwKoGN48DdmNXRbYbc?=
+ =?us-ascii?Q?dESpFQhAvtL3rMvASdFJ9ELjMDpu0xqySwy5wCsqE+ml/O2t3hYRTcQjZJFS?=
+ =?us-ascii?Q?PFJPFpDn+97oR5qcON+4OCTAQaAi33VOP4wcP0+Mtwgx5lDuX0DmuF53mpcS?=
+ =?us-ascii?Q?O2b+w1evwI4C1xFh3aLyr3jbuJpjT5gdftdFRALs3Npr05VghP3Rq7azqN1h?=
+ =?us-ascii?Q?lbpv2CYlyK6HLvce3pO4SfV8ULZlVMcS4F0koDC/Lci6Gon7NjaJ8EUaCtmV?=
+ =?us-ascii?Q?qST+sGmf9YIOgKEvmKbsOViqFxXlyY0lRO1AnZUxels7bQOpaadmG17iHjEj?=
+ =?us-ascii?Q?bQckEElSOva1COLjjnQ/W8VPEmaZPhY9AKdDJ8kQhf9Hsju7YWptCyN7tKve?=
+ =?us-ascii?Q?WZbo0pR2tdezjsIvJJ/RABRpDRtOmsQIhwOXAWm4gRg9ggvm50afeVlOIwrb?=
+ =?us-ascii?Q?65IbDjnW2zWXqOyBxPqvbupComNoKByF4PU3axUCMY4s1MGpDk5+wHXVkCBn?=
+ =?us-ascii?Q?FRRqbPSmMl8dnt2bJiv4MunfSLUnpaihsRjH2VE7pbw36ZhXMAMV/SKJp8bs?=
+ =?us-ascii?Q?2KiZmLLfBiPFpifVukjhJDobTvoSzg18ntwifTSWmXpQeToGzdePhT25b3n8?=
+ =?us-ascii?Q?BsO+xCwjGuet/S/ciGS6GjyJQZEQFPw/AXlA8rvIKqP2sAYBV44e3Fde/yex?=
+ =?us-ascii?Q?mUcNxmPpE7Fz53uFk+lBTZJ4ePbhfoHJYLBg7t6Fy+VRIqLj72wE1DVbJCKf?=
+ =?us-ascii?Q?V8I17xBWUE2IGOOv3EwVFaBA96Y6n4YewHclpZQIryz2qjkxdPj3AwL+ngT6?=
+ =?us-ascii?Q?G/zj1MOOBb3eO8nEw2cgY9exqFDisafK3xD36g6WR2E5AvYALMn2Ouh49aSP?=
+ =?us-ascii?Q?vQY0owCfD6o/jY3Fo8+lvXg+qZge1mga/GOmUKdkn1Y04Wg2/k3vTkEwc8BD?=
+ =?us-ascii?Q?LacqJyZTxJcWJfUOsFlWYnSKyifLTSDkesZ3CO3YwIxSll4Z4Jsdu7yWoBnM?=
+ =?us-ascii?Q?5Ll4rwGGiJV7FYnNFx1zi+Awyx2qvLndUrglrO17xwXpfqwkVYM+mwIK3iCV?=
+ =?us-ascii?Q?vnCQZOamuav58rPrdIDF0oi0pNbCwOKlcwBgHNcf1xtT4wefGOTetsbsFX55?=
+ =?us-ascii?Q?smiVQiy/9oO2kwKUtU5RU64mjxX0K7gclcwoTEIBGWEPYG3WiJsmasSKmT5V?=
+ =?us-ascii?Q?dywFakcVRs2dbXjlXHmhJGRkNqHWCJGAbzQlkm6cX5/aCQCEtv8S8gE5AWkc?=
+ =?us-ascii?Q?edzrwgFZKoDbG4Y489hBcBgosnx6oBHGQE8vzB0HmOunnj5VBTbQB0r3sVBW?=
+ =?us-ascii?Q?6c14b3v4Tgo5t/3ILsAJ55lhL1HtQGZbp6o8oSoCCRK0lyn+?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1bd08981-fccc-452a-9766-08dea088aa47
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2026 16:03:16.7970
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kaOX3Iv+5pB5uL2tQaT8ts5uZTRzqFNl5hWobBS7HaEw/v1bvFwqhznTv9+BSS2j
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7834
 
-On Wed, Apr 22, 2026 at 06:44:31AM +0000, Evangelos Petrongonas wrote:
-> On Mon, Apr 20, 2026 at 09:40:32AM -0300 Jason Gunthorpe wrote:
-> > On Mon, Apr 20, 2026 at 12:32:01PM +0000, Evangelos Petrongonas wrote:
-> > > When the hardware advertises both Stage 1 and Stage 2 translation, the
-> > > driver prefers Stage 1 for DMA domain allocation and only falls back to
-> > > Stage 2 if Stage 1 is not supported.
-> > > 
-> > > Some configurations may want to force Stage 2 translation even when the
-> > > hardware supports Stage 1. 
+On Wed, Apr 22, 2026 at 08:12:43AM +0000, Tian, Kevin wrote:
+> > Technically yes but we need this flag to match forced features since we
+> > are sharing with the real AMDv1. Otherwise, this will fail with
+> > EOPNOTSUPP.
+> > static int pt_init_common(struct pt_common *common)
+> > {
+> > ...
+> > 	/* Requested features must match features compiled into this
+> > format */
+> > 	if ((common->features & ~(unsigned int)PT_SUPPORTED_FEATURES)
+> > ||
+> > 	    (!IS_ENABLED(CONFIG_DEBUG_GENERIC_PT) &&
+> > 	     (common->features & PT_FORCE_ENABLED_FEATURES) !=
+> > 		     PT_FORCE_ENABLED_FEATURES))
+> > 		return -EOPNOTSUPP;
 > > 
-> > Why? You really need to explain why for a patch like this.
-> > 
-> > If there really is some HW issue I think it is more appropriate to get
-> > an IORT flag or IDR detection that the HW has a problem.
+> > where in iommu_amdv1.c:
+> > #define PT_FORCE_ENABLED_FEATURES
+> > \ (BIT(PT_FEAT_DYNAMIC_TOP) | BIT(PT_FEAT_AMDV1_ENCRYPT_TABLES) |
+> > \
+> > 	 BIT(PT_FEAT_AMDV1_FORCE_COHERENCE))
 > 
-> It's not a hardware bug there's no IORT or IDR bit that would make sense
-> here.
+> Okay, make sense.
 > 
-> The motivation is live update of the hypervisor: we want to kexec into a
-> new kernel while keeping DMA from passthrough devices flowing, which
-> means the SMMU's translation state has to survive the handover. The Live
-> Update Orchestrator work [1] and the in-progress  "iommu: Add live
-> update state preservation" series [2] are building exactly this plumbing
-> on top of KHO; [2]'s cover letter calls out Arm SMMUv3 support as future
-> work, and an earlier RFC from Amazon [3] sketched the same idea for
-> iommufd.
-> 
-> For this use case, Stage 2 is materially easier to persist than Stage 1,
-> for structural rather than performance reasons: An S2 STE carries the
-> whole translation configuration inline. To hand over an S2 domain, the
-> pre-kexec kernel only needs to preserve the stream table pages and the
-> S2 pgtable pages. An S1 STE points at a Context Descriptor table and as
-> a result Persisting S1 therefore requires preserving the CD table pages
-> too, and because the CD is keyed by ASID coordinating ASID identity
-> across the handover.
-> 
-> In the long term the plan should be to persist both stages.
-> However, until a patch series that properly introduces SMMU support for
-> is developed/posted we would like to experiment with S1+S2-capable
-> hardware with an easier to implement handover machinery, that relies on
-> S2 translations.
-> 
+> btw iommufd selftest just removed the amdv1 format (will be in 7.1). then
+> let's not mention it in this series.
 
-Hi Evangelos,
+Why? The selftest was removed because it wasn't used by the userspace
+selftest, the format is still there
 
-We (Google) currently have a series in the works specifically for
-arm-smmu-v3 state preservation. Our plan is to post it in phases (S2
-preservation first then the S1 + CD series) once the iommu: liveupdate
-persistence series has stabilized.
+I wanted to use amdv1 for this because it has the best multi-page size
+options of all the formats.
 
-Since the iommu core liveupdate framework itself is still in flux,
-it’s a bit premature to accept/merge this patch before both the series.
-
-Furthermore, it must be noted that even if the iommu liveupdate series
-is merged, until the framework is fully integrated with the SMMU driver,
-liveupdate shall remain essentially non-functional or 'broken' for
-drivers that haven't yet implemented the necessary support hooks.
-
-We’d prefer to wait until the core infrastructure is solid so we can
-ensure the SMMUv3 implementation aligns perfectly with the final
-requirements of the iommu liveupdate persistence series.
-
-That said, we don't mind posting our arm-smmu-v3 series with S2-only
-preservation early as an early RFC if that helps align on the design
-and implementation details.
-
-Thanks,
-Praan
-
-> [1] https://lwn.net/Articles/1021442/ — Live Update Orchestrator
-> [2] https://lore.kernel.org/all/20260203220948.2176157-1-skhawaja@google.com/ —
-> [PATCH 00/14] iommu: Add live update state preservation
-> [3] https://lore.kernel.org/all/20240916113102.710522-1-jgowans@amazon.com/ — [RFC
-> PATCH 00/13] Support iommu(fd) persistence for live update
-> 
-> > Jason
-> 
-> Kind Regards,
-> Evangelos
-> 
-> 
-> 
-> Amazon Web Services Development Center Germany GmbH
-> Tamara-Danz-Str. 13
-> 10243 Berlin
-> Geschaeftsfuehrung: Christof Hellmis, Andreas Stieger
-> Eingetragen am Amtsgericht Charlottenburg unter HRB 257764 B
-> Sitz: Berlin
-> Ust-ID: DE 365 538 597
+Jason
