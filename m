@@ -1,151 +1,108 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out203-205-221-245.mail.qq.com (out203-205-221-245.mail.qq.com [203.205.221.245])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D33F1DF256;
-	Wed, 22 Apr 2026 09:18:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB92F388E40
+	for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 09:29:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.205.221.245
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776849529; cv=none; b=FoSj3Nv0cQKCSPfP6/5+guIJfDbg5R0V1CFAHRoltVk4DEPFjeds/D4DQOAXv8ZPjsBwWCNBxDaRsQ6Do8uB8gn31knUOZ8h6qye4P5nBMF1esS6Pk1Np6A4fGviNp3axHK8JYWdmXaf8quxB0M7uQuqFoIze9Xgrq6N73m+hGA=
+	t=1776850146; cv=none; b=hllkWSNWBCi9olGzYZWb1yaQYiDx0Zft242TTUTyCaBcuf+rKOxB72DipY6hgM6YhZ/dxQDLwfFyi8nxieqPmK3n2x4J8UmfZcEkEw5N5GcIbR6nThdrcD/CfjXBADnUN4JtqA8ChlORuKn3pYT0gSPqm5w05hACc+/78XOaXYE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776849529; c=relaxed/simple;
-	bh=K8pcoY2WgjFw92Yz0dOk8n5L/ZPIsmzw+Zb1EkmEH/o=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=nBPvIP8xYYvHn6Gi3atrvlD+WleH6SRpfMdCYmDqH13ULnWi2L2fMCDu5OUFQZSuXXQQHnZLf7Y615hoElaSZXblc1OxUZzeV5ft8OTpvbQfauuRHgwhr3ozmxh1ZuGBrINLjVmPs2jsihp2p3feR+ZGhE2ybs7xZ82P5Gy/Vgs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LLQZJ+1k; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1776850146; c=relaxed/simple;
+	bh=5DKj+loyYLzbVp/lVvp0Rz/1T2Z2FcckTEFu+cHbO1o=;
+	h=Message-ID:From:To:Cc:Subject:Date:In-Reply-To:References:
+	 MIME-Version; b=E6QNYNnKKQFgrAmUW4tgoUBiVkJiz4kiPjV1jT5PVUaXemnU+emIZgCXOgWZAp4y8SoDhV9+944JBPgQ9CygcSDCR1bDS7QlQi7MGO/KmGKT84FsWfYuHTEI79c7/EF8vTzjT2yN1GfHLHRZOu4LZ8onFqh7ZAqv9BRdYUEa5d8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com; spf=pass smtp.mailfrom=foxmail.com; dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b=hG1d0IPj; arc=none smtp.client-ip=203.205.221.245
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foxmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LLQZJ+1k"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7191C19425;
-	Wed, 22 Apr 2026 09:18:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776849528;
-	bh=K8pcoY2WgjFw92Yz0dOk8n5L/ZPIsmzw+Zb1EkmEH/o=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=LLQZJ+1kSY/o60d6TTX7DKYBkuuD8VNc4XiuneZZhwI/K3F3/KYPHPlKbb/7y41F0
-	 gW1geJvdRNu0QQF2ij+TdA1Ko6jujZCK/cQOjIaqyw1+Do9f0iniyArT4lNax/LEZV
-	 hM6b/dNMUWVUMQmA71kXlXPG59YnQYZW9oqBVyfSD41/HPP2mLSWqE4thBh30kYWAe
-	 ++lrrvZfP3q9VR1MrQ0mrIYbQIm5mwvKy5DbT3+ooWNPnWVuklVR8qXC5xAHiG3bju
-	 uV+jNi6tXJJiBLTXufIj9S5p9mECdkVaQQ3Uo/5V7pf2LGjpD8hv6xWI7SxI3bKhVG
-	 N/ctHrkaSbPjA==
-X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>, Jiri Pirko <jiri@resnulli.us>
-Cc: dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	iommu@lists.linux.dev, linux-media@vger.kernel.org,
-	sumit.semwal@linaro.org, benjamin.gaignard@collabora.com,
-	Brian.Starkey@arm.com, jstultz@google.com, tjmercier@google.com,
-	christian.koenig@amd.com, m.szyprowski@samsung.com,
-	robin.murphy@arm.com, leon@kernel.org, sean.anderson@linux.dev,
-	ptesarik@suse.com, catalin.marinas@arm.com,
-	suzuki.poulose@arm.com, steven.price@arm.com,
-	thomas.lendacky@amd.com, john.allen@amd.com,
-	ashish.kalra@amd.com, suravee.suthikulpanit@amd.com,
-	linux-coco@lists.linux.dev
-Subject: Re: [PATCH v5 1/2] dma-mapping: introduce DMA_ATTR_CC_SHARED for
- shared memory
-In-Reply-To: <20260421121004.GA3611611@ziepe.ca>
-References: <20260325192352.437608-1-jiri@resnulli.us>
- <20260325192352.437608-2-jiri@resnulli.us> <yq5atst6ywbl.fsf@kernel.org>
- <4qdizkkoeke3cvkcf35upa7p7ick6s654eqlrizmi7ozkw5eze@tnpk2e34xgwl>
- <yq5awly0d504.fsf@kernel.org>
- <tteiecxfqy4k24wnzvp6ocxnuopyhmqtne2xwh5htwldlbzjnp@o6cbzdlurxld>
- <20260421121004.GA3611611@ziepe.ca>
-Date: Wed, 22 Apr 2026 14:48:37 +0530
-Message-ID: <yq5aik9jcpzm.fsf@kernel.org>
+	dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b="hG1d0IPj"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+	s=s201512; t=1776850135;
+	bh=My6EacjSNjmZHU0CTpNvEYFjVGs69rZoNa95xb2tQH0=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=hG1d0IPj/EyGS5LZMAA6yIpL1c8xXk4rWtgLrNGHimeE0qcN5W5sSXpxH5FN5OJn/
+	 BZneeaUHe5uQQqh6S20EqP1eFg8Ixf8DGx+ARanhRTYvsM5DUmolan2RIUUpb+ZEbi
+	 xEqg9o3FRJIb49u7ANOxUo7srsCc3Y5WwMsC0n4I=
+Received: from LAPTOP-LEO.yizhu.local ([61.169.175.90])
+	by newxmesmtplogicsvrszc56-0.qq.com (NewEsmtp) with SMTP
+	id 735968E0; Wed, 22 Apr 2026 17:28:53 +0800
+X-QQ-mid: xmsmtpt1776850133tw656rhmy
+Message-ID: <tencent_361CADF43F93DCA4D5489881006382FF4006@qq.com>
+X-QQ-XMAILINFO: MIoti6gokNxFG89lDdt/Ih6wjJqL2qXZRDgYysB5haN0dSdvhD8KKtT4+mwQ2K
+	 s0SsaXzcyN4ptUbs/odxnD+TBA3tSKEMyQ2HInL4H0n9sfmqlbn53bjcJlZM5ad7sjq6+Ev6CxmZ
+	 Ozn2c0sXUl5yps02x95b/CrXVubw5B3ZSRrymB+o70of8X9ASlUqUMcZ1aZzX0MWHPR+nvjIv9re
+	 wkqC6xFLqlWdOh7mUE90TFnC9IIjTfkCa0fdwNAQKMxD9aamVwUhwbBClWCjiAtrxt8z9zmz3u1N
+	 /jauqWukPI7W10c/iu6AQyVrDenlzMIH6VcQKQdAN4WVHQPUm4tiMqwK/pqB1Kc30JDoxVJYrGea
+	 qWXEdbidWzLUGiDjU+SureWFBYe8Gj9p5NQ3tcXCVY51ge27/lKos/i02qAWzGvE/hkN3SZ+ZmGL
+	 1qghN10rVbZh/ho2ZV71BmTJ3Ax4sJjA3iBwesCUpjbJ3FthON2vYXzYko9ZWMlJTT0NpQLoU7/w
+	 G9XDLDwfPlAUT8TZSRZM8U7opKV9pUo3ESLM0xBBJsrBX6shmxjcQuS2Ufp1h8C1UclZMhWsCrhB
+	 xw+G2xs3bUP472D7u2Hq/Hd2NyuDbYbnPnEJ7Hc12prmMeNVUgNPXO3yZj2YJmUCykDBkhRFqHil
+	 JB59BcO0jh8sGz7yv6ktx9yYzRjDZFE0ZeyiHXhm/9UBmKmzE/1y/AxsIbmBJ/VXlSz0djroXLCb
+	 BjKEg0qbr5FEfRJ9laXtLsqvyuj2grcl0w1xglagmO+x+KnK9lZ7Eu36pgj56Za+IBnTbauJ1SIB
+	 lO5fknXIwLaSP4sqjbxIxJzbnLlEH5i/WRkEsqEpWNK5Srjuw+cqe1dvfCegrdaZhSYOUqIvVPrH
+	 1nEHrXab6y3oQoj6CbNlvOQFmX40ZYX5CcGocEmAqrm4MmlHyFiClaepOCkY3rTzpetirijVlzYZ
+	 mqzrnZr3zmTx46MfStKCxIgk1r/vFIYgZkjBIZjVQ1tHqeJFSuvMtPoraNpjQx7OWMLmdwvBNO7F
+	 lAxPoQlPIikfX/5MVzqxeCFKKUPIYhVdfnCIZCG2SrRpPtRQT5BhT6cMbXxiaDmfl3pRENh068oq
+	 mPKgAvYBo3xQq3h21dTAitDGRuQVRWqAbXeNE7WTQi5NnZnKAK9gd78sLeXlNDcOy1rJxm24cX8T
+	 Xzbw2r754Bfl2v3k4VP1YTxN+O
+X-QQ-XMRINFO: NS+P29fieYNwqS3WCnRCOn9D1NpZuCnCRA==
+From: Leo Jiang <leo.jiang1224@foxmail.com>
+To: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	Leo Jiang <leo.jiang1224@foxmail.com>
+Subject: [PATCH v2] iommu/arm-smmu-v3: Limit queue allocation retry boundary to PAGE_SIZE
+Date: Wed, 22 Apr 2026 17:28:52 +0800
+X-OQ-MSGID: <20260422092852.1824220-1-leo.jiang1224@foxmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <tencent_DA99B62735469A0CD219E9FC73E234A47309@qq.com>
+References: <tencent_DA99B62735469A0CD219E9FC73E234A47309@qq.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 
-Jason Gunthorpe <jgg@ziepe.ca> writes:
+In arm_smmu_init_one_queue(), the driver attempts to allocate the largest
+supported queue and retries by halving the size on failure. Currently,
+the retry logic allows the allocation to fall below PAGE_SIZE if the
+PAGE_SIZE attempt fails.
 
-> On Tue, Apr 21, 2026 at 01:53:31PM +0200, Jiri Pirko wrote:
->> >> You reach there when is_swiotlb_force_bounce(dev) is true and
->> >> DMA_ATTR_CC_SHARED is set. What am I missing?
->> >>
->> >
->> >So a swiotlb_force_bounce will not use swiotlb bouncing if
->> >DMA_ATTR_CC_SHARED is set ? 
->> 
->> Correct. Bouncing does not make sense in this case, as shared memory is
->> already being mapped.
->
-> It is a little bit mangled, there are many reasons force_swiotlb can
-> be set, but we loose them as it flows through - swiotlb_init()
-> just has a simple SWIOTLB_FORCE
->
-> Ideally DMA_ATTR_CC_SHARED would skip swiotlb only if it is being
-> selected for CC reasons. For instance if you have the swiotlb force
-> command line parameter I would still expect it bounce shared memory.
->
-> Arguably I think this arch flow is misdesigned, the
-> is_swiotlb_force_bounce() should not be used for CC. dma_capable() is
-> the correct API to check if the device can DMA to the presented
-> address, and it will trigger swiotlb_map() just the same without
-> creating this gap.
->
-> Jason
+While dmam_alloc_coherent() can theoretically return allocations smaller
+than a page in certain configurations, it is preferable to limit the
+retry boundary to PAGE_SIZE for SMMUv3 queues to align with the
+original design intent.
 
-Something like this?
+This patch ensures the retry loop terminates when qsz reaches PAGE_SIZE,
+per the feedback from the maintainer.
 
-static inline dma_addr_t dma_direct_map_phys(struct device *dev,
-		phys_addr_t phys, size_t size, enum dma_data_direction dir,
-		unsigned long attrs, bool flush)
-{
-	dma_addr_t dma_addr;
+Signed-off-by: Leo Jiang <leo.jiang1224@foxmail.com>
+---
+v2:
+- Use real name "Leo Jiang".
+- Remove code comments as suggested by Will.
+- Limit the queue allocation retry boundary to PAGE_SIZE
 
-	if (is_swiotlb_force_bounce(dev)) {
-		if (attrs & (DMA_ATTR_MMIO | DMA_ATTR_REQUIRE_COHERENT))
-			return DMA_MAPPING_ERROR;
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-		return swiotlb_map(dev, phys, size, dir, attrs);
-	}
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index e8d7dbe495f0..4a0b15b1d4d2 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -4418,7 +4418,7 @@ int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
+ 		qsz = ((1 << q->llq.max_n_shift) * dwords) << 3;
+ 		q->base = dmam_alloc_coherent(smmu->dev, qsz, &q->base_dma,
+ 					      GFP_KERNEL);
+-		if (q->base || qsz < PAGE_SIZE)
++		if (q->base || qsz <= PAGE_SIZE)
+ 			break;
+ 
+ 		q->llq.max_n_shift--;
+-- 
+2.34.1
 
-	if (attrs & DMA_ATTR_MMIO) {
-		dma_addr = phys;
-		if (unlikely(!dma_capable(dev, dma_addr, size, false, attrs)))
-			goto err_overflow;
-		goto dma_mapped;
-	} else if (attrs & DMA_ATTR_CC_SHARED) {
-		dma_addr = phys_to_dma_unencrypted(dev, phys);
-	} else {
-		dma_addr = phys_to_dma_encrypted(dev, phys);
-	}
-
-	if (unlikely(!dma_capable(dev, dma_addr, size, true, attrs)) ||
-	    dma_kmalloc_needs_bounce(dev, size, dir)) {
-		if (is_swiotlb_active(dev) &&
-		    !(attrs & DMA_ATTR_REQUIRE_COHERENT))
-			return swiotlb_map(dev, phys, size, dir, attrs);
-		goto err_overflow;
-	}
-
-dma_mapped:
-	if (!dev_is_dma_coherent(dev) &&
-	    !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO))) {
-		arch_sync_dma_for_device(phys, size, dir);
-		if (flush)
-			arch_sync_dma_flush();
-	}
-	return dma_addr;
-
-and dma_capable() now does
-static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size,
-		bool is_ram, unsigned long attrs)
-{
-....
-
-	/*
-	 * if phys addr attribute is encrypted but the
-	 * device is forcing an encrypted dma addr
-	 */
-	if (!(attrs & DMA_ATTR_CC_SHARED) && force_dma_unencrypted(dev))
-		return false;
-...
-
-}
-
-
--aneesh
