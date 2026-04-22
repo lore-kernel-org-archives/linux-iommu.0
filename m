@@ -1,249 +1,176 @@
-Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011041.outbound.protection.outlook.com [40.107.208.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5725E1A683E
-	for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 15:00:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776870009; cv=fail; b=VvKHf2wMc6OLYxYZ5qwt2ddeVfWTRVIWx1jc3sW7vInTcjULE5IAhAsBbU3PtqAnt2Dfu2TXP0l+ZYUdkLHWG/jqcARwjhzE/BsIuDiiVO7wp32nH7QMrYzwLi4RbEjQiAPlnEImViVxgwlYB4/G5EAZ2QpX6pkfkZDtKlPCl9A=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776870009; c=relaxed/simple;
-	bh=LYzuTIhKD5bcoH68pQ9n1TTrKgdMIu2y64Sd7d2puAw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=GvIaHgWE52vEmFinJmMS7zoblnY37MgjmapoK98rl+NjmjrYV00JymWjh8bWYuAu5eTtAfXqUvojIhvwLIESv83/WWw2z47UyDgUa4Cd8gHeHpVaEDXiEA6G7CusaigcH58xa7PdLrTA+elfs8lYwsV+vCaRk7VxEsXddv4eRNQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Y/h7lDY8; arc=fail smtp.client-ip=40.107.208.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90E1A346AF8
+	for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 15:44:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776872682; cv=none; b=ZvXx7bv2X2QKMMN9c6/jDAR5iZfXEarmoihw4WJH1qAPyiQJ86UW8C4nnAjFvGTvw/BKipMp8drQCCK+uqSn9qE25x1g2SZ82QfM1o+aFLFb+1FZE/tcp4Ia9tUVGRMmFDDBh5TSciRiF82t3gA35tzKKe5c6JwoG6jvEfsimxg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776872682; c=relaxed/simple;
+	bh=avnk4GU77eJdWBqpzi1y776H5v2VdhpFnM8ByuUntY4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=eiQ7705QnRkjxbtHjYdzi4NM7lwSiMaLfQxHyHiHibLJdm1H5xCABkYb4IS7AvTYe8XRemgaPkl4srVfCz+i2KTy91Zl2YHA+hTqtGSOUqfK8rJM/JX+JgQ/cOUjXqJm8lExsNas1SbtMHD21i4/14iu6mCz7o/4/8hwGh64Dto=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=KiMpyOuq; arc=none smtp.client-ip=209.85.214.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Y/h7lDY8"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=iPQMbuZm05g6mOSzIRXTAfGH3+mmeKPsEqdMjJee6tzFbn48JMdkooAKYMCHWojpaHllT6xCBwCvXkEiP401snO/Bl+BARdM/I8D6EOu0aHP1R76uXMzb+KQao55iR/3jhGGgyCIY1PLh70ERCbkef5PdAvu/+AE6I1p9cI6ZQ/joH3AVVCO2oxYM7YZqA2jbb1sKlhZPAMijKAQD62ox8f/dS3BuhegyRq4Z+G0qZJqiwoDPUvhg75+QZeluCQZXUd0Zcs+IVvVoC7R09uRjHtofEv/FYFPf3Ds9TaYW+GS+3ItMyqdtTrIUldweXDgqjame5YxmgfSA2GoavMZQQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VgJM+r8FUK64NIwaToeS0Jqf6Ffw4GG63eLK/XBmOxE=;
- b=gtOilO05tgFQeSzQWo5vyEyScyf4wjSV0Bf+rqa1ulvcMjLtj8jF3CYQdjoU2pTxumJNc0yr8x3DTLuY0OVeX/KAvs0XXOUlKtKorZ6YAc4o83VPuqSqeX2xnrQIHQb8LBBgHmQPoGBMmMZZ+5Lp6Z0zutVsfF2WRxoY6LJLw1eN1S25dZrET/e6brSdCFCKCzM/f84ZzduKb6CtDRKvy0h7DJj35vPGzG/wanliXAE0KNsOVZH7/XCAzGT7guQ7IUaLXDMTZ6VcaJziWGgj8m4COoQcTZky3feP2ZOFc9FVh9NOBRI4jCgPTM0D6aSdq/h0xZXx69qic45RiTEpbg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VgJM+r8FUK64NIwaToeS0Jqf6Ffw4GG63eLK/XBmOxE=;
- b=Y/h7lDY8X/Ya2G/33EKxl+NQeVTRJw+TC8gaYxonW+wToUPT8VAAxM5J683UrrrIfV+ZbaiL04EpAg91wRNeY0wNGSPpR+g1M+DzCUQppTaj1NNELfEiyGrIQnWq0MKaYQxkLceW3jDp3q87M0gILWcfUDhlHLur+PKLLKiLvRt2gqXFdLszmW/wYGrhBBd3WAKdEuerW4DIUNIEOPBUttMpNzaRMlxgR5z2TIUswQzoQeNk/db+ZJmiNG7gCDJzh19tLLWIToQw2yytNDKFeWSoVbaO5soKH968tP5bEnLM9AyRtIqQsAeTVRapPfDmC9lv0lMybwcawFNBhNFnGg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by DM4PR12MB6012.namprd12.prod.outlook.com (2603:10b6:8:6c::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9846.16; Wed, 22 Apr 2026 15:00:02 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9846.019; Wed, 22 Apr 2026
- 15:00:01 +0000
-Date: Wed, 22 Apr 2026 12:00:00 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
-Cc: Dongwon Kim <dongwon.kim@intel.com>, dri-devel@lists.freedesktop.org,
-	intel-xe@lists.freedesktop.org, iommu@lists.linux.dev,
-	Kevin Tian <kevin.tian@intel.com>,
-	Leon Romanovsky <leonro@nvidia.com>, linaro-mm-sig@lists.linaro.org,
-	linux-media@vger.kernel.org,
-	Matthew Brost <matthew.brost@intel.com>,
-	Simona Vetter <simona.vetter@ffwll.ch>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Thomas Hellstrom <thomas.hellstrom@linux.intel.com>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>
-Subject: Re: [PATCH RFC 21/26] dma-buf: Add the Physical Address List DMA
- mapping type
-Message-ID: <20260422150000.GK3199414@nvidia.com>
-References: <21-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
- <c413710b-4c28-4ed8-88ec-aeb8c4482011@amd.com>
- <20260413121628.GE2588311@nvidia.com>
- <f6d38a08-009c-4efe-9dc3-6bcf00ac35f7@amd.com>
- <20260422115306.GI3199414@nvidia.com>
- <fd8065ce-fd0e-4df5-9c80-8e9603657cfe@amd.com>
- <20260422131337.GJ3199414@nvidia.com>
- <e67426b9-4ded-4f6c-8309-7f847adb4540@amd.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <e67426b9-4ded-4f6c-8309-7f847adb4540@amd.com>
-X-ClientProxiedBy: YT4P288CA0082.CANP288.PROD.OUTLOOK.COM
- (2603:10b6:b01:d0::12) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="KiMpyOuq"
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2b2591757fbso9995ad.0
+        for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 08:44:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1776872681; x=1777477481; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=3/bQL7TanDi+LGxlRj56HG2qI4sxsGUbPbeeZiNiay8=;
+        b=KiMpyOuq5JjbEuzdgw0+lrKcIAI8IyNxpkE+NSWQKYGu2AK4oF5ri4/0eIjBeCIXp3
+         Q7kWEFKu6Wb+GqzJvXQe98dR1koWH2ApyYi6yS2BAApw3wkCI0w5WDcG0JukdZpaIGQk
+         4NU28q0+3I0RFjBrCg2DPasDSI2gaqcAasgpT4ouPhKbcrhv7kOg3Ynmqls33jUalBhl
+         eclTAkoSMbisKYbnqj4YxR+xP4222FbY+z1bucWDt58i2eGNbBrOISbYJwPyBiKN5aeW
+         2zithZuZTBHBgoKwp8ekVG0VA9xQGZzBPbmWyR2B74BjvZv5Nghyz/kVVxlbQczKI68P
+         2KOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776872681; x=1777477481;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=3/bQL7TanDi+LGxlRj56HG2qI4sxsGUbPbeeZiNiay8=;
+        b=KaNk6n5H4nH2pFMCMo2uffxggIfmS/9SSoGbCLPzRXWiWD1Bzsh4+448n1d0V6J5tX
+         mButQbEDeuwhG7aE1jT9uMSA2I63VGKrcTpyAPk4BAe/RqdN4b+c0h6Bd6y+xWIHDwFO
+         vranURYbe75DlpWNtWll608CYUEoIaxU6kPMC/BQw6rU6CH6fbDFcofCaWYFjEbiG97E
+         y0G1M1AT8Tb4oEspOAMYHmlQcRYaO9oeOs9Vr2pmuJF8ZnuwusE2q+ZpI8fYN0XvwWHi
+         Z5x2o5oqYjvLaZ+vF6qPyb8Lgupik6MvSFM/hLFWPQxr+6/+/2wF16/lQfUmBJXAr08r
+         kj3w==
+X-Forwarded-Encrypted: i=1; AFNElJ8m5VqGzyJTJC4OlhvXm4M2e48Bu7G5KFAPmRPB5PTaeabCw3w3KdYwjRJd41eZtTETf/LOnQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzdXvG0zN+7o5YrvirWqsbcrBxVbCbkA6wVz36VK/+dERsTexgg
+	JDoWcPl00+WsqcLzfrvsdYZaNtgydVcU79ENTfWuoDYBXhtU64kVbJBLsxr28cnWOA==
+X-Gm-Gg: AeBDiesk1BQcsUHV68Lu0T3PzFAeUpuCz+420ayR/bxkaevJYMpSBkvaWdQosQyumXp
+	qn1o7LTIr2w2F9V5PiS+gaNoSQ/cjY8MJRImp8hZDe+FWT0zslz4PMGbyngOXKy95cJLI4UwKkb
+	3O9RkjEQ5pKYmMMb+faqWT1WEKSCZ8CJb++Z28/V7jRlXX5e/JA+icuF+QVlPI07hCigbLnCHdh
+	TOu/Niq3JWqDBUJeOZFVGDYS2IRAKoVX2Q5oNDHtyEKwVWt/m7NDJHUNUQ7ZDCzBaswpo4/DxFZ
+	8kfxncHFVFVAT2LG+zQ/OXoGkRJZTP5xSFbvR4UxXHrx519bDgKGJ79/NBoK2Vov6DYbZ+7rKWB
+	mD1q2s+K/RxSAFKm1cp1QnD3eYPucnPf7vRodaKajiH7+cE3h0XI/F1Czyf/4mFI+8TiVLjfZtd
+	CDfpnogUP8rlU+XTV6cTY2HV3Nm1LOieGZVXLRN0/j/IyFFT3iHJ3jIsSOV8lZQsgRXGUQ9x1q6
+	0+wDZU=
+X-Received: by 2002:a17:903:2f10:b0:2ae:4e8e:954e with SMTP id d9443c01a7336-2b603f3d6demr6173345ad.5.1776872680351;
+        Wed, 22 Apr 2026 08:44:40 -0700 (PDT)
+Received: from google.com (174.188.87.34.bc.googleusercontent.com. [34.87.188.174])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b60003ffd7sm152803975ad.80.2026.04.22.08.44.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Apr 2026 08:44:39 -0700 (PDT)
+Date: Wed, 22 Apr 2026 15:44:33 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Evangelos Petrongonas <epetron@amazon.de>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, nh-open-source@amazon.com,
+	Zeev Zilberman <zeev@amazon.com>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Allow disabling Stage 1 translation
+Message-ID: <aejs4So33q0PoghS@google.com>
+References: <20260420123221.20801-1-epetron@amazon.de>
+ <20260420124032.GO2577880@ziepe.ca>
+ <20260422064431.GA49867@dev-dsk-epetron-1c-1d4d9719.eu-west-1.amazon.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|DM4PR12MB6012:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8d39485a-5cb6-449d-214f-08dea07fd43d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|7416014|376014|366016|22082099003|56012099003|18096099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	NDVN1wZS960bvxxCyFyOpFyNyGlik59XaYx9T9Z+tD6gdaWl9MUZ+OqCv7S7Qf/mAIgiTFdKYpzxLxdVpbPhtc3+wuWZxUYHfK64/O8xt4ol0N0twv9l2Wdn2xlmfgXAguZFGHR8Obo2Vmrf55EXffKZdnX9UBSH2qYSIuMoF9uyoKSDhOWIhaz2HlZptSBCrY0/W2QVHO/Jq+KcVgkHybNmNWuS5V0jnEPNdxh2w/CIhR9BUUGFwwEh3YAb2IiaJfvbo4DiLX1KFbNChue1uUaNolLFutIREV4fpMfMW478rHsRpco9iDAwxXrfEWmgMWxDv9ROWOt54aW3/92erHegVT8lsdgFMRNSuBBd4A+LF253VW7DBIsmXssUwit+Alu0T8xFGF+JRpMRsui2JaYaYYlzpcL+Oxez2uz5mD1ggD5TUkZcVeB86TZ3Ce60mxkZ0V+oFHzmRdqlPhaaAgUHvrL1sn0hXa+o+fWZ81NLnp93oi7dfqZoHflQMaclddSKkUtEW+XNC+85PKby4PUeX39nt3olGlVDcAP1mIY67xz0w6CrSPJOp7JFicogsX+Cw0t0UMfDi5c6qAt7itiQsqU95ESsmxXYIXSoTh2p778D6bAajnANf3GAeW/MpXgqGGozyuLFqd4nMtXIG5Eh3GmCRbY4IfC/feW+jHKEvmCGwHtb4urV4OrQn4rkH8/fREejWjFBOxB2h9GnO8J4hdAq+ECSPfinaAEbPpI=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016)(22082099003)(56012099003)(18096099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?OXRGeVVQM3FZQXZaKzlReUc0Zzd6c1ZvOFlOUmdBMmdxU2NiVzdHLzFXU0pZ?=
- =?utf-8?B?dWdTOVZXSCtNUXY3V2VkZzFHWVZpbXU1d2hxNjNSTjRFallCZGUwQUZpZDNQ?=
- =?utf-8?B?TUwyWWQxK0tiMENPWTNNbk5XdVZHWW4zSHlhT2tQY1JoVnZqL1A1VkhNMkND?=
- =?utf-8?B?aWdTeTkyM1FEdytDTFVYT21PdCswVEp1b04vMTd0ZFhjVjZodXFTS0VTRXlJ?=
- =?utf-8?B?dkI1YlJlMEx2UHdaMThHNi90QzROZWtvWTBhOU9raFhpdFpVNndjTmdvM0lY?=
- =?utf-8?B?UFFQSEZKRHhPV0J1MHdObndKSkd3Mnd3ZTUzYTlvblBqK2xjalAvL1hHT2Z1?=
- =?utf-8?B?RG5KSDBjYzlGQTVNQ3dHVGNZWjFzVW16cnRyL1lzNjNzVW9STnJNT3Q3a0gy?=
- =?utf-8?B?V1dXeVN3VUJJK1VJZGpqNnlTU2ZuM3dhNGt0WVhEWFRPMEFCS1ZJOEIwdGJi?=
- =?utf-8?B?SHQvSStHSkJWbVZieXZrZXczb3BJUWI1YVZjUFZ3WXN6c0gwamRkYVQvajA0?=
- =?utf-8?B?NTR5MWVMVC8xTG9SUEY5eVE0TGo5dWhabFJpZngyUnBWanpDRnVUMFF5Wmpy?=
- =?utf-8?B?QUI4MG1vSC93Rk5hMDNCZ1QwSXhtSmc4MlVKUHJkMURZNHFlazhKWkVKTXJG?=
- =?utf-8?B?Sy9IM1dkOC9wQnBUOXBjeitTdTh3Ui83QkthdEZZUHNDeWw1eWhzcnVHZzRt?=
- =?utf-8?B?eTdnL2hsendOU0pjV25MektvRjQzQzZZV0xpUGFSN0tNc0RVSVdUYU1PVVZa?=
- =?utf-8?B?L2R1YXdiYmZicG9OVmozb3NaQlFiY1hwQjRSNldMYUl3OGJRd0szb1QveUpL?=
- =?utf-8?B?V09xNlpDNmdlVFhHU0JnMGpDOGFDaXJ3VmdFajRLZEhydE52MUtxTHVuUzB0?=
- =?utf-8?B?cEorck1ZbzhTVjdYM2NRemdFZnFUdDdiRVl3UU01WVBSTGRHRTVrdW5CU1RN?=
- =?utf-8?B?U2lHd2UzZjlPYVlCaExwdDlYRDdIQnpHbTk0SCswTXgrM1FFMWw3aXF5bDJQ?=
- =?utf-8?B?VVJOMlFVL1F5UXI2Vkp6aitrTktvSjN1aVlBcHlyRlM2QjAyY0cyRSswTndY?=
- =?utf-8?B?MjRBSUp4NVBhSmVFK1phdUlETGdQVy90VU81dXRQcDQveVdTMkozWUs1OTRn?=
- =?utf-8?B?eXVBQjFRZnlKY3JWdS93SnRqOWFaOHlPMmtEKzllSWNOaGtadDZSVjdHaS9o?=
- =?utf-8?B?WjB2ZzkyWDdSaW81Tm1vdEJDSVNoYW10ZHVYdFFlNG1zV3NQMWVwbWNOeU0v?=
- =?utf-8?B?YU5SLzgvM29kV2tKVlcwRk8rbDZQamxoSnNwQndIQkdrMGMwLzRkVUZFM09Q?=
- =?utf-8?B?aHkwdWNFYVEwN2JnbVJ3ZUEvbkhma25Tb2U0RThsZmxrZWFiQlBhMEltZWp5?=
- =?utf-8?B?UkdjVk5tUm9FWW9FcEt1N1B6alFONDB3YkVKb2JnclQvZHJZVnIrY1BOd1Rn?=
- =?utf-8?B?bTZDOTdMenh3ZHUvQUYyVWJHSW14cnNwMlVKNVF6eWtzS0NjVnFvUmUvd1pv?=
- =?utf-8?B?SjUyd3FOeWU1bHJieDBTa1pUMlFnM0dEcTZYMis4Uk9VRjFlanR6KzAxcUJo?=
- =?utf-8?B?c25mTm5MWW9ka09lY1crbzdyVmVxVXBrRk8zbmc1VllqNHNHQ1JxaExOVU91?=
- =?utf-8?B?R1VjYTRDSGNGYjlqbkhwaU54ZFM1NUhpTEcwTStjcC9DUGplejJLZ3JsMnJ3?=
- =?utf-8?B?WEY1dVlWbVl0amRFaGdra0dUeUIwd0ZaaWRGcTZTRVBhMW5yOGpWVzROYzVz?=
- =?utf-8?B?dU5ISVJZL2J4cXpqSXRqb3pzSS9RcXdOQmc2anRKUERsNlZkNDVsdGsvQysy?=
- =?utf-8?B?bHNpc2lJZW9TR3pqUDFpd2pnOFVFSUw5RlF3TDQzVFhlYmx6aG04NEswWGRF?=
- =?utf-8?B?bDdIRkM5WWw1clpFQkt1L1BZdk5wWXNqYjhlam45TmdIMGI5eVBzaytUNmpw?=
- =?utf-8?B?ZGtZV2NpVGtIYnorQzYzZjNyemUvelY3WlQrWlk0eE52TFNyU1VzN3ZhWDE3?=
- =?utf-8?B?dzFSTXNGZnVFNUlvdnpnazRZSitIbm1tVVJuMFh5eDBOamR2UVZoYkxzVVQ2?=
- =?utf-8?B?Vy9Na2tRNzgrR2NqSzlNY2lpK0tGNU1IckRRSVY2SmEyYlZSais2UkYweDZx?=
- =?utf-8?B?WGxsa011NWRwWFV3MGlVWmp1cnJCbXIwRlFmNFd0Ly9zOXFvZ1ZGcDlPRDZt?=
- =?utf-8?B?MTRqQUlSS2t3YlFPMlhIazNXeTdRN1oyKzRhVDM3dFBwb3A3WEtDaXlOaFZr?=
- =?utf-8?B?TWFDU1M5VHk1cTZkTFk1K3p3TlduR0NuTDdJOHliTXR3TDRhaUptVGJaRVZs?=
- =?utf-8?Q?VknX+e1qJ3yr5J99SA?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8d39485a-5cb6-449d-214f-08dea07fd43d
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2026 15:00:01.8023
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PO5VsNEdkzZVrwhp14CjSAptIyBHAvhCYP3ymPXYhMAw9exJoHt3E+Dpsh9pnycI
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6012
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260422064431.GA49867@dev-dsk-epetron-1c-1d4d9719.eu-west-1.amazon.com>
 
-On Wed, Apr 22, 2026 at 04:04:19PM +0200, Christian König wrote:
-> > Well, my first reaction is very negative, this suggestion is leaking
-> > deep internal details like iommu_domain out of the single place that
-> > needs them - iommufd - into about 6 exporter drivers. Not nice. I have
-> > the mirror of your concern that I don't trust DRM drivers not to abuse
-> > the iommu_domain pointer in some very creative way.
+On Wed, Apr 22, 2026 at 06:44:31AM +0000, Evangelos Petrongonas wrote:
+> On Mon, Apr 20, 2026 at 09:40:32AM -0300 Jason Gunthorpe wrote:
+> > On Mon, Apr 20, 2026 at 12:32:01PM +0000, Evangelos Petrongonas wrote:
+> > > When the hardware advertises both Stage 1 and Stage 2 translation, the
+> > > driver prefers Stage 1 for DMA domain allocation and only falls back to
+> > > Stage 2 if Stage 1 is not supported.
+> > > 
+> > > Some configurations may want to force Stage 2 translation even when the
+> > > hardware supports Stage 1. 
+> > 
+> > Why? You really need to explain why for a patch like this.
+> > 
+> > If there really is some HW issue I think it is more appropriate to get
+> > an IORT flag or IDR detection that the HW has a problem.
 > 
-> Yeah, of course that argument goes into both directions.
+> It's not a hardware bug there's no IORT or IDR bit that would make sense
+> here.
 > 
-> The point is just that we have much more importers than exporters to
-> handle, and from experience it was always the importer who messed
-> things up.
-
-I think that is true for scatter list, but it is the opposite for this
-iommufd connection. One iommufd, many exporting drivers.
-
-I imagine all the compute/server type DRM drivers plus RDMA and VFIO
-will want to implement exporters. That's at least 5..
-
-> Background is that the importer integrates the buffer into it's own
-> handling which might not be made for the way the exporter is
-> expecting things to be used.
-
-I think dmabuf has robust rules for lifecycle, and the invalidation
-notification mechanism. It is complex and perhaps not well understood,
-but all the technical pieces are there to allow a correct importer.
-
-I fully agree if the importer messes up the rules things will be
-broken and you will have corruption issues. But they can mess up
-scatterlist liftime too! Yes, VMAs are a really easy way to mess it
-up, and for some reason DRM drivers really want to put things in
-VMAs <shrug>
- 
-> > However. With a suitable helper we can largely isolate this to a
-> > single function and yeah I can see making this functional.
+> The motivation is live update of the hypervisor: we want to kexec into a
+> new kernel while keeping DMA from passthrough devices flowing, which
+> means the SMMU's translation state has to survive the handover. The Live
+> Update Orchestrator work [1] and the in-progress  "iommu: Add live
+> update state preservation" series [2] are building exactly this plumbing
+> on top of KHO; [2]'s cover letter calls out Arm SMMUv3 support as future
+> work, and an earlier RFC from Amazon [3] sketched the same idea for
+> iommufd.
 > 
-> The important point is that the exporter should not need to expose
-> it's physical data store and how it's housekeeping works.
-
-I'd argue the other side just as strongly, the importer should not
-have to expose its underlying HW objects or how they work either.
-
-Would you be open to an in-between? The exporter and importer both
-have information that should not leak into each other's drivers. 
-
-What if the dmabuf mapping type core code was the only thing that had
-access to *BOTH*? The exporter provides the address data, the importer
-provides the iommu_domain. The core code, and only the core code, has
-both and does the required operation?
-
-I think that satisfies your goal to prevent importers from accessing
-the information?
-
-In the language of this series I imagine a PAL exporter, and an
-iommu_domain importer. No PAL *importer*, no exposing phys_addr_t to
-importers.
-
-Instead the core code will match a PAL exporter to an iommu_domain
-importer. The core code will provide a "converter function" from PAL
-to iommu_domain. Only this converter function can see the phys_addr_t
-and iommu_domain together. The exporter does not see iommu_domain.
-
-This is appealing to reduce the driver burden. A converter that calls
-dma_buf_phys_vec_to_sgt() could exist. Then a driver only has to
-implement PAL exporter and it works with two of the importer mapping
-types. Makes it easier to introduce future types (eg scatterlist-ng)
-
-I don't think it would be a nice outcome if every exporting driver has
-to open code several dma_buf_phys_vec_to_XXX() helper calls.
-
-(I say PAL exporter here from my non-DRM perspective, but maybe DRM
-wants a bo/ttm/gem/page[] or something as the exporter mapping type)
-
-> > Do you have a positive feeling about the general mapping type system
-> > from the earlier patches?
+> For this use case, Stage 2 is materially easier to persist than Stage 1,
+> for structural rather than performance reasons: An S2 STE carries the
+> whole translation configuration inline. To hand over an S2 domain, the
+> pre-kexec kernel only needs to preserve the stream table pages and the
+> S2 pgtable pages. An S1 STE points at a Context Descriptor table and as
+> a result Persisting S1 therefore requires preserving the CD table pages
+> too, and because the CD is keyed by ASID coordinating ASID identity
+> across the handover.
 > 
-> As far as I can see that goes into the right direction, yes.
+> In the long term the plan should be to persist both stages.
+> However, until a patch series that properly introduces SMMU support for
+> is developed/posted we would like to experiment with S1+S2-capable
+> hardware with an easier to implement handover machinery, that relies on
+> S2 translations.
+> 
 
-Okay, do you have guidance what you'd like to see as a non-RFC
-posting? Ideally I'd like to make smaller steps, this RFC was
-responding to your request to see everything.
+Hi Evangelos,
 
-a) just the core dmabuf infrastructure for mapping type infra and SGL
-b) a plus some set of the simpler/safer driver conversions
-c) a plus all the driver conversions
+We (Google) currently have a series in the works specifically for
+arm-smmu-v3 state preservation. Our plan is to post it in phases (S2
+preservation first then the S1 + CD series) once the iommu: liveupdate
+persistence series has stabilized.
 
-?
+Since the iommu core liveupdate framework itself is still in flux,
+it’s a bit premature to accept/merge this patch before both the series.
 
-If we agree to the "converter functions" idea I imagine the following
-sequence of series:
+Furthermore, it must be noted that even if the iommu liveupdate series
+is merged, until the framework is fully integrated with the SMMU driver,
+liveupdate shall remain essentially non-functional or 'broken' for
+drivers that haven't yet implemented the necessary support hooks.
 
-1) Introduce basic dma buf mapping types for SGL
-   side activity: Move drivers from legacy to SGL mapping type
+We’d prefer to wait until the core infrastructure is solid so we can
+ensure the SMMUv3 implementation aligns perfectly with the final
+requirements of the iommu liveupdate persistence series.
 
-2) Introduce dma buf mapping type conversion functions. With PAL to
-   SGL converter. Restructure vfio to be PAL only and rely on the
-   converter for SGL
-   side activity: Move more exporters to PAL/etc away from SGL
-
-3) Introduce dma buf iommu_domain importer only mapping type. Core
-   code converter from PAL to iommu_domain. iommufd implementation of
-   the importer
+That said, we don't mind posting our arm-smmu-v3 series with S2-only
+preservation early as an early RFC if that helps align on the design
+and implementation details.
 
 Thanks,
-Jason
+Praan
+
+> [1] https://lwn.net/Articles/1021442/ — Live Update Orchestrator
+> [2] https://lore.kernel.org/all/20260203220948.2176157-1-skhawaja@google.com/ —
+> [PATCH 00/14] iommu: Add live update state preservation
+> [3] https://lore.kernel.org/all/20240916113102.710522-1-jgowans@amazon.com/ — [RFC
+> PATCH 00/13] Support iommu(fd) persistence for live update
+> 
+> > Jason
+> 
+> Kind Regards,
+> Evangelos
+> 
+> 
+> 
+> Amazon Web Services Development Center Germany GmbH
+> Tamara-Danz-Str. 13
+> 10243 Berlin
+> Geschaeftsfuehrung: Christof Hellmis, Andreas Stieger
+> Eingetragen am Amtsgericht Charlottenburg unter HRB 257764 B
+> Sitz: Berlin
+> Ust-ID: DE 365 538 597
