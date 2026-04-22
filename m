@@ -1,30 +1,30 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 470C23750B6
-	for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 02:33:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 349B03806C3
+	for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 02:33:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776825238; cv=none; b=i8ycX+bVS+rt3UCUvLNjnE0k1Zic3JHcGcya6hayJO8Q51UQgQdbotax+T6676JtICmGUZ9OpJNdPrfnImVhSCCz3KSnHULkm9PAFW1MSZSnpdvxwJXUXl/pOIqRJSRfiz027vFRlSIEJML4kxqI3tWmMHOWV3sZpXP+CL/ixtk=
+	t=1776825236; cv=none; b=NuLJfR8/zcz33N209aqY4iyVfGAFKvKi19RknSa0MlJ4gafpT8Qq+e4QkkU9+MEd3GeyCUdiuK53p+xaAo1rDM8jo2NaOG3PM7wyg9H8OndYoUi28QN7Nm8pefFtB5/a7JFx7xp9vkWFXx6tAD6Nj1xX/8lAyribFZrDSbPeeUE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776825238; c=relaxed/simple;
-	bh=i7TTD4rbc9FHgT/PqRax2hCxSF14mcjnAspWxjiAQFI=;
+	s=arc-20240116; t=1776825236; c=relaxed/simple;
+	bh=Yvgldd4nQGSF/LYqRa98GkHpoMtDyLqBf3EpIQNEdz4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=IDxMEtogP1NE8OHd6+6LHH1L4N6Xnp3RIb8KcmAUS3czY65wNetvX1FS6PR0R47NAjAkJb2JNYfS4WZgQHK5VLcsbqBqkEZTbzUGEX5FsdT34Gq1yZ86cgAdMiFUti4PRnSm8gjmND/ZuYBCcjNN24iMfZGd4kWPd8GQftXJRZk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=QGPwRGKv; arc=none smtp.client-ip=13.77.154.182
+	 MIME-Version; b=CXiBitfXeDMZmw6EAdWvYsamLIA1PGzmxknJc9u8qRHYzQyVRz+hQPtHIUGiqj5Anbc89yBKh1PCN7mLsEO9KtezxwZnikM+srC0tfXfdUwFDjiYhGFtwqi3C78CiIt3GQU0nLWxOLIl2Zk7TJJkUs+nAHxAJfLOJbiZdgaCa+w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=PNjDCwQb; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="QGPwRGKv"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="PNjDCwQb"
 Received: from mrdev.corp.microsoft.com (192-184-212-33.fiber.dynamic.sonic.net [192.184.212.33])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 1C17A20B6F1B;
-	Tue, 21 Apr 2026 19:33:43 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 1C17A20B6F1B
+	by linux.microsoft.com (Postfix) with ESMTPSA id A8D0A20B6F08;
+	Tue, 21 Apr 2026 19:33:37 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A8D0A20B6F08
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1776825223;
-	bh=tidzTRCfJneaHjA+fOlX3DgM/7vG+INZY/lk1h6owmY=;
+	s=default; t=1776825218;
+	bh=DGshgrqxUKkRySd8JcGwdzb2ggF+IE9bbLNEuDjQN+E=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=QGPwRGKvHHZQ5ClWfTVBNhmOekp92Iiqn55G5NGuiCZYTUvYYvnsvCMP3fEQ0/UUA
-	 UfP+vFCUAIYN+x9a76g1Jq4uVNYbk2FK2SgvaioAPdeGy1G8DqrU8V2AAKUie1JIC5
-	 G3MyhqLY7hCDtKHMuoSDWn/oe76iNjehF9pIk1kg=
+	b=PNjDCwQbtWZ1gGTne9Wx6233h1/7r/9UKDsA/e2YJdwxrF1V67ohC96DZiM6P8TF3
+	 Qwu8cP6MvQBodgNNu6f3V7L6cX2liQWK2Vz0bCrj6y1d+4fCBUdC+E9/y8pXojK9k0
+	 pIZQwzMMXCtp4s6VRy2+vFe3vLDuXk1pjGRRrAcw=
 From: Mukesh R <mrathor@linux.microsoft.com>
 To: hpa@zytor.com,
 	robin.murphy@arm.com,
@@ -56,9 +56,9 @@ Cc: kys@microsoft.com,
 	kwilczynski@kernel.org,
 	bhelgaas@google.com,
 	arnd@arndb.de
-Subject: [PATCH V1 05/13] mshv: Declarations and definitions for VFIO-MSHV bridge device
-Date: Tue, 21 Apr 2026 19:32:31 -0700
-Message-ID: <20260422023239.1171963-6-mrathor@linux.microsoft.com>
+Subject: [PATCH V1 01/13] iommu/hyperv: rename hyperv-iommu.c to hyperv-irq.c
+Date: Tue, 21 Apr 2026 19:32:27 -0700
+Message-ID: <20260422023239.1171963-2-mrathor@linux.microsoft.com>
 X-Mailer: git-send-email 2.51.2.vfs.0.1
 In-Reply-To: <20260422023239.1171963-1-mrathor@linux.microsoft.com>
 References: <20260422023239.1171963-1-mrathor@linux.microsoft.com>
@@ -70,84 +70,72 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add data structs needed by the subsequent patch that introduces a new
-module to implement VFIO-MSHV pseudo device.
+This file actually implements irq remapping, so rename to more appropriate
+hyperv-irq.c. A new file to implement hyperv iommu will be introduced
+later.  Also, it should not be tied to HYPERV_IOMMU, but to CONFIG_HYPERV
+and IRQ_REMAP. The file already has #ifdef CONFIG_IRQ_REMAP.
 
 Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
 ---
- drivers/hv/mshv_root.h    | 19 +++++++++++++++++++
- include/uapi/linux/mshv.h | 30 ++++++++++++++++++++++++++++++
- 2 files changed, 49 insertions(+)
+ MAINTAINERS                                    | 2 +-
+ drivers/iommu/Makefile                         | 2 +-
+ drivers/iommu/{hyperv-iommu.c => hyperv-irq.c} | 2 +-
+ drivers/iommu/irq_remapping.c                  | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+ rename drivers/iommu/{hyperv-iommu.c => hyperv-irq.c} (99%)
 
-diff --git a/drivers/hv/mshv_root.h b/drivers/hv/mshv_root.h
-index a85c24dcc701..b9880d0bdc4d 100644
---- a/drivers/hv/mshv_root.h
-+++ b/drivers/hv/mshv_root.h
-@@ -227,6 +227,25 @@ struct port_table_info {
- 	};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index d1cc0e12fe1f..f803a6a38fee 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -11914,7 +11914,7 @@ F:	drivers/clocksource/hyperv_timer.c
+ F:	drivers/hid/hid-hyperv.c
+ F:	drivers/hv/
+ F:	drivers/input/serio/hyperv-keyboard.c
+-F:	drivers/iommu/hyperv-iommu.c
++F:	drivers/iommu/hyperv-irq.c
+ F:	drivers/net/ethernet/microsoft/
+ F:	drivers/net/hyperv/
+ F:	drivers/pci/controller/pci-hyperv-intf.c
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index 0275821f4ef9..335ea77cced6 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -30,7 +30,7 @@ obj-$(CONFIG_TEGRA_IOMMU_SMMU) += tegra-smmu.o
+ obj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o
+ obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
+ obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
+-obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
++obj-$(CONFIG_HYPERV) += hyperv-irq.o
+ obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
+ obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o
+ obj-$(CONFIG_IOMMU_IOPF) += io-pgfault.o
+diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-irq.c
+similarity index 99%
+rename from drivers/iommu/hyperv-iommu.c
+rename to drivers/iommu/hyperv-irq.c
+index 479103261ae6..cc49c7cbc434 100644
+--- a/drivers/iommu/hyperv-iommu.c
++++ b/drivers/iommu/hyperv-irq.c
+@@ -331,4 +331,4 @@ static const struct irq_domain_ops hyperv_root_ir_domain_ops = {
+ 	.free = hyperv_root_irq_remapping_free,
  };
  
-+struct mshv_device {
-+	const struct mshv_device_ops *device_ops;
-+	struct mshv_partition *device_pt;
-+	void *device_private;
-+	struct hlist_node device_ptnode;
-+};
-+
-+struct mshv_device_ops {
-+	const char *device_name;
-+	long (*device_create)(struct mshv_device *dev);
-+	void (*device_release)(struct mshv_device *dev);
-+	long (*device_set_attr)(struct mshv_device *dev,
-+				struct mshv_device_attr *attr);
-+	long (*device_has_attr)(struct mshv_device *dev,
-+				struct mshv_device_attr *attr);
-+};
-+
-+extern struct mshv_device_ops mshv_vfio_device_ops;
-+
- int mshv_update_routing_table(struct mshv_partition *partition,
- 			      const struct mshv_user_irq_entry *entries,
- 			      unsigned int numents);
-diff --git a/include/uapi/linux/mshv.h b/include/uapi/linux/mshv.h
-index 32ff92b6342b..4373a8243951 100644
---- a/include/uapi/linux/mshv.h
-+++ b/include/uapi/linux/mshv.h
-@@ -404,4 +404,34 @@ struct mshv_sint_mask {
- /* hv_hvcall device */
- #define MSHV_HVCALL_SETUP        _IOW(MSHV_IOCTL, 0x1E, struct mshv_vtl_hvcall_setup)
- #define MSHV_HVCALL              _IOWR(MSHV_IOCTL, 0x1F, struct mshv_vtl_hvcall)
-+
-+/* device passhthru */
-+#define MSHV_CREATE_DEVICE_TEST		1
-+
-+enum {
-+	MSHV_DEV_TYPE_VFIO,
-+	MSHV_DEV_TYPE_MAX,
-+};
-+
-+struct mshv_create_device {
-+	__u32	type;	     /* in: MSHV_DEV_TYPE_xxx */
-+	__u32	fd;	     /* out: device handle */
-+	__u32	flags;	     /* in: MSHV_CREATE_DEVICE_xxx */
-+};
-+
-+#define MSHV_DEV_VFIO_FILE      1
-+#define MSHV_DEV_VFIO_FILE_ADD	1
-+#define MSHV_DEV_VFIO_FILE_DEL	2
-+
-+struct mshv_device_attr {
-+	__u32	flags;		/* no flags currently defined */
-+	__u32	group;		/* device-defined */
-+	__u64	attr;		/* group-defined */
-+	__u64	addr;		/* userspace address of attr data */
-+};
-+
-+/* Device fds created with MSHV_CREATE_DEVICE */
-+#define MSHV_SET_DEVICE_ATTR	_IOW(MSHV_IOCTL, 0x00, struct mshv_device_attr)
-+#define MSHV_HAS_DEVICE_ATTR	_IOW(MSHV_IOCTL, 0x01, struct mshv_device_attr)
-+
- #endif
+-#endif
++#endif  /* CONFIG_IRQ_REMAP */
+diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
+index c2443659812a..41bf65e4ea88 100644
+--- a/drivers/iommu/irq_remapping.c
++++ b/drivers/iommu/irq_remapping.c
+@@ -108,7 +108,7 @@ int __init irq_remapping_prepare(void)
+ 	else if (IS_ENABLED(CONFIG_AMD_IOMMU) &&
+ 		 amd_iommu_irq_ops.prepare() == 0)
+ 		remap_ops = &amd_iommu_irq_ops;
+-	else if (IS_ENABLED(CONFIG_HYPERV_IOMMU) &&
++	else if (IS_ENABLED(CONFIG_HYPERV) &&
+ 		 hyperv_irq_remap_ops.prepare() == 0)
+ 		remap_ops = &hyperv_irq_remap_ops;
+ 	else
 -- 
 2.51.2.vfs.0.1
 
