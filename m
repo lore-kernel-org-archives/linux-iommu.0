@@ -1,30 +1,30 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A6BE3381AF9
-	for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 02:33:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3571C386C1C
+	for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 02:34:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776825239; cv=none; b=iA7UbmJ/CkPZoPjRw2AG3sPDcCqxtQ2uaA12ENQZ6T4lzKQmZ2yh70XShBJkCVWTtVQlGJTXTwmwI7M2mGmCiCsrRu0D8HnrcnGBXWXJFIFzZmURe2HuXccPVHQr4fUpQ8HhTcDn4Gv2dScmt6KHa4i6fDa1lLHWa5cKn6VOr1E=
+	t=1776825246; cv=none; b=tyiUu2wywqq3xHeR+eMIzTtsnhqFzE4O0LdsRBPqFvxuMORNPYlxRQRdO0NtHC3Ls6oMkBCaqyt6JZH9xno3FZXe7m+90sLalgxY8wx0Dk4ZdG40+9kqNrE/PNdM19BbSWPs0tpJMyoeaZ2V53dB2sWboZxKYho03BW3SzhoY8Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776825239; c=relaxed/simple;
-	bh=jYrebEGyLACqbZL/w3y9a7O0xWgw6FHchfvbYBMKEM0=;
+	s=arc-20240116; t=1776825246; c=relaxed/simple;
+	bh=3TNU4EMnv17LluIqrnkhvD8xOvL+YdsPt3gnwRHpmUc=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=dLYHEyl0ctj+rkHs/RBNgQncis5Tfctl5Ct0DxxeGIQEcnjtLrjn4DinhKjluH69hV6/ZfAP4KO1Isp8/0RW+Zi7+PRvD1WuNeh+x6zfXsbDxCf9rqqAxCSrBBm0aPVcTZ8/e0104wo3ntsCfTpzd/4zjI9cLvokyQ8TnsttPpI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=GgLzpdJZ; arc=none smtp.client-ip=13.77.154.182
+	 MIME-Version; b=hN/GU/8Oh+lnzwt4LTrQtAs3qmfS3Z3Zymnp2QKJGKieGL81QrnYjsauUPVezXWZaAsQrWnscTb4HLkxjJZ2xxJfG9U24msrc0zNVcW+MBD2YIiByY8KkfCpl3zHZ2g+yq/pP61OtnJRbSKPbm2BsrBufLhhnlyNgN1vMxFlos8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=YViEiMXm; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="GgLzpdJZ"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="YViEiMXm"
 Received: from mrdev.corp.microsoft.com (192-184-212-33.fiber.dynamic.sonic.net [192.184.212.33])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 4F8A320B6F1F;
-	Tue, 21 Apr 2026 19:33:44 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 4F8A320B6F1F
+	by linux.microsoft.com (Postfix) with ESMTPSA id CB81720B6F08;
+	Tue, 21 Apr 2026 19:33:57 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com CB81720B6F08
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1776825225;
-	bh=YnF+uI+QwqeYTK6oQpqBg7HAiFmqfGlkyQt6D84StzY=;
+	s=default; t=1776825238;
+	bh=84awl3Z2Kbawc6FZaMJAbg5OX/GvsOXiTuFqfIzdbWs=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=GgLzpdJZ9nmTE/p4NZSlFoqA8wfROdvtb29VmC5gy4u/g+sAFKx15pHMNK0ZG8yfE
-	 ZZXvc8Tcv/AFHSLs7vfDcTEqxfvehzsr5Ba8763F99tj78RMpsTTOAbzlpVQ1i8sAI
-	 YdWhJVQ0mYd+YLMldvIq5xIVa5h4ubRqYaMgZAfk=
+	b=YViEiMXm980dK9+OXkB0Jxegh6wk9Bxkhn8VP0IxBr0DaR7ZjYCu90PMX7OVW6hbF
+	 ixwXK4YlP+caCujsCD3EdpL2Lqb+QNfYsnV1w1SZtBZIbILsTmhuU1Mrh2APSmKAcL
+	 J0vXWvQm+zFvJ+7eTv+aJ0j+7Zb4sAp9lzfAKkKA=
 From: Mukesh R <mrathor@linux.microsoft.com>
 To: hpa@zytor.com,
 	robin.murphy@arm.com,
@@ -56,9 +56,9 @@ Cc: kys@microsoft.com,
 	kwilczynski@kernel.org,
 	bhelgaas@google.com,
 	arnd@arndb.de
-Subject: [PATCH V1 06/13] mshv: Implement mshv bridge device for VFIO
-Date: Tue, 21 Apr 2026 19:32:32 -0700
-Message-ID: <20260422023239.1171963-7-mrathor@linux.microsoft.com>
+Subject: [PATCH V1 12/13] mshv: Populate mmio mappings for PCI passthru
+Date: Tue, 21 Apr 2026 19:32:38 -0700
+Message-ID: <20260422023239.1171963-13-mrathor@linux.microsoft.com>
 X-Mailer: git-send-email 2.51.2.vfs.0.1
 In-Reply-To: <20260422023239.1171963-1-mrathor@linux.microsoft.com>
 References: <20260422023239.1171963-1-mrathor@linux.microsoft.com>
@@ -70,263 +70,187 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add a new file to implement VFIO-MSHV bridge pseudo device. These
-functions are called in the VFIO framework, and credits to kvm/vfio.c
-as this file was adapted from it.
+Upon guest access, in case of missing mmio mapping, the hypervisor
+generates an unmapped gpa intercept. In this path, lookup the PCI
+resource pfn for the guest gpa, and ask the hypervisor to map it
+via hypercall. The PCI resource pfn is maintained by the VFIO driver,
+and obtained via fixup_user_fault call (similar to KVM).
 
-Co-developed-by: Wei Liu <wei.liu@kernel.org>
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Also, VFIO no longer puts the mmio pfn in vma->vm_pgoff. So, remove
+code that is using it to map mmio space. It is broken and will cause
+panic.
+
 Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
 ---
- drivers/hv/Makefile       |   3 +-
- drivers/hv/mshv_vfio.c    | 211 ++++++++++++++++++++++++++++++++++++++
- include/uapi/linux/mshv.h |   1 +
- 3 files changed, 214 insertions(+), 1 deletion(-)
- create mode 100644 drivers/hv/mshv_vfio.c
+ drivers/hv/mshv_root_main.c | 113 ++++++++++++++++++++++++++++++------
+ 1 file changed, 96 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/hv/Makefile b/drivers/hv/Makefile
-index 888a748cc7cb..9ab6fc254c38 100644
---- a/drivers/hv/Makefile
-+++ b/drivers/hv/Makefile
-@@ -14,7 +14,8 @@ hv_vmbus-y := vmbus_drv.o \
- hv_vmbus-$(CONFIG_HYPERV_TESTING)	+= hv_debugfs.o
- hv_utils-y := hv_util.o hv_kvp.o hv_snapshot.o hv_utils_transport.o
- mshv_root-y := mshv_root_main.o mshv_synic.o mshv_eventfd.o mshv_irq.o \
--	       mshv_root_hv_call.o mshv_portid_table.o mshv_regions.o
-+	       mshv_root_hv_call.o mshv_portid_table.o mshv_regions.o  \
-+               mshv_vfio.o
- mshv_root-$(CONFIG_DEBUG_FS) += mshv_debugfs.o
- mshv_root-$(CONFIG_TRACEPOINTS) += mshv_trace.o
- mshv_vtl-y := mshv_vtl_main.o
-diff --git a/drivers/hv/mshv_vfio.c b/drivers/hv/mshv_vfio.c
-new file mode 100644
-index 000000000000..00a97920e25b
---- /dev/null
-+++ b/drivers/hv/mshv_vfio.c
-@@ -0,0 +1,211 @@
-+// SPDX-License-Identifier: GPL-2.0-only
+diff --git a/drivers/hv/mshv_root_main.c b/drivers/hv/mshv_root_main.c
+index 6ceb5f608589..a7864463961b 100644
+--- a/drivers/hv/mshv_root_main.c
++++ b/drivers/hv/mshv_root_main.c
+@@ -46,6 +46,9 @@ MODULE_DESCRIPTION("Microsoft Hyper-V root partition VMM interface /dev/mshv");
+ #define HV_VP_COUNTER_ROOT_DISPATCH_THREAD_BLOCKED 95
+ #endif
+ 
++static bool hv_nofull_mmio;	/* don't map entire mmio region upon fault */
++module_param(hv_nofull_mmio, bool, 0644);
++
+ struct mshv_root mshv_root;
+ 
+ enum hv_scheduler_type hv_scheduler_type;
+@@ -641,6 +644,94 @@ mshv_partition_region_by_gfn_get(struct mshv_partition *p, u64 gfn)
+ 	return region;
+ }
+ 
 +/*
-+ * VFIO-MSHV bridge pseudo device
-+ *
-+ * Heavily inspired by the VFIO-KVM bridge pseudo device.
++ * Check if uaddr is for mmio range. If yes, return 0 with mmio_pfn filled in
++ * else just return -errno.
 + */
-+#include <linux/errno.h>
-+#include <linux/file.h>
-+#include <linux/list.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/slab.h>
-+#include <linux/vfio.h>
-+#include <asm/mshyperv.h>
-+
-+#include "mshv.h"
-+#include "mshv_root.h"
-+
-+struct mshv_vfio_file {
-+	struct list_head node;
-+	struct file *file;	/* list of struct mshv_vfio_file */
-+};
-+
-+struct mshv_vfio {
-+	struct list_head file_list;
-+	struct mutex lock;
-+};
-+
-+static bool mshv_vfio_file_is_valid(struct file *file)
++static int mshv_chk_get_mmio_start_pfn(u64 uaddr, u64 *mmio_pfnp)
 +{
-+	bool (*fn)(struct file *file);
-+	bool ret;
++	struct vm_area_struct *vma;
++	bool is_mmio;
++	struct follow_pfnmap_args pfnmap_args;
++	int rc = -EINVAL;
 +
-+	fn = symbol_get(vfio_file_is_valid);
-+	if (!fn)
++	mmap_read_lock(current->mm);
++	vma = vma_lookup(current->mm, uaddr);
++	is_mmio = vma ? !!(vma->vm_flags & (VM_IO | VM_PFNMAP)) : 0;
++	if (!is_mmio)
++		goto unlock_mmap_out;
++
++	pfnmap_args.vma = vma;
++	pfnmap_args.address = uaddr;
++
++	rc = follow_pfnmap_start(&pfnmap_args);
++	if (rc) {
++		rc = fixup_user_fault(current->mm, uaddr, FAULT_FLAG_WRITE,
++				      NULL);
++		if (rc)
++			goto unlock_mmap_out;
++
++		rc = follow_pfnmap_start(&pfnmap_args);
++		if (rc)
++			goto unlock_mmap_out;
++	}
++
++	*mmio_pfnp = pfnmap_args.pfn;
++	follow_pfnmap_end(&pfnmap_args);
++
++unlock_mmap_out:
++	mmap_read_unlock(current->mm);
++	return rc;
++}
++
++/*
++ * Check if the unmapped gpa belongs to mmio space. If yes, resolve it.
++ *
++ * Returns: True if valid mmio intercept and handled, else false.
++ */
++static bool mshv_handle_unmapped_gpa(struct mshv_vp *vp)
++{
++	struct hv_message *hvmsg = vp->vp_intercept_msg_page;
++	u64 gfn, uaddr, mmio_spa, numpgs;
++	struct mshv_mem_region *rg;
++	int rc = -EINVAL;
++	struct mshv_partition *pt = vp->vp_partition;
++#if defined(CONFIG_X86_64)
++	struct hv_x64_memory_intercept_message *msg =
++		(struct hv_x64_memory_intercept_message *)hvmsg->u.payload;
++#elif defined(CONFIG_ARM64)
++	struct hv_arm64_memory_intercept_message *msg =
++		(struct hv_arm64_memory_intercept_message *)hvmsg->u.payload;
++#endif
++
++	gfn = msg->guest_physical_address >> HV_HYP_PAGE_SHIFT;
++
++	rg = mshv_partition_region_by_gfn_get(pt, gfn);
++	if (rg == NULL)
 +		return false;
++	if (rg->mreg_type != MSHV_REGION_TYPE_MMIO)
++		goto put_rg_out;
 +
-+	ret = fn(file);
++	uaddr = rg->start_uaddr + ((gfn - rg->start_gfn) << HV_HYP_PAGE_SHIFT);
 +
-+	symbol_put(vfio_file_is_valid);
++	rc = mshv_chk_get_mmio_start_pfn(uaddr, &mmio_spa);
++	if (rc)
++		goto put_rg_out;
 +
-+	return ret;
++	if (!hv_nofull_mmio) {		/* default case */
++		mmio_spa = mmio_spa - (gfn - rg->start_gfn);
++		gfn = rg->start_gfn;
++		numpgs = rg->nr_pages;
++	} else
++		numpgs = 1;
++
++	rc = hv_call_map_mmio_pages(pt->pt_id, gfn, mmio_spa, numpgs);
++
++put_rg_out:
++	mshv_region_put(rg);
++	return rc == 0;
 +}
 +
-+static long mshv_vfio_file_add(struct mshv_device *mshvdev, unsigned int fd)
-+{
-+	struct mshv_vfio *mshv_vfio = mshvdev->device_private;
-+	struct mshv_vfio_file *mvf;
-+	struct file *filp;
-+	long ret = 0;
-+
-+	filp = fget(fd);
-+	if (!filp)
-+		return -EBADF;
-+
-+	/* Ensure the FD is a vfio FD. */
-+	if (!mshv_vfio_file_is_valid(filp)) {
-+		ret = -EINVAL;
-+		goto out_fput;
-+	}
-+
-+	mutex_lock(&mshv_vfio->lock);
-+
-+	list_for_each_entry(mvf, &mshv_vfio->file_list, node) {
-+		if (mvf->file == filp) {
-+			ret = -EEXIST;
-+			goto out_unlock;
-+		}
-+	}
-+
-+	mvf = kzalloc(sizeof(*mvf), GFP_KERNEL_ACCOUNT);
-+	if (!mvf) {
-+		ret = -ENOMEM;
-+		goto out_unlock;
-+	}
-+
-+	mvf->file = get_file(filp);
-+	list_add_tail(&mvf->node, &mshv_vfio->file_list);
-+
-+out_unlock:
-+	mutex_unlock(&mshv_vfio->lock);
-+out_fput:
-+	fput(filp);
-+	return ret;
-+}
-+
-+static long mshv_vfio_file_del(struct mshv_device *mshvdev, unsigned int fd)
-+{
-+	struct mshv_vfio *mshv_vfio = mshvdev->device_private;
-+	struct mshv_vfio_file *mvf;
-+	long ret;
-+
-+	CLASS(fd, f)(fd);
-+
-+	if (fd_empty(f))
-+		return -EBADF;
-+
-+	ret = -ENOENT;
-+	mutex_lock(&mshv_vfio->lock);
-+
-+	list_for_each_entry(mvf, &mshv_vfio->file_list, node) {
-+		if (mvf->file != fd_file(f))
-+			continue;
-+
-+		list_del(&mvf->node);
-+		fput(mvf->file);
-+		kfree(mvf);
-+		ret = 0;
-+		break;
-+	}
-+
-+	mutex_unlock(&mshv_vfio->lock);
-+	return ret;
-+}
-+
-+static long mshv_vfio_set_file(struct mshv_device *mshvdev, long attr,
-+			      void __user *arg)
-+{
-+	int32_t __user *argp = arg;
-+	int32_t fd;
-+
-+	switch (attr) {
-+	case MSHV_DEV_VFIO_FILE_ADD:
-+		if (get_user(fd, argp))
-+			return -EFAULT;
-+		return mshv_vfio_file_add(mshvdev, fd);
-+
-+	case MSHV_DEV_VFIO_FILE_DEL:
-+		if (get_user(fd, argp))
-+			return -EFAULT;
-+		return mshv_vfio_file_del(mshvdev, fd);
-+	}
-+
-+	return -ENXIO;
-+}
-+
-+static long mshv_vfio_set_attr(struct mshv_device *mshvdev,
-+			      struct mshv_device_attr *attr)
-+{
-+	switch (attr->group) {
-+	case MSHV_DEV_VFIO_FILE:
-+		return mshv_vfio_set_file(mshvdev, attr->attr,
-+					  u64_to_user_ptr(attr->addr));
-+	}
-+
-+	return -ENXIO;
-+}
-+
-+static long mshv_vfio_has_attr(struct mshv_device *mshvdev,
-+			      struct mshv_device_attr *attr)
-+{
-+	switch (attr->group) {
-+	case MSHV_DEV_VFIO_FILE:
-+		switch (attr->attr) {
-+		case MSHV_DEV_VFIO_FILE_ADD:
-+		case MSHV_DEV_VFIO_FILE_DEL:
-+			return 0;
-+		}
-+
-+		break;
-+	}
-+
-+	return -ENXIO;
-+}
-+
-+static long mshv_vfio_create_device(struct mshv_device *mshvdev)
-+{
-+	struct mshv_device *tmp;
-+	struct mshv_vfio *mshv_vfio;
-+
-+	/* Only one VFIO "device" per VM */
-+	hlist_for_each_entry(tmp, &mshvdev->device_pt->pt_devices,
-+			     device_ptnode)
-+		if (tmp->device_ops == &mshv_vfio_device_ops)
-+			return -EBUSY;
-+
-+	mshv_vfio = kzalloc(sizeof(*mshv_vfio), GFP_KERNEL_ACCOUNT);
-+	if (mshv_vfio == NULL)
-+		return -ENOMEM;
-+
-+	INIT_LIST_HEAD(&mshv_vfio->file_list);
-+	mutex_init(&mshv_vfio->lock);
-+
-+	mshvdev->device_private = mshv_vfio;
-+
-+	return 0;
-+}
-+
-+/* This is called from mshv_device_fop_release() */
-+static void mshv_vfio_release_device(struct mshv_device *mshvdev)
-+{
-+	struct mshv_vfio *mv = mshvdev->device_private;
-+	struct mshv_vfio_file *mvf, *tmp;
-+
-+	list_for_each_entry_safe(mvf, tmp, &mv->file_list, node) {
-+		fput(mvf->file);
-+		list_del(&mvf->node);
-+		kfree(mvf);
-+	}
-+
-+	kfree(mv);
-+	kfree(mshvdev);
-+}
-+
-+struct mshv_device_ops mshv_vfio_device_ops = {
-+	.device_name = "mshv-vfio",
-+	.device_create = mshv_vfio_create_device,
-+	.device_release = mshv_vfio_release_device,
-+	.device_set_attr = mshv_vfio_set_attr,
-+	.device_has_attr = mshv_vfio_has_attr,
-+};
-diff --git a/include/uapi/linux/mshv.h b/include/uapi/linux/mshv.h
-index 4373a8243951..6404e8a98237 100644
---- a/include/uapi/linux/mshv.h
-+++ b/include/uapi/linux/mshv.h
-@@ -254,6 +254,7 @@ struct mshv_root_hvcall {
- #define MSHV_GET_GPAP_ACCESS_BITMAP	_IOWR(MSHV_IOCTL, 0x06, struct mshv_gpap_access_bitmap)
- /* Generic hypercall */
- #define MSHV_ROOT_HVCALL		_IOWR(MSHV_IOCTL, 0x07, struct mshv_root_hvcall)
-+#define MSHV_CREATE_DEVICE             _IOWR(MSHV_IOCTL, 0x08, struct mshv_create_device)
+ /**
+  * mshv_handle_gpa_intercept - Handle GPA (Guest Physical Address) intercepts.
+  * @vp: Pointer to the virtual processor structure.
+@@ -699,6 +790,8 @@ static bool mshv_handle_gpa_intercept(struct mshv_vp *vp)
+ static bool mshv_vp_handle_intercept(struct mshv_vp *vp)
+ {
+ 	switch (vp->vp_intercept_msg_page->header.message_type) {
++	case HVMSG_UNMAPPED_GPA:
++		return mshv_handle_unmapped_gpa(vp);
+ 	case HVMSG_GPA_INTERCEPT:
+ 		return mshv_handle_gpa_intercept(vp);
+ 	}
+@@ -1322,16 +1415,8 @@ static int mshv_prepare_pinned_region(struct mshv_mem_region *region)
+ }
  
  /*
-  ********************************
+- * This maps two things: guest RAM and for pci passthru mmio space.
+- *
+- * mmio:
+- *  - vfio overloads vm_pgoff to store the mmio start pfn/spa.
+- *  - Two things need to happen for mapping mmio range:
+- *	1. mapped in the uaddr so VMM can access it.
+- *	2. mapped in the hwpt (gfn <-> mmio phys addr) so guest can access it.
+- *
+- *   This function takes care of the second. The first one is managed by vfio,
+- *   and hence is taken care of via vfio_pci_mmap_fault().
++ * This is called for both user ram and mmio space. The mmio space is not
++ * mapped here, but later during intercept on demand.
+  */
+ static long
+ mshv_map_user_memory(struct mshv_partition *partition,
+@@ -1340,7 +1425,6 @@ mshv_map_user_memory(struct mshv_partition *partition,
+ 	struct mshv_mem_region *region;
+ 	struct vm_area_struct *vma;
+ 	bool is_mmio;
+-	ulong mmio_pfn;
+ 	long ret;
+ 
+ 	if (mem->flags & BIT(MSHV_SET_MEM_BIT_UNMAP) ||
+@@ -1350,7 +1434,6 @@ mshv_map_user_memory(struct mshv_partition *partition,
+ 	mmap_read_lock(current->mm);
+ 	vma = vma_lookup(current->mm, mem->userspace_addr);
+ 	is_mmio = vma ? !!(vma->vm_flags & (VM_IO | VM_PFNMAP)) : 0;
+-	mmio_pfn = is_mmio ? vma->vm_pgoff : 0;
+ 	mmap_read_unlock(current->mm);
+ 
+ 	if (!vma)
+@@ -1376,11 +1459,7 @@ mshv_map_user_memory(struct mshv_partition *partition,
+ 					    region->nr_pages,
+ 					    HV_MAP_GPA_NO_ACCESS, NULL);
+ 		break;
+-	case MSHV_REGION_TYPE_MMIO:
+-		ret = hv_call_map_mmio_pages(partition->pt_id,
+-					     region->start_gfn,
+-					     mmio_pfn,
+-					     region->nr_pages);
++	default:
+ 		break;
+ 	}
+ 
 -- 
 2.51.2.vfs.0.1
 
