@@ -1,156 +1,133 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26FC336C0BD
-	for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 07:37:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9A213603FC
+	for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 07:51:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776843464; cv=none; b=PeK/UEGmq+w6+XzmLlSMXgj1Uq2icxl0bGY0o4dhdFBSwZZUPbBtnxpy+R26MPocDCJiXvT4zwZDuq1+KlZDOwjc6qymGrh3Y5WXoI4u5JHkGVq8v97NsZaqd8hexBuFDyL+eq7rfCXoZDueXq+YG/P8hx8iDM41y67B2oUjlUo=
+	t=1776844274; cv=none; b=cSvg1g2xDfbwhYcwqcgnjPh4RzX47FIwEyY7ICvjs8mgQgBA+KyiLKWv6p9RV/UySMNz2oRNqKAwXRPjPqU5WPEQdtcw8i1j7BBkHjPh3vQAeMqGC+GhRucuZz3LUtIaO1Nrd8LeLya1JYng995eXOA8DynULRKWWosqc8qklUA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776843464; c=relaxed/simple;
-	bh=yC9ooREPFoPevEeFC7MzV3MUhKTTHk8Dwuly7lWrnGQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=dNug/jY60pRoPDRAYVg0+Og31NU6iNtS7q5Xa2wLMiPV1w2fLiLPGugzmH5nKsrFnsExd1D4cLmDEFLXjQK67ZvJyMMAc74fAi6pnSmmGsvbYO3qCtuqgYz3aT17Eabvh9DauuvVslpkHLDgEoMdkZNZqtIUmLhI9ysrTrWZPTc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Ft4JlUQc; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=dg9IkAnZ; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1776844274; c=relaxed/simple;
+	bh=eFM3fFc5Zl326sG07acTtNC+v1oI2aRgEXDFTR18mFY=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Wv7RkrZXigYgDMjTzPS9Ler8aZg2kCF+4xAQHAvXLZlJdzZzAkPA0yZDvy2+fsok2B3M11imskzG7A4kADN9dPMgeGrQB1eDZBBj54aGQY6JyWuw/2D7FpifpadjUYBUVfW3jnnC/KskALBFoBYFlnX+dBOfcfSlIWWbt8MHr6k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=I3mJ2h+Z; arc=none smtp.client-ip=209.85.221.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Ft4JlUQc";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="dg9IkAnZ"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63M5dtAF2123589
-	for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 07:37:42 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	g710tN5HVbxOu4aj5AjgHTCieRGwwYofyR2aDtM7hfs=; b=Ft4JlUQcj8//lmDb
-	NFgPRyBG7tuG4sEwV+3ofOBpu5eo1UOpO4mhhvW5tu93Oi115wWu2io/ytfiGxGF
-	k9WCXGSfZJsqSE7tAg6ZVUibMf5MmlIU01cajoLQj2zSU3zIsvMUyh52HD2Lr/Jf
-	J2PrdD5NFDG6mKghjj6Whgxu3KTRuEibX6dLBWTZyxsJVMCIj0ehjnhWYdhosOrb
-	5iIO1Vh8GSecZa9wz//zFsKhSIc1aqy3QTza2yg0tislg68jP8abx4FKgVN+kdZG
-	0wVe+SNOEZn/FElHMI6PLNelIYDyArN7XjrBAXI6lBDY4m4JUHdZ+9SPeNMivQ6+
-	P4TOUg==
-Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com [209.85.215.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4dpenft9xf-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 07:37:42 +0000 (GMT)
-Received: by mail-pg1-f199.google.com with SMTP id 41be03b00d2f7-c79943d2fbfso795750a12.1
-        for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 00:37:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="I3mJ2h+Z"
+Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-43d7dab87e1so461203f8f.3
+        for <iommu@lists.linux.dev>; Wed, 22 Apr 2026 00:51:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1776843462; x=1777448262; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=g710tN5HVbxOu4aj5AjgHTCieRGwwYofyR2aDtM7hfs=;
-        b=dg9IkAnZolO7kDbOSrTgRXvJCYEWQ9XdZE6PTmmdLXGqlwA0qMPk/FGYPea3MoAxPk
-         zvlGBXPfVE7JuwAi5OivT9PmoD4eAXbv66cGQa+yevrNF/OoYn2is5ldxWP8SBOt4joN
-         G2quHDyX2biqdVG1BqF71U6D39DjGgNX7X8c/jt0JN7Um7zVwpskQwO5fDQslFV+vNKG
-         aTXGv2GCyeSKia0N4QmrOvxSsCwECSe4IVqecif7KiFQWBZ+TIpOcrvawjycqvxQWA/S
-         nRWhXvPuqhv+JNbALiymnI+XXaA5dNx4cgjvlJsVFGJnExvAqIKNg39qCgIuBVTO8Y08
-         pJVQ==
+        d=suse.com; s=google; t=1776844271; x=1777449071; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=JoRr8QDMIzfqgX7VNwrYeGw2tZtA7cdSKtjPSj3Z59k=;
+        b=I3mJ2h+Zn7e8TAtxfjQ+RVmj9ifgVJ2P988xK45XLiJTAC+xslv6XQutK1U+EXGZss
+         NpaLx0GWoHgXOZ+UhAo8FhuE4alQSd9TE6Slz74YFauB7ASC2w5D0ER0Pyo4v0OeoDKF
+         1r+AxiYQSwS8XQTKNCl6QbwByUt6tFAJRlFMEwEUnOUSvH+P9N+a3oHX7lHyaP1QEIEH
+         tfuSaSQ0R5stPpUrex41oSZs2VRWS2ncQ7as/giM3LwdIpNn61Yt5pxvBttTTmw8iU4+
+         U2FSkIKTUKc6q2N/DIVZW3JXlWdLMsSaw8G5yHVTBjyRy7sZxAVC6k1T+1pZ8pQ2Nu47
+         V5kA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776843462; x=1777448262;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=g710tN5HVbxOu4aj5AjgHTCieRGwwYofyR2aDtM7hfs=;
-        b=HZ4JExWmdSTYqZKmsRYSHGScG4ws7cRx+6BI88QLNs9ScwU/Hp53U2VOd05no79k8O
-         GtitxXQNuHPT9FTx1t2bZip+Ql4SfVqHnHx+2llEGJMnv0X7hroNJbtA0e2Lo/ej2ykN
-         dqPLBaBab2suVTvLLyX+JSxf6LXmbjoKz2/raY3RZIJYp11R5bJvTLoEoDQoQZn6fKBt
-         I4iUd981ZVyRSybrh9ubcF6Z92eSbF++OJHe/ygddoClDF3yACK4B4qKcwRZykcncWof
-         pnstKiRUSafyGdg4npn/N7AphVE1dlyaDcBj5cK+L0keAEaT5ND3a1Wv7Xk5exy1Au4A
-         A8bg==
-X-Forwarded-Encrypted: i=1; AFNElJ/DFmKdWol3GT1Vy/rw4g7deViLaKtRJ5LZ/FkGlVBSGauLaz+djUZTC9jEx4PgwOHSnDa/tA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyn1UiH5LDh3rjKUY3/PKJDva1CgCmPo5cKJ136X3P00thUg16d
-	7jLDT+NmymFUhyLxBbnIzEdfpF0qSQxVvwT7teyK+TU3K6BwmCa4ozWbVegcrEUBqdKjkcjd5X0
-	KYPiOpwWa/sPn72eaft1QrC58q8khquiPYf6eTQqlmUk62lZgNUOaw4rl2A==
-X-Gm-Gg: AeBDiev7e8bMdDvOrySsSJmkwP+mQtHtOFc0RP7fgch7gS1JR4ZLxyPwgLEgvsPbFdo
-	ED2evTMEUStsyS14FhrFMSj0JEiYGBJlG9sHMTlMkDbd959+oi1ZVd5B5jQ78HXLpGGEicDzw/g
-	vFc5ExQBePK31+7gHyEHP1mlolJ5s9nQE2UOFjf81+z3dhlr51HZoueuUvHh3v2xfwKAY/VvaHN
-	gF95mt0QWEv/8pgCD2rQ6jT90qOF7/oRDIxOCgST9iXc7TuJR4xGFqviXSVHWNsRLeYjXncMe8Z
-	Op1UZ0h7qXWeUpTj3qKOTtqVP6FJ0qR+L2A/I33MUDxp6tatEwLVe/7kildEWKseg+xOR4iv08K
-	dCMntH6sb2tR4f8XntN9y4GSmoIr5NUTxf7gZ+n+BNL6YJP+TkziCv0LPUUq7fUrn
-X-Received: by 2002:a05:6a20:2590:b0:3a0:bc61:62e5 with SMTP id adf61e73a8af0-3a0bc6165damr16766846637.44.1776843461654;
-        Wed, 22 Apr 2026 00:37:41 -0700 (PDT)
-X-Received: by 2002:a05:6a20:2590:b0:3a0:bc61:62e5 with SMTP id adf61e73a8af0-3a0bc6165damr16766815637.44.1776843461143;
-        Wed, 22 Apr 2026 00:37:41 -0700 (PDT)
-Received: from [10.206.101.19] ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c79770512afsm12391799a12.31.2026.04.22.00.37.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Apr 2026 00:37:40 -0700 (PDT)
-Message-ID: <88b38699-aa1a-42b9-8d2e-6139c1ced4fb@oss.qualcomm.com>
-Date: Wed, 22 Apr 2026 13:07:10 +0530
+        d=1e100.net; s=20251104; t=1776844271; x=1777449071;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=JoRr8QDMIzfqgX7VNwrYeGw2tZtA7cdSKtjPSj3Z59k=;
+        b=Kfj6sMOUn8n0PPu+gmvIBzdQsz1wRyWyf9pHpPdmTSEUmL3ZVVVpwHQqsWfK06v0fF
+         34dJ2Nu6jj/PsXGef5XmVWxuiLmjVKVMYbQ3u2ILgDyNZ3Po/JHdLRSSvfKhF1Ubk/j8
+         4WkFjL1dNhlqrL+D1GSXKa+0l7GnWuGyCjjlAxL5jwWWb6xgDiJFFm+OruVz07hUAJrU
+         6JlNlmMUp++PopwhAEKqdWEV4hdBuppxcgcfnwITGV+VJNXNo/be+w8Ah2b4Jj+Tnp/q
+         DJbYYOiBwUwUt2b3qhDiyhN6NY5LTvEWCGd/60mo9/h6fOmKQMByKIdOUXTzN08S+A+R
+         eySg==
+X-Forwarded-Encrypted: i=1; AFNElJ8FBcb6/FnsZSEK+etdanB4mBLRXaDcFipGw0/0jdTMzk42h6PA/JoSaWbO6gQBJQunB0h9Lg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz+ehQqGPgIEhK3uTj2czpM58Vj36SjUNVXWrKT35naZfRCYp9V
+	uKmGVWpy9z1AdJm0uown9v9DDHPkj1GNTFuBqKgL3LbMApc2EtPuEL6twkRHHUtuZDs=
+X-Gm-Gg: AeBDieseO6RYTVVvVB87nhBZXg0WnrUQNbrM+ECr8dssAh81nzVKFJy9cvPhJZFx86W
+	2fo1ZSt0xsM2se8X9q0xxWm+fd0HyVn+os8eX50iaJejko1KnMP6h5qiKhnahKHMsQdG2bnhAe/
+	1LJc5h80SOGrK2kCWwbubAMhmCJXMbuAG6wvPkLNSzjKV6UM4p5R30oiMq+gjXb0fcZ4N7XRlew
+	2S3cloAROyHfcpyE+vtFH+aeCqIt5LjPp3ek4p1BzlPoAwEs5D7z9FvTHalsWcy9mBbJKSRemRO
+	S57N+gj4u6v15IIZOHRFxL9cDFuMMI2RyTyPJlJ3A14OZ7sQKkFeUXMWQMLOpee9YCyjm4Xg3HK
+	NcB7pPBxbYN8wR137KpkxZ1VvPC5OxT+nRgfumt8Ju57uk1UVor8/ua6eL8ipZNpeseF5J6yhuo
+	f+4X85aDnL11A7k40NhFPmpXCqv8aoB7tS6MwpOJBhbbY4n6iH9vHzyngyKI+vEq0dXtpD0wRfc
+	fSYVA4bFNhIyZ0Xihq6PMvD8fI=
+X-Received: by 2002:a05:600c:314c:b0:48a:5664:f44a with SMTP id 5b1f17b1804b1-48a56650076mr45995745e9.2.1776844271346;
+        Wed, 22 Apr 2026 00:51:11 -0700 (PDT)
+Received: from mordecai (dynamic-2a00-1028-83b8-1e7a-3010-3bd6-8521-caf1.ipv6.o2.cz. [2a00:1028:83b8:1e7a:3010:3bd6:8521:caf1])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43fe4e4d6casm39579398f8f.32.2026.04.22.00.51.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Apr 2026 00:51:10 -0700 (PDT)
+Date: Wed, 22 Apr 2026 09:51:04 +0200
+From: Petr Tesarik <ptesarik@suse.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Jiri Pirko <jiri@resnulli.us>, "Aneesh Kumar K.V"
+ <aneesh.kumar@kernel.org>, dri-devel@lists.freedesktop.org,
+ linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev,
+ linux-media@vger.kernel.org, sumit.semwal@linaro.org,
+ benjamin.gaignard@collabora.com, Brian.Starkey@arm.com, jstultz@google.com,
+ tjmercier@google.com, christian.koenig@amd.com, m.szyprowski@samsung.com,
+ robin.murphy@arm.com, leon@kernel.org, sean.anderson@linux.dev,
+ catalin.marinas@arm.com, suzuki.poulose@arm.com, steven.price@arm.com,
+ thomas.lendacky@amd.com, john.allen@amd.com, ashish.kalra@amd.com,
+ suravee.suthikulpanit@amd.com, linux-coco@lists.linux.dev
+Subject: Re: [PATCH v5 1/2] dma-mapping: introduce DMA_ATTR_CC_SHARED for
+ shared memory
+Message-ID: <20260422095104.1b3c4132@mordecai>
+In-Reply-To: <20260421121004.GA3611611@ziepe.ca>
+References: <20260325192352.437608-1-jiri@resnulli.us>
+	<20260325192352.437608-2-jiri@resnulli.us>
+	<yq5atst6ywbl.fsf@kernel.org>
+	<4qdizkkoeke3cvkcf35upa7p7ick6s654eqlrizmi7ozkw5eze@tnpk2e34xgwl>
+	<yq5awly0d504.fsf@kernel.org>
+	<tteiecxfqy4k24wnzvp6ocxnuopyhmqtne2xwh5htwldlbzjnp@o6cbzdlurxld>
+	<20260421121004.GA3611611@ziepe.ca>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 06/11] media: iris: Fix VM count passed to firmware
-To: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
-        Bryan O'Donoghue <bod@kernel.org>,
-        Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Stefan Schmidt <stefan.schmidt@linaro.org>,
-        Hans Verkuil <hverkuil@kernel.org>
-Cc: linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev, stable@vger.kernel.org
-References: <20260414-glymur-v1-0-7d3d1cf57b16@oss.qualcomm.com>
- <20260414-glymur-v1-6-7d3d1cf57b16@oss.qualcomm.com>
-Content-Language: en-US
-From: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-In-Reply-To: <20260414-glymur-v1-6-7d3d1cf57b16@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Authority-Analysis: v=2.4 cv=OdioyBTY c=1 sm=1 tr=0 ts=69e87ac6 cx=c_pps
- a=Oh5Dbbf/trHjhBongsHeRQ==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
- a=IkcTkHD0fZMA:10 a=A5OVakUREuEA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22
- a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=UlvO0n_oXqfwqGaIblEA:9 a=QEXdDO2ut3YA:10
- a=_Vgx9l1VpLgwpw_dHYaR:22
-X-Proofpoint-ORIG-GUID: uUnxIZ3d5B1usMcCtcNy7QhyAAGHv0Hc
-X-Proofpoint-GUID: uUnxIZ3d5B1usMcCtcNy7QhyAAGHv0Hc
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDIyMDA3MSBTYWx0ZWRfX7QY+YKnpRzrn
- fYF1JQAMc7M8q3qnVzOKFncpcerDer9XY92mqZVcn/cvx2NZsUWPI8W1WtAySj2p4q71zTCFjDK
- SfOzW/f6igSddcN/D6N27pc+uaQ7l+n00fQJ5FV1iAV3DtoV/7muJcA23yU2z/VKKlcwUbcpM3F
- OErzNwQgKmxFbt2JG0AV0r9swRap7M7bCHXIPxC1Hxt1G4OHnPgEjxS8DXnaqsMUcl5hqzjklmB
- jgI+vZhyJJFGfTmtUFd6hHBL47NWhavz7esk5qSDTLbCxPrbPXNZxTinhWxaRaOqB1+12rd8UA8
- xRZ6BVErOb8mJ7vAv2gS0YWOLloVxKp7ILZuaY7q4UOBxtEzKkS2W4+8qB29fVRQtnBKZih0QjZ
- q2Me0PJH1+ZdRdtJ/UC8V2f2BOAuEYYqwVpYyx84twtr840+tYGjhswTw6vF2I1XH8UCzMBoQJe
- Bv9k0V9gg39Fv9yLnHw==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-04-21_03,2026-04-21_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 impostorscore=0 malwarescore=0 phishscore=0 adultscore=0
- clxscore=1015 priorityscore=1501 bulkscore=0 lowpriorityscore=0
- suspectscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2604200000
- definitions=main-2604220071
 
+On Tue, 21 Apr 2026 09:10:04 -0300
+Jason Gunthorpe <jgg@ziepe.ca> wrote:
 
-On 4/14/2026 10:30 AM, Vishnu Reddy wrote:
-> On Glymur, firmware interprets the value written to CPU_CS_SCIACMDARG3 as
-> the number of virtual machines (VMs) and internally adds 1 to it. Writing
-> 1 causes firmware to treat it as 2 VMs. Since only one VM is required,
-> remove this write to leave the register at its reset value of 0. This does
-> not affect other platforms as only Glymur firmware uses this register,
-> earlier platform firmwares ignore it.
+> On Tue, Apr 21, 2026 at 01:53:31PM +0200, Jiri Pirko wrote:
+> > >> You reach there when is_swiotlb_force_bounce(dev) is true and
+> > >> DMA_ATTR_CC_SHARED is set. What am I missing?
+> > >>  
+> > >
+> > >So a swiotlb_force_bounce will not use swiotlb bouncing if
+> > >DMA_ATTR_CC_SHARED is set ?   
+> > 
+> > Correct. Bouncing does not make sense in this case, as shared memory is
+> > already being mapped.  
 > 
-> Fixes: abf5bac63f68a ("media: iris: implement the boot sequence of the firmware")
-> Cc:stable@vger.kernel.org
-> Signed-off-by: Vishnu Reddy<busanna.reddy@oss.qualcomm.com>
-> ---
+> It is a little bit mangled, there are many reasons force_swiotlb can
+> be set, but we loose them as it flows through - swiotlb_init()
+> just has a simple SWIOTLB_FORCE
+> 
+> Ideally DMA_ATTR_CC_SHARED would skip swiotlb only if it is being
+> selected for CC reasons. For instance if you have the swiotlb force
+> command line parameter I would still expect it bounce shared memory.
+> 
+> Arguably I think this arch flow is misdesigned, the
+> is_swiotlb_force_bounce() should not be used for CC. dma_capable() is
+> the correct API to check if the device can DMA to the presented
+> address, and it will trigger swiotlb_map() just the same without
+> creating this gap.
 
-Reviewed-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+Seconded.
+
+Then again, the whole DMA mapping logic is extremely convoluted, with
+dmaops, direct, CMA, and swiotlb, so I'm no longer sure there is one
+undisputable way where CC shared mappings should be added to the mix.
+
+Has anyone considered a cleaner design yet? If yes, I'm volunteering to
+help implement it. If not, then please ignore me as a random rant.
+
+Petr T
