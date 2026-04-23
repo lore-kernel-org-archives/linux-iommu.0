@@ -1,101 +1,125 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out30-98.freemail.mail.aliyun.com (out30-98.freemail.mail.aliyun.com [115.124.30.98])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B78903E6392;
-	Thu, 23 Apr 2026 09:47:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 964A5308F2A
+	for <iommu@lists.linux.dev>; Thu, 23 Apr 2026 09:52:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.98
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776937675; cv=none; b=GNX2PfByMNT72VZ0qTPA2rDa2BuRLmH/c+LHQvuVyS/lVDTHYKvUdQb6jfiHpH/99AlYqVN5BvbiVN4sA2HaNBs7Jb+K61k8maRjFFMZDEhm9nlPCbbi7GxgPvtqdXjKluA8uT0BVCJmtZy7aKEtm9wTUgZl5h6Ds3GYKy0fAb0=
+	t=1776937983; cv=none; b=tf0GA0lyDrnU9lqiE+W2vFQV2Q7E6GsM/LiPyHvsjd5WdDSb8tgICfDjuXjTJ8bGzraTFF16gvndv3T02z5m66vu4XjnsUr1fPwtY0uGhF+VG35442ukv6vskZB/2r3TlUHzVh7ObkzoC3QDxyvX7Ywpyowj8Y4craQKRLefsjU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776937675; c=relaxed/simple;
-	bh=br5wlc5f09n9mCEqo9WCcoPnuWcALLuWS7e/ixgqzF4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Y9SaH9CsgiUscp32VuxhJB99/KlgciNH/Sdzl9pWCRME3oD6hr55dZ5H17gTIp1Ynw79OJswxNCinT4uvRKSTBVt1Fb0s0O9OzLhpIs9UJk5f6tp8GyumF+arHHvt2B/OHdEyysy9fv8K5VC7kEpyGJddVlDral/BLPvYGA7llA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ct0tQNrN; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1776937983; c=relaxed/simple;
+	bh=14aLCO5GWoojNsXtLkEGVdnhp/kzZ28H3YHxv0pj090=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=btsodqu75hGHnlUWz3RC/YGfZhuR/a8wfi5pa6MM1hDVHs2D0n1v65cP1fFvfCq1T/m6L5gFOgXo43Zg+9czkZndxbHejmi2ib7cBHWTi4gb6di81pWMaxqRoDrPfGUmU/v5D7OH2yUzwwc9HVMI2N113p2ZWt+M4Tn6ZxHawN8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=ol3fKMFK; arc=none smtp.client-ip=115.124.30.98
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ct0tQNrN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC9D3C2BCAF;
-	Thu, 23 Apr 2026 09:47:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776937675;
-	bh=br5wlc5f09n9mCEqo9WCcoPnuWcALLuWS7e/ixgqzF4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ct0tQNrNoDOxJybDdDRqEJFZs+32ZnzrR6+M9qZKSZDaAdiUm1YiMuknDnjYQI4yi
-	 mc+DbyPPBGCIaSHJca5OGtMBvPCleQJsRds1uj5Y0SW29flqfClpiaQv2e7U8IHYyh
-	 YqwzyRAcF2bzaYKRqf33rBiG2EOSt0s9vDmzdll6b/cc9YNEsVfg+C0L+6XxRQzy8n
-	 G00XSloa4Y4BRvD4rnpQhGBT6NcZj+JxSGSDw/g7JdQuxVMsyR2/lZZru3sDbKMmHg
-	 xS59aLLINn5LOU+XP5ENbqMC5YtJdKQIR8n6UiabP+jHhSMGrmW9Cgo00dwkrgB2eP
-	 +4khsM6ch74lg==
-Date: Thu, 23 Apr 2026 10:47:49 +0100
-From: Will Deacon <will@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Evangelos Petrongonas <epetron@amazon.de>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Pranjal Shrivastava <praan@google.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, nh-open-source@amazon.com,
-	Zeev Zilberman <zeev@amazon.com>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Allow disabling Stage 1 translation
-Message-ID: <aenqxasLJ8yKYqbT@willie-the-truck>
-References: <20260420123221.20801-1-epetron@amazon.de>
- <20260420124032.GO2577880@ziepe.ca>
- <20260422064431.GA49867@dev-dsk-epetron-1c-1d4d9719.eu-west-1.amazon.com>
- <20260422162351.GK3611611@ziepe.ca>
- <aenp6FHzx9rtUQkZ@willie-the-truck>
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="ol3fKMFK"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1776937966; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=A6YdoIxeuZkdXGNum/CTyuM6cy/pazqB/L6iHJ0FGmU=;
+	b=ol3fKMFKIevQImudUVFu5duQMqhONZigwMz6vc4Xv2vQPaqaEFHTI+VFHYsz0Zhiu18kznECcpgrvWVQ2ycBqnrNE3Ocb6KpR7+CI0tKqP3H7Prx5IMityo/u5EgSkDnJXCUfRvFLK12NJtI0bn3gevFb0err0IVQOG0D/t3uzg=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037009110;MF=feng.tang@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0X1ZJOkg_1776937964;
+Received: from localhost(mailfrom:feng.tang@linux.alibaba.com fp:SMTPD_---0X1ZJOkg_1776937964 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Thu, 23 Apr 2026 17:52:44 +0800
+From: Feng Tang <feng.tang@linux.alibaba.com>
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Ying Huang <ying.huang@linux.alibaba.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: Christoph Hellwig <hch@lst.de>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Feng Tang <feng.tang@linux.alibaba.com>
+Subject: [PATCH v2] dma-contiguous: setup default pernuma cma area if not configured explicitly
+Date: Thu, 23 Apr 2026 17:52:43 +0800
+Message-Id: <20260423095243.14239-1-feng.tang@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.5 (Apple Git-154)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <aenp6FHzx9rtUQkZ@willie-the-truck>
 
-On Thu, Apr 23, 2026 at 10:44:08AM +0100, Will Deacon wrote:
-> On Wed, Apr 22, 2026 at 01:23:51PM -0300, Jason Gunthorpe wrote:
-> > On Wed, Apr 22, 2026 at 06:44:31AM +0000, Evangelos Petrongonas wrote:
-> > > The motivation is live update of the hypervisor: we want to kexec into a
-> > > new kernel while keeping DMA from passthrough devices flowing, which
-> > > means the SMMU's translation state has to survive the handover. The Live
-> > > Update Orchestrator work [1] and the in-progress  "iommu: Add live
-> > > update state preservation" series [2] are building exactly this plumbing
-> > > on top of KHO; [2]'s cover letter calls out Arm SMMUv3 support as future
-> > > work, and an earlier RFC from Amazon [3] sketched the same idea for
-> > > iommufd.
-> > 
-> > It would be appropriate to keep this patch with the rest of that out
-> > of tree pile, for example in the series that enables s2 only support
-> > in smmuv3.
-> > 
-> > > For this use case, Stage 2 is materially easier to persist than Stage 1,
-> > > for structural rather than performance reasons: 
-> > 
-> > I don't think so. The driver needs to know each and every STE that
-> > will survive KHO. The ones that don't survive need to be reset to
-> > abort STEs. From that point it is trivial enough to include the CD
-> > memory in the preservation.
-> > 
-> > It would help to send a preparation series to switch the ARM STE and
-> > CD logic away from dma_alloc_coherent and use iommu-pages instead,
-> > since we only expect iommu-pages to support preservation..
-> 
-> Does iommu-pages provide a mechanism to map the memory as non-cacheable
-> if the SMMU isn't coherent? I really don't want to entertain CMOs for
-> the queues.
+There was a report on a multi-numa-nodes ARM server that when IOMMU is
+disabled, the dma_alloc_coherent() function always returns memory from
+node 0 even for devices attaching to other nodes, while they can get
+local dma memory when IOMMU is on with the same API.
 
-Sorry, I said "queues" here but I was really referring to any of the
-current dma_alloc_coherent() allocations and it's the CDs that matter
-in this thread.
+The reason is, when IOMMU is disabled, the dma_alloc_coherent() will
+go the direct way and call dma_alloc_contiguous(). The system doesn't
+have any explicit cma setting (like per-numa cma), and only has a
+default 64MB cma reserved area (on node 0), where kernel will try
+first to allocate memory from.
 
-The rationale being that:
+Robin Murphy suggested to setup pernuma cma or disable cma, which did
+solve the issue. While there is still concern that for customers
+which don't have much kernel knowledge, they could still suffer from
+this silently as some architectures enable cma area by default (not
+an issue for X86 though, which set CONFIG_CMA_SIZE_MBYTES to 0 by
+default) for most Linux distributions. 
 
-1. A cacheable mapping is going to pollute the cache unnecessarily.
-2. Reasoning about atomicity and ordering is a lot more subtle with CMOs.
-3. It seems like a pretty invasive driver change to support live update,
-   which isn't relevant for a lot of systems.
+One thought is to follow the current cma reserving policy for platform
+with 'CONFIG_DMA_NUMA_CMA=y', that if the numa cma is not explicitly
+configured, set it up according to CONFIG_CMA_SIZE_MBYTES (The
+percentage kernel option is not considered yet as the number of NUMA
+nodes could be big).
 
-Will
+Suggested-by: Ying Huang <ying.huang@linux.alibaba.com>
+Signed-off-by: Feng Tang <feng.tang@linux.alibaba.com>
+---
+Changelog:
+
+	since v1
+		* don't use the original way of adding alloc_pages_node()
+		before trying default cma node (Robin Murphy)
+
+ kernel/dma/contiguous.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index c56004d314dc..b2fd6789db85 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -107,6 +107,7 @@ static struct cma *dma_contiguous_numa_area[MAX_NUMNODES];
+ static phys_addr_t numa_cma_size[MAX_NUMNODES] __initdata;
+ static struct cma *dma_contiguous_pernuma_area[MAX_NUMNODES];
+ static phys_addr_t pernuma_size_bytes __initdata;
++static bool numa_cma_configured;
+ 
+ static int __init early_numa_cma(char *p)
+ {
+@@ -135,6 +136,7 @@ static int __init early_numa_cma(char *p)
+ 			break;
+ 	}
+ 
++	numa_cma_configured = true;
+ 	return 0;
+ }
+ early_param("numa_cma", early_numa_cma);
+@@ -142,6 +144,7 @@ early_param("numa_cma", early_numa_cma);
+ static int __init early_cma_pernuma(char *p)
+ {
+ 	pernuma_size_bytes = memparse(p, &p);
++	numa_cma_configured = true;
+ 	return 0;
+ }
+ early_param("cma_pernuma", early_cma_pernuma);
+@@ -181,6 +184,9 @@ static void __init dma_numa_cma_reserve(void)
+ 			continue;
+ 		}
+ 
++		if (!numa_cma_configured)
++			pernuma_size_bytes = size_bytes;
++
+ 		if (pernuma_size_bytes) {
+ 
+ 			cma = &dma_contiguous_pernuma_area[nid];
+-- 
+2.43.5
+
