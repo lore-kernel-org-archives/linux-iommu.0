@@ -1,134 +1,258 @@
-Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011066.outbound.protection.outlook.com [52.101.52.66])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEC69347C7
-	for <iommu@lists.linux.dev>; Thu, 23 Apr 2026 20:03:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.66
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776974600; cv=fail; b=jAcjC50r5iDXS/HfghoTzPFRgmV5wnuvcbC9EbmuPeC1co7GGMOgMWaOV48brIXh81sqCZHxwNi5fZrLRWgEb65hUGJoZXYs4VUmRudtnfvNWviLeAyiLJqqzOLh6YlA7J+t6pBK5MWsk5iOInaMPPpeEtdjI+AJm2xrh/kzqyE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776974600; c=relaxed/simple;
-	bh=yrkqsBJpfKJazeeUubogDtAmLqWcWCo/LSdwUQew9l0=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SG+MhHt7Wp+XCyS9tZCK/Q9z/vRDTpPErKMdaKb6Tscv1IjU9xuk1zkxaTSLSd2LiKGwqGAE3bJOcSw6eHtdZ6QImezT4WRbr4uxNPAqXd42gM8xXb57kSzVw5QB65ybxHhzmxnHcdJBlX3P/HLnEOp7SV7Cv5VKL7lljzvut98=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=PXy6Iyrb; arc=fail smtp.client-ip=52.101.52.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA3B13BD647
+	for <iommu@lists.linux.dev>; Thu, 23 Apr 2026 21:22:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776979368; cv=none; b=XtU8Pip+3+NICvyNW3qPjefRiD16ZUn4TeJrO7IQNPknz72ITMz0PBCjKBQ/lYzLXFdp8PfShYwfbsze4EA2SScBQvCr5jp8aRwHP+Hi0Ykhlw5q/kWStk1Ehlfxie5PLR/9FU9/MJIL4TTeY8CEvQO6lGfySP6pPcNH/Hqq3e4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776979368; c=relaxed/simple;
+	bh=VEr3YGdqak3FVQ9/ao+xXZ+w5i00Ao9Ssj4jC1ZGrN4=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Content-Type; b=MIIjCGZrjwzBDUAG/nFkC3Umw74bu8KLiNAJEYDzMqvQG2NMWPHJRAIIFOpJvGGjQm6mWyBgaxpGBEOFr2CNQLwR5o5OOhdPmR3DV6GleDBK45QtMwAnZRi0xAGezzmG4YAenASctmyG96C58xCvpYZf1hTjCyNZ73m72UL80H4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--dmatlack.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Q366xdYU; arc=none smtp.client-ip=209.85.214.202
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--dmatlack.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="PXy6Iyrb"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=RRrxQUfkUVpHvtRnQVn7IKY0uec0C3JChQrNxm8zNjm5J9w71aiBsJcONf3POWmOz7SDA+r8eLrLj7gahM5kc+OTXhaTUJj2X9SKicHmmrzJz0Fvx3tnnOpFKNEGrMBbtrPXm4e1U2/yNiEaOCUF2jH6X3yH2JhWyQbJxV+LzkQsey8aP2LWxjAoOpih+Ls7bGN/QvfOxe2zSGUDYe2/HWAGkMn1gLzqzXCsRGEoLyQOBjb1T6tsO8mKJWWqW7xVaypBb7eR5/RHx0NvJv3IpGGJHZCx477oCUKMZddXKiLAXgsjeIwozYlnYLbgOaz20kF4ckafndkrxNvGoqAYpw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=L66LUNwoDrC8v+fLcz/2laZfBAffYNs40TcmMe7nvug=;
- b=MpOfg3c8/OJ9aL4kBRCnYCIvmM/Krz/MuAJInbI9Zyb0a80xrq1KPXpxLcJD5vnF0fg0VovAsDFi+f0cfthVw2ithcmLt8mwhA/qOics/LHjCvivDMlFXMvik7dUWLFvMK/nR3Mp5LBLncVddmtTu7Hruf/sZltUwq/LomxbaXVcVQT5NZuaN2b5roa7y65T4ia56mtOiMYrbiKFAH9JkPTL9t0AoKA8GM8QoqpWpmBcRSfOn7beL0fppumOp7Qvts/K7fHRhvimbd0mHiKo4cWkrkD7Y6TvxbXOxYdzGCBbq6bgl6TNsrj15coVBsykljmtcdiSSLtmQTEznqpC9Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L66LUNwoDrC8v+fLcz/2laZfBAffYNs40TcmMe7nvug=;
- b=PXy6Iyrb6gw/YTX6RNITj6BytF9N55ykx1wWiSrdUJRuM4fEM6pIQJhpSdUIiMy2XAwvJLzCcV5z+ez65yS98gOII50DKoPIGfY+grixqlrNOpXzvBqDm2eRNR05JjvuuJEweK6b5yD4oY0nm83yRMKZJATVssWf28xxb5PCWQZ+10XVFdcF5XvV+loBc2iZ+OEog4NTZPCTFtimZ/cC1s4OUMn1wHTXmOZOOehdhqUmwnSVEcOKqQTPSuf/19ZNkFUjXKmNmUfV3RFfzo6xrEzTa5HHBs3cBQZmh2+cJQQvH1EXnA+R9oAepbw6PWnuA6v1XI0A9k8q0ZRRS4tfxg==
-Received: from BL1P221CA0027.NAMP221.PROD.OUTLOOK.COM (2603:10b6:208:2c5::8)
- by SJ2PR12MB9006.namprd12.prod.outlook.com (2603:10b6:a03:540::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9846.16; Thu, 23 Apr
- 2026 20:03:09 +0000
-Received: from BN2PEPF000044A6.namprd04.prod.outlook.com
- (2603:10b6:208:2c5:cafe::19) by BL1P221CA0027.outlook.office365.com
- (2603:10b6:208:2c5::8) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9791.48 via Frontend Transport; Thu,
- 23 Apr 2026 20:03:08 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- BN2PEPF000044A6.mail.protection.outlook.com (10.167.243.100) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9846.18 via Frontend Transport; Thu, 23 Apr 2026 20:03:08 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 23 Apr
- 2026 13:03:00 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.20; Thu, 23 Apr 2026 13:02:59 -0700
-Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Thu, 23 Apr 2026 13:02:59 -0700
-Date: Thu, 23 Apr 2026 13:02:57 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <will@kernel.org>, <robin.murphy@arm.com>, <jgg@nvidia.com>,
-	<kevin.tian@intel.com>
-CC: <joro@8bytes.org>, <praan@google.com>, <baolu.lu@linux.intel.com>,
-	<miko.lenczewski@arm.com>, <smostafa@google.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>, <jamien@nvidia.com>
-Subject: Re: [PATCH rc v2 0/5] iommu/arm-smmu-v3: Fix device crash on kdump
- kernel
-Message-ID: <aep68esJlQjaG1XE@Asurada-Nvidia>
-References: <cover.1776286352.git.nicolinc@nvidia.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Q366xdYU"
+Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-2b24af7ca99so96466255ad.1
+        for <iommu@lists.linux.dev>; Thu, 23 Apr 2026 14:22:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1776979364; x=1777584164; darn=lists.linux.dev;
+        h=to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=kl+pv05082o4iUYPTAspfzDZexWtIImSBuw1JtCkgoE=;
+        b=Q366xdYU0dOrSVpiSQggVPtKk/iIAPMTktxYmMThecZ/z3iGd36Kp+fPJt+Fa1di+f
+         kPWFSMbKKzwaUzhF/3FWVLWM21wya4mqnwp4yB1hkbRgHaCc1cI3oAVq09LZ/NgE3SAn
+         OJkuJ6CMuELn9agN7Ds2V5vmN1cf1F4XousAMoam+SoG27Mp5uT4r0HjebfOgqnKU9iC
+         cz5Nlp0RDi6zMarHu1ldRL9lElj8lvxb+PK6t6PA6M17t+iGiEkFhJOx5fOES6wHVnjt
+         32EJqy/55nk75WA01KppYDQxUchqEYsLszTbboIyAuBtBzquMZ5F+6YiLrRhGj3ZX7vm
+         Qkuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776979364; x=1777584164;
+        h=to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=kl+pv05082o4iUYPTAspfzDZexWtIImSBuw1JtCkgoE=;
+        b=HEf3fWWtDaP1zyp358aAGG7RU6X4IeCq3rn8CHhvcYZlDbw52f2bd3ocAgIYkEK60l
+         6v5wFJZsCBI5lNDzyhIi75VYeftmeysyTFLvETB7y/fpzZIJ3bNk2DJ9RFoUUSuUyx+E
+         7auCKOZMHdTUbtCBQSsulFpwyUFmcY1cEGqUZWOAiQikyQ12JhLpcf01lybb/tuFvPeM
+         ajfqF8p2g9Hhm2hmcJITiUSHGZ0OUdYrMilFSry/jmAIz5pxnCDqC39xAr/6EePNnJoI
+         dHFIrkoSgPI4H32piwaBxPjER1ATiAQJHMTh71kC6pXlpCa6FPCWEEbTfQg5QBSCTfl9
+         Vz9g==
+X-Forwarded-Encrypted: i=1; AFNElJ8Wdx6GXEBkrvhFnz59NK4qv/L3D0UIu7qvSHFQPk2tzxHKH7mef1LlCNodUIrClGd0xLvRTQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw/vCYcstD6pD66skEZHRlAGGFt/+bLz1CvaZjHTWN3BI94lOQG
+	rQgVLkRszjaMHilDKldKlq9wZV6ipSTNlgG487P/ioHIGnLYS6RP7nLvj5O0jE6rFq3LggaESn8
+	BAiH2THTho97IMw==
+X-Received: from plnx22.prod.google.com ([2002:a17:902:8216:b0:2ae:ce70:7c80])
+ (user=dmatlack job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a17:902:7d8c:b0:2b4:604c:ec6f with SMTP id d9443c01a7336-2b5f9f86840mr213628685ad.32.1776979363647;
+ Thu, 23 Apr 2026 14:22:43 -0700 (PDT)
+Date: Thu, 23 Apr 2026 21:22:31 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <cover.1776286352.git.nicolinc@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN2PEPF000044A6:EE_|SJ2PR12MB9006:EE_
-X-MS-Office365-Filtering-Correlation-Id: 89d8c663-6020-43a0-1d37-08dea1735713
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|82310400026|7416014|1800799024|36860700016|18002099003|22082099003|56012099003;
-X-Microsoft-Antispam-Message-Info:
-	Bz7W/8hCAoY9yzCBrB5dhMpHnPPBfw9m1oDeHo7+a4j6KRadkjMTsEhA5QPZLy71lxjhySP4Q4wBK5ZptQ971cZ1gHm2/aJlInn9rJ1qyJj2XsHWQfhf2SvIAOXBPr7i5FKLIEZf57U5FJ0UOs4e1sTQ4SeYGh1DskRPX1y+YV9Ao5NjZPQp+plKfsa8lYdp6igO9NULplhRo8IBlEG1LAJtuCJFvZFoj2DoXFt8M9le2ftNsSxsm0OayMiHCd8a9l8XoQMNYLm7MCvgPcGyFYQIeGrQiji/ZCXKwvpTxgoT3pfV8qfeV9mUMPm3gLfiQXxYL6AGDuAlzp9DlopceH7hHZvg6EPrOb1qpQN3K2C6boS7M5AsqqAtgE7gMDSekHQbVxWhWAQZJjUC9GC0fED4/BP+fttmOtst9RLscERdAT6ds1XQxBco0ZO8bNiGHsGOdsj+AVMJ9Eu0/qgAiFctbicJ4PwjW1PK++01WXIsYdM9nm0r5sKlFDgNKVK+ts8mURqIgzzLauIGBqkqC7P6/lwW2ar+gqXaqOjSqxsICK5IbPo0JjpX3XQY4zkIW10QmowNhJ82Y9EIclFSMysrEN1wYlqObqYyefnUMWXmFPPz1/imPsbb4BiRBWn4VnIagdtEBGljEnDF6R4Q46y93HMZE5cTzMqbXceTbRHhSz/jmszZx2wUjtMU/Q4NRQ0GB9t7PoNUBqr74g5qhVwpmcJEVaFxzTyHx822RuZJsho2b43Z/lpjC+ewqW7Z7vofYw+NZIchowqtuTt3YA==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(82310400026)(7416014)(1800799024)(36860700016)(18002099003)(22082099003)(56012099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	S9675W9krBpqA9cb2pqkNaVXb2mI2m1afwOD2YaXYzbqYWMq867KCjc792EgiXhWukUccq9yBydkzs53Mg9SlM+PRyVjKTT7Q4gv+RGNOD6ojYQ8KG2MXk0g71XjgSkm5NlGKf814vxjWSZ8T1HWGDuppJStp9+9VV9QlD/3677rMrorN02sv7zyw1fcGe1ErqttYz28TkgJAT81K8WRFlehb/ymQfO6b+CyfVHTSFbbsAgeYVjjYcsS80k1adfWou96ySWw9QJ30lGOVVuNbCpQ7Y48eRWKPLg2Qznqvyw1azYkOXa8UI8ODY0/QMKfvO+l0SDtWnTxIU9gZRozA/YMa1Cjz5QEqU0fZuib/9tiVxabMComtfKaX/rw+bDh6BSYppafy1V+c1kwmd27ecObM2HwRXYMR/CXTkLpoYT3cfsgewjVj0SNOPqgk49g
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Apr 2026 20:03:08.5501
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 89d8c663-6020-43a0-1d37-08dea1735713
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN2PEPF000044A6.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB9006
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.54.0.rc2.544.gc7ae2d5bb8-goog
+Message-ID: <20260423212242.3431136-1-dmatlack@google.com>
+Subject: [PATCH v4 00/11] PCI: liveupdate: PCI core support for Live Update
+From: David Matlack <dmatlack@google.com>
+To: dmatlack@google.com, iommu@lists.linux.dev, kexec@lists.infradead.org, 
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-pci@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, Apr 15, 2026 at 02:17:35PM -0700, Nicolin Chen wrote:
-> This is on Github:
-> https://github.com/nicolinc/iommufd/commits/smmuv3_kdump-v2
-> 
-> Changelog
-> v2
->  * Add warning in non-coherent SMMU cases
->  * Keep eventq/priq disabled v.s. enabling-and-disabling-later
->  * Check KDUMP option in the beginning of arm_smmu_device_reset()
->  * Validate STRTAB format matches HW capability instead of forcing flags
+This series can be found on GitHub:
 
-https://sashiko.dev/#/patchset/cover.1776286352.git.nicolinc%40nvidia.com
+  https://github.com/dmatlack/linux/tree/liveupdate/pci/base/v4
 
-Sashiko posted a few comments, mostly valid.
+This patch series introduces support in the PCI core for Live Update,
+enabling drivers to preserve PCI devices across a kexec-based kernel
+update without interrupting the device. This functionality is critical
+for minimizing downtime in environments where PCI devices (e.g., those
+assigned to VMs via VFIO) must continue operating or maintain state
+across a host kernel upgrade.
 
-I am fixing them with a v3.
+This series was split off from the the VFIO driver series [1] to enable
+more rapid iteration on the PCI core changes, add breathing room to
+split changes into smaller patches, and add some more functionality.
 
-Thanks
-Nicolin
+Series Overview
+---------------
+
+This series implements the following to support PCI device preservation
+across Live Update:
+
+  1. Set up a File-Lifecycle-Bound (FLB) handler to track and preserve
+     PCI-specific state (struct pci_ser) across Live Update using Kexec
+     Handover (KHO).
+
+  2. Add APIs for drivers to register "outgoing" devices for
+     preservation and for the PCI core to identify "incoming" preserved
+     devices during enumeration.
+
+  3. Automatically preserve all upstream bridges for any preserved
+     endpoint. Use reference counting to ensure bridges remain preserved
+     as long as any downstream device is preserved.
+
+  4. Inherit secondary/subordinate bus numbers, ARI Forwarding Enable,
+     and Access Control Services (ACS) flags from the previous kernel to
+     ensure a stable routing fabric and consistent IOMMU group
+     assignments during Live Update.
+
+  5. Restrict preservation to devices in immutable singleton IOMMU
+     groups. Require that all upstream bridges have the necessary ACS
+     features enabled to prevent IOMMU group changes across the update.
+
+  6. Modify the PCI shutdown path to avoid disabling bus mastering on
+     preserved devices and their upstream bridges, allowing memory
+     transactions to continue uninterrupted.
+
+  7. Provide comprehensive documentation for the FLB API, device
+     tracking mechanisms, and the division of responsibilities between
+     the PCI core, drivers, and userspace.
+
+This series could be simplified down to fewer patches by limiting
+preservation support to only devices on a root bus. Supporting devices
+downstream of bridges could be split off into a follow-up series.
+However since I got bridge preservation working and the series was less
+than 15 patches I opted to include it for now.
+
+Dependencies
+------------
+
+This series depends on 2 LUO patches to enable refcounting of the
+incoming FLB so that it is safe for the PCI core to use
+liveupdate_flb_get_incoming() during enumeration.
+
+  https://lore.kernel.org/lkml/20260423174032.3140399-1-dmatlack@google.com/
+
+VFIO support for PCI device preservation is built on top of this series.
+The following branch on GitHub contains all the patches together to
+enable testing (the LUO FLB changes, this series, and the VFIO patches):
+
+  https://github.com/dmatlack/linux/tree/liveupdate/pci/base/v4-with-vfio
+
+Testing
+-------
+
+This series was tested in combination with the VFIO patches mentioned in
+the previous section using the the new VFIO selftests:
+
+  - vfio_pci_liveupdate_uapi_test
+  - vfio_pci_liveupdate_kexec_test
+
+Both tests were ran in ran in a QEMU-based VM environment, using a
+single virtio-net PCIe device behind a PCI-to-PCI bridge as the test
+device, and in a baremetal environment on an Intel EMR server, using 8x
+Intel DSA PCIe devices (each on a host bridge).
+
+Future Work
+-----------
+
+After this series we expect to make further improvements to the PCI core
+support for Live Update. Once these are done we plan to drop the
+"experimental" verbiage from PCI_LIVEUPDATE Kconfig help message and
+documentation.
+
+  - Ensure bridges with downstream preserved devices stay in D0 across
+    Live Update in case preserved endpoints are doing memory
+    transactions.
+  - Preserve BARs of all preserved devices to avoid disrupting P2P
+
+Beyond that we also plan to add support for preserving Virtual Functions
+since that is a major use-case for Cloud environments. This will require
+keeping SR-IOV enabled on the partent PF across a Live Update.
+
+Changelog
+---------
+
+v4:
+
+ Enhancements on top of previous series:
+
+ - Split "PCI: Add API to track PCI devices preserved across Live
+   Update" from v3 into 4 separate commits to make reviewing easier (FLB
+   setup, outgoing device tracking, incoming device tracking, and
+   documentation for driver binding)
+ - Use new incoming FLB refcounting to avoid use-after-free bugs during
+   enumeration
+ - Use an xarray to speed up looking up of incoming preserved devices
+   during enumeration
+ - Use a per-device bit to indicate when secondary and subordinate bus
+   numbers should be inherited on bridges instead of global data to
+   avoid races between the 2 passes
+ - Inherit ARI enablement across Live Update
+ - Automatically preserve bridges upstream of preserved endpoints so
+   so that ACS flags, ARI enablement, and bus mastering can be kept
+   constant on bridges across Live Update
+ - Avoid clearing bus mastering during shutdown on outgoing preserved
+   device to avoid disrupting memory transcations being performed by
+   preserved devices
+ - Add a MAINTAINERS entry for the new files to support Live Update in
+   the PCI core
+ - Add info and debug level logging for various events throughout device
+   preservation
+
+ Changes based on review feedback on v3:
+
+ - Fix up typos, wording, documentation gaps, and code style (Bjorn)
+ - Use pci_WARN_ONCE() where possible (Bjorn)
+ - Require ACS flags to preserve devices behind bridges so that
+   singleton IOMMU group topology is guaranteed to remain across Live
+   Update (Yi)
+ - Preserve ACS flags (Jason, Alex)
+
+v3: https://lore.kernel.org/kvm/20260323235817.1960573-1-dmatlack@google.com/
+
+v2: https://lore.kernel.org/kvm/20260129212510.967611-1-dmatlack@google.com/
+
+v1: https://lore.kernel.org/kvm/20251126193608.2678510-1-dmatlack@google.com/
+
+rfc: https://lore.kernel.org/kvm/20251018000713.677779-1-vipinsh@google.com/
+
+
+[1] https://lore.kernel.org/kvm/20260323235817.1960573-1-dmatlack@google.com/
+
+David Matlack (11):
+  PCI: liveupdate: Set up FLB handler for the PCI core
+  PCI: liveupdate: Track outgoing preserved PCI devices
+  PCI: liveupdate: Track incoming preserved PCI devices
+  PCI: liveupdate: Document driver binding responsibilities
+  PCI: liveupdate: Inherit bus numbers during Live Update
+  PCI: liveupdate: Auto-preserve upstream bridges across Live Update
+  PCI: liveupdate: Inherit ACS flags in incoming preserved devices
+  PCI: liveupdate: Require preserved devices are in immutable singleton
+    IOMMU groups
+  PCI: liveupdate: Inherit ARI Forwarding Enable on preserved bridges
+  PCI: liveupdate: Do not disable bus mastering on preserved devices
+    during kexec
+  Documentation: PCI: Add documentation for Live Update
+
+ Documentation/PCI/index.rst                   |   1 +
+ Documentation/PCI/liveupdate.rst              |  23 +
+ .../admin-guide/kernel-parameters.txt         |   6 +-
+ Documentation/core-api/liveupdate.rst         |   1 +
+ MAINTAINERS                                   |  13 +
+ drivers/iommu/iommu.c                         |  35 ++
+ drivers/pci/Kconfig                           |  14 +
+ drivers/pci/Makefile                          |   1 +
+ drivers/pci/liveupdate.c                      | 562 ++++++++++++++++++
+ drivers/pci/pci-driver.c                      |  31 +-
+ drivers/pci/pci.c                             |  22 +-
+ drivers/pci/pci.h                             |  13 +
+ drivers/pci/probe.c                           |  25 +-
+ include/linux/iommu.h                         |   7 +
+ include/linux/kho/abi/pci.h                   |  62 ++
+ include/linux/pci.h                           |  58 ++
+ 16 files changed, 858 insertions(+), 16 deletions(-)
+ create mode 100644 Documentation/PCI/liveupdate.rst
+ create mode 100644 drivers/pci/liveupdate.c
+ create mode 100644 include/linux/kho/abi/pci.h
+
+
+base-commit: a13f7eb5b2d5bef886659768680093bec1c0470d
+-- 
+2.54.0.rc2.544.gc7ae2d5bb8-goog
+
