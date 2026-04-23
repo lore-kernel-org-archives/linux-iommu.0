@@ -1,54 +1,54 @@
-Received: from mail-pg1-f201.google.com (mail-pg1-f201.google.com [209.85.215.201])
+Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8485A3921C3
-	for <iommu@lists.linux.dev>; Thu, 23 Apr 2026 21:23:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 191493C4548
+	for <iommu@lists.linux.dev>; Thu, 23 Apr 2026 21:23:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776979422; cv=none; b=YWl69ssE7x8qGzUExtvwKpL+ebZFqqYMcSZm0pqWkhfozfsOUUsdxeyuiBs76ChHz4rfr3XCBKqdXs72ifUq2Hn/95RfTD8DUB9GmLzVmjwcziZZYxj7hZ+jtmI20M7mH17L613/a9o3Q8c7bNckNEQ1k7TNXBncO+rONgEatpA=
+	t=1776979426; cv=none; b=rRHr7zAmGr1pP/l8SrFFgKeipy0X56y5RPeMs0TRL94Lfuvmp0q0JQmCNL48KN1lwhMsr4tjuosCfBYl6vuRS8G2PB9fgdi4JFddCz+4m8UZ68C3BfTcBGMxWPOQ+ixh7NNfjHIclqWtl8uff1zvMSJMY0Of3ceJYncMwW23NWs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776979422; c=relaxed/simple;
-	bh=GLaesJwUwri2XBQC98JUEA4yA/xfrELrLuoXDywngTA=;
+	s=arc-20240116; t=1776979426; c=relaxed/simple;
+	bh=Oe8MwOihG5BzjH99EK3y2Iy4j4M/3j0maoUzCe5H9s8=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=nLn2DAyMDSbdQGXh6ht62GHVXtb4cPPiijh3Ketp8QhGkIjVKjy11RYSXBEwWqhsFRp9sNIOhpfN3J1EjNIRFM3MbdLQJeDaAppcJowC/TQBhAsTEvXjiOR4k8x/BeJsLcPOKIRdCwKpjjg4g/htb72U5F3JefOAT84tR4I/3hQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--dmatlack.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=USPc3a12; arc=none smtp.client-ip=209.85.215.201
+	 To:Cc:Content-Type; b=UFE5jN+w73VSDQLzI3ChIzlScsoLVBa0z6VzDJPkauLbfF4gvVLhogOGvZeD0JhgnWKxQEa+k8OyBZb5u6UkF+z5trnXL5Xp3hmY9DAVKVHU64oTrKdMuK5PDNMIy7yD2EJhi6GNfIg/a9wVFAHT/o6/6k7fHzeKQPw2RWWA94k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--dmatlack.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=F01pFuTv; arc=none smtp.client-ip=209.85.214.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--dmatlack.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="USPc3a12"
-Received: by mail-pg1-f201.google.com with SMTP id 41be03b00d2f7-bce224720d8so4148506a12.1
-        for <iommu@lists.linux.dev>; Thu, 23 Apr 2026 14:23:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="F01pFuTv"
+Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-2b242b9359aso70728615ad.0
+        for <iommu@lists.linux.dev>; Thu, 23 Apr 2026 14:23:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1776979414; x=1777584214; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1776979418; x=1777584218; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Xzr76OgKRSVyLlNPZ4BBmoEisHfu3frnnsSEc+2qgNA=;
-        b=USPc3a12JfuJPjRRORr8gAGgbWyvIx2LXFyso/3dwyxaZ80G/lfSD/SGmYDpXmVOv7
-         JAILRNs1zz/wD1OD4jHLpcKkArGtXtrJ/tqUnb3yPWQS/QCEdvAWaJYMD3YSSopS2Ld2
-         qnze6raFP+M29Ag9dHkQwUOqR28Kc/3L1T1WoynR0OZJ+odc0Npc4G2QFl337jYQpfDL
-         ndSPdd0biQMBt126eIfoL8lPQomJ+nEoAaZewWjimG3caLPz3X3Lu3+tGUtF5/W9suXX
-         z/1fsfMxJipU3lndB5+0l6sjpQvtdx+imW/VSWTUyiP1p8Y9hAHNXt2SyrjhUszkKWlY
-         Gpxg==
+        bh=NDSmr3KzvFf45fqXLLacm4Nig+LS/n/kl38OHtIvfGo=;
+        b=F01pFuTv1OEeSGdkrMKXrkCosrDXOK6YRw2CiDlB/91LNFOa8FET8wDsxEqAhEKZyt
+         gypSOrfdv1qP2k/MHruFkh2aNnoqQAHnzDIujBeNxt/0eRRKSQNJQuE5Yjx4b0HudDVG
+         MUO0zZqWoA7yLzsc5zi4w++OF6Rr1bY8pYpCt8SrnLtxeXLBhvDhIyU51u8I3kOBNlKu
+         ZmjJM/B8RBYzoZ5lQBL3yzosDOhMXM7TxZVG205F3d7MAE7gwWqLUzij9KpI5gD9Bv1k
+         l+XTq1Ue31LHXjunDa9Jvxf2LcYSP4pxI6JzJkJFmBbxmO5GuQjIeDkGe8299HER59SG
+         elow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776979414; x=1777584214;
+        d=1e100.net; s=20251104; t=1776979418; x=1777584218;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Xzr76OgKRSVyLlNPZ4BBmoEisHfu3frnnsSEc+2qgNA=;
-        b=XIwlpfYpxAsawGDDdDuSufAeB/BOW5UlIxBsDmHp//wrr8p2FaJ7Bz1yTinGDqhkM9
-         OFgVLXNFvuoj+FdqXXzWrv8Sx+ztaJ+tnfsGarYUt/Hfu6enFFVEfC+3l+7fl2zQ5OlD
-         vvqH4V2VOCo9UizBXNV5PKbFgmqZ44P72Kt005eMSt4v5Fu/qz22xMbe53ddVnWz2ogl
-         NE+LR0eP2uxIjDcjbL2kTXPdfoSRw5x6NRrjg+SdwxIgNVSixGC9pDagXDqkZmX2muV1
-         lJ+DLs31h4hhjaDA80zNCDxUQ5BWkub8Njoe49UOWovjXVnJVRD6cAI8cHl3p1dryXJG
-         hoCg==
-X-Gm-Message-State: AOJu0YydAxP8cNmAGz5b0eQrANZVtsbi1wnDLbEgQ8FcUeBpcGdu9JqV
-	TzCPCmMVPB6fA9TXnZZYeBIqQkIVWQINsbDGmEcx4jUcyJifV7606SoIopnGOYb3Xmq9dWOYOso
-	VfNBKbXtE7Zg61/E2ArIF7fH1Q/EecXCFx1sYBG0mpyKUxAvx1noQZze2p6GatdWIsgwh5BHJej
-	Z3sXLS/F2Tg4hGIcaD+tShbTkF9GLlJUV+Q0MU1CVUTLwpJw==
-X-Received: from pgbda7.prod.google.com ([2002:a05:6a02:2387:b0:c79:9058:b77e])
+        bh=NDSmr3KzvFf45fqXLLacm4Nig+LS/n/kl38OHtIvfGo=;
+        b=FG7EsbiiyEYFgooebEtO7XWTR1XpiJNmfylmsfFoWSK/rPChOQ43eIOE4VmONHtcAA
+         NOOVTi7JLWi3XSZz8I0eA1PjUGKjgbhrIbx8vWd6TlOUZDepY8mV+n8fB7Nj9/4zBjJo
+         +EVhZBXh9l/9l9fUGQT/yxfzX3mHSjrrmyDPfJmzem6JmwA2ETLpBWF/MI3gZTriz6hX
+         XsPpjoV2F92EO/iyGdC3tkKYgGbsSI7CQMfdvvT/q1IvJQTs5UODMNXoc3G6fSb/N6Le
+         jXdOrq69JvffXj4yJf+L+YN1WMuMrpQXidAgExGZawq2AvpGWdbG6ItVmpGR8Y89xzu7
+         8scg==
+X-Gm-Message-State: AOJu0YyRciqLL82hQGSSoieBgHzBu7Fgt2fMrNIjX19TYSq+XBziogyZ
+	GC51gEG4+ZD5GgnQryWxM3rQyiP6btf+Y+0aWyIJlnFY/vzar55N93COzB+4lR+VPVl7lAaw/XQ
+	TDFR/SOIhLdwWcf8iozZW9MawvR5vqwSGl/PY7AW8pHU/9OMMPUS5htcwnvmKGThwF+oAX3wtNj
+	8PhMGoVKJAfiyUzp2YVjCe0qkZejlvld1VIAw5ec72ehAdyw==
+X-Received: from plov1.prod.google.com ([2002:a17:902:8d81:b0:2ae:c54f:d5ad])
  (user=dmatlack job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6a21:6da2:b0:3a0:b781:4c8b with SMTP id adf61e73a8af0-3a0b78155d5mr25116879637.2.1776979414052;
- Thu, 23 Apr 2026 14:23:34 -0700 (PDT)
-Date: Thu, 23 Apr 2026 21:23:12 +0000
+ 2002:a17:902:ba94:b0:2b4:5c0d:314b with SMTP id d9443c01a7336-2b5f9f83342mr210260195ad.38.1776979417788;
+ Thu, 23 Apr 2026 14:23:37 -0700 (PDT)
+Date: Thu, 23 Apr 2026 21:23:14 +0000
 In-Reply-To: <20260423212316.3431746-1-dmatlack@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -58,9 +58,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20260423212316.3431746-1-dmatlack@google.com>
 X-Mailer: git-send-email 2.54.0.rc2.544.gc7ae2d5bb8-goog
-Message-ID: <20260423212316.3431746-9-dmatlack@google.com>
-Subject: [PATCH v4 08/11] PCI: liveupdate: Require preserved devices are in
- immutable singleton IOMMU groups
+Message-ID: <20260423212316.3431746-11-dmatlack@google.com>
+Subject: [PATCH v4 10/11] PCI: liveupdate: Do not disable bus mastering on
+ preserved devices during kexec
 From: David Matlack <dmatlack@google.com>
 To: iommu@lists.linux.dev, kexec@lists.infradead.org, 
 	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
@@ -78,126 +78,91 @@ Cc: Adithya Jayachandran <ajayachandra@nvidia.com>, Alexander Graf <graf@amazon.
 	Will Deacon <will@kernel.org>, William Tu <witu@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Restrict support for preserving PCI devices across Live Update to
-devices in immutable singleton IOMMU groups. A device's group is
-considered immutable if all bridges upstream from the device up to the
-root port have the required ACS features enabled.
+Do not disable bus mastering on outgoing preserved devices during
+pci_device_shutdown() for kexec.
 
-Since ACS flags are inherited across a Live Update for preserved devices
-and all the way up to the root port, the preserved device should be in a
-singleton IOMMU group after kexec in the new kernel.
+Preserved devices must be allowed to perform memory transactions during
+a Live Update to minimize downtime and ensure continuous operation.
+Clearing the bus mastering bit would prevent these devices from issuing
+any memory requests while the new kernel boots.
 
-This change should still permit all the current use-cases for PCI device
-preservation across Live Update, since it is intended to be used in
-Cloud enviroments which should have the required ACS features enabled
-for virtualization purposes.
-
-If a device is part of a multi-device IOMMU group, preserving it will
-now fail with an error. This restriction may be lifted in the future if
-support for preserving multi-device groups is desired.
+Because bridges upstream of preserved endpoint devices are also
+automatically preserved, this change also avoids clearing bus mastering
+on them. This is critical because clearing bus mastering on an upstream
+bridge prevents the bridge from forwarding memory requests upstream (i.e.
+it would prevent the endpoint device from accessing system RAM and doing
+peer-to-peer transactions with devices not downstream of the bridge).
 
 Signed-off-by: David Matlack <dmatlack@google.com>
 ---
- drivers/iommu/iommu.c    | 35 +++++++++++++++++++++++++++++++++++
- drivers/pci/liveupdate.c |  6 ++++++
- include/linux/iommu.h    |  7 +++++++
- 3 files changed, 48 insertions(+)
+ drivers/pci/liveupdate.c |  4 ++++
+ drivers/pci/pci-driver.c | 31 ++++++++++++++++++++++---------
+ 2 files changed, 26 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 61c12ba78206..782e73a9d45f 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1664,6 +1664,41 @@ struct iommu_group *pci_device_group(struct device *dev)
- }
- EXPORT_SYMBOL_GPL(pci_device_group);
- 
-+bool pci_device_group_immutable_singleton(struct pci_dev *dev)
-+{
-+	struct iommu_group *group;
-+	struct group_device *d;
-+	struct pci_bus *bus;
-+	int nr_devices = 0;
-+
-+	group = iommu_group_get(&dev->dev);
-+	if (!group)
-+		return false;
-+
-+	mutex_lock(&group->mutex);
-+
-+	for_each_group_device(group, d)
-+		nr_devices++;
-+
-+	mutex_unlock(&group->mutex);
-+	iommu_group_put(group);
-+
-+	if (nr_devices != 1)
-+		return false;
-+
-+	for (bus = dev->bus; !pci_is_root_bus(bus); bus = bus->parent) {
-+		if (!bus->self)
-+			continue;
-+
-+		if (!pci_acs_path_enabled(bus->self, NULL, REQ_ACS_FLAGS))
-+			return false;
-+
-+		break;
-+	}
-+
-+	return true;
-+}
-+
- /* Get the IOMMU group for device on fsl-mc bus */
- struct iommu_group *fsl_mc_device_group(struct device *dev)
- {
 diff --git a/drivers/pci/liveupdate.c b/drivers/pci/liveupdate.c
-index a9a89f7bd3e5..54a90ff02bdd 100644
+index 25c86cd4c173..2a4a139623a6 100644
 --- a/drivers/pci/liveupdate.c
 +++ b/drivers/pci/liveupdate.c
-@@ -133,6 +133,7 @@
+@@ -132,6 +132,10 @@
+  *  * The PCI core inherits ARI Forwarding Enable on all bridges with downstream
+  *    preserved devices to ensure that all preserved devices on the bridge's
+  *    secondary bus are addressable after the Live Update.
++ *
++ *  * The PCI core does not disable bus mastering on outoing preserved devices
++ *    during kexec. This allows preserved devices to issue memory transactions
++ *    throughout the Live Update.
+  */
+ 
  #define pr_fmt(fmt) "PCI: liveupdate: " fmt
- 
- #include <linux/io.h>
-+#include <linux/iommu.h>
- #include <linux/kexec_handover.h>
- #include <linux/kho/abi/pci.h>
- #include <linux/liveupdate.h>
-@@ -359,6 +360,11 @@ int pci_liveupdate_preserve(struct pci_dev *dev)
- 	if (dev->is_virtfn)
- 		return -EINVAL;
- 
-+	if (!pci_device_group_immutable_singleton(dev)) {
-+		pci_warn(dev, "Device preservation limited to immutable singleton iommu groups\n");
-+		return -EINVAL;
-+	}
-+
- 	if (dev->liveupdate_outgoing)
- 		return -EBUSY;
- 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index e587d4ac4d33..6f5d1dec3f89 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -1096,6 +1096,8 @@ extern struct iommu_group *generic_device_group(struct device *dev);
- struct iommu_group *fsl_mc_device_group(struct device *dev);
- extern struct iommu_group *generic_single_device_group(struct device *dev);
- 
-+bool pci_device_group_immutable_singleton(struct pci_dev *dev);
-+
- /**
-  * struct iommu_fwspec - per-device IOMMU instance data
-  * @iommu_fwnode: firmware handle for this device's IOMMU
-@@ -1528,6 +1530,11 @@ static inline int pci_dev_reset_iommu_prepare(struct pci_dev *pdev)
- static inline void pci_dev_reset_iommu_done(struct pci_dev *pdev)
- {
+diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+index d10ece0889f0..05584bc76332 100644
+--- a/drivers/pci/pci-driver.c
++++ b/drivers/pci/pci-driver.c
+@@ -531,6 +531,27 @@ static void pci_device_remove(struct device *dev)
+ 	pci_dev_put(pci_dev);
  }
-+
-+static inline bool pci_device_group_immutable_singleton(struct pci_dev *dev)
-+{
-+	return false;
-+}
- #endif /* CONFIG_IOMMU_API */
  
- #ifdef CONFIG_IRQ_MSI_IOMMU
++/*
++ * Disable bus mastering on the device so that it does not perform memory
++ * transactions during kexec.
++ *
++ * Don't touch devices that are being preserved across kexec for Live
++ * Update or that are in D3cold or unknown states.
++ */
++static void pci_clear_master_for_shutdown(struct pci_dev *pci_dev)
++{
++	if (!kexec_in_progress)
++		return;
++
++	if (pci_liveupdate_outgoing(pci_dev))
++		return;
++
++	if (pci_dev->current_state > PCI_D3hot)
++		return;
++
++	pci_clear_master(pci_dev);
++}
++
+ static void pci_device_shutdown(struct device *dev)
+ {
+ 	struct pci_dev *pci_dev = to_pci_dev(dev);
+@@ -541,15 +562,7 @@ static void pci_device_shutdown(struct device *dev)
+ 	if (drv && drv->shutdown)
+ 		drv->shutdown(pci_dev);
+ 
+-	/*
+-	 * If this is a kexec reboot, turn off Bus Master bit on the
+-	 * device to tell it to not continue to do DMA. Don't touch
+-	 * devices in D3cold or unknown states.
+-	 * If it is not a kexec reboot, firmware will hit the PCI
+-	 * devices with big hammer and stop their DMA any way.
+-	 */
+-	if (kexec_in_progress && (pci_dev->current_state <= PCI_D3hot))
+-		pci_clear_master(pci_dev);
++	pci_clear_master_for_shutdown(pci_dev);
+ }
+ 
+ #ifdef CONFIG_PM_SLEEP
 -- 
 2.54.0.rc2.544.gc7ae2d5bb8-goog
 
