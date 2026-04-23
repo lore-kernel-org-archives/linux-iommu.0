@@ -1,84 +1,157 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA04626E173;
-	Thu, 23 Apr 2026 13:40:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5BFAD1EFF8D
+	for <iommu@lists.linux.dev>; Thu, 23 Apr 2026 13:51:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776951629; cv=none; b=lQ7VSDRCKTNwbo/n6yfj81vmnwwXP3KKAcqhOe5czHSK34jmApT0marDEl9QWy3dFv3C2mpBbMWmzws26O9K8nyAyyFcypPSrZznqvcl/vMcQ/BIs/0nnYHNnd+JPI/XZ3GBMxzxcAJ8NGDS/F/qO947cN8m2eZskaf1Y/KXlog=
+	t=1776952279; cv=none; b=oPcRl46tF9HNX4IkoV7wo9NLXhfI4C3hLH8xrwnvOUDjav/ETgyYV/tT4sFI5XB3G3+ARBtPavxKy7/Ah2lW8Rn2ltVD4DleEZpvJIRIvxPZQhAguz1BHRprHhbnaC/aodmHyHvayovz8Ee7OIs7xPOstA1sZhdm94Y1XAx3DW4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776951629; c=relaxed/simple;
-	bh=3KP4UVdXkAjUCLuoO/Zngx5JujLIt1ZAmsr3rv4yp5M=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=l/JRcLrJqFTLi/8W2HALgjlTFJqix7lh5b0jNf10175wOJAE8DghWyQfS3SuM8L3ri0DfdB5tkvEp///uUGmgYCxNL2hC9SKps5HKOLRX41Hzbk0bg/ep8rHIhFnnV8ZfprXpxW07+iZAEFtDIFP6ifibAI0Z1A9ByTFldJ7tc8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=d51b2ao5; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1776952279; c=relaxed/simple;
+	bh=XfqOATxDwDI8LIBrL7cQRAF2Bu7r8V5j98kapDXzVSw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=TAFOm+R1LN+44AA/x7S+vIJyYKX3YWM9r8ZTM0gwYUVV2eLHPKobkXlVkTsFtx7HzhFAPf3/SAUgFQwu6orffWmr9etcYLlJl97ENb1vU0tijh1s+KWADYOvEXk0nEKyZfWltspDSeF3PI4cd1B+O1z0OcxfdpxntDALg9obqcI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=tpxdKJvT; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="d51b2ao5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7DEBC2BCAF;
-	Thu, 23 Apr 2026 13:40:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1776951629;
-	bh=3KP4UVdXkAjUCLuoO/Zngx5JujLIt1ZAmsr3rv4yp5M=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=d51b2ao5sf7XgHmfz7iMq57cj2OZF6xGfimWjCfRuSY0cxJxIeeynX8T6+uuCsAwQ
-	 QelMwuEkg4FlvKEstXscM6rkCKvWKSJS/rsmkYU1wU7PB/pRdg3xHq5U1ViGvA+c5o
-	 2ESF5wtWpLmggMSwRMhFBfaffFSNbnd27dGEbD6o=
-Date: Thu, 23 Apr 2026 15:40:26 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-Cc: Bryan O'Donoghue <bod@kernel.org>,
-	Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
-	Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
-	Abhinav Kumar <abhinav.kumar@linux.dev>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Stefan Schmidt <stefan.schmidt@linaro.org>,
-	Hans Verkuil <hverkuil@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Mikko Perttunen <mperttunen@nvidia.com>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Jonathan Hunter <jonathanh@nvidia.com>, linux-media@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	driver-core@lists.linux.dev, dri-devel@lists.freedesktop.org,
-	linux-tegra@vger.kernel.org,
-	Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
-Subject: Re: [PATCH v2 03/13] gpu: host1x: Migrate to generic dma context bus
-Message-ID: <2026042330-recopy-corner-07d9@gregkh>
-References: <20260423-glymur-v2-0-0296bccb9f4e@oss.qualcomm.com>
- <20260423-glymur-v2-3-0296bccb9f4e@oss.qualcomm.com>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="tpxdKJvT"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4B2441BF7;
+	Thu, 23 Apr 2026 06:51:04 -0700 (PDT)
+Received: from [10.1.196.85] (e121345-lin.cambridge.arm.com [10.1.196.85])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8651C3F641;
+	Thu, 23 Apr 2026 06:51:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1776952269; bh=XfqOATxDwDI8LIBrL7cQRAF2Bu7r8V5j98kapDXzVSw=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=tpxdKJvTLYCEkqrH+jeteTGk28EVofx3aVEDwMupSduAK6dDkqcgo1RUzR6r4OnEP
+	 QvY1tITRTY/DyPjixR80WDusW5lbUOtTrcUzp7JycPt8Cv/BOP+F5hkZq/Z3iQw1yF
+	 XOwlPeYF1eGOuvt19EFTumEHNRz709ZKVaH77uTw=
+Message-ID: <43c5301c-fe6a-41e4-9482-ccfc7b62f2a7@arm.com>
+Date: Thu, 23 Apr 2026 14:51:06 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260423-glymur-v2-3-0296bccb9f4e@oss.qualcomm.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] dma-contiguous: setup default pernuma cma area if not
+ configured explicitly
+To: Feng Tang <feng.tang@linux.alibaba.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Ying Huang <ying.huang@linux.alibaba.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Cc: Christoph Hellwig <hch@lst.de>, Catalin Marinas
+ <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>
+References: <20260423095243.14239-1-feng.tang@linux.alibaba.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260423095243.14239-1-feng.tang@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Apr 23, 2026 at 06:59:32PM +0530, Vishnu Reddy wrote:
-> --- a/include/linux/host1x.h
-> +++ b/include/linux/host1x.h
-> @@ -462,7 +462,7 @@ struct host1x_memory_context {
->  	struct pid *owner;
->  
->  	struct device_dma_parameters dma_parms;
-> -	struct device dev;
-> +	struct device *dev;
+On 23/04/2026 10:52 am, Feng Tang wrote:
+> There was a report on a multi-numa-nodes ARM server that when IOMMU is
+> disabled, the dma_alloc_coherent() function always returns memory from
+> node 0 even for devices attaching to other nodes, while they can get
+> local dma memory when IOMMU is on with the same API.
+> 
+> The reason is, when IOMMU is disabled, the dma_alloc_coherent() will
+> go the direct way and call dma_alloc_contiguous(). The system doesn't
+> have any explicit cma setting (like per-numa cma), and only has a
+> default 64MB cma reserved area (on node 0), where kernel will try
+> first to allocate memory from.
+> 
+> Robin Murphy suggested to setup pernuma cma or disable cma, which did
+> solve the issue. While there is still concern that for customers
+> which don't have much kernel knowledge, they could still suffer from
+> this silently as some architectures enable cma area by default (not
+> an issue for X86 though, which set CONFIG_CMA_SIZE_MBYTES to 0 by
+> default) for most Linux distributions.
+> 
+> One thought is to follow the current cma reserving policy for platform
+> with 'CONFIG_DMA_NUMA_CMA=y', that if the numa cma is not explicitly
+> configured, set it up according to CONFIG_CMA_SIZE_MBYTES (The
+> percentage kernel option is not considered yet as the number of NUMA
+> nodes could be big).
 
-Ah, nice try, but no.  You can't use a "generic" device for this type of
-thing (i.e. your dma context bus device), as that's not what this device
-really is.  Add the needed logic to the bus this real device lives on,
-don't try to work around it.
+IIRC, the main reason it's still an opt-in is that it doesn't 
+necessarily interact all that well with the default CMA area, and what 
+we definitely don't want to do is unexpectedly start allocating 
+additional CMA areas on systems which don't need nor want them.
 
-thanks,
+I guess what might be ideal would be to rearrange things such that when 
+DMA_NUMA_CMA is enabled, we try to merge the "global" CMA area with a 
+per-node area that can satisfy the necessary size, ZONE_DMA32, etc. 
+constraints, such that unless explicitly configured otherwise, we don't 
+end up making that extra n+1th allocation. Similarly I'm not sure about 
+the usefulness of having two separate types of per-node area, especially 
+given the apparent intent that users only want one _or_ the other, so 
+probably dma_contiguous_numa_area[] should really have just been a 
+generalisation of dma_contiguous_pernuma_area[] in the first place...
 
-greg k-h
+I can imagine that work being quite involved though, as all the 
+interaction between default, command line and devicetree/platform 
+controls is sure to be fiddly. As a compromise for now, I think rather 
+than trying to imply a default "cma_pernuma" behaviour, it would be 
+cleaner to instead imply "numa_cma" to only replicate the default area 
+across nodes other than the one which has it already. That then would 
+inherently avoid changing anything for single-node systems; otherwise at 
+the very least any automatic fiddling with pernuma_size_bytes should 
+depend on num_online_nodes() > 1.
+
+Thanks,
+Robin.
+
+> 
+> Suggested-by: Ying Huang <ying.huang@linux.alibaba.com>
+> Signed-off-by: Feng Tang <feng.tang@linux.alibaba.com>
+> ---
+> Changelog:
+> 
+> 	since v1
+> 		* don't use the original way of adding alloc_pages_node()
+> 		before trying default cma node (Robin Murphy)
+> 
+>   kernel/dma/contiguous.c | 6 ++++++
+>   1 file changed, 6 insertions(+)
+> 
+> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+> index c56004d314dc..b2fd6789db85 100644
+> --- a/kernel/dma/contiguous.c
+> +++ b/kernel/dma/contiguous.c
+> @@ -107,6 +107,7 @@ static struct cma *dma_contiguous_numa_area[MAX_NUMNODES];
+>   static phys_addr_t numa_cma_size[MAX_NUMNODES] __initdata;
+>   static struct cma *dma_contiguous_pernuma_area[MAX_NUMNODES];
+>   static phys_addr_t pernuma_size_bytes __initdata;
+> +static bool numa_cma_configured;
+>   
+>   static int __init early_numa_cma(char *p)
+>   {
+> @@ -135,6 +136,7 @@ static int __init early_numa_cma(char *p)
+>   			break;
+>   	}
+>   
+> +	numa_cma_configured = true;
+>   	return 0;
+>   }
+>   early_param("numa_cma", early_numa_cma);
+> @@ -142,6 +144,7 @@ early_param("numa_cma", early_numa_cma);
+>   static int __init early_cma_pernuma(char *p)
+>   {
+>   	pernuma_size_bytes = memparse(p, &p);
+> +	numa_cma_configured = true;
+>   	return 0;
+>   }
+>   early_param("cma_pernuma", early_cma_pernuma);
+> @@ -181,6 +184,9 @@ static void __init dma_numa_cma_reserve(void)
+>   			continue;
+>   		}
+>   
+> +		if (!numa_cma_configured)
+> +			pernuma_size_bytes = size_bytes;
+> +
+>   		if (pernuma_size_bytes) {
+>   
+>   			cma = &dma_contiguous_pernuma_area[nid];
+
