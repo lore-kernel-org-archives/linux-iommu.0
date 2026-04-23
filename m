@@ -1,155 +1,88 @@
-Received: from mail-4325.protonmail.ch (mail-4325.protonmail.ch [185.70.43.25])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C9453E3C78;
-	Thu, 23 Apr 2026 09:26:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.25
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF6673E3D9F;
+	Thu, 23 Apr 2026 09:44:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776936374; cv=none; b=CLIjonesR1zsSxic+Xwqoj8VhqdAwBuZAvIoyrLt7yEH/9KbYGYPiJ3fFTaDZ7RKZ5LDzWciPl3C5NI6qTLH2mNZDXT5H8TuE/6XX4PtiQMzG+xW8Wxa7LOMgq2R6irZxpgk/XatunI4vEnS9ILXE6vl32IbjXbI1BjXZgIRDRo=
+	t=1776937455; cv=none; b=HJCCGLqoP32DR7Dp5zpH7tXZC3nQpOiSF74fWtDqtQvGLTAv2z8IzvG6JmQcMtBw4QpUVkVz2Qtgwd7Rxg87Rcdx1sAUfDKtxqEKAg8HxzGqphG7S4SGar/0DWQueu3mItJNXesZB5Gsy74SU1o8A1J1lHdj9tffb+RVb97NGbc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776936374; c=relaxed/simple;
-	bh=bTadD+jv9LHiJ5uG3E23q5B3A9o1NoncHmFl/1EQxLo=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=idAuTjUP43srUZ5fu/MH8kLyAZqoG/54psPTNYEHHWXslMsep2NzVktxqnO5TIWQwwNAiAJ1R/vNXtjsGlceqJLm5pHY9F6ykq5TXpw2WLKAugmGqppoiviBiScBEfZZKEVQ0OmJKg87fmSkoQ5D1xDS8yUbt5m6LPYsOgS1ZWA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com; spf=pass smtp.mailfrom=protonmail.com; dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b=aqDhl9yD; arc=none smtp.client-ip=185.70.43.25
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
+	s=arc-20240116; t=1776937455; c=relaxed/simple;
+	bh=fDvsL0aY81zyDVkYCGzXT70F+YYlXrLKm52ouhe2SKg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=QmklopAEVThRVENRGxjAgpB4/2SP080pPwLCiHJMNNRD1C8rhWnNi1k5gIJhO0pnuZk1zJcB7HTMWLE10ePXI9gYy0k4g0D1Y0WGxnv3Y6/KxBD6KVpeIH+ly9GDazRH8EsI5QxYyA3V8qnJuWINyA6XFdA3xRP89CWMWwgBGCg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i3+CI0sM; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b="aqDhl9yD"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-	s=protonmail3; t=1776936363; x=1777195563;
-	bh=mwZY5DucRwTXoJsKiFxV0MP4yG1k00/Tz8sAf1c7Zys=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=aqDhl9yDazSX273B0wC57PA2H3TYPW/MQbylGHS50ovDEBfJZpDMqaLhUrRuGX9E2
-	 Rlgklk0tjr6IJol2wQFMGWEgwNSA9uJ0trqOXkbbVrpYd16GspswTW5MOuMUv1A1vc
-	 5gxWaRyS6sPDO+k9I+ih6dpzlaMrqYPd/5yTTfjWLNt8/4mtp/OZ2I4FwDJKK8wTT1
-	 xBwwejMHhBCDcqfT6ukam3SN4iAaUpSqROluh1twJLDz5mj2HcAmtzgSmUuRf3/Qu4
-	 9t+QtjhCAT4KHVH0wgAsQuWtwZJc7JARHzEmyVHkBRQw6ihg6P5CFnwa2766eir1kA
-	 mxV2g+wih3b6w==
-Date: Thu, 23 Apr 2026 09:25:58 +0000
-To: Baolu Lu <baolu.lu@linux.intel.com>
-From: 70sp <70sp@protonmail.com>
-Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-Subject: Re: [REGRESSION] GPU passes into VM improperly after c376a3456d8b or a98db518dde2
-Message-ID: <FhMS_WRKl1GUZqMFEwdeZFpixCICEaQ-NIX6-eC7Nti1H0ZeEzBpWUkP5-t9lrOv-NcmW0iefExkPne5riXNqYZ2IM97uM_sg91cgAh4MNY=@protonmail.com>
-In-Reply-To: <C4BK-Bp_FII0EkxSHQxBS2wO-Age-UxFrp_KfmYzb8cnQ8ZndzBBIPD8S9T86wOifBP0tysQGCFtGQsBsBvG2IzIMw3jb3NF5HGbS3tsawA=@protonmail.com>
-References: <z7Rkts0EsooZcnCjNfJaK6ursftFU8ubOkH0hcNjzxugEAwGsHLMblOdfoAx-gJzBZ-TMmeUtD7iWBngbFY5UCJCwdSmYqmCVMy-yhbirUk=@protonmail.com> <56ce85d5-e0b9-407c-9a86-708111a8a509@linux.intel.com> <C4BK-Bp_FII0EkxSHQxBS2wO-Age-UxFrp_KfmYzb8cnQ8ZndzBBIPD8S9T86wOifBP0tysQGCFtGQsBsBvG2IzIMw3jb3NF5HGbS3tsawA=@protonmail.com>
-Feedback-ID: 144929603:user:proton
-X-Pm-Message-ID: 73f9431b3f8899114d03c5ddfa318c374fdad1d9
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i3+CI0sM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEF8FC2BCAF;
+	Thu, 23 Apr 2026 09:44:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1776937455;
+	bh=fDvsL0aY81zyDVkYCGzXT70F+YYlXrLKm52ouhe2SKg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=i3+CI0sMhoEpkBBhgojks254wglba/Eook+DIoF0VfPZxEnr1J843GDhv95EZbrZO
+	 hhZny20ipACHgc7Grzufn5r7EDOqd83xUB7iOX/lKEzJVpjis2Pkxk/XiC5n3rTCgT
+	 ooykqhyj3yosOz0l2ajeZQhf2xcMX6L32J8Kb14p2fupQL3MCLdBFWxQOjG/hpztoE
+	 3g43NCr3mUVU9522Y6PehQW9PwuE7+oX3SfV4bgmH9cr8I98ibPoMx7yX2yYptB+NT
+	 FrVq7RJahnxZq6+jsTAs3JuCtk1fXFmc8dIVhep+XXhh0f4+5TXiCMkAlpa4O9w4rD
+	 ToACv09BiCBuQ==
+Date: Thu, 23 Apr 2026 10:44:08 +0100
+From: Will Deacon <will@kernel.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Evangelos Petrongonas <epetron@amazon.de>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Pranjal Shrivastava <praan@google.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, nh-open-source@amazon.com,
+	Zeev Zilberman <zeev@amazon.com>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Allow disabling Stage 1 translation
+Message-ID: <aenp6FHzx9rtUQkZ@willie-the-truck>
+References: <20260420123221.20801-1-epetron@amazon.de>
+ <20260420124032.GO2577880@ziepe.ca>
+ <20260422064431.GA49867@dev-dsk-epetron-1c-1d4d9719.eu-west-1.amazon.com>
+ <20260422162351.GK3611611@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260422162351.GK3611611@ziepe.ca>
 
-Hello,
+On Wed, Apr 22, 2026 at 01:23:51PM -0300, Jason Gunthorpe wrote:
+> On Wed, Apr 22, 2026 at 06:44:31AM +0000, Evangelos Petrongonas wrote:
+> > The motivation is live update of the hypervisor: we want to kexec into a
+> > new kernel while keeping DMA from passthrough devices flowing, which
+> > means the SMMU's translation state has to survive the handover. The Live
+> > Update Orchestrator work [1] and the in-progress  "iommu: Add live
+> > update state preservation" series [2] are building exactly this plumbing
+> > on top of KHO; [2]'s cover letter calls out Arm SMMUv3 support as future
+> > work, and an earlier RFC from Amazon [3] sketched the same idea for
+> > iommufd.
+> 
+> It would be appropriate to keep this patch with the rest of that out
+> of tree pile, for example in the series that enables s2 only support
+> in smmuv3.
+> 
+> > For this use case, Stage 2 is materially easier to persist than Stage 1,
+> > for structural rather than performance reasons: 
+> 
+> I don't think so. The driver needs to know each and every STE that
+> will survive KHO. The ones that don't survive need to be reset to
+> abort STEs. From that point it is trivial enough to include the CD
+> memory in the preservation.
+> 
+> It would help to send a preparation series to switch the ARM STE and
+> CD logic away from dma_alloc_coherent and use iommu-pages instead,
+> since we only expect iommu-pages to support preservation..
 
-sending a friendly reminder about this ongoing regression.
+Does iommu-pages provide a mechanism to map the memory as non-cacheable
+if the SMMU isn't coherent? I really don't want to entertain CMOs for
+the queues.
 
-Thank you for your attention.
-
-On Tuesday, April 14th, 2026 at 11:22 AM, 70sp <70sp@protonmail.com> wrote:
-
-> I can confirm, that the "domain is not compatible with device" message is=
- nowhere to be seen.
->=20
-> I have double checked by also adding an else statement with a different m=
-essage and that one showed up several times. (by pci (iGPU) 0000:00:02.0, p=
-cieport 0000:00:01.0 and vfio-pci (GTX 970) 0000:01:00.0, 0000:01:00.1). re=
-t =3D 0.
->=20
->=20
->=20
-> Sent with Proton Mail secure email.
->=20
-> On Monday, April 13th, 2026 at 8:49 AM, Baolu Lu <baolu.lu@linux.intel.co=
-m> wrote:
->=20
-> > On 4/12/26 19:17, 70sp wrote:
-> > > Hello,
-> > >
-> > > I have been dealing with a regression launching a Windows QEMU/KVM
-> > > virtual machine with a GPU passed through.
-> > >
-> > > The issue consists of launching a QEMU/KVM VM, which gets stuck for
-> > > about 2 minutes on booting with a white screen and then having NVIDIA=
-=E2=80=99s
-> > > code 43 in Windows.
-> > >
-> > > I=E2=80=99m certain, that the issue is not caused by anything in Wind=
-ows or
-> > > related software in Linux, because I tried reinstalling my whole PC
-> > > including the Windows VM. I tried to reproduce the bug on an out-of-t=
-he-
-> > > box Arch Linux install and the bug is still present.
-> > >
-> > > The first bad commit is either a98db518dde246e01ead53617dc0a30d6aaa37=
-52
-> > > or c376a3456d8bef43ec556a98c0a04c35086c2737. I don=E2=80=99t know for=
- sure which
-> > > one introduced it, because during bisection I had to skip
-> > > a98db518dde246e01ead53617dc0a30d6aaa3752 due to it being unable to
-> > > launch the virtual machine resulting in a different error (didn=
-=E2=80=99t even
-> > > start booting). In kernels before these commits, the VM works flawles=
-sly.
-> > >
-> > > I have tested it on latest mainline kernel and the issue is still
-> > > present. I have been experiencing the issue since kernel 6.13, so I j=
-ust
-> > > switched to the 6.12 LTS kernel instead which doesn=E2=80=99t have th=
-is issue.
-> > >
-> > > Configuration of my Linux install and hardware: https://pastebin.com/
-> > > rcsyyYiK
-> > > .config: https://pastebin.com/RTQCBduD
-> > > dmesg errors: https://pastebin.com/84jPP81E
-> > > lspci: https://pastebin.com/qi29BSWi
-> > >
-> > > #regzbot introduced:
-> > > a98db518dde246e01ead53617dc0a30d6aaa3752..c376a3456d8bef43ec556a98c0a=
-04c35086c2737
-> >
-> > Before these commits, if a device was attached to a domain that didn't
-> > perfectly match the hardware's capabilities (such as address width or
-> > coherency), the kernel would dynamically adjust the domain to
-> > accommodate the hardware.
-> >
-> > Following these two commits, the driver now applies a "match or fail"
-> > policy. If the domain is incompatible with the device's hardware
-> > capabilities, it returns -EINVAL. This expects the caller to allocate a
-> > new domain dedicated to that specific device and attempt the attachment
-> > again.
-> >
-> > Can you please add a message line in paging_domain_compatible() to
-> > verify whether it's a domain compatibility issue?
-> >
-> > diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> > index 205debd76989..c7e1e0dfa250 100644
-> > --- a/drivers/iommu/intel/iommu.c
-> > +++ b/drivers/iommu/intel/iommu.c
-> > @@ -3111,8 +3111,10 @@ int paging_domain_compatible(struct iommu_domain
-> > *domain, struct device *dev)
-> >                  ret =3D
-> > paging_domain_compatible_second_stage(dmar_domain, iommu);
-> >          else if (WARN_ON(true))
-> >                  ret =3D -EINVAL;
-> > -       if (ret)
-> > +       if (ret) {
-> > +               dev_info(dev, "domain is not compatible with device, re=
-t
-> > =3D %d", ret);
-> >                  return ret;
-> > +       }
-> >
-> >          if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev) &&
-> >              context_copied(iommu, info->bus, info->devfn))
-> >
-> > Thanks,
-> > baolu
-> >
+Will
