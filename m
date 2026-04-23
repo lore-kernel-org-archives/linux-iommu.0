@@ -1,53 +1,53 @@
-Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
+Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA3B13BD647
-	for <iommu@lists.linux.dev>; Thu, 23 Apr 2026 21:22:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B53F36D4E4
+	for <iommu@lists.linux.dev>; Thu, 23 Apr 2026 21:23:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776979368; cv=none; b=XtU8Pip+3+NICvyNW3qPjefRiD16ZUn4TeJrO7IQNPknz72ITMz0PBCjKBQ/lYzLXFdp8PfShYwfbsze4EA2SScBQvCr5jp8aRwHP+Hi0Ykhlw5q/kWStk1Ehlfxie5PLR/9FU9/MJIL4TTeY8CEvQO6lGfySP6pPcNH/Hqq3e4=
+	t=1776979405; cv=none; b=uuouhNIC3ZO8OqC6ErF9ysUh1F/EsisLXnKLff2WLGi781DHUpdIRcmfVr2cOXsrPvSTRrhutpw5UZuxxQAo56OFBlyKl9830XMLuw42S/qD8Sv2ihEfLd9sRO2QYcA60IIjyQvFJ6EyFV7u+TFhvJW1fbsSDiiQQf0fjY92t58=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776979368; c=relaxed/simple;
+	s=arc-20240116; t=1776979405; c=relaxed/simple;
 	bh=VEr3YGdqak3FVQ9/ao+xXZ+w5i00Ao9Ssj4jC1ZGrN4=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Content-Type; b=MIIjCGZrjwzBDUAG/nFkC3Umw74bu8KLiNAJEYDzMqvQG2NMWPHJRAIIFOpJvGGjQm6mWyBgaxpGBEOFr2CNQLwR5o5OOhdPmR3DV6GleDBK45QtMwAnZRi0xAGezzmG4YAenASctmyG96C58xCvpYZf1hTjCyNZ73m72UL80H4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--dmatlack.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Q366xdYU; arc=none smtp.client-ip=209.85.214.202
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=CNqHMDZDmOXAYtgEmgpLfyqQ835VLfqR1VU9RLkwvi/hKMQcy8DegqF3oeFNV3Ya/GDGBAB0KudyvqctSXt7u85AVgkD+mGZ/TFx3NyeM4RwSV2IvQPFyurY7a0j0s/Ik0QoCiqgIdAH8fcWF22K3wzEkastN6rx0c3SKmXP5LU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--dmatlack.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=PkEGpWq/; arc=none smtp.client-ip=209.85.210.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--dmatlack.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Q366xdYU"
-Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-2b24af7ca99so96466255ad.1
-        for <iommu@lists.linux.dev>; Thu, 23 Apr 2026 14:22:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="PkEGpWq/"
+Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-82f70ae35c0so3661448b3a.2
+        for <iommu@lists.linux.dev>; Thu, 23 Apr 2026 14:23:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1776979364; x=1777584164; darn=lists.linux.dev;
-        h=to:from:subject:message-id:mime-version:date:from:to:cc:subject
+        d=google.com; s=20251104; t=1776979400; x=1777584200; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
          :date:message-id:reply-to;
         bh=kl+pv05082o4iUYPTAspfzDZexWtIImSBuw1JtCkgoE=;
-        b=Q366xdYU0dOrSVpiSQggVPtKk/iIAPMTktxYmMThecZ/z3iGd36Kp+fPJt+Fa1di+f
-         kPWFSMbKKzwaUzhF/3FWVLWM21wya4mqnwp4yB1hkbRgHaCc1cI3oAVq09LZ/NgE3SAn
-         OJkuJ6CMuELn9agN7Ds2V5vmN1cf1F4XousAMoam+SoG27Mp5uT4r0HjebfOgqnKU9iC
-         cz5Nlp0RDi6zMarHu1ldRL9lElj8lvxb+PK6t6PA6M17t+iGiEkFhJOx5fOES6wHVnjt
-         32EJqy/55nk75WA01KppYDQxUchqEYsLszTbboIyAuBtBzquMZ5F+6YiLrRhGj3ZX7vm
-         Qkuw==
+        b=PkEGpWq/A0rKLB7ngGYVYfPPpG+ulVEeGT78e33cgo9yTsC4NOdwZ0RMqeS4DD5wtv
+         FCU4c3tyWV5ASFRgFMGrmOppJDO9N1VzQBVdIJY2LQ2Itw/erCgeX1/R46hrsLdzatfb
+         06lRZQkhHtW+ZvGTEyxbWQJbfdi6hxrC1DEcrDL3BooH2OE7qCzov/vpJgO7e69IEPlt
+         B2fRQ5lFqI62uTYgDGXmXPTRWTSAdRtk6pz+PfhKAelmPbA1nhI8dRHpXlUJqpPjtMxF
+         Xknb7uisymMIk/LIv0OjGy1S8OCDaNt9kgNLu0Iz3gE0jq/FjFxFRyMBEaFqNbpf4Dxv
+         H69Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776979364; x=1777584164;
-        h=to:from:subject:message-id:mime-version:date:x-gm-message-state
+        d=1e100.net; s=20251104; t=1776979400; x=1777584200;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
         bh=kl+pv05082o4iUYPTAspfzDZexWtIImSBuw1JtCkgoE=;
-        b=HEf3fWWtDaP1zyp358aAGG7RU6X4IeCq3rn8CHhvcYZlDbw52f2bd3ocAgIYkEK60l
-         6v5wFJZsCBI5lNDzyhIi75VYeftmeysyTFLvETB7y/fpzZIJ3bNk2DJ9RFoUUSuUyx+E
-         7auCKOZMHdTUbtCBQSsulFpwyUFmcY1cEGqUZWOAiQikyQ12JhLpcf01lybb/tuFvPeM
-         ajfqF8p2g9Hhm2hmcJITiUSHGZ0OUdYrMilFSry/jmAIz5pxnCDqC39xAr/6EePNnJoI
-         dHFIrkoSgPI4H32piwaBxPjER1ATiAQJHMTh71kC6pXlpCa6FPCWEEbTfQg5QBSCTfl9
-         Vz9g==
-X-Forwarded-Encrypted: i=1; AFNElJ8Wdx6GXEBkrvhFnz59NK4qv/L3D0UIu7qvSHFQPk2tzxHKH7mef1LlCNodUIrClGd0xLvRTQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw/vCYcstD6pD66skEZHRlAGGFt/+bLz1CvaZjHTWN3BI94lOQG
-	rQgVLkRszjaMHilDKldKlq9wZV6ipSTNlgG487P/ioHIGnLYS6RP7nLvj5O0jE6rFq3LggaESn8
-	BAiH2THTho97IMw==
-X-Received: from plnx22.prod.google.com ([2002:a17:902:8216:b0:2ae:ce70:7c80])
+        b=G7TrvCbFloCC4zSCR1d+z0RSp+UNx9TXO5lj+9XO1j5h8XYAB6KuzK8gw/RhIJxjRe
+         KRsIRxYYHKRKx+0vM/vd9n9fGStqDhL7GCk0WZHANs/3eJ0adTHy+vRFCK0YVc5pqKeL
+         M4tJdH8P7Lu6EH9PXyfA653Zu6JWbd2bhZsIMEKTcBdsZw4PrUpC9pqXvhWHd4EjlJaa
+         NOP0ftuWpnocSb4Q9GbXmvf2oDoxHFoEsehYLBCSK0/XAc7vjRAaX0O2gmyU5ItUwqtw
+         cJy6rPHQNfLogvhnjArIiSsF25nOnHxyjHz+SKKFJcSPPc340d7qJMBO81HlChrOjH7G
+         iprQ==
+X-Gm-Message-State: AOJu0YzidHdFVgZ6PR6Uf5yAB1yECHCKPdKYcifHNosOi63o3x/XvDuX
+	EYp1/AAsVEBpk7AcIs7VITbaY1fkmXxwk+TVjvHpKmkmedq9Kywb0Ftc1o0CmP+bztQkCUAqCaP
+	VfdTa6+lchuKODHBsJiyblbydUvtJjDlyrf32ScqpDDzXm6UQUaMvzeJVUMHwohTCW/vM/mhh52
+	MtSA7VTA95xWjuGQ0g0sbqVIzN5iuy8IAz1zQxCbIENcRDpA==
+X-Received: from pfhx15.prod.google.com ([2002:a05:6a00:188f:b0:82f:3c29:a283])
  (user=dmatlack job=prod-delivery.src-stubby-dispatcher) by
- 2002:a17:902:7d8c:b0:2b4:604c:ec6f with SMTP id d9443c01a7336-2b5f9f86840mr213628685ad.32.1776979363647;
- Thu, 23 Apr 2026 14:22:43 -0700 (PDT)
-Date: Thu, 23 Apr 2026 21:22:31 +0000
+ 2002:a05:6a00:bd0a:b0:82f:74b2:7fba with SMTP id d2e1a72fcca58-82f8c7dd0d9mr31341067b3a.4.1776979399901;
+ Thu, 23 Apr 2026 14:23:19 -0700 (PDT)
+Date: Thu, 23 Apr 2026 21:23:04 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -55,12 +55,23 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 X-Mailer: git-send-email 2.54.0.rc2.544.gc7ae2d5bb8-goog
-Message-ID: <20260423212242.3431136-1-dmatlack@google.com>
+Message-ID: <20260423212316.3431746-1-dmatlack@google.com>
 Subject: [PATCH v4 00/11] PCI: liveupdate: PCI core support for Live Update
 From: David Matlack <dmatlack@google.com>
-To: dmatlack@google.com, iommu@lists.linux.dev, kexec@lists.infradead.org, 
+To: iommu@lists.linux.dev, kexec@lists.infradead.org, 
 	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
 	linux-pci@vger.kernel.org
+Cc: Adithya Jayachandran <ajayachandra@nvidia.com>, Alexander Graf <graf@amazon.com>, 
+	Alex Williamson <alex@shazbot.org>, Bjorn Helgaas <bhelgaas@google.com>, Chris Li <chrisl@kernel.org>, 
+	David Matlack <dmatlack@google.com>, David Rientjes <rientjes@google.com>, 
+	Jacob Pan <jacob.pan@linux.microsoft.com>, Jason Gunthorpe <jgg@nvidia.com>, 
+	Joerg Roedel <joro@8bytes.org>, Jonathan Corbet <corbet@lwn.net>, Josh Hilke <jrhilke@google.com>, 
+	Leon Romanovsky <leonro@nvidia.com>, Lukas Wunner <lukas@wunner.de>, Mike Rapoport <rppt@kernel.org>, 
+	Parav Pandit <parav@nvidia.com>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
+	Pranjal Shrivastava <praan@google.com>, Pratyush Yadav <pratyush@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Saeed Mahameed <saeedm@nvidia.com>, 
+	Samiullah Khawaja <skhawaja@google.com>, Shuah Khan <skhan@linuxfoundation.org>, 
+	Will Deacon <will@kernel.org>, William Tu <witu@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
 Content-Type: text/plain; charset="UTF-8"
 
 This series can be found on GitHub:
