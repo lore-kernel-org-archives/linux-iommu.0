@@ -1,138 +1,138 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vk1-f178.google.com (mail-vk1-f178.google.com [209.85.221.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E89A2798EA;
-	Fri, 24 Apr 2026 15:16:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABBF723ABA7
+	for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 15:16:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777043783; cv=none; b=ChmWO5NnJFBrYiMzo7JXSK1B3itim3edpLfJpx555oKAsgqgGsk3cPVAZ6s480aIdpSUm59rKbnhin7WlybuZCWhnvnjBMjKGm+KcNabGKvzJbrkX5poX5UgPlBKdnltp3GMfpn6p6Oxf/ivXhZuS5keyzAgO/HQsY9pQMzJqK8=
+	t=1777043803; cv=none; b=kjJOBy8nNEAaZH+fokBcEGwat0QWH+Y3KzIGAeqqnJ0hFSyRq9iHSpDivA27IbmfUuHk9wgAOZrrPPgB5470hAS0PXWIcCVwERnnhr0gRh9iDVj+el2+OABcEKANETX+U2r0oaZTAg6OIiO8DeJL/Uz7CIHYf0BV+rpjhQe1a5w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777043783; c=relaxed/simple;
-	bh=nrM3UKcrO7tPwOt1LFMCFnX8PG4XqEiYfdua6M/CYZI=;
+	s=arc-20240116; t=1777043803; c=relaxed/simple;
+	bh=tEKsRIMbVVImthEe0Ig9QHxM7y+PfDnbHxuik7nVS90=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iQWjshbf6gQutpK4I6FnkmBp+EKR5C2BdAS6W0/0pXg0wyeOY3OfDaYYgfIciePdLJyNtWtQpRO6jeP5NglNpxScRBhgeG92rJAnFIeM5xDCG2YvAl9ajgOi0Zwa9SRZD6HE59SCR2QeFI7VaeTb8wYzO8iyXXq1JjoyWepMJug=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=H6v7GrWs; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=l/Vk3IsqbfVOztTAO3bRljv2Nlr3TZ7cd73s2OlFLQdfF/4Tf8xJUjjzdBlatLzkniwJRnIOyUaproMPGLJ4LeZGy/DRBF+6h+PH6lqZJuZ7wJCuuehfhus1mkUGxcgVl38XL+vHLngnnE/qEDcUb5p+m2CclzfSjuYk3Z404+M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=B2JP9+cX; arc=none smtp.client-ip=209.85.221.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="H6v7GrWs"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95047C19425;
-	Fri, 24 Apr 2026 15:16:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777043782;
-	bh=nrM3UKcrO7tPwOt1LFMCFnX8PG4XqEiYfdua6M/CYZI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=H6v7GrWsEyBK2JTdhH44O/VJffVliTLN/jxYcPHtXzEA3iIKF1gnE3HGxGa9SKEQA
-	 RS7yTV0uv7X/4/m3kSfAS4hKfKLkfs/T231MtXN7LZH4G6Oq5otf3NdFktwJTloTB/
-	 AO/SVqd3Vzh3GyM8KS82GO1bSOmBWKyslzNbrFj80ipoaHN4HDTc14XqNe+SGZ+ymG
-	 i2FQpB8i/+GN99DxFVUqc028G3/n7yltam8zR7wSeIQZRovjqGiOPyvFKHUR6HZFKC
-	 niK8h5kYh3SfA4v1gs9iKh7L5JIC4yU5amMeESkf8nVxOeHry7hfqPBqTDutoLCpT8
-	 +MFE/f+awrvyA==
-Date: Fri, 24 Apr 2026 16:16:17 +0100
-From: Will Deacon <will@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Evangelos Petrongonas <epetron@amazon.de>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="B2JP9+cX"
+Received: by mail-vk1-f178.google.com with SMTP id 71dfb90a1353d-56f8b51db2cso2489071e0c.1
+        for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 08:16:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1777043800; x=1777648600; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=PzgLQxohs/il7NHvgFr010I6KflEnf0n78ToT8yVBKs=;
+        b=B2JP9+cXltSmtx0NCYSvUfJjA4MUvLl0xWZCOnkFUX10wwbS74dtVw89N+IyzumogK
+         yyGkb1F0JykcTGe8p/8iBw+FssIOypEL0VoSQCO+ltAvxJA1+iyZOoOe+WN4K6+5gH6i
+         FwDMwuKt9HFhErll4nJolUIkwFqQbxN82/aNDf6t3tLmYGS8dUO+tilW5ULj4zulQUgW
+         QBoZBQAZLdk0y8du287Cl6VWRSEVRbkYq9EoLNPUWb4LcJ2s1ZUqPaoI/o4l6Qbs/P0k
+         DYtU6hSD71+IgecK2SsKB3v8hALVhWodirr6WaCBekyuVwcMYJxHp8Q56dM1vCULZXoT
+         lKRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777043800; x=1777648600;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=PzgLQxohs/il7NHvgFr010I6KflEnf0n78ToT8yVBKs=;
+        b=CBkVjGwr1c/dhdr/X9FzMlffNxpJxcoYXh2ttj/VTKwIsBBEZu6kKWgfVwQ+svpFNh
+         7vDd95ll1ffb9gQxtnNBM1xKk8zBoHfmWwdYp+nu4XuvABSxm1fBSKn4jgI/1vLEp6Ow
+         uo6MAq6F1ZZl2FRMNIIk9vsRwh7a4DA5Vhp2fYOpOx4WgzLxjOrOpM0+DwQQcTIjiMzE
+         vai9JlymsZFWB3R2FMOZXaTvEDYLydyOky5UenTJMeJf24qCsNGsvYKu40d6vVN+RjEr
+         sCSVw/7BB1H8hM8MZOcu7PYBcMYzcqntbz6sxBOOg0JI+DhCZG0UwP22ZA7j6pn+k8Ng
+         leJA==
+X-Forwarded-Encrypted: i=1; AFNElJ/ZTZoz+zslag442Pu6apTQ2XSbp2cYieFPXC8RRjzxes1NbL6ahEYn2cSobPvF0ci314rK5g==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxm728eVm4FF5JfVz01TUUaKgfWkVxgpUxsTtuKE7ZbTnngNgSb
+	Myh8DMsLWmnMlCPFsayaM2JjKqU9lHw+BUGN7St83N/Nb15VGbcYouHZ8chd4/JK+u4=
+X-Gm-Gg: AeBDievhLLPgu3pyCDMj18VCGWxV+mORTyaK9gPfHCTvrq/s6ahbMLNZn8s7rbaPbhk
+	mdMMfwYrj19tMyznEYXRYjwpXHD73Vd0gdfhsgVhbrdzU6UjX49+7AvhVXNnnzU+Scridd8vsNb
+	P9dyIGX1i9zYhXPHTTHJTJVqw8i48X/xTazZLKVBmBhGCTo+KeGYyV8OJyywLSJdJrbPD6ReXiq
+	ftGujytaBiELoa+0MdQPmP0I0JJ8dJMFjL/GCoakVFLXsSPPx9o10LNGWEPWmXnWSZdvUr8iAVV
+	Gzj4TjpxjLvHFJeARKmWpk4ey26JoeHbilrYRFzAE6JKmT8ChX2GesX+xKZrAHtSEjQoPWZv275
+	r1g3DBfrYP68lsPp1ejxlidwtp8U97H2FuMBfYY2j2fjq31SK9JVzHeyHVizlUpdE4Lyynhg+pc
+	M1jS7yGqZIIpGD/o7Jz8kQYqJ5RAqBusKXn+csd1h1aTmHUfCTAprf7s4RMTCLMBGaXgwpXQHPe
+	CgQ0NrpF3lmFy8O
+X-Received: by 2002:a05:6122:289a:b0:56f:61d8:86d7 with SMTP id 71dfb90a1353d-56fa58bf83cmr16721886e0c.7.1777043800600;
+        Fri, 24 Apr 2026 08:16:40 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8b031f65a27sm181558956d6.16.2026.04.24.08.16.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Apr 2026 08:16:40 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wGIGl-00000002yvf-2Ggp;
+	Fri, 24 Apr 2026 12:16:39 -0300
+Date: Fri, 24 Apr 2026 12:16:39 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Daniel Mentz <danielmentz@google.com>
+Cc: Pranjal Shrivastava <praan@google.com>, iommu@lists.linux.dev,
+	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Mostafa Saleh <smostafa@google.com>,
 	Nicolin Chen <nicolinc@nvidia.com>,
-	Pranjal Shrivastava <praan@google.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, nh-open-source@amazon.com,
-	Zeev Zilberman <zeev@amazon.com>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Allow disabling Stage 1 translation
-Message-ID: <aeuJQW8bGLY-O_vv@willie-the-truck>
-References: <20260420123221.20801-1-epetron@amazon.de>
- <20260420124032.GO2577880@ziepe.ca>
- <20260422064431.GA49867@dev-dsk-epetron-1c-1d4d9719.eu-west-1.amazon.com>
- <20260422162351.GK3611611@ziepe.ca>
- <aenp6FHzx9rtUQkZ@willie-the-truck>
- <aenqxasLJ8yKYqbT@willie-the-truck>
- <20260423142326.GP3611611@ziepe.ca>
- <aepRy7Gp7Ng85Zr7@willie-the-truck>
- <20260423223716.GS3611611@ziepe.ca>
+	Ashish Mhetre <amhetre@nvidia.com>
+Subject: Re: [PATCH v6 07/10] iommu/arm-smmu-v3: Implement pm_runtime &
+ system sleep ops
+Message-ID: <20260424151639.GE3611611@ziepe.ca>
+References: <20260414194702.1229094-1-praan@google.com>
+ <20260414194702.1229094-8-praan@google.com>
+ <CAE2F3rCaBWtRruBbZcedrsLnkkETSniTWoxxYn+Lkac9ttsshQ@mail.gmail.com>
+ <aejP5Yk72_FtZnIo@google.com>
+ <CAE2F3rBeqrTkgqwYcY7SPiUaPap6y8Hj95T0KqWCnaG59VB_hw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260423223716.GS3611611@ziepe.ca>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAE2F3rBeqrTkgqwYcY7SPiUaPap6y8Hj95T0KqWCnaG59VB_hw@mail.gmail.com>
 
-On Thu, Apr 23, 2026 at 07:37:16PM -0300, Jason Gunthorpe wrote:
-> On Thu, Apr 23, 2026 at 06:07:23PM +0100, Will Deacon wrote:
+On Thu, Apr 23, 2026 at 10:24:30PM -0700, Daniel Mentz wrote:
+> On Wed, Apr 22, 2026 at 6:41 AM Pranjal Shrivastava <praan@google.com> wrote:
+> > > > +       /* Clear the STOP FLAG to allow CMDQ Submissions */
+> > >
+> > > Clearing the STOP flag here seems premature. I propose the following sequence:
+> > >
+> > > * Set up command queue (SMMU_CR1, SMMU_CMDQ_BASE etc.)
+> > > * Enable command queue
+> > > * Clear STOP flag
+> > > * Enable SMMU
+> > >
+> > > By clearing the STOP flag, you allow arm_smmu_cmdq_issue_cmdlist() to
+> > > write to SMMU_CMDQ_PROD which then races against
+> > > arm_smmu_device_reset() which also writes to SMMU_CMDQ_PROD.
+> > >
+> >
+> > I agree, IIUC you're suggesting to clear the stop flag before the
+> > TLBI_ALL and CFGI_ALL commands are issued by device_reset? We'll need
+> > to clear the flag before device_reset issues the  TLBI_ALL AND CFGI_ALL.
+> > Thus the sequence should be:
+> >
+> > * Set up CMDQ
+> > * Enable CMDQ
+> > * Clear STOP flag
+> > * Issue TLBI_ALL + CFGI_ALL
+> > * Enable SMMU
+> >
+> > Right?
 > 
-> > I don't think it's that odd given that the STE/CD entries are bigger
-> > than PTEs and the SMMU permits a lot more relaxations about how they are
-> > accessed and cached compared to the PTW.
-> 
-> Well I'm not sure bigger really matters, but I wasn't aware there was
-> a spec relaxation here that would make the cachable path not viable
-> for STE but not PTW...
+> Yes
 
-Things like the SMMU being allowed to cache invalid structures and
-loading structures using multiple, unordered accesses are the things
-that worry me relative to the page-tables. But see below.
+This is making a very similar fencing argument to how Nicolin's series
+works.
 
-> > Having said that, the page-table code looks broken to me even in the
-> > coherent case:
-> > 
-> > 	ptep[i] = pte | paddr_to_iopte(paddr + i * sz, data);
-> > 
-> > as the compiler can theoretically make a right mess of that.
-> 
-> Heh, great. The iommupt stuff does better.. It does a 64 bit cmpxchg
-> to store a table pointer and a 64 bit WRITE_ONCE to store the pte,
-> then a CMO through the DMA API.
-> 
-> DMA API has to guarentee the right ordering, so we only have the
-> question below:
-> 
-> > > STE/CD is pretty simple now, there is only one place to put the CMO
-> > > and the ordering is all handled with that shared code. We no longer
-> > > care about ordering beyond all the writes must be visible to HW before
-> > > issuing the CMDQ invalidation command - which is the same environment
-> > > as the pagetable.
-> > 
-> > You presumably rely on 64-bit single-copy atomicity for hitless updates,
-> > no?
-> 
-> Yes, just like the page table does..
-> 
-> I hope that's not a problem or we have a issue with the PTW :)
+After clearing stop but before enablie SMMU you have to acquire all
+concurrent threads updated data structure memory into this thread
+because as soon as enable SMMU happens it will start reading that
+memory and it must be 'either we see the latest copy' or 'we see an
+old copy and guarenteed to see the invalidation'
 
-You trimmed the part from my reply where I think we _do_ have an issue
-with the PTW. Here it is again:
+Exactly the same as the reasoning used for attach with the
+invalidation list. So I think you should look at the barrier design
+there and ensure it exists here too.
 
-  The non-coherent case looks more fragile, because I don't _think_ the
-  architecture provides any ordering or atomicity guarantees about cache
-  cleaning to the PoC. Presumably, the correct sequence would be to write
-  the PTE with the valid bit clear, do the CMO (with completion barrier),
-  *then* write the bottom byte with the valid bit set and do another CMO.
-
-> > > I also don't like this "lot of systems thing". I don't want these
-> > > powerful capabilities locked up in some giant CSP's proprietary
-> > > kernel.  I want all the companies in the cloud market to have access
-> > > to the same feature set. That's what open source is supposed to be
-> > > driving toward. I have several interesting use cases for this
-> > > functionality already.
-> > 
-> > Sorry, the point here was definitely _not_ about keeping this out of
-> > tree, nor was I trying to say that this stuff isn't important. But the
-> > mobile world doesn't give a hoot about KHO and _does_ tend to care about
-> > the impact of CMO, so we have to find a way to balance the two worlds.
-> 
-> Yes, that make sense.
-> 
-> My argument is that the CMO on STE/CD shouldn't bother mobile, you
-> could even view it as an micro-optimization because we do occasionally
-> read-back the STE/CD fields.
-
-I was against that read-back, iirc :)
-
-> And if Samiullah can tackle dma_alloc_coherent then maybe the whole
-> question is moot.
-
-Yes, that would be great, but we probably need to fix the page-table
-code too.
-
-Will
+Jason
