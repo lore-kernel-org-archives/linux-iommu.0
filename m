@@ -1,79 +1,81 @@
-Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FFEC3D75C1
-	for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 13:39:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62E323D75AB
+	for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 13:44:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777037996; cv=none; b=PKrXgPDrMqmBdl0EtUKH7XVs1SVudUEpAqrcI8uoi75oYcP1V916qVyPGieh7oRy2HJGuauVquk3HrbJWckXztj9FWulaocW/cEoZQ9YaYUZvSRxgDfEXZk79Dchw/R8pdWleGFLjh2hGxGeK/DMRqkInKZRP5U1rd14o+w8GLY=
+	t=1777038258; cv=none; b=pj2X6jIL+fttD5F9KgdIra93xk1IiG7f7keli62IXLfNx7jJpB6AEoRRBYcRqpG12tHkM90ovWc9GrX4R/iZyKdag93XekIumXPiEomGlITvakEPLWKqtA8wn62PDDc+OaVzQcpB+IZoyNBHG6GauD4IXXEU+id0hshzufwbDag=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777037996; c=relaxed/simple;
-	bh=j3+lKywoBxbZH7+FkX2AlRZXpnpN3o4ZxFlVxcBmwLI=;
+	s=arc-20240116; t=1777038258; c=relaxed/simple;
+	bh=i1i2c485F0Qe0xpZ3iilWtVCakNDvIIadcOceyICV/Y=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=apTFVFRQDjOIpC5ryN/z5iGKz4JTqVwjzelde4sH6oVit1QjDIWRxbnpL85BEQFNg8i2aPhmd5M0IY92EYFddfEThHnfttuTomD0GPEYm9O14nnlWiYRXV9gIDEXVRfG1xkNLP2kWRy7+IArlQarIkFAXVBpPSDE4iRl8HF42pY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=nwpkmzhP; arc=none smtp.client-ip=209.85.222.179
+	 Content-Type:Content-Disposition:In-Reply-To; b=MNCYqLu2ruU/jdg27K+k8sY/f/5FWtWlWqKIG1fDO1zJMNtFrvl0tc9hNVFQyA+PCOQ1+BJCl2Hj1rEUn/VVt/9NN6vyBiekTnB39/71CVmXee4gNGaHyzDV6HB3MQgAOqvByM40ci3Mr9Bhltj+Smxdqw5/wGGIAburAKf55nM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Un6nKdhz; arc=none smtp.client-ip=209.85.219.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="nwpkmzhP"
-Received: by mail-qk1-f179.google.com with SMTP id af79cd13be357-8c70b5594f4so863614585a.1
-        for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 06:39:55 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Un6nKdhz"
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-899a9f445cbso93830246d6.0
+        for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 06:44:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1777037994; x=1777642794; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1777038256; x=1777643056; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=rPjCFMFqi8QLuboc2zZPARuZC0PwzjGUIbdAh+rlNHU=;
-        b=nwpkmzhPCVd2tF3At4geqN+uBoliAEQurJCzx4XXNwGbtmisufFLcyqNFNiTj9cdVE
-         bB7sGEP3LrY3kF/sP2ed6F3fhJEOWkrxa4hCun/JqzNXac0MdGQLhGX2bMBXAayh021M
-         Km8OeCrPGDaLLxwTPX9u4eXg+wui6v/URyzVJkQBNDnQ261nXsLHqHyWbaAatVqwMJwa
-         LqE2i2g5CPQt9p4e8gDbu829CAU6f2u1NuBn9A8SDNI+TVVZvotEC1EWSmdILmCn4Wn+
-         Dd0GZP39zbgDMHwRJpBsQzs943xlLI6asPg4UTUXZjaTpnzYvFPUbHyRkhp9Ay+ls9Hy
-         2Yzw==
+        bh=Zv88UvTgiwZqXaUOezK9Ft5EGGZMSyJ0Ff2r4iX0Lmc=;
+        b=Un6nKdhzsQgzEHyuNC/wr7SPQOJYCDIt8S/6HbhuVBeKId88pt293uhmMbsqE9AhdP
+         WAzGrhxLIiJHwgHuf5LiH0Nl/IaMw7xxQjOVBbLad7UlQRMZQJf23m1IYX8nV43f9Boi
+         1O4HCcp85tcFpPi0HWzGXc7utt1VLwCh4pWWXej6MFguJleq8YLxvudp0ezTmSyxCduJ
+         xP9kSK5i9GB7C73p9jJVJbomFKl30jCQtI6KMsiNiHE39ycjlvLkB7B4eEUFaFyAjuQZ
+         Zf9dmJqU/Kymsj/WmMVdagnjNT5ewpv6YwecZ0usEFQZS/89UXyRj4pXbhpBYDYatxWc
+         ZAPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777037994; x=1777642794;
+        d=1e100.net; s=20251104; t=1777038256; x=1777643056;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=rPjCFMFqi8QLuboc2zZPARuZC0PwzjGUIbdAh+rlNHU=;
-        b=k0FmUXi9H1lohD0ccl7FNDSb+aZkW4KLV5PhY4R5bgyi3OvySiUt+Hx+ndyL/2O74T
-         6CSv77Z6HTs8W2ByBkxIzg2D0DG4Qq7NckIdXLhZ8aI3jCeNmA+4Hzl3tTOhZHRvLOez
-         OKA53OPYfdRR+YZLaiNWVwuewv5c/H1uSAvZ9M2ZMQpOibVQVUTRrNrpg3IOdCcaMOJj
-         05sKYT7nTgz82iyOZasM4MWU3sHji1oSy3HKZetN3o9dJvJr4WKcCMcIgzxrUtNKNP7f
-         RNtobY7ZcJjU8zpWh2/5yD8okIALRpDehTTJPnbnfY6czn+Yr//YTkd+sOz4P9lyokTH
-         XdFQ==
-X-Forwarded-Encrypted: i=1; AFNElJ93uY0HqFNER6+2MN8bGLdJscYNQ0Hbcli+MAEWjqslVpD3P2t4Z9dwB4letSXopQM+JDAYSg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzlPcziT7X8UPZLYEr1fp/pq3+uov6u9pFFgKgEJZaa8wp9KeV0
-	dYpbhPI4w/GozxXqTspqvxCF4Sz2GnQiMwJsDyqmZbH7Rok089AhWDzeO8cx4g+Fslo=
-X-Gm-Gg: AeBDiesyp8tSiqHlDevIXvofoyxFnzStQfUXrNye1W1rU4uL0wa3bXXeMwi8SVhr0FE
-	wCzqKVNQQOQN6Y2IZmTIbYdVLtgHBsCbwVcOvTvhjQAqwYhwOTAc2r+aXiH7uSSP5zoY7tfoNMF
-	KkZamI/uO/SYF8ekoJJLfeOqiCR2Gq1u/6JkrSD0Y81/mcqOrALlBYDG48ghjDGbJGKF7F0VmHJ
-	YwIXkCdJXSN1mt/8JtdFGQNW06CE5Y84g3pDKH6LoCiapFtsM2rbPG8yMKZIozjg2vyzaObvfI1
-	2ovYQVzG3mSO0PRxug1Sodr+RwkEUpkKsHuygOvh5BWkRASPyqgzc8IEM0pd3cKVWU65I61NKh7
-	ae2gLl2QjsHlfDZyZZVotiF3FpFXzFxr3P/Fx2XCMBy/+U97FjXLEUbqI6EpSW9S1vNHKI52GoR
-	WsLRd72VZWoIdHT0fw6VO6JinBPcAIIZNq48IrK8R+3IFrQKXsH/lTeLJ3RApSlc32+4YmqQI75
-	dWHIpo+fy3nKjsJ
-X-Received: by 2002:a05:620a:40c1:b0:8cd:9281:6be9 with SMTP id af79cd13be357-8e78c5c256amr3549840385a.31.1777037994254;
-        Fri, 24 Apr 2026 06:39:54 -0700 (PDT)
+        bh=Zv88UvTgiwZqXaUOezK9Ft5EGGZMSyJ0Ff2r4iX0Lmc=;
+        b=bRZKFTQ9lz8+fOaVjNfMVjUv2IB86iIEu34Rb+ZNeTxotgnFz+v1Kgvku/7CzwYUWV
+         wTgpYQ0mdYpq2CdZHILQMGAEv3ZHKQEELwxHraIBYIUzmGZhwW2h26VnuezYcBKhBZDn
+         ceNv9P3Ikk3QoimRz4hoIO+k+HRzxg9eAsHYHhldJObxmFay6ge0GHLjgx0kKaaqJkBL
+         h51jcBQc3/CkoMsAVsg3EniohJfW/KR+WJc7Bdbv6tDiGIyxf5vf6ebUg8ukfzzhJ+7L
+         wRYwolKZwWJYdYENm3HS73fdNi1mlDaWr6h1XVLHY4U7dakES6jgGpJmKHFCfPOnx51H
+         Ee1Q==
+X-Forwarded-Encrypted: i=1; AFNElJ+r+E33LIaniRIU6cdthGfGe9w0VBtc/iQf6xNE0FVWDBRpiE4JRz0ooyL2iDKSQR9ODQjSww==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw2dfjfN/Uwm4zykSnmerN5rkwkFBmx5J+LKOPIbBfMoZOiolON
+	c19cZ7rDAAEtlXyLtxvrk77HUlPFIgWZT03B0qCAtR5szVDDH2gN1FoLByVrK9bIKAA=
+X-Gm-Gg: AeBDievLPPVU1jq3M6+r8Fd0ffbJ47mxpWxaaSTMCKonTBv2+EQTNxDSIvKPJne/zkd
+	7SraYTnOVakC9n76p/nrEwLGKf0i1SEhae40RlFtfEeBuHIURN91NcqEvQkMIsVpwaG49dyGJGg
+	daaowuN4yalm+chBZAsbnCLfsQYeFAhXcuPJL2Qxz+9PH9Gv8pdpKZiAi1cNRsTCyhz/3hux0W2
+	C7dkqVtzJ4pD0alEU5vOLyKIlCb+kyhQDmgD92q7FQn/XLMMQEo2RxjU+YfOMn4gQvRCTzvTFhr
+	RShLIPNKT7Q14g9FPhRaMtPh+tUtS3833phVXJJ6kvTtuQ7tkhXytKo5PsSnfSTAVV1lItGrNly
+	E6LAMJIKsrrHTy6CSH0/UAcwX0zHVVNVviZEMQfs5KVOIj1qm7Ity5WXFwZOC4t6T9p356QGD8+
+	6ZBK/8Y/81jrdG+nIYf8Hvw72p8kLvzcvFa0aB+qRLlDmwAekZDzDZCFhgrEpR7ejaFXTCcYsjr
+	hVqcoVFqBRIr47Cp+5HTelsWfo=
+X-Received: by 2002:a05:6214:20a8:b0:8ac:a914:c2cd with SMTP id 6a1803df08f44-8b0280808cfmr513452986d6.20.1777038256324;
+        Fri, 24 Apr 2026 06:44:16 -0700 (PDT)
 Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8e7d5fe9638sm1898047285a.1.2026.04.24.06.39.53
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8b02ac6c3e7sm188611786d6.13.2026.04.24.06.44.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Apr 2026 06:39:53 -0700 (PDT)
+        Fri, 24 Apr 2026 06:44:15 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1wGGl7-00000002Yhv-0Ex0;
-	Fri, 24 Apr 2026 10:39:53 -0300
-Date: Fri, 24 Apr 2026 10:39:53 -0300
+	id 1wGGpL-00000002Zm3-0EMP;
+	Fri, 24 Apr 2026 10:44:15 -0300
+Date: Fri, 24 Apr 2026 10:44:15 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Joonwon Kang <joonwonkang@google.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, jpb@kernel.org,
-	nicolinc@nvidia.com, praan@google.com, kees@kernel.org,
-	amhetre@nvidia.com, Alexander.Grest@microsoft.com,
-	baolu.lu@linux.intel.com, smostafa@google.com,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC] iommu: Enable per-device SSID space for SVA
-Message-ID: <20260424133953.GY3611611@ziepe.ca>
-References: <20260424085339.3503582-1-joonwonkang@google.com>
+To: Peng Fan <peng.fan@oss.nxp.com>
+Cc: Juergen Gross <jgross@suse.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+	xen-devel@lists.xenproject.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
+Subject: Re: [PATCH RFC] xen/swiotlb: avoid arch_sync_dma_* on per-device DMA
+ memory
+Message-ID: <20260424134415.GZ3611611@ziepe.ca>
+References: <20260415-xen-swiotlb-v1-1-de24eda3c0fd@nxp.com>
+ <20260420230137.GQ2577880@ziepe.ca>
+ <aesUTxAl2qWZiqoT@shlinux89>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -82,40 +84,48 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260424085339.3503582-1-joonwonkang@google.com>
+In-Reply-To: <aesUTxAl2qWZiqoT@shlinux89>
 
-On Fri, Apr 24, 2026 at 08:53:39AM +0000, Joonwon Kang wrote:
-> For SVA, the IOMMU core always allocates PASID from the global PASID
-> space. The use of this global PASID space comes from the limitation of
-> the ENQCMD instruction in Intel CPUs that it fetches its PASID operand
-> from IA32_PASID, which is per-task.
+On Fri, Apr 24, 2026 at 02:57:19PM +0800, Peng Fan wrote:
+> Hi Jason,
+> 
+> On Mon, Apr 20, 2026 at 08:01:37PM -0300, Jason Gunthorpe wrote:
+> >On Wed, Apr 15, 2026 at 11:08:36PM +0800, Peng Fan (OSS) wrote:
+> >> From: Peng Fan <peng.fan@nxp.com>
+> >> 
+> >> On ARM64, arch_sync_dma_for_{cpu,device}() assumes that the
+> >> physical address passed in refers to normal RAM that is part of the
+> >> kernel linear(direct) mapping, as it unconditionally derives a CPU
+> >> virtual address via phys_to_virt().
+> >> 
+> >> With Xen swiotlb, devices may use per-device coherent DMA memory,
+> >> such as reserved-memory regions described by 'shared-dma-pool',
+> >> which are assigned to dev->dma_mem. These regions may be marked
+> >> no-map in DT and therefore are not part of the kernel linear map.
+> >> In such cases, pfn_valid() still returns true, but phys_to_virt()
+> >> is not valid and cache maintenance via arch_sync_dma_* will fault.
+> >> 
+> >> Prevent this by excluding devices with a private DMA memory pool
+> >> (dev->dma_mem) from the arch_sync_dma_* fast path, and always
+> >> fall back to xen_dma_sync_* for those devices to avoid invalid
+> >> phys_to_virt() conversions for no-map DMA memory while preserving the
+> >> existing fast path for normal, linear-mapped RAM.
+> >
+> >I think this is the same sort of weirdness the other two CC threads are
+> >dealing with.. We already have two different flags indicating the
+> >cache flush should be skipped, it would make more sense to have the
+> >swiotlb mangle the flags, just like for cc.
+> >
+> >https://lore.kernel.org/r/20260420061415.3650870-1-aneesh.kumar@kernel.org
+> >
+> >Then you know that the swiotlb was used and it should flow down to
+> >here.
+> 
+> Xen fully implements dev->dma_ops and does not leak hypervisor-specific
+> semantics outside of it.
 
-That's right, and all the iommu drivers should have no issue with
-per-device pasid or they are not following the API contract..  I
-believe that has been taking care of already.
-
-So, I don't think this is an iommu driver capability.
-
-Instead, you have to decide if the PASID is per device or not based on
-if the system will use ENQCMD or any similar instruction.  I
-understand ARM has introduced a similar instruction.
-
-So you may be better off with some kind of 'arch has enqcmd like
-instruction' to control this instead of involving the iommu driver.
-
-> - The device is not a PCIe device.
-> - The device is to use SVA.
-> - The supported SSID/PASID space is very small for the device; only 1 to
->   3 SSIDs are supported.
-
-Yuk
-
-> With this setup, when other modules have allocated all the PASIDs that
-> our device is expected to use from the global PASID space via APIs like
-> iommu_alloc_global_pasid() or iommu_sva_bind_device(), SVA binding to
-> our device fails due to the lack of available PASIDs.
-
-So you have multiple SVA using devices as well? Or multiple instances
-of the same device?
+It may have its own re-implementation but the same remarks apply. The
+flags in attrs should be correct and you should not be putting random
+boolean checks all over the place to make up for incorrect flags.
 
 Jason
