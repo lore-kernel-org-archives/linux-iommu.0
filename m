@@ -1,186 +1,183 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E87D3246788
-	for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 06:31:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.13
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777012274; cv=fail; b=hoB3yOliY5x4MwEKbAMMNVC1FAnpIESs5lBj+bIwag9/PH+I+gg6qI887OzlUgI8xElANY/LuN1qooflfjZsyfYAetXafxnBdyYIRWsHu8wUvpcypXI2IBuaWwH6TmSoSte2fddbOngx0Yj6/F/FxrJ22rRBRjEMzWxJzidE25s=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777012274; c=relaxed/simple;
-	bh=9q8xJKkVncBJp8ev7xKgaOuKxHjYaFW+BeYXD2HiX0s=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=WncGKPiFNSn1BQpQWLaR25eIZ4S0c+QG1oRbbc96DiMDBj80EoCejB3jKg46jzBxGWEvVQd5EpjVReu3RsdBqhCMDqxGxm7siv6TdDN5LLX2TLh1dXUyeFZMsI4CF7CVtaBeHuIJwmkO1PAeri1ddIiK8t2umYC5uwUCVgVOxiI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UsTXweYQ; arc=fail smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C93C21255A
+	for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 06:41:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.130
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777012890; cv=none; b=T6dWKF3Yx60pHgroSx6kb9BHmnbSajqsTDCNXkl9V2d3zjEx10erpzYycjUMdYRnMoD1ti60Ihk+IAUEhZhoICrG3Vn44uVZPK28G81ihFFwyFNDJGA0DjyBMAapJ3pru0vRbQ3xePhzH6ViBIcChqk2ePmig5zLHhJM89Ep+IY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777012890; c=relaxed/simple;
+	bh=py6200VNs9CQwejtv6M/Y9wbJEAf2XQYecs730uCbb8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=I8VlU/jCMZEb0nR50FQ1S3uCw1X6Gbs6p/l4haMKJcDbiYGSCwijFQOWfQGaao7BL+AVrXzZhMw3gYo8gRXvxWt4I3c+FPmW0y7HVaK4HkNtqg0GN8BOK+QQmIrRR3r7kXSX8jjloSpMpb2vusKHcoGrUyh8Naj+aDpxCX4jtGQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=Ta8YEUa7; arc=none smtp.client-ip=115.124.30.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UsTXweYQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777012273; x=1808548273;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=9q8xJKkVncBJp8ev7xKgaOuKxHjYaFW+BeYXD2HiX0s=;
-  b=UsTXweYQ/aX5cJgt2vGqg3+qj2NYaGmNyusD/elC3EV5SSH6c2iFBMts
-   daoFvI0LLjyvDyAMf+4Vrm2WDEVDZU2ObXeUKEhZyBcveqRxXn3UikfRA
-   350PRciIN9ZYXLcou1sVkEZliTKpvwVeTD6+y5xZL591WT8gn9SkKwZFd
-   z4EcaRmOZRFNpUgCg51eVyz/9OPcdGnpMQXfw3gQ8rV4n0R4wHvqKdwAT
-   zUJyJd1orjltDkq8VEBWlw42TiJqQMhbFnNHBcWAXZZhN1mfh3lInRMox
-   IV6jwDDDNo/HmQPlz+DRVHc7aRPE3ihanYONq37bVqB70QoDmPkm4OHyu
-   w==;
-X-CSE-ConnectionGUID: cMy5vKpKTLSYPtNes1+N/Q==
-X-CSE-MsgGUID: vAHZFl4pT/mm41VDl2vLgQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11765"; a="89073068"
-X-IronPort-AV: E=Sophos;i="6.23,196,1770624000"; 
-   d="scan'208";a="89073068"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2026 23:31:07 -0700
-X-CSE-ConnectionGUID: 94HHUbxSSqm77H2iiEJERg==
-X-CSE-MsgGUID: lpDPjhCVS6iOukix+kgWMg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,196,1770624000"; 
-   d="scan'208";a="230206030"
-Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
-  by fmviesa008.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2026 23:31:06 -0700
-Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
- ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Thu, 23 Apr 2026 23:31:05 -0700
-Received: from ORSEDG903.ED.cps.intel.com (10.7.248.13) by
- ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Thu, 23 Apr 2026 23:31:05 -0700
-Received: from PH7PR06CU001.outbound.protection.outlook.com (52.101.201.35) by
- edgegateway.intel.com (134.134.137.113) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Thu, 23 Apr 2026 23:31:05 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Yq/U/wfFtf3Bhrc2NnKzQdPSfowFYA5K58j1f18jTIG2sNhTGsJvt0+Oy6PqNhEdgDAs3iJ5J5BmesBuKQxoLkdBHINMYM73iln4W23iyoCK3Kl6wxDsXuGznOeJnRwLA1fKRG8ydSV47Q9729IfK/qR0f+xEVtVRWWVifUo3oZOk2Qz0jWqEdglx7OICGOojngvkVFNgcdF44h4J7StWufthn7H6w1oeBzN9m3vrvpIER4euF8I9coRg09xJ2fvFyLWaOg2oCSvAhqKnaY6IzsPWviRJ7y9QAQVljrThgA4sNvpEB4vkGD+1clrmCoaVBbxcH8DO2nKD7nLaqdhfA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9q8xJKkVncBJp8ev7xKgaOuKxHjYaFW+BeYXD2HiX0s=;
- b=AeMgfbLGeTxoF4kdApl3LWn4jFTZt6ledo4bbvDjhLGn+afawgHZ+0TzwVoqadUa3uPWaLg8X1vg/qEH5jBFhvaIvzOkSzY+OsioCz2nOzQl4hasAqr7AHuxtJnDRDb83WtCi194s/nAl3TMj87CkEJ+xFMAR6OtrUo7cfzTYJrC+bOMGcaCMGAn68QGVsNbEyLXIWEvCRqW0S/IhFP+32NwPqIpTSC+h4ddEjQvNvIzs+2hqJmLN+U0XzaFf0QVKewQfLaiWKp4MB1qnRHLTvefJG/uh9Z9BPD933SidMlJV+gSsBusX4k8DwfhG0Vvoyh47E/PGqeA/VDhI2FH9g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by DM6PR11MB4755.namprd11.prod.outlook.com (2603:10b6:5:2ae::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9846.22; Fri, 24 Apr
- 2026 06:31:01 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::f997:762f:f079:134f]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::f997:762f:f079:134f%5]) with mapi id 15.20.9846.016; Fri, 24 Apr 2026
- 06:31:01 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Jacob Pan <jacob.pan@linux.microsoft.com>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, Alex Williamson <alex@shazbot.org>, Joerg Roedel
-	<joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>, David Matlack
-	<dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen
-	<nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
-	"skhawaja@google.com" <skhawaja@google.com>, "pasha.tatashin@soleen.com"
-	<pasha.tatashin@soleen.com>, Will Deacon <will@kernel.org>, Baolu Lu
-	<baolu.lu@linux.intel.com>
-Subject: RE: [PATCH V4 01/10] iommufd: Support a HWPT without an iommu driver
- for noiommu
-Thread-Topic: [PATCH V4 01/10] iommufd: Support a HWPT without an iommu driver
- for noiommu
-Thread-Index: AQHczFOuuqfc0SHbYUui55qaSnKQFbXhSYCQgAKI2gCABvQEUIAAhAiAgAEBYDCAAHzPAIABBoaw
-Date: Fri, 24 Apr 2026 06:31:01 +0000
-Message-ID: <BN9PR11MB5276324C5D7CA8297A8E83378C2B2@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20260414211412.2729-1-jacob.pan@linux.microsoft.com>
- <20260414211412.2729-2-jacob.pan@linux.microsoft.com>
- <BL1PR11MB52710F2441FB52E2D94D37868C232@BL1PR11MB5271.namprd11.prod.outlook.com>
- <20260417145946.00004418@linux.microsoft.com>
- <BN9PR11MB5276DB15491F949DA7D8F0A78C2D2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20260422160315.GL3199414@nvidia.com>
- <BN9PR11MB5276317325A185589BB76F118C2A2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20260423145108.GM3199414@nvidia.com>
-In-Reply-To: <20260423145108.GM3199414@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|DM6PR11MB4755:EE_
-x-ms-office365-filtering-correlation-id: 1bbfb85b-0811-4b00-857f-08dea1cb0deb
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|366016|1800799024|7416014|376014|38070700021|18002099003|22082099003|56012099003;
-x-microsoft-antispam-message-info: a7UwwsHH/yMk96uw6D8Tc4EM0PVHZeCbb7kxWq+QK5ecV6lgjt0bJUjuC3JOJkEq/Px/mEmRkZSsM1JEDxKs03mDHYpqmHpl9RUuXZ273M55zeiNodi707D1fIUDaC47KNg8h7Rpn2xEeuV760ogNhBX2/4ig+TWOoRzFKPwjtkU5zexIlYbLrzWW9fepDCWS2aU0yhBHXAD+BONP6FZlUjeuWQ/YgjjN56VenbPpQzJV5+7H7AEEao6vDXVq4jy4LpadXKNOzqf+N7WdR07n+L5trM85YYtnblMnd1gjtHUqFPQWrcXpfyooyMqGJ7Ogrq+vc4CqmTuzqOI3jPnGveBVGcBr1XZnxKAEAjwaAyr1w6qfCIO1tz3CygYRm5GDeBioCt1qYVQP+Iegi+7xzdEoy6DVinRn3GWR7lTLnMVywFFwT1Bri8g+drJNCwTGNZrxgKHFIwUpeTj6e8CuzRI5cFNE6FsT9zItnrPVyBb8m2YiAwHK0Q4laSAuMefVGYQEBkhfmSwLmsqm7sUVzBun4CMnhjv04accrdEcFrV+1EebAzAysWQO7UzT2cXKFt+CHGMr8wkYMNU+Kcy2ORzhPuFlouliQ0d9qF06XTsAz/rdJQkwycybZu7KKzrBmDhInMPPWHa6bQ/0pvVQQe3CPvy6j66Y1RjTORwXG5ty8aAE80sR/2wpsA+iXvBVA+aryMEn8GrC3zcdxFu1+rWeHRs5wMKVpCq0NCS5HnjgFerGSgZpKL/+2fjaXp5M065r664nzSeavRSJrwLrGzCzy1/PvLCJsRPqCjufTo=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(7416014)(376014)(38070700021)(18002099003)(22082099003)(56012099003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?LkBOyQCljWeZ4G5b864ExppmVg/Au+R8Gbd6hyTmhttZiRnthqo6E62tWLZj?=
- =?us-ascii?Q?qTNuLlTZOG6X22d00YPx9VA/YArUnYgJ3ERusuKBGv/NgTGVW0Ee+XA4qvRs?=
- =?us-ascii?Q?jjBzUlRZ/heL/UNzsHhZz54vyRY/qut730w23Hpti/W5y28YrzsO6nW/xvjL?=
- =?us-ascii?Q?+TgtGFhbWdGKkAAcXJ1gREWvL5q0fmAnb18mZkJ8LMSi56LBGt3UBR3V7JjO?=
- =?us-ascii?Q?gHKMy41HimxLS1fVtl+opahOPLy299+teqhersFlfZKqrEdmKsRSH2hxqtDR?=
- =?us-ascii?Q?RnTVNRDgd72WFqzm4+946TP6CVY62e0gj6vrWh1R9auTh21X6gSDP+QeJwJO?=
- =?us-ascii?Q?KrjtZBUNqkJbh5K+85vRW67LYFkqvZf9qQlHjZ5UWMTC0OlJW5GybVkz5LfV?=
- =?us-ascii?Q?DD8C7G1MQV+Pbe4La085/YyzyeI9/JI0wkAxGHo9D5pH+nCC+9mxcz+naMMp?=
- =?us-ascii?Q?sMyMeDOZdE25gZDEO/CJ+RUOs7kcshHLwPfhkq8vd8XYQfroW+1ul0B0RdId?=
- =?us-ascii?Q?f6i95gqwLkJUapJ9F7QiYKcP/r9dmhFWipn//rKitUyCOS7A0dTGOQYGI0O1?=
- =?us-ascii?Q?+EyBJCsfGlHh7x6iOtKlAbqSGiiAJWMpyOdYAaUkOsD0sB9+Ku4S8vxoeu37?=
- =?us-ascii?Q?BbSlJgZAYXJyD6Rv9UFbN2i5xJkMwtXhlfw2cgtnDMZRjolMes/kZwTVBuGQ?=
- =?us-ascii?Q?6QdcRJemDSvOXabCguGBXUjVvJPzdpYbH/CuqivE81UcJ9fLIxIyWMo2IGUN?=
- =?us-ascii?Q?jidZ6AEarMgRwvfdpXa1sHNpixN3xrNrSkwE1oLV4+NEE2D6HcE0i6KxmX1u?=
- =?us-ascii?Q?7zm95TPU9Px2akKfFim/AmiQv1iEHzGcyQCCzUZLQ36Q5zYMjTCq7KthJkUw?=
- =?us-ascii?Q?Q9ySFStYH8VHTgzOaIwlyof4MgC0L2GSVNZDTupfYO5hWqSEfn3ljakoGZ1U?=
- =?us-ascii?Q?unKSOET087YaBPSTCxWqYF0JSLayhUr1LRV2kIAo+o7LF/7rbDB7KBM1gwfi?=
- =?us-ascii?Q?jwMh4Dan445sShdHFR9K1s21LlZuUGqSTFzEt0UJNLO+BZts+rety57gzXAS?=
- =?us-ascii?Q?4fTOGkgTXvDJ1Ru5AmR06esE/yg2K4RMlgf22CKnqUXI27mlN3chqDE1u193?=
- =?us-ascii?Q?ZGVyCz+SfLXO8dukKIxtOJSc7YNOdQ2ul5RQ6ZpjMTcpvztiKLtnIFjGMczR?=
- =?us-ascii?Q?m+1S7/PGwvp9sbPZ4n8oazmKWdAIrq/45PofgwoAtvqAU28WcaKY42sWeeek?=
- =?us-ascii?Q?isJluWUHhrIsz4Gd/NIc3aLsCbDq/YtXPYvbunSNW14E2ZgFszETc71DvT1X?=
- =?us-ascii?Q?y7tUy6itGIA1uGKPSGqxkW/tnS7JstOL8SyxL5Rmvy8TYLM+gBBbbvN/p96z?=
- =?us-ascii?Q?TZYdPBWUCkznj+BglG8C8yWECuYdjRNdqFNCWMY+9kcBpENzyfULgRJD2J9y?=
- =?us-ascii?Q?zUvU/rx1qJoJJ0zkeQ+qtYGpABsrb+yXTcpMI7pWo3t6Cuz0Lz/owbQTsezW?=
- =?us-ascii?Q?wSjoy4JW1fK9sIcfLDO1OHzj9Ipunfkuwqan4FQiHfG+orhl5E0thITE3FhI?=
- =?us-ascii?Q?AnUdMu5mmO+zxiXCOzdOUYsta5dc8/Vj2OArv2qk0f6M10metz48RAjyQDqi?=
- =?us-ascii?Q?QVNsbFBuFzcxtvaWwkgoy4eRqvbGdBaXuBDY0GyeSwjGDTaI5VXWMnyX20i6?=
- =?us-ascii?Q?BbJnx33t7U0OU1qswjgTTpDHr1w8Ly309igcBn/kVRKGJRhV?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="Ta8YEUa7"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1777012880; h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+	bh=LvQ4bEDMUuAkdBnpsr3cU9rclCnY7mDzqEJrn85KyaU=;
+	b=Ta8YEUa7Ewu+JECPRd0x18KIfm38sLJ8TgxDvhBgEo85qCeg+rllOpn4XHhO4K0vTEj63jKtYTUBfDJpI9ZL0flJHCac6A30BqflI85yeQLlDgj6AIIZb6/5aauQmRnF5p5UYS/+W68jeTtU2uAAI2YemayWvr7HGvQ6rDKI5vc=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R241e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045133197;MF=feng.tang@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0X1bhvTE_1777012878;
+Received: from localhost(mailfrom:feng.tang@linux.alibaba.com fp:SMTPD_---0X1bhvTE_1777012878 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Fri, 24 Apr 2026 14:41:19 +0800
+Date: Fri, 24 Apr 2026 14:41:17 +0800
+From: Feng Tang <feng.tang@linux.alibaba.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Ying Huang <ying.huang@linux.alibaba.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v2] dma-contiguous: setup default pernuma cma area if not
+ configured explicitly
+Message-ID: <aesQjax9qYU3osnZ@U-2FWC9VHC-2323.local>
+References: <20260423095243.14239-1-feng.tang@linux.alibaba.com>
+ <43c5301c-fe6a-41e4-9482-ccfc7b62f2a7@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Exchange-RoutingPolicyChecked: L2Mxh+VKkdsEejzdOYLApqQWV85qRzI8jNFqH8LlcoP/lhDp5s03oAv7N/8HHKeZxjEBNDNBSdW42xkThRBb6F4e3EeHnNkiHBh8tGNLEPH2gaLrqzs60BA/cP0+6RDAU+WmjJxsJZmrZaG2aws46m9ZR+IBIKmMwD2woXr0q8OOfdoK1ULjbHXxDw+Hcu1CaBJjeEQClOhrz8/21yh7vbd4g83o3fKRS0bUgEuaBv23oCNgRKCks+9P3/N8fHqtsASGG8rtgqffi1ctzZ7B5igcoBzrD82NUeAmxhznW6jLOImiQ9/I4KBgiVuvbJr6ttow12dys7GvuyW3IewueQ==
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1bbfb85b-0811-4b00-857f-08dea1cb0deb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Apr 2026 06:31:01.6753
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 50sBIClbyRUxz0DFinEwBsuAjH6ASaj/eeg45FzsJGFG6/h14s0svAJ1tdR6QfgQl3RTkuJJ0XG9Q6ybbVJ6bw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4755
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <43c5301c-fe6a-41e4-9482-ccfc7b62f2a7@arm.com>
 
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Thursday, April 23, 2026 10:51 PM
->=20
-> On Thu, Apr 23, 2026 at 07:26:49AM +0000, Tian, Kevin wrote:
->=20
-> > I meant to avoid mentioning selftest like below:
-> >
-> > + * AMDV1 is used as a dummy page table for no-IOMMU mode, similar to
-> the
-> > + * iommufd selftest mock page table.
-> >
-> > "similar to" is not helpful here, and is now not the fact any more.
->=20
-> The mock page table is still amdv1, just a little different flavour of
-> it :)
->=20
+On Thu, Apr 23, 2026 at 02:51:06PM +0100, Robin Murphy wrote:
+> On 23/04/2026 10:52 am, Feng Tang wrote:
+> > There was a report on a multi-numa-nodes ARM server that when IOMMU is
+> > disabled, the dma_alloc_coherent() function always returns memory from
+> > node 0 even for devices attaching to other nodes, while they can get
+> > local dma memory when IOMMU is on with the same API.
+> > 
+> > The reason is, when IOMMU is disabled, the dma_alloc_coherent() will
+> > go the direct way and call dma_alloc_contiguous(). The system doesn't
+> > have any explicit cma setting (like per-numa cma), and only has a
+> > default 64MB cma reserved area (on node 0), where kernel will try
+> > first to allocate memory from.
+> > 
+> > Robin Murphy suggested to setup pernuma cma or disable cma, which did
+> > solve the issue. While there is still concern that for customers
+> > which don't have much kernel knowledge, they could still suffer from
+> > this silently as some architectures enable cma area by default (not
+> > an issue for X86 though, which set CONFIG_CMA_SIZE_MBYTES to 0 by
+> > default) for most Linux distributions.
+> > 
+> > One thought is to follow the current cma reserving policy for platform
+> > with 'CONFIG_DMA_NUMA_CMA=y', that if the numa cma is not explicitly
+> > configured, set it up according to CONFIG_CMA_SIZE_MBYTES (The
+> > percentage kernel option is not considered yet as the number of NUMA
+> > nodes could be big).
+> 
+> IIRC, the main reason it's still an opt-in is that it doesn't necessarily
+> interact all that well with the default CMA area, and what we definitely
+> don't want to do is unexpectedly start allocating additional CMA areas on
+> systems which don't need nor want them.
 
-ah, you are right.
+I see the point, thanks
+
+> 
+> I guess what might be ideal would be to rearrange things such that when
+> DMA_NUMA_CMA is enabled, we try to merge the "global" CMA area with a
+> per-node area that can satisfy the necessary size, ZONE_DMA32, etc.
+> constraints, such that unless explicitly configured otherwise, we don't end
+> up making that extra n+1th allocation. Similarly I'm not sure about the
+> usefulness of having two separate types of per-node area, especially given
+> the apparent intent that users only want one _or_ the other, so probably
+> dma_contiguous_numa_area[] should really have just been a generalisation of
+> dma_contiguous_pernuma_area[] in the first place...
+
+Yes, that makes sense. I did wonder what happens when both of them are
+configured in the cmdline. The 2 numa dma array should better be merged,
+maybe giving 'numa_cma' a higher priority. I know a user case for
+'numa_cma' is that some socket in system have GPU/GPGPU card for AI
+connected and need huge cma area specifically for it.
+
+
+> I can imagine that work being quite involved though, as all the interaction
+> between default, command line and devicetree/platform controls is sure to be
+> fiddly. As a compromise for now, I think rather than trying to imply a
+> default "cma_pernuma" behaviour, it would be cleaner to instead imply
+> "numa_cma" to only replicate the default area across nodes other than the
+> one which has it already. That then would inherently avoid changing anything
+> for single-node systems; otherwise at the very least any automatic fiddling
+> with pernuma_size_bytes should depend on num_online_nodes() > 1.
+
+Something like the psudo code below?
+(One complex point would be to get the node id of default cma area,
+as 'struct cma' is a private definition in mm/cma.h, and we can't
+access cma->nid inside contiguous.c for now)
+
+---
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index d8fd6f779f79..6694ae62e785 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -97,6 +97,7 @@ static struct cma *dma_contiguous_numa_area[MAX_NUMNODES];
+ static phys_addr_t numa_cma_size[MAX_NUMNODES] __initdata;
+ static struct cma *dma_contiguous_pernuma_area[MAX_NUMNODES];
+ static phys_addr_t pernuma_size_bytes __initdata;
++static bool numa_cma_configured;
+ 
+ static int __init early_numa_cma(char *p)
+ {
+@@ -125,6 +126,7 @@ static int __init early_numa_cma(char *p)
+ 			break;
+ 	}
+ 
++	numa_cma_configured = true;
+ 	return 0;
+ }
+ early_param("numa_cma", early_numa_cma);
+@@ -132,6 +134,7 @@ early_param("numa_cma", early_numa_cma);
+ static int __init early_cma_pernuma(char *p)
+ {
+ 	pernuma_size_bytes = memparse(p, &p);
++	numa_cma_configured = true;
+ 	return 0;
+ }
+ early_param("cma_pernuma", early_cma_pernuma);
+@@ -182,6 +185,11 @@ static void __init dma_numa_cma_reserve(void)
+ 					ret, nid);
+ 		}
+ 
++		if (!numa_cma_configured && dma_contiguous_default_area) {
++			if (nid != dma_contiguous_default_area->nid)
++				numa_cma_size[nid] =  (dma_contiguous_default_area->count) << PAGE_SHIFT;
++		}
++
+ 		if (numa_cma_size[nid]) {
+ 
+ 			cma = &dma_contiguous_numa_area[nid];
+@@ -216,8 +224,6 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
+ 	phys_addr_t selected_limit = limit;
+ 	bool fixed = false;
+ 
+-	dma_numa_cma_reserve();
+-
+ 	pr_debug("%s(limit %08lx)\n", __func__, (unsigned long)limit);
+ 
+ 	if (size_cmdline != -1) {
+@@ -256,6 +262,8 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
+ 		if (ret)
+ 			pr_warn("Couldn't register default CMA heap.");
+ 	}
++
++	dma_numa_cma_reserve();
+ }
+ 
+ void __weak
+
+
+Thanks,
+Feng
+
+> 
+> Thanks,
+> Robin.
+ 
