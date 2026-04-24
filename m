@@ -1,85 +1,79 @@
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
+Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF8233D6CA9
-	for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 13:29:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FFEC3D75C1
+	for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 13:39:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777037373; cv=none; b=K0er900m0k9+ZlIn7nSGJNEWdy2vbd1QaK1rEYw8wGB/rlDXUr2whxPY4rJqtgU7mOEYFL/mVa9QonA7ZnOxb+5DI98knmaVHTQKSlH/Kj9baR+NdC4LuN9+Jt3x+SLbvTgpwQ5JafhHUZgfL1Bs8dLlLFZDqsqorh7izvEuUgA=
+	t=1777037996; cv=none; b=PKrXgPDrMqmBdl0EtUKH7XVs1SVudUEpAqrcI8uoi75oYcP1V916qVyPGieh7oRy2HJGuauVquk3HrbJWckXztj9FWulaocW/cEoZQ9YaYUZvSRxgDfEXZk79Dchw/R8pdWleGFLjh2hGxGeK/DMRqkInKZRP5U1rd14o+w8GLY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777037373; c=relaxed/simple;
-	bh=8N9ZUyumLhZPpREviRbZwKlXS861tjEA3KjPMdkQopg=;
+	s=arc-20240116; t=1777037996; c=relaxed/simple;
+	bh=j3+lKywoBxbZH7+FkX2AlRZXpnpN3o4ZxFlVxcBmwLI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BR44HKnVnOfEGKGH3EMpB9xE+YX2U9OJ0Q4Tcx3gLsaX9ejiMHk2zAJMg+QSj5z4O1QsAs1uQuKlVDhuWNILlFbryGQStUoAnRGd4zLEYZ/uLVC/waSLslJgEGcKtf4zhOEC3tF9p7WqaJGGUfskzSquBfsyB8KN5E+fQOnsXto=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b=iVwhJ6Q0; arc=none smtp.client-ip=209.85.160.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=soleen.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=apTFVFRQDjOIpC5ryN/z5iGKz4JTqVwjzelde4sH6oVit1QjDIWRxbnpL85BEQFNg8i2aPhmd5M0IY92EYFddfEThHnfttuTomD0GPEYm9O14nnlWiYRXV9gIDEXVRfG1xkNLP2kWRy7+IArlQarIkFAXVBpPSDE4iRl8HF42pY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=nwpkmzhP; arc=none smtp.client-ip=209.85.222.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b="iVwhJ6Q0"
-Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-506a7bbe9d0so65533441cf.0
-        for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 06:29:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="nwpkmzhP"
+Received: by mail-qk1-f179.google.com with SMTP id af79cd13be357-8c70b5594f4so863614585a.1
+        for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 06:39:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen.com; s=google; t=1777037368; x=1777642168; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1777037994; x=1777642794; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=4ezbOz+DNq/Ln5lGWJ2GbxuTePwedL+fzC5CYxvFRhc=;
-        b=iVwhJ6Q0Q4Zt6L70XMoA5orwDuFU3xUcrEeUeKhOM/JqTDGQIHI/W+XCGp60CEmMJ2
-         Ni9Ikf3QQLs6K1L5N96cMgr+fGLRYQ95UoFL2SKh9M22AANDXHgJ55UhDsjdHjGFARLy
-         xV40CFV6WMJIzgDRktwxS9a3t7nrOhnrVkQ/Cvhj13KnVrVtt+OSob5HR82hdmppom5D
-         o0VqlLWkoFRyHWG/gpfD9LI/Xqqm7/mPR1OAaqe7Yo0HZSeutDDHRcKvkQoatF03Gy2a
-         TiCbS6HjFFMLEuobf1HoBwfm6PtrcdzyStYLNSqeq1mTfjxuV8rZ2GZKPTmMXQgmLMkO
-         sB8A==
+        bh=rPjCFMFqi8QLuboc2zZPARuZC0PwzjGUIbdAh+rlNHU=;
+        b=nwpkmzhPCVd2tF3At4geqN+uBoliAEQurJCzx4XXNwGbtmisufFLcyqNFNiTj9cdVE
+         bB7sGEP3LrY3kF/sP2ed6F3fhJEOWkrxa4hCun/JqzNXac0MdGQLhGX2bMBXAayh021M
+         Km8OeCrPGDaLLxwTPX9u4eXg+wui6v/URyzVJkQBNDnQ261nXsLHqHyWbaAatVqwMJwa
+         LqE2i2g5CPQt9p4e8gDbu829CAU6f2u1NuBn9A8SDNI+TVVZvotEC1EWSmdILmCn4Wn+
+         Dd0GZP39zbgDMHwRJpBsQzs943xlLI6asPg4UTUXZjaTpnzYvFPUbHyRkhp9Ay+ls9Hy
+         2Yzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777037368; x=1777642168;
+        d=1e100.net; s=20251104; t=1777037994; x=1777642794;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=4ezbOz+DNq/Ln5lGWJ2GbxuTePwedL+fzC5CYxvFRhc=;
-        b=XkeL8GlyKHCrDPJJsFn+WiMmDyuBOKFNv8Olf9cXf1zznQqtNIU1Q+y5XXrkdOhll3
-         xTKtxOpHANRay6m1WfLtRj64dYkLuXkhYXc/4X9Wc5JLRkhW4rySAuakeo5Q5HDKS0Vw
-         zmo6UInMRYSCUu7fqs7zkEXvSEAkmexMSuhGOGM3iTsNhvVTBiBjzNSDNTXqwy3OOkAx
-         XC33OLVMSlmp99N4pP3LkAV5JqUL2CX3L0cUlAbXX/473mKu9e+yhUF/MswuEZ16stCa
-         sdXBcQMR/GNXMvYlPabvwqj+nWu+q7KUtLtgq4YonjhtgpwATOVmGOodJ9t9wVgmQpCn
-         2d/g==
-X-Forwarded-Encrypted: i=1; AFNElJ+Cy4kQOzsTNCEQ++BveAl1sFNxlXZgqCKvS1GqXU6KKRUBFxKm1ZN7V8rXqU007MjWnc+xFg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzWVe/eqhZTDnEdTjw4IX02OB5Ma/Ah9cjWQhR0lcZMqV3Hpr8T
-	XiJCrUFYAUOgpolKoFMlTaFHD11yKL+DCAxzZuQSZPTTG7blN6gEdBv//wdOcrtSGjM=
-X-Gm-Gg: AeBDietvK4ACimwqtGUKJA93XXX+SGbo1tVnLqIJjKLhwHjhKPVvWM9JS9UXTjWmbAF
-	8cQSQadVe/dVWohKqtdQBSf50WLutbogl1RWx2uRWVeOfES4DGzosaz9kVnalOjBkfq1J7Xg2BN
-	Kxbw1yhNAtJVvbH9ec4BriHGh/bhpBBZSo6mRyPNW38wYEQv+LLzRmT3ngiMfMYc/zi+Sr2cQpf
-	D+9OsAeLZaSEoeRTlYs1P2BwSa5tDuuE4JWdrVuarBEoZdaD1IMBqUXHlhGZ4oUUjra14KwTvcY
-	3BWhIL1DZHcIRo3cGEEhjl8lY5cofqm1XwsZZyaTcjBuDOhfo/HurAU1m1Cv3tWKOvcIlEm9+3j
-	dZhZoEcJUcDTgU/VnfeQCFUfM3Q+edLCfyHFcygVg/ZKCvVBzc8LYg6Ikle1K4Oe0zfX1s0Aho0
-	khW3IG3QSDdmCJAXhQHU4zJP0btMqqDZ/wV5P6KilXBKPxmmHzXYfb58hFQRbyGw==
-X-Received: by 2002:a05:622a:1f0d:b0:50f:c36a:381a with SMTP id d75a77b69052e-50fc36a3bd2mr157337571cf.55.1777037367645;
-        Fri, 24 Apr 2026 06:29:27 -0700 (PDT)
-Received: from plex ([71.181.43.54])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-50fb5fc8e04sm101886121cf.13.2026.04.24.06.29.25
+        bh=rPjCFMFqi8QLuboc2zZPARuZC0PwzjGUIbdAh+rlNHU=;
+        b=k0FmUXi9H1lohD0ccl7FNDSb+aZkW4KLV5PhY4R5bgyi3OvySiUt+Hx+ndyL/2O74T
+         6CSv77Z6HTs8W2ByBkxIzg2D0DG4Qq7NckIdXLhZ8aI3jCeNmA+4Hzl3tTOhZHRvLOez
+         OKA53OPYfdRR+YZLaiNWVwuewv5c/H1uSAvZ9M2ZMQpOibVQVUTRrNrpg3IOdCcaMOJj
+         05sKYT7nTgz82iyOZasM4MWU3sHji1oSy3HKZetN3o9dJvJr4WKcCMcIgzxrUtNKNP7f
+         RNtobY7ZcJjU8zpWh2/5yD8okIALRpDehTTJPnbnfY6czn+Yr//YTkd+sOz4P9lyokTH
+         XdFQ==
+X-Forwarded-Encrypted: i=1; AFNElJ93uY0HqFNER6+2MN8bGLdJscYNQ0Hbcli+MAEWjqslVpD3P2t4Z9dwB4letSXopQM+JDAYSg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzlPcziT7X8UPZLYEr1fp/pq3+uov6u9pFFgKgEJZaa8wp9KeV0
+	dYpbhPI4w/GozxXqTspqvxCF4Sz2GnQiMwJsDyqmZbH7Rok089AhWDzeO8cx4g+Fslo=
+X-Gm-Gg: AeBDiesyp8tSiqHlDevIXvofoyxFnzStQfUXrNye1W1rU4uL0wa3bXXeMwi8SVhr0FE
+	wCzqKVNQQOQN6Y2IZmTIbYdVLtgHBsCbwVcOvTvhjQAqwYhwOTAc2r+aXiH7uSSP5zoY7tfoNMF
+	KkZamI/uO/SYF8ekoJJLfeOqiCR2Gq1u/6JkrSD0Y81/mcqOrALlBYDG48ghjDGbJGKF7F0VmHJ
+	YwIXkCdJXSN1mt/8JtdFGQNW06CE5Y84g3pDKH6LoCiapFtsM2rbPG8yMKZIozjg2vyzaObvfI1
+	2ovYQVzG3mSO0PRxug1Sodr+RwkEUpkKsHuygOvh5BWkRASPyqgzc8IEM0pd3cKVWU65I61NKh7
+	ae2gLl2QjsHlfDZyZZVotiF3FpFXzFxr3P/Fx2XCMBy/+U97FjXLEUbqI6EpSW9S1vNHKI52GoR
+	WsLRd72VZWoIdHT0fw6VO6JinBPcAIIZNq48IrK8R+3IFrQKXsH/lTeLJ3RApSlc32+4YmqQI75
+	dWHIpo+fy3nKjsJ
+X-Received: by 2002:a05:620a:40c1:b0:8cd:9281:6be9 with SMTP id af79cd13be357-8e78c5c256amr3549840385a.31.1777037994254;
+        Fri, 24 Apr 2026 06:39:54 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8e7d5fe9638sm1898047285a.1.2026.04.24.06.39.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Apr 2026 06:29:26 -0700 (PDT)
-Date: Fri, 24 Apr 2026 13:29:24 +0000
-From: Pasha Tatashin <pasha.tatashin@soleen.com>
-To: Pratyush Yadav <pratyush@kernel.org>
-Cc: David Matlack <dmatlack@google.com>, iommu@lists.linux.dev, 
-	kexec@lists.infradead.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-mm@kvack.org, linux-pci@vger.kernel.org, 
-	Adithya Jayachandran <ajayachandra@nvidia.com>, Alexander Graf <graf@amazon.com>, 
-	Alex Williamson <alex@shazbot.org>, Bjorn Helgaas <bhelgaas@google.com>, 
-	Chris Li <chrisl@kernel.org>, David Rientjes <rientjes@google.com>, 
-	Jacob Pan <jacob.pan@linux.microsoft.com>, Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>, 
-	Jonathan Corbet <corbet@lwn.net>, Josh Hilke <jrhilke@google.com>, 
-	Leon Romanovsky <leonro@nvidia.com>, Lukas Wunner <lukas@wunner.de>, Mike Rapoport <rppt@kernel.org>, 
-	Parav Pandit <parav@nvidia.com>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	Pranjal Shrivastava <praan@google.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Saeed Mahameed <saeedm@nvidia.com>, Samiullah Khawaja <skhawaja@google.com>, 
-	Shuah Khan <skhan@linuxfoundation.org>, Will Deacon <will@kernel.org>, William Tu <witu@nvidia.com>, 
-	Yi Liu <yi.l.liu@intel.com>
-Subject: Re: [PATCH v4 01/11] PCI: liveupdate: Set up FLB handler for the PCI
- core
-Message-ID: <aetvAkM0y45WAmfV@plex>
-References: <20260423212316.3431746-1-dmatlack@google.com>
- <20260423212316.3431746-2-dmatlack@google.com>
- <2vxzeck45yin.fsf@kernel.org>
+        Fri, 24 Apr 2026 06:39:53 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wGGl7-00000002Yhv-0Ex0;
+	Fri, 24 Apr 2026 10:39:53 -0300
+Date: Fri, 24 Apr 2026 10:39:53 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Joonwon Kang <joonwonkang@google.com>
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, jpb@kernel.org,
+	nicolinc@nvidia.com, praan@google.com, kees@kernel.org,
+	amhetre@nvidia.com, Alexander.Grest@microsoft.com,
+	baolu.lu@linux.intel.com, smostafa@google.com,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC] iommu: Enable per-device SSID space for SVA
+Message-ID: <20260424133953.GY3611611@ziepe.ca>
+References: <20260424085339.3503582-1-joonwonkang@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -88,52 +82,40 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2vxzeck45yin.fsf@kernel.org>
+In-Reply-To: <20260424085339.3503582-1-joonwonkang@google.com>
 
-On 04-24 14:33, Pratyush Yadav wrote:
-> Hi David,
-> 
-> On Thu, Apr 23 2026, David Matlack wrote:
-> [...]
-> > diff --git a/MAINTAINERS b/MAINTAINERS
-> > index c9b7b6f9828e..94af31837375 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -20555,6 +20555,18 @@ L:	linux-pci@vger.kernel.org
-> >  S:	Supported
-> >  F:	Documentation/PCI/pci-error-recovery.rst
-> >  
-> > +PCI LIVE UPDATE
-> > +M:	Bjorn Helgaas <bhelgaas@google.com>
-> > +M:	David Matlack <dmatlack@google.com>
-> > +L:	linux-pci@vger.kernel.org
-> > +S:	Supported
-> > +Q:	https://patchwork.kernel.org/project/linux-pci/list/
-> > +B:	https://bugzilla.kernel.org
-> > +C:	irc://irc.oftc.net/linux-pci
-> > +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/pci/pci.git
-> > +F:	drivers/pci/liveupdate.c
-> > +F:	include/linux/kho/abi/pci.h
-> > +
-> 
-> Can we please also add these files under the "LIVE UPDATE" entry. The
-> code here concerns both live update and PCI. We can figure out the
-> maintenance details as we go along, but I think the live update
-> maintainers should at least get all the patches for PCI live update.
-> 
-> Perhaps also add the kexec list here? We plan to use it to maintain the
-> LUO patches, and adding it will make sure we get the patches in case
-> someone updates the file list here but forgets to update it in the LIVE
-> UPDATE entry.
+On Fri, Apr 24, 2026 at 08:53:39AM +0000, Joonwon Kang wrote:
+> For SVA, the IOMMU core always allocates PASID from the global PASID
+> space. The use of this global PASID space comes from the limitation of
+> the ENQCMD instruction in Intel CPUs that it fetches its PASID operand
+> from IA32_PASID, which is per-task.
 
-+1
+That's right, and all the iommu drivers should have no issue with
+per-device pasid or they are not following the API contract..  I
+believe that has been taking care of already.
 
-These files should also be added to the Live Update entry, and the kexec
-mailing list should be included.
+So, I don't think this is an iommu driver capability.
 
-Changes specific to Live Update should be routed through the
-liveupdate/linux.git tree, while generic PCI changes should go through
-pci/pci.git. In either case, if liveupdate.c or abi/pci.h are modified,
-acks are required from the Live Update group.
+Instead, you have to decide if the PASID is per device or not based on
+if the system will use ENQCMD or any similar instruction.  I
+understand ARM has introduced a similar instruction.
 
-Pasha
+So you may be better off with some kind of 'arch has enqcmd like
+instruction' to control this instead of involving the iommu driver.
+
+> - The device is not a PCIe device.
+> - The device is to use SVA.
+> - The supported SSID/PASID space is very small for the device; only 1 to
+>   3 SSIDs are supported.
+
+Yuk
+
+> With this setup, when other modules have allocated all the PASIDs that
+> our device is expected to use from the global PASID space via APIs like
+> iommu_alloc_global_pasid() or iommu_sva_bind_device(), SVA binding to
+> our device fails due to the lack of available PASIDs.
+
+So you have multiple SVA using devices as well? Or multiple instances
+of the same device?
+
+Jason
