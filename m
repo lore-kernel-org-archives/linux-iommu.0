@@ -1,53 +1,53 @@
-Received: from mail-pg1-f202.google.com (mail-pg1-f202.google.com [209.85.215.202])
+Received: from mail-pf1-f201.google.com (mail-pf1-f201.google.com [209.85.210.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4349033A9F8
-	for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 08:50:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29F802874FA
+	for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 08:53:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777020619; cv=none; b=lUCJZMFFuRLiyWl7bImt9WL2FJ72m3g55EEZW3H7aqcRF2aVPNm2KJ+xsLjLw/GCJ1pDIitacdKdQU8j1au/6es0ImNnhfEa6mlqE4Bw2YPsHBW7lwCqh6mG8LlX6wHXXpPS+WYfNrFVdfkVgr0am0eniJNGPOt7uqYPaseNtI8=
+	t=1777020826; cv=none; b=LUa2Rc/PwxpoBitP35mxpKWe82YfcBr7yHimqbY5ixGRlA34uCvVgrWdzLqeFX39PEvCxE6kS+CDMJhfIW9PO4QDLkZ04NuLMdYbp9EisGIxoIXYdP3Pi1U81vThk4Z3aPKSD0IvTdrjBhBq1gcu6EcpZ37tt9Y7qh4FFw8xcoU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777020619; c=relaxed/simple;
+	s=arc-20240116; t=1777020826; c=relaxed/simple;
 	bh=QjYFSBeCbFK99m1dIJR+XgEazeT5WRvnB7NyWckUAM0=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=rSYTPRxYFg7erwjUyBdsvvSjcWbq/wAy14rbOXm+S8/dKxRSWrsllNSXvd01OkYs61zHCGDJ79J1u4/ApNDWoKkzWHzblHDRhwi0khQNAtUr9uRLkzA8WI3ZmB67ONZoVKVXRJXGirNEftmtFwVBUCrgsqMY0gmExHlQM1OZKKM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=kOcmA9Ec; arc=none smtp.client-ip=209.85.215.202
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=Y6mRIi2359VHFpXuKhx0tA4zvSRET4yOyx+RvmKZOiCPv8RpVIq0qWAx9Cx+rDT+gLJaOHy+RaNWeH/D3F6Kxhbm0lO4Stq1W/yuYb5gtjxlbQL5CPmAkOIMvm9+QLk3lnZWpQaJ26IaL+qJGzblt84fVuiicm4mJaE43DY7rk4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Tx6VWpwc; arc=none smtp.client-ip=209.85.210.201
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="kOcmA9Ec"
-Received: by mail-pg1-f202.google.com with SMTP id 41be03b00d2f7-c79281bd14cso3029228a12.3
-        for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 01:50:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Tx6VWpwc"
+Received: by mail-pf1-f201.google.com with SMTP id d2e1a72fcca58-82f8bbb4045so4711383b3a.2
+        for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 01:53:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1777020618; x=1777625418; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1777020823; x=1777625623; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
          :date:message-id:reply-to;
         bh=i9nRQWrSO8yCuAghUfsOuR4TVxWLZXmy5/OuspGEKv4=;
-        b=kOcmA9EcKH/P+4ywxuZiAH7OqbQxCL7jysPrM04/CQqeVubgWD8tBbgrnsWmx44vWE
-         vE2d2u3lHSjFO5fKXjYD7Vpyc5cJ1egNBjzw8MCjAIWhocZ6qN2Et2TdQyt/oR80POZA
-         qEe6YsZTc6GwtS4rh6UZWhHH7E+d1jqvQAjmT94sQo09rWui/YErjvzwh/2bAv+D3M4X
-         gVA0Z7sFc1WeOXCeJczDHWrs5VxyH1KmVoN9kvSy6jrbjj81XTG5w8Y2VR5ntcD50pG3
-         iDFM9OkRTuExJMDQu7yvN/xRrg635/YttuD6ZKJuccoSa04JYPORUDDwiXeyCAxbv+Ty
-         hRww==
+        b=Tx6VWpwccY/V7SwlSb+rvbkNoCsp6QDedP2zxvCzR7ZsF4MNxOkGRgrVr9P2DLOV+e
+         /SNxxL/0pxqPa86JeDir/s5lB7onPtuVWSEo0nkzSEyFRwQcHosOwSJAGWMAh7VYV7MN
+         oAc0rE6XMI4t9+qV2QivgpJFRgyYgnOI+KvSP0gX1aUGA+h+M2fPfPblFYenJdueUUg8
+         rQjPzKFd+vf/iW7vTPuc3P+K7rL82nTJIaYIbxLKug6NFZnfyi7g98kg3cggWqx4OMVC
+         5lFcRJo8ascDodZOtl/Asm0ntSg3VfBFdHMMj0Gq5TmtpGl7A2mZ1ShvEAWG2I5koJCi
+         HSSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777020618; x=1777625418;
+        d=1e100.net; s=20251104; t=1777020823; x=1777625623;
         h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
         bh=i9nRQWrSO8yCuAghUfsOuR4TVxWLZXmy5/OuspGEKv4=;
-        b=hW3mFBf/D7cQjy94DAUOxJKJ9NTgXw2KfX+8KHpL/Obkb5LpsJqy/T95V1xgqEjSNT
-         0umXSX8TkIl+QVNfiHK9sLOYFMigoW2hAFHrT9DImXIGOkLdcM1hw2aE0NgV6joQuZtJ
-         Z1BDSueCRF/8WFD0QcDO0AjwBtwGsBlKbQ3b5wOyPaDJJNZsg12dqF7EWxrHKIdCXM/W
-         fuqOPL9GSAIAdOc4yaqgR4yUd/0rwqL/H6a+9ZxBZ5xZOvk8reD3UZP9IJTFT3pvoLAn
-         m9L593aQ/5BYLYMSHvybttW3DwB9Luv6H1r2r802j1YQn2vtaVuU2G1bDOks53ResY2g
-         zn7w==
-X-Forwarded-Encrypted: i=1; AFNElJ8swhSP+vdZ7URhjjzVG7leVV47hvjtK639cInSbaCBC3VkNqdly+hJmA8DLbU2TXvCgSeGPw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywo86p+8pnNrLhruuPBO5hiNDBI9TAiE7PIzYBFSYS/zilzb/MF
-	WnMOCkpc4xnZe/W+LRhS4fMBvYcKH9HsgdtEQtbVXOEDVdvZw2wPrSkcYpnfwjPeTZJ3UixjAHj
-	qkPB2T0Ik3YuoG8KiDdNC80INLw==
-X-Received: from pgx2.prod.google.com ([2002:a63:1742:0:b0:c79:63dd:68f3])
+        b=SMqJj9/m8mwt9uxbnbd0iCLz67Jlq9/jodTqdmDb3LldYnYjG8U5RcJE5Ve2PocEQ5
+         /kar51EFMBBLXN+Pk+uStS1J43wk1kz9MHGEMwnBr5WiURAUY4TgwqJMf+eGdQirmtxK
+         ihK7TTnvlA9+qbjFrZJEsIC6/GMJpHqHcXA47Vj54GLpC/QNvC5PDZqt7nXfeTG2nQNj
+         SvpB9AHCu73DVV+v7VC+/xFsiygwnuts6arexKYWhvAje3uD1Ot2KerYU0wcotAq+66g
+         atO25uyRxeBGcac+XJ0WQYy/E7cFsaYuApfetWeGAlbneL0Nb+BvdQy45ZQvkQxG4Tzk
+         PcGw==
+X-Forwarded-Encrypted: i=1; AFNElJ/lyJrcejX9C/pRFWEgTvMkV0IBsC7FBfOdjkMuwA6aC7WKMi7WYRKVNUQ9WaZJix0jl2R8og==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzaOoZIB8KdTppqGKlaawa8GnH/1T59KcHp4FoqY27LWOYsrCSc
+	Zx3P+u6j7fK5zjFplXoqMOamZxmLn6twVZUmeXRoEoCvaSy6kBmwxJxSLBItbgXi1zunWyhi8hZ
+	1o1FR0PiEKzC9Rp7nq3sSgrGkig==
+X-Received: from pfbho13.prod.google.com ([2002:a05:6a00:880d:b0:7ba:8e68:3140])
  (user=joonwonkang job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6a20:7fa2:b0:398:9662:10ff with SMTP id adf61e73a8af0-3a08d687750mr36319637637.4.1777020617462;
- Fri, 24 Apr 2026 01:50:17 -0700 (PDT)
-Date: Fri, 24 Apr 2026 08:50:10 +0000
+ 2002:a05:6a00:2ea5:b0:82f:1973:4b96 with SMTP id d2e1a72fcca58-82f8c91bc71mr35909962b3a.26.1777020823227;
+ Fri, 24 Apr 2026 01:53:43 -0700 (PDT)
+Date: Fri, 24 Apr 2026 08:53:39 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -55,10 +55,10 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 X-Mailer: git-send-email 2.54.0.545.g6539524ca2-goog
-Message-ID: <20260424085011.3502295-1-joonwonkang@google.com>
+Message-ID: <20260424085339.3503582-1-joonwonkang@google.com>
 Subject: [PATCH RFC] iommu: Enable per-device SSID space for SVA
 From: Joonwon Kang <joonwonkang@google.com>
-To: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org
+To: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, jpb@kernel.org
 Cc: jgg@ziepe.ca, nicolinc@nvidia.com, praan@google.com, kees@kernel.org, 
 	amhetre@nvidia.com, Alexander.Grest@microsoft.com, baolu.lu@linux.intel.com, 
 	smostafa@google.com, linux-arm-kernel@lists.infradead.org, 
