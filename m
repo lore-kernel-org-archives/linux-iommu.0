@@ -1,110 +1,157 @@
-Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012027.outbound.protection.outlook.com [52.101.48.27])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B5943659F6
-	for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 08:57:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.73
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777021076; cv=none; b=annPhMvwyH54yKWrlnIUbsZOA4I+ALRxiba5jC2bfieciNxrn573VNJb1S17Hqnj4RjGqWVvnioN1iGdSsoFOEP0imA2bT2Z0y59Sk62u14IqnyYYdw56G0+jy66Y54ffl3wSm7uuGYm+8zzMtnL+v3v6fXahKdICSOacPE8aiQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777021076; c=relaxed/simple;
-	bh=im9BpNo3HM0WXa7B46VITPQSYzn/y4+H/7Tp17gibD0=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=rFoqunJu07ZaBMCP1boJ0XbLLqAhGhuxVHPFKOuS0Uc8lMmJ4X3nAcGjIRUlJJ1bnqG1yJ2LztHcO8Mi8qHnlc9irnv+p6A55cXc2ZjR3mpng8yvEh4yAQwB6PcxUBvgsMnXazUAZ3dTjEwgftf/qVQguYZBt7Z3s+7zfPU0XEM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=QxR1LsjQ; arc=none smtp.client-ip=209.85.216.73
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B10E13254B2
+	for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 09:22:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.48.27
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777022556; cv=fail; b=iZkoWx0FutRPZ4kTcVY2Uu6dHgFUxzzIUy5+7Hz9auNlowQE28g6KSNtRGAmVjtr8T164XW+suS+Kp2YW7A6aCsYme9iOsNeJpeSMCadUVGVkH+55Oi4ouKR2FUY80iUxhXhY9IpV5ily3Sjq9KVIFGTX3ckyPT2XlTf0CuAd90=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777022556; c=relaxed/simple;
+	bh=s/66PweP6XrBvNKHvpeQB3mKT1cHSoT+XwzadR+wRzA=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=EbahIFLpm6ky+0saLwOnZO3C3kHoedhODP7dm+HA4ydh1IupYxY2oF7Wg3Nz+UD+FalQhiNQP0TGydp25jKMSDDdo3qzlJA4b7P0WS/Bd91rYlo/5B9PDzBuYkgIRNrRa6aKr4FrwRUVFCHbyvn3+04tUrn1UIwktJnRgQCLT7E=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=sAuFFxUH; arc=fail smtp.client-ip=52.101.48.27
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="QxR1LsjQ"
-Received: by mail-pj1-f73.google.com with SMTP id 98e67ed59e1d1-3614272b00cso9452015a91.3
-        for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 01:57:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1777021075; x=1777625875; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=fwFNTETipk2+0oOmAmumV4DtfgdBkUEEsoK+rKkQKqg=;
-        b=QxR1LsjQOosAg25P5iwQA2xo10l+sL6XthNA8HYeR17VKYu+JNM3vadOkO3nW+A5Mn
-         To12g6BG8/0jJ1xppjwyccWp5O75gT8Pwv2o9azagNuOYm60P+92k5yhUBnyUme4PftF
-         o6pVtVdAM331bVmJmHqaTNrraFb9ZA3z/R5mVwcCYCdbHoUcksqf1Wu4xUdLMFd7g0GO
-         IX4ioAS0GNzVseKrZGgVN/TVVsAtozwtvDGrwpS0GSGAvRN33UeeqwoxNxttNdppDtl6
-         t6lRiwHttSmnPp9U5Z0/lXtT/1nI4Gs4CdFEvg8s9/Lg+57UBvuiYns5/sPnuA/tWw/a
-         ua+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777021075; x=1777625875;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=fwFNTETipk2+0oOmAmumV4DtfgdBkUEEsoK+rKkQKqg=;
-        b=q8LAuuhWAEsUH6qad00IWNW0WWXIGGPIE+FkQc6mnCWAgUd2X0z3nJaSHTT74z+YYr
-         VvGvM5q8BxHz7Q+F37M2B/IETIN2MjCYc9CV8RWa1P9wlETJqh+0occg3AJm3sGpvfI2
-         Voek7F7rhl162Px9XmwwjKkZYzkz2g9yEev+h6ETw/7z7qNork22xJcc/SwZ6PCVr42c
-         4cxMm07am6FzccWO6zMVl0yYXGt/8od9gXRQPUydIgn6Ncu542v5fBURAaS2xjd1S5Pr
-         n7ntgD8e67Vp4VZzhvuvbLICpuxndR4g4Wvd3KTC2BEoR5Cz6IQ1324Nx3PIVXWGw7Uw
-         O34g==
-X-Forwarded-Encrypted: i=1; AFNElJ8/ADxiJmU73JKwsmSyinz0dgydxPnOe66+A3omZDe+9U7ku1WnLPDOiQGinSB3ZoKMmotvPA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz6pFvKxlYIq9zNaQbHSy/BowMRnPllYyTBZHnrq5wKM54kzkdA
-	rFZ8m9lrgm9QLaLRJ6+JJ1L95skuNhwdXpdjecxfbGyuwJyaW1T+nUYyXHWT5X/SOTVbrD0GBV6
-	y7EkfwPj/ySFpXO2FyqVmbMQPvQ==
-X-Received: from pfbfm15.prod.google.com ([2002:a05:6a00:2f8f:b0:82a:6ac2:2386])
- (user=joonwonkang job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6a20:734c:b0:39b:c4cd:d854 with SMTP id adf61e73a8af0-3a08d8a876emr35407723637.30.1777021074747;
- Fri, 24 Apr 2026 01:57:54 -0700 (PDT)
-Date: Fri, 24 Apr 2026 08:57:53 +0000
-In-Reply-To: <20260424085011.3502295-1-joonwonkang@google.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="sAuFFxUH"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=JgDhjf7qnbEqtdPvj71rlq91jedvSG/LOpt91mEnUCEVzd7n46WKkokSw8DyFDHxKupcVGJNIkDH68ruwxi9I38QLUGUdvIiUUMkjnMCWwFCrAMQLyBDoYed4dPDA+uclcIcbAsm3oOmf7GAno/jiA2yz2miVZcIOnoFiQxr4xnxYJqeAvvAIlXDcRt1F1wiC2VgkZ9DiAVybkZSfQ4JZSJtgcmbMHNSSTzNZnXtrjhoclTM6aYluHb9xW5e3u+TLtoO7elmCmPspvd/DElJtsx56QUbM+Mblff9npugMRXZMEzIjFbRtzYkQavq+7g8aZvHb/j9EgbVxkkv8gzQ8Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0qxRhm1dI5zNuttdD7ZWldE7qGLOBLbb7id5A1dTJFw=;
+ b=rpHozq+Y6+NFp6H/V2C7eDkiTRi4iAkj5aF8p3IOs7QUOIkJfvSV5zML7FWLtdzNYMUY49mqVkaDVTFZ+nijU8s5zzsA7S8sv1YPxxRX6H5bMPJ8OGxQFd9RpnK/6NXB2w6vhcUJne3tED/a5lmcj3Ed+a04HMC73TOGj5YrTHw8yOXLfqPgPRiAwb9un/OC3sILwgcp+lwyGX3Ko3AZhtpRNGvp5t2a+cwQRAblPvgeMjhhHOees5ilaG9u7vVB1dAbZNjCTweWu/6lKKAzur8vfy+XaHwqgrTgYgeIzmcZ97SbCkJU5ugLz9IBBSMUv2c4rTPsiD+TSh8nkNVVoA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0qxRhm1dI5zNuttdD7ZWldE7qGLOBLbb7id5A1dTJFw=;
+ b=sAuFFxUH4tQmAgCquyaKjAa8cF3u2MrRddk9H1b0uVHYzKcJG6t4PtCt1OIaFTL5Ex5WVODMTxWKfN013l7siq2UyYi9PyOttl9B7M0DmC+TECdDj0SbaObX4DRyiV77ansF/VWuCoUvpbfDsxUh59jF4V0ZhJEbIv9em1DOMzw=
+Received: from CH0PR03CA0439.namprd03.prod.outlook.com (2603:10b6:610:10e::8)
+ by LV3PR12MB9096.namprd12.prod.outlook.com (2603:10b6:408:198::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9846.22; Fri, 24 Apr
+ 2026 09:22:30 +0000
+Received: from CH2PEPF0000009C.namprd02.prod.outlook.com
+ (2603:10b6:610:10e:cafe::9) by CH0PR03CA0439.outlook.office365.com
+ (2603:10b6:610:10e::8) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9846.22 via Frontend Transport; Fri,
+ 24 Apr 2026 09:22:30 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ CH2PEPF0000009C.mail.protection.outlook.com (10.167.244.24) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9846.18 via Frontend Transport; Fri, 24 Apr 2026 09:22:30 +0000
+Received: from purico-ed03host.amd.com (10.180.168.240) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Fri, 24 Apr
+ 2026 04:22:27 -0500
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
+CC: <joro@8bytes.org>, <jon.grimm@amd.com>, <vasant.hegde@amd.com>,
+	<frank.gorishek@amd.com>, <thomas.lendacky@amd.com>,
+	<santosh.shukla@amd.com>, Suravee Suthikulpanit
+	<suravee.suthikulpanit@amd.com>
+Subject: [PATCH v2 0/4] iommu/amd: IVMD handling cleanup and ivmd= boot override
+Date: Fri, 24 Apr 2026 09:22:09 +0000
+Message-ID: <20260424092213.16976-1-suravee.suthikulpanit@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20260424085011.3502295-1-joonwonkang@google.com>
-X-Mailer: git-send-email 2.54.0.545.g6539524ca2-goog
-Message-ID: <20260424085753.3505585-1-joonwonkang@google.com>
-Subject: Re: [PATCH RFC] iommu: Enable per-device SSID space for SVA
-From: Joonwon Kang <joonwonkang@google.com>
-To: joonwonkang@google.com
-Cc: Alexander.Grest@microsoft.com, amhetre@nvidia.com, 
-	baolu.lu@linux.intel.com, iommu@lists.linux.dev, jgg@ziepe.ca, 
-	joro@8bytes.org, kees@kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, nicolinc@nvidia.com, praan@google.com, 
-	robin.murphy@arm.com, smostafa@google.com, will@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
+ (10.181.42.216)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH2PEPF0000009C:EE_|LV3PR12MB9096:EE_
+X-MS-Office365-Filtering-Correlation-Id: e9304b7a-e612-44f8-76c8-08dea1e3026c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|36860700016|376014|1800799024|56012099003|13003099007|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	Kvm3VLuJqvQTWCz34aokZYwsZ2t0TDjaqo3y0RzW78a31RRqZ9weJV1Xhpj0k1aRvVJKx1k+bb8EP6yyZmjpNfQnR4JVgAUD3nDEoFptmXB3Xg87meC0FNL1d8XDhchpxPBC09OuuQK8GM/mzdKA8x2SHL0FBlUiq1XPFAEjtQUZiZx+1MyX9/+XACgYoWzrvnYM7+u661FmP6HZZehpur+tFvLBV6bVv4JPXpK0ZATnsFuU2tPSdJZVMXYQjgM7g4+pZEAINwjpNs0UpG6QcKTnk9326JBZQ1V0V/PhbEEcddVy8gv1/EGbqm/TpkxljpDbSuVWEhZ1NkLGOtz8kPrchv0AZIkStqH9mU2YM1aB+KJ2R1H6Uc0689aroJSH5VVZ0L/+TPkiQqrlSr4tEhReFJYOiGjJhbum+6koqKda834deIbMgHYgZWkOXEMsRSlM1jd/F9SsEp2sipVeMyC0Ia1/VFzaJK+qXStXmRN8AdoLDDgUDvgpVCfP8K9KQYjnsFfwAHtXRdhfmMePGAOoIGI5lydN7a7sli+KkRLxQknf+cRGvwuPibX5sT1Kyx6EeFRkZ0JY2f23emQNx5phPUmPSmq/GgWqzqfBWAuGKW++5ikYm0UtbkOO+HGCazDzZvaWzFQzj+QzNbKGw7qCfRNNnzPpMyEub6AKFh/HtOofuCbs1fQdSAcXq+B4ZaExz2fu8wuFa3MMt0VFiDe6Er1L4gny+o2JcDs+Sw6fCJ8KQHwQ2zjeVaQNBsfHR8ZtH7JpD89yPEDq3RAjHPU/yAYIh4NhgUNsDVJPfV0=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(36860700016)(376014)(1800799024)(56012099003)(13003099007)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	BjxIh19tWH0yoSh323BMQRTtxwnMD/9HJ3D3WhrwANALFGENchLzsh14LS/kgdE7/I9MVLDjcrvGSDyuIz7iT0tINASTGFxXJMrCm+rWF6tb22hGXBPakR2p1LSM9QEk3mB1TXjmoPtsKAdqC/cAAPRKQLobD5GkktIyel5OSMtaDll+d4zGP8Xgha7fmRoNpPYkkG2nLOARrnvv1A9I/H6X4N2eKDTkhUaHF95xf3oNeDBLqZUnClF6UxU5YPf1BYiIbRo6nMf2u+ZE7/SqWSpykYxgd4nG6D17flLZe+T57vAwan8Ozn/dDJ5OZsN177fhvCgQgWngXGmO8FniTT0NTLHCuBtOO0R2i7VGOEYAPSEBMJLlOdnan/Ca6eApfiufv1InHc9yijHsBRu5i2fVyYafGLsk1COJ+eOf3dAAb+xqyWwjCpzHsI8hWhQn
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2026 09:22:30.3223
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e9304b7a-e612-44f8-76c8-08dea1e3026c
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CH2PEPF0000009C.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR12MB9096
 
-> For SVA, the IOMMU core always allocates PASID from the global PASID
-> space. The use of this global PASID space comes from the limitation of
-> the ENQCMD instruction in Intel CPUs that it fetches its PASID operand
-> from IA32_PASID, which is per-task.
-> 
-> Due to this nature, SVA with ARM SMMU v3 has been found not working in
-> our environment when other modules/devices compete for PASID. The
-> environment looks as follows:
-> 
-> - The device is not a PCIe device.
-> - The device is to use SVA.
-> - The supported SSID/PASID space is very small for the device; only 1 to
->   3 SSIDs are supported.
-> - There is a custom way of transmitting the SSID from the kernel to the
->   device.
-> 
-> With this setup, when other modules have allocated all the PASIDs that
-> our device is expected to use from the global PASID space via APIs like
-> iommu_alloc_global_pasid() or iommu_sva_bind_device(), SVA binding to
-> our device fails due to the lack of available PASIDs.
-> 
-> Since SSID/PASID is supported per-SID in ARM SMMU v3, this commit
-> leverages the fact and lifts the use of the global PASID space if
-> possible. What it does includes:
-> 
-> - Introduce a new IOMMU capability IOMMU_CAP_PER_DEV_PASID_SPACE, which
->   represents whether the IOMMU supports an independent PASID space per-
->   device, not shared across devices. ARM SMMU v3 is the case.
-> - Open a new API iommu_attach_device_pasid_any() to allocate any
->   available PASID and attach an IOMMU domain to it.
-> - Opt out the use of the global PASID space for SVA if the IOMMU has
->   that capability, and use the new API to allocate a PASID in that case.
-> 
-> Signed-off-by: Joonwon Kang <joonwonkang@google.com>
+This series refreshes how the AMD IOMMU driver models IVRS IVMD entries
+after the hardware exclusion range registers were repurposed.
 
-Please disregard this RFC as I have sent a new one with more recipients.
+The first patch renames the associated MMIO offsets to reflect completion-wait
+store base/limit.
+
+The second patch drops the workaround that forced IVMD exclusion ranges to
+r/w unity mappings; the driver no longer programs exclusion range
+registers, so that the workaround is obsolete.
+
+The third patch centralizes IVMD flag definitions, renames the unity-map
+structures to ivmd_entry, stores the raw IVMD flags byte from ACPI, and
+derives IOMMU reserved regions (including exclusion as IOMMU_RESV_RESERVED)
+from those flags.
+
+The fourth patch adds an ivmd= kernel parameter so up to four per-device
+IVMD-style ranges can be supplied from the command line when the IVRS
+table is wrong or incomplete, documented in kernel-parameters.txt.
+
+Change from v1:
+(https://lore.kernel.org/linux-iommu/20260420170033.6780-1-suravee.suthikulpanit@amd.com/)
+
+* Rebase on top of patch "[PATCH] iommu/amd: Remove dead code for exclusion ranges in IVMD"
+  that was submitted by Yu Zhang <zhangyu1@linux.microsoft.com>.
+  (https://lore.kernel.org/all/20260331152550.479841-1-zhangyu1@linux.microsoft.com/)
+
+* Patch 1: Modified to only rename the marco.
+
+* Patch 3: Reintroduce logic to parse IVMD exclusion flag to allow
+  reserve region of type IOMMU_RESV_RESERVED.
+
+* Patch 4: 
+  - Update the sscan function to scan start, length, flags in hex format only.
+  - Fix apply_ivmd_cmdline_entries() to not free the cmd, which points to
+    the early_ivmd_cmdline_map[]  on failure path.
 
 Thanks,
-Joonwon Kang
+Suravee
+
+Suravee Suthikulpanit (4):
+  iommu/amd: Drop unused global exclusion range fields and init
+  iommu/amd: Do not convert IVMD exclusion range to unity range
+  iommu/amd: Clean up and simplify IVMD entry handling
+  iommu/amd: Introduce boot option ivmd=seg:bus:dev.fun,start,size,flags
+
+ .../admin-guide/kernel-parameters.txt         |  16 ++
+ drivers/iommu/amd/amd_iommu_types.h           |  36 ++--
+ drivers/iommu/amd/init.c                      | 159 ++++++++++++++----
+ drivers/iommu/amd/iommu.c                     |  27 ++-
+ 4 files changed, 187 insertions(+), 51 deletions(-)
+
+-- 
+2.34.1
+
