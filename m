@@ -1,172 +1,274 @@
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33C813D6497
-	for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 16:39:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7837F3D648A
+	for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 16:41:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777048764; cv=none; b=oyqqBPxMwZMciMs8vAldPSSBgMp1rb2Zv2PaHigtkPIg3qTKgP7kUd9040v0zOrb6djMsKJNb5TmstXKiX8c61USVkbgv3ttD/MfWgtWLHFG4feMti5mStTI/yuIiNnYKDkHll3B9mCE/nPlDyTxIUbknucHYeX7fSSRnW7CQ30=
+	t=1777048876; cv=none; b=JuGt2v2vTWAcm+lgKEWGqG9h+e/Lckpt+3Q17vWfY0hroBZDjY6MlmLBi/hLpOj730LMfx/62kA5Q0uNoj5rbgGcqE/mZAeuLQMH9W7PheOUHmYDaopFImNhzRm0wLGx2PU2h+jQM+Ux++6AGwQ3Qb6i7MJeh9Xq/CX8bIzpGB8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777048764; c=relaxed/simple;
-	bh=c7Ret2AWgfDsaIm21hkMMD9rs9MLLV0BuDZ7Xo+ndwQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JQbHw8mVFc/0b755AwHJX1qmFIu5EK5QGW9twldB2BPV16e3C4QngL8Iq8+Z8K1zbRGa0PX/RaRFYGHMsM+gZC1g927G98duowyMe6uTD65OgAzw6cLZGoZWT00yTcK/SyPDnx8QasqhyqmRErEFYtE4x4tkle01A2FXbTPCAEA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=lqJoClaJ; arc=none smtp.client-ip=209.85.222.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1777048876; c=relaxed/simple;
+	bh=jQ/5iV3NcxNIjNq4NJAWgTrBlzhII3dS9XKJUKy6PHE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=jiIq6yMQP9D9l+U8tR5PvsxX6SgSJ+w+Cy+VKYTOx9mGUOG037k3WFEGm606qhOPZdM9KKZG0gRAABR7dIGsIgtFi+L/Givpe/Zm+AYNvx4uF7Ev6e9ZVxsrUwrUroQO0lajwPv5xoZ4dq6JF8ekMlbl7dd/gd2iL4CeLK55ecE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=dTSqdamw; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=bf4oIMRM; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="lqJoClaJ"
-Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-8d6d5e45c43so914792885a.3
-        for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 09:39:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="dTSqdamw";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="bf4oIMRM"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63ODPZjg1823362
+	for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 16:41:15 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	eltpKz/vHGzdVltnYjt3RwZNW4ucKi/6/+2SCBIudcA=; b=dTSqdamwixelTx2H
+	ATfV1RW82rZYb+yMxshg5gurfKGBenY2S+4490x+DvVDwjno5hT+bINhtZv2zuoa
+	p4bcdkR0uUEO7w8JRUTXuJM+V12dn/3GD7bRVab9LrGH4IrbzLrmtTQ9qRh93+cJ
+	YJFuTzbrYPF2155OeQXvoesjaP0q58uxifPK1za+Ir5D4a3/XGwGZN7tw9HBdrcv
+	6I+DtZdenGYWnjAKYHNvgAENWGMNyHXFWayBdyFZxRDAm4C6XJIk1Kopu0jw3yDJ
+	QbU+kCBkpiSDoYyO03JXXlrnvby0iizFtV0/mlrtBr0Mgbf1WwtnE/CGsC+bF1rV
+	UjCBUg==
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4dqv5ruupq-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 16:41:14 +0000 (GMT)
+Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-35da86144daso7911660a91.3
+        for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 09:41:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1777048762; x=1777653562; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=baVqOWXW0W679wCWJSOseh6T7DFu4rt5dV7U28qjPJU=;
-        b=lqJoClaJwIPEx//OytQyDeditRKv9F3IM5Z+h3IhyK67nLpe7K6yvHfK15TvQStNoc
-         TjJMV3lOMsBnqMUwsMMndfd+B0dHKIkqv8ht6fPqRr4bKc1n7Q9rdqJ+79CaDriYmUon
-         AJrw808Ri249WAaEJ8qsb1/0+D1/IbKvVgaD80+j8FWgq+MoQ/ATfMYi2u7E6cr8wd3B
-         iXL3Ys6DEU76Ym8IfD4lqVNXlc788sbkgadenaMEAFfWJ9OljhaVGY6WM+ixKHciev+U
-         FrTpm2Jx0f8F7GspAc5hU+r1oniHGRblnjGaFiLavd9XudU5PRWBewvE6tBlEDqMZzzW
-         aT9w==
+        d=oss.qualcomm.com; s=google; t=1777048874; x=1777653674; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=eltpKz/vHGzdVltnYjt3RwZNW4ucKi/6/+2SCBIudcA=;
+        b=bf4oIMRM8cnfUx1rnrAcSBEZS51H17NO9zJgPFTQ+mt+mHXuuJ4ZM+kE56uxGPUXYz
+         4FdVi6BsDFWAC6IWZUWd9yIF9qEBHRKDSvd3vTABp117NSAMiGiQkYPcKg39ofNinOri
+         WQnPkEXrVdCIbQFsbv51HgEGyMwjEi4JU1+gF5VZf5vvojBAqYxiDEuffz9cUY43R4Dm
+         BUafgIBql0V/zNt40I+0Ec9NlOF/aV2XUzFY6S0E9OpSXHkLGbIjiWZO+FuV2ljqghkw
+         0RVgGEKIxfLlhlxUTwU9sfKLwtIgTxEv9qV21/QsHletsGCK17eQqT1gcknzYJ6HB/8q
+         Q2AA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777048762; x=1777653562;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=baVqOWXW0W679wCWJSOseh6T7DFu4rt5dV7U28qjPJU=;
-        b=UMMoB5+iYb+3pYR0falKT/r8Hid+eIdNfj9eTXCGjO7vtdb6TdGrKwMqGnGSpqvrVE
-         5yWH40DH8UEr1fTMxRHZcN5d/cossAXoXMch3mfTbYCGDOvLEbiJ/mCzc6ly58X1Zeds
-         4gQNhLqhUmW+nI9Q0Hr5J/CH8pSrcR1DkNZPDrOZ+DrT8nUOHerxHg01pTZJg3uit7pf
-         wniEr/PMjawE5N4Ucx6mDwICT3N8BowQw/EnwXhByFQkN73bZqYS3d2PjP2Q3VUD52My
-         hHqK9g/79a0rE7FWgyc8WCOnlpM2RDNhrEJsKQc+4r0RF5Kb3mGZ8jv3ywM7F9Vlf8PT
-         /YGQ==
-X-Forwarded-Encrypted: i=1; AFNElJ81EuoHMh1QIuoqbLwz042vw252XXQPnRKoCcAEiOZ49Y4f1Fr9H3I4ch0LTPCFye1rHpuyVA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwMNVUh9eNhhOPg4XG7oQRJvnsHV2EO51oA6/QguyY661Lrdp5A
-	2XbvOfWpAp567Ucwk1ToMg79i22jr5QtMeLgBAte8KbYR6vjN1VvectEnDKDDss0pvI=
-X-Gm-Gg: AeBDiesuhlQhGXIGOSYBsxh4DR2WX4eMZGaIeqF1UTv/8y8eUGyPoRFQuhD5ElQPmue
-	YfB9I5dOMUIfHyN3ral9yWxU68PzRSZYRV0o6DCHPhOxUI7XWKLII4JqzANqrrW/fKUTtkMXsiu
-	vbI/hp7eSdmnmZKt+bfiCnx6oT/DeNsFIokhkgRR3SleWonz3K39mGpp/kMtzmWTGzXNf2LNK4j
-	zDv62s7BFQd41taZhCN77EEDl3I82A4cLMAInJnWSKQmXs1UkW4CEoq2EECkm69uGARbD+ACwBt
-	Vl+tTGHZlRrrh1a3CJBxxmw9olo1d4nzSpLDZtCZEmuB9wp/7uq5X/Lzj8hBVi37/z1Eqr0UUcF
-	Qo44cK/h7dEaBvmQJ+N/JglBgKL1w5/hZ4zJ8XxR1u/X83+BJTfGQeP7j7fCbt1ks4NptxKWBch
-	haYN68LpX4YN2Vo9HXCUknYZwjbCQ7fVLqMBf/cZuGF7zIvp0cIcFAoZX04fNjEHuAwHxGL6bUV
-	v46gioxqOJXm7TOt3yBpNkaE48=
-X-Received: by 2002:a05:622a:4187:b0:50b:37a1:a012 with SMTP id d75a77b69052e-50e36c419bcmr479897421cf.41.1777048762005;
-        Fri, 24 Apr 2026 09:39:22 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8b02ae7fef0sm182965026d6.38.2026.04.24.09.39.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Apr 2026 09:39:21 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wGJYn-00000003KVv-09ty;
-	Fri, 24 Apr 2026 13:39:21 -0300
-Date: Fri, 24 Apr 2026 13:39:21 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Will Deacon <will@kernel.org>
-Cc: Evangelos Petrongonas <epetron@amazon.de>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Pranjal Shrivastava <praan@google.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, nh-open-source@amazon.com,
-	Zeev Zilberman <zeev@amazon.com>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Allow disabling Stage 1 translation
-Message-ID: <20260424163921.GG3611611@ziepe.ca>
-References: <20260422064431.GA49867@dev-dsk-epetron-1c-1d4d9719.eu-west-1.amazon.com>
- <20260422162351.GK3611611@ziepe.ca>
- <aenp6FHzx9rtUQkZ@willie-the-truck>
- <aenqxasLJ8yKYqbT@willie-the-truck>
- <20260423142326.GP3611611@ziepe.ca>
- <aepRy7Gp7Ng85Zr7@willie-the-truck>
- <20260423223716.GS3611611@ziepe.ca>
- <aeuJQW8bGLY-O_vv@willie-the-truck>
- <20260424154256.GF3611611@ziepe.ca>
- <aeuT1-TB6dOT5ZQ2@willie-the-truck>
+        d=1e100.net; s=20251104; t=1777048874; x=1777653674;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=eltpKz/vHGzdVltnYjt3RwZNW4ucKi/6/+2SCBIudcA=;
+        b=ntq7RjHBcxr362Wm78NDMeTW02xkF9C9DMgwB9SiHgvJGPduz3fyLvu02Uh+saJBLZ
+         3ZEa+Tk5jtU4ppq0smmZO9vj7ZgQAiBUelY2RDWzbimgI3HYs8j3tvSa2zcy/Z2RCFQd
+         9tDZGdzBpqHa3y+8boVpLRrMDsxBKrnGoF/gvRt0dh7QNuvOTs1HQT0fbA/1gPeJs98q
+         7mJ6y/n+IuifSaUol3SSWF0e1Xi0D5YXF4Hb21qOx1+AewXu57I/os4AOMzyiWrJCtqT
+         cz4ghHLsXrVAaRK2iImLFqZmygjKggx1w3OSw9DjENkHaQBbbvMIJ6Ze7fUKvisxpFlV
+         /ZoA==
+X-Forwarded-Encrypted: i=1; AFNElJ/o08f8Nj/xB+ZQe7nH11/y/Wc1lCDFX3GHzhucI8IeBCObiDp1EnnV2njCC27AqzgSt0EmdA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yygzt1hLQAsKc3iit5UCJH4MiYznf6moEXbYNSirZmX8iso+9kO
+	M3htSYthvVQ9cK5ZqSd+04qoYW8NlQhVfr1s84kMFc2gQQ181LH7QVpAMAgQEMGtG083iu9TYbL
+	6CpNQofXTxkUTPG7TblbnzT9h69VR9GsAnzNkJo1CvgGLviSECr6cqv558Q==
+X-Gm-Gg: AeBDietwtfnUoLEW49KZVlhnK//SxesQWGFTWVJG5zJ25EO4WF28rEw/A5roSbWNVCT
+	4MqIQdJB4xn9S0u1tb3FaVtt1b2eYvbjV0c6nhJ5Tu+q2mEmFSSNkNgy63yTm9/AT0e6o6I7FGG
+	vF7Z4D4Rsw27aT+w3op9Svjj3SsWMDCyZa8IjxRZ9eW1MFDY0Ph5gj5d1HHx3kGUNbNEWOJaXoD
+	v0kHlJIfB6vMk34mo4nWNpdrSLP6gOIBLgSF1eRKySNAuq9Q0pRQVioz6fLFQr0GGiVkmUC1IvW
+	if937m9/s4GH4eb9szCgzghglbeYhRf/STqBogzcRMkINElv1kfn9Wj5zaoV0j1/M/xc/T89RaO
+	CSNToYgpaWoomMW4Z0UdieAdZgEUYJNfjAi3H6/AFHYSp8OLgZdS/SL8lJyYiesjm
+X-Received: by 2002:a17:90b:3c0f:b0:359:87a8:e65c with SMTP id 98e67ed59e1d1-3614046c9f7mr32840188a91.17.1777048874070;
+        Fri, 24 Apr 2026 09:41:14 -0700 (PDT)
+X-Received: by 2002:a17:90b:3c0f:b0:359:87a8:e65c with SMTP id 98e67ed59e1d1-3614046c9f7mr32840139a91.17.1777048873514;
+        Fri, 24 Apr 2026 09:41:13 -0700 (PDT)
+Received: from [10.239.60.18] ([106.192.26.241])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-361418c3944sm30414672a91.8.2026.04.24.09.40.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Apr 2026 09:41:13 -0700 (PDT)
+Message-ID: <eceae566-93da-a0e2-cac0-1f5abdbbe661@oss.qualcomm.com>
+Date: Fri, 24 Apr 2026 22:10:09 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aeuT1-TB6dOT5ZQ2@willie-the-truck>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v2 02/13] drivers: base: Add generic dma context bus
+Content-Language: en-US
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Bryan O'Donoghue <bod@kernel.org>,
+        Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
+        Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+ <conor+dt@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Stefan Schmidt <stefan.schmidt@linaro.org>,
+        Hans Verkuil <hverkuil@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Danilo Krummrich <dakr@kernel.org>,
+        Thierry Reding <thierry.reding@kernel.org>,
+        Mikko Perttunen <mperttunen@nvidia.com>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Jonathan Hunter <jonathanh@nvidia.com>, linux-media@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+        driver-core@lists.linux.dev, dri-devel@lists.freedesktop.org,
+        linux-tegra@vger.kernel.org,
+        Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+References: <20260423-glymur-v2-0-0296bccb9f4e@oss.qualcomm.com>
+ <20260423-glymur-v2-2-0296bccb9f4e@oss.qualcomm.com>
+ <2026042346-trustable-register-095a@gregkh>
+ <06c04947-e72e-679b-493b-e112d693f391@oss.qualcomm.com>
+ <2026042422-deem-chemist-8d0f@gregkh>
+ <4c3fa710-f61a-4aad-622d-54909190cb9e@oss.qualcomm.com>
+ <2026042428-blemish-helpline-7d8d@gregkh>
+ <1e039dd5-da3f-19b2-ef98-29e64fdd925d@oss.qualcomm.com>
+ <2026042442-luxurious-antonym-f20c@gregkh>
+From: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+In-Reply-To: <2026042442-luxurious-antonym-f20c@gregkh>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Authority-Analysis: v=2.4 cv=LqiiDHdc c=1 sm=1 tr=0 ts=69eb9d2a cx=c_pps
+ a=UNFcQwm+pnOIJct1K4W+Mw==:117 a=K3jt3zD9TrcZs+Uyli2v9A==:17
+ a=IkcTkHD0fZMA:10 a=A5OVakUREuEA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=DJpcGTmdVt4CTyJn9g5Z:22
+ a=VwQbUJbxAAAA:8 a=7CQSdrXTAAAA:8 a=EUspDBNiAAAA:8 a=TCXhiZJuOe0p4lytgSYA:9
+ a=QEXdDO2ut3YA:10 a=uKXjsCUrEbL0IQVhDsJ9:22 a=a-qgeE7W1pNrGK8U0ZQC:22
+X-Proofpoint-ORIG-GUID: d4xAojOkKEI6IzoVvP5T6doImXrgHSHR
+X-Proofpoint-GUID: d4xAojOkKEI6IzoVvP5T6doImXrgHSHR
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDI0MDE2MiBTYWx0ZWRfX++oMDu+og5ff
+ EvPYaKHwjf4AxKsP7jzT3ixukWTICHn3k4ky84QLEoiuipE3A8Zera5i3QqD7OLXIXWDLJLzmpK
+ XqcjlyiGpXMVBZ/lciIT1cTZM9qtFBnYiMaWimS+07DRSb4otKTbRtcZks2nIoHvOib+ipU8vkE
+ ZIl9WOfOoTP41DAace/2JPwlbrCuOuikZKmkC/dYsXujBB/3Pz7AViJFN7NnyqzkK8cParp3BED
+ sK9PrJ/4mNVxRaoMP/6w9EypUP6iQUD28u/uvcwbCzgBIO9GEb7SUZp/2BdhTXX57DBE2cWehkF
+ 5JC2KidLZv7xjuQJVk+UbPME7Lp+prJZqFxUncQbiIHu+IiF/vzCUS0ROUDAu8RKtlGwSfi1xyH
+ AXqI6wt1xdAROSnSjkSyzJ14b6G5bR4ishLNDZLbtztQbMrocsHatYN73ee7Z0t7KHFsxLXLCIv
+ 7vPDl8t8E7CdlpTcucA==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-04-24_02,2026-04-21_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 bulkscore=0 clxscore=1015 impostorscore=0 lowpriorityscore=0
+ malwarescore=0 suspectscore=0 adultscore=0 phishscore=0 priorityscore=1501
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2604200000 definitions=main-2604240162
 
-On Fri, Apr 24, 2026 at 05:01:27PM +0100, Will Deacon wrote:
-> On Fri, Apr 24, 2026 at 12:42:56PM -0300, Jason Gunthorpe wrote:
-> > On Fri, Apr 24, 2026 at 04:16:17PM +0100, Will Deacon wrote:
-> > > > > > STE/CD is pretty simple now, there is only one place to put the CMO
-> > > > > > and the ordering is all handled with that shared code. We no longer
-> > > > > > care about ordering beyond all the writes must be visible to HW before
-> > > > > > issuing the CMDQ invalidation command - which is the same environment
-> > > > > > as the pagetable.
-> > > > > 
-> > > > > You presumably rely on 64-bit single-copy atomicity for hitless updates,
-> > > > > no?
-> > > > 
-> > > > Yes, just like the page table does..
-> > > > 
-> > > > I hope that's not a problem or we have a issue with the PTW :)
-> > > 
-> > > You trimmed the part from my reply where I think we _do_ have an issue
-> > > with the PTW. Here it is again:
-> > > 
-> > >   The non-coherent case looks more fragile, because I don't _think_ the
-> > >   architecture provides any ordering or atomicity guarantees about cache
-> > >   cleaning to the PoC. Presumably, the correct sequence would be to write
-> > >   the PTE with the valid bit clear, do the CMO (with completion barrier),
-> > >   *then* write the bottom byte with the valid bit set and do another CMO.
-> > 
-> > I wasn't sure if you are being serious.
-> > 
-> > CMO + barriers must provide an ordering guarentee about cache cleaning
-> > to POC otherwise the entire Linux DMA API is broken. dma_sync must
-> > order with following device DMA. IMHO that's not negotiable for Linux.
-> 
-> The problem is with concurrent DMA (from the page-table walker) and I
-> don't see anything that guarantees that in the CPU architecture. I don't
-> think the streaming DMA API pretends to handle that case, does it? It
-> relies on a pretty rigid ownership concept from what I understand.
 
-I think you pointed out two things, ordering and tearing.
+On 4/24/2026 7:04 PM, Greg Kroah-Hartman wrote:
+> On Fri, Apr 24, 2026 at 06:12:09PM +0530, Vishnu Reddy wrote:
+>> On 4/24/2026 5:25 PM, Greg Kroah-Hartman wrote:
+>>> On Fri, Apr 24, 2026 at 05:15:02PM +0530, Vishnu Reddy wrote:
+>>>> On 4/24/2026 4:43 PM, Greg Kroah-Hartman wrote:
+>>>>> On Fri, Apr 24, 2026 at 04:01:13PM +0530, Vishnu Reddy wrote:
+>>>>>> On 4/23/2026 7:07 PM, Greg Kroah-Hartman wrote:
+>>>>>>> On Thu, Apr 23, 2026 at 06:59:31PM +0530, Vishnu Reddy wrote:
+>>>>>>>> From: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+>>>>>>>>
+>>>>>>>> When a driver needs to create virtual device at runtime and map it to
+>>>>>>>> an IOMMU context for memory isolation, there is no common bus available
+>>>>>>>> for this purpose. Each driver ends up implementing its own bus type,
+>>>>>>>> leading to duplicated logic across multiple drivers.
+>>>>>>>>
+>>>>>>>> host1x driver implemented its own bus type to attach an IOMMU context to
+>>>>>>>> a dynamically created device. The Iris VPU driver now has the same
+>>>>>>>> requirement. Rather than duplicating the same bus logic again, a shared
+>>>>>>>> bus type is introduced under drivers/base that multiple drivers can use
+>>>>>>>> directly.
+>>>>>>>>
+>>>>>>>> The bus takes care of creating a device and attaching the IOMMU context
+>>>>>>>> to it based on the client inputs.
+>>>>>>>>
+>>>>>>>> Suggested-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+>>>>>>>> Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+>>>>>>>> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+>>>>>>>> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+>>>>>>>> ---
+>>>>>>>>  drivers/base/Kconfig            |  3 ++
+>>>>>>>>  drivers/base/Makefile           |  1 +
+>>>>>>>>  drivers/base/dma_context_bus.c  | 77 +++++++++++++++++++++++++++++++++++++++++
+>>>>>>>>  include/linux/dma_context_bus.h | 26 ++++++++++++++
+>>>>>>>>  4 files changed, 107 insertions(+)
+>>>>>>> as you can not have a device on multiple busses at the same time, this
+>>>>>>> makes no sense to me at all.  "dma context" is a bus-specific thing, so
+>>>>>>> please add it to the bus that you are wanting it for.  It can't be a
+>>>>>>> generic bus as that just doesn't work.
+>>>>>>>
+>>>>>>> Or what am I missing here?
+>>>>>>>
+>>>>>>> And why is DMA somehow "special" here from any other hardware attribute?
+>>>>>> Let me give brief information which was discussed, in the initial series,
+>>>>>> the iris VPU used platform bus for dynamically created devices and we got
+>>>>>> the comment/suggestion from Robin to implement a proper bus_type with a
+>>>>>> .dma_configure callback.
+>>>>>>
+>>>>>> https://lore.kernel.org/all/02b3d0f5-f94c-43cd-93af-97cfcf7751b1@arm.com/
+>>>>>>
+>>>>>> based on the discussion, implemented the dma_context_bus and used for iris
+>>>>>> VPU devices instead of platform bus.
+>>>>> Why not make a irus_vpu_bus where you can do what you want?
+>>>> Initially iris_vpu_bus was introduced, and it was made generic based on the
+>>>> discussion,
+>>>>
+>>>> https://lore.kernel.org/all/20260227-kaanapali-iris-v2-3-850043ac3933@oss.qualcomm.com/
+>>> I don't really see that request here, I see a "make this better and more
+>>> generic for other busses" but that does not mean "dump it into
+>>> drivers/bus/ for someone else to maintain" :)
+>>>
+>>>>>> Here, the device have only one bus (dma_context_bus), not multiple buses.
+>>>>>>
+>>>>>> Regarding the "DMA" naming, the core operation of this bus is its
+>>>>>> .dma_configure callback, which calls of_dma_configure_id() to map the device
+>>>>>> to a corresponding IOMMU stream ID. The name "dma_context" reflects this
+>>>>>> purpose.
+>>>>>>
+>>>>>> I am open to suggestions from you or Robin or anyone else, if there is a
+>>>>>> better or preferred way to achieve this, I am happy to consider it and
+>>>>>> rework the implementation accordingly.
+>>>>> As there is only one user, just make this your own bus please and do all
+>>>>> of the needed bus operations for your devices there (i.e. don't hang an
+>>>>> "empty" device off of it.)
+>>>> The reasoning behind to make it generic was to have more users - host1x,
+>>>> Iris VPU, QDA on the generic context bus, instead of each of them having
+>>>> their own. Let me know if you suggest to have the iris_vpu_bus.
+>>> But you did not add such users here, so how would we know this?
+>>>
+>>> And still, I have no idea what this bus really is doing.  Is it dynamic?
+>>> Is it self-describing?  Why not just use aux-bus?  What is it supposed
+>>> to be doing and used for?
+>> This bus will allow users to create a dynamic device and map to IOMMU stream
+>> ID via .dma_configure callback which calls the of_dma_confgure_id() based on
+>> the user inputs. This bus is under the iommu_buses list to register for bus
+>> notifier callbacks for iommu_probe_device() and iommu_release_device() during
+>> add and remove.
+> But a device is nothing on its own.  You can not just have a random
+> 'struct device' hanging out there that does nothing but iommu, right?
+> It should be doing something else that is very "bus" specific.
+>
+> Again, why not create a bus for your hardware type and have that control
+> the bindings of drivers to the devices, like it should be done.  You
+> better not be creating platform devices for these things :)
 
-Ordering is OK. If I write a PTE, dma_sync, then command a device to
-use that IOVA the PTW must observe the new PTE value. Otherwise
-dma_sync isn't doing what Linux requires.
+Creating a dedicated bus for iris_vpu is indeed possible, and we had actually
+explored this direction in a one of the series. A patch implementing an
+iris_vpu bus was posted earlier here,
+https://lore.kernel.org/all/20260313-kaanapali-iris-v3-3-9c0d1a67af4b@oss.qualcomm.com/
 
-Tearing is a different issue, if the device uses the IOVA and races
-with the PTE write changing it then you say maybe it can mis-read it
-with tearing.
+I'll bring back that approach. Before that, I'll wait a few days to gather any
+further opinions or suggestions from anyone else. Then, I'll proceed with
+posting the next revision with the iris_vpu bus in place.
 
-However, this race only happens if the PTE is currently non-valid or
-being changed to non-valid. Meaning randomly you will be getting an
-invalid IOVA event.
-
-In non-coherent mode we don't allow SVA and we don't allow VFIO. Only
-the DMA API and drivers open coding things.
-
-For VFIO and SVA, yes, we need the HW to work and properly, userspcae
-can trigger invalid IOVA, we can't tolerate a corrupted PTE.
-
-In embedded I suppose you could make an argument you don't care about
-it since invalid IOVA would have to be caused by a buggy kernel
-driver, it should never happen, and thus this is really a debug
-feature. If the race will never be hit in a working system maybe it is
-fine to leave it as is.
-
-Would be good to document this detail :)
-
-> Of course I'd rather that the architecture said that our current code
-> is fine, but if it doesn't then I don't have much choice, really. At the
-> very least, we should minimise the number of places where we rely on
-> non-architected behaviour and so keeping the CDs and STEs non-cacheable
-> remains my preference.
-
-So, I am convinced, PTW has that escape above that doesn't apply to
-STE/CD. Those can be accessed truely at any time and we can't ever
-leave a 64 bit value in a strange state.
-
-Jason
+>> auxilary bus don't have the .dma_callback and bus notifier callbacks where it
+>> can do iommu_probe_device() and iommu_release_device(). iommu_release_device(),
+>> being a static api, need to be called from bus notifier callbacks which should
+>> be under the list of iommu_buses.
+> True, because aux bus devices don't do that directly, they are "sharing"
+> resources with their parent device and something has to mediate for it.
+> So yes, you are right, that is not a good idea.  Make a custom bus type
+> instead please.
+>
+> thanks,
+>
+> greg k-h
