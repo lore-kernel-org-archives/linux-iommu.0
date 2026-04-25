@@ -1,72 +1,68 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFE95242D9B
-	for <iommu@lists.linux.dev>; Sat, 25 Apr 2026 05:36:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B04C5CDF1;
+	Sat, 25 Apr 2026 05:42:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777095383; cv=none; b=pIMaxeMVVQGAI2NQuq83dkgdOigrXVjvLsykb2hFb8HykUGk1zPWK+IIwu1RhOejgpfZH/1+d+XpWz9IUE2vNjPtNAbkSCI9JXB74HcWXewmsfj5zZ70QnyCadlAp/hWFgAaCp3+lbSE1uG1eCVgMNzP2oaP/WwrPzzgZIsi56M=
+	t=1777095727; cv=none; b=JwYZeZeqL0sQ7k3Zc7Nc78/unXyAriXeD885CEwuVVwPGtBoFTpVOwU5eyRx7iaNu+QiAs6UQmTys8hyw57AFqGxjViw7g6H9fzA0mjhIdY2s2OqksWabL8HYIKgEOq4Vx5lmt6zKF9A4kBmSE4qo7OAp2HDawMiJ3YcUho+8as=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777095383; c=relaxed/simple;
-	bh=hZVY+ETiO0+AcVoWnE3eZrOKIPxYwj1k+9WNOZCzCG4=;
+	s=arc-20240116; t=1777095727; c=relaxed/simple;
+	bh=HPRnxwXK8vu5np6VX+55Q2Y3ogOkac72lAGyNzFWA/g=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qx5VQIKwtOyD6zYv415ssgQ9HyL/sPyv0c+Kn+sbtS3qC3iRbKwSPE7IbwHAVi0lHL4GXxRtbrq2ABq/adAkFwpRFQFDSbLjee+9CgnqU7FIuCXLebQvwVcYxuoaTwTs3gkog+mgsc4CPnQ1mCoMzYBdrC0vOjesbMrnVZIa20Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Hd5/MHl1; arc=none smtp.client-ip=209.85.214.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=R3Re49FwHaP8eIO03P1z7v2xQIt8wcGIVe9n6fs9hoy2KvmvjqeZJpBLEcvRtXmyvms0uuKH2OFpaxyaJ0FxTUmHL5A9sIwyi0Pqh6H6O1gBIMAR9CN32Rl10WEBOqdiOmn5ShTTwctS8WdeWcvF6cwZPEUppQKZVG9VwjTG9dw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=AIulHLRA; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Hd5/MHl1"
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2b46da8c48eso286275ad.1
-        for <iommu@lists.linux.dev>; Fri, 24 Apr 2026 22:36:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1777095381; x=1777700181; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=4Bhm+3+gPswslgbL7oHCmogmsFEviM1VPdfvizTa+/Q=;
-        b=Hd5/MHl1H4+FioQr9+49HF4zp9vCba7NCDyMf4tUP//lGla/ClWhLL5CHl6wfjP8BO
-         nGH+ZHFR7avGFN9K4hgpTbBV89ApeHDaqbHdv4McA8GLWoLLRwXISjnHuzuhhGp3nrEF
-         HIwX8f5UeyJuoQVT9eZ4ato3XiTi12cyYxu5qVqlfQWqkDNPNWdlojyhamNREKIY7T6W
-         NNxgi44QEX4L5gaD+j/ZI7vIKddi0cMjugQkssloylJXzY1tp61JdUCWz2HabzKpOf61
-         Q7hc/B+UL8jrBvCwCxhxZYJsBezRZ1opxDMsb07ndYRB6ERPuODTy2u0v4kfbDw13mSy
-         h4bQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777095381; x=1777700181;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=4Bhm+3+gPswslgbL7oHCmogmsFEviM1VPdfvizTa+/Q=;
-        b=OH6ATbR+RKNVgJuKKrhCNRd78pNuj+Oa5uYVGij8Ing/0TeZWapesvHkKVIcvrR1GY
-         uYEw0WkuKRQ7mq8POC3QdFlliarxo796NBzqo2GBnZVXqauHcYFcI7uWKgY19rxjmUWu
-         hIQnx4N50IhormyAzUipNSM6edqPXry6o0XEDfwBu+f26zDVuN8MsGLVhAxiD8GVq3Pf
-         9MOFHtzKur/o9vyOlc9+9jK934clwEKrJw56N6ZDZS5FghcTumbMy+LJW/cTzRTK3Z9B
-         uH8+Ru/R0V8kKegrgLjaVjVjBYqfyOesJ0oJV1jLQMxVNX3akqbawA30/9RXAN18kHBr
-         dh4g==
-X-Gm-Message-State: AOJu0Yw2xyB0YL9JgYi7t5V3gzWX/Rysi5bOtrWgQqVt7Aw+LoNT3AkZ
-	i2kKCpzJIYY5pjtUsS+zIUT2D2igSLe3PPdoFEkYG3HYWKgYFg/ZpUlXHS85luS9Qg==
-X-Gm-Gg: AeBDievh67uaemddko1KDhCX5Du/uWHXqDlEXIKmgWAncWvlNVL85IqvXQWQ0YLRpTN
-	bykz3MpTST9/qrUA8AabKsuBxBIC/23PfZUS4YHZ8NiFzqLmhp5NoiYakm66S0YNw8cdOYFF2Iw
-	XjtUeB3+P2oYN9o/dn4YSE4fQdIs8iPqd9J9fMGbmRycKBUU40ZOkYeOgh0I4LducYGapyErDjN
-	kotYIs8PlI2jm/JfYYUvxOfaYQmn+exukdIVRkcjifWNAWOAE2AJmnhxyLak2eCJ7/0nGgPRj8E
-	opTkcbVP5RLDJcWZtFVgWdOqXPYl6NxLg3poaVnoebqKdFQ3UCg9FX9dmaHEKG0qAY7cQsAncFa
-	tqzMmfIanJ6Mu/b1jbPmVIwQW8nM1YZ4Xb9q9vb1RPu0FvTgVcFsh1AkoUqcpvpf+uCWFe/JVWD
-	lS2RXOlJKmvnibQ2gwjjdoN1QpLB+mSfYQ2BmaEgRA2Jt+mxV2ZQj9F9FM9zub7Vp/zCUSa+0Wh
-	6Aj3XII1PwQlup5Gw==
-X-Received: by 2002:a17:903:4b4c:b0:2a7:4151:2c74 with SMTP id d9443c01a7336-2b6030443acmr23421485ad.16.1777095380910;
-        Fri, 24 Apr 2026 22:36:20 -0700 (PDT)
-Received: from google.com (174.188.87.34.bc.googleusercontent.com. [34.87.188.174])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82f8ec24850sm26334037b3a.60.2026.04.24.22.36.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Apr 2026 22:36:20 -0700 (PDT)
-Date: Sat, 25 Apr 2026 05:36:15 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, joro@8bytes.org,
-	robin.murphy@arm.com, will@kernel.org, jgg@ziepe.ca,
-	baolu.lu@linux.intel.com, kevin.tian@intel.com
-Subject: Re: [PATCH] iommu/pages: Fix iommu_pages_flush_incoherent() for
- non-x86
-Message-ID: <aexSz6tANRfo0D_y@google.com>
-References: <20260424115051.2082174-1-smostafa@google.com>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="AIulHLRA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F38FC2BCB2;
+	Sat, 25 Apr 2026 05:42:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1777095726;
+	bh=HPRnxwXK8vu5np6VX+55Q2Y3ogOkac72lAGyNzFWA/g=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=AIulHLRAKLlLErfT4LNX6qehizWiYSRf/7frr23MN5EuQV/uv1/GMEgWhNnYOC3S2
+	 P7aAr8Ifr31gNTvRcI/4Tu1+p8sDQj+AymmqnfPtX25X51hEmG9Qfc+0zfM+WqN3cH
+	 qxacBTLwV8747T2MjGJ/lwbO5Uglr0akF36/x8Rk=
+Date: Sat, 25 Apr 2026 07:42:04 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Cc: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
+	Bryan O'Donoghue <bod@kernel.org>,
+	Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
+	Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
+	Abhinav Kumar <abhinav.kumar@linux.dev>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Stefan Schmidt <stefan.schmidt@linaro.org>,
+	Hans Verkuil <hverkuil@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Mikko Perttunen <mperttunen@nvidia.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Jonathan Hunter <jonathanh@nvidia.com>, linux-media@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	driver-core@lists.linux.dev, dri-devel@lists.freedesktop.org,
+	linux-tegra@vger.kernel.org,
+	Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+Subject: Re: [PATCH v2 02/13] drivers: base: Add generic dma context bus
+Message-ID: <2026042539-swab-active-21a5@gregkh>
+References: <20260423-glymur-v2-0-0296bccb9f4e@oss.qualcomm.com>
+ <20260423-glymur-v2-2-0296bccb9f4e@oss.qualcomm.com>
+ <2026042346-trustable-register-095a@gregkh>
+ <06c04947-e72e-679b-493b-e112d693f391@oss.qualcomm.com>
+ <2026042422-deem-chemist-8d0f@gregkh>
+ <4c3fa710-f61a-4aad-622d-54909190cb9e@oss.qualcomm.com>
+ <2026042428-blemish-helpline-7d8d@gregkh>
+ <1e039dd5-da3f-19b2-ef98-29e64fdd925d@oss.qualcomm.com>
+ <2026042442-luxurious-antonym-f20c@gregkh>
+ <xuitjl6tzfl6nl4ds4vdy3637i5cqtjuqntcpqt5fnkx2ogcws@iapcavrwhyzv>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -75,83 +71,115 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260424115051.2082174-1-smostafa@google.com>
+In-Reply-To: <xuitjl6tzfl6nl4ds4vdy3637i5cqtjuqntcpqt5fnkx2ogcws@iapcavrwhyzv>
 
-On Fri, Apr 24, 2026 at 11:50:51AM +0000, Mostafa Saleh wrote:
-> The dma_sync_single_for_device() function expects a dma_addr_t, but
-> iommu_pages_flush_incoherent() was incorrectly passing a virtual
-> address.
+On Fri, Apr 24, 2026 at 07:11:35PM +0300, Dmitry Baryshkov wrote:
+> On Fri, Apr 24, 2026 at 03:34:38PM +0200, Greg Kroah-Hartman wrote:
+> > On Fri, Apr 24, 2026 at 06:12:09PM +0530, Vishnu Reddy wrote:
+> > > 
+> > > On 4/24/2026 5:25 PM, Greg Kroah-Hartman wrote:
+> > > > On Fri, Apr 24, 2026 at 05:15:02PM +0530, Vishnu Reddy wrote:
+> > > >> On 4/24/2026 4:43 PM, Greg Kroah-Hartman wrote:
+> > > >>> On Fri, Apr 24, 2026 at 04:01:13PM +0530, Vishnu Reddy wrote:
+> > > >>>> On 4/23/2026 7:07 PM, Greg Kroah-Hartman wrote:
+> > > >>>>> On Thu, Apr 23, 2026 at 06:59:31PM +0530, Vishnu Reddy wrote:
+> > > >>>>>> From: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+> > > >>>>>>
+> > > >>>>>> When a driver needs to create virtual device at runtime and map it to
+> > > >>>>>> an IOMMU context for memory isolation, there is no common bus available
+> > > >>>>>> for this purpose. Each driver ends up implementing its own bus type,
+> > > >>>>>> leading to duplicated logic across multiple drivers.
+> > > >>>>>>
+> > > >>>>>> host1x driver implemented its own bus type to attach an IOMMU context to
+> > > >>>>>> a dynamically created device. The Iris VPU driver now has the same
+> > > >>>>>> requirement. Rather than duplicating the same bus logic again, a shared
+> > > >>>>>> bus type is introduced under drivers/base that multiple drivers can use
+> > > >>>>>> directly.
+> > > >>>>>>
+> > > >>>>>> The bus takes care of creating a device and attaching the IOMMU context
+> > > >>>>>> to it based on the client inputs.
+> > > >>>>>>
+> > > >>>>>> Suggested-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+> > > >>>>>> Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+> > > >>>>>> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+> > > >>>>>> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+> > > >>>>>> ---
+> > > >>>>>>  drivers/base/Kconfig            |  3 ++
+> > > >>>>>>  drivers/base/Makefile           |  1 +
+> > > >>>>>>  drivers/base/dma_context_bus.c  | 77 +++++++++++++++++++++++++++++++++++++++++
+> > > >>>>>>  include/linux/dma_context_bus.h | 26 ++++++++++++++
+> > > >>>>>>  4 files changed, 107 insertions(+)
+> > > >>>>> as you can not have a device on multiple busses at the same time, this
+> > > >>>>> makes no sense to me at all.  "dma context" is a bus-specific thing, so
+> > > >>>>> please add it to the bus that you are wanting it for.  It can't be a
+> > > >>>>> generic bus as that just doesn't work.
+> > > >>>>>
+> > > >>>>> Or what am I missing here?
+> > > >>>>>
+> > > >>>>> And why is DMA somehow "special" here from any other hardware attribute?
+> > > >>>> Let me give brief information which was discussed, in the initial series,
+> > > >>>> the iris VPU used platform bus for dynamically created devices and we got
+> > > >>>> the comment/suggestion from Robin to implement a proper bus_type with a
+> > > >>>> .dma_configure callback.
+> > > >>>>
+> > > >>>> https://lore.kernel.org/all/02b3d0f5-f94c-43cd-93af-97cfcf7751b1@arm.com/
+> > > >>>>
+> > > >>>> based on the discussion, implemented the dma_context_bus and used for iris
+> > > >>>> VPU devices instead of platform bus.
+> > > >>> Why not make a irus_vpu_bus where you can do what you want?
+> > > >> Initially iris_vpu_bus was introduced, and it was made generic based on the
+> > > >> discussion,
+> > > >>
+> > > >> https://lore.kernel.org/all/20260227-kaanapali-iris-v2-3-850043ac3933@oss.qualcomm.com/
+> > > > I don't really see that request here, I see a "make this better and more
+> > > > generic for other busses" but that does not mean "dump it into
+> > > > drivers/bus/ for someone else to maintain" :)
+> > > >
+> > > >>>> Here, the device have only one bus (dma_context_bus), not multiple buses.
+> > > >>>>
+> > > >>>> Regarding the "DMA" naming, the core operation of this bus is its
+> > > >>>> .dma_configure callback, which calls of_dma_configure_id() to map the device
+> > > >>>> to a corresponding IOMMU stream ID. The name "dma_context" reflects this
+> > > >>>> purpose.
+> > > >>>>
+> > > >>>> I am open to suggestions from you or Robin or anyone else, if there is a
+> > > >>>> better or preferred way to achieve this, I am happy to consider it and
+> > > >>>> rework the implementation accordingly.
+> > > >>> As there is only one user, just make this your own bus please and do all
+> > > >>> of the needed bus operations for your devices there (i.e. don't hang an
+> > > >>> "empty" device off of it.)
+> > > >> The reasoning behind to make it generic was to have more users - host1x,
+> > > >> Iris VPU, QDA on the generic context bus, instead of each of them having
+> > > >> their own. Let me know if you suggest to have the iris_vpu_bus.
+> > > > But you did not add such users here, so how would we know this?
+> > > >
+> > > > And still, I have no idea what this bus really is doing.  Is it dynamic?
+> > > > Is it self-describing?  Why not just use aux-bus?  What is it supposed
+> > > > to be doing and used for?
+> > > 
+> > > This bus will allow users to create a dynamic device and map to IOMMU stream
+> > > ID via .dma_configure callback which calls the of_dma_confgure_id() based on
+> > > the user inputs. This bus is under the iommu_buses list to register for bus
+> > > notifier callbacks for iommu_probe_device() and iommu_release_device() during
+> > > add and remove.
+> > 
+> > But a device is nothing on its own.  You can not just have a random
+> > 'struct device' hanging out there that does nothing but iommu, right?
+> > It should be doing something else that is very "bus" specific.
 > 
-> Since iommu_pages_start_incoherent() enforces a 1:1 mapping between
-> DMA addresses and physical addresses (checked via WARN_ON), we can
-> convert the virtual address to a physical address before passing it to
-> the DMA API.
-> 
-> This also  matches the behaviour of the other non-x86 in
-> iommu_pages_free_incoherent(), which uses virt_to_phys(virt);
-> 
-> Fixes: 36ae67b13976 ("iommu/pages: Add support for incoherent IOMMU page table walkers")
-> Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> ---
->  drivers/iommu/iommu-pages.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/iommu-pages.h b/drivers/iommu/iommu-pages.h
-> index ae9da4f571f6..e9e605b5fa3a 100644
-> --- a/drivers/iommu/iommu-pages.h
-> +++ b/drivers/iommu/iommu-pages.h
-> @@ -137,7 +137,7 @@ static inline void iommu_pages_flush_incoherent(struct device *dma_dev,
->  						void *virt, size_t offset,
->  						size_t len)
->  {
-> -	dma_sync_single_for_device(dma_dev, (uintptr_t)virt + offset, len,
-> +	dma_sync_single_for_device(dma_dev, virt_to_phys(virt) + offset, len,
->  				   DMA_TO_DEVICE);
->  }
->  void iommu_pages_stop_incoherent_list(struct iommu_pages_list *list,
+> Unfortunately, it is a pattern of IOMMU-only devices. All the actual
+> programmig is done through IO region associated with the main device,
+> while subdevices are mostly used for DMA buffer allocation.
 
-Nice catch! 
+Great, then you have a "host controller" for the devices, and children
+devices on that bus, with proper drivers binding to them.  Like all
+other normal busses.
 
-Additionally, I think we should update the comment in
-iommu_pages_start_incoherent() to clarify the restriction. The current
-comment says:
+Yes, writing a new bus is a bit more pain than it should be, one of
+these days someone will get around to making that simpler...
 
-"The DMA API is not allowed to do anything other than DMA direct."
+Along those lines, why aren't these new drivers in rust?  :)
 
-But dma_direct actually handles bus offsets perfectly fine. However,
-this code fails on platforms with a bus offset is because of the strict
-check:
+thanks,
 
-   WARN_ON(dma != virt_to_phys(virt))
-   
-which enforces a strict 1:1 mapping.
-
-So saying that we only allow dma_direct is a bit misleading as to why
-bus offsets fail here. We should update that comment to something like:
-
-diff --git a/drivers/iommu/iommu-pages.c b/drivers/iommu/iommu-pages.c
-index 3bab175d8557..3904de686206 100644
---- a/drivers/iommu/iommu-pages.c
-+++ b/drivers/iommu/iommu-pages.c
-@@ -161,9 +161,11 @@ int iommu_pages_start_incoherent(void *virt, struct device *dma_dev)
-                        return -EINVAL;
-
-                /*
--                * The DMA API is not allowed to do anything other than DMA
--                * direct. It would be nice to also check
--                * dev_is_dma_coherent(dma_dev));
-+                * We enforce a strict 1:1 mapping (dma == phys). This means
-+                * platforms with a bus offset or those that require translation for
-+                * the IOMMU's own memory are not supported, even though dma_direct
-+                * could otherwise handle bus offsets.
-+                * It would be nice to also check dev_is_dma_coherent(dma_dev));
-                 */
-                if (WARN_ON(dma != virt_to_phys(virt))) {
-                        dma_unmap_single(dma_dev, dma, ioptdesc_mem_size(iopt),
-
-For the fix:
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
-
-Thanks,
-Praan
-
+greg k-h
