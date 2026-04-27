@@ -1,122 +1,318 @@
-Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26AC73D1CAA
-	for <iommu@lists.linux.dev>; Mon, 27 Apr 2026 14:05:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.44
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 06DED21D3F5
+	for <iommu@lists.linux.dev>; Mon, 27 Apr 2026 15:57:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777298743; cv=none; b=C7YyKw1Jzk54fROARuR3umSRB2dAAx9AtMNAd32WMfyDFPtYF7BmPcS/6CQojZiyAwv7CdMmWsPK26H7zZZZdPqgYqXPrDfQGmintR+wfOfQ387N0Q1q8af+PN1WNh5FtqHcc4AwABiHuhv/C4y7vChkJK5kLsiaNqgNk1yb8qU=
+	t=1777305450; cv=none; b=MWfoqJUicp1+YY1BS1jKVvJrse6ywnNE7OX3v9yCE6EELAFFOB5YzIPjRuL6TCJrsZBJvRmm4W+YyMXRRsyE29+ZVA8TRw2DkIVtLsx4/QzOJe+eClHPQQEJCRMPfneIQLTvhoB3AFX/rch95CLWvXxUB1WMyZmvOgBzKRdRbaE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777298743; c=relaxed/simple;
-	bh=iGS050Vh31Rx6ADQYBwC5U1aYufsbvINEeiUPc1swZo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UJyY6/XdteZ+QSlROieKJ8yXefLm91WO+ST4nELf0iUn02D3O5qytAzp8PuC46VD34DvU7yO6ATtB+1hZdsbfbtvWlfsftwS97Xt6vhWSDpwQNPoO2lrIJ9zcj+PZbvHz0xE5O1OHpMgH5isuRUJT/5aEY0nuHfA45ZBfs8LZLQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Nc1a1bIN; arc=none smtp.client-ip=209.85.219.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1777305450; c=relaxed/simple;
+	bh=kN0/zBZdm9NxVXKJAoQJhWqJCgj21oE9y9ViQHYtXGk=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=JX9FAt+eGJaX8l6oiPyyu10IKugQfeRi3xSKHlbPIOeu2dz0CpvbMwFhuh/m4Myk6mTwUJ2BpQrWEvzkNhYi0fh1dFTALGlzPQgieX/mhUJphyE+PxJpbpfTca7SPZ32P4iVYMobS2XhLH4g0uZTsD//2zlz4w3AlVnHmJThb/w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=OhQoS5cT; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Nc1a1bIN"
-Received: by mail-qv1-f44.google.com with SMTP id 6a1803df08f44-8a210c813f8so65837646d6.0
-        for <iommu@lists.linux.dev>; Mon, 27 Apr 2026 07:05:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1777298741; x=1777903541; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=iGS050Vh31Rx6ADQYBwC5U1aYufsbvINEeiUPc1swZo=;
-        b=Nc1a1bINPsA4P83iQoDWYVtguEHt84F71OhQLklT25BxabyAxQAPcvVJ23W6rwbcZ7
-         GgcoVfpMvjUSykZ6AdDp/SCx02pqAsV4gLKpgfX86qn5n1bkMaHo0ESNHozC5uBLPdY2
-         C6k29wxCcTBMv1c7CIvT9jkhPJj0KxJGU9xM2MauIe/ej5smKKr2dkkVS2tSj+/FzEJY
-         tJdef0Q5bOkVTvu/aFUoTmLCLz9qimuyUja0dl4FbbmyfHMp9v1cCR20t5wqi40qj7nV
-         IqTH7ADKFZj3X7dVKWVG2G+L/P0u8dsBVrHiuv0Y906VDY3xU3N+EZnXKAPjpzxUVps+
-         9FnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777298741; x=1777903541;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=iGS050Vh31Rx6ADQYBwC5U1aYufsbvINEeiUPc1swZo=;
-        b=NX3qCWnknL/FYvld8qgFSgyZlPQodDToq19g7olo9VELhUJca+56VcMnd/tocvE5Wu
-         vefcPP09X1x4ZgpYBvVTE6I4PlYJ1j3dwZQA0uGSHgqxv6/J1q29rlJVtUG0CBDjUlwp
-         koy3SUb59gDTkZtHRA46Co7e58Bc2/GBulX/qkjw2e+ceKFEpnD7vwDtuY/XFwwBvibL
-         ibjkxjYBfkypgyA346D77cqJ5RdffZUR/1a+PkXG6GLl8OeBIvOguFIVnj2bkidGRzGx
-         mhStant0pt3LQL0ic/DCavMp996A4eQUqQH0yKnouC/hR1K5BTQ7nbQhWbVaxQVbKXaM
-         wePw==
-X-Gm-Message-State: AOJu0YwLULqth82qMRrxaT3C3QlsQ4ueerb2l7OdI1r0zKBZH+YxpTxV
-	NEkBUyilmL3CWSXxuxI5LAjhdqbFOZSMWhVKxlFkRd8s4PgOdBuRsLlFTkKIm4CBaVc=
-X-Gm-Gg: AeBDiesfxlHzyxXH4g1ZuPgesPo5QyQjgAeXAu8xs0x+5dU1rXtsmvXhz6O5MH21BB1
-	qndHLMaBQQg6oHzPtJkzZbf+GZRkXwAtopmRyyGM51GjSpTbzyxWVulNcrCrj/X8Z1d+j0uVr8a
-	7otiXC9zc1gj++S1lk2Vm0j+pqi298ExtC89YPpTQdn36pV1kX0oqQ5pAO1UNqSCiGlzg5qAtYq
-	9ekCidXmAOq3bI8c/bLSDSIA49GjjjjRHKzZg0r9DSou3plVbUn8QPuC/Chrd9XKc00kK8bGzGq
-	gLtuyrv5yfeC70p31eTEn69+i/ra4ZAlPSeF4hztUVv4K1l40WquiFPOgTD/FDbhYPevJVVdbIB
-	Zy1gxDoPUfEfZEUCUGAASlr9lvHRkyBAIjstd2+3oG9J9Dlz0T7whARBxa5WuVblfOhyN5GuWLr
-	gA4m96MPB6y1T5l5JoQh9o8KPceIvpKC5SzGlqrTU0Sw/R5flEWaZEBAz2fJmDdqaff/KK5wFrn
-	BAtQqJZ0nrwsGWVTAa6zDgtXfY=
-X-Received: by 2002:a05:6214:489:b0:8b1:f3e1:5e12 with SMTP id 6a1803df08f44-8b1f3e16020mr426493366d6.14.1777298740980;
-        Mon, 27 Apr 2026 07:05:40 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8b02ac4260bsm260265136d6.4.2026.04.27.07.05.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2026 07:05:40 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wHMah-00000003YNw-36NU;
-	Mon, 27 Apr 2026 11:05:39 -0300
-Date: Mon, 27 Apr 2026 11:05:39 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	kvm@vger.kernel.org, Alexey Kardashevskiy <aik@amd.com>,
-	Bjorn Helgaas <helgaas@kernel.org>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Joerg Roedel <joro@8bytes.org>, Jonathan Cameron <jic23@kernel.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Samuel Ortiz <sameo@rivosinc.com>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Will Deacon <will@kernel.org>, Xu Yilun <yilun.xu@linux.intel.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v4 4/4] iommufd/vdevice: add TSM guest request ioctl
-Message-ID: <20260427140539.GE740385@ziepe.ca>
-References: <20260427061005.901854-1-aneesh.kumar@kernel.org>
- <20260427061005.901854-5-aneesh.kumar@kernel.org>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="OhQoS5cT"
+Received: from localhost (unknown [40.65.108.177])
+	by linux.microsoft.com (Postfix) with ESMTPSA id D338920B716A;
+	Mon, 27 Apr 2026 08:57:27 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D338920B716A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1777305448;
+	bh=9LeH8B86nKcZOpLZaBsejYDxB8jSKUcx+rF/bpcYhS4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=OhQoS5cTppvzXia529YlPHyl3gEpjLWlCpqEjC0wytPu1aoMn+auy5b+Twna7AZOq
+	 Lvng4260i2n0yzHjGfSp5eYpSAvQTyiXS2IYISChFXvH/uD1Pd2GiYxD6n9fpiMfwn
+	 a+1mc9wLudzyJ4EU5tC+TsVbZknBuN1SpzNpVqY8=
+Date: Mon, 27 Apr 2026 08:57:25 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: David Matlack <dmatlack@google.com>
+Cc: iommu@lists.linux.dev, kexec@lists.infradead.org,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-mm@kvack.org, linux-pci@vger.kernel.org, Adithya Jayachandran
+ <ajayachandra@nvidia.com>, Alexander Graf <graf@amazon.com>, Alex
+ Williamson <alex@shazbot.org>, Bjorn Helgaas <bhelgaas@google.com>, Chris
+ Li <chrisl@kernel.org>, David Rientjes <rientjes@google.com>, Jason
+ Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Jonathan Corbet
+ <corbet@lwn.net>, Josh Hilke <jrhilke@google.com>, Leon Romanovsky
+ <leonro@nvidia.com>, Lukas Wunner <lukas@wunner.de>, Mike Rapoport
+ <rppt@kernel.org>, Parav Pandit <parav@nvidia.com>, Pasha Tatashin
+ <pasha.tatashin@soleen.com>, Pranjal Shrivastava <praan@google.com>,
+ Pratyush Yadav <pratyush@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Saeed Mahameed <saeedm@nvidia.com>, Samiullah Khawaja
+ <skhawaja@google.com>, Shuah Khan <skhan@linuxfoundation.org>, Will Deacon
+ <will@kernel.org>, William Tu <witu@nvidia.com>, Yi Liu
+ <yi.l.liu@intel.com>
+Subject: Re: [PATCH v4 02/11] PCI: liveupdate: Track outgoing preserved PCI
+ devices
+Message-ID: <20260427085725.00005283@linux.microsoft.com>
+In-Reply-To: <20260423212316.3431746-3-dmatlack@google.com>
+References: <20260423212316.3431746-1-dmatlack@google.com>
+	<20260423212316.3431746-3-dmatlack@google.com>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260427061005.901854-5-aneesh.kumar@kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, Apr 27, 2026 at 11:40:05AM +0530, Aneesh Kumar K.V (Arm) wrote:
-> +/**
-> + * struct iommu_vdevice_tsm_guest_request - ioctl(IOMMU_VDEVICE_TSM_GUEST_REQUEST)
-> + * @size: sizeof(struct iommu_vdevice_tsm_guest_request)
-> + * @vdevice_id: vDevice ID the guest request is for
-> + * @scope: Bus-specific scope classification for the guest request
-> + * @req_len: Size in bytes of the input payload at @req_uptr
-> + * @resp_len: Size in bytes of the output buffer at @resp_uptr
-> + * @__reserved: Must be 0
-> + * @req_uptr: Userspace pointer to the guest-provided request payload
-> + * @resp_uptr: Userspace pointer to the guest response buffer
+Hi David,
+
+On Thu, 23 Apr 2026 21:23:06 +0000
+David Matlack <dmatlack@google.com> wrote:
+
+> Add APIs to allow drivers to notify the PCI core of which devices are
+> being preserved across a Live Update for the next kernel, i.e.
+> "outgoing" devices.
+> 
+> Drivers must notify the PCI core when devices are preserved so that
+> the PCI core can update its FLB data (struct pci_ser) and track the
+> list of outgoing devices. pci_liveupdate_preserve() notifies the PCI
+> core that a device must be preserved across Live Update.
+> pci_liveupdate_unpreserve() reverses this (cancels the preservation
+> of the device).
+> 
+> This tracking ensures the PCI core is fully aware of which devices may
+> need special handling during shutdown and kexec, and so that it can be
+> handed off to the next kernel.
+> 
+> Signed-off-by: David Matlack <dmatlack@google.com>
+> ---
+>  drivers/pci/liveupdate.c    | 101
+> ++++++++++++++++++++++++++++++++++++ include/linux/kho/abi/pci.h |
+> 7 +-- include/linux/pci.h         |  26 ++++++++++
+>  3 files changed, 131 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/pci/liveupdate.c b/drivers/pci/liveupdate.c
+> index d4fa61625d56..2dd8daa2f17c 100644
+> --- a/drivers/pci/liveupdate.c
+> +++ b/drivers/pci/liveupdate.c
+> @@ -43,6 +43,26 @@
+>   *
+>   *  * ``pci_liveupdate_register_flb(driver_file_handler)``
+>   *  * ``pci_liveupdate_unregister_flb(driver_file_handler)``
 > + *
-> + * Forward a guest request to the TSM bound vDevice. This is intended for
-> + * guest TSM/TDISP message transport where the host kernel only marshals
-> + * bytes between userspace and the TSM implementation.
+> + * Device Tracking
+> + * ===============
 > + *
-> + * The meaning and valid values of @scope are defined by the TSM backend for
-> + * the device bus type.
+> + * Drivers must notify the PCI core when specific devices are
+> preserved or
+> + * unpreserved with the following APIs:
+> + *
+> + *  * ``pci_liveupdate_preserve(pci_dev)``
+> + *  * ``pci_liveupdate_unpreserve(pci_dev)``
+> + *
+> + * This allows the PCI core to keep it's FLB data (struct pci_ser)
+> up to date
+> + * with the list of **outgoing** preserved devices for the next
+> kernel.
+> + *
+> + * Restrictions
+> + * ============
+> + *
+> + * The PCI core enforces the following restrictions on which devices
+> can be
+> + * preserved. These may be relaxed in the future:
+> + *
+> + *  * The device cannot be a Virtual Function (VF).
+>   */
+>  
+>  #define pr_fmt(fmt) "PCI: liveupdate: " fmt
+> @@ -57,6 +77,8 @@
+>  #include <linux/pci.h>
+>  #include <linux/sort.h>
+>  
+> +static DEFINE_MUTEX(pci_flb_outgoing_lock);
+> +
+>  static int pci_flb_preserve(struct liveupdate_flb_op_args *args)
+>  {
+>  	struct pci_dev *dev = NULL;
+> @@ -124,6 +146,85 @@ static struct liveupdate_flb pci_liveupdate_flb
+> = { .compatible = PCI_LUO_FLB_COMPATIBLE,
+>  };
+>  
+> +int pci_liveupdate_preserve(struct pci_dev *dev)
+> +{
+> +	struct pci_ser *ser;
+> +	int i, ret;
+> +
+> +	guard(mutex)(&pci_flb_outgoing_lock);
+> +
+> +	ret = liveupdate_flb_get_outgoing(&pci_liveupdate_flb, (void
+> **)&ser);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (!ser)
+> +		return -ENOENT;
+> +
+> +	if (dev->is_virtfn)
+> +		return -EINVAL;
+This can be left outside the mutex?
 
-If you want to do this then you have to also provide a way to discover
-what the TSM backend is so userspace can form the correct numbers.
+> +
+> +	if (dev->liveupdate_outgoing)
+> +		return -EBUSY;
+> +
+> +	if (ser->nr_devices == ser->max_nr_devices)
+> +		return -ENOSPC;
+> +
+> +	for (i = 0; i < ser->max_nr_devices; i++) {
+> +		/*
+> +		 * Start searching at index ser->nr_devices. This
+> should result
+> +		 * in a constant time search under expected
+> conditions (devices
+> +		 * are not getting unpreserved).
+> +		 */
+> +		int index = (ser->nr_devices + i) %
+> ser->max_nr_devices;
+> +		struct pci_dev_ser *dev_ser = &ser->devices[index];
+> +
+> +		if (dev_ser->refcount)
+> +			continue;
+> +
+> +		pci_info(dev, "Device will be preserved across next
+> Live Update\n");
+> +		ser->nr_devices++;
+> +
+> +		dev_ser->domain = pci_domain_nr(dev->bus);
+> +		dev_ser->bdf = pci_dev_id(dev);
+> +		dev_ser->refcount = 1;
+> +
+> +		dev->liveupdate_outgoing = dev_ser;
+> +		return 0;
+> +	}
+> +
+> +	return -ENOSPC;
+> +}
+> +EXPORT_SYMBOL_GPL(pci_liveupdate_preserve);
+> +
+> +void pci_liveupdate_unpreserve(struct pci_dev *dev)
+> +{
+> +	struct pci_dev_ser *dev_ser;
+> +	struct pci_ser *ser = NULL;
+> +	int ret;
+> +
+> +	guard(mutex)(&pci_flb_outgoing_lock);
+> +
+> +	ret = liveupdate_flb_get_outgoing(&pci_liveupdate_flb, (void
+> **)&ser); +
+> +	if (ret || !ser) {
+> +		pci_warn(dev, "Cannot unpreserve device without
+> outgoing Live Update state\n");
+> +		return;
+> +
+> +	}
+> +
+> +	dev_ser = dev->liveupdate_outgoing;
+> +	if (!dev_ser) {
+> +		pci_warn(dev, "Cannot unpreserve device that is not
+> preserved\n");
+> +		return;
+> +	}
+> +
+> +	pci_info(dev, "Device will no longer be preserved across
+> next Live Update\n");
+> +	ser->nr_devices--;
+> +	memset(dev_ser, 0, sizeof(*dev_ser));
+> +	dev->liveupdate_outgoing = NULL;
+> +}
+> +EXPORT_SYMBOL_GPL(pci_liveupdate_unpreserve);
+> +
+>  int pci_liveupdate_register_flb(struct liveupdate_file_handler *fh)
+>  {
+>  	pr_debug("Registering file handler \"%s\"\n",
+> fh->compatible); diff --git a/include/linux/kho/abi/pci.h
+> b/include/linux/kho/abi/pci.h index 5c0e92588c00..5b4c8d9e462c 100644
+> --- a/include/linux/kho/abi/pci.h
+> +++ b/include/linux/kho/abi/pci.h
+> @@ -23,19 +23,20 @@
+>   * incrementing the version number in the PCI_LUO_FLB_COMPATIBLE
+> string. */
+>  
+> -#define PCI_LUO_FLB_COMPATIBLE "pci-v1"
+> +#define PCI_LUO_FLB_COMPATIBLE "pci-v2"
+>  
+>  /**
+>   * struct pci_dev_ser - Serialized state about a single PCI device.
+>   *
+>   * @domain: The device's PCI domain number (segment).
+>   * @bdf: The device's PCI bus, device, and function number.
+> - * @reserved: Reserved (to naturally align struct pci_dev_ser).
+> + * @refcount: Reference count used by the PCI core to keep track of
+> whether it
+> + *            is done using a device's struct pci_dev_ser.
+>   */
+>  struct pci_dev_ser {
+>  	u32 domain;
+>  	u16 bdf;
+> -	u16 reserved;
+> +	u16 refcount;
+>  } __packed;
+>  
+>  /**
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index d70080babd52..eb94cbd8ab9d 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -41,6 +41,7 @@
+>  #include <linux/msi_api.h>
+>  #include <uapi/linux/pci.h>
+>  #include <linux/liveupdate.h>
+> +#include <linux/kho/abi/pci.h>
+>  
+>  #include <linux/pci_ids.h>
+>  
+> @@ -594,6 +595,9 @@ struct pci_dev {
+>  	u8		tph_mode;	/* TPH mode */
+>  	u8		tph_req_type;	/* TPH requester type
+> */ #endif
+> +#ifdef CONFIG_PCI_LIVEUPDATE
+> +	struct pci_dev_ser *liveupdate_outgoing; /* State preserved
+> for next kernel */ +#endif
+>  };
+>  
+>  static inline struct pci_dev *pci_physfn(struct pci_dev *dev)
+> @@ -2880,6 +2884,14 @@ void pci_uevent_ers(struct pci_dev *pdev, enum
+>  pci_ers_result err_type); #ifdef CONFIG_PCI_LIVEUPDATE
+>  int pci_liveupdate_register_flb(struct liveupdate_file_handler *fh);
+>  void pci_liveupdate_unregister_flb(struct liveupdate_file_handler
+> *fh); +
+> +int pci_liveupdate_preserve(struct pci_dev *dev);
+> +void pci_liveupdate_unpreserve(struct pci_dev *dev);
+> +
+> +static inline struct pci_dev_ser *pci_liveupdate_outgoing(struct
+> pci_dev *dev) +{
+> +	return dev->liveupdate_outgoing;
+> +}
+>  #else
+>  static inline int pci_liveupdate_register_flb(struct
+> liveupdate_file_handler *fh) {
+> @@ -2889,6 +2901,20 @@ static inline int
+> pci_liveupdate_register_flb(struct liveupdate_file_handler *fh static
+> inline void pci_liveupdate_unregister_flb(struct
+> liveupdate_file_handler *fh) { }
+> +
+> +static inline int pci_liveupdate_preserve(struct pci_dev *dev)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
+> +
+> +static inline void pci_liveupdate_unpreserve(struct pci_dev *dev)
+> +{
+> +}
+> +
+> +static inline struct pci_dev_ser *pci_liveupdate_outgoing(struct
+> pci_dev *dev) +{
+> +	return NULL;
+> +}
+>  #endif
+>  
+>  #endif /* LINUX_PCI_H */
 
-Also, since scope is now a uapi whatever in tsm is defining the values
-must be moved to the uapi headers.
-
-Probably this is not a good idea and iommufd should just have its own
-enum with unique numbers for every bus and do the validation and
-translation.
-
-Jason
