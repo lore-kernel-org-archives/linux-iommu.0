@@ -1,130 +1,129 @@
-Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 562433ED114
-	for <iommu@lists.linux.dev>; Mon, 27 Apr 2026 18:57:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.173
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777316242; cv=pass; b=rdBr8FCikKse9HKiQ/opVjRhEOcQGwHgPc5n52L2Tzis7tdQNqjHHhizew6ah6u/tyhndp+9kDjLW2VhLEolNuiyvsLie4iRQhVukEUxwa06nHlmuxVxGWV4dSegW8omAodfWDBQCH1FH+31lVnP9TZ0BWaE0NirWnoAI0vbSww=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777316242; c=relaxed/simple;
-	bh=DDNNIqkIGd79GFDvWgXKCnKvFpN60AdJ3nOosKMNMyk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=oGMQZCk7Fn6i1EQO0XlHPQ8BaqPsF0gCSOltvtIGK7qaKrXLc34vejVYCtdOrfHTNNTqfr4wOqLs3UtLU0F7uRAO/NQR2yaEzPq47UN2A8g/GsCn5OiK3OPe2t/Ve8qqlAOWBemYD11fO1RgFKqFF9e7VS4nDe61LBbvVDmV+IQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=sGI+yMS0; arc=pass smtp.client-ip=209.85.208.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9183534A78F;
+	Mon, 27 Apr 2026 19:34:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777318490; cv=none; b=lvZ2BUIktv/2qEH3jYlHa31p1F+tOlFDtTRpXa/pG5/9XHm3c8aZgpvKdgV51xk1HPCvAgRpchloiQ9Ufn8vnrJG1bvENmIvF0D6E0gOHKOvp0qLMQD8ufzKhKI6rpqGW1SPxTUQ/6HqxpW7GLvFhqfAnajDGZxR3yT8Qj1V8L0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777318490; c=relaxed/simple;
+	bh=LOMHarbM4v+JH2BBsj44YuwETzM7GQZrOBerh8UkOyI=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=ExVW/k5ZUSHu83sEUY3jnStwoDjtm15Q/QWJ+JKzADpH6g0lxxKmq69h5D7+dJsm2jRbHpw0OPTX3CKWFGta6jyO2YP4TAKsfoSUtRdDJ+zlxcz8RJJFBzEHIAMPs61u9pBZ2QKTZDH9xtQktFhZghHHVDZrI+SxcAeUIJXx9a8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kQPZVkb9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="sGI+yMS0"
-Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-38a01c80c34so103474281fa.0
-        for <iommu@lists.linux.dev>; Mon, 27 Apr 2026 11:57:21 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777316239; cv=none;
-        d=google.com; s=arc-20240605;
-        b=aR/85xi5X3I+/qH77yaqnpOODndB8Jl3sun2tBbCvmBiJ8YXKqDMooDnGDnu0Fokji
-         G71nZd4ipll/EBhDrRofSYqlAgC73K9Bpltc8T/PYlepyvrOnDYvQBp+sAUxumac+I0K
-         9OSDcGpB6CPLXP8Z+v03aQAo8rh3KOeaAi2a4aRadaIrpvYFb7QE4SKt8RI6Tt3OEVHI
-         WABceRJ1Rz9NEGp85CnadwEu8HJU4Z2XP86v7C4XW7tgUeKn0P3lJ8ytSo0p4DQWuGpb
-         GiFWWTl9Wl3osEWfr98dbQL8yXPjePn+qO3bTjcqSyVsM1xdgQhudxGohXk80e4JX+hU
-         YjEg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=wr02yN3/yZBXI2xon5jDCKdawxJYqqpUq3piVXy5yYI=;
-        fh=zE72JYYHfHvIr+K0Cow/capIv5Dymc9dqiI/QeMgCDE=;
-        b=CpCCkKGB9L+PuyBxECukMvkbS4KP9+GD7bhSbM2mV2Ba5xHrx1PySXFKdxwxz5pC0p
-         MI2joFS9H4E7LyTYhjNhNNDS6nOp8Re5sAvqDEUnK87xLFdwMageaBReslX5yASLjuYL
-         z/lVq8Odp9FfSO5RPhj/rWpmDttipQk7EKpmdS78c49oGvHTREvozte3vdMCaiwKlD4g
-         L4sBjqR89DBWvObCUjLvgMmlAY+jTUSgHva9sGMPjyVp3Sq3ky6JjpReYAJ7gH9ZR2ht
-         G+OrBRa75ipZqwWOpbFs7NXCQ8YfaI2DgowrSDA5y6Lu/FrgBTjlXR535waMdLoOI+mW
-         x8kg==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1777316239; x=1777921039; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wr02yN3/yZBXI2xon5jDCKdawxJYqqpUq3piVXy5yYI=;
-        b=sGI+yMS0bClzM1UIzWX01RIMGR7RhoLuf1MJ+AbaVvNtIr/v+zgicvArOPPGdjZUjD
-         ti9pTwmBYtTmtFGp4ktv+5JOE1rBXkxg1OTv+shlBWXLrj4ZTMGIqfM+uIz1R0kjPFRi
-         x6MIivdQ1SbZVsv0TAQ9wRSGiIFMuQR6biXLQ8Gc/O9bXY5WaGIlBX49kMbR5s3rSXlu
-         TGxgSKI/IvbJERS+hO3eBq0IRWGgaq4fJZhgfj0+3/JJ4rSa/GGT4um9ZVmTe9Cz69QJ
-         JuGPEQipTrgUc4pFiw0Zgp+gnHV3tRwWCHK3SKZp7G6m1M94OS9zi1Dv0+Uz/0ILvmcf
-         Ly3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777316239; x=1777921039;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=wr02yN3/yZBXI2xon5jDCKdawxJYqqpUq3piVXy5yYI=;
-        b=T/Pd17Tzop7zLqpreOeMMCTdF3lvIhce+nWUbW6Za//631yqDh+XqQJQz0+Rf6W2aH
-         G1vx0hvtlOLqjD0y4eE+wbGS9Yj5BWSQKmDWqJ3rnK3atHdD8YDe+XIpTcYg0wpgyvdj
-         c4jC90BtxP7SFDT+lw4bjcc+e95B9XSTJyZiy6oJb7UCv5hA03NCzcdHhSVeh4eBLHe4
-         cYBl+j791EflUOExuomFn3jjLUHhW5j8i9GVULI36sGNyg4jPm81sO021+E00cIqhacH
-         4LYnBU4pJQQ8ykwy/VN5r9GbvT/iLREua0aKEMutcj17oIQjIOpVKli+6kHyl9M9sFUt
-         5BvQ==
-X-Gm-Message-State: AOJu0Yy1CT4JmWMxDFrOQcZPdI+Az8W7880LBw04y9C/bAKVeaFQo5tE
-	lkp7YawagZsqkQ8nYwNVKh4UP5gChgOhfLaWG+HU3d6he1Ab7OiCUkE7UVUjOz347LI1OiFtkEV
-	F2wAEr0PQmznUn/RgbV/V/ShXGLQ6SevF4a0rZh+U
-X-Gm-Gg: AeBDiesS62HEPR9OJ7+oyfxhMiC/5WxZdi/US6/aF1LBhDCkdj5PYetZ6F3NkGWf3G8
-	bDtt8ElprxESfDD5smDtajbuLU48sFYo8+nmiK5EPc5jc6IfKtIIIlB6unG24DBR98kFESdUtEi
-	tYr7cfcr1dTa1dHqy8eYR9fMwhztj/3Y5I+EU3y5bmKOFgrQFHYdBfm4wfKMARIZKsk7ac9XS9a
-	/Wi+BqRGrDBTYJA9dCvJvQ77HFwCzp0/vw3t5SyQnbyxhkdjK5aIp5w/AMOBwqF1NktM7bK0GDr
-	S7cMOm2tQWtZ2jonTr2twkxR3Lg/VQ==
-X-Received: by 2002:a05:6512:3c98:b0:5a4:b18:427e with SMTP id
- 2adb3069b0e04-5a7466047eemr34628e87.1.1777316239065; Mon, 27 Apr 2026
- 11:57:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kQPZVkb9"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6B398C19425;
+	Mon, 27 Apr 2026 19:34:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777318490;
+	bh=LOMHarbM4v+JH2BBsj44YuwETzM7GQZrOBerh8UkOyI=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=kQPZVkb94OcJwHzJwqptEYuTWJ9fd6OG8uGK266PafxSf4WfXy1snWhtRQq8AiiTk
+	 MpOwtt2okrrWYDGFpzVRuFgkk5As8Ki5w+WBZlZKI9a78IHPzP2biVpnl7CCUiLKJt
+	 Iakx2Zpt7OzGfdM2HcGG6zst6KVbj2v5b4ROSqmyVIp5bP3HuLWXKM7rcYHkuBva/K
+	 jN19Z3owe7ekaIkmcr5K7VGIHHKCECAhf35W9Q9l3TUgVTN9v8KqI38BvtAnS30GLm
+	 UOyJshxQNmT0EYJMozt9H2sVdAK592kSsixaL0nKyIuMOIbTWo2T//ILgNezfkcMcF
+	 JavBIZmwcM+IA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60B12FF8868;
+	Mon, 27 Apr 2026 19:34:50 +0000 (UTC)
+From: Alexandre MINETTE via B4 Relay <devnull+contact.alex-min.fr@kernel.org>
+Subject: [PATCH v2 0/8] Add Samsung Galaxy S4 support
+Date: Mon, 27 Apr 2026 21:34:46 +0200
+Message-Id: <20260427-mainline-send-v1-sending-v2-0-dcaa9178007b@alex-min.fr>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260423212316.3431746-1-dmatlack@google.com> <20260423212316.3431746-3-dmatlack@google.com>
- <20260427085725.00005283@linux.microsoft.com>
-In-Reply-To: <20260427085725.00005283@linux.microsoft.com>
-From: David Matlack <dmatlack@google.com>
-Date: Mon, 27 Apr 2026 11:56:51 -0700
-X-Gm-Features: AVHnY4IwEsFxMBzAHVS8KxW2Zq56dU7ADRcx7gdZfScIG7qn-IMwc1DMcXI8nOc
-Message-ID: <CALzav=di-fMMPgTEzfWagRgXCWox9CB4XiRhZcVAzc3dUzzfHg@mail.gmail.com>
-Subject: Re: [PATCH v4 02/11] PCI: liveupdate: Track outgoing preserved PCI devices
-To: Jacob Pan <jacob.pan@linux.microsoft.com>
-Cc: iommu@lists.linux.dev, kexec@lists.infradead.org, 
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-pci@vger.kernel.org, Adithya Jayachandran <ajayachandra@nvidia.com>, 
-	Alexander Graf <graf@amazon.com>, Alex Williamson <alex@shazbot.org>, Bjorn Helgaas <bhelgaas@google.com>, 
-	Chris Li <chrisl@kernel.org>, David Rientjes <rientjes@google.com>, 
-	Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Jonathan Corbet <corbet@lwn.net>, 
-	Josh Hilke <jrhilke@google.com>, Leon Romanovsky <leonro@nvidia.com>, Lukas Wunner <lukas@wunner.de>, 
-	Mike Rapoport <rppt@kernel.org>, Parav Pandit <parav@nvidia.com>, 
-	Pasha Tatashin <pasha.tatashin@soleen.com>, Pranjal Shrivastava <praan@google.com>, 
-	Pratyush Yadav <pratyush@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Saeed Mahameed <saeedm@nvidia.com>, Samiullah Khawaja <skhawaja@google.com>, 
-	Shuah Khan <skhan@linuxfoundation.org>, Will Deacon <will@kernel.org>, 
-	William Tu <witu@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAFa672kC/42NwQqDMBBEf0X23C1JsBp76n8UD5qsuqBrSUqwi
+ P/e1C/oaeYNzMwOkQJThHuxQ6DEkVfJYC4FuKmTkZB9ZjDKVKo0GpeOZWYhjCQekz6VZURjG3K
+ Npco7Dbn+CjTwdk4/28wTx/caPudT0r/0j9FsFfauV/ZW16b09Ohm2nBhuQ4B2uM4vheRB8PCA
+ AAA
+To: Bjorn Andersson <andersson@kernel.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, MyungJoo Ham <myungjoo.ham@samsung.com>, 
+ Chanwoo Choi <cw00.choi@samsung.com>, 
+ Guru Das Srinagesh <linux@gurudas.dev>, Linus Walleij <linusw@kernel.org>, 
+ Rob Clark <robin.clark@oss.qualcomm.com>, Joerg Roedel <joro@8bytes.org>, 
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>, 
+ "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, 
+ iommu@lists.linux.dev, phone-devel@vger.kernel.org, 
+ Alexandre MINETTE <contact@alex-min.fr>, 
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
+ Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777318488; l=2418;
+ i=contact@alex-min.fr; s=20260421; h=from:subject:message-id;
+ bh=LOMHarbM4v+JH2BBsj44YuwETzM7GQZrOBerh8UkOyI=;
+ b=AL7tZWu53t/0Uhru9BLys/An11yWBqwc9RpldlJZZeD9jGyfuEoVTdLI0Rp8RKs1CFATSsn97
+ zxVVP0Ya6+NAReJVNB4q/VUsReuQYvnvBCOeF4IZQhOaULymhRTjrNs
+X-Developer-Key: i=contact@alex-min.fr; a=ed25519;
+ pk=KOCaxY4v16ptaT0uk1FRkuaDF2n1JhmnYwLiqWD76M4=
+X-Endpoint-Received: by B4 Relay for contact@alex-min.fr/20260421 with
+ auth_id=743
+X-Original-From: Alexandre MINETTE <contact@alex-min.fr>
+Reply-To: contact@alex-min.fr
 
-On Mon, Apr 27, 2026 at 8:57=E2=80=AFAM Jacob Pan <jacob.pan@linux.microsof=
-t.com> wrote:
+Add initial mainline support for the Samsung Galaxy S4, codenamed jflte.
 
-> > +int pci_liveupdate_preserve(struct pci_dev *dev)
-> > +{
-> > +     struct pci_ser *ser;
-> > +     int i, ret;
-> > +
-> > +     guard(mutex)(&pci_flb_outgoing_lock);
-> > +
-> > +     ret =3D liveupdate_flb_get_outgoing(&pci_liveupdate_flb, (void
-> > **)&ser);
-> > +     if (ret)
-> > +             return ret;
-> > +
-> > +     if (!ser)
-> > +             return -ENOENT;
-> > +
-> > +     if (dev->is_virtfn)
-> > +             return -EINVAL;
-> This can be left outside the mutex?
+This series adds the devicetree binding and board DTS, together with the
+small driver and common DTS changes needed to boot the device with working
+USB peripheral mode.
 
-Yes indeed. I will move it out in v5. Thanks!
+Tested on a Samsung Galaxy S4 GT-I9505. With this series the device boots
+and supports UART, USB peripheral mode with USB networking, the front
+notification LED and the physical buttons.
+
+Signed-off-by: Alexandre MINETTE <contact@alex-min.fr>
+---
+Changes in v2:
+- Keep the APQ8064 compatible list in qcom.yaml alphabetically sorted.
+- Clarify the Qualcomm pinctrl commit message and include the failing hog
+  lookup trace seen on APQ8064.
+- Clarify the MSM IOMMU commit message and include the NULL dereference
+  trace seen during IOMMU probe on APQ8064.
+- Move the PM8921 USB ID extcon node to the end of the PM8921 child nodes.
+- Reorder the jflte DTS nodes and pinctrl properties as requested by
+  reviewers.
+- Add Reviewed-by/Acked-by tags collected on v1.
+- Link to v1: https://lore.kernel.org/r/20260421-mainline-send-v1-sending-v1-0-bcb0857724de@alex-min.fr
+
+---
+Alexandre MINETTE (8):
+      dt-bindings: arm: qcom: Add Samsung Galaxy S4
+      dt-bindings: extcon: qcom,pm8941-misc: Add PM8921 compatible
+      pinctrl: qcom: Register functions before enabling pinctrl
+      iommu/msm: Look up masters per IOMMU instance
+      extcon: qcom-spmi-misc: Add PM8921 compatible
+      ARM: dts: qcom: apq8064: Fix USB controller clocks
+      ARM: dts: qcom: pm8921: Add USB ID extcon
+      ARM: dts: qcom: Add Samsung Galaxy S4
+
+ Documentation/devicetree/bindings/arm/qcom.yaml    |   1 +
+ .../bindings/extcon/qcom,pm8941-misc.yaml          |  17 +-
+ arch/arm/boot/dts/qcom/Makefile                    |   1 +
+ arch/arm/boot/dts/qcom/pm8921.dtsi                 |   7 +
+ .../boot/dts/qcom/qcom-apq8064-samsung-jflte.dts   | 485 +++++++++++++++++++++
+ arch/arm/boot/dts/qcom/qcom-apq8064.dtsi           |  18 +-
+ drivers/extcon/extcon-qcom-spmi-misc.c             |   1 +
+ drivers/iommu/msm_iommu.c                          |  28 +-
+ drivers/pinctrl/qcom/pinctrl-msm.c                 |  15 +-
+ 9 files changed, 546 insertions(+), 27 deletions(-)
+---
+base-commit: b4e07588e743c989499ca24d49e752c074924a9a
+change-id: 20260421-mainline-send-v1-sending-289ec98e6dc1
+
+Best regards,
+-- 
+Alexandre MINETTE <contact@alex-min.fr>
+
+
