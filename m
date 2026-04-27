@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71D4B36CDE2;
-	Mon, 27 Apr 2026 06:10:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F235636CDE2;
+	Mon, 27 Apr 2026 06:10:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777270235; cv=none; b=au5bk1DzBJIw1ibC6GeY0lut5jn9LrpAi/61WYijJXIrAmRqvoFTG6CWhEVXesx36qbD84OQgIAk9G30SuFaBOvIlK8S59YTwGVJxkLqqT7qpowMKx8gCTr/WmuxBiLYbyhp31yP2BnNTZUkSk4uhtM+ACiTBwudxFIRWLpMUzM=
+	t=1777270241; cv=none; b=a263+EJfwAvIk8tpVGKx0pGqmKPCltYJqMqgASoFf5ZaafDPGRnOnKL7nJAgHPHVBGQ04/7ma8fv67411blFo+vVuPemmABHWtHtdqFcPrOBgVdUsIWZmK8f8lh/TTpKyXGJA7aWSnB/I+6DTz/Krkud4IFxHFr5EMK6zYZ5+9s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777270235; c=relaxed/simple;
-	bh=g5BKfRIkdnJuuvmrgGsKTQkhK8uuSZmj9EM3h0yB6q4=;
+	s=arc-20240116; t=1777270241; c=relaxed/simple;
+	bh=/TuP7k7o4mfug5ma2TZl6voJcTWtYtrqwVFMu0KcjPo=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=r8aSwE2vH5hfP9TW6LR+nGkUuH9TMpIw8W9mzhs5Jbc5snvuj+oZ7Uh90G417j9Wp6rUnflw/DtKybOtyayI6b9X6AExa/jHJEoviayRz57OHNC3Jc5PoHk0w3S2OAdG5gnCv5VKkAXJDozkEVHarNKj3c3J7/vwaTPwWQAsKDc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OKP5Fr9J; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=J2TxB78SOd5IgnE3CXoXEROl/HeS6A64SOK1FW1YaHBPRAuWKyT7hpuaU7wcRRkrJh2Nj8XHjQQ/eDOv1luAIbnXtdGSCaSs03mXkMwQO5NZbK52Br9g+WDHrY7GyNNGDh++Sty+t9OJjtYBnwMmbK23JC2QKXg5iI/8ytCkbJ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Cru5fxg5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OKP5Fr9J"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 458ECC2BCB8;
-	Mon, 27 Apr 2026 06:10:30 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Cru5fxg5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6F1CC2BCB4;
+	Mon, 27 Apr 2026 06:10:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777270235;
-	bh=g5BKfRIkdnJuuvmrgGsKTQkhK8uuSZmj9EM3h0yB6q4=;
+	s=k20201202; t=1777270240;
+	bh=/TuP7k7o4mfug5ma2TZl6voJcTWtYtrqwVFMu0KcjPo=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=OKP5Fr9J/rmiRmuDtkx+L4oWbtQ3uTyJySNOza5GnL6Py3TPtsPeN1FZ49xJ7q9nu
-	 XAZS/OC556nkM1EADIRLicbmurrRTLrLFnyXW3CqWNC8NL5SQ2kZPtZM3xtooIJthh
-	 zpRy+Lti1NC9BoWyFBLylld+RUVHcTEzLqECaqbROp4h/Tsd847YRZ4mQWSOGtnkVH
-	 u6GDRwAW1w3EdD1Cwx9yOFabkdlp9zX72TwOdxa2VB2wCGi+5lisJDfIp/Mh9QgMqe
-	 LAJoxxOLSx1HR11kzhlWc/HzBjtvyOq9Xy8yenqqd3TBMGRdfhvwDztQYE62/Q5uT6
-	 3C79S7tJiyZQg==
+	b=Cru5fxg5A5+8Qe+N0bMb4AhYDoJIqS05eiOnc4tjZdbpaWXR17euDTNK3S1orpNqI
+	 HJOTLkOVVkzVnooLY1B9N94PARDySyfDewQZFNJCyPv9mBYCoYoKz0uiGgHKCsr6Y0
+	 3Z9wqtNIwjxsspRZT6mvnJcjx7aNNjrnwPw3LMwj8q1fx0LBxcBEKf/x3qttd0zt5r
+	 Ie/j/9d8wbx1ndY07lSmsD0+q7n6wgds7gsJhJKedtBViQN5nE7V+AP2TIBNlFF3IU
+	 GK0dRvoiJFNVg8Aorx1ataAwSZt/nhdqo0qa5jLyCNWjYvyKakA1Pk00aQbhCprOlL
+	 WoB9LRcRVIAnw==
 From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
 To: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
@@ -45,9 +45,9 @@ Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
 	Will Deacon <will@kernel.org>,
 	Xu Yilun <yilun.xu@linux.intel.com>,
 	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: [PATCH v4 2/4] iommufd/viommu: Associate a kvm pointer to iommufd_viommu
-Date: Mon, 27 Apr 2026 11:40:03 +0530
-Message-ID: <20260427061005.901854-3-aneesh.kumar@kernel.org>
+Subject: [PATCH v4 3/4] iommufd/tsm: add vdevice TSM bind/unbind ioctl
+Date: Mon, 27 Apr 2026 11:40:04 +0530
+Message-ID: <20260427061005.901854-4-aneesh.kumar@kernel.org>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260427061005.901854-1-aneesh.kumar@kernel.org>
 References: <20260427061005.901854-1-aneesh.kumar@kernel.org>
@@ -59,114 +59,274 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Nicolin Chen <nicolinc@nvidia.com>
+Introduce IOMMU_VDEVICE_TSM_OP to allow userspace to issue TSM bind/unbind
+operations for an iommufd vdevice.
 
-For TSM use case, vIOMMU will need to get access to KVM to make different
-TSM calls. Associate the kvm pointer to the vIOMMU and take kvm's refcount.
+The new ioctl:
+- looks up the vdevice object from vdevice_id
+- resolves the associated KVM VM from the vIOMMU KVM file reference
+- dispatches bind/unbind via tsm_bind()/tsm_unbind()
 
-Based on an original patch by Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Also add common TSM helpers in tsm-core and wire vdevice teardown to unbind
+the device from TSM state.
 
-[nicolinc: hold kvm's users_count]
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+This provides iommufd plumbing to bind a TDI to a confidential guest through
+the TSM layer.
+
 Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 ---
- drivers/iommu/iommufd/viommu.c | 20 +++++++++++++++++---
- include/linux/iommu.h          |  1 +
- include/linux/iommufd.h        |  1 +
- 3 files changed, 19 insertions(+), 3 deletions(-)
+ drivers/iommu/iommufd/Makefile          |  2 +
+ drivers/iommu/iommufd/iommufd_private.h |  8 ++++
+ drivers/iommu/iommufd/main.c            |  3 ++
+ drivers/iommu/iommufd/tsm.c             | 60 +++++++++++++++++++++++++
+ drivers/iommu/iommufd/viommu.c          |  4 ++
+ drivers/virt/coco/tsm-core.c            | 19 ++++++++
+ include/linux/tsm.h                     | 17 +++++++
+ include/uapi/linux/iommufd.h            | 26 +++++++++++
+ 8 files changed, 139 insertions(+)
+ create mode 100644 drivers/iommu/iommufd/tsm.c
 
-diff --git a/drivers/iommu/iommufd/viommu.c b/drivers/iommu/iommufd/viommu.c
-index 4081deda9b33..1e023d1cf8d5 100644
---- a/drivers/iommu/iommufd/viommu.c
-+++ b/drivers/iommu/iommufd/viommu.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /* Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES
-  */
-+#include <linux/kvm_host.h>
- #include "iommufd_private.h"
+diff --git a/drivers/iommu/iommufd/Makefile b/drivers/iommu/iommufd/Makefile
+index 71d692c9a8f4..431089089ee9 100644
+--- a/drivers/iommu/iommufd/Makefile
++++ b/drivers/iommu/iommufd/Makefile
+@@ -10,6 +10,8 @@ iommufd-y := \
+ 	vfio_compat.o \
+ 	viommu.o
  
- void iommufd_viommu_destroy(struct iommufd_object *obj)
-@@ -11,6 +12,8 @@ void iommufd_viommu_destroy(struct iommufd_object *obj)
- 	if (viommu->ops && viommu->ops->destroy)
- 		viommu->ops->destroy(viommu);
- 	refcount_dec(&viommu->hwpt->common.obj.users);
-+	if (viommu->kvm)
-+		kvm_put_kvm(viommu->kvm);
- 	xa_destroy(&viommu->vdevs);
- }
++iommufd-$(CONFIG_TSM) += tsm.o
++
+ iommufd-$(CONFIG_IOMMUFD_TEST) += selftest.o
  
-@@ -68,14 +71,22 @@ int iommufd_viommu_alloc_ioctl(struct iommufd_ucmd *ucmd)
- 		goto out_put_hwpt;
- 	}
+ obj-$(CONFIG_IOMMUFD) += iommufd.o
+diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+index c48a568c6cbb..14d2d6d1beec 100644
+--- a/drivers/iommu/iommufd/iommufd_private.h
++++ b/drivers/iommu/iommufd/iommufd_private.h
+@@ -699,6 +699,14 @@ void iommufd_vdevice_destroy(struct iommufd_object *obj);
+ void iommufd_vdevice_abort(struct iommufd_object *obj);
+ int iommufd_hw_queue_alloc_ioctl(struct iommufd_ucmd *ucmd);
+ void iommufd_hw_queue_destroy(struct iommufd_object *obj);
++#ifdef CONFIG_TSM
++int iommufd_vdevice_tsm_op_ioctl(struct iommufd_ucmd *ucmd);
++#else
++static inline int iommufd_vdevice_tsm_op_ioctl(struct iommufd_ucmd *ucmd)
++{
++	return -EOPNOTSUPP;
++}
++#endif
  
-+	if (idev->kvm && !kvm_get_kvm_safe(idev->kvm)) {
-+		rc = -ENOENT;
-+		goto out_put_hwpt;
+ static inline struct iommufd_vdevice *
+ iommufd_get_vdevice(struct iommufd_ctx *ictx, u32 id)
+diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
+index 8c6d43601afb..d73e6b391c6f 100644
+--- a/drivers/iommu/iommufd/main.c
++++ b/drivers/iommu/iommufd/main.c
+@@ -432,6 +432,7 @@ union ucmd_buffer {
+ 	struct iommu_veventq_alloc veventq;
+ 	struct iommu_vfio_ioas vfio_ioas;
+ 	struct iommu_viommu_alloc viommu;
++	struct iommu_vdevice_tsm_op tsm_op;
+ #ifdef CONFIG_IOMMUFD_TEST
+ 	struct iommu_test_cmd test;
+ #endif
+@@ -493,6 +494,8 @@ static const struct iommufd_ioctl_op iommufd_ioctl_ops[] = {
+ 		 __reserved),
+ 	IOCTL_OP(IOMMU_VIOMMU_ALLOC, iommufd_viommu_alloc_ioctl,
+ 		 struct iommu_viommu_alloc, out_viommu_id),
++	IOCTL_OP(IOMMU_VDEVICE_TSM_OP, iommufd_vdevice_tsm_op_ioctl,
++		 struct iommu_vdevice_tsm_op, vdevice_id),
+ #ifdef CONFIG_IOMMUFD_TEST
+ 	IOCTL_OP(IOMMU_TEST_CMD, iommufd_test, struct iommu_test_cmd, last),
+ #endif
+diff --git a/drivers/iommu/iommufd/tsm.c b/drivers/iommu/iommufd/tsm.c
+new file mode 100644
+index 000000000000..4e5fa7849342
+--- /dev/null
++++ b/drivers/iommu/iommufd/tsm.c
+@@ -0,0 +1,60 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (C) 2026 ARM Ltd.
++ */
++
++#include <linux/tsm.h>
++#include "iommufd_private.h"
++
++/**
++ * iommufd_vdevice_tsm_op_ioctl - Handle vdevice TSM operations
++ * @ucmd: user command data for IOMMU_VDEVICE_TSM_OP
++ *
++ * Currently only supports TSM bind/unbind operations
++ * Resolve @iommu_vdevice_tsm_op::vdevice_id to a vdevice and dispatch the
++ * requested bind/unbind operation through the TSM core.
++ *
++ * Return: 0 on success, or a negative error code on failure.
++ */
++int iommufd_vdevice_tsm_op_ioctl(struct iommufd_ucmd *ucmd)
++{
++	int rc;
++	struct kvm *kvm;
++	struct iommufd_vdevice *vdev;
++	struct iommu_vdevice_tsm_op *cmd = ucmd->cmd;
++
++	if (cmd->flags)
++		return -EOPNOTSUPP;
++
++	vdev = iommufd_get_vdevice(ucmd->ictx, cmd->vdevice_id);
++	if (IS_ERR(vdev))
++		return PTR_ERR(vdev);
++
++	kvm = vdev->viommu->kvm;
++	if (!kvm) {
++		rc = -ENODEV;
++		goto out_put_vdev;
 +	}
 +
- 	viommu = (struct iommufd_viommu *)_iommufd_object_alloc_ucmd(
- 		ucmd, viommu_size, IOMMUFD_OBJ_VIOMMU);
- 	if (IS_ERR(viommu)) {
- 		rc = PTR_ERR(viommu);
--		goto out_put_hwpt;
-+		goto out_put_kvm;
- 	}
++	/* tsm layer will take care of parallel calls to tsm_bind/unbind */
++	switch (cmd->type) {
++	case IOMMU_VDEVICE_TSM_BIND:
++		rc = tsm_bind(vdev->idev->dev, kvm, vdev->virt_id);
++		break;
++	case IOMMU_VDEVICE_TSM_UNBIND:
++		rc = tsm_unbind(vdev->idev->dev);
++		break;
++	default:
++		rc = -EINVAL;
++		goto out_put_vdev;
++	}
++
++	if (rc)
++		goto out_put_vdev;
++
++	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
++
++out_put_vdev:
++	iommufd_put_object(ucmd->ictx, &vdev->obj);
++	return rc;
++}
+diff --git a/drivers/iommu/iommufd/viommu.c b/drivers/iommu/iommufd/viommu.c
+index 1e023d1cf8d5..ec9054d3ec92 100644
+--- a/drivers/iommu/iommufd/viommu.c
++++ b/drivers/iommu/iommufd/viommu.c
+@@ -3,6 +3,8 @@
+  */
+ #include <linux/kvm_host.h>
+ #include "iommufd_private.h"
++#include <linux/cleanup.h>
++#include <linux/tsm.h>
  
- 	xa_init(&viommu->vdevs);
-+	viommu->kvm = idev->kvm;
-+	if (viommu->kvm)
-+		kvm_get_kvm(viommu->kvm);
- 	viommu->type = cmd->type;
- 	viommu->ictx = ucmd->ictx;
- 	viommu->hwpt = hwpt_paging;
-@@ -92,17 +103,20 @@ int iommufd_viommu_alloc_ioctl(struct iommufd_ucmd *ucmd)
- 	rc = ops->viommu_init(viommu, hwpt_paging->common.domain,
- 			      user_data.len ? &user_data : NULL);
- 	if (rc)
--		goto out_put_hwpt;
-+		goto out_put_kvm;
+ void iommufd_viommu_destroy(struct iommufd_object *obj)
+ {
+@@ -133,6 +135,8 @@ void iommufd_vdevice_abort(struct iommufd_object *obj)
  
- 	/* It is a driver bug that viommu->ops isn't filled */
- 	if (WARN_ON_ONCE(!viommu->ops)) {
- 		rc = -EOPNOTSUPP;
--		goto out_put_hwpt;
-+		goto out_put_kvm;
- 	}
+ 	lockdep_assert_held(&idev->igroup->lock);
  
- 	cmd->out_viommu_id = viommu->obj.id;
- 	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
++	tsm_unbind(idev->dev);
++
+ 	if (vdev->destroy)
+ 		vdev->destroy(vdev);
+ 	/* xa_cmpxchg is okay to fail if alloc failed xa_cmpxchg previously */
+diff --git a/drivers/virt/coco/tsm-core.c b/drivers/virt/coco/tsm-core.c
+index ae3617abd2ac..f0e35fc38776 100644
+--- a/drivers/virt/coco/tsm-core.c
++++ b/drivers/virt/coco/tsm-core.c
+@@ -240,6 +240,25 @@ void tsm_ide_stream_unregister(struct pci_ide *ide)
+ }
+ EXPORT_SYMBOL_GPL(tsm_ide_stream_unregister);
  
-+out_put_kvm:
-+	if (idev->kvm)
-+		kvm_put_kvm(idev->kvm);
- out_put_hwpt:
- 	iommufd_put_object(ucmd->ictx, &hwpt_paging->common.obj);
- out_put_idev:
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 555597b54083..300281dae01d 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -46,6 +46,7 @@ struct iommu_dma_msi_cookie;
- struct iommu_fault_param;
- struct iommufd_ctx;
- struct iommufd_viommu;
++int tsm_bind(struct device *dev, struct kvm *kvm, u64 tdi_id)
++{
++	if (!dev_is_pci(dev))
++		return -EINVAL;
++
++	return pci_tsm_bind(to_pci_dev(dev), kvm, tdi_id);
++}
++EXPORT_SYMBOL_GPL(tsm_bind);
++
++int tsm_unbind(struct device *dev)
++{
++	if (!dev_is_pci(dev))
++		return -EINVAL;
++
++	pci_tsm_unbind(to_pci_dev(dev));
++	return 0;
++}
++EXPORT_SYMBOL_GPL(tsm_unbind);
++
+ static void tsm_release(struct device *dev)
+ {
+ 	struct tsm_dev *tsm_dev = container_of(dev, typeof(*tsm_dev), dev);
+diff --git a/include/linux/tsm.h b/include/linux/tsm.h
+index 7f72a154b6b2..85eb1717bddd 100644
+--- a/include/linux/tsm.h
++++ b/include/linux/tsm.h
+@@ -126,4 +126,21 @@ struct tsm_dev *find_tsm_dev(int id);
+ struct pci_ide;
+ int tsm_ide_stream_register(struct pci_ide *ide);
+ void tsm_ide_stream_unregister(struct pci_ide *ide);
++
 +struct kvm;
- struct msi_desc;
- struct msi_msg;
++#ifdef CONFIG_TSM
++int tsm_bind(struct device *dev, struct kvm *kvm, u64 tdi_id);
++int tsm_unbind(struct device *dev);
++#else
++static inline int tsm_bind(struct device *dev, struct kvm *kvm, u64 tdi_id)
++{
++	return -EINVAL;
++}
++
++static inline int tsm_unbind(struct device *dev)
++{
++	return 0;
++}
++#endif
++
+ #endif /* __TSM_H */
+diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+index 1dafbc552d37..aabdfd86504c 100644
+--- a/include/uapi/linux/iommufd.h
++++ b/include/uapi/linux/iommufd.h
+@@ -57,6 +57,7 @@ enum {
+ 	IOMMUFD_CMD_IOAS_CHANGE_PROCESS = 0x92,
+ 	IOMMUFD_CMD_VEVENTQ_ALLOC = 0x93,
+ 	IOMMUFD_CMD_HW_QUEUE_ALLOC = 0x94,
++	IOMMUFD_CMD_VDEVICE_TSM_OP = 0x95,
+ };
  
-diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-index 5cdcb8d2f305..8e0505a9bd0c 100644
---- a/include/linux/iommufd.h
-+++ b/include/linux/iommufd.h
-@@ -103,6 +103,7 @@ struct iommufd_viommu {
- 	struct iommufd_ctx *ictx;
- 	struct iommu_device *iommu_dev;
- 	struct iommufd_hwpt_paging *hwpt;
-+	struct kvm *kvm;
+ /**
+@@ -1134,6 +1135,31 @@ struct iommu_vdevice_alloc {
+ };
+ #define IOMMU_VDEVICE_ALLOC _IO(IOMMUFD_TYPE, IOMMUFD_CMD_VDEVICE_ALLOC)
  
- 	const struct iommufd_viommu_ops *ops;
- 
++/**
++ * enum iommu_vdevice_tsm_op_type - operation type for struct iommu_vdevice_tsm_op
++ * @IOMMU_VDEVICE_TSM_BIND: Bind a vDevice to TSM
++ * @IOMMU_VDEVICE_TSM_UNBIND: Unbind a vDevice from TSM
++ */
++enum iommu_vdevice_tsm_op_type {
++	IOMMU_VDEVICE_TSM_BIND = 0x1,
++	IOMMU_VDEVICE_TSM_UNBIND,
++};
++
++/**
++ * struct iommu_vdevice_tsm_op - ioctl(IOMMU_VDEVICE_TSM_OP)
++ * @size: sizeof(struct iommu_vdevice_tsm_op)
++ * @type: Type of TSM operation. Must be defined in enum iommu_vdevice_tsm_op_type
++ * @flags: Must be 0
++ * @vdevice_id: Object handle for the vDevice. Returned from IOMMU_VDEVICE_ALLOC
++ */
++struct iommu_vdevice_tsm_op {
++	__u32 size;
++	__u32 type;
++	__u32 flags;
++	__u32 vdevice_id;
++};
++#define IOMMU_VDEVICE_TSM_OP _IO(IOMMUFD_TYPE, IOMMUFD_CMD_VDEVICE_TSM_OP)
++
+ /**
+  * struct iommu_ioas_change_process - ioctl(VFIO_IOAS_CHANGE_PROCESS)
+  * @size: sizeof(struct iommu_ioas_change_process)
 -- 
 2.43.0
 
