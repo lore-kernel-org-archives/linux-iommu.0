@@ -1,68 +1,67 @@
-Received: from mail-pj1-f43.google.com (mail-pj1-f43.google.com [209.85.216.43])
+Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11D7931195C
-	for <iommu@lists.linux.dev>; Mon, 27 Apr 2026 14:04:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26AC73D1CAA
+	for <iommu@lists.linux.dev>; Mon, 27 Apr 2026 14:05:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777298667; cv=none; b=YXPuBlXF0bM5shE2MWv0pEPu2awdzKEwrIjtYTACNID6cOTvRh6kyEK4+AQxqN56K51pNAjurqLG6z3v7SPbPV9u5Jw8aoVL+LpW6l59cVLOgHkthKcySxgu1AilbBk3Fhy+HEHkiniDII3V6L4vb3iQjhCFgjT+K0Nc3oZdXx8=
+	t=1777298743; cv=none; b=C7YyKw1Jzk54fROARuR3umSRB2dAAx9AtMNAd32WMfyDFPtYF7BmPcS/6CQojZiyAwv7CdMmWsPK26H7zZZZdPqgYqXPrDfQGmintR+wfOfQ387N0Q1q8af+PN1WNh5FtqHcc4AwABiHuhv/C4y7vChkJK5kLsiaNqgNk1yb8qU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777298667; c=relaxed/simple;
-	bh=jEMMmfGSdoox1VvMk7/uQfRnvnb9SxPsH9ArA5SHRF0=;
+	s=arc-20240116; t=1777298743; c=relaxed/simple;
+	bh=iGS050Vh31Rx6ADQYBwC5U1aYufsbvINEeiUPc1swZo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CVXyPmjD0/smLrODQTWvwuceN5UutwJ/ZCkIdbXkAk+tcJxi/tQebK8udcCX7v2LQOKpZXFQQnNqkp4VkMMfTEUNs3oiC8MFZFIzyVEJLnMvJsKACHxdJzz9WrgJUxiS4fEE3jI7gda/yS5wqkAtSHbleqbLIcMo4EmLRzWADzo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=bCSOJQvD; arc=none smtp.client-ip=209.85.216.43
+	 Content-Type:Content-Disposition:In-Reply-To; b=UJyY6/XdteZ+QSlROieKJ8yXefLm91WO+ST4nELf0iUn02D3O5qytAzp8PuC46VD34DvU7yO6ATtB+1hZdsbfbtvWlfsftwS97Xt6vhWSDpwQNPoO2lrIJ9zcj+PZbvHz0xE5O1OHpMgH5isuRUJT/5aEY0nuHfA45ZBfs8LZLQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Nc1a1bIN; arc=none smtp.client-ip=209.85.219.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="bCSOJQvD"
-Received: by mail-pj1-f43.google.com with SMTP id 98e67ed59e1d1-35d90833cacso6371241a91.2
-        for <iommu@lists.linux.dev>; Mon, 27 Apr 2026 07:04:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Nc1a1bIN"
+Received: by mail-qv1-f44.google.com with SMTP id 6a1803df08f44-8a210c813f8so65837646d6.0
+        for <iommu@lists.linux.dev>; Mon, 27 Apr 2026 07:05:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1777298664; x=1777903464; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1777298741; x=1777903541; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=xsNytmMTjP7HFXqAqLQl9kJMS/VlfS6FjoNqX+XGHx8=;
-        b=bCSOJQvD9mSlWyalqsMlRi4oda295QqeCg2yN24bCaZ6MFnpH7bhXl+zlMqmlmNTC9
-         agE3x4DksWTbRnVoMGHbgw777ziZe9Qj+t1Wh5upqhEVZmI8twRbu7oIueRUU/YrHdFu
-         elz67k5a9yckYkewzX1S2o1PDrBTe5g7OOJnwO1Vtng0OyyW+5WY8kXrlt98StescGBD
-         RzcWLViY07vbu7R09/jHAvJQT/eJTwM1z4YCaXRcc/ht6fiyQ5eSHDYYw2Nqj2WtQmDS
-         /ACIV29TQIiSpMbTO5m/RvocTJ/BOmN1GKw/Rv+5pbN72Ez4vtYSzlPKh1qUJbHHR5Qi
-         hc7Q==
+        bh=iGS050Vh31Rx6ADQYBwC5U1aYufsbvINEeiUPc1swZo=;
+        b=Nc1a1bINPsA4P83iQoDWYVtguEHt84F71OhQLklT25BxabyAxQAPcvVJ23W6rwbcZ7
+         GgcoVfpMvjUSykZ6AdDp/SCx02pqAsV4gLKpgfX86qn5n1bkMaHo0ESNHozC5uBLPdY2
+         C6k29wxCcTBMv1c7CIvT9jkhPJj0KxJGU9xM2MauIe/ej5smKKr2dkkVS2tSj+/FzEJY
+         tJdef0Q5bOkVTvu/aFUoTmLCLz9qimuyUja0dl4FbbmyfHMp9v1cCR20t5wqi40qj7nV
+         IqTH7ADKFZj3X7dVKWVG2G+L/P0u8dsBVrHiuv0Y906VDY3xU3N+EZnXKAPjpzxUVps+
+         9FnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777298664; x=1777903464;
+        d=1e100.net; s=20251104; t=1777298741; x=1777903541;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=xsNytmMTjP7HFXqAqLQl9kJMS/VlfS6FjoNqX+XGHx8=;
-        b=gwm5x8Fa9oicJuEfHT2Z+64jx3SwqZP+3UFpYzIwocArlEKxVi0OCLuaC8RRkVcfd3
-         hdh7smARt/Z+TZ2h2qaJq4OiC6cLFwoSpMSrhUy2VMWtcvUNV7GGd267XPm99+JJNI3u
-         WGI0MRxrYX9LyDpn40h8Bg+R2XYQCi9029eiuJIFjZk6hrdSe9FFn2RbkquUTHUV+0AZ
-         B9hHuOPK9HS1FXHAMVeOhglRMDX/zIikUwrtvx7BvOHU6vrxKsGobrfpSY9Nj7Fk8Nsd
-         6VkkVMkhtqEXpeGa5Oo76RkpBzCkFi2XWwmHyCvCpDD6KCX/R1qHNiNk5Dk5qNOUY6VT
-         10vA==
-X-Gm-Message-State: AOJu0YyDnIQw+2AAH4q6rECPiH07Cs8d4r3q+83fkbpwRiOZCY6DxLIC
-	hVrdOlugRdPPVvg2p9sOhsZsWMT/h5x5GWLjdtlqXNiXveYKwARo6KzYhxKOTAdc9uHi0B7FkP7
-	phl4JDeA=
-X-Gm-Gg: AeBDievIa5Cax9YfR6wdOcYqOzDQELYliEq/rHzHHgoSOeKJEC3jL1H/UuUFDgVqI5i
-	WWi83WaRnuiadEO+Ut6Tr04ZgCs4w7dtIAXExcp/LS5aVhKp5W1w6efdduh4U+LMVb+ftjGuZTh
-	4UZNi8C9fS0y3RYJni9l8Yc+53xnJJUi0YejLNgsxusBUeVTV10AFLInLe8kJS98fWMu0CJdjOK
-	zMsnfi/xgNF49KUsF/5eqcSDpdZ5e3ZpIIGCFENKDNy8lAwmt7wWmqWoC5itofVobrW9cltokpi
-	iI+ZdZJVGo2FnLgQp6dmMKh0RJ58B0Ja3LhbmYhjrdqxJlOqs4xSc898muBeh5gIWrJn/swhHNd
-	59L3tMK7R0JaZSFsICAn9DnQvlhKA+k/h5Qsn5SULUKrGl+U/H7H0lMS6OuGVUyHefaHeHLpUGb
-	PE9l3LLMQaTeoBBhKfGXPn/S6fEUPyIbnnOo9349LV4pKylPjVLw+qr9FCCFsWHAeKmYfHoFATb
-	kB76I+ZMMmLqCG6
-X-Received: by 2002:a05:6820:2d04:b0:694:a02f:75ad with SMTP id 006d021491bc7-694a02f7af1mr14826616eaf.59.1777298592445;
-        Mon, 27 Apr 2026 07:03:12 -0700 (PDT)
+        bh=iGS050Vh31Rx6ADQYBwC5U1aYufsbvINEeiUPc1swZo=;
+        b=NX3qCWnknL/FYvld8qgFSgyZlPQodDToq19g7olo9VELhUJca+56VcMnd/tocvE5Wu
+         vefcPP09X1x4ZgpYBvVTE6I4PlYJ1j3dwZQA0uGSHgqxv6/J1q29rlJVtUG0CBDjUlwp
+         koy3SUb59gDTkZtHRA46Co7e58Bc2/GBulX/qkjw2e+ceKFEpnD7vwDtuY/XFwwBvibL
+         ibjkxjYBfkypgyA346D77cqJ5RdffZUR/1a+PkXG6GLl8OeBIvOguFIVnj2bkidGRzGx
+         mhStant0pt3LQL0ic/DCavMp996A4eQUqQH0yKnouC/hR1K5BTQ7nbQhWbVaxQVbKXaM
+         wePw==
+X-Gm-Message-State: AOJu0YwLULqth82qMRrxaT3C3QlsQ4ueerb2l7OdI1r0zKBZH+YxpTxV
+	NEkBUyilmL3CWSXxuxI5LAjhdqbFOZSMWhVKxlFkRd8s4PgOdBuRsLlFTkKIm4CBaVc=
+X-Gm-Gg: AeBDiesfxlHzyxXH4g1ZuPgesPo5QyQjgAeXAu8xs0x+5dU1rXtsmvXhz6O5MH21BB1
+	qndHLMaBQQg6oHzPtJkzZbf+GZRkXwAtopmRyyGM51GjSpTbzyxWVulNcrCrj/X8Z1d+j0uVr8a
+	7otiXC9zc1gj++S1lk2Vm0j+pqi298ExtC89YPpTQdn36pV1kX0oqQ5pAO1UNqSCiGlzg5qAtYq
+	9ekCidXmAOq3bI8c/bLSDSIA49GjjjjRHKzZg0r9DSou3plVbUn8QPuC/Chrd9XKc00kK8bGzGq
+	gLtuyrv5yfeC70p31eTEn69+i/ra4ZAlPSeF4hztUVv4K1l40WquiFPOgTD/FDbhYPevJVVdbIB
+	Zy1gxDoPUfEfZEUCUGAASlr9lvHRkyBAIjstd2+3oG9J9Dlz0T7whARBxa5WuVblfOhyN5GuWLr
+	gA4m96MPB6y1T5l5JoQh9o8KPceIvpKC5SzGlqrTU0Sw/R5flEWaZEBAz2fJmDdqaff/KK5wFrn
+	BAtQqJZ0nrwsGWVTAa6zDgtXfY=
+X-Received: by 2002:a05:6214:489:b0:8b1:f3e1:5e12 with SMTP id 6a1803df08f44-8b1f3e16020mr426493366d6.14.1777298740980;
+        Mon, 27 Apr 2026 07:05:40 -0700 (PDT)
 Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-50fb92db861sm165173551cf.5.2026.04.27.07.03.11
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8b02ac4260bsm260265136d6.4.2026.04.27.07.05.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2026 07:03:11 -0700 (PDT)
+        Mon, 27 Apr 2026 07:05:40 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1wHMYI-00000003Xlc-0XFo;
-	Mon, 27 Apr 2026 11:03:10 -0300
-Date: Mon, 27 Apr 2026 11:03:10 -0300
+	id 1wHMah-00000003YNw-36NU;
+	Mon, 27 Apr 2026 11:05:39 -0300
+Date: Mon, 27 Apr 2026 11:05:39 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
 Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
@@ -77,11 +76,10 @@ Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
 	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
 	Will Deacon <will@kernel.org>, Xu Yilun <yilun.xu@linux.intel.com>,
 	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v4 2/4] iommufd/viommu: Associate a kvm pointer to
- iommufd_viommu
-Message-ID: <20260427140310.GD740385@ziepe.ca>
+Subject: Re: [PATCH v4 4/4] iommufd/vdevice: add TSM guest request ioctl
+Message-ID: <20260427140539.GE740385@ziepe.ca>
 References: <20260427061005.901854-1-aneesh.kumar@kernel.org>
- <20260427061005.901854-3-aneesh.kumar@kernel.org>
+ <20260427061005.901854-5-aneesh.kumar@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -90,21 +88,35 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260427061005.901854-3-aneesh.kumar@kernel.org>
+In-Reply-To: <20260427061005.901854-5-aneesh.kumar@kernel.org>
 
-On Mon, Apr 27, 2026 at 11:40:03AM +0530, Aneesh Kumar K.V (Arm) wrote:
-> @@ -68,14 +71,22 @@ int iommufd_viommu_alloc_ioctl(struct iommufd_ucmd *ucmd)
->  		goto out_put_hwpt;
->  	}
->  
-> +	if (idev->kvm && !kvm_get_kvm_safe(idev->kvm)) {
-> +		rc = -ENOENT;
-> +		goto out_put_hwpt;
-> +	}
+On Mon, Apr 27, 2026 at 11:40:05AM +0530, Aneesh Kumar K.V (Arm) wrote:
+> +/**
+> + * struct iommu_vdevice_tsm_guest_request - ioctl(IOMMU_VDEVICE_TSM_GUEST_REQUEST)
+> + * @size: sizeof(struct iommu_vdevice_tsm_guest_request)
+> + * @vdevice_id: vDevice ID the guest request is for
+> + * @scope: Bus-specific scope classification for the guest request
+> + * @req_len: Size in bytes of the input payload at @req_uptr
+> + * @resp_len: Size in bytes of the output buffer at @resp_uptr
+> + * @__reserved: Must be 0
+> + * @req_uptr: Userspace pointer to the guest-provided request payload
+> + * @resp_uptr: Userspace pointer to the guest response buffer
+> + *
+> + * Forward a guest request to the TSM bound vDevice. This is intended for
+> + * guest TSM/TDISP message transport where the host kernel only marshals
+> + * bytes between userspace and the TSM implementation.
+> + *
+> + * The meaning and valid values of @scope are defined by the TSM backend for
+> + * the device bus type.
 
-Can we actually do this or is this circular module references if kvm
-isn't built in? kvm->vfio->iommufd->kvm isn't it?
+If you want to do this then you have to also provide a way to discover
+what the TSM backend is so userspace can form the correct numbers.
 
-This is why I want to use file *...
+Also, since scope is now a uapi whatever in tsm is defining the values
+must be moved to the uapi headers.
+
+Probably this is not a good idea and iommufd should just have its own
+enum with unique numbers for every bus and do the validation and
+translation.
 
 Jason
