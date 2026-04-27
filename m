@@ -1,318 +1,127 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 06DED21D3F5
-	for <iommu@lists.linux.dev>; Mon, 27 Apr 2026 15:57:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A28A0359A70;
+	Mon, 27 Apr 2026 16:31:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777305450; cv=none; b=MWfoqJUicp1+YY1BS1jKVvJrse6ywnNE7OX3v9yCE6EELAFFOB5YzIPjRuL6TCJrsZBJvRmm4W+YyMXRRsyE29+ZVA8TRw2DkIVtLsx4/QzOJe+eClHPQQEJCRMPfneIQLTvhoB3AFX/rch95CLWvXxUB1WMyZmvOgBzKRdRbaE=
+	t=1777307501; cv=none; b=myyt9bq/VqBx4qfb7zO8go75fxyTch+rlVIWAXiBiUYec1eD7gT4maYYKNIz7EPoL6zTN999MzyogRg8FQt07V+o6hV6eTavIhcZEnYYlJMZTYNZaz5mRO4xXKHUq9pINhUW9IIwZX07PHUOjAXtUcQFKppQthY9EuerxzBv21c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777305450; c=relaxed/simple;
-	bh=kN0/zBZdm9NxVXKJAoQJhWqJCgj21oE9y9ViQHYtXGk=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=JX9FAt+eGJaX8l6oiPyyu10IKugQfeRi3xSKHlbPIOeu2dz0CpvbMwFhuh/m4Myk6mTwUJ2BpQrWEvzkNhYi0fh1dFTALGlzPQgieX/mhUJphyE+PxJpbpfTca7SPZ32P4iVYMobS2XhLH4g0uZTsD//2zlz4w3AlVnHmJThb/w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=OhQoS5cT; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1777307501; c=relaxed/simple;
+	bh=EmBgN/l8famoiPgynzTW/sALQPUBysGWNc0lBt29TW8=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=pKlHB8Tu07AMP36uu9As85fp2i30u2n/zYfy5gSSZrbm2gnCX0Awy0pf7S/Tb429qp7NwGvFwvZCxmyTIaAMxey/nY7MzCjaA0kP4TZFlIYf1QXOsL0F7BeAhvJfpGem1Q93uGj7jWQ4R8pzXyYmg7J0Ho/lm+LY9jJ+YXVjIYk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RinZmw0F; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="OhQoS5cT"
-Received: from localhost (unknown [40.65.108.177])
-	by linux.microsoft.com (Postfix) with ESMTPSA id D338920B716A;
-	Mon, 27 Apr 2026 08:57:27 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D338920B716A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1777305448;
-	bh=9LeH8B86nKcZOpLZaBsejYDxB8jSKUcx+rF/bpcYhS4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=OhQoS5cTppvzXia529YlPHyl3gEpjLWlCpqEjC0wytPu1aoMn+auy5b+Twna7AZOq
-	 Lvng4260i2n0yzHjGfSp5eYpSAvQTyiXS2IYISChFXvH/uD1Pd2GiYxD6n9fpiMfwn
-	 a+1mc9wLudzyJ4EU5tC+TsVbZknBuN1SpzNpVqY8=
-Date: Mon, 27 Apr 2026 08:57:25 -0700
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: David Matlack <dmatlack@google.com>
-Cc: iommu@lists.linux.dev, kexec@lists.infradead.org,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, linux-pci@vger.kernel.org, Adithya Jayachandran
- <ajayachandra@nvidia.com>, Alexander Graf <graf@amazon.com>, Alex
- Williamson <alex@shazbot.org>, Bjorn Helgaas <bhelgaas@google.com>, Chris
- Li <chrisl@kernel.org>, David Rientjes <rientjes@google.com>, Jason
- Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Jonathan Corbet
- <corbet@lwn.net>, Josh Hilke <jrhilke@google.com>, Leon Romanovsky
- <leonro@nvidia.com>, Lukas Wunner <lukas@wunner.de>, Mike Rapoport
- <rppt@kernel.org>, Parav Pandit <parav@nvidia.com>, Pasha Tatashin
- <pasha.tatashin@soleen.com>, Pranjal Shrivastava <praan@google.com>,
- Pratyush Yadav <pratyush@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Saeed Mahameed <saeedm@nvidia.com>, Samiullah Khawaja
- <skhawaja@google.com>, Shuah Khan <skhan@linuxfoundation.org>, Will Deacon
- <will@kernel.org>, William Tu <witu@nvidia.com>, Yi Liu
- <yi.l.liu@intel.com>
-Subject: Re: [PATCH v4 02/11] PCI: liveupdate: Track outgoing preserved PCI
- devices
-Message-ID: <20260427085725.00005283@linux.microsoft.com>
-In-Reply-To: <20260423212316.3431746-3-dmatlack@google.com>
-References: <20260423212316.3431746-1-dmatlack@google.com>
-	<20260423212316.3431746-3-dmatlack@google.com>
-Organization: LSG
-X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RinZmw0F"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19613C19425;
+	Mon, 27 Apr 2026 16:31:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777307501;
+	bh=EmBgN/l8famoiPgynzTW/sALQPUBysGWNc0lBt29TW8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=RinZmw0FkguzhJm6YLBMK0Rxd0yaMn/wfzwEiaKqPJ72QskJB9Eng4b2HCqoImhxa
+	 hlnylvgXjDQyeCkaIZhrCut/b8JregTwmKlf1QmUqCWuLSA10NqYx5TOBVeUpu4NSR
+	 K0CnW8D+MgRtdXRsL3+Hk+VulUfGfB6dZQe2iYeAHoqkKnQ3DnmzjKVnhtIRkIBbVl
+	 flMFoHVKLkX2RFOPvEIN7jqi4PKDxBIm/FynjwF9aULAR052tEAdpge0xGsIwkD9g0
+	 zfLpeYq6WwvZQHhJNeZZmnaXaHf08SFwwE245gvr0ZmIOLM2jFqa4ivOJ+PJwV6jP+
+	 KvhpqWUdQIjlQ==
+Date: Mon, 27 Apr 2026 11:31:39 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Mukesh R <mrathor@linux.microsoft.com>
+Cc: hpa@zytor.com, robin.murphy@arm.com, robh@kernel.org,
+	wei.liu@kernel.org, mhklinux@outlook.com, muislam@microsoft.com,
+	namjain@linux.microsoft.com, magnuskulke@linux.microsoft.com,
+	anbelski@linux.microsoft.com, linux-kernel@vger.kernel.org,
+	linux-hyperv@vger.kernel.org, iommu@lists.linux.dev,
+	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+	kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
+	longli@microsoft.com, tglx@kernel.org, mingo@redhat.com,
+	bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+	joro@8bytes.org, will@kernel.org, lpieralisi@kernel.org,
+	kwilczynski@kernel.org, bhelgaas@google.com, arnd@arndb.de
+Subject: Re: [PATCH V1 08/13] PCI: hv: rename hv_compose_msi_msg to
+ hv_vmbus_compose_msi_msg
+Message-ID: <20260427163139.GA157548@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260422023239.1171963-9-mrathor@linux.microsoft.com>
 
-Hi David,
+On Tue, Apr 21, 2026 at 07:32:34PM -0700, Mukesh R wrote:
+> Main change here is to rename hv_compose_msi_msg to
+> hv_vmbus_compose_msi_msg as we introduce hv_compose_msi_msg in upcoming
+> patches that builds MSI messages for both VMBus and non-VMBus cases. VMBus
+> is not used on baremetal root partition for example. While at it, replace
+> spaces with tabs and fix some formatting involving excessive line wraps.
 
-On Thu, 23 Apr 2026 21:23:06 +0000
-David Matlack <dmatlack@google.com> wrote:
+Would be better to do the whitespace changes in their own patch,
+although several of them should just be dropped (see below).
 
-> Add APIs to allow drivers to notify the PCI core of which devices are
-> being preserved across a Live Update for the next kernel, i.e.
-> "outgoing" devices.
-> 
-> Drivers must notify the PCI core when devices are preserved so that
-> the PCI core can update its FLB data (struct pci_ser) and track the
-> list of outgoing devices. pci_liveupdate_preserve() notifies the PCI
-> core that a device must be preserved across Live Update.
-> pci_liveupdate_unpreserve() reverses this (cancels the preservation
-> of the device).
-> 
-> This tracking ensures the PCI core is fully aware of which devices may
-> need special handling during shutdown and kexec, and so that it can be
-> handed off to the next kernel.
-> 
-> Signed-off-by: David Matlack <dmatlack@google.com>
-> ---
->  drivers/pci/liveupdate.c    | 101
-> ++++++++++++++++++++++++++++++++++++ include/linux/kho/abi/pci.h |
-> 7 +-- include/linux/pci.h         |  26 ++++++++++
->  3 files changed, 131 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/pci/liveupdate.c b/drivers/pci/liveupdate.c
-> index d4fa61625d56..2dd8daa2f17c 100644
-> --- a/drivers/pci/liveupdate.c
-> +++ b/drivers/pci/liveupdate.c
-> @@ -43,6 +43,26 @@
+Capitalize subject ("PCI: hv: Rename ...").
+
+Add "()" after function names in subject and commit log.
+
+> +++ b/drivers/pci/controller/pci-hyperv.c
+> @@ -30,7 +30,7 @@
+>   * function's configuration space is zero.
 >   *
->   *  * ``pci_liveupdate_register_flb(driver_file_handler)``
->   *  * ``pci_liveupdate_unregister_flb(driver_file_handler)``
-> + *
-> + * Device Tracking
-> + * ===============
-> + *
-> + * Drivers must notify the PCI core when specific devices are
-> preserved or
-> + * unpreserved with the following APIs:
-> + *
-> + *  * ``pci_liveupdate_preserve(pci_dev)``
-> + *  * ``pci_liveupdate_unpreserve(pci_dev)``
-> + *
-> + * This allows the PCI core to keep it's FLB data (struct pci_ser)
-> up to date
-> + * with the list of **outgoing** preserved devices for the next
-> kernel.
-> + *
-> + * Restrictions
-> + * ============
-> + *
-> + * The PCI core enforces the following restrictions on which devices
-> can be
-> + * preserved. These may be relaxed in the future:
-> + *
-> + *  * The device cannot be a Virtual Function (VF).
->   */
->  
->  #define pr_fmt(fmt) "PCI: liveupdate: " fmt
-> @@ -57,6 +77,8 @@
->  #include <linux/pci.h>
->  #include <linux/sort.h>
->  
-> +static DEFINE_MUTEX(pci_flb_outgoing_lock);
-> +
->  static int pci_flb_preserve(struct liveupdate_flb_op_args *args)
->  {
->  	struct pci_dev *dev = NULL;
-> @@ -124,6 +146,85 @@ static struct liveupdate_flb pci_liveupdate_flb
-> = { .compatible = PCI_LUO_FLB_COMPATIBLE,
->  };
->  
-> +int pci_liveupdate_preserve(struct pci_dev *dev)
-> +{
-> +	struct pci_ser *ser;
-> +	int i, ret;
-> +
-> +	guard(mutex)(&pci_flb_outgoing_lock);
-> +
-> +	ret = liveupdate_flb_get_outgoing(&pci_liveupdate_flb, (void
-> **)&ser);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (!ser)
-> +		return -ENOENT;
-> +
-> +	if (dev->is_virtfn)
-> +		return -EINVAL;
-This can be left outside the mutex?
+>   * The rest of this driver mostly maps PCI concepts onto underlying Hyper-V
+> - * facilities.  For instance, the configuration space of a function exposed
+> + * facilities.	For instance, the configuration space of a function exposed
 
-> +
-> +	if (dev->liveupdate_outgoing)
-> +		return -EBUSY;
-> +
-> +	if (ser->nr_devices == ser->max_nr_devices)
-> +		return -ENOSPC;
-> +
-> +	for (i = 0; i < ser->max_nr_devices; i++) {
-> +		/*
-> +		 * Start searching at index ser->nr_devices. This
-> should result
-> +		 * in a constant time search under expected
-> conditions (devices
-> +		 * are not getting unpreserved).
-> +		 */
-> +		int index = (ser->nr_devices + i) %
-> ser->max_nr_devices;
-> +		struct pci_dev_ser *dev_ser = &ser->devices[index];
-> +
-> +		if (dev_ser->refcount)
-> +			continue;
-> +
-> +		pci_info(dev, "Device will be preserved across next
-> Live Update\n");
-> +		ser->nr_devices++;
-> +
-> +		dev_ser->domain = pci_domain_nr(dev->bus);
-> +		dev_ser->bdf = pci_dev_id(dev);
-> +		dev_ser->refcount = 1;
-> +
-> +		dev->liveupdate_outgoing = dev_ser;
-> +		return 0;
-> +	}
-> +
-> +	return -ENOSPC;
-> +}
-> +EXPORT_SYMBOL_GPL(pci_liveupdate_preserve);
-> +
-> +void pci_liveupdate_unpreserve(struct pci_dev *dev)
-> +{
-> +	struct pci_dev_ser *dev_ser;
-> +	struct pci_ser *ser = NULL;
-> +	int ret;
-> +
-> +	guard(mutex)(&pci_flb_outgoing_lock);
-> +
-> +	ret = liveupdate_flb_get_outgoing(&pci_liveupdate_flb, (void
-> **)&ser); +
-> +	if (ret || !ser) {
-> +		pci_warn(dev, "Cannot unpreserve device without
-> outgoing Live Update state\n");
-> +		return;
-> +
-> +	}
-> +
-> +	dev_ser = dev->liveupdate_outgoing;
-> +	if (!dev_ser) {
-> +		pci_warn(dev, "Cannot unpreserve device that is not
-> preserved\n");
-> +		return;
-> +	}
-> +
-> +	pci_info(dev, "Device will no longer be preserved across
-> next Live Update\n");
-> +	ser->nr_devices--;
-> +	memset(dev_ser, 0, sizeof(*dev_ser));
-> +	dev->liveupdate_outgoing = NULL;
-> +}
-> +EXPORT_SYMBOL_GPL(pci_liveupdate_unpreserve);
-> +
->  int pci_liveupdate_register_flb(struct liveupdate_file_handler *fh)
->  {
->  	pr_debug("Registering file handler \"%s\"\n",
-> fh->compatible); diff --git a/include/linux/kho/abi/pci.h
-> b/include/linux/kho/abi/pci.h index 5c0e92588c00..5b4c8d9e462c 100644
-> --- a/include/linux/kho/abi/pci.h
-> +++ b/include/linux/kho/abi/pci.h
-> @@ -23,19 +23,20 @@
->   * incrementing the version number in the PCI_LUO_FLB_COMPATIBLE
-> string. */
->  
-> -#define PCI_LUO_FLB_COMPATIBLE "pci-v1"
-> +#define PCI_LUO_FLB_COMPATIBLE "pci-v2"
->  
->  /**
->   * struct pci_dev_ser - Serialized state about a single PCI device.
->   *
->   * @domain: The device's PCI domain number (segment).
->   * @bdf: The device's PCI bus, device, and function number.
-> - * @reserved: Reserved (to naturally align struct pci_dev_ser).
-> + * @refcount: Reference count used by the PCI core to keep track of
-> whether it
-> + *            is done using a device's struct pci_dev_ser.
->   */
->  struct pci_dev_ser {
->  	u32 domain;
->  	u16 bdf;
-> -	u16 reserved;
-> +	u16 refcount;
->  } __packed;
->  
->  /**
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index d70080babd52..eb94cbd8ab9d 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -41,6 +41,7 @@
->  #include <linux/msi_api.h>
->  #include <uapi/linux/pci.h>
->  #include <linux/liveupdate.h>
-> +#include <linux/kho/abi/pci.h>
->  
->  #include <linux/pci_ids.h>
->  
-> @@ -594,6 +595,9 @@ struct pci_dev {
->  	u8		tph_mode;	/* TPH mode */
->  	u8		tph_req_type;	/* TPH requester type
-> */ #endif
-> +#ifdef CONFIG_PCI_LIVEUPDATE
-> +	struct pci_dev_ser *liveupdate_outgoing; /* State preserved
-> for next kernel */ +#endif
->  };
->  
->  static inline struct pci_dev *pci_physfn(struct pci_dev *dev)
-> @@ -2880,6 +2884,14 @@ void pci_uevent_ers(struct pci_dev *pdev, enum
->  pci_ers_result err_type); #ifdef CONFIG_PCI_LIVEUPDATE
->  int pci_liveupdate_register_flb(struct liveupdate_file_handler *fh);
->  void pci_liveupdate_unregister_flb(struct liveupdate_file_handler
-> *fh); +
-> +int pci_liveupdate_preserve(struct pci_dev *dev);
-> +void pci_liveupdate_unpreserve(struct pci_dev *dev);
-> +
-> +static inline struct pci_dev_ser *pci_liveupdate_outgoing(struct
-> pci_dev *dev) +{
-> +	return dev->liveupdate_outgoing;
-> +}
->  #else
->  static inline int pci_liveupdate_register_flb(struct
-> liveupdate_file_handler *fh) {
-> @@ -2889,6 +2901,20 @@ static inline int
-> pci_liveupdate_register_flb(struct liveupdate_file_handler *fh static
-> inline void pci_liveupdate_unregister_flb(struct
-> liveupdate_file_handler *fh) { }
-> +
-> +static inline int pci_liveupdate_preserve(struct pci_dev *dev)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
-> +
-> +static inline void pci_liveupdate_unpreserve(struct pci_dev *dev)
-> +{
-> +}
-> +
-> +static inline struct pci_dev_ser *pci_liveupdate_outgoing(struct
-> pci_dev *dev) +{
-> +	return NULL;
-> +}
->  #endif
->  
->  #endif /* LINUX_PCI_H */
+Oops, this hunk made it worse.  Definitely don't want a tab there.
 
+> @@ -1954,7 +1955,7 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+>  			return;
+>  		}
+>  		/*
+> -		 * The vector we select here is a dummy value.  The correct
+> +		 * The vector we select here is a dummy value.	The correct
+
+Another tab that should be a space.  Actually, you should just drop
+this hunk; the rest of the comment has two spaces after periods, so
+this should too.
+
+> @@ -2046,7 +2047,7 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+>  
+>  		/*
+>  		 * Make sure that the ring buffer data structure doesn't get
+> -		 * freed while we dereference the ring buffer pointer.  Test
+> +		 * freed while we dereference the ring buffer pointer.	Test
+
+Same here.  This makes it worse.
+
+> @@ -2226,7 +2227,7 @@ static int hv_pcie_init_irq_domain(struct hv_pcibus_device *hbus)
+>  /**
+>   * get_bar_size() - Get the address space consumed by a BAR
+>   * @bar_val:	Value that a BAR returned after -1 was written
+> - *              to it.
+> + *		to it.
+
+Just put "to it" on the preceding line.  There's plenty of space
+there.
+
+> @@ -2580,7 +2581,7 @@ static void q_resource_requirements(void *context, struct pci_response *resp,
+>   * new_pcichild_device() - Create a new child device
+>   * @hbus:	The internal struct tracking this root PCI bus.
+>   * @desc:	The information supplied so far from the host
+> - *              about the device.
+> + *		about the device.
+
+Ditto.  If you want to change this, put "about the device" on the
+preceding line.
+
+> @@ -3422,7 +3423,7 @@ static int hv_allocate_config_window(struct hv_pcibus_device *hbus)
+>  	 * vmbus_allocate_mmio() gets used for allocating both device endpoint
+>  	 * resource claims (those which cannot be overlapped) and the ranges
+>  	 * which are valid for the children of this bus, which are intended
+> -	 * to be overlapped by those children.  Set the flag on this claim
+> +	 * to be overlapped by those children.	Set the flag on this claim
+
+Another hunk that should be dropped.
