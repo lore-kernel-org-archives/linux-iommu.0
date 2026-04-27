@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C56CD36B055;
-	Mon, 27 Apr 2026 06:10:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71D4B36CDE2;
+	Mon, 27 Apr 2026 06:10:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777270229; cv=none; b=MiDpYqFHvIhU3tnMhwKNYsEMA4a28j9uMNs8bqbqxzb6vySq0VyZAKWQU6zv7wKcEVmGzd+uq8lYzYMFVppSKzjvu5NmjuxXksJhTJJC1XycU8hrmjNF216mlrv/PDS7NFSYlTYpJ0faRmnCs+nBbJDKdv2n33HmQ7VtsCHwMp4=
+	t=1777270235; cv=none; b=au5bk1DzBJIw1ibC6GeY0lut5jn9LrpAi/61WYijJXIrAmRqvoFTG6CWhEVXesx36qbD84OQgIAk9G30SuFaBOvIlK8S59YTwGVJxkLqqT7qpowMKx8gCTr/WmuxBiLYbyhp31yP2BnNTZUkSk4uhtM+ACiTBwudxFIRWLpMUzM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777270229; c=relaxed/simple;
-	bh=GsMrvT95jqJoIf80EiOGB0kNyW9tUTunjzDRSq0VmnI=;
+	s=arc-20240116; t=1777270235; c=relaxed/simple;
+	bh=g5BKfRIkdnJuuvmrgGsKTQkhK8uuSZmj9EM3h0yB6q4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=rpGjC22kRUr8Ton3Es808mjEIlbcvoNPew3vHwQlwgGAMGorFxNRy9FKt8Ec6u2AKA5j5/9QRK2UfjmenJx7WStpvfQ2Pdk2cyvEEMtT6F39XH5nOEvxxXhZJn/vwz4rWKkuRJh/ZMs0B3M2TatkRegiQUmq5Z7A/6Hyi+lxJlg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=V4AsL3KQ; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=r8aSwE2vH5hfP9TW6LR+nGkUuH9TMpIw8W9mzhs5Jbc5snvuj+oZ7Uh90G417j9Wp6rUnflw/DtKybOtyayI6b9X6AExa/jHJEoviayRz57OHNC3Jc5PoHk0w3S2OAdG5gnCv5VKkAXJDozkEVHarNKj3c3J7/vwaTPwWQAsKDc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OKP5Fr9J; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="V4AsL3KQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89A10C19425;
-	Mon, 27 Apr 2026 06:10:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OKP5Fr9J"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 458ECC2BCB8;
+	Mon, 27 Apr 2026 06:10:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777270229;
-	bh=GsMrvT95jqJoIf80EiOGB0kNyW9tUTunjzDRSq0VmnI=;
+	s=k20201202; t=1777270235;
+	bh=g5BKfRIkdnJuuvmrgGsKTQkhK8uuSZmj9EM3h0yB6q4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=V4AsL3KQjIIL0ZcbgO+6JHT/kIO/SzhWYeXIgqhVnwmt1BtjDD6vzmgIMYptXg3hg
-	 S/0gVOsOihZV8hw4JFYCr6qEYhesUyiLBCofJcP3QBZRAYyHoe1xJ+KU1y3ZmgsZUh
-	 ha052FTqdtNgjrSTNsbJGzaOi9bGEbCAtfb8tDiKZOahgweRteN4G1gNfDxt47yXYw
-	 SVde2t775SlHYkcZfnkYADOETwJTJoG3xNiXTs75XN6yP8yKcfrjglruZ2Xcue/eCX
-	 +SlM3wLnTlsPAMVcrjo0O5tTpcAV21hJetgSutMNHtc1HqL7uSIMc3JHoOzvHjpE4O
-	 0u5foroeQyxdw==
+	b=OKP5Fr9J/rmiRmuDtkx+L4oWbtQ3uTyJySNOza5GnL6Py3TPtsPeN1FZ49xJ7q9nu
+	 XAZS/OC556nkM1EADIRLicbmurrRTLrLFnyXW3CqWNC8NL5SQ2kZPtZM3xtooIJthh
+	 zpRy+Lti1NC9BoWyFBLylld+RUVHcTEzLqECaqbROp4h/Tsd847YRZ4mQWSOGtnkVH
+	 u6GDRwAW1w3EdD1Cwx9yOFabkdlp9zX72TwOdxa2VB2wCGi+5lisJDfIp/Mh9QgMqe
+	 LAJoxxOLSx1HR11kzhlWc/HzBjtvyOq9Xy8yenqqd3TBMGRdfhvwDztQYE62/Q5uT6
+	 3C79S7tJiyZQg==
 From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
 To: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
@@ -44,11 +44,10 @@ Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
 	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
 	Will Deacon <will@kernel.org>,
 	Xu Yilun <yilun.xu@linux.intel.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH v4 1/4] iommufd/device: Associate a kvm pointer to iommufd_device
-Date: Mon, 27 Apr 2026 11:40:02 +0530
-Message-ID: <20260427061005.901854-2-aneesh.kumar@kernel.org>
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v4 2/4] iommufd/viommu: Associate a kvm pointer to iommufd_viommu
+Date: Mon, 27 Apr 2026 11:40:03 +0530
+Message-ID: <20260427061005.901854-3-aneesh.kumar@kernel.org>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260427061005.901854-1-aneesh.kumar@kernel.org>
 References: <20260427061005.901854-1-aneesh.kumar@kernel.org>
@@ -60,115 +59,114 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+From: Nicolin Chen <nicolinc@nvidia.com>
 
-Add a struct kvm * to iommufd_device_bind() fn and associate it
-with idev if bind is successful.
+For TSM use case, vIOMMU will need to get access to KVM to make different
+TSM calls. Associate the kvm pointer to the vIOMMU and take kvm's refcount.
 
-Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-[nicolinc: fix build error in iommufd_test_mock_domain()]
+Based on an original patch by Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+
+[nicolinc: hold kvm's users_count]
 Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 ---
- drivers/iommu/iommufd/device.c          | 5 ++++-
- drivers/iommu/iommufd/iommufd_private.h | 2 ++
- drivers/iommu/iommufd/selftest.c        | 2 +-
- drivers/vfio/iommufd.c                  | 2 +-
- include/linux/iommufd.h                 | 4 +++-
- 5 files changed, 11 insertions(+), 4 deletions(-)
+ drivers/iommu/iommufd/viommu.c | 20 +++++++++++++++++---
+ include/linux/iommu.h          |  1 +
+ include/linux/iommufd.h        |  1 +
+ 3 files changed, 19 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 344d620cdecc..453fbceb9219 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -203,6 +203,7 @@ void iommufd_device_destroy(struct iommufd_object *obj)
-  * iommufd_device_bind - Bind a physical device to an iommu fd
-  * @ictx: iommufd file descriptor
-  * @dev: Pointer to a physical device struct
-+ * @kvm: Pointer to struct kvm if device belongs to a KVM VM
-  * @id: Output ID number to return to userspace for this device
-  *
-  * A successful bind establishes an ownership over the device and returns
-@@ -216,7 +217,8 @@ void iommufd_device_destroy(struct iommufd_object *obj)
-  * The caller must undo this with iommufd_device_unbind()
+diff --git a/drivers/iommu/iommufd/viommu.c b/drivers/iommu/iommufd/viommu.c
+index 4081deda9b33..1e023d1cf8d5 100644
+--- a/drivers/iommu/iommufd/viommu.c
++++ b/drivers/iommu/iommufd/viommu.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ /* Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES
   */
- struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
--					   struct device *dev, u32 *id)
-+					   struct device *dev, struct kvm *kvm,
-+					   u32 *id)
- {
- 	struct iommufd_device *idev;
- 	struct iommufd_group *igroup;
-@@ -266,6 +268,7 @@ struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
- 	if (!iommufd_selftest_is_mock_dev(dev))
- 		iommufd_ctx_get(ictx);
- 	idev->dev = dev;
-+	idev->kvm = kvm;
- 	idev->enforce_cache_coherency =
- 		device_iommu_capable(dev, IOMMU_CAP_ENFORCE_CACHE_COHERENCY);
- 	/* The calling driver is a user until iommufd_device_unbind() */
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 6ac1965199e9..c48a568c6cbb 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -488,6 +488,8 @@ struct iommufd_device {
- 	struct list_head group_item;
- 	/* always the physical device */
- 	struct device *dev;
-+	/* ..and kvm if available */
-+	struct kvm *kvm;
- 	bool enforce_cache_coherency;
- 	struct iommufd_vdevice *vdev;
- 	bool destroying;
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index 7823142097d4..76a2f83f430c 100644
---- a/drivers/iommu/iommufd/selftest.c
-+++ b/drivers/iommu/iommufd/selftest.c
-@@ -1100,7 +1100,7 @@ static int iommufd_test_mock_domain(struct iommufd_ucmd *ucmd,
- 		goto out_sobj;
++#include <linux/kvm_host.h>
+ #include "iommufd_private.h"
+ 
+ void iommufd_viommu_destroy(struct iommufd_object *obj)
+@@ -11,6 +12,8 @@ void iommufd_viommu_destroy(struct iommufd_object *obj)
+ 	if (viommu->ops && viommu->ops->destroy)
+ 		viommu->ops->destroy(viommu);
+ 	refcount_dec(&viommu->hwpt->common.obj.users);
++	if (viommu->kvm)
++		kvm_put_kvm(viommu->kvm);
+ 	xa_destroy(&viommu->vdevs);
+ }
+ 
+@@ -68,14 +71,22 @@ int iommufd_viommu_alloc_ioctl(struct iommufd_ucmd *ucmd)
+ 		goto out_put_hwpt;
  	}
  
--	idev = iommufd_device_bind(ucmd->ictx, &sobj->idev.mock_dev->dev,
-+	idev = iommufd_device_bind(ucmd->ictx, &sobj->idev.mock_dev->dev, NULL,
- 				   &idev_id);
- 	if (IS_ERR(idev)) {
- 		rc = PTR_ERR(idev);
-diff --git a/drivers/vfio/iommufd.c b/drivers/vfio/iommufd.c
-index a38d262c6028..c1c58194fd3a 100644
---- a/drivers/vfio/iommufd.c
-+++ b/drivers/vfio/iommufd.c
-@@ -119,7 +119,7 @@ int vfio_iommufd_physical_bind(struct vfio_device *vdev,
- {
- 	struct iommufd_device *idev;
++	if (idev->kvm && !kvm_get_kvm_safe(idev->kvm)) {
++		rc = -ENOENT;
++		goto out_put_hwpt;
++	}
++
+ 	viommu = (struct iommufd_viommu *)_iommufd_object_alloc_ucmd(
+ 		ucmd, viommu_size, IOMMUFD_OBJ_VIOMMU);
+ 	if (IS_ERR(viommu)) {
+ 		rc = PTR_ERR(viommu);
+-		goto out_put_hwpt;
++		goto out_put_kvm;
+ 	}
  
--	idev = iommufd_device_bind(ictx, vdev->dev, out_device_id);
-+	idev = iommufd_device_bind(ictx, vdev->dev, vdev->kvm, out_device_id);
- 	if (IS_ERR(idev))
- 		return PTR_ERR(idev);
- 	vdev->iommufd_device = idev;
+ 	xa_init(&viommu->vdevs);
++	viommu->kvm = idev->kvm;
++	if (viommu->kvm)
++		kvm_get_kvm(viommu->kvm);
+ 	viommu->type = cmd->type;
+ 	viommu->ictx = ucmd->ictx;
+ 	viommu->hwpt = hwpt_paging;
+@@ -92,17 +103,20 @@ int iommufd_viommu_alloc_ioctl(struct iommufd_ucmd *ucmd)
+ 	rc = ops->viommu_init(viommu, hwpt_paging->common.domain,
+ 			      user_data.len ? &user_data : NULL);
+ 	if (rc)
+-		goto out_put_hwpt;
++		goto out_put_kvm;
+ 
+ 	/* It is a driver bug that viommu->ops isn't filled */
+ 	if (WARN_ON_ONCE(!viommu->ops)) {
+ 		rc = -EOPNOTSUPP;
+-		goto out_put_hwpt;
++		goto out_put_kvm;
+ 	}
+ 
+ 	cmd->out_viommu_id = viommu->obj.id;
+ 	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
+ 
++out_put_kvm:
++	if (idev->kvm)
++		kvm_put_kvm(idev->kvm);
+ out_put_hwpt:
+ 	iommufd_put_object(ucmd->ictx, &hwpt_paging->common.obj);
+ out_put_idev:
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 555597b54083..300281dae01d 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -46,6 +46,7 @@ struct iommu_dma_msi_cookie;
+ struct iommu_fault_param;
+ struct iommufd_ctx;
+ struct iommufd_viommu;
++struct kvm;
+ struct msi_desc;
+ struct msi_msg;
+ 
 diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-index 6e7efe83bc5d..5cdcb8d2f305 100644
+index 5cdcb8d2f305..8e0505a9bd0c 100644
 --- a/include/linux/iommufd.h
 +++ b/include/linux/iommufd.h
-@@ -24,6 +24,7 @@ struct iommufd_ctx;
- struct iommufd_device;
- struct iommufd_viommu_ops;
- struct page;
-+struct kvm;
+@@ -103,6 +103,7 @@ struct iommufd_viommu {
+ 	struct iommufd_ctx *ictx;
+ 	struct iommu_device *iommu_dev;
+ 	struct iommufd_hwpt_paging *hwpt;
++	struct kvm *kvm;
  
- enum iommufd_object_type {
- 	IOMMUFD_OBJ_NONE,
-@@ -59,7 +60,8 @@ struct iommufd_object {
- };
+ 	const struct iommufd_viommu_ops *ops;
  
- struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
--					   struct device *dev, u32 *id);
-+					   struct device *dev, struct kvm *kvm,
-+					   u32 *id);
- void iommufd_device_unbind(struct iommufd_device *idev);
- 
- int iommufd_device_attach(struct iommufd_device *idev, ioasid_t pasid,
 -- 
 2.43.0
 
