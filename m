@@ -1,121 +1,170 @@
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
+Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C45672DB78B
-	for <iommu@lists.linux.dev>; Mon, 27 Apr 2026 21:31:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.172
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777325504; cv=pass; b=WNx+qr++/vZI6n1ohmZPWYFrxhMkMS2MioUfKgq1fr2/Gn8TxNRV1+hVSxTnKmwJVS2NF3bupp+HMW7UVtYfhMxiNP9ffHsGOxhxys/SiNewrH9d+TSoQgRop7UxtW3WC8/sHmcHyYvQMUMg1nY4nqhJ6DAjrGTKeTW3cZNctNA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777325504; c=relaxed/simple;
-	bh=XxyXGFehDCe0pfONU0BVHIsiW5Y6i0tO8AG04f++XSk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=O5YmzrzpZzx0uelnNqPjXIDXK1oJd4e359H84XOLFO63ANqe25/4cKqMwiStTU6CW+0mLcdy2KWhH6UUJdvo57K4ppu/EL6hEIXOr1YZy2uHD3jGZf2p19P14Gfv1UV1IOATY+ui+JeNvqz6vCFC+7MdLouyxA2f3HOLyADelRk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=OoNJzY69; arc=pass smtp.client-ip=209.85.208.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5C733AE1BC
+	for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 00:00:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.179
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777334407; cv=none; b=ALZy1cFcCysxtWKBJAHQqJqZryUcD+cYoMeTrfaHPdSMdUczx7NVp4cqwx9cLRNCDC2BQS1G0BKVmzmTXdOqogf3Q3qtsHE3MGUe2aJiKEWsqAS9BE9FXuMmS98gZ1wqcb3JqDpm4pHVxAiK15B17CusqU6kjzggpfoanCLSL6g=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777334407; c=relaxed/simple;
+	bh=D5Po78dEqgLiBX+e8ZeJ6Ti1UiQKA53NB1AL+0u7frw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Jn2+6MrlW9p5RmdzdIlLnX0X9or9crST9xjeG7NtDXWBT5e6liDWavhJKy/8/7uGd0Yn8oEIoTc9F0p5xbim2zP1sf0aRWq7oLtIgOeVVSGW1Z8nJ/OPUx8AHC6vPDlEpIMIdTVgjWdEF8oHX0EMBIDfJPxSZpYaZ/ZMYKymSDo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Ae+oIF9R; arc=none smtp.client-ip=209.85.210.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="OoNJzY69"
-Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-38ce0ab821cso91529551fa.0
-        for <iommu@lists.linux.dev>; Mon, 27 Apr 2026 14:31:42 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777325501; cv=none;
-        d=google.com; s=arc-20240605;
-        b=NOZQPcRt7fR2dn564Bik2RpLuMWd4LfhcnxPFf73Iy9WlyuG4He6Kt9kAZOsJxLFwZ
-         owj91Sz3NApF8G3j7B32ghm3SdWTkrwX8z67dYRQ07U4vWEd/uqnoQOXa+bHubmJSj0t
-         hz98vB1jh3TcZx/FNAxyhpAoPK4h2o8J3J6gTrOlT2mDOMGoBU/sydK1isnHMwI5OWTC
-         JJx9S+sP1NzS0noEGOTi4ddit1WRN9R9vIMnVo+aLzdNjdJmz8M41sOVt0URZswPGrzU
-         hHqo1H2+BQ+PLpLpZBXgGCjD13AMVebjMMIVUTOPrG4LeplhbCF0Dmn9Bqwzz2bKzKTZ
-         pA+A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=4fbSZrcbEX7pFS60K+snXC2z4cFQZ67H6ZAP0NTDTDM=;
-        fh=bxtuj4IX+oyroDsd7zxiyyPTxE7E/X1k/UO56zBtQns=;
-        b=iynnH9a9GFhPgUKAchwt/rEI0KbaqWk4+X5ZEbOyDpe0iR9YP6CJQDqu0HR1M40i4s
-         2/Qga/FNT57egoB2sb5s8Sma+aFDQBGdfUDMFmfC1rkO6AL51ZW07cKfPCPwxYun8TGz
-         6/6HQmTTjXggad6+o770jRMFxsyBb70B032CU9n57lPJO8TatZRaT9U5K9XP2gcJevr8
-         0+VaiIsMH8w0PyydzIWGWFi0ipJtjfEP6JnpT8NGFGq6SSnroGRBM+0sgHdmFvXF+q0p
-         OGfwjElFmWFfGUxP3WnDwoxzdordvAU32yp2lQ0FySnRaKJswRMZgKF/eFo1fNKv27Qw
-         52tw==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Ae+oIF9R"
+Received: by mail-pf1-f179.google.com with SMTP id d2e1a72fcca58-82418b0178cso6630357b3a.1
+        for <iommu@lists.linux.dev>; Mon, 27 Apr 2026 17:00:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1777325501; x=1777930301; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4fbSZrcbEX7pFS60K+snXC2z4cFQZ67H6ZAP0NTDTDM=;
-        b=OoNJzY69FWlY85Nu3J8mS73bwoJsIDYGffcMdW23nLsr/KSe6nS9dC6ZyUGNhEtB2h
-         zlcJmtoTOGQzx0aWfYvMdupJ/YM09JDelQ5ZGJcVxkVPaN2vBKO+xVKcBC7VIE2ClQWE
-         ow8zGDfeA9FCwqcY8nj2dOmytV6dsq+i79FuoQISwwxIx2kfY1wCC+sjDck5O3U6cn3h
-         /DNkFgn52/Qddo4domN8YwqgCWzgObtf+r31fXlED1pnPF4JcvzX70n1a4frEeWmJO1s
-         vsWnOe/FLD+h5gdd0OV5FouGFQPQ7jH3a8u+GchCCmB9XT7+OSVGYG2AL2cEt+L+B9ur
-         ORvw==
+        d=google.com; s=20251104; t=1777334404; x=1777939204; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=tW+6Pw0a8+ahYm3oOFUJTtBa/jkSN4mmIAQkMqykSWk=;
+        b=Ae+oIF9RiLEoWBd2VwKFcl4+JT2cMG8HBkMPBF5o02biuXombHsXSs8XDymndAqT2u
+         LOMmSSaJ7dPDWcvr+hMcBkqiKzDsmFZFZv0Y8fpOZOsjfaBtUnbHpYqMD3Rq3QJibKJC
+         Hv46Ot6mwR1Y1VWVatEh07rzQS4C8iyz5hYJIOp25O99WMoisBg63s7qZ9WQBTnczY0j
+         6IQuhK6TV8fNtvBsN8cbskaUWG61KaSSaxoxq37bIZFdFhS1emoyl5ozA0U3NQQKTcQH
+         8fcs4yf7CsEwmX0ndeFxW+6idQNPlznLeRPxTZqQws9CBoc15Q2M1bZi4l2jAVzP6cdK
+         XlAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777325501; x=1777930301;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=4fbSZrcbEX7pFS60K+snXC2z4cFQZ67H6ZAP0NTDTDM=;
-        b=WoboHvGe9wOoqc6Je3P8HIggCEtdsEi2EH/3oXBaw5aRYFmMs89iNUHMpLvcQzzITR
-         HIF+2QPlpQeld9P2HglMUoQHI5+UFTUbzgDHr/feiALJEYjJ3YwefiF/pD5k1XbyS6+r
-         BJlPzjbKaPy68pN59Cjb7q51vsFv6EyllMzz8UAFRJB6Bh9X8XNpaAMBHqsu9KygfBUu
-         3TbBsFb8XBOfJWDzevZ3KXwShfc+Rg4g/OHAmIb7TqzY1TQ99fWEW77cxLDRghcPSyjn
-         zuPIhciRyXJBjtamliLgxbhJuqo3IVtkJRVcGalm8SnMPzQvVPSuZdORTDXHw6XSQeP9
-         gWMw==
-X-Gm-Message-State: AOJu0YxlJLHOXhiUALEyW1B+ZZvisPF56minjDRM0AUrC80SARUYJRIg
-	nft4MjPbbqX5m33N9ZL4d+tNCzGKFSzOXPS0elgAuc1VZktRdywG3jp+Y7e0PKwm8+fSTIjtjgQ
-	Hn2vFlW1TfvsIgLrweT5UI6gt0y5TdWFaLUaIxUWk
-X-Gm-Gg: AeBDieuIwTpPhzxcisEBbtM0sXLIFkJPPWxsOMBYfiZ7xuyZDnrbEaFT8iyYSa95oXK
-	P5l4KqO4MmL0pca3LKlaJp/nL0fz/AlRPWYcR25ur7d10u+43mM/Bqnc4TzSssVOBGFJzwmiwty
-	/oXX9EmhyuPRENAhzEoXw9b09PF6RWrEpjCreI/gMsW/tEglY7ujWSQAruslxjdMPPcXxNJyicx
-	inqPYfoznCBF8uNPZe4mqq/Q0mWYr2l8VKcKjsGYvxHWPNkOBVKgFcnoxscVz1p+r4Kvx8U36Va
-	MWPaqw+wcsDmm7c4jtcPu19doHUhNg==
-X-Received: by 2002:a05:6512:3c8f:b0:5a4:505:f62f with SMTP id
- 2adb3069b0e04-5a746411871mr173644e87.6.1777325500555; Mon, 27 Apr 2026
- 14:31:40 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1777334404; x=1777939204;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=tW+6Pw0a8+ahYm3oOFUJTtBa/jkSN4mmIAQkMqykSWk=;
+        b=NSOGzWiZY/nFiotWfLKbOcGIPQwdJrhyjHgIyBMtfoaMv54XWbHVIIlOyMkyYL4NbW
+         WjyyUWl4oPOLC2qOThXFEbz3bYmlvTusPIRvZWDA5w4p0VCXGo2HVSRZVqyD9Voeo6B6
+         INEhX6E9BFNXorcYk5UTw43HM7rw5vCGavV+gVh472JgbiITYJXONYTSQZKQQMluKrdx
+         m+XcdbYZ4BnSRfmR7Y9DTjiZCN5dkzgr4ynX+Yf7RgnADRVXtSJuYFP5mQVU025FwtCz
+         +7rGdTBuQKRrW/fLGvBl0ZWNwYpUao7o6weYBTwPNT+TS/5eHDGyvIvFGNz60tQn58dt
+         /FUw==
+X-Forwarded-Encrypted: i=1; AFNElJ9RGiIVHuLx0lCjhdUCFpaJLbdXEszn4OOjXbvtCH90z2Qtt4tqmEgmp+SsVXT+PQL0qIDsSQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyRWw3gNWpW/C/q/77vhaXo8uiLQjSvh4W4IcN5FH5VFun6gWZ+
+	qGXIu6LtPix6naTRvnVg6a1etEPxyT1Pv29y8AmacRBZpsp9aHg4J0Q60wFVFjCN1Q==
+X-Gm-Gg: AeBDies0aCy1XPRzfIRa3nyTcAcAmanD8c+JE2FMpktWamsJ1MYdJHAroHU4OXxu5El
+	RnXtDvObNn0O+9diPtRjL8LmNhasrSN5MI4AO+mMrKVn5NHLW9Pvcikxom1J8bTXi8LdTN5UJ3r
+	IpJKoys2QH8tRZzHkks4Dm3jTYQli749LReSOTf4dFgq6xb8+verKt3IhCxfusQEJc4ogWw2mCu
+	iXDbPQLPMOVvfmATIPpYDsw2G2aTm20P7I+cfyWsXYm+j+COzHGanKv2MUKGJEuRkEvo1qidl9o
+	aOGdtXhSwQBq9b4qOudrbEkGojC7+fQ5InGu4te56gKtAvAFi8bAbiPD+2ioy97OZugjBlhfbyx
+	AOZGKzXRU6IWHOx4IfaYPF0QpoKjXFjUDY87fAz30E0KXsX/NKtxtcsYntvgH63JxdgdEI5FjbE
+	6kzodVtsLmvLMBl1O/iOB6rHBdM2aTVTOOiPQTlWVTv6+7Zld+0UCGU5Otv3VNDHIXHWv+OWTW9
+	zNBoQ==
+X-Received: by 2002:a05:6a00:1885:b0:82f:1d38:f68d with SMTP id d2e1a72fcca58-834ddc22f16mr638227b3a.34.1777334403001;
+        Mon, 27 Apr 2026 17:00:03 -0700 (PDT)
+Received: from google.com (76.9.127.34.bc.googleusercontent.com. [34.127.9.76])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-834daf7f43bsm633995b3a.58.2026.04.27.17.00.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Apr 2026 17:00:01 -0700 (PDT)
+Date: Mon, 27 Apr 2026 23:59:58 +0000
+From: David Matlack <dmatlack@google.com>
+To: Pasha Tatashin <pasha.tatashin@soleen.com>
+Cc: Pratyush Yadav <pratyush@kernel.org>, iommu@lists.linux.dev,
+	kexec@lists.infradead.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+	linux-pci@vger.kernel.org,
+	Adithya Jayachandran <ajayachandra@nvidia.com>,
+	Alexander Graf <graf@amazon.com>,
+	Alex Williamson <alex@shazbot.org>,
+	Bjorn Helgaas <bhelgaas@google.com>, Chris Li <chrisl@kernel.org>,
+	David Rientjes <rientjes@google.com>,
+	Jacob Pan <jacob.pan@linux.microsoft.com>,
+	Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+	Jonathan Corbet <corbet@lwn.net>, Josh Hilke <jrhilke@google.com>,
+	Leon Romanovsky <leonro@nvidia.com>, Lukas Wunner <lukas@wunner.de>,
+	Mike Rapoport <rppt@kernel.org>, Parav Pandit <parav@nvidia.com>,
+	Pranjal Shrivastava <praan@google.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Saeed Mahameed <saeedm@nvidia.com>,
+	Samiullah Khawaja <skhawaja@google.com>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Will Deacon <will@kernel.org>, William Tu <witu@nvidia.com>,
+	Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH v4 01/11] PCI: liveupdate: Set up FLB handler for the PCI
+ core
+Message-ID: <ae_4fg_18Rli2_Nt@google.com>
+References: <20260423212316.3431746-1-dmatlack@google.com>
+ <20260423212316.3431746-2-dmatlack@google.com>
+ <2vxzeck45yin.fsf@kernel.org>
+ <aetvAkM0y45WAmfV@plex>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260423212316.3431746-2-dmatlack@google.com> <20260427210529.GA186381@bhelgaas>
-In-Reply-To: <20260427210529.GA186381@bhelgaas>
-From: David Matlack <dmatlack@google.com>
-Date: Mon, 27 Apr 2026 14:31:11 -0700
-X-Gm-Features: AVHnY4K95rEzKgWcXKT0jFnCdsBpr0VFFFUI48Oher6g49BqIzQIKoHjNP8bc8M
-Message-ID: <CALzav=c=99653vuRa0S6cyAuTfP-PWFpOdopYArihOBLor6eQA@mail.gmail.com>
-Subject: Re: [PATCH v4 01/11] PCI: liveupdate: Set up FLB handler for the PCI core
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: iommu@lists.linux.dev, kexec@lists.infradead.org, 
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-pci@vger.kernel.org, Adithya Jayachandran <ajayachandra@nvidia.com>, 
-	Alexander Graf <graf@amazon.com>, Alex Williamson <alex@shazbot.org>, Bjorn Helgaas <bhelgaas@google.com>, 
-	Chris Li <chrisl@kernel.org>, David Rientjes <rientjes@google.com>, 
-	Jacob Pan <jacob.pan@linux.microsoft.com>, Jason Gunthorpe <jgg@nvidia.com>, 
-	Joerg Roedel <joro@8bytes.org>, Jonathan Corbet <corbet@lwn.net>, Josh Hilke <jrhilke@google.com>, 
-	Leon Romanovsky <leonro@nvidia.com>, Lukas Wunner <lukas@wunner.de>, Mike Rapoport <rppt@kernel.org>, 
-	Parav Pandit <parav@nvidia.com>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	Pranjal Shrivastava <praan@google.com>, Pratyush Yadav <pratyush@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Saeed Mahameed <saeedm@nvidia.com>, 
-	Samiullah Khawaja <skhawaja@google.com>, Shuah Khan <skhan@linuxfoundation.org>, 
-	Will Deacon <will@kernel.org>, William Tu <witu@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aetvAkM0y45WAmfV@plex>
 
-On Mon, Apr 27, 2026 at 2:05=E2=80=AFPM Bjorn Helgaas <helgaas@kernel.org> =
-wrote:
+On 2026-04-24 01:29 PM, Pasha Tatashin wrote:
+> On 04-24 14:33, Pratyush Yadav wrote:
+> > Hi David,
+> > 
+> > On Thu, Apr 23 2026, David Matlack wrote:
+> > [...]
+> > > diff --git a/MAINTAINERS b/MAINTAINERS
+> > > index c9b7b6f9828e..94af31837375 100644
+> > > --- a/MAINTAINERS
+> > > +++ b/MAINTAINERS
+> > > @@ -20555,6 +20555,18 @@ L:	linux-pci@vger.kernel.org
+> > >  S:	Supported
+> > >  F:	Documentation/PCI/pci-error-recovery.rst
+> > >  
+> > > +PCI LIVE UPDATE
+> > > +M:	Bjorn Helgaas <bhelgaas@google.com>
+> > > +M:	David Matlack <dmatlack@google.com>
+> > > +L:	linux-pci@vger.kernel.org
+> > > +S:	Supported
+> > > +Q:	https://patchwork.kernel.org/project/linux-pci/list/
+> > > +B:	https://bugzilla.kernel.org
+> > > +C:	irc://irc.oftc.net/linux-pci
+> > > +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/pci/pci.git
+> > > +F:	drivers/pci/liveupdate.c
+> > > +F:	include/linux/kho/abi/pci.h
+> > > +
+> > 
+> > Can we please also add these files under the "LIVE UPDATE" entry. The
+> > code here concerns both live update and PCI.
 
-> > +++ b/MAINTAINERS
-> > @@ -20555,6 +20555,18 @@ L:   linux-pci@vger.kernel.org
-> >  S:   Supported
-> >  F:   Documentation/PCI/pci-error-recovery.rst
-> >
-> > +PCI LIVE UPDATE
-> > +M:   Bjorn Helgaas <bhelgaas@google.com>
->
-> I don't think I want to be the primary contact here.  I'll see patches
-> regardless since they're on linux-pci.
+Covering that intersection of Live Update and PCI was exactly my
+intention with introducing this new PCI LIVE UPDATE entry. This ensures
+we have maintenance coverage with knowledge of that intersection.
 
-Ack, I will drop this line from v5.
+> > We can figure out the
+> > maintenance details as we go along, but I think the live update
+> > maintainers should at least get all the patches for PCI live update.
+
+Would adding kexec@ here be sufficient or do you want to be CC'd
+directly?
+
+If you want to be CC'd directly do you think makes more sense to add the
+Live Update maintainers as Reviewers under PCI LIVE UPDATE, or add
+drivers/pci/liveupdate.c under LIVE UPDATE?
+
+> > 
+> > Perhaps also add the kexec list here? We plan to use it to maintain the
+> > LUO patches, and adding it will make sure we get the patches in case
+> > someone updates the file list here but forgets to update it in the LIVE
+> > UPDATE entry.
+> 
+> +1
+> 
+> These files should also be added to the Live Update entry, and the kexec
+> mailing list should be included.
+> 
+> Changes specific to Live Update should be routed through the
+> liveupdate/linux.git tree, while generic PCI changes should go through
+> pci/pci.git. In either case, if liveupdate.c or abi/pci.h are modified,
+> acks are required from the Live Update group.
+
+Do you want to merge changes to drivers/pci/liveupdate.c through the
+live update tree or PCI tree? We should probably decide now. I was
+assuming the PCI tree since its part of PCI core.
+
+As we project this out there are going to be users of the Live Update
+API across different parts of the kernel: PCI core, IOMMU core, IOMMU
+drivers, VFIO core, VFIO PCI drivers, and KVM. I don't think it will
+scale to take all that code through the live update tree.
