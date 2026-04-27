@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F235636CDE2;
-	Mon, 27 Apr 2026 06:10:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3917F34A78E;
+	Mon, 27 Apr 2026 06:10:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777270241; cv=none; b=a263+EJfwAvIk8tpVGKx0pGqmKPCltYJqMqgASoFf5ZaafDPGRnOnKL7nJAgHPHVBGQ04/7ma8fv67411blFo+vVuPemmABHWtHtdqFcPrOBgVdUsIWZmK8f8lh/TTpKyXGJA7aWSnB/I+6DTz/Krkud4IFxHFr5EMK6zYZ5+9s=
+	t=1777270246; cv=none; b=rjKQmHWv02YG7Ba6aurmebdLYdWVhPD2no/ICGRTlXQdmbx43uw2buFKNsTtZ2JsZu5zYC1j4arAnplawTvYmEUz87dEXFhu356k2EDBCOvm+YuQ/lHectPxv4gnZmk0R0ufkXYREARJn2q/fqab3o4EmIOZV9COmkgtv+Fib9A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777270241; c=relaxed/simple;
-	bh=/TuP7k7o4mfug5ma2TZl6voJcTWtYtrqwVFMu0KcjPo=;
+	s=arc-20240116; t=1777270246; c=relaxed/simple;
+	bh=Hp5HnxbAmMw5Nb5MF/pQEylDTfu3UENs902wE1b9ieg=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=J2TxB78SOd5IgnE3CXoXEROl/HeS6A64SOK1FW1YaHBPRAuWKyT7hpuaU7wcRRkrJh2Nj8XHjQQ/eDOv1luAIbnXtdGSCaSs03mXkMwQO5NZbK52Br9g+WDHrY7GyNNGDh++Sty+t9OJjtYBnwMmbK23JC2QKXg5iI/8ytCkbJ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Cru5fxg5; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=JhgUH14XD8T2BOFS/rJSwbbZvZHgu1GkNp9VVq39FmnZUdUBAuTeY6g82oifcOi7pbI9ujWnESwnralQ/CGJ9vXfbAhdZMeivcruvoTsKJTCNUh5z5tyvuAgb0VIEbStXYbRUbDHyeo5vFzPhtysg8HwtAhelwavTCul0BUoW0c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Y2oiRlvd; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Cru5fxg5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6F1CC2BCB4;
-	Mon, 27 Apr 2026 06:10:35 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Y2oiRlvd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35C89C19425;
+	Mon, 27 Apr 2026 06:10:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777270240;
-	bh=/TuP7k7o4mfug5ma2TZl6voJcTWtYtrqwVFMu0KcjPo=;
+	s=k20201202; t=1777270246;
+	bh=Hp5HnxbAmMw5Nb5MF/pQEylDTfu3UENs902wE1b9ieg=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Cru5fxg5A5+8Qe+N0bMb4AhYDoJIqS05eiOnc4tjZdbpaWXR17euDTNK3S1orpNqI
-	 HJOTLkOVVkzVnooLY1B9N94PARDySyfDewQZFNJCyPv9mBYCoYoKz0uiGgHKCsr6Y0
-	 3Z9wqtNIwjxsspRZT6mvnJcjx7aNNjrnwPw3LMwj8q1fx0LBxcBEKf/x3qttd0zt5r
-	 Ie/j/9d8wbx1ndY07lSmsD0+q7n6wgds7gsJhJKedtBViQN5nE7V+AP2TIBNlFF3IU
-	 GK0dRvoiJFNVg8Aorx1ataAwSZt/nhdqo0qa5jLyCNWjYvyKakA1Pk00aQbhCprOlL
-	 WoB9LRcRVIAnw==
+	b=Y2oiRlvdX9SeGxLcLSwhdaY7MXULvVB0fN/nMGhYByyd32cc5McT4at5Bc+qtyyVq
+	 yapkkOF+7UCfYIw9dZ+OwtLDmhQ+bQUx2pRA7Mw8/cahNFOARRwVq5XnJMTcyM2aMh
+	 YhbZhrJMq3CNPCAiHzszsjhD4qu4fmo9m+OiiDNT6eG/keSlS+sHeDiqXkYA+WCYWX
+	 XTmlLKKWEOQOv45Jw7hQikuyGfuAVp/XVLxN9C3qr/rkvgCOIkM06CBzRhXimpzQZA
+	 GHTgco/LI0/73r8zJYYZRydU2G7fXr6WscpnmlEktuQXYPhS0IbWSu2umfJlXKcULR
+	 zSvt7h993dYtA==
 From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
 To: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
@@ -45,9 +45,9 @@ Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
 	Will Deacon <will@kernel.org>,
 	Xu Yilun <yilun.xu@linux.intel.com>,
 	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: [PATCH v4 3/4] iommufd/tsm: add vdevice TSM bind/unbind ioctl
-Date: Mon, 27 Apr 2026 11:40:04 +0530
-Message-ID: <20260427061005.901854-4-aneesh.kumar@kernel.org>
+Subject: [PATCH v4 4/4] iommufd/vdevice: add TSM guest request ioctl
+Date: Mon, 27 Apr 2026 11:40:05 +0530
+Message-ID: <20260427061005.901854-5-aneesh.kumar@kernel.org>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260427061005.901854-1-aneesh.kumar@kernel.org>
 References: <20260427061005.901854-1-aneesh.kumar@kernel.org>
@@ -59,274 +59,260 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Introduce IOMMU_VDEVICE_TSM_OP to allow userspace to issue TSM bind/unbind
-operations for an iommufd vdevice.
+Add IOMMU_VDEVICE_TSM_GUEST_REQUEST for issuing TSM guest request/response
+transactions against an iommufd vdevice.
 
-The new ioctl:
-- looks up the vdevice object from vdevice_id
-- resolves the associated KVM VM from the vIOMMU KVM file reference
-- dispatches bind/unbind via tsm_bind()/tsm_unbind()
+The ioctl takes a vdevice_id plus request/response user buffers and length
+fields, and forwards the request through tsm_guest_req() to the PCI TSM
+backend. This provides the host-side passthrough path used by CoCo guests
+for TSM device attestation and acceptance flows after the device has been
+bound to TSM.
 
-Also add common TSM helpers in tsm-core and wire vdevice teardown to unbind
-the device from TSM state.
+Also add the supporting tsm_guest_req() helper and associated TSM core
+interface definitions.
 
-This provides iommufd plumbing to bind a TDI to a confidential guest through
-the TSM layer.
+Based on changes from: Alexey Kardashevskiy <aik@amd.com>
 
 Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 ---
- drivers/iommu/iommufd/Makefile          |  2 +
- drivers/iommu/iommufd/iommufd_private.h |  8 ++++
+ drivers/iommu/iommufd/iommufd_private.h |  7 ++++
  drivers/iommu/iommufd/main.c            |  3 ++
- drivers/iommu/iommufd/tsm.c             | 60 +++++++++++++++++++++++++
- drivers/iommu/iommufd/viommu.c          |  4 ++
- drivers/virt/coco/tsm-core.c            | 19 ++++++++
- include/linux/tsm.h                     | 17 +++++++
- include/uapi/linux/iommufd.h            | 26 +++++++++++
- 8 files changed, 139 insertions(+)
- create mode 100644 drivers/iommu/iommufd/tsm.c
+ drivers/iommu/iommufd/tsm.c             | 49 +++++++++++++++++++++++++
+ drivers/virt/coco/tsm-core.c            | 11 ++++++
+ include/linux/tsm.h                     | 25 +++++++++++++
+ include/uapi/linux/iommufd.h            | 41 +++++++++++++++++++++
+ 6 files changed, 136 insertions(+)
 
-diff --git a/drivers/iommu/iommufd/Makefile b/drivers/iommu/iommufd/Makefile
-index 71d692c9a8f4..431089089ee9 100644
---- a/drivers/iommu/iommufd/Makefile
-+++ b/drivers/iommu/iommufd/Makefile
-@@ -10,6 +10,8 @@ iommufd-y := \
- 	vfio_compat.o \
- 	viommu.o
- 
-+iommufd-$(CONFIG_TSM) += tsm.o
-+
- iommufd-$(CONFIG_IOMMUFD_TEST) += selftest.o
- 
- obj-$(CONFIG_IOMMUFD) += iommufd.o
 diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index c48a568c6cbb..14d2d6d1beec 100644
+index 14d2d6d1beec..8a27b946adef 100644
 --- a/drivers/iommu/iommufd/iommufd_private.h
 +++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -699,6 +699,14 @@ void iommufd_vdevice_destroy(struct iommufd_object *obj);
- void iommufd_vdevice_abort(struct iommufd_object *obj);
- int iommufd_hw_queue_alloc_ioctl(struct iommufd_ucmd *ucmd);
+@@ -701,11 +701,18 @@ int iommufd_hw_queue_alloc_ioctl(struct iommufd_ucmd *ucmd);
  void iommufd_hw_queue_destroy(struct iommufd_object *obj);
-+#ifdef CONFIG_TSM
-+int iommufd_vdevice_tsm_op_ioctl(struct iommufd_ucmd *ucmd);
-+#else
-+static inline int iommufd_vdevice_tsm_op_ioctl(struct iommufd_ucmd *ucmd)
+ #ifdef CONFIG_TSM
+ int iommufd_vdevice_tsm_op_ioctl(struct iommufd_ucmd *ucmd);
++int iommufd_vdevice_tsm_guest_request_ioctl(struct iommufd_ucmd *ucmd);
+ #else
+ static inline int iommufd_vdevice_tsm_op_ioctl(struct iommufd_ucmd *ucmd)
+ {
+ 	return -EOPNOTSUPP;
+ }
++
++static inline int
++iommufd_vdevice_tsm_guest_request_ioctl(struct iommufd_ucmd *ucmd)
 +{
 +	return -EOPNOTSUPP;
 +}
-+#endif
+ #endif
  
  static inline struct iommufd_vdevice *
- iommufd_get_vdevice(struct iommufd_ctx *ictx, u32 id)
 diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-index 8c6d43601afb..d73e6b391c6f 100644
+index d73e6b391c6f..7f4bbdd0bda5 100644
 --- a/drivers/iommu/iommufd/main.c
 +++ b/drivers/iommu/iommufd/main.c
-@@ -432,6 +432,7 @@ union ucmd_buffer {
- 	struct iommu_veventq_alloc veventq;
+@@ -433,6 +433,7 @@ union ucmd_buffer {
  	struct iommu_vfio_ioas vfio_ioas;
  	struct iommu_viommu_alloc viommu;
-+	struct iommu_vdevice_tsm_op tsm_op;
+ 	struct iommu_vdevice_tsm_op tsm_op;
++	struct iommu_vdevice_tsm_guest_request gr;
  #ifdef CONFIG_IOMMUFD_TEST
  	struct iommu_test_cmd test;
  #endif
-@@ -493,6 +494,8 @@ static const struct iommufd_ioctl_op iommufd_ioctl_ops[] = {
- 		 __reserved),
- 	IOCTL_OP(IOMMU_VIOMMU_ALLOC, iommufd_viommu_alloc_ioctl,
+@@ -496,6 +497,8 @@ static const struct iommufd_ioctl_op iommufd_ioctl_ops[] = {
  		 struct iommu_viommu_alloc, out_viommu_id),
-+	IOCTL_OP(IOMMU_VDEVICE_TSM_OP, iommufd_vdevice_tsm_op_ioctl,
-+		 struct iommu_vdevice_tsm_op, vdevice_id),
+ 	IOCTL_OP(IOMMU_VDEVICE_TSM_OP, iommufd_vdevice_tsm_op_ioctl,
+ 		 struct iommu_vdevice_tsm_op, vdevice_id),
++	IOCTL_OP(IOMMU_VDEVICE_TSM_GUEST_REQUEST, iommufd_vdevice_tsm_guest_request_ioctl,
++		 struct iommu_vdevice_tsm_guest_request, resp_uptr),
  #ifdef CONFIG_IOMMUFD_TEST
  	IOCTL_OP(IOMMU_TEST_CMD, iommufd_test, struct iommu_test_cmd, last),
  #endif
 diff --git a/drivers/iommu/iommufd/tsm.c b/drivers/iommu/iommufd/tsm.c
-new file mode 100644
-index 000000000000..4e5fa7849342
---- /dev/null
+index 4e5fa7849342..2458bc27628d 100644
+--- a/drivers/iommu/iommufd/tsm.c
 +++ b/drivers/iommu/iommufd/tsm.c
-@@ -0,0 +1,60 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (C) 2026 ARM Ltd.
-+ */
-+
-+#include <linux/tsm.h>
-+#include "iommufd_private.h"
+@@ -58,3 +58,52 @@ int iommufd_vdevice_tsm_op_ioctl(struct iommufd_ucmd *ucmd)
+ 	iommufd_put_object(ucmd->ictx, &vdev->obj);
+ 	return rc;
+ }
 +
 +/**
-+ * iommufd_vdevice_tsm_op_ioctl - Handle vdevice TSM operations
-+ * @ucmd: user command data for IOMMU_VDEVICE_TSM_OP
++ * iommufd_vdevice_tsm_guest_request_ioctl - Forward guest TSM requests
++ * @ucmd: user command data for IOMMU_VDEVICE_TSM_GUEST_REQUEST
 + *
-+ * Currently only supports TSM bind/unbind operations
-+ * Resolve @iommu_vdevice_tsm_op::vdevice_id to a vdevice and dispatch the
-+ * requested bind/unbind operation through the TSM core.
++ * Resolve @iommu_vdevice_tsm_guest_request::vdevice_id to a vdevice and pass
++ * the request/response buffers to the TSM core.
 + *
-+ * Return: 0 on success, or a negative error code on failure.
++ * Return:
++ *  -errno on error.
++ *  positive residue if response/request bytes were left unconsumed.
++ *    if response buffer is provided, residue indicates the number of bytes
++ *    not used in response buffer
++ *    if there is no response buffer, residue indicates the number of bytes
++ *    not consumed in req buffer
++ *  0 otherwise.
 + */
-+int iommufd_vdevice_tsm_op_ioctl(struct iommufd_ucmd *ucmd)
++int iommufd_vdevice_tsm_guest_request_ioctl(struct iommufd_ucmd *ucmd)
 +{
 +	int rc;
-+	struct kvm *kvm;
 +	struct iommufd_vdevice *vdev;
-+	struct iommu_vdevice_tsm_op *cmd = ucmd->cmd;
++	struct iommu_vdevice_tsm_guest_request *cmd = ucmd->cmd;
++	struct tsm_guest_req_info info = {
++		.scope = cmd->scope,
++		.req   = {
++			.user = u64_to_user_ptr(cmd->req_uptr),
++			.is_kernel = false,
++		},
++		.req_len = cmd->req_len,
++		.resp    =  {
++			.user = u64_to_user_ptr(cmd->resp_uptr),
++			.is_kernel = false,
++		},
++		.resp_len = cmd->resp_len,
++	};
 +
-+	if (cmd->flags)
++	if (cmd->__reserved)
 +		return -EOPNOTSUPP;
 +
 +	vdev = iommufd_get_vdevice(ucmd->ictx, cmd->vdevice_id);
 +	if (IS_ERR(vdev))
 +		return PTR_ERR(vdev);
 +
-+	kvm = vdev->viommu->kvm;
-+	if (!kvm) {
-+		rc = -ENODEV;
-+		goto out_put_vdev;
-+	}
++	rc = tsm_guest_req(vdev->idev->dev, &info);
 +
-+	/* tsm layer will take care of parallel calls to tsm_bind/unbind */
-+	switch (cmd->type) {
-+	case IOMMU_VDEVICE_TSM_BIND:
-+		rc = tsm_bind(vdev->idev->dev, kvm, vdev->virt_id);
-+		break;
-+	case IOMMU_VDEVICE_TSM_UNBIND:
-+		rc = tsm_unbind(vdev->idev->dev);
-+		break;
-+	default:
-+		rc = -EINVAL;
-+		goto out_put_vdev;
-+	}
-+
-+	if (rc)
-+		goto out_put_vdev;
-+
-+	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
-+
-+out_put_vdev:
++	/* No inline response, hence we don't need to copy the response */
 +	iommufd_put_object(ucmd->ictx, &vdev->obj);
 +	return rc;
 +}
-diff --git a/drivers/iommu/iommufd/viommu.c b/drivers/iommu/iommufd/viommu.c
-index 1e023d1cf8d5..ec9054d3ec92 100644
---- a/drivers/iommu/iommufd/viommu.c
-+++ b/drivers/iommu/iommufd/viommu.c
-@@ -3,6 +3,8 @@
-  */
- #include <linux/kvm_host.h>
- #include "iommufd_private.h"
-+#include <linux/cleanup.h>
-+#include <linux/tsm.h>
- 
- void iommufd_viommu_destroy(struct iommufd_object *obj)
- {
-@@ -133,6 +135,8 @@ void iommufd_vdevice_abort(struct iommufd_object *obj)
- 
- 	lockdep_assert_held(&idev->igroup->lock);
- 
-+	tsm_unbind(idev->dev);
-+
- 	if (vdev->destroy)
- 		vdev->destroy(vdev);
- 	/* xa_cmpxchg is okay to fail if alloc failed xa_cmpxchg previously */
 diff --git a/drivers/virt/coco/tsm-core.c b/drivers/virt/coco/tsm-core.c
-index ae3617abd2ac..f0e35fc38776 100644
+index f0e35fc38776..6c46f5ef139c 100644
 --- a/drivers/virt/coco/tsm-core.c
 +++ b/drivers/virt/coco/tsm-core.c
-@@ -240,6 +240,25 @@ void tsm_ide_stream_unregister(struct pci_ide *ide)
+@@ -259,6 +259,17 @@ int tsm_unbind(struct device *dev)
  }
- EXPORT_SYMBOL_GPL(tsm_ide_stream_unregister);
+ EXPORT_SYMBOL_GPL(tsm_unbind);
  
-+int tsm_bind(struct device *dev, struct kvm *kvm, u64 tdi_id)
++ssize_t tsm_guest_req(struct device *dev, struct tsm_guest_req_info *info)
 +{
 +	if (!dev_is_pci(dev))
 +		return -EINVAL;
 +
-+	return pci_tsm_bind(to_pci_dev(dev), kvm, tdi_id);
++	return pci_tsm_guest_req(to_pci_dev(dev), info->scope, info->req,
++				 info->req_len, info->resp, info->resp_len,
++				 NULL);
 +}
-+EXPORT_SYMBOL_GPL(tsm_bind);
-+
-+int tsm_unbind(struct device *dev)
-+{
-+	if (!dev_is_pci(dev))
-+		return -EINVAL;
-+
-+	pci_tsm_unbind(to_pci_dev(dev));
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(tsm_unbind);
++EXPORT_SYMBOL_GPL(tsm_guest_req);
 +
  static void tsm_release(struct device *dev)
  {
  	struct tsm_dev *tsm_dev = container_of(dev, typeof(*tsm_dev), dev);
 diff --git a/include/linux/tsm.h b/include/linux/tsm.h
-index 7f72a154b6b2..85eb1717bddd 100644
+index 85eb1717bddd..938da0324408 100644
 --- a/include/linux/tsm.h
 +++ b/include/linux/tsm.h
-@@ -126,4 +126,21 @@ struct tsm_dev *find_tsm_dev(int id);
- struct pci_ide;
- int tsm_ide_stream_register(struct pci_ide *ide);
- void tsm_ide_stream_unregister(struct pci_ide *ide);
+@@ -6,6 +6,7 @@
+ #include <linux/types.h>
+ #include <linux/uuid.h>
+ #include <linux/device.h>
++#include <linux/sockptr.h>
+ 
+ #define TSM_REPORT_INBLOB_MAX 64
+ #define TSM_REPORT_OUTBLOB_MAX SZ_16M
+@@ -131,6 +132,23 @@ struct kvm;
+ #ifdef CONFIG_TSM
+ int tsm_bind(struct device *dev, struct kvm *kvm, u64 tdi_id);
+ int tsm_unbind(struct device *dev);
 +
-+struct kvm;
-+#ifdef CONFIG_TSM
-+int tsm_bind(struct device *dev, struct kvm *kvm, u64 tdi_id);
-+int tsm_unbind(struct device *dev);
-+#else
-+static inline int tsm_bind(struct device *dev, struct kvm *kvm, u64 tdi_id)
++/**
++ * struct tsm_guest_req_info - parameter for tsm_guest_req()
++ * @scope: scope for tsm guest request
++ * @req: request data buffer filled by guest
++ * @req_len: the size of @req filled by guest
++ * @resp: response data buffer filled by host
++ * @resp_len: the size of @resp buffer filled by guest
++ */
++struct tsm_guest_req_info {
++	u32 scope;
++	sockptr_t req;
++	size_t req_len;
++	sockptr_t resp;
++	size_t resp_len;
++};
++ssize_t tsm_guest_req(struct device *dev, struct tsm_guest_req_info *info);
+ #else
+ static inline int tsm_bind(struct device *dev, struct kvm *kvm, u64 tdi_id)
+ {
+@@ -141,6 +159,13 @@ static inline int tsm_unbind(struct device *dev)
+ {
+ 	return 0;
+ }
++
++struct tsm_guest_req_info;
++static inline ssize_t tsm_guest_req(struct device *dev,
++				    struct tsm_guest_req_info *info)
 +{
 +	return -EINVAL;
 +}
-+
-+static inline int tsm_unbind(struct device *dev)
-+{
-+	return 0;
-+}
-+#endif
-+
+ #endif
+ 
  #endif /* __TSM_H */
 diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index 1dafbc552d37..aabdfd86504c 100644
+index aabdfd86504c..47213663c0c1 100644
 --- a/include/uapi/linux/iommufd.h
 +++ b/include/uapi/linux/iommufd.h
-@@ -57,6 +57,7 @@ enum {
- 	IOMMUFD_CMD_IOAS_CHANGE_PROCESS = 0x92,
+@@ -58,6 +58,7 @@ enum {
  	IOMMUFD_CMD_VEVENTQ_ALLOC = 0x93,
  	IOMMUFD_CMD_HW_QUEUE_ALLOC = 0x94,
-+	IOMMUFD_CMD_VDEVICE_TSM_OP = 0x95,
+ 	IOMMUFD_CMD_VDEVICE_TSM_OP = 0x95,
++	IOMMUFD_CMD_VDEVICE_TSM_GUEST_REQUEST = 0x96,
  };
  
  /**
-@@ -1134,6 +1135,31 @@ struct iommu_vdevice_alloc {
+@@ -1364,4 +1365,44 @@ struct iommu_hw_queue_alloc {
+ 	__aligned_u64 length;
  };
- #define IOMMU_VDEVICE_ALLOC _IO(IOMMUFD_TYPE, IOMMUFD_CMD_VDEVICE_ALLOC)
- 
-+/**
-+ * enum iommu_vdevice_tsm_op_type - operation type for struct iommu_vdevice_tsm_op
-+ * @IOMMU_VDEVICE_TSM_BIND: Bind a vDevice to TSM
-+ * @IOMMU_VDEVICE_TSM_UNBIND: Unbind a vDevice from TSM
-+ */
-+enum iommu_vdevice_tsm_op_type {
-+	IOMMU_VDEVICE_TSM_BIND = 0x1,
-+	IOMMU_VDEVICE_TSM_UNBIND,
-+};
+ #define IOMMU_HW_QUEUE_ALLOC _IO(IOMMUFD_TYPE, IOMMUFD_CMD_HW_QUEUE_ALLOC)
 +
 +/**
-+ * struct iommu_vdevice_tsm_op - ioctl(IOMMU_VDEVICE_TSM_OP)
-+ * @size: sizeof(struct iommu_vdevice_tsm_op)
-+ * @type: Type of TSM operation. Must be defined in enum iommu_vdevice_tsm_op_type
-+ * @flags: Must be 0
-+ * @vdevice_id: Object handle for the vDevice. Returned from IOMMU_VDEVICE_ALLOC
++ * struct iommu_vdevice_tsm_guest_request - ioctl(IOMMU_VDEVICE_TSM_GUEST_REQUEST)
++ * @size: sizeof(struct iommu_vdevice_tsm_guest_request)
++ * @vdevice_id: vDevice ID the guest request is for
++ * @scope: Bus-specific scope classification for the guest request
++ * @req_len: Size in bytes of the input payload at @req_uptr
++ * @resp_len: Size in bytes of the output buffer at @resp_uptr
++ * @__reserved: Must be 0
++ * @req_uptr: Userspace pointer to the guest-provided request payload
++ * @resp_uptr: Userspace pointer to the guest response buffer
++ *
++ * Forward a guest request to the TSM bound vDevice. This is intended for
++ * guest TSM/TDISP message transport where the host kernel only marshals
++ * bytes between userspace and the TSM implementation.
++ *
++ * The meaning and valid values of @scope are defined by the TSM backend for
++ * the device bus type.
++ *
++ * For PCI devices, @scope follows enum pci_tsm_req_scope. Requests outside
++ * the allowed PCI scope for this path are rejected.
++ *
++ * The request payload is read from @req_uptr/@req_len. If a response is
++ * expected, userspace provides @resp_uptr/@resp_len as writable storage for
++ * response bytes returned by the TSM path.
++ *
++ * The ioctl is only suitable for commands and results that the host kernel
++ * has no use, the host is only facilitating guest to TSM communication.
 + */
-+struct iommu_vdevice_tsm_op {
++struct iommu_vdevice_tsm_guest_request {
 +	__u32 size;
-+	__u32 type;
-+	__u32 flags;
 +	__u32 vdevice_id;
++	__u32 scope;
++	__u32 req_len;
++	__u32 resp_len;
++	__u32 __reserved;
++	__aligned_u64 req_uptr;
++	__aligned_u64 resp_uptr;
 +};
-+#define IOMMU_VDEVICE_TSM_OP _IO(IOMMUFD_TYPE, IOMMUFD_CMD_VDEVICE_TSM_OP)
-+
- /**
-  * struct iommu_ioas_change_process - ioctl(VFIO_IOAS_CHANGE_PROCESS)
-  * @size: sizeof(struct iommu_ioas_change_process)
++#define IOMMU_VDEVICE_TSM_GUEST_REQUEST _IO(IOMMUFD_TYPE, IOMMUFD_CMD_VDEVICE_TSM_GUEST_REQUEST)
+ #endif
 -- 
 2.43.0
 
