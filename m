@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9CD53914E9;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9D9D3914FC;
 	Mon, 27 Apr 2026 19:34:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777318490; cv=none; b=CGTRHhrnU8ASI992jQTnw+dDvOYiTQsPX81at1mI54LPn1XYv5kIYfmXQwGSFikgwWl2w0/5X5icx9MikioT8x6+HwPBHqXR0aArmVKW49z+qkK9m7A4ec5UOOFjSphOioG13A/yRm6+KuXTu64sWyHSbZNMoj7WRjeAPLfjTYE=
+	t=1777318490; cv=none; b=sGVaclzBQEoYcfiuK28G5E3aDnRMoPr0+uZr58b/M5QAo4iUMI5o8Ta1AAjFm3hX15AnZraklVqCehCD8KHFXSsopHYUT1nAh4hHE+zlpirSMYsgxerVZ7vJh5RVrwqYt8cchwyoa+6cphIrEThHtkPj12keUrKMKjpk/lJ4+U8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1777318490; c=relaxed/simple;
-	bh=7DeREkHBuy3CC/OxlxoJowva/HyNWfGd+W2ZNWZknP8=;
+	bh=rDqz766+E6phUQjlub0Ao54TKx1InCqtA9Pfpa7kJtU=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=CusYQZQV7+gPjRVJn7IiG0YrW8PAxxm5HGW3X3p3n+tu30BkWc7w19gOHZipLTO7uwMYUu9sPBqRhLhu38lIYBPUB7zuy8lITrCgCUUAIe698J31zKZ6swCn2EyOx3PJWNmlPULP29/yZ9QrRUPa3MCtwLpjaEIExb0e8LHj6Nk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CLiokm3z; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=aA3EnITlcj+gIlS+uxr6XmWmS81fhA0SlqmO5EXSpmp02GrhSNEiCCuJ//mOg+oGxmf5q9pIX5lH8Xk/pD7bDOhRlSLgrjTXqq4IvncL53VNAGGGO4AwY/26XP7uZC0Ok6lDMQ5OUOe/lu43twwv6J9EhXMxVCDoQ96K6kTeXIY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b3AzZTks; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CLiokm3z"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9FCA8C2BCB7;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b3AzZTks"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7CB80C2BCB6;
 	Mon, 27 Apr 2026 19:34:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1777318490;
-	bh=7DeREkHBuy3CC/OxlxoJowva/HyNWfGd+W2ZNWZknP8=;
+	bh=rDqz766+E6phUQjlub0Ao54TKx1InCqtA9Pfpa7kJtU=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=CLiokm3zJp5RtPy1k9AdAo6Qo2XAeWOZZdG4XTw9BMfwzG/GL9TCLlQZE6t6DyLCS
-	 Tlx6GS7DvA++YmtmyNAf2KSJVCav75vB7ZC45khsfX6J9gPI87bRxsMhZqEHkdvwr5
-	 SSe6TPZyBIPcMtLOd1oiYsqoHk/ez8fnaYhggXQyPTVrsjwQrViI8/sY1yJyIVduwz
-	 CGwfN6pR/EDxdTeZdqpICkwRJ42/HnfoqVd7FM8X7Kbth4jMX07GGPNuu6/hs6qcP9
-	 tZxmMyVftPLIfhy4Rcxesh7G7pVpynq3L++Cho1PQ64zp+Jaaw5WUKUXUC5tGFx7Wg
-	 vhSWkcp5BVWHA==
+	b=b3AzZTkslsBmbUNSd5Wrxhm9DpXJZcoJKtKNPFzQJh6Lc/hDguf1vg6DgoWqmnwzq
+	 rZRnjoq22w9XU/OsFUUwfQtlUt9TyvF3ZiT8dli5cJ27eXY0jqsQHMs9uPprTZy8zU
+	 7GZU1AGcQ6/8VrTlzF1Dau7z/3qEyMC26khEruUyACD5PCpIayPE//dFdjzx77LXn3
+	 aWuxqzxZd/HMQyY+PNaJ+yuts+0WH/GuwL5Ota26Uww+KBzXmaNHwUvp7nckvIllkx
+	 VtVb/o7nVZKXXeAiu6ZpIhjemufYebJeheYjjuXoGCU5CEmazRTp5/sYj4zU6sDKjK
+	 wUQUQl+WfiSQQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98D52FF8870;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75330FF8860;
 	Mon, 27 Apr 2026 19:34:50 +0000 (UTC)
 From: Alexandre MINETTE via B4 Relay <devnull+contact.alex-min.fr@kernel.org>
-Date: Mon, 27 Apr 2026 21:34:49 +0200
-Subject: [PATCH v2 3/8] pinctrl: qcom: Register functions before enabling
- pinctrl
+Date: Mon, 27 Apr 2026 21:34:47 +0200
+Subject: [PATCH v2 1/8] dt-bindings: arm: qcom: Add Samsung Galaxy S4
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260427-mainline-send-v1-sending-v2-3-dcaa9178007b@alex-min.fr>
+Message-Id: <20260427-mainline-send-v1-sending-v2-1-dcaa9178007b@alex-min.fr>
 References: <20260427-mainline-send-v1-sending-v2-0-dcaa9178007b@alex-min.fr>
 In-Reply-To: <20260427-mainline-send-v1-sending-v2-0-dcaa9178007b@alex-min.fr>
 To: Bjorn Andersson <andersson@kernel.org>, 
@@ -59,11 +58,11 @@ Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
  iommu@lists.linux.dev, phone-devel@vger.kernel.org, 
  Alexandre MINETTE <contact@alex-min.fr>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777318488; l=2004;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777318488; l=762;
  i=contact@alex-min.fr; s=20260421; h=from:subject:message-id;
- bh=gqK5qmgCceA2ln5R06RBqAB8HOklQ9gk21qwB8S51xo=;
- b=oOWG34jZy36RGXXAHLq5QkZ6h3qiGytJ7F+UT5O5j57647flrE8MXSuHSuDk/C3BpUuYHsd+Y
- 3GNF3MxsuCRB3xQLR/it0HBYwwA+q1E+5mxpRqUbYAGLRKCi+ZAebw3
+ bh=pN5zSMRd7VPt+prprAXYp+uFxzoyOlObA2TSxPHx4vo=;
+ b=MAf7IlcrrpOwvS7ItL7RfCDkZ2bREHw2T/E+ZzGhSPDT/pltyVLslIynsKNMux6GE17SwkIEz
+ DZ4AHb+03rsCLe/HE3zA1iEP5fA6uD8rBsGBspx2cX4ABB0viwAvlJV
 X-Developer-Key: i=contact@alex-min.fr; a=ed25519;
  pk=KOCaxY4v16ptaT0uk1FRkuaDF2n1JhmnYwLiqWD76M4=
 X-Endpoint-Received: by B4 Relay for contact@alex-min.fr/20260421 with
@@ -73,58 +72,25 @@ Reply-To: contact@alex-min.fr
 
 From: Alexandre MINETTE <contact@alex-min.fr>
 
-pinctrl consumers can request states while the pinctrl core enables the
-controller. On Qualcomm pinctrl drivers this can happen before the SoC
-function list has been registered, which leaves the function table
-incomplete during state lookup.
-
-On APQ8064 this can fail while claiming pinctrl hogs:
-
-   apq8064-pinctrl 800000.pinctrl: invalid function ps_hold in map table
-   apq8064-pinctrl 800000.pinctrl: error claiming hogs: -22
-   apq8064-pinctrl 800000.pinctrl: could not claim hogs: -22
-
-Register Qualcomm pinctrl with devm_pinctrl_register_and_init(), add the
-SoC pin functions, and only then enable the pinctrl device.
+Add the compatible for this Samsung smartphone, codenamed jflte.
 
 Signed-off-by: Alexandre MINETTE <contact@alex-min.fr>
 ---
- drivers/pinctrl/qcom/pinctrl-msm.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ Documentation/devicetree/bindings/arm/qcom.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/pinctrl/qcom/pinctrl-msm.c b/drivers/pinctrl/qcom/pinctrl-msm.c
-index 45b3a2763eb8..a2a1e0835735 100644
---- a/drivers/pinctrl/qcom/pinctrl-msm.c
-+++ b/drivers/pinctrl/qcom/pinctrl-msm.c
-@@ -1593,11 +1593,11 @@ int msm_pinctrl_probe(struct platform_device *pdev,
- 	pctrl->desc.pins = pctrl->soc->pins;
- 	pctrl->desc.npins = pctrl->soc->npins;
- 
--	pctrl->pctrl = devm_pinctrl_register(&pdev->dev, &pctrl->desc, pctrl);
--	if (IS_ERR(pctrl->pctrl)) {
--		dev_err(&pdev->dev, "Couldn't register pinctrl driver\n");
--		return PTR_ERR(pctrl->pctrl);
--	}
-+	ret = devm_pinctrl_register_and_init(&pdev->dev, &pctrl->desc,
-+					     pctrl, &pctrl->pctrl);
-+	if (ret)
-+		return dev_err_probe(&pdev->dev, ret,
-+				     "Couldn't register pinctrl driver\n");
- 
- 	for (i = 0; i < soc_data->nfunctions; i++) {
- 		func = &soc_data->functions[i];
-@@ -1607,6 +1607,11 @@ int msm_pinctrl_probe(struct platform_device *pdev,
- 			return ret;
- 	}
- 
-+	ret = pinctrl_enable(pctrl->pctrl);
-+	if (ret)
-+		return dev_err_probe(&pdev->dev, ret,
-+				     "Couldn't enable pinctrl driver\n");
-+
- 	ret = msm_gpio_init(pctrl);
- 	if (ret)
- 		return ret;
+diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+index b4943123d2e4..b7e186ed2efc 100644
+--- a/Documentation/devicetree/bindings/arm/qcom.yaml
++++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+@@ -39,6 +39,7 @@ properties:
+           - enum:
+               - asus,nexus7-flo
+               - lg,nexus4-mako
++              - samsung,jflte
+               - sony,xperia-yuga
+               - qcom,apq8064-cm-qs600
+               - qcom,apq8064-ifc6410
 
 -- 
 2.43.0
