@@ -1,55 +1,53 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FA2B36897F;
-	Mon, 27 Apr 2026 05:56:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6528433B97F;
+	Mon, 27 Apr 2026 06:10:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777269374; cv=none; b=qHUHttfHijzrNdj3qfU6JUDgGD7uiaTfBFBM1Bph7ucst2J1PI1JzYnsQVuVzxIDyQ6XED4dvTwshW5ef6cAVicOxVh8ocNcKRu9wU9vR9pNe9VLCTXqAQqVhxUHYoVTUYcZnJNaNe7ibx1Itpufw/HY5iJtY9j8TI2RBFMApak=
+	t=1777270224; cv=none; b=PpM6Woqhhe1d82H3FbRdyVFlFvUQUNAbxbIVKvANBliuhzH7SoQGxpyH9pIyi0TVerJErWNzxL4cXG7pIcU84JOB/IR/lGgfrtNK+VnzidVaE4VfL2VS2I73Llw1l3xDLJrL2SgohKruf5xSNhHzpEIKTlkifFso8NGlvq/kl40=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777269374; c=relaxed/simple;
-	bh=bFwWw9ornwOfEMIFvLXF0QGVNCkgM8YE0JfxZ/KW67Q=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=UQ8cMdr4mpK0jwKKJQHPVsF6plBTRMcpKDeG/F2p6ymm7+9EeVen4xLBjvEToOcm0KkL/0BgeyDLvS6CKMOaHtIrn8OtxtcFI81mu7pa2atytPkM0d3j5RtVztQXs4WJ5DjNV2CuSHNF0NdkCqOQz0KURtxcbAgc5pU4Q3xbhr4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ytlds4is; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777270224; c=relaxed/simple;
+	bh=FXNseaUyPlkvsiojsWtx3KsUI8A3dSz/hWt+/LNARW4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=s8CSdPFZL/NK/J6nW6NCR+1VNvFqVYSOHqtvgKGS2ZYsTA1iHpf0rqa3PhVfZtir731lTtSSNE6kMrIZn9W0NTRP3A/CDbUmguyxN/pL4lAyq+aFLl/N8KQLVKKfvFNBidFyLrnmz093c35khTkC2OHvh8c5Ek5iTQqFTqCkcRI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Np/fJ/Ld; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ytlds4is"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDCCEC2BCB4;
-	Mon, 27 Apr 2026 05:56:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Np/fJ/Ld"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FA62C19425;
+	Mon, 27 Apr 2026 06:10:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777269373;
-	bh=bFwWw9ornwOfEMIFvLXF0QGVNCkgM8YE0JfxZ/KW67Q=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Ytlds4isRPm11He1sxPy8w+5lT/dqMr4S4YeTl9RAyBzAWszDBX/VnBlsY4AUt4AL
-	 r8Rg3bs0stHe1qX7RoSZrtxU47j4Llsmf/+FW1ZxpI6zP5XsNIb6q/13SZ6QtB4Z9N
-	 fgGtMHJ5b6bkNVZDiSbhczLmc0ZWrltM6GAHVwCptkFsi1vLscd3NlGTB4YzDAM9+t
-	 uAFARLw6NU2B616m6k91PRiREI29VvbwS73VEChpR8Zb5VdUuRGwNmeTkLA65O0ece
-	 NTWE/9a6WYkPcb8P3rQozOvEHBXDY3HCcYo8LNvGHhfgeY0oaGhF/vSamN9aRmT2Sj
-	 4YjOdkyNbj6Fg==
+	s=k20201202; t=1777270224;
+	bh=FXNseaUyPlkvsiojsWtx3KsUI8A3dSz/hWt+/LNARW4=;
+	h=From:To:Cc:Subject:Date:From;
+	b=Np/fJ/Ld8KknmcuTyDZSt4YryM3X+4gbXd53P72vx5f445xArwgyHL4dp23zKRvnh
+	 0Ss+eoQknDzxVnEHgj+n1BGXQDExt1l8vGFVYGzPE+Fxx5xrSt7pOLUQyDfNkohLL8
+	 F7/3fUf2j+bSPgTfmqyp9liLHfRiDmFnBjLnvS3TVlC9GGugJqC8nqoalw2CCD21eC
+	 tKD/73pJ9i/sssx9iWPd6D2Golfv39hpljJnjt2jXLEvCkkj4QPyvrDy5x6kz8MbUj
+	 xyNZznOSubPKcoyk7UGIhCASRyE2I2a1LQoddp/gtKYzpDKD3NTO/rzdEajl9puGme
+	 aJ7jTpw/nO+dA==
 From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
 To: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
+	linux-kernel@vger.kernel.org,
+	kvm@vger.kernel.org
 Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>,
-	Marc Zyngier <maz@kernel.org>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Bjorn Helgaas <helgaas@kernel.org>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Joerg Roedel <joro@8bytes.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Samuel Ortiz <sameo@rivosinc.com>,
 	Steven Price <steven.price@arm.com>,
 	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>
-Subject: [PATCH v3 9/9] dma-direct: select DMA address encoding from DMA_ATTR_CC_SHARED
-Date: Mon, 27 Apr 2026 11:25:09 +0530
-Message-ID: <20260427055509.898190-10-aneesh.kumar@kernel.org>
+	Will Deacon <will@kernel.org>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v4 0/4] Add iommufd ioctls to support TSM operations
+Date: Mon, 27 Apr 2026 11:40:01 +0530
+Message-ID: <20260427061005.901854-1-aneesh.kumar@kernel.org>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260427055509.898190-1-aneesh.kumar@kernel.org>
-References: <20260427055509.898190-1-aneesh.kumar@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,148 +56,69 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Make the dma-direct helpers derive the DMA address encoding from
-DMA_ATTR_CC_SHARED instead of implicitly relying on
-force_dma_unencrypted() inside phys_to_dma_direct()
+This patch series adds iommufd ioctl support for TSM-related operations.
+These ioctls allow VMMs to perform TSM management tasks such as bind and
+unbind operations, and to handle guest requests.
 
-Pass an explicit unencrypted/decrypted state into phys_to_dma_direct(),
-make the alloc paths return DMA addresses that match the requested
-buffer encryption state. Also only call dma_set_decrypted()
-DMA_ATTR_CC_SHARED is actually set.
+Changes from v2:
+https://lore.kernel.org/all/20260309111704.2330479-1-aneesh.kumar@kernel.org
+* Bump the series revision to v4 to keep it in sync with the dependent CCA DA
+  patchsets. There was no v3 posting.
+* Drop [PATCH v2 1/3] iommufd/viommu: Allow associating a KVM VM fd with a
+  vIOMMU
+* Add two new patches to associate a struct kvm * with iommufd objects:
+  iommufd/device: Associate a kvm pointer to iommufd_device
+  iommufd/viommu: Associate a kvm pointer to iommufd_viommu
+* Address review feedback
 
-Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
----
- kernel/dma/direct.c | 48 ++++++++++++++++++++++++++++-----------------
- 1 file changed, 30 insertions(+), 18 deletions(-)
+Changes from v1:
+https://lore.kernel.org/all/20250728135216.48084-8-aneesh.kumar@kernel.org
+* Rebase onto the latest kernel
+* Address review feedback
+* Drop the TSM map ioctl; the KVM prefault patch will be used instead to
+  ensure that private memory is preallocated
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index f874be2d85c2..cafa6b5ed1c6 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -24,11 +24,11 @@
- u64 zone_dma_limit __ro_after_init = DMA_BIT_MASK(24);
- 
- static inline dma_addr_t phys_to_dma_direct(struct device *dev,
--		phys_addr_t phys)
-+		phys_addr_t phys, bool unencrypted)
- {
--	if (force_dma_unencrypted(dev))
-+	if (unencrypted)
- 		return phys_to_dma_unencrypted(dev, phys);
--	return phys_to_dma(dev, phys);
-+	return phys_to_dma_encrypted(dev, phys);
- }
- 
- static inline struct page *dma_direct_to_page(struct device *dev,
-@@ -39,8 +39,9 @@ static inline struct page *dma_direct_to_page(struct device *dev,
- 
- u64 dma_direct_get_required_mask(struct device *dev)
- {
-+	bool require_decrypted = force_dma_unencrypted(dev);
- 	phys_addr_t phys = (phys_addr_t)(max_pfn - 1) << PAGE_SHIFT;
--	u64 max_dma = phys_to_dma_direct(dev, phys);
-+	u64 max_dma = phys_to_dma_direct(dev, phys, require_decrypted);
- 
- 	return (1ULL << (fls64(max_dma) - 1)) * 2 - 1;
- }
-@@ -69,7 +70,8 @@ static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 *phys_limit)
- 
- bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
- {
--	dma_addr_t dma_addr = phys_to_dma_direct(dev, phys);
-+	bool require_decrypted = force_dma_unencrypted(dev);
-+	dma_addr_t dma_addr = phys_to_dma_direct(dev, phys, require_decrypted);
- 
- 	if (dma_addr == DMA_MAPPING_ERROR)
- 		return false;
-@@ -79,17 +81,18 @@ bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
- 
- static int dma_set_decrypted(struct device *dev, void *vaddr, size_t size)
- {
--	if (!force_dma_unencrypted(dev))
--		return 0;
--	return set_memory_decrypted((unsigned long)vaddr, PFN_UP(size));
-+	int ret;
-+
-+	ret = set_memory_decrypted((unsigned long)vaddr, PFN_UP(size));
-+	if (ret)
-+		pr_warn_ratelimited("leaking DMA memory that can't be decrypted\n");
-+	return ret;
- }
- 
- static int dma_set_encrypted(struct device *dev, void *vaddr, size_t size)
- {
- 	int ret;
- 
--	if (!force_dma_unencrypted(dev))
--		return 0;
- 	ret = set_memory_encrypted((unsigned long)vaddr, PFN_UP(size));
- 	if (ret)
- 		pr_warn_ratelimited("leaking DMA memory that can't be re-encrypted\n");
-@@ -177,7 +180,8 @@ static void *dma_direct_alloc_from_pool(struct device *dev, size_t size,
- 				  dma_coherent_ok);
- 	if (!page)
- 		return NULL;
--	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
-+	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page),
-+					 !!(attrs & DMA_ATTR_CC_SHARED));
- 	return ret;
- }
- 
-@@ -193,9 +197,11 @@ static void *dma_direct_alloc_no_mapping(struct device *dev, size_t size,
- 	/* remove any dirty cache lines on the kernel alias */
- 	if (!PageHighMem(page))
- 		arch_dma_prep_coherent(page, size);
--
--	/* return the page pointer as the opaque cookie */
--	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
-+	/*
-+	 * return the page pointer as the opaque cookie.
-+	 * Never used for unencrypted allocation
-+	 */
-+	*dma_handle = phys_to_dma_encrypted(dev, page_to_phys(page));
- 	return page;
- }
- 
-@@ -337,7 +343,8 @@ void *dma_direct_alloc(struct device *dev, size_t size,
- 			goto out_encrypt_pages;
- 	}
- 
--	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
-+	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page),
-+					 !!(attrs & DMA_ATTR_CC_SHARED));
- 	return ret;
- 
- out_encrypt_pages:
-@@ -447,11 +454,12 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
- 		return NULL;
- 
- 	ret = page_address(page);
--	if (dma_set_decrypted(dev, ret, size))
-+	if ((attrs & DMA_ATTR_CC_SHARED) && dma_set_decrypted(dev, ret, size))
- 		goto out_leak_pages;
- setup_page:
- 	memset(ret, 0, size);
--	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
-+	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page),
-+					 !!(attrs & DMA_ATTR_CC_SHARED));
- 	return page;
- out_leak_pages:
- 	return NULL;
-@@ -461,8 +469,12 @@ void dma_direct_free_pages(struct device *dev, size_t size,
- 		struct page *page, dma_addr_t dma_addr,
- 		enum dma_data_direction dir)
- {
-+	/*
-+	 * if the device had requested for an unencrypted buffer,
-+	 * convert it to encrypted on free
-+	 */
-+	bool mark_mem_encrypted =  force_dma_unencrypted(dev);
- 	void *vaddr = page_address(page);
--	bool mark_mem_encrypted = true;
- 
- 	/* If cpu_addr is not from an atomic pool, dma_free_from_pool() fails */
- 	if (IS_ENABLED(CONFIG_DMA_COHERENT_POOL) &&
+Cc: Alexey Kardashevskiy <aik@amd.com>
+Cc: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Dan Williams <dan.j.williams@intel.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Kevin Tian <kevin.tian@intel.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Samuel Ortiz <sameo@rivosinc.com>
+Cc: Steven Price <steven.price@arm.com>
+Cc: Suzuki K Poulose <Suzuki.Poulose@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Xu Yilun <yilun.xu@linux.intel.com>
+Cc: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+
+Aneesh Kumar K.V (Arm) (2):
+  iommufd/tsm: add vdevice TSM bind/unbind ioctl
+  iommufd/vdevice: add TSM guest request ioctl
+
+Nicolin Chen (1):
+  iommufd/viommu: Associate a kvm pointer to iommufd_viommu
+
+Shameer Kolothum (1):
+  iommufd/device: Associate a kvm pointer to iommufd_device
+
+ drivers/iommu/iommufd/Makefile          |   2 +
+ drivers/iommu/iommufd/device.c          |   5 +-
+ drivers/iommu/iommufd/iommufd_private.h |  17 ++++
+ drivers/iommu/iommufd/main.c            |   6 ++
+ drivers/iommu/iommufd/selftest.c        |   2 +-
+ drivers/iommu/iommufd/tsm.c             | 109 ++++++++++++++++++++++++
+ drivers/iommu/iommufd/viommu.c          |  24 +++++-
+ drivers/vfio/iommufd.c                  |   2 +-
+ drivers/virt/coco/tsm-core.c            |  30 +++++++
+ include/linux/iommu.h                   |   1 +
+ include/linux/iommufd.h                 |   5 +-
+ include/linux/tsm.h                     |  42 +++++++++
+ include/uapi/linux/iommufd.h            |  67 +++++++++++++++
+ 13 files changed, 305 insertions(+), 7 deletions(-)
+ create mode 100644 drivers/iommu/iommufd/tsm.c
+
 -- 
 2.43.0
 
