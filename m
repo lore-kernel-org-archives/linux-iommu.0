@@ -1,208 +1,241 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C8DF3AF646
-	for <iommu@lists.linux.dev>; Mon, 27 Apr 2026 09:07:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEBB636F42B;
+	Mon, 27 Apr 2026 09:27:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777280881; cv=none; b=BshMhFmhjp/P13U1WmX+ZPGCU4e8U3kv5H40B5wT+mfwtr1zyHbFOBgmZVEsxo/d9ImdMEZF1CvwBWz9O8hCYdKv5KmF8OKQjpzAsvaG/T97BUJ5g/TrLY0P5gNXLZWQ/17sXbT0BbfuilT0p2EvSk5lWI9hTYjHrIHiu97MEXQ=
+	t=1777282047; cv=none; b=LDRGoUrEXnKJA+jamIG4l2MBjNhcARFvM4d5TLjKM92evYDpnZKliKNuN/DaZe8RplSdCDTxUHQjnBdiGnY4fpYzryVUZfvBezsCsScdgYSd9swoaNU+LjQIeNlqDiE+/0h6hrSJ5fD1hrY9ug/xWpOL2t+TU3+5e79g2r+UwxI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777280881; c=relaxed/simple;
-	bh=TEBtvs1vjKigMWsFOX5/bn4bMwkHFLIVZrCdKPxfiwE=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=H3+vN4DHOyQBv20K8AVx+TG4U4LH9t2bZkwQKOm742dW+n034iDnQ6bPEWol6zkVPn/A0qkd3zjD8sP+rlOZ6MV0iPPzioD3HMUAmSZEtazEld8yVcKc0UQqqNn0/Rer3cnAQkdWcteQ++4jRNdOwMFnJE1vTEIOlczWcmGbi1c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=m0aKA/uC; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1777282047; c=relaxed/simple;
+	bh=miQQMID1hHUD427jdBzC3EbawWKRdBwwrYduccnjev8=;
+	h=Date:Message-ID:From:To:Cc:Subject:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ofV9vXqPB49FT3hKCBz50X1wcVlbH72lxPrLBADbNEhbz70oncKp9x5AlQGp1td2ZXL56Nwa0lpDkTxOF8RWuz/DpV2zn8f1Zf7WHdFQZMvsa0QNpyUjKthx3WkAv0YS3wH50aVLA5qtwwGD9KaFV9cvJFflxZ+H/PBHClz3LSI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XTsgR9nT; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="m0aKA/uC"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777280879; x=1808816879;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=TEBtvs1vjKigMWsFOX5/bn4bMwkHFLIVZrCdKPxfiwE=;
-  b=m0aKA/uCIqGLyhA+iewUK/wx2m70X2tTpOcAOqtSR/I83b9P1D+gN8Xk
-   g2RbVQ+O1cPLwHVSy2V53kT09X5tPIB40KrxynNHm/anBLaCiXZbhWMAQ
-   ML070mR0zGqzokctAYMYCVFrt53RY/H3rPHaYPTaohLcFMDfTIqHTa6TB
-   LuHQQEkQA/B1zuvyK1Pg3PTnl24S8S6avnpyYMJo1K5GgTEVSPtf+0U51
-   ZOJtmgjq42K8mrgOkGCTqLtCpb1BJe/yCkIklarvsgHhg+KZsPGa01Ekx
-   FT5auZENcr/nYXRcSo4EQ2nh1EcQ9cuXv+GVY9AajSH0NT9FHcNtw1y1d
-   w==;
-X-CSE-ConnectionGUID: jXSPdWhxS6mkiomgH9e7pw==
-X-CSE-MsgGUID: wnUuziFrSMqhIUpF7NL3yw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11768"; a="103626088"
-X-IronPort-AV: E=Sophos;i="6.23,201,1770624000"; 
-   d="scan'208";a="103626088"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 02:07:59 -0700
-X-CSE-ConnectionGUID: FYDd+31MR7KHd2Ni80r5sQ==
-X-CSE-MsgGUID: iHfbtUdjQheofsbPE6IWgw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,201,1770624000"; 
-   d="scan'208";a="227055600"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.248.249]) ([10.124.248.249])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 02:07:54 -0700
-Message-ID: <f5f2bd86-4cde-4efe-b824-d9f1c82357ac@linux.intel.com>
-Date: Mon, 27 Apr 2026 17:07:52 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XTsgR9nT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 710C4C19425;
+	Mon, 27 Apr 2026 09:27:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777282046;
+	bh=miQQMID1hHUD427jdBzC3EbawWKRdBwwrYduccnjev8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=XTsgR9nTr22cnm+4IRYfBtYS9TyOOd6018sOZaSBFrNsDqxKzgl5Q8hF3h8Fh21Fh
+	 plpUOMZdT8a5BLpL1mKOy6TK/BtEcTnwUwJR+KytNOImf4wVD6qyF+JiuGAO+OyQog
+	 tkz8n9mGoD56w41YnuBtTXzov9Tx5RoQb/69Cip/xPV6wDxQlf6CiWcAN/wQ06odFL
+	 sG2zhs+C9tUgTpGlHKaNreJiZoGOKODSu9ktJAQjBHl3co4HZ5TrSQ4zW0nP+Oqp8M
+	 q6H3kitKgsGeH0Ylr3MzCb1WayacMkW05qgrS+sS+XVDSVtctrVMWj6hNiR61qnEZZ
+	 RbDZq4xvGktcQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=goblin-girl.misterjones.org)
+	by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.98.2)
+	(envelope-from <maz@kernel.org>)
+	id 1wHIFQ-0000000EzrO-081k;
+	Mon, 27 Apr 2026 09:27:24 +0000
+Date: Mon, 27 Apr 2026 10:27:23 +0100
+Message-ID: <86zf2ozrb8.wl-maz@kernel.org>
+From: Marc Zyngier <maz@kernel.org>
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-coco@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	kvmarm@lists.linux.dev,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v4 2/3] swiotlb: dma: its: Enforce host page-size alignment for shared buffers
+In-Reply-To: <20260427063108.909019-3-aneesh.kumar@kernel.org>
+References: <20260427063108.909019-1-aneesh.kumar@kernel.org>
+	<20260427063108.909019-3-aneesh.kumar@kernel.org>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/30.1
+ (aarch64-unknown-linux-gnu) MULE/6.0 (HANACHIRUSATO)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Alexey Kardashevskiy <aik@amd.com>,
- Bjorn Helgaas <helgaas@kernel.org>, Dan Williams <dan.j.williams@intel.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
- Jonathan Cameron <jic23@kernel.org>, Kevin Tian <kevin.tian@intel.com>,
- Nicolin Chen <nicolinc@nvidia.com>, Samuel Ortiz <sameo@rivosinc.com>,
- Steven Price <steven.price@arm.com>,
- Suzuki K Poulose <Suzuki.Poulose@arm.com>, Will Deacon <will@kernel.org>,
- Xu Yilun <yilun.xu@linux.intel.com>,
- Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
- Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v4 1/4] iommufd/device: Associate a kvm pointer to
- iommufd_device
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-References: <20260427061005.901854-1-aneesh.kumar@kernel.org>
- <20260427061005.901854-2-aneesh.kumar@kernel.org>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20260427061005.901854-2-aneesh.kumar@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: aneesh.kumar@kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, linux-coco@lists.linux.dev, linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, catalin.marinas@arm.com, jgg@ziepe.ca, m.szyprowski@samsung.com, robin.murphy@arm.com, steven.price@arm.com, suzuki.poulose@arm.com, tglx@kernel.org, will@kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 
-On 4/27/2026 2:10 PM, Aneesh Kumar K.V (Arm) wrote:
-> From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-> 
-> Add a struct kvm * to iommufd_device_bind() fn and associate it
-> with idev if bind is successful.
-> 
-> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> [nicolinc: fix build error in iommufd_test_mock_domain()]
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+On Mon, 27 Apr 2026 07:31:07 +0100,
+"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> wrote:
+>=20
+> When running private-memory guests, the guest kernel must apply additional
+> constraints when allocating buffers that are shared with the hypervisor.
+>=20
+> These shared buffers are also accessed by the host kernel and therefore
+> must be aligned to the host=E2=80=99s page size, and have a size that is =
+a multiple
+> of the host page size.
+>=20
+> On non-secure hosts, set_guest_memory_attributes() tracks memory at the
+> host PAGE_SIZE granularity. This creates a mismatch when the guest applies
+> attributes at 4K boundaries while the host uses 64K pages. In such cases,
+> set_guest_memory_attributes() call returns -EINVAL, preventing the
+> conversion of memory regions from private to shared.
+>=20
+> Architectures such as Arm can tolerate realm physical address space
+> (protected memory) PFNs being mapped as shared memory, as incorrect
+> accesses are detected and reported as GPC faults. However, relying on this
+> mechanism is unsafe and can still lead to kernel crashes.
+>=20
+> This is particularly likely when guest_memfd allocations are mmapped and
+> accessed from userspace. Once exposed to userspace, we cannot guarantee
+> that applications will only access the intended 4K shared region rather
+> than the full 64K page mapped into their address space. Such userspace
+> addresses may also be passed back into the kernel and accessed via the
+> linear map, resulting in a GPC fault and a kernel crash.
+>=20
+> With CCA, although Stage-2 mappings managed by the RMM still operate at a
+> 4K granularity, shared pages must nonetheless be aligned to the
+> host-managed page size and sized as whole host pages to avoid the issues
+> described above.
+
+I thought that was being fixed, and that there was now a strong
+guarantee that RMM and host are aligned on the page size. Even more,
+S2 is totally irrelevant here. The only thing that matters is the host
+page size vs the guest page size. Nothing else.
+
+>=20
+> Introduce a new helper, mem_decrypt_align(), to allow callers to enforce
+> the required alignment and size constraints for shared buffers.
+>=20
+> The architecture-specific implementation of mem_decrypt_align() will be
+> provided in a follow-up patch.
+>=20
+> Note on restricted-dma-pool:
+> rmem_swiotlb_device_init() uses reserved-memory regions described by
+> firmware. Those regions are not changed in-kernel to satisfy host granule
+> alignment. This is intentional: we do not expect restricted-dma-pool
+> allocations to be used with CCA. If restricted-dma-pool is intended for C=
+CA
+> shared use, firmware must provide base/size aligned to the host IPA-change
+> granule.
+>=20
 > Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 > ---
->   drivers/iommu/iommufd/device.c          | 5 ++++-
->   drivers/iommu/iommufd/iommufd_private.h | 2 ++
->   drivers/iommu/iommufd/selftest.c        | 2 +-
->   drivers/vfio/iommufd.c                  | 2 +-
->   include/linux/iommufd.h                 | 4 +++-
->   5 files changed, 11 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-> index 344d620cdecc..453fbceb9219 100644
-> --- a/drivers/iommu/iommufd/device.c
-> +++ b/drivers/iommu/iommufd/device.c
-> @@ -203,6 +203,7 @@ void iommufd_device_destroy(struct iommufd_object *obj)
->    * iommufd_device_bind - Bind a physical device to an iommu fd
->    * @ictx: iommufd file descriptor
->    * @dev: Pointer to a physical device struct
-> + * @kvm: Pointer to struct kvm if device belongs to a KVM VM
->    * @id: Output ID number to return to userspace for this device
->    *
->    * A successful bind establishes an ownership over the device and returns
-> @@ -216,7 +217,8 @@ void iommufd_device_destroy(struct iommufd_object *obj)
->    * The caller must undo this with iommufd_device_unbind()
->    */
->   struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
-> -					   struct device *dev, u32 *id)
-> +					   struct device *dev, struct kvm *kvm,
-> +					   u32 *id)
->   {
->   	struct iommufd_device *idev;
->   	struct iommufd_group *igroup;
-> @@ -266,6 +268,7 @@ struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
->   	if (!iommufd_selftest_is_mock_dev(dev))
->   		iommufd_ctx_get(ictx);
->   	idev->dev = dev;
-> +	idev->kvm = kvm;
->   	idev->enforce_cache_coherency =
->   		device_iommu_capable(dev, IOMMU_CAP_ENFORCE_CACHE_COHERENCY);
->   	/* The calling driver is a user until iommufd_device_unbind() */
-> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-> index 6ac1965199e9..c48a568c6cbb 100644
-> --- a/drivers/iommu/iommufd/iommufd_private.h
-> +++ b/drivers/iommu/iommufd/iommufd_private.h
-> @@ -488,6 +488,8 @@ struct iommufd_device {
->   	struct list_head group_item;
->   	/* always the physical device */
->   	struct device *dev;
-> +	/* ..and kvm if available */
-> +	struct kvm *kvm;
->   	bool enforce_cache_coherency;
->   	struct iommufd_vdevice *vdev;
->   	bool destroying;
-> diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-> index 7823142097d4..76a2f83f430c 100644
-> --- a/drivers/iommu/iommufd/selftest.c
-> +++ b/drivers/iommu/iommufd/selftest.c
-> @@ -1100,7 +1100,7 @@ static int iommufd_test_mock_domain(struct iommufd_ucmd *ucmd,
->   		goto out_sobj;
->   	}
->   
-> -	idev = iommufd_device_bind(ucmd->ictx, &sobj->idev.mock_dev->dev,
-> +	idev = iommufd_device_bind(ucmd->ictx, &sobj->idev.mock_dev->dev, NULL,
->   				   &idev_id);
->   	if (IS_ERR(idev)) {
->   		rc = PTR_ERR(idev);
-> diff --git a/drivers/vfio/iommufd.c b/drivers/vfio/iommufd.c
-> index a38d262c6028..c1c58194fd3a 100644
-> --- a/drivers/vfio/iommufd.c
-> +++ b/drivers/vfio/iommufd.c
-> @@ -119,7 +119,7 @@ int vfio_iommufd_physical_bind(struct vfio_device *vdev,
->   {
->   	struct iommufd_device *idev;
->   
-> -	idev = iommufd_device_bind(ictx, vdev->dev, out_device_id);
-> +	idev = iommufd_device_bind(ictx, vdev->dev, vdev->kvm, out_device_id);
->   	if (IS_ERR(idev))
->   		return PTR_ERR(idev);
->   	vdev->iommufd_device = idev;
-> diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-> index 6e7efe83bc5d..5cdcb8d2f305 100644
-> --- a/include/linux/iommufd.h
-> +++ b/include/linux/iommufd.h
-> @@ -24,6 +24,7 @@ struct iommufd_ctx;
->   struct iommufd_device;
->   struct iommufd_viommu_ops;
->   struct page;
-> +struct kvm;
->   
->   enum iommufd_object_type {
->   	IOMMUFD_OBJ_NONE,
-> @@ -59,7 +60,8 @@ struct iommufd_object {
->   };
->   
->   struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
-> -					   struct device *dev, u32 *id);
-> +					   struct device *dev, struct kvm *kvm,
-> +					   u32 *id);
->   void iommufd_device_unbind(struct iommufd_device *idev);
->   
->   int iommufd_device_attach(struct iommufd_device *idev, ioasid_t pasid,
+>  arch/arm64/mm/mem_encrypt.c      | 19 +++++++++++++++----
+>  drivers/irqchip/irq-gic-v3-its.c | 20 +++++++++++++-------
+>  include/linux/mem_encrypt.h      | 14 ++++++++++++++
+>  kernel/dma/contiguous.c          | 10 ++++++++++
+>  kernel/dma/direct.c              | 16 ++++++++++++++--
+>  kernel/dma/pool.c                |  4 +++-
+>  kernel/dma/swiotlb.c             | 21 +++++++++++++--------
+>  7 files changed, 82 insertions(+), 22 deletions(-)
+>=20
 
-iommufd_device_unbind() is an asynchronous teardown operation. Is it
-possible for idev->kvm to persist or be accessed within the iommufd
-subsystem after iommufd_device_unbind() has returned? Should we add the
-change below to prevent this potential UAF case?
+[...]
 
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 170a7005f0bc..dac39cb5e7cc 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -333,6 +333,7 @@ EXPORT_SYMBOL_NS_GPL(iommufd_ctx_has_group, "IOMMUFD");
-   */
-  void iommufd_device_unbind(struct iommufd_device *idev)
-  {
-+       idev->kvm = NULL;
-         iommufd_object_destroy_user(idev->ictx, &idev->obj);
-  }
-  EXPORT_SYMBOL_NS_GPL(iommufd_device_unbind, "IOMMUFD");
+> diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v=
+3-its.c
+> index 291d7668cc8d..239d7e3bc16f 100644
+> --- a/drivers/irqchip/irq-gic-v3-its.c
+> +++ b/drivers/irqchip/irq-gic-v3-its.c
+> @@ -213,16 +213,17 @@ static gfp_t gfp_flags_quirk;
+>  static struct page *its_alloc_pages_node(int node, gfp_t gfp,
+>  					 unsigned int order)
+>  {
+> +	unsigned int new_order;
+>  	struct page *page;
+>  	int ret =3D 0;
+> =20
+> -	page =3D alloc_pages_node(node, gfp | gfp_flags_quirk, order);
+> -
+> +	new_order =3D get_order(mem_decrypt_align((PAGE_SIZE << order)));
+> +	page =3D alloc_pages_node(node, gfp | gfp_flags_quirk, new_order);
+>  	if (!page)
+>  		return NULL;
+> =20
+>  	ret =3D set_memory_decrypted((unsigned long)page_address(page),
+> -				   1 << order);
+> +				   1 << new_order);
+>  	/*
+>  	 * If set_memory_decrypted() fails then we don't know what state the
+>  	 * page is in, so we can't free it. Instead we leak it.
+> @@ -241,13 +242,16 @@ static struct page *its_alloc_pages(gfp_t gfp, unsi=
+gned int order)
+> =20
+>  static void its_free_pages(void *addr, unsigned int order)
+>  {
+> +	int new_order;
+> +
+> +	new_order =3D get_order(mem_decrypt_align((PAGE_SIZE << order)));
+>  	/*
+>  	 * If the memory cannot be encrypted again then we must leak the pages.
+>  	 * set_memory_encrypted() will already have WARNed.
+>  	 */
+> -	if (set_memory_encrypted((unsigned long)addr, 1 << order))
+> +	if (set_memory_encrypted((unsigned long)addr, 1 << new_order))
+>  		return;
+> -	free_pages((unsigned long)addr, order);
+> +	free_pages((unsigned long)addr, new_order);
+>  }
+>
 
-Otherwise, it looks good to me.
+Here's the non-obfuscated version of the two hunks above (and let it
+be on the record that New Order is a terrible, overrated band):
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-=
+its.c
+index 291d7668cc8da..a4d555aaee241 100644
+--- a/drivers/irqchip/irq-gic-v3-its.c
++++ b/drivers/irqchip/irq-gic-v3-its.c
+@@ -216,6 +216,7 @@ static struct page *its_alloc_pages_node(int node, gfp_=
+t gfp,
+ 	struct page *page;
+ 	int ret =3D 0;
+=20
++	order =3D get_order(mem_decrypt_align(PAGE_SIZE << order));
+ 	page =3D alloc_pages_node(node, gfp | gfp_flags_quirk, order);
+=20
+ 	if (!page)
+@@ -245,6 +246,7 @@ static void its_free_pages(void *addr, unsigned int ord=
+er)
+ 	 * If the memory cannot be encrypted again then we must leak the pages.
+ 	 * set_memory_encrypted() will already have WARNed.
+ 	 */
++	order =3D get_order(mem_decrypt_align(PAGE_SIZE << order));
+ 	if (set_memory_encrypted((unsigned long)addr, 1 << order))
+ 		return;
+ 	free_pages((unsigned long)addr, order);
+
+>  static struct gen_pool *itt_pool;
+> @@ -268,11 +272,13 @@ static void *itt_alloc_pool(int node, int size)
+>  		if (addr)
+>  			break;
+> =20
+> -		page =3D its_alloc_pages_node(node, GFP_KERNEL | __GFP_ZERO, 0);
+> +		page =3D its_alloc_pages_node(node, GFP_KERNEL | __GFP_ZERO,
+> +					    get_order(mem_decrypt_granule_size()));
+
+You already taught its_alloc_pages_node() about the decrypt granule
+size stuff. I don't think we need to see more of it (and you don't
+mess with the call that is just above it).
+
+>  		if (!page)
+>  			break;
+> =20
+> -		gen_pool_add(itt_pool, (unsigned long)page_address(page), PAGE_SIZE, n=
+ode);
+> +		gen_pool_add(itt_pool, (unsigned long)page_address(page),
+> +			     mem_decrypt_granule_size(), node);
+
+I'd rather see something like mem_decrypt_align(PAGE_SIZE), which
+keeps the intent clear.
+
+	M.
+
+--=20
+Without deviation from the norm, progress is not possible.
