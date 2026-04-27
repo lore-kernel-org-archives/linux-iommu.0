@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9D9D3914FC;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD63C391505;
 	Mon, 27 Apr 2026 19:34:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777318490; cv=none; b=sGVaclzBQEoYcfiuK28G5E3aDnRMoPr0+uZr58b/M5QAo4iUMI5o8Ta1AAjFm3hX15AnZraklVqCehCD8KHFXSsopHYUT1nAh4hHE+zlpirSMYsgxerVZ7vJh5RVrwqYt8cchwyoa+6cphIrEThHtkPj12keUrKMKjpk/lJ4+U8=
+	t=1777318491; cv=none; b=AObOLj/u6UjVSYi830DH9upzPI9QLz23h4uOta9O3H4Fy5Omod/uORXgnRMJ5T3LlBHM35tNDMbPEWnxgcghnE44N8jmrz81M8QZzoFPGfBRzZ7S346fOv9oGFp49T/du4yqhxsSswY6Evh5ysKOsF9vhGjNUyED7T7c4hv6bw4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777318490; c=relaxed/simple;
-	bh=rDqz766+E6phUQjlub0Ao54TKx1InCqtA9Pfpa7kJtU=;
+	s=arc-20240116; t=1777318491; c=relaxed/simple;
+	bh=Djj4DA8V0onSZ02OPE+IzZkuFDVGk+DrM9lo8y2SZSQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=aA3EnITlcj+gIlS+uxr6XmWmS81fhA0SlqmO5EXSpmp02GrhSNEiCCuJ//mOg+oGxmf5q9pIX5lH8Xk/pD7bDOhRlSLgrjTXqq4IvncL53VNAGGGO4AwY/26XP7uZC0Ok6lDMQ5OUOe/lu43twwv6J9EhXMxVCDoQ96K6kTeXIY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b3AzZTks; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=GsXooPLwD7BAjsdz/EcIoZr4OiLXKJPlhw9Y+UYy7Fcd1lW9tDJOXc0vgnb439FNAaNa2vC4kSOKkdLhjGaQslxvz/VvL2eP25yN8WZhvZrDjMtM7Xskkas4tI/kJPEE/OelG4iCmNQ2cFM7w0rTYwQDgR6+rC7CKTsHGJQTWgo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UiMm8uar; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b3AzZTks"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7CB80C2BCB6;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UiMm8uar"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B0750C2BCB8;
 	Mon, 27 Apr 2026 19:34:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1777318490;
-	bh=rDqz766+E6phUQjlub0Ao54TKx1InCqtA9Pfpa7kJtU=;
+	bh=Djj4DA8V0onSZ02OPE+IzZkuFDVGk+DrM9lo8y2SZSQ=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=b3AzZTkslsBmbUNSd5Wrxhm9DpXJZcoJKtKNPFzQJh6Lc/hDguf1vg6DgoWqmnwzq
-	 rZRnjoq22w9XU/OsFUUwfQtlUt9TyvF3ZiT8dli5cJ27eXY0jqsQHMs9uPprTZy8zU
-	 7GZU1AGcQ6/8VrTlzF1Dau7z/3qEyMC26khEruUyACD5PCpIayPE//dFdjzx77LXn3
-	 aWuxqzxZd/HMQyY+PNaJ+yuts+0WH/GuwL5Ota26Uww+KBzXmaNHwUvp7nckvIllkx
-	 VtVb/o7nVZKXXeAiu6ZpIhjemufYebJeheYjjuXoGCU5CEmazRTp5/sYj4zU6sDKjK
-	 wUQUQl+WfiSQQ==
+	b=UiMm8uar4gP/J6Ql0zKDZUplt4IbcHxODxY+kcc3H5+fMrwocNiMaXgMXW+ySVLa4
+	 f4g2nlSpENWmGFskLbWBbvpEJ3Nw5FGM7jCJi/NVHYR6z4m+z2G+aSHPrbkLiO84me
+	 gTZf5Wa8Hdbt7WeW6sjjRMH61WPWg/x6N/GmAMA8uHvd7HN/JLDIMrdAPsZRFG0MdO
+	 7R/HBYA1k59ZylMzFj6lrTq5bh4i3X+FZXLnAhUsbJjd/WMuRpRePnOIp0ZLJZspoG
+	 4BWVdFMrV7YVBA+h4mRB9qlnXqHjNqltgZ+aqJjjNE1Uqr1o0kV6NmouCgqsVSD2Fc
+	 yakWk6LzvHjag==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75330FF8860;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A96CAFF8868;
 	Mon, 27 Apr 2026 19:34:50 +0000 (UTC)
 From: Alexandre MINETTE via B4 Relay <devnull+contact.alex-min.fr@kernel.org>
-Date: Mon, 27 Apr 2026 21:34:47 +0200
-Subject: [PATCH v2 1/8] dt-bindings: arm: qcom: Add Samsung Galaxy S4
+Date: Mon, 27 Apr 2026 21:34:50 +0200
+Subject: [PATCH v2 4/8] iommu/msm: Look up masters per IOMMU instance
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260427-mainline-send-v1-sending-v2-1-dcaa9178007b@alex-min.fr>
+Message-Id: <20260427-mainline-send-v1-sending-v2-4-dcaa9178007b@alex-min.fr>
 References: <20260427-mainline-send-v1-sending-v2-0-dcaa9178007b@alex-min.fr>
 In-Reply-To: <20260427-mainline-send-v1-sending-v2-0-dcaa9178007b@alex-min.fr>
 To: Bjorn Andersson <andersson@kernel.org>, 
@@ -58,11 +58,11 @@ Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
  iommu@lists.linux.dev, phone-devel@vger.kernel.org, 
  Alexandre MINETTE <contact@alex-min.fr>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777318488; l=762;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777318488; l=3959;
  i=contact@alex-min.fr; s=20260421; h=from:subject:message-id;
- bh=pN5zSMRd7VPt+prprAXYp+uFxzoyOlObA2TSxPHx4vo=;
- b=MAf7IlcrrpOwvS7ItL7RfCDkZ2bREHw2T/E+ZzGhSPDT/pltyVLslIynsKNMux6GE17SwkIEz
- DZ4AHb+03rsCLe/HE3zA1iEP5fA6uD8rBsGBspx2cX4ABB0viwAvlJV
+ bh=1JcBVPryARcXpHswW3TvhWpd0BaNOt71q4/rKhmP4NY=;
+ b=5XOC2OaldtQ1/p7DoGQyvI4znlWXoVAnNZPpzexhOajp6zxDrNkFAITLPL+f4vcXdeaXvbhPe
+ 03Vt1VkOdeyDYdBTlxDWYrwfaA7Z0dHQ9FssH2cQBSuxyXzQlSTm71y
 X-Developer-Key: i=contact@alex-min.fr; a=ed25519;
  pk=KOCaxY4v16ptaT0uk1FRkuaDF2n1JhmnYwLiqWD76M4=
 X-Endpoint-Received: by B4 Relay for contact@alex-min.fr/20260421 with
@@ -72,25 +72,109 @@ Reply-To: contact@alex-min.fr
 
 From: Alexandre MINETTE <contact@alex-min.fr>
 
-Add the compatible for this Samsung smartphone, codenamed jflte.
+MSM IOMMU stores context descriptors on each IOMMU instance. Looking up
+the descriptor through dev_iommu_priv_get() is not sufficient because a
+device can reference multiple IOMMU provider nodes.
+
+Look up the master from the target IOMMU ctx_list instead, and use the
+same helper when probing and attaching devices. This avoids
+dereferencing a NULL master when an IOMMU already has context entries
+for another device, and keeps separate context descriptors for separate
+IOMMU instances.
+
+On APQ8064 this crashes during IOMMU probe while qcom_iommu_of_xlate()
+adds stream IDs for a device referencing multiple IOMMU provider nodes.
+The failure comes from insert_iommu_master() dereferencing a NULL master
+after dev_iommu_priv_get() returns no context descriptor for the current
+IOMMU instance:
+
+  Unable to handle kernel NULL pointer dereference at virtual address 00000088
+  PC is at qcom_iommu_of_xlate+0x84/0x174
+  Call trace:
+   qcom_iommu_of_xlate from of_iommu_configure+0x140/0x234
+   of_iommu_configure from of_dma_configure_id+0xec/0x3b0
+   of_dma_configure_id from platform_dma_configure+0xb0/0xcc
+   platform_dma_configure from __iommu_probe_device+0x270/0x450
+   __iommu_probe_device from probe_iommu_group+0x24/0x48
+   probe_iommu_group from bus_for_each_dev+0x7c/0xcc
+   bus_for_each_dev from iommu_device_register+0xcc/0x220
+   iommu_device_register from msm_iommu_probe+0x47c/0x578
+
+This is required to boot APQ8064 boards using multiple IOMMU contexts.
 
 Signed-off-by: Alexandre MINETTE <contact@alex-min.fr>
 ---
- Documentation/devicetree/bindings/arm/qcom.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/msm_iommu.c | 28 ++++++++++++++++------------
+ 1 file changed, 16 insertions(+), 12 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index b4943123d2e4..b7e186ed2efc 100644
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -39,6 +39,7 @@ properties:
-           - enum:
-               - asus,nexus7-flo
-               - lg,nexus4-mako
-+              - samsung,jflte
-               - sony,xperia-yuga
-               - qcom,apq8064-cm-qs600
-               - qcom,apq8064-ifc6410
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index 0ad5ff431d5b..9c03878d0d2c 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -357,17 +357,25 @@ static int msm_iommu_domain_config(struct msm_priv *priv)
+ 	return 0;
+ }
+ 
++static struct msm_iommu_ctx_dev *find_iommu_master(struct msm_iommu_dev *iommu,
++						   struct device *dev)
++{
++	struct msm_iommu_ctx_dev *master;
++
++	list_for_each_entry(master, &iommu->ctx_list, list)
++		if (master->of_node == dev->of_node)
++			return master;
++
++	return NULL;
++}
++
+ /* Must be called under msm_iommu_lock */
+ static struct msm_iommu_dev *find_iommu_for_dev(struct device *dev)
+ {
+ 	struct msm_iommu_dev *iommu, *ret = NULL;
+-	struct msm_iommu_ctx_dev *master;
+ 
+ 	list_for_each_entry(iommu, &qcom_iommu_devices, dev_node) {
+-		master = list_first_entry(&iommu->ctx_list,
+-					  struct msm_iommu_ctx_dev,
+-					  list);
+-		if (master->of_node == dev->of_node) {
++		if (find_iommu_master(iommu, dev)) {
+ 			ret = iommu;
+ 			break;
+ 		}
+@@ -405,10 +413,7 @@ static int msm_iommu_attach_dev(struct iommu_domain *domain, struct device *dev,
+ 
+ 	spin_lock_irqsave(&msm_iommu_lock, flags);
+ 	list_for_each_entry(iommu, &qcom_iommu_devices, dev_node) {
+-		master = list_first_entry(&iommu->ctx_list,
+-					  struct msm_iommu_ctx_dev,
+-					  list);
+-		if (master->of_node == dev->of_node) {
++		if (find_iommu_master(iommu, dev)) {
+ 			ret = __enable_clocks(iommu);
+ 			if (ret)
+ 				goto fail;
+@@ -601,10 +606,10 @@ static int insert_iommu_master(struct device *dev,
+ 				struct msm_iommu_dev **iommu,
+ 				const struct of_phandle_args *spec)
+ {
+-	struct msm_iommu_ctx_dev *master = dev_iommu_priv_get(dev);
++	struct msm_iommu_ctx_dev *master = find_iommu_master(*iommu, dev);
+ 	int sid;
+ 
+-	if (list_empty(&(*iommu)->ctx_list)) {
++	if (!master) {
+ 		master = kzalloc_obj(*master, GFP_ATOMIC);
+ 		if (!master) {
+ 			dev_err(dev, "Failed to allocate iommu_master\n");
+@@ -612,7 +617,6 @@ static int insert_iommu_master(struct device *dev,
+ 		}
+ 		master->of_node = dev->of_node;
+ 		list_add(&master->list, &(*iommu)->ctx_list);
+-		dev_iommu_priv_set(dev, master);
+ 	}
+ 
+ 	for (sid = 0; sid < master->num_mids; sid++)
 
 -- 
 2.43.0
