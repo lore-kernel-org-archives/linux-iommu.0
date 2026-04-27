@@ -1,356 +1,57 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53D54361DBA;
-	Mon, 27 Apr 2026 10:33:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EBBCE313558
+	for <iommu@lists.linux.dev>; Mon, 27 Apr 2026 11:50:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777285999; cv=none; b=GKr8rq12yNNA2nJ/ofyvXcykq9WPEuX/Gy9/Fnov1dKqqVG6kkcxtT3J8zaK3aQ7WSy5qKcf8TvjyogKnZVUIDQy0ylyhz7y9vnjoVhaLNibPVgQhFPEqghBWdu0PK8v1jRDSu7a6RdBvd68aKw/hsC3NbavAK0DXik9tJYummc=
+	t=1777290634; cv=none; b=MKrMfCHOvphSUUIupmS53PkFDUPEtgWB6zlmWU+0nkhVLCm8X+YViIuYBKV8+as5HuyXO70r7Z9G8OwXkLWFkHhT96gOyOzTdkOya8UM+uRpIovA5E9mMnTlYWhTGfRM2J5dRyfKg0dgRxiVCVUijJq0+PCK3VnKG8QtqbMTHWU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777285999; c=relaxed/simple;
-	bh=FPY/T+e9phzGqTaFehkbQCBcK9RxnTMkg/PcLmH4az0=;
-	h=From:Date:Message-ID:To:Cc:Subject:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bkKWeKW8AcZuRNKbWWbbRWvNLdhcPMgHsqXtaXoUjyY4p4vvpKMyhy89DmhMkuilhnnWK15/QiP8z15YtnQnr3ESRv0wmiuKdwo5f0xDUP2xWfXq+0ajcHYOjxQLdQiT2QaVXjweL6mnIKhU2DSZP93NjQmEQtaPNPJIF0S8UnM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Uh5qous5; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777290634; c=relaxed/simple;
+	bh=1Vy5Pn7lTLLk/c4ZaJOMMpDSSyOaYf3t2PONR5rBogw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PoA1jBAJS6xMcvsEyJFXn46NGZE0jeFIXDnp61aXIWYpgrWTm5+cIdrM9aOrBHD2EXn67auFbYJ6Mfrm35Eb2m14OGuA8drAJDZ82x4DBgAectnuvYNzSipBfxASzSxtDD7vopcV0mfbEzk3O/5Mojh0y5BRxrEL1JmL85u3YyI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=2G/n7rBG; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Uh5qous5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D67D0C19425;
-	Mon, 27 Apr 2026 10:33:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777285999;
-	bh=FPY/T+e9phzGqTaFehkbQCBcK9RxnTMkg/PcLmH4az0=;
-	h=From:Date:To:Cc:Subject:In-Reply-To:References:From;
-	b=Uh5qous5cQPPEzoaGz1yu5FlezTiFRdhWSEit3FfKVvqtXI3i9PogWkNBB5Q+hCIS
-	 gcd+bUFrJvFmqTycxhnx50PDeiebiljZXa7iRMETT6H4LGhZNdVnxSLs6W/T/kOLP1
-	 KxIEqCscmZmzuJBdaV/v4yJeyERl8F+q/qe0gUtkHIy1thlB1rCEPUSz3GnMvPvgVI
-	 /rMf7p+S8+/fY3vUKarvYx4aBJxtLVJt6ZDMkPBJQ2feerq3kUtkvf+1bJp/7FDcKS
-	 QvBXUZcBBdl8eRtB42cOcqb5cJO9RB1A8n4IuQIbWyPvRNgOebJhLSovya4X0WwhZ9
-	 eh1QyjuCcoj9g==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=goblin-girl.misterjones.org)
-	by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.98.2)
-	(envelope-from <maz@kernel.org>)
-	id 1wHJHA-0000000F1Jx-2NEn;
-	Mon, 27 Apr 2026 10:33:16 +0000
-From: Marc Zyngier <maz@kernel.org>
-Date: Mon, 27 Apr 2026 11:33:16 +0100
-Message-ID: <86y0i8zo9f.wl-maz@kernel.org>
->From: Marc Zyngier <maz@kernel.org>
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-Cc: linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-coco@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	kvmarm@lists.linux.dev,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v4 3/3] coco: guest: arm64: Query host IPA-change alignment via RHI
-In-Reply-To: <20260427063108.909019-4-aneesh.kumar@kernel.org>
-References: <20260427063108.909019-1-aneesh.kumar@kernel.org>
-	<20260427063108.909019-4-aneesh.kumar@kernel.org>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/30.1
- (aarch64-unknown-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="2G/n7rBG"
+Received: from 8bytes.org (p4ffe051a.dip0.t-ipconnect.de [79.254.5.26])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 1105B2009F6;
+	Mon, 27 Apr 2026 13:50:26 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1777290626;
+	bh=1Vy5Pn7lTLLk/c4ZaJOMMpDSSyOaYf3t2PONR5rBogw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=2G/n7rBG427EGcYH9lBWDpldifiMqNpQ6EiPlPRJY5bevv2ElJ+wWWqKRBgTfyNo2
+	 SW1mKOQNCPmQuL7oCW8xQsfLsEvA0mgaXnjUjyxG7wcCf8PdlcK07POjy72QLWkO7/
+	 ix0xUt10I8qQXbrTOuGzZUZ8dTSbJRnHzp5X7MgRqCgIoQH/pZF5LtppSxgVBwRKyt
+	 ec0N3fG/QMBkvD9xOKjSu/0U3vvgMgRBZ6kaYw+hh5bHN5qSLINMX5n2clMU34j5u9
+	 PI+cghjwaAepHICHLOAVA7uQFaG6cTRB+m8pCm0+ToVJ7pzeuat928qwG0zBokVsuw
+	 uJdcdR2suV8sA==
+Date: Mon, 27 Apr 2026 13:50:23 +0200
+From: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, will@kernel.org, robin.murphy@arm.com, 
+	suravee.suthikulpanit@amd.com, bp@alien8.de, Joerg Roedel <joerg.roedel@amd.com>
+Subject: Re: [PATCH 0/2] iommu/amd: Use MAX buffer size when SNP is enabled
+ on Family 0x19
+Message-ID: <tnfenccbp2uqfpc7kwx5tcejbzzmb2xwkzzfcrsjflg6xldyyd@oiwirkvt73ty>
+References: <20260420084204.12263-1-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=US-ASCII
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: aneesh.kumar@kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, linux-coco@lists.linux.dev, linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, catalin.marinas@arm.com, jgg@ziepe.ca, m.szyprowski@samsung.com, robin.murphy@arm.com, steven.price@arm.com, suzuki.poulose@arm.com, tglx@kernel.org, will@kernel.org
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260420084204.12263-1-vasant.hegde@amd.com>
 
-On Mon, 27 Apr 2026 07:31:08 +0100,
-"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> wrote:
-> 
-> Add the Realm Host Interface support needed to query host configuration
-> from a Realm guest. Define the RHI hostconf SMCs, add rsi_host_call(), and
-> use them during Realm initialization to retrieve the host IPA-change
-> alignment size.
+On Mon, Apr 20, 2026 at 08:42:02AM +0000, Vasant Hegde wrote:
+> Vasant Hegde (2):
+>   iommu/amd: Use maximum Event log buffer size when SNP is enabled on Family 0x19
+>   iommu/amd: Use maximum PPR log buffer size when SNP is enabled on Family 0x19
 
-I don't understand what "IPA-change" means. What you are after is the
-host's sharing granule size.
-
-> 
-> Expose that alignment through realm_get_hyp_pagesize() and
-> mem_decrypt_granule_size() so shared-buffer allocation and
-> encryption/decryption paths can honor the ipa change page-size requirement.
-> 
-> If the host reports an invalid alignment (when alginment value is not
-> multiple of 4K), do not enable Realm support.
-> 
-> This provides the host alignment information required by the shared buffer
-> alignment changes.
-> 
-> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
-> ---
->  arch/arm64/include/asm/mem_encrypt.h |  3 ++
->  arch/arm64/include/asm/rhi.h         | 24 +++++++++++++
->  arch/arm64/include/asm/rsi.h         |  2 ++
->  arch/arm64/include/asm/rsi_cmds.h    | 10 ++++++
->  arch/arm64/include/asm/rsi_smc.h     |  7 ++++
->  arch/arm64/kernel/Makefile           |  2 +-
->  arch/arm64/kernel/rhi.c              | 54 ++++++++++++++++++++++++++++
->  arch/arm64/kernel/rsi.c              | 13 +++++++
->  arch/arm64/mm/mem_encrypt.c          |  8 +++++
->  9 files changed, 122 insertions(+), 1 deletion(-)
->  create mode 100644 arch/arm64/include/asm/rhi.h
->  create mode 100644 arch/arm64/kernel/rhi.c
-> 
-> diff --git a/arch/arm64/include/asm/mem_encrypt.h b/arch/arm64/include/asm/mem_encrypt.h
-> index 314b2b52025f..5541911eb028 100644
-> --- a/arch/arm64/include/asm/mem_encrypt.h
-> +++ b/arch/arm64/include/asm/mem_encrypt.h
-> @@ -16,6 +16,9 @@ int arm64_mem_crypt_ops_register(const struct arm64_mem_crypt_ops *ops);
->  int set_memory_encrypted(unsigned long addr, int numpages);
->  int set_memory_decrypted(unsigned long addr, int numpages);
->  
-> +#define mem_decrypt_granule_size mem_decrypt_granule_size
-> +size_t mem_decrypt_granule_size(void);
-> +
->  int realm_register_memory_enc_ops(void);
->  
->  static inline bool force_dma_unencrypted(struct device *dev)
-> diff --git a/arch/arm64/include/asm/rhi.h b/arch/arm64/include/asm/rhi.h
-> new file mode 100644
-> index 000000000000..0895dd92ea1d
-> --- /dev/null
-> +++ b/arch/arm64/include/asm/rhi.h
-> @@ -0,0 +1,24 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * Copyright (C) 2026 ARM Ltd.
-> + */
-> +
-> +#ifndef __ASM_RHI_H_
-> +#define __ASM_RHI_H_
-> +
-> +#include <linux/types.h>
-> +
-> +#define SMC_RHI_CALL(func)				\
-> +	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,		\
-> +			   ARM_SMCCC_SMC_64,		\
-> +			   ARM_SMCCC_OWNER_STANDARD_HYP,\
-> +			   (func))
-> +
-> +unsigned long rhi_get_ipa_change_alignment(void);
-> +#define RHI_HOSTCONF_VER_1_0		0x10000
-> +#define RHI_HOSTCONF_VERSION		SMC_RHI_CALL(0x004E)
-> +
-> +#define __RHI_HOSTCONF_GET_IPA_CHANGE_ALIGNMENT BIT(0)
-> +#define RHI_HOSTCONF_FEATURES		SMC_RHI_CALL(0x004F)
-> +#define RHI_HOSTCONF_GET_IPA_CHANGE_ALIGNMENT	SMC_RHI_CALL(0x0050)
-> +#endif
-> diff --git a/arch/arm64/include/asm/rsi.h b/arch/arm64/include/asm/rsi.h
-> index 88b50d660e85..ae54fb3b1429 100644
-> --- a/arch/arm64/include/asm/rsi.h
-> +++ b/arch/arm64/include/asm/rsi.h
-> @@ -67,4 +67,6 @@ static inline int rsi_set_memory_range_shared(phys_addr_t start,
->  	return rsi_set_memory_range(start, end, RSI_RIPAS_EMPTY,
->  				    RSI_CHANGE_DESTROYED);
->  }
-> +
-> +unsigned long realm_get_hyp_pagesize(void);
->  #endif /* __ASM_RSI_H_ */
-> diff --git a/arch/arm64/include/asm/rsi_cmds.h b/arch/arm64/include/asm/rsi_cmds.h
-> index 2c8763876dfb..a341ce0eeda1 100644
-> --- a/arch/arm64/include/asm/rsi_cmds.h
-> +++ b/arch/arm64/include/asm/rsi_cmds.h
-> @@ -159,4 +159,14 @@ static inline unsigned long rsi_attestation_token_continue(phys_addr_t granule,
->  	return res.a0;
->  }
->  
-> +static inline unsigned long rsi_host_call(struct rsi_host_call *rhi_call)
-> +{
-> +	phys_addr_t addr = virt_to_phys(rhi_call);
-> +	struct arm_smccc_res res;
-> +
-> +	arm_smccc_1_1_invoke(SMC_RSI_HOST_CALL, addr, &res);
-
-Errr... What guarantees that *rhi_call is *IPA contiguous*? This is
-incredibly fragile. You should at the very least check that this isn't
-vmalloc'd.
-
-> +
-> +	return res.a0;
-> +}
-> +
->  #endif /* __ASM_RSI_CMDS_H */
-> diff --git a/arch/arm64/include/asm/rsi_smc.h b/arch/arm64/include/asm/rsi_smc.h
-> index e19253f96c94..9ee8b5c7612e 100644
-> --- a/arch/arm64/include/asm/rsi_smc.h
-> +++ b/arch/arm64/include/asm/rsi_smc.h
-> @@ -182,6 +182,13 @@ struct realm_config {
->   */
->  #define SMC_RSI_IPA_STATE_GET			SMC_RSI_FID(0x198)
->  
-> +struct rsi_host_call {
-> +	union {
-> +		u16 imm;
-> +		u64 padding0;
-> +	};
-> +	u64 gprs[31];
-> +} __aligned(0x100);
->  /*
->   * Make a Host call.
->   *
-> diff --git a/arch/arm64/kernel/Makefile b/arch/arm64/kernel/Makefile
-> index fe627100d199..3e72dd9584ed 100644
-> --- a/arch/arm64/kernel/Makefile
-> +++ b/arch/arm64/kernel/Makefile
-> @@ -34,7 +34,7 @@ obj-y			:= debug-monitors.o entry.o irq.o fpsimd.o		\
->  			   cpufeature.o alternative.o cacheinfo.o		\
->  			   smp.o smp_spin_table.o topology.o smccc-call.o	\
->  			   syscall.o proton-pack.o idle.o patching.o pi/	\
-> -			   rsi.o jump_label.o
-> +			   rsi.o jump_label.o rhi.o
->  
->  obj-$(CONFIG_COMPAT)			+= sys32.o signal32.o			\
->  					   sys_compat.o
-> diff --git a/arch/arm64/kernel/rhi.c b/arch/arm64/kernel/rhi.c
-> new file mode 100644
-> index 000000000000..7cd6c5102464
-> --- /dev/null
-> +++ b/arch/arm64/kernel/rhi.c
-> @@ -0,0 +1,54 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (C) 2026 ARM Ltd.
-> + */
-> +
-> +#include <linux/mm.h>
-> +#include <asm/rsi.h>
-> +#include <asm/rhi.h>
-> +
-> +/* we need an aligned rhicall for rsi_host_call. slab is not yet ready */
-> +static struct rsi_host_call hyp_pagesize_rhicall;
-
-Why the "hyp_" prefix? This has absolutely nothing to with the
-hypervisor.
-
-> +unsigned long rhi_get_ipa_change_alignment(void)
-> +{
-> +	long ret;
-> +	unsigned long ipa_change_align;
-> +
-> +	hyp_pagesize_rhicall.imm = 0;
-> +	hyp_pagesize_rhicall.gprs[0] = RHI_HOSTCONF_VERSION;
-> +	ret = rsi_host_call(lm_alias(&hyp_pagesize_rhicall));
-> +	if (ret != RSI_SUCCESS)
-> +		goto err_out;
-> +
-> +	if (hyp_pagesize_rhicall.gprs[0] != RHI_HOSTCONF_VER_1_0)
-> +		goto err_out;
-> +
-> +	hyp_pagesize_rhicall.imm = 0;
-> +	hyp_pagesize_rhicall.gprs[0] = RHI_HOSTCONF_FEATURES;
-> +	ret = rsi_host_call(lm_alias(&hyp_pagesize_rhicall));
-> +	if (ret != RSI_SUCCESS)
-> +		goto err_out;
-> +
-> +	if (!(hyp_pagesize_rhicall.gprs[0] & __RHI_HOSTCONF_GET_IPA_CHANGE_ALIGNMENT))
-> +		goto err_out;
-> +
-> +	hyp_pagesize_rhicall.imm = 0;
-> +	hyp_pagesize_rhicall.gprs[0] = RHI_HOSTCONF_GET_IPA_CHANGE_ALIGNMENT;
-> +	ret = rsi_host_call(lm_alias(&hyp_pagesize_rhicall));
-> +	if (ret != RSI_SUCCESS)
-> +		goto err_out;
-> +
-> +	ipa_change_align = hyp_pagesize_rhicall.gprs[0];
-> +	/* This error needs special handling in the caller */
-> +	if (ipa_change_align & (SZ_4K - 1))
-> +		return 0;
-> +
-> +	return ipa_change_align;
-> +
-> +err_out:
-> +	/*
-> +	 * For failure condition assume host is built with 4K page size
-> +	 * and hence ipa change alignment can be guest PAGE_SIZE.
-> +	 */
-> +	return PAGE_SIZE;
-> +}
-
-Why can't this be part of rsi.c? This is an RSI call, and it should be
-part of the RSI initialisation.
-
-> diff --git a/arch/arm64/kernel/rsi.c b/arch/arm64/kernel/rsi.c
-> index 9e846ce4ef9c..ff735c04e236 100644
-> --- a/arch/arm64/kernel/rsi.c
-> +++ b/arch/arm64/kernel/rsi.c
-> @@ -14,8 +14,10 @@
->  #include <asm/mem_encrypt.h>
->  #include <asm/pgtable.h>
->  #include <asm/rsi.h>
-> +#include <asm/rhi.h>
->  
->  static struct realm_config config;
-> +static unsigned long ipa_change_alignment = PAGE_SIZE;
->  
->  unsigned long prot_ns_shared;
->  EXPORT_SYMBOL(prot_ns_shared);
-> @@ -139,6 +141,11 @@ static int realm_ioremap_hook(phys_addr_t phys, size_t size, pgprot_t *prot)
->  	return 0;
->  }
->  
-> +unsigned long realm_get_hyp_pagesize(void)
-> +{
-> +	return ipa_change_alignment;
-> +}
-
-Again, this has nothing to do with the hypervisor, but the host. And
-ipa_change_alignment is still a wording I can't wrap my small head
-around.
-
-> +
->  void __init arm64_rsi_init(void)
->  {
->  	if (arm_smccc_1_1_get_conduit() != SMCCC_CONDUIT_SMC)
-> @@ -147,6 +154,12 @@ void __init arm64_rsi_init(void)
->  		return;
->  	if (WARN_ON(rsi_get_realm_config(&config)))
->  		return;
-> +
-> +	ipa_change_alignment = rhi_get_ipa_change_alignment();
-> +	/* If we don't get a correct alignment response, don't enable realm */
-> +	if (!ipa_change_alignment)
-> +		return;
-
-But at the same time, you override a global value with an error, and
-then paper over it in mem_decrypt_granule_size()...
-
-> +
->  	prot_ns_shared = __phys_to_pte_val(BIT(config.ipa_bits - 1));
->  
->  	if (arm64_ioremap_prot_hook_register(realm_ioremap_hook))
-> diff --git a/arch/arm64/mm/mem_encrypt.c b/arch/arm64/mm/mem_encrypt.c
-> index 38c62c9e4e74..f5d64bc29c20 100644
-> --- a/arch/arm64/mm/mem_encrypt.c
-> +++ b/arch/arm64/mm/mem_encrypt.c
-> @@ -59,3 +59,11 @@ int set_memory_decrypted(unsigned long addr, int numpages)
->  	return crypt_ops->decrypt(addr, numpages);
->  }
->  EXPORT_SYMBOL_GPL(set_memory_decrypted);
-> +
-> +size_t mem_decrypt_granule_size(void)
-> +{
-> +	if (is_realm_world())
-> +		return max(PAGE_SIZE, realm_get_hyp_pagesize());
-
-If you didn't mess with ipa_change_alignment above, you shouldn't need
-this max().
-
-	M.
-
--- 
-Without deviation from the norm, progress is not possible.
+Applied to fixes, thanks Vasant.
