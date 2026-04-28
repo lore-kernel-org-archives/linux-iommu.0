@@ -1,220 +1,182 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E45632F1FF4;
-	Tue, 28 Apr 2026 07:52:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90DF630FC21
+	for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 08:08:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777362744; cv=none; b=WuwGpDxzHddhB946vCevDM063FTfFA1WXkq23a8GJWWwxej09jaJIM+RB2frUboZqdamCQgkd4jsA0Z0SqEkJr/M2j1TyTxZE1fWXpTcCCZPfFzE8CQjXTjUKkjFWI6OV4YkBPVy6P1/e4YsvyK25e+xAOnNPniG1t5HCrJ+J9o=
+	t=1777363722; cv=none; b=n9hRk7ClQmwNfJu9F58h9G4+WuPAn9I9aF5DMjCwmwNAKNGtN3RDDornLAJ0o1Atmel443F0PVjjWnSfLxO0P5pjwRrB4qO/8J3RwtSvWnJVVVj3X5n8Q4vMMuJDZNjJzpXr/xyBrb0IwZn29uT3lOtP1Wpe12vPhwb6r2bOKkU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777362744; c=relaxed/simple;
-	bh=KiGBp9SBRr0S2SXmmAPqSl+u4SEOgHA1uGT3SstawwI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=pqcx8wkVajfoC7QZdQIEj8vxvD6U6dMa4znLI/H37Pr3YObolGAztrFUz7S1c5k+HvTCElYBcZrYtjW3JwvZtsq0Qz8S0ugt2L7fra+O202oMAB17Z9Mt1hvYMGEWVKn+wKnGJOaa0+QOib4Wnb0w8lUiRpRWP4j5LLXZ1sQ1B8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GjLCFQjU; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777363722; c=relaxed/simple;
+	bh=JTml0sJEvHCoPx2+7e2IBnyRODquxGMmZxKsUP9MvLY=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=qF7RIhHpRiHC6ij4uyFkTqx2PvEE48uKwz+DFGKPUM3pFhsM3pjmT1HSSzth8pXSr2JvE6BgeBIADQ9ZhbpFr/ghc22kc1cQhmk/ysVtU4UwZXEKUyegwq2nzhngtwqJt4RgqDTCCZBoVXxw9ZSMIgAcA9JNqSzt3p2c0Uh1wng=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=WlKQij8S; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=eM8Tl2qf; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GjLCFQjU"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B08F6C2BCAF;
-	Tue, 28 Apr 2026 07:52:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777362743;
-	bh=KiGBp9SBRr0S2SXmmAPqSl+u4SEOgHA1uGT3SstawwI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=GjLCFQjU5XtMIR8p2eUHF/UWAM3rz6xZtiteqH9mcF/Bbm0PvaCdhkYoFJLGQSAH6
-	 NU+UqmQjnxZXYTuWhqjjm8pLO7oFBCYo+7rRTICVh4gAu67PGrqy90X1HVTMfio0E4
-	 p35H3mRqvSxp47kRl96y94PYS6TM0FqgsBA89sR0EGpc7PfaGDp1yKJxz+SN67b8w9
-	 GhHHdfFSgrTeOLdduvttmvYXLk4gsAiP9oUfNNhG9OwyzcAhwxyN2FGmmOMyfDjv7l
-	 WQU1ikAd8gcOb21b696ddPm2emWuXyL07t8Bxx9eFLZCAjBk2rh4RhpUAjz8Xklfjk
-	 Yrbw1tNNzGoVA==
-Message-ID: <6dd52f8b-7092-4d02-ba24-f8b55409b7b6@kernel.org>
-Date: Tue, 28 Apr 2026 09:52:15 +0200
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="WlKQij8S";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="eM8Tl2qf"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63S2mEjU662902
+	for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 08:08:36 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	JTml0sJEvHCoPx2+7e2IBnyRODquxGMmZxKsUP9MvLY=; b=WlKQij8S0tlpwaSO
+	1N8mKTGe5H1O52lOrh8HwAaeYcsufyFNNcIorv+KdFUNLiBSiQBNzS7GwtQdlmZC
+	e3nBU7TOmAviuumnLZClaHbMliqdhnkpNxQHYvBv3XSMvOl5fSYNfWH+8YdkVblj
+	8XCiobRpobU8y/FFR/HJxrc9hk17Nx/n5BrfZHIAIruBSwRA230ESvBkd1B9hEBR
+	plQGKdj4RVOxcGLN/tsqn+VjkbadOwtdkBRA5fuPKwEch/GqImViT3mgyfAsEHlg
+	vBnU8AB0MWWpBl1NceBVIjuZf35kuNeycOy5aFg0/zJRBZZOUmiHja0bC2MMNnX/
+	n/gNcA==
+Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com [209.85.216.70])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4dtc5n2wxb-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 08:08:36 +0000 (GMT)
+Received: by mail-pj1-f70.google.com with SMTP id 98e67ed59e1d1-35e59791605so12130073a91.1
+        for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 01:08:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1777363715; x=1777968515; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:subject:from:user-agent:mime-version:date:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=JTml0sJEvHCoPx2+7e2IBnyRODquxGMmZxKsUP9MvLY=;
+        b=eM8Tl2qfH68AUW4XQSif3Wvk+Sp8qj1TEeRUqaEBRVMl1rTZkb82Mg5iqNFRkuL4mL
+         GouyL7qlp9iw4mqvKD83YPxjPIp1GARIpfqm7uHAB5itbmaVEuUgSdX2wBIrETlxu9lh
+         3TEUBiFVqWcGJuwWdDzYIGQac5al4F5AEIFQqvTwKUaVdWRTHgqc79xbmxOPPdm8WgMr
+         8zB7R9NNJuiHIa8Q6S+Fn3K2S4D6TZJtTJQdZwPME2KSsZ11z+3fiLR+OW8Ufy0DZO3T
+         3Nh0/d2fK0zNdq25goLzBC1P7dBI1eCzPWuvvf5Xt/x1zpqEBlRWl0lHo/qW2rGyOveP
+         FWsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777363715; x=1777968515;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:subject:from:user-agent:mime-version:date:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=JTml0sJEvHCoPx2+7e2IBnyRODquxGMmZxKsUP9MvLY=;
+        b=hXWHN5kNRFKR4YKOLGf5gTUIe3uKiOfV2dtN2jlFBg6tY9z3qpTIeN8rwgAwssiB8o
+         S5rtyWE7Lpf/6iF1O+iacpSOar8aHD1jTaspbB23A1MHZKhyQYAaIRTp547UG6DHtKE5
+         uVG3Su+LsPOldrfPX0h0DxYk5eD9SM/CIv2MpkE0Io3XoMM2pvAl+DDXTu9WMi3h6D3q
+         MZD0iR/FxQpMg+9mbjKRh96gO5xUUvt7GVbmnknXI3pLmkBXJcc9VbGKkp0ECna4vrDD
+         n9b+fWrwMkdLuD0XqKZ0rIpE0lLn2mXqB1Z31yyHTYbgCuV3sUj7JbsNi+1R6w/Dwjj3
+         Iayg==
+X-Forwarded-Encrypted: i=1; AFNElJ+TjIw6M74cZ9P7r7sfj/r/sBKm42EvvIcu0uaLiZZp8j6baNhZlNRlPLwHHFYSxE/Xz36QtA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxD5zAklLIqrNthVan53nOSqEOPuAyBgpCtclultxAsA0VWMDqu
+	LHZ0C7HorjCVc1PRLyAngBTZafsAbw5Snj0ZjraSiPduJGGyeuVgbLxt7ch0hvRIDQ4UMyvwPYF
+	s1wEKZVh4CIndS9hQsrknybk09hWkVWd/tntEGtgkpApVvV7nGBry4T7T1w==
+X-Gm-Gg: AeBDietpAdDD3m47vafUBauLvWwr7beUpXhyMx3iERJbdnGLHFr3XXhsOCzEM+t6kQd
+	Xhwq2wVaGxHrzzhs+dRaZIMsmjypAXBezIPAKiwc9eKZEX9OFHncEJ/lQsUmTn7Kf7aivfS8TW/
+	r/MtA0yByj7CbfhrTEODR2eAIoqm7dYf/E1VC9nmmQs95CHFYSnBYxjwYi6NMrLVNaH3gzFITtA
+	TEUoqU9HGeqvKTmq0zljrlLA8ubNbE7gNrUcBxUYiVkPrQYJBUtoWPWSooo+30H8Qawbh/BZgT8
+	TQ6zEtvgOwiSVAYtH3Hb6ce//5VF93GNKrFzaWleKhukqZHhabWExvBkvoLsdykrT9y+UYoA4Xl
+	/WlQdw7Z+8Evcx0FBXBHCa+gnSBaKDN+Xp/0Y1yyU5FYNcRGOgaJyokZM8iMFiWoq
+X-Received: by 2002:a17:90b:2e88:b0:35d:9c32:6219 with SMTP id 98e67ed59e1d1-36491fda867mr2410772a91.9.1777363715235;
+        Tue, 28 Apr 2026 01:08:35 -0700 (PDT)
+X-Received: by 2002:a17:90b:2e88:b0:35d:9c32:6219 with SMTP id 98e67ed59e1d1-36491fda867mr2410709a91.9.1777363714720;
+        Tue, 28 Apr 2026 01:08:34 -0700 (PDT)
+Received: from [10.206.105.200] ([202.46.23.25])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-36490c4f3edsm976224a91.6.2026.04.28.01.08.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Apr 2026 01:08:33 -0700 (PDT)
+Message-ID: <97aa5f18-d1d5-f082-9075-a385255f2e97@oss.qualcomm.com>
+Date: Tue, 28 Apr 2026 13:38:25 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3] dma-contiguous: setup default numa cma area if not
- configured explicitly
-To: Feng Tang <feng.tang@linux.alibaba.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>,
- Ying Huang <ying.huang@linux.alibaba.com>,
- Andrew Morton <akpm@linux-foundation.org>
-Cc: Lorenzo Stoakes <ljs@kernel.org>, Liam.Howlett@oracle.com,
- Vlastimil Babka <vbabka@kernel.org>, Mike Rapoport <rppt@kernel.org>,
- Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>,
- linux-mm@kvack.org, Christoph Hellwig <hch@lst.de>,
- Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- Changrong Chen <chenchangrong.ccr@alibaba-inc.com>
-References: <20260428060550.7167-1-feng.tang@linux.alibaba.com>
-From: "David Hildenbrand (Arm)" <david@kernel.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+From: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+Subject: Re: [PATCH v3 02/12] dt-bindings: media: qcom,glymur-iris: Add glymur
+ video codec
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
+        Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Bryan O'Donoghue <bod@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hverkuil@kernel.org>,
+        Stefan Schmidt <stefan.schmidt@linaro.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+ <conor+dt@kernel.org>,
+        Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>, linux-media@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, iommu@lists.linux.dev
+References: <20260428-glymur-v3-0-8f28930f47d3@oss.qualcomm.com>
+ <20260428-glymur-v3-2-8f28930f47d3@oss.qualcomm.com>
+ <20260428-nifty-quaint-hoatzin-6de65d@quoll>
 Content-Language: en-US
-Autocrypt: addr=david@kernel.org; keydata=
- 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
- qIws/H2t
-In-Reply-To: <20260428060550.7167-1-feng.tang@linux.alibaba.com>
+In-Reply-To: <20260428-nifty-quaint-hoatzin-6de65d@quoll>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDI4MDA3NCBTYWx0ZWRfXz0bNe/byGffA
+ 2izM8VgREkCk6kzh0wxyOAEVqHmWQza6x/i6wmQwnXkwNtaJdmN7h/xxfYDOYjs//929RFFrJ2c
+ 9uYsv7oiHAVmUIIDk5yykjt1Tod+4gQS6iZPHb3siy+Qd3raN3LpoKTdtwsdHvgXWs6No82AXjl
+ erUVY1SLyBT9ckILFBmQWFSRgcKXda1Hps+MnDveQgy+/O27tlqCb8gcqbuA8Lsk9rSzPrktYlA
+ mkATNVO9DXiTwdevy+cBqP6kQUk6l5FCm9LkwJ0yigrCEwykeC7KDZF1/q6yAPgvGV43kTjoz5t
+ RPLlL3rL0ORKlsb9EH9XyAyXhi9MDiQ9BZU1FCl2DePy1rLGgf8QvI9XgY5/SvO2SbuoJM8gHXo
+ sycRjsip78VXHsIMQ9P/YGSQNmcPoWmAokUwHXuL44WtAn2JAuv61nyTaxHkPvcKE+IDY8FIfqT
+ AnS96BHrzjRbiyYu8+w==
+X-Proofpoint-GUID: M4ulK0v1rtbkgci7LYlSHm84No0S1-_A
+X-Proofpoint-ORIG-GUID: M4ulK0v1rtbkgci7LYlSHm84No0S1-_A
+X-Authority-Analysis: v=2.4 cv=ZMfnX37b c=1 sm=1 tr=0 ts=69f06b04 cx=c_pps
+ a=0uOsjrqzRL749jD1oC5vDA==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
+ a=IkcTkHD0fZMA:10 a=A5OVakUREuEA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
+ a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=HCVpI3b-1_oNncJzd4sA:9 a=QEXdDO2ut3YA:10
+ a=mQ_c8vxmzFEMiUWkPHU9:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-04-28_02,2026-04-21_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 priorityscore=1501 lowpriorityscore=0 suspectscore=0
+ malwarescore=0 adultscore=0 impostorscore=0 spamscore=0 phishscore=0
+ bulkscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.22.0-2604200000
+ definitions=main-2604280074
 
-On 4/28/26 08:05, Feng Tang wrote:
-> There was a report on a multi-numa-nodes ARM server that when IOMMU is
-> disabled, the dma_alloc_coherent() function always returns memory from
-> node 0 even for devices attaching to other nodes, while they can get
-> local dma memory when IOMMU is on with the same API.
-> 
-> The reason is, when IOMMU is disabled, the dma_alloc_coherent() will
-> go the direct way and call dma_alloc_contiguous(). The system doesn't
-> have any explicit cma setting (like per-numa cma), and only has a
-> default 64MB cma reserved area (on node 0), where kernel will try
-> first to allocate memory from.
-> 
-> Robin Murphy suggested to setup pernuma cma or disable cma, which did
-> solve the issue. 
 
-That sounds like the obvious approach to me.
+On 4/28/2026 11:44 AM, Krzysztof Kozlowski wrote:
+> On Tue, Apr 28, 2026 at 09:24:08AM +0530, Vishnu Reddy wrote:
+>> Add device tree binding for the Qualcomm Glymur Iris video codec. Glymur
+>> is a new generation of video IP that introduces a dual-core architecture.
+>> The second core brings its own power domain, clocks, and reset lines,
+>> requiring additional power domains and clocks in the power sequence.
+>>
+>> To accommodate glymur clock and power resources requirement, the maxItems
+>> constraints in qcom,venus-common.yaml are relaxed. This allows the glymur
+> This is a very confusing part of commit msg. You cannot relax the
+> constraints. Each device MUST have a specific, fixed constraint. It is
+> your task to be sure they are not relaxed.
+>
+>
+>> binding to inherit from the common venus schema without duplicating shared
+>> properties.
+> That's obvious. Why would new iris device schema not use common venus
+> schema? What is different here then that such possibility exists?
 
-> While there is still concern that for customers
-> which don't have much kernel knowledge, they could still suffer from
-> this silently as some architectures enable cma area by default (not
-> an issue for X86 though, which set CONFIG_CMA_SIZE_MBYTES to 0 by
-> default) for most Linux distributions.
+Glymur platform has a dual-core video codec architecture (vcodec0 + vcodec1),
+requiring 9 clocks and 5 power domains. The stricter maxItems from the
+qcom,venus-common.yaml takes precedence, making it impossible to accommodate
+glymur requirements without updating the common schema.
 
-Okay, so on x86 it is not silent, because they don't even have a default CMA area?
+The same thing I mentioned in our earlier discussion here,
+https://lore.kernel.org/all/6d5516ab-f693-e605-77ad-e3f7d0bf579e@oss.qualcomm.com/
 
-> 
-> One thought is to follow the current cma reserving policy for platform
-> with 'CONFIG_DMA_NUMA_CMA=y', that if the numa cma (either the 'numa cma'
-> or 'cma pernuma' method) is not explicitly configured, set it up
-> according to size of default 'dma_contiguous_default_area', while
-> skipping the numa node where the 'dma_contiguous_default_area' lies
-> in, this way the default behavior of platform with one NUMA node is
-> kept unchanged.
+Alternatively, I can drop the $ref and use additionalProperties: false.
+Please let me know your preferred approach.
 
-So, the kernel is configured to have a certain CONFIG_CMA_SIZE_MBYTES size, but
-you go ahead and multiply that by the number of nodes? Sounds wrong.
+Thanks,
+Vishnu Reddy.
 
-The whole proposal here looks rather hacky.
-
-Wouldn't a default for e.g., pernuma_size_bytes make more sense, that users can
-then overwrite on the cmdline?
-
-> 
-> To get the node info of cma area, add some helpr funciton and setup
-> in cma code.
-> 
-> Reported-by: Changrong Chen <chenchangrong.ccr@alibaba-inc.com>
-> Suggested-by: Ying Huang <ying.huang@linux.alibaba.com>
-> Suggested-by: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Feng Tang <feng.tang@linux.alibaba.com>
-> ---
-> Changelog:
-> 
->   since v2:
->     * setup the numa cma are following default cma, while
-> 	  skipping the node holds the default cma (Robin Murphy)
-> 	* add cma_get_node() help and related code
-> 	* add reporter info 
-> 
->   since v1:
-> 	* don't use the original way of adding alloc_pages_node()
-> 	  before trying default cma node (Robin Murphy)
-> 	* setup default numa cma area if not configured (Ying Huang)
-> 
->    v2: https://lore.kernel.org/lkml/20260423095243.14239-1-feng.tang@linux.alibaba.com/
->    v1: https://lore.kernel.org/lkml/20260414090310.92055-1-feng.tang@linux.alibaba.com/
-> 
->  include/linux/cma.h     |  1 +
->  kernel/dma/contiguous.c | 14 ++++++++++++--
->  mm/cma.c                | 11 ++++++++++-
->  3 files changed, 23 insertions(+), 3 deletions(-)
-
-[...]
-
->  		if (numa_cma_size[nid]) {
->  
->  			cma = &dma_contiguous_numa_area[nid];
-> @@ -255,8 +265,6 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
->  	phys_addr_t selected_limit = limit;
->  	bool fixed = false;
->  
-> -	dma_numa_cma_reserve();
-> -
->  	pr_debug("%s(limit %08lx)\n", __func__, (unsigned long)limit);
->  
->  	if (size_cmdline != -1) {
-> @@ -312,6 +320,8 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
->  		if (ret)
->  			pr_warn("Couldn't queue default CMA region for heap creation.");
->  	}
-> +
-> +	dma_numa_cma_reserve();
->  }
->  
->  void __weak
-> diff --git a/mm/cma.c b/mm/cma.c
-> index c7ca567f4c5c..3bbfafeaf6c1 100644
-> --- a/mm/cma.c
-> +++ b/mm/cma.c
-> @@ -54,6 +54,11 @@ const char *cma_get_name(const struct cma *cma)
->  }
->  EXPORT_SYMBOL_GPL(cma_get_name);
->  
-> +extern int cma_get_nid(const struct cma *cma)
-> +{
-> +	return cma->nid;
-> +}
-
-Why do you have to store the nid instead of just looking it up from the base_pfn
-in here?
-
-Also, what is the expectation when the ranges would span different NIDs? (is
-that possible?)
-
--- 
-Cheers,
-
-David
+> Best regards,
+> Krzysztof
+>
