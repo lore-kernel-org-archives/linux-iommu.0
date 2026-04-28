@@ -1,109 +1,132 @@
-Received: from canpmsgout03.his.huawei.com (canpmsgout03.his.huawei.com [113.46.200.218])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1041A423A9A;
-	Tue, 28 Apr 2026 12:32:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=113.46.200.218
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5608843CED7
+	for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 12:48:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777379554; cv=none; b=lteD+vP3kdQjQVoo7GyCmMcJOZ+EBsvtQIhVUPT8jWm8F5SscFEMkUr0DxHRpFHB+VKD6hmdH9EHEDGJUuD4UiU+ZGQHfeHMHdG6l/0BQtrm4bRWO6PvHmjC7FfujueGqQNW57vf4TtE4zwwaFmPCZnKo9QcW3G+agXs9wpxr5w=
+	t=1777380542; cv=none; b=tfDC7S/x5Dtefg2t3F+TzOs2BPNPmhuStHKD5znm8evJJMlTqXCwA/lWmeFwYow9GTjXARgczztV33yTUTUfJhkAxBfEbClQybRSb59JN+7Wrv9vcJNMKh8Xw607dmUGURf6EVlLDi4bbmufsHwhuv1agHCX83IPBBdc/khzVsQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777379554; c=relaxed/simple;
-	bh=0Fme70mutnWfE+gMGA9aNcG2k7MUS9AC/srCubxZtSM=;
-	h=Subject:To:CC:References:From:Message-ID:Date:MIME-Version:
-	 In-Reply-To:Content-Type; b=Mea4Er0RRMAjkHuO5Bdy0jTcciMgS5NHb5p1DJj9PU6I9m/0ow2hB0h8DwAGqbNZC4sBDtfZs6nhT9X8fxaeZdzaCqIZqTNOO8YXQeqDa/FiNmAZuKX5+5UGkGC5JVWr3HVCz1vrfzU+U8OKKVzSonUgvUjw7CCaVlz14I9T9mQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=LFp0QVZW; arc=none smtp.client-ip=113.46.200.218
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+	s=arc-20240116; t=1777380542; c=relaxed/simple;
+	bh=6uQsReytJShRtVwFuY+KaKU4UtffiV2XCyp37o5sVFE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GZ3J2NUeCh3FWGwJ6FzwutJj4118aa/nXcu16cyzIIrN6fPZffaVqr02JMd9oaaRNzvv3Qys86WC9nwE3GxfBeDY+1sZN2yBJqkYHJnFkb+JkaWa016E61ifW3ziWD5Otv2P+/VQdi8aIzqJRPOMZ8RatzLnoRtiMZsOf5T1IUw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=pWBIMobc; arc=none smtp.client-ip=209.85.222.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="LFp0QVZW"
-dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
-	c=relaxed/relaxed; q=dns/txt;
-	h=From;
-	bh=WYVh3rRNApPh1xCCN3OpCIIeR/JDDKtNd9mRTZdEGN8=;
-	b=LFp0QVZWjsJ0M4aWYjOUIOQg+8m7/Uxy/nFSGQn3YvN1wf9blJa19UbcK2KFxPGA6iq+To5ef
-	EhcDSfDevbu0qDIij7sis/Q+3ur0xwmHxUT5+HHppwRXaMgg1L3sYz7ofXCdxOot5ydgVNAwgzO
-	ZSzpAHHo9w38T9efqE5QnCc=
-Received: from mail.maildlp.com (unknown [172.19.162.197])
-	by canpmsgout03.his.huawei.com (SkyGuard) with ESMTPS id 4g4fm32f6mzpSvH;
-	Tue, 28 Apr 2026 20:25:39 +0800 (CST)
-Received: from dggpemf500002.china.huawei.com (unknown [7.185.36.57])
-	by mail.maildlp.com (Postfix) with ESMTPS id BBFC240576;
-	Tue, 28 Apr 2026 20:32:14 +0800 (CST)
-Received: from [10.174.179.24] (10.174.179.24) by
- dggpemf500002.china.huawei.com (7.185.36.57) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Tue, 28 Apr 2026 20:32:13 +0800
-Subject: Re: [PATCH V1 1/3] ACPICA: IORT: Add Root Complex PASID Flags field
-To: Jason Gunthorpe <jgg@ziepe.ca>, Vidya Sagar <vidyas@nvidia.com>
-CC: <rafael@kernel.org>, <lenb@kernel.org>, <saket.dumbre@intel.com>,
-	<lpieralisi@kernel.org>, <sudeep.holla@kernel.org>, <will@kernel.org>,
-	<catalin.marinas@arm.com>, <joro@8bytes.org>, <robin.murphy@arm.com>,
-	<nicolinc@nvidia.com>, <praan@google.com>, <vsethi@nvidia.com>,
-	<sdonthineni@nvidia.com>, <kthota@nvidia.com>, <sagar.tv@gmail.com>,
-	<linux-acpi@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-	<acpica-devel@lists.linux.dev>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>
-References: <20260423191417.2031652-1-vidyas@nvidia.com>
- <20260423191417.2031652-2-vidyas@nvidia.com>
- <20260423224318.GT3611611@ziepe.ca>
-From: Hanjun Guo <guohanjun@huawei.com>
-Message-ID: <e092b85e-9ac2-22ef-b213-1b2a32fbf784@huawei.com>
-Date: Tue, 28 Apr 2026 20:32:12 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="pWBIMobc"
+Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-8ec37d52c0dso1174436185a.0
+        for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 05:48:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1777380538; x=1777985338; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=rZDznJLnR5IBM+qy2CmcyjeNtRZUzmIeFEkRhR7jVHY=;
+        b=pWBIMobcygQ/OY97AHCqCFJNXr1kr8jYlS/poyw2lb4+7v9k9th0w6V/l4ZtxDjEc6
+         bBq5HVEUc55E5zk6C0miBL5Ljkfwr/Mul+VOvElE5/rGyozVpbQa/2JemOJUti94zvXt
+         VA4Wgl/Xm1NwFaHUqvsKWvFA60cWPhAGrnJ0vI163PxmegDUKbfJNl/0D9FgFdrKNcYk
+         Tr+aQS7DD+w2lhSw/9Mh7ylNJp5RAogg9/+eojg0BnbTaB39P6MPQz4GMM0Ccvxywn3U
+         GcWSKCOBNF4F3vQDjxQSRycvADgyWGVa7MwlGo73bZsQb1jOU0EuyDy/7HqwtzXouyaw
+         2MLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777380538; x=1777985338;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=rZDznJLnR5IBM+qy2CmcyjeNtRZUzmIeFEkRhR7jVHY=;
+        b=ruxkD5YSb1+K48k+vf9f18id+nFapHYcF60RxImgP0HuDF6UOgSXLT2wZkCb97H0jD
+         URqHTtIi9te+cfQCuwYpF1moFqfnThyuxG3yb4KJsioF/jRp3D0Gt8CYtDP+xvpnkfrU
+         hFBRcvh9/7+XndwjZVSX+YNgQwOxPgdwzq7f4QK3T6A5KSB0xKUN9T7sW9+AAgqa0xH5
+         +nvCGnStKUKnClYSdAW9K+lgCQsNX3iIsA2I90SVsvDEoPK3vJEZhF2XhuiKxFQqD7yT
+         UV2PPB+5eR3G98UJyEilbICJj9TmUraCo8s88/dNJxmszlKbJPhB1tTc7Y8ftt2MH0LW
+         Q6oQ==
+X-Gm-Message-State: AOJu0Yxxvv7H9uA+8823sqeUw+Z7dnHtTs3PNZeBj3v7YskilN8JeYa2
+	NfI+d0Hn4GmAB4mQXitS52y2Xm6udoBCfbI2DsbR9EQ5PkWP7pC0DjHQiumVnmQiGMk=
+X-Gm-Gg: AeBDietReS3tMLXjBn/XYbmDmEX8O1cadQ3ZsgmEsXYck0vtHqr9acZECSYUkQ+inth
+	IJpoJQFXVKBy/Zt5srKJ8wqYDzmDnvof5m0sXrPdg8AMTvPu1CIyW3eJdL4I340sWTgY3Y/SfIo
+	0G3STI75qDU6fO4xtA5zJ8aEmR2eRFtDrRZSmzSVxHolHhzDgm85kEwJxkFa4x2auSiqE1bZxyX
+	6Objc5z8jT9+LCmOPDK/DrzBUjDhn5An5zvxnK+IBsLY1+ACYjNJtAYEobC3bAj84/tPCRaw6R1
+	MEU4+Yko9gWjchh54VGzIQtc7X7wRNDdJ2/rNeFwSZMDAkmGy2RqGCBUi2BcdjUguVIR3+WNU3x
+	KGWE9OJM9pi9kam0IcDZ62LjTW2xZvv+zyfMvivUUdVXFCprukKWndmLsjtk3ldSh0r0sPlAqJU
+	quQsAy+1DgH+FFuEU5LmNlJcVUY5iHqhDiB5m4THHTWcM7of0QwppXMiUWW8MHaF0vVbpq9MObm
+	jxebLHPI0HbiIzp
+X-Received: by 2002:a05:620a:1a29:b0:8ed:2b66:9ec3 with SMTP id af79cd13be357-8f7d72475c8mr387065185a.16.1777380537766;
+        Tue, 28 Apr 2026 05:48:57 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8f7c7cd2c0dsm183064985a.26.2026.04.28.05.48.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Apr 2026 05:48:55 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wHhry-0000000AVug-1I54;
+	Tue, 28 Apr 2026 09:48:54 -0300
+Date: Tue, 28 Apr 2026 09:48:54 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	kvm@vger.kernel.org, Alexey Kardashevskiy <aik@amd.com>,
+	Bjorn Helgaas <helgaas@kernel.org>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Joerg Roedel <joro@8bytes.org>, Jonathan Cameron <jic23@kernel.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Samuel Ortiz <sameo@rivosinc.com>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Will Deacon <will@kernel.org>, Xu Yilun <yilun.xu@linux.intel.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v4 4/4] iommufd/vdevice: add TSM guest request ioctl
+Message-ID: <20260428124854.GA849557@ziepe.ca>
+References: <20260427061005.901854-1-aneesh.kumar@kernel.org>
+ <20260427061005.901854-5-aneesh.kumar@kernel.org>
+ <20260427140539.GE740385@ziepe.ca>
+ <yq5acxzj1dwu.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20260423224318.GT3611611@ziepe.ca>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: kwepems100002.china.huawei.com (7.221.188.206) To
- dggpemf500002.china.huawei.com (7.185.36.57)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <yq5acxzj1dwu.fsf@kernel.org>
 
-On 2026/4/24 6:43, Jason Gunthorpe wrote:
-> On Fri, Apr 24, 2026 at 12:44:15AM +0530, Vidya Sagar wrote:
->> The IORT spec, Issue E.c (ARM DEN 0049E.c, January 2022), bumps the
->> Root Complex Node to revision 4 and adds two PASID descriptors:
->>
->>    - PASID Capabilities at byte offset 33 (2 bytes), bits[4:0] of which
->>      report the Max PASID Width supported by the Root Complex.
->>    - Flags at byte offset 36 (4 bytes), bit 0 of which reports whether
->>      the Root Complex itself supports PASID. This is distinct from the
->>      existing ATS Attribute bit 2 (at offset 24) that only reports
->>      whether the RC forwards PASID information on translated
->>      transactions.
->>
->> The ACPICA struct in include/acpi/actbl2.h was updated for the E.c
->> PASID Capabilities descriptor (offset 33) but stops short with a
->> trailing 'u8 reserved[]' flexible array, so the new Flags field at
->> offset 36 is unreachable and the existing ACPI_IORT_PASID_*
->> definitions have no consumer.
->>
->> Replace the trailing flexible array with a fixed 'u8 reserved[1]'
->> followed by 'u32 flags' so the struct fully covers RC node revision 4,
->> and add the ACPI_IORT_RC_PASID_SUPPORTED mask for bit 0 of the new
->> field. With #pragma pack(1) in effect for actbl2.h, this lands the new
->> field at the spec-mandated absolute offset 36.
->>
->> Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
->> ---
->>   include/acpi/actbl2.h | 6 +++++-
->>   1 file changed, 5 insertions(+), 1 deletion(-)
+On Tue, Apr 28, 2026 at 05:43:05PM +0530, Aneesh Kumar K.V wrote:
+> Jason Gunthorpe <jgg@ziepe.ca> writes:
 > 
-> There is a whole process to change this file, I went through it once
-> for canwbs..
+> > On Mon, Apr 27, 2026 at 11:40:05AM +0530, Aneesh Kumar K.V (Arm) wrote:
+> >> +/**
+> >> + * struct iommu_vdevice_tsm_guest_request - ioctl(IOMMU_VDEVICE_TSM_GUEST_REQUEST)
+> >> + * @size: sizeof(struct iommu_vdevice_tsm_guest_request)
+> >> + * @vdevice_id: vDevice ID the guest request is for
+> >> + * @scope: Bus-specific scope classification for the guest request
+> >> + * @req_len: Size in bytes of the input payload at @req_uptr
+> >> + * @resp_len: Size in bytes of the output buffer at @resp_uptr
+> >> + * @__reserved: Must be 0
+> >> + * @req_uptr: Userspace pointer to the guest-provided request payload
+> >> + * @resp_uptr: Userspace pointer to the guest response buffer
+> >> + *
+> >> + * Forward a guest request to the TSM bound vDevice. This is intended for
+> >> + * guest TSM/TDISP message transport where the host kernel only marshals
+> >> + * bytes between userspace and the TSM implementation.
+> >> + *
+> >> + * The meaning and valid values of @scope are defined by the TSM backend for
+> >> + * the device bus type.
+> >
+> > If you want to do this then you have to also provide a way to discover
+> > what the TSM backend is so userspace can form the correct numbers.
+> >
 > 
-> https://lore.kernel.org/acpica-devel/2-v3-e2e16cd7467f+2a6a1-smmuv3_nesting_jgg@nvidia.com/
-> 
-> You have to make a pull request here:
-> 
-> https://github.com/acpica/acpica/pulls
+> These guest-driven requests end up in the correct VMM backend, which
+> should already be aware of the scope value to use. In the case of ARM
+> CCA, the RHI calls include a device ID (vdev_id), which the VMM can use
+> to determine the appropriate scope value.
 
-Yes, please get this patch merged in ACPICA first.
+That seems kind of indirect, we technically support multiple TSMs in
+the kernel, how does it all get reconciled?
 
-Thanks
-Hanjun
+Passing overlapping numbers here without any way to tell them apart is
+not a good uapi design.
+
+Jason
