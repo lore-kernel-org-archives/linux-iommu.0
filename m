@@ -1,30 +1,30 @@
 Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9321945BD6C
-	for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 13:14:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54D2747276E
+	for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 13:14:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777382072; cv=none; b=b1M0EKv8/z00gYLqH+9jVVbKFX0gs/DO46uBVSRJYxeitdfV1zIfCUEwwcvmwYYjykPJPnNSJncBG45geoNDFY1/GqYe/a/dOFPb6/DrwYpgKvB+nXT955Zkyy0coiwYpl9p2ObE9CH1VTimlbNpTeaIlqgPj26sOyDEgzK3mvc=
+	t=1777382075; cv=none; b=RApjE43fD0X4IWogd7eqXsaoev/lCJIQSnLwmxpLbLkp7fvqK+Dl5RCKMLC9sXD7Cu/maW+ckyyh63c/hR8s0ipa1sABXYCpyykjVY5fXoewRjVdypFQ7XEbwfwRJ/JjVKIKX0HN1ietShPp+Bicl1+YinoFF2cdRut7QVLC+6s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777382072; c=relaxed/simple;
-	bh=0j5ZL3J+m+k4ABT8fB03YfQnL0eBL5sT6rdu7L7+iYQ=;
+	s=arc-20240116; t=1777382075; c=relaxed/simple;
+	bh=4xKIRapWnT2z6xwd1ZKn2asQzFjw891Qxs3StuBXga4=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=TkclJTOzYzxZN69Mea0+bpLy3HA2BIi7/QOnnEDDnHCdwXHqfd2HThdPdOJUhY8MAfgCot+UzMIeZ5wBGwQyO9t1f5/GICwDJxQS74hSaF1LIR64u/X85lD+AV9nG00yP94nfMkGoQce35WZfTD5FcKqk2yBUvUVffgjevE1WeU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=osCM39ps; arc=none smtp.client-ip=115.124.30.131
+	 MIME-Version; b=XqAUfBqbhL0+9bHtJcodTZI7FT0D8orSkvNPiuikO/FEyoZXWUIQCMxSV6L3ATzhauGkId/mNbBsWNxyIV/Ym4rG+QYkF5XIzbbhPLvr1KB3EH2/bYkbeX5ZdWJ8nvFVx/zNA7U3mhIiehewHDQpkd7AXNgNqqSxY6xYuP44u8A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=gVnPYbWJ; arc=none smtp.client-ip=115.124.30.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="osCM39ps"
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="gVnPYbWJ"
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
-	t=1777382061; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=iWNf/dxG28Z+J1fFtK1WtJe+wKDMG+JY4xphdsapE1c=;
-	b=osCM39psTopiwVz3b2EJ1UFGC1cMLwdefB8sWax/2cXMALals6mZemQT+jlvJSWCWXyifItHF/fYLrA0MWKj+1mW74lITUoruo36cR3wUg59CA8PUEGjHnhjad9wxPYpgzzLNtfv9tLhF2UR8wOR1cTRFX4wg6ZwYGDy1SyGMc0=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R481e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam011083073210;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=24;SR=0;TI=SMTPD_---0X1ubIF3_1777382058;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X1ubIF3_1777382058 cluster:ay36)
+	t=1777382071; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=7Qo2K+aVXskZxtjU2vtmdryTxJmRp8P78C8zyT6CDZ8=;
+	b=gVnPYbWJZvXQ1BKSwU7mYCrSDtfPRzH+SOT1dXmMaBzwU2QcTSvJyMQKqApFb7CF7aDjqDsp5jP8csEPs3XbI8sMCAl5ahny7IpaPv+aGp4mYzl74Wuz+DC5vCij1Xe/jJ0gsNVfNyh5WnhytP03vnmUPugYAPIMos2NPbvjCf4=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037033178;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=23;SR=0;TI=SMTPD_---0X1ubIHL_1777382068;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X1ubIHL_1777382068 cluster:ay36)
           by smtp.aliyun-inc.com;
-          Tue, 28 Apr 2026 21:14:19 +0800
+          Tue, 28 Apr 2026 21:14:29 +0800
 From: fangyu.yu@linux.alibaba.com
 To: joro@8bytes.org,
 	will@kernel.org,
@@ -48,11 +48,10 @@ Cc: guoren@kernel.org,
 	kvm-riscv@lists.infradead.org,
 	linux-riscv@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
-	Zong Li <zong.li@sifive.com>,
 	Fangyu Yu <fangyu.yu@linux.alibaba.com>
-Subject: [RFC PATCH 04/11] iommu/riscv: support GSCID and GVMA invalidation command
-Date: Tue, 28 Apr 2026 21:13:52 +0800
-Message-Id: <20260428131359.34872-5-fangyu.yu@linux.alibaba.com>
+Subject: [RFC PATCH 09/11] iommu/riscv: Add IOTINVAL.GVMA after updating DDT/PDT entries
+Date: Tue, 28 Apr 2026 21:13:57 +0800
+Message-Id: <20260428131359.34872-10-fangyu.yu@linux.alibaba.com>
 X-Mailer: git-send-email 2.39.3 (Apple Git-146)
 In-Reply-To: <20260428131359.34872-1-fangyu.yu@linux.alibaba.com>
 References: <20260428131359.34872-1-fangyu.yu@linux.alibaba.com>
@@ -64,127 +63,39 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Zong Li <zong.li@sifive.com>
+From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 
-This patch adds a ID Allocator for GSCID and a wrap for setting up
-GSCID in IOTLB invalidation command.
+Previously, only IOTINVAL.VMA was issued, which is insufficient for
+second-stage address translation consistency.
 
-Set up iohgatp to enable second stage table and flush stage-2 table if
-the GSCID is set.
-
-The GSCID of domain should be freed when release domain. GSCID will be
-allocated for parent domain in nested IOMMU process.
-
-Signed-off-by: Zong Li <zong.li@sifive.com>
 Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 ---
- drivers/iommu/riscv/iommu-bits.h |  7 +++++++
- drivers/iommu/riscv/iommu.c      | 32 ++++++++++++++++++++++++++------
- 2 files changed, 33 insertions(+), 6 deletions(-)
+ drivers/iommu/riscv/iommu.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/riscv/iommu-bits.h b/drivers/iommu/riscv/iommu-bits.h
-index 29a0040b1c32..7c440926fa23 100644
---- a/drivers/iommu/riscv/iommu-bits.h
-+++ b/drivers/iommu/riscv/iommu-bits.h
-@@ -716,6 +716,13 @@ static inline void riscv_iommu_cmd_inval_vma(struct riscv_iommu_command *cmd)
- 	cmd->dword1 = 0;
- }
- 
-+static inline void riscv_iommu_cmd_inval_gvma(struct riscv_iommu_command *cmd)
-+{
-+	cmd->dword0 = FIELD_PREP(RISCV_IOMMU_CMD_OPCODE, RISCV_IOMMU_CMD_IOTINVAL_OPCODE) |
-+		      FIELD_PREP(RISCV_IOMMU_CMD_FUNC, RISCV_IOMMU_CMD_IOTINVAL_FUNC_GVMA);
-+	cmd->dword1 = 0;
-+}
-+
- static inline void riscv_iommu_cmd_inval_set_addr(struct riscv_iommu_command *cmd,
- 						  u64 addr)
- {
 diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-index 369c98b7e1e5..5dadf6d09139 100644
+index 1f7967074492..cb9d315e82ee 100644
 --- a/drivers/iommu/riscv/iommu.c
 +++ b/drivers/iommu/riscv/iommu.c
-@@ -48,6 +48,10 @@
- static DEFINE_IDA(riscv_iommu_pscids);
- #define RISCV_IOMMU_MAX_PSCID		(BIT(20) - 1)
- 
-+/* IOMMU GSCID allocation namespace. */
-+static DEFINE_IDA(riscv_iommu_gscids);
-+#define RISCV_IOMMU_MAX_GSCID		(BIT(16) - 1)
-+
- /* Device resource-managed allocations */
- struct riscv_iommu_devres {
- 	void *addr;
-@@ -819,6 +823,7 @@ struct riscv_iommu_domain {
- 	struct list_head bonds;
- 	spinlock_t lock;		/* protect bonds list updates. */
- 	int pscid;
-+	int gscid;
- };
- PT_IOMMU_CHECK_DOMAIN(struct riscv_iommu_domain, riscvpt.iommu, domain);
- 
-@@ -967,15 +972,20 @@ static void riscv_iommu_iotlb_inval(struct riscv_iommu_domain *domain,
- 
+@@ -1065,12 +1065,15 @@ static void riscv_iommu_iodir_iotinval(struct riscv_iommu_device *iommu,
  		/*
- 		 * IOTLB invalidation request can be safely omitted if already sent
--		 * to the IOMMU for the same PSCID, and with domain->bonds list
-+		 * to the IOMMU for the same PSCID/GSCID, and with domain->bonds list
- 		 * arranged based on the device's IOMMU, it's sufficient to check
- 		 * last device the invalidation was sent to.
+ 		 * else: IOTINVAL.VMA with GV=1,AV=PSCV=0,and
+ 		 * GSCID=DC.iohgatp.GSCID
+-		 *
++		 */
++		riscv_iommu_cmd_send(iommu, &cmd);
++		/*
+ 		 * IOTINVAL.GVMA with GV=1,AV=0,and
+ 		 * GSCID=DC.iohgatp.GSCID
+-		 * TODO: For now, the Second-Stage feature have not yet been merged,
+-		 * also issue IOTINVAL.GVMA once second-stage support is merged.
  		 */
- 		if (iommu == prev)
- 			continue;
- 
--		riscv_iommu_cmd_inval_vma(&cmd);
--		riscv_iommu_cmd_inval_set_pscid(&cmd, domain->pscid);
-+		if (domain->gscid) {
-+			riscv_iommu_cmd_inval_gvma(&cmd);
-+			riscv_iommu_cmd_inval_set_gscid(&cmd, domain->gscid);
-+		} else {
-+			riscv_iommu_cmd_inval_vma(&cmd);
-+			riscv_iommu_cmd_inval_set_pscid(&cmd, domain->pscid);
-+		}
- 		if (end - start < RISCV_IOMMU_IOTLB_INVAL_LIMIT - 1) {
- 			unsigned long iova = start;
- 
-@@ -1120,6 +1130,7 @@ static void riscv_iommu_iodir_update(struct riscv_iommu_device *iommu,
- 
- 		WRITE_ONCE(dc->fsc, new_dc->fsc);
- 		WRITE_ONCE(dc->ta, new_dc->ta & RISCV_IOMMU_PC_TA_PSCID);
-+		WRITE_ONCE(dc->iohgatp, new_dc->iohgatp);
- 		/* Update device context, write TC.V as the last step. */
- 		dma_wmb();
- 		WRITE_ONCE(dc->tc, tc);
-@@ -1175,8 +1186,10 @@ static void riscv_iommu_free_paging_domain(struct iommu_domain *iommu_domain)
- 
- 	WARN_ON(!list_empty(&domain->bonds));
- 
--	if ((int)domain->pscid > 0)
-+	if (domain->pscid > 0)
- 		ida_free(&riscv_iommu_pscids, domain->pscid);
-+	if (domain->gscid > 0)
-+		ida_free(&riscv_iommu_gscids, domain->gscid);
- 
- 	pt_iommu_deinit(&domain->riscvpt.iommu);
- 	kfree(domain);
-@@ -1212,8 +1225,15 @@ static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
- 	if (!riscv_iommu_pt_supported(iommu, pt_info.fsc_iosatp_mode))
- 		return -ENODEV;
- 
--	dc.fsc = FIELD_PREP(RISCV_IOMMU_PC_FSC_MODE, pt_info.fsc_iosatp_mode) |
--	      FIELD_PREP(RISCV_IOMMU_PC_FSC_PPN, pt_info.ppn);
-+	if (domain->gscid) {
-+		dc.iohgatp = FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_MODE, pt_info.iohgatp_mode) |
-+			     FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_GSCID, domain->gscid) |
-+			     FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_PPN, pt_info.ppn);
-+	} else {
-+		dc.fsc = FIELD_PREP(RISCV_IOMMU_PC_FSC_MODE, pt_info.fsc_iosatp_mode) |
-+		      FIELD_PREP(RISCV_IOMMU_PC_FSC_PPN, pt_info.ppn);
-+	}
-+
- 	dc.ta = FIELD_PREP(RISCV_IOMMU_PC_TA_PSCID, domain->pscid) |
- 	     RISCV_IOMMU_PC_TA_V;
- 
++		riscv_iommu_cmd_inval_gvma(&cmd);
++		riscv_iommu_cmd_inval_set_gscid(&cmd,
++			FIELD_GET(RISCV_IOMMU_DC_IOHGATP_GSCID, iohgatp));
+ 	}
+ 	riscv_iommu_cmd_send(iommu, &cmd);
+ }
 -- 
 2.50.1
 
