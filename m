@@ -1,30 +1,30 @@
-Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B685C478847
-	for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 13:19:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.132
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7C434779B3
+	for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 13:19:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777382385; cv=none; b=BBsTNGFNSNG/g8iI2Hns6/hjq9FQ+V64LflPkAQlo53pK6PH8NtSDYOgS/nVRksSj0j7FtlxfAQiHlNkol18JE5ZvZRYic/oM3hpV5pihJfuPex5WOPLC1yc7enDiYxBRMc4omkBA+/6srewFXCEzCvhMkagsbu/2P9UoaRniVw=
+	t=1777382388; cv=none; b=L2Uk4wl6vJuoiAm8IjDbSFKLswjaMk2x0KRb/kI21JVR7fl+cTQ/Mfz+P9m4YHd+9DBEeqxrgjwyyFjNHRYspgga3hi7355+KbzJ9XLcGKHcwPT+i4aMXoJh1AZz3N9QyjbptuiSAGFvU+M8D5shadPzPmHLjqB4wehv2Fo8XSA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777382385; c=relaxed/simple;
-	bh=TJtwwmOes+WMqZV10KyeFqw49c64kqL7395J+MxsNMo=;
+	s=arc-20240116; t=1777382388; c=relaxed/simple;
+	bh=hOS96Apq9JzCXIC4USAb423oCppmaEpcM2qpGyF2GP0=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Hq5JJa2vrezhvQqyz27PPwO/7E97IaHAI7EaobxlNhCKJ0/zstWn8cFMb7Jy7+nlrFs+ghpKwsta7/r/4fZAn7BqevhHCuG8PU32spoNzkjDAXvi18h0Xta7KyP9e66DqYzMuMV6qqcq9sf3KI9lFTQE+HDPnIZBRa0so1RWF0c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=NVrmmP4L; arc=none smtp.client-ip=115.124.30.132
+	 MIME-Version; b=tGmn9GQ/Nf8oMbqHQdqMgfB/c1mssZ/Aau8Q8724DDOKUeif014Nd2AvfbOajRof/+piFSpovkBy+3AlmXvWMJhF2hWo6BSlvqAtLqdZ3tubPw9HMiLgV0mBLduy4+tptpujmmQhDFupwdiz9xxuHPNm+pTge4teu5BB9qIw/os=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=D1F9pOme; arc=none smtp.client-ip=115.124.30.133
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="NVrmmP4L"
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="D1F9pOme"
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
-	t=1777382381; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=RWu/puVJ24xC3wGWoddID7UrDVPs6J4eX8hoo+uZKZs=;
-	b=NVrmmP4LLGn6iuN6K5C05HjCzdStpBQu7hBO0dFa4X1l6xFWCQwuPJFNl0xkxzSRr3KzVbWwmsWGGmwZVXGnSeVW68+oSkQ5gwOD98ooFtkNRUIRkP2ZrH49Ud4NfIGE9b+9TkP7opIrJA/Nvah3nQFV8rohhgBSH5gGk+v7gPQ=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R661e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045133197;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=24;SR=0;TI=SMTPD_---0X1ubIFW_1777382060;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X1ubIFW_1777382060 cluster:ay36)
+	t=1777382383; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=d/CJi0j31iQURubrtaBsC+TOdWT/tV2UED1jlPNtsn8=;
+	b=D1F9pOme7HuzO3fKj/jjUrRdSuAQw8JAtRQRsAxujDkDa/O0rNVXVG3uUBQ/Gn0gkvFi5DVs04MzpdWx6S0/u91F+V2x1aT2+OQ3BmJxtc7JZWcL3qcLfoydxaT6PGpru8wTw8jy78b5SllpUXUL9ObFn/Qv3wctDl38Msm+wM8=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037026112;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=23;SR=0;TI=SMTPD_---0X1ubIGF_1777382064;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X1ubIGF_1777382064 cluster:ay36)
           by smtp.aliyun-inc.com;
-          Tue, 28 Apr 2026 21:14:21 +0800
+          Tue, 28 Apr 2026 21:14:25 +0800
 From: fangyu.yu@linux.alibaba.com
 To: joro@8bytes.org,
 	will@kernel.org,
@@ -48,11 +48,10 @@ Cc: guoren@kernel.org,
 	kvm-riscv@lists.infradead.org,
 	linux-riscv@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
-	Andrew Jones <ajones@ventanamicro.com>,
 	Fangyu Yu <fangyu.yu@linux.alibaba.com>
-Subject: [RFC PATCH 05/11] RISC-V: KVM: Enable KVM_VFIO interfaces on RISC-V arch
-Date: Tue, 28 Apr 2026 21:13:53 +0800
-Message-Id: <20260428131359.34872-6-fangyu.yu@linux.alibaba.com>
+Subject: [RFC PATCH 07/11] iommupt: Don't preset D when RISC-V IOMMU dirty tracking on
+Date: Tue, 28 Apr 2026 21:13:55 +0800
+Message-Id: <20260428131359.34872-8-fangyu.yu@linux.alibaba.com>
 X-Mailer: git-send-email 2.39.3 (Apple Git-146)
 In-Reply-To: <20260428131359.34872-1-fangyu.yu@linux.alibaba.com>
 References: <20260428131359.34872-1-fangyu.yu@linux.alibaba.com>
@@ -64,31 +63,69 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Tomasz Jeznach <tjeznach@rivosinc.com>
+From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 
-Enable KVM/VFIO support on RISC-V architecture.
+When mapping writable pages, the RISC-V format code currently
+pre-sets the PTE D bit unconditionally.
 
-Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
-Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
+If hardware dirty tracking is active (DC.tc.GADE set), the IOMMU
+sets D autonomously on the first write. Pre-setting D makes every
+new mapping appear dirty immediately and breaks dirty tracking.
+
+Introduce PT_FEAT_RISCV_DIRTY_TRACKING_ACTIVE and, when set, leave
+D cleared for new writable mappings so hardware can capture the
+first write. Keep pre-setting D when dirty tracking is inactive.
+
+Only meaningful for second-stage (iohgatp) page tables.
+
 Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 ---
- arch/riscv/kvm/Kconfig | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iommu/generic_pt/fmt/riscv.h | 13 +++++++++++--
+ include/linux/generic_pt/common.h    |  8 ++++++++
+ 2 files changed, 19 insertions(+), 2 deletions(-)
 
-diff --git a/arch/riscv/kvm/Kconfig b/arch/riscv/kvm/Kconfig
-index ec2cee0a39e0..54ee90f010ef 100644
---- a/arch/riscv/kvm/Kconfig
-+++ b/arch/riscv/kvm/Kconfig
-@@ -30,8 +30,10 @@ config KVM
- 	select KVM_GENERIC_HARDWARE_ENABLING
- 	select KVM_MMIO
- 	select VIRT_XFER_TO_GUEST_WORK
-+	select KVM_VFIO
- 	select SCHED_INFO
- 	select GUEST_PERF_EVENTS if PERF_EVENTS
-+	select SRCU
- 	help
- 	  Support hosting virtualized guest machines.
+diff --git a/drivers/iommu/generic_pt/fmt/riscv.h b/drivers/iommu/generic_pt/fmt/riscv.h
+index 4fe645e60375..0281356cfaf6 100644
+--- a/drivers/iommu/generic_pt/fmt/riscv.h
++++ b/drivers/iommu/generic_pt/fmt/riscv.h
+@@ -248,8 +248,17 @@ static inline int riscvpt_iommu_set_prot(struct pt_common *common,
+ 	u64 pte;
+ 
+ 	pte = RISCVPT_A | RISCVPT_U;
+-	if (iommu_prot & IOMMU_WRITE)
+-		pte |= RISCVPT_W | RISCVPT_R | RISCVPT_D;
++	if (iommu_prot & IOMMU_WRITE) {
++		pte |= RISCVPT_W | RISCVPT_R;
++		/*
++		 * When hardware dirty tracking is active (GADE set), the IOMMU
++		 * sets the D bit autonomously on the first write access.
++		 *
++		 */
++		if (!(common->features &
++		      BIT(PT_FEAT_RISCV_DIRTY_TRACKING_ACTIVE)))
++			pte |= RISCVPT_D;
++	}
+ 	if (iommu_prot & IOMMU_READ)
+ 		pte |= RISCVPT_R;
+ 	if (!(iommu_prot & IOMMU_NOEXEC))
+diff --git a/include/linux/generic_pt/common.h b/include/linux/generic_pt/common.h
+index e82dff33ece8..4606c7464c27 100644
+--- a/include/linux/generic_pt/common.h
++++ b/include/linux/generic_pt/common.h
+@@ -193,6 +193,14 @@ enum {
+ 	 * Support the 64k contiguous page size following the Svnapot extension.
+ 	 */
+ 	PT_FEAT_RISCV_SVNAPOT_64K = PT_FEAT_FMT_START,
++	/*
++	 * Hardware dirty tracking is currently active: DC.tc.GADE is set and
++	 * the IOMMU will set the D bit in PTEs autonomously on write access.
++	 * When this flag is set, new mappings must not pre-set the D bit so
++	 * that every write is correctly captured by hardware.
++	 * Only meaningful for second-stage (iohgatp) page tables.
++	 */
++	PT_FEAT_RISCV_DIRTY_TRACKING_ACTIVE,
+ 
+ };
  
 -- 
 2.50.1
