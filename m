@@ -1,49 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3153E322A;
-	Tue, 28 Apr 2026 06:14:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 203192DECBF;
+	Tue, 28 Apr 2026 06:20:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777356893; cv=none; b=e3RtAiSoduqJg/fd9+Ab6hqr9X7PEgC0ajgb9ygUNKh579X/RTXun8Pc7mii6fGfQ74yxmaGkxxWXv+eXKvqYFzPzApzELPHCrxW+sa2K4285WlvH0+VYhlz3dFFdrFs4ai/NmNP2RixWzlyL+TYpPlBMn+cQpa2+zu6ghSoi8o=
+	t=1777357238; cv=none; b=E6mMU3dzMhU7Dp4ujIjoFe+Vrp3Eo3phZeERkjK8LlOyVbOWtkh55pSrru/aHzWccnz4+nTdTmtOv73idaDiT6WiqLGjFq/XkBEzgDTGU1kpAeS3YcPX5cbgC/5teUnqd2QV4W94s1EdJy2/7cvOTqp/PFPyzt6Q+AqdpY0irOg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777356893; c=relaxed/simple;
-	bh=ZtNEEwE/C9cL26Tuda4aj88/aIU5hPbhP1JSjoFn+EU=;
+	s=arc-20240116; t=1777357238; c=relaxed/simple;
+	bh=zVLSiuhLnWSlgMLSLcR56FrD5XmA9WGm0HRaLNp0vvE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=a/YWZGaomQtGTh9zNxqkVytnyqO6+NB29Aqg2QZ1F/pWfqQVSnCzo8HbMm0cvMhwS5Z0BJfB40Ey4bwI6KOQTeNQOuaO1uhelpygMQr/uuv0+AoEYlENhynzFejXXLlopSvUpU9Om/jUnv8fleKio9SHHzawRdMWT6z7/JkMbok=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WWOSwsps; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=kkz1VhdqXCF6rfy1WJ/IL2L/+/gbLehxr1eLol+/tyyB1DjVRJE2UkaWvApcByYgzxnWSN3tXFyUiKWH27N9aSVmQY4OjIXu8q0iNWj5gdL8HwJcrCXKXX/1m17podJ8X97OxyGR4yeg5SDZzY47E751QKWJOdi6qJP7T+FKMeI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b5I+x14t; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WWOSwsps"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F14DC2BCAF;
-	Tue, 28 Apr 2026 06:14:51 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b5I+x14t"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C9F1C2BCAF;
+	Tue, 28 Apr 2026 06:20:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777356892;
-	bh=ZtNEEwE/C9cL26Tuda4aj88/aIU5hPbhP1JSjoFn+EU=;
+	s=k20201202; t=1777357237;
+	bh=zVLSiuhLnWSlgMLSLcR56FrD5XmA9WGm0HRaLNp0vvE=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=WWOSwsps2UaCyLidZ43a2fT7AZWHkqGM0pcS1f5LES2h643yzai4q1nKtbd0FlGSs
-	 NbN5rl99ASQhfoCLWJdjbT5CYuCV5mor1cVGWIRWcsvE33/YzkxGCLFGusZCkPLU24
-	 wsX6h5BJV25uO2nOTBlJvqabdm/1chBlSUZFQmRneugpKnSR+yQBc8PhCGfQVSkmdC
-	 mEfDwkntQ5ffLsho4B5fhOyXREGE5a56I++lElJYZofKTcShIk+ZBo1+SI18GkakYE
-	 W9adFmN1UuHhqtX2nhbH+/raYNR/JWj/l4nlcLHPl9A+P/sbvWR1D/PvWjS9UcoTxA
-	 gjFAJIWKwKg7g==
-Date: Tue, 28 Apr 2026 08:14:49 +0200
+	b=b5I+x14tnn56ulxVhKph/T8hiIBFduIPjqYVx9px/rJUCmrG3vKdN7N+tifEbshV6
+	 ucSRT36gHuV8ln6a1Krpw6J3ioz/bcZBMSOJiCo/uuDnjjHNjvwXUWUpBBab5Qst31
+	 cS6tBoh0h0yZN6butOWTTkFGlCYPjI5hFtyVj7lQn4ryc+6BtdzTaMyyjLNK18l6Df
+	 Iac2hw9DhzkyFhVyTr4NN/ChVowYuOCbWF7yH5uAvFm8BAxLyEIy0bwhnB2KZhlTYQ
+	 CwuP661Fwx3VLyN7i8j+iTZDDge1AzD+8KfLkbOHo9+ZTeE5Zf7wcKrEiN/fh7FBaL
+	 Z68GHcgUQyr0Q==
+Date: Tue, 28 Apr 2026 08:20:35 +0200
 From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-Cc: Vikash Garodia <vikash.garodia@oss.qualcomm.com>, 
-	Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>, Abhinav Kumar <abhinav.kumar@linux.dev>, 
-	Bryan O'Donoghue <bod@kernel.org>, Mauro Carvalho Chehab <mchehab@kernel.org>, 
-	Hans Verkuil <hverkuil@kernel.org>, Stefan Schmidt <stefan.schmidt@linaro.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Stanimir Varbanov <stanimir.k.varbanov@gmail.com>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Bjorn Andersson <andersson@kernel.org>, 
-	Konrad Dybcio <konradybcio@kernel.org>, linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, iommu@lists.linux.dev
-Subject: Re: [PATCH v3 02/12] dt-bindings: media: qcom,glymur-iris: Add
- glymur video codec
-Message-ID: <20260428-nifty-quaint-hoatzin-6de65d@quoll>
-References: <20260428-glymur-v3-0-8f28930f47d3@oss.qualcomm.com>
- <20260428-glymur-v3-2-8f28930f47d3@oss.qualcomm.com>
+To: Shawn Guo <shengchao.guo@oss.qualcomm.com>
+Cc: Will Deacon <will@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, Dmitry Baryshkov <lumag@kernel.org>, 
+	Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>, Deepti Jaggi <deepti.jaggi@oss.qualcomm.com>, 
+	iommu@lists.linux.dev, devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] dt-bindings: arm-smmu: Add compatible for Qualcomm
+ Nord SoC
+Message-ID: <20260428-tricky-magic-koala-b21fed@quoll>
+References: <20260427011728.231026-1-shengchao.guo@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,27 +47,17 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260428-glymur-v3-2-8f28930f47d3@oss.qualcomm.com>
+In-Reply-To: <20260427011728.231026-1-shengchao.guo@oss.qualcomm.com>
 
-On Tue, Apr 28, 2026 at 09:24:08AM +0530, Vishnu Reddy wrote:
-> Add device tree binding for the Qualcomm Glymur Iris video codec. Glymur
-> is a new generation of video IP that introduces a dual-core architecture.
-> The second core brings its own power domain, clocks, and reset lines,
-> requiring additional power domains and clocks in the power sequence.
-> 
-> To accommodate glymur clock and power resources requirement, the maxItems
-> constraints in qcom,venus-common.yaml are relaxed. This allows the glymur
+On Mon, Apr 27, 2026 at 09:17:28AM +0800, Shawn Guo wrote:
+> Document APPS SMMU on Qualcomm Nord SoC which is compatible with
 
-This is a very confusing part of commit msg. You cannot relax the
-constraints. Each device MUST have a specific, fixed constraint. It is
-your task to be sure they are not relaxed.
+What is APPS?
 
+> 'qcom,smmu-500'.
 
-> binding to inherit from the common venus schema without duplicating shared
-> properties.
-
-That's obvious. Why would new iris device schema not use common venus
-schema? What is different here then that such possibility exists?
+What is qcom,smmu-500? And which one? Adreno or not-Adreno? Please do
+not add any obvious parts to commit msg.
 
 Best regards,
 Krzysztof
