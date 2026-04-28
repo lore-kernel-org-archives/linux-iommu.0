@@ -1,136 +1,195 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 165583D410D;
-	Tue, 28 Apr 2026 08:28:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C34D3D810F
+	for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 08:37:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777364923; cv=none; b=E6o0E/lctiuRrD1xw4UrOyFK0C7nVe2yXjNsAqf9pSh91opcKBeWo1MxVuZqukQtReF/W0ENJE/hvSh5z6vmfEpIMT5iqKjTAFeOjGdcMw+Xfo14UOpPLeSQabrfzVkaJWjG3z/ImZykMpbTsBMIlVOtQb776eXoKm7xrBNtRXQ=
+	t=1777365435; cv=none; b=tTJ0DXTYxEGhGvirwSA1SvaKvinivOqrvLnjpGQFmkbf+FE/nCC+x9Qfb49pmN5AsRx6hCvUf5N+RxMOIiq8SLzfSv9n82Ul+J5rli2ClJ7Dc3guqqwsk0xbXS9IdulqAAYWDpegJ4Si84dXhrWut7MTZrTBDA+m81iCKsMpBx4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777364923; c=relaxed/simple;
-	bh=mkjcjeexLv3V/WbUKU15SDX1ajbilkWjIGJke0b+jDQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=EtwlEW2uq3EMrpQMpCcnB5fMHScgTG4qOyIGtOL4w43XFDCulw7zsW38rTf3pYTRSdMTPwXaYOZ/lF/0J74toudTqHM6CUerGesqguz9tGdPDsHJ+6VlOwwH3nHxSL5zRWRY1D8jBLpwtn7MZND3yiOT7vuwmjIm1iJisJIkZYk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ld3KE3Xs; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777365435; c=relaxed/simple;
+	bh=bFI3e4HqNdfIJ2hzy8kEa8NN7YkQujVN2mgZIjwgopQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=pse74I+IFfzlAVV9EHg5IzMop8BevQCOq9YOJIMd18Dg88cCIdbREo+ocxe3hiwsXoBOwV0SyJht3aHMDlYnILdC72y7MosWsJjhAQy46c3rAB5O6WtxZmUa2zE8ObJjPrT95TBF7XyyZr2pxHRm4dcgAC5Gf2ho55U5LFQznAk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=c0dpP7Hg; arc=none smtp.client-ip=115.124.30.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ld3KE3Xs"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ED05C2BCAF;
-	Tue, 28 Apr 2026 08:28:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777364922;
-	bh=mkjcjeexLv3V/WbUKU15SDX1ajbilkWjIGJke0b+jDQ=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=ld3KE3XsreOnOkeVns8UDjirR0DRS8AFC4MTreqgAcVtRSbfzGY6b/IZcSUj9Bwr0
-	 d8ey/LLNB1FOPU5jEVUn5WPDqtvUyf5vElX07IgKymb+USx/0bqjnvu/DMJb2eZn6m
-	 dsbvNJOQt5f+6Q42ji2xSa3qLbn6jIg6WjGydX8t0h/8b2QYt3O6hXnQy7boDdMk+K
-	 31TP/K9e3zCayGfcZ2A8zNh3cOrcgaKuke24l8/VLqtDEoqoVPC3+H+/v43K9/AtgG
-	 3bWcZBORH4D3N+UIqLlISe/GVx49Bqy1D8mI7EsFP0cQ0M5riIXSWKGXL00okHw0/1
-	 1ixzOCjadAgIA==
-Message-ID: <7d775357-c7b1-4cf5-af90-012d1364e773@kernel.org>
-Date: Tue, 28 Apr 2026 10:28:35 +0200
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="c0dpP7Hg"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1777365430; h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+	bh=myH3QOIFz0y2hknBNFxgLWJcfHd2Xwb17shw2Tk83v4=;
+	b=c0dpP7HgfFGKLpB3nC8dqF8ECTViQSdBko6BVwsog6umbc+Tdru+hlO5mmjw89srBSqgs/ThxKM4GRjnFN3EXollXAyRjAXmLMu81EIyx0N8+I6AZTJ9L7vepsTTjrIas22gUAF9i9A09xeHVJlfl3FXkTsa75x06TLhigBbe2A=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033032089153;MF=feng.tang@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0X1txRAC_1777365428;
+Received: from localhost(mailfrom:feng.tang@linux.alibaba.com fp:SMTPD_---0X1txRAC_1777365428 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Tue, 28 Apr 2026 16:37:09 +0800
+Date: Tue, 28 Apr 2026 16:37:08 +0800
+From: Feng Tang <feng.tang@linux.alibaba.com>
+To: "David Hildenbrand (Arm)" <david@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Ying Huang <ying.huang@linux.alibaba.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Lorenzo Stoakes <ljs@kernel.org>, Liam.Howlett@oracle.com,
+	Vlastimil Babka <vbabka@kernel.org>,
+	Mike Rapoport <rppt@kernel.org>,
+	Suren Baghdasaryan <surenb@google.com>,
+	Michal Hocko <mhocko@suse.com>, linux-mm@kvack.org,
+	Christoph Hellwig <hch@lst.de>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Changrong Chen <chenchangrong.ccr@alibaba-inc.com>
+Subject: Re: [PATCH v3] dma-contiguous: setup default numa cma area if not
+ configured explicitly
+Message-ID: <afBxtIdWqv8pD8YE@U-2FWC9VHC-2323.local>
+References: <20260428060550.7167-1-feng.tang@linux.alibaba.com>
+ <6dd52f8b-7092-4d02-ba24-f8b55409b7b6@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 02/12] dt-bindings: media: qcom,glymur-iris: Add glymur
- video codec
-To: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-Cc: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
- Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
- Abhinav Kumar <abhinav.kumar@linux.dev>, Bryan O'Donoghue <bod@kernel.org>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- Hans Verkuil <hverkuil@kernel.org>,
- Stefan Schmidt <stefan.schmidt@linaro.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>, linux-media@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, iommu@lists.linux.dev
-References: <20260428-glymur-v3-0-8f28930f47d3@oss.qualcomm.com>
- <20260428-glymur-v3-2-8f28930f47d3@oss.qualcomm.com>
- <20260428-nifty-quaint-hoatzin-6de65d@quoll>
- <97aa5f18-d1d5-f082-9075-a385255f2e97@oss.qualcomm.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
- cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
- JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
- gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
- J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
- NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
- BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
- vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
- Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
- TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
- S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGVBBMBCgA/AhsDBgsJCAcDAgYVCAIJCgsE
- FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJoF1BKBQkWlnSaAAoJEBuTQ307
- QWKbHukP/3t4tRp/bvDnxJfmNdNVn0gv9ep3L39IntPalBFwRKytqeQkzAju0whYWg+R/rwp
- +r2I1Fzwt7+PTjsnMFlh1AZxGDmP5MFkzVsMnfX1lGiXhYSOMP97XL6R1QSXxaWOpGNCDaUl
- ajorB0lJDcC0q3xAdwzRConxYVhlgmTrRiD8oLlSCD5baEAt5Zw17UTNDnDGmZQKR0fqLpWy
- 786Lm5OScb7DjEgcA2PRm17st4UQ1kF0rQHokVaotxRM74PPDB8bCsunlghJl1DRK9s1aSuN
- hL1Pv9VD8b4dFNvCo7b4hfAANPU67W40AaaGZ3UAfmw+1MYyo4QuAZGKzaP2ukbdCD/DYnqi
- tJy88XqWtyb4UQWKNoQqGKzlYXdKsldYqrLHGoMvj1UN9XcRtXHST/IaLn72o7j7/h/Ac5EL
- 8lSUVIG4TYn59NyxxAXa07Wi6zjVL1U11fTnFmE29ALYQEXKBI3KUO1A3p4sQWzU7uRmbuxn
- naUmm8RbpMcOfa9JjlXCLmQ5IP7Rr5tYZUCkZz08LIfF8UMXwH7OOEX87Y++EkAB+pzKZNNd
- hwoXulTAgjSy+OiaLtuCys9VdXLZ3Zy314azaCU3BoWgaMV0eAW/+gprWMXQM1lrlzvwlD/k
- whyy9wGf0AEPpLssLVt9VVxNjo6BIkt6d1pMg6mHsUEVzsFNBFVDXDQBEADNkrQYSREUL4D3
- Gws46JEoZ9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLue
- MNsWLJBvBaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6ei
- OMheesVS5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wA
- GldWsRxbf3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA
- 6z6lBZn0WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9
- YegxWKvXXHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt
- 91pFzBSOIpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gU
- BLHFTg2hYnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/
- JoFzZ4B0p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu
- 4vXVFBYIGmpyNPYzRm0QPwARAQABwsF8BBgBCgAmAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtB
- YpsFAmgXUF8FCRaWWyoACgkQG5NDfTtBYptO0w//dlXJs5/42hAXKsk+PDg3wyEFb4NpyA1v
- qmx7SfAzk9Hf6lWwU1O6AbqNMbh6PjEwadKUk1m04S7EjdQLsj/MBSgoQtCT3MDmWUUtHZd5
- RYIPnPq3WVB47GtuO6/u375tsxhtf7vt95QSYJwCB+ZUgo4T+FV4hquZ4AsRkbgavtIzQisg
- Dgv76tnEv3YHV8Jn9mi/Bu0FURF+5kpdMfgo1sq6RXNQ//TVf8yFgRtTUdXxW/qHjlYURrm2
- H4kutobVEIxiyu6m05q3e9eZB/TaMMNVORx+1kM3j7f0rwtEYUFzY1ygQfpcMDPl7pRYoJjB
- dSsm0ZuzDaCwaxg2t8hqQJBzJCezTOIkjHUsWAK+tEbU4Z4SnNpCyM3fBqsgYdJxjyC/tWVT
- AQ18NRLtPw7tK1rdcwCl0GFQHwSwk5pDpz1NH40e6lU+NcXSeiqkDDRkHlftKPV/dV+lQXiu
- jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
- zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
- XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <97aa5f18-d1d5-f082-9075-a385255f2e97@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <6dd52f8b-7092-4d02-ba24-f8b55409b7b6@kernel.org>
 
-On 28/04/2026 10:08, Vishnu Reddy wrote:
+Hi David,
+
+Thanks for the review!
+
+On Tue, Apr 28, 2026 at 09:52:15AM +0200, David Hildenbrand (Arm) wrote:
+> On 4/28/26 08:05, Feng Tang wrote:
+> > There was a report on a multi-numa-nodes ARM server that when IOMMU is
+> > disabled, the dma_alloc_coherent() function always returns memory from
+> > node 0 even for devices attaching to other nodes, while they can get
+> > local dma memory when IOMMU is on with the same API.
+> > 
+> > The reason is, when IOMMU is disabled, the dma_alloc_coherent() will
+> > go the direct way and call dma_alloc_contiguous(). The system doesn't
+> > have any explicit cma setting (like per-numa cma), and only has a
+> > default 64MB cma reserved area (on node 0), where kernel will try
+> > first to allocate memory from.
+> > 
+> > Robin Murphy suggested to setup pernuma cma or disable cma, which did
+> > solve the issue. 
 > 
-> On 4/28/2026 11:44 AM, Krzysztof Kozlowski wrote:
->> On Tue, Apr 28, 2026 at 09:24:08AM +0530, Vishnu Reddy wrote:
->>> Add device tree binding for the Qualcomm Glymur Iris video codec. Glymur
->>> is a new generation of video IP that introduces a dual-core architecture.
->>> The second core brings its own power domain, clocks, and reset lines,
->>> requiring additional power domains and clocks in the power sequence.
->>>
->>> To accommodate glymur clock and power resources requirement, the maxItems
->>> constraints in qcom,venus-common.yaml are relaxed. This allows the glymur
->> This is a very confusing part of commit msg. You cannot relax the
->> constraints. Each device MUST have a specific, fixed constraint. It is
->> your task to be sure they are not relaxed.
->>
->>
->>> binding to inherit from the common venus schema without duplicating shared
->>> properties.
->> That's obvious. Why would new iris device schema not use common venus
->> schema? What is different here then that such possibility exists?
+> That sounds like the obvious approach to me.
+
+Indeed. We also gave some of them to the reporter once we got the report. 
+
+> > While there is still concern that for customers
+> > which don't have much kernel knowledge, they could still suffer from
+> > this silently as some architectures enable cma area by default (not
+> > an issue for X86 though, which set CONFIG_CMA_SIZE_MBYTES to 0 by
+> > default) for most Linux distributions.
 > 
-> Glymur platform has a dual-core video codec architecture (vcodec0 + vcodec1),
-> requiring 9 clocks and 5 power domains. The stricter maxItems from the
-> qcom,venus-common.yaml takes precedence, making it impossible to accommodate
-> glymur requirements without updating the common schema.
+> Okay, so on x86 it is not silent, because they don't even have a default CMA area?
 
-But so does every other device, no? So what is different here?
+Right for default kernel configs.
 
-Best regards,
-Krzysztof
+In kernel/dma/Kconfig:
+
+config CMA_SIZE_MBYTES
+	int "Size in Mega Bytes"
+	depends on !CMA_SIZE_SEL_PERCENTAGE
+	default 0 if X86
+	default 16
+
+config CMA_SIZE_PERCENTAGE
+	int "Percentage of total memory"
+	depends on !CMA_SIZE_SEL_MBYTES
+	default 0 if X86
+	default 10
+
+> > 
+> > One thought is to follow the current cma reserving policy for platform
+> > with 'CONFIG_DMA_NUMA_CMA=y', that if the numa cma (either the 'numa cma'
+> > or 'cma pernuma' method) is not explicitly configured, set it up
+> > according to size of default 'dma_contiguous_default_area', while
+> > skipping the numa node where the 'dma_contiguous_default_area' lies
+> > in, this way the default behavior of platform with one NUMA node is
+> > kept unchanged.
+> 
+> So, the kernel is configured to have a certain CONFIG_CMA_SIZE_MBYTES size, but
+> you go ahead and multiply that by the number of nodes? Sounds wrong.
+
+Yes. I thought about that, and didn't have good solution, and used this
+given it's on a multi-numa-node machine, which may not be too bad
+regarding memory usage.
+
+Robin did concern about the memory usage for embedded/small devices in
+v2 review, and we change to v3 to not affect them.
+
+> 
+> The whole proposal here looks rather hacky.
+
+I agree :)
+
+> Wouldn't a default for e.g., pernuma_size_bytes make more sense, that users can
+> then overwrite on the cmdline?
+ 
+This sounds good to me, if no objection from others. Maybe default 64MB
+or more. One good part is, all these setup is under protection of
+CONFIG_DMA_NUMA_CMA. 
+
+> > 
+> > To get the node info of cma area, add some helpr funciton and setup
+> > in cma code.
+> > 
+> > Reported-by: Changrong Chen <chenchangrong.ccr@alibaba-inc.com>
+> > Suggested-by: Ying Huang <ying.huang@linux.alibaba.com>
+> > Suggested-by: Robin Murphy <robin.murphy@arm.com>
+> > Signed-off-by: Feng Tang <feng.tang@linux.alibaba.com>
+> > ---
+> > Changelog:
+> > 
+> >   since v2:
+> >     * setup the numa cma are following default cma, while
+> > 	  skipping the node holds the default cma (Robin Murphy)
+> > 	* add cma_get_node() help and related code
+> > 	* add reporter info 
+> > 
+> >   since v1:
+> > 	* don't use the original way of adding alloc_pages_node()
+> > 	  before trying default cma node (Robin Murphy)
+> > 	* setup default numa cma area if not configured (Ying Huang)
+> > 
+> >    v2: https://lore.kernel.org/lkml/20260423095243.14239-1-feng.tang@linux.alibaba.com/
+> >    v1: https://lore.kernel.org/lkml/20260414090310.92055-1-feng.tang@linux.alibaba.com/
+> > 
+> >  include/linux/cma.h     |  1 +
+> >  kernel/dma/contiguous.c | 14 ++++++++++++--
+> >  mm/cma.c                | 11 ++++++++++-
+> >  3 files changed, 23 insertions(+), 3 deletions(-)
+[...]
+> > +extern int cma_get_nid(const struct cma *cma)
+> > +{
+> > +	return cma->nid;
+> > +}
+> 
+> Why do you have to store the nid instead of just looking it up from the base_pfn
+> in here?
+
+My thought was 'struct cma' already have 'nid' member, and when CONFIG_NUMA=y,
+it may be useful to save the 'nid' info instead of NUMA_NO_NODE for the default
+cma area (cmdline like cma=XXG@YYG could make it on different node)
+
+> 
+> Also, what is the expectation when the ranges would span different NIDs? (is
+> that possible?)
+
+Per my understanding, it won't. There is a cma_validate_zones() to prevent it
+from crossing zones.
+
+Thanks,
+Feng
+
+> 
+> -- 
+> Cheers,
+> 
+> David
