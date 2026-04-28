@@ -1,90 +1,220 @@
-Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88A773A963C
-	for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 07:39:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E45632F1FF4;
+	Tue, 28 Apr 2026 07:52:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777361943; cv=none; b=ZmkBG29orFDokmHHu2c86dn9DPgLF9LCpvH6FVn467wEORtikD+WqhAhJD+/gbE+MzKQ/bokR1uflK+9PiUUFwfni/QooVIyDBI//p5RZSOECU7ORdCtgFoQmDwvf7gqcSBtLzkd0Mqw3zSh7jfs5XVTzAjWycQyyerSQ0CUWFM=
+	t=1777362744; cv=none; b=WuwGpDxzHddhB946vCevDM063FTfFA1WXkq23a8GJWWwxej09jaJIM+RB2frUboZqdamCQgkd4jsA0Z0SqEkJr/M2j1TyTxZE1fWXpTcCCZPfFzE8CQjXTjUKkjFWI6OV4YkBPVy6P1/e4YsvyK25e+xAOnNPniG1t5HCrJ+J9o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777361943; c=relaxed/simple;
-	bh=LOmVa5HEYXAhxFxX5dmA5ibLhZjG/rAPjw3EsQuigAE=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=oH0DYR3FDraFllL1zsnwM+FpDJIHnwaW0NVURpKlawj8SbtKdofpbFobOfP/q3SDirjZpVQFR6OFOVRtndB9cB7rme0+L08rwszGGkECcpDGAKSHNeLVCTfUCdNExTXG4EAwvYlB/y91T5lF4NZE8BnNCyqDrI3bBvqaU5VIRSA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=K+6amBpY; arc=none smtp.client-ip=209.85.210.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com
+	s=arc-20240116; t=1777362744; c=relaxed/simple;
+	bh=KiGBp9SBRr0S2SXmmAPqSl+u4SEOgHA1uGT3SstawwI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=pqcx8wkVajfoC7QZdQIEj8vxvD6U6dMa4znLI/H37Pr3YObolGAztrFUz7S1c5k+HvTCElYBcZrYtjW3JwvZtsq0Qz8S0ugt2L7fra+O202oMAB17Z9Mt1hvYMGEWVKn+wKnGJOaa0+QOib4Wnb0w8lUiRpRWP4j5LLXZ1sQ1B8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GjLCFQjU; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="K+6amBpY"
-Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-82f460260cfso11167396b3a.2
-        for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 00:39:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1777361942; x=1777966742; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=LOmVa5HEYXAhxFxX5dmA5ibLhZjG/rAPjw3EsQuigAE=;
-        b=K+6amBpYOSyjnfsnnCFkM6SVbiKt6wtonbbvLJeJeODN2kepBctdCLCv9gQH5Gv9Az
-         bbUKlI6kEzfrU6RJJ8Hbl8pxfAut2bP8ZRW8oOhzcBxR395e/tKk4ESPp6u5sQCLbmfi
-         w/dT16TnokoEMGS33kl9NdaV69IK3IbUyLSQpHgLRKxZiaF+Lqy5BJ61UGfxUeNOEBOK
-         vqjopbCiwu0OgsZ3WmOulRjuaOEykyNuLt+LIXERytipm8JF8sB7I0fEjYd/2FGkWHHI
-         eaG7LrywbMwa0P/I9XQe2mnjougZg3eywErTodgaNGyf4962XtaQeu3zI+W/w8xPJnTs
-         z8UQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777361942; x=1777966742;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=LOmVa5HEYXAhxFxX5dmA5ibLhZjG/rAPjw3EsQuigAE=;
-        b=HEKeBuro5witEvX86l3fMmI6BXcpetWpjTqutlrhKl67c1cDz7HU4eCmh3uxAojRMD
-         /kHF+dQ48NQ/WlxUX763+6jwz/bb2xY+zuYPJ0nzgQLqsZS3n/Dz6kulY9S+QhABOYgh
-         agnQndnZRRXaKzxhYtLJrs5ykSCNLPYwijE/DCo2YfmxX+qQrJ72xurTbycQdSwWaXcX
-         3Bo3y8FYtRz2yvQBYc9eq9PcWgwt+Oz6xOPVxrUJLj4genp5PkE4kcHq0PDIZfVzHZ7o
-         efIBf+41vaTTcPH9GxYtlhF4m3SOejxynY5myX5izKQhWRKoBk0YGkztF8s6J6M7Ps24
-         0jMw==
-X-Forwarded-Encrypted: i=1; AFNElJ/XQ28Kv2vgr4tKd+Ld3WRDKGaKp5ZwD36cJD9a/orHsSqdRg0GptxJ50nxA5gQndK+6LVyJA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx78NXGgjWe7iRh7eyn95VJyXfZlYKvgmo1cuuM4JTvA/AGz6pN
-	NicKkWZR6U4iKPs/JG8toO8IbrAO4U+YhKZKrBZL1OpIg4mlaTE9rasv0tYNXVqsPS08bSVM4b9
-	kigNuulRGWiHCHwZLrjnP80eeAg==
-X-Received: from pfwy28.prod.google.com ([2002:a05:6a00:1c9c:b0:82f:a201:42c7])
- (user=joonwonkang job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6a00:2d22:b0:81e:12f1:d8a with SMTP id d2e1a72fcca58-834ddbe707fmr2002397b3a.34.1777361941509;
- Tue, 28 Apr 2026 00:39:01 -0700 (PDT)
-Date: Tue, 28 Apr 2026 07:38:59 +0000
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GjLCFQjU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B08F6C2BCAF;
+	Tue, 28 Apr 2026 07:52:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777362743;
+	bh=KiGBp9SBRr0S2SXmmAPqSl+u4SEOgHA1uGT3SstawwI=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=GjLCFQjU5XtMIR8p2eUHF/UWAM3rz6xZtiteqH9mcF/Bbm0PvaCdhkYoFJLGQSAH6
+	 NU+UqmQjnxZXYTuWhqjjm8pLO7oFBCYo+7rRTICVh4gAu67PGrqy90X1HVTMfio0E4
+	 p35H3mRqvSxp47kRl96y94PYS6TM0FqgsBA89sR0EGpc7PfaGDp1yKJxz+SN67b8w9
+	 GhHHdfFSgrTeOLdduvttmvYXLk4gsAiP9oUfNNhG9OwyzcAhwxyN2FGmmOMyfDjv7l
+	 WQU1ikAd8gcOb21b696ddPm2emWuXyL07t8Bxx9eFLZCAjBk2rh4RhpUAjz8Xklfjk
+	 Yrbw1tNNzGoVA==
+Message-ID: <6dd52f8b-7092-4d02-ba24-f8b55409b7b6@kernel.org>
+Date: Tue, 28 Apr 2026 09:52:15 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.54.0.545.g6539524ca2-goog
-Message-ID: <20260428073859.1502047-1-joonwonkang@google.com>
-Subject: [QUESTION] Is the ARM SMMU v3 implementation designed to always
- ignore SSID when SSID_VALID == 0?
-From: Joonwon Kang <joonwonkang@google.com>
-To: will@kernel.org, robin.murphy@arm.com, jpb@kernel.org
-Cc: joro@8bytes.org, jgg@ziepe.ca, baolu.lu@linux.intel.com, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, stimim@google.com, cychu@google.com, 
-	hhchung@google.com
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3] dma-contiguous: setup default numa cma area if not
+ configured explicitly
+To: Feng Tang <feng.tang@linux.alibaba.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Ying Huang <ying.huang@linux.alibaba.com>,
+ Andrew Morton <akpm@linux-foundation.org>
+Cc: Lorenzo Stoakes <ljs@kernel.org>, Liam.Howlett@oracle.com,
+ Vlastimil Babka <vbabka@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+ Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>,
+ linux-mm@kvack.org, Christoph Hellwig <hch@lst.de>,
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Changrong Chen <chenchangrong.ccr@alibaba-inc.com>
+References: <20260428060550.7167-1-feng.tang@linux.alibaba.com>
+From: "David Hildenbrand (Arm)" <david@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=david@kernel.org; keydata=
+ xsFNBFXLn5EBEAC+zYvAFJxCBY9Tr1xZgcESmxVNI/0ffzE/ZQOiHJl6mGkmA1R7/uUpiCjJ
+ dBrn+lhhOYjjNefFQou6478faXE6o2AhmebqT4KiQoUQFV4R7y1KMEKoSyy8hQaK1umALTdL
+ QZLQMzNE74ap+GDK0wnacPQFpcG1AE9RMq3aeErY5tujekBS32jfC/7AnH7I0v1v1TbbK3Gp
+ XNeiN4QroO+5qaSr0ID2sz5jtBLRb15RMre27E1ImpaIv2Jw8NJgW0k/D1RyKCwaTsgRdwuK
+ Kx/Y91XuSBdz0uOyU/S8kM1+ag0wvsGlpBVxRR/xw/E8M7TEwuCZQArqqTCmkG6HGcXFT0V9
+ PXFNNgV5jXMQRwU0O/ztJIQqsE5LsUomE//bLwzj9IVsaQpKDqW6TAPjcdBDPLHvriq7kGjt
+ WhVhdl0qEYB8lkBEU7V2Yb+SYhmhpDrti9Fq1EsmhiHSkxJcGREoMK/63r9WLZYI3+4W2rAc
+ UucZa4OT27U5ZISjNg3Ev0rxU5UH2/pT4wJCfxwocmqaRr6UYmrtZmND89X0KigoFD/XSeVv
+ jwBRNjPAubK9/k5NoRrYqztM9W6sJqrH8+UWZ1Idd/DdmogJh0gNC0+N42Za9yBRURfIdKSb
+ B3JfpUqcWwE7vUaYrHG1nw54pLUoPG6sAA7Mehl3nd4pZUALHwARAQABzS5EYXZpZCBIaWxk
+ ZW5icmFuZCAoQ3VycmVudCkgPGRhdmlkQGtlcm5lbC5vcmc+wsGQBBMBCAA6AhsDBQkmWAik
+ AgsJBBUKCQgCFgICHgUCF4AWIQQb2cqtc1xMOkYN/MpN3hD3AP+DWgUCaYJt/AIZAQAKCRBN
+ 3hD3AP+DWriiD/9BLGEKG+N8L2AXhikJg6YmXom9ytRwPqDgpHpVg2xdhopoWdMRXjzOrIKD
+ g4LSnFaKneQD0hZhoArEeamG5tyo32xoRsPwkbpIzL0OKSZ8G6mVbFGpjmyDLQCAxteXCLXz
+ ZI0VbsuJKelYnKcXWOIndOrNRvE5eoOfTt2XfBnAapxMYY2IsV+qaUXlO63GgfIOg8RBaj7x
+ 3NxkI3rV0SHhI4GU9K6jCvGghxeS1QX6L/XI9mfAYaIwGy5B68kF26piAVYv/QZDEVIpo3t7
+ /fjSpxKT8plJH6rhhR0epy8dWRHk3qT5tk2P85twasdloWtkMZ7FsCJRKWscm1BLpsDn6EQ4
+ jeMHECiY9kGKKi8dQpv3FRyo2QApZ49NNDbwcR0ZndK0XFo15iH708H5Qja/8TuXCwnPWAcJ
+ DQoNIDFyaxe26Rx3ZwUkRALa3iPcVjE0//TrQ4KnFf+lMBSrS33xDDBfevW9+Dk6IISmDH1R
+ HFq2jpkN+FX/PE8eVhV68B2DsAPZ5rUwyCKUXPTJ/irrCCmAAb5Jpv11S7hUSpqtM/6oVESC
+ 3z/7CzrVtRODzLtNgV4r5EI+wAv/3PgJLlMwgJM90Fb3CB2IgbxhjvmB1WNdvXACVydx55V7
+ LPPKodSTF29rlnQAf9HLgCphuuSrrPn5VQDaYZl4N/7zc2wcWM7BTQRVy5+RARAA59fefSDR
+ 9nMGCb9LbMX+TFAoIQo/wgP5XPyzLYakO+94GrgfZjfhdaxPXMsl2+o8jhp/hlIzG56taNdt
+ VZtPp3ih1AgbR8rHgXw1xwOpuAd5lE1qNd54ndHuADO9a9A0vPimIes78Hi1/yy+ZEEvRkHk
+ /kDa6F3AtTc1m4rbbOk2fiKzzsE9YXweFjQvl9p+AMw6qd/iC4lUk9g0+FQXNdRs+o4o6Qvy
+ iOQJfGQ4UcBuOy1IrkJrd8qq5jet1fcM2j4QvsW8CLDWZS1L7kZ5gT5EycMKxUWb8LuRjxzZ
+ 3QY1aQH2kkzn6acigU3HLtgFyV1gBNV44ehjgvJpRY2cC8VhanTx0dZ9mj1YKIky5N+C0f21
+ zvntBqcxV0+3p8MrxRRcgEtDZNav+xAoT3G0W4SahAaUTWXpsZoOecwtxi74CyneQNPTDjNg
+ azHmvpdBVEfj7k3p4dmJp5i0U66Onmf6mMFpArvBRSMOKU9DlAzMi4IvhiNWjKVaIE2Se9BY
+ FdKVAJaZq85P2y20ZBd08ILnKcj7XKZkLU5FkoA0udEBvQ0f9QLNyyy3DZMCQWcwRuj1m73D
+ sq8DEFBdZ5eEkj1dCyx+t/ga6x2rHyc8Sl86oK1tvAkwBNsfKou3v+jP/l14a7DGBvrmlYjO
+ 59o3t6inu6H7pt7OL6u6BQj7DoMAEQEAAcLBfAQYAQgAJgIbDBYhBBvZyq1zXEw6Rg38yk3e
+ EPcA/4NaBQJonNqrBQkmWAihAAoJEE3eEPcA/4NaKtMQALAJ8PzprBEXbXcEXwDKQu+P/vts
+ IfUb1UNMfMV76BicGa5NCZnJNQASDP/+bFg6O3gx5NbhHHPeaWz/VxlOmYHokHodOvtL0WCC
+ 8A5PEP8tOk6029Z+J+xUcMrJClNVFpzVvOpb1lCbhjwAV465Hy+NUSbbUiRxdzNQtLtgZzOV
+ Zw7jxUCs4UUZLQTCuBpFgb15bBxYZ/BL9MbzxPxvfUQIPbnzQMcqtpUs21CMK2PdfCh5c4gS
+ sDci6D5/ZIBw94UQWmGpM/O1ilGXde2ZzzGYl64glmccD8e87OnEgKnH3FbnJnT4iJchtSvx
+ yJNi1+t0+qDti4m88+/9IuPqCKb6Stl+s2dnLtJNrjXBGJtsQG/sRpqsJz5x1/2nPJSRMsx9
+ 5YfqbdrJSOFXDzZ8/r82HgQEtUvlSXNaXCa95ez0UkOG7+bDm2b3s0XahBQeLVCH0mw3RAQg
+ r7xDAYKIrAwfHHmMTnBQDPJwVqxJjVNr7yBic4yfzVWGCGNE4DnOW0vcIeoyhy9vnIa3w1uZ
+ 3iyY2Nsd7JxfKu1PRhCGwXzRw5TlfEsoRI7V9A8isUCoqE2Dzh3FvYHVeX4Us+bRL/oqareJ
+ CIFqgYMyvHj7Q06kTKmauOe4Nf0l0qEkIuIzfoLJ3qr5UyXc2hLtWyT9Ir+lYlX9efqh7mOY
+ qIws/H2t
+In-Reply-To: <20260428060550.7167-1-feng.tang@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi team,
+On 4/28/26 08:05, Feng Tang wrote:
+> There was a report on a multi-numa-nodes ARM server that when IOMMU is
+> disabled, the dma_alloc_coherent() function always returns memory from
+> node 0 even for devices attaching to other nodes, while they can get
+> local dma memory when IOMMU is on with the same API.
+> 
+> The reason is, when IOMMU is disabled, the dma_alloc_coherent() will
+> go the direct way and call dma_alloc_contiguous(). The system doesn't
+> have any explicit cma setting (like per-numa cma), and only has a
+> default 64MB cma reserved area (on node 0), where kernel will try
+> first to allocate memory from.
+> 
+> Robin Murphy suggested to setup pernuma cma or disable cma, which did
+> solve the issue. 
 
-According to the ARM SMMU v3 spec, I believe that SSID should always be
-ignored when SSID_VALID == 0 and the current ARM SMMU v3 module
-implementation in the kernel seems to comply with this without exception.
-For example, when handling an event from SMMU, the implementation checks
-SSID_VALID(SSV) first and ignores SSID accordingly. If there is any
-exception to this rule, I believe it is a bug.
+That sounds like the obvious approach to me.
 
-Is it true for all the current and future cases? In other words, is it
-**mandatory** that the ARM SMMU v3 implementation ignores SSID when
-SSID_VALID == 0? or there might be some cases where the implementation
-needs to refer to SSID even when SSID_VALID == 0?
+> While there is still concern that for customers
+> which don't have much kernel knowledge, they could still suffer from
+> this silently as some architectures enable cma area by default (not
+> an issue for X86 though, which set CONFIG_CMA_SIZE_MBYTES to 0 by
+> default) for most Linux distributions.
 
-Asking this question since our HW may not be able to clear SSID when
-SSID_VALID == 0 and so there might be some garbage value in SSID at some
-point of time(the HW will have a correct SSID when SSID_VALID == 1,
-though). If the ARM SMMU v3 implementation is to refer to that garbage
-value for any reason, the result would be devastating.
+Okay, so on x86 it is not silent, because they don't even have a default CMA area?
 
-Thanks,
-Joonwon Kang
+> 
+> One thought is to follow the current cma reserving policy for platform
+> with 'CONFIG_DMA_NUMA_CMA=y', that if the numa cma (either the 'numa cma'
+> or 'cma pernuma' method) is not explicitly configured, set it up
+> according to size of default 'dma_contiguous_default_area', while
+> skipping the numa node where the 'dma_contiguous_default_area' lies
+> in, this way the default behavior of platform with one NUMA node is
+> kept unchanged.
+
+So, the kernel is configured to have a certain CONFIG_CMA_SIZE_MBYTES size, but
+you go ahead and multiply that by the number of nodes? Sounds wrong.
+
+The whole proposal here looks rather hacky.
+
+Wouldn't a default for e.g., pernuma_size_bytes make more sense, that users can
+then overwrite on the cmdline?
+
+> 
+> To get the node info of cma area, add some helpr funciton and setup
+> in cma code.
+> 
+> Reported-by: Changrong Chen <chenchangrong.ccr@alibaba-inc.com>
+> Suggested-by: Ying Huang <ying.huang@linux.alibaba.com>
+> Suggested-by: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Feng Tang <feng.tang@linux.alibaba.com>
+> ---
+> Changelog:
+> 
+>   since v2:
+>     * setup the numa cma are following default cma, while
+> 	  skipping the node holds the default cma (Robin Murphy)
+> 	* add cma_get_node() help and related code
+> 	* add reporter info 
+> 
+>   since v1:
+> 	* don't use the original way of adding alloc_pages_node()
+> 	  before trying default cma node (Robin Murphy)
+> 	* setup default numa cma area if not configured (Ying Huang)
+> 
+>    v2: https://lore.kernel.org/lkml/20260423095243.14239-1-feng.tang@linux.alibaba.com/
+>    v1: https://lore.kernel.org/lkml/20260414090310.92055-1-feng.tang@linux.alibaba.com/
+> 
+>  include/linux/cma.h     |  1 +
+>  kernel/dma/contiguous.c | 14 ++++++++++++--
+>  mm/cma.c                | 11 ++++++++++-
+>  3 files changed, 23 insertions(+), 3 deletions(-)
+
+[...]
+
+>  		if (numa_cma_size[nid]) {
+>  
+>  			cma = &dma_contiguous_numa_area[nid];
+> @@ -255,8 +265,6 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
+>  	phys_addr_t selected_limit = limit;
+>  	bool fixed = false;
+>  
+> -	dma_numa_cma_reserve();
+> -
+>  	pr_debug("%s(limit %08lx)\n", __func__, (unsigned long)limit);
+>  
+>  	if (size_cmdline != -1) {
+> @@ -312,6 +320,8 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
+>  		if (ret)
+>  			pr_warn("Couldn't queue default CMA region for heap creation.");
+>  	}
+> +
+> +	dma_numa_cma_reserve();
+>  }
+>  
+>  void __weak
+> diff --git a/mm/cma.c b/mm/cma.c
+> index c7ca567f4c5c..3bbfafeaf6c1 100644
+> --- a/mm/cma.c
+> +++ b/mm/cma.c
+> @@ -54,6 +54,11 @@ const char *cma_get_name(const struct cma *cma)
+>  }
+>  EXPORT_SYMBOL_GPL(cma_get_name);
+>  
+> +extern int cma_get_nid(const struct cma *cma)
+> +{
+> +	return cma->nid;
+> +}
+
+Why do you have to store the nid instead of just looking it up from the base_pfn
+in here?
+
+Also, what is the expectation when the ranges would span different NIDs? (is
+that possible?)
+
+-- 
+Cheers,
+
+David
