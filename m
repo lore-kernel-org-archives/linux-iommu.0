@@ -1,109 +1,359 @@
-Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 263251AA797
-	for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 13:39:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C73B3F54CE;
+	Tue, 28 Apr 2026 13:49:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777383585; cv=none; b=iHZok4/WztLu1f00tjSIN+tpmSBoLaYB1HWY/h8GtV/xyRT0Z51knc4kUTFxlBjWS+UE/2lia4wMAbx3jybj9qelp1ueiDoL1ccOISXsfErLwHCGDs8PKsHCHWFmXmXBa6aLxoX3w3fLnTrPax2TRbNRtTFDWpU3S0gGOmHpx4M=
+	t=1777384171; cv=none; b=g2EuGYMvW14wYXdzLnrqgWewpbttPnMKSVfzr20dsTszUs1nucp64bcwQpU9KbcOC28zPOKOM2Fc2umhbUBcdqX6200aK1DG0yiQAsw4xzcsPQE5Oxcz53nAWICkoZYpFEbcqUhD6A+hq3sY2Ejs8Bh+02DQ8U01dOujiBgE1eM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777383585; c=relaxed/simple;
-	bh=L8HDnTm3t5UfCzUjApcE3hEgz7xnRCJCpMcVAmSZC+s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eCF29nP4T3mZmQIp7QoRBRtAS0tPIaEi1tYTUbhy/Hh3zCrg3DIg1kWwD0tqsekACswZnaKl7tTKqhKErvr+dTufwKoM6jSJrlycqHDx5Hhp82kesB6RE2plmbOu8gz8EM8l+39RH42e+y17XRrnfeeNHc7rCuE6abSDKMCO9QU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=mj1Z666l; arc=none smtp.client-ip=209.85.219.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1777384171; c=relaxed/simple;
+	bh=T90qpzH+IxgMriE1r9J4sAT681SbwTg9c9z3A+z+O0M=;
+	h=Date:Message-ID:From:To:Cc:Subject:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=AoB3WMj0jYdN6V+/MPxEn8JzDIqO9ZynGzPJxX8aXi6r9k/AYTyolhWZUxv2do1TumtPcMgN6kxL9eh4wPDpTSkjsOAEj/rqjN7KXvmRUeMIZAPWmCl7g21pPglMPJ6frHYWF0hNwBl2h/yjR743qZdLFOW624zVM8seH4hoXXs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JrvpvXp3; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="mj1Z666l"
-Received: by mail-qv1-f54.google.com with SMTP id 6a1803df08f44-8b3e37e0d45so7240886d6.1
-        for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 06:39:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1777383583; x=1777988383; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=cP40XfCNqjUZHKaFHTD5m2R9L06qogZbeISGyPC9spA=;
-        b=mj1Z666lXbWME4MgYFaWOjbWd5rf0VMqpNvSECGNHul4Clh96AX6zGWx2tuD1EDoe9
-         n3YvwC3+BPSn71vT0kk4z+lI72p98QXTPDtibRmqpUox3hXFLd3biDV6u7mtofH3VshX
-         +T+BqqMFIODa6NWfPasydd9+j9mGxxtRfzH6ca69zXqyvrfFssg3WQqrjy6TKG10bub6
-         vDqDhEZCiRARPH8QboPtkaVrD+8gV8jf/xv9jp4fswHnh+ypeNoQ5+vlMRHmDwBpX4ip
-         lU/mjNEzvWztabhr8twgQfz/KMM+FHA2NT0vnxRTPNinEG7Vm3MY/NOm1aFZBwXhRFbP
-         eg5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777383583; x=1777988383;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=cP40XfCNqjUZHKaFHTD5m2R9L06qogZbeISGyPC9spA=;
-        b=XzD8ivffryic6zIPb2epKWEJMhX1luLH3BQJ7oDPNp0xpgJDeGXtvzwd9ZAe+PMVmL
-         EpasRaEKDHMTvb+rH63jBnBKDqBZdDWBFF2bOro8A1REhSdq3a6s+mBGAM7G1pk1PhZD
-         iWjwMTj7E8lFp6CemwTH3PmzHrrghWmpmoMluCzwv3kRnbyt+7hUwk8VJAe+aXWIZ8Ko
-         eFU/Dg0dtnoDI3fDxSTae/zZmzgYS0VfjiFsRnyuL9SU92bmZQQzLxvbvcVb9tU/eBpn
-         XpOn1RUILHiHcAT+C0SFunwc9E+2LfwnK4E5nY/9oxcALkSmAhz/899mIgD+mPPXHA4s
-         SV1w==
-X-Forwarded-Encrypted: i=1; AFNElJ/wPa6k2C1sVSklyBT9vyIqA1eSqMYHy+K8uZ2VF/lNWByxFAvHESIZqChA6NsnTreoajrKpg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz3R3Cci62AqQmVc6QLLXR+9h/NeNTFXukEkINDtpWuDquC7Bb2
-	Pn4WtB5MdXTBaZUtYls5MiqEfx9eR0tRFcL09ditKhVoYo4P+qa+kW6qRxXaunST9Cc/6he9gfo
-	ucB8dhWg=
-X-Gm-Gg: AeBDieurXxk8sgUtp4Iy6ZK52v+A9LyxUxp4mkhXaiQ8Hga9D+QxxucEAU7VfwLwm7u
-	Wsm95RjXl5FhMilu0hLuyE7rj9n5NNwmIItb5K/DJVbM7keyEZX6Z8CxvzdZH3LeuE8Gs+wOvJu
-	EPtp6zFgfxMSeUYOr85naqQDwoWNf8eVhsEHO3+DEJZdCPqxHyKKX18TOHQBkeYJESvFdij8ZfD
-	g3yTc+UTfHw34F0ObivMEKbGtB6DmmsUZ8R7vdUN3FPxfimFgunX5Im81Ce8P1Cb2gzOOD9Mafn
-	oc/Ty0WjnFd3VGbLm1SyI90flPB+hL7HJRhfWcK1KlexgF29P0RBwv1XUgcxg9NxEdyffrWNUQs
-	YMNa43EjpScPPuaRIJST6g43VbI2OgOgNoR1Z/HQih6QsaBMBO4JzZRMcfRuoOmpjNZi0gUdKp8
-	QjbzTX2J44PMkRa/CfYzVybceCV95OedM0PjSftl7Kav6RdpLmF5dyaFjFi56RYg5M36VYUkyD1
-	7jsghY7fHuUjny0
-X-Received: by 2002:ad4:594d:0:b0:8ae:7146:603d with SMTP id 6a1803df08f44-8b3e2ffa2b5mr47731266d6.13.1777383583207;
-        Tue, 28 Apr 2026 06:39:43 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8b3e281bd11sm20759256d6.8.2026.04.28.06.39.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Apr 2026 06:39:42 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wHif8-0000000AjUG-0wGD;
-	Tue, 28 Apr 2026 10:39:42 -0300
-Date: Tue, 28 Apr 2026 10:39:42 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: fangyu.yu@linux.alibaba.com
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, pjw@kernel.org,
-	palmer@dabbelt.com, aou@eecs.berkeley.edu, alex@ghiti.fr,
-	tjeznach@rivosinc.com, kevin.tian@intel.com,
-	baolu.lu@linux.intel.com, vasant.hegde@amd.com, anup@brainfault.org,
-	atish.patra@linux.dev, skhawaja@google.com, guoren@kernel.org,
-	kvm@vger.kernel.org, iommu@lists.linux.dev,
-	kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org, Zong Li <zong.li@sifive.com>
-Subject: Re: [RFC PATCH 11/11] iommu/riscv: support nested iommu for getting
- iommu hardware information
-Message-ID: <20260428133942.GI849557@ziepe.ca>
-References: <20260428131359.34872-1-fangyu.yu@linux.alibaba.com>
- <20260428131359.34872-12-fangyu.yu@linux.alibaba.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JrvpvXp3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E090DC2BCAF;
+	Tue, 28 Apr 2026 13:49:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777384171;
+	bh=T90qpzH+IxgMriE1r9J4sAT681SbwTg9c9z3A+z+O0M=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=JrvpvXp3i5liE8excVJzVvbrrAYuHH3dL37BGNF79PheXwvflHT8vYmelLE2Ekmys
+	 DHRdYkAC6aQ4eo234cWrlsG7pv3t8eajKkNaBNFtXhhMeB33vZ/KcfrXBxOys5t+nG
+	 ubh0pWL4wQi49x1hLG/DelkL8Ai1DaKPwu5lFlQCfYu//umXlal8xh2P2PnbSE/S+a
+	 O8Ez3wPxiWxD+77oHMdS5z8WxDY7gorew5rBezTFGVLBpKTiEAMXCQKUpSJCh2Yys1
+	 081mIah3IFGQWZ+/TXKPGGZuLCiXXDAjoFch+gXiY8TWJBWXI3pLACMN494n81gwfM
+	 tOhZ76c55/VbA==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=goblin-girl.misterjones.org)
+	by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.98.2)
+	(envelope-from <maz@kernel.org>)
+	id 1wHioa-0000000FWaB-2fQo;
+	Tue, 28 Apr 2026 13:49:28 +0000
+Date: Tue, 28 Apr 2026 14:49:28 +0100
+Message-ID: <86tssvyz2v.wl-maz@kernel.org>
+From: Marc Zyngier <maz@kernel.org>
+To: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-coco@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	kvmarm@lists.linux.dev,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v4 3/3] coco: guest: arm64: Query host IPA-change alignment via RHI
+In-Reply-To: <yq5a4ikv1c7p.fsf@kernel.org>
+References: <20260427063108.909019-1-aneesh.kumar@kernel.org>
+	<20260427063108.909019-4-aneesh.kumar@kernel.org>
+	<86y0i8zo9f.wl-maz@kernel.org>
+	<yq5a4ikv1c7p.fsf@kernel.org>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/30.1
+ (aarch64-unknown-linux-gnu) MULE/6.0 (HANACHIRUSATO)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260428131359.34872-12-fangyu.yu@linux.alibaba.com>
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: aneesh.kumar@kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, linux-coco@lists.linux.dev, linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, catalin.marinas@arm.com, jgg@ziepe.ca, m.szyprowski@samsung.com, robin.murphy@arm.com, steven.price@arm.com, suzuki.poulose@arm.com, tglx@kernel.org, will@kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 
-On Tue, Apr 28, 2026 at 09:13:59PM +0800, fangyu.yu@linux.alibaba.com wrote:
-> From: Zong Li <zong.li@sifive.com>
-> 
-> This patch implements .hw_info operation and the related data
-> structures for passing the IOMMU hardware capabilities for iommufd.
-> 
-> Signed-off-by: Zong Li <zong.li@sifive.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
-> ---
->  drivers/iommu/riscv/iommu.c  | 19 +++++++++++++++++++
->  include/uapi/linux/iommufd.h | 18 ++++++++++++++++++
->  2 files changed, 37 insertions(+)
+On Tue, 28 Apr 2026 13:49:46 +0100,
+Aneesh Kumar K.V <aneesh.kumar@kernel.org> wrote:
+>=20
+> Marc Zyngier <maz@kernel.org> writes:
+>=20
+> > On Mon, 27 Apr 2026 07:31:08 +0100,
+> > "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> wrote:
+> >>=20
+> >> Add the Realm Host Interface support needed to query host configuration
+> >> from a Realm guest. Define the RHI hostconf SMCs, add rsi_host_call(),=
+ and
+> >> use them during Realm initialization to retrieve the host IPA-change
+> >> alignment size.
+> >
+> > I don't understand what "IPA-change" means. What you are after is the
+> > host's sharing granule size.
+> >
+>=20
+> This is part of the RHI specification, and the call is named
+> RHI_HOSTCONF_GET_IPA_CHANGE_ALIGNMENT. The intent is to determine the
+> alignment requirements for changing IPA attributes (protected vs.
+> unprotected IPA
 
-This has nothing to do with dirty tracking. It should go with a series
-introducing viommu.
+This really is a terrible name. Why the 'change' part? It doesn't
+change, it is a constant.
 
-Jason
+Oh well...
+
+[...]
+
+> >> +static inline unsigned long rsi_host_call(struct rsi_host_call *rhi_c=
+all)
+> >> +{
+> >> +	phys_addr_t addr =3D virt_to_phys(rhi_call);
+> >> +	struct arm_smccc_res res;
+> >> +
+> >> +	arm_smccc_1_1_invoke(SMC_RSI_HOST_CALL, addr, &res);
+> >
+> > Errr... What guarantees that *rhi_call is *IPA contiguous*? This is
+> > incredibly fragile. You should at the very least check that this isn't
+> > vmalloc'd.
+> >
+>=20
+>=20
+> I didn=E2=80=99t quite follow that. We have other RSI calls (even RMI cal=
+ls)
+> that do similar things, and the caller understands that the address
+> should be IPA-contiguous.
+
+Does it? Where is it documented?  All you get is a pointer, so all
+bets are off.
+
+> Are you suggesting that all RSI calls should
+> add checks for this?. or are you suggesting to update the API to
+>=20
+> unsigned long rsi_host_call(unsigned long rhi_call_phys) ?
+
+I'm suggesting that this API is subtly broken because it makes random
+assumption about the physical contiguity of the VA space. It does so
+without any check, without any documentation.
+
+Simply changing the parameter to phys_addr_t could at the very least
+capture some of the requirements, but I'd like something in big bold
+letters.
+
+>
+> >> +
+> >> +	return res.a0;
+> >> +}
+> >> +
+> >>  #endif /* __ASM_RSI_CMDS_H */
+> >> diff --git a/arch/arm64/include/asm/rsi_smc.h b/arch/arm64/include/asm=
+/rsi_smc.h
+> >> index e19253f96c94..9ee8b5c7612e 100644
+> >> --- a/arch/arm64/include/asm/rsi_smc.h
+> >> +++ b/arch/arm64/include/asm/rsi_smc.h
+> >> @@ -182,6 +182,13 @@ struct realm_config {
+> >>   */
+> >>  #define SMC_RSI_IPA_STATE_GET			SMC_RSI_FID(0x198)
+> >> =20
+> >> +struct rsi_host_call {
+> >> +	union {
+> >> +		u16 imm;
+> >> +		u64 padding0;
+> >> +	};
+> >> +	u64 gprs[31];
+> >> +} __aligned(0x100);
+> >>  /*
+> >>   * Make a Host call.
+> >>   *
+> >> diff --git a/arch/arm64/kernel/Makefile b/arch/arm64/kernel/Makefile
+> >> index fe627100d199..3e72dd9584ed 100644
+> >> --- a/arch/arm64/kernel/Makefile
+> >> +++ b/arch/arm64/kernel/Makefile
+> >> @@ -34,7 +34,7 @@ obj-y			:=3D debug-monitors.o entry.o irq.o fpsimd.o=
+		\
+> >>  			   cpufeature.o alternative.o cacheinfo.o		\
+> >>  			   smp.o smp_spin_table.o topology.o smccc-call.o	\
+> >>  			   syscall.o proton-pack.o idle.o patching.o pi/	\
+> >> -			   rsi.o jump_label.o
+> >> +			   rsi.o jump_label.o rhi.o
+> >> =20
+> >>  obj-$(CONFIG_COMPAT)			+=3D sys32.o signal32.o			\
+> >>  					   sys_compat.o
+> >> diff --git a/arch/arm64/kernel/rhi.c b/arch/arm64/kernel/rhi.c
+> >> new file mode 100644
+> >> index 000000000000..7cd6c5102464
+> >> --- /dev/null
+> >> +++ b/arch/arm64/kernel/rhi.c
+> >> @@ -0,0 +1,54 @@
+> >> +// SPDX-License-Identifier: GPL-2.0-only
+> >> +/*
+> >> + * Copyright (C) 2026 ARM Ltd.
+> >> + */
+> >> +
+> >> +#include <linux/mm.h>
+> >> +#include <asm/rsi.h>
+> >> +#include <asm/rhi.h>
+> >> +
+> >> +/* we need an aligned rhicall for rsi_host_call. slab is not yet read=
+y */
+> >> +static struct rsi_host_call hyp_pagesize_rhicall;
+> >
+> > Why the "hyp_" prefix? This has absolutely nothing to with the
+> > hypervisor.
+> >
+>=20
+> Sure will update "hyp_" reference to host.=20
+>=20
+>=20
+> >> +unsigned long rhi_get_ipa_change_alignment(void)
+> >> +{
+> >> +	long ret;
+> >> +	unsigned long ipa_change_align;
+> >> +
+> >> +	hyp_pagesize_rhicall.imm =3D 0;
+> >> +	hyp_pagesize_rhicall.gprs[0] =3D RHI_HOSTCONF_VERSION;
+> >> +	ret =3D rsi_host_call(lm_alias(&hyp_pagesize_rhicall));
+> >> +	if (ret !=3D RSI_SUCCESS)
+> >> +		goto err_out;
+> >> +
+> >> +	if (hyp_pagesize_rhicall.gprs[0] !=3D RHI_HOSTCONF_VER_1_0)
+> >> +		goto err_out;
+> >> +
+> >> +	hyp_pagesize_rhicall.imm =3D 0;
+> >> +	hyp_pagesize_rhicall.gprs[0] =3D RHI_HOSTCONF_FEATURES;
+> >> +	ret =3D rsi_host_call(lm_alias(&hyp_pagesize_rhicall));
+> >> +	if (ret !=3D RSI_SUCCESS)
+> >> +		goto err_out;
+> >> +
+> >> +	if (!(hyp_pagesize_rhicall.gprs[0] & __RHI_HOSTCONF_GET_IPA_CHANGE_A=
+LIGNMENT))
+> >> +		goto err_out;
+> >> +
+> >> +	hyp_pagesize_rhicall.imm =3D 0;
+> >> +	hyp_pagesize_rhicall.gprs[0] =3D RHI_HOSTCONF_GET_IPA_CHANGE_ALIGNME=
+NT;
+> >> +	ret =3D rsi_host_call(lm_alias(&hyp_pagesize_rhicall));
+> >> +	if (ret !=3D RSI_SUCCESS)
+> >> +		goto err_out;
+> >> +
+> >> +	ipa_change_align =3D hyp_pagesize_rhicall.gprs[0];
+> >> +	/* This error needs special handling in the caller */
+> >> +	if (ipa_change_align & (SZ_4K - 1))
+> >> +		return 0;
+> >> +
+> >> +	return ipa_change_align;
+> >> +
+> >> +err_out:
+> >> +	/*
+> >> +	 * For failure condition assume host is built with 4K page size
+> >> +	 * and hence ipa change alignment can be guest PAGE_SIZE.
+> >> +	 */
+> >> +	return PAGE_SIZE;
+> >> +}
+> >
+> > Why can't this be part of rsi.c? This is an RSI call, and it should be
+> > part of the RSI initialisation.
+> >
+>=20
+> This is an RHI call as per the specification, hence it has been added to
+> rhi.c.
+
+News flash: this is the Linux kernel, not an ARM spec. We organise
+things based on the logical use, not on the TLA associated with it.
+
+And RHI is implemented in terms of RSI. In rsi.c it goes. We don't
+need this pointless proliferation of helper files that only result in
+equally pointless global symbols.
+
+>=20
+> >> diff --git a/arch/arm64/kernel/rsi.c b/arch/arm64/kernel/rsi.c
+> >> index 9e846ce4ef9c..ff735c04e236 100644
+> >> --- a/arch/arm64/kernel/rsi.c
+> >> +++ b/arch/arm64/kernel/rsi.c
+> >> @@ -14,8 +14,10 @@
+> >>  #include <asm/mem_encrypt.h>
+> >>  #include <asm/pgtable.h>
+> >>  #include <asm/rsi.h>
+> >> +#include <asm/rhi.h>
+> >> =20
+> >>  static struct realm_config config;
+> >> +static unsigned long ipa_change_alignment =3D PAGE_SIZE;
+> >> =20
+> >>  unsigned long prot_ns_shared;
+> >>  EXPORT_SYMBOL(prot_ns_shared);
+> >> @@ -139,6 +141,11 @@ static int realm_ioremap_hook(phys_addr_t phys, s=
+ize_t size, pgprot_t *prot)
+> >>  	return 0;
+> >>  }
+> >> =20
+> >> +unsigned long realm_get_hyp_pagesize(void)
+> >> +{
+> >> +	return ipa_change_alignment;
+> >> +}
+> >
+> > Again, this has nothing to do with the hypervisor, but the host. And
+> > ipa_change_alignment is still a wording I can't wrap my small head
+> > around.
+> >
+> >> +
+> >>  void __init arm64_rsi_init(void)
+> >>  {
+> >>  	if (arm_smccc_1_1_get_conduit() !=3D SMCCC_CONDUIT_SMC)
+> >> @@ -147,6 +154,12 @@ void __init arm64_rsi_init(void)
+> >>  		return;
+> >>  	if (WARN_ON(rsi_get_realm_config(&config)))
+> >>  		return;
+> >> +
+> >> +	ipa_change_alignment =3D rhi_get_ipa_change_alignment();
+> >> +	/* If we don't get a correct alignment response, don't enable realm =
+*/
+> >> +	if (!ipa_change_alignment)
+> >> +		return;
+> >
+> > But at the same time, you override a global value with an error, and
+> > then paper over it in mem_decrypt_granule_size()...
+> >
+>=20
+>=20
+> I believe I received similar feedback on my previous version as well,
+> which I didn=E2=80=99t quite follow.
+
+And you didn't think of asking? Sometimes I wonder what these patch
+reviews are for... Just to waste some more electrons, I guess :-/.
+
+>=20
+> rhi_get_ipa_change_alignment() only returns an error when the host
+> returns a size that is not 4K-aligned. Otherwise, it returns the
+> host-determined size, or defaults to guest PAGE_SIZE if the RHI call
+> itself is not supported.
+
+You encode the error as 0. You override ipa_change_alignment with 0.
+
+Then...
+
+> >> +size_t mem_decrypt_granule_size(void)
+> >> +{
+> >> +	if (is_realm_world())
+> >> +		return max(PAGE_SIZE, realm_get_hyp_pagesize());
+> >
+> > If you didn't mess with ipa_change_alignment above, you shouldn't need
+> > this max().
+> >
+>=20
+> size_t mem_decrypt_granule_size(void)
+> {
+> 	if (is_realm_world())
+> 		return max(PAGE_SIZE, realm_get_hyp_pagesize());
+> 	return PAGE_SIZE;
+> }
+>=20
+> That needs to use max(), because we should align to the guest PAGE_SIZE
+> if it is larger than the host-specified alignment value.
+
+... you need to correct that back to PAGE_SIZE because you have stored
+something smaller than PAGE_SIZE.
+
+Isn't the problem really obvious? ipa_change_alignment can *NEVER* go
+down. It should never be allowed to reduce, because that's exactly
+the property you are trying to enforce.
+
+	M.
+
+--=20
+Without deviation from the norm, progress is not possible.
