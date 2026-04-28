@@ -1,169 +1,342 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 305D1478869
-	for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 16:06:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2E3D632720D
+	for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 16:42:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777392383; cv=none; b=UVqdx+MvVlO5aVgZR445TKXHXgvltL06nEKF8VvRPhGu+c6D1Nc6Z5SvAjm/hY/W1Bqpv+EjUk8k2cFAfVzduQoSRoZgzGrbNCKnAhiWxPk4uSMxpGM3OYWg1MVeGX/h63nBXa7TUeOTFvevUkZGpEf+Oot2UFg7Nefe+SGDMYQ=
+	t=1777394562; cv=none; b=fXJ9+EWjlviYrXBR2/GrTV/LpDiMVQ1lxIryGfwoTgXA0a6jdJP4yROYVslbSRcs5moXMuHigDR4accF6k0v2fQNMo+MjHetvXkHM1lq/ZbFYyJoAGXoaZ/MrJVTsZb3TGBnM8NApmFn6tLcAIMtifmnNbG4bWQn/3fxL8H/DTk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777392383; c=relaxed/simple;
-	bh=m/TCYFI4Mlj08UwCUuUQSrr8AB+r3TQVHcrwFuMzBXo=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=eRFbpZuf7tTs4OHmCA9L3fZ6apbjO4xJJXKhgxwbsMs9fViX4dBumoFLKDwSRmp5uwmRCasDs3/96YBUBcSqctt58eNafyqYjvDNZRPeaNDvcxS7UysR0io2maB5PzkEbvH4Pajn1IvJ/NzbyawoGjr8tT2WvIdFUR9pZUuq8oo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=peter.mobile.pengutronix.de)
-	by metis.whiteo.stw.pengutronix.de with esmtp (Exim 4.92)
-	(envelope-from <s.pueschel@pengutronix.de>)
-	id 1wHkwg-0002mE-B7; Tue, 28 Apr 2026 18:05:58 +0200
-From: =?utf-8?q?Sven_P=C3=BCschel?= <s.pueschel@pengutronix.de>
-Date: Tue, 28 Apr 2026 18:05:31 +0200
-Subject: [PATCH v2] iommu/rockchip: disable fetch dte time limit
+	s=arc-20240116; t=1777394562; c=relaxed/simple;
+	bh=+ZZQJ3OhnE8xEpJ2zHeeU7+maq0rU0IOgdEzQL4Zgxw=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=lqAVReXalWvdhH2a5khyloC2eW1kSEDvaWH2gvKs4qt8oKF5hb7KcLZ6zr79aGeFmF4eiLhlqFhaljA7O9C2Ucbaeoj60Afkgzpp6opO71K85Yr/G8CGWV+wMCBLpOqWigqX+4gQVVWFGsfAHfQh39M15ciV4KuuybTdg8/VjcE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Wz4eDih1; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Wz4eDih1"
+Received: from localhost (unknown [52.148.140.42])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 8ABBF20B716C;
+	Tue, 28 Apr 2026 09:42:40 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 8ABBF20B716C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1777394560;
+	bh=YJX3Ai2pY5QUCNPlc/L83dnSa7VXWkJLG2StHc/PDKk=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=Wz4eDih1diRoqK0NG/YOYG2sTlQumjgA4PsxxjZQZcO17/LcuScimULO7oCkWh4BG
+	 uP7OrJw5ghov6iKl2pLP/9ug2J99WO4kJRH3m7Ojc6w35ffo83TlZES0r4UndHLXVi
+	 JYl1DJlD4tYfWvtF3dq4gW2jiziRV8CdfGm1xdVY=
+Date: Tue, 28 Apr 2026 09:42:38 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Alex Williamson
+ <alex@shazbot.org>, Joerg Roedel <joro@8bytes.org>, Mostafa Saleh
+ <smostafa@google.com>, David Matlack <dmatlack@google.com>, Robin Murphy
+ <robin.murphy@arm.com>, Nicolin Chen <nicolinc@nvidia.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, <skhawaja@google.com>, <pasha.tatashin@soleen.com>,
+ Will Deacon <will@kernel.org>, Baolu Lu <baolu.lu@linux.intel.com>,
+ jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH V4 01/10] iommufd: Support a HWPT without an iommu
+ driver for noiommu
+Message-ID: <20260428094238.0000222b@linux.microsoft.com>
+In-Reply-To: <b0bf1e99-d7d0-4e62-8a97-114e8e990b58@intel.com>
+References: <20260414211412.2729-1-jacob.pan@linux.microsoft.com>
+	<20260414211412.2729-2-jacob.pan@linux.microsoft.com>
+	<b0bf1e99-d7d0-4e62-8a97-114e8e990b58@intel.com>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20260428-spu-iommudtefix-v2-1-f592f579e508@pengutronix.de>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/3WNwQ6DIBAFf8XsuTRAsU178j8aDxYW3YNAAImN8
- d+L3nucSd68DRJGwgSvZoOIhRJ5V0FeGtDT4EZkZCqD5LIVQt5ZCgsjP8+LyWhpZdpw3Uql9EM
- NUFchHvosvvvKE6Xs4/c8KOKw/1tFMMHsk3N+Mx+rteoCunHJ0Ttarwah3/f9B3jTTfizAAAA
-X-Change-ID: 20251126-spu-iommudtefix-cd0c5244c74a
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Heiko Stuebner <heiko@sntech.de>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
- linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org, 
- Simon Xue <xxm@rock-chips.com>, kernel@pengutronix.de, 
- =?utf-8?q?Sven_P=C3=BCschel?= <s.pueschel@pengutronix.de>
-X-Mailer: b4 0.15.2
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
-X-SA-Exim-Mail-From: s.pueschel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: iommu@lists.linux.dev
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-From: Simon Xue <xxm@rock-chips.com>
+Hi Yi,
 
-Disable the Bit 31 of the AUTO_GATING iommu register, as it causes
-hangups with the RGA3 (Raster Graphics Acceleration 3) peripheral.
-The RGA3 register description of the TRM already states that the bit
-must be set to 1. The vendor kernel sets the bit unconditionally to
-1 to fix VOP (Video Output Processor) screen black issues. This patch
-squashes the 2 vendor kernel commits with the following commit messages:
+On Tue, 28 Apr 2026 15:45:08 +0800
+Yi Liu <yi.l.liu@intel.com> wrote:
 
-Master fetch data and cpu update page table may work in parallel, may
-have the following procedure:
+> Hi Jacob,
+> 
+> On 4/15/26 05:14, Jacob Pan wrote:
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > 
+> > Create just a little part of a real iommu driver, enough to
+> > slot in under the dev_iommu_ops() and allow iommufd to call
+> > domain_alloc_paging_flags() and fail everything else.
+> > 
+> > This allows explicitly creating a HWPT under an IOAS.
+> > 
+> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> > Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+> > 
+> > ---
+> > v4:
+> >     - Make iommufd_noiommu_ops const
+> > v3:
+> >     - Add comment to explain the design difference over the
+> >       legacy noiommu VFIO code.
+> > 
+> > fix const hwpt
+> > ---
+> >   drivers/iommu/iommufd/Makefile          |   1 +
+> >   drivers/iommu/iommufd/hw_pagetable.c    |  11 ++-
+> >   drivers/iommu/iommufd/hwpt_noiommu.c    | 102
+> > ++++++++++++++++++++++++ drivers/iommu/iommufd/iommufd_private.h |
+> >  2 + 4 files changed, 114 insertions(+), 2 deletions(-)
+> >   create mode 100644 drivers/iommu/iommufd/hwpt_noiommu.c
+> > 
+> > diff --git a/drivers/iommu/iommufd/Makefile
+> > b/drivers/iommu/iommufd/Makefile index 71d692c9a8f4..2b1a020b14a6
+> > 100644 --- a/drivers/iommu/iommufd/Makefile
+> > +++ b/drivers/iommu/iommufd/Makefile
+> > @@ -10,6 +10,7 @@ iommufd-y := \
+> >   	vfio_compat.o \
+> >   	viommu.o
+> >   
+> > +iommufd-$(CONFIG_VFIO_NOIOMMU) += hwpt_noiommu.o  
+> 
+> is it better to have a separate kconfig for it? Also, VFIO_NOIOMMU
+> depends on VFIO_GROUP, this does not sound good. For one, cdev's
+> noiommu support should not depend on groups. For two, this means the
+> iommufd noiommu support is only for VFIO. It closes the gate for other
+> userpsace drivers. Perhaps a IOMMUFD_NOIOMMU kconfig for it.
+> 
+> 
+> VFIO_GROUP | VFIO_DEVICE_CDEV | IOMMUFD_NOIOMMU | VFIO_NOIOMMU
+> allowed?
+> -----------+------------------+-----------------+----------------------
+> Y     |        Y         |        Y        | Y (both paths work) Y
+>  |        Y         |        N        | N (cdev path lacks
+> IOMMUFD_NOIOMMU) Y     |        N         |        Y        | Y
+> (group path only, cdev irrelevant)
+>       Y     |        N         |        N        | Y (group path
+> only, cdev irrelevant)
+>       N     |        Y         |        Y        | Y (cdev path only)
+>       N     |        Y         |        N        | N (cdev path lacks 
+> IOMMUFD_NOIOMMU)
+>       N     |        N         |       any       | N (no VFIO
+> interface at all)
+> 
+> Then VFIO_NOIOMMU Kconfig dependency is:
+> 
+>      depends on VFIO_GROUP || VFIO_DEVICE_CDEV
+>      depends on !VFIO_DEVICE_CDEV || IOMMUFD_NOIOMMU
+> 
+yes, separating the two Kconfigs is cleaner. Alex also suggested
+similar to this in another thread, just different names.
+https://lore.kernel.org/linux-iommu/20260414211412.2729-1-jacob.pan@linux.microsoft.com/T/#m1a687fd4c9a9d24b6413d7a6d5cd09ba3f7ddb5e
 
-	master                  cpu
-	fetch dte               update page tabl
-	        |                       |
-	(make dte invalid)  <-  zap iotlb entry
-	        |                       |
-	fetch dte again
-	(make dte invalid)  <-  zap iotlb entry
-	        |                       |
-	fetch dte again
-	(make dte invalid)  <-  zap iotlb entry
-	        |                       |
-	fetch dte again
-	(make iommu block)  <-  zap iotlb entry
+- VFIO_GROUP_NOIOMMU
+- VFIO_CDEV_NOIOMMU // IOMMUFD_NOIOMMU sounds more generic, and
+  VFIO_DEVICE_CDEV already depends on IOMMUFD.
 
-New iommu version has the above bug, if fetch dte consecutively four
-times, then it will be blocked. Fortunately, we can set bit 31 of
-register MMU_AUTO_GATING to 1 to make it work as old version which does
-not have this issue.
+I am working on covering all the cases above and looks promising.
+Thanks for the matrix, I will put this in the doc patch.
 
-This issue only appears on RV1126 so far, so make a workaround dedicated
-to "rockchip,rv1126" machine type.
+> >   iommufd-$(CONFIG_IOMMUFD_TEST) += selftest.o
+> >   
+> >   obj-$(CONFIG_IOMMUFD) += iommufd.o
+> > diff --git a/drivers/iommu/iommufd/hw_pagetable.c
+> > b/drivers/iommu/iommufd/hw_pagetable.c index
+> > fe789c2dc0c9..37316d77277d 100644 ---
+> > a/drivers/iommu/iommufd/hw_pagetable.c +++
+> > b/drivers/iommu/iommufd/hw_pagetable.c @@ -8,6 +8,13 @@
+> >   #include "../iommu-priv.h"
+> >   #include "iommufd_private.h"
+> >   
+> > +static const struct iommu_ops *get_iommu_ops(struct iommufd_device
+> > *idev) +{
+> > +	if (IS_ENABLED(CONFIG_VFIO_NOIOMMU) &&
+> > !idev->igroup->group)
+> > +		return &iommufd_noiommu_ops;
+> > +	return dev_iommu_ops(idev->dev);
+> > +}
+> > +
+> >   static void __iommufd_hwpt_destroy(struct iommufd_hw_pagetable
+> > *hwpt) {
+> >   	if (hwpt->domain)
+> > @@ -114,7 +121,7 @@ iommufd_hwpt_paging_alloc(struct iommufd_ctx
+> > *ictx, struct iommufd_ioas *ioas, IOMMU_HWPT_ALLOC_DIRTY_TRACKING |
+> >   				IOMMU_HWPT_FAULT_ID_VALID |
+> >   				IOMMU_HWPT_ALLOC_PASID;
+> > -	const struct iommu_ops *ops = dev_iommu_ops(idev->dev);
+> > +	const struct iommu_ops *ops = get_iommu_ops(idev);
+> >   	struct iommufd_hwpt_paging *hwpt_paging;
+> >   	struct iommufd_hw_pagetable *hwpt;
+> >   	int rc;
+> > @@ -229,7 +236,7 @@ iommufd_hwpt_nested_alloc(struct iommufd_ctx
+> > *ictx, struct iommufd_device *idev, u32 flags,
+> >   			  const struct iommu_user_data *user_data)
+> >   {
+> > -	const struct iommu_ops *ops = dev_iommu_ops(idev->dev);
+> > +	const struct iommu_ops *ops = get_iommu_ops(idev);
+> >   	struct iommufd_hwpt_nested *hwpt_nested;
+> >   	struct iommufd_hw_pagetable *hwpt;
+> >   	int rc;
+> > diff --git a/drivers/iommu/iommufd/hwpt_noiommu.c
+> > b/drivers/iommu/iommufd/hwpt_noiommu.c new file mode 100644
+> > index 000000000000..1c8cae02beec
+> > --- /dev/null
+> > +++ b/drivers/iommu/iommufd/hwpt_noiommu.c
+> > @@ -0,0 +1,102 @@
+> > +// SPDX-License-Identifier: GPL-2.0-only
+> > +/*
+> > + * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
+> > + */
+> > +#include <linux/iommu.h>
+> > +#include <linux/generic_pt/iommu.h>  
+> 
+> how about moving it to the first one? :)
+will do.
 
-iommu/rockchip: fix vop blocked and screen black on RK356X and RK3588
+> 
+> > +#include "iommufd_private.h"
+> > +
+> > +static const struct iommu_domain_ops noiommu_amdv1_ops;
+> > +
+> > +struct noiommu_domain {
+> > +	union {
+> > +		struct iommu_domain domain;
+> > +		struct pt_iommu_amdv1 amdv1;
+> > +	};
+> > +	spinlock_t lock;
+> > +};
+> > +PT_IOMMU_CHECK_DOMAIN(struct noiommu_domain, amdv1.iommu, domain);
+> > +
+> > +static void noiommu_change_top(struct pt_iommu *iommu_table,
+> > +			       phys_addr_t top_paddr, unsigned int
+> > top_level) +{
+> > +}
+> > +
+> > +static spinlock_t *noiommu_get_top_lock(struct pt_iommu *iommupt)
+> > +{
+> > +	struct noiommu_domain *domain =
+> > +		container_of(iommupt, struct noiommu_domain,
+> > amdv1.iommu); +
+> > +	return &domain->lock;
+> > +}
+> > +
+> > +static const struct pt_iommu_driver_ops noiommu_driver_ops = {
+> > +	.get_top_lock = noiommu_get_top_lock,
+> > +	.change_top = noiommu_change_top,
+> > +};
+> > +
+> > +static struct iommu_domain *
+> > +noiommu_alloc_paging_flags(struct device *dev, u32 flags,
+> > +			   const struct iommu_user_data *user_data)
+> > +{
+> > +	struct pt_iommu_amdv1_cfg cfg = {};
+> > +	struct noiommu_domain *dom;
+> > +	int rc;
+> > +
+> > +	if (flags || user_data)
+> > +		return ERR_PTR(-EOPNOTSUPP);
+> > +
+> > +	cfg.common.hw_max_vasz_lg2 = 64;
+> > +	cfg.common.hw_max_oasz_lg2 = 52;
+> > +	cfg.starting_level = 2;
+> > +	cfg.common.features =
+> > +		(BIT(PT_FEAT_DYNAMIC_TOP) |
+> > BIT(PT_FEAT_AMDV1_ENCRYPT_TABLES) |
+> > +		 BIT(PT_FEAT_AMDV1_FORCE_COHERENCE));
+> > +
+> > +	dom = kzalloc(sizeof(*dom), GFP_KERNEL);
+> > +	if (!dom)
+> > +		return ERR_PTR(-ENOMEM);
+> > +
+> > +	spin_lock_init(&dom->lock);
+> > +	dom->amdv1.iommu.nid = NUMA_NO_NODE;
+> > +	dom->amdv1.iommu.driver_ops = &noiommu_driver_ops;
+> > +	dom->domain.ops = &noiommu_amdv1_ops;
+> > +
+> > +	/* Use mock page table which is based on AMDV1 */  
+> 
+> "mock" may mislead reader that this is test code... may just explain
+> why choose AMDV1 page table.
+I will quote Jason's comment "because it has the best multi-page size
+options of all the formats.". I also want to stress that this page
+table is not used by HW for DMA translation, maybe "SW only".
 
-RK3568 and RK3588 has the same issue as RV1126/RV1109 that caused by
-dte fetch time limit, So we can set BIT(31) of register 0x24 default
-to 1 as a workaround.
+Let me delete this comment and explain this later in the domain ops
+comment.
 
-Signed-off-by: Simon Xue <xxm@rock-chips.com>
-Signed-off-by: Sven Püschel <s.pueschel@pengutronix.de>
----
-During testing of a newly developed driver for the RGA3 peripheral [1]
-(Raster Graphic Acceleration 3) of the RK3588 some sporadic hangs
-have been observed. The upstream rockchip-iommu driver is used to handle
-the RGA3 IOMMU register space.
+> 
+> > +	rc = pt_iommu_amdv1_init(&dom->amdv1, &cfg, GFP_KERNEL);
+> > +	if (rc) {
+> > +		kfree(dom);
+> > +		return ERR_PTR(rc);
+> > +	}
+> > +
+> > +	return &dom->domain;
+> > +}
+> > +
+> > +static void noiommu_domain_free(struct iommu_domain *iommu_domain)
+> > +{
+> > +	struct noiommu_domain *domain =
+> > +		container_of(iommu_domain, struct noiommu_domain,
+> > domain); +
+> > +	pt_iommu_deinit(&domain->amdv1.iommu);
+> > +	kfree(domain);
+> > +}
+> > +
+> > +/*
+> > + * AMDV1 is used as a dummy page table for no-IOMMU mode, similar
+> > to the
+> > + * iommufd selftest mock page table.
+> > + * Unlike legacy VFIO no-IOMMU mode, where no container level APIs
+> > are
+> > + * supported, this allows IOAS and hwpt objects to exist without
+> > hardware
+> > + * IOMMU support. IOVAs are used only for IOVA-to-PA lookups not
+> > for
+> > + * hardware translation in DMA.  
+> 
+> Not sure if the above comment is helpful. To me, IOAS/hwpt operation
+> support is the natural advantage of using cdev. What helps here is
+> explaining why the specific ops are defined for noiommu_amdv1_ops. If
+> you'd keep it, may go in the commit message. :)
+Agreed, I kind of mixing two things here. I will move the high-level
+"why noiommu needs a page table" explanation to the commit message.
+Only keep the domain op explanation:
+ /*
+  * Domain ops for iommufd no-IOMMU mode. Uses AMDV1 format as a
+  * SW-only IOPT because it has the best multi-page size options
+  * of all the formats. IOVAs serve only for IOVA-to-PA lookups,
+  * not for hardware DMA translation.
+  */
 
-After a closer look at the TRM for the RK3588, the RGA3 iommu register
-description of the RGA3_MMU_AUTO_GATING register (offset 0xf24) mentions
-a mmu_bug_fixed_disable bit, which must be set to 1 but defaults to 0.
-
-Looking at the commits in the vendor kernel, the bit is unconditionally
-set to 1 and mentions that it fixes a blocked VOP (Video Output
-Processor) [3]. Therefore squash the relevant vendor commits
-[2] and [3] into a single patch, combine the commit messages and keep
-the Signed-off-by line from the original author.
-
-[1] https://lore.kernel.org/linux-media/20260428-spu-rga3-v5-0-eb7f5d019d86@pengutronix.de/
-[2] https://github.com/rockchip-linux/kernel/commit/7f8158fb41b5cc8e738aaeebc3637c50ebd74cae
-[3] https://github.com/rockchip-linux/kernel/commit/6a355e5f9a2069a2309e240791bc3aad63b7324e
----
-Changes in v2:
-- no changes to the actual commit
-- Adjusted RGA3 register offset mention in the cover to 0xf24
-- Adjusted RGA3 link to the latest patch version
-- Link to v1: https://lore.kernel.org/r/20251126-spu-iommudtefix-v1-1-f90003dbfcc4@pengutronix.de
-
-To: Joerg Roedel <joro@8bytes.org>
-To: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-To: Heiko Stuebner <heiko@sntech.de>
-Cc: iommu@lists.linux.dev
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-rockchip@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
----
- drivers/iommu/rockchip-iommu.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 0013cf196c573..87ae036d64145 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -76,6 +76,8 @@
- #define SPAGE_ORDER 12
- #define SPAGE_SIZE (1 << SPAGE_ORDER)
- 
-+#define DISABLE_FETCH_DTE_TIME_LIMIT BIT(31)
-+
-  /*
-   * Support mapping any size that fits in one page table:
-   *   4 KiB to 4 MiB
-@@ -930,6 +932,7 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
- 	struct iommu_domain *domain = iommu->domain;
- 	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
- 	int ret, i;
-+	u32 auto_gate;
- 
- 	ret = clk_bulk_enable(iommu->num_clocks, iommu->clocks);
- 	if (ret)
-@@ -948,6 +951,11 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
- 			       rk_ops->mk_dtentries(rk_domain->dt_dma));
- 		rk_iommu_base_command(iommu->bases[i], RK_MMU_CMD_ZAP_CACHE);
- 		rk_iommu_write(iommu->bases[i], RK_MMU_INT_MASK, RK_MMU_IRQ_MASK);
-+
-+		/* Workaround for iommu blocked, BIT(31) default to 1 */
-+		auto_gate = rk_iommu_read(iommu->bases[i], RK_MMU_AUTO_GATING);
-+		auto_gate |= DISABLE_FETCH_DTE_TIME_LIMIT;
-+		rk_iommu_write(iommu->bases[i], RK_MMU_AUTO_GATING, auto_gate);
- 	}
- 
- 	ret = rk_iommu_enable_paging(iommu);
-
----
-base-commit: dca922e019dd758b4c1b4bec8f1d509efddeaab4
-change-id: 20251126-spu-iommudtefix-cd0c5244c74a
-
-Best regards,
---  
-Sven Püschel <s.pueschel@pengutronix.de>
+> 
+> Regards,
+> Yi Liu
+> 
+> > + *
+> > + * This is only used with iommufd and cdev-based interfaces and
+> > does not
+> > + * apply to legacy VFIO group-container based noiommu mode.
+> > + */
+> > +static const struct iommu_domain_ops noiommu_amdv1_ops = {
+> > +	IOMMU_PT_DOMAIN_OPS(amdv1),
+> > +	.free = noiommu_domain_free,
+> > +};
+> > +
+> > +const struct iommu_ops iommufd_noiommu_ops = {
+> > +	.domain_alloc_paging_flags = noiommu_alloc_paging_flags,
+> > +};
+> > diff --git a/drivers/iommu/iommufd/iommufd_private.h
+> > b/drivers/iommu/iommufd/iommufd_private.h index
+> > 6ac1965199e9..2682b5baa6e9 100644 ---
+> > a/drivers/iommu/iommufd/iommufd_private.h +++
+> > b/drivers/iommu/iommufd/iommufd_private.h @@ -464,6 +464,8 @@
+> > static inline void iommufd_hw_pagetable_put(struct iommufd_ctx
+> > *ictx, refcount_dec(&hwpt->obj.users); }
+> >   
+> > +extern const struct iommu_ops iommufd_noiommu_ops;
+> > +
+> >   struct iommufd_attach;
+> >   
+> >   struct iommufd_group {  
 
