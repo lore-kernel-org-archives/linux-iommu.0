@@ -1,111 +1,162 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3CA0436377;
-	Tue, 28 Apr 2026 13:56:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DD2D131E847;
+	Tue, 28 Apr 2026 15:23:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777384588; cv=none; b=sQ//DIKsl5dtLGZZXUiG7HosiON4B0x8M+4cQHarRtpcFybKpiWPrM/1EAWVx2o7X7n8nzcs5uh+9M4A5u2+v/qXcKoydr2wt6UMQ9LZgwyG2ofzl8D4oQV5/0k7UYTGCPecKA4MwUfObhU7qzNCtGWdxEHsXgKq+VV+dcvczKM=
+	t=1777389785; cv=none; b=iHRZRxLgTh5voT8HBmjIRsuAy/8KOdzzqYqIemZTEOfQfatP0h/5BJ6KgDXBaep6VGp1+4KrpXW2KdaYADL8SCDucpDBCggt/KFRHpNYV+X7RJh124RYrwxHdspNKgWwsMnQfMqEwsu8uL7Zte42Unmn7JIaoqVs8JOPZ2lSg3Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777384588; c=relaxed/simple;
-	bh=tzR76jwjcwHZJGzKefeV38J4m6XWBejLedn5tsPTIMQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HR+xj+OU1D38rvOcuYm98YlpBA3WsYCyEomF0S4bxdHKy/e1wC7OxmVvAeHTtHw6WDzvi7tZtiaNHNN3LpodRZRApC3HANvLIZDdMVTAsj+6PQln3VgP5IeT2YcVMAVDbUGIgXjwRtiAke67P0FCDvlALjr+jLhWY6O0/8rcn6M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DS6k2Bn8; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777389785; c=relaxed/simple;
+	bh=Om8QGmof8/BcITtEzWX1Cbn/822D5GRchdbAMmDVVoQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=T7jp2tRJqUQ5Z3zNLhcSo5+OaxoUY+KBHBVeG+yW2ODyeMoy6t4TqmJT+fxZqWkS0tXTTR3xOO/5S5UHULOhH+SiuLUs7Zu7x7ega/aWk6aK3+h54vozara2pCdxo8ZynwNulKg3niCm2ppJF/3cHbBrrGP2gkX8pPyKwqGqnl0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=E8ZPSTep; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DS6k2Bn8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE6A1C2BCAF;
-	Tue, 28 Apr 2026 13:56:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777384587;
-	bh=tzR76jwjcwHZJGzKefeV38J4m6XWBejLedn5tsPTIMQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=DS6k2Bn82HqQjbd4tlW9JWMHVz1+5KTI5b/BfvTBKiuA9WwzIscwxhmjHPgb/omGV
-	 OEzL1EXlTR5pjJSG4pTVflm5N5KzaCaxnkOE/3kNnDqaLBxY5+7ircXZy75INGU9Ve
-	 HY34+7q6JTokXxXbfrgJXOO0I7GlAlaj9nJWgT3FD069FRRAeh6HPKDNVfdre/gap9
-	 IuEqo6dFQThj2aOR4eexv9DFHAcebMq4dGVho9d46SUpcWSTApxZF7B92dT1sn7BxD
-	 OsMgdW3FOkTcd3ZtB5/PNG7B88aGK2w5TsmLKVdI1b3up4H9dq5O4qTJhZBzwk9Pbg
-	 dCDhqziOEZTmQ==
-Date: Tue, 28 Apr 2026 14:56:21 +0100
-From: Will Deacon <will@kernel.org>
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-coco@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	kvmarm@lists.linux.dev, Catalin Marinas <catalin.marinas@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Marc Zyngier <maz@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Thomas Gleixner <tglx@kernel.org>, sebastianene@google.com
-Subject: Re: [PATCH v4 3/3] coco: guest: arm64: Query host IPA-change
- alignment via RHI
-Message-ID: <afC8hZTJY6Cx8Liz@willie-the-truck>
-References: <20260427063108.909019-1-aneesh.kumar@kernel.org>
- <20260427063108.909019-4-aneesh.kumar@kernel.org>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="E8ZPSTep"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A9DBF1C0A;
+	Tue, 28 Apr 2026 08:22:57 -0700 (PDT)
+Received: from [10.57.21.11] (unknown [10.57.21.11])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0A9FA3F7B4;
+	Tue, 28 Apr 2026 08:23:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1777389783; bh=Om8QGmof8/BcITtEzWX1Cbn/822D5GRchdbAMmDVVoQ=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=E8ZPSTep/LUn9gzYwuBIgGN4jIaXaTmBJNnNday4fnmjnZWOGAaUD7U99tv9XABic
+	 QfWbpZbIsPrUhqF0O7HIkiHEK6KIi3oxFTN6+nepB4u+vemndbGockrfl0DgRV/Xu1
+	 PjWCuB8Ue4y4+SGL+eVhFLZEJv0FWSaOfoV1QzY8=
+Message-ID: <5399c16f-faf1-471e-ac37-7dd9d5ddb897@arm.com>
+Date: Tue, 28 Apr 2026 16:22:59 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260427063108.909019-4-aneesh.kumar@kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 3/3] coco: guest: arm64: Query host IPA-change
+ alignment via RHI
+Content-Language: en-GB
+To: Marc Zyngier <maz@kernel.org>, "Aneesh Kumar K.V"
+ <aneesh.kumar@kernel.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ linux-coco@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ kvmarm@lists.linux.dev, Catalin Marinas <catalin.marinas@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, Steven Price <steven.price@arm.com>,
+ Thomas Gleixner <tglx@kernel.org>, Will Deacon <will@kernel.org>
+References: <20260427063108.909019-1-aneesh.kumar@kernel.org>
+ <20260427063108.909019-4-aneesh.kumar@kernel.org>
+ <86y0i8zo9f.wl-maz@kernel.org> <yq5a4ikv1c7p.fsf@kernel.org>
+ <86tssvyz2v.wl-maz@kernel.org>
+From: Suzuki K Poulose <suzuki.poulose@arm.com>
+In-Reply-To: <86tssvyz2v.wl-maz@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-[+Seb for the ITS]
-
-On Mon, Apr 27, 2026 at 12:01:08PM +0530, Aneesh Kumar K.V (Arm) wrote:
-> Add the Realm Host Interface support needed to query host configuration
-> from a Realm guest. Define the RHI hostconf SMCs, add rsi_host_call(), and
-> use them during Realm initialization to retrieve the host IPA-change
-> alignment size.
+On 28/04/2026 14:49, Marc Zyngier wrote:
+> On Tue, 28 Apr 2026 13:49:46 +0100,
+> Aneesh Kumar K.V <aneesh.kumar@kernel.org> wrote:
+>>
+>> Marc Zyngier <maz@kernel.org> writes:
+>>
+>>> On Mon, 27 Apr 2026 07:31:08 +0100,
+>>> "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> wrote:
+>>>>
+>>>> Add the Realm Host Interface support needed to query host configuration
+>>>> from a Realm guest. Define the RHI hostconf SMCs, add rsi_host_call(), and
+>>>> use them during Realm initialization to retrieve the host IPA-change
+>>>> alignment size.
+>>>
+>>> I don't understand what "IPA-change" means. What you are after is the
+>>> host's sharing granule size.
+>>>
+>>
+>> This is part of the RHI specification, and the call is named
+>> RHI_HOSTCONF_GET_IPA_CHANGE_ALIGNMENT. The intent is to determine the
+>> alignment requirements for changing IPA attributes (protected vs.
+>> unprotected IPA
 > 
-> Expose that alignment through realm_get_hyp_pagesize() and
-> mem_decrypt_granule_size() so shared-buffer allocation and
-> encryption/decryption paths can honor the ipa change page-size requirement.
+> This really is a terrible name. Why the 'change' part? It doesn't
+> change, it is a constant.
+
+Agreed, it was supposed to mean IPA_STATE_CHANGE.
+
 > 
-> If the host reports an invalid alignment (when alginment value is not
-> multiple of 4K), do not enable Realm support.
+> Oh well...
 > 
-> This provides the host alignment information required by the shared buffer
-> alignment changes.
+> [...]
 > 
-> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
-> ---
->  arch/arm64/include/asm/mem_encrypt.h |  3 ++
->  arch/arm64/include/asm/rhi.h         | 24 +++++++++++++
->  arch/arm64/include/asm/rsi.h         |  2 ++
->  arch/arm64/include/asm/rsi_cmds.h    | 10 ++++++
->  arch/arm64/include/asm/rsi_smc.h     |  7 ++++
->  arch/arm64/kernel/Makefile           |  2 +-
->  arch/arm64/kernel/rhi.c              | 54 ++++++++++++++++++++++++++++
->  arch/arm64/kernel/rsi.c              | 13 +++++++
->  arch/arm64/mm/mem_encrypt.c          |  8 +++++
->  9 files changed, 122 insertions(+), 1 deletion(-)
->  create mode 100644 arch/arm64/include/asm/rhi.h
->  create mode 100644 arch/arm64/kernel/rhi.c
 
-[...]
+...
 
-> diff --git a/arch/arm64/mm/mem_encrypt.c b/arch/arm64/mm/mem_encrypt.c
-> index 38c62c9e4e74..f5d64bc29c20 100644
-> --- a/arch/arm64/mm/mem_encrypt.c
-> +++ b/arch/arm64/mm/mem_encrypt.c
-> @@ -59,3 +59,11 @@ int set_memory_decrypted(unsigned long addr, int numpages)
->  	return crypt_ops->decrypt(addr, numpages);
->  }
->  EXPORT_SYMBOL_GPL(set_memory_decrypted);
-> +
-> +size_t mem_decrypt_granule_size(void)
-> +{
-> +	if (is_realm_world())
-> +		return max(PAGE_SIZE, realm_get_hyp_pagesize());
-> +	return PAGE_SIZE;
+>>>> +unsigned long rhi_get_ipa_change_alignment(void)
+>>>> +{
+>>>> +	long ret;
+>>>> +	unsigned long ipa_change_align;
+>>>> +
+>>>> +	hyp_pagesize_rhicall.imm = 0;
+>>>> +	hyp_pagesize_rhicall.gprs[0] = RHI_HOSTCONF_VERSION;
+>>>> +	ret = rsi_host_call(lm_alias(&hyp_pagesize_rhicall));
+>>>> +	if (ret != RSI_SUCCESS)
+>>>> +		goto err_out;
+>>>> +
+>>>> +	if (hyp_pagesize_rhicall.gprs[0] != RHI_HOSTCONF_VER_1_0)
+>>>> +		goto err_out;
+>>>> +
+>>>> +	hyp_pagesize_rhicall.imm = 0;
+>>>> +	hyp_pagesize_rhicall.gprs[0] = RHI_HOSTCONF_FEATURES;
+>>>> +	ret = rsi_host_call(lm_alias(&hyp_pagesize_rhicall));
+>>>> +	if (ret != RSI_SUCCESS)
+>>>> +		goto err_out;
+>>>> +
+>>>> +	if (!(hyp_pagesize_rhicall.gprs[0] & __RHI_HOSTCONF_GET_IPA_CHANGE_ALIGNMENT))
+>>>> +		goto err_out;
+>>>> +
+>>>> +	hyp_pagesize_rhicall.imm = 0;
+>>>> +	hyp_pagesize_rhicall.gprs[0] = RHI_HOSTCONF_GET_IPA_CHANGE_ALIGNMENT;
+>>>> +	ret = rsi_host_call(lm_alias(&hyp_pagesize_rhicall));
+>>>> +	if (ret != RSI_SUCCESS)
+>>>> +		goto err_out;
+>>>> +
+>>>> +	ipa_change_align = hyp_pagesize_rhicall.gprs[0];
+>>>> +	/* This error needs special handling in the caller */
+>>>> +	if (ipa_change_align & (SZ_4K - 1))
+>>>> +		return 0;
+>>>> +
+>>>> +	return ipa_change_align;
+>>>> +
+>>>> +err_out:
+>>>> +	/*
+>>>> +	 * For failure condition assume host is built with 4K page size
+>>>> +	 * and hence ipa change alignment can be guest PAGE_SIZE.
+>>>> +	 */
+>>>> +	return PAGE_SIZE;
+>>>> +}
+>>>
+>>> Why can't this be part of rsi.c? This is an RSI call, and it should be
+>>> part of the RSI initialisation.
+>>>
+>>
+>> This is an RHI call as per the specification, hence it has been added to
+>> rhi.c.
+> 
+> News flash: this is the Linux kernel, not an ARM spec. We organise
+> things based on the logical use, not on the TLA associated with it.
+> 
+> And RHI is implemented in terms of RSI. In rsi.c it goes. We don't
+> need this pointless proliferation of helper files that only result in
+> equally pointless global symbols.
 
-No, this should be indirected via 'struct arm64_mem_crypt_ops' because
-there's nothing particularly unique to realms here. For pKVM protected
-guests using a smaller page-size than the host, we'd presumably need
-something similar for the ITS (where restricted-dma isn't used).
+RHI (Realm Host Interface) is not really the same as RSI. The former is
+a service mechanism for Realms with the "Non-secure Hypervisor".  And
+this single call is just one of the services. There are further more
+services that will eventually come up (e.g., Device Assignment, Boot
+Sync Protocol, Firmware Activity Log etc).
 
-Will
+RSI (to be precise, RSI_HOST_CALL) is the transport to talk to the Host,
+as that is the only way for the Realm to reach the Host. So, tbh, it
+does make sense to keep this in rhic ?
+
+Suzuki
