@@ -1,149 +1,243 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from out30-100.freemail.mail.aliyun.com (out30-100.freemail.mail.aliyun.com [115.124.30.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5291C466B48
-	for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 13:11:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3C8F4418CC
+	for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 13:14:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.100
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777381887; cv=none; b=QL/REdaRYRiXsThtLa1HrjfjOMNpu1xOFI3mZoTVs/OyNpHRHOkv3r0AeYahgXLXJ97fbSjBfTDbIrvFsSTaAtbzCDUAlgmIM2J8CnfSYtayKab3fbWqt/2EpoKHfmy4XsIY57oi4L2m0dRiiNPoaDIBR42+ZMEmF6whbf5Ipjo=
+	t=1777382060; cv=none; b=DqgfUETfAsABPPCA3cRaXLB7oEdXuUqoC9X0t/2G+VZIOHqMKsuximRdt32mdVPgK3PXJePkvVPYDVh4a0xAuHCpS+9BlaqFe4KZ8YDIPEsgnZF/swpQeXfg6I7xIUIMFNe40kpebhInGx4njuIcSZOFVpCG2BhUELTslpvkhhs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777381887; c=relaxed/simple;
-	bh=ZV7gQ+vFpTm462vRo27QptIK65cykKtJURR/0mqEpwU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SzNlHGBOd6EH9AC4WHk161cybRxC+q8TY65uF8ELNdFQ4b3ozWVFXGeiUI9YYHgfA80qoibzikmWKqPYfrxJAUqm3Fp1/OfZXwCUMYNhK4Wwx/OH4uq8e49zuP2bHrWUB9xfqRArDo6R9iTpp8uHgbQkfsU8VaNYEtjpPFXR5CE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=IuenkFNs; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=fot877qj; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1777382060; c=relaxed/simple;
+	bh=OYEP1JP8BVFHXbULzGk1wNAbCbBlFfgcJ1H95hoOhwQ=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=RC1gsoNHxOFPO7CQelmcv/+kaVPCwPNfLLuJYn3hSR5RSES3QiYQRw3Pte8Rjm2tvseHWLGoXhv6t9KWOXFcYCjQHk2k9qCI30JrnuB8hgznrM2sRmPkZ7VReiKSvTfgV7pSg5N6/1dQ6SOKwoIu2lXEjDLkgVNPzLOlAIZpzD4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=KJjAT3K+; arc=none smtp.client-ip=115.124.30.100
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="IuenkFNs";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="fot877qj"
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63S7vqtS1744980
-	for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 13:11:25 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=blI+99Sh7Qr7qWaUiHcHIJCf
-	MzzoY5IQsQhu8lkmxlE=; b=IuenkFNs5yI+oKkt0osCDt0wUaVhV25n5hAcHF0V
-	URW6M3IHAWQnh7kQQkqHs+a1V4UV0e+ts5XYjdYbDUhiDg8KfnKQ3t7zLdzR7XkJ
-	9y27+IO7EoWvTVNwtaa33TRmedPPYbU0xSvMMdedStAImjXzh6ej66x+LOeZtYKo
-	uJpBYAE4vGtXC6MvcDgFquPZ2GtDsyrayRy9M/e2EzIQiGWskScZ78idBw7FtOIB
-	LNMnB0h7JX2CILYrhQu6+MoRFfPYhZLHU3Ry5mo2SMbrCLYZ+7mje46zDc2yT9Fq
-	5469fIzGP2D0p2xksoI5P6FLbWQ6GKya5hJ3FDtJky7fbg==
-Received: from mail-dy1-f200.google.com (mail-dy1-f200.google.com [74.125.82.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4dtryd97ny-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 13:11:25 +0000 (GMT)
-Received: by mail-dy1-f200.google.com with SMTP id 5a478bee46e88-2ba8013a9e3so13782109eec.0
-        for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 06:11:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1777381885; x=1777986685; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=blI+99Sh7Qr7qWaUiHcHIJCfMzzoY5IQsQhu8lkmxlE=;
-        b=fot877qjpFJB54ZE/lUGNPW8vzfaAac8D7m0r2dMGJvXYhhYz/bhp6mqTpABZSr5XI
-         +uV4Hw5ky2kOXzKehOFzrZUT/bwINgEB/viRspcXLL45I5We1UqSKqFE8myQhm9si8QL
-         UrMkQRnQOFDex0byr1kzaIHeQL0JvaZpIm8QJG+nBUKYjdw+POiwsXGs36eGHMAJQljn
-         MSssVG06YGUmCA9anT9NSG52GawKrZoHIjXCq5WhrGoFV1ew3ImeoLV3khwuvAmkbSwd
-         7tu6koXyKpM+YtiudLpkKxEBjiSoY9vIrTOGxlyl5AqsGvmjDrh51oGPwqx3cbPIeACw
-         iq7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777381885; x=1777986685;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=blI+99Sh7Qr7qWaUiHcHIJCfMzzoY5IQsQhu8lkmxlE=;
-        b=NLet1gd9ADr3kr9HZaJ6tMhNEJxKTpgQLGDOfeTT9GDrXEhQXb3umu8yhcoM5wo+wu
-         v3dTAp0CJLRHn77mZAaHUB5YPM9ZV9+wOp7GSbQ+CPVm/7Vn/taowVzEThfKF/j0CShn
-         8GTP2dZPPtrVJtMXVHXMuIsN/T/boVaeAtolkfX7b+aFkTEuw/+Q4JHujsq3nHTmyyGN
-         t5f9V6uz5vkc5lPGwhDTQvCVQeHCoggYSHmdppfmZlqLoCPWvE8pI12To8AWTMCpJa/a
-         b5tZsdmi73O2p2Q0oqYY4T9qbuy7NE09hOMSSdrjkyAdaIrBBvRawKzdSpYSTuHocKS/
-         vAmg==
-X-Forwarded-Encrypted: i=1; AFNElJ//cNYSg8TuX1aH4ftVGgonQQws650N8K6ddXMhFBeAGJsrvOADymnO6oB7rxZ0g23bikyLQg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwgAfk5Y5fgyHFAsnlJitsHokBYarULONQFSMXdMhW+7bia61EN
-	LnPBdq+AXdqKXqlw2ft0cPC02oPbeCa0pTtkmcDz9ZKyGyI015x+3P+A3zmVp/hNU+tJ0p9JQ2B
-	5Jan0jBazjXSbtSoNMZRt9K1yPDKYFZg8fawTDnE6qQdyMXtAlaHX2eYBOA==
-X-Gm-Gg: AeBDies5hz5QZHWBllBqMmHymSdEyBGqzAO1Td7IvCW/q7tbrOwBwk5LjB/60tMccP8
-	ak5DWeuL2wpZmro0Ne2ZRo1ZYftL0B1OLHG0cIN1Z8o2UzjnYnISZbQ9bHXNQixoQehrGPhV+AO
-	W17EFOLAbpHTL0Qz5JUWFqa+s2yBzdHAVHJZJTMIbvPS1dTeDLVactyKNAgQTIEX4ddbBbq0Asc
-	BhdAQI2LGknxSXxkNflm/6H8hdcvU8rO5t2Trsv4zK6PUFObQMrhzfD6MsJhTQJwYJ2NkpEY2ja
-	eYmAlVOuf+xTOmJVCqfjEF5wh6AiUxVJTkK7hM5VtI3eehTcsIjoP4oodkjp5cdzOq/MG/6abU6
-	PtUfxEHINlMgvT3kmS2UwXDrCnb2P/ciAD51cyQW8Yw3osEjSS8J3/h9eD7ZBwaFymRV+STNZLr
-	I=
-X-Received: by 2002:a05:7300:e9c9:20b0:2e2:185b:87d9 with SMTP id 5a478bee46e88-2ed0a200d8amr1091280eec.20.1777381884652;
-        Tue, 28 Apr 2026 06:11:24 -0700 (PDT)
-X-Received: by 2002:a05:7300:e9c9:20b0:2e2:185b:87d9 with SMTP id 5a478bee46e88-2ed0a200d8amr1091253eec.20.1777381883972;
-        Tue, 28 Apr 2026 06:11:23 -0700 (PDT)
-Received: from QCOM-aGQu4IUr3Y (i-global052.qualcomm.com. [199.106.103.52])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2ed0a0ce761sm2214447eec.15.2026.04.28.06.11.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Apr 2026 06:11:23 -0700 (PDT)
-Date: Tue, 28 Apr 2026 21:11:17 +0800
-From: Shawn Guo <shengchao.guo@oss.qualcomm.com>
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Will Deacon <will@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-        Dmitry Baryshkov <lumag@kernel.org>,
-        Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>,
-        Deepti Jaggi <deepti.jaggi@oss.qualcomm.com>, iommu@lists.linux.dev,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: arm-smmu: Add compatible for Qualcomm
- Nord SoC
-Message-ID: <afCx9Qwb9_gffTtK@QCOM-aGQu4IUr3Y>
-References: <20260427011728.231026-1-shengchao.guo@oss.qualcomm.com>
- <20260428-tricky-magic-koala-b21fed@quoll>
- <afCus0_JslMgwdlg@QCOM-aGQu4IUr3Y>
- <b65fd25a-7175-4963-b623-7805979984b7@kernel.org>
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="KJjAT3K+"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1777382055; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=ZUHnJEfer0hml+VpdHPHpDcwMmO2L2tgfhLYa+ZhlhQ=;
+	b=KJjAT3K+Axk0MWlmVWuAuzpBYj+xMvI+RjiSnpXeBcYTziK31IFL7Z24+jWxtwXLLduPa7TYdbnC8ylxNyUo+RsoHDb+VeiYXRYg3NfIjusIyRc4vdVGD8niG5MBnqriWpbyJs6ed5kTTEylhmKs4p4rxuoF7HObsUWBfoE+08o=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045098064;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=23;SR=0;TI=SMTPD_---0X1ubIDQ_1777382052;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X1ubIDQ_1777382052 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Tue, 28 Apr 2026 21:14:13 +0800
+From: fangyu.yu@linux.alibaba.com
+To: joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	pjw@kernel.org,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu,
+	alex@ghiti.fr,
+	tjeznach@rivosinc.com,
+	jgg@ziepe.ca,
+	kevin.tian@intel.com,
+	baolu.lu@linux.intel.com,
+	vasant.hegde@amd.com,
+	anup@brainfault.org,
+	atish.patra@linux.dev,
+	skhawaja@google.com,
+	jgg@nvidia.com
+Cc: guoren@kernel.org,
+	kvm@vger.kernel.org,
+	iommu@lists.linux.dev,
+	kvm-riscv@lists.infradead.org,
+	linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Fangyu Yu <fangyu.yu@linux.alibaba.com>
+Subject: [RFC PATCH 01/11] iommupt: Add RISC-V Second-stage (iohgatp) page table support
+Date: Tue, 28 Apr 2026 21:13:49 +0800
+Message-Id: <20260428131359.34872-2-fangyu.yu@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
+In-Reply-To: <20260428131359.34872-1-fangyu.yu@linux.alibaba.com>
+References: <20260428131359.34872-1-fangyu.yu@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b65fd25a-7175-4963-b623-7805979984b7@kernel.org>
-X-Proofpoint-GUID: H3zTQ6QFWjliJlkjf3j2GENFu0W3rw4Q
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDI4MDEyMyBTYWx0ZWRfX7j0zXngeR5/9
- uhwaEhJ3Eog2LGWG32mno2GkMXiXm8IxLG6VkfPh+HBQOBTbWTD8xAyebDutj2jpOmlRC/Mz5dB
- ZzQcmWgLukyP6kmq1oP45qCcW2+SjD06n1HWVXoxFwrdXtcrXP+bfAauKMLvo8ItTmJ5RK1NcS2
- 4RjI3kZaRs1UpXQr8hr5vWYLMg1e02yRmGp4IU7EcjfJE+oECXiaOeSGwN9+glYBCWVK+Cl7FFN
- l0M+j4zsYeCpTal5v7eqlvCnr1H13oELV/rhKo1a0gggNglJTcHXBE03RFbu4sL1dnZ8GJNiUm8
- iZAfaxPHRwgZ3UabING2oobpvjSp/wswg9XjHQiKyvSIeVwb+FPg0IqKPzy/kLnFvd3Dn0dpoSz
- 4exP/yMlEoQ51KugDluGT/G+GK5IpodLQOapy8GaCHXVK34eT735Y1wzZ3t6E7Z2xm5EU+tzIA8
- WFFvzGoZqUDOiHKRgXw==
-X-Proofpoint-ORIG-GUID: H3zTQ6QFWjliJlkjf3j2GENFu0W3rw4Q
-X-Authority-Analysis: v=2.4 cv=cMnQdFeN c=1 sm=1 tr=0 ts=69f0b1fd cx=c_pps
- a=PfFC4Oe2JQzmKTvty2cRDw==:117 a=b9+bayejhc3NMeqCNyeLQQ==:17
- a=kj9zAlcOel0A:10 a=A5OVakUREuEA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=eoimf2acIAo5FJnRuUoq:22
- a=nc39diHjlmVoUhwZKG0A:9 a=CjuIK1q_8ugA:10 a=6Ab_bkdmUrQuMsNx7PHu:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-04-28_04,2026-04-28_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- adultscore=0 spamscore=0 impostorscore=0 malwarescore=0 bulkscore=0
- clxscore=1015 priorityscore=1501 suspectscore=0 lowpriorityscore=0
- phishscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2604200000
- definitions=main-2604280123
+Content-Transfer-Encoding: 8bit
 
-On Tue, Apr 28, 2026 at 03:02:13PM +0200, Krzysztof Kozlowski wrote:
-> On 28/04/2026 14:57, Shawn Guo wrote:
-> > On Tue, Apr 28, 2026 at 08:20:35AM +0200, Krzysztof Kozlowski wrote:
-> >> On Mon, Apr 27, 2026 at 09:17:28AM +0800, Shawn Guo wrote:
-> >>> Document APPS SMMU on Qualcomm Nord SoC which is compatible with
-> >>
-> >> What is APPS?
-> > 
-> > Should be APSS.  Thanks for spotting it!
-> 
-> True, but what is APSS? Maybe you meant AP, which I think is known to
-> most of the audience. Qualcomm names are not known outside of Qualcomm,
-> so question stays.
+From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 
-Ah, I will expand it to Applications Processor Subsystem.
+Add support for Sv39x4/Sv48x4/Sv57x4 Second-stage page tables used by
+the RISC-V IOMMU iohgatp register. The x4 root page table is 16 KiB
+instead of the usual 4 KiB, covering 2 extra GPA bits (hw_max_vasz_lg2
+= 41/50/59).
 
-Shawn
+Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+---
+ drivers/iommu/generic_pt/fmt/riscv.h | 64 +++++++++++++++++++++++++---
+ include/linux/generic_pt/common.h    |  5 +++
+ include/linux/generic_pt/iommu.h     | 17 +++++++-
+ 3 files changed, 80 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/iommu/generic_pt/fmt/riscv.h b/drivers/iommu/generic_pt/fmt/riscv.h
+index a7fef6266a36..4fe645e60375 100644
+--- a/drivers/iommu/generic_pt/fmt/riscv.h
++++ b/drivers/iommu/generic_pt/fmt/riscv.h
+@@ -37,7 +37,16 @@ enum {
+ 	PT_MAX_OUTPUT_ADDRESS_LG2 = 34,
+ 	PT_MAX_TOP_LEVEL = 1,
+ #else
+-	PT_MAX_VA_ADDRESS_LG2 = 57,
++	/*
++	 * PT_MAX_VA_ADDRESS_LG2 is the upper bound accepted by the generic
++	 * pt_iommu_init() range check.  It must cover both first-stage and
++	 * second-stage (G-stage) modes:
++	 *
++	 *   First-stage  (fsc/iosatp): Sv39=39, Sv48=48, Sv57=57
++	 *   Second-stage (iohgatp):    Sv39x4=41, Sv48x4=50, Sv57x4=59
++	 *
++	 */
++	PT_MAX_VA_ADDRESS_LG2 = 59,
+ 	PT_MAX_OUTPUT_ADDRESS_LG2 = 56,
+ 	PT_MAX_TOP_LEVEL = 4,
+ #endif
+@@ -124,6 +133,14 @@ riscvpt_entry_num_contig_lg2(const struct pt_state *pts)
+ 
+ static inline unsigned int riscvpt_num_items_lg2(const struct pt_state *pts)
+ {
++	/*
++	 * Second-stage (iohgatp) root page tables have 4x the usual number of
++	 * entries (2048 = 2^11 instead of 512 = 2^9) to cover the 2 extra GPA
++	 * bits in Sv39x4/Sv48x4/Sv57x4.  Only the root (top) level is
++	 * enlarged; all other levels remain at the standard 9-bit index width.
++	 */
++	if (to_riscvpt(pts)->second_stage && pts->level == pts->range->top_level)
++		return PT_TABLEMEM_LG2SZ - ilog2(sizeof(u64)) + 2;
+ 	return PT_TABLEMEM_LG2SZ - ilog2(sizeof(u64));
+ }
+ #define pt_num_items_lg2 riscvpt_num_items_lg2
+@@ -254,6 +271,7 @@ riscvpt_iommu_fmt_init(struct pt_iommu_riscv_64 *iommu_table,
+ 	struct pt_riscv *table = &iommu_table->riscv_64pt;
+ 
+ 	switch (cfg->common.hw_max_vasz_lg2) {
++	/* First-stage (fsc/iosatp): Sv39 / Sv48 / Sv57 */
+ 	case 39:
+ 		pt_top_set_level(&table->common, 2);
+ 		break;
+@@ -263,6 +281,22 @@ riscvpt_iommu_fmt_init(struct pt_iommu_riscv_64 *iommu_table,
+ 	case 57:
+ 		pt_top_set_level(&table->common, 4);
+ 		break;
++	/*
++	 * Second-stage (iohgatp): Sv39x4 / Sv48x4 / Sv57x4.
++	 * The top level is the same as for the first-stage counterpart.
++	 */
++	case 41:
++		pt_top_set_level(&table->common, 2);
++		table->second_stage = true;
++		break;
++	case 50:
++		pt_top_set_level(&table->common, 3);
++		table->second_stage = true;
++		break;
++	case 59:
++		pt_top_set_level(&table->common, 4);
++		table->second_stage = true;
++		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -283,10 +317,17 @@ riscvpt_iommu_fmt_hw_info(struct pt_iommu_riscv_64 *table,
+ 	PT_WARN_ON(top_phys & ~PT_TOP_PHYS_MASK);
+ 
+ 	/*
+-	 * See Table 3. Encodings of iosatp.MODE field" for DC.tx.SXL = 0:
+-	 *  8 = Sv39 = top level 2
+-	 *  9 = Sv38 = top level 3
+-	 *  10 = Sv57 = top level 4
++	 * Both first-stage (fsc/iosatp) and second-stage (iohgatp) share the
++	 * same MODE numeric values for a given top level:
++	 *   top_level 2 -> MODE 8  (Sv39 / Sv39x4)
++	 *   top_level 3 -> MODE 9  (Sv48 / Sv48x4)
++	 *   top_level 4 -> MODE 10 (Sv57 / Sv57x4)
++	 *
++	 * The union members fsc_iosatp_mode and iohgatp_mode occupy the same
++	 * byte; the caller selects the appropriate name based on domain type.
++	 *
++	 * See "Table 3. Encodings of iosatp.MODE field" (DC.tc.SXL = 0) and
++	 * "Table 2. Encoding of iohgatp.MODE field" in the RISC-V IOMMU spec.
+ 	 */
+ 	info->fsc_iosatp_mode = top_range->top_level + 6;
+ }
+@@ -294,6 +335,7 @@ riscvpt_iommu_fmt_hw_info(struct pt_iommu_riscv_64 *table,
+ 
+ #if defined(GENERIC_PT_KUNIT)
+ static const struct pt_iommu_riscv_64_cfg riscv_64_kunit_fmt_cfgs[] = {
++	/* First-stage (fsc/iosatp): Sv39 / Sv48 / Sv57 */
+ 	[0] = { .common.features = BIT(PT_FEAT_RISCV_SVNAPOT_64K),
+ 		.common.hw_max_oasz_lg2 = 56,
+ 		.common.hw_max_vasz_lg2 = 39 },
+@@ -303,6 +345,18 @@ static const struct pt_iommu_riscv_64_cfg riscv_64_kunit_fmt_cfgs[] = {
+ 	[2] = { .common.features = BIT(PT_FEAT_RISCV_SVNAPOT_64K),
+ 		.common.hw_max_oasz_lg2 = 56,
+ 		.common.hw_max_vasz_lg2 = 57 },
++	/*
++	 * Second-stage (iohgatp): Sv39x4 / Sv48x4 / Sv57x4.
++	 */
++	[3] = { .common.features = BIT(PT_FEAT_RISCV_SVNAPOT_64K),
++		.common.hw_max_oasz_lg2 = 56,
++		.common.hw_max_vasz_lg2 = 41 },
++	[4] = { .common.features = 0,
++		.common.hw_max_oasz_lg2 = 56,
++		.common.hw_max_vasz_lg2 = 50 },
++	[5] = { .common.features = BIT(PT_FEAT_RISCV_SVNAPOT_64K),
++		.common.hw_max_oasz_lg2 = 56,
++		.common.hw_max_vasz_lg2 = 59 },
+ };
+ #define kunit_fmt_cfgs riscv_64_kunit_fmt_cfgs
+ enum {
+diff --git a/include/linux/generic_pt/common.h b/include/linux/generic_pt/common.h
+index fc5d0b5edadc..e82dff33ece8 100644
+--- a/include/linux/generic_pt/common.h
++++ b/include/linux/generic_pt/common.h
+@@ -181,6 +181,11 @@ struct pt_riscv_32 {
+ 
+ struct pt_riscv_64 {
+ 	struct pt_common common;
++	/*
++	 * True when this table is used for second-stage / iohgatp
++	 * address translation.
++	 */
++	bool second_stage;
+ };
+ 
+ enum {
+diff --git a/include/linux/generic_pt/iommu.h b/include/linux/generic_pt/iommu.h
+index dd0edd02a48a..f27d229ff318 100644
+--- a/include/linux/generic_pt/iommu.h
++++ b/include/linux/generic_pt/iommu.h
+@@ -328,7 +328,22 @@ struct pt_iommu_riscv_64_cfg {
+ 
+ struct pt_iommu_riscv_64_hw_info {
+ 	u64 ppn;
+-	u8 fsc_iosatp_mode;
++	union {
++		/*
++		 * First-stage (fsc/iosatp) MODE encoding:
++		 *   8 = Sv39, 9 = Sv48, 10 = Sv57
++		 * Used to program DC.fsc.iosatp.MODE.
++		 */
++		u8 fsc_iosatp_mode;
++		/*
++		 * Second-stage (iohgatp) MODE encoding:
++		 *   8 = Sv39x4, 9 = Sv48x4, 10 = Sv57x4
++		 * Used to program DC.iohgatp.MODE.
++		 * The numeric values are identical to fsc_iosatp_mode;
++		 * the caller selects the interpretation based on domain type.
++		 */
++		u8 iohgatp_mode;
++	};
+ };
+ 
+ IOMMU_FORMAT(riscv_64, riscv_64pt);
+-- 
+2.50.1
+
