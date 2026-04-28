@@ -1,170 +1,142 @@
-Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5C733AE1BC
-	for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 00:00:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.179
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A0D7A248166
+	for <iommu@lists.linux.dev>; Tue, 28 Apr 2026 02:22:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777334407; cv=none; b=ALZy1cFcCysxtWKBJAHQqJqZryUcD+cYoMeTrfaHPdSMdUczx7NVp4cqwx9cLRNCDC2BQS1G0BKVmzmTXdOqogf3Q3qtsHE3MGUe2aJiKEWsqAS9BE9FXuMmS98gZ1wqcb3JqDpm4pHVxAiK15B17CusqU6kjzggpfoanCLSL6g=
+	t=1777342935; cv=none; b=Svid3d9/2iqPB2Pl03t2C8C6rkxGWRCtisewSAzD/MXj7f/Ur6rNXelnbvfnjhxFm0c4K+PG67VhTQgLkdWxgyae8/DF+cQY4jP9J+fGxoPcFfKopkpZ3nCHG/StzPTuII1XMHkTQCCf4d/wwp1B6PvlqS8Ucqmush5DQCdbPcc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777334407; c=relaxed/simple;
-	bh=D5Po78dEqgLiBX+e8ZeJ6Ti1UiQKA53NB1AL+0u7frw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Jn2+6MrlW9p5RmdzdIlLnX0X9or9crST9xjeG7NtDXWBT5e6liDWavhJKy/8/7uGd0Yn8oEIoTc9F0p5xbim2zP1sf0aRWq7oLtIgOeVVSGW1Z8nJ/OPUx8AHC6vPDlEpIMIdTVgjWdEF8oHX0EMBIDfJPxSZpYaZ/ZMYKymSDo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Ae+oIF9R; arc=none smtp.client-ip=209.85.210.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1777342935; c=relaxed/simple;
+	bh=ZGtX9WCr5zkWpmmvkEth6BMnjp67T1OH13wleeEhs5g=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=oKwvvrfZLjetPK5zg9byligFPBN4qBDdlyIzxBWedcUSVsPfI3gSIYNbg4jtqP9I/VLshca92P54eTDGm/G+SaTuStYoQg09ycJmUlCcVSEziaUGUVyK/lbCtSjDm4k1ryzbIx5F0s0Z0Afh0PN0TkZjCLEDXtm1sJD1KMKAeig=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=B39f6qoV; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Ae+oIF9R"
-Received: by mail-pf1-f179.google.com with SMTP id d2e1a72fcca58-82418b0178cso6630357b3a.1
-        for <iommu@lists.linux.dev>; Mon, 27 Apr 2026 17:00:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1777334404; x=1777939204; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=tW+6Pw0a8+ahYm3oOFUJTtBa/jkSN4mmIAQkMqykSWk=;
-        b=Ae+oIF9RiLEoWBd2VwKFcl4+JT2cMG8HBkMPBF5o02biuXombHsXSs8XDymndAqT2u
-         LOMmSSaJ7dPDWcvr+hMcBkqiKzDsmFZFZv0Y8fpOZOsjfaBtUnbHpYqMD3Rq3QJibKJC
-         Hv46Ot6mwR1Y1VWVatEh07rzQS4C8iyz5hYJIOp25O99WMoisBg63s7qZ9WQBTnczY0j
-         6IQuhK6TV8fNtvBsN8cbskaUWG61KaSSaxoxq37bIZFdFhS1emoyl5ozA0U3NQQKTcQH
-         8fcs4yf7CsEwmX0ndeFxW+6idQNPlznLeRPxTZqQws9CBoc15Q2M1bZi4l2jAVzP6cdK
-         XlAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777334404; x=1777939204;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tW+6Pw0a8+ahYm3oOFUJTtBa/jkSN4mmIAQkMqykSWk=;
-        b=NSOGzWiZY/nFiotWfLKbOcGIPQwdJrhyjHgIyBMtfoaMv54XWbHVIIlOyMkyYL4NbW
-         WjyyUWl4oPOLC2qOThXFEbz3bYmlvTusPIRvZWDA5w4p0VCXGo2HVSRZVqyD9Voeo6B6
-         INEhX6E9BFNXorcYk5UTw43HM7rw5vCGavV+gVh472JgbiITYJXONYTSQZKQQMluKrdx
-         m+XcdbYZ4BnSRfmR7Y9DTjiZCN5dkzgr4ynX+Yf7RgnADRVXtSJuYFP5mQVU025FwtCz
-         +7rGdTBuQKRrW/fLGvBl0ZWNwYpUao7o6weYBTwPNT+TS/5eHDGyvIvFGNz60tQn58dt
-         /FUw==
-X-Forwarded-Encrypted: i=1; AFNElJ9RGiIVHuLx0lCjhdUCFpaJLbdXEszn4OOjXbvtCH90z2Qtt4tqmEgmp+SsVXT+PQL0qIDsSQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyRWw3gNWpW/C/q/77vhaXo8uiLQjSvh4W4IcN5FH5VFun6gWZ+
-	qGXIu6LtPix6naTRvnVg6a1etEPxyT1Pv29y8AmacRBZpsp9aHg4J0Q60wFVFjCN1Q==
-X-Gm-Gg: AeBDies0aCy1XPRzfIRa3nyTcAcAmanD8c+JE2FMpktWamsJ1MYdJHAroHU4OXxu5El
-	RnXtDvObNn0O+9diPtRjL8LmNhasrSN5MI4AO+mMrKVn5NHLW9Pvcikxom1J8bTXi8LdTN5UJ3r
-	IpJKoys2QH8tRZzHkks4Dm3jTYQli749LReSOTf4dFgq6xb8+verKt3IhCxfusQEJc4ogWw2mCu
-	iXDbPQLPMOVvfmATIPpYDsw2G2aTm20P7I+cfyWsXYm+j+COzHGanKv2MUKGJEuRkEvo1qidl9o
-	aOGdtXhSwQBq9b4qOudrbEkGojC7+fQ5InGu4te56gKtAvAFi8bAbiPD+2ioy97OZugjBlhfbyx
-	AOZGKzXRU6IWHOx4IfaYPF0QpoKjXFjUDY87fAz30E0KXsX/NKtxtcsYntvgH63JxdgdEI5FjbE
-	6kzodVtsLmvLMBl1O/iOB6rHBdM2aTVTOOiPQTlWVTv6+7Zld+0UCGU5Otv3VNDHIXHWv+OWTW9
-	zNBoQ==
-X-Received: by 2002:a05:6a00:1885:b0:82f:1d38:f68d with SMTP id d2e1a72fcca58-834ddc22f16mr638227b3a.34.1777334403001;
-        Mon, 27 Apr 2026 17:00:03 -0700 (PDT)
-Received: from google.com (76.9.127.34.bc.googleusercontent.com. [34.127.9.76])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-834daf7f43bsm633995b3a.58.2026.04.27.17.00.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2026 17:00:01 -0700 (PDT)
-Date: Mon, 27 Apr 2026 23:59:58 +0000
-From: David Matlack <dmatlack@google.com>
-To: Pasha Tatashin <pasha.tatashin@soleen.com>
-Cc: Pratyush Yadav <pratyush@kernel.org>, iommu@lists.linux.dev,
-	kexec@lists.infradead.org, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-	linux-pci@vger.kernel.org,
-	Adithya Jayachandran <ajayachandra@nvidia.com>,
-	Alexander Graf <graf@amazon.com>,
-	Alex Williamson <alex@shazbot.org>,
-	Bjorn Helgaas <bhelgaas@google.com>, Chris Li <chrisl@kernel.org>,
-	David Rientjes <rientjes@google.com>,
-	Jacob Pan <jacob.pan@linux.microsoft.com>,
-	Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
-	Jonathan Corbet <corbet@lwn.net>, Josh Hilke <jrhilke@google.com>,
-	Leon Romanovsky <leonro@nvidia.com>, Lukas Wunner <lukas@wunner.de>,
-	Mike Rapoport <rppt@kernel.org>, Parav Pandit <parav@nvidia.com>,
-	Pranjal Shrivastava <praan@google.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Saeed Mahameed <saeedm@nvidia.com>,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Will Deacon <will@kernel.org>, William Tu <witu@nvidia.com>,
-	Yi Liu <yi.l.liu@intel.com>
-Subject: Re: [PATCH v4 01/11] PCI: liveupdate: Set up FLB handler for the PCI
- core
-Message-ID: <ae_4fg_18Rli2_Nt@google.com>
-References: <20260423212316.3431746-1-dmatlack@google.com>
- <20260423212316.3431746-2-dmatlack@google.com>
- <2vxzeck45yin.fsf@kernel.org>
- <aetvAkM0y45WAmfV@plex>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="B39f6qoV"
+Received: from [100.75.0.48] (unknown [40.78.12.133])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 5812820B716A;
+	Mon, 27 Apr 2026 19:22:13 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5812820B716A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1777342934;
+	bh=+IGQoTFr6Qw+EwmeMJT0ONytj53r7yK9Br87bvqZ/PM=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=B39f6qoV/2v2M6uwjFfc4vZ8hZYZndrMmocQpsC+wZhzw87oZAWKOSHiV9+S+OxE7
+	 5//1yYEVSmRpELFbDSpBVNsqT+W/54o3nRUL73gjylrWf1JytwHomgAIgmyrhjQgU8
+	 5uyvosrDRXUyFUC7eALyiQiTiZO7LTbLKlxk9FDw=
+Message-ID: <43f41598-ee90-eb2f-1877-da6d1687322e@linux.microsoft.com>
+Date: Mon, 27 Apr 2026 19:22:12 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aetvAkM0y45WAmfV@plex>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.1
+Subject: Re: [PATCH V1 08/13] PCI: hv: rename hv_compose_msi_msg to
+ hv_vmbus_compose_msi_msg
+Content-Language: en-US
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: hpa@zytor.com, robin.murphy@arm.com, robh@kernel.org, wei.liu@kernel.org,
+ mhklinux@outlook.com, muislam@microsoft.com, namjain@linux.microsoft.com,
+ magnuskulke@linux.microsoft.com, anbelski@linux.microsoft.com,
+ linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+ linux-arch@vger.kernel.org, kys@microsoft.com, haiyangz@microsoft.com,
+ decui@microsoft.com, longli@microsoft.com, tglx@kernel.org,
+ mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+ joro@8bytes.org, will@kernel.org, lpieralisi@kernel.org,
+ kwilczynski@kernel.org, bhelgaas@google.com, arnd@arndb.de
+References: <20260427163139.GA157548@bhelgaas>
+From: Mukesh R <mrathor@linux.microsoft.com>
+In-Reply-To: <20260427163139.GA157548@bhelgaas>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On 2026-04-24 01:29 PM, Pasha Tatashin wrote:
-> On 04-24 14:33, Pratyush Yadav wrote:
-> > Hi David,
-> > 
-> > On Thu, Apr 23 2026, David Matlack wrote:
-> > [...]
-> > > diff --git a/MAINTAINERS b/MAINTAINERS
-> > > index c9b7b6f9828e..94af31837375 100644
-> > > --- a/MAINTAINERS
-> > > +++ b/MAINTAINERS
-> > > @@ -20555,6 +20555,18 @@ L:	linux-pci@vger.kernel.org
-> > >  S:	Supported
-> > >  F:	Documentation/PCI/pci-error-recovery.rst
-> > >  
-> > > +PCI LIVE UPDATE
-> > > +M:	Bjorn Helgaas <bhelgaas@google.com>
-> > > +M:	David Matlack <dmatlack@google.com>
-> > > +L:	linux-pci@vger.kernel.org
-> > > +S:	Supported
-> > > +Q:	https://patchwork.kernel.org/project/linux-pci/list/
-> > > +B:	https://bugzilla.kernel.org
-> > > +C:	irc://irc.oftc.net/linux-pci
-> > > +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/pci/pci.git
-> > > +F:	drivers/pci/liveupdate.c
-> > > +F:	include/linux/kho/abi/pci.h
-> > > +
-> > 
-> > Can we please also add these files under the "LIVE UPDATE" entry. The
-> > code here concerns both live update and PCI.
-
-Covering that intersection of Live Update and PCI was exactly my
-intention with introducing this new PCI LIVE UPDATE entry. This ensures
-we have maintenance coverage with knowledge of that intersection.
-
-> > We can figure out the
-> > maintenance details as we go along, but I think the live update
-> > maintainers should at least get all the patches for PCI live update.
-
-Would adding kexec@ here be sufficient or do you want to be CC'd
-directly?
-
-If you want to be CC'd directly do you think makes more sense to add the
-Live Update maintainers as Reviewers under PCI LIVE UPDATE, or add
-drivers/pci/liveupdate.c under LIVE UPDATE?
-
-> > 
-> > Perhaps also add the kexec list here? We plan to use it to maintain the
-> > LUO patches, and adding it will make sure we get the patches in case
-> > someone updates the file list here but forgets to update it in the LIVE
-> > UPDATE entry.
+On 4/27/26 09:31, Bjorn Helgaas wrote:
+> On Tue, Apr 21, 2026 at 07:32:34PM -0700, Mukesh R wrote:
+>> Main change here is to rename hv_compose_msi_msg to
+>> hv_vmbus_compose_msi_msg as we introduce hv_compose_msi_msg in upcoming
+>> patches that builds MSI messages for both VMBus and non-VMBus cases. VMBus
+>> is not used on baremetal root partition for example. While at it, replace
+>> spaces with tabs and fix some formatting involving excessive line wraps.
 > 
-> +1
+> Would be better to do the whitespace changes in their own patch,
+> although several of them should just be dropped (see below).
 > 
-> These files should also be added to the Live Update entry, and the kexec
-> mailing list should be included.
+> Capitalize subject ("PCI: hv: Rename ...").
 > 
-> Changes specific to Live Update should be routed through the
-> liveupdate/linux.git tree, while generic PCI changes should go through
-> pci/pci.git. In either case, if liveupdate.c or abi/pci.h are modified,
-> acks are required from the Live Update group.
+> Add "()" after function names in subject and commit log.
 
-Do you want to merge changes to drivers/pci/liveupdate.c through the
-live update tree or PCI tree? We should probably decide now. I was
-assuming the PCI tree since its part of PCI core.
+Ok, will do in next version.
 
-As we project this out there are going to be users of the Live Update
-API across different parts of the kernel: PCI core, IOMMU core, IOMMU
-drivers, VFIO core, VFIO PCI drivers, and KVM. I don't think it will
-scale to take all that code through the live update tree.
+>> +++ b/drivers/pci/controller/pci-hyperv.c
+>> @@ -30,7 +30,7 @@
+>>    * function's configuration space is zero.
+>>    *
+>>    * The rest of this driver mostly maps PCI concepts onto underlying Hyper-V
+>> - * facilities.  For instance, the configuration space of a function exposed
+>> + * facilities.	For instance, the configuration space of a function exposed
+> 
+> Oops, this hunk made it worse.  Definitely don't want a tab there.
+> 
+>> @@ -1954,7 +1955,7 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+>>   			return;
+>>   		}
+>>   		/*
+>> -		 * The vector we select here is a dummy value.  The correct
+>> +		 * The vector we select here is a dummy value.	The correct
+> 
+> Another tab that should be a space.  Actually, you should just drop
+> this hunk; the rest of the comment has two spaces after periods, so
+> this should too.
+
+well, most of our files does global replace 8 spaces with tabs, so
+everywhere comments are well indented. Since, checkpatch doesn't complain
+about tabs on comment lines, may I assue it is not a strict requirement
+and more a nit or personal preference?
+
+Thanks,
+-Mukesh
+
+
+>> @@ -2046,7 +2047,7 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+>>   
+>>   		/*
+>>   		 * Make sure that the ring buffer data structure doesn't get
+>> -		 * freed while we dereference the ring buffer pointer.  Test
+>> +		 * freed while we dereference the ring buffer pointer.	Test
+> 
+> Same here.  This makes it worse.
+> 
+>> @@ -2226,7 +2227,7 @@ static int hv_pcie_init_irq_domain(struct hv_pcibus_device *hbus)
+>>   /**
+>>    * get_bar_size() - Get the address space consumed by a BAR
+>>    * @bar_val:	Value that a BAR returned after -1 was written
+>> - *              to it.
+>> + *		to it.
+> 
+> Just put "to it" on the preceding line.  There's plenty of space
+> there.
+> 
+>> @@ -2580,7 +2581,7 @@ static void q_resource_requirements(void *context, struct pci_response *resp,
+>>    * new_pcichild_device() - Create a new child device
+>>    * @hbus:	The internal struct tracking this root PCI bus.
+>>    * @desc:	The information supplied so far from the host
+>> - *              about the device.
+>> + *		about the device.
+> 
+> Ditto.  If you want to change this, put "about the device" on the
+> preceding line.
+> 
+>> @@ -3422,7 +3423,7 @@ static int hv_allocate_config_window(struct hv_pcibus_device *hbus)
+>>   	 * vmbus_allocate_mmio() gets used for allocating both device endpoint
+>>   	 * resource claims (those which cannot be overlapped) and the ranges
+>>   	 * which are valid for the children of this bus, which are intended
+>> -	 * to be overlapped by those children.  Set the flag on this claim
+>> +	 * to be overlapped by those children.	Set the flag on this claim
+> 
+> Another hunk that should be dropped.
+
