@@ -1,119 +1,85 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from sender4-of-o54.zoho.com (sender4-of-o54.zoho.com [136.143.188.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE2DA9463;
-	Wed, 29 Apr 2026 09:04:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777453442; cv=none; b=SUjq8MA1aWrZNvXM12UpJWl9A9+ATUmxRwGNiGUQl6Cy+A5b5fo0JV5JeyTp8iDeiGPdm1XXR5jyCLxNvjq9rA5HLYSD4HGfNLPdYsW5eEmhWl5UCDBovbhmLOwmrXdvJCfhg/6wIlC2JcxWjSkI56oXFrIuIhzEw6h5cARyODw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777453442; c=relaxed/simple;
-	bh=GlS0SwwAWXqWj/7Jc6bpwhH0bZk5wVaKJDdB02OB62g=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=tiZDLQd9pyasqtFzEOg/XCig4E+bwKq+3o7e1aSHQ0znceJG24oyGUTSyPGrOQEOggzyi8zQCZNCMMYOpL9AFk2nGOwHQTTYcRQlnLBuIMEm4gF1KRB/ARwj2hARkQzjYeVNdCK09etqDKJNFBirxwUWeph6EC2HEbx98iE4v+Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ti93xAMi; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E51D9346FA1
+	for <iommu@lists.linux.dev>; Wed, 29 Apr 2026 10:36:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.54
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777458990; cv=pass; b=assCZixrHPPylHqt39vQcaJ4lJaplga7FFx6P50eqeWA2OuwfdpzAil3M2UC/mTy5gFGZDynww9EBpNE9gKxzWiRuQAhS07XIOe0yvOtQlDg0JERjyo3NShEWyx7cLnEP5q/zmJdjrwaQk/046hThGbV5i7B7u9YcztdP1/Ycoc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777458990; c=relaxed/simple;
+	bh=wWsgI55T2IIdII2886fM0Y+D2bDD3d/AayrfFLAVrIA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=iShSuSlLBUrnfe7VCT4AM4moOLlUuPjv0mDO2sJWTxasfq2DG8EMiII2jNgLv3oquPyJvEHhKLWWptyHxkJ/+G1tkAoBINnhkPyO369UDIACy9Qjx0ekbFHD1J1vpThAFoP2FcWhlySbvdFpHlQimGslzyob55RsMcvs0Gjz7Zc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=anirudhrb.com; spf=pass smtp.mailfrom=anirudhrb.com; dkim=pass (1024-bit key) header.d=anirudhrb.com header.i=anirudh@anirudhrb.com header.b=T+MYPJcl; arc=pass smtp.client-ip=136.143.188.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=anirudhrb.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=anirudhrb.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ti93xAMi"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B8E5C19425;
-	Wed, 29 Apr 2026 09:03:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777453442;
-	bh=GlS0SwwAWXqWj/7Jc6bpwhH0bZk5wVaKJDdB02OB62g=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=ti93xAMiLbMaMHonvVmLyQT0uIvkTKlNv0xaRHEBxrmRd5VjIbPfZ0KEU/CG3fqs0
-	 vlnllUSlrwer2rVn7Kl3nhYyUcx3v5S7CfROlsqqxPItkeVidgYkXK76GUED4eCvPH
-	 6BcfYEYaVeND0Z4goX05clzzSvaa0RM6z0VaqEbSg1cn4G0Zp9v0d2M212KLJT0TPi
-	 6klFM3hjhapurXuRWCbRt6LrBEgFl79/ud5WBEC0jvWoFgjtxXqxquMHHAv8OA8YgN
-	 bX/MRcupcMSUOzl9JUYQ+HDgsbahChlb6L43dRAtf/+q93ztefgKUHrA4iIXQR0upQ
-	 9miKEWWI8iQDw==
-X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Will Deacon <will@kernel.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-coco@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	kvmarm@lists.linux.dev,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Marc Zyngier <maz@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Thomas Gleixner <tglx@kernel.org>, sebastianene@google.com
-Subject: Re: [PATCH v4 3/3] coco: guest: arm64: Query host IPA-change
- alignment via RHI
-In-Reply-To: <afC8hZTJY6Cx8Liz@willie-the-truck>
-References: <20260427063108.909019-1-aneesh.kumar@kernel.org>
- <20260427063108.909019-4-aneesh.kumar@kernel.org>
- <afC8hZTJY6Cx8Liz@willie-the-truck>
-Date: Wed, 29 Apr 2026 14:33:55 +0530
-Message-ID: <yq5awlxqyw78.fsf@kernel.org>
+	dkim=pass (1024-bit key) header.d=anirudhrb.com header.i=anirudh@anirudhrb.com header.b="T+MYPJcl"
+ARC-Seal: i=1; a=rsa-sha256; t=1777458968; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=S6Oi1Mhyn7HSEIlQZ9NQ+85YldW92YeyhctFkYS3PpffytOc/8sLu3tr29aehHvNJQTbdTuDI/ZnxBEDviRKULb/2Qh/5lSTlTuMf1sksWN4UcIBl4Jd4rxUkY1R+barhNRu2E8iK3KNTKZ/Z2pIZ4d5/OkvVPDRH+SpPMhxkr8=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1777458968; h=Content-Type:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=Xj/9h++E416HVc3sW+ej95YsGS2ZgLD3ML/lfDNu5mw=; 
+	b=IILA7pZin3aP6X402//pPOBXAjLFHFCRk9h+dBon5zvUFOcQTyXVIGczlINRmxZuonqXPTHrBacbJKBhR4MYu9gomwBtDtRx8EHdonYr3HQoZ1ur28q8lxNm/rxiGXcYiQjGC1ZT0/rIsz9FdbyS4ma7VNunAzntCB00GZ/hfgw=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=anirudhrb.com;
+	spf=pass  smtp.mailfrom=anirudh@anirudhrb.com;
+	dmarc=pass header.from=<anirudh@anirudhrb.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1777458968;
+	s=zoho; d=anirudhrb.com; i=anirudh@anirudhrb.com;
+	h=Date:Date:From:From:To:To:Cc:Cc:Subject:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To:Message-Id:Reply-To;
+	bh=Xj/9h++E416HVc3sW+ej95YsGS2ZgLD3ML/lfDNu5mw=;
+	b=T+MYPJclCboEFY2K75ze4MtY94KGcSs0Ebeb670CPu5Y4If7R5RFZPfLHKoEcvLD
+	CUX0ZpNpYQmUi86E94MJeBknmbwTId0QoQEddCUXhC4abLVcq/+hMX2F9x3qxDloMm2
+	YBbUKZXfmYErqwF79jT1WoARSFDlyOPqEUzr7fOY=
+Received: by mx.zohomail.com with SMTPS id 1777458964961585.9652544116735;
+	Wed, 29 Apr 2026 03:36:04 -0700 (PDT)
+Date: Wed, 29 Apr 2026 10:35:54 +0000
+From: Anirudh Rayabharam <anirudh@anirudhrb.com>
+To: Mukesh R <mrathor@linux.microsoft.com>
+Cc: hpa@zytor.com, robin.murphy@arm.com, robh@kernel.org,
+	wei.liu@kernel.org, mhklinux@outlook.com, muislam@microsoft.com,
+	namjain@linux.microsoft.com, magnuskulke@linux.microsoft.com,
+	anbelski@linux.microsoft.com, linux-kernel@vger.kernel.org,
+	linux-hyperv@vger.kernel.org, iommu@lists.linux.dev,
+	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+	kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
+	longli@microsoft.com, tglx@kernel.org, mingo@redhat.com,
+	bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+	joro@8bytes.org, will@kernel.org, lpieralisi@kernel.org,
+	kwilczynski@kernel.org, bhelgaas@google.com, arnd@arndb.de
+Subject: Re: [PATCH V1 04/13] mshv: Provide a way to get partition id if
+ running in a VMM process
+Message-ID: <20260429-pristine-unyielding-magpie-1ce6ee@anirudhrb>
+References: <20260422023239.1171963-1-mrathor@linux.microsoft.com>
+ <20260422023239.1171963-5-mrathor@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260422023239.1171963-5-mrathor@linux.microsoft.com>
+X-ZohoMailClient: External
 
-Will Deacon <will@kernel.org> writes:
+On Tue, Apr 21, 2026 at 07:32:30PM -0700, Mukesh R wrote:
+> Many PCI passthru related hypercalls require partition id of the target
+> guest. Guests are actually managed by MSHV driver and the partition id
+> is only maintained there. Add a field in the partition struct in MSHV
+> driver to save the tgid of the VMM process creating the partition,
+> and add a function there to retrieve partition id if current process
+> is a VMM process.
+> 
+> Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
+> ---
+>  drivers/hv/mshv_root.h         |  1 +
+>  drivers/hv/mshv_root_main.c    | 22 ++++++++++++++++++++++
+>  include/asm-generic/mshyperv.h |  5 +++++
+>  3 files changed, 28 insertions(+)
 
-> [+Seb for the ITS]
->
-> On Mon, Apr 27, 2026 at 12:01:08PM +0530, Aneesh Kumar K.V (Arm) wrote:
->> Add the Realm Host Interface support needed to query host configuration
->> from a Realm guest. Define the RHI hostconf SMCs, add rsi_host_call(), and
->> use them during Realm initialization to retrieve the host IPA-change
->> alignment size.
->> 
->> Expose that alignment through realm_get_hyp_pagesize() and
->> mem_decrypt_granule_size() so shared-buffer allocation and
->> encryption/decryption paths can honor the ipa change page-size requirement.
->> 
->> If the host reports an invalid alignment (when alginment value is not
->> multiple of 4K), do not enable Realm support.
->> 
->> This provides the host alignment information required by the shared buffer
->> alignment changes.
->> 
->> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
->> ---
->>  arch/arm64/include/asm/mem_encrypt.h |  3 ++
->>  arch/arm64/include/asm/rhi.h         | 24 +++++++++++++
->>  arch/arm64/include/asm/rsi.h         |  2 ++
->>  arch/arm64/include/asm/rsi_cmds.h    | 10 ++++++
->>  arch/arm64/include/asm/rsi_smc.h     |  7 ++++
->>  arch/arm64/kernel/Makefile           |  2 +-
->>  arch/arm64/kernel/rhi.c              | 54 ++++++++++++++++++++++++++++
->>  arch/arm64/kernel/rsi.c              | 13 +++++++
->>  arch/arm64/mm/mem_encrypt.c          |  8 +++++
->>  9 files changed, 122 insertions(+), 1 deletion(-)
->>  create mode 100644 arch/arm64/include/asm/rhi.h
->>  create mode 100644 arch/arm64/kernel/rhi.c
->
-> [...]
->
->> diff --git a/arch/arm64/mm/mem_encrypt.c b/arch/arm64/mm/mem_encrypt.c
->> index 38c62c9e4e74..f5d64bc29c20 100644
->> --- a/arch/arm64/mm/mem_encrypt.c
->> +++ b/arch/arm64/mm/mem_encrypt.c
->> @@ -59,3 +59,11 @@ int set_memory_decrypted(unsigned long addr, int numpages)
->>  	return crypt_ops->decrypt(addr, numpages);
->>  }
->>  EXPORT_SYMBOL_GPL(set_memory_decrypted);
->> +
->> +size_t mem_decrypt_granule_size(void)
->> +{
->> +	if (is_realm_world())
->> +		return max(PAGE_SIZE, realm_get_hyp_pagesize());
->> +	return PAGE_SIZE;
->
-> No, this should be indirected via 'struct arm64_mem_crypt_ops' because
-> there's nothing particularly unique to realms here. For pKVM protected
-> guests using a smaller page-size than the host, we'd presumably need
-> something similar for the ITS (where restricted-dma isn't used).
->
+Reviewed-by: Anirudh Rayabharam (Microsoft) <anirudh@anirudhrb.com>
 
-Sure, I will rework this to use struct arm64_mem_crypt_ops in the next revision.
-
--aneesh
