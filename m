@@ -1,30 +1,30 @@
-Received: from out30-118.freemail.mail.aliyun.com (out30-118.freemail.mail.aliyun.com [115.124.30.118])
+Received: from out30-111.freemail.mail.aliyun.com (out30-111.freemail.mail.aliyun.com [115.124.30.111])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2BF018A6A8
-	for <iommu@lists.linux.dev>; Wed, 29 Apr 2026 01:06:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.118
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71A8541C62
+	for <iommu@lists.linux.dev>; Wed, 29 Apr 2026 01:15:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.111
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777424823; cv=none; b=ba8y18sED6woJMW8Np75OmIc5DCTHOHMJAXun2xbCUFpCIQ3L4QTbxnUMTWyEzH5hYRcpG+BiXWZfWgBFOqbWvoqamaYeSJxvGK/Bgfh+6ZrQColqma3Aa9fn6dr+/sQZokFkoXbJnBPBIQbyeHy/7p2/FLQffJ8cbU5lkfdW4g=
+	t=1777425329; cv=none; b=tGPVgEbewpKPkUYrbqGOwBqDAW1n3Eh+Bjgf6/8N4K+tsIvvGVro1yOkszEnyuSvvnx/mpD6AbAVeNsaRObUgOWWjZpZ2RCVPDwFqxRFnocd8YkcBGYOAqqiQ+y9DeNUI+k9Nr9BE6ZnI3fbelVLZgX3DvkSIb1Xa1gphboasHU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777424823; c=relaxed/simple;
-	bh=dR0nfY6GEZ3yOr/Ehd4BMntDHEqTN2fTGWOfpFmvskU=;
+	s=arc-20240116; t=1777425329; c=relaxed/simple;
+	bh=r8EbWNXi4J82YFK/uhQ5l2XFpmLroabMXBcb58UjF6g=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=CF9aHLlaQW2aiAfY00OPDC01linIl0pfRFbqG2hxLs3JgfOOMVueTZgwIxWqJ1SjRv5Ham+lQkwbvtOxJmIQ89scpHvOO5hyJmKRwQxvhCy9oVoyy52uL2aCqZd1Id7g5Q45SoRmr9rFweeqGecciNjKnhnohPB0CD4c+KkQf04=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=ltoCIyug; arc=none smtp.client-ip=115.124.30.118
+	 MIME-Version; b=SWw66EiHbVJXB5m1TMGYFe/XJrOPdLMx3mw3bAT4Ve+h29M9wKCNpmUrZtvGlhnotSMh6sg06X5LyYLNp49Jjbz1zjbqu5piAfaYl+ny2bbHeTTo8h7kWfG0KQKXFHMBMBfJpizTW6goQAoaVuvr0MIFuUyhUrCN8iI+QR67+4w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=d7AdNmsL; arc=none smtp.client-ip=115.124.30.111
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="ltoCIyug"
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="d7AdNmsL"
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
-	t=1777424818; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=ZIGgm1LnnTKQYeHSW75Afg46i5j+k0U/fuPrhUWSwJ4=;
-	b=ltoCIyuggRdxHP386ZWGJhSRq3bqkpitH2iY0Zf91TfX8dk28HOqzfEHSI+Fh3cp3dkuVBC/1/ndUjAVNSQWZyCsJqDsSSaBjFEJ1G7xRPfV1UgIG2BhjjG5ZkqHfCd6dm7RrOI7emjsTVi/SEzLeOuDIeTyVgDx6FT1iySJAZg=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R361e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037026112;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=22;SR=0;TI=SMTPD_---0X1vlBef_1777424814;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X1vlBef_1777424814 cluster:ay36)
+	t=1777425325; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=xWnII7NbedrCecv32Wz7AYnJB6oJuNa7XLMjqnf42ng=;
+	b=d7AdNmsLQCnRsf+Gv/1Awdemh5I1CO8FJ9EBGw8TvjCMs4Gb3PNmqLSWp75UA2AIB3/UHKE3tRiaDdbyyL8v6CqoRWwhQew2v53Ko5h3V0DLQ7qqULCynqFUCdlSk0YJ7DLo1/pUxLGQFBhCQLdyXvRV0EPVCTQ494xJIvLb/zs=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R861e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033032089153;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=22;SR=0;TI=SMTPD_---0X1vlEBh_1777425321;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X1vlEBh_1777425321 cluster:ay36)
           by smtp.aliyun-inc.com;
-          Wed, 29 Apr 2026 09:06:56 +0800
+          Wed, 29 Apr 2026 09:15:23 +0800
 From: fangyu.yu@linux.alibaba.com
 To: jgg@ziepe.ca
 Cc: alex@ghiti.fr,
@@ -48,12 +48,12 @@ Cc: alex@ghiti.fr,
 	tjeznach@rivosinc.com,
 	vasant.hegde@amd.com,
 	will@kernel.org
-Subject: Re: Re: [RFC PATCH 01/11] iommupt: Add RISC-V Second-stage (iohgatp) page table support  
-Date: Wed, 29 Apr 2026 09:06:50 +0800
-Message-Id: <20260429010650.61646-1-fangyu.yu@linux.alibaba.com>
+Subject: Re: Re: [RFC PATCH 02/11] iommu/riscv: report iommu capabilities  
+Date: Wed, 29 Apr 2026 09:15:20 +0800
+Message-Id: <20260429011520.62812-1-fangyu.yu@linux.alibaba.com>
 X-Mailer: git-send-email 2.39.3 (Apple Git-146)
-In-Reply-To: <20260428133239.GC849557@ziepe.ca>
-References: <20260428133239.GC849557@ziepe.ca>
+In-Reply-To: <20260428133324.GD849557@ziepe.ca>
+References: <20260428133324.GD849557@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -62,27 +62,15 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
->> @@ -263,6 +281,22 @@ riscvpt_iommu_fmt_init(struct pt_iommu_riscv_64 *iommu_table,
->>  	case 57:
->>  		pt_top_set_level(&table->common, 4);
->>  		break;
->> +	/*
->> +	 * Second-stage (iohgatp): Sv39x4 / Sv48x4 / Sv57x4.
->> +	 * The top level is the same as for the first-stage counterpart.
->> +	 */
->> +	case 41:
->> +		pt_top_set_level(&table->common, 2);
->> +		table->second_stage = true;
->> +		break;
+>> +static bool riscv_iommu_capable(struct device *dev, enum iommu_cap cap)
+>> +{
+>> +	switch (cap) {
+>> +	case IOMMU_CAP_CACHE_COHERENCY:
+>> +	case IOMMU_CAP_DEFERRED_FLUSH:
 >
->Second stage needs to be an explicit PT_FEAT not implicitly deduced
->based on the vasz.
+>IOMMU_CAP_DEFERRED_FLUSH is not needed in v7.1
 
-Agreed. I will add an explicit PT_FEAT_RISCV_SECOND_STAGE flag and
-stop deriving second-stage semantics from vasz.
-
-Thanks,
-Fangyu
+Thanks, I will drop IOMMU_CAP_DEFERRED_FLUSH.
 
 >
 >Jason
