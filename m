@@ -1,185 +1,350 @@
-Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013002.outbound.protection.outlook.com [40.93.196.2])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5A163A6409
-	for <iommu@lists.linux.dev>; Wed, 29 Apr 2026 07:22:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.2
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777447337; cv=fail; b=D7xCk7sBSAGk9wFq22Hrm7+WNfdQ6HTDSP8UtT6Xnrwar3315fz35Awy+lHA1LhU/6BopHL5ByDailaHdC1qSd8lacwKvi4g+nwYD4jXy++QwxQV+hkVe4vd/U1lpXm+tCQ/1pRt2uNSUnAUZuITL4h4VT1O4LWrXu4Z3LVx+cQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777447337; c=relaxed/simple;
-	bh=iBfWYZCWwAz1vHCp5vseAafhqIhGTiaPi7Lzj9YdQCc=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=eu4aGz3Zw0vx4CC9rsHllT2I+FO95IgT7kOGyiEZKXNfggJfZiujjNSSqgQiQLkWj8ic+GY9kIz5yjW36CKfoxA0bBsyMMwq5anlkp5HHqVeH1YEme1d7ZaWZY88FYCv2z90wtDqHYLXpZNE29zkNn6TFxM2M8N0zQZQ96S2b+Q=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=rrDvVQIq; arc=fail smtp.client-ip=40.93.196.2
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 824FE2EA498;
+	Wed, 29 Apr 2026 09:01:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777453291; cv=none; b=d/RpqvfHsA+e+FIWVSvcQUGo56v6oS3CIyVy+/1jzzpfawhu5QzxiHBhQBsfZR5xz1fJhYNlxRREE8PC8WkJ5DWZmnnoJ3U3WjfpC/c3bJ94OUBudpyOgKII5iso5yEQfhAwKGdAlacxUxbLGd+4CsvdOMpLR8DD3t7uEK7h/1c=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777453291; c=relaxed/simple;
+	bh=yPvnutkaqdUvY5Sa11PPA09D33u8fKpbeuUykRqteQ0=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=LyAVIDadjpYxD+QTSqJa5WMIqs1PjWlbYYi/178eiwxnnZMCwMBNKNVICEpshEHBHO7d3eN0QbJZHR351btRHYQ/LEZavXkcC8yyePYUFHpGY6PN0gbGnzZ+ktJgyxi+q+StFMU/AQzFiQaetE/uNA8tFuBU/nHIQbDqVgeQZA4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=P08g+7Lg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="rrDvVQIq"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=uWg0OQgzX347cTF7FvIPKZiFgpSgYl6s3ZUT2Pn4WvYmEWLqFsRlctfLOCIUo5i9k7ONEfQtvOaPFpz1WLx74Q8P+ljvyAzIOw5YHJFoIQR5E7S4mipJQcngwOCwZiach65wXuKun7aa/V2JsRemQ4q/W8c5McPIJgTRrAT6Mz9pHi5OmfqdRTF9fDSiCvYM95Dp2k3QTmWRvDI/pVxZJlXPdfBTD0Nz27jnITQH11WkUjH3oWEORZhjJdtFJG1Zr1MkXVbMZ308p97JN8Qx/RPTjaL7g+I59tR49/KF76rs8h1ACq/qVVYM8n6Xn6MPtsarwbKwM3luM8vDeCScGw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8/YgeRMPs1947BIjmWAPT2oWeN++jyT+HkpDryUX+TY=;
- b=SBhoz1swXPG0vnrcgT4Gn6xC5smmkBu0MG8mVjhtbtAD/OEyWsBK+qajxHtUB/MepgHsJ7u+CO7lr0VfMfPLj/D1kJYjFmUupBoYRqLgxCY6VoCWrY3VPzKNuDY5kpgbZMGSaTvTKkiti/5uByuZTqVlw8hBAL4BaoMuv5EsOUYTF/ihdWsoB2aCxP36w1IWRrCqt3pgiI0oi4reMxNZ8uQP8W3MH6UB/a9tmtfRD/2p5K2nxes4LpVPnVTI9TaADDqIixqL6KPFEnLyKs7MCFLYNPEmqHJ+U7rxScN1QmAXgZBG4wunf+Jjc4qftRO/g9BvJowVsY2DkvdINCn5jQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8/YgeRMPs1947BIjmWAPT2oWeN++jyT+HkpDryUX+TY=;
- b=rrDvVQIqiFQG0l7cIHmuqFzUFUuJgRZWal6BwzloqXzkKYgoAM3M+J9I9s0ToHrcMjmU/Loq9NLIuWfxe7Vxv0kEMZc4k07G1ebiAbUjHYw3m9qFmRHJuOOsYfIkIn2rNH6REkP4wIcKOXfr/iFSVxG78BAD3bzZY2q/pxjaC7LAcs1KwUZwtA6Y6sCmSNyr1rwl6dC2U1PLsEBgxZZJiFOhlccoejRraEmB2ZVkNUn89QvdcZC+gM0WNfKQO4pknRYtDt9U8UAiEHvNPIE30CbbdLZfcho4MXZzzaL4mbxDzTYUF+7n33viqp6JbvvKly3X7XOSEf4Zkl6EUXUGYw==
-Received: from DS7PR03CA0270.namprd03.prod.outlook.com (2603:10b6:5:3b3::35)
- by SA1PR12MB8141.namprd12.prod.outlook.com (2603:10b6:806:339::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9870.16; Wed, 29 Apr
- 2026 07:22:07 +0000
-Received: from DM2PEPF00003FC4.namprd04.prod.outlook.com
- (2603:10b6:5:3b3:cafe::21) by DS7PR03CA0270.outlook.office365.com
- (2603:10b6:5:3b3::35) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9846.26 via Frontend Transport; Wed,
- 29 Apr 2026 07:22:07 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- DM2PEPF00003FC4.mail.protection.outlook.com (10.167.23.22) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9846.18 via Frontend Transport; Wed, 29 Apr 2026 07:22:07 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Wed, 29 Apr
- 2026 00:21:54 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.20; Wed, 29 Apr 2026 00:21:53 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.12) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server id 15.2.2562.20 via Frontend
- Transport; Wed, 29 Apr 2026 00:21:52 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <will@kernel.org>, <robin.murphy@arm.com>, <jgg@nvidia.com>,
-	<kevin.tian@intel.com>
-CC: <joro@8bytes.org>, <praan@google.com>, <kees@kernel.org>,
-	<baolu.lu@linux.intel.com>, <miko.lenczewski@arm.com>, <smostafa@google.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>, <jamien@nvidia.com>
-Subject: [PATCH rc v4 5/5] iommu/arm-smmu-v3: Detect ARM_SMMU_OPT_KDUMP_ADOPT in probe()
-Date: Wed, 29 Apr 2026 00:20:53 -0700
-Message-ID: <bb1aa2d0d1fabadb76dfef9ea9cf44f4a96c65be.1777446969.git.nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1777446969.git.nicolinc@nvidia.com>
-References: <cover.1777446969.git.nicolinc@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="P08g+7Lg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 326CAC19425;
+	Wed, 29 Apr 2026 09:01:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777453291;
+	bh=yPvnutkaqdUvY5Sa11PPA09D33u8fKpbeuUykRqteQ0=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=P08g+7LgE8rugnyDZKpkIBlwTI6XcLs70Wxotcz3NigGJt5sPdulOVqFP+WMCbnbJ
+	 V8MF2QHpGAqT1JRlB8HvnNDasvvZwWcvTFwGP1is0PW6GpmJVYCz72+rBrNkV28L6k
+	 xw9B+JMlKHJpQdHKmjErSfSYRmJz6VR9DrsaITjblPGVB55S9nwIXl3jEyf4+J++Hv
+	 R11pnNU7XoiNOQn9xj0n2/p6HKQMuTvtFqqcLt+89lLdk4oKU0AAl87HcrWJq9ZmJd
+	 Hveo0rTPUa2lF2GyTEbzuvm0oaXcu+KG1/QtSx4fnHBxxipeUGycoL8j0UMZV06Iyy
+	 6T3QFtVamvK7w==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Marc Zyngier <maz@kernel.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-coco@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	kvmarm@lists.linux.dev,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v4 3/3] coco: guest: arm64: Query host IPA-change
+ alignment via RHI
+In-Reply-To: <86tssvyz2v.wl-maz@kernel.org>
+References: <20260427063108.909019-1-aneesh.kumar@kernel.org>
+ <20260427063108.909019-4-aneesh.kumar@kernel.org>
+ <86y0i8zo9f.wl-maz@kernel.org> <yq5a4ikv1c7p.fsf@kernel.org>
+ <86tssvyz2v.wl-maz@kernel.org>
+Date: Wed, 29 Apr 2026 14:31:23 +0530
+Message-ID: <yq5azf2mywbg.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM2PEPF00003FC4:EE_|SA1PR12MB8141:EE_
-X-MS-Office365-Filtering-Correlation-Id: 28bcec21-9d7e-4d03-17d3-08dea5c00569
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|36860700016|1800799024|82310400026|22082099003|18002099003|56012099003;
-X-Microsoft-Antispam-Message-Info:
-	F++yRXvsKp9LTDNFFI7TJAi2z9c8eblampBZV47bcnj9j8cY1AclUMWfXtovW46lkzOEtoUhQj2+2qxtnIGRhXQiXXzgb9xIyRsU+Pe6xuV70SRftdldKPAq0YrCz4jR6VHvH+Bg7lqnG3j65781VsTg5GtlRkA0uC4fioCMr9C9cAkPbEL0jvaqe9Izln9pFehaArSI2DoeAqwFli+H74XmwXAoQJ1mXgvO/Gug8v+DArt2sVSM0VmGE91LWmSMCijVglYkwwjkJitAdMCzTDXjynfdARy1hFo+QZaklMkZVFV2cumg6G2KvxPMe9tfWIJygh5S7f+s46rhyY+mIbC3638Yv5vfB6eky6p73+RFtdjbUwPrdx4AtYskOT1CplstQy5oOlo3q7y6oSleYSKit9thJOhepF6uvC5USU76RXSrGWAOs66ksEwXj1F00mW43HfRbTZCWhroNYrUDjxMgD0mrTJRpZM+D5ZMfYsykoimB/A24uUDrxZMzE7QDnsAOODI2PNb2ZDg185X9M3vNLmVnlnbgLHm4As8gGvGL19EIGx63sK55WBpweIpY2pNc7LzjWhXkDnJ1kaeE9wDuZUvEVnTjS4qu/aBnEHWrRXILIosEF8ah+v14SwXsqkcunTgNDN0yKDvC/jYQ708QVpM9Ns1l7wRNDfmgXySbV2mPzXIzeue9xfn/CkJXA5urQcr+C50mLfEQzv7QbDQFXsGQ9tpYjEvmo2DlA6Ry1X744oqW8m/sHesgYzoYzHsMu3hPpV3ipBn0v8VjQ==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(376014)(36860700016)(1800799024)(82310400026)(22082099003)(18002099003)(56012099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	PzHFUxtfp3HUzEU8brc3Dha8o2AdEllYYEyWSN4S6N0/UczVl59Ph02AMZi0D/fsR9Apm3Ff0NIaRWbmF7OHC99wjT3+xgV8EEKr43btODlVizC1kVTiY3FQTzh4aF5+MFme63g1RV55I1Vh4ZZquKBgTpt9DLujgj9SK9lFeE/k844S2G6IDkhhb0/bR1amolfydCPPljYzeSKOkn7tOdjWFbvPY6xUY5g0rg8evF/YzZrdif0AVLHrK7LOrLwzeU6Xm7939oRBKzfNmkHoIyoksw7NWeyEZWnEQpMuvnr1GcEV6HHoVxEa75cncENCGwjcO1V7Qs19+NQpfDsS774lfmt4x1m2C2Vn9lC9YlllkP70aEWFNX2SrwCPQ/cY/x4OYKh6RWZd81KdL0dkKUr7bhPFDPqbM0ZHdHxYEPshOpkHUCWrEZnuL+GNYFyT
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2026 07:22:07.4746
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 28bcec21-9d7e-4d03-17d3-08dea5c00569
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DM2PEPF00003FC4.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8141
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-arm_smmu_device_hw_probe() runs before arm_smmu_init_structures(), so it's
-natural to decide whether the kdump kernel must adopt the crashed kernel's
-stream table.
+Marc Zyngier <maz@kernel.org> writes:
 
-Given that memremap is used to adopt the old stream table, set this option
-only on a coherent SMMU.
+> On Tue, 28 Apr 2026 13:49:46 +0100,
+> Aneesh Kumar K.V <aneesh.kumar@kernel.org> wrote:
+>>=20
+>> Marc Zyngier <maz@kernel.org> writes:
+>>=20
+>> > On Mon, 27 Apr 2026 07:31:08 +0100,
+>> > "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> wrote:
+>> >>=20
+>> >> Add the Realm Host Interface support needed to query host configurati=
+on
+>> >> from a Realm guest. Define the RHI hostconf SMCs, add rsi_host_call()=
+, and
+>> >> use them during Realm initialization to retrieve the host IPA-change
+>> >> alignment size.
+>> >
+>> > I don't understand what "IPA-change" means. What you are after is the
+>> > host's sharing granule size.
+>> >
+>>=20
+>> This is part of the RHI specification, and the call is named
+>> RHI_HOSTCONF_GET_IPA_CHANGE_ALIGNMENT. The intent is to determine the
+>> alignment requirements for changing IPA attributes (protected vs.
+>> unprotected IPA
+>
+> This really is a terrible name. Why the 'change' part? It doesn't
+> change, it is a constant.
+>
+> Oh well...
+>
+> [...]
+>
+>> >> +static inline unsigned long rsi_host_call(struct rsi_host_call *rhi_=
+call)
+>> >> +{
+>> >> +	phys_addr_t addr =3D virt_to_phys(rhi_call);
+>> >> +	struct arm_smccc_res res;
+>> >> +
+>> >> +	arm_smccc_1_1_invoke(SMC_RSI_HOST_CALL, addr, &res);
+>> >
+>> > Errr... What guarantees that *rhi_call is *IPA contiguous*? This is
+>> > incredibly fragile. You should at the very least check that this isn't
+>> > vmalloc'd.
+>> >
+>>=20
+>>=20
+>> I didn=E2=80=99t quite follow that. We have other RSI calls (even RMI ca=
+lls)
+>> that do similar things, and the caller understands that the address
+>> should be IPA-contiguous.
+>
+> Does it? Where is it documented?  All you get is a pointer, so all
+> bets are off.
+>
+>> Are you suggesting that all RSI calls should
+>> add checks for this?. or are you suggesting to update the API to
+>>=20
+>> unsigned long rsi_host_call(unsigned long rhi_call_phys) ?
+>
+> I'm suggesting that this API is subtly broken because it makes random
+> assumption about the physical contiguity of the VA space. It does so
+> without any check, without any documentation.
+>
+> Simply changing the parameter to phys_addr_t could at the very least
+> capture some of the requirements, but I'd like something in big bold
+> letters.
+>
+>>
+>> >> +
+>> >> +	return res.a0;
+>> >> +}
+>> >> +
+>> >>  #endif /* __ASM_RSI_CMDS_H */
+>> >> diff --git a/arch/arm64/include/asm/rsi_smc.h b/arch/arm64/include/as=
+m/rsi_smc.h
+>> >> index e19253f96c94..9ee8b5c7612e 100644
+>> >> --- a/arch/arm64/include/asm/rsi_smc.h
+>> >> +++ b/arch/arm64/include/asm/rsi_smc.h
+>> >> @@ -182,6 +182,13 @@ struct realm_config {
+>> >>   */
+>> >>  #define SMC_RSI_IPA_STATE_GET			SMC_RSI_FID(0x198)
+>> >>=20=20
+>> >> +struct rsi_host_call {
+>> >> +	union {
+>> >> +		u16 imm;
+>> >> +		u64 padding0;
+>> >> +	};
+>> >> +	u64 gprs[31];
+>> >> +} __aligned(0x100);
+>> >>  /*
+>> >>   * Make a Host call.
+>> >>   *
+>> >> diff --git a/arch/arm64/kernel/Makefile b/arch/arm64/kernel/Makefile
+>> >> index fe627100d199..3e72dd9584ed 100644
+>> >> --- a/arch/arm64/kernel/Makefile
+>> >> +++ b/arch/arm64/kernel/Makefile
+>> >> @@ -34,7 +34,7 @@ obj-y			:=3D debug-monitors.o entry.o irq.o fpsimd.=
+o		\
+>> >>  			   cpufeature.o alternative.o cacheinfo.o		\
+>> >>  			   smp.o smp_spin_table.o topology.o smccc-call.o	\
+>> >>  			   syscall.o proton-pack.o idle.o patching.o pi/	\
+>> >> -			   rsi.o jump_label.o
+>> >> +			   rsi.o jump_label.o rhi.o
+>> >>=20=20
+>> >>  obj-$(CONFIG_COMPAT)			+=3D sys32.o signal32.o			\
+>> >>  					   sys_compat.o
+>> >> diff --git a/arch/arm64/kernel/rhi.c b/arch/arm64/kernel/rhi.c
+>> >> new file mode 100644
+>> >> index 000000000000..7cd6c5102464
+>> >> --- /dev/null
+>> >> +++ b/arch/arm64/kernel/rhi.c
+>> >> @@ -0,0 +1,54 @@
+>> >> +// SPDX-License-Identifier: GPL-2.0-only
+>> >> +/*
+>> >> + * Copyright (C) 2026 ARM Ltd.
+>> >> + */
+>> >> +
+>> >> +#include <linux/mm.h>
+>> >> +#include <asm/rsi.h>
+>> >> +#include <asm/rhi.h>
+>> >> +
+>> >> +/* we need an aligned rhicall for rsi_host_call. slab is not yet rea=
+dy */
+>> >> +static struct rsi_host_call hyp_pagesize_rhicall;
+>> >
+>> > Why the "hyp_" prefix? This has absolutely nothing to with the
+>> > hypervisor.
+>> >
+>>=20
+>> Sure will update "hyp_" reference to host.=20
+>>=20
+>>=20
+>> >> +unsigned long rhi_get_ipa_change_alignment(void)
+>> >> +{
+>> >> +	long ret;
+>> >> +	unsigned long ipa_change_align;
+>> >> +
+>> >> +	hyp_pagesize_rhicall.imm =3D 0;
+>> >> +	hyp_pagesize_rhicall.gprs[0] =3D RHI_HOSTCONF_VERSION;
+>> >> +	ret =3D rsi_host_call(lm_alias(&hyp_pagesize_rhicall));
+>> >> +	if (ret !=3D RSI_SUCCESS)
+>> >> +		goto err_out;
+>> >> +
+>> >> +	if (hyp_pagesize_rhicall.gprs[0] !=3D RHI_HOSTCONF_VER_1_0)
+>> >> +		goto err_out;
+>> >> +
+>> >> +	hyp_pagesize_rhicall.imm =3D 0;
+>> >> +	hyp_pagesize_rhicall.gprs[0] =3D RHI_HOSTCONF_FEATURES;
+>> >> +	ret =3D rsi_host_call(lm_alias(&hyp_pagesize_rhicall));
+>> >> +	if (ret !=3D RSI_SUCCESS)
+>> >> +		goto err_out;
+>> >> +
+>> >> +	if (!(hyp_pagesize_rhicall.gprs[0] & __RHI_HOSTCONF_GET_IPA_CHANGE_=
+ALIGNMENT))
+>> >> +		goto err_out;
+>> >> +
+>> >> +	hyp_pagesize_rhicall.imm =3D 0;
+>> >> +	hyp_pagesize_rhicall.gprs[0] =3D RHI_HOSTCONF_GET_IPA_CHANGE_ALIGNM=
+ENT;
+>> >> +	ret =3D rsi_host_call(lm_alias(&hyp_pagesize_rhicall));
+>> >> +	if (ret !=3D RSI_SUCCESS)
+>> >> +		goto err_out;
+>> >> +
+>> >> +	ipa_change_align =3D hyp_pagesize_rhicall.gprs[0];
+>> >> +	/* This error needs special handling in the caller */
+>> >> +	if (ipa_change_align & (SZ_4K - 1))
+>> >> +		return 0;
+>> >> +
+>> >> +	return ipa_change_align;
+>> >> +
+>> >> +err_out:
+>> >> +	/*
+>> >> +	 * For failure condition assume host is built with 4K page size
+>> >> +	 * and hence ipa change alignment can be guest PAGE_SIZE.
+>> >> +	 */
+>> >> +	return PAGE_SIZE;
+>> >> +}
+>> >
+>> > Why can't this be part of rsi.c? This is an RSI call, and it should be
+>> > part of the RSI initialisation.
+>> >
+>>=20
+>> This is an RHI call as per the specification, hence it has been added to
+>> rhi.c.
+>
+> News flash: this is the Linux kernel, not an ARM spec. We organise
+> things based on the logical use, not on the TLA associated with it.
+>
+> And RHI is implemented in terms of RSI. In rsi.c it goes. We don't
+> need this pointless proliferation of helper files that only result in
+> equally pointless global symbols.
+>
+>>=20
+>> >> diff --git a/arch/arm64/kernel/rsi.c b/arch/arm64/kernel/rsi.c
+>> >> index 9e846ce4ef9c..ff735c04e236 100644
+>> >> --- a/arch/arm64/kernel/rsi.c
+>> >> +++ b/arch/arm64/kernel/rsi.c
+>> >> @@ -14,8 +14,10 @@
+>> >>  #include <asm/mem_encrypt.h>
+>> >>  #include <asm/pgtable.h>
+>> >>  #include <asm/rsi.h>
+>> >> +#include <asm/rhi.h>
+>> >>=20=20
+>> >>  static struct realm_config config;
+>> >> +static unsigned long ipa_change_alignment =3D PAGE_SIZE;
+>> >>=20=20
+>> >>  unsigned long prot_ns_shared;
+>> >>  EXPORT_SYMBOL(prot_ns_shared);
+>> >> @@ -139,6 +141,11 @@ static int realm_ioremap_hook(phys_addr_t phys, =
+size_t size, pgprot_t *prot)
+>> >>  	return 0;
+>> >>  }
+>> >>=20=20
+>> >> +unsigned long realm_get_hyp_pagesize(void)
+>> >> +{
+>> >> +	return ipa_change_alignment;
+>> >> +}
+>> >
+>> > Again, this has nothing to do with the hypervisor, but the host. And
+>> > ipa_change_alignment is still a wording I can't wrap my small head
+>> > around.
+>> >
+>> >> +
+>> >>  void __init arm64_rsi_init(void)
+>> >>  {
+>> >>  	if (arm_smccc_1_1_get_conduit() !=3D SMCCC_CONDUIT_SMC)
+>> >> @@ -147,6 +154,12 @@ void __init arm64_rsi_init(void)
+>> >>  		return;
+>> >>  	if (WARN_ON(rsi_get_realm_config(&config)))
+>> >>  		return;
+>> >> +
+>> >> +	ipa_change_alignment =3D rhi_get_ipa_change_alignment();
+>> >> +	/* If we don't get a correct alignment response, don't enable realm=
+ */
+>> >> +	if (!ipa_change_alignment)
+>> >> +		return;
+>> >
+>> > But at the same time, you override a global value with an error, and
+>> > then paper over it in mem_decrypt_granule_size()...
+>> >
+>>=20
+>>=20
+>> I believe I received similar feedback on my previous version as well,
+>> which I didn=E2=80=99t quite follow.
+>
+> And you didn't think of asking? Sometimes I wonder what these patch
+> reviews are for... Just to waste some more electrons, I guess :-/.
+>
+>>=20
+>> rhi_get_ipa_change_alignment() only returns an error when the host
+>> returns a size that is not 4K-aligned. Otherwise, it returns the
+>> host-determined size, or defaults to guest PAGE_SIZE if the RHI call
+>> itself is not supported.
+>
+> You encode the error as 0. You override ipa_change_alignment with 0.
+>
+> Then...
+>
+>> >> +size_t mem_decrypt_granule_size(void)
+>> >> +{
+>> >> +	if (is_realm_world())
+>> >> +		return max(PAGE_SIZE, realm_get_hyp_pagesize());
+>> >
+>> > If you didn't mess with ipa_change_alignment above, you shouldn't need
+>> > this max().
+>> >
+>>=20
+>> size_t mem_decrypt_granule_size(void)
+>> {
+>> 	if (is_realm_world())
+>> 		return max(PAGE_SIZE, realm_get_hyp_pagesize());
+>> 	return PAGE_SIZE;
+>> }
+>>=20
+>> That needs to use max(), because we should align to the guest PAGE_SIZE
+>> if it is larger than the host-specified alignment value.
+>
+> ... you need to correct that back to PAGE_SIZE because you have stored
+> something smaller than PAGE_SIZE.
+>
+> Isn't the problem really obvious? ipa_change_alignment can *NEVER* go
+> down. It should never be allowed to reduce, because that's exactly
+> the property you are trying to enforce.
+>
 
-And make sure SMMU isn't in Service Failure Mode.
+Sure, I will update rhi_get_ipa_change_alignment() to always return the
+max value.
 
-Fixes: b63b3439b856 ("iommu/arm-smmu-v3: Abort all transactions if SMMU is enabled in kdump kernel")
-Cc: stable@vger.kernel.org # v6.12+
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 34 +++++++++++++++++++++
- 1 file changed, 34 insertions(+)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index f9332cf0b28a6..18e0d97cec401 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -5402,6 +5402,36 @@ static void arm_smmu_get_httu(struct arm_smmu_device *smmu, u32 reg)
- 			  hw_features, fw_features);
- }
- 
-+static void arm_smmu_device_hw_probe_kdump(struct arm_smmu_device *smmu)
-+{
-+	u32 gerror, gerrorn, active;
-+
-+	/*
-+	 * If SMMU is already active in kdump case, there could be in-flight DMA
-+	 * from devices initiated by the crashed kernel.
-+	 */
-+	if (!(readl_relaxed(smmu->base + ARM_SMMU_CR0) & CR0_SMMUEN))
-+		return;
-+
-+	/* For now, only support a coherent SMMU that works with MEMREMAP_WB */
-+	if (!(smmu->features & ARM_SMMU_FEAT_COHERENCY)) {
-+		dev_warn(smmu->dev,
-+			 "kdump: non-coherent SMMU can't adopt stream table\n");
-+		return;
-+	}
-+
-+	gerror = readl_relaxed(smmu->base + ARM_SMMU_GERROR);
-+	gerrorn = readl_relaxed(smmu->base + ARM_SMMU_GERRORN);
-+	active = gerror ^ gerrorn;
-+	if (active & GERROR_SFM_ERR) {
-+		dev_warn(smmu->dev,
-+			 "kdump: SMMU in Service Failure Mode, must reset\n");
-+		return;
-+	}
-+
-+	smmu->options |= ARM_SMMU_OPT_KDUMP_ADOPT;
-+}
-+
- static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- {
- 	u32 reg;
-@@ -5616,6 +5646,10 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 
- 	dev_info(smmu->dev, "oas %lu-bit (features 0x%08x)\n",
- 		 smmu->oas, smmu->features);
-+
-+	if (is_kdump_kernel())
-+		arm_smmu_device_hw_probe_kdump(smmu);
-+
- 	return 0;
- }
- 
--- 
-2.43.0
-
+-aneesh
