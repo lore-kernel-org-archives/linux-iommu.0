@@ -1,91 +1,248 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from BYAPR05CU005.outbound.protection.outlook.com (mail-westusazon11010012.outbound.protection.outlook.com [52.101.85.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BACAD39D6F9;
-	Wed, 29 Apr 2026 06:58:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777445930; cv=none; b=Rn/YptPs2ZTVP90S54BZp1+14Gwm0YKr5QAIFWkt7Dn075/r8sInjuhNGNn7l8/ArzwrL8xricpvAoqG6mf7hKTR0crmm08EXU72Zv0oPRiSJkWl2fly41YcPe2zpUyFxLfx+FkmBTHejd7W0LMyTgVBUmBmxTvO23wnI+LrqQo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777445930; c=relaxed/simple;
-	bh=u4Pfn5a/U0AlGb8AqkEdtAoy0eLj8UmNKcvMgCHYYec=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=B/SCrNPrHImbFaGur/XhHpSTXVwcJUyZ6uzBYw5BtBfGJ2iT5xNXpenbjzpsmHvFSn77Q1QodZpQILoUQ4xqy+ucEwHzM8tO+AzGCCtTEutqd4b4+7PHzLaw3mk/2/A0x+pnmTd+w30PfAlqe4A+sZABTgk5lvATbjXRuR4t/ik=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cuSlswfz; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A27D73A257F
+	for <iommu@lists.linux.dev>; Wed, 29 Apr 2026 07:22:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.85.12
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777447328; cv=fail; b=M7SwVsxkNTrNDmyGSYrZcUxxthKRxpgoSomvJ4pQyCyP6cTtL5n1UBGHtlezs6z0fyBJmwi0I5Gaz/hwTLVPOsCji8I15fax2nHorswU2OXIhS3P2Dq/h+12jTOFEReCECMNP3S+r+DfjcYz39wuJLhoJzGMeeq9D6N0GSSXnMw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777447328; c=relaxed/simple;
+	bh=odaaHMre8bRq2gMrPLCjJb3SiKpkIKNumWlzxeepjkQ=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=XLzvLT7YKVuRbt2wIec8cyN0PWbb3SlA8tRsLXHXVaWZJAsh4mowRR2htWm//5tbpAryJO5KsD6r2ExQlsIaXvS8kPeqJqhGB9MbZV/3yvtmNsyslB5cEAPLgLvb8jcvwpu+wThsman9OVLnCG5DerUCyxbUb5u7BcGk71FSNlk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=EJCNe+OV; arc=fail smtp.client-ip=52.101.85.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cuSlswfz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B28B9C19425;
-	Wed, 29 Apr 2026 06:58:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777445930;
-	bh=u4Pfn5a/U0AlGb8AqkEdtAoy0eLj8UmNKcvMgCHYYec=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=cuSlswfzB7iS01np7vobw5kDq/S0raz1Y/72kRLxRYcbyrLrEdn4ZOR8t2PNUMkzt
-	 u1OP4+iIAGHPqITBECrxxjDugEXnmIfRf/Rm2L831QdbQB4mH5TChRjrlBt78n/nO6
-	 PLrX9vFwp7OL6chDwF0DODIPk7lXFnIF5kHCyPz7HUAsnoMWuZza0o4BodA+a5/DNI
-	 HCpRZXJhV94y2RAWQ2wNfTDmS9Oiz7E4U7p4aYSIN6xUG4pv8jzCadXvGp6ki3hCg1
-	 oBkLSGLOP3wnrkXi6ai2/+5mCBUCrzxueCKz48RCeVHQd3OzLeRZnG8akIcBbxV/TO
-	 ISSB8xNmlZd/g==
-Date: Wed, 29 Apr 2026 08:58:47 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-Cc: Vikash Garodia <vikash.garodia@oss.qualcomm.com>, 
-	Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>, Abhinav Kumar <abhinav.kumar@linux.dev>, 
-	Bryan O'Donoghue <bod@kernel.org>, Mauro Carvalho Chehab <mchehab@kernel.org>, 
-	Hans Verkuil <hverkuil@kernel.org>, Stefan Schmidt <stefan.schmidt@linaro.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Stanimir Varbanov <stanimir.k.varbanov@gmail.com>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Bjorn Andersson <andersson@kernel.org>, 
-	Konrad Dybcio <konradybcio@kernel.org>, linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, iommu@lists.linux.dev
-Subject: Re: [PATCH v3 02/12] dt-bindings: media: qcom,glymur-iris: Add
- glymur video codec
-Message-ID: <20260429-calm-shark-of-tempest-3a7bcb@quoll>
-References: <20260428-glymur-v3-0-8f28930f47d3@oss.qualcomm.com>
- <20260428-glymur-v3-2-8f28930f47d3@oss.qualcomm.com>
- <20260428-nifty-quaint-hoatzin-6de65d@quoll>
- <97aa5f18-d1d5-f082-9075-a385255f2e97@oss.qualcomm.com>
- <7d775357-c7b1-4cf5-af90-012d1364e773@kernel.org>
- <6ebe28dc-b8a3-db92-0e66-3f0541e23e13@oss.qualcomm.com>
- <1f88a8eb-1725-4e6a-b4f3-287ec538ee7d@kernel.org>
- <e39df722-3868-60d4-07f3-768d11762e12@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="EJCNe+OV"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ZgWO18Mlje6ucbTgVTmEgUBSUyWjDOxyZgynYUvpYMLcL6X2xoW++3KknOgqrYnlH8Ow28NrfMmOfYuDCE0dKr/vY8kM5ZWxbelHfRsefukJLQReqs4L0TEruG+ebGuePuwj2fPMaFLPjamL8bPypMB6LzUcDUIXNKr43shWp9Vi46D3Ep4FmcSUODp1Kx8ClgMux/sC89nTpOqPEKw0lnKAO3DPy0CZPf5evTga5mkV2/hLKKw3nUtfBkfnq0hNvIK21OmC61XskzoOuDwHSxbAzz8pcIb5a19jOgzDSPJx4HR9HyW29HvfbYXsFgw84qT85bx7+RCMj4xygC2Dmw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+Fnfjx1z1Zz3cE6gs6SGNHRFy6N3IvamefkyfWB1TZw=;
+ b=jl8bWcMZjQps2I5saPdmP0IrXkG/d0d5zTTglAwtCCCULtGM8371ZCyLnysNrWir/NSj6sr+ui/Ym5ccq3LDfNCPmWKVUuIv7fNs2LAY/Dv5J5bddiC2f9oFGSi4k6FMij5vFxXzSDhtOUg1lzZPOjN1Cv9XX4mCFpS3+CfJ000qi7hP8J0CRfTP+6lvt1m+r3eATGV2aAMQUKXa/ISnoqybBsSKOTckeRMWzw4e9C15ZJZQG14YzBcJ6B/+awMDRSb9D8hIuGfDyPvlTW+9gOInJDsvtCKz5UILBbGqp5kFE+i5S98ROUZHSivtC/oSNBIBn9GnwbkYCLxltIg2Hw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+Fnfjx1z1Zz3cE6gs6SGNHRFy6N3IvamefkyfWB1TZw=;
+ b=EJCNe+OVC3BfwtcO8y47jCi6LrYBnbjpSXUcnPT3KHyUXWWYNPWWJ3AzglI1oq9u4nlZDMIsurSyc6fcvReDUCZKPJ0mhgU1r2+IKV8UxePIoJlT3gXUcsfj8KJHbF5rw+qfOvzkTNj8Ij8qyriXz9F+WyVGwKzmpfouuGrGHGfbtxXamfBCrbWY3Ul3+1SgXnguTvPGdowucCvj8LlSBQ3TAGSOzhjwbKfUfkyMgy+LdB08mAHiZPvrlAGwzmoeYf4fJ2w6kehApf/gGg2qLDpw2QHwaYgO9KLWzJTZlK1ZX3GOhe9g/O99W7eRxBt1uAiDsHo/tyR1XJF//ZFdZg==
+Received: from DS7PR05CA0005.namprd05.prod.outlook.com (2603:10b6:5:3b9::10)
+ by BL1PR12MB5899.namprd12.prod.outlook.com (2603:10b6:208:397::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9870.18; Wed, 29 Apr
+ 2026 07:22:00 +0000
+Received: from DS3PEPF000099DE.namprd04.prod.outlook.com
+ (2603:10b6:5:3b9:cafe::14) by DS7PR05CA0005.outlook.office365.com
+ (2603:10b6:5:3b9::10) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9846.26 via Frontend Transport; Wed,
+ 29 Apr 2026 07:21:59 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ DS3PEPF000099DE.mail.protection.outlook.com (10.167.17.200) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9846.18 via Frontend Transport; Wed, 29 Apr 2026 07:21:59 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Wed, 29 Apr
+ 2026 00:21:52 -0700
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.20; Wed, 29 Apr 2026 00:21:51 -0700
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.12) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server id 15.2.2562.20 via Frontend
+ Transport; Wed, 29 Apr 2026 00:21:51 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <will@kernel.org>, <robin.murphy@arm.com>, <jgg@nvidia.com>,
+	<kevin.tian@intel.com>
+CC: <joro@8bytes.org>, <praan@google.com>, <kees@kernel.org>,
+	<baolu.lu@linux.intel.com>, <miko.lenczewski@arm.com>, <smostafa@google.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>, <jamien@nvidia.com>
+Subject: [PATCH rc v4 3/5] iommu/arm-smmu-v3: Skip EVTQ/PRIQ setup in kdump kernel
+Date: Wed, 29 Apr 2026 00:20:51 -0700
+Message-ID: <25398d02373e7592d0555e7da9dbf33b3e83983a.1777446969.git.nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <cover.1777446969.git.nicolinc@nvidia.com>
+References: <cover.1777446969.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <e39df722-3868-60d4-07f3-768d11762e12@oss.qualcomm.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS3PEPF000099DE:EE_|BL1PR12MB5899:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1b137e43-220f-4832-47a2-08dea5c000c7
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|1800799024|376014|7416014|36860700016|56012099003|22082099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	l+Wv/9YaebU3PpVhJzz3STgbrTQ3rrvmpuLPhDIHr4534F8Y4Z8I2eiWimLqVcQbZdxTY5vw/vDqQPRtEwL2lvPQ24QNpNtx8WA3NxSi3go56nP0mtKJhScofxwGkifvYtajcrs6DDNMeCim4+EyujijwGvHTRqHFBNYAGevWP9CxcVsgj79Vo9cP4BZC5Muco3fadvpcQjbjHceKbZuSfcicvVhZ0782dA+fJNy4Ar6bLDJAgFcl3+rNPv+N90FZQj4sQMFeXjQjULkrnRsk0Tdkv+DXxCmzTcD8sv/HRLulDRzTbd0fKwHr9JBek14uy/rseTajnXTZnsI+NW0OQBY2w6M1U8pSx9OSnTqWvWHNjjXNHiD2Lw+N6Xb1iemsuKvl3SxrytR61U14vBlv4Y1sFMFlqXKNE89WTXk+NBuK4WxMGYMxns/dgGAT3mg5Aj1MxE0+2AEUhKVhuw+QFgsk3Hjp6SjqRozp7KV/Mi3cZ94XgFhg5F8SZcJdtPl4xK4ivAxc+84WfLefFBsA8h1mcOJd5fPvwlpvEROTu3AuSaYBhWPAG1cpqSV3DnpAS2icNZKMEwsnW5KTT8tD/47pIWXtzL2gfJCh926B7iygI0oxGMVBUKEJoBovs9QxZ3Wlh/sgF+5eONUD2dpRpN/0uRjRU5g3qqrTHFzbpE5UtRsBJzqbpg02ZXvW2P8uH4CI7AFs13Sr3Xkt5Amu4SMN3Zh1+bhQPQtYpHc7c2RILBOwPAGaO1dG+q9SgvnxqnPE2+a6ApxUJcQuYanEw==
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(376014)(7416014)(36860700016)(56012099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	W1Hq7hNScsHU+KM2kHsYvn+R++2qEpvik9WNmvzPdcbiVlPo2Pngt8BizGtY82krbsWOHUR6wUX9qEDWFGMaqdz9Cl+x0ye3IMmY7fNDawI34ET2gPdpILU+UtsG5zQYL1N3leg11fs8iHWykgr9JxAG4W8uXgLPIotT1f2M9e1JSu7hXkEx4xstlf3kwIrWjSVL36igZK3ZklPcTTv/5H7l9Da3nchh//SQBUY4yF4VmaGFR4ExydWO3Hu63KSkotqjry6CKGMDakTt11otMmP4EF+88HNfuFSHT9aM8rvOu+G2hQHst0gHvBBg50IGYmte2TVvV55jl9SJLytyWGQ6+4S2MWQXfEgyUNumPNi6qwOudR7KeOI9t1mQHAJfZf8ZjsZTLYDjimzUJYrqaYQnQX0RApDCC7qX/l3UebTtmChbVhwpNXyKRHU0VKnY
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2026 07:21:59.7109
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1b137e43-220f-4832-47a2-08dea5c000c7
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS3PEPF000099DE.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5899
 
-On Tue, Apr 28, 2026 at 05:46:55PM +0530, Vishnu Reddy wrote:
-> >> Glymur is the first platform where the common schema limits become a h=
-ard
-> >> blocker, unlike all prior platforms that happened to stay within those=
- limits.
-> > Hard blocker? What? How? you are imagining some problems here which do
-> > not exist in any other devices, any other IP blocks.
-> >
-> > Why is this special and GPU is not? Or display is not? Or anything else?
-> > Why standard rules of writing bindings do not apply here? What is
-> > exactly different? Write like this:
->=20
-> The intent is not to treat Glymur as =E2=80=9Cspecial=E2=80=9D in the sen=
-se of resource
-> count alone. The key difference is architectural:
->=20
-> The existing qcom,venus-common.yaml was originally written with single
-> Venus/Iris video core and its maxItems for clocks and power domains were
-> defined accordingly. All existing platforms fit within that assumption,
-> even if their exact counts differ slightly.
+In kdump cases, the crashed kernel's CDs and page tables can be corrupted,
+which could trigger event spamming. Also, we cannot serve page requests.
 
-I don't think that's anyhow relevant difference here. Just change the
-common binding and be 100% SURE that all devices have correct/fixed
-consrtaints.
+Skip the EVTQ/PRIQ setup entirely rather than enabling then disabling them.
 
-Best regards,
-Krzysztof
+Skip the IRQ setup and guard their thread functions as well.
+
+Also add some inline comments explaining that.
+
+Fixes: b63b3439b856 ("iommu/arm-smmu-v3: Abort all transactions if SMMU is enabled in kdump kernel")
+Cc: stable@vger.kernel.org # v6.12+
+Suggested-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 66 +++++++++++++++------
+ 1 file changed, 48 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 27b84688bcc99..17d5e1395e245 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2363,6 +2363,14 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
+ 	static DEFINE_RATELIMIT_STATE(rs, DEFAULT_RATELIMIT_INTERVAL,
+ 				      DEFAULT_RATELIMIT_BURST);
+ 
++	/*
++	 * A combined IRQ might call into this function with the queue disabled.
++	 * E.g. kdump, where stale HW PROD vs SW CONS would drive a bogus drain
++	 * and a CONS write to a disabled queue.
++	 */
++	if (!(readl_relaxed(smmu->base + ARM_SMMU_CR0) & CR0_EVTQEN))
++		return IRQ_NONE;
++
+ 	do {
+ 		while (!queue_remove_raw(q, evt)) {
+ 			arm_smmu_decode_event(smmu, evt, &event);
+@@ -2431,6 +2439,14 @@ static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
+ 	struct arm_smmu_ll_queue *llq = &q->llq;
+ 	u64 evt[PRIQ_ENT_DWORDS];
+ 
++	/*
++	 * A combined IRQ might call into this function with the queue disabled.
++	 * E.g. kdump, where stale HW PROD vs SW CONS would drive a bogus drain
++	 * and a CONS write to a disabled queue.
++	 */
++	if (!(readl_relaxed(smmu->base + ARM_SMMU_CR0) & CR0_PRIQEN))
++		return IRQ_NONE;
++
+ 	do {
+ 		while (!queue_remove_raw(q, evt))
+ 			arm_smmu_handle_ppr(smmu, evt);
+@@ -5055,7 +5071,10 @@ static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
+ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+ {
+ 	int ret, irq;
+-	u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
++	u32 irqen_flags = IRQ_CTRL_GERROR_IRQEN;
++
++	if (!is_kdump_kernel())
++		irqen_flags |= IRQ_CTRL_EVTQ_IRQEN;
+ 
+ 	/* Disable IRQs first */
+ 	ret = arm_smmu_write_reg_sync(smmu, 0, ARM_SMMU_IRQ_CTRL,
+@@ -5081,7 +5100,7 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+ 	} else
+ 		arm_smmu_setup_unique_irqs(smmu);
+ 
+-	if (smmu->features & ARM_SMMU_FEAT_PRI)
++	if (!is_kdump_kernel() && (smmu->features & ARM_SMMU_FEAT_PRI))
+ 		irqen_flags |= IRQ_CTRL_PRIQ_IRQEN;
+ 
+ 	/* Enable interrupt generation on the SMMU */
+@@ -5191,21 +5210,35 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ 	cmd.opcode = CMDQ_OP_TLBI_NSNH_ALL;
+ 	arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
+ 
+-	/* Event queue */
+-	writeq_relaxed(smmu->evtq.q.q_base, smmu->base + ARM_SMMU_EVTQ_BASE);
+-	writel_relaxed(smmu->evtq.q.llq.prod, smmu->page1 + ARM_SMMU_EVTQ_PROD);
+-	writel_relaxed(smmu->evtq.q.llq.cons, smmu->page1 + ARM_SMMU_EVTQ_CONS);
+-
+-	enables |= CR0_EVTQEN;
+-	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
+-				      ARM_SMMU_CR0ACK);
+-	if (ret) {
+-		dev_err(smmu->dev, "failed to enable event queue\n");
+-		return ret;
++	/*
++	 * Event queue
++	 *
++	 * Do not enable in a kdump case, as the crashed kernel's CDs and page
++	 * tables might be corrupted, triggering event spamming.
++	 */
++	if (!is_kdump_kernel()) {
++		writeq_relaxed(smmu->evtq.q.q_base,
++			       smmu->base + ARM_SMMU_EVTQ_BASE);
++		writel_relaxed(smmu->evtq.q.llq.prod,
++			       smmu->page1 + ARM_SMMU_EVTQ_PROD);
++		writel_relaxed(smmu->evtq.q.llq.cons,
++			       smmu->page1 + ARM_SMMU_EVTQ_CONS);
++
++		enables |= CR0_EVTQEN;
++		ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
++					      ARM_SMMU_CR0ACK);
++		if (ret) {
++			dev_err(smmu->dev, "failed to enable event queue\n");
++			return ret;
++		}
+ 	}
+ 
+-	/* PRI queue */
+-	if (smmu->features & ARM_SMMU_FEAT_PRI) {
++	/*
++	 * PRI queue
++	 *
++	 * Do not enable in a kdump case, as we cannot serve page requests.
++	 */
++	if (!is_kdump_kernel() && (smmu->features & ARM_SMMU_FEAT_PRI)) {
+ 		writeq_relaxed(smmu->priq.q.q_base,
+ 			       smmu->base + ARM_SMMU_PRIQ_BASE);
+ 		writel_relaxed(smmu->priq.q.llq.prod,
+@@ -5238,9 +5271,6 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ 		return ret;
+ 	}
+ 
+-	if (is_kdump_kernel())
+-		enables &= ~(CR0_EVTQEN | CR0_PRIQEN);
+-
+ 	/* Enable the SMMU interface */
+ 	enables |= CR0_SMMUEN;
+ 	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
+-- 
+2.43.0
 
