@@ -1,34 +1,34 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73C9537B02E;
-	Thu, 30 Apr 2026 03:26:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B07237CD34;
+	Thu, 30 Apr 2026 03:26:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777519570; cv=none; b=l6lXhtKVYNdcBcN9e6/u2/IOc72RKJw2c2BjFdJa8TVkYA4Wi7F35RSpRm/AcBfu2e5b2JEkOVjhpQGb6CQnu9J0LFtzrLG0fssCmdj22vB0DjE+5il8ANSW/TAXAbsQK+l6clQV/OFPsTWRfiR+3IktfIG9pH5hBob4cDpuR6E=
+	t=1777519572; cv=none; b=GPURpYR7R6ufM5FnKgAuFOHY7NgByHGhIyA2uRwwNE3ktXpZXZRryQ36moxTcNR97u0O6z4rrj+bJ90Br7uVFMLwQRGdhfKPGPs3KMV6q/5RvFNCxvns5Zdfi69TaiyUZ4rkqste2UG7mtPBowoVsfUMq67xib0IX0UJb+VprPc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777519570; c=relaxed/simple;
-	bh=MMezDMVVjOGv9weqyAZbIsRz2DJ3hj00P7r6+llifw4=;
+	s=arc-20240116; t=1777519572; c=relaxed/simple;
+	bh=YfC1QZZ/UU6y93F8yKnC0I+PiZBznMVQxb/ENiqO8b8=;
 	h=Content-Type:MIME-Version:Subject:From:Message-Id:Date:References:
-	 In-Reply-To:To:Cc; b=hx1lRKrGmGK+ErduXIidRWzzxCb4v3j3QIKE2JElB93mH19BAu6awdj89Ct1X1u8JjJR17t8RJz8m356PuaKJICpJE8yRwiNXQRiLDp1gVb2Ks1wd5UlYaQ9evAnL7MxVUDyKTiALPDQC6ZUJs2labXoiumT8KHJ1D9omwsF4kI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=vRz+s+9c; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=uFdsQtept1AlQsT642gljeCsUVOLN5bXbS25DCuw4wMqaKCHyriubc54LjaKplN5CkjLgUnmR5euot6H2YzccNGalrkb1dlTDEH5pD8FuxPXAOAw5/1y1RU8DiyHLhtRbf7jztx6S+t55Ma6cVQ/ZeQq8QP3Ot+92mJDLgEqpeA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uwbKJYTR; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="vRz+s+9c"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 310ECC2BCC7;
-	Thu, 30 Apr 2026 03:26:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uwbKJYTR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E22F8C2BCB8;
+	Thu, 30 Apr 2026 03:26:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777519570;
-	bh=MMezDMVVjOGv9weqyAZbIsRz2DJ3hj00P7r6+llifw4=;
+	s=k20201202; t=1777519571;
+	bh=YfC1QZZ/UU6y93F8yKnC0I+PiZBznMVQxb/ENiqO8b8=;
 	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=vRz+s+9cOCsRHbqoqF9y7TN15mN/t4/9y/aFbWHbpYIG3rFsaAN0ZWWnZ2figYLFH
-	 qT0+vFYiTpcJUDv6K5E2yw0gaZzcQqYtf0ghbw54gLZwsSfpE55l1HE/BpoB4X67g8
-	 iJvxiIl2YR5VpH2ISyB7KAiTe2rsIoPsu/ewK8OPaszr9oFFOhkeMvvN6d4ZGtj2tD
-	 /niHYE+0B27p8MTHXsbXjLboVTrLQyIoSFRfGpstoQGU1O/mfEHPflSpiOTAaRzp50
-	 8uLjSSyzUJslLvLFg4VO8nycygv6v4kX2p17ejlhyQCsZE+Rtmu6AkyOKAywW0PcMt
-	 52QngJhEtYsFQ==
+	b=uwbKJYTRnPuHgHvmKVgiZN5bsbZmlaIPFFlBoSY4hQQVZt2jEssn+r90LgoJKtfVh
+	 KYwquO77vUHjYWVQseqKU/ZfPgsvJjnuLok91FGW3PAAStr4I8xkw75ZrLomu6rkW8
+	 ZG0ICIO9l8v8ED7E7mUYB4z1+rfgqGIIa92KGoNojnIg6dlrwbekebnofjiZ40Ux6s
+	 byVyqhPJXTDD9DZLw0KyoTnPGOpkYrUM3wXgQywkg3pYdcAeUceTsrtQaMdEfovI/R
+	 dM3t1lhgAWs7oL8wzCHEhHxEKE0R1jWI7QqtVJQw2jbsuZ15B2PXSOITwn/RMBSQuE
+	 6mc9GOTRHcSTQ==
 Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 7CEE53809A07;
-	Thu, 30 Apr 2026 03:25:26 +0000 (UTC)
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 3FDDC3809A07;
+	Thu, 30 Apr 2026 03:25:28 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -37,42 +37,46 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] iommu/riscv: Add IOTINVAL after updating DDT/PDT
- entries
+Subject: Re: [PATCH 0/5] Convert riscv to use the generic iommu page table
 From: patchwork-bot+linux-riscv@kernel.org
 Message-Id: 
- <177751952504.2274119.2285271071573350641.git-patchwork-notify@kernel.org>
-Date: Thu, 30 Apr 2026 03:25:25 +0000
-References: <20260122143224.25146-1-fangyu.yu@linux.alibaba.com>
-In-Reply-To: <20260122143224.25146-1-fangyu.yu@linux.alibaba.com>
-To: yu fangyu <fangyu.yu@linux.alibaba.com>
-Cc: linux-riscv@lists.infradead.org, tjeznach@rivosinc.com, joro@8bytes.org,
- will@kernel.org, robin.murphy@arm.com, pjw@kernel.org, palmer@dabbelt.com,
- aou@eecs.berkeley.edu, alex@ghiti.fr, baolu.lu@linux.intel.com,
- zong.li@sifive.com, andrew.jones@oss.qualcomm.com, guoren@kernel.org,
- ajones@ventanamicro.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+ <177751952688.2274119.13814163549347100067.git-patchwork-notify@kernel.org>
+Date: Thu, 30 Apr 2026 03:25:26 +0000
+References: <0-v1-d3317b0ee398+50-iommu_pt_riscv_jgg@nvidia.com>
+In-Reply-To: <0-v1-d3317b0ee398+50-iommu_pt_riscv_jgg@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: linux-riscv@lists.infradead.org, alex@ghiti.fr, aou@eecs.berkeley.edu,
+ iommu@lists.linux.dev, joro@8bytes.org, palmer@dabbelt.com, pjw@kernel.org,
+ robin.murphy@arm.com, tjeznach@rivosinc.com, will@kernel.org,
+ lihangjing@bytedance.com, luxu.kernel@bytedance.com, patches@lists.linux.dev,
+ xieyongji@bytedance.com
 
 Hello:
 
-This patch was applied to riscv/linux.git (fixes)
+This series was applied to riscv/linux.git (fixes)
 by Joerg Roedel <joerg.roedel@amd.com>:
 
-On Thu, 22 Jan 2026 22:32:24 +0800 you wrote:
-> From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+On Tue,  4 Nov 2025 15:00:39 -0400 you wrote:
+> [ It looks like the precursor series will be merged, along with VTD. If
+> someone from riscv can test and review this it can likely go this cycle
+> too. I couldn't even slightly test it. ]
 > 
-> Add riscv_iommu_iodir_iotinval() to perform required TLB and context cache
-> invalidations after updating DDT or PDT entries, as mandated by the RISC-V
-> IOMMU specification (Section 6.3.1 and 6.3.2).
-> 
-> Fixes: 488ffbf18171 ("iommu/riscv: Paging domain support")
-> Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
-> Reviewed-by: Andrew Jones <andrew.jones@oss.qualcomm.com>
+> This is a fairly straightforward conversion of the RISC-V iommu driver to
+> use the generic iommu page table code.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2] iommu/riscv: Add IOTINVAL after updating DDT/PDT entries
-    https://git.kernel.org/riscv/c/f5c262b54497
+  - [1/5] iommupt: Add the RISC-V page table format
+    (no matching commit)
+  - [2/5] iommu/riscv: Disable SADE
+    https://git.kernel.org/riscv/c/e93e4a6363b8
+  - [3/5] iommu/riscv: Use the generic iommu page table
+    (no matching commit)
+  - [4/5] iommu/riscv: Enable SVNAPOT support for contiguous ptes
+    (no matching commit)
+  - [5/5] iommu/riscv: Allow RISC_VIOMMU to COMPILE_TEST
+    (no matching commit)
 
 You are awesome, thank you!
 -- 
