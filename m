@@ -1,107 +1,134 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A618F3559DF
-	for <iommu@lists.linux.dev>; Thu, 30 Apr 2026 06:22:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777530177; cv=none; b=aJH+DNDYB2vvRowSPCYQWd37xT1xWDvjxYd0d+DDcsdxLkT0Km6feOdqxAKmVQ+uDiZlx1dMkxt6PfmvHrnIx8ehD0p9QKktXbzyRU7fqqZNRGJC5zP1p9F51qUPE9V5elD+DjqUwMsbKdotF/bdJXDl4rcKOeLwkf3CYYaG8lc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777530177; c=relaxed/simple;
-	bh=OGnidlCzhA0F4/Z1vrqwqz5+nlxg8SqNC86SvA0Hlbk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=XfHYozxH9nFEJFAjQ4fXXzqT6hHrB/fO/xKFJ5zgqMDW3As357d7fR3i9d2ErQhpIZH4daIIebfaJRRWjolih7cw4b1vEvNz4SkyGoMytCHO27ysDDSFSa0dXxqgWGZJGg22zVs8wANBTKZjZI+HvBaGf6A6A57XUPFM7MEht7U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=J0IedF5O; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A95E23A75BD
+	for <iommu@lists.linux.dev>; Thu, 30 Apr 2026 11:50:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.50
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777549831; cv=pass; b=rzvzYgvuPKt8C5bI85GQ151iYbbSw/9TY8RaODZgrRjQ+Ms087mDUBVNWPcqtyWgz38ykCXdtSG2U/S95hs+E1jKZZEk9dhJ4CFFXb4XfTpJtS3Rkigdn4ivuMwNYzwiR8auxoBwaQxKJaYzzoC9B0FoLnXSvX3MDV/4+gLu6Og=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777549831; c=relaxed/simple;
+	bh=KihtfK9D9cPL9XluiFB9tIj1YOnUMt8+Kkxl64Ym1F0=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=nueVNr7LfUEHNscGhzcHMVBT4HaiOGjJYA9Lkp2hi5tVr/uP3aOCdLldSSIHvR8jwhY1M8buGHH+0CWwTzaEBU/paGAQUGh4zq6DMTbz6c068OM3P4fPRnuiyLxPaLD+JeOzZlpvtAx2xL0GDJ7MLcKmdCRtmBC4iq/crNvlL7s=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JXEO73ly; arc=pass smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="J0IedF5O"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260430062246euoutp01343614bb2daddb9791c9e6e39909fb55~rDkTF7i801571115711euoutp01f
-	for <iommu@lists.linux.dev>; Thu, 30 Apr 2026 06:22:46 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260430062246euoutp01343614bb2daddb9791c9e6e39909fb55~rDkTF7i801571115711euoutp01f
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1777530166;
-	bh=XSGGClWujqSw1eCqMU2KpQZI6X1o5DKjanJnuaMOXIY=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=J0IedF5OqFOdjSjS5Da3kWktekjIJ5dFjypWKZNOjkS2HiSUG3o5U4w2K9/MD9cqW
-	 ix0+Cvm6xNZvFbjUHLLZWHf0T+IAh/XEMUt/oekhwF+TDzOBvfhmwZgRCYYT7NAWST
-	 T1nPvGdiTI9d1cuTYWkgv9+y+vfwfuy9SKkEfocU=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20260430062246eucas1p1733cbb99aa531dfedf7d49a57f72884f~rDkS5l3cl2363823638eucas1p1o;
-	Thu, 30 Apr 2026 06:22:46 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20260430062245eusmtip1b497e04bddc3ccb7c59bd1c3db00ef40~rDkSHtETb0080800808eusmtip1p;
-	Thu, 30 Apr 2026 06:22:45 +0000 (GMT)
-Message-ID: <3ba1efbb-abde-41a9-9090-e70fcde362ea@samsung.com>
-Date: Thu, 30 Apr 2026 08:22:44 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JXEO73ly"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4891cd41959so7595125e9.3
+        for <iommu@lists.linux.dev>; Thu, 30 Apr 2026 04:50:27 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1777549826; cv=none;
+        d=google.com; s=arc-20240605;
+        b=GUj/5gaLnuHIth8yI5QBXmKTNqEsjmAnenaGsEydDcJFN28zeeyPddWfAoWWWSXlp7
+         c0uDbiZQOlSIThBSY9B4yUzazHbY7RtfeftfcWYf8TYq54qAY3qmujIGRodMfuBv+HPk
+         PDJLvIJocCm2fP7y1aBm+e7SjAaJOjQ1YZKYSwjmnYI/gAmYohG0NoUOiutOoyiy5sky
+         PgdM5vEu6/PHUJYd5rFe/e5meBEvdFXIsOJHB9RrOxOYlPebtWC/BnC69qg8WmSeOuKB
+         8rlGPRJE/otI8mCYdW/RAEI5ck4Wmtk815dYscQlsFdp40zJmWmMzAg6lzlNoE36yneD
+         Kg2A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=KihtfK9D9cPL9XluiFB9tIj1YOnUMt8+Kkxl64Ym1F0=;
+        fh=eN+hC+lN0HtJNF1TW00xQ+Fv8uQRg7upeO+95xDRHqo=;
+        b=Segp+rQsEXw/M8vm7uxIgDX3Stb693r1NO4kf0WRoFID+5M0HdmeKy/edd3RfoeMkh
+         gf86WXtm9rdsMuDEgQKANeUB42Et1kEkjhYLNsV/C56QDLGvqUHqtszlLfAT1uSiOOXE
+         ml6qgv3XawYZ4oRvwedPa+2vDw47JawHNpzOyQxnHUiFP7M5SwYlihLGULN8sJzO5iEK
+         /Ap55RKLVSu2QD9WefM9lw08+Oy00KppF45kb3lb+YEuROmZTDDCPwN1F2ucvuc05vzR
+         xqPSGDYHOIlmLRbn4mk/OlXN1bTwf6F/8wZVQHQU69GeNEzpeyx2ZS3Tdas+B2YfEgw9
+         9mGA==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777549826; x=1778154626; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=KihtfK9D9cPL9XluiFB9tIj1YOnUMt8+Kkxl64Ym1F0=;
+        b=JXEO73lyfeNUvOyeIUCUP55Q1eDiGqouh+U90L0LxCYgFFzBgle5D8wX5Y1GV1W/g5
+         jtqB/BUdnaQ9ybftEOmtbXqTI5aL9M5v3WIpCL8wJOES9vCsXCjWb/2oaryyewOxkf2m
+         Z1TmfzDbyP/z2xdteZwrn2S+dn/c+TvmhuqemzKOl9PxM8EZMjONgnvi/Kbmnmo8h835
+         F7tPnXzZE127UUO73MLsJShEVxNZ6zHRumitX85a1+6GcbMUPJhXLcIs4IbODXdJuru8
+         PESV5nEUvVpFkITSWDZkp5tFUv10wDKTr/tKNcqRZ3gwbkX2RSpFCej2KNOuinZoDUQk
+         rvHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777549826; x=1778154626;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=KihtfK9D9cPL9XluiFB9tIj1YOnUMt8+Kkxl64Ym1F0=;
+        b=Q3qqwx80U/FGes9YzhO1aWREVQ4khkKBHHf5cE6RzehM/64QdyjmP7ezRHlofvdF3L
+         L4b2Pj8jk+IPxnmYyQ6FU0NZzvgXgc30z0yX2lxRPzEjnOh3E0em8aY0q/2acpWSCGaR
+         iYcIdQgupcW8dz88gx7eSGmT07rk9XiY26oWahYNi+Y9pkR077gqaL0nsdy0A4JiuoPP
+         EhZv4EKzoscnEEX5YzYRAOCJzXvn19dS0YEglKKEOu01yuCaMUOxaAUgJC2UfISbELKb
+         4q5+VqGR5XXu2ElXay6TjC9vvJLCmnAJNs45qgVSlbBa+S2I4gmuOR3lHyWCw2EXKmxv
+         qpdg==
+X-Gm-Message-State: AOJu0YwkaHzKrqUhKwRsbmkXbpT6bBJipsdEPT+aWJV5We7UNWhfq0RI
+	GZpkRFQhobEztXsYpND6mI4t+CGcLH0WUtA3a5F8kiSwes2z4md17WryfLwmIKpBzH2W6vnBnfc
+	svTgiJ7wD0Y36JEWJ1EdarRZ0dUOjLuzzY/6N
+X-Gm-Gg: AeBDieuG+FbX/guTs8KqlBhJ2/HLGhuBKX37s4AVb0vVtX46Ec+FXs3z9bBQXtWjT7z
+	TmkRfCWPytpbCfLE1mL8rtn0wvYy48XsQzF/eixFJT7LBUkWNGR0etekgrkdohCwYVyaqWmzlBg
+	LuKdaqtZcS4wUBghxa2qiQy9GPHRH1ZIbr6Wj4gX6sqdrXXyRxy1VhXyy+HoHaqJYCOdNwUGCRv
+	4C7tzI0YzVDjVgj4uh9RI8ei/CRMVM3WYll4olxuNETQ+/7PGsQ5mmuwX11rBKYddw2iIZWT/1u
+	vE985BMvCxOIXxZgx6w=
+X-Received: by 2002:a05:600c:a49:b0:48a:f18:ece4 with SMTP id
+ 5b1f17b1804b1-48a8445d265mr42858075e9.24.1777549825854; Thu, 30 Apr 2026
+ 04:50:25 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH 1/1] dma-direct: fix use of max_pfn
-To: Petr Tesarik <ptesarik@suse.com>, Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20260410113506.262579-1-ptesarik@suse.com>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20260430062246eucas1p1733cbb99aa531dfedf7d49a57f72884f
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260410113518eucas1p2b4149df13e7716f6f05710b577b37f1a
-X-EPHeader: CA
-X-CMS-RootMailID: 20260410113518eucas1p2b4149df13e7716f6f05710b577b37f1a
-References: <CGME20260410113518eucas1p2b4149df13e7716f6f05710b577b37f1a@eucas1p2.samsung.com>
-	<20260410113506.262579-1-ptesarik@suse.com>
+From: =?UTF-8?B?6Y2+6IiI55KH?= <ao403268@gmail.com>
+Date: Thu, 30 Apr 2026 19:50:13 +0800
+X-Gm-Features: AVHnY4IH_Y0eaJhXMRctf9PVH1s5z5dPGUBu4ntvPfSIAs0WAH6mtfZttcV5elc
+Message-ID: <CAFjZNbmNt10d=cfWPCFwquZCFtVGbSJY0XkT1QZER4+yq=zfBA@mail.gmail.com>
+Subject: [Question] SVA PASID lifecycle during rapid bind/unbind
+To: jpb@kernel.org, will@kernel.org, robin.murphy@arm.com
+Cc: iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On 10.04.2026 13:35, Petr Tesarik wrote:
-> Calculate the correct physical address of the last byte of memory. Since
-> max_pfn is in fact "the PFN of the first page after the highest system RAM
-> in physical address space", the highest address that might be used for a
-> DMA buffer is one byte below max_pfn << PAGE_SHIFT.
->
-> This fix is unlikely to make any difference in practice. It's just that the
-> current formula is slightly confusing.
->
-> Signed-off-by: Petr Tesarik <ptesarik@suse.com>
+Hi all,
 
-Applied to dma-mapping-fixes, thanks!
+I am currently working on a driver utilizing ARM SMMU SVA on Linux
+v6.12. As I am still familiarizing myself with the SVA subsystem, I
+would like to consult you regarding PASID lifecycle management during
+rapid bind and unbind operations.
 
-> ---
->  kernel/dma/direct.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 8f43a930716d4..fefa6c4ac467f 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -39,7 +39,7 @@ static inline struct page *dma_direct_to_page(struct device *dev,
->  
->  u64 dma_direct_get_required_mask(struct device *dev)
->  {
-> -	phys_addr_t phys = (phys_addr_t)(max_pfn - 1) << PAGE_SHIFT;
-> +	phys_addr_t phys = ((phys_addr_t)max_pfn << PAGE_SHIFT) - 1;
->  	u64 max_dma = phys_to_dma_direct(dev, phys);
->  
->  	return (1ULL << (fls64(max_dma) - 1)) * 2 - 1;
-> @@ -540,7 +540,7 @@ int dma_direct_mmap(struct device *dev, struct vm_area_struct *vma,
->  
->  int dma_direct_supported(struct device *dev, u64 mask)
->  {
-> -	u64 min_mask = (max_pfn - 1) << PAGE_SHIFT;
-> +	u64 min_mask = ((u64)max_pfn << PAGE_SHIFT) - 1;
->  
->  	/*
->  	 * Because 32-bit DMA masks are so common we expect every architecture
+The Issue
+When repeatedly calling iommu_sva_bind_device() and
+iommu_sva_unbind_device(), subsequent bind attempts occasionally fail
+with -ENOSPC (-28). Based on my debugging, the allocation failure
+occurs here:
+https://elixir.bootlin.com/linux/v6.12/source/drivers/iommu/iommu.c#L3452
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Root Cause Analysis
+In our current design, we limit the number of available PASIDs to 1. I
+found that iommu_sva_unbind_device() does not immediately trigger
+iommu_free_global_pasid() because the mm_count has not yet decreased
+to 1 at that moment.
 
+Specifically, iommu_sva_bind_device() increases mm_count by 2, and
+iommu_sva_unbind_device() decreases it by 1. The remaining reference
+is held until the mmu_notifier drops it. Because the mmu_notifier
+teardown executes asynchronously in a separate kthread, we are forced
+to wait for the scheduler to complete the mm_struct teardown before
+the PASID is actually freed and becomes available again.
+
+My Questions
+Since waiting for the kthread is non-deterministic and the PASID
+lifecycle is strictly tied to the process (meaning we must wait for
+the bound process to fully terminate before we can bind to another),
+I have two questions
+
+Synchronous Teardown: Would it be feasible to manually call
+iommu_free_global_pasid() and free the iommu_mm synchronously within
+our driver (similar to how mm_pasid_drop functions)? Are there
+underlying race conditions or locking concerns with this approach?
+
+Alternative Approaches: Do you have any recommendations on how to
+reduce this teardown latency for release PASID, or how we might handle
+this PASID exhaustion more gracefully?
+
+(Note: Apologies if you receive a duplicate of this email; I
+previously sent it to an incorrect mailing address).
+
+Thanks,
+Ryan
