@@ -1,179 +1,99 @@
-Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010025.outbound.protection.outlook.com [40.93.198.25])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dl1-f73.google.com (mail-dl1-f73.google.com [74.125.82.73])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1148C219EB
-	for <iommu@lists.linux.dev>; Thu, 30 Apr 2026 23:28:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.25
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777591735; cv=fail; b=N8Csv0T8AXBqHu6/zPWOmRjR/6+cPx1i94aJ+hGCxdCIjsKo5Rja+a3fq363aPDTwyUGiXdr/IfQCzUZW0BKYZxK0Xzu+pAewd0VA6YMSUnsTAlHU4f97NL1kiAKE51c8soRh4sIraZoa8a9cLxezahBnuryCEv3qi/DQdQYcpg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777591735; c=relaxed/simple;
-	bh=6b9Vd6TlijgcvXMNJ8qFtyei7G88cZrT4mbPgr3T/SU=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PEFkSY+hni7Nh1RSfOj6Qs2E/bd5+fjR0VYnlcKhMdEgUBDYlas5+Hj/hoM2HOXu765UNv7CaJOmzSZJ6kZomJtflD4vWzMP5tu36AelZv4i4yKXu7jgyehzRUw+UhRr++DilZKahpCPbKjNYgtvZcEOFc7n89DdlNDMMMLyPuM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=mMLBm6kV; arc=fail smtp.client-ip=40.93.198.25
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AD633CA4A3
+	for <iommu@lists.linux.dev>; Thu, 30 Apr 2026 23:28:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.73
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777591739; cv=none; b=F4ifSEm7wgPVyQu7D7nPPsjaArgSWjvAPqXHlGfcs2JsTPdSksSU0l9JqdfQFI3cjQI/p9rjZfucHUZoade43FFaajY6gu7dyGcM9kQ3mR/BdqG3/m1+LIyhOrsPe09bYqPOpack5tuMiJzcuI01yQYpotGalIMOcqoSGBsoZ+Q=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777591739; c=relaxed/simple;
+	bh=05e4kCmh5d4jmhjGWrDP68fi2cOhrwkmP/2S+lC/vVc=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=G0hMPNfOCfyjUzeZ+WO4T602KVpiSfrnx7RffyU3t1bCP77oUGaC5nRI5v1lRE5eZgexA0Od9N8PE1Tz05psOJ+z8FAn4jnh4kF67DPJkk8HlZr6+VaPpzitLElvemyhvSBwN1PXC90kN9U45o/8PSQ3gCjZaLHRUfPw5+DZPh8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=VDXzWaOA; arc=none smtp.client-ip=74.125.82.73
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="mMLBm6kV"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=IRUBYmhAuYfAijpbVwQQ6MbIu/KB1LGUpheZWgJwUvzR0y0XF0IJMzOo+d2CfeCNOEcgi4eCHrqKv1DRwveKSSQ22X2Iia5GQcw/dFy+VL5wGVfiGB6owb8a3fqvxmIdOyvSHrxRdQMaCdmzLWj360QBs4szUiP8pylJFIXWO8anTE4nbGn/IJ5AmSd3j35Hk69ubIhyV0w3ADKyAWGyny7Asq+8NeBvAowCQcp4trrpfJbD6zAzlk/xtETLlWUKGdfDun0JR53REdOrQamzXCtPXL9UmbH2Z2D5GOCh+MxYMleIMI6nSY7zuITQTQ28z8KrsebbHBV0zMIE9fIx4w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=f5eETolv2CRJ+KGuzqHXNWHz75SkAhmrcTAnZvVauEE=;
- b=DcEBcN4HBFB8NWFbLvBWERyOGFPSntjOFSqRbi0GMnmezSqbxkTA+ehmkCGBQrPRj1c3HtOcoFPwBaDuK0DCHoJA89sEoEO0sOGlA5J6nojLKvgDKaCVi6ymK5+NXw8KGoifvj+7Y+KERpXkiMybXtfyR9apmccjBlXK8P23Ijx8uoHAivTItFD6Z6wqiNu3RzkDO61xi48aTpolc6IjsJcwNTuHsVSvQP4Z87obrTjMOrZbUd0DmOi8gRNvfnMjD0qRso+vi1OGvi7KTWaWDJeTLgYZxJ/BW6i1mi6+/5HXco0To9G6e3y2AsdHFzdp+wHB2tp0cfkvI2346cY4mA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=f5eETolv2CRJ+KGuzqHXNWHz75SkAhmrcTAnZvVauEE=;
- b=mMLBm6kV3YOXYYJRO8e/70BpjU0vtzzslFfTmDnSUjzo0eu4teU98t91S7Zuhi2jYjJZ75CdkSXrA+ebqHf4wcc/bHafQBH905u8wKDSpG4veX7yExnCUY5Xz2/XnjyNmSYrWYXVWjKJZx3nbcH9jW7iZQPltdEg9LlmQrjMx4YKhfjIWxEWHjWvbLNxCx669JFcue4suZSgwJrExaE7p8LKG2zAyTDgbuVz0xa+OlWpUHaO6xWUkd4UFcXtSjJlhe13oLDjXL8FSEAHMZsKnAH1uzL/E3gnFg1OxHL0/v+iHN5KUv8aLQ2OfVcK21bISyOcGu2B7xNOm9BKs3al2g==
-Received: from BL0PR05CA0003.namprd05.prod.outlook.com (2603:10b6:208:91::13)
- by CYYPR12MB8890.namprd12.prod.outlook.com (2603:10b6:930:c7::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9870.15; Thu, 30 Apr
- 2026 23:28:41 +0000
-Received: from BL6PEPF0001AB4B.namprd04.prod.outlook.com
- (2603:10b6:208:91:cafe::e1) by BL0PR05CA0003.outlook.office365.com
- (2603:10b6:208:91::13) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9870.16 via Frontend Transport; Thu,
- 30 Apr 2026 23:28:40 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- BL6PEPF0001AB4B.mail.protection.outlook.com (10.167.242.69) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9870.22 via Frontend Transport; Thu, 30 Apr 2026 23:28:40 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 30 Apr
- 2026 16:28:20 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 30 Apr
- 2026 16:28:19 -0700
-Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Thu, 30 Apr 2026 16:28:18 -0700
-Date: Thu, 30 Apr 2026 16:28:17 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Dan Williams (nvidia)" <djbw@kernel.org>
-CC: <jgg@nvidia.com>, <will@kernel.org>, <robin.murphy@arm.com>,
-	<bhelgaas@google.com>, <joro@8bytes.org>, <praan@google.com>,
-	<baolu.lu@linux.intel.com>, <kevin.tian@intel.com>,
-	<miko.lenczewski@arm.com>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-pci@vger.kernel.org>, <dan.j.williams@intel.com>,
-	<jonathan.cameron@huawei.com>, <vsethi@nvidia.com>,
-	<linux-cxl@vger.kernel.org>, <nirmoyd@nvidia.com>
-Subject: Re: [PATCH v4 1/3] PCI: Allow ATS to be always on for CXL.cache
- capable devices
-Message-ID: <afPlkW5zlTSHwQCT@Asurada-Nvidia>
-References: <cover.1777269009.git.nicolinc@nvidia.com>
- <f6734b9dad0050138676f11ecd14e9db1cf6b697.1777269009.git.nicolinc@nvidia.com>
- <69f3cc82926_3291a910039@djbw-dev.notmuch>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="VDXzWaOA"
+Received: by mail-dl1-f73.google.com with SMTP id a92af1059eb24-12c87ba0890so7399202c88.0
+        for <iommu@lists.linux.dev>; Thu, 30 Apr 2026 16:28:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1777591737; x=1778196537; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=J7V+aJczrYa+luWKSbD/4vJrKAK9nvJvKMYrb9vqHfk=;
+        b=VDXzWaOAE4OU1Ez11gj2d98RLkdRKFm1pUVyR+gP06Qx9ryRkamQc4+DpecuyyxPF/
+         H9wAT7R3N7bLh89H/a7gNgDPAmPcIAoxn1DMgB2d+uT9lgoM24XeIFtan14MXxkAmarA
+         FWViZ6mivqkEJonjtaeiFfm70sabgHOK1f515deBoL/egGKw4z9nw/UoOIHkSe8h6avJ
+         eklkYuP4fL4Sp6zzh0+qV9SMbwZxywKW3v2r1RD6/8OBQJlJ5I3jIepSebiUMopuUcWw
+         Mn8Yne967e8s/gHElhpREfJ4gz36h2d/HM6GnNlM7wguaE2OeL2YO+2AEffIHAdaCsJn
+         G1Yw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777591737; x=1778196537;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=J7V+aJczrYa+luWKSbD/4vJrKAK9nvJvKMYrb9vqHfk=;
+        b=Y40igrnbR9grjk+D70ODkocXgfmoODDpXPCZwiV9IGZZX/0HAhTwiCnY+hguYZdxmm
+         nmy1Y23C5zEv/x3YjuzPQE9kXC7EAgamdnu14xTQIe71UBXuVWcqYfjV5Lpbwf/UtO1e
+         +mQg6YKgUw/Tepch1JQJ6T2kDNIxmMT8+lQcxfRuyl4eAg6Uy5ynsao9WDlCPP+Af3g0
+         YYEAUdEfnWIHe2Iu/1VOIJerbG5v9I5kqOytOMDpMZu9sJXWObZdRw2lc5Rc/2kNSdxC
+         h4Bo0F50aRJxY1w1hojXZdnYXo+IjCUfupPQgPxdrRCEEMHvfwjSgk2EBo/itejOC4Zc
+         sd4g==
+X-Gm-Message-State: AOJu0YwvkI2lF2knv4GM57u1Cqm/oUT7KIEwN72+0LKHEkJjM0GtXnkX
+	TioBjY7x15chQpW7WbqLQc9qVTVDNpTkbFD7GUns2IBQ31K7X/murkrtWhErfYuewRxdgV7T3s0
+	ZgtH7lcvLp1+Zi1N2X9IcrWnhoYOXk8NOtrAUY14pTdQK9EvgUA77V1UolAwaDxriBFNRjMzeLp
+	exhi81LOQTRdxj9YBSnYYHQib5QnPrjQ==
+X-Received: from dldnz3.prod.google.com ([2002:a05:701a:ca03:b0:12d:bd4b:5b09])
+ (user=wnliu job=prod-delivery.src-stubby-dispatcher) by 2002:a05:7022:985:b0:12d:b7e5:a691
+ with SMTP id a92af1059eb24-12df822905emr291576c88.7.1777591736300; Thu, 30
+ Apr 2026 16:28:56 -0700 (PDT)
+Date: Thu, 30 Apr 2026 23:28:51 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <69f3cc82926_3291a910039@djbw-dev.notmuch>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL6PEPF0001AB4B:EE_|CYYPR12MB8890:EE_
-X-MS-Office365-Filtering-Correlation-Id: 23c0172c-c533-40ce-6828-08dea710366b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|7416014|376014|82310400026|36860700016|22082099003|18002099003|56012099003;
-X-Microsoft-Antispam-Message-Info:
-	Pa5XL9cSlKqDuP7K5er0RtlkfJlY6adNW4aBqIePvmlGlf2io5JMLUpDrZMmdQCur3kdjKuKsbw+2PBDs+vWOXxC7HDq6oqqUdS5Zf4lsh9yCoL1tgkKZ0Zk+CfpKPzqNYFkzrq2xjVgHcBbquKg3o8QJuKC7d5Pce/b5InXoVQ7UUw58WAVmGFA1j1KMC3fD/Sg9twNxRIf+5jgXNx4xq7ot/gEgiidMJwMmcMKrjhSuABFeCwkHSY5rbP3LZrxEUaEsKY/swl/TBkd9VJgoBKwutwRHBEMMr4hh6jw3NCPSQ0MP279pS+hbV67Tjc/6uzTB7dFchhVPoFJ7mLuyhLtlpFd7gGgZC32H36FKdTOYr/s9vW8VCf0K+q5E3M26QDnEqL5Zrbyt1u1eM3Xlzgwg/SalaFaO5A8feXpVicq18t9kRy5W7sXYkQShKQOCQw8VXqrFQu6MkFVbbVqaQZ3gbdxG6p9SppQdg+Ce9AgX7Ax+PuIgH7LzQaCgBmBpZZk3mr4PBcfze4eTUdhAJfMHFJUgN85lL7kO17xprhTqPKI9oagtLzBE81dJR+7NxosDbKEH1Cnb4CuskLgpEduiwXIHObnCBmR88VGCgSAQRkl6uqpv1MebVQBU/3uPJuxYXlC7QsTcrRex+XSdgssRX5RVRYkrc3ncp55Nh/hryWNXxV+mnoqzN9SC0NfIYbsFk4zSWuSqV+fCf4S/WD3DVhHFz5ZCnLog8eFES8=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(82310400026)(36860700016)(22082099003)(18002099003)(56012099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	5QRvdu2tsMZaZN6LaVF5mfJKTnQpODLoriiYBkjWTsLktvO7JrdjeDySsyOcq+ZSbIbea/2/wMMiUp3qI/TmGNNtk0phWymDrrdWo4AJpPyKM5Mi1oZRe16vqbQ1AIOzxtEfhN+IOcZAwsqQ5M9Ka6FjB5Ddy+i7rreix7amE3EoJQywtaWvJGx5ZoGzAdgmpDcMZBAaRHGfpFPFAA0Aag5WcwpfPpElHrg6+viV9PBu7bskH2EXw3+rOuwHFDQ+p7so24CPzX2Jc8bGmEtGw/dFSMtvw3dX/jos/Ra2Ad4ncIv5ILL8egmbbzTOh/e367j/Bj500kSv7oSlgcRlcIcHTZVtwNBDBM82yNmqjrekRkbYDYO1mcOtL9tzY5HKdNU0z7ti4PE0fcjbuapGKbdA6cagOm54xxrC0Q4opB8n7e2kdOpNIl4pPvil7MNL
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2026 23:28:40.5541
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 23c0172c-c533-40ce-6828-08dea710366b
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL6PEPF0001AB4B.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR12MB8890
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.54.0.545.g6539524ca2-goog
+Message-ID: <20260430232851.236666-1-wnliu@google.com>
+Subject: [PATCH] iommu/amd: Fix precedence order in set_dte_passthrough()
+From: Weinan Liu <wnliu@google.com>
+To: iommu@lists.linux.dev, jgg@nvidia.com, joro@8bytes.org, 
+	suravee.suthikulpanit@amd.com
+Cc: will@kernel.org, patches@lists.linux.dev, stable@vger.kernel.org, 
+	robin.murphy@arm.com, vasant.hegde@amd.com, santosh.shukla@amd.com, 
+	chrisl@kernel.org, Weinan Liu <wnliu@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, Apr 30, 2026 at 02:41:22PM -0700, Dan Williams (nvidia) wrote:
-> > +static bool pci_cxl_ats_always_on(struct pci_dev *pdev)
-> > +{
-> > +	int offset;
-> > +	u16 cap;
-> > +
-> > +	offset = pci_find_dvsec_capability(pdev, PCI_VENDOR_ID_CXL,
-> > +					   PCI_DVSEC_CXL_DEVICE);
-> > +	if (!offset)
-> > +		return false;
-> > +
-> > +	if (pci_read_config_word(pdev, offset + PCI_DVSEC_CXL_CAP, &cap))
-> > +		return false;
-> > +
-> > +	return cap & PCI_DVSEC_CXL_CACHE_CAPABLE;
-[...]
-> Apologies for coming to this late and forgive me if the following has
-> already been asked and answered. Why not check for actual CXL.cache
-> protocol on the wire being present?
+Bitwise OR | operator has a higher precedence than the ternary ?:
+operatior. It will be incorrectly evaluated as:
 
-Actually it would make the patch smaller. The thing is that this
-is_cxl property wasn't added when I started the series. So, it's
-not using it. :)
+new->data[1] |= (FIELD_PREP(...) | dev_data->ats_enabled) ? DTE_FLAG_IOTLB : 0;
 
-> @@ -1733,9 +1733,8 @@ static void set_pcie_cxl(struct pci_dev *dev)
->  	pci_read_config_word(dev, dvsec + PCI_DVSEC_CXL_FLEXBUS_PORT_STATUS,
->  			     &cap);
->  
-> -	dev->is_cxl = FIELD_GET(PCI_DVSEC_CXL_FLEXBUS_PORT_STATUS_CACHE, cap) ||
-> -		FIELD_GET(PCI_DVSEC_CXL_FLEXBUS_PORT_STATUS_MEM, cap);
-> -
-> +	dev->is_cxl_cache = FIELD_GET(PCI_DVSEC_CXL_FLEXBUS_PORT_STATUS_CACHE, cap);
-> +	dev->is_cxl_mem = FIELD_GET(PCI_DVSEC_CXL_FLEXBUS_PORT_STATUS_MEM, cap);
+Wrap the conditional operation in parentheses to enforce the
+correct evaluation order.
 
-One caveat is that:
+Fixes: 93eee2a49c1b ("iommu/amd: Refactor logic to program the host page table in DTE")
+Signed-off-by: Weinan Liu <wnliu@google.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/iommu/amd/iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Here it checks the cap from:
-	PCI_DVSEC_CXL_FLEXBUS_PORT_STATUS (0xE) via
-		PCI_DVSEC_CXL_FLEXBUS_PORT_STATUS (0x7)
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 01171361f9bc..ccffbecb15c2 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -2149,7 +2149,8 @@ static void set_dte_passthrough(struct iommu_dev_data *dev_data,
+ 	new->data[0] |= DTE_FLAG_TV | DTE_FLAG_IR | DTE_FLAG_IW;
+ 
+ 	new->data[1] |= FIELD_PREP(DTE_DOMID_MASK, domain->id) |
+-			(dev_data->ats_enabled) ? DTE_FLAG_IOTLB : 0;
++			(dev_data->ats_enabled ? DTE_FLAG_IOTLB : 0);
++
+ }
+ 
+ static void set_dte_entry(struct amd_iommu *iommu,
+-- 
+2.54.0.545.g6539524ca2-goog
 
-On the other hand, mine checks from:
-	PCI_DVSEC_CXL_CAP (0xA) via
-		PCI_DVSEC_CXL_DEVICE (0x0)
-
-The spec mentions in 8.2.1.3.1 DVSEC Flex Bus Port Capability: "
-  Note: The Mem_Capable, IO_Capable, and Cache_Capable fields are
-  also present in the DVSEC Flex Bus for the device [which is the
-  legacy name for DVSEC 0x0]. This allows for future scalability
-  where multiple devices, each with potentially different
-  capabilities, may be populated behind a single Port.
-"
-
-Not arguing that set_pcie_cxl() is wrong, but I am not sure if there
-would be any side effect to rely on the "legacy name" over DVSEC 0x0.
-
-Is there any CXL expert who can help confirm?
-
-Thanks!
-Nicolin
