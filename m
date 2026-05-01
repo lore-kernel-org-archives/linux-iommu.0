@@ -1,103 +1,175 @@
-Received: from mail-dy1-f201.google.com (mail-dy1-f201.google.com [74.125.82.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A59513783B2
-	for <iommu@lists.linux.dev>; Fri,  1 May 2026 00:01:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.201
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F1DBA24DD17
+	for <iommu@lists.linux.dev>; Fri,  1 May 2026 00:42:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777593668; cv=none; b=J0sA6LTJlRy2ezCnB33KpPkjUduugydy7VaXh6Dhyb8Md17oXDM4sACYuFymwO7WOFcyTUi3dcLsCHy2wxeSv7dslcmExSFtGGevuMpvJUY5vFUUExOFIZsN+62covHqL1yUWiMY5/ld/ulVRzhzb9Si2fuiPS/YIbBiYaCCt2o=
+	t=1777596129; cv=none; b=h76gq+qj2dvGxTb6jfgv0OHBnUXhnOW/dv9KKcI4HQ1LSJFjWHUGoj0DBJqQB69zetlABzsVAyIiznq/pv097EXRtWvn1icRjW0V6V4VSdiGQWGs6JXIcrUV2LiFqp+85SH095GtPf2TDwXfynO09wOE98L613bw8QwtRUzAu0s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777593668; c=relaxed/simple;
-	bh=vFS/zQjd56B3fLWY6rq0TVzIfgce3sBAg1mKjG6Ekhg=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=EdH7L7TnG1HiDsk0OIX6gDXUBZrV7mYj5S1ZOA7GJQKvP87xgB58SwYASdCOytCJr+fFoUBClzNfPg3BSSkfh4rZq6Gmrlk+5rx/7zsI6nMw8uRq8NRcvX++u0iS63kRP/0M6g5cFVy1ah6kGSN6vifv++JFuLIUYJuW902Jmhs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=cGOGRaJj; arc=none smtp.client-ip=74.125.82.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com
+	s=arc-20240116; t=1777596129; c=relaxed/simple;
+	bh=HgczbydWMyKMmyI8k4BSu6vP0cO81ZFeNwpOwluA5r8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=RNi5HfwBxfPQaA+Myi+6mQyVUvEgm8OF1HzLH4MAbejyNxFDHQumpKgNuFiGrQq6gcEL+hmIZmFnshoSk+wwjG9GN3IPVWYCvT1mCkSRLtBqpm0YFekx6Ts1BMl6lrCAdh2+87ckg7UXLv1s5qDYy1qn/ikpkp0ZnBmBoewGTcY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Q4d943jk; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="cGOGRaJj"
-Received: by mail-dy1-f201.google.com with SMTP id 5a478bee46e88-2de07c12745so9468725eec.1
-        for <iommu@lists.linux.dev>; Thu, 30 Apr 2026 17:01:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1777593663; x=1778198463; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=xHpNReJ/NE9/UeuqVc7wulNIRWGmhInh1blTLbI9Cu0=;
-        b=cGOGRaJjyDVttUCpQWDwHO/vAroqHacnTiHBl60WfQsC30seC+eWkUx+b7y3YRfrPU
-         2YZ6bKQyfr6xF6voRS6azS1SG+JWvPAfbSFk+zvKztkUrJj+5FvL3BnO4soM1ZGanyi3
-         N4RgVY59ui9EWidECsEA/IjOKkqPCYp1dUwyrPSng6mpKt2MrbdWcBYotA4zxpr5S8KQ
-         n3T0lyKt1BDnzlHu4TU4gQ9p1/r5WEdPoUMKHkN8zrvcRiyr/fg17G0/8DDIRENwTqZ5
-         uXd8iLnvjy601XAYa0apIkClrwk46WV6DUO5ch7eKaC1bCGHBEXYqk6FM3IDNS0AdxWa
-         4EtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777593663; x=1778198463;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=xHpNReJ/NE9/UeuqVc7wulNIRWGmhInh1blTLbI9Cu0=;
-        b=EKnEL0c0+p/ZnIbYcyq1QrVmw1R7hQOVke0s5+14H6NykU/7txYZ4Tig9U1AObUhYV
-         5tOwTx1jau6E/fjzZGPD4pM2TadR5KZPDxLP9AINwI8gxhClostcWt3nmkrjg72BKLe3
-         QUg8eF67zmR9MFfpxe0qVVby/nWPJfWpOHfFmCKZYSGjgxLgyZOuusEf1xm04ZzWuWZ9
-         mIPbeBGfDJtqD+Rjhc4Xxct+zCjhllgXujabO6avQgOYdlhDfabDiEZYFhSJimLw7JNc
-         RIs+t+Efv0VN18epE573JDJ0VKK4u1gs3kkAMLYNyMDuX7pZl8bdKZp1CaoKClbWENaL
-         H6eA==
-X-Forwarded-Encrypted: i=1; AFNElJ8pID3XpVMTPX5w6LNQYdACuWjeZB0SaHxsy0NuBJ7klNHpxRVR6NqV2irTo+bC7f4MEqMPCw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxfDrlnyq7V6wsuScx+tpDn8vdJbf0dr7Oi7BpMR755jd80F0la
-	2x4HUE9eMNKmSTCD9qhGRofAabqZ+9ZcaHlX6W+YlrP0pIkDQJ87PznRzpfoU3V9j8z/IlDkKcO
-	PJA==
-X-Received: from dybvi26.prod.google.com ([2002:a05:7301:531a:b0:2d8:dd18:baee])
- (user=wnliu job=prod-delivery.src-stubby-dispatcher) by 2002:a05:7301:1284:b0:2ed:e17:d50d
- with SMTP id 5a478bee46e88-2ee88e25449mr433736eec.32.1777593663040; Thu, 30
- Apr 2026 17:01:03 -0700 (PDT)
-Date: Fri,  1 May 2026 00:00:59 +0000
-In-Reply-To: <20260430232851.236666-1-wnliu@google.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Q4d943jk"
+Received: from mrdev.corp.microsoft.com (unknown [40.86.183.173])
+	by linux.microsoft.com (Postfix) with ESMTPSA id D651420B7165;
+	Thu, 30 Apr 2026 17:42:06 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D651420B7165
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1777596127;
+	bh=sobSl1Jx196MsXs3tYpB2WD+rsl04IeCc/J8ABEWGzo=;
+	h=From:To:Cc:Subject:Date:From;
+	b=Q4d943jkkAiqHUL3/pHeB+0zJfi0bz679ZcSuvAPmUOrsucCI9R6LWB6Qci6d05G8
+	 DLUH6nxICAqHUyod4w2j4qebNLE6LvDPgLd2rCd/xqIsB0tjVRhDE5g0WayRS4rFen
+	 wqbIJA1rREJEB0tmWQCJaJ44jDch6e4H5OmzpcI4=
+From: Mukesh R <mrathor@linux.microsoft.com>
+To: hpa@zytor.com,
+	robin.murphy@arm.com,
+	robh@kernel.org,
+	wei.liu@kernel.org,
+	mrathor@linux.microsoft.com,
+	mhklinux@outlook.com,
+	muislam@microsoft.com,
+	namjain@linux.microsoft.com,
+	magnuskulke@linux.microsoft.com,
+	anbelski@linux.microsoft.com,
+	linux-kernel@vger.kernel.org,
+	linux-hyperv@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-pci@vger.kernel.org,
+	linux-arch@vger.kernel.org
+Cc: kys@microsoft.com,
+	haiyangz@microsoft.com,
+	decui@microsoft.com,
+	longli@microsoft.com,
+	tglx@kernel.org,
+	mingo@redhat.com,
+	bp@alien8.de,
+	dave.hansen@linux.intel.com,
+	x86@kernel.org,
+	joro@8bytes.org,
+	will@kernel.org,
+	lpieralisi@kernel.org,
+	kwilczynski@kernel.org,
+	bhelgaas@google.com,
+	arnd@arndb.de
+Subject: [PATCH V2 00/11]  PCI passthru on Hyper-V (Part I)
+Date: Thu, 30 Apr 2026 17:41:46 -0700
+Message-ID: <20260501004157.3108202-1-mrathor@linux.microsoft.com>
+X-Mailer: git-send-email 2.51.2.vfs.0.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20260430232851.236666-1-wnliu@google.com>
-X-Mailer: git-send-email 2.54.0.545.g6539524ca2-goog
-Message-ID: <20260501000059.262516-1-wnliu@google.com>
-Subject: [PATCH] iommu/amd: Fix precedence order in set_dte_passthrough()
-From: Weinan Liu <wnliu@google.com>
-To: wnliu@google.com
-Cc: chrisl@kernel.org, iommu@lists.linux.dev, jgg@nvidia.com, joro@8bytes.org, 
-	patches@lists.linux.dev, robin.murphy@arm.com, santosh.shukla@amd.com, 
-	stable@vger.kernel.org, suravee.suthikulpanit@amd.com, vasant.hegde@amd.com, 
-	will@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Bitwise OR | operator has a higher precedence than the ternary ?:
-operatior. It will be incorrectly evaluated as:
+Implement passthru of PCI devices to unprivileged virtual machines
+(VMs) when Linux is running as a privileged VM on Microsoft Hyper-V
+hypervisor. This support is made to fit within the workings of VFIO
+framework, and any VMM needing to use it must use the VFIO subsystem.
+This supports both full device passthru and SR-IOV based VFs.
 
-new->data[1] |= (FIELD_PREP(...) | dev_data->ats_enabled) ? DTE_FLAG_IOTLB : 0;
+At a high level, the hypervisor supports traditional mapped iommu domains
+that use explicit map and unmap hypercalls for mapping and unmapping guest
+RAM into the iommu subsystem. Hyper-V also has a concept of direct attach
+devices whereby the iommu subsystem simply uses the guest HW page table
+(ept/npt/..). This series adds support for both, and both are made to
+work with the VFIO subsystem.
 
-Wrap the conditional operation in parentheses to enforce the
-correct evaluation order.
+While this Part I focuses on memory mappings, Part II focuses on irq 
+remapping and irq migrations.
 
-Fixes: 93eee2a49c1b ("iommu/amd: Refactor logic to program the host page table in DTE")
-Cc: stable@vger.kernel.org # v7.0.*
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Weinan Liu <wnliu@google.com>
----
- drivers/iommu/amd/iommu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+This series rebased to: 5170a82e8921 (origin/hyperv-next)
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 01171361f9bc..ccffbecb15c2 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2149,7 +2149,8 @@ static void set_dte_passthrough(struct iommu_dev_data *dev_data,
- 	new->data[0] |= DTE_FLAG_TV | DTE_FLAG_IR | DTE_FLAG_IW;
- 
- 	new->data[1] |= FIELD_PREP(DTE_DOMID_MASK, domain->id) |
--			(dev_data->ats_enabled) ? DTE_FLAG_IOTLB : 0;
-+			(dev_data->ats_enabled ? DTE_FLAG_IOTLB : 0);
-+
- }
- 
- static void set_dte_entry(struct amd_iommu *iommu,
+Testing:
+ o Most testing done on hyperv-next:e733a9e28180 using Cloud Hypervisor (51).
+ o Limited testing on : 5170a82e8921
+ o Tested with impending Part II irq patches.
+ o All tests involved PF passthru of devices using MSIx.
+ o Following combinations were tested:
+    - L1VH(1): test 1: Mellanox ConnectX-6 Lx passthru
+               test 2: NVIDIA Tesla Tesla T4 GPU.
+               test 3: Both of above simultaneous passthru
+    - Baremetal dom0/root: All of above.
+
+(1) L1VH: this is a semi privileged VM that runs on Windows root on
+          Hyper-V, and allows users to create more child VMs.
+
+This series strives to establish a base line. Some pending work items:
+ o arm64 : some delta to make this work on arm64 (in progress).
+ o Qemu and OpenVMM support (in progress).
+ o VF testing
+ o device sleep/wakeup.
+ o More stress testing with high end GPUs
+
+Changes in V2:
+ o rebase to 5170a82e8921
+ o minor fixes for arm64 build
+ o drop patch 03: "x86/hyperv: add insufficient memory support in irqdomain.c" 
+     as it that path is no longer used
+ o drop patch 08: "PCI: hv: rename hv_compose_msi_msg .. " and do it separately
+   outside this series.
+ o minor updates to commit messages
+
+Changes in V1:
+ o patch 1: Don't tie hyperv-irq.c to CONFIG_HYPERV_IOMMU.
+ o patch 4: Redesigned to address security vulnerability found by copilot 
+            with passing tgid as a parameter.  Also, do tgid setting right 
+            after setting pt_id.
+ o patch 5: Remove unused type parameter from mshv_device_ops.device_create
+ o patch 7: mshv_partition_ioctl_create_device cleanup on copy_to_user.
+ o patch 10: Add export of hv_build_devid_type_pci here to get rid of 
+             patch 11.
+ o patch 12: Move functions to build device ids from patch 11 here for
+             the benefit of arm64. Rename file to: hyperv-iommu-root.c.
+ o patch 13: removed to be made part of interrupt part II of this support.
+ o patch 14: get rid of fast path to reduce review noise.
+ o New (last) patch to pin ram regions if device passthru to a VM.
+
+Thanks,
+-Mukesh
+
+Mukesh R (11):
+  iommu/hyperv: rename hyperv-iommu.c to hyperv-irq.c
+  x86/hyperv: cosmetic changes in irqdomain.c for readability
+  mshv: Provide a way to get partition id if running in a VMM process
+  mshv: Declarations and definitions for VFIO-MSHV bridge device
+  mshv: Implement mshv bridge device for VFIO
+  mshv: Add ioctl support for MSHV-VFIO bridge device
+  mshv: Import data structs around device passthru from hyperv headers
+  PCI: hv: Build device id for a VMBus device, export PCI devid function
+  x86/hyperv: Implement hyperv virtual IOMMU
+  mshv: Populate mmio mappings for PCI passthru
+  mshv: Mark mem regions as non-movable upfront if device passthru
+
+ MAINTAINERS                                   |   3 +-
+ arch/x86/hyperv/irqdomain.c                   | 199 ++--
+ arch/x86/include/asm/mshyperv.h               |   6 +
+ arch/x86/kernel/pci-dma.c                     |   2 +
+ drivers/hv/Makefile                           |   3 +-
+ drivers/hv/mshv_root.h                        |  21 +
+ drivers/hv/mshv_root_main.c                   | 266 ++++-
+ drivers/hv/mshv_vfio.c                        | 211 ++++
+ drivers/iommu/Kconfig                         |   5 +-
+ drivers/iommu/Makefile                        |   3 +-
+ drivers/iommu/hyperv-iommu-root.c             | 908 ++++++++++++++++++
+ .../iommu/{hyperv-iommu.c => hyperv-irq.c}    |   6 +-
+ drivers/iommu/irq_remapping.c                 |   2 +-
+ drivers/pci/controller/pci-hyperv.c           |  24 +
+ include/asm-generic/mshyperv.h                |  30 +
+ include/hyperv/hvgdk_mini.h                   |  11 +
+ include/hyperv/hvhdk_mini.h                   | 112 +++
+ include/linux/hyperv.h                        |   6 +
+ include/uapi/linux/mshv.h                     |  31 +
+ 19 files changed, 1727 insertions(+), 122 deletions(-)
+ create mode 100644 drivers/hv/mshv_vfio.c
+ create mode 100644 drivers/iommu/hyperv-iommu-root.c
+ rename drivers/iommu/{hyperv-iommu.c => hyperv-irq.c} (99%)
+
 -- 
-2.54.0.545.g6539524ca2-goog
+2.51.2.vfs.0.1
 
