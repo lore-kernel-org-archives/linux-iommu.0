@@ -1,117 +1,131 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36F5C3DA7DB;
-	Fri,  1 May 2026 17:00:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 090493F0AB0
+	for <iommu@lists.linux.dev>; Fri,  1 May 2026 18:17:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777654842; cv=none; b=GCEAjdy1rkRQsVDFSSZJWmapCCYyhOaBVRo0HYbOEFmjGQM8x9LW5RKY3s4oTgj1ksdPhuezsO/z8NPN+oiqDSrGC6InBULse845FFiJwjL0hQ+OYRO/L/xi6oBNYo0hYVr/CGJDxLTIj0cVCqdSVq9gFGoHTPAn7erNjr6KFXE=
+	t=1777659437; cv=none; b=lY/+9Ak1ZhfV3V1qK+W94QNB/RRf+9x4YKcic9T6Q+x5V9AMF/nI90qBFtDI+qzO8Ot0jBbeWkjqI5bAArPNjCyvC2DPVhuzlzs3K5CFTFmDtRVZakWSbHCC0NA8EBuVtruFRxlsytNreretY6sVBbIOmqIq5Gy02qkrnL+zecA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777654842; c=relaxed/simple;
-	bh=MMHiPEfA3OPcjaDzqcD1mgeXkac1NUhCuQyTITSnWnU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=eq4ewYALvLynULse3BD3V3Zc5enavhcQ9Ycz6jkBEyGg/CYLOmsM+USWLqQqFk+EP0PfmTtkh5wqYiHN+aBlPcL3Zs5gB7ScnKFPHXOLFHbZ4slgTCW504rFwBZasQRRmeP1gnS7eZAg/1Uo5DO6k4qLSGhNQRwZ/YzrvRfJnLI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RZPkcmJ5; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1777659437; c=relaxed/simple;
+	bh=FuyGme0uC1dQYmMPiHV3ukU8NV7ufPunP8OPpbJlgHc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=oRWu/sfyruGOLCeaUR94MxtbbYIRKrPRfQYhqUVZVxPubnbTf31n5blJNEr4yAIbKeW+L0ndaKf3hdvtO251W6IxcIKy54QwaLSPuaypv2kAXZX1iO5n744RJIIyeB2vmNoJFMXc+WR39flNEcEG6D6xgYiNwqubyDIXKacVyVQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=uclbxVXm; arc=none smtp.client-ip=209.85.214.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RZPkcmJ5"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777654838; x=1809190838;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=MMHiPEfA3OPcjaDzqcD1mgeXkac1NUhCuQyTITSnWnU=;
-  b=RZPkcmJ5S1FRa1mlZMk/z1G90biE1BMkEb7u10G+ZzvpMIG0OLre8tqZ
-   wNNsypN439Du/J+OwolYhRpFIpZS0Bd1WqSf/g/OL4yriK1U2D/oKq0fb
-   Bzj95XXlln+9Hfr2XeQngvXz3oS1wKX2wpqOp/q2eTXlI2Q4Fw28kicQD
-   96hHgh62hZ4N8QrgNuMjB4syY2EdNCU77d15uHbMxNXRizQ0v4V3FCsNR
-   1EGsWbv6uAZgAFlRY6L5m/cz1Q6oMqtgojOkcPzWeCwxVgDS2LGveFrsw
-   n0ueJYLi1LzV0A4Y0l0dcbqJyrUAy/gZwW+Hx8gOHiKKf66usHOD1gDzY
-   g==;
-X-CSE-ConnectionGUID: n+5AUNyNQ/avDR7yRf+pjw==
-X-CSE-MsgGUID: A/QXMTypSySWXy/EHHMKBA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11773"; a="81186470"
-X-IronPort-AV: E=Sophos;i="6.23,210,1770624000"; 
-   d="scan'208";a="81186470"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 May 2026 10:00:29 -0700
-X-CSE-ConnectionGUID: KsjoK2uUTASap7x3n6yknw==
-X-CSE-MsgGUID: ECdjj8MUQNW2v1RUXRgJGA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,210,1770624000"; 
-   d="scan'208";a="239233535"
-Received: from aduenasd-mobl5.amr.corp.intel.com (HELO [10.125.109.150]) ([10.125.109.150])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 May 2026 10:00:28 -0700
-Message-ID: <4dcc8e09-3e8c-4d94-b5b2-a025ae375b08@intel.com>
-Date: Fri, 1 May 2026 10:00:28 -0700
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="uclbxVXm"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2b2e8b95bdbso9925ad.0
+        for <iommu@lists.linux.dev>; Fri, 01 May 2026 11:17:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1777659435; x=1778264235; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=hH8WjvIFvfB7lCVYfIBULvtLO+n9YZWTzS7cJlqaCmA=;
+        b=uclbxVXm5nCZEUHrue5GM/3U3YltxaLV7rzIM/J1+20IEKaCZcz6Hw0lGx3QT9lFzt
+         iA5W0oRw8Nld8KAhKpVkRj/ScALyALfCXx1dNa3+cweSOKlNZ71EczR4AIlmmkO9CZzF
+         09CM+kUp8x0yyVmvzVssZGTa+pzJIq1LpchvSQQzVhap8iT38O2h9cLaCkBg7W6iJAEA
+         toQRvABqlvHSv111YkoHmmGSJx3bXIkgtqX0YaJwWt/ACpHrRji41tATp2rGzct0SazO
+         GON5UURxaeDxErGSkAscrKp6sEloi/vqkLqY9jXLLWcD1Kma1ih6OQxqXEkjKW8tl4v3
+         DPMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777659435; x=1778264235;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=hH8WjvIFvfB7lCVYfIBULvtLO+n9YZWTzS7cJlqaCmA=;
+        b=JQmgkKC+nBRKd/v6QJA+En0h5bbXNOc7O+gqsHXsgeHOW2sSo0wxK0VDIHkNhHFPH4
+         QHOQmN283lwiSwTDUlzw0fkIsd2n6PdureC33l1eJ7HJ/gBJhYuG4qEmpnnuDn2v8HwQ
+         M37q4J9vvp8To5ah8Lj+eJFp9j9K2EwXXcc1AeV5prUUxBlWkpbnQ+SlKpn2l05B/S+C
+         5cpu73OP+qMsuzz+jrye8htNxJNiEvzwrt8hZcfZGEvxb21CkC9xYJ4XTDVVCcPm/E8b
+         pl44YW8vOGH8eByfrEBNMbzseFHkoWVdPOzy6RwBegOu65EE9JAXz4SYMJrHS7eJ/LMG
+         j4iQ==
+X-Gm-Message-State: AOJu0Yy4CPrVdn4w4ZyUVXcBGpuv715NBN9A5rFodRf8S8awLYyXsysE
+	sNKZfgEfrYaeVgskZogVmX95z6zpPy5BeaasYeIpzzgyxLZZwuqedF9PpCmiiiuRyw==
+X-Gm-Gg: AeBDievUvsmDITfPonhkcZcjGiz3ObeLSXDuWYTd66Rxnn503Y4hhMVp2muddl2xf4t
+	SQvX4z7jtDKZ0Dgn154sBOTqyhfuwGJQM1g9n6SWcnetjbvCXcqq4n1obXFVSebcpf4Y1dYZTc8
+	OODNYpvhrDmZqB5Kaz+Kg8/Ci/Aix/Kf0Bwcf2tcdi1hpjXaA6AAzxQeS+1lINHbnMUlykvxQn6
+	1ppP+tntkcSOghxEDu4ED56qdQpExwwFbkD68qavZNmc/cGAOwLCC3BZt2JLsrzN3z7DIsP7z7n
+	lm672g6CmID/eqzv/L+GzD3SE8GgtyX1zT27d8qM9sfE780RZShJdlTd2L1b0VFplzmRcuKB2fK
+	IYDc3mW5/2nHbpuu8ktn2i9fODtMk+zJDcOqY1LZlO1b0pn/XaoWf0GlYkxHKbkIECOcayk1I3R
+	sSMt8iKoDplL0qJ2OQ77xswQtC3WKrTag9mS6RgpLOegVb5sPDteEp16z95MUqNBnXljtst3uOv
+	WwHgHVtUloADRy835F9aA==
+X-Received: by 2002:a17:902:cf4c:b0:2b4:60e6:44bc with SMTP id d9443c01a7336-2b9f38a41abmr300485ad.13.1777659434630;
+        Fri, 01 May 2026 11:17:14 -0700 (PDT)
+Received: from google.com (195.236.83.34.bc.googleusercontent.com. [34.83.236.195])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c7ffbc85c61sm2776855a12.22.2026.05.01.11.17.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 May 2026 11:17:13 -0700 (PDT)
+Date: Fri, 1 May 2026 18:17:10 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: David Matlack <dmatlack@google.com>
+Cc: iommu@lists.linux.dev, kexec@lists.infradead.org, 
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-pci@vger.kernel.org, Adithya Jayachandran <ajayachandra@nvidia.com>, 
+	Alexander Graf <graf@amazon.com>, Alex Williamson <alex@shazbot.org>, 
+	Bjorn Helgaas <bhelgaas@google.com>, Chris Li <chrisl@kernel.org>, 
+	David Rientjes <rientjes@google.com>, Jacob Pan <jacob.pan@linux.microsoft.com>, 
+	Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Jonathan Corbet <corbet@lwn.net>, 
+	Josh Hilke <jrhilke@google.com>, Leon Romanovsky <leonro@nvidia.com>, 
+	Lukas Wunner <lukas@wunner.de>, Mike Rapoport <rppt@kernel.org>, Parav Pandit <parav@nvidia.com>, 
+	Pasha Tatashin <pasha.tatashin@soleen.com>, Pranjal Shrivastava <praan@google.com>, 
+	Pratyush Yadav <pratyush@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Saeed Mahameed <saeedm@nvidia.com>, Shuah Khan <skhan@linuxfoundation.org>, 
+	Will Deacon <will@kernel.org>, William Tu <witu@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH v4 02/11] PCI: liveupdate: Track outgoing preserved PCI
+ devices
+Message-ID: <afTgOXpUNWMapPAS@google.com>
+References: <20260423212316.3431746-1-dmatlack@google.com>
+ <20260423212316.3431746-3-dmatlack@google.com>
+ <afDqs6oqWlhoVqMN@google.com>
+ <afPGYp145FbrvURR@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/6] ntb: Use consistent DMA attributes when freeing
- DMA mappings
-To: Leon Romanovsky <leon@kernel.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, Jon Mason <jdmason@kudzu.us>,
- Allen Hubbe <allenbh@gmail.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, ntb@lists.linux.dev
-References: <20260501-dma-attrs-debug-v2-0-8dbac75cd501@nvidia.com>
- <20260501-dma-attrs-debug-v2-2-8dbac75cd501@nvidia.com>
-Content-Language: en-US
-From: Dave Jiang <dave.jiang@intel.com>
-In-Reply-To: <20260501-dma-attrs-debug-v2-2-8dbac75cd501@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <afPGYp145FbrvURR@google.com>
 
+On Thu, Apr 30, 2026 at 09:15:14PM +0000, David Matlack wrote:
+>On 2026-04-28 05:24 PM, Samiullah Khawaja wrote:
+>> On Thu, Apr 23, 2026 at 09:23:06PM +0000, David Matlack wrote:
+>
+>> > +	for (i = 0; i < ser->max_nr_devices; i++) {
+>> > +		/*
+>> > +		 * Start searching at index ser->nr_devices. This should result
+>> > +		 * in a constant time search under expected conditions (devices
+>> > +		 * are not getting unpreserved).
+>> > +		 */
+>> > +		int index = (ser->nr_devices + i) % ser->max_nr_devices;
+>> > +		struct pci_dev_ser *dev_ser = &ser->devices[index];
+>>
+>> nit: Maybe we can move this logic in a separate function as down the road
+>> when we expand this to add VFs and Hotpluggable devices, this might
+>> change significantly? It's good if it is self-contained.
+>
+>Did you mean to leave this comment on pci_flb_preserve() where it
+>decides how many devices to allocate room for?
 
+I was talking about this one, as I think depending on the scheme we take
+this might change significantly. Just a nit, you can ignore it.
+>
+>> > +static inline struct pci_dev_ser *pci_liveupdate_outgoing(struct pci_dev *dev)
+>> > +{
+>> > +	return dev->liveupdate_outgoing;
+>> > +}
+>>
+>> Is this expected to be called under the outgoing lock?
+>
+>For now this API is only used during shutdown, at which point userspace
+>should have already been stopped so drivers should not be changing the
+>preservation status of an outgoing device. So I don't think this needs
+>to be under the outgoing lock, but it would be nice to have some more
+>explicit synchronization.
 
-On 4/30/26 11:35 PM, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> The counterpart of dma_alloc_attrs() is dma_free_attrs(), which must
-> receive the same DMA attributes used during allocation. The code
-> previously used dma_free_coherent(), which does not accept or apply any
-> DMA attributes.
-> 
-> Fixes: 061a785a114f ("ntb: Force physically contiguous allocation of rx ring buffers")
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-
-Reviewed-by: Dave Jiang <dave.jiang@intel.com>
-
-
-> ---
->  drivers/ntb/ntb_transport.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/ntb/ntb_transport.c b/drivers/ntb/ntb_transport.c
-> index 771eb7d9f4356..f59f926d4bfaa 100644
-> --- a/drivers/ntb/ntb_transport.c
-> +++ b/drivers/ntb/ntb_transport.c
-> @@ -766,8 +766,8 @@ static void ntb_free_mw(struct ntb_transport_ctx *nt, int num_mw)
->  		return;
->  
->  	ntb_mw_clear_trans(nt->ndev, PIDX, num_mw);
-> -	dma_free_coherent(dma_dev, mw->alloc_size,
-> -			  mw->alloc_addr, mw->original_dma_addr);
-> +	dma_free_attrs(dma_dev, mw->alloc_size, mw->alloc_addr,
-> +		       mw->original_dma_addr, DMA_ATTR_FORCE_CONTIGUOUS);
->  	mw->xlat_size = 0;
->  	mw->buff_size = 0;
->  	mw->alloc_size = 0;
-> @@ -828,8 +828,8 @@ static int ntb_alloc_mw_buffer(struct ntb_transport_mw *mw,
->  	return 0;
->  
->  err:
-> -	dma_free_coherent(ntb_dev, mw->alloc_size, alloc_addr, dma_addr);
-> -
-> +	dma_free_attrs(ntb_dev, mw->alloc_size, alloc_addr, dma_addr,
-> +		       DMA_ATTR_FORCE_CONTIGUOUS);
->  	return rc;
->  }
->  
-> 
-
+Ok that makes sense. I have similar cases in my series, but maybe we can
+add kdoc regarding these stating in which context this is expected to be
+used?
