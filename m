@@ -1,64 +1,64 @@
-Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69341329C54
-	for <iommu@lists.linux.dev>; Fri,  1 May 2026 22:08:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E93F526C39E
+	for <iommu@lists.linux.dev>; Fri,  1 May 2026 22:43:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777673333; cv=none; b=qZ8M6Pn4Yp/q/GYdsq5EKeOt02GpRy4uW0+IU5E3agnNdh+zqL4ZBYOnFM7XcUG7LjDI33lDwox4cxqkWnwbxxvA93gle2gpwvi7tjxfz/Vd6La0voRhnUz31vzDhkLup9HbyQ0i3gPejPZutJmzLmhXq/iQ1ghXmH1HN2ZE38c=
+	t=1777675384; cv=none; b=SGMUE0DfyHjjtceDdEGC70yeheJX9HIU+Ar0B95Kc4eCEyxY9fOl4HU9Mrvo9PdFwDB/8FNS2rlKS6dkHt6AJYBlBYEraWZsxaj7XrqllCNJKL+BV9CzbAowqRbgpnzBlqnwW74k1OjBbA+D7jgwhqXft7I1hq3PodsoUv6NxR8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777673333; c=relaxed/simple;
-	bh=Gg8XwvR2iye8ftuUb9NqbqgTU1BVsr9N0mr1rcUra+M=;
+	s=arc-20240116; t=1777675384; c=relaxed/simple;
+	bh=zxY+FJ/D1qGJPLj7LmqjRlqbTv0Us5t8F//4LBJztq8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LlT7j0XBNUZacBcY4ezdhDSgBxcSjrC2tx1lkQ/OwYsDsBHUb1z2yAbK3E/3bx59WzzbBZkdbMcu5fniYWyuBlZnqjIOi5bkbUEhF4ZQBHAJSwxIB6OGqBDutzFzzqGBaFSEQW7e8CaXdXn2mFR38/f+DZN6GFwLKwmczvCzZPQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=TfFAeAFU; arc=none smtp.client-ip=209.85.214.178
+	 Content-Type:Content-Disposition:In-Reply-To; b=R0oWRYXpywzusvo8yOCsF76yA457IJ+OVzGWxLM5SYP9QMDLUPF5lqgCbmdg3PQ/tDZ3sIeQWr0p+5StkYZIMCHmdmAEmz1gzkYxQ7JMRuq2sFMYIigyu/vHZSR6FBps5bCmft9a70ZEY2Yj/cpAs4fpzn6x0hweKMbr9QOoKmI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=K1l9GWgP; arc=none smtp.client-ip=209.85.216.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="TfFAeAFU"
-Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2aae146b604so15058035ad.3
-        for <iommu@lists.linux.dev>; Fri, 01 May 2026 15:08:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="K1l9GWgP"
+Received: by mail-pj1-f50.google.com with SMTP id 98e67ed59e1d1-35d971fb6f1so2656191a91.0
+        for <iommu@lists.linux.dev>; Fri, 01 May 2026 15:43:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1777673332; x=1778278132; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1777675382; x=1778280182; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=rIaBOF6T3Igmnhw7WxYJufQz1JELLjrBCUgq2t+SNoU=;
-        b=TfFAeAFUKTHerlTvsC1GbwSbO4kbXOdZypyjIWUYdSWGQnU//ZVDqbRWbEYfduL8kO
-         uxLo4e8ulraMOrROGYmVPJOArIk34+7t5addv4ZAY/1cRLop/qXGy4U0DQOwcQSV9s7y
-         g7xThXxC9dBLGWtBk3m03XB1RWrMOvH6eLoF1tqxYRB0KQ/GCZMWCjq7b0D+7p/GGpxC
-         2MyyUP5k6rANfYya02aHG2Mqg24hQbaKe6TUiSR/Y6Jy627y+pvI117wdjyf3eX3bt4C
-         U2y2+pg2mjHgIEb+CzPqlVSr4D3hEhxDunV6hNZI2ioNgfCPLRUxfEUEQbeIDN96xMB9
-         BaSw==
+        bh=zA7ZB+9cdr8jZzJkhetR/xMmU5JX5i8WCgvlAknX308=;
+        b=K1l9GWgPkiphIIZKpELC4roOb172HdwiVH8ZLBGRKyg0+axHVPryY6vqN4rdn5nc3X
+         sxTeox8EpEpE3Mn0tgYZ2MNOG2CW2u2mykazzSKz0Gb7RhDfT2x7UIWWv4Wf8f5W47mo
+         thksOmfaobZrgrWfuWZpH3O99K3UCo7QYt+qrrzpKJ3Igo2aa7fe9nWCJoVBlfImJOIi
+         ERMmbxOzSFr8EOh6nOx4RhVe8yzmz49TocQw/IMT/2kov12Yvau9IzQSRKdlJZWrc//Z
+         flrhdp/aHU1mWMg/Ew4KvCemJ0qEQWGrD5tx7QCnLXq3jmviOkC5u3RivHfgM4eaBJ59
+         Vlcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777673332; x=1778278132;
+        d=1e100.net; s=20251104; t=1777675382; x=1778280182;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=rIaBOF6T3Igmnhw7WxYJufQz1JELLjrBCUgq2t+SNoU=;
-        b=QON44Xzq84Bf/1Hq67iaxBI9NuE2Ios5XYiCkN2pkvvMywoSxOivt/6JFG2V6XAQ6r
-         GlxnNaqp3ljECokBEcZlHY8sjnMonFldtEAC84c7nanE1Xw417pIuJliOrfzkfTwiit7
-         QDiSzzpZO39YaSHilMRzzXZxbfBk9QkTLRmnjFaShv24Wc8bLF6UpMIZq7kmQs9a0gTy
-         VgGskqCir3ctAYjUMaaX/G1H6WvXWxcT7YbSbqHlJtH+0EhbhAUyVU/Xz7ReWiA1VD2H
-         TaTw5bPdLzVqsUJ/K+lTPdQiRLWmE8Jvb64C/lVjCVE17/Jh3JcGaOgidX+Ep9fc1eJw
-         i3TQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/2/VriJWvvr84FzEBhEdzbIW4lRZ1Y4yV32cm9WPjd1WTiywW5oDU3j0in9CJQhmLZt6pdAg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwnIEglSNsyRKI+o4CXZtIguepXIxuT/NHl3n3pkz8GxYMAhvh7
-	GPhvv3rmFnMswO1usggVRfJUcr+hT1uyTQFVRhyvL02WMM93YrgV+UjEIyCOMcc+Dw==
-X-Gm-Gg: AeBDieuunR7wwWMvRz9wvpqhwgT7ajqcqOiK3LdwmCQ94X1BJ+YQN22/DDISnmqjWEs
-	6eYulNnktfllmRJzxt0JxZRzLdlGIIbEAysHly6k+jsPmO7ez/6tijAUaPZyUzblaFxuNrh/sAp
-	65ZkcJ8rQfv2mhYpMFoYZamLYNNlbmMHUL7qrWsZ0NdrGO8BniqRl4HuqpC+upJGCBGXTznVw1s
-	oahx3ohWkhTk1Tu7gwvG3hrFmWyNPguE93lD9239tKe7taK2ip/RY68S3FPQ0Z6M1f3TmD9h6Pz
-	8ndvY3luV3jWHTLfrjnN4MREX/VZ3G2odLoOvIMwyDvECf57lFzUURE6wVS7PbwZUb59F1LPTg5
-	nHFQbt0zwEkMbA7nBc+MWVu7ZPh2IEqZshzv3ooksfprY+od5dLbg3CNTn8LT1V5e+ZSlbRmaXs
-	D55S6oirTYxzBT2I/LeQtY2FaTW2+RkXXkpcDTgg41X3XrM+t84i+PGf8zH9xoPsv/3jyfMv77f
-	M/A0w==
-X-Received: by 2002:a17:903:3c23:b0:2b2:41a9:8e10 with SMTP id d9443c01a7336-2b9f25e5495mr9622995ad.23.1777673331344;
-        Fri, 01 May 2026 15:08:51 -0700 (PDT)
+        bh=zA7ZB+9cdr8jZzJkhetR/xMmU5JX5i8WCgvlAknX308=;
+        b=Z+7PpPvvqiWruJE/5f4WMP96kM5dZB50wvaD4qbYRFCeMumd4bqMUY5ijLjYqAPyRK
+         cc70xvuAgt7+ltZQuC/b45XcGv12ouEikTCPz4+AOhLhJGsCoGEoFCtTqcE1t9HTXbLC
+         l4W0id7TshjFjY6lE26sy8FKDeeEkvPVzRgPKJqJGbmAwLVJl5WHTJ7yl/EeyGAwTuWs
+         5olAlduP6+NjLwLLb0PJ7WNd3OyWdDyAt60VGgBl+eefqn4Mig1E+LWVxTmfqfiG9cNy
+         PVjAsCn1gT5pw8p/tY14nJdASR94dZcBNmoVB4CeaZXlAUXDaEzNBI7ZKbs1VBfQBVYE
+         fOWg==
+X-Forwarded-Encrypted: i=1; AFNElJ9FMpZvWEoaYfBOIPK5d8RV+iLBbQP4kHS+VOpyJBhHF+h62MueXqqjCtsSO1mwu6mGmfKlnQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yya8ENtdrOsYaHVPeYxWONwFYOE1EbS6muVBulU1zZpBwW3lc/Q
+	cQXfHDEUIr7OZXM30lNCh6jm1gEPIUTVl32McBssSyNW/BI7oW85GIT/g8smbB2zqg==
+X-Gm-Gg: AeBDietW0iar4CW+cyHnYlPGUSnl/JdgjLjNIsbChk4T5fWTI8ZLJYBNtcfzpPCI4wN
+	XvP2GTu5trcS4gYUi4fSqzxx+sPNr/OcSb7MDRukYgqa++I58GS2XXkrJtbXCD5AR/Hi1Ms2MGb
+	RDptodERQCm2Qsqmc4JqPzE5k08WmN3FFee1/d89jtCJlYbfW1aWRAXp5jf5J0oly5MNnsyGaxr
+	A7H2e6VZzkNqW59ZwQQkMkTNLp+7RJhfy0XVHIH/1m487HRoePcczl5i2dbA9ukzbZgF3kB+gFo
+	LcG2EB07Vp6iBI47ZKn3gO86tGi3X2o95IaAlAyyuVUmOzuZxf04SUq8ZUHP1PPji3YD5d59Z0W
+	1kK7BzlkmfyLeHVF/ZjL1f9aSijohArk8s1TM6JRoaRG/uv94fHq6F+fIdlDHUZAEnEa0ghSGY6
+	WOKblpIh9A9Z7ksDPiuniW2BfeazxoHshO+9NCEJGwIVNQa07tDW5+Euj/k6ZFPQov+zXN543ml
+	QR3bg==
+X-Received: by 2002:a17:90b:3852:b0:35e:30bc:96e2 with SMTP id 98e67ed59e1d1-3650cdd40cfmr981966a91.10.1777675381854;
+        Fri, 01 May 2026 15:43:01 -0700 (PDT)
 Received: from google.com (76.9.127.34.bc.googleusercontent.com. [34.127.9.76])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b9cae6d123sm33770635ad.84.2026.05.01.15.08.50
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-364f3fc1714sm1322177a91.2.2026.05.01.15.43.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 May 2026 15:08:50 -0700 (PDT)
-Date: Fri, 1 May 2026 22:08:47 +0000
+        Fri, 01 May 2026 15:43:01 -0700 (PDT)
+Date: Fri, 1 May 2026 22:42:57 +0000
 From: David Matlack <dmatlack@google.com>
 To: Samiullah Khawaja <skhawaja@google.com>
 Cc: David Woodhouse <dwmw2@infradead.org>,
@@ -78,10 +78,11 @@ Cc: David Woodhouse <dwmw2@infradead.org>,
 	Chris Li <chrisl@kernel.org>,
 	Pranjal Shrivastava <praan@google.com>,
 	Vipin Sharma <vipinsh@google.com>, YiFei Zhu <zhuyifei@google.com>
-Subject: Re: [PATCH v2 03/16] iommu: Implement IOMMU domain preservation
-Message-ID: <afUkbz0IQh98siYn@google.com>
+Subject: Re: [PATCH v2 04/16] iommu: Implement device and IOMMU HW
+ preservation
+Message-ID: <afUscSeXKnNAJ0ZF@google.com>
 References: <20260427175633.1978233-1-skhawaja@google.com>
- <20260427175633.1978233-4-skhawaja@google.com>
+ <20260427175633.1978233-5-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -90,34 +91,68 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260427175633.1978233-4-skhawaja@google.com>
+In-Reply-To: <20260427175633.1978233-5-skhawaja@google.com>
 
 On 2026-04-27 05:56 PM, Samiullah Khawaja wrote:
-> Add IOMMU domain ops that can be implemented by the IOMMU drivers if
-> they support IOMMU domain preservation across liveupdate. The new IOMMU
-> domain preserve, unpreserve and restore APIs call these ops to perform
-> respective live update operations.
+> Add IOMMU ops to preserve/unpreserve a device. These can be implemented
+
+Can you make this comment more specific about what is being preserved?
+Saying it preserves a device is vague and maybe even misleading. It's
+more about  about preserving a device's attachment to a specific domain
+correct?
+
+> by the IOMMU drivers that support preservation of devices that have
+> their IOMMU domains preserved. During device preservation the state of
+> the associated IOMMU is also preserved as dependency.
 > 
 > Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
 
-> +static int alloc_object_ser(struct iommu_array_hdr_ser **curr_array_ptr, u64 max_objs)
-> +{
-> +	struct iommu_array_hdr_ser *curr_array = *curr_array_ptr;
-> +	struct iommu_array_hdr_ser *next_array;
-> +
+> diff --git a/drivers/iommu/liveupdate.c b/drivers/iommu/liveupdate.c
+> index f71f14518248..765d042e22e3 100644
+> --- a/drivers/iommu/liveupdate.c
+> +++ b/drivers/iommu/liveupdate.c
 
-There's a trade-off being made in this function to leak deleted array
-elements instead of trying to reuse them that warrants a comment.
+> +static struct iommu_device_ser *alloc_iommu_device_ser(struct iommu_flb_obj *flb)
 
-> +	if (curr_array->nr_objects >= max_objs) {
-> +		next_array = kho_alloc_preserve(PAGE_SIZE);
-> +		if (IS_ERR(next_array))
-> +			return PTR_ERR(next_array);
-> +
-> +		curr_array->next_array_phys = virt_to_phys(next_array);
-> +		*curr_array_ptr = next_array;
-> +		curr_array = next_array;
-> +	}
-> +
-> +	return curr_array->nr_objects++;
-> +}
+It is unforunate that struct iommu_device_ser has nothing to do with
+struct iommu_device. The former represents an a PCI device, while the
+latter represents an IOMMU.
+
+> diff --git a/include/linux/iommu-liveupdate.h b/include/linux/iommu-liveupdate.h
+> index 6019cfc27428..279c7ab04f09 100644
+> --- a/include/linux/iommu-liveupdate.h
+> +++ b/include/linux/iommu-liveupdate.h
+
+>  int iommu_domain_preserve(struct iommu_domain *domain, struct iommu_domain_ser **ser);
+>  void iommu_domain_unpreserve(struct iommu_domain *domain);
+> +int iommu_preserve_device(struct iommu_domain *domain,
+> +			  struct device *dev, u64 *preserved_state);
+> +void iommu_unpreserve_device(struct iommu_domain *domain, struct device *dev);
+
+The naming scheme is inconsistent... Maybe it can be:
+
+  iommu_preserve_domain()
+  iommu_unpreserve_domain()
+  iommu_preserve_device() or iommu_preserve_device_attachment()
+  iommu_unpreserve_device() or iommu_unpreserve_device_attachment()
+
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 3853a3946733..1c424b32c5fc 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+
+> +#ifdef CONFIG_IOMMU_LIVEUPDATE
+> +	int (*preserve_device)(struct device *dev, struct iommu_device_ser *device_ser);
+> +	void (*unpreserve_device)(struct device *dev, struct iommu_device_ser *device_ser);
+> +	int (*preserve)(struct iommu_device *iommu, struct iommu_hw_ser *iommu_ser);
+> +	void (*unpreserve)(struct iommu_device *iommu, struct iommu_hw_ser *iommu_ser);
+> +#endif
+
+Maybe we can make these names a little more specific:
+
+  preserve_device_attachment()
+  unpreserve_device_attachment()
+  preserve_iommu()
+  unpreserve_iommu()
+
+?
