@@ -1,172 +1,335 @@
-Received: from fout-a2-smtp.messagingengine.com (fout-a2-smtp.messagingengine.com [103.168.172.145])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f73.google.com (mail-ej1-f73.google.com [209.85.218.73])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34F852D3EC1
-	for <iommu@lists.linux.dev>; Fri,  1 May 2026 07:42:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.145
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0531239DBF8
+	for <iommu@lists.linux.dev>; Fri,  1 May 2026 11:19:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777621341; cv=none; b=joIy5lDqCIz7lpfFdtjyMrCRyLFlBFjUmR8ZL40whvQ6aBLgUNQwk+MrzHE0uJjBex67kHFRGcYsd+Gaf3ZiaOPr9GqaQy8MPg321bXiXI9lVrN4vxaHyXkou3jeeMAbK0f+jWvS+e+v4mePms3Vbu00MA4fyUVYFvDchjCwapM=
+	t=1777634388; cv=none; b=RTL4XFGWbg0/11zGHwTb+G+4cEADgg9Ntus/+B4uZLH+5gIAHAZVz7m0vOI4FlvR7Tmq7y3LCIFMgkf7Wm+C+ygQtTdAnJ+zWfT8xUzYFOS6DtVkVNlQgN5t5UXJ5kZ9RfzVZQ1W6wK7oxXrAXuQEKyXxLWb22PxQLulqoc73B4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777621341; c=relaxed/simple;
-	bh=hBnzokI6KHxyl17lpS6jXZPBgbFHczeNt0+6RC6qwUQ=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=IfBSn7D4YjXSTyrlSqUzEMIJvLgH9oD7rzyiu3fbIXYkoBJe0Lgyi5GfcmAatv+oBdpFcfYE/47uWtTglzlfykR7V4z0dTc74pJ7YsF0nBWLYOMbrn+WpdrlVwAp8o+ipEvO9E9QxYrz0P/s6CFY2FDdxXKLbOQAVEkxyp6yQzg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=alex-min.fr; spf=pass smtp.mailfrom=alex-min.fr; dkim=pass (2048-bit key) header.d=alex-min.fr header.i=@alex-min.fr header.b=BHPV6KbV; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=irqP4X/n; arc=none smtp.client-ip=103.168.172.145
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=alex-min.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alex-min.fr
+	s=arc-20240116; t=1777634388; c=relaxed/simple;
+	bh=a7l0tjjKDWFABSCDQFyGvRK9SXNivegcz+Anu6dErts=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=ejAR48SUI1lgPqMF63+Ku4NqdwllsIsXoQdBK0HjJTXOQDwFg7fJHHiw96+iczADDRKr2wraOPbZueRl9+9Nmevh5CIKSFqaS5sIWleSWcET00XMWbjAcgn/GL4IXG98IdulnbPMb4A4kCkdWPn6UYVvP9LZ2ODnyNaRYNMtQck=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=aiWICx/X; arc=none smtp.client-ip=209.85.218.73
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=alex-min.fr header.i=@alex-min.fr header.b="BHPV6KbV";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="irqP4X/n"
-Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
-	by mailfout.phl.internal (Postfix) with ESMTP id 693B7EC0128;
-	Fri,  1 May 2026 03:42:18 -0400 (EDT)
-Received: from phl-imap-02 ([10.202.2.81])
-  by phl-compute-04.internal (MEProxy); Fri, 01 May 2026 03:42:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alex-min.fr; h=
-	cc:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm1; t=1777621338;
-	 x=1777707738; bh=Zg5eNZ5CCvS7Z24O3/xznVWLB3OXF7Zf2PatPh9o7WU=; b=
-	BHPV6KbVLBP0+ivN2+rBflpqymNvZEB8JHTB/+2kMQ2YMULpzEa0v5X/oaiKIvuY
-	1ZiGrLXpEPKPn44sNmiuB/tWmkTaYhk9fwAPduJKL8Rk+SQpydwQuBasjZdaC3TK
-	wSor3iQYk80x0iDLRvx7iRbY5J6LojfFXpqWnKVybO3bym1UCZcOu9Gpq9AsK0UL
-	0ZGXvj0zSw92gFtPXuC9jaq8zcDiK7hG6y8TerWgokP90rXAuJHjDz80KwlfcHeq
-	uv2waobLwrHNNAe5P7+ct/o82jiN49PxYw224G/K0hzFGINpPE9pmTsoCEovjUkY
-	5RlmyggfZAdBC2GYYeHCYg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1777621338; x=
-	1777707738; bh=Zg5eNZ5CCvS7Z24O3/xznVWLB3OXF7Zf2PatPh9o7WU=; b=i
-	rqP4X/ncZgoXaUTrrxnDaN/aelca1i0lZ0zJfz7xE7WuREsyKyT7wvrI7tbr0Nuw
-	gtGBlPzug8vrNzwRywLY4ipBKJGE0/Cm977OIU0eQLAbXyum/9wLY2LjxSrVzvr9
-	R1QhvBkBuMFYzGyfC2WQNBE+L2rqsRSMMx8sgngvnPq4touiaS5VVqDJSzeLs3Gs
-	bEpVHBef+R1BXlCZAHk++sY9azs738d8jWx9KnQVlcWklT7Pu9j+IVuY3K6rGkO5
-	o+JpkmcuBT5vnXNx8BWAuGqDn10GC2SAKCoGG/HnXt4gY4XCwt1svIli20Vukzhs
-	kw5rTxy80EDEJ5Fw8Ll6A==
-X-ME-Sender: <xms:WVn0aY4gDNgx1dcpRRVIp8lt74QaDBil9eyJL_JCr3GpcLZzMX7afw>
-    <xme:WVn0aUtE4ORcwKnHixp5KMa-J16fLMsKtI5yAMAIx9DfKkdIyEskC0CrvPClNJ1y5
-    frR1opxLb6ADFCW3xZ9hRulIzeHwnt8Azx5vgFYUrGRFiCwrpXeXw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefhedrtddtgdekleeifecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpuffrtefokffrpgfnqfghnecuuegr
-    ihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjug
-    hrpefoggffhffvvefkjghfufgtgfesthhqredtredtjeenucfhrhhomhepfdfokffpgffv
-    vffgucetlhgvgigrnhgurhgvfdcuoegtohhnthgrtghtsegrlhgvgidqmhhinhdrfhhrqe
-    enucggtffrrghtthgvrhhnpedtuedtfedtuddugedtuefggedtieekhefhteefvdetueev
-    heeghefhfeetfeejhfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrih
-    hlfhhrohhmpegtohhnthgrtghtsegrlhgvgidqmhhinhdrfhhrpdhnsggprhgtphhtthho
-    pedvfedpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtohepjhhorhhoseeksgihthgvsh
-    drohhrghdprhgtphhtthhopehrohgsihhnrdhmuhhrphhhhiesrghrmhdrtghomhdprhgt
-    phhtthhopehlihhnuhigsehguhhruhgurghsrdguvghvpdhrtghpthhtohepghhpihgttg
-    holhhisehighgrlhhirgdrtghomhdprhgtphhtthhopehtohhnhidrlhhutghksehinhht
-    vghlrdgtohhmpdhrtghpthhtoheprghnuggvrhhsshhonheskhgvrhhnvghlrdhorhhgpd
-    hrtghpthhtoheptghonhhorhdoughtsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehk
-    vggvsheskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepkhhonhhrrgguhigstghioheskh
-    gvrhhnvghlrdhorhhg
-X-ME-Proxy: <xmx:WVn0aQDL2F-AF40KutzE8NRagdkt1s25sLDUepaJP0Gs399YZg6Cmw>
-    <xmx:WVn0ad-A-bhFR3otixkBEP5ojjstOyloATJVnAQUC-jKDeusgcIcAQ>
-    <xmx:WVn0aSRfiWvouhwJlWsYNAvzmrscLTvS6O7T06L6KZn77W59DrXRKQ>
-    <xmx:WVn0aT4JynqPYm-SJt6gJd55t9PXNGsTdxsUfcZTFxgOeMErILBOgw>
-    <xmx:Wln0acDKOmxMLmcQjSxJrVoRGxGmFxeG8awHyg1rwKf6ZrKBakyUQahQ>
-Feedback-ID: i72694427:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id B2479700065; Fri,  1 May 2026 03:42:17 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="aiWICx/X"
+Received: by mail-ej1-f73.google.com with SMTP id a640c23a62f3a-b844098869cso144565266b.2
+        for <iommu@lists.linux.dev>; Fri, 01 May 2026 04:19:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1777634384; x=1778239184; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:from:subject:message-id
+         :mime-version:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=39s63gE+FaRnrwSJ1nF07Frvg2b04cpO6BVgy2OjLZw=;
+        b=aiWICx/XY+6Gf9uskqKMFJVfpCsPW/eNI7tkNl5cIgCSapOI8/TJhkkmnyWu8VucGt
+         m9ggYMbRlVyBkgPgGj5jNR7OR9JAbUgPJlczvC0oR5bA8bvUl6UaWnK4XS1xe6M/IIzq
+         lcN8e3ottibV7l/dvjXJW5BYPoVY1JdCBe4h5BkpIviFz+DYjs65ThUkqWCnfJLsYsEA
+         1iLao/KSdiTAZe/qRm4V+Ec7Ubyg2HJkXGwdc0XBTKLK+dlmijgPSrV5u99Zgsw+ycnM
+         q8Csxebub4SHWWZ7tdUedlFyiCCtB4aFAs+kq2Jze68ysXdiw1ATn+2HZGYiljTtV4L/
+         1l9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777634384; x=1778239184;
+        h=content-transfer-encoding:cc:to:from:subject:message-id
+         :mime-version:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=39s63gE+FaRnrwSJ1nF07Frvg2b04cpO6BVgy2OjLZw=;
+        b=mEu2BEwu7p4oIOcR54DxZJ1yWnazUuKSxKxR7GdgnPL+lMnrYGeyRGWnM2TveWs30y
+         CPOsEA255NAavCdKriSs0B2u0MC0G5rXWdo7ARXB/aU68CSorqBlQ02q4kW0buHDtCZS
+         uZYtZ0VhXnzh4176J9pgEBDL5nwnHLFHa4yqw//mmskHkuC4hFN3KFmHrTtQfB4mch5J
+         dWrmdG7B0Sibp+laOt7fkXLTqXg1yXrNNbwMpWSOhB8XXIqnhSJjL7gEKVPjE/TYSbL8
+         KCTFRO/uYCLvqNc6dm4UIXeHT6XeASGu3fLjrixsdMONm8PQaZ+ui5pJgOu5EA4Ryy+Y
+         btxA==
+X-Forwarded-Encrypted: i=1; AFNElJ9orgcacM3QodDDg9ZRFg2lz7oVzoaalCs3+OH6iqbYAELpJhtSSYh36I/e+9ZXdCuLNl/JdQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YziYEJB7JEokTda75hX6SXdqhpjLzUqWdWKpV7axx5YF5N7Dgb4
+	S1IjpmmCqBKW2UEZJ1O7H/a98+x3biVS24F7F1lBabfk/l/DkN9/eRxB8ALj5TwCLX/7cnysMKW
+	hjLzPZESZ75STug==
+X-Received: from ejcqw28.prod.google.com ([2002:a17:906:6a1c:b0:ba5:6ff2:e915])
+ (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a17:907:980d:b0:bab:ba5a:fcb8 with SMTP id a640c23a62f3a-bbac7e8405emr444971866b.32.1777634384133;
+ Fri, 01 May 2026 04:19:44 -0700 (PDT)
+Date: Fri,  1 May 2026 11:19:02 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-ThreadId: A0acSZ0bucxw
-Date: Fri, 01 May 2026 09:41:09 +0200
-From: "MINETTE Alexandre" <contact@alex-min.fr>
-To: "Konrad Dybcio" <konrad.dybcio@oss.qualcomm.com>,
- "Bjorn Andersson" <andersson@kernel.org>,
- "Konrad Dybcio" <konradybcio@kernel.org>, "Rob Herring" <robh@kernel.org>,
- "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
- "Conor Dooley" <conor+dt@kernel.org>,
- "MyungJoo Ham" <myungjoo.ham@samsung.com>,
- "Chanwoo Choi" <cw00.choi@samsung.com>,
- "Guru Das Srinagesh" <linux@gurudas.dev>,
- "Linus Walleij" <linusw@kernel.org>,
- "Rob Clark" <robin.clark@oss.qualcomm.com>, "Joerg Roedel" <joro@8bytes.org>,
- "Will Deacon" <will@kernel.org>, "Robin Murphy" <robin.murphy@arm.com>,
- "Kees Cook" <kees@kernel.org>, "Tony Luck" <tony.luck@intel.com>,
- "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
- iommu@lists.linux.dev, phone-devel@vger.kernel.org
-Message-Id: <edbaf71e-6a47-4294-a8c6-6b356bc336ed@app.fastmail.com>
-In-Reply-To: <97969bf9-8eb2-4498-90bd-9973fb2bd638@oss.qualcomm.com>
-References: <20260427-mainline-send-v1-sending-v2-0-dcaa9178007b@alex-min.fr>
- <20260427-mainline-send-v1-sending-v2-8-dcaa9178007b@alex-min.fr>
- <97969bf9-8eb2-4498-90bd-9973fb2bd638@oss.qualcomm.com>
-Subject: Re: [PATCH v2 8/8] ARM: dts: qcom: Add Samsung Galaxy S4
-Content-Type: text/plain; charset=utf-8
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.54.0.545.g6539524ca2-goog
+Message-ID: <20260501111928.259252-1-smostafa@google.com>
+Subject: [PATCH v6 00/25] KVM: arm64: SMMUv3 driver for pKVM (trap and emulate)
+From: Mostafa Saleh <smostafa@google.com>
+To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	kvmarm@lists.linux.dev, iommu@lists.linux.dev
+Cc: catalin.marinas@arm.com, will@kernel.org, maz@kernel.org, 
+	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com, 
+	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org, jgg@ziepe.ca, 
+	mark.rutland@arm.com, qperret@google.com, tabba@google.com, 
+	vdonnefort@google.com, sebastianene@google.com, keirf@google.com, 
+	Mostafa Saleh <smostafa@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Thanks a lot for the suggestion, I checked the downstream board files
-and it does not look like these buses are wired for GSBI.
+This is v6 of pKVM SMMUv3 support with trap and emulate
 
-There, the MAX77693 bus is instantiated as a dedicated i2c-gpio bus on
-GPIO 22/23, and the AN30259A LED bus as a dedicated i2c-gpio bus on
-GPIO 6/7. The native APQ8064 GSBI2/GSBI3 I2C pins are different
-(GPIO 24/25 and GPIO 8/9), so these two buses do not seem to be wired
-to the GSBI controllers on jflte.
+v1: Implements full fledged pv interface
+https://lore.kernel.org/kvmarm/20230201125328.2186498-1-jean-philippe@linar=
+o.org/
 
-Regards,
+v2:  Implements full fledged pv interface (+ more features as evtq and s1)
+https://lore.kernel.org/kvmarm/20241212180423.1578358-1-smostafa@google.com=
+/
+
+v3: Only DMA isolation (using pv)
+https://lore.kernel.org/kvmarm/20250728175316.3706196-1-smostafa@google.com=
+/
+
+v4: Trap and emulate
+https://lore.kernel.org/all/20250819215156.2494305-1-smostafa@google.com/
+
+v5: Trap and emulate
+https://lore.kernel.org/all/20251117184815.1027271-1-smostafa@google.com/
+
+
+This series is based on the review feedback on v5 + improvements,
+most notably:
+- Rebase on ToT which includes the newly merged protected VM support!
+- Drop non-coherent support to make the patches smaller, this can be
+  added in a later series.
+- Re-work the io-pgtable-arm split to rely on iommu-pages [Jason]
+- Use the newly added clock for tracing instead of adding new
+  functions in the hypervisor.
+- Align nesting support with the upstream driver in terms of
+  supported IPs [Jason]
+- Keep STE hiltless updating when possible [Jason]
+- Move some of the refactored code to the c file [Jason]
+- Add support for evtq and priq tracking
+- Add extra hardening checks, handle failures and massively reduce the
+  amount of WARN_ONs and other cleanups.
+- Don=E2=80=99t enforce DMA isolation to not regress pKVM booting.
+
+Notes about Sashiko
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+I ran Sashiko locally and it was helpful in discovering problems in
+the series. However, it still shows large number of critical and high
+severity issues, I went through them and I believe they are false
+positive, mainly because (in the order of frequently reported):
+- It doesn=E2=80=99t understand de-privilege and which data is trusted that
+  the driver populated at boot (keeps complaining about missing checks
+  for zero mmio size..)
+- It doesn=E2=80=99t understand WARNs are fatal in the hypervisor.
+- It doesn=E2=80=99t understand that a malicious host can DoS the system an=
+d
+  pKVM doesn=E2=80=99t guarantee availability
+- It doesn=E2=80=99t understand the SMMUv3 spec and makes stuff up (eg.  ab=
+out
+  CMD_SYC CS field it makes up an non-existent encoding or wrong
+  semantics for the gbpa register)
+- It seems to look at one patch at a time and not the whole series, and
+  as the series is written in a way to be bisectable that confuses it.
+- Sometimes it complains about code which is not related to the change.
+
+Fuad is currently working on updating review prompts to make it work better
+with protected KVM [1]
+
+Design:
+=3D=3D=3D=3D=3D=3D=3D
+Assumptions:
+------------
+One of the important points, is that this doesn=E2=80=99t emulate the full
+SMMUv3 architecture, but only the parts used by Linux kernel,
+that=E2=80=99s why enablement of this (ARM_SMMU_V3_PKVM) depends on
+(ARM_SMMU_V3=3Dy) so we are sure of the driver behaviour.
+
+Any new change in the driver will likely trigger a WARN_ON ending up
+in panic, that will require to support also in the hypervisor.
+
+Most notable assumptions:
+- Changing of stream table format/size or l2 pointers is not allowed
+  after initialization.
+- leaf=3D0 CFGI is not allowed.
+- CFGI_ALL with any value but 31 is not allowed.
+- Some commands which are not used are not allowed.
+- Values set in ARM_SMMU_CR1 are hardcoded and don't change.
+
+Emulation logic mainly targets:
+
+1) Command Queue
+----------------
+At boot time, the hypervisor will allocate a shadow command queue
+(doesn=E2=80=99t need to match the host size) which then sets up in HW, the=
+n
+it will trap access to
+
+i) ARM_SMMU_CMDQ_BASE
+That can only be written when the cmdq is disabled. Then on enable,
+the hypervisor will put the host command queue in a shared state to
+avoid transition into the hypervisor or VMs. It will be unshared with
+the cmdq is disabled
+
+ii) ARM_SMMU_CMDQ_PROD
+Trigger emulation code, where the hypervisor will copy the commands
+between cons and prod, of the host queue and sanitise them (mostly
+WARNs if the host is malicious and issuing commands it shouldn=E2=80=99t)
+then eagerly consume them, updating the host cons.
+
+iii) ARM_SMMU_CMDQ_CONS
+No much logic, just return the emulated cons + error bits.
+
+2) Stream table
+---------------
+Similar to the command queue, the first level is allocated at boot
+with max possible size, then the hypervisor  will trap access to:
+i) ARM_SMMU_STRTAB_BASE/ARM_SMMU_STRTAB_BASE_CFG: Keep track of
+   the stream table to put it in a shared state.
+
+On CFGI_STE, the hypervisor will read the STE in scope from the host
+copy, shadow L2 pointers if needed and attach stage-2.
+
+3) GBPA
+-------
+The hypervisor will set GBPA to abort at boot, then any read from the
+host will return ABORT and writes are ignored.
+If the host tries to clear GBPA, it will look like GBPA is refusing
+to update and time out.
+
+4) EVTQ and PRIDQ
+No shadowing needed for those queues, but the hypervisor needs to keep
+track of them to put them in a shared state so they can=E2=80=99t be used b=
+y
+the host or the hypervisor.
+
+Bisectibility:
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+I wrote the patches where most of them are bisectable at run time (so
+we can run with a prefix of the series till MMIO emulation, cmdq
+emulation, STE or full nested) that was very helpful in debugging,
+and I kept it like this to make debugging easier.
+
+Constraints:
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+1) Discovery:
+-------------
+Only device trees are supported at the moment.
+I don=E2=80=99t usually use ACPI, but I can look into adding that later.
+(not make this series bigger)
+
+1) Shadow page table
+--------------------
+Uses page granularity (leaf) for memory, that=E2=80=99s because of the lack
+of split_block_unmap() logic. I am currently looking into the
+possibility of sharing page tables, if that turned complicated (as
+expected) it might be worth to re-add this logic
+
+Boot and Probe ordering:
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+The main SMMUv3 MUST be only bound/probed after KVM fully initialises
+so it can set up the MMIO emulation.
+
+The KVM SMMUv3 driver is loaded early before KVM init so it can
+register itself, during that point it will probe all the SMMUs from the
+platform bus and bind them to the driver.
+
+Then at a later init call it will create an auxiliary device per SMMU,
+that the main driver will probe. The main driver still relies on this
+device(parent) for all driver activity. (Check comment in patch 14.
+
+Future work
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+1) Sharing page tables will be an interesting optimization, but
+   requires dealing with stage-2 page faults (which are handled
+   by the kernel), BBM and possibly more complexity.
+
+2) There is currently ongoing work to enable RPM, that will possibly
+   enable/disable the SMMU frequently, we might need some optimizations
+   to avoid re-shadowing the CMDQ/STE unnecessarily.
+
+3) Add support for non-coherent SMMUs
+
+4) Optimizations (as using block mappings for memory)
+
+Patches overview
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+The patches are split as follows:
+
+Patches 01-02: Core hypervisor: Dealing with MMIO and timers.
+Patches 04-06: Refactoring of io-pgtable-arm and SMMUv3 driver.
+Patches 07-10: Hypervisor IOMMU core: pagetable management, dabts.
+Patches 11-25: KVM SMMUv3 code.
+
+Tested on Lenovo IdeaCentre mini X and Qemu.
+
+A development branch can be found at [2]
+
+[1] https://github.com/ftabba/review-prompts/commits/local-arm64-kvm/
+[2] https://android-kvm.googlesource.com/linux/+/refs/heads/pkvm-smmu-v6
+
+
+Jean-Philippe Brucker (1):
+  iommu/arm-smmu-v3-kvm: Add SMMUv3 driver
+
+Mostafa Saleh (24):
+  KVM: arm64: Generalize trace clock
+  KVM: arm64: Donate MMIO to the hypervisor
+  iommu/arm-smmu-v3: Split code with hyp
+  iommu/arm-smmu-v3: Move TLB range invalidation into common code
+  iommu/arm-smmu-v3: Move IDR parsing to common functions
+  iommu/io-pgtable-arm: Rework to use the iommu-pages API
+  KVM: arm64: iommu: Introduce IOMMU driver infrastructure
+  KVM: arm64: iommu: Shadow host stage-2 page table
+  KVM: arm64: iommu: Add memory pool
+  KVM: arm64: iommu: Support DABT for IOMMU
+  iommu/arm-smmu-v3-kvm: Add the kernel driver
+  iommu/arm-smmu-v3-kvm: Probe SMMU HW
+  iommu/arm-smmu-v3-kvm: Add MMIO emulation
+  iommu/arm-smmu-v3-kvm: Shadow the command queue
+  iommu/arm-smmu-v3-kvm: Add CMDQ functions
+  iommu/arm-smmu-v3-kvm: Emulate CMDQ for host
+  iommu/arm-smmu-v3-kvm: Shadow stream table
+  iommu/arm-smmu-v3-kvm: Shadow STEs
+  iommu/arm-smmu-v3-kvm: Share other queues
+  iommu/arm-smmu-v3-kvm: Emulate GBPA
+  iommu/io-pgtable-arm: Support io-pgtable-arm in the hypervisor
+  iommu/arm-smmu-v3-kvm: Shadow the CPU stage-2 page table
+  iommu/arm-smmu-v3-kvm: Enable nesting
+  KVM: arm64: Add documentation for pKVM DMA isolation
+
+ .../admin-guide/kernel-parameters.txt         |    4 +
+ Documentation/virt/kvm/arm/pkvm.rst           |   19 +-
+ arch/arm64/include/asm/kvm_host.h             |    6 +
+ arch/arm64/kvm/Makefile                       |    2 +-
+ arch/arm64/kvm/hyp/include/nvhe/clock.h       |   11 +-
+ arch/arm64/kvm/hyp/include/nvhe/iommu.h       |   23 +
+ arch/arm64/kvm/hyp/include/nvhe/mem_protect.h |    4 +
+ arch/arm64/kvm/hyp/nvhe/Makefile              |   13 +-
+ arch/arm64/kvm/hyp/nvhe/clock.c               |   44 +-
+ arch/arm64/kvm/hyp/nvhe/iommu/iommu.c         |  156 ++
+ arch/arm64/kvm/hyp/nvhe/mem_protect.c         |  169 ++-
+ arch/arm64/kvm/hyp/nvhe/setup.c               |   20 +
+ arch/arm64/kvm/hyp/nvhe/trace.c               |    4 +-
+ arch/arm64/kvm/hyp/pgtable.c                  |    9 +-
+ arch/arm64/kvm/iommu.c                        |   57 +
+ arch/arm64/kvm/pkvm.c                         |    1 +
+ drivers/iommu/arm/Kconfig                     |    9 +
+ drivers/iommu/arm/arm-smmu-v3/Makefile        |    3 +-
+ .../arm/arm-smmu-v3/arm-smmu-v3-common-lib.c  |  224 +++
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c   |  232 +++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  387 +----
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  150 ++
+ .../iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c  | 1250 +++++++++++++++++
+ .../iommu/arm/arm-smmu-v3/pkvm/arm_smmu_v3.h  |   67 +
+ drivers/iommu/io-pgtable-arm.c                |   68 +-
+ drivers/iommu/io-pgtable-arm.h                |    6 +
+ drivers/iommu/iommu-pages.h                   |   99 ++
+ 27 files changed, 2668 insertions(+), 369 deletions(-)
+ create mode 100644 arch/arm64/kvm/hyp/include/nvhe/iommu.h
+ create mode 100644 arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
+ create mode 100644 arch/arm64/kvm/iommu.c
+ create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common-lib.c
+ create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
+ create mode 100644 drivers/iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c
+ create mode 100644 drivers/iommu/arm/arm-smmu-v3/pkvm/arm_smmu_v3.h
+
 --=20
-  MINETTE Alexandre
-  contact@alex-min.fr
+2.54.0.545.g6539524ca2-goog
 
-Mar 28 avr 2026, =C3=A0 10:57, Konrad Dybcio a =C3=A9crit=E2=80=AF:
-> On 4/27/26 9:34 PM, Alexandre MINETTE via B4 Relay wrote:
->> From: Alexandre MINETTE <contact@alex-min.fr>
->>=20
->> Add a device tree for the Samsung Galaxy S4, codenamed jflte.
->>=20
->> This has been tested on a Samsung Galaxy S4 GT-I9505. The initial sup=
-port
->> covers UART, USB peripheral mode with USB networking, the front LED a=
-nd
->> the physical buttons.
->>=20
->> Signed-off-by: Alexandre MINETTE <contact@alex-min.fr>
->> ---
->>  arch/arm/boot/dts/qcom/Makefile                    |   1 +
->>  .../boot/dts/qcom/qcom-apq8064-samsung-jflte.dts   | 485 +++++++++++=
-++++++++++
->>  2 files changed, 486 insertions(+)
->>=20
->> diff --git a/arch/arm/boot/dts/qcom/Makefile b/arch/arm/boot/dts/qcom=
-/Makefile
->> index 32a44b02d2fa..c23c961f79e3 100644
->> --- a/arch/arm/boot/dts/qcom/Makefile
->> +++ b/arch/arm/boot/dts/qcom/Makefile
->> @@ -12,6 +12,7 @@ dtb-$(CONFIG_ARCH_QCOM) +=3D \
->>  	qcom-apq8064-ifc6410.dtb \
->>  	qcom-apq8064-sony-xperia-lagan-yuga.dtb \
->>  	qcom-apq8064-asus-nexus7-flo.dtb \
->> +	qcom-apq8064-samsung-jflte.dtb \
->>  	qcom-apq8064-lg-nexus4-mako.dtb \
->
-> 'l'g < 's'amsung
->
-> [...]
->
->> +	i2c-led {
->> +		compatible =3D "i2c-gpio";
->> +		sda-gpios =3D <&tlmm_pinmux 6 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)=
->;
->> +		scl-gpios =3D <&tlmm_pinmux 7 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)=
->;
->
-> Have you tried setting up the I2C-GPIO busses as GSBI devices, like
-> I think I suggested the last time? This will potentially bring power
-> and latency benefits, since there's an actual bus controller
-> connected to these pins
->
-> Konrad
