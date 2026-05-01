@@ -1,162 +1,330 @@
-Received: from mail-dl1-f50.google.com (mail-dl1-f50.google.com [74.125.82.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADE0940F8E0
-	for <iommu@lists.linux.dev>; Fri,  1 May 2026 18:25:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.50
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777659956; cv=pass; b=eN6pW7PpxdL6HH4Qo3ApY/ISJsxwzhngyz1gTzdIaJfxpLuQERQQPC7uksD5MJymfl6UTmKlH7iaT9RQ2qSvjAlxouDkpKCbjZGhxQO4kUpBMZCWBq1VgYmWpt2dhidNmOh/Ksri19JaB8NuikdoFhTpIW162MvoE7CQoBC+HQA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777659956; c=relaxed/simple;
-	bh=7glQpGGcTAa1D+c5BdpA3vyeZj9yXvwRLKoRKqlblRY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=dzr7kERzpezGHOrY8o+GbC6oQl7nSAeWOan8h4uyKM/RZGP5zVXI3pQdmYcNf1a8xTFg0umd+2AJ8j0px+NWhE8AwSnjUQSuypPcdqmiz7lddDJaVp/7T27cQN+jAtgqBgzQU+CisRci1+eU0perqDBFMjdW5HKcpaxZPRWoSAA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=AyzGBO2P; arc=pass smtp.client-ip=74.125.82.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9119832FA30
+	for <iommu@lists.linux.dev>; Fri,  1 May 2026 18:38:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777660734; cv=none; b=Vu888MYsz2gdTtNG31HU1H6uiggMKBd4fA4emr4b5sq3VoD2R1/sgSpd0HAg6DV69bg8bI3nDdpe7Z3G5q7BUR85O4xv8O2vZnY7QdzNP4c5k6suVa3Myxyu4/YK4ThAStAjmx2Fel+RikL6DIlFSNlHwPWb5khWAVUszb5KQiQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777660734; c=relaxed/simple;
+	bh=Cs/3xyomAhG80Ub25L3D0EyGfkubymoWuhLCR3M++6k=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=CJYCgBDPgOUF6vNwNqxXDJhmo7tG/ReEPH2PN+dYJBxLGiuSII69pGOvnyqpQJXcSWaapJd/Nxnzz0ZFOwqAesNoXdfF+i6zFVrm/9z5JJOKPEgM7wZWXQpul4Ef5LJJv8Io/Cixk3SS+JPF4Ksb6Ib8M0MNk1dvneEm9autarw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Yr2yEuJp; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="AyzGBO2P"
-Received: by mail-dl1-f50.google.com with SMTP id a92af1059eb24-12c726ef332so3485901c88.1
-        for <iommu@lists.linux.dev>; Fri, 01 May 2026 11:25:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777659954; cv=none;
-        d=google.com; s=arc-20240605;
-        b=CYLmsqYPpb3VAKjCd1d0XkU/19CYw1fya6tuablA+FRWutakGrDs8+T/DlhoJpaPKD
-         hvM51JC8MjTKHV6a/J/TnB3oOwM3Z0YnBJ8b2Q1RVwtjk41gJV9ZVxvi7uAdxKQUMppX
-         xg04Ig1aArNFnAlqDV00z08xP8u/9/8rqgTtr/REkRPuv4Y4ti20Uo2WPdSrKilq8Zlx
-         Ylhd0/qPlboC//65jzPNmsKRQWtm3I0b+sf9jvVVYjzeFz9ZTzlG+0eRqEyxY0f9bkN2
-         5uEIpQ2raJTJcQX5nOqkSl/d/OCcQLQUJl1rwQ4T8aWIkAAtSLuTY6uKnS5G2PhA01g3
-         YpLA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=Ynp4A/JaH22lvkihT3nPFtsXKnzutYHpfXYULBKQQKo=;
-        fh=I926+arf7AW+J2jpO4S7zDk+kQlcBMJLizH2QZxxKt0=;
-        b=iJHM2DwYMD/I4lHv1HHwCXyiexvLjArbCeZqYFH9BzZ10081UxBWHjN2Z7My4eNQi+
-         MkZBnTZaqjKfAvA0n70NBtpq8tL5qUD4WgiYOJ6PER9B8lQhFu6dfm/2vyaRJ2eP/tg/
-         FW/iPEnwtGlL9OIvcpdNvqLeWnJEAE5frsZNbS4EslUn8F5bVZiRyFx69DYYwg37feCA
-         OMAc2Va5f1+siaFKVdpXF9beZ/I14OT8Mc35dtIBiR423F+6+crhPs2NactMV26kPiRG
-         cSyzo5CW2HIWZhlTAwxdY/1ZZVYQ0NET8Mv1GqtQUeghhWGXVON2684aDfwvPnfX0yGm
-         /CLQ==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1777659954; x=1778264754; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Ynp4A/JaH22lvkihT3nPFtsXKnzutYHpfXYULBKQQKo=;
-        b=AyzGBO2PRgG2pnl3Yj9cFiz1HUu90ywRvzQOXV1TKvR5udAzPW25oMxQsyF7Ircj6W
-         jCC+9pf8PA/88uO8JQKsCZ4/nQaECOgQQIMzZFO5QcXJbO5bIVc6PKUhH7/QPcUDL2OG
-         sk5lW3E8kNPpiuL/su6mut6Ao/R5RlExw80Aj1s8ZBk+R+JR55RDl3xdTOgIBUWTeamn
-         EGLmM977AUl6tR8lgmqvzzkQrLoRJZZ3jIhst42JsLgZ5OsAu5KseVjFY+MK0etuYTo/
-         YhEnOtES3bvAZ+O85Mfo18DwkOIf29aoBFRqHnSzEMRZferAlR1Uvymvad5UYpazhR/E
-         k1Jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777659954; x=1778264754;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=Ynp4A/JaH22lvkihT3nPFtsXKnzutYHpfXYULBKQQKo=;
-        b=oFjxwUMvb/6oLAT1Rc0a3Y1gSjBosTWamOTCnn6G8oUxhEm/qrskvDTef9vf0FIGBy
-         iFGmdYq9TSd8sPxEGfU9uh3701prFpMNyI07A2ogfn+UgPDZfjAROBvY8kF5fyTYdoqE
-         1sysnY2TKOj++vie8hYK1HTMva1ccEtYPqcUWI/nJpAFsgi4sFMQDR3Un1mtpGAuWD06
-         PzdZKgz9If0BqsCjVPHCTVx+Tpe7Uj2pnMmPrjUbfgMcXPdOa7c1oa7CRpjFUAEbLvwT
-         oRmxmcD8pT1QKcK3pVezUrZ7U10XETeEERCFxHNYhdBa8KQZv9Oj6k8fo3xhU7RriaKF
-         XPGA==
-X-Gm-Message-State: AOJu0YzCNOt8KBibDhFMa3k8TlY+n/xcw3vmSxjBZscctZHDwe2lDPub
-	C+0ECdOKTldvNo4uK6HSUoJp97UOOmWglGpHbHg43vWWb2lYKzj33TLBLajFs9XOwY031OJ894N
-	qEOYo5+h1wRqdj7mhwBkN75SpfFsEWOkw5QSRHlm0
-X-Gm-Gg: AeBDiesOznzxneXUnEBhjjpCyiPSEeIEIglnWfwGAKpUI5ZHHdFpBlfSBEnKT0uf/Xb
-	AmJYMZpsWsgmeGJ77CmE1k9lU7sfTW0ydH8HoGkuDIeXI6z1tT5BazyXVn59dC5xOC8+XKnHumO
-	slH0G2WyCa9VoCjspn6Cdl1avzwBpd0JvHfP/c668HG1Uot1NRfraGTBanFfsaT6Jk7hlfeOASx
-	x8/BDehfgupZn/hrvEPrshVCr31I7eoMKZ7x3D7bECkYJ7PG8MF4wYVwno/m3Izw2tQ+0EhcZR1
-	CW352Au6xf7DHBLhJ/sPtnWzDBamAw==
-X-Received: by 2002:a05:7022:ebcc:b0:12b:ec15:69d3 with SMTP id
- a92af1059eb24-12dfd7d88femr150449c88.19.1777659953185; Fri, 01 May 2026
- 11:25:53 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Yr2yEuJp"
+Received: from [10.17.144.128] (unknown [131.107.1.128])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 1753E20B7167;
+	Fri,  1 May 2026 11:38:46 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 1753E20B7167
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1777660726;
+	bh=VWHUtdKcIqKUgAKujME9mYENyngCK25nDrOwnvGtKZ4=;
+	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+	b=Yr2yEuJpMuZAb5c5L1ZVIGd0WTZdXvOQUbBFLDZxcjSqzT3t7eNSzNOawn0riz86Q
+	 PzKG/qeVpwgR8AZks1mgXdNM0zypBT2mCoGxKdetYOza06aF3g9fJTwhucp8bqYjB5
+	 ug7tBUkWFaCjbSwK5Bva8svCaU3VxBfj+1VLDrqc=
+Message-ID: <af9fa6f0-1dce-4a15-98c5-b4f8cc8b7f70@linux.microsoft.com>
+Date: Fri, 1 May 2026 11:38:44 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260423212316.3431746-1-dmatlack@google.com> <20260423212316.3431746-3-dmatlack@google.com>
- <afDqs6oqWlhoVqMN@google.com> <afPGYp145FbrvURR@google.com> <afTgOXpUNWMapPAS@google.com>
-In-Reply-To: <afTgOXpUNWMapPAS@google.com>
-From: David Matlack <dmatlack@google.com>
-Date: Fri, 1 May 2026 11:25:26 -0700
-X-Gm-Features: AVHnY4LHOeLRxPaffc9oaSUdxPiYe323BsN3VXy59mO0tVvOtZ5BkXLT2WRxf9Q
-Message-ID: <CALzav=cJLA3-gK=Ljfqf=YCPML60F=hM_teB67M_3PNCZE4T9w@mail.gmail.com>
-Subject: Re: [PATCH v4 02/11] PCI: liveupdate: Track outgoing preserved PCI devices
-To: Samiullah Khawaja <skhawaja@google.com>
-Cc: iommu@lists.linux.dev, kexec@lists.infradead.org, 
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-pci@vger.kernel.org, Adithya Jayachandran <ajayachandra@nvidia.com>, 
-	Alexander Graf <graf@amazon.com>, Alex Williamson <alex@shazbot.org>, Bjorn Helgaas <bhelgaas@google.com>, 
-	Chris Li <chrisl@kernel.org>, David Rientjes <rientjes@google.com>, 
-	Jacob Pan <jacob.pan@linux.microsoft.com>, Jason Gunthorpe <jgg@nvidia.com>, 
-	Joerg Roedel <joro@8bytes.org>, Jonathan Corbet <corbet@lwn.net>, Josh Hilke <jrhilke@google.com>, 
-	Leon Romanovsky <leonro@nvidia.com>, Lukas Wunner <lukas@wunner.de>, Mike Rapoport <rppt@kernel.org>, 
-	Parav Pandit <parav@nvidia.com>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	Pranjal Shrivastava <praan@google.com>, Pratyush Yadav <pratyush@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Saeed Mahameed <saeedm@nvidia.com>, 
-	Shuah Khan <skhan@linuxfoundation.org>, Will Deacon <will@kernel.org>, 
-	William Tu <witu@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Cc: hpa@zytor.com, robin.murphy@arm.com, robh@kernel.org, wei.liu@kernel.org,
+ mhklinux@outlook.com, muislam@microsoft.com, namjain@linux.microsoft.com,
+ magnuskulke@linux.microsoft.com, anbelski@linux.microsoft.com,
+ linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+ linux-arch@vger.kernel.org, easwar.hariharan@linux.microsoft.com,
+ kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
+ longli@microsoft.com, tglx@kernel.org, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, x86@kernel.org, joro@8bytes.org,
+ will@kernel.org, lpieralisi@kernel.org, kwilczynski@kernel.org,
+ bhelgaas@google.com, arnd@arndb.de
+Subject: Re: [PATCH V2 08/11] PCI: hv: Build device id for a VMBus device,
+ export PCI devid function
+To: Mukesh R <mrathor@linux.microsoft.com>
+References: <20260501004157.3108202-1-mrathor@linux.microsoft.com>
+ <20260501004157.3108202-9-mrathor@linux.microsoft.com>
+From: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+Content-Language: en-US
+In-Reply-To: <20260501004157.3108202-9-mrathor@linux.microsoft.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Fri, May 1, 2026 at 11:17=E2=80=AFAM Samiullah Khawaja <skhawaja@google.=
-com> wrote:
->
-> On Thu, Apr 30, 2026 at 09:15:14PM +0000, David Matlack wrote:
-> >On 2026-04-28 05:24 PM, Samiullah Khawaja wrote:
-> >> On Thu, Apr 23, 2026 at 09:23:06PM +0000, David Matlack wrote:
-> >
-> >> > +  for (i =3D 0; i < ser->max_nr_devices; i++) {
-> >> > +          /*
-> >> > +           * Start searching at index ser->nr_devices. This should =
-result
-> >> > +           * in a constant time search under expected conditions (d=
-evices
-> >> > +           * are not getting unpreserved).
-> >> > +           */
-> >> > +          int index =3D (ser->nr_devices + i) % ser->max_nr_devices=
-;
-> >> > +          struct pci_dev_ser *dev_ser =3D &ser->devices[index];
-> >>
-> >> nit: Maybe we can move this logic in a separate function as down the r=
-oad
-> >> when we expand this to add VFs and Hotpluggable devices, this might
-> >> change significantly? It's good if it is self-contained.
-> >
-> >Did you mean to leave this comment on pci_flb_preserve() where it
-> >decides how many devices to allocate room for?
->
-> I was talking about this one, as I think depending on the scheme we take
-> this might change significantly. Just a nit, you can ignore it.
+On 4/30/2026 5:41 PM, Mukesh R wrote:
+> On Hyper-V, most hypercalls related to PCI passthru to map/unmap regions,
+> interrupts, etc need a device ID as a parameter. This device ID refers
+> to that specific device during the lifetime of passthru.
+> 
+> An L1VH VM only contains VMBus based devices. A device ID for a VMBus
+> device is slightly different in that it uses the hv_pcibus_device info
+> for building it to make sure it matches exactly what the hypervisor
+> expects. This VMBus based device ID is needed when attaching devices in
+> an L1VH based guest VM. Before building it, a check is done to make sure
+> the device is a valid VMBus device.
+> 
+> In remaining cases, PCI device ID is used. So, also make PCI device ID
+> build function hv_build_devid_type_pci() public.
+> 
+> Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
+> ---
+>  arch/x86/hyperv/irqdomain.c         |  9 +++++----
+>  arch/x86/include/asm/mshyperv.h     |  6 ++++++
+>  drivers/pci/controller/pci-hyperv.c | 24 ++++++++++++++++++++++++
+>  include/asm-generic/mshyperv.h      |  8 ++++++++
+>  4 files changed, 43 insertions(+), 4 deletions(-)
+> 
+Please see the discussion on a similar patch for the guest IOMMU driver here:
+https://lore.kernel.org/all/2dabc1b8-0cf0-4fc8-9cd4-cce60adfc05e@linux.microsoft.com/
 
-It would depend on if userspace is doing a lot of unpreserving as
-well... I'll see what I can do in v5.
+My implementation of that approach is below:
 
-> >
-> >> > +static inline struct pci_dev_ser *pci_liveupdate_outgoing(struct pc=
-i_dev *dev)
-> >> > +{
-> >> > +  return dev->liveupdate_outgoing;
-> >> > +}
-> >>
-> >> Is this expected to be called under the outgoing lock?
-> >
-> >For now this API is only used during shutdown, at which point userspace
-> >should have already been stopped so drivers should not be changing the
-> >preservation status of an outgoing device. So I don't think this needs
-> >to be under the outgoing lock, but it would be nice to have some more
-> >explicit synchronization.
->
-> Ok that makes sense. I have similar cases in my series, but maybe we can
-> add kdoc regarding these stating in which context this is expected to be
-> used?
+--------------------x8-------------------------------------------------
+commit 233e90466cb79b3a952806206d89164ca2a1428a
+Author: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+Date:   Thu Apr 30 20:46:05 2026 +0000
 
-Yes will do. I'll add some documentation and also restrict it to avoid
-misuse (move to internal pci.h, return a bool instead of pointer, and
-use READ_ONCE()).
+    PCI: hv: Inform IOMMU when new devices are offered
+
+    Hyper-V uses a logical device ID to identify a PCI endpoint device for
+    child partitions. This ID is built from parts of the virtual PCI bus
+    GUID and the function number of the PCI BDF. This ID is required to
+    identify devices to the hypervisor for IOMMU management hypercalls used
+    by the Hyper-V IOMMU driver.
+
+    Inform the IOMMU driver of the Hyper-V vPCI bus GUID so it can build the
+    logical device ID for vPCI devices, and factor the logic for building
+    this ID into a standalone helper function for clarity and easier
+    maintenance in tandem with the IOMMU driver's version.
+
+    Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+
+diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyperv.h
+index 20d947c2c758..d1070a4a24eb 100644
+--- a/arch/x86/include/asm/mshyperv.h
++++ b/arch/x86/include/asm/mshyperv.h
+@@ -315,6 +315,9 @@ static inline void __mshv_vtl_return_call(struct mshv_vtl_cpu_context *vtl0) {}
+ 
+ #ifdef CONFIG_HYPERV_PVIOMMU
+ int __init hv_iommu_init(void);
++int hv_iommu_inform(int dom, guid_t bus_instance_guid);
++#else
++int hv_iommu_inform(int dom, guid_t bus_instance_guid) {}
+ #endif
+ 
+ #include <asm-generic/mshyperv.h>
+diff --git a/drivers/iommu/hyperv/iommu.c b/drivers/iommu/hyperv/iommu.c
+index ad7000f4566e..34a39c3b89b4 100644
+--- a/drivers/iommu/hyperv/iommu.c
++++ b/drivers/iommu/hyperv/iommu.c
+@@ -8,6 +8,7 @@
+ 
+ #include <linux/iommu.h>
+ #include <linux/pci.h>
++#include <linux/uuid.h>
+ #include <linux/dma-map-ops.h>
+ #include <linux/generic_pt/iommu.h>
+ #include <linux/syscore_ops.h>
+@@ -26,12 +27,86 @@ static struct hv_iommu_domain hv_blocking_domain;
+ static const struct iommu_domain_ops hv_iommu_identity_domain_ops;
+ static const struct iommu_domain_ops hv_iommu_blocking_domain_ops;
+ static struct iommu_ops hv_iommu_ops;
++static struct list_head hv_pci_bus_list;
+ 
+ #define hv_iommu_present(iommu_cap) (iommu_cap & HV_IOMMU_CAP_PRESENT)
+ #define hv_iommu_s1_domain_supported(iommu_cap) (iommu_cap & HV_IOMMU_CAP_S1)
+ #define hv_iommu_5lvl_supported(iommu_cap) (iommu_cap & HV_IOMMU_CAP_S1_5LVL)
+ #define hv_iommu_ats_supported(iommu_cap) (iommu_cap & HV_IOMMU_CAP_ATS)
+ 
++/*
++ * Build a "Device Logical ID" out of this PCI bus's instance GUID and the
++ * function number of the device.
++ * This is identical and should be maintained in sync with
++ * hv_pci_build_logical_dev_id() in pci-hyperv.c. Only repeated here to avoid
++ * dependency of a built-in driver (iommu) on a module (pci-hyperv) and to
++ * maintain the correct direction of dependency of the PCI driver on the IOMMU
++ * instead of vice versa
++ */
++static u64 hv_iommu_build_logical_dev_id(struct pci_dev *pdev,
++					 guid_t bus_instance_guid)
++{
++	return (u64)((bus_instance_guid.b[5] << 24) |
++		     (bus_instance_guid.b[4] << 16) |
++		     (bus_instance_guid.b[7] << 8)  |
++		     (bus_instance_guid.b[6] & 0xf8) |
++		     PCI_FUNC(pdev->devfn));
++}
++
++static struct hv_pci_busdata *find_hv_pci_bus(int dom)
++{
++	struct hv_pci_busdata *curr = NULL;
++
++	list_for_each_entry(curr, &hv_pci_bus_list, list) {
++		if (curr->dom == dom) {
++			return curr;
++		}
++	}
++	return NULL;
++}
++
++#define INVALID_LOGICAL_DEV_ID	0
++static u64 hv_iommu_get_logical_dev_id(struct pci_dev *pdev)
++{
++	struct hv_pci_busdata *bus = find_hv_pci_bus(pci_domain_nr(pdev->bus));
++
++	if (!bus) {
++		dev_WARN(&pdev->dev,
++			"received device ID request for missing hv_pci bus\n");
++		return INVALID_LOGICAL_DEV_ID;
++	}
++
++	return hv_iommu_build_logical_dev_id(pdev, bus->bus_instance_guid);
++}
++
++int hv_iommu_inform(int dom, guid_t bus_instance_guid)
++{
++	struct hv_pci_busdata *found, *new;
++
++	/* Don't spend memory if there is no consumer */
++	if (no_iommu || !iommu_detected)
++		return 0;
++
++	found = find_hv_pci_bus(dom);
++	if (found && !guid_equal(&found->bus_instance_guid, &bus_instance_guid)) {
++		found->bus_instance_guid = bus_instance_guid;
++		return 0;
++	}
++
++	new = kzalloc_obj(*new);
++	if (!new) {
++		pr_info("No memory to allocate hv_pci bus data\n");
++		return -ENOMEM;
++	}
++
++	new->dom = dom;
++	new->bus_instance_guid = bus_instance_guid;
++	list_add(&new->list, &hv_pci_bus_list);
++
++	return 0;
++}
++EXPORT_SYMBOL_FOR_MODULES(hv_iommu_inform, "pci-hyperv");
++
+ static int hv_create_device_domain(struct hv_iommu_domain *hv_domain, u32 domain_stage)
+ {
+ 	int ret;
+@@ -143,7 +218,7 @@ static void hv_iommu_detach_dev(struct iommu_domain *domain, struct device *dev)
+ 	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
+ 	memset(input, 0, sizeof(*input));
+ 	input->partition_id = HV_PARTITION_ID_SELF;
+-	input->device_id.as_uint64 = hv_build_logical_dev_id(pdev);
++	input->device_id.as_uint64 = hv_iommu_get_logical_dev_id(pdev);
+ 	status = hv_do_hypercall(HVCALL_DETACH_DEVICE_DOMAIN, input, NULL);
+ 
+ 	local_irq_restore(flags);
+@@ -185,7 +260,7 @@ static int hv_iommu_attach_dev(struct iommu_domain *domain, struct device *dev,
+ 	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
+ 	memset(input, 0, sizeof(*input));
+ 	input->device_domain = hv_domain->device_domain;
+-	input->device_id.as_uint64 = hv_build_logical_dev_id(pdev);
++	input->device_id.as_uint64 = hv_iommu_get_logical_dev_id(pdev);
+ 	status = hv_do_hypercall(HVCALL_ATTACH_DEVICE_DOMAIN, input, NULL);
+ 
+ 	local_irq_restore(flags);
+@@ -213,7 +288,7 @@ static int hv_iommu_get_logical_device_property(struct device *dev,
+ 	output = *this_cpu_ptr(hyperv_pcpu_input_arg) + sizeof(*input);
+ 	memset(input, 0, sizeof(*input));
+ 	input->partition_id = HV_PARTITION_ID_SELF;
+-	input->logical_device_id = hv_build_logical_dev_id(to_pci_dev(dev));
++	input->logical_device_id = hv_iommu_get_logical_dev_id(to_pci_dev(dev));
+ 	input->code = code;
+ 	status = hv_do_hypercall(HVCALL_GET_LOGICAL_DEVICE_PROPERTY, input, output);
+ 	*property = *output;
+@@ -665,6 +740,7 @@ int __init hv_iommu_init(void)
+ 
+ 	iommu_detected = 1;
+ 	pci_request_acs();
++	INIT_LIST_HEAD(&hv_pci_bus_list);
+ 
+ 	hv_iommu = kzalloc(sizeof(*hv_iommu), GFP_KERNEL);
+ 	if (!hv_iommu)
+diff --git a/drivers/iommu/hyperv/iommu.h b/drivers/iommu/hyperv/iommu.h
+index 8829176ddb51..5b2d1c41c101 100644
+--- a/drivers/iommu/hyperv/iommu.h
++++ b/drivers/iommu/hyperv/iommu.h
+@@ -36,6 +36,12 @@ struct hv_iommu_domain {
+ 	u64		pgsize_bitmap;
+ };
+ 
++struct hv_pci_busdata {
++	int dom;
++	guid_t bus_instance_guid;
++	struct list_head list;
++};
++
+ struct hv_iommu_endpoint {
+ 	struct device *dev;
+ 	struct hv_iommu_dev *hv_iommu;
+diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
+index 3b7adf28ee09..5d4fb2c2f60a 100644
+--- a/drivers/pci/controller/pci-hyperv.c
++++ b/drivers/pci/controller/pci-hyperv.c
+@@ -597,23 +597,19 @@ static unsigned int hv_msi_get_int_vector(struct irq_data *data)
+ 
+ #define hv_msi_prepare		pci_msi_prepare
+ 
+-/**
++#define INVALID_LOGICAL_DEV_ID	0
++/*
+  * Build a "Device Logical ID" out of this PCI bus's instance GUID and the
+  * function number of the device.
+  */
+-u64 hv_build_logical_dev_id(struct pci_dev *pdev)
++static u64 hv_pci_build_logical_dev_id(struct pci_dev *pdev, guid_t bus_instance_guid)
+ {
+-	struct pci_bus *pbus = pdev->bus;
+-	struct hv_pcibus_device *hbus = container_of(pbus->sysdata,
+-						struct hv_pcibus_device, sysdata);
+-
+-	return (u64)((hbus->hdev->dev_instance.b[5] << 24) |
+-		     (hbus->hdev->dev_instance.b[4] << 16) |
+-		     (hbus->hdev->dev_instance.b[7] << 8)  |
+-		     (hbus->hdev->dev_instance.b[6] & 0xf8) |
++	return (u64)((bus_instance_guid.b[5] << 24) |
++		     (bus_instance_guid.b[4] << 16) |
++		     (bus_instance_guid.b[7] << 8)  |
++		     (bus_instance_guid.b[6] & 0xf8) |
+ 		     PCI_FUNC(pdev->devfn));
+ }
+-EXPORT_SYMBOL_GPL(hv_build_logical_dev_id);
+ 
+ /**
+  * hv_irq_retarget_interrupt() - "Unmask" the IRQ by setting its current
+@@ -657,7 +653,7 @@ static void hv_irq_retarget_interrupt(struct irq_data *data)
+ 	params->int_entry.source = HV_INTERRUPT_SOURCE_MSI;
+ 	params->int_entry.msi_entry.address.as_uint32 = int_desc->address & 0xffffffff;
+ 	params->int_entry.msi_entry.data.as_uint32 = int_desc->data;
+-	params->device_id = hv_build_logical_dev_id(pdev);
++	params->device_id = hv_pci_build_logical_dev_id(pdev, hbus->hdev->dev_instance);
+ 	params->int_target.vector = hv_msi_get_int_vector(data);
+ 
+ 	if (hbus->protocol_version >= PCI_PROTOCOL_VERSION_1_2) {
+@@ -3869,6 +3865,9 @@ static int hv_pci_probe(struct hv_device *hdev,
+ 
+ 	hbus->state = hv_pcibus_probed;
+ 
++	/* Inform the IOMMU of the bus GUID of devices headed their way */
++	hv_iommu_inform(dom, hdev->dev_instance);
++
+ 	ret = create_root_hv_pci_bus(hbus);
+ 	if (ret)
+ 		goto free_windows;
+
+--------------------8x-------------------------------------------------
+
+Thanks,
+Easwar (he/him)
