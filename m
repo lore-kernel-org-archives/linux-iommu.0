@@ -1,158 +1,167 @@
-Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E93F526C39E
-	for <iommu@lists.linux.dev>; Fri,  1 May 2026 22:43:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DFA037EFF4;
+	Fri,  1 May 2026 23:27:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777675384; cv=none; b=SGMUE0DfyHjjtceDdEGC70yeheJX9HIU+Ar0B95Kc4eCEyxY9fOl4HU9Mrvo9PdFwDB/8FNS2rlKS6dkHt6AJYBlBYEraWZsxaj7XrqllCNJKL+BV9CzbAowqRbgpnzBlqnwW74k1OjBbA+D7jgwhqXft7I1hq3PodsoUv6NxR8=
+	t=1777678064; cv=none; b=Sa89I4MVxdiEsWnZ4Jt/CnQCy4eoyumTvDL5iLuaEaloRTchITxryxEcJBAbY3JnPzRbO8zVdy+PngkSeu+dyvD0Wfs0z2RuD8Zu7n62MUS96OEqOvcLeechEAWq+kjU4zEMkiBIi7jXKAI047M5AC0Zh864+pYGnKLSEBjcPcA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777675384; c=relaxed/simple;
-	bh=zxY+FJ/D1qGJPLj7LmqjRlqbTv0Us5t8F//4LBJztq8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=R0oWRYXpywzusvo8yOCsF76yA457IJ+OVzGWxLM5SYP9QMDLUPF5lqgCbmdg3PQ/tDZ3sIeQWr0p+5StkYZIMCHmdmAEmz1gzkYxQ7JMRuq2sFMYIigyu/vHZSR6FBps5bCmft9a70ZEY2Yj/cpAs4fpzn6x0hweKMbr9QOoKmI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=K1l9GWgP; arc=none smtp.client-ip=209.85.216.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1777678064; c=relaxed/simple;
+	bh=2k5q00p8L2SCLrIAB5imsL6AkKQY6Gzh059g+5BeG2w=;
+	h=Date:From:To:Cc:Message-ID:In-Reply-To:References:Subject:
+	 Mime-Version:Content-Type; b=RQAKWKQLz8M38bX1afeZMkGNc3DN3Fd9aNq03UT/vGDPLM+p/FiM96O0IH87C14Xk50QAWUDfahthGIiekfyFuVR3bVlHKBEc7YDFZpGFTK0VdldGlHGxnnqLiQhiD52LQlxnWJu36coeBZ1IUi94wnuu/GDNd0BC0HK+GVtRis=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=s0uSP/yC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="K1l9GWgP"
-Received: by mail-pj1-f50.google.com with SMTP id 98e67ed59e1d1-35d971fb6f1so2656191a91.0
-        for <iommu@lists.linux.dev>; Fri, 01 May 2026 15:43:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1777675382; x=1778280182; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=zA7ZB+9cdr8jZzJkhetR/xMmU5JX5i8WCgvlAknX308=;
-        b=K1l9GWgPkiphIIZKpELC4roOb172HdwiVH8ZLBGRKyg0+axHVPryY6vqN4rdn5nc3X
-         sxTeox8EpEpE3Mn0tgYZ2MNOG2CW2u2mykazzSKz0Gb7RhDfT2x7UIWWv4Wf8f5W47mo
-         thksOmfaobZrgrWfuWZpH3O99K3UCo7QYt+qrrzpKJ3Igo2aa7fe9nWCJoVBlfImJOIi
-         ERMmbxOzSFr8EOh6nOx4RhVe8yzmz49TocQw/IMT/2kov12Yvau9IzQSRKdlJZWrc//Z
-         flrhdp/aHU1mWMg/Ew4KvCemJ0qEQWGrD5tx7QCnLXq3jmviOkC5u3RivHfgM4eaBJ59
-         Vlcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777675382; x=1778280182;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=zA7ZB+9cdr8jZzJkhetR/xMmU5JX5i8WCgvlAknX308=;
-        b=Z+7PpPvvqiWruJE/5f4WMP96kM5dZB50wvaD4qbYRFCeMumd4bqMUY5ijLjYqAPyRK
-         cc70xvuAgt7+ltZQuC/b45XcGv12ouEikTCPz4+AOhLhJGsCoGEoFCtTqcE1t9HTXbLC
-         l4W0id7TshjFjY6lE26sy8FKDeeEkvPVzRgPKJqJGbmAwLVJl5WHTJ7yl/EeyGAwTuWs
-         5olAlduP6+NjLwLLb0PJ7WNd3OyWdDyAt60VGgBl+eefqn4Mig1E+LWVxTmfqfiG9cNy
-         PVjAsCn1gT5pw8p/tY14nJdASR94dZcBNmoVB4CeaZXlAUXDaEzNBI7ZKbs1VBfQBVYE
-         fOWg==
-X-Forwarded-Encrypted: i=1; AFNElJ9FMpZvWEoaYfBOIPK5d8RV+iLBbQP4kHS+VOpyJBhHF+h62MueXqqjCtsSO1mwu6mGmfKlnQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yya8ENtdrOsYaHVPeYxWONwFYOE1EbS6muVBulU1zZpBwW3lc/Q
-	cQXfHDEUIr7OZXM30lNCh6jm1gEPIUTVl32McBssSyNW/BI7oW85GIT/g8smbB2zqg==
-X-Gm-Gg: AeBDietW0iar4CW+cyHnYlPGUSnl/JdgjLjNIsbChk4T5fWTI8ZLJYBNtcfzpPCI4wN
-	XvP2GTu5trcS4gYUi4fSqzxx+sPNr/OcSb7MDRukYgqa++I58GS2XXkrJtbXCD5AR/Hi1Ms2MGb
-	RDptodERQCm2Qsqmc4JqPzE5k08WmN3FFee1/d89jtCJlYbfW1aWRAXp5jf5J0oly5MNnsyGaxr
-	A7H2e6VZzkNqW59ZwQQkMkTNLp+7RJhfy0XVHIH/1m487HRoePcczl5i2dbA9ukzbZgF3kB+gFo
-	LcG2EB07Vp6iBI47ZKn3gO86tGi3X2o95IaAlAyyuVUmOzuZxf04SUq8ZUHP1PPji3YD5d59Z0W
-	1kK7BzlkmfyLeHVF/ZjL1f9aSijohArk8s1TM6JRoaRG/uv94fHq6F+fIdlDHUZAEnEa0ghSGY6
-	WOKblpIh9A9Z7ksDPiuniW2BfeazxoHshO+9NCEJGwIVNQa07tDW5+Euj/k6ZFPQov+zXN543ml
-	QR3bg==
-X-Received: by 2002:a17:90b:3852:b0:35e:30bc:96e2 with SMTP id 98e67ed59e1d1-3650cdd40cfmr981966a91.10.1777675381854;
-        Fri, 01 May 2026 15:43:01 -0700 (PDT)
-Received: from google.com (76.9.127.34.bc.googleusercontent.com. [34.127.9.76])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-364f3fc1714sm1322177a91.2.2026.05.01.15.43.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 May 2026 15:43:01 -0700 (PDT)
-Date: Fri, 1 May 2026 22:42:57 +0000
-From: David Matlack <dmatlack@google.com>
-To: Samiullah Khawaja <skhawaja@google.com>
-Cc: David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-	Adithya Jayachandran <ajayachandra@nvidia.com>,
-	Parav Pandit <parav@nvidia.com>,
-	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>,
-	Pratyush Yadav <pratyush@kernel.org>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Chris Li <chrisl@kernel.org>,
-	Pranjal Shrivastava <praan@google.com>,
-	Vipin Sharma <vipinsh@google.com>, YiFei Zhu <zhuyifei@google.com>
-Subject: Re: [PATCH v2 04/16] iommu: Implement device and IOMMU HW
- preservation
-Message-ID: <afUscSeXKnNAJ0ZF@google.com>
-References: <20260427175633.1978233-1-skhawaja@google.com>
- <20260427175633.1978233-5-skhawaja@google.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="s0uSP/yC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A17CDC4AF09;
+	Fri,  1 May 2026 23:27:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777678064;
+	bh=2k5q00p8L2SCLrIAB5imsL6AkKQY6Gzh059g+5BeG2w=;
+	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+	b=s0uSP/yCn1UL3bPdLD/W/BCIjoWt3FOlHsijmAbt3e6fEvEK0QXXyr3FeOjXJ0Wsd
+	 aYjhLg0SnQrcWGmNHKxYTfpa9nr1gZpQY3tXLlHUsw1tc8nMoVYINo38GRgkJrJZiB
+	 RpSnq7XSuprhfKV0jsOvGpnGfzpTk5x2OpKxiWSnoucEvR+l59p/wUyMdQZCqYjD4e
+	 eNsd8KvjwO2O0JOFQVrXHJ0HEdLQyS/ivuAMwfzAkZ0vI5+HrBdmyE1yOnFM+3C4CF
+	 74fdvtxXaX1MNI4GNGHuXm7h6qKpAe6WOBk1nO++JFjD/aO9dhebaJ5TXn2T/xykHN
+	 wmwGJjBbLc6OA==
+Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
+	by mailfauth.phl.internal (Postfix) with ESMTP id A88FDF40068;
+	Fri,  1 May 2026 19:27:42 -0400 (EDT)
+Received: from phl-frontend-04 ([10.202.2.163])
+  by phl-compute-04.internal (MEProxy); Fri, 01 May 2026 19:27:42 -0400
+X-ME-Sender: <xms:7jb1acHY-tPHMvyM98Jqckvdort1JVM99gSyfPMsEDUEEqUbN5gJcQ>
+    <xme:7jb1acZG05AiWaobmeQsjEXn-98j1WHrGb-VSSRg-QhDdU4c6ZbZ71W-zZCFNzgcP
+    hsATR-XUCjE1wPvKH-tsF2n5eZQAociU5IiwePTIZ6RMgI-mJkYng4K>
+X-ME-Received: <xmr:7jb1ad0n3Xd6f7-Z65FKboAL6YNLzkFObSdXGqjzz9Ahin0-X8SPDiE_MFwfOjxAph1BtznRROZL2BxS1XNUm2Ti32Gg4nCO8Zc>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefhedrtddtgdeludehvdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpuffrtefokffrpgfnqfghnecuuegr
+    ihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjug
+    hrpeffhffvvefkjghfufggtgfgsehtjeertddttdejnecuhfhrohhmpedfffgrnhcuhghi
+    lhhlihgrmhhsucdlnhhvihguihgrmddfuceoughjsgifsehkvghrnhgvlhdrohhrgheqne
+    cuggftrfgrthhtvghrnhepvdegheeikeetleeuffeuheefjeejvdejvdevteefgfffveeh
+    vdeuvdffveffvdehnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilh
+    hfrhhomhepughjsgifodhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhithihqddujeej
+    vdeftdegheehqdeffeefleegtdegjedqughjsgifpeepkhgvrhhnvghlrdhorhhgsehfrg
+    hsthhmrghilhdrtghomhdpnhgspghrtghpthhtohepvddtpdhmohguvgepshhmthhpohhu
+    thdprhgtphhtthhopehnihgtohhlihhntgesnhhvihguihgrrdgtohhmpdhrtghpthhtoh
+    epughjsgifsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehjghhgsehnvhhiughirgdr
+    tghomhdprhgtphhtthhopeifihhllheskhgvrhhnvghlrdhorhhgpdhrtghpthhtoheprh
+    hosghinhdrmhhurhhphhihsegrrhhmrdgtohhmpdhrtghpthhtohepsghhvghlghgrrghs
+    sehgohhoghhlvgdrtghomhdprhgtphhtthhopehjohhroheskegshihtvghsrdhorhhgpd
+    hrtghpthhtohepphhrrggrnhesghhoohhglhgvrdgtohhmpdhrtghpthhtohepsggrohhl
+    uhdrlhhusehlihhnuhigrdhinhhtvghlrdgtohhm
+X-ME-Proxy: <xmx:7jb1aUc7xep8-XO8N2WGdSLCmHALigT1u79gu81zGLEbTP19kskZDg>
+    <xmx:7jb1afAUat8iHAecyPX4xjpsjKHL7MLEgoZRwuNvZJIdGN1dLsSPFw>
+    <xmx:7jb1aW07DHrU6-JbKte1wiE-7EtcH2ze9v0pvjWzc_PNyAFr1HPPzg>
+    <xmx:7jb1afM_RN63IDbTfXgJndsz4SEIBN-UAnwcJ9lMdpGEKCGKX38t5A>
+    <xmx:7jb1aUc0Q01sB9YnmfYzZ1DP9YbWSwcXE7IeewNI6Ru4D3cN50Vq79pG>
+Feedback-ID: i67ae4b3e:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 1 May 2026 19:27:42 -0400 (EDT)
+Date: Fri, 01 May 2026 16:27:41 -0700
+From: "Dan Williams (nvidia)" <djbw@kernel.org>
+To: Nicolin Chen <nicolinc@nvidia.com>, 
+ "Dan Williams (nvidia)" <djbw@kernel.org>
+Cc: jgg@nvidia.com, 
+ will@kernel.org, 
+ robin.murphy@arm.com, 
+ bhelgaas@google.com, 
+ joro@8bytes.org, 
+ praan@google.com, 
+ baolu.lu@linux.intel.com, 
+ kevin.tian@intel.com, 
+ miko.lenczewski@arm.com, 
+ linux-arm-kernel@lists.infradead.org, 
+ iommu@lists.linux.dev, 
+ linux-kernel@vger.kernel.org, 
+ linux-pci@vger.kernel.org, 
+ dan.j.williams@intel.com, 
+ jonathan.cameron@huawei.com, 
+ vsethi@nvidia.com, 
+ linux-cxl@vger.kernel.org, 
+ nirmoyd@nvidia.com
+Message-ID: <69f536ed263dd_3291a910017@djbw-dev.notmuch>
+In-Reply-To: <afPlkW5zlTSHwQCT@Asurada-Nvidia>
+References: <cover.1777269009.git.nicolinc@nvidia.com>
+ <f6734b9dad0050138676f11ecd14e9db1cf6b697.1777269009.git.nicolinc@nvidia.com>
+ <69f3cc82926_3291a910039@djbw-dev.notmuch>
+ <afPlkW5zlTSHwQCT@Asurada-Nvidia>
+Subject: Re: [PATCH v4 1/3] PCI: Allow ATS to be always on for CXL.cache
+ capable devices
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260427175633.1978233-5-skhawaja@google.com>
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 
-On 2026-04-27 05:56 PM, Samiullah Khawaja wrote:
-> Add IOMMU ops to preserve/unpreserve a device. These can be implemented
-
-Can you make this comment more specific about what is being preserved?
-Saying it preserves a device is vague and maybe even misleading. It's
-more about  about preserving a device's attachment to a specific domain
-correct?
-
-> by the IOMMU drivers that support preservation of devices that have
-> their IOMMU domains preserved. During device preservation the state of
-> the associated IOMMU is also preserved as dependency.
+Nicolin Chen wrote:
+> On Thu, Apr 30, 2026 at 02:41:22PM -0700, Dan Williams (nvidia) wrote:
+> > > +static bool pci_cxl_ats_always_on(struct pci_dev *pdev)
+> > > +{
+> > > +	int offset;
+> > > +	u16 cap;
+> > > +
+> > > +	offset = pci_find_dvsec_capability(pdev, PCI_VENDOR_ID_CXL,
+> > > +					   PCI_DVSEC_CXL_DEVICE);
+> > > +	if (!offset)
+> > > +		return false;
+> > > +
+> > > +	if (pci_read_config_word(pdev, offset + PCI_DVSEC_CXL_CAP, &cap))
+> > > +		return false;
+> > > +
+> > > +	return cap & PCI_DVSEC_CXL_CACHE_CAPABLE;
+> [...]
+> > Apologies for coming to this late and forgive me if the following has
+> > already been asked and answered. Why not check for actual CXL.cache
+> > protocol on the wire being present?
 > 
-> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+> Actually it would make the patch smaller. The thing is that this
+> is_cxl property wasn't added when I started the series. So, it's
+> not using it. :)
+> 
+> > @@ -1733,9 +1733,8 @@ static void set_pcie_cxl(struct pci_dev *dev)
+> >  	pci_read_config_word(dev, dvsec + PCI_DVSEC_CXL_FLEXBUS_PORT_STATUS,
+> >  			     &cap);
+> >  
+> > -	dev->is_cxl = FIELD_GET(PCI_DVSEC_CXL_FLEXBUS_PORT_STATUS_CACHE, cap) ||
+> > -		FIELD_GET(PCI_DVSEC_CXL_FLEXBUS_PORT_STATUS_MEM, cap);
+> > -
+> > +	dev->is_cxl_cache = FIELD_GET(PCI_DVSEC_CXL_FLEXBUS_PORT_STATUS_CACHE, cap);
+> > +	dev->is_cxl_mem = FIELD_GET(PCI_DVSEC_CXL_FLEXBUS_PORT_STATUS_MEM, cap);
+> 
+> One caveat is that:
+> 
+> Here it checks the cap from:
+> 	PCI_DVSEC_CXL_FLEXBUS_PORT_STATUS (0xE) via
+> 		PCI_DVSEC_CXL_FLEXBUS_PORT_STATUS (0x7)
+> 
+> On the other hand, mine checks from:
+> 	PCI_DVSEC_CXL_CAP (0xA) via
+> 		PCI_DVSEC_CXL_DEVICE (0x0)
+> 
+> The spec mentions in 8.2.1.3.1 DVSEC Flex Bus Port Capability: "
+>   Note: The Mem_Capable, IO_Capable, and Cache_Capable fields are
+>   also present in the DVSEC Flex Bus for the device [which is the
+>   legacy name for DVSEC 0x0]. This allows for future scalability
+>   where multiple devices, each with potentially different
+>   capabilities, may be populated behind a single Port.
+> "
+> 
+> Not arguing that set_pcie_cxl() is wrong, but I am not sure if there
+> would be any side effect to rely on the "legacy name" over DVSEC 0x0.
+> 
+> Is there any CXL expert who can help confirm?
 
-> diff --git a/drivers/iommu/liveupdate.c b/drivers/iommu/liveupdate.c
-> index f71f14518248..765d042e22e3 100644
-> --- a/drivers/iommu/liveupdate.c
-> +++ b/drivers/iommu/liveupdate.c
+You appear to be confusing Cache_Capable and Cache_Enabled.
 
-> +static struct iommu_device_ser *alloc_iommu_device_ser(struct iommu_flb_obj *flb)
+"8.2.1.3.1 DVSEC Flex Bus Port Capability" != "8.2.1.3.3 DVSEC Flex Bus Port Status"
 
-It is unforunate that struct iommu_device_ser has nothing to do with
-struct iommu_device. The former represents an a PCI device, while the
-latter represents an IOMMU.
-
-> diff --git a/include/linux/iommu-liveupdate.h b/include/linux/iommu-liveupdate.h
-> index 6019cfc27428..279c7ab04f09 100644
-> --- a/include/linux/iommu-liveupdate.h
-> +++ b/include/linux/iommu-liveupdate.h
-
->  int iommu_domain_preserve(struct iommu_domain *domain, struct iommu_domain_ser **ser);
->  void iommu_domain_unpreserve(struct iommu_domain *domain);
-> +int iommu_preserve_device(struct iommu_domain *domain,
-> +			  struct device *dev, u64 *preserved_state);
-> +void iommu_unpreserve_device(struct iommu_domain *domain, struct device *dev);
-
-The naming scheme is inconsistent... Maybe it can be:
-
-  iommu_preserve_domain()
-  iommu_unpreserve_domain()
-  iommu_preserve_device() or iommu_preserve_device_attachment()
-  iommu_unpreserve_device() or iommu_unpreserve_device_attachment()
-
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 3853a3946733..1c424b32c5fc 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-
-> +#ifdef CONFIG_IOMMU_LIVEUPDATE
-> +	int (*preserve_device)(struct device *dev, struct iommu_device_ser *device_ser);
-> +	void (*unpreserve_device)(struct device *dev, struct iommu_device_ser *device_ser);
-> +	int (*preserve)(struct iommu_device *iommu, struct iommu_hw_ser *iommu_ser);
-> +	void (*unpreserve)(struct iommu_device *iommu, struct iommu_hw_ser *iommu_ser);
-> +#endif
-
-Maybe we can make these names a little more specific:
-
-  preserve_device_attachment()
-  unpreserve_device_attachment()
-  preserve_iommu()
-  unpreserve_iommu()
-
-?
+Cache_Capable is only a capability. To check that the device has
+actually trained the CXL.cache alternate protocol you need to look at
+the status register.
