@@ -1,171 +1,103 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C9CED3C9EE4
-	for <iommu@lists.linux.dev>; Thu, 30 Apr 2026 23:41:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mail-dy1-f201.google.com (mail-dy1-f201.google.com [74.125.82.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A59513783B2
+	for <iommu@lists.linux.dev>; Fri,  1 May 2026 00:01:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777592465; cv=none; b=bTVsYCqrfYappMdzpM4X8ufdn6Rd4/Oe03SnElTleeIJtVSICvkvSZtW/97IijVn6/p742K/5CVV+vQElhVIPCf7AcUgr1TjrGn4kuolcNippQfsvsb8pnrjHrKC1fJpCGgk+uYYb9upMsk1e5c4BdxoxzzPYe9A2jdiVBo+qNY=
+	t=1777593668; cv=none; b=J0sA6LTJlRy2ezCnB33KpPkjUduugydy7VaXh6Dhyb8Md17oXDM4sACYuFymwO7WOFcyTUi3dcLsCHy2wxeSv7dslcmExSFtGGevuMpvJUY5vFUUExOFIZsN+62covHqL1yUWiMY5/ld/ulVRzhzb9Si2fuiPS/YIbBiYaCCt2o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777592465; c=relaxed/simple;
-	bh=oXGlyYq26zAUg+QOiDBlsMh3M/LGv4pGaoR3U7Li1rk=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=sFL5v5xGouKbAe6H2ORnBDNg8BAG3KWGOwOoQsps99MMSiGb5bW4+iMDjMOLA6PZ4zjxOeR6jaQzCLnf9ivRfwN4szSq4//Vnh/g3dyckkjQ5qZAwF5tKaHgxzrZRtlYBRyqWFFG35la3Is0jXUyh+nwkAlx1tsmIM3y9MKWs/w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=K/pvlMRE; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1777593668; c=relaxed/simple;
+	bh=vFS/zQjd56B3fLWY6rq0TVzIfgce3sBAg1mKjG6Ekhg=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=EdH7L7TnG1HiDsk0OIX6gDXUBZrV7mYj5S1ZOA7GJQKvP87xgB58SwYASdCOytCJr+fFoUBClzNfPg3BSSkfh4rZq6Gmrlk+5rx/7zsI6nMw8uRq8NRcvX++u0iS63kRP/0M6g5cFVy1ah6kGSN6vifv++JFuLIUYJuW902Jmhs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=cGOGRaJj; arc=none smtp.client-ip=74.125.82.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="K/pvlMRE"
-Received: from localhost (unknown [20.236.11.29])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 6162720B7165;
-	Thu, 30 Apr 2026 16:41:03 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6162720B7165
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1777592463;
-	bh=UeeKqZf6rhrR6DVgGnHAKAW/5bc/aqK6o1Q3qiPH7Ic=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=K/pvlMREAqEcX1RE5bbDCJbVNwoLF0u2izzC5GG0gVNuM7ZI+bkdSAMRsVhefeVCg
-	 +yziMgpX0TTk4PKyuhKQgou0f5eln2qDkcDiDj5QwEu19elinLgbZ/BmA6FudQ8zMO
-	 TFO/9qrH678iHhJGazvr/ByrtHsqP/PjKbktbO0g=
-Date: Thu, 30 Apr 2026 16:41:01 -0700
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Yi Liu <yi.l.liu@intel.com>
-Cc: <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Alex Williamson
- <alex@shazbot.org>, Joerg Roedel <joro@8bytes.org>, Mostafa Saleh
- <smostafa@google.com>, David Matlack <dmatlack@google.com>, Robin Murphy
- <robin.murphy@arm.com>, Nicolin Chen <nicolinc@nvidia.com>, "Tian, Kevin"
- <kevin.tian@intel.com>, <skhawaja@google.com>, <pasha.tatashin@soleen.com>,
- Will Deacon <will@kernel.org>, Baolu Lu <baolu.lu@linux.intel.com>,
- jacob.pan@linux.microsoft.com
-Subject: Re: [PATCH V4 10/10] Documentation: Update VFIO NOIOMMU mode
-Message-ID: <20260430164101.000039c8@linux.microsoft.com>
-In-Reply-To: <b82b7f9e-befe-4a45-b242-6d6df0e70bd4@intel.com>
-References: <20260414211412.2729-1-jacob.pan@linux.microsoft.com>
-	<20260414211412.2729-11-jacob.pan@linux.microsoft.com>
-	<b82b7f9e-befe-4a45-b242-6d6df0e70bd4@intel.com>
-Organization: LSG
-X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="cGOGRaJj"
+Received: by mail-dy1-f201.google.com with SMTP id 5a478bee46e88-2de07c12745so9468725eec.1
+        for <iommu@lists.linux.dev>; Thu, 30 Apr 2026 17:01:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1777593663; x=1778198463; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=xHpNReJ/NE9/UeuqVc7wulNIRWGmhInh1blTLbI9Cu0=;
+        b=cGOGRaJjyDVttUCpQWDwHO/vAroqHacnTiHBl60WfQsC30seC+eWkUx+b7y3YRfrPU
+         2YZ6bKQyfr6xF6voRS6azS1SG+JWvPAfbSFk+zvKztkUrJj+5FvL3BnO4soM1ZGanyi3
+         N4RgVY59ui9EWidECsEA/IjOKkqPCYp1dUwyrPSng6mpKt2MrbdWcBYotA4zxpr5S8KQ
+         n3T0lyKt1BDnzlHu4TU4gQ9p1/r5WEdPoUMKHkN8zrvcRiyr/fg17G0/8DDIRENwTqZ5
+         uXd8iLnvjy601XAYa0apIkClrwk46WV6DUO5ch7eKaC1bCGHBEXYqk6FM3IDNS0AdxWa
+         4EtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777593663; x=1778198463;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=xHpNReJ/NE9/UeuqVc7wulNIRWGmhInh1blTLbI9Cu0=;
+        b=EKnEL0c0+p/ZnIbYcyq1QrVmw1R7hQOVke0s5+14H6NykU/7txYZ4Tig9U1AObUhYV
+         5tOwTx1jau6E/fjzZGPD4pM2TadR5KZPDxLP9AINwI8gxhClostcWt3nmkrjg72BKLe3
+         QUg8eF67zmR9MFfpxe0qVVby/nWPJfWpOHfFmCKZYSGjgxLgyZOuusEf1xm04ZzWuWZ9
+         mIPbeBGfDJtqD+Rjhc4Xxct+zCjhllgXujabO6avQgOYdlhDfabDiEZYFhSJimLw7JNc
+         RIs+t+Efv0VN18epE573JDJ0VKK4u1gs3kkAMLYNyMDuX7pZl8bdKZp1CaoKClbWENaL
+         H6eA==
+X-Forwarded-Encrypted: i=1; AFNElJ8pID3XpVMTPX5w6LNQYdACuWjeZB0SaHxsy0NuBJ7klNHpxRVR6NqV2irTo+bC7f4MEqMPCw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxfDrlnyq7V6wsuScx+tpDn8vdJbf0dr7Oi7BpMR755jd80F0la
+	2x4HUE9eMNKmSTCD9qhGRofAabqZ+9ZcaHlX6W+YlrP0pIkDQJ87PznRzpfoU3V9j8z/IlDkKcO
+	PJA==
+X-Received: from dybvi26.prod.google.com ([2002:a05:7301:531a:b0:2d8:dd18:baee])
+ (user=wnliu job=prod-delivery.src-stubby-dispatcher) by 2002:a05:7301:1284:b0:2ed:e17:d50d
+ with SMTP id 5a478bee46e88-2ee88e25449mr433736eec.32.1777593663040; Thu, 30
+ Apr 2026 17:01:03 -0700 (PDT)
+Date: Fri,  1 May 2026 00:00:59 +0000
+In-Reply-To: <20260430232851.236666-1-wnliu@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0
+References: <20260430232851.236666-1-wnliu@google.com>
+X-Mailer: git-send-email 2.54.0.545.g6539524ca2-goog
+Message-ID: <20260501000059.262516-1-wnliu@google.com>
+Subject: [PATCH] iommu/amd: Fix precedence order in set_dte_passthrough()
+From: Weinan Liu <wnliu@google.com>
+To: wnliu@google.com
+Cc: chrisl@kernel.org, iommu@lists.linux.dev, jgg@nvidia.com, joro@8bytes.org, 
+	patches@lists.linux.dev, robin.murphy@arm.com, santosh.shukla@amd.com, 
+	stable@vger.kernel.org, suravee.suthikulpanit@amd.com, vasant.hegde@amd.com, 
+	will@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Hi Yi,
+Bitwise OR | operator has a higher precedence than the ternary ?:
+operatior. It will be incorrectly evaluated as:
 
-On Tue, 28 Apr 2026 15:46:02 +0800
-Yi Liu <yi.l.liu@intel.com> wrote:
+new->data[1] |= (FIELD_PREP(...) | dev_data->ats_enabled) ? DTE_FLAG_IOTLB : 0;
 
-> On 4/15/26 05:14, Jacob Pan wrote:
-> > Document the NOIOMMU mode with newly added cdev support under
-> > iommufd.
-> >=20
-> > Cc: Jonathan Corbet <corbet@lwn.net>
-> > Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
-> > ---
-> >   Documentation/driver-api/vfio.rst | 45
-> > +++++++++++++++++++++++++++++-- 1 file changed, 43 insertions(+), 2
-> > deletions(-)
-> >=20
-> > diff --git a/Documentation/driver-api/vfio.rst
-> > b/Documentation/driver-api/vfio.rst index
-> > 2a21a42c9386..da6f77414c3b 100644 ---
-> > a/Documentation/driver-api/vfio.rst +++
-> > b/Documentation/driver-api/vfio.rst @@ -275,8 +275,6 @@ in a VFIO
-> > group. With CONFIG_VFIO_DEVICE_CDEV=3Dy the user can now acquire a
-> > device fd by directly opening a character device
-> > /dev/vfio/devices/vfioX where "X" is the number allocated uniquely
-> > by VFIO for registered devices. -cdev interface does not support
-> > noiommu devices, so user should use -the legacy group interface if
-> > noiommu is wanted.=20
-> >   The cdev only works with IOMMUFD.  Both VFIO drivers and
-> > applications must adapt to the new cdev security model which
-> > requires using @@ -370,6 +368,49 @@ IOMMUFD IOAS/HWPT to enable
-> > userspace DMA::=20
-> >   	/* Other device operations as stated in "VFIO Usage
-> > Example" */=20
-> > +VFIO NOIOMMU mode
-> > +----------------------------------------------------------------------=
----------
-> > +VFIO also supports a no-IOMMU mode, intended for usages where
-> > unsafe DMA can +be performed by userspace drivers w/o physical
-> > IOMMU protection. This mode +is controlled by the parameter:
-> > +
-> > +/sys/module/vfio/parameters/enable_unsafe_noiommu_mode
-> > +
-> > +Upon enabling this mode, with an assigned device, the user will be
-> > presented +with a VFIO group and device file, e.g.::
-> > +
-> > +  /dev/vfio/
-> > +  |-- devices
-> > +  |   `-- noiommu-vfio0	/* VFIO device cdev */
-> > +  |-- noiommu-0		/* VFIO group */
-> > +  `-- vfio
-> > +
-> > +The capabilities vary depending on the device programming
-> > interface and kernel +configuration used. The following table
-> > summarizes the differences: +
-> > ++-------------------+---------------------+----------------------+
-> > +| Feature           | VFIO group          | VFIO device cdev     |
-> > ++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D+=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D+=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D+
-> > +| VFIO device UAPI  | Yes                 | Yes                  |
-> > ++-------------------+---------------------+----------------------+
-> > +| VFIO container    | No                  | No                   |
-> > ++-------------------+---------------------+----------------------+
-> > +| IOMMUFD IOAS      | No                  | Yes*                 |
-> > ++-------------------+---------------------+----------------------+
-> > +
-> > +Note that the VFIO container case includes IOMMUFD provided VFIO
-> > compatibility +interfaces when either CONFIG_VFIO_CONTAINER or
-> > CONFIG_IOMMUFD_VFIO_CONTAINER is +enabled.
-> > +
-> > +* IOMMUFD UAPI is available for VFIO device cdev to pin and map
-> > user memory with
-> > +  the ability to retrieve physical addresses for DMA command
-> > submission. +
-> > +A new IOMMUFD ioctl IOMMU_IOAS_GET_PA is added to retrieve the
-> > physical address +for a given user virtual address. Note that
-> > IOMMU_IOAS_MAP_FIXED_IOVA flag is +ignored in no-IOMMU mode since
-> > there is no physical DMA remapping hardware. =20
->=20
-> not quite get this. Does it mean the the iova field is not used when
-> invoking IOMMU_IOAS_MAP ioctl? Hence the iova will be allocated by
-> iommufd and returned to userspace? Also, how does kernel know it
-> should ignore IOMMU_IOAS_MAP_FIXED_IOVA flag?
->=20
+Wrap the conditional operation in parentheses to enforce the
+correct evaluation order.
 
-Good question. Let me clarify =E2=80=94 I should reword this in the cover l=
-etter.
+Fixes: 93eee2a49c1b ("iommu/amd: Refactor logic to program the host page table in DTE")
+Cc: stable@vger.kernel.org # v7.0.*
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Weinan Liu <wnliu@google.com>
+---
+ drivers/iommu/amd/iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-The IOMMU_IOAS_MAP_FIXED_IOVA flag is NOT silently ignored by the kernel.
-Userspace can still pass it as with normal IOMMU mode, otherwise
-IOPT_ALLOC_IOVA kicks in and IOMMUFD allocates an IOVA from the allowed
-range.
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 01171361f9bc..ccffbecb15c2 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -2149,7 +2149,8 @@ static void set_dte_passthrough(struct iommu_dev_data *dev_data,
+ 	new->data[0] |= DTE_FLAG_TV | DTE_FLAG_IR | DTE_FLAG_IW;
+ 
+ 	new->data[1] |= FIELD_PREP(DTE_DOMID_MASK, domain->id) |
+-			(dev_data->ats_enabled) ? DTE_FLAG_IOTLB : 0;
++			(dev_data->ats_enabled ? DTE_FLAG_IOTLB : 0);
++
+ }
+ 
+ static void set_dte_entry(struct amd_iommu *iommu,
+-- 
+2.54.0.545.g6539524ca2-goog
 
-What I meant is that in no-IOMMU mode, the IOVA itself has no physical
-significance =E2=80=94 there is no DMA remapping hardware programming the
-IOVA=E2=86=92PA translation. The IOVA is simply used as a key in the softwa=
-re
-IO page table (IOMMU_PT_AMDV1 backed) to track the pinned pages and
-their physical addresses.
-
-So from the userspace API perspective, the flow is identical:
-
-  1. IOMMU_IOAS_MAP with FIXED_IOVA flag and user VA =E2=86=92 pins pages,
-  stores PA in the SW page table at the given IOVA
-  2. IOMMU_IOAS_GET_PA with that IOVA =E2=86=92 returns the physical address
-  for DMA command submission
-
-The kernel doesn't need special logic to "know" it should ignore
-anything =E2=80=94 the same iopt_map code path runs; it's just that the
-backing domain is iommufd_noiommu_ops (a software page table) rather
-than a hardware IOMMU domain.
-
-The user is assumed to know how to use the special IOVA as the unsafe
-noiommu mode is enabled by the user.
-
-I'll fix the misleading wording in the next version.
