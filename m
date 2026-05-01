@@ -1,201 +1,221 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD5675A79B;
-	Fri,  1 May 2026 18:51:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD9C32DC32A
+	for <iommu@lists.linux.dev>; Fri,  1 May 2026 21:45:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777661507; cv=none; b=YyrxgUddaZEy7ol0V/zBIUphSSXMMQjvrPVcm+LrwM57jdo1o5sHV+HxsILdIDOo3prCwguNmoD11yw76Ij5N7yOP0lHQcREHTya/ls5T7Fk095GgkUE8k/pzR9oMNM1yIrJBuDHHJzfIfYPuq/sMVU5erIiyteEXTiP8etiCMo=
+	t=1777671927; cv=none; b=cAj7ve5LAuPPhkcE8vL45xGrXuB1HTbFpGJExxa1R8C+lVgxbou474BJ4vWqsiiaHL9nzOrwX0h9wd4LNziuqjmTEaVdaRQheqOX2ZthGj+QYauE4qi9WhpVUcZW0/MC8eTJzggw60E6yAeTLQf/0SUyPw5MxoEDPIH6u6KrlUg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777661507; c=relaxed/simple;
-	bh=SgxH2HyW4oS4NiVwuhtY5isslD3L87GImOQpAVBRjl0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=TnlmBT6tSea1A+Xg8Xl98CdMeDFtgmyf9PlzCEMXosTuuaDIytUeRMD0uAouIW7WC9ml247eQI1U6cz8Zr/PxeLTWfhnvpjXvTAFHXrqV8mxOqUEMMJauCWVCeWp1yUdxcPVfMNy9LDFfLBq2BshHoMJL+djNl69fdiosyuH5jc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Gr1siNtI; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777671927; c=relaxed/simple;
+	bh=wONl8ymJLcFAu45GW0iEPDy4OF4pO+1gALRXgGMmCEY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WXSpJviCZQRyrtc/wmmRWufMCg6dAlBQOmQNXwEnsh8pvPetNtsYipY7vZJW76mad0vSboLjMoHN+aeNaNhHlYEQ+iCtsp/U53+7Q6Zfn30o2ZyT4UzDHnGPg2ilpeZJAtNQ2LyIIox1VnOderAEoxcBaIi2NL9pG27W8qhEy9U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=jx/Ym9Og; arc=none smtp.client-ip=209.85.210.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Gr1siNtI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 159DEC2BCB4;
-	Fri,  1 May 2026 18:51:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777661507;
-	bh=SgxH2HyW4oS4NiVwuhtY5isslD3L87GImOQpAVBRjl0=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Gr1siNtIvuhyNyF2+IHVVnB28aTGvbbySnh6LT3C+b09uEvVEEWITbXV8+ZmvAZ8j
-	 MwgF2miTZ91k+herq6g2XJme7fFCLUKOkKJMXRwa9MrCLEnIn2TSyEWYQQj1zyZLAk
-	 GCl3Xn0C8uCd5FoufYENHyxiSCW2F3mgUs7trbHL5cVfZ9hR7yFG/S4YFPpFsjb95H
-	 xgqbQd++isSyUcIOs4OEFALkpiJZ7q+fqc8j/zlDY/apKlN1wXi4CyaA6Topa/ezB7
-	 QWf28ujz3I6rZKVgHmSFroWplJih8A9zXVCV7vWpCLJunYVX+Cp6Cb0w7BabNvw7A5
-	 UiXF+fR5FmisQ==
-Message-ID: <f900172c-341a-4956-b7b7-b297418be913@kernel.org>
-Date: Fri, 1 May 2026 20:51:39 +0200
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="jx/Ym9Og"
+Received: by mail-pf1-f179.google.com with SMTP id d2e1a72fcca58-82f68b3aaf7so1017737b3a.0
+        for <iommu@lists.linux.dev>; Fri, 01 May 2026 14:45:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1777671925; x=1778276725; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=EnSyBxXT0t6Az3EuJiRgBhCI9ryWONltfzcDE6vjMFY=;
+        b=jx/Ym9OgH41oTl8IsVy+iQjlVNJiOWozUe82VWXgVQLieBDalr5ZZlW24xy71Ncc8B
+         KUfeQyPA2coA1RHGTW7FGNlemjxQbboUF0tx7Kz3s9E5GLE6PXamOEK/tXdRLyKNo9Vz
+         +8UPere0RuifChGEKB8co88upGExqLqioNYeg6M6rJ9IsFveWVFzYMJu64d6c1x1vTqJ
+         47f2UOu+OHLlwt8fahOsH/WIjD8BOwxq2VEfdtRr5H6wfF2BdSgHCJ0lLdg02bp+m6Ll
+         MKMrVElWdFbDhLsiOnUpeMDc2t/MjrrYlb2fmbZGR/9OvBGx4/I+ui5fF4EWOQoF9w0P
+         szDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777671925; x=1778276725;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=EnSyBxXT0t6Az3EuJiRgBhCI9ryWONltfzcDE6vjMFY=;
+        b=KRSQZGx+ARCEMfurJzIOBAOhc4ssTqf76cXObXfloxBvPSSaZcSUeiS0KIPLG3Vril
+         anPWkBhuL/U5SUbORfJtPlIyyfexhEDsz88GeafWwPHs/Z178ZC4LDG0WJmVA4eBEBTl
+         vrxY3W30w7hN8jf+ngYJcIFaibd4drh60ULbxR7XeY8PZJdShHUd9pT3Dl5grvjbSvD2
+         CuCjtuYBumVgcks9veGtOwJH5mr67ZSg8mS/citTfwy40sq3RL67Bgz8wzFXrMgL2kQT
+         PCtuKp+l03ZRFVRN+ofRuwSG3dL01iIhFVoo6cqW8pHEYQWQSfjRquBHqxe0+cRKgBPN
+         k/0Q==
+X-Forwarded-Encrypted: i=1; AFNElJ/bAB6WyttaXucncewSXWnidp+vmUqrdNKbtSb8/5FY6nvf8Xbjna+WGyvmRKwnuIBtPP5h3Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzoDIUNciItaA+3xKa9sHWpojJhKHpwrdhoHN1lEc2ewp+/Qmfp
+	DRW/4A5IUmqwQl9AnUpfPl1qAgZ3J0q2wmFl0+t/Z8me7BzCS37eVg2YVtKUqRcgKQ==
+X-Gm-Gg: AeBDiesFGkpotXThT5araRUqxFAyzcdCQBE7TQfNhWAIMaF+7GDkudYR82ssRkNJ8Rw
+	BKCkAQonFRr0Re2/C00tx2ksXBoGHjo/FVlHQGCG7W2GmAVmuJNxQ8ELCoMxdHJRau2rOrxYB0Y
+	QbC6TSTBn5z/GsYIvMz27N5AgToOZ7/oVCUZT2oog0PdJTa8Su59dOqBdalUyuIAKdC6n6d6sJ0
+	+LzcULLqktk6FIporRitupE7nFYgtDzLAL7pwzqAqybvQxRQnF3LKSsdiN5Ke3WNcfRrsqJu0g2
+	V2za4UxyYcdwZa/khaRE9Ned+kgzeC02li4ta24a6KaB2OFxGaJU2fd3dZNPoveEcIsBP4YrPFI
+	noCGCuuAFvmcwRgeWcxjfiKP/PQiJpVWf5c0KL5nzMJ2LHJl3qhSA+V/40bFH2cgL9MpUfZkP+g
+	0/CNEzPfWjaIpsSTCbsF65ymzj0huavTG5XYqp5II+zYDCEReiV0ffBWYYqBdBP4LrGs5vebXO8
+	IoL0g==
+X-Received: by 2002:a05:6a00:1d8d:b0:82a:7734:8c6a with SMTP id d2e1a72fcca58-8352d371a37mr648847b3a.48.1777671924329;
+        Fri, 01 May 2026 14:45:24 -0700 (PDT)
+Received: from google.com (76.9.127.34.bc.googleusercontent.com. [34.127.9.76])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-83515ad0049sm4007877b3a.33.2026.05.01.14.45.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 May 2026 14:45:23 -0700 (PDT)
+Date: Fri, 1 May 2026 21:45:19 +0000
+From: David Matlack <dmatlack@google.com>
+To: Samiullah Khawaja <skhawaja@google.com>
+Cc: David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+	Adithya Jayachandran <ajayachandra@nvidia.com>,
+	Parav Pandit <parav@nvidia.com>,
+	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>,
+	Pratyush Yadav <pratyush@kernel.org>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Chris Li <chrisl@kernel.org>,
+	Pranjal Shrivastava <praan@google.com>,
+	Vipin Sharma <vipinsh@google.com>, YiFei Zhu <zhuyifei@google.com>
+Subject: Re: [PATCH v2 02/16] iommu: Implement IOMMU Live update FLB callbacks
+Message-ID: <afUe71D8JfgmA0BG@google.com>
+References: <20260427175633.1978233-1-skhawaja@google.com>
+ <20260427175633.1978233-3-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3] dma-contiguous: setup default numa cma area if not
- configured explicitly
-To: Feng Tang <feng.tang@linux.alibaba.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>,
- Ying Huang <ying.huang@linux.alibaba.com>,
- Andrew Morton <akpm@linux-foundation.org>, Lorenzo Stoakes <ljs@kernel.org>,
- Liam.Howlett@oracle.com, Vlastimil Babka <vbabka@kernel.org>,
- Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>,
- Michal Hocko <mhocko@suse.com>, linux-mm@kvack.org,
- Christoph Hellwig <hch@lst.de>, Catalin Marinas <catalin.marinas@arm.com>,
- Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org,
- Changrong Chen <chenchangrong.ccr@alibaba-inc.com>
-References: <20260428060550.7167-1-feng.tang@linux.alibaba.com>
- <6dd52f8b-7092-4d02-ba24-f8b55409b7b6@kernel.org>
- <afBxtIdWqv8pD8YE@U-2FWC9VHC-2323.local>
-From: "David Hildenbrand (Arm)" <david@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=david@kernel.org; keydata=
- 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
- qIws/H2t
-In-Reply-To: <afBxtIdWqv8pD8YE@U-2FWC9VHC-2323.local>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260427175633.1978233-3-skhawaja@google.com>
 
-On 4/28/26 10:37, Feng Tang wrote:
-> Hi David,
-
-Hi!
-
-[...]
-
->>
->> Okay, so on x86 it is not silent, because they don't even have a default CMA area?
+On 2026-04-27 05:56 PM, Samiullah Khawaja wrote:
+> Add liveupdate FLB for IOMMU state preservation. Use KHO preserve memory
+> alloc/free helper functions to allocate memory for the IOMMU Live update
+> FLB object and the serialization structs for device, domain and iommu.
 > 
-> Right for default kernel configs.
+> During retrieve, walk through the preserved obj array headers and
+> restore each folio. Also recreate the FLB obj.
 > 
-> In kernel/dma/Kconfig:
-> 
-> config CMA_SIZE_MBYTES
-> 	int "Size in Mega Bytes"
-> 	depends on !CMA_SIZE_SEL_PERCENTAGE
-> 	default 0 if X86
-> 	default 16
-> 
-> config CMA_SIZE_PERCENTAGE
-> 	int "Percentage of total memory"
-> 	depends on !CMA_SIZE_SEL_MBYTES
-> 	default 0 if X86
-> 	default 10
-> 
->>>
->>> One thought is to follow the current cma reserving policy for platform
->>> with 'CONFIG_DMA_NUMA_CMA=y', that if the numa cma (either the 'numa cma'
->>> or 'cma pernuma' method) is not explicitly configured, set it up
->>> according to size of default 'dma_contiguous_default_area', while
->>> skipping the numa node where the 'dma_contiguous_default_area' lies
->>> in, this way the default behavior of platform with one NUMA node is
->>> kept unchanged.
->>
->> So, the kernel is configured to have a certain CONFIG_CMA_SIZE_MBYTES size, but
->> you go ahead and multiply that by the number of nodes? Sounds wrong.
-> 
-> Yes. I thought about that, and didn't have good solution, and used this
-> given it's on a multi-numa-node machine, which may not be too bad
-> regarding memory usage.
+> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
 
-It sounds wrong given the existing config options.
+> +static void *iommu_liveupdate_restore_array(u64 array_phys)
+> +{
+> +	struct iommu_array_hdr_ser *array_hdr;
+> +	void *vaddr = array_phys ? phys_to_virt(array_phys) : NULL;
+> +
+> +	while (array_phys) {
+> +		/*
+> +		 * Failure to restore preserved IOMMU state is considered fatal.
+> +		 *
+> +		 * This is because the IOMMU translations for preserved IOMMUs
+> +		 * were kept enabled in the previous kernel and the preserved
+> +		 * devices have their IOMMU domains still present. Not being
+> +		 * able to restore means that the memory mapped into preserved
+> +		 * domains might be already corrupted by the preserved devices.
+> +		 *
+> +		 * There is no way to confirm the integrity of the memory that
+> +		 * was mapped. BUG_ON is the safest option at this point.
+> +		 */
+> +		BUG_ON(!kho_restore_folio(array_phys));
+> +		array_hdr = phys_to_virt(array_phys);
+> +		array_phys = array_hdr->next_array_phys;
+> +	}
+> +
+> +	return vaddr;
+> +}
 
-> 
-> Robin did concern about the memory usage for embedded/small devices in
-> v2 review, and we change to v3 to not affect them.
-> 
->>
->> The whole proposal here looks rather hacky.
-> 
-> I agree :)
-> 
->> Wouldn't a default for e.g., pernuma_size_bytes make more sense, that users can
->> then overwrite on the cmdline?
->  
-> This sounds good to me, if no objection from others. Maybe default 64MB
-> or more. One good part is, all these setup is under protection of
-> CONFIG_DMA_NUMA_CMA. 
+> +static int iommu_liveupdate_flb_retrieve(struct liveupdate_flb_op_args *argp)
+> +{
+> +	struct iommu_flb_obj *obj;
+> +	struct iommu_flb_ser *ser;
+> +
+> +	obj = kzalloc_obj(*obj, GFP_KERNEL);
+> +	if (!obj)
+> +		return -ENOMEM;
 
-I cannot do the heavy thinking here because -EBUSY, but maybe you want a config
-option similar to CMA_SIZE_MBYTES/CMA_SIZE_PERCENTAGE that either controls that
-these sizes will be split over NUMA nodes, or another one, that sets the default
-for pernuma.
+Should this be considered fatal for the same reason
+iommu_liveupdate_restore_array() is considered fatal? If anything in
+iommu_liveupdate_flb_retrieve() fails then the risk of corruption as
+described in iommu_liveupdate_restore_array() is possible.
 
-[...]
+> +
+> +	/* Data must be present and valid from the previous kernel */
+> +	BUG_ON(!kho_restore_folio(argp->data));
+> +
+> +	mutex_init(&obj->lock);
+> +	ser = phys_to_virt(argp->data);
+> +	obj->ser = ser;
+> +
+> +	obj->curr_domain_array = iommu_liveupdate_restore_array(ser->iommu_domain_array_phys);
+> +	obj->curr_device_array = iommu_liveupdate_restore_array(ser->device_array_phys);
+> +	obj->curr_iommu_array = iommu_liveupdate_restore_array(ser->iommu_array_phys);
+> +	argp->obj = obj;
+> +	return 0;
+> +}
+> +
+> +static struct liveupdate_flb_ops iommu_flb_ops = {
+> +	.preserve = iommu_liveupdate_flb_preserve,
+> +	.unpreserve = iommu_liveupdate_flb_unpreserve,
+> +	.finish = iommu_liveupdate_flb_finish,
+> +	.retrieve = iommu_liveupdate_flb_retrieve,
 
->>> +extern int cma_get_nid(const struct cma *cma)
->>> +{
->>> +	return cma->nid;
->>> +}
->>
->> Why do you have to store the nid instead of just looking it up from the base_pfn
->> in here?
-> 
-> My thought was 'struct cma' already have 'nid' member, and when CONFIG_NUMA=y,
-> it may be useful to save the 'nid' info instead of NUMA_NO_NODE for the default
-> cma area (cmdline like cma=XXG@YYG could make it on different node)
+nit: I think it's helpful to put these in the order they are expected to
+be called.
 
-Ah, yeah. It's a bit nasty that we have to handle the default area like that.
+  .preserve = iommu_liveupdate_flb_preserve,
+  .unpreserve = iommu_liveupdate_flb_unpreserve,
+  .retrieve = iommu_liveupdate_flb_retrieve,
+  .finish = iommu_liveupdate_flb_finish,
 
-Another sign that we probably shouldn't deal with the default area :)
+> diff --git a/include/linux/kho/abi/iommu.h b/include/linux/kho/abi/iommu.h
+> new file mode 100644
+> index 000000000000..37b967820f14
 
-> 
->>
->> Also, what is the expectation when the ranges would span different NIDs? (is
->> that possible?)
-> 
-> Per my understanding, it won't. There is a cma_validate_zones() to prevent it
-> from crossing zones.
+> +enum iommu_type_ser {
+> +	IOMMU_INVALID,
+> +};
 
-It's a bit confusing, because it ignores other nids.
+Please document this enum.
 
--- 
-Cheers,
+> +
+> +/**
+> + * struct iommu_hdr_ser - Common header for all serialized IOMMU objects
+> + * @ref_count: Reference count for the object
+> + * @deleted: Flag indicating if the object is deleted
+> + * @incoming: Flag indicating if the object was preserved in previous kernel
+> + */
+> +struct iommu_hdr_ser {
+> +	u32 ref_count;
+> +	u32 deleted:1;
+> +	u32 incoming:1;
 
-David
+Are C bitfields safe to use in Live Update ABI?
+
+> +} __packed;
+
+> +/**
+> + * struct iommu_flb_obj - FLB object allocated in current kernel pointing to
+> + *			  preserved state in FLB
+> + * @lock: Mutex protecting the object
+> + * @ser: Pointer to the serialized state in FLB
+> + * @curr_iommu_array: Pointer to the current array of IOMMU instances
+> + * @curr_domain_array: Pointer to the current array of domains
+> + * @curr_device_array: Pointer to the current array of devices
+> + */
+> +struct iommu_flb_obj {
+> +	/* @lock: Protects the serialized objects during concurrent preservation */
+> +	struct mutex lock;
+> +	struct iommu_flb_ser *ser;
+> +
+> +	struct iommu_hw_array_ser *curr_iommu_array;
+> +	struct iommu_domain_array_ser *curr_domain_array;
+> +	struct iommu_device_array_ser *curr_device_array;
+> +} __packed;
+
+This struct is not ABI so it should not be __packed nor defined in this
+file. I haven't read the whole series yet but this definition can
+probably go in drivers/iommu/liveupdate.c.
