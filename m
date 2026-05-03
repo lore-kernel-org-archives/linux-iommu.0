@@ -1,129 +1,240 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from forward202b.mail.yandex.net (forward202b.mail.yandex.net [178.154.239.155])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35431238C0A;
-	Sat,  2 May 2026 00:19:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C75DB175A66;
+	Sun,  3 May 2026 10:38:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.154.239.155
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777681150; cv=none; b=WYGBWb0d8H/PPdEvdscCC0FqDrlnfOii74b/YQWlo29YZR16KFZcsMHyAC+LyRJrPG9puZ71HnM8H8EJ3fOeEtayOPjl3f7CSJTTZtQnVi4yBXpHfHIDJ+maomw1GLdqVI+nk6FmhXfWySlyuVoe33EibuKL6RCwhRimJYvdH5U=
+	t=1777804695; cv=none; b=nnu6t2cxQoC3moct3jGigDlZL+TJEjYEbkiF+ZItN+7FsRdbARxjKG6hNwK2t1hXLPOXNXnwPcmf4jWa71yrB6x2b9ennEwWuPFjuMXvPRIk17D7IdgEJeYIZjiCG1glcGkb7jkEZPC7jaDH2BSQGipWbklFJln7wl6ncvD8lN4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777681150; c=relaxed/simple;
-	bh=AP5JtaG8I7D1v0LgQNhGuJZhUd8kwkp1E37feztWb0M=;
-	h=Date:From:To:Cc:Message-ID:In-Reply-To:References:Subject:
-	 Mime-Version:Content-Type; b=h2Qlfj+5AaeaOlq6VjeRJ9N6tooEIr5JZjpu7bWJYk3iwvjL+E3/os1G6ZJLe4u6VTT8OVhx2jrlcD9c0Vk8rpSOlFpW9jYb9cox0nmNf7cpr+tZudiOW+k8WnItEkBG1VmK1RnzkQy0X+JVKMQ2e4nsQ4/Z/Y/o6GGihNXxa6s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UR5aMexr; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777804695; c=relaxed/simple;
+	bh=InkpjzdiCLzusxzyeMvWTUrovVx0A/NuHzY4bOAMdXs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=lJ+2OrM6m1AF+XrFxdTVotwG7DOa3DxmZqO5scJdXPiY0d4jKZuQ6tGVRUJUCbfbUWoYUHopqW0TV2eRP5D/FElGPps26urH9+SURgW3559IaFnFyBm14k3EZ2W+TwcQDuWPhR347y3AwbNqyki0adW7jtE8uONJG8z/JqExFYg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=2005.tr; spf=pass smtp.mailfrom=2005.tr; dkim=pass (1024-bit key) header.d=2005.tr header.i=@2005.tr header.b=gUkPpPBh; arc=none smtp.client-ip=178.154.239.155
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=2005.tr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=2005.tr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UR5aMexr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 479FBC2BCC6;
-	Sat,  2 May 2026 00:19:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777681150;
-	bh=AP5JtaG8I7D1v0LgQNhGuJZhUd8kwkp1E37feztWb0M=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-	b=UR5aMexr6sdKEpwcxwp2PWNNLGHpodQxZUsycKLv5k9Aiwltm4OIgt0Iu2Tggp7NN
-	 l4PeqiYs6ppWS/417FP8hl33FbwukLTvJ33RUctkIaLEdFI4gM15w1L/kBrHXAmXJ6
-	 UgisGLMMlM3sFFrMupWBS6XMJ90/90yssI3tVIJkBW/qhWFtY3GBNqgT9DEwxN19dr
-	 KdMl5Wk3IOJTDI8CtRwsRMdAQ1pcyB4SKiYyFoL8JCamH5TBInEvOtRM0sXMccLvsW
-	 LbUsdvSvUFxS8av/iwJOiWRnatx/UXVubRRS2aAfmwUZ3ezemGsVN2UPfLLy3BmD+Z
-	 XAIkMNbj0PTlQ==
-Received: from phl-compute-07.internal (phl-compute-07.internal [10.202.2.47])
-	by mailfauth.phl.internal (Postfix) with ESMTP id 6D4DBF4008A;
-	Fri,  1 May 2026 20:19:08 -0400 (EDT)
-Received: from phl-frontend-03 ([10.202.2.162])
-  by phl-compute-07.internal (MEProxy); Fri, 01 May 2026 20:19:08 -0400
-X-ME-Sender: <xms:_EL1ab8UvC2-9pbbO2KQYSRWWigYdGEX84B4fmvQ_i8d6fw95U6xRQ>
-    <xme:_EL1aeKQlj9hLPCJrQgGNG8WqSS5p7etufmdMAUscppgic_Yav88H1XcPxC0eSRkM
-    Q26nqQqD3MKoA35QHlE1f3OU7MupB53NNx0PU40x3kUdGI9KSpT_o8>
-X-ME-Received: <xmr:_EL1aWhwra82VRDbo5ui8t1JWLDI1_fliQo6rhn3FgwR_-a-hDs8OR5oer8DVyejU2NeA8cyCvVVd-nnzvWRr7ACFRjmZG370VI>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefhedrtddtgdeludeivdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpuffrtefokffrpgfnqfghnecuuegr
-    ihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjug
-    hrpeffhffvvefkjghfufggtgfgsehtjeertddttdejnecuhfhrohhmpedfffgrnhcuhghi
-    lhhlihgrmhhsucdlnhhvihguihgrmddfuceoughjsgifsehkvghrnhgvlhdrohhrgheqne
-    cuggftrfgrthhtvghrnhepvdegheeikeetleeuffeuheefjeejvdejvdevteefgfffveeh
-    vdeuvdffveffvdehnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilh
-    hfrhhomhepughjsgifodhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhithihqddujeej
-    vdeftdegheehqdeffeefleegtdegjedqughjsgifpeepkhgvrhhnvghlrdhorhhgsehfrg
-    hsthhmrghilhdrtghomhdpnhgspghrtghpthhtohepvddtpdhmohguvgepshhmthhpohhu
-    thdprhgtphhtthhopehjghhgsehnvhhiughirgdrtghomhdprhgtphhtthhopegujhgsfi
-    eskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepnhhitgholhhinhgtsehnvhhiughirgdr
-    tghomhdprhgtphhtthhopeifihhllheskhgvrhhnvghlrdhorhhgpdhrtghpthhtoheprh
-    hosghinhdrmhhurhhphhihsegrrhhmrdgtohhmpdhrtghpthhtohepsghhvghlghgrrghs
-    sehgohhoghhlvgdrtghomhdprhgtphhtthhopehjohhroheskegshihtvghsrdhorhhgpd
-    hrtghpthhtohepphhrrggrnhesghhoohhglhgvrdgtohhmpdhrtghpthhtohepsggrohhl
-    uhdrlhhusehlihhnuhigrdhinhhtvghlrdgtohhm
-X-ME-Proxy: <xmx:_EL1af1ZcO5-YpE38i02isp_4d3w_hFixKhXCSrW96L-ciuBrGBDrw>
-    <xmx:_EL1afZPvW9E4Amn80J9eH2GpDZzyt8By6wclunVRO8D0olRXeMtDg>
-    <xmx:_EL1aUgUaU-zz0xg4mi6T_A2g8cgIF2nO-JMwfoAIj99ioRfK0Pi2A>
-    <xmx:_EL1aXj6EQX90dPENstW4VruevvnCZqNYkgo_1rcL1SHGY71Q0ZM1w>
-    <xmx:_EL1aZASdYzR3rwLJK-YLv5dzahm4FdEOnUJs64EcSQObA-3BwprAE-8>
-Feedback-ID: i67ae4b3e:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 1 May 2026 20:19:06 -0400 (EDT)
-Date: Fri, 01 May 2026 17:19:05 -0700
-From: "Dan Williams (nvidia)" <djbw@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>, 
- "Dan Williams (nvidia)" <djbw@kernel.org>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, 
- will@kernel.org, 
- robin.murphy@arm.com, 
- bhelgaas@google.com, 
- joro@8bytes.org, 
- praan@google.com, 
- baolu.lu@linux.intel.com, 
- kevin.tian@intel.com, 
- miko.lenczewski@arm.com, 
- linux-arm-kernel@lists.infradead.org, 
- iommu@lists.linux.dev, 
- linux-kernel@vger.kernel.org, 
- linux-pci@vger.kernel.org, 
- dan.j.williams@intel.com, 
- jonathan.cameron@huawei.com, 
- vsethi@nvidia.com, 
- linux-cxl@vger.kernel.org, 
- nirmoyd@nvidia.com
-Message-ID: <69f542f92e36e_3291a910052@djbw-dev.notmuch>
-In-Reply-To: <20260501234641.GB1381708@nvidia.com>
-References: <cover.1777269009.git.nicolinc@nvidia.com>
- <f6734b9dad0050138676f11ecd14e9db1cf6b697.1777269009.git.nicolinc@nvidia.com>
- <69f3cc82926_3291a910039@djbw-dev.notmuch>
- <afPlkW5zlTSHwQCT@Asurada-Nvidia>
- <69f536ed263dd_3291a910017@djbw-dev.notmuch>
- <20260501234641.GB1381708@nvidia.com>
-Subject: Re: [PATCH v4 1/3] PCI: Allow ATS to be always on for CXL.cache
- capable devices
+	dkim=pass (1024-bit key) header.d=2005.tr header.i=@2005.tr header.b="gUkPpPBh"
+Received: from forward101b.mail.yandex.net (forward101b.mail.yandex.net [IPv6:2a02:6b8:c02:900:1:45:d181:d101])
+	by forward202b.mail.yandex.net (Yandex) with ESMTPS id 9DE4DC1B82;
+	Sun, 03 May 2026 13:31:25 +0300 (MSK)
+Received: from mail-nwsmtp-smtp-production-main-87.sas.yp-c.yandex.net (mail-nwsmtp-smtp-production-main-87.sas.yp-c.yandex.net [IPv6:2a02:6b8:c5a:30b4:0:640:f126:0])
+	by forward101b.mail.yandex.net (Yandex) with ESMTPS id 74E34C0074;
+	Sun, 03 May 2026 13:31:17 +0300 (MSK)
+Received: by mail-nwsmtp-smtp-production-main-87.sas.yp-c.yandex.net (smtp) with ESMTPSA id 5VbTKPfSQW20-Il54nMyb;
+	Sun, 03 May 2026 13:31:16 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=2005.tr; s=mail;
+	t=1777804276; bh=iiHQfYwwq+y63xmVlSmQSrMy246317Nq+OjXaxmq1p8=;
+	h=Message-ID:Date:Cc:Subject:To:From;
+	b=gUkPpPBhhnzUHd1GYChWmgWQ2v9ilmjz7Xi8CHB+wrVaiBHYlqOiT5nI4xao+o3mR
+	 7/Q2qQ3dKAkOjYtYsDgA8n4Bm+krsn7h0uOPyz30bpDDp022jej7FoHa6Ykq9S8e66
+	 N11JGhgHdWWXjv/pmLvqfHJ8hzdC+iRe0o3M89AU=
+Authentication-Results: mail-nwsmtp-smtp-production-main-87.sas.yp-c.yandex.net; dkim=pass header.i=@2005.tr
+From: x@2005.tr
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J . Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Daniel Almeida <daniel.almeida@collabora.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>
+Cc: Boqun Feng <boqun@kernel.org>,
+	Gary Guo <gary@garyguo.net>,
+	=?UTF-8?q?Bj=C3=B6rn=20Roy=20Baron?= <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>,
+	Trevor Gross <tmgross@umich.edu>,
+	Robin Murphy <robin.murphy@arm.com>,
+	driver-core@lists.linux.dev,
+	rust-for-linux@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: [PATCH] rust: io: use newtype for PhysAddr
+Date: Sun,  3 May 2026 13:30:50 +0300
+Message-ID: <20260503103050.200526-1-x@2005.tr>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Jason Gunthorpe wrote:
-> On Fri, May 01, 2026 at 04:27:41PM -0700, Dan Williams (nvidia) wrote:
-> 
-> > You appear to be confusing Cache_Capable and Cache_Enabled.
-> > 
-> > "8.2.1.3.1 DVSEC Flex Bus Port Capability" != "8.2.1.3.3 DVSEC Flex Bus Port Status"
-> > 
-> > Cache_Capable is only a capability. To check that the device has
-> > actually trained the CXL.cache alternate protocol you need to look at
-> > the status register.
-> 
-> The capable is probably a reasonable choice here unless you are
-> confident the status will never change after the device is first
-> discovered? ATS is being set early in the boot sequence.
-> 
-> It is pretty safe to be over eager with the ATS enablement, less safe
-> to get it off when it needs to be on.
+From: Favilances Noir <favilances@proton.me>
 
-True, a reset could turn on CXL.cache. Ok, stick with what you have.
+From: Favilances Noir <favilances@proton.me>
 
-The present state of alternate protocol negotiation is still relevant
-though for distinguishing CXL protocol errors from other PCIe AER
-"internal" errors.
+Currently, `PhysAddr` is a type alias for `phys_addr_t`. This means
+that physical addresses can be mixed with unrelated integer values
+without Rust noticing.
 
-Need a bit of fixup work for that to refresh the status bit after reset.
+Use a transparent newtype for `PhysAddr` instead, and update the
+affected call sites to perform explicit raw conversions at the FFI
+boundary.
+
+This keeps the existing `phys_addr_t` representation while making
+physical addresses distinct in Rust type checking.
+
+Signed-off-by: Favilances Noir <favilances@proton.me>
+---
+ rust/kernel/devres.rs        |  8 +++++---
+ rust/kernel/io.rs            | 30 ++++++++++++++++++++++++------
+ rust/kernel/io/mem.rs        |  4 ++--
+ rust/kernel/io/resource.rs   |  6 +++---
+ rust/kernel/iommu/pgtable.rs |  2 +-
+ 5 files changed, 35 insertions(+), 15 deletions(-)
+
+diff --git a/rust/kernel/devres.rs b/rust/kernel/devres.rs
+index 9e5f93aed20c..beb3723d2519 100644
+--- a/rust/kernel/devres.rs
++++ b/rust/kernel/devres.rs
+@@ -85,10 +85,10 @@ struct Inner<T> {
+ ///     ///
+ ///     /// [`paddr`, `paddr` + `SIZE`) must be a valid MMIO region that is mappable into the CPUs
+ ///     /// virtual address space.
+-///     unsafe fn new(paddr: usize) -> Result<Self>{
++///     unsafe fn new(paddr: PhysAddr) -> Result<Self>{
+ ///         // SAFETY: By the safety requirements of this function [`paddr`, `paddr` + `SIZE`) is
+ ///         // valid for `ioremap`.
+-///         let addr = unsafe { bindings::ioremap(paddr as PhysAddr, SIZE) };
++///         let addr = unsafe { bindings::ioremap(paddr.into_raw(), SIZE) };
+ ///         if addr.is_null() {
+ ///             return Err(ENOMEM);
+ ///         }
+@@ -114,7 +114,9 @@ struct Inner<T> {
+ /// }
+ /// # fn no_run(dev: &Device<Bound>) -> Result<(), Error> {
+ /// // SAFETY: Invalid usage for example purposes.
+-/// let iomem = unsafe { IoMem::<{ core::mem::size_of::<u32>() }>::new(0xBAAAAAAD)? };
++/// let iomem = unsafe {
++///     IoMem::<{ core::mem::size_of::<u32>() }>::new(PhysAddr::from_raw(0xBAAAAAAD))?
++/// };
+ /// let devres = Devres::new(dev, iomem)?;
+ ///
+ /// let res = devres.try_access().ok_or(ENXIO)?;
+diff --git a/rust/kernel/io.rs b/rust/kernel/io.rs
+index fcc7678fd9e3..2d55ee93caae 100644
+--- a/rust/kernel/io.rs
++++ b/rust/kernel/io.rs
+@@ -21,9 +21,25 @@
+ 
+ /// Physical address type.
+ ///
+-/// This is a type alias to either `u32` or `u64` depending on the config option
+-/// `CONFIG_PHYS_ADDR_T_64BIT`, and it can be a u64 even on 32-bit architectures.
+-pub type PhysAddr = bindings::phys_addr_t;
++/// This wraps either `u32` or `u64` depending on the config option
++/// `CONFIG_PHYS_ADDR_T_64BIT`, and it can be a `u64` even on 32-bit architectures.
++#[repr(transparent)]
++#[derive(Clone, Copy)]
++pub struct PhysAddr(bindings::phys_addr_t);
++
++impl PhysAddr {
++    /// Creates a physical address from the raw C type.
++    #[inline]
++    pub const fn from_raw(value: bindings::phys_addr_t) -> Self {
++        Self(value)
++    }
++
++    /// Turns this physical address into the raw C type.
++    #[inline]
++    pub const fn into_raw(self) -> bindings::phys_addr_t {
++        self.0
++    }
++}
+ 
+ /// Resource Size type.
+ ///
+@@ -101,10 +117,10 @@ pub fn maxsize(&self) -> usize {
+ ///     ///
+ ///     /// [`paddr`, `paddr` + `SIZE`) must be a valid MMIO region that is mappable into the CPUs
+ ///     /// virtual address space.
+-///     unsafe fn new(paddr: usize) -> Result<Self>{
++///     unsafe fn new(paddr: PhysAddr) -> Result<Self>{
+ ///         // SAFETY: By the safety requirements of this function [`paddr`, `paddr` + `SIZE`) is
+ ///         // valid for `ioremap`.
+-///         let addr = unsafe { bindings::ioremap(paddr as PhysAddr, SIZE) };
++///         let addr = unsafe { bindings::ioremap(paddr.into_raw(), SIZE) };
+ ///         if addr.is_null() {
+ ///             return Err(ENOMEM);
+ ///         }
+@@ -131,7 +147,9 @@ pub fn maxsize(&self) -> usize {
+ ///
+ ///# fn no_run() -> Result<(), Error> {
+ /// // SAFETY: Invalid usage for example purposes.
+-/// let iomem = unsafe { IoMem::<{ core::mem::size_of::<u32>() }>::new(0xBAAAAAAD)? };
++/// let iomem = unsafe {
++///     IoMem::<{ core::mem::size_of::<u32>() }>::new(PhysAddr::from_raw(0xBAAAAAAD))?
++/// };
+ /// iomem.write32(0x42, 0x0);
+ /// assert!(iomem.try_write32(0x42, 0x0).is_ok());
+ /// assert!(iomem.try_write32(0x42, 0x4).is_err());
+diff --git a/rust/kernel/io/mem.rs b/rust/kernel/io/mem.rs
+index 7dc78d547f7a..f21f9038b297 100644
+--- a/rust/kernel/io/mem.rs
++++ b/rust/kernel/io/mem.rs
+@@ -254,12 +254,12 @@ fn ioremap(resource: &Resource) -> Result<Self> {
+             // SAFETY:
+             // - `res_start` and `size` are read from a presumably valid `struct resource`.
+             // - `size` is known not to be zero at this point.
+-            unsafe { bindings::ioremap_np(res_start, size) }
++            unsafe { bindings::ioremap_np(res_start.into_raw(), size) }
+         } else {
+             // SAFETY:
+             // - `res_start` and `size` are read from a presumably valid `struct resource`.
+             // - `size` is known not to be zero at this point.
+-            unsafe { bindings::ioremap(res_start, size) }
++            unsafe { bindings::ioremap(res_start.into_raw(), size) }
+         };
+ 
+         if addr.is_null() {
+diff --git a/rust/kernel/io/resource.rs b/rust/kernel/io/resource.rs
+index b7ac9faf141d..5dda1061db68 100644
+--- a/rust/kernel/io/resource.rs
++++ b/rust/kernel/io/resource.rs
+@@ -58,7 +58,7 @@ fn drop(&mut self) {
+         };
+ 
+         // SAFETY: Safe as per the invariant of `Region`.
+-        unsafe { release_fn(start, size) };
++        unsafe { release_fn(start.into_raw(), size) };
+     }
+ }
+ 
+@@ -113,7 +113,7 @@ pub fn request_region(
+         let region = unsafe {
+             bindings::__request_region(
+                 self.0.get(),
+-                start,
++                start.into_raw(),
+                 size,
+                 name.as_char_ptr(),
+                 flags.0 as c_int,
+@@ -137,7 +137,7 @@ pub fn size(&self) -> ResourceSize {
+     pub fn start(&self) -> PhysAddr {
+         let inner = self.0.get();
+         // SAFETY: Safe as per the invariants of `Resource`.
+-        unsafe { (*inner).start }
++        PhysAddr::from_raw(unsafe { (*inner).start })
+     }
+ 
+     /// Returns the name of the resource.
+diff --git a/rust/kernel/iommu/pgtable.rs b/rust/kernel/iommu/pgtable.rs
+index c88e38fd938a..ae724ca1e8ad 100644
+--- a/rust/kernel/iommu/pgtable.rs
++++ b/rust/kernel/iommu/pgtable.rs
+@@ -182,7 +182,7 @@ pub unsafe fn map_pages(
+             (map_pages)(
+                 self.raw_ops(),
+                 iova,
+-                paddr,
++                paddr.into_raw(),
+                 pgsize,
+                 pgcount,
+                 prot as i32,
+-- 
+2.54.0
+
