@@ -1,153 +1,272 @@
-Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010005.outbound.protection.outlook.com [40.93.198.5])
+Received: from mail-106111.protonmail.ch (mail-106111.protonmail.ch [79.135.106.111])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7ADA72D837C
-	for <iommu@lists.linux.dev>; Sun,  3 May 2026 13:54:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.5
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777816475; cv=fail; b=frkkeWZNlczUYQ6pIGzJiXpBoHf/mwq6Rw0qabvyoQkwUqiWxQTXv9XOXPNf+fb1NWomGmcdUYgFSI/wvAYnbYanNPSNgtHPTiOIoL1ka08oPeHtPipU0Odu4YZbwoU2triDnwMQ54KLAls8pZSpf+6AT7w5iQuc5MnZkekuQEw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777816475; c=relaxed/simple;
-	bh=6h9qF37r396PmwWUHSTD+ZSW8/0v0ftJPY/C3iCEIfU=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=LYCg+1w/QnAY/4ADyp2UJ/n09JfZy+gciXYr+TNpd1MLDjOBVAfwOUb4qBKYuxK8nRUX4DMil6YcM2wXsM9377+kp9l8vHzQYsCF9WV/33d8thMO6iyP6ms9y2tpfVc2X/liCSGsNlQy074+nzifBf7w5ODlJjO1IRZeSveLXrw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ft0ZHhvD; arc=fail smtp.client-ip=40.93.198.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CE272C15BE
+	for <iommu@lists.linux.dev>; Sun,  3 May 2026 18:28:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.111
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777832928; cv=none; b=H+XdTg1ivcpMnq6UvyJEKNu3VcEW1ruMtFsGMD1ZTFmjaSxddNJm6TIWtxLDQ2tYEJfA3OKeb2rOhbRCtLu17U1AuytnNVDFSlOLxrMHO+YcsahnzR6TllGJA6sHRClQ9U3cF1gde4euPyczE/tMc6FekeeQ5bAkVA437Om4g/s=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777832928; c=relaxed/simple;
+	bh=VYo98G9LYQZAgchu3pErKrxjjIzFnfrk+RocwlnjPzY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=si6oY4oc8ySjV40jyEkS5txUBYzzpDOoDhEQa6PZtt4LFek6YAGuQHXFM7dNwQqpCBIJ+1IfqIXBmsW6lsmUraX4bKgxpLbSpF9S/grVOa0b6WIE7VS2tK7+gfOfLM+07jqGOMVpsQSbIsyk/VkL3WfkY3WhkBKUTSd7CU8dbNU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=onurozkan.dev; spf=pass smtp.mailfrom=onurozkan.dev; dkim=pass (2048-bit key) header.d=onurozkan.dev header.i=@onurozkan.dev header.b=pjlI7Tjv; arc=none smtp.client-ip=79.135.106.111
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=onurozkan.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=onurozkan.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ft0ZHhvD"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=fM6pE773XeUfy4QHK6mho0oV2uuwnApMzvnPO4qDwVSKa+3AJWA/S16OdQ3OXcMkodbvFLgb0mUIq5Q4Qkrzzb+6XaDFByIVmamb+CpR85bGXKIjlMDJfWRTCcvuiHGQWsVnI9A96o2gb4kRL/nQjdld6lOxnHz8MoigCniCCwl7dKhyWlFssT/0+WkYJV0a/LIOrMHequZByIxfn0dM4oeBYRgRaNymWtOM3rn+TXY6oc81y9OO8BWSjwT8XRkZvtVROtNNx2+wRjPp29r/fag+S7aMtOLub0edZPcfPg2rP/0bGr7P8kMnzN4dNkYqmpn/APfRNRkAZZEPHVI3HA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tj2+hqYd1S8ulxN8n8VYNe5qA+wZFVHUron88tKCpqc=;
- b=AqRY9lUf6mb73MNmas8NmaWiVFS1hxNq9PZU/LbfKDeS/AGdQcoDYHS72TH9urwj7E2lJvtoDvlKP4KJ1hKCxUBmHOq4BMeZXpDk+ZNb5mYbRj/rk+4nGFlRVFYCChrl4M5NdHoBgZh9W9413UVzfmCY4lPPCMqmgslzNSbc6Ulc7jmy3yNEtl065rrSoo3h5s9QZXDp/GhIUc+Ub5/wC1peJNagj/mXO9vpNR63CQWTK2FTfq0bvRns+o07Hn4nLp3CcUS68b+4xWczpiCykPMCkTOfdL8urE54q+yKo6GbhmNKeDgN5j5lwfFThBESKk0Gw5sfVLzsIQodF9ABIg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tj2+hqYd1S8ulxN8n8VYNe5qA+wZFVHUron88tKCpqc=;
- b=ft0ZHhvDur+EjZCBzuqqpbhQgkgmZBVBo+loX08PKSQzV8fMyFnamBxVFipATcCi/ptITmSx4Wat2rYGE2CeZhN8KrPQ4HjJ6xTceG0gTRfXOkrkgqGH5GmfB1vUiP1fQzS7GQEcDBeT32jxPTLTZosLShAXL97rOEkABooppcheUInu2Q6NDul/FBsDUA2ppuQ73dIeOM3qfed8goLL174F4s7HwUR0aKrh2bFmNeYrwkQPp6EyHSoinj4wqIP2VghAuPd4/SjsNGpJA/sj4i9XPwcMj4CBd9vQhdSVVvyu1OpClavXjzvOcodtTvIEcVpcqdkxJSruSmbf2Jxgeg==
-Received: from BY5PR17CA0034.namprd17.prod.outlook.com (2603:10b6:a03:1b8::47)
- by DM4PR12MB5769.namprd12.prod.outlook.com (2603:10b6:8:60::6) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9870.23; Sun, 3 May 2026 13:54:29 +0000
-Received: from SJ5PEPF000001CA.namprd05.prod.outlook.com
- (2603:10b6:a03:1b8:cafe::12) by BY5PR17CA0034.outlook.office365.com
- (2603:10b6:a03:1b8::47) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9870.25 via Frontend Transport; Sun,
- 3 May 2026 13:54:28 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SJ5PEPF000001CA.mail.protection.outlook.com (10.167.242.39) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9891.9 via Frontend Transport; Sun, 3 May 2026 13:54:28 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Sun, 3 May
- 2026 06:54:21 -0700
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Sun, 3 May
- 2026 06:54:21 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.12) by mail.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server id 15.2.2562.20 via Frontend
- Transport; Sun, 3 May 2026 06:54:20 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Will Deacon <will@kernel.org>
-CC: Joerg Roedel <joro@8bytes.org>, Jean-Philippe Brucker <jpb@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
-	Pranjal Shrivastava <praan@google.com>, Catalin Marinas
-	<catalin.marinas@arm.com>, =?UTF-8?q?Miko=C5=82aj=20Lenczewski?=
-	<miko.lenczewski@arm.com>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] iommu/arm-smmu-v3-sva: Enable Hardware Access and Hardware Dirty bits
-Date: Sun, 3 May 2026 06:54:12 -0700
-Message-ID: <20260503135413.1108138-1-nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=onurozkan.dev header.i=@onurozkan.dev header.b="pjlI7Tjv"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=onurozkan.dev;
+	s=protonmail; t=1777832913; x=1778092113;
+	bh=o95u23FBpkLn4PXJWNFhC1YCBKZbusyxEdzbhMJ4BsM=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:From:To:
+	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=pjlI7TjvmVAWndM7KNEvYXGtsfXsMcWVNhvRcI51A6RJBmhw3Br3YyR5YMV09xtTB
+	 DdfDrg0VphLdBW7yOqz4+Co0JYlJVAlpLVV1G3Zqj1ltlHhnAKr76O+iJ/OXz5DzpE
+	 hYbEN8ldOs/3aay5DKJCl01G5a0ot6/fnRSjEkCVyocHT9NBzmZGBDqMKQDrOTDLJ2
+	 wNIPWyYUh0EUF86eaSLSID5PdZ2Y81LFS7hjZTVoW+sS7KaGRdMejALm+t2pDcIEuU
+	 +Uy8IgIUGT4KE7HqnGv2BOVaRfd+Vkhq3akR+PwGtOwF9VAh/BXSlWvGRjEGzwP58m
+	 +WLRsFCslu1DQ==
+X-Pm-Submission-Id: 4g7tZP4Z6lz1DDX4
+From: =?UTF-8?q?Onur=20=C3=96zkan?= <work@onurozkan.dev>
+To: x@2005.tr
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J . Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Daniel Almeida <daniel.almeida@collabora.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Boqun Feng <boqun@kernel.org>,
+	Gary Guo <gary@garyguo.net>,
+	=?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>,
+	Trevor Gross <tmgross@umich.edu>,
+	Robin Murphy <robin.murphy@arm.com>,
+	driver-core@lists.linux.dev,
+	rust-for-linux@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: Re: [PATCH] rust: io: use newtype for PhysAddr
+Date: Sun,  3 May 2026 21:28:26 +0300
+Message-ID: <20260503182827.21492-1-work@onurozkan.dev>
+X-Mailer: git-send-email 2.51.2
+In-Reply-To: <20260503103050.200526-1-x@2005.tr>
+References: <20260503103050.200526-1-x@2005.tr>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ5PEPF000001CA:EE_|DM4PR12MB5769:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3c3e7171-bafa-4001-01f5-08dea91b7e8e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|7416014|82310400026|36860700016|1800799024|56012099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	WJxGblC0gWUr8XzCgqCK4BixBVW8JH74WcDT5p2EIxUJRipM2Qm2z0wpI4IuloiDFqCKRda0w9Gdnl9y8nH5Tf6xAte9S2vOid3bVsBf25x69iKcU64RML0o/4kthOVX8Y2j4+NaLDSWmU8M40jzD8WfXL2pMr+vuLNwN+zNOIlUmcymkuA2/hVHSb11sEym7G295o20qFvnn4DxejVyhvK9FTyAe43k7bLIllKndohralbvJayuVu3NdKQzbZD3bU7tHI/mzxkEYm/CWaJO1ukuah63MPUS4+e1IUh0R674ebE0rUK+ftZJHU7wv+h02oE5AYyOjdRO/ko+xpfaDR8Kq1KcB1w835YRaTx72Owj6VDZFcCiAOi4odgHQB0W4TBsaNOF02Ig16JJ+GP53ai7IgHgdb8K5RNpAh0r+2/LdMxAlUefzrdTsb07VPQea1fQbXnSUw3gSk3wf4IcKp1dXBkC9WMIMevLbHLHbT+DGssk+dlOqQcVJmU8FmJzKlBlNn4WpbFCtgPRx35FugLQvaTfXBpjuPK9h6/52KCWi1WdCxSF7pASum2N54p9XuVdyNC0pNPq9RCGtu4w3BSm1OgNLyoHRN6xB7YUg+Lt/0n9xy/fUbFFeVvZZkcj5F176TU6HHuoIApa350nEBiUrqLvK0kP+JfNKcS1UqhzTbTTWpoPzVqX3SWLvHj4kx8DMC92xk+gOqsr1kBwWFXUlbZehWHkUt+rN6mlMXo=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(7416014)(82310400026)(36860700016)(1800799024)(56012099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	F/WLmtxD6MMFSbzwMFAIFVr9NxTQsXUzLqUFb6crZglcG89UOTrMO6g+4Bkr94yBDn4aN/oSTVR8LpFoQoxPlNJ/51v0itxtKs13KPHlbFpy6UhHEcZw+SvewFz9gpmsN6cVtyB34ZVeBH9oFJyd3uq/r+rt0MMUzHDRkQehSbk5RQBoqy0BfFFWBgevPwfFSzwRgzwm/Pcj9gDUqn7lH7JocQJ8XQdTV9m6ugwpbAW1QwpwUTT8rLet0x/hM0H8nyxolWhcxZhM+c+9kSM8+CgfBPLxIxJ5W1VQeaDHSq5RjnBPNQ6fx5yDyLCZpddclNE/hZtoYZim/Wpj/abBZf/CY/Yw+rNXVwdy1DLRazMSJq4BLIIpDztWYkFC51tbhoFAI19iNg7EIftXqv9wFYUPbetNBQyHq8i8zo4gwOzL93N86Fpu6Cv0nNJU8OYa
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 May 2026 13:54:28.5037
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3c3e7171-bafa-4001-01f5-08dea91b7e8e
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ5PEPF000001CA.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5769
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-HTTU is introduced by utilizing the Dirty Bit Modifier (DBM) in the PTE.
-When kernel maps a clean but writable page, it will set PTE_READONLY and
-PTE_DBM (aka PTE_WRITE) at the same time. When a write occurs, an HTTU-
-capable MMU will automatically clear the PTE_RDONLY bit without software
-intervention.
-
-On the other hand, SMMU has the same HTTU feature, yet it is not enabled
-in the SVA CD. As a result, SMMU will not clear the PTE_RDONLY bit while
-sharing the CPU page table, resulting in unnecessary stalls.
-
-Thus, enable CTXDESC_CD_0_TCR_HA and CTXDESC_CD_0_TCR_HD in the SVA CD.
-
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index f1f8e01a7e914..1ed8a6f29dc44 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -92,6 +92,16 @@ void arm_smmu_make_sva_cd(struct arm_smmu_cd *target,
- 
- 		target->data[1] = cpu_to_le64(virt_to_phys(mm->pgd) &
- 					      CTXDESC_CD_1_TTB0_MASK);
-+
-+		/*
-+		 * Enable Hardware Access and Dirty updates (DBM) if supported.
-+		 * This is safe to enable by default, as PTE_WRITE and PTE_DBM
-+		 * share the same bit.
-+		 */
-+		if (master->smmu->features & ARM_SMMU_FEAT_HA)
-+			target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_HA);
-+		if (master->smmu->features & ARM_SMMU_FEAT_HD)
-+			target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_HD);
- 	} else {
- 		target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_EPD0);
- 
--- 
-2.43.0
-
+On Sun, 03 May 2026 13:30:50 +0300=0D
+x@2005.tr wrote:=0D
+=0D
+> From: Favilances Noir <favilances@proton.me>=0D
+> =0D
+> From: Favilances Noir <favilances@proton.me>=0D
+> =0D
+> Currently, `PhysAddr` is a type alias for `phys_addr_t`. This means=0D
+> that physical addresses can be mixed with unrelated integer values=0D
+> without Rust noticing.=0D
+> =0D
+> Use a transparent newtype for `PhysAddr` instead, and update the=0D
+> affected call sites to perform explicit raw conversions at the FFI=0D
+> boundary.=0D
+> =0D
+> This keeps the existing `phys_addr_t` representation while making=0D
+> physical addresses distinct in Rust type checking.=0D
+> =0D
+> Signed-off-by: Favilances Noir <favilances@proton.me>=0D
+> ---=0D
+>  rust/kernel/devres.rs        |  8 +++++---=0D
+>  rust/kernel/io.rs            | 30 ++++++++++++++++++++++++------=0D
+>  rust/kernel/io/mem.rs        |  4 ++--=0D
+>  rust/kernel/io/resource.rs   |  6 +++---=0D
+>  rust/kernel/iommu/pgtable.rs |  2 +-=0D
+>  5 files changed, 35 insertions(+), 15 deletions(-)=0D
+> =0D
+> diff --git a/rust/kernel/devres.rs b/rust/kernel/devres.rs=0D
+> index 9e5f93aed20c..beb3723d2519 100644=0D
+> --- a/rust/kernel/devres.rs=0D
+> +++ b/rust/kernel/devres.rs=0D
+> @@ -85,10 +85,10 @@ struct Inner<T> {=0D
+>  ///     ///=0D
+>  ///     /// [`paddr`, `paddr` + `SIZE`) must be a valid MMIO region that=
+ is mappable into the CPUs=0D
+>  ///     /// virtual address space.=0D
+> -///     unsafe fn new(paddr: usize) -> Result<Self>{=0D
+> +///     unsafe fn new(paddr: PhysAddr) -> Result<Self>{=0D
+>  ///         // SAFETY: By the safety requirements of this function [`pad=
+dr`, `paddr` + `SIZE`) is=0D
+>  ///         // valid for `ioremap`.=0D
+> -///         let addr =3D unsafe { bindings::ioremap(paddr as PhysAddr, S=
+IZE) };=0D
+> +///         let addr =3D unsafe { bindings::ioremap(paddr.into_raw(), SI=
+ZE) };=0D
+>  ///         if addr.is_null() {=0D
+>  ///             return Err(ENOMEM);=0D
+>  ///         }=0D
+> @@ -114,7 +114,9 @@ struct Inner<T> {=0D
+>  /// }=0D
+>  /// # fn no_run(dev: &Device<Bound>) -> Result<(), Error> {=0D
+>  /// // SAFETY: Invalid usage for example purposes.=0D
+> -/// let iomem =3D unsafe { IoMem::<{ core::mem::size_of::<u32>() }>::new=
+(0xBAAAAAAD)? };=0D
+> +/// let iomem =3D unsafe {=0D
+> +///     IoMem::<{ core::mem::size_of::<u32>() }>::new(PhysAddr::from_raw=
+(0xBAAAAAAD))?=0D
+> +/// };=0D
+>  /// let devres =3D Devres::new(dev, iomem)?;=0D
+>  ///=0D
+>  /// let res =3D devres.try_access().ok_or(ENXIO)?;=0D
+> diff --git a/rust/kernel/io.rs b/rust/kernel/io.rs=0D
+> index fcc7678fd9e3..2d55ee93caae 100644=0D
+> --- a/rust/kernel/io.rs=0D
+> +++ b/rust/kernel/io.rs=0D
+> @@ -21,9 +21,25 @@=0D
+>  =0D
+>  /// Physical address type.=0D
+>  ///=0D
+> -/// This is a type alias to either `u32` or `u64` depending on the confi=
+g option=0D
+> -/// `CONFIG_PHYS_ADDR_T_64BIT`, and it can be a u64 even on 32-bit archi=
+tectures.=0D
+> -pub type PhysAddr =3D bindings::phys_addr_t;=0D
+> +/// This wraps either `u32` or `u64` depending on the config option=0D
+> +/// `CONFIG_PHYS_ADDR_T_64BIT`, and it can be a `u64` even on 32-bit arc=
+hitectures.=0D
+> +#[repr(transparent)]=0D
+> +#[derive(Clone, Copy)]=0D
+=0D
+Copy and Clone seem never used, please drop them (also see [1]).=0D
+=0D
+[1]: https://rust-for-linux.zulipchat.com/#narrow/channel/509436-Nova/topic=
+/clone.2Fcopy.20additions=0D
+=0D
+Regards,=0D
+Onur=0D
+=0D
+> +pub struct PhysAddr(bindings::phys_addr_t);=0D
+> +=0D
+> +impl PhysAddr {=0D
+> +    /// Creates a physical address from the raw C type.=0D
+> +    #[inline]=0D
+> +    pub const fn from_raw(value: bindings::phys_addr_t) -> Self {=0D
+> +        Self(value)=0D
+> +    }=0D
+> +=0D
+> +    /// Turns this physical address into the raw C type.=0D
+> +    #[inline]=0D
+> +    pub const fn into_raw(self) -> bindings::phys_addr_t {=0D
+> +        self.0=0D
+> +    }=0D
+> +}=0D
+>  =0D
+>  /// Resource Size type.=0D
+>  ///=0D
+> @@ -101,10 +117,10 @@ pub fn maxsize(&self) -> usize {=0D
+>  ///     ///=0D
+>  ///     /// [`paddr`, `paddr` + `SIZE`) must be a valid MMIO region that=
+ is mappable into the CPUs=0D
+>  ///     /// virtual address space.=0D
+> -///     unsafe fn new(paddr: usize) -> Result<Self>{=0D
+> +///     unsafe fn new(paddr: PhysAddr) -> Result<Self>{=0D
+>  ///         // SAFETY: By the safety requirements of this function [`pad=
+dr`, `paddr` + `SIZE`) is=0D
+>  ///         // valid for `ioremap`.=0D
+> -///         let addr =3D unsafe { bindings::ioremap(paddr as PhysAddr, S=
+IZE) };=0D
+> +///         let addr =3D unsafe { bindings::ioremap(paddr.into_raw(), SI=
+ZE) };=0D
+>  ///         if addr.is_null() {=0D
+>  ///             return Err(ENOMEM);=0D
+>  ///         }=0D
+> @@ -131,7 +147,9 @@ pub fn maxsize(&self) -> usize {=0D
+>  ///=0D
+>  ///# fn no_run() -> Result<(), Error> {=0D
+>  /// // SAFETY: Invalid usage for example purposes.=0D
+> -/// let iomem =3D unsafe { IoMem::<{ core::mem::size_of::<u32>() }>::new=
+(0xBAAAAAAD)? };=0D
+> +/// let iomem =3D unsafe {=0D
+> +///     IoMem::<{ core::mem::size_of::<u32>() }>::new(PhysAddr::from_raw=
+(0xBAAAAAAD))?=0D
+> +/// };=0D
+>  /// iomem.write32(0x42, 0x0);=0D
+>  /// assert!(iomem.try_write32(0x42, 0x0).is_ok());=0D
+>  /// assert!(iomem.try_write32(0x42, 0x4).is_err());=0D
+> diff --git a/rust/kernel/io/mem.rs b/rust/kernel/io/mem.rs=0D
+> index 7dc78d547f7a..f21f9038b297 100644=0D
+> --- a/rust/kernel/io/mem.rs=0D
+> +++ b/rust/kernel/io/mem.rs=0D
+> @@ -254,12 +254,12 @@ fn ioremap(resource: &Resource) -> Result<Self> {=0D
+>              // SAFETY:=0D
+>              // - `res_start` and `size` are read from a presumably valid=
+ `struct resource`.=0D
+>              // - `size` is known not to be zero at this point.=0D
+> -            unsafe { bindings::ioremap_np(res_start, size) }=0D
+> +            unsafe { bindings::ioremap_np(res_start.into_raw(), size) }=
+=0D
+>          } else {=0D
+>              // SAFETY:=0D
+>              // - `res_start` and `size` are read from a presumably valid=
+ `struct resource`.=0D
+>              // - `size` is known not to be zero at this point.=0D
+> -            unsafe { bindings::ioremap(res_start, size) }=0D
+> +            unsafe { bindings::ioremap(res_start.into_raw(), size) }=0D
+>          };=0D
+>  =0D
+>          if addr.is_null() {=0D
+> diff --git a/rust/kernel/io/resource.rs b/rust/kernel/io/resource.rs=0D
+> index b7ac9faf141d..5dda1061db68 100644=0D
+> --- a/rust/kernel/io/resource.rs=0D
+> +++ b/rust/kernel/io/resource.rs=0D
+> @@ -58,7 +58,7 @@ fn drop(&mut self) {=0D
+>          };=0D
+>  =0D
+>          // SAFETY: Safe as per the invariant of `Region`.=0D
+> -        unsafe { release_fn(start, size) };=0D
+> +        unsafe { release_fn(start.into_raw(), size) };=0D
+>      }=0D
+>  }=0D
+>  =0D
+> @@ -113,7 +113,7 @@ pub fn request_region(=0D
+>          let region =3D unsafe {=0D
+>              bindings::__request_region(=0D
+>                  self.0.get(),=0D
+> -                start,=0D
+> +                start.into_raw(),=0D
+>                  size,=0D
+>                  name.as_char_ptr(),=0D
+>                  flags.0 as c_int,=0D
+> @@ -137,7 +137,7 @@ pub fn size(&self) -> ResourceSize {=0D
+>      pub fn start(&self) -> PhysAddr {=0D
+>          let inner =3D self.0.get();=0D
+>          // SAFETY: Safe as per the invariants of `Resource`.=0D
+> -        unsafe { (*inner).start }=0D
+> +        PhysAddr::from_raw(unsafe { (*inner).start })=0D
+>      }=0D
+>  =0D
+>      /// Returns the name of the resource.=0D
+> diff --git a/rust/kernel/iommu/pgtable.rs b/rust/kernel/iommu/pgtable.rs=
+=0D
+> index c88e38fd938a..ae724ca1e8ad 100644=0D
+> --- a/rust/kernel/iommu/pgtable.rs=0D
+> +++ b/rust/kernel/iommu/pgtable.rs=0D
+> @@ -182,7 +182,7 @@ pub unsafe fn map_pages(=0D
+>              (map_pages)(=0D
+>                  self.raw_ops(),=0D
+>                  iova,=0D
+> -                paddr,=0D
+> +                paddr.into_raw(),=0D
+>                  pgsize,=0D
+>                  pgcount,=0D
+>                  prot as i32,=0D
+> -- =0D
+> 2.54.0=0D
+> =0D
