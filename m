@@ -1,241 +1,110 @@
-Received: from forward502d.mail.yandex.net (forward502d.mail.yandex.net [178.154.239.210])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BB6737DE85;
-	Mon,  4 May 2026 11:25:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.154.239.210
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B4253CEB8D
+	for <iommu@lists.linux.dev>; Mon,  4 May 2026 12:13:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777893903; cv=none; b=WEJR/beHsXHRz9iS3uT95z83iB+jjFmpL7yA/Mh5SDVkXckMVgfE+6yb+QchWwVbmYhScoERoW8ul0zoue7zAUZ+dxGZgG2xQeW+1sXuIcZyFbOmIg1OH5i/BrP5LxezZCQE39uumgk34BLQC92jb7t6yhQ4DsflPIs9zWf86D4=
+	t=1777896792; cv=none; b=HUPbGIz4CfLCVcfD4DMFrLxvJqhIdvU/A1rudy2xU6eV8mmsAsNW7+9VqMoHPRAxszjrn3AjY35ErYPgchJH321CI4Sea0vrS0UBdQLSMRLdrl/uUwoycf42d5+BeZeAso0uu8MXS2T9xhvC4ztTFZ1aBAyF24O2yo0vSL1BwKY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777893903; c=relaxed/simple;
-	bh=tUzzMutq4Sx7of0cMGJidiHPmwK9ZP0wtz5XQHd8UAc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=mQWfJxjWp9lGdMtWKewaWxqgbhXKtiqHJhw5DCY5xLS2267tc0CqzStCc6ORZrzaqAjr8bHOItltKczG6xOT28wm3cynM0OomJAFg1qaH6uXPGVUJbD/eMJoOhK+QomFTQstb0NnkKf40Y9n5qirfFn96t6/GpXahywYOntSEIg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=2005.tr; spf=pass smtp.mailfrom=2005.tr; dkim=pass (1024-bit key) header.d=2005.tr header.i=@2005.tr header.b=Nm4Weixd; arc=none smtp.client-ip=178.154.239.210
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=2005.tr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=2005.tr
+	s=arc-20240116; t=1777896792; c=relaxed/simple;
+	bh=bX2UkMsTl6OcCaUjBf88U30d1MFR4spQoSasIx4OSUM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=SnQ76Re5c5OeTreMtSUEFkUR8cz6OysTl/j9AQK06OuogFjuNTZIbx+JNDAMO70zAkwPfPvv3z7mg1O/QRqNMgWRgoEp8HfyqhyGM0ymGFetGBH9clbDTNiY1D3Qh3j4FISEdtwwUVAF/CH2SwPV2w4AJTboKkkS5TU287WPKjQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=aWkwRa0s; arc=none smtp.client-ip=209.85.128.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=2005.tr header.i=@2005.tr header.b="Nm4Weixd"
-Received: from mail-nwsmtp-smtp-production-main-57.klg.yp-c.yandex.net (mail-nwsmtp-smtp-production-main-57.klg.yp-c.yandex.net [IPv6:2a02:6b8:c42:494f:0:640:ed81:0])
-	by forward502d.mail.yandex.net (Yandex) with ESMTPS id 93E68C0CE6;
-	Mon, 04 May 2026 14:14:51 +0300 (MSK)
-Received: by mail-nwsmtp-smtp-production-main-57.klg.yp-c.yandex.net (smtp) with ESMTPSA id bEdRaMsSLSw0-lv5ex7uR;
-	Mon, 04 May 2026 14:14:50 +0300
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=2005.tr; s=mail;
-	t=1777893290; bh=EyRXmwAUXgiBKVinT8b1roGNdRCmdbZK3Hh4r5I0of0=;
-	h=Message-ID:Date:In-Reply-To:Cc:Subject:References:To:From;
-	b=Nm4Weixd7OH/si+5SYYFS8IdnVdc4VdeokB4lWUxwdU19NNCZNB9JpMLPqazTy8GS
-	 T/ezmEbGNWiTwoNP3tok3i6ddk+GNQITRK9qIL9igFgFpFJ2Kk5Ukiklh69dj+ElLj
-	 F39MMgoLdw376zcPQU9wxYn4LINJDPTi638Ia/s8=
-Authentication-Results: mail-nwsmtp-smtp-production-main-57.klg.yp-c.yandex.net; dkim=pass header.i=@2005.tr
-From: x@2005.tr
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Daniel Almeida <daniel.almeida@collabora.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>
-Cc: =?UTF-8?q?Onur=20=C3=96zkan?= <work@onurozkan.dev>,
-	Boqun Feng <boqun@kernel.org>,
-	Gary Guo <gary@garyguo.net>,
-	=?UTF-8?q?Bj=C3=B6rn=20Roy=20Baron?= <bjorn3_gh@protonmail.com>,
-	Benno Lossin <lossin@kernel.org>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>,
-	Trevor Gross <tmgross@umich.edu>,
-	Robin Murphy <robin.murphy@arm.com>,
-	driver-core@lists.linux.dev,
-	rust-for-linux@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: [PATCH v2] rust: io: use newtype for PhysAddr
-Date: Mon,  4 May 2026 14:14:21 +0300
-Message-ID: <20260504111421.72130-1-x@2005.tr>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260503103050.200526-1-x@2005.tr>
-References: <20260503103050.200526-1-x@2005.tr>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="aWkwRa0s"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-488940ccfa6so170505e9.1
+        for <iommu@lists.linux.dev>; Mon, 04 May 2026 05:13:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1777896789; x=1778501589; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=7MdnKaX0TB6YagnPneZAL0SbiGRfNhnRbVRU61aMvP8=;
+        b=aWkwRa0sakHPeRkmCPnYeOHZueipbmwAyziJmR6pA7W6cuQaxzyHfGsXInU44kLHD8
+         B7t0l6sd6cIVbV3RegDN2wXzx8JaZu0L1HEa/BQDR7OdcOiLJxFuwDThN5eq2A7zc1gi
+         qXl6izeulrUf0PyWXl1X67HLw7rd/3pEHWvkualyLdssHHZm2x8smlFlWKU6xWOq8QQJ
+         zlMDCiWhMe3C7mTiW5IYOGidUnlEnPsW29dWicJa09WQK3OWMaFLy6z/S2r8+PhLf/5U
+         bqImwvk9i27VCHrDBpHkXTsfNxdgJPc7UIfXuy85xzIExUHCpt/HH8epcjeoRNNKi7Wa
+         iFLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777896789; x=1778501589;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=7MdnKaX0TB6YagnPneZAL0SbiGRfNhnRbVRU61aMvP8=;
+        b=BfhCt5ULCFmRXOK1Joi1WM0JLRMmnM7OI5ISMn4hYzq1ReT8be3ukcrdztofo/LhTm
+         r4mageHC1qomv3ZwACbkE7qgAdiKwuivq+1HosRVG9dIgpIkWBD9+Rmq4qQxweWuhlxV
+         qG0omw4fEBRB8WS3MvuWuYkWEEjT/lpdTI5RBaDfkYjeLIQn210rajsceO0RWwGn0gz0
+         7atiDv3CutQkXAq2MvmySLdO/bkZH3mmDCDvCEDdjDOYtFU14+9TzfFyfqCAOfOBIlML
+         aBb8u0iFGyz2aPdERXf3kiOJdtFEZThRI6FEjEE35Txz2opXNkHoTg4Qlj7J9cPRVrUl
+         QzXg==
+X-Forwarded-Encrypted: i=1; AFNElJ/U/uU792UJyDb3kf3WnVleIyCT6qPFlvoPmXn/h66tXJsO2il9jBk6sNt6BgWQYuY7AyYiJw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwoapBeZ3PvelR3fonlKJMxL1oQq8QjQ6ocyNRe1YqlfBpwAIWa
+	dQYbkbU7qPYO7s2X7L7RuqULeOfR5dOCdPnDHGpMk95XaGfYPgXFoVOz4DP1Cxz6TA==
+X-Gm-Gg: AeBDiev5R2x7mIsZ9XLmdzDtulVWQu1+KpGkH/NOFU3sje9HAJoy653so00nZb//qB1
+	dNSw9lRppx+8MIua5l/wpce6H6om3hGoymQzqXHG2CAVj2OYnuFU5AfoPt7xPSJIN53+28WsKkR
+	gScgCfByUaF28Tcg5ZnEgYy41X6CTrHaLQraPID15y2zYFC5oGKriFGRh5dG1bNhapGVWjuMuLy
+	ocpEnOiOj52tsPc8eD60jmQ+BjrQASb0TNm+7qD1ao0jYFl5Hi2yvcT/9PSl6kBJKGKRP3yDB+G
+	CCKQIkkAWaKlHiEGY0EYLbEDowuWc9WC4hI90g5aVoxc/wMDtyvqRNZ4izd2D+nGGAuveIUTIDt
+	wRz82GpLFopAWDKjFPSTrxLiAjKTLvgr5mX3AqlDd5szM6G2G936n/x1WRXmD8B9yOZzX4qzEX3
+	mqQKMmWgJcIdCkFV7D6+yMODWQz8aeBEGUPJyBEeLqoEyxZkgoHBzME0zoHIVBi8RurcWvSvYYg
+	J4TYg==
+X-Received: by 2002:a05:600c:c3cf:10b0:485:1a54:9407 with SMTP id 5b1f17b1804b1-48a97f9d4cbmr1615265e9.0.1777896788643;
+        Mon, 04 May 2026 05:13:08 -0700 (PDT)
+Received: from google.com (8.181.38.34.bc.googleusercontent.com. [34.38.181.8])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-44a8bf18c9bsm25362412f8f.0.2026.05.04.05.13.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 May 2026 05:13:07 -0700 (PDT)
+Date: Mon, 4 May 2026 12:13:04 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
+	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
+	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
+	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
+	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
+	vdonnefort@google.com, sebastianene@google.com, keirf@google.com
+Subject: Re: [PATCH v6 03/25] iommu/arm-smmu-v3: Split code with hyp
+Message-ID: <afiNUBlnTGNzXIan@google.com>
+References: <20260501111928.259252-1-smostafa@google.com>
+ <20260501111928.259252-4-smostafa@google.com>
+ <20260501124445.GC6912@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260501124445.GC6912@ziepe.ca>
 
-From: Favilances Noir <favilances@proton.me>
+On Fri, May 01, 2026 at 09:44:45AM -0300, Jason Gunthorpe wrote:
+> On Fri, May 01, 2026 at 11:19:05AM +0000, Mostafa Saleh wrote:
+> > +int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+> > +{
+> > +	memset(cmd, 0, 1 << CMDQ_ENT_SZ_SHIFT);
+> > +	cmd[0] |= FIELD_PREP(CMDQ_0_OP, ent->opcode);
+> 
+> Hopefully I get to it today, but I am going to post a series that will
+> move this logic into the headers while deleting arm_smmu_cmdq_ent. It
+> should be directly usable for pkvm as well to achieve this same split
+> without having to shove a giant inline into a header file.
+> 
+> https://github.com/jgunthorpe/linux/commits/iommu_pt_arm64/
+> 
+> cover-letter: Remove SMMUv3 struct arm_smmu_cmdq_ent
 
-Currently, PhysAddr is a type alias for phys_addr_t. This means
-that physical addresses can be mixed with unrelated integer values
-without Rust noticing.
+I see it’s already posted, I will go through it and provide feedback there.
 
-Use a transparent newtype for PhysAddr instead, and update the
-affected call sites to perform explicit raw conversions at the FFI
-boundary.
+Thanks,
+Mostafa
 
-This keeps the existing phys_addr_t representation while making
-physical addresses distinct in Rust type checking.
-
-Drop the unused Clone and Copy derives from PhysAddr, as pointed out
-in review.
-
-Signed-off-by: Favilances Noir <favilances@proton.me>
----
- rust/kernel/devres.rs        |  8 +++++---
- rust/kernel/io.rs            | 29 +++++++++++++++++++++++------
- rust/kernel/io/mem.rs        |  4 ++--
- rust/kernel/io/resource.rs   |  6 +++---
- rust/kernel/iommu/pgtable.rs |  2 +-
- 5 files changed, 34 insertions(+), 15 deletions(-)
-
-diff --git a/rust/kernel/devres.rs b/rust/kernel/devres.rs
-index 9e5f93aed20c..beb3723d2519 100644
---- a/rust/kernel/devres.rs
-+++ b/rust/kernel/devres.rs
-@@ -85,10 +85,10 @@ struct Inner<T> {
- ///     ///
- ///     /// [`paddr`, `paddr` + `SIZE`) must be a valid MMIO region that is mappable into the CPUs
- ///     /// virtual address space.
--///     unsafe fn new(paddr: usize) -> Result<Self>{
-+///     unsafe fn new(paddr: PhysAddr) -> Result<Self>{
- ///         // SAFETY: By the safety requirements of this function [`paddr`, `paddr` + `SIZE`) is
- ///         // valid for `ioremap`.
--///         let addr = unsafe { bindings::ioremap(paddr as PhysAddr, SIZE) };
-+///         let addr = unsafe { bindings::ioremap(paddr.into_raw(), SIZE) };
- ///         if addr.is_null() {
- ///             return Err(ENOMEM);
- ///         }
-@@ -114,7 +114,9 @@ struct Inner<T> {
- /// }
- /// # fn no_run(dev: &Device<Bound>) -> Result<(), Error> {
- /// // SAFETY: Invalid usage for example purposes.
--/// let iomem = unsafe { IoMem::<{ core::mem::size_of::<u32>() }>::new(0xBAAAAAAD)? };
-+/// let iomem = unsafe {
-+///     IoMem::<{ core::mem::size_of::<u32>() }>::new(PhysAddr::from_raw(0xBAAAAAAD))?
-+/// };
- /// let devres = Devres::new(dev, iomem)?;
- ///
- /// let res = devres.try_access().ok_or(ENXIO)?;
-diff --git a/rust/kernel/io.rs b/rust/kernel/io.rs
-index fcc7678fd9e3..999fa285a6ec 100644
---- a/rust/kernel/io.rs
-+++ b/rust/kernel/io.rs
-@@ -21,9 +21,24 @@
- 
- /// Physical address type.
- ///
--/// This is a type alias to either `u32` or `u64` depending on the config option
--/// `CONFIG_PHYS_ADDR_T_64BIT`, and it can be a u64 even on 32-bit architectures.
--pub type PhysAddr = bindings::phys_addr_t;
-+/// This wraps either `u32` or `u64` depending on the config option
-+/// `CONFIG_PHYS_ADDR_T_64BIT`, and it can be a `u64` even on 32-bit architectures.
-+#[repr(transparent)]
-+pub struct PhysAddr(bindings::phys_addr_t);
-+
-+impl PhysAddr {
-+    /// Creates a physical address from the raw C type.
-+    #[inline]
-+    pub const fn from_raw(value: bindings::phys_addr_t) -> Self {
-+        Self(value)
-+    }
-+
-+    /// Turns this physical address into the raw C type.
-+    #[inline]
-+    pub const fn into_raw(self) -> bindings::phys_addr_t {
-+        self.0
-+    }
-+}
- 
- /// Resource Size type.
- ///
-@@ -101,10 +116,10 @@ pub fn maxsize(&self) -> usize {
- ///     ///
- ///     /// [`paddr`, `paddr` + `SIZE`) must be a valid MMIO region that is mappable into the CPUs
- ///     /// virtual address space.
--///     unsafe fn new(paddr: usize) -> Result<Self>{
-+///     unsafe fn new(paddr: PhysAddr) -> Result<Self>{
- ///         // SAFETY: By the safety requirements of this function [`paddr`, `paddr` + `SIZE`) is
- ///         // valid for `ioremap`.
--///         let addr = unsafe { bindings::ioremap(paddr as PhysAddr, SIZE) };
-+///         let addr = unsafe { bindings::ioremap(paddr.into_raw(), SIZE) };
- ///         if addr.is_null() {
- ///             return Err(ENOMEM);
- ///         }
-@@ -131,7 +146,9 @@ pub fn maxsize(&self) -> usize {
- ///
- ///# fn no_run() -> Result<(), Error> {
- /// // SAFETY: Invalid usage for example purposes.
--/// let iomem = unsafe { IoMem::<{ core::mem::size_of::<u32>() }>::new(0xBAAAAAAD)? };
-+/// let iomem = unsafe {
-+///     IoMem::<{ core::mem::size_of::<u32>() }>::new(PhysAddr::from_raw(0xBAAAAAAD))?
-+/// };
- /// iomem.write32(0x42, 0x0);
- /// assert!(iomem.try_write32(0x42, 0x0).is_ok());
- /// assert!(iomem.try_write32(0x42, 0x4).is_err());
-diff --git a/rust/kernel/io/mem.rs b/rust/kernel/io/mem.rs
-index 7dc78d547f7a..f21f9038b297 100644
---- a/rust/kernel/io/mem.rs
-+++ b/rust/kernel/io/mem.rs
-@@ -254,12 +254,12 @@ fn ioremap(resource: &Resource) -> Result<Self> {
-             // SAFETY:
-             // - `res_start` and `size` are read from a presumably valid `struct resource`.
-             // - `size` is known not to be zero at this point.
--            unsafe { bindings::ioremap_np(res_start, size) }
-+            unsafe { bindings::ioremap_np(res_start.into_raw(), size) }
-         } else {
-             // SAFETY:
-             // - `res_start` and `size` are read from a presumably valid `struct resource`.
-             // - `size` is known not to be zero at this point.
--            unsafe { bindings::ioremap(res_start, size) }
-+            unsafe { bindings::ioremap(res_start.into_raw(), size) }
-         };
- 
-         if addr.is_null() {
-diff --git a/rust/kernel/io/resource.rs b/rust/kernel/io/resource.rs
-index b7ac9faf141d..5dda1061db68 100644
---- a/rust/kernel/io/resource.rs
-+++ b/rust/kernel/io/resource.rs
-@@ -58,7 +58,7 @@ fn drop(&mut self) {
-         };
- 
-         // SAFETY: Safe as per the invariant of `Region`.
--        unsafe { release_fn(start, size) };
-+        unsafe { release_fn(start.into_raw(), size) };
-     }
- }
- 
-@@ -113,7 +113,7 @@ pub fn request_region(
-         let region = unsafe {
-             bindings::__request_region(
-                 self.0.get(),
--                start,
-+                start.into_raw(),
-                 size,
-                 name.as_char_ptr(),
-                 flags.0 as c_int,
-@@ -137,7 +137,7 @@ pub fn size(&self) -> ResourceSize {
-     pub fn start(&self) -> PhysAddr {
-         let inner = self.0.get();
-         // SAFETY: Safe as per the invariants of `Resource`.
--        unsafe { (*inner).start }
-+        PhysAddr::from_raw(unsafe { (*inner).start })
-     }
- 
-     /// Returns the name of the resource.
-diff --git a/rust/kernel/iommu/pgtable.rs b/rust/kernel/iommu/pgtable.rs
-index c88e38fd938a..ae724ca1e8ad 100644
---- a/rust/kernel/iommu/pgtable.rs
-+++ b/rust/kernel/iommu/pgtable.rs
-@@ -182,7 +182,7 @@ pub unsafe fn map_pages(
-             (map_pages)(
-                 self.raw_ops(),
-                 iova,
--                paddr,
-+                paddr.into_raw(),
-                 pgsize,
-                 pgcount,
-                 prot as i32,
--- 
-2.54.0
-
+> 
+> Jason
