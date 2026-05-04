@@ -1,172 +1,172 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A1461A683E
-	for <iommu@lists.linux.dev>; Mon,  4 May 2026 12:30:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74E5B378818
+	for <iommu@lists.linux.dev>; Mon,  4 May 2026 12:54:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777897841; cv=none; b=JqrMLSNAejzHfnzOKFoZ3y6wHLus/OVqqzMhRsysiMXKXwIOlIZmEq8/3IcNqTai0RP7t4j4SGnjEfZ6qnCgsinQqcqL/LCPbEzPB+F0uAmmhK+y4WfSfv3OhYygM325dhxXljr69xoXkk2xAzQ0YWrHjnCmRBNLupPsMz2AHq0=
+	t=1777899242; cv=none; b=iAnYTxmT0OM1GGc8DAkN/VMO0lXF+en/WrNbvvVf6YZmbG8ZQwgS7db5lytcOZXXgy+b6ZSq+edTMhBQioFeWWrLwnAG/WOwfq9ZDuc7plHs9OBJuNQ5QbXckjcQvpy3NHT48SvfgszTVhc/NNKfPGa7EbOI1mXm9VC6WJlr6cQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777897841; c=relaxed/simple;
-	bh=4ZOBMscc1HOs7kCpJsHpKzdFOrZP/gFzsttOdLIt+CQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fXKdUueDNJYkjMWUaOa9FB7G6URcJIsemZ5zVWdu3ff4xHZczXhfeRfKT8O50/wAMu4XqBmnwTHZ8f/QM/Y97TG4j5SR4Xg1AK75HMMZ2q9ZqeKnyH/y424Xk1avUQAl5gDBLqZQ7tCZC6ONgdTKXoLBPpgdKkBGmxQ0Q9GEeI8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=v/E8mNj/; arc=none smtp.client-ip=209.85.128.41
+	s=arc-20240116; t=1777899242; c=relaxed/simple;
+	bh=yAqL4q0N0jSQt7KcmvNEWpAu/gSojLBNjarC0tiPw8A=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=V5iy/PXMx7lwJj3cRBbfHO1pBoWrVdGwfKaioQO9X9qJB7NrA7FWuwFyE5DhXV2Iyzd0A6I1ABqquVgqrnXs13Di6l0Lh/Hitk1FKW1kjL8szLBexon5Jpl6J/Qmf/OQFr3ecXIu/TCFnu3OAZXURSzFP1YGTzXDVuzDqYatS0c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=WXEjkv4R; arc=none smtp.client-ip=209.85.216.73
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="v/E8mNj/"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-488940ccfa6so171325e9.1
-        for <iommu@lists.linux.dev>; Mon, 04 May 2026 05:30:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="WXEjkv4R"
+Received: by mail-pj1-f73.google.com with SMTP id 98e67ed59e1d1-35fbb57764aso5428478a91.1
+        for <iommu@lists.linux.dev>; Mon, 04 May 2026 05:54:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1777897839; x=1778502639; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=qOfQTG3NufNYyUm+WMPkXEQQNupQgi3c8ZHhQrRCx6U=;
-        b=v/E8mNj/ljFvZDn/cR2FRurYlhqqWpjW1sbHLoYnsnDSGD6xifYCkZztpI76eixrpL
-         7It8Qx0dQAGppsUgSWG70yYcTtTnZgw3qVEIx6fY6+Daino0ZB5cOgkkD4mgX+HHBjnz
-         0QHacvpHEmDsJd3a3WTVC9F5cjEdbf+VnAt5YS9tpzXI4qhjtpIRX5pQ3MJQlcr9SU35
-         noEvu5ou5DB5RtD1NH2MiOU/R2cOQ/RddZ+9RXEY1tjAiCVrgjqz8P3cG5HWUCagtDLT
-         XSysGoNN9TP/xv4Jt0cKgYo7un2TC4HjaatS9YVqAzdyek9cEPFVQp43eUSa01z9RNcw
-         VTfg==
+        d=google.com; s=20251104; t=1777899241; x=1778504041; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=kKE9/d7s5TzTov68yHVyHNVKvHYTgS1dMt0EB2Qan4M=;
+        b=WXEjkv4R5H0/9G3IjSulaQPaJoYUPI+M0JjKpzVZvLOAgENovenjKxFWI1g45WJiyd
+         nBAcGvDqhGObNPE28ja1nShrzncXv2DJsSBO3MrqYqHAISYQyl/PyCp2riyCCXrwCO0H
+         tcElYNMTGKwNmOIdLluR+SNMW1RiN/RNDWev2t4BGm7T8mL8Df3TWoLhDesi4AB78K4r
+         Y+O045YJUvQyuFz2bEk6v/9QfNllKa6iUpbbj7YHI+eYu1ujBLYa3qEkVkZIcCtWDTo3
+         Ro3xXNUwJAGoFJue2F5rT8iAQ7ZclLMX7nIUZLPh36xgoxyETyopvW21ZYp8YsYxeocN
+         xO+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777897839; x=1778502639;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=qOfQTG3NufNYyUm+WMPkXEQQNupQgi3c8ZHhQrRCx6U=;
-        b=YQK5pcbSfnvNz1/nG1Tti4+vMuvOwB7SO7eMrVKydeO9W9yJoQ2+Aog7j+XEBkZzUm
-         MYia8EMp4h3wOTNithaqtAnTnBuY4hz3UeijMal2aWG8TAX3TRi56LAZBIRt3Nmr8Le1
-         I3VAWqHw1SE6rpD8vz6iifx63+rYa/G+GXVPydC2rNcEwmWxzgSs6CBuRfHxg0uVRgh8
-         qro5QWUj1eJwAGDbNo5YRfj/Sr4zl6n9kZReLsJ3ccNUY8VBYOK43K0pjdV7EnQ6OJq4
-         552GKZKK46PhQdMU7MPcyozCvBq7iFe7bTAIr8MzHRqs2XaqOBq7IYBdYXuGsGNVJ6jH
-         sbaQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/y6qoyaCXoWqqPrKYKOWmrIkZzw3WY6bY11cpi/QBJOPsbvXgvuoiixL5rU7OsjSlJMVS7bg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxx/ZvAsxaL+WHyfxLYs7DdAOnGDhZhsye29RyaIqcwKpSUIFyA
-	nVVnTJCSAAtF8OzZiK8g04pyLL3TiXH+ktKoIRxTPRaaOS3Y8lG3bfoqSWN1yhJtNw==
-X-Gm-Gg: AeBDievMa/3JJYj5Ms/fxTSzN5c3qQyyOG83ij3/1pbsDAd2T2AW0Z8ucoprrMNBX0X
-	yUl7RaxbBHgPPALciqRqGhWs/llwUzv3iSVcONFJucIO6ifq/4B7vbilE84NIaijnwlMc9YXn7n
-	A+6arzPmx5P020oS/W0CR/hjM4Bt5XUGkL+6Zj0ZFgIWoT37T4i+sw391ms0J7fUkUN2Oc+zpRo
-	eg/lFuMazbSoDr4WDDt3HyH3gsjB1HjhdmDBLU7XWERYVT6h/fzgwneNvS2ZgSytqMfpRt7TAvU
-	RejKAywcTzkNiHrkHZkcmltmK41hvODY9enZP+tH8mb9ChHEIxCGENCfHcorhgy28TIRwAASheZ
-	WU5ALejZ+siNmIwX47/YDubBGfOR/RUi6DSFBmZXCk5N5GzjhLBGozB0mZMWKFmRHHT4LO1UUcl
-	kMrysJthegMkozoNVFoi+Jk8dMyz4nTql1wePNSmZ9R7to7ES5PQddNzl55Ih/N02uqEPe1A/K3
-	DyoqA==
-X-Received: by 2002:a05:600c:63c4:b0:485:b6e4:9808 with SMTP id 5b1f17b1804b1-48ac315a359mr2185965e9.1.1777897838152;
-        Mon, 04 May 2026 05:30:38 -0700 (PDT)
-Received: from google.com (8.181.38.34.bc.googleusercontent.com. [34.38.181.8])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a8fee32fesm113417605e9.3.2026.05.04.05.30.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 May 2026 05:30:37 -0700 (PDT)
-Date: Mon, 4 May 2026 12:30:33 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
-	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
-	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
-	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
-	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
-	vdonnefort@google.com, sebastianene@google.com, keirf@google.com
-Subject: Re: [PATCH v6 13/25] iommu/arm-smmu-v3-kvm: Probe SMMU HW
-Message-ID: <afiRaQRmu7Evbzfn@google.com>
-References: <20260501111928.259252-1-smostafa@google.com>
- <20260501111928.259252-14-smostafa@google.com>
- <20260501125148.GE6912@ziepe.ca>
+        d=1e100.net; s=20251104; t=1777899241; x=1778504041;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=kKE9/d7s5TzTov68yHVyHNVKvHYTgS1dMt0EB2Qan4M=;
+        b=bLRXqmQv/Rf6AbWDDWQFw7G9Vab6AcbgigAbHoN6ULYfpsbtsiS7KI/vdagquvLm3A
+         JMM6r0WP0+j0frvdCHH+4kw4eqcFvmg4ZN/vImukfnQm4jpY7s6ZyxiHXwvUo4HLVIS5
+         wTzPbP7ZdONXnMB4LRlQ+w+vQ4pG9bIXRRfftTr2H/ZZcQhJx2MV5JcrF8h/EexYAoNQ
+         2zea8abn+W8gN9OKx+LpMX9AhisQ8GdzHbKphX6FI8EStExtfu5ecKvUlssXfptJz6Lz
+         Z8LBehzEWkOWawZ+rA9Ol0AFFHVE7oV6+MR9iLnBIyiU89+GXZ+mN4HjuRyz7Ia2YEsE
+         seyg==
+X-Gm-Message-State: AOJu0YyMTp/QLEGUU+ppvja0hPqqNe6jv4QviEDWkEcs7eHHVXhNIvS8
+	bnvuQP31nlIJfWLhrc+YmNSCOJ12vTTlLfTG8p4lGcs46TJkN0OG94GnVHqz5mwe4Y1yHY2hW3L
+	APChegasUxueeqjjnJozYrSlCKFdgRPmMhroegXw4JGK6b9wWA4WJBSdyuxMyQuujrVHHAPObVz
+	+zRGDwF3POQUrsWR31ZfbGNA0ry3qbfw==
+X-Received: from pgbee13.prod.google.com ([2002:a05:6a02:458d:b0:c73:9a1a:387d])
+ (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a20:4311:b0:35d:cc9a:8bc1
+ with SMTP id adf61e73a8af0-3a7f041ebf8mr7655271637.27.1777899240358; Mon, 04
+ May 2026 05:54:00 -0700 (PDT)
+Date: Mon,  4 May 2026 12:53:42 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260501125148.GE6912@ziepe.ca>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.54.0.545.g6539524ca2-goog
+Message-ID: <20260504125343.2088858-1-praan@google.com>
+Subject: [PATCH rc] iommu/arm-smmu-v3: Fix inconsistent ATS state tracking
+From: Pranjal Shrivastava <praan@google.com>
+To: iommu@lists.linux.dev
+Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, 
+	Nicolin Chen <nicolinc@nvidia.com>, Samiullah Khawaja <skhawaja@google.com>, 
+	Daniel Mentz <danielmentz@google.com>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
+	David Matlack <dmatlack@google.com>, Pranjal Shrivastava <praan@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, May 01, 2026 at 09:51:48AM -0300, Jason Gunthorpe wrote:
-> On Fri, May 01, 2026 at 11:19:15AM +0000, Mostafa Saleh wrote:
-> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > index 61e6ab364086..157acde0436d 100644
-> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > @@ -4738,12 +4738,6 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
-> >  	return 0;
-> >  }
-> >  
-> > -#define IIDR_IMPLEMENTER_ARM		0x43b
-> > -#define IIDR_PRODUCTID_ARM_MMU_600	0x483
-> > -#define IIDR_PRODUCTID_ARM_MMU_700	0x487
-> > -#define IIDR_PRODUCTID_ARM_MMU_L1	0x48a
-> > -#define IIDR_PRODUCTID_ARM_MMU_S3	0x498
-> > -
-> >  static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
-> >  {
-> >  	u32 reg;
-> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> > index 64618299d03a..f904f4d19609 100644
-> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> > @@ -84,6 +84,12 @@ struct arm_vsmmu;
-> >  #define IIDR_REVISION			GENMASK(15, 12)
-> >  #define IIDR_IMPLEMENTER		GENMASK(11, 0)
-> >  
-> > +#define IIDR_IMPLEMENTER_ARM		0x43b
-> > +#define IIDR_PRODUCTID_ARM_MMU_600	0x483
-> > +#define IIDR_PRODUCTID_ARM_MMU_700	0x487
-> > +#define IIDR_PRODUCTID_ARM_MMU_L1	0x48a
-> > +#define IIDR_PRODUCTID_ARM_MMU_S3	0x498
-> > +
-> >  #define ARM_SMMU_AIDR			0x1C
-> 
-> Lets put these hunks in some earlier patch to migrate out the
-> functions/etc
-> 
-> I think all these pkvm/arm-smmu-v3.c should just be building up the
-> driver.
+arm_smmu_enable_ats() ignores the return value of pci_enable_ats(). If
+pci_enable_ats() fails, the driver still updates its internal state
+master->ats_enabled to true in arm_smmu_attach_commit().
 
-Will do.
+This leads to a state mismatch between the SMMU driver and the PCI core,
+the SMMU driver operates assuming ATS is enabled. Later, when detaching
+the device the driver callspci_disable_ats() because it believes ATS is
+enabled. This triggers a warning in the PCI core since ATS was never
+actually enabled on the device:
 
-> 
-> > +static bool smmu_nesting_supported(struct hyp_arm_smmu_v3_device *smmu)
-> > +{
-> > +	unsigned int implementer, productid, variant, revision;
-> > +	u32 reg;
-> > +
-> > +	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_S1) ||
-> > +	    !(smmu->features & ARM_SMMU_FEAT_TRANS_S2))
-> > +		return false;
-> > +
-> > +	reg = readl_relaxed(smmu->base + ARM_SMMU_IIDR);
-> > +	implementer = FIELD_GET(IIDR_IMPLEMENTER, reg);
-> > +	productid = FIELD_GET(IIDR_PRODUCTID, reg);
-> > +	variant = FIELD_GET(IIDR_VARIANT, reg);
-> > +	revision = FIELD_GET(IIDR_REVISION, reg);
-> > +
-> > +	if (implementer != IIDR_IMPLEMENTER_ARM)
-> > +		return true;
-> > +
-> > +	if (productid == IIDR_PRODUCTID_ARM_MMU_600)
-> > +		return variant >= 2;
-> > +	else if (productid == IIDR_PRODUCTID_ARM_MMU_700)
-> > +		return !(variant < 1 || revision < 1);
-> > +
-> > +	return true;
-> > +}
-> 
-> Why not share all this errata stuff with the idr parsing code too?
-> 
-> We already have ARM_SMMU_FEAT_NESTING that has the above calculation.
-> 
-> The two drivers use the same ARM_SMMU_FEAT system, I would expect one
-> chunk of shared code to compute the FEATs, who cares if pkvm doesn't
-> use all of them?
-> 
-> Use the same errata logic and so on to get to the feat bitmap.
+[  127.925080] ------------[ cut here ]------------
+[  127.925084] WARNING: drivers/pci/ats.c:132 at pci_disable_ats+0x94/0xa8, CPU#42: iova_stress/12240
+[  127.949761] Modules linked in: vfat fat dummy bridge stp llc cdc_ncm cdc_eem cdc_ether usbnet mii xhci_pci xhci_hcd ehci_pci ehci_hcd
+[  127.961760] CPU: 42 UID: 0 PID: 12240 Comm: iova_stress Not tainted 7.1.0-smp-DEV #4 PREEMPTLAZY
+[  127.970619] Hardware name: <REDACTED>
+[  127.977655] pstate: 61400009 (nZCv daif +PAN -UAO -TCO +DIT -SSBS BTYPE=--)
+[  127.984603] pc : pci_disable_ats+0x94/0xa8
+[  127.988687] lr : arm_smmu_attach_prepare+0x104/0x310
+[  127.993641] sp : ffff8000ae013ab0
+[  127.996943] x29: ffff8000ae013ac0 x28: ffff0001481b0000 x27: ffff000103d17980
+[  128.004066] x26: ffff0001093aad48 x25: ffff0001093ab020 x24: ffff0001118200c8
+[  128.011189] x23: ffffcf76ddf1ca1c x22: ffffcf76df679020 x21: ffff000148f1df00
+[  128.018311] x20: ffff8000ae013c18 x19: ffff8000ae013b28 x18: 0000000000000000
+[  128.025434] x17: 0000000000000000 x16: ffff00010945a358 x15: ffff000110ffd080
+[  128.032557] x14: 0000000000000200 x13: 0000000000000002 x12: 0000000000000001
+[  128.039679] x11: 0000000000004040 x10: 0000000000000001 x9 : ffffcf76dd37f504
+[  128.046801] x8 : 0000000000000000 x7 : 0000000000000000 x6 : 0000000000000000
+[  128.053924] x5 : 0000000000000000 x4 : 0000000000000000 x3 : ffff0001093ab000
+[  128.061046] x2 : 0000000000000000 x1 : 0000000000000001 x0 : ffff000111820000
+[  128.068169] Call trace:
+[  128.070603]  pci_disable_ats+0x94/0xa8 (P)
+[  128.074688]  arm_smmu_attach_prepare+0x104/0x310
+[  128.079292]  arm_smmu_attach_dev_ste+0x128/0x1e0
+[  128.083899]  arm_smmu_attach_dev_blocked+0x50/0x88
+[  128.088677]  __iommu_attach_device+0x30/0x138
+[  128.093026]  __iommu_group_set_domain_internal+0xdc/0x228
+[  128.098412]  __iommu_take_dma_ownership+0x118/0x150
+[  128.103278]  iommu_group_claim_dma_owner+0x48/0x80
+[  128.108056]  vfio_container_attach_group+0xc8/0x1b0
+[  128.112927]  vfio_group_fops_unl_ioctl+0x578/0x968
+[  128.117706]  __arm64_sys_ioctl+0x90/0xe8
+[  128.121622]  invoke_syscall+0x50/0x108
+[  128.125366]  el0_svc_common+0x94/0xe8
+[  128.129016]  do_el0_svc+0x24/0x38
+[  128.132319]  el0_svc+0x44/0xf8
+[  128.135364]  el0t_64_sync_handler+0x68/0xe0
+[  128.139534]  el0t_64_sync+0x1b0/0x1b8
+[  128.143185] ---[ end trace 0000000000000000 ]---
 
-Makes sense.
+The issue was exposed under heavy load when running a VFIO-based DMA map
+stress test: iova_stress [1]
 
-Thanks,
-Mostafa
+Fix this by propagating the error from arm_smmu_enable_ats() and updating
+state->ats_enabled to false on failure. This ensures that
+master->ats_enabled correctly reflects the actual state of the device.
 
-> 
-> Jason
+Signed-off-by: Pranjal Shrivastava <praan@google.com>
+
+[1] https://github.com/soleen/iova_stress
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index e8d7dbe495f0..50ede399089d 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -3051,8 +3051,9 @@ static bool arm_smmu_ats_supported(struct arm_smmu_master *master)
+ 	return dev_is_pci(dev) && pci_ats_supported(to_pci_dev(dev));
+ }
+ 
+-static void arm_smmu_enable_ats(struct arm_smmu_master *master)
++static int arm_smmu_enable_ats(struct arm_smmu_master *master)
+ {
++	int ret = 0;
+ 	size_t stu;
+ 	struct pci_dev *pdev;
+ 	struct arm_smmu_device *smmu = master->smmu;
+@@ -3065,8 +3066,11 @@ static void arm_smmu_enable_ats(struct arm_smmu_master *master)
+ 	 * ATC invalidation of PASID 0 causes the entire ATC to be flushed.
+ 	 */
+ 	arm_smmu_atc_inv_master(master, IOMMU_NO_PASID);
+-	if (pci_enable_ats(pdev, stu))
++	ret = pci_enable_ats(pdev, stu);
++	if (ret)
+ 		dev_err(master->dev, "Failed to enable ATS (STU %zu)\n", stu);
++
++	return ret;
+ }
+ 
+ static int arm_smmu_enable_pasid(struct arm_smmu_master *master)
+@@ -3635,7 +3639,8 @@ void arm_smmu_attach_commit(struct arm_smmu_attach_state *state)
+ 	arm_smmu_attach_commit_vmaster(state);
+ 
+ 	if (state->ats_enabled && !master->ats_enabled) {
+-		arm_smmu_enable_ats(master);
++		if (arm_smmu_enable_ats(master))
++			state->ats_enabled = false;
+ 	} else if (state->ats_enabled && master->ats_enabled) {
+ 		/*
+ 		 * The translation has changed, flush the ATC. At this point the
+-- 
+2.54.0.545.g6539524ca2-goog
+
