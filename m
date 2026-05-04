@@ -1,53 +1,53 @@
-Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
+Received: from mail-pg1-f202.google.com (mail-pg1-f202.google.com [209.85.215.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74E5B378818
-	for <iommu@lists.linux.dev>; Mon,  4 May 2026 12:54:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34BBA3E0236
+	for <iommu@lists.linux.dev>; Mon,  4 May 2026 16:39:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777899242; cv=none; b=iAnYTxmT0OM1GGc8DAkN/VMO0lXF+en/WrNbvvVf6YZmbG8ZQwgS7db5lytcOZXXgy+b6ZSq+edTMhBQioFeWWrLwnAG/WOwfq9ZDuc7plHs9OBJuNQ5QbXckjcQvpy3NHT48SvfgszTVhc/NNKfPGa7EbOI1mXm9VC6WJlr6cQ=
+	t=1777912749; cv=none; b=VMXcJmXzcU5GB5uw8gDjexzxgbtQgTElNNZ5sb5is4qIAZEnwqxtYs56T1i2z2Uj+UPauSbAyjRqtl07uriskpLJeds0zZ9WfPnk8Esn0zcGv+e3hPt6lnPrHPCG5iQlLKakQ/Zp8AjLn4kjvzwbKp8WMZsW7OFHlwwPUojIJIg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777899242; c=relaxed/simple;
-	bh=yAqL4q0N0jSQt7KcmvNEWpAu/gSojLBNjarC0tiPw8A=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=V5iy/PXMx7lwJj3cRBbfHO1pBoWrVdGwfKaioQO9X9qJB7NrA7FWuwFyE5DhXV2Iyzd0A6I1ABqquVgqrnXs13Di6l0Lh/Hitk1FKW1kjL8szLBexon5Jpl6J/Qmf/OQFr3ecXIu/TCFnu3OAZXURSzFP1YGTzXDVuzDqYatS0c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=WXEjkv4R; arc=none smtp.client-ip=209.85.216.73
+	s=arc-20240116; t=1777912749; c=relaxed/simple;
+	bh=f1vHlRbgag1Kqk9CwN/Igd+rU4HdeCq8Y6uICkqJTAg=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=NWX7MklzEUmtsO0RqbKsg6xl2OgukxlkG4HOP3Qqx4aH86EGjN0nj123iQkqqFZ1jz5wnwjgTK8EiPGnOyVacHsB2+f3ZZajFAV/GL9a9h7h+BD5cMwGSJR/0vMWc6rrfWpToXG6SuBYsxt4d91gOFVsoFrGwiJ1Z3qyiIYoFe8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Azmrzyns; arc=none smtp.client-ip=209.85.215.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="WXEjkv4R"
-Received: by mail-pj1-f73.google.com with SMTP id 98e67ed59e1d1-35fbb57764aso5428478a91.1
-        for <iommu@lists.linux.dev>; Mon, 04 May 2026 05:54:01 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Azmrzyns"
+Received: by mail-pg1-f202.google.com with SMTP id 41be03b00d2f7-c80b103360cso602089a12.3
+        for <iommu@lists.linux.dev>; Mon, 04 May 2026 09:39:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1777899241; x=1778504041; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1777912747; x=1778517547; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=kKE9/d7s5TzTov68yHVyHNVKvHYTgS1dMt0EB2Qan4M=;
-        b=WXEjkv4R5H0/9G3IjSulaQPaJoYUPI+M0JjKpzVZvLOAgENovenjKxFWI1g45WJiyd
-         nBAcGvDqhGObNPE28ja1nShrzncXv2DJsSBO3MrqYqHAISYQyl/PyCp2riyCCXrwCO0H
-         tcElYNMTGKwNmOIdLluR+SNMW1RiN/RNDWev2t4BGm7T8mL8Df3TWoLhDesi4AB78K4r
-         Y+O045YJUvQyuFz2bEk6v/9QfNllKa6iUpbbj7YHI+eYu1ujBLYa3qEkVkZIcCtWDTo3
-         Ro3xXNUwJAGoFJue2F5rT8iAQ7ZclLMX7nIUZLPh36xgoxyETyopvW21ZYp8YsYxeocN
-         xO+A==
+        bh=L6V0+8hcFN7kCbvWwsr0wEVNI1wsakbq0cnc7TLmQIQ=;
+        b=AzmrzynsN7SpmdL7xDrB+ids+5FTSouYm4EZidVQqn2soEas8cdVEav43K7h92Y4ol
+         aEkadhBk7U168un8HKdIpbwLfzt+rigp6NW27rpeQqv1GO13HOfZ4aAPaWuTWze4OY9g
+         sWekN7vcXE//xpvA46B4YLxw/IXDnFVUalZkN7NoRnrxoVi0yO8amSp6HNqt2yyBnO3l
+         o/md5GWTjSVj7W5HntKP0dkQOruNeJDo1oCoSd94k5yaK+kXxasUtfNyqewJQTC3KVOt
+         tZG0ryqO8ExJ+d2J33K8VualcZEBJSv6tZ+Sabz67Nu1uLinubP4kQ2yidmbArlHJMHY
+         LyNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777899241; x=1778504041;
+        d=1e100.net; s=20251104; t=1777912747; x=1778517547;
         h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=kKE9/d7s5TzTov68yHVyHNVKvHYTgS1dMt0EB2Qan4M=;
-        b=bLRXqmQv/Rf6AbWDDWQFw7G9Vab6AcbgigAbHoN6ULYfpsbtsiS7KI/vdagquvLm3A
-         JMM6r0WP0+j0frvdCHH+4kw4eqcFvmg4ZN/vImukfnQm4jpY7s6ZyxiHXwvUo4HLVIS5
-         wTzPbP7ZdONXnMB4LRlQ+w+vQ4pG9bIXRRfftTr2H/ZZcQhJx2MV5JcrF8h/EexYAoNQ
-         2zea8abn+W8gN9OKx+LpMX9AhisQ8GdzHbKphX6FI8EStExtfu5ecKvUlssXfptJz6Lz
-         Z8LBehzEWkOWawZ+rA9Ol0AFFHVE7oV6+MR9iLnBIyiU89+GXZ+mN4HjuRyz7Ia2YEsE
-         seyg==
-X-Gm-Message-State: AOJu0YyMTp/QLEGUU+ppvja0hPqqNe6jv4QviEDWkEcs7eHHVXhNIvS8
-	bnvuQP31nlIJfWLhrc+YmNSCOJ12vTTlLfTG8p4lGcs46TJkN0OG94GnVHqz5mwe4Y1yHY2hW3L
-	APChegasUxueeqjjnJozYrSlCKFdgRPmMhroegXw4JGK6b9wWA4WJBSdyuxMyQuujrVHHAPObVz
-	+zRGDwF3POQUrsWR31ZfbGNA0ry3qbfw==
-X-Received: from pgbee13.prod.google.com ([2002:a05:6a02:458d:b0:c73:9a1a:387d])
- (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a20:4311:b0:35d:cc9a:8bc1
- with SMTP id adf61e73a8af0-3a7f041ebf8mr7655271637.27.1777899240358; Mon, 04
- May 2026 05:54:00 -0700 (PDT)
-Date: Mon,  4 May 2026 12:53:42 +0000
+        bh=L6V0+8hcFN7kCbvWwsr0wEVNI1wsakbq0cnc7TLmQIQ=;
+        b=cLc5JiwhwTKa3eoXFBGD2gmly4kA7av+67ZAlIq9h79Q6FTO2q94RDUg5ChFOfbsE0
+         wmgytDjkGdcRODzCML4tk5K3KdRfBpc3DCJAhqctHaQKGvZgmPcKprwu+tBHeOO3vkE9
+         yK8X6w+WbPahlNNnZ55wL3gZQF11LWbLIHOZzQ7v8emjARofAlXTHTAR1zDHJnL1XOv9
+         zx4fk6jvzhQuQmErWgV9Oi7kgLr05jjW5knA2xG/BaSIOJv1k3EZHnsyDD9c+MkOMM9P
+         DRGKqVldUDakITNx8JiV3bvmsXCZpwXxfwg4pFM1X1igENgUvkhWr0b94fdTmOfPsU1r
+         ymyg==
+X-Gm-Message-State: AOJu0Yx2lS2B6ICeZ2CyRNA/pxyLGSN9/DVYgfiULWeE8H+YNZ44o85B
+	Yq4mO7MOMFGYuggp+P822cqyJM94dJQmsSAJkbTvYFu6tc62/aDKzAQDfDRTzequ4eqkU+YyDUI
+	q6vWtp1plEA0HYfYCUFcRCE+zOxQJUyq0yFnszNybQpQZlQdzCVHqZx3/x0pKfd4+zmwEjxZxaf
+	crlOv0GybE2Pk0swhKK9to+2oQDgmygQ==
+X-Received: from pfbfc22.prod.google.com ([2002:a05:6a00:2e16:b0:82f:2efd:4159])
+ (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:369b:b0:82a:6f69:7f72
+ with SMTP id d2e1a72fcca58-8352d28b64bmr9819246b3a.47.1777912747062; Mon, 04
+ May 2026 09:39:07 -0700 (PDT)
+Date: Mon,  4 May 2026 16:38:42 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -55,8 +55,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 X-Mailer: git-send-email 2.54.0.545.g6539524ca2-goog
-Message-ID: <20260504125343.2088858-1-praan@google.com>
-Subject: [PATCH rc] iommu/arm-smmu-v3: Fix inconsistent ATS state tracking
+Message-ID: <20260504163842.2692314-1-praan@google.com>
+Subject: [PATCH rc v2] iommu/arm-smmu-v3: Fix inconsistent ATS state tracking
 From: Pranjal Shrivastava <praan@google.com>
 To: iommu@lists.linux.dev
 Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
@@ -122,6 +122,7 @@ Fix this by propagating the error from arm_smmu_enable_ats() and updating
 state->ats_enabled to false on failure. This ensures that
 master->ats_enabled correctly reflects the actual state of the device.
 
+Fixes: 7497f4211f4f ("iommu/arm-smmu-v3: Make changing domains be hitless for ATS")
 Signed-off-by: Pranjal Shrivastava <praan@google.com>
 
 [1] https://github.com/soleen/iova_stress
