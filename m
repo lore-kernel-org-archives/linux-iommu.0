@@ -1,66 +1,65 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B01EF4921AE
-	for <iommu@lists.linux.dev>; Tue,  5 May 2026 16:43:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3B6148BD29
+	for <iommu@lists.linux.dev>; Tue,  5 May 2026 16:48:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777999409; cv=none; b=HQ6HPcsG4SKCY7u6Vnp4l10/uj6v5Nk1aml2DclEryWE0t7xm3fJ5x65+YlaKN4IuKYrdwuIEv7z23CkMOqE+fenZ0l2l5fsgY1SdtOmCPgGVzRiCgA6r76igPBJc8ybeend3JR3jSb+ncwkP4hbX5btOxWiiygsSxN1rnVKFvg=
+	t=1777999700; cv=none; b=ii+bhZM+GlJqK4yp2CfCwHC58xsy+yzvckUY6ma8+5wouFyiWBUeNdCOnWaLW1/sdfAdVbMJeAU9eK5dKXnHohYmK+hr9E/5VMZKX9t99+HI391KTrSphuGEW6/6y7DYHQPHEnRQH6pXdPn4+ZMm2W0hpes//8d+xomI6OukXEo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777999409; c=relaxed/simple;
-	bh=faS2CkT9BSZJpclVo/IT6hgfVCE3Khrz9KkbYaXxOUc=;
+	s=arc-20240116; t=1777999700; c=relaxed/simple;
+	bh=HZDV9B9whj7jMOnAALU0NHlqzHm0TKcc03SszyoLCcw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JQrkyrvw1Dt1WTAVpSKK6ZV70q72IPTSA1FWZsIFWcrRv9nnqz+ldP+C9WOQokHnQy3n6kwF44IR8XSvpzfKzboj+9FIIN59mgnFNesuvC3CiG8e5HwYBmuY7chbu+1M5xm+d6UQMcXEIePmz2jfZawHsFJT86WsORqB8ThnYlg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=XS6YWTLa; arc=none smtp.client-ip=209.85.128.54
+	 Content-Type:Content-Disposition:In-Reply-To; b=GoIdBy1bDKVv0+Ip/XHh2cOyMMB2fbFMX8ys8spsIWWX4CMpUAkL1Q1eAl6Vv0/Jz0pSoNAyJdbRwnOweXnY9Itcp5zkFeODrhrG0OdrilWZUPh7H/LsuBaU3Vn9QQlmPzJQY1Z6iqDuT2rY+q6wZqOcRhL+/LulW/gq02gl3Tw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Yx4QlEDO; arc=none smtp.client-ip=209.85.160.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="XS6YWTLa"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-488940ccfa6so255e9.1
-        for <iommu@lists.linux.dev>; Tue, 05 May 2026 09:43:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Yx4QlEDO"
+Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-50e61648f10so8261cf.1
+        for <iommu@lists.linux.dev>; Tue, 05 May 2026 09:48:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1777999402; x=1778604202; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1777999698; x=1778604498; darn=lists.linux.dev;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=HIyq5XxnZOa3QCDQC431jNPLKmCFh6Pbs13KNByKE/o=;
-        b=XS6YWTLaXQPikDElvq/UAeLboFtkWOJ/4z7s7UK6s1mXpokN/LV0pe3Fxw3xQIkWV/
-         aQKfsdvsIVzVbZKkqVj9SD0m/M03KabKR3GhbAex0OPTAh3CrHoIXzO9faj8eGe6G35o
-         RJ/Gt6GvgvYmtp7j1Yy0NoVAsvArjsrWLcVN77mN3H77iysBhM9IUSkBf9zrUqeohadX
-         O0iMWxPNzMOCoB+z1eyjsXU9MZpFjux0MSprARPfEiiIR/JLFJUvbOKVr4pVhiqfYA51
-         /SMz0rkd0/Hm+JcsBbFvcLbte9W88gvUo0bni6KYBj+hKkp2R+l73uAmy3uS5D5rxlL5
-         NyVw==
+        bh=Vp5iopfAmcsOX6ZIRTEf038gXmebvITcztxNgxO/nOk=;
+        b=Yx4QlEDOkAmRHBe8cgrTxL1mMtXO7obwwUAFV80aMryELdNcdyXLLgzeZaT6zQhdGR
+         Ea3Q81iVRTGqWZSBYyVpcquOI7EANzAlZXhGjDPT/5y/6WqArXTTfc2BeZl36YiNnjfn
+         w00Lk4ZDkmq2V9LNA5fYQpnYoU047MNbpp9JQdbDkZx8Aa188184v99iUNiJUF81dYBo
+         9jGbVqsflp4Sa3t6PebWhSwnib78A5VEukgct5LhyPvhk8fZ7+AArt2cOROhqgMPF9X1
+         Gx7OYrj561mwD3Fbhk83N4RRc6SEBUt6WBJpQSCsmL/8t6twdOFZAZs8PW5QBnsed6iE
+         NZzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777999402; x=1778604202;
+        d=1e100.net; s=20251104; t=1777999698; x=1778604498;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=HIyq5XxnZOa3QCDQC431jNPLKmCFh6Pbs13KNByKE/o=;
-        b=STuV68oWBhVfR9/VhYxVVg1x4z4Vh1/rRntJMdPKECFUh+55OIJm7JuyijcdXD91oR
-         Cd1OktDTIWaOJY8ZDQzhLTzcV0JJMn12u/S2A0+hiiGy+95jojhGnTj98non2hhaMa1F
-         F6+0boFgLcgy/j9VC8TZzBRr0QaQigCDEyAjmPcC8TSFPivcSBo7kPx8mHHuG7wFa07v
-         YTdbXTJRgsOthkfCiZNholFGNpIybrDRi6KNpR2MEvzYxeHLlJ/1fLWqV0KghlZ/DD/F
-         qGMQqs/ADaVBMe582JdUz3f+Xh3Y23d26pFyTQbPusTfy/1n2T7TAxW8v0PxbzXMVGdw
-         VmiA==
-X-Forwarded-Encrypted: i=1; AFNElJ/eJp8swiMpfkF4hQEtBuXR1okyQVRSthXofQLiQ1FKzgtIx0d2mHWadiUUWPa6Cv1Xze1qAA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwvN+gwBaXryMGxc2aGeQCQJlKXZcb9bsWQR+5aMNVp8ZSElGbj
-	dl7fFkOi0o7D8AIYpXSHlftuT6ljZGbt1UuQqJ5RQL2S0RtsF8Nw4eyi7I4LoIpiSV6LDK/2zvJ
-	YamOQHw==
-X-Gm-Gg: AeBDieuGu+BcA1kE70UVrcCXnBmiar8RpdicOEuS82Fdm3aeIzYy6pj2L5TyZiLbWEe
-	niqPNkhkI/nzOrbtfuP67VXQMkV2G9XY/snNhFA6USLkmy0AYnEA5WkIr3Atumo80LHXwYdSYNg
-	Xk1HCReSDguJBZiz6Q3v/AqR4HbfmMyBB7TzY+jHu9Bfj7cgai2JyJ9nijqM9cWYZ1iObZPZyIS
-	uCcXxclPvNyYJ54E7wf1OVuSebQTA31lTZpmlUM3W2jEeFXikMG9N7VI+BCwaL0a+ihBE9epK/K
-	ZllDei9CYaKeP01GRSIufOVEC14YfMPPff34C9cDlrIJs3ZyAFzFiCNeTqjgtZp6EF0Am+VeC0x
-	OnjYqR4dpEmt7jq6hiznxM5Do3eMK9bs3kcTT4NmfxglSusDR9gT2qAqro5ZQlHo+T6siJzHKJW
-	hiAP4i23faIVPr6XTqMateyQbd1OK2lPEUUvX67AAUd3KBkr1S4+GJ3HA5ghnLY+Le40avEF3lq
-	T2deQ==
-X-Received: by 2002:a05:600c:2214:b0:48a:6321:87f7 with SMTP id 5b1f17b1804b1-48d147423acmr907145e9.8.1777999402201;
-        Tue, 05 May 2026 09:43:22 -0700 (PDT)
+        bh=Vp5iopfAmcsOX6ZIRTEf038gXmebvITcztxNgxO/nOk=;
+        b=dPG2E7+majNNHf4BwbnaBGQsrquhIDzLxBBOfhwgkqXerz6rkGEj89hCuzgj7MGWos
+         xMZCSJcu6wt2X07qqb3SDSQ0914+qp2CWvD7PxMxGVSeRwazF1MFPTO2mSTd9PVf07tA
+         oqaE1OicJRRMv39HN4qMx8fz7G7Ss95NcJrCM4578iJz7HTbeWaaRWezOfV2C1AQhlqC
+         BPwOlpu8LHpZoPUWmbprWvlqlp35lnSymb2Vdbdx/7K4Nx9T/d2NGQbXPiREZWyf1uvR
+         J8BybdqrSbhh5eLxSeY8s1tcXArf60Xxu6rOhJ/LdeOcmd7R3c/6WvVApsfu2d7y2p+a
+         l2dA==
+X-Forwarded-Encrypted: i=1; AFNElJ8Z8kCwHBegYxzIdAEenmhptE6OkSLkC9FDqqFWUeFW//r0jU7nnkdbCkWx4TcZGOduSt0yow==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz7FR5u8gzAXn6yljLOIV8MmQt9RPwy9lTxqcjQN7dCQ/NkZUpb
+	b9nJbRt1hpVYRt3v37MEVwBquuQMwh7Zvqs9kgf1jg3zR1O5yndcBEwfiImxNYIocg==
+X-Gm-Gg: AeBDietmpuObjHtjBRq4eeZI9tCsdBUwdAo89egg0KgsHMQEHUNg+mZOXJJxuxi9GLq
+	LXnQ+LtMimR/BYc9HBMuEJqodgHcSfpkZdoeHXH3XSjH5UnSi6gC9gAnQ5mYOkczDjZkVRhqZQx
+	eLDMVqhBj2qfRpFWVXenFjbVUGV+0VUDVvjjIC4Ba+5bD0kAiSdcQQYJ6PsSldYKWKLoWnyJNLM
+	Vh+IWbCJGaHTgHz4fG88FvuH1eULyk5ipja9IknJ3DC0p0xJ9fQJxLwnMviojCk5Cf9y3LGo20x
+	B2KZsFQM5QDmQyrfim5WMPAcgXw1AdCTlRUcwt/6weyL1xi/4rCQYu6GAPjEuEtDbRYUJ4zBz96
+	gZBJLf5U+cmoRGQbLKCr4Q67l8Vjp1Hj2/vxUawsVJrCJvL0zD0ZU3JtYm0fuWL26eSZIMMXnH9
+	f6qkvs0OqKkkbDXcGZl0rviIGpHLD2AnbkasPykYhPD8KOdbSnOvgp1pdvzzBEFhFUtA8OqCSRq
+	q+SNQ==
+X-Received: by 2002:a05:622a:8310:b0:509:15b6:f6a0 with SMTP id d75a77b69052e-51305908cf9mr15393051cf.6.1777999697103;
+        Tue, 05 May 2026 09:48:17 -0700 (PDT)
 Received: from google.com (8.181.38.34.bc.googleusercontent.com. [34.38.181.8])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48d14e15ce9sm22679075e9.13.2026.05.05.09.43.21
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8fc29c6fa7asm1340531885a.20.2026.05.05.09.48.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 May 2026 09:43:21 -0700 (PDT)
-Date: Tue, 5 May 2026 16:43:13 +0000
+        Tue, 05 May 2026 09:48:16 -0700 (PDT)
+Date: Tue, 5 May 2026 16:48:08 +0000
 From: Mostafa Saleh <smostafa@google.com>
 To: Jason Gunthorpe <jgg@ziepe.ca>
 Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -70,14 +69,14 @@ Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
 	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
 	vdonnefort@google.com, sebastianene@google.com, keirf@google.com
-Subject: Re: [PATCH v6 04/25] iommu/arm-smmu-v3: Move TLB range invalidation
- into common code
-Message-ID: <afoeIVIGE-JjYy22@google.com>
+Subject: Re: [PATCH v6 05/25] iommu/arm-smmu-v3: Move IDR parsing to common
+ functions
+Message-ID: <afofSPQbepd_fpom@google.com>
 References: <20260501111928.259252-1-smostafa@google.com>
- <20260501111928.259252-5-smostafa@google.com>
- <20260501124143.GB6912@ziepe.ca>
- <afiN1UwS9q6F6A_v@google.com>
- <afoYBYIJOTClsdLS@ziepe.ca>
+ <20260501111928.259252-6-smostafa@google.com>
+ <20260501124716.GD6912@ziepe.ca>
+ <afiODW2sVMeOj3Ag@google.com>
+ <afoagb/wVBJD1IX+@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -87,44 +86,61 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <afoYBYIJOTClsdLS@ziepe.ca>
+In-Reply-To: <afoagb/wVBJD1IX+@ziepe.ca>
 
-On Tue, May 05, 2026 at 01:17:09PM -0300, Jason Gunthorpe wrote:
-> On Mon, May 04, 2026 at 12:15:17PM +0000, Mostafa Saleh wrote:
+On Tue, May 05, 2026 at 01:27:45PM -0300, Jason Gunthorpe wrote:
+> On Mon, May 04, 2026 at 12:16:13PM +0000, Mostafa Saleh wrote:
+> > On Fri, May 01, 2026 at 09:47:16AM -0300, Jason Gunthorpe wrote:
+> > > On Fri, May 01, 2026 at 11:19:07AM +0000, Mostafa Saleh wrote:
+> > > > Move parsing of IDRs to functions so that it can be re-used
+> > > > +unsigned long smmu_idr5_to_pgsize(u32 reg)
+> > > > +{
+> > > > +	unsigned long pgsize_bitmap = 0;
+> > > > +
+> > > > +	if (reg & IDR5_GRAN64K)
+> > > > +		pgsize_bitmap |= SZ_64K | SZ_512M;
+> > > > +	if (reg & IDR5_GRAN16K)
+> > > > +		pgsize_bitmap |= SZ_16K | SZ_32M;
+> > > > +	if (reg & IDR5_GRAN4K)
+> > > > +		pgsize_bitmap |= SZ_4K | SZ_2M | SZ_1G;
+> > > > +	return pgsize_bitmap;
+> > > > +}
+> > > 
+> > > I think this should include:
+> > > 
+> > > > +	smmu->oas = smmu_idr5_to_oas(reg);
+> > > > +	if (smmu->oas == 52)
+> > > >  		smmu->pgsize_bitmap |= 1ULL << 42; /* 4TB */
+> > > > -		break;
+> > > 
+> > > ie it should return the supported page sizes by inspecting all the
+> > > idrs and don't leave this tricky bit to be open coded..
+> > 
+> > This way was easier as each function only returns one thing, otherwise
+> > we have to pass stuff by address as we can’t pass the smmu struct as it
+> > is not shared between the drivers.
+> > But no strong opinion, I can change that.
 > 
-> > I am not sure if it’s worth it, the hypervisor is much simpler, there
-> > is a single page table, it’s locked (also identity mapped), it’s
-> > updated on VM boot/teardown only, we don’t even use iotlb_gather at
-> > the moment, although possible but I wanted to keep this series as
-> > simple as I can then we can add more features later.
-> > So this patch is the least intrusive change, as whatever the main SMMUv3
-> > driver does, the range tlb invalidation logic is the same.
-> > But I am happy to experiment with that when posted.
+> Could you share the struct? With multi-compilation you do get two
+> structs with the same name and different layout, it is OK?
 > 
-> Okay, then maybe just always push a full invalidation?
+> That would give a cleaner setup too because you can just shove all
+> this into a function and have it setup the same struct which is more a
+> copy and paste than break up into little functions?
 
-Like full address space invalidation? that will not be optimal and will
-affect every device on the system, why would we do that if we know the address?
+Yes, that’s possible, but I didn't want to contaminate the main struct,
+also we can’t compile the main one for KVM because of things such as
+“struct device, struct mutex...”
+May we can do:
+- struct arm_smmu_device_common: Basic stuff (ioaddress, features,
+  oas...)
+- arm_smmu_device: For the main driver which inherits arm_smmu_device_common
+- arm_smmu_nested_device for KVM which also inherits arm_smmu_device_common
 
-> 
-> I didn't like seeing the range invalidation lifted out, especially how
-> ugly that will turn into after my next series. So, don't use range or
-> use the proper full gather flow seem like the right two options.
-> 
-> I'm not so interested in minimal change, but maximum forward
-> maintainability. It is much easier to manage if you double compile
-> more of the driver exactly the same, and call functions in a fairly
-> normal way vs make special cases and special functions..
 
-Let me try with your series, but the core range invalidation shouldn’t
-be changed often as it is tied to the hardware and wrapping it in a macro
-is reasonable (just like the CPU tlb invalidation)
-The last time this code was changed was in 2023.
-I am happy to use higher level functions to improve the driver maintainability,
-but I don’t see what is the problem at the moment.
+What do you think?
 
 Thanks,
 Mostafa
-
 > 
 > Jason
