@@ -1,129 +1,120 @@
-Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33678311968
-	for <iommu@lists.linux.dev>; Tue,  5 May 2026 13:48:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.110
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 710B2481FB8
+	for <iommu@lists.linux.dev>; Tue,  5 May 2026 16:11:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777988934; cv=none; b=uZzjp19OdiKlf/uU150l8MDqXCo9b7X3OSrZkaCpzcjcelJuliRvsDoxQrJZT3g+R98eZWDKzm/meV9fwws5SkSFQ6OaKIFg734GhsHqloBM6RqC7xHSvu/8wuhZ5l5vuXP052T8N/x7ZTgq0gT7JallNtuUsGx8Y/e8tsmvASE=
+	t=1777997491; cv=none; b=TlpiEAZhyQeMQ342Fbdo5UdsDbsIkw7xU2mhv17fIK6P3298fv+s/urm72QMbdz39l+ICsYYEo7z7Qfn5JbfR0nrfSoXO6osqOaBCepgjNs5BhjSFFVCg3zGV+hQsq4fbAF4pMsLr6pTuBhjcAsdATq4xA//RvH3S2XT4vZef2g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777988934; c=relaxed/simple;
-	bh=Zk/1K+MnMpA92ul7kl0jDIMKnTfYzSHa9pyZmtvAxfU=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KPLzHIPA9nId61SzCNiWtbCn1Xa3t1nIW8+gZOl7+Ze7YMIpE7vEKPUd98PDPxF3v4D6jTMwwIxg5hragGakuy0zq/VzNvuMNOzY39vpzD2nQ4KI13sc1zeZaY+aT+UykyjDUYjRDDSO6VhE7SMgxFqTWKUkBGY0yKvRCn9ajJU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=LLJa0R2N; arc=none smtp.client-ip=115.124.30.110
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	s=arc-20240116; t=1777997491; c=relaxed/simple;
+	bh=RB63+vKaagSktShm0zw04FwFu2zaUl3ea85kl4rSlm4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kKbNGxySsyf3SYFeYl3Z6fyO/0d5Xr1zX4oznEIhhTsMnDQlb8n5OZvlzTPuPMEzJp4Gur3VdRA4zi2FiUx5dGIPjEirPTffzsT2GjQlEKb6h+uIiCAl1hWQG9ui9MG7opNXaVGt8h8r3kgudCdbKW6fxJBwXFy5uYC8HI+ELu4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=o5TuyOtp; arc=none smtp.client-ip=209.85.128.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="LLJa0R2N"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1777988927; h=From:To:Subject:Date:Message-Id:MIME-Version:Content-Type;
-	bh=AIhBTePeyajf+I+K0EBW6V9IUyGlhUFNxPuEI2KpBN0=;
-	b=LLJa0R2Nq4uTZI1OpwoEOBViMjpdxtfErSZFnGpw1Al0PjMqX4N3IUszUj+FO1W4ZVx1vWMbmjOngaXQhcmSLIioLScukvhqThUSePKUoEBdiC/b5zb1lLYi8XVsTPqYNvQYrI9nZGHyZS1NMIRogVLufFHP8K4yZ1eosR7JN3Y=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R571e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam011083073210;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=24;SR=0;TI=SMTPD_---0X2I-OJb_1777988923;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X2I-OJb_1777988923 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Tue, 05 May 2026 21:48:45 +0800
-From: fangyu.yu@linux.alibaba.com
-To: andrew.jones@oss.qualcomm.com
-Cc: alex@ghiti.fr,
-	anup@brainfault.org,
-	aou@eecs.berkeley.edu,
-	atish.patra@linux.dev,
-	baolu.lu@linux.intel.com,
-	fangyu.yu@linux.alibaba.com,
-	guoren@kernel.org,
-	iommu@lists.linux.dev,
-	jgg@nvidia.com,
-	jgg@ziepe.ca,
-	joro@8bytes.org,
-	kevin.tian@intel.com,
-	kvm-riscv@lists.infradead.org,
-	kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	palmer@dabbelt.com,
-	pjw@kernel.org,
-	robin.murphy@arm.com,
-	skhawaja@google.com,
-	tjeznach@rivosinc.com,
-	vasant.hegde@amd.com,
-	will@kernel.org
-Subject: Re: Re: [RFC PATCH 00/11] iommu/riscv: Add hardware dirty tracking for second-stage domains 
-Date: Tue,  5 May 2026 21:48:42 +0800
-Message-Id: <20260505134842.23549-1-fangyu.yu@linux.alibaba.com>
-X-Mailer: git-send-email 2.39.3 (Apple Git-146)
-In-Reply-To: <tdcd7276ffsfc6vh3expyfcajnfkowknbtkpyplb3xe3dcukj2@tnhi6jcwrfgn>
-References: <tdcd7276ffsfc6vh3expyfcajnfkowknbtkpyplb3xe3dcukj2@tnhi6jcwrfgn>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="o5TuyOtp"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-48d146705b4so13782925e9.3
+        for <iommu@lists.linux.dev>; Tue, 05 May 2026 09:11:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1777997488; x=1778602288; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=3mLXC04zFhT/Lrh722HvmOadS9CRUyg7tuq/peX8SkA=;
+        b=o5TuyOtp7bLVFoiyBNlIKMSK+WSENoOXrsdT7wS1d8nXklLUIwMiNBUGYMSrZeOONX
+         7s0qZ1/9YGpzMRaXGn3CKwa5BSGqOOzwr5gejwuoYYS1dUiBAuU5LdxZiDS/1/7uPVld
+         oQh3Ok/zhvsMqKCV11wU8gtoHBS/oQN3SAZ/AmT/UvCHSJo877c+Ln8Pjt+0rraqO6Sw
+         Zvw/M1x/r4xqzl1EysMjcMrEGlhrwMu0ZkJD/ixcBXVN3M3+jpAY1chIZwhGpYlL8rXJ
+         5ed/dH+fYfDsiCyF259wc8ARTcKZmxoO6I0MlAfbaQLavTEOaOAwV5RQUWDeRY6Pg9Vz
+         qtMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777997488; x=1778602288;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3mLXC04zFhT/Lrh722HvmOadS9CRUyg7tuq/peX8SkA=;
+        b=oK932LDw79BWVSy4v2SkZ0HuTPhJ6riag1u0H8Rzapz/RHl6lrRKuJHSjxqWelSQjk
+         SgQY5DtUxwG1IxUjHJauQJtnETdi2wlQbtgoOwDe+790M1KPa+L7qRcTNikcyGkJK0Df
+         TLES/BdAYXCtrG6bBymI/a+fsJaubUM5mRMUuUetq6XdiK/QwhsCSedQ7CdBwnGBtrg9
+         Jr8bXt9R9QFnET0+CmEZ6zt2JKPqPWVAM3W5HgDUpsNOmSqq8r5UdksCC7LRq3w/FjY1
+         JIP19ciBpv2nnXsa+PdjlZHSkQxJL859DtFyXp16iTZK6tiUkws4fdMmwPEkP653oMj7
+         C+hw==
+X-Forwarded-Encrypted: i=1; AFNElJ8/dqqskiPbK6UpELBHp2TNDPkEMW3NLjmnp9O0I4QzVBte2jYnxOYsYKpPnLdZwJmsTAvjyQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxbZD/nnQeT+nY/lN2aBzBVJPUcV5IXuG30SPu49gTplKeJnn8w
+	fEk51OmhAyZM1YCL1fOoyhbbIhUE8cokmQJaBlor7pI/EA13kP6SS7mgZQuvbtdCykNAwh9Eb+v
+	orokFRcbTkQ==
+X-Gm-Gg: AeBDietc7T7tNBhyDsW4lZMJdHGeFAg/zXXAS1y1ALicPgEOTaEtgleZtiHIz8hFegN
+	lzaFmDgp7S0itYBMjkHPSIpexSIN89Hiyq99Va48lA3zcbZEVbSrTcJ8LkduBJ0fgxAv/+rcP6a
+	TqQ9Vp8qjpVl7O50oQBQkA9jvKtWu4p7IXJ6vPiYH6P0c45gFpdvmfpq0h0Eu79x/gTMnjBVDWJ
+	4w74tJAVPFCJDxH4Q0untB7YabhEHGzi+gcg5Dn+VAwcLqPeX32v1YulDqNCEqT2Cwr7wI9UaDh
+	vv/BJBAf6dGW6YUTqPmlUaHXG65vzxsTdq2UBQluc0sZ1LIF4en8LQ5cwxHemPEIe1x1Pr/aDfY
+	PQ02iW9iQAZBF6d8QSPW7vr2SO7rEsBR4ron23fpI8VllcCqnjlBmhC+0817aFqTgK4Htgrchp+
+	OkUdaUcBE=
+X-Received: by 2002:a05:600c:45d5:b0:488:d6eb:e63c with SMTP id 5b1f17b1804b1-48d18be7d40mr57839665e9.15.1777997487815;
+        Tue, 05 May 2026 09:11:27 -0700 (PDT)
+Received: from ziepe.ca ([213.147.98.98])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48a824f9f0dsm393238945e9.15.2026.05.05.09.11.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 May 2026 09:11:27 -0700 (PDT)
+Received: from jgg by jggl with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wKIMo-000ALn-3b;
+	Tue, 05 May 2026 13:11:26 -0300
+Date: Tue, 5 May 2026 13:11:26 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Pranjal Shrivastava <praan@google.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
+	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Mostafa Saleh <smostafa@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>,
+	Daniel Mentz <danielmentz@google.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	David Matlack <dmatlack@google.com>
+Subject: Re: [PATCH rc v2] iommu/arm-smmu-v3: Fix inconsistent ATS state
+ tracking
+Message-ID: <afoWrn/RXxDmcHsS@ziepe.ca>
+References: <20260504163842.2692314-1-praan@google.com>
+ <afjfBi+vw/Ywkzid@nvidia.com>
+ <afj0cyBZwkVLyIwK@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <afj0cyBZwkVLyIwK@google.com>
 
->> From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
->> 
->> The RISC-V IOMMU architecture defines an AMO_HWAD capability (Hardware
->> Access/Dirty update) that allows the IOMMU to atomically set the A/D bits
->> in second-stage PTEs on DMA access.  When DC.tc.GADE is asserted, the IOMMU
->> autonomously sets D on the first write to a page mapped by an iohgatp
->> domain.  This series wires that capability up to the iommufd dirty-tracking
->> interface (IOMMU_HWPT_SET_DIRTY_TRACKING / IOMMU_HWPT_GET_DIRTY_BITMAP) and
->> reports IOMMU_CAP_DIRTY_TRACKING.
->> 
->> Design notes
->> ------------
->> 
->> * The feature is scoped to second-stage (iohgatp) domains only; these are
->>   the domains created for KVM / VFIO device pass-through when userspace
->>   allocates an HWPT with IOMMU_HWPT_ALLOC_NEST_PARENT or
->>   IOMMU_HWPT_ALLOC_DIRTY_TRACKING.  First-stage (iosatp) domains are not
->>   touched by this series.
->> 
->> * The page-table side plugs into the existing generic_pt dirty hook
->>   framework (amdv1 / vtdss style).  RISC-V adds the three required PTE
->>   ops – is_write_dirty / make_write_clean / make_write_dirty.
->> 
->> Testing
->> -------
->> 
->> * Test on QEMU RISC-V, a virtio-net and an e1000e device was passed through
->>   to an L2 guest via vfio-pci + iommufd.
->> 
->> * generic_pt KUnit: the existing test_dirty case now runs and passes for
->>   the RISC-V 64-bit format.
->> 
->> Follow-up work
->> --------------
->> * Build a dedicated end-to-end test case that drives the full flow
->>   (HWPT_ALLOC with DIRTY_TRACKING -> attach -> IOAS_MAP -> generate real
->>   DMA -> SET_DIRTY_TRACKING -> GET_DIRTY_BITMAP -> verify bitmap against
->>   expected IOVA footprint) so that the behaviour can be regression-tested
->>   beyond the KUnit PTE-level coverage.
->> 
->> * If possible, rebase and retest on top of the updated "iommu irqbypass"
->>   patchset.
->
->Thanks for this series! I was starting to go down a similar road myself
->in order to limit irqbypass to IOMMU_HWPT_ALLOC_NEST_PARENT domains since
->I wasn't happy with other approaches, e.g. continuing to use s-stage, but
->activating g-stage too with identity mappings since the MSI table can't be
->activated otherwise. Or, simply using g-stage instead of s-stage in order
->to get the MSI table enabled. In the end, I think the best is to require
->nested for irqbypass and this series will provide a good base for that.
->
->I'll rebase irqbypass on this series and test it out.
->
+On Mon, May 04, 2026 at 07:33:07PM +0000, Pranjal Shrivastava wrote:
 
-Thanks for the feedback. Jason has provided some helpful suggestions on this
-series, and I am in the process of updating it. I expect to send out a new
-version in the coming days.
+> > > The issue was exposed under heavy load when running a VFIO-based DMA map
+> > > stress test: iova_stress [1]
+> > 
+> > I wonder what's the real reason for pci_enable_ats() to fail:
+> > 
+> 
+> Yes, It's the dev->is_virtfn case (the one you suspect below)
 
-Fangyu
+Oh.... This is a much larger problem then
 
->Thanks,
->drew
+The VF should not fail to enable ATS, that is a meaningful bug, I'm
+not sure why are are just discovering this?
+
+It looks like the PF unconditionally calls pci_prepare_ats() during
+arm_smmu_probe_device(), so how does this happen:
+
+> >         if (dev->is_virtfn) {
+> >                 pdev = pci_physfn(dev);
+> >                 if (pdev->ats_stu != ps)
+> >                         return -EINVAL;		// maybe this one?
+
+??
+
+So, I think the right error handling for a case that shouldn't happen is
+to fail the attachment not to try to continue it broken?
+
+Jason
