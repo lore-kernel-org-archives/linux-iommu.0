@@ -1,54 +1,54 @@
 Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C4A727FD4F
-	for <iommu@lists.linux.dev>; Tue,  5 May 2026 00:27:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB10A282F1B
+	for <iommu@lists.linux.dev>; Tue,  5 May 2026 00:27:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777940862; cv=none; b=BIY+khZU1Rrl2Tpjr0/588LIAlSljomNLH/v/esgnV5/IDohCCp/w5ZfCtT0uozz3nou+G4PiZ+T1LGxzKAvnGFm0FgW8Onri+wtfuAs6GBE1OTVWycm8lfR8/xTzr3KtwdxDxqwwJn64RbTJooJc6gqYHP45WGvqR+u7Vpcq54=
+	t=1777940864; cv=none; b=GEF6bgTHnp8RjczxIZqtxfo433KfvBa2grEoo0nA+kGxSrjLY8CiiGv9D6sXbyRzXNOke29ukHx3SDa059CeZEDDtGoEYWJ+jtd0mglcVHMTLVMsrvN7PO56jETI9F/ISaOCLCiD3aG9aAtlzyWdHkOBPT8utI35MaV09Y9eREo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777940862; c=relaxed/simple;
-	bh=6vPJz5FklGOmRIlTlxNWv/NMzXGEFSNYxGd2jakuq1k=;
+	s=arc-20240116; t=1777940864; c=relaxed/simple;
+	bh=CCcGBBN0jmPI/uNBfL2Btoc6e31bbEmFkyduYlT94ZM=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=DDmFVDXX4fdaeY4R0iJxZqjYtVBWCzT03eg7ytsk6ZOXEQpSXKrJN9jJ7CUSdoyFBAdMUrgEhKxoGYf8b2vkxET739FQ6DMnbL4AQThfwOJYTrNNPaO0WgrwEyc76JxXebZiU+tirWkiiK9mXgbIyT//x/EcwK1TdBPHSBCjTaE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=vlbsoua6; arc=none smtp.client-ip=209.85.210.202
+	 To:Cc:Content-Type; b=D4OWWeNq32+Uk60J1C8JkiHCTk9uYAor1Z7rxyOwndz71A6BBsQLqLvormxHPGMHhqT/qzi4oVDNYeXGed5KJKoYuYnewdVfgOH2O9gX94A9OlW5LyGtfJ+1QiLnKAb5u6lZoZoYIVcABmqgRTdGkYD7Jg8Wxv6FQGbINh16/rw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=WY5NVdMT; arc=none smtp.client-ip=209.85.210.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="vlbsoua6"
-Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-82fa860e71eso2397736b3a.0
-        for <iommu@lists.linux.dev>; Mon, 04 May 2026 17:27:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="WY5NVdMT"
+Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-836cfd84728so745772b3a.0
+        for <iommu@lists.linux.dev>; Mon, 04 May 2026 17:27:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1777940860; x=1778545660; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1777940862; x=1778545662; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=b+FOv1S5jZxTI8xiOq/TIFYAKVGB2GSKJ5eXMG7ksgc=;
-        b=vlbsoua6+ndmr9orj+Lw9B06+RslDqtc/AWQfflUucq8kkvV+Kvn+Sb6GlpBpOjC+D
-         it90Q0zy5aJ1FrJuLA6bE5GK3WUlCYaz9rq0UG8qygrlIVKbPdbk/lUHybl4HPPTAvcS
-         3kvkSPwPR/kiCsjgfg9IoxOjBzGq0+/xspipf6ETuHen3E7ZmBJjBpMTHC0y7BJIKCP/
-         2i0pKi0qKPuJbXTkM7LvXSyFyEvusaI5kwEZ4hnbYq/2Q6Ge3NtzA/y+SVUWFqWUEReN
-         Njm9zxjfUCz2QFML+EbKdv1kpawfC/LD8qU1vKuzquOeDV2hZcMTFIk/aDmq1IOn6ztP
-         fyiw==
+        bh=fPL/zEjIbq1+/WxDxvRlbVhXmcB0wkR7Z2KUt1rRxnY=;
+        b=WY5NVdMTzMrOSdQCzCdUJzHjkU2nG6iVqjuZfzQlPWKdzK4WZgQc9mVllhn2EY0ePp
+         UIwj12YDvfHbhr2lxbM9HLBTU1ItJKiP4Alebi5Fwl6PI83qoU5J3IGIe08KDVJv7Atc
+         8UVfJvYLRYaZ5ybcZXbtTR4QPRYhZV6b/jk3xlGiAAjUsneEBhOyRPe5chxHxoZ1+IP1
+         nLGXf99kiyZtiB+AP8QmghHVeO8xFDnx8JbiNcIysk/RKjioLclCDBmV8zSYA4W17tpF
+         iG4T3GKpHMO3y1W7JLEnu0nO+zddgaNeY0qKMjr/5+FLwwSuE66PqBZfgOcWagK5IOgn
+         OFbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777940860; x=1778545660;
+        d=1e100.net; s=20251104; t=1777940862; x=1778545662;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=b+FOv1S5jZxTI8xiOq/TIFYAKVGB2GSKJ5eXMG7ksgc=;
-        b=h5HHTyoo5URzc12nMoZPIIMfZvFq0hmQJNaKsEwEli0oMzQnRt8AKkQ0kiQHX1WEwM
-         zwlRUXNQnzUDUfq49vthnGfRTOUkwuXYLHAC3xB8KBPRIPAj6ehp9wOelwYlKJtbgqJ6
-         x7QjIO29bqZmuFTJY44yIcfOP+OveQFIC4pnGFk+Gq+Cmfj06SSocAKFVS2EyTJQCPlN
-         kGyDcR1U5qRPuiNsWtWZ+FWtZcIzF1gObvGZsyMpEKNhQDWGrJW232a4VuzNowdu9gDg
-         Spvp1mBYIYIFlgFTvghyb9DZ+vgbfV9cJJ/PdqdhEVejyLJGpDIBjI6kESro0zRMZ3k4
-         QbbQ==
-X-Forwarded-Encrypted: i=1; AFNElJ8Q5C0WjEGSQUGfGsIoJCXVlFDIRlc89w/8tq3gwLb9KO0Kaa1LGNOLp12tfGE9dxFbBppo5Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwNF6Zp0VvgnPcQxudlbJlt5j2AUoUJqZwH2DSP0NU+piIPIxRG
-	TaMi/m2COyWnPWK2ZoyvyXaiATvGrCgn0ReZCQPdDf7zusdO/jbqNzBzMTM1DWzrvVxMrGJHP/8
-	g1V4eTnSaFUsSwA==
-X-Received: from pfnj5.prod.google.com ([2002:aa7:83c5:0:b0:82f:8a3b:87f0])
+        bh=fPL/zEjIbq1+/WxDxvRlbVhXmcB0wkR7Z2KUt1rRxnY=;
+        b=Vtcww2Y5njo8klaXFL0vcnELUTzrMvlCqNy6X83uzyv196ldNZplNWSfbnx1mVws1n
+         lzt8lH6udSJSfipV+P3OQUL1c5AB37cDYXCxjRPMaPgV2x1XBsIfH2HsYF+27O0Up9pM
+         mdhLlkBvRTBJeF34lZdb4hOfM4f0Mv8O4asRP3UbjBmwOmq/SF3QASFd4dZlsQmIXR8S
+         nTbfYxmwZZ1Eg+XRrROqSxt3IxJtRfXA9N06gU1TP0fJlFz2AUJXEL8C/xVhdx/lV0Yn
+         7rn2T5zH8C3RySFpICQ5CRwuU9/akHWkRnnpGB3O2D0Ys/k4iZ+QwCpfwR9hzqYTJlby
+         AFiw==
+X-Forwarded-Encrypted: i=1; AFNElJ8PV8gJOS97LN9QrhMQ9zRXz0BPrixPaiZ+9WGm8sW6/CRnIY0oe3+Rk6mT4xB9ZN7f2lh1Qw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx+sgdh3GoUkgZnNxJsq5MY8UDNiy/7ivS9bKvrTHyPMWdeScht
+	6LXBNE26B45ixRNQqezeO5h/IODb/DyKw+9tyhpWAcE4YmlWs71I0whNQ+Puci3o1adul7U8No9
+	PeHNaqtBB7weTNg==
+X-Received: from pfbgj10.prod.google.com ([2002:a05:6a00:840a:b0:82f:d8c0:fef8])
  (user=skhawaja job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6a00:1f04:b0:836:5c3c:2051 with SMTP id d2e1a72fcca58-83923d96a31mr1009427b3a.23.1777940860319;
- Mon, 04 May 2026 17:27:40 -0700 (PDT)
-Date: Tue,  5 May 2026 00:27:34 +0000
+ 2002:a05:6a00:340e:b0:837:8a0c:8f70 with SMTP id d2e1a72fcca58-838fe8703c4mr1212855b3a.28.1777940861986;
+ Mon, 04 May 2026 17:27:41 -0700 (PDT)
+Date: Tue,  5 May 2026 00:27:35 +0000
 In-Reply-To: <20260505002737.2213734-1-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -58,8 +58,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20260505002737.2213734-1-skhawaja@google.com>
 X-Mailer: git-send-email 2.54.0.545.g6539524ca2-goog
-Message-ID: <20260505002737.2213734-2-skhawaja@google.com>
-Subject: [RFC PATCH 1/4] dma: Add DMA allocation preservation KHO ABI
+Message-ID: <20260505002737.2213734-3-skhawaja@google.com>
+Subject: [RFC PATCH 2/4] dma/pool: Add an API to check if DMA allocation is
+ from pool
 From: Samiullah Khawaja <skhawaja@google.com>
 To: Marek Szyprowski <m.szyprowski@samsung.com>, Will Deacon <will@kernel.org>, 
 	Jason Gunthorpe <jgg@ziepe.ca>
@@ -71,52 +72,49 @@ Cc: Samiullah Khawaja <skhawaja@google.com>, Pasha Tatashin <pasha.tatashin@sole
 	Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-The DMA allocations can be backed by a variety of allocators. Add KHO
-ABI for the preservation of contiguous allocations that are done through
-dma-direct.
+DMA allocations can be done through DMA pools, add an API that can be
+used to check if an allocation is done from a pool. This will be used in
+the later commit during preservation of DMA allocation.
 
 Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
 ---
- include/linux/kho/abi/dma_alloc.h | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
- create mode 100644 include/linux/kho/abi/dma_alloc.h
+ include/linux/dma-map-ops.h |  1 +
+ kernel/dma/pool.c           | 13 +++++++++++++
+ 2 files changed, 14 insertions(+)
 
-diff --git a/include/linux/kho/abi/dma_alloc.h b/include/linux/kho/abi/dma_alloc.h
-new file mode 100644
-index 000000000000..46e61db81abe
---- /dev/null
-+++ b/include/linux/kho/abi/dma_alloc.h
-@@ -0,0 +1,30 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _LINUX_KHO_ABI_DMA_ALLOC_H
-+#define _LINUX_KHO_ABI_DMA_ALLOC_H
+diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+index 6a1832a73cad..6a0bc4ea2467 100644
+--- a/include/linux/dma-map-ops.h
++++ b/include/linux/dma-map-ops.h
+@@ -216,6 +216,7 @@ struct page *dma_alloc_from_pool(struct device *dev, size_t size,
+ 		bool (*phys_addr_ok)(struct device *, phys_addr_t, size_t));
+ bool dma_free_from_pool(struct device *dev, void *start, size_t size);
+ 
++bool dma_is_from_pool(struct device *dev, void *start, size_t size);
+ int dma_direct_set_offset(struct device *dev, phys_addr_t cpu_start,
+ 		dma_addr_t dma_start, u64 size);
+ 
+diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+index 2b2fbb709242..32ce4d6d7683 100644
+--- a/kernel/dma/pool.c
++++ b/kernel/dma/pool.c
+@@ -307,3 +307,16 @@ bool dma_free_from_pool(struct device *dev, void *start, size_t size)
+ 
+ 	return false;
+ }
 +
-+#include <linux/types.h>
++bool dma_is_from_pool(struct device *dev, void *start, size_t size)
++{
++	struct gen_pool *pool = NULL;
 +
-+/**
-+ * DOC: DMA Alloc ABI
-+ *
-+ * This header defines the structures used to serialize the state of DMA
-+ * allocations, done by device driver, across a Live Update.
-+ *
-+ * Only DMA allocations done through dma-direct that are contiguous and
-+ * allocated using alloc_page are supported.
-+ */
++	while ((pool = dma_guess_pool(pool, 0))) {
++		if (!gen_pool_has_addr(pool, (unsigned long)start, size))
++			continue;
++		return true;
++	}
 +
-+/**
-+ * struct dma_alloc_ser - Serialized state of a single DMA allocation
-+ * @page_phys: Physical address of the preserved pages
-+ * @size: Size of the DMA allocation
-+ * @force_decrypted: Whether the memory is force decrypted in previous kernel
-+ */
-+struct dma_alloc_ser {
-+	u64 page_phys;
-+	u64 size;
-+	u8 force_decrypted;
-+	u8 padding[7];
-+} __packed;
-+
-+#endif /* _LINUX_KHO_ABI_DMA_ALLOC_H */
++	return false;
++}
 -- 
 2.54.0.545.g6539524ca2-goog
 
