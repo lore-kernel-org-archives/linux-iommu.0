@@ -1,53 +1,53 @@
-Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
+Received: from mail-pf1-f201.google.com (mail-pf1-f201.google.com [209.85.210.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 808E522A4E1
-	for <iommu@lists.linux.dev>; Tue,  5 May 2026 00:23:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 815D4481B1
+	for <iommu@lists.linux.dev>; Tue,  5 May 2026 00:27:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777940603; cv=none; b=am4D4tfPGApACY78AGB+hsr0fHsY4vgX3jpIhkj0fQKzlvYS+7jL0e8CduNYENr4bm+86FtxcryHHSmZqfkTXfgvdcpYhXZAPKO/oBn1lF32IOadxT5n/0FONa+FEglQT3b3A1ev+389RW7y/VVfVabGhq90EAMa95s0OTIYSlo=
+	t=1777940860; cv=none; b=GVHBSCpjyBRPpgO6CKlbjVt5MliRsVBgm3e0pZiqjWlVrtxXeVB4x0tTs2zK/5/Pcnc7xdjfeEkcMQxzlqlxz6/Np+8j5fDQ10sjekiQCwlf/4O+bVQSNwnt+A7G5Nycs4fMxvvAMV8yhlNSb1AJfPfrgDNInf4iDw1BFkYN9Ac=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777940603; c=relaxed/simple;
-	bh=xbhTzoI9Yb8krsLvI17n3/N8clqfBJwRv6mertDyy2k=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=Hy0JFHnfObjqPtT4MAW5r++eK2dMvOwwF0zB60KIyKo/kZZbq8pUvslo0mXbqEgSjNpIZ1QiXBUIswE4DNwjoF0p6UhViDJIghQRRLT/6MM21qF5Al/ouuol9rXLRbGRbLGtp9rH6OKRTsxNENMRtWG+6P+pr8Pjxv+R/mrGVgE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=kFKvAG0D; arc=none smtp.client-ip=209.85.214.202
+	s=arc-20240116; t=1777940860; c=relaxed/simple;
+	bh=91nRYe/wLdIrUgZME+Tr6TDRQiKCek5oJsJuNHIN4MY=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=Pi4RvlTOP7AgtSYjy0QbFGT5T3IjUDGyBJmU2oA/ldbJG0IaP6RRYcgvsthp8e74CFkHvfnxjJUWuE59tbMgbxWn6rJWFh4lXS44WE1XQg23dFB36E6N2I2C5D97mHbub99e6fqK4L+GmxTcg6D5fkIyzu2ATwW12LO4HVBiTW4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=kc9m76gv; arc=none smtp.client-ip=209.85.210.201
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="kFKvAG0D"
-Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-2b79f4b35b7so42806495ad.0
-        for <iommu@lists.linux.dev>; Mon, 04 May 2026 17:23:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="kc9m76gv"
+Received: by mail-pf1-f201.google.com with SMTP id d2e1a72fcca58-837d43e9ff3so948459b3a.2
+        for <iommu@lists.linux.dev>; Mon, 04 May 2026 17:27:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1777940602; x=1778545402; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1777940859; x=1778545659; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=P7hLyOAFb/XotDLSfzs07sOc8bnqFDsHZkne19sPDsE=;
-        b=kFKvAG0DcsvshVS6OGQlrQ1xcw4p5bMy3Q9oTlER+9vgOmD/YLTRFEhnWs8o8WB/EC
-         AiYyJrR058TW+pNCLb6ivYuDef03/ioUR30h8QReMt28Z1d2cSCY9+15xgMEnn3zcM46
-         jeOkRDFje5T/FA/iUkJzk0VfM7hn9j/Q0E44N8I90HUas+2QIdDnVl247Xyt0Fru97vK
-         YWUAO1SMHENQq+JtCxv3pQaje64mZfi91FADlgi8UmARYnaZjcyn3fVu1tLqcvui0f9s
-         7a1QMJEVvAwzb6QW4qH2+LEFeP/t689vRBbERJAia2qHS4zPMflJ39JzS3/60XYcSJdR
-         sFRw==
+        bh=Obu+hjMmt2gyOfNoZeJMdjxX5bs05kcQmj8x3MdMggE=;
+        b=kc9m76gvA+s59Xi7XvqvTmmlps6X8FNmeWKE2jsF8vQNtsDIY+83o9xLNNAjOULhKE
+         EIEkLyOo+dpPc6GKahokMgIRimscQT1aVW0oIjUnFX4vt1vVKszmWVtcmj07/90LxWM7
+         awyEuowge9M3Fe6fnK47079/mXPmvMMxQy1mBYcdZniB/uZ2VoG5JBdNx8bvpbmboZMz
+         wjVzW5YeEJOH7GuXF5M1vjR3CFuTeuBoGqHdmHZiSXuLiA3TBDj+Y7EbL/AJZfZR8IUQ
+         KbuMJw4PNagubsVEirZHL/7Sb2+c/XGsD+aUFEwPHPqQTA66EfwKYp3gcKHPq4kUdk1R
+         gEMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777940602; x=1778545402;
+        d=1e100.net; s=20251104; t=1777940859; x=1778545659;
         h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=P7hLyOAFb/XotDLSfzs07sOc8bnqFDsHZkne19sPDsE=;
-        b=L/IQ+7B9qpuT8f8xGqnFHoprklT971AYgp/oUz3t+i15tfWluic8ih3L7LlSfvDzFr
-         1shLVgQTqpbiOcDV9p23hZDCaaNsIwJpSv01r5bk7kcqxLW6NRY5lqKKSmG/bQuPqIzl
-         bUabpf3Yl07agiNo0eO6W3JYdK5uqcS6qF6ltFNWmS7U3azEwB5TOa9DVqgtdOtKbFyF
-         SfDjv7+1erBg70t6mjg/lfmgRmXNUZjvEiRFdfj3w0yHm0Zd+X7uqig+A0KSp6ZVLarJ
-         unP77PFVI+u8pYNG8XT140eO42FIYd6DbUJSyl/DoCsuh06q57q2RgW9scxq7tHbtauZ
-         2urA==
-X-Forwarded-Encrypted: i=1; AFNElJ8pMO/YRNr47sX9IJwWt4B3OrnnHDGdvL2167BWV5eacAm+z1RaiesAVrMISj85UDgol0x/ag==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyhdqwFaICKf+NP4IoeYRxkxl6w3x5rxxg1BAO+bfaL1SD5LWws
-	16YwmmRR1OslpX5eHYqnOIkc/28Lps5Ia3uDH3CjDpQRvhdeb6PhAFD2zCbriZT/uuXBPnCFK9f
-	Vy5HgnSu30vDlvA==
-X-Received: from pfr4.prod.google.com ([2002:a05:6a00:94c4:b0:836:55e:c2f])
+        bh=Obu+hjMmt2gyOfNoZeJMdjxX5bs05kcQmj8x3MdMggE=;
+        b=LLdDjBkZa5ADLSjTEgJ/tCvC3XkX2j0odWILniOMtqawhwbm2F7H4x4+keuIvt8Pqj
+         g/FCcvshQR/s7Wk3mNAO73xTz91SevTH+LYPnb2Ccfyv7K0aanjTUfL6Wq0QnkmzwMro
+         2zpr7iJzEYAp8gGgBnv5h6uYbwtAnC9VHUuVQzWRnYmdeBmawQd8VG1cArHBnLPGUrDu
+         GuPdsc9AItrNdovBZRWVqT5G+Xk/3DWn1iqGOm8RNAJBtpFGo2l4hQMLpeO+ivLZFZid
+         IpOcqn9WkGcRRAmeWmh+D6hLoWzQYP+PARGTt1FP+ESn3ZLlSTW8eW26ARXC760dTcKr
+         4JbA==
+X-Forwarded-Encrypted: i=1; AFNElJ+nUgdc1zPfmylvs8SxOb/EnEhm86raQAgV+rh94c0rB2Yj1wMOE/FzKWPsT+kgJI6Xb8snpw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxXCT0LkmJW4h5/bnIs5g5Ryj0WEEL4Q+rZGsVGyInf/VDj4cij
+	6N/z2uEDDo8d9G495mQMZuWHYz7WgC2V9CzP1g+WRMOqGcFLj+cW0Y+VYCh5cDBZfYdJ4LUmChc
+	8WaZ6WZXHuly6/Q==
+X-Received: from pfbhh11.prod.google.com ([2002:a05:6a00:868b:b0:82f:a959:4a7f])
  (user=skhawaja job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6a20:6a15:b0:3a2:cf6d:a9f7 with SMTP id adf61e73a8af0-3aa3b75b178mr909398637.36.1777940601569;
- Mon, 04 May 2026 17:23:21 -0700 (PDT)
-Date: Tue,  5 May 2026 00:23:16 +0000
+ 2002:a05:6a00:4188:b0:834:e5a2:d089 with SMTP id d2e1a72fcca58-8352d29abeamr10788662b3a.33.1777940858612;
+ Mon, 04 May 2026 17:27:38 -0700 (PDT)
+Date: Tue,  5 May 2026 00:27:33 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -55,7 +55,7 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 X-Mailer: git-send-email 2.54.0.545.g6539524ca2-goog
-Message-ID: <20260505002320.2210067-1-skhawaja@google.com>
+Message-ID: <20260505002737.2213734-1-skhawaja@google.com>
 Subject: [RFC PATCH 0/4] dma-mapping: Add preservation of direct allocations
 From: Samiullah Khawaja <skhawaja@google.com>
 To: Marek Szyprowski <m.szyprowski@samsung.com>, Will Deacon <will@kernel.org>, 
@@ -114,7 +114,6 @@ Samiullah Khawaja (4):
 
 
 base-commit: 9974969c14031a097d6b45bcb7a06bb4aa525c40
-prerequisite-patch-id: 41f13f37cb3b439f17dfa4e3f2d5c767aaef0346
 -- 
 2.54.0.545.g6539524ca2-goog
 
