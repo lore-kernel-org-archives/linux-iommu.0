@@ -1,146 +1,88 @@
-Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F30D054654
-	for <iommu@lists.linux.dev>; Tue,  5 May 2026 21:23:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CA3D12FBDFD
+	for <iommu@lists.linux.dev>; Tue,  5 May 2026 21:32:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778016204; cv=none; b=BcBYDHLuFryKElZOKMLlOPzzRKWL4iQZXlHo0J3QgfJ9CoEBZJjKtvr8vgTphL4uL3hE0QwQk/lJIymf6GI/s8pisgSCjaYYDckSZ0xyc5JAe7Ip+K2GBnfSUg5DrVL8rJK3clW1fBctO75OeNGztu5HbzJhvFfqdsX99x/vMBk=
+	t=1778016741; cv=none; b=hsWd67oFicohb57vjxePSFcDxqqMSjp/bz+rMEB0g1EOUhH/iBqCt5oxumOZxxUfzBeEUM9If2L5opVm5ywskmCipbZPbZ8c06LPIML4EwEiv4p3mD41YznnS2ebOGmKC2q/VCQP3glNCrbjLWBA8iQggomNvhnReOPIzVJOm5w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778016204; c=relaxed/simple;
-	bh=BGb0iWxdCYeL8J+arIzaJxrMe2aHZ/tsRHAT4guOCPw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=O/izgPEQ8U2I2LaB2sCE31A6gTNHIxIGr2FHoN7+EEKGGaKNFwgZ4LQUGXU99mg6hJer95SyOw8ilD+0TydaQLtpGyYcaijBdlfZthD8F9pt8oDTwZM62wq8h61IqFBsGpfbxrMi0G37IjPJVWTWNGv0fokCLzTQrgBKjZsgxoM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=U+iJzb7d; arc=none smtp.client-ip=209.85.214.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1778016741; c=relaxed/simple;
+	bh=fuw/fNnStS2bmmH9Sb1UtPzfbETK2c2LelEflFxPoFk=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=TioCC3felOed46o3vEhEe7BAFcZvKUC5VUbwiRzFLYR+aIfokMcQhPWFvfygWp3Lrd4LVlUaOibPdcEhz6Ap5+YdPnrpmNLFtRM1WO2Ct8pISfVIMlAOFSbTHofEMGYwgEIki1u6qA/gU9L2CUBrJTg3lMKQv7KBhD1bHcDFZCo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=s0pmKe+B; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="U+iJzb7d"
-Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2ba3b9bcf69so13265ad.0
-        for <iommu@lists.linux.dev>; Tue, 05 May 2026 14:23:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778016202; x=1778621002; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=EF7N2saeKWRt9QNInISs7LlrVhXl8UH86sm657r0EbQ=;
-        b=U+iJzb7dqq9DdKfwoCINKG2W/Oj5+7umlceTnH+wQNl6Xfu4POMWkiWWCqFCq0GWQs
-         /1lw8gteMPv+Immhy23qDUpG/Snr533ODs1rkw8G6qjsg3VkeTE+AFe3h55sOM6nrwLd
-         HcXHLYQB/39uHfAjaxL1UyLzx6mNMwIBVXP+qn3CGNozb5txpDgJn/O4YVl5IgNpmOtA
-         QEqvrZbgaqr3O2PQvMmeBToO+RwSRRbg1Unj7obBXOP5vtfyKJeNpAtH7BTu9x51wiRA
-         Zx08REF/sBB0Zt+xfkYeklHaF1cTm5gbjZ4kRU8pIRIx1mve7a4gmhZDt9zQNDbZzpUW
-         MY0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778016202; x=1778621002;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=EF7N2saeKWRt9QNInISs7LlrVhXl8UH86sm657r0EbQ=;
-        b=QbLoQBfk+CtGWgMxa7yybgP1VGXMbf6jTJlZZ79Ii9rCuDlvu7XzUMyFc+BsSeirxg
-         5J0U2dMlunKZvkmWS2wSDeRXyr+D6Ov8P/2r44hdqN/CDmvVXwapr+x7mjf8eQbsTQRc
-         8lyEV3VhF28ccp4s48oTqVx4xHVtUUxirUk/FQm+46TerlIF16u+PWwAarPckPQxziv9
-         ph/Hxt5zVN32SOu00XoJutvMWDWu77rbhE1QcNSpa4VWdiSG/FMvOzZkpH35lilsavda
-         hllQRNVbcp6zpfoltSF+TMSpKqmA0nrJOXkGVJ8FicPa5qn0ThftIpNAt4skBRPWKlsX
-         A0Qw==
-X-Forwarded-Encrypted: i=1; AFNElJ9Is4yQaxmxGPT1p5G3Z1UjOyfQo1QzueEAEo+wbescBHZCOA+NnJMSnxE0JDrNOII9Wlvijw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwmxT4Out3JNgI5TAEbY2k3+XAIbdkm05/ObIj4PcRhPlcIkAQL
-	BCcC8koKERnb72g/6qzblClmJv9DduCQtgcX45PCsBMsOrRNuBGcMtOppPuyQVntlw==
-X-Gm-Gg: AeBDietnjhltr+yfVXc7mXUJOc7EwNCl8fkjfe+GtnPL9+hLTZv8HRJigJIRm1/5Wce
-	gX3dCPvvhIHUjIJeEYqszZvAbzDaNXeYrRs/s3XScmPbKJhLnjeD/gfyE0/QYiPTlsrROumR5u7
-	i5spS3537KptxM/B6jIaA2BvFJbSg3gsC/thZemHjIMEQ5RvFIfq3hJ4mPtHlF+l4pAasVx6mCR
-	+2d+ru9JsAHm3e5VYbLiPFqK2wtEvZAFby7reguvYLjKdpnHzfgHYOoHsUeN1fnqqQoVlmozfuV
-	mlK9yx1t0tdiLkk2Z8VGDw3wDybY6C4QSIOQP7687Tl7IfKmyF051xqOX9lRy9wwpgSF5apqCvw
-	JlSmpm5holK/Jij1TQA2AwX67DPBaDWtLE0vF2rjxYKAMV7JEuZBPLRCapPNuvvsKA93zmiILx/
-	9BS4NBEJLqvPdKFjrjP8iq54sx4Jco5km7Q2KM0feomf8x9EGJ4s0uONgPUABwHQ+Mhx6yr7ixY
-	xntcuw=
-X-Received: by 2002:a17:902:d590:b0:2ba:dfa:328d with SMTP id d9443c01a7336-2ba7cc552ffmr456805ad.1.1778016201521;
-        Tue, 05 May 2026 14:23:21 -0700 (PDT)
-Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-365b10d3e04sm31214a91.9.2026.05.05.14.23.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 May 2026 14:23:20 -0700 (PDT)
-Date: Tue, 5 May 2026 21:23:15 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, iommu@lists.linux.dev,
-	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Daniel Mentz <danielmentz@google.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	David Matlack <dmatlack@google.com>
-Subject: Re: [PATCH rc v2] iommu/arm-smmu-v3: Fix inconsistent ATS state
- tracking
-Message-ID: <afpfwwmUeNbs1juV@google.com>
-References: <20260504163842.2692314-1-praan@google.com>
- <afjfBi+vw/Ywkzid@nvidia.com>
- <afj0cyBZwkVLyIwK@google.com>
- <afoWrn/RXxDmcHsS@ziepe.ca>
- <afpRUaciIEGvD3Bi@nvidia.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="s0pmKe+B"
+Received: from localhost (unknown [52.148.140.42])
+	by linux.microsoft.com (Postfix) with ESMTPSA id A5BB120B7168;
+	Tue,  5 May 2026 14:32:16 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A5BB120B7168
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1778016737;
+	bh=g7R5PXR3x5jKKNWg6zW1flLeHMLxjwhh/ziGStyhNPI=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=s0pmKe+B9C+x5WzSFp6sPUJpqhMqgH+sZDee0nTUhrfkXd3XQBm61m2+U5L6q4Ep2
+	 bpO0qyCgzjgKoAUMtP/B1k0QX5l6rFArN27MV/V6xlA0a5MtwBzFVv5r4NMiYk6BeB
+	 aiRhX+ZQHLTYrgdnbk8rnoMDFLlLv9pyIuS+c/kI=
+Date: Tue, 5 May 2026 14:32:17 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Jason Gunthorpe
+ <jgg@nvidia.com>, Alex Williamson <alex@shazbot.org>, Joerg Roedel
+ <joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>, David Matlack
+ <dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen
+ <nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+ "skhawaja@google.com" <skhawaja@google.com>, "pasha.tatashin@soleen.com"
+ <pasha.tatashin@soleen.com>, Will Deacon <will@kernel.org>, Baolu Lu
+ <baolu.lu@linux.intel.com>, jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH V4 02/10] iommufd: Move igroup allocation to a function
+Message-ID: <20260505143217.0000704e@linux.microsoft.com>
+In-Reply-To: <BL1PR11MB527178A84DEE234931CF6B268C232@BL1PR11MB5271.namprd11.prod.outlook.com>
+References: <20260414211412.2729-1-jacob.pan@linux.microsoft.com>
+	<20260414211412.2729-3-jacob.pan@linux.microsoft.com>
+	<BL1PR11MB527178A84DEE234931CF6B268C232@BL1PR11MB5271.namprd11.prod.outlook.com>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <afpRUaciIEGvD3Bi@nvidia.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, May 05, 2026 at 01:21:37PM -0700, Nicolin Chen wrote:
-> On Tue, May 05, 2026 at 01:11:26PM -0300, Jason Gunthorpe wrote:
-> > On Mon, May 04, 2026 at 07:33:07PM +0000, Pranjal Shrivastava wrote:
-> > 
-> > > > > The issue was exposed under heavy load when running a VFIO-based DMA map
-> > > > > stress test: iova_stress [1]
-> > > > 
-> > > > I wonder what's the real reason for pci_enable_ats() to fail:
-> > > > 
-> > > 
-> > > Yes, It's the dev->is_virtfn case (the one you suspect below)
-> > 
-> > Oh.... This is a much larger problem then
-> > 
-> > The VF should not fail to enable ATS, that is a meaningful bug, I'm
-> > not sure why are are just discovering this?
-> > 
-> > It looks like the PF unconditionally calls pci_prepare_ats() during
-> > arm_smmu_probe_device(), so how does this happen:
-> > 
-> > > >         if (dev->is_virtfn) {
-> > > >                 pdev = pci_physfn(dev);
-> > > >                 if (pdev->ats_stu != ps)
-> > > >                         return -EINVAL;		// maybe this one?
-> > 
-> > ??
-> > 
-> > So, I think the right error handling for a case that shouldn't happen is
-> > to fail the attachment not to try to continue it broken?
-> 
-> Inspired by your inputs, I found that pci_prepare_ats() demands in
-> kdocs:
-> 
-> /**
->  * pci_prepare_ats - Setup the PS for ATS
->  * @dev: the PCI device
->  * @ps: the IOMMU page shift
->  *
->  * This must be done by the IOMMU driver on the PF before any VFs are created to
->  * ensure that the VF can have ATS enabled.
-> 
-> But it returns 0 directly on dev->is_virtfn.
-> 
-> I wonder if this function itself should just fail if dev->is_virtfn
-> and !pci_physfn(dev)->ats_stu?
-> 
+Hi Kevin,
 
-Just wondering if there's a use-case that might break? Otherwise, in
-current context I agree that we should fail if ats_stu == 0 / mis-match
+On Thu, 16 Apr 2026 07:48:27 +0000
+"Tian, Kevin" <kevin.tian@intel.com> wrote:
 
-> Then, arm_smmu_probe_device() must fail if pci_prepare_ats() fails.
-
-I don't think probe device should fail, we should just mark that ATS
-isn't supported for the function? right?
+> > From: Jacob Pan <jacob.pan@linux.microsoft.com>
+> > Sent: Wednesday, April 15, 2026 5:14 AM
+> > 
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > 
+> > So it can be reused in the next patch which allows binding to
+> > noiommu device.
+> > 
+> > Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
+> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> > Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>  
+> 
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> 
+> with a nit:
+> 
+> > +
+> > +	/*
+> > +	 * The ictx is not additionally refcounted here becase all
+> > objects using
+> > +	 * an igroup must put it before their destroy completes.
+> > +	 */  
+> 
+> s/becase/because/, though it's not added by this patch
+will do.
 
 Thanks,
-Praan
