@@ -1,62 +1,65 @@
-Received: from mail-pf1-f201.google.com (mail-pf1-f201.google.com [209.85.210.201])
+Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 815D4481B1
-	for <iommu@lists.linux.dev>; Tue,  5 May 2026 00:27:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C4A727FD4F
+	for <iommu@lists.linux.dev>; Tue,  5 May 2026 00:27:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777940860; cv=none; b=GVHBSCpjyBRPpgO6CKlbjVt5MliRsVBgm3e0pZiqjWlVrtxXeVB4x0tTs2zK/5/Pcnc7xdjfeEkcMQxzlqlxz6/Np+8j5fDQ10sjekiQCwlf/4O+bVQSNwnt+A7G5Nycs4fMxvvAMV8yhlNSb1AJfPfrgDNInf4iDw1BFkYN9Ac=
+	t=1777940862; cv=none; b=BIY+khZU1Rrl2Tpjr0/588LIAlSljomNLH/v/esgnV5/IDohCCp/w5ZfCtT0uozz3nou+G4PiZ+T1LGxzKAvnGFm0FgW8Onri+wtfuAs6GBE1OTVWycm8lfR8/xTzr3KtwdxDxqwwJn64RbTJooJc6gqYHP45WGvqR+u7Vpcq54=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777940860; c=relaxed/simple;
-	bh=91nRYe/wLdIrUgZME+Tr6TDRQiKCek5oJsJuNHIN4MY=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=Pi4RvlTOP7AgtSYjy0QbFGT5T3IjUDGyBJmU2oA/ldbJG0IaP6RRYcgvsthp8e74CFkHvfnxjJUWuE59tbMgbxWn6rJWFh4lXS44WE1XQg23dFB36E6N2I2C5D97mHbub99e6fqK4L+GmxTcg6D5fkIyzu2ATwW12LO4HVBiTW4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=kc9m76gv; arc=none smtp.client-ip=209.85.210.201
+	s=arc-20240116; t=1777940862; c=relaxed/simple;
+	bh=6vPJz5FklGOmRIlTlxNWv/NMzXGEFSNYxGd2jakuq1k=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=DDmFVDXX4fdaeY4R0iJxZqjYtVBWCzT03eg7ytsk6ZOXEQpSXKrJN9jJ7CUSdoyFBAdMUrgEhKxoGYf8b2vkxET739FQ6DMnbL4AQThfwOJYTrNNPaO0WgrwEyc76JxXebZiU+tirWkiiK9mXgbIyT//x/EcwK1TdBPHSBCjTaE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=vlbsoua6; arc=none smtp.client-ip=209.85.210.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="kc9m76gv"
-Received: by mail-pf1-f201.google.com with SMTP id d2e1a72fcca58-837d43e9ff3so948459b3a.2
-        for <iommu@lists.linux.dev>; Mon, 04 May 2026 17:27:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="vlbsoua6"
+Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-82fa860e71eso2397736b3a.0
+        for <iommu@lists.linux.dev>; Mon, 04 May 2026 17:27:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1777940859; x=1778545659; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=Obu+hjMmt2gyOfNoZeJMdjxX5bs05kcQmj8x3MdMggE=;
-        b=kc9m76gvA+s59Xi7XvqvTmmlps6X8FNmeWKE2jsF8vQNtsDIY+83o9xLNNAjOULhKE
-         EIEkLyOo+dpPc6GKahokMgIRimscQT1aVW0oIjUnFX4vt1vVKszmWVtcmj07/90LxWM7
-         awyEuowge9M3Fe6fnK47079/mXPmvMMxQy1mBYcdZniB/uZ2VoG5JBdNx8bvpbmboZMz
-         wjVzW5YeEJOH7GuXF5M1vjR3CFuTeuBoGqHdmHZiSXuLiA3TBDj+Y7EbL/AJZfZR8IUQ
-         KbuMJw4PNagubsVEirZHL/7Sb2+c/XGsD+aUFEwPHPqQTA66EfwKYp3gcKHPq4kUdk1R
-         gEMw==
+        d=google.com; s=20251104; t=1777940860; x=1778545660; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=b+FOv1S5jZxTI8xiOq/TIFYAKVGB2GSKJ5eXMG7ksgc=;
+        b=vlbsoua6+ndmr9orj+Lw9B06+RslDqtc/AWQfflUucq8kkvV+Kvn+Sb6GlpBpOjC+D
+         it90Q0zy5aJ1FrJuLA6bE5GK3WUlCYaz9rq0UG8qygrlIVKbPdbk/lUHybl4HPPTAvcS
+         3kvkSPwPR/kiCsjgfg9IoxOjBzGq0+/xspipf6ETuHen3E7ZmBJjBpMTHC0y7BJIKCP/
+         2i0pKi0qKPuJbXTkM7LvXSyFyEvusaI5kwEZ4hnbYq/2Q6Ge3NtzA/y+SVUWFqWUEReN
+         Njm9zxjfUCz2QFML+EbKdv1kpawfC/LD8qU1vKuzquOeDV2hZcMTFIk/aDmq1IOn6ztP
+         fyiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777940859; x=1778545659;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Obu+hjMmt2gyOfNoZeJMdjxX5bs05kcQmj8x3MdMggE=;
-        b=LLdDjBkZa5ADLSjTEgJ/tCvC3XkX2j0odWILniOMtqawhwbm2F7H4x4+keuIvt8Pqj
-         g/FCcvshQR/s7Wk3mNAO73xTz91SevTH+LYPnb2Ccfyv7K0aanjTUfL6Wq0QnkmzwMro
-         2zpr7iJzEYAp8gGgBnv5h6uYbwtAnC9VHUuVQzWRnYmdeBmawQd8VG1cArHBnLPGUrDu
-         GuPdsc9AItrNdovBZRWVqT5G+Xk/3DWn1iqGOm8RNAJBtpFGo2l4hQMLpeO+ivLZFZid
-         IpOcqn9WkGcRRAmeWmh+D6hLoWzQYP+PARGTt1FP+ESn3ZLlSTW8eW26ARXC760dTcKr
-         4JbA==
-X-Forwarded-Encrypted: i=1; AFNElJ+nUgdc1zPfmylvs8SxOb/EnEhm86raQAgV+rh94c0rB2Yj1wMOE/FzKWPsT+kgJI6Xb8snpw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxXCT0LkmJW4h5/bnIs5g5Ryj0WEEL4Q+rZGsVGyInf/VDj4cij
-	6N/z2uEDDo8d9G495mQMZuWHYz7WgC2V9CzP1g+WRMOqGcFLj+cW0Y+VYCh5cDBZfYdJ4LUmChc
-	8WaZ6WZXHuly6/Q==
-X-Received: from pfbhh11.prod.google.com ([2002:a05:6a00:868b:b0:82f:a959:4a7f])
+        d=1e100.net; s=20251104; t=1777940860; x=1778545660;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=b+FOv1S5jZxTI8xiOq/TIFYAKVGB2GSKJ5eXMG7ksgc=;
+        b=h5HHTyoo5URzc12nMoZPIIMfZvFq0hmQJNaKsEwEli0oMzQnRt8AKkQ0kiQHX1WEwM
+         zwlRUXNQnzUDUfq49vthnGfRTOUkwuXYLHAC3xB8KBPRIPAj6ehp9wOelwYlKJtbgqJ6
+         x7QjIO29bqZmuFTJY44yIcfOP+OveQFIC4pnGFk+Gq+Cmfj06SSocAKFVS2EyTJQCPlN
+         kGyDcR1U5qRPuiNsWtWZ+FWtZcIzF1gObvGZsyMpEKNhQDWGrJW232a4VuzNowdu9gDg
+         Spvp1mBYIYIFlgFTvghyb9DZ+vgbfV9cJJ/PdqdhEVejyLJGpDIBjI6kESro0zRMZ3k4
+         QbbQ==
+X-Forwarded-Encrypted: i=1; AFNElJ8Q5C0WjEGSQUGfGsIoJCXVlFDIRlc89w/8tq3gwLb9KO0Kaa1LGNOLp12tfGE9dxFbBppo5Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwNF6Zp0VvgnPcQxudlbJlt5j2AUoUJqZwH2DSP0NU+piIPIxRG
+	TaMi/m2COyWnPWK2ZoyvyXaiATvGrCgn0ReZCQPdDf7zusdO/jbqNzBzMTM1DWzrvVxMrGJHP/8
+	g1V4eTnSaFUsSwA==
+X-Received: from pfnj5.prod.google.com ([2002:aa7:83c5:0:b0:82f:8a3b:87f0])
  (user=skhawaja job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6a00:4188:b0:834:e5a2:d089 with SMTP id d2e1a72fcca58-8352d29abeamr10788662b3a.33.1777940858612;
- Mon, 04 May 2026 17:27:38 -0700 (PDT)
-Date: Tue,  5 May 2026 00:27:33 +0000
+ 2002:a05:6a00:1f04:b0:836:5c3c:2051 with SMTP id d2e1a72fcca58-83923d96a31mr1009427b3a.23.1777940860319;
+ Mon, 04 May 2026 17:27:40 -0700 (PDT)
+Date: Tue,  5 May 2026 00:27:34 +0000
+In-Reply-To: <20260505002737.2213734-1-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
+References: <20260505002737.2213734-1-skhawaja@google.com>
 X-Mailer: git-send-email 2.54.0.545.g6539524ca2-goog
-Message-ID: <20260505002737.2213734-1-skhawaja@google.com>
-Subject: [RFC PATCH 0/4] dma-mapping: Add preservation of direct allocations
+Message-ID: <20260505002737.2213734-2-skhawaja@google.com>
+Subject: [RFC PATCH 1/4] dma: Add DMA allocation preservation KHO ABI
 From: Samiullah Khawaja <skhawaja@google.com>
 To: Marek Szyprowski <m.szyprowski@samsung.com>, Will Deacon <will@kernel.org>, 
 	Jason Gunthorpe <jgg@ziepe.ca>
@@ -68,52 +71,52 @@ Cc: Samiullah Khawaja <skhawaja@google.com>, Pasha Tatashin <pasha.tatashin@sole
 	Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-This is an RFC to discuss the preservation of DMA allocations for
-devices that are using direct allocation mode. Note preservation here
-means preservation of physical memory only using KHO. IOVAs and IOMMU
-mappings are out of scope.
+The DMA allocations can be backed by a variety of allocators. Add KHO
+ABI for the preservation of contiguous allocations that are done through
+dma-direct.
 
-The complexity and need of this was discussed in the thread mentioned
-below. It was proposed to allow preservation of only a subset of
-allocations with minimum support.
-
-https://lore.kernel.org/all/aepfYzkI7NsVGCF0@google.com/
-https://lore.kernel.org/all/aepRy7Gp7Ng85Zr7@willie-the-truck/
-
-Note DMA allocation allows allocation from various allocators in various
-configurations. This RFC supports preservation with,
-
-- Direct Allocation Only.
-- Pages allocated through alloc_page (Buddy allocator).
-- No CMA support.
-- No DMA allocators.
-
-The changes are also pushed here:
-https://github.com/samikhawaja/linux/tree/dma-alloc-preserve-direct
-
-Looking forward to your feedback on this.
-
-Thanks
-
-Samiullah Khawaja (4):
-  dma: Add DMA allocation preservation KHO ABI
-  dma/pool: Add an API to check if DMA allocation is from pool
-  dma-direct: Add API to preserve/restore allocations
-  dma-mapping: Add API to preserve/restore DMA allocation
-
- include/linux/dma-direct.h        |  29 ++++++
- include/linux/dma-map-ops.h       |   1 +
- include/linux/dma-mapping.h       |  50 +++++++++
- include/linux/kho/abi/dma_alloc.h |  30 ++++++
- kernel/dma/Kconfig                |   3 +
- kernel/dma/direct.c               | 163 ++++++++++++++++++++++++++++++
- kernel/dma/mapping.c              |  52 ++++++++++
- kernel/dma/pool.c                 |  13 +++
- 8 files changed, 341 insertions(+)
+Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+---
+ include/linux/kho/abi/dma_alloc.h | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
  create mode 100644 include/linux/kho/abi/dma_alloc.h
 
-
-base-commit: 9974969c14031a097d6b45bcb7a06bb4aa525c40
+diff --git a/include/linux/kho/abi/dma_alloc.h b/include/linux/kho/abi/dma_alloc.h
+new file mode 100644
+index 000000000000..46e61db81abe
+--- /dev/null
++++ b/include/linux/kho/abi/dma_alloc.h
+@@ -0,0 +1,30 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _LINUX_KHO_ABI_DMA_ALLOC_H
++#define _LINUX_KHO_ABI_DMA_ALLOC_H
++
++#include <linux/types.h>
++
++/**
++ * DOC: DMA Alloc ABI
++ *
++ * This header defines the structures used to serialize the state of DMA
++ * allocations, done by device driver, across a Live Update.
++ *
++ * Only DMA allocations done through dma-direct that are contiguous and
++ * allocated using alloc_page are supported.
++ */
++
++/**
++ * struct dma_alloc_ser - Serialized state of a single DMA allocation
++ * @page_phys: Physical address of the preserved pages
++ * @size: Size of the DMA allocation
++ * @force_decrypted: Whether the memory is force decrypted in previous kernel
++ */
++struct dma_alloc_ser {
++	u64 page_phys;
++	u64 size;
++	u8 force_decrypted;
++	u8 padding[7];
++} __packed;
++
++#endif /* _LINUX_KHO_ABI_DMA_ALLOC_H */
 -- 
 2.54.0.545.g6539524ca2-goog
 
