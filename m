@@ -1,93 +1,93 @@
-Received: from mail-oo1-f42.google.com (mail-oo1-f42.google.com [209.85.161.42])
+Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FCBC48B392
-	for <iommu@lists.linux.dev>; Tue,  5 May 2026 16:34:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.161.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5049337B3F2
+	for <iommu@lists.linux.dev>; Tue,  5 May 2026 16:35:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.161.51
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777998900; cv=pass; b=qC2tGhYaKmuaeWkUzpTbjpT1sQslmoHP2vH+Rior0yZKskzY8FPch6atDP5XW88GisXH4Us8Y5ZxWjVaRHxU94hbKCea+Wd7CWBFR7w+wDBcXMjNcyvvcHqtKUjjrFGL+pLNRVgFM23V9ISU9oM2SejU79ENAMVYGke/gz+P3Wg=
+	t=1777998918; cv=pass; b=RUXnYLfVD1yFVQ/9PYyoKzXEiwKwza9t23DIIwogEuTM8i5yc5a/BcXrr2kHmqwNwLeFuGGf9Um8YLJYAEfUVfeGbwRGFRhZ6BiVNFYR/6M4YZGLiGEFWa/x43gvU6iCfw1FKFKDaHzdJnpZ33xSOtMh4OMGyCsUpdgZ8beucO8=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777998900; c=relaxed/simple;
-	bh=CROFyCAkzv4ywS8BdMQC8KdzM2vCDU1JuULLkFtFPYs=;
+	s=arc-20240116; t=1777998918; c=relaxed/simple;
+	bh=CTonTKixj9AKgBHFu3WR/xrozDujgnWc94kv9TkdB38=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=eQnfvcheBmohf2LCwhQIf3WuLaRd5WX7H2EiUXXlZWnQ7DMeo36W4YOCOXPsonxTJFd/PO0RuQxbAPMKFuFzOB7FnDUddKgUQOQ1x0LEvizfXmEK2DkY8jXPpYokUgz9Tkj9HLNiE+2BPsmg3jh2DtGn++YalJuM8GmR95HumNY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc.com header.i=@rivosinc.com header.b=TyHgMv6e; arc=pass smtp.client-ip=209.85.161.42
+	 To:Cc:Content-Type; b=msue/HRZGfTUwIl7YacF88DqaEWajBEmkZcX2tPkm/Y4kP8ft41v5PrXIg5wtgnL7DGSD4G2a9pgM+jhjwWFrN/igFNa3EDVFXsZBmRo9J/FLOI8VCjwA4WMpQaCNh+sZrS3Q47nEoNs1RP9/F3vc3mI73k580gIirSveSwttBs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc.com header.i=@rivosinc.com header.b=Oer2vdBt; arc=pass smtp.client-ip=209.85.161.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rivosinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rivosinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=rivosinc.com header.i=@rivosinc.com header.b="TyHgMv6e"
-Received: by mail-oo1-f42.google.com with SMTP id 006d021491bc7-69498319ee7so35953eaf.1
-        for <iommu@lists.linux.dev>; Tue, 05 May 2026 09:34:56 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777998894; cv=none;
+	dkim=pass (2048-bit key) header.d=rivosinc.com header.i=@rivosinc.com header.b="Oer2vdBt"
+Received: by mail-oo1-f51.google.com with SMTP id 006d021491bc7-67e09232daeso3623111eaf.2
+        for <iommu@lists.linux.dev>; Tue, 05 May 2026 09:35:17 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1777998916; cv=none;
         d=google.com; s=arc-20240605;
-        b=XpHHM4KXbQKZJMC1SAsa3WK2jhMTYsRGcTojdWlATld7/MGFbRWjgS/ec4obIMk4uJ
-         lj8B96E3AOdqrkbJJjq9Jt6pqky/6u2iOtI4DQLbtImGSnbFgzwhsiL9mX5PpN4lpTBU
-         sxQSqVX11fpWgdWSL2oRAVy5BhNf6pkcMDkw02auQLCbhI7lIRzny9in9xnBJGDhp0t+
-         0U3CVb3jc/OA33KSdFs4AD73VICkFXV2UJyeQLhLE5LvuNGcbu5lpkhtuUHTVOeTPyNE
-         e5OmGg4hYkicod5h7YdGh9/jrrA9W4KSL5fwXlLy8peFeSw14NPzWuHcMwL5h5KzbXQG
-         RmgQ==
+        b=Y2MqT7Oi6rlKw48cBbNbVm47+IC+A9dtAurrJKFwiN6vrhNHL3f9FLul2iBHJFk4Ru
+         HhIMdHRfYowAN3ZzpeSW62xW/1HzW4hNXG7Auw4Jk/rDV81x3FiiCDTRd+VjE+7qy1Dq
+         jrL1s06efOBO+F5m0WKg/FyELUU9kjcrPE2wS9U8EyJEVjsc3o3bpFO7iLPdM00S/YLl
+         ht1P+v/0KoN68IPnwmZLRROdnkWYn2RWNh/q+KAFThlywCFzUyfePrudY+bCmWJ1PJmk
+         mMQIdoyNiE6I+6EkKkLZs2hsTJw/qj6fdKnTwxFlTBIbvSoQX+utcDwOjzS10YR6xiK5
+         zD7Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=NDO3eiyh9Hz1u3onzFvnQb0LT/Ww16oACcFMq/SSUIc=;
-        fh=BvaFosUR605UZ4Bu09oLwz6W+QeGLotXC78k/63XuZM=;
-        b=A+SWu3zqqu3BECmOmlpNINfSFY9YAxVEmGvqxOgzDZ/VnPELaX/qQT6UooAIHkhzhG
-         8fFCQ74x/xPBFGk5Su23UP2MgF9r+oKFXts9c4XC1SvWtwEp3CGcicAOAiujmP6BCNtl
-         APuPZzEflhnZz74mJouB3GavOSF8oyTrx42zP3pcazrKP5R+LXi9becsQffNowq7kYjL
-         quzBY7akfP9B3sfx5mxlKPWUAiORq9hQk1hIP9E48DiWK5iQG3d2EW1WBA4MYUAyqvVH
-         kOEEjq1Y8YjPs1cwLCDHP0iE4NKCseklO7HlzI9rpPaGC6HkgHsQdwO/tvzeu6e6X+nA
-         QTlg==;
+        bh=PZwRlD35/Ni4eJ8ZVe6U+Aw5CsKjsJO0tLj7syFGyqI=;
+        fh=LH2kAxhhOENv+QbyPLsql48cBv+DdZl+l3au8i+It9k=;
+        b=NQoT7ZGATXYwrUKQRyP8iFKWAOPnS3pXaW+Gbi3oXtOhLN7k2bDU+VSf3EeQ0J7Wta
+         1Gl274w432xW67HVJ2U88AuJqb8tkDj44sxcLKWFcIBz57JcrIbhwQteEEOntplT1NS9
+         2J68aGHSCqEHsCv6SFuS/mI7tK5D4UUwqnYm2zVDCostZYGwtqNnHoIngsQudr8DfcJr
+         o95XQWPAJ0izxAcft0gndUmVtL0HbqrRBagrRiJLApjqHK3cgGD7OCcS1CcCtUY1Ubj/
+         I1BACOZ4dk0m6FNUS/lPuwd79RCqWxERAZPzLENz86IWrZao47Np2RhIAgmoWXCe3Bct
+         5H9w==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc.com; s=google; t=1777998894; x=1778603694; darn=lists.linux.dev;
+        d=rivosinc.com; s=google; t=1777998916; x=1778603716; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=NDO3eiyh9Hz1u3onzFvnQb0LT/Ww16oACcFMq/SSUIc=;
-        b=TyHgMv6ePwPvCrlNLNg1VjO8130XJEzNOjoVcNUxloeLYnAwp9YI1Kmd7Vl+RbROmx
-         mwPwXU82jRqrQO5IUB41cvjAW5ccnccxx4ciAgMkwBADod6lu5bz8iD/A9D5NA0B/0iR
-         dwtNP/BgCyBMnfwX6tYxye1+kzkPOs8Qj/nUHSa+MEenBjF7u8KXH9zB99Ygwv2fJi0D
-         xfAxT3vPhP7dd1ecpyywtH6vIOLsH+u7/2remQzmQrcpFjz4DI8TX4innK9LbIq/5t0h
-         lBWGORjpLOAW68rN2u4VCzRsdbc3ly0I87HdBrhrFXPf1o/o7rGTxlIvNyuBPW2hnXy4
-         63iA==
+        bh=PZwRlD35/Ni4eJ8ZVe6U+Aw5CsKjsJO0tLj7syFGyqI=;
+        b=Oer2vdBt0EKRS8MSn4UP2PtdZFkDYKByVR4cRiCtmmbPr9sonp7deQgaFPzhwCIHdh
+         VN3Fo/3jJ5COInEZGGnuYnkx9yQUNAO13jwb5x5vrdPgieg3C+RWuwBu9KkO/8qOaJwM
+         fbQqNTmGQlK9ujZ6eOFGHP12QcGiP+UOV8fqhVk2GsBCcvRDD+UG5qJnpkbt5f9dHu9a
+         cMNcal356DIEOZNJqR+14+my95mwDyOXRJH3imj0SwklkwZJqz5CtX/hbkmPmVdjWyxQ
+         fridzYBKFPGaVpfu7gUS8ZouDCoUttxx1e5Z7FJEOLf0rX4uDo9d7vY2gqnftR4xOFds
+         PAaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777998894; x=1778603694;
+        d=1e100.net; s=20251104; t=1777998916; x=1778603716;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=NDO3eiyh9Hz1u3onzFvnQb0LT/Ww16oACcFMq/SSUIc=;
-        b=XA0zlsgUT/keiUMgraOfKuHc7IIBZoFCF9Al2RHXFjWUCrID+LjcntCI2LFzqMyljs
-         MYIfsoW69ih8Nh1Jsd97g6NKTqT1kfeKdLxmRQ2AHA9t7piGhO2Ez/Xbhbxid05hdgJu
-         OB2rN/dtd0+1sZYChgzr9FS9nGWLAOHMGpMBBXYMP4fPjgnh6Nk6UpGv7gSWNBMpU2mr
-         Z+uwfX/8YXPBqqGjOqnLXnsCYO639dU3jgr7AkIeCT9CUZ0cW4UEgr6oAsDFohGMhaWj
-         q7U52F8wZrSGH53/oOXaLL0oTGp+yMH+wILdiC7nc3gbnAkDEwJ1T3XU55rexJAelZIT
-         L/rw==
-X-Forwarded-Encrypted: i=1; AFNElJ+6lbHbhYI21eAmx3CMw4fe1P2YSUcaYhq9ZvIOakWlN5lWjii1HL/7GnjaK2G1gwI6/2OrKg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YysYEbXlZswM3Hk9Kz/nQwTyVB6cMAyOEobliZqAf79ETArIFYI
-	t6Ce7nbcotG3LXOfShF9A8dlNcY9qePZ54msWuCIdo7yrqTDty2syYvUa/hQyzJIA67K9+t8i6M
-	uRXPrs2SH+mEBdRl++iMUGJ2ZD3+Od8Wa/AGZ2HPUAQ==
-X-Gm-Gg: AeBDiesSH3frEUhfTHbxhPg1CMCjYFhBwypnNcxSQkhp/2QsuX+JZb4nbqc9+lJWfON
-	kef9VazFrVVj8TkRX5RnhHOVZcoh8zOw6X9Sp6eUM6UppR63BlFfPzkJDeEqixTjLRcaRSXn8u6
-	KhfZ5r/+XlVREK+0B2yiwj1BB7zpS8QBAYER9uZEzvdqtRLBA930LfYE3BP5C5zaVNIJuBNyTE/
-	PNAo8m7LXD3ZC+J36C7ShYhJw5Avsu+aC95fBUtFbUlzdLVm9jlaPxVZj8zAoVU/2GCzO1c1r/h
-	qr9uIEmU6kWtpL2e5w==
-X-Received: by 2002:a05:6820:2b03:b0:693:7a6f:b311 with SMTP id
- 006d021491bc7-6989150d84emr1409508eaf.22.1777998892571; Tue, 05 May 2026
- 09:34:52 -0700 (PDT)
+        bh=PZwRlD35/Ni4eJ8ZVe6U+Aw5CsKjsJO0tLj7syFGyqI=;
+        b=RkE7FjtNH78MPMfttfuYT84n1yQp59hkZeFRgNShzZrP/5MS+M3T7VPhaViTNL8IjC
+         C/WbV40yM+cQJhiBFchld0KoILeqmTBEEMQyeB2hhZ8MzXcKSPBtBkigYglAd9yPVEIb
+         w7uBj8AWa47t/8ILwP+2ddklGndIiHp26ORVzk2TpSMHekjnANN+BHcT32ywKlLkzKuH
+         Q8YL2eOOP7k/XNYVqeKlzaDYrOmeYX7wiFklaDGQDiYeCWwtIk7kPtvSMLBp6lzNQxTy
+         irJHZmKZaKVUoitMVLuDUPe/n1idTfgQ2Aw9sQTbrl0Pj1quVM3mPzJepgg28RsUHTYI
+         tc9g==
+X-Forwarded-Encrypted: i=1; AFNElJ9bBGk9R8PrgNDRoGsN2MVyFRrs6df9U4pZ4JQcYFbSqntPisfg2lIM+oJTzLUDiG4zWdS+xw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw1Z/DppbL9PsMs7EzqgcLB1wN0IBSXySupmA0NEkzmTpsL9ONg
+	IAiulNlcQpnsNSEfjxbXURo9un0rsUTJ10Vat6tiTDtxTuW+3kZLDPFUm50sO0PBCOsg/FfyCeh
+	8keR38L60eiJNXDNjGQHM50cvzsvpHk1iYlg8V9OWlw==
+X-Gm-Gg: AeBDievFlJJwGKx54wTklx4jaWvGIIl9al8lG7XzvbT+P2Gw/jshqoOFsCfRiGkGhKf
+	Qu/b6V38DAmyLr2Wc4K4pl+rblD7mkyKUsVDL0z6bzR03ZSrIb/QGNwhdkRQrpWq96HnhnPXMaW
+	EsJlLkGOrp+JXYEFJeKhEEopWJpbPpJjO7//AWQEsr2wpZHdj+UGuob1YEGfkMCQ50dVrvzZWMn
+	/4c7e4GIGH1SmtTKvjokuoD3AMZNruhoLemKEdc59ywjmE71gDfp4DOBpGSl5oqVH1X1rjG9WfG
+	uS+sVFGf7f6/e4UrNQ==
+X-Received: by 2002:a05:6820:f001:b0:696:2cf3:3bc3 with SMTP id
+ 006d021491bc7-699981ea5efmr81275eaf.41.1777998915996; Tue, 05 May 2026
+ 09:35:15 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <0-v1-54e7264d71b4+17cc3-iommu_riscv_inv_jgg@nvidia.com> <5-v1-54e7264d71b4+17cc3-iommu_riscv_inv_jgg@nvidia.com>
-In-Reply-To: <5-v1-54e7264d71b4+17cc3-iommu_riscv_inv_jgg@nvidia.com>
+References: <0-v1-54e7264d71b4+17cc3-iommu_riscv_inv_jgg@nvidia.com> <6-v1-54e7264d71b4+17cc3-iommu_riscv_inv_jgg@nvidia.com>
+In-Reply-To: <6-v1-54e7264d71b4+17cc3-iommu_riscv_inv_jgg@nvidia.com>
 From: Tomasz Jeznach <tjeznach@rivosinc.com>
-Date: Tue, 5 May 2026 09:34:41 -0700
-X-Gm-Features: AVHnY4KmN3zuPOnphRUD3iSyHclk6jkkiTRo8gM7OfuZX2MGnqIi-uGqw8s8o2g
-Message-ID: <CAH2o1u6RQBQARdL1VTYTJEb_6tskCizfbHPV=h+413H11RmV8A@mail.gmail.com>
-Subject: Re: [PATCH 5/7] iommu/riscv: Compute best stride for single invalidation
+Date: Tue, 5 May 2026 09:35:04 -0700
+X-Gm-Features: AVHnY4LPfK7qs4OtHxHKG0TGC_8I0pYYVtUUsANuSQbTNv8bjJdgyf0feiYrb7A
+Message-ID: <CAH2o1u4opjWDL8pFTstYVYDbML4_hAgQm1D4NH6rR8=RyG=Vig@mail.gmail.com>
+Subject: Re: [PATCH 6/7] iommu/riscv: Add RISCV_IOMMU_CAPABILITIES_NL
 To: Jason Gunthorpe <jgg@nvidia.com>
 Cc: Alexandre Ghiti <alex@ghiti.fr>, Albert Ou <aou@eecs.berkeley.edu>, iommu@lists.linux.dev, 
 	Joerg Roedel <joro@8bytes.org>, linux-riscv@lists.infradead.org, 
@@ -99,173 +99,96 @@ Content-Transfer-Encoding: quoted-printable
 On Fri, Apr 10, 2026 at 8:57=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wr=
 ote:
 >
-> Replace the per-page IOTLB invalidation loop with stride-based
-> invalidation that uses the level bitmaps from iommu_iotlb_gather.
->
-> Pre-calculate the invalidation information before running over the
-> bonds loop as it is the same for every entry.
->
-> The lowest set bit in the PT_FEAT_DETAILED_GATHER bitmaps indicates
-> the stride. This design ignores the SVNAPOT contiguous pages on the
-> assumption that they still have to be individually invalidated like
-> ARM requires, though it is not clear from the spec.
->
-> Replace the 2M cutoff for global invalidation with a 512 command
-> limit. This is the same for a 4k stride and now scales with the
-> stride size.
+> Non-leaf invalidation allows the single invalidate command to also
+> clear the walk cache. If NL is available, set the NL bit if the
+> gather indicates tables have been changed. The stride is already
+> calculated properly.
 >
 > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > ---
->  drivers/iommu/riscv/iommu.c | 103 +++++++++++++++++++++++++-----------
->  1 file changed, 71 insertions(+), 32 deletions(-)
+>  drivers/iommu/riscv/iommu-bits.h |  7 +++++++
+>  drivers/iommu/riscv/iommu.c      | 12 +++++++-----
+>  2 files changed, 14 insertions(+), 5 deletions(-)
 >
-> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-> index 556d5dc9c58681..fd9c5294dbc082 100644
-> --- a/drivers/iommu/riscv/iommu.c
-> +++ b/drivers/iommu/riscv/iommu.c
-> @@ -920,22 +920,58 @@ static void riscv_iommu_bond_unlink(struct riscv_io=
-mmu_domain *domain,
->         }
+> diff --git a/drivers/iommu/riscv/iommu-bits.h b/drivers/iommu/riscv/iommu=
+-bits.h
+> index 29a0040b1c32ea..f01b49ac815586 100644
+> --- a/drivers/iommu/riscv/iommu-bits.h
+> +++ b/drivers/iommu/riscv/iommu-bits.h
+> @@ -63,6 +63,7 @@
+>  #define RISCV_IOMMU_CAPABILITIES_PD8           BIT_ULL(38)
+>  #define RISCV_IOMMU_CAPABILITIES_PD17          BIT_ULL(39)
+>  #define RISCV_IOMMU_CAPABILITIES_PD20          BIT_ULL(40)
+> +#define RISCV_IOMMU_CAPABILITIES_NL            BIT_ULL(42)
+>
+>  /**
+>   * enum riscv_iommu_igs_settings - Interrupt Generation Support Settings
+> @@ -473,6 +474,7 @@ struct riscv_iommu_command {
+>  #define RISCV_IOMMU_CMD_IOTINVAL_PSCV          BIT_ULL(32)
+>  #define RISCV_IOMMU_CMD_IOTINVAL_GV            BIT_ULL(33)
+>  #define RISCV_IOMMU_CMD_IOTINVAL_GSCID         GENMASK_ULL(59, 44)
+> +#define RISCV_IOMMU_CMD_IOTINVAL_NL            BIT_ULL(34)
+>  /* dword1[61:10] is the 4K-aligned page address */
+>  #define RISCV_IOMMU_CMD_IOTINVAL_ADDR          GENMASK_ULL(61, 10)
+>
+> @@ -724,6 +726,11 @@ static inline void riscv_iommu_cmd_inval_set_addr(st=
+ruct riscv_iommu_command *cm
+>         cmd->dword0 |=3D RISCV_IOMMU_CMD_IOTINVAL_AV;
 >  }
 >
-> -/*
-> - * Send IOTLB.INVAL for whole address space for ranges larger than 2MB.
-> - * This limit will be replaced with range invalidations, if supported by
-> - * the hardware, when RISC-V IOMMU architecture specification update for
-> - * range invalidations update will be available.
-> - */
-> -#define RISCV_IOMMU_IOTLB_INVAL_LIMIT  (2 << 20)
-> +struct riscv_iommu_tlbi {
-> +       u64 start;
-> +       u64 last;
-> +       bool non_leaf;
-> +       struct {
-> +               bool use_global;
-> +               u8 stride_lg2;
-> +               unsigned int num;
-> +       } single;
-> +};
->
-> -static void riscv_iommu_iotlb_inval(struct riscv_iommu_domain *domain,
-> -                                   struct iommu_iotlb_gather *gather)
-> +static void riscv_iommu_tlbi_calc(struct riscv_iommu_tlbi *tlbi,
-> +                                 struct iommu_iotlb_gather *gather)
+> +static inline void riscv_iommu_cmd_inval_set_nl(struct riscv_iommu_comma=
+nd *cmd)
 > +{
-> +       u8 combined =3D gather->pt.leaf_levels_bitmap |
-> +                     gather->pt.table_levels_bitmap;
-> +       u64 num;
-> +
-> +       tlbi->non_leaf =3D gather->pt.table_levels_bitmap !=3D 0;
-> +       tlbi->start =3D gather->start;
-> +       tlbi->last =3D gather->end;
-> +
-> +       /* No level information available */
-> +       if (!combined) {
-> +               tlbi->single.use_global =3D true;
-> +               return;
-> +       }
-> +
-> +       /*
-> +        * Calculate stride from the lowest changed level. RISC-V uses 4K=
-iB
-> +        * granule with 9 bits per level.
-> +        */
-> +       tlbi->single.stride_lg2 =3D 9 * __ffs(combined) + 12;
-> +       num =3D (tlbi->last - tlbi->start + 1) >> tlbi->single.stride_lg2=
-;
-> +       if (!num || num > 512) {
-> +               tlbi->single.use_global =3D true;
-> +       } else {
-> +               tlbi->single.num =3D num;
-> +               tlbi->single.use_global =3D false;
-> +       }
+> +       cmd->dword0 |=3D RISCV_IOMMU_CMD_IOTINVAL_NL;
 > +}
 > +
-> +static void riscv_iommu_iotlb_inval_iommu(struct riscv_iommu_device *iom=
-mu,
-> +                                         int pscid,
-> +                                         struct riscv_iommu_tlbi *tlbi)
+>  static inline void riscv_iommu_cmd_inval_set_pscid(struct riscv_iommu_co=
+mmand *cmd,
+>                                                    int pscid)
 >  {
-> -       unsigned long start;
-> -       unsigned long end;
-> -       struct riscv_iommu_bond *bond;
-> -       struct riscv_iommu_device *iommu, *prev;
+> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+> index fd9c5294dbc082..ea14630430451a 100644
+> --- a/drivers/iommu/riscv/iommu.c
+> +++ b/drivers/iommu/riscv/iommu.c
+> @@ -966,6 +966,8 @@ static void riscv_iommu_iotlb_inval_iommu(struct risc=
+v_iommu_device *iommu,
+>                                           int pscid,
+>                                           struct riscv_iommu_tlbi *tlbi)
+>  {
+> +       bool use_nl =3D tlbi->non_leaf &&
+> +                     (iommu->caps & RISCV_IOMMU_CAPABILITIES_NL);
 >         struct riscv_iommu_command cmd;
-> +       unsigned long iova;
-> +       unsigned int i;
-> +
-> +       riscv_iommu_cmd_inval_vma(&cmd);
-> +       riscv_iommu_cmd_inval_set_pscid(&cmd, pscid);
+>         unsigned long iova;
+>         unsigned int i;
+> @@ -974,17 +976,17 @@ static void riscv_iommu_iotlb_inval_iommu(struct ri=
+scv_iommu_device *iommu,
+>         riscv_iommu_cmd_inval_set_pscid(&cmd, pscid);
 >
 >         /*
->          * When non-leaf page table entries were changed, the base spec
-> @@ -943,13 +979,28 @@ static void riscv_iommu_iotlb_inval(struct riscv_io=
-mmu_domain *domain,
->          * way to do targeted non-leaf invalidation without the NL
->          * extension. Force global invalidation to preserve correctness.
+> -        * When non-leaf page table entries were changed, the base spec
+> -        * requires a full PSCID invalidation (AV=3D0) since there is no
+> -        * way to do targeted non-leaf invalidation without the NL
+> -        * extension. Force global invalidation to preserve correctness.
+> +        * If non-leaf entries were changed and the IOMMU doesn't
+> +        * support NL, we must fall back to global invalidation (AV=3D0).
 >          */
-> -       if (gather->pt.table_levels_bitmap) {
-> -               start =3D 0;
-> -               end =3D ULONG_MAX;
-> -       } else {
-> -               start =3D gather->start;
-> -               end =3D gather->end;
-> +       if (tlbi->single.use_global || tlbi->non_leaf)
-> +               goto global;
-> +
-> +       iova =3D tlbi->start;
-> +       for (i =3D 0; i < tlbi->single.num; i++) {
-> +               riscv_iommu_cmd_inval_set_addr(&cmd, iova);
-> +               riscv_iommu_cmd_send(iommu, &cmd);
-> +               iova +=3D 1ULL << tlbi->single.stride_lg2;
+> -       if (tlbi->single.use_global || tlbi->non_leaf)
+> +       if (tlbi->single.use_global || (tlbi->non_leaf && !use_nl))
+>                 goto global;
+>
+>         iova =3D tlbi->start;
+>         for (i =3D 0; i < tlbi->single.num; i++) {
+>                 riscv_iommu_cmd_inval_set_addr(&cmd, iova);
+> +               if (use_nl)
+> +                       riscv_iommu_cmd_inval_set_nl(&cmd);
+>                 riscv_iommu_cmd_send(iommu, &cmd);
+>                 iova +=3D 1ULL << tlbi->single.stride_lg2;
 >         }
-> +       return;
-> +global:
-> +       riscv_iommu_cmd_send(iommu, &cmd);
-> +}
-> +
-> +static void riscv_iommu_iotlb_inval(struct riscv_iommu_domain *domain,
-> +                                   struct iommu_iotlb_gather *gather)
-> +{
-> +       struct riscv_iommu_device *iommu, *prev;
-> +       struct riscv_iommu_bond *bond;
-> +       struct riscv_iommu_tlbi tlbi;
-> +
-> +       riscv_iommu_tlbi_calc(&tlbi, gather);
->
->         /*
->          * For each IOMMU linked with this protection domain (via bonds->=
-dev),
-> @@ -990,19 +1041,7 @@ static void riscv_iommu_iotlb_inval(struct riscv_io=
-mmu_domain *domain,
->                 if (iommu =3D=3D prev)
->                         continue;
->
-> -               riscv_iommu_cmd_inval_vma(&cmd);
-> -               riscv_iommu_cmd_inval_set_pscid(&cmd, domain->pscid);
-> -               if (end - start < RISCV_IOMMU_IOTLB_INVAL_LIMIT - 1) {
-> -                       unsigned long iova =3D start;
-> -
-> -                       do {
-> -                               riscv_iommu_cmd_inval_set_addr(&cmd, iova=
-);
-> -                               riscv_iommu_cmd_send(iommu, &cmd);
-> -                       } while (!check_add_overflow(iova, PAGE_SIZE, &io=
-va) &&
-> -                                iova < end);
-> -               } else {
-> -                       riscv_iommu_cmd_send(iommu, &cmd);
-> -               }
-> +               riscv_iommu_iotlb_inval_iommu(iommu, domain->pscid, &tlbi=
-);
->                 prev =3D iommu;
->         }
->
 > --
 > 2.43.0
 >
 
 Reviewed-by: Tomasz Jeznach <tjeznach@rivosinc.com>
 
-Thank you
+Thank you,
 - Tomasz
