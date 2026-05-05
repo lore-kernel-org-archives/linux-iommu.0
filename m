@@ -1,93 +1,93 @@
-Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
+Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5049337B3F2
-	for <iommu@lists.linux.dev>; Tue,  5 May 2026 16:35:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.161.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32B0948C8C1
+	for <iommu@lists.linux.dev>; Tue,  5 May 2026 16:36:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.210.50
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777998918; cv=pass; b=RUXnYLfVD1yFVQ/9PYyoKzXEiwKwza9t23DIIwogEuTM8i5yc5a/BcXrr2kHmqwNwLeFuGGf9Um8YLJYAEfUVfeGbwRGFRhZ6BiVNFYR/6M4YZGLiGEFWa/x43gvU6iCfw1FKFKDaHzdJnpZ33xSOtMh4OMGyCsUpdgZ8beucO8=
+	t=1777998975; cv=pass; b=GH+Yx+TnQH3B0WAfonItTDiyCiYgRhCsYsCF0oa1Z/CQ/UTf5pjiWb7QZJJ+WmDDYlaMeF5eWdZQeC+kZFhGcOG7auaBNro+VGUbDVU2dPN/HZDGxvTm9Tb5ah5krilkamUhtEiWaF+j+0DkrelUidKv91ZK6GJ2k+ZFDIl4hss=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777998918; c=relaxed/simple;
-	bh=CTonTKixj9AKgBHFu3WR/xrozDujgnWc94kv9TkdB38=;
+	s=arc-20240116; t=1777998975; c=relaxed/simple;
+	bh=UFuKXwH3uUk34lhZVYCtQJ9B2E0d9YVtv3RCiQ1zYbM=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=msue/HRZGfTUwIl7YacF88DqaEWajBEmkZcX2tPkm/Y4kP8ft41v5PrXIg5wtgnL7DGSD4G2a9pgM+jhjwWFrN/igFNa3EDVFXsZBmRo9J/FLOI8VCjwA4WMpQaCNh+sZrS3Q47nEoNs1RP9/F3vc3mI73k580gIirSveSwttBs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc.com header.i=@rivosinc.com header.b=Oer2vdBt; arc=pass smtp.client-ip=209.85.161.51
+	 To:Cc:Content-Type; b=H1XyLgQh3bBUaTYx/CjcISNJxK/T96Reg7JJwzQC28Glwy9mKsKTgm6usdrO6P71TIqFHon2epO0ZUW7+jRpqyd/nYSb0NeLWrBQOtRb47DOYjSHPmDzOZcVFvHT/s3tZbWFMiQAjpY6UGAj7ms1MrntukD3AbTpC4og774wg+8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc.com header.i=@rivosinc.com header.b=PGcs+7Ea; arc=pass smtp.client-ip=209.85.210.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rivosinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rivosinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=rivosinc.com header.i=@rivosinc.com header.b="Oer2vdBt"
-Received: by mail-oo1-f51.google.com with SMTP id 006d021491bc7-67e09232daeso3623111eaf.2
-        for <iommu@lists.linux.dev>; Tue, 05 May 2026 09:35:17 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777998916; cv=none;
+	dkim=pass (2048-bit key) header.d=rivosinc.com header.i=@rivosinc.com header.b="PGcs+7Ea"
+Received: by mail-ot1-f50.google.com with SMTP id 46e09a7af769-7dcdaf06498so3831326a34.2
+        for <iommu@lists.linux.dev>; Tue, 05 May 2026 09:36:14 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1777998973; cv=none;
         d=google.com; s=arc-20240605;
-        b=Y2MqT7Oi6rlKw48cBbNbVm47+IC+A9dtAurrJKFwiN6vrhNHL3f9FLul2iBHJFk4Ru
-         HhIMdHRfYowAN3ZzpeSW62xW/1HzW4hNXG7Auw4Jk/rDV81x3FiiCDTRd+VjE+7qy1Dq
-         jrL1s06efOBO+F5m0WKg/FyELUU9kjcrPE2wS9U8EyJEVjsc3o3bpFO7iLPdM00S/YLl
-         ht1P+v/0KoN68IPnwmZLRROdnkWYn2RWNh/q+KAFThlywCFzUyfePrudY+bCmWJ1PJmk
-         mMQIdoyNiE6I+6EkKkLZs2hsTJw/qj6fdKnTwxFlTBIbvSoQX+utcDwOjzS10YR6xiK5
-         zD7Q==
+        b=B96liy2kpIkRZNYdSdnYQ1nJen8qXGWc4seoOSHmLkWwBUGz9diAfFjbg+Yc6hjY5U
+         81R8OYmGuBLC9YtWOcQUqCvIxAEuIpJF6wggxP8Msr67X7/qjPHbg50yo4KkpJBUPgir
+         /HadLi1R8ZoIKhNcMzhQ03pfM9f6Bj7Hi07uL9ssDbXP6dk1TvYegMSz5VZS+XD5Vau0
+         IpPLzdWUa2WlXpmg2Q7uApGekEeHmMcAatKQOvNvPGCtpCNHML+lnQ/jRmupZzsU/KWQ
+         x5a7HBuDJo5uEEjvyEjHhqxStiFvUwonjzOGcO9VinHwGr/6FQUMTu/W9SsJkYvpPdhR
+         +x2Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=PZwRlD35/Ni4eJ8ZVe6U+Aw5CsKjsJO0tLj7syFGyqI=;
-        fh=LH2kAxhhOENv+QbyPLsql48cBv+DdZl+l3au8i+It9k=;
-        b=NQoT7ZGATXYwrUKQRyP8iFKWAOPnS3pXaW+Gbi3oXtOhLN7k2bDU+VSf3EeQ0J7Wta
-         1Gl274w432xW67HVJ2U88AuJqb8tkDj44sxcLKWFcIBz57JcrIbhwQteEEOntplT1NS9
-         2J68aGHSCqEHsCv6SFuS/mI7tK5D4UUwqnYm2zVDCostZYGwtqNnHoIngsQudr8DfcJr
-         o95XQWPAJ0izxAcft0gndUmVtL0HbqrRBagrRiJLApjqHK3cgGD7OCcS1CcCtUY1Ubj/
-         I1BACOZ4dk0m6FNUS/lPuwd79RCqWxERAZPzLENz86IWrZao47Np2RhIAgmoWXCe3Bct
-         5H9w==;
+        bh=XMwGqdsNVv3aob9cGd1eQz6UK34amfZUCSFO2bXmDok=;
+        fh=hGPnVdnQZeeYEKYVan82xmXI2/YmH2g75KjdTa+pwXY=;
+        b=eWgeLbptixfd2UHoXgrD7dSt0EUe3RqVxl65//1I1zt8RgaySbG5vx9yHSuEQDVwgj
+         753gskuRvDFbewSfXQ2LC/ntT4OqDC8fCLCXDnFi8FY5CVUqqgdBdCFs2hw3pCCGUoW0
+         IuEFQIhRf2jHn+zwpf7pngnnCPn4gucjadS23Xjc9fdcojID343Br945o0UiuPbfGYc0
+         uFxuqbeydKuNLqStKx24JYHcaJTWJXaAb/eflLIMI3RlxHugaqt6aGKN/7desoGyPkj+
+         5EY+ZwElB5Uoj6w3G3QcuisNdzdkipNSM84mHtJsX6bajn/C/b0ANktj5G69LwQJPPfV
+         8vXA==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc.com; s=google; t=1777998916; x=1778603716; darn=lists.linux.dev;
+        d=rivosinc.com; s=google; t=1777998973; x=1778603773; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=PZwRlD35/Ni4eJ8ZVe6U+Aw5CsKjsJO0tLj7syFGyqI=;
-        b=Oer2vdBt0EKRS8MSn4UP2PtdZFkDYKByVR4cRiCtmmbPr9sonp7deQgaFPzhwCIHdh
-         VN3Fo/3jJ5COInEZGGnuYnkx9yQUNAO13jwb5x5vrdPgieg3C+RWuwBu9KkO/8qOaJwM
-         fbQqNTmGQlK9ujZ6eOFGHP12QcGiP+UOV8fqhVk2GsBCcvRDD+UG5qJnpkbt5f9dHu9a
-         cMNcal356DIEOZNJqR+14+my95mwDyOXRJH3imj0SwklkwZJqz5CtX/hbkmPmVdjWyxQ
-         fridzYBKFPGaVpfu7gUS8ZouDCoUttxx1e5Z7FJEOLf0rX4uDo9d7vY2gqnftR4xOFds
-         PAaQ==
+        bh=XMwGqdsNVv3aob9cGd1eQz6UK34amfZUCSFO2bXmDok=;
+        b=PGcs+7EaUhsChHIoOx3Y5DqpLJJmBX1wzZObZEVqtepDqXVIzatBNbuu7a7fj8e00y
+         JpnjQU1G4rY9UCsWzmXHyoTn6yAda/BlIKoLkKPR5r19mi5gCtE5x6OZBlkKnFDIQjyD
+         mxu8C+FUsUAwMikd6xK4dKvY1jK2HtVbJktDAK2ZgGYsu25qXI7E6isKJPPwUcdLAm0M
+         JRq4gte6dI0vi4rdwD1aPSOqWvOMRxeEozchyuLul9M2cj8ECA8AcEd1/AidXJDSImB8
+         8IkSk3mYAWGtE+qhkRcqGnpDX6NiiH3QHCX3tLzNXvLXTAvt6v4LZG8S/aoxaQBx1c0y
+         qZhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777998916; x=1778603716;
+        d=1e100.net; s=20251104; t=1777998973; x=1778603773;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=PZwRlD35/Ni4eJ8ZVe6U+Aw5CsKjsJO0tLj7syFGyqI=;
-        b=RkE7FjtNH78MPMfttfuYT84n1yQp59hkZeFRgNShzZrP/5MS+M3T7VPhaViTNL8IjC
-         C/WbV40yM+cQJhiBFchld0KoILeqmTBEEMQyeB2hhZ8MzXcKSPBtBkigYglAd9yPVEIb
-         w7uBj8AWa47t/8ILwP+2ddklGndIiHp26ORVzk2TpSMHekjnANN+BHcT32ywKlLkzKuH
-         Q8YL2eOOP7k/XNYVqeKlzaDYrOmeYX7wiFklaDGQDiYeCWwtIk7kPtvSMLBp6lzNQxTy
-         irJHZmKZaKVUoitMVLuDUPe/n1idTfgQ2Aw9sQTbrl0Pj1quVM3mPzJepgg28RsUHTYI
-         tc9g==
-X-Forwarded-Encrypted: i=1; AFNElJ9bBGk9R8PrgNDRoGsN2MVyFRrs6df9U4pZ4JQcYFbSqntPisfg2lIM+oJTzLUDiG4zWdS+xw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw1Z/DppbL9PsMs7EzqgcLB1wN0IBSXySupmA0NEkzmTpsL9ONg
-	IAiulNlcQpnsNSEfjxbXURo9un0rsUTJ10Vat6tiTDtxTuW+3kZLDPFUm50sO0PBCOsg/FfyCeh
-	8keR38L60eiJNXDNjGQHM50cvzsvpHk1iYlg8V9OWlw==
-X-Gm-Gg: AeBDievFlJJwGKx54wTklx4jaWvGIIl9al8lG7XzvbT+P2Gw/jshqoOFsCfRiGkGhKf
-	Qu/b6V38DAmyLr2Wc4K4pl+rblD7mkyKUsVDL0z6bzR03ZSrIb/QGNwhdkRQrpWq96HnhnPXMaW
-	EsJlLkGOrp+JXYEFJeKhEEopWJpbPpJjO7//AWQEsr2wpZHdj+UGuob1YEGfkMCQ50dVrvzZWMn
-	/4c7e4GIGH1SmtTKvjokuoD3AMZNruhoLemKEdc59ywjmE71gDfp4DOBpGSl5oqVH1X1rjG9WfG
-	uS+sVFGf7f6/e4UrNQ==
-X-Received: by 2002:a05:6820:f001:b0:696:2cf3:3bc3 with SMTP id
- 006d021491bc7-699981ea5efmr81275eaf.41.1777998915996; Tue, 05 May 2026
- 09:35:15 -0700 (PDT)
+        bh=XMwGqdsNVv3aob9cGd1eQz6UK34amfZUCSFO2bXmDok=;
+        b=i/1qElv8WA6Jm+bs+vsWkXKRyMVJAPjKoiPj6ikzFrFU8l04Gi66twSnr6TwbqvBCS
+         obDeeuEFHEjxd3ykyXrPkfDFjv1kRdJlbmbCeAhWQvhsTEsm1Gmg7YboCQWEObimoefh
+         wRnaOrk7f2HAvqun0cZfYIYnugV01nNaIqgQeavnjhXgRsCGWi8R4LUW4lsKwzQyfhe/
+         PoRA50BdxmEi+6vy55VEMaS8HWAVQZknRnir+2IT8cDvM+DUBYG36QOPzhUERcqcsvfi
+         pGCzleYR0bbk2wjAd563CAOhKMQkgr5uzvD5FY+Kb0T3+z7O+537L6r4tn/QfRhTUNy1
+         +8Vw==
+X-Forwarded-Encrypted: i=1; AFNElJ9Q5fqrWwrSk7/Ul8/4laRttLi30u4G810i2T8d4qegj4dz4bf697Mx9p1UvhmDjs3JGo6OuQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxE5zOcUDHp3j06/37W/dk0UsmX5ef7KnlEGQ2qxDNS6j/xf+yw
+	D7vTK1AWw+VcFgsTksi+WQRYUJWqaPdz7rf1PQQYGx1h3sFfUd0wfJO455DC2WcrlNn1/FYlXw2
+	3jW5RvEQqvK02FLr79grFNT+EkiccgWe+8uBFW8Jajg==
+X-Gm-Gg: AeBDietavtjtBDzkjuIQje7nPxVfj9C+KbOY3rdqEsiijl3vt9utvw0FgC3GkhgnKXI
+	mUVHV8CMXQaAmhOAc3N/5UqTx3EVtmJIsIs5sPDvKpULwki5Oxrm4huegB0p4geO83o0zejoPq8
+	o7lrAdEaWqFyVwkeAMZ+IKhqcme7no6Pib/MgB8/kaOj5DtgrcBDip4yaM/qeJEaxI4d80MiYLE
+	+Rt0zkMLfd5WMvWZFVWD37WqUcuauekys2PW9YIXjrGRGmnAhoCsYBFLkdWm0nz/KimcTnPhizw
+	J78NR6AyFDgKryg3hQ==
+X-Received: by 2002:a05:6820:4df9:b0:692:a19b:af68 with SMTP id
+ 006d021491bc7-6998a59a01emr1986059eaf.5.1777998973075; Tue, 05 May 2026
+ 09:36:13 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <0-v1-54e7264d71b4+17cc3-iommu_riscv_inv_jgg@nvidia.com> <6-v1-54e7264d71b4+17cc3-iommu_riscv_inv_jgg@nvidia.com>
-In-Reply-To: <6-v1-54e7264d71b4+17cc3-iommu_riscv_inv_jgg@nvidia.com>
+References: <0-v1-54e7264d71b4+17cc3-iommu_riscv_inv_jgg@nvidia.com> <7-v1-54e7264d71b4+17cc3-iommu_riscv_inv_jgg@nvidia.com>
+In-Reply-To: <7-v1-54e7264d71b4+17cc3-iommu_riscv_inv_jgg@nvidia.com>
 From: Tomasz Jeznach <tjeznach@rivosinc.com>
-Date: Tue, 5 May 2026 09:35:04 -0700
-X-Gm-Features: AVHnY4LPfK7qs4OtHxHKG0TGC_8I0pYYVtUUsANuSQbTNv8bjJdgyf0feiYrb7A
-Message-ID: <CAH2o1u4opjWDL8pFTstYVYDbML4_hAgQm1D4NH6rR8=RyG=Vig@mail.gmail.com>
-Subject: Re: [PATCH 6/7] iommu/riscv: Add RISCV_IOMMU_CAPABILITIES_NL
+Date: Tue, 5 May 2026 09:36:02 -0700
+X-Gm-Features: AVHnY4KvPh1rW_OXbHCyJsQ0b4w2L_79cfPR7de6IXz-sHUXJfM_liaWTT5PblY
+Message-ID: <CAH2o1u4PJSf8epbjLcAD1rojYu2gLVUtgW4kd1J+Cnwzz08PeQ@mail.gmail.com>
+Subject: Re: [PATCH 7/7] iommu/riscv: Add NAPOT range invalidation support
 To: Jason Gunthorpe <jgg@nvidia.com>
 Cc: Alexandre Ghiti <alex@ghiti.fr>, Albert Ou <aou@eecs.berkeley.edu>, iommu@lists.linux.dev, 
 	Joerg Roedel <joro@8bytes.org>, linux-riscv@lists.infradead.org, 
@@ -99,47 +99,65 @@ Content-Transfer-Encoding: quoted-printable
 On Fri, Apr 10, 2026 at 8:57=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wr=
 ote:
 >
-> Non-leaf invalidation allows the single invalidate command to also
-> clear the walk cache. If NL is available, set the NL bit if the
-> gather indicates tables have been changed. The stride is already
-> calculated properly.
+> Use the RISC-V IOMMU Address Range Invalidation extension
+> (capabilities.S, spec section 9.3) to invalidate an IOVA range with
+> a single IOTINVAL.VMA command using NAPOT-encoded addressing.
+>
+> One iommu_iotlb_gather maps to one NAPOT invalidation command. The
+> smallest power-of-two aligned range covering the gather is used since
+> over-invalidation is always safe.
+>
+> S and NL seem to be orthogonal in the spec, so if NL is not
+> supported then global invalidation is probably always going to happen
+> as wiping a large range without a table change is not common.
 >
 > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > ---
->  drivers/iommu/riscv/iommu-bits.h |  7 +++++++
->  drivers/iommu/riscv/iommu.c      | 12 +++++++-----
->  2 files changed, 14 insertions(+), 5 deletions(-)
+>  drivers/iommu/riscv/iommu-bits.h | 17 +++++++++++++
+>  drivers/iommu/riscv/iommu.c      | 43 +++++++++++++++++++++++++++-----
+>  2 files changed, 54 insertions(+), 6 deletions(-)
 >
 > diff --git a/drivers/iommu/riscv/iommu-bits.h b/drivers/iommu/riscv/iommu=
 -bits.h
-> index 29a0040b1c32ea..f01b49ac815586 100644
+> index f01b49ac815586..32b3ad3ac9ae59 100644
 > --- a/drivers/iommu/riscv/iommu-bits.h
 > +++ b/drivers/iommu/riscv/iommu-bits.h
-> @@ -63,6 +63,7 @@
->  #define RISCV_IOMMU_CAPABILITIES_PD8           BIT_ULL(38)
+> @@ -64,6 +64,7 @@
 >  #define RISCV_IOMMU_CAPABILITIES_PD17          BIT_ULL(39)
 >  #define RISCV_IOMMU_CAPABILITIES_PD20          BIT_ULL(40)
-> +#define RISCV_IOMMU_CAPABILITIES_NL            BIT_ULL(42)
+>  #define RISCV_IOMMU_CAPABILITIES_NL            BIT_ULL(42)
+> +#define RISCV_IOMMU_CAPABILITIES_S             BIT_ULL(43)
 >
 >  /**
 >   * enum riscv_iommu_igs_settings - Interrupt Generation Support Settings
-> @@ -473,6 +474,7 @@ struct riscv_iommu_command {
->  #define RISCV_IOMMU_CMD_IOTINVAL_PSCV          BIT_ULL(32)
+> @@ -475,6 +476,7 @@ struct riscv_iommu_command {
 >  #define RISCV_IOMMU_CMD_IOTINVAL_GV            BIT_ULL(33)
 >  #define RISCV_IOMMU_CMD_IOTINVAL_GSCID         GENMASK_ULL(59, 44)
-> +#define RISCV_IOMMU_CMD_IOTINVAL_NL            BIT_ULL(34)
+>  #define RISCV_IOMMU_CMD_IOTINVAL_NL            BIT_ULL(34)
+> +#define RISCV_IOMMU_CMD_IOTINVAL_S             BIT_ULL(9)
 >  /* dword1[61:10] is the 4K-aligned page address */
 >  #define RISCV_IOMMU_CMD_IOTINVAL_ADDR          GENMASK_ULL(61, 10)
 >
-> @@ -724,6 +726,11 @@ static inline void riscv_iommu_cmd_inval_set_addr(st=
-ruct riscv_iommu_command *cm
->         cmd->dword0 |=3D RISCV_IOMMU_CMD_IOTINVAL_AV;
+> @@ -731,6 +733,21 @@ static inline void riscv_iommu_cmd_inval_set_nl(stru=
+ct riscv_iommu_command *cmd)
+>         cmd->dword0 |=3D RISCV_IOMMU_CMD_IOTINVAL_NL;
 >  }
 >
-> +static inline void riscv_iommu_cmd_inval_set_nl(struct riscv_iommu_comma=
-nd *cmd)
+> +/*
+> + * Set NAPOT-encoded address for range invalidation (S=3D1).
+> + * sz_lg2: log2 of total range in bytes, must be >=3D 13 (8KiB, 2 pages)=
+.
+> + * addr must be naturally aligned to 2^sz_lg2.
+> + */
+> +static inline void riscv_iommu_cmd_inval_set_napot(
+> +       struct riscv_iommu_command *cmd, u64 addr, unsigned int sz_lg2)
 > +{
-> +       cmd->dword0 |=3D RISCV_IOMMU_CMD_IOTINVAL_NL;
+> +       u64 pfn =3D addr >> 12;
+> +
+> +       pfn |=3D BIT_U64(sz_lg2 - 13) - 1;
+> +       cmd->dword1 =3D FIELD_PREP(RISCV_IOMMU_CMD_IOTINVAL_ADDR, pfn);
+> +       cmd->dword0 |=3D RISCV_IOMMU_CMD_IOTINVAL_AV | RISCV_IOMMU_CMD_IO=
+TINVAL_S;
 > +}
 > +
 >  static inline void riscv_iommu_cmd_inval_set_pscid(struct riscv_iommu_co=
@@ -147,43 +165,94 @@ mmand *cmd,
 >                                                    int pscid)
 >  {
 > diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-> index fd9c5294dbc082..ea14630430451a 100644
+> index ea14630430451a..41e26e267a7fd6 100644
 > --- a/drivers/iommu/riscv/iommu.c
 > +++ b/drivers/iommu/riscv/iommu.c
-> @@ -966,6 +966,8 @@ static void riscv_iommu_iotlb_inval_iommu(struct risc=
-v_iommu_device *iommu,
->                                           int pscid,
->                                           struct riscv_iommu_tlbi *tlbi)
->  {
-> +       bool use_nl =3D tlbi->non_leaf &&
-> +                     (iommu->caps & RISCV_IOMMU_CAPABILITIES_NL);
->         struct riscv_iommu_command cmd;
->         unsigned long iova;
->         unsigned int i;
-> @@ -974,17 +976,17 @@ static void riscv_iommu_iotlb_inval_iommu(struct ri=
-scv_iommu_device *iommu,
->         riscv_iommu_cmd_inval_set_pscid(&cmd, pscid);
+> @@ -929,6 +929,10 @@ struct riscv_iommu_tlbi {
+>                 u8 stride_lg2;
+>                 unsigned int num;
+>         } single;
+> +       struct {
+> +               u8 sz_lg2;
+> +               u64 addr;
+> +       } range;
+>  };
 >
+>  static void riscv_iommu_tlbi_calc(struct riscv_iommu_tlbi *tlbi,
+> @@ -945,9 +949,23 @@ static void riscv_iommu_tlbi_calc(struct riscv_iommu=
+_tlbi *tlbi,
+>         /* No level information available */
+>         if (!combined) {
+>                 tlbi->single.use_global =3D true;
+> +               tlbi->range.sz_lg2 =3D 0;
+>                 return;
+>         }
+>
+> +       /*
+> +        * Calculate the smallest NAPOT range containing [start, last].
+> +        * NAPOT encoding requires a power-of-two sized, naturally aligne=
+d
+> +        * range. Over-invalidation is always safe.
+> +        */
+> +       tlbi->range.sz_lg2 =3D fls64(tlbi->start ^ tlbi->last);
+> +       if (unlikely(tlbi->range.sz_lg2 >=3D 64)) {
+> +               tlbi->single.use_global =3D true;
+> +               tlbi->range.sz_lg2 =3D 0;
+> +               return;
+> +       }
+> +       tlbi->range.addr =3D tlbi->start & ~(BIT_U64(tlbi->range.sz_lg2) =
+- 1);
+> +
 >         /*
-> -        * When non-leaf page table entries were changed, the base spec
-> -        * requires a full PSCID invalidation (AV=3D0) since there is no
-> -        * way to do targeted non-leaf invalidation without the NL
-> -        * extension. Force global invalidation to preserve correctness.
-> +        * If non-leaf entries were changed and the IOMMU doesn't
-> +        * support NL, we must fall back to global invalidation (AV=3D0).
+>          * Calculate stride from the lowest changed level. RISC-V uses 4K=
+iB
+>          * granule with 9 bits per level.
+> @@ -969,7 +987,6 @@ static void riscv_iommu_iotlb_inval_iommu(struct risc=
+v_iommu_device *iommu,
+>         bool use_nl =3D tlbi->non_leaf &&
+>                       (iommu->caps & RISCV_IOMMU_CAPABILITIES_NL);
+>         struct riscv_iommu_command cmd;
+> -       unsigned long iova;
+>         unsigned int i;
+>
+>         riscv_iommu_cmd_inval_vma(&cmd);
+> @@ -979,16 +996,30 @@ static void riscv_iommu_iotlb_inval_iommu(struct ri=
+scv_iommu_device *iommu,
+>          * If non-leaf entries were changed and the IOMMU doesn't
+>          * support NL, we must fall back to global invalidation (AV=3D0).
 >          */
-> -       if (tlbi->single.use_global || tlbi->non_leaf)
-> +       if (tlbi->single.use_global || (tlbi->non_leaf && !use_nl))
+> -       if (tlbi->single.use_global || (tlbi->non_leaf && !use_nl))
+> +       if (tlbi->non_leaf && !use_nl)
 >                 goto global;
 >
->         iova =3D tlbi->start;
->         for (i =3D 0; i < tlbi->single.num; i++) {
->                 riscv_iommu_cmd_inval_set_addr(&cmd, iova);
-> +               if (use_nl)
-> +                       riscv_iommu_cmd_inval_set_nl(&cmd);
+> -       iova =3D tlbi->start;
+> -       for (i =3D 0; i < tlbi->single.num; i++) {
+> -               riscv_iommu_cmd_inval_set_addr(&cmd, iova);
+> +       if (iommu->caps & RISCV_IOMMU_CAPABILITIES_S &&
+> +           tlbi->range.sz_lg2 >=3D 13) {
+> +               riscv_iommu_cmd_inval_set_napot(&cmd, tlbi->range.addr,
+> +                                               tlbi->range.sz_lg2);
+>                 if (use_nl)
+>                         riscv_iommu_cmd_inval_set_nl(&cmd);
 >                 riscv_iommu_cmd_send(iommu, &cmd);
->                 iova +=3D 1ULL << tlbi->single.stride_lg2;
+> -               iova +=3D 1ULL << tlbi->single.stride_lg2;
+> +       } else {
+> +               unsigned long iova;
+> +
+> +               if (tlbi->single.use_global)
+> +                       goto global;
+> +
+> +               iova =3D tlbi->start;
+> +               for (i =3D 0; i < tlbi->single.num; i++) {
+> +                       riscv_iommu_cmd_inval_set_addr(&cmd, iova);
+> +                       if (use_nl)
+> +                               riscv_iommu_cmd_inval_set_nl(&cmd);
+> +                       riscv_iommu_cmd_send(iommu, &cmd);
+> +                       iova +=3D 1ULL << tlbi->single.stride_lg2;
+> +               }
 >         }
+>         return;
+>  global:
 > --
 > 2.43.0
 >
