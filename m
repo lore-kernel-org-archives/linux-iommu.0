@@ -1,134 +1,363 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 365664C0414
-	for <iommu@lists.linux.dev>; Wed,  6 May 2026 18:16:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9F16E4C0433
+	for <iommu@lists.linux.dev>; Wed,  6 May 2026 18:51:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778091396; cv=none; b=S55EElhzCCd3loxOXuSpdCig2QVdPlyNdoocMMr8MCnCiOHzuSP1kqD39s/z1YLnZ80jI6PwbuUnFdbFSi4/v/eIS1y2r9eet2rxql5nB68coKBIgfsXktfxh6EgxOlJcVc6zZ5nTcto0atm3WgQ8+lZ8DTAj9Adkkk8Eogx97k=
+	t=1778093481; cv=none; b=c0x+vb7h3Yb16G5adHXlmIHBbXpgajbkQKth1dTPrd7qgCuuEF5u2DVfQ5tZF4sfNXgiN4JcJKaXQfFDD5UhZ/RhLjnvnbi3ZtJH/BU/oDhlgMMnAk8RDEXsccw23WlJKYZYGajfT7powR0a7y1Z/ye1jqzgzZRKWGowXrbHbqU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778091396; c=relaxed/simple;
-	bh=S9mvrWt8MHwjrniC+5hfqEcZPJwFH1boXGZmNPTls+Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=N5eB0A9wXRyEQSYh8ZLGnt6P9hFQQNXMzX3aD/C8WyKm8iCBgvNtFuy/i8bHZH75jSAIxBqbrko2wxNEY6tBa0ZyQ4vmHmsIx2FrTN8YyhbD1T4N4Pzc5lL57JMECtMJxur8x2SmYemA/CaBwV7B1j9WWYZx1in8NFeDXmujqF0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=T5668+1i; arc=none smtp.client-ip=209.85.214.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1778093481; c=relaxed/simple;
+	bh=l8q3fQT1Uhf9PefZsPEXCZLfXMFVhrdJuNGVG2hZFIc=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=fay1k4T29o6xMu7cskM+GeaX0lFFOHbYnVPqAMir/kYBQ69sQpaHxEiFPWLUgRb/u36Hetolx13JiXoWcOnbrPC1P98K6alalLqxsN7pbWDP3VsEe7gEpMjihE7H8+B/DnI/vpjg+jvlA77sjpgoBZS7EPVceak0bkLQK2zpq6c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=YfgnQ4zI; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="T5668+1i"
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2b46da8c48eso124505ad.1
-        for <iommu@lists.linux.dev>; Wed, 06 May 2026 11:16:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778091391; x=1778696191; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=e7Y9JqHzZKULv50XrRzWAnOBKFiT4J2l9mPMNIlCT3Y=;
-        b=T5668+1irnqfVlnAadlu/zg+zXkWSFN2jGfoaRfWAwSKAWVImzBpVtuOoujQYKg1nD
-         h5OK6cpd3YTSLnwqsNcbHfhhxjag8a94puCbL1xt/x73ZpRBVm+iuefKqLG4N0Uomd6n
-         ZtbFaQm31gRwTrhYOox6314NX+u6ViTAZCfZJBlli1sIeA3Ru1PmqzwSmbfvRtofFXn4
-         5l3fxkSVXDBvi9oVxDK1yFtL+1fIHWpRnflnl0Lzj1vmv1+v5AXCIbnpx/Aa8R9UShst
-         4gyawgCKMxhoRgCVb/sSGSUdUTQKihcVzV233HsKYyNFGR/j4BV5sEFjgJIO2GjYGYvB
-         vs0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778091391; x=1778696191;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=e7Y9JqHzZKULv50XrRzWAnOBKFiT4J2l9mPMNIlCT3Y=;
-        b=Sct4BnGmik4jq45beiobeAUU+ngUyK+dF72yjeutzC+xV5KMvzIurcYYEVgXdgY3Yb
-         LXuv20OtgjKBZu3jEbQ+VboPZwTOUaZundq7d4keuwLZHBoJkH3gwbbLIBZCDES7eJFY
-         ox3zLE3Fw7U480cxJS4EtOwZFqU4Qx5tjamqx8ctD2OVv9e2UZE9ufqr5uM1k3k+b7gu
-         XrJ9APTSxWMNQCAuQsM5cIpaFlNgT8eECNOW+IoWMRLoSH+0UOuK/+vEtZu6UVLkkNQf
-         GLANlgb2wfbc9USdM6sDZx3aETzRDD6eOrt4OZMJ1XzPvh/yvPtkPzVYmzVGjpNjSi60
-         Cqog==
-X-Forwarded-Encrypted: i=1; AFNElJ9C3gG61qIKqUZeafi43XoP4RRumYy0CnZKFISiQ74I8dROdXPct2/+aM0RSCt86U+UY5ODbA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxJfxHcav0+6sYXx+vk4X8lnXO4hb8TcxMddX1r09M6Jgx8uhte
-	CJd0Z5+RtUjYyWG2YGOXxCkO2d6MKu9qk8s2TwMerjvButzov7ufYXobv9gV7d9qcw==
-X-Gm-Gg: AeBDiesr5kqFNGvbUgc1xBN8ihUJXaXVrj8rNpHzZbJ3NfQ1X30vxWVsutrTS8b9lVV
-	CQHbYHJ2uIBW/Tsv3SLWuzfQdNa5vuhIZX1n6CiuQJjwnQbo8LaXHOluzUr5+haLrviLvCv+Xkm
-	gk5l0Z1y/yKmvSUoXQbqH9GTNIDCpFZzIzK7eqsXawNvMKDOUpdQr4CngA71V4CDhNvwoYFohS9
-	xx6MBjGBeOT7gSC/ITkamEhj55tpjut0pbqDHTsBl2k3SoeWtSIe/Dbmm/ER5BkEskQaLMys9z2
-	gq5AnWo1hQuYOjhUe29bDdnynD3hTmlzktElUWxGTLX2F8a4givy7NkCxu/C6HM9mXOMEXYnKgg
-	RXPgsVcFANP0JVplgwBE2+aBB2JykWlQ1iNUxlHKvy7b/qTggnSgGNOk7KmEfu0TJbjUJgWt7H1
-	L5X1TcvcOuzxJrjhyxNrAthaZjcsdxKW6/aLEoCqo4pUuyS0TpAjN66bFc681jr/j+Lqy9VwrdC
-	CMERKXh
-X-Received: by 2002:a17:903:3887:b0:2b7:b03d:9847 with SMTP id d9443c01a7336-2ba7cecf689mr4399065ad.7.1778091390466;
-        Wed, 06 May 2026 11:16:30 -0700 (PDT)
-Received: from google.com (153.46.83.34.bc.googleusercontent.com. [34.83.46.153])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-365b4c196ecsm3120637a91.6.2026.05.06.11.16.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 May 2026 11:16:30 -0700 (PDT)
-Date: Wed, 6 May 2026 18:16:27 +0000
-From: Samiullah Khawaja <skhawaja@google.com>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Jon Mason <jdmason@kudzu.us>, Dave Jiang <dave.jiang@intel.com>, 
-	Allen Hubbe <allenbh@gmail.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	ntb@lists.linux.dev
-Subject: Re: [PATCH v2 6/6] dma-debug: Ensure mappings are created and
- released with matching attributes
-Message-ID: <afuFcwO8hHqWZWuc@google.com>
-References: <20260501-dma-attrs-debug-v2-0-8dbac75cd501@nvidia.com>
- <20260501-dma-attrs-debug-v2-6-8dbac75cd501@nvidia.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="YfgnQ4zI"
+Received: from localhost (unknown [52.148.171.5])
+	by linux.microsoft.com (Postfix) with ESMTPSA id BF9AF20B7165;
+	Wed,  6 May 2026 11:51:15 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com BF9AF20B7165
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1778093476;
+	bh=FqkE3AnjOC54q+/CUtG8ChoGtSX/vykzC0WVfkKDCWE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=YfgnQ4zIxpKyeJI5MQKPjqThOooF3HLoQpePJ5Jdc56rkuAb2eFeDec+q6fuKQ7WP
+	 g8C3G6eEy9Au3NU5arPkDBzXb/+TTo9TBHDxUXxTf0EYjgb4GHj1Mh2BdXGQz594fX
+	 EHF9rkax0eO47OhFlYL/qgVvhuT7KEVbOx3f98UE=
+Date: Wed, 6 May 2026 11:51:16 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Alex Williamson
+ <alex@shazbot.org>, Joerg Roedel <joro@8bytes.org>, Mostafa Saleh
+ <smostafa@google.com>, David Matlack <dmatlack@google.com>, Robin Murphy
+ <robin.murphy@arm.com>, Nicolin Chen <nicolinc@nvidia.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, <skhawaja@google.com>, <pasha.tatashin@soleen.com>,
+ Will Deacon <will@kernel.org>, Baolu Lu <baolu.lu@linux.intel.com>,
+ jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH V4 03/10] iommufd: Allow binding to a noiommu device
+Message-ID: <20260506115116.00001251@linux.microsoft.com>
+In-Reply-To: <dbdd2289-8a0e-40f9-a0b5-842fd861acba@intel.com>
+References: <20260414211412.2729-1-jacob.pan@linux.microsoft.com>
+	<20260414211412.2729-4-jacob.pan@linux.microsoft.com>
+	<dbdd2289-8a0e-40f9-a0b5-842fd861acba@intel.com>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20260501-dma-attrs-debug-v2-6-8dbac75cd501@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 01, 2026 at 09:35:10AM +0300, Leon Romanovsky wrote:
->From: Leon Romanovsky <leonro@nvidia.com>
->
->The DMA API expects that callers use the same attributes when mapping
->and unmapping. Add tracking to verify this and catch mismatches.
->
->Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
->---
-> kernel/dma/debug.c | 23 +++++++++++++++++++++++
-> 1 file changed, 23 insertions(+)
->
->diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
->index 3dfed51c3d9aa..c38efc1ac8d6c 100644
->--- a/kernel/dma/debug.c
->+++ b/kernel/dma/debug.c
->@@ -1074,6 +1074,29 @@ static void check_unmap(struct dma_debug_entry *ref)
-> 			   type2name[entry->type]);
-> 	}
->
->+	/*
->+	 * This may be no bug in reality - but DMA API still expects
->+	 * that entry is unmapped with same attributes as it was mapped.
->+	 *
->+	 * DMA_ATTR_UNMAP_VALID lists the attributes that must be identical
->+	 * between map and unmap. Any attribute outside this set (e.g.
->+	 * DMA_ATTR_NO_WARN, DMA_ATTR_SKIP_CPU_SYNC) is allowed to differ.
->+	 */
->+#define DMA_ATTR_UNMAP_VALID                                               \
->+	(DMA_ATTR_NO_KERNEL_MAPPING | DMA_ATTR_FORCE_CONTIGUOUS |          \
->+	 DMA_ATTR_MMIO | DMA_ATTR_REQUIRE_COHERENT | DMA_ATTR_PRIVILEGED | \
->+	 DMA_ATTR_CC_SHARED)
->+	if ((ref->attrs & DMA_ATTR_UNMAP_VALID) !=
->+	    (entry->attrs & DMA_ATTR_UNMAP_VALID)) {
->+		err_printk(ref->dev, entry,
->+			   "device driver frees "
->+			   "DMA memory with different attributes "
->+			   "[device address=0x%016llx] [size=%llu bytes] "
->+			   "[mapped with 0x%lx] [unmapped with 0x%lx]\n",
->+			   ref->dev_addr, ref->size, entry->attrs, ref->attrs);
->+	}
->+#undef DMA_ATTR_UNMAP_VALID
->+
-> 	hash_bucket_del(entry);
-> 	put_hash_bucket(bucket, flags);
->
->
->-- 
->2.53.0
->
->
+Hi Yi,
 
-Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
+On Tue, 28 Apr 2026 15:45:56 +0800
+Yi Liu <yi.l.liu@intel.com> wrote:
+
+> On 4/15/26 05:14, Jacob Pan wrote:
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> >=20
+> > Allow iommufd to bind devices without an IOMMU (noiommu mode) by
+> > creating a dummy IOMMU group for such devices and skipping hwpt
+> > operations.
+> >=20
+> > This enables noiommu devices to operate through the same iommufd
+> > API as IOMMU- capable devices.
+> >=20
+> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> > Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+> >=20
+> > ---
+> > v4:
+> >     - handle partially initialized idev w/o igroup (Sashiko)
+> > v3:
+> >     - handle new error cases iommufd_device_bind. (Mostafa)
+> > ---
+> >   drivers/iommu/iommufd/device.c | 132
+> > +++++++++++++++++++++++---------- 1 file changed, 93 insertions(+),
+> > 39 deletions(-)
+> >=20
+> > diff --git a/drivers/iommu/iommufd/device.c
+> > b/drivers/iommu/iommufd/device.c index 2f30ea069f66..0283ac39be55
+> > 100644 --- a/drivers/iommu/iommufd/device.c
+> > +++ b/drivers/iommu/iommufd/device.c
+> > @@ -23,6 +23,11 @@ struct iommufd_attach {
+> >   	struct xarray device_array;
+> >   };
+> >  =20
+> > +static bool is_vfio_noiommu(struct iommufd_device *idev) =20
+>=20
+> perhaps iommufd_device_is_noiommu().
+>=20
+sounds good, remove vfio.
+
+> > +{
+> > +	return !device_iommu_mapped(idev->dev) ||
+> > !idev->dev->iommu; +}
+> > +
+> >   static void iommufd_group_release(struct kref *kref)
+> >   {
+> >   	struct iommufd_group *igroup =3D
+> > @@ -30,9 +35,11 @@ static void iommufd_group_release(struct kref
+> > *kref)=20
+> >   	WARN_ON(!xa_empty(&igroup->pasid_attach));
+> >  =20
+> > -	xa_cmpxchg(&igroup->ictx->groups,
+> > iommu_group_id(igroup->group), igroup,
+> > -		   NULL, GFP_KERNEL);
+> > -	iommu_group_put(igroup->group);
+> > +	if (igroup->group) {
+> > +		xa_cmpxchg(&igroup->ictx->groups,
+> > iommu_group_id(igroup->group),
+> > +			   igroup, NULL, GFP_KERNEL);
+> > +		iommu_group_put(igroup->group);
+> > +	}
+> >   	mutex_destroy(&igroup->lock);
+> >   	kfree(igroup);
+> >   }
+> > @@ -204,32 +211,19 @@ void iommufd_device_destroy(struct
+> > iommufd_object *obj) struct iommufd_device *idev =3D
+> >   		container_of(obj, struct iommufd_device, obj);
+> >  =20
+> > -	iommu_device_release_dma_owner(idev->dev);
+> > +	if (!idev->igroup)
+> > +		return;
+> > +	if (!is_vfio_noiommu(idev))
+> > +		iommu_device_release_dma_owner(idev->dev);
+> >   	iommufd_put_group(idev->igroup);
+> >   	if (!iommufd_selftest_is_mock_dev(idev->dev))
+> >   		iommufd_ctx_put(idev->ictx);
+> >   }
+> >  =20
+> > -/**
+> > - * iommufd_device_bind - Bind a physical device to an iommu fd
+> > - * @ictx: iommufd file descriptor
+> > - * @dev: Pointer to a physical device struct
+> > - * @id: Output ID number to return to userspace for this device
+> > - *
+> > - * A successful bind establishes an ownership over the device and
+> > returns
+> > - * struct iommufd_device pointer, otherwise returns error pointer.
+> > - *
+> > - * A driver using this API must set driver_managed_dma and must
+> > not touch
+> > - * the device until this routine succeeds and establishes
+> > ownership.
+> > - *
+> > - * Binding a PCI device places the entire RID under iommufd
+> > control.
+> > - *
+> > - * The caller must undo this with iommufd_device_unbind()
+> > - */
+> > -struct iommufd_device *iommufd_device_bind(struct iommufd_ctx
+> > *ictx,
+> > -					   struct device *dev, u32
+> > *id) +static int iommufd_bind_iommu(struct iommufd_device *idev)
+> >   {
+> > -	struct iommufd_device *idev;
+> > +	struct iommufd_ctx *ictx =3D idev->ictx;
+> > +	struct device *dev =3D idev->dev;
+> >   	struct iommufd_group *igroup;
+> >   	int rc;
+> >  =20
+> > @@ -238,11 +232,11 @@ struct iommufd_device
+> > *iommufd_device_bind(struct iommufd_ctx *ictx,
+> >   	 * to restore cache coherency.
+> >   	 */
+> >   	if (!device_iommu_capable(dev, IOMMU_CAP_CACHE_COHERENCY))
+> > -		return ERR_PTR(-EINVAL);
+> > +		return -EINVAL;
+> >  =20
+> > -	igroup =3D iommufd_get_group(ictx, dev);
+> > +	igroup =3D iommufd_get_group(idev->ictx, dev); =20
+>=20
+> no need as you already have a local ictx.
+will do.
+
+>=20
+> >   	if (IS_ERR(igroup))
+> > -		return ERR_CAST(igroup);
+> > +		return PTR_ERR(igroup);
+> >  =20
+> >   	/*
+> >   	 * For historical compat with VFIO the insecure interrupt
+> > path is @@ -268,21 +262,69 @@ struct iommufd_device
+> > *iommufd_device_bind(struct iommufd_ctx *ictx, if (rc)
+> >   		goto out_group_put;
+> >  =20
+> > +	/* igroup refcount moves into iommufd_device */
+> > +	idev->igroup =3D igroup;
+> > +	return 0;
+> > +
+> > +out_group_put:
+> > +	iommufd_put_group(igroup);
+> > +	return rc;
+> > +}
+> > +
+> > +/**
+> > + * iommufd_device_bind - Bind a physical device to an iommu fd
+> > + * @ictx: iommufd file descriptor
+> > + * @dev: Pointer to a physical device struct
+> > + * @id: Output ID number to return to userspace for this device
+> > + *
+> > + * A successful bind establishes an ownership over the device and
+> > returns
+> > + * struct iommufd_device pointer, otherwise returns error pointer.
+> > + *
+> > + * A driver using this API must set driver_managed_dma and must
+> > not touch
+> > + * the device until this routine succeeds and establishes
+> > ownership.
+> > + *
+> > + * Binding a PCI device places the entire RID under iommufd
+> > control.
+> > + *
+> > + * The caller must undo this with iommufd_device_unbind()
+> > + */
+> > +struct iommufd_device *iommufd_device_bind(struct iommufd_ctx
+> > *ictx,
+> > +					   struct device *dev, u32
+> > *id) +{
+> > +	struct iommufd_device *idev;
+> > +	int rc;
+> > +
+> >   	idev =3D iommufd_object_alloc(ictx, idev,
+> > IOMMUFD_OBJ_DEVICE);
+> > -	if (IS_ERR(idev)) {
+> > -		rc =3D PTR_ERR(idev);
+> > -		goto out_release_owner;
+> > -	}
+> > +	if (IS_ERR(idev))
+> > +		return idev;
+> > +
+> >   	idev->ictx =3D ictx;
+> > -	if (!iommufd_selftest_is_mock_dev(dev))
+> > -		iommufd_ctx_get(ictx);
+> >   	idev->dev =3D dev;
+> >   	idev->enforce_cache_coherency =3D
+> >   		device_iommu_capable(dev,
+> > IOMMU_CAP_ENFORCE_CACHE_COHERENCY); =20
+>=20
+> Functioanlly, it is harmless since device_iommu_capable() returns
+> false for noiommu device. But conceptually, it is nice to move it to=20
+> iommufd_bind_iommu().
+make sense, will move it.
+>=20
+> > +
+> > +	if (!is_vfio_noiommu(idev)) {
+> > +		rc =3D iommufd_bind_iommu(idev);
+> > +		if (rc)
+> > +			goto err_out;
+> > +	} else {
+> > +		struct iommufd_group *igroup;
+> > +
+> > +		/*
+> > +		 * Create a dummy igroup, lots of stuff expects
+> > ths igroup to be
+> > +		 * present, but a NULL igroup->group is OK
+> > +		 */
+> > +		igroup =3D iommufd_alloc_group(ictx, NULL);
+> > +		if (IS_ERR(igroup)) {
+> > +			rc =3D PTR_ERR(igroup);
+> > +			goto err_out;
+> > +		}
+> > +		idev->igroup =3D igroup;
+> > +	}
+> > +
+> > +	if (!iommufd_selftest_is_mock_dev(dev))
+> > +		iommufd_ctx_get(ictx);
+> >   	/* The calling driver is a user until
+> > iommufd_device_unbind() */ refcount_inc(&idev->obj.users);
+> > -	/* igroup refcount moves into iommufd_device */
+> > -	idev->igroup =3D igroup;
+> >  =20
+> >   	/*
+> >   	 * If the caller fails after this success it must call
+> > @@ -294,11 +336,14 @@ struct iommufd_device
+> > *iommufd_device_bind(struct iommufd_ctx *ictx, *id =3D idev->obj.id;
+> >   	return idev;
+> >  =20
+> > -out_release_owner:
+> > -	iommu_device_release_dma_owner(dev);
+> > -out_group_put:
+> > -	iommufd_put_group(igroup);
+> > +err_out:
+> > +	/*
+> > +	 * Be careful that iommufd_device_destroy() can handle
+> > partial
+> > +	 * initialization.
+> > +	 */ =20
+>=20
+> no native speaker. This is a bit strange to me. I think the comment=20
+> wants to highligh that iommufd_device_destroy() can handle partial
+> initialization. But the above comment seems to warn something...
+> how about below?
+>=20
+yes, that is better, This is not a warning, just explaining.
+
+> /*
+>   * iommufd_device_destroy() handles partially initialized idev,
+>   * so iommufd_object_abort_and_destroy() is safe to call here.
+>   */
+>=20
+> > +	iommufd_object_abort_and_destroy(ictx, &idev->obj);
+> >   	return ERR_PTR(rc);
+> > +
+> >   }
+> >   EXPORT_SYMBOL_NS_GPL(iommufd_device_bind, "IOMMUFD");
+> >  =20
+> > @@ -512,6 +557,9 @@ static int iommufd_hwpt_attach_device(struct
+> > iommufd_hw_pagetable *hwpt, struct iommufd_attach_handle *handle;
+> >   	int rc;
+> >  =20
+> > +	if (is_vfio_noiommu(idev))
+> > +		return 0;
+> > +
+> >   	if (!iommufd_hwpt_compatible_device(hwpt, idev))
+> >   		return -EINVAL;
+> >  =20
+> > @@ -559,6 +607,9 @@ static void iommufd_hwpt_detach_device(struct
+> > iommufd_hw_pagetable *hwpt, {
+> >   	struct iommufd_attach_handle *handle;
+> >  =20
+> > +	if (is_vfio_noiommu(idev))
+> > +		return;
+> > +
+> >   	handle =3D iommufd_device_get_attach_handle(idev, pasid);
+> >   	if (pasid =3D=3D IOMMU_NO_PASID)
+> >   		iommu_detach_group_handle(hwpt->domain,
+> > idev->igroup->group); @@ -577,6 +628,9 @@ static int
+> > iommufd_hwpt_replace_device(struct iommufd_device *idev, struct
+> > iommufd_attach_handle *handle, *old_handle; int rc;
+> >  =20
+> > +	if (is_vfio_noiommu(idev))
+> > +		return 0;
+> > +
+> >   	if (!iommufd_hwpt_compatible_device(hwpt, idev))
+> >   		return -EINVAL;
+> >  =20
+> > @@ -652,7 +706,7 @@ int iommufd_hw_pagetable_attach(struct
+> > iommufd_hw_pagetable *hwpt, goto err_release_devid;
+> >   	}
+> >  =20
+> > -	if (attach_resv) {
+> > +	if (attach_resv && !is_vfio_noiommu(idev)) { =20
+>=20
+> how about the iommufd_hw_pagetable_detach() path? Does it also need to
+> check noiommu device?
+I don't think it is needed. iopt_remove_reserved_iova() is safe to call
+when nothing was added =E2=80=94 it's a no-op. But I can add the guard for
+symmetry if preferred.
+
+>=20
+> >   		rc =3D iommufd_device_attach_reserved_iova(idev,
+> > hwpt_paging); if (rc)
+> >   			goto err_release_devid; =20
+>=20
+> Regards,
+> Yi Liu
+
