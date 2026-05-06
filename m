@@ -1,192 +1,178 @@
-Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010014.outbound.protection.outlook.com [40.93.198.14])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DCFD3E315F;
-	Wed,  6 May 2026 09:13:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.14
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778058799; cv=fail; b=WfiPitZ8b7wQ8KSfdQisgHAkEvt6Zqn2ForF7RDMpfitlUvC4AhMj9+6T2CxEZdpkqQDJaucDAQRlKiJu0m3bBgUCucANbN8n3m6S2Xk+17+a0Y4bfQT0AT0KD3jwRLL5Wlq7J/uqV6l25HTMOCLvYXr2R+4kv/NihwTGya+FAk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778058799; c=relaxed/simple;
-	bh=k6Kqep8/8OIqqbs9xasCWsnPjua+0zkYasu3FIvIG+0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=NgHtP1FKkMvLL6XCqs7Heh96d70r7/MuRMTSe/TsAvuascy9uQx+Bx55cSI2KbTTuMZMem+L8eet1J9+so0vqVA1cnnRh/Q2jjqkVSi59T5nD4ztHUgimvCB8KPX5OOQMoYoRl2JZRSEUCxIdD92d0/5FQk1bE6mAPxpSNvjmnY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=BhuPzNlQ; arc=fail smtp.client-ip=40.93.198.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7E483E9299
+	for <iommu@lists.linux.dev>; Wed,  6 May 2026 09:32:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778059961; cv=none; b=G6srNSx2P1uim8JA92UAFq+MYlgldqmTNF5rJdGJ97XV4xajpTy3zLkbWYPT+2aYvETJQG7k+Wwy6QB0rWK/3N2Lvfp93GfSG3dnnLMq0lrM7ZgaDZFEMzcpiURGns1nFyMp9HCkgGMl37B7ep2D/6Z+us96FpI+Tv8IA7r2HvQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778059961; c=relaxed/simple;
+	bh=f0FQAS1GD3dN9uwV8F5vKw0hNMRhc34lZFSrPLYTbjE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=e7SNR1M8EA9lwSkMSVDuYm/KfMezQw918vGQzGAZX6okuFWi3yCg7p/maK6UFuuPdAW4Gw4c5CDzvalRfClzg838JSFfGQNQOmS4oO9MJAdXc9OHgBlG7JDD+IF5M+0cZvThuOiNnB8VEVYnwgRH19hnqa34sBmOdS8cKyMUSW0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=XBrBBIeE; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=i6dl5URF; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="BhuPzNlQ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=i4eTt0Osfb+HDbc/hZ/8jPX3aHiaDJGbziioqhUH1PTv26d4nHzltRrsIL4EZGDW7mHhHrh0Y8sPmi3Wk+Tagtyhhk9X+bbFX3cxYcJHP0MK9iUh0F/LxyuHBD2iTqGMwE/5b86e+aLFtw9+1OcuSk5D5rngMyD3ZrdYJPPDv3+2SikD496PvAJtRFMZO9YOv+OCeqWM/ayLO67iCy29THDTVlOwVr59m1gWPa4NgpXQgKZYXu1fL0gSHE2RsotEeE3UVBn4Ow5ABtn5IuN84clsSUS2/1PvDeUT4Ee/1ZS/3f4jhzF5HZE/IIc+xZ3bsJZxN/YGc+Nq8i6YPFxV1w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iGrYu4B/sa4l/Atbq1ML/D2tEBQ2bfXmPau6/r4eYI4=;
- b=OkhTKC1+0q0qSMLUhVHYeDT81Ij2eOVsUFkB3YabtMxhAILrL0o/Ocn/3+DDunpqh2PzmHtYSrgUHpUznDYFQBy4db/qt1IIbXA84WzdVdhyVVKIt5xpc0aDcK9R9JGiXNHbHXAh0zhXIVbOTX6se1R4FLIshg/qukJwPVaVIMVNd4rZD5k4nfzkeCykJ5nCvyTA0OG++ATFO+s7NukurPJM+ZRdA4oIfR68mo7NgtQIQ6hDRqLJr5+79GoDdVxfVO3XzanIK8P0RFLcSxfrYlH+DdsFIIyAQAnsovEFOFWqsnVd7G8N7Kv88RfLNZ2rZX8j8WzSCcH4aI4D3eKH2Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iGrYu4B/sa4l/Atbq1ML/D2tEBQ2bfXmPau6/r4eYI4=;
- b=BhuPzNlQzp9LQbx/TVVN+WLpoo4H3oKgVQXVm0wAkrCXsbssoQurGRyd8WjnQ1leNqk7i+GkURZMGER8nZ6gdllA1bLeAqBHZW90dTN+yn03AWGrlFhz68HZHlBiPNkiAKVqS5r5ad8PU3DSuywXKZJfBSEEM41amTbUzqrpHxsDm9YNlp68tNRMhgHDLmQg1c/SlMUkaefj/P5Gvdhebf+v1SBDnqyw6ox24pcmZoD5Nnby+3DLJHfxXS7OapDqS5GcoTAly50kYiMkyP2vYcl3nZMkV0tR64y3p8uMgzOh4kyUEt/AxgUX5jkNx/cTQ3Ql3wUSkJqq5LsHZJC40g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by DM6PR12MB4075.namprd12.prod.outlook.com (2603:10b6:5:21d::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9891.15; Wed, 6 May
- 2026 09:13:09 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9891.008; Wed, 6 May 2026
- 09:13:09 +0000
-Date: Wed, 6 May 2026 06:13:06 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Andrew Jones <andrew.jones@oss.qualcomm.com>
-Cc: Alexandre Ghiti <alex@ghiti.fr>, Albert Ou <aou@eecs.berkeley.edu>,
-	iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-riscv@lists.infradead.org,
-	Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <pjw@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Tomasz Jeznach <tjeznach@rivosinc.com>,
-	Will Deacon <will@kernel.org>,
-	Fangyu Yu <fangyu.yu@linux.alibaba.com>, patches@lists.linux.dev
-Subject: Re: [PATCH 7/7] iommu/riscv: Add NAPOT range invalidation support
-Message-ID: <afsGItRkLibstQpa@nvidia.com>
-References: <0-v1-54e7264d71b4+17cc3-iommu_riscv_inv_jgg@nvidia.com>
- <7-v1-54e7264d71b4+17cc3-iommu_riscv_inv_jgg@nvidia.com>
- <oe75yk2fx2c7wg73xrikppw2gxxe2e6bsvkktowbo64ftldy7p@53gjjzhu6cy5>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <oe75yk2fx2c7wg73xrikppw2gxxe2e6bsvkktowbo64ftldy7p@53gjjzhu6cy5>
-X-ClientProxiedBy: ZR0P278CA0091.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:23::6) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="XBrBBIeE";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="i6dl5URF"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6465tTW6152028
+	for <iommu@lists.linux.dev>; Wed, 6 May 2026 09:32:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	f0FQAS1GD3dN9uwV8F5vKw0hNMRhc34lZFSrPLYTbjE=; b=XBrBBIeErZn1ngc4
+	lvmrsupECFO+P0Qp73xN2be0BwwzxheaW2Fu46M76lHtLISshYm23wjtootAwnPK
+	UOVWOB9yOQ2RW2ZY/weXgpvw6ibGCTudakdq/bvOYr8GEYB2JwqoT+QC8tAkAXlC
+	bpaSi6ROatTzs++iP0ttFRx8C0T57JpO19s+kfWH84kl/s72B5eKC8U7TkLjlry2
+	A33z2hUctu0DyYso+8GyXpSG684Y1u8z0ns9vAirOT5q1mlQ09wIU6kg8ggkwIAf
+	LAeneRU5rlXdcs7KLDaSg36lx0J46pE4O7I5bWnfZkr7E2hG6T/LHYEo71bo0GsQ
+	Cki22w==
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4dyj80c2v2-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 06 May 2026 09:32:39 +0000 (GMT)
+Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-36512f223d8so7973698a91.3
+        for <iommu@lists.linux.dev>; Wed, 06 May 2026 02:32:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1778059958; x=1778664758; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=f0FQAS1GD3dN9uwV8F5vKw0hNMRhc34lZFSrPLYTbjE=;
+        b=i6dl5URF8SdHIwogiVCQH+gPYN8FsE731XCxN5ydMWlPeAqTlKRTAy/DVaYBLj4sQ9
+         skJzNJkXZiw0/9+cIPVpajsxG8x0Yf/c8X9Qd/wCNKT3pCeP8dJp0vB0iae7sun7VZB7
+         OXWejMrhylAwZLCmQGOaH36xbXQjdN7jgSbIm27Ytv8vQ8GShtfwe4mBfZyAUF3sj7oA
+         nuuEQnkzfk6SU/J00hDDV8ODSS7L8sGc1iz5R0cFsPRcgGlqHliY8MgjfmPlaYJpTM8h
+         ziimvxJRN9TsD7v6EWwG8JeP+5ilowbI0Tg8IgnWhPpyV1MJI+QfiCIUyxocpzLkcL3j
+         MqHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778059958; x=1778664758;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=f0FQAS1GD3dN9uwV8F5vKw0hNMRhc34lZFSrPLYTbjE=;
+        b=Bf+s4lXMwo+6nOKP8Km1rD41e8XqqAz8BhbQYJJeqZDXvyMtQ0jJCmrJnedwaLQDbO
+         9957eJhrVAMxPTyT1K1GimDAt14fbfFAMr3U4vxublLFnUOX8+T2/tYKL02GO2yAgGHb
+         awYPlHBOFTSkLx1AmaZplK+Ihn6SzJIA+3hNq6ToWNtnS1ljcVReswR+hTyu5BfpQDhc
+         RvBSntjukY3eQksS2SaUBZV9xo/k2PPTcFo8FLJT1CNWUnz/uYO9e6TYwft1W38EgFYr
+         O51YKiwj5uHrsfSgUYDTXMFT0FeLDqd1TrvnbbjzAuHASDLEP0me/uvOjsNwp02zo4hB
+         I5Yw==
+X-Forwarded-Encrypted: i=1; AFNElJ/oVJSRn1sRY8LSQ0npcG+CU/30vwYwJAmZg9HjUdGfVFIrR2qL8b9OzQ91ITi0SRDJA9BtHA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyQ7y52gGLQdDeHRZPkQlBAYpB+P/qWl8r2B1MLxSIr3aaWKrtT
+	O9WyuEqNXZtUkNYS/SxQJQ5AJb90LNU31SmOxB15P5dyhttYy1ygmyrTnw9OmabtypV5ma2T34j
+	pu0AH8Nz0yT/ob8L6FLg2RlQDKBhWRgc3iQJO1Zcj61IR0EDjyzWbthcMGg==
+X-Gm-Gg: AeBDieuRQbzlQsX2gCRbpCI0w+nCOxjETF49B/4IzCd5QPgv4Qjek2VJp8UNygqRO8i
+	2MUW0ysJwwMed/ZZIYhUe1tZOvcf+Fq2eOWWnY9akkL2fC0FutIhrBPY+pRnn+IduitiNp6edRw
+	WiwtgHG8ynBIJoPiI2twLLFZVA19BhGAS+5YbUSykiKNdKcFma/m90HlWEu383WIZsEUGYVQYGR
+	g0ondLGO+efP929zDSmULjZRTGQNXty0sfsTe7BHpeTJfN3RHrtEYiDsXRPB44PwgMbPuvUGBV2
+	duTHJibXp2xKh9Z/yoATfIYUsMvJd55rtUlhWHKTf8iM10HnAD7MZrBSpMmw76xVEDdYnJA3nyA
+	9Yc7hFVKIhiDQtyltzyEqKOqkjPOgAxyUigWi8CDLBA3P18NO+ME2BxRtlRTRFaW0
+X-Received: by 2002:a17:90b:5546:b0:35f:be35:fedb with SMTP id 98e67ed59e1d1-365abadb3d0mr2543394a91.9.1778059958530;
+        Wed, 06 May 2026 02:32:38 -0700 (PDT)
+X-Received: by 2002:a17:90b:5546:b0:35f:be35:fedb with SMTP id 98e67ed59e1d1-365abadb3d0mr2543361a91.9.1778059958052;
+        Wed, 06 May 2026 02:32:38 -0700 (PDT)
+Received: from [10.206.105.200] ([202.46.23.25])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-365b0058b30sm1020810a91.0.2026.05.06.02.32.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 May 2026 02:32:37 -0700 (PDT)
+Message-ID: <455376f9-48c2-e663-3be3-fd310afb7f7f@oss.qualcomm.com>
+Date: Wed, 6 May 2026 15:02:29 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|DM6PR12MB4075:EE_
-X-MS-Office365-Filtering-Correlation-Id: 520a4334-c55f-4089-e4e2-08deab4fb0f0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|7416014|376014|1800799024|56012099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	p14PSjAZHzeaHfPMU5vI3H3h+i1aK996F3UA3t+sWxxVlvhG5Si4x1FmFdhDCRI3aYmLXY03RZdvoRrud5qUOD5B76lD0G+/beYk8XJ2HqCLV3BPUFtd5vIF6WbsHUSEnqsKahZWtdfRcuvbZPheCJNi80LwUiSJg94M7QMMEwLb8TKb5/qUZY+8MoppuzQKJ5xjFJuRJ3QX4DSsJSc9aQSMxhfON8XGljuGdSXUuXxWCM2csmwjfz6WCQp6eCHIbHm7qQvhbGDEoGHasOcCILhX9rejo0mF99xIIrRTkucCO5ypqpt/RnGNzUrgCGb3GfzjRFwAWa/vE86AegMb09/dENey5RRFxzEKEXU9yfUMGQNTv1ZGarZmpiYGGjUlZA+/aAFUEAabBmqPL9kcrsjj1ebKn0XftcwuYq8aeaJGS4rR09DeM9Lr2wg/XYhgzq5/ggf2+rXIu6fcaXqzWfDn9HKxLXsYDsMg8CNPMnFRaZNPU+8lwiWlNq9tKUWiuwip/o4YPV71Not/oF8jle2ZX7mvC33vjvr8GXvNaGBMdRzMKSpDxRveiXyqy4LFIBZMtzj5SriRUyhtvttW+BVoFIKFZ4Vd//i/hHbQ90nRgM/nDSBVBMpwjLsmKhuAMHL5P98MUruwuDckYege/bNNGGQVwHxMSMJNuE5sW/2kIfcxvJS90uLSJTHKf5Oq
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024)(56012099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?evbnhrAi4gh5CRKXZxg3UsJoBq+ruH+/QGVsOdMF6hdQmE9QCw/ZhHQ3P7VR?=
- =?us-ascii?Q?PCKRgkbQk9gQhUUY+D6slS1XCvS7JF0P5XFNL02vTsm3pRXGSUxqHKRVaxwd?=
- =?us-ascii?Q?+6OocDGXclXptXZSqGKzmKEqvaL7bfnKehT6dH4IfOw6t64A3kZ/23AqeS5d?=
- =?us-ascii?Q?X7dGiUdUZ4dThSEBDjqBGEUeR2KjoMBfM9/pGntTVXUtYuqiVcHXUqx9pFMA?=
- =?us-ascii?Q?pYPcZf+Zf+Tg6guCuZV8XCnjh4NnyeUoMDYGwNRahl8hxEEYQXgPnoWDAO5+?=
- =?us-ascii?Q?yw15GsQUpt7pf5Ncha2XekgiT2hz4izbMoMLvY+IFPLnNh7UHxqf7aIZCfR4?=
- =?us-ascii?Q?TqcjU2thrLqkZXq+I/KJ3eMtW7JNunTFM6AXn33I5caDWeaSi0l+cR0aiceR?=
- =?us-ascii?Q?JuhoT6qMt7NYdLnpWJUbmHd0lZhnYYp5YEjM0EtMczGGzBcUBfpDLz6O6YDb?=
- =?us-ascii?Q?jcF6PgYC/gqn1lBGLSGLM0RB1Kfq1i3s1dAvKyI+a2/PTsWffgvlOGJ1rLgc?=
- =?us-ascii?Q?m7hKdexTCXd0ZRwRzg/4j+JD9wqm9KzuAiqYcV+9R3qQ3rqZ0Yd3klzloOu9?=
- =?us-ascii?Q?1tubxuKQ7YtAyRrmXjUPGI8jBOa4FYMacJkPsVrZ56YdElegfV8T/PRmYoyM?=
- =?us-ascii?Q?VMt+N2Q/dz45hCtwpX8BqlixvBPShrz9fTJMcSmVsPUHAzqWTmQsYHFb6rGA?=
- =?us-ascii?Q?PisreEgK9sVr5jIM2fInwKlXLOtETZyn9W6Z9u9EUwpEqcyYkQTsuypqA2Tl?=
- =?us-ascii?Q?QihkGxMG30cuxt4cqfy805z6O90jlXcamgK6DDZ/Zkq6LjhAO9n1m/9Ym00d?=
- =?us-ascii?Q?6aUFBp05j5xYh+FzvYoyGKW4y/iaX/QlGQaqdGDcc45zPZ5yQoU0uClzDbxP?=
- =?us-ascii?Q?TkJZdcL1OZII+3qEirhVWvMSAix5k614nJ/dAb3dtrqOFVJQ/3c7o1oGSR/v?=
- =?us-ascii?Q?iZMDsMaugcuUq8mOWTSk+W1sY/Aj920Iltg12ri8+pWrUD4g2aL1K8i6QZ//?=
- =?us-ascii?Q?d833EgAtV9HRpk1R/UYLgwPCbuXXM3W3JPnrKSVlRpo/64SBTPEfbzvbYg4r?=
- =?us-ascii?Q?m9hMwDOCjFaeV0qs/KeswyjUXUyKnNKyzzy79TIR8vV17XAEYW9Ddx9/CiY0?=
- =?us-ascii?Q?28HEADR5gGkRiBiSiCMLqoaIKMpepYd8pmeEh4aR9/5WIRxcgb0oogFcZVM+?=
- =?us-ascii?Q?vBjmi4PpJrXvxf1aWSMDJMVlNx6lr69GM+rNMH4Rjw1/KEPYVys4FB6xEso1?=
- =?us-ascii?Q?JilWtdaxDt7FdTohGiJS/GU7wiGyARwyACC9EWIgNLXhs2dZ/owTAqVJbBV1?=
- =?us-ascii?Q?tM940EhNnIJ23oTtT+ggDEtNV94eOxO6wuSnr/zcMIC86+4zisJ+p5EI3HUa?=
- =?us-ascii?Q?FVwYO2RaYoYqUzi+HnfIlNddRSJeDFwSNXPeVyTOd5qPX7Z5NttSdyQaHPvy?=
- =?us-ascii?Q?UmYc+qiCiEoFbtye22ulqqIuYyPBdIIw1TsUVVW2M0cPc6bDK/ilGHOOIq0f?=
- =?us-ascii?Q?b+UuYi63M2QxfmoSkQIPS1RXaIMeSM9zXxDTXs4/jLTJDK/qsmnMHEOqYzRl?=
- =?us-ascii?Q?2iX0eYQXK7VaSOnaUI68jB8bTzyc/4i3QUDNtcmZhCZLmj4K24WJv2K7GmK6?=
- =?us-ascii?Q?dydgBtDmPEMaN58iA9VDCnd49lT3j4+JEtq4gGXSBGFFtJwBqaS9XxzwiXeq?=
- =?us-ascii?Q?2WizrRA84icdBevsC/q4OQgYBuBLq0zqmVSB2rc/vJpx1t6p?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 520a4334-c55f-4089-e4e2-08deab4fb0f0
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 May 2026 09:13:09.4657
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sUZM/guim4oSDPOHTF2fLHgpGEobWhFpNhlhC+yduz87FPtjTkrmN7XSN1Wy9Bb/
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4075
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v4 02/13] dt-bindings: media: qcom,venus: Remove clock,
+ power-domain, and iommus from common schema
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
+        Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Bryan O'Donoghue <bod@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hverkuil@kernel.org>,
+        Stefan Schmidt <stefan.schmidt@linaro.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+ <conor+dt@kernel.org>,
+        Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>, linux-media@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, iommu@lists.linux.dev
+References: <20260505-glymur-v4-0-17571dbd1caa@oss.qualcomm.com>
+ <20260505-glymur-v4-2-17571dbd1caa@oss.qualcomm.com>
+ <20260506-inquisitive-wondrous-lori-a9e639@quoll>
+Content-Language: en-US
+From: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+In-Reply-To: <20260506-inquisitive-wondrous-lori-a9e639@quoll>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Authority-Analysis: v=2.4 cv=XvnK/1F9 c=1 sm=1 tr=0 ts=69fb0ab7 cx=c_pps
+ a=UNFcQwm+pnOIJct1K4W+Mw==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
+ a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=DJpcGTmdVt4CTyJn9g5Z:22
+ a=TQHRF8L8_Bey4eUWYNUA:9 a=QEXdDO2ut3YA:10 a=uKXjsCUrEbL0IQVhDsJ9:22
+X-Proofpoint-ORIG-GUID: f24VM5mUbxnieP5PcquqgUYq26gMP5xr
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTA2MDA5MyBTYWx0ZWRfX6roWLH8QEsOd
+ DtPbQ8a+jEahZVgMAFPKjOpm6LKfAKpc9X/0/jC60fDOCV2IipLTXiAUe6e3Jw++8ooJ9OWEysb
+ iQAa1zU6If6Zi5410bZQIPEW5zrh/hdlrwlNTB0NQzDANs7Dyl9BS0tpNFCvLoOuJKJchpslEvp
+ 2OHSgRR9jyhlj/I4HXIyQQhh+pQc53CIDcpEK2LBW1qLdLpq/7mSYA//tOhsodXSGDopgGy5Vun
+ p3WuE3cG0+WUygwR1k9f6zErBIDzSNPlj+ZmwGm5023a0fmECFNRUeFQ5TmoJyZe2nnl/LTIcWQ
+ z8R+M7HdT5Rx5Tp4RtK9JZv8HHKZlKSuvTp5rzpgGGM1rvJZU3EhK9QPP3Q/C0Alg9rXHjltfG1
+ 23te3XBjH3qbVWDCWpEAFKjvgQ6JYRqonBTe83DNENVR4LwJg7eSXSdNJ7juj5aJexy8hnP88BE
+ +uYZaOzNgan/kwT+gVA==
+X-Proofpoint-GUID: f24VM5mUbxnieP5PcquqgUYq26gMP5xr
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-05-05_03,2026-04-30_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 bulkscore=0 suspectscore=0 priorityscore=1501
+ lowpriorityscore=0 adultscore=0 clxscore=1015 spamscore=0 phishscore=0
+ impostorscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2604200000
+ definitions=main-2605060093
 
-On Tue, May 05, 2026 at 05:47:10PM -0500, Andrew Jones wrote:
-> On Fri, Apr 10, 2026 at 12:57:08PM -0300, Jason Gunthorpe wrote:
-> > Use the RISC-V IOMMU Address Range Invalidation extension
-> > (capabilities.S, spec section 9.3) to invalidate an IOVA range with
-> > a single IOTINVAL.VMA command using NAPOT-encoded addressing.
-> > 
-> > One iommu_iotlb_gather maps to one NAPOT invalidation command. The
-> > smallest power-of-two aligned range covering the gather is used since
-> > over-invalidation is always safe.
-> > 
-> > S and NL seem to be orthogonal in the spec, so if NL is not
-> > supported then global invalidation is probably always going to happen
-> > as wiping a large range without a table change is not common.
-> > 
-> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> > ---
-> >  drivers/iommu/riscv/iommu-bits.h | 17 +++++++++++++
-> >  drivers/iommu/riscv/iommu.c      | 43 +++++++++++++++++++++++++++-----
-> >  2 files changed, 54 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/riscv/iommu-bits.h b/drivers/iommu/riscv/iommu-bits.h
-> > index f01b49ac815586..32b3ad3ac9ae59 100644
-> > --- a/drivers/iommu/riscv/iommu-bits.h
-> > +++ b/drivers/iommu/riscv/iommu-bits.h
-> > @@ -64,6 +64,7 @@
-> >  #define RISCV_IOMMU_CAPABILITIES_PD17		BIT_ULL(39)
-> >  #define RISCV_IOMMU_CAPABILITIES_PD20		BIT_ULL(40)
-> >  #define RISCV_IOMMU_CAPABILITIES_NL		BIT_ULL(42)
-> > +#define RISCV_IOMMU_CAPABILITIES_S		BIT_ULL(43)
-> >  
-> >  /**
-> >   * enum riscv_iommu_igs_settings - Interrupt Generation Support Settings
-> > @@ -475,6 +476,7 @@ struct riscv_iommu_command {
-> >  #define RISCV_IOMMU_CMD_IOTINVAL_GV		BIT_ULL(33)
-> >  #define RISCV_IOMMU_CMD_IOTINVAL_GSCID		GENMASK_ULL(59, 44)
-> >  #define RISCV_IOMMU_CMD_IOTINVAL_NL		BIT_ULL(34)
-> > +#define RISCV_IOMMU_CMD_IOTINVAL_S		BIT_ULL(9)
-> 
-> We should add a comment here that this is actually bit 73, i.e.
-> 
-> #define RISCV_IOMMU_CMD_IOTINVAL_S           BIT_ULL(9)	/* bit 73 (dword1 bit 9) */
-> 
-> because...
 
-!! That's a big mistake, the common thing in other drivers is
-something like CMD0 CMD1 to designate the word.
+On 5/6/2026 12:11 PM, Krzysztof Kozlowski wrote:
+> On Tue, May 05, 2026 at 12:29:23PM +0530, Vishnu Reddy wrote:
+>> The common schema defines minItems and maxItems for clocks, power-domains,
+>> and iommus. This suggests that the number of these resources can vary,
+>> while in reality they are fixed constraints per platform.
+> OK, that's interesting approach. I am fine with it, but then you need to
+> remove these from "required:" list as well, because requiring properties
+> which are not defined here is not the most readable.
 
-> > +static inline void riscv_iommu_cmd_inval_set_napot(
-> > +	struct riscv_iommu_command *cmd, u64 addr, unsigned int sz_lg2)
-> > +{
-> > +	u64 pfn = addr >> 12;
-> > +
-> > +	pfn |= BIT_U64(sz_lg2 - 13) - 1;
-> > +	cmd->dword1 = FIELD_PREP(RISCV_IOMMU_CMD_IOTINVAL_ADDR, pfn);
-> > +	cmd->dword0 |= RISCV_IOMMU_CMD_IOTINVAL_AV | RISCV_IOMMU_CMD_IOTINVAL_S;
-> 
-> ...here we're setting the wrong dword. This should be
-> 
-> 	cmd->dword1 = FIELD_PREP(RISCV_IOMMU_CMD_IOTINVAL_ADDR, pfn) |
-> 		      RISCV_IOMMU_CMD_IOTINVAL_S;
-> 	cmd->dword0 |= RISCV_IOMMU_CMD_IOTINVAL_AV;
+Ack, I will remove them from "required:" in the next revision.
 
-Right, I will fix it up
+> I still do not understand though why you cannot just grow the properties
+> here. The point of this schema is to define common set for range of
+> devices, because all of these devices are supposed to be veri similar.
+
+If a new platform schema uses this common schema but does not explicitly
+re-declare clocks or power-domains, it will inherit minItems and maxItems
+range from the common schema. This gives the false impression that the
+resource count is flexible for that platform, when in reality it should
+be a fixed constraints.
+
+If a new platform requires more resources than the current maxItems (e.g.,
+Glymur due to its dual vcodec core design), we need to keep bumping maxItems
+in the common schema every time a new platform exceeds the previous limit.
+That makes the common schema a moving target driven by platform specific.
 
 Thanks,
-Jason
+Vishnu Reddy
+
+> Best regards,
+> Krzysztof
+>
