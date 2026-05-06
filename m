@@ -1,64 +1,64 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8209837106D
-	for <iommu@lists.linux.dev>; Wed,  6 May 2026 21:58:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E34811E511
+	for <iommu@lists.linux.dev>; Wed,  6 May 2026 22:03:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778104684; cv=none; b=CBphhAqYXAlsRmBov2+57IV6m94+/4zWmTFJsnKm0NO4tkbr07N+OXoPNp/iZjLS3mkd47HdAD0K4NkThG0gh3eatlD8f0e4JE2MB4erNAhaMwnds6u0IZXu6qgzTxcrlmv5wbD7KsEBZW8UtkH+AFqSgdnnnvswJUHvDX8Ms3o=
+	t=1778105040; cv=none; b=LiIVtsABydz6EySarvWGushgKX5xxRQ+ylMXZ/zTgr5EvluXyJu0gXV7Gx+ZKX7Pt2gBVFElHypHQoqKusNa0EXGqLDldcF47sr969IsX7vql5j6GeP6u+PAGnkA9zDCBubDAx0NcP0gqcyWhDhQtpjisHn238ju4mKANqr4h9c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778104684; c=relaxed/simple;
-	bh=A3Eyx0juCKPivb1WOr+KGxgbVBT3Er4gXQ6ywTpBPhU=;
+	s=arc-20240116; t=1778105040; c=relaxed/simple;
+	bh=wAZbvX2um+mJnHMkw+AXSh31G6A5FgPUudfE0Br1Bl0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nlfskf/gidx4x0crafsnYy0drEHumWCiVORTow9J5J6ew0MYHOhwZMWYIQ6jmX75QuP/XAn0/Kgha9DhHMIYOG+V83DMEIc/XlLBCQnAeyq7nmyaq3/XM5IWagsjScMUsLqG+d10Ap3PWAktRBk7Otnqpnc/T3b7sEhfcPWT/NU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=AVOJas8l; arc=none smtp.client-ip=209.85.214.175
+	 Content-Type:Content-Disposition:In-Reply-To; b=t31kA52n507995zu55YH15uEoFOu+mEUfiy93gUjZri6dVhoZzkdNg1haj6+q1vGFsNT/m2RlbQnYgqhMipLUzhO+G/O7G0T1K6wmjOWpnSBMIQoNN7ss3G1DdgQHkHEu/0V0pp9KMTwWFFbacJv5g9aZWM5sXHZtrZs6wvtsLE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=RZUUi2no; arc=none smtp.client-ip=209.85.214.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="AVOJas8l"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2b2e8b95bdbso17285ad.0
-        for <iommu@lists.linux.dev>; Wed, 06 May 2026 14:58:03 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="RZUUi2no"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2b46da8c48eso18345ad.1
+        for <iommu@lists.linux.dev>; Wed, 06 May 2026 15:03:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778104683; x=1778709483; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1778105038; x=1778709838; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=nOB1W/ORSDa7JUnJPQjyolVaPhXWnjrIaLVGMxAf84A=;
-        b=AVOJas8lUcniTm6B22Pml5oY7c9bRbMnA4tBEv0o4eQv/ALfr5KxnBasotDQi7ge9a
-         nA4nNg+Qp9V6Ac7KNWnRdtrR0WS9yaEBY8mBctR5OSXmnUdBSyazTOXMlRXIJ4dphU6B
-         TnKnMpkPTwYA0HGhANphgJXckG/DY0sFB0QU1qw8FEfnn1Aktp/0UK88nuzhbrgIzRUY
-         WQZXM1aUIuXWA2RVW9pr57IzAissAn3CcatWITAfBLNHsPM+G7z/CdI3VUbnsq3OY63S
-         d7Y/GSZ7XJa27yJkcpQZzUqVdWlNDSsnm9wQbSrniLq1J/Gk9ACxMm2D85+WyNoG2KYV
-         SNRg==
+        bh=SfAstnWeGSjoMP7q8NjdjeBL9ILZHUEp8VmJGFEOXmU=;
+        b=RZUUi2noPilly2iJiZJWmvFxAiG20X9eEVhudRzJQEJORYtqHmP0/JWd491kA6ju0D
+         o+KlvXrCHga4jU1atuE9CrzRjzYPv/jKVRJrQw67SLAj67YuagYAj136ufI+CkX2Oy+a
+         +a+8SewDuFrznwRWKpc+B7yVrQaeE6/KQxSFMsx4H8qOZMTC2425VyA9abjBrIMrxHqd
+         ijViEsR9ADwSh5j7qKVOqVRecKuZm8lRlOT31uNLx7+MwuQJ/eHNkrrSdOcyGMDxjlWv
+         MKEfnHMx7qADSSdwafdBcfE7+rPCwhLxUJ5hkOvGtrP0Awt75qmRPPGSZ5S02keEYP2A
+         dtow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778104683; x=1778709483;
+        d=1e100.net; s=20251104; t=1778105038; x=1778709838;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=nOB1W/ORSDa7JUnJPQjyolVaPhXWnjrIaLVGMxAf84A=;
-        b=M3i4ND0pJn/CedTGw6ZcigkE1w/8X1/Jfxb96zYlgxPjDBVOxKboQHJ3JRNZs+B1PI
-         SnMBqX9uPo1WH6vKtyQ59EWn0hv4xo2rIvF6Q0qZQBXL5HEvoSFHnXaUUB09Ir8YI1KV
-         MNzshg+9Zl2A4VWA9nzVeOtaoOq+w5TOL6RLfiCYW5ipqbXS3nbDdQ9pKl6iMP0XABPO
-         mMWMKU7e30YlgOMcUx0/G4j/vghIWSxelq4Ur0UQBj2Wfu77vEY67PK8st7N/CcBxogr
-         cEgVrMnhDY1DXI3y6iSCSAyWwFVEFXDhjcmF0+8BtNMvShETBs7Ok6kCthbTkb2yfFRG
-         xrCw==
-X-Forwarded-Encrypted: i=1; AFNElJ//UOnnA9zgV8u5CrKk/P4fR3CuRBemQDBkZyJXlvkcGvuUl4yqN38aDMtHOMnT88oUZqTJxg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx3c5LOdEOr8PRCQ/MaMCM8jVDH1aTKIwtqGzG0ZUvU+Yj/I2Bc
-	Ial1b4kPKWb9xhEViNCr0dXM9wt8dr/+M8uWtEOQB+iTbSXGjwCFJd5VDpKJzMHL/g==
-X-Gm-Gg: AeBDieszMz0C3nxcd1lNUJdGXlSp6Ctb2dmxWFp1dEtV1kUbe/h5lNGbQEaObYER2NB
-	r4E9NWYzp3ro2m/djtkyXrsPWUfYcol+ngO62mYp++lgEZ5MDZFJ9KWh9zRa7vJKb0x3OOa8Gsg
-	60NMeuehi1e9BhVieA0v0pT5wQNCh5Md6cYNrJkQijkJ2U7YypRDKKK704JP8dsRDlcswHiHNvX
-	lfH2ZbszCcBeJrhM8pPXVikd30coghm6PneEUcrBwuv4TquOs4aWwThuU8keK7VgiXILI+Em4Nk
-	sicyrBuwJc+yI2Jy7MvFgoeBOHSwUNoqBlPfx1mSEZkcVfoyW2F2AC4/JwIp/Deh14FS1uBFZ5j
-	JK1irFZAIGBQf/h8h6tUGCZ8roCv8Vx1gV7vQLDIkm+jzNni33Z2rYOTagnM835T3xwvO2Pk28+
-	YqJcGjM9Fwi8Y1U6Fjgd2Xm+putovyWF7jOsoFf3u0TBUfMJHLJf9LKL2tJwEPPuwKIR18TiA4D
-	oZ6zM8=
-X-Received: by 2002:a17:902:f709:b0:2b0:b0c9:96e2 with SMTP id d9443c01a7336-2bab644d0f1mr1545885ad.21.1778104682252;
-        Wed, 06 May 2026 14:58:02 -0700 (PDT)
+        bh=SfAstnWeGSjoMP7q8NjdjeBL9ILZHUEp8VmJGFEOXmU=;
+        b=ol6lUHYx3er0M54n4DfiLCaHQsVqCXhIl3GV3GW3/mSL6AYj3zDIyc31mh3nwgU0/0
+         Cox8hrgrRj7ApuQd5j+LZlIwCEX1ZRsI2lIQjWqVOfyhWLDeT0e8ul/sV4s4P82cRqtv
+         OykeTj0GQQirifSiMmTkuGD8QzAkKMFNrtQ/Jd48VwRs1oitOC3btudaar2Ozio2SR9q
+         VBEcmVSYc8kAnEjbis7hrxqRzm4U8E6E5wnV2JsnC6TFEuRJRilA2d84GhrA3JuiJ9em
+         XXwKIUfpmXWpJffIHIb6w4RRWSJzbF7tKhRDnCqJGgmsGuf6k3KHCYBG3ku9UwwSe9cN
+         UdRQ==
+X-Forwarded-Encrypted: i=1; AFNElJ9kqr7zMSY93VfU85mz5jzOZbaHKzO0JlsF9g80vhnSEjUKKuHaeIV7CpIlHQw8SSgqwVOHRQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyjrb39PHFLfB9bFo+04t01xtsxtlV66rLgv1z8jweF2iaehAca
+	HA/WxmOAlIEIcswKOFZEIhortFWfcHs+vmWpksG3hVXWA5FymRTO3VuEhwvZr6YglA==
+X-Gm-Gg: AeBDieuyVAC8lU0F2F3MTA1JxgiEcvDZVeey+VKBMP3ybsN0NuD0kCXeJceMBSkiPCM
+	xRcU4S3Yu6H7oHLOAHXNt+b5Tb4Nk97DLlJgw5ZVtEcqDRnCyOouzONd7jYyVZwiNW8Q45cQu7l
+	ouJJVNfPUEzv7fBPkxA1DT752OdtlMm7lZTsD65qDy6jXt4ShhFPbAqViUAMOHR/cT4dsa8Bc5B
+	3mhuFyRiES6j/HZRgmkOSuDSpfeKED1JSRsjmNrQ1XOEP+AF0PP7SIRNjgVsu6PTAQtnut7AFhe
+	vbNQcQWkbb0OJm2+m+nJizwS8XWEmeR8IGg0qlIamm+1thDP6wqAii56pjLDsbbr6P3edr/Arzu
+	JiBpga16G32YF5L8mjRCui32pHlA6791fIwDZiT2SGwxqyCKNotTNF0EAE7ti+lPsjsYQ3YPAmP
+	8xvsBzgJD0ayElPz4CA7sA2QfqSy+DxxlYX5KMVmH19dUoabz4vyq5yK/ImyJHelhWcuuOg9i90
+	jID5xs=
+X-Received: by 2002:a17:903:2c03:b0:2b0:d1f4:f601 with SMTP id d9443c01a7336-2ba7cefe763mr4912305ad.15.1778105037685;
+        Wed, 06 May 2026 15:03:57 -0700 (PDT)
 Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-839679c9293sm6514543b3a.33.2026.05.06.14.57.58
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-365b0560ffasm1450533a91.2.2026.05.06.15.03.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 May 2026 14:58:01 -0700 (PDT)
-Date: Wed, 6 May 2026 21:57:55 +0000
+        Wed, 06 May 2026 15:03:57 -0700 (PDT)
+Date: Wed, 6 May 2026 22:03:50 +0000
 From: Pranjal Shrivastava <praan@google.com>
 To: Jason Gunthorpe <jgg@ziepe.ca>
 Cc: Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
@@ -71,7 +71,7 @@ Cc: Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
 	David Matlack <dmatlack@google.com>
 Subject: Re: [PATCH rc v2] iommu/arm-smmu-v3: Fix inconsistent ATS state
  tracking
-Message-ID: <afu5Y55W5oj70b5v@google.com>
+Message-ID: <afu6xq5djv_svAJf@google.com>
 References: <20260504163842.2692314-1-praan@google.com>
  <afjfBi+vw/Ywkzid@nvidia.com>
  <afj0cyBZwkVLyIwK@google.com>
@@ -79,6 +79,7 @@ References: <20260504163842.2692314-1-praan@google.com>
  <afpdm5lfIeWptxOh@google.com>
  <afpwCIjQXwfImPXm@google.com>
  <afsN9jrsfuigV+DM@ziepe.ca>
+ <afuiX-lXJOSURB4H@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -87,91 +88,37 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <afsN9jrsfuigV+DM@ziepe.ca>
+In-Reply-To: <afuiX-lXJOSURB4H@google.com>
 
-On Wed, May 06, 2026 at 06:46:30AM -0300, Jason Gunthorpe wrote:
-> On Tue, May 05, 2026 at 10:32:40PM +0000, Pranjal Shrivastava wrote:
-> > The PF shows no ATS Cap:
+On Wed, May 06, 2026 at 08:19:43PM +0000, Pranjal Shrivastava wrote:
+> On Wed, May 06, 2026 at 06:46:30AM -0300, Jason Gunthorpe wrote:
+> > On Tue, May 05, 2026 at 10:32:40PM +0000, Pranjal Shrivastava wrote:
+> > > The PF shows no ATS Cap:
+> > 
 > 
-> Yeah, that's complete broken and unusable. We should be failing things
-> not trying to patch around it. quirks should be used to deal with
-> this non-compliant HW.
+>  3. Finally, if the PCIe spec actually allows VFs to enable ATS even
+>     when the PF's ATS is disabled (but is ATS capable), then we might
+>     need to ensure the PF is initialized with a valid STU even when its
+>     ATS Enable bit is disabled, to allow enable_pci_ats() to pass for VFs
 > 
 
-IMPORTANT correction, the HW is NOT broken, I mis-read the logs & pasted
-the wrong ones. The BDF logs were supposed to be:
+Correction: This is what happens currently in the happy path, the STU is
+set and we only clear the enable bit in the ATS control reg in 
+pci_ats_disable.
 
-WRONG BDF logs: 000X:00:01.0 
-RIGHT BDF logs: 000X:01:00.0
+> I'll dig into the PCIe ATS spec to confirm regarding PF/VF dependencies.
+> 
+> But from an initial understanding, I believe 3 is the correct way to go.
+> If a device is ATS capable (i.e. PF & VF both present ATS capability),
+> We shall allow PFs to attach to Identity domain and disable ATS while
+> while allowing VFs to enable and use ATS.
 
-Infact we're seeing an in-tree quirk[1] in action:
+The kernel seems to allow this today, during PF probe the PF's STU is
+set regardless of it's ATS being enabled. Thus, a VF can use ATS even if
+it's PF disables ATS. (Given that the ATS capability is presented
+uniformly in both).
 
-PF logs:
+We are seeing a weird case due to a pci_ats_quirk coming into action.
 
-[    0.575983] pci 000X:01:00.0: [8086:1452] type 00 class 0x020000 PCIe Endpoint
-[    0.576003] pci 000X:01:00.0: BAR 0 [mem 0x640900000000-0x64090fffffff 64bit pref]
-[    0.576005] pci 000X:01:00.0: BAR 2 [mem 0x640a6cc00000-0x640a6cc3ffff 64bit pref]
-[    0.576089] pci 000X:01:00.0: VF BAR 0 [mem 0x640994800000-0x640994bfffff 64bit pref]
-[    0.576091] pci 000X:01:00.0: VF BAR 0 [mem 0x640994800000-0x640a547fffff 64bit pref]: contains BAR 0 for 768 VFs
-[    0.576093] pci 000X:01:00.0: VF BAR 2 [mem 0x640a6cc80000-0x640a6cc8ffff 64bit pref]
-[    0.576094] pci 000X:01:00.0: VF BAR 2 [mem 0x640a6cc80000-0x640a6fc7ffff 64bit pref]: contains BAR 2 for 768 VFs
-
-[    0.832175] pci 000X:01:00.0: quirk_intel_e2000_no_ats: revision 0x11 < 0x20, disabling ATS 
-[    0.832177] pci 000X:01:00.0: quirk_no_ats: SETTING ats_cap TO 0 (was 0x2dc) <--- pdev->ats_cap = 0
-
-[    2.365656] pci 000X:01:00.0: pci_prepare_ats: ps=12, is_virtfn=0, ats_cap=0x0
-[    2.365663] pci 000X:01:00.0: pci_prepare_ats: MANUAL SCAN FOUND ATS at 0x2dc (header 0x1000f, ctrl 0x0)
-[    2.365666] pci 000X:01:00.0: pci_prepare_ats failed: not supported
-
-The PCI ID : Vendor ID => [8086:1452] is for Intel e2000 NICs which has
-a quirk for ATS: quirk_intel_e2000_no_ats[1]
-
-VF logs:
-[   16.634000] pci 000X:02:00.0: [8086:145c] type 00 class 0x020000 PCIe Endpoint
-[   16.634060] pci 000X:02:00.0: pci_ats_init: pci_find_ext_capability(ATS) returned 0x1e4
-
-[   16.634196] pci 000X:02:00.0: pci_prepare_ats: ps=12, is_virtfn=1, ats_cap=0x1e4
-[   16.634201] pci 000X:02:00.0: pci_prepare_ats: MANUAL SCAN FOUND ATS at 0x1e4
-[   16.634202] pci 000X:02:00.0: pci_prepare_ats: device is VF, returning success
-
-[   16.634272] pci 000X:02:00.0: arm_smmu_ats_supported: dev is PCI, ats_cap=0x1e4, pci_ats_supported=1
-
-[   16.634282] pci 000X:02:00.0: pci_enable_ats entry: ps=12, is_virtfn=1, ats_cap=0x1e4
-[   16.634283] pci 000X:02:00.0: pci_enable_ats (VF): checking PF (0005:01:00.0) -> ats_cap=0x0, ats_enabled=0, ats_stu=0
-[   16.634285] pci 000X:02:00.0: pci_enable_ats EXIT: STU mismatch (PF 0 vs VF 12)
-[   16.634286] pci 000X:02:00.0: Failed to enable ATS (STU 12) error -22
-
-[   16.634513] pci 000X:02:00.0: quirk_intel_e2000_no_ats: revision 0x11 < 0x20, disabling ATS
-[   16.634515] pci 000X:02:00.0: quirk_no_ats: SETTING ats_cap TO 0 (was 0x1e4)
-
-The PCI ID : Vendor ID => [8086:145c] also has the same: quirk_intel_e2000_no_ats[1]
-
-Thus, this sequence occurs:
-
-1. The Intel quirk sets pdev->ats_cap = 0 for the PF at boot.
-2. pci_prepare_ats(PF) fails during arm_smmu_probe_device() as the
-   quirk causes pci_ats_supported to return false & PF->ats_stu
-   remains 0. (arm-smmu-v3 ignores the failure)
-
-3. PF attaches to identity domain: pci_enable_ats is skipped
-4. VF's arm_smmu_probe_device returns early from pci_prepare_ats() due 
-   to the if (dev->is_virtfn) return 0; check
-
-5. SMMU calls pci_ats_supported() for the VF in attach_prepare() which
-   returns true as the quirk hasn't been called for the VF yet. 
-   The SMMU driver sets state->ats_enabled = true
-
-6. We call pci_enable_ats which hits the STU mismatch (PF never sets it)
-7. Later while disabling ATS for VF via pci_disable_ats, we hit the WARN
-
-I guess we must think about the following:
-
-1. Check return values of pci_enable_ats / pci_prepare_ats in SMMUv3
-2. PCIe core to provide a proper ATS flag that iommu driver can rely on
-   and maybe define a policy around pci_ats_supported() to make sure it 
-   also handles such quirks in pci_ats_supported().
-
-LMK, your thoughts?
-
-Thanks!
+Thanks
 Praan
