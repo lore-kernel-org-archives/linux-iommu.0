@@ -1,103 +1,190 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96CD42E612E;
-	Wed,  6 May 2026 22:19:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BFCD33AD85
+	for <iommu@lists.linux.dev>; Wed,  6 May 2026 22:20:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778105957; cv=none; b=Z8SY7Khb2CQlRoZMh0JCnkE27OxikLixe8JX1Ftp0Za0K9Err073JzjHcb4ZrbTaJm7AwowGh+2SxUC6621bz1j1HLqgF2jQmH9q/vQAukprnlMF7sC3cyPc4eAHlvCYUK+0Wqn/UqEYV9eHyS0wNehm9AD+uSHuyEVKswnESIk=
+	t=1778106021; cv=none; b=VrWCoaQ26wyPmaJXlleTUoIO1wTu1I5UhisFHtc6aiYottJpYJo6+suT4BY8ozCVM9ghpN56MEl5KoEPoGqVJLlk/5U9KfVIWIraZRK7B6H8KR6Z4LHl/LgArIA16Bjqhk0155Hqbz1i1WNfbIa4JKh9DZvgeqCHUQ5jHG5JLG0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778105957; c=relaxed/simple;
-	bh=gysC/lx1i73eA4zP8jwgbWYpicdKVkkAq/If5SfmOvk=;
+	s=arc-20240116; t=1778106021; c=relaxed/simple;
+	bh=zRq/+I9xHsvThfUxt+wcHigq6zTh8tYsG/kpNFRaf5g=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Nv48ScvAih9VyVBnqcOp+kT3nFzwZAa14AqgflLGXZmkgp7Gd8TBdq89HV70jqsF0i8lN2uPdGNyvMGhAWSzbOgI+2PqSnSQTnMNOndbDfi29/r6Tiiqbq/V1K4ZBi1jfBNuTyzNTWmC4G4Elj42HLXBVu9o0SFKRVmZhUDNj5o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UF/aj9HS; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=aIalz0Kxv9o9CcXxp7k/BINcfYGutzRluGhURl0SekSBIUY5DxMvSvGUGcQ1JnrV9SSaKM//cWamuBVShM/sLSpLxMN1B/6+uacNoMDsmOC6rjf6iUkS9eMTUwkYWve9FRVLZP+yzwRA4fcVzjziTdbz1qDFRGFC44MMI7dyLrg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Who2fRXk; arc=none smtp.client-ip=209.85.214.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UF/aj9HS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F5ECC2BCB0;
-	Wed,  6 May 2026 22:19:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778105957;
-	bh=gysC/lx1i73eA4zP8jwgbWYpicdKVkkAq/If5SfmOvk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=UF/aj9HS2SYPYHTIXkOa8lL3owagoxJHzGMhyRFSAxj+GJL8gP8yC5+XoLLz6s1x5
-	 X9cL5R+VcjnFIjQexqIW2yM4i2kvMQEHMnTIu0Lb82lcqBkA1Hg3vvTFnYScS91BuS
-	 2N40C7auuO3CTglHzgoaPeo24WGlW/+zx0190iYZVTD6bGYt2OnLQxGXS+Zi31QbCo
-	 BSVOloj3oH2LafE2j6H0SnRWGMGyru24IxEPo4APpEHqlKdF+7EKoOV6XhFqOa+f3G
-	 bqbSLPeKNIjTZdxVJ1+2t3TbHL1Z+PbeCe39zAx2EWiABfykEikLE4KgvyrMiahx6n
-	 +1VGvBd4tB8Jw==
-Date: Wed, 6 May 2026 17:19:15 -0500
-From: Rob Herring <robh@kernel.org>
-To: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
-Cc: Nipun Gupta <nipun.gupta@amd.com>,
-	Nikhil Agarwal <nikhil.agarwal@amd.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Marc Zyngier <maz@kernel.org>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Saravana Kannan <saravanak@kernel.org>,
-	Richard Zhu <hongxing.zhu@nxp.com>,
-	Lucas Stach <l.stach@pengutronix.de>,
-	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>, Frank Li <Frank.Li@nxp.com>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>, Juergen Gross <jgross@suse.com>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-	Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Prakash Gupta <prakash.gupta@oss.qualcomm.com>,
-	Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-	linux-pci@vger.kernel.org, imx@lists.linux.dev,
-	xen-devel@lists.xenproject.org, linux-arm-msm@vger.kernel.org,
-	Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
-Subject: Re: [PATCH v14 0/3] of: parsing of multi #{iommu,msi}-cells in maps
-Message-ID: <20260506221915.GA3290640-robh@kernel.org>
-References: <20260424-parse_iommu_cells-v14-0-fd02f11b6c38@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Who2fRXk"
+Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2b46da8c48eso19545ad.1
+        for <iommu@lists.linux.dev>; Wed, 06 May 2026 15:20:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1778106020; x=1778710820; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=faK89Am0otTSmAcVRsm2dBTjpbS/djylu86NEYR5cEg=;
+        b=Who2fRXk+rEle7tzN66jkcNv7e6Nkk8LDVzagEcFxebYKoZmmQ36n+0ckBKyAEjR+i
+         j9LNUhVhn926XfQ8gnW/YZnzTUgOm9pEBm4KwuQMNYQgOp2xHAPXz1lGqW+cPJuKm0Xk
+         ADgaKseO93SOj9L3A7kBNCyBO9JradakPpIbT4t4WrnzghEbPYGBEi6G9iyrSd7gFbHk
+         kBRYYFy3yTYlvBmaIhBJe/ASniQPLjzgdTJ4JKvobAN7rfnZID/xLRaFytfASllgy0i0
+         FH3F3ELHi33jsGFdjfsQTRLMUjEhHVlWnT7dGtMpVJIOrFs/xaQ8trNVOK9RtG9Lnz29
+         Wmgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778106020; x=1778710820;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=faK89Am0otTSmAcVRsm2dBTjpbS/djylu86NEYR5cEg=;
+        b=R97lkkmttw/WkV7gA7vSyTrehrkgwwOdKlHSqCGYS3yegDcfhW549UhUigJ3f25U/s
+         w8IhHVhK6tRSuIhY6H/tjdCF/4osP3YDlnFZF0UhB/qIfYvzRGd6XqyNSn5voja1B/Yp
+         W3Jf3BmIsLQaJ0G7xoCHVaxSYY/VGd0ElAGQbS6oKbzoDqy9umu8wfEUeQrQu3aenJ1h
+         Fo2DFVDk4MjOILYERsYTUr+4RwBJn5S4pth85O+iESdTaKgLdjJhiB/nnSJPzBfJR+q4
+         MFeXwcMw6vsJJxsCP8skjWNvmygTDzti0gXWs0GXtOwDDtF1h0gbcexL9/1Kv8Z91uf9
+         jGbQ==
+X-Forwarded-Encrypted: i=1; AFNElJ83brhmC5Fg3l8KV9HY13PYKjF7Q45iMUOx1uJO7MskhGbwJiFN/RxN9KoB0ycBaO9VZmWArw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzyYjzzJ9dArQTq+MNCQVfnQb1rrzR+cbv48t+FU+NOmS6BPOCD
+	4Z/aXTzjtEK79VFskJRwU1JQuN/y2E+UkC7t0Q7AvWA1fugJJpZwQlODgNdEvaEXarXm9b6R16g
+	ryRJJgQ==
+X-Gm-Gg: AeBDieucO2Cg5F9/WSIvZYghbD9fwTmCvf3kL10NeLqJ/Ig89VgQyWqWf4r+izpkX5U
+	XVFnXdDPARJXDuZ/t6JF5pcBxzfwb64yPvQOV2FthEJYQmLVjBjfRZdMadqBd/t9zuFGPGW234J
+	bgZfnCF3U+GYeNbDabNmEaWI3o9YY2OwUR2zlqVTceY9kJiqQKrNpDXXrUvtzSTaTXNdn1Gnzj3
+	Yoms9YJeU7m545EkRGXsOK5HKqfyK8Ul3LBroFqziMhSOc9c2cm2E4N9GcKKINO4mOgn0mH2ypI
+	L+7bo/2LocXv5k7aJElo9E9QLnoQUvrVL/K/xGgaEU7zoQo1yRD/Q8RLdMmd3zcSMh5YiiEZ8Wa
+	aYj7cd2iyNvavdkS3HbllWYvDio6z+TFqMYu3ZD2t5oqbTc8EIBnSBGWgNBHsKvXvu4bXUvZK9I
+	MHKwv1h9poTOXFdYeqz44pxoDRArWxevCSvr7uBXIfc03X3wV08cIcMhdNWjNElGjbs2d6u+Foy
+	mgDbpPUvVVTXqN78e4=
+X-Received: by 2002:a17:903:987:b0:2b4:58ad:e987 with SMTP id d9443c01a7336-2ba7cf04e0dmr4884965ad.17.1778106019309;
+        Wed, 06 May 2026 15:20:19 -0700 (PDT)
+Received: from google.com (153.46.83.34.bc.googleusercontent.com. [34.83.46.153])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c82537949c1sm176498a12.12.2026.05.06.15.20.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 May 2026 15:20:18 -0700 (PDT)
+Date: Wed, 6 May 2026 22:20:15 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Pranjal Shrivastava <praan@google.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>, 
+	iommu@lists.linux.dev, Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Mostafa Saleh <smostafa@google.com>, 
+	Daniel Mentz <danielmentz@google.com>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
+	David Matlack <dmatlack@google.com>
+Subject: Re: [PATCH rc v2] iommu/arm-smmu-v3: Fix inconsistent ATS state
+ tracking
+Message-ID: <afu5s1vnmZ2aEev_@google.com>
+References: <20260504163842.2692314-1-praan@google.com>
+ <afjfBi+vw/Ywkzid@nvidia.com>
+ <afj0cyBZwkVLyIwK@google.com>
+ <afoWrn/RXxDmcHsS@ziepe.ca>
+ <afpdm5lfIeWptxOh@google.com>
+ <afpwCIjQXwfImPXm@google.com>
+ <afsN9jrsfuigV+DM@ziepe.ca>
+ <afu5Y55W5oj70b5v@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20260424-parse_iommu_cells-v14-0-fd02f11b6c38@oss.qualcomm.com>
+In-Reply-To: <afu5Y55W5oj70b5v@google.com>
 
-On Fri, Apr 24, 2026 at 11:26:07AM +0530, Vijayanand Jitta wrote:
-> So far our parsing of {iommu,msi}-map properties has always blindly
-> assumed that the output specifiers will always have exactly 1 cell.
-> This typically does happen to be the case, but is not actually enforced
-> (and the PCI msi-map binding even explicitly states support for 0 or 1
-> cells) - as a result we've now ended up with dodgy DTs out in the field
-> which depend on this behaviour to map a 1-cell specifier for a 2-cell
-> provider, despite that being bogus per the bindings themselves.
-> 
-> Since there is some potential use[1] in being able to map at least
-> single input IDs to multi-cell output specifiers (and properly support
-> 0-cell outputs as well), add support for properly parsing and using the
-> target nodes' #cells values, albeit with the unfortunate complication of
-> still having to work around expectations of the old behaviour too.
-> 							-- Robin.
-> 
-> Unlike single #{}-cell, it is complex to establish a linear relation
-> between input 'id' and output specifier for multi-cell properties, thus
-> it is always expected that len never going to be > 1.
-> 
-> These changes have been tested on QEMU for the arm64 architecture.
-> 
-> Since, this would also need update in dt-schema, raised PR[2] for the
-> same.
+On Wed, May 06, 2026 at 09:57:55PM +0000, Pranjal Shrivastava wrote:
+>On Wed, May 06, 2026 at 06:46:30AM -0300, Jason Gunthorpe wrote:
+>> On Tue, May 05, 2026 at 10:32:40PM +0000, Pranjal Shrivastava wrote:
+>> > The PF shows no ATS Cap:
+>>
+>> Yeah, that's complete broken and unusable. We should be failing things
+>> not trying to patch around it. quirks should be used to deal with
+>> this non-compliant HW.
+>>
+>
+>IMPORTANT correction, the HW is NOT broken, I mis-read the logs & pasted
+>the wrong ones. The BDF logs were supposed to be:
+>
+>WRONG BDF logs: 000X:00:01.0
+>RIGHT BDF logs: 000X:01:00.0
+>
+>Infact we're seeing an in-tree quirk[1] in action:
+>
+>PF logs:
+>
+>[    0.575983] pci 000X:01:00.0: [8086:1452] type 00 class 0x020000 PCIe Endpoint
+>[    0.576003] pci 000X:01:00.0: BAR 0 [mem 0x640900000000-0x64090fffffff 64bit pref]
+>[    0.576005] pci 000X:01:00.0: BAR 2 [mem 0x640a6cc00000-0x640a6cc3ffff 64bit pref]
+>[    0.576089] pci 000X:01:00.0: VF BAR 0 [mem 0x640994800000-0x640994bfffff 64bit pref]
+>[    0.576091] pci 000X:01:00.0: VF BAR 0 [mem 0x640994800000-0x640a547fffff 64bit pref]: contains BAR 0 for 768 VFs
+>[    0.576093] pci 000X:01:00.0: VF BAR 2 [mem 0x640a6cc80000-0x640a6cc8ffff 64bit pref]
+>[    0.576094] pci 000X:01:00.0: VF BAR 2 [mem 0x640a6cc80000-0x640a6fc7ffff 64bit pref]: contains BAR 2 for 768 VFs
+>
+>[    0.832175] pci 000X:01:00.0: quirk_intel_e2000_no_ats: revision 0x11 < 0x20, disabling ATS
+>[    0.832177] pci 000X:01:00.0: quirk_no_ats: SETTING ats_cap TO 0 (was 0x2dc) <--- pdev->ats_cap = 0
+>
+>[    2.365656] pci 000X:01:00.0: pci_prepare_ats: ps=12, is_virtfn=0, ats_cap=0x0
+>[    2.365663] pci 000X:01:00.0: pci_prepare_ats: MANUAL SCAN FOUND ATS at 0x2dc (header 0x1000f, ctrl 0x0)
+>[    2.365666] pci 000X:01:00.0: pci_prepare_ats failed: not supported
+>
+>The PCI ID : Vendor ID => [8086:1452] is for Intel e2000 NICs which has
+>a quirk for ATS: quirk_intel_e2000_no_ats[1]
+>
+>VF logs:
+>[   16.634000] pci 000X:02:00.0: [8086:145c] type 00 class 0x020000 PCIe Endpoint
+>[   16.634060] pci 000X:02:00.0: pci_ats_init: pci_find_ext_capability(ATS) returned 0x1e4
+>
+>[   16.634196] pci 000X:02:00.0: pci_prepare_ats: ps=12, is_virtfn=1, ats_cap=0x1e4
+>[   16.634201] pci 000X:02:00.0: pci_prepare_ats: MANUAL SCAN FOUND ATS at 0x1e4
+>[   16.634202] pci 000X:02:00.0: pci_prepare_ats: device is VF, returning success
+>
+>[   16.634272] pci 000X:02:00.0: arm_smmu_ats_supported: dev is PCI, ats_cap=0x1e4, pci_ats_supported=1
+>
+>[   16.634282] pci 000X:02:00.0: pci_enable_ats entry: ps=12, is_virtfn=1, ats_cap=0x1e4
+>[   16.634283] pci 000X:02:00.0: pci_enable_ats (VF): checking PF (0005:01:00.0) -> ats_cap=0x0, ats_enabled=0, ats_stu=0
+>[   16.634285] pci 000X:02:00.0: pci_enable_ats EXIT: STU mismatch (PF 0 vs VF 12)
+>[   16.634286] pci 000X:02:00.0: Failed to enable ATS (STU 12) error -22
+>
+>[   16.634513] pci 000X:02:00.0: quirk_intel_e2000_no_ats: revision 0x11 < 0x20, disabling ATS
+>[   16.634515] pci 000X:02:00.0: quirk_no_ats: SETTING ats_cap TO 0 (was 0x1e4)
+>
+>The PCI ID : Vendor ID => [8086:145c] also has the same: quirk_intel_e2000_no_ats[1]
+>
+>Thus, this sequence occurs:
+>
+>1. The Intel quirk sets pdev->ats_cap = 0 for the PF at boot.
+>2. pci_prepare_ats(PF) fails during arm_smmu_probe_device() as the
+>   quirk causes pci_ats_supported to return false & PF->ats_stu
+>   remains 0. (arm-smmu-v3 ignores the failure)
 
-Sashiko has some thoughts on the series:
+Ok that explains how PF stu is zero.
+>
+>3. PF attaches to identity domain: pci_enable_ats is skipped
+>4. VF's arm_smmu_probe_device returns early from pci_prepare_ats() due
+>   to the if (dev->is_virtfn) return 0; check
+>
+>5. SMMU calls pci_ats_supported() for the VF in attach_prepare() which
+>   returns true as the quirk hasn't been called for the VF yet.
+>   The SMMU driver sets state->ats_enabled = true
+>
+>6. We call pci_enable_ats which hits the STU mismatch (PF never sets it)
+>7. Later while disabling ATS for VF via pci_disable_ats, we hit the WARN
+>
+>I guess we must think about the following:
+>
+>1. Check return values of pci_enable_ats / pci_prepare_ats in SMMUv3
+>2. PCIe core to provide a proper ATS flag that iommu driver can rely on
+>   and maybe define a policy around pci_ats_supported() to make sure it
+>   also handles such quirks in pci_ats_supported().
 
-https://sashiko.dev/#/patchset/20260424-parse_iommu_cells-v14-0-fd02f11b6c38%40oss.qualcomm.com
+It seems like that ats_supported() checking only ats_cap of the VF is
+not enough, since ATS can be enabled for a VF only when the stu matches
+with the PF? So even if ats_supported() for the VF returns true, its not
+really supported if the stu doesn't match. And the stu would be set
+properly if the PF had ats_cap. Should the ats_supported() check for
+the ats_cap for the PF also?
 
-Rob
+We can check the PF ats_cap in the ats_supported() or handle the
+enable_ats() error in arm smmuv3. Intel and AMD drivers seems to be
+handling the error.
+>
+>LMK, your thoughts?
+>
+>Thanks!
+>Praan
