@@ -1,160 +1,132 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0144C3BED46
-	for <iommu@lists.linux.dev>; Thu,  7 May 2026 09:26:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5079A3BF685
+	for <iommu@lists.linux.dev>; Thu,  7 May 2026 09:40:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778145978; cv=none; b=pE0JwZvXfUErrN4FsP0CTOVHndlhoV6skAh/1Vkndackq6VIQZ+GrvnOOf7Xa/rPOZAvBSJ/Mfg1uekVCa5rXk+kOdldRcbfG8wxasiCV17GJcKWwoRpoljj+vSDun1oob0reeV5X3taaVh2On4bvaCE8AmTYRXv1pTSiy0pWeQ=
+	t=1778146809; cv=none; b=bIHLMjpSVuJ1/KoJoLx2aYAasbbW02XJGH6kMpGzDHiCPzuniImvzfpdvv6t6N67WR6eE9c1nff5irUD9p7RFRpQ0RFrb8O7tDFQjHdx1UQGz+i2aA1Fqe1L1VjGrAg3JI9IB7iM4ob0szmvt3o2I+FvcY90m/DrH5/yfPl8Z0g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778145978; c=relaxed/simple;
-	bh=vYJLKQq99o9j2d0X8mxUuCgo33Tys51drYCrIkMtYFQ=;
+	s=arc-20240116; t=1778146809; c=relaxed/simple;
+	bh=//T+uUZKVsScMqNPuY2uDzqT14OVSZxoXfFh1I1LXYk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=B8kNBABlQx/aSQOzzRzFmvIKfO+ImL7mhhzxiy47936fUcrZ5q1/uY6ZTXK4Jif++l/paVXHHr2YxblGwyvErHe6B/+vTUpE5JUtVM58P1AB+Cq8pHKH5vStJO8cH28x07m4SlaDPtCKtoEQp+MOhfAPaTAMqnax7+QYJNEgVGQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=RS7yVBww; arc=none smtp.client-ip=209.85.128.45
+	 Content-Type:Content-Disposition:In-Reply-To; b=aASgg5X9dNKCNknwAQiHbxEiUwv41sEq0oiSlQsJHQ4ymZgTHqsZtparO2mxh4FDEGHxP1d7jFqrMRME/vGWc7SolOokd/GctmnIcnjAegyd7CouKyP1xOX82hngiSqy87C0hiM5MD0WX/JkZuK6QXDrOlb7CvFzPed3lNI039Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=X/w2pbVO; arc=none smtp.client-ip=209.85.128.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="RS7yVBww"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4891b4934ffso73445e9.0
-        for <iommu@lists.linux.dev>; Thu, 07 May 2026 02:26:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="X/w2pbVO"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-48d1c670255so79345e9.0
+        for <iommu@lists.linux.dev>; Thu, 07 May 2026 02:40:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778145975; x=1778750775; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=IlD/sZLAbq1YNiDypmu5ohGMtt+/3desZPPRaicZ4+Q=;
-        b=RS7yVBwwe+fOy5URY6ZB3LdtMnyyShSjXWH2517sEkX0unYMWqm+De47nn64ozcKv+
-         aVxwctTAfG6BbbY09N1OgEYYfdTPSZZR6h9fV2Az8MRYJenCVyDSZJ5S6YFWrqNaj5VE
-         Q8yVDEcoNDhAZrJn4uUWWBhUqn7HAKlbEfchOVexZ5X7epyiUxTbnNaRwlIUZY++ngcR
-         KKXq/ryMMmaqsJZWOHeT1b7KzE0oSZpKdUHdZ/YTFP+E7UDx7TXd9l+b4vUQ36UNISrG
-         nD2Lzh1sg1vDO6zKxDyOqdG0CkYnxCV68CgWnTLtoN3i8xxA3xBARIpbOOSi4lfGs936
-         CXRA==
+        d=google.com; s=20251104; t=1778146807; x=1778751607; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=iO2qxGV2Dz72sotDpa6WZEWx9OFKl0tlRmAkWtejDhY=;
+        b=X/w2pbVOs6JJob2PkEG3V3W+kYJs+AROSXyZVPKAAby+0aL7vHvGBNRacRT5JuIWFT
+         55h4mb/S1GIQ7Dz7Fml5DJybyHZ7Id4vx79xoCwsZsa7v9SRPi8ZQNShzkYlde0UB0OK
+         lYv6bKuixu+EXAZTaqvp8n8nbVdMey/8HQcdjZ1sxLYFdx4/Mgv+o7N8semakPSFwU4T
+         qVkzqYxlWaPFr3c2G2K7y/661F98EEKT5PwdDOlIyKdhP1GSCTeNWUAsx8KX0EiwzyYb
+         TTJ0sVxxLKSjfpVnHxqsPoVINcrhOIpiTxNsTzgd1y6IwBQG1l2T+A7D8IcTDzPAZ/xR
+         TwFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778145975; x=1778750775;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=IlD/sZLAbq1YNiDypmu5ohGMtt+/3desZPPRaicZ4+Q=;
-        b=g6cbN8RRuhm8poTI+uscRWpvI7iOUUfY8+7bEiWLqhuicU3Crf1n6iLAbIpCIoXg22
-         rG7qLK5An5y1KBaNVOwPtgPY5AIJOeFy2ZR9WJwFD5rHgX/nnJBVVsW2ehxkplOCEVoj
-         5zZsIpc1EbRBZTVgdRolRL4tlbPJQv8BZhnEGaZpm7w28m0le0oWv8I+M24PQDoP8jP2
-         5svGaF/2Dv41mLq9u7dyq/HBD/dAPf4KFWfBaljSAariI6d0/OyEEENRJHwTr5wlPPDT
-         4Ry4KAq59ifmsb1Ayqcxbk4GzFSVkS3Ehm92H8fcqKu8jREzqmoIkY0ImMjtQ87mvYrw
-         1wSw==
-X-Gm-Message-State: AOJu0YyVjoIhuu60rS6kd9ZaL3edIALJhUfDZVXznt6IvifzawuLPj+6
-	WRwy73Tc0Tea1GJv24ZatCqwMTb1eXUuRvarHYiPoQME7nAKopbxFZAjwoNVOGn7Aw==
-X-Gm-Gg: AeBDieuZNdrZ1WmE3UxnoWnx3IaGCachbe7TgDmDAs1skj/+9clAoPjuJgYAbgl2uS4
-	WvItQBuu4MZxEsOMTUkCWtcg01zA8hJ24LwGnlVGXLRgHaMwDY2iMasYZyrlfih5GIwCvM6RGYy
-	UQGNGy3yMfMImVF+PIaH6fzMdbgt79I4ubWkKjO11RanqbQLVwXNNWGKv75bNTUZynxzEuAEkXV
-	6+nqAlRAWzEIRmNe6BCe84zzRDX2ltmNnYLiH/fYZv410cM5o/tmmOaXpWgYSwHJo8gwBGT7YA1
-	NkBIBzwfMaX8nBGQNLqy8KhvCd4NZ+W4S2UU6DIUyFX6WxaszfN2DBrfrIqoZRi5QcTy+ukOC15
-	yuJ5wTSAfCQd4MFKM4NWvrDU8kabtMlbL8D02RJemwOmFfq2W+hCOHyPms3X1DkeOZSOozYctZi
-	SR4DFPa4w9/e3gjT/2Wc0IfLLxGRR30HUXo2QYSjP9719XOcm7MuC0ZEGxjrIrxESmXblolssTZ
-	O/PwopMbNMPHmMj
-X-Received: by 2002:a05:600c:3b88:b0:489:1adc:f017 with SMTP id 5b1f17b1804b1-48e52ef5224mr3387525e9.5.1778145975038;
-        Thu, 07 May 2026 02:26:15 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1778146807; x=1778751607;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=iO2qxGV2Dz72sotDpa6WZEWx9OFKl0tlRmAkWtejDhY=;
+        b=f5pwZ+ZRfBG51pVSvi7ly+G9YOAkoymifhHOngnxyELcth4nwgE45yKxAZnkg9OcHE
+         lTEhZbJPtE2xu4tG2YzVNqCbr7ZHkGPMl+GIKpnySBj/K2pKyNHbr8ovFusEH+4UIJMY
+         CWdNWSuRb56ZcZtq82sNT27y0fqJUigP62+KDk40lF2Jhb8ulWJpl/h4zv2/z69pXyc9
+         i1lRrzcauFYnsi2DLh5uSYWMDzmPVWa1fU8s+8a3MzyMVAfrbV4YS5KCSRPdnDK1/jG2
+         cK+KJ0pJBxktT59KO+vu65BxqMq+Hb4AE9qwRRl2N6lNmq+oDkBSdFxdRRNEJplWjnLx
+         42xg==
+X-Forwarded-Encrypted: i=1; AFNElJ8D1n4+rIgDSBtVToCB2+jYTEJbDj9PZuQ94ZxCQTUhPnnkNTIpjhiIhin389WOP9EctSYD7Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyl5jpZlJoWqkaVZasY/lzp/2c5oGubgxIuJ0OAYIy5UrWr7075
+	T+f1rYSyMEHJuIt/krLVtP9CWgaAJ2JKanjjtrIaCdc5Hz8Wu4DV/9Xa0TbTsFp1jQ==
+X-Gm-Gg: AeBDiesmfd1Hgu3IiRCS4vO4EYOWtDGdCJKUhraVlffez41GdGzobgxgNNnxoBphXNw
+	PzPvSUPv4Ie6oucX481wJOqOdKVJ2fzxTq4Rhacu8k8UbB5Ak/q+ZmQ8weRRBAr4ICYhCWiD8+h
+	NMBp/RcglVvegWv4djSHc9TW09Y9e7FlFXCRnivdcSASelaqK9cyQG47Mp5Eicdf9wn3G66vZH5
+	6AJkzxrCmxYkKemvQL89ps8BpQzRbJRtDmOcmqRLorONLMa1sdm2f534Gwm8MVA75VfqtaMGpib
+	lzA+0h5r7XezZZ3NT5VWJ35JrMAkiMsqxKaszo2mG/AqVCU2TsIwdDfctQvBBqsqf+yYcR7r/sq
+	XuxuDrYNd2aA00DETmJh8o+Nn+IoymtgYXs1hNyqb7JrI3GiDgJPz4npwIaDG0iyepqTMlthZ+U
+	j1bKS3CG14/0GTKB1Q9N+vFYKNMoGmoyOs7HVRePENqRHAzs5urdof+xPCGLICjqTjDdp/Q19v3
+	z2rfg==
+X-Received: by 2002:a7b:c314:0:b0:48a:5f32:62d0 with SMTP id 5b1f17b1804b1-48e5d650751mr703025e9.12.1778146806189;
+        Thu, 07 May 2026 02:40:06 -0700 (PDT)
 Received: from google.com (8.181.38.34.bc.googleusercontent.com. [34.38.181.8])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48e53907a00sm99399225e9.12.2026.05.07.02.26.14
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48e531578c8sm38996315e9.34.2026.05.07.02.40.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 May 2026 02:26:14 -0700 (PDT)
-Date: Thu, 7 May 2026 09:26:10 +0000
+        Thu, 07 May 2026 02:40:05 -0700 (PDT)
+Date: Thu, 7 May 2026 09:40:00 +0000
 From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Jonathan Hunter <jonathanh@nvidia.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Krishna Reddy <vdumpa@nvidia.com>, Will Deacon <will@kernel.org>,
-	David Matlack <dmatlack@google.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
-	Samiullah Khawaja <skhawaja@google.com>
-Subject: Re: [PATCH 0/9] Remove SMMUv3 struct arm_smmu_cmdq_ent
-Message-ID: <afxasmHvZVl1iQgz@google.com>
-References: <0-v1-b7dc0a0d4aa0+3723d-smmu_no_cmdq_ent_jgg@nvidia.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
+	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
+	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
+	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
+	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
+	vdonnefort@google.com, sebastianene@google.com, keirf@google.com
+Subject: Re: [PATCH v6 04/25] iommu/arm-smmu-v3: Move TLB range invalidation
+ into common code
+Message-ID: <afxd8Km40A5ulZvd@google.com>
+References: <20260501111928.259252-1-smostafa@google.com>
+ <20260501111928.259252-5-smostafa@google.com>
+ <20260501124143.GB6912@ziepe.ca>
+ <afiN1UwS9q6F6A_v@google.com>
+ <afoYBYIJOTClsdLS@ziepe.ca>
+ <afoeIVIGE-JjYy22@google.com>
+ <afsPfEzgGtAFrN5P@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <0-v1-b7dc0a0d4aa0+3723d-smmu_no_cmdq_ent_jgg@nvidia.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <afsPfEzgGtAFrN5P@ziepe.ca>
 
-On Fri, May 01, 2026 at 11:29:09AM -0300, Jason Gunthorpe wrote:
-> [ This is part of the patch pile to move SMMUv3 over to the generic page
-> table:
-> 1) Introduction of new gather items and RISCV usage
->   https://patch.msgid.link/r/0-v1-54e7264d71b4+17cc3-iommu_riscv_inv_jgg@nvidia.com
-> 2) Remove SMMUv3 struct arm_smmu_cmdq_ent
-> 3) Organize the SMMUv3 invalidation flow so iommupt can use it
-> 4) Use the generic iommu page table for SMMUv3
+On Wed, May 06, 2026 at 06:53:00AM -0300, Jason Gunthorpe wrote:
+> On Tue, May 05, 2026 at 04:43:13PM +0000, Mostafa Saleh wrote:
+> > On Tue, May 05, 2026 at 01:17:09PM -0300, Jason Gunthorpe wrote:
+> > > On Mon, May 04, 2026 at 12:15:17PM +0000, Mostafa Saleh wrote:
+> > > 
+> > > > I am not sure if it’s worth it, the hypervisor is much simpler, there
+> > > > is a single page table, it’s locked (also identity mapped), it’s
+> > > > updated on VM boot/teardown only, we don’t even use iotlb_gather at
+> > > > the moment, although possible but I wanted to keep this series as
+> > > > simple as I can then we can add more features later.
+> > > > So this patch is the least intrusive change, as whatever the main SMMUv3
+> > > > driver does, the range tlb invalidation logic is the same.
+> > > > But I am happy to experiment with that when posted.
+> > > 
+> > > Okay, then maybe just always push a full invalidation?
+> > 
+> > Like full address space invalidation? that will not be optimal and
+> > will affect every device on the system, why would we do that if we
+> > know the address?
 > 
-> The whole branch is here:
->    https://github.com/jgunthorpe/linux/commits/iommu_pt_arm64/
-> ]
-> 
-> The invalidation logic has this multi-step process where it first
-> writes the command into a 32 byte struct arm_smmu_cmdq_ent, then it
-> calls a function which converts it into a 16 byte HW struct, and
-> sometimes it then edits the HW struct a little bit before passing it
-> off to the batch or submission functions.
-> 
-> Instead just generate the HW struct directly by moving the FIELD_PREP
-> blocks out of the big case statement and into helper functions. Call the
-> right function in all the places that were building arm_smmu_cmdq_ent.
-> 
-> Add a type for the CMDQ entry similar to the STE/CD types that wraps the
-> two u64s for clarity and use it everywhere.
-> 
-> This is intended to have no functional change. It makes the following
-> patches work better and removes a bunch of LOC. I've run several AI tools
-> with instruction to look for functional changes, which did find one subtle
-> mistake in PRI response.
-> 
-> The removal of arm_smmu_cmdq_build_cmd() also achieves what Mostafa is
-> doing in the pkvm series by making the command formation entirely header
-> based with the arm_smmu_make_cmd_*() mini inlines.
+> Not every device, just wipe the VMID. If you say it is rare then keep
+> it simple. If you need to be narrow then use the proper infastructure
+> with a gather. No reason to make something boutique for pkvm here.
 
-I was able to rebase my pKVM series on top of this and it works fine with
-just the helpers in the headers, so splitting of the build command is not
-needed anymore for pKVM.
+But all devices share the same VMID, which impacts all devices on the
+system, and is not that rare to ignore.
 
-I also did test the whole series with just the upstream kernel on my
-Lenovo setup.
-
-Tested-by: Mostafa Saleh <smostafa@google.com>
+I can add gather support, it’s not that complicated, it is currently
+supported in Android.
+But that doesn’t solve the problem, which is: At some point, whether
+eagerly from the page table code, through gather sync or a fancy
+invalidation array, the driver will need to populate a range
+invalidation command (tg, ttl, scale...) and this logic is better
+shared with the main driver which is this patch does.
 
 Thanks,
 Mostafa
 
-> This series has no dependencies. Several people have already tested this
-> on various ARM systems along with the full iommupt conversion.
 > 
-> Jason Gunthorpe (9):
->   iommu/arm-smmu-v3: Add struct arm_smmu_cmd to represent the HW format
->     command
->   iommu/arm-smmu-v3: Use the HW arm_smmu_cmd in cmdq selection functions
->   iommu/arm-smmu-v3: Use the HW arm_smmu_cmd in cmdq submission
->     functions
->   iommu/arm-smmu-v3: Convert arm_smmu_cmdq_batch cmds to struct
->     arm_smmu_cmd
->   iommu/arm-smmu-v3: Remove CMDQ_OP_CFGI_CD_ALL from
->     arm_smmu_cmdq_build_cmd()
->   iommu/arm-smmu-v3: Directly encode simple commands
->   iommu/arm-smmu-v3: Directly encode CMDQ_OP_ATC_INV
->   iommu/arm-smmu-v3: Directly encode CMDQ_OP_SYNC
->   iommu/arm-smmu-v3: Directly encode TLBI commands
-> 
->  .../arm/arm-smmu-v3/arm-smmu-v3-iommufd.c     |  24 +-
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 475 +++++++-----------
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   | 248 +++++----
->  .../iommu/arm/arm-smmu-v3/tegra241-cmdqv.c    |  16 +-
->  4 files changed, 350 insertions(+), 413 deletions(-)
-> 
-> 
-> base-commit: 1338d1bd1ea27bfe2cd1c4494547d409016a6644
-> -- 
-> 2.43.0
-> 
+> Jason
