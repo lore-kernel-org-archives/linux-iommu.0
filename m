@@ -1,29 +1,50 @@
-Received: from smtpbgau2.qq.com (smtpbgau2.qq.com [54.206.34.216])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB7EE2FF17A
-	for <iommu@lists.linux.dev>; Thu,  7 May 2026 08:22:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.206.34.216
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B87D33A7F5F
+	for <iommu@lists.linux.dev>; Thu,  7 May 2026 09:05:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778142132; cv=none; b=Q28KY70oCR5FA2kps4MNm2iju+oebcUhW53E9KKM19rRHjGie07lyMOH32CW4tlDvmlohlIuUyOij0r+90rWdNjhPYEngsnGh2T9jm97VLuaa298iDGnDfaT8+p+ovMXc40BuaXdiHhVYrDZUVsQL+/Rwhkkba1sqWgeY791FAg=
+	t=1778144724; cv=none; b=aUI+H3hJSUTr/p1uVJRBbDGhtjmq1W4O1ESzJM6HwJXF2GJRNu0IQEuHkELQdvtTnHYYY//9bpoRi/MzKaMGzEc3qMQ27Qv3g3Vb+/pefWBAKU3wTOGyYwl57pUGIkGsuXTH6CU/zcPcuzimWsaME8rqVw9LSrnIejI8J47mPPs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778142132; c=relaxed/simple;
-	bh=oFyCt0ZcvHxeKWKnNYN3GLQ73f6AO0b2Rdzeg2beUxg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=lKXJW0GzkSUz0ClB8607rGQKbdeuS532dXwBJS+jE4H1py7HbqYEAFHyRYVhzqSXqM77P3CGFFwGtEF+NC1xfHRIIZ1DlLWKE0sS6DCwr2AuVio/bEaqpGqwRB1qB8x95RwmzvTRxTMMlNJymtPD4gw+b81Zs+90AhlQzm8iyfU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=radxa.com; spf=pass smtp.mailfrom=radxa.com; arc=none smtp.client-ip=54.206.34.216
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=radxa.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=radxa.com
-X-QQ-mid: zesmtpgz6t1778142077t63181914
-X-QQ-Originating-IP: jfpb67kdMjgSXRETIGIS0RyRqVsnPNrvm+HhFO3Cm1Q=
-Received: from [127.0.0.1] ( [116.234.74.217])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Thu, 07 May 2026 16:21:15 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 16652249558774308387
-Message-ID: <330D3C56EBC6D08F+3d956321-39de-4308-a977-ad8f7101ed92@radxa.com>
-Date: Thu, 7 May 2026 16:21:15 +0800
+	s=arc-20240116; t=1778144724; c=relaxed/simple;
+	bh=urMm9QHvMt26Vg3gkkRj33qfSQ4pD/CUxXveH/XzMmY=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=rjP8fSjn9yqw76Ao62oqstD34LMXxHXvuwfS0W4QHFML6iOHPTYifE8meqwHe0//xn5u5ukWe07QB0BRhwFNNh6Ul9wf7pKsJ76a90Kq3VIoFvhQUOfKnwuamtxR+pl5zFE2/XD0fW99c2/ujx3j6JkT9w4OV9yO8dgcvG/Y1f8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=W0ntcFYW; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="W0ntcFYW"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778144720; x=1809680720;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=urMm9QHvMt26Vg3gkkRj33qfSQ4pD/CUxXveH/XzMmY=;
+  b=W0ntcFYWKVek2vER61kxSV6yOU5nN5bI8MIGkzeR41VQYKgiBIPGg+67
+   kkJJ5hEuBP2uOOv8JjRPIiFhAu4/E4Nc6ytrDWA+uCjoiCadOesjFkGnZ
+   RE4swfhqJgrTqs49drUCw439rxUOlVHVKyvGaJcrKzq7nifnJLoTBj2AP
+   qJ6eGV4yo/ijoKAxaC/+r5RMz/B0GTuGL+872tG9oGXOutvdQV4/j1d6s
+   x3OoQBF/Ss7dLzhUFiLNe+xONBUOSxpxzyf160ZlQoY2ogSwa1h6ZOcI/
+   0+c1WvXa8TW86AKt4aozZM/Hx9IAtYmPYNgozSqJBiRyTaHGU2UwI7gQ6
+   g==;
+X-CSE-ConnectionGUID: 0iO7yRj5SV6t/MZ2WAONAg==
+X-CSE-MsgGUID: QFxNXgS0SkarTrtucXrUQQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11778"; a="89785038"
+X-IronPort-AV: E=Sophos;i="6.23,221,1770624000"; 
+   d="scan'208";a="89785038"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2026 02:05:15 -0700
+X-CSE-ConnectionGUID: 21NdPKWYTEK3fWqGKg/nUg==
+X-CSE-MsgGUID: zzXtSJlVSpW4mlIhk4zNPQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,221,1770624000"; 
+   d="scan'208";a="231865139"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.248.249]) ([10.124.248.249])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2026 02:05:10 -0700
+Message-ID: <ad4f1b2c-a79a-4dce-b891-c0df92664a56@linux.intel.com>
+Date: Thu, 7 May 2026 17:05:07 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -31,95 +52,80 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iommu: arm-smmu-qcom: Ensure smmu is powered up in
- set_ttbr0_cfg
-To: Anna Maniscalco <anna.maniscalco2000@gmail.com>,
- Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20260325-qcom_smmu_pmfix-v2-1-ba769a6ad0be@gmail.com>
+Cc: baolu.lu@linux.intel.com, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>,
+ Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+ Saeed Mahameed <saeedm@nvidia.com>,
+ Adithya Jayachandran <ajayachandra@nvidia.com>,
+ Parav Pandit <parav@nvidia.com>, Leon Romanovsky <leonro@nvidia.com>,
+ William Tu <witu@nvidia.com>, Pratyush Yadav <pratyush@kernel.org>,
+ Pasha Tatashin <pasha.tatashin@soleen.com>,
+ David Matlack <dmatlack@google.com>,
+ Andrew Morton <akpm@linux-foundation.org>, Chris Li <chrisl@kernel.org>,
+ Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>,
+ YiFei Zhu <zhuyifei@google.com>
+Subject: Re: [PATCH v2 09/16] iommu/vt-d: Restore IOMMU state and reclaimed
+ domain ids
+To: Samiullah Khawaja <skhawaja@google.com>,
+ David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
+References: <20260427175633.1978233-1-skhawaja@google.com>
+ <20260427175633.1978233-10-skhawaja@google.com>
 Content-Language: en-US
-From: Xilin Wu <sophon@radxa.com>
-In-Reply-To: <20260325-qcom_smmu_pmfix-v2-1-ba769a6ad0be@gmail.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20260427175633.1978233-10-skhawaja@google.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: zesmtpgz:radxa.com:qybglogicsvrsz:qybglogicsvrsz3b-0
-X-QQ-XMAILINFO: MLQK/Qc97rZTdr43tE6TitzHEJbKv06OUWn26Wu5R9PnDVVhF3/Q8HTP
-	TOZz+mS8WseFACwoZ9cYuBoqc5fh9dwvj5DwTzQE2dItJ0/gRPyZT368v5JG+zqgMvUSq62
-	nYIXJRmTCOwNwQeVV9Ab/+kAsPC8cnVn/NxwN7GL5hCccJKc6faKgCyRM3NSloSso0Sq5kZ
-	6l5dkDtdzt8crcTKXQTK+YM/2rAcMkyy3PClSnBGLQfn77AJqMrBOscqwaqH52V5uPdf1Nl
-	QUX0co19a9erRCp3j6EM/HYXYFPOo5Ci7SSskCUWqQ+61f5uNKCdv2W9oq6BuzXy/AyEb20
-	1H8f2E6FDLoCsxGTfkEjrAAhRtuzBzOYQlxlmtP01O3Bu7eCUfmQAxP+RRYorTCm6/p25W3
-	xJvp9xT5wdv98cbAWu9XJkJad08a8BhZMiubUy0dJoorXDd0zpz1Qj7o3xufni6C5zvRK+x
-	XGHvpJO1286Mx8C5w4OEV2yvzHbzemw/6yKrbMCqgiUbe/3ExmmUrGd2pPTFKnwtQV4Qb4X
-	+vPzT1CfkqTkAsPYIJ8UruktFVC+FjPcqfI7vyV7LO27uShoYxiAZlDHYgnMS71fDiG3llO
-	4aCRAbO17TlAX9rIYZLxEber84WmRO8TBbfgdDqME+jpmX2m2r7hatx1fRIoWBILmxQ0WK8
-	g9dEgZaD/1fOJ9omiLuPstv1TT5K+N5za3JzVkcFYMtB/0ie8Qpj2PIqD/Kvywzcll3KBaa
-	PFkMHIyI8XeymlamuXbxCPtyeKZ/IZQKC2dOUPLZ7rxxMJ0KaKSMPBkIToxJnGCT28136X/
-	nEEU/NwK2OJY3FRM11p/NMkyfsJRV9wX8r/IZbnjQRGSstxJCOAVwy0ZafNmvDJCOCoe8/6
-	DAK+HpwDC07dtvVLbt2cDsUUsjy9bzyYAWidSHuc1pndOVrOKj5TtV13iId0Z2D/MWcbhwo
-	SqTJUFMS2NJx/+MwBqp3usAVFsK0Mb9eQ0ckZ+YBxZoZvMYV81b3QAgF/NQy1CvgA/sGDtr
-	vGfF9BGMzzW0d+c2JR
-X-QQ-XMRINFO: OD9hHCdaPRBwH5bRRRw8tsiH4UAatJqXfg==
-X-QQ-RECHKSPAM: 0
 
-On 3/26/2026 5:11 AM, Anna Maniscalco wrote:
-> Previously the device was being accessed while potentially in a
-> suspended state.
+On 4/28/2026 1:56 AM, Samiullah Khawaja wrote:
+> During boot fetch the preserved state of IOMMU unit and if found then
+> restore the state.
 > 
-> Signed-off-by: Anna Maniscalco <anna.maniscalco2000@gmail.com>
-> ---
-> Changes in v2:
-> - Simplify patch by acquiring device just around the call that needs it
-> - Link to v1: https://lore.kernel.org/r/20260210-qcom_smmu_pmfix-v1-1-78b7143ac053@gmail.com
-> ---
->   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 9 +++++++++
->   1 file changed, 9 insertions(+)
+> - Reuse the root_table that was preserved in the previous kernel.
+> - Reclaim the domain ids of the preserved domains for each preserved
+>    devices so these are not acquired by another domain.
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> index 573085349df3..cab7d110aaf5 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -231,6 +231,7 @@ static int qcom_adreno_smmu_set_ttbr0_cfg(const void *cookie,
->   	struct io_pgtable *pgtable = io_pgtable_ops_to_pgtable(smmu_domain->pgtbl_ops);
->   	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
->   	struct arm_smmu_cb *cb = &smmu_domain->smmu->cbs[cfg->cbndx];
-> +	int ret;
+> Signed-off-by: Samiullah Khawaja<skhawaja@google.com>
+> ---
+>   drivers/iommu/intel/iommu.c      | 55 ++++++++++++++++++++++--------
+>   drivers/iommu/intel/iommu.h      |  7 ++++
+>   drivers/iommu/intel/liveupdate.c | 57 ++++++++++++++++++++++++++++++++
+>   3 files changed, 105 insertions(+), 14 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 68fecd4e57fa..4118a0861f38 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -670,10 +670,17 @@ void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
+>   #endif
 >   
->   	/* The domain must have split pagetables already enabled */
->   	if (cb->tcr[0] & ARM_SMMU_TCR_EPD1)
-> @@ -260,8 +261,16 @@ static int qcom_adreno_smmu_set_ttbr0_cfg(const void *cookie,
->   		cb->ttbr[0] |= FIELD_PREP(ARM_SMMU_TTBRn_ASID, cb->cfg->asid);
->   	}
+>   /* iommu handling */
+> -static int iommu_alloc_root_entry(struct intel_iommu *iommu)
+> +static int iommu_alloc_root_entry(struct intel_iommu *iommu,
+> +				  struct iommu_hw_ser *iommu_ser)
+>   {
+>   	struct root_entry *root;
 >   
-> +	ret = pm_runtime_resume_and_get(smmu_domain->smmu->dev);
-> +	if (ret < 0) {
-> +		dev_err(smmu_domain->smmu->dev, "failed to get runtime PM: %d\n", ret);
-> +		return -ENODEV;
+> +	if (iommu_ser) {
+> +		intel_iommu_liveupdate_restore_root_table(iommu, iommu_ser);
+> +		__iommu_flush_cache(iommu, iommu->root_entry, ROOT_SIZE);
+
+The root table is already active and being used by the hardware at this
+point, correct? Since the CPU should not be modifying an active table,
+the __iommu_flush_cache() call seems unnecessary and potentially risky.
+
+Furthermore, if the iommu state has been restored, is it necessary to
+call iommu_set_root_entry()? Calling it would essentially replace an
+active, in-use root table with an identical one, which appears
+redundant.
+
+> +		return 0;
 > +	}
 > +
->   	arm_smmu_write_context_bank(smmu_domain->smmu, cb->cfg->cbndx);
->   
-> +	pm_runtime_put_autosuspend(smmu_domain->smmu->dev);
-> +
->   	return 0;
->   }
->   
-> 
-> ---
-> base-commit: 50c4a49f7292b33b454ea1a16c4f77d6965405dc
-> change-id: 20260210-qcom_smmu_pmfix-2aead2ba4e20
-> 
-> Best regards,
+>   	root = iommu_alloc_pages_node_sz(iommu->node, GFP_ATOMIC, SZ_4K);
+>   	if (!root) {
+>   		pr_err("Allocating root entry for %s failed\n",
 
-May I ask what is the status of this patch? Without this patch, I can 
-trigger a crash easily on sc8280xp by running fastfetch multiple times.
-
-Tested-by: Xilin Wu <sophon@radxa.com> # sc8280xp-radxa-dragon-q8b
-
--- 
-Best regards,
-Xilin Wu <sophon@radxa.com>
-
+Thanks,
+baolu
