@@ -1,341 +1,139 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from mx0a-0064b401.pphosted.com (mx0a-0064b401.pphosted.com [205.220.166.238])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B31B9225403
-	for <iommu@lists.linux.dev>; Thu,  7 May 2026 02:58:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 391B362809
+	for <iommu@lists.linux.dev>; Thu,  7 May 2026 03:21:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.166.238
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778122699; cv=none; b=MuV8ofHm9jUgyzW0CikH6oz3pk+e+s4hqZWA0Y/OYxIUvFVlnj0rrg9rpTySk/VeczrxnDiFHcPJtWm1omp0T6KDB2Hr/QWyvciUqRGauiD90FUgZcJaQ0rd0IV4Vo6FL9TW1wge+hfOLc6yeSbQvLJTYD9vvY6+HKSmmivdQ8o=
+	t=1778124105; cv=none; b=fDMtozUSHK2lPXyZbxlFhI4+kbD4RNEvWzGdpa/qjl+cRixpOEGlv2B/+zEffszf1nKwg/gH5d7Zz4zCxOHn90H5BnP9wCYSmhwbAB7NMONLMkeVacsl4k0ZugQMfsw6ZhJPyo8WOKfKlKRB22xLTtTaJoZ2fziArsn8hWQ8j/g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778122699; c=relaxed/simple;
-	bh=iXISzev/0LC4OZ3gbHLmUdmiQ+zAVSODpccbTdBCK1U=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=TC8ZbO6ReVMA/87jcIsFPAGbH+aev0FvDK/FTBckaYKwhoxHIc6N6P/zd8KbMxPOZoshMkmfeTy0kyF3QrXacBWbZppqxQsLsTsw1Mpkb+85RrOemblOOzvlxMWBgMr7Rb9iXkTLXOZl7q0KPigQCmTXhkBmnMsq+ZD8Okg2NVI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OKBhxPho; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1778124105; c=relaxed/simple;
+	bh=6CjXO5V0dFEIJ0NLzTCAryvwu1xsh0eAB12oETCo1Wo=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=fY8aOSXbVgNg5YOVLVRJCzw5C0uqAnR/3lTfS/YrPgR1H3j68DzcOG+9+/jPWic3nQaamdgDKnKk6Pjjx7MCKq8nnjaE7U8UzNciUGXLno+thQhbZFcQNEOmqEU54B+1ktFGiahcwc+RvNsRrTCeTLFEROI47u6eLyXvpBd18UA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=windriver.com; spf=pass smtp.mailfrom=windriver.com; dkim=pass (2048-bit key) header.d=windriver.com header.i=@windriver.com header.b=ml0yt601; arc=none smtp.client-ip=205.220.166.238
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=windriver.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=windriver.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OKBhxPho"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778122698; x=1809658698;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=iXISzev/0LC4OZ3gbHLmUdmiQ+zAVSODpccbTdBCK1U=;
-  b=OKBhxPhozlVV/s7R/4KcdWK5MkgLAtfxP0dxCU0m7Eb+vlIMtusV5s1m
-   7pu76PEccAi6+ZTzqGl0VwlldVaFlOIP+DZKcD/Y61O8zgOZzYOzBZ4F+
-   /uHqOLA8j1uu8wSVYPIbVqRxJk0F/QkdMVhN3macvbbCiQbEFDRzFdwJs
-   JYuwhP+VPLn46N/13m4wrPPinWrai4qDTIbjiGlCsuKSJeDbJVCZwo+BX
-   4jZrUcd2T+3I/mYerZgJSSvkznn0+mkg51/sZ8NZxa4X56nzkdY79PZ9Y
-   y4VxiA0SoV8HsFEaW7DNQucvg3neEHmgfdwHJjkRwX+0MWZE9g5nN1jC1
-   g==;
-X-CSE-ConnectionGUID: YnItPX/rQVOqtsnqHUY9oA==
-X-CSE-MsgGUID: 69Zr0pr9Q0Wr0RacweuGgQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11778"; a="79082961"
-X-IronPort-AV: E=Sophos;i="6.23,220,1770624000"; 
-   d="scan'208";a="79082961"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 19:58:17 -0700
-X-CSE-ConnectionGUID: oftxAlgJRXKbzWPd9mP2ug==
-X-CSE-MsgGUID: xfkid6ZrTjq8L7ZBayG4Bw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,220,1770624000"; 
-   d="scan'208";a="266707987"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2026 19:58:11 -0700
-Message-ID: <39a010b4-7099-434a-b8de-5d03a75f2a9f@linux.intel.com>
-Date: Thu, 7 May 2026 10:55:42 +0800
+	dkim=pass (2048-bit key) header.d=windriver.com header.i=@windriver.com header.b="ml0yt601"
+Received: from pps.filterd (m0250810.ppops.net [127.0.0.1])
+	by mx0a-0064b401.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6473HX6I3059320;
+	Wed, 6 May 2026 20:21:24 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com;
+	 h=cc:content-transfer-encoding:content-type:date:from
+	:message-id:mime-version:subject:to; s=PPS06212021; bh=xmxWwBaG8
+	aY9eZ5nONu3HL/L7rxspP0mF57gfOA5Arg=; b=ml0yt6018ya27ieqSFBx/FJUU
+	YuluNLaExt22mg3jfA1bDmo/LaqCCBPguf2zZhhuCoh0e8lfDEtc0HuUYpS+r7iN
+	iWTu24r0PQjmhBY1cdOAwBF740snJUXiDBAXaDAwZOZOP5uFkGAQ0zWll7jgAJpW
+	El4fHBK5JQWf/c/6TBDKWOUc6et/S0T/DMg43GZM0gPtZ9FaqrYwlZsHxxFfwqfk
+	2FL51CN34A9n/ic2vj3A/Iqda34VTKckDZxNjJqVix3afaORR7Cvuz9A9K4xN7i/
+	UagzLPy41STv09ppw4e3Nq1rL1Eyect0bKuAtAfUyBrpHaAitUq93846AnPZw==
+Received: from ala-exchng02.corp.ad.wrs.com (ala-exchng02.wrs.com [128.224.246.37])
+	by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 4dwchywsmf-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+	Wed, 06 May 2026 20:21:24 -0700 (PDT)
+Received: from ala-exchng01.corp.ad.wrs.com (10.11.224.121) by
+ ALA-EXCHNG02.corp.ad.wrs.com (10.11.224.122) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.61; Wed, 6 May 2026 20:21:23 -0700
+Received: from pek-lpggp9.wrs.com (10.11.232.110) by
+ ala-exchng01.corp.ad.wrs.com (10.11.224.121) with Microsoft SMTP Server id
+ 15.1.2507.61 via Frontend Transport; Wed, 6 May 2026 20:21:21 -0700
+From: Jianpeng Chang <jianpeng.chang.cn@windriver.com>
+To: <m.szyprowski@samsung.com>
+CC: <robin.murphy@arm.com>, <leon@kernel.org>, <kbusch@kernel.org>,
+        <jgg@ziepe.ca>, <iommu@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>,
+        Jianpeng Chang <jianpeng.chang.cn@windriver.com>
+Subject: [PATCH] dma-mapping: remove bogus test for pfn_valid from dma_map_resource
+Date: Thu, 7 May 2026 11:21:20 +0800
+Message-ID: <20260507032120.4072283-1-jianpeng.chang.cn@windriver.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 06/16] iommupt: Implement preserve/unpreserve/restore
- callbacks
-To: Samiullah Khawaja <skhawaja@google.com>,
- David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
- Saeed Mahameed <saeedm@nvidia.com>,
- Adithya Jayachandran <ajayachandra@nvidia.com>,
- Parav Pandit <parav@nvidia.com>, Leon Romanovsky <leonro@nvidia.com>,
- William Tu <witu@nvidia.com>, Pratyush Yadav <pratyush@kernel.org>,
- Pasha Tatashin <pasha.tatashin@soleen.com>,
- David Matlack <dmatlack@google.com>,
- Andrew Morton <akpm@linux-foundation.org>, Chris Li <chrisl@kernel.org>,
- Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>,
- YiFei Zhu <zhuyifei@google.com>
-References: <20260427175633.1978233-1-skhawaja@google.com>
- <20260427175633.1978233-7-skhawaja@google.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20260427175633.1978233-7-skhawaja@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTA3MDAyOSBTYWx0ZWRfX2LHKRiS6AIK0
+ T+p8BdNGwswetjsm7KGzxF0hqn3eiDlN/n2/ze/Nls9+IpAI1FdZ31gci4nvZnHmkS8NSjmrpXU
+ ticW7QvraLcD4lewZxZbayezL+EfjpBs/TNAyP/VS5MMt9YhZTjgDcach/+ZUHTbXoeVjlf2PPC
+ Z1aAAH8CDaLER5yZ2KIdXmrLsV09M4vFHK9z4hkegThGVrtZpdE2dsQtc+5LZSEiQ821mQwRg6N
+ txZGFSl8l1qFRYT4ZMsvUkPl3E8mjlfh/0+CkpciW79E8bwe8ZAeW12DHt+eURYr9M3Iz2slOex
+ xHtSeqAAhmR0dcOaCacKOD51anvkNAAMjpD4tZAmRFCPjvQvu9JIJPgbP05sLOD1HJJ0+Hy7q3N
+ /VBoFsiOuKeVdWtpsyYnSIKVT7Lb6+XPxlxw0j0NzBjbSJU2tQwkf8/0TzLoUlHGCVazw+r4tWU
+ pX5uwDfDOF+1CirbySA==
+X-Proofpoint-ORIG-GUID: zwBmYozWhQ2glz4g6f4vCYsEZZsazMJw
+X-Authority-Analysis: v=2.4 cv=LsSiDHdc c=1 sm=1 tr=0 ts=69fc0534 cx=c_pps
+ a=Lg6ja3A245NiLSnFpY5YKQ==:117 a=Lg6ja3A245NiLSnFpY5YKQ==:17
+ a=NGcC8JguVDcA:10 a=VkNPw1HP01LnGYTKEx00:22 a=bi6dqmuHe4P4UrxVR6um:22
+ a=HK-ge7EqtdluswH-FwHe:22 a=NEAV23lmAAAA:8 a=t7CeM3EgAAAA:8
+ a=6u_XfHm06m7VSS-ZnyoA:9 a=FdTzh2GWekK77mhwV6Dw:22
+X-Proofpoint-GUID: zwBmYozWhQ2glz4g6f4vCYsEZZsazMJw
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-05-06_02,2026-05-06_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 priorityscore=1501 lowpriorityscore=0 spamscore=0 suspectscore=0
+ adultscore=0 clxscore=1011 malwarescore=0 bulkscore=0 impostorscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2604200000 definitions=main-2605070029
 
-On 4/28/26 01:56, Samiullah Khawaja wrote:
-> Implement the iommu domain ops for presevation, unpresevation and
-> restoration of iommu domains for liveupdate. Use the existing page
-> walker to preserve the ioptdesc of the top_table and the lower tables.
-> 
-> Preserve top_level, VASZ and FEAT Sign Extended to restore the domain in
-> the next kernel. On restore the domain has only the preserved features
-> enabled and all the other features are zeroed. This is ok since the
-> restored domain is made immutable and can only be freed. A kunit test is
-> added to verify that the IOMMU domain free can be done with trimmed
-> features.
-> 
-> Signed-off-by: Samiullah Khawaja<skhawaja@google.com>
-> ---
->   drivers/iommu/generic_pt/iommu_pt.h       | 131 ++++++++++++++++++++++
->   drivers/iommu/generic_pt/kunit_iommu_pt.h |  28 +++++
->   include/linux/generic_pt/iommu.h          |  19 +++-
->   3 files changed, 177 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/generic_pt/iommu_pt.h b/drivers/iommu/generic_pt/iommu_pt.h
-> index 19b6daf88f2a..7bca827e3a55 100644
-> --- a/drivers/iommu/generic_pt/iommu_pt.h
-> +++ b/drivers/iommu/generic_pt/iommu_pt.h
-> @@ -961,6 +961,133 @@ static int NS(map_range)(struct pt_iommu *iommu_table, dma_addr_t iova,
->   	return ret;
->   }
->   
-> +#ifdef CONFIG_IOMMU_LIVEUPDATE
-> +/**
-> + * unpreserve() - Unpreserve page tables and other state of a domain.
-> + * @domain: Domain to unpreserve
-> + */
-> +void DOMAIN_NS(unpreserve)(struct iommu_domain *domain, struct iommu_domain_ser *ser)
-> +{
-> +	struct pt_iommu *iommu_table =
-> +		container_of(domain, struct pt_iommu, domain);
-> +	struct pt_common *common = common_from_iommu(iommu_table);
-> +	struct pt_range range = pt_all_range(common);
-> +	struct pt_iommu_collect_args collect = {
-> +		.free_list = IOMMU_PAGES_LIST_INIT(collect.free_list),
-> +	};
-> +
-> +	iommu_pages_list_add(&collect.free_list, range.top_table);
-> +	pt_walk_range(&range, __collect_tables, &collect);
-> +
-> +	iommu_unpreserve_pages(&collect.free_list);
-> +}
-> +EXPORT_SYMBOL_NS_GPL(DOMAIN_NS(unpreserve), "GENERIC_PT_IOMMU");
-> +
-> +/**
-> + * preserve() - Preserve page tables and other state of a domain.
-> + * @domain: Domain to preserve
-> + *
-> + * Returns: -ERRNO on failure, 0 on success.
-> + */
-> +int DOMAIN_NS(preserve)(struct iommu_domain *domain, struct iommu_domain_ser *ser)
-> +{
-> +	struct pt_iommu *iommu_table =
-> +		container_of(domain, struct pt_iommu, domain);
-> +	struct pt_common *common = common_from_iommu(iommu_table);
-> +	struct pt_range range = pt_all_range(common);
-> +	struct pt_iommu_collect_args collect = {
-> +		.free_list = IOMMU_PAGES_LIST_INIT(collect.free_list),
-> +	};
-> +	int ret;
-> +
-> +	iommu_pages_list_add(&collect.free_list, range.top_table);
-> +	pt_walk_range(&range, __collect_tables, &collect);
-> +
-> +	ret = iommu_preserve_pages(&collect.free_list);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ser->top_table_phys = virt_to_phys(range.top_table);
-> +	ser->top_level = range.top_level;
-> +
-> +	/*
-> +	 * VASZ and SIGN_EXTEND will be needed in next kernel for collector page
-> +	 * table walk to restore and free pages.
-> +	 */
-> +	ser->vasz = common->max_vasz_lg2;
-> +	ser->sign_extend = pt_feature(common, PT_FEAT_SIGN_EXTEND);
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_NS_GPL(DOMAIN_NS(preserve), "GENERIC_PT_IOMMU");
-> +
-> +static int __restore_tables(struct pt_range *range, void *arg,
-> +			    unsigned int level, struct pt_table_p *table)
-> +{
-> +	struct pt_state pts = pt_init(range, level, table);
-> +	int ret;
-> +
-> +	for_each_pt_level_entry(&pts) {
-> +		if (pts.type == PT_ENTRY_TABLE) {
-> +			iommu_restore_page(virt_to_phys(pts.table_lower));
-> +
-> +			/*
-> +			 * pt_descend can only fail if pts.table_lower is not
-> +			 * init. So the if statement below is dead code.
-> +			 */
-> +			ret = pt_descend(&pts, arg, __restore_tables);
-> +			if (ret)
-> +				return ret;
-> +		}
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct pt_iommu_ops NS(ops_immutable);
-> +
-> +/**
-> + * restore() - Restore page tables and other state of a domain.
-> + * @domain: Domain to preserve
-> + *
-> + * Returns: -ERRNO on failure, 0 on success.
-> + */
-> +int DOMAIN_NS(restore)(struct iommu_domain *domain, struct iommu_domain_ser *ser)
-> +{
-> +	struct pt_iommu *iommu_table =
-> +		container_of(domain, struct pt_iommu, domain);
-> +	struct pt_common *common = common_from_iommu(iommu_table);
-> +	struct pt_range range;
-> +
-> +	common->max_vasz_lg2 = ser->vasz;
-> +
-> +	/* Make this domain immutable.*/
-> +	iommu_table->ops = &NS(ops_immutable);
-> +
-> +	/*
-> +	 * It is safe to override this here since this domain is immutable and
-> +	 * can only be freed.
-> +	 */
-> +	common->features = 0;
-> +	if (ser->sign_extend)
-> +		common->features |= BIT(PT_FEAT_SIGN_EXTEND);
-> +
-> +	range = pt_all_range(common);
-> +	iommu_restore_page(ser->top_table_phys);
-> +
-> +	/* Free new table */
-> +	iommu_free_pages(range.top_table);
-> +
-> +	/* Set the restored top table */
-> +	pt_top_set(common, phys_to_virt(ser->top_table_phys), ser->top_level);
-> +
-> +	/* Restore all pages*/
-> +	range = pt_all_range(common);
-> +	return pt_walk_range(&range, __restore_tables, NULL);
-> +}
-> +EXPORT_SYMBOL_NS_GPL(DOMAIN_NS(restore), "GENERIC_PT_IOMMU");
-> +#endif
-> +
->   struct pt_unmap_args {
->   	struct iommu_pages_list free_list;
->   	pt_vaddr_t unmapped;
-> @@ -1138,6 +1265,10 @@ static const struct pt_iommu_ops NS(ops) = {
->   	.deinit = NS(deinit),
->   };
->   
-> +static const struct pt_iommu_ops NS(ops_immutable) = {
-> +	.deinit = NS(deinit),
-> +};
-> +
->   static int pt_init_common(struct pt_common *common)
->   {
->   	struct pt_range top_range = pt_top_range(common);
-> diff --git a/drivers/iommu/generic_pt/kunit_iommu_pt.h b/drivers/iommu/generic_pt/kunit_iommu_pt.h
-> index e8a63c8ea850..af1918d693ed 100644
-> --- a/drivers/iommu/generic_pt/kunit_iommu_pt.h
-> +++ b/drivers/iommu/generic_pt/kunit_iommu_pt.h
-> @@ -426,6 +426,33 @@ static void test_mixed(struct kunit *test)
->   	check_iova(test, start, oa, len);
->   }
->   
-> +static void test_restore_free(struct kunit *test)
-> +{
-> +	struct kunit_iommu_priv *priv = test->priv;
-> +	struct pt_range top_range = pt_top_range(priv->common);
-> +	u64 start = 0x3fe400ULL << 12;
-> +	u64 end = 0x4c0600ULL << 12;
-> +	pt_vaddr_t len = end - start;
-> +
-> +	if (top_range.last_va <= start || sizeof(unsigned long) == 4)
-> +		kunit_skip(test, "range is too small");
-> +	if ((priv->safe_pgsize_bitmap & GENMASK(30, 21)) != (BIT(30) | BIT(21)))
-> +		kunit_skip(test, "incompatible psize");
-> +
-> +	/* Map a large mixed range to populate multiple levels of page tables */
-> +	do_map(test, start, start, len);
-> +
-> +	/*
-> +	 * Simulate a restored state by clearing all features except
-> +	 * SIGN_EXTEND. This verifies that the generic page table free walker
-> +	 * can correctly tear down a populated domain when other features are
-> +	 * zeroed.
-> +	 */
-> +	priv->common->features &= BIT(PT_FEAT_SIGN_EXTEND);
-> +
-> +	/* The domain will be freed when the test exits. */
-> +}
-> +
->   static struct kunit_case iommu_test_cases[] = {
->   	KUNIT_CASE_FMT(test_increase_level),
->   	KUNIT_CASE_FMT(test_map_simple),
-> @@ -434,6 +461,7 @@ static struct kunit_case iommu_test_cases[] = {
->   	KUNIT_CASE_FMT(test_random_map),
->   	KUNIT_CASE_FMT(test_pgsize_boundary),
->   	KUNIT_CASE_FMT(test_mixed),
-> +	KUNIT_CASE_FMT(test_restore_free),
->   	{},
->   };
->   
-> diff --git a/include/linux/generic_pt/iommu.h b/include/linux/generic_pt/iommu.h
-> index dd0edd02a48a..649b3b9eb1a0 100644
-> --- a/include/linux/generic_pt/iommu.h
-> +++ b/include/linux/generic_pt/iommu.h
-> @@ -13,6 +13,7 @@ struct iommu_iotlb_gather;
->   struct pt_iommu_ops;
->   struct pt_iommu_driver_ops;
->   struct iommu_dirty_bitmap;
-> +struct iommu_domain_ser;
->   
->   /**
->    * DOC: IOMMU Radix Page Table
-> @@ -251,6 +252,12 @@ struct pt_iommu_cfg {
->   #define IOMMU_PROTOTYPES(fmt)                                                  \
->   	phys_addr_t pt_iommu_##fmt##_iova_to_phys(struct iommu_domain *domain, \
->   						  dma_addr_t iova);            \
-> +	int pt_iommu_##fmt##_preserve(struct iommu_domain *domain,             \
-> +				      struct iommu_domain_ser *ser);           \
-> +	void pt_iommu_##fmt##_unpreserve(struct iommu_domain *domain,          \
-> +					 struct iommu_domain_ser *ser);        \
-> +	int pt_iommu_##fmt##_restore(struct iommu_domain *domain,              \
-> +				     struct iommu_domain_ser *ser);            \
->   	int pt_iommu_##fmt##_read_and_clear_dirty(                             \
->   		struct iommu_domain *domain, unsigned long iova, size_t size,  \
->   		unsigned long flags, struct iommu_dirty_bitmap *dirty);        \
-> @@ -266,12 +273,22 @@ struct pt_iommu_cfg {
->   	};                              \
->   	IOMMU_PROTOTYPES(fmt)
->   
-> +#ifdef CONFIG_IOMMU_LIVEUPDATE
-> +#define IOMMU_PT_LIVEUPDATE_OPS(fmt)			\
-> +	, .preserve = &pt_iommu_##fmt##_preserve,	\
-> +	.unpreserve = &pt_iommu_##fmt##_unpreserve,	\
-> +	.restore = &pt_iommu_##fmt##_restore
+dma_map_resource() uses pfn_valid() to ensure the range is not RAM.
+However, pfn_valid() only checks for availability of the memory map for a
+PFN but it does not ensure that the PFN is actually backed by RAM. On
+ARM64 with SPARSEMEM (128MB section granularity), MMIO addresses that
+share a section with RAM will falsely trigger the WARN_ON_ONCE.
 
-Nit: would it look better if we put it like this?
+This causes a WARNING on Raspberry Pi 4 during spi_bcm2835 probe because
+the SPI FIFO register (0xfe204004) falls in the same sparsemem section as
+the end of RAM (0xf8000000-0xfbffffff), both in section 31
+(0xf8000000-0xffffffff).
 
-#define IOMMU_PT_LIVEUPDATE_OPS(fmt)			\
-	, .preserve = &pt_iommu_##fmt##_preserve	\
-	, .unpreserve = &pt_iommu_##fmt##_unpreserve	\
-	, .restore = &pt_iommu_##fmt##_restore
+The pfn_valid() check was originally removed by commit a9c38c5d267c
+("dma-mapping: remove bogus test for pfn_valid from dma_map_resource")
+but was accidentally re-introduced by commit f7326196a781
+("dma-mapping: export new dma_*map_phys() interface") during the
+refactoring of dma_map_resource() into a wrapper around dma_map_phys().
 
-> +#else
-> +#define IOMMU_PT_LIVEUPDATE_OPS(fmt)
-> +#endif
+Drop the pfn_valid() test from dma_map_resource() again.
+
+Fixes: f7326196a781 ("dma-mapping: export new dma_*map_phys() interface")
+Signed-off-by: Jianpeng Chang <jianpeng.chang.cn@windriver.com>
+---
+Hi,
+
+I found the WARNING in dma_map_resource() on Raspberry Pi 4 when using the
+downstream kernel from https://github.com/raspberrypi/linux, which calls
+dma_map_resource() in bcm2835-dma.c (mainline uses the physical address
+directly instead).
+
+Although mainline bcm2835-dma does not call dma_map_resource(), the bogus
+pfn_valid() check can still affect any other driver that does, so it
+should be removed again.
 
 Thanks,
-baolu
+Jianpeng
+
+ kernel/dma/mapping.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index 23ed8eb9233e..e6b07f160d20 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -365,10 +365,6 @@ EXPORT_SYMBOL(dma_unmap_sg_attrs);
+ dma_addr_t dma_map_resource(struct device *dev, phys_addr_t phys_addr,
+ 		size_t size, enum dma_data_direction dir, unsigned long attrs)
+ {
+-	if (IS_ENABLED(CONFIG_DMA_API_DEBUG) &&
+-	    WARN_ON_ONCE(pfn_valid(PHYS_PFN(phys_addr))))
+-		return DMA_MAPPING_ERROR;
+-
+ 	return dma_map_phys(dev, phys_addr, size, dir, attrs | DMA_ATTR_MMIO);
+ }
+ EXPORT_SYMBOL(dma_map_resource);
+-- 
+2.54.0
+
