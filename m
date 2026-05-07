@@ -1,132 +1,153 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5079A3BF685
-	for <iommu@lists.linux.dev>; Thu,  7 May 2026 09:40:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC5163C6A29
+	for <iommu@lists.linux.dev>; Thu,  7 May 2026 09:58:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778146809; cv=none; b=bIHLMjpSVuJ1/KoJoLx2aYAasbbW02XJGH6kMpGzDHiCPzuniImvzfpdvv6t6N67WR6eE9c1nff5irUD9p7RFRpQ0RFrb8O7tDFQjHdx1UQGz+i2aA1Fqe1L1VjGrAg3JI9IB7iM4ob0szmvt3o2I+FvcY90m/DrH5/yfPl8Z0g=
+	t=1778147935; cv=none; b=OUPwAB08N+j1mBbqqbgDiJlwKaLFwrTMtq2CJOnRTMZqgdsntYOzuIiOcgdEC58kdXC8UqSgPHZpIdswrYTR8uOAgdCp6TJBxf36ypgW8CCxjNGaUZJvMRL1YoK+wfGM3whu/BhwOKhqZAMy1G4jGhhwDWLbDyiMcHCJAZftNjg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778146809; c=relaxed/simple;
-	bh=//T+uUZKVsScMqNPuY2uDzqT14OVSZxoXfFh1I1LXYk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aASgg5X9dNKCNknwAQiHbxEiUwv41sEq0oiSlQsJHQ4ymZgTHqsZtparO2mxh4FDEGHxP1d7jFqrMRME/vGWc7SolOokd/GctmnIcnjAegyd7CouKyP1xOX82hngiSqy87C0hiM5MD0WX/JkZuK6QXDrOlb7CvFzPed3lNI039Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=X/w2pbVO; arc=none smtp.client-ip=209.85.128.48
+	s=arc-20240116; t=1778147935; c=relaxed/simple;
+	bh=xMLrZlHEoMKQqjUsB4Iq5/Hl6DyHAHS/iyWEMmXHV8A=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=uUhS8aGIND0hGNvaAS/XcjpwuGAvxLOGnLGvhogB+VqnifNH8kfxUze9qWqNccpEpjIu4Qu+r2SJiQIW9pcJgNZGfoVKBIZRT4FmfMRFXpMJ+d5KpgejNomupen59MJkbuuqxn1gPv2rZKstDiurlTm/BRqZZYYRjgUjNKopZrM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ijpKWyy5; arc=none smtp.client-ip=209.85.216.74
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="X/w2pbVO"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-48d1c670255so79345e9.0
-        for <iommu@lists.linux.dev>; Thu, 07 May 2026 02:40:08 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ijpKWyy5"
+Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-362eb03240bso905415a91.3
+        for <iommu@lists.linux.dev>; Thu, 07 May 2026 02:58:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778146807; x=1778751607; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=iO2qxGV2Dz72sotDpa6WZEWx9OFKl0tlRmAkWtejDhY=;
-        b=X/w2pbVOs6JJob2PkEG3V3W+kYJs+AROSXyZVPKAAby+0aL7vHvGBNRacRT5JuIWFT
-         55h4mb/S1GIQ7Dz7Fml5DJybyHZ7Id4vx79xoCwsZsa7v9SRPi8ZQNShzkYlde0UB0OK
-         lYv6bKuixu+EXAZTaqvp8n8nbVdMey/8HQcdjZ1sxLYFdx4/Mgv+o7N8semakPSFwU4T
-         qVkzqYxlWaPFr3c2G2K7y/661F98EEKT5PwdDOlIyKdhP1GSCTeNWUAsx8KX0EiwzyYb
-         TTJ0sVxxLKSjfpVnHxqsPoVINcrhOIpiTxNsTzgd1y6IwBQG1l2T+A7D8IcTDzPAZ/xR
-         TwFw==
+        d=google.com; s=20251104; t=1778147933; x=1778752733; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Tv6ESL3sqOkfsUQX3nZNF8lwSawGbrEYEhFUcZ/x1Kc=;
+        b=ijpKWyy5p9F7c4+immLX9mNYUKHJ0BK0lZRptPBm50PqUSqak7JrUwcLnNK0YA5Hmh
+         Eb61U4HlS3a6lV4osp5ngbrQ2oRWKw1cZYkrG8Y/lWpPuj5wmASbeI6T17OUGMZ8FrUQ
+         mA4s8fjMrwtsLjEm5jx2o6ops5UFIYu2i+1bwLG2vDf6wUkbmHC83QGjdfbSpNGQRPq/
+         xQ2mgS0ltowPMGzq/tb10tIilgx8dvgzR8j54rfzTexRJe/UtFIAl5dX0PAnlj5WCEgu
+         I5+rP1JUaUIECI6zYaNW+Uv8LCKrNdvK/hFOd2z7DvNrnO4aWqNCEjTe2VhvaCVC/pEd
+         7UKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778146807; x=1778751607;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=iO2qxGV2Dz72sotDpa6WZEWx9OFKl0tlRmAkWtejDhY=;
-        b=f5pwZ+ZRfBG51pVSvi7ly+G9YOAkoymifhHOngnxyELcth4nwgE45yKxAZnkg9OcHE
-         lTEhZbJPtE2xu4tG2YzVNqCbr7ZHkGPMl+GIKpnySBj/K2pKyNHbr8ovFusEH+4UIJMY
-         CWdNWSuRb56ZcZtq82sNT27y0fqJUigP62+KDk40lF2Jhb8ulWJpl/h4zv2/z69pXyc9
-         i1lRrzcauFYnsi2DLh5uSYWMDzmPVWa1fU8s+8a3MzyMVAfrbV4YS5KCSRPdnDK1/jG2
-         cK+KJ0pJBxktT59KO+vu65BxqMq+Hb4AE9qwRRl2N6lNmq+oDkBSdFxdRRNEJplWjnLx
-         42xg==
-X-Forwarded-Encrypted: i=1; AFNElJ8D1n4+rIgDSBtVToCB2+jYTEJbDj9PZuQ94ZxCQTUhPnnkNTIpjhiIhin389WOP9EctSYD7Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyl5jpZlJoWqkaVZasY/lzp/2c5oGubgxIuJ0OAYIy5UrWr7075
-	T+f1rYSyMEHJuIt/krLVtP9CWgaAJ2JKanjjtrIaCdc5Hz8Wu4DV/9Xa0TbTsFp1jQ==
-X-Gm-Gg: AeBDiesmfd1Hgu3IiRCS4vO4EYOWtDGdCJKUhraVlffez41GdGzobgxgNNnxoBphXNw
-	PzPvSUPv4Ie6oucX481wJOqOdKVJ2fzxTq4Rhacu8k8UbB5Ak/q+ZmQ8weRRBAr4ICYhCWiD8+h
-	NMBp/RcglVvegWv4djSHc9TW09Y9e7FlFXCRnivdcSASelaqK9cyQG47Mp5Eicdf9wn3G66vZH5
-	6AJkzxrCmxYkKemvQL89ps8BpQzRbJRtDmOcmqRLorONLMa1sdm2f534Gwm8MVA75VfqtaMGpib
-	lzA+0h5r7XezZZ3NT5VWJ35JrMAkiMsqxKaszo2mG/AqVCU2TsIwdDfctQvBBqsqf+yYcR7r/sq
-	XuxuDrYNd2aA00DETmJh8o+Nn+IoymtgYXs1hNyqb7JrI3GiDgJPz4npwIaDG0iyepqTMlthZ+U
-	j1bKS3CG14/0GTKB1Q9N+vFYKNMoGmoyOs7HVRePENqRHAzs5urdof+xPCGLICjqTjDdp/Q19v3
-	z2rfg==
-X-Received: by 2002:a7b:c314:0:b0:48a:5f32:62d0 with SMTP id 5b1f17b1804b1-48e5d650751mr703025e9.12.1778146806189;
-        Thu, 07 May 2026 02:40:06 -0700 (PDT)
-Received: from google.com (8.181.38.34.bc.googleusercontent.com. [34.38.181.8])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48e531578c8sm38996315e9.34.2026.05.07.02.40.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 May 2026 02:40:05 -0700 (PDT)
-Date: Thu, 7 May 2026 09:40:00 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
-	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
-	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
-	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
-	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
-	vdonnefort@google.com, sebastianene@google.com, keirf@google.com
-Subject: Re: [PATCH v6 04/25] iommu/arm-smmu-v3: Move TLB range invalidation
- into common code
-Message-ID: <afxd8Km40A5ulZvd@google.com>
-References: <20260501111928.259252-1-smostafa@google.com>
- <20260501111928.259252-5-smostafa@google.com>
- <20260501124143.GB6912@ziepe.ca>
- <afiN1UwS9q6F6A_v@google.com>
- <afoYBYIJOTClsdLS@ziepe.ca>
- <afoeIVIGE-JjYy22@google.com>
- <afsPfEzgGtAFrN5P@ziepe.ca>
+        d=1e100.net; s=20251104; t=1778147933; x=1778752733;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Tv6ESL3sqOkfsUQX3nZNF8lwSawGbrEYEhFUcZ/x1Kc=;
+        b=ckU5Br5zs2p/cezLl6y2Uz9I3uarDiJ/0c5RiZS6BXc/i21wlUzujfJAcLD4yWRxtJ
+         ZADfIzr6iF2OVbPr/lLMOWjqwx9/W8nfc1TcPe6bAraqS4tj1J9cLWqWBcA/OXoYflfi
+         DT1KpaQivu+AefIrctpezdI2ug4hSpnZUcnty84THXCrBzX0n6cUKakdbjLbsUjtiop/
+         DV/8zyikvVyfqb7sQGHUkzpgt2Pjn+Nm0d2vX/u3frwJHnxyB3EniR1s7N6SEWK2Z7x/
+         3p1xnE0g0OC2eD5uylXdoShpBwE/TUw5qmzxOljCXjlE4MbqL1Kj+0o4eFocKIJ1fVDZ
+         /LKQ==
+X-Forwarded-Encrypted: i=1; AFNElJ9+v6QA5ViQb8PV+oDIRjDw5Tk2JUfUqpi4Dr1vxbxRVN/bFT7vuc+14Ge5JhTXR6hUoxncLg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx5WUT2E+F2dZ4uqm9bsx+TOO4gHWDQd4JwybSoLGEorEg7/2w2
+	4QuBAsp69R5FDJmyjLASStkIhTzTZXd8rcs5FqiwyEc38JQ/qu2js+vDSxwE4XzgoSnKniH6Nxh
+	vaEV3/vkJM3u1/1vXe3WQlkuMQw==
+X-Received: from pgac3.prod.google.com ([2002:a05:6a02:2943:b0:c6e:228a:f070])
+ (user=joonwonkang job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:6a21:6d88:b0:39b:e710:e2e2 with SMTP id adf61e73a8af0-3aa5ac1ae28mr8112180637.46.1778147932850;
+ Thu, 07 May 2026 02:58:52 -0700 (PDT)
+Date: Thu,  7 May 2026 09:58:51 +0000
+In-Reply-To: <20260424133953.GY3611611@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <afsPfEzgGtAFrN5P@ziepe.ca>
+Mime-Version: 1.0
+References: <20260424133953.GY3611611@ziepe.ca>
+X-Mailer: git-send-email 2.54.0.545.g6539524ca2-goog
+Message-ID: <20260507095851.3220765-1-joonwonkang@google.com>
+Subject: Re: [PATCH RFC] iommu: Enable per-device SSID space for SVA
+From: Joonwon Kang <joonwonkang@google.com>
+To: jgg@ziepe.ca
+Cc: Alexander.Grest@microsoft.com, amhetre@nvidia.com, 
+	baolu.lu@linux.intel.com, iommu@lists.linux.dev, joonwonkang@google.com, 
+	joro@8bytes.org, jpb@kernel.org, kees@kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	nicolinc@nvidia.com, praan@google.com, robin.murphy@arm.com, 
+	smostafa@google.com, will@kernel.org, jacob.jun.pan@linux.intel.com, 
+	easwar.hariharan@linux.microsoft.com, kevin.tian@intel.com
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, May 06, 2026 at 06:53:00AM -0300, Jason Gunthorpe wrote:
-> On Tue, May 05, 2026 at 04:43:13PM +0000, Mostafa Saleh wrote:
-> > On Tue, May 05, 2026 at 01:17:09PM -0300, Jason Gunthorpe wrote:
-> > > On Mon, May 04, 2026 at 12:15:17PM +0000, Mostafa Saleh wrote:
-> > > 
-> > > > I am not sure if it’s worth it, the hypervisor is much simpler, there
-> > > > is a single page table, it’s locked (also identity mapped), it’s
-> > > > updated on VM boot/teardown only, we don’t even use iotlb_gather at
-> > > > the moment, although possible but I wanted to keep this series as
-> > > > simple as I can then we can add more features later.
-> > > > So this patch is the least intrusive change, as whatever the main SMMUv3
-> > > > driver does, the range tlb invalidation logic is the same.
-> > > > But I am happy to experiment with that when posted.
-> > > 
-> > > Okay, then maybe just always push a full invalidation?
-> > 
-> > Like full address space invalidation? that will not be optimal and
-> > will affect every device on the system, why would we do that if we
-> > know the address?
+Hi Jason, thank you for your review and sorry for the late reply.
+
+> On Fri, Apr 24, 2026 at 08:53:39AM +0000, Joonwon Kang wrote:
+> > For SVA, the IOMMU core always allocates PASID from the global PASID
+> > space. The use of this global PASID space comes from the limitation of
+> > the ENQCMD instruction in Intel CPUs that it fetches its PASID operand
+> > from IA32_PASID, which is per-task.
 > 
-> Not every device, just wipe the VMID. If you say it is rare then keep
-> it simple. If you need to be narrow then use the proper infastructure
-> with a gather. No reason to make something boutique for pkvm here.
+> That's right, and all the iommu drivers should have no issue with
+> per-device pasid or they are not following the API contract..  I
+> believe that has been taking care of already.
+> 
 
-But all devices share the same VMID, which impacts all devices on the
-system, and is not that rare to ignore.
+Thanks for this info that every IOMMU should support per-device PASID
+space already, i.e. each device behind the IOMMU can have its own PASID
+space.
 
-I can add gather support, it’s not that complicated, it is currently
-supported in Android.
-But that doesn’t solve the problem, which is: At some point, whether
-eagerly from the page table code, through gather sync or a fancy
-invalidation array, the driver will need to populate a range
-invalidation command (tg, ttl, scale...) and this logic is better
-shared with the main driver which is this patch does.
+Let me clarify my understanding first to prevent future confusion.
+
+The reason of using the global PASID space in the first place, i.e.
+`iommu_global_pasid_ida`, is to support the case where a userspace driver
+wants to communicate with multiple devices using the ENQCMD instruction
+without kernel's intervention. Since the ENQCMD instruction fetches PASID
+from the per-process IA32_PASID, the userspace driver could not use a
+different PASID for each device. If a syscall had been provided to change
+the process' current PASID, however, we might have been able to get rid of
+the use of the global PASID space, although it may cause other issues and
+require research on feasibility and effectiveness.
+
+Please let me know if there is any other reason of the global PASID space
+use that the team considered back then.
+
+> So, I don't think this is an iommu driver capability.
+> 
+> Instead, you have to decide if the PASID is per device or not based on
+> if the system will use ENQCMD or any similar instruction.  I
+> understand ARM has introduced a similar instruction.
+> 
+
+By "similar instruction" on ARM, I guess you mean ST64BV0, which fetches
+the bottom 32 bits data from ACCDATA_EL1. Please let me know if you meant
+others as it will matter. If ST64BV0 is supported on ARM, however, it
+would mean that ST64B and ST64BV are also supported already according to
+the ID_AA64ISAR1_EL1's LS64 field. The latter 2 instructions are just to
+atomically store whatever user wants to a memory location without
+referring to ACCDATA_EL1 and all the 3 instructions can be run at EL0. So,
+the userspace driver would have enough capability to designate arbitrary
+PASID as it wants via the latter 2 instructions when communicating with
+multiple devices.
+
+> So you may be better off with some kind of 'arch has enqcmd like
+> instruction' to control this instead of involving the iommu driver.
+> 
+
+If the above makes sense, I guess we could lift the use of the global
+PASID space on ARM unconditionally. What do you think?
+
+> > - The device is not a PCIe device.
+> > - The device is to use SVA.
+> > - The supported SSID/PASID space is very small for the device; only 1 to
+> >   3 SSIDs are supported.
+> 
+> Yuk
+> 
+> > With this setup, when other modules have allocated all the PASIDs that
+> > our device is expected to use from the global PASID space via APIs like
+> > iommu_alloc_global_pasid() or iommu_sva_bind_device(), SVA binding to
+> > our device fails due to the lack of available PASIDs.
+> 
+> So you have multiple SVA using devices as well? Or multiple instances
+> of the same device?
+
+We have multiple processes and a single device, those processes want to
+do SVA with the same device, and only one process will do SVA with the
+device at a time. Though, the problem occurs even when irrelevant
+processes allocate the PASIDs from the global PASID space for their own
+irrelevant purposes.
 
 Thanks,
-Mostafa
-
-> 
-> Jason
+Joonwon Kang
