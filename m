@@ -1,76 +1,84 @@
-Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB88D33A9E9
-	for <iommu@lists.linux.dev>; Thu,  7 May 2026 19:52:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0761036AB77
+	for <iommu@lists.linux.dev>; Thu,  7 May 2026 20:12:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778183580; cv=none; b=gnczwAPUiXtM1cKIXkmuhzmaYQUvG1O+oLWQ51x7895sHTnFompH9tzAnruEo4LK7AucXG8o7sXgmy17F2piYu7lPLRGZSiOQ7doREAZhRMJIovMcSYARErlscKGdp7bLuz92XZP95GryMKRK0o2viE+oHK69QcP2L9vOHtbloE=
+	t=1778184743; cv=none; b=R10BCM6wvuMObRCiXBs9WTwHj/xbt5lUISzqsUz+YY7FL5Bi/7N6G/Rba51d/HAV76papls6XH8ud/mqTrqiHikoGw532tdXaF5kx2t2L3/JJSxpqoonQETnHjO46OtcS7575eQ/ZLNJUIiKiq3hHHR3Lup2A7wvpTXS85ROxbk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778183580; c=relaxed/simple;
-	bh=m5WrwJrwUPjUGvBzSD52ltgiX6XfTNVaKEDLCoj+VR8=;
+	s=arc-20240116; t=1778184743; c=relaxed/simple;
+	bh=saBpaD3FYQphogaD7lBZThMVv45E7M3i+4Uxu1LH21M=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HOkf2qeM/WxYcJasokDbJ2SYzLElDRmP0hgx2MnzRKak5CEctzlRwhop4Z7t60EnVa+Rk6N810Ysn75Y2GiWAYicV4AcqrcFKjVHowx+F6+TPrT/YqZBCQH+aXS6Uuisr5Z/U1SZLxJx+x0UJPZD2gXMyNX75/rQI89aJ5WaIzU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=HbSGq9tG; arc=none smtp.client-ip=209.85.160.177
+	 Content-Type:Content-Disposition:In-Reply-To; b=G0WU1Dq4NTLnbTMcpPYYEBj8uV/OTfgJDCGX85L2opqJbPe4EOI2XJXewKLe4HT1+4es0kxnm7Q6fxCIGC2BmDS+cc6j/o2ZZe1iYCFJ+xXqbFSj++zkCX4JpTquCoKD0cKFFaETIAQxmflUEjQyvo5y5KGgHXzO6Loa3tY5hv4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=gf6/iB7M; arc=none smtp.client-ip=209.85.214.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="HbSGq9tG"
-Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-50d864c23bdso16081cf.1
-        for <iommu@lists.linux.dev>; Thu, 07 May 2026 12:52:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="gf6/iB7M"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2b2e8b95bdbso6765ad.0
+        for <iommu@lists.linux.dev>; Thu, 07 May 2026 13:12:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778183578; x=1778788378; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1778184741; x=1778789541; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=UXxlxipshsFnd98Nkncaq6s+XN4axxGz1vRo0Xze8nc=;
-        b=HbSGq9tGxRkmq9C+4PtCoUM821RdvcdGLiHjzc1hhjR8gKkKSPbzWcNwufPpfhzmJt
-         +0jDkFltSJszLjtfkbdvWBpZ9oRpEKdKA8bg7KltLr3xA52j36+0f33FaL/JubzOtUnA
-         wFdRTF1Clcpd4G/MHuvPXffjdQ8kul5nlu4a3ISujMEGY/Pglmfzb/1nhE2PVSMqqpNq
-         CU1Er+N8C7qDXFUqQ13B9cvnsl5F+xU/G7MGTUF7tmca6xZX3byShIFBNz++iVZx4NoQ
-         iU9PfyzptQhGUOnTI3uTirkXLmp5LShGnLsgwsOn4UcLMCZhXRp2rhtN3SWo7/FyZ7NV
-         8OUw==
+        bh=iTBwEf5cFW2J6vKw2a1TMt4cf9FpxkIw7xjtJSL/6NA=;
+        b=gf6/iB7MN7nvaLanzlI0UxXQJS4zYMU4rHHdcYtRLbHfc0D6fFcB3pvM+RS/Lz3sKh
+         Z4koCI4kGb7JKpVbY6u8/lKmGwpFyPWuURwopW6eJuKoSf+irK2EcYJF33dBGDWWXUjB
+         aN4ochPU88zpwK9jbpqMojLimqZuGmmhGXtkvgUYHUvLPrV+ejxgrFNkFMA3uei0xuML
+         9hNgYcQfCZBlbk6fI29nSE64VJ0ZYsBTlXkAxkqD17e1LrqxuQSawy/kp14hkNOoWMxo
+         5u9waB3QY1X4jXDQdBs4g0Fy2NJpE1I2/uDvdb42P+nlYKxmrfhfiBtfPAaM9glUzNxA
+         unDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778183578; x=1778788378;
+        d=1e100.net; s=20251104; t=1778184741; x=1778789541;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=UXxlxipshsFnd98Nkncaq6s+XN4axxGz1vRo0Xze8nc=;
-        b=Yku37F1c8xdFl4bSxEsM9BS62L+luMaZdsyRm3asXLOa0mVp6U3RGRKKgjivcjhVJ8
-         7imUyGuTidsTUaza2MQQ7oPGPZY1QZz4L/BGjxY4l9ey/i61iZHfx96GKIxu0RgFvxKS
-         v1s44iumt1yGyVyf0LDm1C3kn44QQI2+FxFn28NYqqGHlmI7dTsjnqZaUItcJkrF2c5W
-         L2ytvUo8D/r4UVdBm5FRpztkq+O+ybIrrrhoqXD/xmVk9TVln9HzLD4NV7rF5rm/bHsO
-         KgVbeZ9PxOgL0NDB8Za/dtfdjQoY+Z79i3OkEBYBZKWXpPHwEfGcSB/4B+EdKttL9Nvx
-         erBg==
-X-Forwarded-Encrypted: i=1; AFNElJ9/GBXRw3blXqaLZ2Jl7NHYSUc4Ztaz1D8jnyRrXLYJfxLD7cWuDK3Di4wXlfglHk7Q3Em/TQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwsKrVodbBRRoZF8R6OOLno9sgO/mmlD1mYJtAtTfl9YEmY0a4F
-	3tmOJDtxDnUB9STSRkVwnRGXKNKrZ4IXlSnujssiYRaJFQEAkOGZrrCwo0qzzgmPlw==
-X-Gm-Gg: AeBDieto2uBd62UVYRCxI1Hv3jQi/WXJU8C/U5AAZD2JtobFmjvfQ87tn6Tx0uPhI7x
-	y02MKkjMVPYX7Q7FBixJJ2rZQiQkygesM5n5M/EsiF3Lr4LnUIViFF5gQLnqN78mVmfkKfO2x0p
-	UG4aQDKm146tBA8RYS3Lb8k5WpZODt3j7CdeLqNMaD66kk9RkvaXf4kRyDC0MauOXAiJ4TeyO5K
-	Z9Sgo3RJKhppGSal/YdIJ96KJaLRQDk8SZvoEC8tKjQ7FB2T6YZyFPhPjggmp8oAV8dNBr+4lB+
-	MfzgFXBSQuiKeJNGdfvMleXGa6ARTJopYJEMWELz3Ujvo7NRrZqkXiZulV/FIGF09P6hMuLU9ms
-	zSbRanPRunWBYe0SYZKpBEBtLadZCVAkA1fUNZjQ8x/aSVjdKTCf90P7eaPgFgHKkKMTY4WEav5
-	xMS2emDY8XbFcuRA+J18XoAYCz0pxetQaCg0QAJbgzymWAuFi/z33Z0SY406g/d8H96+ys5eHO5
-	KP9WUA=
-X-Received: by 2002:ac8:614b:0:10b0:50f:ce97:3b84 with SMTP id d75a77b69052e-51487e39150mr2421751cf.6.1778183577126;
-        Thu, 07 May 2026 12:52:57 -0700 (PDT)
+        bh=iTBwEf5cFW2J6vKw2a1TMt4cf9FpxkIw7xjtJSL/6NA=;
+        b=hPVyhudOsIhhoCtlCMTn6epocVrUW7oVyl1IpOpH+nQ8DK351EhU35zdgKYw7eQkpy
+         +bIhhGS/24sxNWHEepOgALv7rH4fR1AEkJR9FSzUjlgC8HTv9C8C/raz+Q3ECZmulLKA
+         Q23g/Aglj54Ha8QitY8RGW0IaNqAKLah0590U2mDjxAGU5tln8EdGnxWYrEA6xMNsnqB
+         Gp1+V/BIMwOCTdfdPdJ4tmqd8jBMUVgVk6vApDpcv9R166PtbKpgFvBmwmbEyRrmf2mg
+         99SoIZvXQIjgMZiPSIu9JjK7B8I1v2fe7t9H/SRB2p4HoIgsordUIkI+MeQtASQidPFH
+         vsGg==
+X-Forwarded-Encrypted: i=1; AFNElJ+WsdOV0MYNPbZSESJLHJY66Wz6PJRkUHuHxNWU88NZodKHJxoKz20u/dUUN6SVX7zRiV/4Xw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyue29pUeKT2tk7fcQ70q3bDdOxpjj6ZPvT/a+uwKVClirwWkdu
+	q+V++lqenkSeInA91j1g8kwI3jEDZzmATeEY7EQGTay+W+lc7kVzRiED1bdzCpch/Q==
+X-Gm-Gg: Acq92OGeOa67WHiZ13W2uzzNDc1VJI96+Pjrzl14coYQKLnVR2HW0RVH3hwZhg/fT02
+	8P3FCXjHo3/THLGXrTbkTW0oJk0jA4aOMmFDmpmeHtugUk0XvsyzJr9+1BWJY7Pdt4+icg/Ues0
+	nzD/POX5DPoS22rtQHB3vB9Gk71BTtn0x6Y3b5zoYa7QU7aua2hEEr395+SkExLC77s+o7UJD9b
+	be2ymo02vHzV4+nNW6EcU36iKsC89RCFro2Bn7zdRMi0TLYN7LrUSypS5peHnI5OmwDn8RjQMpH
+	WKCWpWsTOpVBVEh6pn39rtKj10jo8b0P01vz/O2J3tHzVLRE4E4ejCvQK4mXVStERLYQo/L7/MP
+	tydLRi3WiM2N83Ih5TI4jdSFuQ61Nj2n2ZKXENTsO7Z7NhVlE4jRupUlH6AXT5DQJCx4hXlfgG0
+	txnKv+pewIbkk/Vo/7J0mGUMpLQXg90UIczNDDOeJiztIj9+DbH+FqBmt+SqHqlVkGkVKf
+X-Received: by 2002:a17:902:da87:b0:2ba:f71:57a8 with SMTP id d9443c01a7336-2bae9e663eamr899145ad.10.1778184740717;
+        Thu, 07 May 2026 13:12:20 -0700 (PDT)
 Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8fc29a80069sm2298791985a.15.2026.05.07.12.52.53
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c82640e84casm411522a12.29.2026.05.07.13.12.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 May 2026 12:52:56 -0700 (PDT)
-Date: Thu, 7 May 2026 19:52:49 +0000
+        Thu, 07 May 2026 13:12:20 -0700 (PDT)
+Date: Thu, 7 May 2026 20:12:14 +0000
 From: Pranjal Shrivastava <praan@google.com>
-To: Yigit Oguz <yigitogu@amazon.de>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	baolu.lu@linux.intel.com, dwmw2@infradead.org,
-	suravee.suthikulpanit@amd.com, jgg@ziepe.ca, nicolinc@nvidia.com,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, Lilit Janpoladyan <lilitj@amazon.com>
-Subject: Re: [PATCH 3/3] iommu/amd: Add vendor:device ID to AMD IOMMU event
- logs
-Message-ID: <afztkdvuWFn-42Pr@google.com>
-References: <20260506150541.60467-1-yigitogu@amazon.de>
- <20260506150541.60467-4-yigitogu@amazon.de>
+To: Samiullah Khawaja <skhawaja@google.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>,
+	iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+	Mostafa Saleh <smostafa@google.com>,
+	Daniel Mentz <danielmentz@google.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	David Matlack <dmatlack@google.com>
+Subject: Re: [PATCH rc v2] iommu/arm-smmu-v3: Fix inconsistent ATS state
+ tracking
+Message-ID: <afzyHk6aQeOiMm88@google.com>
+References: <20260504163842.2692314-1-praan@google.com>
+ <afjfBi+vw/Ywkzid@nvidia.com>
+ <afj0cyBZwkVLyIwK@google.com>
+ <afoWrn/RXxDmcHsS@ziepe.ca>
+ <afpdm5lfIeWptxOh@google.com>
+ <afpwCIjQXwfImPXm@google.com>
+ <afsN9jrsfuigV+DM@ziepe.ca>
+ <afu5Y55W5oj70b5v@google.com>
+ <afu5s1vnmZ2aEev_@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -79,82 +87,56 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260506150541.60467-4-yigitogu@amazon.de>
+In-Reply-To: <afu5s1vnmZ2aEev_@google.com>
 
-On Wed, May 06, 2026 at 03:05:39PM +0000, Yigit Oguz wrote:
-> Add amd_iommu_devid_str() helper that formats PCI device identity as
-> SSSS:BB:DD.F VVVV:DDDD by looking up the pci_dev via
-> pci_get_domain_bus_and_slot. Falls back to SSSS:BB:DD.F when the
-> device is not found.
+On Wed, May 06, 2026 at 10:20:15PM +0000, Samiullah Khawaja wrote:
+> > 
+> > Thus, this sequence occurs:
+> > 
+> > 1. The Intel quirk sets pdev->ats_cap = 0 for the PF at boot.
+> > 2. pci_prepare_ats(PF) fails during arm_smmu_probe_device() as the
+> >   quirk causes pci_ats_supported to return false & PF->ats_stu
+> >   remains 0. (arm-smmu-v3 ignores the failure)
 > 
-> Before:
->   AMD-Vi: Event logged [IO_PAGE_FAULT device=0000:41:00.0 domain=0x000a
->   	address=0xe0000000 flags=0x0020]
+> Ok that explains how PF stu is zero.
+> > 
+> > 3. PF attaches to identity domain: pci_enable_ats is skipped
+> > 4. VF's arm_smmu_probe_device returns early from pci_prepare_ats() due
+> >   to the if (dev->is_virtfn) return 0; check
+> > 
+> > 5. SMMU calls pci_ats_supported() for the VF in attach_prepare() which
+> >   returns true as the quirk hasn't been called for the VF yet.
+> >   The SMMU driver sets state->ats_enabled = true
+> > 
+> > 6. We call pci_enable_ats which hits the STU mismatch (PF never sets it)
+> > 7. Later while disabling ATS for VF via pci_disable_ats, we hit the WARN
+> > 
+> > I guess we must think about the following:
+> > 
+> > 1. Check return values of pci_enable_ats / pci_prepare_ats in SMMUv3
+> > 2. PCIe core to provide a proper ATS flag that iommu driver can rely on
+> >   and maybe define a policy around pci_ats_supported() to make sure it
+> >   also handles such quirks in pci_ats_supported().
 > 
-> After:
->   AMD-Vi: Event logged [IO_PAGE_FAULT device=0000:41:00.0 8086:1533 domain=0x000a
->   	address=0xe0000000 flags=0x0020]
+> It seems like that ats_supported() checking only ats_cap of the VF is
+> not enough, since ATS can be enabled for a VF only when the stu matches
+> with the PF? So even if ats_supported() for the VF returns true, its not
+> really supported if the stu doesn't match. And the stu would be set
+> properly if the PF had ats_cap. Should the ats_supported() check for
+> the ats_cap for the PF also?
 > 
-> Signed-off-by: Yigit Oguz <yigitogu@amazon.de>
-> Signed-off-by: Lilit Janpoladyan <lilitj@amazon.com>
-> Assisted-by: Claude:claude-4.6-opus
-> ---
->  drivers/iommu/amd/iommu.c | 94 ++++++++++++++++++++++++---------------
->  1 file changed, 58 insertions(+), 36 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index 01171361f9bc..441b4a7e85d5 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -779,11 +779,34 @@ static void dump_command(unsigned long phys_addr)
->  		pr_err("CMD[%d]: %08x\n", i, cmd->data[i]);
->  }
->  
-> +#define AMD_IOMMU_DEVID_SIZE	48
-> +
-> +static void amd_iommu_devid_str(struct amd_iommu *iommu, u16 devid, char *buf,
-> +				size_t size)
-> +{
-> +	struct pci_dev *pdev;
-> +
-> +	pdev = pci_get_domain_bus_and_slot(iommu->pci_seg->id,
-> +					   PCI_BUS_NUM(devid), devid & 0xff);
-> +	if (pdev) {
-> +		snprintf(buf, size, "%04x:%02x:%02x.%x %04x:%04x",
-> +			 iommu->pci_seg->id, PCI_BUS_NUM(devid),
-> +			 PCI_SLOT(devid), PCI_FUNC(devid),
-> +			 pdev->vendor, pdev->device);
-> +		pci_dev_put(pdev);
 
-From a quick glance it looks like we call this in bottom halves, which
-looks fine.
+I think yes. We should add that OR we should be checking for PF's ATS
+cap while probing VFs to handle such quirks. The main problem is that
+the quirk isn't applied to the VF *before* the IOMMU attach. 
 
-> +	} else {
-> +		snprintf(buf, size, "%04x:%02x:%02x.%x",
-> +			 iommu->pci_seg->id, PCI_BUS_NUM(devid),
-> +			 PCI_SLOT(devid), PCI_FUNC(devid));
-> +	}
-> +}
-> +
->  static void amd_iommu_report_rmp_hw_error(struct amd_iommu *iommu, volatile u32 *event)
->  {
->  	struct iommu_dev_data *dev_data = NULL;
->  	int devid, vmg_tag, flags;
->  	struct pci_dev *pdev;
-> +	char devid_str[AMD_IOMMU_DEVID_SIZE];
->  	u64 spa;
->  
->  	devid   = (event[0] >> EVENT_DEVID_SHIFT) & EVENT_DEVID_MASK;
-> @@ -796,15 +819,16 @@ static void amd_iommu_report_rmp_hw_error(struct amd_iommu *iommu, volatile u32
->  	if (pdev)
->  		dev_data = dev_iommu_priv_get(&pdev->dev);
->  
-> +	amd_iommu_devid_str(iommu, devid, devid_str, sizeof(devid_str));
+> We can check the PF ats_cap in the ats_supported() or handle the
+> enable_ats() error in arm smmuv3. Intel and AMD drivers seems to be
+> handling the error.
 
-Will this iterate the global pci dev list for EVERY event? I'm wondering
-if we could improve that somehow?
-
-[------------- >8 ---------------]
+I guess if pci_ats_supported() is fixed arm smmuv3 would stop hitting
+that warning. Although, I agree that we should be checking the retval of
+prepare_ats & enable_ats in arm-smmu-v3.
 
 Thanks,
 Praan
