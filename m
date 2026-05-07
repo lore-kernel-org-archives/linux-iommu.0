@@ -1,99 +1,65 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B3FB34218A1
-	for <iommu@lists.linux.dev>; Thu,  7 May 2026 17:36:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65CB83C0600;
+	Thu,  7 May 2026 18:19:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778175394; cv=none; b=szdpptThuhcrgPnkCsscXkk9HuHgdrr1m+qlc/K+IHVvfqGTTtVkAwFXKJDeBBkVGwywDiMC2wXntrqB0lVoS2HdMdnMngW/T9gO3Lcbu0LsnBDjy738ZTof3E/i8KRrZzp4y2XOYeV9VLWVxLvZ/TibFTleCKTPsAY+K5/TpXE=
+	t=1778177962; cv=none; b=AaKJEkbT3GZl4AMzdFYuczctt/xznFeghvu5UgwS3IDqIUGLwVuHS7UQceBX6hvXwT8LXFSS8XnEisuw1bDu2JeFttin4liou9EW/+/WV6ZTjI+QENdc4OflpKkQDlfrgGqR10Aucoy7+QXFnHwBpNOCh2aLhvZpOH/O+bC93ZQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778175394; c=relaxed/simple;
-	bh=lufFP1j2+8a/VDqN02ukHYuK7WPPw9TYBa516/C1kSw=;
+	s=arc-20240116; t=1778177962; c=relaxed/simple;
+	bh=L13Ya1YLtr11/2vSHCsuWV2gqbbrk3THnoiNxoiKkoE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZVzHWN0fpxeigXOkTQYJaBGLNahamnKbhA6CL4tNX+JmNOvGjFJp9rIIM8i5T0x8h21RD1JWWUpHZfoGk5Yp6t+m20vL9jw+HI1Rv55TIIkl6Nsn6NT4hS+Q3ANMwdxQl0Ty3yLgkixX72/XKqERcKA1Wn+sKJ21mCqeEokt4hk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=Rx3BNejL; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=WU2iz9/P3y9p5PFHAw9inGwnQHmj/2CjVpP/40rKxDdodqKRtdb4HnC0LqVcKLNRNEOKMYDUAGUVE2zziSUt6jpKec3YiiFaqTUdKBACG7qffBGEFxodDAGpu4ev1qQJ8EmHTINiX+NTSPpV720+OMZ2pseDr5NXTDlD1cqw0Zs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FphLEBkW; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="Rx3BNejL"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AFB4B204C;
-	Thu,  7 May 2026 10:36:26 -0700 (PDT)
-Received: from arm.com (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 607223F836;
-	Thu,  7 May 2026 10:36:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1778175392; bh=lufFP1j2+8a/VDqN02ukHYuK7WPPw9TYBa516/C1kSw=;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FphLEBkW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCAA8C2BCB2;
+	Thu,  7 May 2026 18:19:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778177962;
+	bh=L13Ya1YLtr11/2vSHCsuWV2gqbbrk3THnoiNxoiKkoE=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Rx3BNejLWFXtZUw1/U4pbhkLIMRpx+wkkQNdj2DSotWR92o32fJW0CBpuYQ8Jqd93
-	 rRnfHevz11obJJw0ysvC7+++0wJMStpe5VUcmQWdGFuSBSUgdBht8lEoV7esLfqYw3
-	 P66KHquUvH8/v4e0ghCK6e67i7BSv5z98RPcWdCs=
-Date: Thu, 7 May 2026 18:36:27 +0100
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com,
-	m.szyprowski@samsung.com, will@kernel.org, maz@kernel.org,
-	suzuki.poulose@arm.com, jiri@resnulli.us, aneesh.kumar@kernel.org
-Subject: Re: [RFC PATCH v3 4/5] dma-mapping: Encapsulate memory state during
- allocation
-Message-ID: <afzNm6ZmR6c8_SMk@arm.com>
-References: <20260408194750.2280873-1-smostafa@google.com>
- <20260408194750.2280873-5-smostafa@google.com>
- <20260410180504.GE2551565@ziepe.ca>
- <aeJVh5VbkzxHDBEK@google.com>
+	b=FphLEBkW2BByd/51JTrKOETzSTkxz355vauLF556Z550I3Vp+8XDuYYZdq755prvL
+	 WEhJgJuudOzkpTdDGu2hZkOA5mq9htHiumi5gPnpJx70xjrxGpPwTLkiQtnTcaDq80
+	 ALyaa1qMgzvHEALZgpRzHSTnw1BxE4P0WOp4m5UIEbojP0vQvv+sCIwe+JOwwKLl8p
+	 iXM5jj/05LCMSoJcztk1bKnc6ErOKN4l6CFxzsreiVSDmWiWpf6+9KaCtwehcKBq1M
+	 /jMMUbrLADPOk54Y4a6KNJbLXzl/u6B6QjjDN36vJrmJukVXGmxgsRNS9fIkOaqZvN
+	 C9d2y1omsOzEg==
+Date: Thu, 7 May 2026 13:19:20 -0500
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Komal Bajaj <komal.bajaj@oss.qualcomm.com>
+Cc: linux-arm-kernel@lists.infradead.org,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev, Conor Dooley <conor+dt@kernel.org>,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: arm-smmu: qcom: Add compatible for Qualcomm
+ Shikra SoC
+Message-ID: <177817795959.2206284.11592002109697803806.robh@kernel.org>
+References: <20260430-shikra-smmu-binding-v1-1-1a28572ebccf@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <aeJVh5VbkzxHDBEK@google.com>
+In-Reply-To: <20260430-shikra-smmu-binding-v1-1-1a28572ebccf@oss.qualcomm.com>
 
-On Fri, Apr 17, 2026 at 03:45:11PM +0000, Mostafa Saleh wrote:
-> On Fri, Apr 10, 2026 at 03:05:04PM -0300, Jason Gunthorpe wrote:
-> > On Wed, Apr 08, 2026 at 07:47:41PM +0000, Mostafa Saleh wrote:
-> > > Introduce a new dma-direct internal type dma_page which is
-> > > "struct page" and a bit indicate whether the memory has been decrypted
-> > > or not.
-> > > This is useful to pass such information encapsulated through
-> > > allocation functions, which is currently set from swiotlb_alloc().
-> > > 
-> > > No functional changes.
-> > > 
-> > > Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> > > ---
-> > >  kernel/dma/direct.c | 58 +++++++++++++++++++++++++++++++++++----------
-> > >  1 file changed, 46 insertions(+), 12 deletions(-)
-> > > 
-> > > diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> > > index de63e0449700..204bc566480c 100644
-> > > --- a/kernel/dma/direct.c
-> > > +++ b/kernel/dma/direct.c
-> > > @@ -16,6 +16,33 @@
-> > >  #include <linux/pci-p2pdma.h>
-> > >  #include "direct.h"
-> > >  
-> > > +/*
-> > > + * Represent DMA allocation and 1 bit flag for it's state
-> > > + */
-> > 
-> > I'd explain this wrappers a pointer and uses the low PAGE_SHIFT bits
-> > for flags..
-> > 
-> > > +struct dma_page {
-> > > +	unsigned long val;
-> > 
-> > unintptr_t ?
+
+On Thu, 30 Apr 2026 17:54:44 +0530, Komal Bajaj wrote:
+> Qualcomm Shikra SoC includes an apps SMMU that implements arm,mmu-500,
+> which is used to translate device-visible virtual addresses to physical
+> addresses. Add compatible for it.
 > 
-> I thought about that, but I don’t see unintptr_t anywhere in the
-> kernel, it seems similar cases use “unsigned long” as in xarray.h
+> Signed-off-by: Komal Bajaj <komal.bajaj@oss.qualcomm.com>
+> ---
+>  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-Jason meant uintptr_t. However, we have a similar pattern with struct
-encoded_page as an incomplete type and encode_page() adds the bits
-directly to the pointer. I'd use something similar as there's precedent
-already.
+Acked-by: Rob Herring (Arm) <robh@kernel.org>
 
--- 
-Catalin
