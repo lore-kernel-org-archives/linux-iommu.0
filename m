@@ -1,33 +1,50 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7B7A13CCFA8
-	for <iommu@lists.linux.dev>; Fri,  8 May 2026 16:04:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84AB9372B4B;
+	Fri,  8 May 2026 16:20:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778256277; cv=none; b=Jy5imbL/5HEYuUq4d1aF5cyzjwXrKnrnLLoYfQihhn/1rL14B0utCOXhG08lmH2sQJSLqpLy2OxsOeHMncIupkt9bamkanUwNuQ4QI73nc0yZl5CE1X0Q1wo6mjbrVd9oZBkQaSKrchSLSBCDV51QWosXNf+qS/iGul5Zy3iubY=
+	t=1778257217; cv=none; b=EQ84kY4cf6/cOngusqFlQVpukIckAzTSxUIiUKHbquJ2wvoP5Wz1x/wUvFHOiz0MQ8r30IRT5lPJwyKeQ0dAYwd0Rf5zWHy8Qck3btC29ta6d6BsWaMfsrqXeCTnwg9sTHY4CMcrQUezeWCatSbdczO36C8DkSc8MeBcqBNtSiI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778256277; c=relaxed/simple;
-	bh=kmD/l6NJJEgqq90/B8qBpAxyVg8m8aN6Dr1wB60XbVg=;
+	s=arc-20240116; t=1778257217; c=relaxed/simple;
+	bh=aFYtQc33skw3M1hEMq0k5DG/e1OddKKBL3Bo8hmK8VY=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=IMU1r3DXxXFfUXNR9JJq0sS35FA/7uZSljqvFRRY9H1ojMSN+Y225YKRWFRUA4eK7kIM+eekRZEAlubGvvzetLzIBKAeKu1jyWPykz+qXsy8nzbBK6Rz191Ar2UJbYfNVoCZ3T/HO+T5pejX7M9WHzLGq0vMICPSsip3nCER6SQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=Ew52XfXR; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	 In-Reply-To:Content-Type; b=pVAms5gBZktxbJ91KaYzjE6aZ4PSNMqsBkuUHhZC6JLdLTYBfxGXRkDjcrfWGbIkUD+9zDP7ZU2PLdRC/qG4N4jkzzcyom3cP+WcMdRVA3jjsaJI49Vx75q8pVfxlNiKqbdyxu8+Xh3zz2lftfVxUZntGw9OG3mlh9UMf+3ix+c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=estwLOG/; arc=none smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="Ew52XfXR"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 862641E5E;
-	Fri,  8 May 2026 09:04:29 -0700 (PDT)
-Received: from [10.57.63.248] (unknown [10.57.63.248])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6867E3F763;
-	Fri,  8 May 2026 09:04:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1778256274; bh=kmD/l6NJJEgqq90/B8qBpAxyVg8m8aN6Dr1wB60XbVg=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Ew52XfXRv1zqge0MsDtQJn/S+diiX2J5oNTuPQxBNK81e47icmoL89a67yhXrmXnb
-	 dMW7EX4NXvBVHWnDd3Vv/+Tl9LWeJ7Rlq0/+ioVClwTcEgYxzWQRiKOTB4zhmhsejE
-	 AbFUjSvAzysaEmi8NWCHRSY7pJs9B3iuuoTwsttk=
-Message-ID: <4134fcd9-7d12-4e76-955d-5a679916a0c0@arm.com>
-Date: Fri, 8 May 2026 17:04:31 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="estwLOG/"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778257215; x=1809793215;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=aFYtQc33skw3M1hEMq0k5DG/e1OddKKBL3Bo8hmK8VY=;
+  b=estwLOG/wnhBL0f/UZMTRLBLru3d+RgeP1O3VDmnCvHQrHKEF/QFZcJQ
+   ei2yt35qctDHJkyMI44swBNHRG6XpNYNv233qOStb5zIRsxMNbNRhZRUZ
+   WgOfgWQtEL8r+Zbx8xegeYw9eh5N0eTVfsX65ONNyCiimzCvBx2pMn0f7
+   Xg8XMx5QJvY9sKQj/H5dnT0Tpsg5RiAADYA8rQ0AWzOZo9V03EDtKF/iV
+   kHEswJW1Y2HhRwJIq1amzQB9v9a3f95i8FZvQMn6lTTc5YCUy4P4b/Nd7
+   68LMCUX4JZaVVwqRsFWYHB21qIJflWY6iGFcNgio9nzDhULwh/C3AClTa
+   g==;
+X-CSE-ConnectionGUID: 9OyJN3uASAGKgWETFPfhOA==
+X-CSE-MsgGUID: jAHavv1rSs+6ABHaZZ4UJA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11780"; a="82850465"
+X-IronPort-AV: E=Sophos;i="6.23,223,1770624000"; 
+   d="scan'208";a="82850465"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2026 09:20:14 -0700
+X-CSE-ConnectionGUID: S2tBuvy1SaqPr5ZK1AfWyQ==
+X-CSE-MsgGUID: HQyGzF8iRM+e/RUypZu0gw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,223,1770624000"; 
+   d="scan'208";a="237044413"
+Received: from ssimmeri-mobl2.amr.corp.intel.com (HELO [10.125.111.44]) ([10.125.111.44])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2026 09:20:14 -0700
+Message-ID: <8881f9e2-431a-48d0-a778-c75014689192@intel.com>
+Date: Fri, 8 May 2026 09:20:12 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,63 +52,67 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dma-mapping: remove bogus test for pfn_valid from
- dma_map_resource
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Jianpeng Chang <jianpeng.chang.cn@windriver.com>,
- m.szyprowski@samsung.com, leon@kernel.org, kbusch@kernel.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, stable@vger.kernel.org
-References: <20260507032120.4072283-1-jianpeng.chang.cn@windriver.com>
- <2dcc29d6-a4a9-4fdf-861d-312941ab0f07@arm.com>
- <89094011-fe78-40f9-9695-d50ee19167c5@windriver.com>
- <20260508113100.GA9285@ziepe.ca>
- <662fdf07-6475-4807-94b0-54b3b439ae1c@arm.com>
- <20260508151857.GB9285@ziepe.ca>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260508151857.GB9285@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v2 0/6] Add DMA attributes tracking
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+ Leon Romanovsky <leon@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jon Mason <jdmason@kudzu.us>, Allen Hubbe <allenbh@gmail.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, ntb@lists.linux.dev
+References: <CGME20260501063531eucas1p1019e81b1904fc7f0811b3c50cbbf9567@eucas1p1.samsung.com>
+ <20260501-dma-attrs-debug-v2-0-8dbac75cd501@nvidia.com>
+ <de72ecd7-05a1-4ef8-ad4d-de9b6c7f6774@samsung.com>
+Content-Language: en-US
+From: Dave Jiang <dave.jiang@intel.com>
+In-Reply-To: <de72ecd7-05a1-4ef8-ad4d-de9b6c7f6774@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On 2026-05-08 4:18 pm, Jason Gunthorpe wrote:
-> On Fri, May 08, 2026 at 01:16:25PM +0100, Robin Murphy wrote:
->> On 2026-05-08 12:31 pm, Jason Gunthorpe wrote:
->>> On Fri, May 08, 2026 at 06:01:01PM +0800, Jianpeng Chang wrote:
->>>>> As I said last time, I think pfn_valid() && !PageReserved(pfn_to_page())
->>>>> would be enough for what we want here, although now it's strictly under
->>>>> CONFIG_DMA_API_DEBUG, perhaps the overhead of memblock_is_map_memory()
->>>>> might be less of an issue. Either way though, now that it's all
->>>>> channelled through the single dma_map_phys() path, it would probably
->>>>> make sense to consolidate any MMIO sanity-checking into
->>>>> dma_debug_map_phys() anyway :/
->>>
->>>> Thanks for the suggestion. Move the check into debug_dma_map_phys() is
->>>> indeed better, and I will replace pfn_valid() with pfn_valid() &&
->>>> !PageReserved() as you suggested.
->>>
->>> I'm not sure that is right. IIRC pfn_valid() is true for ZONE_DEVICE
->>> P2P pages that are used with map_phys but never with map_resource.
->>>
->>> PageReserved isn't enough to fix it.
+
+
+On 5/8/26 1:50 AM, Marek Szyprowski wrote:
+> On 01.05.2026 08:35, Leon Romanovsky wrote:
+>> The DMA API expects that callers use the same attributes when mapping
+>> and unmapping. Add tracking to verify this and catch mismatches.
+> 
+> I would like to merge this to dma-mapping-for-next, but I have a question about ntb
+> patches - Jon, Dave, Allen: do You plan to take them (either to the fixes or to the
+> -next) or do You want me to take them together with dma patches?
+
+Please go ahead and take them together. Thanks!
+
+> 
+> 
+>> Thanks
 >>
->> It fixes the false-positive on non-reserved pages, which is the important
->> thing. Yes, we'll get false-negatives on reserved ZONE_DEVICE pages and
->> similar, but that's still an improvement over getting false-negatives on
->> _everything_ by not checking at all. Realistically, dma-debug can never be
->> exhaustive and 100% accurate, but there's still value in catching as much
->> obvious misuse as is straightforward to do.
-> 
-> I'm saying I think the new expression still has a false positive for
-> the common case of map_phys with ZONE_DEVICE P2P, and I don't want to
-> see debugging logging for normal as-designed scenarios in map_phys.
-> 
-> So we either need to narrow the expression further somehow, or leave
-> it in map_resource which has fewer users and doesn't accept
-> ZONE_DEVICE anyhow.
+>> ---
+>> Changes in v2:
+>> - Split original patch to be a series
+>> - Added all unmap flows
+>> - Skipped DMA attributes which exist only in map path
+>> - Added ntb patch
+>> - Link to v1: https://protect2.fireeye.com/v1/url?k=70e722e7-116c37d7-70e6a9a8-000babffaa23-c39f7f9efe32c6a2&q=1&e=c79241ff-9ff4-40ae-8e29-753dd9d59f23&u=https%3A%2F%2Fpatch.msgid.link%2F20260323-dma-attrs-debug-v1-1-6275228ca300%40nvidia.com
+>>
+>> ---
+>> Leon Romanovsky (6):
+>>       ntb: Store original DMA address for future release
+>>       ntb: Use consistent DMA attributes when freeing DMA mappings
+>>       dma-debug: Remove unused DMA attribute parameter
+>>       dma-debug: Record DMA attributes in debug entry
+>>       dma-debug: Feed DMA attribute for unmapping flows too
+>>       dma-debug: Ensure mappings are created and released with matching attributes
+>>
+>>  drivers/ntb/ntb_transport.c | 10 +++---
+>>  kernel/dma/debug.c          | 87 +++++++++++++++++++++++++++++++--------------
+>>  kernel/dma/debug.h          | 25 ++++++-------
+>>  kernel/dma/mapping.c        | 10 +++---
+>>  4 files changed, 85 insertions(+), 47 deletions(-)
+>> ---
+>> base-commit: 254f49634ee16a731174d2ae34bc50bd5f45e731
+>> change-id: 20260323-dma-attrs-debug-85e282d6f3bb
+>>
+>> Best regards,
+>> --  
+>> Leon Romanovsky <leonro@nvidia.com>
+>>
+>>
+> Best regards
 
-But surely anything with a ZONE_DEVICE page is "memory" to the degree 
-that mapping it with DMA_ATTR_MMIO would be wrong, no? However, IIRC 
-ZONE_DEVICE pages _are_ reserved, so still wouldn't warn whether we'd 
-like it or not. I'm confused as to what you're objecting to...
-
-Robin.
