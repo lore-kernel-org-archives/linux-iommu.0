@@ -1,134 +1,273 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5339E322DAF;
-	Fri,  8 May 2026 04:12:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9124340281
+	for <iommu@lists.linux.dev>; Fri,  8 May 2026 06:08:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778213541; cv=none; b=DSZPPB0pXQ8Bls0K2LKo0VjCGSLNpci/erNy8PQNkDhe+ATu1PhsCp7Xf/MHlvHU/37IOiAs17Hkn6NwNmkJKZTQEs9XP3eM4eDdfNG7OrPdAumFMFOtEM0h8XTZaHmzgx39Sq0M76GMWtTtOA6YtY+rFYXpuMcC/w9iUd/RKeg=
+	t=1778220522; cv=none; b=bpLGJ/BeDQx3i0i/U7f60aWyMf8bOP558ZtpYD6DaoFLR7UTJ1agWaL0sWIVSsJ5qRVNbPGTjDUowUrR52ZpV+eO8RR19QK9mo2agSMRtvoo9Kr1cqOTs75XqJ7aWkwMwOsHZGzvvZyV8sj/u7FvbuFmiCtCIUaJiv0+HnHTA2s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778213541; c=relaxed/simple;
-	bh=xGK13SXlZFMCZyBXHG1YIKcBmtpGcWGbIJ5WRiG2RwQ=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=OFyv+e66ZBFG92E6+7h/UO6S0/4Lx5SdXLHo0By+0z1i1IWz5yb83z+EJtwQBjKE5MYxykrXgNqZRklkRROmjAc9AFSGlxjyrfibdRtW4lnMgWGLMnjaLpOTvixgXFNOJoeDlN9idCMqCW98xS4rUVPPdrFlegyP9w2vQd2fJLk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Y1P2q12t; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778220522; c=relaxed/simple;
+	bh=dC6moos725vN40QiuJsjKokrVFl0dwcanMGIrdErclo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=EMgaaJ7t2vxLN0MfbnpL9x+NxMulMxpIGFFqUtML2bAFAC6n+hggKOk8S+floGvAvKu+FL005/RXM18z9I1PA17QLTNnV7+8h/je6ulOkeSNRz9Unq43aj0v71uwtpSCoUlucyPCjvWQdQI0nSLYuQlIR9azTHjMiGPpZJl5cgg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UzPfPYkt; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Y1P2q12t"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21815C2BCB0;
-	Fri,  8 May 2026 04:12:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778213540;
-	bh=xGK13SXlZFMCZyBXHG1YIKcBmtpGcWGbIJ5WRiG2RwQ=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=Y1P2q12t/0gddTnuxQOckoaIGYu3bjTZWgT2cmhUTDRKfFtUofqrjovX0ReQhNvYS
-	 cU+HBMYS4tJPgjff35lLQGbSvpUGsFjApRQj6biGqyXmffizRSdgVn4BtXKOq/hMfL
-	 fMDe9S01d42NqsL2sVvXgrzApATWeFMvUBvtRnX9NXuf9IzrmvVvtcG21UsR3g4brZ
-	 mxKGSep3nuD5n/b9B0XBgb9XQIH3larj3PGzscn9I8wkgNzLxT/4HQ+1a53ILqT3B9
-	 5Es5fwz+BN320sTmoaDDiDMtk2M03Z6361GYd9hsxOjLCky6GRWNRpIYbwZgs+lVvP
-	 9PL9AatndrLEA==
-X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: "Tian, Kevin" <kevin.tian@intel.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>
-Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Bjorn Helgaas <helgaas@kernel.org>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Samuel Ortiz <sameo@rivosinc.com>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Will Deacon <will@kernel.org>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	djbw@kernel.org
-Subject: RE: [PATCH v4 4/4] iommufd/vdevice: add TSM guest request ioctl
-In-Reply-To: <BN9PR11MB5276EA9139255EE49B56AD718C3D2@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20260427061005.901854-1-aneesh.kumar@kernel.org>
- <20260427061005.901854-5-aneesh.kumar@kernel.org>
- <20260427140539.GE740385@ziepe.ca> <yq5acxzj1dwu.fsf@kernel.org>
- <20260428124854.GA849557@ziepe.ca>
- <BN9PR11MB5276EA9139255EE49B56AD718C3D2@BN9PR11MB5276.namprd11.prod.outlook.com>
-Date: Fri, 08 May 2026 09:42:11 +0530
-Message-ID: <yq5alddutu90.fsf@kernel.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UzPfPYkt"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778220516; x=1809756516;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=dC6moos725vN40QiuJsjKokrVFl0dwcanMGIrdErclo=;
+  b=UzPfPYktsFZ4F74dJWwUgQbEiUPDY9gJdH4Gsa7GRBqVnUwlYR7LylQK
+   qTmhnEaRDsLTu5BXNs5yhjdhRtMzepwV6YG1XVrDH0GuhVHG4oqLXeYhG
+   IIlxRtQZgDZ7ge16lXqt7J03B+wAoHkzZOKx7SzHCoOVIUVzi3ArOfvdz
+   nPB5y1z7iK8qH9aWx+vAdFGcChV8vQAmLYG6KWHBFc1sKK8p5jIgR1FUJ
+   /+uK9qIRvq7rKkt76re/HjRbMCwevK0ixn8eWdYt3OeVP7REjeVnBVYkC
+   nwijRe9YIonIUSqimubaXz8XqTy5B6sR2MtedOkcSbvw0HmS5ic/H/hnm
+   A==;
+X-CSE-ConnectionGUID: Zv8GaSY3TjmPTRd5MYG9Rg==
+X-CSE-MsgGUID: cCi9p5y3Th6SyWx+wAfdNQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11779"; a="81747157"
+X-IronPort-AV: E=Sophos;i="6.23,223,1770624000"; 
+   d="scan'208";a="81747157"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2026 23:08:33 -0700
+X-CSE-ConnectionGUID: P2PrqLbrRAaXU+L+IQa6Tw==
+X-CSE-MsgGUID: SnqLcs45Tty88p3nHthLSA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,223,1770624000"; 
+   d="scan'208";a="274800633"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2026 23:08:28 -0700
+Message-ID: <666d749e-c1fd-44e1-bfe8-681ba04862e0@linux.intel.com>
+Date: Fri, 8 May 2026 14:05:58 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 11/16] iommu/vt-d: preserve PASID table of preserved
+ device
+To: Samiullah Khawaja <skhawaja@google.com>,
+ David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+ Saeed Mahameed <saeedm@nvidia.com>,
+ Adithya Jayachandran <ajayachandra@nvidia.com>,
+ Parav Pandit <parav@nvidia.com>, Leon Romanovsky <leonro@nvidia.com>,
+ William Tu <witu@nvidia.com>, Pratyush Yadav <pratyush@kernel.org>,
+ Pasha Tatashin <pasha.tatashin@soleen.com>,
+ David Matlack <dmatlack@google.com>,
+ Andrew Morton <akpm@linux-foundation.org>, Chris Li <chrisl@kernel.org>,
+ Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>,
+ YiFei Zhu <zhuyifei@google.com>
+References: <20260427175633.1978233-1-skhawaja@google.com>
+ <20260427175633.1978233-12-skhawaja@google.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20260427175633.1978233-12-skhawaja@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-"Tian, Kevin" <kevin.tian@intel.com> writes:
+On 4/28/26 01:56, Samiullah Khawaja wrote:
+> In scalable mode the PASID table is used to fetch the io page tables.
+> Preserve and restore the PASID table of the preserved devices.
+> 
+> Signed-off-by: Samiullah Khawaja<skhawaja@google.com>
+> ---
+>   drivers/iommu/intel/iommu.c      |   5 +-
+>   drivers/iommu/intel/iommu.h      |  12 +++
+>   drivers/iommu/intel/liveupdate.c | 141 +++++++++++++++++++++++++++++++
+>   drivers/iommu/intel/pasid.c      |   7 +-
+>   drivers/iommu/intel/pasid.h      |   9 ++
+>   include/linux/kho/abi/iommu.h    |  13 +++
+>   6 files changed, 184 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index b90757164cd8..6d42051dcf7c 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -2951,8 +2951,10 @@ static int clear_unpreserve_context_entry_fn(struct device *dev,
+>   	if (!info)
+>   		return 0;
+>   
+> -	if (dev_is_pci(dev) && dev_iommu_preserved_state(dev))
+> +	if (dev_is_pci(dev) && dev_iommu_preserved_state(dev)) {
+> +		pasid_cleanup_preserved_table(dev);
+>   		return 0;
+> +	}
+>   
+>   	domain_context_clear(info);
+>   	return 0;
+> @@ -4013,6 +4015,7 @@ const struct iommu_ops intel_iommu_ops = {
+>   	.page_response		= intel_iommu_page_response,
+>   #ifdef CONFIG_IOMMU_LIVEUPDATE
+>   	.preserve_device	= intel_iommu_preserve_device,
+> +	.unpreserve_device	= intel_iommu_unpreserve_device,
+>   	.preserve		= intel_iommu_preserve,
+>   	.unpreserve		= intel_iommu_unpreserve,
+>   #endif
+> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+> index 8e37acf7de12..62076a1a0b4d 100644
+> --- a/drivers/iommu/intel/iommu.h
+> +++ b/drivers/iommu/intel/iommu.h
+> @@ -1290,12 +1290,15 @@ static inline int iopf_for_domain_replace(struct iommu_domain *new,
+>   #ifdef CONFIG_IOMMU_LIVEUPDATE
+>   int intel_iommu_preserve_device(struct device *dev,
+>   				struct iommu_device_ser *device_ser);
+> +void intel_iommu_unpreserve_device(struct device *dev,
+> +				   struct iommu_device_ser *device_ser);
+>   int intel_iommu_preserve(struct iommu_device *iommu,
+>   			 struct iommu_hw_ser *iommu_ser);
+>   void intel_iommu_unpreserve(struct iommu_device *iommu,
+>   			    struct iommu_hw_ser *iommu_ser);
+>   void intel_iommu_liveupdate_restore_root_table(struct intel_iommu *iommu,
+>   					       struct iommu_hw_ser *iommu_ser);
+> +void pasid_cleanup_preserved_table(struct device *dev);
+>   #else
+>   static inline int intel_iommu_preserve_device(struct device *dev,
+>   					      struct iommu_device_ser *device_ser)
+> @@ -1303,6 +1306,11 @@ static inline int intel_iommu_preserve_device(struct device *dev,
+>   	return -EOPNOTSUPP;
+>   }
+>   
+> +static inline void intel_iommu_unpreserve_device(struct device *dev,
+> +						 struct iommu_device_ser *device_ser)
+> +{
+> +}
+> +
+>   static inline int intel_iommu_preserve(struct iommu_device *iommu,
+>   				       struct iommu_hw_ser *iommu_ser)
+>   {
+> @@ -1318,6 +1326,10 @@ static inline void intel_iommu_liveupdate_restore_root_table(struct intel_iommu
+>   							     struct iommu_hw_ser *iommu_ser)
+>   {
+>   }
+> +
+> +static inline void pasid_cleanup_preserved_table(struct device *dev)
+> +{
+> +}
+>   #endif
+>   
+>   #ifdef CONFIG_INTEL_IOMMU_SVM
+> diff --git a/drivers/iommu/intel/liveupdate.c b/drivers/iommu/intel/liveupdate.c
+> index 50a63812533f..404b485e97b9 100644
+> --- a/drivers/iommu/intel/liveupdate.c
+> +++ b/drivers/iommu/intel/liveupdate.c
+> @@ -14,6 +14,7 @@
+>   #include <linux/pci.h>
+>   
+>   #include "iommu.h"
+> +#include "pasid.h"
+>   #include "../iommu-pages.h"
+>   
+>   static void unpreserve_iommu_context_table(struct intel_iommu *iommu, int end)
+> @@ -140,10 +141,96 @@ void intel_iommu_liveupdate_restore_root_table(struct intel_iommu *iommu,
+>   	iommu_for_each_preserved_device(_restore_used_domain_ids, iommu);
+>   }
+>   
+> +enum pasid_lu_op {
+> +	PASID_LU_OP_PRESERVE = 1,
+> +	PASID_LU_OP_UNPRESERVE,
+> +	PASID_LU_OP_RESTORE,
+> +	PASID_LU_OP_FREE,
+> +};
+> +
+> +static int pasid_lu_do_op(void *table, enum pasid_lu_op op)
+> +{
+> +	int ret = 0;
+> +
+> +	switch (op) {
+> +	case PASID_LU_OP_PRESERVE:
+> +		ret = iommu_preserve_page(table);
+> +		break;
+> +	case PASID_LU_OP_UNPRESERVE:
+> +		iommu_unpreserve_page(table);
+> +		break;
+> +	case PASID_LU_OP_RESTORE:
+> +		iommu_restore_page(virt_to_phys(table));
+> +		break;
+> +	case PASID_LU_OP_FREE:
+> +		iommu_free_pages(table);
+> +		break;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static int pasid_lu_handle_pd(struct pasid_dir_entry *dir, enum pasid_lu_op op)
+> +{
+> +	struct pasid_entry *table;
+> +	int ret;
+> +
+> +	/* Only preserve first table for NO_PASID. */
+> +	table = get_pasid_table_from_pde(&dir[0]);
+> +	if (!table)
+> +		return -EINVAL;
+> +
+> +	ret = pasid_lu_do_op(table, op);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = pasid_lu_do_op(dir, op);
+> +	if (ret)
+> +		goto err;
+> +
+> +	return 0;
+> +err:
+> +	if (op == PASID_LU_OP_PRESERVE)
+> +		pasid_lu_do_op(table, PASID_LU_OP_UNPRESERVE);
+> +
+> +	return ret;
+> +}
+> +
+> +void pasid_cleanup_preserved_table(struct device *dev)
+> +{
+> +	struct pasid_table *pasid_table;
+> +	struct pasid_dir_entry *dir;
+> +	struct pasid_entry *table;
+> +	size_t dir_size;
+> +
+> +	pasid_table = intel_pasid_get_table(dev);
+> +	if (!pasid_table)
+> +		return;
+> +
+> +	dir = pasid_table->table;
+> +	table = get_pasid_table_from_pde(&dir[0]);
+> +	if (!table)
+> +		return;
+> +
+> +	/* Clear everything except the first entry in table. */
+> +	memset(&table[1], 0, SZ_4K - sizeof(*table));
+> +
+> +	/* Use the folio order to calculate the size of Pasid Directory */
+> +	dir_size = (1 << (folio_order(virt_to_folio(dir)) + PAGE_SHIFT));
+> +
+> +	/* Clear everything except the first entry in directory */
+> +	memset(&dir[1], 0, dir_size - sizeof(struct pasid_dir_entry));
+> +
+> +	clflush_cache_range(&table[0], SZ_4K);
+> +	clflush_cache_range(&dir[0], dir_size);
+> +}
 
->> From: Jason Gunthorpe <jgg@ziepe.ca>
->> Sent: Tuesday, April 28, 2026 8:49 PM
->>=20
->> On Tue, Apr 28, 2026 at 05:43:05PM +0530, Aneesh Kumar K.V wrote:
->> > Jason Gunthorpe <jgg@ziepe.ca> writes:
->> >
->> > > On Mon, Apr 27, 2026 at 11:40:05AM +0530, Aneesh Kumar K.V (Arm)
->> wrote:
->> > >> +/**
->> > >> + * struct iommu_vdevice_tsm_guest_request -
->> ioctl(IOMMU_VDEVICE_TSM_GUEST_REQUEST)
->> > >> + * @size: sizeof(struct iommu_vdevice_tsm_guest_request)
->> > >> + * @vdevice_id: vDevice ID the guest request is for
->> > >> + * @scope: Bus-specific scope classification for the guest request
->> > >> + * @req_len: Size in bytes of the input payload at @req_uptr
->> > >> + * @resp_len: Size in bytes of the output buffer at @resp_uptr
->> > >> + * @__reserved: Must be 0
->> > >> + * @req_uptr: Userspace pointer to the guest-provided request
->> payload
->> > >> + * @resp_uptr: Userspace pointer to the guest response buffer
->> > >> + *
->> > >> + * Forward a guest request to the TSM bound vDevice. This is inten=
-ded
->> for
->> > >> + * guest TSM/TDISP message transport where the host kernel only
->> marshals
->> > >> + * bytes between userspace and the TSM implementation.
->> > >> + *
->> > >> + * The meaning and valid values of @scope are defined by the TSM
->> backend for
->> > >> + * the device bus type.
->> > >
->> > > If you want to do this then you have to also provide a way to discov=
-er
->> > > what the TSM backend is so userspace can form the correct numbers.
->> > >
->> >
->> > These guest-driven requests end up in the correct VMM backend, which
->> > should already be aware of the scope value to use. In the case of ARM
->> > CCA, the RHI calls include a device ID (vdev_id), which the VMM can use
->> > to determine the appropriate scope value.
->>=20
->> That seems kind of indirect, we technically support multiple TSMs in
->> the kernel, how does it all get reconciled?
->>=20
->> Passing overlapping numbers here without any way to tell them apart is
->> not a good uapi design.
->>=20
->
-> Agree. another thing is, as I replied to last version, what about userspa=
-ce
-> providing a wrong scope value then what would be the consequence...
+The PASID table is currently active and in use by the hardware. Clearing
+the entries without the necessary hardware cache invalidation is buggy.
 
+It seems this manual clearing is a workaround because PASID domain
+preservation isn't supported yet. If so, rather than clearing the table
+blindly, the code should verify if any PASIDs (other than
+IOMMU_NO_PASID) are actually in use. If there are, the preserve callback
+should return an error.
 
-I will wait for Dan=E2=80=99s feedback on how we should handle the scope. W=
-e may
-have to move that to the generic headers as part of the TSM patchset.
+Or anything I overlooked here?
 
-Regarding what happens when an invalid scope is passed: tsm_guest_req()
-currently only handles pci_device, and the backend driver=E2=80=99s
-pci_tsm_guest_req() callback will reject unsupported scope values.
-
-I understand that we may want to add some checks in the generic ioctl
-handler once these scope values are moved out of PCI TSM.
-
--aneesh
+Thanks,
+baolu
