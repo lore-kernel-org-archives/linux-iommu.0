@@ -1,269 +1,197 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 586D33D5672
-	for <iommu@lists.linux.dev>; Fri,  8 May 2026 11:33:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E57801FECBA;
+	Fri,  8 May 2026 11:46:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778240023; cv=none; b=GUVK1hv+x/BalQMPBjReSbiK6cZI0+VdSUNGHqdlOO1wqzs378GOkHGCga+4N5QvbfIAWXgb10mZD96S9Km7CzKWK9CfAxZFlDrcLN29GKK0V3qjPS1j0CGwsTnmVbCI3/shbdau6oNlHq/mAdzGA+0G9vKyNPR4Eu7gXwM5MLc=
+	t=1778240771; cv=none; b=buPX4INcYaK0rzcGE58zWwh3G0bl9Fv1/F4UNuoDTIxMEqScfpgwhAV03jdathR5XCNxvVlAlyL7KRTghrcFWb4/Nm0w9NaY7i1n5DoNDmqfSBTRCfvGBQwwEmez3kO8HeACBzAHBHH2yQABfh7RcfsDqVSrrrD0vrBag/BKXKg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778240023; c=relaxed/simple;
-	bh=/8zJOScllfY27di+rf/OBgDiO9wjXvpqeL1239cUesc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Nhoox/TMPr4Bce5tVAybZ87RILRp1UXBOGBfFXUPR4oXoyI8FXKTEyuOZ5fh9pe806edgexOYtd1zmKL4BL1e2/1AbPsUxRQ4BL7HNGro17g9aFVJnjYG2hVbexbEsED8e7MBwIQYrzqkLPzTuJhDR7ejv1EhxCP6fEgGhGwXXI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=r7SclNCR; arc=none smtp.client-ip=209.85.214.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1778240771; c=relaxed/simple;
+	bh=2kzRnBqgBU5KvKIDqJxGWoWinU1iXToqRq/hGbyW4rI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Fj//aegbSefYOMOww0v9ShcoyBDiCrJ8Ywrd5xKxQQJRzI9+YSOvFpXw+gb9ui56hmP7A+oILI9AvXUtwSldxTjpPkVYLVPguPCK+sbr4KEyxxwRV1K5a0R5Qq9E0Aj8MqEjoMeUIRkp2HbWA3EAED/HRZcrD8GVnpSlqoHlkgw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bqs1FXjS; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="r7SclNCR"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2ba180a022dso73715ad.1
-        for <iommu@lists.linux.dev>; Fri, 08 May 2026 04:33:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778240020; x=1778844820; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=3HLt/hxOkl7aSPqpAf1bFw2IFuOfV/t7jCK+Ije+pMc=;
-        b=r7SclNCRJC8gCP9DVtDVPzW/I/FNXlUllqXr3bKEqQ47YxI7zf7cwE0m0dxMapRObp
-         lYlY+JZygelUFo9wz+rBFqgiYJIRD4lnSqS2FPr2aa8eaF9+H8A7CCaKQg4yaVhiAy5d
-         3KxUHS3kYT5ArHSj/Px/qU2alMLhU4UH+EZldLX3igSX/lD1Uf40Vradz8ASxgIizoLg
-         v3UPqDfPDkmwhe3SHidY9h/ua4XImQhsUWhJYuxCTl22UNn/BFiTSwPuxWhxQKEY8iUS
-         iAaOug1/pZh0/Ipj5d8SPU6VDGr9PoL5mEUq7VEgJO9kpgZVrx2VxFEy7vQmt5qW3w2p
-         afgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778240020; x=1778844820;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=3HLt/hxOkl7aSPqpAf1bFw2IFuOfV/t7jCK+Ije+pMc=;
-        b=QpO4wQekH+coAAK5CQkKnGnvLtsPOfmhOKA6OUOQXoHPvhCM+5UOb+zRulxDkj+IIz
-         jxPl9qW+LdBVQXWPJAmFy1G9cTXustgV7Lre34swa3GOcF3R4inqwJHbfhOxjUZ1imtG
-         I6Q6uSIvTNq4vBdXnihUfPjqynG0KuyVjPEPGpLCSKC0k3diWcYxFLzfg9J5OPQ1SsKu
-         APSWGnxxJP+SkqQz9aT6hJOeMigPEQOu0iRsoL5SrGXvkYwL9d2Mk+XfHxIKTKsZTH+S
-         AWPX8hEyn8k3IV2FT3tLaZClzUVln57AsNCZTwXq16S3KmX4QroR7tF+OnIgOZrFvDib
-         +eBg==
-X-Gm-Message-State: AOJu0Yyq8K3u9/V9trTXG0j7EjTW+8mW201bvBF/dqq6UdRW6IIZcQjo
-	gPfpk+/2NNPW9WY4g+d+oFw7oxT7DaRLBYvl9Hibexv07+wbt/gH0neXY8LDWz6VJw==
-X-Gm-Gg: Acq92OHxH6OqNlvNZQUM0DqbKc7EN+3mjYCNSIQ2L+V5cyqmy0ITTxFR76EmwzYNq3n
-	3Bbtlwk33OGeGXUPupafWf/gZpG2A/l2l6GHIvUbdwkxIjp2XnOHkGX51wFAE32CEYTllIZOAjY
-	Tmf9FTN4q3xw6FDYD0z0NjWgMJ/qP1t83mvA8Sbrrayw9dYkX+D/CY7A2KtG4XK8ieeozRiPsza
-	6yM77YxV7Dd2R+g7y6AH8t8kEGxLYVzlAWAGjT5ansWJFLN2J7DVgt4q1q/b02Vwyb+qlPnqL6P
-	N+Ic3U2iAam+CEZqhopOtB8v9avKFGx1N8Xq0NM2tLeXUHJsHeSsyBtL8C+7gX1wmDWJgCI+W16
-	bm3zW62qrZ5Cs7VfAGwKt56arRrVG4dOEvLWQ/RNYbYL5ku0I6OHkjWKUkz3XJoqOpQR37fYptO
-	7tRGNw1hAkfloU/PgwWOc+fIuSp7KpeXT7quukdv9kYFoAnvQZ35eHl2xuKB9Zq8416Y/J
-X-Received: by 2002:a17:903:2c9:b0:2ba:30f:33e0 with SMTP id d9443c01a7336-2bae9e99284mr2894105ad.20.1778240019615;
-        Fri, 08 May 2026 04:33:39 -0700 (PDT)
-Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-83965d36c10sm14982546b3a.25.2026.05.08.04.33.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 May 2026 04:33:39 -0700 (PDT)
-Date: Fri, 8 May 2026 11:33:32 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Jonathan Hunter <jonathanh@nvidia.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Krishna Reddy <vdumpa@nvidia.com>, Will Deacon <will@kernel.org>,
-	David Matlack <dmatlack@google.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Mostafa Saleh <smostafa@google.com>
-Subject: Re: [PATCH 6/9] iommu/arm-smmu-v3: Directly encode simple commands
-Message-ID: <af3KDBt8vhClSKEF@google.com>
-References: <0-v1-b7dc0a0d4aa0+3723d-smmu_no_cmdq_ent_jgg@nvidia.com>
- <6-v1-b7dc0a0d4aa0+3723d-smmu_no_cmdq_ent_jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bqs1FXjS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13763C2BCB0;
+	Fri,  8 May 2026 11:46:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778240770;
+	bh=2kzRnBqgBU5KvKIDqJxGWoWinU1iXToqRq/hGbyW4rI=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=bqs1FXjS13wNgcrsExd9ewUN58pNMxoAP7eGdSlYnjyF9xKfP2iBHfxOe2KfZVREM
+	 9gxfVARpua7JlcnWeFDB36Ex/f7obduxKx7a0GCETaRR9lUsUihaUKvaK18xEp9oXQ
+	 EY0CpVjwQJzDNGZVmxxjeVnj4xgCbadZtPEi+x6O7czh1R5FJzdEmTz2myEDvJV5r5
+	 qBXv/Sp+zgF4dzaeaYRg1oDi+w5cSztHW6FsrRzRsCQnX51ZZY4sObGOlPDyPUTaaJ
+	 ileYHXScFqnzAik6050zNfYLeWzMHmZI+BsS7c9EbmjnQ3tlKrKYq/ykTeRAnIJPO3
+	 cL2zQ6WDr2C6g==
+Message-ID: <a5660e22-b1f9-4dcb-a190-f3dc5253c570@kernel.org>
+Date: Fri, 8 May 2026 13:46:03 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6-v1-b7dc0a0d4aa0+3723d-smmu_no_cmdq_ent_jgg@nvidia.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3] dma-contiguous: setup default numa cma area if not
+ configured explicitly
+To: Feng Tang <feng.tang@linux.alibaba.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Ying Huang <ying.huang@linux.alibaba.com>,
+ Andrew Morton <akpm@linux-foundation.org>, Lorenzo Stoakes <ljs@kernel.org>,
+ Liam.Howlett@oracle.com, Vlastimil Babka <vbabka@kernel.org>,
+ Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>,
+ Michal Hocko <mhocko@suse.com>, linux-mm@kvack.org,
+ Christoph Hellwig <hch@lst.de>, Catalin Marinas <catalin.marinas@arm.com>,
+ Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org,
+ Changrong Chen <chenchangrong.ccr@alibaba-inc.com>
+References: <20260428060550.7167-1-feng.tang@linux.alibaba.com>
+ <6dd52f8b-7092-4d02-ba24-f8b55409b7b6@kernel.org>
+ <afBxtIdWqv8pD8YE@U-2FWC9VHC-2323.local>
+ <f900172c-341a-4956-b7b7-b297418be913@kernel.org>
+ <aftiQuHOA0t2lfyP@U-2FWC9VHC-2323.local>
+From: "David Hildenbrand (Arm)" <david@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=david@kernel.org; keydata=
+ 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
+ qIws/H2t
+In-Reply-To: <aftiQuHOA0t2lfyP@U-2FWC9VHC-2323.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Fri, May 01, 2026 at 11:29:15AM -0300, Jason Gunthorpe wrote:
-> Add make functions to build commands for
+On 5/6/26 17:46, Feng Tang wrote:
+> On Fri, May 01, 2026 at 08:51:39PM +0200, David Hildenbrand (Arm) wrote:
+>> On 4/28/26 10:37, Feng Tang wrote:
+>>> Hi David,
+>>
+>> Hi!
+>>
+>> [...]
+>>
+>>>
+>>> Right for default kernel configs.
+>>>
+>>> In kernel/dma/Kconfig:
+>>>
+>>> config CMA_SIZE_MBYTES
+>>> 	int "Size in Mega Bytes"
+>>> 	depends on !CMA_SIZE_SEL_PERCENTAGE
+>>> 	default 0 if X86
+>>> 	default 16
+>>>
+>>> config CMA_SIZE_PERCENTAGE
+>>> 	int "Percentage of total memory"
+>>> 	depends on !CMA_SIZE_SEL_MBYTES
+>>> 	default 0 if X86
+>>> 	default 10
+>>>
+>>>
+>>> Yes. I thought about that, and didn't have good solution, and used this
+>>> given it's on a multi-numa-node machine, which may not be too bad
+>>> regarding memory usage.
+>>
+>> It sounds wrong given the existing config options.
 > 
->  CMDQ_OP_TLBI_EL2_ALL
->  CMDQ_OP_TLBI_NSNH_ALL
->  CMDQ_OP_CFGI_ALL
->  CMDQ_OP_PREFETCH_CFG
->  CMDQ_OP_CFGI_STE
->  CMDQ_OP_CFGI_CD
->  CMDQ_OP_RESUME
->  CMDQ_OP_PRI_RESP
+> Yes, it is confusing. 
 > 
-> Convert all of these call sites to use the make function instead of
-> going through arm_smmu_cmdq_build_cmd(). Use a #define so the general
-> pattern is always:
+>>>
+>>> Robin did concern about the memory usage for embedded/small devices in
+>>> v2 review, and we change to v3 to not affect them.
+>>>
+>>>
+>>> I agree :)
+>>>
+>>>  
+>>> This sounds good to me, if no objection from others. Maybe default 64MB
+>>> or more. One good part is, all these setup is under protection of
+>>> CONFIG_DMA_NUMA_CMA. 
+>>
+>> I cannot do the heavy thinking here because -EBUSY, but maybe you want a config
+>> option similar to CMA_SIZE_MBYTES/CMA_SIZE_PERCENTAGE that either controls that
+>> these sizes will be split over NUMA nodes, or another one, that sets the default
+>> for pernuma.
 > 
->    arm_smmu_cmdq_issue_cmd(smmu, arm_smmu_make_cmd_XX(..));
+> Maybe a CMA_NUMA_SIZE_MBYTES?
+
+Maybe, I'm hoping some CMA DMA people have the capacity to provide input.
+
+>  
+>> [...]
+>>
+>>>
+>>> My thought was 'struct cma' already have 'nid' member, and when CONFIG_NUMA=y,
+>>> it may be useful to save the 'nid' info instead of NUMA_NO_NODE for the default
+>>> cma area (cmdline like cma=XXG@YYG could make it on different node)
+>>
+>> Ah, yeah. It's a bit nasty that we have to handle the default area like that.
+>>
+>> Another sign that we probably shouldn't deal with the default area :)
 > 
-> Add arm_smmu_cmdq_batch_add_cmd() which takes struct arm_smmu_cmd
-> directly to match the new flow.
+> Yep, in v2 I didn't touch the default area, while Robin had a concern
+> that the v2 approach will bindly add an extra per-numa cma area for
+> the node which already has the default area, which will hurt those
+> small/embedded devices which has limited number of memory. Adding
+> the nid check is trying to keep the behavior of one node device
+> unchanged.
 > 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 213 +++++++-------------
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h | 109 +++++++---
->  2 files changed, 151 insertions(+), 171 deletions(-)
->
-
-[----- >8 ------]
-
->  
-> -static int __arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
-> -				     struct arm_smmu_cmd *cmd,
-> -				     bool sync)
-> +static int arm_smmu_cmdq_issue_cmd_p(struct arm_smmu_device *smmu,
-> +				     struct arm_smmu_cmd *cmd, bool sync)
-
-Nit: I'm not sure why we need to rename this? We can still define the 
-rest of the helpers like:
-
-#define arm_smmu_cmdq_issue_cmd(smmu, cmd)                      \
-	({                                                      \
-		struct arm_smmu_cmd __cmd = cmd;                \
-		__arm_smmu_cmdq_issue_cmd(smmu, &__cmd, false); \
-	})
-
->  {
->  	return arm_smmu_cmdq_issue_cmdlist(
->  		smmu, arm_smmu_get_cmdq(smmu, cmd), cmd, 1, sync);
->  }
->  
-> -static int arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
-> -				   struct arm_smmu_cmd *cmd)
-> -{
-> -	return __arm_smmu_cmdq_issue_cmd(smmu, cmd, false);
-> -}
-> +#define arm_smmu_cmdq_issue_cmd(smmu, cmd)                      \
-> +	({                                                      \
-> +		struct arm_smmu_cmd __cmd = cmd;                \
-> +		arm_smmu_cmdq_issue_cmd_p(smmu, &__cmd, false); \
-> +	})
+>>>
+>>>
+>>> Per my understanding, it won't. There is a cma_validate_zones() to prevent it
+>>> from crossing zones.
+>>
+>> It's a bit confusing, because it ignores other nids.
 > 
-> -static int arm_smmu_cmdq_issue_cmd_with_sync(struct arm_smmu_device *smmu,
-> -					     struct arm_smmu_cmd *cmd)
-> -{
-> -	return __arm_smmu_cmdq_issue_cmd(smmu, cmd, true);
-> -}
-> +#define arm_smmu_cmdq_issue_cmd_with_sync(smmu, cmd)           \
-> +	({                                                     \
-> +		struct arm_smmu_cmd __cmd = cmd;               \
-> +		arm_smmu_cmdq_issue_cmd_p(smmu, &__cmd, true); \
-> +	})
->  
->  static void arm_smmu_cmdq_batch_init_cmd(struct arm_smmu_device *smmu,
->  					 struct arm_smmu_cmdq_batch *cmds,
-> @@ -962,14 +924,41 @@ static void arm_smmu_cmdq_batch_init(struct arm_smmu_device *smmu,
->  	arm_smmu_cmdq_batch_init_cmd(smmu, cmds, &cmd);
->  }
->  
-> +static void arm_smmu_cmdq_batch_add_cmd_p(struct arm_smmu_device *smmu,
-> +					  struct arm_smmu_cmdq_batch *cmds,
-> +					  struct arm_smmu_cmd *cmd)
+> I might have missed your point. Do you mean one cma are could have
+> multiple ranges?
 
-Nit: Same here, why not  __arm_smmu_cmdq_batch_add_cmd? I understand
-that _p just means we'll aceept ptr.. but the name's kinda wonky.
+I don't know, it's confusing :)
 
-> +{
-> +	bool force_sync = (cmds->num == CMDQ_BATCH_ENTRIES - 1) &&
-> +			  (smmu->options & ARM_SMMU_OPT_CMDQ_FORCE_SYNC);
-> +	bool unsupported_cmd;
-> +
-> +	unsupported_cmd = !arm_smmu_cmdq_supports_cmd(cmds->cmdq, cmd);
-> +	if (force_sync || unsupported_cmd) {
-> +		arm_smmu_cmdq_issue_cmdlist(smmu, cmds->cmdq, cmds->cmds,
-> +					    cmds->num, true);
-> +		arm_smmu_cmdq_batch_init_cmd(smmu, cmds, cmd);
-> +	}
-> +
-> +	if (cmds->num == CMDQ_BATCH_ENTRIES) {
-> +		arm_smmu_cmdq_issue_cmdlist(smmu, cmds->cmdq, cmds->cmds,
-> +					    cmds->num, false);
-> +		arm_smmu_cmdq_batch_init_cmd(smmu, cmds, cmd);
-> +	}
-> +
-> +	cmds->cmds[cmds->num++] = *cmd;
-> +}
-> +
-> +#define arm_smmu_cmdq_batch_add_cmd(smmu, cmds, cmd)               \
-> +	({                                                         \
-> +		struct arm_smmu_cmd __cmd = cmd;                   \
-> +		arm_smmu_cmdq_batch_add_cmd_p(smmu, cmds, &__cmd); \
-> +	})
-> +
->
+-- 
+Cheers,
 
-[----- >8 -----]
-
->  
->  static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
-> @@ -3464,7 +3405,7 @@ static void arm_smmu_inv_flush_iotlb_tag(struct arm_smmu_inv *inv)
->  
->  	cmd.opcode = inv->nsize_opcode;
->  	arm_smmu_cmdq_build_cmd(&hw_cmd, &cmd);
-> -	arm_smmu_cmdq_issue_cmd_with_sync(inv->smmu, &hw_cmd);
-> +	arm_smmu_cmdq_issue_cmd_with_sync(inv->smmu, hw_cmd);
-
-Nit: are we passing it by value here? This would be a 16-byte stack
-copy? As with the macro expansion this looks like:
-
-{
-	struct arm_smmu_cmd __cmd = hw_cmd; // <-- Redundant 16-byte copy
-	arm_smmu_cmdq_issue_cmd_p(inv->smmu, &__cmd, true);
-}
-
-Why not use arm_smmu_cmdq_issue_cmd_p(inv->smmu, &hw_cmd, true) ?
-Although, I see this is eventually cleaned up in Patch 9.
-
->  }
->  
->  /* Should be installed after arm_smmu_install_ste_for_dev() */
-> @@ -4827,8 +4768,6 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
->  {
->  	int ret;
->  	u32 reg, enables;
-> -	struct arm_smmu_cmdq_ent ent;
-
-Ah, we remove this unitialized thing here. I guess we should still init
-it in the previous patch for consistency.
-
-[---- >8 ----]
-
->  #define CMDQ_RESUME_0_RESP_TERM		0UL
->  #define CMDQ_RESUME_0_RESP_RETRY	1UL
->  #define CMDQ_RESUME_0_RESP_ABORT	2UL
-> @@ -475,6 +481,77 @@ enum arm_smmu_cmdq_opcode {
->  	CMDQ_OP_CMD_SYNC = 0x46,
->  };
->  
-> +static inline struct arm_smmu_cmd
-> +arm_smmu_make_cmd_op(enum arm_smmu_cmdq_opcode op)
-> +{
-> +	struct arm_smmu_cmd cmd = {};
-> +
-> +	cmd.data[0] = FIELD_PREP(CMDQ_0_OP, op);
-> +	return cmd;
-> +}
-> +
-> +static inline struct arm_smmu_cmd arm_smmu_make_cmd_cfgi_all(void)
-> +{
-> +	struct arm_smmu_cmd cmd = arm_smmu_make_cmd_op(CMDQ_OP_CFGI_ALL);
-> +
-> +	cmd.data[1] |= FIELD_PREP(CMDQ_CFGI_1_RANGE, 31);
-
-Maybe this is a good opportunity to define "31"? We already have a 
-similar definition for TLBI: #define CMDQ_TLBI_RANGE_NUM_MAX 31
-
-Perhaps we could have: #define CMDQ_CFGI_RANGE_ALL 31
-
-With the above nits:
-
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
-
-Thanks,
-Praan
+David
