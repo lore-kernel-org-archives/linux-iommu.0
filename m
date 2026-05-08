@@ -1,252 +1,126 @@
-Received: from mx0b-0064b401.pphosted.com (mx0b-0064b401.pphosted.com [205.220.178.238])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B53363CB2E5
-	for <iommu@lists.linux.dev>; Fri,  8 May 2026 10:01:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.178.238
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778234504; cv=fail; b=d0VkNc7W6QMeu/Nhn0CVMm+J6iRH/E60GyrRAaqBKEnPum563P1aY8MsEzkib0iIQEDc1HSPctj10kqEnYyvDMjaAfLLdsSYslY1nrl3+87rCjana1TPrsQojj+pttoj6SUXJ+QCdCE6Cpy35Jt391FRsga4cP2MS/8GrB1B8Lk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778234504; c=relaxed/simple;
-	bh=CuQ6Rx37Q3AD7X6b95bzyDiPnTEVh+kKcO+wFf4Anxo=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=cU85br9sL/IfIXXbeGoJsXngw8p2wOMinF6qH6rbeR3+W8UYxjcRwdQPZy2kEDf6cS9mE/3No72vwNDVJlJtsreXBskdb0Q9ITFEYfCvWY/d3MBrsyhHuUObhLANd7EZY+zXPjhGLNdM61vrublSeZ9LYNa8SxEi8YndTuMmI4Q=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=windriver.com; spf=pass smtp.mailfrom=windriver.com; dkim=pass (2048-bit key) header.d=windriver.com header.i=@windriver.com header.b=bgrKKWaI; arc=fail smtp.client-ip=205.220.178.238
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=windriver.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=windriver.com
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A57C42F8EBE
+	for <iommu@lists.linux.dev>; Fri,  8 May 2026 10:45:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778237161; cv=none; b=kf3ITaAm1Wisa1JKMmZg0c77rDhqDBH0bLlqxNVGyUDAef50BaEkmZpl21Bvy3CJSNcNfx2MSc4KaCNO7C0WF5WScRPvS2NqBRw/FWKhzV3jvhWQd73FFUtxssmiZyX+KPztfMYJJLsNBHjvYVQZGvtwr+li781IIGg/ObN4yeI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778237161; c=relaxed/simple;
+	bh=yyZzoYvssdmpBPRlr1SJGXb2t0ugmFYZleDiF4Y/D5s=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=kDZwrRoKARAR2s4spcNWN9K/rOZNRoA9oYntUTBUyd75CvsoSvwbHkPEpTsTv1SikOemNVNvmO2pY9ZazMGGK+nFjUWy6PtGuJUmsB2fQdRP1Id9f0m1dO08lrU8rb74ybHOXIDhlV/I/0GqtsbHSb0hgwLpRA8ZWbPbx7QtFxQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=KA0eieWe; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=windriver.com header.i=@windriver.com header.b="bgrKKWaI"
-Received: from pps.filterd (m0250812.ppops.net [127.0.0.1])
-	by mx0a-0064b401.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6488T6gO203826;
-	Fri, 8 May 2026 10:01:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com;
-	 h=cc:content-transfer-encoding:content-type:date:from
-	:in-reply-to:message-id:mime-version:references:subject:to; s=
-	PPS06212021; bh=VWJaBp82KGAsYvmnr6kBlMWRjHQ9RZ7xZMhnNF3tQ4A=; b=
-	bgrKKWaIv8LImJLI2geU78bqjEEjiqvYkBE6KwJsY2f/IyoM2cbklwnMSxQ7jRpV
-	zlEKemI7Z6Wn/pvIhgwwUs8nxC/8oLMZz3bOZ/CoFNTf1OvkRT8rvKrDtQqfGE4o
-	O1CzP/ClgQqnitidv+tVdF6jjnvSo5r2YpKBtpTVqPnkV6BOSoBc4VRj2s1ieAFl
-	uRxcU6r8UJ/nG2sJa34bk2mETNslnGtfm0RzJrCy5je9YY2sAUad0qxDnnbtqi9J
-	272rVcK7G4tDK6Kes/aJ1qea3ZTElpqCx+WleMbuYvfpLfGgxLopm0GYuCMz5HKq
-	Btay8Bx6wZGOLgC1KqLVcw==
-Received: from byapr05cu005.outbound.protection.outlook.com (mail-westusazon11010014.outbound.protection.outlook.com [52.101.85.14])
-	by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 4e1cbvr2n8-1
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Fri, 08 May 2026 10:01:15 +0000 (GMT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=cFhhqqCLwuHpIyLe4tWsjVQPjiYMwMhSFeHOhcz1dWoM9ptxmigVQcpdcsZ/M2rkilg72fuF4qb+NYsOL+kQmgu/XJ7xfJzsxAM6KqcJJ76ZuMfdp8CKKcr7aRUYvxN96Np9kyQC6ZVOQL4+AumeT/wBcENF/+QrKxsYJfIZQ+mYARQdQ3g+gQcVJQuLnbkOMkHdxDhLZZeD4nr1BqEBOHmVp0+ZyUqpwWmrtuDwONWQJIR3wTNM7VuoN4JinmVWyfTuVxADJm7TKvXXfc5Uxl+ZOVpKPIdYS4GUwmvTyYIt3rhB0E9PmlRBwNjMFA6A7OBICeZ4nsHePou8bEZJ0Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VWJaBp82KGAsYvmnr6kBlMWRjHQ9RZ7xZMhnNF3tQ4A=;
- b=Mbqn0Uq3U2paTKggYLzgHN6GAQVPRBfk+U9ppiazrjWafqA34PNFo9v1rxjQwLH4wZhnI8so31ArNQ57auWk/RuseOvCakCqtq7w7u+qlmKVJZxypXVjz1EpVvF7EAP8zlOcrx0hoPdDsoWf4eM0sqOdykA6+XhLx7hhLIUn11fQPVvcq7jKJ5I1X1EY++w2sQoNTJ9780HBdxRH+WCxqCPVEAdpoCZ6qqut2XpOq3779UXRtsR5ViVKY3uKYJU4u8qlPmbCdRUFTDW8PajlH/2DqzDFMiCt+Zt9Ho1e5WXSVPw2hKqkUolTHkPEh7C2QtDB6XI7up97i7xQvuPN0A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=windriver.com; dmarc=pass action=none
- header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
-Received: from DS0PR11MB7736.namprd11.prod.outlook.com (2603:10b6:8:f1::17) by
- CH2PR11MB8835.namprd11.prod.outlook.com (2603:10b6:610:285::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9891.19; Fri, 8 May
- 2026 10:01:10 +0000
-Received: from DS0PR11MB7736.namprd11.prod.outlook.com
- ([fe80::f7c7:f271:a7b:7a68]) by DS0PR11MB7736.namprd11.prod.outlook.com
- ([fe80::f7c7:f271:a7b:7a68%3]) with mapi id 15.20.9891.019; Fri, 8 May 2026
- 10:01:10 +0000
-Message-ID: <89094011-fe78-40f9-9695-d50ee19167c5@windriver.com>
-Date: Fri, 8 May 2026 18:01:01 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dma-mapping: remove bogus test for pfn_valid from
- dma_map_resource
-To: Robin Murphy <robin.murphy@arm.com>, m.szyprowski@samsung.com
-Cc: leon@kernel.org, kbusch@kernel.org, jgg@ziepe.ca, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-References: <20260507032120.4072283-1-jianpeng.chang.cn@windriver.com>
- <2dcc29d6-a4a9-4fdf-861d-312941ab0f07@arm.com>
-From: Jianpeng Chang <jianpeng.chang.cn@windriver.com>
-In-Reply-To: <2dcc29d6-a4a9-4fdf-861d-312941ab0f07@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: KL1PR0401CA0014.apcprd04.prod.outlook.com
- (2603:1096:820:f::19) To DS0PR11MB7736.namprd11.prod.outlook.com
- (2603:10b6:8:f1::17)
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="KA0eieWe"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C128B1C01;
+	Fri,  8 May 2026 03:45:52 -0700 (PDT)
+Received: from [10.57.63.248] (unknown [10.57.63.248])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 847223F763;
+	Fri,  8 May 2026 03:45:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1778237158; bh=yyZzoYvssdmpBPRlr1SJGXb2t0ugmFYZleDiF4Y/D5s=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=KA0eieWeLNPgGr4n8aoPRUnkbT8E4iRGWp0RUrRa49SRyuVOv1N1sDkNm3t3stpI6
+	 v1GwklLlCbo96Le5Flzdm3+ihD+p7kNSNC6JdvDw62LmHlg8wlHvUDlEoHCb73WJl7
+	 q+KVVETaIvT6Q/oEAyLPh7f87zK2Ng7uMffYH+2o=
+Message-ID: <b00c0492-e71a-4be6-b95f-ec3b424cc8ac@arm.com>
+Date: Fri, 8 May 2026 11:45:50 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR11MB7736:EE_|CH2PR11MB8835:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1ed4255b-9ac3-402f-c4ed-08deace8baac
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|1800799024|366016|22082099003|56012099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	uG4lD+BgMzHNJEKK0Piw8ALtbYsptGT1D7GpiOjaeZNR8DjQBB3KMgMhjRkBjfjIjkXlZZTgKhKf9x0eHpE4OjhJxGHPhY5za3eNbj0jynnRtfjTDF7R3EW4lWdaXdP8Ki97wLrInv7EXYjREyYDjLJasagLylv0RYJigjeI7O1yd06PvapQ6IWxwJnKf+FmbkZA7tAasGu1og+Dh6zuqzyq2n6GUKmo8Y3tZ0ovS5C0kFjqHpQ08R0+KlZiDXZXvxciX0lcpOBVG0Ehth3AVhPRk42RQxrKcBmuMgUnRVnjrIe+a9VSTR686EKLsSRP13hFw55wXNgpANVrST1st3ytDZje3gaaa+li7BTvRuT+guM3KbNBMiwAQkjBVOW9HdtUQA51XmjhPihtBU3JP+JbgZR0gqUBUGX0AyotfAsaf0LO6UHCqfHPdoF8dMI3jtHod0EMjZIFjCecK7IPuhJ1YLiRPnmU9Lwhvbj4qL0NQNoAptaU5Kuzqn8vByVuIJuRRQlS/A5lv+LpChEt7H3y+/zbbwta5VDWRC7wwMMOK5zIy62/IhSG8xWLrk7NVTmPLDFTXFhUIETS+wOt1zBhOfhvzF6fe7Oag8dqjHEMI2VjPoZf1UnrMnPXcftXG31IU1I+iVMHjSfAUVuweEka+nChdXEhEg5RwqViDPVxjceOc4YVE4Rl1TsdHtqu
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7736.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(22082099003)(56012099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?a3JHTUJFUVVQRmErQkpTQmZZTHZTRVgweDNGZmJGbTNyYXJGR3RQOU45YWFy?=
- =?utf-8?B?TEQvdUsyV1dmclFTSFRiMHo4YTlYaHV4TjBvMGtmQlRkOUxuYmpTQnlvVHNY?=
- =?utf-8?B?WU9MZDIrbWN2WGdPVFprWGlsYU85T0JvR3hFMzVLVTZYV3ZVNXpQZ2JmakJZ?=
- =?utf-8?B?U204NElYcHc2cWEyYTQxLzVUUTMzVTlaeXlNMk1lQVhqRWtuRHkwbzgyVVFO?=
- =?utf-8?B?ai9vN1JPZ3ROcDFMOHdURE1IeTJFWWg0MkRJUWJ0S2I1ZjJJS2VId0pHN3hw?=
- =?utf-8?B?YkkySHR4UjNwTURTa0NDU2t5OGdnWUxXOGRKeDh3Qi9wVmNmbnRCQk9pMFF0?=
- =?utf-8?B?YVpUN2VjN1JpcVAwV1lPVDdjczZmZnVGS1hDdnpoN3JEUms3YXFDQ2ttb01r?=
- =?utf-8?B?NFhzcTVJU3l5cHRULzFBTDJkQldoUmYrb0d5VDJxMGYrYUxNenMzR2xaVUhG?=
- =?utf-8?B?S2MzZmJiYXRZc2NESSt5NjhZZm9ua3Yzb1ZxanJFbGRDcGh2Zlo5ZDdPRm96?=
- =?utf-8?B?eGdZbmM2Q2lsZk5jQnpCN01IbU5zeDFYODBUZEhrbjFsaXhoUmxHckd3bVpo?=
- =?utf-8?B?WTE4Q3hCK0xhQ0tYL0hDdkloMnVBWlMyS29NZ0IyNE5tUWdHVk5rZGExU25m?=
- =?utf-8?B?OEhDWktCcWY0NmdJQm5YYlBPL1JwUm55cGpaN1JSQ0Nnbk96NVV4V3BJREJz?=
- =?utf-8?B?c2hWNThaMkFqTytKWm0zZzhFTE9TVFk1OG9UYWNidGRCbWk3V3I2TzN3dURh?=
- =?utf-8?B?cmJMSlFUanBhV29TZDc0UHc0Yk5PWVNDSHZ3YlA2NUk3NytjNFhOSWdvQ1ZM?=
- =?utf-8?B?dE5rRVU1cTNLbm1YbkU2WUhyd3BmdnJ1ZkU3cXNJbjRSZE1kSGFiUkRVMXVm?=
- =?utf-8?B?cUE2SEdCLzhNcFAzK0p0YzBmbzFBTlU0VUtsQjA5YWw0akhSd0lSU05xc1pE?=
- =?utf-8?B?TmFqQVJ5cGgvWGdxdDRta0M1SWVPclNoRUlveXlQR05rbEpYYTFGd3BlRU5T?=
- =?utf-8?B?Nld5cTlxY0ZQcGY2TEh5b01pdnQrRUJVczNSbTN6MG1HdDVSY2tYcEVMWmpR?=
- =?utf-8?B?VFZtbHpMTGN5bjlVaEhjUHUrcVhUcmtVVkJjRjJLeVErOW83Z2V2M0hlRzZ6?=
- =?utf-8?B?Mk5rMEwrKzBORnVFVm9KUjV4a0xCY21jTEQyZERGRVJmdE95VVRmeGtkUWxP?=
- =?utf-8?B?MTNmaU1CUmJQZWJ3U01xSmY4Sm52bGtCL0dJak1yUVMzZkppa2NxUG5aZ29a?=
- =?utf-8?B?KytrZGozNkwyNWZFT1QrYXJkcnhRSVdUOWpZbDBudVdPUEhFZkNzaDlRY0k3?=
- =?utf-8?B?Um9WSXFrTFoxdTk2aVo5MmRQS0d4cGp4NVhEQ0RtSDdnS3YzYU9zQ1cwd2pP?=
- =?utf-8?B?cFhYaWxUTnBnNWJ1eUp6NXF6dGs3TDI5R3lvS1VISW5XNHMvRm9uM25BaTJi?=
- =?utf-8?B?a2JRT1liZ0puRWVRYUJMOGJLY1dYUFRCclR4VXhCOHZ3TzJiN1NkSVpqZ1B5?=
- =?utf-8?B?UlRaUnFZam9TdXdQamM0TThlVEtUM2wrcE9SV1VkNTRod2Y1NG5ZUlZ3ajhy?=
- =?utf-8?B?UnRMQzNobXBuVk42M0E2enl5UmhIbzdnWFBTYTdDenJ1S1ZhMVRFN3lJam5i?=
- =?utf-8?B?cFFPRGNnUGNFVDJuTGY4Y0dXMG9HQmE0VjFSbmNicnN2d1hiM3ViUmZtN0lT?=
- =?utf-8?B?dzIrQkhTRUd2QkJTK0d0NDNsa1RDWW5wenZkSXJwVnlmYldDYmVsYjFSWjBx?=
- =?utf-8?B?dHUycTRtR0NWVVdUYVJaZURGazcya0hwck5QdkFsN3FjZjlzT0NRaytUV24v?=
- =?utf-8?B?UEZnaXlLTEhNSnZxamI3NUNxUHBwMWcxRGJHdjJPWC95dnJEMjhjdGRoOEs1?=
- =?utf-8?B?L1Z3NGx5ZXd4bmVtUWVQRVVWcWc2ZDVGbTFFWS92N3p6Ky9PMGcvNmlydDJP?=
- =?utf-8?B?ZXU3NnR3anZleDIwZFpSalRJNDFublpkTDZaZ0ZRN3NWVlBEMnRGcGd6NHRr?=
- =?utf-8?B?Z2pPR0JLZDlTbzBYUGZEOWxGYnozRlAzd2hjV2NabVN1aHdMbG5uNm5xZ1hN?=
- =?utf-8?B?ZlQ5eTkvT2VvYWlOWTZxdkNEU0tPUGd6ZnpUL2pNb3g5cTV0R1VWTVFZclBx?=
- =?utf-8?B?MHJWWUNzTHZJbGZEUGphNXFxMDdvRmV4NlZjaTB4TGlVU0l1NDJBd25XOThC?=
- =?utf-8?B?b0NSMHpWcVVuN05EYXdXVG9WRlQ5dlZvRWlCS21LM29lWE9QbEZsN0dFR09W?=
- =?utf-8?B?Q0xkR29RbXJ0dmFJU1dpUXROMlZ0c3BTQ2pWaXFkSVV4bUtLT1diMitNbEw0?=
- =?utf-8?B?MHgvVWw2Rk10TzZXTnVQV1NFYVJieFhiOVVSYklyZGRTa2pCdmZzS1lNcGR2?=
- =?utf-8?Q?L1wxuJY0URU8Xi9I=3D?=
-X-Exchange-RoutingPolicyChecked:
-	TIyIHa2V4ofVXlrn222yvITDO6bbXCZdFHqcVePXk17K035gYp8z5yijJEqKs2aEoQzkQgqk8wVAFydCyd2hseZX9WabEgLnYsKKJ64N9YiR3ILdyppYkzryMrT99TB8f3dT1cfMVQpc2UOglSbsA1qmn8/5MASJn7v0emDchuqNIy5OoAuDHvfTr1MNYsLb6SDO7/aq6tMjVzb80sHHCWuGhm03beRaREeHgLCPGNiovq+sleo3JXGw5J1k45cUJbvaJz32GNOWSXWX1qgi1p5oJTNAiWr94LseSA0XzPMNs0pAaMaNCsTUp7HQr0w2DYIYFF1CYK+LVeo6wUrrSw==
-X-OriginatorOrg: windriver.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1ed4255b-9ac3-402f-c4ed-08deace8baac
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7736.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2026 10:01:10.0820
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sYcPFbeck/irCUMF7jfEWx/FKJhGwleZun2X7lf2AGI76S18IBTRrUsNUwA7YQF0sNQ8S5RsQzSsNX3GfM/oS4WfvblxUOfC/Ligvjmn4LE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR11MB8835
-X-Proofpoint-ORIG-GUID: 6LwMlYeMefpiPpQs5R9U9v30NP7zw_-9
-X-Proofpoint-GUID: 6LwMlYeMefpiPpQs5R9U9v30NP7zw_-9
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTA4MDEwMSBTYWx0ZWRfXwlq/VNl548vE
- WkuDWU0/9lTueIOplkM0IK3R+1Ftl6HrN0QKXAGDqCMTINiiLtJ3X+SqewbabsEHIdZUJG/AI5z
- Zum01onOl1NtMVoZSWEt2O/kdipEjUV0qtHWUno5dSYhyc1D+JnKnPQskqcFpNGvDL/bDHkwhFW
- q9b6PXfgC2lTTe6QeaoILemL4d1eSy9YC0R6XK/t2hDCrR5nF7VcMjHrSwLEe72lts8+nMt6Asr
- 1qsZmeLP6q3lXpVOhmIZW0PN7K6drL2Rset7KxpHGpwJPPVEmXPjwt1QD+7odPRhmREy0l4ocNY
- zwyFyQjQohOi97d6mKTAFU1ajoFaY2rCggWD/4grCLChQPanORPNukI0v1hMD4OVGWn/MYtLMmO
- 2rPmr7ERomQ+cRPb8w7pXZk2zsSorw1kmSGPqReK8cV2z2SJDvSO66yMJkdyk/NJR68FlqNG+Xm
- CSs0HRJNDMr2DyfEWdw==
-X-Authority-Analysis: v=2.4 cv=U9iiy+ru c=1 sm=1 tr=0 ts=69fdb46b cx=c_pps
- a=guboMCJq5DUNhCsQxgR9jQ==:117 a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19
- a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19 a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19
- a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=bi6dqmuHe4P4UrxVR6um:22 a=fTW__CHxibyLmBMfj2wP:22
- a=NEAV23lmAAAA:8 a=t7CeM3EgAAAA:8 a=23wbk4N_KxE_iVXtykIA:9 a=3ZKOabzyN94A:10
- a=QEXdDO2ut3YA:10 a=FdTzh2GWekK77mhwV6Dw:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-05-07_02,2026-05-06_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 bulkscore=0 adultscore=0 spamscore=0 priorityscore=1501
- phishscore=0 clxscore=1015 lowpriorityscore=0 malwarescore=0 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2604200000 definitions=main-2605080101
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 0/3] iommu: Add PCI vendor:device ID to IOMMU fault logs
+To: Yigit Oguz <yigitogu@amazon.de>, joro@8bytes.org, will@kernel.org,
+ baolu.lu@linux.intel.com, dwmw2@infradead.org, suravee.suthikulpanit@amd.com
+Cc: jgg@ziepe.ca, nicolinc@nvidia.com, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20260506150541.60467-1-yigitogu@amazon.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260506150541.60467-1-yigitogu@amazon.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
+On 2026-05-06 4:05 pm, Yigit Oguz wrote:
+> IOMMU fault and event logs currently identify devices using only their
+> PCI segment/bus/device/function (SSSS:BB:DD.F). While mapping a single
+> BDF to a device type is straightforward, doing so at scale across many
+> hosts and thousands of fault events requires additional tooling and
+> manual cross-referencing. Including the vendor:device ID directly in
+> the log line makes each event self-contained and immediately actionable
+> without any post-processing.
 
+Sorry, but why are unexpected DMA faults happening "at scale" in the 
+first place? If you have so many broken drivers that disambiguating them 
+needs help from the kernel, something seems fundamentally wrong with 
+that picture. Conversely if these are devices assigned to userspace then 
+we should perhaps reconsider their ability to spam up the host kernel 
+log at will anyway.
 
-在 2026/5/7 下午9:18, Robin Murphy 写道:
-> CAUTION: This email comes from a non Wind River email account!
-> Do not click links or open attachments unless you recognize the sender 
-> and know the content is safe.
-> 
-> On 07/05/2026 4:21 am, Jianpeng Chang wrote:
->> dma_map_resource() uses pfn_valid() to ensure the range is not RAM.
->> However, pfn_valid() only checks for availability of the memory map for a
->> PFN but it does not ensure that the PFN is actually backed by RAM. On
->> ARM64 with SPARSEMEM (128MB section granularity), MMIO addresses that
->> share a section with RAM will falsely trigger the WARN_ON_ONCE.
->>
->> This causes a WARNING on Raspberry Pi 4 during spi_bcm2835 probe because
->> the SPI FIFO register (0xfe204004) falls in the same sparsemem section as
->> the end of RAM (0xf8000000-0xfbffffff), both in section 31
->> (0xf8000000-0xffffffff).
->>
->> The pfn_valid() check was originally removed by commit a9c38c5d267c
->> ("dma-mapping: remove bogus test for pfn_valid from dma_map_resource")
->> but was accidentally re-introduced by commit f7326196a781
->> ("dma-mapping: export new dma_*map_phys() interface") during the
->> refactoring of dma_map_resource() into a wrapper around dma_map_phys().
->>
->> Drop the pfn_valid() test from dma_map_resource() again.
-> 
-> As I said last time, I think pfn_valid() && !PageReserved(pfn_to_page())
-> would be enough for what we want here, although now it's strictly under
-> CONFIG_DMA_API_DEBUG, perhaps the overhead of memblock_is_map_memory()
-> might be less of an issue. Either way though, now that it's all
-> channelled through the single dma_map_phys() path, it would probably
-> make sense to consolidate any MMIO sanity-checking into
-> dma_debug_map_phys() anyway :/
-Thanks for the suggestion. Move the check into debug_dma_map_phys() is 
-indeed better, and I will replace pfn_valid() with pfn_valid() && 
-!PageReserved() as you suggested.
+I'm not saying I necessarily have anything against this change in 
+particular, but it has a strong smell of effort being spent on the wrong 
+thing...
+
+(And even then AFAICS it only really helps in the specific scenario of 
+having only one of each type of device, otherwise you're back to still 
+needing per-system knowledge of how BDFs map to physical instances to 
+know what's what.)
 
 Thanks,
-Jianpeng>
-> Thanks,
-> Robin.
+Robin.
+
+> This series adds vendor:device ID (VVVV:DDDD) to IOMMU event logs for
+> ARM SMMUv3, Intel VT-d and AMD IOMMU.
 > 
->> Fixes: f7326196a781 ("dma-mapping: export new dma_*map_phys() interface")
->> Signed-off-by: Jianpeng Chang <jianpeng.chang.cn@windriver.com>
->> ---
->> Hi,
->>
->> I found the WARNING in dma_map_resource() on Raspberry Pi 4 when using 
->> the
->> downstream kernel from https://github.com/raspberrypi/linux, which calls
->> dma_map_resource() in bcm2835-dma.c (mainline uses the physical address
->> directly instead).
->>
->> Although mainline bcm2835-dma does not call dma_map_resource(), the bogus
->> pfn_valid() check can still affect any other driver that does, so it
->> should be removed again.
->>
->> Thanks,
->> Jianpeng
->>
->>   kernel/dma/mapping.c | 4 ----
->>   1 file changed, 4 deletions(-)
->>
->> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
->> index 23ed8eb9233e..e6b07f160d20 100644
->> --- a/kernel/dma/mapping.c
->> +++ b/kernel/dma/mapping.c
->> @@ -365,10 +365,6 @@ EXPORT_SYMBOL(dma_unmap_sg_attrs);
->>   dma_addr_t dma_map_resource(struct device *dev, phys_addr_t phys_addr,
->>               size_t size, enum dma_data_direction dir, unsigned long 
->> attrs)
->>   {
->> -     if (IS_ENABLED(CONFIG_DMA_API_DEBUG) &&
->> -         WARN_ON_ONCE(pfn_valid(PHYS_PFN(phys_addr))))
->> -             return DMA_MAPPING_ERROR;
->> -
->>       return dma_map_phys(dev, phys_addr, size, dir, attrs | 
->> DMA_ATTR_MMIO);
->>   }
->>   EXPORT_SYMBOL(dma_map_resource);
+> Before:
+>    arm-smmu-v3 arm-smmu-v3.0.auto: event: F_TRANSLATION client: 0000:2b:11.6
+>      sid: 0x158e ssid: 0x0 iova: 0x280000000000 ipa: 0x0
+>    DMAR: [DMA Write NO_PASID] Request device [86:00.0] fault addr 0xe0000000
+>      [fault reason 0x05] PTE Write access is not set
+>    AMD-Vi: Event logged [IO_PAGE_FAULT device=0000:41:00.0 domain=0x000a
+>      address=0xe0000000 flags=0x0020]
+> 
+> After:
+>    arm-smmu-v3 arm-smmu-v3.0.auto: event: F_TRANSLATION client: 0000:2b:11.6 [8086:1533]
+>      sid: 0x158e ssid: 0x0 iova: 0x280000000000 ipa: 0x0
+>    DMAR: [DMA Write NO_PASID] Request device [0000:86:00.0 8086:1533] fault addr 0xe0000000
+>      [fault reason 0x05] PTE Write access is not set
+>    AMD-Vi: Event logged [IO_PAGE_FAULT device=0000:41:00.0 8086:1533 domain=0x000a
+>      address=0xe0000000 flags=0x0020]
+> 
+> Patch 1 adds vendor:device ID to ARM SMMUv3 translation fault logs.
+> Patch 2 adds PCI segment and vendor:device ID to Intel VT-d DMAR
+>          fault logs.
+> Patch 3 adds a devid_str helper and vendor:device ID to all AMD IOMMU
+>          event log paths.
+> 
+> Testing:
+> Build-tested against mainline Linux (torvalds/master).
+> 
+> Runtime-tested on a custom downstream branch on ARM SMMUv3, Intel VT-d and
+> AMD IOMMU hosts. Translation faults were induced in a virtualized setup
+> by removing DMA mappings for an in-use region, causing the assigned device's
+> subsequent DMA transactions to hit unmapped IOVAs and produce
+> translation fault events. The resulting log lines were verified to
+> contain the PCI vendor:device ID on all three platforms.
+> 
+> Lilit Janpoladyan (1):
+>    iommu/arm-smmu-v3: Print PCI vendor:device ID in SMMU translation
+>      fault logs
+> 
+> Yigit Oguz (2):
+>    iommu/vt-d: Add PCI segment and vendor:device ID to DMAR fault logs
+>    iommu/amd: Add vendor:device ID to AMD IOMMU event logs
+> 
+>   drivers/iommu/amd/iommu.c                   | 94 +++++++++++++--------
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 29 ++++++-
+>   drivers/iommu/intel/dmar.c                  | 33 +++++---
+>   3 files changed, 104 insertions(+), 52 deletions(-)
 > 
 
