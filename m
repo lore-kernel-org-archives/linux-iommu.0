@@ -1,80 +1,110 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68DAF3D7D70
-	for <iommu@lists.linux.dev>; Fri,  8 May 2026 20:09:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37C053D646C
+	for <iommu@lists.linux.dev>; Fri,  8 May 2026 20:20:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778270985; cv=none; b=d6n4Hk4eP8NLZIaohORhuVmQLnvVhx8K+ORy9QHOiw0W+VYh33jmHEG6C+OZfHfItVykEJDI+uPiQoYpn14/UAJz7n+0NzYbjJ8y17PlFw2KvXGx4wrl3o4p7ZYdR5BYSuVXcIul6UoWGOoNdjbmDW+wf8e/MW0AKwlA1ZPY39E=
+	t=1778271613; cv=none; b=HAKd2i9JOTLe7HVFq5omeqco7DncVFcaYLDq29EgAC7qndgE1ZxzKnfHacdgtuZmuDaLc+JfunfcFWmHja/C9zmU11uv8Jo0WToIeqr8D9EKOg4H/ZlcuC2KV3SvUINe1UbQFyRzKGOM3TgpTOCOXmVjdz+6Hw8taufgEdnhDFE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778270985; c=relaxed/simple;
-	bh=kOkgadq14suwO8KmR+859hipwhbCqWCtsBjZKpFyOnE=;
+	s=arc-20240116; t=1778271613; c=relaxed/simple;
+	bh=2ttoDRFvuARsXM73aSa/iyFGnllYGs0qVza3Mt5VlKM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qeBEdbkwOBAUsDkme6hkq9uTengzITSvWE4/xQerYkKK8wCx5zMANIbkR12SUBJ1cRyqh3QMCfuFzoBTg0Ikgk6m0rE7XAn36o95cO4fCyaL4U0Vx8MviXXNxDY2dnAM9Go2T+11LZm1ltTHfPXFjuNySqs8uiOSwmCz6YzvPu0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=L6H4BN3/; arc=none smtp.client-ip=209.85.214.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=K/jSUcezypbS3SnGBUX7om4qvNkDsKYr2ZSahWW5uM4tat7W7xjWCt6McsR8HFyxLeHhkip+S+HHcREfaw5afcodL7XE5Gm7HUBfdgQA5J9vZem6jmP4QJzkKbXvkvWCyS9b4G9e6FC1+6sIFVjN20mFHEXn2S7WWh1srAXzCPc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=VAe7u21T; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=JW8rvAvK; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="L6H4BN3/"
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2b46da8c48eso1055ad.1
-        for <iommu@lists.linux.dev>; Fri, 08 May 2026 13:09:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="VAe7u21T";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="JW8rvAvK"
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 648G47t01093543
+	for <iommu@lists.linux.dev>; Fri, 8 May 2026 20:20:11 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=eo2cOr8LDHMQe3YBBwdT+ufW
+	1HrZes1kP3AFsqymXKw=; b=VAe7u21Tk5sv2zpIwGJ6bUhWuVUFeT0XndTet4P+
+	9Eep8twjpYbsFCH2JKEciZfmJcwDe1taNnOnwCqsWZJWgC3YlrQVZ408StwSuWgX
+	AIkvLpZqWnCbTQfcH0AopSeFsBa+Eynnf0ZYCyZOes2qNHLDCBpmBJyyPCM0b3cA
+	mry54d3Pe7BJoKVK+wsJwgb+RAG/dsROP/9thN9+2YLzHjeAGsyDYSoxtOVzPsgb
+	ZevysEOhlcZZ9fCCwcdi8+/mlvExcXn5rW+U9HaSK9T5o7bendZqUueIzI0+rIXC
+	OtjHNY5JTaWS/jBSuaFXWvG3ZnCu0RgND2tvlu2E1vaEiQ==
+Received: from mail-vs1-f71.google.com (mail-vs1-f71.google.com [209.85.217.71])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4e1k1d0v6j-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Fri, 08 May 2026 20:20:11 +0000 (GMT)
+Received: by mail-vs1-f71.google.com with SMTP id ada2fe7eead31-6312af106fcso3018067137.3
+        for <iommu@lists.linux.dev>; Fri, 08 May 2026 13:20:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778270984; x=1778875784; darn=lists.linux.dev;
+        d=oss.qualcomm.com; s=google; t=1778271610; x=1778876410; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=zu32dzAdarKxbcjgwX2AWV9AveqcvXYvabaFeB6Rgag=;
-        b=L6H4BN3/KR3g0yLczJoz5U1wKo6XEhDw+Uqri4soXv+sIrZWL3jf/b4kGlMmJJ/QUg
-         YD3AOYQdpPt3OTmoiSPpAAHk0603+hDFpvixXuItkz9tPrNpihdy7tqn6/xJCzfjeyXZ
-         CON8+u+GHwSyrbKVgip7x0pml9HXT4AzrriChu8h/v9E+JI0FTRDMfzZTUXfOd3pVGX8
-         /4Mn5ae5xYqDUoYmXUBCCLyYwns6DMkJjl32UKmDuKoaHP1KjkaRE8Dtgk2oocpPHeIN
-         X/teeOoMt5xpH1QqyIpHuA91m41db1R97GA3WNCDpDJb1ErdZ+q3yDOq7Uomw/NpK7jq
-         jK4Q==
+        bh=eo2cOr8LDHMQe3YBBwdT+ufW1HrZes1kP3AFsqymXKw=;
+        b=JW8rvAvKLryQIePtT+50irp7qKHwKPBf8ptOK26UuRzHayNz+3oLs0haZ/Mni1HxcL
+         ySP7l5TcFO7tVIoPXbraCGQMLTMVVP6AQfVPaD0arfAZBOTrXcIJDAt8eLuQJ2z1SWgT
+         8rYl2EJEavXtLEe472GRoUhSWEIhm6YD7jroQbE8SlNEyumTzdjRVvYvbD38pQuEPQCl
+         v9dhQ/N4nIZunh2Z4VnGDjKZogsdiGK686yrzfxIapeba2+Cb70Ro1PUsr4wXnHtXZWt
+         WMJYvuisUSRcStxsxxOVXDEY6OfFgw9/jBv59qlFUz8U+f3NOnH6wWNkYTCXY9g6+EzZ
+         8v8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778270984; x=1778875784;
+        d=1e100.net; s=20251104; t=1778271610; x=1778876410;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=zu32dzAdarKxbcjgwX2AWV9AveqcvXYvabaFeB6Rgag=;
-        b=jB79hOztJxh/hkCxfB3iDQSgRDn64F5/wxVhEh+tlbCA4E6EKgsveBhEsN3TnNqzI/
-         BqqanHqwhGOQ030oGhhoV0xVElUtXJQRu2v7j9NrLlGbBxoXQWW+e2cfssdZbisUs4e7
-         N8PIzl98ZQOiV0uDsdQjn8K5sJiUoH9hazr7BHjDZgTfQGAvhvmlj0jAq1RW5sfKD7XW
-         oYRI5PIznslhSMi2JUzdENS6PqeIcLkA79vchQtavGOydf1pl9CDruqTVldyTGXAN6JE
-         3dbsq+4H7ggV4iqQprUmKFbwjiOPrUnYv96CK6ZUZ2VsgsmhSnENwaVUm9BvWQ3pzmH5
-         iFOg==
-X-Gm-Message-State: AOJu0YyegYLHRwfTtdIhDWbEV+EwYAYGmcvopn14vk+htVkJlZbKLPdT
-	UmdoG1yswZsgsPnhZwld6cCezHkARa77m39hwS+bIDTrlP5U1LQN6PP4iop3mBrM6A==
-X-Gm-Gg: Acq92OF1705UqnrdOL+5uXT5N8QRc5UAYGwLD4duBJwAh3ekVmrm/mwdrbEv9AIzIZd
-	cYi6u0PAiQQmNSYWd2fGZqeL+HzV2NmbLih6V+5MIBIF8/ZCBIPS9M5rM2ZFQh4ka4rIzPuYx4I
-	n8l9/LsEaERoY1czU7c/hURZ9WfNSzntsVRuvH5WAOEDrqllejdMZrxV68DciKrshRDzULNpOX+
-	bscw1bHPeWVIIYDnYgN5c4Rx9Ojr5aRr9hnRwGNJ/hCuFyd/DaS44kpa/fRnqf/FnE0/95qgR6o
-	4xg/lsi1j09VDXlVIdPcCO9ZGiso250MV9j4dYLTqQfc8ESAJ1+K+bTmgsQHPNpxmxPH2r2ZNBK
-	Dgy/Go+HRJFiRCUVIVub0kf3ijO7ohknjFLBmerE0gcJEMjRVMeSu4juiabmY76l11c8MV5c6ga
-	Ks0JC2g0H5tfPffEC7NE7c3rmlmx8QOz4IJEHgQkwcN6wSEJKBE/WItdTNLGnk6QPThG7U
-X-Received: by 2002:a17:902:cecd:b0:2ae:45cc:aeb6 with SMTP id d9443c01a7336-2bc74753517mr653625ad.6.1778270980413;
-        Fri, 08 May 2026 13:09:40 -0700 (PDT)
-Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2baf1e35ba2sm33602775ad.50.2026.05.08.13.09.36
+        bh=eo2cOr8LDHMQe3YBBwdT+ufW1HrZes1kP3AFsqymXKw=;
+        b=DVZIUqRq4Ovwq7ECkunuSHIkP9hLrcvBAU/oE6lq2Geem/hJzU3ifXCr12a4sLl5sA
+         wLFPD2RRfaY0LWpT8oogL1mAy0HxJ9AIHYJl4e6xWy6gpdOb+A+ODPK1g2229i0aq8T2
+         V7M1v+gk4x6OSABE10MbuyTFnS9qAC+Rz8oCRyuIyfTn4Ueg4KB8f+leHYpvUKA3b0tw
+         eBcVtk6dxVTv82e/L3M+s09nnxP26sX/Vsx915PvzIUiYuXx7fzc7dJI+skHpp7HyLdV
+         yx4TE2WSIHWQu1/cxi7oc59G0YC0VIGj397Rm9UU0uBQkK7B4E7GcO0gY1FTx7FHuYSA
+         Q+yQ==
+X-Forwarded-Encrypted: i=1; AFNElJ8rwU0TBCBtdRbWbT8q/FEfX14J+IgIHZWOHZuuRojmhY+VbX0Ax0J4myX8HTg1wEd4cZc1YQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw+jNgVio5kpxqVF8c6sIBumblE2dv4hyQfOhCB1Fa3sR0plu6/
+	fabN5J7BXm3jNqbW8/67NzFn1AI8MGGn0KV1FqZvo29y0xuAGSU6Pfxr2s1RgyxNUl2NRgAsi4c
+	T1QdepI/yrcbuU8nhEu6TTUmnWhAq+cxR8BbFqmH1Z1NJvDquf6Ab0b6Rlg==
+X-Gm-Gg: Acq92OGqYdrfN/8hJ3QniUOdr/5AGzBpjBt9mCNNLkJNrRu9rLAmozydcovUMuiL174
+	LanQDAw/msC/9oSo+0DQiE3V1/Z+DyLW81WEub+IjDqLH+tAVzu5lNrduyyH/kUO7v9KUEM0Gan
+	DMrNcH8sU+rlJUkgKbqdzAxGGM5NF1afR5OZcx1HcovgNK2X4XD0epzZCVO6HlaFpPhaq1EuMnl
+	r/E+seb/ZvGWpVq0oa30ZwNkYoqVs0/lDJaBdUzel+dfT4hXPmiXY8PHIM+6ZdtOXE7gk4e5ICn
+	0LAsO/N6YGygRQSpOTMOFcy5xUNq0MqBsovvSkFT2hwwk72aC7CLG8HN0zb/Dp+hSZ/H8qjeo11
+	SUBSfo2s9wBx3r9nJWG6EIaBKbvfcWUIvHDCi/8zpcuwX9EUDjEBLBgmEf1sEd05bCNPdWG4chW
+	eP844atnkFSH6xD3b5ehsDLvvKPgU/5u2Icoc=
+X-Received: by 2002:a05:6102:580e:b0:631:41f9:ffa2 with SMTP id ada2fe7eead31-63141fa0939mr2402757137.29.1778271610162;
+        Fri, 08 May 2026 13:20:10 -0700 (PDT)
+X-Received: by 2002:a05:6102:580e:b0:631:41f9:ffa2 with SMTP id ada2fe7eead31-63141fa0939mr2402741137.29.1778271609727;
+        Fri, 08 May 2026 13:20:09 -0700 (PDT)
+Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a8a955df99sm797786e87.45.2026.05.08.13.20.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 May 2026 13:09:40 -0700 (PDT)
-Date: Fri, 8 May 2026 20:09:33 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Jonathan Hunter <jonathanh@nvidia.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Krishna Reddy <vdumpa@nvidia.com>, Will Deacon <will@kernel.org>,
-	David Matlack <dmatlack@google.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Mostafa Saleh <smostafa@google.com>
-Subject: Re: [PATCH 6/9] iommu/arm-smmu-v3: Directly encode simple commands
-Message-ID: <af5C_ax1a3LbtL1Q@google.com>
-References: <0-v1-b7dc0a0d4aa0+3723d-smmu_no_cmdq_ent_jgg@nvidia.com>
- <6-v1-b7dc0a0d4aa0+3723d-smmu_no_cmdq_ent_jgg@nvidia.com>
- <af3KDBt8vhClSKEF@google.com>
- <20260508173736.GH9254@nvidia.com>
+        Fri, 08 May 2026 13:20:08 -0700 (PDT)
+Date: Fri, 8 May 2026 23:20:06 +0300
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+To: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+Cc: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
+        Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Bryan O'Donoghue <bod@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Hans Verkuil <hverkuil@kernel.org>,
+        Stefan Schmidt <stefan.schmidt@linaro.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Jorge Ramirez-Ortiz <jorge.ramirez@oss.qualcomm.com>,
+        Del Regno <angelogioacchino.delregno@collabora.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        iommu@lists.linux.dev, Krzysztof Kozlowski <krzk@kernel.org>,
+        devicetree@vger.kernel.org, Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>
+Subject: Re: [PATCH v5 07/14] media: iris: Enable Secure PAS support with
+ IOMMU managed by Linux
+Message-ID: <elhlmmmisecn7vylpsboiicn7dn4umrggktabyixthmevdv7eo@a4keayee2um7>
+References: <20260509-glymur-v5-0-7fbb340c5dbd@oss.qualcomm.com>
+ <20260509-glymur-v5-7-7fbb340c5dbd@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -83,94 +113,75 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260508173736.GH9254@nvidia.com>
+In-Reply-To: <20260509-glymur-v5-7-7fbb340c5dbd@oss.qualcomm.com>
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTA4MDIwMCBTYWx0ZWRfX7sOjlXE6azEW
+ GvqnB9ksiIpiSVaCOnbCIpL17cEXCZ0elzc9yMpQzwhFAPpR06mOxBo7VoxbzdRRVV018KVb2iE
+ IanAQZF+oa2FZWo/8/26TL9qVyoePhgY8WtrTjW0ENR5acgv7nWMoUIn1g0MlhZo0JPkFenDDwE
+ 0lJ/ADdDsv1yGJTe7DCsgVJ4JurokZEKkTjqu7pE6JKoIh5g/6PZLZiYqWD0DzA40gqgBG9dJia
+ qEj9cXezIyDpxVnQ+viIYHnBIo5gONh9+TkhEkIkqilwpIvhMMpyq/tq+lnmazlycKNJHZhfU0t
+ UxobpR0IT7uR9wGKYj4fCWyJox2tWonYvpcrhnjj2NQ2T5cWvBzQIiq4oW+j7ccUzCBE8XRSkgm
+ x012bbGl9n/JhZWqRg3F+diD9QL9+wM9lmCGz0ZNxSyR2jp1sMum0rgY19HJibHZnyj8KrMWpKT
+ BILgBRixL9J5ojBssCA==
+X-Authority-Analysis: v=2.4 cv=GLU41ONK c=1 sm=1 tr=0 ts=69fe457b cx=c_pps
+ a=P2rfLEam3zuxRRdjJWA2cw==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
+ a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22 a=EUspDBNiAAAA:8
+ a=BowHXwPdtatiOUMbaTwA:9 a=CjuIK1q_8ugA:10 a=ODZdjJIeia2B_SHc_B0f:22
+X-Proofpoint-ORIG-GUID: 6A5LNAukTC9LF-1VySInV6eChwHa7AfK
+X-Proofpoint-GUID: 6A5LNAukTC9LF-1VySInV6eChwHa7AfK
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-05-07_02,2026-05-08_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ lowpriorityscore=0 suspectscore=0 adultscore=0 malwarescore=0 phishscore=0
+ clxscore=1015 impostorscore=0 spamscore=0 priorityscore=1501 bulkscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2604200000 definitions=main-2605080200
 
-On Fri, May 08, 2026 at 02:37:36PM -0300, Jason Gunthorpe wrote:
-> On Fri, May 08, 2026 at 11:33:32AM +0000, Pranjal Shrivastava wrote:
+On Sat, May 09, 2026 at 12:29:56AM +0530, Vishnu Reddy wrote:
+> From: Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>
 > 
-> > > -static int __arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
-> > > -				     struct arm_smmu_cmd *cmd,
-> > > -				     bool sync)
-> > > +static int arm_smmu_cmdq_issue_cmd_p(struct arm_smmu_device *smmu,
-> > > +				     struct arm_smmu_cmd *cmd, bool sync)
-> > 
-> > Nit: I'm not sure why we need to rename this? We can still define the 
-> > rest of the helpers like:
+> Most Qualcomm platforms feature a proprietary hypervisor (such as Gunyah
+> or QHEE), which typically handles IOMMU configuration. This includes
+> mapping memory regions and device memory resources for remote processors
+> by intercepting qcom_scm_pas_auth_and_reset() calls. These mappings are
+
+No the calls to those functions are not intercepted. Doesn't hypervisor
+simply implement the SCM calls?
+
+> later removed during teardown. Additionally, SHM bridge setup is required
+> to enable memory protection for both remoteproc metadata and its memory
+> regions.
 > 
-> I made it have the same naming system as this:
+> When the hypervisor is absent, the operating system must perform these
+> configurations instead.
 > 
+> Support for handling IOMMU and SHM setup in the absence of a hypervisor
+> is now in place. Extend the Iris driver to enable this functionality on
+> platforms where IOMMU is managed by Linux (i.e., non-Gunyah, non-QHEE).
 
-I know lol, I just meant why are we prefering  "_p" names. No strong 
-feelings here though.
-
-> > > +static void arm_smmu_cmdq_batch_add_cmd_p(struct arm_smmu_device *smmu,
-> > > +					  struct arm_smmu_cmdq_batch *cmds,
-> > > +					  struct arm_smmu_cmd *cmd)
-> > 
-> > Nit: Same here, why not  __arm_smmu_cmdq_batch_add_cmd? I understand
-> > that _p just means we'll aceept ptr.. but the name's kinda wonky.
-> 
-> Which becomes a fairly widly used public entry point, so I didn't want
-> to have the __
-> 
-> Though there is no external user of arm_smmu_cmdq_issue_cmd_p()
-> 
-
-It's just that we're calling "arm_smmu_cmdq_batch_add_cmd_p" at one
-place and using `arm_smmu_make_cmd_<cmd_name>` at the other. It makes
-one think what's "_p" in issue_cmd, only to realize "_p: pointer variant
-
-I guess I didn't like the new _p ones but I guess it's fine. Happy to
-leave it at your discretion.
-
-> > >  static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
-> > > @@ -3464,7 +3405,7 @@ static void arm_smmu_inv_flush_iotlb_tag(struct arm_smmu_inv *inv)
-> > >  
-> > >  	cmd.opcode = inv->nsize_opcode;
-> > >  	arm_smmu_cmdq_build_cmd(&hw_cmd, &cmd);
-> > > -	arm_smmu_cmdq_issue_cmd_with_sync(inv->smmu, &hw_cmd);
-> > > +	arm_smmu_cmdq_issue_cmd_with_sync(inv->smmu, hw_cmd);
-> > 
-> > Nit: are we passing it by value here? This would be a 16-byte stack
-> > copy? As with the macro expansion this looks like:
-> > 
-> > {
-> > 	struct arm_smmu_cmd __cmd = hw_cmd; // <-- Redundant 16-byte copy
-> > 	arm_smmu_cmdq_issue_cmd_p(inv->smmu, &__cmd, true);
-> > }
-> > 
-> > Why not use arm_smmu_cmdq_issue_cmd_p(inv->smmu, &hw_cmd, true) ?
-> > Although, I see this is eventually cleaned up in Patch 9.
-> 
-> Because it is eventually cleaned up in patch 9 :) The point was not to
-> change this logic in this patch.
-
-Yea, just trying to call it out for a situation if this series gets
-merged in 2 parts. Not suggesting this would happen but helps to know
-for bisection etc too..
-
-But I understand the point on keeping the intermediate diff clean.
-Always learning :)
+I fail to identify, which changes correspond to this description. If
+it's about the PAS context creation, could you please be more specific?
 
 > 
-> > > +static inline struct arm_smmu_cmd arm_smmu_make_cmd_cfgi_all(void)
-> > > +{
-> > > +	struct arm_smmu_cmd cmd = arm_smmu_make_cmd_op(CMDQ_OP_CFGI_ALL);
-> > > +
-> > > +	cmd.data[1] |= FIELD_PREP(CMDQ_CFGI_1_RANGE, 31);
-> > 
-> > Maybe this is a good opportunity to define "31"? We already have a 
-> > similar definition for TLBI: #define CMDQ_TLBI_RANGE_NUM_MAX 31
+> Additionally, the Iris driver must map the firmware and its required
+> resources to the firmware SID, which is now specified via iommu-map in
+> the device tree.
+
+Why? You miss the most important part here.
+
 > 
-> I went with how the spec was written. The CMD_CFGI_ALL has its own section
-> with a direct encoding of 31 in that position, no field name.
-> 
-> While CMD_CFGI_STE_RANGE has the same op code and names that spot
-> "range" and it would be a NUM_MAX, we don't use STE_RANGE..
-> 
-> I'm inclined to leave it for someone who adds STE_RANGE..
+> Reviewed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+> Co-developed-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+> Signed-off-by: Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>
+> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+> ---
+>  drivers/media/platform/qcom/iris/iris_core.h     |  4 ++
+>  drivers/media/platform/qcom/iris/iris_firmware.c | 72 ++++++++++++++++++++----
+>  2 files changed, 66 insertions(+), 10 deletions(-)
 > 
 
-Alright. We'll wait for someone to add it with STE_RANGE.
-
-Praan
+-- 
+With best wishes
+Dmitry
