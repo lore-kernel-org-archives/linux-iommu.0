@@ -1,83 +1,113 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83A0230F95F
-	for <iommu@lists.linux.dev>; Fri,  8 May 2026 20:31:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15C6933F38A
+	for <iommu@lists.linux.dev>; Fri,  8 May 2026 20:35:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778272277; cv=none; b=FjMUc+JXb1GJsHyAiwlPf0/4D3ETmxowu6f5x6kcoiS8awraoiNjj/XCMdbFHcEqGmGqIAy2GQPqaI9BWR9HE26nNHASy5UveSReo+89E4CYT/mneEC3djhZchGoNOPtmFWiaKeTRo0LAuNwyWAPb3hYksExZW+94Su9Yo34iU8=
+	t=1778272519; cv=none; b=tvaSQukxMvpvnwjg1PxdGCphNXLHk92qYNqCtWsvG86NXvnwGmO2APJPuCgNK/PREB+1YqmHQULoEydAe4J4HL549YFdDrC8fo+7Jo93DVQrlQXUp7K+zZszCfxYX1VGz/ipzJTHHPuWvmX2kLIqc/viDvkz+DII/mwdavr/pbU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778272277; c=relaxed/simple;
-	bh=rdR9Zlyy3Tn7QJlr+httRb7kaC5Eilw2yzFdFMkeYMU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=hHiVppJo+Cblt1sMNa7ch0rBkJJqKm7mmNcCrBf1+KwSs3WtKfdTLmeEJaPiqP35gmIHu/JjRM+8rFm2jaFz9jkC2dXXF+/eBbBvEEwtoazLexjIAlnFaZBPtH4wlv+wtKGDlOVWoAlocWyWUMbEqZQjLNxuw3NHGfpbxomROzY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=u66ujydN; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1778272519; c=relaxed/simple;
+	bh=/RXh760jgpmBXWYza11o+sjayeAl1AGvqWbQvG3+uvM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PcTGf21D9Ob9ynGMCzJmXVkVz/qIhGF/UiTsK9Sf32X2QR0mZ3pQJv0IEjxAoEQrAgU8jiOEbjF9w+QgITnXtJP78PTfCihOoUwOMpUMDbv1YYmv4JdVHSbGwi779Ulzcq47LjnRVmMh+YyzPcPOvR8kNZGeyCCsxhvHYBQLjdk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=oG17tuWf; arc=none smtp.client-ip=209.85.214.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="u66ujydN"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260508203113euoutp018a873dd75658ce28519abc300de3c7fb~tsTYUFZFR0506105061euoutp01R
-	for <iommu@lists.linux.dev>; Fri,  8 May 2026 20:31:13 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260508203113euoutp018a873dd75658ce28519abc300de3c7fb~tsTYUFZFR0506105061euoutp01R
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1778272273;
-	bh=UTu/eorxGUlBka/r2okP5EobnTrz/P+IwSkOw5M6dCw=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=u66ujydN9d9WhwULfFjubY0SHQUnXwIrYs4jxEo1Y2f3+610fvYTwa9F+GQjnReDS
-	 balPr3omA5e3vRSZPF9VJen6bB1edBiGnH3GOm7dEGfPOYRYqkRBpUwdXS2CeMOzsC
-	 Sd0Dn4AQLAQJCic89/VzGArFskVy+j8iqWMTAGtY=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20260508203112eucas1p1219853ee1c786b780fa13736c5e5446d~tsTXNIsBx2004020040eucas1p1s;
-	Fri,  8 May 2026 20:31:12 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20260508203112eusmtip1a0c0cac4f470ebcd6bbeade345afdd99~tsTW1NZEq2637826378eusmtip1v;
-	Fri,  8 May 2026 20:31:12 +0000 (GMT)
-Message-ID: <9b3b0d1f-39ca-439b-9102-0b4aeb5066aa@samsung.com>
-Date: Fri, 8 May 2026 22:31:11 +0200
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="oG17tuWf"
+Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2b2e8b95bdbso445ad.0
+        for <iommu@lists.linux.dev>; Fri, 08 May 2026 13:35:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1778272517; x=1778877317; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=/SXlitbk32WOyBlu30f95rRaQhj+JA3b3XmJB516F7k=;
+        b=oG17tuWfYsxwiY489+TIweoPnQpb9KQcuVaY6NGJE8yJZeg/P7xul16vR6VqS07wjH
+         OolhszmXXiRAfCKsIi5DCFP/DZ9qx/JWdTcMuECXU8cIY7Ga7rz1QHxuPmDqlWboyvch
+         0bxU0ioLdx1niAHt/WrNfGbIcvB02H41d3SD9ra/9L0YFXWnM7xugolTnleN4RJcUe4s
+         FTCIZrzRSo5u89k4/Xv/ikEIAxbxhGZK08X+iz+A1ePaQEAnqYHv6a7mO7baFOULkqi2
+         R2WcUmkr+Vt7Ief3rs9PRPjNNfgufKQeiM0ilHEkX3t7qm+qJn7t/5kKJ7KYbrezNwu4
+         o6rQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778272517; x=1778877317;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=/SXlitbk32WOyBlu30f95rRaQhj+JA3b3XmJB516F7k=;
+        b=b/vADaw6N0HqZ5HZSG/hqaeYS0zbLfdngy696sMIyfJc/+IHI4YMvppwVfwcgVqUXS
+         d2utme4B5qodyvhjz8mf0gq9OSoP4z9LrfP2BbfBHkcG0wxCavirDslm/UjevRIR8kXV
+         i1diZp8noCJtxkz5nql8gNL4dTwcRVzZ3kNuSdFJCJmKo0RPSWpzBCgEhCYSjw2zay+y
+         XoaTOU70i7AOdjPl8duSPlD1JaebP/NvASfggc7Q1b5ZEWG1t3uTKSvKqo+/Uqo7Xpcs
+         cWKK3AKScVplN5GhVZKA6XRz0Bcog3TcGaeuz/wfvp3haOmFyJvoiboke8Mqve4n5e24
+         64LQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+GKEo5g05TZRlnnkO1gT57M3qzlqJO+p579g0KwUhLgg/Xpa2DNihwl+NB4AIDcoysD6Kqww==@lists.linux.dev
+X-Gm-Message-State: AOJu0YylPMnf1bcX/R3zmUJgdel3DSNyYb9Z69Pi16dv1GWTME9WZF44
+	zpG2pa7V/u/hRgwE8h4kYS+zEIQFIHaTWeArnp43gWlEhWqwrIKwL2Tsgg44akXVnA==
+X-Gm-Gg: Acq92OFwcJgwtvcduUNbj/WaDDKfcyI6Vnb5gg5K3jHyzgC/+Wlk5bpjmeOPEPvKqMT
+	+dwzILyRj2XqZeZzIUDyyi+UwQS/mqsyRBThLo25hmLGtQBA7aEv2lYCBAsenPAuu7AdjNccDFo
+	PVEJCRGjadSJsg+LSZDPMUdraGJ1DoaL1h3UvzB28e9BEeXn4NXzRi/VM+CO26M9TCHfOtAnDVn
+	USVMBkzlT1kfMBbBo03DgHnf1BER0+zGD64qSQiC4+2gHYchA/VX2neG2IGLXyg2jR22+X1ensi
+	A/tG9R+oXL9UV0iSBFuYObu2TLDTB0UeXSZ3k9WA/ESyFtQOF+nrGJkLpejQzY5SkpbKd5Hgs6w
+	ozwRy/GGA1fkv4cQIoTIm4Xj+jU8HLj4dlabJe/yLOAThbPR4lPMKD4mU8QW6A/7idDU8hDqlI9
+	8ZjmxikGKXlcUolsbQ0lHTCBv3lWPmCeyUfr+/RJ0ksJ2DLvunrsIzs/6VVYdgmocb1otE
+X-Received: by 2002:a17:903:3884:b0:2ba:30f:33e0 with SMTP id d9443c01a7336-2bc747f25cbmr741565ad.20.1778272516852;
+        Fri, 08 May 2026 13:35:16 -0700 (PDT)
+Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-367c1f48517sm689352a91.10.2026.05.08.13.35.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 May 2026 13:35:16 -0700 (PDT)
+Date: Fri, 8 May 2026 20:35:09 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Alexandre Ghiti <alex@ghiti.fr>, Albert Ou <aou@eecs.berkeley.edu>,
+	iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-riscv@lists.infradead.org,
+	Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <pjw@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Tomasz Jeznach <tjeznach@rivosinc.com>,
+	Will Deacon <will@kernel.org>,
+	Andrew Jones <andrew.jones@oss.qualcomm.com>,
+	Fangyu Yu <fangyu.yu@linux.alibaba.com>, patches@lists.linux.dev
+Subject: Re: [PATCH v2 3/8] iommupt: Add PT_FEAT_DETAILED_GATHER
+Message-ID: <af5I_Xps4Ma-qUDx@google.com>
+References: <0-v2-b5156f657dc1+25f-iommu_riscv_inv_jgg@nvidia.com>
+ <3-v2-b5156f657dc1+25f-iommu_riscv_inv_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v2 0/6] Add DMA attributes tracking
-To: Dave Jiang <dave.jiang@intel.com>, Leon Romanovsky <leon@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Jon Mason <jdmason@kudzu.us>, Allen
-	Hubbe <allenbh@gmail.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, ntb@lists.linux.dev
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <8881f9e2-431a-48d0-a778-c75014689192@intel.com>
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20260508203112eucas1p1219853ee1c786b780fa13736c5e5446d
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260501063531eucas1p1019e81b1904fc7f0811b3c50cbbf9567
-X-EPHeader: CA
-X-CMS-RootMailID: 20260501063531eucas1p1019e81b1904fc7f0811b3c50cbbf9567
-References: <CGME20260501063531eucas1p1019e81b1904fc7f0811b3c50cbbf9567@eucas1p1.samsung.com>
-	<20260501-dma-attrs-debug-v2-0-8dbac75cd501@nvidia.com>
-	<de72ecd7-05a1-4ef8-ad4d-de9b6c7f6774@samsung.com>
-	<8881f9e2-431a-48d0-a778-c75014689192@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3-v2-b5156f657dc1+25f-iommu_riscv_inv_jgg@nvidia.com>
 
-On 08.05.2026 18:20, Dave Jiang wrote:
-> On 5/8/26 1:50 AM, Marek Szyprowski wrote:
->> On 01.05.2026 08:35, Leon Romanovsky wrote:
->>> The DMA API expects that callers use the same attributes when mapping
->>> and unmapping. Add tracking to verify this and catch mismatches.
->> I would like to merge this to dma-mapping-for-next, but I have a question about ntb
->> patches - Jon, Dave, Allen: do You plan to take them (either to the fixes or to the
->> -next) or do You want me to take them together with dma patches?
-> Please go ahead and take them together. Thanks!
+On Fri, May 08, 2026 at 11:53:02AM -0300, Jason Gunthorpe wrote:
+> Generating the ARM SMMUv3 and RISC-V invalidation commands optimally
+> requires some additional details from iommupt:
+> 
+> - leaf_levels_bitmap is used to compute the ARM Range Invalidation
+>   Table Top Level hint
+> 
+> - leaf_levels_bitmap is also used to compute the stride when
+>   generating single invalidations to invalidate once per leaf
+> 
+> - table_levels_bitmap also computes the ARM TTL for future cases when
+>   there are no leaves
+> 
+> Put these under a feature since only two drivers need to calculate
+> them.
+> 
+> This is also useful for the coming kunit iotlb invalidation test to
+> know more about what invalidation is happening.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
 
-Applied all patches to dma-mapping-for-next. Thanks!
+The conditional gathering via PT_FEAT_DETAILED_GATHER looks nice.
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
 
+Thanks,
+Praan
