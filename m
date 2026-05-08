@@ -1,127 +1,104 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E645C3630B7
-	for <iommu@lists.linux.dev>; Fri,  8 May 2026 06:48:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778222918; cv=none; b=fM1VSxVM1oqvZXt52FnQqYU1d2UbybK4Etyoe+X9EP9vFbgID9z6e85HWdSnzCcsirK1H+xFNGfsIAxafGCE9sd4D5uuilATQYxi/Z//qHOrIhwBWnGfYwb9kmoQJPNP3XucIGdUYiVvKNgFKyiN/g9L1B1PmrBBdu3nkhnDziU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778222918; c=relaxed/simple;
-	bh=5RlyPK5vvXRwwanYyUQeS2uslwSfOuhbSIwW1dfBMTw=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=tXJ16Us413zT51Txid97HA+SGRK3F4PDh/D9NgPzGT/XMm549FOYQ8xMJyvuQrflJYP4URZVrk+liiyXq+ChWVmvj7SEmTuYQOCZLCpqWYwV3u1A8WXJ9cKTPVofJsOaZ9T5BG++ugqMhP7R3o5t3Xf31pFUn6yGqAcThEwV4wg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=7c99ZZ1u; arc=none smtp.client-ip=85.214.250.239
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="7c99ZZ1u"
-Received: from 8bytes.org (p4ffe051a.dip0.t-ipconnect.de [79.254.5.26])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 8D8121C3CD1;
-	Fri,  8 May 2026 08:48:28 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1778222908;
-	bh=5RlyPK5vvXRwwanYyUQeS2uslwSfOuhbSIwW1dfBMTw=;
-	h=Date:From:To:Cc:Subject:From;
-	b=7c99ZZ1uAS47ocJmzmp5SDaZJ1n3NrspKIYdMvrdx7aGPYD7rCDZwpgfposzWgBuZ
-	 wOBxCIlSNer/YTFSQR1C6/LgpWXvSyeO/NYsHS+zevQAOwQTcF8hKZ9T7WdP7KpVz3
-	 2PYKHALxCB9RpSpnvG7i9ivkbv8OVcffESoHmUDToLM5eM8TMq6wZwXiweuOGQk8uV
-	 0UDC2ywD53iucKq0/0Rp8fgpTHfcmC0H6jDdS9IMBskP5E579Vby19GMrYLVhzWojN
-	 7+hjRzavoV37+AlkG4zq83uvtwSp+ZzM45v9StGPQTnRIpUFTWaXOWrbnRcwzYf5KJ
-	 Iy6MxkDtmzfPQ==
-Date: Fri, 8 May 2026 08:47:56 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev
-Subject: [git pull] IOMMU Fixes for Linux v7.1-rc2
-Message-ID: <hczz7n5onhjxyrwum2quka5braofmab7wstrzni7cvx36ti4c2@pddvq6ufemun>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B805D37D13D
+	for <iommu@lists.linux.dev>; Fri,  8 May 2026 07:29:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778225393; cv=none; b=agCHtFpfjVGilkVre52U3/DDGLm61Mh24nSmxeD0x7cQL/QJROAxj2fawFlDkcWQACEsD0KerErgYp4wC4zLvTn3N/DOE2kekgCOS8z656pD9kpBF1EPgxfKcjnj6pqQTKKzG0yaoSYk8fGTrVmSxnMkQebC9uX8VNSrF6t+en0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778225393; c=relaxed/simple;
+	bh=QA9hR0bSYIQ5D64x8sjWe6pmUWzl9IwQcukTQJ+tl4I=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=N+6XEpEO5thZTHc1zBjlIwgM9M8O03CV28Tm/9H2QUtNherwY0jSA/jjI7X3cmyq3cxZH7pity1FAvyK45DMVfGSNitftV30RiMUxsI2PQ4sYTH/YsZCBtjiIwxXt/VA+T1u7OHQ1jXwPh30GcFyqRhaUOrq3mSCfu8Vc66Amw0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=KVuE53YF; arc=none smtp.client-ip=209.85.214.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="KVuE53YF"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2ba3b9bcf69so54185ad.0
+        for <iommu@lists.linux.dev>; Fri, 08 May 2026 00:29:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1778225388; x=1778830188; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=gtzgOVlx3+XiZk8bPWEWW2C41hmZeWg0/ZKf/2wFHh8=;
+        b=KVuE53YF7yMwqCxUP5eDGRuofjiCkddWYBWzjsERFEA8UcrzcqjDC+nmgOU7J9ZZn8
+         xsvlJO5hLSdJ7OXHywutl+x3TCZxa2dPRV/CXWKjsEkLm0pgYnjmbSxu9fMkQ4J1z4V+
+         3t8AczqMsFoKdfrE+FpNx74GJmFLa5TrRFLjBHykhplhJSeWlGKR0yKn9ovfVw3E+Onm
+         rl9vbA71f4ZrUbE/zPeJLP6kHfmEif5XtHBFrB6LYPasOhu7gYxHLnCxBEOpFjCOClQ8
+         i7IqYBNvjrbv+tqAi6SGXaajXmSrxl94I4d7wLWdsxQrFT2jO1AEh9I1OLU8MYc6XW31
+         +98A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778225388; x=1778830188;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=gtzgOVlx3+XiZk8bPWEWW2C41hmZeWg0/ZKf/2wFHh8=;
+        b=N0lTQ27wYeIquX+PcvJYF46UpA/7querV7TuiYBPwP4NJQCj73EfqKTaBqv7PIcCaK
+         hRdhG4+fhs64durn/DByndPSEhUVpdnJdN4eacbiRRGdqwDEewYt3zP/pXNC2bbJ/LaN
+         AjM/tVNFDcjJYVnRf2paI7glFit6AaXggILt3ivVsavItxmRMqeMIBrYfLWJ9NaMRxtc
+         Beht0UDv4zX599axbzEW5jlEa6C6euSovLJi8vUjoFONCoGyx7vBHKCM0zDdnMvzOGnk
+         ZIbfXe8rKTjFaLkbXPa5UFxVGACjRWqgu1uDvXYtM8FJRi3A4k91gb6eC7HZa9tuvkvU
+         fATQ==
+X-Gm-Message-State: AOJu0YwgpxbDHh66u1maqt6HdEU+SBcH7ZzXgmhJyhhJKjkI9WqUcHLM
+	wIqKOjTN/xWJT2xpKlc8oTcl6UmGWgs2iV/Sp61fegmcTWjBYQumZxTFTd/P40O8VQ==
+X-Gm-Gg: Acq92OGiDenZ2VAdaPoz6iM506GWxwQy9TGRVBbLgc4HzHZY/PidFh6WYXUBginKhKq
+	+DY0IKoEp+VSfaKFVHbX/Sv6JC8iHpz4Z3m6UigsjgUQYP2D2Txakt1lC6nkni4rm7W9o8g0rM2
+	xYcXxx0Js2HFjT07vXhjXmlprKEjMzJwXA3JWoO7xRETCra4+IFsLYfXm84IBo2CWb+rF0lOrdh
+	2mHRXQNzNg6HAUh14lFzeectnjBUH/9u6c3Nm0dGB6fVtPCJqUG5Y7ersYEEHgWynNyoUDWqmRZ
+	Wp318O7EaoNLBKLvtgs3Gq0C3l082igqjt8SGVq0CSwd5xTLXQCLCL/Xqyl21OXB9BeZDbgSm3Q
+	tTvg5uQEIUQpvdc4MxRIZnOOg0f2gKvOFu6YV2XgpdeLVTwrAC9kRjOVZ0fsIY5NSi0H1BQVK3j
+	wDepfUljyJ1DdVIOiIqDoQthu+1OlfVv5D8CzaU//H2LLQ1BBqyKY7uS3IOxtpQ9mBoDcT
+X-Received: by 2002:a17:903:3c6d:b0:2b2:70ba:305c with SMTP id d9443c01a7336-2bae9a8bf41mr2914125ad.8.1778225386989;
+        Fri, 08 May 2026 00:29:46 -0700 (PDT)
+Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2baf1e9fd64sm10355055ad.69.2026.05.08.00.29.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 May 2026 00:29:46 -0700 (PDT)
+Date: Fri, 8 May 2026 07:29:39 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Jonathan Hunter <jonathanh@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Krishna Reddy <vdumpa@nvidia.com>, Will Deacon <will@kernel.org>,
+	David Matlack <dmatlack@google.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	Samiullah Khawaja <skhawaja@google.com>,
+	Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH 1/9] iommu/arm-smmu-v3: Add struct arm_smmu_cmd to
+ represent the HW format command
+Message-ID: <af2Q47MaAECnRzvY@google.com>
+References: <0-v1-b7dc0a0d4aa0+3723d-smmu_no_cmdq_ent_jgg@nvidia.com>
+ <1-v1-b7dc0a0d4aa0+3723d-smmu_no_cmdq_ent_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="mxecx5kdxi56uevv"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <1-v1-b7dc0a0d4aa0+3723d-smmu_no_cmdq_ent_jgg@nvidia.com>
 
+On Fri, May 01, 2026 at 11:29:10AM -0300, Jason Gunthorpe wrote:
+> Like STE/CD, add a wrapper struct around the u64 array to represent the
+> already FIELD_PREP'd command data. Unlike the STE/CD this is a u64
+> because the command submission path will have the swap to le64.
+> 
+> This makes the API clearer when a u64 is referring to a formatted
+> command and makes the following changes easier to follow.
+> 
+> Move the command constants out of the struct and into an enum alongside
+> the rest of the constants defining the HW format so the entire HW format
+> is self contained and independent of struct arm_smmu_cmdq_ent.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 
---mxecx5kdxi56uevv
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Subject: [git pull] IOMMU Fixes for Linux v7.1-rc2
-MIME-Version: 1.0
-
-Hi Linus,
-
-The following changes since commit 254f49634ee16a731174d2ae34bc50bd5f45e731:
-
-  Linux 7.1-rc1 (2026-04-26 14:19:00 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v7.1-rc2
-
-for you to fetch changes up to 10161b4a791d5c4b7ea16512c1ddb133c3f8f953:
-
-  iommu/amd: Fix precedence order in set_dte_passthrough() (2026-05-04 10:26:16 +0200)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux 7.1-rc2:
-
-Including:
-
-	- Core: Cache-flushing fix for non-x86 platforms.
-
-	- AMD-Vi: Security fix when SEV-SNP is enabled.
-
-	- AMD-Vi: Operator precedence fix in DTE setting.
-
-----------------------------------------------------------------
-Mostafa Saleh (1):
-      iommu/pages: Fix iommu_pages_flush_incoherent() for non-x86
-
-Vasant Hegde (2):
-      iommu/amd: Use maximum Event log buffer size when SNP is enabled on Family 0x19
-      iommu/amd: Use maximum PPR log buffer size when SNP is enabled on Family 0x19
-
-Weinan Liu (1):
-      iommu/amd: Fix precedence order in set_dte_passthrough()
-
- drivers/iommu/amd/amd_iommu.h       |   3 +
- drivers/iommu/amd/amd_iommu_types.h |  21 +++---
- drivers/iommu/amd/init.c            | 123 ++++++++++++++++++++++++++----------
- drivers/iommu/amd/iommu.c           |   5 +-
- drivers/iommu/amd/ppr.c             |   8 ++-
- drivers/iommu/iommu-pages.h         |   2 +-
- 6 files changed, 113 insertions(+), 49 deletions(-)
-
-Please pull.
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
 
 Thanks,
-
-	Joerg
-
---mxecx5kdxi56uevv
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmn9hxwACgkQK/BELZcB
-GuPVbg/+P3voH5/DlCfZ57ju+hiJHkOS31yTdUYNPRFu7wog+oD2WE4pPcs2CDlV
-UmocW4ro60K2USjiMSb3X2eBU2xIwQzY5Vxgp3rkUJaFENGTDS4RPs+cG/X02LxO
-aJXs/2Ljtzw/7PU8Ccm4TzpReKKcl/STAH3RDh2f3nUYw6F4BmVUo3cw0YUbyfgg
-cJYGTVJov3/VUVt8GGdo/WAt8Gf6gAkiZNk3/ml9gu8Ta2wf5G4leK8AhIcJ3XM5
-o5sfvr8EgtvKJUcGjOszT9vLzXI4l4ybAC7PP9Npby/39H/5S5UwBjV4W53rZNSr
-mSLDwX3wiMewRStDJV7Btq9pCDRmV1Nphii3bZdXivkOG+AodbuUYztRcr/Xe/sp
-mvx1FonpeJJ0xRpwQNVf8uutLp75yEjNoghxezJExqQf0BYxHlGyfQtJ/AkptQ8k
-x0CFPMmY3gVvkHNhpAajIWksmYftDlnKQ6Kq5thOSq9fuNzasbwhtnT3Vrqm21Gy
-VNMm5kONkzKF3YGbPIClNqjm/94rD6BqKG8L9GwlnnJnAqkt19irdTrY0aJqmZAA
-T7qArQ0grlpdwrHQu3tR4eViHv3RItG/euLNEz9rstHYZnLphjUNExaC7HxBGzqJ
-7kskYI5FxKHcFnL53N0lOVgl7agmxCpyDF3j3g/Y4ff5cTWRYt4=
-=bmhW
------END PGP SIGNATURE-----
-
---mxecx5kdxi56uevv--
+Praan
