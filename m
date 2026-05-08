@@ -1,152 +1,193 @@
-Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013000.outbound.protection.outlook.com [40.93.201.0])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 056A840DFDE
-	for <iommu@lists.linux.dev>; Fri,  8 May 2026 17:36:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.170
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778261794; cv=none; b=aCYYFK8gqlZEzo35C4BACJhJDRwtcIoX6OGH+t3Diwqwa/Mn+FC3YqgyQ6KpuwBm77APCjihNymJEptQa+uYbMrJYS8fjikXWYqlL/XrK1KTElrpjG3LllsliwMbLG5lhG1kXhHG7UOVtVALN0r6NdefofaoZw2vhfvGbAd/62Q=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778261794; c=relaxed/simple;
-	bh=OU1gxYIqGS+hUlkKXFu7H/zFbRvTyfjfeFJIkBy9t/M=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JMSA1pqY2fi5TUtWHKBtDU+XZ7aykP6qY5Co+OZeNWK8ujANf6m0KJ+49va2U8yiYnEkcG1wX4vKps28AnJsRRe6L5ZHIKBHWNm0qUpBx0t8v3iJALwajN/d5bDHlkt9muwUCfmagL50q0Hx/35pb0qsOHbM1vf8Whj0+BnIN5g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=aNCigpcI; arc=none smtp.client-ip=209.85.222.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 510DA3254B3;
+	Fri,  8 May 2026 17:37:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.201.0
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778261866; cv=fail; b=YtLfQAaDw6F2ufUicTkvZTS08+g55xY+/49s5GJwUvX+78Si1LqoAAfvnkeFBIqxw8nleDvtnPjPvvTwOmAJxh18VmWoV3/goG+28eVNf7hKPjlGqeg7uyDGWmrzNvWAeEf+SQTyoxtO1oqfFlbzNjkjo5hMGp4eoQZiNnrzeBI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778261866; c=relaxed/simple;
+	bh=f7J1ALt2ekWlM0z3aKreVSv/LKaIPJGgUX0iX6y3XK8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=kqg3iJJKqTvbKh2ONL0+SCaCSpoyLO/0cIWOUPzYTulhG/rmaiTJ6IEl4dixTnT0aDsQptpAI1vMNRZJ/gP3AnIoMi+lzfiooOPf1B7JPMfnKWloJ9dgK7v4USqE6nyiK7ueo8U1ttLxHZBjZbLDmGBICDAk/afAx9oT35SxVso=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=A9uuobhP; arc=fail smtp.client-ip=40.93.201.0
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="aNCigpcI"
-Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-8d736211595so157057885a.0
-        for <iommu@lists.linux.dev>; Fri, 08 May 2026 10:36:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1778261792; x=1778866592; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=uxmQhUJsbyd70+Vusdx4W/KBVOYgLDyj/k4cRH8CB0E=;
-        b=aNCigpcIovQpk0ZVFKlkmvJYpHn34zRWWPYWoWGKpxxTUzV+4pdy9Q4TNJL1bZn/Wm
-         KGFhVZZN8+V+j5+Dukhum72jQyU5WXioNsVdQR7rwR68El1z36murqFOWGzKBuxXEX/E
-         3WKvV3I/3XOdDJ24dbiINGfgBBKkooSg3F6SG+9egS1cBfN985qUf8lClQ7q9nuUizqm
-         ATAWxOWGMkRk3+mcBSShDwpmSv0vl+gh8i8Vc2uQES8OVXO5X+zjjd+YxCPyzv9EHAwr
-         aQ9W0qFaZY6BxTQcNkQZD7wObrsLGasQLvVaO4BcgGlF1jlk7SHhTU9A5aoDom7YB7lf
-         hXUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778261792; x=1778866592;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=uxmQhUJsbyd70+Vusdx4W/KBVOYgLDyj/k4cRH8CB0E=;
-        b=HYJv4rJc0KKengFAIn+bTyfh7FQtMufDeXS6m0cBAwkXpipPLAsklMgbsRhWxDLDvS
-         YJS608p/urgZmQybc9/NbYB2sVP9TQdWeRPnFLhI0O26Xm2KCnia9TkC6pZrJkQuSOL0
-         lFaj4luZfv8SBakPFENGAWGzirDgefv5CcvNdDL8ERRBEFLv9zrbKn1FigSjeZNhTn3U
-         WxukqxNxTu6P57g1ElczhI32/5u7cugpZdBbLIXvDQAUySPGMwFHSbPyaGfyKhU+OiIR
-         VhWdruYKXV12e9aQmfcoHsQWIPh4JJ2T0UYUhVhNjFfMtUn/LXu8QSt3kT6LZT/ZFyFg
-         O85A==
-X-Forwarded-Encrypted: i=1; AFNElJ/dLafyV9iRrOgppigs8MUzzTMrJ7YfUWrodghoxdmSGeAdSlXUpQ9nbqSkN3T14TS/cCQXlQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yypgslfvq3Fm4On7T1f7M71ILLoBXXK39JJ+wH/9/zEupojdYAB
-	AigI/QAAUofX9ThxFmo7JH0C+NQi6YFPAbiBpPpTLbYAOkoFQksc3YNR9TptnJCfl3w=
-X-Gm-Gg: AeBDiesI5bDFsflBULlI9+Eoj+nTEHSdndo8RKlNPCZTkcRYJ7XuERDwnopj4GPEfTI
-	+QUxuOR2yDtO7asyr3L1blFxEPZklaWDJlmz3zokOViV5U5+PIyuhdAO7/B+X5zOkH9BpOcEP3A
-	X9oKSM0XS/PwWTEgAOW1osbwVUERI8P/c3079EeEBeHf+ncO3CjqpXZEVwcnL20xbTgMeaZ07wZ
-	XEIoBu+zPaOvIL87CBu3YMhZ/D9abvvaGxvbU2IlUWNCoh8vb/12IkCdBYiHRdfmPWbgcxZx4iU
-	waPVLTP363Ie/yEoVIcYyEQSBya198mJseY9h7kdHHHAUyNOFQHFZm0b7Ds3lPXIZcLWX1pMC1c
-	aMtsamA/AWoqC16ELhZ7eSn/r9IInkN8R1EhM2AKuJ1HvUTKKhEPTcqxfjuLjK6VXB3AXyCaDx/
-	XbQtV017YELaVA29DcgN6wvXsSo7Z1mmt4/oz7P0iv9VT1Bp31yNKJKuT18EbeNe3sGu2b2Zik/
-	gecrg==
-X-Received: by 2002:a05:620a:179e:b0:8cf:d88d:c46e with SMTP id af79cd13be357-904d69d8ef1mr1994373485a.48.1778261791849;
-        Fri, 08 May 2026 10:36:31 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8fc2cd04c68sm2315053685a.46.2026.05.08.10.36.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 May 2026 10:36:31 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wLP7m-00000000Cx5-2s34;
-	Fri, 08 May 2026 14:36:30 -0300
-Date: Fri, 8 May 2026 14:36:30 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Jianpeng Chang <jianpeng.chang.cn@windriver.com>,
-	m.szyprowski@samsung.com, leon@kernel.org, kbusch@kernel.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: Re: [PATCH] dma-mapping: remove bogus test for pfn_valid from
- dma_map_resource
-Message-ID: <20260508173630.GC9285@ziepe.ca>
-References: <20260507032120.4072283-1-jianpeng.chang.cn@windriver.com>
- <2dcc29d6-a4a9-4fdf-861d-312941ab0f07@arm.com>
- <89094011-fe78-40f9-9695-d50ee19167c5@windriver.com>
- <20260508113100.GA9285@ziepe.ca>
- <662fdf07-6475-4807-94b0-54b3b439ae1c@arm.com>
- <20260508151857.GB9285@ziepe.ca>
- <4134fcd9-7d12-4e76-955d-5a679916a0c0@arm.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="A9uuobhP"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=sW56COGgIQyEoiX291OryDXohWhMWWiUSELzPOF2IWVdq82XMYr2vjg2mKbpEFKdZD1E7IVWs+iaYG3fEccj9+Ovk7DPzZk78ho/bM+nlWu3yTvPpRULtkCYeHsmFhEEI5dtJfwi6sVwI7vFp0wohQpRcra3n5jPrTy/U5FqPl6U+8Sk+w55+A590nnENg7t4XfGEI96xpHIx6BGi06aa3GF1LSRS8hjfe0boE/O843zh+lsWVCmU+7lszjrF1Vjnx5W4czkVb7BQtILlTROCWMyf5r+NxAJ+PGdakl+6WmbQJEfmjMzYD7RVtBBr4rDoDMyoNpSYcp8SCwMPxAHsg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7vVtvJN65jzXaakphSoo/Ji8+WWz3GNy21ZBOF8LR9Y=;
+ b=rhN6SziyRUYIbjekh2+Mni55YQuYoGQbh1LGpJEORKntBTHeEIdxUWrqzhouDCn8dNg7Q+7jOOX0R9THR/cB3bz/1fengV+M/cijpwQr/lfSk3om8P8+okCU1gMzSPaAygZHHQapqytVHHgatrQz+mSppzM2+zng164m+uOJzZZc4J4XMlu4QBPuQegXkkwYri8ll4E26iAWMUKPXeqZzfL2P3KWgoePHzvgNmZL5mWSWDFY/CMYWO5sPHJ9Wpvlox2YBXMhmhkofJEcqGpz+xitQ/2nSBFFRsglabuCmIz/vYQTfB1YHA+1p9ia070mste56fwv0+QHjsqi3bSeSw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7vVtvJN65jzXaakphSoo/Ji8+WWz3GNy21ZBOF8LR9Y=;
+ b=A9uuobhPAqKeZuXV39seXS37sFa2hKy1V4ckHbZHf7DdS25TwKRc4dPZi7w28opYHA68s86uul1siXkpeN0z0aenuo0fV4BgiLmfoD7cTwWVC3ywKX2y/gI7S6OrrNxF7B0hPAiHQgKQPqj1CTBl1i7raHuYRLzD1c9b9ZJ4njlA3JbnTXnwqFrgQoP3Qq+hO66aOrWGeroJ+LJE0vn9VcBL9jzDwCaAU/Uyg17azNJOROiLVJTUJoidH/pAtoiZcU4kC0xdUsQs6F00dEfqdXDUZILpHoACVuvzYlzUVqm5colGx2NplKMW4S/CrQwk4UigzS30Y25InbhLwjAcsg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by IA1PR12MB8078.namprd12.prod.outlook.com (2603:10b6:208:3f1::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9891.16; Fri, 8 May
+ 2026 17:37:38 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9891.017; Fri, 8 May 2026
+ 17:37:38 +0000
+Date: Fri, 8 May 2026 14:37:36 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Pranjal Shrivastava <praan@google.com>
+Cc: iommu@lists.linux.dev, Jonathan Hunter <jonathanh@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Krishna Reddy <vdumpa@nvidia.com>, Will Deacon <will@kernel.org>,
+	David Matlack <dmatlack@google.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	Samiullah Khawaja <skhawaja@google.com>,
+	Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH 6/9] iommu/arm-smmu-v3: Directly encode simple commands
+Message-ID: <20260508173736.GH9254@nvidia.com>
+References: <0-v1-b7dc0a0d4aa0+3723d-smmu_no_cmdq_ent_jgg@nvidia.com>
+ <6-v1-b7dc0a0d4aa0+3723d-smmu_no_cmdq_ent_jgg@nvidia.com>
+ <af3KDBt8vhClSKEF@google.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <af3KDBt8vhClSKEF@google.com>
+X-ClientProxiedBy: MN2PR03CA0027.namprd03.prod.outlook.com
+ (2603:10b6:208:23a::32) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4134fcd9-7d12-4e76-955d-5a679916a0c0@arm.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|IA1PR12MB8078:EE_
+X-MS-Office365-Filtering-Correlation-Id: bfd83e7a-ffa3-4dd3-4122-08dead287f2f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|1800799024|7416014|376014|18002099003|56012099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	WDDcWUBv3UQnYdLgNzo6yOU1sCEf+YjOFGbcnUmqj9nun2dV8t3rHpCJSZE+II+263zpIfnjRJhCNPsehtKwOaS/jgN2sxzhkyie46e+kxrZoW5ZSwXeeooYxx2bFVLIonz3JP8IcWAHPP6x1sHl67OO9ad2+uXqcEGXA//slvFsjGfPSbfFOtrPEo+K71jxWrqGMRHT3zcm0760RtRrYK2fDmW8Wm26Ddl9u2nQLROHkAbFLWqEWQhnGTYWkL2Qx69XcjY5khPYn/xU4c59L8naaajp+5UDJscw234akjLluJD0lXcowIfkLCajUjlwhT8M+9hdmL0IP5lVQWROQJ6y8VzNLwKrjhxOD97e1HV8Anpw34qVL6Z73fOwBXGABzo27OsTbuZP8wm6nzWpv8YtJmFmspvB7Zr6i/4JPdoMfTAve4XNbk+KeNsnebzJCV3vUJGtw+1lIKUjIlVCD61H+dWpQ03PQaN7dXheG2Etmx2lo2hBiXd6dE56143qCtZVK1H0C6b/lNP/y3kAgjaPVaze3e48eEXpCZ5mBW6d6lqUUNEPW7YbdBr/E+KT9qDSwHDEKyksBg2Ed6IrWVssXkceDQLPK7VN6ssp1BsGPmaTZwmVcpIugmsT4zRrj93CZ5SfbKJnlr9iZzKAmV8OGP59qLcBcb7WZln+qjZONRbilb8+tdvQUhticCL3
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(7416014)(376014)(18002099003)(56012099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?6+EymM48qMoi6AK6AuHPx1AC7VGhv9/XEcVd+GbOG3RhQFqkljVhuJzpYjRG?=
+ =?us-ascii?Q?y9sYW+uHhsTORVnl6/Psz4Rn/YbJa3+FdR63hI/Ivrji3yzGrsqqJiVGTSDM?=
+ =?us-ascii?Q?C8G8QITb8QT8zqS2SCvMaAY7Ubv0icGWtBxcihlqRQqElZ3kw+Vnf2Aj6ZpX?=
+ =?us-ascii?Q?u5m3jYLgwsGeunwdkmVOLHNyK/bcQTtjRrRlXADFklH8N4FDkMpzzi4WZahl?=
+ =?us-ascii?Q?fAXsBrjO3CFbu0Uij/pqywNFOXGTxEGzY+CyaasIvdKUSTwBaE56YM9y464P?=
+ =?us-ascii?Q?ORogoO5OZWaqhRoLHFLsY/QMSL7UUF8dcihuSEpQpyz/csczv1Sust10cJTt?=
+ =?us-ascii?Q?TpcYjU2JyqTNwnkWMnU4uYHrvldWiPbrPb6WSt44m9w+W35xIiPw5X/y5FyX?=
+ =?us-ascii?Q?qhGfpWtqLrMPhBBSvT9D9yFoZhqzE7iK4giSIsVVkZirsT0DWCsi6k239Xoy?=
+ =?us-ascii?Q?hP2udlnAti/HzBN3T6rA5tExD8vj9Il0V99utNfYwwTyv7rllLjRwengaDHQ?=
+ =?us-ascii?Q?OZ2IGXsjuvKSdS9myMGniXz7HgD6sCK5F7PMY9FnPwBw2RbwdeKtpleAKaCn?=
+ =?us-ascii?Q?dVlAKpVmS83XVA30GlB1SgxDpIPaWV/4LWo90RoOgfSr1hnnGb4zjsUhLDg0?=
+ =?us-ascii?Q?3Phb4ODg5dmI8M3daZqliz+TghAIA51X2ML9TX+rSCbyo8eC6CTa2K3UqJ7z?=
+ =?us-ascii?Q?FivJxeAY1SabDxPkgCi7puWs2ZqbXJRYB7lFnvQUA+X0mFuswCd+VxfTyD2y?=
+ =?us-ascii?Q?rCI5JjowBsTvGMDFFbHguhEIb6vy7LRUDW01nOa5jwQ9OR4ZJrNAnnZnW8q6?=
+ =?us-ascii?Q?RxIBgPLwQBdwhmTEq0gn8UT28n0ZLUv43XmjlvggCycV6vOs8xkZVsUuHppd?=
+ =?us-ascii?Q?4IjdA4ps2MCDkXOsgxBFB8ZdFDoNaya8fkuwnwnzUz71EpBrsQ4u4hMHuWV8?=
+ =?us-ascii?Q?XD077AbNEXtFpARYnIBzQ9c8EhwJ++73zNkO4ne3xkI0IC0/NqrfUnkfPGRd?=
+ =?us-ascii?Q?w28ayEAR+HNM182kLXXTnriF2bDi/YclGr13rjubwkLYnhK2LrGelb3IMmTt?=
+ =?us-ascii?Q?NubjOpouV5kDnGwXlDFEkZWDo/3HYldEK3h3Ua1cLEehBrShvX1H+Rb58a/6?=
+ =?us-ascii?Q?etW6rgSWvqmr0mVYMyNskqs15/PPyMXaxmnLc38EamfW5tghDs8GHn1rr16y?=
+ =?us-ascii?Q?PIKrHa+FGt4oqrTHbkNtqLc/EwTFP0qcMCCIIeB2Bmpgsf1zBvedaVI8TYEG?=
+ =?us-ascii?Q?D/CM3rTSgw+iFEhZ/qy0riqrIBqIbVWr6CudhjIZ6x7fd6uQkXNU2TK2oF+4?=
+ =?us-ascii?Q?S/WbZhQz5dhJb40c19rv0uxGoZjA+rQSke65miCAbitLhzlpxomcCzZclBr8?=
+ =?us-ascii?Q?/Q0iw3BZWYRdp4NLoUbAY0f4Rx9ZOW5wDkPHOlvs22BvKGJCE6OaLacH5Alh?=
+ =?us-ascii?Q?WIQqv/utQTx/DNIV3uGkiounPIqpocS/+sjSURs5F1W8vZ59XDnVc8iY6nh1?=
+ =?us-ascii?Q?FQbvsK8zFB+uX57qxSbWQ+yyp6w4NzVl3JsdVT9w5Am3I4EhqozvKhdNEDsy?=
+ =?us-ascii?Q?M/T2zLhiakoCyoKVb6/5U0WVzNDtLPPHccggXwnN13iOEnfZy4rVOgOn8meL?=
+ =?us-ascii?Q?eNyLGQQEpjed37CL6p4FElAQT+FSy/algk9jzBxC/rDS/ZXnBjqDkx1pGCBE?=
+ =?us-ascii?Q?H9Xmu3qWZgseKnObtD0GUfjAI+npLY652PwzDWQr4O4gnyIK?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bfd83e7a-ffa3-4dd3-4122-08dead287f2f
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2026 17:37:38.2643
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gf0Sb29qr3eRaKRvHprksCXS4hk/M06TzsqGhDgF9JUnKk2xwhKPCAre/WDxQYA0
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8078
 
-On Fri, May 08, 2026 at 05:04:31PM +0100, Robin Murphy wrote:
-> On 2026-05-08 4:18 pm, Jason Gunthorpe wrote:
-> > On Fri, May 08, 2026 at 01:16:25PM +0100, Robin Murphy wrote:
-> > > On 2026-05-08 12:31 pm, Jason Gunthorpe wrote:
-> > > > On Fri, May 08, 2026 at 06:01:01PM +0800, Jianpeng Chang wrote:
-> > > > > > As I said last time, I think pfn_valid() && !PageReserved(pfn_to_page())
-> > > > > > would be enough for what we want here, although now it's strictly under
-> > > > > > CONFIG_DMA_API_DEBUG, perhaps the overhead of memblock_is_map_memory()
-> > > > > > might be less of an issue. Either way though, now that it's all
-> > > > > > channelled through the single dma_map_phys() path, it would probably
-> > > > > > make sense to consolidate any MMIO sanity-checking into
-> > > > > > dma_debug_map_phys() anyway :/
-> > > > 
-> > > > > Thanks for the suggestion. Move the check into debug_dma_map_phys() is
-> > > > > indeed better, and I will replace pfn_valid() with pfn_valid() &&
-> > > > > !PageReserved() as you suggested.
-> > > > 
-> > > > I'm not sure that is right. IIRC pfn_valid() is true for ZONE_DEVICE
-> > > > P2P pages that are used with map_phys but never with map_resource.
-> > > > 
-> > > > PageReserved isn't enough to fix it.
-> > > 
-> > > It fixes the false-positive on non-reserved pages, which is the important
-> > > thing. Yes, we'll get false-negatives on reserved ZONE_DEVICE pages and
-> > > similar, but that's still an improvement over getting false-negatives on
-> > > _everything_ by not checking at all. Realistically, dma-debug can never be
-> > > exhaustive and 100% accurate, but there's still value in catching as much
-> > > obvious misuse as is straightforward to do.
-> > 
-> > I'm saying I think the new expression still has a false positive for
-> > the common case of map_phys with ZONE_DEVICE P2P, and I don't want to
-> > see debugging logging for normal as-designed scenarios in map_phys.
-> > 
-> > So we either need to narrow the expression further somehow, or leave
-> > it in map_resource which has fewer users and doesn't accept
-> > ZONE_DEVICE anyhow.
+On Fri, May 08, 2026 at 11:33:32AM +0000, Pranjal Shrivastava wrote:
+
+> > -static int __arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
+> > -				     struct arm_smmu_cmd *cmd,
+> > -				     bool sync)
+> > +static int arm_smmu_cmdq_issue_cmd_p(struct arm_smmu_device *smmu,
+> > +				     struct arm_smmu_cmd *cmd, bool sync)
 > 
-> But surely anything with a ZONE_DEVICE page is "memory" to the degree that
-> mapping it with DMA_ATTR_MMIO would be wrong, no?
+> Nit: I'm not sure why we need to rename this? We can still define the 
+> rest of the helpers like:
 
-If the ZONE_DEVICE subtype is MEMORY_DEVICE_PCI_P2PDMA it is mapped as
-MMIO and must be used with DMA_ATTR_MMIO.
+I made it have the same naming system as this:
 
-> However, IIRC ZONE_DEVICE pages _are_ reserved, so still wouldn't
-> warn whether we'd like it or not. 
+> > +static void arm_smmu_cmdq_batch_add_cmd_p(struct arm_smmu_device *smmu,
+> > +					  struct arm_smmu_cmdq_batch *cmds,
+> > +					  struct arm_smmu_cmd *cmd)
+> 
+> Nit: Same here, why not  __arm_smmu_cmdq_batch_add_cmd? I understand
+> that _p just means we'll aceept ptr.. but the name's kinda wonky.
 
-I didn't think that was the case for PCI_P2PDMA, but yes it does look
-like the reserved flag remains set.
+Which becomes a fairly widly used public entry point, so I didn't want
+to have the __
 
-> I'm confused as to what you're objecting to...
+Though there is no external user of arm_smmu_cmdq_issue_cmd_p()
 
-I don't want to see a warning, if it turns out it doesn't then it's
-fine, but it certainly isn't obvious that it was going to be OK for
-phys and I explained what we were worried about when we had left this
-behind in map resource. 
+> >  static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
+> > @@ -3464,7 +3405,7 @@ static void arm_smmu_inv_flush_iotlb_tag(struct arm_smmu_inv *inv)
+> >  
+> >  	cmd.opcode = inv->nsize_opcode;
+> >  	arm_smmu_cmdq_build_cmd(&hw_cmd, &cmd);
+> > -	arm_smmu_cmdq_issue_cmd_with_sync(inv->smmu, &hw_cmd);
+> > +	arm_smmu_cmdq_issue_cmd_with_sync(inv->smmu, hw_cmd);
+> 
+> Nit: are we passing it by value here? This would be a 16-byte stack
+> copy? As with the macro expansion this looks like:
+> 
+> {
+> 	struct arm_smmu_cmd __cmd = hw_cmd; // <-- Redundant 16-byte copy
+> 	arm_smmu_cmdq_issue_cmd_p(inv->smmu, &__cmd, true);
+> }
+> 
+> Why not use arm_smmu_cmdq_issue_cmd_p(inv->smmu, &hw_cmd, true) ?
+> Although, I see this is eventually cleaned up in Patch 9.
 
-So this should all be summarized in the commit message moving the
-check
+Because it is eventually cleaned up in patch 9 :) The point was not to
+change this logic in this patch.
+
+> > +static inline struct arm_smmu_cmd arm_smmu_make_cmd_cfgi_all(void)
+> > +{
+> > +	struct arm_smmu_cmd cmd = arm_smmu_make_cmd_op(CMDQ_OP_CFGI_ALL);
+> > +
+> > +	cmd.data[1] |= FIELD_PREP(CMDQ_CFGI_1_RANGE, 31);
+> 
+> Maybe this is a good opportunity to define "31"? We already have a 
+> similar definition for TLBI: #define CMDQ_TLBI_RANGE_NUM_MAX 31
+
+I went with how the spec was written. The CMD_CFGI_ALL has its own section
+with a direct encoding of 31 in that position, no field name.
+
+While CMD_CFGI_STE_RANGE has the same op code and names that spot
+"range" and it would be a NUM_MAX, we don't use STE_RANGE..
+
+I'm inclined to leave it for someone who adds STE_RANGE..
 
 Jason
-
