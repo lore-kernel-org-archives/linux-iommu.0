@@ -1,63 +1,82 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E26B98635D;
-	Fri,  8 May 2026 17:21:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1231815E8B
+	for <iommu@lists.linux.dev>; Fri,  8 May 2026 17:28:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778260868; cv=none; b=rm3Xy9hquCfw/m+4aR6N7iftxGfYWKRJFA2ZeTOoXHx9vXSPxv3T82Jure+zq+s3w5FShk+MKgTdf1Tw7v+Ej2Qi+jhUp2bYllLo8sFKO7YXpUlFeBAyezpghQFnYdKBWF59xf9jbdyaZN1aw4iAy1BG1NwVzfsiJnaazdESndg=
+	t=1778261298; cv=none; b=OEZwZ5b2S9IGu7+XPlnXo4dm7dorHSDGdHR8TdzX9extgwV/kJmRFFzS/HBG4ywsp1yZzV3n72qr0Myvve1cS4ZzXZK9bqPUERDJfxzCAiuzdVgtf1NqeEQ/ZBF4gmTMT0efiRipnGZyYwdkD2ZcWMfptgBISn2GTPCSY9ImBUg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778260868; c=relaxed/simple;
-	bh=ouWWBe2eeOridgyirPCrdFeeKPmMFNpj7gndlmCFpd4=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=SEJl/zrYfMJbT8Xxg85IT8E2LGpX+B/6/g0tOee5jXU77UziTeqdWv4cpiInDOpt6LhsVaOS0+gcFLicPC9Ll8rBcyYwUkYlKSAIzjw2SfcP4fHPtpwp4SH7HkPpc+gFTNBv4lw44Mfc7IMkk8/0a5YJI0oM0HFnoxogO95h2LI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FbI0wiQY; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778261298; c=relaxed/simple;
+	bh=Iikru55NoURSx6J2SyL9jJPQp5D8hOPJCa6JZG2NuSg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=tL40iuHdeybNtby6PTrxsgPCSB5FN6PFFzEtbvWtXUnT7P2ReGEgid42P6hALqqTpzrsT1d2NLuquOFjB6MHCYDW89a0Ir+FBW+6IIQHNWfraroT/QMv3nAL2808ZOkvYKGBJwB6VeZ1AKU+u8DcUdJCUK1WXshkZvKiuc4AERc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=sobmFfYq; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FbI0wiQY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 923E4C2BCB0;
-	Fri,  8 May 2026 17:21:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778260867;
-	bh=ouWWBe2eeOridgyirPCrdFeeKPmMFNpj7gndlmCFpd4=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=FbI0wiQYMUW6Cggw9Sgqjas/ymc+tUFm47BpOkdHuqiNt7qBkM72kXsen3NyqOr5U
-	 L6cr3Mn9oYbAl2OVOeIU+se2jMY7HtSOmgvdoJZSf0/WdYQRqG/FvQLCcJtmPT/qNN
-	 HTkKkjd/xLvNLTdHbTIqrWr/GVaMlK/N3LD6qb6vmyb2CKDXjpdTI+0V7e+nX7VEU2
-	 GdHO/HqgjLrx9wcIBi6kpD9G56AMzaMxaohAHmaFCNzp/sDoi6aHXY4bkGfYwv4Von
-	 TfSiPNfTmkRETgH4ptkoNByOHoWmVeWSNcY3VgALhdYS6dZVVaXQBeIjQI5gzuxpaq
-	 xENfdxiU1AerA==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 427523811979;
-	Fri,  8 May 2026 17:20:17 +0000 (UTC)
-Subject: Re: [git pull] IOMMU Fixes for Linux v7.1-rc2
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <hczz7n5onhjxyrwum2quka5braofmab7wstrzni7cvx36ti4c2@pddvq6ufemun>
-References: <hczz7n5onhjxyrwum2quka5braofmab7wstrzni7cvx36ti4c2@pddvq6ufemun>
-X-PR-Tracked-List-Id: <iommu.lists.linux.dev>
-X-PR-Tracked-Message-Id: <hczz7n5onhjxyrwum2quka5braofmab7wstrzni7cvx36ti4c2@pddvq6ufemun>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v7.1-rc2
-X-PR-Tracked-Commit-Id: 10161b4a791d5c4b7ea16512c1ddb133c3f8f953
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: fa7431eb99245e0a283d470101e44be1d2c2aeb3
-Message-Id: <177826081671.771267.4388990852978511136.pr-tracker-bot@kernel.org>
-Date: Fri, 08 May 2026 17:20:16 +0000
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="sobmFfYq"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 198BB1AC1;
+	Fri,  8 May 2026 10:28:11 -0700 (PDT)
+Received: from arm.com (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E36593F836;
+	Fri,  8 May 2026 10:28:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1778261296; bh=Iikru55NoURSx6J2SyL9jJPQp5D8hOPJCa6JZG2NuSg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=sobmFfYqPXXAfIvtR4YIYpBTVa984BNVuwyjtpIRyrgoihtxxscsfBZwrJyx809j4
+	 KrtKs9EyXfpJBazNvSmz6Ylpw/IqYnGGq+MUyCQn/9aiCBmvlnY6TZ55lBGAzY4Zlg
+	 Q5ybprDJY/85PR9ieeIbMgDpkY/vRRWgzAKXEwgA=
+Date: Fri, 8 May 2026 18:28:11 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>
+Subject: Re: [PATCH v3 0/9] dma-mapping: Use DMA_ATTR_CC_SHARED through
+ direct, pool and swiotlb paths
+Message-ID: <af4dK-0HEsKdPAvM@arm.com>
+References: <20260427055509.898190-1-aneesh.kumar@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260427055509.898190-1-aneesh.kumar@kernel.org>
 
-The pull request you sent on Fri, 8 May 2026 08:47:56 +0200:
+On Mon, Apr 27, 2026 at 11:25:00AM +0530, Aneesh Kumar K.V (Arm) wrote:
+> This series propagates DMA_ATTR_CC_SHARED through the dma-direct,
+> dma-pool, and swiotlb paths so that encrypted and decrypted DMA buffers
+> are handled consistently.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v7.1-rc2
+I think this series makes sense, using DMA_ATTR_CC_SHARED throughout the
+DMA API, either for alloc or for streaming to decide/check what bouncing
+does. Sashiko has a few interesting reports, it probably breaks s390 as
+well (it might be similar to the pKVM case).
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/fa7431eb99245e0a283d470101e44be1d2c2aeb3
+I don't think it addresses earlier Mostafa's issues with pKVM, although
+I'd rather base additional pKVM related fixes on top of this series.
+With pKVM, cc_platform_has(CC_ATTR_MEM_ENCRYPT) returns false, as does
+force_dma_unencrypted(). I think we should update protected guests to
+return true for these if they need shared buffers (the whole
+decrypted/shared terminology is messy but in most places it just means
+buffer not private to the protected guest, whether encryption is
+available or not).
 
-Thank you!
+That said, does CC_ATTR_GUEST_MEM_ENCRYPT actually make more sense than
+CC_ATTR_MEM_ENCRYPT throughout this series? We'd need to change arm64
+realms as well to use this one.
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Catalin
