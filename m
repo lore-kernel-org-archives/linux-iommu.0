@@ -1,102 +1,87 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 227BF30F95F
-	for <iommu@lists.linux.dev>; Fri,  8 May 2026 11:46:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5DBC2366548
+	for <iommu@lists.linux.dev>; Fri,  8 May 2026 12:16:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778240809; cv=none; b=a4CMipUAIDWQc5UUVmZyEczfiHqViRImWkxw8ZPmGYuIuAYqtoq/2eBL+5SwoUp8G/gy0bZdrLulLtwV2Bz75Xc4e8WEudGqL6wM0bI3RfVEdWHk8qc0b7Yidx4CIWrCO332VhGK+4tzCHpLBNTdrApZWwcECJkdhJtPrlEW5W0=
+	t=1778242591; cv=none; b=lIoz9As+ZQAzw6+G1p40n+sCPLo2dT+miCatKiOHF6vufM4mryQdDstZH/Ys09HcZ1ZfNt9e3FBztiML2jROZMQOm5KV43wvyDFk6c/fe1J3OiTgRhyNzApB70/SK09S30O70s5WrN7kiwUrQWoHeb/HLCe6ibuNDGtGXH1xnzU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778240809; c=relaxed/simple;
-	bh=DYoySGWvwhGOll9MsWpRxB+eEde5kCmNkA4iyDMusGU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ofFxsmvTSesovPGIuYF70autVchJ3RDGnjxMKsLGgtNmOhoxMf6JeFcV9yqo4aUAkUEllw6FEZ5u1240vSR6yA/5A7ZeBAWHbtlO15a1oHmw/I+xPXmKV6wPTRcNVfsrPiiySQXRX6gnfmz+Mlk0GvP02dkv0lM5OYQRrXyfBkI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=UrkIKMvt; arc=none smtp.client-ip=209.85.214.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1778242591; c=relaxed/simple;
+	bh=HbTupgDMI57jkZxLiL4IdpGCIDjjMhZjnIHjIezty50=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=JYOU4XCfy75+YpF1iBP3MOWovoRVfQWJ84GiAsJ7l87yxLxYGCoTLNxRNh85y9MhmApOcIlrUpJ88VILvErAWZrjXyFDcIKIoiADQ3YNoDRRdQm8g1vzdkwJ5DSpPug3gPSuqHg1+M+T1kBk4Gm4h8C4LrQn09Bbz7ZYoAG1r/4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=icrLRbdL; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="UrkIKMvt"
-Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2b2e8b95bdbso75075ad.0
-        for <iommu@lists.linux.dev>; Fri, 08 May 2026 04:46:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778240807; x=1778845607; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Yk+VF2UUzCSCg/RvIE6fW76wSTl5BC3qMVjRSFknw3M=;
-        b=UrkIKMvtR0Pv7xK0dvGl6W8XywaqdCz9QaEvjUo9rRtsAYYpDJu1tH5xw+zTNdxk7c
-         ktMcokK1PLSslQZIrlF6N+PeKIc50Bu71Pc71yYJr+RPKTu/e6MD1ifDdxgAC13+d3X2
-         xNH0ZGM5ZxGSml7Nzy6SRjAc90ewdVF4FF6wxrjnUrxpCUm9gZRNQ8EnY3XCKnSZ3E9n
-         8UpqIoWi4oybgqII+yGGYy7IDpL54V9B7bu72ozlwFqWiVfv8Ol6j4K163UhccvaV2dt
-         wGLFXK5s4nEMcU10eiCuIDchra5tKdN6vT7mV5x74FxN4YoZ3bGfvE7fLlLtTKpLdSVX
-         OX5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778240807; x=1778845607;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Yk+VF2UUzCSCg/RvIE6fW76wSTl5BC3qMVjRSFknw3M=;
-        b=iBZBkt+OUKf00mzPAFeNYdeuCmJoV7sr9UIQwS09Diz6T0jNuUrGgyQIppz8LcF9br
-         fCYuPz6iHvuEgzC7gsdamDHGlFtBLvSxRoUb2+xrwhVrJ5Ndc4xTZWlbVNSQpGcCvCPu
-         6y4g+wgO4SYGGty2Rk+nha8aX3dlj33+PdQ++pPfRzKz2tACwItbSB/BuxewMajH3CwS
-         k52RV/yJ4fZfhy4JVPIHUQMEbghxxHEdAgsTgp5OQSVG73NhWZ1poZPuUEk9boGhn/PV
-         XOBrJuewSjBycvuH84MWby5U6P5goGPbza+2kIpLPjuz0Ih0v69kg02HGMq8CNw1118y
-         11yg==
-X-Gm-Message-State: AOJu0YxMFJb2EoZkYVaX5yatwPfL2yZM0SzHJXNBBVjs6TOzyFy9xLjm
-	eKwklZ/lGKl4Q/tOn+ggO7fzkbY3Z0AyPjZ9+BHAMVEAC6SBretSSyHsOIpSKTD+/g==
-X-Gm-Gg: Acq92OFRov9LM0PdwVBXAmoxfHByLPj+W1cWPEZc4glqiPcDpQRuPjBGFVO3Bpf2a9Q
-	dYhK80VNa634YI5tHpPNQaAofb/TZsscYHwMhfR/sGk0Tnz56Exys+xXyRSsPScMkpiciWWZWIY
-	NdFqTNnHHLn6iajIVTfXAK/4rneQm/BdzJi8is0/pT1r2beDzjG9+r9RE2vBCcqH+xcWCDSchTJ
-	EonGKGJ/svKqIyshDFrW06Sk0KDcgRAY0sTBXqIC/+NOsHk8Mjc2Kxyy+tbv6tNWdth1ul3Uzqc
-	9acLEYVfPOWdRNOCip+pBV2Ntobidf84LPMXpv6ilfl1GzMuJ918IP0M+u7/YyoVVh7S5C1eDE3
-	KjkzI8wFUiFt3qxKi7N5wxcjT7M/xM7sawZt3RDSqFc0cyOIcou+w0CkHOCK4miV0woHFUZn966
-	JsEPZWcgBTmFXMRoKZj0GTThEpGy/HSdUJhbuwe7BqNSKKmazWezsdxdV1aQpB3Dqh47AX
-X-Received: by 2002:a17:903:1210:b0:2a7:87c2:fcde with SMTP id d9443c01a7336-2baee8320bbmr2253775ad.15.1778240806820;
-        Fri, 08 May 2026 04:46:46 -0700 (PDT)
-Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-83965d36c10sm15031850b3a.25.2026.05.08.04.46.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 May 2026 04:46:46 -0700 (PDT)
-Date: Fri, 8 May 2026 11:46:39 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Jonathan Hunter <jonathanh@nvidia.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Krishna Reddy <vdumpa@nvidia.com>, Will Deacon <will@kernel.org>,
-	David Matlack <dmatlack@google.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Mostafa Saleh <smostafa@google.com>
-Subject: Re: [PATCH 7/9] iommu/arm-smmu-v3: Directly encode CMDQ_OP_ATC_INV
-Message-ID: <af3NH0cihPUQ8PST@google.com>
-References: <0-v1-b7dc0a0d4aa0+3723d-smmu_no_cmdq_ent_jgg@nvidia.com>
- <7-v1-b7dc0a0d4aa0+3723d-smmu_no_cmdq_ent_jgg@nvidia.com>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="icrLRbdL"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 18EAF1BCA;
+	Fri,  8 May 2026 05:16:23 -0700 (PDT)
+Received: from [10.57.63.248] (unknown [10.57.63.248])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3E9813F763;
+	Fri,  8 May 2026 05:16:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1778242588; bh=HbTupgDMI57jkZxLiL4IdpGCIDjjMhZjnIHjIezty50=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=icrLRbdLBTqGmRZrGCpNV0w9uRuKVvRNaT3O0/INRkfmQokvUSd0d2Dg9ZTb4Lp2z
+	 qClzYe3kBdA7W0afgCBlUiG3wtVGIkmD7c6MKqNitK57ToXXeglg0RV2KCCjPJlfjv
+	 YaqJH/0o5pawmQ/XB4kWuEpxzeE18mRDlLV+ZgrI=
+Message-ID: <662fdf07-6475-4807-94b0-54b3b439ae1c@arm.com>
+Date: Fri, 8 May 2026 13:16:25 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7-v1-b7dc0a0d4aa0+3723d-smmu_no_cmdq_ent_jgg@nvidia.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dma-mapping: remove bogus test for pfn_valid from
+ dma_map_resource
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+ Jianpeng Chang <jianpeng.chang.cn@windriver.com>
+Cc: m.szyprowski@samsung.com, leon@kernel.org, kbusch@kernel.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, stable@vger.kernel.org
+References: <20260507032120.4072283-1-jianpeng.chang.cn@windriver.com>
+ <2dcc29d6-a4a9-4fdf-861d-312941ab0f07@arm.com>
+ <89094011-fe78-40f9-9695-d50ee19167c5@windriver.com>
+ <20260508113100.GA9285@ziepe.ca>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260508113100.GA9285@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, May 01, 2026 at 11:29:16AM -0300, Jason Gunthorpe wrote:
-> Add a new command make function and convert all the places using
-> ATC_INV.
+On 2026-05-08 12:31 pm, Jason Gunthorpe wrote:
+> On Fri, May 08, 2026 at 06:01:01PM +0800, Jianpeng Chang wrote:
+>>> As I said last time, I think pfn_valid() && !PageReserved(pfn_to_page())
+>>> would be enough for what we want here, although now it's strictly under
+>>> CONFIG_DMA_API_DEBUG, perhaps the overhead of memblock_is_map_memory()
+>>> might be less of an issue. Either way though, now that it's all
+>>> channelled through the single dma_map_phys() path, it would probably
+>>> make sense to consolidate any MMIO sanity-checking into
+>>> dma_debug_map_phys() anyway :/
 > 
-> Split out full invalidation to directly make the cmd instead of
-> overloading size=0 to mean full invalidation.
+>> Thanks for the suggestion. Move the check into debug_dma_map_phys() is
+>> indeed better, and I will replace pfn_valid() with pfn_valid() &&
+>> !PageReserved() as you suggested.
 > 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
+> I'm not sure that is right. IIRC pfn_valid() is true for ZONE_DEVICE
+> P2P pages that are used with map_phys but never with map_resource.
+> 
+> PageReserved isn't enough to fix it.
 
-Nit: I guess it's worth mentioning that we remove CMDQ_ATC_0_GLOBAL as
-we don't set ent->atc.global = true anywhere in the driver anymore.
+It fixes the false-positive on non-reserved pages, which is the 
+important thing. Yes, we'll get false-negatives on reserved ZONE_DEVICE 
+pages and similar, but that's still an improvement over getting 
+false-negatives on _everything_ by not checking at all. Realistically, 
+dma-debug can never be exhaustive and 100% accurate, but there's still 
+value in catching as much obvious misuse as is straightforward to do.
 
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
+In the long term, perhaps we could add some kind of "DMAable 
+memory/P2Pable MMIO/neither" attribute to our wishlist of physical 
+address range properties along with CoCO shared/private, such that 
+dma_map_phys() could then do the right thing all by itself and we 
+wouldn't even need DMA_ATTR_MMIO any more...
 
 Thanks,
-Praan
+Robin.
