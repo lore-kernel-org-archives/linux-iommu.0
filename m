@@ -1,215 +1,121 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AA8139D6E6
-	for <iommu@lists.linux.dev>; Sat,  9 May 2026 17:07:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7AC53BBA1D
+	for <iommu@lists.linux.dev>; Sat,  9 May 2026 17:10:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778346452; cv=none; b=iTw/dA4W3L3mN/AZJHAgEDLzoAaRP8l1L551K7s/7S36/uPwJlOZM5PHBY6imQi9LmGwwmZzQ2+hmAuaLzIP917jmjExvGi6Fqom9oHZK7iVXSdJ3cGUtcfRYgTiIIiGlnbqiGgKnPUvDlnPRSkyKY8OBdJ9YLPlx0H0+eDPeN0=
+	t=1778346619; cv=none; b=TdREJryRCjG0xHZhPd/Da9u3gFdCZ/iDIvOxdCY/Bq8qoH8YUKTlLLckrKPCakGHxwWd0dnMhNSi8WrLiiP4rY2hDmVNGgllVnEKNbW4es4tZhS3gNuQLumviQxVf8XdcjQ42Mw1sGdXYGO2bwLlbNGiX4S5avTom158tVjlkso=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778346452; c=relaxed/simple;
-	bh=QhhESLt4sU4La0hv5PEaGGtWswEN/2rxsz2V4OX7lNc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=D/9CnNymcYLx7OVVgzUq03G9M4ZNxfJx7bZF23D4FuGxn1XLtRdqQqscfvwoiKtdtePwACjsgqspUAyeRs7bERbDMhlwPzN8TBnHICZMMJ7JVmayIK5aimuTzuHwO3EgUCkyO3J9w/ocmT5jCVlnaC2FvGTEW7IrTqkdgC655dM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=PSvGJXcZ; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=PdhghiTX; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1778346619; c=relaxed/simple;
+	bh=Ib4XRsG2e4tlDimBfCEgugHOngPORoyq0KGAVzHdcZE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=L1BDlVIrdNPJCjhMXSSnaSnDLUcGPUO+cLPJEUgoN96gw62VPCHc9m1i8K5nK5PfZG+CiC6M1Tvf4Ocu8lqDLLJRRfENuZ34X1t+NIoenAEPJ+DYGH3v07BEfME9TgJK49zjECggtdMj8EfbzqNrJamblnYzKsUuF6b8ZgL0DD0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=oXQ8HdlL; arc=none smtp.client-ip=209.85.222.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="PSvGJXcZ";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="PdhghiTX"
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6494diW63075656
-	for <iommu@lists.linux.dev>; Sat, 9 May 2026 17:07:31 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	NK26YkhXhOkB1zXXrflzYxxjD7OJUQPCc6PGnNHByaw=; b=PSvGJXcZAgrUyxaM
-	U6HDSgO1E2DllbScsXkg2vFzairaUrRNUwT/eHB8sNtYb9Mi7QIPIy9oRuPp6vTX
-	qvqZRxKGECeOJAlfKPy/tChHjGd3dsC3WQJRMuKXFTcs30wkjWhlQQS4IXA5w7/p
-	HBCSU6AEzIdjXCyIKsoOYmhpMEhezBnUYxN6RrWPmSg19rXe30Gas6nCH1SOJnPM
-	AEA+TWemEm0jcVf5UooqQbDMp/fWsupOsSgjZzz+wuPDfLlBOu77UV2Bzx9WcaXz
-	y/werDFzZw+zG/79CrF4/vSovF3+4jEul/RGYwcb/AftErqGrCTWy32yDRypTCXd
-	xaWKfw==
-Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com [209.85.210.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4e1x3k18me-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Sat, 09 May 2026 17:07:30 +0000 (GMT)
-Received: by mail-pf1-f198.google.com with SMTP id d2e1a72fcca58-82f74bcfb86so3024255b3a.0
-        for <iommu@lists.linux.dev>; Sat, 09 May 2026 10:07:30 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="oXQ8HdlL"
+Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-8ef5776530bso286517285a.0
+        for <iommu@lists.linux.dev>; Sat, 09 May 2026 10:10:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1778346450; x=1778951250; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=NK26YkhXhOkB1zXXrflzYxxjD7OJUQPCc6PGnNHByaw=;
-        b=PdhghiTXcPnxNjaL7tBJoidw9DzE5otsex54jxmiUJBGbt3gZ9IMwnQqLgEjf9YShh
-         B3AADrHnb23qQifu6E/ezqZVSTtZFpzf70XCpjel2V8wlLljghQsbVakCZsAwTyssvhJ
-         1jICWQXifgwnD/qW2yV6U14qSzEgOJk0QT2G7fNQ6KMPsGSJF8DVgIhnzV0GktqSwW1f
-         ej6bqWCmd24TIfVkNpqN6JZIoUBy15esRXiaX4DCYrO2A0MV9EkYRU89ltYhgpXtDLro
-         RiTj9sc7lFI5H+xUDU1PzB11GjbX5xrlb5TypXNTKURprWp0eZZvnIr9O2ZqEEymIzWD
-         GVMA==
+        d=ziepe.ca; s=google; t=1778346617; x=1778951417; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Ib4XRsG2e4tlDimBfCEgugHOngPORoyq0KGAVzHdcZE=;
+        b=oXQ8HdlLN/6cbxsfxQAh9buv0RBTLh1piZ2duVk7M8MNRMLDcHe3bvBjU9h7mhK4hb
+         TEYflD26WdSon4kln56fyEnMp9CmPDA7Yvvvi5qKzWTDFWK4rcx9vbYkWVjMugVCBFwk
+         oswFlJfd1qT7uiumXonHCT4bIy+aQeX8l5cty6/ytb+/yMDZt7GvidhdrHqvjHfK9Nt0
+         kMMRTos76R4RCtEG4ohwgMIbbH4zedxRTXtjwM77yuVhznfyQqCyiBZbVPvgr/iC0tbz
+         zh7IAlqE5ODNLyfcC5LTe4gDH9E0BHiTTlQ4dd2F208t5HaT4q9AAMXwsJ+RQi52+nTH
+         SHig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778346450; x=1778951250;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=NK26YkhXhOkB1zXXrflzYxxjD7OJUQPCc6PGnNHByaw=;
-        b=dPnxFUC2bTvP1gx4jyYDi38hsXBMZ64AVAEUkR5JCcx9Y2ks+WI4TnL5LcoNqx9jzp
-         E0zXoLN10QOtbrL4Bkhj2aA/sz3Zj1OAboKBglHvm9YA1PnaKbkEEmIaGBr7H8Sik0FF
-         m8eC2qJGcF7zi6T7SUbVcNNRu5dgnPrmHn4vUvSU4kqsGLFZEIEJobowBLg6iFzSl3mS
-         HDdCmw74ABXpotefRKaclG2aX+RlGv+KAFq7BJkIch9q6Kmy4ReGek0EtPg4DcblsF2F
-         QjsBE9B7grozKRoo6gtg5wZASLStOWwHaX6UWin2dkaw+NVhicThXd9UL97zZmML3F38
-         HuVQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+ulR0p7FmnBsNtVEudiuvQAhL5ANgxGz5uyuEmGyeBTp4MRz7ygETDjn/mz6+jmDAKPqCu+w==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw6jCtd7mhEQk/PirRlFg3Bx7MYH+S6y2z3UNLjk7Ez3HSj3KJ7
-	tUq8gV6c/g+HJI7BOFGeNzG6Snul/T1mH4EMdrrdRJ7Kr6H/PRWGbjaUN3wsBj4YTccSS7wRgUf
-	p7p5Z2sApztmL87zFy1Ey8yhiQKfxG6IfWfkgLUUezFNR687hu0f3ghE+HA==
-X-Gm-Gg: Acq92OEoeMupeYMp/YM31Bd9YuxmsFAnJYORwxDVIJE/AbxlM5TNuglMokn1Pjaxg4p
-	+DPhCWaUE6DBs/MgBt1L5dQvzPKnx/2+LXfP2bNJyoqeBMkzDdDYudY1U34VXx4a5r+ZRi7XxvX
-	75JcrjSRZxB/cPy6+YIt23O2vplcMEG+umxZRW37I7Msfc8YEZESk0l1ZEeUVEsM6e3pHyO05VS
-	Rt3FhFPCc7dVBsBc2fZ4XkrogO289vXjmBfg/G2Uk9D/AqDU6Ki+kM344MLkYr0YUFxk/x1c08W
-	BOpfolGBSdd6U6YJCq1Re4kEAD0uUUVYF+Y8hUAU5Ha1QOJaq38oN2IDYt49AzTOc209k+pLLQy
-	XJaApEKDSbhoc47WqEMUjM0bRNHBZiQ7tmqy9MHG0hBCfStK2tCuWa9CeDwgLxA==
-X-Received: by 2002:a05:6a00:1303:b0:81f:3f03:6846 with SMTP id d2e1a72fcca58-83e3bf8eaf4mr2810763b3a.47.1778346450096;
-        Sat, 09 May 2026 10:07:30 -0700 (PDT)
-X-Received: by 2002:a05:6a00:1303:b0:81f:3f03:6846 with SMTP id d2e1a72fcca58-83e3bf8eaf4mr2810726b3a.47.1778346449532;
-        Sat, 09 May 2026 10:07:29 -0700 (PDT)
-Received: from [192.168.0.9] ([49.205.255.40])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-83967dbee14sm20911031b3a.48.2026.05.09.10.07.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 09 May 2026 10:07:29 -0700 (PDT)
-Message-ID: <4eef8b17-47b5-e8f0-4a44-87fdf1d69d18@oss.qualcomm.com>
-Date: Sat, 9 May 2026 22:37:20 +0530
+        d=1e100.net; s=20251104; t=1778346617; x=1778951417;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Ib4XRsG2e4tlDimBfCEgugHOngPORoyq0KGAVzHdcZE=;
+        b=P+THUZ5VOromZq64YWLkCCQ+6lsRg9lQxoeP+t1qZRTUkh3731uKIHtQbxhFCysdsO
+         CPJLQYh5P5N34ej9VbkcpIsrl0UXdFlFXGE+BFwpKEwggd2K3dUNNEEZhjOfistLuHLw
+         OJHErseqWT8c3KqlT4OA3Qz99Bs7RGeG6+2Mp8ih+YF3EjNjYgvHwecfNKDmMTus4mIx
+         pnKhEd9tIFlottu7CbKa7L+v9ZyNDy1dKzXgzJY6oFrI6oZWP8tymv+Xk5czsSUVdKyL
+         CNkrWUImUDH4RTh4Kx4OXQRBEcIJMwq8DH/R7qJYKcMlUhY2jYo89j6iXmQbsgiU9hj0
+         j26g==
+X-Forwarded-Encrypted: i=1; AFNElJ+8GFaSk0Y5Mg41KwoYrbdalA4SA/seupMUW3wPlgkghpZY/BjVl2XoNhH1v3E3/x7Clm/Cug==@lists.linux.dev
+X-Gm-Message-State: AOJu0YysTH993yyzmTnZm1VVVZeaRRpx4O/6l3GX6/VnStRm8AA+BqaM
+	u+Sl6j4mJ9URscnqNCagnn8SefghmzApKqDoAOASADwIWnglyrZQX/Bi/kMiJHqViBU=
+X-Gm-Gg: Acq92OHC84qOO85sHJsMz9XtiIfrTkWbesuF/Pzl4xUTxuPq17U0dWE3efzza7UdCyL
+	FwEkGWsYGzaognvv6zEd+xFjhfreHOiWhVzGlClmXg+euv4nMTl+w7pMpC+yySjhFEhCquFJ/SM
+	9nbhtrNF+n07HxxIOif74lHW548yeIc3I+PQiyJh8EKRO/2Zx0XJ+zRcPtc/ZfjODFOo0ENnZzS
+	+Gl6ZKlztTPSbvskOaZcn5O+PiEIoNNqMm0RLcd1fTCqM8EJXLHqGbgMbsl21qvsOlgbAWPFLyg
+	JHs1CdTkMqX7O+66aX0xaIv4iZMfy1ZSOaVA71Q9th9EvzRnbQh+AsfQLneVfTBH6xHVlZhuLib
+	rMUqgZCIsJuB3+dPiu13Sga7kypFqgpuLiS0KlPeEtzPWEOYaT5YgHcnzID6Cr3b3N2cwX1kKGB
+	V7XIY0pzevCK30aPBJeXkcfN2QDB1WEJYAkIF4iNCl7WmNiQKAIVFYtNCIt6pD+kEirdAfVQ5si
+	zUaJA==
+X-Received: by 2002:a05:620a:44cf:b0:8ee:cbf0:8311 with SMTP id af79cd13be357-9091072fa59mr433663085a.54.1778346616735;
+        Sat, 09 May 2026 10:10:16 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-907b8d9eed0sm552694685a.19.2026.05.09.10.10.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 09 May 2026 10:10:14 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wLlBt-00000001qju-3hnc;
+	Sat, 09 May 2026 14:10:13 -0300
+Date: Sat, 9 May 2026 14:10:13 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Joonwon Kang <joonwonkang@google.com>
+Cc: Alexander.Grest@microsoft.com, amhetre@nvidia.com,
+	baolu.lu@linux.intel.com, iommu@lists.linux.dev, joro@8bytes.org,
+	jpb@kernel.org, kees@kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	nicolinc@nvidia.com, praan@google.com, robin.murphy@arm.com,
+	smostafa@google.com, will@kernel.org, jacob.jun.pan@linux.intel.com,
+	easwar.hariharan@linux.microsoft.com, kevin.tian@intel.com
+Subject: Re: [PATCH RFC] iommu: Enable per-device SSID space for SVA
+Message-ID: <20260509171013.GF9285@ziepe.ca>
+References: <20260424133953.GY3611611@ziepe.ca>
+ <20260507095851.3220765-1-joonwonkang@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v5 08/14] media: iris: Rename clock and power domain
- macros to use vcodec prefix
-Content-Language: en-US
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Cc: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
-        Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Bryan O'Donoghue <bod@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Hans Verkuil <hverkuil@kernel.org>,
-        Stefan Schmidt <stefan.schmidt@linaro.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>,
-        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
-        Jorge Ramirez-Ortiz <jorge.ramirez@oss.qualcomm.com>,
-        Del Regno <angelogioacchino.delregno@collabora.com>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        iommu@lists.linux.dev, Krzysztof Kozlowski <krzk@kernel.org>,
-        devicetree@vger.kernel.org
-References: <20260509-glymur-v5-0-7fbb340c5dbd@oss.qualcomm.com>
- <20260509-glymur-v5-8-7fbb340c5dbd@oss.qualcomm.com>
- <6hr42ins65rf6ftdmme5lok6ham67piz3343kdwxaff2acktcz@oipdhket32og>
-From: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-In-Reply-To: <6hr42ins65rf6ftdmme5lok6ham67piz3343kdwxaff2acktcz@oipdhket32og>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTA5MDE4NiBTYWx0ZWRfX0ZrhHLIoBaWW
- 0z3qwlGX/mjBNzck4mDDD+cxnT/l4qzGa6pRBGk+v2+XM4aa8Xody/7F3f65sh6pWgfDUouAYhm
- g0oGnfea3EJXeIUPK0jkW1WLbuAOQ/MTSNPEROYv7MWBSbXYfJdiQrNZRX2hBORisW+6xJPQyGB
- hOYHv/MjfRuknaV1LjWd3ste04qPKngaANP1EikeTXpllQSJuuIiIvpOt95EHabtlSDnhTsKGyH
- 01ICwuWfk5R61NzLnjK9rQQ1qYBni09vuWM7GczJ+j+XYm4y8gUxXMiPv16lZFlpHayaAdRTMUz
- 5dcL7CEqXW9Yr08GApBQM+tKDn6DOWzoceZq2RQmTyvX5vSEmgOCMS4//HhmWndNjHwD7/sW5sT
- tJOW/C4UgdzWxYzt6HWUXuJquqxMY8orya1YxsWWKU4TQSctNUCelCeIr06zRtAbnsCJr11Ygfj
- alw8FhZ48OmDd0TiQpQ==
-X-Proofpoint-ORIG-GUID: xETNwEvWOMfT4UtmEiY1IHPtO2KYznnk
-X-Authority-Analysis: v=2.4 cv=UNvt2ify c=1 sm=1 tr=0 ts=69ff69d2 cx=c_pps
- a=m5Vt/hrsBiPMCU0y4gIsQw==:117 a=SpcZ+gRb+6o1zy8jT5J+bQ==:17
- a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=DJpcGTmdVt4CTyJn9g5Z:22
- a=EUspDBNiAAAA:8 a=2nvh9x2cStbi1KpodkAA:9 a=QEXdDO2ut3YA:10
- a=IoOABgeZipijB_acs4fv:22
-X-Proofpoint-GUID: xETNwEvWOMfT4UtmEiY1IHPtO2KYznnk
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-05-09_05,2026-05-08_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 suspectscore=0 spamscore=0 priorityscore=1501 phishscore=0
- bulkscore=0 lowpriorityscore=0 malwarescore=0 impostorscore=0 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2604200000 definitions=main-2605090186
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260507095851.3220765-1-joonwonkang@google.com>
 
+On Thu, May 07, 2026 at 09:58:51AM +0000, Joonwon Kang wrote:
 
-On 5/9/2026 1:52 AM, Dmitry Baryshkov wrote:
-> On Sat, May 09, 2026 at 12:29:57AM +0530, Vishnu Reddy wrote:
->> The current clock and power domain enum names are too generic. Rename
->> them with a vcodec prefix to make the names more meaningful and to easily
->> accommodate vcodec1 enums for the secondary core for glymur platform.
->>
->> No functional changes intended.
->>
->> Reviewed-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
->> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
->> ---
->>  .../platform/qcom/iris/iris_platform_common.h      | 12 ++++----
->>  .../media/platform/qcom/iris/iris_platform_gen1.c  |  6 ++--
->>  .../media/platform/qcom/iris/iris_platform_gen2.c  |  6 ++--
->>  .../platform/qcom/iris/iris_platform_sc7280.h      | 10 +++----
->>  .../platform/qcom/iris/iris_platform_sm8750.h      | 12 ++++----
->>  drivers/media/platform/qcom/iris/iris_vpu3x.c      | 21 +++++++-------
->>  drivers/media/platform/qcom/iris/iris_vpu4x.c      | 30 +++++++++++---------
->>  drivers/media/platform/qcom/iris/iris_vpu_common.c | 33 +++++++++++-----------
->>  8 files changed, 67 insertions(+), 63 deletions(-)
->>
->> diff --git a/drivers/media/platform/qcom/iris/iris_platform_common.h b/drivers/media/platform/qcom/iris/iris_platform_common.h
->> index 55ff6137d9a9..30e9d4d288c6 100644
->> --- a/drivers/media/platform/qcom/iris/iris_platform_common.h
->> +++ b/drivers/media/platform/qcom/iris/iris_platform_common.h
->> @@ -49,14 +49,14 @@ extern const struct iris_platform_data sm8650_data;
->>  extern const struct iris_platform_data sm8750_data;
->>  
->>  enum platform_clk_type {
->> -	IRIS_AXI_CLK, /* AXI0 in case of platforms with multiple AXI clocks */
->> +	IRIS_AXI_VCODEC_CLK,
->>  	IRIS_CTRL_CLK,
->>  	IRIS_AHB_CLK,
->> -	IRIS_HW_CLK,
->> -	IRIS_HW_AHB_CLK,
->> -	IRIS_AXI1_CLK,
->> +	IRIS_VCODEC_CLK,
->> +	IRIS_VCODEC_AHB_CLK,
->> +	IRIS_AXI_CTRL_CLK,
-> Why AXI_CTRL is better than AXI1?
+> By "similar instruction" on ARM, I guess you mean ST64BV0, which fetches
+> the bottom 32 bits data from ACCDATA_EL1. Please let me know if you meant
+> others as it will matter. If ST64BV0 is supported on ARM, however, it
+> would mean that ST64B and ST64BV are also supported already according to
+> the ID_AA64ISAR1_EL1's LS64 field. The latter 2 instructions are just to
+> atomically store whatever user wants to a memory location without
+> referring to ACCDATA_EL1 and all the 3 instructions can be run at EL0. So,
+> the userspace driver would have enough capability to designate arbitrary
+> PASID as it wants via the latter 2 instructions when communicating with
+> multiple devices.
 
-Glymur has 3 AXI clocks: axi_vcodec0, axi_ctrl, and axi_vcodec1. Using
-positional names like AXI0/AXI1/AXI2 doesn't convey their purpose, whereas
-naming them as AXI_VCODEC_CLK, AXI_CTRL_CLK makes the intent clearer,
-especially when platforms differ in the number of AXI clocks they expose.
+IDK exactly what ARM did. IIRC on Intel ENQCMD forms a special
+non-posted write TLP and the device can tell the TLP came from ENQCMD
+and so it trusts the encoded PASID. ARM has to have done the same
+thing - allowing anyone to forge the PASID by using a different
+instruction misses the point of the Intel design.
 
->
->>  	IRIS_CTRL_FREERUN_CLK,
->> -	IRIS_HW_FREERUN_CLK,
->> +	IRIS_VCODEC_FREERUN_CLK,
-> Can we at least group them too?
->
->>  	IRIS_BSE_HW_CLK,
-> Is BSE a core or a codec clock?
->
->>  	IRIS_VPP0_HW_CLK,
->>  	IRIS_VPP1_HW_CLK,
->> @@ -206,7 +206,7 @@ struct icc_vote_data {
->>  
->>  enum platform_pm_domain_type {
->>  	IRIS_CTRL_POWER_DOMAIN,
->> -	IRIS_HW_POWER_DOMAIN,
->> +	IRIS_VCODEC_POWER_DOMAIN,
->>  	IRIS_VPP0_HW_POWER_DOMAIN,
->>  	IRIS_VPP1_HW_POWER_DOMAIN,
->>  	IRIS_APV_HW_POWER_DOMAIN,
+Honestly, I'm not sure why they even implemented it. SMMUv3 can't do
+the translation scheme required to use ENQCMD from a VM anyhow, so it
+is pretty useless.
+
+> We have multiple processes and a single device, those processes want to
+> do SVA with the same device, and only one process will do SVA with the
+> device at a time. Though, the problem occurs even when irrelevant
+> processes allocate the PASIDs from the global PASID space for their own
+> irrelevant purposes.
+
+The only way to allocate a PASID from the global PASID space is to
+establish another SVA, so you have multiple devices doing SVA?
+
+Jason
