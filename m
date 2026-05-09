@@ -1,70 +1,69 @@
-Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
+Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00EB9393DFB
-	for <iommu@lists.linux.dev>; Sat,  9 May 2026 23:29:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7DF33451BD
+	for <iommu@lists.linux.dev>; Sat,  9 May 2026 23:34:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778369375; cv=none; b=MomEmAVq8ydm6+w47q5YDtLkGpodq2QO9F2V4KrRc9Q3eWbxxL8uKjNL+a5CDOHEkqd6E7nYeeXkChRZ3A+3UcJ65/RW8PvXWwigH62hSsmIX7a5j0BkdqFGFtXSRXt4jhZVq0VquIVUvjA1wV2CGmlB1yjkxq7MEpY9D2Az+i0=
+	t=1778369688; cv=none; b=PoT8mX4jd7VHldSWnDGBkAsY49sL+iqGn77Y5Kf/JgiXUKq83bE0NS+a7oKysT/vdrUrVjeTH5z92Xl7o/dGR+HzOMsfFGJqmGCdWg7s7pmoIGgTloN+kQeWoQEKoVji+9E3kMWoMAWqB5IofBPsxEfYHUUHIGtUs7FgZ2hWUCw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778369375; c=relaxed/simple;
-	bh=sce070X88mUVBdz9b9Y4+DDwl2h8zEkLOKh5Apexnnk=;
+	s=arc-20240116; t=1778369688; c=relaxed/simple;
+	bh=viE2tZT/M+fmeTU3fRuSrMwCvMP+jn8S3W++VN5Bl0Q=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ngpA3NDaeuV3gcpD6PL8GB6i7cZd61ZT04iaAMHmDINmlio53XORwDlKcpM8kg5DrD1aEVMMxyUs/6q3n+fmWoR2j2SS1WqtcvaaGp25+czYrdPF+Mag4a5/ueoRHI29qY8Qv231tEGdwlG8hgCHJC1N0P1vQBQ5+szPnYVSo5I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=TKS03tp3; arc=none smtp.client-ip=209.85.219.51
+	 Content-Type:Content-Disposition:In-Reply-To; b=tjRBj1RAthrRbmOjfON7UmzzTChT68IQRGmEv9FfEreMpyc43eaxN+qhhoa+TMOGphgo6ptgjxSp5uiF/ZahEEwmq/j5K3qa78HIjTU6cJ8gJMewG03QX1a54US968xX3CPqo0qkVsQKXeSxFCoyiR5KBWmjk8uoO4nOkARDgk0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=R4XcU/RY; arc=none smtp.client-ip=209.85.160.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="TKS03tp3"
-Received: by mail-qv1-f51.google.com with SMTP id 6a1803df08f44-8acb09ddbf6so49929876d6.2
-        for <iommu@lists.linux.dev>; Sat, 09 May 2026 16:29:33 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="R4XcU/RY"
+Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-512f09ecc67so21297821cf.3
+        for <iommu@lists.linux.dev>; Sat, 09 May 2026 16:34:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1778369373; x=1778974173; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1778369686; x=1778974486; darn=lists.linux.dev;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=sce070X88mUVBdz9b9Y4+DDwl2h8zEkLOKh5Apexnnk=;
-        b=TKS03tp3PaIHG0roBKMv0YUFMmjXGUm6hR/LVK1tEW85eFnpgc6eRl7RoJ8CT4BFW3
-         BwKofKWHYEF1x5rnc2/74p1g7K+ke5vr0PDqTkz23rnuLbbst8BF6CkZ1Qnof4UmqJ3/
-         ZnbeuD4KgKOjImzpKO1OrzqDB7GlCgyxhJQl1ZyK3u3Vg53M5s3WvvXVt67nFjp3dXKS
-         6Vf7MimECp/CJxOCSzclKKYKM9ylAiijk0OpSPO7i44fgSFBjuYDBYRscJoRqyV0yJkf
-         qNWaywXuCuzo6SWl71loa8uEFi8TWtsVcLXmLoFI+a6qnxp7N1ZiQb48s9YX3l1CbobC
-         erWg==
+        bh=t6tLt4US09DyLso/mhdji9Hp8lkbi3csRWs2bmEy9sU=;
+        b=R4XcU/RYKFBXFTaONdVKP4n+LPB81y9dWQ32Wr2E+uFGBfCEYZyQt+lRGAvpn8rRtf
+         VkU3Pl9OzlgfJWx1FUHVTMUZLN52tJajiVPHmOBK2mTMIH0NLVZfAw3j43ITJfsgkqh+
+         xFy9SPg3tyOcoK4UR7bruur+aMDwKnr59I8el9xDc9ykYpwYty0wDt3VCctsr6M9rVwP
+         3H/wt/XshOqT6YQe5KLDQ7rYsfjAgHo5bI2Y2/6v7ZQHuwxaxdjij34x5iiFL2y/Ya9Y
+         /2oNI8+ByzevTZbCnN19465pDbaKTgASdipYbq7o5jGHwp+M6toGbH9c7kn/LZRAzERO
+         YElQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778369373; x=1778974173;
+        d=1e100.net; s=20251104; t=1778369686; x=1778974486;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=sce070X88mUVBdz9b9Y4+DDwl2h8zEkLOKh5Apexnnk=;
-        b=pNePlJ/HO2tK/v9x9cZ3hgsuTi75oEFllyNwg7kl/AUZ5UGoQqCYic2NX+mTTRPaRt
-         2Fmv1HkBP2mj4qRhEGPJ9mcElPsQ8I9xW/gc0kchkNsIj65Kx1kWh2PKdRFFGIPkUmoC
-         znqdfGOGIno7r5CURUqGr9GFIkT8QFN8ho9jQix/owf5+OoGj0DO8BPq4fgbmFoZvUyt
-         qmaKWGGpU0/ULXBBcfk3nUpUGO0wCv4lpCwO3fkmW3bQeXlY+6ksk4fVPEmWZbN7bmZX
-         iWohUh/7t6hbJjF0Rb7ELsfsfPenvwFKAtyK+fthClY4AW/COnm/zwGtPEyqVzVzHETi
-         lpig==
-X-Forwarded-Encrypted: i=1; AFNElJ+glH9igAUYeE964/81uBp2n7v/I2V6SvDmZGBIGNZ95rQua0xUtU1rEHsa9f845P/VSEF2tw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywf+HFZmhGQ18dLdbB5FT/mIkTzxGkhh9bjgJsBOHUX+uA1Mwe4
-	KyljvoOmt9RlAOl/4odJXtcqdSmIVWrsm+OXOADVJzHDAY6Er6ZkgUtHmCYP8Vt+60MFDuJ0iVR
-	aRexe/Gk=
-X-Gm-Gg: Acq92OES2UqlxYDy8BFZzx50RpRKU0FceB/A5T9UfXftEWbFsTIj4rCzDd9xHhqgyDD
-	WQoLriyXw/yc85nUpAjUn6ANw+WZExLTFjDB3MfV8HBDNxRIBLSIsCsqFlE2BQvQqfMrU1Zz6HA
-	yE1/32KTrmjtQYNH12CgeC2vYOXwFrFDew+pmZiPLqEcN2U8QdC5staDV8RXX6L/m2jXd5iMpcz
-	xnbx/RYvSquIbd4NKCf6JEwbclo1f+jQajntxVQRVU4FtRNBICMvRZacy2jNv3lVvA4VGiYOAdw
-	p54pI2HyX6w2syOXjrLElIkkJDDLLwv7XjsG7dGNze+vPBZAdP+rz4wszYKqAg49TNIbaGS7ByT
-	D9vpBpTzdhUby3rhm3R+U9E3SHLrkUN4Cu/c/sWnKcBoGAJwZbcmY/Tx4vitLzVEv/a+9ez+oZC
-	6RwiTPCzmq+NG5pTXlq2ugEnJOxcev0FaxvodFTfLCKa849rs5PNHdtLM3U1BPh1T1saaDyzPRh
-	ijgWQ==
-X-Received: by 2002:a05:6214:3a8a:b0:8bd:de6d:c33a with SMTP id 6a1803df08f44-8bdde6dc799mr202539986d6.21.1778369372915;
-        Sat, 09 May 2026 16:29:32 -0700 (PDT)
+        bh=t6tLt4US09DyLso/mhdji9Hp8lkbi3csRWs2bmEy9sU=;
+        b=pfoF5Tbx/eR1skXFZnYjHmYWKTQWD9mRwA+4gBbbabt0THAqcC6LCIG4DVnIj3z4jk
+         Au1DJP/VkkI3PfW6DwfIlyIRGXsIOhxIOYVFStMk5Sb9RIv4A0KiN7RDP0qttAnNebz1
+         XlTCwQLpcxAy5X6m9dHka10dEVUPcVkM4LlL+7iuSd7dLTqQ4/CFxYaJwpl7axsv3TY9
+         sRxzjaYR5GWo6QwXsc1g20b+Xi1kzedZEOPQD/NuVvYZHduQz6aJPfmP1scLdko0nmp6
+         AKKt6AfoICHHSItsDAE5c2ooP30R1HZRsJQ19HQJ8cvZMp7jS+8vYH99iU1yl7K2k4Uv
+         Bc+g==
+X-Forwarded-Encrypted: i=1; AFNElJ+YJ6CFYocww9HrmmEczQn2zMxAoIeAhLntQfkFDnzksyVHD3wFXnJ+Mn73RdTtG3iEJqt1oQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy9b/wa9kq8yYwdsY0l7KYsdikH2eknsz3L3I0YY4Ua+umW/Stz
+	IXaYtXefXEBaX4B1wdBph0mh0MM13RfWYOkafpxA0Z6EkoExe6a+4zJSk87RbUTc43o=
+X-Gm-Gg: Acq92OGsx1KUZZ88YG1Jmk5N+mGfSdBNALppMKzqayVWYUXqx+DWj8buv5UUcq36mNm
+	Ly7oSMB21Fg4JXQ1FfjJKNXuseOTREi8Vx/oOX4lNOZgX7s9IYVlaRIh7KJfnKqAbi+TMqtweJU
+	rnczXIzsj2rYobKF81FqGwboK+VXafwYSYsaCnd3sVdjgYQSu0D7Z9yhrL6lIx7jE5rsoxZnh6D
+	O518vslf8JtebnSn+TIc4pg2eIpBv8LvdD+wU2T06v7VnWPWE9RcfqKAmJJcj+pLmq6dkhGEVWm
+	4wZKxA+OYeQJkYYDMulXcUUHaYhg/D8Di0lypAY9QJwIIWUDDPPh3ThKC6VVs1WmakEo/7F9jlq
+	fRdOmGZvLC275eYemKn95hZMhmA4f8OiY84vOBf9AYz3Ph08GHBTBABGwebZ+vNhhF7cVZnlUTs
+	H0n23x7pPjgaNJUyCueApOxjE/4sTpe0eXP7m66JE8eAzNUyhg0D4096EuQW1C0MDMOJmrP3QTa
+	knASxbBK14Ly8Lc
+X-Received: by 2002:a05:622a:5a9b:b0:50e:6139:492b with SMTP id d75a77b69052e-51461c3620dmr247096161cf.23.1778369685834;
+        Sat, 09 May 2026 16:34:45 -0700 (PDT)
 Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8bf3a33fab4sm53837756d6.23.2026.05.09.16.29.32
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-5148e7e3d90sm51028881cf.20.2026.05.09.16.34.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 May 2026 16:29:32 -0700 (PDT)
+        Sat, 09 May 2026 16:34:44 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1wLr6x-00000002NrB-31tQ;
-	Sat, 09 May 2026 20:29:31 -0300
-Date: Sat, 9 May 2026 20:29:31 -0300
+	id 1wLrBz-00000002ONN-38VG;
+	Sat, 09 May 2026 20:34:43 -0300
+Date: Sat, 9 May 2026 20:34:43 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Mostafa Saleh <smostafa@google.com>
 Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -74,17 +73,17 @@ Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
 	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
 	vdonnefort@google.com, sebastianene@google.com, keirf@google.com
-Subject: Re: [PATCH v6 04/25] iommu/arm-smmu-v3: Move TLB range invalidation
- into common code
-Message-ID: <20260509232931.GJ9285@ziepe.ca>
+Subject: Re: [PATCH v6 05/25] iommu/arm-smmu-v3: Move IDR parsing to common
+ functions
+Message-ID: <20260509233443.GK9285@ziepe.ca>
 References: <20260501111928.259252-1-smostafa@google.com>
- <20260501111928.259252-5-smostafa@google.com>
- <20260501124143.GB6912@ziepe.ca>
- <afiN1UwS9q6F6A_v@google.com>
- <afoYBYIJOTClsdLS@ziepe.ca>
- <afoeIVIGE-JjYy22@google.com>
- <afsPfEzgGtAFrN5P@ziepe.ca>
- <afxd8Km40A5ulZvd@google.com>
+ <20260501111928.259252-6-smostafa@google.com>
+ <20260501124716.GD6912@ziepe.ca>
+ <afiODW2sVMeOj3Ag@google.com>
+ <afoagb/wVBJD1IX+@ziepe.ca>
+ <afofSPQbepd_fpom@google.com>
+ <afsQTwO3eW+Ks2fe@ziepe.ca>
+ <afxlufh3t3hRe4-G@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -94,25 +93,46 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <afxd8Km40A5ulZvd@google.com>
+In-Reply-To: <afxlufh3t3hRe4-G@google.com>
 
-On Thu, May 07, 2026 at 09:40:00AM +0000, Mostafa Saleh wrote:
-> But that doesn’t solve the problem, which is: At some point, whether
-> eagerly from the page table code, through gather sync or a fancy
-> invalidation array, the driver will need to populate a range
-> invalidation command (tg, ttl, scale...) and this logic is better
-> shared with the main driver which is this patch does.
+On Thu, May 07, 2026 at 10:13:13AM +0000, Mostafa Saleh wrote:
+> > I was thinking more like
+> > 
+> > #define arm_smmu arm_pkvm_smmu
+> > 
+> > Before the pkvm compile of the shared code. 
+> 
+> Oh, so we rely on arm_pkvm_smmu and arm_smmu having the same field
+> names and types?
 
-My point is this patch doesn't share enough. If you do need to issue
-invalidations then share everything below the top level tlbi entry
-point and don't try to make a pkvm version of the entire logic just by
-ripping out the range logic.
+Just for the shared code, yes.
 
-There is no reason for pkvm to need a different algorithm
-here. Especially when you get to supporting ATS and multiple devices
-and smmus you may as well just use the whole thing.
+For instance this patch would require the features field be present in
+both, and then all you do is directly copy all the smmu->features
+logic into the shared file and that's it.
 
-Which is why I suggested to copy the entire call chain into a shared
-file
+> I don’t think that’s better for maintainability, I can look into it
+> if Robin and Will are OK with that.
+
+I think maintainability here means pkvm minimizes how much it changes
+the code of the main driver.
+
+Copying a bunch of functions into a shared .c file exactly as it is,
+then compiling the shared file with some #ifdef'ery at is going to be
+long term better than trying to mangle the whole thing to avoid using
+any of the core types and not directly share the code, IMHO.
+
+Like my tlbi point for instance, it is not a good idea to rip out a
+little bit of the invalidation logic then open code a pkvm
+version. Use the exact driver code. But to do this you need to pass an
+arm_smmu through to to the pkvm specific queue management functions.
+
+> > How does pkvm compilation work anyhow? Is it all rolled into a unique
+> > link, or do you have to worry about symbol conflicts with the main
+> > kernel?
+> 
+> All pkvm symbols are prefixed with __kvm_nvhe_ in the main kernel.
+
+So automatically with objcopy or something like that during the build?
 
 Jason
