@@ -1,158 +1,170 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 024A4368287
-	for <iommu@lists.linux.dev>; Fri,  8 May 2026 23:54:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A80323BCF7
+	for <iommu@lists.linux.dev>; Sat,  9 May 2026 02:21:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.110
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778284454; cv=none; b=IikFPDkH8h7R1OoEOK/ktCKYQd4VM5QPteaDCUVNX+tssdgh9JZeF7VyDWWBlL+XGE4aZUb2sGgnCwLfZQwXNmL6Okdc3oIXlKRuu3osCuEQApYTJSMYeoYOM/ralBW+KNhnOOTjhTdBeAMnvM4IF/GqpfpggaNLYxLlbgV7teY=
+	t=1778293286; cv=none; b=pPHyY0UyvQ1bIY5zudACxq/W7lHmsOq+mu+sWjZHvECLyDnlx2FsvX7T685I1KXcVKT9oH3ldFrxn4N25RoTvMpi4qJ86/KQQFFX03W4vlbuQmZ81XPzS0PLS1fEnucejcVTNtPDp55CDJc2u8CPRfMjdpvCPXjXAWcz01hcv1k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778284454; c=relaxed/simple;
-	bh=M+irl09BB3lpaeKwpF9y+VIsDUUpMsVxXvjsUgdWUqk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fPc8Jz1Q39j1UGCktypXgWbthJu+lCN5ptUQonir+VPOYDJvk29TBFwYtyryN6vekQctltVFaOUCbp+l7zOLCmx4MUPEgNzX29rQijtYULLfdpNtEj/UpTSOh/dd7v0To8YBL9qkxF310SOo5Br+oDe0viIKtMZMHIO/sS22DTw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=lqAva3Jo; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=f1oP6YT0; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1778293286; c=relaxed/simple;
+	bh=EYHygaLXEzen/cX/MOFt4Um+zDLrToLbUAl6lCcmcNY=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=EfFKLAPRd/WiRiFgWcasHOXcUCIAsy/p1JGDq2S1fUeRV3L5XgF/wA9SH0woxarbYT7nTzWOcv0dNKwqpvezWReTf80lqYbN+iikkcVIVsT1E9oTWJxkzoGtOBgM1LkLlXSof2kD2hkD71XVdTb08CD6ykoPrdmvjpEwyfl3z0E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=euZUrpWD; arc=none smtp.client-ip=115.124.30.110
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="lqAva3Jo";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="f1oP6YT0"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 648He040874422
-	for <iommu@lists.linux.dev>; Fri, 8 May 2026 23:54:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=U/y3XlxsK17A/ooTr1YrUKH/
-	737x87wh9dKRfPzZz/0=; b=lqAva3JoUFBU9P+C0Ml+j8gYnNhFiFc4GcfrBw+P
-	1Br3PBFnhgd2J/28iJNuOVg3yzCWJ0yXdoEqmFwWo3vU6y0WUgUmJ5n2ybbYmqCa
-	VzEcnExd7j7kcY4CVsobvZ8jD88fjcow8e1rydxfbRHrviHGHn4HATI9XUyLFUkX
-	bLbFNs85gQa+70lp0VDf6axj8ajhYDgmLNz86OuN4zyTJ7k9CS9ZZQ5KSq1NpRej
-	DUND+xAGgqWKUjBrw1yU6AwD02KR93lWUNyyA7Bih+wMDEMfvJtdifv7V9CB8Qes
-	Ypz2qATIOGnilaWGipCM0WMu1RdONUd3kaoPgMQKTEeOFA==
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com [209.85.160.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4e1me80yun-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Fri, 08 May 2026 23:54:10 +0000 (GMT)
-Received: by mail-qt1-f199.google.com with SMTP id d75a77b69052e-50ff051e189so56609091cf.2
-        for <iommu@lists.linux.dev>; Fri, 08 May 2026 16:54:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1778284450; x=1778889250; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=U/y3XlxsK17A/ooTr1YrUKH/737x87wh9dKRfPzZz/0=;
-        b=f1oP6YT0zViDfzfC9s7uew8rvlrVZaK97IlV9N94I9U/qpm++i+Ng6GrVDGGI3B9uB
-         A9Ao4cuMvMzibU2fhYHx9G1m1Np4XUP4HvVmo1FTHWuXj88tuY1nE9QRK+tvTJ2gLVcR
-         P2rHG+3OHjsZDkO+JtDtvLF00Ig2mfqbvlYc9jrvB+noGi8RePsqploo10eemFi8B0Nb
-         +cpH0si+PrXZ1wbwATo/4gmEsbN7PTsinsbUHl7KA0JLRdK5yFXvinJNSjpQtOsQePkE
-         8zO2rJSe6qZK+WyiqgSFSzcnZJbkWduXqVpSNSHem9qV3leMiJ9nSBr7xUo39g0RQ2bY
-         lIuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778284450; x=1778889250;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=U/y3XlxsK17A/ooTr1YrUKH/737x87wh9dKRfPzZz/0=;
-        b=gIf4qSR/7JlnVUELM52rSb93dqO4ulQaRCP4QTp4aJ+RVwZEhspuyMlIDtOgl8gjEM
-         dyCQ2NCchvQhlc3UmaOfdOP3qUe8vD3jhDV6X/Z7+/OPN12MAIy2ZB04sZSR9ApQvi6G
-         tNVIK0Klsg5n1OZRkM5lFcdDcMqB3rm4C1c1LX9Sv7VQSbBLDmzPrIH3iFT8jplId+Lv
-         /REqJpnD+QaZ7idAGZn+C9L2MvrIXCFIUlpeXtEy8DcdCr707gWhG8FAY0jm4DXokq0l
-         Qm92jzDFR/BsWzuonE2C3OBv1VnddsC6fHdSSvMfjyJEP7rs+8+XNrFacVFn+BXBVZ7J
-         hrIA==
-X-Forwarded-Encrypted: i=1; AFNElJ9HavWMXMnZYnqbGbhFEsLJXdKQSpORXlcFoxrxX6sky0xlEBnx+HdcMuOodfiaVu6BIXMxzw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxuWJ+UEIYxG4QFaAIcpAKarMrLRxBnR/tKIxzReodRBCclmD7I
-	QF0TOc7LsnqUfjsH+REsM9O8PxLJUuyIMNj3xM3D7DHeJ2h2YRMa8niX6UOalVrPfT1E1O5iSb4
-	qitMQbH9r6s05qcYvPsClSqDCnYk6DCzGsYGERl6khJRVFQFdJpYnFX2rYg==
-X-Gm-Gg: AeBDievi8X53Ae5x7jspVf99T98HiOcZ11wi+iVVjD1iJt98A88Nbe5x3JyIiSVk2kJ
-	eEOpRMlj1NnwSqEV+Yj6U7a6mk8ZMka/FSi80m8mhm3oElqLb0Rsy31pPRkeKDPFbu3d8R0pUEq
-	3CUVxR4/5eyLqTDPMW+ZxVgeEFCI9C3sc04fKo6eWEjve18A7UCl9rqu8V5QMo08RV5slNjckbU
-	jbXKDfLlD1XB8jPaMUDEXqfJCHptm0U3paXIOL1KBv+TDEfDn2S7XzK56rP+BecCwrU8ZUlpQ3n
-	cgw3toZp8u0BPTT7Rgf7UcCo/Oqe33YXp2EDZQo63Cwtm6l9dn1/200IzPw3fQ589PYuXFhAo5q
-	ezU4h/9W4ZN5aGTXc80KQ5aU6HpXn410VHKO93q7OO1XAcEFHPloL4uy2v7puTXOMPfEyLgHo37
-	RVI9bVqJqWuQH6iWQlbCH7SA/x3Dh84cP+rVQkLtukemMWnQ==
-X-Received: by 2002:ac8:7f01:0:b0:50d:8050:a358 with SMTP id d75a77b69052e-51461fcf281mr213549921cf.47.1778284450349;
-        Fri, 08 May 2026 16:54:10 -0700 (PDT)
-X-Received: by 2002:ac8:7f01:0:b0:50d:8050:a358 with SMTP id d75a77b69052e-51461fcf281mr213549431cf.47.1778284449855;
-        Fri, 08 May 2026 16:54:09 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-393fa029671sm7049111fa.36.2026.05.08.16.54.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 May 2026 16:54:07 -0700 (PDT)
-Date: Sat, 9 May 2026 02:54:04 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-Cc: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
-        Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Bryan O'Donoghue <bod@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Hans Verkuil <hverkuil@kernel.org>,
-        Stefan Schmidt <stefan.schmidt@linaro.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
-        Jorge Ramirez-Ortiz <jorge.ramirez@oss.qualcomm.com>,
-        Del Regno <angelogioacchino.delregno@collabora.com>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        iommu@lists.linux.dev, Krzysztof Kozlowski <krzk@kernel.org>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v5 14/14] arm64: dts: qcom: glymur-crd: Enable iris video
- codec node
-Message-ID: <676tz2xvipbhm25djmbqokfemscjjwwjethvglycvzqqtsf2uj@xlqiuzyqyfax>
-References: <20260509-glymur-v5-0-7fbb340c5dbd@oss.qualcomm.com>
- <20260509-glymur-v5-14-7fbb340c5dbd@oss.qualcomm.com>
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="euZUrpWD"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1778293281; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=yM6gBNBfMjfsnVo2Zphvol5VwDk6zyg7O9ApOWcqZ4g=;
+	b=euZUrpWDfCJsDl0Ol48BMdk8DC+Fx/k092tRSdkhl3ZDM/g8q1XHTAn3IYdCQWyHuXeseEL1JvrZ9oplUABy8RKR5TorRdXXn0+31e7ZCP/kW+/BvXx2x1M7/cWW961POTeTKPX7dgfJj7sk/j2e05Gtx565dQn9cCkSY8SEcU0=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033032089153;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0X2Z3i8N_1778293278;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X2Z3i8N_1778293278 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Sat, 09 May 2026 10:21:20 +0800
+From: fangyu.yu@linux.alibaba.com
+To: andrew.jones@oss.qualcomm.com
+Cc: anup@brainfault.org,
+	iommu@lists.linux.dev,
+	joro@8bytes.org,
+	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	palmer@dabbelt.com,
+	pjw@kernel.org,
+	tjeznach@rivosinc.com,
+	will@kernel.org
+Subject: Re:  [PATCH 1/2] iommu/riscv: Map IMSIC addresses for paging domains
+Date: Sat,  9 May 2026 10:21:13 +0800
+Message-Id: <20260509022113.53400-1-fangyu.yu@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
+In-Reply-To: <20260508212339.381933-2-andrew.jones@oss.qualcomm.com>
+References: <20260508212339.381933-2-andrew.jones@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260509-glymur-v5-14-7fbb340c5dbd@oss.qualcomm.com>
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTA4MDIzNiBTYWx0ZWRfX5HFCzcVHQRg2
- RHJlZFcf0lMdV4I3kAU3SzPvMcjFS6y6ZKVBKpCjY4lo0VjDGzH88aIhghfGcz20iYr83mSf75j
- A3FUTSEHHyYip8A549PUIZ8ZtlKX19tX0lIrcZ8fFAWv00kcgcZFngkKTvE66h7tG78ht4uj/+j
- YQxe20aioUZEy0qrmAjYrODLqTVgJaQEUA9v6L160yWhQhKqS06mh1/GyaiMKcRoNTUgTg7dQIh
- ZQKJX1sam3t2K3ndAccM6lH/iXvZUEkQlahjCMGXkrQwHPRfj9Zh5PaME4hk9WwX5aBPlrh3PXT
- hFjwZDMkRTBI/jOd9IJS/j7CDPpBLMv7qmUFGL95H3MBqfx3u7fMjHr+MreKHnmnR3VlIV/QlOO
- vxcdj4nJCBTMPmA2qIUvt7JMNnH5ihhdBkvYcpvInHSCT0RQyOV4EvWtyjdVLmYGmCQIhczSvqU
- ex8fcIkiiuxOOsXuLJA==
-X-Authority-Analysis: v=2.4 cv=BsKtB4X5 c=1 sm=1 tr=0 ts=69fe77a3 cx=c_pps
- a=WeENfcodrlLV9YRTxbY/uA==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=gowsoOTTUOVcmtlkKump:22 a=EUspDBNiAAAA:8
- a=MCItce8SuK6p_Dj8i7MA:9 a=CjuIK1q_8ugA:10 a=kacYvNCVWA4VmyqE58fU:22
-X-Proofpoint-GUID: KOq0esiq61Ai_tzdlxgnTLjd30YBrNIS
-X-Proofpoint-ORIG-GUID: KOq0esiq61Ai_tzdlxgnTLjd30YBrNIS
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-05-07_02,2026-05-08_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 priorityscore=1501 phishscore=0 adultscore=0 spamscore=0
- lowpriorityscore=0 bulkscore=0 suspectscore=0 impostorscore=0 malwarescore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2604200000 definitions=main-2605080236
+Content-Transfer-Encoding: 8bit
 
-On Sat, May 09, 2026 at 12:30:03AM +0530, Vishnu Reddy wrote:
-> The iris hardware block is described in the glymur SoC DTSI, and enabling
-> it here allows the media iris driver to probe and use the video codec
-> functionality.
-> 
-> Reviewed-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-> ---
->  arch/arm64/boot/dts/qcom/glymur-crd.dts | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
+>When IOMMU_DMA is enabled, devices get paging domains and MSI writes
+>to IMSIC interrupt files must be handled correctly in the s-stage.
+>As the device always writes to the host physical IMSIC addresses,
+>which the IMSIC irqchip programs directly, install s-stage identity
+>mappings for the host IMSICs. But, use IOMMU_RESV_DIRECT_RELAXABLE
+>since the 1:1 mappings aren't required for device assignment.
+>
+>Loop over the cpus rather than imsic groups to handle asymmetric
+>configurations.
+>
+>Signed-off-by: Andrew Jones <andrew.jones@oss.qualcomm.com>
+>---
+> drivers/iommu/riscv/iommu.c         | 34 +++++++++++++++++++++++++++++
+> include/linux/irqchip/riscv-imsic.h |  7 ++++++
+> 2 files changed, 41 insertions(+)
+>
+>diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+>index a31f50bbad35..3c6aa9d69f95 100644
+>--- a/drivers/iommu/riscv/iommu.c
+>+++ b/drivers/iommu/riscv/iommu.c
+>@@ -19,6 +19,7 @@
+> #include <linux/init.h>
+> #include <linux/iommu.h>
+> #include <linux/iopoll.h>
+>+#include <linux/irqchip/riscv-imsic.h>
+> #include <linux/kernel.h>
+> #include <linux/pci.h>
+> #include <linux/generic_pt/iommu.h>
+>@@ -1286,6 +1287,38 @@ static struct iommu_domain *riscv_iommu_alloc_paging_domain(struct device *dev)
+> 	return &domain->domain;
+> }
+>
+>+static void riscv_iommu_get_resv_regions(struct device *dev, struct list_head *head)
+>+{
+>+	const struct imsic_global_config *imsic_global;
+>+	unsigned int cpu;
+>+
+>+	if (!imsic_enabled())
+>+		return;
+>+
+>+	imsic_global = imsic_get_global_config();
+>+
+>+	for_each_possible_cpu(cpu) {
+>+		const struct imsic_local_config *local;
+>+		struct iommu_resv_region *reg;
+>+
+>+		local = per_cpu_ptr(imsic_global->local, cpu);
+>+		if (!local->msi_va)
+>+			continue;
+>+
+>+		/*
+>+		 * The device always writes to the host physical IMSIC address, so install
+>+		 * identity mappings directly. Use IOMMU_RESV_DIRECT_RELAXABLE instead of
+>+		 * IOMMU_RESV_DIRECT since these 1:1 mappings are not required for assigned
+>+		 * devices.
+>+		 */
+>+		reg = iommu_alloc_resv_region(local->msi_pa, IMSIC_MMIO_PAGE_SZ,
+>+					      IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO,
+>+					      IOMMU_RESV_DIRECT_RELAXABLE, GFP_KERNEL);
+>+		if (reg)
+>+			list_add_tail(&reg->list, head);
+>+	}
+>+}
+>+
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Hi Andrew,
 
+Thanks for picking this up -- enabling IOMMU_DMA on RISC-V has been
+along-standing gap, and handling the IMSIC MSI mapping is the missing
+piece that finally unblocks it.
 
--- 
-With best wishes
-Dmitry
+One concern is that the current implementation emits one 4 KiB
+RESV_DIRECT_RELAXABLE region for each possible CPU. On platforms
+with hundreds of harts, this noticeably increases the cost of both
+.get_resv_regions() and the iommu_create_device_direct_mappings()
+walk.
+
+Since interrupt files within one IMSIC group occupy a physically
+contiguous range, would it make sense to emit one region per IMSIC
+group covering the full group stride, aligned down/up to 2 MiB so
+the core can map it as a superpage? This would over-map some padding
+within the IMSIC PA window, but RESV_DIRECT_RELAXABLE keeps the
+padding out of assigned-device IOVA space, so it looks harmless.
+
+Thanks,
+Fangyu
+
+> static int riscv_iommu_attach_blocking_domain(struct iommu_domain *iommu_domain,
+> 					      struct device *dev,
+> 					      struct iommu_domain *old)
+>@@ -1401,6 +1434,7 @@ static const struct iommu_ops riscv_iommu_ops = {
+> 	.blocked_domain = &riscv_iommu_blocking_domain,
+> 	.release_domain = &riscv_iommu_blocking_domain,
+> 	.domain_alloc_paging = riscv_iommu_alloc_paging_domain,
+>+	.get_resv_regions = riscv_iommu_get_resv_regions,
+> 	.device_group = riscv_iommu_device_group,
+> 	.probe_device = riscv_iommu_probe_device,
+> 	.release_device	= riscv_iommu_release_device,
+>diff --git a/include/linux/irqchip/riscv-imsic.h b/include/linux/irqchip/riscv-imsic.h
+>index 4b348836de7a..ba3000f047b0 100644
+>--- a/include/linux/irqchip/riscv-imsic.h
+>+++ b/include/linux/irqchip/riscv-imsic.h
+>@@ -88,6 +88,13 @@ static inline const struct imsic_global_config *imsic_get_global_config(void)
+>
+> #endif
+>
+>+static inline bool imsic_enabled(void)
+>+{
+>+	const struct imsic_global_config *imsic_global = imsic_get_global_config();
+>+
+>+	return imsic_global && imsic_global->nr_ids;
+>+}
+>+
+> #if IS_ENABLED(CONFIG_ACPI) && IS_ENABLED(CONFIG_RISCV_IMSIC)
+> int imsic_platform_acpi_probe(struct fwnode_handle *fwnode);
+> struct fwnode_handle *imsic_acpi_get_fwnode(struct device *dev);
+>--
+>2.43.0
