@@ -1,259 +1,144 @@
-Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
+Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azon11012027.outbound.protection.outlook.com [40.107.209.27])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C017288B1
-	for <iommu@lists.linux.dev>; Sat,  9 May 2026 07:25:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.97
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778311554; cv=none; b=UGzz87OcFoRcqrnUNKYDhzvLL8jl2hGVSJbuLwglR/14u2MeNbaj0+DbgXu/LcSM6NJpbNYK9SkfRWCaIhbvb4bkgawBsiMtx22QV2aPOH0nIouDiC+Cra1h5e4k0tkh6rH7HVMFXRN2JnrYJ9PUUf2QzSE8es5CID/30zIzjqE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778311554; c=relaxed/simple;
-	bh=QrzAK8UOcwBG9zeJTwqNExwRRFXT0F7MYTwbcz20D44=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=HYruoYdSbczRdi1DHrcJzWrf5J2L9/E3MTlvX7FaaTKHphW31DEuustF7G5AL7jXsI1YD/IUgSu3hJGs3zvRR1MjMA5CPaNmndqrNVbD8t7Uhs1k+JRXD9llxjaOuLb74o/5K9eWzppc7/RYL6S5XSh2/BRotwANWYebFtG6hJg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=UDVBYgGh; arc=none smtp.client-ip=115.124.30.97
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 073D9288B1
+	for <iommu@lists.linux.dev>; Sat,  9 May 2026 07:45:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.209.27
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778312711; cv=fail; b=aN+ceUf/RXTwEnQQehEanT1ZkqYgrXVsJHhIRJTuY+lY/5wOVyhwR2Gv10Dt71YdIC3CuEblpWyml+K4THH3iwtJn3ml1l2QVeQLVAl8WcQHtcH24Cvjq9s+EH4fY22Y55/+GrVPWklkI4EzLkdAkmmE0mzDNeFxrNUynkCESlM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778312711; c=relaxed/simple;
+	bh=LbyppeKZICft47x49gjo2/S7vS5NRsxT43ibxTsH6LE=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MzcaG4GYK67N7c5VgcLaMZuFNbq3u0hf4v7J25z5RjiUD6ay/HGZGRH+w4rEJgenDgy/yC6yTr+6hOAXDFZ3+xSX5aIlh5eweXxNufahxobM7wlVRSjwHaFcqJcIuTLWgwTyIJDpSVVMKx2HcTZxN6GmDfQUtRmUl0hskr866kU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=A5GfF5ga; arc=fail smtp.client-ip=40.107.209.27
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="UDVBYgGh"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1778311546; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=Zz9dljwMnRAVIrIM8dQvn0hpqZlwAvACimR9yDAo7Rs=;
-	b=UDVBYgGhK0fnsD4MS1xNbZCqISKs7qYxUpLcM0I6pQ2yHKY5R1VO3+SClrFhwisFzefn6xQuMDPFirOVFRsYGb1cfrzK8JpTosEza/ylkBjkOrdbycNtYlr3vOK1BtUkk4IVk5HZfaXIJxmN8C5fXrCLdfaGT8bvTQ5B432L4OA=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam011083073210;MF=feng.tang@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0X2ZrJg._1778311544;
-Received: from localhost(mailfrom:feng.tang@linux.alibaba.com fp:SMTPD_---0X2ZrJg._1778311544 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Sat, 09 May 2026 15:25:45 +0800
-From: Feng Tang <feng.tang@linux.alibaba.com>
-To: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Ying Huang <ying.huang@linux.alibaba.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	David Hildenbrand <david@kernel.org>
-Cc: Lorenzo Stoakes <ljs@kernel.org>,
-	Liam.Howlett@oracle.com,
-	Vlastimil Babka <vbabka@kernel.org>,
-	Mike Rapoport <rppt@kernel.org>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Michal Hocko <mhocko@suse.com>,
-	linux-mm@kvack.org,
-	Christoph Hellwig <hch@lst.de>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Feng Tang <feng.tang@linux.alibaba.com>,
-	Changrong Chen <chenchangrong.ccr@alibaba-inc.com>
-Subject: [PATCH] dma-contiguous: add kconfig option to setup numa cma area if not configured explicitly
-Date: Sat,  9 May 2026 15:25:43 +0800
-Message-Id: <20260509072543.69650-1-feng.tang@linux.alibaba.com>
-X-Mailer: git-send-email 2.39.5 (Apple Git-154)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="A5GfF5ga"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=l6gXb+jYgBC5wLHjEM3/a2uNHleIYOsPtbm97HgPgaeEmJzOKso+5wJ6zd+6RZsjGhOChZxlG4/sXxR0Fz37a65GcFh2QXDLkwdKzaGlF64BB1AzhZ1GsemD7kcAL2t1mFoI1KDQKyYQT2XIa+/VqdzwprEV3N5J7KPuROf7gU6OTWpwg9d9s6Gt7qa5X1iUxzQeQwUdQAFWCLbHMbXeMGtRsbBJCh3s3+q+YRBeQ8JICt81PPUjwxngjvkK9rffvy0wu3ECSC+hVoksqb5HLcSEDqVf97Le3kv5vI/hux3V2Cfq4QBknlHOx2C+/nikyFYBJqvTXc23HaVOJkvjyQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=EL3MUmsvOpRTtqFXsULjV0AcKyz+fbORgYJ6p4Aid4k=;
+ b=ocSf01YLE9oQNpUdzQTz7mV7Lv+WiFTRebCcFFm5SkTQhe58Ji53vIx47dqfzgQ/iuTX/nT4DD8jP2vh0fHS9hH57Wb45lGf8HLSrrBRuj3y4/iw8ilfWIxiCPbE9jmBh4wgtI8pL73/ikVZr4OjKKLiVObdbJPf0864WLnLbIxzzVd8hmFzaYMAjQW1dUkDLZ8lpcc9/hEguMZmOHoSd2VhqfB69qBdvgOYLVLBjWqkopr3eu4NOAVcJnbTYXAzoJ9EyWtEWyGXc6U4IkAaQZIm9fSbUZinbTkk0QDNTukn049w8TfkYNNLIDc8rKu4vTUTPQaO9rSopKVp4OPGNw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EL3MUmsvOpRTtqFXsULjV0AcKyz+fbORgYJ6p4Aid4k=;
+ b=A5GfF5gaX+L9PNWEM6kMGA7ZMd4zYflZjl9IsU+ZcJUs4b9ZbgmZvKfHpN+UcdLNu7nciKOZOD6GwAXXXRPzOHK/vtSu82CjYtLAMSzRNaXTkswD1z5QzwGWNvG/J6vfT7bTb3XsUJ6tYDvqVBzApvQer51EmfV2mDEUjNwiaxd3Lh1fXpTXWVQTk2apxCKkaZU2tCNzHylMfhKYWDSlVFh+8c6ctj+bKMdvj2TSKZugqbO3tF16tRKjgxHpTsm9NbAS8GBS8g2hokT3UJzWuR0Tm6qb7y6YZZMv5s8sAeZ/yb+pznmyZ8zwIk9dujvLT5i0mzXmTDY17wGsg5o7zQ==
+Received: from BL1PR13CA0390.namprd13.prod.outlook.com (2603:10b6:208:2c0::35)
+ by BY5PR12MB4243.namprd12.prod.outlook.com (2603:10b6:a03:20f::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9891.20; Sat, 9 May
+ 2026 07:45:05 +0000
+Received: from BL6PEPF00022574.namprd02.prod.outlook.com
+ (2603:10b6:208:2c0:cafe::52) by BL1PR13CA0390.outlook.office365.com
+ (2603:10b6:208:2c0::35) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.25.12 via Frontend Transport; Sat, 9
+ May 2026 07:45:05 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ BL6PEPF00022574.mail.protection.outlook.com (10.167.249.42) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9913.8 via Frontend Transport; Sat, 9 May 2026 07:45:04 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Sat, 9 May
+ 2026 00:44:57 -0700
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.20; Sat, 9 May 2026 00:44:56 -0700
+Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.126.190.180)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Sat, 9 May 2026 00:44:53 -0700
+Date: Sat, 9 May 2026 00:44:49 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+CC: "will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "jgg@nvidia.com" <jgg@nvidia.com>, "joro@8bytes.org"
+	<joro@8bytes.org>, "praan@google.com" <praan@google.com>, "kees@kernel.org"
+	<kees@kernel.org>, "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"miko.lenczewski@arm.com" <miko.lenczewski@arm.com>, "smostafa@google.com"
+	<smostafa@google.com>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "stable@vger.kernel.org"
+	<stable@vger.kernel.org>, "jamien@nvidia.com" <jamien@nvidia.com>
+Subject: Re: [PATCH rc v4 3/5] iommu/arm-smmu-v3: Skip EVTQ/PRIQ setup in
+ kdump kernel
+Message-ID: <af7l8UKXIwTW/e/W@nvidia.com>
+References: <cover.1777446969.git.nicolinc@nvidia.com>
+ <25398d02373e7592d0555e7da9dbf33b3e83983a.1777446969.git.nicolinc@nvidia.com>
+ <BN9PR11MB52764380FD823D9D33B302E98C3D2@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB52764380FD823D9D33B302E98C3D2@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL6PEPF00022574:EE_|BY5PR12MB4243:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8de808ab-2622-41e7-2206-08dead9ee27b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700016|376014|7416014|82310400026|1800799024|56012099003|22082099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	KCHMZdpuWQziJnlHMgqsJky/dj3+Ta3BVOQZM+V+w90rO3KXuP9ynaGjSQuMCIpaO5wtOd6mwKcfybY8Z/siJfY9c11NmAl/OeZJ8f6PLcq2XXFtsLYfU2Z8O+8aXum67ApnijRInle7QIOqKNVx7mCXmqZEeWdPRvkNwGPDAykSBGTmtsGpUtWE3mDpeqMxnWfuDF7qYME+KA0zaTYQ0hCTaeV8Fcz3+nSHAK0NmcrTKoh6qFDmwWGFlHROE+0UBH50RrA5Cavkigp96a4a2zNnEeaK+E8Y+S9m87ti8ftiUSroEjH6UYUM/EZJiexMCeoXjOw8ImyqcZ77LKc6u5Gh/r6FF7ghCTOQreXgqPkjF5aJm7y5+T631UoVTPfSp8wjk3o9so47wjPlaCxcalm15BkGm3X36fbEcZU9TKc1JCMwDz6Dp71GUpJOCEiOmrP3QtxaDYsTbvU8iZa6H2rsxFX3jYYKE0NDwAcE04VwH57UESW5+Fm7HDYZkY14UzA4wbCaiH4UlRZAyit2iYe2Y5pd9DUKkbXWAGS/05Py3xIy5Pm8xML1zReSDF1LKUlVwCGs51aw/vXB2JyAHP8cRY29IA3tUq2Py/nOIyrvDMO7vdwGanNNKFlQjG4zVKBXxueO0RFZvJGKWwLLC4hI+qpmzQ0YRH1ieWGn//BI71rPDYfDizq5WRp4dSCCp7WjcN2udzOJ2+ZD1eTRw6zDbQ1BC8gQY9UmLFci9C8=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(376014)(7416014)(82310400026)(1800799024)(56012099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	KjmI/EYjZY1hj2bn3lbT9NUpEsqcV0yMWw1EdVPKbEvomisUB2U933b5dWWWi/Z2muebKozrShN7phUwcrhpguxzG7o32DPSMdIykhivEffebIfrdMlyQYkFnHZAyMINEZW0z4wgmBZTY1uO7uSRWxzU0OlvM1A65wFo4846KfPFNGhSn7Z2Tfg1lJ5SCd99jHMvJSRvGKaKHwQHEDy4Sxqm+38/mubvMJsN3XWT88Xfw/rLxw3rG2ymbNQiVahojJkSQJ3itXfklzkSi3cZRxGM9pHwu6DvT+BATkI0z5xgaavTBu7DiWL7OANZgyEDJkU8k3BZ58sUJ85gIEP7BLwgWrw4GtqZsjoi6k8Ty5wx+TUWh1tEvcnX2/z+y8DM/RNa5MGmUOOq7XyvJQ/QvqiiMGKIutzCLeAhK7ZB1okoPFpsvtE+ppRY37kTbpse
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2026 07:45:04.7602
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8de808ab-2622-41e7-2206-08dead9ee27b
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL6PEPF00022574.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4243
 
-There was a report on a multi-numa-nodes arm64 server that when IOMMU
-is disabled, the dma_alloc_coherent() function always returns memory
-from node 0 even for devices attaching to other nodes, while they can
-get local dma memory when IOMMU is on with the same API.
+On Fri, May 08, 2026 at 07:41:20AM +0000, Tian, Kevin wrote:
+> > From: Nicolin Chen <nicolinc@nvidia.com>
+> > Sent: Wednesday, April 29, 2026 3:21 PM
+> > 
+> > In kdump cases, the crashed kernel's CDs and page tables can be corrupted,
+> > which could trigger event spamming. Also, we cannot serve page requests.
+> > 
+> > Skip the EVTQ/PRIQ setup entirely rather than enabling then disabling them.
+> 
+> this is a refactoring to achieve the same goal as before...
+> 
+> > 
+> > Skip the IRQ setup and guard their thread functions as well.
+> 
+> ... while this sounds a new enforcement (then better in a separate patch?)
 
-The reason is, when IOMMU is disabled, the dma_alloc_coherent() will
-go the direct way and call dma_alloc_contiguous(). The system doesn't
-have any explicit cma setting (like per-numa cma), and only has a
-default 64MB cma reserved area (on node 0), where kernel will try
-first to allocate memory from.
+In v5, I split it into two patches and kept your Reviewed-by:
+ - iommu/arm-smmu-v3: Skip EVTQ/PRIQ setup in kdump kernel
+ - iommu/arm-smmu-v3: Suppress EVTQ/PRIQ events in kdump kernel
 
-Robin Murphy suggested to setup pernuma cma or disable cma, which did
-solve the issue. While there is still concern that for customers
-which don't have much kernel knowledge, they could still suffer from
-this silently as some architectures enable cma area by default (not
-an issue for X86 though, which set CONFIG_CMA_SIZE_MBYTES to 0 by
-default) for most Linux distributions.
-
-One thought is to follow the current cma reserving policy for platform
-with 'CONFIG_DMA_NUMA_CMA=y', that if the numa cma (either the 'numa cma'
-or 'cma pernuma' method) is not explicitly configured, set it up
-according to size of default 'dma_contiguous_default_area', while
-skipping the numa node where the 'dma_contiguous_default_area' lies
-in, this way the default behavior of platform with one NUMA node is
-kept unchanged (say embedded/small devices don't need to allocate
-extra memory).
-
-Add a new bool kernel config CONFIG_CMA_SIZE_PERNUMA to control whether
-to enable it. Even when the config is enabled, user can still disable
-it by kernel-cmdline setting like "numa_cma=0:0" or "cma_pernuma=0".
-
-To get the node info of cma area, add some helper function and setup
-in cma code.
-
-Reported-by: Changrong Chen <chenchangrong.ccr@alibaba-inc.com>
-Suggested-by: Ying Huang <ying.huang@linux.alibaba.com>
-Suggested-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Feng Tang <feng.tang@linux.alibaba.com>
----
-
-In v4, the cma_get_nid() code is still kept, and if people really
-think it's not necessary, we can use the "nr_online_nodes() > 1" 
-instead as mentioned by Robin.
-
-Changelog:
-
-  since v3:
-	* Add kernel config to control this pernuma cma setup (David, Robin)
-	* Fix a compile waring (LKP 0day robot)
-
-  since v2:
-	* setup the numa cma are following default cma, while
-	  skipping the node holds the default cma (Robin Murphy)
-	* add cma_get_node() help and related code
-	* add reporter info 
-
-  since v1:
-	* don't use the original way of adding alloc_pages_node()
-	  before trying default cma node (Robin Murphy)
-	* setup default numa cma area if not configured (Ying Huang)
-
-   v3: https://lore.kernel.org/lkml/20260428060550.7167-1-feng.tang@linux.alibaba.com/ 
-   v2: https://lore.kernel.org/lkml/20260423095243.14239-1-feng.tang@linux.alibaba.com/
-   v1: https://lore.kernel.org/lkml/20260414090310.92055-1-feng.tang@linux.alibaba.com/
-
-
- include/linux/cma.h     |  1 +
- kernel/dma/Kconfig      | 10 ++++++++++
- kernel/dma/contiguous.c | 16 ++++++++++++++--
- mm/cma.c                | 11 ++++++++++-
- 4 files changed, 35 insertions(+), 3 deletions(-)
-
-diff --git a/include/linux/cma.h b/include/linux/cma.h
-index 8555d38a97b1..acc9ecdf28e1 100644
---- a/include/linux/cma.h
-+++ b/include/linux/cma.h
-@@ -26,6 +26,7 @@ extern unsigned long totalcma_pages;
- extern phys_addr_t cma_get_base(const struct cma *cma);
- extern unsigned long cma_get_size(const struct cma *cma);
- extern const char *cma_get_name(const struct cma *cma);
-+extern int cma_get_nid(const struct cma *cma);
- 
- extern int __init cma_declare_contiguous_nid(phys_addr_t base,
- 			phys_addr_t size, phys_addr_t limit,
-diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-index bfef21b4a9ae..c9fa0a922cba 100644
---- a/kernel/dma/Kconfig
-+++ b/kernel/dma/Kconfig
-@@ -181,6 +181,16 @@ config DMA_NUMA_CMA
- 	  or set the node id and its size of CMA by specifying "numa_cma=
- 	  <node>:size[,<node>:size]" on the kernel's command line.
- 
-+config CMA_SIZE_PERNUMA
-+	bool "Default CMA area per NUMA node"
-+	depends on DMA_NUMA_CMA
-+	default y
-+	help
-+	  On systems with more than one NUMA node, the selected CMA
-+	  area size will be also allocated on each additional node,
-+	  so that most devices may have benefit from better DMA
-+	  locality without an explicit command-line opt-in.
-+
- comment "Default contiguous memory area size:"
- 
- config CMA_SIZE_MBYTES
-diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index 03f52bd17120..6388ebbbfebd 100644
---- a/kernel/dma/contiguous.c
-+++ b/kernel/dma/contiguous.c
-@@ -136,6 +136,7 @@ static struct cma *dma_contiguous_numa_area[MAX_NUMNODES];
- static phys_addr_t numa_cma_size[MAX_NUMNODES] __initdata;
- static struct cma *dma_contiguous_pernuma_area[MAX_NUMNODES];
- static phys_addr_t pernuma_size_bytes __initdata;
-+static bool numa_cma_configured;
- 
- static int __init early_numa_cma(char *p)
- {
-@@ -164,6 +165,7 @@ static int __init early_numa_cma(char *p)
- 			break;
- 	}
- 
-+	numa_cma_configured = true;
- 	return 0;
- }
- early_param("numa_cma", early_numa_cma);
-@@ -171,6 +173,7 @@ early_param("numa_cma", early_numa_cma);
- static int __init early_cma_pernuma(char *p)
- {
- 	pernuma_size_bytes = memparse(p, &p);
-+	numa_cma_configured = true;
- 	return 0;
- }
- early_param("cma_pernuma", early_cma_pernuma);
-@@ -221,6 +224,15 @@ static void __init dma_numa_cma_reserve(void)
- 					ret, nid);
- 		}
- 
-+#ifdef CONFIG_CMA_SIZE_PERNUMA
-+		if (!numa_cma_configured && dma_contiguous_default_area) {
-+			if (nid != cma_get_nid(dma_contiguous_default_area))
-+				numa_cma_size[nid] = cma_get_size(dma_contiguous_default_area);
-+			else
-+				dma_contiguous_numa_area[nid] = dma_contiguous_default_area;
-+		}
-+#endif
-+
- 		if (numa_cma_size[nid]) {
- 
- 			cma = &dma_contiguous_numa_area[nid];
-@@ -255,8 +267,6 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
- 	phys_addr_t selected_limit = limit;
- 	bool fixed = false;
- 
--	dma_numa_cma_reserve();
--
- 	pr_debug("%s(limit %08lx)\n", __func__, (unsigned long)limit);
- 
- 	if (size_cmdline != -1) {
-@@ -312,6 +322,8 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
- 		if (ret)
- 			pr_warn("Couldn't queue default CMA region for heap creation.");
- 	}
-+
-+	dma_numa_cma_reserve();
- }
- 
- void __weak
-diff --git a/mm/cma.c b/mm/cma.c
-index c7ca567f4c5c..fba5fc9c004f 100644
---- a/mm/cma.c
-+++ b/mm/cma.c
-@@ -54,6 +54,11 @@ const char *cma_get_name(const struct cma *cma)
- }
- EXPORT_SYMBOL_GPL(cma_get_name);
- 
-+int cma_get_nid(const struct cma *cma)
-+{
-+	return cma->nid;
-+}
-+
- static unsigned long cma_bitmap_aligned_mask(const struct cma *cma,
- 					     unsigned int align_order)
- {
-@@ -511,7 +516,11 @@ static int __init __cma_declare_contiguous_nid(phys_addr_t *basep,
- 		return ret;
- 	}
- 
--	(*res_cma)->nid = nid;
-+	if (IS_ENABLED(CONFIG_NUMA) && nid == NUMA_NO_NODE)
-+		(*res_cma)->nid = early_pfn_to_nid((*res_cma)->ranges[0].base_pfn);
-+	else
-+		(*res_cma)->nid = nid;
-+
- 	*basep = base;
- 
- 	return 0;
-
-base-commit: 70390501d1944d4e5b8f7352be180fceb3a44132
--- 
-2.39.5 (Apple Git-154)
-
+Thanks
+Nicolin
