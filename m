@@ -1,170 +1,93 @@
-Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A80323BCF7
-	for <iommu@lists.linux.dev>; Sat,  9 May 2026 02:21:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.110
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B9E4372673
+	for <iommu@lists.linux.dev>; Sat,  9 May 2026 02:46:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778293286; cv=none; b=pPHyY0UyvQ1bIY5zudACxq/W7lHmsOq+mu+sWjZHvECLyDnlx2FsvX7T685I1KXcVKT9oH3ldFrxn4N25RoTvMpi4qJ86/KQQFFX03W4vlbuQmZ81XPzS0PLS1fEnucejcVTNtPDp55CDJc2u8CPRfMjdpvCPXjXAWcz01hcv1k=
+	t=1778294777; cv=none; b=t5NpuDhz24FG/k6lnwrywf4+zdjZH2eaDABbrxiWRtXmjJUujoAFMLxzrPGfAvoeoOLM/loGdZRSyRMB8eYajqISGpAx3cv/0Tp9gDKM0/MwSyDIY848LR3VSpbD8n92R7uEn7pp33maX07pnWoaBKaniQGERSa1VdbZGM90LvQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778293286; c=relaxed/simple;
-	bh=EYHygaLXEzen/cX/MOFt4Um+zDLrToLbUAl6lCcmcNY=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=EfFKLAPRd/WiRiFgWcasHOXcUCIAsy/p1JGDq2S1fUeRV3L5XgF/wA9SH0woxarbYT7nTzWOcv0dNKwqpvezWReTf80lqYbN+iikkcVIVsT1E9oTWJxkzoGtOBgM1LkLlXSof2kD2hkD71XVdTb08CD6ykoPrdmvjpEwyfl3z0E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=euZUrpWD; arc=none smtp.client-ip=115.124.30.110
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	s=arc-20240116; t=1778294777; c=relaxed/simple;
+	bh=hiXOJAH3kOKC+UzumuhtrUJjVAXCKeJ2HyCBjRfnENo=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=coUH8r/A2vXeCGqN1ZzAzW2mk8oU4aKtjStjGwm1SJR91gskgUK+lT6+DihBVnXq43CAdkd6uPzzWtcSIBAoUC9o8eHDtsWkbpWg8qJU/cp/DureLjwNNAebq6HATb5nns97LYanG/qvOEvKX6i1I8wBjvEg73dVSQoa71MGwgw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=K35x/TJr; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="euZUrpWD"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1778293281; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=yM6gBNBfMjfsnVo2Zphvol5VwDk6zyg7O9ApOWcqZ4g=;
-	b=euZUrpWDfCJsDl0Ol48BMdk8DC+Fx/k092tRSdkhl3ZDM/g8q1XHTAn3IYdCQWyHuXeseEL1JvrZ9oplUABy8RKR5TorRdXXn0+31e7ZCP/kW+/BvXx2x1M7/cWW961POTeTKPX7dgfJj7sk/j2e05Gtx565dQn9cCkSY8SEcU0=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033032089153;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0X2Z3i8N_1778293278;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X2Z3i8N_1778293278 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Sat, 09 May 2026 10:21:20 +0800
-From: fangyu.yu@linux.alibaba.com
-To: andrew.jones@oss.qualcomm.com
-Cc: anup@brainfault.org,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="K35x/TJr"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778294776; x=1809830776;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=hiXOJAH3kOKC+UzumuhtrUJjVAXCKeJ2HyCBjRfnENo=;
+  b=K35x/TJrkRpxnFYVLYqYsxX8if690/FY775v3hIz9iblQIHtwMrqoxnA
+   vN8kR/5yMQv/xiukc89plEMGQP0DNBlYI/AEEWwQL+6QrgmRsZcqnKWv7
+   Mf+UmDcD0plwUTOarMMccbhgmf7C0a3m2fGrPgC7siVjjO6ZPLCQMLZQ8
+   KenR167HuS4i9xKltMSWXxOf3AnAE/sgRBIMEFGypxT/yTFSEhCRIMx9N
+   bs5/bFwkAVhhvweBGZaHI2jrz6spcqdXPr86039QOjwHCkbQdrvpvCR3a
+   +Z7VAuvZAXwQanAqClGjIs4GgiHgTAG/KWZwNwo1s+4OQc6zJosLOTo/C
+   g==;
+X-CSE-ConnectionGUID: psKMVnlOTDCM2MK3+vSRBg==
+X-CSE-MsgGUID: pqFw7eqcTzyULH1p5SE4qA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11780"; a="83142488"
+X-IronPort-AV: E=Sophos;i="6.23,224,1770624000"; 
+   d="scan'208";a="83142488"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2026 19:46:15 -0700
+X-CSE-ConnectionGUID: dbZKkeTHQSu51BZwS/xmyQ==
+X-CSE-MsgGUID: cRPqfYtcT4KjJywK8+bLkA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,224,1770624000"; 
+   d="scan'208";a="236103466"
+Received: from allen-box.sh.intel.com ([10.239.159.52])
+  by orviesa010.jf.intel.com with ESMTP; 08 May 2026 19:46:13 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Zhenzhong Duan <zhenzhong.duan@intel.com>,
+	=?UTF-8?q?Naval=20Alcal=C3=A1?= <ari@naval.cat>,
 	iommu@lists.linux.dev,
-	joro@8bytes.org,
-	linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	palmer@dabbelt.com,
-	pjw@kernel.org,
-	tjeznach@rivosinc.com,
-	will@kernel.org
-Subject: Re:  [PATCH 1/2] iommu/riscv: Map IMSIC addresses for paging domains
-Date: Sat,  9 May 2026 10:21:13 +0800
-Message-Id: <20260509022113.53400-1-fangyu.yu@linux.alibaba.com>
-X-Mailer: git-send-email 2.39.3 (Apple Git-146)
-In-Reply-To: <20260508212339.381933-2-andrew.jones@oss.qualcomm.com>
-References: <20260508212339.381933-2-andrew.jones@oss.qualcomm.com>
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 0/3] [PULL REQUEST] iommu/vt-d: Fixes for v7.1-rc
+Date: Sat,  9 May 2026 10:43:43 +0800
+Message-ID: <20260509024348.3516523-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
->When IOMMU_DMA is enabled, devices get paging domains and MSI writes
->to IMSIC interrupt files must be handled correctly in the s-stage.
->As the device always writes to the host physical IMSIC addresses,
->which the IMSIC irqchip programs directly, install s-stage identity
->mappings for the host IMSICs. But, use IOMMU_RESV_DIRECT_RELAXABLE
->since the 1:1 mappings aren't required for device assignment.
->
->Loop over the cpus rather than imsic groups to handle asymmetric
->configurations.
->
->Signed-off-by: Andrew Jones <andrew.jones@oss.qualcomm.com>
->---
-> drivers/iommu/riscv/iommu.c         | 34 +++++++++++++++++++++++++++++
-> include/linux/irqchip/riscv-imsic.h |  7 ++++++
-> 2 files changed, 41 insertions(+)
->
->diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
->index a31f50bbad35..3c6aa9d69f95 100644
->--- a/drivers/iommu/riscv/iommu.c
->+++ b/drivers/iommu/riscv/iommu.c
->@@ -19,6 +19,7 @@
-> #include <linux/init.h>
-> #include <linux/iommu.h>
-> #include <linux/iopoll.h>
->+#include <linux/irqchip/riscv-imsic.h>
-> #include <linux/kernel.h>
-> #include <linux/pci.h>
-> #include <linux/generic_pt/iommu.h>
->@@ -1286,6 +1287,38 @@ static struct iommu_domain *riscv_iommu_alloc_paging_domain(struct device *dev)
-> 	return &domain->domain;
-> }
->
->+static void riscv_iommu_get_resv_regions(struct device *dev, struct list_head *head)
->+{
->+	const struct imsic_global_config *imsic_global;
->+	unsigned int cpu;
->+
->+	if (!imsic_enabled())
->+		return;
->+
->+	imsic_global = imsic_get_global_config();
->+
->+	for_each_possible_cpu(cpu) {
->+		const struct imsic_local_config *local;
->+		struct iommu_resv_region *reg;
->+
->+		local = per_cpu_ptr(imsic_global->local, cpu);
->+		if (!local->msi_va)
->+			continue;
->+
->+		/*
->+		 * The device always writes to the host physical IMSIC address, so install
->+		 * identity mappings directly. Use IOMMU_RESV_DIRECT_RELAXABLE instead of
->+		 * IOMMU_RESV_DIRECT since these 1:1 mappings are not required for assigned
->+		 * devices.
->+		 */
->+		reg = iommu_alloc_resv_region(local->msi_pa, IMSIC_MMIO_PAGE_SZ,
->+					      IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO,
->+					      IOMMU_RESV_DIRECT_RELAXABLE, GFP_KERNEL);
->+		if (reg)
->+			list_add_tail(&reg->list, head);
->+	}
->+}
->+
+Hi Joerg,
 
-Hi Andrew,
+The following fixes have been queued for v7.1-rc. They aim to fix the
+following issues.
 
-Thanks for picking this up -- enabling IOMMU_DMA on RISC-V has been
-along-standing gap, and handling the IMSIC MSI mapping is the missing
-piece that finally unblocks it.
+- Apply an existing quirk for Q35 graphic device.
+- Skip dev_pasid teardown for the blocked domain to avoid out-of-bounds
+  access.
+- Return early if dev_pasid is missing to prevent NULL dereference or
+  UAF.
 
-One concern is that the current implementation emits one 4 KiB
-RESV_DIRECT_RELAXABLE region for each possible CPU. On platforms
-with hundreds of harts, this noticeably increases the cost of both
-.get_resv_regions() and the iommu_create_device_direct_mappings()
-walk.
+These patches have been reviewed and tested and are ready for merge.
+Please consider them for iommu/fix branch.
 
-Since interrupt files within one IMSIC group occupy a physically
-contiguous range, would it make sense to emit one region per IMSIC
-group covering the full group stride, aligned down/up to 2 MiB so
-the core can map it as a superpage? This would over-map some padding
-within the IMSIC PA window, but RESV_DIRECT_RELAXABLE keeps the
-padding out of assigned-device IOVA space, so it looks harmless.
+Best regards,
+baolu
 
-Thanks,
-Fangyu
+Naval Alcalá (1):
+  iommu/vt-d: Disable DMAR for Intel Q35 IGFX
 
-> static int riscv_iommu_attach_blocking_domain(struct iommu_domain *iommu_domain,
-> 					      struct device *dev,
-> 					      struct iommu_domain *old)
->@@ -1401,6 +1434,7 @@ static const struct iommu_ops riscv_iommu_ops = {
-> 	.blocked_domain = &riscv_iommu_blocking_domain,
-> 	.release_domain = &riscv_iommu_blocking_domain,
-> 	.domain_alloc_paging = riscv_iommu_alloc_paging_domain,
->+	.get_resv_regions = riscv_iommu_get_resv_regions,
-> 	.device_group = riscv_iommu_device_group,
-> 	.probe_device = riscv_iommu_probe_device,
-> 	.release_device	= riscv_iommu_release_device,
->diff --git a/include/linux/irqchip/riscv-imsic.h b/include/linux/irqchip/riscv-imsic.h
->index 4b348836de7a..ba3000f047b0 100644
->--- a/include/linux/irqchip/riscv-imsic.h
->+++ b/include/linux/irqchip/riscv-imsic.h
->@@ -88,6 +88,13 @@ static inline const struct imsic_global_config *imsic_get_global_config(void)
->
-> #endif
->
->+static inline bool imsic_enabled(void)
->+{
->+	const struct imsic_global_config *imsic_global = imsic_get_global_config();
->+
->+	return imsic_global && imsic_global->nr_ids;
->+}
->+
-> #if IS_ENABLED(CONFIG_ACPI) && IS_ENABLED(CONFIG_RISCV_IMSIC)
-> int imsic_platform_acpi_probe(struct fwnode_handle *fwnode);
-> struct fwnode_handle *imsic_acpi_get_fwnode(struct device *dev);
->--
->2.43.0
+Zhenzhong Duan (2):
+  iommu/vt-d: Fix oops due to out of scope access
+  iommu/vt-d: Avoid NULL pointer dereference or refcount corruption
+
+ drivers/iommu/intel/iommu.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
+
+-- 
+2.43.0
+
