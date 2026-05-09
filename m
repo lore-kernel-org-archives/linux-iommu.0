@@ -1,96 +1,86 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from out-184.mta0.migadu.com (out-184.mta0.migadu.com [91.218.175.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28E9533F8BE
-	for <iommu@lists.linux.dev>; Sat,  9 May 2026 17:45:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19AF51A6836
+	for <iommu@lists.linux.dev>; Sat,  9 May 2026 17:56:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.184
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778348710; cv=none; b=BVXerLZP0xjDwjG8+wVpskcJYFdMYqZSdjP/RR2hBi079dwLsAJAPi1DqFsVyFW0UuLzHYr1Hh+hrWq0xuHo8rEFjkE9r+uDmxDMD7BN71NMzVQKsJ3XbNTmcUS+F4R1Fw/wKK0Ue+QYJllMn04M0hv0AvOjr3QAgcDFhcl1TaQ=
+	t=1778349407; cv=none; b=Vpgu4LieOXJIGVCQNjMjETP16Yg0CysU/kcc8+Jl5SnK5jh+YCmx8VUQPI7jFLuFewbLV+NWHNS8dpoMJr3SKH7k5aZ7a0ikdbzv62M8dIWjgmrFn4nlOaybQcWea5AobJa6ZCMGm5p2GqiwuYDL4gBg5n6BB3+2EY/uAHlTXuc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778348710; c=relaxed/simple;
-	bh=MJrjIRkU9VgyxMXB9VRxXJUH1BjymHLlgf244bw2WRs=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=qLpYjgKKC9GWdGLH/jjuuPGMZBgeQU59ASXKAY/HbCF6hRfKDn58v1Tx2AOgDcZtb4xdpBvdbr+aiVN/2G1/iFi2BBELkfRVaU6DUNeitFb42PqBvf0M5F04swv2unJ+j6PyTlumlHl2LT61uPrYnopxA1G0cEnagcrYOIrNT0g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gjOOJ1y5; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1778349407; c=relaxed/simple;
+	bh=6Dx5Ivk2dUgZlsc0ikWY+XsRb81CBEQG/iCXu/vtNQM=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Subject:From:To:Cc:
+	 References:In-Reply-To; b=aK84b5E8/IExmlvEQlSpt05BjLLeREjhjGNRtk5b7Y0braHuV4i45CNKV09SpdWlK+rT/wmGwauiH5V04NxWXS8hjxfZNagQVO7nMnZcCzT5MRYnKPfIwyr+XIOWIbF5waq1huCSMinvhK9HNGqpZObPFAv7HNnVtPIqxEAE8L4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cknow-tech.com; spf=pass smtp.mailfrom=cknow-tech.com; dkim=pass (2048-bit key) header.d=cknow-tech.com header.i=@cknow-tech.com header.b=MPD2dCcm; arc=none smtp.client-ip=91.218.175.184
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cknow-tech.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cknow-tech.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gjOOJ1y5"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778348708; x=1809884708;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=MJrjIRkU9VgyxMXB9VRxXJUH1BjymHLlgf244bw2WRs=;
-  b=gjOOJ1y57vzQvQubMSujCNoBUXcBsrQAR/P8WJalTf7ZDtN47DpmDSCA
-   KHC5G+KJ0xBHRZ7YsxAdO7liW7T457ngzADPwXeIaGpGOaonCR3sw0dRv
-   CsR9fdsWEu6Hlb/9t7B06ie+XvOpSap5wfIU3h0+xpslPWL6aaixbzqGl
-   fAQqmGnzwvUr2eCY+i2B4Okrfk68MWSrKSN3HNxkYdrkxXn/2+lDmWIjD
-   aXPZN37FpqV374/hbxnhysruYewUP14VmVQBP0SYUeu3hKA19YVtzldrq
-   ks/RBHciaqliOqF+bstP2yWT5s+yr5Zm+cudyvWr6SmwtR+ubj5s9mvpH
-   A==;
-X-CSE-ConnectionGUID: scHgP/R7RgCRt7Q8BR039A==
-X-CSE-MsgGUID: 7TUEF+AcR/e9UTEKCGcn3g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11781"; a="79337441"
-X-IronPort-AV: E=Sophos;i="6.23,225,1770624000"; 
-   d="scan'208";a="79337441"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2026 10:45:07 -0700
-X-CSE-ConnectionGUID: +TPEgRKfQFq+zJEXlygVUQ==
-X-CSE-MsgGUID: uaurjwtyRYqcQbjlktvb9Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,225,1770624000"; 
-   d="scan'208";a="275178354"
-Received: from dev-417.igk.intel.com ([10.91.214.181])
-  by orviesa001.jf.intel.com with ESMTP; 09 May 2026 10:45:06 -0700
-From: =?UTF-8?q?Micha=C5=82=20Grzelak?= <michal.grzelak@intel.com>
-To: iommu@lists.linux.dev
-Cc: Lu Baolu <baolu.lu@linux.intel.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	=?UTF-8?q?Micha=C5=82=20Grzelak?= <michal.grzelak@intel.com>
-Subject: [PATCH] iommu/vt-d: remove typo from pasid_pte_config_nested()
-Date: Sat,  9 May 2026 19:45:03 +0200
-Message-ID: <20260509174503.831134-1-michal.grzelak@intel.com>
-X-Mailer: git-send-email 2.45.2
+	dkim=pass (2048-bit key) header.d=cknow-tech.com header.i=@cknow-tech.com header.b="MPD2dCcm"
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
+Mime-Version: 1.0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cknow-tech.com;
+	s=key1; t=1778349401;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=jIh60pxxvGKOUsnTbxcu3v39dVCI3FE1FnfA1fpg1iA=;
+	b=MPD2dCcmz3mdk8VygCqc9i2PHEr4TZNN9lNCBmKzcxGHZ+eWZ+AuNUgrvZXxXTlqHwdXS9
+	wx7CycvLytT3JhZ8axiRlRYLDxxuoBCb9qD6djOQe+86kK2bCeo2lkFLpN2ANV14xXjT5L
+	pccNsYyuvstsAo8Na6Faab8YRnpWDwwQpJt6sZrpMXFeH8uMctcmAa8SdnZSDwRZVDWHNz
+	5stVLgqHcGfEohu6HqOjmJCrk4NLHKgJgStX+NCXk7IrOF2T1yy3icRH7qmwwqQRarbgIc
+	+YLJyETMWPEFvHAQ0fNd05zlzs8yF8Jm+fQHZZkxI7FhRkPx32RcQfdOaOIw2A==
+Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset=UTF-8
-Organization: Intel Technology Poland sp. z o.o. - ul. Slowackiego 173, 80-298 Gdansk - KRS 101882 - NIP 957-07-52-316
-Content-Transfer-Encoding: 8bit
+Date: Sat, 09 May 2026 19:56:37 +0200
+Message-Id: <DIEC8YT0XK4O.VAG6G4H31KJM@cknow-tech.com>
+Subject: Re: [PATCH v14 1/5] dt-bindings: vendor-prefixes: Add Verisilicon
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: "Diederik de Haas" <diederik@cknow-tech.com>
+To: "Benjamin Gaignard" <benjamin.gaignard@collabora.com>,
+ <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
+ <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <heiko@sntech.de>
+Cc: <iommu@lists.linux.dev>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+ <linux-rockchip@lists.infradead.org>, <kernel@collabora.com>, "Conor
+ Dooley" <conor.dooley@microchip.com>
+References: <20260415072349.44237-1-benjamin.gaignard@collabora.com>
+ <20260415072349.44237-2-benjamin.gaignard@collabora.com>
+In-Reply-To: <20260415072349.44237-2-benjamin.gaignard@collabora.com>
+X-Migadu-Flow: FLOW_OUT
 
-Rename pasid_pte_config_nestd() into pasid_pte_config_nested(). Do it to
-match other function names ending with _nested().
+On Wed Apr 15, 2026 at 9:23 AM CEST, Benjamin Gaignard wrote:
+> Verisilicon Microelectronics is a company based in Shanghai, China,
+> developping hardware blocks for SoC.
+>
+> https://verisilicon.com/
+>
+> Add their name to the list of vendors.
+>
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+> Acked-by: Conor Dooley <conor.dooley@microchip.com>
+> ---
+>  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Doc=
+umentation/devicetree/bindings/vendor-prefixes.yaml
+> index ee7fd3cfe203..ebd9072300a8 100644
+> --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> @@ -1761,6 +1761,8 @@ patternProperties:
+>      description: Variscite Ltd.
+>    "^vdl,.*":
+>      description: Van der Laan b.v.
+> +  "^verisilicon,.*":
+> +    description: VeriSilicon Microelectronics
+>    "^vertexcom,.*":
+>      description: Vertexcom Technologies, Inc.
+>    "^via,.*":
 
-Signed-off-by: Michał Grzelak <michal.grzelak@intel.com>
----
- drivers/iommu/intel/pasid.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index 89541b74ab8c..3b39a9ea338c 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -618,7 +618,7 @@ void intel_pasid_setup_page_snoop_control(struct intel_iommu *iommu,
- 	intel_pasid_flush_present(iommu, dev, pasid, did, pte);
- }
- 
--static void pasid_pte_config_nestd(struct intel_iommu *iommu,
-+static void pasid_pte_config_nested(struct intel_iommu *iommu,
- 				   struct pasid_entry *pte,
- 				   struct iommu_hwpt_vtd_s1 *s1_cfg,
- 				   struct dmar_domain *s2_domain,
-@@ -720,7 +720,7 @@ int intel_pasid_setup_nested(struct intel_iommu *iommu, struct device *dev,
- 		return -EBUSY;
- 	}
- 
--	pasid_pte_config_nestd(iommu, pte, s1_cfg, s2_domain, did);
-+	pasid_pte_config_nested(iommu, pte, s1_cfg, s2_domain, did);
- 	spin_unlock(&iommu->lock);
- 
- 	pasid_flush_caches(iommu, pte, pasid, did);
--- 
-2.45.2
-
+FTR: Another version of this patch is already present in Linus' tree:
+c131d78840d7 ("dt-bindings: vendor-prefixes: add verisilicon")
