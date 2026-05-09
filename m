@@ -1,718 +1,110 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7E783BADA9
-	for <iommu@lists.linux.dev>; Sat,  9 May 2026 17:02:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 695E7372663
+	for <iommu@lists.linux.dev>; Sat,  9 May 2026 17:03:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778346163; cv=none; b=izzkIpWsR4z8v5Dksk3jMOLvGF6mr9vfGk0rXmDGe9Crp2UXWzZ5DlT244stEtMWnxQRhGWOUv1o06dXBp+B4cwqMPI1Ztnh45CfesRrv/JNMRqkBsBkw0D3EhiN81uDkAfg3so6lvunVgW4kTqfiDjGeMJBDoouuhr3a6tx7jo=
+	t=1778346229; cv=none; b=B2OyRw7pxCFBxm4AlhMpl3pqALbvbG9gTki4RAXNN8pQIS9IcYV/NFO4CS8s8w/WH3SJcElJ+AuLAtkYvnV611+BmSOYoa+nlP8+ug/Fuxpyyp3NcdGqXa9lBVCkXPp9C+rZ3akYfnbS6QTC2qvAiul2clIUO6jHHdGA0E59pM4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778346163; c=relaxed/simple;
-	bh=H7SbIXY+1+R0pJqTQxnBbHB7flIW0LRP0IZiEHjKHtE=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=Ksc56mGJd1t1bKUOBm9Ejnuq7oOY1mluh/JsXhcNui7E/7iR2AgvyNT8iU5dUGMeBUnlvVEyUURZodxIIdKtL3q4L+j+m2C01CFfxdccAsELe/FMKkLI5EX96OnDxy/8/8Vo76Mhkk70rMC3wJDth+jWiBbAWCuw9V8tyXKmv5k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=d9T1/UQV; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=LzPu1XsH; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1778346229; c=relaxed/simple;
+	bh=XoQ5W2g/isa3ls7lIv2Ywc4hldYr7+Cn5pVaiQ2MZE4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=cn+6JArnQUOojnKds92Xi61iR/pjYJ0oewjLnK4MMO0D5kQag/9M5yUoVW/Nuac+RT1S3E9lUZPw6VcEkhndzABcJTdKh28jQomxNOZm5sr1E6jXgbAJTcTdJEZ16Gb9I4r5T1F7/jqAwzsgbLYCS6AC0hpTuBM4MBF40Zr9msY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=WTqtAnMe; arc=none smtp.client-ip=209.85.219.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="d9T1/UQV";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="LzPu1XsH"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 649CTkME3630227
-	for <iommu@lists.linux.dev>; Sat, 9 May 2026 17:02:39 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	IH3/2ORAYau8uWMETXVpjJ1gCYlVYf6ydQds6fFY2wc=; b=d9T1/UQVWi6GRvSW
-	TU5UbeRvcoMIAYsNpp9HTv7Q3Ye1YypMcWPoRSVsNRIiJAMlyJSWRCx1hsBuVehZ
-	h1yBri2raE8n4kyj3XPRFkAvvDT8otsXEAG5JAfRWdX8s1PYttjWzt1IZJUW+oTY
-	FVF71OTQSxX/C4oGPY7/SCnNMDKGFWAudXTy4VOpCPCUXsIR9mRJ/kt7Bfv0rT6U
-	3cbN/YjdFvmh8LfGdjCyekocfQKQaXJFr08L518nUA2XQpbonTmqnqJcudnl9ykL
-	AsZO+UooxZDntMlFBz3lUEetyHEQqNaqFqhLtdOhAKys9KX5RSHUFbHNnhibqYGS
-	ZIJgVg==
-Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com [209.85.214.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4e1w539cen-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Sat, 09 May 2026 17:02:39 +0000 (GMT)
-Received: by mail-pl1-f200.google.com with SMTP id d9443c01a7336-2babbeff9e4so33749555ad.0
-        for <iommu@lists.linux.dev>; Sat, 09 May 2026 10:02:38 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="WTqtAnMe"
+Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-8b5232009a6so30190876d6.1
+        for <iommu@lists.linux.dev>; Sat, 09 May 2026 10:03:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1778346158; x=1778950958; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:subject:from:user-agent:mime-version:date:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=IH3/2ORAYau8uWMETXVpjJ1gCYlVYf6ydQds6fFY2wc=;
-        b=LzPu1XsHj3pbbN5+gmg/+CmkJo8EmyeAShN7JNV2aFJtMZ5NRyJYXkCa6YlZUUHa1M
-         Hpy8L2bBSSYErLzdHgpFtPY70SyM6gxsk5u7+w+2cWjgXl+1NmpumgN0gwrKWSgkMk3P
-         xqUgYL959NLp+du7S65MbYGATo0UDiavIQ1ctvXAKTtL3PcQN3zRJ1l9V/lA4wUSD+ag
-         e3u8Xh4jrZc3a0t1Z8ABkIbk3dsMIMztpyEQhCGr8Z+/VqjdmUOlE6kjR26mDgWM2rP/
-         ox6DyQSiNIwojcjotMjNKCFu7GvdBNaPLH9wLEzYRsGWt4PqrwgNM3UUCRL6lE/5x2yI
-         qjuA==
+        d=ziepe.ca; s=google; t=1778346227; x=1778951027; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=r8mn2kjAcaeBMh+gpou1r3QDxvcT8ZpaHOK5AzbQbeQ=;
+        b=WTqtAnMeEv/YlVzIsC9iUdmMYhVwts/hx6PLGL2ORrqx0NmAup3vIhBnUtifYTqNxg
+         OT4e/T7CMDwp2nO79/rxST17Nmnrohf4TUO5kyM2J7Bcckyx5IVnwOr32Ve97Ay1j3jF
+         qnFwa9wmZu+F4p4Ol/Odk4T2iu7O1Tsgb0KJFxnLU574VEN8Q5fW55Tz/GUyW1LMO5BQ
+         +LuncxUhrefBbIOT34PH7ccaYZdn+vlBu+qp1dRgI8ulfvN07z/j7cZGDwF4QoewO7jb
+         mqwLtitYGIazyS+wQlPBpWQAs9TtdfF8MihW1MyLmlkZPrEndn3KlKQPfVK/mHFxydrF
+         LU3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778346158; x=1778950958;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:subject:from:user-agent:mime-version:date:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=IH3/2ORAYau8uWMETXVpjJ1gCYlVYf6ydQds6fFY2wc=;
-        b=p6m/T6TvgMEPAsWXd4ygaN+CHmQeKRlJQBkyJr/alNSwaTRJwhAfxeoQcu7I0J1t6p
-         xYT3Tx32A4VxfvxuUkZDPPgmLdexWkQOegxK/8xwx0CrJzgRVP+Inwc/PDK6PHe8wbLN
-         zLV5zfXuHc2qPB+qTetZEs6H/gSCOeyddjhK74tLeFyfCYmEswg2xWgBHSb6pKZSAaeV
-         H0NcJKveGYMSr426QE+N5wiuseGrYYrcGdxzWWFzWl2Z5jLNw0KBJzOk0MoHNJwHoehg
-         0keel5q/9uH74dehao3dHi6pYFJQJ6wMYQAy1WtwE58wAxfGq9OXAn/n2if1u6K+bm5P
-         NCyw==
-X-Forwarded-Encrypted: i=1; AFNElJ9Vn7RV8AJ5r4xY7qDk95UX7VcqYrIGJXyQbTQEKcWNl1DH1JnLi6+jf7VIo3gjQOchDSISwA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwIVZgxHKpYgs6TBqBPGC5w2psNQ/kTtv9u2Y70mNcFZkRuOLx9
-	kjwDraJ9B0e5aV7dc9UoGQnxrFhQIeGbprtr0N0sSlUImDDoYVpf6M/gg1vjXYiD6opCTa3mRP2
-	UviDebKXfXyrkz8ysp8weRHUvN8kFqjpkyWy0hhYPj4Y+JiuAWgpZSIU+fg==
-X-Gm-Gg: Acq92OFHCgYsGzojMb68gLWGCutC7j7A5G8VYrV/qAnyMyAorUyi5ACgMIUAVa/RaSm
-	vUwzc7j4y4JYq4Zl5bUwPzD80BCSafXs0f1Z1a1i9nUEBQ0RgeIgFSg8O/IdgRThpdPcBB4L/1y
-	+xY4x3QTQwCj2p4UUwY5wWhHMGNSLxh/ofBTaQO5gII3488sNvuqNNMozH/rFo9XCXYnr4YJyhF
-	cQAF4tCdx5uqoaUO/TtI+24nmLs1/6RgotEEXKYnRJvqvROIqPs+nXltM18QQajtLt3H0Mj5PPU
-	NWOAQJh6PMqb8ZflxuIbM23o4WgGiessFT+n5i5WH4gTN1ChJM+sUqgl3K4USL3CKZ7jYVM/ahd
-	HTm0Vg/OzQcIZ6mARIz4GwaRAlJ2SKOeUH+pmmuMog/eSU2EiVD4=
-X-Received: by 2002:a17:902:cf43:b0:2b4:5bf8:a7e1 with SMTP id d9443c01a7336-2babc85ef7amr108364265ad.6.1778346158130;
-        Sat, 09 May 2026 10:02:38 -0700 (PDT)
-X-Received: by 2002:a17:902:cf43:b0:2b4:5bf8:a7e1 with SMTP id d9443c01a7336-2babc85ef7amr108363655ad.6.1778346157422;
-        Sat, 09 May 2026 10:02:37 -0700 (PDT)
-Received: from [192.168.0.9] ([49.205.255.40])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2baf1d40677sm56288265ad.33.2026.05.09.10.02.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 09 May 2026 10:02:36 -0700 (PDT)
-Message-ID: <201bfaca-b462-ec34-da00-9bac5804a808@oss.qualcomm.com>
-Date: Sat, 9 May 2026 22:32:24 +0530
+        d=1e100.net; s=20251104; t=1778346227; x=1778951027;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=r8mn2kjAcaeBMh+gpou1r3QDxvcT8ZpaHOK5AzbQbeQ=;
+        b=sQLe1E3oqKlCospXondtoPwOLRtenQEd4sYJB2M39Q5eX2UR9IfdEL9MvvXYuptx1U
+         +10N9M/VHfoAU6XBf/p7iBXoP1CD4DAQnl5rdfdEtzcItw+5Coxd/sq/L3DLIAFTN/lK
+         pfD5w8es3zoObIAcoeXUXjyyMzAC0iTK2YnUS/BTzIG3m+8PmfKkfYuzytIahaw0O4pe
+         mZZWhzSp4FoK2XCIR0cQknRpCjnSaXTduSzN+JZvmFSu7ghVMZaeTc17ZFJwg8p5a99z
+         jHuoOUGN9mw25ldoAkGYkaPmGTqSzajne0OFppPcMJDRiwmbjHCEUntDzVvrfD2Hor7A
+         A51A==
+X-Forwarded-Encrypted: i=1; AFNElJ+MGNCqbm/RsvC25Dx8Zn++bMW8tM+q6MJcvMTEFl5dP42TZaQF/O/npaKGixUKxqVKnCe9/Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw73ZAPon+5aScYOXSi/7MH4XE4tU4JkZdjJptPG8FF7SMX6VbP
+	/LZk37nKVhHxmyIjK0ZfbFtZUjCarjEgulQG85ze3rSFjieBUgASc8pk3iLBNdbS2gI=
+X-Gm-Gg: Acq92OFprdsXP+fox8LnCSeAXFYc41gXZFPKNYgP+yX8knMn4/YRYck+zSTX/U8WHtH
+	ymHtT3X5B6W186QssqqcbpJ+N8lsvQeFxI8ae66BY3GxosG4ZI2VAP8VMNNplUKy4WF+NTiLOTx
+	vigj837PtUUn34UNbHZw3jM+mGsYUxtx7wfsg+9auyCuLxXwvaruXZt2BY5JKxSk0qSHWh3f8rx
+	WMIFBy5PD/fwMbk9fkEYfGGeldtOIKdCS6DIcenDbx5Mx+Yz2Q3cFfuDURb+pIMeTAWecL2T/iP
+	qWJS7IsiE1lbCd040z9XdJkXWB0wJGA10+CsYbnqh0U5pKiEkfOFkJJjPoK3o5nd7BmdWbBXoVa
+	aE1xAp6K9Js7KHvxfrd3H45gbqKmMS+t6Sr58k94fWmUw50i2eOiX+yTRKyGXsV5nZAEMPQacBj
+	5ATutYgIekyDo7txWWGmZILCoNmJ+0cAPLC3DjNY32x/eUUrgij8uJiCbMlRGoJ/4YuQWMKyski
+	iuzUA==
+X-Received: by 2002:a05:6214:3986:b0:8bc:81:c1db with SMTP id 6a1803df08f44-8bc45e1e978mr276779406d6.43.1778346227366;
+        Sat, 09 May 2026 10:03:47 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8b53c6b8123sm262540686d6.35.2026.05.09.10.03.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 09 May 2026 10:03:46 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wLl5d-00000001qDf-32X3;
+	Sat, 09 May 2026 14:03:45 -0300
+Date: Sat, 9 May 2026 14:03:45 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Joonwon Kang <joonwonkang@google.com>,
+	"will@kernel.org" <will@kernel.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"jpb@kernel.org" <jpb@kernel.org>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"praan@google.com" <praan@google.com>,
+	"kees@kernel.org" <kees@kernel.org>,
+	"amhetre@nvidia.com" <amhetre@nvidia.com>,
+	"Alexander.Grest@microsoft.com" <Alexander.Grest@microsoft.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"smostafa@google.com" <smostafa@google.com>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH RFC] iommu: Enable per-device SSID space for SVA
+Message-ID: <20260509170345.GE9285@ziepe.ca>
+References: <20260424085339.3503582-1-joonwonkang@google.com>
+ <20260424133953.GY3611611@ziepe.ca>
+ <BN9PR11MB5276E9D968D3738CCE7125248C3C2@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-From: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-Subject: Re: [PATCH v5 09/14] media: iris: Use power domain type to look up
- pd_devs index
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Cc: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
-        Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Bryan O'Donoghue <bod@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Hans Verkuil <hverkuil@kernel.org>,
-        Stefan Schmidt <stefan.schmidt@linaro.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>,
-        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
-        Jorge Ramirez-Ortiz <jorge.ramirez@oss.qualcomm.com>,
-        Del Regno <angelogioacchino.delregno@collabora.com>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        iommu@lists.linux.dev, Krzysztof Kozlowski <krzk@kernel.org>,
-        devicetree@vger.kernel.org
-References: <20260509-glymur-v5-0-7fbb340c5dbd@oss.qualcomm.com>
- <20260509-glymur-v5-9-7fbb340c5dbd@oss.qualcomm.com>
- <pkd26h6alzddoky4bfnc3ljwlgxoodcyjo6blreuourlkg7mdl@qkg2jtdcjh7m>
-Content-Language: en-US
-In-Reply-To: <pkd26h6alzddoky4bfnc3ljwlgxoodcyjo6blreuourlkg7mdl@qkg2jtdcjh7m>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTA5MDE4NSBTYWx0ZWRfX7Y+HENVybU6c
- 9Ihzcc7iYGKYa4iWwkkn+hbljMiO0p940OJC4gUAQXDTE77iqRsv3vT6Onv8Fcs7YG0rMKrPhgR
- 4Awq27ZaZZNIWltXqZYogDDEUy6ykonvd6EnrOq3AgIZN2jZdXzAsPc3Obz8KGMkhNeoQBx3Q7T
- NxUNCqw31V0EXu7OUvVzEvi4VAtNQ8UJ0JPonY1qzHAUn9itau1B4ea3jN77X1iMtqpWUuAlKoc
- EUznxvwga/dYDiy6g4zVAzEKfUo7YCJ8FA2vZJNhVRO8OPqckEtnTvaMe68cKjkF7lWIvAXHRRA
- 5KubByisfGYYd0vVyn/FEh2Tlbu2yUBkbvUHQOAcE+ZhgWrHeVkxyDyhhvJS0IRqufZnAhU6T7a
- 8aqscitkvP6WKdztcBZ+AVbWy3jEndkCGgYagAPatboWM+h3KXDPHuOGUD33+jEXnQVGSdtUHBU
- 5S+4SZUFya05v+qa8PA==
-X-Proofpoint-ORIG-GUID: eFOn4hPpC_pZQ6Jcbd5_B2Lx7A-olB_F
-X-Authority-Analysis: v=2.4 cv=BYHoFLt2 c=1 sm=1 tr=0 ts=69ff68af cx=c_pps
- a=IZJwPbhc+fLeJZngyXXI0A==:117 a=SpcZ+gRb+6o1zy8jT5J+bQ==:17
- a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22
- a=EUspDBNiAAAA:8 a=siKIllzpvWrrnXSPHwYA:9 a=QEXdDO2ut3YA:10
- a=uG9DUKGECoFWVXl0Dc02:22
-X-Proofpoint-GUID: eFOn4hPpC_pZQ6Jcbd5_B2Lx7A-olB_F
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-05-09_05,2026-05-08_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 suspectscore=0 bulkscore=0 impostorscore=0 lowpriorityscore=0
- spamscore=0 clxscore=1015 adultscore=0 malwarescore=0 priorityscore=1501
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2604200000 definitions=main-2605090185
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB5276E9D968D3738CCE7125248C3C2@BN9PR11MB5276.namprd11.prod.outlook.com>
 
+On Thu, May 07, 2026 at 08:15:21AM +0000, Tian, Kevin wrote:
+> if both arch and device support enqcmd-like insn...
+> 
+> I recalled this was discussed years ago. For devices like this, just
+> let driver manage its own pasid space then have a new interface
+> e.g. iommu_sva_bind_device_pasid(dev, mm, pasid) to use the
+> specified pasid.
 
-On 5/9/2026 2:14 AM, Dmitry Baryshkov wrote:
-> On Sat, May 09, 2026 at 12:29:58AM +0530, Vishnu Reddy wrote:
->> The pmdomain_tbl was a array of strings holding only the power domain
->> names. Callers had to pass a pd_devs[] pointer indexed directly by the
->> platform_pm_domain_type enum value to iris_enable_power_domains() and
->> iris_disable_power_domains().
->>
->> A future platform may need to introduce a new enum value that aliases
->> an existing one (e.g. IRIS_VCODEC1_POWER_DOMAIN aliasing the
->> IRIS_VPP0_HW_POWER_DOMAIN on Glymur), which would break the assumption
-> Why do they alias so? Or what do you mean by aliasing? Why VCODEC1 is
-> the same as VPP0? Do you mean that the index in DT would match?
+Yeah, that makes sense. If the driver knows it doesn't use an ENQCMD
+like programming model at all then it can use this API and it should
+also avoid programming the MSRs/etc.
 
-VPP0 index in kaanapali and the VCODEC1 index in glymur are same.
-
->> that enum values map 1:1 to pd_devs[] indices.
->>
->> To fix this, replace the string array with a new struct platform_pd_data
->> that pairs each power domain name with its platform_pm_domain_type. Add
->> a helper iris_get_pd_index_by_type() that walks this table and returns
->> the correct pd_devs[] index for a given type.
-> This looks like leaking too many platform details into the
-> not-so-generic code.
->
->> Update iris_enable_power_domains() and iris_disable_power_domains()
->> to accept a platform_pm_domain_type instead of a struct device pointer.
->> They now call the helper internally to resolve the index, removing the
->> need for callers to do the index lookup themselves.
->>
->> This prepares the driver for adding new platforms where power domain enum
->> values cannot be used directly as pd_devs[] indices.
->>
->> Reviewed-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
->> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
->> ---
->>  .../platform/qcom/iris/iris_platform_common.h      |  9 +++-
->>  .../media/platform/qcom/iris/iris_platform_gen1.c  | 18 +++++---
->>  .../media/platform/qcom/iris/iris_platform_gen2.c  | 24 ++++++----
->>  drivers/media/platform/qcom/iris/iris_probe.c      |  4 +-
->>  drivers/media/platform/qcom/iris/iris_resources.c  | 43 +++++++++++++++++-
->>  drivers/media/platform/qcom/iris/iris_resources.h  |  6 ++-
->>  drivers/media/platform/qcom/iris/iris_vpu3x.c      |  7 ++-
->>  drivers/media/platform/qcom/iris/iris_vpu4x.c      | 52 ++++++++--------------
->>  drivers/media/platform/qcom/iris/iris_vpu_common.c | 23 +++++-----
->>  9 files changed, 115 insertions(+), 71 deletions(-)
->>
->> diff --git a/drivers/media/platform/qcom/iris/iris_platform_common.h b/drivers/media/platform/qcom/iris/iris_platform_common.h
->> index 30e9d4d288c6..7d59e6364e9d 100644
->> --- a/drivers/media/platform/qcom/iris/iris_platform_common.h
->> +++ b/drivers/media/platform/qcom/iris/iris_platform_common.h
->> @@ -212,6 +212,12 @@ enum platform_pm_domain_type {
->>  	IRIS_APV_HW_POWER_DOMAIN,
->>  };
->>  
->> +struct platform_pd_data {
->> +	enum platform_pm_domain_type *pd_types;
->> +	const char **pd_names;
->> +	u32 pd_count;
->> +};
->> +
->>  struct iris_platform_data {
->>  	void (*init_hfi_command_ops)(struct iris_core *core);
->>  	void (*init_hfi_response_ops)(struct iris_core *core);
->> @@ -225,8 +231,7 @@ struct iris_platform_data {
->>  	unsigned int icc_tbl_size;
->>  	const struct bw_info *bw_tbl_dec;
->>  	unsigned int bw_tbl_dec_size;
->> -	const char * const *pmdomain_tbl;
->> -	unsigned int pmdomain_tbl_size;
->> +	const struct platform_pd_data *pmdomain_tbl;
->>  	const char * const *opp_pd_tbl;
->>  	unsigned int opp_pd_tbl_size;
->>  	const struct platform_clk_data *clk_tbl;
->> diff --git a/drivers/media/platform/qcom/iris/iris_platform_gen1.c b/drivers/media/platform/qcom/iris/iris_platform_gen1.c
->> index be6a631f8ede..0ec73783bc10 100644
->> --- a/drivers/media/platform/qcom/iris/iris_platform_gen1.c
->> +++ b/drivers/media/platform/qcom/iris/iris_platform_gen1.c
->> @@ -279,7 +279,17 @@ static const struct bw_info sm8250_bw_table_dec[] = {
->>  	{ ((1920 * 1080) / 256) * 30,  416000 },
->>  };
->>  
->> -static const char * const sm8250_pmdomain_table[] = { "venus", "vcodec0" };
->> +static const struct platform_pd_data sm8250_pmdomain_table = {
->> +	.pd_types = (enum platform_pm_domain_type []) {
->> +		IRIS_CTRL_POWER_DOMAIN,
->> +		IRIS_VCODEC_POWER_DOMAIN,
->> +	},
->> +	.pd_names = (const char *[]) {
->> +		"venus",
->> +		"vcodec0",
->> +	},
->> +	.pd_count = 2,
->> +};
->>  
->>  static const char * const sm8250_opp_pd_table[] = { "mx" };
->>  
->> @@ -350,8 +360,7 @@ const struct iris_platform_data sm8250_data = {
->>  	.clk_rst_tbl_size = ARRAY_SIZE(sm8250_clk_reset_table),
->>  	.bw_tbl_dec = sm8250_bw_table_dec,
->>  	.bw_tbl_dec_size = ARRAY_SIZE(sm8250_bw_table_dec),
->> -	.pmdomain_tbl = sm8250_pmdomain_table,
->> -	.pmdomain_tbl_size = ARRAY_SIZE(sm8250_pmdomain_table),
->> +	.pmdomain_tbl = &sm8250_pmdomain_table,
->>  	.opp_pd_tbl = sm8250_opp_pd_table,
->>  	.opp_pd_tbl_size = ARRAY_SIZE(sm8250_opp_pd_table),
->>  	.clk_tbl = sm8250_clk_table,
->> @@ -403,8 +412,7 @@ const struct iris_platform_data sc7280_data = {
->>  	.icc_tbl_size = ARRAY_SIZE(sm8250_icc_table),
->>  	.bw_tbl_dec = sc7280_bw_table_dec,
->>  	.bw_tbl_dec_size = ARRAY_SIZE(sc7280_bw_table_dec),
->> -	.pmdomain_tbl = sm8250_pmdomain_table,
->> -	.pmdomain_tbl_size = ARRAY_SIZE(sm8250_pmdomain_table),
->> +	.pmdomain_tbl = &sm8250_pmdomain_table,
->>  	.opp_pd_tbl = sc7280_opp_pd_table,
->>  	.opp_pd_tbl_size = ARRAY_SIZE(sc7280_opp_pd_table),
->>  	.clk_tbl = sc7280_clk_table,
->> diff --git a/drivers/media/platform/qcom/iris/iris_platform_gen2.c b/drivers/media/platform/qcom/iris/iris_platform_gen2.c
->> index 47c6b650f0b4..5862c89a4971 100644
->> --- a/drivers/media/platform/qcom/iris/iris_platform_gen2.c
->> +++ b/drivers/media/platform/qcom/iris/iris_platform_gen2.c
->> @@ -775,7 +775,17 @@ static const struct bw_info sm8550_bw_table_dec[] = {
->>  	{ ((1920 * 1080) / 256) * 30,  294000 },
->>  };
->>  
->> -static const char * const sm8550_pmdomain_table[] = { "venus", "vcodec0" };
->> +static const struct platform_pd_data sm8550_pmdomain_table = {
->> +	.pd_types = (enum platform_pm_domain_type []) {
->> +		IRIS_CTRL_POWER_DOMAIN,
->> +		IRIS_VCODEC_POWER_DOMAIN,
->> +	},
->> +	.pd_names = (const char *[]) {
->> +		"venus",
->> +		"vcodec0",
->> +	},
->> +	.pd_count = 2,
->> +};
->>  
->>  static const char * const sm8550_opp_pd_table[] = { "mxc", "mmcx" };
->>  
->> @@ -934,8 +944,7 @@ const struct iris_platform_data sm8550_data = {
->>  	.clk_rst_tbl_size = ARRAY_SIZE(sm8550_clk_reset_table),
->>  	.bw_tbl_dec = sm8550_bw_table_dec,
->>  	.bw_tbl_dec_size = ARRAY_SIZE(sm8550_bw_table_dec),
->> -	.pmdomain_tbl = sm8550_pmdomain_table,
->> -	.pmdomain_tbl_size = ARRAY_SIZE(sm8550_pmdomain_table),
->> +	.pmdomain_tbl = &sm8550_pmdomain_table,
->>  	.opp_pd_tbl = sm8550_opp_pd_table,
->>  	.opp_pd_tbl_size = ARRAY_SIZE(sm8550_opp_pd_table),
->>  	.clk_tbl = sm8550_clk_table,
->> @@ -1039,8 +1048,7 @@ const struct iris_platform_data sm8650_data = {
->>  	.controller_rst_tbl_size = ARRAY_SIZE(sm8650_controller_reset_table),
->>  	.bw_tbl_dec = sm8550_bw_table_dec,
->>  	.bw_tbl_dec_size = ARRAY_SIZE(sm8550_bw_table_dec),
->> -	.pmdomain_tbl = sm8550_pmdomain_table,
->> -	.pmdomain_tbl_size = ARRAY_SIZE(sm8550_pmdomain_table),
->> +	.pmdomain_tbl = &sm8550_pmdomain_table,
->>  	.opp_pd_tbl = sm8550_opp_pd_table,
->>  	.opp_pd_tbl_size = ARRAY_SIZE(sm8550_opp_pd_table),
->>  	.clk_tbl = sm8550_clk_table,
->> @@ -1135,8 +1143,7 @@ const struct iris_platform_data sm8750_data = {
->>  	.clk_rst_tbl_size = ARRAY_SIZE(sm8750_clk_reset_table),
->>  	.bw_tbl_dec = sm8550_bw_table_dec,
->>  	.bw_tbl_dec_size = ARRAY_SIZE(sm8550_bw_table_dec),
->> -	.pmdomain_tbl = sm8550_pmdomain_table,
->> -	.pmdomain_tbl_size = ARRAY_SIZE(sm8550_pmdomain_table),
->> +	.pmdomain_tbl = &sm8550_pmdomain_table,
->>  	.opp_pd_tbl = sm8550_opp_pd_table,
->>  	.opp_pd_tbl_size = ARRAY_SIZE(sm8550_opp_pd_table),
->>  	.clk_tbl = sm8750_clk_table,
->> @@ -1235,8 +1242,7 @@ const struct iris_platform_data qcs8300_data = {
->>  	.clk_rst_tbl_size = ARRAY_SIZE(sm8550_clk_reset_table),
->>  	.bw_tbl_dec = sm8550_bw_table_dec,
->>  	.bw_tbl_dec_size = ARRAY_SIZE(sm8550_bw_table_dec),
->> -	.pmdomain_tbl = sm8550_pmdomain_table,
->> -	.pmdomain_tbl_size = ARRAY_SIZE(sm8550_pmdomain_table),
->> +	.pmdomain_tbl = &sm8550_pmdomain_table,
->>  	.opp_pd_tbl = sm8550_opp_pd_table,
->>  	.opp_pd_tbl_size = ARRAY_SIZE(sm8550_opp_pd_table),
->>  	.clk_tbl = sm8550_clk_table,
->> diff --git a/drivers/media/platform/qcom/iris/iris_probe.c b/drivers/media/platform/qcom/iris/iris_probe.c
->> index 34751912f871..34c981be9bc1 100644
->> --- a/drivers/media/platform/qcom/iris/iris_probe.c
->> +++ b/drivers/media/platform/qcom/iris/iris_probe.c
->> @@ -43,8 +43,8 @@ static int iris_init_power_domains(struct iris_core *core)
->>  	int ret;
->>  
->>  	struct dev_pm_domain_attach_data iris_pd_data = {
->> -		.pd_names = core->iris_platform_data->pmdomain_tbl,
->> -		.num_pd_names = core->iris_platform_data->pmdomain_tbl_size,
->> +		.pd_names = core->iris_platform_data->pmdomain_tbl->pd_names,
->> +		.num_pd_names = core->iris_platform_data->pmdomain_tbl->pd_count,
->>  		.pd_flags = PD_FLAG_NO_DEV_LINK,
->>  	};
->>  
->> diff --git a/drivers/media/platform/qcom/iris/iris_resources.c b/drivers/media/platform/qcom/iris/iris_resources.c
->> index 773f6548370a..cc61dc038598 100644
->> --- a/drivers/media/platform/qcom/iris/iris_resources.c
->> +++ b/drivers/media/platform/qcom/iris/iris_resources.c
->> @@ -70,10 +70,42 @@ int iris_opp_set_rate(struct device *dev, unsigned long freq)
->>  	return dev_pm_opp_set_opp(dev, opp);
->>  }
->>  
->> -int iris_enable_power_domains(struct iris_core *core, struct device *pd_dev)
->> +static int iris_get_pd_index_by_type(struct iris_core *core, enum platform_pm_domain_type pd_type)
->>  {
->> +	const struct platform_pd_data *pd_tbl;
->> +	u32 i;
->> +
->> +	pd_tbl = core->iris_platform_data->pmdomain_tbl;
->> +
->> +	for (i = 0; i < pd_tbl->pd_count; i++) {
->> +		if (pd_tbl->pd_types[i] == pd_type)
->> +			return i;
->> +	}
->> +
->> +	return -EINVAL;
->> +}
->> +
->> +int iris_genpd_set_hwmode(struct iris_core *core, enum platform_pm_domain_type pd_type, bool hwmode)
->> +{
->> +	int pd_index = iris_get_pd_index_by_type(core, pd_type);
->> +
->> +	if (pd_index < 0)
->> +		return pd_index;
->> +
->> +	return dev_pm_genpd_set_hwmode(core->pmdomain_tbl->pd_devs[pd_index], hwmode);
->> +}
->> +
->> +int iris_enable_power_domains(struct iris_core *core, enum platform_pm_domain_type pd_type)
->> +{
->> +	int pd_index = iris_get_pd_index_by_type(core, pd_type);
->> +	struct device *pd_dev;
->>  	int ret;
->>  
->> +	if (pd_index < 0)
->> +		return pd_index;
->> +
->> +	pd_dev = core->pmdomain_tbl->pd_devs[pd_index];
->> +
-> As you are touching this code... It looks like the original intent of
-> this function was to enable all power domains in a single run (thus it
-> has the iris_opp_set_rate() call. Now we are are calling this function
-> multiple times and still setting the clock rate to the max all the
-> times. Please break it down, so that we bump the OPP performance point
-> only once, before the first bump of the power domains. Another option
-> would be to restore the behaviour and enable all domains at once.
-
-The dev_pm_opp_set_opp() returns early if the requested rate matches the
-previous set rate, so it does not call rpmhpd level set or trigger a clock update.
-So, calling it multiple times with the same frequency is not expensive.
-
->>  	ret = iris_opp_set_rate(core->dev, ULONG_MAX);
->>  	if (ret)
->>  		return ret;
->> @@ -85,10 +117,17 @@ int iris_enable_power_domains(struct iris_core *core, struct device *pd_dev)
->>  	return ret;
->>  }
->>  
->> -int iris_disable_power_domains(struct iris_core *core, struct device *pd_dev)
->> +int iris_disable_power_domains(struct iris_core *core, enum platform_pm_domain_type pd_type)
-> The same here.
->
->>  {
->> +	int pd_index = iris_get_pd_index_by_type(core, pd_type);
->> +	struct device *pd_dev;
->>  	int ret;
->>  
->> +	if (pd_index < 0)
->> +		return pd_index;
->> +
->> +	pd_dev = core->pmdomain_tbl->pd_devs[pd_index];
->> +
->>  	ret = iris_opp_set_rate(core->dev, 0);
->>  	if (ret)
->>  		return ret;
->> diff --git a/drivers/media/platform/qcom/iris/iris_resources.h b/drivers/media/platform/qcom/iris/iris_resources.h
->> index 6bfbd2dc6db0..d5692e4694b1 100644
->> --- a/drivers/media/platform/qcom/iris/iris_resources.h
->> +++ b/drivers/media/platform/qcom/iris/iris_resources.h
->> @@ -9,11 +9,13 @@
->>  struct iris_core;
->>  
->>  int iris_opp_set_rate(struct device *dev, unsigned long freq);
->> -int iris_enable_power_domains(struct iris_core *core, struct device *pd_dev);
->> -int iris_disable_power_domains(struct iris_core *core, struct device *pd_dev);
->> +int iris_enable_power_domains(struct iris_core *core, enum platform_pm_domain_type pd_type);
->> +int iris_disable_power_domains(struct iris_core *core, enum platform_pm_domain_type pd_type);
->>  int iris_unset_icc_bw(struct iris_core *core);
->>  int iris_set_icc_bw(struct iris_core *core, unsigned long icc_bw);
->>  int iris_disable_unprepare_clock(struct iris_core *core, enum platform_clk_type clk_type);
->>  int iris_prepare_enable_clock(struct iris_core *core, enum platform_clk_type clk_type);
->> +int iris_genpd_set_hwmode(struct iris_core *core, enum platform_pm_domain_type pd_type,
->> +			  bool hwmode);
->>  
->>  #endif
->> diff --git a/drivers/media/platform/qcom/iris/iris_vpu3x.c b/drivers/media/platform/qcom/iris/iris_vpu3x.c
->> index 834194cb5513..13fbb21c2182 100644
->> --- a/drivers/media/platform/qcom/iris/iris_vpu3x.c
->> +++ b/drivers/media/platform/qcom/iris/iris_vpu3x.c
->> @@ -208,7 +208,7 @@ static int iris_vpu33_power_off_controller(struct iris_core *core)
->>  	iris_disable_unprepare_clock(core, IRIS_CTRL_CLK);
->>  
->>  disable_power:
->> -	iris_disable_power_domains(core, core->pmdomain_tbl->pd_devs[IRIS_CTRL_POWER_DOMAIN]);
->> +	iris_disable_power_domains(core, IRIS_CTRL_POWER_DOMAIN);
->>  	iris_disable_unprepare_clock(core, IRIS_AXI_VCODEC_CLK);
->>  
->>  	return 0;
->> @@ -218,8 +218,7 @@ static int iris_vpu35_power_on_hw(struct iris_core *core)
->>  {
->>  	int ret;
->>  
->> -	ret = iris_enable_power_domains(core,
->> -					core->pmdomain_tbl->pd_devs[IRIS_VCODEC_POWER_DOMAIN]);
->> +	ret = iris_enable_power_domains(core, IRIS_VCODEC_POWER_DOMAIN);
->>  	if (ret)
->>  		return ret;
->>  
->> @@ -242,7 +241,7 @@ static int iris_vpu35_power_on_hw(struct iris_core *core)
->>  err_disable_axi_clk:
->>  	iris_disable_unprepare_clock(core, IRIS_AXI_VCODEC_CLK);
->>  err_disable_power:
->> -	iris_disable_power_domains(core, core->pmdomain_tbl->pd_devs[IRIS_VCODEC_POWER_DOMAIN]);
->> +	iris_disable_power_domains(core, IRIS_VCODEC_POWER_DOMAIN);
->>  
->>  	return ret;
->>  }
->> diff --git a/drivers/media/platform/qcom/iris/iris_vpu4x.c b/drivers/media/platform/qcom/iris/iris_vpu4x.c
->> index 92c0b06bbbff..bf7ad4e7cb8a 100644
->> --- a/drivers/media/platform/qcom/iris/iris_vpu4x.c
->> +++ b/drivers/media/platform/qcom/iris/iris_vpu4x.c
->> @@ -27,28 +27,24 @@ static int iris_vpu4x_genpd_set_hwmode(struct iris_core *core, bool hw_mode, u32
->>  {
->>  	int ret;
->>  
->> -	ret = dev_pm_genpd_set_hwmode(core->pmdomain_tbl->pd_devs[IRIS_VCODEC_POWER_DOMAIN],
->> -				      hw_mode);
->> +	ret = iris_genpd_set_hwmode(core, IRIS_VCODEC_POWER_DOMAIN, hw_mode);
->>  	if (ret)
->>  		return ret;
->>  
->>  	if (!(efuse_value & DISABLE_VIDEO_VPP0_BIT)) {
->> -		ret = dev_pm_genpd_set_hwmode(core->pmdomain_tbl->pd_devs
->> -					      [IRIS_VPP0_HW_POWER_DOMAIN], hw_mode);
->> +		ret = iris_genpd_set_hwmode(core, IRIS_VPP0_HW_POWER_DOMAIN, hw_mode);
->>  		if (ret)
->>  			goto restore_hw_domain_mode;
->>  	}
->>  
->>  	if (!(efuse_value & DISABLE_VIDEO_VPP1_BIT)) {
->> -		ret = dev_pm_genpd_set_hwmode(core->pmdomain_tbl->pd_devs
->> -					      [IRIS_VPP1_HW_POWER_DOMAIN], hw_mode);
->> +		ret = iris_genpd_set_hwmode(core, IRIS_VPP1_HW_POWER_DOMAIN, hw_mode);
->>  		if (ret)
->>  			goto restore_vpp0_domain_mode;
->>  	}
->>  
->>  	if (!(efuse_value & DISABLE_VIDEO_APV_BIT)) {
->> -		ret = dev_pm_genpd_set_hwmode(core->pmdomain_tbl->pd_devs
->> -					      [IRIS_APV_HW_POWER_DOMAIN], hw_mode);
->> +		ret = iris_genpd_set_hwmode(core, IRIS_APV_HW_POWER_DOMAIN, hw_mode);
->>  		if (ret)
->>  			goto restore_vpp1_domain_mode;
->>  	}
->> @@ -57,14 +53,12 @@ static int iris_vpu4x_genpd_set_hwmode(struct iris_core *core, bool hw_mode, u32
->>  
->>  restore_vpp1_domain_mode:
->>  	if (!(efuse_value & DISABLE_VIDEO_VPP1_BIT))
->> -		dev_pm_genpd_set_hwmode(core->pmdomain_tbl->pd_devs[IRIS_VPP1_HW_POWER_DOMAIN],
->> -					!hw_mode);
->> +		iris_genpd_set_hwmode(core, IRIS_VPP1_HW_POWER_DOMAIN, !hw_mode);
->>  restore_vpp0_domain_mode:
->>  	if (!(efuse_value & DISABLE_VIDEO_VPP0_BIT))
->> -		dev_pm_genpd_set_hwmode(core->pmdomain_tbl->pd_devs[IRIS_VPP0_HW_POWER_DOMAIN],
->> -					!hw_mode);
->> +		iris_genpd_set_hwmode(core, IRIS_VPP0_HW_POWER_DOMAIN, !hw_mode);
->>  restore_hw_domain_mode:
->> -	dev_pm_genpd_set_hwmode(core->pmdomain_tbl->pd_devs[IRIS_VCODEC_POWER_DOMAIN], !hw_mode);
->> +	iris_genpd_set_hwmode(core, IRIS_VCODEC_POWER_DOMAIN, !hw_mode);
->>  
->>  	return ret;
->>  }
->> @@ -73,8 +67,7 @@ static int iris_vpu4x_power_on_apv(struct iris_core *core)
->>  {
->>  	int ret;
->>  
->> -	ret = iris_enable_power_domains(core,
->> -					core->pmdomain_tbl->pd_devs[IRIS_APV_HW_POWER_DOMAIN]);
->> +	ret = iris_enable_power_domains(core, IRIS_APV_HW_POWER_DOMAIN);
->>  	if (ret)
->>  		return ret;
->>  
->> @@ -85,7 +78,7 @@ static int iris_vpu4x_power_on_apv(struct iris_core *core)
->>  	return 0;
->>  
->>  disable_apv_hw_power_domain:
->> -	iris_disable_power_domains(core, core->pmdomain_tbl->pd_devs[IRIS_APV_HW_POWER_DOMAIN]);
->> +	iris_disable_power_domains(core, IRIS_APV_HW_POWER_DOMAIN);
->>  
->>  	return ret;
->>  }
->> @@ -140,7 +133,7 @@ static void iris_vpu4x_power_off_apv(struct iris_core *core)
->>  
->>  disable_clocks_and_power:
->>  	iris_disable_unprepare_clock(core, IRIS_APV_HW_CLK);
->> -	iris_disable_power_domains(core, core->pmdomain_tbl->pd_devs[IRIS_APV_HW_POWER_DOMAIN]);
->> +	iris_disable_power_domains(core, IRIS_APV_HW_POWER_DOMAIN);
->>  }
->>  
->>  static void iris_vpu4x_ahb_sync_reset_apv(struct iris_core *core)
->> @@ -227,21 +220,18 @@ static int iris_vpu4x_power_on_hardware(struct iris_core *core)
->>  	u32 efuse_value = readl(core->reg_base + WRAPPER_EFUSE_MONITOR);
->>  	int ret;
->>  
->> -	ret = iris_enable_power_domains(core,
->> -					core->pmdomain_tbl->pd_devs[IRIS_VCODEC_POWER_DOMAIN]);
->> +	ret = iris_enable_power_domains(core, IRIS_VCODEC_POWER_DOMAIN);
->>  	if (ret)
->>  		return ret;
->>  
->>  	if (!(efuse_value & DISABLE_VIDEO_VPP0_BIT)) {
->> -		ret = iris_enable_power_domains(core, core->pmdomain_tbl->pd_devs
->> -						[IRIS_VPP0_HW_POWER_DOMAIN]);
->> +		ret = iris_enable_power_domains(core, IRIS_VPP0_HW_POWER_DOMAIN);
->>  		if (ret)
->>  			goto disable_hw_power_domain;
->>  	}
->>  
->>  	if (!(efuse_value & DISABLE_VIDEO_VPP1_BIT)) {
->> -		ret = iris_enable_power_domains(core, core->pmdomain_tbl->pd_devs
->> -						[IRIS_VPP1_HW_POWER_DOMAIN]);
->> +		ret = iris_enable_power_domains(core, IRIS_VPP1_HW_POWER_DOMAIN);
->>  		if (ret)
->>  			goto disable_vpp0_power_domain;
->>  	}
->> @@ -262,14 +252,12 @@ static int iris_vpu4x_power_on_hardware(struct iris_core *core)
->>  	iris_vpu4x_disable_hardware_clocks(core, efuse_value);
->>  disable_vpp1_power_domain:
->>  	if (!(efuse_value & DISABLE_VIDEO_VPP1_BIT))
->> -		iris_disable_power_domains(core, core->pmdomain_tbl->pd_devs
->> -						[IRIS_VPP1_HW_POWER_DOMAIN]);
->> +		iris_disable_power_domains(core, IRIS_VPP1_HW_POWER_DOMAIN);
->>  disable_vpp0_power_domain:
->>  	if (!(efuse_value & DISABLE_VIDEO_VPP0_BIT))
->> -		iris_disable_power_domains(core, core->pmdomain_tbl->pd_devs
->> -						[IRIS_VPP0_HW_POWER_DOMAIN]);
->> +		iris_disable_power_domains(core, IRIS_VPP0_HW_POWER_DOMAIN);
->>  disable_hw_power_domain:
->> -	iris_disable_power_domains(core, core->pmdomain_tbl->pd_devs[IRIS_VCODEC_POWER_DOMAIN]);
->> +	iris_disable_power_domains(core, IRIS_VCODEC_POWER_DOMAIN);
->>  
->>  	return ret;
->>  }
->> @@ -340,14 +328,12 @@ static void iris_vpu4x_power_off_hardware(struct iris_core *core)
->>  	iris_vpu4x_disable_hardware_clocks(core, efuse_value);
->>  
->>  	if (!(efuse_value & DISABLE_VIDEO_VPP1_BIT))
->> -		iris_disable_power_domains(core, core->pmdomain_tbl->pd_devs
->> -					   [IRIS_VPP1_HW_POWER_DOMAIN]);
->> +		iris_disable_power_domains(core, IRIS_VPP1_HW_POWER_DOMAIN);
->>  
->>  	if (!(efuse_value & DISABLE_VIDEO_VPP0_BIT))
->> -		iris_disable_power_domains(core, core->pmdomain_tbl->pd_devs
->> -					   [IRIS_VPP0_HW_POWER_DOMAIN]);
->> +		iris_disable_power_domains(core, IRIS_VPP0_HW_POWER_DOMAIN);
->>  
->> -	iris_disable_power_domains(core, core->pmdomain_tbl->pd_devs[IRIS_VCODEC_POWER_DOMAIN]);
->> +	iris_disable_power_domains(core, IRIS_VCODEC_POWER_DOMAIN);
->>  }
->>  
->>  static int iris_vpu4x_set_hwmode(struct iris_core *core)
->> diff --git a/drivers/media/platform/qcom/iris/iris_vpu_common.c b/drivers/media/platform/qcom/iris/iris_vpu_common.c
->> index 73c094bc4311..2593c04decb0 100644
->> --- a/drivers/media/platform/qcom/iris/iris_vpu_common.c
->> +++ b/drivers/media/platform/qcom/iris/iris_vpu_common.c
->> @@ -214,15 +214,15 @@ int iris_vpu_power_off_controller(struct iris_core *core)
->>  	iris_disable_unprepare_clock(core, IRIS_AHB_CLK);
->>  	iris_disable_unprepare_clock(core, IRIS_CTRL_CLK);
->>  	iris_disable_unprepare_clock(core, IRIS_AXI_VCODEC_CLK);
->> -	iris_disable_power_domains(core, core->pmdomain_tbl->pd_devs[IRIS_CTRL_POWER_DOMAIN]);
->> +	iris_disable_power_domains(core, IRIS_CTRL_POWER_DOMAIN);
->>  
->>  	return 0;
->>  }
->>  
->>  void iris_vpu_power_off_hw(struct iris_core *core)
->>  {
->> -	dev_pm_genpd_set_hwmode(core->pmdomain_tbl->pd_devs[IRIS_VCODEC_POWER_DOMAIN], false);
->> -	iris_disable_power_domains(core, core->pmdomain_tbl->pd_devs[IRIS_VCODEC_POWER_DOMAIN]);
->> +	iris_genpd_set_hwmode(core, IRIS_VCODEC_POWER_DOMAIN, false);
->> +	iris_disable_power_domains(core, IRIS_VCODEC_POWER_DOMAIN);
->>  	iris_disable_unprepare_clock(core, IRIS_VCODEC_AHB_CLK);
->>  	iris_disable_unprepare_clock(core, IRIS_VCODEC_CLK);
->>  }
->> @@ -243,7 +243,7 @@ int iris_vpu_power_on_controller(struct iris_core *core)
->>  	u32 rst_tbl_size = core->iris_platform_data->clk_rst_tbl_size;
->>  	int ret;
->>  
->> -	ret = iris_enable_power_domains(core, core->pmdomain_tbl->pd_devs[IRIS_CTRL_POWER_DOMAIN]);
->> +	ret = iris_enable_power_domains(core, IRIS_CTRL_POWER_DOMAIN);
->>  	if (ret)
->>  		return ret;
->>  
->> @@ -270,7 +270,7 @@ int iris_vpu_power_on_controller(struct iris_core *core)
->>  err_disable_axi_clock:
->>  	iris_disable_unprepare_clock(core, IRIS_AXI_VCODEC_CLK);
->>  err_disable_power:
->> -	iris_disable_power_domains(core, core->pmdomain_tbl->pd_devs[IRIS_CTRL_POWER_DOMAIN]);
->> +	iris_disable_power_domains(core, IRIS_CTRL_POWER_DOMAIN);
->>  
->>  	return ret;
->>  }
->> @@ -279,8 +279,7 @@ int iris_vpu_power_on_hw(struct iris_core *core)
->>  {
->>  	int ret;
->>  
->> -	ret = iris_enable_power_domains(core,
->> -					core->pmdomain_tbl->pd_devs[IRIS_VCODEC_POWER_DOMAIN]);
->> +	ret = iris_enable_power_domains(core, IRIS_VCODEC_POWER_DOMAIN);
->>  	if (ret)
->>  		return ret;
->>  
->> @@ -297,14 +296,14 @@ int iris_vpu_power_on_hw(struct iris_core *core)
->>  err_disable_hw_clock:
->>  	iris_disable_unprepare_clock(core, IRIS_VCODEC_CLK);
->>  err_disable_power:
->> -	iris_disable_power_domains(core, core->pmdomain_tbl->pd_devs[IRIS_VCODEC_POWER_DOMAIN]);
->> +	iris_disable_power_domains(core, IRIS_VCODEC_POWER_DOMAIN);
->>  
->>  	return ret;
->>  }
->>  
->>  int iris_vpu_set_hwmode(struct iris_core *core)
->>  {
->> -	return dev_pm_genpd_set_hwmode(core->pmdomain_tbl->pd_devs[IRIS_VCODEC_POWER_DOMAIN], true);
->> +	return iris_genpd_set_hwmode(core, IRIS_VCODEC_POWER_DOMAIN, true);
->>  }
->>  
->>  int iris_vpu_switch_to_hwmode(struct iris_core *core)
->> @@ -369,7 +368,7 @@ int iris_vpu35_vpu4x_power_off_controller(struct iris_core *core)
->>  	iris_disable_unprepare_clock(core, IRIS_CTRL_FREERUN_CLK);
->>  	iris_disable_unprepare_clock(core, IRIS_AXI_CTRL_CLK);
->>  
->> -	iris_disable_power_domains(core, core->pmdomain_tbl->pd_devs[IRIS_CTRL_POWER_DOMAIN]);
->> +	iris_disable_power_domains(core, IRIS_CTRL_POWER_DOMAIN);
->>  
->>  	reset_control_bulk_reset(clk_rst_tbl_size, core->resets);
->>  
->> @@ -380,7 +379,7 @@ int iris_vpu35_vpu4x_power_on_controller(struct iris_core *core)
->>  {
->>  	int ret;
->>  
->> -	ret = iris_enable_power_domains(core, core->pmdomain_tbl->pd_devs[IRIS_CTRL_POWER_DOMAIN]);
->> +	ret = iris_enable_power_domains(core, IRIS_CTRL_POWER_DOMAIN);
->>  	if (ret)
->>  		return ret;
->>  
->> @@ -403,7 +402,7 @@ int iris_vpu35_vpu4x_power_on_controller(struct iris_core *core)
->>  err_disable_axi1_clk:
->>  	iris_disable_unprepare_clock(core, IRIS_AXI_CTRL_CLK);
->>  err_disable_power:
->> -	iris_disable_power_domains(core, core->pmdomain_tbl->pd_devs[IRIS_CTRL_POWER_DOMAIN]);
->> +	iris_disable_power_domains(core, IRIS_CTRL_POWER_DOMAIN);
->>  
->>  	return ret;
->>  }
->>
->> -- 
->> 2.34.1
->>
+Jason
