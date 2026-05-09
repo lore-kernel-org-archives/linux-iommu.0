@@ -1,61 +1,53 @@
-Received: from out162-62-57-210.mail.qq.com (out162-62-57-210.mail.qq.com [162.62.57.210])
+Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90F47372EFF
-	for <iommu@lists.linux.dev>; Sat,  9 May 2026 07:09:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.62.57.210
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C017288B1
+	for <iommu@lists.linux.dev>; Sat,  9 May 2026 07:25:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.97
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778310546; cv=none; b=SRocvtleo3WgSiWH0zTX6LDose6vZEl1bxlB5qOUV0FAQ+1axB7moxxeDtyXfu+uofW1j/vi+dixBLvSTm21jbcXdlCnsmRykuexm1LIfOpR1q0Dd4prqhEjDmlynOELt5BI/JmEOOKQOvJ3lnJ2TNRpS2JGpwtP6SO0RvV4x9Y=
+	t=1778311554; cv=none; b=UGzz87OcFoRcqrnUNKYDhzvLL8jl2hGVSJbuLwglR/14u2MeNbaj0+DbgXu/LcSM6NJpbNYK9SkfRWCaIhbvb4bkgawBsiMtx22QV2aPOH0nIouDiC+Cra1h5e4k0tkh6rH7HVMFXRN2JnrYJ9PUUf2QzSE8es5CID/30zIzjqE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778310546; c=relaxed/simple;
-	bh=m1nxLMf3vRQh4xIKe9AL2rkbiMSL9Xe+yNhzLqXADiA=;
-	h=Message-ID:From:To:Cc:Subject:Date:MIME-Version; b=diE+KFNcWsUc6be6TikXLL94h8zrU1ea1Ho4izD6ck26k0F9zmA0+q1enPQdesvxkZnb6J48/KUhadRjDAREQZfggYolGAmg0O7jVV5hOvV2u8SZBHkE/tH7BYllHztXSHx9ZmJinYo4F/4CBTwFLFhXgg3GvbmuM23a0yEeUO8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com; spf=pass smtp.mailfrom=foxmail.com; dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b=HUbdBG25; arc=none smtp.client-ip=162.62.57.210
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foxmail.com
+	s=arc-20240116; t=1778311554; c=relaxed/simple;
+	bh=QrzAK8UOcwBG9zeJTwqNExwRRFXT0F7MYTwbcz20D44=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=HYruoYdSbczRdi1DHrcJzWrf5J2L9/E3MTlvX7FaaTKHphW31DEuustF7G5AL7jXsI1YD/IUgSu3hJGs3zvRR1MjMA5CPaNmndqrNVbD8t7Uhs1k+JRXD9llxjaOuLb74o/5K9eWzppc7/RYL6S5XSh2/BRotwANWYebFtG6hJg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=UDVBYgGh; arc=none smtp.client-ip=115.124.30.97
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b="HUbdBG25"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-	s=s201512; t=1778310533;
-	bh=lK7ohFdEAMIwgPt7gLEpD5YoicRl00ld7oZBGaVtP6I=;
-	h=From:To:Cc:Subject:Date;
-	b=HUbdBG258VY1gpzAo5pIpYthhbL4vEM3NjEpwJrNk1qwhumKnExAjmtpON3LapWIR
-	 1H6deuM3iKiO4z3nuF7vdxnfY8MtF1lonTtRWJlFWQlkgSWZrvBeYDmQzIi+40ri2u
-	 v1sLRnPPY/dNL5/ZVLZ1boNQ8pmvZ2wHKiknPAFg=
-Received: from LAPTOP-LEO.yizhu.local ([61.169.175.90])
-	by newxmesmtplogicsvrszc43-0.qq.com (NewEsmtp) with SMTP
-	id 1E528A4D; Sat, 09 May 2026 15:07:37 +0800
-X-QQ-mid: xmsmtpt1778310457togr8xore
-Message-ID: <tencent_F13723B53F68DC857410D3DBE4F6C895C106@qq.com>
-X-QQ-XMAILINFO: MJf32pulH481fEIAojPZ1aL2Obd/WH1jnkB3OnJ8p9BS4LEZKHvj8ckfFRQGTE
-	 DhUpEQqnkOUC1uqR/falbX4f12fellpoyAFtAudqK/AVzyDUccZFeBhO20qtvsrDYaX7F4dyaSv4
-	 CN5bdC9rykHSjjAAR4/pqW2B0BC//wGHg+cg+Z3hEsvDR2ZPX3aUNcJ/00EsLgSRc1Y5ub4wWCY+
-	 2pbiV/GDNOEPOBFrGLXr3wNhA7ZT+6gmbyOqjfgXExHxAmp1QPAk5Gyc9TLauLvL3/NfctzgKwBF
-	 D71PNegdAZamz9cmaHhxt44iY/P09fjZ36k5Tc02ERxWyurBdKhRDgiHrhuyVY06amtAZ+C1r/Pa
-	 p0XUN5AcT8LwoYApg5TR2lEdgMGBUJk9JvqL7UOMLGxP0C08ECLVEGqgy7mZ/F3NQ/puITug38tz
-	 y/6uEOmWb+/JxY8tpZvHs12GUatTrbH/hZiSA1KXZQRCRr7Vmu0V16oqz+IVBz+WOedcN+EK5tml
-	 9VcK1KUoMtTTL0Bn9IzFibHAoD9uygtY4yyp52LwhQddqAOt828s5tz26QfYpgMzN4kLR7MWzBhX
-	 yL4h/dCCjtw9dmakxbVmPUKzuBJmcminocNzROhKxOBNzx1AOnPC27fAJoV69fcsrD+7UVKp9j8D
-	 v4qyFV5yRaGZ3XyCdRYWrrlIcV2FxpfVxZ7RUYWsQNFUCm876tq5zJ9mfdAJhCJc/W4/J9DpC7zd
-	 KW8atni+Zrusy19Blq5QNbEn0xvSPcpJoxq6YSkMpMcBoHCWhMUYEIJ97AJe6afy+OtQbaPbqVVu
-	 XPplw85WGw8kHnukoSSdpQ3JGIkoukhe94my9wXZMcekmb+nD2gjBZZ9NeNC8jl76fprR7S5wJy+
-	 5wnVOXmLm9yvn6RPA3PWJA/3t2xA31ZpCQjoXWWSfL5hpNvPEhat82awO+bixvQq6H5H0ikyOK05
-	 kcBIgo/igBSu4aR6Wniewd8u+OxGaWZgM60OJY9vU9IWLLuc5i4VFQcWZEmm8xeMC3myYi0kP9KL
-	 IjyqJW9ay3yWZGtlkuSPPCvqHEoyY9PBQ7O6E+S9SeN+S8P3eV8+/w6C3+1wZb5rZFXFZHXm53an
-	 3PLwNA8oac2yQDOdk4xytsvaAfXw==
-X-QQ-XMRINFO: NI4Ajvh11aEjEMj13RCX7UuhPEoou2bs1g==
-From: Leo Jiang <leo.jiang1224@foxmail.com>
-To: Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Pranjal Shrivastava <praan@google.com>,
-	Joerg Roedel <joro@8bytes.org>,
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="UDVBYgGh"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1778311546; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=Zz9dljwMnRAVIrIM8dQvn0hpqZlwAvACimR9yDAo7Rs=;
+	b=UDVBYgGhK0fnsD4MS1xNbZCqISKs7qYxUpLcM0I6pQ2yHKY5R1VO3+SClrFhwisFzefn6xQuMDPFirOVFRsYGb1cfrzK8JpTosEza/ylkBjkOrdbycNtYlr3vOK1BtUkk4IVk5HZfaXIJxmN8C5fXrCLdfaGT8bvTQ5B432L4OA=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam011083073210;MF=feng.tang@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0X2ZrJg._1778311544;
+Received: from localhost(mailfrom:feng.tang@linux.alibaba.com fp:SMTPD_---0X2ZrJg._1778311544 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Sat, 09 May 2026 15:25:45 +0800
+From: Feng Tang <feng.tang@linux.alibaba.com>
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Ying Huang <ying.huang@linux.alibaba.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	David Hildenbrand <david@kernel.org>
+Cc: Lorenzo Stoakes <ljs@kernel.org>,
+	Liam.Howlett@oracle.com,
+	Vlastimil Babka <vbabka@kernel.org>,
+	Mike Rapoport <rppt@kernel.org>,
+	Suren Baghdasaryan <surenb@google.com>,
+	Michal Hocko <mhocko@suse.com>,
+	linux-mm@kvack.org,
+	Christoph Hellwig <hch@lst.de>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>,
 	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	Leo Jiang <leo.jiang1224@foxmail.com>
-Subject: [PATCH v2] iommu/arm-smmu-v3: Limit queue allocation retry boundary to PAGE_SIZE
-Date: Sat,  9 May 2026 15:07:33 +0800
-X-OQ-MSGID: <20260509070733.950260-1-leo.jiang1224@foxmail.com>
-X-Mailer: git-send-email 2.34.1
+	linux-kernel@vger.kernel.org,
+	Feng Tang <feng.tang@linux.alibaba.com>,
+	Changrong Chen <chenchangrong.ccr@alibaba-inc.com>
+Subject: [PATCH] dma-contiguous: add kconfig option to setup numa cma area if not configured explicitly
+Date: Sat,  9 May 2026 15:25:43 +0800
+Message-Id: <20260509072543.69650-1-feng.tang@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.5 (Apple Git-154)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,32 +56,204 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Stop retrying queue allocation when qsz reaches PAGE_SIZE.
+There was a report on a multi-numa-nodes arm64 server that when IOMMU
+is disabled, the dma_alloc_coherent() function always returns memory
+from node 0 even for devices attaching to other nodes, while they can
+get local dma memory when IOMMU is on with the same API.
 
-Signed-off-by: Leo Jiang <leo.jiang1224@foxmail.com>
----
-Changes in v2:
-- Use real name "Leo Jiang".
-- Remove code comments as suggested by Will.
-- Limit the queue allocation retry boundary to PAGE_SIZE, per the feedback from the maintainer.
-- Link to v1: https://lore.kernel.org/linux-iommu/tencent_F6E384A40D990A279B460A0CDE1927FDF509@qq.com
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The reason is, when IOMMU is disabled, the dma_alloc_coherent() will
+go the direct way and call dma_alloc_contiguous(). The system doesn't
+have any explicit cma setting (like per-numa cma), and only has a
+default 64MB cma reserved area (on node 0), where kernel will try
+first to allocate memory from.
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index e8d7dbe495f0..4a0b15b1d4d2 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -4418,7 +4418,7 @@ int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
- 		qsz = ((1 << q->llq.max_n_shift) * dwords) << 3;
- 		q->base = dmam_alloc_coherent(smmu->dev, qsz, &q->base_dma,
- 					      GFP_KERNEL);
--		if (q->base || qsz < PAGE_SIZE)
-+		if (q->base || qsz <= PAGE_SIZE)
- 			break;
+Robin Murphy suggested to setup pernuma cma or disable cma, which did
+solve the issue. While there is still concern that for customers
+which don't have much kernel knowledge, they could still suffer from
+this silently as some architectures enable cma area by default (not
+an issue for X86 though, which set CONFIG_CMA_SIZE_MBYTES to 0 by
+default) for most Linux distributions.
+
+One thought is to follow the current cma reserving policy for platform
+with 'CONFIG_DMA_NUMA_CMA=y', that if the numa cma (either the 'numa cma'
+or 'cma pernuma' method) is not explicitly configured, set it up
+according to size of default 'dma_contiguous_default_area', while
+skipping the numa node where the 'dma_contiguous_default_area' lies
+in, this way the default behavior of platform with one NUMA node is
+kept unchanged (say embedded/small devices don't need to allocate
+extra memory).
+
+Add a new bool kernel config CONFIG_CMA_SIZE_PERNUMA to control whether
+to enable it. Even when the config is enabled, user can still disable
+it by kernel-cmdline setting like "numa_cma=0:0" or "cma_pernuma=0".
+
+To get the node info of cma area, add some helper function and setup
+in cma code.
+
+Reported-by: Changrong Chen <chenchangrong.ccr@alibaba-inc.com>
+Suggested-by: Ying Huang <ying.huang@linux.alibaba.com>
+Suggested-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Feng Tang <feng.tang@linux.alibaba.com>
+---
+
+In v4, the cma_get_nid() code is still kept, and if people really
+think it's not necessary, we can use the "nr_online_nodes() > 1" 
+instead as mentioned by Robin.
+
+Changelog:
+
+  since v3:
+	* Add kernel config to control this pernuma cma setup (David, Robin)
+	* Fix a compile waring (LKP 0day robot)
+
+  since v2:
+	* setup the numa cma are following default cma, while
+	  skipping the node holds the default cma (Robin Murphy)
+	* add cma_get_node() help and related code
+	* add reporter info 
+
+  since v1:
+	* don't use the original way of adding alloc_pages_node()
+	  before trying default cma node (Robin Murphy)
+	* setup default numa cma area if not configured (Ying Huang)
+
+   v3: https://lore.kernel.org/lkml/20260428060550.7167-1-feng.tang@linux.alibaba.com/ 
+   v2: https://lore.kernel.org/lkml/20260423095243.14239-1-feng.tang@linux.alibaba.com/
+   v1: https://lore.kernel.org/lkml/20260414090310.92055-1-feng.tang@linux.alibaba.com/
+
+
+ include/linux/cma.h     |  1 +
+ kernel/dma/Kconfig      | 10 ++++++++++
+ kernel/dma/contiguous.c | 16 ++++++++++++++--
+ mm/cma.c                | 11 ++++++++++-
+ 4 files changed, 35 insertions(+), 3 deletions(-)
+
+diff --git a/include/linux/cma.h b/include/linux/cma.h
+index 8555d38a97b1..acc9ecdf28e1 100644
+--- a/include/linux/cma.h
++++ b/include/linux/cma.h
+@@ -26,6 +26,7 @@ extern unsigned long totalcma_pages;
+ extern phys_addr_t cma_get_base(const struct cma *cma);
+ extern unsigned long cma_get_size(const struct cma *cma);
+ extern const char *cma_get_name(const struct cma *cma);
++extern int cma_get_nid(const struct cma *cma);
  
- 		q->llq.max_n_shift--;
+ extern int __init cma_declare_contiguous_nid(phys_addr_t base,
+ 			phys_addr_t size, phys_addr_t limit,
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index bfef21b4a9ae..c9fa0a922cba 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -181,6 +181,16 @@ config DMA_NUMA_CMA
+ 	  or set the node id and its size of CMA by specifying "numa_cma=
+ 	  <node>:size[,<node>:size]" on the kernel's command line.
+ 
++config CMA_SIZE_PERNUMA
++	bool "Default CMA area per NUMA node"
++	depends on DMA_NUMA_CMA
++	default y
++	help
++	  On systems with more than one NUMA node, the selected CMA
++	  area size will be also allocated on each additional node,
++	  so that most devices may have benefit from better DMA
++	  locality without an explicit command-line opt-in.
++
+ comment "Default contiguous memory area size:"
+ 
+ config CMA_SIZE_MBYTES
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index 03f52bd17120..6388ebbbfebd 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -136,6 +136,7 @@ static struct cma *dma_contiguous_numa_area[MAX_NUMNODES];
+ static phys_addr_t numa_cma_size[MAX_NUMNODES] __initdata;
+ static struct cma *dma_contiguous_pernuma_area[MAX_NUMNODES];
+ static phys_addr_t pernuma_size_bytes __initdata;
++static bool numa_cma_configured;
+ 
+ static int __init early_numa_cma(char *p)
+ {
+@@ -164,6 +165,7 @@ static int __init early_numa_cma(char *p)
+ 			break;
+ 	}
+ 
++	numa_cma_configured = true;
+ 	return 0;
+ }
+ early_param("numa_cma", early_numa_cma);
+@@ -171,6 +173,7 @@ early_param("numa_cma", early_numa_cma);
+ static int __init early_cma_pernuma(char *p)
+ {
+ 	pernuma_size_bytes = memparse(p, &p);
++	numa_cma_configured = true;
+ 	return 0;
+ }
+ early_param("cma_pernuma", early_cma_pernuma);
+@@ -221,6 +224,15 @@ static void __init dma_numa_cma_reserve(void)
+ 					ret, nid);
+ 		}
+ 
++#ifdef CONFIG_CMA_SIZE_PERNUMA
++		if (!numa_cma_configured && dma_contiguous_default_area) {
++			if (nid != cma_get_nid(dma_contiguous_default_area))
++				numa_cma_size[nid] = cma_get_size(dma_contiguous_default_area);
++			else
++				dma_contiguous_numa_area[nid] = dma_contiguous_default_area;
++		}
++#endif
++
+ 		if (numa_cma_size[nid]) {
+ 
+ 			cma = &dma_contiguous_numa_area[nid];
+@@ -255,8 +267,6 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
+ 	phys_addr_t selected_limit = limit;
+ 	bool fixed = false;
+ 
+-	dma_numa_cma_reserve();
+-
+ 	pr_debug("%s(limit %08lx)\n", __func__, (unsigned long)limit);
+ 
+ 	if (size_cmdline != -1) {
+@@ -312,6 +322,8 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
+ 		if (ret)
+ 			pr_warn("Couldn't queue default CMA region for heap creation.");
+ 	}
++
++	dma_numa_cma_reserve();
+ }
+ 
+ void __weak
+diff --git a/mm/cma.c b/mm/cma.c
+index c7ca567f4c5c..fba5fc9c004f 100644
+--- a/mm/cma.c
++++ b/mm/cma.c
+@@ -54,6 +54,11 @@ const char *cma_get_name(const struct cma *cma)
+ }
+ EXPORT_SYMBOL_GPL(cma_get_name);
+ 
++int cma_get_nid(const struct cma *cma)
++{
++	return cma->nid;
++}
++
+ static unsigned long cma_bitmap_aligned_mask(const struct cma *cma,
+ 					     unsigned int align_order)
+ {
+@@ -511,7 +516,11 @@ static int __init __cma_declare_contiguous_nid(phys_addr_t *basep,
+ 		return ret;
+ 	}
+ 
+-	(*res_cma)->nid = nid;
++	if (IS_ENABLED(CONFIG_NUMA) && nid == NUMA_NO_NODE)
++		(*res_cma)->nid = early_pfn_to_nid((*res_cma)->ranges[0].base_pfn);
++	else
++		(*res_cma)->nid = nid;
++
+ 	*basep = base;
+ 
+ 	return 0;
+
+base-commit: 70390501d1944d4e5b8f7352be180fceb3a44132
 -- 
-2.34.1
+2.39.5 (Apple Git-154)
 
