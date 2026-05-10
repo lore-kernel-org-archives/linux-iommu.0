@@ -1,123 +1,82 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8C5B325495
-	for <iommu@lists.linux.dev>; Sun, 10 May 2026 19:00:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B03C1DE2AD;
+	Sun, 10 May 2026 19:32:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778439607; cv=none; b=kwN4KATG16en+ZqYWaOBNHLibfUnFezsvN6r16tfhvJ2nZP6dvHxiDxrWzpHZ5nRB/X0unXkmt9A6E6P8BqyRnnDP/0vVcivlC8GHL02Zcii9EaVq5iEdZaxkFxLMRkwHUyUbA9SXw1Z9fNuMyyIDSxuEMwViYlmEryMNUuRO+8=
+	t=1778441524; cv=none; b=DQi6aCjXp45KI8nRl/HLYn+K4u3XUmTNmeGBXEaFmCFKLIRKwsCmSJyDGy62u8e5jOSr2il/nH8DF6EEB3XrmHipwyd4ud8r+jTIP2+iKt5gwJM7PgmQqxdJa2OGfgqFlJGRw5Ku5ynw/klbdV9Pm6K+4KcINcBaw8yghV847pM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778439607; c=relaxed/simple;
-	bh=Bvc212FwGt0vxmNS1oiSrfkzUZX2D+Zt999xDLx+UQQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Li+4p7NrAtC2dhZG49mGgFGYbkyFuPG7noxkuFbNBUiIstUHjbUTmyF/+QRDvENd6oksvOqZHNTx06lBDejR0SkImqmClMSfklymyu4NpYYSsX29Dl4sk79BRjno5PdNXKArndH8a9Ip0Odx+EjcMkiJWtqnwJQDfmN9aATAaNE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=N6MDlr4j; arc=none smtp.client-ip=209.85.214.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1778441524; c=relaxed/simple;
+	bh=oosQGewjKOseq/Zf5kpRlYqAjqUau3hSHYi43sFgkAA=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=FDKYXoDpyJtGd+h0/qdK/d1SXvy1NTIf+QdvpSIrFN+2KdpcAgG5szBN0+PMOr/ibwooJt8DYEy/dLCTjq0gCGNsGiGY414spw0TRTil9R2gwaW7njZk/caLRKZzCU5dHFxXBNWaXDo2ZaCpBtNJuHIZ46gbE0aM+gr+hZ5VFLg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JyADTMis; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="N6MDlr4j"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2ba3b9bcf69so145ad.0
-        for <iommu@lists.linux.dev>; Sun, 10 May 2026 12:00:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778439605; x=1779044405; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=bMsfc8Zbf8JIkTQeMv/NJIxXAe3vZVoXdywLBqyZ2Qs=;
-        b=N6MDlr4jkGBKZUFnFNMZoWq85jJbqoiUuaLXYkyg433Riuf77QzCI0cL0KdwzTVrHp
-         4+GpIjeyqvQ+83xml//9iL157IO+Hv+30S+p//ioiRQw2RZMC+0KAEre3G6N85EsR3Id
-         FMY6XfpOAeYHEvscpt9MrYBAwa/1EJp5b4pL7Xk5ho1aCHJtU50pjnFt44AhSeF9I0Ki
-         iKK1Sfqp3+Y+9/GLd8+0PEyNVsmHh7AF6OVgmQHlMvc2ZvpJTfiNE5vT3yXSCPHumMwO
-         sud5ZazCsOEJVtEDDKCEUT8xecEdlZQkjmvQx8od9K5wgwF3ZXeDH/3r3S68pTiDRMmy
-         +q9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778439605; x=1779044405;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=bMsfc8Zbf8JIkTQeMv/NJIxXAe3vZVoXdywLBqyZ2Qs=;
-        b=g8f/HZQd3F8JcRvVKw/ER/X2oirP/5xZjXFA5eVp6w77M3/CWGM/LELKzSsR3QWxgp
-         E/6/QAvmkL4sE5DWQL7iW7tQUH346KSVZqJd83YI4r7f0JPC0CuI2aFeO4M2MtbCPWrO
-         GSB32XDRvDoeifzlc0ePtEgVPBrZDdGGygr8RB1e6SqgCAFh2lf3hUJ9X6J1z3SIP193
-         DvWclVKkZFtV8nF2XKaV8W3JG3gjNkQW2+iurLV3BN5iXR1AVZIaVvsOJprXewwivhSx
-         7Iqs5sU7dnZaQfhv+X8PSCvqtqaiUKIomA91Er0ncH8959kE8BwSGh4Fn21uiF+SOnmw
-         JEJQ==
-X-Gm-Message-State: AOJu0Yxt2NXknuzcCDb6CPZns7UnypEBKBDQ/EQusBdKfk5X4ieloKhc
-	qBZxjC3Ls7cmi45mOHHIBYJVzVRO5xra4w8a/k6EB3wlqRxb8iG7HArct9Wa/zOevg==
-X-Gm-Gg: Acq92OGoZPoEb3lSJ3oTkHu/oMcI64WiEL2Xpse6fa6qOEm8RCJyBL2R0EzgaAF1NS6
-	IiGbGPefKcKoOVPGal3HGELYSkvsRwkTPOsiBxN3BY19u2XZMWdhgSvNtr+Ae8VZSCrQFlc6ikt
-	AdgQZyX4cNKLmXKM5EzW/Tz5VIiokXm/JgrX+Eiy1xRLXGyGKbcF/wrgEk8NeOqlp0BolU87feU
-	We7Ie7ovfiQnWrd2PnZ7QRVsy+l+B1mSepvFScNy1YjUVKNlQ/KxLJD8qUe4kEo60ejnv5TW2ld
-	fMjJU2MbUFotQvVMOQZTEgtCyIRIPlDuyBbmeR01ceSg0qLIj+1eVOElPbdRoDUMWMK57NsMZ7W
-	cTLTDjcDDOgwt7JATAsMqmjLxPtT2L9qwxuZMuttYScqvkww6AX86A9gK+HaJ/SKVtYO9xl5/ly
-	rxyc8uu7yPS0n8Y8GA6Sfnp5ZCiqKWgFnta2O7Z6lgP5BXWXVPGwxT99svhs/ISm3VASe/
-X-Received: by 2002:a17:903:8ce:b0:2b4:641a:6b7c with SMTP id d9443c01a7336-2bc7868490cmr2499495ad.13.1778439604484;
-        Sun, 10 May 2026 12:00:04 -0700 (PDT)
-Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-839685a8125sm18060689b3a.61.2026.05.10.12.00.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 May 2026 12:00:03 -0700 (PDT)
-Date: Sun, 10 May 2026 18:59:57 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Jonathan Hunter <jonathanh@nvidia.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Krishna Reddy <vdumpa@nvidia.com>, Will Deacon <will@kernel.org>,
-	David Matlack <dmatlack@google.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Mostafa Saleh <smostafa@google.com>
-Subject: Re: [PATCH 6/9] iommu/arm-smmu-v3: Directly encode simple commands
-Message-ID: <agDVrTUTAIt1DpZ6@google.com>
-References: <0-v1-b7dc0a0d4aa0+3723d-smmu_no_cmdq_ent_jgg@nvidia.com>
- <6-v1-b7dc0a0d4aa0+3723d-smmu_no_cmdq_ent_jgg@nvidia.com>
- <af3KDBt8vhClSKEF@google.com>
- <20260508173736.GH9254@nvidia.com>
- <af5C_ax1a3LbtL1Q@google.com>
- <20260508233629.GI9254@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JyADTMis"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E672C2BCB8;
+	Sun, 10 May 2026 19:32:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778441524;
+	bh=oosQGewjKOseq/Zf5kpRlYqAjqUau3hSHYi43sFgkAA=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=JyADTMisvVNX5qwlsV0UQO/IiW9peVSs44lX9szf4Nkxsa6mNgJqBu2InpqVUUWhu
+	 nqJYbyzOlwlSYlqs6SmxsJdsNVaO9vZpzb44YMH5RV8UXIB0cCpd1EeMsvue1KLoIV
+	 b7O2/4EQSSJCvAHEX3k6kj+tUXoTMsCpB94Mko8Gs6E1+xC9rsbiJWewU6zAqpywFy
+	 gJ7zuRiwaLPPe+iCtoE8UJsllLPSrpXvMLOqJi+XDO1fJySNyjdbCNW8S1+O6WPcxL
+	 6IpObWWpKyHqZ399vvy+59K3d/NxrxQia8vhz/3TUbCD5To2e+T5ixm7gE1tjl8Buo
+	 HIfAELBrUFThQ==
+From: Thomas Gleixner <tglx@kernel.org>
+To: Arnd Bergmann <arnd@kernel.org>, Will Deacon <will@kernel.org>, Robin
+ Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Andrew
+ Morton <akpm@linux-foundation.org>
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Sebastian
+ Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH 1/2] [RFC] debugobjects: avoid gcc-16.0.1 section mismatch
+In-Reply-To: <20260203162406.2215716-1-arnd@kernel.org>
+References: <20260203162406.2215716-1-arnd@kernel.org>
+Date: Sun, 10 May 2026 21:31:59 +0200
+Message-ID: <874ikf9i34.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260508233629.GI9254@nvidia.com>
+Content-Type: text/plain
 
-On Fri, May 08, 2026 at 08:36:29PM -0300, Jason Gunthorpe wrote:
-> On Fri, May 08, 2026 at 08:09:33PM +0000, Pranjal Shrivastava wrote:
-> > > > > +static void arm_smmu_cmdq_batch_add_cmd_p(struct arm_smmu_device *smmu,
-> > > > > +					  struct arm_smmu_cmdq_batch *cmds,
-> > > > > +					  struct arm_smmu_cmd *cmd)
-> > > > 
-> > > > Nit: Same here, why not  __arm_smmu_cmdq_batch_add_cmd? I understand
-> > > > that _p just means we'll aceept ptr.. but the name's kinda wonky.
-> > > 
-> > > Which becomes a fairly widly used public entry point, so I didn't want
-> > > to have the __
-> > > 
-> > > Though there is no external user of arm_smmu_cmdq_issue_cmd_p()
-> > > 
-> > 
-> > It's just that we're calling "arm_smmu_cmdq_batch_add_cmd_p" at one
-> > place and using `arm_smmu_make_cmd_<cmd_name>` at the other. It makes
-> > one think what's "_p" in issue_cmd, only to realize "_p: pointer variant
-> > 
-> > I guess I didn't like the new _p ones but I guess it's fine. Happy to
-> > leave it at your discretion.
-> 
-> I don't much care for the _p (and yes it means pointer variation) but
-> do like it better than __ and failed to come up with another idea :)
-> 
+On Tue, Feb 03 2026 at 17:23, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+>
+> gcc-16 has gained some more advanced inlining techniques that enable
+> it to inline the is_static_object() function pointer into a specialized
+> version of lookup_object_or_alloc:
+>
+> WARNING: modpost: vmlinux: section mismatch in reference: lookup_object_or_alloc.part.0+0x1ac (section: .text) -> is_static_object (section: .init.text)
+>
+> From what I can tell, the transformation is correct, as this
+> is only called when lookup_object_or_alloc() is called from
+> debug_objects_selftest(), which is also __init.
 
-Yea, I can't come up with much either (without __ or _p), maybe we could
-leave this as is..
+So clearly the compiler is buggy. It creates an __init specific copy of
+lookup_object_or_alloc() and then fails to attribute it correctly.
 
-The only alternatives in my mind are arm_smmu_cmdq_issue_cmd_ptr() which
-is similar.
+> I have not come up with a good workaround, so this simply marks
+> is_static_object() as not __init. Since there are currently only two
+> files where this happens, that may be an easy way out.
+
+That's a horrible hack and while it's only two files today, this sounds
+like the start of a whack a mole game.
+
+Aside of that five weeks down the road some clever AI bot creates a
+patch which marks the function __init again (rightfully so).
+
+> If anyone has a better idea for how to deal with that, let me know!
+
+Mark the compiler broken and wait until GCC people get their act
+together.
 
 Thanks,
-Praan
+
+        tglx
