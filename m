@@ -1,166 +1,123 @@
-Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D02BC39C645
-	for <iommu@lists.linux.dev>; Sun, 10 May 2026 14:40:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.110
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8C5B325495
+	for <iommu@lists.linux.dev>; Sun, 10 May 2026 19:00:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778424060; cv=none; b=rJ9g4lPp3DqpfhkY1dyzCAX89dBtaqjUo4er7JvMpKsra8zQLbKk1aDXNq+ua/hmqYxehAPg5EVwYCOWGuGZBkwvhtC227eU3W1pouwtUsHwwk6akyEw2y3ildSRiyA9NORx+gM3LtE2TgZEhzHqBNFUDXEEV9t8kqnZmjGsU40=
+	t=1778439607; cv=none; b=kwN4KATG16en+ZqYWaOBNHLibfUnFezsvN6r16tfhvJ2nZP6dvHxiDxrWzpHZ5nRB/X0unXkmt9A6E6P8BqyRnnDP/0vVcivlC8GHL02Zcii9EaVq5iEdZaxkFxLMRkwHUyUbA9SXw1Z9fNuMyyIDSxuEMwViYlmEryMNUuRO+8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778424060; c=relaxed/simple;
-	bh=DJvPcNnxSjxkGj7lDXtDd+kqdKUOvgDmtsXYiFAuCBE=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=rGIsivufLznuocNmE56AREjl/ztWrWpu33YZadVQKkhxWDZF1iy/d/hOhUOYsVJ75iEt0IMkuMU9Lj0uFjnG8muSqBsrMBbf7K3uiIlB0o17qLLtKNtlpEoxhEB4ZyZjYTCVb/1+QBGk0iKeCTftjO8KjTG88FHn3VkjT1G84Y0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=Cb2rFDwR; arc=none smtp.client-ip=115.124.30.110
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	s=arc-20240116; t=1778439607; c=relaxed/simple;
+	bh=Bvc212FwGt0vxmNS1oiSrfkzUZX2D+Zt999xDLx+UQQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Li+4p7NrAtC2dhZG49mGgFGYbkyFuPG7noxkuFbNBUiIstUHjbUTmyF/+QRDvENd6oksvOqZHNTx06lBDejR0SkImqmClMSfklymyu4NpYYSsX29Dl4sk79BRjno5PdNXKArndH8a9Ip0Odx+EjcMkiJWtqnwJQDfmN9aATAaNE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=N6MDlr4j; arc=none smtp.client-ip=209.85.214.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="Cb2rFDwR"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1778424048; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=R6vTP+75SxlXoCmcc8VJ7xs6oTFPgGOP+Sy2kcFXi10=;
-	b=Cb2rFDwRgbo9ExQnFWG/V/wmivICAKGjC3iAH7GLL6cJj/BgWdjCflJJtAPyMrdxRLa17Q8xA6NNHFSYckbGwhO4jUJZD8Ijqwyrr/LfmLkaVjOTg9srLXjYR4HJBtQxMMf2Bd7VJqPwPeq72Q8RcPC6eFFH7oru5fMSXDOK53k=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037009110;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0X2cswKI_1778424045;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X2cswKI_1778424045 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Sun, 10 May 2026 22:40:47 +0800
-From: fangyu.yu@linux.alibaba.com
-To: andrew.jones@oss.qualcomm.com
-Cc: anup@brainfault.org,
-	fangyu.yu@linux.alibaba.com,
-	iommu@lists.linux.dev,
-	joro@8bytes.org,
-	linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	palmer@dabbelt.com,
-	pjw@kernel.org,
-	tjeznach@rivosinc.com,
-	will@kernel.org
-Subject: Re: Re: [PATCH 1/2] iommu/riscv: Map IMSIC addresses for paging domains 
-Date: Sun, 10 May 2026 22:40:38 +0800
-Message-Id: <20260510144038.54523-1-fangyu.yu@linux.alibaba.com>
-X-Mailer: git-send-email 2.39.3 (Apple Git-146)
-In-Reply-To: <fhv3w4kmxd5kw26kdlj4uj7cgr5mhov7rytph6dedokdpe36d4@svjdhnilgnwe>
-References: <fhv3w4kmxd5kw26kdlj4uj7cgr5mhov7rytph6dedokdpe36d4@svjdhnilgnwe>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="N6MDlr4j"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2ba3b9bcf69so145ad.0
+        for <iommu@lists.linux.dev>; Sun, 10 May 2026 12:00:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1778439605; x=1779044405; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=bMsfc8Zbf8JIkTQeMv/NJIxXAe3vZVoXdywLBqyZ2Qs=;
+        b=N6MDlr4jkGBKZUFnFNMZoWq85jJbqoiUuaLXYkyg433Riuf77QzCI0cL0KdwzTVrHp
+         4+GpIjeyqvQ+83xml//9iL157IO+Hv+30S+p//ioiRQw2RZMC+0KAEre3G6N85EsR3Id
+         FMY6XfpOAeYHEvscpt9MrYBAwa/1EJp5b4pL7Xk5ho1aCHJtU50pjnFt44AhSeF9I0Ki
+         iKK1Sfqp3+Y+9/GLd8+0PEyNVsmHh7AF6OVgmQHlMvc2ZvpJTfiNE5vT3yXSCPHumMwO
+         sud5ZazCsOEJVtEDDKCEUT8xecEdlZQkjmvQx8od9K5wgwF3ZXeDH/3r3S68pTiDRMmy
+         +q9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778439605; x=1779044405;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=bMsfc8Zbf8JIkTQeMv/NJIxXAe3vZVoXdywLBqyZ2Qs=;
+        b=g8f/HZQd3F8JcRvVKw/ER/X2oirP/5xZjXFA5eVp6w77M3/CWGM/LELKzSsR3QWxgp
+         E/6/QAvmkL4sE5DWQL7iW7tQUH346KSVZqJd83YI4r7f0JPC0CuI2aFeO4M2MtbCPWrO
+         GSB32XDRvDoeifzlc0ePtEgVPBrZDdGGygr8RB1e6SqgCAFh2lf3hUJ9X6J1z3SIP193
+         DvWclVKkZFtV8nF2XKaV8W3JG3gjNkQW2+iurLV3BN5iXR1AVZIaVvsOJprXewwivhSx
+         7Iqs5sU7dnZaQfhv+X8PSCvqtqaiUKIomA91Er0ncH8959kE8BwSGh4Fn21uiF+SOnmw
+         JEJQ==
+X-Gm-Message-State: AOJu0Yxt2NXknuzcCDb6CPZns7UnypEBKBDQ/EQusBdKfk5X4ieloKhc
+	qBZxjC3Ls7cmi45mOHHIBYJVzVRO5xra4w8a/k6EB3wlqRxb8iG7HArct9Wa/zOevg==
+X-Gm-Gg: Acq92OGoZPoEb3lSJ3oTkHu/oMcI64WiEL2Xpse6fa6qOEm8RCJyBL2R0EzgaAF1NS6
+	IiGbGPefKcKoOVPGal3HGELYSkvsRwkTPOsiBxN3BY19u2XZMWdhgSvNtr+Ae8VZSCrQFlc6ikt
+	AdgQZyX4cNKLmXKM5EzW/Tz5VIiokXm/JgrX+Eiy1xRLXGyGKbcF/wrgEk8NeOqlp0BolU87feU
+	We7Ie7ovfiQnWrd2PnZ7QRVsy+l+B1mSepvFScNy1YjUVKNlQ/KxLJD8qUe4kEo60ejnv5TW2ld
+	fMjJU2MbUFotQvVMOQZTEgtCyIRIPlDuyBbmeR01ceSg0qLIj+1eVOElPbdRoDUMWMK57NsMZ7W
+	cTLTDjcDDOgwt7JATAsMqmjLxPtT2L9qwxuZMuttYScqvkww6AX86A9gK+HaJ/SKVtYO9xl5/ly
+	rxyc8uu7yPS0n8Y8GA6Sfnp5ZCiqKWgFnta2O7Z6lgP5BXWXVPGwxT99svhs/ISm3VASe/
+X-Received: by 2002:a17:903:8ce:b0:2b4:641a:6b7c with SMTP id d9443c01a7336-2bc7868490cmr2499495ad.13.1778439604484;
+        Sun, 10 May 2026 12:00:04 -0700 (PDT)
+Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-839685a8125sm18060689b3a.61.2026.05.10.12.00.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 10 May 2026 12:00:03 -0700 (PDT)
+Date: Sun, 10 May 2026 18:59:57 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Jonathan Hunter <jonathanh@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Krishna Reddy <vdumpa@nvidia.com>, Will Deacon <will@kernel.org>,
+	David Matlack <dmatlack@google.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	Samiullah Khawaja <skhawaja@google.com>,
+	Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH 6/9] iommu/arm-smmu-v3: Directly encode simple commands
+Message-ID: <agDVrTUTAIt1DpZ6@google.com>
+References: <0-v1-b7dc0a0d4aa0+3723d-smmu_no_cmdq_ent_jgg@nvidia.com>
+ <6-v1-b7dc0a0d4aa0+3723d-smmu_no_cmdq_ent_jgg@nvidia.com>
+ <af3KDBt8vhClSKEF@google.com>
+ <20260508173736.GH9254@nvidia.com>
+ <af5C_ax1a3LbtL1Q@google.com>
+ <20260508233629.GI9254@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260508233629.GI9254@nvidia.com>
 
->> >When IOMMU_DMA is enabled, devices get paging domains and MSI writes
->> >to IMSIC interrupt files must be handled correctly in the s-stage.
->> >As the device always writes to the host physical IMSIC addresses,
->> >which the IMSIC irqchip programs directly, install s-stage identity
->> >mappings for the host IMSICs. But, use IOMMU_RESV_DIRECT_RELAXABLE
->> >since the 1:1 mappings aren't required for device assignment.
->> >
->> >Loop over the cpus rather than imsic groups to handle asymmetric
->> >configurations.
->> >
->> >Signed-off-by: Andrew Jones <andrew.jones@oss.qualcomm.com>
->> >---
->> > drivers/iommu/riscv/iommu.c         | 34 +++++++++++++++++++++++++++++
->> > include/linux/irqchip/riscv-imsic.h |  7 ++++++
->> > 2 files changed, 41 insertions(+)
->> >
->> >diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
->> >index a31f50bbad35..3c6aa9d69f95 100644
->> >--- a/drivers/iommu/riscv/iommu.c
->> >+++ b/drivers/iommu/riscv/iommu.c
->> >@@ -19,6 +19,7 @@
->> > #include <linux/init.h>
->> > #include <linux/iommu.h>
->> > #include <linux/iopoll.h>
->> >+#include <linux/irqchip/riscv-imsic.h>
->> > #include <linux/kernel.h>
->> > #include <linux/pci.h>
->> > #include <linux/generic_pt/iommu.h>
->> >@@ -1286,6 +1287,38 @@ static struct iommu_domain *riscv_iommu_alloc_paging_domain(struct device *dev)
->> > 	return &domain->domain;
->> > }
->> >
->> >+static void riscv_iommu_get_resv_regions(struct device *dev, struct list_head *head)
->> >+{
->> >+	const struct imsic_global_config *imsic_global;
->> >+	unsigned int cpu;
->> >+
->> >+	if (!imsic_enabled())
->> >+		return;
->> >+
->> >+	imsic_global = imsic_get_global_config();
->> >+
->> >+	for_each_possible_cpu(cpu) {
->> >+		const struct imsic_local_config *local;
->> >+		struct iommu_resv_region *reg;
->> >+
->> >+		local = per_cpu_ptr(imsic_global->local, cpu);
->> >+		if (!local->msi_va)
->> >+			continue;
->> >+
->> >+		/*
->> >+		 * The device always writes to the host physical IMSIC address, so install
->> >+		 * identity mappings directly. Use IOMMU_RESV_DIRECT_RELAXABLE instead of
->> >+		 * IOMMU_RESV_DIRECT since these 1:1 mappings are not required for assigned
->> >+		 * devices.
->> >+		 */
->> >+		reg = iommu_alloc_resv_region(local->msi_pa, IMSIC_MMIO_PAGE_SZ,
->> >+					      IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO,
->> >+					      IOMMU_RESV_DIRECT_RELAXABLE, GFP_KERNEL);
->> >+		if (reg)
->> >+			list_add_tail(&reg->list, head);
->> >+	}
->> >+}
->> >+
->> 
->> Hi Andrew,
->> 
->> Thanks for picking this up -- enabling IOMMU_DMA on RISC-V has been
->> along-standing gap, and handling the IMSIC MSI mapping is the missing
->> piece that finally unblocks it.
->> 
->> One concern is that the current implementation emits one 4 KiB
->> RESV_DIRECT_RELAXABLE region for each possible CPU. On platforms
->> with hundreds of harts, this noticeably increases the cost of both
->> .get_resv_regions() and the iommu_create_device_direct_mappings()
->> walk.
->> 
->> Since interrupt files within one IMSIC group occupy a physically
->> contiguous range, would it make sense to emit one region per IMSIC
->> group covering the full group stride, aligned down/up to 2 MiB so
->> the core can map it as a superpage? This would over-map some padding
->> within the IMSIC PA window, but RESV_DIRECT_RELAXABLE keeps the
->> padding out of assigned-device IOVA space, so it looks harmless.
->> 
->
->Hi Fangyu,
->
->Thanks for pointing out this issue. We'll need to decide how much we
->want to isolate the devices from VMs in order to address it, though,
->because, if we do group mappings, then we'll also be exposing the guest
->interrupt files to the devices.
->
->I'll certainly send a v2 to do larger mappings when s-mode imsics are
->contiguous (nr-guest-files = 0) and then we can consider creating a
->way to opt-in to group mappings even when nr-guest-files != 0. How's
->that sound?
->
+On Fri, May 08, 2026 at 08:36:29PM -0300, Jason Gunthorpe wrote:
+> On Fri, May 08, 2026 at 08:09:33PM +0000, Pranjal Shrivastava wrote:
+> > > > > +static void arm_smmu_cmdq_batch_add_cmd_p(struct arm_smmu_device *smmu,
+> > > > > +					  struct arm_smmu_cmdq_batch *cmds,
+> > > > > +					  struct arm_smmu_cmd *cmd)
+> > > > 
+> > > > Nit: Same here, why not  __arm_smmu_cmdq_batch_add_cmd? I understand
+> > > > that _p just means we'll aceept ptr.. but the name's kinda wonky.
+> > > 
+> > > Which becomes a fairly widly used public entry point, so I didn't want
+> > > to have the __
+> > > 
+> > > Though there is no external user of arm_smmu_cmdq_issue_cmd_p()
+> > > 
+> > 
+> > It's just that we're calling "arm_smmu_cmdq_batch_add_cmd_p" at one
+> > place and using `arm_smmu_make_cmd_<cmd_name>` at the other. It makes
+> > one think what's "_p" in issue_cmd, only to realize "_p: pointer variant
+> > 
+> > I guess I didn't like the new _p ones but I guess it's fine. Happy to
+> > leave it at your discretion.
+> 
+> I don't much care for the _p (and yes it means pointer variation) but
+> do like it better than __ and failed to come up with another idea :)
+> 
 
-Hi Andrew,
+Yea, I can't come up with much either (without __ or _p), maybe we could
+leave this as is..
 
-As you mentioned, my suggestion could also expose the guest interrupt
-files to the device-visible/mappable range, but the current approach
-already appears to provide only limited isolation. So I think this
-change would not materially increase the risk.
-
-In any case, I respect your decision, and we can certainly proceed
-with your current suggestion for now.
+The only alternatives in my mind are arm_smmu_cmdq_issue_cmd_ptr() which
+is similar.
 
 Thanks,
-Fangyu
-
->Thanks,
->drew
+Praan
