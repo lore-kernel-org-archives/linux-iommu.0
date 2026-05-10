@@ -1,82 +1,187 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010000.outbound.protection.outlook.com [40.93.198.0])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B03C1DE2AD;
-	Sun, 10 May 2026 19:32:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778441524; cv=none; b=DQi6aCjXp45KI8nRl/HLYn+K4u3XUmTNmeGBXEaFmCFKLIRKwsCmSJyDGy62u8e5jOSr2il/nH8DF6EEB3XrmHipwyd4ud8r+jTIP2+iKt5gwJM7PgmQqxdJa2OGfgqFlJGRw5Ku5ynw/klbdV9Pm6K+4KcINcBaw8yghV847pM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778441524; c=relaxed/simple;
-	bh=oosQGewjKOseq/Zf5kpRlYqAjqUau3hSHYi43sFgkAA=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=FDKYXoDpyJtGd+h0/qdK/d1SXvy1NTIf+QdvpSIrFN+2KdpcAgG5szBN0+PMOr/ibwooJt8DYEy/dLCTjq0gCGNsGiGY414spw0TRTil9R2gwaW7njZk/caLRKZzCU5dHFxXBNWaXDo2ZaCpBtNJuHIZ46gbE0aM+gr+hZ5VFLg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JyADTMis; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEB8633260C
+	for <iommu@lists.linux.dev>; Sun, 10 May 2026 21:23:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.0
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778448210; cv=fail; b=nWjvop6Dr3mtl7ArHNr7zT41/WbsqumhJEJ7iTHL6YzxlY3XxpVq2fcPxnV39YSZFgqOBW+DUWWirKbn6inlI3xai5RmBlvPlsHOmVqOkETfqdcSFH7box+IIdq8n6vk3lz1f5HsS7kqqMXAnxpHRRqC90e87OvnE0HXlimFJC4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778448210; c=relaxed/simple;
+	bh=orTsSzy7vw1B+36FELMmIg17PXvR65e1FWmkR4paKlo=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=OxHhbDRzrn2pS+vWGN+nycWr6SCwWI8Y7JpSte2c2LY4HO2BB5vMARaD8X0eJFB0qWodVy0XwfieSUyXMci0J6hRKygl+k7/BHpoDxCxYq7hpMxa5Z3XsKadRKr48zkWx+GYyiRV9oizW34y+J5U6OkFLDbV8gspX5EvGmcQ0cI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=KLjZxg6Q; arc=fail smtp.client-ip=40.93.198.0
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JyADTMis"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E672C2BCB8;
-	Sun, 10 May 2026 19:32:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778441524;
-	bh=oosQGewjKOseq/Zf5kpRlYqAjqUau3hSHYi43sFgkAA=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=JyADTMisvVNX5qwlsV0UQO/IiW9peVSs44lX9szf4Nkxsa6mNgJqBu2InpqVUUWhu
-	 nqJYbyzOlwlSYlqs6SmxsJdsNVaO9vZpzb44YMH5RV8UXIB0cCpd1EeMsvue1KLoIV
-	 b7O2/4EQSSJCvAHEX3k6kj+tUXoTMsCpB94Mko8Gs6E1+xC9rsbiJWewU6zAqpywFy
-	 gJ7zuRiwaLPPe+iCtoE8UJsllLPSrpXvMLOqJi+XDO1fJySNyjdbCNW8S1+O6WPcxL
-	 6IpObWWpKyHqZ399vvy+59K3d/NxrxQia8vhz/3TUbCD5To2e+T5ixm7gE1tjl8Buo
-	 HIfAELBrUFThQ==
-From: Thomas Gleixner <tglx@kernel.org>
-To: Arnd Bergmann <arnd@kernel.org>, Will Deacon <will@kernel.org>, Robin
- Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Andrew
- Morton <akpm@linux-foundation.org>
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Sebastian
- Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH 1/2] [RFC] debugobjects: avoid gcc-16.0.1 section mismatch
-In-Reply-To: <20260203162406.2215716-1-arnd@kernel.org>
-References: <20260203162406.2215716-1-arnd@kernel.org>
-Date: Sun, 10 May 2026 21:31:59 +0200
-Message-ID: <874ikf9i34.ffs@tglx>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="KLjZxg6Q"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ZUPN3tCe7gZCir7K76KqtEUGUyb8qZEURzI9WTe6YAhjFKvW9b12J1uMqNVl1EY5o7DOQRTVX+QDFvXhjmj4jKQ03dLUXhKEjFFMyPM1xcFI4plAvrA1Ey97raQSA62m0lTZi49ewUAAaJkN38dBdJ1XnquCnUTmjzPRVrhYiTEvWuEYDVOchoiQyUan4dOQkhLNO7AWvygxZQXFU0x+8eqzwuiDq1t+wtxuOiX5789HvNmCcnUFruT9b5F6Yi0IM0UAXhiDB9vENxz4w+TtKiqt1tvcPMo/OuXvZfhEkBaGdpyT686WhPqV7zi9sH3vQnih0K8cgVfFfFzg8jO0BA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wXF7/VnoFyjuP/yln8XBDFi+P1RESZRxh0nlAC/WRtM=;
+ b=OeI3DoI2MH/qM9j3UaXC8xNOZ0TqSsz2eogC1O7aieXymMxgjoLEM1vyKtzgQtuPlbOFyHX20tqGg1mSJu27UBvy3MR0I0pWniMBBx1A/FONFGnybY0gAoMcUKV1ueAhGxTvFs+qwrr6n4ERqR4L1fNuDMS7A6MfN3AvpkJjQO5UNULwBaWtQ+e00jcgp9FGlUL9EmpHz/AKcZKCDiso/AdweScRvgVel9WJgGhnJ2A1XfWc3tNw1g7YpFGvhT/0UvPbtSoa9ZrXWH8/SJyRzVoB76XFMJUS568x0axkClDsIzP5hWWRU2Zv3ht5YtV76KiCI7RwuF/lPhQJ14iRYQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wXF7/VnoFyjuP/yln8XBDFi+P1RESZRxh0nlAC/WRtM=;
+ b=KLjZxg6Qtutu6qfmIvJ7Pw40a/5pJjWaNqh3+fhlQ1TAQmVlgg4SXHPR2/7YkIHhx8GynbmRu7RLgjmj5v7331IH+zVmLA3T1be++IuQhOhmLKGc2iAYKd7aC77LT91J+TvX0UMNDnhrex1Z68Pev+JjRnFkM0Irh2cP2wsc0XdLab2e0jHdR/6Ti9hznBl/KF5z13F9uvaPguquaEV937XlQyVJx9c4Xe2CSdFxKxVKoec4KVrF8AfnV8EL/CZBstMRpwFsqJdzPJjX7tGx9DSsxtZnFQWDS9z7jDpV1dz38X25CuEegNJVsYqfvqzHVlfFot4Agzra9gLSAlzBag==
+Received: from BL1PR13CA0186.namprd13.prod.outlook.com (2603:10b6:208:2be::11)
+ by MN0PR12MB5956.namprd12.prod.outlook.com (2603:10b6:208:37f::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9891.22; Sun, 10 May
+ 2026 21:23:23 +0000
+Received: from BL6PEPF0002256E.namprd02.prod.outlook.com
+ (2603:10b6:208:2be:cafe::1c) by BL1PR13CA0186.outlook.office365.com
+ (2603:10b6:208:2be::11) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.25.14 via Frontend Transport; Sun, 10
+ May 2026 21:23:23 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ BL6PEPF0002256E.mail.protection.outlook.com (10.167.249.36) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.25.13 via Frontend Transport; Sun, 10 May 2026 21:23:22 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Sun, 10 May
+ 2026 14:23:14 -0700
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.20; Sun, 10 May 2026 14:23:14 -0700
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.9) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server id 15.2.2562.20 via Frontend
+ Transport; Sun, 10 May 2026 14:23:13 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <will@kernel.org>, <robin.murphy@arm.com>, <jgg@nvidia.com>,
+	<kevin.tian@intel.com>
+CC: <joro@8bytes.org>, <praan@google.com>, <kees@kernel.org>,
+	<baolu.lu@linux.intel.com>, <miko.lenczewski@arm.com>, <smostafa@google.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>, <jamien@nvidia.com>
+Subject: [PATCH v5 3/6] iommu/arm-smmu-v3: Suppress EVTQ/PRIQ events in kdump kernel
+Date: Sun, 10 May 2026 14:23:02 -0700
+Message-ID: <6e5828f3288aed6f9e9f4e0ca54e7fbd9f439274.1778416609.git.nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <cover.1778416609.git.nicolinc@nvidia.com>
+References: <cover.1778416609.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL6PEPF0002256E:EE_|MN0PR12MB5956:EE_
+X-MS-Office365-Filtering-Correlation-Id: ecb94f07-4085-4892-1e46-08deaeda5da5
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|376014|7416014|36860700016|1800799024|56012099003|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	aaV897NE9K4IWIavoxdOA4drbCDAA/XHcl5OfMhjvtxtbEQSNYDw57l80nK8tjPDVHgg0VIlJwJoXYhlwObY37oU0HmjaEpkJ0D/O234b/+YDwIA+G0QZzmiorF/RUINmzetm+9E4mH7q0NHqbOGJTcl39tsWJ6zBNpCardkbrg2xGZ4wJHTHxwm99wcTQuUZf53FVjYL8Rdz7fYWbakCllAE3kAg/WhHiN/tH3BVfg37uPHB4d/2bPbHedc1c4ftaPQB9SFnrm8BTZnn0/pXZU+GRgr8s1vch/aB9UvvUx0qp6kZ+/TDqaczuB+tE9ZzzElCRMJgfdq7TJcGjD+jTxkQg06aj9f+bKkok3I0UMixX0qnOHc4bnRJuXf9ej1oOwnXE7OwqyR0wJd1LMWRyroJAhx4DrzF1nrS3EIgDaog92a72bQdrDGNYJU9xExNwwa06OLmR7xOFwFFt8NddmQoMXbqJUO8OTlt4zaf4NfTV/hIs92pchYsRfE3/N2DaiO6RToeo1qgfvvJ+QeCkIgsqxQJv6k9XK7lYrUnteKYLaDvteK6LKjq/rXMrei546jq1NHR52aYElR5yViuD47PfSCS9utgYVZhpbtotgDzzkj7fRQIAOCMzbAY3Eq8Ru0v59gUHRlR+yjTPautbQenAw86Ao+1mRuqD/cQpIbRzntfs5GJy92STYj1dn+KfIXSYXIh/COX9kqHK5JQT1tBFBca6KqM/dwpiY5U3o=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(376014)(7416014)(36860700016)(1800799024)(56012099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	2G+Wk/IAvbRi6BATfPdAqvIGcLliC4Ha5LFKbNkUrKVXXI8uu/pHARrnGTP7pXbQd2AyowZ/0l4D/HOj9O99EX3NMgUCBABUPuD5uvczG+thiOMPA0BlcDxHDQt0oC+dbmIP5vknk8WNPmK3yCJhBfsjE+SDpzSmW9lwBeWRfr1hQFNQ3GqqyLRA6pvYXuQ6lJWcgQXs0MDEIG7m2zXurhkDqe5QDJm1CSP7kHLbOYrGevi2FVEQHqn/ahJ1G8HG6PB72ergVR+FMi2kbp6ALzihqSNlCeujhXwCI8wWFViaYRNygsdpWMy1KDIdPLDhekWDqiRgP76E0MRbO2wioFBrP7Te4vjUDFcmCFcDKdujVtE28TNKh4RiCiv+1NRmPFgVxO+SZCppNVCnGSvJ9YqwqCH8n+Xaqrat2QXMQMC/xz/csI/X50BX9vOMvJ8C
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2026 21:23:22.8478
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: ecb94f07-4085-4892-1e46-08deaeda5da5
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL6PEPF0002256E.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5956
 
-On Tue, Feb 03 2026 at 17:23, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> gcc-16 has gained some more advanced inlining techniques that enable
-> it to inline the is_static_object() function pointer into a specialized
-> version of lookup_object_or_alloc:
->
-> WARNING: modpost: vmlinux: section mismatch in reference: lookup_object_or_alloc.part.0+0x1ac (section: .text) -> is_static_object (section: .init.text)
->
-> From what I can tell, the transformation is correct, as this
-> is only called when lookup_object_or_alloc() is called from
-> debug_objects_selftest(), which is also __init.
+In kdump cases, the crashed kernel's CDs and page tables can be corrupted,
+which could trigger event spamming. Also, we cannot serve page requests.
 
-So clearly the compiler is buggy. It creates an __init specific copy of
-lookup_object_or_alloc() and then fails to attribute it correctly.
+Skip the IRQ setup for EVTQ/PRIQ in arm_smmu_setup_irqs(), and guard the
+thread functions against being entered via a combined-IRQ delivery while
+the queue is disabled.
 
-> I have not come up with a good workaround, so this simply marks
-> is_static_object() as not __init. Since there are currently only two
-> files where this happens, that may be an easy way out.
+Fixes: b63b3439b856 ("iommu/arm-smmu-v3: Abort all transactions if SMMU is enabled in kdump kernel")
+Cc: stable@vger.kernel.org # v6.12+
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 23 +++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
 
-That's a horrible hack and while it's only two files today, this sounds
-like the start of a whack a mole game.
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 579c8af82d6b6..ebb0826d74541 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2364,6 +2364,14 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
+ 	static DEFINE_RATELIMIT_STATE(rs, DEFAULT_RATELIMIT_INTERVAL,
+ 				      DEFAULT_RATELIMIT_BURST);
+ 
++	/*
++	 * A combined IRQ might call into this function with the queue disabled.
++	 * E.g. kdump, where stale HW PROD vs SW CONS would drive a bogus drain
++	 * and a CONS write to a disabled queue.
++	 */
++	if (!(readl_relaxed(smmu->base + ARM_SMMU_CR0) & CR0_EVTQEN))
++		return IRQ_NONE;
++
+ 	do {
+ 		while (!queue_remove_raw(q, evt)) {
+ 			arm_smmu_decode_event(smmu, evt, &event);
+@@ -2432,6 +2440,14 @@ static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
+ 	struct arm_smmu_ll_queue *llq = &q->llq;
+ 	u64 evt[PRIQ_ENT_DWORDS];
+ 
++	/*
++	 * A combined IRQ might call into this function with the queue disabled.
++	 * E.g. kdump, where stale HW PROD vs SW CONS would drive a bogus drain
++	 * and a CONS write to a disabled queue.
++	 */
++	if (!(readl_relaxed(smmu->base + ARM_SMMU_CR0) & CR0_PRIQEN))
++		return IRQ_NONE;
++
+ 	do {
+ 		while (!queue_remove_raw(q, evt))
+ 			arm_smmu_handle_ppr(smmu, evt);
+@@ -5056,7 +5072,10 @@ static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
+ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+ {
+ 	int ret, irq;
+-	u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
++	u32 irqen_flags = IRQ_CTRL_GERROR_IRQEN;
++
++	if (!is_kdump_kernel())
++		irqen_flags |= IRQ_CTRL_EVTQ_IRQEN;
+ 
+ 	/* Disable IRQs first */
+ 	ret = arm_smmu_write_reg_sync(smmu, 0, ARM_SMMU_IRQ_CTRL,
+@@ -5082,7 +5101,7 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+ 	} else
+ 		arm_smmu_setup_unique_irqs(smmu);
+ 
+-	if (smmu->features & ARM_SMMU_FEAT_PRI)
++	if (!is_kdump_kernel() && (smmu->features & ARM_SMMU_FEAT_PRI))
+ 		irqen_flags |= IRQ_CTRL_PRIQ_IRQEN;
+ 
+ 	/* Enable interrupt generation on the SMMU */
+-- 
+2.43.0
 
-Aside of that five weeks down the road some clever AI bot creates a
-patch which marks the function __init again (rightfully so).
-
-> If anyone has a better idea for how to deal with that, let me know!
-
-Mark the compiler broken and wait until GCC people get their act
-together.
-
-Thanks,
-
-        tglx
