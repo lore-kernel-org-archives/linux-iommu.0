@@ -1,132 +1,140 @@
-Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 992F4372EFF
-	for <iommu@lists.linux.dev>; Mon, 11 May 2026 14:30:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.177
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0D02340242A
+	for <iommu@lists.linux.dev>; Mon, 11 May 2026 15:32:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778509856; cv=none; b=ZQHVJc19p6Vkcv/cytjryNAaL8bm1SeHsfekHyKht0nIy0OTz3Hsuv+0EEOSjv5XXmsNHNP2tOmdrloUJ42zfPHhUZsk6CXW21gjRaY+2gECMYx3/KxMkyCZV+je4xgdXCTqluQrc3LHJnU+pKw46jkMEUMgd5XjF358sk3mKUU=
+	t=1778513551; cv=none; b=k539HzLjhL0/vMQ9uJG/bOSaGpIlEw0pQJO/TSfOfmlxahDVq2GXnxzeCdQKcURbbnvf7zFiMql9RtC32fU5008TkX8j3KkecNGRz46ZfCKRhv00LwTwcVuZdgU3tCa1cQqAU6py7KovjiWrgz2G2kMxmjoKYwy5W8xRNetgoZc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778509856; c=relaxed/simple;
-	bh=KyLuFEE+coaf/jJEo/cblEGq/QqRcgAQPejr03h+6d4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uiDnryRv+T8qC6/sYhZzV75b4I3Pks9Nqlv1LeGALe1c0OlFSEmWAf2SWFVYf5Pn4SZ3xLwWs60OTAkS/y2lsVudyhI9r1OEB/FFO0gIrPPgWNWHJSmLlhQk8irN95EuLZEqdH2eFGpKevICs+RQjijSJJRxYvQUUkCdhE9Cb1E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=G9fgPA45; arc=none smtp.client-ip=209.85.160.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1778513551; c=relaxed/simple;
+	bh=pl8wdqR3J5owQqTKJ9ZiLHKTq5azhHmOEVq9Hfx8phU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=S4sVW6h1/ZYrLJJoCXi+fcNjvuIX5gvJRszmKQVZd9tcRIv5w01iW6AR8M5rdhWk52Dz82dqxrsLFrWs7QdlEmtozAnzSY8BLc8QjxA7fy7a/AKeLWBAWIhr/IRWWvytapfJ7Skfm6SpU5rRN5fzk/jF31eCVnBH+m8WelbV45Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=QkFh16PN; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="G9fgPA45"
-Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-50d6ab4476eso42016511cf.2
-        for <iommu@lists.linux.dev>; Mon, 11 May 2026 07:30:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1778509854; x=1779114654; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=1t4Q3YbgMx/6e1k8a1sHgBJ6iv/rwR+3bFc9xbIXC10=;
-        b=G9fgPA45BGQqcyYUHh2py5G1KHsHVTk+Qq0WKde0tnShQU6J+GS8n1rKBeLH8kcd7E
-         w+5i30Mfdv434UxMvO06usK6DpvKE7GIOmpENVB1XbhaKV1sVUwweS5rJvIev33cAKk7
-         pE2axrqScDywdnZpyTs0o7OgWRGBO3vwi+RZE/8IQtAjc3HWAKvCcLFLeRWOxjSk8a5k
-         MAjpT5tKqZmh8RcN/h5IkQbZTT0n6ABDI1dZ+ShQ1v8KXw4UDRaHYy78shQje4Z+2jy0
-         noD6WWWpK+eyjM05TD/SHf6/W2JLHEAR6n00QqHd64kcLjWFxAcw4oOaN5nxDYLWMFsw
-         4lPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778509854; x=1779114654;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=1t4Q3YbgMx/6e1k8a1sHgBJ6iv/rwR+3bFc9xbIXC10=;
-        b=RhgxgMkfQkTGb9Cp1Xy8ApopBzcfDax54c+KxqadAmwpIlZGSGEWG8hKpwH4cNqx57
-         a3rrj2uxlgNqG9nzTZdNMNuqeGBM4jeejwSfmYGBRfpYBdMSV4iEMtYt9jk2XqFY58lV
-         pvobkz3LbPgXo3UVWjXCoZxpXZrrMgNBhSzKtyPPua9q8W6oz14VIWfW38LprEam0uhN
-         1C/9QLZvuzlIwLE/vSS3bCheQOKu7a1giYd6HkJUrGB3bqxj2yAn10ie7PizlVH6C8Fu
-         J3GBdfZWp8RP0gTrNLXBq2qiMEnYDjPtZmIL2tYmDZBGIEI4VXdQXt8aV+HfnhQcqWZg
-         wK4w==
-X-Forwarded-Encrypted: i=1; AFNElJ9igOGSR3gD32DKzMnQrJsVL+UhlRWMBBI8ztQ2+fnnO3TW8Gq0WHKuA1iEJMoMQxvrrOdR7w==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzk6pFsnU92sYJnXMGTYpO8zpZL1mqhXvI9GIE3AsI/ttGFqzpr
-	TLkECIoDjJRKpMxuwVRa7lj5rW3yILPngxnlTt4atxZxd7Dp80jdkkzOEGDXJq1UDBc=
-X-Gm-Gg: Acq92OFSmlY1prAwQgGK+UwsGAlNgqMYSzlBGzX0IiOuTjZvHJACWqwtlcLHun9/iT+
-	JRhGrSnIKf7S+zuMutLUQdFpBjVktdQcJq85RXYNCIDJ+YwttGLfIAxZ3nvofKzt/gyg0JOPIgN
-	hvnz3pXte8ykeIv3IfXLNsf2woUJZEfbMb3ljK5ryKuFE92JRVzEOmS8XTfzPbCTw1U/Zk2AgbK
-	KH6dJaImxNtzLp/LDMnef3spUOY3ER7ZPW1putCGgCaD7SIuS9MZW1f34IxdMQcPfm4c4vYTcsc
-	dYiQgT8BRECm+Xa830GdnCa6TJfLrTGm0te+sxEOAES2+6MyKj0DJEBe5Z0egkqDRI/2bY67y+h
-	1WWPkKuqAY5kqA1Dp+Z34JjbdVr5TAuZxy04czjk9z+qHSV5CnVidKPFKvhO7+mhdnxPRZtRS/0
-	kSTUhh1lnO8FsQSNC26LgxNDY6oA84iLyIg73WcufCE1QX/KbH+gzVi/ZP8zMtyJ8spBTP74Fjz
-	qBTuw==
-X-Received: by 2002:a05:622a:d5:b0:50d:2a76:43c5 with SMTP id d75a77b69052e-514619de7e5mr335362441cf.2.1778509850538;
-        Mon, 11 May 2026 07:30:50 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-5148e83aa2bsm90525421cf.28.2026.05.11.07.30.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2026 07:30:49 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wMRej-00000004oIk-12xC;
-	Mon, 11 May 2026 11:30:49 -0300
-Date: Mon, 11 May 2026 11:30:49 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
-	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
-	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
-	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
-	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
-	vdonnefort@google.com, sebastianene@google.com, keirf@google.com
-Subject: Re: [PATCH v6 05/25] iommu/arm-smmu-v3: Move IDR parsing to common
- functions
-Message-ID: <20260511143049.GR9285@ziepe.ca>
-References: <20260501111928.259252-1-smostafa@google.com>
- <20260501111928.259252-6-smostafa@google.com>
- <20260501124716.GD6912@ziepe.ca>
- <afiODW2sVMeOj3Ag@google.com>
- <afoagb/wVBJD1IX+@ziepe.ca>
- <afofSPQbepd_fpom@google.com>
- <afsQTwO3eW+Ks2fe@ziepe.ca>
- <afxlufh3t3hRe4-G@google.com>
- <20260509233443.GK9285@ziepe.ca>
- <CAFgf54rJqq_bJONpx85p+uB68i1oVAGZW40aZA1ufid_5fqwQw@mail.gmail.com>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="QkFh16PN"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8591E1477;
+	Mon, 11 May 2026 08:32:16 -0700 (PDT)
+Received: from [10.57.68.228] (unknown [10.57.68.228])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DBEFD3F836;
+	Mon, 11 May 2026 08:32:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1778513541; bh=pl8wdqR3J5owQqTKJ9ZiLHKTq5azhHmOEVq9Hfx8phU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=QkFh16PN2DwDTUj8DhF9YhnLssbOgxSEG2xB+tC8zrFs8TU+3XNmB8Lzhjue6Rrx6
+	 tkxm7y7/FhsZyHLvSVwMHrhFb2ZK3RUlOgrft8u/55dOIYtOFrPOg8+OEdILPOAS5j
+	 nVwX6YZoBRJ+GKSNpCieHVOx+h4+Y18Lf/5aU2fg=
+Message-ID: <98ccdefe-fe16-41fd-9267-00e0a1fe993f@arm.com>
+Date: Mon, 11 May 2026 16:32:18 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFgf54rJqq_bJONpx85p+uB68i1oVAGZW40aZA1ufid_5fqwQw@mail.gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] dma-mapping: move dma_map_resource() sanity check into
+ debug code
+To: Jianpeng Chang <jianpeng.chang.cn@windriver.com>, m.szyprowski@samsung.com
+Cc: leon@kernel.org, kbusch@kernel.org, jgg@ziepe.ca, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+References: <20260511083133.1096171-1-jianpeng.chang.cn@windriver.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260511083133.1096171-1-jianpeng.chang.cn@windriver.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-> > Copying a bunch of functions into a shared .c file exactly as it is,
-> > then compiling the shared file with some #ifdef'ery at is going to be
-> > long term better than trying to mangle the whole thing to avoid using
-> > any of the core types and not directly share the code, IMHO.
-> >
+On 2026-05-11 9:31 am, Jianpeng Chang wrote:
+> dma_map_resource() uses pfn_valid() to ensure the range is not RAM.
+> However, pfn_valid() only checks for availability of the memory map for
+> a PFN but it does not ensure that the PFN is actually backed by RAM. On
+> ARM64 with SPARSEMEM (128MB section granularity), MMIO addresses that
+> share a section with RAM will falsely trigger the WARN_ON_ONCE and cause
+> dma_map_resource() to return DMA_MAPPING_ERROR.
 > 
-> There isn't #ifdef'ery at the moment, that's what I was trying to
-> avoid by introducing shared code.
+> This causes a WARNING on Raspberry Pi 4 during spi_bcm2835 probe because
+> the SPI FIFO register (0xfe204004) falls in the same sparsemem section
+> as the end of RAM (0xf8000000-0xfbffffff), both in section 31
+> (0xf8000000-0xffffffff).
+> 
+> Move the sanity check from dma_map_resource() into debug_dma_map_phys()
+> and replace the unreliable pfn_valid() with pfn_valid() &&
+> !PageReserved(), which correctly identifies actual usable RAM without
+> false positives for MMIO regions that happen to have struct pages.
+> 
+> Since dma_map_resource() is dma_map_phys(DMA_ATTR_MMIO), the check
+> applies equally to both APIs. Any non-reserved page represents kernel
+> memory to a sufficient degree that using DMA_ATTR_MMIO on it is almost
+> certainly wrong and risks breaking coherency on non-coherent platforms.
+> ZONE_DEVICE pages used for PCI P2P DMA (MEMORY_DEVICE_PCI_P2PDMA) have
+> PageReserved set, so they will not trigger a false positive.
+> 
+> The check is now a WARN_ONCE that no longer blocks the mapping, since
+> being unobtrusive is more important than being exhaustive for what is
+> merely a debug sanity check.
+> 
+> Fixes: f7326196a781 ("dma-mapping: export new dma_*map_phys() interface")
+> Signed-off-by: Jianpeng Chang <jianpeng.chang.cn@windriver.com>
+> ---
+> v2:
+>    - move check to debug_dma_map_phys and replace pfn_valid() with
+>      pfn_valid() && !PageReserved() as Robin suggested.
+>    - update commit message to explain why PageReserved is safe for
+>      ZONE_DEVICE PCI_P2PDMA pages
+> v1: https://lore.kernel.org/all/20260507032120.4072283-1-jianpeng.chang.cn@windriver.com/
+>   kernel/dma/debug.c   | 9 +++++++++
+>   kernel/dma/mapping.c | 4 ----
+>   2 files changed, 9 insertions(+), 4 deletions(-)
+> 
+> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+> index 1a725edbbbf6..180aa2c930b5 100644
+> --- a/kernel/dma/debug.c
+> +++ b/kernel/dma/debug.c
+> @@ -1239,6 +1239,15 @@ void debug_dma_map_phys(struct device *dev, phys_addr_t phys, size_t size,
+>   	if (dma_mapping_error(dev, dma_addr))
+>   		return;
+>   
+> +	if (attrs & DMA_ATTR_MMIO) {
+> +		unsigned long pfn = PHYS_PFN(phys);
+> +
+> +		WARN_ONCE(pfn_valid(pfn) && !PageReserved(pfn_to_page(pfn)),
+> +			  "dma_map_resource called for RAM address %pa\n",
+> +			  &phys);
+> +		return;
+> +	}
 
-Yeah, I think that may be a bad direction. Ultimately it feels like it
-will be more burden to maintain this careful split, while some small
-list of carefully selected #defines will let you reuse alot more with
-no code changes and I think that is ultimately going to be better.
+This wants to pair with the existing !MMIO checks slightly further down 
+- since we're no longer aborting the map request itself, if we bail out 
+early without actually creating the debug entry, we'll end up firing 
+another spurious warning if the caller (correctly) unmaps the address. 
+Then we can also finish the job of turning it into a proper dma-debug 
+check by using err_printk() instead of the open-coded WARN(), so that 
+it's subject to filtering etc. as well.
 
-> What concerns me is how fragile that is, any change in the main struct
-> can easily break the hypervisor, unlike if we have a clear shared code
-> and defined API that is used by 2 entities.
-> I will think more about this before v7 and see how intrusive it is.
+With that fixed,
 
-IMHO so long as it is easy to include pkvm in the compilation I see no
-issue with build testing the pkvm driver when working on smmuv3
-driver. So I'm not worried about this, any breaks will be compile
-breaks and can be delt with.
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
-What I'd like is to minimize logic changes and maximimize re-use so
-you don't have to make bad re-implementations. Like pkvm shouldn't be
-building a weaker tlbi, it shouldn't have different logic for errata
-and FEAT, it shouldn't be doing STE changes without the
-hitless logic, etc, etc. All these things are easier to solve with
-greater direct code re-use..
+> +
+>   	entry = dma_entry_alloc();
+>   	if (!entry)
+>   		return;
+> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+> index 23ed8eb9233e..e6b07f160d20 100644
+> --- a/kernel/dma/mapping.c
+> +++ b/kernel/dma/mapping.c
+> @@ -365,10 +365,6 @@ EXPORT_SYMBOL(dma_unmap_sg_attrs);
+>   dma_addr_t dma_map_resource(struct device *dev, phys_addr_t phys_addr,
+>   		size_t size, enum dma_data_direction dir, unsigned long attrs)
+>   {
+> -	if (IS_ENABLED(CONFIG_DMA_API_DEBUG) &&
+> -	    WARN_ON_ONCE(pfn_valid(PHYS_PFN(phys_addr))))
+> -		return DMA_MAPPING_ERROR;
+> -
+>   	return dma_map_phys(dev, phys_addr, size, dir, attrs | DMA_ATTR_MMIO);
+>   }
+>   EXPORT_SYMBOL(dma_map_resource);
 
-Thus I feel the trade of off 'use the code with no changed via
-#define' is better than 'try to carefully cut away and avoid #define'
-
-Jason
