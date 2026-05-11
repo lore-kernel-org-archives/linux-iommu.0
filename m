@@ -1,161 +1,173 @@
-Received: from mx0a-0064b401.pphosted.com (mx0a-0064b401.pphosted.com [205.220.166.238])
+Received: from fout-b8-smtp.messagingengine.com (fout-b8-smtp.messagingengine.com [202.12.124.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE9C83B2FE5
-	for <iommu@lists.linux.dev>; Mon, 11 May 2026 08:31:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.166.238
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92C433112BD
+	for <iommu@lists.linux.dev>; Mon, 11 May 2026 09:47:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.151
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778488316; cv=none; b=Y+gjgWvKznrPtWXTTL5lBCQTxlPOsHpaVGv8EgcWTtRhrrly5DDWFSQ1MEMzto4NRbLhQ8gOvkH+4M/n75oF6agg30BBW5tBqU0NzqWbpLOF+3Wc65wcblhwKYRxH9smZynXSasdQhFpWA4u6xZvGP3eMtD2RSWEL7DZMWxTW0Y=
+	t=1778492823; cv=none; b=ZW5zEHWX7vD/lkBAKTd0VbNZPb4yJC9n2KAy4t2eFwQSwbh+SImU9aJuacGHKPdsCnOAct0zEKEsEaKZb8KUCriHj9FLXmEVPdjL7UxuC70JnKJOLHgXDR9uw/GfWl6JnlztO7towwQLt+81ukzzq0Vz8rTz1wFNkyXq1YgIVmE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778488316; c=relaxed/simple;
-	bh=sz2mlZDT53bsPop7hHBS/2HwxEsHhbeQjeRvZmi60h0=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=QE2Uph4p0ZMirI/eJ+bJ+V7mk4BkmV3dQbY3u5uqYIceZ0S/2m3DqKDrpGxAcdI/v6KWKQKODBfBknYkJyosmH58ITGsxADJ8IKTh/t0SAp2uHjXxWKIpwuV3wVGbyTrsQUh8KpFiVp7HcoAOi6LlXJtQCIxYaDuCAilrqjY18Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=windriver.com; spf=pass smtp.mailfrom=windriver.com; dkim=pass (2048-bit key) header.d=windriver.com header.i=@windriver.com header.b=tBbG7rSJ; arc=none smtp.client-ip=205.220.166.238
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=windriver.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=windriver.com
+	s=arc-20240116; t=1778492823; c=relaxed/simple;
+	bh=D/4Zbemo5vF6p8/soVP/ycbQ3QKW1LUgg1CBMUjbR4M=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=Vj7S2mCggAfAgKZn5A16XzZYVb+Z5x1Y74I7Eo+W+w6pgEAB8O6CNA3P7MLjy0XQGx/k6bhN+QK42JlPEEqSxvsBQ67o8CACauuQPVuLVAFlChVUBt0WoTIgx/W3QnRKAUmY23orcvXZAPSOjJwYbSgNHypExpIyl5TVn/yRhc4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=VYi7BEnD; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=BNlQW2Gr; arc=none smtp.client-ip=202.12.124.151
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=windriver.com header.i=@windriver.com header.b="tBbG7rSJ"
-Received: from pps.filterd (m0250809.ppops.net [127.0.0.1])
-	by mx0a-0064b401.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64B5eJob1174006;
-	Mon, 11 May 2026 01:31:36 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com;
-	 h=cc:content-transfer-encoding:content-type:date:from
-	:message-id:mime-version:subject:to; s=PPS06212021; bh=xM0c8X8Oj
-	xQteNR6SOoz3ERQaeTZo47aoNSkqShTm2w=; b=tBbG7rSJfn6tpD4Uxc9IS5ME9
-	YVB51D9390tVXoAJcv4r17xHy4E0bS99r3H06tCIXWMUFvQyNMxs50YrjLXv206f
-	VoZBdVTpRDvoOcCVhTeoMTRIJ5DigYSjjk8Yjz2Z/Rm4pT89BKlstyLZO7t1Knx3
-	wY4jMJLlO0wOrcHp0S4WWOEYtXB1fERUK97AYLic7NDpgcAbb6G1r/pZrhW9dVBD
-	HNZ0fnPxWUKoZ0/N56Uho/lqvXhHm9uPkgwFZwcd/+n64Llhy21Rnzd3QhqO0wre
-	NTUJbGAt/tz2EBva5eWTHo/MRi9F/9iu4oQnovnF2XUor7YnjCUW/3Hm8d5AA==
-Received: from ala-exchng02.corp.ad.wrs.com (ala-exchng02.wrs.com [128.224.246.37])
-	by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 4e24ee9d09-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-	Mon, 11 May 2026 01:31:36 -0700 (PDT)
-Received: from ala-exchng01.corp.ad.wrs.com (10.11.224.121) by
- ALA-EXCHNG02.corp.ad.wrs.com (10.11.224.122) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.61; Mon, 11 May 2026 01:31:35 -0700
-Received: from pek-lpggp9.wrs.com (10.11.232.110) by
- ala-exchng01.corp.ad.wrs.com (10.11.224.121) with Microsoft SMTP Server id
- 15.1.2507.61 via Frontend Transport; Mon, 11 May 2026 01:31:33 -0700
-From: Jianpeng Chang <jianpeng.chang.cn@windriver.com>
-To: <m.szyprowski@samsung.com>
-CC: <robin.murphy@arm.com>, <leon@kernel.org>, <kbusch@kernel.org>,
-        <jgg@ziepe.ca>, <iommu@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>,
-        Jianpeng Chang <jianpeng.chang.cn@windriver.com>
-Subject: [PATCH v2] dma-mapping: move dma_map_resource() sanity check into debug code
-Date: Mon, 11 May 2026 16:31:33 +0800
-Message-ID: <20260511083133.1096171-1-jianpeng.chang.cn@windriver.com>
-X-Mailer: git-send-email 2.54.0
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="VYi7BEnD";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="BNlQW2Gr"
+Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
+	by mailfout.stl.internal (Postfix) with ESMTP id 55AD81D0008D;
+	Mon, 11 May 2026 05:46:59 -0400 (EDT)
+Received: from phl-imap-12 ([10.202.2.86])
+  by phl-compute-04.internal (MEProxy); Mon, 11 May 2026 05:46:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm2; t=1778492819;
+	 x=1778579219; bh=TWbx4nQ+++QmGm3BfnUj9UQpSo0jVkGk9GjwYWuvoTU=; b=
+	VYi7BEnDHXsoCVNn8uAHpzegR2U06vS3kxBHRDjdgsgpn4XocWQS/m43V/TMKkE2
+	e5lQ5bOLm0rbl4JxIueQLb/Sl8Xnts9WZnvVgoluMu+STKdBlAtGkE5R7aBeESUY
+	Hm/w413898OLbphdoFR/1436vg2g9U0WNXt+38DXNL9KcC7mKcExOWBFc1PaKZVR
+	kDo7YzQfFYzAFGTegQ7WJA/Dxzezbki6vMoSC6daX87ufZbuPM5ttd4O752S7tKT
+	fuAIUy87Z37FH4+xPWg1UGbY0u/NHxxALMDpIVzrCjyWDUnhJgJ4VvdBNS+07aRU
+	fkJCtXeGAfOfqcWyLU2VOg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1778492819; x=
+	1778579219; bh=TWbx4nQ+++QmGm3BfnUj9UQpSo0jVkGk9GjwYWuvoTU=; b=B
+	NlQW2Grt5sdDGAfhfXCUos5Nd0wO9gEEOI1eHqKKtn5YsYgkWlFJ8gD5ThPI7/86
+	pyrueeUHVXyIOLPlldJHtn/yGZwo3uEfCYSmKkiy392tqPsZlIL2S6PQTTvgU651
+	r0+9lr2rSju+YPu/bfxihkehEMjfSvj0qy0SabkM+h7y3Z2PXctsTsSN6x+DpyFt
+	D27MJYUuvUA8gCDp5tXboN9YBcfYSho40aITxanS/XbujAYymK2vz0mN8pEYcyUp
+	zfd4xYSVmB3i71AP6609SdPp+SwmuS6I+9kl9qqKAMMciyT8yCxxcBK7eiHe9kpA
+	dpxht0Q+V/cC10BEAOURg==
+X-ME-Sender: <xms:kqUBat8gcYJgArWQcSWbTE7Aa2nMyJAH1UzTytzG42AiKLkxKRKATQ>
+    <xme:kqUBasgs1ris0F51SOgVf4QmhZgKjLeQQOn2LchB-xWJDuW1QWRDoLUkeMUFmUiPe
+    1EmX6Gk5JSKJb6Hk2u8Gi516wuyPZWt_nIM-BDO8b1FnI0di9--gVo>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefhedrtddtgdduudekiedvucetufdoteggodetrf
+    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
+    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
+    gurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddtnecuhfhrohhmpedftehrnhgu
+    uceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrthhtvg
+    hrnhephfdthfdvtdefhedukeetgefggffhjeeggeetfefggfevudegudevledvkefhvdei
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprghrnh
+    gusegrrhhnuggsrdguvgdpnhgspghrtghpthhtohepuddtpdhmohguvgepshhmthhpohhu
+    thdprhgtphhtthhopehjohhroheskegshihtvghsrdhorhhgpdhrtghpthhtoheprhhosg
+    hinhdrmhhurhhphhihsegrrhhmrdgtohhmpdhrtghpthhtoheprghrnhgusehkvghrnhgv
+    lhdrohhrghdprhgtphhtthhopehtghhlgieskhgvrhhnvghlrdhorhhgpdhrtghpthhtoh
+    epfihilhhlsehkvghrnhgvlhdrohhrghdprhgtphhtthhopegsihhgvggrshihsehlihhn
+    uhhtrhhonhhigidruggvpdhrtghpthhtoheprghkphhmsehlihhnuhigqdhfohhunhgurg
+    htihhonhdrohhrghdprhgtphhtthhopehlihhnuhigqdgrrhhmqdhkvghrnhgvlheslhhi
+    shhtshdrihhnfhhrrgguvggrugdrohhrghdprhgtphhtthhopehiohhmmhhusehlihhsth
+    hsrdhlihhnuhigrdguvghv
+X-ME-Proxy: <xmx:kqUBagiXrMjUWsphcDn9l_ykZ6fT9l-kXe6cM57h_CcpVQvtT4UznA>
+    <xmx:kqUBahOP_25gZ4nlAviyGUrJFh0WCiOsvj-zdJ_sziCFNyN5_KpOuA>
+    <xmx:kqUBajq_WcZabBNsLNpFZtU7aqdJxv9O-NjNmvsmUn_YI6faMAz_RA>
+    <xmx:kqUBar4N9Q2O8-S3EQ1prwObWx_vX2qx6-UKiRVzIbSgUkmv6GXbIg>
+    <xmx:k6UBas14nptktwBJRQXCDf7_S7BI-JTL-lDjAu-AZRb7jFSlAROnzGKm>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id 9A9791060065; Mon, 11 May 2026 05:46:58 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-ThreadId: AVHaR-kDAB-J
+Date: Mon, 11 May 2026 11:46:29 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Thomas Gleixner" <tglx@kernel.org>, "Arnd Bergmann" <arnd@kernel.org>,
+ "Will Deacon" <will@kernel.org>, "Robin Murphy" <robin.murphy@arm.com>,
+ "Joerg Roedel" <joro@8bytes.org>, "Andrew Morton" <akpm@linux-foundation.org>
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org,
+ "Sebastian Andrzej Siewior" <bigeasy@linutronix.de>
+Message-Id: <34af0db2-7a04-4119-925f-3aa3e3ecb683@app.fastmail.com>
+In-Reply-To: <87y0hq8lcu.ffs@tglx>
+References: <20260203162406.2215716-1-arnd@kernel.org> <874ikf9i34.ffs@tglx>
+ <d52dcd45-959a-4ff4-9e82-0bae133785f1@app.fastmail.com> <87y0hq8lcu.ffs@tglx>
+Subject: Re: [PATCH 1/2] [RFC] debugobjects: avoid gcc-16.0.1 section mismatch
 Content-Type: text/plain
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTExMDA5MiBTYWx0ZWRfX8RV6Sbl6WhaQ
- I5/sEIU0UZ41oEp5eMzzm2nNmn6gR4enu78bAhCopmo0UPBbgyc11MPPT8rvzWcdrJb6nhXb0P+
- IOJabp4ePlx68u/Y4YJcjFm7WXa3T+yi4m+9sWilD53JC3uGQiIQhmHZVfRUiws7vcW6Wswl6u7
- TK8FO5sWBH6rPj2rs/93rm9/TPHswnBHx6lm5P/V0lTZFGsmYuvlvUmPnNWpgR+7NgEXXJZ0D6T
- sd5iziMQRxFT+hDRUERQGlFvBeTcPGWq7J2EZmjvzP6pPqlbVtdUY4WpDsQSbODmxQDQc96XOY6
- trBojCiP2fpvFNAsPHLjQ8Qri3P3LgXk+UwsSfNpOE6p+IdiJkpvV2WNOi0+POU9BxbbKMAt7pO
- E5IPvVZ2pi2XnqJJ7OadW4sJn3Yw/aLeZvyh45ImPHq75ntrOy2s8d/VpcJBddATtxVLBebGVID
- JxMtB23n2i9vn1hTuJQ==
-X-Authority-Analysis: v=2.4 cv=H/TrBeYi c=1 sm=1 tr=0 ts=6a0193e8 cx=c_pps
- a=Lg6ja3A245NiLSnFpY5YKQ==:117 a=Lg6ja3A245NiLSnFpY5YKQ==:17
- a=NGcC8JguVDcA:10 a=VkNPw1HP01LnGYTKEx00:22 a=bi6dqmuHe4P4UrxVR6um:22
- a=iKiJcTA2PjBS6x5JeXcw:22 a=VwQbUJbxAAAA:8 a=t7CeM3EgAAAA:8
- a=h0AvKgH_ywIdHqhAvZkA:9 a=FdTzh2GWekK77mhwV6Dw:22
-X-Proofpoint-GUID: 2394AkpGSmTLRrlOucGsnY3xOHz69ErM
-X-Proofpoint-ORIG-GUID: 2394AkpGSmTLRrlOucGsnY3xOHz69ErM
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-05-11_02,2026-05-08_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 malwarescore=0 impostorscore=0 adultscore=0 bulkscore=0
- phishscore=0 lowpriorityscore=0 spamscore=0 clxscore=1015 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2604200000 definitions=main-2605110092
+Content-Transfer-Encoding: 7bit
 
-dma_map_resource() uses pfn_valid() to ensure the range is not RAM.
-However, pfn_valid() only checks for availability of the memory map for
-a PFN but it does not ensure that the PFN is actually backed by RAM. On
-ARM64 with SPARSEMEM (128MB section granularity), MMIO addresses that
-share a section with RAM will falsely trigger the WARN_ON_ONCE and cause
-dma_map_resource() to return DMA_MAPPING_ERROR.
+On Mon, May 11, 2026, at 09:18, Thomas Gleixner wrote:
+> On Mon, May 11 2026 at 08:17, Arnd Bergmann wrote:
+>> On Sun, May 10, 2026, at 21:31, Thomas Gleixner wrote:
+>>> On Tue, Feb 03 2026 at 17:23, Arnd Bergmann wrote:
+>>>> WARNING: modpost: vmlinux: section mismatch in reference: lookup_object_or_alloc.part.0+0x1ac (section: .text) -> is_static_object (section: .init.text)
+>>>>
+>>>> From what I can tell, the transformation is correct, as this
+>>>> is only called when lookup_object_or_alloc() is called from
+>>>> debug_objects_selftest(), which is also __init.
+>>>
+>>> So clearly the compiler is buggy. It creates an __init specific copy of
+>>> lookup_object_or_alloc() and then fails to attribute it correctly.
+>>
+>> I don't see what else the compiler is supposed to do, it has no idea what
+>> __init means in the kernel, or what the rules are for calling between
+>> that and normal functions. Putting a non-inlined lookup_object_or_alloc()
+>> into a special section without an explicit attribute would clearly
+>> be a bug.
+>
+> I agree that the compiler does not know what __init means, but this
+> sucks as it leaves an unused copy of lookup_object_or_alloc() around
+> after init.
+>
+> What happens if you mark is_static_object() with 'noinline'?
 
-This causes a WARNING on Raspberry Pi 4 during spi_bcm2835 probe because
-the SPI FIFO register (0xfe204004) falls in the same sparsemem section
-as the end of RAM (0xf8000000-0xfbffffff), both in section 31
-(0xf8000000-0xffffffff).
+I've reproduced the issue with the release gcc-16.1.0 build,
+and tested marking is_static_object (along with
+dummy_tlb_add_page and dummy_tlb_flush from the other
+instance) as noinline.
 
-Move the sanity check from dma_map_resource() into debug_dma_map_phys()
-and replace the unreliable pfn_valid() with pfn_valid() &&
-!PageReserved(), which correctly identifies actual usable RAM without
-false positives for MMIO regions that happen to have struct pages.
+As expected, this avoids the problem as well.
 
-Since dma_map_resource() is dma_map_phys(DMA_ATTR_MMIO), the check
-applies equally to both APIs. Any non-reserved page represents kernel
-memory to a sufficient degree that using DMA_ATTR_MMIO on it is almost
-certainly wrong and risks breaking coherency on non-coherent platforms.
-ZONE_DEVICE pages used for PCI P2P DMA (MEMORY_DEVICE_PCI_P2PDMA) have
-PageReserved set, so they will not trigger a false positive.
+      Arnd
 
-The check is now a WARN_ONCE that no longer blocks the mapping, since
-being unobtrusive is more important than being exhaustive for what is
-merely a debug sanity check.
-
-Fixes: f7326196a781 ("dma-mapping: export new dma_*map_phys() interface")
-Signed-off-by: Jianpeng Chang <jianpeng.chang.cn@windriver.com>
----
-v2:
-  - move check to debug_dma_map_phys and replace pfn_valid() with
-    pfn_valid() && !PageReserved() as Robin suggested.
-  - update commit message to explain why PageReserved is safe for
-    ZONE_DEVICE PCI_P2PDMA pages
-v1: https://lore.kernel.org/all/20260507032120.4072283-1-jianpeng.chang.cn@windriver.com/
- kernel/dma/debug.c   | 9 +++++++++
- kernel/dma/mapping.c | 4 ----
- 2 files changed, 9 insertions(+), 4 deletions(-)
-
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 1a725edbbbf6..180aa2c930b5 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -1239,6 +1239,15 @@ void debug_dma_map_phys(struct device *dev, phys_addr_t phys, size_t size,
- 	if (dma_mapping_error(dev, dma_addr))
- 		return;
- 
-+	if (attrs & DMA_ATTR_MMIO) {
-+		unsigned long pfn = PHYS_PFN(phys);
-+
-+		WARN_ONCE(pfn_valid(pfn) && !PageReserved(pfn_to_page(pfn)),
-+			  "dma_map_resource called for RAM address %pa\n",
-+			  &phys);
-+		return;
-+	}
-+
- 	entry = dma_entry_alloc();
- 	if (!entry)
- 		return;
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index 23ed8eb9233e..e6b07f160d20 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -365,10 +365,6 @@ EXPORT_SYMBOL(dma_unmap_sg_attrs);
- dma_addr_t dma_map_resource(struct device *dev, phys_addr_t phys_addr,
- 		size_t size, enum dma_data_direction dir, unsigned long attrs)
- {
--	if (IS_ENABLED(CONFIG_DMA_API_DEBUG) &&
--	    WARN_ON_ONCE(pfn_valid(PHYS_PFN(phys_addr))))
--		return DMA_MAPPING_ERROR;
--
- 	return dma_map_phys(dev, phys_addr, size, dir, attrs | DMA_ATTR_MMIO);
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index 40e33257d3c2..b89dcf167832 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -782,16 +782,17 @@ static void __init dummy_tlb_flush_all(void *cookie)
+ 	WARN_ON(cookie != cfg_cookie);
  }
- EXPORT_SYMBOL(dma_map_resource);
--- 
-2.54.0
-
+ 
+-static void __init dummy_tlb_flush(unsigned long iova, size_t size,
+-				   size_t granule, void *cookie)
++static noinline void __init dummy_tlb_flush(unsigned long iova, size_t size,
++					    size_t granule, void *cookie)
+ {
+ 	WARN_ON(cookie != cfg_cookie);
+ 	WARN_ON(!(size & cfg_cookie->pgsize_bitmap));
+ }
+ 
+-static void __init dummy_tlb_add_page(struct iommu_iotlb_gather *gather,
+-				      unsigned long iova, size_t granule,
+-				      void *cookie)
++static noinline void __init dummy_tlb_add_page(struct iommu_iotlb_gather *gather,
++					       unsigned long iova,
++					       size_t granule,
++					       void *cookie)
+ {
+ 	dummy_tlb_flush(iova, granule, granule, cookie);
+ }
+diff --git a/lib/debugobjects.c b/lib/debugobjects.c
+index 12e2e42e6a31..18253cb03701 100644
+--- a/lib/debugobjects.c
++++ b/lib/debugobjects.c
+@@ -1212,7 +1212,7 @@ struct self_test {
+ 
+ static __initconst const struct debug_obj_descr descr_type_test;
+ 
+-static bool __init is_static_object(void *addr)
++static noinline bool __init is_static_object(void *addr)
+ {
+ 	struct self_test *obj = addr;
+ 
