@@ -1,69 +1,69 @@
-Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
+Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB5A03F20F0
-	for <iommu@lists.linux.dev>; Mon, 11 May 2026 14:22:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B8593FD159
+	for <iommu@lists.linux.dev>; Mon, 11 May 2026 14:24:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778509356; cv=none; b=M4Xy2XhjZxVQZh7NtfSK8grKWZleFWD0Ch1iviYdpoWmPoEUEe9be2C2O0ebRlIBhGTB/YGMP4sFIyO/n61WpGYA9K5kkwTJFiU5JUzwfJcq4lSEfAQTWGGjVmvjHnb0YV3hZr2XI+bd2cqFyf8lFCUyMO11SARqvwQHdh2T2Kg=
+	t=1778509468; cv=none; b=BLrlkC5HtiFXTpANg3f6Vv7IZK6GXhBE9wg9VCM1h3Bj4/gcMiyF4PGU/y+gg/LFEprMzfaIDLXSiC0bgH6Fxpei3zxwi7Ew7p3ioQcsM/iGNC+EeeqqgAk5X17GHSm0y3ckEnv7izUz3RM3rQpW140D3hj6PuKdS3UzI9CprrU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778509356; c=relaxed/simple;
-	bh=qJaZDUv8tWzR82l/Nglli0CCITCzVGn6lJPSfUdXdOo=;
+	s=arc-20240116; t=1778509468; c=relaxed/simple;
+	bh=7tNpnX1gFQ6tZ3oOp3leOMqhI0tgTzBeVDf3yJe9700=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pKUFCFQ/7Aj3uRkYIMEtF2UrhGCFFhflot5MfYIjPgoFq30YYHzzl4PYOjLUbrOVZ4AbKEAPKbiHVkCE5v6W5AA9FPgGmM/fB5cinIxslXwj24xbGovCRwL806rloIK+RAiEHwsu8syI4cQUVOK7ZD+2o5m/NYryyiJWfUyTgvc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=altI4kOA; arc=none smtp.client-ip=209.85.219.44
+	 Content-Type:Content-Disposition:In-Reply-To; b=s8g42z+k38PZ5RjmAJIy++OKC+2r0EY25APH+/N/7SpzMkEFYI6dW0/KivHfGzsZU91PUdrNf8+yoKZvtSIZUbbxck18zQoXeemcBrNjXHZfCFC83imkKWV3Zwfhsp7sIyHujNO98G842U+1vtSUjPnC/iee3FsXGUNRlkSytZk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=i7CkzapJ; arc=none smtp.client-ip=209.85.222.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="altI4kOA"
-Received: by mail-qv1-f44.google.com with SMTP id 6a1803df08f44-8acb09ddbf6so69835916d6.2
-        for <iommu@lists.linux.dev>; Mon, 11 May 2026 07:22:34 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="i7CkzapJ"
+Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-8e8c0c2d2bcso574803685a.1
+        for <iommu@lists.linux.dev>; Mon, 11 May 2026 07:24:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1778509354; x=1779114154; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1778509466; x=1779114266; darn=lists.linux.dev;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=lRu8PBFexJkXAK4pr5czUbNe2ffmqFkTspqpEqHZ1YI=;
-        b=altI4kOACRIeYYXcLF5hYE5CoALt+DXkHp1s2gX8AEw4Ks1UZ//U7U8QPk1uCLR4nw
-         i5AdlKcQZ9ZytAJBKEa4CzSfr2IPqtjsdWL8AKZnadHbhNbdZajwvXhpTaiH2AuScG0a
-         6KKscMTVILZ3avptJw8tKiATfvB05J6VM7rXvBrpJthm3IO96eP5gHy9PMHejt9sA764
-         jYv2VxoW5WCIKehTbTHLHPQLawq1msNLEVU1cgh2DYHQlSwqyEEaqYy6/IoUFCcFDED+
-         glerDlaLxRtHl5BgCxcfVQ4Rq12ZqD6bvV1F5Cnuh0cZTpwSk1OGYu/N0wFevjBVT/1N
-         7xiQ==
+        bh=jkQyUrfkqfz8XQIv/dWok02t1PybehRH8tb5fDYY/+I=;
+        b=i7CkzapJaM9p9UWFRM29AXu0kUBLSrmr1K84SDhJ9yRcdFjinJz0w7N8lufhqvDsmB
+         mqJvgc+ObxmWOg0DyjBZ7FqqEDQvMXt+vMBBlQkMtpDvPY8keOfUyecYsVekGqql65p2
+         yy+b8q3kRrHW/+CHwDvpUrtAus47rGh5GjZYrK4dgrCbUJKssQFXN4EGLNIRMhq/W913
+         yYZ0B1YOauTnfBumYJm+MxrJtZmx7BDLmTSHSAm1jtIspICtOVd7M1breaQ0WSPlKMDS
+         Hh6kMOA8YD5CMBhfhAOgMQRG9BeqUzsYKfuPn6ac1WBHAyjf5WQsgXF4+Tc/famXBGbp
+         hd2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778509354; x=1779114154;
+        d=1e100.net; s=20251104; t=1778509466; x=1779114266;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=lRu8PBFexJkXAK4pr5czUbNe2ffmqFkTspqpEqHZ1YI=;
-        b=gz3SQ5GF+WW1KdHZ/KzNJqm3bfxuUyPAZPG7vbNnzPuxmiri1gE3fs/ctF8yxmmIxq
-         hM7SJGUhFsdtYNxpkCejRzop6uWsSvq+PJHMT0pvCb+qorS+lvqrfFej5fEDPxJ5pcRr
-         s5CPP5WGHAp8bBZ3Ia8lyxXw+SRcnw+XkFJOcb+GkgzZ2b4vd0C6poy46BSTACqhQf4g
-         hgYBsmvCi8dB6usnrFGd7MQBOfADysWxzCFn81hE9MfG+ORlddjfqskkQ14IH9IemXjU
-         3q+7vnWPcov1LHa1aPHEIkzrOjaHtFS+SuLpRKNxY20VAG5Gog3E0PejX6PRPOgw7E16
-         sFLw==
-X-Forwarded-Encrypted: i=1; AFNElJ+gix+p+fiOHnI/89IpbtTnoer22XfPDDzGm47+SY8ZU4y20154FNamUBwhuLSWLsNysRvRxQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxElwIDGNUljmwaLdnvIbs7gZuB44P6CHSyzRMY3byDh/MK8jkz
-	qi4gaI3J6DyPWowUKu8Bri9MlO3750de2/CK246ZglKwO6+0kFFnuaxp6u+K5kZOaa4=
-X-Gm-Gg: Acq92OE9GBuQfxia5mseECHwhIPOeXVgywD7c+rhbHQT47LF3yXthkbRrGTVw7AJpzW
-	0vnBLqKad38V9KREz5MRfiktXpGZ5YW/J/fiA4qynxVI5SUyg+wxXmlm3UUzNNEc+roWoYoj0RA
-	ZexmB0bTR+H/mXYQ5n5QuKmspxiR/iAJVKmd6wyJ0xs9uT0yWnFxtjllq8jIlSC5VEStbN+txZC
-	2MZwRcULOrEfV1xxZLP/D2MzKAxKePrEVb1jj4KrQ8Be6gjgWOatTftst967iuplZFoR/WS+Zkm
-	1Sa8KvN3KRPq7TG32FmqelkegJvp+++GL8TIUw0hFDpkpva+EYxERZHQDIuwY7KXFEQ9OrNll54
-	JGNWyfUrzUH+kdJ2kMaaGeLpXkp0N6hOygTeoi18M9i8RvkYeDXE9nwmIWk9VQGaVkIy7G1WBQO
-	v1lAzYkV2WFlv16ScJ9U8S+dPJzWWg2yNL/piNvo7DqP2+z7Q6/RB/SeSYzMjUx15rnfz/A3C31
-	7s13GJInrH90HTK
-X-Received: by 2002:a05:6214:130b:b0:89c:8a0f:55a0 with SMTP id 6a1803df08f44-8bc42f55059mr354930086d6.16.1778509353844;
-        Mon, 11 May 2026 07:22:33 -0700 (PDT)
+        bh=jkQyUrfkqfz8XQIv/dWok02t1PybehRH8tb5fDYY/+I=;
+        b=n3uaaysb0cWYPl9GmNVM9CIkBrhFg7skAC/bVldLq+aihW9XeLLQ6UWjNjUQeN/UDw
+         JQrg9MDtfjlLL+RnaJS35Y8+X5Iw3TWs6jCsW/UtdSvxi0qJ/x3/13bkflOlyeUE2V5z
+         9lYI4guW9fgDOZf/Znc7TEgZSK94jEcMrR5rwbOms4GBKDSlJFR6CRuaTF4ozcSclesF
+         pqQsmYCd8DfBLpEn/KLrFtrakDR3byB0nF7qROfcGoCMXpXRlzu85P3hANzQOHW2NsFV
+         c7zQIy/bDvvcxp5MU4xn9Vga4igONVbF9tZPihuQZMmiYHn3BoLsJWgG5yElS03eTd1J
+         Ec9Q==
+X-Forwarded-Encrypted: i=1; AFNElJ9gnzmYEmfBx2pirpZfFdtW5+pedLbDr115FCHUf0yZmyuxjaTeEzhUgilJXQfdAUzSGKJ8vg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyIDVG4rc1OOHZ7HutBULBPoEPtUhUECmVKI09DLPhejGq5LDkg
+	9dfQzPqPEAsuty5ZeQoCxZCHVj4B7wbCcz3ZiY4VPsL+VuA1bnMGUYYaGld2piLfL7o=
+X-Gm-Gg: Acq92OHCbWnVoOze7r/Fto68eCSCIVfFxtxxddon/twVMX3hYxqOCtwvh7h+24z235M
+	wE35+9VmzRCUgHJOW3sWZ8XCRs5I45JFIWFgOiDyMAhqz2SlVuhMTzkS9e2uQYM4xu2oVEZJysG
+	tACqL8PI4oi1ahT+rsjQYhLFQs+ZK+ArBR2OUPTATM3howmxs/wuzKGa4dYZqPEh2sAlDqmpr6A
+	OVCqF1lMVq5FsEYNoYMcQrmU8F733coZp5AK0OhtfXQLc8rH5E0m1YFWSznaRx1IDpdE8NRHFPw
+	QV/tFQ+kFfVGirnbkkVE4Cyb24T2CqV0HBbvQ6OwV0Z2SmcRtKBMn6Hrkxk6btDUFJke2cm0hRr
+	JHOCrXObMthm/0oPhqm9X8+olTxfGa5tZzmN1FYOMg2fh8ZG1kKDj18ag2fugeuZj9LsJ+WgZA0
+	MobnGKu5zD6zVmt2Pi4AE8Kq2fsyJib0+RQzRHehBx+Ft2WGBTU6q2DUUONItK0H6P4d30wJcNO
+	3TRzA==
+X-Received: by 2002:a05:620a:19a0:b0:8ef:6b87:5c5b with SMTP id af79cd13be357-904d3eafa08mr3652391585a.9.1778509466038;
+        Mon, 11 May 2026 07:24:26 -0700 (PDT)
 Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8b53d83114fsm308645866d6.48.2026.05.11.07.22.33
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8fc2c91cd89sm3166863085a.35.2026.05.11.07.24.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2026 07:22:33 -0700 (PDT)
+        Mon, 11 May 2026 07:24:25 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1wMRWi-00000004oEW-37xE;
-	Mon, 11 May 2026 11:22:32 -0300
-Date: Mon, 11 May 2026 11:22:32 -0300
+	id 1wMRYX-00000004oFc-0DRM;
+	Mon, 11 May 2026 11:24:25 -0300
+Date: Mon, 11 May 2026 11:24:25 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Mostafa Saleh <smostafa@google.com>
 Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -73,15 +73,19 @@ Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
 	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
 	vdonnefort@google.com, sebastianene@google.com, keirf@google.com
-Subject: Re: [PATCH v6 08/25] KVM: arm64: iommu: Shadow host stage-2 page
- table
-Message-ID: <20260511142232.GP9285@ziepe.ca>
+Subject: Re: [PATCH v6 04/25] iommu/arm-smmu-v3: Move TLB range invalidation
+ into common code
+Message-ID: <20260511142425.GQ9285@ziepe.ca>
 References: <20260501111928.259252-1-smostafa@google.com>
- <20260501111928.259252-9-smostafa@google.com>
- <20260501130006.GF6912@ziepe.ca>
- <afiRB3e3o0G1oZvY@google.com>
- <20260509232714.GI9285@ziepe.ca>
- <agG8XtrHUfWGy-kd@google.com>
+ <20260501111928.259252-5-smostafa@google.com>
+ <20260501124143.GB6912@ziepe.ca>
+ <afiN1UwS9q6F6A_v@google.com>
+ <afoYBYIJOTClsdLS@ziepe.ca>
+ <afoeIVIGE-JjYy22@google.com>
+ <afsPfEzgGtAFrN5P@ziepe.ca>
+ <afxd8Km40A5ulZvd@google.com>
+ <20260509232931.GJ9285@ziepe.ca>
+ <agHBby1qBvR6cmJY@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -91,63 +95,44 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <agG8XtrHUfWGy-kd@google.com>
+In-Reply-To: <agHBby1qBvR6cmJY@google.com>
 
-On Mon, May 11, 2026 at 11:24:14AM +0000, Mostafa Saleh wrote:
-> On Sat, May 09, 2026 at 08:27:14PM -0300, Jason Gunthorpe wrote:
-> > On Mon, May 04, 2026 at 12:28:55PM +0000, Mostafa Saleh wrote:
-> > > So far this is the list of requirements/changes needed share the
-> > > stage-2 page table (besides the obvious: same page table format,
-> > > granularity, endianness...)
-> > > 
-> > > 1) HW BBM is not supported in the hypervisor page table, that’s
-> > >    because it can generate TLB conflict aborts, which the hypervisor
-> > >    can not handle because of the limited syndrome information.
-> > >    We can rely on FEAT_BBML3 which was newly introduced to work
-> > >    around that, it’s quite niche and not supported in KVM yet or
-> > >    have an allow list similar to the kernel
-> > >    (as in cpu_supports_bbml2_noabort()) which also limits the number
-> > >    of CPUs that can run this.
+On Mon, May 11, 2026 at 11:45:51AM +0000, Mostafa Saleh wrote:
+> On Sat, May 09, 2026 at 08:29:31PM -0300, Jason Gunthorpe wrote:
+> > On Thu, May 07, 2026 at 09:40:00AM +0000, Mostafa Saleh wrote:
+> > > But that doesn’t solve the problem, which is: At some point, whether
+> > > eagerly from the page table code, through gather sync or a fancy
+> > > invalidation array, the driver will need to populate a range
+> > > invalidation command (tg, ttl, scale...) and this logic is better
+> > > shared with the main driver which is this patch does.
 > > 
-> > Do you think pkvm will need BBM? Hitless replace of a PTE is already a
-> > pretty advanced feature and the SMMU has its own support matrix there
-> > too. Is it for shared/private conversion?
-> 
-> Yes, we can break block on memory donation which is transfer of
-> ownership to the hypervisor or a guest.
-
-So you need BBM support on the SMMU too? That is probably a big
-problem because the SMMU is often mismatched to the CPU :\
-
-Also io-pgtable arm cannot trigger BBM behaviors, so how do you
-implement it?
-
-> > No.. once you turn on IO like this you don't have page faults
-> > anymore. Everything must be permantently mapped into the SMMU view, it
-> > can never be made non-present and you must run without page
-> > faults. That's what you have in the io-pgtable constructed table,
-> > right?
-> 
-> Exactly, but the CPU page table doesn’t guarantee that, so we either
-> have to handle page faults in the IOMMU, or completely change how KVM
-> deals with stage-2 if we want to share the page table with the CPU.
-
-So that's the real explanation, KVM cannot manage the S2 in the right
-way so you can't share it. RMM/etc are managing the S2 without
-pointless page faults so they can share it.
-
-> > >    Alternatively, we can pin the stage-2 pages, that would require some
-> > >    hypercalls, hacks to the driver/IOMMU API and possibly new semantics
-> > >    in the DMA-API for IDENTITY devices as they will still need to pin
-> > >    the pages as they are actually in stage-2 translation and not bypass.
+> > My point is this patch doesn't share enough. If you do need to issue
+> > invalidations then share everything below the top level tlbi entry
+> > point and don't try to make a pkvm version of the entire logic just by
+> > ripping out the range logic.
 > > 
-> > ?? Then how does this series work?
+> > There is no reason for pkvm to need a different algorithm
+> > here. Especially when you get to supporting ATS and multiple devices
+> > and smmus you may as well just use the whole thing.
+> > 
+> > Which is why I suggested to copy the entire call chain into a shared
+> > file
 > 
-> This series works fine as it shadows the page table and doesn't share it
-> with the CPU, so it fully populates the address space.
+> Agh, actually this seires doesn't deal with ATS, which I think is
+> wrong, propably we have to issue CMDQ_OP_ATC_INV for the whole
+> space on every S2 invalidation which has to be done per-SID and
+> as it can't be done by VMID :/ or just hide ATS support from host for
+> now, I will look into more for v7.
 
-Which is why it is so weird that KVM is using a partially populated S2
-when there is, and must, be a fully populated one for the SMMU. But I
-understand there are reasons fo rthis.
+Hiding from the host is a fine solution to start with.
+
+> But anyway, we don’t have to share any logic, the kernel driver
+> is quite complicated as it is designed for a different use-case.
+> Doing that makes the hypervisor unnecessary complicated and
+> oversharing this logic makes the kernel driver less maintainable IMO.
+
+invalidation is complicated, you should not try to open code your own
+version. You really cannot make it any simpler than what is in the
+driver, just use the code it is already decently modular.
 
 Jason
