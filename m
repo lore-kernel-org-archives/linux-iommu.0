@@ -1,30 +1,30 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D1B3E4B8DFA
-	for <iommu@lists.linux.dev>; Mon, 11 May 2026 18:41:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8CBE84BC023
+	for <iommu@lists.linux.dev>; Mon, 11 May 2026 18:41:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778524883; cv=none; b=srRmuDQoC5OdSzIYQRUD71DME4gnjIsNDlOFgHAKRVHowi/8LIF5/SxjgrtxhqvOX/Ty3wVsUEUL9C0OuLkYB725PMPZN074ajHAPY2e/9UpUDZ7fVgI6ZhhdYlfc/MoT7MA1hcz41suwSdybpg7nb/Xy7ku4L0WUl+Bm7fljTc=
+	t=1778524884; cv=none; b=rCuu946MyA9X+RBSA/9SjNfOm6oVkOFRyJxH5ptkcgOpzbJNkJOuNRZN82CnU/86sRjsLUPz2MkBghOS2JOCpRA976t6THY7iLjq7sduuFMsXsfouhLPZIC4/C3xvZgON3yzbHDPhOZCC49dXxHHNnR8BuQKzfwRdOS8cuufpdw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778524883; c=relaxed/simple;
-	bh=S/mLqIW2xoIjdzsecFkCDuFrsg6BIpzl+B1ViTQaLao=;
+	s=arc-20240116; t=1778524884; c=relaxed/simple;
+	bh=bQsSNTNsI2IlIYddQCMknSy1Db/4RJRmkKxSm/jKHvM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=FswBXelplMMzIHUDZ3UAXR5LhiovRbm2bqrhHSrLTXXfJExhhpuETC5F/OJXY3X4dwQhgzfJaRg3fzipjVKViZ63lAuMhzFxiMrVrf3Y3AEcq8msafEhBS2juB47y3b0O3QgTf7FZHNmGZGJH2ljrYEdl5uhDDlFYhaOCoOnbJM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=cRWVh4ke; arc=none smtp.client-ip=13.77.154.182
+	 MIME-Version:Content-Type; b=hHYDYfe/4OxoI+S/yT9eFSLuMlMJ/19h5ny2QnAGaG3f6+VHSY5wmBOezvWzwnAYdDCvW95ArmeJ1MAGEJXclQX18ZSEMtNJW8qjV0u3AbifBhKVh+C11d554DiNv30qeF42U1WIr9DC7YXfNl+fgcM7q80Fgf25BJUMLb7EVyI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Y8lccsXz; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="cRWVh4ke"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Y8lccsXz"
 Received: from administrator-PowerEdge-R660.corp.microsoft.com (unknown [131.107.147.7])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 6C3EE20B7168;
-	Mon, 11 May 2026 11:41:19 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6C3EE20B7168
+	by linux.microsoft.com (Postfix) with ESMTPSA id 0A76620B7169;
+	Mon, 11 May 2026 11:41:20 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0A76620B7169
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1778524879;
-	bh=JLT/D+LKRNNW+8Y+8wWf9P3+geYXRWGwMMUe+rr4oek=;
+	s=default; t=1778524880;
+	bh=TDZ5i67VQF3EWjuduA+apFnardmoQaxov31srAy2fpI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=cRWVh4ke8tghsxTSwLfPJPJZdy0OOtVCssMgisG2giEt1BN9iRtzm4MCLQ3WF/OKl
-	 NRIwhnsdgnJBIYJ9dieMqcTy/5jm+ayqdnKd2n/0NVZDtzmnrgy+1b9wv4+Ca0o7BV
-	 27sj5YJDD1PlcB+IH1haRaE/yLki/Y8slj5SCPr4=
+	b=Y8lccsXz7o2I2td4BBDbTkk3NCB4UAQcooWM6THembNSODIXKXXvR+hdXVqQ+ewUm
+	 H+sQWHL7fmoed8loB53FgwRVVknUbTpBcTFaow3yA+2IYvakV71+M3odae9IEcLtUk
+	 h/NppbsGCQRc0lDIm+MSu1nOnToCM3sBUb/7l6TQ=
 From: Jacob Pan <jacob.pan@linux.microsoft.com>
 To: linux-kernel@vger.kernel.org,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
@@ -43,9 +43,9 @@ Cc: Saurabh Sengar <ssengar@linux.microsoft.com>,
 	Will Deacon <will@kernel.org>,
 	Jacob Pan <jacob.pan@linux.microsoft.com>,
 	Baolu Lu <baolu.lu@linux.intel.com>
-Subject: [PATCH v5 5/9] iommufd: Add an ioctl to query PA from IOVA for noiommu mode
-Date: Mon, 11 May 2026 11:41:10 -0700
-Message-ID: <20260511184116.3687392-6-jacob.pan@linux.microsoft.com>
+Subject: [PATCH v5 6/9] vfio/group: Add VFIO_CDEV_NOIOMMU Kconfig and tolerate NULL group
+Date: Mon, 11 May 2026 11:41:11 -0700
+Message-ID: <20260511184116.3687392-7-jacob.pan@linux.microsoft.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260511184116.3687392-1-jacob.pan@linux.microsoft.com>
 References: <20260511184116.3687392-1-jacob.pan@linux.microsoft.com>
@@ -55,247 +55,149 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-To support no-IOMMU mode where userspace drivers perform unsafe DMA
-using physical addresses, introduce a new API to retrieve the
-physical address of a user-allocated DMA buffer that has been mapped to
-an IOVA via IOAS. The mapping is backed by SW-only I/O page tables
-maintained by the generic IOMMUPT framework.
+Add a new CONFIG_VFIO_CDEV_NOIOMMU option, independent of
+CONFIG_VFIO_GROUP, to support noiommu mode via the cdev interface.
 
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Since CONFIG_VFIO_GROUP can be enabled while CONFIG_VFIO_GROUP_NOIOMMU
+is not, guard the noiommu group allocation in vfio_group_find_or_alloc()
+with IS_ENABLED(CONFIG_VFIO_GROUP_NOIOMMU) to prevent creating spurious
+/dev/vfio/noiommu-N group files when only cdev noiommu is configured.
+
+For cdev noiommu devices that have no group, let vfio_device_set_group()
+return success with a NULL group pointer and add null guards in group
+functions that may be called during device lifecycle. These guards are
+contained within group.c and are dead code for IOMMU-enabled devices
+where device->group is always non-NULL.
+
 Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
 ---
-v5:
-   - Add header stubs for iopt_get_phys() and
-     iommufd_ioas_noiommu_get_pa() to avoid ifdef at call sites (Kevin)
-v4:
-   - Fix ioctl return type (Yi Liu)
-v2:
-   - New patch
----
- drivers/iommu/iommufd/io_pagetable.c    | 62 +++++++++++++++++++++++++
- drivers/iommu/iommufd/ioas.c            | 30 ++++++++++++
- drivers/iommu/iommufd/iommufd_private.h | 18 +++++++
- drivers/iommu/iommufd/main.c            |  3 ++
- include/uapi/linux/iommufd.h            | 25 ++++++++++
- 5 files changed, 138 insertions(+)
+ drivers/vfio/Kconfig | 17 +++++++++++++++++
+ drivers/vfio/group.c | 31 +++++++++++++++++++++++++++++--
+ 2 files changed, 46 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
-index 24d4917105d9..1ee7c8e6408c 100644
---- a/drivers/iommu/iommufd/io_pagetable.c
-+++ b/drivers/iommu/iommufd/io_pagetable.c
-@@ -859,6 +859,68 @@ int iopt_unmap_iova(struct io_pagetable *iopt, unsigned long iova,
- 	return iopt_unmap_iova_range(iopt, iova, iova_last, unmapped);
+diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
+index 39939be2908e..b1b1633412a9 100644
+--- a/drivers/vfio/Kconfig
++++ b/drivers/vfio/Kconfig
+@@ -75,6 +75,23 @@ config VFIO_GROUP_NOIOMMU
+ 
+ 	  If you don't know what to do here, say N.
+ 
++config VFIO_CDEV_NOIOMMU
++	bool "VFIO cdev No-IOMMU support"
++	depends on VFIO_DEVICE_CDEV
++	select IOMMUFD_NOIOMMU
++	help
++	  VFIO cdev no-IOMMU mode enables device access via the cdev
++	  interface without hardware IOMMU backing. This relies on
++	  IOMMUFD_NOIOMMU to provide a SW-only IO page table for
++	  IOVA-to-PA lookups.
++
++	  Use of this mode will result in an unsupportable kernel and
++	  will therefore taint the kernel. Device assignment to virtual
++	  machines is also not possible with this mode since there is
++	  no IOMMU to provide DMA translation.
++
++	  If you don't know what to do here, say N.
++
+ config VFIO_VIRQFD
+ 	bool
+ 	select EVENTFD
+diff --git a/drivers/vfio/group.c b/drivers/vfio/group.c
+index 5b9329df04e5..c8a75ee28f20 100644
+--- a/drivers/vfio/group.c
++++ b/drivers/vfio/group.c
+@@ -386,6 +386,9 @@ int vfio_device_block_group(struct vfio_device *device)
+ 	struct vfio_group *group = device->group;
+ 	int ret = 0;
+ 
++	if (!group)
++		return 0;
++
+ 	mutex_lock(&group->group_lock);
+ 	if (group->opened_file) {
+ 		ret = -EBUSY;
+@@ -403,6 +406,9 @@ void vfio_device_unblock_group(struct vfio_device *device)
+ {
+ 	struct vfio_group *group = device->group;
+ 
++	if (!group)
++		return;
++
+ 	mutex_lock(&group->group_lock);
+ 	group->cdev_device_open_cnt--;
+ 	mutex_unlock(&group->group_lock);
+@@ -641,7 +647,8 @@ static struct vfio_group *vfio_group_find_or_alloc(struct device *dev)
+ 	struct vfio_group *group;
+ 
+ 	iommu_group = iommu_group_get(dev);
+-	if (!iommu_group && vfio_noiommu) {
++	if (!iommu_group && IS_ENABLED(CONFIG_VFIO_GROUP_NOIOMMU) &&
++	    vfio_noiommu) {
+ 		/*
+ 		 * With noiommu enabled, create an IOMMU group for devices that
+ 		 * don't already have one, implying no IOMMU hardware/driver
+@@ -686,8 +693,19 @@ int vfio_device_set_group(struct vfio_device *device,
+ 	else
+ 		group = vfio_noiommu_group_alloc(device->dev, type);
+ 
+-	if (IS_ERR(group))
++	if (IS_ERR(group)) {
++		/*
++		 * Cdev noiommu devices don't need a vfio_group. When
++		 * CONFIG_VFIO_GROUP_NOIOMMU is not set, the group alloc
++		 * above returns -EINVAL for devices without an IOMMU.
++		 * That's fine — a NULL group is expected and iommufd
++		 * handles these devices directly.
++		 */
++		if (IS_ENABLED(CONFIG_VFIO_CDEV_NOIOMMU) &&
++		    vfio_noiommu && !device->dev->iommu)
++			return 0;
+ 		return PTR_ERR(group);
++	}
+ 
+ 	/* Our reference on group is moved to the device */
+ 	device->group = group;
+@@ -699,6 +717,9 @@ void vfio_device_remove_group(struct vfio_device *device)
+ 	struct vfio_group *group = device->group;
+ 	struct iommu_group *iommu_group;
+ 
++	if (!group)
++		return;
++
+ 	if (group->type == VFIO_NO_IOMMU || group->type == VFIO_EMULATED_IOMMU)
+ 		iommu_group_remove_device(device->dev);
+ 
+@@ -742,6 +763,8 @@ void vfio_device_remove_group(struct vfio_device *device)
+ 
+ void vfio_device_group_register(struct vfio_device *device)
+ {
++	if (!device->group)
++		return;
+ 	mutex_lock(&device->group->device_lock);
+ 	list_add(&device->group_next, &device->group->device_list);
+ 	mutex_unlock(&device->group->device_lock);
+@@ -749,6 +772,8 @@ void vfio_device_group_register(struct vfio_device *device)
+ 
+ void vfio_device_group_unregister(struct vfio_device *device)
+ {
++	if (!device->group)
++		return;
+ 	mutex_lock(&device->group->device_lock);
+ 	list_del(&device->group_next);
+ 	mutex_unlock(&device->group->device_lock);
+@@ -786,6 +811,8 @@ void vfio_device_group_unuse_iommu(struct vfio_device *device)
+ 
+ bool vfio_device_has_container(struct vfio_device *device)
+ {
++	if (!device->group)
++		return false;
+ 	return device->group->container;
  }
  
-+#ifdef CONFIG_IOMMUFD_NOIOMMU
-+int iopt_get_phys(struct io_pagetable *iopt, unsigned long iova, u64 *paddr,
-+		  u64 *length)
-+{
-+	struct iopt_area *area;
-+	u64 tmp_length = 0;
-+	u64 tmp_paddr = 0;
-+	int rc = 0;
-+
-+	down_read(&iopt->iova_rwsem);
-+	area = iopt_area_iter_first(iopt, iova, iova);
-+	if (!area || !area->pages) {
-+		rc = -ENOENT;
-+		goto unlock_exit;
-+	}
-+
-+	if (!area->storage_domain ||
-+	    area->storage_domain->owner != &iommufd_noiommu_ops) {
-+		rc = -EOPNOTSUPP;
-+		goto unlock_exit;
-+	}
-+
-+	*paddr = iommu_iova_to_phys(area->storage_domain, iova);
-+	if (!*paddr) {
-+		rc = -EINVAL;
-+		goto unlock_exit;
-+	}
-+
-+	tmp_length = PAGE_SIZE - offset_in_page(iova);
-+	tmp_paddr = *paddr;
-+	/*
-+	 * Scan the domain for the contiguous physical address length so that
-+	 * userspace search can be optimized for fewer ioctls.
-+	 */
-+	while (iova < iopt_area_last_iova(area)) {
-+		unsigned long next_iova;
-+		u64 next_paddr;
-+
-+		if (check_add_overflow(iova, PAGE_SIZE, &next_iova))
-+			break;
-+
-+		if (next_iova > iopt_area_last_iova(area))
-+			break;
-+
-+		next_paddr = iommu_iova_to_phys(area->storage_domain, next_iova);
-+
-+		if (!next_paddr || next_paddr != tmp_paddr + PAGE_SIZE)
-+			break;
-+
-+		iova = next_iova;
-+		tmp_paddr += PAGE_SIZE;
-+		tmp_length += PAGE_SIZE;
-+	}
-+	*length = tmp_length;
-+
-+unlock_exit:
-+	up_read(&iopt->iova_rwsem);
-+
-+	return rc;
-+}
-+#endif
-+
- int iopt_unmap_all(struct io_pagetable *iopt, unsigned long *unmapped)
- {
- 	/* If the IOVAs are empty then unmap all succeeds */
-diff --git a/drivers/iommu/iommufd/ioas.c b/drivers/iommu/iommufd/ioas.c
-index fed06c2b728e..666440e32c9e 100644
---- a/drivers/iommu/iommufd/ioas.c
-+++ b/drivers/iommu/iommufd/ioas.c
-@@ -375,6 +375,36 @@ int iommufd_ioas_unmap(struct iommufd_ucmd *ucmd)
- 	return rc;
- }
- 
-+#ifdef CONFIG_IOMMUFD_NOIOMMU
-+int iommufd_ioas_noiommu_get_pa(struct iommufd_ucmd *ucmd)
-+{
-+	struct iommu_ioas_noiommu_get_pa *cmd = ucmd->cmd;
-+	struct iommufd_ioas *ioas;
-+	int rc;
-+
-+	if (!capable(CAP_SYS_RAWIO))
-+		return -EPERM;
-+
-+	if (cmd->flags || cmd->__reserved)
-+		return -EOPNOTSUPP;
-+
-+	ioas = iommufd_get_ioas(ucmd->ictx, cmd->ioas_id);
-+	if (IS_ERR(ioas))
-+		return PTR_ERR(ioas);
-+
-+	rc = iopt_get_phys(&ioas->iopt, cmd->iova, &cmd->out_phys,
-+			   &cmd->out_length);
-+	if (rc)
-+		goto out_put;
-+
-+	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
-+out_put:
-+	iommufd_put_object(ucmd->ictx, &ioas->obj);
-+
-+	return rc;
-+}
-+#endif
-+
- static void iommufd_release_all_iova_rwsem(struct iommufd_ctx *ictx,
- 					   struct xarray *ioas_list)
- {
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 2682b5baa6e9..13f1506d8066 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -118,6 +118,16 @@ int iopt_map_pages(struct io_pagetable *iopt, struct list_head *pages_list,
- int iopt_unmap_iova(struct io_pagetable *iopt, unsigned long iova,
- 		    unsigned long length, unsigned long *unmapped);
- int iopt_unmap_all(struct io_pagetable *iopt, unsigned long *unmapped);
-+#ifdef CONFIG_IOMMUFD_NOIOMMU
-+int iopt_get_phys(struct io_pagetable *iopt, unsigned long iova, u64 *paddr,
-+		  u64 *length);
-+#else
-+static inline int iopt_get_phys(struct io_pagetable *iopt, unsigned long iova,
-+				u64 *paddr, u64 *length)
-+{
-+	return -EOPNOTSUPP;
-+}
-+#endif
- 
- int iopt_read_and_clear_dirty_data(struct io_pagetable *iopt,
- 				   struct iommu_domain *domain,
-@@ -346,6 +356,14 @@ int iommufd_ioas_map_file(struct iommufd_ucmd *ucmd);
- int iommufd_ioas_change_process(struct iommufd_ucmd *ucmd);
- int iommufd_ioas_copy(struct iommufd_ucmd *ucmd);
- int iommufd_ioas_unmap(struct iommufd_ucmd *ucmd);
-+#ifdef CONFIG_IOMMUFD_NOIOMMU
-+int iommufd_ioas_noiommu_get_pa(struct iommufd_ucmd *ucmd);
-+#else
-+static inline int iommufd_ioas_noiommu_get_pa(struct iommufd_ucmd *ucmd)
-+{
-+	return -EOPNOTSUPP;
-+}
-+#endif
- int iommufd_ioas_option(struct iommufd_ucmd *ucmd);
- int iommufd_option_rlimit_mode(struct iommu_option *cmd,
- 			       struct iommufd_ctx *ictx);
-diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-index 8c6d43601afb..3b4192d70570 100644
---- a/drivers/iommu/iommufd/main.c
-+++ b/drivers/iommu/iommufd/main.c
-@@ -424,6 +424,7 @@ union ucmd_buffer {
- 	struct iommu_ioas_alloc alloc;
- 	struct iommu_ioas_allow_iovas allow_iovas;
- 	struct iommu_ioas_copy ioas_copy;
-+	struct iommu_ioas_noiommu_get_pa noiommu_get_pa;
- 	struct iommu_ioas_iova_ranges iova_ranges;
- 	struct iommu_ioas_map map;
- 	struct iommu_ioas_unmap unmap;
-@@ -482,6 +483,8 @@ static const struct iommufd_ioctl_op iommufd_ioctl_ops[] = {
- 	IOCTL_OP(IOMMU_IOAS_MAP, iommufd_ioas_map, struct iommu_ioas_map, iova),
- 	IOCTL_OP(IOMMU_IOAS_MAP_FILE, iommufd_ioas_map_file,
- 		 struct iommu_ioas_map_file, iova),
-+	IOCTL_OP(IOMMU_IOAS_NOIOMMU_GET_PA, iommufd_ioas_noiommu_get_pa, struct iommu_ioas_noiommu_get_pa,
-+		 out_phys),
- 	IOCTL_OP(IOMMU_IOAS_UNMAP, iommufd_ioas_unmap, struct iommu_ioas_unmap,
- 		 length),
- 	IOCTL_OP(IOMMU_OPTION, iommufd_option, struct iommu_option, val64),
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index e998dfbd6960..7df366d161f1 100644
---- a/include/uapi/linux/iommufd.h
-+++ b/include/uapi/linux/iommufd.h
-@@ -57,6 +57,7 @@ enum {
- 	IOMMUFD_CMD_IOAS_CHANGE_PROCESS = 0x92,
- 	IOMMUFD_CMD_VEVENTQ_ALLOC = 0x93,
- 	IOMMUFD_CMD_HW_QUEUE_ALLOC = 0x94,
-+	IOMMUFD_CMD_IOAS_NOIOMMU_GET_PA = 0x95,
- };
- 
- /**
-@@ -219,6 +220,30 @@ struct iommu_ioas_map {
- };
- #define IOMMU_IOAS_MAP _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_MAP)
- 
-+/**
-+ * struct iommu_ioas_noiommu_get_pa - ioctl(IOMMU_IOAS_NOIOMMU_GET_PA)
-+ * @size: sizeof(struct iommu_ioas_noiommu_get_pa)
-+ * @flags: Reserved, must be 0 for now
-+ * @ioas_id: IOAS ID to query IOVA to PA mapping from
-+ * @__reserved: Must be 0
-+ * @iova: IOVA to query
-+ * @out_length: Number of bytes contiguous physical address starting from phys
-+ * @out_phys: Output physical address the IOVA maps to
-+ *
-+ * Query the physical address backing an IOVA range. The entire range must be
-+ * mapped already. For noiommu devices doing unsafe DMA only.
-+ */
-+struct iommu_ioas_noiommu_get_pa {
-+	__u32 size;
-+	__u32 flags;
-+	__u32 ioas_id;
-+	__u32 __reserved;
-+	__aligned_u64 iova;
-+	__aligned_u64 out_length;
-+	__aligned_u64 out_phys;
-+};
-+#define IOMMU_IOAS_NOIOMMU_GET_PA _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_NOIOMMU_GET_PA)
-+
- /**
-  * struct iommu_ioas_map_file - ioctl(IOMMU_IOAS_MAP_FILE)
-  * @size: sizeof(struct iommu_ioas_map_file)
 -- 
 2.43.0
 
