@@ -1,46 +1,44 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8EED13B8D75
-	for <iommu@lists.linux.dev>; Mon, 11 May 2026 08:08:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 170C43ACF1C
+	for <iommu@lists.linux.dev>; Mon, 11 May 2026 08:13:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778486938; cv=none; b=AueHMiHHRalzMEeK7OgVGep0w2ys5IxIMsZUbeaj9GUQBzfb0LIMfnqGirPU/T4qDd3DnmCNw79wWfIA6Unp94m1e1Suev7XuTcg+nW+SD2lqq82YyfHLXMH5fYnUh5wwKJ1ileHeEydg/qSS+UOHR4WttjqRl/yHxb3ImvK29c=
+	t=1778487243; cv=none; b=rTF/V7LAGfdRiaekrGKYm0bgUbJv0M7pCkkKEu852Y+p9bBzID9jp1T3W2yVnL0H9yEhDR95qauX+hzSyv232b41Le2P39Z0MBi8qy8s+EdnqlrZtHQob1TlS15BsnVph9o3z3g9CfVU/DJUsUdt2pZNuYfDX9Cj32B7GyQdAxI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778486938; c=relaxed/simple;
-	bh=1OTai5XQcPKAzlvbKeBHtZYacoe9n2xrOOUoEPBnkU0=;
+	s=arc-20240116; t=1778487243; c=relaxed/simple;
+	bh=0DvqQBlt3gljLeEo6ZrxfhFW8GIa1uyFtPs9IsLL+pk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=l4hD4gU3nP0L8N4q9qvU8BmWxBqKPi134Wr+aNWKITHWLa4/0r9hgEacmlvTVUVaNoxVqlXcLTOcT4Ghgt29BxDTMoqO699TltMoK5dN8NxH6gWQXg1uQuD9DXHRA9V2g705Opf4ZKdqjb0pdWlYzK1CPnpq1NrqUIYNbDuGypU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=JQegSdcg; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=N17bS+TZjHaUFmlaGRT3ulHsdZHBo5EUmrIJ9PvgcMq3fRohUacFsx7V9ZOoBMvfuQik8gZn0tuZmLJivCI46emzWJjAPtZWtM1hi6qj1DZ+ABgruXDex61NX8U9YKMIyaLAweCx02nNDREr9y+wXMKRNUCbGJFp9833cT2HSYU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=LMKh12Yg; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="JQegSdcg"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="LMKh12Yg"
 Received: from 8bytes.org (p200300f6af1d9600f5faa5cebd6c042e.dip0.t-ipconnect.de [IPv6:2003:f6:af1d:9600:f5fa:a5ce:bd6c:42e])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id DD3DA1C44DC;
-	Mon, 11 May 2026 10:08:41 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id F107E1C44E0;
+	Mon, 11 May 2026 10:13:49 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1778486922;
-	bh=1OTai5XQcPKAzlvbKeBHtZYacoe9n2xrOOUoEPBnkU0=;
+	s=default; t=1778487230;
+	bh=0DvqQBlt3gljLeEo6ZrxfhFW8GIa1uyFtPs9IsLL+pk=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=JQegSdcga1IhnUnKF+Sv0cnGkICuLjLcmCuSMJmh4xwPkFn5VhnXZoSWXrwh2N9M2
-	 uyx5DS0/WE3dwiplV2AhosUqcYpXDlUL2JH5hLfdX3mjmlXELx3aZSM/Cep+h3eHWX
-	 O8ge+w7D6inMIPQA6kw11HXNPboYOl+L1HS5dBhw97z4kdiVigJBtULQbtWtoW2fbv
-	 me1VdyiWaqgzdcPJVLa0n+fkwjujeJU0VVAVUDOQfxXIseSKRMvnt4IBBC/5+Jo3bO
-	 OIMXmgWlqT838OAZnTKHIuDNCSWy374DaLY5ZFKdOfELssMIttv7FnnGkvQhAhaB1j
-	 i71I0iKNJHDbg==
-Date: Mon, 11 May 2026 10:08:40 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: "Jose Fernandez (Anthropic)" <jose.fernandez@linux.dev>
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <jroedel@suse.de>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org, Ziyuan Chen <zc@anthropic.com>, 
-	Josef Bacik <josef@toxicpanda.com>
-Subject: Re: [PATCH] iommu/amd: Bounds-check devid in __rlookup_amd_iommu()
-Message-ID: <cfhoa2kztzk5xklrbl5nnygenxfrro2smow5naj4xascc4ugt6@byfaegjgwjpr>
-References: <20260421-amd-iommu-rlookup-bounds-v1-1-bbac5f0f48bd@linux.dev>
+	b=LMKh12YgctwyGx7SsUYcCleOH/ChnHbBzKFUAZcpUAZBehlaJy0/6E3tuyKwtfbiG
+	 WyQNM7YiYSfCSE6OyggGisYUKdb9vrs98L1fxyi40bIBFwQr8m3mT88nwZozvtc7wt
+	 c9y2ZYOBT9MRR5XmVzuBPBTbSBjciEj5QWdzVoNXav4xgDTSpckrBfzRi0e7D5DsvX
+	 huTLZg6rXATP5HMhv2Z/vO6MD0Hpssww+krOpAZ+14VO31AythjEpRQ+Tqe6QFZbCQ
+	 Pma2NWa6JRHJxBrVV1xJQpUzCytaXoxyH4xXn+NNdV5usjpW5m0/hOKSVcsZy5uS0h
+	 cHO5YzxXy205w==
+Date: Mon, 11 May 2026 10:13:48 +0200
+From: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: kevin.tian@intel.com, jgg@nvidia.com, will@kernel.org, 
+	robin.murphy@arm.com, baolu.lu@linux.intel.com, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, xueshuai@linux.alibaba.com
+Subject: Re: [PATCH rc v8 0/8] iommu: Fix pci_dev_reset_iommu_prepare/done()
+Message-ID: <v5ho7btw6blweqgo335blyyaf6gr4vh37yjtwqynawu44ufkj5@zwilvdbxm6gu>
+References: <cover.1777074513.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,18 +47,22 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260421-amd-iommu-rlookup-bounds-v1-1-bbac5f0f48bd@linux.dev>
+In-Reply-To: <cover.1777074513.git.nicolinc@nvidia.com>
 
-On Tue, Apr 21, 2026 at 07:26:13PM +0000, Jose Fernandez (Anthropic) wrote:
-> Fixes: e874c666b15b ("iommu/amd: Change rlookup, irq_lookup, and alias to use kvalloc()")
-> Cc: stable@vger.kernel.org
-> Reported-by: Ziyuan Chen <zc@anthropic.com>
-> Tested-by: Ziyuan Chen <zc@anthropic.com>
-> Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-> Assisted-by: Claude:unspecified
-> Signed-off-by: Jose Fernandez (Anthropic) <jose.fernandez@linux.dev>
-> ---
->  drivers/iommu/amd/iommu.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
+On Fri, Apr 24, 2026 at 06:15:19PM -0700, Nicolin Chen wrote:
+> Nicolin Chen (8):
+>   iommu: Fix NULL group->domain dereference in
+>     pci_dev_reset_iommu_done()
+>   iommu: Fix kdocs of pci_dev_reset_iommu_done()
+>   iommu: Replace per-group resetting_domain with per-gdev blocked flag
+>   iommu: Fix pasid attach in pci_dev_reset_iommu_prepare/done()
+>   iommu: Fix nested pci_dev_reset_iommu_prepare/done()
+>   iommu: Fix ATS invalidation timeouts during
+>     __iommu_remove_group_pasid()
+>   iommu: Fix WARN_ON in __iommu_group_set_domain_nofail() due to reset
+>   iommu: Warn on premature unblock during DMA aliased sibling reset
+> 
+>  drivers/iommu/iommu.c | 223 ++++++++++++++++++++++++++++++++++--------
+>  1 file changed, 181 insertions(+), 42 deletions(-)
 
 Applied for -rc, thanks.
