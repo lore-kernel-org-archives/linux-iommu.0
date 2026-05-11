@@ -1,140 +1,191 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0D02340242A
-	for <iommu@lists.linux.dev>; Mon, 11 May 2026 15:32:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FBD93D301B
+	for <iommu@lists.linux.dev>; Mon, 11 May 2026 16:07:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778513551; cv=none; b=k539HzLjhL0/vMQ9uJG/bOSaGpIlEw0pQJO/TSfOfmlxahDVq2GXnxzeCdQKcURbbnvf7zFiMql9RtC32fU5008TkX8j3KkecNGRz46ZfCKRhv00LwTwcVuZdgU3tCa1cQqAU6py7KovjiWrgz2G2kMxmjoKYwy5W8xRNetgoZc=
+	t=1778515640; cv=none; b=iyQaOkL6JGhzQTOpFrNcy8ndYF59/wXvhvLgel3ATrDpJBtImRgnWpNamhhFezdoHbL+4/UXSr21vWSoIqnQnBv8t9EZ54j5W2ugO/XczaazRsvugkdk9Y3LQnC6wlVRfmNT0yxFUVepof+PgbusMVbRk5LpbmkZziwLWIJFKN4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778513551; c=relaxed/simple;
-	bh=pl8wdqR3J5owQqTKJ9ZiLHKTq5azhHmOEVq9Hfx8phU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=S4sVW6h1/ZYrLJJoCXi+fcNjvuIX5gvJRszmKQVZd9tcRIv5w01iW6AR8M5rdhWk52Dz82dqxrsLFrWs7QdlEmtozAnzSY8BLc8QjxA7fy7a/AKeLWBAWIhr/IRWWvytapfJ7Skfm6SpU5rRN5fzk/jF31eCVnBH+m8WelbV45Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=QkFh16PN; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1778515640; c=relaxed/simple;
+	bh=2SUghpFDdCu0lHDEMeEu7bxOXhHv2vXRxLxKKa+EJAc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=TXWDKNcO9su3AfDywBFc0ycz62JZQBtkikzlxXKY4nzhqa5ZDPQJCP+JyRfl6cU8aF6SDhP6Ps2MwlOB62ivcR3jLSBnLn0G7oW/+U4lwR69xfjqeNkcJcb5KmNTpC/4sBzwt0G93ezyRGxIbdEqJX9neUkOeToVly+jpr8XdDU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=PDdLDJqQ; arc=none smtp.client-ip=209.85.214.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="QkFh16PN"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8591E1477;
-	Mon, 11 May 2026 08:32:16 -0700 (PDT)
-Received: from [10.57.68.228] (unknown [10.57.68.228])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DBEFD3F836;
-	Mon, 11 May 2026 08:32:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1778513541; bh=pl8wdqR3J5owQqTKJ9ZiLHKTq5azhHmOEVq9Hfx8phU=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=QkFh16PN2DwDTUj8DhF9YhnLssbOgxSEG2xB+tC8zrFs8TU+3XNmB8Lzhjue6Rrx6
-	 tkxm7y7/FhsZyHLvSVwMHrhFb2ZK3RUlOgrft8u/55dOIYtOFrPOg8+OEdILPOAS5j
-	 nVwX6YZoBRJ+GKSNpCieHVOx+h4+Y18Lf/5aU2fg=
-Message-ID: <98ccdefe-fe16-41fd-9267-00e0a1fe993f@arm.com>
-Date: Mon, 11 May 2026 16:32:18 +0100
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="PDdLDJqQ"
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2ba180a022dso85ad.1
+        for <iommu@lists.linux.dev>; Mon, 11 May 2026 09:07:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1778515639; x=1779120439; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=rueWGtmi0URcaWlYJW9AHk5rAqgIWokqrrvYb6vzEKs=;
+        b=PDdLDJqQYRcirbO4MK/h0OBV4pnq7wItV3zJENHB0EBGP1CT9U92tQxdzn3fTv80c1
+         uZgr2CAK0K3Lo3n4FGDtpkBP2SPkkM/htSki8/CDg1nQtFBAYGQHQiIYbXGh1VyMxWfv
+         YMDLDT0d7hRzwYz9KZlUxCToDdwZATLQhxrH73OdbWhpt/GPk9I8zzIPEGIAcDJy6Lxa
+         LS1TnWZ5G6ZYN6KyzdqgdkMKqRbSFVYzd3jtFY9IRYT2cF7zqOuCa8OPMatiS+OWUOOD
+         P8a9DWSyDjyVQ81MA5QMGQ5ZLDJAH3YpbWd3mLrfpfEWUPwxDuCsMOOhRhM2JUg70kg3
+         8cPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778515639; x=1779120439;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=rueWGtmi0URcaWlYJW9AHk5rAqgIWokqrrvYb6vzEKs=;
+        b=YehECaS1eitnnCmcsHAjkW1FEXSuqsbOSFCyPd9jhrJu00MQOCB3qyCDE4z/JfWiMZ
+         amDCVXr+WGE51VLsjTmiTugTPR5+amHXGbjMgWud36MHvCGwecNIHCm62LV4ecZJ5+tI
+         p5pvXCKki2IkMrIsEYzNp29hcnDfsl3KW3zgWmDCNJi8hnpnfDIyLjFNCkV7OwQamj34
+         LrZqsz64XW3KV2kf8QE2dZbGqOdH2IQmpJs5ktlPkgLuZIvzFZ4//pqb9M+UTaCP9Ua5
+         YgSzI1jfEWlMNDe0SNVaCTjpnUAZ1kLdTR+hZrTuBTCalgyWIE1aXSDI9Sn8dHDR79QY
+         WjLg==
+X-Forwarded-Encrypted: i=1; AFNElJ/Zh47Mmn35JrdSmBegRN/4Y96al5u06QB11Cbz2m/NqrRyzErXFdbgNepzTqTc86HBPSOTtQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxm/AXo6h4bl9478AavLRcJbdbYnT8FQmN1tBuAMFlrLGT/25+H
+	QDFOIlgeGdddplA29iHQUV9zGy5Y+4Ni6PaCldB94iVtwmjN89zmL/h/RPv1sk7Hqw==
+X-Gm-Gg: Acq92OG8jePefTz+9/VMIVSur293uoUysFEUI5Ekkc+mwHsLsuYULvnBeg8I/n/Tbv0
+	i4hBxNFXhzCZj0ZzC+TkqwZFiQYttkJa1G72jMrH7PCO3yNJl/x6TCA8e/SuG9hAPCuguDZBLic
+	st3WOkJ4t5zgum61/dnoEgGggroGkQzL9HCTSzstF3Z0/OQ8+mg6039D7Rg1wZC3cWkG8CWHWpH
+	UenA11G8zdaLTANKS5mUeXQtZJnSCKlIBZQoa2ZGuMlUsuZ6GEifJPS+t09CYDwZUkFDVZKFOJ4
+	OC/7t3Krw2olRLcChYjA49kzcT0IWFVOTBZ4fnRbB+gsbIagJfOAxijuqncAVjU6zt50q+byaD7
+	9HdhGFUsmz93DDw1shWtASL0zMmSvBxJRdk3+wImqUf/SFN5RCDK+zENG+3U2UZsRt10RwXQrkH
+	h9IVFcQx7V2bhsxA6cxiCwsmaz8FYxNllMH7Bu6lzqcmAhmnuCcizPWkC25JpVyCiH7ykJ
+X-Received: by 2002:a17:903:90c:b0:2a8:ffed:4663 with SMTP id d9443c01a7336-2bc747c2186mr6018285ad.12.1778515638084;
+        Mon, 11 May 2026 09:07:18 -0700 (PDT)
+Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-368ac4d713csm2377a91.0.2026.05.11.09.07.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 May 2026 09:07:17 -0700 (PDT)
+Date: Mon, 11 May 2026 16:07:10 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
+	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Mostafa Saleh <smostafa@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>,
+	Daniel Mentz <danielmentz@google.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	David Matlack <dmatlack@google.com>
+Subject: Re: [PATCH rc v2] iommu/arm-smmu-v3: Fix inconsistent ATS state
+ tracking
+Message-ID: <agH-rkumGS1vX4dv@google.com>
+References: <afj0cyBZwkVLyIwK@google.com>
+ <afoWrn/RXxDmcHsS@ziepe.ca>
+ <afpdm5lfIeWptxOh@google.com>
+ <afpwCIjQXwfImPXm@google.com>
+ <afsN9jrsfuigV+DM@ziepe.ca>
+ <afu5Y55W5oj70b5v@google.com>
+ <afu69hAtkRlI1GJd@google.com>
+ <20260509171451.GG9285@ziepe.ca>
+ <agHGaJfwPr7-F1z2@google.com>
+ <20260511141607.GN9285@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] dma-mapping: move dma_map_resource() sanity check into
- debug code
-To: Jianpeng Chang <jianpeng.chang.cn@windriver.com>, m.szyprowski@samsung.com
-Cc: leon@kernel.org, kbusch@kernel.org, jgg@ziepe.ca, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org
-References: <20260511083133.1096171-1-jianpeng.chang.cn@windriver.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260511083133.1096171-1-jianpeng.chang.cn@windriver.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260511141607.GN9285@ziepe.ca>
 
-On 2026-05-11 9:31 am, Jianpeng Chang wrote:
-> dma_map_resource() uses pfn_valid() to ensure the range is not RAM.
-> However, pfn_valid() only checks for availability of the memory map for
-> a PFN but it does not ensure that the PFN is actually backed by RAM. On
-> ARM64 with SPARSEMEM (128MB section granularity), MMIO addresses that
-> share a section with RAM will falsely trigger the WARN_ON_ONCE and cause
-> dma_map_resource() to return DMA_MAPPING_ERROR.
+On Mon, May 11, 2026 at 11:16:07AM -0300, Jason Gunthorpe wrote:
+> On Mon, May 11, 2026 at 12:07:04PM +0000, Pranjal Shrivastava wrote:
+> > 
+> > > Thus the quirk should cover the VFs too and also disable ATS there.
+> > 
+> > I observe the quirk does apply VFs but after the VF's iommu attach
+> > because of how the pci_iov_add_virtfn() is written:
 > 
-> This causes a WARNING on Raspberry Pi 4 during spi_bcm2835 probe because
-> the SPI FIFO register (0xfe204004) falls in the same sparsemem section
-> as the end of RAM (0xf8000000-0xfbffffff), both in section 31
-> (0xf8000000-0xffffffff).
+> Ah, that seems to be the issue then :\
 > 
-> Move the sanity check from dma_map_resource() into debug_dma_map_phys()
-> and replace the unreliable pfn_valid() with pfn_valid() &&
-> !PageReserved(), which correctly identifies actual usable RAM without
-> false positives for MMIO regions that happen to have struct pages.
-> 
-> Since dma_map_resource() is dma_map_phys(DMA_ATTR_MMIO), the check
-> applies equally to both APIs. Any non-reserved page represents kernel
-> memory to a sufficient degree that using DMA_ATTR_MMIO on it is almost
-> certainly wrong and risks breaking coherency on non-coherent platforms.
-> ZONE_DEVICE pages used for PCI P2P DMA (MEMORY_DEVICE_PCI_P2PDMA) have
-> PageReserved set, so they will not trigger a false positive.
-> 
-> The check is now a WARN_ONCE that no longer blocks the mapping, since
-> being unobtrusive is more important than being exhaustive for what is
-> merely a debug sanity check.
-> 
-> Fixes: f7326196a781 ("dma-mapping: export new dma_*map_phys() interface")
-> Signed-off-by: Jianpeng Chang <jianpeng.chang.cn@windriver.com>
-> ---
-> v2:
->    - move check to debug_dma_map_phys and replace pfn_valid() with
->      pfn_valid() && !PageReserved() as Robin suggested.
->    - update commit message to explain why PageReserved is safe for
->      ZONE_DEVICE PCI_P2PDMA pages
-> v1: https://lore.kernel.org/all/20260507032120.4072283-1-jianpeng.chang.cn@windriver.com/
->   kernel/dma/debug.c   | 9 +++++++++
->   kernel/dma/mapping.c | 4 ----
->   2 files changed, 9 insertions(+), 4 deletions(-)
-> 
-> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-> index 1a725edbbbf6..180aa2c930b5 100644
-> --- a/kernel/dma/debug.c
-> +++ b/kernel/dma/debug.c
-> @@ -1239,6 +1239,15 @@ void debug_dma_map_phys(struct device *dev, phys_addr_t phys, size_t size,
->   	if (dma_mapping_error(dev, dma_addr))
->   		return;
->   
-> +	if (attrs & DMA_ATTR_MMIO) {
-> +		unsigned long pfn = PHYS_PFN(phys);
-> +
-> +		WARN_ONCE(pfn_valid(pfn) && !PageReserved(pfn_to_page(pfn)),
-> +			  "dma_map_resource called for RAM address %pa\n",
-> +			  &phys);
-> +		return;
-> +	}
 
-This wants to pair with the existing !MMIO checks slightly further down 
-- since we're no longer aborting the map request itself, if we bail out 
-early without actually creating the debug entry, we'll end up firing 
-another spurious warning if the caller (correctly) unmaps the address. 
-Then we can also finish the job of turning it into a proper dma-debug 
-check by using err_printk() instead of the open-coded WARN(), so that 
-it's subject to filtering etc. as well.
+Yea :/ we need something to ensure that quirk orders don't impact sanity
 
-With that fixed,
+> > While, we can move this quirk to be in fixup_early / fixup_header.
+> > I still think we should add checking the PF->ats_cap within 
+> > pci_ats_supported before bailing out happily (return 0) for VFs.
+> 
+> I feel like this should stay in prepare... supported is a differerent
+> thing. Maybe the quirk should be more directly tied to ats_supported
+> instead of whatever it is doing now? The ACS code calls directly into
+> quirks for example?
+>  
+> > > So I still think my original suggestion is appropriate, fail to probe
+> > > the iommu device if ats prepare fails (serious PCI layer bug, like
+> > > broken quirks) and fail to attach the domain of ats enable fails
+> > > (serious internal kernel malfunction since enable must succeed if
+> > > prepare succeeded)
+> > 
+> > I’m concerned that refusing to attach a device because it isn't ATS 
+> > capable is bit too aggressive.
+> 
+> Sorry, I was thinking prepare fails because it *fails*, prepare
+> succeeds if ATS is just not supported and won't ever be enabled.
+> 
+> But these odd cases where prepare sees ATS as available but can't
+> prepare it should fail and that should fail to probe the device.
+> That's exposing some kind of kernel or device bug that someone should
+> be fixing - exactly like you discovered here.
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+This is actually a little weird/funny...
 
-> +
->   	entry = dma_entry_alloc();
->   	if (!entry)
->   		return;
-> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-> index 23ed8eb9233e..e6b07f160d20 100644
-> --- a/kernel/dma/mapping.c
-> +++ b/kernel/dma/mapping.c
-> @@ -365,10 +365,6 @@ EXPORT_SYMBOL(dma_unmap_sg_attrs);
->   dma_addr_t dma_map_resource(struct device *dev, phys_addr_t phys_addr,
->   		size_t size, enum dma_data_direction dir, unsigned long attrs)
->   {
-> -	if (IS_ENABLED(CONFIG_DMA_API_DEBUG) &&
-> -	    WARN_ON_ONCE(pfn_valid(PHYS_PFN(phys_addr))))
-> -		return DMA_MAPPING_ERROR;
-> -
->   	return dma_map_phys(dev, phys_addr, size, dir, attrs | DMA_ATTR_MMIO);
->   }
->   EXPORT_SYMBOL(dma_map_resource);
+For PF: pci_prepare_ats fails as it sees a null ats_cap (quirk applied)
+        and fails at pci_ats_supported().
 
+For VF: pci_prepare_ats bails out early if (dev->is_virtfn):
+
+/**
+ * pci_prepare_ats - Setup the PS for ATS
+ * @dev: the PCI device
+ * @ps: the IOMMU page shift
+ *
+ * This must be done by the IOMMU driver on the PF before any VFs are created to
+ * ensure that the VF can have ATS enabled.
+ *
+ * Returns 0 on success, or negative on failure.
+ */
+int pci_prepare_ats(struct pci_dev *dev, int ps)
+{
+	u16 ctrl;
+
+	if (!pci_ats_supported(dev))
+		return -EINVAL;
+
+	if (WARN_ON(dev->ats_enabled))
+		return -EBUSY;
+
+	if (ps < PCI_ATS_MIN_STU)
+		return -EINVAL;
+
+	if (dev->is_virtfn) <---- THIS
+		return 0;
+
+	dev->ats_stu = ps;
+	ctrl = PCI_ATS_CTRL_STU(dev->ats_stu - PCI_ATS_MIN_STU);
+	pci_write_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, ctrl);
+	return 0;
+}
+EXPORT_SYMBOL_GPL(pci_prepare_ats);
+
+Ideally, in such cases I'd want VFs to fail at pci_ats_supported itself
+
+We could either:
+
+1. Add this directly in pci_ats_supported:
+
+if (dev->is_virtfn && !pci_ats_supported(pci_physfn(dev)))
+         return false;
+
+OR 2. we could have pci_ats_supported call into some ats quirk helper.
+
+We need pci_ats_supported to fail here because if we contain the failure
+in pci_prepare_ats, we'll see pci_ats_supported return success in attach
+which will make arm_smmu_v3 believe that ATS is supported..
+
+Thanks,
+Praan
