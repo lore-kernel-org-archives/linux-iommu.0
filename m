@@ -1,237 +1,122 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1D719426ECF
-	for <iommu@lists.linux.dev>; Mon, 11 May 2026 16:24:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778516680; cv=none; b=ClgPXdUQz6LVnPb1Bldat3wU8H3aO2FdpC29KvQCKac1FsTLMA1nFcPMpdj8cMutK+/wQgfcjhwVN33R0v1sLULk4iCsgM2u++bxq3GmZY4b+49aW660+LflycBul5XR6yTzCVgZkjesiqvf31/23+UrxfNdD8tgg2m62bFNoTM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778516680; c=relaxed/simple;
-	bh=G80ldcDStJWyidKCH3MjV5K4lu3Wp/Q7JaaBMXNCWZI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=I7u2RgJjrq5x90QniU1ymWnfFLemL01+liSpHlDzBToEO3yFVYgVeIqGjY9+X9J0CDrvQmeL3BOVA9Zy5JlPEXm/g4jkB/Bj+r1lNPJCPLESIXGbxl31WeIrkU7ks+A9jzNliSPAYz7Q4zkPilfmJCqJ8fNNtB16TusULxC5/rg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=rRaMCxER; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Received: from mail-dl1-f45.google.com (mail-dl1-f45.google.com [74.125.82.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D32D244DB9C
+	for <iommu@lists.linux.dev>; Mon, 11 May 2026 16:31:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.45
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778517079; cv=pass; b=enxND97pOWzw3thMb6R9VL2EhT60Y7yDwzG+4xAsMXx31YA4na8hac00E/Gv/vwufznW3qHz4JP1QFPb48E67GULqbXl4Q40VxfLHdTASHS86rzdK1PahY2PKME0auJnG9nIUcK8hIICXZ5Amljc1T/xjEf3TvwiEgrXw7l4kR0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778517079; c=relaxed/simple;
+	bh=had+1ZXn5IbhJQ+9hKZhfxqYkloaOsKefHmoCYR6dvA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=m5JPnTwiUqW26ViQXr07nGHzZb0Lftyn92v9dTsbzl/to9YLb+hYS7NyzKUi1VCEJttBJl7ZOlsvjMge3fsfkHyYZUAF2gy3ud9Lkon4Nx1FiLu8rKALlxVRoeViKArDa0ZU7cHzJwjMWSZrdilBIih+iFh0MnBP3nqz0Jvwov8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=nveDo39J; arc=pass smtp.client-ip=74.125.82.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="rRaMCxER"
-Received: from zhangyu-hyperv.mshome.net (unknown [167.220.233.27])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 7582120B7166;
-	Mon, 11 May 2026 09:24:31 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7582120B7166
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1778516675;
-	bh=HFzTSaQ70veIfvuNDaz8Hy1Vs/v2M6n0NU+oyEGbXT8=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=rRaMCxERGgqBHv0De4Z7eVTwbUpQznx8jHtzbE0N9WBswZhY3kjMDitss9lksuUba
-	 Ut0ciGpYy1kPhET2vuz7gBS1upW0sExBRaPfQ6q89e1kn0zCR/3Tug+vrPHzFTxTSK
-	 unVbiLewWGHRuzRu5T/eMAkBLO6YmKhfqOqBxVWk=
-From: Yu Zhang <zhangyu1@linux.microsoft.com>
-To: linux-kernel@vger.kernel.org,
-	linux-hyperv@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org,
-	linux-arch@vger.kernel.org
-Cc: wei.liu@kernel.org,
-	kys@microsoft.com,
-	haiyangz@microsoft.com,
-	decui@microsoft.com,
-	longli@microsoft.com,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	bhelgaas@google.com,
-	kwilczynski@kernel.org,
-	lpieralisi@kernel.org,
-	mani@kernel.org,
-	robh@kernel.org,
-	arnd@arndb.de,
-	jgg@ziepe.ca,
-	mhklinux@outlook.com,
-	jacob.pan@linux.microsoft.com,
-	tgopinath@linux.microsoft.com,
-	easwar.hariharan@linux.microsoft.com
-Subject: [PATCH v1 4/4] iommu/hyperv: Add page-selective IOTLB flush support
-Date: Tue, 12 May 2026 00:24:08 +0800
-Message-ID: <20260511162408.1180069-5-zhangyu1@linux.microsoft.com>
-X-Mailer: git-send-email 2.52.0
-In-Reply-To: <20260511162408.1180069-1-zhangyu1@linux.microsoft.com>
-References: <20260511162408.1180069-1-zhangyu1@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="nveDo39J"
+Received: by mail-dl1-f45.google.com with SMTP id a92af1059eb24-132830d8281so1541839c88.1
+        for <iommu@lists.linux.dev>; Mon, 11 May 2026 09:31:17 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778517077; cv=none;
+        d=google.com; s=arc-20240605;
+        b=KQqyw00i/7yClD6LgmfZhjo+KHoyePiY0X8HNSJVja6lNu0ClA5CfAt75jICoO8lKe
+         F2umJvAlDtyx4qpARAXDK94lR6VN2kGaUSaG6q3VNeFUlpKeMEN6QJamPAVoLtF4cTki
+         Bxzbn3tT3+3+W+QtRU1AzaFnnMsIGwTfnGU+wfDkRd5kNqWUUeM+VaiGar0y4NfmIwoW
+         KgmonV3wioZLHLpQz7DTxmYfxYSP+5YrRnPyyj+ov1rpVQwYHuyE5Yfhdvmg+uGH29fv
+         2jozDXr6mG9Ff1v76anzIlXtpAJ6o0FnQqwL++V9ibZBNSOwyqEVVfoC+iTx6s198mVL
+         pc1A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=HxYtWSwI/C6D0/BSATPHEBBU9xDG7QhHyYiVG3R9dR4=;
+        fh=wziNohkvOkB2kMAx+8QyU7em3XMi6A4K7LMvB/x5fAk=;
+        b=cqY1NLT9jYiWJSdUf9pZ0IrzEYH3vGNvwuYinrTIf6Mb5Fy33OVl2btRa5NsA0E3Mr
+         nCXwUkSxrXrNbQJaouBMQIRES/E0e/H9CWlUvbJSQOLwZ0F8uhkECMXmusyLnuHRmjXK
+         KEEWLae+lohMjPpsAC/I3FAvJI8Ftny43Oo57A++39Gvs90+UFGZceu4XdU1A/OTFx1N
+         5wuYVarDM3Ig4vS7YAns6Doat6VGBht9LsIhIy2cRWZ6Nf9I1xFXCeW+b91FnqXD6rY1
+         pH3EDUdcfmL//QEuxlHVQoQxBiAvrhv7P2Vra4lXizVah1G18mIpr9zLcdv0gYZXNER+
+         g8KQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1778517077; x=1779121877; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=HxYtWSwI/C6D0/BSATPHEBBU9xDG7QhHyYiVG3R9dR4=;
+        b=nveDo39JKD/SSHAvoS+c0HDOcoTN/F1QZGAvq8/AYZRqcuaWwGo9RVHSdq59lybfS9
+         ni10W/Ll0BHHR8n42c+1/96ZmQPXuj+mzUfQ09z0ZC3Bbiom9k1Ezjni8zQpJ17/rdHr
+         SqVxXVr+7FNEFU5wAWytoWcG1FaNgM6E+FD4i2G+5oz2iV8eP6CNuHCcg5o6tra89voG
+         GVs/jbUsAoVYcNvNThoiQ7cb3spxCOwpS9PssKUOggqa83Hirhs1dK4nS8kSxTPQQois
+         h7/1X13L0AVmmzqL5Fy9HtYRrOFm89j7pHpxWx/BI0xd9Ns8K0WPm98unYtoiRdp6Z14
+         UPEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778517077; x=1779121877;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=HxYtWSwI/C6D0/BSATPHEBBU9xDG7QhHyYiVG3R9dR4=;
+        b=lsSuD5Dtt+DMMWT6XjmGKIhTWDh8uOdakM6Y0EwnNyOL+sf/xMIHw7xT8TDsaOAJfB
+         qKBReW7DwzPsdG1cEWWH/U0CiN0zTBRLVgk+HPUWwyH2SX9yS6UEPs6j6P6d5r9hATbm
+         48wSoLWE+Xnhje37gnls8/rv7GG61W+C4bR5Xb2n16u1a7x++rp7+k6HoOCHyKQjIi4Z
+         Ex36EBmD2YK8ttqyyY8+VCBx5MJKSfCOFrcsEs0J++KewF6xmRv6o1tbCDhKU7rVmAMU
+         pot1m5lGpRDKIYR6ND4dnxawfSq9BjAlQd2HHzDzIN9QbjqYI/tXdbG/0f/XheQRGimM
+         BVvA==
+X-Forwarded-Encrypted: i=1; AFNElJ89b8uP1ofpMBiFv0imCEi9B9aSJX0P5lAK/Ilq0ZjFcg0boae2QWLeaNLErBAGXshWjCOxnw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw+lJ3oDrtn3LOt/9g2eCDeoLE273z/8uvAsuDOOzuzp8LzW0zn
+	N6kPcBO1NzvK29PGSJab9Yzb5GVrtaNJrU1Yy0QF4OhK0jrZ2yKdxNl6Lx3sJks98Sssm4VhYr5
+	iRQln+6oimKT6u3fbn70LiZqVRqHHDNDclCDi1+MZ
+X-Gm-Gg: Acq92OGXH4UB3fMgtOMrOQZQ9A7yh8zPv1a2dzkBgLRRQO8rptdPccqmszp+LKpjksn
+	gT3gCwn1tLUgQOitGGlqCOt8H0qGyaLCik/BuHEumHg5oK9HNQPgrDrMnTvW8dghQDbnY8FCbm3
+	nKqhcEQu8r535qhIsCv70/VjN6lv8hhSSJpWIQDDmagaAsRAGDAqgbXQdJgMosxI8GyidwD6Fhz
+	J5ZhkgVlxI2x80cMV/K/jg3GMRkCnsOllkaZ6btJcVN4dkw9OjLENWpLrf4Kb4s56jOOlFk5Knv
+	nvCFbezcC40JxzoLgwE=
+X-Received: by 2002:a05:7022:660d:b0:12b:f881:d8fb with SMTP id
+ a92af1059eb24-1327124fafemr9120583c88.3.1778517076198; Mon, 11 May 2026
+ 09:31:16 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <afj0cyBZwkVLyIwK@google.com> <afoWrn/RXxDmcHsS@ziepe.ca>
+ <afpdm5lfIeWptxOh@google.com> <afpwCIjQXwfImPXm@google.com>
+ <afsN9jrsfuigV+DM@ziepe.ca> <afu5Y55W5oj70b5v@google.com> <afu69hAtkRlI1GJd@google.com>
+ <20260509171451.GG9285@ziepe.ca> <agHGaJfwPr7-F1z2@google.com>
+ <20260511141607.GN9285@ziepe.ca> <agH-rkumGS1vX4dv@google.com>
+In-Reply-To: <agH-rkumGS1vX4dv@google.com>
+From: David Matlack <dmatlack@google.com>
+Date: Mon, 11 May 2026 09:30:49 -0700
+X-Gm-Features: AVHnY4LOJbzMyxIhRSawn4ckl5oJM7Ez40Ko5eBJSnKhq-YPlTgXIpJvP8_Le70
+Message-ID: <CALzav=dVPBx-kVhZF2KbCkWCxoufr3eGU4Mtv10FFofW9jtsGg@mail.gmail.com>
+Subject: Re: [PATCH rc v2] iommu/arm-smmu-v3: Fix inconsistent ATS state tracking
+To: Pranjal Shrivastava <praan@google.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev, 
+	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Mostafa Saleh <smostafa@google.com>, Samiullah Khawaja <skhawaja@google.com>, 
+	Daniel Mentz <danielmentz@google.com>, Pasha Tatashin <pasha.tatashin@soleen.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Add page-selective IOTLB flush using HVCALL_FLUSH_DEVICE_DOMAIN_LIST.
-This hypercall accepts a list of (page_number, page_mask_shift) entries,
-enabling finer-grained IOTLB invalidation compared to the domain-wide
-HVCALL_FLUSH_DEVICE_DOMAIN used by hv_iommu_flush_iotlb_all().
+On Mon, May 11, 2026 at 9:07=E2=80=AFAM Pranjal Shrivastava <praan@google.c=
+om> wrote:
+>
+> On Mon, May 11, 2026 at 11:16:07AM -0300, Jason Gunthorpe wrote:
+> > On Mon, May 11, 2026 at 12:07:04PM +0000, Pranjal Shrivastava wrote:
+> > >
+> > > > Thus the quirk should cover the VFs too and also disable ATS there.
+> > >
+> > > I observe the quirk does apply VFs but after the VF's iommu attach
+> > > because of how the pci_iov_add_virtfn() is written:
+> >
+> > Ah, that seems to be the issue then :\
+>
+> Yea :/ we need something to ensure that quirk orders don't impact sanity
 
-hv_iommu_fill_iova_list() decomposes a contiguous IOVA range into a
-minimal set of aligned power-of-two regions that fit in a single
-hypercall input page. When the range exceeds the page capacity, the
-code falls back to a full domain flush automatically.
+I haven't read through this whole thread, but I think this patch is
+related to the issue you are discussing:
 
-Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
-Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
----
- drivers/iommu/hyperv/iommu.c | 91 +++++++++++++++++++++++++++++++++++-
- include/hyperv/hvgdk_mini.h  |  1 +
- include/hyperv/hvhdk_mini.h  | 17 +++++++
- 3 files changed, 108 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/hyperv/iommu.c b/drivers/iommu/hyperv/iommu.c
-index e5fc625314b5..3bca362b7815 100644
---- a/drivers/iommu/hyperv/iommu.c
-+++ b/drivers/iommu/hyperv/iommu.c
-@@ -486,10 +486,98 @@ static void hv_iommu_flush_iotlb_all(struct iommu_domain *domain)
- 	hv_flush_device_domain(to_hv_iommu_domain(domain));
- }
- 
-+/* Max number of iova_list entries in a single hypercall input page. */
-+#define HV_IOMMU_MAX_FLUSH_VA_COUNT \
-+	((HV_HYP_PAGE_SIZE - sizeof(struct hv_input_flush_device_domain_list)) / \
-+	 sizeof(union hv_iommu_flush_va))
-+
-+/* Returned by hv_iommu_fill_iova_list() when the range exceeds the capacity */
-+#define HV_IOMMU_FLUSH_VA_OVERFLOW	U16_MAX
-+
-+static inline u16 hv_iommu_fill_iova_list(union hv_iommu_flush_va *iova_list,
-+					  unsigned long start,
-+					  unsigned long end)
-+{
-+	unsigned long start_pfn = start >> PAGE_SHIFT;
-+	unsigned long end_pfn = PAGE_ALIGN(end) >> PAGE_SHIFT;
-+	unsigned long nr_pages = end_pfn - start_pfn;
-+	u16 count = 0;
-+
-+	while (nr_pages > 0) {
-+		unsigned long flush_pages;
-+		int order;
-+		unsigned long pfn_align;
-+		unsigned long size_align;
-+
-+		if (count >= HV_IOMMU_MAX_FLUSH_VA_COUNT) {
-+			count = HV_IOMMU_FLUSH_VA_OVERFLOW;
-+			break;
-+		}
-+
-+		if (start_pfn)
-+			pfn_align = __ffs(start_pfn);
-+		else
-+			pfn_align = BITS_PER_LONG - 1;
-+
-+		size_align = __fls(nr_pages);
-+		order = min(pfn_align, size_align);
-+		iova_list[count].page_mask_shift = order;
-+		iova_list[count].page_number = start_pfn;
-+
-+		flush_pages = 1UL << order;
-+		start_pfn += flush_pages;
-+		nr_pages -= flush_pages;
-+		count++;
-+	}
-+
-+	return count;
-+}
-+
-+static void hv_flush_device_domain_list(struct hv_iommu_domain *hv_domain,
-+					struct iommu_iotlb_gather *iotlb_gather)
-+{
-+	u64 status;
-+	u16 count;
-+	unsigned long flags;
-+	struct hv_input_flush_device_domain_list *input;
-+
-+	local_irq_save(flags);
-+
-+	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
-+	memset(input, 0, sizeof(*input));
-+
-+	input->device_domain = hv_domain->device_domain;
-+	input->flags |= HV_FLUSH_DEVICE_DOMAIN_LIST_IOMMU_FORMAT;
-+	count = hv_iommu_fill_iova_list(input->iova_list,
-+					iotlb_gather->start,
-+					iotlb_gather->end);
-+	if (count == HV_IOMMU_FLUSH_VA_OVERFLOW) {
-+		/*
-+		 * Range exceeds hypercall page capacity. Fall back to a full
-+		 * domain flush.
-+		 */
-+		struct hv_input_flush_device_domain *flush_all = (void *)input;
-+
-+		memset(flush_all, 0, sizeof(*flush_all));
-+		flush_all->device_domain = hv_domain->device_domain;
-+		status = hv_do_hypercall(HVCALL_FLUSH_DEVICE_DOMAIN,
-+					flush_all, NULL);
-+	} else {
-+		status = hv_do_rep_hypercall(
-+				HVCALL_FLUSH_DEVICE_DOMAIN_LIST,
-+				count, 0, input, NULL);
-+	}
-+
-+	local_irq_restore(flags);
-+
-+	if (!hv_result_success(status))
-+		pr_err("HVCALL_FLUSH_DEVICE_DOMAIN_LIST failed, status %lld\n", status);
-+}
-+
- static void hv_iommu_iotlb_sync(struct iommu_domain *domain,
- 				struct iommu_iotlb_gather *iotlb_gather)
- {
--	hv_flush_device_domain(to_hv_iommu_domain(domain));
-+	hv_flush_device_domain_list(to_hv_iommu_domain(domain), iotlb_gather);
- 
- 	iommu_put_pages_list(&iotlb_gather->freelist);
- }
-@@ -543,6 +631,7 @@ static struct iommu_domain *hv_iommu_domain_alloc_paging(struct device *dev)
- 
- 	cfg.common.hw_max_vasz_lg2 = hv_iommu_device->max_iova_width;
- 	cfg.common.hw_max_oasz_lg2 = 52;
-+	cfg.common.features |= BIT(PT_FEAT_FLUSH_RANGE);
- 	cfg.top_level = (hv_iommu_device->max_iova_width > 48) ? 4 : 3;
- 
- 	ret = pt_iommu_x86_64_init(&hv_domain->pt_iommu_x86_64, &cfg, GFP_KERNEL);
-diff --git a/include/hyperv/hvgdk_mini.h b/include/hyperv/hvgdk_mini.h
-index 5bdbb44da112..eaaf87171478 100644
---- a/include/hyperv/hvgdk_mini.h
-+++ b/include/hyperv/hvgdk_mini.h
-@@ -496,6 +496,7 @@ union hv_vp_assist_msr_contents {	 /* HV_REGISTER_VP_ASSIST_PAGE */
- #define HVCALL_GET_GPA_PAGES_ACCESS_STATES		0x00c9
- #define HVCALL_CONFIGURE_DEVICE_DOMAIN			0x00ce
- #define HVCALL_FLUSH_DEVICE_DOMAIN			0x00d0
-+#define HVCALL_FLUSH_DEVICE_DOMAIN_LIST			0x00d1
- #define HVCALL_ACQUIRE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d7
- #define HVCALL_RELEASE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d8
- #define HVCALL_MODIFY_SPARSE_GPA_PAGE_HOST_VISIBILITY	0x00db
-diff --git a/include/hyperv/hvhdk_mini.h b/include/hyperv/hvhdk_mini.h
-index 493608e791b4..f51d5d9467f1 100644
---- a/include/hyperv/hvhdk_mini.h
-+++ b/include/hyperv/hvhdk_mini.h
-@@ -671,4 +671,21 @@ struct hv_input_flush_device_domain {
- 	u32 reserved;
- } __packed;
- 
-+union hv_iommu_flush_va {
-+	u64 iova;
-+	struct {
-+		u64 page_mask_shift : 12;
-+		u64 page_number : 52;
-+	};
-+} __packed;
-+
-+
-+struct hv_input_flush_device_domain_list {
-+	struct hv_input_device_domain device_domain;
-+#define HV_FLUSH_DEVICE_DOMAIN_LIST_IOMMU_FORMAT (1 << 0)
-+	u32 flags;
-+	u32 reserved;
-+	union hv_iommu_flush_va iova_list[];
-+} __packed;
-+
- #endif /* _HV_HVHDK_MINI_H */
--- 
-2.52.0
-
+  https://lore.kernel.org/linux-pci/20260403222750.1215002-1-dmatlack@googl=
+e.com/
