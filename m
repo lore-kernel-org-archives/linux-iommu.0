@@ -1,173 +1,125 @@
-Received: from fout-b8-smtp.messagingengine.com (fout-b8-smtp.messagingengine.com [202.12.124.151])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92C433112BD
-	for <iommu@lists.linux.dev>; Mon, 11 May 2026 09:47:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.151
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B89E43D8133
+	for <iommu@lists.linux.dev>; Mon, 11 May 2026 10:34:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778492823; cv=none; b=ZW5zEHWX7vD/lkBAKTd0VbNZPb4yJC9n2KAy4t2eFwQSwbh+SImU9aJuacGHKPdsCnOAct0zEKEsEaKZb8KUCriHj9FLXmEVPdjL7UxuC70JnKJOLHgXDR9uw/GfWl6JnlztO7towwQLt+81ukzzq0Vz8rTz1wFNkyXq1YgIVmE=
+	t=1778495660; cv=none; b=UhnCP8UO7nrTCzJXLGYzkZuYXyxw26FCpr6iuMP7Dwo0uFW12LDKgP29yC5F26k2Apkwr369QZ1OBTgjUb2LvjIw0rOQ7cKA89vSCwwp127+hAUdy6h4SLSal3hWv5L/QpxLESlirw8Lm0LWx2BRAXozgexda9d1h+9U2bpavGA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778492823; c=relaxed/simple;
-	bh=D/4Zbemo5vF6p8/soVP/ycbQ3QKW1LUgg1CBMUjbR4M=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=Vj7S2mCggAfAgKZn5A16XzZYVb+Z5x1Y74I7Eo+W+w6pgEAB8O6CNA3P7MLjy0XQGx/k6bhN+QK42JlPEEqSxvsBQ67o8CACauuQPVuLVAFlChVUBt0WoTIgx/W3QnRKAUmY23orcvXZAPSOjJwYbSgNHypExpIyl5TVn/yRhc4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=VYi7BEnD; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=BNlQW2Gr; arc=none smtp.client-ip=202.12.124.151
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	s=arc-20240116; t=1778495660; c=relaxed/simple;
+	bh=OBjJ4qWY2VNba0vgmOYHWkVFmsOhC9ZRZRJDpBNdUpM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CuRwqnXelUc7ZIlgFiDlCjVkwyB3pnruy+VMGvhOMRK80M6FUbYQt0xYHPobiLVDCIuQt03zJM7khl0y1tVhs1ryAtOyP4qSaOxh5NMO3QJBsg8kKr5IfX000xAosS6sm7lAy/H+H5qk7bq5o60izQJctp9zmNk8CfJF+Iys6Dk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=HH5zERF1; arc=none smtp.client-ip=209.85.214.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="VYi7BEnD";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="BNlQW2Gr"
-Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
-	by mailfout.stl.internal (Postfix) with ESMTP id 55AD81D0008D;
-	Mon, 11 May 2026 05:46:59 -0400 (EDT)
-Received: from phl-imap-12 ([10.202.2.86])
-  by phl-compute-04.internal (MEProxy); Mon, 11 May 2026 05:46:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm2; t=1778492819;
-	 x=1778579219; bh=TWbx4nQ+++QmGm3BfnUj9UQpSo0jVkGk9GjwYWuvoTU=; b=
-	VYi7BEnDHXsoCVNn8uAHpzegR2U06vS3kxBHRDjdgsgpn4XocWQS/m43V/TMKkE2
-	e5lQ5bOLm0rbl4JxIueQLb/Sl8Xnts9WZnvVgoluMu+STKdBlAtGkE5R7aBeESUY
-	Hm/w413898OLbphdoFR/1436vg2g9U0WNXt+38DXNL9KcC7mKcExOWBFc1PaKZVR
-	kDo7YzQfFYzAFGTegQ7WJA/Dxzezbki6vMoSC6daX87ufZbuPM5ttd4O752S7tKT
-	fuAIUy87Z37FH4+xPWg1UGbY0u/NHxxALMDpIVzrCjyWDUnhJgJ4VvdBNS+07aRU
-	fkJCtXeGAfOfqcWyLU2VOg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1778492819; x=
-	1778579219; bh=TWbx4nQ+++QmGm3BfnUj9UQpSo0jVkGk9GjwYWuvoTU=; b=B
-	NlQW2Grt5sdDGAfhfXCUos5Nd0wO9gEEOI1eHqKKtn5YsYgkWlFJ8gD5ThPI7/86
-	pyrueeUHVXyIOLPlldJHtn/yGZwo3uEfCYSmKkiy392tqPsZlIL2S6PQTTvgU651
-	r0+9lr2rSju+YPu/bfxihkehEMjfSvj0qy0SabkM+h7y3Z2PXctsTsSN6x+DpyFt
-	D27MJYUuvUA8gCDp5tXboN9YBcfYSho40aITxanS/XbujAYymK2vz0mN8pEYcyUp
-	zfd4xYSVmB3i71AP6609SdPp+SwmuS6I+9kl9qqKAMMciyT8yCxxcBK7eiHe9kpA
-	dpxht0Q+V/cC10BEAOURg==
-X-ME-Sender: <xms:kqUBat8gcYJgArWQcSWbTE7Aa2nMyJAH1UzTytzG42AiKLkxKRKATQ>
-    <xme:kqUBasgs1ris0F51SOgVf4QmhZgKjLeQQOn2LchB-xWJDuW1QWRDoLUkeMUFmUiPe
-    1EmX6Gk5JSKJb6Hk2u8Gi516wuyPZWt_nIM-BDO8b1FnI0di9--gVo>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefhedrtddtgdduudekiedvucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
-    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
-    gurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddtnecuhfhrohhmpedftehrnhgu
-    uceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrthhtvg
-    hrnhephfdthfdvtdefhedukeetgefggffhjeeggeetfefggfevudegudevledvkefhvdei
-    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprghrnh
-    gusegrrhhnuggsrdguvgdpnhgspghrtghpthhtohepuddtpdhmohguvgepshhmthhpohhu
-    thdprhgtphhtthhopehjohhroheskegshihtvghsrdhorhhgpdhrtghpthhtoheprhhosg
-    hinhdrmhhurhhphhihsegrrhhmrdgtohhmpdhrtghpthhtoheprghrnhgusehkvghrnhgv
-    lhdrohhrghdprhgtphhtthhopehtghhlgieskhgvrhhnvghlrdhorhhgpdhrtghpthhtoh
-    epfihilhhlsehkvghrnhgvlhdrohhrghdprhgtphhtthhopegsihhgvggrshihsehlihhn
-    uhhtrhhonhhigidruggvpdhrtghpthhtoheprghkphhmsehlihhnuhigqdhfohhunhgurg
-    htihhonhdrohhrghdprhgtphhtthhopehlihhnuhigqdgrrhhmqdhkvghrnhgvlheslhhi
-    shhtshdrihhnfhhrrgguvggrugdrohhrghdprhgtphhtthhopehiohhmmhhusehlihhsth
-    hsrdhlihhnuhigrdguvghv
-X-ME-Proxy: <xmx:kqUBagiXrMjUWsphcDn9l_ykZ6fT9l-kXe6cM57h_CcpVQvtT4UznA>
-    <xmx:kqUBahOP_25gZ4nlAviyGUrJFh0WCiOsvj-zdJ_sziCFNyN5_KpOuA>
-    <xmx:kqUBajq_WcZabBNsLNpFZtU7aqdJxv9O-NjNmvsmUn_YI6faMAz_RA>
-    <xmx:kqUBar4N9Q2O8-S3EQ1prwObWx_vX2qx6-UKiRVzIbSgUkmv6GXbIg>
-    <xmx:k6UBas14nptktwBJRQXCDf7_S7BI-JTL-lDjAu-AZRb7jFSlAROnzGKm>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id 9A9791060065; Mon, 11 May 2026 05:46:58 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="HH5zERF1"
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2b2e8b95bdbso505ad.0
+        for <iommu@lists.linux.dev>; Mon, 11 May 2026 03:34:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1778495657; x=1779100457; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=+1RmAL1G6V7aOO8kOtNRCIE/n9eFhH+hpo5Ze/Bw3SM=;
+        b=HH5zERF1ypgVNOE5MbIYGzi3dcvB0iZ59VX6D60pAZx4b//sf0zfKF3Q0VMciMpMRA
+         erE8ns52gY5hAOMBgzpwiX9xRkfsOXIf+ULguhQIyI//BeVuCusrOWB5unYondJyZwB2
+         BocjEof6XHRXeo8qVfYX8FQodn/xSQ/3alCKU9zxzUv66ytUxGdDAhwefwPRxhPYW2mx
+         YyU2cCpTO3J+tN5ZMnBE3f9aozDf+YmNBXw/g/UqNNp+DUtnjADXJyc+4Am5eckLvRyt
+         vzJzaaMQkdFTQj+4NN0+9RRAUzVs0m4V2HOLLejP2oOeo+JC7WTTFNbQQQWrR1uHZXiM
+         gKxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778495657; x=1779100457;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=+1RmAL1G6V7aOO8kOtNRCIE/n9eFhH+hpo5Ze/Bw3SM=;
+        b=lncRQK0SzeimHgzu3S056B9WVnOLkzyBvfxuhjTf9Ze3aaKM3mwC0ixBxg65I8V/67
+         SO0jhx/bVyXpWdLP6Uk/ET3GQSOrIrC8rthrUbwW1BxgzvOD5zhCwtwNkQC2Tw8TxwEL
+         4xZhMYcX3qoe4BnYTgI/M0fABR0T0xlG3JLxcY1MdJrOTAP9w2k+BpCnT2L2zvb40nMN
+         CMw3i/sXsOX1oBn/nG01kb/h9g0875K6NaN6sVh463jAXgwgTjHW6iNCZjNM5cSqvwLy
+         c8XX0NLlq8qwJIUZEWM277Yw1O5+OtGN+mVDCMqqKyPBFXx1jeWq7xNUVK1N62j/daGq
+         1yuQ==
+X-Gm-Message-State: AOJu0YzwQoA4GXOyUAa1nmglGQqg8SH5TxC1YyjUOj9ycVJsmLTFN1Rw
+	hMQt8YR0+mzJIjBVlp6FJeDPFMYv7NUN4+6rc+tXEKl1DPULUfhQquTW6iEu6IBBjg==
+X-Gm-Gg: Acq92OHPTlWDYK5sQK9br4MPb9+zRWiQT8lgsuCVraGxHNxWnCRkgXdohiAE395jKCB
+	hJbzu8kx7BB4CTLKIisb3Gaa/HIXkt4EmoDX+YcC5UR2y4jsiZyb3WVJaGqiezbfAqbfk28jgxi
+	Zihob2yJBEFgQG8ab75lTPs/QXF5IYhY7FJbivdifWVMwxk69ONx9EjPWq+9SAHXAcY44pWGyQf
+	5a5Yl4dId98iMKVPXWEIINB2gcjDiel3AfTnNlt3dtPHmqFbMtq02KQ/I6U1nRKflVZGYCYQ8Fp
+	TDXxwBjv9zlUT13mnk9jG6lhbppCI8uGiDWm8WXC8VhpYmgSlNOxwQhLZK4SPsX1vxT+EovTvyg
+	vw4aW0xy4M2rm7b2vBONUG6OdXUe321i8RsgVuB0CARZp2gD6ATioBV8KCiCy1ePZ9Mpj9cfS+8
+	ZGYM/Se0MDDRas3q4Q12RAfP+qLfKGVXN2t3b6nfJJMRXmrZ9CdCvpZ/UQDeelK5dP6EBe
+X-Received: by 2002:a17:903:1c3:b0:2a7:6c4e:5914 with SMTP id d9443c01a7336-2bc746fc88cmr4737145ad.6.1778495656102;
+        Mon, 11 May 2026 03:34:16 -0700 (PDT)
+Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-367d63e03f6sm7798313a91.12.2026.05.11.03.34.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 May 2026 03:34:15 -0700 (PDT)
+Date: Mon, 11 May 2026 10:34:09 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Jonathan Hunter <jonathanh@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Krishna Reddy <vdumpa@nvidia.com>, Will Deacon <will@kernel.org>,
+	David Matlack <dmatlack@google.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	Samiullah Khawaja <skhawaja@google.com>,
+	Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH 7/9] iommu/arm-smmu-v3: Directly encode CMDQ_OP_ATC_INV
+Message-ID: <agGwoYJD3s2T00fX@google.com>
+References: <0-v1-b7dc0a0d4aa0+3723d-smmu_no_cmdq_ent_jgg@nvidia.com>
+ <7-v1-b7dc0a0d4aa0+3723d-smmu_no_cmdq_ent_jgg@nvidia.com>
+ <af3NH0cihPUQ8PST@google.com>
+ <20260509165401.GL9254@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-ThreadId: AVHaR-kDAB-J
-Date: Mon, 11 May 2026 11:46:29 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Thomas Gleixner" <tglx@kernel.org>, "Arnd Bergmann" <arnd@kernel.org>,
- "Will Deacon" <will@kernel.org>, "Robin Murphy" <robin.murphy@arm.com>,
- "Joerg Roedel" <joro@8bytes.org>, "Andrew Morton" <akpm@linux-foundation.org>
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org,
- "Sebastian Andrzej Siewior" <bigeasy@linutronix.de>
-Message-Id: <34af0db2-7a04-4119-925f-3aa3e3ecb683@app.fastmail.com>
-In-Reply-To: <87y0hq8lcu.ffs@tglx>
-References: <20260203162406.2215716-1-arnd@kernel.org> <874ikf9i34.ffs@tglx>
- <d52dcd45-959a-4ff4-9e82-0bae133785f1@app.fastmail.com> <87y0hq8lcu.ffs@tglx>
-Subject: Re: [PATCH 1/2] [RFC] debugobjects: avoid gcc-16.0.1 section mismatch
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260509165401.GL9254@nvidia.com>
 
-On Mon, May 11, 2026, at 09:18, Thomas Gleixner wrote:
-> On Mon, May 11 2026 at 08:17, Arnd Bergmann wrote:
->> On Sun, May 10, 2026, at 21:31, Thomas Gleixner wrote:
->>> On Tue, Feb 03 2026 at 17:23, Arnd Bergmann wrote:
->>>> WARNING: modpost: vmlinux: section mismatch in reference: lookup_object_or_alloc.part.0+0x1ac (section: .text) -> is_static_object (section: .init.text)
->>>>
->>>> From what I can tell, the transformation is correct, as this
->>>> is only called when lookup_object_or_alloc() is called from
->>>> debug_objects_selftest(), which is also __init.
->>>
->>> So clearly the compiler is buggy. It creates an __init specific copy of
->>> lookup_object_or_alloc() and then fails to attribute it correctly.
->>
->> I don't see what else the compiler is supposed to do, it has no idea what
->> __init means in the kernel, or what the rules are for calling between
->> that and normal functions. Putting a non-inlined lookup_object_or_alloc()
->> into a special section without an explicit attribute would clearly
->> be a bug.
->
-> I agree that the compiler does not know what __init means, but this
-> sucks as it leaves an unused copy of lookup_object_or_alloc() around
-> after init.
->
-> What happens if you mark is_static_object() with 'noinline'?
+On Sat, May 09, 2026 at 01:54:01PM -0300, Jason Gunthorpe wrote:
+> On Fri, May 08, 2026 at 11:46:39AM +0000, Pranjal Shrivastava wrote:
+> > On Fri, May 01, 2026 at 11:29:16AM -0300, Jason Gunthorpe wrote:
+> > > Add a new command make function and convert all the places using
+> > > ATC_INV.
+> > > 
+> > > Split out full invalidation to directly make the cmd instead of
+> > > overloading size=0 to mean full invalidation.
+> > > 
+> > > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> > > ---
+> > 
+> > Nit: I guess it's worth mentioning that we remove CMDQ_ATC_0_GLOBAL as
+> > we don't set ent->atc.global = true anywhere in the driver anymore.
+> 
+> I added this:
+> 
+> In section "3.9.1 ATS Interface" of F.b the specification says:
+> 
+>   When the SMMU returns an ATS Translation Completion for a request that
+>   had a PASID, the Global bit of the Translation Completion Data Entry
+>   must be zero.
+> 
+> Even though it faithfully forwards the G bit through to the ATS
+> invalidation command there is no way to create G mappings so there is
+> never any need to send a G invalidation. Thus don't expose global in the
+> new helpers and leave CMDQ_ATC_0_GLOBAL unused.
 
-I've reproduced the issue with the release gcc-16.1.0 build,
-and tested marking is_static_object (along with
-dummy_tlb_add_page and dummy_tlb_flush from the other
-instance) as noinline.
+Ack. Sounds good. Should also add that the only other place we might need
+G=1 is for a full ATC wipe. However, we don't since the PCIe Spec 10.3.8,
+mentions issuing an invalidation without a PASID prefix (SSV=0) already
+forces the device to invalidate all ATC entries for any PASID at all 
+addresses, e.g. arm_smmu_atc_inv_master(master, IOMMU_NO_PASID).
 
-As expected, this avoids the problem as well.
+Although the comment in arm_smmu_enable_ats should suffice too.
 
-      Arnd
-
-diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-index 40e33257d3c2..b89dcf167832 100644
---- a/drivers/iommu/io-pgtable-arm-v7s.c
-+++ b/drivers/iommu/io-pgtable-arm-v7s.c
-@@ -782,16 +782,17 @@ static void __init dummy_tlb_flush_all(void *cookie)
- 	WARN_ON(cookie != cfg_cookie);
- }
- 
--static void __init dummy_tlb_flush(unsigned long iova, size_t size,
--				   size_t granule, void *cookie)
-+static noinline void __init dummy_tlb_flush(unsigned long iova, size_t size,
-+					    size_t granule, void *cookie)
- {
- 	WARN_ON(cookie != cfg_cookie);
- 	WARN_ON(!(size & cfg_cookie->pgsize_bitmap));
- }
- 
--static void __init dummy_tlb_add_page(struct iommu_iotlb_gather *gather,
--				      unsigned long iova, size_t granule,
--				      void *cookie)
-+static noinline void __init dummy_tlb_add_page(struct iommu_iotlb_gather *gather,
-+					       unsigned long iova,
-+					       size_t granule,
-+					       void *cookie)
- {
- 	dummy_tlb_flush(iova, granule, granule, cookie);
- }
-diff --git a/lib/debugobjects.c b/lib/debugobjects.c
-index 12e2e42e6a31..18253cb03701 100644
---- a/lib/debugobjects.c
-+++ b/lib/debugobjects.c
-@@ -1212,7 +1212,7 @@ struct self_test {
- 
- static __initconst const struct debug_obj_descr descr_type_test;
- 
--static bool __init is_static_object(void *addr)
-+static noinline bool __init is_static_object(void *addr)
- {
- 	struct self_test *obj = addr;
- 
+Thanks,
+Praan
