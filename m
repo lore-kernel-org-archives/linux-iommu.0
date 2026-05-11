@@ -1,124 +1,135 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E374B366060
-	for <iommu@lists.linux.dev>; Mon, 11 May 2026 11:13:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 086FC36D500
+	for <iommu@lists.linux.dev>; Mon, 11 May 2026 11:16:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778498032; cv=none; b=Q4m92xVkQYZIQYAQRPtSoTDetAycaCfNQP/xC4m/HWVSbp3854ace6ykdC49X0AKuG/0oxO0TstG8b368G+mWVMceMJcn9AT4X6kstgxDuTiSkc2gHY51o2pQLeTf8OJHeVY5X0ghn4uvCyq7idp+/XKcszZCOrZXzl2zYolgCQ=
+	t=1778498214; cv=none; b=YSsV3NctIylEENlyWsBnZf1gXpyOpfFnFPDate925/8Gc5zJ8k31H/nelvcydBOfWtJI3cIrJFQYaEqsaOBRK6SS8TiDw1s6tvWnKYfBf9TxUsxLTr55meDeU9LJqTJ437/BWsACV6f15BkLlG6UDsUihQ944XQ774ysjnk1dy8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778498032; c=relaxed/simple;
-	bh=XxgqOVAvsBiqccnVAD240XyEMuriRVfTF0T3UfzRmEc=;
+	s=arc-20240116; t=1778498214; c=relaxed/simple;
+	bh=aWrmuPCEUpNW6pyyMCyT3Ev0vO66QbU8APlpujnwPUQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sq8jGkLGzmg5ew+1plwLhq2GlflxavSP5LJYAgajrHYrVejUCUWJjo5sTCC/IrDQgQPZmCghNe8U+cgrjwo0DbRXiKNbDwP0OXb4buevzFMVTGNwD+J3rIitfOoopHECtje7CEPhd09XK0bGzR3Af8tOekAsndY2ScFWbwO6jA4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Yh60y8Ko; arc=none smtp.client-ip=209.85.128.52
+	 Content-Type:Content-Disposition:In-Reply-To; b=PyECEdV57cPn2UjqgBlvdr8EcRccQtUY0LrfgFzxTvps410IWEC9OKSSP8fT9vy7RLeaQThnenfLVcZ/tF562M6Es3VBC9XpitgepmrCgCIlAZuYyype7XhS6ByTKHJmAwIB/iGZkdp5IUgfYGlufvEkuF0hhFQiSpXKslarqxo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=SQznqZCi; arc=none smtp.client-ip=209.85.128.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Yh60y8Ko"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4891ca4ce02so935e9.1
-        for <iommu@lists.linux.dev>; Mon, 11 May 2026 04:13:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="SQznqZCi"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-488940ccfa6so285e9.1
+        for <iommu@lists.linux.dev>; Mon, 11 May 2026 04:16:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778498029; x=1779102829; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=OdpkiWeL2t8R+EHDk3fbd7ThTtXnMvXGE12dkE0RMC4=;
-        b=Yh60y8KomVoazjSWwpMiy45Gvu4M+DNJKTjfwyy9e+Dwzhr+yEXkBLvAirEfQcx1Xe
-         2DXrj2UpvGiXa4+Ql7H+Fh8iDRORaKBvygJE4dtRekmkZ0mETBuD4mkIPZhuqkuMem/D
-         RKyLTGK4lO6VIQI0TTjsZwXhkQ/3QPk9+zMtLR2ptTiXUJzB9OHxcvYaJvIBUpC+wFrx
-         XYa7xSIqri/EJ0h0Q+qCtnZooKDkKhAzaXsLq9tER3TYc5Ec6V3MDhacuV8HhAdtlqYx
-         UZm4IQRhmKB1OG+TFr+PfVJeRnDT0o9dcjq2KqkddrhMQiz3S+t9RM2k9ejrsYhXctZF
-         zTug==
+        d=google.com; s=20251104; t=1778498211; x=1779103011; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=mjFxAsYJ767LfglQAiic8pmf/v4fVUq2j4oVrXIto5c=;
+        b=SQznqZCi8mv+rE6qlz33SVquPCr58Znloijir/WGQKn3ZjhLL3+wPQseXtvqDndBNI
+         WoHutkhimaz9TayCb+Xjwrwc0L4ZNsPkFkmievdJ2m+dNmmd7gvb3khTces1/bIAbmak
+         7F/+Y07lZqXr6NlwJNJAhjUMyJMKXIplHu52GQEb3mz8w2/+S1jutU22mccQsCC8XmBg
+         jlLc5mheZCp249taZ8dNdXvEZuyaxraDHqjcA0ET3vcjhATYM+t2Lf1ih9Jck24pdQ+L
+         I9lZukb2FS/T1B/gRUuk13/HiYfeUEcG2W2zhcdVlpvxaEwiN2Gqb7c1DS8qOBZxKh/C
+         +c7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778498029; x=1779102829;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=OdpkiWeL2t8R+EHDk3fbd7ThTtXnMvXGE12dkE0RMC4=;
-        b=QvMaEb+sukltIdO6dneF3dUpiXJSib5fIsMI5GBC/hn/BrpW2ql7IBv9IiK3PAW1uZ
-         dxTgID3ntqDJwjWm6AVel4U9IkR2IsBb54Tq7ZgQqC2yW1T191L4QiwAIG9GDH8P5y8H
-         QmIdlnUn/fvTB2FXnVSsYW7ArY0XrakXtaawP3vmpT1DgopIAHX5WOoYMX8h9F8beGqB
-         7e3VCAVyiCUhu98rmjX3EqZ0I4G1Y55rh6U3W8rYAMuNqdRYq5i9Jf8vjHP+krgOPxdG
-         nb4DrSGAM2623W1lf1PbVOG9c3nv9Euw2CSJ+0pGkeXUndu0tyWPBj01sayv0/W5ngua
-         2K2A==
-X-Forwarded-Encrypted: i=1; AFNElJ+A0jswqdy+g/SCdbFgG5zcPRuDwcgXYmCY4GpaYUPInOkuy9kA75yuRunZIBjNUsKAUvsoCg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz8f02YJX4+2YIVkHMkDOZ1Zj2CDl2uaoU7ZTeeDHz6jUmESbqm
-	cMo221kqazXFPMo7+5d739/QROsVf663pBooZh6xdXRHyBjShtc/zhhLE3kJB0lklA==
-X-Gm-Gg: Acq92OH5zkR0kPxlmBBpZyCu4sbd2+hl8rZk2atuBcuO1j2bF5nObP4WR264yx9jeEf
-	L3E1pEicOUAW9W3oQ6889g44v0GEHOtF/VSCOnam/JeNskNN/3i9fSY55ZmMnkrWZtZ9sUjXOHo
-	pBZ2vvYqEch4G2dIbRgab9xwlAbKW+CZTKGKWZKmkWhp9R6VICuxPYazEVHp8hsY5OsIy6XAK/r
-	iMD+DR8zv9htzpcrRgGmEDPjnu00pflHTn4Fkpav50HohW9O2a1RH/hU+uyakIkhxsJFmThkaA5
-	KGl9po6KbRtlZPU8WHEIt5Ql+8C8Bi+qL9V/jO1aCKCvjpGiFgukocU0v1WIAjZq+yM3b50mQh0
-	fPoddYGLbUOVjK/OKIe77Bbc/+/ah3lmzvmzjjL4laFwjUsGg0fjt7zK0WEgVSbUF3OqySxk5dc
-	5UXXdkprzdZQalGi+8ei4PBEKRCTDcGLieiRsW5kFoXTUxreVi8xb7GmZnfjWV4w8lAsw=
-X-Received: by 2002:a05:600c:a11c:b0:47d:1e65:e841 with SMTP id 5b1f17b1804b1-48e6f504706mr1661475e9.9.1778498028611;
-        Mon, 11 May 2026 04:13:48 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1778498211; x=1779103011;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=mjFxAsYJ767LfglQAiic8pmf/v4fVUq2j4oVrXIto5c=;
+        b=rBzvawCTgU7fSjvLhnn3kITXX5HQyLNiQzRX3FWUg4ygVKk9inrM937yRhgqnRR/xQ
+         NmesjU8sP7JOEOggG7dejm1V2jEzx2TytD7ISRmqPtRjuAaYONOjJ1qpoJLTdSRqyj5k
+         IF2qOyz2B9IzpxzV4gBFop1ewaucUzCanuGRi34iXoQ1GPTjbz+V666cstnu1dPWMveM
+         7uGOG47sc1UYhbgwT3cBmbsBUr0ReQE7nTG1msFVpKdyIbg8kvxxSlYnYApF9I4QHc9c
+         jX/5oPUlcau/Bg498QnhLu9r9kNRWZLedGI6CmZRlnbB5F63+kBZLKaKxTRCXAXaya0P
+         HNig==
+X-Forwarded-Encrypted: i=1; AFNElJ8Wz7zQJRu4PEpyrN24jJ/6vi1xjEzObTNWltSJ7Hs5aPrT+QPTDSr5sQnSqVgPCQqhCQ4oNA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyQYAoL2tWpNw9TKFBO5jwetIUD1AOXoF38ASDHeyZhthpXvUTd
+	3jNmWiLS6xAX3MsUgouh6u8L0tWeip0IleWrcxIvToAqeYnWNTqkVeGlIjRA7Z54iA==
+X-Gm-Gg: Acq92OHUoqa/hrs03RdfD+ebjbqarBjjhK55Q6FpggMRnkLnaV8kbzU7BFBtooMEay7
+	GB2F6n11plEM76dv9mVPay5zyZchc8bhSMmBfg5mOFQkEtVEWLIpHAcv159/yy3LPUl4TTiCwYB
+	DQ7BKhUVEh3g4YG582mdIaTP7iG00+xc/H8sGt7a2IMVoBX0RhnN2jlroRlUVxLlmgG8u4dJUTp
+	+/aQ+Sgn5f/wim76tyoAkzN3/TKg4831+mfsperARbWxg0csLpi9M5vJtKjvP+i6I0zfMFnUDj6
+	QaXrqN8hmqvnb5xgE2dgaEUv1Iw/THCD+DJGPmdlJCCgvh4pZxV+6W2wldgu72cF5s1VSq7eBSa
+	0N8Bk0EYG9sxlL5xhLkUhewZijKsx6N8hOPuY0oYfAal/fsQIg6XBCQohtUh93+cFjei6kcYT1w
+	ZBKZf207O7F9yEbyRUJFK8D6eXpoi85mno4m3DbicbF9KQEcnavQfp8GfqGhjAHCtcBGQ=
+X-Received: by 2002:a05:600c:c3db:10b0:48a:5d55:c194 with SMTP id 5b1f17b1804b1-48e6f507bc1mr1377065e9.7.1778498211122;
+        Mon, 11 May 2026 04:16:51 -0700 (PDT)
 Received: from google.com (8.181.38.34.bc.googleusercontent.com. [34.38.181.8])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48e6db1413csm61259705e9.29.2026.05.11.04.13.47
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4548eb75c29sm24522316f8f.9.2026.05.11.04.16.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2026 04:13:47 -0700 (PDT)
-Date: Mon, 11 May 2026 11:13:43 +0000
+        Mon, 11 May 2026 04:16:50 -0700 (PDT)
+Date: Mon, 11 May 2026 11:16:47 +0000
 From: Mostafa Saleh <smostafa@google.com>
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>
-Subject: Re: [PATCH v3 0/9] dma-mapping: Use DMA_ATTR_CC_SHARED through
- direct, pool and swiotlb paths
-Message-ID: <agG557zSEmAqp1mn@google.com>
-References: <20260427055509.898190-1-aneesh.kumar@kernel.org>
- <af4dK-0HEsKdPAvM@arm.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
+	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
+	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
+	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
+	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
+	vdonnefort@google.com, sebastianene@google.com, keirf@google.com
+Subject: Re: [PATCH v6 06/25] iommu/io-pgtable-arm: Rework to use the
+ iommu-pages API
+Message-ID: <agG6n4CeuIMD57G1@google.com>
+References: <20260501111928.259252-1-smostafa@google.com>
+ <20260501111928.259252-7-smostafa@google.com>
+ <20260501122424.GA6912@ziepe.ca>
+ <afiO2WL4ILGfmUui@google.com>
+ <20260509232155.GH9285@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <af4dK-0HEsKdPAvM@arm.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260509232155.GH9285@ziepe.ca>
 
-On Fri, May 08, 2026 at 06:28:11PM +0100, Catalin Marinas wrote:
-> On Mon, Apr 27, 2026 at 11:25:00AM +0530, Aneesh Kumar K.V (Arm) wrote:
-> > This series propagates DMA_ATTR_CC_SHARED through the dma-direct,
-> > dma-pool, and swiotlb paths so that encrypted and decrypted DMA buffers
-> > are handled consistently.
+On Sat, May 09, 2026 at 08:21:55PM -0300, Jason Gunthorpe wrote:
+> On Mon, May 04, 2026 at 12:19:37PM +0000, Mostafa Saleh wrote:
+> > > So.. I suggest you update it to use the iommu_pages API, #ifdef out
+> > > the allocator so the pkvm pkvm doesn't need to deal with it. Then
+> > > compile a special iommu-pages for the pkvm side presenting the same
+> > > API.
+> > 
+> > I see, we still need to leave the DMA-API calls for the custom config,
+> > as I am not sure if it can use pages not backed by the vmemmap, I
+> > pushed that into a separate function so it’s easily compiled out.
 > 
-> I think this series makes sense, using DMA_ATTR_CC_SHARED throughout the
-> DMA API, either for alloc or for streaming to decide/check what bouncing
-> does. Sashiko has a few interesting reports, it probably breaks s390 as
-> well (it might be similar to the pKVM case).
+> Yeah..
+> 
+> > Without this patch, now it looks like:
+> 
+> Seems reasonable, and then i'd probably just put something like
+>    #define dma_map(...)
+>    #define dma_umap(...)
+> 
+> To effectively take it out of the pkvm build
+> 
+> Then have a pkvm compile of iommu-pages to provide the functions in a
+> pkvm compatible way. I guess you can't actually fully do this, but
+> can do enough to support this file at least.
+> 
+> > > You should have a pkvm shim header that provides
+> > > kmalloc/kfree/virt_to_phys in the normal way and just #include that in
+> > > io-pgtable when doing a pkvm build instead of hacking up all the code.
+> > 
+> > Ok, I can do that in another change, but I believe it's better to
+> > change the usage in this file to arm_lpae_*(virt_to_phys...) so it's
+> > clear which parts are intended for that.
+> 
+> IDK, why? virt_to_phys() is part of the iommu-pages API, I'd just
+> leave it.. If you want to narrow it then #define it for pkvm when
+> compiling this file..
 
-I have this series on my review list, I believe there is an overlap with
-my series, I can rebase mine on top of this if that makes sense, I will
-probably wait for a new version to address the current comments and
-Sashiko notes.
+It is not going to be part of the iommu-pages API, I meant in
+io-pgtable-arm, we will use something arm_lpae_virt_to_phys()...
+which is then implemented differently for pkvm.
 
 Thanks,
 Mostafa
 
 > 
-> I don't think it addresses earlier Mostafa's issues with pKVM, although
-> I'd rather base additional pKVM related fixes on top of this series.
-> With pKVM, cc_platform_has(CC_ATTR_MEM_ENCRYPT) returns false, as does
-> force_dma_unencrypted(). I think we should update protected guests to
-> return true for these if they need shared buffers (the whole
-> decrypted/shared terminology is messy but in most places it just means
-> buffer not private to the protected guest, whether encryption is
-> available or not).
-> 
-> That said, does CC_ATTR_GUEST_MEM_ENCRYPT actually make more sense than
-> CC_ATTR_MEM_ENCRYPT throughout this series? We'd need to change arm64
-> realms as well to use this one.
-> 
-> -- 
-> Catalin
+> Jason
