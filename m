@@ -1,99 +1,67 @@
-Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8A1A375AB2
-	for <iommu@lists.linux.dev>; Mon, 11 May 2026 07:22:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D43DD3346A8
+	for <iommu@lists.linux.dev>; Mon, 11 May 2026 07:31:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778484126; cv=none; b=f1i2++Unr2DbJeHGIDa36iSN1EPRT4OvBnYoJModPXESVrp/Khd8qkB1SKMIu34IiVH8fLaH+Vq5wCdLYesPHMSo868TlIFvhRH4ovTe5FTVivs1YtgiCx+JjBvz6jamx4VfoVmvTReWQ15wqcKkIr7CqihpaQRJIK4QK/YcV44=
+	t=1778484716; cv=none; b=Wj1EUwFRjGCeR79UvI5/Fw/1cP8Zw7c97PHifXls7WFXFyEicX6/R7mcUBUuE5/xLr6A2Tv1VLSSywXWAq3yctq5T15UGNVSuX1XCqC7LSefzWWqQT1qMc7CKGUzXEuasEZ8e2NE3afaWHl6pqxTrVxQmCaC1DMKI1HyGB0sqsc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778484126; c=relaxed/simple;
-	bh=sFa6mjTeZA+YdjdzIRkDzWZvvTvkozLyw4GG3pLu5g8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=JonuVIfQN1PT/baCYE3SGXrJv3jgrM0gry96yuTaRdTzWVDexEEQIpYwEFssBJU0tGPZJvyx/d0oJ59lKv+9+g8wJmZHVXsT0GkTf2s0Wc35SpFZ99NK5VYw53s2/SYqrjPEFxwKORM9X3CsNb7dHhPBhgO/j1ITJ547WZ9kI84=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=R0ATEsm3; arc=none smtp.client-ip=148.251.105.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	s=arc-20240116; t=1778484716; c=relaxed/simple;
+	bh=8NMOkFwesrKWURB51smC0eJsMZxF/MsGZNcq4Rgw90E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PvMCXA+h8r1cUAeWBg2xFT2OLCPSUg6ObuqPbxgBkq9vuA72PYF6R0+YE5SID6bzRYXBaUidsH/DATAgheLVfnjHRt086vhkfJOyx/UtLCGBD9PF+98BO0KcjXs3jraSYQWI+lVWplqvL07x4hubvb3xg1ZzycLTf5tMYCewoIw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=cGoiOSIL; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="R0ATEsm3"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1778484121;
-	bh=sFa6mjTeZA+YdjdzIRkDzWZvvTvkozLyw4GG3pLu5g8=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=R0ATEsm367q/tkMguEZtJEF8nYKvKUL0gTj0GCcC8/uZna4C01SpMlCgkLx2kQYk0
-	 O5H+L/N0pbg0Oz228uuYg+9w152APlplCi51FE76IIfaJp3/Ao5751ugoplRzFLXdN
-	 g9jttptHdPwZRptAyQbvZw67uX58bZAMEZO8TB6j7UetCC5jYJkcUdwj4+lqte2MYg
-	 15hnSw+r9vFlVNlzqozLqLBGEz/SYnR94ROkin6AdwacWP9rDGsiFITS/v7IhvDaDU
-	 R6ZSKwaTYUi0tjHH9K/+vSP4xTPTQtu1fjZ3KxWhwRiGMuX6Mfx3guxwFpoZ9DJw0E
-	 s3THntGpbBFrw==
-Received: from [100.64.1.43] (unknown [100.64.1.43])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="cGoiOSIL"
+Received: from 8bytes.org (p200300f6af1d9600f5faa5cebd6c042e.dip0.t-ipconnect.de [IPv6:2003:f6:af1d:9600:f5fa:a5ce:bd6c:42e])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	(Authenticated sender: benjamin.gaignard)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id 8C5AE17E05FC;
-	Mon, 11 May 2026 09:22:01 +0200 (CEST)
-Message-ID: <36e114a3-8240-480b-a53a-6aa3810bf089@collabora.com>
-Date: Mon, 11 May 2026 09:22:00 +0200
+	by mail.8bytes.org (Postfix) with ESMTPSA id D783F1C41F2;
+	Mon, 11 May 2026 09:31:47 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1778484707;
+	bh=8NMOkFwesrKWURB51smC0eJsMZxF/MsGZNcq4Rgw90E=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=cGoiOSILIGwttiawFTf0hy7TR6HCGyRucoDgL8YMgktIfxvHgWFqJx9bX+t41A8ox
+	 Lhs4v+9Lq9+m4g1vaz1v4DaTvWyf1ihSFQnzD2SVrBZ0TAmsHz8zMe+yzwGoFVkj+D
+	 CcqK9nwmvBYHgnxDxwN47zWnUdnmGDkY9WsRWA3HYudENR7F42drIK7R0djZYIuxaQ
+	 euFXmbrizCinFZG9F1qvRFx3z7Kr0+84Ja3k94bnuthAyPc/1yqaV+ya/GxzLv0f7T
+	 Ayp5VH/lQ90ydK6Udfznj/G+GJpzmz4q37XMyXY/nZrpVu29RYJnSm4avrqGwB8zal
+	 o5ix2w5ax4coA==
+Date: Mon, 11 May 2026 09:31:46 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Sean Christopherson <seanjc@google.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: Re: [PATCH] iommu/amd: Explicitly bail from enable_iommus_vapic()
+ when in legacy mode
+Message-ID: <utkh4mj3wddgtsdagg2m3n5zhmmne5n2pa7o56phieyc6g7ciq@qge574d6mysp>
+References: <20250315030928.2373250-1-seanjc@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v14 1/5] dt-bindings: vendor-prefixes: Add Verisilicon
-To: Diederik de Haas <diederik@cknow-tech.com>, joro@8bytes.org,
- will@kernel.org, robin.murphy@arm.com, krzk+dt@kernel.org,
- conor+dt@kernel.org, heiko@sntech.de
-Cc: iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-rockchip@lists.infradead.org, kernel@collabora.com,
- Conor Dooley <conor.dooley@microchip.com>
-References: <20260415072349.44237-1-benjamin.gaignard@collabora.com>
- <20260415072349.44237-2-benjamin.gaignard@collabora.com>
- <DIEC8YT0XK4O.VAG6G4H31KJM@cknow-tech.com>
-Content-Language: en-US
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-In-Reply-To: <DIEC8YT0XK4O.VAG6G4H31KJM@cknow-tech.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250315030928.2373250-1-seanjc@google.com>
 
+On Fri, Mar 14, 2025 at 08:09:28PM -0700, Sean Christopherson wrote:
+> Bail early from enable_iommus_vapic() if IOMMUs are configured for either
+> of the legacy modes, as it's absurdly difficult to see that
+> iommu_ga_log_enable() is guaranteed to fail because iommu_init_ga_log()
+> skips allocating the ga_log.
+> 
+> Opportunistically have iommu_ga_log_enable() WARN if it's called without
+> IOMMUs being configured to support AVIC/vAPIC.
+> 
+> Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>  drivers/iommu/amd/init.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
 
-Le 09/05/2026 à 19:56, Diederik de Haas a écrit :
-> On Wed Apr 15, 2026 at 9:23 AM CEST, Benjamin Gaignard wrote:
->> Verisilicon Microelectronics is a company based in Shanghai, China,
->> developping hardware blocks for SoC.
->>
->> https://verisilicon.com/
->>
->> Add their name to the list of vendors.
->>
->> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
->> Acked-by: Conor Dooley <conor.dooley@microchip.com>
->> ---
->>   Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
->>   1 file changed, 2 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
->> index ee7fd3cfe203..ebd9072300a8 100644
->> --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
->> +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
->> @@ -1761,6 +1761,8 @@ patternProperties:
->>       description: Variscite Ltd.
->>     "^vdl,.*":
->>       description: Van der Laan b.v.
->> +  "^verisilicon,.*":
->> +    description: VeriSilicon Microelectronics
->>     "^vertexcom,.*":
->>       description: Vertexcom Technologies, Inc.
->>     "^via,.*":
-> FTR: Another version of this patch is already present in Linus' tree:
-> c131d78840d7 ("dt-bindings: vendor-prefixes: add verisilicon")
-
-It seems it has been merged right 7.0-rc1 that I used for this series.
-Both are almost identical so we can ignore mine.
-
-Regards,
-Benjamin
-
+Applied, thanks.
