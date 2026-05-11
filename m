@@ -1,66 +1,66 @@
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 775601B87C0
-	for <iommu@lists.linux.dev>; Mon, 11 May 2026 13:21:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99093376483
+	for <iommu@lists.linux.dev>; Mon, 11 May 2026 13:22:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778505702; cv=none; b=XnQHV5JEvw5GiTKCduYQDYg9fjGRFB0r2scrHvvZ8nOyBw2tB6yaP774ONTZkpHRwbgCy8oamb3Ad1quOB/AIK5IQV5bF1nXrusZlmo3D65xMFfTUEwNAwZqaCDSEzX/PRiuMvf6ani4nj4BfHbTA7uKZFEmqR0SZK0zCsNUoHk=
+	t=1778505752; cv=none; b=Q7hcRPqHvABRUTT0N5naQbbcUEoHZ4OUMZm3C3voICiJU6myuydSZ/rdeg65uJIs/Yoaa08HwlNnaMoGNo/8mY5JVTSe2tgyqAdWL73kX2+cY+k5V+7o5E+f+6QHBq60vy0K9ZdkI19Z41CskY1Y+5PK+Dh5RG6zSMTslp+8/9I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778505702; c=relaxed/simple;
-	bh=TVx456v4bPVt5hN7INd320N3ng06cE3ZqomA3NeIx0M=;
+	s=arc-20240116; t=1778505752; c=relaxed/simple;
+	bh=QCLyIduHWDaal5TO9sBwO677I7k+rnGufj+09Tz+zfs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tWjSFbIMXcveqaGF1/PxSTZJ/MFVUVPrVEQ2gfTWu2ZoKyzg43z1oDiImpbRw/frdFIbI92AgFS3hdkd1c7FjRgQPI2hUDFqK4SgdRQKaPH5mMe4dmWnMaqykI+bAYWMcdhuOFfHOaExYi+PP/FGOW1sxLKenRa6g/CWsgy4VNI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=UeOmdIne; arc=none smtp.client-ip=209.85.214.181
+	 Content-Type:Content-Disposition:In-Reply-To; b=nK8ab+XxgeehBkxUr9YemEzWtll7RCudUYDbhqHhHeyfGdIf+VIrVTSbc1XkP8bY3vlyNFSWlOBxpTofmjWKFbkwWGs0j75qjkj0bqBdVDE+OcNwHxBgTqS4VVK6rJHzb6Df4ivAV17XzSkG51ZChL+OJEfonEtYccbeV1BKvg4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=I17wd++C; arc=none smtp.client-ip=209.85.214.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="UeOmdIne"
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2ba180a022dso735ad.1
-        for <iommu@lists.linux.dev>; Mon, 11 May 2026 06:21:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="I17wd++C"
+Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2ba3b9bcf69so1355ad.0
+        for <iommu@lists.linux.dev>; Mon, 11 May 2026 06:22:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778505699; x=1779110499; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1778505751; x=1779110551; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=odoNhC1jkxHEmpElHSk6/Y6iPKFT+XGqoxzHTbmY1lw=;
-        b=UeOmdIneDKKaX3RSWx018UT3yR01BRj1o43NMdY/5mS7Q+pZ+yYrZ6wAGyddHFsiLt
-         pLlCsCSqlkzwJHYwudLqeeNBL8VM6w2+TL557/Zitv1XXrLLytu7IE8/oyhpU7+vPrbQ
-         h/N1rrn60UGKFvOCsLU/06quzGIdmABNNVzFy4OZmymKATP7aLKe1yLDlrAjZ8+0dpUi
-         KbaZex+bR88ezvLdH2HRpbGOOvQVv7VyEC5ba1QdLU6e+6gTokLnRCIcH/qeUn3ASRFU
-         /+SFIp4XY3EYZDnPKYzRsi7WsWaub8/fUjctGGlJURyKl0TObZA6jFGfbzEsnYGC+u6t
-         Ep+g==
+        bh=j1/7qz951QFpfVmLjYKwAHUwEETJuwr+EbTrOwLd4n8=;
+        b=I17wd++Cys3eWLubvE40qdLL6KWVjg94IV7Qlp5K6ku17iicMg/nRk2qgB8fPkbngY
+         U9yhRwJuAzt4Q9SpeVScHwp/rTrJJJ5HsfzY9IGAMIZGGaQnXgylxrV3W/LD9l0RXfSF
+         V1FKpaPEy5qGwOw6YejRBrmXeKleuik6t9bTyzM/wOT4v13bXZEJsGWgBGDqFxIzLlSF
+         mX83lKKWrBxFYN9Jdoig1eVxlF+h29KGWae4lAgodhmbhaqNvGNFcQflgSOxECWtDzgW
+         Kyw6TrCgM93Dz7jH4DdAfh1YrEA/7J3doTsmsE1mp3ASlAqngqZ2V+INUHMJ2/CSRqEq
+         zoRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778505699; x=1779110499;
+        d=1e100.net; s=20251104; t=1778505751; x=1779110551;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=odoNhC1jkxHEmpElHSk6/Y6iPKFT+XGqoxzHTbmY1lw=;
-        b=r/OmIprJscylR3vAW6jpYS0+CFAVqTomGxV/p8+GV99IyMuRxzYvyIcGp6wF5mcu9n
-         OGpYuViHRtyEIwC96oAt2OQ17uJLpu7LrO8DWV6mldPBHFq/4R3g1QyUwFxv1qaQSPtG
-         duyr0k7KyOszFQN34G0EvmURIegB1iL+ybqS05kvYKCcXVbBbTCTdPAuDbe6wGVRyJIo
-         thLbgbEmq997yu2i8Tb68fog2uY6oc4IANGOmeb1ImhnNEtgjxaMtDYY32aeDy0zL7oI
-         R0tdZo78hXoWQpnuxrfZi/tXqn4JnkYDdEsaNEI/1cimmZAPo6wYHlilNjZV7yJY8flI
-         eQLw==
-X-Forwarded-Encrypted: i=1; AFNElJ8X1Fo9b4C1eKs59Jslh4fhZ5S5kcTKHlTQiX22NOQO73/Hox7t2zxTpfFQtMgLoUH5ROcVdA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwpzgW8N8QDYf64Avtcb6hQF6LShnOA7EpcGkdDfua27WCm6yZC
-	wpB4pC76300xI7L4oUWDC8B6PBmbCzaKNpx6i53nJyqhWeH9zE5bhDnVR4HTbqVEyA==
-X-Gm-Gg: Acq92OEWipNhGeVlPVKZoMw6OysTaJTfvfU64l8FsCjRh/9UllWYBz4BmWGJEyYnsyx
-	STWuwELpD3uDTNHAclkCThBeLelYP074FEvX79WcPowCvwhB22sTQSDT2pZu5d6EnQ4Rn1ccGWA
-	oqHr6gAgtcVy1Qx5CzQqyM7O+A/O6jpJHZsw6wPXIUZ3Jf1qp60e0Yi3OUZSxX39DJLWcpOg1N7
-	+L3KZMlgYAkqXeIOJFLvztD9n2l3MEJv8dPzF2sTwfl6OGHBj2NqVIy/nVFD667fDOq09snyPfV
-	KK6FkHvGK7AmUnpUUGAzm4Mf1fpxSCj0jofhtcdlXd3lwrpTFyhrBY58i1QdM0LV9xMqIVLjMM2
-	HFsOa76OtKDdHegHS/HXWJpW2I0p6XxvqJnOq/iJyL9E2/2JWLLykQp4shqITWe62b3TOKh1Zx8
-	KuVQ5sYxVhuRXCQAMEH8GJXP/SMkHaJb1LILPIFZXkPhK5KjNdLOGEzsHq92c8nQwPKn5k
-X-Received: by 2002:a17:903:1666:b0:2b0:5c88:51e1 with SMTP id d9443c01a7336-2bc747c1c17mr5151525ad.14.1778505698122;
-        Mon, 11 May 2026 06:21:38 -0700 (PDT)
+        bh=j1/7qz951QFpfVmLjYKwAHUwEETJuwr+EbTrOwLd4n8=;
+        b=kPLKcwTdeZ7pVMjYM6sgvZ7o7quLYPZKN6IOiKm14U1ti6/kLPkrdp1rY46MiWRI1Y
+         nPSk2sOXGjVGBpge08rUNUVcdD8++U+w6tCg+d12TidUpUDTnYXlNDBGBMyBW18m5kk6
+         uDkkn+/LA4fXHOj3PSlYEmdZleuUuMHSat5loUFIjhKMAHCA588rc3Hqf0ZHa0J899oJ
+         PlV7nveZEOaOXw33qlIAVv/ax8qDv+8WxV06Kt7hJVQEoNUMa5fHxk8LRrhP6+jOvO+u
+         PqswvA07GAAoE55Aimd37qt+W3WE0Ft2TzlV6JB7CVTMBhdza84hG6nUIkrXPDFIOSKE
+         QV8g==
+X-Forwarded-Encrypted: i=1; AFNElJ/XNQTItrJBNvb3y4QQC6CroOuf3lpnE4fBR2WxOhDWoaHcSsQfmSD4D0dSl/nuFblkwZ/JIQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy1COk6JxJSLJenQnc59w00f7Z+bRfV5awLePZodwKOUFs48mGY
+	sj5WFoJlrOKw2C58YZ1pEcdM+ZylZUm8r1+zWsOcD9wLORG4LDrmGHxxo0NfX36RnA==
+X-Gm-Gg: Acq92OHNGjwl2FJPSx1cXSv4VZ9aeMWZdx0i2kZqA+G2werDeoFuoKYLGsuJ+b2mTXt
+	hakgwAnzZezfXZXuColhViSATtNLkM6TOA7uhmuLJRxcmuVNZnOhvqIIWfdm2WVzJghc7JBnZOv
+	i96rMXeUVRk7taN6YsouRzEMnxrVdJwyYuungHkiduUEV9kll/tDAxVDbsvtKvOwxMFfDV8HEyr
+	N9N3Cl11rG8ar4SDzSWodpt1MWDZLTGK4z+73ixaPOGz92CWq3wvl3zPwIhDOCaq0nz5h8gH8Ok
+	dszrKQ9Ngb1mR6DSjdwqEnTku5h4GEWfRHnAl3Nv1fJBwa0GxUD/7JrABIGGxwk5tfejK2+FtML
+	V+u8oQKCkLEtZcjn1nT6L0ctSXUn7RYMtw5lal8aVYhAGD3hPdddyc00B7oygXw+HvJJcWh+ja/
+	NgBciFMUh2Bs8K6D6M3iNB1gjyjOPp7+nR/OU3LjDbi/WMW/wh0OATdeVtItNVMFs/zOXC
+X-Received: by 2002:a17:903:986:b0:2b4:58ad:e987 with SMTP id d9443c01a7336-2bc786865femr3773475ad.17.1778505750279;
+        Mon, 11 May 2026 06:22:30 -0700 (PDT)
 Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-83965a3e3ecsm20960916b3a.19.2026.05.11.06.21.35
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2baf1d26968sm102835425ad.16.2026.05.11.06.22.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2026 06:21:37 -0700 (PDT)
-Date: Mon, 11 May 2026 13:21:31 +0000
+        Mon, 11 May 2026 06:22:29 -0700 (PDT)
+Date: Mon, 11 May 2026 13:22:23 +0000
 From: Pranjal Shrivastava <praan@google.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Nicolin Chen <nicolinc@nvidia.com>,
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
 	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
 	Jean-Philippe Brucker <jpb@kernel.org>,
 	Catalin Marinas <catalin.marinas@arm.com>,
@@ -69,7 +69,7 @@ Cc: Jason Gunthorpe <jgg@nvidia.com>, Nicolin Chen <nicolinc@nvidia.com>,
 	linux-kernel@vger.kernel.org
 Subject: Re: [PATCH] iommu/arm-smmu-v3-sva: Enable Hardware Access and
  Hardware Dirty bits
-Message-ID: <agHX241sD1AjG8KB@google.com>
+Message-ID: <agHYDxuYyqzmAfy5@google.com>
 References: <20260503135413.1108138-1-nicolinc@nvidia.com>
  <af0SdkjQOZxnnaQb@google.com>
  <20260508123550.GB9254@nvidia.com>
@@ -77,6 +77,7 @@ References: <20260503135413.1108138-1-nicolinc@nvidia.com>
  <f31043cc-45dd-457f-8031-0cef51c9470e@arm.com>
  <af3ryl7G58D2GeWr@google.com>
  <4e129891-2f52-4bac-8e33-1fdde42fd29a@arm.com>
+ <af7oyeleKFXpcIKu@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -85,97 +86,46 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4e129891-2f52-4bac-8e33-1fdde42fd29a@arm.com>
+In-Reply-To: <af7oyeleKFXpcIKu@nvidia.com>
 
-On Fri, May 08, 2026 at 03:24:32PM +0100, Robin Murphy wrote:
-> On 2026-05-08 2:57 pm, Pranjal Shrivastava wrote:
-> > On Fri, May 08, 2026 at 02:31:11PM +0100, Robin Murphy wrote:
-> > > On 2026-05-08 2:12 pm, Pranjal Shrivastava wrote:
-> > > > On Fri, May 08, 2026 at 09:35:50AM -0300, Jason Gunthorpe wrote:
-> > > > > On Thu, May 07, 2026 at 10:30:14PM +0000, Pranjal Shrivastava wrote:
-> > > > > > > @@ -92,6 +92,16 @@ void arm_smmu_make_sva_cd(struct arm_smmu_cd *target,
-> > > > > > >    		target->data[1] = cpu_to_le64(virt_to_phys(mm->pgd) &
-> > > > > > >    					      CTXDESC_CD_1_TTB0_MASK);
-> > > > > > > +
-> > > > > > > +		/*
-> > > > > > > +		 * Enable Hardware Access and Dirty updates (DBM) if supported.
-> > > > > > > +		 * This is safe to enable by default, as PTE_WRITE and PTE_DBM
-> > > > > > > +		 * share the same bit.
-> > > > > > > +		 */
-> > > > > > > +		if (master->smmu->features & ARM_SMMU_FEAT_HA)
-> > > > > > > +			target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_HA);
-> > > > > > > +		if (master->smmu->features & ARM_SMMU_FEAT_HD)
-> > > > > > > +			target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_HD);
-> > > > > > 
-> > > > > > IIUC, we should be setting these if IO_PGTABLE_QUIRK_ARM_HD is present?
-> > > > > 
-> > > > > SVA does not use IO_PGTABLE at all, and it directly constructs its own
-> > > > > CD.
-> > > > > 
-> > > > > No relation between those two flows.
-> > > > 
-> > > > I understand that but I mean we need to know if the system supports
-> > > > HTTU ? Like for SMMU we use the IO_PGTABLE_QUIRK, shouldn't we be
-> > > > checking if the CPU's tables support HTTU?
-> > > > 
-> > > > Are we assuming that if the SMMU IDR presents HTTU capability the MMU
-> > > > would also have it? I think an unconditional enablement is risky as we
-> > > > may not have system-wide HTTU support.
-> > > > 
-> > > > If we look at arm_smmu_master_sva_supported, the driver already
-> > > > maintains a strict agreement between the CPU and SMMU for SVA.
-> > > > It checks sanitized CPU ID registers for things like PARANGE & ASIDBITS,
-> > > > and it uses system_supports_bbml2_noabort() to decide whether to enable
-> > > > FEAT_BBML2.
-> > > > 
-> > > > Shouldn't we follow this exact same pattern for HTTU ?
-> > > > We should probably be checking cpu_has_hw_af() (from asm/cpufeature.h)
-> > > > in the SVA support check or here if we wanna enable HTTU.
+On Sat, May 09, 2026 at 12:56:57AM -0700, Nicolin Chen wrote:
+> On Fri, May 08, 2026 at 03:24:32PM +0100, Robin Murphy wrote:
+> > On 2026-05-08 2:57 pm, Pranjal Shrivastava wrote:
+> > > I see, so IIUC, you mean if IS_ENABLED(CONFIG_ARM64_HW_AFDBM) but CPU
+> > > doesn't enable HTTU, it is perfectly safe to let the SMMU do HTT updates,
+> > > Since the fault handlers are already expecting HW-triggered updates?
 > > > 
-> > > It might make sense to depend on CONFIG_ARM64_HW_AFDBM - when that is
-> > > enabled, then IIRC we already expect to cope with some CPUs not supporting
-> > > hardware updates, so it should still be fine for an SMMU to make them even
-> > > if no CPU does. However, if it's disabled then I'm not sure if missing
-> > > access flag faults (if SMMU HA silently sets them) might be an issue - for
-> > > dirty, we'd just never put down the Writeable-Clean permission so enabling
-> > > SMMU HD wouldn't do anything anyway.
+> > > Which means our check would be something like:
+> > > 
+> > >     if (IS_ENABLED(CONFIG_ARM64_HW_AFDBM) {
+> > >     	if (smmu->features & FEAT_HA)
+> > > 	 ...
+> > >     }
+> > > 
+> > > instead of cpu_has_hw_af()?
 > > 
-> > I see, so IIUC, you mean if IS_ENABLED(CONFIG_ARM64_HW_AFDBM) but CPU
-> > doesn't enable HTTU, it is perfectly safe to let the SMMU do HTT updates,
-> > Since the fault handlers are already expecting HW-triggered updates?
-> > 
-> > Which means our check would be something like:
-> > 
-> >     if (IS_ENABLED(CONFIG_ARM64_HW_AFDBM) {
-> >     	if (smmu->features & FEAT_HA)
-> > 	 ...
-> >     }
-> > 
-> > instead of cpu_has_hw_af()?
+> > Hmm, looking closer, cpu_has_hw_af() is the thing which actually influences
+> > mm behaviour (via arch_has_hw_pte_young and arch_wants_old_prefaulted_pte),
+> > and that can still be false at runtime if ARM64_HW_AFDBM is enabled but any
+> > CPU doesn't support HAFDBS, so perhaps you were right the first time :)
 > 
-> Hmm, looking closer, cpu_has_hw_af() is the thing which actually influences
-> mm behaviour (via arch_has_hw_pte_young and arch_wants_old_prefaulted_pte),
-> and that can still be false at runtime if ARM64_HW_AFDBM is enabled but any
-> CPU doesn't support HAFDBS, so perhaps you were right the first time :)
+> IIUIC, v2 should be:
 > 
+> +		/*
+> +		 * Enable Hardware Access and Dirty updates (DBM) if supported by
+> +		 * both the SMMU and the CPU. It is unsafe to enable SMMU's HTTU,
+> +		 * if the CPU does not support it as it bypasses mm page aging.
+> +		 */
+> +		if (cpu_has_hw_af()) {
 
-Yea, I believe the cpu_has_hw_af() is the right gate.
+Ack, yes. IMO, this is the correct system-wide gate.
 
-> Although AFAICS from __cpu_setup(), ARM64_HW_AFDBM will still
-> unconditionally enable TCR_EL1.HA on CPUs which do support it, so maybe it
-> is OK anyway?
+> +			if (master->smmu->features & ARM_SMMU_FEAT_HA)
+> +				target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_HA);
+> +			if (master->smmu->features & ARM_SMMU_FEAT_HD)
+> +				target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_HD);
+> +		}
 > 
-
-I believe cpu_has_hw_af() is still the safer gate for SVA. While 
-individual cores might turn on their local HA support, cpu_has_hw_af()
-represents the sanitized system view.
-
-In mismatched systems (where some cores support HAFDBS and others don't),
-cpu_has_hw_af() will be false & mm shall default to software-managed AF/
-Dirty for consistency across all threads. Enabling HTTU in the SMMU while
-the kernel mm is in 'SW-Managed' mode could cause the SMMU to silently 
-flip bits that the kernel is expecting to handle via faults, leading to a
-mismatch.
 
 Thanks,
 Praan
