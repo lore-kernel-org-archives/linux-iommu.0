@@ -1,136 +1,115 @@
-Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
+Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1C313FAE04
-	for <iommu@lists.linux.dev>; Mon, 11 May 2026 14:16:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DE693FCB37
+	for <iommu@lists.linux.dev>; Mon, 11 May 2026 14:18:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778508971; cv=none; b=VLvnqq1B1v9cxu2J+jMUJWQYFyJDyJmSOT9SMXICCDurq0eMrjy4NB8FKDhct8SoUQSq7/Ddql+VLt1B+xHlKlBhgW4vIY0ockY+THk2qv6ijqiDqhAwm9LiSbcaA6OafWmr+dIfYroZnOWS5Yt3CZJU0hfQ3K1VV1heJVZxRZM=
+	t=1778509132; cv=none; b=hHX9Gp9fy4KrLfuhufkfhnHSCDe0efIUcXN9HnX2QhGyvcIMCdny/BpBok6KadIIoAiPuR/itVSe5lOS3NTLkor6o6XeaSd2wc3PrLX94l/iM8F4F7fc5Q3ZFsiICf/lo5QaAyJG2OuGnWs3w9/u9k6kgLbCXtlJM1jkxnvSETM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778508971; c=relaxed/simple;
-	bh=Qin6jo88CkHlgiIxNlYjfJTx4GowjgUxVDkj317PXw4=;
+	s=arc-20240116; t=1778509132; c=relaxed/simple;
+	bh=35fAx2DRHYaIyZAtRTiPzerFcANm+T3Dutf9bONwTyY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hxpRZDxB7qry//foxyPZ+A8lVdcqsw9qu+yh3iJU5xs826bkY1F1PDyPJ3w5oMSuTz3A3Y8AL19QirilFLYtmPzPeHOZitLCIz3XjRZPl/ND3L16HtZ8G51UkZj2jINgpOiv727GAWPKYgGaNjpbPdmQ9jty0YT5W2RX/pgdpY0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=YUHyZnRz; arc=none smtp.client-ip=209.85.167.175
+	 Content-Type:Content-Disposition:In-Reply-To; b=qs3JeICN7x3o4WmpHurLm4RxT+fZTz9rrFHKGSg7FPxn0oTwVYUZoLTuCQfbNJ2Hw+qWsJo/OVm4ZH5J8ce8qyDqsszS4rbSatn6urxN6q7X5yQGJovwocScRJagRBl3a0Y/yIOjEnp4GxpqeRAIH6Zyz7SyfEvjbFIujc3hjXE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=I/0zOAm9; arc=none smtp.client-ip=209.85.219.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="YUHyZnRz"
-Received: by mail-oi1-f175.google.com with SMTP id 5614622812f47-48270f099d5so805621b6e.0
-        for <iommu@lists.linux.dev>; Mon, 11 May 2026 07:16:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="I/0zOAm9"
+Received: by mail-qv1-f51.google.com with SMTP id 6a1803df08f44-8b6dd874471so58063556d6.0
+        for <iommu@lists.linux.dev>; Mon, 11 May 2026 07:18:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1778508969; x=1779113769; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=2XYfpgDr8rhwU4VmZAcmnr3FHYX6CTKDgcqkhraCAE4=;
-        b=YUHyZnRzykuehKnEdfTeYv2sZwi+DMVoYIpcdAecT+4nHH3hP0a4BePQuZ/XsikDz9
-         U4akuI6bGqel+Z68TfHLJHAVYYCVY98HW5aX4R3tST6Bpu7H0dAqDwV2MiFmc7jfg9Ho
-         +wMl8WrPqZKeljeHmNmmgMOUaSGsm5XfxPYvEnezR8l5zTXGKdRJowT3B/NIo/WbtCmG
-         batlnedon4oEu0WUVlEzSorCnNZ4tRxOREfl+3zT27hvDzbfLMTgRab+BdnLwgGrib5X
-         bPsV6lgBaYEhQccol6bKmBbuZmWrWrK8NtGsw+4gq9x42Nca3DPE+1ii4pKGvaF7RllQ
-         IZiw==
+        d=ziepe.ca; s=google; t=1778509130; x=1779113930; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=nhPDshriKOHBVRsVBlLjs1r/ABM7AzaFK2EEc21Hio4=;
+        b=I/0zOAm9pnymIRaMwEzLqlx50E+2SKjV/eSB/cekgIn1VXb1gWYg182RDoCergjQG3
+         kXI1MVaqhhOFr0kXZFHxG+Tt8pO23qUt6M3ViafO6BhRoRgxVnxBuh6bcspHKdOwzWEq
+         eK/hgYfGK+kDZ856rzgDUYZod64nTOZxJrDkej/XQ00vz6IIZLJskqkWFEtA/BK8gbdx
+         jk4c98tr5in2co5ymt/+yanpgKku+dWxjqVoYZqkYB67DKnl0hBwX5zCPp0I7FxDBXdu
+         6IL+2a6BXZHLmSVqBcr3TxbbOcL3FDSPCGXpWedGE13vuGTY5oA+1K6p1zbqEXdewgmW
+         DAqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778508969; x=1779113769;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=2XYfpgDr8rhwU4VmZAcmnr3FHYX6CTKDgcqkhraCAE4=;
-        b=PTXaskxFVtaT1M5KaxRR3K2LBXPmHQl9QjAcBzxIm0Lluli9pk5mqd2jgbWD6dIXzQ
-         u9O1DXwr/oIGE02v/BDrH8oTTGXGG5twGCzAejUspx/gCxGr1sGLnPcMBpDS/zkR0fkF
-         QIzBtNJHI7WdSUbBZ7PC6TecYU9E1870dr0ka6ER0jorVrxXZGVUdDYFoeQ0TcX2er1Y
-         i52GQg69YV4Zq+rdF/p/UdA/g8sFYZRIJ4oqx/Ugnes2BLqWi+HUZWN3GONzaj1eV0GD
-         DdmVLNP7A8MmCs2nzpfHPru4HJQO1kRQlF8MemdIkkDReRLsfDHkiuC+vDKgQ6NSd9sH
-         Rl9Q==
-X-Forwarded-Encrypted: i=1; AFNElJ/p/4iRxeN2sjGcaiNGMJb3/afS8Um92L+dZryYCoJK9YYeicN+N9sFVSF7C45erScPX/dfRQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyWomidVueippHOTwH8mMXGgEPnqv3alLkshXfGsBr/jJR4RAK8
-	kh5j/9s1mkS8f7BnE+JaLzdf8x53mBWqzMxOhyV3BTQzUAUFEWjWJbCD9s1p4b8ylkw=
-X-Gm-Gg: Acq92OGt78giyC7/G99nkvr68CNaD+aDqI1sxXtDoyyR4pOFXw27bxgDRlv2J0WDgL5
-	VJyy7RAo0RGt9RVPWK93CFZvOsUMHmvBBe4exVSoRs5jj+ErUahDYYknTqNNT+YsrRV1Ei5t+/3
-	ATpfe2/Xc3IGKhXP/QRDnVTckS8iOCWelDy/LT+74XO2zSoIg11IPAJoZysm/f5QZ2pG/iezFvp
-	sWlAqOD0lusVQ9aQFXzh/fg+acCpZ6G81CAKBDGKdZqFo/13s1pgsh52VK33+VmO5tnod5tLQ06
-	ruyFXihIIyEqPzKOShzR5oYqL6H1BTnQBffldIjB1jb7owzw10OFAPxSsARfCkduKvuJI7h2U1c
-	9voNKS3VT2yE1XSw4On7Jf+f5RIiobWDlJ8Sql7A43XGlGbSrGbpmej1eL90zSXiFyRMRHsdr4M
-	Tqmu5XG0n6yHRTcJlb/dGMqwF6CTK4fmC8eO5lhlkd/icnsN2n5vzrtI26ILxPop7dBJf4h96e8
-	4ZqWw==
-X-Received: by 2002:a05:6808:2382:b0:467:1da9:2b0f with SMTP id 5614622812f47-480424ee5eamr14020119b6e.34.1778508968626;
-        Mon, 11 May 2026 07:16:08 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1778509130; x=1779113930;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=nhPDshriKOHBVRsVBlLjs1r/ABM7AzaFK2EEc21Hio4=;
+        b=AAlZJxr6T8tOPNuo5DwSq3NIjMSTBXyHk4xmPuIOhkhdRVRxNvHyGr5hCxKFxrCFjy
+         N8jWE6lLnXcMNAqyEjajWw1JFX4Y8Yxrkpq6JOc41cnuBuuM4yoOcG5WuDxsozi9eAHH
+         2KAeLwqYg511DXhNNaMvK04FIEe9Tdxvxu/db3ExtSpJg3Z93+H8nAqSozGVHN/EwVSN
+         DCmJeLD7gs6z2TSKCaE8frQrwZflnnEggZWTKyHr7Guq+xRPgp1IRSNPc3tv+PCoLRTr
+         zL8DjOcr/IN08Hh8nFj2ZZINl6ZEUUNA08vYefNVVfgrzs9QHJ8aW2JpAf90BjBU6cIg
+         d7lg==
+X-Forwarded-Encrypted: i=1; AFNElJ/9bm1UwVtlflVeClv3NBLfYTVDsFCahgNli+bE6p3VB+gqdLsqHL9X+G61HtaMShvHvn+SFQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxVOOvU+Tm4Ef04siGA6h6xkv3yZqgZhEdbJ5AWk5No85pmS4sq
+	nLntaclWf7BFQEskYY03VB+4HxQIBWxgCX6UMIyTNeWuIc8wCN3dMBXP6cUoo1VYj7I=
+X-Gm-Gg: Acq92OE0q5v8pFqGRi5tsrMUOqlyjbGOj2fmG1L6Vf89OcYyZYGe2gfpyLbM0hQ4bf/
+	1bFZ2jGq2+g9X6KYGT1XbSlFwpKRWul6kmUxTw4rTmCC2c/7hSawjGENr6qfiqcnSWroMXLCbRn
+	/ITrvMnqM/LbvGoxvDXjrabpPObWLotrn9bDqAe0lcIoEkWywWJaVZy66/vfFRc/m9j3BhIwT/8
+	rSjQGVz/x6pt3/mnmuPJhASv29Sp1Fceb8lXKt8a2I7bYu/bflr4J2hnEJxccTOK33bXIDAWVfW
+	mSJvX++aEPYuhQftgooRjM6k0EeJBAzC5QNtgUfidfu1eQgayzSYAYBLxZtQVqIMC61LFh/CkWc
+	PR+lVmnrRvVP7qr/fyz6lAH2bDFXv7wW2HE3RuQ9JUVv4TebvEZykHcJmOM+T3diO8mwRDmxsmj
+	nRK6AnjuqE9v40buUcULHTbGsCH8Go5wTAjwDozKDsO7TJXo2CAt+m7+hlNt8PNpBUAc8uZuYCC
+	0wbjQYcu4d0yud7C012JDUlaaI=
+X-Received: by 2002:a05:6214:4982:b0:8c0:1d4:4171 with SMTP id 6a1803df08f44-8c001d4430cmr177173846d6.19.1778509130231;
+        Mon, 11 May 2026 07:18:50 -0700 (PDT)
 Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-5148e7e3d90sm88620031cf.20.2026.05.11.07.16.07
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8bf3a71be9csm97495666d6.17.2026.05.11.07.18.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2026 07:16:08 -0700 (PDT)
+        Mon, 11 May 2026 07:18:49 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1wMRQV-00000004oAh-1lMi;
-	Mon, 11 May 2026 11:16:07 -0300
-Date: Mon, 11 May 2026 11:16:07 -0300
+	id 1wMRT7-00000004oCe-06zM;
+	Mon, 11 May 2026 11:18:49 -0300
+Date: Mon, 11 May 2026 11:18:49 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Pranjal Shrivastava <praan@google.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
-	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Daniel Mentz <danielmentz@google.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	David Matlack <dmatlack@google.com>
-Subject: Re: [PATCH rc v2] iommu/arm-smmu-v3: Fix inconsistent ATS state
- tracking
-Message-ID: <20260511141607.GN9285@ziepe.ca>
-References: <afjfBi+vw/Ywkzid@nvidia.com>
- <afj0cyBZwkVLyIwK@google.com>
- <afoWrn/RXxDmcHsS@ziepe.ca>
- <afpdm5lfIeWptxOh@google.com>
- <afpwCIjQXwfImPXm@google.com>
- <afsN9jrsfuigV+DM@ziepe.ca>
- <afu5Y55W5oj70b5v@google.com>
- <afu69hAtkRlI1GJd@google.com>
- <20260509171451.GG9285@ziepe.ca>
- <agHGaJfwPr7-F1z2@google.com>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
+	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
+	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
+	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
+	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
+	vdonnefort@google.com, sebastianene@google.com, keirf@google.com
+Subject: Re: [PATCH v6 06/25] iommu/io-pgtable-arm: Rework to use the
+ iommu-pages API
+Message-ID: <20260511141849.GO9285@ziepe.ca>
+References: <20260501111928.259252-1-smostafa@google.com>
+ <20260501111928.259252-7-smostafa@google.com>
+ <20260501122424.GA6912@ziepe.ca>
+ <afiO2WL4ILGfmUui@google.com>
+ <20260509232155.GH9285@ziepe.ca>
+ <agG6n4CeuIMD57G1@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <agHGaJfwPr7-F1z2@google.com>
+In-Reply-To: <agG6n4CeuIMD57G1@google.com>
 
-On Mon, May 11, 2026 at 12:07:04PM +0000, Pranjal Shrivastava wrote:
+On Mon, May 11, 2026 at 11:16:47AM +0000, Mostafa Saleh wrote:
+> > IDK, why? virt_to_phys() is part of the iommu-pages API, I'd just
+> > leave it.. If you want to narrow it then #define it for pkvm when
+> > compiling this file..
 > 
-> > Thus the quirk should cover the VFs too and also disable ATS there.
-> 
-> I observe the quirk does apply VFs but after the VF's iommu attach
-> because of how the pci_iov_add_virtfn() is written:
+> It is not going to be part of the iommu-pages API, I meant in
+> io-pgtable-arm, we will use something arm_lpae_virt_to_phys()...
+> which is then implemented differently for pkvm.
 
-Ah, that seems to be the issue then :\
+Again why? I think the main goal should be to not mess up the normal
+code. 
 
-> While, we can move this quirk to be in fixup_early / fixup_header.
-> I still think we should add checking the PF->ats_cap within 
-> pci_ats_supported before bailing out happily (return 0) for VFs.
+  #define virt_to_phys pkvm_virt_to_phys
 
-I feel like this should stay in prepare... supported is a differerent
-thing. Maybe the quirk should be more directly tied to ats_supported
-instead of whatever it is doing now? The ACS code calls directly into
-quirks for example?
- 
-> > So I still think my original suggestion is appropriate, fail to probe
-> > the iommu device if ats prepare fails (serious PCI layer bug, like
-> > broken quirks) and fail to attach the domain of ats enable fails
-> > (serious internal kernel malfunction since enable must succeed if
-> > prepare succeeded)
-> 
-> I’m concerned that refusing to attach a device because it isn't ATS 
-> capable is bit too aggressive.
+Does that, we should be leaning into this pattern I think, not adding
+unnecessary churn...
 
-Sorry, I was thinking prepare fails because it *fails*, prepare
-succeeds if ATS is just not supported and won't ever be enabled.
-
-But these odd cases where prepare sees ATS as available but can't
-prepare it should fail and that should fail to probe the device.
-That's exposing some kind of kernel or device bug that someone should
-be fixing - exactly like you discovered here.
+If anything is needed then it should be an iommu_pages function to
+wrapper virt_to_phys() for use by iommu_pages uses but I'd rather
+not..
 
 Jason
