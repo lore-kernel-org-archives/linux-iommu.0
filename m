@@ -1,140 +1,124 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33F6D3CAE70
-	for <iommu@lists.linux.dev>; Mon, 11 May 2026 10:48:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E374B366060
+	for <iommu@lists.linux.dev>; Mon, 11 May 2026 11:13:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778496526; cv=none; b=Fx2kBHyVz1QNmb5fIlCtFHM2z8WA6TdwJkwg/2w89+3VW2tO4+h9P+PuxWEpGpaZiZ3RnTyN+4toDhTciu0VcaAuagC68nl1cq0iDANek88Mjidj3BrOf4spB1KfI4yxdir3E+iYn9MeuiDl7rq7zIGu9KJRf5OoarENFhdBRIc=
+	t=1778498032; cv=none; b=Q4m92xVkQYZIQYAQRPtSoTDetAycaCfNQP/xC4m/HWVSbp3854ace6ykdC49X0AKuG/0oxO0TstG8b368G+mWVMceMJcn9AT4X6kstgxDuTiSkc2gHY51o2pQLeTf8OJHeVY5X0ghn4uvCyq7idp+/XKcszZCOrZXzl2zYolgCQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778496526; c=relaxed/simple;
-	bh=Swp3xGW3vTawn+izWd62T9fOozzOrIouuue1VdtxNLc=;
+	s=arc-20240116; t=1778498032; c=relaxed/simple;
+	bh=XxgqOVAvsBiqccnVAD240XyEMuriRVfTF0T3UfzRmEc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jtaaIiopw9ZFAxvGZIlPMg7uvhwI1JPMoeQh7BnwWEUBEugQbvB7PHE9Wjh5tAI/4IBvynR4UlUQkFCh+4gn8QweVzBlVnsikCR7IrOnnlYQlEwC+sj8roFJmVmd9z+5+WbNLKyeVAl5xdULadI0ieT52kCs4FICHBwjgQKJN84=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=oFOHxFzS; arc=none smtp.client-ip=209.85.128.51
+	 Content-Type:Content-Disposition:In-Reply-To; b=sq8jGkLGzmg5ew+1plwLhq2GlflxavSP5LJYAgajrHYrVejUCUWJjo5sTCC/IrDQgQPZmCghNe8U+cgrjwo0DbRXiKNbDwP0OXb4buevzFMVTGNwD+J3rIitfOoopHECtje7CEPhd09XK0bGzR3Af8tOekAsndY2ScFWbwO6jA4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Yh60y8Ko; arc=none smtp.client-ip=209.85.128.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="oFOHxFzS"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-488940ccfa6so1495e9.1
-        for <iommu@lists.linux.dev>; Mon, 11 May 2026 03:48:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Yh60y8Ko"
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4891ca4ce02so935e9.1
+        for <iommu@lists.linux.dev>; Mon, 11 May 2026 04:13:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778496523; x=1779101323; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=EgO3YEbraGVhlJDckmxk50y+7wZISWCLqWPhmHwgijY=;
-        b=oFOHxFzS67LLJYrY8rkCyTHatD8KQ4PLWewwcg6xjRvXTgCrIf+xVAajCbHFn0eDu6
-         MobhTKChDMyrbQsD9/lieOl9V2QdR7m1PlWVWzbOA+ViDwW43GJKog6KtNb6uHuI0+XH
-         rltJ1yRLyVFukJuUdY4VvKg3Q/SB9V487WaSOrv79heOO9k+Mjf5LL/g5WWW0A7xqhPH
-         o7ndwSYl49XHpzUkH/4Du1OMST43Epc8HeIAplTfyJTapSFox7TANiXrKq6oh8ApL4Ye
-         /l3+6KH37jB5Z+xylniCDw5r0Euo1JVgUE+qruFk+k3cB8yWpq2Ieas2v9JbieHhS575
-         xWJg==
+        d=google.com; s=20251104; t=1778498029; x=1779102829; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=OdpkiWeL2t8R+EHDk3fbd7ThTtXnMvXGE12dkE0RMC4=;
+        b=Yh60y8KomVoazjSWwpMiy45Gvu4M+DNJKTjfwyy9e+Dwzhr+yEXkBLvAirEfQcx1Xe
+         2DXrj2UpvGiXa4+Ql7H+Fh8iDRORaKBvygJE4dtRekmkZ0mETBuD4mkIPZhuqkuMem/D
+         RKyLTGK4lO6VIQI0TTjsZwXhkQ/3QPk9+zMtLR2ptTiXUJzB9OHxcvYaJvIBUpC+wFrx
+         XYa7xSIqri/EJ0h0Q+qCtnZooKDkKhAzaXsLq9tER3TYc5Ec6V3MDhacuV8HhAdtlqYx
+         UZm4IQRhmKB1OG+TFr+PfVJeRnDT0o9dcjq2KqkddrhMQiz3S+t9RM2k9ejrsYhXctZF
+         zTug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778496523; x=1779101323;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=EgO3YEbraGVhlJDckmxk50y+7wZISWCLqWPhmHwgijY=;
-        b=QIZgyIZUaTybuyOeJ+a4AzLxrS8LKQEZyT22VnuhRp7GOV5BykBd5Vg0WynapfDXgF
-         C6mP3aVlb+/iVAu6dObUt3jdt3HJYJVEboReQsr9G4kJR/m3kzxvgtIro1jWURNj8ZZQ
-         C02EHWn6668TnMPRvlEIPIKOhVYRVSpLiyKN/b7XyscGFx5zIoGtiXFrKUfmErK0V8Sp
-         H+2D4uYQjQ7Baho6xEHJ1fvbLAy52chtyHJbrj+ETHkxZqtGtVyj0BSNERjVDBdEfo2R
-         y2kxgwSkKGKhQeBAGpZKdOyrDiXE+n2mq4KSmFQIXB28eWj1C1/FDN9J29QK7YpAByKS
-         /aSA==
-X-Forwarded-Encrypted: i=1; AFNElJ/jG4kC3MyyCtQ8jdlGXB9+1UjBvQjeUoL6RiwK5zHgHccbXiDHLovlmMguJZ9z88Fdy1k4OA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwvRGPYscF5JqkXuX+I9cSAnpzKlORWO/CRxZNH8fIZW9PqT1hM
-	Zh3vpuFxWS3RbrN+ux+N69ZMRGm+DdGxoqzXFrqlVIJ8rdrJOijx/wndHg4Ja6nYbf1lojSepYo
-	LySim+A==
-X-Gm-Gg: Acq92OH+6rIfdvpGjcs3f28rr407ecbJ4j9jg3DFP5Cq2UdWAL3xJwZR1YwfTJ41+QN
-	CzoZvaE/e3R5m8eRLvkoGYn/R7O5348daAOmnSlexSJJv6TBjsBi3Kv5Q2FfsjeDxPGnLgmKgZ1
-	S8bMUIV0HP5PsHzaMddZRM127tymHC3TJc24QxZqKDqtI2mNvl3Ae0+hi0iCPsf3OvwXpLaLI27
-	N2liMNDvOiEkx1R9+cHc7QhnJP0oiZulUnZylS+r21evvBEES5wT8xCq+CYVzO2rFiZJ/xhoTGA
-	Iw9MO88an+bOX+9YzOXQJxnFCyxeqQmAE8z0EqXX9TnZHnGZY9lD/TVkUYd34KcXYhZoh07pemm
-	UrlhaIO0LM24H9Ud5manwsB4Z956HJRikC64kAvOK/hzWbEDeIcqQDEbBz7Z4F6ECQTRYWqNt0X
-	FCjEzWcFTaMBB8VJjCm+yPZZ3y4c95JVoOF5BAZ8/JvflX7eSJ7RwbFHqofUxKCzDKU7U=
-X-Received: by 2002:a05:600c:34c9:b0:48a:56fa:36dd with SMTP id 5b1f17b1804b1-48e6f50a1b5mr2391805e9.11.1778496523100;
-        Mon, 11 May 2026 03:48:43 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1778498029; x=1779102829;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=OdpkiWeL2t8R+EHDk3fbd7ThTtXnMvXGE12dkE0RMC4=;
+        b=QvMaEb+sukltIdO6dneF3dUpiXJSib5fIsMI5GBC/hn/BrpW2ql7IBv9IiK3PAW1uZ
+         dxTgID3ntqDJwjWm6AVel4U9IkR2IsBb54Tq7ZgQqC2yW1T191L4QiwAIG9GDH8P5y8H
+         QmIdlnUn/fvTB2FXnVSsYW7ArY0XrakXtaawP3vmpT1DgopIAHX5WOoYMX8h9F8beGqB
+         7e3VCAVyiCUhu98rmjX3EqZ0I4G1Y55rh6U3W8rYAMuNqdRYq5i9Jf8vjHP+krgOPxdG
+         nb4DrSGAM2623W1lf1PbVOG9c3nv9Euw2CSJ+0pGkeXUndu0tyWPBj01sayv0/W5ngua
+         2K2A==
+X-Forwarded-Encrypted: i=1; AFNElJ+A0jswqdy+g/SCdbFgG5zcPRuDwcgXYmCY4GpaYUPInOkuy9kA75yuRunZIBjNUsKAUvsoCg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz8f02YJX4+2YIVkHMkDOZ1Zj2CDl2uaoU7ZTeeDHz6jUmESbqm
+	cMo221kqazXFPMo7+5d739/QROsVf663pBooZh6xdXRHyBjShtc/zhhLE3kJB0lklA==
+X-Gm-Gg: Acq92OH5zkR0kPxlmBBpZyCu4sbd2+hl8rZk2atuBcuO1j2bF5nObP4WR264yx9jeEf
+	L3E1pEicOUAW9W3oQ6889g44v0GEHOtF/VSCOnam/JeNskNN/3i9fSY55ZmMnkrWZtZ9sUjXOHo
+	pBZ2vvYqEch4G2dIbRgab9xwlAbKW+CZTKGKWZKmkWhp9R6VICuxPYazEVHp8hsY5OsIy6XAK/r
+	iMD+DR8zv9htzpcrRgGmEDPjnu00pflHTn4Fkpav50HohW9O2a1RH/hU+uyakIkhxsJFmThkaA5
+	KGl9po6KbRtlZPU8WHEIt5Ql+8C8Bi+qL9V/jO1aCKCvjpGiFgukocU0v1WIAjZq+yM3b50mQh0
+	fPoddYGLbUOVjK/OKIe77Bbc/+/ah3lmzvmzjjL4laFwjUsGg0fjt7zK0WEgVSbUF3OqySxk5dc
+	5UXXdkprzdZQalGi+8ei4PBEKRCTDcGLieiRsW5kFoXTUxreVi8xb7GmZnfjWV4w8lAsw=
+X-Received: by 2002:a05:600c:a11c:b0:47d:1e65:e841 with SMTP id 5b1f17b1804b1-48e6f504706mr1661475e9.9.1778498028611;
+        Mon, 11 May 2026 04:13:48 -0700 (PDT)
 Received: from google.com (8.181.38.34.bc.googleusercontent.com. [34.38.181.8])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4549130549bsm24986752f8f.18.2026.05.11.03.48.42
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48e6db1413csm61259705e9.29.2026.05.11.04.13.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2026 03:48:42 -0700 (PDT)
-Date: Mon, 11 May 2026 10:48:38 +0000
+        Mon, 11 May 2026 04:13:47 -0700 (PDT)
+Date: Mon, 11 May 2026 11:13:43 +0000
 From: Mostafa Saleh <smostafa@google.com>
 To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com,
-	m.szyprowski@samsung.com, will@kernel.org, maz@kernel.org,
-	suzuki.poulose@arm.com, jiri@resnulli.us, aneesh.kumar@kernel.org
-Subject: Re: [RFC PATCH v3 4/5] dma-mapping: Encapsulate memory state during
- allocation
-Message-ID: <agG0BpB0ZwvcvE3r@google.com>
-References: <20260408194750.2280873-1-smostafa@google.com>
- <20260408194750.2280873-5-smostafa@google.com>
- <20260410180504.GE2551565@ziepe.ca>
- <aeJVh5VbkzxHDBEK@google.com>
- <afzNm6ZmR6c8_SMk@arm.com>
+Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>
+Subject: Re: [PATCH v3 0/9] dma-mapping: Use DMA_ATTR_CC_SHARED through
+ direct, pool and swiotlb paths
+Message-ID: <agG557zSEmAqp1mn@google.com>
+References: <20260427055509.898190-1-aneesh.kumar@kernel.org>
+ <af4dK-0HEsKdPAvM@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <afzNm6ZmR6c8_SMk@arm.com>
+In-Reply-To: <af4dK-0HEsKdPAvM@arm.com>
 
-On Thu, May 07, 2026 at 06:36:27PM +0100, Catalin Marinas wrote:
-> On Fri, Apr 17, 2026 at 03:45:11PM +0000, Mostafa Saleh wrote:
-> > On Fri, Apr 10, 2026 at 03:05:04PM -0300, Jason Gunthorpe wrote:
-> > > On Wed, Apr 08, 2026 at 07:47:41PM +0000, Mostafa Saleh wrote:
-> > > > Introduce a new dma-direct internal type dma_page which is
-> > > > "struct page" and a bit indicate whether the memory has been decrypted
-> > > > or not.
-> > > > This is useful to pass such information encapsulated through
-> > > > allocation functions, which is currently set from swiotlb_alloc().
-> > > > 
-> > > > No functional changes.
-> > > > 
-> > > > Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> > > > ---
-> > > >  kernel/dma/direct.c | 58 +++++++++++++++++++++++++++++++++++----------
-> > > >  1 file changed, 46 insertions(+), 12 deletions(-)
-> > > > 
-> > > > diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> > > > index de63e0449700..204bc566480c 100644
-> > > > --- a/kernel/dma/direct.c
-> > > > +++ b/kernel/dma/direct.c
-> > > > @@ -16,6 +16,33 @@
-> > > >  #include <linux/pci-p2pdma.h>
-> > > >  #include "direct.h"
-> > > >  
-> > > > +/*
-> > > > + * Represent DMA allocation and 1 bit flag for it's state
-> > > > + */
-> > > 
-> > > I'd explain this wrappers a pointer and uses the low PAGE_SHIFT bits
-> > > for flags..
-> > > 
-> > > > +struct dma_page {
-> > > > +	unsigned long val;
-> > > 
-> > > unintptr_t ?
-> > 
-> > I thought about that, but I don’t see unintptr_t anywhere in the
-> > kernel, it seems similar cases use “unsigned long” as in xarray.h
+On Fri, May 08, 2026 at 06:28:11PM +0100, Catalin Marinas wrote:
+> On Mon, Apr 27, 2026 at 11:25:00AM +0530, Aneesh Kumar K.V (Arm) wrote:
+> > This series propagates DMA_ATTR_CC_SHARED through the dma-direct,
+> > dma-pool, and swiotlb paths so that encrypted and decrypted DMA buffers
+> > are handled consistently.
 > 
-> Jason meant uintptr_t. However, we have a similar pattern with struct
-> encoded_page as an incomplete type and encode_page() adds the bits
-> directly to the pointer. I'd use something similar as there's precedent
-> already.
+> I think this series makes sense, using DMA_ATTR_CC_SHARED throughout the
+> DMA API, either for alloc or for streaming to decide/check what bouncing
+> does. Sashiko has a few interesting reports, it probably breaks s390 as
+> well (it might be similar to the pKVM case).
 
-I see, makes sense, I will do that.
+I have this series on my review list, I believe there is an overlap with
+my series, I can rebase mine on top of this if that makes sense, I will
+probably wait for a new version to address the current comments and
+Sashiko notes.
 
 Thanks,
 Mostafa
 
+> 
+> I don't think it addresses earlier Mostafa's issues with pKVM, although
+> I'd rather base additional pKVM related fixes on top of this series.
+> With pKVM, cc_platform_has(CC_ATTR_MEM_ENCRYPT) returns false, as does
+> force_dma_unencrypted(). I think we should update protected guests to
+> return true for these if they need shared buffers (the whole
+> decrypted/shared terminology is messy but in most places it just means
+> buffer not private to the protected guest, whether encryption is
+> available or not).
+> 
+> That said, does CC_ATTR_GUEST_MEM_ENCRYPT actually make more sense than
+> CC_ATTR_MEM_ENCRYPT throughout this series? We'd need to change arm64
+> realms as well to use this one.
 > 
 > -- 
 > Catalin
