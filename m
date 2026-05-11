@@ -1,148 +1,107 @@
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C22A37B018
-	for <iommu@lists.linux.dev>; Mon, 11 May 2026 12:07:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F2C8536F433
+	for <iommu@lists.linux.dev>; Mon, 11 May 2026 12:39:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778501234; cv=none; b=qoDoE2p2CdvXcPL9n4vmDfKkOLJ3x5ALKWPBKaorPmEFchRDFBmsF8si8iyB3wnpWNxeG5cWWMqtrLzdoXe9sU3eUliwZo4Ete4mDihmuBbroYPRfJeRy24ePOfjHFwswgcItOyEbEkvb9M59HXLMDqg2hY0OPe2I7DL3J9/TMI=
+	t=1778503152; cv=none; b=Hd7lHlfoh9nD0O0d2qpflhft/ZRZD6UJUmTbUmmtPLhzP3db+F4CqdP9GtHvQUBs0y1dyWRh3FD70Rin0rarbKUBXda3Oo8tuJTCyPZ9Ii2burh2Erre7tUNs6OOrJSczmULuKCvkfgKOwzsmEyru9XGWB7hSYZVHgGwaWwENb8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778501234; c=relaxed/simple;
-	bh=7Qjhm3YdhhO4t+vF7XagYTnn9XOfWd4xq/CKCcvdJog=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mzNYLJD2Z5t+eXocXShUArM7tDRPav+wXsTI50GQo+9LK/GynVXtisyVwIK0jHxj+OGsPuz3Wu09F1zxZ34pkMMSJj9ZNiAmG8NZF6QrC/+ZGxalWtIvyshLK8lIHsIJIKn9l+KAbqh1fYgi3T/dfNUH70lah+fRqxhIeoX8CSU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=CY3wGME6; arc=none smtp.client-ip=209.85.214.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1778503152; c=relaxed/simple;
+	bh=QLEE1X1xHeVvZP4CCFZks7mG64iGB9TUiMiSZkQVSaU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ULwgDSfHouhEArVuXYAcJnesQvlSGO/DY9sd4pGu/r7vRrLabASpzz2O3iw7BOQJP+OIl2gFCRxhSdr2tH4Fn1qhb7LcWfHWTRxzi5cZ7D4xPqehXayW8Bd+Itfq9kqMBXOAUA0+aAMpzDg8OrbpFfO/BO9cQddCC4P0f64Xhn0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=Yr0IcQFY; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="CY3wGME6"
-Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2b46da8c48eso95ad.1
-        for <iommu@lists.linux.dev>; Mon, 11 May 2026 05:07:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778501231; x=1779106031; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=LT2dOn0HXXyGKpMQ+Gw6Q15wO7E08EwiUoUgDekxIyA=;
-        b=CY3wGME6MKkfZGPYDAVOK6c4Gn4jKRj/W3ELRkBFSAjJn4XU0EAYy+N6sAGxuDrAU6
-         LChyLL3OEoHUN/Lx3gFQejEGX10et2d4hfDGLCciDxJLQNqRmeKW9IOdrdk0FCJW0jxY
-         n9FLBmnlif2vs07/rypy8W8V5vG4x7xNUNb05GnU0ZeLD7x9z4OnfKQ6iMKCAce1CW4C
-         S3fL3fSKz2G3GEX1WSvjNVh4AB+GBoSS/SUljDCiOXOdBhmS47i1TcMFQpOv27c/+GLm
-         dN+nOVP302Ow8s8HSdt19kxR/PlSynrMiHPJlGziHcxhYUGfaXAK3paVoS4tknN0aPlq
-         AAtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778501231; x=1779106031;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=LT2dOn0HXXyGKpMQ+Gw6Q15wO7E08EwiUoUgDekxIyA=;
-        b=Ou7Pkm5qye6tAYJpdV5KOlA2sXa+87HiQfHw69Hlvo0YdZ0wCxV60/1t04gQWW129R
-         hxDwn2T3kunCDe/S+mr/a4CL7mIVxlEepwx8HIFzpStMsluDPv9UMFd9NLFyt1LGcmYR
-         uzhB5aoJ7JiSurTpvOLztrEbtTW96R0imZCurwJWWqsCvXqNhCAJu8Xm8nL+y0kgiPb/
-         f+TjICD/0UTbQAsSfx+5CaNgAjejTgsgycsDq5XMw7u25KQYJWTRASK0+MvHASp0WRlE
-         2qUWOgYTGDJ2mZ0F9sdkqP5vJobvgcf/zGF2N5wXVOHjGwUu56dYxpGjJaSvy20bV9fe
-         zVPw==
-X-Forwarded-Encrypted: i=1; AFNElJ+fUmJESJujlNWKeu06MHo1AqZiWt+40PDrJgfqr8P1mCK3QFTFFKPoBVJ3oL+kz9SiZVOLow==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy4WEXlq5h9VDw1BBp+T5E2CDIkXAzNGxaZMuxL+/eUEkSF0m5p
-	pw6zTkRW3zPBMr0YfFifRNs/5dHnZqxUTRPTixMGXuWK8zQ4hpOS0SCcqOyyiCFI1A==
-X-Gm-Gg: Acq92OE9AxPXlq8/STTR7Niyw6ORYBhXkZFIAP5lYtq0UfKYCMfQlCb4e2/76RtHdVO
-	yI/zSWM6RJaJAal2j1kb6lj1snTG2atzIE5uG3hW9Pxw4KsdscsmOseeIuvrQtabPeqjcp6GLKt
-	Yl2XhSLJeaAsv3+khjEi7RxW+J2wFc7a0RoT4AUq80pipmGiFEioXZ2uonQr9mTfldXDk84Qmgi
-	OLH7XvvFqdprU+ysL88PsKxFGhTgtGn8FZHyCNVpTzcwKyDRIzIh8cPr2Bn7slGGL2Y9bP/4aR7
-	nAf2wI/yjL2UJSX6B5avd8EjTF8dghHSYmyp/RYG8YCDI0pPDbzyS7pyO1G3sqpHl0vvI9kVVU4
-	hbdJHg6tyjl5B7uczwG35kG/+ci+gQluJ++Wq3VtAxrpcfKZiyRhYEOpnJjgdurZ1yGh9mqCp9v
-	t/uGkk6lEkzh4CSU3zDQAlc/mrL53AmnChJCtGlwc2I/PwXdpDwImR0KNpahWKj3agbe4n
-X-Received: by 2002:a17:902:fa8e:b0:2bc:dc0b:ab29 with SMTP id d9443c01a7336-2bcdc0bada2mr962865ad.0.1778501230958;
-        Mon, 11 May 2026 05:07:10 -0700 (PDT)
-Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c826768acf3sm10719085a12.10.2026.05.11.05.07.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2026 05:07:10 -0700 (PDT)
-Date: Mon, 11 May 2026 12:07:04 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
-	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Daniel Mentz <danielmentz@google.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	David Matlack <dmatlack@google.com>
-Subject: Re: [PATCH rc v2] iommu/arm-smmu-v3: Fix inconsistent ATS state
- tracking
-Message-ID: <agHGaJfwPr7-F1z2@google.com>
-References: <20260504163842.2692314-1-praan@google.com>
- <afjfBi+vw/Ywkzid@nvidia.com>
- <afj0cyBZwkVLyIwK@google.com>
- <afoWrn/RXxDmcHsS@ziepe.ca>
- <afpdm5lfIeWptxOh@google.com>
- <afpwCIjQXwfImPXm@google.com>
- <afsN9jrsfuigV+DM@ziepe.ca>
- <afu5Y55W5oj70b5v@google.com>
- <afu69hAtkRlI1GJd@google.com>
- <20260509171451.GG9285@ziepe.ca>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="Yr0IcQFY"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 047B016F3;
+	Mon, 11 May 2026 05:39:05 -0700 (PDT)
+Received: from [10.57.68.228] (unknown [10.57.68.228])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AD99F3F836;
+	Mon, 11 May 2026 05:39:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1778503150; bh=QLEE1X1xHeVvZP4CCFZks7mG64iGB9TUiMiSZkQVSaU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=Yr0IcQFYT4Du7w6J9c139Pmm1QHTDFOpJ1zDcdnaU+8YGlNfWVc4aWtPtNKgq1yBM
+	 PQ0RFPgH/OTcOGhw9vj+p3ok1HleN3E/hMoaNK2qphVtKCE9B9/Z9Rrgznd4N9iVwh
+	 WFzRYaNxpuEsM2kucOGKIUqHoRQJs+4n0JCbUhjg=
+Message-ID: <30eefd04-1d0f-45d8-b55d-e3e8d41a57ef@arm.com>
+Date: Mon, 11 May 2026 13:39:06 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260509171451.GG9285@ziepe.ca>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC] iommu: Enable per-device SSID space for SVA
+To: Jason Gunthorpe <jgg@ziepe.ca>, Joonwon Kang <joonwonkang@google.com>
+Cc: Alexander.Grest@microsoft.com, amhetre@nvidia.com,
+ baolu.lu@linux.intel.com, iommu@lists.linux.dev, joro@8bytes.org,
+ jpb@kernel.org, kees@kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, nicolinc@nvidia.com, praan@google.com,
+ smostafa@google.com, will@kernel.org, jacob.jun.pan@linux.intel.com,
+ easwar.hariharan@linux.microsoft.com, kevin.tian@intel.com
+References: <20260424133953.GY3611611@ziepe.ca>
+ <20260507095851.3220765-1-joonwonkang@google.com>
+ <20260509171013.GF9285@ziepe.ca>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260509171013.GF9285@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Sat, May 09, 2026 at 02:14:51PM -0300, Jason Gunthorpe wrote:
-> On Wed, May 06, 2026 at 10:04:38PM +0000, Pranjal Shrivastava wrote:
+On 2026-05-09 6:10 pm, Jason Gunthorpe wrote:
+> On Thu, May 07, 2026 at 09:58:51AM +0000, Joonwon Kang wrote:
 > 
-> > [1] https://elixir.bootlin.com/linux/v7.0.1/source/drivers/pci/quirks.c#L5703
+>> By "similar instruction" on ARM, I guess you mean ST64BV0, which fetches
+>> the bottom 32 bits data from ACCDATA_EL1. Please let me know if you meant
+>> others as it will matter. If ST64BV0 is supported on ARM, however, it
+>> would mean that ST64B and ST64BV are also supported already according to
+>> the ID_AA64ISAR1_EL1's LS64 field. The latter 2 instructions are just to
+>> atomically store whatever user wants to a memory location without
+>> referring to ACCDATA_EL1 and all the 3 instructions can be run at EL0. So,
+>> the userspace driver would have enough capability to designate arbitrary
+>> PASID as it wants via the latter 2 instructions when communicating with
+>> multiple devices.
 > 
-> The quirk is broken. It clearly says the device has mis-implemented
-> the ATS invalidation message so ATS must *NEVER* be enabled.
-> 
+> IDK exactly what ARM did. IIRC on Intel ENQCMD forms a special
+> non-posted write TLP and the device can tell the TLP came from ENQCMD
+> and so it trusts the encoded PASID. ARM has to have done the same
+> thing - allowing anyone to forge the PASID by using a different
+> instruction misses the point of the Intel design.
 
-I agree that the ATS must never be enable on this device. 
+Yes, ACCDATA_EL1 is a privileged register neither writeable nor readable 
+by userspace[1], so it should be functionally equivalent from an SVA 
+point of view.
 
-> Thus the quirk should cover the VFs too and also disable ATS there.
+> Honestly, I'm not sure why they even implemented it. SMMUv3 can't do
+> the translation scheme required to use ENQCMD from a VM anyhow, so it
+> is pretty useless.
 
-I observe the quirk does apply VFs but after the VF's iommu attach
-because of how the pci_iov_add_virtfn() is written:
-
-int pci_iov_add_virtfn(...)
-{
-
-	...
-	pci_device_add(virtfn, virtfn->bus); // <------ This is where the iommu attach happens within device_add()
-	rc = pci_iov_sysfs_link(dev, virtfn, id);
-	if (rc)
-		goto failed1;
-
-	pci_bus_add_device(virtfn); // <---- This is where the quirk gets applied
-
-}
-
-i.e. in pci_device_add it calls pci_fixup_device(pci_fixup_header, dev)
-whereas this ATS quirk is of `pci_fixup_final` type & gets applied within
-pci_bus_add_device(). 
-
-While, we can move this quirk to be in fixup_early / fixup_header.
-I still think we should add checking the PF->ats_cap within 
-pci_ats_supported before bailing out happily (return 0) for VFs.
-
-> So I still think my original suggestion is appropriate, fail to probe
-> the iommu device if ats prepare fails (serious PCI layer bug, like
-> broken quirks) and fail to attach the domain of ats enable fails
-> (serious internal kernel malfunction since enable must succeed if
-> prepare succeeded)
-
-I’m concerned that refusing to attach a device because it isn't ATS 
-capable is bit too aggressive.
-
-Even if pci_enable_ats() fails, the device is still perfectly capable of
-performing standard DMA. We should allow the IOMMU attach to succeed but
-in a 'Degraded' mode—where ATS is disabled for all it's functions, i.e. 
-configured to treat it as a standard non-ATS device.
+Not sure what you mean there - indeed you can't do the SIOV thing of 
+assigning individual ADIs to _different_ VMs, but there's still no 
+reason you couldn't give the whole accelerator device to one VM, and run 
+the "full" kernel driver in that VM to hand out ADIs to processes, same 
+as for non-virtualised ST64BV0/ENQCMD usage. It's entirely usable, just 
+not so "scalable".
 
 Thanks,
-Praan
+Robin.
+
+[1] 
+https://developer.arm.com/documentation/ddi0601/2026-03/AArch64-Registers/ACCDATA-EL1--Accelerator-Data
+
+> 
+>> We have multiple processes and a single device, those processes want to
+>> do SVA with the same device, and only one process will do SVA with the
+>> device at a time. Though, the problem occurs even when irrelevant
+>> processes allocate the PASIDs from the global PASID space for their own
+>> irrelevant purposes.
+> 
+> The only way to allocate a PASID from the global PASID space is to
+> establish another SVA, so you have multiple devices doing SVA?
+> 
+> Jason
+
