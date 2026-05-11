@@ -1,81 +1,54 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 086FC36D500
-	for <iommu@lists.linux.dev>; Mon, 11 May 2026 11:16:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34ACA36E46E;
+	Mon, 11 May 2026 11:18:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778498214; cv=none; b=YSsV3NctIylEENlyWsBnZf1gXpyOpfFnFPDate925/8Gc5zJ8k31H/nelvcydBOfWtJI3cIrJFQYaEqsaOBRK6SS8TiDw1s6tvWnKYfBf9TxUsxLTr55meDeU9LJqTJ437/BWsACV6f15BkLlG6UDsUihQ944XQ774ysjnk1dy8=
+	t=1778498327; cv=none; b=klCMayiJ0pqTa/yff6tNfM268qJa5ZvPjGap6EcXcYxha5IHryJg7rz2LtrS0C6tsCO4/IOC3p4rlxQvDb9wfmTet+jiCngd7pm8/jooMKnh5HlhNpFfnVmyi3wtyKRMoRqagSsQ97shWBrH9EoFj717SJNk1+RxBwlNKbI14/s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778498214; c=relaxed/simple;
-	bh=aWrmuPCEUpNW6pyyMCyT3Ev0vO66QbU8APlpujnwPUQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PyECEdV57cPn2UjqgBlvdr8EcRccQtUY0LrfgFzxTvps410IWEC9OKSSP8fT9vy7RLeaQThnenfLVcZ/tF562M6Es3VBC9XpitgepmrCgCIlAZuYyype7XhS6ByTKHJmAwIB/iGZkdp5IUgfYGlufvEkuF0hhFQiSpXKslarqxo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=SQznqZCi; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1778498327; c=relaxed/simple;
+	bh=4SJQe9/0G4pdLMhT5c/jy6OdJnu0csbyG2XiyP+BPII=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=LKtTiSCVm07MoeMAMGk0ZIcmupCQ28U4m5mp1Wk/MVXSt7IBNNU6abpxOe2tUoRHSHvStMRO6y25k55KzqdQQolb2zmoG0U8/M82U1ly4jDGkO0iaOfZS2Ke18pvHc08BriMr4CTYtAwlFIDazU50vm0L7j5ivxr2r7GMyVOXGY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=raFBujDZ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="SQznqZCi"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-488940ccfa6so285e9.1
-        for <iommu@lists.linux.dev>; Mon, 11 May 2026 04:16:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778498211; x=1779103011; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=mjFxAsYJ767LfglQAiic8pmf/v4fVUq2j4oVrXIto5c=;
-        b=SQznqZCi8mv+rE6qlz33SVquPCr58Znloijir/WGQKn3ZjhLL3+wPQseXtvqDndBNI
-         WoHutkhimaz9TayCb+Xjwrwc0L4ZNsPkFkmievdJ2m+dNmmd7gvb3khTces1/bIAbmak
-         7F/+Y07lZqXr6NlwJNJAhjUMyJMKXIplHu52GQEb3mz8w2/+S1jutU22mccQsCC8XmBg
-         jlLc5mheZCp249taZ8dNdXvEZuyaxraDHqjcA0ET3vcjhATYM+t2Lf1ih9Jck24pdQ+L
-         I9lZukb2FS/T1B/gRUuk13/HiYfeUEcG2W2zhcdVlpvxaEwiN2Gqb7c1DS8qOBZxKh/C
-         +c7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778498211; x=1779103011;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mjFxAsYJ767LfglQAiic8pmf/v4fVUq2j4oVrXIto5c=;
-        b=rBzvawCTgU7fSjvLhnn3kITXX5HQyLNiQzRX3FWUg4ygVKk9inrM937yRhgqnRR/xQ
-         NmesjU8sP7JOEOggG7dejm1V2jEzx2TytD7ISRmqPtRjuAaYONOjJ1qpoJLTdSRqyj5k
-         IF2qOyz2B9IzpxzV4gBFop1ewaucUzCanuGRi34iXoQ1GPTjbz+V666cstnu1dPWMveM
-         7uGOG47sc1UYhbgwT3cBmbsBUr0ReQE7nTG1msFVpKdyIbg8kvxxSlYnYApF9I4QHc9c
-         jX/5oPUlcau/Bg498QnhLu9r9kNRWZLedGI6CmZRlnbB5F63+kBZLKaKxTRCXAXaya0P
-         HNig==
-X-Forwarded-Encrypted: i=1; AFNElJ8Wz7zQJRu4PEpyrN24jJ/6vi1xjEzObTNWltSJ7Hs5aPrT+QPTDSr5sQnSqVgPCQqhCQ4oNA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyQYAoL2tWpNw9TKFBO5jwetIUD1AOXoF38ASDHeyZhthpXvUTd
-	3jNmWiLS6xAX3MsUgouh6u8L0tWeip0IleWrcxIvToAqeYnWNTqkVeGlIjRA7Z54iA==
-X-Gm-Gg: Acq92OHUoqa/hrs03RdfD+ebjbqarBjjhK55Q6FpggMRnkLnaV8kbzU7BFBtooMEay7
-	GB2F6n11plEM76dv9mVPay5zyZchc8bhSMmBfg5mOFQkEtVEWLIpHAcv159/yy3LPUl4TTiCwYB
-	DQ7BKhUVEh3g4YG582mdIaTP7iG00+xc/H8sGt7a2IMVoBX0RhnN2jlroRlUVxLlmgG8u4dJUTp
-	+/aQ+Sgn5f/wim76tyoAkzN3/TKg4831+mfsperARbWxg0csLpi9M5vJtKjvP+i6I0zfMFnUDj6
-	QaXrqN8hmqvnb5xgE2dgaEUv1Iw/THCD+DJGPmdlJCCgvh4pZxV+6W2wldgu72cF5s1VSq7eBSa
-	0N8Bk0EYG9sxlL5xhLkUhewZijKsx6N8hOPuY0oYfAal/fsQIg6XBCQohtUh93+cFjei6kcYT1w
-	ZBKZf207O7F9yEbyRUJFK8D6eXpoi85mno4m3DbicbF9KQEcnavQfp8GfqGhjAHCtcBGQ=
-X-Received: by 2002:a05:600c:c3db:10b0:48a:5d55:c194 with SMTP id 5b1f17b1804b1-48e6f507bc1mr1377065e9.7.1778498211122;
-        Mon, 11 May 2026 04:16:51 -0700 (PDT)
-Received: from google.com (8.181.38.34.bc.googleusercontent.com. [34.38.181.8])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4548eb75c29sm24522316f8f.9.2026.05.11.04.16.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2026 04:16:50 -0700 (PDT)
-Date: Mon, 11 May 2026 11:16:47 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
-	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
-	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
-	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
-	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
-	vdonnefort@google.com, sebastianene@google.com, keirf@google.com
-Subject: Re: [PATCH v6 06/25] iommu/io-pgtable-arm: Rework to use the
- iommu-pages API
-Message-ID: <agG6n4CeuIMD57G1@google.com>
-References: <20260501111928.259252-1-smostafa@google.com>
- <20260501111928.259252-7-smostafa@google.com>
- <20260501122424.GA6912@ziepe.ca>
- <afiO2WL4ILGfmUui@google.com>
- <20260509232155.GH9285@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="raFBujDZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35A56C2BCB0;
+	Mon, 11 May 2026 11:18:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778498326;
+	bh=4SJQe9/0G4pdLMhT5c/jy6OdJnu0csbyG2XiyP+BPII=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=raFBujDZrev1ikLnmMjAb2LRXd7eEiCYq4YLaIGDjKpPfQR+pR02tqMumNfPpI2Ky
+	 zheS/kWgloyB0YF3ZJ5yM5mnms8L2RFB1P2Rm/qaRtLn6Lk1vFQk+3PoiMQmW+2jkp
+	 n0tvxbxH2ALtv5XcB2tjr5o1a5RL5ZJIdOZbkxCpysSUy6rN+XzS//pcDCwvdCwWmC
+	 ZLF7A9zrLAp/eZjErHAWQg/WidvSbvboeCdRMK0/5B4eyqSLZuywqmSwhlPDByRonL
+	 wlsEJM0eJsQ4llku4wlhICsX1xmuPNvcixnRGtofvna44mTZdeQAKHxM6u2tWqFP4H
+	 x843i+arPK6FQ==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>
+Subject: Re: [PATCH v3 0/9] dma-mapping: Use DMA_ATTR_CC_SHARED through
+ direct, pool and swiotlb paths
+In-Reply-To: <af4dK-0HEsKdPAvM@arm.com>
+References: <20260427055509.898190-1-aneesh.kumar@kernel.org>
+ <af4dK-0HEsKdPAvM@arm.com>
+Date: Mon, 11 May 2026 16:48:37 +0530
+Message-ID: <yq5acxz2tcs2.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -83,53 +56,67 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260509232155.GH9285@ziepe.ca>
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, May 09, 2026 at 08:21:55PM -0300, Jason Gunthorpe wrote:
-> On Mon, May 04, 2026 at 12:19:37PM +0000, Mostafa Saleh wrote:
-> > > So.. I suggest you update it to use the iommu_pages API, #ifdef out
-> > > the allocator so the pkvm pkvm doesn't need to deal with it. Then
-> > > compile a special iommu-pages for the pkvm side presenting the same
-> > > API.
-> > 
-> > I see, we still need to leave the DMA-API calls for the custom config,
-> > as I am not sure if it can use pages not backed by the vmemmap, I
-> > pushed that into a separate function so it’s easily compiled out.
-> 
-> Yeah..
-> 
-> > Without this patch, now it looks like:
-> 
-> Seems reasonable, and then i'd probably just put something like
->    #define dma_map(...)
->    #define dma_umap(...)
-> 
-> To effectively take it out of the pkvm build
-> 
-> Then have a pkvm compile of iommu-pages to provide the functions in a
-> pkvm compatible way. I guess you can't actually fully do this, but
-> can do enough to support this file at least.
-> 
-> > > You should have a pkvm shim header that provides
-> > > kmalloc/kfree/virt_to_phys in the normal way and just #include that in
-> > > io-pgtable when doing a pkvm build instead of hacking up all the code.
-> > 
-> > Ok, I can do that in another change, but I believe it's better to
-> > change the usage in this file to arm_lpae_*(virt_to_phys...) so it's
-> > clear which parts are intended for that.
-> 
-> IDK, why? virt_to_phys() is part of the iommu-pages API, I'd just
-> leave it.. If you want to narrow it then #define it for pkvm when
-> compiling this file..
+Catalin Marinas <catalin.marinas@arm.com> writes:
 
-It is not going to be part of the iommu-pages API, I meant in
-io-pgtable-arm, we will use something arm_lpae_virt_to_phys()...
-which is then implemented differently for pkvm.
+> On Mon, Apr 27, 2026 at 11:25:00AM +0530, Aneesh Kumar K.V (Arm) wrote:
+>> This series propagates DMA_ATTR_CC_SHARED through the dma-direct,
+>> dma-pool, and swiotlb paths so that encrypted and decrypted DMA buffers
+>> are handled consistently.
+>
+> I think this series makes sense, using DMA_ATTR_CC_SHARED throughout the
+> DMA API, either for alloc or for streaming to decide/check what bouncing
+> does. Sashiko has a few interesting reports, it probably breaks s390 as
+> well (it might be similar to the pKVM case).
+>
 
-Thanks,
-Mostafa
+I will address Shahiko=E2=80=99s review comments in the next revision.
 
-> 
-> Jason
+With respect to s390/powerpc, I can drop SWIOTLB_FORCE from this series.
+However, I was not sure whether we would get enough testing for that
+soon. Both architectures are similar to x86/arm in forcing dma
+unencrypted.
+
+powerpc:
+static inline bool force_dma_unencrypted(struct device *dev)
+{
+	return is_secure_guest();
+}
+
+s390:
+/* are we a protected virtualization guest? */
+bool force_dma_unencrypted(struct device *dev)
+{
+	return is_prot_virt_guest();
+}
+
+
+>
+> I don't think it addresses earlier Mostafa's issues with pKVM, although
+> I'd rather base additional pKVM related fixes on top of this series.
+> With pKVM, cc_platform_has(CC_ATTR_MEM_ENCRYPT) returns false, as does
+> force_dma_unencrypted(). I think we should update protected guests to
+> return true for these if they need shared buffers (the whole
+> decrypted/shared terminology is messy but in most places it just means
+> buffer not private to the protected guest, whether encryption is
+> available or not).
+>
+> That said, does CC_ATTR_GUEST_MEM_ENCRYPT actually make more sense than
+> CC_ATTR_MEM_ENCRYPT throughout this series? We'd need to change arm64
+> realms as well to use this one.
+>
+
+x86 memory encryption can use swiotlb boucing even on the host right?
+
++       if (cc_platform_has(CC_ATTR_MEM_ENCRYPT)) {
++               io_tlb_default_mem.decrypted =3D true;
++               set_memory_decrypted((unsigned long)mem->vaddr, bytes >> PA=
+GE_SHIFT);
++       } else {
++               io_tlb_default_mem.decrypted =3D false;
++       }
++
+
+
+-aneesh
