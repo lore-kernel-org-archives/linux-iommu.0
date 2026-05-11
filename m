@@ -1,229 +1,148 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from fout-b2-smtp.messagingengine.com (fout-b2-smtp.messagingengine.com [202.12.124.145])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B03F2236FD;
-	Mon, 11 May 2026 05:38:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3D762C234E
+	for <iommu@lists.linux.dev>; Mon, 11 May 2026 06:18:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.145
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778477890; cv=none; b=bNZOlV4JyobCsMFSz6U7ut9ZjgjJEEpfbwCcYS2pfAad1q3o40Iew1IPiKEGGE+UQjG+MBQ0zewcL95ejoD5xwbYKYNmUcX8lYD8yJNM5LYGDQOHKnYNoIUoJH4sRIAXKmWQxOvUi8LrdS0x2ssZImIo0b1xAXrc/nj8pKJYq7o=
+	t=1778480287; cv=none; b=KuqCvL/YBhVePKFHbw0qGz5JPr4rnB2JYt5j9xDBwp2Sb6+sRQCwuBYJG5kP/n+aDzHLBayd5KCoUHHg+b8ZqpghrxTZ+TJHO6vfHOsuiGr/ZExmls1iXtQYMz59RmSXbGiL6vSw3/HrISveNFtgN5ilf/oUQ4Y2dnARB0njKbQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778477890; c=relaxed/simple;
-	bh=IpfAO1s4+NwwOUx8SsuPXv6LBmua3S4jzYDrwx5KXIM=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=IkuWtG1/OjAqXsZYwD1qiAQrYC/OgsR28zNfntvZmMPlRXdeHmSh8ZiM0WlIvWAU0CEkrX+kAM3+k0hQQ5BTo7oTFhdebL6lMblzNiTPBWqM/D2jLhKvp3LX8SF0uIN7hg+zViFO8Bfo63aHbL6oHlZJYMieUhNbGMivG/liImU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Xg1fk3FB; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778480287; c=relaxed/simple;
+	bh=ppdyTKjjA3cfRlqTgnrJu7zvJnDNhei7XnqO43pq9BI=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=BDAmo1rUQxKTRfvOYwisydlrEHuyAJXm5C84jHDP6CGZDQIUK5qQgtem3teLbOjDKLmnqIe09ncx34jEAr7OKTccyjbZgk8Id68r1KzZqnFdMCAwwwr7uzewGS+0Qo7GcdZmm//WZrr7KiyGyEoFkwuYjjlpr+K1GySuPBT654c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=uXFP2pLl; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=p0EVz+XT; arc=none smtp.client-ip=202.12.124.145
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Xg1fk3FB"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF403C2BCB0;
-	Mon, 11 May 2026 05:38:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778477889;
-	bh=IpfAO1s4+NwwOUx8SsuPXv6LBmua3S4jzYDrwx5KXIM=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=Xg1fk3FB4gVuz1V+1X/p5nKJLDtVmXsxJ9ZgTXYNiSzwM+X7j6OCjt6hxTh4fDcji
-	 KcFN3HqBPx7uMO0y31Bx2D4R6a3R9KzzXy53Q1Nb9Vhyzpz+drKbwd65xAMjZ1ye90
-	 oVZRNway0fVXoQpAGL5+pSnlLUEy09arXiS5mkCo6+wRkxWL77sEUjRe/JeOq9Za3k
-	 7nw6+JVv2p7yenFC8zBFnVG/UcScfLtsQ/78JI9KuRXsqxGnYLHrxGj+FI/Z3wI7Tr
-	 /4h01n7pPs7DttANkrg1jTAU9E4ycx/qrPiuKuNqVPHVHuV4PPtUMCD8P6+I9H02az
-	 zY4BtRs3PcWag==
-X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v3 2/9] dma-direct: use DMA_ATTR_CC_SHARED in alloc/free
- paths
-In-Reply-To: <af2sTsMX1Ap_EOiU@arm.com>
-References: <20260427055509.898190-1-aneesh.kumar@kernel.org>
- <20260427055509.898190-3-aneesh.kumar@kernel.org>
- <af2sTsMX1Ap_EOiU@arm.com>
-Date: Mon, 11 May 2026 11:08:00 +0530
-Message-ID: <yq5afr3ytsjr.fsf@kernel.org>
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="uXFP2pLl";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="p0EVz+XT"
+Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
+	by mailfout.stl.internal (Postfix) with ESMTP id C49641D000A9;
+	Mon, 11 May 2026 02:18:04 -0400 (EDT)
+Received: from phl-imap-12 ([10.202.2.86])
+  by phl-compute-04.internal (MEProxy); Mon, 11 May 2026 02:18:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm2; t=1778480284;
+	 x=1778566684; bh=KmPiNvYodwvAgla7BPtVHRd3nfpBWvtXV9w4ndZPxTU=; b=
+	uXFP2pLlOevVE1Czc3D036PQ0TwM9Wt0eNP5yrnf/g+KYDGakLaBFEWzKs7NOUjE
+	cwUbxwtd9UUBaG9821AFYXcYxYCez1Ai/p6YUzH6aAwQTjdWNiZ4tKran/ee2Y3v
+	vJBoEcHzTz4LsgCw9YakjPT1xl9JrjjrbmFvqkVzHfcncnvTuScUmUKH743ZcEfM
+	uRJecjNvpsBz5/4r84oy+hyHmBUhemp5sKAmEt8ef4X5DhxmMuQsfIOkfFMys9HC
+	qbA1dyvD/tLQlGldg+ScPEXDql6qnQ8rPktSXPOhe9SaAlBW5vJBqRPyZ18z0yVL
+	6tB5F5bzSUdnt3aM8GSUcw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1778480284; x=
+	1778566684; bh=KmPiNvYodwvAgla7BPtVHRd3nfpBWvtXV9w4ndZPxTU=; b=p
+	0EVz+XTAVgky9EdPZ4Uu3d8hd6y+DXAquqzD7JANgHh58AntQEQIIvP4+ybRE3eQ
+	4rrlOxxKVtOQFw6Oc0JkLzvaxsATBfIOeMcH78qtYMx6uAYoaFIIjo7i67oSeKOp
+	yZWCiKnhZRzJ7I8Yk3KqGk4nizqhWmD3EjVWBEFkQn64rLTFB/0SZkK02y6UzknL
+	THe1KQvca4HrVtIrDi00WlkgTdJAp02CShHp9/q+W9II2nYNKyv3veFL14SIrmYz
+	JFc1NlGcTHYjTOkfFI1LetYzlbH53uol6W3ntKeBYEyBhvIPIwyzovlF190VJAxG
+	yNiwGxPR4F13TAbaNrAWg==
+X-ME-Sender: <xms:nHQBajkJI9f3dFR1oJiYqT-ZzkMGeUPsvgNoroB80xTlRTT_ct5dzg>
+    <xme:nHQBahr3Tt6ftyHc-T1kU-ENcZr7XwHCdqluFL5Svump7JW23rNMpCcHmJSK0qFxo
+    Ca5kO1mBzvzxaC87KGq--eQlmJThafDf5WiTCTfsjbB66ZBl8aTg-bI>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefhedrtddtgdduudekvdegucetufdoteggodetrf
+    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
+    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
+    gurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddtnecuhfhrohhmpedftehrnhgu
+    uceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrthhtvg
+    hrnhephfdthfdvtdefhedukeetgefggffhjeeggeetfefggfevudegudevledvkefhvdei
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprghrnh
+    gusegrrhhnuggsrdguvgdpnhgspghrtghpthhtohepuddtpdhmohguvgepshhmthhpohhu
+    thdprhgtphhtthhopehjohhroheskegshihtvghsrdhorhhgpdhrtghpthhtoheprhhosg
+    hinhdrmhhurhhphhihsegrrhhmrdgtohhmpdhrtghpthhtoheprghrnhgusehkvghrnhgv
+    lhdrohhrghdprhgtphhtthhopehtghhlgieskhgvrhhnvghlrdhorhhgpdhrtghpthhtoh
+    epfihilhhlsehkvghrnhgvlhdrohhrghdprhgtphhtthhopegsihhgvggrshihsehlihhn
+    uhhtrhhonhhigidruggvpdhrtghpthhtoheprghkphhmsehlihhnuhigqdhfohhunhgurg
+    htihhonhdrohhrghdprhgtphhtthhopehlihhnuhigqdgrrhhmqdhkvghrnhgvlheslhhi
+    shhtshdrihhnfhhrrgguvggrugdrohhrghdprhgtphhtthhopehiohhmmhhusehlihhsth
+    hsrdhlihhnuhigrdguvghv
+X-ME-Proxy: <xmx:nHQBagL1K4BV80vBidQsid_aebAhwZbGvNlvcWCTDYjveg0-ecHjlQ>
+    <xmx:nHQBaoUuIW329Pxzwgr5P59YRnx3qR1LQzrPzMX6ODXKeuDUNnAI5Q>
+    <xmx:nHQBasQOAwmo1FJmzo0k64Gw6J4H6oaHB8cU6tEWbSsEfMvPWuDREg>
+    <xmx:nHQBaoDnuYxaLASb3LDsTe5WSyqVh0xWey4mnSWkkzm-VheQgnr31g>
+    <xmx:nHQBao923uMwYMT2LW2tfgYZi_91azd-oDyBZH5S7QJrewX7cGnwZIjy>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id 05C841060065; Mon, 11 May 2026 02:18:04 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+X-ThreadId: AVHaR-kDAB-J
+Date: Mon, 11 May 2026 08:17:43 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Thomas Gleixner" <tglx@kernel.org>, "Arnd Bergmann" <arnd@kernel.org>,
+ "Will Deacon" <will@kernel.org>, "Robin Murphy" <robin.murphy@arm.com>,
+ "Joerg Roedel" <joro@8bytes.org>, "Andrew Morton" <akpm@linux-foundation.org>
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org,
+ "Sebastian Andrzej Siewior" <bigeasy@linutronix.de>
+Message-Id: <d52dcd45-959a-4ff4-9e82-0bae133785f1@app.fastmail.com>
+In-Reply-To: <874ikf9i34.ffs@tglx>
+References: <20260203162406.2215716-1-arnd@kernel.org> <874ikf9i34.ffs@tglx>
+Subject: Re: [PATCH 1/2] [RFC] debugobjects: avoid gcc-16.0.1 section mismatch
 Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-Catalin Marinas <catalin.marinas@arm.com> writes:
-
-> On Mon, Apr 27, 2026 at 11:25:02AM +0530, Aneesh Kumar K.V (Arm) wrote:
->> @@ -365,10 +389,14 @@ void dma_direct_free(struct device *dev, size_t size,
->>  struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
->>  		dma_addr_t *dma_handle, enum dma_data_direction dir, gfp_t gfp)
->>  {
->> +	unsigned long attrs = 0;
->>  	struct page *page;
->>  	void *ret;
->>  
->> -	if (force_dma_unencrypted(dev) && dma_direct_use_pool(dev, gfp))
->> +	if (force_dma_unencrypted(dev))
->> +		attrs |= DMA_ATTR_CC_SHARED;
->> +
->> +	if ((attrs & DMA_ATTR_CC_SHARED) && dma_direct_use_pool(dev, gfp))
->>  		return dma_direct_alloc_from_pool(dev, size, dma_handle, gfp);
+On Sun, May 10, 2026, at 21:31, Thomas Gleixner wrote:
+> On Tue, Feb 03 2026 at 17:23, Arnd Bergmann wrote:
+>> From: Arnd Bergmann <arnd@arndb.de>
+>>
+>> gcc-16 has gained some more advanced inlining techniques that enable
+>> it to inline the is_static_object() function pointer into a specialized
+>> version of lookup_object_or_alloc:
+>>
+>> WARNING: modpost: vmlinux: section mismatch in reference: lookup_object_or_alloc.part.0+0x1ac (section: .text) -> is_static_object (section: .init.text)
+>>
+>> From what I can tell, the transformation is correct, as this
+>> is only called when lookup_object_or_alloc() is called from
+>> debug_objects_selftest(), which is also __init.
 >
-> I was looking at Sashiko's reports and it noticed the wrong type
-> returned here. Not something your patch introduces but I think it should
-> be fixed rather than continue to propagate it. It's been around since
-> 5.10, commit 5b138c534fda ("dma-direct: factor out a
-> dma_direct_alloc_from_pool helper"). This code path isn't used much I
-> guess.
+> So clearly the compiler is buggy. It creates an __init specific copy of
+> lookup_object_or_alloc() and then fails to attribute it correctly.
+
+I don't see what else the compiler is supposed to do, it has no idea what
+__init means in the kernel, or what the rules are for calling between
+that and normal functions. Putting a non-inlined lookup_object_or_alloc()
+into a special section without an explicit attribute would clearly
+be a bug.
+
+>> I have not come up with a good workaround, so this simply marks
+>> is_static_object() as not __init. Since there are currently only two
+>> files where this happens, that may be an easy way out.
 >
+> That's a horrible hack and while it's only two files today, this sounds
+> like the start of a whack a mole game.
 
-I can add this change as one of the patch
+After thousands of randconfig builds, I found exactly the two
+instances from this series.
 
-modified    kernel/dma/direct.c
-@@ -165,24 +165,24 @@
- 	return !gfpflags_allow_blocking(gfp) && !is_swiotlb_for_alloc(dev);
- }
- 
--static void *dma_direct_alloc_from_pool(struct device *dev, size_t size,
--		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
-+static struct page *dma_direct_alloc_from_pool(struct device *dev, size_t size,
-+		dma_addr_t *dma_handle, void **cpu_addr, gfp_t gfp,
-+		unsigned long attrs)
- {
- 	struct page *page;
- 	u64 phys_limit;
--	void *ret;
- 
- 	if (WARN_ON_ONCE(!IS_ENABLED(CONFIG_DMA_COHERENT_POOL)))
- 		return NULL;
- 
- 	gfp |= dma_direct_optimal_gfp_mask(dev, &phys_limit);
--	page = dma_alloc_from_pool(dev, size, &ret, gfp, attrs,
--				  dma_coherent_ok);
-+	page = dma_alloc_from_pool(dev, size, cpu_addr, gfp, attrs,
-+				   dma_coherent_ok);
- 	if (!page)
- 		return NULL;
- 	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page),
- 					 !!(attrs & DMA_ATTR_CC_SHARED));
--	return ret;
-+	return page;
- }
- 
- static void *dma_direct_alloc_no_mapping(struct device *dev, size_t size,
-@@ -212,7 +212,7 @@
- 	bool mark_mem_decrypt = false;
- 	bool allow_highmem = true;
- 	struct page *page;
--	void *ret;
-+	void *cpu_addr;
- 
- 	/*
- 	 * DMA_ATTR_CC_SHARED is not a caller-visible dma_alloc_*()
-@@ -278,9 +278,12 @@
- 	 * the atomic pools instead if we aren't allowed block.
- 	 */
- 	if ((remap || (attrs & DMA_ATTR_CC_SHARED)) &&
--	    dma_direct_use_pool(dev, gfp))
--		return dma_direct_alloc_from_pool(dev, size, dma_handle,
--					  gfp, attrs);
-+	    dma_direct_use_pool(dev, gfp)) {
-+		page = dma_direct_alloc_from_pool(dev, size,
-+					dma_handle, &cpu_addr,
-+					gfp, attrs);
-+		return page ? cpu_addr : NULL;
-+	}
- 
- 	if (is_swiotlb_for_alloc(dev)) {
- 		page = dma_direct_alloc_swiotlb(dev, size, attrs);
-@@ -318,12 +321,12 @@
- 		arch_dma_prep_coherent(page, size);
- 
- 		/* create a coherent mapping */
--		ret = dma_common_contiguous_remap(page, size, prot,
-+		cpu_addr = dma_common_contiguous_remap(page, size, prot,
- 				__builtin_return_address(0));
--		if (!ret)
-+		if (!cpu_addr)
- 			goto out_free_pages;
- 	} else {
--		ret = page_address(page);
-+		cpu_addr = page_address(page);
- 	}
- 
- 	if (mark_mem_decrypt) {
-@@ -334,18 +337,18 @@
- 			goto out_leak_pages;
- 	}
- 
--	memset(ret, 0, size);
-+	memset(cpu_addr, 0, size);
- 
- 	if (set_uncached) {
- 		arch_dma_prep_coherent(page, size);
--		ret = arch_dma_set_uncached(ret, size);
--		if (IS_ERR(ret))
-+		cpu_addr = arch_dma_set_uncached(cpu_addr, size);
-+		if (IS_ERR(cpu_addr))
- 			goto out_encrypt_pages;
- 	}
- 
- 	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page),
- 					 !!(attrs & DMA_ATTR_CC_SHARED));
--	return ret;
-+	return cpu_addr;
- 
- out_encrypt_pages:
- 	if (mark_mem_decrypt && dma_set_encrypted(dev, page_address(page), size))
-@@ -427,14 +430,14 @@
- {
- 	unsigned long attrs = 0;
- 	struct page *page;
--	void *ret;
-+	void *cpu_addr;
- 
- 	if (force_dma_unencrypted(dev))
- 		attrs |= DMA_ATTR_CC_SHARED;
- 
- 	if ((attrs & DMA_ATTR_CC_SHARED) && dma_direct_use_pool(dev, gfp))
- 		return dma_direct_alloc_from_pool(dev, size, dma_handle,
--					  gfp, attrs);
-+					&cpu_addr, gfp, attrs);
- 
- 	if (is_swiotlb_for_alloc(dev)) {
- 		page = dma_direct_alloc_swiotlb(dev, size, attrs);
-@@ -445,7 +448,7 @@
- 			swiotlb_free(dev, page, size);
- 			return NULL;
- 		}
--		ret = page_address(page);
-+		cpu_addr = page_address(page);
- 		goto setup_page;
- 	}
- 
-@@ -453,11 +456,11 @@
- 	if (!page)
- 		return NULL;
- 
--	ret = page_address(page);
--	if ((attrs & DMA_ATTR_CC_SHARED) && dma_set_decrypted(dev, ret, size))
-+	cpu_addr = page_address(page);
-+	if ((attrs & DMA_ATTR_CC_SHARED) && dma_set_decrypted(dev, cpu_addr, size))
- 		goto out_leak_pages;
- setup_page:
--	memset(ret, 0, size);
-+	memset(cpu_addr, 0, size);
- 	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page),
- 					 !!(attrs & DMA_ATTR_CC_SHARED));
- 	return page;
+Since this only happens in a very specific case where a file
+uses function pointers to local functions and gcc is able
+to turn these into direct calls, I wouldn't expect this to
+become a widespread problem. It's normal for new compiler
+versions to run into some corner cases like this when inlining
+decisions change.
 
+>> If anyone has a better idea for how to deal with that, let me know!
+>
+> Mark the compiler broken and wait until GCC people get their act
+> together.
 
+I'll have to retest with the actual release compiler, maybe they
+changed something again that makes it go away already, otherwise
+there is probably a flag to tell gcc to skip that optimization pass.
 
+       Arnd
