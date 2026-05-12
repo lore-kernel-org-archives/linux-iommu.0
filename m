@@ -1,158 +1,148 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C553A319858
-	for <iommu@lists.linux.dev>; Tue, 12 May 2026 02:12:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2FE973264F2
+	for <iommu@lists.linux.dev>; Tue, 12 May 2026 04:59:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778551977; cv=none; b=X8tHahOGkVYHUBm7B8+S2IiBVN+l5fCV35YGaihfDDih7jAQniFdw2h2t2J3rv3zOroFDL5J7AUgOUA04fIsP2aHgJZSYunTJJSBgKj6PA1Yjcar/bEOqdYD56b3FDXlEf/4yMLjN2SEekEvbY2rRhDiSGLka661UnzEYcwKRQc=
+	t=1778561945; cv=none; b=PPMURaRTE/DEqZe8ELe45lSoJQTmOrjCR5EQJ4nMTkm5Sno9tvTwdpX4HRKHkqltVQzC9nK/V3YMj/LE4p6aHnsnOIaCJit7D65cLbTgJWmnOm19XRSQEdrSv/F9oLkLdmU2p6ZSNubWiAfqDh8mMlA4QCbxZuXCwUYGU6lQAoA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778551977; c=relaxed/simple;
-	bh=PIMOM+38WPisoeckzuWM0T2Ojwc3Get4Tkda0krDR+8=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=TNub5RBy03av1N1pA3SmN6ARjKlyJYcFThdozw2FiMw0K94y+5TBJS9NgfcePcorWVhE5BvropM/1mMfMR+pC5G8JYCMogVgiOJHOBQnedaTxjLhwsGT3FbVj9pFWnCbYheT+F6wIdJ4+/iPG952PwzOmqRATtRKuLgVsrnYVWQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=XxPNjBtV; arc=none smtp.client-ip=13.77.154.182
+	s=arc-20240116; t=1778561945; c=relaxed/simple;
+	bh=TvQkbCpBAwWmu/+s0/683PQaLuNtS6G4/9C8St/egB4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PWzevyoKsBTac093Nfz9worrqcKoYBR3VG588J6sL8ed6T5IRFTn1OHM0XRulTuSXHa623T98O7kQK1JRUJ9W2ysrc3qvO2pT8rI1rTNTz1xDXnZ+3hFSb61fx7ThRHNBZu0/erQWynst/Q+Po4Zqtu0ER7q2z67aGQFw3AKxfA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=CI1ArQZT; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="XxPNjBtV"
-Received: from mrdev.corp.microsoft.com (unknown [40.118.131.60])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 56AFB20B7169;
-	Mon, 11 May 2026 19:12:52 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 56AFB20B7169
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="CI1ArQZT"
+Received: by linux.microsoft.com (Postfix, from userid 1099)
+	id DEA0C20B7166; Mon, 11 May 2026 21:59:01 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com DEA0C20B7166
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1778551972;
-	bh=KS6l/b5Uv4heu85TppZODlG7u81WUffqR10quhteBFk=;
-	h=From:To:Subject:Date:In-Reply-To:References:From;
-	b=XxPNjBtV27aOt6CeSGnryK55XK8T2s7g2tD1ERx19lyhuoiTS7cvCXnoI2Z6mKFYT
-	 cCck0odpK+MNIWycV968leTigXYb/d4Sfmb8q+4XrdV8rtDkZIRNsqDiUWP6VBLmK/
-	 2QSfhd4+YyiqkUc9G2WiCwErPwZx3RHoE5u6iGbY=
-From: Mukesh R <mrathor@linux.microsoft.com>
-To: hpa@zytor.com,
-	robin.murphy@arm.com,
-	robh@kernel.org,
-	linux-hyperv@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org,
+	s=default; t=1778561941;
+	bh=Ct2zox4LNaFQs4SrzFzo0qnDAt+wwOMkCjNjaObBP1w=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=CI1ArQZT/OgZjHmn5SqzOI3XEf+nL8o+BsRStOnwZlz8wxDQD4IR5dy7KhF3EJ/07
+	 CvPNuDOYl3oTa6fNTLp8vxKJqlp5IycfbM3mCaopVnC0m9AZb+ZmGyLfgWW/9ulLps
+	 1kWRQAVeDL7y+MELf57k41+iMf4N6Ld0Lj8hdXvQ=
+Date: Mon, 11 May 2026 21:59:01 -0700
+From: Souradeep Chakrabarti <schakrabarti@linux.microsoft.com>
+To: Mukesh R <mrathor@linux.microsoft.com>
+Cc: hpa@zytor.com, robin.murphy@arm.com, robh@kernel.org,
+	linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, linux-pci@vger.kernel.org,
 	linux-arch@vger.kernel.org
-Subject: [PATCH V1 3/3] mshv: Implement guest irq migration for passthru devices
-Date: Mon, 11 May 2026 19:12:42 -0700
-Message-ID: <20260512021242.1679786-4-mrathor@linux.microsoft.com>
-X-Mailer: git-send-email 2.51.2.vfs.0.1
-In-Reply-To: <20260512021242.1679786-1-mrathor@linux.microsoft.com>
+Subject: Re: [PATCH V1 1/3] mshv: Import declarations for irq remap and add
+ irqbypass support
+Message-ID: <agKzlfagq4Sh7ua3@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
 References: <20260512021242.1679786-1-mrathor@linux.microsoft.com>
+ <20260512021242.1679786-2-mrathor@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260512021242.1679786-2-mrathor@linux.microsoft.com>
 
-Ask the hypervisor to retarget interrupts to new guest cpu or vector
-upon guest irq migration. This happens in the irqfd update path.
-
-Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
----
- drivers/hv/mshv_eventfd.c | 78 ++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 76 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/hv/mshv_eventfd.c b/drivers/hv/mshv_eventfd.c
-index 1f5c1e9ee9b7..c05201d857fd 100644
---- a/drivers/hv/mshv_eventfd.c
-+++ b/drivers/hv/mshv_eventfd.c
-@@ -192,6 +192,77 @@ static int mshv_map_device_interrupt(u64 ptid, union hv_device_id hv_devid,
- 
- }
- 
-+/* NOTE: caller does spin_lock_irq on pt_irqfds_lock, hence no disable here */
-+static void mshv_do_guest_irq_retarget(u64 partid, struct mshv_irqfd *irqfd)
-+{
-+	int rc, var_size;
-+	u64 status;
-+	union hv_device_id hv_devid;
-+	struct hv_input_get_vp_set_from_mda *mda_input;
-+	union hv_output_get_vp_set_from_mda *mda_output;
-+	struct hv_retarget_device_interrupt *remap_inp;
-+	struct pci_dev *pdev;
-+	struct irq_data *irqdata;
-+	struct mshv_lapic_irq *lapic_irq = &irqfd->irqfd_lapic_irq;
-+	struct hv_interrupt_entry *inte = NULL;
-+
-+	if (!irqfd->irqfd_girq_ent.girq_entry_valid ||
-+	    irqfd->irqfd_bypass_prod == NULL)
-+		return;
-+
-+	rc = mshv_parse_mshv_irqfd(irqfd, &pdev, &irqdata);
-+	if (rc)
-+		return;
-+
-+	inte = irqdata->chip_data;
-+	if (inte == NULL)
-+		return;
-+
-+	hv_devid.as_uint64 = hv_devid_from_pdev(pdev);
-+
-+
-+	mda_input = *this_cpu_ptr(hyperv_pcpu_input_arg);
-+	mda_output = *this_cpu_ptr(hyperv_pcpu_output_arg);
-+
-+	rc = hv_vpset_from_hyp_disabled(mda_input, mda_output, lapic_irq,
-+					partid);
-+	if (rc)
-+		return;
-+
-+	remap_inp = *this_cpu_ptr(hyperv_pcpu_input_arg);
-+	memset(remap_inp, 0, sizeof(*remap_inp));
-+
-+	rc = hv_copy_vpset(&remap_inp->int_target.vp_set,
-+			   &mda_output->target_vpset);
-+	if (rc <= 0) {
-+		pr_err("Hyper-V: ptid %lld - vpset copy failed (%d)\n",
-+		       partid, rc);
-+		return;
-+	}
-+
-+	/*
-+	 * var-sized hcall: var-size starts after vp_mask (thus vp_set.format
-+	 * does not count, but vp_set.valid_bank_mask does).
-+	 */
-+	var_size = rc + 1;
-+
-+	remap_inp->partition_id = partid;
-+	remap_inp->device_id = hv_devid.as_uint64;
-+	remap_inp->int_target.vector = lapic_irq->lapic_vector;
-+	remap_inp->int_target.flags = HV_DEVICE_INTERRUPT_TARGET_PROCESSOR_SET;
-+
-+	remap_inp->int_entry.source = inte->source;
-+	remap_inp->int_entry.msi_entry.as_uint64 = inte->msi_entry.as_uint64;
-+
-+	status = hv_do_rep_hypercall(HVCALL_RETARGET_INTERRUPT, 0, var_size,
-+				     remap_inp, NULL);
-+
-+	if (!hv_result_success(status))
-+		hv_status_err(status, "pt:%lld vec:%d lapic-id:%lld\n",
-+			      partid, lapic_irq->lapic_vector,
-+			      lapic_irq->lapic_apic_id);
-+}
-+
- static int mshv_unmap_device_interrupt(union hv_device_id hv_devid,
- 				       struct hv_interrupt_entry *irq_entry)
- {
-@@ -729,9 +800,12 @@ static void mshv_irqfd_update(struct mshv_partition *pt,
- 			      struct mshv_irqfd *irqfd)
- {
- 	write_seqcount_begin(&irqfd->irqfd_irqe_sc);
--	irqfd->irqfd_girq_ent = mshv_ret_girq_entry(pt,
--						    irqfd->irqfd_irqnum);
-+	irqfd->irqfd_girq_ent = mshv_ret_girq_entry(pt, irqfd->irqfd_irqnum);
- 	mshv_copy_girq_info(&irqfd->irqfd_girq_ent, &irqfd->irqfd_lapic_irq);
-+
-+#if IS_ENABLED(CONFIG_X86_64)
-+	mshv_do_guest_irq_retarget(pt->pt_id, irqfd);
-+#endif
- 	write_seqcount_end(&irqfd->irqfd_irqe_sc);
- }
- 
--- 
-2.51.2.vfs.0.1
-
+On Mon, May 11, 2026 at 07:12:40PM -0700, Mukesh R wrote:
+> For the irq map/remap hypercalls, copy relevant data structures from
+> hypervisor public headers into Linux equivalents. Also, update Kconfig and
+> mshv_irqfd for irqbypass. Please note, irqbypass is required for doing
+> passthru on MSHV. This because there is really no way of knowing the linux
+> irq in the mshv_irqfd_assign and mshv_irqfd_update paths without it. The
+> linux irq is setup upfront by VFIO before irqfd assign/update happens.
+> 
+Reviewed-by: Souradeep Chakrabarti <schakrabarti@linux.microsoft.com>
+> Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
+> ---
+>  drivers/hv/Kconfig          |  1 +
+>  drivers/hv/mshv_eventfd.h   |  3 +++
+>  include/hyperv/hvgdk_mini.h |  3 +++
+>  include/hyperv/hvhdk.h      | 17 +++++++++++++++++
+>  4 files changed, 24 insertions(+)
+> 
+> diff --git a/drivers/hv/Kconfig b/drivers/hv/Kconfig
+> index 7937ac0cbd0f..c831fe25ca2b 100644
+> --- a/drivers/hv/Kconfig
+> +++ b/drivers/hv/Kconfig
+> @@ -75,6 +75,7 @@ config MSHV_ROOT
+>  	# no particular order, making it impossible to reassemble larger pages
+>  	depends on PAGE_SIZE_4KB
+>  	select EVENTFD
+> +	select IRQ_BYPASS_MANAGER
+>  	select VIRT_XFER_TO_GUEST_WORK
+>  	select HMM_MIRROR
+>  	select MMU_NOTIFIER
+> diff --git a/drivers/hv/mshv_eventfd.h b/drivers/hv/mshv_eventfd.h
+> index 464c6b81ab33..ff4dd24b8ad4 100644
+> --- a/drivers/hv/mshv_eventfd.h
+> +++ b/drivers/hv/mshv_eventfd.h
+> @@ -9,6 +9,7 @@
+>  #define __LINUX_MSHV_EVENTFD_H
+>  
+>  #include <linux/poll.h>
+> +#include <linux/irqbypass.h>
+>  
+>  #include "mshv.h"
+>  #include "mshv_root.h"
+> @@ -37,6 +38,8 @@ struct mshv_irqfd {
+>  	struct mshv_irqfd_resampler	    *irqfd_resampler;
+>  	struct eventfd_ctx		    *irqfd_resamplefd;
+>  	struct hlist_node		     irqfd_resampler_hnode;
+> +	struct irq_bypass_consumer	     irqfd_bypass_cons;
+> +	struct irq_bypass_producer	    *irqfd_bypass_prod;
+>  };
+>  
+>  void mshv_eventfd_init(struct mshv_partition *partition);
+> diff --git a/include/hyperv/hvgdk_mini.h b/include/hyperv/hvgdk_mini.h
+> index da622fb06440..1ef480825705 100644
+> --- a/include/hyperv/hvgdk_mini.h
+> +++ b/include/hyperv/hvgdk_mini.h
+> @@ -59,6 +59,8 @@ struct hv_u128 {
+>  #define HV_PARTITION_ID_INVALID		((u64)0)
+>  #define HV_PARTITION_ID_SELF		((u64)-1)
+>  
+> +#define HV_MAX_VPS    256               /* HV_MAXIMUM_PROCESSORS */
+> +
+>  /* Hyper-V specific model specific registers (MSRs) */
+>  
+>  #if defined(CONFIG_X86)
+> @@ -508,6 +510,7 @@ union hv_vp_assist_msr_contents {	 /* HV_REGISTER_VP_ASSIST_PAGE */
+>  #define HVCALL_UNMAP_VP_STATE_PAGE			0x00e2
+>  #define HVCALL_GET_VP_STATE				0x00e3
+>  #define HVCALL_SET_VP_STATE				0x00e4
+> +#define HVCALL_GET_VPSET_FROM_MDA                       0x00e5
+>  #define HVCALL_GET_VP_CPUID_VALUES			0x00f4
+>  #define HVCALL_GET_PARTITION_PROPERTY_EX		0x0101
+>  #define HVCALL_MMIO_READ				0x0106
+> diff --git a/include/hyperv/hvhdk.h b/include/hyperv/hvhdk.h
+> index 5e83d3714966..d0a892347ab1 100644
+> --- a/include/hyperv/hvhdk.h
+> +++ b/include/hyperv/hvhdk.h
+> @@ -952,4 +952,21 @@ struct hv_input_modify_sparse_spa_page_host_access {
+>  #define HV_MODIFY_SPA_PAGE_HOST_ACCESS_LARGE_PAGE      0x4
+>  #define HV_MODIFY_SPA_PAGE_HOST_ACCESS_HUGE_PAGE       0x8
+>  
+> +#ifdef CONFIG_X86
+> +
+> +struct hv_input_get_vp_set_from_mda {   /* HV_OUTPUT_GET_VP_SET_FROM_MDA */
+> +	u64 target_partid;
+> +	u64 dest_address;
+> +	u8  input_vtl;
+> +	u8  destmode_logical;         /* true => mode is logical */
+> +	u16 reserved0;                /* mbz */
+> +	u32 reserved1;                /* mbz */
+> +} __packed;
+> +
+> +union hv_output_get_vp_set_from_mda {  /* HV_OUTPUT_GET_VP_SET_FROM_MDA */
+> +	struct hv_vpset target_vpset;
+> +	u64 bitset_buffer[HV_GENERIC_SET_QWORD_COUNT(HV_MAX_VPS)];
+> +} __packed;
+> +
+> +#endif /* CONFIG_X86 */
+>  #endif /* _HV_HVHDK_H */
+> -- 
+> 2.51.2.vfs.0.1
+> 
