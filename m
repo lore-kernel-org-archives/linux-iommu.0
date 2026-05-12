@@ -1,91 +1,146 @@
-Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D17304BCADE
-	for <iommu@lists.linux.dev>; Tue, 12 May 2026 10:07:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B4A7F395AC6
+	for <iommu@lists.linux.dev>; Tue, 12 May 2026 10:26:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778580466; cv=none; b=DpMuWbUdaRvACrj8eFaa51xLCNwH67O1lBLcsAJMHMTwV5D6lJEP6vwUqSmy4pH+oZL62qBTpVacD+2lQqQOFlA00qxHxLzCIBSSAKFA0z0y8C3jj3FlUpAnpQGXBpDGH2yUdwLjz166qalsINM41n5knKOYDSpSGS9gnuOLJ/M=
+	t=1778581575; cv=none; b=FNvLAtVOskk31KuQFB0U096dbEgoq1gUFFzd96ztM/P+cNd+EK8BVRmErQ+cIv0acDYwhBaYC3YEJqAOAXV5bh7p2eSfvDdlv0f+KWvqKPmMUEJfBOjuMTwRYUEvqnTm6P7YeZGNltcd8cVd4Eh+anXk6vs9BibuJ/YGAPFkgII=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778580466; c=relaxed/simple;
-	bh=UZuNloMwiW+tHrGQ6MZ2lLA+dVPzlHThABVURqhAJtI=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=A/kWIh+6Gtu/gAO+SAdy1vZg/ECuf4+ilQ4UfGi2ReAZfVw0heP+3crp6lqw0zmbHZSXw/gj1T4Sv9Sf9TX3ZJNIXW+5y6wa4Mvcy8kzshPlJct2cOkqPunDwaagR/6rKyFRX1nk3Bx45WgTFcHqrRF3ETs8HnwWUrIJXNXz7bQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=NPXzW/vd; arc=none smtp.client-ip=209.85.214.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com
+	s=arc-20240116; t=1778581575; c=relaxed/simple;
+	bh=p2px6H+WTEk/NCl9roM9isjrVup2rBnxKf5K7cPz+1o=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Dz0/ATrd1H8MEyalkszSHdMH1QgzT7V0wUPVN8rYr4YBFbERJD3jM4QHkjZzLAKM3Ci98uqGFrVu70jK21Zz6FyDKpK0+/vmgLoCNCv1nvuT+63ONeE1CsHgoycASJgd9udjLDT94Vjz7IEUGdYs0IRao0pS8vZaxQSz65/GRig=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=bKog0cPf; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="NPXzW/vd"
-Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-2ba5f794825so45299245ad.0
-        for <iommu@lists.linux.dev>; Tue, 12 May 2026 03:07:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778580464; x=1779185264; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=4BRCH8Q+sSIoCslEFIamY+nsMlk/tKqIeqWpZmZWSTw=;
-        b=NPXzW/vdbYybQ6MdX+pyZmXLUNmciKJPL84ejf4fch6mu1KcYoxDE3S+zSFeOwiPEV
-         tvvqdn4ugzDP3RQox8wu6WMwxWQQS/7THLXOyHdALjRoqJddtOhzDIEIjd5gN2ZcdBZP
-         0ILS+1i0felGJdkxlpr38tEtUmqZFWSmm7VEe+atlrkaC2qMszQer/WCDaUk8W4L1AR9
-         VnDvK47ltnPHO+CqXDXZpiokBHCx+xmsMkfefqeanRK4RlSeUxiXA+xBsO2DQf6Rf2m9
-         qJHkYiSE8+u28HONZg1b4R97diDHkaLLNLkh8Bzjqq7FSzp1x4F2YAvf37y65EJh7E8d
-         W0Ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778580464; x=1779185264;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=4BRCH8Q+sSIoCslEFIamY+nsMlk/tKqIeqWpZmZWSTw=;
-        b=b3s0f0LMAhEyg8uw4EIMiREZuHyjx+PrGT9qFvY3mZb/onn8n1xX9Tc2JjSGFbzR1s
-         kQ32/gajIcXS9NbGP2e0nyX2lxyjQDsl9JEYuIa/Fn+fJpVfX02LC36RHOn/JUjlVoBr
-         MQpwAexW5mHy3fpkmGKsQp9VxVA747FPOns1TWbCRpB/b9szFS88FDoE7AuoUi1vNP+X
-         ph2AdYILwmFHPzUsKS7VbYglL4dZtOz0cNCIZzBk7GHSKcZYExOd8FmDhqzUOnnGmBWD
-         CMwxrsPwejZ4RS/ic0SvDNTGcPXFnCnKmM+pqqhkFswxauGdbT05PBl1K2boC+nhYxGj
-         cfmQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9t3bOcV6X4SE8sv+B/Zcwq5tvlsffJgrhFsaSSGJdFxtbAzqj7gKfFy+80nGBJTXvPc9ebcg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzJdaLZwbkH2ON2ybsgjLNX7Lk9Sm0FEd15EG8oe9//oVHorKF4
-	B6TXyIl8KfQ+c1H+4ym8L7OMG5YKwBA11g/SZlryt4HnT3UQavdTKE667/e/hRO1ISh5WZnoeZs
-	agcXS8bmGPI/jBIF2UzBFbHQ1qw==
-X-Received: from plqu15.prod.google.com ([2002:a17:902:a60f:b0:2ae:c329:bddd])
- (user=joonwonkang job=prod-delivery.src-stubby-dispatcher) by
- 2002:a17:903:1ac3:b0:2bd:7ca:e67d with SMTP id d9443c01a7336-2bd07caea66mr18092335ad.29.1778580463897;
- Tue, 12 May 2026 03:07:43 -0700 (PDT)
-Date: Tue, 12 May 2026 10:07:42 +0000
-In-Reply-To: <20260509171013.GF9285@ziepe.ca>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="bKog0cPf"
+Received: by linux.microsoft.com (Postfix, from userid 1099)
+	id 52D5C20B7166; Tue, 12 May 2026 03:26:12 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 52D5C20B7166
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1778581572;
+	bh=A3fdTJavZcamyWjE/iWjcMnfv2Zd92fLhKuCUIKfZB0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=bKog0cPfmxc/YHvPjQ/jWyN0newyW9ui6x3e20xbi6xQ+BpUdZy5Yh9z/eorOYtBm
+	 vLTg9j+Vp7KQj0497z94XKR8bMrJEixzBr+0+nW9N62QQ3QVFCuWEYnApYmsdbIOp4
+	 E15RVLhktN4Fw5j7ulpQ5bWYl5Z8lb4VxMgmwyGE=
+Date: Tue, 12 May 2026 03:26:12 -0700
+From: Souradeep Chakrabarti <schakrabarti@linux.microsoft.com>
+To: Mukesh R <mrathor@linux.microsoft.com>
+Cc: hpa@zytor.com, robin.murphy@arm.com, robh@kernel.org,
+	wei.liu@kernel.org, mhklinux@outlook.com, muislam@microsoft.com,
+	namjain@linux.microsoft.com, magnuskulke@linux.microsoft.com,
+	anbelski@linux.microsoft.com, linux-kernel@vger.kernel.org,
+	linux-hyperv@vger.kernel.org, iommu@lists.linux.dev,
+	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+	kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
+	longli@microsoft.com, tglx@kernel.org, mingo@redhat.com,
+	bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+	joro@8bytes.org, will@kernel.org, lpieralisi@kernel.org,
+	kwilczynski@kernel.org, bhelgaas@google.com, arnd@arndb.de,
+	jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH V3 01/11] iommu/hyperv: Rename hyperv-iommu.c to
+ hyperv-irq.c
+Message-ID: <agMARN3DHTFPeHFH@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+References: <20260512020259.1678627-1-mrathor@linux.microsoft.com>
+ <20260512020259.1678627-2-mrathor@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20260509171013.GF9285@ziepe.ca>
-X-Mailer: git-send-email 2.54.0.563.g4f69b47b94-goog
-Message-ID: <20260512100742.2522825-1-joonwonkang@google.com>
-Subject: Re: [PATCH RFC] iommu: Enable per-device SSID space for SVA
-From: Joonwon Kang <joonwonkang@google.com>
-To: jgg@ziepe.ca
-Cc: Alexander.Grest@microsoft.com, amhetre@nvidia.com, 
-	baolu.lu@linux.intel.com, easwar.hariharan@linux.microsoft.com, 
-	iommu@lists.linux.dev, jacob.jun.pan@linux.intel.com, joonwonkang@google.com, 
-	joro@8bytes.org, jpb@kernel.org, kees@kernel.org, kevin.tian@intel.com, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	nicolinc@nvidia.com, praan@google.com, robin.murphy@arm.com, 
-	smostafa@google.com, will@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260512020259.1678627-2-mrathor@linux.microsoft.com>
 
-> > We have multiple processes and a single device, those processes want to
-> > do SVA with the same device, and only one process will do SVA with the
-> > device at a time. Though, the problem occurs even when irrelevant
-> > processes allocate the PASIDs from the global PASID space for their own
-> > irrelevant purposes.
+On Mon, May 11, 2026 at 07:02:49PM -0700, Mukesh R wrote:
+> This file actually implements irq remapping, so rename to more appropriate
+> hyperv-irq.c. A new file to implement hyperv iommu will be introduced
+> later.  Also, it should not be tied to HYPERV_IOMMU, but to CONFIG_HYPERV
+> and IRQ_REMAP. The file already has #ifdef CONFIG_IRQ_REMAP.
 > 
-> The only way to allocate a PASID from the global PASID space is to
-> establish another SVA, so you have multiple devices doing SVA?
-
-Another way is via iommu_alloc_global_pasid() [1] and it does not require
-SVA. No, we currently do not have multiple devices doing SVA. But, the
-problem is that it is out of our control when any device is to allocate a
-PASID or do SVA for its own purpose.
-
-[1] https://lore.kernel.org/all/20230802212427.1497170-3-jacob.jun.pan@linux.intel.com/
-
-Thanks,
-Joonwon Kang
+> Reviewed-by: Anirudh Rayabharam (Microsoft) <anirudh@anirudhrb.com>
+Reviewed-by: Souradeep Chakrabarti <schakrabarti@linux.microsoft.com>
+> Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
+> ---
+>  MAINTAINERS                                    | 2 +-
+>  drivers/iommu/Makefile                         | 2 +-
+>  drivers/iommu/{hyperv-iommu.c => hyperv-irq.c} | 6 +++---
+>  drivers/iommu/irq_remapping.c                  | 2 +-
+>  4 files changed, 6 insertions(+), 6 deletions(-)
+>  rename drivers/iommu/{hyperv-iommu.c => hyperv-irq.c} (99%)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index d1cc0e12fe1f..f803a6a38fee 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -11914,7 +11914,7 @@ F:	drivers/clocksource/hyperv_timer.c
+>  F:	drivers/hid/hid-hyperv.c
+>  F:	drivers/hv/
+>  F:	drivers/input/serio/hyperv-keyboard.c
+> -F:	drivers/iommu/hyperv-iommu.c
+> +F:	drivers/iommu/hyperv-irq.c
+>  F:	drivers/net/ethernet/microsoft/
+>  F:	drivers/net/hyperv/
+>  F:	drivers/pci/controller/pci-hyperv-intf.c
+> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+> index 0275821f4ef9..335ea77cced6 100644
+> --- a/drivers/iommu/Makefile
+> +++ b/drivers/iommu/Makefile
+> @@ -30,7 +30,7 @@ obj-$(CONFIG_TEGRA_IOMMU_SMMU) += tegra-smmu.o
+>  obj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o
+>  obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
+>  obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
+> -obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
+> +obj-$(CONFIG_HYPERV) += hyperv-irq.o
+>  obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
+>  obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o
+>  obj-$(CONFIG_IOMMU_IOPF) += io-pgfault.o
+> diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-irq.c
+> similarity index 99%
+> rename from drivers/iommu/hyperv-iommu.c
+> rename to drivers/iommu/hyperv-irq.c
+> index 479103261ae6..d11076f906fb 100644
+> --- a/drivers/iommu/hyperv-iommu.c
+> +++ b/drivers/iommu/hyperv-irq.c
+> @@ -8,6 +8,8 @@
+>   * Author : Lan Tianyu <Tianyu.Lan@microsoft.com>
+>   */
+>  
+> +#ifdef CONFIG_IRQ_REMAP
+> +
+>  #include <linux/types.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/irq.h>
+> @@ -24,8 +26,6 @@
+>  
+>  #include "irq_remapping.h"
+>  
+> -#ifdef CONFIG_IRQ_REMAP
+> -
+>  /*
+>   * According 82093AA IO-APIC spec , IO APIC has a 24-entry Interrupt
+>   * Redirection Table. Hyper-V exposes one single IO-APIC and so define
+> @@ -331,4 +331,4 @@ static const struct irq_domain_ops hyperv_root_ir_domain_ops = {
+>  	.free = hyperv_root_irq_remapping_free,
+>  };
+>  
+> -#endif
+> +#endif  /* CONFIG_IRQ_REMAP */
+> diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
+> index c2443659812a..41bf65e4ea88 100644
+> --- a/drivers/iommu/irq_remapping.c
+> +++ b/drivers/iommu/irq_remapping.c
+> @@ -108,7 +108,7 @@ int __init irq_remapping_prepare(void)
+>  	else if (IS_ENABLED(CONFIG_AMD_IOMMU) &&
+>  		 amd_iommu_irq_ops.prepare() == 0)
+>  		remap_ops = &amd_iommu_irq_ops;
+> -	else if (IS_ENABLED(CONFIG_HYPERV_IOMMU) &&
+> +	else if (IS_ENABLED(CONFIG_HYPERV) &&
+>  		 hyperv_irq_remap_ops.prepare() == 0)
+>  		remap_ops = &hyperv_irq_remap_ops;
+>  	else
+> -- 
+> 2.51.2.vfs.0.1
+> 
