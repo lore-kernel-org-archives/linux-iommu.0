@@ -1,488 +1,173 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 503B8349CCE
-	for <iommu@lists.linux.dev>; Tue, 12 May 2026 10:27:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78ECE3839A5
+	for <iommu@lists.linux.dev>; Tue, 12 May 2026 10:42:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778581657; cv=none; b=bASQPTH5MuNVosUhnmxF0K0epXa+Bk7/cao6asRv8CMDGYeXe5Y9kieppllTzBmLezjysB2UmD5ZVIwxjj539MwyH8Mij7YHbnC4RtyOfpXj6VMt2UQVVT2UVC062yES8hcU/sCFXY8RsRTUx1hMMZ5x8mIoJ7pB7lwt4U/UDpY=
+	t=1778582558; cv=none; b=JsfybU83QEvxVND80qjOkd1k6/4WtRXZBd61RzJvwhn+GYXNU7+/pYjdz5ueLXhT6nq2ZwC/0zNLQq18UdUnyvaWijWijjp1FXtJossePZq8VTmtoYoef+flCZQ2YdYss3P/S1j9RtaK/nPcWMJkSgWn+jKrNz6+cbfddF166o4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778581657; c=relaxed/simple;
-	bh=J5gD9wtyLmRvDM4IrUXehYOKCNt756esS04K+gbOq/c=;
+	s=arc-20240116; t=1778582558; c=relaxed/simple;
+	bh=sH9hlfmrkF9dZBN/budsXhrCURN6fClLi7pruXZyxm0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gsrSn2TRsO1nyT3xVWNp4IGqZyQhvtntpV+sdG9LhALnRSYW1mkGyXcScQKYdq3wDiMvHwo92G3HYggNk3dipeh/bNvWbYA2ZD9wzgZyrzA11Vop+bewWAugqvYI1ocug1unxgdMZS7TbBHqT+Oa5g4Fgw6T1bP3hsl3NsirfDs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=pfYJ/i27; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=qnRUPgJeSdpuxNBO8cnSxrABDFrfYLAUpXl6DqYwmQvYzcgj/gOV8xSR8ADWiiiX/Qut1VoMBCpqcYMtWx1Ofu/0NyFbo3F+YBfixX7fSw/AhNOI8ird+0ffeDmj8mKlvQC7b/d0ZnFZCI+sTM4BHBluFJlxj/Gs47P0EgHIaHk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=oggya1Tr; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="pfYJ/i27"
-Received: by linux.microsoft.com (Postfix, from userid 1099)
-	id EDD6620B7166; Tue, 12 May 2026 03:27:32 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com EDD6620B7166
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1778581652;
-	bh=VTpkazokvCswLbrPdaZv7BY48d3mdyIXwaVdSf8IFjI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=pfYJ/i27Ker4Ax6jV52NldTBUsNc4eVFu6TvQFJ1v+g86QVJ0E1iy2go/pz/yG815
-	 UB9a3GwE4TlGthI4XYVPB5nv7MrH4NGinOeq7Hr9t2jnuZIGoOK23oM7IQIz8pIVTM
-	 pYDT3elUNJTqf49eYbaJGw6oA79pbYerLukNZyak=
-Date: Tue, 12 May 2026 03:27:32 -0700
-From: Souradeep Chakrabarti <schakrabarti@linux.microsoft.com>
-To: Mukesh R <mrathor@linux.microsoft.com>
-Cc: hpa@zytor.com, robin.murphy@arm.com, robh@kernel.org,
-	wei.liu@kernel.org, mhklinux@outlook.com, muislam@microsoft.com,
-	namjain@linux.microsoft.com, magnuskulke@linux.microsoft.com,
-	anbelski@linux.microsoft.com, linux-kernel@vger.kernel.org,
-	linux-hyperv@vger.kernel.org, iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-	kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
-	longli@microsoft.com, tglx@kernel.org, mingo@redhat.com,
-	bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-	joro@8bytes.org, will@kernel.org, lpieralisi@kernel.org,
-	kwilczynski@kernel.org, bhelgaas@google.com, arnd@arndb.de,
-	jacob.pan@linux.microsoft.com
-Subject: Re: [PATCH V3 02/11] x86/hyperv: Cosmetic changes in irqdomain.c for
- readability
-Message-ID: <agMAlBVwFwN08Wf0@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
-References: <20260512020259.1678627-1-mrathor@linux.microsoft.com>
- <20260512020259.1678627-3-mrathor@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="oggya1Tr"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-488940ccfa6so245e9.1
+        for <iommu@lists.linux.dev>; Tue, 12 May 2026 03:42:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1778582555; x=1779187355; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=gh0YPsx5HT0HEDlr/gUYFUWx5XOdgj6wDtu6dF4cI3k=;
+        b=oggya1TrsLgQCj+LvfjquWEkLLKTJLZQc3w+hVjZDxWHRgQhZMf5wS5nPUZFO7X7xx
+         qckgbc4ay9hJNiZGfZKTR5gXFnvk6KGJb+A13IEhc4YpXFy0cReBDNQpzZmazKIyOnHj
+         BiJ2eo3J15PvEKuHmIFiU5QptDU2g9HqQh4wmW8oJMnhTwtf/GAVh3C1/ZsT4cFI97al
+         I84ndfEY4gHC8sMDptQ18mOV7MICn9V0g1yYbAhCqACKOnSFaKzJQSV1DfQ4TSmS6UUH
+         sMdTVBhdOPEmkGm8v3IlfmuoONJaGsUKK+5+RzVCWMXbvBShn1IfNXHJDrcnxyeqyiUV
+         vamw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778582555; x=1779187355;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=gh0YPsx5HT0HEDlr/gUYFUWx5XOdgj6wDtu6dF4cI3k=;
+        b=QS1Pyar4RlwDSPEGeQ8E/qELClaE6OneTX3SMCJ7P2p65FSGN9W7wBZqvSLnk7VraH
+         SLUOTH4d9lIbEsJbAfNlT23kynoyQZasj5fVVNU0i1Ooz1DrOh73Q0JyrHgvM0IuPlqP
+         J0xWpEjsPEmMnYwWIZgNvyMpmm3jS9B8L0MHetlUYPUlBGWxGeNieGKCTQJ75/M4YspR
+         aU7oJa57IHQrNnIr1ENhNoiLKI+BcQFmq3rb5b+ncYeNcxHYWk4OtZWlH93bh5I8VATg
+         tfvGsACzWnTyi8qOE8PzXKPuTC3IGhykAJOvpDMJUQo8ODTekTpBjoUk+ZMItw9R5rJ5
+         IyVg==
+X-Forwarded-Encrypted: i=1; AFNElJ+k5iyQNO8ow9jUMjWQXSZ3boRe2Wz1sjUTZC1zM87WUpWGDEGNWfoh3ZcLQoi66E7qos2dNQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Ywdx/YidmGSV1erl2cG7a89jde+q8zDbw/x9zY1BkF4KEJiqouM
+	7xvZjiuMZH3KZVuPwFl7nQnygktYDk8L573jhzg/DXaK4l5HtL9CHlc45FxMmQaCcg==
+X-Gm-Gg: Acq92OHA1tl0DaZHDLGDBOofIVhWYBjDhkJPrJCpNVj9WSh/bir2TICKOKgrdiyVWGx
+	glkGi3w/354vnsgymGKHqRF7hUwKNOtuvcg214u5/ANzVx5e1gkq6z0grb4/y/qg8ttfjyofJof
+	0p8kZq/gr44hrtYbRTZSBEyjCF9En6DZGcCwI7mEb2AJsxLqQLYXlsmIzg2FNHQqnSXAc5PftXn
+	Zl6a4tqag3CKv783fw9N/lOZpu5WOXnPJLpLn6CNNEYFhAEBZCA6MX/6k5tXDuOMlaHziTdaza3
+	u7zsXBHjJ+P460XfXJXGhFv2R7R9vHHHfQkdoCs/GATrvW/jxxpu5efeaYF32sLaDFoLdUqswH1
+	mPoAdyOonXb6k8wyC0qpTU4oSTZtgHuTVIGZO5IXJqaWff0aHtOKjQo/yxlt5hLPdSN7ZACouml
+	vU6ibRNiNFFe7IgGC+aT6b9LWHvpc4/dafS8Y9JbIenADttQhGBE4bb5lqwrFWlpBLyWPk+bYdp
+	uuVMA==
+X-Received: by 2002:a7b:c041:0:b0:45f:2940:d194 with SMTP id 5b1f17b1804b1-48e90664de3mr468235e9.2.1778582554477;
+        Tue, 12 May 2026 03:42:34 -0700 (PDT)
+Received: from google.com (8.181.38.34.bc.googleusercontent.com. [34.38.181.8])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4548ec6b00fsm34945814f8f.11.2026.05.12.03.42.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 May 2026 03:42:33 -0700 (PDT)
+Date: Tue, 12 May 2026 10:42:30 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
+	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
+	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
+	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
+	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
+	vdonnefort@google.com, sebastianene@google.com, keirf@google.com
+Subject: Re: [PATCH v6 08/25] KVM: arm64: iommu: Shadow host stage-2 page
+ table
+Message-ID: <agMEFhxsmjpO0thM@google.com>
+References: <20260501111928.259252-1-smostafa@google.com>
+ <20260501111928.259252-9-smostafa@google.com>
+ <20260501130006.GF6912@ziepe.ca>
+ <afiRB3e3o0G1oZvY@google.com>
+ <20260509232714.GI9285@ziepe.ca>
+ <agG8XtrHUfWGy-kd@google.com>
+ <20260511142232.GP9285@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260512020259.1678627-3-mrathor@linux.microsoft.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260511142232.GP9285@ziepe.ca>
 
-On Mon, May 11, 2026 at 07:02:50PM -0700, Mukesh R wrote:
-> Make cosmetic changes:
->  o Rename struct pci_dev *dev to *pdev since there are cases of
->    struct device *dev in the file and all over the kernel
->  o Rename hv_build_pci_dev_id to hv_build_devid_type_pci in anticipation
->    of building different types of device IDs
->  o Fix checkpatch.pl issues with return and extraneous printk
->  o Replace spaces with tabs
->  o Rename struct hv_devid *xxx to struct hv_devid *hv_devid given code
->    paths involve many types of device IDs
->  o Fix indentation in a large if block by using goto.
+On Mon, May 11, 2026 at 11:22:32AM -0300, Jason Gunthorpe wrote:
+> On Mon, May 11, 2026 at 11:24:14AM +0000, Mostafa Saleh wrote:
+> > On Sat, May 09, 2026 at 08:27:14PM -0300, Jason Gunthorpe wrote:
+> > > On Mon, May 04, 2026 at 12:28:55PM +0000, Mostafa Saleh wrote:
+> > > > So far this is the list of requirements/changes needed share the
+> > > > stage-2 page table (besides the obvious: same page table format,
+> > > > granularity, endianness...)
+> > > > 
+> > > > 1) HW BBM is not supported in the hypervisor page table, that’s
+> > > >    because it can generate TLB conflict aborts, which the hypervisor
+> > > >    can not handle because of the limited syndrome information.
+> > > >    We can rely on FEAT_BBML3 which was newly introduced to work
+> > > >    around that, it’s quite niche and not supported in KVM yet or
+> > > >    have an allow list similar to the kernel
+> > > >    (as in cpu_supports_bbml2_noabort()) which also limits the number
+> > > >    of CPUs that can run this.
+> > > 
+> > > Do you think pkvm will need BBM? Hitless replace of a PTE is already a
+> > > pretty advanced feature and the SMMU has its own support matrix there
+> > > too. Is it for shared/private conversion?
+> > 
+> > Yes, we can break block on memory donation which is transfer of
+> > ownership to the hypervisor or a guest.
 > 
-> There are no functional changes.
+> So you need BBM support on the SMMU too? That is probably a big
+> problem because the SMMU is often mismatched to the CPU :\
 > 
-> Reviewed-by: Anirudh Rayabharam (Microsoft) <anirudh@anirudhrb.com>
-Reviewed-by: Souradeep Chakrabarti <schakrabarti@linux.microsoft.com>
-> Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
-> ---
->  arch/x86/hyperv/irqdomain.c | 198 +++++++++++++++++++-----------------
->  1 file changed, 104 insertions(+), 94 deletions(-)
+
+Yes, that's why it's hard to find systems that can easily share the
+CPU page table with the SMMU (some might even have mis-match in
+OAS/PS)
+
+> Also io-pgtable arm cannot trigger BBM behaviors, so how do you
+> implement it?
+
+At the moment, we workaround this by mapping all the memory with PTE
+level, while MMIO remains at block level as they never change ownership
+at the moment.
+
+This is one of the missing features I plan to add after this series,
+if you look in the cover letter, these are listed under “Future work”
+
 > 
-> diff --git a/arch/x86/hyperv/irqdomain.c b/arch/x86/hyperv/irqdomain.c
-> index 365e364268d9..b3ad50a874dc 100644
-> --- a/arch/x86/hyperv/irqdomain.c
-> +++ b/arch/x86/hyperv/irqdomain.c
-> @@ -1,5 +1,4 @@
->  // SPDX-License-Identifier: GPL-2.0
-> -
->  /*
->   * Irqdomain for Linux to run as the root partition on Microsoft Hypervisor.
->   *
-> @@ -14,8 +13,8 @@
->  #include <linux/irqchip/irq-msi-lib.h>
->  #include <asm/mshyperv.h>
->  
-> -static int hv_map_interrupt(union hv_device_id device_id, bool level,
-> -		int cpu, int vector, struct hv_interrupt_entry *entry)
-> +static int hv_map_interrupt(union hv_device_id hv_devid, bool level,
-> +		int cpu, int vector, struct hv_interrupt_entry *ret_entry)
->  {
->  	struct hv_input_map_device_interrupt *input;
->  	struct hv_output_map_device_interrupt *output;
-> @@ -32,7 +31,7 @@ static int hv_map_interrupt(union hv_device_id device_id, bool level,
->  	intr_desc = &input->interrupt_descriptor;
->  	memset(input, 0, sizeof(*input));
->  	input->partition_id = hv_current_partition_id;
-> -	input->device_id = device_id.as_uint64;
-> +	input->device_id = hv_devid.as_uint64;
->  	intr_desc->interrupt_type = HV_X64_INTERRUPT_TYPE_FIXED;
->  	intr_desc->vector_count = 1;
->  	intr_desc->target.vector = vector;
-> @@ -44,7 +43,7 @@ static int hv_map_interrupt(union hv_device_id device_id, bool level,
->  
->  	intr_desc->target.vp_set.valid_bank_mask = 0;
->  	intr_desc->target.vp_set.format = HV_GENERIC_SET_SPARSE_4K;
-> -	nr_bank = cpumask_to_vpset(&(intr_desc->target.vp_set), cpumask_of(cpu));
-> +	nr_bank = cpumask_to_vpset(&intr_desc->target.vp_set, cpumask_of(cpu));
->  	if (nr_bank < 0) {
->  		local_irq_restore(flags);
->  		pr_err("%s: unable to generate VP set\n", __func__);
-> @@ -61,7 +60,7 @@ static int hv_map_interrupt(union hv_device_id device_id, bool level,
->  
->  	status = hv_do_rep_hypercall(HVCALL_MAP_DEVICE_INTERRUPT, 0, var_size,
->  			input, output);
-> -	*entry = output->interrupt_entry;
-> +	*ret_entry = output->interrupt_entry;
->  
->  	local_irq_restore(flags);
->  
-> @@ -71,21 +70,19 @@ static int hv_map_interrupt(union hv_device_id device_id, bool level,
->  	return hv_result_to_errno(status);
->  }
->  
-> -static int hv_unmap_interrupt(u64 id, struct hv_interrupt_entry *old_entry)
-> +static int hv_unmap_interrupt(u64 id, struct hv_interrupt_entry *irq_entry)
->  {
->  	unsigned long flags;
->  	struct hv_input_unmap_device_interrupt *input;
-> -	struct hv_interrupt_entry *intr_entry;
->  	u64 status;
->  
->  	local_irq_save(flags);
->  	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
->  
->  	memset(input, 0, sizeof(*input));
-> -	intr_entry = &input->interrupt_entry;
->  	input->partition_id = hv_current_partition_id;
->  	input->device_id = id;
-> -	*intr_entry = *old_entry;
-> +	input->interrupt_entry = *irq_entry;
->  
->  	status = hv_do_hypercall(HVCALL_UNMAP_DEVICE_INTERRUPT, input, NULL);
->  	local_irq_restore(flags);
-> @@ -115,67 +112,71 @@ static int get_rid_cb(struct pci_dev *pdev, u16 alias, void *data)
->  	return 0;
->  }
->  
-> -static union hv_device_id hv_build_pci_dev_id(struct pci_dev *dev)
-> +static union hv_device_id hv_build_devid_type_pci(struct pci_dev *pdev)
->  {
-> -	union hv_device_id dev_id;
-> +	int pos;
-> +	union hv_device_id hv_devid;
->  	struct rid_data data = {
->  		.bridge = NULL,
-> -		.rid = PCI_DEVID(dev->bus->number, dev->devfn)
-> +		.rid = PCI_DEVID(pdev->bus->number, pdev->devfn)
->  	};
->  
-> -	pci_for_each_dma_alias(dev, get_rid_cb, &data);
-> +	pci_for_each_dma_alias(pdev, get_rid_cb, &data);
->  
-> -	dev_id.as_uint64 = 0;
-> -	dev_id.device_type = HV_DEVICE_TYPE_PCI;
-> -	dev_id.pci.segment = pci_domain_nr(dev->bus);
-> +	hv_devid.as_uint64 = 0;
-> +	hv_devid.device_type = HV_DEVICE_TYPE_PCI;
-> +	hv_devid.pci.segment = pci_domain_nr(pdev->bus);
->  
-> -	dev_id.pci.bdf.bus = PCI_BUS_NUM(data.rid);
-> -	dev_id.pci.bdf.device = PCI_SLOT(data.rid);
-> -	dev_id.pci.bdf.function = PCI_FUNC(data.rid);
-> -	dev_id.pci.source_shadow = HV_SOURCE_SHADOW_NONE;
-> +	hv_devid.pci.bdf.bus = PCI_BUS_NUM(data.rid);
-> +	hv_devid.pci.bdf.device = PCI_SLOT(data.rid);
-> +	hv_devid.pci.bdf.function = PCI_FUNC(data.rid);
-> +	hv_devid.pci.source_shadow = HV_SOURCE_SHADOW_NONE;
->  
-> -	if (data.bridge) {
-> -		int pos;
-> +	if (data.bridge == NULL)
-> +		goto out;
->  
-> -		/*
-> -		 * Microsoft Hypervisor requires a bus range when the bridge is
-> -		 * running in PCI-X mode.
-> -		 *
-> -		 * To distinguish conventional vs PCI-X bridge, we can check
-> -		 * the bridge's PCI-X Secondary Status Register, Secondary Bus
-> -		 * Mode and Frequency bits. See PCI Express to PCI/PCI-X Bridge
-> -		 * Specification Revision 1.0 5.2.2.1.3.
-> -		 *
-> -		 * Value zero means it is in conventional mode, otherwise it is
-> -		 * in PCI-X mode.
-> -		 */
-> +	/*
-> +	 * Microsoft Hypervisor requires a bus range when the bridge is
-> +	 * running in PCI-X mode.
-> +	 *
-> +	 * To distinguish conventional vs PCI-X bridge, we can check
-> +	 * the bridge's PCI-X Secondary Status Register, Secondary Bus
-> +	 * Mode and Frequency bits. See PCI Express to PCI/PCI-X Bridge
-> +	 * Specification Revision 1.0 5.2.2.1.3.
-> +	 *
-> +	 * Value zero means it is in conventional mode, otherwise it is
-> +	 * in PCI-X mode.
-> +	 */
->  
-> -		pos = pci_find_capability(data.bridge, PCI_CAP_ID_PCIX);
-> -		if (pos) {
-> -			u16 status;
-> +	pos = pci_find_capability(data.bridge, PCI_CAP_ID_PCIX);
-> +	if (pos) {
-> +		u16 status;
->  
-> -			pci_read_config_word(data.bridge, pos +
-> -					PCI_X_BRIDGE_SSTATUS, &status);
-> +		pci_read_config_word(data.bridge, pos + PCI_X_BRIDGE_SSTATUS,
-> +				     &status);
->  
-> -			if (status & PCI_X_SSTATUS_FREQ) {
-> -				/* Non-zero, PCI-X mode */
-> -				u8 sec_bus, sub_bus;
-> +		if (status & PCI_X_SSTATUS_FREQ) {
-> +			/* Non-zero, PCI-X mode */
-> +			u8 sec_bus, sub_bus;
->  
-> -				dev_id.pci.source_shadow = HV_SOURCE_SHADOW_BRIDGE_BUS_RANGE;
-> +			hv_devid.pci.source_shadow =
-> +					     HV_SOURCE_SHADOW_BRIDGE_BUS_RANGE;
->  
-> -				pci_read_config_byte(data.bridge, PCI_SECONDARY_BUS, &sec_bus);
-> -				dev_id.pci.shadow_bus_range.secondary_bus = sec_bus;
-> -				pci_read_config_byte(data.bridge, PCI_SUBORDINATE_BUS, &sub_bus);
-> -				dev_id.pci.shadow_bus_range.subordinate_bus = sub_bus;
-> -			}
-> +			pci_read_config_byte(data.bridge, PCI_SECONDARY_BUS,
-> +					     &sec_bus);
-> +			hv_devid.pci.shadow_bus_range.secondary_bus = sec_bus;
-> +			pci_read_config_byte(data.bridge, PCI_SUBORDINATE_BUS,
-> +					     &sub_bus);
-> +			hv_devid.pci.shadow_bus_range.subordinate_bus = sub_bus;
->  		}
->  	}
->  
-> -	return dev_id;
-> +out:
-> +	return hv_devid;
->  }
->  
-> -/**
-> - * hv_map_msi_interrupt() - "Map" the MSI IRQ in the hypervisor.
-> +/*
-> + * hv_map_msi_interrupt() - Map the MSI IRQ in the hypervisor.
->   * @data:      Describes the IRQ
->   * @out_entry: Hypervisor (MSI) interrupt entry (can be NULL)
->   *
-> @@ -188,22 +189,23 @@ int hv_map_msi_interrupt(struct irq_data *data,
->  {
->  	struct irq_cfg *cfg = irqd_cfg(data);
->  	struct hv_interrupt_entry dummy;
-> -	union hv_device_id device_id;
-> +	union hv_device_id hv_devid;
->  	struct msi_desc *msidesc;
-> -	struct pci_dev *dev;
-> +	struct pci_dev *pdev;
->  	int cpu;
->  
->  	msidesc = irq_data_get_msi_desc(data);
-> -	dev = msi_desc_to_pci_dev(msidesc);
-> -	device_id = hv_build_pci_dev_id(dev);
-> +	pdev = msi_desc_to_pci_dev(msidesc);
-> +	hv_devid = hv_build_devid_type_pci(pdev);
->  	cpu = cpumask_first(irq_data_get_effective_affinity_mask(data));
->  
-> -	return hv_map_interrupt(device_id, false, cpu, cfg->vector,
-> +	return hv_map_interrupt(hv_devid, false, cpu, cfg->vector,
->  				out_entry ? out_entry : &dummy);
->  }
->  EXPORT_SYMBOL_GPL(hv_map_msi_interrupt);
->  
-> -static inline void entry_to_msi_msg(struct hv_interrupt_entry *entry, struct msi_msg *msg)
-> +static void entry_to_msi_msg(struct hv_interrupt_entry *entry,
-> +			     struct msi_msg *msg)
->  {
->  	/* High address is always 0 */
->  	msg->address_hi = 0;
-> @@ -211,17 +213,19 @@ static inline void entry_to_msi_msg(struct hv_interrupt_entry *entry, struct msi
->  	msg->data = entry->msi_entry.data.as_uint32;
->  }
->  
-> -static int hv_unmap_msi_interrupt(struct pci_dev *dev, struct hv_interrupt_entry *old_entry);
-> +static int hv_unmap_msi_interrupt(struct pci_dev *pdev,
-> +				  struct hv_interrupt_entry *irq_entry);
-> +
->  static void hv_irq_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
->  {
->  	struct hv_interrupt_entry *stored_entry;
->  	struct irq_cfg *cfg = irqd_cfg(data);
->  	struct msi_desc *msidesc;
-> -	struct pci_dev *dev;
-> +	struct pci_dev *pdev;
->  	int ret;
->  
->  	msidesc = irq_data_get_msi_desc(data);
-> -	dev = msi_desc_to_pci_dev(msidesc);
-> +	pdev = msi_desc_to_pci_dev(msidesc);
->  
->  	if (!cfg) {
->  		pr_debug("%s: cfg is NULL", __func__);
-> @@ -240,7 +244,7 @@ static void hv_irq_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
->  		stored_entry = data->chip_data;
->  		data->chip_data = NULL;
->  
-> -		ret = hv_unmap_msi_interrupt(dev, stored_entry);
-> +		ret = hv_unmap_msi_interrupt(pdev, stored_entry);
->  
->  		kfree(stored_entry);
->  
-> @@ -249,10 +253,8 @@ static void hv_irq_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
->  	}
->  
->  	stored_entry = kzalloc_obj(*stored_entry, GFP_ATOMIC);
-> -	if (!stored_entry) {
-> -		pr_debug("%s: failed to allocate chip data\n", __func__);
-> +	if (!stored_entry)
->  		return;
-> -	}
->  
->  	ret = hv_map_msi_interrupt(data, stored_entry);
->  	if (ret) {
-> @@ -262,18 +264,21 @@ static void hv_irq_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
->  
->  	data->chip_data = stored_entry;
->  	entry_to_msi_msg(data->chip_data, msg);
-> -
-> -	return;
->  }
->  
-> -static int hv_unmap_msi_interrupt(struct pci_dev *dev, struct hv_interrupt_entry *old_entry)
-> +static int hv_unmap_msi_interrupt(struct pci_dev *pdev,
-> +				  struct hv_interrupt_entry *irq_entry)
->  {
-> -	return hv_unmap_interrupt(hv_build_pci_dev_id(dev).as_uint64, old_entry);
-> +	union hv_device_id hv_devid;
-> +
-> +	hv_devid = hv_build_devid_type_pci(pdev);
-> +	return hv_unmap_interrupt(hv_devid.as_uint64, irq_entry);
->  }
->  
-> -static void hv_teardown_msi_irq(struct pci_dev *dev, struct irq_data *irqd)
-> +/* NB: during map, hv_interrupt_entry is saved via data->chip_data */
-> +static void hv_teardown_msi_irq(struct pci_dev *pdev, struct irq_data *irqd)
->  {
-> -	struct hv_interrupt_entry old_entry;
-> +	struct hv_interrupt_entry irq_entry;
->  	struct msi_msg msg;
->  
->  	if (!irqd->chip_data) {
-> @@ -281,13 +286,13 @@ static void hv_teardown_msi_irq(struct pci_dev *dev, struct irq_data *irqd)
->  		return;
->  	}
->  
-> -	old_entry = *(struct hv_interrupt_entry *)irqd->chip_data;
-> -	entry_to_msi_msg(&old_entry, &msg);
-> +	irq_entry = *(struct hv_interrupt_entry *)irqd->chip_data;
-> +	entry_to_msi_msg(&irq_entry, &msg);
->  
->  	kfree(irqd->chip_data);
->  	irqd->chip_data = NULL;
->  
-> -	(void)hv_unmap_msi_interrupt(dev, &old_entry);
-> +	(void)hv_unmap_msi_interrupt(pdev, &irq_entry);
->  }
->  
->  /*
-> @@ -302,7 +307,8 @@ static struct irq_chip hv_pci_msi_controller = {
->  };
->  
->  static bool hv_init_dev_msi_info(struct device *dev, struct irq_domain *domain,
-> -				 struct irq_domain *real_parent, struct msi_domain_info *info)
-> +				 struct irq_domain *real_parent,
-> +				 struct msi_domain_info *info)
->  {
->  	struct irq_chip *chip = info->chip;
->  
-> @@ -317,7 +323,8 @@ static bool hv_init_dev_msi_info(struct device *dev, struct irq_domain *domain,
->  }
->  
->  #define HV_MSI_FLAGS_SUPPORTED	(MSI_GENERIC_FLAGS_MASK | MSI_FLAG_PCI_MSIX)
-> -#define HV_MSI_FLAGS_REQUIRED	(MSI_FLAG_USE_DEF_DOM_OPS | MSI_FLAG_USE_DEF_CHIP_OPS)
-> +#define HV_MSI_FLAGS_REQUIRED	(MSI_FLAG_USE_DEF_DOM_OPS |	\
-> +				 MSI_FLAG_USE_DEF_CHIP_OPS)
->  
->  static struct msi_parent_ops hv_msi_parent_ops = {
->  	.supported_flags	= HV_MSI_FLAGS_SUPPORTED,
-> @@ -329,14 +336,14 @@ static struct msi_parent_ops hv_msi_parent_ops = {
->  	.init_dev_msi_info	= hv_init_dev_msi_info,
->  };
->  
-> -static int hv_msi_domain_alloc(struct irq_domain *d, unsigned int virq, unsigned int nr_irqs,
-> -			       void *arg)
-> +/* Allocate nr_irqs IRQs for the given irq domain */
-> +static int hv_msi_domain_alloc(struct irq_domain *d, unsigned int virq,
-> +			       unsigned int nr_irqs, void *arg)
->  {
->  	/*
-> -	 * TODO: The allocation bits of hv_irq_compose_msi_msg(), i.e. everything except
-> -	 * entry_to_msi_msg() should be in here.
-> +	 * TODO: The allocation bits of hv_irq_compose_msi_msg(), i.e.
-> +	 *	 everything except entry_to_msi_msg() should be in here.
->  	 */
-> -
->  	int ret;
->  
->  	ret = irq_domain_alloc_irqs_parent(d, virq, nr_irqs, arg);
-> @@ -344,13 +351,15 @@ static int hv_msi_domain_alloc(struct irq_domain *d, unsigned int virq, unsigned
->  		return ret;
->  
->  	for (int i = 0; i < nr_irqs; ++i) {
-> -		irq_domain_set_info(d, virq + i, 0, &hv_pci_msi_controller, NULL,
-> -				    handle_edge_irq, NULL, "edge");
-> +		irq_domain_set_info(d, virq + i, 0, &hv_pci_msi_controller,
-> +				    NULL, handle_edge_irq, NULL, "edge");
->  	}
-> +
->  	return 0;
->  }
->  
-> -static void hv_msi_domain_free(struct irq_domain *d, unsigned int virq, unsigned int nr_irqs)
-> +static void hv_msi_domain_free(struct irq_domain *d, unsigned int virq,
-> +			       unsigned int nr_irqs)
->  {
->  	for (int i = 0; i < nr_irqs; ++i) {
->  		struct irq_data *irqd = irq_domain_get_irq_data(d, virq);
-> @@ -362,6 +371,7 @@ static void hv_msi_domain_free(struct irq_domain *d, unsigned int virq, unsigned
->  
->  		hv_teardown_msi_irq(to_pci_dev(desc->dev), irqd);
->  	}
-> +
->  	irq_domain_free_irqs_top(d, virq, nr_irqs);
->  }
->  
-> @@ -394,25 +404,25 @@ struct irq_domain * __init hv_create_pci_msi_domain(void)
->  
->  int hv_unmap_ioapic_interrupt(int ioapic_id, struct hv_interrupt_entry *entry)
->  {
-> -	union hv_device_id device_id;
-> +	union hv_device_id hv_devid;
->  
-> -	device_id.as_uint64 = 0;
-> -	device_id.device_type = HV_DEVICE_TYPE_IOAPIC;
-> -	device_id.ioapic.ioapic_id = (u8)ioapic_id;
-> +	hv_devid.as_uint64 = 0;
-> +	hv_devid.device_type = HV_DEVICE_TYPE_IOAPIC;
-> +	hv_devid.ioapic.ioapic_id = (u8)ioapic_id;
->  
-> -	return hv_unmap_interrupt(device_id.as_uint64, entry);
-> +	return hv_unmap_interrupt(hv_devid.as_uint64, entry);
->  }
->  EXPORT_SYMBOL_GPL(hv_unmap_ioapic_interrupt);
->  
->  int hv_map_ioapic_interrupt(int ioapic_id, bool level, int cpu, int vector,
->  		struct hv_interrupt_entry *entry)
->  {
-> -	union hv_device_id device_id;
-> +	union hv_device_id hv_devid;
->  
-> -	device_id.as_uint64 = 0;
-> -	device_id.device_type = HV_DEVICE_TYPE_IOAPIC;
-> -	device_id.ioapic.ioapic_id = (u8)ioapic_id;
-> +	hv_devid.as_uint64 = 0;
-> +	hv_devid.device_type = HV_DEVICE_TYPE_IOAPIC;
-> +	hv_devid.ioapic.ioapic_id = (u8)ioapic_id;
->  
-> -	return hv_map_interrupt(device_id, level, cpu, vector, entry);
-> +	return hv_map_interrupt(hv_devid, level, cpu, vector, entry);
->  }
->  EXPORT_SYMBOL_GPL(hv_map_ioapic_interrupt);
-> -- 
-> 2.51.2.vfs.0.1
+> > > No.. once you turn on IO like this you don't have page faults
+> > > anymore. Everything must be permantently mapped into the SMMU view, it
+> > > can never be made non-present and you must run without page
+> > > faults. That's what you have in the io-pgtable constructed table,
+> > > right?
+> > 
+> > Exactly, but the CPU page table doesn’t guarantee that, so we either
+> > have to handle page faults in the IOMMU, or completely change how KVM
+> > deals with stage-2 if we want to share the page table with the CPU.
 > 
+> So that's the real explanation, KVM cannot manage the S2 in the right
+> way so you can't share it. RMM/etc are managing the S2 without
+> pointless page faults so they can share it.
+
+Well, there is not really a right way, even with a fully populated
+stage-2 page table, you can’t guarantee not getting TLB conflict aborts
+without FEAT_BBML3 (which is quite recent), unless you map everything
+with a leaf level, which then impacts performance.
+
+Thanks,
+Mostafa
+
+> 
+> > > >    Alternatively, we can pin the stage-2 pages, that would require some
+> > > >    hypercalls, hacks to the driver/IOMMU API and possibly new semantics
+> > > >    in the DMA-API for IDENTITY devices as they will still need to pin
+> > > >    the pages as they are actually in stage-2 translation and not bypass.
+> > > 
+> > > ?? Then how does this series work?
+> > 
+> > This series works fine as it shadows the page table and doesn't share it
+> > with the CPU, so it fully populates the address space.
+> 
+> Which is why it is so weird that KVM is using a partially populated S2
+> when there is, and must, be a fully populated one for the SMMU. But I
+> understand there are reasons fo rthis.
+> 
+> Jason
