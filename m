@@ -1,157 +1,126 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBA0A4D2ED2
-	for <iommu@lists.linux.dev>; Tue, 12 May 2026 11:32:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 282F43A2E1C
+	for <iommu@lists.linux.dev>; Tue, 12 May 2026 12:36:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778585554; cv=none; b=jbAEoUFTdgSILcWngNiQBNQp1+a9IBct9af1I9+ZOMRmTC1omqkdR8KrxAH+mMGZVcQYIPLdAYDA/c7N2LLbJ/iZqQuQaXhCfsaEzg5XkSulg001fpVFrLUZVVqPyX00QO7QvyPeddmLQwRuT3EJ01SANKb7DgdtSBOyq680tqA=
+	t=1778589403; cv=none; b=XAIY2UVS+1v4r+6E8j3OdI4VTQFluUgmJYb4LEZrPYGxL1/VkMyTm7TqWKSRC7ovkfTZxDWv0AWjq7dIL14ACEc7gNfbw8vp3cHt5MrXdCGPCRJGdarVteJCoSFoW+IZe2SK6DYRogyWg4nFBT2bxRjDx/4wjUZZ88vtoTzhLhw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778585554; c=relaxed/simple;
-	bh=0g+LZ2kMg+kPXVAn2V9YPYRNhs9vfvuABqAmQrCxlNs=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=ARtnnBmLS13dbdS5z0tK4aWvZzu+lmbKCwzhf+3f8BPKsnmutQ7992gvDpfWPDj4nrKBaBsXnZWkislm7mYt3StAAMWE0+EY/p3Iehx0yFnODYjcg1bKes3OSjBEO0pCVp8LF8lgUkesICiIgE2Gfnq2/AggOq+kn3z/7nU5bHE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XA4nJupf; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1778589403; c=relaxed/simple;
+	bh=QuXcvbNKcdRmJ0PUN7xsL0HY9nWmc8jMrwxpJx0KWZY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=J20REJPwILaIDFglj6wnBaC6EDHs6CgJAXbTohhdStVMvAmaKl6S/LQmwOf6ivmOyGxaMH9/GUylvhjJV1pg1w/hrIHb5UQBPHfED5N5g5terWk1YnWmmr7hO9PoXgqANjPKzGxFL+iPaOnwpbQNhBePMEoanncnonwCn1rxDyg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=K3ARYiQH; arc=none smtp.client-ip=209.85.160.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XA4nJupf"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778585553; x=1810121553;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=0g+LZ2kMg+kPXVAn2V9YPYRNhs9vfvuABqAmQrCxlNs=;
-  b=XA4nJupf/2sbjCadIyBDCjbQB5ldtlFd0oj5eVpe86uRtB8W9PrXtIhS
-   6tMfRG0hItgHqtU23E+4YFs/8AgD1FTYV9OHA2VgRJN0r3r72z2rFsDJH
-   GogWKiUW+f/39GhGmIyT46InV0ZapiKMMVt9AZo+k5yH39J+02a66gZpd
-   +TMBD1Nv+X1PuvzWCxXvPYVgzr2dTU7QTsDw0Vu8ir8urqXcS/wWs+Hnf
-   pQXBSyppaAxhsrKrESf6Xnvq331yNFSXQoPel2Dc/X5C3SjaloaJD9S/t
-   vvQ1FcExmiAMh8HUpePrH2I23wgui+7bu3tsUX5Hwi5ui/OlFIO9Sq6fh
-   Q==;
-X-CSE-ConnectionGUID: 7gXplsS2QAuxMwXes3g7ug==
-X-CSE-MsgGUID: FFR5im4rRna+YXOkYdfzWw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11783"; a="79440292"
-X-IronPort-AV: E=Sophos;i="6.23,230,1770624000"; 
-   d="scan'208";a="79440292"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 04:32:33 -0700
-X-CSE-ConnectionGUID: QxbpYteZSwe/mxUyHTcZ0A==
-X-CSE-MsgGUID: +FmBxDedTeCTMbaEO1ogcA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,230,1770624000"; 
-   d="scan'208";a="261494861"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.248.249]) ([10.124.248.249])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 04:32:26 -0700
-Message-ID: <416088c2-b1b9-4011-bd72-4368647cb2a1@linux.intel.com>
-Date: Tue, 12 May 2026 19:32:08 +0800
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="K3ARYiQH"
+Received: by mail-qt1-f176.google.com with SMTP id d75a77b69052e-50d75bfb259so36562901cf.1
+        for <iommu@lists.linux.dev>; Tue, 12 May 2026 05:36:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1778589393; x=1779194193; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=MOp4VzQJzpVrzaLWG2n8IsNxEYbCwRvMjRwLio3IkjI=;
+        b=K3ARYiQHob2GOLdEyCUnOsy8g+2jZe4IscAufQkYYjy1YpN+ln32DwhIFKsiSwt2DJ
+         gCdoMcKe5lDoTlUDrbsXo+U5wqJWsMx1t7GCvGKcp4B7oIBBUFLPuXASWGoH8oVSm0wf
+         WxRGOiZFNqIArjOMq3JzDp5CvGTNXJD/aFdK0I6BvJU/hriKzDz1f185NqH2vbgJ+1+k
+         6V56tijB72BSgtymbmpo3fNraXKrBRqtQhTeHFJfr6ka3kR+j7H6DAngmDHaVeIYcMHw
+         csmChOba2OwWSt1mQlObVMsGXUYZbfiBkZmbNrt+ty10DIiLjuPNZpEARziwbo5fMFRB
+         394g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778589393; x=1779194193;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=MOp4VzQJzpVrzaLWG2n8IsNxEYbCwRvMjRwLio3IkjI=;
+        b=UqKYxR3i3XfgNoDypCLg6KYSYKzqaUscQHVDVWY9ZezwJRjAtgF8re+6oeStw+1FrI
+         4fz4qFIEux9Tcwp3+9ZyIdd/TyQKfrEdw9CqvHWNJpsTtWNPL4rNzOCGGCCIrm0pDIH+
+         7OTEw9uLd0RRViiWYTGPhgZYiRBQGq8Al5a4zegxxuHWCXgArTwfXJZecUAtOy+pURoH
+         cEtDo0QbgAPeZWVM/7aD5PXuepOWtIj05AbiEreeoUlzeM7r6AmqKhjXmLjjUMbv9phB
+         IZCjaxGmH59/Gkiz0vLsYfsUp3cjllkERB7B4TyPNc3Zq/WUhWQu7RwGl48a/zkKR6l7
+         PnEw==
+X-Forwarded-Encrypted: i=1; AFNElJ/tJhFeawIl7PoSjvmfnd8ZH+XmBNIsGCxAlyB3zVpk8WeGPfyf9LzKV3OiheW55dHtRtlx+g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzKiQYCH3G00i/wLZytNaURgclDghpOGFcGmD4vSHjaYiNmNnPH
+	+4kyej0Fd4XhQk9YJJE3dpSp9wKNHrQStwf0lbaQ9BhKcDkXf4l/gNNnBHLgklE7wcE=
+X-Gm-Gg: Acq92OFtNbwSIFTL/IM1k9SqeS2LW+bDl2xTfkafSdlP4JEGoQ40GYx424+eMWfwrKJ
+	9UVicIIPjZ00qmV48oaG3kYdvWY/s/hlPh18TMdxGPxQWDTDO2l7yg7W9MWERsWtB8deF2cYDja
+	0i05BhbSVcsDjH+6XqMySRHT5HJ2gW/B1EfcDjDN+A5rskL8H0Xl9BwVOL79qmJUqXmagX0YIHY
+	dLp8iCGFl98bDngL2kXFlSTOGRY/fwGMbuH4vhZeXw4B827vR5+cujoV3SAoqmcRyuACS/atp5P
+	yCJoExj8WuCx5g+c/kS1yMHvEjIAttbFmXmSNTLb7B4ZSkgnGTefed2f/0KDscuz4Onlla0AkJX
+	T7jy5rGyEQcHshwysikGbKzzX3GvInhjVEQ4TC1oweqogxz1OdgVySI5Uj/zyHCX5eOkMmLLjJN
+	+uIG+xqJv2ebRmH2ZGyvpk0WyGFTt8MTDS81m8ESdSzbLQSqomFDE9WnGOrqwrPvQq5rZZIGkEe
+	WVHjw==
+X-Received: by 2002:a05:622a:4ccc:b0:50d:97e8:939b with SMTP id d75a77b69052e-51461f9e47fmr406246311cf.36.1778589393437;
+        Tue, 12 May 2026 05:36:33 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8b53cd827c5sm391412326d6.40.2026.05.12.05.36.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 May 2026 05:36:32 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wMmLg-00000005AiQ-0kgs;
+	Tue, 12 May 2026 09:36:32 -0300
+Date: Tue, 12 May 2026 09:36:32 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
+	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
+	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
+	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
+	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
+	vdonnefort@google.com, sebastianene@google.com, keirf@google.com
+Subject: Re: [PATCH v6 08/25] KVM: arm64: iommu: Shadow host stage-2 page
+ table
+Message-ID: <20260512123632.GT9285@ziepe.ca>
+References: <20260501111928.259252-1-smostafa@google.com>
+ <20260501111928.259252-9-smostafa@google.com>
+ <20260501130006.GF6912@ziepe.ca>
+ <afiRB3e3o0G1oZvY@google.com>
+ <20260509232714.GI9285@ziepe.ca>
+ <agG8XtrHUfWGy-kd@google.com>
+ <20260511142232.GP9285@ziepe.ca>
+ <agMEFhxsmjpO0thM@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>,
- Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
- Saeed Mahameed <saeedm@nvidia.com>,
- Adithya Jayachandran <ajayachandra@nvidia.com>,
- Parav Pandit <parav@nvidia.com>, Leon Romanovsky <leonro@nvidia.com>,
- William Tu <witu@nvidia.com>, Pratyush Yadav <pratyush@kernel.org>,
- Pasha Tatashin <pasha.tatashin@soleen.com>,
- David Matlack <dmatlack@google.com>,
- Andrew Morton <akpm@linux-foundation.org>, Chris Li <chrisl@kernel.org>,
- Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>,
- YiFei Zhu <zhuyifei@google.com>
-Subject: Re: [PATCH v2 11/16] iommu/vt-d: preserve PASID table of preserved
- device
-To: Samiullah Khawaja <skhawaja@google.com>
-References: <20260427175633.1978233-1-skhawaja@google.com>
- <20260427175633.1978233-12-skhawaja@google.com>
- <666d749e-c1fd-44e1-bfe8-681ba04862e0@linux.intel.com>
- <agIGEyL12Djj2clV@google.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <agIGEyL12Djj2clV@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <agMEFhxsmjpO0thM@google.com>
 
-On 5/12/2026 2:45 AM, Samiullah Khawaja wrote:
-> On Fri, May 08, 2026 at 02:05:58PM +0800, Baolu Lu wrote:
->> On 4/28/26 01:56, Samiullah Khawaja wrote:
->>> In scalable mode the PASID table is used to fetch the io page tables.
->>> Preserve and restore the PASID table of the preserved devices.
->>>
->>> Signed-off-by: Samiullah Khawaja<skhawaja@google.com>
->>> ---
->>>  drivers/iommu/intel/iommu.c      |   5 +-
->>>  drivers/iommu/intel/iommu.h      |  12 +++
->>>  drivers/iommu/intel/liveupdate.c | 141 +++++++++++++++++++++++++++++++
->>>  drivers/iommu/intel/pasid.c      |   7 +-
->>>  drivers/iommu/intel/pasid.h      |   9 ++
->>>  include/linux/kho/abi/iommu.h    |  13 +++
->>>  6 files changed, 184 insertions(+), 3 deletions(-)
->>>
+On Tue, May 12, 2026 at 10:42:30AM +0000, Mostafa Saleh wrote:
+> > Also io-pgtable arm cannot trigger BBM behaviors, so how do you
+> > implement it?
 > 
-> [snip]
->>> +
->>> +void pasid_cleanup_preserved_table(struct device *dev)
->>> +{
->>> +    struct pasid_table *pasid_table;
->>> +    struct pasid_dir_entry *dir;
->>> +    struct pasid_entry *table;
->>> +    size_t dir_size;
->>> +
->>> +    pasid_table = intel_pasid_get_table(dev);
->>> +    if (!pasid_table)
->>> +        return;
->>> +
->>> +    dir = pasid_table->table;
->>> +    table = get_pasid_table_from_pde(&dir[0]);
->>> +    if (!table)
->>> +        return;
->>> +
->>> +    /* Clear everything except the first entry in table. */
->>> +    memset(&table[1], 0, SZ_4K - sizeof(*table));
->>> +
->>> +    /* Use the folio order to calculate the size of Pasid Directory */
->>> +    dir_size = (1 << (folio_order(virt_to_folio(dir)) + PAGE_SHIFT));
->>> +
->>> +    /* Clear everything except the first entry in directory */
->>> +    memset(&dir[1], 0, dir_size - sizeof(struct pasid_dir_entry));
->>> +
->>> +    clflush_cache_range(&table[0], SZ_4K);
->>> +    clflush_cache_range(&dir[0], dir_size);
->>> +}
->>
->> The PASID table is currently active and in use by the hardware. Clearing
->> the entries without the necessary hardware cache invalidation is buggy.
->>
->> It seems this manual clearing is a workaround because PASID domain
->> preservation isn't supported yet. If so, rather than clearing the table
->> blindly, the code should verify if any PASIDs (other than
->> IOMMU_NO_PASID) are actually in use. If there are, the preserve callback
->> should return an error.
+> At the moment, we workaround this by mapping all the memory with PTE
+> level, while MMIO remains at block level as they never change ownership
+> at the moment.
 > 
-> Thanks for looking into this, I agree and will remove the clearing logic
-> here.
-> 
-> Yes, we do this check in iommufd, as it is the dma owner of the device,
-> and only DMA owned devices are allowed to be preserved.
-> 
-> During preservation iommufd returns an error if the device has PASID
-> (non NO_PASID) attachments. And once the device is preserved, any PASID
-> attachments are not allowed until the device is unpreserved.
-> 
-> I think I will make this check robust by moving it into core and use
-> pasid_array. It will require some plumbing as pasid_array exists in
-> iommu.c file.
+> This is one of the missing features I plan to add after this series,
+> if you look in the cover letter, these are listed under “Future work”
 
-Yeah, that would be better.
+Hrm, I would not be happy to see io-pgtable modified to have bbm
+features :\ They are very complex this is what iommupt is for..
 
-Thanks,
-baolu
+> > So that's the real explanation, KVM cannot manage the S2 in the right
+> > way so you can't share it. RMM/etc are managing the S2 without
+> > pointless page faults so they can share it.
+> 
+> Well, there is not really a right way, even with a fully populated
+> stage-2 page table, you can’t guarantee not getting TLB conflict aborts
+> without FEAT_BBML3 (which is quite recent), unless you map everything
+> with a leaf level, which then impacts performance.
+
+I mean, there is a right way - you need to rely on the BBM features in
+all HW and fully populate the S2 for no faults. So if that isn't
+present then you are doing things that will harm performance to work
+around the issue. It's fine, but just explain in the commit message.
+
+Jason
