@@ -1,78 +1,75 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out-172.mta0.migadu.com (out-172.mta0.migadu.com [91.218.175.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 262483E0738;
-	Tue, 12 May 2026 17:41:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC7193655EC
+	for <iommu@lists.linux.dev>; Tue, 12 May 2026 19:03:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778607717; cv=none; b=iIAekx22FMZk81TAdUnQK3QorNhcOzFXJWPpaprAKBpheQu9CVSRCZK696pdNNYdknumuZll1cqjJobXA9YKjO56Fin9JMHewXulNPtU/WSznUCflEnq0fIQwYvTg8yiBJjLlkc+cQex4VlfDK5tqozFgM56gH1bGdj+Red/gRc=
+	t=1778612595; cv=none; b=cUwe84f4E1rrO0gSw9Hy52u5TcslNR+NW9txbOoeHwDgk3MB3qQnDBcr0MEYoX5p0RF8kCZeBsYgn1caWpSNk62mPMpH0t/wgwWc8fyWfrTO6M5QKC2TQqFNBPBUOnGfxdPIPVMK+d6retefzylrFShErr04+pYkrQg3kdCXn2c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778607717; c=relaxed/simple;
-	bh=0IBJXkR3QCl3CT5FkY4S+RQddewS2cZDu4PxcyWGpoU=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=cQzOgjFcMryBPZ2kgsQO7oEIWRmrCJsn2nIbuOL6SpzRHuO9aiX+yBchPo5p7zqlO8MsRJequwneDvfzTvhQYAa+YIVEfEo80uGony2h0fHU75RnWPmnAhU+olV+JIwGXHA4sjUFHTk63Mf1Sg7aXjkiDTQHtPFfCXRD3GOgBUw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Che5QV00; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778612595; c=relaxed/simple;
+	bh=uvFMS/Wl32PAwZ/51GhVZ2aXGYJ7UOXVmsDziu17/t4=;
+	h=From:Message-ID:Date:To:CC:Subject; b=TFGeKAlKF4yyozCWIFyJ6V9ScIhf0SS8Jg/dd3xEmFRpgnnIczQZ74G73hos4Day7Kz5uB0gyRp9oDsA7Noce+KJEZIHF3TBqS/UtMMpTJXi5nlCDNiQSVEvMS036W2LheBMoNWJQ1s7RaEIvq8yVIOfSeLmYlBVa9i4FHvWxp8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=X8bm9m1G; arc=none smtp.client-ip=91.218.175.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Che5QV00"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB22BC2BCC7;
-	Tue, 12 May 2026 17:41:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778607717;
-	bh=0IBJXkR3QCl3CT5FkY4S+RQddewS2cZDu4PxcyWGpoU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=Che5QV00iFYIcYW67C/V6FoPD/zC+BRZYm143CseiGHCH40Xv7qm9FTbs0zrB0DF3
-	 YYR+GPabRRhfPzFgVXLdndX1CyXE00MYpIHkJD83f4rt2Ceris3q/PBHzFhbuSfOTf
-	 /0rjfEU18/sLHQIbaLzcBmzLTcAn1OFDeU1PNxWnP2pWDlXohws/jdvOpOj1Rby1Rp
-	 2JhZ9nqJkzfulFInDenjgMnCUsm0q8AaNF2Av5bl8zO6OZYRTcFO2zQEd1PZQoj38Y
-	 CdMCnQXz08exHWiFqLwNVvEWRuLvsviyv/u1GaAj/jF1TGXSaRTTsrK6Tjxj2OvQlT
-	 9X9vRwg1AG0XA==
-Date: Tue, 12 May 2026 12:41:55 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Mukesh R <mrathor@linux.microsoft.com>
-Cc: hpa@zytor.com, robin.murphy@arm.com, robh@kernel.org,
-	wei.liu@kernel.org, mhklinux@outlook.com, muislam@microsoft.com,
-	namjain@linux.microsoft.com, magnuskulke@linux.microsoft.com,
-	anbelski@linux.microsoft.com, linux-kernel@vger.kernel.org,
-	linux-hyperv@vger.kernel.org, iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-	kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
-	longli@microsoft.com, tglx@kernel.org, mingo@redhat.com,
-	bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-	joro@8bytes.org, will@kernel.org, lpieralisi@kernel.org,
-	kwilczynski@kernel.org, bhelgaas@google.com, arnd@arndb.de,
-	jacob.pan@linux.microsoft.com
-Subject: Re: [PATCH V3 08/11] PCI: hv: VMBus and PCI device IDs for PCI
- passthru
-Message-ID: <20260512174155.GA231433@bhelgaas>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="X8bm9m1G"
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1778612591;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc; bh=xwwG6JH2PL7eqhShQsglVQeokcXkqtFymm8/VUhv+o8=;
+	b=X8bm9m1GzKeUlozR2gBQo/gcJ30rP+2aVqXEj5ibEbouuVfeyVN7gI5iTXpslFo/7khC4R
+	DGtRPje3Y2KUDxAVDAo4UdvynQgbvCAWXcG9vy5CKsfPVkY+7W7kj6Jtwz5th3XlrB5fsp
+	dj1OIP3dbfRyh2fIgB1mC2IFNj3g/Ys=
+From: Tomasz Jeznach <tomasz.jeznach@linux.dev>
+Message-ID: <41c3c83de6e2d8422261b57609425d43@linux.dev>
+Date: Tue, 12 May 2026 10:37:44 -0700
+To: joro@8bytes.org, iommu@lists.linux.dev
+CC: tjeznach@rivosinc.com, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] MAINTAINERS: update Tomasz Jeznach's email address
+X-Migadu-Flow: FLOW_OUT
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260512020259.1678627-9-mrathor@linux.microsoft.com>
 
-On Mon, May 11, 2026 at 07:02:56PM -0700, Mukesh R wrote:
-> On Hyper-V, most hypercalls related to PCI passthru to map/unmap regions,
-> interrupts, etc need a device ID as a parameter. This device ID refers
-> to that specific device during the lifetime of passthru.
-> 
-> An L1VH VM only contains VMBus based devices. A device ID for a VMBus
-> device is slightly different in that it uses the hv_pcibus_device info
-> for building it to make sure it matches exactly what the hypervisor
-> expects. This VMBus based device ID is needed when attaching devices in
-> an L1VH based guest VM. Add a function to build and export it. Before
-> building it, a check is done to make sure the device is a valid VMBus
-> device.
-> 
-> In remaining cases, PCI device ID is used. So, also make PCI device ID
-> build function hv_build_devid_type_pci() public.
+Switch from the previous work address to a linux.dev account,
+as the work address is no longer actively monitored.
 
-The subject line should start with a verb to help say what this patch
-does.  I guess it's something about adding a function to build the
-device IDs expected by the hypervisor?  Would be good to include the
-function name too, e.g., something like this:
+Signed-off-by: Tomasz Jeznach <tomasz.jeznach@linux.dev>
+---
+ .mailmap    | 1 +
+ MAINTAINERS | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-  PCI: hv: Add foo() to build hypervisor device IDs
+diff --git a/.mailmap b/.mailmap
+index b78aa092b4bb..f409ad927143 100644
+--- a/.mailmap
++++ b/.mailmap
+@@ -856,6 +856,7 @@ Tobias Klauser <tklauser@distanz.ch> <klto@zhaw.ch>
+ Tobias Klauser <tklauser@distanz.ch> <tklauser@nuerscht.ch>
+ Tobias Klauser <tklauser@distanz.ch> <tklauser@xenon.tklauser.home>
+ Todor Tomov <todor.too@gmail.com> <todor.tomov@linaro.org>
++Tomasz Jeznach <tomasz.jeznach@linux.dev> <tjeznach@rivosinc.com>
+ Tony Luck <tony.luck@intel.com>
+ Trilok Soni <quic_tsoni@quicinc.com> <tsoni@codeaurora.org>
+ TripleX Chung <xxx.phy@gmail.com> <triplex@zh-kernel.org>
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 882214b0e7db..aacab143a697 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -22940,7 +22940,7 @@ N:	riscv
+ K:	riscv
+ 
+ RISC-V IOMMU
+-M:	Tomasz Jeznach <tjeznach@rivosinc.com>
++M:	Tomasz Jeznach <tomasz.jeznach@linux.dev>
+ L:	iommu@lists.linux.dev
+ L:	linux-riscv@lists.infradead.org
+ S:	Maintained
+-- 
+2.54.0
+
