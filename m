@@ -1,110 +1,88 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C4714399D0E
-	for <iommu@lists.linux.dev>; Tue, 12 May 2026 13:53:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8ABB3911AA
+	for <iommu@lists.linux.dev>; Tue, 12 May 2026 14:43:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.99
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778594037; cv=none; b=pyg24Ik+26dnUrpn8Rc0mb8D/GW5SSEQqan/UfWSDfqHNA/y8EYYk1+RtGszD3JvXAjgblI31eLzbCqd1fEKM+SS4Ums0d3kn/hwT0qpT+HYC+3nZP4EsCXe+YzDKCLHIwjYXOHusUCYMRZrvkvkN4lMlE6oesuoXyPZJFTW8TE=
+	t=1778597028; cv=none; b=Cob3V/0zorHdc+Pw47jYlsyje17Vnn8+/M7ZgPg8K5gZXvUo9n72mgTPKZCFf0iP/Vdk8H6mQqPkwPoyD875Rr97zc98DBddEVrN/nMLRIcPqhaAJGZ6TKWyP9/XMcrVzAVLLMs3/b1oo2O4UN+TAa5wN9/eT+VuUolAPsDBhNQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778594037; c=relaxed/simple;
-	bh=gQhaNhMmvHKpp2DPTddlYwPbDh9/dUpVw6fJuFpkQAw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=K0DhhOQ8e63z2Iu04zLGQhSeTofHdu4v9DHImBhrKM6qIvDPiXTs0pnpEYnJ+OEG4eMgUMaaQn+GemcQPvYyeWGpNWJJBRnD2JhPmcZ2KIvLBB2wiu25EpVDDCJN30BRIJLxMMBGld77rMGe5e6PnjBILmS01+LldmcpUPDbx7M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=AvDbkyI/; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1778597028; c=relaxed/simple;
+	bh=zoHZ7UHQoDpxjF4aFyfEOg/0NtSuC+QVM9Bivg8ckgo=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=nMb7V4Y1CqS39vx25clFIJogOzJBg4XNWBgVKhrKjG6RE1V0MJg6KLURwuMltjx5NppfzrEAveHJj1O9Swn24FIMS6GmPn6xq+TSWFqXPOZyBSuRSH5QUAN3JLp461ZGpKkZ+c6/sqXokkfT8obiOCMaObFBA87oTNAaKJXl0Bg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=HKL6lNNb; arc=none smtp.client-ip=115.124.30.99
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="AvDbkyI/"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BD4B91655;
-	Tue, 12 May 2026 06:53:49 -0700 (PDT)
-Received: from [10.1.196.85] (e121345-lin.cambridge.arm.com [10.1.196.85])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B7CF53F85F;
-	Tue, 12 May 2026 06:53:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1778594035; bh=gQhaNhMmvHKpp2DPTddlYwPbDh9/dUpVw6fJuFpkQAw=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=AvDbkyI/apv2QKkRzcv1qomxgmQ8r+9ZC/MCfWWieYiZwDcrOlH30JxSndJ7um0Bq
-	 Xj0tuOcIPj+GrrdQXZWB0Xh4ReCS/I0RcP3M4V/ijVbsYNYi7vwpHEE4GAOegbhShh
-	 DorDUYtmUnsgGmS5gldEUuawZlAHc2D33Y6kk6Z0=
-Message-ID: <b95b42c6-4d10-4701-88e2-9991f3773e6a@arm.com>
-Date: Tue, 12 May 2026 14:53:49 +0100
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="HKL6lNNb"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1778597019; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=rGf7I8/6d+oaxOH3iQMKwENVJqvQ7e/ZZfEuXFJcHxM=;
+	b=HKL6lNNbfTRKjzAlGFvyT6TPdqJ2TBW6jnKTaJsvmZqoBjoTYQD1Bq4yyPWeTSZKFxGXxIaNXx4x2fgP/qxblKj0bzZPcx8nX+mUkzIsGmWsn20MkcbEnAgAJChDq7NwBKN1odk2uHuWRmNkWv7gQIGGzWXB4CYOkNS7pUnOv0o=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R921e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam011083073210;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0X2qqOSF_1778597016;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X2qqOSF_1778597016 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Tue, 12 May 2026 22:43:37 +0800
+From: fangyu.yu@linux.alibaba.com
+To: joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	pjw@kernel.org,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu,
+	alex@ghiti.fr,
+	jgg@ziepe.ca,
+	kevin.tian@intel.com,
+	jgg@nvidia.com,
+	nutty.liu@hotmail.com
+Cc: guoren@kernel.org,
+	kvm@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Fangyu Yu <fangyu.yu@linux.alibaba.com>,
+	kernel test robot <lkp@intel.com>
+Subject: [PATCH] iommupt: Fixup build warning by using BIT_ULL() for RISCVPT_NC/IO
+Date: Tue, 12 May 2026 22:43:30 +0800
+Message-Id: <20260512144330.91113-1-fangyu.yu@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC] iommu: Enable per-device SSID space for SVA
-To: Jason Gunthorpe <jgg@ziepe.ca>, Joonwon Kang <joonwonkang@google.com>
-Cc: Alexander.Grest@microsoft.com, amhetre@nvidia.com,
- baolu.lu@linux.intel.com, easwar.hariharan@linux.microsoft.com,
- iommu@lists.linux.dev, jacob.jun.pan@linux.intel.com, joro@8bytes.org,
- jpb@kernel.org, kees@kernel.org, kevin.tian@intel.com,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- nicolinc@nvidia.com, praan@google.com, smostafa@google.com, will@kernel.org
-References: <20260511132128.GM9285@ziepe.ca>
- <20260512095714.2518097-1-joonwonkang@google.com>
- <20260512124015.GU9285@ziepe.ca>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260512124015.GU9285@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 12/05/2026 1:40 pm, Jason Gunthorpe wrote:
-> On Tue, May 12, 2026 at 09:57:14AM +0000, Joonwon Kang wrote:
->>> There is a bit more going on though, I think that is what Joonwon is
->>> mentioning by asking about ST64B and ST64BV. I *think* the answer is:
->>>
->>> - ST64B uses a posted write
->>> - ST64BV can be restricted so EL0 cannot execute it, it uses a
->>>    non-posted write (AI tells me via EnASR)
->>> - ST64BV0 can be used by EL0, always uses a non-posted write, and always
->>>    uses ACCDATA_EL1
->>>
->>> Which is similar to Intel.
->>
->> Ah, I missed that ST64BV is currently being trapped to EL1 while ST64B is
->> not [1]. However, I am not sure if the trap is to disallow EL0 to use it.
->> Can it be instead to pass the response value of the non-posted write to
->> EL0 while using the EL0-given PASID as-is? If so, I believe EL0 still can
->> specify arbitrary PASID as it wants via ST64BV.
-> 
-> I think if an OS implements things this way it is would security
-> broken as far as ENQCMD compatible HW goes.
+From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 
-Yes, I think it's rather the point that the EnALS/EnASR traps to EL1 
-allow EL1 to sanitise the data that ST64B/ST64BV are sending, and do 
-exactly things like substituting a valid PASID. ST64BV0 offers a way of 
-doing so _without_ needing the overhead of trapping, but conversely that 
-needs the EnAS0 opt-in all the way down to indicate both EL1's awareness 
-of programming ACCDATA_EL1 appropriately and EL2/3's awareness of 
-context-switching it.
+Fix build warning on 32-bit configurations by using BIT_ULL() for
+RISCVPT_NC and RISCVPT_IO.
 
-I've not looked closely at what exactly the arm64 arch code is doing 
-today and how well it actually fits the expected ENQCMD usage model, but 
-I can well believe it might need a bit of tweaking.
+Fixes: 6c21eb174c6c ("iommupt: Encode IOMMU_MMIO/IOMMU_CACHE via RISC-V Svpbmt bits")
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202605121350.wZxB51k0-lkp@intel.com/
+Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+---
+ drivers/iommu/generic_pt/fmt/riscv.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Thanks,
-Robin.
-
->> Since I guess ST64B* instructions are to serve generic purposes not only
->> for communication with accelerators with SIOV but also with any memory
->> location or device without SIOV, I am not sure if it is always okay to
->> make those instructions work the way Jason mentioned.
-> 
-> The end point has to use the posted vs non-posted write distinction
-> for security.
-> 
->>> The device only processes the PASID from a non-posted write,
->>
->> Regarding ST64B, are the ARM devices behind ARM SMMU v3 supposed to work
->> this way too? If not, EL0 can specify arbitrary PASID via ST64B with the
->> kernel today [1].
-> 
-> If you want ENQCMD compatible semantics then yes you have to do all of
-> these things, it is part of the security design.
-> 
-> Jason
+diff --git a/drivers/iommu/generic_pt/fmt/riscv.h b/drivers/iommu/generic_pt/fmt/riscv.h
+index 2648bb57953e..ae9a76514416 100644
+--- a/drivers/iommu/generic_pt/fmt/riscv.h
++++ b/drivers/iommu/generic_pt/fmt/riscv.h
+@@ -64,8 +64,8 @@ enum {
+ 	RISCVPT_PPN64 = GENMASK_ULL(53, 10),
+ 	RISCVPT_PPN64_64K = GENMASK_ULL(53, 14),
+ 	RISCVPT_PBMT = GENMASK_ULL(62, 61),
+-	RISCVPT_NC = BIT(61),
+-	RISCVPT_IO = BIT(62),
++	RISCVPT_NC = BIT_ULL(61),
++	RISCVPT_IO = BIT_ULL(62),
+ 	RISCVPT_N = BIT_ULL(63),
+ 
+ 	/* Svnapot encodings for ppn[0] */
+-- 
+2.50.1
 
