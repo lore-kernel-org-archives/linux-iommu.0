@@ -1,667 +1,242 @@
-Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
+Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azolkn19011070.outbound.protection.outlook.com [52.103.23.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 958C0381AFB;
-	Wed, 13 May 2026 02:03:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=96.67.55.147
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778637803; cv=none; b=UrROo3WAw2u1UgU7vj6fD7YqdoPEXsWuRgDQbmwT81/sTdVqQh3ksifDLIO07yQsaOg7mf7kgF2pz356Xj4wcNiYcbw5GLqT07L06q5ZzLUvk3YnDAUkRfQvHj2DHOiXQlZONenjiif4mW6dbmLIm2S8rEYgtJiFU/7ruCh0xeI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778637803; c=relaxed/simple;
-	bh=41hrHwfchr34G6dv1i37TpBlXqtBPLFr13A8Q3i1U5A=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=AxO5vb1BOh1jqlUcNxhIFLJmQfjIBperjvvH8A94Ckl09P4CTS22hET3w7Rmq89CGUjKaL6X6AmdyH26xo2i1u1vnOWRfOs3/ZYPf4yi984q5khZx+9+5AdeVf7dXHmiNyGqqJO3Tu8PbnuybJMp3e1Vz2xQISkU6FDP7X5qT40=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com; spf=pass smtp.mailfrom=surriel.com; dkim=pass (2048-bit key) header.d=surriel.com header.i=@surriel.com header.b=otRgMr7t; arc=none smtp.client-ip=96.67.55.147
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=surriel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE6412DC783
+	for <iommu@lists.linux.dev>; Wed, 13 May 2026 03:15:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.23.70
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778642159; cv=fail; b=Zdg4fRYGlZZU/MkCyM7fS+U7OWWMwrFkxUYwGNMrQrpgfXh5ycDdTEM+tocfohGeJllIYtSBcEz7ixA9zqm0h3AtCVGbhmm/vSuCNSKDY8s99BZeQIF7PsBfJyulOJGVVv/J3el3+GlBwTK3x7CmGI1hL1n8URop2D+5eBKZwwY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778642159; c=relaxed/simple;
+	bh=MtS636NZHi+sJfealQ9TNg2x3kG2VGLEWpH2cAYZkvU=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=QLLn/NZFhKp/BVkc2EdQxkvgbYvUGYFkNdKkoIhgSRd2NbGxpiubu0OMAD/TZqV4ofP/uF2Nm0zvYW+7axaE3k4+OKLRzXo9F6FnSW+VzkmE3kKeo86s2uVPAswHTD2U9hOaA5TXLFgelIHasgCZhS4OLxqZNRZVWw9u4BLpR3g=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=VDb02Ms5; arc=fail smtp.client-ip=52.103.23.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=surriel.com header.i=@surriel.com header.b="otRgMr7t"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=surriel.com
-	; s=mail; h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:
-	In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-	List-Post:List-Owner:List-Archive;
-	bh=2E57BXtOvv/R8hb2DBqVXtfeBA65Ud9+LXTlXyCtHoo=; b=otRgMr7tnIylHKROGlOtn9n9Aw
-	YGV10qs7/86dH4wgwKAleQAOEJAEIKWoDH4ggk1EnPm+9kP2KcZV+irKWwQSgMay4WT5M64653QNz
-	DFGi3sxc7hlpsti/1+L4VslZYKudx32yebcG2gWiabdkq2ZgJIbf1Qavk7hqT/Webl+GFPPw9pXeE
-	vN2koVyOV08dvGvi8NsCGOmWtBxOrryypHzIoSzQQ7Tnb+Gr0KpH2GEIx6aP/ceAZRMFoh8VQ+m2E
-	Nii7YWRbxV0Gz4+0hLv9qW4CZFBVltUlIEs3dDTL3BZ6YpkPhwPkIyTOJUHu8lew2tpAEbhKD6xYI
-	pM3G4n8A==;
-Received: from fangorn.home.surriel.com ([10.0.13.7])
-	by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.97.1)
-	(envelope-from <riel@surriel.com>)
-	id 1wMywG-0000000022e-44xY;
-	Tue, 12 May 2026 22:03:08 -0400
-From: Rik van Riel <riel@surriel.com>
-To: linux-kernel@vger.kernel.org
-Cc: robin.murphy@arm.com,
-	joro@8bytes.org,
-	will@kernel.org,
-	iommu@lists.linux.dev,
-	kyle@mcmartin.ca,
-	kernel-team@meta.com,
-	Rik van Riel <riel@meta.com>,
-	Rik van Riel <riel@surriel.com>
-Subject: [PATCH 5/5] iova: add KUnit test suite
-Date: Tue, 12 May 2026 22:00:22 -0400
-Message-ID: <20260513020304.1528751-6-riel@surriel.com>
-X-Mailer: git-send-email 2.52.0
-In-Reply-To: <20260513020304.1528751-1-riel@surriel.com>
-References: <20260513020304.1528751-1-riel@surriel.com>
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="VDb02Ms5"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=vbRA6SS87gGX6DKZuNv6x4Zj9EDFyYgI+Vy4jdB8I8zwaS0jOUMS63NGto1mIkAQ/Qm7TNvx7OVL/2Sl6c5hZOV/B+9hLdmOtmWHr8aHj7boiFYG74ohz5eqUPQZChgdUikVifCGQCGlRLvyhNKymY7zBNwKssBnQIfNjLCphojoms1QSyGq19oVDTIJhi9SYt+6QiXDtY3agC1+v717QljbQn3nuYP1AaLSzja9ug7d7T3iQBbzYhmCx7GpFsXJGZG0eDK3NMNg+8Yhcxbdsdbf3rqqcaaOBReBOmD0G1R06bPCIY5TmDIZwL8peUlP5XMzluNpJ9ZKsCvhjE0OcQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MtS636NZHi+sJfealQ9TNg2x3kG2VGLEWpH2cAYZkvU=;
+ b=R7ycb0lMQ/OUVuLJluDgJtU6PlvLty1l6p1/pvwTJROY/7sRNtdtTTOlq8KHEvghAMw2S1CKVstlaDGaYOnua/d3BkXfZ9uj6RfS+fRN4LgtdGAPj71bVT5URt5HTs3wGbBFXQuSPRJGovkJ1V8P5Q31pJRo9wXtU++tbSGccTGdNNaZ9W6OT4oqCjgl5yoM2vwQ1jAIJRgOvX0nOgvQhWS2n7Ti1NycBsTFA3e8O3c+bPsYmoMMK3SQ0E6AUSCNwg55MDvRSzxuMbcZnU+2fYBCVpZ24YcsVwK4XIdTQcJRZLZgMD9YE1151Kd3q0MUaM0TJGSD5FcKrs0Bv/ajEw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MtS636NZHi+sJfealQ9TNg2x3kG2VGLEWpH2cAYZkvU=;
+ b=VDb02Ms56O6aYDNzbfZhhBp35TvCy+SA9d/rbt06FFgyKLaoxrrcaU7mslPpQTHvhMGFRZvbuNia2cswrx6jysMPeljVK3zaxEQUq92Bay0j9166/y/uV7aJ4rJSgI25/u7w6HhuUnRSoILcS1WjJYnZR6vpnRIoGeOtZWsIYuY5OJujPkEO0lJn4jEGQoLv0e4iNgUKKgLkzHYpV07dCT01sp2Nod8uV8jWUvHnBB1SpC0MwEkkQtgzOTjJSJw9WgX4nvEmoBoND6+ThlKdpjHDla8GHB1JkIpy/gsP38kzbEpWc1iky19DinleJ2yGd4R9ekOX1lNbQN8481AHpQ==
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
+ by IA1PR02MB9181.namprd02.prod.outlook.com (2603:10b6:208:42b::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9891.23; Wed, 13 May
+ 2026 03:15:53 +0000
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::900:1ccf:2b1e:52b6]) by SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::900:1ccf:2b1e:52b6%6]) with mapi id 15.20.9913.009; Wed, 13 May 2026
+ 03:15:52 +0000
+From: Michael Kelley <mhklinux@outlook.com>
+To: Jacob Pan <jacob.pan@linux.microsoft.com>, Mukesh R
+	<mrathor@linux.microsoft.com>
+CC: "hpa@zytor.com" <hpa@zytor.com>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "robh@kernel.org" <robh@kernel.org>,
+	"wei.liu@kernel.org" <wei.liu@kernel.org>, Michael Kelley
+	<mhklinux@outlook.com>, "muislam@microsoft.com" <muislam@microsoft.com>,
+	"namjain@linux.microsoft.com" <namjain@linux.microsoft.com>,
+	"magnuskulke@linux.microsoft.com" <magnuskulke@linux.microsoft.com>,
+	"anbelski@linux.microsoft.com" <anbelski@linux.microsoft.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "linux-pci@vger.kernel.org"
+	<linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org"
+	<linux-arch@vger.kernel.org>, "kys@microsoft.com" <kys@microsoft.com>,
+	"haiyangz@microsoft.com" <haiyangz@microsoft.com>, "decui@microsoft.com"
+	<decui@microsoft.com>, "longli@microsoft.com" <longli@microsoft.com>,
+	"tglx@kernel.org" <tglx@kernel.org>, "mingo@redhat.com" <mingo@redhat.com>,
+	"bp@alien8.de" <bp@alien8.de>, "dave.hansen@linux.intel.com"
+	<dave.hansen@linux.intel.com>, "x86@kernel.org" <x86@kernel.org>,
+	"joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+	"lpieralisi@kernel.org" <lpieralisi@kernel.org>, "kwilczynski@kernel.org"
+	<kwilczynski@kernel.org>, "bhelgaas@google.com" <bhelgaas@google.com>,
+	"arnd@arndb.de" <arnd@arndb.de>
+Subject: RE: [PATCH V3 01/11] iommu/hyperv: Rename hyperv-iommu.c to
+ hyperv-irq.c
+Thread-Topic: [PATCH V3 01/11] iommu/hyperv: Rename hyperv-iommu.c to
+ hyperv-irq.c
+Thread-Index: AQHc4bOBVgXmy5UnlESUrT55wvQDFbYLD62AgAA6e3A=
+Date: Wed, 13 May 2026 03:15:52 +0000
+Message-ID:
+ <SN6PR02MB4157371A1A3931F582F9A2E9D4062@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20260512020259.1678627-1-mrathor@linux.microsoft.com>
+	<20260512020259.1678627-2-mrathor@linux.microsoft.com>
+ <20260512164623.0000273f@linux.microsoft.com>
+In-Reply-To: <20260512164623.0000273f@linux.microsoft.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|IA1PR02MB9181:EE_
+x-ms-office365-filtering-correlation-id: 4378399a-6ae2-4302-3070-08deb09df0a4
+x-microsoft-antispam:
+ BCL:0;ARA:14566002|13091999003|37011999003|19110799012|8060799015|8062599012|15080799012|55001999006|51005399006|19101099003|31061999003|10035399007|3412199025|440099028|4302099013|102099032|12091999003|1602099012|40105399003|1710799026;
+x-microsoft-antispam-message-info:
+ =?utf-8?B?YjNQTFlDMExrMEE4MTZJdGtlSkpubTVjM2ZtcWJ5TUpFUTZ6a01JcmtMZVdn?=
+ =?utf-8?B?RlRLb2VxR0U2ZjYvM3h2cWdSVXoyMHZTb0x3bGlhQzdDaXR3dVRFVnRCWFo1?=
+ =?utf-8?B?NUhEdUpxZVA5WjY0Z0NmcHdoL1hsbjRxMnRXNXNQVTBESTdZSmFQc2lGaHA2?=
+ =?utf-8?B?N1lwNTFxMWpDZmxEYmxBOFdVM1p5a2Q5K3crcXJjN3NkcnZHb1RMbFRHSzRC?=
+ =?utf-8?B?aDBIZGRxL0ZpODNreGk5d3hUdWZvUU9tQWx4RmFhM0ozcDFUQ1l6V29IbU9W?=
+ =?utf-8?B?WVNiOXgzbHNuZXNZNjJCTlNJdThGREZIVUlyZ0swZlVBMHJ4TDB4V1dOM2JT?=
+ =?utf-8?B?WHRtMU4wOVYxb1pJejljODJlYThqWm1CdVEwc24vd3ZwVW4wR1I5NEZjdWVi?=
+ =?utf-8?B?NllHb280SDd2NVd3YlFWZEhYUVZYMG5WVmJzUXFERzh6cGxnYWtEM0VqajN2?=
+ =?utf-8?B?SkVNRk41cHk2cnlnbVg3UDlIWXNNVkU0R3owZzk0QWRBT1owYTVyRmtJb0ww?=
+ =?utf-8?B?OHRYM2VvMUFpdm9Gc3hGRktBcFdZOE12aTZsWHFtckFBV05JVWNnSEZhZjU1?=
+ =?utf-8?B?K0grRkp4TndJVE9IcUFMUllBYVBOREs4OTZVNEh1Ry9qdnVmWURCZXlDZ2dI?=
+ =?utf-8?B?dnFxanhLdk1OUjBOcGY3M0RacWVkdFhaSTZ6ZXM0bEc1Sm9Jc2VEankxQm1V?=
+ =?utf-8?B?RzFYbVBrRFZIY0FuVEd1ckZHTllDV3AzT1czV0txWEZIdHd3YnVLNk5vYlR3?=
+ =?utf-8?B?RFFkNXFueDNMQjZ0dUh4MXdiemlyNVhLbmxkVDlUeFR2b0FBVEF3VnlxNGpj?=
+ =?utf-8?B?cW82Ui9VRUZKc09VL20xTkh0dFFvQUIyZ3MyNURCb2hCTk9haXdPWFdBenpD?=
+ =?utf-8?B?QlZLVXNyRHRRcnk5dVdFVkViVDdxaW02bEFGSDRBNE1EL2dvc1hpeHZZT25M?=
+ =?utf-8?B?TXE5WVE2WFpjMGpBS3VrZlVCVjBES08rWnFRYWhlQkl0cWNUcWFrcWJyUDdU?=
+ =?utf-8?B?VXZ1aHBGTFE3dTY5ek95UnRydEpSRmRMclprb0ovK3dIMVdPcTFnRTYvaXZD?=
+ =?utf-8?B?VmUwQXdGdCtZWWJLenJEaWhRLy9GOU45djhqMjhPeWZjYy92SExrMVdPM1hR?=
+ =?utf-8?B?enlpc1BBQW5yRzBXbCsxZmJLV1pOb2FXalluMUlaZHVDMWppSVppQ3plYjY0?=
+ =?utf-8?B?V3NjUXdEeEVNTTY0Tm9DdHpRc3JneERDOWpic3JtNVBxMnM0NEw3UGROaTZW?=
+ =?utf-8?B?OXM5cjhoeUlpU2U2YnMrKzVuUEFOdVlrMUFuQXRnVkJzYWt2TnFKdW5yakFZ?=
+ =?utf-8?B?OVIzRWNIYVdPbmMxZVV0Y2gwUkk0VWQvUnhhN1FENWdBVHBsbjJQRFBUT01R?=
+ =?utf-8?B?c1RXWElNSDJIckVNa2VXR1pEeG9ud2lYTEtNK29UTG5TeUFqaHNXSFNKUXFa?=
+ =?utf-8?B?ZkNsNnF6VkJ2RGY4N05ObzR5U2xLYlRaU2xDRHdnenUxalljTnpWVHlteHNR?=
+ =?utf-8?B?M083dUtsTHlLbm1EN3V2NGdleEpheFVuU2x4OTFUZW5BNERCZmpPQTRtQ2I3?=
+ =?utf-8?Q?3zdYtWpROTkZWhW9/1ca6LYwELGy0i8qGAjj10ivS8cSnL?=
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?cmdXRThBTXZOcXdZU2hURUV4dnZXb0kvS1k1dFlUNElqaWNMYlVtM2RVdzl4?=
+ =?utf-8?B?Q0NmWE5wRjQvV1NCVUREa3dLMVFIeWtrRXEwcWdVYlZacGZsc3hpSnArWDFV?=
+ =?utf-8?B?Y2NSamJQWm1CZGwyWm5hV1pYdVlBTUpTK0w2ODFnSGY1a0grVG5Ja2wwUU4v?=
+ =?utf-8?B?cXpicndSWVNVMFF6UnFEWHBnbHBkQURlZmlVKzh3cTRuRE41RUMrLy9FcVpu?=
+ =?utf-8?B?eWVmY0pGeHVqTy9xbVhvdnFxbkhnd2h3VTMwNXJTeWlsQy9PV0lBbFl0a3M1?=
+ =?utf-8?B?WEhsMFhZSnFWK1VqS2puU3lMaGZrNzFLSTd3SG5GNmVkNFFKUVp1NWowMjdL?=
+ =?utf-8?B?QndMbHNhTUo4WjFIa2VyMzIrcG5rZnlnVmxXaFhaN0tvb2xuZmZXcGdTWWFD?=
+ =?utf-8?B?SFkzdzJ1SmZIYVpzN0xQN3E1eXk3MUJqN1hWSUhQdHZaWVlRVDJudDJueFZn?=
+ =?utf-8?B?bEl2Y2ZVWGExa2Q2ZzgvT0NyeUdkbUw5NnFPU1daSWsxLzNSQVNVMVpEYkRn?=
+ =?utf-8?B?TkkyMkVKa0gxUEFFd25Bb0EwUHllK01mZGNzTDNWUnJtSTNMQWxVeVk4bWIz?=
+ =?utf-8?B?aEpOdFpiU2pPNTBTSEllZFVuQnBSTFB0Y2F3T01jam12aVAycVFPeFg3cGo3?=
+ =?utf-8?B?YnRackxPaUlZa0l3ckZBcDNlRS9rK1diazFML3hzNzBHT21LazZpUUhIay9O?=
+ =?utf-8?B?WVkzOXR2UVBPSUw1UlRXMElUM0Ezei9FNml0R0V2ZkhyZzdBU0dySDNsTHZO?=
+ =?utf-8?B?dzhwT2drdzAydk5wUExQcGNhV3FJaGQxeVoyeFJSMnRZRHVtU3o1YUpzUVpW?=
+ =?utf-8?B?aTFicHM0bmptRVNaa0tRZ3FwbWtGK045bElQQzhsUWJTYkZqQmxIbmdNY3Bq?=
+ =?utf-8?B?MS9CVlEwQ2hkczdjWXdDRDQ2cXI3ZmZ0YkJEQUMycElqTzVYYlhxcGxaS1R2?=
+ =?utf-8?B?amhMT1NMV3pyR1EvK1ZRaGVuQjdpZ284SjNiVkxhY2l6SjZhUm0rcUxiVXBa?=
+ =?utf-8?B?SFNWQXdKTGYvVGgyWUsrMEx0Z3hRME1oM3FYb3pMM2dnN2lxb3Q2Z0Fnc1pz?=
+ =?utf-8?B?SHpLRjRKWllhNkk5WUFrS0ZITE9MWEdqbnlXNXorWXVTTkZGdk43cjlaOEhh?=
+ =?utf-8?B?SVlrcmdVdXk1S3NTRkpQZERDYWNqektVMkhaVkdTUVVVd0NQRHU2aFVGd29G?=
+ =?utf-8?B?WFQ0dzAyWENRTmZGSytLWFlhUTRBOWpkLzhHYkU2NUZRTGdFTkF0aFUzSHls?=
+ =?utf-8?B?djNuSzZHUE9zMzY2L3BjLzk4dk13S3dWc0R4N3NIWDFXSzhCNUJQZ0IxSzVx?=
+ =?utf-8?B?Q0V4TnF0M2VqNkROd2VGTEVWNFdDUVVqN0s5OURYR1JURzl2ZlRxOS9sQkhw?=
+ =?utf-8?B?VDAvVHE1TzZoSzRjV1VHTHQ3ejBsOGZmWVlJTTlqTU5hN3A5dkF5VXJ4M0pH?=
+ =?utf-8?B?QnNTNEY1NWJmZWE4Y2ZEV3NUWDBGVnJKcDlMWExhNHB4R3Y4cVZRcmtpWDZZ?=
+ =?utf-8?B?OWVNRWdLMmlhK0JTZ1dFWFRad0JidVc1aVVyMHovbTJiQXI3YXNPNVRhV1VN?=
+ =?utf-8?B?cStrcnZ5UDVoZFZWckdEVUtWNEsrWG9WRmxlaG9XRVI2WlJZQ2taMUlBS2RP?=
+ =?utf-8?B?RE5CRFVLQ1QrektZemN0aUc5bXc2MkJ6RFF0MHRLdUZRaXBiV01DeFBvUm16?=
+ =?utf-8?B?anNFUnVCTnZNdEkxMmI2ckNuMHpNaE5zM0JUdEtZY2pYanRlODZwZUFrbyts?=
+ =?utf-8?B?TjI5SmJQQUpRbExCQjJnWkZlWmZRWE5QVS9QRXJlem0yalNRbzB5UXJPdEV1?=
+ =?utf-8?Q?KhzEfiAKiG7lFsqUrK1guc1e9TNXG9Sfdwx1c=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4378399a-6ae2-4302-3070-08deb09df0a4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 May 2026 03:15:52.6578
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR02MB9181
 
-From: Rik van Riel <riel@meta.com>
-
-Add a kunit suite for the augmented-rbtree IOVA allocator, plus an
-iova_domain_verify_invariants() helper (compiled only when the test
-config is enabled) that walks the tree and confirms every node's
-gap_to_prev, clamped_gap32, __subtree_max_gap, and __subtree_max_gap32
-match what recomputation from scratch yields.
-
-Test cases:
-  - test_init_destroy: domain lifecycle, no leaks.
-  - test_basic_alloc_free: single alloc/free roundtrip, top-down reuse.
-  - test_size_aligned: alignment of size_aligned allocs across orders 0..7.
-  - test_top_down_preference: sequential allocs decrease in pfn_lo.
-  - test_limit_pfn_respected: 100 allocs all stay <= limit_pfn.
-  - test_reserve_iova: allocs avoid the reserved range.
-  - test_find_iova: lookup by pfn returns the right iova.
-  - test_32bit_in_64bit_domain: 1000 64-bit allocs followed by a 32-bit
-    alloc must still find a slot below DMA_BIT_MASK(32) -- exercises
-    the __subtree_max_gap32 augmentation.
-  - test_two_phase_alignment: pack size-2 size_aligned allocs, free
-    every other; subsequent size-2 alloc must succeed via the phase-2
-    fallback search since phase-1's S+A-1 threshold prunes the size-2
-    gaps.
-  - test_pci_32bit_workaround_pattern: alternate 32-bit-first allocation
-    attempts with 64-bit fallback, mirroring dma-iommu.c.
-  - test_stress_random: 2048 random alloc/free operations with mixed
-    sizes, alignments, and 32/64-bit limits, with periodic invariant
-    checks.
-
-Each test verifies the augmented invariants both during and after the
-test run so that any sequencing bug in insert / erase / rotate /
-propagate is caught at the operation that introduced it.
-
-Tested by: building drivers/iommu/iova.o and drivers/iommu/iova-kunit.o
-(no warnings); runtime execution requires booting a kernel with
-CONFIG_IOMMU_IOVA_KUNIT_TEST=y under qemu-system-x86_64 (not available
-on this devvm).
-
-Assisted-by: Claude:claude-opus-4.7
-Signed-off-by: Rik van Riel <riel@surriel.com>
----
- drivers/iommu/Kconfig      |  14 ++
- drivers/iommu/Makefile     |   1 +
- drivers/iommu/iova-kunit.c | 396 +++++++++++++++++++++++++++++++++++++
- drivers/iommu/iova.c       |  90 +++++++++
- include/linux/iova.h       |   3 +
- 5 files changed, 504 insertions(+)
- create mode 100644 drivers/iommu/iova-kunit.c
-
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index f86262b11416..61906a5664a6 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -3,6 +3,20 @@
- config IOMMU_IOVA
- 	tristate
- 
-+config IOMMU_IOVA_KUNIT_TEST
-+	tristate "KUnit tests for the IOVA allocator" if !KUNIT_ALL_TESTS
-+	depends on IOMMU_IOVA && KUNIT
-+	default KUNIT_ALL_TESTS
-+	help
-+	  Enable kunit tests for the IOVA allocator. The tests exercise
-+	  basic allocation and free, size-aligned allocation, top-down
-+	  ordering, the limit_pfn-aware 32-bit augmentation, the
-+	  alignment-aware two-phase search, and randomly-fragmented
-+	  stress scenarios. Each test verifies that the augmented
-+	  rbtree invariants remain consistent throughout.
-+
-+	  If unsure, say N here.
-+
- # IOMMU_API always gets selected by whoever wants it.
- config IOMMU_API
- 	bool
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 0275821f4ef9..6bd7da1cbebd 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -16,6 +16,7 @@ obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE_KUNIT_TEST) += io-pgtable-arm-selftests.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_DART) += io-pgtable-dart.o
- obj-$(CONFIG_IOMMU_IOVA) += iova.o
-+obj-$(CONFIG_IOMMU_IOVA_KUNIT_TEST) += iova-kunit.o
- obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
- obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
- obj-$(CONFIG_IPMMU_VMSA) += ipmmu-vmsa.o
-diff --git a/drivers/iommu/iova-kunit.c b/drivers/iommu/iova-kunit.c
-new file mode 100644
-index 000000000000..e921c8543668
---- /dev/null
-+++ b/drivers/iommu/iova-kunit.c
-@@ -0,0 +1,396 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * KUnit tests for the IOVA allocator.
-+ *
-+ * Exercises the augmented-rbtree based allocator: basic alloc/free,
-+ * size-aligned allocations, top-down ordering, the limit_pfn-aware
-+ * 32-bit augmentation (relevant for the dma-iommu pci_32bit_workaround
-+ * pattern), the alignment-aware two-phase search, and randomly
-+ * fragmented stress.
-+ *
-+ * Each test verifies that the augmented invariants
-+ * (__subtree_max_gap, __subtree_max_gap32, gap_to_prev, clamped_gap32)
-+ * remain consistent after every batch of operations.
-+ */
-+#include <kunit/test.h>
-+#include <linux/dma-mapping.h>
-+#include <linux/iova.h>
-+#include <linux/random.h>
-+
-+#define TEST_GRANULE PAGE_SIZE
-+/* Highest pfn that fits in 32 bits — triggers the is_32bit alloc path. */
-+#define TEST_LIMIT_32BIT (DMA_BIT_MASK(32) >> PAGE_SHIFT)
-+/* A 64-bit-ish limit well above dma_32bit_pfn. */
-+#define TEST_LIMIT_64BIT ((1UL << 36) >> PAGE_SHIFT)
-+
-+struct iova_test_ctx {
-+	struct iova_domain iovad;
-+	bool initialized;
-+};
-+
-+static struct iova_test_ctx *iova_test_init_ctx(struct kunit *test)
-+{
-+	struct iova_test_ctx *ctx;
-+	int ret;
-+
-+	ctx = kunit_kzalloc(test, sizeof(*ctx), GFP_KERNEL);
-+	KUNIT_ASSERT_NOT_NULL(test, ctx);
-+
-+	ret = iova_cache_get();
-+	KUNIT_ASSERT_EQ(test, ret, 0);
-+
-+	init_iova_domain(&ctx->iovad, TEST_GRANULE, 1);
-+	ret = iova_domain_init_rcaches(&ctx->iovad);
-+	KUNIT_ASSERT_EQ(test, ret, 0);
-+	ctx->initialized = true;
-+	KUNIT_ASSERT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+	return ctx;
-+}
-+
-+static void iova_test_cleanup(struct kunit *test, struct iova_test_ctx *ctx)
-+{
-+	if (ctx->initialized) {
-+		KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+		put_iova_domain(&ctx->iovad);
-+		iova_cache_put();
-+		ctx->initialized = false;
-+	}
-+}
-+
-+static void test_init_destroy(struct kunit *test)
-+{
-+	struct iova_test_ctx *ctx = iova_test_init_ctx(test);
-+
-+	iova_test_cleanup(test, ctx);
-+}
-+
-+static void test_basic_alloc_free(struct kunit *test)
-+{
-+	struct iova_test_ctx *ctx = iova_test_init_ctx(test);
-+	struct iova *iova;
-+	unsigned long pfn_lo;
-+
-+	iova = alloc_iova(&ctx->iovad, 1, TEST_LIMIT_32BIT, false);
-+	KUNIT_ASSERT_NOT_NULL(test, iova);
-+	KUNIT_EXPECT_LE(test, iova->pfn_hi, TEST_LIMIT_32BIT);
-+	KUNIT_EXPECT_EQ(test, iova->pfn_hi - iova->pfn_lo + 1, 1);
-+	KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+	pfn_lo = iova->pfn_lo;
-+	__free_iova(&ctx->iovad, iova);
-+	KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+
-+	/* Top-down policy: subsequent alloc should reuse the same pfn. */
-+	iova = alloc_iova(&ctx->iovad, 1, TEST_LIMIT_32BIT, false);
-+	KUNIT_ASSERT_NOT_NULL(test, iova);
-+	KUNIT_EXPECT_EQ(test, iova->pfn_lo, pfn_lo);
-+	__free_iova(&ctx->iovad, iova);
-+
-+	iova_test_cleanup(test, ctx);
-+}
-+
-+static void test_size_aligned(struct kunit *test)
-+{
-+	struct iova_test_ctx *ctx = iova_test_init_ctx(test);
-+	int order;
-+
-+	for (order = 0; order < 8; ++order) {
-+		unsigned long size = 1UL << order;
-+		struct iova *iova = alloc_iova(&ctx->iovad, size,
-+					       TEST_LIMIT_32BIT, true);
-+
-+		KUNIT_ASSERT_NOT_NULL(test, iova);
-+		KUNIT_EXPECT_EQ(test, iova->pfn_lo & (size - 1), 0);
-+		KUNIT_EXPECT_EQ(test, iova->pfn_hi - iova->pfn_lo + 1, size);
-+		__free_iova(&ctx->iovad, iova);
-+		KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+	}
-+
-+	iova_test_cleanup(test, ctx);
-+}
-+
-+static void test_top_down_preference(struct kunit *test)
-+{
-+	struct iova_test_ctx *ctx = iova_test_init_ctx(test);
-+	struct iova *iovas[16];
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(iovas); ++i) {
-+		iovas[i] = alloc_iova(&ctx->iovad, 1, TEST_LIMIT_32BIT, false);
-+		KUNIT_ASSERT_NOT_NULL(test, iovas[i]);
-+		if (i > 0)
-+			KUNIT_EXPECT_LT(test, iovas[i]->pfn_lo,
-+					iovas[i - 1]->pfn_lo);
-+	}
-+	KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+
-+	for (i = 0; i < ARRAY_SIZE(iovas); ++i)
-+		__free_iova(&ctx->iovad, iovas[i]);
-+
-+	iova_test_cleanup(test, ctx);
-+}
-+
-+static void test_limit_pfn_respected(struct kunit *test)
-+{
-+	struct iova_test_ctx *ctx = iova_test_init_ctx(test);
-+	struct iova *iova;
-+	int i;
-+
-+	for (i = 0; i < 100; ++i) {
-+		iova = alloc_iova(&ctx->iovad, 1, TEST_LIMIT_32BIT, false);
-+		KUNIT_ASSERT_NOT_NULL(test, iova);
-+		KUNIT_EXPECT_LE(test, iova->pfn_hi, TEST_LIMIT_32BIT);
-+	}
-+	KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+
-+	iova_test_cleanup(test, ctx);
-+}
-+
-+static void test_reserve_iova(struct kunit *test)
-+{
-+	struct iova_test_ctx *ctx = iova_test_init_ctx(test);
-+	const unsigned long reserve_lo = TEST_LIMIT_32BIT / 2;
-+	struct iova *r, *iova;
-+	int i;
-+
-+	/* Reserve the entire top half through the limit_pfn, inclusive. */
-+	r = reserve_iova(&ctx->iovad, reserve_lo, TEST_LIMIT_32BIT);
-+	KUNIT_ASSERT_NOT_NULL(test, r);
-+	KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+
-+	/* All allocs must land below the reserved range. */
-+	for (i = 0; i < 100; ++i) {
-+		iova = alloc_iova(&ctx->iovad, 1, TEST_LIMIT_32BIT, false);
-+		KUNIT_ASSERT_NOT_NULL(test, iova);
-+		KUNIT_EXPECT_LT(test, iova->pfn_hi, reserve_lo);
-+	}
-+	KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+
-+	iova_test_cleanup(test, ctx);
-+}
-+
-+static void test_find_iova(struct kunit *test)
-+{
-+	struct iova_test_ctx *ctx = iova_test_init_ctx(test);
-+	struct iova *iova, *found;
-+
-+	iova = alloc_iova(&ctx->iovad, 4, TEST_LIMIT_32BIT, true);
-+	KUNIT_ASSERT_NOT_NULL(test, iova);
-+
-+	found = find_iova(&ctx->iovad, iova->pfn_lo);
-+	KUNIT_EXPECT_PTR_EQ(test, found, iova);
-+	found = find_iova(&ctx->iovad, iova->pfn_hi);
-+	KUNIT_EXPECT_PTR_EQ(test, found, iova);
-+	/* Outside the range should not find. */
-+	if (iova->pfn_hi + 1 <= TEST_LIMIT_32BIT) {
-+		found = find_iova(&ctx->iovad, iova->pfn_hi + 1);
-+		KUNIT_EXPECT_PTR_NE(test, found, iova);
-+	}
-+
-+	__free_iova(&ctx->iovad, iova);
-+	iova_test_cleanup(test, ctx);
-+}
-+
-+/*
-+ * The pci_32bit_workaround scenario: every PCI device's first IOVA
-+ * allocation hits the 32-bit-restricted path before falling back to
-+ * 64-bit. Mix the two and verify the limit_pfn-aware augmentation
-+ * keeps both correct.
-+ */
-+static void test_32bit_in_64bit_domain(struct kunit *test)
-+{
-+	struct iova_test_ctx *ctx = iova_test_init_ctx(test);
-+	struct iova *iova;
-+	int i;
-+
-+	/* Fill the high 64-bit space. */
-+	for (i = 0; i < 1000; ++i) {
-+		iova = alloc_iova(&ctx->iovad, 1, TEST_LIMIT_64BIT, true);
-+		KUNIT_ASSERT_NOT_NULL(test, iova);
-+	}
-+	KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+
-+	/* A 32-bit alloc must still find a slot below DMA_BIT_MASK(32). */
-+	iova = alloc_iova(&ctx->iovad, 1, TEST_LIMIT_32BIT, true);
-+	KUNIT_ASSERT_NOT_NULL(test, iova);
-+	KUNIT_EXPECT_LE(test, iova->pfn_hi, TEST_LIMIT_32BIT);
-+	KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+
-+	__free_iova(&ctx->iovad, iova);
-+	iova_test_cleanup(test, ctx);
-+}
-+
-+/*
-+ * Force the alignment-aware two-phase search through phase 2: pack
-+ * size-2 size_aligned allocations, free every other one to leave gaps
-+ * of size 2 (which the strict phase-1 threshold of size + align - 1 = 3
-+ * will prune away), and verify a fresh size-2 alloc still succeeds via
-+ * the phase-2 fallback.
-+ */
-+static void test_two_phase_alignment(struct kunit *test)
-+{
-+	struct iova_test_ctx *ctx = iova_test_init_ctx(test);
-+	const int N = 64;
-+	struct iova **iovas;
-+	struct iova *iova;
-+	int i;
-+	bool found_phase2_candidate = false;
-+
-+	iovas = kunit_kcalloc(test, N, sizeof(*iovas), GFP_KERNEL);
-+	KUNIT_ASSERT_NOT_NULL(test, iovas);
-+
-+	for (i = 0; i < N; ++i) {
-+		iovas[i] = alloc_iova(&ctx->iovad, 2, TEST_LIMIT_32BIT, true);
-+		KUNIT_ASSERT_NOT_NULL(test, iovas[i]);
-+		KUNIT_EXPECT_EQ(test, iovas[i]->pfn_lo & 1, 0);
-+	}
-+	KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+
-+	/* Free every other to create size-2 gaps interleaved with allocs. */
-+	for (i = 0; i < N; i += 2) {
-+		__free_iova(&ctx->iovad, iovas[i]);
-+		iovas[i] = NULL;
-+	}
-+	KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+
-+	/*
-+	 * Allocate size-2 — phase 1 (threshold 3) should miss the size-2
-+	 * gaps; phase 2 (threshold 2) should still find one. The result
-+	 * may also land in the unfragmented gap below the lowest packed
-+	 * iova; either way, alloc must succeed and the result must be
-+	 * 2-aligned.
-+	 */
-+	iova = alloc_iova(&ctx->iovad, 2, TEST_LIMIT_32BIT, true);
-+	KUNIT_ASSERT_NOT_NULL(test, iova);
-+	KUNIT_EXPECT_EQ(test, iova->pfn_lo & 1, 0);
-+	/* Was it placed in one of the freed slots (= phase 2 hit)? */
-+	for (i = 1; i < N; i += 2) {
-+		struct iova *neighbor = iovas[i];
-+
-+		if (!neighbor)
-+			continue;
-+		if (iova->pfn_hi + 1 == neighbor->pfn_lo ||
-+		    iova->pfn_lo == neighbor->pfn_hi + 1) {
-+			found_phase2_candidate = true;
-+			break;
-+		}
-+	}
-+	kunit_info(test, "alloc landed at pfn 0x%lx, phase2-slot=%s\n",
-+		   iova->pfn_lo, found_phase2_candidate ? "yes" : "no");
-+	__free_iova(&ctx->iovad, iova);
-+	KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+
-+	for (i = 0; i < N; ++i)
-+		if (iovas[i])
-+			__free_iova(&ctx->iovad, iovas[i]);
-+	iova_test_cleanup(test, ctx);
-+}
-+
-+/*
-+ * Mimic dma-iommu's pci_32bit_workaround pattern: every alloc first
-+ * tries the 32-bit limit; if that fails, retry with the 64-bit limit.
-+ * Verifies that the dual-augmented invariant survives the rapid
-+ * switching between is_32bit=true and is_32bit=false.
-+ */
-+static void test_pci_32bit_workaround_pattern(struct kunit *test)
-+{
-+	struct iova_test_ctx *ctx = iova_test_init_ctx(test);
-+	int i;
-+
-+	for (i = 0; i < 500; ++i) {
-+		unsigned long size = (i % 4) + 1;
-+		struct iova *iova = alloc_iova(&ctx->iovad, size,
-+					       TEST_LIMIT_32BIT, true);
-+
-+		if (!iova)
-+			iova = alloc_iova(&ctx->iovad, size,
-+					  TEST_LIMIT_64BIT, true);
-+		KUNIT_ASSERT_NOT_NULL(test, iova);
-+	}
-+	KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+
-+	iova_test_cleanup(test, ctx);
-+}
-+
-+/*
-+ * Random alloc/free over many iterations, verifying invariants after
-+ * every operation. Uses a deterministic PRNG so failures reproduce
-+ * across boots.
-+ */
-+static void test_stress_random(struct kunit *test)
-+{
-+	struct iova_test_ctx *ctx = iova_test_init_ctx(test);
-+	const int N = 512;
-+	const int iters = 4 * N;
-+	struct iova **iovas;
-+	u32 rng = 0xDEADBEEF;
-+	int i;
-+
-+	iovas = kunit_kcalloc(test, N, sizeof(*iovas), GFP_KERNEL);
-+	KUNIT_ASSERT_NOT_NULL(test, iovas);
-+
-+	for (i = 0; i < iters; ++i) {
-+		int slot;
-+		bool use_32bit;
-+		unsigned long limit;
-+		const char *op;
-+
-+		rng = rng * 1103515245 + 12345;
-+		slot = (rng >> 8) % N;
-+		rng = rng * 1103515245 + 12345;
-+		use_32bit = rng & 1;
-+		limit = use_32bit ? TEST_LIMIT_32BIT : TEST_LIMIT_64BIT;
-+
-+		if (iovas[slot]) {
-+			op = "free";
-+			__free_iova(&ctx->iovad, iovas[slot]);
-+			iovas[slot] = NULL;
-+		} else {
-+			unsigned long size;
-+			bool aligned;
-+
-+			rng = rng * 1103515245 + 12345;
-+			size = 1UL << ((rng >> 8) % 4);
-+			rng = rng * 1103515245 + 12345;
-+			aligned = rng & 1;
-+
-+			op = "alloc";
-+			iovas[slot] = alloc_iova(&ctx->iovad, size, limit,
-+						 aligned);
-+		}
-+		if (!iova_domain_verify_invariants(&ctx->iovad)) {
-+			kunit_info(test, "iter %d slot %d: invariant broken after %s\n",
-+				   i, slot, op);
-+			KUNIT_FAIL(test, "verify failed");
-+			break;
-+		}
-+	}
-+
-+	for (i = 0; i < N; ++i)
-+		if (iovas[i])
-+			__free_iova(&ctx->iovad, iovas[i]);
-+	iova_test_cleanup(test, ctx);
-+}
-+
-+static struct kunit_case iova_test_cases[] = {
-+	KUNIT_CASE(test_init_destroy),
-+	KUNIT_CASE(test_basic_alloc_free),
-+	KUNIT_CASE(test_size_aligned),
-+	KUNIT_CASE(test_top_down_preference),
-+	KUNIT_CASE(test_limit_pfn_respected),
-+	KUNIT_CASE(test_reserve_iova),
-+	KUNIT_CASE(test_find_iova),
-+	KUNIT_CASE(test_32bit_in_64bit_domain),
-+	KUNIT_CASE(test_two_phase_alignment),
-+	KUNIT_CASE(test_pci_32bit_workaround_pattern),
-+	KUNIT_CASE(test_stress_random),
-+	{}
-+};
-+
-+static struct kunit_suite iova_test_suite = {
-+	.name = "iova",
-+	.test_cases = iova_test_cases,
-+};
-+kunit_test_suite(iova_test_suite);
-+
-+MODULE_DESCRIPTION("KUnit tests for the IOVA allocator");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 4f3465d8ee16..dfde90fef1f5 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -1160,6 +1160,96 @@ void iova_cache_put(void)
- }
- EXPORT_SYMBOL_GPL(iova_cache_put);
- 
-+#if IS_ENABLED(CONFIG_IOMMU_IOVA_KUNIT_TEST)
-+/*
-+ * Walk the iova rbtree and verify that every node's gap_to_prev,
-+ * clamped_gap32, __subtree_max_gap, and __subtree_max_gap32 match what
-+ * recomputation from scratch would yield. Returns true on success.
-+ *
-+ * Intended for use by kunit tests to catch invariant corruption from
-+ * insertion / deletion / rotation paths.
-+ */
-+struct iova_subtree_maxes {
-+	unsigned long max_gap;
-+	unsigned long max_gap32;
-+};
-+
-+static struct iova_subtree_maxes
-+iova_walk_verify(struct rb_node *node, struct iova_domain *iovad, bool *ok)
-+{
-+	struct iova_subtree_maxes m = { 0, 0 };
-+	struct iova_subtree_maxes left, right;
-+	struct rb_node *prev_node;
-+	struct iova *iova;
-+	unsigned long expected_gap;
-+	unsigned long expected_clamped;
-+
-+	if (!node)
-+		return m;
-+
-+	left = iova_walk_verify(node->rb_left, iovad, ok);
-+	right = iova_walk_verify(node->rb_right, iovad, ok);
-+	iova = to_iova(node);
-+
-+	prev_node = rb_prev(node);
-+	if (prev_node)
-+		expected_gap = iova->pfn_lo - to_iova(prev_node)->pfn_hi - 1;
-+	else
-+		expected_gap = iova->pfn_lo;
-+	if (iova->gap_to_prev != expected_gap) {
-+		pr_err("iova_verify: pfn_lo=0x%lx gap_to_prev=%lu expected=%lu\n",
-+		       iova->pfn_lo, iova->gap_to_prev, expected_gap);
-+		*ok = false;
-+	}
-+
-+	expected_clamped = iova_compute_clamped_gap32(iova, iovad->dma_32bit_pfn);
-+	if (iova->clamped_gap32 != expected_clamped) {
-+		pr_err("iova_verify: pfn_lo=0x%lx clamped_gap32=%lu expected=%lu\n",
-+		       iova->pfn_lo, iova->clamped_gap32, expected_clamped);
-+		*ok = false;
-+	}
-+
-+	m.max_gap = iova->gap_to_prev;
-+	if (left.max_gap > m.max_gap)
-+		m.max_gap = left.max_gap;
-+	if (right.max_gap > m.max_gap)
-+		m.max_gap = right.max_gap;
-+
-+	m.max_gap32 = iova->clamped_gap32;
-+	if (left.max_gap32 > m.max_gap32)
-+		m.max_gap32 = left.max_gap32;
-+	if (right.max_gap32 > m.max_gap32)
-+		m.max_gap32 = right.max_gap32;
-+
-+	if (iova->__subtree_max_gap != m.max_gap) {
-+		pr_err("iova_verify: pfn_lo=0x%lx __subtree_max_gap=%lu expected=%lu (own=%lu left=%lu right=%lu)\n",
-+		       iova->pfn_lo, iova->__subtree_max_gap, m.max_gap,
-+		       iova->gap_to_prev, left.max_gap, right.max_gap);
-+		*ok = false;
-+	}
-+	if (iova->__subtree_max_gap32 != m.max_gap32) {
-+		pr_err("iova_verify: pfn_lo=0x%lx __subtree_max_gap32=%lu expected=%lu (own=%lu left=%lu right=%lu)\n",
-+		       iova->pfn_lo, iova->__subtree_max_gap32, m.max_gap32,
-+		       iova->clamped_gap32, left.max_gap32, right.max_gap32);
-+		*ok = false;
-+	}
-+
-+	return m;
-+}
-+
-+bool iova_domain_verify_invariants(struct iova_domain *iovad)
-+{
-+	bool ok = true;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
-+	iova_walk_verify(iovad->rbroot.rb_node, iovad, &ok);
-+	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-+	return ok;
-+}
-+EXPORT_SYMBOL_GPL(iova_domain_verify_invariants);
-+#endif /* CONFIG_IOMMU_IOVA_KUNIT_TEST */
-+
- MODULE_AUTHOR("Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>");
- MODULE_DESCRIPTION("IOMMU I/O Virtual Address management");
- MODULE_LICENSE("GPL");
-diff --git a/include/linux/iova.h b/include/linux/iova.h
-index d262c6d88d6c..108676d8ad69 100644
---- a/include/linux/iova.h
-+++ b/include/linux/iova.h
-@@ -104,6 +104,9 @@ void init_iova_domain(struct iova_domain *iovad, unsigned long granule,
- int iova_domain_init_rcaches(struct iova_domain *iovad);
- struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
- void put_iova_domain(struct iova_domain *iovad);
-+#if IS_ENABLED(CONFIG_IOMMU_IOVA_KUNIT_TEST)
-+bool iova_domain_verify_invariants(struct iova_domain *iovad);
-+#endif
- #else
- static inline int iova_cache_get(void)
- {
--- 
-2.52.0
-
+RnJvbTogSmFjb2IgUGFuIDxqYWNvYi5wYW5AbGludXgubWljcm9zb2Z0LmNvbT4gU2VudDogVHVl
+c2RheSwgTWF5IDEyLCAyMDI2IDQ6NDYgUE0NCj4gDQo+IEhpIE11a2VzaCwNCj4gDQo+IE9uIE1v
+biwgMTEgTWF5IDIwMjYgMTk6MDI6NDkgLTA3MDANCj4gTXVrZXNoIFIgPG1yYXRob3JAbGludXgu
+bWljcm9zb2Z0LmNvbT4gd3JvdGU6DQo+IA0KPiA+IFRoaXMgZmlsZSBhY3R1YWxseSBpbXBsZW1l
+bnRzIGlycSByZW1hcHBpbmcsIHNvIHJlbmFtZSB0byBtb3JlDQo+ID4gYXBwcm9wcmlhdGUgaHlw
+ZXJ2LWlycS5jLiBBIG5ldyBmaWxlIHRvIGltcGxlbWVudCBoeXBlcnYgaW9tbXUgd2lsbA0KPiA+
+IGJlIGludHJvZHVjZWQgbGF0ZXIuICBBbHNvLCBpdCBzaG91bGQgbm90IGJlIHRpZWQgdG8gSFlQ
+RVJWX0lPTU1VLA0KPiA+IGJ1dCB0byBDT05GSUdfSFlQRVJWIGFuZCBJUlFfUkVNQVAuIFRoZSBm
+aWxlIGFscmVhZHkgaGFzICNpZmRlZg0KPiA+IENPTkZJR19JUlFfUkVNQVAuDQo+ID4NCj4gPiBS
+ZXZpZXdlZC1ieTogQW5pcnVkaCBSYXlhYmhhcmFtIChNaWNyb3NvZnQpIDxhbmlydWRoQGFuaXJ1
+ZGhyYi5jb20+DQo+ID4gU2lnbmVkLW9mZi1ieTogTXVrZXNoIFIgPG1yYXRob3JAbGludXgubWlj
+cm9zb2Z0LmNvbT4NCj4gPiAtLS0NCj4gPiAgTUFJTlRBSU5FUlMgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICB8IDIgKy0NCj4gPiAgZHJpdmVycy9pb21tdS9NYWtlZmlsZSAgICAg
+ICAgICAgICAgICAgICAgICAgICB8IDIgKy0NCj4gPiAgZHJpdmVycy9pb21tdS97aHlwZXJ2LWlv
+bW11LmMgPT4gaHlwZXJ2LWlycS5jfSB8IDYgKysrLS0tDQo+DQo+IEdpdmVuIHRoYXQgd2UgaGF2
+ZSBtdWx0aXBsZSBIeXBlci1WIElPTU1VLXJlbGF0ZWQgZmlsZXMg4oCUIHRoaXMgcmVuYW1lZA0K
+PiBoeXBlcnYtaXJxLmMsIHRoZSBleGlzdGluZyBoeXBlcnYtaW9tbXUgY29kZSwgaW9tbXUtcm9v
+dCAodGhpcw0KPiBzZXJpZXMpIGFuZCB0aGUgcmVjZW50bHkgcG9zdGVkIGd1ZXN0IHB2SU9NTVUg
+ZHJpdmVyIOKAlCBzaG91bGQgd2UgY3JlYXRlDQo+IGEgZHJpdmVycy9pb21tdS9oeXBlcnYvIGRp
+cmVjdG9yeSB0byBjb25zb2xpZGF0ZSB0aGVtPw0KDQpQYXRjaCAxLzQgaW4gdGhlIGd1ZXN0IHB2
+SU9NTVUgZHJpdmVyIFsxXSB0aGF0IHdhcyByZWNlbnRseSBwb3N0ZWQgYnkNCll1IFpoYW5nIGRv
+ZXMgYXMgeW91IHN1Z2dlc3QuDQoNCk1pY2hhZWwNCg0KWzFdIGh0dHBzOi8vbG9yZS5rZXJuZWwu
+b3JnL2xpbnV4LWh5cGVydi8yMDI2MDUxMTE2MjQwOC4xMTgwMDY5LTEtemhhbmd5dTFAbGludXgu
+bWljcm9zb2Z0LmNvbS8NCg0KPiANCj4gPiAgZHJpdmVycy9pb21tdS9pcnFfcmVtYXBwaW5nLmMg
+ICAgICAgICAgICAgICAgICB8IDIgKy0NCj4gPiAgNCBmaWxlcyBjaGFuZ2VkLCA2IGluc2VydGlv
+bnMoKyksIDYgZGVsZXRpb25zKC0pDQo+ID4gIHJlbmFtZSBkcml2ZXJzL2lvbW11L3toeXBlcnYt
+aW9tbXUuYyA9PiBoeXBlcnYtaXJxLmN9ICg5OSUpDQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvTUFJ
+TlRBSU5FUlMgYi9NQUlOVEFJTkVSUw0KPiA+IGluZGV4IGQxY2MwZTEyZmUxZi4uZjgwM2E2YTM4
+ZmVlIDEwMDY0NA0KPiA+IC0tLSBhL01BSU5UQUlORVJTDQo+ID4gKysrIGIvTUFJTlRBSU5FUlMN
+Cj4gPiBAQCAtMTE5MTQsNyArMTE5MTQsNyBAQCBGOglkcml2ZXJzL2Nsb2Nrc291cmNlL2h5cGVy
+dl90aW1lci5jDQo+ID4gIEY6CWRyaXZlcnMvaGlkL2hpZC1oeXBlcnYuYw0KPiA+ICBGOglkcml2
+ZXJzL2h2Lw0KPiA+ICBGOglkcml2ZXJzL2lucHV0L3NlcmlvL2h5cGVydi1rZXlib2FyZC5jDQo+
+ID4gLUY6CWRyaXZlcnMvaW9tbXUvaHlwZXJ2LWlvbW11LmMNCj4gPiArRjoJZHJpdmVycy9pb21t
+dS9oeXBlcnYtaXJxLmMNCj4gPiAgRjoJZHJpdmVycy9uZXQvZXRoZXJuZXQvbWljcm9zb2Z0Lw0K
+PiA+ICBGOglkcml2ZXJzL25ldC9oeXBlcnYvDQo+ID4gIEY6CWRyaXZlcnMvcGNpL2NvbnRyb2xs
+ZXIvcGNpLWh5cGVydi1pbnRmLmMNCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9NYWtl
+ZmlsZSBiL2RyaXZlcnMvaW9tbXUvTWFrZWZpbGUNCj4gPiBpbmRleCAwMjc1ODIxZjRlZjkuLjMz
+NWVhNzdjY2VkNiAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL2lvbW11L01ha2VmaWxlDQo+ID4g
+KysrIGIvZHJpdmVycy9pb21tdS9NYWtlZmlsZQ0KPiA+IEBAIC0zMCw3ICszMCw3IEBAIG9iai0k
+KENPTkZJR19URUdSQV9JT01NVV9TTU1VKSArPSB0ZWdyYS1zbW11Lm8NCj4gPiAgb2JqLSQoQ09O
+RklHX0VYWU5PU19JT01NVSkgKz0gZXh5bm9zLWlvbW11Lm8NCj4gPiAgb2JqLSQoQ09ORklHX0ZT
+TF9QQU1VKSArPSBmc2xfcGFtdS5vIGZzbF9wYW11X2RvbWFpbi5vDQo+ID4gIG9iai0kKENPTkZJ
+R19TMzkwX0lPTU1VKSArPSBzMzkwLWlvbW11Lm8NCj4gPiAtb2JqLSQoQ09ORklHX0hZUEVSVl9J
+T01NVSkgKz0gaHlwZXJ2LWlvbW11Lm8NCj4gPiArb2JqLSQoQ09ORklHX0hZUEVSVikgKz0gaHlw
+ZXJ2LWlycS5vDQo+ID4gIG9iai0kKENPTkZJR19WSVJUSU9fSU9NTVUpICs9IHZpcnRpby1pb21t
+dS5vDQo+ID4gIG9iai0kKENPTkZJR19JT01NVV9TVkEpICs9IGlvbW11LXN2YS5vDQo+ID4gIG9i
+ai0kKENPTkZJR19JT01NVV9JT1BGKSArPSBpby1wZ2ZhdWx0Lm8NCj4gPiBkaWZmIC0tZ2l0IGEv
+ZHJpdmVycy9pb21tdS9oeXBlcnYtaW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvaHlwZXJ2LWlycS5j
+DQo+ID4gc2ltaWxhcml0eSBpbmRleCA5OSUNCj4gPiByZW5hbWUgZnJvbSBkcml2ZXJzL2lvbW11
+L2h5cGVydi1pb21tdS5jDQo+ID4gcmVuYW1lIHRvIGRyaXZlcnMvaW9tbXUvaHlwZXJ2LWlycS5j
+DQo+ID4gaW5kZXggNDc5MTAzMjYxYWU2Li5kMTEwNzZmOTA2ZmIgMTAwNjQ0DQo+ID4gLS0tIGEv
+ZHJpdmVycy9pb21tdS9oeXBlcnYtaW9tbXUuYw0KPiA+ICsrKyBiL2RyaXZlcnMvaW9tbXUvaHlw
+ZXJ2LWlycS5jDQo+ID4gQEAgLTgsNiArOCw4IEBADQo+ID4gICAqIEF1dGhvciA6IExhbiBUaWFu
+eXUgPFRpYW55dS5MYW5AbWljcm9zb2Z0LmNvbT4NCj4gPiAgICovDQo+ID4NCj4gPiArI2lmZGVm
+IENPTkZJR19JUlFfUkVNQVANCj4gPiArDQo+ID4gICNpbmNsdWRlIDxsaW51eC90eXBlcy5oPg0K
+PiA+ICAjaW5jbHVkZSA8bGludXgvaW50ZXJydXB0Lmg+DQo+ID4gICNpbmNsdWRlIDxsaW51eC9p
+cnEuaD4NCj4gPiBAQCAtMjQsOCArMjYsNiBAQA0KPiA+DQo+ID4gICNpbmNsdWRlICJpcnFfcmVt
+YXBwaW5nLmgiDQo+ID4NCj4gPiAtI2lmZGVmIENPTkZJR19JUlFfUkVNQVANCj4gPiAtDQo+ID4g
+IC8qDQo+ID4gICAqIEFjY29yZGluZyA4MjA5M0FBIElPLUFQSUMgc3BlYyAsIElPIEFQSUMgaGFz
+IGEgMjQtZW50cnkgSW50ZXJydXB0DQo+ID4gICAqIFJlZGlyZWN0aW9uIFRhYmxlLiBIeXBlci1W
+IGV4cG9zZXMgb25lIHNpbmdsZSBJTy1BUElDIGFuZCBzbw0KPiA+IGRlZmluZSBAQCAtMzMxLDQg
+KzMzMSw0IEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3QgaXJxX2RvbWFpbl9vcHMNCj4gPiBoeXBlcnZf
+cm9vdF9pcl9kb21haW5fb3BzID0geyAuZnJlZSA9IGh5cGVydl9yb290X2lycV9yZW1hcHBpbmdf
+ZnJlZSwNCj4gPiAgfTsNCj4gPg0KPiA+IC0jZW5kaWYNCj4gPiArI2VuZGlmICAvKiBDT05GSUdf
+SVJRX1JFTUFQICovDQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaXJxX3JlbWFwcGlu
+Zy5jDQo+ID4gYi9kcml2ZXJzL2lvbW11L2lycV9yZW1hcHBpbmcuYyBpbmRleCBjMjQ0MzY1OTgx
+MmEuLjQxYmY2NWU0ZWE4OA0KPiA+IDEwMDY0NCAtLS0gYS9kcml2ZXJzL2lvbW11L2lycV9yZW1h
+cHBpbmcuYw0KPiA+ICsrKyBiL2RyaXZlcnMvaW9tbXUvaXJxX3JlbWFwcGluZy5jDQo+ID4gQEAg
+LTEwOCw3ICsxMDgsNyBAQCBpbnQgX19pbml0IGlycV9yZW1hcHBpbmdfcHJlcGFyZSh2b2lkKQ0K
+PiA+ICAJZWxzZSBpZiAoSVNfRU5BQkxFRChDT05GSUdfQU1EX0lPTU1VKSAmJg0KPiA+ICAJCSBh
+bWRfaW9tbXVfaXJxX29wcy5wcmVwYXJlKCkgPT0gMCkNCj4gPiAgCQlyZW1hcF9vcHMgPSAmYW1k
+X2lvbW11X2lycV9vcHM7DQo+ID4gLQllbHNlIGlmIChJU19FTkFCTEVEKENPTkZJR19IWVBFUlZf
+SU9NTVUpICYmDQo+ID4gKwllbHNlIGlmIChJU19FTkFCTEVEKENPTkZJR19IWVBFUlYpICYmDQo+
+ID4gIAkJIGh5cGVydl9pcnFfcmVtYXBfb3BzLnByZXBhcmUoKSA9PSAwKQ0KPiA+ICAJCXJlbWFw
+X29wcyA9ICZoeXBlcnZfaXJxX3JlbWFwX29wczsNCj4gPiAgCWVsc2UNCj4gDQoNCg==
