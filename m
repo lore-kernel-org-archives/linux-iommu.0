@@ -1,51 +1,50 @@
-Received: from relay.yourmailgateway.de (relay.yourmailgateway.de [188.68.63.98])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 212EE391517;
-	Wed, 13 May 2026 06:50:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=188.68.63.98
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1C482D12ED
+	for <iommu@lists.linux.dev>; Wed, 13 May 2026 06:59:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778655059; cv=none; b=sC7GN9fYIK9iXjZFido3bTL0VF8S4CMb+5mDzy3sPcLFh0Ph6Qhj48TKhdavD+Pz6uAOjkOk8VLBZdsgTRMZ6pCrNbUFu4OP93Uz3MzMX2PwociFIHNhSGTE2bfbL/MI7Im43ppN2mFfb9Khgv6nxUs+/c6Ob3txunGEwUF6VLY=
+	t=1778655559; cv=none; b=pLtTEKW2RpcMrEaBeME7YtoF39yW5BHnAZT3vnElOmZ5aGUWHUe+VN08lxMikWlcWyFcv5s2aduESBXlLEifWIj3DNOET3hTke3Uba5xJPbWr+epw1G/xlgcA+AKQMTjs2GSVtE9amsfMvAtofEbWlWZZMxp7Xt3JoplXMQpKOM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778655059; c=relaxed/simple;
-	bh=lTDwtGysRq7hkS0Y7aGitl6TT3RUqPXqifYMKOQ3eg4=;
+	s=arc-20240116; t=1778655559; c=relaxed/simple;
+	bh=u/5enIcr7VRpXJQ6J20DXBwlIJBgiLhXA59pBk4Zgz4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Q4+HrvRCoJoiR3whum/K7fNjrIsxmOwFHKjWVHtImnO6K2xVtbbIdkE/wR6O9zGf43f32cUe1xOh15SyS0LsEqMQxF5a1t2TisVI9AV5B3l+CRpPWPqtM2+7u/O+QDxmjXM1dUhZe7SL/Bjvx2cdx+0G12TyIz4uzcu0h7mpKOs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=leemhuis.info; spf=pass smtp.mailfrom=leemhuis.info; dkim=pass (2048-bit key) header.d=leemhuis.info header.i=@leemhuis.info header.b=XWNgHdNb; arc=none smtp.client-ip=188.68.63.98
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=leemhuis.info
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=leemhuis.info
+	 In-Reply-To:Content-Type; b=bGpj59UYr02mZlY6HYAknDPkrZ7n0lq01CEMt2K5nayCQNK1G5dSXYLWKAf6K1oYj/QyD3WIUZeIMyvJYAJqq9SX1qgzRjYYCQmQauC4U6UrseWXgwUBzixXLTNcaEpr63OiVNhBqnid9Lx/VhSYEnwDBBJdswLrUOI9gXRd+xA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ko11BalG; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=leemhuis.info header.i=@leemhuis.info header.b="XWNgHdNb"
-Received: from mors-relay-2501.netcup.net (localhost [127.0.0.1])
-	by mors-relay-2501.netcup.net (Postfix) with ESMTPS id 4gFkcm1WMLz6DMP;
-	Wed, 13 May 2026 08:50:48 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=leemhuis.info;
-	s=key2; t=1778655048;
-	bh=lTDwtGysRq7hkS0Y7aGitl6TT3RUqPXqifYMKOQ3eg4=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=XWNgHdNbT8uQ0+OXW1SrsQ362+PJ5nlh5PEa4oI+GD+BLJCo//74HA2pxSCRAjK6/
-	 fo6RdQI7wEtpsinJfOB8Fq39BSgEPoJO1Qga2sk4C28o0splZk9Exq/f5bDrIhPZFF
-	 yV5h+4m/EGYqVzdeyViOXZJyx8NJlRmUIPTlDtuThthOpuEqdrS5Lxstdkenvzg1AY
-	 GmiU0Z4Pv8KqshRWvwMg0fPA0NRO58ipqbAvuFR0oVI07LZC4yhSjinb9jZjDe4+C5
-	 d7eKjKGsNTUBbKsCRJRelQ7ySqkaB06aQ5fbxCaKA1nqTYQda3VfhHBVU8R064xp1L
-	 wmA6gkbsCpuMw==
-Received: from policy02-mors.netcup.net (unknown [46.38.225.35])
-	by mors-relay-2501.netcup.net (Postfix) with ESMTPS id 4gFkcm0kg6z4xvt;
-	Wed, 13 May 2026 08:50:48 +0200 (CEST)
-Received: from mxe9fb.netcup.net (unknown [10.243.12.53])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by policy02-mors.netcup.net (Postfix) with ESMTPS id 4gFkcl300Hz8sch;
-	Wed, 13 May 2026 08:50:47 +0200 (CEST)
-Received: from [IPV6:2a02:8108:8984:1d00:a0cf:1912:4be:477f] (unknown [IPv6:2a02:8108:8984:1d00:a0cf:1912:4be:477f])
-	by mxe9fb.netcup.net (Postfix) with ESMTPSA id 79E3B60305;
-	Wed, 13 May 2026 08:50:46 +0200 (CEST)
-Authentication-Results: mxe9fb;
-        spf=pass (sender IP is 2a02:8108:8984:1d00:a0cf:1912:4be:477f) smtp.mailfrom=regressions@leemhuis.info smtp.helo=[IPV6:2a02:8108:8984:1d00:a0cf:1912:4be:477f]
-Received-SPF: pass (mxe9fb: connection is authenticated)
-Message-ID: <a2a3fecb-5b9e-4574-bd23-fe7e0ce14bfa@leemhuis.info>
-Date: Wed, 13 May 2026 08:50:45 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ko11BalG"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778655557; x=1810191557;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=u/5enIcr7VRpXJQ6J20DXBwlIJBgiLhXA59pBk4Zgz4=;
+  b=ko11BalGt+TPY8zB4armR+lVG7PINOyzmXIfZ3FNCJP8A+W/A8mL2fpq
+   8AbNBycJL6+pr6MqJZiWPE/Cjdmo4cFyoMVjoOqbIdqO3C0n3P+/vqDCs
+   GTnih+tLpLXtWgAqszVO/skpmpjQg7g/UpfrqK/8f/hBlfR6UTC2hfKrs
+   wlBV8W9OX/q2W4r5iI8wPLWN5AUuqGXHAAWMwPGeeH3ED+kBEVSEs2cgU
+   f+TgKUJDllTZjy7AK4eJrtGW6iPTp0qY6MYJz3DMCTXjq1X7GnKNuvV1i
+   rVgvwaO/DkwjJBhXilD8TNiBifvgfdxz3KcsxDHKFUetiwQyUtsgquAXN
+   Q==;
+X-CSE-ConnectionGUID: Ml9YtQdFRhW5nXNPJzWMFA==
+X-CSE-MsgGUID: BexgVIwZR5exLZEm71nIcQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11784"; a="79288067"
+X-IronPort-AV: E=Sophos;i="6.23,232,1770624000"; 
+   d="scan'208";a="79288067"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 23:59:17 -0700
+X-CSE-ConnectionGUID: aEsqia+WRGmzeBnIR9fBCA==
+X-CSE-MsgGUID: 8XitU1f/Sb+QM77/oCmPbA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,232,1770624000"; 
+   d="scan'208";a="261490423"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 23:59:12 -0700
+Message-ID: <da30f8e1-b794-4bcf-9c96-7e38f319cf35@linux.intel.com>
+Date: Wed, 13 May 2026 14:58:40 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,46 +52,135 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [REGRESSION] GPU passes into VM improperly after c376a3456d8b or
- a98db518dde2
-To: 70sp <70sp@protonmail.com>, Baolu Lu <baolu.lu@linux.intel.com>
-Cc: "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+Subject: Re: [PATCH v5 2/9] iommufd: Support a HWPT without an iommu driver
+ for noiommu
+To: Jacob Pan <jacob.pan@linux.microsoft.com>, linux-kernel@vger.kernel.org,
  "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: 
- <z7Rkts0EsooZcnCjNfJaK6ursftFU8ubOkH0hcNjzxugEAwGsHLMblOdfoAx-gJzBZ-TMmeUtD7iWBngbFY5UCJCwdSmYqmCVMy-yhbirUk=@protonmail.com>
- <56ce85d5-e0b9-407c-9a86-708111a8a509@linux.intel.com>
- <C4BK-Bp_FII0EkxSHQxBS2wO-Age-UxFrp_KfmYzb8cnQ8ZndzBBIPD8S9T86wOifBP0tysQGCFtGQsBsBvG2IzIMw3jb3NF5HGbS3tsawA=@protonmail.com>
- <d6a7f70c-5a8a-4be6-abdd-5b3decbb602a@linux.intel.com>
- <uaUIyysjsnLHVLladjVXkuU63CTRoEzcw3BdlDX2cdkt8T82i0AX79VQAJo08uMKvpnn20xyK0Pu2PrtyMV3hmSgcwutWhV14fgjyTW3aiQ=@protonmail.com>
-From: Thorsten Leemhuis <regressions@leemhuis.info>
-Content-Language: de-DE, en-US
-In-Reply-To: 
- <uaUIyysjsnLHVLladjVXkuU63CTRoEzcw3BdlDX2cdkt8T82i0AX79VQAJo08uMKvpnn20xyK0Pu2PrtyMV3hmSgcwutWhV14fgjyTW3aiQ=@protonmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-PPP-Message-ID: <177865504675.1976311.7887495488887018125@mxe9fb.netcup.net>
-X-Rspamd-Server: rspamd-worker-8404
-X-Rspamd-Queue-Id: 79E3B60305
-X-NC-CID: OC9jNeE25qOyWQ8qzWOwPFA2h/g5tnaGARNRJA+duQgKG9F5xG8=
+ Jason Gunthorpe <jgg@nvidia.com>, Alex Williamson <alex@shazbot.org>,
+ Joerg Roedel <joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>,
+ David Matlack <dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+ Yi Liu <yi.l.liu@intel.com>
+Cc: Saurabh Sengar <ssengar@linux.microsoft.com>, skhawaja@google.com,
+ pasha.tatashin@soleen.com, Will Deacon <will@kernel.org>
+References: <20260511184116.3687392-1-jacob.pan@linux.microsoft.com>
+ <20260511184116.3687392-3-jacob.pan@linux.microsoft.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20260511184116.3687392-3-jacob.pan@linux.microsoft.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On 4/29/26 22:30, 70sp wrote:
-> So I have tested it on both a working kernel (v6.12) and an affected kernel (mainline).
->  
-> I managed to get the domain translation structures on the affected kernel, but couldn't get them on the working one since reading the file always ended up in a system crash or a segmentation fault.
->  
-> I also couldn't get the PASID table entries, because the GPU doesn't support PASID.
->  
-> Domain translation structures:
-> GPU: https://pastebin.com/4EY5Wmsj
-> GPU audio device: https://pastebin.com/fLf7weii
->  
-> I've also looked through dmesg on both configurations, and on the affected kernel, this was the only data I found to have atleast something different. (On the working kernel basically nothing was reported)
->  
-> Referenced snippet of dmesg: https://pastebin.com/5e3jQ2BL
+On 5/12/26 02:41, Jacob Pan wrote:
+> From: Jason Gunthorpe<jgg@nvidia.com>
+> 
+> Create just a little part of a real iommu driver, enough to
+> slot in under the dev_iommu_ops() and allow iommufd to call
+> domain_alloc_paging_flags() and fail everything else.
+> 
+> This allows explicitly creating a HWPT under an IOAS.
+> 
+> A new Kconfig option IOMMUFD_NOIOMMU is introduced to differentiate
+> from the VFIO group/container based noiommu mode.
+> 
+> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+> Signed-off-by: Jacob Pan<jacob.pan@linux.microsoft.com>
+> ---
+> v5:
+>     - Use the new IOMMUFD_NOIOMMU Kconfig instead of VFIO_NOIOMMU
+>     - Use consistent wording referring to VFIO noiommu mode (Kevin)
+>     - Copyright date fix (Kevin)
+> v4:
+>     - Make iommufd_noiommu_ops const
+> v3:
+>     - Add comment to explain the design difference over the
+>       legacy noiommu VFIO code.
+> ---
+>   drivers/iommu/iommufd/Kconfig           |  13 +++
+>   drivers/iommu/iommufd/Makefile          |   1 +
+>   drivers/iommu/iommufd/hw_pagetable.c    |  15 +++-
+>   drivers/iommu/iommufd/hwpt_noiommu.c    | 102 ++++++++++++++++++++++++
+>   drivers/iommu/iommufd/iommufd_private.h |   2 +
+>   5 files changed, 131 insertions(+), 2 deletions(-)
+>   create mode 100644 drivers/iommu/iommufd/hwpt_noiommu.c
+> 
+> diff --git a/drivers/iommu/iommufd/Kconfig b/drivers/iommu/iommufd/Kconfig
+> index 455bac0351f2..74d6ea5b5b3b 100644
+> --- a/drivers/iommu/iommufd/Kconfig
+> +++ b/drivers/iommu/iommufd/Kconfig
+> @@ -16,6 +16,19 @@ config IOMMUFD
+>   	  If you don't know what to do here, say N.
+>   
+>   if IOMMUFD
+> +config IOMMUFD_NOIOMMU
+> +	bool
+> +	depends on !GENERIC_ATOMIC64 # IOMMU_PT_AMDV1 requires cmpxchg64
+> +	select GENERIC_PT
+> +	select IOMMU_PT
+> +	select IOMMU_PT_AMDV1
+> +	help
+> +	  Provides a SW-only IO page table for devices without hardware
+> +	  IOMMU backing. This uses the AMDV1 page table format for
+> +	  IOVA-to-PA lookups only, not for hardware DMA translation.
+> +
+> +	  Selected by VFIO_CDEV_NOIOMMU. Not intended to be enabled directly.
+> +
+>   config IOMMUFD_VFIO_CONTAINER
+>   	bool "IOMMUFD provides the VFIO container /dev/vfio/vfio"
+>   	depends on VFIO_GROUP && !VFIO_CONTAINER
+> diff --git a/drivers/iommu/iommufd/Makefile b/drivers/iommu/iommufd/Makefile
+> index 71d692c9a8f4..67207914bb6e 100644
+> --- a/drivers/iommu/iommufd/Makefile
+> +++ b/drivers/iommu/iommufd/Makefile
+> @@ -10,6 +10,7 @@ iommufd-y := \
+>   	vfio_compat.o \
+>   	viommu.o
+>   
+> +iommufd-$(CONFIG_IOMMUFD_NOIOMMU) += hwpt_noiommu.o
+>   iommufd-$(CONFIG_IOMMUFD_TEST) += selftest.o
+>   
+>   obj-$(CONFIG_IOMMUFD) += iommufd.o
+> diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
+> index fe789c2dc0c9..0ae14cd3fc72 100644
+> --- a/drivers/iommu/iommufd/hw_pagetable.c
+> +++ b/drivers/iommu/iommufd/hw_pagetable.c
+> @@ -8,6 +8,15 @@
+>   #include "../iommu-priv.h"
+>   #include "iommufd_private.h"
+>   
+> +static const struct iommu_ops *get_iommu_ops(struct iommufd_device *idev)
+> +{
+> +	if (IS_ENABLED(CONFIG_IOMMUFD_NOIOMMU) && !idev->igroup->group)
+> +		return &iommufd_noiommu_ops;
+> +	if (WARN_ON_ONCE(!idev->dev->iommu))
+> +		return NULL;
+> +	return dev_iommu_ops(idev->dev);
+> +}
+> +
+>   static void __iommufd_hwpt_destroy(struct iommufd_hw_pagetable *hwpt)
+>   {
+>   	if (hwpt->domain)
+> @@ -114,11 +123,13 @@ iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+>   				IOMMU_HWPT_ALLOC_DIRTY_TRACKING |
+>   				IOMMU_HWPT_FAULT_ID_VALID |
+>   				IOMMU_HWPT_ALLOC_PASID;
+> -	const struct iommu_ops *ops = dev_iommu_ops(idev->dev);
+> +	const struct iommu_ops *ops = get_iommu_ops(idev);
+>   	struct iommufd_hwpt_paging *hwpt_paging;
+>   	struct iommufd_hw_pagetable *hwpt;
+>   	int rc;
+>   
+> +	if (!ops)
+> +		return ERR_PTR(-ENODEV);
 
-Lo! Baolu, just wondering: what happened to this? It seems things
-stalled. Or was there any progress to fix the regression that I missed?
-Or do you need more data from 70sp? Ciao, Thorsten
+Nit: it's unnecessary to add this check. get_iommu_ops() will WARN if
+ops is NULL. The previous code assumes that ops is always valid and does
+not return here. If you want to change this behavior, it’s better to
+explain the reasoning in the commit message.
 
+Otherwise it looks good to me.
 
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+
+Thanks,
+baolu
