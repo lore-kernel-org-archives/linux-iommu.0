@@ -1,129 +1,172 @@
-Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6688335839C
-	for <iommu@lists.linux.dev>; Wed, 13 May 2026 17:11:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C4154DB574
+	for <iommu@lists.linux.dev>; Wed, 13 May 2026 17:24:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778692263; cv=none; b=d1OgPNHTCVCN8wGdL0ba/MQ5dpZF7FTtGH54bVBoBoMYKrNryRLybiGUVsk2/jhGcaSws5H+aMkYS9G2LPCSJ7MRoALLbRC53pgVbdrniug5zJNio7v4UlGkCVQBmQw1cwpEZT6HEbUbP5g0Zbb4AjtnLXdCywUbRghWOPQhpgs=
+	t=1778693100; cv=none; b=Iul9Fq6sy70Xer1vy0ouvXD7KsIFwxJVX5+DomCxeIiCUTv8bUsbt75rczRCbt3FUui211MgJGz55RNWpL6JJxOxw4TAiI3ffJ2O2wPdE42LD8s2sw+FHwlpXvUX0nesdYx3W5QIsXXfSlg3f2ASwN8fAM2IsoK142qCAQsgIwM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778692263; c=relaxed/simple;
-	bh=QW93lb1fdkpsnUJto5D4XyEklvCRZfMWCbZsUem2uAk=;
+	s=arc-20240116; t=1778693100; c=relaxed/simple;
+	bh=BfC504n+kThMXbLodptWdwF+5sTWwaf4D5wXQNX5RnE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SXQci5oGzgcgvGlVSp6BeR7qKzhwm8F9S8ILEVHosz6ctYXwBfwQlfhFt/a6gfXKj+Aeze6IsIbC4NhX16c3MDc1wC9gu29g9luTTxjzisqujeNynPQ0mwssngZzG/Ej0XxMRbYrknhREIvZMd4YjoNcMte8Pnc/wCj0A1yKbdI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=UTTOrSCq; arc=none smtp.client-ip=209.85.219.49
+	 Content-Type:Content-Disposition:In-Reply-To; b=esbdUbn9Jl3xkUQ48caUupHF70eqGrzzjXRWocHHT+6FU9zNhPgFhOxEbk1Lx9tj0XoGkDsHncqWKfhGoxKhfApytM2+tg+vtXDnDu1WmViMcUGuLKsucxSmFKyG9+REO3tTPtrJcu+tbPPt+9gn+B7xZc1My0e/5LhiP9x448I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=diTLTNGm; arc=none smtp.client-ip=209.85.222.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="UTTOrSCq"
-Received: by mail-qv1-f49.google.com with SMTP id 6a1803df08f44-8b81586dff3so81021046d6.1
-        for <iommu@lists.linux.dev>; Wed, 13 May 2026 10:11:01 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="diTLTNGm"
+Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-9103019f8c4so73483785a.3
+        for <iommu@lists.linux.dev>; Wed, 13 May 2026 10:24:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1778692260; x=1779297060; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=LFS+fpNwj5CoQBfOxdsT86bztMTzUd1XUisAgFNuBCE=;
-        b=UTTOrSCqRGI20oWk7GLP16R/GfJvM7+28XaH7slpD8pJQvGReqeoDS8/PzxAjVQE6X
-         1OJV43sX6ua5/FyPCjdPiz0irs3XdJTsIGXOBwdzNaTHypTwRCztBKRrsQ2vhjiJG08G
-         apaEzWFEHgz/plbggUEfyN9VbLbOCITmtHHL13ocXOdbxl6XtYC9cI2/pzHTOppsEuqW
-         OsR1Z/B8ZS9hZ3P2L+vTSXDaLCzSX2fF2c216ikF4lGmWP3/CDa8D+gvT6HyWFFXXYwM
-         gG9i3FQgMuA9+dSduw0fZX5M6D9iDFB0axc3qCuWNHem+dOB0CINUDad++2z5/p327ug
-         H8bw==
+        d=ziepe.ca; s=google; t=1778693092; x=1779297892; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=fQtwNmxswhQih8gmC6FPDl+zfVKzr3i0rq4YmglfcBk=;
+        b=diTLTNGmhCzdtJ+NRsujqK+1p/V4K8syBN7koLP8469L3r5vDF8JmO9dVYvGRYQ0JO
+         GQ4+v62TgIC5yZ1XXI+khnEcjBWf/vMziwrSTq5V2Zif5/iDDg4yqURpG3pgf5FSAxqy
+         NkAeHJN4Ur8P53UGvYapAHzmCTTP3l7radxOY0U5LkTOxRHhuQBzKAOmFzf6MPFqgF/g
+         y7JU21ZOfCTiroh9dQkDRAfVqKQ3+IAih6J//pbBVvr2OYjGhBBDmUdlMy5SgVaWVIzR
+         olnPTOMuYD0xzd6t/cQaassSeCkY5IGJZKhVn9/mzDDbj8tnnsjsOo8gSa4r3MfB81Ho
+         HJPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778692260; x=1779297060;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=LFS+fpNwj5CoQBfOxdsT86bztMTzUd1XUisAgFNuBCE=;
-        b=mJZqWJKyB/FChthz8lp2hXrdDfskBC0hog53+MxfDOO/k4gdQXK7BAdRgilKPVvMB7
-         fFo3MRy8HPQbMqJbRcZPZWYESGDEc1fohQCgVzolRuTAB+snYFhTcbUKCIvsfm3FPVdq
-         J/ktWYmELvI45zoxq7xTepYwxDVTebDVdqEEUMFYRNk2VzRc2LG4cSED7mpmnH1St7CT
-         7iM91I43RAjPyzh2ZQ0C9ax8J0JthEPESzvL8XORQckvDMw/v7qw8bEUKYFVFzcgB/z4
-         mko0exiy802akEzFAu2Bv2yTLc9V5zihZytahvXv8SfYYhQeE8SbCrBZ2vR/v5jaHTOn
-         Efkg==
-X-Forwarded-Encrypted: i=1; AFNElJ/Nyv39NI+XQfCOnhnr7QXpBCcxBIORztoNqV7csuT5hhq5X2Ed3x4E7p8+svTOdSKbpZAHdA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzqTvy8OcN8pK7/MR32o20iMsTmzzfHvBdegEm9SHDAFA8nHFcr
-	Yp1TvMxjrUZq/STFNcFzVeXHVK7LyyfZZgqFxOZpBFJgl1EhipSetp0SIheKC9afIsY=
-X-Gm-Gg: Acq92OFlxVbUXokvlP8mNNLBXTXN4OrIl0mSr3/6Fgsyu2UiAZu52gIHbXsM3gEdR8G
-	gH0iy1VhElqZSjxmiQRJAdkrXaZKfuNUrRBSfYUDHgOoncFKSKu5p9xkd0hiHPh7MV/7SOuSHVl
-	xaV+7mPeMPG67TB67UzckI3jDe6lv4Z4PWN/0A/dfSYoUyQLqzFfwy4tPs5uUa5Jhzkb/SMgS/4
-	8R9IXPOTby9MUyPEJs8MXoS49T05v2zhAVRtDya4THKyhcrtpGo54vlyt7OvaVFR7ur4JXQcnaB
-	jZCdqWpxHILzx7NAaC5dTVdM5nc/JTI65NB7cL24nJvo0ALsXusedLtlo9sHfYuLYyIpjqzoje+
-	aHD/+ID6S5JTpUIzW4/VcKZ39EvW0u3V5HcBLn+ZuweA7B4f34CWUVGX6sEFB4MpLjwjYniE0X+
-	sS2FPrPMtPxuSnAtmarMyBykNx1FLGLKEu0zqlgdD6Pze4cgEyTOAo8pHLfhwlQNu+lE42gHm12
-	9p8SA==
-X-Received: by 2002:a05:6214:4697:b0:8c6:1e19:80a4 with SMTP id 6a1803df08f44-8c7bc91b0d7mr58558936d6.26.1778692260161;
-        Wed, 13 May 2026 10:11:00 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1778693092; x=1779297892;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=fQtwNmxswhQih8gmC6FPDl+zfVKzr3i0rq4YmglfcBk=;
+        b=e5WuONim//nNxaTgmNEMbdplLefz75ACyBYhkbdEMEBOw5VrVbV6zz4qeKoMv14jRG
+         xaZ74Vp5Roj9WyyvJCpHyAnqsRSWbslMBqDcqDF7kkYl3RrB7z41z2T2RPlKEY6fdK3q
+         tze5sl+CjQOQkAAq4pRJ0+/XwBMPPty9PbGY+5PeywjxOHk6QpwSNsA88F6V+YMzE3Pf
+         YocRqDteg2grwMPV88H3Acmo9vMWyvRyeuiRbu1GrWaqojSKVgIws4/SMJGbS6n7/dXz
+         WzUpC91gvRNhF0Fv1Ng6mD8yKRvADIxYOo2Utr2TE0XUakfmLgMvhT1IBLNVgVG1QqFZ
+         zN4A==
+X-Forwarded-Encrypted: i=1; AFNElJ8jIhHBstkfNlGL+o1moMlj444xSBk8D5kJrLGQ7ZouXfRDPYfIS2pFpRly75DYhtwmOh8/FQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxgsus6j3+34nB1t9duEV+w9q0EsRNCnUcyktJz6JqVP1V4iXoW
+	1YbcYoFbe6FTXQc0uZSkr4rrM44CelXB2xVpEzCqbNNajLeH5ZCSBBBphutfCEO+PLg=
+X-Gm-Gg: Acq92OEDrXG1XVHOSAM0RMtL939P1q0+Cvbv0EkZCXPL/FCDfvG7OeWdVhl36oPaCQx
+	lnn1znCxDgrhf0bn5XW+d1UPQkB3cZGzTdCyJMRm+stHetWkLL2cP3d3h0a0LdazFISnoUf1ujg
+	bAIkTiKGxZuZx8zzxqKi61KyK6AJihY/S5wRZL9V4klhlz0zjfSJPrnElsqXFvYKLqJW09OrgMP
+	y7+5gLLi8gfvYV7Vs7i6RB0jrIg0qckEpwNy4EkMyAIMCss43ljnrNFgmOt08bZZODNOYqiqG8O
+	R/WQIetMevcHiA7T1nZdW5AjRxc68JwZUbPF7CMvNXQBZnUDSnHFwFGWYikuXYoGh4javFZ3b1F
+	ONwVf8MGIGNdYGAlkgltI148rJ1FfrWL+yaXljozbqxUv2Q61fiPP357YbTp4yovexgn4hW2Xx7
+	NsNRTv9iGOhTdrYbpzp8ynGjSS9oA4dzy3akkmKPSRKBwvTBqZ2flBvJ+X66U527vrSJTAAE1kt
+	78KyA==
+X-Received: by 2002:a05:620a:19a3:b0:8ee:42cc:4d9c with SMTP id af79cd13be357-90f8ac08735mr658592985a.39.1778693092335;
+        Wed, 13 May 2026 10:24:52 -0700 (PDT)
 Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8c90c358539sm710716d6.41.2026.05.13.10.10.59
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-910bc83bbf5sm13598685a.28.2026.05.13.10.24.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 May 2026 10:10:59 -0700 (PDT)
+        Wed, 13 May 2026 10:24:50 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1wND6p-00000003cRB-0Am8;
-	Wed, 13 May 2026 14:10:59 -0300
-Date: Wed, 13 May 2026 14:10:59 -0300
+	id 1wNDKE-00000003dZu-0jxL;
+	Wed, 13 May 2026 14:24:50 -0300
+Date: Wed, 13 May 2026 14:24:50 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Joonwon Kang <joonwonkang@google.com>
-Cc: Alexander.Grest@microsoft.com, amhetre@nvidia.com,
-	baolu.lu@linux.intel.com, easwar.hariharan@linux.microsoft.com,
-	iommu@lists.linux.dev, jacob.jun.pan@linux.intel.com,
-	joro@8bytes.org, jpb@kernel.org, kees@kernel.org,
-	kevin.tian@intel.com, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, nicolinc@nvidia.com, praan@google.com,
-	robin.murphy@arm.com, smostafa@google.com, will@kernel.org
-Subject: Re: [PATCH RFC] iommu: Enable per-device SSID space for SVA
-Message-ID: <20260513171059.GP7702@ziepe.ca>
-References: <20260512151133.GD7702@ziepe.ca>
- <20260513170333.1235601-1-joonwonkang@google.com>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>, Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
+	linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
+Subject: Re: [PATCH v4 04/13] dma: swiotlb: track pool encryption state and
+ honor DMA_ATTR_CC_SHARED
+Message-ID: <20260513172450.GR7702@ziepe.ca>
+References: <20260512090408.794195-1-aneesh.kumar@kernel.org>
+ <20260512090408.794195-5-aneesh.kumar@kernel.org>
+ <agSKQrSIhizCXKwx@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260513170333.1235601-1-joonwonkang@google.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <agSKQrSIhizCXKwx@google.com>
 
-On Wed, May 13, 2026 at 05:03:33PM +0000, Joonwon Kang wrote:
-> > On Tue, May 12, 2026 at 02:51:38PM +0000, Joonwon Kang wrote:
-> > 
-> > > Appreciate all your clarifications here. So, my understanding is that if
-> > > our system does not support ST64BV and ST64BV0 or if our device does not
-> > > distinguish between the posted write and the non-posted write regarding
-> > > PASID, then we can lift the use of the global PASID space. Can I say this?
-> > 
-> > You should do what Robin said - just have your driver use a per-device
-> > PASID that it allocates and never use the global pasid allocator.
-> > 
-> > To do this lightly re-organize the SVA code so the driver can supply
-> > its own PASID, and in this mode we wouldn't activate the ENQCMD
-> > features in the mm.
-> 
-> Ah, we could actively disallow EL0 to execute ENQCMD-like instructions
-> when the device driver explicitly shows the intention via a new API like
-> `iommu_sva_bind_device_pasid()` that Tian mentioned earlier. 
+On Wed, May 13, 2026 at 02:27:14PM +0000, Mostafa Saleh wrote:
 
-You shouldn't need to do anything like this. 
+> > +		/*
+> > +		 * if platform supports memory encryption,
+> > +		 * restricted mem pool is decrypted by default
+> > +		 */
+> > +		if (cc_platform_has(CC_ATTR_MEM_ENCRYPT)) {
+> > +			mem->unencrypted = true;
+> > +			set_memory_decrypted((unsigned long)phys_to_virt(rmem->base),
+> > +					     rmem->size >> PAGE_SHIFT);
+> > +		} else {
+> > +			mem->unencrypted = false;
+> > +		}
+>
+> This breaks pKVM as it doesn’t set CC_ATTR_MEM_ENCRYPT, so all virtio
+> traffic now fails.
 
-All you need is to ensure that mm_get_enqcmd_pasid() returns
-IOMMU_PASID_INVALID so long as a the normal iommu_sva_bind_device()
-hasn't been called. Once it is called it is fine to allow the ENQCMD.
+How will pKVM signal what kind of memory the DMA needs then?
 
-Your new iommu_sva_bind_device_pasid() needs to establish the SVA and
-attach it without triggering mm_get_enqcmd_pasid().
+Does it use set_memory_decrypted()? How can it use
+set_memory_decrypted() without offering CC_ATTR_MEM_ENCRYPT ?
 
-The arch code is required to block the ENQCMD like instructions when
-IOMMU_PASID_INVALID.
+> Also, by design, some drivers are clueless about bouncing, so
 
-Devices that can mmap an ENQCMD sensitive BAR region must not do so
-unless iommu_sva_bind_device() has been called.
+Oh? What does this mean? We take quite a dim view of drivers mis-using
+the DMA API..
 
-> To allocate a per-device PASID, I think we should do it using
-> `dev->iommu_group->pasid_array` instead of making the device driver
+> I believe that the pool should have a way to control it’s property
+> (encrypted or decrypted) and that takes priority over whatever
+> attributes comes from allocation.
 
-No, make the driver manage this, don't mess with the core code. PASID
-isn't supported with multi-device groups already.
+We should get here because dma_capable() fails, and then swiotlb needs
+to return something that makes dma_capable() succeed. Yes, it should
+return details about the thing it decided, but it shouldn't have been
+pre-created with some idea how to make dma_capable() work.
+
+If dma_capable() can fail, then swiotlb should know exactly what to do
+to fix it.
+
+If pkvm wants to use the hacky scheme where you force a swiotlb pool
+configuration during arch init with force swiotlb that's a somewhat
+different flow and, sure the forced pool should force do whatever it
+is forced to.
+
+But lets try to keep them seperated in the discussion..
+
+> And that brings us to the same point whether it’s better to return
+> the memory along with it’s state or we pass the requested state.
+> I think for other cases it’s fine for the device/DMA-API to dictate
+> the attrs, but not in restricted-dma case, the firmware just knows better.
+
+The memory type must be returned back at some level so downstream
+things can do the right transformation of the phys_addr_t.
+
+One of the aspirational CC things that should work is a T=1 device
+tries to DMA from a decrypted page, finds the address is above the dma
+limit of the device, so it bounces it with SWIOTLB to an encrypted low
+address page and then the DMA API internal flow switiches from working
+with decrypted to encrypted phys_addr_t.
+
+If we can make that work then maybe the flows are designed correctly.
 
 Jason
