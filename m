@@ -1,190 +1,228 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E921349CE6
-	for <iommu@lists.linux.dev>; Wed, 13 May 2026 14:27:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA2B43101A6
+	for <iommu@lists.linux.dev>; Wed, 13 May 2026 14:30:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778682479; cv=none; b=hAcYEYTxBzxdaWBC3VVkWcLNLvN7H4okppZen+KsO3pyQO0EoU7Og/Hd1DrdCDU67xyFtpo9yVEteU9Q8v/GFLZfSMVwdiWk/fICdCaJC+wuXp12vprayh4pFdpvpa2jvMpgTJfNd+A5MjG1mZrjV+HkptZktBQYrFmWs6lixkU=
+	t=1778682653; cv=none; b=LiumOt1gPZbhblN3o0DBpSdGWNtTF6QoSDrj+fyQxLhe5JleiIP3WJfxDqyxJgOIZGqeuJMv8HnPKNNN0laK9K8FuABt4zDv1cc+lYnpg9BF+nnNuVaTqNj/9cCrlM73MJ1BnX6LsNS1g7Zg+orrGPrR5CmSyrrQVll6ePtigPM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778682479; c=relaxed/simple;
-	bh=XJ3mfSG5bhBulx6TUSY6t5fiBkHC3+OsF05wOi9w0bM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=o9Y/I9eH/JaKrv79Q+fof/p8b2zbNp2g/ZuNQAxc9N6h3zer1lGbC3VLMScijxRHomNliGrF+4LJNfxCoo6+Yoe9Q9K1aiQ5lD4zrqSJFhf+y5TkGXJw2ajFbg0OIJAqkX+NVqE8kW1l/UFefDiFVHYgPGJ0Tu5efwfmJCwEQsM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Bb6tMWjK; arc=none smtp.client-ip=209.85.214.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1778682653; c=relaxed/simple;
+	bh=9vwn9p/G3SBynF/R6x9abjmpGFFEqEuhbl5fGpI/Xo4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Os/5SB4HvVjmhlHADHOQcgVfMy8tkqsU7GLHFHjQi7kNJV36tlUjnQgCMyK0JOfTEzVg7R3UamEneCQ0Ga3hDzhLkfkQ1tDHkEVIi/DuClnSyLjppgxk1JdJkRENj5Kpmj9FoRh/GbWUuyvQe18XmmHtYifZZmSnbRNObkb7tBE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=ZV2cLJMZ; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=dNLycbkO; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Bb6tMWjK"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2ba3b9bcf69so135ad.0
-        for <iommu@lists.linux.dev>; Wed, 13 May 2026 07:27:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="ZV2cLJMZ";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="dNLycbkO"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64D8mGud3474786
+	for <iommu@lists.linux.dev>; Wed, 13 May 2026 14:30:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	kRdRHlj/4FYDgqpaQppw+iq5ofthvt61GQTIwvPfv54=; b=ZV2cLJMZDRi4atUp
+	7gvRykW+ST4ITAgk7scyikVL3gdndFwbo8rKTvUhKXHkmRh/l9CrpfFMY8yQXqfG
+	fT9sv3BgWY/Wsuqf8WPUwAkc/+JoL1+oobkfZhbjbqrzfufmDCbHaF2fSMCVmocp
+	rmcAijS8MpXPFEyF2JSxlejK06CsckT/SHVM++3DHpn0MHHMBpcl7Slt/x74oKsa
+	dRsXBYABpnZuaBFVG4o5QVV47Kd1LSVnr7DLXBmIWFlT8seqt/qaU2Wpm5nQC6M9
+	Ge4mMXfPQ5jIZjrneJpkuiyZr+GPzqaZqdGvHV0iuchr69jgVvf+sq5L6y8SRclh
+	tYEGog==
+Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com [209.85.210.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4e4p4199q3-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 13 May 2026 14:30:50 +0000 (GMT)
+Received: by mail-pf1-f198.google.com with SMTP id d2e1a72fcca58-8353df9bc7eso6367379b3a.2
+        for <iommu@lists.linux.dev>; Wed, 13 May 2026 07:30:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778682476; x=1779287276; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=3TnKwYV0Kzd1zXkaaqOGDYWO3WX2nNMrzmPg/2ozAlk=;
-        b=Bb6tMWjKYAkHbnc+HhbMdmJXAdiTF05C3ptwMBDL6Y6YWYHTByc2qOGg917EDqOurP
-         yqa5fEaMHoUcgjCi7Bc62qsNWEtIrQw5bH5n3+RpC70ThYglu57swE8Xv28zCZ/HPAYh
-         WGNpmNO9vQjvevf9GKFzNKWOeFWuUFgBdK5Lnhoc+16bX8CgjCiRv3upzsr+LFVVZcBH
-         yPtucq/TnAUwA79jCREj+LZuFN9IPN2co/v4W10UPTmuNaaBl6oqCEpZP22Q7GGTH7/U
-         gzCx/FqvJ8/MIFtPU95JG+/yJIEHZ9+O4OGgFHA8+ykH8FH0SfIZpfM0SK//ynyORqnO
-         3e6g==
+        d=oss.qualcomm.com; s=google; t=1778682650; x=1779287450; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=kRdRHlj/4FYDgqpaQppw+iq5ofthvt61GQTIwvPfv54=;
+        b=dNLycbkOAXBoIvFJhbqIK2sWVytAcz91Wf//1In5aPhnxe0Nd16+F36P04MBvGLXkV
+         Lz81raoKyRAu8ZY70GaDoPPLt1uPPvxfpFOEC3k4cCL1y2FMTkPlfhM8dKl90/zPx/LE
+         1e2Dtk/LC+SR7m1I/I0YOeztqVOjaozfDRCnPdEr1SRwrSFmZKZGSr7Zd1d2ZDYZ9TiZ
+         iLcyV+VpCNEv3R6ctX4sBrdVVonYwJ63Qk2UDbnHGhXujizWX7Xwrfwfd62OScN/vPZH
+         /qCAmWpWLwhigJV2hXW55c4woAJQn3wtU/ZdIc61OfCiLLzLnwXoe89kUx9sOc7kCRYR
+         aHaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778682476; x=1779287276;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=3TnKwYV0Kzd1zXkaaqOGDYWO3WX2nNMrzmPg/2ozAlk=;
-        b=a50tlusRizvXybfGVhvBKoBescRj3H8CrcSo59n5UsRDgjGDFMWDNijsljGbkR4SgS
-         6kLqqDImPODh5U8cejyx5Ueyb/Ao1EdXj30dhOsS/S7YREMLboyZAxGrYy7WpEe1kKmN
-         7UrUzlC1IuCOVvxqseuC3O/7grF5WwxGwMl3zsWyv9O+bY/s0X5UtZ1y8i6yTDvtacID
-         D/RE55lHUIt8eHp4zlMszQdYDnXnQravWYY+aT8KbKkuQpjFuj/byotwNlNmPyb9qBlB
-         86VuYs1apI3AUb7H/BvAZ8k4gZXSSkAyYyiMkTvmVAte+WTQVl9YEb3vfgV+Um9qBGZr
-         Q5Og==
-X-Forwarded-Encrypted: i=1; AFNElJ8ZeMy9s7t4KxDEd/pAQgf5I5CiqkBrTSf0K1/93heUMKYkExrcseCNFGepdcZpuwM8ddtJLg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxstkLJ3qiuSOMRQZ6aSkTuB6QEiWG3qZ9zp1yz8KxX3Vbz0U/U
-	MJYTGg0lTYma2CpT1sSKnZFxZdlWqSLkn4aYWJtAMRxkvzQax7r+CN88fdQJotppaQ==
-X-Gm-Gg: Acq92OHWitljv8chVYz6HyqUZ68kY2+hRTqUYcTXyfpi4gY3tRUzM7+s+kyNCQzVoTY
-	FShUh3Ta0r1PFVOQzybgzOIx2Usn6P1f/wyIgV+nd3RcRtPxy3IUf5TkovNoqY1j4oSkw3gIxGd
-	w/Ahjx8nPvblzygB/kTyNXNc6n3aE5JpdWU98/mKkvyI94rmGRIUQfBeQ4lLXbDLongCl53R9ny
-	uz6TWKgrkTLeHRRJXV64uVlzu901tydBRqhnb3prasN+qMljt0btlnhXQeQUjjevJR2sFI/63Oy
-	2qq/oTyOpywHfILRHbsH3KI/22Ltw3ZrlEG9uc1xO7cC7WAMU7F3x5wgYoa4HBKxW1fYRxHUCRB
-	IM5akv9TPOwH8Mk0ihpavv4a97kiQX5U2C6AIZUk0EJ0BnigmYDNvDZ1hekXSTPBxCCGldWeN6+
-	ABgeU0ltf5jEy+tGPXoe3yl6hcQ2tVkDnnTCgzUkesKC8EFxQh8CtIa5uUbwXgeKW+d/5g
-X-Received: by 2002:a17:903:2154:b0:2b8:e82d:ff7c with SMTP id d9443c01a7336-2bd2c0f12bemr1729045ad.9.1778682475851;
-        Wed, 13 May 2026 07:27:55 -0700 (PDT)
-Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-368edfa2fb1sm3416572a91.17.2026.05.13.07.27.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 May 2026 07:27:55 -0700 (PDT)
-Date: Wed, 13 May 2026 14:27:48 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Will Deacon <will@kernel.org>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	=?utf-8?Q?Miko=C5=82aj?= Lenczewski <miko.lenczewski@arm.com>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/arm-smmu-v3-sva: Enable Hardware Access and
- Hardware Dirty bits
-Message-ID: <agSKZPJmFMLc0gno@google.com>
-References: <20260503135413.1108138-1-nicolinc@nvidia.com>
- <af0SdkjQOZxnnaQb@google.com>
- <20260508123550.GB9254@nvidia.com>
- <af3hWGp3etGOIdEn@google.com>
- <f31043cc-45dd-457f-8031-0cef51c9470e@arm.com>
- <af3ryl7G58D2GeWr@google.com>
- <4e129891-2f52-4bac-8e33-1fdde42fd29a@arm.com>
- <af7oyeleKFXpcIKu@nvidia.com>
- <agHYDxuYyqzmAfy5@google.com>
- <agRjt9XpN66ktdk9@willie-the-truck>
+        d=1e100.net; s=20251104; t=1778682650; x=1779287450;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=kRdRHlj/4FYDgqpaQppw+iq5ofthvt61GQTIwvPfv54=;
+        b=E/g7zZx6hwOvD3PzjWinXrKiVYmLIxbExgeFxqHayfDtwXkuakuvGIOyi8lfWKmIyj
+         XA2r70wrmLYgB3uDDRR8Jq37I82rmPNuGCHU24vgg/zPWq0zgogqoP/hTeWl1YDlhIoX
+         CbqehKT2JIqnuQ+tosEj4QeVlu2AxyviA0nyktuxsDG17DV6rRSSLW6m7q2n8RL9Pqie
+         GAqVV8uB/4WtpyRKTilsfFv9JmE1xbFhH3ez7JCWpkIlDrHQO0lSuOy0zXMeQQxk797Z
+         Oi0IquT6KOMHm/BDss2SyizZYc6GHqoEPtIU3tqf3YRcgWoTr/tD1V7RqqRvRykVm3ep
+         Tdug==
+X-Forwarded-Encrypted: i=1; AFNElJ+02IjrH5AtfDZ68xBsRLb3lC2E7zba1d6Sr5iIzN3v1glzLlb1P/Lz7V+N/eUqYWqudfgc0Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxoXRFGC9D9qAmfSptk5oFAgEBkTgDamsIaU7J4BPuFgS8ppHun
+	ksXtXplXc95OkWYFvDqPRvGBMRN3HzBfIHigA9se9cFUMYa+lj0ATJ8s/Rpp6pX/HdAe7mR/HZp
+	SybZ8YpVbxJL6ioEzFTQBFZdRog0K25QCsCowYQpr9uJuuzo97WKOuvh1LQ==
+X-Gm-Gg: Acq92OGUtTrAHhaRvtqn0di5ZJFWX23BHByH/XFy9mZMKnyKgOKFUYR5mizUrGOWt8X
+	g5nIVhZXMCU7iOrgM4ywYwASX5mIKm4d0MYUKqAlTj69Drs0TWp+KAWHUNcTJPKS2peXelkJPIu
+	tIPwKRrj3gEuiYqb2Q8nam3NpdIscITUGUyfrb4Gy2O/mxyL5uoN/9i457s64tQAQdJHvUheLSk
+	73SRdjjJiYDSTngNwuglL0H4QhWqrKvqpy307MaJly93rNbMNqS7muwhUxC/yEnaXCodzqpgVW/
+	3XZoszCkgYgKYOCAPxwgXDXglFm4rA/QNieMdor+wpu8H8xs/Cr+34y5uMuqWkq3NIrKxjOHFDX
+	KDCiyFQ9QyDoDBvoea4cCihJm/ShZCXnWH8mfMXWkC7J/MKiTNncr1NI=
+X-Received: by 2002:a05:6a00:22c6:b0:82c:dfea:9e2a with SMTP id d2e1a72fcca58-83f0542d985mr3656138b3a.2.1778682649598;
+        Wed, 13 May 2026 07:30:49 -0700 (PDT)
+X-Received: by 2002:a05:6a00:22c6:b0:82c:dfea:9e2a with SMTP id d2e1a72fcca58-83f0542d985mr3656058b3a.2.1778682649050;
+        Wed, 13 May 2026 07:30:49 -0700 (PDT)
+Received: from [10.204.101.125] ([202.46.23.25])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-83967dbcf16sm31628277b3a.40.2026.05.13.07.30.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 May 2026 07:30:48 -0700 (PDT)
+Message-ID: <ad875fcf-531a-49af-b58e-575185c12d77@oss.qualcomm.com>
+Date: Wed, 13 May 2026 20:00:39 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <agRjt9XpN66ktdk9@willie-the-truck>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 12/14] media: iris: Add platform data for glymur
+To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+        Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+Cc: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Bryan O'Donoghue <bod@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Hans Verkuil <hverkuil@kernel.org>,
+        Stefan Schmidt <stefan.schmidt@linaro.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+ <conor+dt@kernel.org>,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Jorge Ramirez-Ortiz <jorge.ramirez@oss.qualcomm.com>,
+        Del Regno <angelogioacchino.delregno@collabora.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        iommu@lists.linux.dev, Krzysztof Kozlowski <krzk@kernel.org>,
+        devicetree@vger.kernel.org
+References: <20260509-glymur-v5-0-7fbb340c5dbd@oss.qualcomm.com>
+ <20260509-glymur-v5-12-7fbb340c5dbd@oss.qualcomm.com>
+ <jfypqc5ise7uezog3lwmmrzddbsctir6ze24ma4vp4zgcuwjbf@4443jqib6nxw>
+ <b6dc6b32-26ad-6f2e-dfd4-551e7fd0481e@oss.qualcomm.com>
+ <wequp7ogk2az3d7yzfxn7wwlr6k5ng2jwrg6anaidseteuwlev@v47yoo4j2gbz>
+Content-Language: en-US
+From: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+In-Reply-To: <wequp7ogk2az3d7yzfxn7wwlr6k5ng2jwrg6anaidseteuwlev@v47yoo4j2gbz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Authority-Analysis: v=2.4 cv=df+wG3Xe c=1 sm=1 tr=0 ts=6a048b1a cx=c_pps
+ a=m5Vt/hrsBiPMCU0y4gIsQw==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
+ a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
+ a=EUspDBNiAAAA:8 a=AkRF1kMk2nwCDGt8pKAA:9 a=QEXdDO2ut3YA:10
+ a=IoOABgeZipijB_acs4fv:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTEzMDE0OSBTYWx0ZWRfX9lR2XmUFMZWw
+ F6ECq7ommvDthaasYZeT+q9D+WHwTM69h8v3OGXdTuDabWkjd0xokJ6lDXxJD3ntf43hd+4QSEt
+ GlibiI3trTAf3thZehymSqtWCbaU3Ct6SfUUYb+LO48JOlPz7oMkjqVktrirj+jRIEahRRb01b+
+ g+CIi84i0h/S1pTEGjeZhlhCVtkfH+1oect+f8DbX97NG2yPwRuqMCvDARgQhfUcQp1wk3Dj8e+
+ GMFgt/O7jkMSeYRzembUqFqgpBHyQ47bLWf3hu1D/JlFySsvQwCQ1WP9ukAgfApW+Gn3WqkrZpl
+ abXhmMTVJlgRX/FA5NNEG9T2qgjN0N8I66h83BVUFQmWYGLCnEIDv5abi24K1QyZzKjStZ1TrBg
+ 4KcugtbxC3y7KEI8z2CN4hVex/+4LjdkOxz85A4IR1avuk7vkN6ZIFB2fLFQ8SarF2jX9VlPAs7
+ E+wK5fd2wyhPIJMtIrw==
+X-Proofpoint-GUID: 9eJQkQ-K6KMwTWJwl4hNY5GlI8Be0QVd
+X-Proofpoint-ORIG-GUID: 9eJQkQ-K6KMwTWJwl4hNY5GlI8Be0QVd
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-05-13_01,2026-05-13_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ adultscore=0 malwarescore=0 priorityscore=1501 suspectscore=0 clxscore=1015
+ impostorscore=0 phishscore=0 spamscore=0 lowpriorityscore=0 bulkscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2605050000 definitions=main-2605130149
 
-On Wed, May 13, 2026 at 12:42:47PM +0100, Will Deacon wrote:
-> On Mon, May 11, 2026 at 01:22:23PM +0000, Pranjal Shrivastava wrote:
-> > On Sat, May 09, 2026 at 12:56:57AM -0700, Nicolin Chen wrote:
-> > > On Fri, May 08, 2026 at 03:24:32PM +0100, Robin Murphy wrote:
-> > > > On 2026-05-08 2:57 pm, Pranjal Shrivastava wrote:
-> > > > > I see, so IIUC, you mean if IS_ENABLED(CONFIG_ARM64_HW_AFDBM) but CPU
-> > > > > doesn't enable HTTU, it is perfectly safe to let the SMMU do HTT updates,
-> > > > > Since the fault handlers are already expecting HW-triggered updates?
-> > > > > 
-> > > > > Which means our check would be something like:
-> > > > > 
-> > > > >     if (IS_ENABLED(CONFIG_ARM64_HW_AFDBM) {
-> > > > >     	if (smmu->features & FEAT_HA)
-> > > > > 	 ...
-> > > > >     }
-> > > > > 
-> > > > > instead of cpu_has_hw_af()?
-> > > > 
-> > > > Hmm, looking closer, cpu_has_hw_af() is the thing which actually influences
-> > > > mm behaviour (via arch_has_hw_pte_young and arch_wants_old_prefaulted_pte),
-> > > > and that can still be false at runtime if ARM64_HW_AFDBM is enabled but any
-> > > > CPU doesn't support HAFDBS, so perhaps you were right the first time :)
-> > > 
-> > > IIUIC, v2 should be:
-> > > 
-> > > +		/*
-> > > +		 * Enable Hardware Access and Dirty updates (DBM) if supported by
-> > > +		 * both the SMMU and the CPU. It is unsafe to enable SMMU's HTTU,
-> > > +		 * if the CPU does not support it as it bypasses mm page aging.
-> > > +		 */
-> > > +		if (cpu_has_hw_af()) {
-> > 
-> > Ack, yes. IMO, this is the correct system-wide gate.
+
+
+On 5/13/2026 7:47 PM, Dmitry Baryshkov wrote:
+> On Mon, May 11, 2026 at 09:45:01PM +0530, Vishnu Reddy wrote:
+>>
+>> On 5/9/2026 2:35 AM, Dmitry Baryshkov wrote:
+>>> On Sat, May 09, 2026 at 12:30:01AM +0530, Vishnu Reddy wrote:
+>>>> On glymur platform, the iris core shares most properties with the
+>>>> iris core on the SM8550 platform. The major difference is that glymur
+>>>> integrates two codec cores (vcodec0 and vcodec1), while SM8550 has only
+>>>> one. Add glymur specific platform data, reusing SM8550 definitions
+>>>> wherever applicable.
+>>> This leave me in confusion. Having two cores, each with its own set of
+>>> clocks and pm domains, I'd have expected that each core scales
+>>> independently. I.e. if the load is pushed to the core0, it requires
+>>> core0 clocks to go higher (while core1 clocks can stay at the low freq).
+>>> Or, at least, the clocks would be set to the frequency corresponding to
+>>> the max of the workloads (if for some reason the cores should stay in
+>>> sync).
+>>>
+>>> However, I don't see it in the code. All clocks and all power domains
+>>> seem do be scaled using the common workload. If my assumptions were not
+>>> correct, please explain it in the commit message.
+>>
+>> The OPP core logic sets the rpmhpd level and clock rate based on the OPP table
+>> defined in the DT node, where the clock frequency and power rail level are
+>> tightly coupled together. Since vcodec0 and vcodec1 share the same power rails,
+>> independently scaling one clock high while keeping the other low is not
+>> straightforward within this OPP framework.
+>>
+>> Do you have any suggestion on how best to handle per core independent clock
+>> scaling within these constraints?
 > 
-> Hmm, I'm not so sure :/
+> This would require more plumbing and driver changes, but:
 > 
-> cpu_has_hw_af() doesn't take into account CPUs with broken DBM and, in
-> fact, ID_AA64MMFR1_EL1.HAFDBS allows support for AF to be advertised
-> without support for DBM.
+> 	iris: video-codec@foo {
+> 		compatible = "qcom,glymur-iris",
+> 		clocks = <only-core-clocks>;
+> 		resets = <only-core-resets>;
 > 
-> Having said that, I don't understand why we need to care about the CPU
-> support. The comment above states:
+> 		/* or core@0 */
+> 		codec@0 {
+> 			clocks, resets, power-domains;
+> 			operating-points-v2 = <&iris_opp_table>
+> 		};
 > 
->   "It is unsafe to enable SMMU's HTTU, if the CPU does not support it as
->    it bypasses mm page aging."
+> 		/* or core@1 */
+> 		codec@1 {
+> 			clocks, resets, power-domains;
+> 			operating-points-v2 = <&iris_opp_table>
+> 		};
 > 
-> but I don't understand what that "bypassing" means. vmscan should still
-> pick up the correct state from the page-table, so what's the problem?
+> 		iris_opp_table: opp-table {
+> 			compatible = "operating-points-v2"
+> 		};
+> 	};
+> 
 
-I agree that for the Access Flag (AF), vmscan would eventually see the 
-bit in the table. However, I’m concerned about Hardware Dirty (HD/DBM).
-I know the vmscan might eventually get to it.. but here's my worry:
+clock source "video_cc_mvs0_clk_src" is common for both the cores. It 
+would not matter if core0 is scaled for a specific workload and core1 is 
+scaled for different (let say lower), as the common PLL would always 
+generate the higher of them.
 
-IIUC, in arm64 the dirty state of a page is tracked through a specific 
-protocol using the PTE_RDONLY and PTE_WRITE (DBM) bits. A shared writable
-page is initially mapped with both bits set (_PAGE_SHARED [1])
+Infact, going with the approach of exclusive scaling would be an issue 
+here. The later core scaling command would bring down/up the corner for 
+other core, and could lead to under/over-voting.
+>>
+>>>> Reviewed-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+>>>> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+>>>> ---
+>>>>   drivers/media/platform/qcom/iris/Makefile          |  1 +
+>>>>   .../platform/qcom/iris/iris_platform_common.h      |  5 ++
+>>>>   .../media/platform/qcom/iris/iris_platform_gen2.c  | 99 ++++++++++++++++++++++
+>>>>   .../platform/qcom/iris/iris_platform_glymur.c      | 97 +++++++++++++++++++++
+>>>>   .../platform/qcom/iris/iris_platform_glymur.h      | 17 ++++
+>>>>   drivers/media/platform/qcom/iris/iris_probe.c      |  4 +
+>>>>   6 files changed, 223 insertions(+)
+>>>>
+> 
 
-It also seems to be documented in arch/arm64/include/asm/pgtable.h [2]:
-
-/*
- * PTE bits configuration in the presence of hardware Dirty Bit Management
- * (PTE_WRITE == PTE_DBM):
- *
- * Dirty  Writable | PTE_RDONLY  PTE_WRITE  PTE_DIRTY (sw)
- *   0      0      |   1           0          0
- *   0      1      |   1           1          0
- *   1      0      |   1           0          1
- *   1      1      |   0           1          x
- *
- * When hardware DBM is not present, the software PTE_DIRTY bit is updated via
- * the page fault mechanism. Checking the dirty status of a pte becomes:
- *
- *   PTE_DIRTY || (PTE_WRITE && !PTE_RDONLY)
- */
-
-Thus, if the CPU does not support/enable Hardware Dirty management
-(TCR_EL1.HD == 0), it is forced to trigger a Permission Fault on the 1st
-write because PTE_RDONLY is 1. The fault allows the kernel to call 
-folio_mark_dirty() [3]
-
-If we enable SMMU HD independently in the Context Descriptor, the SMMU
-will see a write and silently clear PTE_RDONLY in the hardware table.
-When the CPU later accesses the page, it sees PTE_RDONLY == 0 and 
-proceeds without ever faulting.
-
-Now, if we're work on an SVA page, with only SMMU supporting HTTU. A DMA
-writes to the page and the process (CPU) calls fsync(). IIUC, it performs
-a lookup in the Page Cache specifically for folios tagged as DIRTY.
-Since, vmscan didn't run yet, this could potentally drop the writes..
-
-Thanks,
-Praan
-
-[1] https://elixir.bootlin.com/linux/v7.1-rc3/source/arch/arm64/include/asm/pgtable-prot.h#L61
-[2] https://elixir.bootlin.com/linux/v7.1-rc3/source/arch/arm64/include/asm/pgtable.h#L390
-[3] https://elixir.bootlin.com/linux/v7.1-rc3/source/mm/memory.c#L3698
