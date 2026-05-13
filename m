@@ -1,79 +1,49 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73DCB30675C
-	for <iommu@lists.linux.dev>; Wed, 13 May 2026 14:57:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C5333478875
+	for <iommu@lists.linux.dev>; Wed, 13 May 2026 15:08:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778684248; cv=none; b=shCqEgPIEIKj8GmUZ2wltuxEgE5ZSUgb7uZc5DipMNAgc0U1GWLleFMPLolHvvgjvQWPILi70QSPAKBzlsrSpuRBFXvErAaTCsgoQomRSm44WeczYj2bYVH9Lk89DnY8pc1KmP9Gk8IBYPwj0xSlmVt4AbuKxVqWj5x8WaSGJl8=
+	t=1778684922; cv=none; b=kV4I9wY44Hcxlt4dSMZH7Vsf+F+SXDaLzI5BsmYcth+xnssXFjay3LPkzz7xCBBLvke1A6UXOZvKUBtrHqGIP1WrFmPrtRyoxWdEKYs16eiwq1NUV764dkG75ZKsNGouYtgCu9yPfzC/X4fWHFG4I8YEIgQGGnW+sriAmFbVt7Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778684248; c=relaxed/simple;
-	bh=h9bAwQMPen4e2kR3BQjshOf6XOKV0LRZUx+Q+Yhg74M=;
+	s=arc-20240116; t=1778684922; c=relaxed/simple;
+	bh=FiaEJRKgT3alMu6+vgIHIeBgx4DggXjWyAHR8Mfq1BE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WI20zeq9lNxigl7yCT5GeA66tjJ5mNXg5FascdopX4aq1O1PS35HUVdp1vtFSwOMZOTbRBCOm3Cp3vuxhRDZ8q3yWUzTYHF/dRMNt05a9n4VCWaHzNWmtfoBvlpQ54e45lBEu+r9E7iPf+n/5lEXnGn5q6sDBwy2bIU5L2k3ThY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=REaO78rU; arc=none smtp.client-ip=209.85.128.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=f/5KVXT3KsXlMLn+AGoZb+/TXfGNRLLL1BNSmWgzkcBak0DOJMukRdFU/Bjnx0zZRbyKSUm8PVORoL8hNO0H1LeLgV/sfV4A5p/YGUruUngt6gTM3P/hs9fAa7WnnCwe7I3BQE8F7G/aJP2NSUCSwl5/yZUhx0ftoGHiboypzUU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=f0qx6A50; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="REaO78rU"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-48d1c670255so3585e9.0
-        for <iommu@lists.linux.dev>; Wed, 13 May 2026 07:57:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778684245; x=1779289045; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7HJ+58x1aDhyagRTCbZYUW45HaOqv0hJBTleCF7fG8M=;
-        b=REaO78rUhyulxXuXT75rODCIRGe6TGovU8TCO5vyVFnzT52zwT+AQFC2Dn+TJik+fE
-         rQDaaoOniBPAx9jz6fldAqhwNo9ZQqBMJlB6NxrZmbgZ6Nyl3lvQ3taUwkCMqoCjPrTa
-         rvYquIoP8KfCenKl0JwCDEvN5yH+QDHosNctmtC5yt+O7r/EkPB9AKSiTsZlNaIjn2t4
-         ls1OnqFqSbdI97r+1vMkFTIlCwz+8Ronsfp+Ej+fSnM+vq/eOz0Rfro2rBrJeJXttnxM
-         APc7EHF20SbJofcdPSBaXjD+0dj7k2tbghF/C+I09p/XVbTogJmnzo0sTb/2eYPGermY
-         mPFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778684245; x=1779289045;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=7HJ+58x1aDhyagRTCbZYUW45HaOqv0hJBTleCF7fG8M=;
-        b=J/rB8Vhj+VCPBvAIuBT43kl2JwY4BP8wi2/PjIXcQWzqhHx9Y+TgfP7DYkFfoKiTBk
-         9kFTdS15b4HZ4IeGNPV3thuJkhkcS/pez095YzbnF4kZzacxnJMmL88cY7eZMbHXe5YA
-         uLRwhg3Mgpuh2tXPhQY0bfxmDQ+qBpjCmiREZw1TJ2U2VA/NUR7dJGdUWqarw9MyH+Up
-         xC17xbKXME8xD6JCr3fuVguIYpKlF3vfsS6XQ76rQjGzQF4e0J5a8fBfatCpT/SC6wxU
-         AbpOm2cCyEkOAen2Ox/oIpysEoMegKLI1FeKYvXdd9aKD5+T+WHawyHR6QJr+nZkOzhZ
-         7Fog==
-X-Gm-Message-State: AOJu0YzGJJYE2xl9a/1KQ6fzGdboVu6wD3xkcgrmCOKp47MxY71RpZeW
-	cqy+MlYqEYV5NfJqc5sEAhgVRT3YvchuOVPWfF1ydY93QDwX1vrtrlyI3eIPVTqJCw==
-X-Gm-Gg: Acq92OHD8WlVKdBfZ48HB0ugncu/U/e9XYQV9UNzWcDke3+Rza0T8CExD8agM4LexBU
-	5y3Mog7O7cGB2vywgVe8hA2h3nODX70sK4lPrATr+iEOGkJTIy33tIvgp5ldGxlqvnRX5ffBLcv
-	XsArwvucnWni3QhXABD8sVoYqcycRBdpFFKGRoYiKru/rV7d/jj8b9RM8P8huQ5npmuajY+Ys9e
-	clMuxinWq9fgY0WemDx/z3CRUXqpNFVmh9VvrDmagh2axboyIXG2ZpNmhS4HYMzogSQh69zgVfV
-	pXRk8xs3E8RN2x86tNQZ4xnxZ+JNbjTw90C8vbx2TPYzDnXdZUy90PmWCD9kMro991EENHegvvU
-	Kqvh91UiSFuFaPHkfIuXF+SkO7ZbiPEZ/0P51Uu5pxbY6FT/tEO+I/dPUhLgax+gtUkNyZmrzck
-	bW2Bznac+2+8VWGhytFNGLMGGO97gAWyutQlRgQKfUoSR39sWhPuvqIZSj0jVBfsOYC7E=
-X-Received: by 2002:a05:600d:8486:20b0:477:86fd:fb49 with SMTP id 5b1f17b1804b1-48fc919a43dmr860735e9.10.1778684244549;
-        Wed, 13 May 2026 07:57:24 -0700 (PDT)
-Received: from google.com (8.181.38.34.bc.googleusercontent.com. [34.38.181.8])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fc8d27d31sm128460865e9.8.2026.05.13.07.57.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 May 2026 07:57:23 -0700 (PDT)
-Date: Wed, 13 May 2026 14:57:17 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Joerg Roedel <joerg.roedel@amd.com>,
-	Josua Mayer <josua@solid-run.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
-	Pranjal Shrivastava <praan@google.com>,
-	Samiullah Khawaja <skhawaja@google.com>, stable@vger.kernel.org
-Subject: Re: [PATCH rc 1/5] iommu: Fix loss of errno on map failure for
- classic ops
-Message-ID: <agSRTQFAhiRQ6DYQ@google.com>
-References: <0-v1-44b2fef88b25+d3-iommupt_map_rc_jgg@nvidia.com>
- <1-v1-44b2fef88b25+d3-iommupt_map_rc_jgg@nvidia.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="f0qx6A50"
+Received: by linux.microsoft.com (Postfix, from userid 1099)
+	id BB35420B7166; Wed, 13 May 2026 08:08:37 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com BB35420B7166
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1778684917;
+	bh=z+2HxtLiUqb6poVICNR3S36TfTkczaotCNxV/J7VYlw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=f0qx6A50vmi6yn6g/U3CAPd4Gf9HwLVjCnbAB/BbMClxWVPo3OjzgJa58zCsVL1Cf
+	 yhzbJOLqGPD+WPhsyJHA3idPsXQhmHc41Kut8pd8vDpyA9KvZacd7i/O51SutNGaY3
+	 RbdfvVPWKEdkl8aFZSu7yl53qgJaxbAF4RIDKDuE=
+Date: Wed, 13 May 2026 08:08:37 -0700
+From: Souradeep Chakrabarti <schakrabarti@linux.microsoft.com>
+To: Mukesh R <mrathor@linux.microsoft.com>
+Cc: hpa@zytor.com, robin.murphy@arm.com, robh@kernel.org,
+	wei.liu@kernel.org, mhklinux@outlook.com, muislam@microsoft.com,
+	namjain@linux.microsoft.com, magnuskulke@linux.microsoft.com,
+	anbelski@linux.microsoft.com, linux-kernel@vger.kernel.org,
+	linux-hyperv@vger.kernel.org, iommu@lists.linux.dev,
+	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+	kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
+	longli@microsoft.com, tglx@kernel.org, mingo@redhat.com,
+	bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+	joro@8bytes.org, will@kernel.org, lpieralisi@kernel.org,
+	kwilczynski@kernel.org, bhelgaas@google.com, arnd@arndb.de,
+	jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH V3 08/11] PCI: hv: VMBus and PCI device IDs for PCI
+ passthru
+Message-ID: <agST9ZRXNWhbUGMY@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+References: <20260512020259.1678627-1-mrathor@linux.microsoft.com>
+ <20260512020259.1678627-9-mrathor@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -82,48 +52,170 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1-v1-44b2fef88b25+d3-iommupt_map_rc_jgg@nvidia.com>
+In-Reply-To: <20260512020259.1678627-9-mrathor@linux.microsoft.com>
 
-On Tue, May 12, 2026 at 01:46:13PM -0300, Jason Gunthorpe wrote:
-> A typo, likely from a rebase, inverted the condition and caused
-> errors to be lost. Fix it to be "if (ret)".
+On Mon, May 11, 2026 at 07:02:56PM -0700, Mukesh R wrote:
+> On Hyper-V, most hypercalls related to PCI passthru to map/unmap regions,
+> interrupts, etc need a device ID as a parameter. This device ID refers
+> to that specific device during the lifetime of passthru.
 > 
-> This was breaking iommu_create_device_direct_mappings() on drivers
-> that don't use iommupt and don't fully set up their domain in
-> alloc_pages() (i.e., SMMUv2). In this case the first call of
-> iommu_create_device_direct_mappings() should fail due to the
-> incompletely initialized domain. Since it wrongly returns success,
-> the second call to iommu_create_device_direct_mappings() doesn't
-> happen and IOMMU_RESV_DIRECT is never set up.
+> An L1VH VM only contains VMBus based devices. A device ID for a VMBus
+> device is slightly different in that it uses the hv_pcibus_device info
+> for building it to make sure it matches exactly what the hypervisor
+> expects. This VMBus based device ID is needed when attaching devices in
+> an L1VH based guest VM. Add a function to build and export it. Before
+> building it, a check is done to make sure the device is a valid VMBus
+> device.
 > 
-> Cc: stable@vger.kernel.org
-> Fixes: d6c65b0fd621 ("iommupt: Avoid rewalking during map")
-> Reported-by: Josua Mayer <josua@solid-run.com>
-> Closes: https://lore.kernel.org/all/321c2e57-6a17-4aef-ba42-d2ebd577e472@solid-run.com/
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-
-Reviewed-by: Mostafa Saleh <smostafa@google.com>
-
-Thanks,
-Mostafa
-
+> In remaining cases, PCI device ID is used. So, also make PCI device ID
+> build function hv_build_devid_type_pci() public.
+>
+Reviewed-by: Souradeep Chakrabarti <schakrabarti@microsoft.com>
+> Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
 > ---
->  drivers/iommu/iommu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  arch/x86/hyperv/irqdomain.c         |  9 +++++----
+>  arch/x86/include/asm/mshyperv.h     |  6 ++++++
+>  drivers/pci/controller/pci-hyperv.c | 24 ++++++++++++++++++++++++
+>  include/asm-generic/mshyperv.h      | 11 +++++++++++
+>  4 files changed, 46 insertions(+), 4 deletions(-)
 > 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 61c12ba782066a..6e53cfad5dc001 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -2669,7 +2669,7 @@ int iommu_map_nosync(struct iommu_domain *domain, unsigned long iova,
->  		return 0;
->  	}
->  	ret = __iommu_map_domain_pgtbl(domain, iova, paddr, size, prot, gfp);
-> -	if (!ret)
-> +	if (ret)
->  		return ret;
+> diff --git a/arch/x86/hyperv/irqdomain.c b/arch/x86/hyperv/irqdomain.c
+> index b3ad50a874dc..8780573a4332 100644
+> --- a/arch/x86/hyperv/irqdomain.c
+> +++ b/arch/x86/hyperv/irqdomain.c
+> @@ -112,7 +112,7 @@ static int get_rid_cb(struct pci_dev *pdev, u16 alias, void *data)
+>  	return 0;
+>  }
 >  
->  	trace_map(iova, paddr, size);
+> -static union hv_device_id hv_build_devid_type_pci(struct pci_dev *pdev)
+> +u64 hv_build_devid_type_pci(struct pci_dev *pdev)
+>  {
+>  	int pos;
+>  	union hv_device_id hv_devid;
+> @@ -172,8 +172,9 @@ static union hv_device_id hv_build_devid_type_pci(struct pci_dev *pdev)
+>  	}
+>  
+>  out:
+> -	return hv_devid;
+> +	return hv_devid.as_uint64;
+>  }
+> +EXPORT_SYMBOL_GPL(hv_build_devid_type_pci);
+>  
+>  /*
+>   * hv_map_msi_interrupt() - Map the MSI IRQ in the hypervisor.
+> @@ -196,7 +197,7 @@ int hv_map_msi_interrupt(struct irq_data *data,
+>  
+>  	msidesc = irq_data_get_msi_desc(data);
+>  	pdev = msi_desc_to_pci_dev(msidesc);
+> -	hv_devid = hv_build_devid_type_pci(pdev);
+> +	hv_devid.as_uint64 = hv_build_devid_type_pci(pdev);
+>  	cpu = cpumask_first(irq_data_get_effective_affinity_mask(data));
+>  
+>  	return hv_map_interrupt(hv_devid, false, cpu, cfg->vector,
+> @@ -271,7 +272,7 @@ static int hv_unmap_msi_interrupt(struct pci_dev *pdev,
+>  {
+>  	union hv_device_id hv_devid;
+>  
+> -	hv_devid = hv_build_devid_type_pci(pdev);
+> +	hv_devid.as_uint64 = hv_build_devid_type_pci(pdev);
+>  	return hv_unmap_interrupt(hv_devid.as_uint64, irq_entry);
+>  }
+>  
+> diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyperv.h
+> index f64393e853ee..2ef34001f8d3 100644
+> --- a/arch/x86/include/asm/mshyperv.h
+> +++ b/arch/x86/include/asm/mshyperv.h
+> @@ -248,6 +248,12 @@ void hv_crash_asm_end(void);
+>  static inline void hv_root_crash_init(void) {}
+>  #endif  /* CONFIG_MSHV_ROOT && CONFIG_CRASH_DUMP */
+>  
+> +#if IS_ENABLED(CONFIG_HYPERV_IOMMU)
+> +u64 hv_build_devid_type_pci(struct pci_dev *pdev);
+> +#else
+> +static inline u64 hv_build_devid_type_pci(struct pci_dev *pdev) { return 0; }
+> +#endif /* IS_ENABLED(CONFIG_HYPERV_IOMMU) */
+> +
+>  #else /* CONFIG_HYPERV */
+>  static inline void hyperv_init(void) {}
+>  static inline void hyperv_setup_mmu_ops(void) {}
+> diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
+> index cfc8fa403dad..50d793ca8f31 100644
+> --- a/drivers/pci/controller/pci-hyperv.c
+> +++ b/drivers/pci/controller/pci-hyperv.c
+> @@ -573,6 +573,7 @@ struct hv_pci_compl {
+>  };
+>  
+>  static void hv_pci_onchannelcallback(void *context);
+> +static bool hv_vmbus_pci_device(struct pci_bus *pbus);
+>  
+>  #ifdef CONFIG_X86
+>  #define DELIVERY_MODE		APIC_DELIVERY_MODE_FIXED
+> @@ -1005,6 +1006,24 @@ static struct irq_domain *hv_pci_get_root_domain(void)
+>  static void hv_arch_irq_unmask(struct irq_data *data) { }
+>  #endif /* CONFIG_ARM64 */
+>  
+> +u64 hv_pci_vmbus_device_id(struct pci_dev *pdev)
+> +{
+> +	struct hv_pcibus_device *hbus;
+> +	struct pci_bus *pbus = pdev->bus;
+> +
+> +	if (!hv_vmbus_pci_device(pbus))
+> +		return 0;
+> +
+> +	hbus = container_of(pbus->sysdata, struct hv_pcibus_device, sysdata);
+> +
+> +	return	(hbus->hdev->dev_instance.b[5] << 24) |
+> +		(hbus->hdev->dev_instance.b[4] << 16) |
+> +		(hbus->hdev->dev_instance.b[7] << 8) |
+> +		(hbus->hdev->dev_instance.b[6] & 0xf8) |
+> +		PCI_FUNC(pdev->devfn);
+> +}
+> +EXPORT_SYMBOL_GPL(hv_pci_vmbus_device_id);
+> +
+>  /**
+>   * hv_pci_generic_compl() - Invoked for a completion packet
+>   * @context:		Set up by the sender of the packet.
+> @@ -1403,6 +1422,11 @@ static struct pci_ops hv_pcifront_ops = {
+>  	.write = hv_pcifront_write_config,
+>  };
+>  
+> +static bool hv_vmbus_pci_device(struct pci_bus *pbus)
+> +{
+> +	return pbus->ops == &hv_pcifront_ops;
+> +}
+> +
+>  /*
+>   * Paravirtual backchannel
+>   *
+> diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
+> index e8cbc4e3f7ad..25ac7ca0fd8b 100644
+> --- a/include/asm-generic/mshyperv.h
+> +++ b/include/asm-generic/mshyperv.h
+> @@ -204,6 +204,9 @@ extern u64 (*hv_read_reference_counter)(void);
+>  /* Sentinel value for an uninitialized entry in hv_vp_index array */
+>  #define VP_INVAL	U32_MAX
+>  
+> +/* Forward declarations */
+> +struct pci_dev;
+> +
+>  int __init hv_common_init(void);
+>  void __init hv_get_partition_id(void);
+>  void __init hv_common_free(void);
+> @@ -316,6 +319,14 @@ void hv_para_set_synic_register(unsigned int reg, u64 val);
+>  void hyperv_cleanup(void);
+>  bool hv_query_ext_cap(u64 cap_query);
+>  void hv_setup_dma_ops(struct device *dev, bool coherent);
+> +
+> +#if IS_ENABLED(CONFIG_PCI_HYPERV)
+> +u64 hv_pci_vmbus_device_id(struct pci_dev *pdev);
+> +#else
+> +static inline u64 hv_pci_vmbus_device_id(struct pci_dev *pdev)
+> +{ return 0; }
+> +#endif /* IS_ENABLED(CONFIG_PCI_HYPERV) */
+> +
+>  #else /* CONFIG_HYPERV */
+>  static inline void hv_identify_partition_type(void) {}
+>  static inline bool hv_is_hyperv_initialized(void) { return false; }
 > -- 
-> 2.43.0
+> 2.51.2.vfs.0.1
 > 
