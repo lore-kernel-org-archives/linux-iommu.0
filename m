@@ -1,159 +1,205 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dl1-f49.google.com (mail-dl1-f49.google.com [74.125.82.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DCF726E6F3
-	for <iommu@lists.linux.dev>; Wed, 13 May 2026 16:53:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0962C4A13A4
+	for <iommu@lists.linux.dev>; Wed, 13 May 2026 16:56:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778691192; cv=none; b=qTyGjME8y7s8AHwKQmf5ue1e/KAvwcrT8gzRCDEa9O4yxYRbmzVf6VMmXVVyvkcO7jU64VYcqCKCQitQ3mpilVS7E/zKZN0cYWCszMw5DdDDe8uZOw4azf7tiJop1+Wj4KA9ZdR75ClijSKIqB+8yuKjKeuEx+IblxV2H5u+2sk=
+	t=1778691403; cv=none; b=u50LP102QdHqROn9HBFlhr1jxyvxRnAQjd522xqNibiaygUi2rybOiTOqQQ6fXCey9a05cGtTZE79nTED8MJAfb0uaYQ6v0fT8cq50pfiWQOl/brOGqplQwUEimIF954W6/1tjJ+saQ5a+IgsRPZOUNmdoFT9gj8C28KLLYzhx8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778691192; c=relaxed/simple;
-	bh=HpqdRvguomuoFu8cYA9HoqXvq7sfUqnGJaGKOQnfdKE=;
+	s=arc-20240116; t=1778691403; c=relaxed/simple;
+	bh=Ut5l11CKVrSjVJL/SXBTdKTB+m65fhYWOTIJs46hZ4Q=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lj2Mz6zs6EBkFiYkoW/4qe2UWSYqVPhG2JGbjV3xyMzo7A5JAj3MaK26pYhEYXhGobXcmxN/ETvubNxNI5oaiwOtBphb9CWiG3xCVoGWshoGXMAkNnPPguzVJqZ78eb5UyaHJC1+G9ZlPMUN655xbJD61MNFO3TP64B7XvjcALA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=VqcTOxGY; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=ZEwCbg8s; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=pQ9dXs3U8CVMo3aE3e5OP9oU9Zm9dtdInO1+Ecdvi/E9ingx1a/juGSIVf3VriYPV1Rxa4XWWAV3JZoRnnxDYdn8ZstNMy6FoH4We0U8OyCTEO1C9MOfhLQPytXYLldLYOu6ls5+YI+ZXhe/IWENF7v6yqgiD5I4P+VMnMlgFE0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=MSrErUg2; arc=none smtp.client-ip=74.125.82.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="VqcTOxGY";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="ZEwCbg8s"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64DAvgbA1393173
-	for <iommu@lists.linux.dev>; Wed, 13 May 2026 16:53:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=ZOuwO8Oe7+fhFiUNtPbUZRGD
-	3ndfLf9Y9W/ejus3N+4=; b=VqcTOxGY8MgLhpL7QdJ7no1pbuPJqDQSDCOQZvYM
-	mMv2QA+Iibd/P3kLfEp/Ky0P4VHfBddRiB/PPRujgkEMFpfPetiBU6hWAsdCxFIR
-	8Ut7dqpEQwHYBfUyicHI/0cWX9KFNFZE8rT3VOCjQcL8m9+BfElsdQUsIATm1skS
-	pjqwAgJ3ViXZjsjoVldeMz5idJoo0ZkjKbBATknvuPAPXU97jAjlkJH4mqR05W1q
-	VnYqmW12Qt9uGodhMDo4ORsMNGmV9eXSkRflCsy1J/r6OmTNtqFcMmFHAlhVr5RO
-	81+YfJ1nhuBpv3IM31e6/dco5ewo+GlxS3b6PQ639X3PqQ==
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4e4k262q9e-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Wed, 13 May 2026 16:53:10 +0000 (GMT)
-Received: by mail-qt1-f200.google.com with SMTP id d75a77b69052e-50fb6d713ddso38291241cf.1
-        for <iommu@lists.linux.dev>; Wed, 13 May 2026 09:53:10 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="MSrErUg2"
+Received: by mail-dl1-f49.google.com with SMTP id a92af1059eb24-133362c30cfso1490c88.0
+        for <iommu@lists.linux.dev>; Wed, 13 May 2026 09:56:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1778691190; x=1779295990; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1778691399; x=1779296199; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZOuwO8Oe7+fhFiUNtPbUZRGD3ndfLf9Y9W/ejus3N+4=;
-        b=ZEwCbg8sy+we1xenaT+36auBpNdLuAy6h+bna47iOZUV4JyLx5V45mhNdKWPvY2Rmp
-         KUe7620az1/hTlqss50g8IBN5c4Gaxsr5/LAVuEjGveLe8Pj1Yb7Sv7Y3vr3WGQPTJRd
-         p/p1EOmzAF8NnWxTfLc4oMVb+jlQyMngPJbyuIPb1eIuLwudEj+Db4GvA0o+QaWDQF+o
-         HA6tKWdfIHeP+0NeNtMGpq/8U2LYSGEnTXirlmZFik46D8ucfrwvYjJ/uzzOxP3irwJr
-         9UP3k1Cxtj1YMLkUNImDu8dXjw/DkUG76XtiXSSSvNhiYCkn4c/Zo38YUem6X5wZNiRB
-         9FmQ==
+        bh=X3lVfNFiffp+uU+9DlG1DEynuXNArzY2ybDWxR4v/kU=;
+        b=MSrErUg2lm0x5R6LbBmZxeIk2ObTUA1rFQ1KrkXyaDPbxMyJ0vplGmwSPmgxfXORUp
+         /Y5YtN1OVe4i1XqtGouL7+LrTed6lBxKsch+bTETjHrHzJQd9fzyImw8cOz2dOZT5GCt
+         lGCTQn1qc6mtHlcHDlItIUng+3iK4peyjFbVXa2SgYuGIeOxLLzxAe0aaQn6rjcnKItx
+         680I7NzEUsguOjfh41R9ZoOxBiCiKTl31qkUu2vifXVZiVc/enC9RdunPZa9QHWExLwz
+         LASzCshSsmx/DP2rfYGyzRiBmTL2bx8zOrDFOCcz9E4ursL2iJgL/AyRkvYKGVwqKVvV
+         ZvjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778691190; x=1779295990;
+        d=1e100.net; s=20251104; t=1778691399; x=1779296199;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=ZOuwO8Oe7+fhFiUNtPbUZRGD3ndfLf9Y9W/ejus3N+4=;
-        b=gKViOuG2Qbevt99LeILop6KGCYf2fGIREoH4LguF/aYW7UHJnChjs8+F6xpwpZrabl
-         P14EIWW+kFZCYppDM8bVFzsPwWcPAI9sadVKJEJ2P1T8pu6ZSAeixhLU7TfpFBCR2G7N
-         n+f8ODlb83ghAjPD/eJFvvrMjLeEaH0SBShoIXp+IuSzGV7ny3pG986DGDBworj7wJip
-         dLrGj0qf90TZcFozP0sL1B7zfy9BmP2k7J5YWezgKOgnuU7y1Je18YgYa7nbxofww05s
-         EDPGk8ZZJe1TEwuxdyW7Fo8k0K/uLd4H3Y41fwzT9Za5cWG1ErbMX/q/2Uzd/gKHR1sC
-         nCrA==
-X-Forwarded-Encrypted: i=1; AFNElJ+bY1EBDBFgRgmzPZ+hLhRfv30+4lDS2iMRtfUR+0PZVzP7/rBQ/YFpEJDh/QZ0C5l2O6w98A==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw5RoVcbGobQdAu/+DiHk22iRDCoguVnD9QK2xAW8UY47iF68we
-	iAjTijZibYAd8hRW5KY+IwzKyTAlr1nge9XLL/kWs2if3X/op4WUT1GVMzCzA3xHuz6mrxrjOzM
-	JVtNMY+KVfK4mvMggrb5tLi48la4JjUuQtJtI9JADmRyLJKsfhxJlCUZzAA==
-X-Gm-Gg: Acq92OE8WbUSSqSgw87fe6RXI6aMhVuMJymsIftYccsjdtMKy6+Kww5pNNuERBuaKjI
-	MC0K+qn+CC+1Bk6v/fnNTYUPZ8QbmEl5jSrq/0o0mMiWFxhdbwYLbmUcKDuh0JXktKcjEjysWte
-	4J28WrK4v0uDO6n+3yYm14kTgYlvQi9t0cSGgPUaW7urDc3oaWLGZHz4VsT54gBQiU3j1RhOYpi
-	koLsbVDGx91I2Bj3bVQS5xoCUy0i6lAXLiyw2W6JiFyGfpPuto6jB8O62+v097/ZYkefsxdNNpg
-	tfr5U6PEs+mFLG4yBiEcy4jwuD/ZCbCG23lZ7g0WJBbpx/XNha+mvVLlVbVtQi9xvmOgj5D39XF
-	uuHPC0POD01zX+nHftoXg4SnPlQwJn/76zH1hAjuhIJaowrtGwBW8pynCsWYa16XykDzO1nIEjs
-	F4CN7KoGf+GU0+eIXUFTTyXG5tEESldqcaef4=
-X-Received: by 2002:a05:622a:5912:b0:50d:7384:a660 with SMTP id d75a77b69052e-5162f43f2fdmr54430531cf.6.1778691189598;
-        Wed, 13 May 2026 09:53:09 -0700 (PDT)
-X-Received: by 2002:a05:622a:5912:b0:50d:7384:a660 with SMTP id d75a77b69052e-5162f43f2fdmr54429961cf.6.1778691189063;
-        Wed, 13 May 2026 09:53:09 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-393f628a724sm40620501fa.39.2026.05.13.09.53.07
+        bh=X3lVfNFiffp+uU+9DlG1DEynuXNArzY2ybDWxR4v/kU=;
+        b=MDCReJVtpkJ2Qnsqr4Kq6LtTtQQ78TF0hl+bgk5rumgkQXTlqs7UlmDAwZ6mEYGWfm
+         zlGA9s0Jxbu4rkGGF3L7DSUnajXWEG3du8hA4Jnpu36EDKyN6ioV2qR1Uo1QPBItb1/a
+         fF0KJu/83oWY68ynKVGkL0BIWjUU/CG+l8VXdeZdoGXDloOJBViRsq5jULUta7BVUXny
+         8ppw12NRT7ZHtdcyknmQmCNuIQQ2lIxXXR46U8nNkBCLNAVtmyzAguj/CsVL5E3bnmnx
+         NhCGxz5YPFrmTvsKHVykjZ03aej8YlxqY72zemPJ3Pe0idftNgjDA2YGkHkOUa581+Eb
+         t6rA==
+X-Gm-Message-State: AOJu0YyIGPW4GgehOFlgs4Ztf+j2W9Z8DIb1gdhOF2JZ/2cMjP1FOf7+
+	r2iT1EXlpvXIAuiGxkzpfmxB0l2GO7Qvcl1ef7cnfbSZqeHaUpRtB+blU1L0EaTrLQ==
+X-Gm-Gg: Acq92OFjmUKVy32WwT1ZKz/e9R0EbBl8jboYeSlgE/5/Ph9zXX9LhlSXj2MHeZOkumB
+	pfzqcy5Emkvu3Rinb+TumOvYFQQX4H9jjM+6Abz1mM/cuZPO0sm7vT0IHkvvhOjc5phizOLu3wm
+	PinzDN1DWq/wY/XarPzXPHcFvri+g3PEmFV7M//bpOSic33BssLUhNP/qDc6PMgoxXH7yDJdkfe
+	WRHwwa43ZGMqgji6KqjhSglL/hwLg/F96mRhV7pT+Gnl3QPc5GdQr6XZJE9/4AWn+W8OHcg082D
+	1r5p40qB7+IhQqPf2/YqEVfAvlW7AQFtoLUthjsHXCuzJlgvUQK4A1c0ZzVEAff1hDwEi034qys
+	tG8jgRiU+hMIMeUHTXbvnXiN3J4UzRsLAnxIam/vFJ+tzeZDuQdUAivkHPmaLXbh/O/Y11er8ke
+	6StYBvpTcp4FnuOInnXjUVOnDdAgKaS75tS1dryAKaIYqTQF25tKLgSQM+zTXXUoCSSxmVQw==
+X-Received: by 2002:a05:7022:ef05:b0:12c:7ec:b96 with SMTP id a92af1059eb24-1347dbc6465mr209272c88.1.1778691397968;
+        Wed, 13 May 2026 09:56:37 -0700 (PDT)
+Received: from google.com (153.46.83.34.bc.googleusercontent.com. [34.83.46.153])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2f888c3b301sm29447066eec.23.2026.05.13.09.56.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 May 2026 09:53:08 -0700 (PDT)
-Date: Wed, 13 May 2026 19:53:06 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Akhil P Oommen <akhilpo@oss.qualcomm.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Rob Clark <robin.clark@oss.qualcomm.com>,
-        Dmitry Baryshkov <lumag@kernel.org>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Jessica Zhang <jesszhan0024@gmail.com>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Sean Paul <sean@poorly.run>, linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux.dev, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: Re: [PATCH 5/8] arm64: dts: qcom: Add GPU support for Kaanapali
-Message-ID: <hdpvs6gftjhaa2xx3r3ds6ss44bvytnllv2lg6anoiq2iyxwtc@qd7ejefkxmwk>
-References: <20260512-kaana-gpu-dt-v1-0-13e1c07c2050@oss.qualcomm.com>
- <20260512-kaana-gpu-dt-v1-5-13e1c07c2050@oss.qualcomm.com>
+        Wed, 13 May 2026 09:56:37 -0700 (PDT)
+Date: Wed, 13 May 2026 16:56:33 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, 
+	Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Joerg Roedel <joerg.roedel@amd.com>, Josua Mayer <josua@solid-run.com>, 
+	Kevin Tian <kevin.tian@intel.com>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
+	patches@lists.linux.dev, Pranjal Shrivastava <praan@google.com>, 
+	Mostafa Saleh <smostafa@google.com>, stable@vger.kernel.org
+Subject: Re: [PATCH rc 3/5] iommu: Handle unmap error when iommu_debug is
+ enabled
+Message-ID: <agSswSq8bTYiI6Uv@google.com>
+References: <0-v1-44b2fef88b25+d3-iommupt_map_rc_jgg@nvidia.com>
+ <3-v1-44b2fef88b25+d3-iommupt_map_rc_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20260512-kaana-gpu-dt-v1-5-13e1c07c2050@oss.qualcomm.com>
-X-Authority-Analysis: v=2.4 cv=M/l97Sws c=1 sm=1 tr=0 ts=6a04ac76 cx=c_pps
- a=JbAStetqSzwMeJznSMzCyw==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=YMgV9FUhrdKAYTUUvYB2:22 a=EUspDBNiAAAA:8
- a=XJtuOP1FUQBXJGSJDRYA:9 a=CjuIK1q_8ugA:10 a=uxP6HrT_eTzRwkO_Te1X:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTEzMDE3MCBTYWx0ZWRfXzrueqzi6wPsv
- Rgor/4dm+QV2ZFhywHS3JeTtSFeVtKb4anuwgGJFMJXVEAFOlhVYEK3hv3A4LRpDf0naaJG/Hs0
- 7hnF3HAx/gl5B4lCV48A8NwXQ6JldXlAIKKu21DHulF2qs+/shWZCW6Je5iBXvOBTQpWXhHVswA
- hSQgiaQzlNQ2Pilso/d1qmcMRusjM7g2IZpKgJllojuyG6q6vFQwDSECQBtZoXrYsTsy5rFqKGg
- CX/Vua+/qEs6E8Vrc+u/EbOX8r3RBQ5zHDIl7nJTiuUuH+cHo9xGL2UrQw2N/4+oFI5B070SPqP
- DBU9U3aucBgnVbO5VXT1lEH7WUmy4epMpmrBlkGJaCyTt8uXU1mJDCesOoqz3kAQZ0aTw1zZtv9
- apr4nZIPgwcFZuZIxtMRbEy6sohMiqcMxcw5L5KbMsrEAH2IzyCme1ZlUYDC5WiWC3IFBTKGhSr
- efbPtl2odaTNO/WpMtw==
-X-Proofpoint-ORIG-GUID: yvFRdHLXAinYPLWRw6KuohmcV4wNWkeo
-X-Proofpoint-GUID: yvFRdHLXAinYPLWRw6KuohmcV4wNWkeo
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-05-13_01,2026-05-13_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- bulkscore=0 clxscore=1015 impostorscore=0 malwarescore=0 suspectscore=0
- spamscore=0 phishscore=0 lowpriorityscore=0 priorityscore=1501 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2605050000 definitions=main-2605130170
+In-Reply-To: <3-v1-44b2fef88b25+d3-iommupt_map_rc_jgg@nvidia.com>
 
-On Tue, May 12, 2026 at 03:53:19AM +0530, Akhil P Oommen wrote:
-> Adreno 840 present in Kaanapali SoC is the second generation GPU in
-> A8x family. It is based on the new slice architecture with 3 slices,
-> higher GMEM/caches etc.
-> 
-> There is some re-arrangement in the reglist to properly cover maximum
-> register region. Other than this, the DT description is mostly similar
-> to the existing chipsets except the OPP tables.
-> 
-> Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
-> ---
->  arch/arm64/boot/dts/qcom/kaanapali.dtsi | 232 ++++++++++++++++++++++++++++++++
->  1 file changed, 232 insertions(+)
-> 
+On Tue, May 12, 2026 at 01:46:15PM -0300, Jason Gunthorpe wrote:
+>Sashiko noticed a latent bug where the map error flow called iommu_unmap()
+>which calls iommu_debug_unmap_begin()/iommu_debug_unmap_end() however
+>since this is an error path the map flow never actually established the
+>original iommu_debug_map() it will malfunction.
+>
+>Lift the unmap error handling into iommu_map_nosync() and reorder it so
+>the trace_map()/iommu_debug_map() records the partial mapping and then
+>immediately unmaps it. This avoid creating the unbalanced tracking and
+>provides saner tracing instead of a unmap unmatched to any map.
+>
+>Fixes: ccc21213f013 ("iommu: Add calls for IOMMU_DEBUG_PAGEALLOC")
+>Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+>---
+> drivers/iommu/iommu.c | 49 +++++++++++++++++--------------------------
+> 1 file changed, 19 insertions(+), 30 deletions(-)
+>
+>diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>index e334588a2476b4..e5fa9875900228 100644
+>--- a/drivers/iommu/iommu.c
+>+++ b/drivers/iommu/iommu.c
+>@@ -2575,12 +2575,11 @@ static size_t iommu_pgsize(struct iommu_domain *domain, unsigned long iova,
+>
+> static int __iommu_map_domain_pgtbl(struct iommu_domain *domain,
+> 				    unsigned long iova, phys_addr_t paddr,
+>-				    size_t size, int prot, gfp_t gfp)
+>+				    size_t size, int prot, gfp_t gfp,
+>+				    size_t *mapped)
+> {
+> 	const struct iommu_domain_ops *ops = domain->ops;
+>-	unsigned long orig_iova = iova;
+> 	unsigned int min_pagesz;
+>-	size_t orig_size = size;
+> 	int ret = 0;
+>
+> 	if (WARN_ON(!ops->map_pages))
+>@@ -2603,31 +2602,25 @@ static int __iommu_map_domain_pgtbl(struct iommu_domain *domain,
+> 	pr_debug("map: iova 0x%lx pa %pa size 0x%zx\n", iova, &paddr, size);
+>
+> 	while (size) {
+>-		size_t pgsize, count, mapped = 0;
+>+		size_t pgsize, count, op_mapped = 0;
+>
+> 		pgsize = iommu_pgsize(domain, iova, paddr, size, &count);
+>
+> 		pr_debug("mapping: iova 0x%lx pa %pa pgsize 0x%zx count %zu\n",
+> 			 iova, &paddr, pgsize, count);
+> 		ret = ops->map_pages(domain, iova, paddr, pgsize, count, prot,
+>-				     gfp, &mapped);
+>+				     gfp, &op_mapped);
+> 		/*
+> 		 * Some pages may have been mapped, even if an error occurred,
+> 		 * so we should account for those so they can be unmapped.
+> 		 */
+>-		size -= mapped;
+>-
+>+		*mapped += op_mapped;
+> 		if (ret)
+>-			break;
+>+			return ret;
+>
+>-		iova += mapped;
+>-		paddr += mapped;
+>-	}
+>-
+>-	/* unroll mapping in case something went wrong */
+>-	if (ret) {
+>-		iommu_unmap(domain, orig_iova, orig_size - size);
+>-		return ret;
+>+		size -= op_mapped;
+>+		iova += op_mapped;
+>+		paddr += op_mapped;
+> 	}
+> 	return 0;
+> }
+>@@ -2645,6 +2638,7 @@ int iommu_map_nosync(struct iommu_domain *domain, unsigned long iova,
+> 		phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
+> {
+> 	struct pt_iommu *pt = iommupt_from_domain(domain);
+>+	size_t mapped = 0;
+> 	int ret;
+>
+> 	might_sleep_if(gfpflags_allow_blocking(gfp));
+>@@ -2656,24 +2650,19 @@ int iommu_map_nosync(struct iommu_domain *domain, unsigned long iova,
+> 				 __GFP_HIGHMEM))))
+> 		return -EINVAL;
+>
+>-	if (pt) {
+>-		size_t mapped = 0;
+>-
+>+	if (pt)
+> 		ret = pt->ops->map_range(pt, iova, paddr, size, prot, gfp,
+> 					 &mapped);
+>-		if (ret) {
+>-			iommu_unmap(domain, iova, mapped);
+>-			return ret;
+>-		}
+>-	} else {
+>+	else
+> 		ret = __iommu_map_domain_pgtbl(domain, iova, paddr, size, prot,
+>-					       gfp);
+>-		if (ret)
+>-			return ret;
+>-	}
+>+					       gfp, &mapped);
+>
+>-	trace_map(iova, paddr, size);
+>-	iommu_debug_map(domain, paddr, size);
+>+	trace_map(iova, paddr, mapped);
+>+	iommu_debug_map(domain, paddr, mapped);
+>+	if (ret) {
+>+		iommu_unmap(domain, iova, mapped);
+>+		return ret;
+>+	}
+> 	return 0;
+> }
+>
+>-- 
+>2.43.0
+>
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-
-
--- 
-With best wishes
-Dmitry
+Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
