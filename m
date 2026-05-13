@@ -1,166 +1,83 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6ACAB368D67
-	for <iommu@lists.linux.dev>; Wed, 13 May 2026 01:31:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E80682866;
+	Wed, 13 May 2026 02:03:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=96.67.55.147
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778635897; cv=none; b=pbYRse2t12eIAetdR+wlYGv2uoc/bDHiu4W5VaJd6A6yBkZJA5h3TJVmBFv6miPK7ArZS8fbbi34QfHfusqyl+TDQbdgMlGeKcQ544LINWeanwUvwHjEjtfVbLLM8pl3jsioS3bB3crCkb1E6i/mUmI6e8FafiSjqV2V1yDSpPY=
+	t=1778637799; cv=none; b=Efo+Cmtqipk5WoL0joEPEeRJFY+K5KOkGP0rC7SaTj8ZxA+1d4FdaiW2sXrlV1W4NjHsMuMRI1eNXoRZyIf5ueZV3Uk6JMxwJ6PfmWTaEt9HfMwi4Qa/jamoO8LO2qL3SMHNSK+DpZRZvYv6GzY6ppfXxbUDESIJ9uF6Mxke7nk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778635897; c=relaxed/simple;
-	bh=H/di9LyEpiVEUN8fxJ5PF/SzJf2jvuHtmB37+wS3jvA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YfHTgL4RZUArKJRz3WCtq9xGzkFCX8TjxKFDUaFDMe4uUFwct2IdwtNPKA3X7GUUxC6yLcTy8uZifeCSraeQB+M2XlpiREWKzah47o9TmmC5d0YX5yIvCKYwXi38cZ5BlQkwqpEQ0hvV7uJViyN8pTfuxgkzwi9F/kWZAN7bzq4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=ZqYJyYOv; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1778637799; c=relaxed/simple;
+	bh=O8gskHSN/sNNUFdFEb/q5LST6B6nwuSIihS6D+arHIU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=JkRuE4QB7/NIPF5ca1+tGhaK9llbAPpmNYlFOlw8r4MbO+z9yQpuIt+ThJbmDtyz5E88lSIPME/XkeGV8BxaoZ7VjnoP2+j9QTygrb/gmsKhyUklKI4fYTfAUjqv43YUs6ZFh4EzQA6gsTLTaf+732O0TAARlwOILEnLNPDnFyY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com; spf=pass smtp.mailfrom=surriel.com; dkim=pass (2048-bit key) header.d=surriel.com header.i=@surriel.com header.b=hSUqV8cc; arc=none smtp.client-ip=96.67.55.147
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=surriel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="ZqYJyYOv"
-Received: from [192.168.0.88] (192-184-212-33.fiber.dynamic.sonic.net [192.184.212.33])
-	by linux.microsoft.com (Postfix) with ESMTPSA id A4C2020B7166;
-	Tue, 12 May 2026 18:31:29 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A4C2020B7166
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1778635890;
-	bh=5q9rABfO0Gt/Q6Q3CrN73o4OycY5uJbilUt6FU0JSwI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=ZqYJyYOvPj+UHa/jWI4PsDmDD5HCuVDNxuPcN1m3CAsdwhUsrIfpnnpQjzdM7z5Qy
-	 chKuGoqKEcjc+pQY40Wiii7Ze3QJhBv9q3Joe+LCwRcOwoU0pTvZwKHnbvfEqewRIe
-	 v9p/A0syWXxuKg6nZGqzUWN0H09hyXTolArvoUWs=
-Message-ID: <79f714df-c072-989a-c95d-989ea6b6f08b@linux.microsoft.com>
-Date: Tue, 12 May 2026 18:31:31 -0700
+	dkim=pass (2048-bit key) header.d=surriel.com header.i=@surriel.com header.b="hSUqV8cc"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=surriel.com
+	; s=mail; h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:Cc
+	:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=O8gskHSN/sNNUFdFEb/q5LST6B6nwuSIihS6D+arHIU=; b=hSUqV8ccO3YVekQQl66zi+lTJg
+	OEPrg5qPI6o5+jCAqXw7PlBBrbDWPSmS0C0OyMEWULit2Ym9Kq/m2MTI1Y6fUORUCZJ73f502aQpe
+	gIzDmK4/gHOZCn/+wrzJVmLjFh84SRSqbAo4lQjqsNx5Fw3xqd4yW5sDfoNAwGELcDMDVrrtSkZ24
+	rOtWF1La8ac/cHwAE4dlPovFpjwOVeSjq505vnFIT2h33r1xn58YU/wSTIIQaoVBHgHljkdkP4prd
+	N8Y5Klw5/+cAitFIuEnaTS8QV/IsNwPnz9Xca/Ph3tfmcY7SV7NIm59prgfwZBOf8RjOmE0fgYF8F
+	bAKXF0Ig==;
+Received: from fangorn.home.surriel.com ([10.0.13.7])
+	by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.97.1)
+	(envelope-from <riel@surriel.com>)
+	id 1wMywG-0000000022e-3Znm;
+	Tue, 12 May 2026 22:03:08 -0400
+From: Rik van Riel <riel@surriel.com>
+To: linux-kernel@vger.kernel.org
+Cc: robin.murphy@arm.com,
+	joro@8bytes.org,
+	will@kernel.org,
+	iommu@lists.linux.dev,
+	kyle@mcmartin.ca,
+	kernel-team@meta.com
+Subject: [PATCH 0/5] iova augmented rbtree O(log n) alloc_iova
+Date: Tue, 12 May 2026 22:00:17 -0400
+Message-ID: <20260513020304.1528751-1-riel@surriel.com>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.1
-Subject: Re: [PATCH V3 01/11] iommu/hyperv: Rename hyperv-iommu.c to
- hyperv-irq.c
-Content-Language: en-US
-To: Jacob Pan <jacob.pan@linux.microsoft.com>
-Cc: hpa@zytor.com, robin.murphy@arm.com, robh@kernel.org, wei.liu@kernel.org,
- mhklinux@outlook.com, muislam@microsoft.com, namjain@linux.microsoft.com,
- magnuskulke@linux.microsoft.com, anbelski@linux.microsoft.com,
- linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
- iommu@lists.linux.dev, linux-pci@vger.kernel.org,
- linux-arch@vger.kernel.org, kys@microsoft.com, haiyangz@microsoft.com,
- decui@microsoft.com, longli@microsoft.com, tglx@kernel.org,
- mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
- joro@8bytes.org, will@kernel.org, lpieralisi@kernel.org,
- kwilczynski@kernel.org, bhelgaas@google.com, arnd@arndb.de
-References: <20260512020259.1678627-1-mrathor@linux.microsoft.com>
- <20260512020259.1678627-2-mrathor@linux.microsoft.com>
- <20260512164623.0000273f@linux.microsoft.com>
-From: Mukesh R <mrathor@linux.microsoft.com>
-In-Reply-To: <20260512164623.0000273f@linux.microsoft.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 5/12/26 16:46, Jacob Pan wrote:
-> Hi Mukesh,
-> 
-> On Mon, 11 May 2026 19:02:49 -0700
-> Mukesh R <mrathor@linux.microsoft.com> wrote:
-> 
->> This file actually implements irq remapping, so rename to more
->> appropriate hyperv-irq.c. A new file to implement hyperv iommu will
->> be introduced later.  Also, it should not be tied to HYPERV_IOMMU,
->> but to CONFIG_HYPERV and IRQ_REMAP. The file already has #ifdef
->> CONFIG_IRQ_REMAP.
->>
->> Reviewed-by: Anirudh Rayabharam (Microsoft) <anirudh@anirudhrb.com>
->> Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
->> ---
->>   MAINTAINERS                                    | 2 +-
->>   drivers/iommu/Makefile                         | 2 +-
->>   drivers/iommu/{hyperv-iommu.c => hyperv-irq.c} | 6 +++---
-> Given that we have multiple Hyper-V IOMMU-related files ? this renamed
-> hyperv-irq.c, the existing hyperv-iommu code, iommu-root (this
-> series) and the recently posted guest pvIOMMU driver ? should we create
-> a drivers/iommu/hyperv/ directory to consolidate them?
 
-This came up briefly during synup with arm64 devs whether to split
-the file into arch specific and common. We decided to wait till arm is
-working so we can tell how intrusive the #ifdefs are. We can decide as
-part of the arm port patches. I am ok also if you want to do it as part
-of the pv-iommu patches as follow up once this is merged.
+Occasionally production workloads at Meta run into the linear search
+in alloc_iova() in ways that cause real issues. For example, when
+enough CPUs at a time fall into the linear search trap, systems
+have been known to get stuck for so long that it causes soft lockups.
 
-Thanks,
--Mukesh
+With the old code, free_iova, find_iova, reserve_iova, iova_insert_rbtree,
+and remove_iova were all O(log n) already. They stay that way with these
+patches.
 
->>   drivers/iommu/irq_remapping.c                  | 2 +-
->>   4 files changed, 6 insertions(+), 6 deletions(-)
->>   rename drivers/iommu/{hyperv-iommu.c => hyperv-irq.c} (99%)
->>
->> diff --git a/MAINTAINERS b/MAINTAINERS
->> index d1cc0e12fe1f..f803a6a38fee 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
->> @@ -11914,7 +11914,7 @@ F:	drivers/clocksource/hyperv_timer.c
->>   F:	drivers/hid/hid-hyperv.c
->>   F:	drivers/hv/
->>   F:	drivers/input/serio/hyperv-keyboard.c
->> -F:	drivers/iommu/hyperv-iommu.c
->> +F:	drivers/iommu/hyperv-irq.c
->>   F:	drivers/net/ethernet/microsoft/
->>   F:	drivers/net/hyperv/
->>   F:	drivers/pci/controller/pci-hyperv-intf.c
->> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
->> index 0275821f4ef9..335ea77cced6 100644
->> --- a/drivers/iommu/Makefile
->> +++ b/drivers/iommu/Makefile
->> @@ -30,7 +30,7 @@ obj-$(CONFIG_TEGRA_IOMMU_SMMU) += tegra-smmu.o
->>   obj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o
->>   obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
->>   obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
->> -obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
->> +obj-$(CONFIG_HYPERV) += hyperv-irq.o
->>   obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
->>   obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o
->>   obj-$(CONFIG_IOMMU_IOPF) += io-pgfault.o
->> diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-irq.c
->> similarity index 99%
->> rename from drivers/iommu/hyperv-iommu.c
->> rename to drivers/iommu/hyperv-irq.c
->> index 479103261ae6..d11076f906fb 100644
->> --- a/drivers/iommu/hyperv-iommu.c
->> +++ b/drivers/iommu/hyperv-irq.c
->> @@ -8,6 +8,8 @@
->>    * Author : Lan Tianyu <Tianyu.Lan@microsoft.com>
->>    */
->>   
->> +#ifdef CONFIG_IRQ_REMAP
->> +
->>   #include <linux/types.h>
->>   #include <linux/interrupt.h>
->>   #include <linux/irq.h>
->> @@ -24,8 +26,6 @@
->>   
->>   #include "irq_remapping.h"
->>   
->> -#ifdef CONFIG_IRQ_REMAP
->> -
->>   /*
->>    * According 82093AA IO-APIC spec , IO APIC has a 24-entry Interrupt
->>    * Redirection Table. Hyper-V exposes one single IO-APIC and so
->> define @@ -331,4 +331,4 @@ static const struct irq_domain_ops
->> hyperv_root_ir_domain_ops = { .free = hyperv_root_irq_remapping_free,
->>   };
->>   
->> -#endif
->> +#endif  /* CONFIG_IRQ_REMAP */
->> diff --git a/drivers/iommu/irq_remapping.c
->> b/drivers/iommu/irq_remapping.c index c2443659812a..41bf65e4ea88
->> 100644 --- a/drivers/iommu/irq_remapping.c
->> +++ b/drivers/iommu/irq_remapping.c
->> @@ -108,7 +108,7 @@ int __init irq_remapping_prepare(void)
->>   	else if (IS_ENABLED(CONFIG_AMD_IOMMU) &&
->>   		 amd_iommu_irq_ops.prepare() == 0)
->>   		remap_ops = &amd_iommu_irq_ops;
->> -	else if (IS_ENABLED(CONFIG_HYPERV_IOMMU) &&
->> +	else if (IS_ENABLED(CONFIG_HYPERV) &&
->>   		 hyperv_irq_remap_ops.prepare() == 0)
->>   		remap_ops = &hyperv_irq_remap_ops;
->>   	else
+This patch series turns the iova rbtree into an augmented rbtree,
+which allows alloc_iova to also be O(log n).
+
+It also adds some self tests for the iova code.
+
+The code was written by Claude, and nitpicked by myself.
+Don't be shy if there are more nitpicks remaining.
+
+It was tested both in a VM (running the selftests), and on an
+AMD Bergamo system with IOMMU enabled.
+
+Unfortunately I do not know of any way to reproduce the linear
+search soft lockups at will, so I have not been able to verify
+that scenary in practice.
+
+Based on 5d6919055dec Linux 7.1-rc3
+
 
