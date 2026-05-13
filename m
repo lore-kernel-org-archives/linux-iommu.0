@@ -1,180 +1,129 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7667D38CFF6;
-	Wed, 13 May 2026 14:54:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73DCB30675C
+	for <iommu@lists.linux.dev>; Wed, 13 May 2026 14:57:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778684076; cv=none; b=jGnLOcYhcgsRWjO7C6tAsVzxvi6MtMpJ6qgGI6//MD5hHf4HyC7y/MngmFJ6Ns41fWzRA6ePnXa4QQKsfaJiyZmajXhSENDaXZHQot2z/7fhdfyrh1LPPL6AopoOd0NykDc3Gci+A7G1HMp4U5FB6duaGc0UY5USAmt9+/1uv14=
+	t=1778684248; cv=none; b=shCqEgPIEIKj8GmUZ2wltuxEgE5ZSUgb7uZc5DipMNAgc0U1GWLleFMPLolHvvgjvQWPILi70QSPAKBzlsrSpuRBFXvErAaTCsgoQomRSm44WeczYj2bYVH9Lk89DnY8pc1KmP9Gk8IBYPwj0xSlmVt4AbuKxVqWj5x8WaSGJl8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778684076; c=relaxed/simple;
-	bh=5tb/dZ3Z6XZ9rdTRViFJg2CQhxIhIhB3K1EbtjSZ+/0=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=OxQkraJwf4jPFkTw7+qyHUJjtGTqGeWEYSL7baFPWZP6bZwzTalY6FG47HNaFEPWuSROJV+Kd0Zo+Gj9Nl4aTSdgyEQlZnupj6wITiCfh06ZAnb4wgZBImuAnkku02n9nub5UX0C0XrYnF6+puVSRbq3GliCzgnjIfefBHoBduI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OvLTF6/v; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778684248; c=relaxed/simple;
+	bh=h9bAwQMPen4e2kR3BQjshOf6XOKV0LRZUx+Q+Yhg74M=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WI20zeq9lNxigl7yCT5GeA66tjJ5mNXg5FascdopX4aq1O1PS35HUVdp1vtFSwOMZOTbRBCOm3Cp3vuxhRDZ8q3yWUzTYHF/dRMNt05a9n4VCWaHzNWmtfoBvlpQ54e45lBEu+r9E7iPf+n/5lEXnGn5q6sDBwy2bIU5L2k3ThY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=REaO78rU; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OvLTF6/v"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48FC9C19425;
-	Wed, 13 May 2026 14:54:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778684076;
-	bh=5tb/dZ3Z6XZ9rdTRViFJg2CQhxIhIhB3K1EbtjSZ+/0=;
-	h=From:To:Cc:Subject:Date:From;
-	b=OvLTF6/v0D+Is1Oo2vvsUkztjB8o43huMqy8iw+pSIEJ/nvZeP4oZB7YNeLzpX70+
-	 F6KHL8ycBfURSnQT1p+fKlIB9OhRQVTn0tCsXa1apa7oDIctXQWRwXvxjqjrRXnGVK
-	 vd0ARq2IWqI97wp/22xXUA4xRls5LUhWjIkH09oIc79WCYDerBL44nYC8NvA/NJ6ri
-	 F+QGxwMrRLrw+4UqlN3r2QqLBtZCTVNDdmCrzGaBuNlD8cL0XM2IFfnEbrmTW1Rw7d
-	 GJhSsAo2QS1ZHFIkt5/EhT5m/ZBORkFb5yljim2NIz9XpXL5HyJ43DPn1XUH7ViMLt
-	 BGE9bIg+4eV6w==
-From: Arnd Bergmann <arnd@kernel.org>
-To: Will Deacon <will@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Nathan Chancellor <nathan@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>,
-	linux-kbuild@vger.kernel.org,
-	stable@vger.kernel.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kees Cook <kees@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] [v2] iommu, debugobjects: avoid gcc-16.1 section mismatch warnings
-Date: Wed, 13 May 2026 16:53:54 +0200
-Message-Id: <20260513145425.1579430-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.39.5
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="REaO78rU"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-48d1c670255so3585e9.0
+        for <iommu@lists.linux.dev>; Wed, 13 May 2026 07:57:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1778684245; x=1779289045; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=7HJ+58x1aDhyagRTCbZYUW45HaOqv0hJBTleCF7fG8M=;
+        b=REaO78rUhyulxXuXT75rODCIRGe6TGovU8TCO5vyVFnzT52zwT+AQFC2Dn+TJik+fE
+         rQDaaoOniBPAx9jz6fldAqhwNo9ZQqBMJlB6NxrZmbgZ6Nyl3lvQ3taUwkCMqoCjPrTa
+         rvYquIoP8KfCenKl0JwCDEvN5yH+QDHosNctmtC5yt+O7r/EkPB9AKSiTsZlNaIjn2t4
+         ls1OnqFqSbdI97r+1vMkFTIlCwz+8Ronsfp+Ej+fSnM+vq/eOz0Rfro2rBrJeJXttnxM
+         APc7EHF20SbJofcdPSBaXjD+0dj7k2tbghF/C+I09p/XVbTogJmnzo0sTb/2eYPGermY
+         mPFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778684245; x=1779289045;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=7HJ+58x1aDhyagRTCbZYUW45HaOqv0hJBTleCF7fG8M=;
+        b=J/rB8Vhj+VCPBvAIuBT43kl2JwY4BP8wi2/PjIXcQWzqhHx9Y+TgfP7DYkFfoKiTBk
+         9kFTdS15b4HZ4IeGNPV3thuJkhkcS/pez095YzbnF4kZzacxnJMmL88cY7eZMbHXe5YA
+         uLRwhg3Mgpuh2tXPhQY0bfxmDQ+qBpjCmiREZw1TJ2U2VA/NUR7dJGdUWqarw9MyH+Up
+         xC17xbKXME8xD6JCr3fuVguIYpKlF3vfsS6XQ76rQjGzQF4e0J5a8fBfatCpT/SC6wxU
+         AbpOm2cCyEkOAen2Ox/oIpysEoMegKLI1FeKYvXdd9aKD5+T+WHawyHR6QJr+nZkOzhZ
+         7Fog==
+X-Gm-Message-State: AOJu0YzGJJYE2xl9a/1KQ6fzGdboVu6wD3xkcgrmCOKp47MxY71RpZeW
+	cqy+MlYqEYV5NfJqc5sEAhgVRT3YvchuOVPWfF1ydY93QDwX1vrtrlyI3eIPVTqJCw==
+X-Gm-Gg: Acq92OHD8WlVKdBfZ48HB0ugncu/U/e9XYQV9UNzWcDke3+Rza0T8CExD8agM4LexBU
+	5y3Mog7O7cGB2vywgVe8hA2h3nODX70sK4lPrATr+iEOGkJTIy33tIvgp5ldGxlqvnRX5ffBLcv
+	XsArwvucnWni3QhXABD8sVoYqcycRBdpFFKGRoYiKru/rV7d/jj8b9RM8P8huQ5npmuajY+Ys9e
+	clMuxinWq9fgY0WemDx/z3CRUXqpNFVmh9VvrDmagh2axboyIXG2ZpNmhS4HYMzogSQh69zgVfV
+	pXRk8xs3E8RN2x86tNQZ4xnxZ+JNbjTw90C8vbx2TPYzDnXdZUy90PmWCD9kMro991EENHegvvU
+	Kqvh91UiSFuFaPHkfIuXF+SkO7ZbiPEZ/0P51Uu5pxbY6FT/tEO+I/dPUhLgax+gtUkNyZmrzck
+	bW2Bznac+2+8VWGhytFNGLMGGO97gAWyutQlRgQKfUoSR39sWhPuvqIZSj0jVBfsOYC7E=
+X-Received: by 2002:a05:600d:8486:20b0:477:86fd:fb49 with SMTP id 5b1f17b1804b1-48fc919a43dmr860735e9.10.1778684244549;
+        Wed, 13 May 2026 07:57:24 -0700 (PDT)
+Received: from google.com (8.181.38.34.bc.googleusercontent.com. [34.38.181.8])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fc8d27d31sm128460865e9.8.2026.05.13.07.57.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 May 2026 07:57:23 -0700 (PDT)
+Date: Wed, 13 May 2026 14:57:17 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Joerg Roedel <joerg.roedel@amd.com>,
+	Josua Mayer <josua@solid-run.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	Pranjal Shrivastava <praan@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>, stable@vger.kernel.org
+Subject: Re: [PATCH rc 1/5] iommu: Fix loss of errno on map failure for
+ classic ops
+Message-ID: <agSRTQFAhiRQ6DYQ@google.com>
+References: <0-v1-44b2fef88b25+d3-iommupt_map_rc_jgg@nvidia.com>
+ <1-v1-44b2fef88b25+d3-iommupt_map_rc_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1-v1-44b2fef88b25+d3-iommupt_map_rc_jgg@nvidia.com>
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Tue, May 12, 2026 at 01:46:13PM -0300, Jason Gunthorpe wrote:
+> A typo, likely from a rebase, inverted the condition and caused
+> errors to be lost. Fix it to be "if (ret)".
+> 
+> This was breaking iommu_create_device_direct_mappings() on drivers
+> that don't use iommupt and don't fully set up their domain in
+> alloc_pages() (i.e., SMMUv2). In this case the first call of
+> iommu_create_device_direct_mappings() should fail due to the
+> incompletely initialized domain. Since it wrongly returns success,
+> the second call to iommu_create_device_direct_mappings() doesn't
+> happen and IOMMU_RESV_DIRECT is never set up.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: d6c65b0fd621 ("iommupt: Avoid rewalking during map")
+> Reported-by: Josua Mayer <josua@solid-run.com>
+> Closes: https://lore.kernel.org/all/321c2e57-6a17-4aef-ba42-d2ebd577e472@solid-run.com/
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 
-gcc-16 has gained some more advanced inter-procedual optimization
-techniques that enable it to inline the dummy_tlb_add_page() and
-dummy_tlb_flush() function pointers into a specialized version of
-__arm_v7s_unmap:
+Reviewed-by: Mostafa Saleh <smostafa@google.com>
 
-WARNING: modpost: vmlinux: section mismatch in reference: __arm_v7s_unmap+0x2cc (section: .text) -> dummy_tlb_add_page (section: .init.text)
-ERROR: modpost: Section mismatches detected.
+Thanks,
+Mostafa
 
-From what I can tell, the transformation is correct, as this is only
-called when __arm_v7s_unmap() is called from arm_v7s_do_selftests(),
-which is also __init. Since __arm_v7s_unmap() however is not __init,
-gcc cannot inline the inner function calls directly.
-
-In debug_objects_selftest(), the same thing happens. Both the
-caller and the leaf function are __init, but the IPA pulls
-it into a non-init one:
-
-WARNING: modpost: vmlinux: section mismatch in reference: lookup_object_or_alloc+0x7c (section: .text.lookup_object_or_alloc) -> is_static_object (section: .init.text)
-
-Marking the affected functions as not "__init" would reliably avoid this
-issue but is not a good solution because it removes an otherwise correct
-annotation. I tried marking the functions as 'noinline', but that ended
-up not covering all the affected configurations.
-
-With some more experimenting, I found that marking these functions as
-__attribute__((noipa)) is both logical and reliable.
-
-In order to keep the syntax readable, add a custom macro for this in
-include/linux/compiler_attributes.h next to other related macros and
-use it to annotate both files.
-
-Link: https://lore.kernel.org/all/abRB6g-48ZX6Yl2r@willie-the-truck/
-Cc: Will Deacon <will@kernel.org>
-Cc: Thomas Gleixner <tglx@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Miguel Ojeda <ojeda@kernel.org>
-Cc: linux-kbuild@vger.kernel.org
-Cc: stable@vger.kernel.org
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
-v2: I merged both patches into one, to simplify the dependency
-on the new compiler_attributes.h macro.
----
- drivers/iommu/io-pgtable-arm-v7s.c  | 18 ++++++++++++------
- include/linux/compiler_attributes.h | 11 +++++++++++
- lib/debugobjects.c                  |  2 +-
- 3 files changed, 24 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-index 40e33257d3c2..1dbef8c55007 100644
---- a/drivers/iommu/io-pgtable-arm-v7s.c
-+++ b/drivers/iommu/io-pgtable-arm-v7s.c
-@@ -777,21 +777,27 @@ struct io_pgtable_init_fns io_pgtable_arm_v7s_init_fns = {
- 
- static struct io_pgtable_cfg *cfg_cookie __initdata;
- 
--static void __init dummy_tlb_flush_all(void *cookie)
-+/*
-+ * __noipa prevents gcc from turning indirect iommu_flush_ops calls
-+ * into direct calls from a specialized __arm_v7s_unmap() that triggers
-+ * a build time section mismatch assertion.
-+ */
-+static __noipa void __init dummy_tlb_flush_all(void *cookie)
- {
- 	WARN_ON(cookie != cfg_cookie);
- }
- 
--static void __init dummy_tlb_flush(unsigned long iova, size_t size,
--				   size_t granule, void *cookie)
-+static __noipa void __init dummy_tlb_flush(unsigned long iova, size_t size,
-+					   size_t granule, void *cookie)
- {
- 	WARN_ON(cookie != cfg_cookie);
- 	WARN_ON(!(size & cfg_cookie->pgsize_bitmap));
- }
- 
--static void __init dummy_tlb_add_page(struct iommu_iotlb_gather *gather,
--				      unsigned long iova, size_t granule,
--				      void *cookie)
-+static __noipa void __init dummy_tlb_add_page(struct iommu_iotlb_gather *gather,
-+					      unsigned long iova,
-+					      size_t granule,
-+					      void *cookie)
- {
- 	dummy_tlb_flush(iova, granule, granule, cookie);
- }
-diff --git a/include/linux/compiler_attributes.h b/include/linux/compiler_attributes.h
-index c16d4199bf92..836a50f5917a 100644
---- a/include/linux/compiler_attributes.h
-+++ b/include/linux/compiler_attributes.h
-@@ -396,6 +396,17 @@
- # define __disable_sanitizer_instrumentation
- #endif
- 
-+/*
-+ * Optional: not supported by clang
-+ *
-+ *   gcc: https://gcc.gnu.org/onlinedocs/gcc/Common-Attributes.html#index-noipa
-+ */
-+#if __has_attribute(noipa)
-+# define __noipa __attribute__((noipa))
-+#else
-+# define __noipa
-+#endif
-+
- /*
-  *   gcc: https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#index-weak-function-attribute
-  *   gcc: https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html#index-weak-variable-attribute
-diff --git a/lib/debugobjects.c b/lib/debugobjects.c
-index 12e2e42e6a31..c93b7ca3e1ab 100644
---- a/lib/debugobjects.c
-+++ b/lib/debugobjects.c
-@@ -1212,7 +1212,7 @@ struct self_test {
- 
- static __initconst const struct debug_obj_descr descr_type_test;
- 
--static bool __init is_static_object(void *addr)
-+static __noipa bool __init is_static_object(void *addr)
- {
- 	struct self_test *obj = addr;
- 
--- 
-2.39.5
-
+> ---
+>  drivers/iommu/iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 61c12ba782066a..6e53cfad5dc001 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2669,7 +2669,7 @@ int iommu_map_nosync(struct iommu_domain *domain, unsigned long iova,
+>  		return 0;
+>  	}
+>  	ret = __iommu_map_domain_pgtbl(domain, iova, paddr, size, prot, gfp);
+> -	if (!ret)
+> +	if (ret)
+>  		return ret;
+>  
+>  	trace_map(iova, paddr, size);
+> -- 
+> 2.43.0
+> 
