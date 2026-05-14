@@ -1,363 +1,378 @@
-Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazolkn19011060.outbound.protection.outlook.com [52.103.14.60])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A624391E6D
-	for <iommu@lists.linux.dev>; Thu, 14 May 2026 18:14:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.14.60
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF17D390CA9
+	for <iommu@lists.linux.dev>; Thu, 14 May 2026 20:04:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.210.50
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778782469; cv=fail; b=awF170LarPVEQLpjGI4t6pY3qhaWUk3oY5Ya35AYqb6BcU1c7SzLsMgqGGb0c98+4nTCq/b1JO3EoAjlW94ai43kKeAQGCH4XcQg0QbwQJJN/iYjXoKHxWW/YuS6D1yIxjrYV7po+5YNf7+jz5W1D9EpOhBeNVWYEgS5YDuGgLQ=
+	t=1778789067; cv=pass; b=Hwy5zSMUS94kqbht2fFHXJVe4gWyHF7tVNJ028CwUHS50twCElLaL40ZX3pD//5M/my7Ww5H6ZBYTqNeGaq6zCQWOCP1sz0vXK3xIZ/s/jXuNQspPbKgdngLeTzwP9Vlg1/u30SB2RCMDKC5+aooSdh/BtQigVYtaLLuJZPhVi8=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778782469; c=relaxed/simple;
-	bh=jg67jzHh+HbmeJos/RB4PK/r7fg/cWQA7nKYNKn2+io=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=D1el1ylx/5dYW/X1YStddUnDeG17+5d1B+g9SkK0IgK1pCQj84Eg2SmQ4unpWH/JA8sUYPg2wftVVGFowzQvtt8XfF+QZuU+n9ejbwOUd4BT01l7GIqlJqimgTxC8t2xStL4NbhpEYIML9MEG8sxfvYW14hFcceYw+xxoEUxm9U=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=pM9Yl7Pr; arc=fail smtp.client-ip=52.103.14.60
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	s=arc-20240116; t=1778789067; c=relaxed/simple;
+	bh=XAwG/G3iDHkyBn0YCjcah8x0gmHTRYddR2yWgMaEkVI=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=n45u76v0cgNwLYS+8lE/YuAnsai1FQpmyXZcFjnlV3Xs5aXN5Ta0zNNkTstqnqxcp8baM5Bepd+bS3QDtT8gOsWzU13qVw59tJJjgGfBo4UkJsjSHMdlqE/VSMXwf28wSO/JwZ2QQxVwQ+0ho+76U/lfcmpnKD7Eq6AkNI5nSMA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc.com header.i=@rivosinc.com header.b=MxkdwFEH; arc=pass smtp.client-ip=209.85.210.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rivosinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rivosinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="pM9Yl7Pr"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=OXgPLaCLY4rMH3Og1h7Qw9kWDdY6Yr00OFkwGJmqAtEbAVIecZx0X9gyAE7OSBbEqFzQ7IYy5Poc9swOkTyPV9MnvW+0Witx32J0s7rQ5ey4A1ClncImJyrBV0P4hWK/CErQZKqYnNZPj3MhQvad7c3Svg3f5kmOrIYWLPGxdl6oHIzW6xSzoN9kE/bURkazdKD8RIWjlSqzU2gh8zBMmzcde9zP48lnHe5jq557K3c+xiFCNoCbt5eOTErML4df+GmaupL8JCzUSiBzTHMAEtkxPaCc47DCkcxZyROnYhOSPLJ3WhcI01+OXI+3somjNanNjX+d30Y7Ct0UtjShHA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=l/nXmxllZKjopD4HXX4xjOuAhRarBk2K3K2207sOxks=;
- b=esqZ8mP42kglYUKqaJr8aqnuweS28QV+kN0nBOl/yBFaD0aIJe14WgaSUf01XBK4isC5TXnEqrDHpBV2gKgbU+5spyWL9TgvhhLnmHLmoM/yFdYdILNZZXV6bLQem5thFdCyC+G9ZLDrmNo9Opbv+QSsWGGfdJPOX1P6mgcDWDppe6dOPMKNAD4keIur6eMUw0ZYklCkFKdTDKz65I30/nH+lrNNsYntn3DRPUGjQQ5RuLPIQcAO5qqdao6YaLRP5iz6wXx/XdWYvG6laoWNnv2j7KEEMxrLrlLUxsIsJJik4r9BBinp5abmNS2XXFJn9olQLHVv/HGWlWunxjZDaA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l/nXmxllZKjopD4HXX4xjOuAhRarBk2K3K2207sOxks=;
- b=pM9Yl7PrzsMdgPOuBCrn9PuuNIukYiVXXUysAcDdIJWRQz4X2x+BIr9Q5bV6beZhJlqYnIIaqJnob6B0RO648idfpam+v8VGJwQVnV3afs3E0sdKil4iXkYjc4KloFES4cMfhhLxo3lM++LUDbZpljNjHhLw8jb+3pUOPlrTzpUvxpT0+1bv6hs1FCBz/FviojH6UDIPWQiTx/1fuiFlraMD+IKsyaZkxezAgWAmlQIIAiGBw+8NCEdVJOSTZb0KQIUeAqFlq7KUh+2OCXUfP1FIUQJegYKOndkJIdhiwMhwYlh7uWsGexMAlEsQaPGvEw31dQzg+oTl4j5iZzw6eQ==
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
- by SN7PR02MB9284.namprd02.prod.outlook.com (2603:10b6:806:349::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9891.20; Thu, 14 May
- 2026 18:14:25 +0000
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::900:1ccf:2b1e:52b6]) by SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::900:1ccf:2b1e:52b6%6]) with mapi id 15.20.9913.009; Thu, 14 May 2026
- 18:14:22 +0000
-From: Michael Kelley <mhklinux@outlook.com>
-To: Yu Zhang <zhangyu1@linux.microsoft.com>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-hyperv@vger.kernel.org"
-	<linux-hyperv@vger.kernel.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-pci@vger.kernel.org"
-	<linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org"
-	<linux-arch@vger.kernel.org>
-CC: "wei.liu@kernel.org" <wei.liu@kernel.org>, "kys@microsoft.com"
-	<kys@microsoft.com>, "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
-	"decui@microsoft.com" <decui@microsoft.com>, "longli@microsoft.com"
-	<longli@microsoft.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
-	<robin.murphy@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>,
-	"kwilczynski@kernel.org" <kwilczynski@kernel.org>, "lpieralisi@kernel.org"
-	<lpieralisi@kernel.org>, "mani@kernel.org" <mani@kernel.org>,
-	"robh@kernel.org" <robh@kernel.org>, "arnd@arndb.de" <arnd@arndb.de>,
-	"jgg@ziepe.ca" <jgg@ziepe.ca>, Michael Kelley <mhklinux@outlook.com>,
-	"jacob.pan@linux.microsoft.com" <jacob.pan@linux.microsoft.com>,
-	"tgopinath@linux.microsoft.com" <tgopinath@linux.microsoft.com>,
-	"easwar.hariharan@linux.microsoft.com" <easwar.hariharan@linux.microsoft.com>
-Subject: RE: [PATCH v1 4/4] iommu/hyperv: Add page-selective IOTLB flush
- support
-Thread-Topic: [PATCH v1 4/4] iommu/hyperv: Add page-selective IOTLB flush
- support
-Thread-Index: AQHc4WKquRiuLrUu+ESNYKKX1F+8PLYN2DNA
-Date: Thu, 14 May 2026 18:14:22 +0000
-Message-ID:
- <SN6PR02MB41577D5EEC884EAE8AF5E14ED4072@SN6PR02MB4157.namprd02.prod.outlook.com>
-References: <20260511162408.1180069-1-zhangyu1@linux.microsoft.com>
- <20260511162408.1180069-5-zhangyu1@linux.microsoft.com>
-In-Reply-To: <20260511162408.1180069-5-zhangyu1@linux.microsoft.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|SN7PR02MB9284:EE_
-x-ms-office365-filtering-correlation-id: 176ee885-ef26-4254-dbe8-08deb1e49fee
-x-microsoft-antispam:
- BCL:0;ARA:14566002|41001999006|8062599012|31061999003|19110799012|8060799015|15080799012|51005399006|19101099003|13091999003|55001999006|37011999003|440099028|12091999003|102099032|3412199025|40105399003|1710799026;
-x-microsoft-antispam-message-info:
- =?us-ascii?Q?Bfq63xbgmaWXMhmd3V/ohR8hFTiOKX7wYTfficjCSmuBmRgJ2atiyfoTNhBk?=
- =?us-ascii?Q?LCHTwHYof2OKY9sL4o4YUDoGkG8aZVHoDsU1b59k/277qx5XbIJ60ozFky4w?=
- =?us-ascii?Q?NBZTt+mOtct+pIfdS0nXn1FFCP/FDDLfxQiAsqRHz3d6NDsNJFTpEYx9L8fB?=
- =?us-ascii?Q?inuLThmM1l1n2qnOY1Fv4MRfxwKHwsJjbgdaYYiZPzXuYeDbticLgVEkiN7J?=
- =?us-ascii?Q?T7JNZy7x0UWf9hjyVmwm0HObbO6yhWI3Ej2AQKY+3rY1JUbxI3b3Brl5/qMF?=
- =?us-ascii?Q?frTbIRFIDEkelBJj2P3xgEoOBcnjfIoYbuJfuxqYsyksh0EptVNUHMoeEeuO?=
- =?us-ascii?Q?sKU2+ymYNxOr3Xjuq5PnMODiXSnlLYBKHRjhQvg7eEWCQdnC38j6YpW7SKC0?=
- =?us-ascii?Q?h0A7JR9CVXuHeoMaYhcp81nxmi0yUeL4P5nPH0O+UgYDf9G3ozXjfrWon1Ef?=
- =?us-ascii?Q?vtPKlVvQXuuC+H2wB3e+pZlVUeOMZHNUHnuOI148wZ0HY3nkLb2B/0W8lsVz?=
- =?us-ascii?Q?spEGeuUwGP6OV5Tn8uTOC6Jj8ETI8uwcFDXCxF9xiIAhShPQxAOD6L9mrS++?=
- =?us-ascii?Q?OAArjjsQWnnreSSLELnHXeMiOh9fgGex9+U5hlIGsTgz1H1iEYgqz5SJOMBL?=
- =?us-ascii?Q?nugv+kbyN8F6GacvgRoOx2/bW9x9TxWa5SDKG8iKpSzVA8cIdzFqMCKN9o1D?=
- =?us-ascii?Q?INNE+5YZKazIhLzr2zBOsfJJbceEqgVoLVjT3uJdeBOIhnxVquLYmawsc80z?=
- =?us-ascii?Q?/F/EJ7SLfCnaGlMuMv8cuOm/b+E3ITXi47pxyI0F/zlXpjs9EMJSazx8BLyf?=
- =?us-ascii?Q?RUt6Tb/NatW17BBPvjfvhNM/+MWOitrt2wMPwp16tAG+DaWkIPpSYY0eBEU0?=
- =?us-ascii?Q?lVWM2vYrBsCT/Dn0OvCIoSuCmnfgrHTKYHCJr2pHBoipIfZQt543QXc6SW7D?=
- =?us-ascii?Q?OugC8nQYC0GqACb5qzofnDRNpxoebDAJ7Q3r1gHe/41sZm52wPIe9IRFR+c4?=
- =?us-ascii?Q?rYwzrriZfzVjJGr9g0LraCZAPrAlcQYN1UWIy4sVFP0H3QafdiSw8NbaYGLQ?=
- =?us-ascii?Q?vuSjMKnt8rIidQDzs6qWVVdjauWDejpCcFOc18iDgKkL38egIiYsvLKNG029?=
- =?us-ascii?Q?LKlAOPytnklY?=
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?dEQpon4sqieqq7YaLzJNvYgpFZJxR0n8prTeQk6+x1ge7QFFcN/vPz3X0qEN?=
- =?us-ascii?Q?P2T17hAu/9RFn87ZsP/eryYvaJaovEGy+gGiO1xSVp8xUKCEYX/lCIkWdS1K?=
- =?us-ascii?Q?b/kw3j/k670pZAew31VY+loaARpKq5MF6ivsB1sLq4br49c5QR4D2HDtcSMi?=
- =?us-ascii?Q?3ZBZk3Z9ewP4q4CNIdms3lsAykYXA9nhmji1MrNV/akTCAKTqhH5W+fpzhH2?=
- =?us-ascii?Q?8zy6q45ImIraw8Zffy7VUlgvrGjJVRPeWHBmyrECHmSCJaywggq+t9NDPkmL?=
- =?us-ascii?Q?A5G48bY0z5lgRdo5U9lTcCrb0rbjYRbCur5RfEfkKKUVL5ae+URsx5wCsO04?=
- =?us-ascii?Q?X1OLZ6k0neFPeeGQbXYcgwX+SPhLn11qvlionQZSMy7wyBrsJpr26Dp2Fk/S?=
- =?us-ascii?Q?yC4APtckfzZf2qtG/LYA6totU8EXEQpDgIRJOGWgB08t+GaSiWCHShlx1RVZ?=
- =?us-ascii?Q?Ejz0G/lWMbN6gLqrIIqixfTGGKb/uCfQZNtBvh05v0j17EYMOA84sZ1j3PtK?=
- =?us-ascii?Q?+w0JPYuvLxTu8rskySTcoTavMld+vHx4/oece3gTAs4/UQheo/VSkf4fisqx?=
- =?us-ascii?Q?624n0XP7iq10g9o/jkuZRQSUYGi2zmweJIpF3aFkzgiknhDmPHsCYJTtnLZM?=
- =?us-ascii?Q?CMQAcvFm0jMUh2Ehw+ksVyiIAuWMEsC79cJKbDO80bQkWCWBr0GjuWD8yhg+?=
- =?us-ascii?Q?l5vRVIhFhWApf83fcEVccYWW7fPnQ8BN8zyQ61V4W79HmL8ohB934YWTYib1?=
- =?us-ascii?Q?/KT7bqLcQHNwf/+ELrNgEWya3YlQbGygAg7kDyZ9iJ+BZUjUNHivKGRelZE1?=
- =?us-ascii?Q?258/1KeDwXBp55RbA1so5UrQKsk29r9eFuKgv8c7WPr3VTzsRo3mfMWPEDGr?=
- =?us-ascii?Q?w+W2aW7snexulnQbmOqcRoyOEsowN48frZjiXlZBUqt2Lh7Jv9f/ZfFYzTZ1?=
- =?us-ascii?Q?yNMaDnefS/XBzk/Y+ELhlSFFJPy8Hllbyplr+CsyvG3Siv6gbZjl1tJe7NCC?=
- =?us-ascii?Q?0ig9YnSoGoZdWJskjl374Ms/+Gc9JzCAbqANO0PW5FWa3J5dTui20H97/DMN?=
- =?us-ascii?Q?2L8KnoDi1MKBZMOaA0HROPJspOqp1MyKB0obz4EvNPZ4vuX1OaryM61Q1N9E?=
- =?us-ascii?Q?YL+0Ub+dBNQFXbSNUAUY60EtE8ci1pFe42n4EB4Mlzw+37JWrf72c2obJh3P?=
- =?us-ascii?Q?XlrQny9Ilr4g7IkJle1kN9YkjIV0OWuXsnxS0TfZNUVVcASKlEDJFVVLnKVg?=
- =?us-ascii?Q?jkLY2dWtEM8l0br+uEKx+Zl6cgEDnwi3UYWr7Mejo8LqM0Cgahr4ejitDQoX?=
- =?us-ascii?Q?eY3RHSOk5lalcIFYdSXFfUbXVyt+ytYJl3vR18T1Ml39O4EmuLPv0c2hdSvh?=
- =?us-ascii?Q?nmw0u94=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=rivosinc.com header.i=@rivosinc.com header.b="MxkdwFEH"
+Received: by mail-ot1-f50.google.com with SMTP id 46e09a7af769-7dcc9b506d9so6898872a34.1
+        for <iommu@lists.linux.dev>; Thu, 14 May 2026 13:04:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778789063; cv=none;
+        d=google.com; s=arc-20240605;
+        b=UBtgERI2c/PpZpaM7T/CS61bYsbjCyHB7W/ICAjIECCQYsf/o5I8SZ1BbCS+B7//tb
+         m8k5aWZ6NaKoKSqgJvoSo6htBK4L43rCGkwxzQ4tZ0DJdOTvkpXgChlV4zMWzzokZuaN
+         lAdkduWPxclkW9mmW1vMgqKYl1bHohf7wEh2Fr5zOlDDlJo7H0qlMtrjiLPtqMg70kLT
+         tyWGVVq6r0JCoPdYTxTyeFgVZfjENMkWvTSOZ3AAZU3VO34e1+BCExaY3o3Ble5/d6Xm
+         KZQArF0DNXqWE5FmDDIxjz1J3yzDlpdjvW2JkV2er6LFFnW070BDFiTPpUfLV15J0Qvv
+         D0xQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=BmrYvBS4e5yQgiQJc9bw4b0Yvv5PakgHG3Rw+9EZ0Lg=;
+        fh=7QJ2Qid08spWmGFgCwygT8YsK0Avej9YlBiIXbU/i0s=;
+        b=OXSVFAUcJX+0T7RLTjI4dKQDGa/qW7URNZTyhxXiO82aJD0g7qRZQChKMXDncm6PQ7
+         gyUOVKwipiPp5I5BHBCfbsKUgo5LKsgISNEbhKeD7KHNkcJa/Afbfy6vswGzQKp+/lq1
+         LHt5x2jQWk4yy6oi0aHc/LdhjIKS9QAeDPMvCEXkJRZ4ikHSEQSipzSZGbXKyE3ShYMn
+         7E1G5nK9cyMOPIKvHIeZDr8byfKCn166/InHNfhorgyj2xGwYy2dwl8ZPxSC8inbdwUQ
+         LE+XAFl2JMOOX8/DU9t91/K2UNfr4pXkWYHwPJs1G0xQYEvmH0w94J9TwNNvQPP4Uwtf
+         jUJg==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc.com; s=google; t=1778789063; x=1779393863; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=BmrYvBS4e5yQgiQJc9bw4b0Yvv5PakgHG3Rw+9EZ0Lg=;
+        b=MxkdwFEH3v7+rAYzDUYCbW7Et3dDsZqd/NVwLKyPBphGdWn9N3CQWTsC+2ctXzC3H6
+         8iiKDsEQjrOjo3w7rIi74KKNyDnZdlrCz6W5Gg8EMU0QuhvdMbxrqZpLygpqTMV433Ss
+         z+zQ1KaQh7jMUgYl5Z2sFTbCQabrcTEiWR9QG43E33SJKZcgKBNqVdUku07uHf4Fw1yt
+         DAQHc1Pbmarwhu07DqIwcrBA1SYRMXjQ3yqo95gMU3AOBJPWoHTnPvv7Z4D3mYTVxE7p
+         6BHK56Q2PxRQ0+bxG73X+oBEAiBHwAHpcGp8CR5K/3QHH93ssqwgI6/4UK5e1KJcOqTV
+         gR4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778789063; x=1779393863;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=BmrYvBS4e5yQgiQJc9bw4b0Yvv5PakgHG3Rw+9EZ0Lg=;
+        b=VoOYJhlrA5FJc2QWf6aTDy4ruOcDf/FMpISRuAI4X50hPSol9YJRzJ55avENjXwJse
+         8IN3mo3Ks9kBlZK6noEbD3g5BfVEtE4bXNBF9BCEt+GNMA1rrmwaIJvFL0o32MUwi0jV
+         Dk7wd3lc/PI/qKzoZsO/5l5FDM+JC2EsgJYeeJIz2XB1TyVBKaf1f7jDztB1X7phj0HK
+         ix8IJWLjxzzG0NyyjNPvzN8O5nBVhpWK6ixjvCrAOjYn6St66usS2tEvGEjcdunIFB8s
+         ewVxUkxxltdXbE1MOxCBE8eTNs15clL3wfCDiFuBOXnkW87qUuUwLfMVpzIEiv5goGeP
+         xFVQ==
+X-Forwarded-Encrypted: i=1; AFNElJ95TmKBhSEMwXe7DVAhHUknwAWMAGymK7ZQANtZ31TtmI8V1I+n2U/90u5KYZrFpYEz/RWG5w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzQzNNbOhwgVElSD9QLhauQKth1pnk1wpFiamC0mVLkc71awiiK
+	j96sPZ3iqZXgU3mCpFbdeWQ+9SvFq0c41+avK98RFALL+mA3NHMVEEhQr1XQxkwXLtG3huUMLdt
+	TYJHGg+R7gD89L3UXJ7z9M5OxQ73EColNWqEM+GbAFYMjHVRIJImpd4vhTQ==
+X-Gm-Gg: Acq92OFnXQODfpw9oWYAwsmUhkuPHRxE2Ko+0M10aonDuVKDIij5/Ur1nuwlRT6K2gg
+	m3rnZp9hu8H5ETe0VE4oqZJqnvBTd3r+JIjxeaiWDFqXHFqzSIsEwaf0ZJol9O39bcdu0vSQmMc
+	C8WGfBlMslMx+af4kVAk+62h5PTDm4QLpZxtgGOdEOycVwcXlQb0Cq2ShjimHGNdPSikcET94Ce
+	u19HeCOOCmMow3PfeVwmHoUhR2kZoP5zkyXJF8+CHTUxeOe+Dui6id2Gy8NIPTaSN63Qqb8nerV
+	1mZM2mdMUPcR7U4Omg==
+X-Received: by 2002:a05:6820:1515:b0:694:6acf:a42d with SMTP id
+ 006d021491bc7-69c9438d904mr619190eaf.39.1778789063465; Thu, 14 May 2026
+ 13:04:23 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: 176ee885-ef26-4254-dbe8-08deb1e49fee
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 May 2026 18:14:22.7024
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR02MB9284
+References: <0-v2-b5156f657dc1+25f-iommu_riscv_inv_jgg@nvidia.com> <7-v2-b5156f657dc1+25f-iommu_riscv_inv_jgg@nvidia.com>
+In-Reply-To: <7-v2-b5156f657dc1+25f-iommu_riscv_inv_jgg@nvidia.com>
+From: Tomasz Jeznach <tjeznach@rivosinc.com>
+Date: Thu, 14 May 2026 13:04:11 -0700
+X-Gm-Features: AVHnY4JqzUN5fb812OBcqjCgX_4bBXAuXGB2_vgh_Ze0FsamHQUFofj3i2u3Hgk
+Message-ID: <CAH2o1u4ur16NQd8ZMgs3ch6BNcvQcuNP51_Y6UBwCRkgykoKUQ@mail.gmail.com>
+Subject: Re: [PATCH v2 7/8] iommu/riscv: Include the dword number in
+ RISCV_IOMMU_CMD macros
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Alexandre Ghiti <alex@ghiti.fr>, Albert Ou <aou@eecs.berkeley.edu>, iommu@lists.linux.dev, 
+	Joerg Roedel <joro@8bytes.org>, linux-riscv@lists.infradead.org, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <pjw@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Will Deacon <will@kernel.org>, Andrew Jones <andrew.jones@oss.qualcomm.com>, 
+	Fangyu Yu <fangyu.yu@linux.alibaba.com>, patches@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Monday, May 11, 2026 9:=
-24 AM
->=20
-> Add page-selective IOTLB flush using HVCALL_FLUSH_DEVICE_DOMAIN_LIST.
-> This hypercall accepts a list of (page_number, page_mask_shift) entries,
-> enabling finer-grained IOTLB invalidation compared to the domain-wide
-> HVCALL_FLUSH_DEVICE_DOMAIN used by hv_iommu_flush_iotlb_all().
->=20
-> hv_iommu_fill_iova_list() decomposes a contiguous IOVA range into a
-> minimal set of aligned power-of-two regions that fit in a single
-> hypercall input page. When the range exceeds the page capacity, the
-> code falls back to a full domain flush automatically.
->=20
-> Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
-> Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+On Fri, May 8, 2026 at 7:53=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wro=
+te:
+>
+> The command queue entry format is 128 bits. Follow the pattern of the
+> other drivers and encode the 64 bit dword number in the macro
+> itself. RISC-V further has similarly named macros that are not field
+> layout macros, but field content macros which won't get a new number.
+>
+> Overall this is clearer to understand the code and check for errors like
+> using the wrong macro in the wrong spot.
+>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > ---
->  drivers/iommu/hyperv/iommu.c | 91 +++++++++++++++++++++++++++++++++++-
->  include/hyperv/hvgdk_mini.h  |  1 +
->  include/hyperv/hvhdk_mini.h  | 17 +++++++
->  3 files changed, 108 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/iommu/hyperv/iommu.c b/drivers/iommu/hyperv/iommu.c
-> index e5fc625314b5..3bca362b7815 100644
-> --- a/drivers/iommu/hyperv/iommu.c
-> +++ b/drivers/iommu/hyperv/iommu.c
-> @@ -486,10 +486,98 @@ static void hv_iommu_flush_iotlb_all(struct iommu_d=
-omain *domain)
->  	hv_flush_device_domain(to_hv_iommu_domain(domain));
->  }
->=20
-> +/* Max number of iova_list entries in a single hypercall input page. */
-> +#define HV_IOMMU_MAX_FLUSH_VA_COUNT \
-> +	((HV_HYP_PAGE_SIZE - sizeof(struct hv_input_flush_device_domain_list)) =
-/ \
-> +	 sizeof(union hv_iommu_flush_va))
-> +
-> +/* Returned by hv_iommu_fill_iova_list() when the range exceeds the capa=
-city */
-> +#define HV_IOMMU_FLUSH_VA_OVERFLOW	U16_MAX
-> +
-> +static inline u16 hv_iommu_fill_iova_list(union hv_iommu_flush_va *iova_=
-list,
-> +					  unsigned long start,
-> +					  unsigned long end)
-> +{
-> +	unsigned long start_pfn =3D start >> PAGE_SHIFT;
-> +	unsigned long end_pfn =3D PAGE_ALIGN(end) >> PAGE_SHIFT;
-
-"end" is an inclusive end address per comment in struct iommu_iotlb_gather.
-So a page aligned value would typically have 0xFFF as the low order 12 bits=
-,
-and PAGE_ALIGN() will do the right thing. But I don't think the value is
-*required* to be page aligned.  If the value of "end" had 0x000 as the
-low order 12 bits, the above calculation would fail to include the page
-that has the address ending in 0x000.  I think it needs to be
-PAGE_ALIGN(end + 1) in order to work correctly for this corner case.=20
-
-> +	unsigned long nr_pages =3D end_pfn - start_pfn;
-> +	u16 count =3D 0;
-> +
-> +	while (nr_pages > 0) {
-> +		unsigned long flush_pages;
-> +		int order;
-> +		unsigned long pfn_align;
-> +		unsigned long size_align;
-> +
-> +		if (count >=3D HV_IOMMU_MAX_FLUSH_VA_COUNT) {
-> +			count =3D HV_IOMMU_FLUSH_VA_OVERFLOW;
-> +			break;
-> +		}
-> +
-> +		if (start_pfn)
-> +			pfn_align =3D __ffs(start_pfn);
-
-I don't understand why __ffs() is correct here. I would expect
-__fls() so it is consistent with the calculation of size_align. But I
-can only surmise how the hypercall works since there's no
-documentation, so maybe my understanding of the hypercall is
-wrong.   If __ffs really is correct, a comment explaining why
-would help. :-)
-
-> +		else
-> +			pfn_align =3D BITS_PER_LONG - 1;
-> +
-> +		size_align =3D __fls(nr_pages);
-> +		order =3D min(pfn_align, size_align);
-> +		iova_list[count].page_mask_shift =3D order;
-> +		iova_list[count].page_number =3D start_pfn;
-> +
-> +		flush_pages =3D 1UL << order;
-> +		start_pfn +=3D flush_pages;
-> +		nr_pages -=3D flush_pages;
-> +		count++;
-> +	}
-> +
-> +	return count;
-> +}
-> +
-> +static void hv_flush_device_domain_list(struct hv_iommu_domain *hv_domai=
-n,
-> +					struct iommu_iotlb_gather *iotlb_gather)
-> +{
-> +	u64 status;
-> +	u16 count;
-> +	unsigned long flags;
-> +	struct hv_input_flush_device_domain_list *input;
-> +
-> +	local_irq_save(flags);
-> +
-> +	input =3D *this_cpu_ptr(hyperv_pcpu_input_arg);
-> +	memset(input, 0, sizeof(*input));
-> +
-> +	input->device_domain =3D hv_domain->device_domain;
-> +	input->flags |=3D HV_FLUSH_DEVICE_DOMAIN_LIST_IOMMU_FORMAT;
-
-I would suggest moving the memset() and setting the input fields down
-under the "else" below so that they are parallel with the flush all case.
-
-> +	count =3D hv_iommu_fill_iova_list(input->iova_list,
-> +					iotlb_gather->start,
-> +					iotlb_gather->end);
-> +	if (count =3D=3D HV_IOMMU_FLUSH_VA_OVERFLOW) {
-> +		/*
-> +		 * Range exceeds hypercall page capacity. Fall back to a full
-> +		 * domain flush.
-> +		 */
-> +		struct hv_input_flush_device_domain *flush_all =3D (void *)input;
-> +
-> +		memset(flush_all, 0, sizeof(*flush_all));
-> +		flush_all->device_domain =3D hv_domain->device_domain;
-> +		status =3D hv_do_hypercall(HVCALL_FLUSH_DEVICE_DOMAIN,
-> +					flush_all, NULL);
-> +	} else {
-> +		status =3D hv_do_rep_hypercall(
-> +				HVCALL_FLUSH_DEVICE_DOMAIN_LIST,
-> +				count, 0, input, NULL);
-> +	}
-> +
-> +	local_irq_restore(flags);
-> +
-> +	if (!hv_result_success(status))
-> +		pr_err("HVCALL_FLUSH_DEVICE_DOMAIN_LIST failed, status %lld\n", status=
-);
-
-As Sashiko pointed out, a failure here can lead to all kinds of trouble bec=
-ause
-of leaving unflushed entries. Maybe a WARN() is more appropriate? Also, may=
-be
-a failure in the list flush should try a flush all as a fallback, with the =
-WARN()
-only if the flush all fails.
-
-> +}
-> +
->  static void hv_iommu_iotlb_sync(struct iommu_domain *domain,
->  				struct iommu_iotlb_gather *iotlb_gather)
+>  drivers/iommu/riscv/iommu-bits.h | 102 +++++++++++++++----------------
+>  1 file changed, 51 insertions(+), 51 deletions(-)
+>
+> diff --git a/drivers/iommu/riscv/iommu-bits.h b/drivers/iommu/riscv/iommu=
+-bits.h
+> index f01b49ac815586..8c60780363da72 100644
+> --- a/drivers/iommu/riscv/iommu-bits.h
+> +++ b/drivers/iommu/riscv/iommu-bits.h
+> @@ -461,32 +461,32 @@ struct riscv_iommu_command {
+>  };
+>
+>  /* Fields on dword0, common for all commands */
+> -#define RISCV_IOMMU_CMD_OPCODE GENMASK_ULL(6, 0)
+> -#define        RISCV_IOMMU_CMD_FUNC    GENMASK_ULL(9, 7)
+> +#define RISCV_IOMMU_CMD0_OPCODE        GENMASK_ULL(6, 0)
+> +#define RISCV_IOMMU_CMD0_FUNC  GENMASK_ULL(9, 7)
+>
+>  /* 3.1.1 IOMMU Page-table cache invalidation */
+>  /* Fields on dword0 */
+>  #define RISCV_IOMMU_CMD_IOTINVAL_OPCODE                1
+>  #define RISCV_IOMMU_CMD_IOTINVAL_FUNC_VMA      0
+>  #define RISCV_IOMMU_CMD_IOTINVAL_FUNC_GVMA     1
+> -#define RISCV_IOMMU_CMD_IOTINVAL_AV            BIT_ULL(10)
+> -#define RISCV_IOMMU_CMD_IOTINVAL_PSCID         GENMASK_ULL(31, 12)
+> -#define RISCV_IOMMU_CMD_IOTINVAL_PSCV          BIT_ULL(32)
+> -#define RISCV_IOMMU_CMD_IOTINVAL_GV            BIT_ULL(33)
+> -#define RISCV_IOMMU_CMD_IOTINVAL_GSCID         GENMASK_ULL(59, 44)
+> -#define RISCV_IOMMU_CMD_IOTINVAL_NL            BIT_ULL(34)
+> +#define RISCV_IOMMU_CMD0_IOTINVAL_AV           BIT_ULL(10)
+> +#define RISCV_IOMMU_CMD0_IOTINVAL_PSCID                GENMASK_ULL(31, 1=
+2)
+> +#define RISCV_IOMMU_CMD0_IOTINVAL_PSCV         BIT_ULL(32)
+> +#define RISCV_IOMMU_CMD0_IOTINVAL_GV           BIT_ULL(33)
+> +#define RISCV_IOMMU_CMD0_IOTINVAL_GSCID                GENMASK_ULL(59, 4=
+4)
+> +#define RISCV_IOMMU_CMD0_IOTINVAL_NL           BIT_ULL(34)
+>  /* dword1[61:10] is the 4K-aligned page address */
+> -#define RISCV_IOMMU_CMD_IOTINVAL_ADDR          GENMASK_ULL(61, 10)
+> +#define RISCV_IOMMU_CMD1_IOTINVAL_ADDR         GENMASK_ULL(61, 10)
+>
+>  /* 3.1.2 IOMMU Command Queue Fences */
+>  /* Fields on dword0 */
+>  #define RISCV_IOMMU_CMD_IOFENCE_OPCODE         2
+>  #define RISCV_IOMMU_CMD_IOFENCE_FUNC_C         0
+> -#define RISCV_IOMMU_CMD_IOFENCE_AV             BIT_ULL(10)
+> -#define RISCV_IOMMU_CMD_IOFENCE_WSI            BIT_ULL(11)
+> -#define RISCV_IOMMU_CMD_IOFENCE_PR             BIT_ULL(12)
+> -#define RISCV_IOMMU_CMD_IOFENCE_PW             BIT_ULL(13)
+> -#define RISCV_IOMMU_CMD_IOFENCE_DATA           GENMASK_ULL(63, 32)
+> +#define RISCV_IOMMU_CMD0_IOFENCE_AV            BIT_ULL(10)
+> +#define RISCV_IOMMU_CMD0_IOFENCE_WSI           BIT_ULL(11)
+> +#define RISCV_IOMMU_CMD0_IOFENCE_PR            BIT_ULL(12)
+> +#define RISCV_IOMMU_CMD0_IOFENCE_PW            BIT_ULL(13)
+> +#define RISCV_IOMMU_CMD0_IOFENCE_DATA          GENMASK_ULL(63, 32)
+>  /* dword1 is the address, word-size aligned and shifted to the right by =
+two bits. */
+>
+>  /* 3.1.3 IOMMU Directory cache invalidation */
+> @@ -494,9 +494,9 @@ struct riscv_iommu_command {
+>  #define RISCV_IOMMU_CMD_IODIR_OPCODE           3
+>  #define RISCV_IOMMU_CMD_IODIR_FUNC_INVAL_DDT   0
+>  #define RISCV_IOMMU_CMD_IODIR_FUNC_INVAL_PDT   1
+> -#define RISCV_IOMMU_CMD_IODIR_PID              GENMASK_ULL(31, 12)
+> -#define RISCV_IOMMU_CMD_IODIR_DV               BIT_ULL(33)
+> -#define RISCV_IOMMU_CMD_IODIR_DID              GENMASK_ULL(63, 40)
+> +#define RISCV_IOMMU_CMD0_IODIR_PID             GENMASK_ULL(31, 12)
+> +#define RISCV_IOMMU_CMD0_IODIR_DV              BIT_ULL(33)
+> +#define RISCV_IOMMU_CMD0_IODIR_DID             GENMASK_ULL(63, 40)
+>  /* dword1 is reserved for standard use */
+>
+>  /* 3.1.4 IOMMU PCIe ATS */
+> @@ -504,25 +504,25 @@ struct riscv_iommu_command {
+>  #define RISCV_IOMMU_CMD_ATS_OPCODE             4
+>  #define RISCV_IOMMU_CMD_ATS_FUNC_INVAL         0
+>  #define RISCV_IOMMU_CMD_ATS_FUNC_PRGR          1
+> -#define RISCV_IOMMU_CMD_ATS_PID                        GENMASK_ULL(31, 1=
+2)
+> -#define RISCV_IOMMU_CMD_ATS_PV                 BIT_ULL(32)
+> -#define RISCV_IOMMU_CMD_ATS_DSV                        BIT_ULL(33)
+> -#define RISCV_IOMMU_CMD_ATS_RID                        GENMASK_ULL(55, 4=
+0)
+> -#define RISCV_IOMMU_CMD_ATS_DSEG               GENMASK_ULL(63, 56)
+> +#define RISCV_IOMMU_CMD0_ATS_PID               GENMASK_ULL(31, 12)
+> +#define RISCV_IOMMU_CMD0_ATS_PV                        BIT_ULL(32)
+> +#define RISCV_IOMMU_CMD0_ATS_DSV               BIT_ULL(33)
+> +#define RISCV_IOMMU_CMD0_ATS_RID               GENMASK_ULL(55, 40)
+> +#define RISCV_IOMMU_CMD0_ATS_DSEG              GENMASK_ULL(63, 56)
+>  /* dword1 is the ATS payload, two different payload types for INVAL and =
+PRGR */
+>
+>  /* ATS.INVAL payload*/
+> -#define RISCV_IOMMU_CMD_ATS_INVAL_G            BIT_ULL(0)
+> +#define RISCV_IOMMU_CMD1_ATS_INVAL_G           BIT_ULL(0)
+>  /* Bits 1 - 10 are zeroed */
+> -#define RISCV_IOMMU_CMD_ATS_INVAL_S            BIT_ULL(11)
+> -#define RISCV_IOMMU_CMD_ATS_INVAL_UADDR                GENMASK_ULL(63, 1=
+2)
+> +#define RISCV_IOMMU_CMD1_ATS_INVAL_S           BIT_ULL(11)
+> +#define RISCV_IOMMU_CMD1_ATS_INVAL_UADDR       GENMASK_ULL(63, 12)
+>
+>  /* ATS.PRGR payload */
+>  /* Bits 0 - 31 are zeroed */
+> -#define RISCV_IOMMU_CMD_ATS_PRGR_PRG_INDEX     GENMASK_ULL(40, 32)
+> +#define RISCV_IOMMU_CMD1_ATS_PRGR_PRG_INDEX    GENMASK_ULL(40, 32)
+>  /* Bits 41 - 43 are zeroed */
+> -#define RISCV_IOMMU_CMD_ATS_PRGR_RESP_CODE     GENMASK_ULL(47, 44)
+> -#define RISCV_IOMMU_CMD_ATS_PRGR_DST_ID                GENMASK_ULL(63, 4=
+8)
+> +#define RISCV_IOMMU_CMD1_ATS_PRGR_RESP_CODE    GENMASK_ULL(47, 44)
+> +#define RISCV_IOMMU_CMD1_ATS_PRGR_DST_ID       GENMASK_ULL(63, 48)
+>
+>  /**
+>   * struct riscv_iommu_fq_record - Fault/Event Queue Record
+> @@ -713,8 +713,8 @@ struct riscv_iommu_msipte {
+>
+>  static inline void riscv_iommu_cmd_inval_vma(struct riscv_iommu_command =
+*cmd)
 >  {
-> -	hv_flush_device_domain(to_hv_iommu_domain(domain));
-> +	hv_flush_device_domain_list(to_hv_iommu_domain(domain), iotlb_gather);
->=20
->  	iommu_put_pages_list(&iotlb_gather->freelist);
+> -       cmd->dword0 =3D FIELD_PREP(RISCV_IOMMU_CMD_OPCODE, RISCV_IOMMU_CM=
+D_IOTINVAL_OPCODE) |
+> -                     FIELD_PREP(RISCV_IOMMU_CMD_FUNC, RISCV_IOMMU_CMD_IO=
+TINVAL_FUNC_VMA);
+> +       cmd->dword0 =3D FIELD_PREP(RISCV_IOMMU_CMD0_OPCODE, RISCV_IOMMU_C=
+MD_IOTINVAL_OPCODE) |
+> +                     FIELD_PREP(RISCV_IOMMU_CMD0_FUNC, RISCV_IOMMU_CMD_I=
+OTINVAL_FUNC_VMA);
+>         cmd->dword1 =3D 0;
 >  }
-> @@ -543,6 +631,7 @@ static struct iommu_domain *hv_iommu_domain_alloc_pag=
-ing(struct device *dev)
->=20
->  	cfg.common.hw_max_vasz_lg2 =3D hv_iommu_device->max_iova_width;
->  	cfg.common.hw_max_oasz_lg2 =3D 52;
-> +	cfg.common.features |=3D BIT(PT_FEAT_FLUSH_RANGE);
->  	cfg.top_level =3D (hv_iommu_device->max_iova_width > 48) ? 4 : 3;
->=20
->  	ret =3D pt_iommu_x86_64_init(&hv_domain->pt_iommu_x86_64, &cfg,
-> GFP_KERNEL);
-> diff --git a/include/hyperv/hvgdk_mini.h b/include/hyperv/hvgdk_mini.h
-> index 5bdbb44da112..eaaf87171478 100644
-> --- a/include/hyperv/hvgdk_mini.h
-> +++ b/include/hyperv/hvgdk_mini.h
-> @@ -496,6 +496,7 @@ union hv_vp_assist_msr_contents {	 /*
-> HV_REGISTER_VP_ASSIST_PAGE */
->  #define HVCALL_GET_GPA_PAGES_ACCESS_STATES		0x00c9
->  #define HVCALL_CONFIGURE_DEVICE_DOMAIN			0x00ce
->  #define HVCALL_FLUSH_DEVICE_DOMAIN			0x00d0
-> +#define HVCALL_FLUSH_DEVICE_DOMAIN_LIST			0x00d1
->  #define HVCALL_ACQUIRE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d7
->  #define HVCALL_RELEASE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d8
->  #define HVCALL_MODIFY_SPARSE_GPA_PAGE_HOST_VISIBILITY	0x00db
-> diff --git a/include/hyperv/hvhdk_mini.h b/include/hyperv/hvhdk_mini.h
-> index 493608e791b4..f51d5d9467f1 100644
-> --- a/include/hyperv/hvhdk_mini.h
-> +++ b/include/hyperv/hvhdk_mini.h
-> @@ -671,4 +671,21 @@ struct hv_input_flush_device_domain {
->  	u32 reserved;
->  } __packed;
->=20
-> +union hv_iommu_flush_va {
-> +	u64 iova;
-> +	struct {
-> +		u64 page_mask_shift : 12;
-> +		u64 page_number : 52;
-> +	};
-> +} __packed;
-> +
-> +
-> +struct hv_input_flush_device_domain_list {
-> +	struct hv_input_device_domain device_domain;
-> +#define HV_FLUSH_DEVICE_DOMAIN_LIST_IOMMU_FORMAT (1 << 0)
-> +	u32 flags;
-> +	u32 reserved;
-> +	union hv_iommu_flush_va iova_list[];
-> +} __packed;
-> +
->  #endif /* _HV_HVHDK_MINI_H */
+>
+> @@ -722,72 +722,72 @@ static inline void riscv_iommu_cmd_inval_set_addr(s=
+truct riscv_iommu_command *cm
+>                                                   u64 addr)
+>  {
+>         cmd->dword1 =3D
+> -               FIELD_PREP(RISCV_IOMMU_CMD_IOTINVAL_ADDR, PHYS_PFN(addr))=
+;
+> -       cmd->dword0 |=3D RISCV_IOMMU_CMD_IOTINVAL_AV;
+> +               FIELD_PREP(RISCV_IOMMU_CMD1_IOTINVAL_ADDR, PHYS_PFN(addr)=
+);
+> +       cmd->dword0 |=3D RISCV_IOMMU_CMD0_IOTINVAL_AV;
+>  }
+>
+>  static inline void riscv_iommu_cmd_inval_set_nl(struct riscv_iommu_comma=
+nd *cmd)
+>  {
+> -       cmd->dword0 |=3D RISCV_IOMMU_CMD_IOTINVAL_NL;
+> +       cmd->dword0 |=3D RISCV_IOMMU_CMD0_IOTINVAL_NL;
+>  }
+>
+>  static inline void riscv_iommu_cmd_inval_set_pscid(struct riscv_iommu_co=
+mmand *cmd,
+>                                                    int pscid)
+>  {
+> -       cmd->dword0 |=3D FIELD_PREP(RISCV_IOMMU_CMD_IOTINVAL_PSCID, pscid=
+) |
+> -                      RISCV_IOMMU_CMD_IOTINVAL_PSCV;
+> +       cmd->dword0 |=3D FIELD_PREP(RISCV_IOMMU_CMD0_IOTINVAL_PSCID, psci=
+d) |
+> +                      RISCV_IOMMU_CMD0_IOTINVAL_PSCV;
+>  }
+>
+>  static inline void riscv_iommu_cmd_inval_set_gscid(struct riscv_iommu_co=
+mmand *cmd,
+>                                                    int gscid)
+>  {
+> -       cmd->dword0 |=3D FIELD_PREP(RISCV_IOMMU_CMD_IOTINVAL_GSCID, gscid=
+) |
+> -                      RISCV_IOMMU_CMD_IOTINVAL_GV;
+> +       cmd->dword0 |=3D FIELD_PREP(RISCV_IOMMU_CMD0_IOTINVAL_GSCID, gsci=
+d) |
+> +                      RISCV_IOMMU_CMD0_IOTINVAL_GV;
+>  }
+>
+>  static inline void riscv_iommu_cmd_iofence(struct riscv_iommu_command *c=
+md)
+>  {
+> -       cmd->dword0 =3D FIELD_PREP(RISCV_IOMMU_CMD_OPCODE, RISCV_IOMMU_CM=
+D_IOFENCE_OPCODE) |
+> -                     FIELD_PREP(RISCV_IOMMU_CMD_FUNC, RISCV_IOMMU_CMD_IO=
+FENCE_FUNC_C) |
+> -                     RISCV_IOMMU_CMD_IOFENCE_PR | RISCV_IOMMU_CMD_IOFENC=
+E_PW;
+> +       cmd->dword0 =3D FIELD_PREP(RISCV_IOMMU_CMD0_OPCODE, RISCV_IOMMU_C=
+MD_IOFENCE_OPCODE) |
+> +                     FIELD_PREP(RISCV_IOMMU_CMD0_FUNC, RISCV_IOMMU_CMD_I=
+OFENCE_FUNC_C) |
+> +                     RISCV_IOMMU_CMD0_IOFENCE_PR | RISCV_IOMMU_CMD0_IOFE=
+NCE_PW;
+>         cmd->dword1 =3D 0;
+>  }
+>
+>  static inline void riscv_iommu_cmd_iofence_set_av(struct riscv_iommu_com=
+mand *cmd,
+>                                                   u64 addr, u32 data)
+>  {
+> -       cmd->dword0 =3D FIELD_PREP(RISCV_IOMMU_CMD_OPCODE, RISCV_IOMMU_CM=
+D_IOFENCE_OPCODE) |
+> -                     FIELD_PREP(RISCV_IOMMU_CMD_FUNC, RISCV_IOMMU_CMD_IO=
+FENCE_FUNC_C) |
+> -                     FIELD_PREP(RISCV_IOMMU_CMD_IOFENCE_DATA, data) |
+> -                     RISCV_IOMMU_CMD_IOFENCE_AV;
+> +       cmd->dword0 =3D FIELD_PREP(RISCV_IOMMU_CMD0_OPCODE, RISCV_IOMMU_C=
+MD_IOFENCE_OPCODE) |
+> +                     FIELD_PREP(RISCV_IOMMU_CMD0_FUNC, RISCV_IOMMU_CMD_I=
+OFENCE_FUNC_C) |
+> +                     FIELD_PREP(RISCV_IOMMU_CMD0_IOFENCE_DATA, data) |
+> +                     RISCV_IOMMU_CMD0_IOFENCE_AV;
+>         cmd->dword1 =3D addr >> 2;
+>  }
+>
+>  static inline void riscv_iommu_cmd_iodir_inval_ddt(struct riscv_iommu_co=
+mmand *cmd)
+>  {
+> -       cmd->dword0 =3D FIELD_PREP(RISCV_IOMMU_CMD_OPCODE, RISCV_IOMMU_CM=
+D_IODIR_OPCODE) |
+> -                     FIELD_PREP(RISCV_IOMMU_CMD_FUNC, RISCV_IOMMU_CMD_IO=
+DIR_FUNC_INVAL_DDT);
+> +       cmd->dword0 =3D FIELD_PREP(RISCV_IOMMU_CMD0_OPCODE, RISCV_IOMMU_C=
+MD_IODIR_OPCODE) |
+> +                     FIELD_PREP(RISCV_IOMMU_CMD0_FUNC, RISCV_IOMMU_CMD_I=
+ODIR_FUNC_INVAL_DDT);
+>         cmd->dword1 =3D 0;
+>  }
+>
+>  static inline void riscv_iommu_cmd_iodir_inval_pdt(struct riscv_iommu_co=
+mmand *cmd)
+>  {
+> -       cmd->dword0 =3D FIELD_PREP(RISCV_IOMMU_CMD_OPCODE, RISCV_IOMMU_CM=
+D_IODIR_OPCODE) |
+> -                     FIELD_PREP(RISCV_IOMMU_CMD_FUNC, RISCV_IOMMU_CMD_IO=
+DIR_FUNC_INVAL_PDT);
+> +       cmd->dword0 =3D FIELD_PREP(RISCV_IOMMU_CMD0_OPCODE, RISCV_IOMMU_C=
+MD_IODIR_OPCODE) |
+> +                     FIELD_PREP(RISCV_IOMMU_CMD0_FUNC, RISCV_IOMMU_CMD_I=
+ODIR_FUNC_INVAL_PDT);
+>         cmd->dword1 =3D 0;
+>  }
+>
+>  static inline void riscv_iommu_cmd_iodir_set_did(struct riscv_iommu_comm=
+and *cmd,
+>                                                  unsigned int devid)
+>  {
+> -       cmd->dword0 |=3D FIELD_PREP(RISCV_IOMMU_CMD_IODIR_DID, devid) |
+> -                      RISCV_IOMMU_CMD_IODIR_DV;
+> +       cmd->dword0 |=3D FIELD_PREP(RISCV_IOMMU_CMD0_IODIR_DID, devid) |
+> +                      RISCV_IOMMU_CMD0_IODIR_DV;
+>  }
+>
+>  static inline void riscv_iommu_cmd_iodir_set_pid(struct riscv_iommu_comm=
+and *cmd,
+>                                                  unsigned int pasid)
+>  {
+> -       cmd->dword0 |=3D FIELD_PREP(RISCV_IOMMU_CMD_IODIR_PID, pasid);
+> +       cmd->dword0 |=3D FIELD_PREP(RISCV_IOMMU_CMD0_IODIR_PID, pasid);
+>  }
+>
+>  #endif /* _RISCV_IOMMU_BITS_H_ */
 > --
-> 2.52.0
->=20
+> 2.43.0
+>
 
+Reviewed-by: Tomasz Jeznach <tjeznach@rivosinc.com>
+
+Thank you,
+- Tomasz
