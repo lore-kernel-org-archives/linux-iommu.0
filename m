@@ -1,404 +1,123 @@
-Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011009.outbound.protection.outlook.com [40.107.208.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f201.google.com (mail-pl1-f201.google.com [209.85.214.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17B7B19046E;
-	Thu, 14 May 2026 00:11:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.9
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778717498; cv=fail; b=Uim4yHOIJXogtSXjO/jhiNg/3S4k0P67TndOXZHfYOvNhD4nilfM0dmDKypK+qHERanQ7OmyyAagBiA/mKap9RL7cdLTaKYwItME9/YtR5mYypPukzk9ZTeCqVl605ylDjXEtfO6eIAsvjCvxpPqvsMuZGfRsIQ5hyS6Sf5cOok=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778717498; c=relaxed/simple;
-	bh=gkZRiy4yRdk4MMA8dGcxsXxr2omQRRoiUi0EMJLxu5A=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=RosYxjzDqMJfkpKJPkV+YRmvTsaqfAYIVyJqlb20i4LEf3vN8HjoSqYrFCnzggrcVhHaha3z4fUQQhcAIuMmClgXJhNFzQSxl3ZRFT4CwPMMNvVI2DDpS6niqaQ1tEaf4Hiu7Z6dcgdktXNy5z2loiCo1KDjklu4XvK+CYQNj6k=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=E9BMyiny; arc=fail smtp.client-ip=40.107.208.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A71E02DB7B8
+	for <iommu@lists.linux.dev>; Thu, 14 May 2026 04:12:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778731947; cv=none; b=XOM77Qlwfz4J8BLHAJ5RfAYyw/FfZTD4/Kf5ahccftObH/yBSxFtAUxNc41K4qztxRK53UtAwGWzUJvXjexDx7IfWadK2Baz6hZnPNAgl1Or1QrLpZpnzSXTL/g01dGD5gPT5eMD1orFhA9ZMWkkpv4ogh7CKKnDteI0i83V5kE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778731947; c=relaxed/simple;
+	bh=emySSEMl392K5cvOyGvt1pcapOKfhTf8D46ghb3n6Cc=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=paj16IGLPGX5SE9D40N/A9L9lkdLgAXP83feyYUU+fLkmHjFkGfmsqRfWm8kB5MdBrT4d+e3MAAz9y9D7QDcOQ9e5A8JsWYu+Q4mVmIBtsrXi0KMkRGqKfwelYOyrBIZoO6FocQXN5m5PglA2qrKD7EwiwR24w61W8LP2/VvCzI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=c10YqV2I; arc=none smtp.client-ip=209.85.214.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="E9BMyiny"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=GvxQpvtmhZ/UtqBazxdezVVMHfHHWIblAPZbRXNOg3SnBukY8XCDZkmXIYSkEttD25XEyifMmD/C3ahXbueCZPrvGufUul0DHSEgaEVLUKgqqU9HQOoO6EWsHzOR2jtAp2APlDTND456gC1ud53Qq1cb2YH9GxRBbehvzXXLbVHW4LL4qY0sLJlVJU10xqpVJ+UXNLsRUzy7fbPnwEHBwqNPzylJm09J8tKYnEdPNYE+8ka0pxia2kVp5UwwnmpWfbtjeK3NdD7wSqYD01hvt67VMG6PpqsrVnJKsKr6fvMaZhmTOGZdLMfCYAaMA6aRrllt6KndDtw7a+YQLAiGfw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=X+Zuykun2KdCKkToETIvXMDWKGUcFEiJQXJf+KpuIZA=;
- b=FHF0v/ZtBVzLAWdJDLhw2rSWSu4dB8k59qhfgg5jvCXG+sNpsO3pw4HMRIqIe6m8rf+wxdOvZTpRA5svkD9Rpk9clcwSz7WbksMuT9Xx1Y/4PqAOp+APqdB1AcIKwN8ofsPLDAuIibevJRWG2Q7quhyh/07CBE/6dHru84T8yw2dRDKjY4uRRHu2fLvTCQudWYfYC1/uKVt6V10ZSIIN77v2GAs8hOXuHCObkpI1DwaNw7dkz+EqNgggItRdVXu+HfWeUaeoKm5fmQxu+5W60PIMTMc2FPW4U51WTvvOLduM5gLIp0fFo7aD2m9IJpNZokfNA/UTxGlW58neW37HYg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X+Zuykun2KdCKkToETIvXMDWKGUcFEiJQXJf+KpuIZA=;
- b=E9BMyinyAmKBM3YrEmFUUfO1LNRBD/OALda5T69b2wYWBddex1e5bLu1b4wx17fVRNSEuyKRbV6gsKRWgGIOP1sdAk1pIXCVPNUAWgEK60DLADjFJkAzBDdFXTprJ/IGgOisXCxbxrhmXxTPIYSBbtmnIJyIBj7yYoH2FxBWxVyNpodzNBCedxITAJ7T3Rbr35AeR2X07MSLaaGzzcpkB6mxHwN1Bw3P5fog2X84F4X2mxd1qSNGKl3t0n3cjHkfPKQTjEZB+Qse5ECY5hn5NOZopct/l+Cqo+7EgZd+aZAyoaqAkyBTmOV/j7+H92DyROFccDjR1v/zsBOFnlMHPQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by SA3PR12MB8764.namprd12.prod.outlook.com (2603:10b6:806:317::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9913.11; Thu, 14 May
- 2026 00:11:27 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9913.009; Thu, 14 May 2026
- 00:11:27 +0000
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Will Deacon <will@kernel.org>
-Cc: patches@lists.linux.dev,
-	Wei Wang <wei.w.wang@hotmail.com>
-Subject: [PATCH v3 2/5] iommu/amd: Pass last in through to build_inv_address()
-Date: Wed, 13 May 2026 21:11:17 -0300
-Message-ID: <2-v3-233e3af938b7+f1-iommupt_inv_amd_jgg@nvidia.com>
-In-Reply-To: <0-v3-233e3af938b7+f1-iommupt_inv_amd_jgg@nvidia.com>
-References:
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: YT4P288CA0027.CANP288.PROD.OUTLOOK.COM
- (2603:10b6:b01:d3::6) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="c10YqV2I"
+Received: by mail-pl1-f201.google.com with SMTP id d9443c01a7336-2baf7378ad0so63071325ad.0
+        for <iommu@lists.linux.dev>; Wed, 13 May 2026 21:12:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1778731946; x=1779336746; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=tLBypvNW5ZYdCzcXRqM68PW6cdfiVcgNLkkpkfrL15Y=;
+        b=c10YqV2IsZ+EwSDFIJ0OWXZlzbcsgHGSL3xxUOFqhYPAZHY0x1bNH6Bc/AbAB5Ag0f
+         5Ea+iyLaTbFLBVNMgXK97Hejdhat7Rxgyw+rgExYcYAbFdgXwG3mfSHZwFlfOjZXlNqD
+         hKdxJcKjvTimymn+hL7vVWDm12edd7lN4O3kkPAOrXmkW0RoR9ZrJYxrjQOeurBxFX/k
+         kz20KMWAtdlg85LcbAC+F68PFeUC80Ollqer6IMsK/N0x7eFBX+HmDfGtvv+/CVV2C3J
+         RowdSF7o5V4PeunZECeKpPBpfBCIUP6UM5PgwqAHkxNpeIj4gYS/+QfybBR8tZ+39Sll
+         8FYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778731946; x=1779336746;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=tLBypvNW5ZYdCzcXRqM68PW6cdfiVcgNLkkpkfrL15Y=;
+        b=R8V3wgVri7fwgBg1VUUQRPQjgblOkp9ff3oZ2U7+MvEB2zuOI/SkhwF7npZFiREN/i
+         wg2AniH+vWFRB5o5WRa+Y3J7TDYD6x6pvTZR1Yzy/mZw/kUbGipsD1mzETGMjgcp8h16
+         MTXo1Uy6+N+uUi41FilmioB0ffjn5m/fLH0D/X91yap/j+YA/X8ez9HpFDNEQETQPcqy
+         eHQJfhrz5ye65wXkePcaji8Dp+cS6/UX4+OTs1OTsR6UTAir1Lq2VlsJOrSkpjTlndFR
+         QDQI+LA7X1pvf6yZ5WF8+hZGzcgw7DoSogFEoTiHr2luePjiPIKGHm5uWbH9wq6TPvPN
+         Q/cg==
+X-Forwarded-Encrypted: i=1; AFNElJ/AEi/WmDdX8GMnsBKhLD/GFxlZVMc6pXBVzTI2n+Hic62QvOIfjKrULEOoOy7NXJozQpUy+Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzGJgZtt0kC32DZA5RI8bH6FhaTXvj05idTQr5afz/2rGnsLOCu
+	B7SCM9ME10VqOpIxn7VNwHIGnEvc+tGpFHZ2JHrq6kDijB3x3s6RfmxDw9WAac8LDDu8/XOnQTH
+	JGv2xvdh6iVOnFpJdfTUvlb8IAw==
+X-Received: from plj12.prod.google.com ([2002:a17:902:c14c:b0:2b0:5006:5260])
+ (user=joonwonkang job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a17:903:388d:b0:2b2:4ffc:a7c4 with SMTP id d9443c01a7336-2bd2fc2201cmr55370495ad.24.1778731945615;
+ Wed, 13 May 2026 21:12:25 -0700 (PDT)
+Date: Thu, 14 May 2026 04:12:23 +0000
+In-Reply-To: <20260513171059.GP7702@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|SA3PR12MB8764:EE_
-X-MS-Office365-Filtering-Correlation-Id: 397bd9ee-c586-44b9-c483-08deb14d5464
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|366016|11063799003|22082099003|56012099003|3613699012|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	I9AHfl6qRN/lQpDgu0RovImkU6bopK4OfECQKjFddYqXXPsgOq1YMO6dypst6TB8fNrXOO27xvKbPvz/zIRXnKklvJ3KROdqvM08KWRVWLPJ2ek/QwMgP5JToHy3PtmII0hp8OjA8YH62eE5pjrkQN7bPSr02EUrv2Kj38YiKSmYkK0tb5fStNWK41OGXskbjwLf1PJ4upEKF64VHBJFufmEznRWqc8pYiImoqeGbp1jL+RTEJ6SqYsa5RQoBLkuf+WK528/6LWSHsseP0LCd6ZBw5z5DElWOcRlMw4QPovUOSpzP5zDW5UmlSbnaujk8q4NIc8CQ/ZnI22PFkEf7j6p6Z29pEH2QJU0Il12gFqR45I8xnlxMQlDDjARb4QjW72TKoDndzBKoEz6cX4j+6VZGR9kaZWWI7gdMPKYBXqYjwMnYHisbHA3qup2+jEFSM9kU0BxG7MHmzFOpeCsyE3Ja66+sE2Ch6oFwOx5bsFGGfmjwQPaq50DE1qD4SyH9UsFzAn/nCrj9MZYSq/rugsdZ/kQhcNk3lNZNz+VMgTpfCqRlA79QSuSJ342cIkxETHPKmKhjugwlG3H20TE0Jh2vHZ7N6L6jpNs5v1psEi8iukbWpcZkANYi/BvAhQJaW2l9YZDHdMWt6NyauWgw4Jk8PsWUe/MGSrcMar9W4mBEzU/LbpAx9GV6YIXca89itKcgYGbolXCgwTsbRrsSzmWItH38OhN5dU3u6bra1h3pj1A58kAKlO3JmIMB8UT
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016)(11063799003)(22082099003)(56012099003)(3613699012)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?ySxA+93PZ39TRrJaDbD1xUGpXhTf4p5F2TzlQcqzvARoFCnuAq7EBRLqM+j+?=
- =?us-ascii?Q?bzF7BEs69wDaGkivnXQQePB2YB3niogTAe3kaMzm0i4L7zNbYR8GCGlIBz3u?=
- =?us-ascii?Q?oU/Ilooc0wbf6ubxrUJbQoGh8ae/FUP+lo/tNqDuDu+1bgxskNDyJPbLpSgt?=
- =?us-ascii?Q?QK7lGT8OKREvrFliBlj/uXf+/IHp8Pyb0dziruoT/4Nl0W2G3NvUHFLEIuq7?=
- =?us-ascii?Q?LFvHM7z2JRMEe1oDsI0lhaDmgEXDTMufp7DoLDvY7zXaYqOfR8PWXiDdbQvh?=
- =?us-ascii?Q?wyeSaRN0bTrTvlHEBCoWK5veibQa/XxWn7vscacyxrRk08x3cDXcQojTcgSB?=
- =?us-ascii?Q?v1GRIa+ariZ1nNzC43YXwWy7fdM8iPfaCPDoIJgezm0Svs6OglXMz6w2dBxD?=
- =?us-ascii?Q?5m+XA6Q1m0KelP7n+4X+xPjB5gMaA9BtRgnzQW2kmmFr5su0yW+bkR3Ltb6J?=
- =?us-ascii?Q?pL24o8JFghfdwkdJGUoRe7BEi7yGQgESTfqS9TwVWOFIvfVMuUCFvrsEs/ZF?=
- =?us-ascii?Q?D0xwWFFG2kFwyH1U5j1nY+UN4kR/0iZfa5ohUgxdVaAM98kMVDSMpYeeHPUm?=
- =?us-ascii?Q?RepRa6+RPuomXn9uOACOQ8JjVgH/89GlKFX40SHINXAVuNMWJSUCrcHwLC4R?=
- =?us-ascii?Q?lytn4gTnbT46Tl8Vp9JTlMaocYFna5kxy3vAfhbm16S/gK+zsLbZIWsar12i?=
- =?us-ascii?Q?Dn9H+1DxkD0DaPvrzCQMZlOLnElf2aLlbPN+KkIk2W1+jnoPdSu9pqx2Nkvi?=
- =?us-ascii?Q?ELdH+cj8SeInHe/EASuQvqlUnOsn+48/n84YL+QwSCTZemML4t81KGS8/I+o?=
- =?us-ascii?Q?ZvetMWAZi51kMJ28GNvWOoae58ThMPGphLCkXtU7cwTq1A+7nbT6CXahawjk?=
- =?us-ascii?Q?NHFzrr8A8v5efMz3Iv6Lmocn+sgc32+PQ5BB1Dy/tttggS7/qY7a/AfRyVCG?=
- =?us-ascii?Q?3yUgeZHfjoBqqidLrlfLbJa31K1kOR3jKq9yph1RwOSYxOCSEa9x/DQf6ObQ?=
- =?us-ascii?Q?BdgQ2oNi2h9ODADc53YmTt5Qdh8ak1StwWXRW/2YXXbFNfxGOM4L2u0hYdJh?=
- =?us-ascii?Q?sFJSrcSCC5pCordcGmAX+jMG2VfnzFEr0v+39o8viH99TWYpOaCCayxTQXKL?=
- =?us-ascii?Q?fkkNrc2dK2HzGRVVpXakziszbHfuwjoRAgxZlitEPJGu1gDN6NaBXz28VwXp?=
- =?us-ascii?Q?K8lDD302l2Ih3cQl0w62vPDsM4mcnT6PqCwVC4Z2MUiWqGfD+xppGlZJbVLl?=
- =?us-ascii?Q?wqPz3jjXYrzLnGlqVi9SLE51bpcuRSJRm3uO7Ef9ppWHAJ+zLxYNnhn67N1t?=
- =?us-ascii?Q?F21k+4zrTLJz5SfBa0fkSvVRCl092zVMlZedKz++kBr3hj6iy9RDdd6J5R9b?=
- =?us-ascii?Q?Up63UKqQ3YaJKX9u31bPreGwp+5DnMTOX5Sv1f786QJ8Y7ImfGdsBn0YkekZ?=
- =?us-ascii?Q?nCCimLOKUtdHg/e+U5LXCwuzx5zSj2F5xiz2qIvYtamF3q9BNTwS/diJqeEr?=
- =?us-ascii?Q?g0eUJ12pZvMptR8DiBN8BsW1tUClcdnwbKslAZcExN8RxAUZJ9iu2CJ+mOGE?=
- =?us-ascii?Q?Otk6O1EdoJ1w4BWtRAaOhy5wup6/TziAXDbvxrkS4oPycjpvUdU6eRozkSug?=
- =?us-ascii?Q?EeSfO2thFMRqyRW7DY3STdBbmCv6EG6iWO0lR8wTU0oo5yqg0XJt3T7N+Pd/?=
- =?us-ascii?Q?g/5wtd/T04oAa4tScDPOu4VsWycS432WlivZmqTYZ/vH8niN?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 397bd9ee-c586-44b9-c483-08deb14d5464
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 May 2026 00:11:22.1171
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: k00mPs6RwmH6NywEY0QqOchI6iclExieuNp/LumhZMsCxBKhLG9059jmRwS4U3gX
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB8764
+Mime-Version: 1.0
+References: <20260513171059.GP7702@ziepe.ca>
+X-Mailer: git-send-email 2.54.0.563.g4f69b47b94-goog
+Message-ID: <20260514041223.1518250-1-joonwonkang@google.com>
+Subject: Re: [PATCH RFC] iommu: Enable per-device SSID space for SVA
+From: Joonwon Kang <joonwonkang@google.com>
+To: jgg@ziepe.ca
+Cc: Alexander.Grest@microsoft.com, amhetre@nvidia.com, 
+	baolu.lu@linux.intel.com, easwar.hariharan@linux.microsoft.com, 
+	iommu@lists.linux.dev, jacob.jun.pan@linux.intel.com, joonwonkang@google.com, 
+	joro@8bytes.org, jpb@kernel.org, kees@kernel.org, kevin.tian@intel.com, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	nicolinc@nvidia.com, praan@google.com, robin.murphy@arm.com, 
+	smostafa@google.com, will@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-This is the trivial call chain below amd_iommu_domain_flush_pages().
+> On Wed, May 13, 2026 at 05:03:33PM +0000, Joonwon Kang wrote:
+> > > On Tue, May 12, 2026 at 02:51:38PM +0000, Joonwon Kang wrote:
+> > > 
+> > > > Appreciate all your clarifications here. So, my understanding is that if
+> > > > our system does not support ST64BV and ST64BV0 or if our device does not
+> > > > distinguish between the posted write and the non-posted write regarding
+> > > > PASID, then we can lift the use of the global PASID space. Can I say this?
+> > > 
+> > > You should do what Robin said - just have your driver use a per-device
+> > > PASID that it allocates and never use the global pasid allocator.
+> > > 
+> > > To do this lightly re-organize the SVA code so the driver can supply
+> > > its own PASID, and in this mode we wouldn't activate the ENQCMD
+> > > features in the mm.
+> > 
+> > Ah, we could actively disallow EL0 to execute ENQCMD-like instructions
+> > when the device driver explicitly shows the intention via a new API like
+> > `iommu_sva_bind_device_pasid()` that Tian mentioned earlier. 
+> 
+> You shouldn't need to do anything like this. 
+> 
+> All you need is to ensure that mm_get_enqcmd_pasid() returns
+> IOMMU_PASID_INVALID so long as a the normal iommu_sva_bind_device()
+> hasn't been called. Once it is called it is fine to allow the ENQCMD.
+> 
+> Your new iommu_sva_bind_device_pasid() needs to establish the SVA and
+> attach it without triggering mm_get_enqcmd_pasid().
+> 
+> The arch code is required to block the ENQCMD like instructions when
+> IOMMU_PASID_INVALID.
+> 
+> Devices that can mmap an ENQCMD sensitive BAR region must not do so
+> unless iommu_sva_bind_device() has been called.
+>
 
-Cases that are doing a full invalidate will pass a last of U64_MAX.
+Yes, the basic idea I meant is the same as this: use `mm->iommu` to
+deactivate the instructions. The arch code for ARM may block them later
+as it does not seem to support FEAT_LS64_ACCDATA for now. Thanks for the
+details. I think I am pretty much aligned. Let me try it.
 
-This avoids converting between size and last, and type confusion with
-size_t, unsigned long and u64 all being used in different places along
-the driver's invalidation path. Consistently use u64 in the internals.
+> > To allocate a per-device PASID, I think we should do it using
+> > `dev->iommu_group->pasid_array` instead of making the device driver
+> 
+> No, make the driver manage this, don't mess with the core code. PASID
+> isn't supported with multi-device groups already.
 
-Reviewed-by: Wei Wang <wei.w.wang@hotmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/iommu/amd/amd_iommu.h |  2 +-
- drivers/iommu/amd/iommu.c     | 71 +++++++++++++++++------------------
- drivers/iommu/amd/pasid.c     |  2 +-
- 3 files changed, 36 insertions(+), 39 deletions(-)
+Understood. Thanks for this info.
 
-diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index 1342e764a5486d..831d457c8dad13 100644
---- a/drivers/iommu/amd/amd_iommu.h
-+++ b/drivers/iommu/amd/amd_iommu.h
-@@ -90,7 +90,7 @@ void amd_iommu_flush_all_caches(struct amd_iommu *iommu);
- void amd_iommu_domain_flush_pages(struct protection_domain *domain,
- 				  u64 address, size_t size);
- void amd_iommu_dev_flush_pasid_pages(struct iommu_dev_data *dev_data,
--				     ioasid_t pasid, u64 address, size_t size);
-+				     ioasid_t pasid, u64 start, u64 last);
- 
- #ifdef CONFIG_IRQ_REMAP
- int amd_iommu_create_irq_domain(struct amd_iommu *iommu);
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 24374c8aa853af..52b91831c73e67 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -1266,9 +1266,8 @@ static void build_inv_dte(struct iommu_cmd *cmd, u16 devid)
-  * Builds an invalidation address which is suitable for one page or multiple
-  * pages. Sets the size bit (S) as needed is more than one page is flushed.
-  */
--static inline u64 build_inv_address(u64 address, size_t size)
-+static inline u64 build_inv_address(u64 address, u64 last)
- {
--	u64 last = address + size - 1;
- 	unsigned int sz_lg2;
- 
- 	address &= GENMASK_U64(63, 12);
-@@ -1301,11 +1300,10 @@ static inline u64 build_inv_address(u64 address, size_t size)
- 	return address | CMD_INV_IOMMU_PAGES_SIZE_MASK;
- }
- 
--static void build_inv_iommu_pages(struct iommu_cmd *cmd, u64 address,
--				  size_t size, u16 domid,
--				  ioasid_t pasid, bool gn)
-+static void build_inv_iommu_pages(struct iommu_cmd *cmd, u64 start, u64 last,
-+				  u16 domid, ioasid_t pasid, bool gn)
- {
--	u64 inv_address = build_inv_address(address, size);
-+	u64 inv_address = build_inv_address(start, last);
- 
- 	memset(cmd, 0, sizeof(*cmd));
- 
-@@ -1322,10 +1320,9 @@ static void build_inv_iommu_pages(struct iommu_cmd *cmd, u64 address,
- }
- 
- static void build_inv_iotlb_pages(struct iommu_cmd *cmd, u16 devid, int qdep,
--				  u64 address, size_t size,
--				  ioasid_t pasid, bool gn)
-+				  u64 start, u64 last, ioasid_t pasid, bool gn)
- {
--	u64 inv_address = build_inv_address(address, size);
-+	u64 inv_address = build_inv_address(start, last);
- 
- 	memset(cmd, 0, sizeof(*cmd));
- 
-@@ -1523,7 +1520,7 @@ static void amd_iommu_flush_tlb_all(struct amd_iommu *iommu)
- 
- 	for (dom_id = 0; dom_id <= last_bdf; ++dom_id) {
- 		struct iommu_cmd cmd;
--		build_inv_iommu_pages(&cmd, 0, CMD_INV_IOMMU_ALL_PAGES_ADDRESS,
-+		build_inv_iommu_pages(&cmd, 0, U64_MAX,
- 				      dom_id, IOMMU_NO_PASID, false);
- 		iommu_queue_command(iommu, &cmd);
- 	}
-@@ -1535,14 +1532,15 @@ static void amd_iommu_flush_tlb_domid(struct amd_iommu *iommu, u32 dom_id)
- {
- 	struct iommu_cmd cmd;
- 
--	build_inv_iommu_pages(&cmd, 0, CMD_INV_IOMMU_ALL_PAGES_ADDRESS,
-+	build_inv_iommu_pages(&cmd, 0, U64_MAX,
- 			      dom_id, IOMMU_NO_PASID, false);
- 	iommu_queue_command(iommu, &cmd);
- 
- 	iommu_completion_wait(iommu);
- }
- 
--static int iommu_flush_pages_v1_hdom_ids(struct protection_domain *pdom, u64 address, size_t size)
-+static int iommu_flush_pages_v1_hdom_ids(struct protection_domain *pdom,
-+					 u64 start, u64 last)
- {
- 	int ret = 0;
- 	struct amd_iommu_viommu *aviommu;
-@@ -1559,7 +1557,7 @@ static int iommu_flush_pages_v1_hdom_ids(struct protection_domain *pdom, u64 add
- 
- 			pr_debug("%s: iommu=%#x, hdom_id=%#x\n", __func__,
- 				 iommu->devid, gdom_info->hdom_id);
--			build_inv_iommu_pages(&cmd, address, size, gdom_info->hdom_id,
-+			build_inv_iommu_pages(&cmd, start, last, gdom_info->hdom_id,
- 					      IOMMU_NO_PASID, false);
- 			ret |= iommu_queue_command(iommu, &cmd);
- 		}
-@@ -1615,15 +1613,15 @@ void amd_iommu_flush_all_caches(struct amd_iommu *iommu)
- /*
-  * Command send function for flushing on-device TLB
-  */
--static int device_flush_iotlb(struct iommu_dev_data *dev_data, u64 address,
--			      size_t size, ioasid_t pasid, bool gn)
-+static int device_flush_iotlb(struct iommu_dev_data *dev_data, u64 start,
-+			      u64 last, ioasid_t pasid, bool gn)
- {
- 	struct amd_iommu *iommu = get_amd_iommu_from_dev_data(dev_data);
- 	struct iommu_cmd cmd;
- 	int qdep = dev_data->ats_qdep;
- 
--	build_inv_iotlb_pages(&cmd, dev_data->devid, qdep, address,
--			      size, pasid, gn);
-+	build_inv_iotlb_pages(&cmd, dev_data->devid, qdep, start,
-+			      last, pasid, gn);
- 
- 	return iommu_queue_command(iommu, &cmd);
- }
-@@ -1667,15 +1665,15 @@ static int device_flush_dte(struct iommu_dev_data *dev_data)
- 
- 	if (dev_data->ats_enabled) {
- 		/* Invalidate the entire contents of an IOTLB */
--		ret = device_flush_iotlb(dev_data, 0, ~0UL,
-+		ret = device_flush_iotlb(dev_data, 0, U64_MAX,
- 					 IOMMU_NO_PASID, false);
- 	}
- 
- 	return ret;
- }
- 
--static int domain_flush_pages_v2(struct protection_domain *pdom,
--				 u64 address, size_t size)
-+static int domain_flush_pages_v2(struct protection_domain *pdom, u64 start,
-+				 u64 last)
- {
- 	struct iommu_dev_data *dev_data;
- 	struct iommu_cmd cmd;
-@@ -1686,7 +1684,7 @@ static int domain_flush_pages_v2(struct protection_domain *pdom,
- 		struct amd_iommu *iommu = get_amd_iommu_from_dev(dev_data->dev);
- 		u16 domid = dev_data->gcr3_info.domid;
- 
--		build_inv_iommu_pages(&cmd, address, size,
-+		build_inv_iommu_pages(&cmd, start, last,
- 				      domid, IOMMU_NO_PASID, true);
- 
- 		ret |= iommu_queue_command(iommu, &cmd);
-@@ -1695,8 +1693,8 @@ static int domain_flush_pages_v2(struct protection_domain *pdom,
- 	return ret;
- }
- 
--static int domain_flush_pages_v1(struct protection_domain *pdom,
--				 u64 address, size_t size)
-+static int domain_flush_pages_v1(struct protection_domain *pdom, u64 start,
-+				 u64 last)
- {
- 	struct pdom_iommu_info *pdom_iommu_info;
- 	struct iommu_cmd cmd;
-@@ -1705,7 +1703,7 @@ static int domain_flush_pages_v1(struct protection_domain *pdom,
- 
- 	lockdep_assert_held(&pdom->lock);
- 
--	build_inv_iommu_pages(&cmd, address, size,
-+	build_inv_iommu_pages(&cmd, start, last,
- 			      pdom->id, IOMMU_NO_PASID, false);
- 
- 	xa_for_each(&pdom->iommu_array, i, pdom_iommu_info) {
-@@ -1725,7 +1723,7 @@ static int domain_flush_pages_v1(struct protection_domain *pdom,
- 	 * See drivers/iommu/amd/nested.c: amd_iommu_alloc_domain_nested()
- 	 */
- 	if (!list_empty(&pdom->viommu_list))
--		ret |= iommu_flush_pages_v1_hdom_ids(pdom, address, size);
-+		ret |= iommu_flush_pages_v1_hdom_ids(pdom, start, last);
- 
- 	return ret;
- }
-@@ -1734,8 +1732,8 @@ static int domain_flush_pages_v1(struct protection_domain *pdom,
-  * TLB invalidation function which is called from the mapping functions.
-  * It flushes range of PTEs of the domain.
-  */
--static void __domain_flush_pages(struct protection_domain *domain,
--				 u64 address, size_t size)
-+static void __domain_flush_pages(struct protection_domain *domain, u64 start,
-+				 u64 last)
- {
- 	struct iommu_dev_data *dev_data;
- 	int ret = 0;
-@@ -1746,9 +1744,9 @@ static void __domain_flush_pages(struct protection_domain *domain,
- 
- 	if (pdom_is_v2_pgtbl_mode(domain)) {
- 		gn = true;
--		ret = domain_flush_pages_v2(domain, address, size);
-+		ret = domain_flush_pages_v2(domain, start, last);
- 	} else {
--		ret = domain_flush_pages_v1(domain, address, size);
-+		ret = domain_flush_pages_v1(domain, start, last);
- 	}
- 
- 	list_for_each_entry(dev_data, &domain->dev_list, list) {
-@@ -1756,7 +1754,7 @@ static void __domain_flush_pages(struct protection_domain *domain,
- 		if (!dev_data->ats_enabled)
- 			continue;
- 
--		ret |= device_flush_iotlb(dev_data, address, size, pasid, gn);
-+		ret |= device_flush_iotlb(dev_data, start, last, pasid, gn);
- 	}
- 
- 	WARN_ON(ret);
-@@ -1768,7 +1766,7 @@ void amd_iommu_domain_flush_pages(struct protection_domain *domain,
- 	lockdep_assert_held(&domain->lock);
- 
- 	if (likely(!amd_iommu_np_cache)) {
--		__domain_flush_pages(domain, address, size);
-+		__domain_flush_pages(domain, address, address + size - 1);
- 
- 		/* Wait until IOMMU TLB and all device IOTLB flushes are complete */
- 		domain_flush_complete(domain);
-@@ -1805,7 +1803,7 @@ void amd_iommu_domain_flush_pages(struct protection_domain *domain,
- 
- 		flush_size = 1ul << min_alignment;
- 
--		__domain_flush_pages(domain, address, flush_size);
-+		__domain_flush_pages(domain, address, address + flush_size - 1);
- 		address += flush_size;
- 		size -= flush_size;
- 	}
-@@ -1822,17 +1820,17 @@ static void amd_iommu_domain_flush_all(struct protection_domain *domain)
- }
- 
- void amd_iommu_dev_flush_pasid_pages(struct iommu_dev_data *dev_data,
--				     ioasid_t pasid, u64 address, size_t size)
-+				     ioasid_t pasid, u64 start, u64 last)
- {
- 	struct iommu_cmd cmd;
- 	struct amd_iommu *iommu = get_amd_iommu_from_dev(dev_data->dev);
- 
--	build_inv_iommu_pages(&cmd, address, size,
-+	build_inv_iommu_pages(&cmd, start, last,
- 			      dev_data->gcr3_info.domid, pasid, true);
- 	iommu_queue_command(iommu, &cmd);
- 
- 	if (dev_data->ats_enabled)
--		device_flush_iotlb(dev_data, address, size, pasid, true);
-+		device_flush_iotlb(dev_data, start, last, pasid, true);
- 
- 	iommu_completion_wait(iommu);
- }
-@@ -1840,8 +1838,7 @@ void amd_iommu_dev_flush_pasid_pages(struct iommu_dev_data *dev_data,
- static void dev_flush_pasid_all(struct iommu_dev_data *dev_data,
- 				ioasid_t pasid)
- {
--	amd_iommu_dev_flush_pasid_pages(dev_data, pasid, 0,
--					CMD_INV_IOMMU_ALL_PAGES_ADDRESS);
-+	amd_iommu_dev_flush_pasid_pages(dev_data, pasid, 0, U64_MAX);
- }
- 
- int amd_iommu_complete_ppr(struct device *dev, u32 pasid, int status, int tag)
-diff --git a/drivers/iommu/amd/pasid.c b/drivers/iommu/amd/pasid.c
-index 67eace9809f16a..d708c6532480a4 100644
---- a/drivers/iommu/amd/pasid.c
-+++ b/drivers/iommu/amd/pasid.c
-@@ -71,7 +71,7 @@ static void sva_arch_invalidate_secondary_tlbs(struct mmu_notifier *mn,
- 	for_each_pdom_dev_data(pdom_dev_data, sva_pdom) {
- 		amd_iommu_dev_flush_pasid_pages(pdom_dev_data->dev_data,
- 						pdom_dev_data->pasid,
--						start, end - start);
-+						start, end - 1);
- 	}
- 
- 	spin_unlock_irqrestore(&sva_pdom->lock, flags);
--- 
-2.43.0
-
+Thanks,
+Joonwon Kang
