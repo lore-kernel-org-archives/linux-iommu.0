@@ -1,151 +1,129 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DA7840DFA0;
-	Thu, 14 May 2026 14:34:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6F1640DFB2
+	for <iommu@lists.linux.dev>; Thu, 14 May 2026 14:37:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778769279; cv=none; b=O+ywljqIBMmXGAeaehd24zYh0ovfLGtIct761BleoBIyz81ny2ummcSzdE8s5A80Oll92Mc+yBpfAw7VkPctS4UT3YkLDeSfvMBptbPCjLC15VkE5EOLRD2oP0WaRn/icN6pSC0/5AfBmrkAIjVO008PmAbbP72BHV0/YdQnzA4=
+	t=1778769457; cv=none; b=jgfpaGPORtg7lR1B7CEmy7wz7Yn4ROHgPN7RJyXqsp/Zk2QtjDbhzfv8gMWXIMCfHUXDn0O8WdWd3V+sLpXwlzy9E2Cy3sDbf4IGFQgaGfiuHjGq3i+Eow8d+xc2d+k2y5OXqWR99ZltWLZerdP6V7eDzNZ7U4Y5vMEt0jK6dbQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778769279; c=relaxed/simple;
-	bh=sIm7xyoGq/3jQyavKbDg6WxX1bxs1qeDt2+PDlTROoc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=DanVAKkOF9S8RiLG3SY2NgqZQfNoj7jZuqreOgXc4nmRaF3nECdQnHczkDy2Z68e48HuWXgte920Wgx1oI2Ip0Rkb4QITekSG+H+Cei4fZlomD5qXenAWRQVmbywdEkHCFNwcGHU+g5BcRgdIrBQlZmwb3cWZcb5mCXIUDElnPU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GEEEmAqS; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778769457; c=relaxed/simple;
+	bh=1R/nhGX8X+QrR70RUCgUXl+c5YpTnUwInBBh5eq6G2A=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GU359j/YZHX0M8aP7qnIDuRgI/oJWVmbiyMdpdEAoXivUJjVs9e+PWLPntwKrDch82+VOl7xh3TXE4Prsvha6/z4EVBu00Pme+NzBKzfSU8C5ZX61DL50wodlJEEULxqAyPk6pBGBXF5Pgd5opBy8R8+EUajBjtAQ5O5kuwdjXI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=IvL/0DLn; arc=none smtp.client-ip=209.85.222.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GEEEmAqS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1CBDC2BCB3;
-	Thu, 14 May 2026 14:34:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778769279;
-	bh=sIm7xyoGq/3jQyavKbDg6WxX1bxs1qeDt2+PDlTROoc=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=GEEEmAqSwkI9NSzSJvGgB6wN7trGDIJ+ORtGRNF2fxyRc+Iqz6iRg45Z8foHpqsla
-	 Ip1H9upOtoUUFWjwBhVYogWIiSIribnF68I+rEiDlCsgLoekpENS+MhU1+RpYDOorX
-	 b1gdudOe2+p7OA2kklmLpjmcI0whPWfDuWA3ocKVpfK+FnB78o2oJW0VEkqU5RAZ2v
-	 bK3QaaMap+T4YQh3so6G5UoTqOTUXslzw/1AEqOGjSsmg+GbG/wrbFnqnWNgHAbV4l
-	 Y1WnknSMqrw4Q4YVWPPEvNdVohIVkxRPtb9Jez1sfnNBx8qOPHmNhAwyOmfoWLctH0
-	 IYh2z2nTTvRZA==
-Message-ID: <a4b317cd-2ed1-46c1-b66e-675a56d3308c@kernel.org>
-Date: Thu, 14 May 2026 16:34:31 +0200
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="IvL/0DLn"
+Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-9102e90bcbeso193176285a.1
+        for <iommu@lists.linux.dev>; Thu, 14 May 2026 07:37:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1778769455; x=1779374255; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=TKVmCu+Gb/QJi05GS/MUngbhCp2nJ8/F0kCLFA01DR8=;
+        b=IvL/0DLn7SKrOp1rX/wGl8AWaRCYkdp8OfEW3zxxAqhcyyOqqB49/4eG4o8P/iM6l0
+         kgYIc93bT/eVcZMjL+eAe7hfOP1DF1Z2TTDQj2RmGqqfqowCUvyNzjMLyPSb/+et/GGP
+         IkjyWdcE7BG0JcKM435yh8HvCWVf9hSVPybTykFF85RBUTHzIYmUD87gPvI8M+okpaZR
+         MaO3sMK1qrj4earksYrXN0aCY9tbrBPJXvo2AyEdzmsnuKKUql+ejWJHt0mKSE26Dzz2
+         2aP5rlVJRVLfqE4OQT3M5vsqzD1oZ7PEZG0xxO2C53GD1ryvDXrI7Jen9nlpxwwaqHNG
+         ackQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778769455; x=1779374255;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=TKVmCu+Gb/QJi05GS/MUngbhCp2nJ8/F0kCLFA01DR8=;
+        b=mk/q7DnNn/Dtpq/txRyZ0iRIU9CFqYtrT3UFDJcEszlCtpTsb/RwbKrHQAiibVH0rh
+         /xMK0eHU5UEqXm/n6EWOgwU+yXCqSGXnnbxjbNFPBuJm0V6wSLbZNgY6WBAp+gjcPu9k
+         AAUL5rzEh5oTEgF+cDTj9jxq0tH2uJSDu1jqChoG83r3nZj4pIhUvpE883aUMrkvGP+a
+         7liOZJr/O5f9jKZWxOQo6MKHlg6MarhmiPYFzZQ9X5cNQ+DjkhDJlSWdueA1VlDZ5cio
+         +0Szn6oA23SPPedVo0wuvtfqJw0r4CGkXP+uIDRRO+FHC/WtxJOupPEr6O34OlKeAXgH
+         QODQ==
+X-Forwarded-Encrypted: i=1; AFNElJ8Aw5GBg+BwTAXue007HfAkTdPL4ya7hras7cskAWPGsgWIYnJiatipGOVc7/PUQIO5VZak+w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyxB2H1SSOx5DWGLAnMrLHDBpTFaIBAO8BIYn2jIgARGMot+Ex2
+	cGE5jN+y7ItCa3s9MHIeze3Yni3uFL3+0tKSJb18n5M1QJZAnIFklyyLeoPbTeS76Mw=
+X-Gm-Gg: Acq92OG+s1JkRD8SC3XjrzFC9HkmOdy/Lxu/rirv6C5zlqFXlCJRTcRT24F4Ww/MwgP
+	vzLarLIQ2oIYe2xc15EAT8uhmTVPy/SCprkAH00EZaHTauksiGWQ1YazzjIi94WXZEjs75dwlgr
+	v5NZa5rpGQte0AbyuhBomQ/9Kdyz+N9pm5GaZGxqrR/Xf0wH1DjAbI+mdguHgOwy+/3m/5N+Uao
+	MPzXb7uMsyiEEgs2dssqFf7uDAM2qkwft1/0iQ7i9aPMRJ97rsm8hDOv/S5w+14LayWQWhAdmAQ
+	iPbFidtBWNT1aBWc6bIdBIlWwFPtUE8lKWqdMrJOW9k8Vbr+VeKFCyGA/yru8WgppfhLogA0A5j
+	xsl548tikQcyU37tTO67GGk5TUSHVldg8jl6nM1DAikUEIsWhmm4hfs6LnjfwUYGwen8ph0+JeH
+	1ypbvQtLSrnqyHZqbPJyVETeIgjxkWxylrutZdFxgGaKhvNMAsWJKfrAiNk4yd31xS/q7GPbqyG
+	fxC/w==
+X-Received: by 2002:a05:6214:55c6:b0:8ca:ee3:6e99 with SMTP id 6a1803df08f44-8ca0ee376b1mr2894306d6.44.1778769454659;
+        Thu, 14 May 2026 07:37:34 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8c908e11929sm25017416d6.14.2026.05.14.07.37.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 May 2026 07:37:33 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wNXBt-00000005Lti-0CPB;
+	Thu, 14 May 2026 11:37:33 -0300
+Date: Thu, 14 May 2026 11:37:33 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+Cc: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-coco@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>, Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
+	linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
+Subject: Re: [PATCH v4 04/13] dma: swiotlb: track pool encryption state and
+ honor DMA_ATTR_CC_SHARED
+Message-ID: <20260514143733.GB7702@ziepe.ca>
+References: <20260512090408.794195-1-aneesh.kumar@kernel.org>
+ <20260512090408.794195-5-aneesh.kumar@kernel.org>
+ <agSKQrSIhizCXKwx@google.com>
+ <yq5ah5oaa63h.fsf@kernel.org>
+ <agW5rhE9n2gDQ0w5@google.com>
+ <yq5apl2y5f96.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 04/14] dt-bindings: media: qcom,venus: Remove clock,
- power-domain, and iommus from common schema
-To: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
- Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Cc: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
- Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
- Abhinav Kumar <abhinav.kumar@linux.dev>, Bryan O'Donoghue <bod@kernel.org>,
- Mauro Carvalho Chehab <mchehab@kernel.org>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Hans Verkuil <hverkuil@kernel.org>,
- Stefan Schmidt <stefan.schmidt@linaro.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Stanimir Varbanov <stanimir.varbanov@linaro.org>,
- Jorge Ramirez-Ortiz <jorge.ramirez@oss.qualcomm.com>,
- Del Regno <angelogioacchino.delregno@collabora.com>,
- Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>, linux-kernel@vger.kernel.org,
- linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- iommu@lists.linux.dev, devicetree@vger.kernel.org
-References: <20260509-glymur-v5-0-7fbb340c5dbd@oss.qualcomm.com>
- <20260509-glymur-v5-4-7fbb340c5dbd@oss.qualcomm.com>
- <35zfskmyogpazxy7wsw2jg36fvpnnc7hng23j4heq2jy5ookai@q7d2vl7nn7ck>
- <fc188af5-ec7e-bebb-2654-62312d79e60f@oss.qualcomm.com>
- <kdbo5d2wibjfnchfw7xn3wcgcp5r6ff7pw3ibkpbqzjgfhkovp@v4er4hdiytks>
- <f1fe6e8c-9a16-3103-fbe8-de772bc4728a@oss.qualcomm.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <f1fe6e8c-9a16-3103-fbe8-de772bc4728a@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <yq5apl2y5f96.fsf@kernel.org>
 
-On 13/05/2026 20:54, Vishnu Reddy wrote:
+On Thu, May 14, 2026 at 06:18:05PM +0530, Aneesh Kumar K.V wrote:
+> > There is no problem with non-protected guests as they don't use memory
+> > encryption, my initial thought was that th encrpyted/decrypted is
+> > per-pool property which is decided by FW (device-tree).
 > 
-> On 5/13/2026 6:59 PM, Dmitry Baryshkov wrote:
->> On Sat, May 09, 2026 at 10:34:15PM +0530, Vishnu Reddy wrote:
->>> On 5/9/2026 12:52 AM, Dmitry Baryshkov wrote:
->>>> On Sat, May 09, 2026 at 12:29:53AM +0530, Vishnu Reddy wrote:
->>>>> The common schema defines minItems and maxItems for clocks, power-domains,
->>>>> and iommus. This suggests that the number of these resources can vary,
->>>>> while in reality they are fixed constraints per platform.
->>>> It really doesn't. It provides common definitions, while individual
->>>> platform schemas tighten those.
->>> If a new platform requires more resources than the current maxItems listed in
->>> the common-schema (e.g.,Glymur due to its dual vcodec core design), we need
->>> to keep bumping maxItems in the common schema every time a new platform exceeds
->>> the previous limit. That makes the common schema a moving target driven by
->>> platform specific.
->>>
->>> I am fine with increasing maxItems in the common schema instead of removing.
->>> I can set it to a reasonable value (for example, up to 20) so that it
->>> accommodates future platforms without frequent changes. Anyway, each platform
->>> schema must define fixed constraints, since clocks and power-domains are
->>> mandatory per platform.
->>>
->>> Could you please let me know which one you would prefer going forward?
->> Just touch venus-common when new platform requires bigger lists.
-> 
-> In the v3 series, I followed same approach — bumping maxItems in venus-common
-> schema to accommodate the Glymur platform while keeping fixed constraints in
-> the Glymur-specific schema:
-> https://lore.kernel.org/all/20260428-glymur-v3-2-8f28930f47d3@oss.qualcomm.com/
-> 
+> What I meant was that we need a generic way to identify a pKVM guest, so
+> that we can use it in the conditional above.
 
-The approach taken at v3 was correct and I ONLY commented about very
-confusing commit msg which told that you relaxed constraints. You must
-not relax constraints, so commit msg claiming that you relax them is
-obviously incorrect. Each device must have a fixed, as in non-relaxed,
-constraints, thus making them relaxed (not fixed) is wrong.
+If I understood Mostafa's remarks I think different devices in the
+guest need shared/decrypted and some don't? Ie a virtio hypervisor
+device needs shared while a real PCI device doesn't? Is that right?
 
-Best regards,
-Krzysztof
+In CC terms that would be a mixture of T=0 and T=1 devices hardwired
+and signaled by firwmare..
+
+Ideally we'd have a flow where if the arch precreates a swiotlb pool
+with special parameters this overrides all other decision making. Then
+this series is about making CC NOT use that flow... ??
+
+Jason
