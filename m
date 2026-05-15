@@ -1,83 +1,78 @@
-Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010057.outbound.protection.outlook.com [52.101.201.57])
+Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013005.outbound.protection.outlook.com [40.93.201.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 272772673B0;
-	Fri, 15 May 2026 03:35:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.201.57
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D14D31CA4A
+	for <iommu@lists.linux.dev>; Fri, 15 May 2026 04:48:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.201.5
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778816137; cv=fail; b=aep6zNmfQDONRaBi8CrzQjEo8yxNlaC+XUFpd4tF7HX1WEFWwLtuSSOJMbw7C0/7zyplO4pXasM6WWQX5rM9dLJtcyXeguT5ZsIt74gUtrVWQl0BJeQpp3hPotrrrK3ozbNCynsMRzjEE6y40Nm7ml9ka/PkD+G7uvqSTtgVWXg=
+	t=1778820496; cv=fail; b=ewgQjndd5qfYNqYxFBDrDjnEr3YZDjr7Q0wlnonEXND6UEHNmTxhYFWy+z1EwXErK0sNdV+JNyrjhEXzK4txJ2gOVDeiecU+KrT1U/HGWr5yGi4WGoE8PZL7np677InTvG3AiDWbfUhW4ssgwSCOJBLIS+XDvgeqrdUdFTJKrQM=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778816137; c=relaxed/simple;
-	bh=1Yx1UgsJhmLdSvdDBcLx/WplduQ003+qJLUvRkL4PcE=;
+	s=arc-20240116; t=1778820496; c=relaxed/simple;
+	bh=/Ie8Hf8njkbVuE7lhBmkRikqVYLhzHMoTTbaegh/Ms0=;
 	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hA5T0xreag/noTFNl6PU4O0jxIAFMm6Va+qVlSklORorpAy4/OWYhMQHVGBM4P2+FAi0k0J2MPdulNOMRwVwiPctymjib9SqHKgRGzkAb4HXKZfRaOqZHwNQtg22oQuq3huC4vkFM7W5lmDz/M3h6cEVbciqIDiwFKDlvh6BeF8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ZrlBWvSN; arc=fail smtp.client-ip=52.101.201.57
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=R/WfKM2Sy9Uf0Hpygi0z3aqOq5l+jRabGRubk/lQjn4i6LJp4xVbJ6OP4TMo+Ykn9me6BksIDHPUwV8N0xAmExH1VywCpTKGuBLZx5+sXHreNKMQ+9gXTcYz4MJbMxeb2XhuXZyWnmtM+OVQL/wahhcTuDaFzre1A46l5RufBOg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=BWtbwqU8; arc=fail smtp.client-ip=40.93.201.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ZrlBWvSN"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="BWtbwqU8"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=sD5JV29QkinGgO1WeIbn8Rfkz9/CPUN9b9DDsjPB0g0xHiiuPMX9OI3SSUmNFe4eJtG9AFmGI00VEQqh5oJL303I4Cc6zkv3Rk2U1LuDwrq08Xcu7DowidSh8M0/RWPfzI0aGoGcUtUVqfdk/X8cyevfsSUCcl0tG6MBB9OoXRRfI85Bg7ATmkqpcoD3BseuGZEoqi6hGGajcHdkj2ibb9/ebhL4ymX+y9tn6yXpI/EKzCzVAD/mMRDIzM1go3IT5KVzffLjSqnFDTow+TSg3/OwtIhaRnWaa90r5n5GiWppaEhp6m2Rn6eKDk55qXAPV1QLBCiTMtH6cjtpGa2fHQ==
+ b=L2hcUaxE+5SBZwY+gDXY/g5TJK8jzC8ZiwuEypTI3tpKWHxEqavWqsJgvoPa35JHREaLekbAukY/KoDTLTm06RDTWBrspwE3MPhP69oTZmiVathSq90tiH38apqRC1RdYM/0XLtAUjh0DvIxFuqfbsEQ2p3i76gKj7xF90/NTCkmpJqFph5fBxd3oHMegmlhVqZex4RnIw+Z7s8xQOouS88uZjsLmPDDx+EhCuH4GGOVVUBetItppDtB4mfqGepNp7TSOS1Cs+TlcVM0359jmwnnrNdwCuQ1nNCtcZ7SHOi5jopFINq/5XnxxB+gcsbha4BBvirnCzhrPumxB0cOVA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EItuEazXeLLZ/GyD0MeYt1zKjv6bBvb2vGiQxHQZqN8=;
- b=LY5668iw4gGe4aEoDvu+zt7zauYlhC5yS1tufX3i/RlI9oMAB00/Y1EX/LpClOd+f3pq1BKC10zIJO8MImZDnoctydhIywyDMOIGWElqKkYxUlZ8/Ezf7HTaBN3ZXkqSHhC8SO1DSmDsKeUEelh8+dyO/6kjKToRazgiztc9DTZKVAdy82MaQxs+mZGYOxFLQm2m3IO/gncsOS4TaSenwgUQqzuQSrjtiDqlTIZCbiUFhOX9PLvl54RMIc7TP+l7Nt2gsqRUPk0eVqIZvcolLeNKM9qZUGCZCaUn0v69SgJAB5zNPAihFGl2yKjAyx5jFJwB5a0W9t/ZLy+wPqG+JA==
+ bh=/TdhJr095ZSop8YldFnKtYR21Zlo0NrzBNuTImGU36M=;
+ b=Wx2tr1G9R6jbrTwW24acg4PdCCY0MKIK6Bxa2uFfLv9V/wqQtxpRDRARi7iNot5JlcwRtjFR/IT+f51A1czx4O1kMBTgOfH64kg7v7cJafaEmtadyGlRc+9mbnnJ0wFTszoG8RRKckbtOyS5keHL1iIzXBnP9yyyeXL1nBRHQ/autLs3t8B+TpalEWbkPGhIoRrpdrq0DHZQsGRtiV9yK80Lygafe6vZAnhoT5bxXjUWN1rwkwrcjvsKSpOIp0fWwKfFYVHWhJocHbimnjyRCjOeoTTYO/7TEaf+9gmEYiJ3P1HKaQSgh3va0yvMPE3aRtlxkRGd3spIPi0410Qobg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ 165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EItuEazXeLLZ/GyD0MeYt1zKjv6bBvb2vGiQxHQZqN8=;
- b=ZrlBWvSNaMFpVxkTb9FIm21nk4xdIuCI0GEx1bPrreC7mGFE8dGVV2ibYuDg5eQMYxa5viZkuxS/n48SbGxD9wv8gGC/rzD3lNP764o5Dsa3slureZ7wi0F0EGEn6vgeGyABqPEkHjYOnb/myBHUuCDs3DxS8UhC9rvdT7RQyw/iPTK9Rk1t4u/vcPChsnIPYcX0DdP5f3MWLaTZj8FbOEvxzOKIxuZCx8Z4AwypxkAp1guYLtXJO2tg1w/ZJeEGfhk8LAu+8Ue5OJFxKVYWUL6RN2zXrogo70AizVnWl72yvB/MlWS66G0P5+qdcJnEG1VKMdsroo8M5jrzfwXkOw==
-Received: from CY8PR12CA0050.namprd12.prod.outlook.com (2603:10b6:930:4c::18)
- by CH3PR12MB9453.namprd12.prod.outlook.com (2603:10b6:610:1c9::12) with
+ bh=/TdhJr095ZSop8YldFnKtYR21Zlo0NrzBNuTImGU36M=;
+ b=BWtbwqU8BmiDC2+M1Q9dOYgQ5kdk5M5LFKSvbe5F8WLHrJmpDUWQ1YI07iu4NO+p+NtR3dVLYpQUBf3dRNfuOwiGWcFaV2lHNYdfEADzCEt1gLpSh9fBmhE4Ot6l00MEW41fOYfJNrxQ96wl9q2ptZhYJiZogl8047QeiGMuCUI=
+Received: from CH2PR18CA0048.namprd18.prod.outlook.com (2603:10b6:610:55::28)
+ by BL1PR12MB5897.namprd12.prod.outlook.com (2603:10b6:208:395::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9913.11; Fri, 15 May
- 2026 03:35:29 +0000
-Received: from DS3PEPF0000C37F.namprd04.prod.outlook.com
- (2603:10b6:930:4c:cafe::a8) by CY8PR12CA0050.outlook.office365.com
- (2603:10b6:930:4c::18) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.25.19 via Frontend Transport; Fri, 15
- May 2026 03:35:28 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- DS3PEPF0000C37F.mail.protection.outlook.com (10.167.23.9) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.25.13 via Frontend Transport; Fri, 15 May 2026 03:35:28 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 14 May
- 2026 20:35:15 -0700
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.20; Thu, 14 May 2026 20:35:15 -0700
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.126.190.182)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.25.19; Fri, 15 May
+ 2026 04:48:06 +0000
+Received: from CH1PEPF0000AD7D.namprd04.prod.outlook.com
+ (2603:10b6:610:55:cafe::54) by CH2PR18CA0048.outlook.office365.com
+ (2603:10b6:610:55::28) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9913.12 via Frontend Transport; Fri,
+ 15 May 2026 04:48:05 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
+Received: from satlexmb08.amd.com (165.204.84.17) by
+ CH1PEPF0000AD7D.mail.protection.outlook.com (10.167.244.86) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.25.13 via Frontend Transport; Fri, 15 May 2026 04:48:05 +0000
+Received: from Satlexmb09.amd.com (10.181.42.218) by satlexmb08.amd.com
+ (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Thu, 14 May
+ 2026 23:48:01 -0500
+Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb09.amd.com
+ (10.181.42.218) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Thu, 14 May
+ 2026 21:48:00 -0700
+Received: from amd.com (10.180.168.240) by satlexmb08.amd.com (10.181.42.217)
  with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Thu, 14 May 2026 20:35:14 -0700
-Date: Thu, 14 May 2026 20:35:13 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <iommu@lists.linux.dev>, Jonathan Hunter <jonathanh@nvidia.com>, "Joerg
- Roedel" <joro@8bytes.org>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-tegra@vger.kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Thierry
- Reding" <thierry.reding@kernel.org>, Krishna Reddy <vdumpa@nvidia.com>, "Will
- Deacon" <will@kernel.org>, David Matlack <dmatlack@google.com>, Pasha
- Tatashin <pasha.tatashin@soleen.com>, <patches@lists.linux.dev>, Pranjal
- Shrivastava <praan@google.com>, Samiullah Khawaja <skhawaja@google.com>,
-	Mostafa Saleh <smostafa@google.com>
-Subject: Re: [PATCH v2 0/9] Remove SMMUv3 struct arm_smmu_cmdq_ent
-Message-ID: <agaUcQ7zFPcjid0K@Asurada-Nvidia>
-References: <0-v2-47b2bf710ad5+716ac-smmu_no_cmdq_ent_jgg@nvidia.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41 via Frontend
+ Transport; Thu, 14 May 2026 23:47:57 -0500
+Date: Fri, 15 May 2026 04:47:51 +0000
+From: Ankit Soni <Ankit.Soni@amd.com>
+To: Jerry Snitselaar <jsnitsel@redhat.com>
+CC: <iommu@lists.linux.dev>, <vasant.hegde@amd.com>,
+	<suravee.suthikulpanit@amd.com>, <joro@8bytes.org>, <will@kernel.org>,
+	<robin.murphy@arm.com>, <linux-kernel@vger.kernel.org>, <jgg@ziepe.ca>
+Subject: Re: [PATCH v5 0/4] Respect VASIZE for address limits
+Message-ID: <g4ottdke5ui57ilntjqy4d74qac7hbuqj7nq7ihm3g4zaxrhsp@jfsdbtehdfoh>
+References: <cover.1776075533.git.Ankit.Soni@amd.com>
+ <af41-umpPHen-9Ry@jsnitsel-thinkpadt14sgen2i.remote.csb>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -86,75 +81,135 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <0-v2-47b2bf710ad5+716ac-smmu_no_cmdq_ent_jgg@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
+In-Reply-To: <af41-umpPHen-9Ry@jsnitsel-thinkpadt14sgen2i.remote.csb>
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS3PEPF0000C37F:EE_|CH3PR12MB9453:EE_
-X-MS-Office365-Filtering-Correlation-Id: 05eb3162-3187-4bd2-8a6c-08deb233026e
+X-MS-TrafficTypeDiagnostic: CH1PEPF0000AD7D:EE_|BL1PR12MB5897:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8fa0f800-bf44-487b-1acd-08deb23d2784
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|82310400026|376014|36860700016|7416014|22082099003|11063799003|13003099007|56012099003|3023799003|18002099003;
+	BCL:0;ARA:13230040|1800799024|82310400026|36860700016|376014|18002099003|56012099003|22082099003|4143699003|11063799003|27256017;
 X-Microsoft-Antispam-Message-Info:
-	9AREEX+zwytufM6kING8XoJX/CBEa3N6kCDhY17js0yNS+Us43wAeBaSFi9z93Ee1p4etnhsq+wVBq0wtgfcLwwDpwp1ilMOZJdAjw/Q6y8WklaFdjRVYLxyyox9jQK98nqHs02gVm2dLMgyTfnEvdsE5bZfPkitwM2j0HDGmPNkGrh88grD4vxS4FK3Cagc3Vg6T9hP4OD9+5u1Lav8i2ntQHS6jhlo2v3B/k9PnJ81IkJJfi5MjpkKLEnLfdpiW8jEZCmMyVCqtH2k0PDrLsjbF/MthRoTtFJsDFxfKOJv98UJLszuTgkDjDIgF/VfMwdEHtI2PGFs8FU8GxAmOe2TcDlEmmQH5rIP9LqpWcHMooVEBGlgwrxtDdybFO3xBbMEhXTTb0bCZmQ1P1jM0uClVgzOG76G9mH84VvKBOsvUEaHERPMrdRJBm7Aok+3a7v5tGFx1Qa3KMapbyOW1uULgbdDVBCvzOxMPoMMX1s/4CzsDqODpUpehhIRLFaXD2WkDPGbvNagH+CKwp7aQPX1L8wAi6rl+82Besqn6NL4/PPsFRIfTmyGjSCF5VHGS7tlcYCBR6rGQ4ZFXlgzX9/hm/HJkRKyuvpVxQTEKs22RJz6vVHsfhliXrQd2dP7Q4vGpSuoLf8eBZN2eXcXyGVLSRPAVg0tIVvO7yDGCKrpz3WCvC0GDN8nPUMNGUopt76HjL6vxS7AVHBQLWEr1V6+inQYmRbOkJR9k5PkLUg=
+	4hGJ8O0aJV+c/TcTe9eCYCsCyUBLiiAcx1uURcNKmBEndOlPp2NPM5A+Gww3ni6nMDZsPaK3THDz9PiCw79MRF+5uV0U4FmDZx6HFrBo6pmwMY+DqD/c2OG2pLRaK9fmDVUd2yVgLTzx7VMd6xshWaF3F8vIi4lSrKDfEpSiu7jm6qnB/Bzagm1RDd2xEH9OA9l7+8A5oOxlPWvAfK4+Ni64c5kdvUYgVl62M7QautwxxPNPtsUPnby2qVZCn3vUAM8QR0Ex5STQ7P22QlEKrquAC89s1RTINSVBl5E1QwAwP9Xz0iE/y96ZUIoXR+Wd89BIM+MAX/9rIx/RWVBbDgg7PI6MwkGVSe58yNRMzy2Jd2NUa4jkPnJsdLlJCUj1B3NZY8ou+por2+s0W5sLmmLWPCMblo7bZAR9SUQG5A7nttnsAhnhdizkMiirJxzxCmfalGkpmItN56B4YWD9EPpOzh1kprvlH+2NBStlJhAhQAqK+MjlJMTfCNdZPgHD/+uSr0v2o5v5PjXn5Foo7jyx0zP6z5xAu1Wxlv9y4I2JLxTVvcm/yw3USb7XowYxPw9OC8CgC9N3bD/cTdbfScsOsJXtgmRxASbrfAC6qrZHUFAMFoPiJGDRPpcuIgxbEZLe/ixzJeTjn7gtP173+cId/oPfButV82Nqy/699M+Eow13YbazTwMu+i1X1KcjmR0JgkR9QFTSkWmTMUyYoMg3NFAvNDZ6dh5ufDRT+dxVg1tYMNaCsebtRM6deHMVmkwzcQ9EvjbDH+IyUHch8AMYXlGRMoUQpzc0zjHk/v8=
 X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(376014)(36860700016)(7416014)(22082099003)(11063799003)(13003099007)(56012099003)(3023799003)(18002099003);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(36860700016)(376014)(18002099003)(56012099003)(22082099003)(4143699003)(11063799003)(27256017);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	kCtJQteg6R5vItujmBcsPAehZzqy1qGyMfBKluu47PWt/8M1EAr72++FaylyWFotJrvr3DeVWBp8eKJ19YGT/g+rH/HKyAxiWhwFIaKZl6fSIVb8udMx2v1jfyodLQOd6byMFtoEYBgt1TPgRoJJY7168fPAWbSQUwjTB6JwofvCmArX2YyTuj3+80r8o8j6jn/I4FSPKtiqyHIH5Y3yZpNZGAZMPUw3oSZzIc4brP+F5cHGz385tqGo4l8BfRzg8/zYWROGUC0kgjw9iks2+CzzZ3ocjwFztisUxJV4zmohJjlkFiQdul7eYUWQNUmgCBHSaEqsIx9AnME1gHHCJOZ7mAlUFpwHY8YFciSE1j6rjq1ySVqAb8EHJ7IuV4yZQlzUPHWvd+XRR73jh/psUm/3SGXq5/SSTSafoYxMqlNgZgUFJfPQvtX3YgAA7Ew8
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2026 03:35:28.5496
+	6Di24yNA6rTc3PjG9ORQEL80nw83Vi+gaR8KgbOcTae5q6bnsO8d9ZeelrRrek5jarg+ucziqTxgq1eAfMTNya2iKgCY9QPaPfIh461GIJ+/2+hNuYMHv1rpNpx2kHxJlFEWsXri5wHEG3JeHmmyDzK1tnhdCHGXLBKywH3jddjx35Sjad4z6SpPECZNHI6Vr6iStXQKvOXpj7BYMvCxx/sjMacQWV/9gSENzWx5fG7muSdDwE1kxU99pRuUuQVXo2hFBTgvYzZYIVktw2W/wowoeMv+DPHOPJmnt0/LePpesVw5O7jkSYuZHAX1NDS8Q0QEDxkNRhAp1ROFpRCv8EQK+bkYUqXOALtK6iPxhX8C4tktbVBDCpdwENAZUyATARNkg147kzFD8OIhIdI2+6akMU0vuZJOYoZIby7nkld69Q1d9Zx/repXszea3Yzq
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2026 04:48:05.8368
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 05eb3162-3187-4bd2-8a6c-08deb233026e
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8fa0f800-bf44-487b-1acd-08deb23d2784
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	DS3PEPF0000C37F.namprd04.prod.outlook.com
+	CH1PEPF0000AD7D.namprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9453
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5897
 
-On Wed, May 13, 2026 at 08:57:39PM -0300, Jason Gunthorpe wrote:
-> [ This is part of the patch pile to move SMMUv3 over to the generic page
-> table:
-> 1) Introduction of new gather items and RISCV usage
->   https://patch.msgid.link/r/0-v2-b5156f657dc1+25f-iommu_riscv_inv_jgg@nvidia.com
-> 2) Remove SMMUv3 struct arm_smmu_cmdq_ent
-> 3) Organize the SMMUv3 invalidation flow so iommupt can use it
-> 4) Use the generic iommu page table for SMMUv3
+On Fri, May 08, 2026 at 12:23:00PM -0700, Jerry Snitselaar wrote:
+> On Mon, Apr 13, 2026 at 02:45:17PM +0000, Ankit Soni wrote:
+> > The AMD IOMMU driver was only using EFR[HATS] to derive the VA size,
+> > ignoring the IVINFO[VASIZE] limit. This could create domains that
+> > exceed the bounds advertised by hypervisor. With this series, driver
+> > respects IVINFO[VASIZE] when determining the addressable VA range.
+> > 
 > 
-> The whole branch is here:
->    https://github.com/jgunthorpe/linux/commits/iommu_pt_arm64/
-> ]
+> Should the AMD code also respect IVINFO[PASIZE]? VMWare presents an IVRS
+> table that has both set to 40 bits.
 > 
-> The invalidation logic has this multi-step process where it first
-> writes the command into a 32 byte struct arm_smmu_cmdq_ent, then it
-> calls a function which converts it into a 16 byte HW struct, and
-> sometimes it then edits the HW struct a little bit before passing it
-> off to the batch or submission functions.
+> [000h 0000 004h]                   Signature : "IVRS"    [I/O Virtualization Reporting Structure]
+> [004h 0004 004h]                Table Length : 000000BC
+> [008h 0008 001h]                    Revision : 01
+> [009h 0009 001h]                    Checksum : AD
+> [00Ah 0010 006h]                      Oem ID : "VMWARE"
+> [010h 0016 008h]                Oem Table ID : "VMW IVRS"
+> [018h 0024 004h]                Oem Revision : 06040001
+> [01Ch 0028 004h]             Asl Compiler ID : "VMW "
+> [020h 0032 004h]       Asl Compiler Revision : 00000001
 > 
-> Instead just generate the HW struct directly by moving the FIELD_PREP
-> blocks out of the big case statement and into helper functions. Call the
-> right function in all the places that were building arm_smmu_cmdq_ent.
+> [024h 0036 004h]         Virtualization Info : 00142803
+> [028h 0040 008h]                    Reserved : 0000000000000000
 > 
-> Add a type for the CMDQ entry similar to the STE/CD types that wraps the
-> two u64s for clarity and use it everywhere.
+> [030h 0048 001h]               Subtable Type : 11 [Hardware Definition Block (IVHD)]
+> [031h 0049 001h]       Flags (decoded below) : 00
+>                                      HtTunEn : 0
+>                                       PassPW : 0
+>                                    ResPassPW : 0
+>                                 Isoc Control : 0
+>                                Iotlb Support : 0
+>                                     Coherent : 0
+>                             Prefetch Support : 0
+>                                  PPR Support : 0
+> [032h 0050 002h]                      Length : 008C
+> [034h 0052 002h]                    DeviceId : 0010
+> [036h 0054 002h]           Capability Offset : 0040
+> [038h 0056 008h]                Base Address : 00000000FEC10000
+> [040h 0064 002h]           PCI Segment Group : 0000
+> [042h 0066 002h]         Virtualization Info : 0000
+> [044h 0068 004h]                  Attributes : 00000000
+> [048h 0072 008h]                   EFR Image : 00004000000000C4
+> [050h 0080 008h]                    Reserved : 0000000000000000
 > 
-> This is intended to have no functional change. It makes the following
-> patches work better and removes a bunch of LOC. I've run several AI tools
-> with instruction to look for functional changes, which did find one subtle
-> mistake in PRI response.
+> Regards,
+> Jerry
 > 
-> The removal of arm_smmu_cmdq_build_cmd() also achieves what Mostafa is
-> doing in the pkvm series by making the command formation entirely header
-> based with the arm_smmu_make_cmd_*() mini inlines.
-> 
-> This series has no dependencies. Several people have already tested this
-> on various ARM systems along with the full iommupt conversion.
-> 
-> v2:
 
-Sanity tested with SVA and nesting cases.
 
-Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+Hi Jerry,
+Good point regarding also considering PASize.
+Currently, with this patch we only limit the VA size based on the 
+IVHD-reported capability because that directly reflects what the IOMMU can
+support for virtual address translation. For physical addresses, we are 
+effectively allowing up to 52 bits unconditionally, which matches the 
+current hardcoded assumption and effectively does not constrain the mm
+layer.
+Your suggestion to additionally restrict PASize makes sense from a 
+correctness perspective. If we propagate the IOMMU-reported physical 
+address size, we could detect cases where the mm layer provides addresses
+that exceed what the IOMMU hardware can actually handle. In such scenarios, 
+it would clearly indicate a mismatch/bug somewhere in the stack (either 
+incorrect capability reporting or misuse by the mm layer).
+
+I will add enforce on pasize change and send a patch.
+
+Thanks,
+Ankit
+
+> > For a small VA size, domain initialization in the generic page table
+> > framework can fail with -EOPNOTSUPP. This happens because the page table
+> > clears the dynamic top feature from the force enabled feature set, as no
+> > page table growth is needed beyond the current level.
+> > This series also fixes this issue and adds KUnit test coverage for the
+> > 32-bit VA configuration.
+> > 
+> > Changes:
+> > v5: - Added Jason's suggestion for modifying get_info().
+> > v4: - Remove PT_FEAT_DYNAMIC_TOP check from pt_init_common().
+> >     - Add test coverage in amdv1 for 32bit va size.
+> > v3: - Remove specific value checking for vasize.
+> >     - Add patch for PT_FORCE_ENABLED_FEATURES.
+> > v2: - Mark ivinfo_vasize_bits() as __init.
+> > 
+> > Ankit Soni (4):
+> >   iommu_pt: Fix pgsize_bitmap calculation in get_info for smaller vasz's
+> >   iommu_pt: support small VA for AMDv1
+> >   iommu_pt: add kunit config for 32-bit VA (amdv1_cfg_1)
+> >   iommu/amd: Adhere to IVINFO[VASIZE] for address limits
+> > 
+> >  drivers/iommu/amd/amd_iommu.h               |  2 +-
+> >  drivers/iommu/amd/amd_iommu_types.h         |  1 +
+> >  drivers/iommu/amd/init.c                    | 13 +++++++++----
+> >  drivers/iommu/amd/iommu.c                   |  3 +--
+> >  drivers/iommu/generic_pt/fmt/amdv1.h        |  1 +
+> >  drivers/iommu/generic_pt/iommu_pt.h         | 12 ++++++------
+> >  drivers/iommu/generic_pt/kunit_generic_pt.h | 10 +++++++---
+> >  drivers/iommu/generic_pt/kunit_iommu_pt.h   |  5 +++--
+> >  8 files changed, 29 insertions(+), 18 deletions(-)
+> > 
+> > -- 
+> > 2.43.0
+> > 
+> 
