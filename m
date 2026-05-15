@@ -1,196 +1,166 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2A6933A2E12
-	for <iommu@lists.linux.dev>; Fri, 15 May 2026 12:38:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61FFA3B2FE4
+	for <iommu@lists.linux.dev>; Fri, 15 May 2026 13:30:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778848713; cv=none; b=CqYKsJ+kr954R9yCe7tD2wNW4y8M30Uq+NVOQ+Rh3he5HxGUKwqhdb0vw63htS8A3x2cUhEBxt8sbD2eckfzmdc9m54ItUm8FhMVrjIVOrnxIGsijaZCiNjY6q7+iyf0Q4A+2dhO8RkP+JzTrmlVSYw7ksp0dxfjsiKVsVwrXOA=
+	t=1778851845; cv=none; b=d9mj4VGuKoNFaKKgrOEwEvX4m+mR6nYrt2hOU/QHdkly/1+rwF/60qf/8kpYX/KItlSX6AbX5FH1e6N7sqVcEjCu3i1yWCyj/hmAXyV9E1vpDcMZu4dk4OWFcoRA7Kq+pf5bs+jqGhVqaY+PF3rkhcsiEqCECk2jOx/LFohpK6U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778848713; c=relaxed/simple;
-	bh=QkyGtymRwTBhyCo+ftYaceSh3xAwbb+WqGHKEO0jwkM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nZxjpuSDs27GTEpvKau1D773GslNvqWCGgPI1aYTZMl06zl8KvJdDk3cb46xFfOwAZmPFafdiUrpEnss89300CvmEejNsatSzz2/mo9MyvvYCCF2nNtraxUbYva+yxLGtIw0bdPxzCfA9NxuKjztWC5lWeRfxcjU/WpGVS7eeFU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=WS/Zdg8A; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1778851845; c=relaxed/simple;
+	bh=E3Fh8rz3WYe2ohpm+DHKECMRr4K1QHvJv/ifilJtXGY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=TxkXUWW3XYZsZAK70qAMtZpfvp3OtGk4HUGrZbRuZZNspJ7bq70FUIXaXJMv/wmAmdOzL3eStjqSws8fvCVzjl1x2iRzNorsaHaz0oosBnESkHH9wKeOwOsb0C67TJ+q9I5ohrbgMDRdTqwsU5B2UuD6vZAFip9pepA3V6bK7iM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=ooi9Fdk4; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=aZKZsYiL; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="WS/Zdg8A"
-Received: from localhost (unknown [167.220.233.27])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 5F50920B7166;
-	Fri, 15 May 2026 05:38:27 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5F50920B7166
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1778848707;
-	bh=1OXr0xlN0CYrNFpGl0atHJ7aaaV0aDo3N3oIZvGVagY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=WS/Zdg8AIi53513pxUnOp+s9InaN9MqXm8Ct+gGszuzww7WhyOeKAYEzmZFH5C4LC
-	 N4WtvrNmTKru+L4Wvy3/mrpRLUIzp7SXf695evqMQzpXzI0vKmUPA9CTnkBUTlDJm0
-	 b1d2IH7XXgyxFJYnqOG7QsvllXFywc14HtOV6AzY=
-Date: Fri, 15 May 2026 20:38:29 +0800
-From: Yu Zhang <zhangyu1@linux.microsoft.com>
-To: Jacob Pan <jacob.pan@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-pci@vger.kernel.org, linux-arch@vger.kernel.org, 
-	wei.liu@kernel.org, kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com, 
-	longli@microsoft.com, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
-	bhelgaas@google.com, kwilczynski@kernel.org, lpieralisi@kernel.org, mani@kernel.org, 
-	robh@kernel.org, arnd@arndb.de, jgg@ziepe.ca, mhklinux@outlook.com, 
-	tgopinath@linux.microsoft.com, easwar.hariharan@linux.microsoft.com
-Subject: Re: [PATCH v1 3/4] iommu/hyperv: Add para-virtualized IOMMU support
- for Hyper-V guest
-Message-ID: <af2mt3eqnadczs2u2psmsdevjhshsl3v6vamtnde2c44mjealc@3yon3hsi7idi>
-References: <20260511162408.1180069-1-zhangyu1@linux.microsoft.com>
- <20260511162408.1180069-4-zhangyu1@linux.microsoft.com>
- <20260513113952.00005b20@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="ooi9Fdk4";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="aZKZsYiL"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64FAsBvC3671196
+	for <iommu@lists.linux.dev>; Fri, 15 May 2026 13:30:42 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	bNBPjawQmJSnV08ZoyTHF4GbC57zg7+EEAvYbW1jGOA=; b=ooi9Fdk4FtLbsM4X
+	cKhHYk3K18NMUCkkpPFmubAdUK2LhChC8Roo+7ztd4me2ZUswHCenloPVM/Nu6pm
+	cv9HTdq023eJiZggnPF0UVJvzL5DntK6DjmzGWtLb1JGEAV6wVkkYZS+ZttyGDqe
+	dljQ708hOUjAyf9CIH0i7QSRbKy4QdMLtBs1oATVM0z01x4ioyD9wADN85jMhAlw
+	sTI8cV7TFFJWLOccQy4xSqrVXbczdPw3YJ+pu/UWDh8E0MEd0VmMliplqy5l9qZ6
+	DyYRswoq7Uaigj5gMCNwmMBrl0EzKObIESEQyXRecjGFY/hoXeKnnB5TdhWWMYp5
+	c0x8Mg==
+Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com [209.85.214.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4e5m1s3fmx-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Fri, 15 May 2026 13:30:42 +0000 (GMT)
+Received: by mail-pl1-f200.google.com with SMTP id d9443c01a7336-2babbeff9e4so11095225ad.0
+        for <iommu@lists.linux.dev>; Fri, 15 May 2026 06:30:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1778851842; x=1779456642; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=bNBPjawQmJSnV08ZoyTHF4GbC57zg7+EEAvYbW1jGOA=;
+        b=aZKZsYiLMc6tAeVT9CUnylEk2EFr4o/kZucXnyzGZaxnsJVFLAv+ZDmUfmhqXlYQXj
+         66QyHmBtGRL8CJP6mNJieI7GmaoRiA3c0R1cuJ5talhEP93h5ClmX5jlICeG4WtSAg4M
+         c+13jnQLvGTo6w12fVuV0WxwtusmwtrnCrbwHpMmDX6+M3/ww+JEQFM1WyDVNEFog8j4
+         faPmbs51cnYowqig4TzOmGhO+Zt7FwH95AYv3W+/VQJGbi6JdVGwqaF0qjXAlYHUw62P
+         Y34F5CQOEfjDD1vN+C0ajwku5/KnJkUpoaUGtmr403sawWVwOcf/+7P7VC8Y1TFEdn4P
+         7bJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778851842; x=1779456642;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=bNBPjawQmJSnV08ZoyTHF4GbC57zg7+EEAvYbW1jGOA=;
+        b=fYu2xpt4YFrd3CUZrn3UIKhtKkfPv1ziBx617odLr6SbHtCY6W6D2NkoNf4n8oEtAn
+         dgJjn6w6521IxHqUwb7/l+/ajdsTkdwOKdw9Qk44KXokLOqubsilWmJUr3p3qp+Tm2ZT
+         HjMrgEfRbI90dTzET06TD0Lsc8Kuo8mTxMVRcJFoZ5huTT4tN4swSgJcznfT/mG2Q/ma
+         owie4f6iiKXOAWwQmPOynEUEpxHG6GKBd2tRjQhFaJ8vGJ71Bhl+LhU6xvPciLpADj69
+         fWJZX7IYoZvux2O9GBQ/TSDdhwosqku9KbSlivafsakjSILfdNyHBDj3kmpteJITRSWe
+         Cb/A==
+X-Forwarded-Encrypted: i=1; AFNElJ9D6y77/Z3dARDKoRdpElQkaL1CVLVtr9yR+9FP6hojzYu964Lx1NICYxtVfrVtrhsGzzDp+Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YylcxlQe+AKXYfInVtLYJxrZTXji1Qxg7dEpyBIKurpzYJz9+kq
+	PCFMAqhaVyNB5LVSFpzZ08V71BOdW20kMSrcgfklfYIPSuZLGCo2CF2DDGzO7F7ZbUVUdr2qke6
+	S8LykqtMwra1ydU4WmK3TfOI+guVN4uWGCbSzSgqDyMs7OwF/Jw7VudGSOg==
+X-Gm-Gg: Acq92OGEJ/5w3QydnzrLhah+l3T5qiG65NC5EOCT1lAAnSPpCIfoTs1iNU3NyiXgaz2
+	sVqKSlnMcmTAO0YAaKIYIrsE0qEhfTYo9Xl9BTJXNyZUT7L2hBbkvrhtm/atOEK3VlDVz3zMVtd
+	DBnAql5KHj3e3U9kalSvM/8FfEVwe8DXcH52Vpsf+KQDPVkNt2a6EYzrxo5/O+9ObJWCXhijeC3
+	xE4F4F5hrfxVv52wFMklvHO8XMkzCkr3YaPO1f4CZmQuLX0VP+5AZd09geS5mBwjfnEEb9uAOX2
+	okAzxTmh3J6CP9JGgUX0u9e7XrfOOrJyGLC55/XMJutFCdJiyWUTHwjMrfNgZSVuwOs6lKlT6+n
+	deFE2tRip0T/nEP0u3Q4J0wbSRJM8xU9GmL79PPNLk6dvb2ySABk4EPilk/omRtwBA3pm8Gfokh
+	RDKA==
+X-Received: by 2002:a17:902:f78a:b0:2bc:cf06:221c with SMTP id d9443c01a7336-2bd527d773dmr69792285ad.21.1778851841896;
+        Fri, 15 May 2026 06:30:41 -0700 (PDT)
+X-Received: by 2002:a17:902:f78a:b0:2bc:cf06:221c with SMTP id d9443c01a7336-2bd527d773dmr69791705ad.21.1778851841358;
+        Fri, 15 May 2026 06:30:41 -0700 (PDT)
+Received: from [192.168.1.10] ([122.164.84.236])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2bd5cfe6b8fsm63057275ad.46.2026.05.15.06.30.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 May 2026 06:30:40 -0700 (PDT)
+Message-ID: <b8f02a31-b175-4dc2-9b2a-5765774b4d88@oss.qualcomm.com>
+Date: Fri, 15 May 2026 19:00:35 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260513113952.00005b20@linux.microsoft.com>
-
-[...]
-> > diff --git a/drivers/iommu/hyperv/Kconfig
-> > b/drivers/iommu/hyperv/Kconfig index 30f40d867036..9e658d5c9a77 100644
-> > --- a/drivers/iommu/hyperv/Kconfig
-> > +++ b/drivers/iommu/hyperv/Kconfig
-> > @@ -8,3 +8,20 @@ config HYPERV_IOMMU
-> >  	help
-> >  	  Stub IOMMU driver to handle IRQs to support Hyper-V Linux
-> >  	  guest and root partitions.
-> > +
-> > +if HYPERV_IOMMU
-> > +config HYPERV_PVIOMMU
-> > +	bool "Microsoft Hypervisor para-virtualized IOMMU support"
-> > +	depends on X86 && HYPERV
-> > +	select IOMMU_API
-> > +	select GENERIC_PT
-> > +	select IOMMU_PT
-> > +	select IOMMU_PT_X86_64
-> nit:
-> If HYPERV_PVIOMMU is enabled on a (hypothetical) platform with
-> GENERIC_ATOMIC64=y, the select would force-enable IOMMU_PT_X86_64 even
-> though its depends on is unsatisfied — leading to a build failure.
-> 
-> In practice this can't happen today because HYPERV_PVIOMMU already
-> depends on X86 && HYPERV, and x86 never sets GENERIC_ATOMIC64. But
-> adding the explicit guard is more defensive.
-> i.e.
->        depends on !GENERIC_ATOMIC64    # for cmpxchg64 in IOMMU_PT
-> 
-
-Good point. Will add "depends on !GENERIC_ATOMIC64".
-
-[...]
-
-> > +
-> > +/*
-> > + * Look up the logical device ID for a vPCI device. Returns 0 on
-> > success
-> > + * with *logical_id filled in; -ENODEV if no entry registered for
-> > this
-> > + * device's vPCI bus.
-> > + */
-> > +static int hv_iommu_lookup_logical_dev_id(struct pci_dev *pdev, u64
-> > *logical_id) +{
-> > +	struct hv_pci_busdata *bus;
-> > +	int domain = pci_domain_nr(pdev->bus);
-> > +	int ret = -ENODEV;
-> > +
-> > +	spin_lock(&hv_iommu_pci_bus_lock);
-> this is called under local_irq_save, should use  raw_spinlock_t for RT
-> kernel?
-> 
-
-Yes, this is problematic on PREEMPT_RT. Michael also suggested hoisting
-the lookup before the local_irq_save() section instead of using a raw
-spinlock, which I think is a great idea - all 3 call sites (detach_dev,
-attach_dev, get_logical_device_property) will be changed.
-
-> > +	list_for_each_entry(bus, &hv_iommu_pci_bus_list, list) {
-> > +		if (bus->pci_domain_nr == domain) {
-> > +			*logical_id =
-> > (u64)bus->logical_dev_id_prefix |
-> > +				      PCI_FUNC(pdev->devfn);
-> > +			ret = 0;
-> > +			break;
-> > +		}
-> > +	}
-> > +	spin_unlock(&hv_iommu_pci_bus_lock);
-> > +	return ret;
-> > +}
-> > +
-
-[...]
-
-> > +static void hv_iommu_release_device(struct device *dev)
-> > +{
-> > +	struct hv_iommu_endpoint *vdev = dev_iommu_priv_get(dev);
-> > +	struct pci_dev *pdev = to_pci_dev(dev);
-> > +
-> > +	if (pdev->ats_enabled)
-> > +		pci_disable_ats(pdev);
-> > +
-> > +	dev_iommu_priv_set(dev, NULL);
-> > +	set_dma_ops(dev, NULL);
-> I don't think this is necessary.
-> 
-
-Oh, yes. Thanks!
-
-> > +
-> > +	kfree(vdev);
-> > +}
-> > +
-> > +static struct iommu_group *hv_iommu_device_group(struct device *dev)
-> > +{
-> > +	if (dev_is_pci(dev))
-> > +		return pci_device_group(dev);
-> > +	else
-> > +		return generic_device_group(dev);
-> non pci device already rejected during attach, maybe we should warn
-> here?
->         WARN_ON_ONCE(1);
->         return generic_device_group(dev);
-> 
-
-Good idea. Will add WARN_ON_ONCE(1).
-
-> > +}
-> > +
-> > +static int hv_configure_device_domain(struct hv_iommu_domain
-> > *hv_domain, u32 domain_type) +{
-> > +	u64 status;
-> > +	unsigned long flags;
-> > +	struct pt_iommu_x86_64_hw_info pt_info;
-> > +	struct hv_input_configure_device_domain *input;
-> > +
-> > +	local_irq_save(flags);
-> > +
-> > +	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
-> > +	memset(input, 0, sizeof(*input));
-> > +	input->device_domain = hv_domain->device_domain;
-> > +	input->settings.flags.blocked = (domain_type ==
-> > IOMMU_DOMAIN_BLOCKED);
-> > +	input->settings.flags.translation_enabled = (domain_type !=
-> > IOMMU_DOMAIN_IDENTITY); +
-> Should this be:
-> input->settings.flags.translation_enabled =
->      (domain_type & __IOMMU_DOMAIN_PAGING);
-> Otherwise, blocked domain will have translation enabled. Maybe add some
-> explanation of what HV expects.
-> 
-I do agree this is not intuitive, but current hypervisor implementation
-requires "blocked == 1" to be paired with "translation_enabled = 1",
-otherwise it returns HV_STATUS_INVALID_PARAMETER. But I can add some
-comment at least.
-
-Thanks for the thorough review, Jacob!
-
-B.R.
-Yu
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dt-bindings: arm-smmu: qcom: Add compatible for IPQ9650
+ SoC
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260512-ipq9650_smmu_binding-v1-1-04defdaa140c@oss.qualcomm.com>
+Content-Language: en-US
+From: Kathiravan Thirumoorthy <kathiravan.thirumoorthy@oss.qualcomm.com>
+In-Reply-To: <20260512-ipq9650_smmu_binding-v1-1-04defdaa140c@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTE1MDEzNiBTYWx0ZWRfXx/K8bz+89PUk
+ XobmVHCILGe96DyolL++uUWdX4p1MZBvM2oIyImpusB9zoMUmVCWK/hpfQXhAWGwvQa82gDh+a5
+ 9qT62k5kevIN0a3x1OxXCqdQ77H1UWpgcMUqxTT4zdjV/BkKs664IaL7XbWWkQD93YM2HgXLJQb
+ fTwoXVfkuazfb34s4/Lh+IAr+D0FDSp2nVf1dVNpZq9n6UfRcEj+cP46wdTMh85jU2vHCI1149L
+ QRNPqMyG/+jwDPnL0XcoixFXh9avRcUpzfDoaRk3tQ7KV5dXoXtLLWH8zVKoyhl0IzxxYZ6WThL
+ i3tmyf5heo2S0XJxsQJU3fj2TaG6MqpLmi5reSYfeRB42eM8evw64DVFkGW9wJ4sdAEvRDJEayf
+ pMAHPgr8Kh7FhlDhYvpoebWtM+Zmi9gAGlR7kYk1oajFSewFcWNZ2xuJKr1ZEAz0JIbKgjEdG9l
+ JxRtIDi0pg1/1J1I90g==
+X-Authority-Analysis: v=2.4 cv=Md5cfZ/f c=1 sm=1 tr=0 ts=6a072002 cx=c_pps
+ a=IZJwPbhc+fLeJZngyXXI0A==:117 a=pcck7Iv2+kD8UxzcD71x3w==:17
+ a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=eoimf2acIAo5FJnRuUoq:22
+ a=EUspDBNiAAAA:8 a=dvW0RAlsEONp_D_cdWEA:9 a=QEXdDO2ut3YA:10
+ a=uG9DUKGECoFWVXl0Dc02:22
+X-Proofpoint-GUID: SEC4DPZF-AtsfKTRHL7zU98Nq3S9gLm_
+X-Proofpoint-ORIG-GUID: SEC4DPZF-AtsfKTRHL7zU98Nq3S9gLm_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-05-15_03,2026-05-13_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 lowpriorityscore=0 bulkscore=0 priorityscore=1501
+ impostorscore=0 malwarescore=0 adultscore=0 phishscore=0 spamscore=0
+ clxscore=1015 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2605130000
+ definitions=main-2605150136
 
 
+On 5/12/2026 12:17 PM, Kathiravan Thirumoorthy wrote:
+> Qualcomm IPQ9650 SoC include APPS SMMU that implements arm,mmu-500.
+> Document the compatible for the same.
+
+Kindly ignore this patch. I will repost along with DTSI changes once it 
+is validated again!
+
+>
+> Signed-off-by: Kathiravan Thirumoorthy <kathiravan.thirumoorthy@oss.qualcomm.com>
+> ---
+>   Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
+>   1 file changed, 1 insertion(+)
+>
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> index 06fb5c8e7547..226f16711d67 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> @@ -37,6 +37,7 @@ properties:
+>             - enum:
+>                 - qcom,eliza-smmu-500
+>                 - qcom,glymur-smmu-500
+> +              - qcom,ipq9650-smmu-500
+>                 - qcom,kaanapali-smmu-500
+>                 - qcom,milos-smmu-500
+>                 - qcom,qcm2290-smmu-500
+>
+> ---
+> base-commit: e98d21c170b01ddef366f023bbfcf6b31509fa83
+> change-id: 20260512-ipq9650_smmu_binding-36dc05d39860
+>
+> Best regards,
+> --
+> Kathiravan Thirumoorthy <kathiravan.thirumoorthy@oss.qualcomm.com>
+>
