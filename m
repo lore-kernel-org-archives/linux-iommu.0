@@ -1,63 +1,63 @@
-Received: from mail-dl1-f50.google.com (mail-dl1-f50.google.com [74.125.82.50])
+Received: from mail-dy1-f177.google.com (mail-dy1-f177.google.com [74.125.82.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39E7C40C5DE
-	for <iommu@lists.linux.dev>; Fri, 15 May 2026 21:15:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED5E4405C22
+	for <iommu@lists.linux.dev>; Fri, 15 May 2026 21:15:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778879758; cv=none; b=fuVwm0kZjO5vb1j7Nthg7dxbLguyWKGLnaogliNAHFpd3g3MV7noU218Wpvvfv7HcBGBIOiTyIaRBaXyQqbvv8j8i7cqxa4FRCl6IcLCNYKMFWby7OjRR7RmY7CBjF4V5mmAPwJwiXxQ0ycOAjcjKm4avyIP4kZjWHD+MdS+pcc=
+	t=1778879760; cv=none; b=iMf3kEr/dA0of9RbMFdYN2naFrP/NiCwP5QIGp7Q6iNqcbA9F2nvehuP13zTFh+LmljQIZT1idsLYBy0Rdkl0ldgaOIaI2thZoPs4iO9q5yKWqhGxtPSfZ4N7jlQrMNhL5X2Yh0fYkIVOj+FN+5hY6nWrRYV4To22GkDkZupSAw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778879758; c=relaxed/simple;
-	bh=7kz9F/A7fTabBES64n2mJiXuxrlDHAgKavRF6IJZP/4=;
+	s=arc-20240116; t=1778879760; c=relaxed/simple;
+	bh=UwbTsginbKatRYw5xm/hcVI6EpyOnfrhKVxHAkEoevA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ZZfRZfzxCUqRnIjO94n4LW4qV/K3R2sovCBXehpjVMY61YMG8CK8/xbr5LxjJCYIuS51zX9aq3yZFABcFv6w+/5RvPyTO+D6/0qGys6FOvbYf3CdYWpvLF3HUD6T7zZ1EcYuhZuLZMR44+fafZueNDVW80+IeKMSjaaFRG+ZxEE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OfAlyWTW; arc=none smtp.client-ip=74.125.82.50
+	 MIME-Version; b=sKUYBCPT0/3/Wf1Ctg0Re7TWf7kOS02xr/T1LAx096H+OXcoN3S/O22C8DCe8aP8P5JdVVVO3qAh8l6f3ABasJdo93p3YYxVcMQWAJvS6KFtEqkzR0+001p3Cd14SZp36ckcRgONb8RFAVVdHNvFqIKWQjBr8c1Aif2dF3a9hxY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=O+BQyBbO; arc=none smtp.client-ip=74.125.82.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OfAlyWTW"
-Received: by mail-dl1-f50.google.com with SMTP id a92af1059eb24-132d1b2519eso781318c88.0
-        for <iommu@lists.linux.dev>; Fri, 15 May 2026 14:15:56 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="O+BQyBbO"
+Received: by mail-dy1-f177.google.com with SMTP id 5a478bee46e88-2f30a4601bbso285823eec.1
+        for <iommu@lists.linux.dev>; Fri, 15 May 2026 14:15:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778879755; x=1779484555; darn=lists.linux.dev;
+        d=gmail.com; s=20251104; t=1778879758; x=1779484558; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Gc9QK/7ZvXL3YWAwN0KCcbTGVvK6GenZl2ozt4yOZIg=;
-        b=OfAlyWTW1mFucLkHFUD/P88jSOqmQNfHRsLvZ1NcXk8c5unrZxCFO60YGDE7nipwz6
-         Af0ytZBqADCyMEqe83HWv+CuG/VAOAWrwfo6FNWoq+c/fNquxhLFd/TdxSm88/Lsmmt6
-         FIenEOyX+d9CECOeCpLNjWcXu1Rnr3kgDC53zShIIOhXZBXddSfRqyBTqcWoB+trgikO
-         F7iuhDEZQHniGM1msVOAqxw6hfV9WA3RuiECSGiYt3yr3FjAkPml+JZivJ6P0ymgfojd
-         ZqjkRpESmZ6kZKI4j+FF3laOsiw1ykUpxeXfqewU6o7xbqhDuB/1oeNbHl0+EZQU7m7X
-         XgSw==
+        bh=yh0gWGTCHr3HLLSp6B0/bzede+AfJuos48AZ5KwqkJE=;
+        b=O+BQyBbOewYZf3b3usXZAR1kFTWchf7XRRMAxa19FeK6sb+lB2/y6Ufc539zvLK9L4
+         V1+PCW1KHIpyDhwVWTxyQSXdg8MzHDAD+huqx5/4KRdTqULLl9t5EheicyrHfw0bGHYz
+         mbF6DBLfMj4hdw9Jmz56blGlHNSYQM/5el49Gyz33VO9Pdlts5dFXPfQq0nOTTgYOpZF
+         d9FXRxQU0Z4X7rCOppMb8v4F1ScGJ+i+7GG1+zzjdeODmxfWw/858rUnTb4wi4+0dABH
+         S2Bc9SXx1L0jVDypWMsybJ5AziC0AlXRC2z9yKPtM5Zc8knyhW/OsoRMNQ7BRpuxsGMW
+         sjgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778879755; x=1779484555;
+        d=1e100.net; s=20251104; t=1778879758; x=1779484558;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=Gc9QK/7ZvXL3YWAwN0KCcbTGVvK6GenZl2ozt4yOZIg=;
-        b=q5IHpnsGOvqWYgrdJ4HdRhCJ5Mji4c7bbLgwsi1zAtXlxIhdy4F7BEjRffcdRFnsu7
-         ZzHkVemyRoeFOiQN0GNENgq3QZcsxNAZsT4al3rMzG2DuiUPFCGdY8zgTJWxDJOUtL18
-         SrivPbKKZEv4IKoSnQ1S6Y2RY6IsT35r03naR4E1xgdhzjwAtlJqMqu7EbNSw0hlhda1
-         7ggbPT+ceGnwiTfEUzD8LHk/SsMy4O5ME14VFVR9oQn7q7xNDwTV8YpsZdg2cYqWZ+xL
-         3AVwd/jER42NZH6WCyx3te7VIIPmiyEkiex979nvsMXcKVvECLfUhrHDnJwZwCbNsGVm
-         JlKA==
-X-Forwarded-Encrypted: i=1; AFNElJ+jTryHG42JSAzftUDpjy2LOgINpaBXuVvaEaZ0F2K1lL0QcjFZvIO4GnEJ2RDaygGjBK/Utg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx2ULbo0p+oEGD2tszpclaBIiGwMnKQLk019IOaTs4TxdhHmXDr
-	ldH1SYP9lXeQb/r4Y7XRibCFuDdAjClcuhMUiTL6oWXI5zZm2uryhBc4
-X-Gm-Gg: Acq92OHIrgrDOrMLB6FbdZb54dl+4kwpQjNc24Y9n5D8c0wDzd2jpk+1lxHzraFRT80
-	nVOfGBpMkvWmThuA4uSq1DZDCK5ybnRwcJXL/YoT56KZCQZoLT6cas1wHM5YmwnAGMymLPJXdp8
-	FMH8+bNhGrWuxTTS/Q4lechwEovul0n3Wkylqnq4rXPEsrIQAonbWdrbPy1OrrIiTdTe/aO6DoL
-	TkusjScuBXcJr/ThxX48LZypluDJepsrkx9xI6aWoFnQuwGVbTtnOBZz/OcDIba/XdCCOJeG51H
-	3JBFe7idl4bjcnkzxlGit4Uo1Rsx9ISCSPcf3WEe1JmdCMcILFmyNYpuEzj4acKl4ro6noU12K6
-	ddbFN4dxWtA1PObGArHr9ZheorajA2z22m7xM895+Q3PvB84Q9r77yXc+Xek3iglmamknEHknqz
-	IgYQ3KEFOJHJFDNOaW8wVUNsx//GzZKnU2gIp+2t5ijQ==
-X-Received: by 2002:a05:7022:661e:b0:12d:de3f:d844 with SMTP id a92af1059eb24-13504951829mr2578587c88.39.1778879755329;
-        Fri, 15 May 2026 14:15:55 -0700 (PDT)
+        bh=yh0gWGTCHr3HLLSp6B0/bzede+AfJuos48AZ5KwqkJE=;
+        b=o6KQt0GHwpCgYE/2nBxH0VjYGAk/NQO/voihDuzY9NBu2UeoloFQx58hFW94Dxe4d6
+         j3mlBszvjYzpp4qnQ63NTjeJE97guXoEcMzYTE1SXGFhtv3ROL8BEPc/IV8Vvhgn16/y
+         vhXAD7Fa0WEEJ8MqiCV29ZPOvjOXAiOzcSy3bxb8bD1DoJT3x0WSE/6ahwkTvotIjv2v
+         w7+lNlIot0HHNnP1j0/Rncsak2hQXHzkgDN7JOzUBrs7TuxPMTrDYZ/d8PTd7yOTXEwq
+         pVApp3AitO+o8NqeipA/GmF8IxAmprfTWC05o6ADKNHUhzQEv1txtoFr/Eqw1Gt4KpnG
+         DLYg==
+X-Forwarded-Encrypted: i=1; AFNElJ+EgmbtEq5UOc6r/beNadzgt3Hl4163GJ4bWmuwrB7A0wwNgQntAtVmcOOagzXCEpgh+/P4uA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yym9kLq4CsapeQh+rjJtXPVBcUQLORK7KwGni/ve9NXaPrlOzRF
+	aB/QJEjoCpf+oJl69cyBzfig7YI60wtaPVQjvYNZCyX7zCI8O/ipuDhW
+X-Gm-Gg: Acq92OFhPJq++RZlVENM7efQhGRRI/JC8LBH2jBLoawwxtgmJlKTdcaqZz08AUd7lPK
+	ERQvP9wIfu9ZT9Xuuk+yM5vrY0LeN7j3CrWF4uZadyxgzZMHvW9vaqcGX9Rq09iHQR/0SM7fqZ5
+	Jf2nFQM6JJbp6oFhMLrJkKWWlrWaYIOrxwjQ87+h+I/quBrjaI4ILUd908Zu9+NnHgHz0LfnglK
+	2ny1PRDEtRzzdTYat5B+2PWMmzT6/DKPLYo6M7wVJyZ4IjOFrjmKC3/Q65cAz8EyokRJeA2cHkN
+	Jhj0P5tRd4//+h7MeoNbzCOikChVXbC2sP+RnCiS7j5hUTsGR0VXsPc28pJmk/nvEAtYkI2ALzW
+	oC+QG8wwnHeDTBmP0Xn4i4VuUuKJQ1JrH1lq+mjiR9ovSgDCI/Mz/1iR+dBc8j+Ft3TwygY/t5s
+	faQARF0w8YJd5BdnZGuDGAge1h3sIlZDTti3Uwwxz85Q==
+X-Received: by 2002:a05:7301:7c12:b0:2ed:e14:7f57 with SMTP id 5a478bee46e88-303986c651cmr3242643eec.33.1778879758108;
+        Fri, 15 May 2026 14:15:58 -0700 (PDT)
 Received: from mimas.lan ([2603:8000:df01:38f7:a6bb:6dff:fecf:e71a])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-134cbdcf140sm11368464c88.5.2026.05.15.14.15.54
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-302947e917dsm8006639eec.12.2026.05.15.14.15.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 May 2026 14:15:54 -0700 (PDT)
+        Fri, 15 May 2026 14:15:57 -0700 (PDT)
 From: Ross Philipson <ross.philipson@gmail.com>
 To: linux-kernel@vger.kernel.org,
 	x86@kernel.org,
@@ -92,9 +92,9 @@ Cc: ross.philipson@gmail.com,
 	daniel.kiper@oracle.com,
 	andrew.cooper3@citrix.com,
 	trenchboot-devel@googlegroups.com
-Subject: [PATCH v16 36/38] x86/slaunch: Secure Launch late initcall platform module
-Date: Fri, 15 May 2026 14:14:08 -0700
-Message-ID: <20260515211410.31440-37-ross.philipson@gmail.com>
+Subject: [PATCH v16 37/38] x86/efistub: EFI stub DRTM support for Secure Launch
+Date: Fri, 15 May 2026 14:14:09 -0700
+Message-ID: <20260515211410.31440-38-ross.philipson@gmail.com>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20260515211410.31440-1-ross.philipson@gmail.com>
 References: <20260515211410.31440-1-ross.philipson@gmail.com>
@@ -106,400 +106,192 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: "Daniel P. Smith" <dpsmith@apertussolutions.com>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-The Secure Launch platform module is a late init module. During the
-init call, the TPM event log is read and measurements taken in the
-early boot stub code are located. These measurements are extended
-into the TPM PCRs using the mainline TPM kernel driver.
+Invoke the Secure Launch protocol exposed by the boot loader at the
+appropriate time to perform a measured launch of the decompressed
+kernel after ExitBootServices().
 
-The platform module also registers the securityfs nodes to allow
-fetching and writing events from/to the DRTM TPM event log. In
-addition, on Intel, access to TXT register fields is made available
-for reading.
-
-Co-developed-by: garnetgrimm <grimmg@ainfosec.com>
-Signed-off-by: garnetgrimm <grimmg@ainfosec.com>
 Co-developed-by: Ross Philipson <ross.philipson@gmail.com>
-Signed-off-by: Daniel P. Smith <dpsmith@apertussolutions.com>
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
 Signed-off-by: Ross Philipson <ross.philipson@gmail.com>
 ---
- arch/x86/kernel/Makefile   |   1 +
- arch/x86/kernel/slmodule.c | 353 +++++++++++++++++++++++++++++++++++++
- 2 files changed, 354 insertions(+)
- create mode 100644 arch/x86/kernel/slmodule.c
+ drivers/firmware/efi/libstub/Makefile      |  1 +
+ drivers/firmware/efi/libstub/efistub.h     | 24 ++++++++++++++
+ drivers/firmware/efi/libstub/x86-slaunch.c | 38 ++++++++++++++++++++++
+ drivers/firmware/efi/libstub/x86-stub.c    | 27 ++++++++++++---
+ 4 files changed, 86 insertions(+), 4 deletions(-)
+ create mode 100644 drivers/firmware/efi/libstub/x86-slaunch.c
 
-diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
-index bf2471701662..8b039ed0a902 100644
---- a/arch/x86/kernel/Makefile
-+++ b/arch/x86/kernel/Makefile
-@@ -98,6 +98,7 @@ obj-$(CONFIG_IA32_EMULATION)	+= tls.o
- obj-y				+= step.o
- obj-$(CONFIG_INTEL_TXT)		+= tboot.o
- obj-$(CONFIG_SECURE_LAUNCH)	+= slaunch.o
-+obj-$(CONFIG_SECURE_LAUNCH)	+= slmodule.o
- obj-$(CONFIG_ISA_DMA_API)	+= i8237.o
- obj-y				+= stacktrace.o
- obj-y				+= cpu/
-diff --git a/arch/x86/kernel/slmodule.c b/arch/x86/kernel/slmodule.c
+diff --git a/drivers/firmware/efi/libstub/Makefile b/drivers/firmware/efi/libstub/Makefile
+index e386ffd009b7..fd5eaf3142b2 100644
+--- a/drivers/firmware/efi/libstub/Makefile
++++ b/drivers/firmware/efi/libstub/Makefile
+@@ -86,6 +86,7 @@ lib-$(CONFIG_ARM)		+= arm32-stub.o
+ lib-$(CONFIG_ARM64)		+= kaslr.o arm64.o arm64-stub.o smbios.o
+ lib-$(CONFIG_X86)		+= x86-stub.o smbios.o
+ lib-$(CONFIG_X86_64)		+= x86-5lvl.o
++lib-$(CONFIG_SECURE_LAUNCH)	+= x86-slaunch.o
+ lib-$(CONFIG_RISCV)		+= kaslr.o riscv.o riscv-stub.o
+ lib-$(CONFIG_LOONGARCH)		+= loongarch.o loongarch-stub.o
+ 
+diff --git a/drivers/firmware/efi/libstub/efistub.h b/drivers/firmware/efi/libstub/efistub.h
+index 979a21818cc1..18301ba3ae0f 100644
+--- a/drivers/firmware/efi/libstub/efistub.h
++++ b/drivers/firmware/efi/libstub/efistub.h
+@@ -1267,4 +1267,28 @@ void arch_accept_memory(phys_addr_t start, phys_addr_t end);
+ efi_status_t efi_zboot_decompress_init(unsigned long *alloc_size);
+ efi_status_t efi_zboot_decompress(u8 *out, unsigned long outlen);
+ 
++#ifdef CONFIG_SECURE_LAUNCH
++efi_status_t efi_secure_launch_init(efi_handle_t image_handle);
++efi_status_t efi_secure_launch_prepare(struct boot_params *boot_params,
++				       phys_addr_t base);
++void efi_secure_launch(void);
++#else
++static inline
++efi_status_t efi_secure_launch_init(efi_handle_t image_handle)
++{
++	return EFI_UNSUPPORTED;
++}
++
++static inline
++efi_status_t efi_secure_launch_prepare(struct boot_params *boot_params,
++				       phys_addr_t base)
++{
++	return EFI_SUCCESS;
++}
++
++static inline void efi_secure_launch(void)
++{
++}
++#endif
++
+ #endif
+diff --git a/drivers/firmware/efi/libstub/x86-slaunch.c b/drivers/firmware/efi/libstub/x86-slaunch.c
 new file mode 100644
-index 000000000000..9688249e274c
+index 000000000000..98ff15f94996
 --- /dev/null
-+++ b/arch/x86/kernel/slmodule.c
-@@ -0,0 +1,353 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Secure Launch late validation/setup, securityfs exposure and finalization.
-+ *
-+ * Copyright (c) 2026 Apertus Solutions, LLC
-+ * Copyright (c) 2026 Assured Information Security, Inc.
-+ * Copyright (c) 2026, Oracle and/or its affiliates.
-+ */
++++ b/drivers/firmware/efi/libstub/x86-slaunch.c
+@@ -0,0 +1,38 @@
++// SPDX-License-Identifier: GPL-2.0-only
 +
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+
-+#include <linux/fs.h>
-+#include <linux/init.h>
-+#include <linux/linkage.h>
-+#include <linux/mm.h>
-+#include <linux/io.h>
-+#include <linux/uaccess.h>
-+#include <linux/security.h>
-+#include <linux/memblock.h>
-+#include <linux/tpm.h>
-+#include <asm/segment.h>
-+#include <asm/sections.h>
-+#include <crypto/sha2.h>
 +#include <linux/efi.h>
-+#include <linux/slr_table.h>
++#include <linux/pci.h>
++#include <linux/stddef.h>
++#include <linux/slr_efi.h>
 +#include <linux/slaunch.h>
 +
-+/*
-+ * The macro DECLARE_TXT_PUB_READ_U is used to read values from the TXT
-+ * public registers as unsigned values.
-+ */
-+#define DECLARE_TXT_PUB_READ_U(size, fmt, msg_size)			\
-+static ssize_t txt_pub_read_u##size(unsigned int offset,		\
-+		loff_t *read_offset,					\
-+		size_t read_len,					\
-+		char __user *buf)					\
-+{									\
-+	char msg_buffer[msg_size];					\
-+	u##size reg_value = 0;						\
-+	void __iomem *txt;						\
-+									\
-+	txt = ioremap(TXT_PUB_CONFIG_REGS_BASE,				\
-+			TXT_NR_CONFIG_PAGES * PAGE_SIZE);		\
-+	if (!txt)							\
-+		return -EFAULT;						\
-+	memcpy_fromio(&reg_value, txt + offset, sizeof(u##size));	\
-+	iounmap(txt);							\
-+	snprintf(msg_buffer, msg_size, fmt, reg_value);			\
-+	return simple_read_from_buffer(buf, read_len, read_offset,	\
-+			&msg_buffer, msg_size);				\
-+}
++#include <asm/boot.h>
++#include <asm/bootparam.h>
++#include <asm/efi.h>
 +
-+DECLARE_TXT_PUB_READ_U(8, "%#04x\n", 6);
-+DECLARE_TXT_PUB_READ_U(32, "%#010x\n", 12);
-+DECLARE_TXT_PUB_READ_U(64, "%#018llx\n", 20);
++#include "efistub.h"
 +
-+#define DECLARE_TXT_FOPS(reg_name, reg_offset, reg_size)		\
-+static ssize_t txt_##reg_name##_read(struct file *flip,			\
-+		char __user *buf, size_t read_len, loff_t *read_offset)	\
-+{									\
-+	return txt_pub_read_u##reg_size(reg_offset, read_offset,	\
-+			read_len, buf);					\
-+}									\
-+static const struct file_operations reg_name##_ops = {			\
-+	.read = txt_##reg_name##_read,					\
-+}
++static struct efi_slaunch_protocol *slaunch;
 +
-+DECLARE_TXT_FOPS(sts, TXT_CR_STS, 64);
-+DECLARE_TXT_FOPS(ests, TXT_CR_ESTS, 8);
-+DECLARE_TXT_FOPS(errorcode, TXT_CR_ERRORCODE, 32);
-+DECLARE_TXT_FOPS(didvid, TXT_CR_DIDVID, 64);
-+DECLARE_TXT_FOPS(e2sts, TXT_CR_E2STS, 64);
-+DECLARE_TXT_FOPS(ver_emif, TXT_CR_VER_EMIF, 32);
-+DECLARE_TXT_FOPS(scratchpad, TXT_CR_SCRATCHPAD, 64);
-+
-+/*
-+ * Securityfs exposure
-+ */
-+struct memfile {
-+	char *name;
-+	void *addr;
-+	size_t size;
-+};
-+
-+static struct memfile sl_evtlog = { "eventlog", NULL, 0 };
-+static void *txt_heap;
-+static struct txt_heap_event_log_pointer2_1_element *evtlog21;
-+static DEFINE_MUTEX(sl_evt_log_mutex);
-+static struct tcg_efi_specid_event_head *efi_head;
-+
-+static ssize_t sl_evtlog_read(struct file *file, char __user *buf,
-+			      size_t count, loff_t *pos)
++efi_status_t efi_secure_launch_init(efi_handle_t image_handle)
 +{
-+	ssize_t size;
-+
-+	if (!sl_evtlog.addr)
-+		return 0;
-+
-+	mutex_lock(&sl_evt_log_mutex);
-+	size = simple_read_from_buffer(buf, count, pos, sl_evtlog.addr,
-+				       sl_evtlog.size);
-+	mutex_unlock(&sl_evt_log_mutex);
-+
-+	return size;
++	return efi_bs_call(handle_protocol, image_handle,
++			   &EFI_SLAUNCH_PROTOCOL_GUID, (void **)&slaunch);
 +}
 +
-+static ssize_t sl_evtlog_write(struct file *file, const char __user *buf,
-+			       size_t datalen, loff_t *ppos)
++efi_status_t efi_secure_launch_prepare(struct boot_params *boot_params,
++				       phys_addr_t base)
 +{
-+	ssize_t result;
-+	char *data;
++	if (!slaunch)
++		return EFI_SUCCESS;
 +
-+	if (!sl_evtlog.addr)
-+		return 0;
++	return slaunch->setup_dlme(slaunch, base, mle_header_offset, (u64)boot_params);
++}
 +
-+	/* No partial writes. */
-+	result = -EINVAL;
-+	if (*ppos != 0)
-+		goto out;
++void efi_secure_launch(void)
++{
++	if (!slaunch)
++		return;
 +
-+	data = memdup_user(buf, datalen);
-+	if (IS_ERR(data)) {
-+		result = PTR_ERR(data);
-+		goto out;
++	slaunch->launch(slaunch);
++}
+diff --git a/drivers/firmware/efi/libstub/x86-stub.c b/drivers/firmware/efi/libstub/x86-stub.c
+index cef32e2c82d8..339e63ae84ef 100644
+--- a/drivers/firmware/efi/libstub/x86-stub.c
++++ b/drivers/firmware/efi/libstub/x86-stub.c
+@@ -833,7 +833,8 @@ static efi_status_t parse_options(const char *cmdline)
+ }
+ 
+ static efi_status_t efi_decompress_kernel(unsigned long *kernel_entry,
+-					  struct boot_params *boot_params)
++					  struct boot_params *boot_params,
++					  unsigned long alloc_limit)
+ {
+ 	unsigned long virt_addr = LOAD_PHYSICAL_ADDR;
+ 	unsigned long addr, alloc_size, entry;
+@@ -877,8 +878,7 @@ static efi_status_t efi_decompress_kernel(unsigned long *kernel_entry,
+ 
+ 	status = efi_random_alloc(alloc_size, CONFIG_PHYSICAL_ALIGN, &addr,
+ 				  seed[0], EFI_LOADER_CODE,
+-				  LOAD_PHYSICAL_ADDR,
+-				  EFI_X86_KERNEL_ALLOC_LIMIT);
++				  LOAD_PHYSICAL_ADDR, alloc_limit);
+ 	if (status != EFI_SUCCESS)
+ 		return status;
+ 
+@@ -890,6 +890,10 @@ static efi_status_t efi_decompress_kernel(unsigned long *kernel_entry,
+ 
+ 	*kernel_entry = addr + entry;
+ 
++	status = efi_secure_launch_prepare(boot_params, addr);
++	if (status != EFI_SUCCESS)
++		return status;
++
+ 	return efi_adjust_memory_range_protection(addr, kernel_text_size) ?:
+ 	       efi_adjust_memory_range_protection(addr + kernel_inittext_offset,
+ 						  kernel_inittext_size);
+@@ -914,6 +918,7 @@ void __noreturn efi_stub_entry(efi_handle_t handle,
+ 			       struct boot_params *boot_params)
+ 
+ {
++	unsigned long alloc_limit = EFI_X86_KERNEL_ALLOC_LIMIT;
+ 	efi_guid_t guid = EFI_MEMORY_ATTRIBUTE_PROTOCOL_GUID;
+ 	const struct linux_efi_initrd *initrd = NULL;
+ 	unsigned long kernel_entry;
+@@ -925,6 +930,17 @@ void __noreturn efi_stub_entry(efi_handle_t handle,
+ 	if (efi_system_table->hdr.signature != EFI_SYSTEM_TABLE_SIGNATURE)
+ 		efi_exit(handle, EFI_INVALID_PARAMETER);
+ 
++	status = efi_secure_launch_init(handle);
++	switch (status) {
++	case EFI_SUCCESS:
++		alloc_limit = U32_MAX;
++		break;
++	case EFI_UNSUPPORTED:
++		break;
++	default:
++		efi_exit(handle, status);
 +	}
 +
-+	mutex_lock(&sl_evt_log_mutex);
-+	if (evtlog21)
-+		result = tpm2_log_event(evtlog21, sl_evtlog.addr,
-+					sl_evtlog.size, datalen, data);
-+	else
-+		result = tpm_log_event(sl_evtlog.addr, sl_evtlog.size,
-+				       datalen, data);
-+	mutex_unlock(&sl_evt_log_mutex);
+ 	if (!IS_ENABLED(CONFIG_EFI_HANDOVER_PROTOCOL) || !boot_params) {
+ 		status = efi_allocate_bootparams(handle, &boot_params);
+ 		if (status != EFI_SUCCESS)
+@@ -974,7 +990,7 @@ void __noreturn efi_stub_entry(efi_handle_t handle,
+ 	if (efi_mem_encrypt > 0)
+ 		hdr->xloadflags |= XLF_MEM_ENCRYPTION;
+ 
+-	status = efi_decompress_kernel(&kernel_entry, boot_params);
++	status = efi_decompress_kernel(&kernel_entry, boot_params, alloc_limit);
+ 	if (status != EFI_SUCCESS) {
+ 		efi_err("Failed to decompress kernel\n");
+ 		goto fail;
+@@ -1029,6 +1045,9 @@ void __noreturn efi_stub_entry(efi_handle_t handle,
+ 		goto fail;
+ 	}
+ 
++	/* If a Secure Launch is in progress, this never returns */
++	efi_secure_launch();
 +
-+	kfree(data);
-+out:
-+	return result;
-+}
-+
-+static const struct file_operations sl_evtlog_ops = {
-+	.read = sl_evtlog_read,
-+	.write = sl_evtlog_write,
-+	.llseek = default_llseek,
-+};
-+
-+struct sfs_file {
-+	const char *name;
-+	const struct file_operations *fops;
-+};
-+
-+#define SL_TXT_ENTRY_COUNT	7
-+static const struct sfs_file sl_txt_files[] = {
-+	{ "sts", &sts_ops },
-+	{ "ests", &ests_ops },
-+	{ "errorcode", &errorcode_ops },
-+	{ "didvid", &didvid_ops },
-+	{ "ver_emif", &ver_emif_ops },
-+	{ "scratchpad", &scratchpad_ops },
-+	{ "e2sts", &e2sts_ops }
-+};
-+
-+/* sysfs file handles */
-+static struct dentry *slaunch_dir;
-+static struct dentry *event_file;
-+static struct dentry *txt_dir;
-+static struct dentry *txt_entries[SL_TXT_ENTRY_COUNT];
-+
-+static long slaunch_expose_securityfs(void)
-+{
-+	long ret = 0;
-+	int i;
-+
-+	slaunch_dir = securityfs_create_dir("slaunch", NULL);
-+	if (IS_ERR(slaunch_dir))
-+		return PTR_ERR(slaunch_dir);
-+
-+	if (slaunch_get_flags() & SL_FLAG_ARCH_TXT) {
-+		txt_dir = securityfs_create_dir("txt", slaunch_dir);
-+		if (IS_ERR(txt_dir)) {
-+			ret = PTR_ERR(txt_dir);
-+			goto remove_slaunch;
-+		}
-+
-+		for (i = 0; i < ARRAY_SIZE(sl_txt_files); i++) {
-+			txt_entries[i] =
-+				securityfs_create_file(sl_txt_files[i].name, 0440, txt_dir,
-+						       NULL, sl_txt_files[i].fops);
-+			if (IS_ERR(txt_entries[i])) {
-+				ret = PTR_ERR(txt_entries[i]);
-+				goto remove_files;
-+			}
-+		}
-+	}
-+
-+	if (sl_evtlog.addr) {
-+		event_file = securityfs_create_file(sl_evtlog.name, 0440,
-+						    slaunch_dir, NULL,
-+						    &sl_evtlog_ops);
-+		if (IS_ERR(event_file)) {
-+			ret = PTR_ERR(event_file);
-+			goto remove_files;
-+		}
-+	}
-+
-+	return 0;
-+
-+remove_files:
-+	if (slaunch_get_flags() & SL_FLAG_ARCH_TXT) {
-+		while (--i >= 0)
-+			securityfs_remove(txt_entries[i]);
-+		securityfs_remove(txt_dir);
-+	}
-+
-+remove_slaunch:
-+	securityfs_remove(slaunch_dir);
-+
-+	return ret;
-+}
-+
-+static void slaunch_teardown_securityfs(void)
-+{
-+	int i;
-+
-+	securityfs_remove(event_file);
-+	if (sl_evtlog.addr) {
-+		memunmap(sl_evtlog.addr);
-+		sl_evtlog.addr = NULL;
-+	}
-+	sl_evtlog.size = 0;
-+
-+	if (slaunch_get_flags() & SL_FLAG_ARCH_TXT) {
-+		for (i = 0; i < ARRAY_SIZE(sl_txt_files); i++)
-+			securityfs_remove(txt_entries[i]);
-+
-+		securityfs_remove(txt_dir);
-+
-+		if (txt_heap) {
-+			memunmap(txt_heap);
-+			txt_heap = NULL;
-+		}
-+	}
-+
-+	securityfs_remove(slaunch_dir);
-+}
-+
-+static void __init slaunch_intel_evtlog(void __iomem *txt)
-+{
-+	struct slr_entry_log_info *log_info;
-+	struct txt_os_mle_data *params;
-+	struct slr_table *slrt;
-+	void *os_sinit_data;
-+	u64 base, size;
-+
-+	memcpy_fromio(&base, txt + TXT_CR_HEAP_BASE, sizeof(base));
-+	memcpy_fromio(&size, txt + TXT_CR_HEAP_SIZE, sizeof(size));
-+
-+	/* now map TXT heap */
-+	txt_heap = memremap(base, size, MEMREMAP_WB);
-+	if (!txt_heap)
-+		slaunch_reset(txt, "Error memremap TXT heap failed\n", SL_ERROR_HEAP_MAP);
-+
-+	params = (struct txt_os_mle_data *)slaunch_txt_get_heap_table(txt_heap,
-+								      TXT_OS_MLE_DATA_TABLE);
-+
-+	/* Get the SLRT and remap it */
-+	slrt = memremap(params->slrt, sizeof(*slrt), MEMREMAP_WB);
-+	if (!slrt)
-+		slaunch_reset(txt, "Error memremap SLR Table failed\n", SL_ERROR_SLRT_MAP);
-+	size = slrt->size;
-+	memunmap(slrt);
-+
-+	slrt = memremap(params->slrt, size, MEMREMAP_WB);
-+	if (!slrt)
-+		slaunch_reset(txt, "Error memremap SLR Table failed\n", SL_ERROR_SLRT_MAP);
-+
-+	log_info = slr_next_entry_by_tag(slrt, NULL, SLR_ENTRY_LOG_INFO);
-+	if (!log_info)
-+		slaunch_reset(txt, "Error SLR Table missing entry\n", SL_ERROR_SLRT_MISSING_ENTRY);
-+
-+	sl_evtlog.size = log_info->size;
-+	sl_evtlog.addr = memremap(log_info->addr, log_info->size, MEMREMAP_WB);
-+	if (!sl_evtlog.addr)
-+		slaunch_reset(txt, "Error memremap TPM event log failed\n", SL_ERROR_EVENTLOG_MAP);
-+
-+	memunmap(slrt);
-+
-+	/* Determine if this is TPM 1.2 or 2.0 event log */
-+	if (memcmp(sl_evtlog.addr + sizeof(struct tcg_pcr_event),
-+		   TCG_SPECID_SIG, sizeof(TCG_SPECID_SIG)))
-+		return; /* looks like it is not 2.0 */
-+
-+	/* For TPM 2.0 logs, the extended heap element must be located */
-+	os_sinit_data = slaunch_txt_get_heap_table(txt_heap, TXT_OS_SINIT_DATA_TABLE);
-+
-+	evtlog21 = txt_find_log2_1_element(os_sinit_data);
-+
-+	/*
-+	 * If this fails, things are in really bad shape. Any attempt to write
-+	 * events to the log will fail.
-+	 */
-+	if (!evtlog21)
-+		slaunch_reset(txt, "Error locate TPM20 event log element failed\n",
-+			      SL_ERROR_TPM_INVALID_LOG20);
-+
-+	/* Save pointer to the EFI SpecID log header */
-+	efi_head = (struct tcg_efi_specid_event_head *)(sl_evtlog.addr +
-+							sizeof(struct tcg_pcr_event));
-+}
-+
-+static void __init slaunch_tpm_open_locality2(void __iomem *txt)
-+{
-+	struct tpm_chip *tpm;
-+	int rc;
-+
-+	tpm = tpm_default_chip();
-+	if (!tpm)
-+		slaunch_reset(txt, "Could not get default TPM chip\n", SL_ERROR_TPM_INIT);
-+
-+	rc = tpm_chip_set_locality(tpm, 2);
-+	if (rc)
-+		slaunch_reset(txt, "Could not set TPM chip locality 2\n", SL_ERROR_TPM_INIT);
-+}
-+
-+static int __init slaunch_module_init(void)
-+{
-+	void __iomem *txt;
-+
-+	/* Check to see if Secure Launch happened */
-+	if ((slaunch_get_flags() & (SL_FLAG_ACTIVE|SL_FLAG_ARCH_TXT)) !=
-+	    (SL_FLAG_ACTIVE | SL_FLAG_ARCH_TXT))
-+		return 0;
-+
-+	txt = ioremap(TXT_PRIV_CONFIG_REGS_BASE, TXT_NR_CONFIG_PAGES *
-+		      PAGE_SIZE);
-+	if (!txt)
-+		panic("Error ioremap of TXT priv registers\n");
-+
-+	/* Only Intel TXT is supported at this point */
-+	slaunch_intel_evtlog(txt);
-+	slaunch_tpm_open_locality2(txt);
-+	iounmap(txt);
-+
-+	return slaunch_expose_securityfs();
-+}
-+
-+static void __exit slaunch_module_exit(void)
-+{
-+	slaunch_teardown_securityfs();
-+}
-+
-+late_initcall(slaunch_module_init);
-+__exitcall(slaunch_module_exit);
+ 	/*
+ 	 * Call the SEV init code while still running with the firmware's
+ 	 * GDT/IDT, so #VC exceptions will be handled by EFI.
 -- 
 2.47.3
 
