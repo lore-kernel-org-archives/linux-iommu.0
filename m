@@ -1,63 +1,63 @@
-Received: from mail-dy1-f177.google.com (mail-dy1-f177.google.com [74.125.82.177])
+Received: from mail-dl1-f46.google.com (mail-dl1-f46.google.com [74.125.82.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 157343ECBE9
-	for <iommu@lists.linux.dev>; Fri, 15 May 2026 21:14:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C73ED3ED126
+	for <iommu@lists.linux.dev>; Fri, 15 May 2026 21:14:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778879661; cv=none; b=q9Bs15GYmM15IONKgoFrpWl4cndytJ0FKPzhTvR7HN5Ty9xMFM/kNmmqj02jn217wRVVfDNqDzYBskSTTs9xVKwQm/KshJ5p06yu/Uv2mKBSHU/CpuKIpgQ/iYuqhrE8FOMsftBRGucAExCj7/0lHKCEDr8RWwDhtzdarUccTzo=
+	t=1778879666; cv=none; b=jFKzcQBbKqkJVWz2qCFzPC4jo94BsGirquB9NosJgEWend4/bg3vDNViDWGix18dvkW8VPOVuNLNHiPm7t0uC6sSRcBdxz9fptvBZ3nZ8Z/PwbdpvZPoX2pwDtEvjzbc9F70T7pkrhbnGYvncok0o8JQp80kOEocFiw1vrxX/ww=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778879661; c=relaxed/simple;
-	bh=SggoenfzsCsY+pb4Ek78lCUJ5LNnpYbdU37TQ8AdKSM=;
+	s=arc-20240116; t=1778879666; c=relaxed/simple;
+	bh=msNEhWQcSwNE6T7QnFoUfFfSSSD/YmuJUa2h6PeyfBc=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=cf2V9OgsM5SeWBMebVABto58btcqT4+X1TDGYjiSLO0oL5O2k05ExSTymV3mfSk9KV/nJUK+d3bXjSdgV8r1L1iQGiXe1/mXdq85x6LPkuCj+vcjL//AfZuXLgAJksEktMg47ROZl/g95AIOtBaC9Ra/kaWoLGR5pp4SakObisY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LntWzs+6; arc=none smtp.client-ip=74.125.82.177
+	 MIME-Version; b=Sp011peRjVjczfUwSUKXowuvMx8EFP+6VLk1/RxD/jDtwMPz0sGnzOoi1qcZ/ivx6TJsZNviTmpR4g5qR7065ikKKj/LqMchWh7myhYYtZlg1p2Nw5KpZbM9hIUH9O3jnrsa0YAjz5Z+YLh/FsmPnTgZCCf3W1vWT0HL5i7DQqY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mqZU70e5; arc=none smtp.client-ip=74.125.82.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LntWzs+6"
-Received: by mail-dy1-f177.google.com with SMTP id 5a478bee46e88-30246cfd41aso1507622eec.1
-        for <iommu@lists.linux.dev>; Fri, 15 May 2026 14:14:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mqZU70e5"
+Received: by mail-dl1-f46.google.com with SMTP id a92af1059eb24-134ac81c445so953062c88.1
+        for <iommu@lists.linux.dev>; Fri, 15 May 2026 14:14:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778879658; x=1779484458; darn=lists.linux.dev;
+        d=gmail.com; s=20251104; t=1778879664; x=1779484464; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=nv+Nw7PPpS+EKWG0VbfKgMCfu5HHf7cWkQjqPeveVJA=;
-        b=LntWzs+6V2iTOsYlNTyQtN3tukQboA0ybbe5xUau6b3k6sE1+eo6B7lrzGvpfDdOk3
-         6KgfGtDWkmVv9TXZBWp9oLNEBuPGnmxM2cCoSDlkkgA2hyKSc40OxZ8VpBIG406ZV6pq
-         Np23uKjKpXloK77QbK49AM0k+xZhcOSQfg+OHpOa9ypHlWEe4h2YX2pZ/KqF7e6Ftna/
-         oWK+wStHU0TRrd0LsK7pJC7TiywPIN2RxGKxSYTWNoXqHT4MpUlDio6BThXc8tsS/Dnw
-         tKKi9AQcjMTiixzHBCXUMYIvcKVFtN8NlfhkXI1/SLQN6P6tOAwA8q7O7D9ZGiJisUdR
-         QL6Q==
+        bh=kFmz/IKFkr+yHkTTECqlvzt5xXCg9R4f8VRlkTmPQhI=;
+        b=mqZU70e5RxvoJ4LiYnaGJmHqGc0q2afyEAjLehOFoIOeGqDKFGbP6I6MVpe5hkSLp7
+         PrjgXEXFUqOJfRlHLl3vg3pVxLGWOcLD2qxeqB+hbsq34zT4bw7aqDqIKeNw+5RF6xUD
+         Xc74g53YyiLxqDvPZhtbo425MV2v5YQgJG/nBabLgXTDRIqHy8i1GbBWL79I7rf7idiq
+         H/RT4TZEUe5E9AgXBQIjg2B3S0OyB9ZjGn/Yd61ceMuRYmREahJwZHGgfPUOYKP38jwO
+         Lyk1jqU47RAbP5+YJ8NZt7rY+oG3OWmAzKI18EpEbhGIUA2OAjRs26FfTzE1H6juS3Lk
+         3q0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778879658; x=1779484458;
+        d=1e100.net; s=20251104; t=1778879664; x=1779484464;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=nv+Nw7PPpS+EKWG0VbfKgMCfu5HHf7cWkQjqPeveVJA=;
-        b=cW9qeSEXQEFW/iyV/Dr+W0YGi1Ttvn7+Llt9LO0pVrrHhZVSaMlbr32z99YVI3nwP5
-         RAUw8B6KPGnFjK57gs3kRM90WPMYYA1Ak4MDM3rGun584FmxH+DKTmTLJ78aFZBbzlrn
-         9BLmr5z3F2Sq4AFpHWRWqck9KVOHcnUZUyGRlGXqAXMovtx4xVH9Sz5+thDAZHLUHIkC
-         6uyViUUkPvZQLGCcaCjzmSItGw2tWZjgUbM4Aehbjm7ofU9kb2qVXfRPkOyw6CTmEfeX
-         FLVMlB2Zst+Xu3DFuygRJDY4zgUZem9t62j4mMoSGDi772frkYRbANBMTB6op3j5ImxQ
-         UIZQ==
-X-Forwarded-Encrypted: i=1; AFNElJ8tz8KXh8zJKnI32aLQutj/P7Am//DkXVmgdVu6cxM4cSsuZPt0t3xueOJ+LLHr+F0DXczYcw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyuJrbM3Ts0MPmDlmjFl2cK5F+hXxaIQTABmMGU7/KKzE+1z+oL
-	/762zCloMnxscRyIiRJ4gDF0XDGMtQvtVVfkJ2usMrmnpz91FreTwxDw
-X-Gm-Gg: Acq92OGEXmyx6mftJ1Zgpk5bP/aqawtGZ28NFKP1zzEm+jw/yhEO5lGa57dE/LFX4GS
-	+lL/UE0rinSBJ+7GhJKT/isPXC//5EgmYRZJMavwmE9weE7HhMZUuJNAdpq9g7OyRV9j+8wWMnr
-	KS+CFHQbJoGU8v6XPzqxpg32fZcVAWYbAaoamDw3yDup5LvdfvmAYYyVsGHhV18kRBwkMsrZ5qM
-	qFMHUDbuL2YHk3gD2bRMpAQd+PzWSwQx52r2LcB7JRQZxLkv9ckor29SN+ituR1BhKS+gZjbX6a
-	yeLT7r9zXwSEpFpheNfP+YMChdQc9F3oOOdJHSRAnnGhfBPoh1R+m5/mb3nrsi9s9wtXFtwomnZ
-	leVSNTO0jGbDv0ewKh4dIG2JvCZ6pGL87YfOVUMPPKP4AP37/LzK6TbCsi4JuMRGZdvO6eixWRA
-	LrfzRd7KabhM7pAaTfuO4AMO0W66FGxxpeKOVkX56rdQ==
-X-Received: by 2002:a05:7300:e6c6:b0:2dd:c066:bf7 with SMTP id 5a478bee46e88-303982b11bbmr2831503eec.11.1778879658197;
-        Fri, 15 May 2026 14:14:18 -0700 (PDT)
+        bh=kFmz/IKFkr+yHkTTECqlvzt5xXCg9R4f8VRlkTmPQhI=;
+        b=TgCiozQK0oEgAm+jXn7p9ffxi+TB/sWfT6eGQnMBefVSefref2nwY5RqJO7ZOsxL7r
+         pHEgymUE3lL1KGUHgnoKFKFjOLSmRUPdwYp5zOg26WH+eBwv2bTdbJlr6dKoNy4wJ3ao
+         hSyfAE5MuN9lIXFNQN2InWhqICQFpSwlZoHxd9xeN3OoUjtt0lLk+Y+k64VF24o5wrky
+         qvE0BNWF1XlbEItJ23D4fNYiEJC0ZXq6bohgBhxvGpLqHpnPEWKvHPHkXhV+/8hF45id
+         IN7YOC/6NKDUK0R3iijvRKeISvCl5HoEY2Io5eZrCYu7u6xqYPyy/b0Rzgu335k4Beoe
+         whJA==
+X-Forwarded-Encrypted: i=1; AFNElJ9OZYVzKyWIYL48pr7yA79F45+3MYnh7kFTrmXruM++7O6zpD6MZRZ5r7vegWufUMvfT1Yagw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyz1UXPxBu+8efpjy98xJGPUYY06WCzIgHMHKDM1EIbojCObY4i
+	fba/6tOvYkaDqQw8U64q3AD8lwpyfjBDpHcTQwXTS2xQ7yuFTV38jCuS
+X-Gm-Gg: Acq92OHOTPzcMA0bQp5+7oWjf9ugmxVUM75F1Mjzg3FvCKG35g5Q8VuWPTc0fzSSiic
+	z83RBIjIVCY0+Wbqq3CzdYSnpCFbRZYdPO5jQt1oA1DORTqaoH5J5WcBEGAsJG1UMuwCi4vX/jl
+	18YxQU8NwtPJUEIXS3DFVun/RzI/pNj00vdfsYEEDAC/GUAIfTzomAPVC9lbQmxxLIUI8W3YNdN
+	UeJPhgSmhdOlDJuTyib9quMPDfOpyE1iJKzz5KfedlPOo5a4celicGTxxMaM5HGgJsrOgWATRby
+	vuVFRjyffY1lLzxKm3kwYsbqkDuzddPV12S5yFaFKxSxEY43SL8sf0IkAXxk01mKqj+mjuIU1+k
+	Lc5u78AXUqezTFJK+3DGjc7Oys0csv6BfDMTqiJfwXNvBHeFps4wxbfeb5JPxmh/kvWpojJ6fAU
+	w+otXAAN5QO78/yimv/SJsXzd1J8uQ6nU=
+X-Received: by 2002:a05:7022:4582:b0:132:5db9:27af with SMTP id a92af1059eb24-13504a49ademr2695477c88.35.1778879663897;
+        Fri, 15 May 2026 14:14:23 -0700 (PDT)
 Received: from mimas.lan ([2603:8000:df01:38f7:a6bb:6dff:fecf:e71a])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-302977a9474sm8153511eec.25.2026.05.15.14.14.16
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-134cbcb93f3sm11145075c88.3.2026.05.15.14.14.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 May 2026 14:14:17 -0700 (PDT)
+        Fri, 15 May 2026 14:14:23 -0700 (PDT)
 From: Ross Philipson <ross.philipson@gmail.com>
 To: linux-kernel@vger.kernel.org,
 	x86@kernel.org,
@@ -92,9 +92,9 @@ Cc: ross.philipson@gmail.com,
 	daniel.kiper@oracle.com,
 	andrew.cooper3@citrix.com,
 	trenchboot-devel@googlegroups.com
-Subject: [PATCH v16 02/38] tpm: Move TPM1 specific definitions to the command header
-Date: Fri, 15 May 2026 14:13:34 -0700
-Message-ID: <20260515211410.31440-3-ross.philipson@gmail.com>
+Subject: [PATCH v16 04/38] tpm: Move TPM common base definitions to the command header
+Date: Fri, 15 May 2026 14:13:36 -0700
+Message-ID: <20260515211410.31440-5-ross.philipson@gmail.com>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20260515211410.31440-1-ross.philipson@gmail.com>
 References: <20260515211410.31440-1-ross.philipson@gmail.com>
@@ -106,15 +106,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Gather all the TPM1 definitions and structures in the internal header
-file drivers/char/tpm/tpm.h into the command header. In addition, bring
-in the single RNG structure from tpm-interface.c.
-
-The definitions moved to these files correspond to the TCG specification
-for TPM 1 family:
-
-TPM 1.2 Main Specification
- -  https://trustedcomputinggroup.org/resource/tpm-main-specification/
+These are top level definitions shared by both TPM 1 and 2
+family chips. This includes core definitions like TPM localities,
+common crypto algorithm IDs, and the base TPM command header.
 
 Co-developed-by: Daniel P. Smith <dpsmith@apertussolutions.com>
 Signed-off-by: Daniel P. Smith <dpsmith@apertussolutions.com>
@@ -122,276 +116,196 @@ Co-developed-by: Alec Brown <alec.r.brown@oracle.com>
 Signed-off-by: Alec Brown <alec.r.brown@oracle.com>
 Signed-off-by: Ross Philipson <ross.philipson@gmail.com>
 ---
- drivers/char/tpm/tpm.h      | 102 --------------------------------
- drivers/char/tpm/tpm1-cmd.c |   5 --
- include/linux/tpm_command.h | 115 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 115 insertions(+), 107 deletions(-)
+ include/linux/tpm.h         | 50 +--------------------
+ include/linux/tpm_command.h | 89 +++++++++++++++++++++++++++++++++++++
+ 2 files changed, 90 insertions(+), 49 deletions(-)
 
-diff --git a/drivers/char/tpm/tpm.h b/drivers/char/tpm/tpm.h
-index 87d68ddf270a..043d78a9617a 100644
---- a/drivers/char/tpm/tpm.h
-+++ b/drivers/char/tpm/tpm.h
-@@ -52,105 +52,9 @@ enum tpm_addr {
- 	TPM_ADDR = 0x4E,
+diff --git a/include/linux/tpm.h b/include/linux/tpm.h
+index 8551b24c2bff..3630b2ea6aef 100644
+--- a/include/linux/tpm.h
++++ b/include/linux/tpm.h
+@@ -27,49 +27,12 @@
+ 
+ #include <linux/tpm_command.h>
+ 
+-#define TPM_DIGEST_SIZE 20	/* Max TPM v1.2 PCR size */
+-
+-#define TPM2_MAX_DIGEST_SIZE	SHA512_DIGEST_SIZE
+-#define TPM2_MAX_PCR_BANKS	8
+-
+ struct tpm_chip;
+ struct trusted_key_payload;
+ struct trusted_key_options;
+ /* opaque structure, holds auth session parameters like the session key */
+ struct tpm2_auth;
+ 
+-/* if you add a new hash to this, increment TPM_MAX_HASHES below */
+-enum tpm_algorithms {
+-	TPM_ALG_ERROR		= 0x0000,
+-	TPM_ALG_SHA1		= 0x0004,
+-	TPM_ALG_AES		= 0x0006,
+-	TPM_ALG_KEYEDHASH	= 0x0008,
+-	TPM_ALG_SHA256		= 0x000B,
+-	TPM_ALG_SHA384		= 0x000C,
+-	TPM_ALG_SHA512		= 0x000D,
+-	TPM_ALG_NULL		= 0x0010,
+-	TPM_ALG_SM3_256		= 0x0012,
+-	TPM_ALG_ECC		= 0x0023,
+-	TPM_ALG_CFB		= 0x0043,
+-};
+-
+-/*
+- * maximum number of hashing algorithms a TPM can have.  This is
+- * basically a count of every hash in tpm_algorithms above
+- */
+-#define TPM_MAX_HASHES	5
+-
+-struct tpm_digest {
+-	u16 alg_id;
+-	u8 digest[TPM2_MAX_DIGEST_SIZE];
+-} __packed;
+-
+-struct tpm_bank_info {
+-	u16 alg_id;
+-	u16 digest_size;
+-	u16 crypto_id;
+-};
+-
+ enum TPM_OPS_FLAGS {
+ 	TPM_OPS_AUTO_STARTUP = BIT(0),
+ };
+@@ -127,7 +90,7 @@ struct tpm_chip_seqops {
+ 	const struct seq_operations *seqops;
  };
  
--#define TPM_WARN_RETRY          0x800
--#define TPM_WARN_DOING_SELFTEST 0x802
--#define TPM_ERR_DEACTIVATED     0x6
--#define TPM_ERR_DISABLED        0x7
--#define TPM_ERR_FAILEDSELFTEST  0x1C
--#define TPM_ERR_INVALID_POSTINIT 38
--
--#define TPM_TAG_RQU_COMMAND 193
--
- /* TPM2 specific constants. */
- #define TPM2_SPACE_BUFFER_SIZE		16384 /* 16 kB */
+-/* fixed define for the curve we use which is NIST_P256 */
++/* Fixed define for the curve we use which is NIST_P256 */
+ #define EC_PT_SZ	32
  
--struct	stclear_flags_t {
--	__be16	tag;
--	u8	deactivated;
--	u8	disableForceClear;
--	u8	physicalPresence;
--	u8	physicalPresenceLock;
--	u8	bGlobalLock;
--} __packed;
+ /*
+@@ -209,8 +172,6 @@ struct tpm_chip {
+ #endif
+ };
+ 
+-#define TPM_HEADER_SIZE		10
 -
--struct tpm1_version {
--	u8 major;
--	u8 minor;
--	u8 rev_major;
--	u8 rev_minor;
--} __packed;
--
--struct tpm1_version2 {
+ static inline enum tpm2_mso_type tpm2_handle_mso(u32 handle)
+ {
+ 	return handle >> 24;
+@@ -239,15 +200,6 @@ enum tpm_chip_flags {
+ 
+ #define to_tpm_chip(d) container_of(d, struct tpm_chip, dev)
+ 
+-struct tpm_header {
 -	__be16 tag;
--	struct tpm1_version version;
+-	__be32 length;
+-	union {
+-		__be32 ordinal;
+-		__be32 return_code;
+-	};
 -} __packed;
 -
--struct	timeout_t {
--	__be32	a;
--	__be32	b;
--	__be32	c;
--	__be32	d;
--} __packed;
--
--struct duration_t {
--	__be32	tpm_short;
--	__be32	tpm_medium;
--	__be32	tpm_long;
--} __packed;
--
--struct permanent_flags_t {
--	__be16	tag;
--	u8	disable;
--	u8	ownership;
--	u8	deactivated;
--	u8	readPubek;
--	u8	disableOwnerClear;
--	u8	allowMaintenance;
--	u8	physicalPresenceLifetimeLock;
--	u8	physicalPresenceHWEnable;
--	u8	physicalPresenceCMDEnable;
--	u8	CEKPUsed;
--	u8	TPMpost;
--	u8	TPMpostLock;
--	u8	FIPS;
--	u8	operator;
--	u8	enableRevokeEK;
--	u8	nvLocked;
--	u8	readSRKPub;
--	u8	tpmEstablished;
--	u8	maintenanceDone;
--	u8	disableFullDALogicInfo;
--} __packed;
--
--typedef union {
--	struct	permanent_flags_t perm_flags;
--	struct	stclear_flags_t	stclear_flags;
--	__u8	owned;
--	__be32	num_pcrs;
--	struct tpm1_version version1;
--	struct tpm1_version2 version2;
--	__be32	manufacturer_id;
--	struct timeout_t  timeout;
--	struct duration_t duration;
--} cap_t;
--
--enum tpm_capabilities {
--	TPM_CAP_FLAG = 4,
--	TPM_CAP_PROP = 5,
--	TPM_CAP_VERSION_1_1 = 0x06,
--	TPM_CAP_VERSION_1_2 = 0x1A,
--};
--
--enum tpm_sub_capabilities {
--	TPM_CAP_PROP_PCR = 0x101,
--	TPM_CAP_PROP_MANUFACTURER = 0x103,
--	TPM_CAP_FLAG_PERM = 0x108,
--	TPM_CAP_FLAG_VOL = 0x109,
--	TPM_CAP_PROP_OWNER = 0x111,
--	TPM_CAP_PROP_TIS_TIMEOUT = 0x115,
--	TPM_CAP_PROP_TIS_DURATION = 0x120,
--};
--
- enum tpm2_pt_props {
- 	TPM2_PT_NONE = 0x00000000,
- 	TPM2_PT_GROUP = 0x00000100,
-@@ -225,12 +129,6 @@ enum tpm2_pt_props {
- 	TPM2_PT_AUDIT_COUNTER_1 = TPM2_PT_VAR + 20,
- };
- 
--/* 128 bytes is an arbitrary cap. This could be as large as TPM_BUFSIZE - 18
-- * bytes, but 128 is still a relatively large number of random bytes and
-- * anything much bigger causes users of struct tpm_cmd_t to start getting
-- * compiler warnings about stack frame size. */
--#define TPM_MAX_RNG_DATA	128
--
- extern const struct class tpm_class;
- extern const struct class tpmrm_class;
- extern dev_t tpm_devt;
-diff --git a/drivers/char/tpm/tpm1-cmd.c b/drivers/char/tpm/tpm1-cmd.c
-index 664ca1fff2e8..96f189b5fd6f 100644
---- a/drivers/char/tpm/tpm1-cmd.c
-+++ b/drivers/char/tpm/tpm1-cmd.c
-@@ -504,11 +504,6 @@ ssize_t tpm1_getcap(struct tpm_chip *chip, u32 subcap_id, cap_t *cap,
- }
- EXPORT_SYMBOL_GPL(tpm1_getcap);
- 
--struct tpm1_get_random_out {
--	__be32 rng_data_len;
--	u8 rng_data[TPM_MAX_RNG_DATA];
--} __packed;
--
- /**
-  * tpm1_get_random() - get random bytes from the TPM's RNG
-  * @chip:	a &struct tpm_chip instance
+ enum tpm_buf_flags {
+ 	/* the capacity exceeded: */
+ 	TPM_BUF_OVERFLOW	= BIT(0),
 diff --git a/include/linux/tpm_command.h b/include/linux/tpm_command.h
-index 174b043d8bbc..30d01953a6f8 100644
+index 9dd903dd6b5c..96edebd9610f 100644
 --- a/include/linux/tpm_command.h
 +++ b/include/linux/tpm_command.h
-@@ -36,6 +36,121 @@ enum tpm_command_ordinals {
- 	TPM_ORD_UNSEAL			= 24,
- };
+@@ -427,4 +427,93 @@ struct tpm2_context {
+ 	__be16 blob_size;
+ } __packed;
  
-+enum tpm_capabilities {
-+	TPM_CAP_FLAG		= 4,
-+	TPM_CAP_PROP		= 5,
-+	TPM_CAP_VERSION_1_1	= 0x06,
-+	TPM_CAP_VERSION_1_2	= 0x1A,
-+};
++/*
++ * == TPM Common Defs ==
++ */
 +
-+enum tpm_sub_capabilities {
-+	TPM_CAP_PROP_PCR		= 0x101,
-+	TPM_CAP_PROP_MANUFACTURER	= 0x103,
-+	TPM_CAP_FLAG_PERM		= 0x108,
-+	TPM_CAP_FLAG_VOL		= 0x109,
-+	TPM_CAP_PROP_OWNER		= 0x111,
-+	TPM_CAP_PROP_TIS_TIMEOUT	= 0x115,
-+	TPM_CAP_PROP_TIS_DURATION	= 0x120,
-+};
-+
-+/* Return Codes */
-+enum tpm_return_codes {
-+	TPM_BASE_MASK			= 0,
-+	TPM_NON_FATAL_MASK		= 0x00000800,
-+	TPM_SUCCESS			= TPM_BASE_MASK + 0,
-+	TPM_ERR_DEACTIVATED		= TPM_BASE_MASK + 6,
-+	TPM_ERR_DISABLED		= TPM_BASE_MASK + 7,
-+	TPM_ERR_FAIL			= TPM_BASE_MASK + 9,
-+	TPM_ERR_FAILEDSELFTEST		= TPM_BASE_MASK + 28,
-+	TPM_ERR_INVALID_POSTINIT	= TPM_BASE_MASK + 38,
-+	TPM_ERR_INVALID_FAMILY		= TPM_BASE_MASK + 55,
-+	TPM_WARN_RETRY			= TPM_BASE_MASK + TPM_NON_FATAL_MASK + 0,
-+	TPM_WARN_DOING_SELFTEST		= TPM_BASE_MASK + TPM_NON_FATAL_MASK + 2,
-+};
-+
-+struct	stclear_flags_t {
-+	__be16 tag;
-+	u8 deactivated;
-+	u8 disableForceClear;
-+	u8 physicalPresence;
-+	u8 physicalPresenceLock;
-+	u8 bGlobalLock;
-+} __packed;
-+
-+struct tpm1_version {
-+	u8 major;
-+	u8 minor;
-+	u8 rev_major;
-+	u8 rev_minor;
-+} __packed;
-+
-+struct tpm1_version2 {
-+	__be16 tag;
-+	struct tpm1_version version;
-+} __packed;
-+
-+struct	timeout_t {
-+	__be32 a;
-+	__be32 b;
-+	__be32 c;
-+	__be32 d;
-+} __packed;
-+
-+struct duration_t {
-+	__be32 tpm_short;
-+	__be32 tpm_medium;
-+	__be32 tpm_long;
-+} __packed;
-+
-+struct permanent_flags_t {
-+	__be16 tag;
-+	u8 disable;
-+	u8 ownership;
-+	u8 deactivated;
-+	u8 readPubek;
-+	u8 disableOwnerClear;
-+	u8 allowMaintenance;
-+	u8 physicalPresenceLifetimeLock;
-+	u8 physicalPresenceHWEnable;
-+	u8 physicalPresenceCMDEnable;
-+	u8 CEKPUsed;
-+	u8 TPMpost;
-+	u8 TPMpostLock;
-+	u8 FIPS;
-+	u8 operator;
-+	u8 enableRevokeEK;
-+	u8 nvLocked;
-+	u8 readSRKPub;
-+	u8 tpmEstablished;
-+	u8 maintenanceDone;
-+	u8 disableFullDALogicInfo;
-+} __packed;
-+
-+typedef union {
-+	struct permanent_flags_t perm_flags;
-+	struct stclear_flags_t stclear_flags;
-+	__u8 owned;
-+	__be32 num_pcrs;
-+	struct tpm1_version version1;
-+	struct tpm1_version2 version2;
-+	__be32 manufacturer_id;
-+	struct timeout_t timeout;
-+	struct duration_t duration;
-+} cap_t;
++#define TPM_DIGEST_SIZE		20	/* Max TPM v1.2 PCR size */
++#define TPM_BUFSIZE		4096
 +
 +/*
-+ * 128 bytes is an arbitrary cap. This could be as large as TPM_BUFSIZE - 18
-+ * bytes, but 128 is still a relatively large number of random bytes and
-+ * anything much bigger causes users of struct tpm_cmd_t to start getting
-+ * compiler warnings about stack frame size.
++ * SHA-512 is, as of today, the largest digest in the TCG algorithm repository.
 + */
-+#define TPM_MAX_RNG_DATA		128
++#define TPM2_MAX_DIGEST_SIZE	SHA512_DIGEST_SIZE
 +
-+struct tpm1_get_random_out {
-+	__be32 rng_data_len;
-+	u8 rng_data[TPM_MAX_RNG_DATA];
++/*
++ * A TPM name digest i.e., TPMT_HA, is a concatenation of TPM_ALG_ID of the
++ * name algorithm and hash of TPMT_PUBLIC.
++ */
++#define TPM2_MAX_NAME_SIZE	(TPM2_MAX_DIGEST_SIZE + 2)
++
++/*
++ * Fixed define for the size of a name.  This is actually HASHALG size
++ * plus 2, so 32 for SHA256
++ */
++#define TPM2_NULL_NAME_SIZE	34
++
++/*
++ * The maximum number of PCR banks.
++ */
++#define TPM2_MAX_PCR_BANKS	8
++
++/* If you add a new hash to this, increment TPM_MAX_HASHES below */
++enum tpm_algorithms {
++	TPM_ALG_ERROR		= 0x0000,
++	TPM_ALG_SHA1		= 0x0004,
++	TPM_ALG_AES		= 0x0006,
++	TPM_ALG_KEYEDHASH	= 0x0008,
++	TPM_ALG_SHA256		= 0x000B,
++	TPM_ALG_SHA384		= 0x000C,
++	TPM_ALG_SHA512		= 0x000D,
++	TPM_ALG_NULL		= 0x0010,
++	TPM_ALG_SM3_256		= 0x0012,
++	TPM_ALG_ECC		= 0x0023,
++	TPM_ALG_CFB		= 0x0043,
++};
++
++/*
++ * The locality (0 - 4) for a TPM, as defined in section 3.2 of the
++ * Client Platform Profile Specification.
++ */
++enum tpm_localities {
++	TPM_LOCALITY_0		= 0, /* Static RTM */
++	TPM_LOCALITY_1		= 1, /* Dynamic OS */
++	TPM_LOCALITY_2		= 2, /* DRTM Environment */
++	TPM_LOCALITY_3		= 3, /* Aux Components */
++	TPM_LOCALITY_4		= 4, /* CPU DRTM Establishment */
++	TPM_MAX_LOCALITY	= TPM_LOCALITY_4
++};
++
++/*
++ * Structure to represent active PCR algorithm banks usable by the
++ * TPM chip.
++ */
++struct tpm_bank_info {
++	u16 alg_id;
++	u16 digest_size;
++	u16 crypto_id;
++};
++
++/*
++ * Maximum number of hashing algorithms a TPM can have.  This is
++ * basically a count of every hash in tpm_algorithms above
++ */
++#define TPM_MAX_HASHES		5
++
++struct tpm_digest {
++	u16 alg_id;
++	u8 digest[TPM2_MAX_DIGEST_SIZE];
 +} __packed;
 +
- /* Other constants */
- #define SRKHANDLE                       0x40000000
- #define TPM_NONCE_SIZE                  20
++#define TPM_HEADER_SIZE		10
++
++struct tpm_header {
++	__be16 tag;
++	__be32 length;
++	union {
++		__be32 ordinal;
++		__be32 return_code;
++	};
++} __packed;
++
+ #endif
 -- 
 2.47.3
 
