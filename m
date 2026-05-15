@@ -1,63 +1,63 @@
-Received: from mail-dy1-f182.google.com (mail-dy1-f182.google.com [74.125.82.182])
+Received: from mail-dy1-f170.google.com (mail-dy1-f170.google.com [74.125.82.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D4783EEADC
-	for <iommu@lists.linux.dev>; Fri, 15 May 2026 21:14:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C75173EFFCF
+	for <iommu@lists.linux.dev>; Fri, 15 May 2026 21:14:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778879689; cv=none; b=SnztIesfwh3aXvH3JRxH94Sdo/1BE4yRuidsp0SW8rQYT2uU6rW/xxggehPY4rnQuZKPMJIXqEpZIz/Dxc0z5+kM0m/7qBgYarMQO8o1Ou0KAM8CWnZ+5fofMi2/nPN9Vt2wK2BCTTpBwvK6w2OHG35kYuuxpIr6WX6iNqMVjcI=
+	t=1778879692; cv=none; b=eiC7thWTPxph4afK945HiTotXCfqhgBrKNV0J6bb5C06KdcI0X4CUPihrcDNjdmw4CD1nCNm4gEu/TyZdbQ3C23hwGQP2tK50sl0K7t98Ci+pqjiU/bBAOkVfAy5ZrSxd6eG6wD5HegcLXO0v2ZGOx0UZMKzCm3kL0sbGekpEUE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778879689; c=relaxed/simple;
-	bh=YM/w2wtPzdX3RmdPxAtDTeVwrQxqc/8DXfB4OKpz4wQ=;
+	s=arc-20240116; t=1778879692; c=relaxed/simple;
+	bh=AEsIZBvhIg+ptwqhrgMw5/o+SifZBkqY2LGhfABVAgs=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=IqhAX5wKgJZMKB98MGSbKZYVw+nbLk7HpyQgLodr7kdCSZeazNagjVWZyQthe6cjt2RArHY6Nq0EXYb3+KfEsy/dIFVdvlqt9zXlgaUkOvQJDWrMBNhUScI5Yvr91/F1GGgX8ucn873/2vT82upmkkZlxYzwX+7ZKK0op/lMHT8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qiGOVn5m; arc=none smtp.client-ip=74.125.82.182
+	 MIME-Version; b=JgGs/VIQHJ3PjWimDWR0n4VP54twdhpPibuvctM7adYW8FhZOPFckoSotZ1LHGKAkEBYzrI0o2TmrKvYpY+nBSWGkqw1nrbjWdieSVPN+TJsbwd+Y6ErqXBqIqUaWX9hTAz/ky1VK0GqRBKa2BveRQSboPW9rZchSRwYkS/J4FE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=oC864Nzm; arc=none smtp.client-ip=74.125.82.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qiGOVn5m"
-Received: by mail-dy1-f182.google.com with SMTP id 5a478bee46e88-2f0d3e07e30so1350286eec.0
-        for <iommu@lists.linux.dev>; Fri, 15 May 2026 14:14:47 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oC864Nzm"
+Received: by mail-dy1-f170.google.com with SMTP id 5a478bee46e88-2f0ad52830cso402581eec.1
+        for <iommu@lists.linux.dev>; Fri, 15 May 2026 14:14:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778879687; x=1779484487; darn=lists.linux.dev;
+        d=gmail.com; s=20251104; t=1778879690; x=1779484490; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=4LfQsLm4zjgCBkokqW/LNO8kguAx5+WYTFTmZDrk46E=;
-        b=qiGOVn5mJbhEp/sEaGE1dJWUjZiqEdzCJzbeTA0QaBK/9Ydo42DXiYpxkFlw8v0jsT
-         8SmfI8g6/AlBFNjtwB5tf/RxsJsGIDuFqEiQZ+i7y9euGpJ0pQAjI6lWGYj9O82+ZrUs
-         jB6pJIPMd0gVNJRybXtEcBL347wqCFBv8caR49CMxA8by0i2St2w+wtrqEp6Sy8FO2Pn
-         sf1jOCfyBBWCJbk9KuPfZyrO+XPBM8Qzgg415xyiNffmbLTIIRa7ykI6CQHH9dRuj9r7
-         LlEhb/KESAgosJmaR/M58cGAhNdSYiZsqE5PSLMY20j4y3GT8zGk4fB0Nv6YE8RxVovW
-         kYYQ==
+        bh=JUJQNdeVMNwfKTOPs21LgA+X7O3xhgiTOeD6RQEitLA=;
+        b=oC864Nzm0GpBWa/uTyIQE/8nX36yJ3lAgBT9S62lESmVMSlhdKD9g/KWfgsXYS230Q
+         UwxrRCdbTstpluaxpdPkWuXpuNNllnlwuqQ+vtyaGkTC/oMTbhSXkPEgSZ8cWHPGOUUm
+         hDXlK1wCmqhdGYa5NILjdrVO5nsPu3bcy32xCMdsPvi2ikeKo0vZad/HnyY8yOO8Tgzc
+         wG2QP+ryDGxYbhUs7HfOrAqOz4yMGFuwTB1nDX2eMwZaTHn1OZVwoCpuknosPGI1VVx0
+         iI+Jn++LgAfJNFy2km9ZRYags8Pt5V2mgGKYrl4ixTc4gDoGldcYKZ76UbOYLFtGlvHN
+         VWLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778879687; x=1779484487;
+        d=1e100.net; s=20251104; t=1778879690; x=1779484490;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=4LfQsLm4zjgCBkokqW/LNO8kguAx5+WYTFTmZDrk46E=;
-        b=rgCfh4GOzj5TLk+qPoRslrUzXOessXDfsvWuJ25PYV9HeWzvcGrgc4Oq1Js/6jJDQ3
-         yoVwZ0ULH55JpOTzXWdvS5IG6Y9kOqGZYKSms1ihL8ufTORTYmlvQ01uDY5xV6reG7GX
-         /avHtLEMLjR8blEMLdgEqrCJGe23nir7iZKtuGj5n1FqY5l44aA/Sdl1boiVqiXJhflm
-         Mn9S0Kh7BC5OzXkOG7k2DJYLsjSXt3MC6j5QtMBGKnhdpW8QZ9+tqa2bqMCechESfXHH
-         gaPXEhxBAnUG2pu5F/MyTU4qlwCXOvck3pTey2iySqPUB946oSKE1hfZJk4Q2de7LkOj
-         A8kg==
-X-Forwarded-Encrypted: i=1; AFNElJ/KcpNfbuNU6mrq496S1sPHe36VfOdHolOodBOstVxlxsk1xz7cc4bGyD7xuGxoRP7EGUU8zw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxFB7cFVc5RUP8L+DTj90woe/gjdT+o0+YUQPJSdHgaYpBOuleO
-	DZf/VQbO3kRlQOa3zwObQXp/4kg4QUmEf4ufgA1Vf2vzlTEER1jZNtZL
-X-Gm-Gg: Acq92OE6NeuX/Kexp58jfDucm9w8sbKGoXDLBcaiOPLObMq9lScQxXV3fd6BafNew8Y
-	h+E0XbA7uv6IDTYmBiuAAgvZil7lv1rqrEyDWBTJNWwvyFZ4feDUGD7BDIdO8mDWpPAykzP6Bor
-	C7fqbmGSBYW4n5YQBqyQ1loBltqfLI7dB+hnz8j1/3ql25cia7HG/VBF5znuydJ0zo3qPIyTB9P
-	amK4IxjBqDbYPPIozXzr1IfPkGeB22eJx6V1BoW2Xi6t1FP7cHYbYhFByKWNDmToTUfWUUeMuAh
-	oN9b5wNQU7rkycbVRI/jzEqWfwlCMuVthYAc13qk1h+yqds8EKpBknQaafE4/CMicFTktT0G5rE
-	rraedA0T1lON7/0SYdJsxao/f1c+XpFUcOCKTl90nETWbg1IDDC6jocoJF9P2dNNXS6WIvthTTa
-	b0pMo54hd4V0va8YrK2oClqisNjBuKWUI=
-X-Received: by 2002:a05:7300:a907:b0:2f0:c8b5:3dc7 with SMTP id 5a478bee46e88-30398680c36mr2863934eec.22.1778879686973;
-        Fri, 15 May 2026 14:14:46 -0700 (PDT)
+        bh=JUJQNdeVMNwfKTOPs21LgA+X7O3xhgiTOeD6RQEitLA=;
+        b=IItKGwnNBTY8UPHrr5d/cqiScGORF4+W3HXPVsCNgsNm31c8sasaWZ1ax1yOBQTopa
+         F6suL3I71ccTXvgx85mYfEoOILcuCPGtccBW57aWkvtH7VOb29jlF4pXxJLZlKC0q6i0
+         Fqh0ijtYaf2X1Iemrj6pNovP4usTHNYy4yhjoVZcZQ1Sp9JWr6hGS5+IojQvEt+Nz/3C
+         v5QRmf77IXPzylvVQLtppUQ8G3poc/0VTAgvqcagU2wVQdiaTvF2LKGwa+FfjPccOVOI
+         iwxqfY2X88xKwoXOoB2hgn6EdLuBYBcm0yeytbmvQr4C/6uy7Ic5Wal8yx8DdoT9HNZo
+         w1aQ==
+X-Forwarded-Encrypted: i=1; AFNElJ9em6e/xAAPC88J9r5dQPqlSOPDVmR4GJjeyF9fVzyXfoh7ZH+Hy1Ik83KnTAbAIwfzu8xWHA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyri/BwSAuZp68VLpAEW3giBN/2hVMxV786mWKCdZKJMean93Mq
+	D4pC2EcguXoXT1I7xwvY6DCQugp62VPEY8mWLH+thpVaxlrK4NJbuWXw
+X-Gm-Gg: Acq92OFAoslJ0ILgT6cK+s0PBsrOMoUXijSRdpgau0DSfJrkrDYdJG68jL0d0kzR2lG
+	AVAu++JUGHaNoc3wK47TjKLWPHtm5KK62/C3DG4ctd/xPsVwNBMxPa7K08KV3jpmywuY2nCZQPK
+	HkqcrwZoiSx3/t4f6i9SN40vO5Ode6kCK0maW7LXN7LXqcAj7Zwa7TIus7ZzUjowhzmsW7eR3Cv
+	gFdIUm43ZAB6vtF+MgnxXkHHEewbqE7yaoYGDmFHhvqBGLT02NMbBhQ2yeDka+o427ZO/smbgek
+	T7ZVMvoam60yyvUBYhBKMU1/BI5BIk9MoEyA7qhJSsbaa1/PQImCO7CTz3ElWkkLnVpHuzG+jcg
+	Ng3LLPwjkgVqgXIyMc14QxrAtGkEoUqvG7xvjQGV0Y/byO+itYRs4tDI4PA3pMFvBZv1hMTJdVa
+	BOr5QJEqY4ET3H+ddLsU5NxKaJDDdizqA=
+X-Received: by 2002:a05:7300:4307:b0:2ea:5057:a331 with SMTP id 5a478bee46e88-30398655963mr2890920eec.21.1778879689799;
+        Fri, 15 May 2026 14:14:49 -0700 (PDT)
 Received: from mimas.lan ([2603:8000:df01:38f7:a6bb:6dff:fecf:e71a])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30296dcb6c3sm9740068eec.19.2026.05.15.14.14.45
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30294adddaasm8120311eec.13.2026.05.15.14.14.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 May 2026 14:14:46 -0700 (PDT)
+        Fri, 15 May 2026 14:14:49 -0700 (PDT)
 From: Ross Philipson <ross.philipson@gmail.com>
 To: linux-kernel@vger.kernel.org,
 	x86@kernel.org,
@@ -92,9 +92,9 @@ Cc: ross.philipson@gmail.com,
 	daniel.kiper@oracle.com,
 	andrew.cooper3@citrix.com,
 	trenchboot-devel@googlegroups.com
-Subject: [PATCH v16 12/38] tpm/tpm_tis: Address positive localities in tpm_tis_request_locality()
-Date: Fri, 15 May 2026 14:13:44 -0700
-Message-ID: <20260515211410.31440-13-ross.philipson@gmail.com>
+Subject: [PATCH v16 13/38] tpm/tpm_tis: Allow locality to be set to a different value
+Date: Fri, 15 May 2026 14:13:45 -0700
+Message-ID: <20260515211410.31440-14-ross.philipson@gmail.com>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20260515211410.31440-1-ross.philipson@gmail.com>
 References: <20260515211410.31440-1-ross.philipson@gmail.com>
@@ -108,50 +108,118 @@ Content-Transfer-Encoding: 8bit
 
 From: "Daniel P. Smith" <dpsmith@apertussolutions.com>
 
-Validate that the input locality is within the correct range, as specified
-by TCG standards, and increase the locality count also for the positive
-localities.
+Provide a one-time function tpm_chip_set_locality() for setting the
+correct locality needed by DRTM launches.
 
 Co-developed-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Daniel P. Smith <dpsmith@apertussolutions.com>
 Signed-off-by: Ross Philipson <ross.philipson@gmail.com>
 ---
- drivers/char/tpm/tpm_tis_core.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/char/tpm/tpm-chip.c     | 35 ++++++++++++++++++++++++++++++++-
+ drivers/char/tpm/tpm_tis_core.c |  2 ++
+ include/linux/tpm.h             |  4 ++++
+ 3 files changed, 40 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_core.c
-index 1fbb74a565f4..70aba05f4ee1 100644
---- a/drivers/char/tpm/tpm_tis_core.c
-+++ b/drivers/char/tpm/tpm_tis_core.c
-@@ -179,7 +179,8 @@ static int tpm_tis_relinquish_locality(struct tpm_chip *chip, int l)
- 	struct tpm_tis_data *priv = dev_get_drvdata(&chip->dev);
+diff --git a/drivers/char/tpm/tpm-chip.c b/drivers/char/tpm/tpm-chip.c
+index 0719577e584d..a9620b27b63d 100644
+--- a/drivers/char/tpm/tpm-chip.c
++++ b/drivers/char/tpm/tpm-chip.c
+@@ -44,7 +44,7 @@ static int tpm_request_locality(struct tpm_chip *chip)
+ 	if (!chip->ops->request_locality)
+ 		return 0;
  
- 	mutex_lock(&priv->locality_count_mutex);
--	priv->locality_count--;
-+	if (priv->locality_count > 0)
-+		priv->locality_count--;
- 	if (priv->locality_count == 0)
- 		__tpm_tis_relinquish_locality(priv, l);
- 	mutex_unlock(&priv->locality_count_mutex);
-@@ -233,10 +234,16 @@ static int tpm_tis_request_locality(struct tpm_chip *chip, int l)
- 	struct tpm_tis_data *priv = dev_get_drvdata(&chip->dev);
- 	int ret = 0;
+-	rc = chip->ops->request_locality(chip, 0);
++	rc = chip->ops->request_locality(chip, chip->kernel_locality);
+ 	if (rc < 0)
+ 		return rc;
  
-+	if (l < 0 || l > TPM_MAX_LOCALITY) {
-+		dev_warn(&chip->dev, "%s: failed to request unknown locality: %d\n",
-+			 __func__, l);
+@@ -343,6 +343,7 @@ struct tpm_chip *tpm_chip_alloc(struct device *pdev,
+ 	}
+ 
+ 	chip->locality = -1;
++	chip->kernel_locality = 0;
+ 	return chip;
+ 
+ out:
+@@ -658,3 +659,35 @@ void tpm_chip_unregister(struct tpm_chip *chip)
+ 	tpm_del_char_device(chip);
+ }
+ EXPORT_SYMBOL_GPL(tpm_chip_unregister);
++
++/**
++ * tpm_chip_set_locality() - Set the TPM locality the kernel uses
++ * @chip:	&tpm_chip instance
++ * @locality:   new locality
++ *
++ * This a one time function to set the locality the kernel driver
++ * uses. Returns zero or POSIX error on failure.
++ */
++int tpm_chip_set_locality(struct tpm_chip *chip, u8 locality)
++{
++	int ret;
++
++	if (locality >= TPM_MAX_LOCALITY)
 +		return -EINVAL;
++
++	ret = tpm_try_get_ops(chip);
++	if (ret)
++		return ret;
++
++	if (!(chip->flags & TPM_CHIP_FLAG_SET_LOCALITY_ENABLED)) {
++		tpm_put_ops(chip);
++		return -EPERM;
 +	}
 +
- 	mutex_lock(&priv->locality_count_mutex);
- 	if (priv->locality_count == 0)
- 		ret = __tpm_tis_request_locality(chip, l);
--	if (!ret)
-+	if (ret >= 0)
- 		priv->locality_count++;
- 	mutex_unlock(&priv->locality_count_mutex);
- 	return ret;
++	chip->kernel_locality = locality;
++	chip->flags &= ~TPM_CHIP_FLAG_SET_LOCALITY_ENABLED;
++	tpm_put_ops(chip);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(tpm_chip_set_locality);
+diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_core.c
+index 70aba05f4ee1..cf6d929ce5aa 100644
+--- a/drivers/char/tpm/tpm_tis_core.c
++++ b/drivers/char/tpm/tpm_tis_core.c
+@@ -1125,6 +1125,8 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
+ 	if (IS_ERR(chip))
+ 		return PTR_ERR(chip);
+ 
++	chip->flags |= TPM_CHIP_FLAG_SET_LOCALITY_ENABLED;
++
+ #ifdef CONFIG_ACPI
+ 	chip->acpi_dev_handle = acpi_dev_handle;
+ #endif
+diff --git a/include/linux/tpm.h b/include/linux/tpm.h
+index 0db277af45c3..4a26a49040b9 100644
+--- a/include/linux/tpm.h
++++ b/include/linux/tpm.h
+@@ -159,6 +159,8 @@ struct tpm_chip {
+ 
+ 	/* active locality */
+ 	int locality;
++	/* the locality used by kernel */
++	u8 kernel_locality;
+ 
+ #ifdef CONFIG_TCG_TPM2_HMAC
+ 	/* details for communication security via sessions */
+@@ -197,6 +199,7 @@ enum tpm_chip_flags {
+ 	TPM_CHIP_FLAG_HWRNG_DISABLED		= BIT(9),
+ 	TPM_CHIP_FLAG_DISABLE			= BIT(10),
+ 	TPM_CHIP_FLAG_SYNC			= BIT(11),
++	TPM_CHIP_FLAG_SET_LOCALITY_ENABLED	= BIT(12),
+ };
+ 
+ #define to_tpm_chip(d) container_of(d, struct tpm_chip, dev)
+@@ -244,6 +247,7 @@ static inline ssize_t tpm_ret_to_err(ssize_t ret)
+ extern int tpm_is_tpm2(struct tpm_chip *chip);
+ extern __must_check int tpm_try_get_ops(struct tpm_chip *chip);
+ extern void tpm_put_ops(struct tpm_chip *chip);
++int tpm_chip_set_locality(struct tpm_chip *chip, u8 locality);
+ extern ssize_t tpm_transmit_cmd(struct tpm_chip *chip, struct tpm_buf *buf,
+ 				size_t min_rsp_body_length, const char *desc);
+ extern int tpm_pcr_read(struct tpm_chip *chip, u32 pcr_idx,
 -- 
 2.47.3
 
