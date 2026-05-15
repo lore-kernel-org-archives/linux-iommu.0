@@ -1,268 +1,134 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012033.outbound.protection.outlook.com [52.101.43.33])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BE7B3F5BF6;
-	Fri, 15 May 2026 23:22:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778887360; cv=none; b=krrLtEhbghN/jHpgKSBnhrtuBMyfcBCtutwzwzuvvwiZKjf9inslC0h+/zYiOx+ZgjJW4DKjww8JAyrFT6o6JS+mTObKL//ns2YSm63IEJFqMvF9tj3ySvmf8ehgBBc77xOu0TyAIdsGgoIjpkX4LSbJGRmMV5tV2GmtR+qprlM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778887360; c=relaxed/simple;
-	bh=JjdiscWBA7In+U808NTJOLwYQaUm2OEpp51K4Ey+p44=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ncR9+gWI3q+nxjGfZLXdR/XUeH6YWnIqJa2IxX+kPce+ycM+xxaBmQaLjMvkWknT4nfmVundCA0FFfLe/MgM6+wvWUMTWh//pSTw71TqdKSmklWsQ75J5G9hsbJ8LyJyBfPeLSHvuNOfGy2RJZy5PdSJOVRya1JsyHqNBRjj26w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q2iOld4o; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECC361ADC97;
+	Fri, 15 May 2026 23:30:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.33
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778887824; cv=fail; b=fCHX4RXl5BmsOlhDyzrNswjxeKjEJXciwm5Llp0P6X7qBXJ+SSLLyqlIuYphe6IbR93hnb0D7GXx8l/0FrLDBD0fIshLWG/g9xlUhI6J0fskuIpmJC6yN72NfbXRJczEIIhEMvTBkgEz3tqtEcUONmWCMHpJx1M93TdXSe8bTjg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778887824; c=relaxed/simple;
+	bh=4aglhG3yiBaxWA70i3nmBx1kRxYaz410jw8u8D3CKKI=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=M86HnlFXKRts8sHPTnSYSnqYRZtGSFI44Ior908iYDM4/Gkome25tyZYcySIwwwx0SfKi4QL2pC5gbdb6LKNGNqvQ6RoD/pl82jbQCx1Sr8zkrEKq+zjeFkShokRNOF2M70mjIkzwgdXSbOI37GDVY0yvFGtNYAHyJsR13nMpbY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=K4U4XAIg; arc=fail smtp.client-ip=52.101.43.33
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q2iOld4o"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9971DC2BCB0;
-	Fri, 15 May 2026 23:22:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778887360;
-	bh=JjdiscWBA7In+U808NTJOLwYQaUm2OEpp51K4Ey+p44=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Q2iOld4olFaHTJRGBeyZvyj92sWp+Y17gtpKe3TEepX4oKM34zMmuakyRbrgKE3ge
-	 pvWEthzo2xMZjEAYU3OHlHlQIJ/haRJ3AYfgZ87H3I2M+tNVFEojjVNONutewDW2xb
-	 DQ9+QwDjwwKw5mxnmM1lEGHXIKUsAHJHhrw0+iY05zX15wyKHzxVoiC4prXFclJpQJ
-	 q37++DG72iRmFdsDAuUPvqx3YaxoJvbDbDJTAXjUOyc2YE3qRGtZcBd+jGTnlzwbDc
-	 br5x1RiU59q40dnIMPyNHUKsGsuzCmE7LLTVeNj1y6MFdpNT1QeUvOFBzx6AM3pm50
-	 pnbBHdbCNB5Ww==
-Date: Sat, 16 May 2026 02:22:36 +0300
-From: Jarkko Sakkinen <jarkko@kernel.org>
-To: Ross Philipson <ross.philipson@gmail.com>
-Cc: linux-kernel@vger.kernel.org, x86@kernel.org,
-	linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
-	linux-efi@vger.kernel.org, iommu@lists.linux.dev,
-	dpsmith@apertussolutions.com, tglx@linutronix.de, mingo@redhat.com,
-	bp@alien8.de, hpa@zytor.com, dave.hansen@linux.intel.com,
-	ardb@kernel.org, mjg59@srcf.ucam.org,
-	James.Bottomley@hansenpartnership.com, peterhuewe@gmx.de,
-	jgg@ziepe.ca, luto@amacapital.net, nivedita@alum.mit.edu,
-	herbert@gondor.apana.org.au, davem@davemloft.net, corbet@lwn.net,
-	ebiederm@xmission.com, dwmw2@infradead.org,
-	baolu.lu@linux.intel.com, kanth.ghatraju@oracle.com,
-	daniel.kiper@oracle.com, andrew.cooper3@citrix.com,
-	trenchboot-devel@googlegroups.com
-Subject: Re: [PATCH v16 04/38] tpm: Move TPM common base definitions to the
- command header
-Message-ID: <ageqvDfgVk1nh2-w@kernel.org>
-References: <20260515211410.31440-1-ross.philipson@gmail.com>
- <20260515211410.31440-5-ross.philipson@gmail.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="K4U4XAIg"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=suFeXs15sKrt+AQVIf4r1llxX30EXvK5d0PhiccrK/nHP+SNwl+myB7BLRIfiUXYt6KEDX/6S2l/WteJObBMYtX0Ct2ReCrLT/5OvFIMTn9dX1lhEY8ZN5RykfqG3rJFhnIYwyHY4RExrR6fhzO7UX1AiMfgYM8Fzw4dtPj1DJgEE+1luzC67e5w5InXl9wRtAmerXQmynX5HJM4cyhMR79EqD/xLqCKDG+A7fhYTHIai7ER47XO2NMDth/lurrNiYcrMM9elaXGgv+ghOnnzG5AjRFquDjhwW4fxEKIrUBodtqtreaxPa0nC044X1NpusNWNZsD4U87zu3FFxVj5w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=hxdFYX0NrCooEGJIy8ZSeSxLvLyFiXMAAGzwgRKyJ8o=;
+ b=p32+6oyDhOZ7bmf+3hrhOuVpgGrjeYZLdcLegSgjzF2UoTx73MxNMpjhDBxKt1UsiPGZwPKQ+Vyw3K9wxtkr8lRLsgyNr8DudfRn3eU1WLwwnXCA4DiYpOgNuvhPBceiz7kOQn5GuHWDUT8zhoqN/m28voBF0q+3Z08PUjxeHAj3P+ulljnUQDhHwbfbz9RC6fnlwnbEq+CRA8igJQlbfffhExXwSLct0Y5VmrRI4oDHXLx3wfBTW/AMYuqqyihs2qCyBMftn7cEV7pnteO1ld2sLqgwUP/pI8ALXjxlk1vA7jW67SgBqxSQmNs6yP5domJvFvVxJQKGDbG7LVL0jA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hxdFYX0NrCooEGJIy8ZSeSxLvLyFiXMAAGzwgRKyJ8o=;
+ b=K4U4XAIg6rNiRQs5hD8xg3LpENi7T3ocjS4fZGEy5iPPuEJirMh+Of3NJzhQcI0AUoCYRX/WOsbFEA2nnTdSfbq1wgpJXVrCfe8Q1pdb2dRGbqZ5AGBYA5CKMwVDDbAm102RN/edBUt9Kx7AzhChzO/kUwVl/R8T6pvIyun90As84Tqp0oNWtuh3H5hCyOirH/RlNUBqcjsQDCKMlkTM5OtTbCUaKIvzZky45l3VC/jUXIX2u14H3/v47cP8R5FS8UpKLpP61rIRHsxDssNDyOnn3oyLN1YD6desfWkGvVQw4xjhZ4tl9ihetXnc5h/PnyQE5SfnUIbUdtxnrI6YWg==
+Received: from PH7PR17CA0052.namprd17.prod.outlook.com (2603:10b6:510:325::19)
+ by DS0PR12MB7725.namprd12.prod.outlook.com (2603:10b6:8:136::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9913.12; Fri, 15 May
+ 2026 23:30:15 +0000
+Received: from SN1PEPF000397B1.namprd05.prod.outlook.com
+ (2603:10b6:510:325:cafe::79) by PH7PR17CA0052.outlook.office365.com
+ (2603:10b6:510:325::19) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.25.19 via Frontend Transport; Fri, 15
+ May 2026 23:30:15 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ SN1PEPF000397B1.mail.protection.outlook.com (10.167.248.55) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.25.13 via Frontend Transport; Fri, 15 May 2026 23:30:15 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 15 May
+ 2026 16:30:00 -0700
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 15 May
+ 2026 16:30:00 -0700
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Fri, 15 May 2026 16:29:59 -0700
+Date: Fri, 15 May 2026 16:29:57 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <iommu@lists.linux.dev>, Jonathan Hunter <jonathanh@nvidia.com>, "Joerg
+ Roedel" <joro@8bytes.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-tegra@vger.kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Thierry
+ Reding" <thierry.reding@kernel.org>, Krishna Reddy <vdumpa@nvidia.com>, "Will
+ Deacon" <will@kernel.org>, David Matlack <dmatlack@google.com>, Pasha
+ Tatashin <pasha.tatashin@soleen.com>, <patches@lists.linux.dev>, Pranjal
+ Shrivastava <praan@google.com>, Samiullah Khawaja <skhawaja@google.com>,
+	Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH v2 4/9] iommu/arm-smmu-v3: Convert arm_smmu_cmdq_batch
+ cmds to struct arm_smmu_cmd
+Message-ID: <agesdZNkLPExzUpx@Asurada-Nvidia>
+References: <0-v2-47b2bf710ad5+716ac-smmu_no_cmdq_ent_jgg@nvidia.com>
+ <4-v2-47b2bf710ad5+716ac-smmu_no_cmdq_ent_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20260515211410.31440-5-ross.philipson@gmail.com>
+In-Reply-To: <4-v2-47b2bf710ad5+716ac-smmu_no_cmdq_ent_jgg@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN1PEPF000397B1:EE_|DS0PR12MB7725:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8eef110f-455e-43bb-cc48-08deb2d9eb1a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|36860700016|82310400026|7416014|376014|56012099003|22082099003|18002099003|11063799003|4143699003;
+X-Microsoft-Antispam-Message-Info:
+	WOMXLrQgcvNyyKs5XE0idZqQUzmVuGhuWV1u4dyd5cpq/0dmPKn466ExaNuhwgB3OOFc9K0S2hsi9bQG4DaOzgJVLjXGJoLREon+BHv4z0rUVi5rrwhEJHZlqi3Fxi4tyuNhB4HMud1pAIT7m/SIp9m6Jsqxd5WIe1NnvbJd+2njrVACyATjsRYfdok7n6guta8QH/ytjDGeOgTQS5dLrGd3p/5yZyTJp+fX1jCb6VXG5xIornbRgDyvRdKlKVsclR4yGaSJ4cXlaLD63jUOv3lZQED+r3pcLkGlQVOZix1i/f5QzmBY808j1VxEVRsXL80Mnr/sT3QsUKCgXd0d8UvvU/+uxgrWx51B/XwtqDIbYbCajAMzsO+38WY/lvcTQXGqGNng3cGh417Zi98rh+oX/6z8UG/utX/6t/Wvgvl+pkrq0EufcLLIteTo2LP9unwe3Qs7YPw/d7I6ig4Tf4WHuYVeR9fDsB45d96m3diKTkGmDynPw4oN67IwRv90l298F3tUa8phiRUvXAQsRJT8MPc0IxNc9XFFmlOaON4EH3j/vfwkMquYo2JKx0B2UGNYsaQtvNDcAsSr16yQCTg7nMoCbQ2G0kGHA/ck0mwQcAeLqrO1etER9DnM4ybGg+8fvh8INyuPRwt+knIG6+QtoSjYWqmvRVh3hBRDB9QkbR2dPCkfieQnumQZ1qWptwEbQUQHEp/p/VXzV5dbJeb8pwc7rzSQM5uVy2plJLE=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(36860700016)(82310400026)(7416014)(376014)(56012099003)(22082099003)(18002099003)(11063799003)(4143699003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	UOpsLU5vwyqod/o1WFWxEXgRRm0r4MhyzosHXf7JI6z/nXHd8eNK3WRMhTP8Xb8FsxOEBNuFC1pi5HI0upxI/ecd1R2P+a4s18H9ooFojKPmImxaHwaRV322LkEte5Bq1gOZfE7fNQFArnF6gRKvYSwjzh3HT24JCVHYhYc3rpp0YtUfyb5G4fraKPqtPlLOmpQlFXy7UPMJxLwlljCi1JEG7Jdb7ExujFrZtmnuFpH3mk+UuSEscMm3/9Se/aITfcwKCv4NyUrg8YDAhIQ9+GVD6T900UV7fLCvX37VpIqq5mvI+J6iYGNDdF1jnlb8SklQh5ziHT139mBKWJ8mB0kiFpklvf/4uktwNpHybpx4yazmg5ZOagIti8O1JmTNM+0kcnOmmbF8HgBE2t9ikwXQp27sKU0QyMVoD7tlSUayHQB4tPzkGTdiW/uFG23H
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2026 23:30:15.4135
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8eef110f-455e-43bb-cc48-08deb2d9eb1a
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SN1PEPF000397B1.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7725
 
-On Fri, May 15, 2026 at 02:13:36PM -0700, Ross Philipson wrote:
-> These are top level definitions shared by both TPM 1 and 2
-> family chips. This includes core definitions like TPM localities,
-> common crypto algorithm IDs, and the base TPM command header.
+On Wed, May 13, 2026 at 08:57:43PM -0300, Jason Gunthorpe wrote:
+> Convert the batch's type to also get the remaining helper functions to
+> use the new type and complete replacing naked u64s with the new struct.
 > 
-> Co-developed-by: Daniel P. Smith <dpsmith@apertussolutions.com>
-> Signed-off-by: Daniel P. Smith <dpsmith@apertussolutions.com>
-> Co-developed-by: Alec Brown <alec.r.brown@oracle.com>
-> Signed-off-by: Alec Brown <alec.r.brown@oracle.com>
-> Signed-off-by: Ross Philipson <ross.philipson@gmail.com>
-> ---
->  include/linux/tpm.h         | 50 +--------------------
->  include/linux/tpm_command.h | 89 +++++++++++++++++++++++++++++++++++++
->  2 files changed, 90 insertions(+), 49 deletions(-)
+> The low-level queue_write()/queue_read()/queue_remove_raw() functions
+> remain u64-based since they are shared by event and PRI queues which
+> have different entry sizes.
 > 
-> diff --git a/include/linux/tpm.h b/include/linux/tpm.h
-> index 8551b24c2bff..3630b2ea6aef 100644
-> --- a/include/linux/tpm.h
-> +++ b/include/linux/tpm.h
-> @@ -27,49 +27,12 @@
->  
->  #include <linux/tpm_command.h>
->  
-> -#define TPM_DIGEST_SIZE 20	/* Max TPM v1.2 PCR size */
-> -
-> -#define TPM2_MAX_DIGEST_SIZE	SHA512_DIGEST_SIZE
-> -#define TPM2_MAX_PCR_BANKS	8
-> -
->  struct tpm_chip;
->  struct trusted_key_payload;
->  struct trusted_key_options;
->  /* opaque structure, holds auth session parameters like the session key */
->  struct tpm2_auth;
->  
-> -/* if you add a new hash to this, increment TPM_MAX_HASHES below */
-> -enum tpm_algorithms {
-> -	TPM_ALG_ERROR		= 0x0000,
-> -	TPM_ALG_SHA1		= 0x0004,
-> -	TPM_ALG_AES		= 0x0006,
-> -	TPM_ALG_KEYEDHASH	= 0x0008,
-> -	TPM_ALG_SHA256		= 0x000B,
-> -	TPM_ALG_SHA384		= 0x000C,
-> -	TPM_ALG_SHA512		= 0x000D,
-> -	TPM_ALG_NULL		= 0x0010,
-> -	TPM_ALG_SM3_256		= 0x0012,
-> -	TPM_ALG_ECC		= 0x0023,
-> -	TPM_ALG_CFB		= 0x0043,
-> -};
-> -
-> -/*
-> - * maximum number of hashing algorithms a TPM can have.  This is
-> - * basically a count of every hash in tpm_algorithms above
-> - */
-> -#define TPM_MAX_HASHES	5
-> -
-> -struct tpm_digest {
-> -	u16 alg_id;
-> -	u8 digest[TPM2_MAX_DIGEST_SIZE];
-> -} __packed;
-> -
-> -struct tpm_bank_info {
-> -	u16 alg_id;
-> -	u16 digest_size;
-> -	u16 crypto_id;
-> -};
-> -
->  enum TPM_OPS_FLAGS {
->  	TPM_OPS_AUTO_STARTUP = BIT(0),
->  };
-> @@ -127,7 +90,7 @@ struct tpm_chip_seqops {
->  	const struct seq_operations *seqops;
->  };
->  
-> -/* fixed define for the curve we use which is NIST_P256 */
-> +/* Fixed define for the curve we use which is NIST_P256 */
->  #define EC_PT_SZ	32
->  
->  /*
-> @@ -209,8 +172,6 @@ struct tpm_chip {
->  #endif
->  };
->  
-> -#define TPM_HEADER_SIZE		10
-> -
->  static inline enum tpm2_mso_type tpm2_handle_mso(u32 handle)
->  {
->  	return handle >> 24;
-> @@ -239,15 +200,6 @@ enum tpm_chip_flags {
->  
->  #define to_tpm_chip(d) container_of(d, struct tpm_chip, dev)
->  
-> -struct tpm_header {
-> -	__be16 tag;
-> -	__be32 length;
-> -	union {
-> -		__be32 ordinal;
-> -		__be32 return_code;
-> -	};
-> -} __packed;
-> -
->  enum tpm_buf_flags {
->  	/* the capacity exceeded: */
->  	TPM_BUF_OVERFLOW	= BIT(0),
-> diff --git a/include/linux/tpm_command.h b/include/linux/tpm_command.h
-> index 9dd903dd6b5c..96edebd9610f 100644
-> --- a/include/linux/tpm_command.h
-> +++ b/include/linux/tpm_command.h
-> @@ -427,4 +427,93 @@ struct tpm2_context {
->  	__be16 blob_size;
->  } __packed;
->  
-> +/*
-> + * == TPM Common Defs ==
-> + */
-> +
-> +#define TPM_DIGEST_SIZE		20	/* Max TPM v1.2 PCR size */
-> +#define TPM_BUFSIZE		4096
-> +
-> +/*
-> + * SHA-512 is, as of today, the largest digest in the TCG algorithm repository.
-> + */
-> +#define TPM2_MAX_DIGEST_SIZE	SHA512_DIGEST_SIZE
-> +
-> +/*
-> + * A TPM name digest i.e., TPMT_HA, is a concatenation of TPM_ALG_ID of the
-> + * name algorithm and hash of TPMT_PUBLIC.
-> + */
-> +#define TPM2_MAX_NAME_SIZE	(TPM2_MAX_DIGEST_SIZE + 2)
-> +
-> +/*
-> + * Fixed define for the size of a name.  This is actually HASHALG size
-> + * plus 2, so 32 for SHA256
-> + */
-> +#define TPM2_NULL_NAME_SIZE	34
-> +
-> +/*
-> + * The maximum number of PCR banks.
-> + */
-> +#define TPM2_MAX_PCR_BANKS	8
-> +
-> +/* If you add a new hash to this, increment TPM_MAX_HASHES below */
-> +enum tpm_algorithms {
-> +	TPM_ALG_ERROR		= 0x0000,
-> +	TPM_ALG_SHA1		= 0x0004,
-> +	TPM_ALG_AES		= 0x0006,
-> +	TPM_ALG_KEYEDHASH	= 0x0008,
-> +	TPM_ALG_SHA256		= 0x000B,
-> +	TPM_ALG_SHA384		= 0x000C,
-> +	TPM_ALG_SHA512		= 0x000D,
-> +	TPM_ALG_NULL		= 0x0010,
-> +	TPM_ALG_SM3_256		= 0x0012,
-> +	TPM_ALG_ECC		= 0x0023,
-> +	TPM_ALG_CFB		= 0x0043,
-> +};
-> +
-> +/*
-> + * The locality (0 - 4) for a TPM, as defined in section 3.2 of the
-> + * Client Platform Profile Specification.
-> + */
-> +enum tpm_localities {
-> +	TPM_LOCALITY_0		= 0, /* Static RTM */
-> +	TPM_LOCALITY_1		= 1, /* Dynamic OS */
-> +	TPM_LOCALITY_2		= 2, /* DRTM Environment */
-> +	TPM_LOCALITY_3		= 3, /* Aux Components */
-> +	TPM_LOCALITY_4		= 4, /* CPU DRTM Establishment */
-> +	TPM_MAX_LOCALITY	= TPM_LOCALITY_4
-> +};
-> +
-> +/*
-> + * Structure to represent active PCR algorithm banks usable by the
-> + * TPM chip.
-> + */
-> +struct tpm_bank_info {
-> +	u16 alg_id;
-> +	u16 digest_size;
-> +	u16 crypto_id;
-> +};
-> +
-> +/*
-> + * Maximum number of hashing algorithms a TPM can have.  This is
-> + * basically a count of every hash in tpm_algorithms above
-> + */
-> +#define TPM_MAX_HASHES		5
-> +
-> +struct tpm_digest {
-> +	u16 alg_id;
-> +	u8 digest[TPM2_MAX_DIGEST_SIZE];
-> +} __packed;
-> +
-> +#define TPM_HEADER_SIZE		10
-> +
-> +struct tpm_header {
-> +	__be16 tag;
-> +	__be32 length;
-> +	union {
-> +		__be32 ordinal;
-> +		__be32 return_code;
-> +	};
-> +} __packed;
-> +
->  #endif
-> -- 
-> 2.47.3
-> 
+> Reviewed-by: Mostafa Saleh <smostafa@google.com>
+> Reviewed-by: Pranjal Shrivastava <praan@google.com>
+> Tested-by: Pranjal Shrivastava <praan@google.com>
+> Tested-by: Mostafa Saleh <smostafa@google.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 
-LGTM
-
-BR, Jarkko
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
