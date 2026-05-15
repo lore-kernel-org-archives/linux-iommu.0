@@ -1,68 +1,68 @@
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 547EC3F44FB
-	for <iommu@lists.linux.dev>; Fri, 15 May 2026 22:19:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E37F28643C
+	for <iommu@lists.linux.dev>; Fri, 15 May 2026 22:31:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778883564; cv=none; b=P2Sc289pqNfhfUXiQuJv/dK2qYtDgL634kL37Inqabmx9y9hUSorDaqCPLKt3MhZiY+6W+c/GahBSuOMjJOLEdFmOWI5NUzLEuMXq9ylEWq1wefviHZNAcColNdW0/jp1TSsK8OWjc0ippSHTTI80hCDSmQGG+j0jgfi5zp7JUw=
+	t=1778884303; cv=none; b=iTYOr34KOxoce9SjBagdhHyi1AvybgD8VXGLeh0CkhpbYrZbRhkZE1/H6H1yXmxDWae8p5UUtsjEjc5+frQSHsdxLxZ2yGmut23cZ9u0SznoHp7ncVo1TLOFSLPJ99+9PseW+/hHYAU0vaFv4+7qCeGaVmsMCVHrvI0AkLZRj4c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778883564; c=relaxed/simple;
-	bh=8SzpbZgJBvBRL/hzxIjQ/9GeIwvuw2el3nJZdpXd+WQ=;
+	s=arc-20240116; t=1778884303; c=relaxed/simple;
+	bh=zEB0iV2Z2zPsc+Q1ndCMHhq/Wgbjwf3tOg6xW5GmCPw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=EPTvDI7R2pmIImpj+crok5nno7MjifgW22jJ2DJ8GXm4PqBLRpBP+7Wpk4ijbLxvalz/56VGcBENKwP25XPG9H6Cl+saxj9pQVSNq8YPKBCkOxxaGYEfQQo9VNKaUf+AT6lAlPjoQ/kjXt+xdi9KMDiSveCvMMdEAQG1b/1LoIM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=IRxG6WCc; arc=none smtp.client-ip=209.85.160.169
+	 Content-Type:Content-Disposition:In-Reply-To; b=nugBc/knoxwz+40qym7zvQRm48y3odavgTK6U8m709ZOvisITK9PrqYicP2yV91DiCNXqjjNb7/R+zUfWYQGxgKdVDrdqG7KlQXJiERrUZ0KCpKiCC+1PGp3iGyNvBeiK2UGo7qG2CtN1JEpAZSnfGnr+s4kD/npwVzFmAo493M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=MxpsvqrO; arc=none smtp.client-ip=209.85.219.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="IRxG6WCc"
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-50e63771d91so5304951cf.0
-        for <iommu@lists.linux.dev>; Fri, 15 May 2026 15:19:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="MxpsvqrO"
+Received: by mail-qv1-f53.google.com with SMTP id 6a1803df08f44-8bb09239328so2991536d6.3
+        for <iommu@lists.linux.dev>; Fri, 15 May 2026 15:31:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1778883560; x=1779488360; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1778884300; x=1779489100; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Lz77QHSF30CmLvYON6sVw/Gk6vw94UV9wtrxbUX8y+M=;
-        b=IRxG6WCc1ZtEhjv6viZgCws1IAvl1xe0mIgz9htC3MSD0BYElovf/tT20dJxpkQqzk
-         hdFA2q3Mu8ZQuKg75eryn71iLoVX33/8CKsyhSL2mul8B9Cu+lwRE+w839nFMshihJxO
-         rpEVnOFx3CiK5oetHFmwX8cKYkZQOgyGkObzZj/nRQzQ8gHmJwXpYCcPrv34ZOAygYUs
-         Tw91oFLXJCkjwobh/tfL+3Wi8LRNo4nefUS8yz9ik3eCYx2oDjaEhRALRDFR4NgYUHMd
-         nDbHr8AG5ztf++nMf6R/Ica4onFF3SVZ5w8IFDexrE5MNSn/b9u6/1Pc39U3ZKKzZJ9W
-         vuag==
+        bh=HEFCQaRYLTA1e6mz4i4vUabso8iGraCDY6RgSEP/y8E=;
+        b=MxpsvqrOMuz7Mnu06CBkQiePEDeocXparipRbrqb2nOpEYghf7k2LHhq0jpu0AB+pW
+         4CPV5xwAQjE+WbeZvG2yX9XCNeuJ3FTcHDGoqNEj20KnJ/Tf8R/fSFnzViob4TvkZ3Lr
+         80yq/o5QRtGHxzQitEmd4hsA8YPTFRDGqqrNNEkdYeY2QFAR8dxKbIN3KqlEJcldg4Q3
+         cGahIzMFGm+qbZmfNLSFd7KPSUW9vEbOAnJ7xcPRwtzKd+2xKDZhVDTw872AW/Xy4u4N
+         fQpMy62hOVCx1gsc5MvBNt+wNy2kyPfypWGsZA//WJaR2NOHHoUe6Ddjmy2negtQrvbj
+         kjsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778883560; x=1779488360;
+        d=1e100.net; s=20251104; t=1778884300; x=1779489100;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Lz77QHSF30CmLvYON6sVw/Gk6vw94UV9wtrxbUX8y+M=;
-        b=eSxrKPP9JPneGfTVLXnciD/GEK2ewGXpo+DPVSUvdoo1CQ5RyTWZGJif03+xbvp1QW
-         i8Yi74tUe5PWRctkVrcohnjcFnJbcejaHh6AiRrfkj2CY9f2zrfBWFJvt6poBJZemX2R
-         yViv3pJzjO5gyz6BF3es4Fvh64UGZO/dq/8tbFwHABZbhOIrVScEmdnvG1FS6b0bjpNP
-         wN1fYdRvI5ePkDbon5I+VXhcK+rNQlVx1JvQCI6xB4KpBXGe4nRNe1jHyui0i87Z9aGX
-         EKcTXjxeUz98ZOVOS/9Qbwq15kVdJJhhpqZi7rGZ2iYM78Lc1L4LZv7G5sHK7+ieqMk6
-         +rlQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9fLdl5sSbN/dN1YLbhPyrZsKS6oYwpF57VL+F9TAo49s11KaaBiEfQeTfgnOwQPCfr/gCpEg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzQqnxv4Md5Q3emuLtQyMRqEQGvyhp8yn904vG+VIXot4CwEps9
-	Eu5UozR0KAWC4r7Ijs3P1bMm6AytrW0FN4vOM/+unhTnlSzOupRwEgAbl4Ch+OLewUs=
-X-Gm-Gg: Acq92OHRWU9enOPDCMc1lVYch49/DpOS/ObB6f3SCmqA66jrrz6D5ym3SNIOIn1zL/3
-	lCaUTwCwDtxMs0jEOTykG0V0dpkfnDQkAtdBTY1ODSA2BBhJNFg6cofvlehF9wUQB9hV4mL14NY
-	U/gBN0KXe8B/GWNL8FRhpD6H2bzaTUchAWNo90z7bLUkW6bUnc90HwoBfi3XkOsYxLHSfR8OAYY
-	ujQp1xMqqj1zItz0D1Jz+TcNXNW6KOGyZuJmWQ9p0rgkc5jWHOTmYI8KhTsM1L4bkvmDeFxTfKw
-	liW0fZo04jSAbiqj/n2WAd7oC63YI27W8UGKOYHLeTwdvSO1tTahz0COQk/9U10C9XoAaZO+cli
-	W79Y9Hv1zqpf2wmni5heLIMKPvRrq9iA6A5ihED5jNzhxLTdq8eRbh8kUYDeXTxLznBjSAzf2X1
-	G+L6g3ty3RC0D62yFjvIN6oVjWhzDKtWkIb6S6KDvFkXUC0yrHl0UjkTlwJfQ+By5ntHNwiJXsO
-	AO2LEA958TlZ6Q9
-X-Received: by 2002:ac8:5742:0:b0:509:2858:3c63 with SMTP id d75a77b69052e-5165a0703c1mr85536381cf.23.1778883559652;
-        Fri, 15 May 2026 15:19:19 -0700 (PDT)
+        bh=HEFCQaRYLTA1e6mz4i4vUabso8iGraCDY6RgSEP/y8E=;
+        b=iliYtaJ5sAwL2KIY5ypRLf5QBPcIXzYSU7snbNH82F/EcjAFLuGvLTtNLXAZgVelyk
+         PDMvM1zfV+dt0RL61ZJPXc0QkKC0IM1Ah+QvXQBnJtrx+DNMI9Te/58xMyLScWQjkAHG
+         MHtw1N5hckHIW3O9HMkOlxz/brIugmQaI8VNxswxiySPzezJb9NK+iR/FbHle/ntqcnL
+         rBP4OJ1sz9v1N+KeLyPgS/Vvc08X0mfVH6ndNgF8XXC+h3iX6/VwJCjI95I+UadRu3WQ
+         h5mL+ES4jggQIVANyQuZh2pgzp/4Z35hugaTl3kxKtenieiZTgf9om2b0M0yfjbT3O5B
+         xkrw==
+X-Forwarded-Encrypted: i=1; AFNElJ92SatLCEFXMdfH6zodG+ATgA/H+QUGKJwbsGNZeIB/QnOr5dXZQ+grjWWKfPiwqx+65xYjTg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzJHynZGhdcg41GMV37NIWQSjj2PxGvMNM0k+mrvzrTLPp5LeEW
+	JJE1t0Es+BUOHyc/hA8OF2w3qs4kst5FsrSzQrx1I7Uf+e9Vky7pkudOPHpduLvCSjU=
+X-Gm-Gg: Acq92OGbOivl77h1D4QiZUWmMB2VAogS/iZZ8O1PrKdkwbTRys0/ee3w5KYFetiF/D7
+	hwCbp7ZgwmmTA+0zG1zVn+91ShXf3E9QzgUQTo5fyW6WxxU4KYaQ1oa15nPIDJq0e0KMql8Ttqh
+	TTyynbhzS0yAx3IwX3S34V1I8qb5eoRLfqgig5G9+S6N16kwVafBozIWyrm8hUxzFD99+1XhQnk
+	KagcKWckALAsW6MtZyECmU3Vs5DhMboEw/3rSJG6UiAQ3vAShZLNf25HZWFZVrZm9W5LCR1EPS3
+	4vSGx3xjKdDJYDbuIvtdenQOjU+tTYXaCwSkEk0afMNG3pJ1cdWjMpYpsYruOTuSn8z3ahl2Nke
+	yeLQoZ8tpsei4MzwoE8DGwX+YEdDJdq2cXoaU9m6Hw2xMUWSCZcFFTVIoCDEjbsxhcwqsj5tK/Z
+	1HUsMECJMTqP0oZ8VRsH9oZJHP68TuL2SuoDrgRKc/OvmXoAfH0/0f2sWxGNHmoUZ7sCLy+9pwD
+	Prvxw==
+X-Received: by 2002:a05:6214:1bcc:b0:8bd:de6d:c331 with SMTP id 6a1803df08f44-8ca0f643048mr101202536d6.17.1778884300407;
+        Fri, 15 May 2026 15:31:40 -0700 (PDT)
 Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-516460cda02sm58162851cf.18.2026.05.15.15.19.19
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8c908d1d2cfsm64136276d6.15.2026.05.15.15.31.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 May 2026 15:19:19 -0700 (PDT)
+        Fri, 15 May 2026 15:31:39 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1wO0sI-00000008D1f-2Swb;
-	Fri, 15 May 2026 19:19:18 -0300
-Date: Fri, 15 May 2026 19:19:18 -0300
+	id 1wO14F-00000008E1i-1465;
+	Fri, 15 May 2026 19:31:39 -0300
+Date: Fri, 15 May 2026 19:31:39 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Yu Zhang <zhangyu1@linux.microsoft.com>
 Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
@@ -74,11 +74,11 @@ Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
 	mani@kernel.org, robh@kernel.org, arnd@arndb.de,
 	mhklinux@outlook.com, jacob.pan@linux.microsoft.com,
 	tgopinath@linux.microsoft.com, easwar.hariharan@linux.microsoft.com
-Subject: Re: [PATCH v1 1/4] iommu: Move Hyper-V IOMMU driver to its own
- subdirectory
-Message-ID: <20260515221918.GJ7702@ziepe.ca>
+Subject: Re: [PATCH v1 3/4] iommu/hyperv: Add para-virtualized IOMMU support
+ for Hyper-V guest
+Message-ID: <20260515223139.GK7702@ziepe.ca>
 References: <20260511162408.1180069-1-zhangyu1@linux.microsoft.com>
- <20260511162408.1180069-2-zhangyu1@linux.microsoft.com>
+ <20260511162408.1180069-4-zhangyu1@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -87,19 +87,234 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260511162408.1180069-2-zhangyu1@linux.microsoft.com>
+In-Reply-To: <20260511162408.1180069-4-zhangyu1@linux.microsoft.com>
 
-On Tue, May 12, 2026 at 12:24:05AM +0800, Yu Zhang wrote:
-> From: Easwar Hariharan <eahariha@linux.microsoft.com>
-> 
-> The Hyper-V IOMMU driver currently only supports IRQ remapping.
-> As it will be adding DMA remapping support, prepare a directory
-> to contain all the different feature files.
+On Tue, May 12, 2026 at 12:24:07AM +0800, Yu Zhang wrote:
+> +/*
+> + * Identity and blocking domains are static singletons: identity is a 1:1
+> + * passthrough with no page table, blocking rejects all DMA. Neither holds
+> + * per-IOMMU state, so one instance suffices even with multiple vIOMMUs.
+> + */
+> +static struct hv_iommu_domain hv_identity_domain;
+> +static struct hv_iommu_domain hv_blocking_domain;
+> +static const struct iommu_domain_ops hv_iommu_identity_domain_ops;
+> +static const struct iommu_domain_ops hv_iommu_blocking_domain_ops;
 
-Any possibility we could put the irq remapping thing under the irq
-directory?
+Please follow the format of other drivers and statically initialize
+these here instead of in C code.
 
-The other drivers have it here because they are co-mingled with their
-iommu HW, will hyperv have the same issue?
+> +static struct iommu_ops hv_iommu_ops;
+> +static LIST_HEAD(hv_iommu_pci_bus_list);
+> +static DEFINE_SPINLOCK(hv_iommu_pci_bus_lock);
+> +
+> +#define hv_iommu_present(iommu_cap) (iommu_cap & HV_IOMMU_CAP_PRESENT)
+> +#define hv_iommu_s1_domain_supported(iommu_cap) (iommu_cap & HV_IOMMU_CAP_S1)
+> +#define hv_iommu_5lvl_supported(iommu_cap) (iommu_cap & HV_IOMMU_CAP_S1_5LVL)
+> +#define hv_iommu_ats_supported(iommu_cap) (iommu_cap & HV_IOMMU_CAP_ATS)
+
+prefer to see static inlines
+
+> +static void hv_iommu_detach_dev(struct iommu_domain *domain, struct device *dev)
+> +{
+> +	u64 status;
+> +	unsigned long flags;
+> +	struct hv_input_detach_device_domain *input;
+> +	struct pci_dev *pdev;
+> +	struct hv_iommu_domain *hv_domain = to_hv_iommu_domain(domain);
+> +	struct hv_iommu_endpoint *vdev = dev_iommu_priv_get(dev);
+> +
+> +	/* See the attach function, only PCI devices for now */
+> +	if (!dev_is_pci(dev) || vdev->hv_domain != hv_domain)
+> +		return;
+> +
+> +	pdev = to_pci_dev(dev);
+> +
+> +	dev_dbg(dev, "detaching from domain %d\n", hv_domain->device_domain.domain_id.id);
+> +
+> +	local_irq_save(flags);
+> +
+> +	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
+> +	memset(input, 0, sizeof(*input));
+> +	input->partition_id = HV_PARTITION_ID_SELF;
+> +	if (hv_iommu_lookup_logical_dev_id(pdev, &input->device_id.as_uint64)) {
+> +		local_irq_restore(flags);
+> +		dev_warn(&pdev->dev, "no IOMMU registration for vPCI bus on detach\n");
+> +		return;
+> +	}
+> +	status = hv_do_hypercall(HVCALL_DETACH_DEVICE_DOMAIN, input, NULL);
+
+FWIW the hypervisor cannot implement the linux attach semantics if it
+has detach/attach. It must support simply 'attach' which atomically
+changes the translation. With detach you have a confusing problem if
+errors happen in the middle of the sequence the device is left in an
+unclear state. You should at least document what state the hypervisor
+is supposed to leaave the translation iin during these failures..
+
+> +static void hv_iommu_release_device(struct device *dev)
+> +{
+> +	struct hv_iommu_endpoint *vdev = dev_iommu_priv_get(dev);
+> +	struct pci_dev *pdev = to_pci_dev(dev);
+> +
+> +	if (pdev->ats_enabled)
+> +		pci_disable_ats(pdev);
+> +
+> +	dev_iommu_priv_set(dev, NULL);
+> +	set_dma_ops(dev, NULL);
+
+Does the driver really need to mess with set_dma_ops ? I'd rather not
+see that in new iommu drivers if at all possible :|
+
+> +static int __init hv_initialize_static_domains(void)
+> +{
+> +	int ret;
+> +	struct hv_iommu_domain *hv_domain;
+> +
+> +	/* Default stage-1 identity domain */
+> +	hv_domain = &hv_identity_domain;
+> +
+> +	ret = hv_create_device_domain(hv_domain, HV_DEVICE_DOMAIN_TYPE_S1);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = hv_configure_device_domain(hv_domain, IOMMU_DOMAIN_IDENTITY);
+> +	if (ret)
+> +		goto delete_identity_domain;
+> +
+> +	hv_domain->domain.type = IOMMU_DOMAIN_IDENTITY;
+> +	hv_domain->domain.ops = &hv_iommu_identity_domain_ops;
+> +	hv_domain->domain.owner = &hv_iommu_ops;
+> +	hv_domain->domain.geometry = hv_iommu_device->geometry;
+> +	hv_domain->domain.pgsize_bitmap = hv_iommu_device->pgsize_bitmap;
+
+identity doesn't use geometry or pgsize_bitmap
+
+> +	/* Default stage-1 blocked domain */
+> +	hv_domain = &hv_blocking_domain;
+> +
+> +	ret = hv_create_device_domain(hv_domain, HV_DEVICE_DOMAIN_TYPE_S1);
+> +	if (ret)
+> +		goto delete_identity_domain;
+> +
+> +	ret = hv_configure_device_domain(hv_domain, IOMMU_DOMAIN_BLOCKED);
+> +	if (ret)
+> +		goto delete_blocked_domain;
+> +
+> +	hv_domain->domain.type = IOMMU_DOMAIN_BLOCKED;
+> +	hv_domain->domain.ops = &hv_iommu_blocking_domain_ops;
+> +	hv_domain->domain.owner = &hv_iommu_ops;
+> +	hv_domain->domain.geometry = hv_iommu_device->geometry;
+> +	hv_domain->domain.pgsize_bitmap = hv_iommu_device->pgsize_bitmap;
+
+Nor does blocked
+
+> +#define INTERRUPT_RANGE_START	(0xfee00000)
+> +#define INTERRUPT_RANGE_END	(0xfeefffff)
+> +static void hv_iommu_get_resv_regions(struct device *dev,
+> +		struct list_head *head)
+> +{
+> +	struct iommu_resv_region *region;
+> +
+> +	region = iommu_alloc_resv_region(INTERRUPT_RANGE_START,
+> +				      INTERRUPT_RANGE_END - INTERRUPT_RANGE_START + 1,
+> +				      0, IOMMU_RESV_MSI, GFP_KERNEL);
+
+Surprised these constants are not discovered from the hv?
+
+> +static void hv_iommu_flush_iotlb_all(struct iommu_domain *domain)
+> +{
+> +	hv_flush_device_domain(to_hv_iommu_domain(domain));
+> +}
+> +
+> +static void hv_iommu_iotlb_sync(struct iommu_domain *domain,
+> +				struct iommu_iotlb_gather *iotlb_gather)
+> +{
+> +	hv_flush_device_domain(to_hv_iommu_domain(domain));
+> +
+> +	iommu_put_pages_list(&iotlb_gather->freelist);
+> +}
+
+Full invalidation only huh?
+
+> +static const struct iommu_domain_ops hv_iommu_identity_domain_ops = {
+> +	.attach_dev	= hv_iommu_attach_dev,
+> +};
+> +
+> +static const struct iommu_domain_ops hv_iommu_blocking_domain_ops = {
+> +	.attach_dev	= hv_iommu_attach_dev,
+> +};
+
+Usually I would expect these to have their own attach
+functions. blocking in particular must have an attach op that cannot
+fail. It is used to recover the device back to a known translation in
+case of cascading other errors.
+
+> +static const struct iommu_domain_ops hv_iommu_paging_domain_ops = {
+> +	.attach_dev	= hv_iommu_attach_dev,
+> +	IOMMU_PT_DOMAIN_OPS(x86_64),
+> +	.flush_iotlb_all = hv_iommu_flush_iotlb_all,
+> +	.iotlb_sync = hv_iommu_iotlb_sync,
+> +	.free = hv_iommu_paging_domain_free,
+> +};
+> +
+> +static struct iommu_domain *hv_iommu_domain_alloc_paging(struct device *dev)
+> +{
+> +	int ret;
+> +	struct hv_iommu_domain *hv_domain;
+> +	struct pt_iommu_x86_64_cfg cfg = {};
+> +
+> +	hv_domain = kzalloc_obj(*hv_domain, GFP_KERNEL);
+> +	if (!hv_domain)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	ret = hv_create_device_domain(hv_domain, HV_DEVICE_DOMAIN_TYPE_S1);
+> +	if (ret) {
+> +		kfree(hv_domain);
+> +		return ERR_PTR(ret);
+> +	}
+> +
+> +	hv_domain->domain.geometry = hv_iommu_device->geometry;
+
+geoemtry shouldn't be set here, it is overriden by
+pt_iommu_x86_64_init() with the exact page table configuration
+
+> +static void __init hv_init_iommu_device(struct hv_iommu_dev *hv_iommu,
+> +			struct hv_output_get_iommu_capabilities *hv_iommu_cap)
+> +{
+> +	ida_init(&hv_iommu->domain_ids);
+> +
+> +	hv_iommu->cap = hv_iommu_cap->iommu_cap;
+> +	hv_iommu->max_iova_width = hv_iommu_cap->max_iova_width;
+> +	if (!hv_iommu_5lvl_supported(hv_iommu->cap) &&
+> +	    hv_iommu->max_iova_width > 48) {
+> +		pr_info("5-level paging not supported, limiting iova width to 48.\n");
+> +		hv_iommu->max_iova_width = 48;
+> +	}
+> +
+> +	hv_iommu->geometry = (struct iommu_domain_geometry) {
+> +		.aperture_start = 0,
+> +		.aperture_end = (((u64)1) << hv_iommu->max_iova_width) - 1,
+> +		.force_aperture = true,
+> +	};
+> +
+> +	hv_iommu->first_domain = HV_DEVICE_DOMAIN_ID_DEFAULT + 1;
+> +	hv_iommu->last_domain = HV_DEVICE_DOMAIN_ID_NULL - 1;
+> +	/* Only x86 page sizes (4K/2M/1G) are supported */
+> +	hv_iommu->pgsize_bitmap = hv_iommu_cap->pgsize_bitmap &
+> +				  (SZ_4K | SZ_2M | SZ_1G);
+> +	if (hv_iommu->pgsize_bitmap != hv_iommu_cap->pgsize_bitmap)
+> +		pr_warn("unsupported page sizes masked: 0x%llx -> 0x%llx\n",
+> +			hv_iommu_cap->pgsize_bitmap, hv_iommu->pgsize_bitmap);
+
+IKD if you need this logic, the way the page table code is used it
+just sort of falls out naturally that other page sizes are ignored.
+
+> +struct hv_iommu_domain {
+> +	union {
+> +		struct iommu_domain    domain;
+> +		struct pt_iommu        pt_iommu;
+> +		struct pt_iommu_x86_64 pt_iommu_x86_64;
+> +	};
+
+You should retain the build assertions here
 
 Jason
