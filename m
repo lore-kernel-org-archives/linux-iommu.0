@@ -1,156 +1,363 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41A16438FED
-	for <iommu@lists.linux.dev>; Fri, 15 May 2026 09:35:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8C98168BD
+	for <iommu@lists.linux.dev>; Fri, 15 May 2026 09:46:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778837751; cv=none; b=ejU3t3j/NnV+GTHqW7zGTR8iJbg5Q2pTua1OKc+EXeVv9afEgN8Ev/ZcuxonPAmXLmkjV2wNjl6qK9NJjfijBAT+GK8cWV06VWft3vCVKw4saqg/wtL4P3DuHvCi9prsMqGW0VSk/U/4HLhtwH0bJvbzOJH3KlzA/QwKnKhxYJM=
+	t=1778838391; cv=none; b=VFt+gWCcXYSzs383t7U46guG5KfjiZsndVLHgrxEmC+nr+6HJm3ff1ImhiQb3U0q/OH1tocY0Eu0p2fcdDYzMlb5GXv5X4aCyVRFDCUthuBx1MZWOjz1b2wc5QUNU+4W4Epe/csxB6Jl973xenvUDJMjuWWR5l0u7cGT8UPcNXg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778837751; c=relaxed/simple;
-	bh=lk0yUUbpT8/U39ivTcsC1egqSJRZIo+BJJ5eGnvW12g=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Vb1XCWWrvgiY7xmfQsvSoE7Q1dzRc2Z86j80GrXtR/Jwbe6HWzpJb9AYd1lwHaoNMh5GKrA2VF2C3ZbE514hLsGXk4HdpLSkfK0f1Eya2KQpoE23rga4egf/98RSvtYy4AAAO1qEG2iFOjdJMUPzuF2aYbAMDmcMh2Wx9NZb6Qw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=VFteFIgp; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=Jgp9CEQd; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1778838391; c=relaxed/simple;
+	bh=UB5z2bdNCMl9SZhMBe08ZSbPxco7Kl/DCRaG6lsVoJ8=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=Y0f9BNExF+izZNe7gsUPiQhNo+irSILXzbe3a6TY/By+gxSXbizdBVtpPoNSP65knAP7Ty+krBjC/IIVsEgO9TTiiV25JBoOA0O3uL/EKx+wcPUCAryHXOHMLAnQCgck554twPdNH1O4rJv62H/MnOCq+9fZ5Gzx3cAMDz2MIkE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Ox8yfWEm; arc=none smtp.client-ip=209.85.214.202
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="VFteFIgp";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="Jgp9CEQd"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64F95dGU1714959
-	for <iommu@lists.linux.dev>; Fri, 15 May 2026 09:35:49 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	lk0yUUbpT8/U39ivTcsC1egqSJRZIo+BJJ5eGnvW12g=; b=VFteFIgpWTy97Kvi
-	MNJD2q+DW11IkDrK+Fv8PrQ9HSJDkcsMwH+aKYt1WY6asyg/UqBiiHbTHjhcMifa
-	xD9xbhv92Zpd35M4ZW7kjWYopS4sx8r3vBHuBLc1bblcY9RxMtii4K8dQ/KM4yxV
-	XG5sPJVkQpBu8XOEL8dImJTI/xJFjcYicfGxiqljemPPHji5v4O9FwakD627F8IJ
-	S7qLbubheLqJf4xid8O95o2czAoOZ/eL2Ih6wIBQZoGWjFOOiSAIUyy9Gaxa+j6o
-	dP0FVXoGu2BO82hoBXJBXG2jXZGAxAjtvADCw5KCFfTZcjoZc0Q8bHUnE+u7s+P1
-	LmlZdA==
-Received: from mail-vs1-f69.google.com (mail-vs1-f69.google.com [209.85.217.69])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4e5tyxse73-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Fri, 15 May 2026 09:35:49 +0000 (GMT)
-Received: by mail-vs1-f69.google.com with SMTP id ada2fe7eead31-634396ec8fdso396371137.0
-        for <iommu@lists.linux.dev>; Fri, 15 May 2026 02:35:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Ox8yfWEm"
+Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-2ba5f794825so75280595ad.0
+        for <iommu@lists.linux.dev>; Fri, 15 May 2026 02:46:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1778837748; x=1779442548; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=lk0yUUbpT8/U39ivTcsC1egqSJRZIo+BJJ5eGnvW12g=;
-        b=Jgp9CEQdup/LHDZti7scvykSXrSRjVV4ChWicC/kMCso81HMlWmkJ6ebU1K5MH5KPd
-         5CmaTscYLlXcBr1TzX+mxJG6i4oMd3URsHmEn0Re6QDLHhAfrUb6fGcAikgaVnH407Dk
-         Zyzvahj6ike0Rn/JxiLVGukmmtnJRJ/iL6txFnzqlc9Q0WMug2qKK9EXWIi85fQ2ho5T
-         0UhpFAghVSC96eBbmG2RmPdctqF8L1351KsT982wwNTk2FXZ4JwbSY94I0fATupRisnZ
-         UUnulFypgTdChp36CJE74jZnMmSw+Ksp7dM2uI+nfFJAhSIw9UFtxSHpxcZQ3PSKytnv
-         MXWg==
+        d=google.com; s=20251104; t=1778838389; x=1779443189; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=xWJsQ/41akAuUsf+Yb2x4PykPgg0DSrsfcVLaBUG/04=;
+        b=Ox8yfWEmUulG6mNzPIPk011LLWlujdBH3zgKFvYjHJBWLi1sJWEKtIcq2Pb6jArxpy
+         dGE3hP08gaJsHtQB8053ggquL7ZtcmzUTEuSiIxzL8wVuW04x+aKhFarbKS9Q6UufQiV
+         fAUNMax4WsYcIM+KrL4hwZwSHC+X1Brcasv9acvu1ZaygUlYnbCZdKk3wrewlDgUYIRu
+         /gNx7v1uz/N1Ec6JKRmlH53HbSxKlvkxTVBBG1+/wDgcfP0t2qycg8e2hAhCpQAYpHjR
+         EP0kxfceIwjRIMxFFSVujC1wxR85RwWNsFZCEtOb7zJ8o8UHG6Bgg+nHt4Fy9oXb/4vK
+         NG9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778837748; x=1779442548;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=lk0yUUbpT8/U39ivTcsC1egqSJRZIo+BJJ5eGnvW12g=;
-        b=f+p44KkNg0Yq/wO5C/JJFrqEYZYU2oWyY0/6XPo3mXucQZRV5JAyHa40oOtD0KmOLI
-         lf5NlBIaTP9ZD1XXC6JwGtrrKUIdiQiGmXHoz7qLfBvngMr8RN8d/nbPYBX9F9ayz8ZM
-         X0kCLx8I4bqYK0DlQMTJm2u377gMcPSbh/Q3ISLKU4tWZtnvYYr44gN1TvLytTTTvmpD
-         Nvg/DLjo2vTfHDSECFvEA1jKqEZGaqiEOzenzcIrEvr0B5KybPwyHV5UDcXcBSee2RLs
-         xGIMTBkt8lIdDJ2RrsEzUcoEtcpT3YOWAvHPH0kvYJPGIz78lZIT1BDt4W50Es8oDOG4
-         O5kQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/nFkzUMELWHd+oo5aJdiNIfZ7EP8OpiXBzTxrBEKmp46Hkslt6gsNLVBpzLtrXFcZ00uX41g==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw2zijtoQpfPBlHlBv04gLRkNiallMbv0LBVgicocMueLb3fFvS
-	aUoppstNtuJvumXowRJt6bLTh2QTYMvRUz37xwUja1s6O4qCsJfLnW47eJcuECs2e/Rj9H2CxVp
-	RzlPwUz/Z5TcHayeuQtkiXMUduPFkFCYYOh9hXo/tpIsNocOQJHO6NE34zQ==
-X-Gm-Gg: Acq92OGzRQTWmjPQ+THdDKYYnhMPcas7wIiMbJUiEW+TQelrQcpeXjj9y0nQykp/b7B
-	J3xNTLO0nHAw8bc2cQqXH1gmvlpSaj5ZXst/05PmbQn8BHFqDmm3MV+1zXTZLSFxGzOJS3A7oqi
-	lTYwR0ByXQbFURuSX1I4Ta/6NI21qX/WL5YK1lDrJtur4orry2lbz2QJ2qlK5KxmQk0XpsR9v2Z
-	kNlzfTKTA/eVAXszkFtvxGDgv2y6tCD2RPpk5m8HSs8tsFkWPOhbE8bbVXuclABqy2nf4NI4s0/
-	W0wsmPX5l/9uGlHjP9al0wdNzvkDGcllL5nQzsUZfoV/9NC+a1QwHIU1VPy4CRIx9WP7SggRxpV
-	V+xDqQxFvIab8V49X4z1jIc0672saTzpxQrQBSvYkOZxm49hiHTvFgFKBSOvUzMwPfdJEuy15Df
-	OGbHQ=
-X-Received: by 2002:a05:6102:21d6:b0:637:25ea:99c8 with SMTP id ada2fe7eead31-63a3cc0c981mr429427137.1.1778837748268;
-        Fri, 15 May 2026 02:35:48 -0700 (PDT)
-X-Received: by 2002:a05:6102:21d6:b0:637:25ea:99c8 with SMTP id ada2fe7eead31-63a3cc0c981mr429413137.1.1778837747869;
-        Fri, 15 May 2026 02:35:47 -0700 (PDT)
-Received: from [192.168.119.254] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bd4f4e5eef9sm195347866b.51.2026.05.15.02.35.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 May 2026 02:35:46 -0700 (PDT)
-Message-ID: <af2a9994-44b1-4945-9c04-4f31c1ff60f9@oss.qualcomm.com>
-Date: Fri, 15 May 2026 11:35:42 +0200
+        d=1e100.net; s=20251104; t=1778838389; x=1779443189;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=xWJsQ/41akAuUsf+Yb2x4PykPgg0DSrsfcVLaBUG/04=;
+        b=aimf2+j3HGD/viRbNEPpKlG/zK2mwK4XYcxnA/F5t/+K9W4+t64eyRgtNz18HHFOLU
+         pOnIqkF5CVDgeBKRNTPCVfv3R4d5eZiwNhg9OXh0ClgztrU7E1RIrYfMcYnm6gKtoH0F
+         SnkIGfa63ZyHpx6A5Gp0M0hRQRh6qcDN4bfVXQ0tVchKBNmXUQVyvqWuUNAdsvC73yna
+         egLm/r4TfWCLGOnnFCyrEKCJzk6IQD0Fb5q8LFguf6pROOhaNe48NfDFtrhzypeeuuli
+         SFnAXOHGIjZxhVZZLxDEcX9ZwFPYKDzF7FukAyXAvEqPcheRLZ6ENAU/Qs1Kq1Eoxb4R
+         lbAw==
+X-Forwarded-Encrypted: i=1; AFNElJ8fUPet6ShgZNy1ID8CLQ/siEX1dwQBqYj12sjhD2sbR5xv6DUhAdqeQOiGkgQdKWAS1Jbn7g==@lists.linux.dev
+X-Gm-Message-State: AOJu0Ywtrp+TFFeF4ZVYKfBOAnuxZgVdJB6lxhipL2UMIEB6NwXsOScl
+	OVKl4CKM9/EwkbDwYBUEGQr9y87absnWt6+PJUx8hJJ5nobFJVsOGq20ga8moTdNTo8FaX6iT6O
+	rZFJnra8O0HIgtlQIhF4iEk12gQ==
+X-Received: from pgbdo6.prod.google.com ([2002:a05:6a02:e86:b0:c76:669e:8145])
+ (user=joonwonkang job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:6a21:33a1:b0:3a3:a55f:405d with SMTP id adf61e73a8af0-3b22ea76bdamr3616498637.13.1778838388477;
+ Fri, 15 May 2026 02:46:28 -0700 (PDT)
+Date: Fri, 15 May 2026 09:46:05 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 8/8] ARM: dts: qcom: Add Samsung Galaxy S4
-To: MINETTE Alexandre <contact@alex-min.fr>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Guru Das Srinagesh
- <linux@gurudas.dev>,
-        Linus Walleij <linusw@kernel.org>,
-        Rob Clark <robin.clark@oss.qualcomm.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Kees Cook <kees@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        iommu@lists.linux.dev, phone-devel@vger.kernel.org
-References: <20260427-mainline-send-v1-sending-v2-0-dcaa9178007b@alex-min.fr>
- <20260427-mainline-send-v1-sending-v2-8-dcaa9178007b@alex-min.fr>
- <97969bf9-8eb2-4498-90bd-9973fb2bd638@oss.qualcomm.com>
- <edbaf71e-6a47-4294-a8c6-6b356bc336ed@app.fastmail.com>
- <fdca4d01-eb6b-49a6-86e1-b6d582af4ba8@oss.qualcomm.com>
- <bb8353fe-29f6-4902-9c7f-67ef61676f2b@oss.qualcomm.com>
- <1eb77056-0716-49d3-b45f-d51ee5b70618@app.fastmail.com>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <1eb77056-0716-49d3-b45f-d51ee5b70618@app.fastmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Authority-Analysis: v=2.4 cv=dMWWXuZb c=1 sm=1 tr=0 ts=6a06e8f5 cx=c_pps
- a=5HAIKLe1ejAbszaTRHs9Ug==:117 a=FpWmc02/iXfjRdCD7H54yg==:17
- a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=Um2Pa8k9VHT-vaBCBUpS:22
- a=NJkuH3xNc77H-X9ZbZMA:9 a=QEXdDO2ut3YA:10 a=gYDTvv6II1OnSo0itH1n:22
-X-Proofpoint-ORIG-GUID: gqWRli-MY5TLbmJeUwuT84rcAV3y0c91
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTE1MDA5NSBTYWx0ZWRfX9T/5I7vWTf2m
- YRVIvXG8wVhtu3mqwEeQj+B/5ab1bkgrAniZ1nTN8L9uWRTxbcpXNQiKLueJlLF0XSyI38fr30o
- hnan2CkYjDCtanpURbNrvDueJpdEY89wGMcawe2NCLF7HatlpBNXSy5nyJnCYvJAzX7a0N8GI6r
- vhyy5k+aQXkZOO2+vIfFrUC9KZvIEGm2OmhHhCcytvxg6/Bdjh4eZRs74cC9F4r3F01FKw5u5X/
- cO+sB2QVSCA9N3QlVK5uxQI5WfTwyGarEs10CmNTACSXFTJ04CcBsHJMr4Sb2Mb+Up8/hic1dW8
- dSqQ74YSEmbJA5qd5SLpHdCNm+ZRpWPJF/pbPoIF43ZJi4jP6BWVTlET6XXqJzmtz8SjrmOylRk
- +SyEhoWqI+FIGO16OewH303uaWecnkqayACg33GnDtPX8DuqCCZ26mxCKpXptBdEqWquW2jSoCn
- 5evOv/Uw0htLhRZklVA==
-X-Proofpoint-GUID: gqWRli-MY5TLbmJeUwuT84rcAV3y0c91
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-05-15_02,2026-05-13_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- adultscore=0 priorityscore=1501 clxscore=1015 impostorscore=0 phishscore=0
- suspectscore=0 malwarescore=0 bulkscore=0 spamscore=0 lowpriorityscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2605130000 definitions=main-2605150095
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.54.0.563.g4f69b47b94-goog
+Message-ID: <20260515094605.3195841-1-joonwonkang@google.com>
+Subject: [PATCH] iommu: Allow device driver to use its own PASID space for SVA
+From: Joonwon Kang <joonwonkang@google.com>
+To: jgg@ziepe.ca, will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, 
+	jpb@kernel.org
+Cc: Alexander.Grest@microsoft.com, amhetre@nvidia.com, 
+	baolu.lu@linux.intel.com, easwar.hariharan@linux.microsoft.com, 
+	jacob.jun.pan@linux.intel.com, kees@kernel.org, kevin.tian@intel.com, 
+	nicolinc@nvidia.com, praan@google.com, smostafa@google.com, tglx@kernel.org, 
+	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org, 
+	hpa@zytor.com, peterz@infradead.org, sohil.mehta@intel.com, kas@kernel.org, 
+	alexander.shishkin@linux.intel.com, ryasuoka@redhat.com, xin@zytor.com, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, joonwonkang@google.com
+Content-Type: text/plain; charset="UTF-8"
 
-On 5/14/26 10:23 PM, MINETTE Alexandre wrote:
-> Ah yes, I see. I tried GSBI for both the MUIC/extcon bus and the LED bus,
-> but it does not work on my GT-I9505: USB does not enumerate with the MUIC
-> on GSBI2, and the LED on GSBI3 times out when setting brightness (-110, with no visble changes).
-> So I think these should stay as i2c-gpio like downstream.
+For SVA, the IOMMU core always allocates PASID from the global PASID
+space. The use of this global PASID space comes from the limitation of
+the ENQCMD instruction in Intel CPUs that it fetches its PASID operand
+from IA32_PASID, which is per-process; when a process wants to
+communicate with multiple devices with the ENQCMD instruction, it cannot
+change its PASID for each device without the kernel's intervention. Also
+note that ARM introduced a similar instruction, which is ST64BV0.
 
-Alright, thanks for confirming
+Due to this nature, SVA with ARM SMMU v3 has been found not working in
+our environment when other modules/devices compete for PASID. The
+environment looks as follows:
 
-Konrad
+- The device is not a PCIe device.
+- The device is to use SVA.
+- The supported SSID/PASID space is very small for the device; only 1 to
+  3 SSIDs are supported.
+
+With this setup, when other modules have allocated all the PASIDs that
+our device is expected to use from the global PASID space via APIs like
+iommu_alloc_global_pasid() or iommu_sva_bind_device(), SVA binding to
+our device fails due to the lack of available PASIDs.
+
+This commit resolves the issue by allowing device driver to maintain its
+own PASID space and assign a PASID from that for the process-device bond
+via a new API called `iommu_sva_bind_device_pasid(dev, mm, pasid)`. Doing
+that, however, will disallow the process to execute the ENQCMD-like
+instructions at EL0. It is because the process cannot change its PASID in
+IA32_PASID(or ACCDATA_EL1 on ARM) for each device without the kernel's
+intervention. For this reason, calling `iommu_sva_bind_device()` and then
+`iommu_sva_bind_device_pasid()` for the same process will not be allowed
+and vice versa.
+
+Currently, there is a limitation that a process simultaneously doing SVA
+with multiple devices with different PASIDs is not supported. So, calling
+`iommu_sva_bind_device_pasid()` multiple times for the same process with
+different devices will not be allowed for now while that for
+`iommu_sva_bind_device()` will be.
+
+Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
+Suggested-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Joonwon Kang <joonwonkang@google.com>
+---
+ arch/x86/kernel/traps.c   |   2 +
+ drivers/iommu/iommu-sva.c | 111 +++++++++++++++++++++++++++++---------
+ include/linux/iommu.h     |  14 ++++-
+ 3 files changed, 102 insertions(+), 25 deletions(-)
+
+diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
+index 0ca3912ecb7f..61e2e52105e5 100644
+--- a/arch/x86/kernel/traps.c
++++ b/arch/x86/kernel/traps.c
+@@ -864,6 +864,8 @@ static bool try_fixup_enqcmd_gp(void)
+ 		return false;
+ 
+ 	pasid = mm_get_enqcmd_pasid(current->mm);
++	if (pasid == IOMMU_PASID_INVALID)
++		return false;
+ 
+ 	/*
+ 	 * Did this thread already have its PASID activated?
+diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+index bc7c7232a43e..12d6d638c827 100644
+--- a/drivers/iommu/iommu-sva.c
++++ b/drivers/iommu/iommu-sva.c
+@@ -10,6 +10,9 @@
+ 
+ #include "iommu-priv.h"
+ 
++/* Whether pasid is to be allocated from the global PASID space */
++#define IOMMU_PASID_GLOBAL_ANY IOMMU_NO_PASID
++
+ static DEFINE_MUTEX(iommu_sva_lock);
+ static bool iommu_sva_present;
+ static LIST_HEAD(iommu_sva_mms);
+@@ -17,10 +20,11 @@ static struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
+ 						   struct mm_struct *mm);
+ 
+ /* Allocate a PASID for the mm within range (inclusive) */
+-static struct iommu_mm_data *iommu_alloc_mm_data(struct mm_struct *mm, struct device *dev)
++static struct iommu_mm_data *iommu_alloc_mm_data(struct mm_struct *mm,
++						 struct device *dev,
++						 ioasid_t pasid)
+ {
+ 	struct iommu_mm_data *iommu_mm;
+-	ioasid_t pasid;
+ 
+ 	lockdep_assert_held(&iommu_sva_lock);
+ 
+@@ -39,10 +43,15 @@ static struct iommu_mm_data *iommu_alloc_mm_data(struct mm_struct *mm, struct de
+ 	if (!iommu_mm)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	pasid = iommu_alloc_global_pasid(dev);
+-	if (pasid == IOMMU_PASID_INVALID) {
+-		kfree(iommu_mm);
+-		return ERR_PTR(-ENOSPC);
++	if (pasid == IOMMU_PASID_GLOBAL_ANY) {
++		pasid = iommu_alloc_global_pasid(dev);
++		if (pasid == IOMMU_PASID_INVALID) {
++			kfree(iommu_mm);
++			return ERR_PTR(-ENOSPC);
++		}
++		iommu_mm->pasid_global = true;
++	} else {
++		iommu_mm->pasid_global = false;
+ 	}
+ 	iommu_mm->pasid = pasid;
+ 	iommu_mm->mm = mm;
+@@ -56,20 +65,9 @@ static struct iommu_mm_data *iommu_alloc_mm_data(struct mm_struct *mm, struct de
+ 	return iommu_mm;
+ }
+ 
+-/**
+- * iommu_sva_bind_device() - Bind a process address space to a device
+- * @dev: the device
+- * @mm: the mm to bind, caller must hold a reference to mm_users
+- *
+- * Create a bond between device and address space, allowing the device to
+- * access the mm using the PASID returned by iommu_sva_get_pasid(). If a
+- * bond already exists between @device and @mm, an additional internal
+- * reference is taken. Caller must call iommu_sva_unbind_device()
+- * to release each reference.
+- *
+- * On error, returns an ERR_PTR value.
+- */
+-struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
++static struct iommu_sva *iommu_sva_bind_device_internal(struct device *dev,
++							struct mm_struct *mm,
++							ioasid_t pasid)
+ {
+ 	struct iommu_group *group = dev->iommu_group;
+ 	struct iommu_attach_handle *attach_handle;
+@@ -84,12 +82,25 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
+ 	mutex_lock(&iommu_sva_lock);
+ 
+ 	/* Allocate mm->pasid if necessary. */
+-	iommu_mm = iommu_alloc_mm_data(mm, dev);
++	iommu_mm = iommu_alloc_mm_data(mm, dev, pasid);
+ 	if (IS_ERR(iommu_mm)) {
+ 		ret = PTR_ERR(iommu_mm);
+ 		goto out_unlock;
+ 	}
+ 
++	if ((pasid == IOMMU_PASID_GLOBAL_ANY && !iommu_mm->pasid_global) ||
++	    (pasid != IOMMU_PASID_GLOBAL_ANY && iommu_mm->pasid_global)) {
++		ret = -EBUSY;
++		goto out_unlock;
++	} else if (pasid != IOMMU_PASID_GLOBAL_ANY && pasid != iommu_mm->pasid) {
++		/*
++		 * Currently, a process simultaneously doing SVA with multiple
++		 * devices with different PASIDs is not supported.
++		 */
++		ret = -ENOSPC;
++		goto out_unlock;
++	}
++
+ 	/* A bond already exists, just take a reference`. */
+ 	attach_handle = iommu_attach_handle_get(group, iommu_mm->pasid, IOMMU_DOMAIN_SVA);
+ 	if (!IS_ERR(attach_handle)) {
+@@ -157,8 +168,56 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
+ 	mutex_unlock(&iommu_sva_lock);
+ 	return ERR_PTR(ret);
+ }
++
++/**
++ * iommu_sva_bind_device() - Bind a process address space to a device
++ * @dev: the device
++ * @mm: the mm to bind, caller must hold a reference to mm_users
++ *
++ * Create a bond between device and address space, allowing the device to
++ * access the mm using the PASID returned by iommu_sva_get_pasid(). If a
++ * bond already exists between @device and @mm, an additional internal
++ * reference is taken. Caller must call iommu_sva_unbind_device()
++ * to release each reference.
++ *
++ * On error, returns an ERR_PTR value.
++ */
++struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
++{
++	return iommu_sva_bind_device_internal(dev, mm, IOMMU_PASID_GLOBAL_ANY);
++}
+ EXPORT_SYMBOL_GPL(iommu_sva_bind_device);
+ 
++/**
++ * iommu_sva_bind_device_pasid() - Bind a process address space to a device
++ * with a designated pasid
++ * @dev: the device
++ * @mm: the mm to bind, caller must hold a reference to mm_users
++ * @pasid: the pasid to assign to the bond
++ *
++ * Create a bond between device and address space, allowing the device to
++ * access the mm using the PASID returned by iommu_sva_get_pasid(). If a
++ * bond already exists between @device and @mm, an additional internal
++ * reference is taken. Caller must call iommu_sva_unbind_device()
++ * to release each reference.
++ *
++ * It is the caller's responsibility to maintain the PASID space for @pasid.
++ * After the bond is created, the process for @mm will not be able to execute
++ * ENQCMD or similar instructions at EL0. To allow those instructions at EL0,
++ * iommu_sva_bind_device() must be used instead.
++ *
++ * On error, returns an ERR_PTR value.
++ */
++struct iommu_sva *iommu_sva_bind_device_pasid(struct device *dev,
++					      struct mm_struct *mm,
++					      ioasid_t pasid)
++{
++	if (pasid == IOMMU_PASID_GLOBAL_ANY)
++		return ERR_PTR(-EINVAL);
++	return iommu_sva_bind_device_internal(dev, mm, pasid);
++}
++EXPORT_SYMBOL_GPL(iommu_sva_bind_device_pasid);
++
+ /**
+  * iommu_sva_unbind_device() - Remove a bond created with iommu_sva_bind_device
+  * @handle: the handle returned by iommu_sva_bind_device()
+@@ -198,9 +257,12 @@ EXPORT_SYMBOL_GPL(iommu_sva_unbind_device);
+ 
+ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+ {
+-	struct iommu_domain *domain = handle->handle.domain;
++	struct iommu_mm_data *iommu_mm = handle->handle.domain->mm->iommu_mm;
++
++	if (!iommu_mm)
++		return IOMMU_PASID_INVALID;
+ 
+-	return mm_get_enqcmd_pasid(domain->mm);
++	return iommu_mm->pasid;
+ }
+ EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
+ 
+@@ -211,7 +273,8 @@ void mm_pasid_drop(struct mm_struct *mm)
+ 	if (!iommu_mm)
+ 		return;
+ 
+-	iommu_free_global_pasid(iommu_mm->pasid);
++	if (iommu_mm->pasid_global)
++		iommu_free_global_pasid(iommu_mm->pasid);
+ 	kfree(iommu_mm);
+ }
+ 
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index e587d4ac4d33..5b6116e7152d 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -1140,6 +1140,7 @@ struct iommu_sva {
+ 
+ struct iommu_mm_data {
+ 	u32			pasid;
++	bool			pasid_global;
+ 	struct mm_struct	*mm;
+ 	struct list_head	sva_domains;
+ 	struct list_head	mm_list_elm;
+@@ -1626,7 +1627,7 @@ static inline u32 mm_get_enqcmd_pasid(struct mm_struct *mm)
+ {
+ 	struct iommu_mm_data *iommu_mm = READ_ONCE(mm->iommu_mm);
+ 
+-	if (!iommu_mm)
++	if (!iommu_mm || !iommu_mm->pasid_global)
+ 		return IOMMU_PASID_INVALID;
+ 	return iommu_mm->pasid;
+ }
+@@ -1634,6 +1635,9 @@ static inline u32 mm_get_enqcmd_pasid(struct mm_struct *mm)
+ void mm_pasid_drop(struct mm_struct *mm);
+ struct iommu_sva *iommu_sva_bind_device(struct device *dev,
+ 					struct mm_struct *mm);
++struct iommu_sva *iommu_sva_bind_device_pasid(struct device *dev,
++					      struct mm_struct *mm,
++					      ioasid_t pasid);
+ void iommu_sva_unbind_device(struct iommu_sva *handle);
+ u32 iommu_sva_get_pasid(struct iommu_sva *handle);
+ void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end);
+@@ -1644,6 +1648,14 @@ iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
+ 	return ERR_PTR(-ENODEV);
+ }
+ 
++static inline struct iommu_sva *
++iommu_sva_bind_device_pasid(struct device *dev,
++			    struct mm_struct *mm,
++			    ioasid_t pasid)
++{
++	return ERR_PTR(-ENODEV);
++}
++
+ static inline void iommu_sva_unbind_device(struct iommu_sva *handle)
+ {
+ }
+-- 
+2.54.0.563.g4f69b47b94-goog
+
