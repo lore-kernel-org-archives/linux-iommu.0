@@ -1,146 +1,304 @@
-Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012023.outbound.protection.outlook.com [52.101.48.23])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dl1-f42.google.com (mail-dl1-f42.google.com [74.125.82.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36FD93D0937;
-	Fri, 15 May 2026 21:03:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.48.23
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778879009; cv=fail; b=DWmYxY7Ioxhtu0hJ1wuBz/QvTjXMadThk7hiWYZ9HgZLhnmxQsHe22u8JsIMWxppyfoLity4RvBG3uoy7kzAH+3kd3qfupyfNsFbs/hj2In9v42N6cWuYb+05PKEjBiGUADBJl3n+ZOpVJ01qTccf4FrZk6Llm9kdDLtKr4Puio=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778879009; c=relaxed/simple;
-	bh=xIHlPSnmoBFtL0PTC7ilp+YDY8seGur5sXtElS4vOU4=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=l9BsTEpOPgsxG0pLAdcb52bFlUwqX3wGArK2NRJHgkgOYglwvQL5v8BlvzoyRaoLLFKDnR8GYSMP/MvngOmCa9ERmEVZFfdP6dgnJWPhwZfotVWtZGMu56RDFyUMZp2Z7V8gpmnWTU/xchJ99ESQqSmuQmoG/4KGobOjOVjtUyI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Rxh1Wdt7; arc=fail smtp.client-ip=52.101.48.23
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3720D35E1C9
+	for <iommu@lists.linux.dev>; Fri, 15 May 2026 21:14:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.42
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778879654; cv=none; b=kszXiRrIzJgKto/9kuianIqmv5NBqwKGG+IQ7JbpzzIPGDRWUHDO4+M1FZa/E1U5/A249GT/L40nw1T6bKFJtKWcRcJt+SW+rZhdxWe+7atIApiW2wQTuSUt0/lHMLbQ7B8Woytx3606KjycbqJbSFP6tQdr1l8aoIBY+LykSZo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778879654; c=relaxed/simple;
+	bh=rFYaUaAT16Cmq71pIwaII1M5sgICxN3WJjU+oZD6zvs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=iEV7ULdIctQXmpOimsgRsrmn/Tsvb7WoQx6AlzfL/k7OF6XiJMkXCatK5+gPb1yTTh3YYzZoUfxCC9IbP+m7cvahzeW1Nc8ICXCSotZUFpU5ahtOf/KHYLXU3Z3kXayvCFnq8NIdyhpY4WxZCWyBTmvhcTmmVFc4dV0Vyhc32fw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mMRhFjaP; arc=none smtp.client-ip=74.125.82.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Rxh1Wdt7"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=J0RfgoxjDCTMvsv2HjEUD1AKy8zolIKhcyfu5PTmfiN1l3mUpACrAHA4jC15jzcOQpd86sh/JNkrq5lKJP1vcgjNbi1xeNaYRM4/YMFt5maBJ17099d/AqW86Z2/PrDvQ1paaA8Ay6xeLxLmOOcdFw7lBpVAUCmM4rEXuw7l7yCDWPrFRSmgyOirn8yydge3Pn3DNiKRns3y/wZ06KpqFDTJgC4Q3v4Qd3ZkjX0r28UKV7dHipCcYbJgUl6WKWgYySd/lUu0r4sMKHHhUowg3cmpdHtOYIUrX8AwowIULW06BIHyuWZ35no0/qg4s29ctfeikxuYy/poSyEH3i2EUQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IKcFwPeea/9VwL8YT+o0/mGEQbWW+vWbTOi8vtsGE4M=;
- b=XKtuETXTpfsN/3QVXheWRhRV7tUUCio9C7DdtfICielhGdFUO9l/6plgAjOc6BXRatDXv8yml3EEW93LVbmnMDYVjuZHeXhFGYHWiAOoH76+EIUob3i8rqvatywb2xdVpU+05pCnbIqEAGU4eBsR/YKjF1x5v6Vbcof7TdS3nfpWqzaMGmwJucKRn8XqV0AtdqhiInozzcTZ9hJKf0RvDLKEikO1sRR7kKu4nrBIWsaGt9ltu16otTq0sagyuE0yaVArXZnUzc0PTFQM3GGW3pi1Q0ycZYTYEZCrqlM6qhOs0Tx0zPxV8qE/u7hGqfIZK65mRqEk3VkPIziqIkzTng==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IKcFwPeea/9VwL8YT+o0/mGEQbWW+vWbTOi8vtsGE4M=;
- b=Rxh1Wdt7yL5TWrynl3mH2NURsQx2UQei2IJablCkriPJklSr/Ialmt0CMTnYUxwzZG1ePvNee3hya6XzFFz74YTRAykxfdVPmP++NoJ8isCdz68SERR7aVYashnz+BqLixwo+QU+aBY5l5jOumupkHq8WJObrSgJwSbVkNuy4KhXvJqVbNUYUmbAcXWkX39SVNZTWO/BlJv4d0QesyhGFtpXCMKYRnbe4fHIZwlvAOA5GO38MU/Xb241xaQRshh/1r2EubskPX/5InZHy2WpzgtHyG5qs9VwgDo9jw0mkSFmQjRHTobUfTjro9QSPE4oMCe350kQVqpCrfp9ltpDaw==
-Received: from BN9PR03CA0933.namprd03.prod.outlook.com (2603:10b6:408:108::8)
- by LV3PR12MB9257.namprd12.prod.outlook.com (2603:10b6:408:1b7::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.25.20; Fri, 15 May
- 2026 21:03:21 +0000
-Received: from BN1PEPF00005FFF.namprd05.prod.outlook.com
- (2603:10b6:408:108:cafe::63) by BN9PR03CA0933.outlook.office365.com
- (2603:10b6:408:108::8) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9846.22 via Frontend Transport; Fri,
- 15 May 2026 21:03:21 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- BN1PEPF00005FFF.mail.protection.outlook.com (10.167.243.231) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.25.13 via Frontend Transport; Fri, 15 May 2026 21:03:21 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 15 May
- 2026 14:02:59 -0700
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.20; Fri, 15 May 2026 14:02:59 -0700
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.126.190.182)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Fri, 15 May 2026 14:02:58 -0700
-Date: Fri, 15 May 2026 14:02:57 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <iommu@lists.linux.dev>, Jonathan Hunter <jonathanh@nvidia.com>, "Joerg
- Roedel" <joro@8bytes.org>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-tegra@vger.kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Thierry
- Reding" <thierry.reding@kernel.org>, Krishna Reddy <vdumpa@nvidia.com>, "Will
- Deacon" <will@kernel.org>, David Matlack <dmatlack@google.com>, Pasha
- Tatashin <pasha.tatashin@soleen.com>, <patches@lists.linux.dev>, Pranjal
- Shrivastava <praan@google.com>, Samiullah Khawaja <skhawaja@google.com>,
-	Mostafa Saleh <smostafa@google.com>
-Subject: Re: [PATCH v2 3/9] iommu/arm-smmu-v3: Use the HW arm_smmu_cmd in
- cmdq submission functions
-Message-ID: <ageKAQC7yAzI0xB6@Asurada-Nvidia>
-References: <0-v2-47b2bf710ad5+716ac-smmu_no_cmdq_ent_jgg@nvidia.com>
- <3-v2-47b2bf710ad5+716ac-smmu_no_cmdq_ent_jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mMRhFjaP"
+Received: by mail-dl1-f42.google.com with SMTP id a92af1059eb24-1332772f6b3so283161c88.1
+        for <iommu@lists.linux.dev>; Fri, 15 May 2026 14:14:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778879652; x=1779484452; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=mZWDYSQL0KY9ESsVCDJnFdENr1SKqKscOsf4LFzsjVs=;
+        b=mMRhFjaPFXgyaJ82gAnTiI6Cr7oV2jh2smYxU0+6M9mNb8zNAQdVJUN8Ycw5vG7lih
+         OyebAo7hkHA/PHg/bIBZ555ARoqoyLeG30dGnqv+duS+xpyMso8Qfjiy9jBxPCqkuVoL
+         17iCmQzsUB+FW7zSCRKRS3MOKmpht2dmzoUsV7lpxhC2N755gYsSLzqLlutubw0khJPR
+         vS3MHX+4uEA2n/B0D9bh8D/vN0zo3/NMChi3KbNHUybXHvSI4yjgB2hCQlPJerFWsvn8
+         B9PSabnQVY0iOE2rfStFKrJD4r0reYiDQ1eAcO/gO7eS4Aw1mpxRsLRcisGAAcnzRpYv
+         xn6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778879652; x=1779484452;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mZWDYSQL0KY9ESsVCDJnFdENr1SKqKscOsf4LFzsjVs=;
+        b=cpUy187uO7v5Ya2agDp37monnzqcTgLBKZ0KF/OM5CwIMcw8JAYHvCFX5EB7EjvZG7
+         0rXFsByQ5qUuBXtpOTXW6DCj++bE65Cj4r9x2ntReh+D+nAbSBj83TS9DRAd06CfZLyM
+         pgTWMx7W/NzZ1JxkQfP0QZejZ05LWg+DxocENMpycfq0et8sANRcj/IgnG/7MHN5HsaT
+         OhyNjd6yvFGLTor3HW57KLslrIjQwxG/sfGqN6eumJKldUSerqF4AtxFmfSQX0sXlLvi
+         vaoZyuCROpp73GNU1mK7tBi3o+ibwvpZ65wsA3E6ImfXh7WO+834Ao5A//0BHOGBRYZs
+         P8dw==
+X-Forwarded-Encrypted: i=1; AFNElJ8xLNA3pK+3bPv99F6lKqHwRGAjI4K+DM1fAfkB3y7a7CMXeZYEaI8c+s/N2rkU6JewQJpQZQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwoZgzfIvmrW9z4vYzct2GLyHULTHTzWeN7yHnApI/OZ8G62Nkv
+	I5VRE1lEVVxnRulTff8lHqy177cnl9zR8+Yt4LtAvOL9cjOZUZTHW+vE
+X-Gm-Gg: Acq92OFmYG0UCpUvuxcDl7BzMrkrDNxY9djk44hYjvsEOxkI0CvF5Ky69zcnrD0cbdk
+	Zhue9xk5as1/EAexw/mmqOx5meWxBg2MUbF4f4q+4Bp9HkhrF5oskU8ehU2H9pUgDV1Yq8L7sT0
+	USYCYoo2wcr9/9/oZJO9Vx+/88M7nDTwjFJ7PzrhJfeHyXo4IU923P7Tlk8Sq3IovT8asXnE/ow
+	RT1Z9F6B1YEg5RFrgCie6MVSUDfkl9RY5kw3WmRsHQyYq/1cTDwKtVGBe0/973pblZcz6Eo85Br
+	VzJhYBnXvq25NeMufRmP+hqYepGOfbuyeAzh7S1ffAgUnClePDE+YxAhHsCUujp1+Rg3e1Dd2TQ
+	a0ciaN6gW/4xoj4SdyMCLPlHv5K8/kbXJnY/Pf0dmbBPxjyjWnAHB3xc6mNoonVxf7SStTiLt5l
+	eNuHdklSjxBo8QQUzA+5d3uPBn74UigBU=
+X-Received: by 2002:a05:7022:b8f:b0:130:6978:c96 with SMTP id a92af1059eb24-13504738d6cmr2812237c88.19.1778879652253;
+        Fri, 15 May 2026 14:14:12 -0700 (PDT)
+Received: from mimas.lan ([2603:8000:df01:38f7:a6bb:6dff:fecf:e71a])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-134cbdcf140sm11362043c88.5.2026.05.15.14.14.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 May 2026 14:14:11 -0700 (PDT)
+From: Ross Philipson <ross.philipson@gmail.com>
+To: linux-kernel@vger.kernel.org,
+	x86@kernel.org,
+	linux-integrity@vger.kernel.org,
+	linux-doc@vger.kernel.org,
+	linux-crypto@vger.kernel.org,
+	kexec@lists.infradead.org,
+	linux-efi@vger.kernel.org,
+	iommu@lists.linux.dev
+Cc: ross.philipson@gmail.com,
+	dpsmith@apertussolutions.com,
+	tglx@linutronix.de,
+	mingo@redhat.com,
+	bp@alien8.de,
+	hpa@zytor.com,
+	dave.hansen@linux.intel.com,
+	ardb@kernel.org,
+	mjg59@srcf.ucam.org,
+	James.Bottomley@hansenpartnership.com,
+	peterhuewe@gmx.de,
+	jarkko@kernel.org,
+	jgg@ziepe.ca,
+	luto@amacapital.net,
+	nivedita@alum.mit.edu,
+	herbert@gondor.apana.org.au,
+	davem@davemloft.net,
+	corbet@lwn.net,
+	ebiederm@xmission.com,
+	dwmw2@infradead.org,
+	baolu.lu@linux.intel.com,
+	kanth.ghatraju@oracle.com,
+	daniel.kiper@oracle.com,
+	andrew.cooper3@citrix.com,
+	trenchboot-devel@googlegroups.com
+Subject: [PATCH v16 00/38] x86: Secure Launch support for Intel TXT
+Date: Fri, 15 May 2026 14:13:32 -0700
+Message-ID: <20260515211410.31440-1-ross.philipson@gmail.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <3-v2-47b2bf710ad5+716ac-smmu_no_cmdq_ent_jgg@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN1PEPF00005FFF:EE_|LV3PR12MB9257:EE_
-X-MS-Office365-Filtering-Correlation-Id: 62feb9ad-0ea0-4b61-939d-08deb2c5657f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|7416014|36860700016|82310400026|3023799003|18002099003|22082099003|56012099003|4143699003|11063799003;
-X-Microsoft-Antispam-Message-Info:
-	SgcbjysddkVdOxaC8DU9j0cJs6gM4Bpz2BCy+CizH8ZY9RSZr+fSDDOUKeN/X0ECJHkCaj4ZXy6Dogjv+9hLfHKyynGbuWfys9BdZuuBfeyQronfe0feRA/L5oolvu15JirEslf2GjlHP3Xt/alWc2jA06Op8Jxgp3417OsLg04okn17PDdtyhBk0nWvvMMHZ7vAkzPwlila2VPkGcirF/jXGeG1E8kp0EzVRn/GAu4vhq5WmRMaKnQKcIJPB7AFm55TtBGkJ+zL1h7qoCnjjVouUMyuxQIpnDpns6D/AzwVDHJ7L3hvaiA1coGa+09diSDXUWrWolzYkkf4APeaG5N/2/qcECIf/4cElJOlzNNpjEMZ0pQ6KsrKaIBH+oLA/Q/oRj9FUnaDZs4hOMYsV79v8uufh0NXOOZOHJaFZ+EJlFjAYx/tuZcKX0bQLi4qCacGUsK7mwIoHRrwzL50QsO1famlFN8UU016YZAofHYaJRZfJ5EtprbCbcYR1NQCbrn5N8a3p4eQquSqkGQb8umNnjMg9lgj0upKE1yG15+lTebeTt9MIIa0bifTaJrAR2dImiiRvjPzkfhtDb4oYGqVjdk0KDVL8tsNX2nusxBLc0ojoZDXmm39m6nynZm74EDw1lVHGLypuEJOxVHXB7KvQ6BmWVQqhaJCDSyz93YtvNJdpaOkE9tCz7n1DqhuRIknxUeiPGJTwU079ZLgyNcv0XXCQnojOEAEUdeDNdM=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(36860700016)(82310400026)(3023799003)(18002099003)(22082099003)(56012099003)(4143699003)(11063799003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	ip1cdjmp4XwMZxYkmNRi2yirekCdoaLpHq2RgjizvQQBXAdPfleBMl0fpQPLHj3qMYlrnkfXVn9yaIb+9oO432hfOOC1WAHgNj//dVeOX6o53LCGOV1HRTbnn+zAmbAT+uQ+iOOYRE7EYokNJp9zU9H/hKBudenn7UjbtcifJNrbZmxsUvMEy5OCA+0iqqr5v48d8N4Xd+PiWDx6+7Lze314UuYWbLG7Ns4CNasFTr5Fd6rpfdNZkbsqN771Z8e/OUHtEUL0zl99FG6z4JSIEIeG/DJZ3T7/mbYi018y+BXFxpGOwQ4phJxrvvJu33BKMgO7dXi26FykuOZNS0sf4PbiCbzc8paa/5QSS71Bwhc6kWv2gQNFF7BrcNyrQ9/8Jaf80ce6wVahIzOOv1u7ex0qOhQUE/B/t8auq6kQGhbUmp38hBVyeXJ2eYLJMRC9
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2026 21:03:21.2420
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 62feb9ad-0ea0-4b61-939d-08deb2c5657f
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN1PEPF00005FFF.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR12MB9257
+Content-Transfer-Encoding: 8bit
 
-On Wed, May 13, 2026 at 08:57:42PM -0300, Jason Gunthorpe wrote:
-> Continue removing struct arm_smmu_cmdq_ent in favour of the HW based
-> struct arm_smmu_cmd. Switch the lower level issue commands to work on
-> the native struct by lifting arm_smmu_cmdq_build_cmd() into all the
-> callers.
-> 
-> Following patches will revise each of the arm_smmu_cmdq_build_cmd()
-> call sites to replace it with the HW struct.
-> 
-> Reviewed-by: Mostafa Saleh <smostafa@google.com>
-> Reviewed-by: Pranjal Shrivastava <praan@google.com>
-> Tested-by: Pranjal Shrivastava <praan@google.com>
-> Tested-by: Mostafa Saleh <smostafa@google.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-[...]
-> @@ -3446,6 +3447,7 @@ arm_smmu_install_new_domain_invs(struct arm_smmu_attach_state *state)
->  static void arm_smmu_inv_flush_iotlb_tag(struct arm_smmu_inv *inv)
->  {
->  	struct arm_smmu_cmdq_ent cmd = {};
-> +	struct arm_smmu_cmd hw_cmd;
+Secure Launch is a vendor-neutral approach to implementing TGC Dynamic
+Root of Trust (DRTM) support in the kernel. This is complementary to
+better known Static Root of Trust (SRTM) schemes such as UEFI
+SecureBoot.
 
-Following the other pattern, this could be:
-    "cmd" -> "ent" and "hw_cmd" -> "cmd"?
+This series provides the common infrastructure along with Intel TXT
+support, without needing the tboot exokernel. Support for AMD SKINIT is
+pending the common infrastructure getting nailed down, and ARM are
+looking to build on it too.
 
-That being said, at the end of the series, these all get removed.
+Originally, tboot were approached to see if they'd take support for
+other vendors, but they elected not to. Hence this approach instead.
 
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+Work is being coordinated by the Trenchboot project,
+https://trenchboot.org/, organising Secure Launch support for upstream
+open source projects including Grub, iPXE and Xen. The goal of the
+Trenchboot project is to make DTRM easy to use, e.g. GRUB adds "slaunch"
+as a command in the boot stanza. See
+https://trenchboot.org/user-docs/QUICKSTART/#linux-quick-start-guide for
+more details
+
+Patch set based on commit:
+torvalds/master/028ef9c96e96197026887c0f092424679298aae8
+(tag: v7.0) Linux 7.0
+
+Finally we would like to thank everyone for their input and
+assistance. It has all been very helpful in improving the quality of
+our solution and in reviewing/strengthening our security posture.
+
+Thanks
+Ross Philipson and Daniel P. Smith
+
+Changes in v16:
+
+ - Moved Secure Launch entry point out of the x86 setup kernel into the
+   mainline kernel.
+ - Add EFI protocol support for DL stub callback.
+ - Add SHA 384/512 PCR extend support.
+ - Rewrote Secure Launch kernel documentation.
+ - Updated the reorganization of TPM header and buffer related files.
+ - TXT early heap parsing support.
+ - Corrected commit messages and tag lists per review feedback.
+ - Fix code formatting and typos.
+
+Changes in v15:
+
+ - Rewriting and reformatting of the cover letter, commit message and
+   code comments per requests from maintainers.
+ - Introduction of a early TPM driver in the x86 setup kernel to allow
+   TPM extend command very early in the boot.
+ - Remove previous TPM extending architecture that attempted to update
+   the TPM PCRs later in the boot process.
+ - Include set of split up TPM header files to allow TPM driver reuse
+   in other environments (e.g. early kernel, x86).
+ - Split slaunch.h into 2 files, with a new txt.h. The former contains
+   platform agnostic definitions for the SL feature. The new txt.h file
+   contains Intel TXT definitions from the public specs.
+ - Split TPM headers up following the specifications where the
+   technologies are defined.
+ - Fix code formatting and typos.
+
+Alec Brown (1):
+  tpm: Remove main TPM header from TPM event log header
+
+Ard Biesheuvel (3):
+  x86/boot: Slight refactor of the 5 level paging logic
+  x86/efistub: EFI stub DRTM support for Secure Launch
+  x86/boot: Legacy boot DRTM support for Secure Launch
+
+Daniel P. Smith (9):
+  tpm/tpm_tis: Close all localities
+  tpm/tpm_tis: Address positive localities in tpm_tis_request_locality()
+  tpm/tpm_tis: Allow locality to be set to a different value
+  tpm/sysfs: Show locality used by kernel
+  Documentation/security: Secure Launch kernel documentation
+  x86: Add early SHA-1 support for Secure Launch early measurements
+  x86: Add early SHA-256 support for Secure Launch early measurements
+  x86: Add early SHA-384/512 support for Secure Launch early
+    measurements
+  x86/slaunch: Secure Launch late initcall platform module
+
+Jarkko Sakkinen (3):
+  tpm-buf: Merge TPM_BUF_BOUNDARY_ERROR and TPM_BUF_OVERFLOW
+  tpm-buf: Remove chip parameter from tpm_buf_append_handle()
+  tpm-buf: Implement managed allocations
+
+Ross Philipson (22):
+  tpm: Initial step to reorganize TPM public headers
+  tpm: Move TPM1 specific definitions to the command header
+  tpm: Move TPM2 specific definitions to the command header
+  tpm: Move TPM common base definitions to the command header
+  tpm: Move platform specific definitions to the new PTP header
+  tpm-buf: Add TPM buffer support header for standalone reuse
+  x86: Secure Launch Kconfig
+  x86: Secure Launch Resource Table header file
+  x86/efi: Secure Launch Resource Table EFI definitions header file
+  x86: Secure Launch main header file
+  x86/txt: Intel Trusted eXecution Technology (TXT) definitions
+  lib/crypto: Add SHA1 support for pre-boot environments
+  lib/crypto: Add SHA512 support for pre-boot environments
+  x86: Allow WARN_trap() macro to be included in pre-boot environments
+  x86/msr: Add variable MTRR base/mask and x2apic ID registers
+  x86/tpm: Early startup TPM PCR extending driver
+  x86/slaunch: Add MLE header and Secure Launch entrypoint to the core
+    kernel
+  x86/slaunch: Secure Launch kernel early boot initialization
+  x86/slaunch: Secure Launch kernel late boot initialization
+  x86/slaunch: Secure Launch SMP bringup support
+  kexec/slaunch: Secure Launch kexec SEXIT support
+  reboot/slaunch: Secure Launch SEXIT support on reboot paths
+
+ Documentation/arch/x86/boot.rst               |   8 +
+ Documentation/arch/x86/zero-page.rst          |   1 +
+ Documentation/security/index.rst              |   1 +
+ .../security/launch-integrity/index.rst       |   9 +
+ .../launch-integrity/secure_launch.rst        | 681 ++++++++++++++
+ arch/x86/Kconfig                              |  15 +
+ arch/x86/boot/compressed/Makefile             |   2 +-
+ arch/x86/boot/compressed/misc.c               |  55 +-
+ arch/x86/boot/compressed/pgtable_64.c         |  18 +-
+ arch/x86/boot/startup/Makefile                |   8 +
+ arch/x86/boot/startup/exports.h               |   7 +
+ arch/x86/boot/startup/lib-sha1.c              |   6 +
+ arch/x86/boot/startup/lib-sha256.c            |   6 +
+ arch/x86/boot/startup/lib-sha512.c            |   6 +
+ arch/x86/boot/startup/sl_main.c               | 638 +++++++++++++
+ arch/x86/boot/startup/tpm.h                   |  47 +
+ arch/x86/boot/startup/tpm_drv.c               | 567 ++++++++++++
+ arch/x86/include/asm/boot.h                   |   4 +
+ arch/x86/include/asm/bug.h                    |   8 +-
+ arch/x86/include/asm/msr-index.h              |   5 +
+ arch/x86/include/asm/realmode.h               |   3 +
+ arch/x86/include/asm/txt.h                    | 281 ++++++
+ arch/x86/include/uapi/asm/bootparam.h         |   3 +-
+ arch/x86/kernel/Makefile                      |   3 +
+ arch/x86/kernel/asm-offsets.c                 |  22 +
+ arch/x86/kernel/reboot.c                      |  14 +
+ arch/x86/kernel/setup.c                       |   3 +
+ arch/x86/kernel/sl_stub.S                     | 847 ++++++++++++++++++
+ arch/x86/kernel/slaunch.c                     | 619 +++++++++++++
+ arch/x86/kernel/slmodule.c                    | 353 ++++++++
+ arch/x86/kernel/smpboot.c                     |  47 +-
+ arch/x86/kernel/vmlinux.lds.S                 |   5 +
+ arch/x86/realmode/init.c                      |   8 +
+ arch/x86/realmode/rm/header.S                 |   3 +
+ arch/x86/realmode/rm/trampoline_64.S          |  32 +
+ arch/x86/tools/relocs.c                       |   1 +
+ drivers/char/tpm/tpm-buf.c                    | 148 +--
+ drivers/char/tpm/tpm-chip.c                   |  35 +-
+ drivers/char/tpm/tpm-sysfs.c                  |  31 +-
+ drivers/char/tpm/tpm.h                        | 180 ----
+ drivers/char/tpm/tpm1-cmd.c                   | 193 ++--
+ drivers/char/tpm/tpm2-cmd.c                   | 338 +++----
+ drivers/char/tpm/tpm2-sessions.c              | 144 ++-
+ drivers/char/tpm/tpm2-space.c                 |  57 +-
+ drivers/char/tpm/tpm_tis_core.c               |  24 +-
+ drivers/char/tpm/tpm_tis_core.h               |  64 +-
+ drivers/char/tpm/tpm_vtpm_proxy.c             |  30 +-
+ drivers/firmware/efi/libstub/Makefile         |   1 +
+ drivers/firmware/efi/libstub/efistub.h        |  24 +
+ drivers/firmware/efi/libstub/x86-slaunch.c    |  38 +
+ drivers/firmware/efi/libstub/x86-stub.c       |  27 +-
+ drivers/iommu/intel/dmar.c                    |   4 +
+ include/keys/trusted_tpm.h                    |   1 -
+ include/linux/slaunch.h                       | 262 ++++++
+ include/linux/slr_efi.h                       |  40 +
+ include/linux/slr_table.h                     | 339 +++++++
+ include/linux/tpm.h                           | 234 +----
+ include/linux/tpm_buf.h                       |  57 ++
+ include/linux/tpm_command.h                   | 516 ++++++++++-
+ include/linux/tpm_eventlog.h                  |   4 +-
+ include/linux/tpm_ptp.h                       | 151 ++++
+ kernel/kexec_core.c                           |   8 +
+ lib/crypto/sha1.c                             |  10 +-
+ lib/crypto/sha512.c                           |  10 +-
+ security/keys/trusted-keys/trusted_tpm1.c     |  37 +-
+ security/keys/trusted-keys/trusted_tpm2.c     | 171 ++--
+ 66 files changed, 6385 insertions(+), 1129 deletions(-)
+ create mode 100644 Documentation/security/launch-integrity/index.rst
+ create mode 100644 Documentation/security/launch-integrity/secure_launch.rst
+ create mode 100644 arch/x86/boot/startup/lib-sha1.c
+ create mode 100644 arch/x86/boot/startup/lib-sha256.c
+ create mode 100644 arch/x86/boot/startup/lib-sha512.c
+ create mode 100644 arch/x86/boot/startup/sl_main.c
+ create mode 100644 arch/x86/boot/startup/tpm.h
+ create mode 100644 arch/x86/boot/startup/tpm_drv.c
+ create mode 100644 arch/x86/include/asm/txt.h
+ create mode 100644 arch/x86/kernel/sl_stub.S
+ create mode 100644 arch/x86/kernel/slaunch.c
+ create mode 100644 arch/x86/kernel/slmodule.c
+ create mode 100644 drivers/firmware/efi/libstub/x86-slaunch.c
+ create mode 100644 include/linux/slaunch.h
+ create mode 100644 include/linux/slr_efi.h
+ create mode 100644 include/linux/slr_table.h
+ create mode 100644 include/linux/tpm_buf.h
+ create mode 100644 include/linux/tpm_ptp.h
+
+-- 
+2.47.3
+
