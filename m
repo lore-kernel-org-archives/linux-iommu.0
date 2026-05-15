@@ -1,78 +1,77 @@
-Received: from mail-qv1-f52.google.com (mail-qv1-f52.google.com [209.85.219.52])
+Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1197430CDAB
-	for <iommu@lists.linux.dev>; Fri, 15 May 2026 13:36:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FE653CC7E3
+	for <iommu@lists.linux.dev>; Fri, 15 May 2026 13:54:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778852165; cv=none; b=RW6dy8LQfKOON64ka4l/zwZ3nWlMwgBfoOaQjQYH38e0jj6PP3SZk8GRP2kqynw8ToRLzkFHOQ2DpS0wVXs70HVU/MTDl5oOQr0mKf9rBAu9pjAqQKAZeaFhbiLfSs5QLWYjKormJKtQtdJ+KoWZm6+NyhPU7oKtPl2HByOedbQ=
+	t=1778853272; cv=none; b=t34ifUhHDyVF0AbqcbiuUPEfFDZ8k07JlVhxvZEFUMwknAzR0g5H0ZQmeox5w5Go39m1gtxroW3SM9EQNo5L+qYpq4/Gh98504TOGrcfloHEHJPDCCuq2Y6xSny2qDmKohX+5U8XzUDbWj+l9lTMOnnublHONdF2TYzjPq+p6lw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778852165; c=relaxed/simple;
-	bh=Fwd7lj78za7/egg1q8Mo4PUhAXSEVczLRrgBepYO3+I=;
+	s=arc-20240116; t=1778853272; c=relaxed/simple;
+	bh=ogaB8c9WpDZ0HQVoAmC1+/X0xgwqdjj3S/BcAjNZTxs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lYjBnia8vxyrej5i/jKMdDLcxGRNvstYdKoM4T2BjLK9vfzeYvduXv1MgLU4NPdsWA4EAVT83o6gBoQH2MgofF2TxNP4Kz9paKExxs1PPqDS+QfXywVW10HEpMHuVqtCXdhoevAfHnlWz/V5gfHt+nzETUBGZRlyXpBQc4+yLq4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=oTo3f5wB; arc=none smtp.client-ip=209.85.219.52
+	 Content-Type:Content-Disposition:In-Reply-To; b=WodOlQstOiSoOR6Y9PYlOku/+u9wuy/oEFYrhri1rVtexRNz0+tNYevePKhXToTSK7NMhsOxTeK4Mi5ijRP/IrQffSyTo9NkToxTfHHzr27a5DaG/1pDegFQN3o932st3TBpQBXaDKE0J0m5A6s6JNZGb/2HsMRhdg5e8uzNl3Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=TkpYQEzw; arc=none smtp.client-ip=209.85.222.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="oTo3f5wB"
-Received: by mail-qv1-f52.google.com with SMTP id 6a1803df08f44-8b7f937ef44so53550766d6.0
-        for <iommu@lists.linux.dev>; Fri, 15 May 2026 06:36:03 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="TkpYQEzw"
+Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-911501a99feso178117685a.2
+        for <iommu@lists.linux.dev>; Fri, 15 May 2026 06:54:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1778852163; x=1779456963; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1778853269; x=1779458069; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Z72wSJNyYtME5egB+TN5Z3aN3HcOFHG2wgqQPaKQrhU=;
-        b=oTo3f5wBFyaJ4QCDgO4dimapljdlry1bisU6N+zjGrj0shDDnWXcXt6UR4AQs7y1P0
-         3g4Dyu/RzcbNlvdf+ohu1p47pYUF1OkgIqHRjygdzaF9tq7m4a0dcj+Y4dz7Z+ooIkc9
-         jracCuGX8iuTNQ292Rtt7toszpgVpYnGHAvmpfv32hHmbKZFTbI/fCNjyNccNqOmSIyB
-         J6IDzPnFcVgbcu07QzCEP6cbMPM/3gmHdU3O5dIC7d/ctYgpae/mkdGW/ddpTTuQnvvB
-         J/gOzGlp+1l74HP9MdVIcsryCLaBnACuWu06OUxcVPHfWupvDNob/6BCCZWCswqBQyeh
-         X/KQ==
+        bh=d7sJIQD9tWQIe4BdjnAe96u8pxDyEGA325KU5uwZDdI=;
+        b=TkpYQEzw3YSWklE3gUqZTexPd/DQFVAScGPUolbZJpR3haoYv91lhKBlsHtYupbAKg
+         6cvYXVbJrmzaWKLeC2Hpfg1Qek4d20cFySaw0XtK6BS/WjwrHacl0HlcGSEA9k3neXef
+         xsU2wlKiKYKu/KgChKcGCJdYcyjhgvGWToYH2wSKj5IXJoCYXM0UqjAlM7XBp5Jz6aVp
+         NMmwqAhi2UtHMnBw23Usi7j0GP3Ae7V3yC1p3MehyjwZAdsOA5tL/gBv9xNdmdndAoZA
+         s9sIR4dPFZiIJOh3CZYl/dSBOLH8Hhjl9kEQ3PgjRMUjuTORwU4EFklx54OaemAMq+su
+         ZrVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778852163; x=1779456963;
+        d=1e100.net; s=20251104; t=1778853269; x=1779458069;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Z72wSJNyYtME5egB+TN5Z3aN3HcOFHG2wgqQPaKQrhU=;
-        b=GBHf3NQy56cRJLYMHh/OZDdhnaYXMo5+rfQKVrh7Bg/TlHwPUWL00zE5xBhlP9IzlG
-         gF23F22cO0kEIWadvBa9K+NraTqV5jBI473uvVbimMnaTL2fqG95jG7w3Pz6MN2n6XfO
-         g9BdPAAC9RXh6AwZlpVZoqgW/WTSd1B03tsf4nVrf0CWEj4xela2mGofAs/hTRgkzbAa
-         dLiIQ/7PcZT4NiWFJkGEeazcWVbu42X5Cl1iCQgLnB4hF0vxdEtTafowOGnaslV0j9f0
-         gXA8hBuZx5Dx8RuBgJyQPay9NpiKu8/ITsN9oV9n9lHNCMVRD9Qt1q/t668xaH3uUlH4
-         jDRA==
-X-Gm-Message-State: AOJu0YxehiCIEVKrnTpMC/BJnHU2Iu7ZctetsXy9OlWz2zPc5z7UHvtP
-	CcxViQtVBTC6+pY/qCC5xNzEWdszqp3nMR4l7erliSC7Z3VwEJKKyZV2xNOyDwSBCR/hcSLtJUR
-	t0jBma5c=
-X-Gm-Gg: Acq92OG5hF5+Mi1bo83T/r0uf1seerQci7dslH1J/cX454OQGenAbXz2diFREZaU7d/
-	woLe1cnFO6uJPnCXVOzCREEawbIXQ56AkcU0J4aD2dkOQJRKnqgt84oWGR4jtxDpMaPTJxjLjLl
-	0y0in6viA65ORMsomvqqHjE3tadPMvplWfsa/N17n6DKMmdnFbRD7ySe56BrqVCuXYI6fQ8/uvh
-	35X5jNWkhpyMIA2cb+GL5kJu++W41VSmAkfwhN0WfUAIhycWfrQ4ZvyXgx6OJcJIidajAd9pA9/
-	yx8u1wayD7SJ/QqhgI2L1FoYniaaPCO3rkuoVa9CLjySXJ7Yev3Ix9ieyCYBO6A4DW3/66c/QJ0
-	6l7BwE5krwujClSh3Feum9101UMfIMfcnakZdmYKRfKxFbkcpeKfO6PX0xY9K0YIa9th9OKgHMH
-	ZDYuAuCCq1MWlOWawycmqhdcDHuEKA1hAHV0MwgBvTTRRal+PoyKyU7E3GaCOlHo2Lh1sj/GMKB
-	nvZyg==
-X-Received: by 2002:a05:6214:54c2:b0:8ba:b699:9e54 with SMTP id 6a1803df08f44-8ca0f69b454mr69231826d6.47.1778852163065;
-        Fri, 15 May 2026 06:36:03 -0700 (PDT)
+        bh=d7sJIQD9tWQIe4BdjnAe96u8pxDyEGA325KU5uwZDdI=;
+        b=pXAmZc87BHszBFbDEuhG1LQjb6qunGo2X3m07FkK4jmh1sw91Usw9kvF1JNNXAaw5e
+         E6IlHivRwW408cX9uLCih0bP/sIjrlpvyHp4XIMoU9xIHIJXJBFdxSlbc8f1TiA6v9tY
+         7sQegRpkiD9C/ysX8N46Yb2T9XYXuqmWWzOE0FAfjL/Ff+8AarJM3RgHJLupSmnjBANf
+         YU2ZdliPD+BBe8Trk6JTx4dT6At/XPr54zbmYIqlibQsdn1Xws6RG1K+ErhffX2AH+Wh
+         OgRRK63ok5T7Pojoq8ceu0Ki/+coLimf11we+H8wP+uaP8dJ4wrWRzfiuYVNOzL7zLf8
+         BZUg==
+X-Gm-Message-State: AOJu0Yz5mq7Wzruld/D5pzP0fhiIVKzTl14BIhfQDRBE3PP7dL+rx4oH
+	dIGwoMKWJ6Ppx6TNJHYYszdnhL1ZEppv0SkxmAgh2H85waJwTyY+fMvWDNS5ZOTkpzY=
+X-Gm-Gg: Acq92OEsFyAmKaCbo4WMl0h9dYQhdnG1B21z6+y2SSW9QntuqAuyAJCiX3K1vDXBRRw
+	X+44JqqIdbg/hQygxIaWLFuVpKRcRaHY8PERkTE20GVNKOIZTDPRci5d6Pz/dIhAaZJR04IP6fR
+	dZPb05IRNswC3Yj5G8tPyq+R/tGRXy8ShqKqiLo7rQBH6zzU8jTaO3Dmm3HWpQuZXwmh6N/nSU5
+	98CJvBEkT4F5GVQ9mZ0tYZ+UPgZuB0YD419/JQ76uFeEt4t3fUku3xUtZnCpWcvzJabZtE5yWBR
+	jcjyo6ecoFWwrRLPYiABscW85cErEbCweifOzAWZs4pbq2PuJsKAz+t7Z1xErNHM6Ixt+3uEq3N
+	QSh9xKlqEP0uB8P/xE8pydCQ5iMDH5yFogeGq9cKxTXRXwht5CCNb5J2/YMhtQrYiIwTTPA/NGP
+	IjT4u7TEdLS2zuEWQvLaGaNLSGTYPISv7mAzs1gQ4Vxe+eAn1ifJdajuZeXsT35TAJu9zlPJpkw
+	eFy3RoeqiR7pxyengU5HROC/JM=
+X-Received: by 2002:a05:620a:7116:b0:8db:7315:706c with SMTP id af79cd13be357-911d0f4a568mr660861285a.59.1778853269479;
+        Fri, 15 May 2026 06:54:29 -0700 (PDT)
 Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8c9093e62c5sm52289596d6.21.2026.05.15.06.36.02
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-910bae24879sm589818085a.18.2026.05.15.06.54.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 May 2026 06:36:02 -0700 (PDT)
+        Fri, 15 May 2026 06:54:28 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1wNsht-00000007QFF-3spW;
-	Fri, 15 May 2026 10:36:01 -0300
-Date: Fri, 15 May 2026 10:36:01 -0300
+	id 1wNszk-00000007TGH-1wJJ;
+	Fri, 15 May 2026 10:54:28 -0300
+Date: Fri, 15 May 2026 10:54:28 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Mostafa Saleh <smostafa@google.com>
 Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org, robin.murphy@arm.com, will@kernel.org,
 	joro@8bytes.org
-Subject: Re: [PATCH 1/3] iommu/io-pgtable-arm: Use consistent sizes for page
- allocation and freeing
-Message-ID: <20260515133601.GF7702@ziepe.ca>
+Subject: Re: [PATCH 2/3] iommu/io-pgtable-arm: Rework to use the iommu-pages
+ API
+Message-ID: <20260515135428.GG7702@ziepe.ca>
 References: <20260513215203.3852661-1-smostafa@google.com>
- <20260513215203.3852661-2-smostafa@google.com>
+ <20260513215203.3852661-3-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -81,26 +80,31 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260513215203.3852661-2-smostafa@google.com>
+In-Reply-To: <20260513215203.3852661-3-smostafa@google.com>
 
-On Wed, May 13, 2026 at 09:52:01PM +0000, Mostafa Saleh wrote:
-> At the moment we use alloc_size to allocate memory but then there
-> is a logical error where we just size in the error and free path,
-> which might be smaller.
-> Also we size to do DMA-API operations, which is OK, but confusing.
+On Wed, May 13, 2026 at 09:52:02PM +0000, Mostafa Saleh wrote:
+> Update the io-pgtable-arm allocator to use the iommu-pages API.
 > 
-> Instead of this error-prone handling, just set size to alloc_size
-> and use it everywhere.
+> Replace the DMA API usage from __arm_lpae_alloc_pages() with
+> iommu_pages_start_incoherent() and from __arm_lpae_free_pages() with
+> iommu_pages_free_incoherent().
 > 
+> Since the iommu-pages API relies on metadata stored in the struct page
+> during iommu_alloc_pages_node_sz(), it cannot be used safely with memory
+> allocated via the custom cfg->alloc (which may not be backed by pages).
+> So, isolate that logic and keep it as it.
+> 
+> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
 > Signed-off-by: Mostafa Saleh <smostafa@google.com>
 > ---
->  drivers/iommu/io-pgtable-arm.c | 11 ++++++-----
->  1 file changed, 6 insertions(+), 5 deletions(-)
+>  drivers/iommu/io-pgtable-arm.c | 79 ++++++++++++++++++++++++----------
+>  1 file changed, 56 insertions(+), 23 deletions(-)
 
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-This is similar to how iommupt works, pt_top_memsize_lg2() rounds up
-the top table size to the alignment minimum and we just dma map
-flush/etc the larger size everwhere.
+I feel the setup for incoherent walk for panthor is kind of sketchy,
+if you select incoherent walk and pass in a random GPU driver struct
+device there are alot of assumptions suddenly to know the dma API is
+doing the right thing..
 
 Jason
