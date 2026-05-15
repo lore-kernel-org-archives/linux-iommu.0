@@ -1,320 +1,156 @@
-Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E37F28643C
-	for <iommu@lists.linux.dev>; Fri, 15 May 2026 22:31:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AC8B19A288
+	for <iommu@lists.linux.dev>; Fri, 15 May 2026 22:32:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778884303; cv=none; b=iTYOr34KOxoce9SjBagdhHyi1AvybgD8VXGLeh0CkhpbYrZbRhkZE1/H6H1yXmxDWae8p5UUtsjEjc5+frQSHsdxLxZ2yGmut23cZ9u0SznoHp7ncVo1TLOFSLPJ99+9PseW+/hHYAU0vaFv4+7qCeGaVmsMCVHrvI0AkLZRj4c=
+	t=1778884335; cv=none; b=ZdATrrj2TLbh1saEOMP9b+rbB40E7XTpnNzBYld4UvFiC9JTEzyIuuKMUt1BqDCe56QZot3mZmuaoVgYtyo0FwiLIOFzVrwCcdziVHLKdFJeoasszkqhMJdwUrL3/ME1WGljBXpL2O8wkQ7geZiRmanH71fBRRZv4rmED3g/tDA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778884303; c=relaxed/simple;
-	bh=zEB0iV2Z2zPsc+Q1ndCMHhq/Wgbjwf3tOg6xW5GmCPw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nugBc/knoxwz+40qym7zvQRm48y3odavgTK6U8m709ZOvisITK9PrqYicP2yV91DiCNXqjjNb7/R+zUfWYQGxgKdVDrdqG7KlQXJiERrUZ0KCpKiCC+1PGp3iGyNvBeiK2UGo7qG2CtN1JEpAZSnfGnr+s4kD/npwVzFmAo493M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=MxpsvqrO; arc=none smtp.client-ip=209.85.219.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1778884335; c=relaxed/simple;
+	bh=KK/lONyvJSJbPPBHqDhaBOi5QdetZIyeHwLoQjZfWgk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=XQbSObmd2+BzewIlCyI2BzowEc0jaix2CkET5edvQ6xFkDVHlUHqqaVueC9ECISGcW+l7e1iCe/KY8fuKfnmb9k2R3Z3D72lHKQvHOSd6ftTvLUMpjlnB9MCjGxfoLwe2afUd01zQWOstZh8PaIw59h2lopKyz0mJ4Ef6WRdbJs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Mn+Cywo+; arc=none smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="MxpsvqrO"
-Received: by mail-qv1-f53.google.com with SMTP id 6a1803df08f44-8bb09239328so2991536d6.3
-        for <iommu@lists.linux.dev>; Fri, 15 May 2026 15:31:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1778884300; x=1779489100; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=HEFCQaRYLTA1e6mz4i4vUabso8iGraCDY6RgSEP/y8E=;
-        b=MxpsvqrOMuz7Mnu06CBkQiePEDeocXparipRbrqb2nOpEYghf7k2LHhq0jpu0AB+pW
-         4CPV5xwAQjE+WbeZvG2yX9XCNeuJ3FTcHDGoqNEj20KnJ/Tf8R/fSFnzViob4TvkZ3Lr
-         80yq/o5QRtGHxzQitEmd4hsA8YPTFRDGqqrNNEkdYeY2QFAR8dxKbIN3KqlEJcldg4Q3
-         cGahIzMFGm+qbZmfNLSFd7KPSUW9vEbOAnJ7xcPRwtzKd+2xKDZhVDTw872AW/Xy4u4N
-         fQpMy62hOVCx1gsc5MvBNt+wNy2kyPfypWGsZA//WJaR2NOHHoUe6Ddjmy2negtQrvbj
-         kjsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778884300; x=1779489100;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=HEFCQaRYLTA1e6mz4i4vUabso8iGraCDY6RgSEP/y8E=;
-        b=iliYtaJ5sAwL2KIY5ypRLf5QBPcIXzYSU7snbNH82F/EcjAFLuGvLTtNLXAZgVelyk
-         PDMvM1zfV+dt0RL61ZJPXc0QkKC0IM1Ah+QvXQBnJtrx+DNMI9Te/58xMyLScWQjkAHG
-         MHtw1N5hckHIW3O9HMkOlxz/brIugmQaI8VNxswxiySPzezJb9NK+iR/FbHle/ntqcnL
-         rBP4OJ1sz9v1N+KeLyPgS/Vvc08X0mfVH6ndNgF8XXC+h3iX6/VwJCjI95I+UadRu3WQ
-         h5mL+ES4jggQIVANyQuZh2pgzp/4Z35hugaTl3kxKtenieiZTgf9om2b0M0yfjbT3O5B
-         xkrw==
-X-Forwarded-Encrypted: i=1; AFNElJ92SatLCEFXMdfH6zodG+ATgA/H+QUGKJwbsGNZeIB/QnOr5dXZQ+grjWWKfPiwqx+65xYjTg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzJHynZGhdcg41GMV37NIWQSjj2PxGvMNM0k+mrvzrTLPp5LeEW
-	JJE1t0Es+BUOHyc/hA8OF2w3qs4kst5FsrSzQrx1I7Uf+e9Vky7pkudOPHpduLvCSjU=
-X-Gm-Gg: Acq92OGbOivl77h1D4QiZUWmMB2VAogS/iZZ8O1PrKdkwbTRys0/ee3w5KYFetiF/D7
-	hwCbp7ZgwmmTA+0zG1zVn+91ShXf3E9QzgUQTo5fyW6WxxU4KYaQ1oa15nPIDJq0e0KMql8Ttqh
-	TTyynbhzS0yAx3IwX3S34V1I8qb5eoRLfqgig5G9+S6N16kwVafBozIWyrm8hUxzFD99+1XhQnk
-	KagcKWckALAsW6MtZyECmU3Vs5DhMboEw/3rSJG6UiAQ3vAShZLNf25HZWFZVrZm9W5LCR1EPS3
-	4vSGx3xjKdDJYDbuIvtdenQOjU+tTYXaCwSkEk0afMNG3pJ1cdWjMpYpsYruOTuSn8z3ahl2Nke
-	yeLQoZ8tpsei4MzwoE8DGwX+YEdDJdq2cXoaU9m6Hw2xMUWSCZcFFTVIoCDEjbsxhcwqsj5tK/Z
-	1HUsMECJMTqP0oZ8VRsH9oZJHP68TuL2SuoDrgRKc/OvmXoAfH0/0f2sWxGNHmoUZ7sCLy+9pwD
-	Prvxw==
-X-Received: by 2002:a05:6214:1bcc:b0:8bd:de6d:c331 with SMTP id 6a1803df08f44-8ca0f643048mr101202536d6.17.1778884300407;
-        Fri, 15 May 2026 15:31:40 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8c908d1d2cfsm64136276d6.15.2026.05.15.15.31.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 May 2026 15:31:39 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wO14F-00000008E1i-1465;
-	Fri, 15 May 2026 19:31:39 -0300
-Date: Fri, 15 May 2026 19:31:39 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Yu Zhang <zhangyu1@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-	iommu@lists.linux.dev, linux-pci@vger.kernel.org,
-	linux-arch@vger.kernel.org, wei.liu@kernel.org, kys@microsoft.com,
-	haiyangz@microsoft.com, decui@microsoft.com, longli@microsoft.com,
-	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	bhelgaas@google.com, kwilczynski@kernel.org, lpieralisi@kernel.org,
-	mani@kernel.org, robh@kernel.org, arnd@arndb.de,
-	mhklinux@outlook.com, jacob.pan@linux.microsoft.com,
-	tgopinath@linux.microsoft.com, easwar.hariharan@linux.microsoft.com
-Subject: Re: [PATCH v1 3/4] iommu/hyperv: Add para-virtualized IOMMU support
- for Hyper-V guest
-Message-ID: <20260515223139.GK7702@ziepe.ca>
-References: <20260511162408.1180069-1-zhangyu1@linux.microsoft.com>
- <20260511162408.1180069-4-zhangyu1@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Mn+Cywo+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778884334; x=1810420334;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=KK/lONyvJSJbPPBHqDhaBOi5QdetZIyeHwLoQjZfWgk=;
+  b=Mn+Cywo+ZW4M6UgLL7Wp27PfCuZeZN00VvKhq8p88lOzsqwQXeuFyBgj
+   EL2mlADnru29A/PjApL+X0ndNSbNZFmlY5s8+MaGQoaM8USC2R5IUugiO
+   XrRChfCJCLgK5T87myvU52PYpt+nJl/iXXboRcP2aw1uYWIdn7koH/rUl
+   Fo300P7izknKk8a5Qp9+j9y0EUb9qW6zIO80bJwCjjDs5zSOfSvjx5xPV
+   mS/7ifSW7zNvyStRyvMsC5b/iw04PIXBi2tS93Ln/VADG3qP3zgcbEith
+   Bl/PuQm3wOnQx7Tz3msc2f24XE99R5SEidpBjz+aagPaWE5I1aZ6+uwzL
+   Q==;
+X-CSE-ConnectionGUID: 98LywI4AS+e1EB49vAhNLQ==
+X-CSE-MsgGUID: 1JcYEem0Q7qNafz/vAKdfg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11787"; a="79874947"
+X-IronPort-AV: E=Sophos;i="6.23,237,1770624000"; 
+   d="scan'208";a="79874947"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2026 15:32:13 -0700
+X-CSE-ConnectionGUID: 7h4qy8WhRj6hnoV9za4Bow==
+X-CSE-MsgGUID: alnpl2zvRBelMjEHn3O9uA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,237,1770624000"; 
+   d="scan'208";a="276911894"
+Received: from gabaabhi-mobl2.amr.corp.intel.com (HELO [10.125.108.201]) ([10.125.108.201])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2026 15:32:13 -0700
+Message-ID: <7648b5f3-2810-4bae-99ab-21c93ea36f25@intel.com>
+Date: Fri, 15 May 2026 15:32:13 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260511162408.1180069-4-zhangyu1@linux.microsoft.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v16 29/38] x86/tpm: Early startup TPM PCR extending driver
+To: Ross Philipson <ross.philipson@gmail.com>, linux-kernel@vger.kernel.org,
+ x86@kernel.org, linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
+ linux-efi@vger.kernel.org, iommu@lists.linux.dev
+Cc: dpsmith@apertussolutions.com, tglx@linutronix.de, mingo@redhat.com,
+ bp@alien8.de, hpa@zytor.com, dave.hansen@linux.intel.com, ardb@kernel.org,
+ mjg59@srcf.ucam.org, James.Bottomley@hansenpartnership.com,
+ peterhuewe@gmx.de, jarkko@kernel.org, jgg@ziepe.ca, luto@amacapital.net,
+ nivedita@alum.mit.edu, herbert@gondor.apana.org.au, davem@davemloft.net,
+ corbet@lwn.net, ebiederm@xmission.com, dwmw2@infradead.org,
+ baolu.lu@linux.intel.com, kanth.ghatraju@oracle.com,
+ daniel.kiper@oracle.com, andrew.cooper3@citrix.com,
+ trenchboot-devel@googlegroups.com
+References: <20260515211410.31440-1-ross.philipson@gmail.com>
+ <20260515211410.31440-30-ross.philipson@gmail.com>
+From: Dave Hansen <dave.hansen@intel.com>
+Content-Language: en-US
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ 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
+In-Reply-To: <20260515211410.31440-30-ross.philipson@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Tue, May 12, 2026 at 12:24:07AM +0800, Yu Zhang wrote:
+On 5/15/26 14:14, Ross Philipson wrote:
+> +// SPDX-License-Identifier: GPL-2.0-only
 > +/*
-> + * Identity and blocking domains are static singletons: identity is a 1:1
-> + * passthrough with no page table, blocking rejects all DMA. Neither holds
-> + * per-IOMMU state, so one instance suffices even with multiple vIOMMUs.
+> + * Based of the original tpm_tis.c implementation as found in the
+> + * Linux 2.6 code base.
+> + *
+> + * Copyright (C) 2005, 2006 IBM Corporation
+> + *
+> + * Authors:
+> + * Leendert van Doorn <leendert@watson.ibm.com>
+> + * Kylene Hall <kjhall@us.ibm.com>
 > + */
-> +static struct hv_iommu_domain hv_identity_domain;
-> +static struct hv_iommu_domain hv_blocking_domain;
-> +static const struct iommu_domain_ops hv_iommu_identity_domain_ops;
-> +static const struct iommu_domain_ops hv_iommu_blocking_domain_ops;
 
-Please follow the format of other drivers and statically initialize
-these here instead of in C code.
+Hey guys,
 
-> +static struct iommu_ops hv_iommu_ops;
-> +static LIST_HEAD(hv_iommu_pci_bus_list);
-> +static DEFINE_SPINLOCK(hv_iommu_pci_bus_lock);
-> +
-> +#define hv_iommu_present(iommu_cap) (iommu_cap & HV_IOMMU_CAP_PRESENT)
-> +#define hv_iommu_s1_domain_supported(iommu_cap) (iommu_cap & HV_IOMMU_CAP_S1)
-> +#define hv_iommu_5lvl_supported(iommu_cap) (iommu_cap & HV_IOMMU_CAP_S1_5LVL)
-> +#define hv_iommu_ats_supported(iommu_cap) (iommu_cap & HV_IOMMU_CAP_ATS)
+Last time:
 
-prefer to see static inlines
+> https://lore.kernel.org/lkml/56929e8b-a7cf-4390-b4ec-0b4c2c32b311@intel.com/
 
-> +static void hv_iommu_detach_dev(struct iommu_domain *domain, struct device *dev)
-> +{
-> +	u64 status;
-> +	unsigned long flags;
-> +	struct hv_input_detach_device_domain *input;
-> +	struct pci_dev *pdev;
-> +	struct hv_iommu_domain *hv_domain = to_hv_iommu_domain(domain);
-> +	struct hv_iommu_endpoint *vdev = dev_iommu_priv_get(dev);
-> +
-> +	/* See the attach function, only PCI devices for now */
-> +	if (!dev_is_pci(dev) || vdev->hv_domain != hv_domain)
-> +		return;
-> +
-> +	pdev = to_pci_dev(dev);
-> +
-> +	dev_dbg(dev, "detaching from domain %d\n", hv_domain->device_domain.domain_id.id);
-> +
-> +	local_irq_save(flags);
-> +
-> +	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
-> +	memset(input, 0, sizeof(*input));
-> +	input->partition_id = HV_PARTITION_ID_SELF;
-> +	if (hv_iommu_lookup_logical_dev_id(pdev, &input->device_id.as_uint64)) {
-> +		local_irq_restore(flags);
-> +		dev_warn(&pdev->dev, "no IOMMU registration for vPCI bus on detach\n");
-> +		return;
-> +	}
-> +	status = hv_do_hypercall(HVCALL_DETACH_DEVICE_DOMAIN, input, NULL);
+So, fast forward another version and six months ... the "fishy" bits
+ripped out of it, license changed and ... crickets in the changelogs and
+cover letter from what I can see.
 
-FWIW the hypervisor cannot implement the linux attach semantics if it
-has detach/attach. It must support simply 'attach' which atomically
-changes the translation. With detach you have a confusing problem if
-errors happen in the middle of the sequence the device is left in an
-unclear state. You should at least document what state the hypervisor
-is supposed to leaave the translation iin during these failures..
+Second, the cadence on these is rather slow. I don't know what the delta
+from the last one is, but it doesn't _look_ like a six month project.
+It's really hard for reviewers to page stuff back in after that long.
 
-> +static void hv_iommu_release_device(struct device *dev)
-> +{
-> +	struct hv_iommu_endpoint *vdev = dev_iommu_priv_get(dev);
-> +	struct pci_dev *pdev = to_pci_dev(dev);
-> +
-> +	if (pdev->ats_enabled)
-> +		pci_disable_ats(pdev);
-> +
-> +	dev_iommu_priv_set(dev, NULL);
-> +	set_dma_ops(dev, NULL);
+Also, new since the last post, you got Sashiko'd:
 
-Does the driver really need to mess with set_dma_ops ? I'd rather not
-see that in new iommu drivers if at all possible :|
+> https://sashiko.dev/#/patchset/20260515211410.31440-1-ross.philipson%40gmail.com
 
-> +static int __init hv_initialize_static_domains(void)
-> +{
-> +	int ret;
-> +	struct hv_iommu_domain *hv_domain;
-> +
-> +	/* Default stage-1 identity domain */
-> +	hv_domain = &hv_identity_domain;
-> +
-> +	ret = hv_create_device_domain(hv_domain, HV_DEVICE_DOMAIN_TYPE_S1);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = hv_configure_device_domain(hv_domain, IOMMU_DOMAIN_IDENTITY);
-> +	if (ret)
-> +		goto delete_identity_domain;
-> +
-> +	hv_domain->domain.type = IOMMU_DOMAIN_IDENTITY;
-> +	hv_domain->domain.ops = &hv_iommu_identity_domain_ops;
-> +	hv_domain->domain.owner = &hv_iommu_ops;
-> +	hv_domain->domain.geometry = hv_iommu_device->geometry;
-> +	hv_domain->domain.pgsize_bitmap = hv_iommu_device->pgsize_bitmap;
+I'd suggest working through those first before the maintainers take
+another crack at this. There are a *LOT* of comments in there.
 
-identity doesn't use geometry or pgsize_bitmap
-
-> +	/* Default stage-1 blocked domain */
-> +	hv_domain = &hv_blocking_domain;
-> +
-> +	ret = hv_create_device_domain(hv_domain, HV_DEVICE_DOMAIN_TYPE_S1);
-> +	if (ret)
-> +		goto delete_identity_domain;
-> +
-> +	ret = hv_configure_device_domain(hv_domain, IOMMU_DOMAIN_BLOCKED);
-> +	if (ret)
-> +		goto delete_blocked_domain;
-> +
-> +	hv_domain->domain.type = IOMMU_DOMAIN_BLOCKED;
-> +	hv_domain->domain.ops = &hv_iommu_blocking_domain_ops;
-> +	hv_domain->domain.owner = &hv_iommu_ops;
-> +	hv_domain->domain.geometry = hv_iommu_device->geometry;
-> +	hv_domain->domain.pgsize_bitmap = hv_iommu_device->pgsize_bitmap;
-
-Nor does blocked
-
-> +#define INTERRUPT_RANGE_START	(0xfee00000)
-> +#define INTERRUPT_RANGE_END	(0xfeefffff)
-> +static void hv_iommu_get_resv_regions(struct device *dev,
-> +		struct list_head *head)
-> +{
-> +	struct iommu_resv_region *region;
-> +
-> +	region = iommu_alloc_resv_region(INTERRUPT_RANGE_START,
-> +				      INTERRUPT_RANGE_END - INTERRUPT_RANGE_START + 1,
-> +				      0, IOMMU_RESV_MSI, GFP_KERNEL);
-
-Surprised these constants are not discovered from the hv?
-
-> +static void hv_iommu_flush_iotlb_all(struct iommu_domain *domain)
-> +{
-> +	hv_flush_device_domain(to_hv_iommu_domain(domain));
-> +}
-> +
-> +static void hv_iommu_iotlb_sync(struct iommu_domain *domain,
-> +				struct iommu_iotlb_gather *iotlb_gather)
-> +{
-> +	hv_flush_device_domain(to_hv_iommu_domain(domain));
-> +
-> +	iommu_put_pages_list(&iotlb_gather->freelist);
-> +}
-
-Full invalidation only huh?
-
-> +static const struct iommu_domain_ops hv_iommu_identity_domain_ops = {
-> +	.attach_dev	= hv_iommu_attach_dev,
-> +};
-> +
-> +static const struct iommu_domain_ops hv_iommu_blocking_domain_ops = {
-> +	.attach_dev	= hv_iommu_attach_dev,
-> +};
-
-Usually I would expect these to have their own attach
-functions. blocking in particular must have an attach op that cannot
-fail. It is used to recover the device back to a known translation in
-case of cascading other errors.
-
-> +static const struct iommu_domain_ops hv_iommu_paging_domain_ops = {
-> +	.attach_dev	= hv_iommu_attach_dev,
-> +	IOMMU_PT_DOMAIN_OPS(x86_64),
-> +	.flush_iotlb_all = hv_iommu_flush_iotlb_all,
-> +	.iotlb_sync = hv_iommu_iotlb_sync,
-> +	.free = hv_iommu_paging_domain_free,
-> +};
-> +
-> +static struct iommu_domain *hv_iommu_domain_alloc_paging(struct device *dev)
-> +{
-> +	int ret;
-> +	struct hv_iommu_domain *hv_domain;
-> +	struct pt_iommu_x86_64_cfg cfg = {};
-> +
-> +	hv_domain = kzalloc_obj(*hv_domain, GFP_KERNEL);
-> +	if (!hv_domain)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	ret = hv_create_device_domain(hv_domain, HV_DEVICE_DOMAIN_TYPE_S1);
-> +	if (ret) {
-> +		kfree(hv_domain);
-> +		return ERR_PTR(ret);
-> +	}
-> +
-> +	hv_domain->domain.geometry = hv_iommu_device->geometry;
-
-geoemtry shouldn't be set here, it is overriden by
-pt_iommu_x86_64_init() with the exact page table configuration
-
-> +static void __init hv_init_iommu_device(struct hv_iommu_dev *hv_iommu,
-> +			struct hv_output_get_iommu_capabilities *hv_iommu_cap)
-> +{
-> +	ida_init(&hv_iommu->domain_ids);
-> +
-> +	hv_iommu->cap = hv_iommu_cap->iommu_cap;
-> +	hv_iommu->max_iova_width = hv_iommu_cap->max_iova_width;
-> +	if (!hv_iommu_5lvl_supported(hv_iommu->cap) &&
-> +	    hv_iommu->max_iova_width > 48) {
-> +		pr_info("5-level paging not supported, limiting iova width to 48.\n");
-> +		hv_iommu->max_iova_width = 48;
-> +	}
-> +
-> +	hv_iommu->geometry = (struct iommu_domain_geometry) {
-> +		.aperture_start = 0,
-> +		.aperture_end = (((u64)1) << hv_iommu->max_iova_width) - 1,
-> +		.force_aperture = true,
-> +	};
-> +
-> +	hv_iommu->first_domain = HV_DEVICE_DOMAIN_ID_DEFAULT + 1;
-> +	hv_iommu->last_domain = HV_DEVICE_DOMAIN_ID_NULL - 1;
-> +	/* Only x86 page sizes (4K/2M/1G) are supported */
-> +	hv_iommu->pgsize_bitmap = hv_iommu_cap->pgsize_bitmap &
-> +				  (SZ_4K | SZ_2M | SZ_1G);
-> +	if (hv_iommu->pgsize_bitmap != hv_iommu_cap->pgsize_bitmap)
-> +		pr_warn("unsupported page sizes masked: 0x%llx -> 0x%llx\n",
-> +			hv_iommu_cap->pgsize_bitmap, hv_iommu->pgsize_bitmap);
-
-IKD if you need this logic, the way the page table code is used it
-just sort of falls out naturally that other page sizes are ignored.
-
-> +struct hv_iommu_domain {
-> +	union {
-> +		struct iommu_domain    domain;
-> +		struct pt_iommu        pt_iommu;
-> +		struct pt_iommu_x86_64 pt_iommu_x86_64;
-> +	};
-
-You should retain the build assertions here
-
-Jason
+I'd appreciate if you'd go back through the v15 comments and make sure
+you got all of them. I certainly felt like you didn't address at least
+on of my questions (the licensing stuff).
