@@ -1,84 +1,77 @@
-Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2088D3EAC6B
-	for <iommu@lists.linux.dev>; Fri, 15 May 2026 22:35:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFF103EFFDB
+	for <iommu@lists.linux.dev>; Fri, 15 May 2026 22:43:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778884548; cv=none; b=qXemxv2H7uzGJGaFVQNieuSWPuVzHuunl9uEnBm3LwPM1P7/HRTOOn1OSaUvUv+XGCmRDpM2lhBpDbukZj7WOfM8Xp7VbDok6mqI8T5qTYilW4+tRLlvtsAd4l4n7sdYX0HDA8GVaVes4XQEC8wTJZT+xj+4oNqlBDQeAkrz2aI=
+	t=1778885001; cv=none; b=TubWA81nSj03Psup0GbDMe/CWTu3w5uiUR4IDtiNtFhEDYEEmUAb0ItF9P97nVgDR5DMWtyBzNljpyBxdfdC+I9ulHeTBmG85YzN7kDlSqK4Z+HdNxxry3VTxno5J1qBudMG+hzOIJg1lpB1HubP3rHpD0KYZQKFfFruS48ZId8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778884548; c=relaxed/simple;
-	bh=43M0QEo0eyyWPrbH4y4RCOZ7Hh/aYFkSTUf2UUibSrU=;
+	s=arc-20240116; t=1778885001; c=relaxed/simple;
+	bh=kaYeoiBhKH8QIrdUuVmAazULlTKQl2EsXPfmNkamrFs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=shJEuUtW+WxVIBkefbAd9EWKFhGwV19yJytp0E1uyYWjnceu9lZwnqp9GDAlh5N2VQTJjkA35l9TdAh38zzbqOmyZNZH02RsjZipt30Rqw2jq3auxXt1BnIejNKk3nlcEGGwiIRO8zgrl3udWxSPtq5oXUz/BqbqqxSsYCj7hwg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=m7+m0PuU; arc=none smtp.client-ip=209.85.219.51
+	 Content-Type:Content-Disposition:In-Reply-To; b=DL37hfLG6fslEWXQZRoERK7XNOsn/ima6rqXpUJdVJw4/0ZN9/esPebv/cE3j9z5IphQFiCh9R6zAQHADqx1ADSrS2cjz/SI8lOy0X19rlyvkTOR9astlaRPQ/ibEj5PfgHEuDDi5UMrdTEJDLomE93QtE64s0gYBHbxWCDlp/k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=C4P+g42/; arc=none smtp.client-ip=209.85.160.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="m7+m0PuU"
-Received: by mail-qv1-f51.google.com with SMTP id 6a1803df08f44-8c921396e37so4542626d6.2
-        for <iommu@lists.linux.dev>; Fri, 15 May 2026 15:35:46 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="C4P+g42/"
+Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-5102582e23eso4072641cf.1
+        for <iommu@lists.linux.dev>; Fri, 15 May 2026 15:43:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1778884546; x=1779489346; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1778884998; x=1779489798; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=TNcmCN882Y+/mpDinGleLsVSa4beLL8jNPnufICq5xU=;
-        b=m7+m0PuU92SjOnUiQPEQcnX4dwOgxucagKvAu0FqE+bSKPFlrtPBFdU655cJNEf0ie
-         1DfW5dmkutFJyYe4ETSU9JejeWJ7pXSZAOyk68Bij+1EWEYBsMEhvyw63e12iTUMzeNY
-         n3kuazaIo1RJVJRYqAFWn3hyGSlqAZ/jZ+Nf7LK7yhsmML5WmYkpWFGxeSNMepbe5M09
-         5x2/YruHSgAd3P7z2AUa9Im3pFl4bhj4IMf/FiS3nrBjXC8+x22ieaBjHHNpKrWvYPFh
-         ZBshDW/VT/FN0L2dKFTX6Pj0Ol9zhqccrq7VO0gpR5S7shxz4HIDHPoC5rxOllN0LjZt
-         UHBw==
+        bh=COahKpUTP3FbIp/9gGBiaABm/08X7eZmQdMgy3y6jxs=;
+        b=C4P+g42/8GXJ5FpW3hxNsSl5HGb0havYvJ1pIR/2KhxLKk2kg4qApUHfS3DyRFgxOn
+         mgAphftWA/c6dje3KroERwYxlprpqCYJTiwRAZ+E3ZA8vEm0//jAhMy06x1tCenYPGv1
+         qJpYdWWdtHsy42Fx+d8cQLNJHeJEv7oj3c3bzhPvFip5xIaYC4ZQjhgly54A8N7jNX0D
+         K9gRqV0ALqCCC0DSEgajeih5HDOkby3gf7zZmoDyXGGcYlaiRjQ+0d/ceQP/wnoQ/IQv
+         RszOemRIcM3SD+h7qR+SHqFo1co9NgYHYczJikjvD8gZNZI+ztWrDOVEHTRZ8V8henEF
+         UOBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778884546; x=1779489346;
+        d=1e100.net; s=20251104; t=1778884998; x=1779489798;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=TNcmCN882Y+/mpDinGleLsVSa4beLL8jNPnufICq5xU=;
-        b=IVzmt1JaBvuTvdtLuzT49YyVTOlD8qooNg0TDw+4sC5DZggG3jwPOR2QG+jIZ7I31W
-         42IOiQ9ocPIIcS67MCA4OM6cdjlwilB3KgpFiYn4PRahCqdr5Vu5Uox8Edi1bpiemini
-         ZJMfZolHML51OP3/UEc8h1vOorRwrWxquAOYk+FxyDNedlWqdNgV2JSD49RJE0P/RqUS
-         eqc1MzG/nsjwKgHxMIL0fStN1/j2yhgfrGXtt2WwR5PyorL9lpbJkn8aWcY2jImEt9yL
-         H4AeylTJzT1+ETjpQSw1tAcehifc2BpjRGdXK4hC7PHBmOskdvoyj3e/aWk37ggiWCxW
-         LVpQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+AdIq69/hc7IqXrVJoZVQgotQay5kkcByl+3OOgMiN8u4QJg6XZsXl1GCgNzyL7dNAU19mjw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxp1mGZSwMTzFhjiz0jBTkPP8JDAigZK5nAiAFLUpty6p2S0Lsc
-	nI5QOKYLH9OTFwd6Ne0nCAEC595njSGgQS0VI7KoQaKkLHDHqZc0l/no1JnxhAx/oQE=
-X-Gm-Gg: Acq92OFTtgpctmbNswhNvpTPaPv8OHq3AfiwzbGY1jcRcC4SshPnoWmmvVkMOfyhhFg
-	LDPXNWMAe4DZiFO51yRwYbpjLLNM3WsF1cWhiwD8SKRDk3QSBLq6/cobpvv1tuWEt3nttmtsNhN
-	GmM4K9d3F/Wo2iqYpcMzjQsMLA1a0C3bEAf51m62tnyrd55XNLJp4XoY2P6gIuQ+u7t1qSh/Xr+
-	kxL6Brq/5NeX0NMMh+LhbnC/ZHx/4nN+yAhuwWYXfjRHok0S3juoTsLNwslF4AtfQj73SspcEfV
-	kz3FQYNLh0Agw5jwj4TRHKDizDyzNB6aS+XKHU91vV4mzoTiH2NUYo/dD18CHsQhGYX07aF+Bkx
-	l5F2O4fDkuiEDPf47obcDCYhbsR8JCkwX+hwFNa79ampei0L1q/Ll9y5LsWjV9sf8FmsCFYZQK5
-	V8IYVxpAtt6xY/XW5N+5vXXUA/7/Tq+PfAHXVGB//EGixy+WkDp/jq3XDX7vRR88UtLk4tE7vQC
-	SM4WHhHQFYUXouj
-X-Received: by 2002:a05:620a:4406:b0:8ef:ed0b:c235 with SMTP id af79cd13be357-911d087dccamr952694285a.56.1778884546078;
-        Fri, 15 May 2026 15:35:46 -0700 (PDT)
+        bh=COahKpUTP3FbIp/9gGBiaABm/08X7eZmQdMgy3y6jxs=;
+        b=mePcuv6Vq71J3s0Ivnk8prO9xmdbIv8VM8K8v9QWTKsIRo26LVR2ywqpf74LAAhEoH
+         sdl1dnabUnjoLJx3VuSXd1wcXQZR1NG+0ODkbWKkVJkNlwf4vltHRkxcXx3/C8ZQy2jF
+         oLa6ewhaNF2jsZzMtUJ6/2SJAVpGZCKCy5ZgIxp5xOSeubY3psEEpT+1ANmOcd20I9rI
+         lCTHxZhNiti81CDQ8LOmBMID5kZ7cqvlQjC1+1tIQJdC8In1X5kmx5vXgaLFq7Ykm1U+
+         zo2NJ4b6EEktVne4MqL8jEexdrF6c5AjdnfK66Qg+u09C9QVIQg5BzZnbhKBwcc32f1E
+         8BpA==
+X-Forwarded-Encrypted: i=1; AFNElJ+nttXnV+ZtryLV+5vi+0kE3BJbXGYZ+XaYDOut1ISKYRxewvSphgovD/WSfkSc2jCQRlGh3g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxeqeJO8i7eOGfafkdAO4xgwMnyGVrX6WI9qEfytpZwjqs5R8Rw
+	4rp6Ji5TaNznI3vUjIU0e8nMaN066cfQnDRsDajPpx+X6MtBE9dHngRroLy7aoTKsFQ=
+X-Gm-Gg: Acq92OGLUZ/64tTz0+VvIQh/rqmsh+E5kSKX3YtLYIGaxVJrMV5hEmtICO51OWhNHyj
+	mirX5xmqKzX8vNfiSG44Vv4KPw0T38wNPVyMNVA6yDqzXAWke69N+hvvbUU8t1us1owPTQ6sKwN
+	c8gk1C2mPQZJQNIQeJCmm3+f04+Zf2EsBME0rJsaBVxBLHz06JCQRdMSPtki0H6KR4I7OoFdfG8
+	pXtZXuLeRMMtAJ9Kp0DVWSD+fIkuOhArTfJVsN1zwy/ttEhItqSQgCpW9z86cpF6zCjG+/i44yH
+	J27BtKbmwji5oJ9VJu9RDpBXuukaF6oUNK2joT8+DbpkvLPrsk08yiNdqjJmTCiuFG7il9+KphS
+	ZnGciqBZYXCLm0eQBANtUXKMuAqkKWUnnSAZUa0WRZtRCLTK/S4BG/RYplxhe2ag1u5w1Kv9bi0
+	XY1ClYz3h6ROBPmcOTv380yAEvOgyeKF7BmK5b4CJGlDtKVJ3uknl6+ey79aTxCZtRIlKS7v9j7
+	v5Q6w==
+X-Received: by 2002:a05:622a:5814:b0:50d:9b4a:e6f with SMTP id d75a77b69052e-5165a012120mr85384381cf.1.1778884998371;
+        Fri, 15 May 2026 15:43:18 -0700 (PDT)
 Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-910baa3c045sm682967285a.13.2026.05.15.15.35.45
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-51645856d10sm56007601cf.26.2026.05.15.15.43.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 May 2026 15:35:45 -0700 (PDT)
+        Fri, 15 May 2026 15:43:17 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1wO18D-00000008EMQ-0W2r;
-	Fri, 15 May 2026 19:35:45 -0300
-Date: Fri, 15 May 2026 19:35:45 -0300
+	id 1wO1FV-00000008F2P-03Ci;
+	Fri, 15 May 2026 19:43:17 -0300
+Date: Fri, 15 May 2026 19:43:17 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Yu Zhang <zhangyu1@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-	iommu@lists.linux.dev, linux-pci@vger.kernel.org,
-	linux-arch@vger.kernel.org, wei.liu@kernel.org, kys@microsoft.com,
-	haiyangz@microsoft.com, decui@microsoft.com, longli@microsoft.com,
-	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	bhelgaas@google.com, kwilczynski@kernel.org, lpieralisi@kernel.org,
-	mani@kernel.org, robh@kernel.org, arnd@arndb.de,
-	mhklinux@outlook.com, jacob.pan@linux.microsoft.com,
-	tgopinath@linux.microsoft.com, easwar.hariharan@linux.microsoft.com
-Subject: Re: [PATCH v1 4/4] iommu/hyperv: Add page-selective IOTLB flush
- support
-Message-ID: <20260515223545.GL7702@ziepe.ca>
-References: <20260511162408.1180069-1-zhangyu1@linux.microsoft.com>
- <20260511162408.1180069-5-zhangyu1@linux.microsoft.com>
+To: Rik van Riel <riel@surriel.com>
+Cc: linux-kernel@vger.kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+	will@kernel.org, iommu@lists.linux.dev, kyle@mcmartin.ca,
+	kernel-team@meta.com, Rik van Riel <riel@meta.com>
+Subject: Re: [PATCH 5/5] iova: add KUnit test suite
+Message-ID: <20260515224317.GM7702@ziepe.ca>
+References: <20260513020304.1528751-1-riel@surriel.com>
+ <20260513020304.1528751-6-riel@surriel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -87,47 +80,117 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260511162408.1180069-5-zhangyu1@linux.microsoft.com>
+In-Reply-To: <20260513020304.1528751-6-riel@surriel.com>
 
-On Tue, May 12, 2026 at 12:24:08AM +0800, Yu Zhang wrote:
-> +static inline u16 hv_iommu_fill_iova_list(union hv_iommu_flush_va *iova_list,
-> +					  unsigned long start,
-> +					  unsigned long end)
+On Tue, May 12, 2026 at 10:00:22PM -0400, Rik van Riel wrote:
+> From: Rik van Riel <riel@meta.com>
+> 
+> Add a kunit suite for the augmented-rbtree IOVA allocator, plus an
+> iova_domain_verify_invariants() helper (compiled only when the test
+> config is enabled) that walks the tree and confirms every node's
+> gap_to_prev, clamped_gap32, __subtree_max_gap, and __subtree_max_gap32
+> match what recomputation from scratch yields.
+> 
+> Test cases:
+>   - test_init_destroy: domain lifecycle, no leaks.
+>   - test_basic_alloc_free: single alloc/free roundtrip, top-down reuse.
+>   - test_size_aligned: alignment of size_aligned allocs across orders 0..7.
+>   - test_top_down_preference: sequential allocs decrease in pfn_lo.
+>   - test_limit_pfn_respected: 100 allocs all stay <= limit_pfn.
+>   - test_reserve_iova: allocs avoid the reserved range.
+>   - test_find_iova: lookup by pfn returns the right iova.
+>   - test_32bit_in_64bit_domain: 1000 64-bit allocs followed by a 32-bit
+>     alloc must still find a slot below DMA_BIT_MASK(32) -- exercises
+>     the __subtree_max_gap32 augmentation.
+>   - test_two_phase_alignment: pack size-2 size_aligned allocs, free
+>     every other; subsequent size-2 alloc must succeed via the phase-2
+>     fallback search since phase-1's S+A-1 threshold prunes the size-2
+>     gaps.
+>   - test_pci_32bit_workaround_pattern: alternate 32-bit-first allocation
+>     attempts with 64-bit fallback, mirroring dma-iommu.c.
+>   - test_stress_random: 2048 random alloc/free operations with mixed
+>     sizes, alignments, and 32/64-bit limits, with periodic invariant
+>     checks.
+> 
+> Each test verifies the augmented invariants both during and after the
+> test run so that any sequencing bug in insert / erase / rotate /
+> propagate is caught at the operation that introduced it.
+> 
+> Tested by: building drivers/iommu/iova.o and drivers/iommu/iova-kunit.o
+> (no warnings); runtime execution requires booting a kernel with
+> CONFIG_IOMMU_IOVA_KUNIT_TEST=y under qemu-system-x86_64 (not available
+> on this devvm).
+    ^^^^^^^^^^^^^^^
+
+Heh, you should still read the patches when using claude :)
+
+Can you add a .kunitconfig please? The tests should run with a command like:
+
+    tools/testing/kunit/kunit.py run --build_dir build_kunit_x86_64 --arch x86_64 --kunitconfig ./drivers/iommu/.kunitconfig
+
+Also it is worth while to carefully read each test because claude will
+happily write nonsense tests that avoid actual bugs so they succeed...
+
+> +static struct iova_test_ctx *iova_test_init_ctx(struct kunit *test)
 > +{
-> +	unsigned long start_pfn = start >> PAGE_SHIFT;
-> +	unsigned long end_pfn = PAGE_ALIGN(end) >> PAGE_SHIFT;
-> +	unsigned long nr_pages = end_pfn - start_pfn;
-> +	u16 count = 0;
+> +	struct iova_test_ctx *ctx;
+> +	int ret;
 > +
-> +	while (nr_pages > 0) {
-> +		unsigned long flush_pages;
-> +		int order;
-> +		unsigned long pfn_align;
-> +		unsigned long size_align;
+> +	ctx = kunit_kzalloc(test, sizeof(*ctx), GFP_KERNEL);
+> +	KUNIT_ASSERT_NOT_NULL(test, ctx);
 > +
-> +		if (count >= HV_IOMMU_MAX_FLUSH_VA_COUNT) {
-> +			count = HV_IOMMU_FLUSH_VA_OVERFLOW;
-> +			break;
-> +		}
+> +	ret = iova_cache_get();
+> +	KUNIT_ASSERT_EQ(test, ret, 0);
 > +
-> +		if (start_pfn)
-> +			pfn_align = __ffs(start_pfn);
-> +		else
-> +			pfn_align = BITS_PER_LONG - 1;
+> +	init_iova_domain(&ctx->iovad, TEST_GRANULE, 1);
+> +	ret = iova_domain_init_rcaches(&ctx->iovad);
+> +	KUNIT_ASSERT_EQ(test, ret, 0);
+> +	ctx->initialized = true;
+> +	KUNIT_ASSERT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
+> +	return ctx;
+> +}
 > +
-> +		size_align = __fls(nr_pages);
-> +		order = min(pfn_align, size_align);
-> +		iova_list[count].page_mask_shift = order;
-> +		iova_list[count].page_number = start_pfn;
-> +
-> +		flush_pages = 1UL << order;
-> +		start_pfn += flush_pages;
-> +		nr_pages -= flush_pages;
-> +		count++;
+> +static void iova_test_cleanup(struct kunit *test, struct iova_test_ctx *ctx)
+> +{
+> +	if (ctx->initialized) {
+> +		KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
+> +		put_iova_domain(&ctx->iovad);
+> +		iova_cache_put();
+> +		ctx->initialized = false;
 > +	}
+> +}
+> +
+> +static void test_init_destroy(struct kunit *test)
+> +{
+> +	struct iova_test_ctx *ctx = iova_test_init_ctx(test);
+> +
+> +	iova_test_cleanup(test, ctx);
+> +}
 
-This seems like a really silly hypervisor interface. Why doesn't it
-just accept a normal range? Splitting it into power of two aligned
-ranges is very inefficient.
+This iova_test_init_ctx()/iova_test_cleanup() stuff is not the right
+way to use kunit. Add a fixture and remove it from every test.
+
+> +bool iova_domain_verify_invariants(struct iova_domain *iovad)
+> +{
+> +	bool ok = true;
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
+> +	iova_walk_verify(iovad->rbroot.rb_node, iovad, &ok);
+> +	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+> +	return ok;
+> +}
+> +EXPORT_SYMBOL_GPL(iova_domain_verify_invariants);
+
+EXPORT_SYMBOL_IF_KUNIT
+
+>  int iova_domain_init_rcaches(struct iova_domain *iovad);
+>  struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
+>  void put_iova_domain(struct iova_domain *iovad);
+> +#if IS_ENABLED(CONFIG_IOMMU_IOVA_KUNIT_TEST)
+> +bool iova_domain_verify_invariants(struct iova_domain *iovad);
+> +#endif
+
+Don't really need this #ifdef
 
 Jason
