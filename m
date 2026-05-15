@@ -1,270 +1,160 @@
-Received: from mail-dl1-f42.google.com (mail-dl1-f42.google.com [74.125.82.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011068.outbound.protection.outlook.com [40.93.194.68])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E52E7405C46
-	for <iommu@lists.linux.dev>; Fri, 15 May 2026 21:16:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.42
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778879763; cv=none; b=Q54OGXfIzOdRNQbMY2RB5t0/UtUvSDx22RswnPtXL9G08l5nddMokRBda+ilTYSBRJnnCmFm6iIDSpSyozCx1Jsy1D4O9Z+e5xJTrKlbP7Fn+p3kD9C1Pqti9b5lksGcTIUNYjuldOhpGc/UwADE4C04snIWFuomwN5eK3Jg9dQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778879763; c=relaxed/simple;
-	bh=Yb8MnWED6Q7bAT/hqKNGG8lkKmGIJFI2VweKIbS2p4w=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=mFTL6BL+7Q64zRmPhUQiMp5DkjPcZC/GNsE+ZZ8RdlNfel5Bd3imFiXgUmxF3nufippxIbCvPWVowxC3WE72z20U/RnSSdrTjQKkn8qhxX1vMmA0rRNaXBhz0OQWBKqjb2HAAiyYBUTbi6s/E3Hpaat+f30DSQixE5qKGs1tr9o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=H0dmIOdC; arc=none smtp.client-ip=74.125.82.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 775A5405C38;
+	Fri, 15 May 2026 22:00:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.194.68
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778882439; cv=fail; b=feZDb/52mhzUhIybZEcllBLT3gi1DVX+7XMveZhtJRzu8EKadaWo7b5EcVtMSDKvHOzPdx8YbtoTwXPnq1cxxTd/3ma0phT5aR48QY8EX7I2Q6x/5e/7p7eJ4OGL4apL4rb2Kr9Lkho5+e5T4j+28wotZA/+WCFx/aj4MeLDnUw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778882439; c=relaxed/simple;
+	bh=j706nUtbzBdL2wn3E3lAKjSqmGE9G06IxCMZwmIRprU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=S2HC4pZyHJRtVHKzz4qWN380fHEH4BExr05db7+Mme/soPwqODoCrc7yzA8EyOLt7/zRH8qyQiDcW01aLYQ30XKPoDgs/qkd7anQ00l7M8DOYzwBOE5aEpu3nUeURidV6X+H3tvqgMjxLUW94t7Bofj/uJ3tD2bO5AAz3waleoo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ZMyTxVhH; arc=fail smtp.client-ip=40.93.194.68
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="H0dmIOdC"
-Received: by mail-dl1-f42.google.com with SMTP id a92af1059eb24-1354403c610so394529c88.0
-        for <iommu@lists.linux.dev>; Fri, 15 May 2026 14:16:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778879761; x=1779484561; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UCBpSoWd+DzhR5w/L2qTUePdSLNQuDLLzBvZ0vft3Fw=;
-        b=H0dmIOdC40eR4yOcZrGk/bxH+WPEKbatZVUoeOstkHcqi1A4g8syPtcPH22AAy3Qjk
-         ZJRpFuXavEPyD4kFdl3Ebq9XgCULleBpewvvx1IkWMBy6+Oi1h5TFCCF/ya2hkoyb9nO
-         vaSf7t8gJIRDAjKrgJsrpnuww+uuzYX0eowJlcE6pCu0YC/56/tF+s9VgUH6ozfpDmba
-         jjfNbrPmW025hLjsiiMak4U5WTdMRiZ7Sd5wIu/OD3I8QXOWqv0uHvbOwXZUSxEAwU0n
-         PAQJsOzHzOye2/X6Acbqi7uOy7n7nNWyOCshYnuOX4OA4VibnnSowcEfKpqwyrVuzttb
-         2Xpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778879761; x=1779484561;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=UCBpSoWd+DzhR5w/L2qTUePdSLNQuDLLzBvZ0vft3Fw=;
-        b=o67QTJ2AqCyjnniXNngjd3FnUA7eVDZL0Vss6nPNYBB4UKiVUYZ5O8MZW2I+LIpou8
-         qO/Xhd3270R2uXzAuP/Ilr5YHIQ/ZN3/ez+Yl07jmHosSBznLlk1pPBmMT8kNdiOuaR/
-         V16/FvEa9YPvy7wluV0IjI0RbKRhNhs35SPwqmxwS09vMfhJGx6ojPK8pNoK0Ih5jL+V
-         wCTUsYJotK98kedxqHfzBLzaWkpNtdgzfF8OUvag49OVGc0jXkTcx4UCDaNIA/+Tk8A9
-         d35h9ps2oht1gn9aa8J+uaitZGb/YHwG3OwoKOj2kGpIOykUgzItpaKhD7WCZkbCK5oo
-         z5HA==
-X-Forwarded-Encrypted: i=1; AFNElJ9sV17fGplpZh1Dy7X1d046MEuDvwZakujNRJsE6yZ24scT9lakMHVMc2zbebvWUUE8cE4/Bg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwKldmnN8bgEN8eVWRIbgvD0ziEifEfY2C82RDegExbh63Yr+i+
-	pusKLj8auqJSUddQ7r2N0EBrpIQl2ff/Yp+LhFdLhJCDTjuXya2RnunE
-X-Gm-Gg: Acq92OEzK6O0iN1IchcpAINb6sOgCapCkPIGvknQJrZTnSV/w2Sc6Pks7Soo1dcax4F
-	MztXXn6zoI2dqnI/RfKrvoiQM+p3dGLeDTxOUzjYQLBhpifOdNCy2pUpKzU7jJJc/eqO6mZCBHk
-	uhUBT0tNvo4JTs0tuiVAlh2lJgQc5IP1MrzMma3KCGNtAMq6etaFK+rifqSZJSm1OigjlyE742I
-	pYiZcyVczagTBJ4uzbDNRQFQq8cXAaML9pTzYYIz4/7BWy8DtUezErWAnEpbqct26UK+qTPcdHD
-	bJsGmiQ96YcI7ga9fydo4WtDQFr64i5hQaGc3pbufSQbxF5lCXq93GRr3DfMi4X3lqXVAwQJ7jY
-	4i5B7CIaCpJzixbXf2r/2H0Hj0AeSzHGn5zoyYXZiN/UNwsyxiQBEDLO+SCxfGfzC0nfAzU+8A6
-	ukmAsuH/x6Oot39pwQIzZshf6QZAQL2OQ=
-X-Received: by 2002:a05:7022:1a85:b0:12d:d972:b96e with SMTP id a92af1059eb24-1350542e8e5mr2758254c88.20.1778879760953;
-        Fri, 15 May 2026 14:16:00 -0700 (PDT)
-Received: from mimas.lan ([2603:8000:df01:38f7:a6bb:6dff:fecf:e71a])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-134cb5b3c20sm11529163c88.0.2026.05.15.14.15.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 May 2026 14:16:00 -0700 (PDT)
-From: Ross Philipson <ross.philipson@gmail.com>
-To: linux-kernel@vger.kernel.org,
-	x86@kernel.org,
-	linux-integrity@vger.kernel.org,
-	linux-doc@vger.kernel.org,
-	linux-crypto@vger.kernel.org,
-	kexec@lists.infradead.org,
-	linux-efi@vger.kernel.org,
-	iommu@lists.linux.dev
-Cc: ross.philipson@gmail.com,
-	dpsmith@apertussolutions.com,
-	tglx@linutronix.de,
-	mingo@redhat.com,
-	bp@alien8.de,
-	hpa@zytor.com,
-	dave.hansen@linux.intel.com,
-	ardb@kernel.org,
-	mjg59@srcf.ucam.org,
-	James.Bottomley@hansenpartnership.com,
-	peterhuewe@gmx.de,
-	jarkko@kernel.org,
-	jgg@ziepe.ca,
-	luto@amacapital.net,
-	nivedita@alum.mit.edu,
-	herbert@gondor.apana.org.au,
-	davem@davemloft.net,
-	corbet@lwn.net,
-	ebiederm@xmission.com,
-	dwmw2@infradead.org,
-	baolu.lu@linux.intel.com,
-	kanth.ghatraju@oracle.com,
-	daniel.kiper@oracle.com,
-	andrew.cooper3@citrix.com,
-	trenchboot-devel@googlegroups.com
-Subject: [PATCH v16 38/38] x86/boot: Legacy boot DRTM support for Secure Launch
-Date: Fri, 15 May 2026 14:14:10 -0700
-Message-ID: <20260515211410.31440-39-ross.philipson@gmail.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260515211410.31440-1-ross.philipson@gmail.com>
-References: <20260515211410.31440-1-ross.philipson@gmail.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ZMyTxVhH"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=uwYGUnCx4ESH+HSaNNSylnaXCg2VbuqMCm688nbobShv4OjgKyFeyI13f8j4o/ulZX6fDMSqySbkdq0KXkExqE4At3/3JUq63EKatpsZ6lVq6Kc7Zp6Rigwo3JGEX0VcMnjpIhg+ubpbxFM6skYNaPqe5PRn20gyXQGkfqtnCny4LVkScdLVul4SOSRgHeipYnSMlDWyarrZ3IP0FTWeQCle91h8fAwX910oFOENq9ixW68k6RN6v12Vbrmb/fNiAWzB5HIeXA7amHkdCKkJN7p0npl41pv0WSX8fr9j4v4h/ZHYGJtstvXgGjyTr85G5DYij61U8m29W1ZErySdEw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ROioUmo2ON/fDHH2Lh/FNPPuXViE3qyUZFXXPbJ6x0I=;
+ b=DqjjSfk9QQs0TzeVa9Q+oK8a2CU6ND7y0KeCvMTTxxPa+L7iK3WQl1sz4PTi7NrqrVNEgdQmF+1YuUVZaFDbNYqKhhMgmwmhOh+QDF288Ys35ohxEEfvfIY1HmIDm68miGPpmU8DYiYHeA2aB9x/4wR1vbKr2rnuoHtZ4NGdFr0VslaDJ828m9Bbzem+3a/fYa+pAlfjLEww9p6iM5MzC00SZYuQLjbWfriDp5kLJVEaJD9po28BuBuwTXOoQn2X4465MPj5W1UZwopQpUjPLzCLGnF6XCzdIql+YqRI2P++pOHdToFY6uWaH+R+TIAFjbYFUGSHbvXiEW2kZ2D1Og==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ROioUmo2ON/fDHH2Lh/FNPPuXViE3qyUZFXXPbJ6x0I=;
+ b=ZMyTxVhHyzCDXCMRx2SOdXsaFtkWddMkF/YcwQlARuJ4Zzylcf1V+krqy2Z2ZnWG6RdA102OiteBL6zUwYbcXJ3ozmFd/OlexqXgo+niqJWNUUPN//5FxwOTFc29vauh+d/IZCIiA2yEXCIXb8hdqkTNwr/NLzMfwQ4hsUdxaQRM2qRV78jLSIsunntnFcsuBOodYVzQZHNvg6teeGpdangKj93pJ4SbAdPETQanhPifbg/im7qp9qh6QDIBZwrkVsNZDhdPAN1jGnYLIN90kxkYuRkSGgtRJh8F+WpalVqNNQ+fvrMsjcuR4zdzanMAyygjX1lDQCWia7t175AuCw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by SN7PR12MB7369.namprd12.prod.outlook.com (2603:10b6:806:298::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9913.11; Fri, 15 May
+ 2026 22:00:33 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.21.0025.012; Fri, 15 May 2026
+ 22:00:33 +0000
+Date: Fri, 15 May 2026 19:00:32 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: iommu@lists.linux.dev, Jonathan Hunter <jonathanh@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Krishna Reddy <vdumpa@nvidia.com>, Will Deacon <will@kernel.org>,
+	David Matlack <dmatlack@google.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	Pranjal Shrivastava <praan@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>,
+	Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH v2 3/9] iommu/arm-smmu-v3: Use the HW arm_smmu_cmd in
+ cmdq submission functions
+Message-ID: <20260515220032.GK787748@nvidia.com>
+References: <0-v2-47b2bf710ad5+716ac-smmu_no_cmdq_ent_jgg@nvidia.com>
+ <3-v2-47b2bf710ad5+716ac-smmu_no_cmdq_ent_jgg@nvidia.com>
+ <ageKAQC7yAzI0xB6@Asurada-Nvidia>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ageKAQC7yAzI0xB6@Asurada-Nvidia>
+X-ClientProxiedBy: BL0PR02CA0037.namprd02.prod.outlook.com
+ (2603:10b6:207:3d::14) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|SN7PR12MB7369:EE_
+X-MS-Office365-Filtering-Correlation-Id: 38b15c8e-a4f5-4ac4-3ab8-08deb2cd630c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|366016|1800799024|376014|22082099003|11063799003|18002099003|56012099003|3023799003|4143699003;
+X-Microsoft-Antispam-Message-Info:
+	64366r5cpvw3r7uZKeZkgpkWT6MU3GV6NPDsTnvjiuSOLlXAE72w0YvxWcbySu+8lSsoN0WG8hZ0fek3sztBFUPU4vYIxGG5lYFX7/chmHG6asu683nv8B0u58zHP0tsb9fOHeAhXN1dQmB3HUhr9AHx5KJjdEB0WhDQTAwowDVw/fD2F4sxax17Kfj5VwVW7b/2vZHJSweEPdDnJSJNzQ4gR3D+S3WK+z5dutMdNdC5+xouwGoRm4zTZq6IxPggmYzKU9o9b7yZevk2gHWxMAtSL662jxMT4M4O8fgQ9z+ugFO8+OTFtQA346miu4vJc27ebNS3AGpOaNHr1U9iO7xvUCGsgyS2E10OmHI1O/KSW5MkAvXiFLasP5Ce7ujHd8LkmLPQmoDSx9i6nR4fFllVmpgJsmkxm0qMF4UMs6KJxguVDxixY3bLYDEZkcDpVQs7VRhx1b/i44cNpbOQNL/MHleYS8jB+IggVqWfFrcuadfM/qZJK52y1hfx3eO5rGZjhl1taDWc1tAqumfUUJ3dS2MrFqw0XZC+j34FEApfLHD7b9vHIoG/rHdJzfvEdd1vbPNyCtN3yl9gRVYM4+Qz5Sdqhhs6W3/kIcVMj91Xy1WMQ+5Lk8VKCHTjbSUvIQHpx37lBWVK4p5U1CPjpSm8hToDy68voaK/rn1+HZ66y7bVMTmqr2fjYdBxGSsb
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(366016)(1800799024)(376014)(22082099003)(11063799003)(18002099003)(56012099003)(3023799003)(4143699003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?QtIbdaFHS/foyPvW35WccoGdTEn6wzFZbaQRIE2lRyC7EJ7H/VaVtRmgxsOx?=
+ =?us-ascii?Q?m4YYVV6GYCl3LDcsCzDzHSVzkbj8NuDyulc8jnNuABoHQNpoSMkGuN7oGE1j?=
+ =?us-ascii?Q?C41um0DAbAqpjMtXZ46DwcHT2bdoGJ1YbPY1oA+17AqIofiVo9a/Y7VGrMlu?=
+ =?us-ascii?Q?QSqYX9RV5xoNDsQbSH+0gV+i4/2vzzYHp2KtO6uYySrtSnlo/nqtafYA4IiR?=
+ =?us-ascii?Q?FhG/yQ1nVfDRA4lDa96FTI+twZB3D+DBIg381zHQAFWcWOu5skHpHcHlM5ec?=
+ =?us-ascii?Q?sl/zjGkqsRCY07k+9evXGRasuMQPyLPwtJSmwXjmnzugojwFMNJ+VCifhz02?=
+ =?us-ascii?Q?KamVewzPp88O0VEXdol0qJ71SXAXqyTtmGYAO8ToUW6iVrAd3b0VghtzFgU1?=
+ =?us-ascii?Q?UVRKwxBGbpWYIGzyZTy2sEk9S41xZkXgu+DbfQiFAdwnbZxrcsDWgblRhdO5?=
+ =?us-ascii?Q?b4BYVLFCQs5R3l7i+aMHshiy/HOtVqee64YnMnsAtafo9C+Z7WFacaUsfqcJ?=
+ =?us-ascii?Q?0TPSok/ekMqwDCdoFEbwgCRlW28Dq0Xc5r/uNspGsnTFifP31CZQadWvlLOn?=
+ =?us-ascii?Q?VvyK2ogZFyANDNB1wD2cVJsADSxK04Jzr6VvNar3CSUA7xMRYulB2GDOIkSw?=
+ =?us-ascii?Q?htbVxdjmXvdOMs+lAhSUMA2I3qXdTp30V3wNOhCHX4X8mV3wAh6rnvP2gv4u?=
+ =?us-ascii?Q?4KZ9ZxErIDsO3rx7J+LZf70Vi7TZctS4ujBfrNfzGEaavvxeUF0jcEn9Q+RY?=
+ =?us-ascii?Q?YVHxnGkJv/mtbg7bsBDMLF5lv1QpqWWr1QorT+8QFoqyNZnDu/0y5YDGCpN/?=
+ =?us-ascii?Q?rEPFtMcAXo0exMU0SixFA6ao7bCx9WuEksTRZGmhyYu77SYENYLiRroVWddg?=
+ =?us-ascii?Q?tsCR4W6xA43IFTbC9ZgeptGiU3lK9b/nTo9jk/Xkbk058TIhzEt3xyovM2lm?=
+ =?us-ascii?Q?Ad6o5Gnvr+z7SrmmHvGaAZKVnChzH0e6ebkyagtTnVEGgdM8ZrAlmCHBgBlP?=
+ =?us-ascii?Q?nrIXrFUnMHxQ99SQRK++zom6iI/yPcLj+GTMMIMHYKtxbQKz+hTxpi8sXjYo?=
+ =?us-ascii?Q?RnLCVemVT4OBafkGnQm8KGg1jDB4IM36MCZjfIPlvyB2VfodbiP3MQZCEZ3H?=
+ =?us-ascii?Q?2SYceaSX/b1R2WkAKAdjgE0JpYD5Jy50tPeX1CLfqVoMSokHZnlvqepn/uBs?=
+ =?us-ascii?Q?xEkViqRjBrlEBEpRepAaJO16+Vm277zJveLhB8pkqN1AdhuuXwAwtNdGnCf3?=
+ =?us-ascii?Q?5pjAp21XkzIsrrM60Jqqx3d5kev+B2BjA6RzouAAn2/dzkF2zQ/eMnbql6HU?=
+ =?us-ascii?Q?HK/AOrVvZ2fGFw01QaL846n/dTrypSRtxaU+x638hYybfrnW25PW/007L0/L?=
+ =?us-ascii?Q?lmwONQqISKFh1ZFjAoYVejCG4V7tu47aD67mUUbtzaTersK+GibxzThAMVgZ?=
+ =?us-ascii?Q?xDVqw2AEfZ6gkXrLIf6Zcyp94H44JcGFWsaIGTi//VfKe/Gs/9FCHtmgWsXa?=
+ =?us-ascii?Q?/N2/pCXeOgWRzvl9VGPM3n4xfjvXtTewWoaa5WC8Nzv3bGcoU3ApCumadVZU?=
+ =?us-ascii?Q?z5t/wowe+5mfKanXmigOCzZrhTYunOXZKO7UmzxHuq2EPa1ugdGwNAZRrJwG?=
+ =?us-ascii?Q?3zWF+AckKmaV5+9xZUOtash095pO9PNxyK6gKPA49eXLXkCNnHxToCOlTTo2?=
+ =?us-ascii?Q?HAJwFvU9MPey7JQW2vl4BdF0VfR+bGv3anPkmeV3Zw8ySoWO?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 38b15c8e-a4f5-4ac4-3ab8-08deb2cd630c
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2026 22:00:33.5338
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: YO9eQsaHQ/DsxjznV5v3YJKa47a1DSWQuyF0WvTkZnGriKQbNu1z4QeXdcG2v3vX
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7369
 
-From: Ard Biesheuvel <ardb@kernel.org>
+On Fri, May 15, 2026 at 02:02:57PM -0700, Nicolin Chen wrote:
+> On Wed, May 13, 2026 at 08:57:42PM -0300, Jason Gunthorpe wrote:
+> > Continue removing struct arm_smmu_cmdq_ent in favour of the HW based
+> > struct arm_smmu_cmd. Switch the lower level issue commands to work on
+> > the native struct by lifting arm_smmu_cmdq_build_cmd() into all the
+> > callers.
+> > 
+> > Following patches will revise each of the arm_smmu_cmdq_build_cmd()
+> > call sites to replace it with the HW struct.
+> > 
+> > Reviewed-by: Mostafa Saleh <smostafa@google.com>
+> > Reviewed-by: Pranjal Shrivastava <praan@google.com>
+> > Tested-by: Pranjal Shrivastava <praan@google.com>
+> > Tested-by: Mostafa Saleh <smostafa@google.com>
+> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> [...]
+> > @@ -3446,6 +3447,7 @@ arm_smmu_install_new_domain_invs(struct arm_smmu_attach_state *state)
+> >  static void arm_smmu_inv_flush_iotlb_tag(struct arm_smmu_inv *inv)
+> >  {
+> >  	struct arm_smmu_cmdq_ent cmd = {};
+> > +	struct arm_smmu_cmd hw_cmd;
+> 
+> Following the other pattern, this could be:
+>     "cmd" -> "ent" and "hw_cmd" -> "cmd"?
+> 
+> That being said, at the end of the series, these all get removed.
 
-Implement Secure Launch D-RTM of the decompressed kernel via a
-callback interface exposed by the Secure Launch Resource Table (SLRT), a
-reference to which is added to struct boot_params.
+Yeah, I made choices to minimize the diffs
 
-This permits a boot loader to set up the Secure Launch, allow the
-decompressor to execute up to the point where it would otherwise boot the
-core kernel, and at that point, perform the Dynamic Launch Event in a
-architecture/vendor specific manner. This is similar to how EFI boot
-achieves this, using a EFI protocol exposed by the boot loader.
-
-This requires that the decompressor unpacks the kernel into the buffer that
-it was started from itself, and so physical KASLR needs to be omitted
-(although the boot loader is free to place the decompressor at any
-suitably aligned locations in system memory, and so it can perform the
-physical randomization itself).
-
-It also relies on the demand paging logic in the decompressor, to ensure
-that the SLRT and the entry point it describes are callable, at least to
-the extent that allows the callback code to re-establish its own
-execution environment.
-
-Co-developed-by: Ross Philipson <ross.philipson@gmail.com>
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Ross Philipson <ross.philipson@gmail.com>
----
- Documentation/arch/x86/zero-page.rst  |  1 +
- arch/x86/boot/compressed/misc.c       | 51 ++++++++++++++++++++++++---
- arch/x86/boot/compressed/pgtable_64.c |  7 ++++
- arch/x86/include/uapi/asm/bootparam.h |  2 +-
- 4 files changed, 56 insertions(+), 5 deletions(-)
-
-diff --git a/Documentation/arch/x86/zero-page.rst b/Documentation/arch/x86/zero-page.rst
-index 45aa9cceb4f1..dd98b467929c 100644
---- a/Documentation/arch/x86/zero-page.rst
-+++ b/Documentation/arch/x86/zero-page.rst
-@@ -20,6 +20,7 @@ Offset/Size	Proto	Name			Meaning
- 060/010		ALL	ist_info		Intel SpeedStep (IST) BIOS support information
- 						(struct ist_info)
- 070/008		ALL	acpi_rsdp_addr		Physical address of ACPI RSDP table
-+078/008		ALL	slr_table_addr		Physical address of Secure Launch Resource Table
- 080/010		ALL	hd0_info		hd0 disk parameter, OBSOLETE!!
- 090/010		ALL	hd1_info		hd1 disk parameter, OBSOLETE!!
- 0A0/010		ALL	sys_desc_table		System description table (struct sys_desc_table),
-diff --git a/arch/x86/boot/compressed/misc.c b/arch/x86/boot/compressed/misc.c
-index e3b5177bfa6f..eaaface4cd7d 100644
---- a/arch/x86/boot/compressed/misc.c
-+++ b/arch/x86/boot/compressed/misc.c
-@@ -17,6 +17,7 @@
- #include "../string.h"
- #include "../voffset.h"
- #include <asm/bootparam_utils.h>
-+#include <linux/slr_table.h>
- 
- /*
-  * WARNING!!
-@@ -391,6 +392,36 @@ static void early_sev_detect(void)
- 		lines = cols = 0;
- }
- 
-+#ifdef CONFIG_SECURE_LAUNCH
-+static void sl_initiate_launch(unsigned long table, unsigned long base)
-+{
-+	struct slr_table *slrt = (void *)table;
-+	struct slr_entry_dl_info *dl_info;
-+	struct slr_setup_dlme dlme;
-+	dl_launch_func launch_fn;
-+
-+	dlme.dlme_base = base;
-+	dlme.dlme_header_offset = mle_header_offset;
-+	dlme.dlme_table = 0;
-+
-+	if (!slrt)
-+		return;
-+
-+	dl_info = slr_next_entry_by_tag(slrt, NULL, SLR_ENTRY_DL_INFO);
-+	if (!dl_info)
-+		return;
-+
-+	launch_fn = (void *)dl_info->dl_launch;
-+
-+	/* Do the Dynamic Launch Event */
-+	launch_fn(&dl_info->bl_context, &dlme);
-+}
-+#else
-+static inline void sl_initiate_launch(unsigned long table, unsigned long base)
-+{
-+}
-+#endif
-+
- /*
-  * The compressed kernel image (ZO), has been moved so that its position
-  * is against the end of the buffer used to hold the uncompressed kernel
-@@ -491,10 +522,15 @@ asmlinkage __visible void *extract_kernel(void *rmode, unsigned char *output)
- 	debug_putaddr(trampoline_32bit);
- #endif
- 
--	choose_random_location((unsigned long)input_data, input_len,
--				(unsigned long *)&output,
--				needed_size,
--				&virt_addr);
-+	/*
-+	 * When doing a secure launch, the actual launch will be initiated by
-+	 * jumping back to the bootloader. Omit physical KASLR in that case, to
-+	 * avoid trampling on its code or data inadvertently.
-+	 */
-+	if (!boot_params_ptr->slr_table_addr)
-+		choose_random_location((unsigned long)input_data, input_len,
-+				       (unsigned long *)&output,
-+				       needed_size, &virt_addr);
- 
- 	/* Validate memory location choices. */
- 	if ((unsigned long)output & (MIN_KERNEL_ALIGN - 1))
-@@ -528,6 +564,13 @@ asmlinkage __visible void *extract_kernel(void *rmode, unsigned char *output)
- 	debug_puthex(entry_offset);
- 	debug_putstr(").\n");
- 
-+	/*
-+	 * Secure Launch involves calling back into the bootloader, so this
-+	 * needs to happen before disabling exception handling, to ensure that
-+	 * the entry point will be mapped on demand if needed.
-+	 */
-+	sl_initiate_launch(boot_params_ptr->slr_table_addr, (unsigned long)output);
-+
- 	/* Disable exception handling before booting the kernel */
- 	cleanup_exception_handling();
- 
-diff --git a/arch/x86/boot/compressed/pgtable_64.c b/arch/x86/boot/compressed/pgtable_64.c
-index 3e9d651da73e..f82094669ac0 100644
---- a/arch/x86/boot/compressed/pgtable_64.c
-+++ b/arch/x86/boot/compressed/pgtable_64.c
-@@ -124,6 +124,13 @@ asmlinkage void configure_5level_paging(struct boot_params *bp, void *pgtable)
- 
- 	l5_required = !cmdline_find_option_bool("no5lvl");
- 
-+	/*
-+	 * Don't change the number of levels when doing a Secure Launch. The
-+	 * Secure Launch stub will take care of that if needed.
-+	 */
-+	if (bp->slr_table_addr)
-+		l5_required = l5_enabled;
-+
- 	if (l5_required) {
- 		/* Initialize variables for 5-level paging */
- 		__pgtable_l5_enabled = 1;
-diff --git a/arch/x86/include/uapi/asm/bootparam.h b/arch/x86/include/uapi/asm/bootparam.h
-index 8155fa899f50..bc2ef37096af 100644
---- a/arch/x86/include/uapi/asm/bootparam.h
-+++ b/arch/x86/include/uapi/asm/bootparam.h
-@@ -121,7 +121,7 @@ struct boot_params {
- 	__u64  tboot_addr;				/* 0x058 */
- 	struct ist_info ist_info;			/* 0x060 */
- 	__u64 acpi_rsdp_addr;				/* 0x070 */
--	__u8  _pad3[8];					/* 0x078 */
-+	__u64 slr_table_addr;				/* 0x078 */
- 	__u8  hd0_info[16];	/* obsolete! */		/* 0x080 */
- 	__u8  hd1_info[16];	/* obsolete! */		/* 0x090 */
- 	struct sys_desc_table sys_desc_table; /* obsolete! */	/* 0x0a0 */
--- 
-2.47.3
-
+Jason
