@@ -1,110 +1,107 @@
-Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FE653CC7E3
-	for <iommu@lists.linux.dev>; Fri, 15 May 2026 13:54:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E05E139D6D5
+	for <iommu@lists.linux.dev>; Fri, 15 May 2026 13:58:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778853272; cv=none; b=t34ifUhHDyVF0AbqcbiuUPEfFDZ8k07JlVhxvZEFUMwknAzR0g5H0ZQmeox5w5Go39m1gtxroW3SM9EQNo5L+qYpq4/Gh98504TOGrcfloHEHJPDCCuq2Y6xSny2qDmKohX+5U8XzUDbWj+l9lTMOnnublHONdF2TYzjPq+p6lw=
+	t=1778853493; cv=none; b=kP6rQH169VU+GN1HkGOPO/LsbBadM9OcWzKLLwTQmFJqFxnwxRJFgj3f/iP9tdX1jATvpWeGZlpRpcBeNRMUlaBS8ovaYlrD2DFb+SVXVF2r09V0xAym2kuPrrNaSenWyYiMMp67oYCwBDYx65bSl9298Ab24WwEosmJSXOgd04=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778853272; c=relaxed/simple;
-	bh=ogaB8c9WpDZ0HQVoAmC1+/X0xgwqdjj3S/BcAjNZTxs=;
+	s=arc-20240116; t=1778853493; c=relaxed/simple;
+	bh=UJQG3VSzgoXmokXHk6pR6tDGZixiDw3OBDMxk+jt3Go=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WodOlQstOiSoOR6Y9PYlOku/+u9wuy/oEFYrhri1rVtexRNz0+tNYevePKhXToTSK7NMhsOxTeK4Mi5ijRP/IrQffSyTo9NkToxTfHHzr27a5DaG/1pDegFQN3o932st3TBpQBXaDKE0J0m5A6s6JNZGb/2HsMRhdg5e8uzNl3Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=TkpYQEzw; arc=none smtp.client-ip=209.85.222.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=M6liXNxx5zZfQSIZcanJ9Y9GmJLoOAqrklEoZsNaUHBRYxvBbt6biV3Ea+P84dXqydHtsXBgMqYa3ikvl47scn7BJMt+Tpb1j0hL8PGH2cHtZ137dNbhs/R9H1B/1IoW+SZLdZD3ID19kN7mpD41/yUnOGO5TlRHkaU1LnMQhUM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=TyhRuKs2; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="TkpYQEzw"
-Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-911501a99feso178117685a.2
-        for <iommu@lists.linux.dev>; Fri, 15 May 2026 06:54:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1778853269; x=1779458069; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=d7sJIQD9tWQIe4BdjnAe96u8pxDyEGA325KU5uwZDdI=;
-        b=TkpYQEzw3YSWklE3gUqZTexPd/DQFVAScGPUolbZJpR3haoYv91lhKBlsHtYupbAKg
-         6cvYXVbJrmzaWKLeC2Hpfg1Qek4d20cFySaw0XtK6BS/WjwrHacl0HlcGSEA9k3neXef
-         xsU2wlKiKYKu/KgChKcGCJdYcyjhgvGWToYH2wSKj5IXJoCYXM0UqjAlM7XBp5Jz6aVp
-         NMmwqAhi2UtHMnBw23Usi7j0GP3Ae7V3yC1p3MehyjwZAdsOA5tL/gBv9xNdmdndAoZA
-         s9sIR4dPFZiIJOh3CZYl/dSBOLH8Hhjl9kEQ3PgjRMUjuTORwU4EFklx54OaemAMq+su
-         ZrVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778853269; x=1779458069;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=d7sJIQD9tWQIe4BdjnAe96u8pxDyEGA325KU5uwZDdI=;
-        b=pXAmZc87BHszBFbDEuhG1LQjb6qunGo2X3m07FkK4jmh1sw91Usw9kvF1JNNXAaw5e
-         E6IlHivRwW408cX9uLCih0bP/sIjrlpvyHp4XIMoU9xIHIJXJBFdxSlbc8f1TiA6v9tY
-         7sQegRpkiD9C/ysX8N46Yb2T9XYXuqmWWzOE0FAfjL/Ff+8AarJM3RgHJLupSmnjBANf
-         YU2ZdliPD+BBe8Trk6JTx4dT6At/XPr54zbmYIqlibQsdn1Xws6RG1K+ErhffX2AH+Wh
-         OgRRK63ok5T7Pojoq8ceu0Ki/+coLimf11we+H8wP+uaP8dJ4wrWRzfiuYVNOzL7zLf8
-         BZUg==
-X-Gm-Message-State: AOJu0Yz5mq7Wzruld/D5pzP0fhiIVKzTl14BIhfQDRBE3PP7dL+rx4oH
-	dIGwoMKWJ6Ppx6TNJHYYszdnhL1ZEppv0SkxmAgh2H85waJwTyY+fMvWDNS5ZOTkpzY=
-X-Gm-Gg: Acq92OEsFyAmKaCbo4WMl0h9dYQhdnG1B21z6+y2SSW9QntuqAuyAJCiX3K1vDXBRRw
-	X+44JqqIdbg/hQygxIaWLFuVpKRcRaHY8PERkTE20GVNKOIZTDPRci5d6Pz/dIhAaZJR04IP6fR
-	dZPb05IRNswC3Yj5G8tPyq+R/tGRXy8ShqKqiLo7rQBH6zzU8jTaO3Dmm3HWpQuZXwmh6N/nSU5
-	98CJvBEkT4F5GVQ9mZ0tYZ+UPgZuB0YD419/JQ76uFeEt4t3fUku3xUtZnCpWcvzJabZtE5yWBR
-	jcjyo6ecoFWwrRLPYiABscW85cErEbCweifOzAWZs4pbq2PuJsKAz+t7Z1xErNHM6Ixt+3uEq3N
-	QSh9xKlqEP0uB8P/xE8pydCQ5iMDH5yFogeGq9cKxTXRXwht5CCNb5J2/YMhtQrYiIwTTPA/NGP
-	IjT4u7TEdLS2zuEWQvLaGaNLSGTYPISv7mAzs1gQ4Vxe+eAn1ifJdajuZeXsT35TAJu9zlPJpkw
-	eFy3RoeqiR7pxyengU5HROC/JM=
-X-Received: by 2002:a05:620a:7116:b0:8db:7315:706c with SMTP id af79cd13be357-911d0f4a568mr660861285a.59.1778853269479;
-        Fri, 15 May 2026 06:54:29 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-910bae24879sm589818085a.18.2026.05.15.06.54.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 May 2026 06:54:28 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wNszk-00000007TGH-1wJJ;
-	Fri, 15 May 2026 10:54:28 -0300
-Date: Fri, 15 May 2026 10:54:28 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com, will@kernel.org,
-	joro@8bytes.org
-Subject: Re: [PATCH 2/3] iommu/io-pgtable-arm: Rework to use the iommu-pages
- API
-Message-ID: <20260515135428.GG7702@ziepe.ca>
-References: <20260513215203.3852661-1-smostafa@google.com>
- <20260513215203.3852661-3-smostafa@google.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="TyhRuKs2"
+Received: from localhost (unknown [167.220.233.27])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 4BC4E20B7166;
+	Fri, 15 May 2026 06:58:06 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 4BC4E20B7166
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1778853486;
+	bh=d1lGfXM5z8FUpJ6yBgaa5Pzq5ONXbZDPl9if6NBwHLE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=TyhRuKs23rya7RRQP5pT3RlKmAk8JcVGEHJM38meAmcZpOrdcO/odd51nDNZm7xPj
+	 AY2hbgxB//Ctudw4ebfc9FTV9Mol9AynhFT74ouFunsO5KMZ2BI+MnNG+j8Q2QKsg4
+	 GlcS1b19jhEdpq20CM6+si9kZvGS0W+G4MwxKGys=
+Date: Fri, 15 May 2026 21:58:08 +0800
+From: Yu Zhang <zhangyu1@linux.microsoft.com>
+To: Michael Kelley <mhklinux@outlook.com>
+Cc: Jacob Pan <jacob.pan@linux.microsoft.com>, 
+	Mukesh R <mrathor@linux.microsoft.com>, "hpa@zytor.com" <hpa@zytor.com>, 
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "robh@kernel.org" <robh@kernel.org>, 
+	"wei.liu@kernel.org" <wei.liu@kernel.org>, "muislam@microsoft.com" <muislam@microsoft.com>, 
+	"namjain@linux.microsoft.com" <namjain@linux.microsoft.com>, 
+	"magnuskulke@linux.microsoft.com" <magnuskulke@linux.microsoft.com>, "anbelski@linux.microsoft.com" <anbelski@linux.microsoft.com>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>, 
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, 
+	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "kys@microsoft.com" <kys@microsoft.com>, 
+	"haiyangz@microsoft.com" <haiyangz@microsoft.com>, "decui@microsoft.com" <decui@microsoft.com>, 
+	"longli@microsoft.com" <longli@microsoft.com>, "tglx@kernel.org" <tglx@kernel.org>, 
+	"mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>, 
+	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>, "x86@kernel.org" <x86@kernel.org>, 
+	"joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>, 
+	"lpieralisi@kernel.org" <lpieralisi@kernel.org>, "kwilczynski@kernel.org" <kwilczynski@kernel.org>, 
+	"bhelgaas@google.com" <bhelgaas@google.com>, "arnd@arndb.de" <arnd@arndb.de>
+Subject: Re: [PATCH V3 01/11] iommu/hyperv: Rename hyperv-iommu.c to
+ hyperv-irq.c
+Message-ID: <s4askzopk7hrst52m2pjaba677qwr6qgipgu57mjlaaqw7sn2n@44r43drjlmoz>
+References: <20260512020259.1678627-1-mrathor@linux.microsoft.com>
+ <20260512020259.1678627-2-mrathor@linux.microsoft.com>
+ <20260512164623.0000273f@linux.microsoft.com>
+ <SN6PR02MB4157371A1A3931F582F9A2E9D4062@SN6PR02MB4157.namprd02.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260513215203.3852661-3-smostafa@google.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <SN6PR02MB4157371A1A3931F582F9A2E9D4062@SN6PR02MB4157.namprd02.prod.outlook.com>
 
-On Wed, May 13, 2026 at 09:52:02PM +0000, Mostafa Saleh wrote:
-> Update the io-pgtable-arm allocator to use the iommu-pages API.
+On Wed, May 13, 2026 at 03:15:52AM +0000, Michael Kelley wrote:
+> From: Jacob Pan <jacob.pan@linux.microsoft.com> Sent: Tuesday, May 12, 2026 4:46 PM
+> > 
+> > Hi Mukesh,
+> > 
+> > On Mon, 11 May 2026 19:02:49 -0700
+> > Mukesh R <mrathor@linux.microsoft.com> wrote:
+> > 
+> > > This file actually implements irq remapping, so rename to more
+> > > appropriate hyperv-irq.c. A new file to implement hyperv iommu will
+> > > be introduced later.  Also, it should not be tied to HYPERV_IOMMU,
+> > > but to CONFIG_HYPERV and IRQ_REMAP. The file already has #ifdef
+> > > CONFIG_IRQ_REMAP.
+> > >
+> > > Reviewed-by: Anirudh Rayabharam (Microsoft) <anirudh@anirudhrb.com>
+> > > Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
+> > > ---
+> > >  MAINTAINERS                                    | 2 +-
+> > >  drivers/iommu/Makefile                         | 2 +-
+> > >  drivers/iommu/{hyperv-iommu.c => hyperv-irq.c} | 6 +++---
+> >
+> > Given that we have multiple Hyper-V IOMMU-related files — this renamed
+> > hyperv-irq.c, the existing hyperv-iommu code, iommu-root (this
+> > series) and the recently posted guest pvIOMMU driver — should we create
+> > a drivers/iommu/hyperv/ directory to consolidate them?
 > 
-> Replace the DMA API usage from __arm_lpae_alloc_pages() with
-> iommu_pages_start_incoherent() and from __arm_lpae_free_pages() with
-> iommu_pages_free_incoherent().
+> Patch 1/4 in the guest pvIOMMU driver [1] that was recently posted by
+> Yu Zhang does as you suggest.
 > 
-> Since the iommu-pages API relies on metadata stored in the struct page
-> during iommu_alloc_pages_node_sz(), it cannot be used safely with memory
-> allocated via the custom cfg->alloc (which may not be backed by pages).
-> So, isolate that logic and keep it as it.
+> Michael
 > 
-> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
-> Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> ---
->  drivers/iommu/io-pgtable-arm.c | 79 ++++++++++++++++++++++++----------
->  1 file changed, 56 insertions(+), 23 deletions(-)
+> [1] https://lore.kernel.org/linux-hyperv/20260511162408.1180069-1-zhangyu1@linux.microsoft.com/
+> 
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Maybe we can send a standalone patch and get it merged
+first (move it to drivers/iommu/hyperv/irq_remapping.c)?
 
-I feel the setup for incoherent walk for panthor is kind of sketchy,
-if you select incoherent walk and pass in a random GPU driver struct
-device there are alot of assumptions suddenly to know the dma API is
-doing the right thing..
+The rename itself is a meaningful cleanup regardless of
+either series, and in the future, both Mukesh and I can
+can then build on top of it without conflicts. :)
 
-Jason
+B.R.
+Yu
