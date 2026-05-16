@@ -1,154 +1,157 @@
-Received: from mail-dl1-f50.google.com (mail-dl1-f50.google.com [74.125.82.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4788F2727EB
-	for <iommu@lists.linux.dev>; Sat, 16 May 2026 00:46:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF1B2248F73;
+	Sat, 16 May 2026 03:20:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=96.67.55.147
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778892397; cv=none; b=QiP8dX00qbZdgmGvU62WDO81qLcGjQXAEHz3nlgxs+BvK7xKfNWUYOKdPRtXtXMLsIIzvYQkWWLVK95hbFsZl9ugOx4rvj79UX5l+h759NiUGj9EmUQDTwIiyGWj8HcLPwLPF+dkuJQ3bqgC9SV8qjA9O58m81KMIZBcZdWUN4A=
+	t=1778901642; cv=none; b=plk2NvhZ0YzdcuHK+FsJqO9ymsX1GCrxKZpIUqs1b6i6wiPL6gt7/VqVLHfSzjzP6WgnD/dKzsC3grpD5yIEYz7mMzceeDfeFXFEGTua04HVxR6N8lscJm2mN7C//9JQre2CJm7h8qf9zJjTN4YJmzTRfgNxj74rtOyYYa2/odE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778892397; c=relaxed/simple;
-	bh=+yBByH+X4c1uoMXYjK5+sjqKUIapyqynpZtSyRIaqE4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WOYaLroF8PEEaeKBNVm6xiVDVSK1XICzCg3GIVOkooFTMtiQsHqcEuy8Pen9PWw5JMtX3DGQakPnOsnlD8JfqlXLKAYino4X0IwIVkUX0KAcOFn0suIzjKpJPXQCOoqyn1R+Z36IkuGJL7bkCVNVI+sqnjeqIqQaL4On8yqXHkw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=s3Bl88Bt; arc=none smtp.client-ip=74.125.82.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1778901642; c=relaxed/simple;
+	bh=d9gHZC/7030Jz3Q2AezS8Fm3v0vfnP0Fw7dyfPCxHOM=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=EgEATylj9js2nVgM1bgrs4k8nTYX+KwSPjdqWSiGprfdgrs/JMnFY0SYryIg/HdAkznUiBLCLmt9F6JJRJEshPYf8o+PQi1AmnzdgucwE7Yrf3QUDnU+X7QMmuchnIr6/rDd7s5mIjv+OK1eWe8nTNZbmHwOo8HnGDYzWN2FSeE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com; spf=pass smtp.mailfrom=surriel.com; dkim=pass (2048-bit key) header.d=surriel.com header.i=@surriel.com header.b=m+ufTgVV; arc=none smtp.client-ip=96.67.55.147
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=surriel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="s3Bl88Bt"
-Received: by mail-dl1-f50.google.com with SMTP id a92af1059eb24-133362c30cfso6c88.0
-        for <iommu@lists.linux.dev>; Fri, 15 May 2026 17:46:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778892392; x=1779497192; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=xi6UMXsamXS4nO8ukGa9Mfe0AvlJid/kwLk/3dcmb4k=;
-        b=s3Bl88BtV6CehRWzjxgbmVZ88wQ7MYpN+VZRSQqL5oipiqcmjK1b+XjYJhAnujSMxQ
-         B0UT2J1fGdO7P0J35OqFsWT3R6f8x+D/zB5sPHKcitZNRMjvzbia+4rqQHMzhxwbq1XZ
-         QUiLguuwzpx3/ZBO/OcRngI0E4oQbfC2MvoSaDj8/9UrPChf41qceS7fTo+N1oumxKkO
-         O2IImg8+hg9I+XR1Um/YRGn6l8CStiJMch72/ijWl8Hl6HAgapERqA8HSob4qS/PxO+s
-         ksXBDQ0j1Q39liSFA0oQI8JU4RNVvueqpUOBUGPvTxMYdVFSazJadPGuimxJ9ERUxzAn
-         hxiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778892392; x=1779497192;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=xi6UMXsamXS4nO8ukGa9Mfe0AvlJid/kwLk/3dcmb4k=;
-        b=fy2ZZVafLKjtyHee8p1GCG/PhEbWgRjgx80sT38iHkv4k+DPFUpAQcSaqKN4TRN3UE
-         VACYkFrNjLszul0mXeTHKsZ3jvEvwoZ8j7ekFDGGNEs93G9PxFyxGfv/ZkwgHrRt6tOO
-         vye+llm9tunD/RiK2pvuNvlJCP3/CRQXqFLQoJlJxJAb4ILe+/wSrPKE5xnPYH2ipMIN
-         l//9iuvqiqeN0L2ldtv9C7+Rz5V8/hXJ2urmmnshIan2wEKSWyvLWqWqp0hTrj2JwmjV
-         /UCkfxE+Pg+6Tc4ljodv9Jmpp8YvJ0qNwEE4JS/yvEdJz9eEqv7EEtgxd3eeqUSS+53n
-         SRqg==
-X-Gm-Message-State: AOJu0YzH5cbGnmE5CJs562K1Q97Gt54DPVKaf/EXe+/DX9xUvauLgu15
-	pNJNN/s+WOdp3C923zbSJzBD0lz/jAc3qTBjFM15Z/Ig6/KSjy0FrtKJSqubLFS6hg==
-X-Gm-Gg: Acq92OE952MWP3Sig5IQEuZ4Hesht/IN4nKEtkn8NcghGKB2qtJeIRs840pqNCHhCMY
-	Q9S6dm1OfXCniU/RbIf+LHjHz6d93M7tiNBJFYDd4GOl7aUHr/w0FpGhYEIvA/ed2oWNun4d4gm
-	ftou8LzEW5Bojm8zPZ+YhJit/bG58CyobcoLP/nSaRUr1iPhhNFsW/dNFpteQKBpxHSdrdK803l
-	3+aUrlldIY321/6c1LvW68hgXULYXjX8psnmVkZ+tlej70dPw78SkzEkwFmbu9uI5rvfUp0SZ3+
-	3W/a4uFEVM0KCV90fKknMkpf+VCANsjVw6gLMTzSMkqp6VOcjWVEyisN2auL3Cc01oj6DdnJetG
-	H+x+DncNORoibQZ8XcCC5tN6ynNDjVTQgmpLnv+tED/qfDw5n4sxiHFnCC5bxDs1oxf8+3m3ZpU
-	PRA+ITeb3zJw4+Z5CAxdU2jNRWG4oNfG0n+EZETiB2XFQGC08orcCfMGX2wAsx8XzFvERL2w==
-X-Received: by 2002:a05:7022:fa02:b0:134:f1e8:e59a with SMTP id a92af1059eb24-1354506413fmr21692c88.27.1778892391267;
-        Fri, 15 May 2026 17:46:31 -0700 (PDT)
-Received: from google.com (153.46.83.34.bc.googleusercontent.com. [34.83.46.153])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-134cbcb93f3sm11830580c88.3.2026.05.15.17.46.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 May 2026 17:46:30 -0700 (PDT)
-Date: Sat, 16 May 2026 00:46:26 +0000
-From: Samiullah Khawaja <skhawaja@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Jonathan Hunter <jonathanh@nvidia.com>, 
-	Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org, 
-	linux-tegra@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, 
-	Thierry Reding <thierry.reding@kernel.org>, Krishna Reddy <vdumpa@nvidia.com>, Will Deacon <will@kernel.org>, 
-	David Matlack <dmatlack@google.com>, Nicolin Chen <nicolinc@nvidia.com>, 
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev, Pranjal Shrivastava <praan@google.com>, 
-	Mostafa Saleh <smostafa@google.com>
-Subject: Re: [PATCH v2 0/9] Remove SMMUv3 struct arm_smmu_cmdq_ent
-Message-ID: <age-DpeiCWBj7UPu@google.com>
-References: <0-v2-47b2bf710ad5+716ac-smmu_no_cmdq_ent_jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=surriel.com header.i=@surriel.com header.b="m+ufTgVV"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=surriel.com
+	; s=mail; h=MIME-Version:Content-Transfer-Encoding:Content-Type:References:
+	In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=d9gHZC/7030Jz3Q2AezS8Fm3v0vfnP0Fw7dyfPCxHOM=; b=m+ufTgVVNfC9MwQXpgRHTxv7Qw
+	9gboQ7UkPET0erhE5QrKNXslkCSzC0dcPQ+TSHDBr0pTH26ZXn7nIfXwusmfJ7EOnCD5fWZkzDULt
+	P5yKIDB47ZQqQMTYY+dKUnHLuenypp3u+/Jl27XT7AbmChzucHOnVc+JcJtGcqCSjdWBCGUme1xT2
+	Wde25bVj+zMJPtklOp/QDfp1uOTUGKPKKqNXF/Q7LlDByArsiR0a+7anyLKFfcwBXUpWgJL/VJJTS
+	RZE1GyHFS0W5VamXNOAg4Mom7fvwEJSQkEwqJzl0oXgyEFcjsKAd0wNRj1t3fcjVTSp8NLuIUYkzo
+	f+qPsUPA==;
+Received: from fangorn.home.surriel.com ([10.0.13.7])
+	by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.97.1)
+	(envelope-from <riel@surriel.com>)
+	id 1wO5Zh-000000006ho-0DNO;
+	Fri, 15 May 2026 23:20:25 -0400
+Message-ID: <87439b0b88bfa4d4771052090e107d38ae5f0eee.camel@surriel.com>
+Subject: Re: [PATCH 5/5] iova: add KUnit test suite
+From: Rik van Riel <riel@surriel.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: linux-kernel@vger.kernel.org, robin.murphy@arm.com, joro@8bytes.org, 
+	will@kernel.org, iommu@lists.linux.dev, kyle@mcmartin.ca,
+ kernel-team@meta.com,  Rik van Riel	 <riel@meta.com>
+Date: Fri, 15 May 2026 23:20:24 -0400
+In-Reply-To: <20260515224317.GM7702@ziepe.ca>
+References: <20260513020304.1528751-1-riel@surriel.com>
+	 <20260513020304.1528751-6-riel@surriel.com>
+	 <20260515224317.GM7702@ziepe.ca>
+Autocrypt: addr=riel@surriel.com; prefer-encrypt=mutual;
+ keydata=mQENBFIt3aUBCADCK0LicyCYyMa0E1lodCDUBf6G+6C5UXKG1jEYwQu49cc/gUBTTk33A
+ eo2hjn4JinVaPF3zfZprnKMEGGv4dHvEOCPWiNhlz5RtqH3SKJllq2dpeMS9RqbMvDA36rlJIIo47
+ Z/nl6IA8MDhSqyqdnTY8z7LnQHqq16jAqwo7Ll9qALXz4yG1ZdSCmo80VPetBZZPw7WMjo+1hByv/
+ lvdFnLfiQ52tayuuC1r9x2qZ/SYWd2M4p/f5CLmvG9UcnkbYFsKWz8bwOBWKg1PQcaYHLx06sHGdY
+ dIDaeVvkIfMFwAprSo5EFU+aes2VB2ZjugOTbkkW2aPSWTRsBhPHhV6dABEBAAG0HlJpayB2YW4gU
+ mllbCA8cmllbEByZWRoYXQuY29tPokBHwQwAQIACQUCW5LcVgIdIAAKCRDOed6ShMTeg05SB/986o
+ gEgdq4byrtaBQKFg5LWfd8e+h+QzLOg/T8mSS3dJzFXe5JBOfvYg7Bj47xXi9I5sM+I9Lu9+1XVb/
+ r2rGJrU1DwA09TnmyFtK76bgMF0sBEh1ECILYNQTEIemzNFwOWLZZlEhZFRJsZyX+mtEp/WQIygHV
+ WjwuP69VJw+fPQvLOGn4j8W9QXuvhha7u1QJ7mYx4dLGHrZlHdwDsqpvWsW+3rsIqs1BBe5/Itz9o
+ 6y9gLNtQzwmSDioV8KhF85VmYInslhv5tUtMEppfdTLyX4SUKh8ftNIVmH9mXyRCZclSoa6IMd635
+ Jq1Pj2/Lp64tOzSvN5Y9zaiCc5FucXtB9SaWsgdmFuIFJpZWwgPHJpZWxAc3VycmllbC5jb20+iQE
+ +BBMBAgAoBQJSLd2lAhsjBQkSzAMABgsJCAcDAgYVCAIJCgsEFgIDAQIeAQIXgAAKCRDOed6ShMTe
+ g4PpB/0ZivKYFt0LaB22ssWUrBoeNWCP1NY/lkq2QbPhR3agLB7ZXI97PF2z/5QD9Fuy/FD/jddPx
+ KRTvFCtHcEzTOcFjBmf52uqgt3U40H9GM++0IM0yHusd9EzlaWsbp09vsAV2DwdqS69x9RPbvE/Ne
+ fO5subhocH76okcF/aQiQ+oj2j6LJZGBJBVigOHg+4zyzdDgKM+jp0bvDI51KQ4XfxV593OhvkS3z
+ 3FPx0CE7l62WhWrieHyBblqvkTYgJ6dq4bsYpqxxGJOkQ47WpEUx6onH+rImWmPJbSYGhwBzTo0Mm
+ G1Nb1qGPG+mTrSmJjDRxrwf1zjmYqQreWVSFEt26tBpSaWsgdmFuIFJpZWwgPHJpZWxAZmIuY29tP
+ okBPgQTAQIAKAUCW5LbiAIbIwUJEswDAAYLCQgHAwIGFQgCCQoLBBYCAwECHgECF4AACgkQznneko
+ TE3oOUEQgAsrGxjTC1bGtZyuvyQPcXclap11Ogib6rQywGYu6/Mnkbd6hbyY3wpdyQii/cas2S44N
+ cQj8HkGv91JLVE24/Wt0gITPCH3rLVJJDGQxprHTVDs1t1RAbsbp0XTksZPCNWDGYIBo2aHDwErhI
+ omYQ0Xluo1WBtH/UmHgirHvclsou1Ks9jyTxiPyUKRfae7GNOFiX99+ZlB27P3t8CjtSO831Ij0Ip
+ QrfooZ21YVlUKw0Wy6Ll8EyefyrEYSh8KTm8dQj4O7xxvdg865TLeLpho5PwDRF+/mR3qi8CdGbkE
+ c4pYZQO8UDXUN4S+pe0aTeTqlYw8rRHWF9TnvtpcNzZw==
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <0-v2-47b2bf710ad5+716ac-smmu_no_cmdq_ent_jgg@nvidia.com>
 
-On Wed, May 13, 2026 at 08:57:39PM -0300, Jason Gunthorpe wrote:
->[ This is part of the patch pile to move SMMUv3 over to the generic page
->table:
->1) Introduction of new gather items and RISCV usage
->  https://patch.msgid.link/r/0-v2-b5156f657dc1+25f-iommu_riscv_inv_jgg@nvidia.com
->2) Remove SMMUv3 struct arm_smmu_cmdq_ent
->3) Organize the SMMUv3 invalidation flow so iommupt can use it
->4) Use the generic iommu page table for SMMUv3
->
->The whole branch is here:
->   https://github.com/jgunthorpe/linux/commits/iommu_pt_arm64/
->]
->
->The invalidation logic has this multi-step process where it first
->writes the command into a 32 byte struct arm_smmu_cmdq_ent, then it
->calls a function which converts it into a 16 byte HW struct, and
->sometimes it then edits the HW struct a little bit before passing it
->off to the batch or submission functions.
->
->Instead just generate the HW struct directly by moving the FIELD_PREP
->blocks out of the big case statement and into helper functions. Call the
->right function in all the places that were building arm_smmu_cmdq_ent.
->
->Add a type for the CMDQ entry similar to the STE/CD types that wraps the
->two u64s for clarity and use it everywhere.
->
->This is intended to have no functional change. It makes the following
->patches work better and removes a bunch of LOC. I've run several AI tools
->with instruction to look for functional changes, which did find one subtle
->mistake in PRI response.
->
->The removal of arm_smmu_cmdq_build_cmd() also achieves what Mostafa is
->doing in the pkvm series by making the command formation entirely header
->based with the arm_smmu_make_cmd_*() mini inlines.
->
->This series has no dependencies. Several people have already tested this
->on various ARM systems along with the full iommupt conversion.
->
->v2:
-> - Collect tags and add a commit message note about ATS
->v1: https://patch.msgid.link/r/0-v1-b7dc0a0d4aa0+3723d-smmu_no_cmdq_ent_jgg@nvidia.com
->
->Jason Gunthorpe (9):
->  iommu/arm-smmu-v3: Add struct arm_smmu_cmd to represent the HW format
->    command
->  iommu/arm-smmu-v3: Use the HW arm_smmu_cmd in cmdq selection functions
->  iommu/arm-smmu-v3: Use the HW arm_smmu_cmd in cmdq submission
->    functions
->  iommu/arm-smmu-v3: Convert arm_smmu_cmdq_batch cmds to struct
->    arm_smmu_cmd
->  iommu/arm-smmu-v3: Remove CMDQ_OP_CFGI_CD_ALL from
->    arm_smmu_cmdq_build_cmd()
->  iommu/arm-smmu-v3: Directly encode simple commands
->  iommu/arm-smmu-v3: Directly encode CMDQ_OP_ATC_INV
->  iommu/arm-smmu-v3: Directly encode CMDQ_OP_SYNC
->  iommu/arm-smmu-v3: Directly encode TLBI commands
->
-> .../arm/arm-smmu-v3/arm-smmu-v3-iommufd.c     |  24 +-
-> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 475 +++++++-----------
-> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   | 248 +++++----
-> .../iommu/arm/arm-smmu-v3/tegra241-cmdqv.c    |  16 +-
-> 4 files changed, 350 insertions(+), 413 deletions(-)
->
->
->base-commit: d8fa633ffaf43316bc3ee8d7b21366cc92c02002
->-- 
->2.43.0
->
->
+On Fri, 2026-05-15 at 19:43 -0300, Jason Gunthorpe wrote:
+> On Tue, May 12, 2026 at 10:00:22PM -0400, Rik van Riel wrote:
+> > From: Rik van Riel <riel@meta.com>
+> >=20
+> > Add a kunit suite for the augmented-rbtree IOVA allocator, plus an
+> > iova_domain_verify_invariants() helper (compiled only when the test
+> > config is enabled) that walks the tree and confirms every node's
+> > gap_to_prev, clamped_gap32, __subtree_max_gap, and
+> > __subtree_max_gap32
+> > match what recomputation from scratch yields.
+> >=20
+> > Test cases:
+> > =C2=A0 - test_init_destroy: domain lifecycle, no leaks.
+> > =C2=A0 - test_basic_alloc_free: single alloc/free roundtrip, top-down
+> > reuse.
+> > =C2=A0 - test_size_aligned: alignment of size_aligned allocs across
+> > orders 0..7.
+> > =C2=A0 - test_top_down_preference: sequential allocs decrease in pfn_lo=
+.
+> > =C2=A0 - test_limit_pfn_respected: 100 allocs all stay <=3D limit_pfn.
+> > =C2=A0 - test_reserve_iova: allocs avoid the reserved range.
+> > =C2=A0 - test_find_iova: lookup by pfn returns the right iova.
+> > =C2=A0 - test_32bit_in_64bit_domain: 1000 64-bit allocs followed by a
+> > 32-bit
+> > =C2=A0=C2=A0=C2=A0 alloc must still find a slot below DMA_BIT_MASK(32) =
+--
+> > exercises
+> > =C2=A0=C2=A0=C2=A0 the __subtree_max_gap32 augmentation.
+> > =C2=A0 - test_two_phase_alignment: pack size-2 size_aligned allocs, fre=
+e
+> > =C2=A0=C2=A0=C2=A0 every other; subsequent size-2 alloc must succeed vi=
+a the
+> > phase-2
+> > =C2=A0=C2=A0=C2=A0 fallback search since phase-1's S+A-1 threshold prun=
+es the
+> > size-2
+> > =C2=A0=C2=A0=C2=A0 gaps.
+> > =C2=A0 - test_pci_32bit_workaround_pattern: alternate 32-bit-first
+> > allocation
+> > =C2=A0=C2=A0=C2=A0 attempts with 64-bit fallback, mirroring dma-iommu.c=
+.
+> > =C2=A0 - test_stress_random: 2048 random alloc/free operations with
+> > mixed
+> > =C2=A0=C2=A0=C2=A0 sizes, alignments, and 32/64-bit limits, with period=
+ic
+> > invariant
+> > =C2=A0=C2=A0=C2=A0 checks.
+> >=20
+> > Each test verifies the augmented invariants both during and after
+> > the
+> > test run so that any sequencing bug in insert / erase / rotate /
+> > propagate is caught at the operation that introduced it.
+> >=20
+> > Tested by: building drivers/iommu/iova.o and drivers/iommu/iova-
+> > kunit.o
+> > (no warnings); runtime execution requires booting a kernel with
+> > CONFIG_IOMMU_IOVA_KUNIT_TEST=3Dy under qemu-system-x86_64 (not
+> > available
+> > on this devvm).
+> =C2=A0=C2=A0=C2=A0 ^^^^^^^^^^^^^^^
+>=20
+> Heh, you should still read the patches when using claude :)
+>=20
+I saw it. Then I got distracted by something else,
+and forgot to fix it :/
 
-Sanity tested on non-coherent rockchip rk3588s with nvme.
+> Can you add a .kunitconfig please? The tests should run with a
+> command like:
 
-Tested-by: Samiullah Khawaja <skhawaja@google.com>
+I'll address your comments, and also the issues
+found by Sashiko. I'll try to get v2 ready within
+a week or two.
+
+--=20
+All Rights Reversed.
