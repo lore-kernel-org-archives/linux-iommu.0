@@ -1,63 +1,199 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 045CF2C181;
-	Sat, 16 May 2026 00:06:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 74B902B9B7
+	for <iommu@lists.linux.dev>; Sat, 16 May 2026 00:11:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778889969; cv=none; b=inyTjBQF0d3duEbMtl/+XK7dESrRgSXX8kQGhyz/Ri78FaJs9hd28qw7336Dn+UEKR1IGP9gHAofpqntdZYqeczdndKU4bLTV62vPfoLTUBHiMsfUaaJdSYlwK55QYLMAHiuQ6gS5VMvk3uTnHRxjDbB4b6Qfn2vHbFd0VTpjGQ=
+	t=1778890288; cv=none; b=FwMkCognykVkxLgUZ/kQP4/e6xBEhA6Dr88MGPgreNfxE8DdrlEyLF8MAIH9dPxMthMBadgqmeH9sEgbiVOvolnTytnQNZMtBgq8hIDB1GthI9ny1IqgyUnOlm+DqxbuA3sZFsiJzhmIa5Cctu0zH+D+9zoMFZWPHuvgAS9lffA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778889969; c=relaxed/simple;
-	bh=auQmhg3dLV7WST++xIMy3N/BCMRO2IcKly2j/5btGCU=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=iiKqRC4GGLJcC9CQNl29Ln4UhdigrG/EQ3M+CPf+vv6E3KXmFDozXwIzCTI54zK2J+ki92KJrT6QW5mEPxqofFYSkzV5Mq1rjIfK8yrp4sFcXXInZJUVA0dqJLkF5hGxgstNPDHBJ2K07fEcOOsqLfQLf/NkvPgqUVsYSeGkn9I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VqBwS2bK; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778890288; c=relaxed/simple;
+	bh=iMMYKTs0MtAf6meTZt2BHXVvX1+8zNyEKjQknw9NZ+g=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=hYoXJ66tsyPIx2VCnZd2BEmxkLX914EuSXoxCydGzc1yR2ASy0+1k3666HGh9h2jbfBLUrYHGaZhS93ePhezf7xqF6zVlZJESUUFeAsb+61J7+qCDV7V3imqnQC9aJY6llL3JVfQ1by8v80OeT2Vj63HeiawzJkAT1CatMBTX+s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=pqnEgP6n; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VqBwS2bK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9086C2BCB7;
-	Sat, 16 May 2026 00:06:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778889968;
-	bh=auQmhg3dLV7WST++xIMy3N/BCMRO2IcKly2j/5btGCU=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=VqBwS2bKIVnyHrorh9INWpogNpPo6LaC0sH1ADZJgtIkdZVMCNDJKoDlEECWWaQn+
-	 ucIgR5C6eZmpPN0IUTGi0cYDkayx8hoaKdSKxpaJ7PoLP0H2Nc6+KIxIxfdw8J9omn
-	 1vvREBbpjkMlpUR8YbWDGas6KXyjnj7CzUNdmJkloOBZR7N8cK1HaEcTtZuB3s0Nmm
-	 jhZwvVG+uPnz5ndFsk6XO5z6kNGDPlC7f6DZKOLmJL2HyVbcawP0QsKt3CPcUoyQXT
-	 7oVAQZDVG1qsGJLzO+1D1JihWFx91mI0PdZ/awEDGUVdHBkmmCM8EpKPFEyPtbbzOk
-	 jXBvsDE6RWg+Q==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 5699A3930A23;
-	Sat, 16 May 2026 00:06:23 +0000 (UTC)
-Subject: Re: [git pull] IOMMU Fixes for Linux v7.1-rc3
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <og4pb7fwmfp5ogjssmsl6uk5ies4t7wba6l2l2gi7ek76tpfji@jhvxjh4rx5in>
-References: <og4pb7fwmfp5ogjssmsl6uk5ies4t7wba6l2l2gi7ek76tpfji@jhvxjh4rx5in>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <og4pb7fwmfp5ogjssmsl6uk5ies4t7wba6l2l2gi7ek76tpfji@jhvxjh4rx5in>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v7.1-rc3
-X-PR-Tracked-Commit-Id: 1bb54043ff309795c90ccadd8a6e6b13ac40ec4e
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 30e0ff6d6a83586486674c343db5e9d933bd92e0
-Message-Id: <177888998191.203181.4854015139177954207.pr-tracker-bot@kernel.org>
-Date: Sat, 16 May 2026 00:06:21 +0000
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="pqnEgP6n"
+Received: from [192.168.0.88] (192-184-212-33.fiber.dynamic.sonic.net [192.184.212.33])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 4E8C320B7166;
+	Fri, 15 May 2026 17:11:16 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 4E8C320B7166
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1778890277;
+	bh=wRm4UPHiGMIH1K4zIH9XD54Ppt6FV0jPEWJlG2DoyKA=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=pqnEgP6ndBnLdD/vm1SvFLU8QTQNcyJMIcclpTZ0oBsVgs/p9OXG5UODl5CvSObWi
+	 RBskESh/NtGLjqz8/n6cLwnSEN8oqK9ol1qMO3h+8QgVWYvmG0Lru9gTRK4Yci6w/l
+	 uuB3rthzd2liibPioc/AIKr+B8jdfIYbtk6WoYd8=
+Message-ID: <53754e0b-2af8-edd2-dfc0-293fac002a52@linux.microsoft.com>
+Date: Fri, 15 May 2026 17:11:19 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.1
+Subject: Re: [PATCH v1 3/4] iommu/hyperv: Add para-virtualized IOMMU support
+ for Hyper-V guest
+Content-Language: en-US
+To: Yu Zhang <zhangyu1@linux.microsoft.com>,
+ Michael Kelley <mhklinux@outlook.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+ "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+ "wei.liu@kernel.org" <wei.liu@kernel.org>,
+ "kys@microsoft.com" <kys@microsoft.com>,
+ "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
+ "decui@microsoft.com" <decui@microsoft.com>,
+ "longli@microsoft.com" <longli@microsoft.com>,
+ "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "bhelgaas@google.com" <bhelgaas@google.com>,
+ "kwilczynski@kernel.org" <kwilczynski@kernel.org>,
+ "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+ "mani@kernel.org" <mani@kernel.org>, "robh@kernel.org" <robh@kernel.org>,
+ "arnd@arndb.de" <arnd@arndb.de>, "jgg@ziepe.ca" <jgg@ziepe.ca>,
+ "jacob.pan@linux.microsoft.com" <jacob.pan@linux.microsoft.com>,
+ "tgopinath@linux.microsoft.com" <tgopinath@linux.microsoft.com>,
+ "easwar.hariharan@linux.microsoft.com" <easwar.hariharan@linux.microsoft.com>
+References: <20260511162408.1180069-1-zhangyu1@linux.microsoft.com>
+ <20260511162408.1180069-4-zhangyu1@linux.microsoft.com>
+ <SN6PR02MB4157FB81CC9B6347DCCC8C56D4072@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <qeyycsdnejwrqle4zwrvkjvkvrpjifeanwxjaa7i7y2ab7rnt2@b6gvugqayarg>
+ <SN6PR02MB415734108A86BDFB66AEE4CED4042@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <fw2pruvjgo7yigtcxssf3xv27soibsj6hmw2ls5wj4rylfhdha@e63f32cwu2x5>
+From: Mukesh R <mrathor@linux.microsoft.com>
+In-Reply-To: <fw2pruvjgo7yigtcxssf3xv27soibsj6hmw2ls5wj4rylfhdha@e63f32cwu2x5>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The pull request you sent on Fri, 15 May 2026 19:57:54 +0200:
+On 5/15/26 09:53, Yu Zhang wrote:
+> On Fri, May 15, 2026 at 02:51:38PM +0000, Michael Kelley wrote:
+>> From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Friday, May 15, 2026 7:00 AM
+>>>
+>>> On Thu, May 14, 2026 at 06:13:24PM +0000, Michael Kelley wrote:
+>>>> From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Monday, May 11, 2026 9:24 AM
+>>>>>
+>>>>> Add a para-virtualized IOMMU driver for Linux guests running on Hyper-V.
+>>>>> This driver implements stage-1 IO translation within the guest OS.
+>>>>> It integrates with the Linux IOMMU core, utilizing Hyper-V hypercalls
+>>>>> for:
+>>>>>   - Capability discovery
+>>>>>   - Domain allocation, configuration, and deallocation
+>>>>>   - Device attachment and detachment
+>>>>>   - IOTLB invalidation
+>>>>>
+>>>>> The driver constructs x86-compatible stage-1 IO page tables in the
+>>>>> guest memory using consolidated IO page table helpers. This allows
+>>>>> the guest to manage stage-1 translations independently of vendor-
+>>>>> specific drivers (like Intel VT-d or AMD IOMMU).
+>>>>>
+>>>>> Hyper-V consumes this stage-1 IO page table when a device domain is
+>>>>> created and configured, and nests it with the host's stage-2 IO page
+>>>>> tables, therefore eliminating the VM exits for guest IOMMU mapping
+>>>>> operations. For unmapping operations, VM exits to perform the IOTLB
+>>>>> flush are still unavoidable.
+>>>>>
+>>>>> Hyper-V identifies each PCI pass-thru device by a logical device ID
+>>>>> in its hypercall interface. The vPCI driver (pci-hyperv) registers the
+>>>>> per-bus portion of this ID with the pvIOMMU driver during bus probe.
+>>>>> The pvIOMMU driver stores this mapping and combines it with the function
+>>>>> number of the endpoint PCI device to form the complete ID for hypercalls.
+>>>>
+>>>> As you are probably aware, Mukesh's patch series to support PCI
+>>>> pass-thru devices also needs to get the logical device ID. Maybe the
+>>>> registration mechanism needs to move somewhere that can be shared
+>>>> with his code.
+>>>>
+>>>
+>>> Thank you so much for the review, Michael!
+>>>
+>>> Yes, I looked at Mukesh's series and noticed his hv_pci_vmbus_device_id()
+>>> in pci-hyperv.c has the same dev_instance byte manipulation. We do need
+>>> a common registration mechanism.
+>>>
+>>> Any suggestion on where to put it? drivers/hv/hv_common.c seems like a
+>>> natural place, but the register/lookup functions are currently only
+>>> meaningful when CONFIG_HYPERV_PVIOMMU is set. If Mukesh's pass-thru
+>>> code also needs them, we might need a new shared Kconfig option that
+>>> both can select. Open to better ideas.
+>>
+>> Unfortunately, I have not looked at Mukesh's series in detail yet, so
+>> I don't have enough knowledge of the full situation to offer a good
+>> recommendation.
+>>
+> 
+> Sorry I forgot to Cc Mukesh in the previous reply. :(
+> @Mukesh, any thoughts on sharing the logical device ID registration mechanism?
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v7.1-rc3
+Yeah, I went round and round trying to find the best place. I almost
+created virt/hyperv/hv_utils.c file. Maybe that is the best place?
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/30e0ff6d6a83586486674c343db5e9d933bd92e0
+Thanks,
+-Mukesh
 
-Thank you!
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+>>>
+>>> [...]
+>>>
+>>>>> +static void hv_flush_device_domain(struct hv_iommu_domain *hv_domain)
+>>>>> +{
+>>>>> +	u64 status;
+>>>>> +	unsigned long flags;
+>>>>> +	struct hv_input_flush_device_domain *input;
+>>>>> +
+>>>>> +	local_irq_save(flags);
+>>>>> +
+>>>>> +	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
+>>>>> +	memset(input, 0, sizeof(*input));
+>>>>> +	input->device_domain = hv_domain->device_domain;
+>>>>
+>>>> The previous version of this patch had code to set several other fields in
+>>>> the input. I wanted to confirm that not setting them in this version is
+>>>> intentional. Were they not needed?
+>>>>
+>>>
+>>> Oh. The RFC v1 set partition_id, owner_vtl, domain_id.type, and domain_id.id
+>>> individually. In this version, I just simplified it to a struct assignment.
+>>> No functional change.
+>>
+>> Of course! I should have looked more closely at the details before making
+>> this comment. :-(
+>>
+>> [...]
+>>
+>>>>
+>>>> Previous versions of this function did hv_iommu_detach_dev(). With that call
+>>>> removed from here, hv_iommu_detach_dev() is only called when attaching a
+>>>> domain to a device that already has a domain attached. Is it the case that
+>>>> Hyper-V doesn't require the detach as a cleanup step?
+>>>>
+>>>
+>>> The IOMMU core attaches the device to release_domain (our blocking domain)
+>>> before calling release_device(), so I believe the explicit detach in the RFC
+>>> was redundant. I simply didn't realize that at the time.
+>>>
+>>
+>> Got it. But after the IOMMU core attaches the device to the blocking
+>> domain, there's the possibility that the vPCI device is rescinded by
+>> Hyper-V and it goes away entirely. Or the device might be subjected
+>> to an "unbind/bind" cycle in Linux. Does the detach need to be done
+>> on the blocking domain in such cases? In this version of the patches, the
+>> Hyper-V "attach" and "detach" hypercalls still end up unbalanced. That
+>> seems a bit untidy at best, and I wonder if there are scenarios where
+>> Hyper-V will complain about the lack of balance.
+>>
+> 
+> Thank you, Michael. May I ask what "the vPCI device is rescinded by
+> Hyper-V and it goes away entirely" mean?
+> 
+> I realized it's a bit untidy. But I want to understand this issue more
+> clearly first. :)
+> 
+> B.R.
+> Yu
+
