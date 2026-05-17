@@ -1,243 +1,147 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012054.outbound.protection.outlook.com [52.101.53.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADCA23C73E5
-	for <iommu@lists.linux.dev>; Sun, 17 May 2026 17:48:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779040133; cv=none; b=ewLNDEI3swTjNGuUlf1nz7/RFb76Xf3Hjn4zTzofYoWZBQvJNNunEMnPd5SI+eDySbfRasgIzUtNnqPABUgCrvMaZlqtdnB9Tj9oqxHTWH9U3BtaHjTkFqgnjypOrzhIIaRSHJAIvqSzlc97+dN0qE2MgyV3J+EP9lNqgM587ag=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779040133; c=relaxed/simple;
-	bh=LH31HdscTScQYadkTVUyNbrfZEMAWXcUK9ZjS2AH6/g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZqjWt/A1drFjA7GsW52YA/53ya4ftVIwQLDBVHjyli93lFxykGin5Brkm/gWOwvCAkofE65pRGXltxRe/BtiN86e7bRcVIv6/cIbodxYVYYjYEwv3UAEpKvWjeIrT2x6CDxXux6dYsV4wm27hb4TuvbofRJdYkqClmQTF0YqbIg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=ZAx3RNV9; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=C4P4X3t0; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3EE22E4257
+	for <iommu@lists.linux.dev>; Sun, 17 May 2026 17:49:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.53.54
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779040196; cv=fail; b=UsaR7Gscd4iZcbxeM2bNitedWXu/9vnyvZZXBBvIp+hczqFNDUMJpHnZTFgiLQgvlFty44mU6+7vNCxEaObcdNkRd65bUpaDfRxMVioq7mEw0jNeZyRQ+bsIx91MvNzNZaSbTSnlJ3iJVpo3yNgjNLKT7/pkfZIyKBrgzsazfPE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779040196; c=relaxed/simple;
+	bh=eQ8TmNOBf2mTReG+gbFkrNh4FVbOYNRet3O79oJpYpo=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=PiuC6B9W3m6LG/smZ0paEnRox8ywmOo8I3k5CsNOwNzqnQzXREDms/i0eaL1HnSA2XwNlZ5DwCSi2Nys3NEBEWBuk9hWl42tXPLo+wHwF4uF4UvVJOoZCKpEKP5FSJ4FZzpXafBvaSYxA2k1eWTiBIcEhCplOy2xFMTZg3IBAXw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=egru8cW3; arc=fail smtp.client-ip=52.101.53.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="ZAx3RNV9";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="C4P4X3t0"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64HATlXZ327129
-	for <iommu@lists.linux.dev>; Sun, 17 May 2026 17:48:48 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=lpHY7oihfb3amRFxiPEd1m3a
-	03YdGFnYGYRDDtzyi7M=; b=ZAx3RNV97QNDaeDPBm0eQJO93jOxwpMPGzb/TJah
-	dqsXoFDz51gjgpaSU8N7Qzp+AUA2My/19D6jWfO4UdtlZMVXDiUakPU1Ou3UfRaz
-	ezSxF5WpCIwrtk0hinjywm2KTy9ROpY892QaKlyHKuaSAPGfH2J36oRJZA5cC9GC
-	l0MsRguIRvO7luEi7zN1PiUnz7iddvoYHEr18Nn/7+tkGp3xaLi1kBJPfVqVfX1I
-	tnwFwth+FR6U4sMg7cpfckuxWhhE0ko3IlG6rAfQo0QcygceqSX/l51jCphWDY6X
-	vMlkZWddo7/fLJ/oFbO23EFnxIIiULneRW5J2nvgs+UpAA==
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com [209.85.222.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4e6gvyuapm-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Sun, 17 May 2026 17:48:48 +0000 (GMT)
-Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-90fb1490e2cso404429785a.2
-        for <iommu@lists.linux.dev>; Sun, 17 May 2026 10:48:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1779040127; x=1779644927; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=lpHY7oihfb3amRFxiPEd1m3a03YdGFnYGYRDDtzyi7M=;
-        b=C4P4X3t0I74Tu+vfDno2A7I+V0ljexq4t//wZw3erVyUdnqvzjyVJZG6TZgLMxVpnv
-         i4ar0qFGq9ahJERUkNZwdkO0UBx51pv149AlbofvG7kTggrlK3OVVJ8Aoqpku6xCv7bC
-         G9NB6tcs8GvOZiI0kEkN3U3lSYLdJiJfYumRJoAi9dort9dhwZAY+wvtZjxWJcm0iK3D
-         ea+hM6fburXiCedxTAF6w883UtLx6R/U8/ujMnbQFRbLRFod5+kqSSbQM5QGh/JU6NR1
-         8APFIY/UIDin9mKGI2wbiTJcfjePH43gl4+AADT5B0Vwy8vDYYc0x6pP5si8wVG4e6RD
-         QcUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779040127; x=1779644927;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=lpHY7oihfb3amRFxiPEd1m3a03YdGFnYGYRDDtzyi7M=;
-        b=R3kEFnl8C0Yg7hO0htzVGpXXhvjvoQjyT4GhQgroxzi6yuTZ1ohA6yc1dk8C4yAv9O
-         HWo89d/cl3P0Z2/SHNXz10ZT/aQhBSpx45pcCrvKnkTx2PALSfy1fX9/lh/X5Gb973Ei
-         T6w0pTLBNZy60tqRui5AO23XlbWiv/ly3lpcN/W4faomXjzvejbYIFYCE+gF5N9aiqeX
-         qnJePgmxMl6cyRgwZ/tA8IQn/vf1M074cl2UmfUnMCFwsRD4A1q1KZT0tlvwAA21h+Ym
-         Yjrl2uJ7HjlcfD6oRSAPT87DFH/A7F8n3xQLsrkqi/1S73Q2IFIVEKbAuxPZLtIn3RDD
-         5Uqg==
-X-Forwarded-Encrypted: i=1; AFNElJ8vGuw2BZouLAwojXTWyYZmP4F5iLgB3SbcUaL5JRFSJ53b7Rar/GAKEtidG2ilphLzfErrRw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzGCgeO2FAANUXYt7G1sP1ozQepKgr9Jn+edhKoazUItYd+Dcw2
-	g4LwLXd1NnZziU0KQR2wU+HerSBQW7EBFlH74kGVGykLDyGEc7hHN0y4Ns7Aun+PvFz3iqdao11
-	61CGs6ZY0tWFFwix30k5WNAWUZyooWC5prDIbDSV7jGWUTSP/jsD/MTAh3A==
-X-Gm-Gg: Acq92OFyYVB1RdeJrvAaG4fonOgeaAJT/Ltp5azu7UmYvb56E7rnwEOpgPlryo7Miww
-	v9YkKe93HrhZcBa5bwtvmTfcBT0jZ58sYJ6NSHOZPDmYfjGp+FPo1POIHrumZGcXzekiqlOmcpg
-	8E18Iy3wXiNhjfpNaYtm69PV0ru0zuM2bzzBqUZ4fNJ/3UAykuKu313OKgbIlDtfJnRpVNw5Daa
-	A9ZMIJqZ1Yde7es9uoM8fnC8Wz9zt6sFVJqROqumUerSxQ54U3Z0AX+nPmBwAO/pfWt9J2Jw0TL
-	GUvfnTv8H+wQJZV9BcxH7Tk1gA3f2OiYE2JbHvVyuu12xEI/YfdeGHVnqjIhj/b4civEDaEao56
-	OFj0DwbU9MlOowvSU4tDVmkN2jsPkL3Qks1xhout46d9IV9xtC45zU8y/0wqsxBYUcF3rwS8hyT
-	dA+yv4oFQrIRSMBPUMPNHMBRbTYS7bzDiJAfw=
-X-Received: by 2002:a05:620a:2685:b0:908:e262:52c3 with SMTP id af79cd13be357-911cef034cdmr1880919885a.46.1779040127356;
-        Sun, 17 May 2026 10:48:47 -0700 (PDT)
-X-Received: by 2002:a05:620a:2685:b0:908:e262:52c3 with SMTP id af79cd13be357-911cef034cdmr1880915585a.46.1779040126788;
-        Sun, 17 May 2026 10:48:46 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a90f10c797sm2804811e87.8.2026.05.17.10.48.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 May 2026 10:48:45 -0700 (PDT)
-Date: Sun, 17 May 2026 20:48:43 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-Cc: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
-        Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Bryan O'Donoghue <bod@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Hans Verkuil <hverkuil@kernel.org>,
-        Stefan Schmidt <stefan.schmidt@linaro.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        iommu@lists.linux.dev, devicetree@vger.kernel.org
-Subject: Re: [PATCH v6 09/14] media: iris: Use power domain type to look up
- pd_devs index
-Message-ID: <bh6g3vne2cnknvpeus3fmwjgyqk4ngstdn5fkvju72rd23lqey@ip2gt4hoqqmd>
-References: <20260515-glymur-v6-0-f6a99cb43a24@oss.qualcomm.com>
- <20260515-glymur-v6-9-f6a99cb43a24@oss.qualcomm.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="egru8cW3"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=hoNuJ7jmjr7aeO85vmuMZrqyus1GbvQiH0uVkM1GEauQu13nsdWu3AQzNs30P+7P/pv7ZVlE+pB68k5xFtlF/j+yhFzli3l3i1dtpuMB8ESxv47kWwhh6wf+IngSvEvjvkOGp3ueYZGFxqce5Q3W1RG7wMjgCgXrWhj3tRcm6bnEg+zi5jbKst0HRoXQaq4B4mB4+6AqybXUmS6at4EVwsKcF6A+FRXyaRysHoydQe0kRYOSv3RbutYOWUGxvtJrMeAl3dvIYQTpdkGDwlSkh/mY3qQF4LS9EUA1HdcHsANhg9UUqhkN45f5MQY3uQj4jcsA4OIH2t+wXtq/9sJoHA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=eQ8TmNOBf2mTReG+gbFkrNh4FVbOYNRet3O79oJpYpo=;
+ b=I3Vm2Aam4gr9Z0dp7vvsHyZMbieJTYz5ZEdh4X084+FJL0tBL0yCJ8sr5W/HQoI1theb2CNIjlmcmQziiX0DgJJH/fqYrXdJsqiGBk50/OQPTo+Xe0aN/evI0HcXNARJUKzo6RKF2wO8ep27VXId2gB23fadnkMk0jva4WWLDftL6UWwnEOx9sW+fLaZ5uVeD4OvVXM6C0nmrX+NgsvjGQZO6Dml82jhiIeMldj7pWnHLXGC3CRfEzMgb80QCG7AB0MzD5W0h154wAaYZsy8CC82zJuIJZlIZWNP2XNCQ3729y3TSKev18D6RpPTOHn5JY4zByce/HddTxKqMTv6uA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eQ8TmNOBf2mTReG+gbFkrNh4FVbOYNRet3O79oJpYpo=;
+ b=egru8cW3uKbWuXhhTnR83lfuAGcx6OURC9FZEKp/lSyW18AIbu2IWcz+XwTVgoUqpg7qJCSL/6Xii7S2w+350H0mvH9moA5lIJhwumquBPSVQuwLq371UIFdAlPcBuEnpklXaQGE2PqnbTtZRmUjxi0PWRTMoK4H2F1OMk02iZY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BL1PR12MB5754.namprd12.prod.outlook.com (2603:10b6:208:391::20)
+ by LV8PR12MB9183.namprd12.prod.outlook.com (2603:10b6:408:193::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.25.21; Sun, 17 May
+ 2026 17:49:52 +0000
+Received: from BL1PR12MB5754.namprd12.prod.outlook.com
+ ([fe80::b080:4c1a:f6e5:4564]) by BL1PR12MB5754.namprd12.prod.outlook.com
+ ([fe80::b080:4c1a:f6e5:4564%5]) with mapi id 15.21.0025.016; Sun, 17 May 2026
+ 17:49:51 +0000
+Message-ID: <67ddc0ee-eb21-4bfe-9d12-ceda0005db91@amd.com>
+Date: Sun, 17 May 2026 23:19:44 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 0/4] Respect VASIZE for address limits
+To: Ankit Soni <Ankit.Soni@amd.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>
+Cc: suravee.suthikulpanit@amd.com, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, linux-kernel@vger.kernel.org, jgg@ziepe.ca
+References: <cover.1776075533.git.Ankit.Soni@amd.com>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <cover.1776075533.git.Ankit.Soni@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MA5P287CA0021.INDP287.PROD.OUTLOOK.COM
+ (2603:1096:a01:179::10) To BL1PR12MB5754.namprd12.prod.outlook.com
+ (2603:10b6:208:391::20)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260515-glymur-v6-9-f6a99cb43a24@oss.qualcomm.com>
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTE3MDE5MiBTYWx0ZWRfX1jphYtkTvygD
- nJ9Yym87f5vdeynjbov+P4dqLlykKJpk+FAcOvgiMJoLEbuO3bM0HkxqG3/Glqh5vO6ya4A4zzk
- yy7Z2E7rF6FU0AdmbTCGGjhhVZxkWLU7zbaGSP/LM5Tn9VGc5VpD41x5+WrDI+Ry84MFo5W8Kb0
- L2demvrzh1gAUh/X9ylRfL3ODTvLC/tibVoWyzs1BpUevupK42lhQDHfoJUZfEBzpXEUkppwghO
- L2AzvtZN8a/tico8yxiKsg/goQYPnRlNE658LpWJ1NB1BSfXaEYpj1YxR+kpG2da95kR+1YtJOk
- dL0oCMPipOVWADgV+CQYyQU3B4OYRHyLiHn+/0H6ybioM9EVmQ6qmKcKbYTkS15epNqIozk+OJ5
- rRso/cHjN6hlirZ/4jvtSfpX3d8bxxA6vr+CDAIMmZK4fG6qw9NNHYaWhcLXmIXNfogGlIeyD/d
- /mWPD3t83pM20SWoZjA==
-X-Proofpoint-ORIG-GUID: BBlnxvQW7QZuxJTNiqU5gTr6bzustwUq
-X-Proofpoint-GUID: BBlnxvQW7QZuxJTNiqU5gTr6bzustwUq
-X-Authority-Analysis: v=2.4 cv=X5Ni7mTe c=1 sm=1 tr=0 ts=6a09ff80 cx=c_pps
- a=qKBjSQ1v91RyAK45QCPf5w==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=Um2Pa8k9VHT-vaBCBUpS:22 a=EUspDBNiAAAA:8
- a=wVukXIzjBZceI6JPWPsA:9 a=CjuIK1q_8ugA:10 a=NFOGd7dJGGMPyQGDc5-O:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-05-17_04,2026-05-15_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 priorityscore=1501 adultscore=0 spamscore=0 phishscore=0
- malwarescore=0 lowpriorityscore=0 clxscore=1015 bulkscore=0 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2605130000 definitions=main-2605170192
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5754:EE_|LV8PR12MB9183:EE_
+X-MS-Office365-Filtering-Correlation-Id: e2b41590-71d9-4f76-2bed-08deb43cb22c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|376014|1800799024|22082099003|18002099003|56012099003|11063799003;
+X-Microsoft-Antispam-Message-Info:
+	PASybJYwqQ4XhbJTt8KzMY6qBqwa7p810v8lktD8/UMSZcU4S6ZPHg0NDxkUrjwMyResNNQXg/E2uhROLAhv49dQ/H8FG9klrpVX6FGa5aHtExfnT+tEGkxTf5Kxm1KJVxAh5VNO84Dc/FMZ/6uPuC+jK2LmLq7DBjZao+CLHSNJ43dvQMhQBh5e1RaFOKi8AamkUsU4OJxKEWvBaiozxhETg9oCw2pFR/QDY+sdP9CBj/pekrxoFLYzh9+4XH3RE6yi5QTqw/5Lr9jN+ALRQ7m3s4OZOAyFWLoKGehVqPgK5wVm1nIlEB4C4PqvskPEtpFNUiVYTDVpb1Jys1hLzDyzJa/3CHJOyyGz3cSHwQN85EDa0ExyDeOUcyvNgcHShLKQr75VzZUKQ5XJS/yMdHGPeyser9VVYvt3wXAUiIDjMhaKZ3f/Fap9MaKUit4W3KmaBbWp9xi9DjOqYnabvzcTWx/XMu5+VZfU8zPQxCzmi+2akVqbStz0Yiyoryvcd9Y/Bj2o/V1bFg2BocQE+0g3WEQrkrRXXIJucu9kN5D7n8N9voaLeY3zo1teMk2d78DH9OtWwt8pOuvhiLNynlmqYWMxc4L/zatpFNspCMZ/x8yHrUy0hnjN52DuBeSbEXeQjU6D7tFbL+wnYc6goTxcoc3kYSGh4HA+aOtZwO5MaysnpfEt2O8J6LpVGaaU
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5754.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(22082099003)(18002099003)(56012099003)(11063799003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?RS8xSnFIby9DdWwxd1hOSjhISUZNS1FnYzRTOGtOV05hQlZveG0zaENTMzlZ?=
+ =?utf-8?B?bW8zMHVHNFBBZmkrcFVNZ1RvblJxY2JMVnRqVUlCK25xcEN1QXBaN3h3R1dP?=
+ =?utf-8?B?S0ViV3pQYUJRcFdtTElpdmh5ajB1bnJVcHhVZW91RnFrZGVhaEdwU0trZFU2?=
+ =?utf-8?B?N2tybmZQcExESFR5UThlUjFmMWQ4UVlZTk0vZk00QmluUWhWNjJoemVZU3ky?=
+ =?utf-8?B?UkxENlRWSlcwOEVFZmthZ1ZyQlRXWlZTa1psMmU3Q2QzS3FMUDJhaktSVVRV?=
+ =?utf-8?B?YkhjcE9hSFBZSGl2ZktNZ1d5dHMrOU5WaGR0RzZnNE1iUjJsb3RvN3dIc2R6?=
+ =?utf-8?B?Q2dydS94bGxNd0dCZUs2L2padDc4TE1LQzIzUlpNSDExZVpIWlNUTUt3cmZp?=
+ =?utf-8?B?UzhmY1lTajJ3K2U4UGc4Nk4raCtsWFdVaDh6MG9wRWw2Z3hPZzJMZEZCS3RH?=
+ =?utf-8?B?dENudlMxWFFWMnJCSTlkVlQxTlhUWHFUNG5SVnBoZnRXNVB0V1lWZ2Fta3lM?=
+ =?utf-8?B?VnZ4RHlCTXJkK3RzRDM0YmNSQ2lSL1lvWUpITFN0ekM4akUzZlR3OGExTWJz?=
+ =?utf-8?B?bzVKR2FjQ2o4azRRZEpXcmY0d1V4MEwzcVV2N3Zrd1k4Zm9uVEdpRjdybUI4?=
+ =?utf-8?B?RURCSHcxUURwRmkwUU8welBPYUFqOEI0aHpLZExVdmdTVEwwZTZEc3pyQVF0?=
+ =?utf-8?B?dmFlQkpWZ3FUOUdxTGNaVzZYZ2JOWi9HWXVPMGZwNXJ4NFhBbzg4cGMyZ2xn?=
+ =?utf-8?B?RU14aHJtSmZqZkxiVktGLytIQVBqd3o5T1pDY01WSk1UdGV1Qlk3V3FmNi9l?=
+ =?utf-8?B?RllTUWtrWU1zUFh4MUk3dEMybldiSVBraURZMGRvaURhaDc0dnlmTjY4M0hJ?=
+ =?utf-8?B?aUpSMERLZ2tzelUrYTVKbFprTEpmYVhBazRDVW5tMGsxNnVNMFNBcHc3MUU0?=
+ =?utf-8?B?MWwyQ3lyb3BnMnduanRoeEFwMHR1QlJtMG95Z2w2S1RESGlScHBVVDhGUGQr?=
+ =?utf-8?B?SDFlT0NzVDhnbWhvNGQwZVlQcFQ1eWNUQTB5Tm1wQzNPVjk1Sk0wUC9TMW9B?=
+ =?utf-8?B?S3ZUVHBveWI5cEtLVlJIYTNrVTBaUDlLY2lDOWpMSmljZy9kS2psSXErd2pC?=
+ =?utf-8?B?OHFiSDJrTDNQUllVUktRMkdDUVk2cWVRSDNhSCsxVW5ROUVqbGRsSzVEc213?=
+ =?utf-8?B?QjU3R1Rva0dNRWhQWGgyaFowTlNYSG5LeVhJNFFad0ZJeGJISW1Nc3V2NmRo?=
+ =?utf-8?B?Q2dnK25IazlFYXNvV2tGUjRZblkyeEZwR1V1T1ZLMnlDczBrdUo3ZmhtRFcx?=
+ =?utf-8?B?K2NOcDBWRTRGeGp4ZXp6elpEQTZUa0MxOEFMVGtpOWtGZHVwLzl2R09nL05Q?=
+ =?utf-8?B?VTJaeHp1eXBaeWtBeTErcmR4RFZpbFdZL2psbmNUTjNJdGRYdDVnenZSOUxh?=
+ =?utf-8?B?eWw5ZUR1bElhVEVldllxcmJpNURPY2FmcDJvQWtXYUtrOFRZeEc3SndmMEEr?=
+ =?utf-8?B?OXJFMEhFSk5McTNsN3VGbkRwSVJ2c25xMXRFK2NTbnpGbU85SWN5MVZhWGdD?=
+ =?utf-8?B?cU1wcXc3UGVBYm5VbHpNbEdOaDh2U3ZIUGNQc3hobCtDMk9ZRnNpZnc5OTdk?=
+ =?utf-8?B?WGFsN3VFczVlbitaOWZGZGx2d1NpR05GU1RXZGxReVc0ck9iMUg3QitIQVBS?=
+ =?utf-8?B?YXJRYjdTakswRFlOczBHTEpMTGNWZTY4U3VkWXphRFVCVG5SZnV6UC8xOUNs?=
+ =?utf-8?B?V2dBVms4MEx5VTRQSlNHbW5FRnNPOWVPUmVxTzBZazV4bFlpT0RCd0FxdFI1?=
+ =?utf-8?B?STJuTnFLTlZ1dEoyc29mRmIrRzN1YjlwN0FGbXdwaXJxVlNUZnR0R1Z2Yi9U?=
+ =?utf-8?B?bW9tRGtRM2NkRUVqM3FPTGtmdUcxazdGN1d3ZFBodlZhbGxKZ3BTeExCdmpF?=
+ =?utf-8?B?TURFNWV1UDV2YnRNa0NOTzFXNmxqUFRXdCtYMzJQYjBkSiszNlMyS0lyY2VC?=
+ =?utf-8?B?L3ZEZFJWYk9DSW53RzBkL2orWXRxdUlrNkQyZURlMGJvZU1HaHFqNGpCZVBj?=
+ =?utf-8?B?dUg2K3gzWUNvZ0V1T1pPN1kzUVFOdHNlU003clg5NDBLeG9SZTFuWFRMTVhu?=
+ =?utf-8?B?ZnY4OFlQdGEyMnp6eVJ0WU8vQlp0Sm5aWFREZnlKN3V2aEVLY3lUL2FQTXNN?=
+ =?utf-8?B?M2JJQTcybEhWSmtlblpKOUFtcVo5STNVZEhXekxyM2JoWEpOa01xTmgzWTRy?=
+ =?utf-8?B?RTU5dXovTVFZSWJud0M1U3RQNWgrYVdaQjBWNDNTRlVtaE1GMFZlUzZNQmkx?=
+ =?utf-8?B?eHJxeE4zQzhEejFqMFdvaVUzRG9mVENqMEcwTllvVjc2WnhoUzVFUT09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e2b41590-71d9-4f76-2bed-08deb43cb22c
+X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5754.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2026 17:49:51.4519
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QG5WRoiOPOBLtmmpWJo3OdNjWEyAQzZAYzpE/l2HTok/V9Smmzx4yf7DHPj+kQR43nTJ9BLkCbj1mid+FV/Nwg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR12MB9183
 
-On Fri, May 15, 2026 at 04:51:24PM +0530, Vishnu Reddy wrote:
-> The pmdomain_tbl was a array of strings holding only the power domain
-> names. Callers had to pass a pd_devs[] pointer indexed directly by the
-> platform_pm_domain_type enum value to iris_enable_power_domains() and
-> iris_disable_power_domains().
-> 
-> A future platform may need to introduce a new enum value that aliases
-> an existing one (e.g. IRIS_VCODEC1_POWER_DOMAIN aliasing the
-> IRIS_VPP0_HW_POWER_DOMAIN on Glymur), which would break the assumption
-> that enum values map 1:1 to pd_devs[] indices.
-> 
-> To fix this, replace the string array with a new struct platform_pd_data
-> that pairs each power domain name with its platform_pm_domain_type. Add
-> a helper iris_get_pd_index_by_type() that walks this table and returns
-> the correct pd_devs[] index for a given type.
-> 
-> Update iris_enable_power_domains() and iris_disable_power_domains()
-> to accept a platform_pm_domain_type instead of a struct device pointer.
-> They now call the helper internally to resolve the index, removing the
-> need for callers to do the index lookup themselves.
-> 
-> This prepares the driver for adding new platforms where power domain enum
-> values cannot be used directly as pd_devs[] indices.
-> 
-> Reviewed-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-> ---
->  .../platform/qcom/iris/iris_platform_common.h      |  9 +++-
->  .../media/platform/qcom/iris/iris_platform_vpu2.c  | 18 +++++---
->  .../media/platform/qcom/iris/iris_platform_vpu3x.c | 24 ++++++----
->  drivers/media/platform/qcom/iris/iris_probe.c      |  4 +-
->  drivers/media/platform/qcom/iris/iris_resources.c  | 43 +++++++++++++++++-
->  drivers/media/platform/qcom/iris/iris_resources.h  |  6 ++-
->  drivers/media/platform/qcom/iris/iris_vpu3x.c      |  7 ++-
->  drivers/media/platform/qcom/iris/iris_vpu4x.c      | 52 ++++++++--------------
->  drivers/media/platform/qcom/iris/iris_vpu_common.c | 23 +++++-----
->  9 files changed, 115 insertions(+), 71 deletions(-)
-> 
-> diff --git a/drivers/media/platform/qcom/iris/iris_platform_common.h b/drivers/media/platform/qcom/iris/iris_platform_common.h
-> index 07cc0ce25b84..1d757cb8e9e1 100644
-> --- a/drivers/media/platform/qcom/iris/iris_platform_common.h
-> +++ b/drivers/media/platform/qcom/iris/iris_platform_common.h
-> @@ -70,6 +70,12 @@ struct platform_clk_data {
->  	const char *clk_name;
->  };
->  
-> +struct platform_pd_data {
-> +	enum platform_pm_domain_type *pd_types;
-> +	const char * const *pd_names;
-> +	u32 pd_count;
-> +};
-> +
->  struct tz_cp_config {
->  	u32 cp_start;
->  	u32 cp_size;
-> @@ -270,8 +276,7 @@ struct iris_platform_data {
->  	unsigned int icc_tbl_size;
->  	const struct bw_info *bw_tbl_dec;
->  	unsigned int bw_tbl_dec_size;
-> -	const char * const *pmdomain_tbl;
-> -	unsigned int pmdomain_tbl_size;
-> +	const struct platform_pd_data *pmdomain_tbl;
->  	const char * const *opp_pd_tbl;
->  	unsigned int opp_pd_tbl_size;
->  	const struct platform_clk_data *clk_tbl;
-> diff --git a/drivers/media/platform/qcom/iris/iris_platform_vpu2.c b/drivers/media/platform/qcom/iris/iris_platform_vpu2.c
-> index 41986af8313b..bcf873829fd3 100644
-> --- a/drivers/media/platform/qcom/iris/iris_platform_vpu2.c
-> +++ b/drivers/media/platform/qcom/iris/iris_platform_vpu2.c
-> @@ -62,7 +62,17 @@ static const struct icc_info iris_icc_info_vpu2[] = {
->  
->  static const char * const iris_clk_reset_table_vpu2[] = { "bus", "core" };
->  
-> -static const char * const iris_pmdomain_table_vpu2[] = { "venus", "vcodec0" };
-> +static const struct platform_pd_data iris_pmdomain_table_vpu2 = {
-> +	.pd_types = (enum platform_pm_domain_type []) {
-> +		IRIS_CTRL_POWER_DOMAIN,
-> +		IRIS_VCODEC_POWER_DOMAIN,
-> +	},
-> +	.pd_names = (const char *[]) {
-> +		"venus",
-> +		"vcodec0",
-> +	},
-> +	.pd_count = 2,
-> +};
+Joerg,
 
-I still don't think it is a good idea. You are using these lookup and
-indirection to make _platform_ code take care about _platform_
-specifics by the price of complicating the core and the core structures.
 
-Instead it looks like it's time to push power domain handling to
-platform code and then hopefully drop all IRIS_foo_POWER_DOMAIN enums.
+On 4/13/2026 8:15 PM, Ankit Soni wrote:
+> The AMD IOMMU driver was only using EFR[HATS] to derive the VA size,
+> ignoring the IVINFO[VASIZE] limit. This could create domains that
+> exceed the bounds advertised by hypervisor. With this series, driver
+> respects IVINFO[VASIZE] when determining the addressable VA range.
 
-I'm pretty sure that the clocks would also need to follow that approach.
-There should be no need to bother the core code to introduce the
-platform-specific clock type. It all needs to be handled in the
-platform callback and platform-specific data structures.
 
->  
->  static const struct tz_cp_config tz_cp_config_vpu2[] = {
->  	{
-> 
+Can you please pick this series? We will address Jerry's comment on PASize
+separately.
 
--- 
-With best wishes
-Dmitry
+Thanks
+-Vasant
+
+
