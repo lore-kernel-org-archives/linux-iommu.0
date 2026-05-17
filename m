@@ -1,42 +1,70 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8BBF870830
-	for <iommu@lists.linux.dev>; Sun, 17 May 2026 00:51:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B31583321A1
+	for <iommu@lists.linux.dev>; Sun, 17 May 2026 04:30:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778979071; cv=none; b=bXBd8V91LaTD2t4rt5cvLMQ9FkMTM3lauHo5M9w9wgCHBPM2b1rNaq0xOLjI5MrYZSVq0yCrWAtwd+FOBlNeooSXy200G50YfdrDs2RTsX62EZJe/8nDY37joInS5Eg92yJtzh1X6+A3FiIw6C2nj4taRtUVRbmoMGLCyVffkg8=
+	t=1778992217; cv=none; b=r4av4cLx0kD1SEvkx21VAmx6b/s6mWoq8rlMRVXYjFVI+fbeJrmusUL5Pj2xafn3/96BDgGkF42GMO968ESCUszBogAe1d9GsE49yLBS+5y42Rs2zMwWc152XW2kbS14JhhljEjWVJqdLh8xaLWqHX66sD30UC3o8d51N9CnW9w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778979071; c=relaxed/simple;
-	bh=vQpgsGOnfqedl0TX87U4zMzvFFz0UDB4jJoZMLdhGxw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=oebDROjCSNZI1un7GiMyJW04/XdsI5DyQj4y6+IbKcElLBAuZg32lCbIRyhEoMgi0qq54/Alri5B6HH7uU6kUoLsBFqGE4ByoHbgMhXna5fHA0IyiOr/hdQ/V2ORH30zXDSqsSHs+RmXBzfE4eJb+nYxIpyW9iNipznxRkoTl6Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Ffb7RcNf; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1778992217; c=relaxed/simple;
+	bh=WMVTvQDMELZTfABGHws/pQzWqv/RZWnEa/gxNKwkzYY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=mnNEZxPzFXsOMCC0cOu+cs1oJt0gxjoEgClKReW+Tq6aqxMNjTuUDNVDUzkaZktuUrbk7SGu1VTKjMf1UbjhgSf8DbsuFKRNSAGnt8Ua9MxrAjeUBdrs2wvmJ3FfuJneEf5DjOYVNS0cD3oj9xWsi1E0Z+AAXb7zjdcEN7INscw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jzCVkFcw; arc=none smtp.client-ip=209.85.214.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Ffb7RcNf"
-Received: from thinkpad-p16sg1.corp.microsoft.com (unknown [40.65.108.177])
-	by linux.microsoft.com (Postfix) with ESMTPSA id DC9F120B7166;
-	Sat, 16 May 2026 17:50:58 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com DC9F120B7166
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1778979059;
-	bh=mCKUQ4PV+b6oGP9aITiW6m4Z4aNfJIHGPjXpLn1su+c=;
-	h=From:To:Cc:Subject:Date:From;
-	b=Ffb7RcNfkHey8LR+idMAEG98d+2zqhimWD7OPoj93CKiXPumPfhItYXAtzeJLGDEc
-	 bR+w89A5rQ/LDdBH3eqOWjzuxlsnaFZiKfcOgCjd8gdyaMA75+hBCrPvsKgrJNSHT1
-	 rLAp9byCJ+t4VrcmMwSHJ7B0XMPXHsfw5K0wjxj4=
-From: Shyam Saini <shyamsaini@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jzCVkFcw"
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-2bc763e2ba8so4892545ad.3
+        for <iommu@lists.linux.dev>; Sat, 16 May 2026 21:30:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778992215; x=1779597015; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=KIZ2FRMVNOsLpkup/QFG+70KCdbOCYaZXVBE75waTX8=;
+        b=jzCVkFcwwfoFXD4YVbyZVi/Ssv10NoARR9Rg9hiaNn0Nod/5bZOThqH5EOhX+7qobw
+         KpqOQ8h7C0To4OabSf9Fgmuw8sgEjtVDs/91cLZOgyC58rPuonYzMVYHcKI+UOETEpFj
+         w0vmtRuklxcRRwOpgngQom1KTFMQPLNIRMOzm8frrgy2882OIL45wQr0qlGpAX2m89qA
+         bK0siOTztRM+ii7ZUYw6tD82Pa9I0pC1y4RKdKw3+f64ESf5rYHOXpC50cgFI/h2IUTG
+         CYwlmCgOTjJxIjHQkKL7w/G46btWB0JDcWEJxT0pnkRzzrgxmPd5AYRbZHQGs+PNsK3n
+         mQeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778992215; x=1779597015;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KIZ2FRMVNOsLpkup/QFG+70KCdbOCYaZXVBE75waTX8=;
+        b=no8j2bMCrIVp5/d4yV8+SxpShWrkyYI1pgQiZc1rnPivA1icCXgd5Ok+0Ko8uQKoPi
+         sVH4z3bkiPJ2wW6G2zSKTGRTsQ265+C3Katj2Hw9r+7Os4xo3bWs1hfx1WBimXOTwrfJ
+         PPKQ4/Bx8Mc6Znc+T+ADhLO2Eki7Effb9XL7cliEUcB5+HmvwgVb7F7Br9uQ9zN13rmp
+         dQrcSyiojqRLEznzhtrVEyceckMzaIyaILs5dZGIXqBdvJWOk//UX4wazF726gB5eVOQ
+         FKvqRB53oenUT7hFGp4cHImDCamYGpV6kQ+nWIxjJ9dTQo+XZBs8HM/TeI1BQjD3fx9X
+         cwKQ==
+X-Gm-Message-State: AOJu0YwDADR8U5tXIKhjisD/RauaxamZaeI7xewhKAWATfeY//XTwfn3
+	tgg00AtvtT0GSQ42dFOMgqRUE1WHC5vaRJotUCXOxs2UdXddymKp6Zqby2YC1Q==
+X-Gm-Gg: Acq92OHTQ284Y/b4pbs/JUmu0dCJMJJ7CBzdWHSc1wqgSvAkEVImbWgiHrvQ26M1XS0
+	U/eMpyc71gcUToZS1AQ2Uw09+y8amx8ydHWhefvKuItfQEmN6QbZnIOhN5Zd9Svcd7gyURNlLjs
+	oLObFwCMRdn3F0Fz8lJDmDz/ztDARSZO3+kzWyNcWsETgDpSUx6rD115R/rbRK3xOmlhA6MilgE
+	HeizEdlIQqrupgCUT8vXgvoR15vpAWrba/9MY7onhy1nqw1qw7btxOv9B4LyYr8GMHAOZArIzga
+	Eq3OF45jNU/PaMkG8HUR4AZEf4oCeln+KvS/kY3Se6hjfLiahSSp910pVPQacSnMwrXpynjeP5y
+	CJqDm5UjEU66AJWbqqWsdncmJJmluqiap3AkPJ1Kp8YXVDy+tbdyMJ2DNZIzRtxwerWtwMa9oEt
+	xJoIPFTrkxkmVvRUZ+5uY1zwV+WK1DEYqb01CoBlHmyBCXXp1aDZUHYQzNcNjJBk6KXRvn/nU2Z
+	QZUYO9uCy4q96ceq8/4E6eEI0lQY7tmqv6rgNiww1FxHA==
+X-Received: by 2002:a17:903:3201:b0:2b2:58c7:2ce1 with SMTP id d9443c01a7336-2bd7e9e9426mr114999455ad.36.1778992213363;
+        Sat, 16 May 2026 21:30:13 -0700 (PDT)
+Received: from ryzen ([2601:644:8000:5b5d:7285:c2ff:fe45:8a32])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2bd5cfe47bdsm109726135ad.44.2026.05.16.21.30.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 16 May 2026 21:30:12 -0700 (PDT)
+From: Rosen Penev <rosenp@gmail.com>
 To: iommu@lists.linux.dev
-Cc: linux-arm-kernel@lists.infradead.org,
-	linux-arm-msm@vger.kernel.org,
-	robin.clark@oss.qualcomm.com,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	joro@8bytes.org,
-	stable@vger.kernel.org
-Subject: [PATCH] iommu/arm-smmu: pass smmu->dev to report_iommu_fault
-Date: Sat, 16 May 2026 17:50:52 -0700
-Message-ID: <20260517005052.3783378-1-shyamsaini@linux.microsoft.com>
-X-Mailer: git-send-email 2.43.0
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] dma-direct: Clear pages before coherent remap
+Date: Sat, 16 May 2026 21:29:55 -0700
+Message-ID: <20260517042955.2218649-1-rosenp@gmail.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -45,64 +73,75 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-report_iommu_fault() passes the dev argument to trace_io_page_fault(),
-which dereferences it via dev_name() and dev_driver_string(). Passing
-NULL causes a kernel crash when the io_page_fault tracepoint is
-enabled.
+Clear pages through their page mapping before creating a coherent
+remap for dma-direct allocations. Some architectures implement the
+coherent remap as uncached memory, where the generic memset() path may
+use cache-only zeroing instructions that are not valid for the returned
+CPU mapping.
 
-In arm-smmu.c, 'commit f8f934c180f6 ("iommu/arm-smmu: Add support for driver IOMMU fault handlers")'
-replaced a dev_err_ratelimited() call that correctly used smmu->dev with
-report_iommu_fault() but passed NULL instead.
-In arm-smmu-qcom-debug.c, 'commit d374555ef993 ("iommu/arm-smmu-qcom: Use a custom context fault handler for sdm845")'
-introduced two report_iommu_fault() calls also with NULL.
+Keep the existing memset() for non-remapped allocations, but avoid
+normal memset() on the remapped coherent allocation path.
 
-Pass smmu->dev to all three call sites.
-
-Fixes: f8f934c180f629bb ("iommu/arm-smmu: Add support for driver IOMMU fault handlers")
-Fixes: d374555ef993433f ("iommu/arm-smmu-qcom: Use a custom context fault handler for sdm845")
-Cc: stable@vger.kernel.org
-Assisted-by: GitHub_Copilot:claude-opus-4.6
-Signed-off-by: Shyam Saini <shyamsaini@linux.microsoft.com>
+Assisted-by: Codex:GPT-5.5
+Signed-off-by: Rosen Penev <rosenp@gmail.com>
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c | 4 ++--
- drivers/iommu/arm/arm-smmu/arm-smmu.c            | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ kernel/dma/direct.c | 20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
-index 65e0ef6539fe7..8eb9f7831de07 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
-@@ -399,7 +399,7 @@ irqreturn_t qcom_smmu_context_fault(int irq, void *dev)
- 		return IRQ_NONE;
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 583c5922bca2..76f7bf43bd28 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -8,6 +8,7 @@
+ #include <linux/export.h>
+ #include <linux/mm.h>
+ #include <linux/dma-map-ops.h>
++#include <linux/highmem.h>
+ #include <linux/scatterlist.h>
+ #include <linux/pfn.h>
+ #include <linux/vmalloc.h>
+@@ -104,6 +105,15 @@ static void __dma_direct_free_pages(struct device *dev, struct page *page,
+ 	dma_free_contiguous(dev, page, size);
+ }
  
- 	if (list_empty(&tbu_list)) {
--		ret = report_iommu_fault(&smmu_domain->domain, NULL, cfi.iova,
-+		ret = report_iommu_fault(&smmu_domain->domain, smmu->dev, cfi.iova,
- 					 cfi.fsynr & ARM_SMMU_CB_FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ);
++static void dma_direct_zero_pages(struct page *page, size_t size)
++{
++	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
++	unsigned long i;
++
++	for (i = 0; i < count; i++)
++		clear_highpage(page + i);
++}
++
+ static struct page *dma_direct_alloc_swiotlb(struct device *dev, size_t size)
+ {
+ 	struct page *page = swiotlb_alloc(dev, size);
+@@ -268,6 +278,13 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 	if (remap) {
+ 		pgprot_t prot = dma_pgprot(dev, PAGE_KERNEL, attrs);
  
- 		if (ret == -ENOSYS)
-@@ -417,7 +417,7 @@ irqreturn_t qcom_smmu_context_fault(int irq, void *dev)
++		/*
++		 * Zero via the page mapping before creating a potentially
++		 * uncached remap.  Some architectures cannot safely run normal
++		 * memset on uncached memory.
++		 */
++		dma_direct_zero_pages(page, size);
++
+ 		if (force_dma_unencrypted(dev))
+ 			prot = pgprot_decrypted(prot);
  
- 	phys_soft = ops->iova_to_phys(ops, cfi.iova);
+@@ -283,10 +300,9 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 		ret = page_address(page);
+ 		if (dma_set_decrypted(dev, ret, size))
+ 			goto out_leak_pages;
++		memset(ret, 0, size);
+ 	}
  
--	tmp = report_iommu_fault(&smmu_domain->domain, NULL, cfi.iova,
-+	tmp = report_iommu_fault(&smmu_domain->domain, smmu->dev, cfi.iova,
- 				 cfi.fsynr & ARM_SMMU_CB_FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ);
- 	if (!tmp || tmp == -EBUSY) {
- 		ret = IRQ_HANDLED;
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 0bd21d206eb3e..92d8fa2100adb 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -467,7 +467,7 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- 	if (!(cfi.fsr & ARM_SMMU_CB_FSR_FAULT))
- 		return IRQ_NONE;
- 
--	ret = report_iommu_fault(&smmu_domain->domain, NULL, cfi.iova,
-+	ret = report_iommu_fault(&smmu_domain->domain, smmu->dev, cfi.iova,
- 		cfi.fsynr & ARM_SMMU_CB_FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ);
- 
- 	if (ret == -ENOSYS && __ratelimit(&rs))
+-	memset(ret, 0, size);
+-
+ 	if (set_uncached) {
+ 		arch_dma_prep_coherent(page, size);
+ 		ret = arch_dma_set_uncached(ret, size);
 -- 
-2.43.0
+2.54.0
 
