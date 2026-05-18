@@ -1,144 +1,185 @@
-Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012061.outbound.protection.outlook.com [40.93.195.61])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FDC138AC65
-	for <iommu@lists.linux.dev>; Mon, 18 May 2026 18:11:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.195.61
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779127921; cv=fail; b=h77EEDscIKGGBup1AtfCT8kGQwVwH9AuS39n/bEpdZ8o9aFmGkiPe4QGqGkbFMzuGVrAV2MMVXRvUnSSO6vHE37/sXD7UE8qQoRtWQyJoWQSgcaSLWvM+DSIYQV6nWd16f+qKkJgZMHIZZflVplSTz0tJrP8gso2Vcun1ES7mWM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779127921; c=relaxed/simple;
-	bh=HaA6MR0KBIu5coYQZ1ji38E06LXsqYy98B8sOUbrM3Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=tpQtZKwa/wi5H+QG1XBt2xg9QoXVcq/NIjeksWhgTgfJ/2rBeSJmUFUBf49yYDwq9mw22rNt0wARf1Y86uZdGlANbnIG0bqnujbreLPBi2mLtgJPK4S3rlLCoZ+jMvAIDvK2H9mPThCcchs2+/eDzDiR/6RAwKgRl26GdJKgnrE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Ib4GSAPw; arc=fail smtp.client-ip=40.93.195.61
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B24E2D838E
+	for <iommu@lists.linux.dev>; Mon, 18 May 2026 18:33:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779129230; cv=none; b=RdUlJM4ZzScQiAwfIasrneyvqPv55kxJUZcVkMf7M/ignDK+NZ+5ns66K76GV/KeU7EuSVu52BkjbcLF9m5247gmz8m1gInlKd1OCV8oseMBI0A9lyEpwii85LQORCdEhSwsjuxnV0z9+ORoy2R+bqKiGXBAQqXncEVEaFOQ4Bg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779129230; c=relaxed/simple;
+	bh=TyOWWPWoGocXqSwMD+MG/Lr0Gd5wpTyR5wdZ+yXhOuM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=BjGNZ1csfDIie1f7REQVp/ZV1Vtfr5lB1GDHvannhVXNwqMJt9gxs8QbxWtfcJW8mqw++nfNwVXkZDdHb71n1dXKf1rLW57hZJPJG72WvRrk0hGTmvWQjjAJAivwiGsyxe4wHNnwIMCVbnqbwbUMlWfUT2tCwSKk+gkYykD9dUU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=HOZDXhBG; arc=none smtp.client-ip=209.85.214.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Ib4GSAPw"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=l1jdtfvTy+hUdfsVBojvkMwqg5FwzbfPdnL4ZQaOTKdyqYTCR5HteeVRHUvL+1ERcD8hQRltPsthuXHfglzW9FCsForUS34071HvKzk0r0S+hCsUzJ8M8H0W2sqf2vrX8r5A3RZ4LIbZa0kki5BrYPn0s5rhIGYBVJ2HhWqlEXS4dsDOLgqqDWSiY7Fxlb9N4xLMRyTqVslq626gHWx37fSyqQ1TeLTNBmjMWP7PJVaGcKBt4Guzh/6qrP5h8t3MKoW0aeMb+FOKHfW4BQWaxQaVeDygMqJwz0rugHQASQrTlhPMXs7pKDQJ/6blaUgTKSATtw9kZEPfuMOVn2q0ww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=46JIqYWxY0Lx5Ih4L++Q3NwHtkhoLtJfDsNbd86e2xU=;
- b=nZcwfL6iAisCGUsVgY43dJZfscL1k9MVqddK8+TAB4HUbLrmTXXhYdSWAmiGuTfDhzVK5OI57i10x1FVLcMzviWBMd3n5ooM0MKrHkoFavuGsGFjXxW68MOiR/5lKZwNrKX0BRF8MX8pIWgCcjEDHVWycKJY7JEsguzRXoGnqBV59jiQ4eJAgVhRNSrf5KS8Q2OdomEqSF/gVqjz+sjv+voXROKHbUtmDvQHElLlNjq4l1/U23rLRZ06568z4M9i/qsAmQT2f3eAd3bvc0FXtxuThFf/0w1G/5U2kebGT3P97uBdGtQ4nrITDqOlWWiiF/DAU5pE6NEL3eyo7MIW0Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=46JIqYWxY0Lx5Ih4L++Q3NwHtkhoLtJfDsNbd86e2xU=;
- b=Ib4GSAPw6lhQ3pZ0GrkBtntqonem696moZaUpBCgIc3l0IDV/U36J+6598oM+2QS3VBqJkCJBXoe5e/RlYZqn8U/YU3s+3ODH0MMiwHW9kN/Fbj1MH2YCEhaowkHZ8kDW4vqhYrNONxpYkYON3hIYbRzV70Phdm5LvthK7gxTM8OZkHEED/BFNl8zVzd4CFFVW2zGs/oQPmNDV/30LHwyuelxMTS+zOyU8vTzJXbhWHFQIVbMlRK2k0dQ8B+4XgsD2oqUwYFmhoBK1gPNNw6wUibgPJCX2CXjoA+MNZuvByeqIpfieV6uHet/VNcIpUM7JLfoEc3jbeH4FlFeehRGQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by LV2PR12MB5847.namprd12.prod.outlook.com (2603:10b6:408:174::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.25.22; Mon, 18 May
- 2026 18:11:55 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.21.0025.022; Mon, 18 May 2026
- 18:11:54 +0000
-Date: Mon, 18 May 2026 15:11:53 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: kevin.tian@intel.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH rc v1 0/4] iommufd: Fix veventq_depth boundary
-Message-ID: <20260518181153.GN787748@nvidia.com>
-References: <cover.1779070992.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1779070992.git.nicolinc@nvidia.com>
-X-ClientProxiedBy: YT4PR01CA0389.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:108::11) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="HOZDXhBG"
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2ba180a022dso1155ad.1
+        for <iommu@lists.linux.dev>; Mon, 18 May 2026 11:33:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1779129229; x=1779734029; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=1KANnHv0swkPJJWZfqLe5jM5UVpVbFidl0DzMhA68oc=;
+        b=HOZDXhBGQNjZt9aZUXwrPmrpIvJRHtq1T80ukbU40OYC5PGp7E7bIUlChjz1GM9QNZ
+         ld545ev4htZQY1L/KyDg/27wBTuaTz7SrFLwj1IKQRRkD+lZeEbt0Dp/SLciBDP1WwPU
+         3myGeGFY6xHEODID8lPxYHw67oDkDcJ18ocmDTm4N+bkgUPeu2OfAfuoW9Mz9stVQuU2
+         wvNXqa9It1WYvtwjeQfiQgmD9iMeWoZWYsSjYZ2TJNN9sXNYfo3WafkuS5ZqTWdCi0jH
+         xXE0CuCpR0hVLqe5xmpGUCtuw/SvfKdhPdxOzk8b1PhSXsdle4pl46blE5BKzIZ/SZZV
+         fcAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779129229; x=1779734029;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1KANnHv0swkPJJWZfqLe5jM5UVpVbFidl0DzMhA68oc=;
+        b=A8jdL15znv09JJ1s0uiyDEM6gj4o3dfeP5yhghhGnLB/4CDre5XMX592LCHm11G+MD
+         m/CcTK5THjzcpjXXn5scWoiYrgOKio88IwplGNvi/9X+F4nFpRB7hLk66LZoc3rG2qmS
+         h4oTwaEvK0m3dL+hDFir61dD8Q4fcQ9x7xskA8zMlX07aH6wgmlwIPT8sxHKDVAtOvpU
+         cZBT6QJuugUgjrALs7V9K++8tLoJe+VftDAuQrqySCVJsvh8cFK60SAgGTa0oG26ZeqC
+         3LChc4+SPp8BVoa1eEanrM9aKfhCcnFr74dtxEWmyKsfJ0BA0/YnN80Gdy8i0tiSj4Ej
+         Vomw==
+X-Forwarded-Encrypted: i=1; AFNElJ9EIQlxvyEzkzWvhpNu3whGuPVZf6fvRxSIkfq3FccE7inbhH5KWsq6a9y8KYAOIPdyRHJkCQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwF9uVptQM8gqqikOGcfGgN/PONPe/F90SPbzEMTceiwWWerWN9
+	DKhKTu0aoTYjzUlyEL9Lw2YX0ZtkoiYvXUFoKT+Re2ffTQ75Iv8F1nFC/ON4+Jhdjw==
+X-Gm-Gg: Acq92OEKH8M5uzE3L/GmyfCAT+Q34MMVRwh4lPlG8AYfWGxAtqIFAeP9B4bFrepcIVh
+	Ig+Rbdh+CRzscEXPIFE/VUIkVI5Vinx2lO+dhytlMfN/EhXjoSIgpmxcAEQ48dBeEaboT72rL92
+	vjHYwgzyu5BX+sC9jW/A5kWbJqoEUQ4K0RCpyZCFjuCpXy1VURgX8rNPkm/Ku04d33onx9sQ5nu
+	IiyU9CB2f57QuKakymJwFuauk7L9DS12ZitjlpFwn8otZiJ48dVnTfqOdwj3b7tMfJl5PXvDUoe
+	Xjuz+QZpWRce2E3SA1/RHNqyF5l0eUYN1jpskkFS5jEB+Ac7HWNWLKwpdir1LIncny2Dg1fD0Bf
+	ldvi/1DRv4FJ21fuEB7BijY4AG0JLbHCUWtT4uZd1A1RNITc7WSjCNGIyMgX5UT+Edflx2bbmS+
+	WRH7BVSTpUgoU25MwRkVRuqvKG9BdCQH46OUVjGgvS+XlPXDcCxcFlDfDigC7nzH83BRl+ZA==
+X-Received: by 2002:a17:903:32c5:b0:2b9:e831:5e5c with SMTP id d9443c01a7336-2bdb03a42c2mr3898675ad.4.1779129227834;
+        Mon, 18 May 2026 11:33:47 -0700 (PDT)
+Received: from google.com (153.46.83.34.bc.googleusercontent.com. [34.83.46.153])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2bd5cfe6487sm156913305ad.54.2026.05.18.11.33.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 May 2026 11:33:47 -0700 (PDT)
+Date: Mon, 18 May 2026 18:33:44 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Pranjal Shrivastava <praan@google.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, 
+	David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>, 
+	Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, 
+	Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>, 
+	Adithya Jayachandran <ajayachandra@nvidia.com>, Parav Pandit <parav@nvidia.com>, 
+	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
+	Pratyush Yadav <pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
+	David Matlack <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	Chris Li <chrisl@kernel.org>, Vipin Sharma <vipinsh@google.com>, 
+	YiFei Zhu <zhuyifei@google.com>
+Subject: Re: [PATCH v2 04/16] iommu: Implement device and IOMMU HW
+ preservation
+Message-ID: <agtMUUYyc1qx6GG7@google.com>
+References: <20260427175633.1978233-1-skhawaja@google.com>
+ <20260427175633.1978233-5-skhawaja@google.com>
+ <3874a086-98ae-4b94-8c1b-20e13f5a92fb@linux.intel.com>
+ <afzcqWa8iVqrhJLs@google.com>
+ <agsbtV4oargwX45d@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|LV2PR12MB5847:EE_
-X-MS-Office365-Filtering-Correlation-Id: d39a843d-776b-4ec2-ba0b-08deb508f11f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|366016|1800799024|11063799003|56012099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	cljrOWJxiPUcfGdZt62USbNPcSWCveD+f8UtYIzxCHme9E7KTTnM9y0ECqgBvEdVm52Su4RsbD5CG7iY71z5c/Jj0cCmamsSe1PjE/7rE1jKlSy1i/Mon6eB/oDwNnH6Ow01EZviipC/DAX1zrUhRTbseV2tgWQxuF2WwYYU29AYYbQMSiKoE0oB11s8C9dofjoGbcPTWaRIeiE8s2l0ZwBt3TLgKXZWkwUQ046pAQpsQEizBqjD9mt6pe8aliXCeM8pA1uhxpYKae9HkKPWUYYSlzggLPuxKe7YSvuh9XqO+SBiEGMJw4ijY/F0u9T1Ix6YE/mrqsT8NRCTnegvNg5NL+C2+xM15GKK3G3HttcLu0U0GetMTSKoa1pG3P1haPBJmw0IGbaECYSHStT3V6fDgbfZxjadJweZtAzUOLYIJ82t3MZJl9nZ74Q1bmS/JaKPi7SH6S22LmS/oUVe+k+jEImNNj65McC6nwY/V5WTGRNRtM/+NHSqnqGhCifwgGh2Z+qUeE1J1Uq92tx/HsVa8lDeeP30UdJLfVYB/JfenUDI7itcp6BpNt6ITuXX+pvdSvJgIuQbc+0nQd73Bx3fD4YY9r1Q8PHfd+lIEL4uj/70FE49yCCVp98d3NGtqMrXH2VDsrxfIWiJ/17i6rMFep1rHdJFWNoSKjowXv8ngTrGizrebdAifcxV7sU61xadc/ZiYIuKCkaLNLj9ow==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(11063799003)(56012099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?Z7/bQ/s9eCYVPPCpsLttLSz9HEAXruqImFcoaUZlBjyr1b2oIo2s6xzc76tC?=
- =?us-ascii?Q?UR5rV40LPbJib2KcfZzQnt555DXS2LY/bGB8VfidUPqRA9k6XZUiDzoP5tE+?=
- =?us-ascii?Q?pdolU7km3Qbsoa5pDHieSd9zThoXUj4mA2XtvN8QauUQ/jLllYzCPRmCNsIA?=
- =?us-ascii?Q?xnnT5GQYQu24eQQ4HDrWLHOVu/mqgWAk4Wh98i+JKBZVaHCtqYUjQmrmk5Al?=
- =?us-ascii?Q?WO4IboDyUDPa7cNuYfo5kjKow3HtHfyA5PQ8pyrs5GMdmEnoDCiZj7z5/sCt?=
- =?us-ascii?Q?cm5syVrF6Hs24ntniXJs+tcrl3SGpEHqXXb/l7RtWpUFDU+vXqixqDHEeII/?=
- =?us-ascii?Q?LfdSlmFU8/h1EoYtfsHaTZ1WDAAXjcgs0nA7gmuY0FyqJOf2tBdSC7SVDWzP?=
- =?us-ascii?Q?kEX1/RtkByBV8iyCcTE80QMPW6CQMJ9QFBnLwhzrg6gWeXGaX3E20Za53oem?=
- =?us-ascii?Q?HMizdVb0CEhswQwnw2+aA8YjvhAI/NP3nB1hsDIOuHEXrXA43EiKw249oc65?=
- =?us-ascii?Q?1c0pYvoBoozlOFw0TfjCegzyQPoTkSxehNdx3phx7goR9wEP5N1PLhlnM/lR?=
- =?us-ascii?Q?IlO4tQYSo8lD89ST1Gf3fPbT9kIsTrTPOzRHvWK7RwemzPwFoQZ1+oISAQqE?=
- =?us-ascii?Q?7AGOgB4Gl4wfysMcMDI4OtAwlJQu3tn72wC6iXV21k4KOez02KEWxHSOVSqi?=
- =?us-ascii?Q?O7glouxAfCr06rw3ltKtH5WJVWH1GPWBYgzvxG0L34I60bPJ2ykWMMdq7zwb?=
- =?us-ascii?Q?k+ywapsSfSP/0mTEY/7IAeI7m9N32PKTvkl3Mevimf6BednkjbUB6frsp/pR?=
- =?us-ascii?Q?FTH6s3QcFZyUIc1cqRqji/E2PMeBhBO+WjD8x3hbhmcxVGPNt4u4zC+33LVH?=
- =?us-ascii?Q?klSYc/L/GQDya/TKkxDwknQD4rVNBeryx7im7o43gGmolMzNCD+agkyF8lbb?=
- =?us-ascii?Q?v+B7AAS4hFGH6Qw0MyHWJmYBt2hNozUDyP6josDw1Eh+LTda4uD3sTJ9rWZ/?=
- =?us-ascii?Q?3UB3ybjEN/ze4M1ZSDPaiQAThkXthABWYpGsTGaianlV6Xgjqz8/Z01BmFAI?=
- =?us-ascii?Q?sx8oMrzuVd1WqrAN1TEuPgj0qvq82BwI7yUU6XhIEnKMKgwBXaBfhjEaQ9UI?=
- =?us-ascii?Q?LUc0d2JmR0m61Eaw04MsHXM6HFhrOZsqSATXGJ5UTum3MuBNsA4vL+H6jh9w?=
- =?us-ascii?Q?xuIjHk1oglQzbAhtusFPy/XBsNmW2Y4lO7ABZeNZfByaG8nsKAglU+Xj1KzW?=
- =?us-ascii?Q?uyRqlzPqv4xx0CMMH0tfyFuycy2ulQPeGLMkPcg0utqyOZ7tZADx6jbcLT0F?=
- =?us-ascii?Q?2zp19luTRDc3rRi9cnT7LhT2Avc74UygbFKO0cqAk5vOJXuoja1qPzElUAEX?=
- =?us-ascii?Q?QQ0Z6TEUF5aFjc4NoWUvfTcsNU9L53GGfQZQQ4dOmp5Yoik3/QwjUl80bP9f?=
- =?us-ascii?Q?9gcWf1Irwlj9MBADjMorT9CV65vSMWEDDpJEZFVWs4JcenGVcv6hunmqzP6c?=
- =?us-ascii?Q?9kNJTgse7GZe++tP+U2U8o98sVtycJSO5otol17g7UahvXv57pyPtnZacjlE?=
- =?us-ascii?Q?62zGk7632/5DIqpwNYCVSxruFjasYMsdc5bodP0kpCBGESKS6EAr3ovTzFKK?=
- =?us-ascii?Q?pUQfGlE+D8UG2djb37CBdywhbV0Zi46hAyw4Je50Umi6M+yMtKJnwGSG2K2I?=
- =?us-ascii?Q?kINBSdRpJsf9IMBL9aEw4eW3yKdyw76n55KwvGc7aZDbq6pr?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d39a843d-776b-4ec2-ba0b-08deb508f11f
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2026 18:11:54.4938
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: N5iIKek5O8ivnWSTnkZxIf8UGTQ+I2z0wxeKBtjFm1sQTdmafm5NfwCOq6ZdDg5R
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5847
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <agsbtV4oargwX45d@google.com>
 
-On Sun, May 17, 2026 at 07:28:45PM -0700, Nicolin Chen wrote:
-> The upper bound of veventq_depth has been missing for veventq allocation,
-> leaving a vulnerability where userspace could exhaust atomic memory pool.
-> 
-> Fix it properly:
->  - Allocate outside the spinlock to avoid GFP_ATOMIC
->  - Cap the veventq_depth upper bound
->  - Fix event_data byte-count
->  - Add selftest coverage
-> 
-> Note that QEMU's SMMU has been already allocating veventq using a "HW"
-> EVTQ entry number. So, picking 19 as the known use case, for a minimal
-> level of ABI consistency.
-> 
-> This is on github:
-> https://github.com/nicolinc/iommufd/commits/fix_veventq_depth-v1
-> 
-> Nicolin Chen (4):
->   iommufd: Move vevent memory allocation outside spinlock
->   iommufd: Set veventq_depth upper bound
->   iommufd: Fix data_len byte-count vs element-count mismatch
->   iommufd/selftest: Add boundary tests for veventq_depth
+On Mon, May 18, 2026 at 02:01:25PM +0000, Pranjal Shrivastava wrote:
+>On Thu, May 07, 2026 at 06:47:07PM +0000, Samiullah Khawaja wrote:
+>> On Thu, May 07, 2026 at 10:07:43AM +0800, Baolu Lu wrote:
+>> > On 4/28/26 01:56, Samiullah Khawaja wrote:
+>> > > Add IOMMU ops to preserve/unpreserve a device. These can be implemented
+>> > > by the IOMMU drivers that support preservation of devices that have
+>> > > their IOMMU domains preserved. During device preservation the state of
+>> > > the associated IOMMU is also preserved as dependency.
+>> > >
+>> > > Signed-off-by: Samiullah Khawaja<skhawaja@google.com>
+>> > > ---
+>> > >  drivers/iommu/liveupdate.c       | 162 +++++++++++++++++++++++++++++++
+>> > >  include/linux/iommu-liveupdate.h |  33 +++++++
+>> > >  include/linux/iommu.h            |  20 ++++
+>> > >  3 files changed, 215 insertions(+)
+>> > >
+>>
+>> [snip]
+>> > > +
+>> > > +int iommu_preserve_device(struct iommu_domain *domain,
+>> > > +			  struct device *dev, u64 *preserved_state)
+>> > > +{
+>> > > +	struct iommu_flb_obj *flb_obj;
+>> > > +	struct iommu_device_ser *device_ser;
+>> > > +	struct dev_iommu *iommu;
+>> > > +	struct pci_dev *pdev;
+>> > > +	int ret;
+>> > > +
+>> > > +	if (!dev_is_pci(dev))
+>> > > +		return -EOPNOTSUPP;
+>> > > +
+>> > > +	if (!domain->preserved_state)
+>> > > +		return -EINVAL;
+>> > > +
+>> > > +	if (!iommu_group_dma_owner_claimed(dev->iommu_group))
+>> > > +		return -EINVAL;
+>> > > +
+>> > > +	pdev = to_pci_dev(dev);
+>> > > +	iommu = dev->iommu;
+>> > > +	if (!iommu->iommu_dev->ops->preserve_device ||
+>> > > +	    !iommu->iommu_dev->ops->preserve)
+>> > > +		return -EOPNOTSUPP;
+>>
+>> I will check for unpreserve ops here also.
+>
+>[snip]
+>
+>> > > +	pdev = to_pci_dev(dev);
+>> > > +	iommu = dev->iommu;
+>> > > +	if (!iommu->iommu_dev->ops->unpreserve_device ||
+>> > > +	    !iommu->iommu_dev->ops->unpreserve)
+>> > > +		return;
+>> >
+>> > Is it considered a driver bug if it implements the preserve hooks but
+>> > not unpreserve ones? This would at least cause a silent memory leak. How
+>> > about adding a WARN like this?
+>>
+>> I think the preservation should not be done if the unpreserve ops are
+>> not implemented by the driver. I will add these checks in the _preserve
+>> functions and return EOPNOTSUPP if it is not implemented by the driver.
+>> >
+>> >    if (WARN_ON_ONCE(!iommu->iommu_dev->ops->unpreserve_device ||
+>> >                     !iommu->iommu_dev->ops->unpreserve))
+>> >        return;
+>>
+>> We can add this warning here also.
+>
+>I'd rather have the iommu device registration fail instead of solely
+>relying on these WARN_ONs here. We can simply add a snippet inside
+>iommu_device_register():
+>
+>#ifdef CONFIG_IOMMU_LIVEUPDATE
+>if ((iommu->ops->preserve && !iommu->ops->unpreserve) ||
+>    (!iommu->ops->preserve && iommu->ops->unpreserve)) {
+>        pr_err("IOMMU: %s: Asymmetric live-update operations detected\n",
+>               dev_name(iommu->dev));
+>        return -EINVAL;
+>}
+>#endif
+>
+>This prevents a half-baked iommu driver from ever spinning up, completely
+>eliminating the need to check for it inside the live-update session paths.
+>We anyway don't support hot-pluggable liveupdate ops atm.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Hmm.. I understand your point, But I think we should let the
+registration go through so the IOMMU can be used. Its just that the
+liveupdate preservation will not be supported. Failing the registration
+would be a big hammer that I think is not really needed.
+>
+>Thanks,
+>Praan
 
-Jason
+Sami
