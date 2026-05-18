@@ -1,172 +1,133 @@
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11BD6404898
-	for <iommu@lists.linux.dev>; Mon, 18 May 2026 12:33:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.175
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D0FC841B378
+	for <iommu@lists.linux.dev>; Mon, 18 May 2026 12:40:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779107618; cv=none; b=uJr8P62I86EuaTrFMBB64r0LndPkjOnfJn0MMbJ/0UQAHduE61hSFIncb9YMtCqjAQ+HNo2Bm1XFXNry2b/1A5pJPZAzFusesV/2leYBRsmMAm5/CeuTdYcLa2fX50DJgFzJY9fvSF5Mbv50w+rumwY8xRoFB6YrgWiMjQk6x+Y=
+	t=1779108023; cv=none; b=SVizHzyVmuOgaLMn0dzcy3EqJABb8fHLmjOM2BjJ65p9k1/lEJbk6jpT8jmNFrbpoCUPf+C7FBCFNxOuwn7N6EF6IEfZJ0Q0TfumJIDAA9Wxafz0EWYQAqUwbnqu74trFYjcJBNzvM2zTMgRlpvdxB3/tuTjqUiTqa4xwKQQM18=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779107618; c=relaxed/simple;
-	bh=eteect+ff8liDAlqaZm03mOtwH8hF75AgpasHuA6duE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BW0OQmJfWTxFUSFcSF7MqcdJ8x7lp+oAowWcAlhtHV1CywaHst+KS1hPEHRFoBxowUqmfDdRuTzLVaWEOOetM3/AG1Kqyuhuw/EMw6EDuOMAFJOJYa9LlJ5/ctqngdh3PswoMg2KzyxXR3NTGf7NQS+pbdE40GJDY08NJyZMFhY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Xf+wEyj8; arc=none smtp.client-ip=209.85.160.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1779108023; c=relaxed/simple;
+	bh=6RRM4voBsYSRyB2HVWqWgArrKsEBjLYey1NyYvTf804=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=fUzOH79bQeL9ceO2gZhC63UzdeGA6clDUjGYPivxdfoF93s5q5xOORP/Vz1qmPsA0OIk/qStEJbbKcUvSbrhqlvZ2EHuS9isXGVX7nVxs9yx1JUvb1PyzoZ2SObJegWM/eHgDH1svYLVvrJC9EtXcjMExRhBe6ai4OlLP5mG3TA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=cUYuVwET; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Xf+wEyj8"
-Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-50d864c23bdso5361cf.1
-        for <iommu@lists.linux.dev>; Mon, 18 May 2026 05:33:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779107616; x=1779712416; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=pEg290J1ykCPkYwv69V6a2ExyDDaRGL6kITmZSq7l38=;
-        b=Xf+wEyj85JrhMvIx8E5w6HU+2HVkgWFscSZj5gYirSZnMCav37BqgpfW8XZRR0lKgP
-         VvX2BqDy2UFwgWwulgjlL5rD7gRKJXQp6cUWcZp82g13JzncdDhX0VbVpf4fpGuV4Ufq
-         r0kcj7vHucKNEogi3Cs/0XmTRlVHzg1CN+yg4Kf8SKZoM8WpLEUz+5UfNTiFiwrvMH6g
-         bdSiBKYBXBrgs6hhi7w2K92OqxJhiECEPgOLmsGw2B46oAz0GsSjDxzp08E02x9epmxT
-         e9rmGfOV8HQaUQzQRBU0jHeItMY/sFUOO6a/aEVjHo2/eKtbgD7wee6AVe2RwdZ5MwxB
-         dnmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779107616; x=1779712416;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=pEg290J1ykCPkYwv69V6a2ExyDDaRGL6kITmZSq7l38=;
-        b=ZXj2n8fW+9dbDlddjRumlTAYdNj0tdDLerm9wtt7WVK6DLXeXLvABYay9j3yklvyfo
-         REdidxNF19UHF5K3p2kX+gx7y+JgYO81DHxtM/XMDGLJ8oAeyVttpP02DWqH87I2Evj/
-         EvPTcxwynmjns9JUPNSLJMIxKy9ulQc3kfUq/SizJnFe/xsFSsssga2BMfqB1OVsWI8v
-         mBNWe9kHIpTDSe+cFnTii8Mv1+Tjm0b0mV89YWR3XxPS25eUn6Lz0RUCZ3J7oJOFlsUj
-         76XpkgadZdHi/PE5xVtwGQBmZpPg+DSrb7+GC3loExdUDDFxNlpSoftgvk7GaEethwBq
-         zy3w==
-X-Forwarded-Encrypted: i=1; AFNElJ9SFGuvBfHqQq+A4druBAu+nDcPuXU9yXdvWwBj13XXSpErJ1HBLj1MEk/DnY7xb9QYY9YH1Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz1SqZ58X8Lt54qeAtgcIQ+K6bh5174xLvdpHJ/RMUN6MjbtJHg
-	9jh408HUcv2wgebuWK7lruIutMXQrwd8cX2qGZ33l00N5M7Vp4LuGMgB7sN78Af5tw==
-X-Gm-Gg: Acq92OE+QS5IDE1ksZlcVRJzc6iofh2vNzqv/UaRahrGX8cYH4hw8Z77FGvtbcJ7DYp
-	cbgJu3LlzUstLuxxDwa/VApe+IVg1lYBFFnJvE9tmNmaiwDRW9eq5aw6e0BW3M3KbPefMy25oPI
-	MBtxwSqMsQITkTN0SV8rmJC57JvLx7GQDPU8YPiBab+pP9ax1stY1sJktLNe+TlR/U0TtRcBTlY
-	WkF5y3Bdo1emspW/Hq/laOKJCyrtqiSnsMFFzI0/GDUyXiajBccmD0so16UUKi2LOW0dneY2FsK
-	xqP7OqikQ04Pcywd61vNW8ykIMBBeISE8vfd4MkNxUVdMa8k4GDsPmr/4G4psk4G9IAIRElnA6z
-	fMHiMt6osF/CgTwHA0whejWzTymlvnPzvvlIpQEu++5nn0j9fxcfF+RzR441Y1Hw/sw9luhMRGd
-	gT0nytF2UJHoWYqzOe51K5u3oJHF3NOnOlrGxII2cXG+i/1Ih3NJ6ezvRouuj5Ph1tMTXq
-X-Received: by 2002:a05:622a:8c0e:b0:516:3b3c:1df2 with SMTP id d75a77b69052e-5167945fee9mr12767131cf.14.1779107615481;
-        Mon, 18 May 2026 05:33:35 -0700 (PDT)
-Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-7cc9c6cd4f5sm20692257b3.35.2026.05.18.05.33.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 May 2026 05:33:35 -0700 (PDT)
-Date: Mon, 18 May 2026 12:33:25 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: David Matlack <dmatlack@google.com>
-Cc: Samiullah Khawaja <skhawaja@google.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-	Adithya Jayachandran <ajayachandra@nvidia.com>,
-	Parav Pandit <parav@nvidia.com>,
-	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>,
-	Pratyush Yadav <pratyush@kernel.org>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Chris Li <chrisl@kernel.org>, Vipin Sharma <vipinsh@google.com>,
-	YiFei Zhu <zhuyifei@google.com>
-Subject: Re: [PATCH v2 02/16] iommu: Implement IOMMU Live update FLB callbacks
-Message-ID: <agsHFbI_FQEXiZAA@google.com>
-References: <20260427175633.1978233-1-skhawaja@google.com>
- <20260427175633.1978233-3-skhawaja@google.com>
- <afUe71D8JfgmA0BG@google.com>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="cUYuVwET"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D8CE52328;
+	Mon, 18 May 2026 05:40:15 -0700 (PDT)
+Received: from [10.1.196.85] (e121345-lin.cambridge.arm.com [10.1.196.85])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9157D3F632;
+	Mon, 18 May 2026 05:40:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1779108021; bh=6RRM4voBsYSRyB2HVWqWgArrKsEBjLYey1NyYvTf804=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=cUYuVwETpvBJ0r9LdBIA+knfi970j52/wfTk5xjo2MAWZyeFjbw/pZEvlPRaftiN9
+	 2LNUWAcv8BX3RXPDm9a4ViqcSlfvs3KC2vDXjPKYlN4od2oVU9FS0KL67AXs58zgWw
+	 kszVqYLpOQmYIa4a/Z3ZCJXq912/w4ymRQrXwQZU=
+Message-ID: <d6366078-3eb9-4445-9f91-27e1dc15970e@arm.com>
+Date: Mon, 18 May 2026 13:40:10 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <afUe71D8JfgmA0BG@google.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dma-direct: Clear pages before coherent remap
+To: Rosen Penev <rosenp@gmail.com>, iommu@lists.linux.dev
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+ open list <linux-kernel@vger.kernel.org>
+References: <20260517042955.2218649-1-rosenp@gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260517042955.2218649-1-rosenp@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, May 01, 2026 at 09:45:19PM +0000, David Matlack wrote:
-> On 2026-04-27 05:56 PM, Samiullah Khawaja wrote:
-> > Add liveupdate FLB for IOMMU state preservation. Use KHO preserve memory
-> > alloc/free helper functions to allocate memory for the IOMMU Live update
-> > FLB object and the serialization structs for device, domain and iommu.
-> > 
-> > During retrieve, walk through the preserved obj array headers and
-> > restore each folio. Also recreate the FLB obj.
-> > 
-> > Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
-> 
-> > +static void *iommu_liveupdate_restore_array(u64 array_phys)
-> > +{
-> > +	struct iommu_array_hdr_ser *array_hdr;
-> > +	void *vaddr = array_phys ? phys_to_virt(array_phys) : NULL;
-> > +
-> > +	while (array_phys) {
-> > +		/*
-> > +		 * Failure to restore preserved IOMMU state is considered fatal.
-> > +		 *
-> > +		 * This is because the IOMMU translations for preserved IOMMUs
-> > +		 * were kept enabled in the previous kernel and the preserved
-> > +		 * devices have their IOMMU domains still present. Not being
-> > +		 * able to restore means that the memory mapped into preserved
-> > +		 * domains might be already corrupted by the preserved devices.
-> > +		 *
-> > +		 * There is no way to confirm the integrity of the memory that
-> > +		 * was mapped. BUG_ON is the safest option at this point.
-> > +		 */
-> > +		BUG_ON(!kho_restore_folio(array_phys));
-> > +		array_hdr = phys_to_virt(array_phys);
-> > +		array_phys = array_hdr->next_array_phys;
-> > +	}
-> > +
-> > +	return vaddr;
-> > +}
-> 
-> > +static int iommu_liveupdate_flb_retrieve(struct liveupdate_flb_op_args *argp)
-> > +{
-> > +	struct iommu_flb_obj *obj;
-> > +	struct iommu_flb_ser *ser;
-> > +
-> > +	obj = kzalloc_obj(*obj, GFP_KERNEL);
-> > +	if (!obj)
-> > +		return -ENOMEM;
-> 
-> Should this be considered fatal for the same reason
-> iommu_liveupdate_restore_array() is considered fatal? If anything in
-> iommu_liveupdate_flb_retrieve() fails then the risk of corruption as
-> described in iommu_liveupdate_restore_array() is possible.
-> 
+On 17/05/2026 5:29 am, Rosen Penev wrote:
+> Clear pages through their page mapping before creating a coherent
+> remap for dma-direct allocations. Some architectures implement the
+> coherent remap as uncached memory, where the generic memset() path may
+> use cache-only zeroing instructions that are not valid for the returned
+> CPU mapping.
 
-Righ... Nice catch. I suppose we should BUG_ON() this because
-luo_flb_file_finish_one [1] returns void. Thus, if we return -ENOMEM
-here all we get is a WARN_ON without panic.
+Which architectures? I'd fear they're just broken in that case - there's 
+every chance that once the caller gets a coherent allocation back, they 
+could also invoke memset() on it - either explicitly, or automatically 
+inserted by the compiler for a structure/array initialisation, or if the 
+buffer subsequently gets mmap()ed to userspace then who knows what. If 
+that's really a problem, this patch isn't going to solve it.
 
-We can't statically allocate obj in liveupdate_flb_op_args because obj
-is a void ptr. I believe we must add a BUG_ON() here.
-
-> > +
-> > +	/* Data must be present and valid from the previous kernel */
-> > +	BUG_ON(!kho_restore_folio(argp->data));
-> > +
-> > +	mutex_init(&obj->lock);
-> > +	ser = phys_to_virt(argp->data);
-> > +	obj->ser = ser;
-> > +
-> > +	obj->curr_domain_array = iommu_liveupdate_restore_array(ser->iommu_domain_array_phys);
-> > +	obj->curr_device_array = iommu_liveupdate_restore_array(ser->device_array_phys);
-> > +	obj->curr_iommu_array = iommu_liveupdate_restore_array(ser->iommu_array_phys);
-> > +	argp->obj = obj;
-> > +	return 0;
-> > +}
+It's rather the point that we clear the buffer the same way that the 
+caller is subsequently going to access it (not least to minimise the 
+chance of any other possible weird coherency side-effects).
 
 Thanks,
-Praan
+Robin.
 
-[1] https://elixir.bootlin.com/linux/v7.1-rc3/source/kernel/liveupdate/luo_flb.c#L208
+> Keep the existing memset() for non-remapped allocations, but avoid
+> normal memset() on the remapped coherent allocation path.
+> 
+> Assisted-by: Codex:GPT-5.5
+> Signed-off-by: Rosen Penev <rosenp@gmail.com>
+> ---
+>   kernel/dma/direct.c | 20 ++++++++++++++++++--
+>   1 file changed, 18 insertions(+), 2 deletions(-)
+> 
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index 583c5922bca2..76f7bf43bd28 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -8,6 +8,7 @@
+>   #include <linux/export.h>
+>   #include <linux/mm.h>
+>   #include <linux/dma-map-ops.h>
+> +#include <linux/highmem.h>
+>   #include <linux/scatterlist.h>
+>   #include <linux/pfn.h>
+>   #include <linux/vmalloc.h>
+> @@ -104,6 +105,15 @@ static void __dma_direct_free_pages(struct device *dev, struct page *page,
+>   	dma_free_contiguous(dev, page, size);
+>   }
+>   
+> +static void dma_direct_zero_pages(struct page *page, size_t size)
+> +{
+> +	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> +	unsigned long i;
+> +
+> +	for (i = 0; i < count; i++)
+> +		clear_highpage(page + i);
+> +}
+> +
+>   static struct page *dma_direct_alloc_swiotlb(struct device *dev, size_t size)
+>   {
+>   	struct page *page = swiotlb_alloc(dev, size);
+> @@ -268,6 +278,13 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+>   	if (remap) {
+>   		pgprot_t prot = dma_pgprot(dev, PAGE_KERNEL, attrs);
+>   
+> +		/*
+> +		 * Zero via the page mapping before creating a potentially
+> +		 * uncached remap.  Some architectures cannot safely run normal
+> +		 * memset on uncached memory.
+> +		 */
+> +		dma_direct_zero_pages(page, size);
+> +
+>   		if (force_dma_unencrypted(dev))
+>   			prot = pgprot_decrypted(prot);
+>   
+> @@ -283,10 +300,9 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+>   		ret = page_address(page);
+>   		if (dma_set_decrypted(dev, ret, size))
+>   			goto out_leak_pages;
+> +		memset(ret, 0, size);
+>   	}
+>   
+> -	memset(ret, 0, size);
+> -
+>   	if (set_uncached) {
+>   		arch_dma_prep_coherent(page, size);
+>   		ret = arch_dma_set_uncached(ret, size);
+
