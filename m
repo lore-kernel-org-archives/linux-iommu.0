@@ -1,215 +1,217 @@
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADC993F20F4
-	for <iommu@lists.linux.dev>; Mon, 18 May 2026 11:32:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 153E03F5BE4
+	for <iommu@lists.linux.dev>; Mon, 18 May 2026 11:41:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779103983; cv=none; b=tib+ShmNvy06JwfiTru0rX13HgYOYTv3RTh/LJ5GBuelaMV+jsO1tkgdxd/iQ3IuG5adwAht2ywK/Suml5/b87DdByWwuE4xhxwZ1W19AE0JMJ11lu8lPprNfnHJmADZzMnSc+9rlvEefqjO2v8S0OhFDafsdeYTtXVGRxtrw2E=
+	t=1779104475; cv=none; b=cGLF6qEkdufBqnnSAuHVPw1Q7Ru7S5XXwmRbqk8N+i5LuC4cK9jOf/qunIaGwLPB3L/GBlh2gt0wSfOGEMJ78Pmy+JAMcU56GrWA4jX5izCe1B+i0FyM4PQuQQNkDtER6z2/1EGv3xCq//qM/CMEWA8uulwCZA4vVXVATulZEZs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779103983; c=relaxed/simple;
-	bh=RJWstnPwMeFt+IyKVb11wv2216Fz1HIRtY5LHVF/Ouc=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=LmPZH9xFxMmJI03xARTGrat8Mr/XxEmBeX5nEWfg9TVWUOjjaP5ioSWnQ0vPPRjT7g+H0DK8EiwyKfFTr7N9yL35CZdEgk5E3UmVGEJn3LR5ZUVnTyo//buWLVdaNkL6fK7Spskx/YZt8hGEE1Bl019u1kuXFCTPR0wRhk0vkLg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=m1hWC1QG; arc=none smtp.client-ip=209.85.167.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1779104475; c=relaxed/simple;
+	bh=JR0gj/1M/EUhnUgMaxAL6FZYgD0KFlF3q0h2HfpHoh8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=FGZXvLeupygB4LKUem9ImeRxiIqu/8dS+y0CNQNq5hv+HDD+Tj/29+UsoBw6u5zzuSWtPpI/ucIomGR3SQS65vgsLdKkCrTjcTWSc2y68nSOx/EKLS0i/XkmpYsk8E5i7UBbdKGiaqYz5LF5IjOhX7Drrn+7V/+Dcu5aA1ewlOc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Gq+/vWnC; arc=none smtp.client-ip=209.85.214.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="m1hWC1QG"
-Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-5a8891f0c51so2349308e87.1
-        for <iommu@lists.linux.dev>; Mon, 18 May 2026 04:32:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Gq+/vWnC"
+Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2ba180a022dso405ad.1
+        for <iommu@lists.linux.dev>; Mon, 18 May 2026 04:41:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779103977; x=1779708777; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=v5Hzt13YTTWOWMVMt3KTq767/BlWjWJAOzpQdOL+rYk=;
-        b=m1hWC1QGGtO8PSsq8kn4Da9aW+b0a9eyiLl7fFUenrt6lnL2DwqLjp82JobrAvtdr1
-         nYSGjcGuD5YVCgfCXqUmo79ni5FprG2jYikzNOmczLiL+cxERwqkzKbhJf15FlxB3JNp
-         YA7KkUKL+fhKt4BYBU/1XLO6iGXVhEI9lovlXZ3m8vgeje2SsvwQw0iEiRTHFA2mclaf
-         MvinO7B+M/0YKeRtPM7Gw1KEaZY5he54q1Xx/hgmDmF9Ih5SA7XTjuMuyXMy2NOd8WCG
-         WrpTJ/d/BTxtRC6ELK/zVeoEMrMsHCGBAU+tT4sTZjZbC5OFfQln63OIFHf/PnzCsL21
-         yXUQ==
+        d=google.com; s=20251104; t=1779104469; x=1779709269; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=+0qOz3b3qR8FSsbmRfcqeQDHbaJBOBeBCeW2JkjDXVM=;
+        b=Gq+/vWnCnoP2+Co6Kjt0ZmPIGpem+uw/XXFl+9n5qcsJvRDLLwCmicWjiAqTsAEHhg
+         Sfy7dR5kWz1er0Ufmp6hlvTMhRiuNju5JC4eyNQRUyy06JUlRVMYQ2RHHQmYOtiCzSEo
+         wlHlpi+87Jc+B5aFgLCRxzXVzKamqOQryiL+3b8rwVcQPsiRn6FZEfBnqGmGu4/q7kky
+         wiKfaIxQoVO79+tX2OjpWtCdqjj10vT+zXxH7Wq3lWglL/rMIZ4Zhf4B9aYKCs/i17IJ
+         MGWokSBh8oecWw5juH3yuqpiAJMt7c04mQCK+KUXxhXtYP20abuyHjzF8zy9MYrA0aeC
+         XKuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779103977; x=1779708777;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=v5Hzt13YTTWOWMVMt3KTq767/BlWjWJAOzpQdOL+rYk=;
-        b=JGMZbH9IIQeP09fHyZFss+2+Fd0AMI51J7CklLBxo+iLSeC6WXFLIFOz2926bLSELA
-         3sgCksPI4KWZF7ABR1wohos3VbR2rgpcx6ZTmveXfAbd8dAbcLqZhuyU9UKHXbLpqWT3
-         +88jG5dhoP/AZgouIEx7o3aNo5MpHulpyVbJaRlaYeBIFXK8MVH3nspW8/s8mCN6YfjH
-         jjOXuI8H7+Dc1CPikY/U5YmYgNGnXXw0Rsmw46tBtwVDM0BeUTNg9vXe3QPc5DxAr/dR
-         /hIR5CCv00y5qq8Ux7DXvJKUp0zLDD23FzjHEwSUtTq1Y5hq1lQ3E4Tq+XVjiyOTmtf1
-         knQQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/l36efcSn2K89zu3hi5RS6aA8/9CiP1Aj6qLF6ZxIICss8yRwP4AvhlU9v9FKIas1Nvjnu2w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyBeQc08v0m8LmxIc5F9R4Oau2lCQ5bDwk0+CPQlcg5d2RHtx1G
-	MMKqhxNZz3s9zTAhp1j0s3lJQbrDa/GIgSfvL9dwpJbEyrh4jlY5x9rG
-X-Gm-Gg: Acq92OGkr6YFfqEweKLtUE7eHH2PycixZhnDnaokA95RsAcW5xgjY+Tml5CNC7TTZSI
-	mWohWPxUTeTqjNCb2RsSTBGgJPjVijwnuhIR5M2bfXyJBkcuzW+FDAIoVZhbaxQ46h7PE/QY/As
-	2RsM4OfTUJow5Y3EVSMvBTzYvQrCpvELaDbs1Ezv+OLUpoeNV0IC6AL+NSV0jEcLlwSGA0Nnukd
-	0+Omqxndjl80A+MDKGCZSczyHf+H+4UtV07EYiT6AGoXLHmw0X+QDdv+HFaVoYvDxjYJN2L0Tec
-	3DFTCpdp4MrrfYM2lHYP1U4jxciJNzYa8wl9P2NQnmOjoM+Dpr2ib1iNaKU3HiGExCyb3wgeRys
-	TqWJobl3dcjDZViOncKyaMAlUBQeDibmrmAknqbOrZ3hORMOUE8E2wRl3l4/ZIogcrGsH2nzNui
-	mdSPR+xcQ11sA3RqvCa1m/ywKvza4KvATrrHux8U1F7Ww=
-X-Received: by 2002:a05:6512:32c6:b0:5a8:8870:70fe with SMTP id 2adb3069b0e04-5aa0e60b31dmr4206317e87.8.1779103976737;
-        Mon, 18 May 2026 04:32:56 -0700 (PDT)
-Received: from localhost ([188.234.148.119])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3958874ffbbsm11403481fa.27.2026.05.18.04.32.55
+        d=1e100.net; s=20251104; t=1779104469; x=1779709269;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=+0qOz3b3qR8FSsbmRfcqeQDHbaJBOBeBCeW2JkjDXVM=;
+        b=sXtPdDNDV5KWpd+qzgea8beTx1OfCN0qBk4SlTzxXbmifYv+8ERqx9ijgPlM1It82R
+         +PYtJIOwD/jtP8BwjB636f0kFo6b3KzmIrmnYMzWoovmlFHuTxxy3jl5gI1sahdCxWXX
+         To8tVF6ku4IHo+e+Qo/vkXbVNS4cRdZL8JRVq5M7uAhtW9VOzku1W1Z3jLrma9ijkJSv
+         nA5/6chC+xepqCk6ZRqT5J7Rf9oR/cwWiX6VOXUecCXhyOUEEQFszuFePVkFKvD+QSy4
+         0iC72gecB0U2hz0U+qP5RNzlpF23Cxzux2A/eh0BdzA41jX/iCuKHAp4p2nS2Jwy83L1
+         ufCQ==
+X-Forwarded-Encrypted: i=1; AFNElJ91rSb3S9gl8GtPJlzXafhYbBBDu5Za7FBDo93+j1Qe3fI/Hp0CLnaDssXIzGjhOc7tTzEFcQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwlnCD6YXgaJY4opVpAx3CUteKfRmToC1KJqQbYgyic3RrK95l2
+	5pERYoJx+visei9ZBddduUewIOcxXrKQjyRV7cV+AS/zdndfNQx9JkYvfRUqQ4N33Q==
+X-Gm-Gg: Acq92OGRea3nZaVe4ikmnDbTU99guiRhVM66nqZMpgsyuX/CblqDNIUNdHPRZRSzJev
+	OhJPhDufv3IomgiQqZ3kgNphioSSJTaNDnfl8+r3um+grZHz5KUgELYclDeU/JMTLECRUpj1guP
+	VJUIL/n2GK9s2CABQqQ6MH0aA1Ezv3H1OALftz6BSxV8830lHc4NtZFYMOcaUyMNPStrl/Gj3Ex
+	2F0Y3D1IvEmF4njFeMJKO353fQROL6EByRKoMKJ9PFfwuxU4jnuIOSwfoRqK9Y9YQxplcsaNYtJ
+	GWPxjh5etCaK8TSIi1n0ZjvEr7JyJcsbUviSicnvJkrrQj2L0rKUc/936QZqos6mu2uZpz+L1QQ
+	TqpAVjTkcJEeTcEiyXEd1uAnAA7XqGjJvTyrj8bmjRr/aJLVv+f2MpKm0C5c+07S8UHF7tN0uQd
+	790f3Jyw2YvHJgwSO2h7XX7lL8YSPaJU8s8QfV/4fBnoPbtUF+rkNgItEW68TRaAgCfpPW
+X-Received: by 2002:a17:903:22c8:b0:2a7:87c2:fcde with SMTP id d9443c01a7336-2bdb329b549mr2479455ad.15.1779104467825;
+        Mon, 18 May 2026 04:41:07 -0700 (PDT)
+Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2bd5bd5f2cesm149846105ad.14.2026.05.18.04.41.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 May 2026 04:32:56 -0700 (PDT)
-From: Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
-To: m.szyprowski@samsung.com
-Cc: hch@lst.de,
-	robin.murphy@arm.com,
-	djbw@kernel.org,
-	akpm@linux-foundation.org,
-	catalin.marinas@arm.com,
-	harry@kernel.org,
-	ming.lei@redhat.com,
-	leon@kernel.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
-Subject: [PATCH] dma-debug: skip cacheline overlap tracking on cache-coherent architectures
-Date: Mon, 18 May 2026 16:32:51 +0500
-Message-ID: <20260518113251.64844-1-mikhail.v.gavrilov@gmail.com>
-X-Mailer: git-send-email 2.54.0
+        Mon, 18 May 2026 04:41:06 -0700 (PDT)
+Date: Mon, 18 May 2026 11:40:58 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Samiullah Khawaja <skhawaja@google.com>
+Cc: David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+	Adithya Jayachandran <ajayachandra@nvidia.com>,
+	Parav Pandit <parav@nvidia.com>,
+	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>,
+	Pratyush Yadav <pratyush@kernel.org>,
+	David Matlack <dmatlack@google.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Chris Li <chrisl@kernel.org>, Vipin Sharma <vipinsh@google.com>,
+	YiFei Zhu <zhuyifei@google.com>
+Subject: Re: [PATCH v2 01/16] liveupdate: luo_file: Add internal APIs for
+ file preservation
+Message-ID: <agr6yoyYYq2QFxjL@google.com>
+References: <20260427175633.1978233-1-skhawaja@google.com>
+ <20260427175633.1978233-2-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260427175633.1978233-2-skhawaja@google.com>
 
-The dma-debug cacheline overlap tracking emits two distinct warnings
-when multiple DMA mappings share a cacheline:
+On Mon, Apr 27, 2026 at 05:56:18PM +0000, Samiullah Khawaja wrote:
+> From: Pasha Tatashin <pasha.tatashin@soleen.com>
+> 
+> The core liveupdate mechanism allows userspace to preserve file
+> descriptors. However, kernel subsystems often manage struct file
+> objects directly and need to participate in the preservation process
+> programmatically without relying solely on userspace interaction.
+> 
+> Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
 
-  1. add_dma_entry() calls err_printk("cacheline tracking EEXIST,
-     overlapping mappings aren't supported\n") on every -EEXIST from
-     active_cacheline_insert().
+[..]
 
-  2. active_cacheline_inc_overlap() calls WARN_ONCE("exceeded %d
-     overlapping mappings of cacheline %pa\n", ...) when the 3-bit
-     per-cacheline overlap counter in the dma_active_cacheline radix
-     tree would saturate past ACTIVE_CACHELINE_MAX_OVERLAP (= 7).
+> @@ -924,3 +931,65 @@ void liveupdate_unregister_file_handler(struct liveupdate_file_handler *fh)
+>  	luo_flb_unregister_all(fh);
+>  	list_del(&ACCESS_PRIVATE(fh, list));
+>  }
+> +EXPORT_SYMBOL_GPL(liveupdate_unregister_file_handler);
+> +
+> +/**
+> + * liveupdate_get_token_outgoing - Get the token for a preserved file.
+> + * @s:      The outgoing liveupdate session.
+> + * @file:   The file object to search for.
+> + * @tokenp: Output parameter for the found token.
+> + *
+> + * Searches the list of preserved files in an outgoing session for a matching
+> + * file object. If found, the corresponding user-provided token is returned.
+> + *
+> + * This function is intended for in-kernel callers that need to correlate a
+> + * file with its liveupdate token.
+> + *
+> + * Context: It must be called with session mutex acquired.
+> + * Return: 0 on success, -ENOENT if the file is not preserved in this session.
+> + */
+> +int liveupdate_get_token_outgoing(struct liveupdate_session *s,
+> +				  struct file *file, u64 *tokenp)
+> +{
+> +	struct luo_file_set *file_set = luo_file_set_from_session_locked(s);
+> +	struct luo_file *luo_file;
+> +	int err = -ENOENT;
+> +
+> +	list_for_each_entry(luo_file, &file_set->files_list, list) {
+> +		if (luo_file->file == file) {
+> +			if (tokenp)
+> +				*tokenp = luo_file->token;
+> +			err = 0;
+> +			break;
+> +		}
+> +	}
+> +
+> +	return err;
+> +}
+> +
+> +/**
+> + * liveupdate_get_file_incoming - Retrieves a preserved file for in-kernel use.
+> + * @s:      The incoming liveupdate session (restored from the previous kernel).
+> + * @token:  The unique token identifying the file to retrieve.
+> + * @filep:  On success, this will be populated with a pointer to the retrieved
+> + *          'struct file'.
+> + *
+> + * Provides a kernel-internal API for other subsystems to retrieve their
+> + * preserved files after a live update. This function is a simple wrapper
+> + * around luo_retrieve_file(), allowing callers to find a file by its token.
+> + *
+> + * The caller receives a new reference to the file and must call fput() when it
+> + * is no longer needed. The file's lifetime is managed by LUO and any userspace
+> + * file descriptors. If the caller needs to hold a reference to the file beyond
+> + * the immediate scope, it must call get_file() itself.
 
-Commit 3d48c9fd78dd ("dma-debug: suppress cacheline overlap warning
-when arch has no DMA alignment requirement") suppressed (1) on
-architectures where hardware bus snooping makes cacheline-overlapping
-DMA mappings safe.  The same reasoning applies to (2): the tracking is
-pure overhead on those architectures, and (2) still fires under real
-workloads, e.g. heavy NVMe block I/O on x86_64:
+Thanks for re-wording this and I'm sorry for being a stickler here, I'm
+a bit concerned that the last part here might lead to reference leaks in
+downstream drivers.
 
-  DMA-API: exceeded 7 overlapping mappings of cacheline 0x...
-  WARNING: kernel/dma/debug.c:465 at add_dma_entry+0x394/0x410
-  Call Trace:
-   add_dma_entry+...
-   debug_dma_map_phys+...
-   dma_map_phys+...
-   blk_dma_map_iter_start+...
-   nvme_map_data+...
+Looking at the underlying luo_retrieve_file() implementation [1], it 
+explicitly calls get_file() before returning the pointer (both on the
+initial retrieve and on cached ones). This means the caller inherently
+receives a reference that they own & the caller is responsible for 
+exactly one fput().
 
-The block layer routinely produces nine or more concurrent in-flight
-mappings whose buffers share a single cacheline.  On hardware-coherent
-systems this is harmless, but it saturates the tag-based overlap
-counter and produces a splat indistinguishable from a real driver bug.
+However, that last part of the comment can be misunderstood as the caller
+doesn't hold a lasting reference unless they call get_file() themselves. 
+This makes the reader assume that LUO is going to automatically reap
+that initial reference from them.
 
-Extend the gate to skip the cacheline overlap tracking entirely on
-cache-coherent architectures, mirroring the DMA_TO_DEVICE early-return
-that already exists for the same "tracking is unnecessary" reason.  The
-helper dma_debug_cacheline_tracking_needed() captures the condition and
-is symmetric to the existing add_dma_entry() check.
+If a driver author assumes LUO is going to reap it, they will follow that
+last sentence and call get_file() to stash the pointer safely. They might
+end up holding two references (thinking one of them will be reaped), and
+could ultimately leak the struct file when they only call fput() once 
+during teardown.
 
-The same DMA_BOUNCE_UNALIGNED_KMALLOC + SWIOTLB suppression that
-commit 03521c892bb8 ("dma-debug: don't report false positives with
-DMA_BOUNCE_UNALIGNED_KMALLOC") added to (1) applies here for the same
-reason: unaligned kmalloc buffers are bounced through aligned swiotlb
-buffers, so the original cacheline overlap never reaches DMA.  The
-helper preserves both suppression conditions.
+Should we just drop that last sentence to make the lifecycle contract 
+unambiguous? (i.e., The caller gets a newly bumped reference, and they
+are responsible for exactly one fput() per call).
 
-Reproducer (out-of-tree module): map a single 8-byte buffer with
-dma_map_single(..., DMA_BIDIRECTIONAL) nine times in a row.  The 9th
-call deterministically fires the WARN_ONCE on an unfixed kernel; with
-this patch applied no warning is emitted regardless of the number of
-overlapping mappings.
+> + *
+> + * Context: It must be called with session mutex acquired of a restored session.
+> + * Return: 0 on success. Returns -ENOENT if no file with the matching token is
+> + *         found, or any other negative errno on failure.
+> + */
+> +int liveupdate_get_file_incoming(struct liveupdate_session *s, u64 token,
+> +				 struct file **filep)
+> +{
+> +	return luo_retrieve_file(luo_file_set_from_session_locked(s),
+> +				 token, filep);
+> +}
 
-Without this patch (n_maps=9):
-  DMA-API: exceeded 7 overlapping mappings of cacheline 0x00000000071d7dbe
-  WARNING: kernel/dma/debug.c:465 at add_dma_entry+0x39e/0x410
-  [...]
+Nit: Shouldn't we export both of these functions via EXPORT_SYMBOL_GPL?
+Since, these new APIs are intended for kernel subsystems to participate
+programmatically, there could be IOMMU drivers (or others) that can be
+compiled as loadable modules. Thus we should export these APIs via 
+EXPORT_SYMBOL_GPL(). If they aren't exported, any loadable module 
+attempting to use them will compile successfully (due to the header), but
+will fail to load at runtime with an Unknown symbol error.
 
-With this patch (n_maps=1000):
-  dma_debug_overlap_repro: 1000/1000 mappings active
-  [no warning]
+IIUC, if a function isn't exported with EXPORT_SYMBOL, it remains hidden
+inside vmlinux, (i.e. it isn't in the kernel's global symbol table used
+during modprobe).
 
-Link: https://lore.kernel.org/all/ZwxzdWmYcBK27mUs@fedora/
-Fixes: 3b7a6418c749 ("dma debug: account for cachelines and read-only mappings in overlap tracking")
-Tested-by: Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
-Signed-off-by: Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
----
- kernel/dma/debug.c | 35 +++++++++++++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
+Thanks,
+Praan
 
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 1a725edbbbf6..2d1609b9d362 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -474,6 +474,35 @@ static int active_cacheline_dec_overlap(phys_addr_t cln)
- 	return active_cacheline_set_overlap(cln, --overlap);
- }
- 
-+/*
-+ * Whether cacheline-overlap tracking is meaningful for @dev.
-+ *
-+ * Mirrors the suppression conditions add_dma_entry() already applies to
-+ * the sibling "cacheline tracking EEXIST" err_printk:
-+ *
-+ *  - On architectures with hardware DMA cache coherence
-+ *    (dma_get_cache_alignment() < L1_CACHE_BYTES, e.g. x86_64) bus
-+ *    snooping makes overlapping cacheline mappings safe.
-+ *
-+ *  - With CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC and an active SWIOTLB,
-+ *    unaligned kmalloc buffers are bounced through aligned swiotlb
-+ *    buffers, so the original cacheline overlap never reaches DMA.
-+ *    See commit 03521c892bb8 ("dma-debug: don't report false positives
-+ *    with DMA_BOUNCE_UNALIGNED_KMALLOC").
-+ *
-+ * In both cases tracking is pure overhead and produces false-positive
-+ * WARN_ONCEs.
-+ */
-+static bool dma_debug_cacheline_tracking_needed(struct device *dev)
-+{
-+	if (dma_get_cache_alignment() < L1_CACHE_BYTES)
-+		return false;
-+	if (IS_ENABLED(CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC) &&
-+	    is_swiotlb_active(dev))
-+		return false;
-+	return true;
-+}
-+
- static int active_cacheline_insert(struct dma_debug_entry *entry,
- 				   bool *overlap_cache_clean)
- {
-@@ -490,6 +519,9 @@ static int active_cacheline_insert(struct dma_debug_entry *entry,
- 	if (entry->direction == DMA_TO_DEVICE)
- 		return 0;
- 
-+	if (!dma_debug_cacheline_tracking_needed(entry->dev))
-+		return 0;
-+
- 	spin_lock_irqsave(&radix_lock, flags);
- 	rc = radix_tree_insert(&dma_active_cacheline, cln, entry);
- 	if (rc == -EEXIST) {
-@@ -516,6 +548,9 @@ static void active_cacheline_remove(struct dma_debug_entry *entry)
- 	if (entry->direction == DMA_TO_DEVICE)
- 		return;
- 
-+	if (!dma_debug_cacheline_tracking_needed(entry->dev))
-+		return;
-+
- 	spin_lock_irqsave(&radix_lock, flags);
- 	/* since we are counting overlaps the final put of the
- 	 * cacheline will occur when the overlap count is 0.
--- 
-2.54.0
+[1] https://elixir.bootlin.com/linux/v7.0-rc3/source/kernel/liveupdate/luo_file.c#L560
 
