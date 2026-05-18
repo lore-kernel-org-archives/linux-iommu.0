@@ -1,112 +1,121 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D70C83B9608
-	for <iommu@lists.linux.dev>; Mon, 18 May 2026 07:14:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A046B3B9928;
+	Mon, 18 May 2026 07:18:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779088475; cv=none; b=AICWNWI96XMtKv9tyrbcDZO7DqYV4ldGOZFrbWG5Ul8KAKsEGGwtGmcTE1YQ9A6FT0LWINKlkbo9bV/0DD6tDtafOU7iZiNEqX1iyMUFKvbVVYBbqFx9Qfp4+OqvJIPd6gg4lJ1jhRpDWYPGzevzO2CvqexuND+ZnrYToKyWVI0=
+	t=1779088703; cv=none; b=GYE+nYwBKxY9yswW33aXeDvRxbWGUXT+Midb20Y23GABQYtDlUuAT9BPapYLB5qzExdQUTsDuxyDyIlvLsjVmHtYChYaWRgmwxqFj3crsUS41rkvHpvE50CbpaKeUUIu3DJkzT+XFyrlsd2h0WI+IfpMitwwc7vSS2Y+bYT1WYE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779088475; c=relaxed/simple;
-	bh=Ddfpw7OqAUg4uD8ewJq0QQlmGQmEVI2PsZmNxztAooc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=BCON6QFiD2wZ7hAqmsx8Ymzb8/IBqeVAF0pQpVPn/FxkxSZ6u+wokklIqDD07cK1B9Qgd6e3XSgLZyw73pmjdLLhiK6A31sjzUrVcmjIAarwYtYb90tcMxPfkox0X0+AJLkNdS1gB9639ex6jd+cqqbBwxcTl1kdkAID4oT19Jo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=ZTZLi9dy; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1779088703; c=relaxed/simple;
+	bh=wcGxJccY94W723JayRAfL4ldNM0QJ+CV24OqzGDkYcU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=FWrTCXfMnId3A1jFo3jNxTS4YHXKEdGgQdtmyr17HhEXhBMR5AjmKvT8O4/XG2Rhh8zHfv7Bm+V/A9Pzi82ZzLKUDqrHnrV+693Gg9QNc6gNK+fYWY7v7c0+aD3U+42TIt28PYoshrnUP0tpA4Mo9YguN0peMaianI3vQ1p3TzY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i+MrcTw8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="ZTZLi9dy"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260518071429euoutp02bf7e07eb612fd3338c9f36213821e9cd~wl4mFpfwd1898118981euoutp02e
-	for <iommu@lists.linux.dev>; Mon, 18 May 2026 07:14:29 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260518071429euoutp02bf7e07eb612fd3338c9f36213821e9cd~wl4mFpfwd1898118981euoutp02e
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1779088469;
-	bh=9hejV/tmqwLHbKahfMWeS4MTA8R3C7KzYBatO1tjh/8=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=ZTZLi9dyAQO5VE/UmH63k0mnt+MOcLYIJA6f7KdeRjPPnpbzlNP9445pRkI2LohNe
-	 8DuOSm43l9ZjBiftP/QYR5DClExjL7eZpb/FXq/0/1/fd68rHh2HgkMkTNuZhKOY3L
-	 qfU7sft8X0IXgsIkXAmZWKwTKKUuCmhHoTjzX7Ec=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20260518071429eucas1p1bda81655e398737dab2d498abf9abfcf~wl4l1YZO31335413354eucas1p1h;
-	Mon, 18 May 2026 07:14:29 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20260518071428eusmtip11d1413a3932c737e1c2a98b0435599ad~wl4lMCr3l1755917559eusmtip1n;
-	Mon, 18 May 2026 07:14:28 +0000 (GMT)
-Message-ID: <0da45751-e4e1-4c98-91ba-08340723ed95@samsung.com>
-Date: Mon, 18 May 2026 09:14:28 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i+MrcTw8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C498C2BCB7;
+	Mon, 18 May 2026 07:18:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1779088703;
+	bh=wcGxJccY94W723JayRAfL4ldNM0QJ+CV24OqzGDkYcU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=i+MrcTw82SqDG13g9ckamWqmo7Q2CCtvzA9S5A7EKGRVSSVftYTWN1Y9fkdfWxDCZ
+	 OyiqD/h0bx+3ErpjIGWvakzlG8kQd9uK9FBqdR9+kYe2NJUMeXS1aTKyODCEdvgqz9
+	 pPfbdPW8PGowCHJZMx7yLmsWZSH1Ys06JtFY08gPBOdDn4BT4a8X3Z0b+xUBAkupce
+	 2ZkEnzoCr4dXqSFFUtW0Ykut50aJBh4j2Ik2HQfnvs7Xhz/v8QJxxs3frXq4HuZnyn
+	 xmQTPPIh7pPHkWx/WmLN/sHZ0cq1ITXwUCZuXdy0R7bW1NHpOM2cOrf3MlrWFYy2gy
+	 1C0JOd5ueKOGA==
+Message-ID: <1571510c-e51c-40c6-a702-214bf77f9f4d@kernel.org>
+Date: Mon, 18 May 2026 09:18:18 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v5] dma-contiguous: add kconfig option to setup numa cma
- area if not configured explicitly
-To: Feng Tang <feng.tang@linux.alibaba.com>, Robin Murphy
-	<robin.murphy@arm.com>, Ying Huang <ying.huang@linux.alibaba.com>, Andrew
-	Morton <akpm@linux-foundation.org>, David Hildenbrand <david@kernel.org>
-Cc: Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org, Christoph Hellwig
-	<hch@lst.de>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon
-	<will@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	Changrong Chen <chenchangrong.ccr@alibaba-inc.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/3] memory: mtk-smi: Add a flag skip_rpm
+To: =?UTF-8?B?WHVlcWkgWmhhbmcgKOW8oOmbqueQpik=?= <Xueqi.Zhang@mediatek.com>,
+ "robh@kernel.org" <robh@kernel.org>,
+ "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+ =?UTF-8?B?WW9uZyBXdSAo5ZC05YuHKQ==?= <Yong.Wu@mediatek.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ "conor+dt@kernel.org" <conor+dt@kernel.org>
+Cc: =?UTF-8?B?V2VuZHktU1QgTGluICjmnpfoqanluq0p?= <Wendy-ST.Lin@mediatek.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
+ "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ Project_Global_Chrome_Upstream_Group
+ <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+References: <20250320073625.25225-1-xueqi.zhang@mediatek.com>
+ <20250320073625.25225-3-xueqi.zhang@mediatek.com>
+ <46e0e1f1-e094-40f9-99f9-22678bb40d39@collabora.com>
+ <198865fb3184926d0b1b4e4855b5f863ad0d6a20.camel@mediatek.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20260512085509.83002-1-feng.tang@linux.alibaba.com>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20260518071429eucas1p1bda81655e398737dab2d498abf9abfcf
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260512085518eucas1p15d8e1a1173b398b496936d96aa29378a
-X-EPHeader: CA
-X-CMS-RootMailID: 20260512085518eucas1p15d8e1a1173b398b496936d96aa29378a
-References: <CGME20260512085518eucas1p15d8e1a1173b398b496936d96aa29378a@eucas1p1.samsung.com>
-	<20260512085509.83002-1-feng.tang@linux.alibaba.com>
+Autocrypt: addr=krzk@kernel.org; keydata=
+ xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
+ cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
+ JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
+ gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
+ J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
+ NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
+ BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
+ vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
+ Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
+ TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
+ S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGVBBMBCgA/AhsDBgsJCAcDAgYVCAIJCgsE
+ FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJoF1BKBQkWlnSaAAoJEBuTQ307
+ QWKbHukP/3t4tRp/bvDnxJfmNdNVn0gv9ep3L39IntPalBFwRKytqeQkzAju0whYWg+R/rwp
+ +r2I1Fzwt7+PTjsnMFlh1AZxGDmP5MFkzVsMnfX1lGiXhYSOMP97XL6R1QSXxaWOpGNCDaUl
+ ajorB0lJDcC0q3xAdwzRConxYVhlgmTrRiD8oLlSCD5baEAt5Zw17UTNDnDGmZQKR0fqLpWy
+ 786Lm5OScb7DjEgcA2PRm17st4UQ1kF0rQHokVaotxRM74PPDB8bCsunlghJl1DRK9s1aSuN
+ hL1Pv9VD8b4dFNvCo7b4hfAANPU67W40AaaGZ3UAfmw+1MYyo4QuAZGKzaP2ukbdCD/DYnqi
+ tJy88XqWtyb4UQWKNoQqGKzlYXdKsldYqrLHGoMvj1UN9XcRtXHST/IaLn72o7j7/h/Ac5EL
+ 8lSUVIG4TYn59NyxxAXa07Wi6zjVL1U11fTnFmE29ALYQEXKBI3KUO1A3p4sQWzU7uRmbuxn
+ naUmm8RbpMcOfa9JjlXCLmQ5IP7Rr5tYZUCkZz08LIfF8UMXwH7OOEX87Y++EkAB+pzKZNNd
+ hwoXulTAgjSy+OiaLtuCys9VdXLZ3Zy314azaCU3BoWgaMV0eAW/+gprWMXQM1lrlzvwlD/k
+ whyy9wGf0AEPpLssLVt9VVxNjo6BIkt6d1pMg6mHsUEVzsFNBFVDXDQBEADNkrQYSREUL4D3
+ Gws46JEoZ9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLue
+ MNsWLJBvBaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6ei
+ OMheesVS5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wA
+ GldWsRxbf3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA
+ 6z6lBZn0WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9
+ YegxWKvXXHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt
+ 91pFzBSOIpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gU
+ BLHFTg2hYnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/
+ JoFzZ4B0p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu
+ 4vXVFBYIGmpyNPYzRm0QPwARAQABwsF8BBgBCgAmAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtB
+ YpsFAmgXUF8FCRaWWyoACgkQG5NDfTtBYptO0w//dlXJs5/42hAXKsk+PDg3wyEFb4NpyA1v
+ qmx7SfAzk9Hf6lWwU1O6AbqNMbh6PjEwadKUk1m04S7EjdQLsj/MBSgoQtCT3MDmWUUtHZd5
+ RYIPnPq3WVB47GtuO6/u375tsxhtf7vt95QSYJwCB+ZUgo4T+FV4hquZ4AsRkbgavtIzQisg
+ Dgv76tnEv3YHV8Jn9mi/Bu0FURF+5kpdMfgo1sq6RXNQ//TVf8yFgRtTUdXxW/qHjlYURrm2
+ H4kutobVEIxiyu6m05q3e9eZB/TaMMNVORx+1kM3j7f0rwtEYUFzY1ygQfpcMDPl7pRYoJjB
+ dSsm0ZuzDaCwaxg2t8hqQJBzJCezTOIkjHUsWAK+tEbU4Z4SnNpCyM3fBqsgYdJxjyC/tWVT
+ AQ18NRLtPw7tK1rdcwCl0GFQHwSwk5pDpz1NH40e6lU+NcXSeiqkDDRkHlftKPV/dV+lQXiu
+ jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
+ zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
+ XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
+In-Reply-To: <198865fb3184926d0b1b4e4855b5f863ad0d6a20.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On 12.05.2026 10:55, Feng Tang wrote:
-> There was a report on a multi-numa-nodes arm64 server that when IOMMU
-> is disabled, the dma_alloc_coherent() function always returns memory
-> from node 0 even for devices attaching to other nodes, while they can
-> get local dma memory when IOMMU is on with the same API.
->
-> The reason is, when IOMMU is disabled, the dma_alloc_coherent() will
-> go the direct way and call dma_alloc_contiguous(). The system doesn't
-> have any explicit cma setting (like per-numa cma), and only has a
-> default 64MB cma reserved area (on node 0), where kernel will try
-> first to allocate memory from.
->
-> Robin Murphy suggested to setup pernuma cma or disable cma, which did
-> solve the issue. While there is still concern that for customers
-> which don't have much kernel knowledge, they could still suffer from
-> this silently as some architectures enable cma area by default (not
-> an issue for X86 though, which set CONFIG_CMA_SIZE_MBYTES to 0 by
-> default) for most Linux distributions.
->
-> One thought is to follow the current cma reserving policy for platform
-> with 'CONFIG_DMA_NUMA_CMA=y', that if the numa cma (either the 'numa cma'
-> or 'cma pernuma' method) is not explicitly configured, and the platform
-> really has multiple NUMA nodes, set it up according to size of default
-> 'dma_contiguous_default_area'. This way, the default behavior of
-> platform with one NUMA node is kept unchanged (say embedded/small
-> devices don't need to allocate extra memory), while the general dma
-> locality is improved.
->
-> Add a new bool kernel config CONFIG_CMA_SIZE_PERNUMA to control whether
-> to enable it. Even when the config is enabled, user can still disable
-> it by kernel-cmdline setting like "numa_cma=0:0" or "cma_pernuma=0".
->
-> Reported-by: Changrong Chen <chenchangrong.ccr@alibaba-inc.com>
-> Suggested-by: Ying Huang <ying.huang@linux.alibaba.com>
-> Suggested-by: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Feng Tang <feng.tang@linux.alibaba.com>
+On 18/05/2026 09:16, Xueqi Zhang (张雪琦) wrote:
+> Hi Angelo,
+> 
+> First of all, please accept my apologies for the delayed response. I 
+> have been deeply occupied with MT8196 Aluminium pKVM SMMU and SMI 
+> related tasks recently.
+> 
 
-Applied to dma-mapping-for-next. Thanks!
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+How may times are you going to send it? I counted FOUR already!
 
+https://lore.kernel.org/all/?q=%22Re%3A+%5BPATCH+2%2F3%5D+memory%3A+mtk-smi%3A+Add+a+flag+skip_rpm%22
+
+Best regards,
+Krzysztof
