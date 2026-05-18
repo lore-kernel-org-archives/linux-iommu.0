@@ -1,601 +1,144 @@
-Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
+Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012061.outbound.protection.outlook.com [40.93.195.61])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DF3538AC6E;
-	Mon, 18 May 2026 18:08:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=96.67.55.147
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779127701; cv=none; b=jBIwVM2iOUxEmt8NErFbvo6ekiOtvEkK7mMEX+nQurYfU5zKfnHGMq2ZgLj+vYav6LOTIthp285RFsQJbqasLKNQerIt3rTlAlgtSDhPK2iC+T8TEGiV7siYkfiPrcfdLbpaeOTjUk3fJA2Wiq31zMXQN87EkYwApZWZyb7nuvQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779127701; c=relaxed/simple;
-	bh=1HH61hQLYzbkKKbwTtST54bosEs+O4Xs+rWAPGhx1sQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KDA8g7PogF2DkBULCr6yHp5/oWI5yvan0j6S7CY6Vo5maOIJGLqDtEzO92kEIcDG6f1/z429M/z9RBsOUAfMLGxiZoMjXbCfz9sqoflmTu+mHDt3yXRX1rGy22HV3GAtV63dmzGGmgeWJYFvOIZso5Cl/azVnteRGSMhfs01bFA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com; spf=pass smtp.mailfrom=surriel.com; dkim=pass (2048-bit key) header.d=surriel.com header.i=@surriel.com header.b=Rwwh/683; arc=none smtp.client-ip=96.67.55.147
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=surriel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FDC138AC65
+	for <iommu@lists.linux.dev>; Mon, 18 May 2026 18:11:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.195.61
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779127921; cv=fail; b=h77EEDscIKGGBup1AtfCT8kGQwVwH9AuS39n/bEpdZ8o9aFmGkiPe4QGqGkbFMzuGVrAV2MMVXRvUnSSO6vHE37/sXD7UE8qQoRtWQyJoWQSgcaSLWvM+DSIYQV6nWd16f+qKkJgZMHIZZflVplSTz0tJrP8gso2Vcun1ES7mWM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779127921; c=relaxed/simple;
+	bh=HaA6MR0KBIu5coYQZ1ji38E06LXsqYy98B8sOUbrM3Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=tpQtZKwa/wi5H+QG1XBt2xg9QoXVcq/NIjeksWhgTgfJ/2rBeSJmUFUBf49yYDwq9mw22rNt0wARf1Y86uZdGlANbnIG0bqnujbreLPBi2mLtgJPK4S3rlLCoZ+jMvAIDvK2H9mPThCcchs2+/eDzDiR/6RAwKgRl26GdJKgnrE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Ib4GSAPw; arc=fail smtp.client-ip=40.93.195.61
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=surriel.com header.i=@surriel.com header.b="Rwwh/683"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=surriel.com
-	; s=mail; h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:
-	In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-	List-Post:List-Owner:List-Archive;
-	bh=iZGFztyXfV+sf4DJsunxOD5ksDnL6RfuXkIYLY3WpoI=; b=Rwwh/683sSiQR8o9DGnF+Ye4EE
-	YSFs+hF+kCvQEq6G+L7r/S8WBNBR2uXYX1qao+FHzITxfvgBvoeDNIcOm+if1VBpg4GsILQiB2jv0
-	Xc/nMMxX0I/ZQjuyW+ve2XX1fQo+n+arQh0MpGOqMIFP4OEYUu0qr3mTd6VcBSUtjrJJ+ntanXWqo
-	BVK4NOYN5nRiUnST6HKezEKv//bJ6PyjLJgDN7SKCNQr5gWTGbaIvwwZAKWvaDSolfxGA8N7nTUgA
-	EUxkTytQL17fbckcnkSrg+MjUIW7ZCMms00ml1s9U1Y1nso+eNS6ofPYpgQxD5srfSDsZZv3vAooV
-	SzXj5DOA==;
-Received: from fangorn.home.surriel.com ([10.0.13.7])
-	by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.97.1)
-	(envelope-from <riel@surriel.com>)
-	id 1wP2Lb-0000000006g-3ibV;
-	Mon, 18 May 2026 14:05:47 -0400
-From: Rik van Riel <riel@surriel.com>
-To: linux-kernel@vger.kernel.org
-Cc: robin.murphy@arm.com,
-	joro@8bytes.org,
-	will@kernel.org,
-	iommu@lists.linux.dev,
-	jgg@ziepe.ca,
-	kyle@mcmartin.ca,
-	kernel-team@meta.com,
-	Rik van Riel <riel@meta.com>,
-	Claude Opus <claude-opus-4-6@anthropic.com>,
-	Rik van Riel <riel@surriel.com>
-Subject: [PATCH 4/4] iova: add KUnit test suite
-Date: Mon, 18 May 2026 14:05:07 -0400
-Message-ID: <20260518180545.2286608-5-riel@surriel.com>
-X-Mailer: git-send-email 2.52.0
-In-Reply-To: <20260518180545.2286608-1-riel@surriel.com>
-References: <20260518180545.2286608-1-riel@surriel.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Ib4GSAPw"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=l1jdtfvTy+hUdfsVBojvkMwqg5FwzbfPdnL4ZQaOTKdyqYTCR5HteeVRHUvL+1ERcD8hQRltPsthuXHfglzW9FCsForUS34071HvKzk0r0S+hCsUzJ8M8H0W2sqf2vrX8r5A3RZ4LIbZa0kki5BrYPn0s5rhIGYBVJ2HhWqlEXS4dsDOLgqqDWSiY7Fxlb9N4xLMRyTqVslq626gHWx37fSyqQ1TeLTNBmjMWP7PJVaGcKBt4Guzh/6qrP5h8t3MKoW0aeMb+FOKHfW4BQWaxQaVeDygMqJwz0rugHQASQrTlhPMXs7pKDQJ/6blaUgTKSATtw9kZEPfuMOVn2q0ww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=46JIqYWxY0Lx5Ih4L++Q3NwHtkhoLtJfDsNbd86e2xU=;
+ b=nZcwfL6iAisCGUsVgY43dJZfscL1k9MVqddK8+TAB4HUbLrmTXXhYdSWAmiGuTfDhzVK5OI57i10x1FVLcMzviWBMd3n5ooM0MKrHkoFavuGsGFjXxW68MOiR/5lKZwNrKX0BRF8MX8pIWgCcjEDHVWycKJY7JEsguzRXoGnqBV59jiQ4eJAgVhRNSrf5KS8Q2OdomEqSF/gVqjz+sjv+voXROKHbUtmDvQHElLlNjq4l1/U23rLRZ06568z4M9i/qsAmQT2f3eAd3bvc0FXtxuThFf/0w1G/5U2kebGT3P97uBdGtQ4nrITDqOlWWiiF/DAU5pE6NEL3eyo7MIW0Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=46JIqYWxY0Lx5Ih4L++Q3NwHtkhoLtJfDsNbd86e2xU=;
+ b=Ib4GSAPw6lhQ3pZ0GrkBtntqonem696moZaUpBCgIc3l0IDV/U36J+6598oM+2QS3VBqJkCJBXoe5e/RlYZqn8U/YU3s+3ODH0MMiwHW9kN/Fbj1MH2YCEhaowkHZ8kDW4vqhYrNONxpYkYON3hIYbRzV70Phdm5LvthK7gxTM8OZkHEED/BFNl8zVzd4CFFVW2zGs/oQPmNDV/30LHwyuelxMTS+zOyU8vTzJXbhWHFQIVbMlRK2k0dQ8B+4XgsD2oqUwYFmhoBK1gPNNw6wUibgPJCX2CXjoA+MNZuvByeqIpfieV6uHet/VNcIpUM7JLfoEc3jbeH4FlFeehRGQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by LV2PR12MB5847.namprd12.prod.outlook.com (2603:10b6:408:174::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.25.22; Mon, 18 May
+ 2026 18:11:55 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.21.0025.022; Mon, 18 May 2026
+ 18:11:54 +0000
+Date: Mon, 18 May 2026 15:11:53 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: kevin.tian@intel.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH rc v1 0/4] iommufd: Fix veventq_depth boundary
+Message-ID: <20260518181153.GN787748@nvidia.com>
+References: <cover.1779070992.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1779070992.git.nicolinc@nvidia.com>
+X-ClientProxiedBy: YT4PR01CA0389.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:108::11) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|LV2PR12MB5847:EE_
+X-MS-Office365-Filtering-Correlation-Id: d39a843d-776b-4ec2-ba0b-08deb508f11f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|366016|1800799024|11063799003|56012099003|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	cljrOWJxiPUcfGdZt62USbNPcSWCveD+f8UtYIzxCHme9E7KTTnM9y0ECqgBvEdVm52Su4RsbD5CG7iY71z5c/Jj0cCmamsSe1PjE/7rE1jKlSy1i/Mon6eB/oDwNnH6Ow01EZviipC/DAX1zrUhRTbseV2tgWQxuF2WwYYU29AYYbQMSiKoE0oB11s8C9dofjoGbcPTWaRIeiE8s2l0ZwBt3TLgKXZWkwUQ046pAQpsQEizBqjD9mt6pe8aliXCeM8pA1uhxpYKae9HkKPWUYYSlzggLPuxKe7YSvuh9XqO+SBiEGMJw4ijY/F0u9T1Ix6YE/mrqsT8NRCTnegvNg5NL+C2+xM15GKK3G3HttcLu0U0GetMTSKoa1pG3P1haPBJmw0IGbaECYSHStT3V6fDgbfZxjadJweZtAzUOLYIJ82t3MZJl9nZ74Q1bmS/JaKPi7SH6S22LmS/oUVe+k+jEImNNj65McC6nwY/V5WTGRNRtM/+NHSqnqGhCifwgGh2Z+qUeE1J1Uq92tx/HsVa8lDeeP30UdJLfVYB/JfenUDI7itcp6BpNt6ITuXX+pvdSvJgIuQbc+0nQd73Bx3fD4YY9r1Q8PHfd+lIEL4uj/70FE49yCCVp98d3NGtqMrXH2VDsrxfIWiJ/17i6rMFep1rHdJFWNoSKjowXv8ngTrGizrebdAifcxV7sU61xadc/ZiYIuKCkaLNLj9ow==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(11063799003)(56012099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?Z7/bQ/s9eCYVPPCpsLttLSz9HEAXruqImFcoaUZlBjyr1b2oIo2s6xzc76tC?=
+ =?us-ascii?Q?UR5rV40LPbJib2KcfZzQnt555DXS2LY/bGB8VfidUPqRA9k6XZUiDzoP5tE+?=
+ =?us-ascii?Q?pdolU7km3Qbsoa5pDHieSd9zThoXUj4mA2XtvN8QauUQ/jLllYzCPRmCNsIA?=
+ =?us-ascii?Q?xnnT5GQYQu24eQQ4HDrWLHOVu/mqgWAk4Wh98i+JKBZVaHCtqYUjQmrmk5Al?=
+ =?us-ascii?Q?WO4IboDyUDPa7cNuYfo5kjKow3HtHfyA5PQ8pyrs5GMdmEnoDCiZj7z5/sCt?=
+ =?us-ascii?Q?cm5syVrF6Hs24ntniXJs+tcrl3SGpEHqXXb/l7RtWpUFDU+vXqixqDHEeII/?=
+ =?us-ascii?Q?LfdSlmFU8/h1EoYtfsHaTZ1WDAAXjcgs0nA7gmuY0FyqJOf2tBdSC7SVDWzP?=
+ =?us-ascii?Q?kEX1/RtkByBV8iyCcTE80QMPW6CQMJ9QFBnLwhzrg6gWeXGaX3E20Za53oem?=
+ =?us-ascii?Q?HMizdVb0CEhswQwnw2+aA8YjvhAI/NP3nB1hsDIOuHEXrXA43EiKw249oc65?=
+ =?us-ascii?Q?1c0pYvoBoozlOFw0TfjCegzyQPoTkSxehNdx3phx7goR9wEP5N1PLhlnM/lR?=
+ =?us-ascii?Q?IlO4tQYSo8lD89ST1Gf3fPbT9kIsTrTPOzRHvWK7RwemzPwFoQZ1+oISAQqE?=
+ =?us-ascii?Q?7AGOgB4Gl4wfysMcMDI4OtAwlJQu3tn72wC6iXV21k4KOez02KEWxHSOVSqi?=
+ =?us-ascii?Q?O7glouxAfCr06rw3ltKtH5WJVWH1GPWBYgzvxG0L34I60bPJ2ykWMMdq7zwb?=
+ =?us-ascii?Q?k+ywapsSfSP/0mTEY/7IAeI7m9N32PKTvkl3Mevimf6BednkjbUB6frsp/pR?=
+ =?us-ascii?Q?FTH6s3QcFZyUIc1cqRqji/E2PMeBhBO+WjD8x3hbhmcxVGPNt4u4zC+33LVH?=
+ =?us-ascii?Q?klSYc/L/GQDya/TKkxDwknQD4rVNBeryx7im7o43gGmolMzNCD+agkyF8lbb?=
+ =?us-ascii?Q?v+B7AAS4hFGH6Qw0MyHWJmYBt2hNozUDyP6josDw1Eh+LTda4uD3sTJ9rWZ/?=
+ =?us-ascii?Q?3UB3ybjEN/ze4M1ZSDPaiQAThkXthABWYpGsTGaianlV6Xgjqz8/Z01BmFAI?=
+ =?us-ascii?Q?sx8oMrzuVd1WqrAN1TEuPgj0qvq82BwI7yUU6XhIEnKMKgwBXaBfhjEaQ9UI?=
+ =?us-ascii?Q?LUc0d2JmR0m61Eaw04MsHXM6HFhrOZsqSATXGJ5UTum3MuBNsA4vL+H6jh9w?=
+ =?us-ascii?Q?xuIjHk1oglQzbAhtusFPy/XBsNmW2Y4lO7ABZeNZfByaG8nsKAglU+Xj1KzW?=
+ =?us-ascii?Q?uyRqlzPqv4xx0CMMH0tfyFuycy2ulQPeGLMkPcg0utqyOZ7tZADx6jbcLT0F?=
+ =?us-ascii?Q?2zp19luTRDc3rRi9cnT7LhT2Avc74UygbFKO0cqAk5vOJXuoja1qPzElUAEX?=
+ =?us-ascii?Q?QQ0Z6TEUF5aFjc4NoWUvfTcsNU9L53GGfQZQQ4dOmp5Yoik3/QwjUl80bP9f?=
+ =?us-ascii?Q?9gcWf1Irwlj9MBADjMorT9CV65vSMWEDDpJEZFVWs4JcenGVcv6hunmqzP6c?=
+ =?us-ascii?Q?9kNJTgse7GZe++tP+U2U8o98sVtycJSO5otol17g7UahvXv57pyPtnZacjlE?=
+ =?us-ascii?Q?62zGk7632/5DIqpwNYCVSxruFjasYMsdc5bodP0kpCBGESKS6EAr3ovTzFKK?=
+ =?us-ascii?Q?pUQfGlE+D8UG2djb37CBdywhbV0Zi46hAyw4Je50Umi6M+yMtKJnwGSG2K2I?=
+ =?us-ascii?Q?kINBSdRpJsf9IMBL9aEw4eW3yKdyw76n55KwvGc7aZDbq6pr?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d39a843d-776b-4ec2-ba0b-08deb508f11f
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2026 18:11:54.4938
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: N5iIKek5O8ivnWSTnkZxIf8UGTQ+I2z0wxeKBtjFm1sQTdmafm5NfwCOq6ZdDg5R
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5847
 
-From: Rik van Riel <riel@meta.com>
+On Sun, May 17, 2026 at 07:28:45PM -0700, Nicolin Chen wrote:
+> The upper bound of veventq_depth has been missing for veventq allocation,
+> leaving a vulnerability where userspace could exhaust atomic memory pool.
+> 
+> Fix it properly:
+>  - Allocate outside the spinlock to avoid GFP_ATOMIC
+>  - Cap the veventq_depth upper bound
+>  - Fix event_data byte-count
+>  - Add selftest coverage
+> 
+> Note that QEMU's SMMU has been already allocating veventq using a "HW"
+> EVTQ entry number. So, picking 19 as the known use case, for a minimal
+> level of ABI consistency.
+> 
+> This is on github:
+> https://github.com/nicolinc/iommufd/commits/fix_veventq_depth-v1
+> 
+> Nicolin Chen (4):
+>   iommufd: Move vevent memory allocation outside spinlock
+>   iommufd: Set veventq_depth upper bound
+>   iommufd: Fix data_len byte-count vs element-count mismatch
+>   iommufd/selftest: Add boundary tests for veventq_depth
 
-Add a kunit suite for the augmented-rbtree IOVA allocator, plus an
-iova_domain_verify_invariants() helper (compiled only when the test
-config is enabled) that walks the tree and confirms every node's
-gap_to_prev, clamped_gap32, __subtree_max_gap, and __subtree_max_gap32
-match what recomputation from scratch yields.
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-Test cases:
-  - test_size_aligned: alignment of size_aligned allocs across orders 0..7.
-  - test_top_down_preference: sequential allocs decrease in pfn_lo.
-  - test_reserve_iova: allocs avoid the reserved range.
-  - test_32bit_in_64bit_domain: 1000 64-bit allocs followed by a 32-bit
-    alloc must still find a slot below DMA_BIT_MASK(32) -- exercises
-    the __subtree_max_gap32 augmentation.
-  - test_aligned_in_fragmented: pack size-2 size_aligned allocs, free
-    every other to leave size-2 holes; a fresh size-2 aligned alloc
-    must still succeed and return a 2-aligned pfn.
-  - test_pci_32bit_workaround_pattern: alternate 32-bit-first allocation
-    attempts with 64-bit fallback, mirroring dma-iommu.c. Uses a
-    deliberately small <=32-bit limit so the 32-bit region is exhausted
-    partway through and the 64-bit fallback path is genuinely exercised.
-  - test_stress_random: 2048 random alloc/free operations with mixed
-    sizes, alignments, and 32/64-bit limits, checking augmented-rbtree
-    invariants after every operation. Uses a deterministic PRNG so
-    failures reproduce across boots.
-
-The suite uses kunit's .init/.exit fixture mechanism for per-test
-setup and teardown, storing the iova_test_ctx in test->priv.
-
-Each test verifies the augmented invariants both during and after the
-test run so that any sequencing bug in insert / erase / rotate /
-propagate is caught at the operation that introduced it.
-
-Run with:
-  tools/testing/kunit/kunit.py run --kunitconfig=drivers/iommu
-
-Assisted-by: Claude Opus <claude-opus-4-6@anthropic.com>
-Signed-off-by: Rik van Riel <riel@surriel.com>
----
- drivers/iommu/.kunitconfig |   4 +
- drivers/iommu/Kconfig      |  17 ++
- drivers/iommu/Makefile     |   1 +
- drivers/iommu/iova-kunit.c | 314 +++++++++++++++++++++++++++++++++++++
- drivers/iommu/iova.c       |  90 +++++++++++
- include/linux/iova.h       |   3 +
- 6 files changed, 429 insertions(+)
- create mode 100644 drivers/iommu/.kunitconfig
- create mode 100644 drivers/iommu/iova-kunit.c
-
-diff --git a/drivers/iommu/.kunitconfig b/drivers/iommu/.kunitconfig
-new file mode 100644
-index 000000000000..56b481ecf993
---- /dev/null
-+++ b/drivers/iommu/.kunitconfig
-@@ -0,0 +1,4 @@
-+CONFIG_KUNIT=y
-+CONFIG_IOMMU_SUPPORT=y
-+CONFIG_IOMMU_IOVA=y
-+CONFIG_IOMMU_IOVA_KUNIT_TEST=y
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index f86262b11416..584cd13356e4 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -3,6 +3,23 @@
- config IOMMU_IOVA
- 	tristate
- 
-+config IOMMU_IOVA_KUNIT_TEST
-+	tristate "KUnit tests for the IOVA allocator" if !KUNIT_ALL_TESTS
-+	depends on IOMMU_IOVA && KUNIT
-+	default KUNIT_ALL_TESTS
-+	help
-+	  Enable kunit tests for the IOVA allocator. The tests exercise
-+	  basic allocation and free, size-aligned allocation, top-down
-+	  ordering, the limit_pfn-aware 32-bit augmentation, aligned
-+	  allocations in fragmented domains, and randomly-fragmented
-+	  stress scenarios. Each test verifies that the augmented
-+	  rbtree invariants remain consistent throughout.
-+
-+	  Run with:
-+	    tools/testing/kunit/kunit.py run --kunitconfig=drivers/iommu
-+
-+	  If unsure, say N here.
-+
- # IOMMU_API always gets selected by whoever wants it.
- config IOMMU_API
- 	bool
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 0275821f4ef9..6bd7da1cbebd 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -16,6 +16,7 @@ obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE_KUNIT_TEST) += io-pgtable-arm-selftests.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_DART) += io-pgtable-dart.o
- obj-$(CONFIG_IOMMU_IOVA) += iova.o
-+obj-$(CONFIG_IOMMU_IOVA_KUNIT_TEST) += iova-kunit.o
- obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
- obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
- obj-$(CONFIG_IPMMU_VMSA) += ipmmu-vmsa.o
-diff --git a/drivers/iommu/iova-kunit.c b/drivers/iommu/iova-kunit.c
-new file mode 100644
-index 000000000000..95eefe66501e
---- /dev/null
-+++ b/drivers/iommu/iova-kunit.c
-@@ -0,0 +1,314 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * KUnit tests for the IOVA allocator.
-+ *
-+ * Exercises the augmented-rbtree based allocator: basic alloc/free,
-+ * size-aligned allocations, top-down ordering, the limit_pfn-aware
-+ * 32-bit augmentation (relevant for the dma-iommu pci_32bit_workaround
-+ * pattern), the alignment-aware two-phase search, and randomly
-+ * fragmented stress.
-+ *
-+ * Each test verifies that the augmented invariants
-+ * (__subtree_max_gap, __subtree_max_gap32, gap_to_prev, clamped_gap32)
-+ * remain consistent after every batch of operations.
-+ */
-+#include <kunit/test.h>
-+#include <linux/dma-mapping.h>
-+#include <linux/iova.h>
-+#include <linux/random.h>
-+
-+#define TEST_GRANULE PAGE_SIZE
-+/* Highest pfn that fits in 32 bits — triggers the is_32bit alloc path. */
-+#define TEST_LIMIT_32BIT (DMA_BIT_MASK(32) >> PAGE_SHIFT)
-+/* A 64-bit-ish limit well above dma_32bit_pfn. 1ULL avoids UB on ILP32. */
-+#define TEST_LIMIT_64BIT ((1ULL << 36) >> PAGE_SHIFT)
-+/*
-+ * A small <=32-bit limit used by tests that want to actually exhaust the
-+ * 32-bit-restricted region within a tractable number of allocations and
-+ * exercise the 64-bit fallback path.
-+ */
-+#define TEST_LIMIT_32BIT_RESTRICTED 1024UL
-+
-+struct iova_test_ctx {
-+	struct iova_domain iovad;
-+	bool initialized;
-+};
-+
-+static int iova_test_init(struct kunit *test)
-+{
-+	struct iova_test_ctx *ctx;
-+	int ret;
-+
-+	ctx = kunit_kzalloc(test, sizeof(*ctx), GFP_KERNEL);
-+	if (!ctx)
-+		return -ENOMEM;
-+	test->priv = ctx;
-+
-+	ret = iova_cache_get();
-+	if (ret)
-+		return ret;
-+
-+	init_iova_domain(&ctx->iovad, TEST_GRANULE, 1);
-+	ret = iova_domain_init_rcaches(&ctx->iovad);
-+	if (ret) {
-+		put_iova_domain(&ctx->iovad);
-+		iova_cache_put();
-+		return ret;
-+	}
-+	ctx->initialized = true;
-+
-+	KUNIT_ASSERT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+	return 0;
-+}
-+
-+static void iova_test_exit(struct kunit *test)
-+{
-+	struct iova_test_ctx *ctx = test->priv;
-+
-+	if (ctx && ctx->initialized) {
-+		put_iova_domain(&ctx->iovad);
-+		ctx->initialized = false;
-+		iova_cache_put();
-+	}
-+}
-+
-+static void test_size_aligned(struct kunit *test)
-+{
-+	struct iova_test_ctx *ctx = test->priv;
-+	int order;
-+
-+	for (order = 0; order < 8; ++order) {
-+		unsigned long size = 1UL << order;
-+		struct iova *iova = alloc_iova(&ctx->iovad, size,
-+					       TEST_LIMIT_32BIT, true);
-+
-+		KUNIT_ASSERT_NOT_NULL(test, iova);
-+		KUNIT_EXPECT_EQ(test, iova->pfn_lo & (size - 1), 0);
-+		KUNIT_EXPECT_EQ(test, iova->pfn_hi - iova->pfn_lo + 1, size);
-+		__free_iova(&ctx->iovad, iova);
-+		KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+	}
-+}
-+
-+static void test_top_down_preference(struct kunit *test)
-+{
-+	struct iova_test_ctx *ctx = test->priv;
-+	struct iova *iovas[16];
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(iovas); ++i) {
-+		iovas[i] = alloc_iova(&ctx->iovad, 1, TEST_LIMIT_32BIT, false);
-+		KUNIT_ASSERT_NOT_NULL(test, iovas[i]);
-+		if (i > 0)
-+			KUNIT_EXPECT_LT(test, iovas[i]->pfn_lo,
-+					iovas[i - 1]->pfn_lo);
-+	}
-+	KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+
-+	for (i = 0; i < ARRAY_SIZE(iovas); ++i)
-+		__free_iova(&ctx->iovad, iovas[i]);
-+}
-+
-+static void test_reserve_iova(struct kunit *test)
-+{
-+	struct iova_test_ctx *ctx = test->priv;
-+	const unsigned long reserve_lo = TEST_LIMIT_32BIT / 2;
-+	struct iova *r, *iova;
-+	int i;
-+
-+	/* Reserve the entire top half through the limit_pfn, inclusive. */
-+	r = reserve_iova(&ctx->iovad, reserve_lo, TEST_LIMIT_32BIT);
-+	KUNIT_ASSERT_NOT_NULL(test, r);
-+	KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+
-+	/* All allocs must land below the reserved range. */
-+	for (i = 0; i < 100; ++i) {
-+		iova = alloc_iova(&ctx->iovad, 1, TEST_LIMIT_32BIT, false);
-+		KUNIT_ASSERT_NOT_NULL(test, iova);
-+		KUNIT_EXPECT_LT(test, iova->pfn_hi, reserve_lo);
-+	}
-+	KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+}
-+
-+/*
-+ * The pci_32bit_workaround scenario: every PCI device's first IOVA
-+ * allocation hits the 32-bit-restricted path before falling back to
-+ * 64-bit. Mix the two and verify the limit_pfn-aware augmentation
-+ * keeps both correct.
-+ */
-+static void test_32bit_in_64bit_domain(struct kunit *test)
-+{
-+	struct iova_test_ctx *ctx = test->priv;
-+	struct iova *iova;
-+	int i;
-+
-+	/* Fill the high 64-bit space. */
-+	for (i = 0; i < 1000; ++i) {
-+		iova = alloc_iova(&ctx->iovad, 1, TEST_LIMIT_64BIT, true);
-+		KUNIT_ASSERT_NOT_NULL(test, iova);
-+	}
-+	KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+
-+	/* A 32-bit alloc must still find a slot below DMA_BIT_MASK(32). */
-+	iova = alloc_iova(&ctx->iovad, 1, TEST_LIMIT_32BIT, true);
-+	KUNIT_ASSERT_NOT_NULL(test, iova);
-+	KUNIT_EXPECT_LE(test, iova->pfn_hi, TEST_LIMIT_32BIT);
-+	KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+
-+	__free_iova(&ctx->iovad, iova);
-+}
-+
-+/*
-+ * Aligned allocation in a fragmented domain: pack size-2 size_aligned
-+ * allocations at the top, free every other one to leave size-2 holes,
-+ * then verify a fresh size-2 aligned alloc still succeeds and returns
-+ * a 2-aligned pfn. The augmented-rbtree invariants must remain
-+ * consistent throughout.
-+ */
-+static void test_aligned_in_fragmented(struct kunit *test)
-+{
-+	struct iova_test_ctx *ctx = test->priv;
-+	const int N = 64;
-+	struct iova **iovas;
-+	struct iova *iova;
-+	int i;
-+
-+	iovas = kunit_kcalloc(test, N, sizeof(*iovas), GFP_KERNEL);
-+	KUNIT_ASSERT_NOT_NULL(test, iovas);
-+
-+	for (i = 0; i < N; ++i) {
-+		iovas[i] = alloc_iova(&ctx->iovad, 2, TEST_LIMIT_32BIT, true);
-+		KUNIT_ASSERT_NOT_NULL(test, iovas[i]);
-+		KUNIT_EXPECT_EQ(test, iovas[i]->pfn_lo & 1, 0);
-+	}
-+	KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+
-+	/* Free every other to create size-2 gaps interleaved with allocs. */
-+	for (i = 0; i < N; i += 2) {
-+		__free_iova(&ctx->iovad, iovas[i]);
-+		iovas[i] = NULL;
-+	}
-+	KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+
-+	iova = alloc_iova(&ctx->iovad, 2, TEST_LIMIT_32BIT, true);
-+	KUNIT_ASSERT_NOT_NULL(test, iova);
-+	KUNIT_EXPECT_EQ(test, iova->pfn_lo & 1, 0);
-+	__free_iova(&ctx->iovad, iova);
-+	KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+
-+	for (i = 0; i < N; ++i)
-+		if (iovas[i])
-+			__free_iova(&ctx->iovad, iovas[i]);
-+}
-+
-+/*
-+ * Mimic dma-iommu's pci_32bit_workaround pattern: every alloc first
-+ * tries the 32-bit limit; if that fails, retry with the 64-bit limit.
-+ * Use a deliberately small <=32-bit limit so the 32-bit region is
-+ * actually exhausted partway through and the 64-bit fallback path is
-+ * exercised. Verifies that the dual-augmented invariant survives the
-+ * rapid switching between is_32bit=true and is_32bit=false.
-+ */
-+static void test_pci_32bit_workaround_pattern(struct kunit *test)
-+{
-+	struct iova_test_ctx *ctx = test->priv;
-+	int fallback_count = 0;
-+	int i;
-+
-+	for (i = 0; i < 500; ++i) {
-+		unsigned long size = (i % 4) + 1;
-+		struct iova *iova = alloc_iova(&ctx->iovad, size,
-+					       TEST_LIMIT_32BIT_RESTRICTED,
-+					       true);
-+
-+		if (!iova) {
-+			iova = alloc_iova(&ctx->iovad, size,
-+					  TEST_LIMIT_64BIT, true);
-+			fallback_count++;
-+		}
-+		KUNIT_ASSERT_NOT_NULL(test, iova);
-+	}
-+	KUNIT_EXPECT_TRUE(test, iova_domain_verify_invariants(&ctx->iovad));
-+	KUNIT_EXPECT_GT(test, fallback_count, 0);
-+}
-+
-+/*
-+ * Random alloc/free over many iterations, verifying invariants after
-+ * every operation. Uses a deterministic PRNG so failures reproduce
-+ * across boots.
-+ */
-+static void test_stress_random(struct kunit *test)
-+{
-+	struct iova_test_ctx *ctx = test->priv;
-+	const int N = 512;
-+	const int iters = 4 * N;
-+	struct iova **iovas;
-+	u32 rng = 0xDEADBEEF;
-+	int i;
-+
-+	iovas = kunit_kcalloc(test, N, sizeof(*iovas), GFP_KERNEL);
-+	KUNIT_ASSERT_NOT_NULL(test, iovas);
-+
-+	for (i = 0; i < iters; ++i) {
-+		int slot;
-+		bool use_32bit;
-+		unsigned long limit;
-+		const char *op;
-+
-+		rng = rng * 1103515245 + 12345;
-+		slot = (rng >> 8) % N;
-+		rng = rng * 1103515245 + 12345;
-+		use_32bit = rng & 1;
-+		limit = use_32bit ? TEST_LIMIT_32BIT : TEST_LIMIT_64BIT;
-+
-+		if (iovas[slot]) {
-+			op = "free";
-+			__free_iova(&ctx->iovad, iovas[slot]);
-+			iovas[slot] = NULL;
-+		} else {
-+			unsigned long size;
-+			bool aligned;
-+
-+			rng = rng * 1103515245 + 12345;
-+			size = 1UL << ((rng >> 8) % 4);
-+			rng = rng * 1103515245 + 12345;
-+			aligned = rng & 1;
-+
-+			op = "alloc";
-+			iovas[slot] = alloc_iova(&ctx->iovad, size, limit,
-+						 aligned);
-+		}
-+		if (!iova_domain_verify_invariants(&ctx->iovad)) {
-+			kunit_info(test, "iter %d slot %d: invariant broken after %s\n",
-+				   i, slot, op);
-+			KUNIT_FAIL(test, "verify failed");
-+			break;
-+		}
-+	}
-+
-+	for (i = 0; i < N; ++i)
-+		if (iovas[i])
-+			__free_iova(&ctx->iovad, iovas[i]);
-+}
-+
-+static struct kunit_case iova_test_cases[] = {
-+	KUNIT_CASE(test_size_aligned),
-+	KUNIT_CASE(test_top_down_preference),
-+	KUNIT_CASE(test_reserve_iova),
-+	KUNIT_CASE(test_32bit_in_64bit_domain),
-+	KUNIT_CASE(test_aligned_in_fragmented),
-+	KUNIT_CASE(test_pci_32bit_workaround_pattern),
-+	KUNIT_CASE(test_stress_random),
-+	{}
-+};
-+
-+static struct kunit_suite iova_test_suite = {
-+	.name = "iova",
-+	.init = iova_test_init,
-+	.exit = iova_test_exit,
-+	.test_cases = iova_test_cases,
-+};
-+kunit_test_suite(iova_test_suite);
-+
-+MODULE_DESCRIPTION("KUnit tests for the IOVA allocator");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 3cdee4870efe..299c9924fb64 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -1150,6 +1150,96 @@ void iova_cache_put(void)
- }
- EXPORT_SYMBOL_GPL(iova_cache_put);
- 
-+#if IS_ENABLED(CONFIG_IOMMU_IOVA_KUNIT_TEST)
-+/*
-+ * Walk the iova rbtree and verify that every node's gap_to_prev,
-+ * clamped_gap32, __subtree_max_gap, and __subtree_max_gap32 match what
-+ * recomputation from scratch would yield. Returns true on success.
-+ *
-+ * Intended for use by kunit tests to catch invariant corruption from
-+ * insertion / deletion / rotation paths.
-+ */
-+struct iova_subtree_maxes {
-+	unsigned long max_gap;
-+	unsigned long max_gap32;
-+};
-+
-+static struct iova_subtree_maxes
-+iova_walk_verify(struct rb_node *node, struct iova_domain *iovad, bool *ok)
-+{
-+	struct iova_subtree_maxes m = { 0, 0 };
-+	struct iova_subtree_maxes left, right;
-+	struct rb_node *prev_node;
-+	struct iova *iova;
-+	unsigned long expected_gap;
-+	unsigned long expected_clamped;
-+
-+	if (!node)
-+		return m;
-+
-+	left = iova_walk_verify(node->rb_left, iovad, ok);
-+	right = iova_walk_verify(node->rb_right, iovad, ok);
-+	iova = to_iova(node);
-+
-+	prev_node = rb_prev(node);
-+	if (prev_node)
-+		expected_gap = iova->pfn_lo - to_iova(prev_node)->pfn_hi - 1;
-+	else
-+		expected_gap = iova->pfn_lo;
-+	if (iova->gap_to_prev != expected_gap) {
-+		pr_err("iova_verify: pfn_lo=0x%lx gap_to_prev=%lu expected=%lu\n",
-+		       iova->pfn_lo, iova->gap_to_prev, expected_gap);
-+		*ok = false;
-+	}
-+
-+	expected_clamped = iova_compute_clamped_gap32(iova, iovad->dma_32bit_pfn);
-+	if (iova->clamped_gap32 != expected_clamped) {
-+		pr_err("iova_verify: pfn_lo=0x%lx clamped_gap32=%lu expected=%lu\n",
-+		       iova->pfn_lo, iova->clamped_gap32, expected_clamped);
-+		*ok = false;
-+	}
-+
-+	m.max_gap = iova->gap_to_prev;
-+	if (left.max_gap > m.max_gap)
-+		m.max_gap = left.max_gap;
-+	if (right.max_gap > m.max_gap)
-+		m.max_gap = right.max_gap;
-+
-+	m.max_gap32 = iova->clamped_gap32;
-+	if (left.max_gap32 > m.max_gap32)
-+		m.max_gap32 = left.max_gap32;
-+	if (right.max_gap32 > m.max_gap32)
-+		m.max_gap32 = right.max_gap32;
-+
-+	if (iova->__subtree_max_gap != m.max_gap) {
-+		pr_err("iova_verify: pfn_lo=0x%lx __subtree_max_gap=%lu expected=%lu (own=%lu left=%lu right=%lu)\n",
-+		       iova->pfn_lo, iova->__subtree_max_gap, m.max_gap,
-+		       iova->gap_to_prev, left.max_gap, right.max_gap);
-+		*ok = false;
-+	}
-+	if (iova->__subtree_max_gap32 != m.max_gap32) {
-+		pr_err("iova_verify: pfn_lo=0x%lx __subtree_max_gap32=%lu expected=%lu (own=%lu left=%lu right=%lu)\n",
-+		       iova->pfn_lo, iova->__subtree_max_gap32, m.max_gap32,
-+		       iova->clamped_gap32, left.max_gap32, right.max_gap32);
-+		*ok = false;
-+	}
-+
-+	return m;
-+}
-+
-+bool iova_domain_verify_invariants(struct iova_domain *iovad)
-+{
-+	bool ok = true;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
-+	iova_walk_verify(iovad->rbroot.rb_node, iovad, &ok);
-+	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-+	return ok;
-+}
-+EXPORT_SYMBOL_GPL(iova_domain_verify_invariants);
-+#endif /* CONFIG_IOMMU_IOVA_KUNIT_TEST */
-+
- MODULE_AUTHOR("Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>");
- MODULE_DESCRIPTION("IOMMU I/O Virtual Address management");
- MODULE_LICENSE("GPL");
-diff --git a/include/linux/iova.h b/include/linux/iova.h
-index d262c6d88d6c..108676d8ad69 100644
---- a/include/linux/iova.h
-+++ b/include/linux/iova.h
-@@ -104,6 +104,9 @@ void init_iova_domain(struct iova_domain *iovad, unsigned long granule,
- int iova_domain_init_rcaches(struct iova_domain *iovad);
- struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
- void put_iova_domain(struct iova_domain *iovad);
-+#if IS_ENABLED(CONFIG_IOMMU_IOVA_KUNIT_TEST)
-+bool iova_domain_verify_invariants(struct iova_domain *iovad);
-+#endif
- #else
- static inline int iova_cache_get(void)
- {
--- 
-2.52.0
-
+Jason
