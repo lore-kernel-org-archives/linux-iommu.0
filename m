@@ -1,133 +1,104 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D0FC841B378
-	for <iommu@lists.linux.dev>; Mon, 18 May 2026 12:40:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA0664508F4;
+	Mon, 18 May 2026 12:53:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779108023; cv=none; b=SVizHzyVmuOgaLMn0dzcy3EqJABb8fHLmjOM2BjJ65p9k1/lEJbk6jpT8jmNFrbpoCUPf+C7FBCFNxOuwn7N6EF6IEfZJ0Q0TfumJIDAA9Wxafz0EWYQAqUwbnqu74trFYjcJBNzvM2zTMgRlpvdxB3/tuTjqUiTqa4xwKQQM18=
+	t=1779108815; cv=none; b=Ixy+q7n2Uj5kGw6T1Jb7Sr9THtBXLWw0XFOrGntICnQ3Dby4XzYLhxwMc33dEzxBKfM4Wkb3hhxD/ECARkF4sc/nQErgvRyOLMupGuFpTCe8uVgZ0y4H/MiU2A1UjYU6eUgdGiIiLoyJDgx9bzJCBgqk5GzdG3UCiykRB4mbhFM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779108023; c=relaxed/simple;
-	bh=6RRM4voBsYSRyB2HVWqWgArrKsEBjLYey1NyYvTf804=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=fUzOH79bQeL9ceO2gZhC63UzdeGA6clDUjGYPivxdfoF93s5q5xOORP/Vz1qmPsA0OIk/qStEJbbKcUvSbrhqlvZ2EHuS9isXGVX7nVxs9yx1JUvb1PyzoZ2SObJegWM/eHgDH1svYLVvrJC9EtXcjMExRhBe6ai4OlLP5mG3TA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=cUYuVwET; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1779108815; c=relaxed/simple;
+	bh=y21Wwsdb9da3Is6q2ePZWfh4VYNlIMx4FrnnNvuO6VQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jehWBwRsHd3dN7jSPJzAlYxSU4vxvk5MS9rwUKOFBVE/+hpEIxXV2lkPvYDMzBxuQeZfjRwEphed3cV+GMIWa7zVcKlM+vwR0CX+CI/z3VD5q3Oma/WIlXH2zX/817yc8RNIxTvIdJkmcnuy/ctVSx9DKEqsQdxjDmxK4IfggR8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=La1zhCZL; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="cUYuVwET"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D8CE52328;
-	Mon, 18 May 2026 05:40:15 -0700 (PDT)
-Received: from [10.1.196.85] (e121345-lin.cambridge.arm.com [10.1.196.85])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9157D3F632;
-	Mon, 18 May 2026 05:40:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1779108021; bh=6RRM4voBsYSRyB2HVWqWgArrKsEBjLYey1NyYvTf804=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=cUYuVwETpvBJ0r9LdBIA+knfi970j52/wfTk5xjo2MAWZyeFjbw/pZEvlPRaftiN9
-	 2LNUWAcv8BX3RXPDm9a4ViqcSlfvs3KC2vDXjPKYlN4od2oVU9FS0KL67AXs58zgWw
-	 kszVqYLpOQmYIa4a/Z3ZCJXq912/w4ymRQrXwQZU=
-Message-ID: <d6366078-3eb9-4445-9f91-27e1dc15970e@arm.com>
-Date: Mon, 18 May 2026 13:40:10 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="La1zhCZL"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED436C4AF0B;
+	Mon, 18 May 2026 12:53:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1779108815;
+	bh=y21Wwsdb9da3Is6q2ePZWfh4VYNlIMx4FrnnNvuO6VQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=La1zhCZL+/kF3BC6iaS6Jb9IpMWSJbkVVf0uQjbYpUzpPlKmNCV54uVMexNeY8Sug
+	 CvaJhfg11aiCDsftdntdS50RKx+t1H31BvdMAuywH4F0bgHbRCXZwpOgcwLKjTSK/8
+	 Qs21lmUpP0jcyE0o4Pl5IMWKXqzWQe4JSHsw8iZqPxNWomKQra1VbZp7HLv8vwoI/p
+	 uDeMgwsC6w1+3UXPfEBFcnKY33c+vvB9H6FnpMqjsiNg3u+V2HBEIXTkcwbsHX+tzj
+	 o0/000h8b6KGHTUgqTlfTpi+FlgzPCkEvbUpypmWO2QMNcq5Dw4E7eMNtYwE9peANP
+	 +4N2W5nanzo2A==
+Date: Mon, 18 May 2026 15:53:30 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
+Cc: m.szyprowski@samsung.com, hch@lst.de, robin.murphy@arm.com,
+	djbw@kernel.org, akpm@linux-foundation.org, catalin.marinas@arm.com,
+	harry@kernel.org, ming.lei@redhat.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dma-debug: skip cacheline overlap tracking on
+ cache-coherent architectures
+Message-ID: <20260518125330.GT33515@unreal>
+References: <20260518113251.64844-1-mikhail.v.gavrilov@gmail.com>
+ <20260518121047.GR33515@unreal>
+ <CABXGCsMxZ7VieyzWEmpGdxohdbTJ_qf_1ZOw0eF5g9i0YeOc3w@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dma-direct: Clear pages before coherent remap
-To: Rosen Penev <rosenp@gmail.com>, iommu@lists.linux.dev
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
- open list <linux-kernel@vger.kernel.org>
-References: <20260517042955.2218649-1-rosenp@gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260517042955.2218649-1-rosenp@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CABXGCsMxZ7VieyzWEmpGdxohdbTJ_qf_1ZOw0eF5g9i0YeOc3w@mail.gmail.com>
 
-On 17/05/2026 5:29 am, Rosen Penev wrote:
-> Clear pages through their page mapping before creating a coherent
-> remap for dma-direct allocations. Some architectures implement the
-> coherent remap as uncached memory, where the generic memset() path may
-> use cache-only zeroing instructions that are not valid for the returned
-> CPU mapping.
-
-Which architectures? I'd fear they're just broken in that case - there's 
-every chance that once the caller gets a coherent allocation back, they 
-could also invoke memset() on it - either explicitly, or automatically 
-inserted by the compiler for a structure/array initialisation, or if the 
-buffer subsequently gets mmap()ed to userspace then who knows what. If 
-that's really a problem, this patch isn't going to solve it.
-
-It's rather the point that we clear the buffer the same way that the 
-caller is subsequently going to access it (not least to minimise the 
-chance of any other possible weird coherency side-effects).
-
-Thanks,
-Robin.
-
-> Keep the existing memset() for non-remapped allocations, but avoid
-> normal memset() on the remapped coherent allocation path.
+On Mon, May 18, 2026 at 05:23:15PM +0500, Mikhail Gavrilov wrote:
+> On Mon, May 18, 2026 at 5:10 PM Leon Romanovsky <leon@kernel.org> wrote:
+> >
+> > I would say this reproducer is incorrect. From what I recall, the only two
+> > legitimate use cases for cacheline overlap are virtio and RDMA.
 > 
-> Assisted-by: Codex:GPT-5.5
-> Signed-off-by: Rosen Penev <rosenp@gmail.com>
-> ---
->   kernel/dma/direct.c | 20 ++++++++++++++++++--
->   1 file changed, 18 insertions(+), 2 deletions(-)
+> The wild trace in the commit message is NVMe block I/O -- neither virtio
+> nor RDMA:
 > 
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 583c5922bca2..76f7bf43bd28 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -8,6 +8,7 @@
->   #include <linux/export.h>
->   #include <linux/mm.h>
->   #include <linux/dma-map-ops.h>
-> +#include <linux/highmem.h>
->   #include <linux/scatterlist.h>
->   #include <linux/pfn.h>
->   #include <linux/vmalloc.h>
-> @@ -104,6 +105,15 @@ static void __dma_direct_free_pages(struct device *dev, struct page *page,
->   	dma_free_contiguous(dev, page, size);
->   }
->   
-> +static void dma_direct_zero_pages(struct page *page, size_t size)
-> +{
-> +	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> +	unsigned long i;
-> +
-> +	for (i = 0; i < count; i++)
-> +		clear_highpage(page + i);
-> +}
-> +
->   static struct page *dma_direct_alloc_swiotlb(struct device *dev, size_t size)
->   {
->   	struct page *page = swiotlb_alloc(dev, size);
-> @@ -268,6 +278,13 @@ void *dma_direct_alloc(struct device *dev, size_t size,
->   	if (remap) {
->   		pgprot_t prot = dma_pgprot(dev, PAGE_KERNEL, attrs);
->   
-> +		/*
-> +		 * Zero via the page mapping before creating a potentially
-> +		 * uncached remap.  Some architectures cannot safely run normal
-> +		 * memset on uncached memory.
-> +		 */
-> +		dma_direct_zero_pages(page, size);
-> +
->   		if (force_dma_unencrypted(dev))
->   			prot = pgprot_decrypted(prot);
->   
-> @@ -283,10 +300,9 @@ void *dma_direct_alloc(struct device *dev, size_t size,
->   		ret = page_address(page);
->   		if (dma_set_decrypted(dev, ret, size))
->   			goto out_leak_pages;
-> +		memset(ret, 0, size);
->   	}
->   
-> -	memset(ret, 0, size);
-> -
->   	if (set_uncached) {
->   		arch_dma_prep_coherent(page, size);
->   		ret = arch_dma_set_uncached(ret, size);
+>   add_dma_entry -> debug_dma_map_phys -> dma_map_phys ->
+>   blk_dma_map_iter_start -> nvme_map_data
+> 
+> The block layer submits many concurrent in-flight requests; small
+> kmalloc'd buffers naturally land in the same cacheline under high IOPS,
+> which is incidental rather than intentional overlap.  Ming Lei's report
+> linked in the commit message [1] enumerates additional non-virtio /
+> non-RDMA cases hitting the same WARN: liburing iopoll tests, raid1,
+> dm-thin and other storage utilities.
 
+Actually, later in that thread, people agreed that this debug message
+correctly pointed out the underlying issue in the code.
+https://lore.kernel.org/all/20241015075418.GA25487@lst.de/
+
+> 
+> > The first intentionally relies on it for small allocations, and the second exports the
+> > cachelines to the user space and cannot operate on non‑coherent architectures.
+> 
+> The reproducer isn't claiming to be either of those.  It deterministically
+> reaches the same state-based gate the wild NVMe trace hits
+> (!is_cache_clean && overlap > 7, with direction != DMA_TO_DEVICE, after
+> the v2 coherent-arch / SWIOTLB-bounce suppressions are evaluated).  Since
+> that gate has no subsystem-specific term, any caller -- synthetic or real
+> -- reaching it with those state values triggers the same WARN.
+> 
+> If the broader concern is that the block layer should opt into your
+> coherency-attribute work rather than relying on debug-side suppression,
+> that's a reasonable longer-term direction.  But it's additive: even with
+> opt-in adoption, the WARN remains a false positive on coherent arches
+> for callers that don't annotate -- which is exactly what v2 (3d48c9fd78dd)
+> already established for the sibling "cacheline tracking EEXIST" err_printk.
+
+How difficult is it to annotate call sites?
+
+Thanks
+
+> 
+> [1] https://lore.kernel.org/all/ZwxzdWmYcBK27mUs@fedora/
+> 
+> -- 
+> Thanks,
+> Mikhail
+> 
