@@ -1,135 +1,206 @@
-Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C48C43E51E9
-	for <iommu@lists.linux.dev>; Mon, 18 May 2026 09:06:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 174A13D5645
+	for <iommu@lists.linux.dev>; Mon, 18 May 2026 09:38:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779095218; cv=none; b=DM7rGEo7FUmslj1uMtNDa0nNttJs0zj5HTu3gmJp/i2v/d4v4RXt9LA1VtXPUVk47gdmk7HgMNy82z3K+BhynfTLjZXxflGhsmwVUhj+P4yIepWk1+4fX1h2w38+3anckOkZGeHDHtawlYxuMUTCQcX3UjFwdqpqTfhFUWYS1Tk=
+	t=1779097108; cv=none; b=mU73DrJY9MbReOJziXmfHt9ULtuIHXikN1Bvm0PFIKZtX6Dviud6ylk2GBXVlAmkjdglAhFegIXlLjjDx8Z7vFLJ7fnNIUMSBgmWC+KCHFcyZ9X2QHoeNEEIfxdFPNVzGJfVhrSVjAuxyvDunhwqZP0gVCdqL6k3PFo8+xN4Z3M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779095218; c=relaxed/simple;
-	bh=2qZ5Z7v49mZdp9tTq4z3AExRs8n1ya/74CMZmv6hrg8=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=FrWD6ABCajwsIdpRTHuoF3xAS3eILAWpzryG3q3QSK8L8KAuPLxbSXC7hjJzQhzbWdCo6Ml5ETsUEdEIJGn9xNUJfbhxUHfo1Dd5vRys3G1+tCq/QzfcE9dv0A4Bb6a3StdNjHGg+gSfTEyaYW3ztC/pqzieyihsvkDR80SxMW8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=DD/9pkOU; arc=none smtp.client-ip=209.85.214.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com
+	s=arc-20240116; t=1779097108; c=relaxed/simple;
+	bh=4fPcah8dmnDnuK5ll3l6RFnFjqxv4SXmcFfh6J4rtLw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=uaiS5FdQ5qBSUl2Iij+hE6YOLLw6GmpXIS+bwGP/6IDP0vnm0L6ETvXsElBlySBeoZq5QTID++NmxokMEwdf1EfS6mA08uu0eB5CZpv9jnzvEg7qflTxJyzr2/jZ9Dxq4yXK4Gc5FshCQjD0/D0IDStnidE3AJOZlLv1fEWVpXg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=j119BinO; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="DD/9pkOU"
-Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-2b9a3c3c4eeso23086475ad.3
-        for <iommu@lists.linux.dev>; Mon, 18 May 2026 02:06:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779095216; x=1779700016; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=UOPk9lUKmu3dyT3km0TD9pgYxeOvFnYVbbb0LRmiqBQ=;
-        b=DD/9pkOU1J9Ss1g4pBcOykGTFyUc1gWmOKA1Vrghu4nv4SMqgCfC2uswA8XiN195sS
-         GQLE8pt8xfZ/A2l5IGNLHZ2JTfrL7QO+7SKTuEVQSzZnAfBiodpxfixAb9DdsogX9s2k
-         +c0vSzUFpQ2JgX27yljSVz29DP7C9lBJ2Yc5d7GmUVARR1V4mGQmqqTPh1h75v/Ha32E
-         okRf4ciavITQcTOGFel6tqDoCgKnffI35YSZsziYGC+eOmB0HN8g+kHU9004KGodA65a
-         FCrV6Snhpdn9ijq9LN/Mv6fXNxLI0UY13KVD7IQ0Ra0T627YCsQTU/E1lJoM2ZNHeppB
-         o1RA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779095216; x=1779700016;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=UOPk9lUKmu3dyT3km0TD9pgYxeOvFnYVbbb0LRmiqBQ=;
-        b=MzLhA0EAuRcbedjOm6JeYvKCl6p0Z+aPKVpayFPTlSOqPZKkmhHhiGjkMIOReFw3he
-         hdYwaqttjNdqhu7uoq4gICQ2/Nv31FTTGXkWc+RC6WBr6ukXYv71AeGJfyQpXsCroKpX
-         ElIg5lC01dHctw8y6HC5xvgKFVXdwmIxKjt1mNZGHXbGGqu/jBmZls+SOOEiqv4CU01R
-         sJbJ0RgUqOeuOqJp+3SRtq3DyObj6uSoPqoUQlsfXGx+pgmP2QcE6qvlFfMTJDq3yK6k
-         F8ICqly6xXN4xkfWw+WPKER8LQWfArd1Ay1OaOcPriHiUNtWIHj9zHm6qsEksl/ZHkx9
-         ddDQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/3AltkYKwB8PIeljq2HhcY2f5d9LDER9oeTVpC4A1n7/V2+ZWZN4N5mPgmhZAa32P8ecP9cA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwZ/K4NeRiVsJJtFHOM6XU2qz6HGGSx2Y5sSem84fP5GNgp/ysQ
-	a1OoXZKj2IczPVUzTvdDmixqFAtCasPfUbjmsuo+9+QhHvw+nZLHhah13Es18HPvJyIt4lGpXRF
-	Ln3gQCyeDYVGFC5FTcITISuyUxA==
-X-Received: from plbv16.prod.google.com ([2002:a17:903:44d0:b0:2b2:488e:b71])
- (user=joonwonkang job=prod-delivery.src-stubby-dispatcher) by
- 2002:a17:903:384c:b0:2bc:6d46:ae9d with SMTP id d9443c01a7336-2bd7e8ca92cmr152641245ad.17.1779095215808;
- Mon, 18 May 2026 02:06:55 -0700 (PDT)
-Date: Mon, 18 May 2026 09:06:54 +0000
-In-Reply-To: <20260515231808.GQ7702@ziepe.ca>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="j119BinO"
+Received: from localhost (unknown [167.220.233.27])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 4B45020B7166;
+	Mon, 18 May 2026 02:38:20 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 4B45020B7166
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1779097100;
+	bh=s+YWJYVFWtMEG0xZrCUw5nCzzgDA6ShdPxjhNN8my48=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=j119BinOxvlRrzkE98QrVKF82TAePguMU9osCRhtQYYu7deolqSpUlplJGmHsNInM
+	 oglxeWgyHeWOSWShyvk/iKi3W6jR5X3+jJGJ3uS7S9Mg+kAMxj+5s3xUcvErjC9H6s
+	 9X2s+eLyYPvfbXm+dSPLyw9HsZCZMS5TPLxBO+78=
+Date: Mon, 18 May 2026 17:38:23 +0800
+From: Yu Zhang <zhangyu1@linux.microsoft.com>
+To: Mukesh R <mrathor@linux.microsoft.com>
+Cc: Michael Kelley <mhklinux@outlook.com>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>, 
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, 
+	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "wei.liu@kernel.org" <wei.liu@kernel.org>, 
+	"kys@microsoft.com" <kys@microsoft.com>, "haiyangz@microsoft.com" <haiyangz@microsoft.com>, 
+	"decui@microsoft.com" <decui@microsoft.com>, "longli@microsoft.com" <longli@microsoft.com>, 
+	"joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>, 
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>, 
+	"kwilczynski@kernel.org" <kwilczynski@kernel.org>, "lpieralisi@kernel.org" <lpieralisi@kernel.org>, 
+	"mani@kernel.org" <mani@kernel.org>, "robh@kernel.org" <robh@kernel.org>, 
+	"arnd@arndb.de" <arnd@arndb.de>, "jgg@ziepe.ca" <jgg@ziepe.ca>, 
+	"jacob.pan@linux.microsoft.com" <jacob.pan@linux.microsoft.com>, "tgopinath@linux.microsoft.com" <tgopinath@linux.microsoft.com>, 
+	"easwar.hariharan@linux.microsoft.com" <easwar.hariharan@linux.microsoft.com>
+Subject: Re: [PATCH v1 3/4] iommu/hyperv: Add para-virtualized IOMMU support
+ for Hyper-V guest
+Message-ID: <f74lbhq66bya4s44mhghc63wckctysvreuxfr6vkysvuj3nloh@axkuugfiati2>
+References: <20260511162408.1180069-1-zhangyu1@linux.microsoft.com>
+ <20260511162408.1180069-4-zhangyu1@linux.microsoft.com>
+ <SN6PR02MB4157FB81CC9B6347DCCC8C56D4072@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <qeyycsdnejwrqle4zwrvkjvkvrpjifeanwxjaa7i7y2ab7rnt2@b6gvugqayarg>
+ <SN6PR02MB415734108A86BDFB66AEE4CED4042@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <fw2pruvjgo7yigtcxssf3xv27soibsj6hmw2ls5wj4rylfhdha@e63f32cwu2x5>
+ <53754e0b-2af8-edd2-dfc0-293fac002a52@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20260515231808.GQ7702@ziepe.ca>
-X-Mailer: git-send-email 2.54.0.563.g4f69b47b94-goog
-Message-ID: <20260518090654.730478-1-joonwonkang@google.com>
-Subject: Re: [PATCH] iommu: Allow device driver to use its own PASID space for SVA
-From: Joonwon Kang <joonwonkang@google.com>
-To: jgg@ziepe.ca, kirill.shutemov@linux.intel.com
-Cc: Alexander.Grest@microsoft.com, alexander.shishkin@linux.intel.com, 
-	amhetre@nvidia.com, baolu.lu@linux.intel.com, bp@alien8.de, 
-	dave.hansen@linux.intel.com, easwar.hariharan@linux.microsoft.com, 
-	hpa@zytor.com, iommu@lists.linux.dev, jacob.jun.pan@linux.intel.com, 
-	joonwonkang@google.com, joro@8bytes.org, jpb@kernel.org, kas@kernel.org, 
-	kees@kernel.org, kevin.tian@intel.com, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, mingo@redhat.com, nicolinc@nvidia.com, 
-	peterz@infradead.org, praan@google.com, robin.murphy@arm.com, 
-	ryasuoka@redhat.com, smostafa@google.com, sohil.mehta@intel.com, 
-	tglx@kernel.org, will@kernel.org, x86@kernel.org, xin@zytor.com
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <53754e0b-2af8-edd2-dfc0-293fac002a52@linux.microsoft.com>
 
-> On Fri, May 15, 2026 at 09:46:05AM +0000, Joonwon Kang wrote:
-> > diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-> > index 0ca3912ecb7f..61e2e52105e5 100644
-> > --- a/arch/x86/kernel/traps.c
-> > +++ b/arch/x86/kernel/traps.c
-> > @@ -864,6 +864,8 @@ static bool try_fixup_enqcmd_gp(void)
-> >  		return false;
-> >  
-> >  	pasid = mm_get_enqcmd_pasid(current->mm);
-> > +	if (pasid == IOMMU_PASID_INVALID)
-> > +		return false;
+On Fri, May 15, 2026 at 05:11:19PM -0700, Mukesh R wrote:
+> On 5/15/26 09:53, Yu Zhang wrote:
+> > On Fri, May 15, 2026 at 02:51:38PM +0000, Michael Kelley wrote:
+> > > From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Friday, May 15, 2026 7:00 AM
+> > > > 
+> > > > On Thu, May 14, 2026 at 06:13:24PM +0000, Michael Kelley wrote:
+> > > > > From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Monday, May 11, 2026 9:24 AM
+> > > > > > 
+> > > > > > Add a para-virtualized IOMMU driver for Linux guests running on Hyper-V.
+> > > > > > This driver implements stage-1 IO translation within the guest OS.
+> > > > > > It integrates with the Linux IOMMU core, utilizing Hyper-V hypercalls
+> > > > > > for:
+> > > > > >   - Capability discovery
+> > > > > >   - Domain allocation, configuration, and deallocation
+> > > > > >   - Device attachment and detachment
+> > > > > >   - IOTLB invalidation
+> > > > > > 
+> > > > > > The driver constructs x86-compatible stage-1 IO page tables in the
+> > > > > > guest memory using consolidated IO page table helpers. This allows
+> > > > > > the guest to manage stage-1 translations independently of vendor-
+> > > > > > specific drivers (like Intel VT-d or AMD IOMMU).
+> > > > > > 
+> > > > > > Hyper-V consumes this stage-1 IO page table when a device domain is
+> > > > > > created and configured, and nests it with the host's stage-2 IO page
+> > > > > > tables, therefore eliminating the VM exits for guest IOMMU mapping
+> > > > > > operations. For unmapping operations, VM exits to perform the IOTLB
+> > > > > > flush are still unavoidable.
+> > > > > > 
+> > > > > > Hyper-V identifies each PCI pass-thru device by a logical device ID
+> > > > > > in its hypercall interface. The vPCI driver (pci-hyperv) registers the
+> > > > > > per-bus portion of this ID with the pvIOMMU driver during bus probe.
+> > > > > > The pvIOMMU driver stores this mapping and combines it with the function
+> > > > > > number of the endpoint PCI device to form the complete ID for hypercalls.
+> > > > > 
+> > > > > As you are probably aware, Mukesh's patch series to support PCI
+> > > > > pass-thru devices also needs to get the logical device ID. Maybe the
+> > > > > registration mechanism needs to move somewhere that can be shared
+> > > > > with his code.
+> > > > > 
+> > > > 
+> > > > Thank you so much for the review, Michael!
+> > > > 
+> > > > Yes, I looked at Mukesh's series and noticed his hv_pci_vmbus_device_id()
+> > > > in pci-hyperv.c has the same dev_instance byte manipulation. We do need
+> > > > a common registration mechanism.
+> > > > 
+> > > > Any suggestion on where to put it? drivers/hv/hv_common.c seems like a
+> > > > natural place, but the register/lookup functions are currently only
+> > > > meaningful when CONFIG_HYPERV_PVIOMMU is set. If Mukesh's pass-thru
+> > > > code also needs them, we might need a new shared Kconfig option that
+> > > > both can select. Open to better ideas.
+> > > 
+> > > Unfortunately, I have not looked at Mukesh's series in detail yet, so
+> > > I don't have enough knowledge of the full situation to offer a good
+> > > recommendation.
+> > > 
+> > 
+> > Sorry I forgot to Cc Mukesh in the previous reply. :(
+> > @Mukesh, any thoughts on sharing the logical device ID registration mechanism?
 > 
-> If you do this then probably you should get rid of mm_valid_pasid(),
-> mm_get_enqcmd_pasid() already has the NULL check so the two functions
-> are kind of pointless.
+> Yeah, I went round and round trying to find the best place. I almost
+> created virt/hyperv/hv_utils.c file. Maybe that is the best place?
+
+Thanks for thinking about this, Mukesh!
+
+I'm a bit hesitant about introducing virt/hyperv/. Currently virt/ 
+only hosts KVM's architecture-neutral hypervisor core. And it feels
+like the wrong layer for driver-level utility code. And drivers/hv/
+seems like a more natural fit?
+
+I'm also thinking about the config to gating these new interfaces(
+register/lookup etc.), I am using CONFIG_HYPERV_PVIOMMU, and I guess
+you may propably propose another one for the host side change(or just 
+CONFIG_MSHV_ROOT)?
+
+B.R.
+Yu
+
 > 
-> You also missed the other place calling mm_valid_pasid() that should
-> really be sensitive to this as well:
+> Thanks,
+> -Mukesh
 > 
-> static int prctl_enable_tagged_addr(struct mm_struct *mm, unsigned long nr_bits)
-> {
-> [..]
->         if (mm_valid_pasid(mm) &&
->             !test_bit(MM_CONTEXT_FORCE_TAGGED_SVA, &mm->context.flags))
->                 return -EINVAL;
 > 
-> Make that removal a prep patch
+> > > > 
+> > > > [...]
+> > > > 
+> > > > > > +static void hv_flush_device_domain(struct hv_iommu_domain *hv_domain)
+> > > > > > +{
+> > > > > > +	u64 status;
+> > > > > > +	unsigned long flags;
+> > > > > > +	struct hv_input_flush_device_domain *input;
+> > > > > > +
+> > > > > > +	local_irq_save(flags);
+> > > > > > +
+> > > > > > +	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
+> > > > > > +	memset(input, 0, sizeof(*input));
+> > > > > > +	input->device_domain = hv_domain->device_domain;
+> > > > > 
+> > > > > The previous version of this patch had code to set several other fields in
+> > > > > the input. I wanted to confirm that not setting them in this version is
+> > > > > intentional. Were they not needed?
+> > > > > 
+> > > > 
+> > > > Oh. The RFC v1 set partition_id, owner_vtl, domain_id.type, and domain_id.id
+> > > > individually. In this version, I just simplified it to a struct assignment.
+> > > > No functional change.
+> > > 
+> > > Of course! I should have looked more closely at the details before making
+> > > this comment. :-(
+> > > 
+> > > [...]
+> > > 
+> > > > > 
+> > > > > Previous versions of this function did hv_iommu_detach_dev(). With that call
+> > > > > removed from here, hv_iommu_detach_dev() is only called when attaching a
+> > > > > domain to a device that already has a domain attached. Is it the case that
+> > > > > Hyper-V doesn't require the detach as a cleanup step?
+> > > > > 
+> > > > 
+> > > > The IOMMU core attaches the device to release_domain (our blocking domain)
+> > > > before calling release_device(), so I believe the explicit detach in the RFC
+> > > > was redundant. I simply didn't realize that at the time.
+> > > > 
+> > > 
+> > > Got it. But after the IOMMU core attaches the device to the blocking
+> > > domain, there's the possibility that the vPCI device is rescinded by
+> > > Hyper-V and it goes away entirely. Or the device might be subjected
+> > > to an "unbind/bind" cycle in Linux. Does the detach need to be done
+> > > on the blocking domain in such cases? In this version of the patches, the
+> > > Hyper-V "attach" and "detach" hypercalls still end up unbalanced. That
+> > > seems a bit untidy at best, and I wonder if there are scenarios where
+> > > Hyper-V will complain about the lack of balance.
+> > > 
+> > 
+> > Thank you, Michael. May I ask what "the vPCI device is rescinded by
+> > Hyper-V and it goes away entirely" mean?
+> > 
+> > I realized it's a bit untidy. But I want to understand this issue more
+> > clearly first. :)
+> > 
+> > B.R.
+> > Yu
 > 
-
-Thanks for pointing this out. I think mm_valid_pasid() is to check if SVA
-is currently in action while mm_get_enqcmd_pasid() is to get the PASID for
-"ENQCMD instruction execution". What prctl_enable_tagged_addr()
-semantically requires here seems to be only checking if SVA is activated
-or not regardless of whether EL0 can execute ENQCMD instruction; the
-function wants to return error if SVA has been activated when LAM is to be
-activated as they are mutually exclusive [1]. So, I think we should leave
-it as-is. I am adding the author Kiryl as a reviewer for confirmation.
-
-Since it is now possible with this patch to activate SVA without involving
-EL0(for ENQCMD-like instructions), callers should be able to distinguish
-between if SVA is activated and if EL0 can execute ENQCMD-like
-instructions in addition to the SVA activation. mm_valid_pasid() is for
-the former and mm_get_enqcmd_pasid() is for the latter. So, I think there
-will be loss if we make the latter API serve for the former.
-
-Or, I guess we could rename mm_valid_pasid() to be more specific like
-mm_sva_activated() or mm_sva_in_use(). What do you think?
-
-> I didn't try to check the rest closely but the approach looked sane to
-> me
-
-Thanks. Sashiko reported valid points [2] and I will handle them in the
-meantime.
-
-[1] https://lore.kernel.org/all/20230312112612.31869-12-kirill.shutemov@linux.intel.com/
-[2] https://sashiko.dev/#/patchset/20260515094605.3195841-1-joonwonkang%40google.com
-
-Thanks,
-Joonwon Kang
