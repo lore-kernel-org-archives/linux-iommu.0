@@ -1,83 +1,84 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F8573815D4
-	for <iommu@lists.linux.dev>; Mon, 18 May 2026 17:20:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45769384233
+	for <iommu@lists.linux.dev>; Mon, 18 May 2026 17:22:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779124847; cv=none; b=LPIWeBVla98D/3mcckIhRJB0F27AOLIuWinFFDMyQmWr3+Fh1QU8AP8nXeXSFylepAa8ijVUIsha3ti0LumGId46lJACN90nRYSQfy95L34YNdgen3r8BDVFLiSivQsbrf0rti+Z0C2aoBuB1MfQnD8H9lNXB8tjGTor67KeDmk=
+	t=1779124938; cv=none; b=FzonsX/gxsUkV3b6hr1PuzvSEyosgO8N+vHrOffWWoK1Oy6OSvvyUEGhOGDpgIOppanLDqSVdQ7D9ofcOP578FdLZZK19bZYjdUZE4srT6bX5BbTt+cUSd2wOQTONAU/QrVhLGuQ4pdokUn8csM73mi7o5D/bbOfXP/3gFgfs58=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779124847; c=relaxed/simple;
-	bh=dj6sO1dq24qPoPg8t/jjU62zkoEGx+WZ2bGv3+pLqUg=;
+	s=arc-20240116; t=1779124938; c=relaxed/simple;
+	bh=kvzoRRtRkt99R85TCv6fmYGvBN6W9hGpuH3oahXqcoc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DXE3IWrbWEeYVR1hKftiFqVAa3PynoRXOptQCCgiObj0LCw7gDLKocgWQ3Gl/RqfMqV7ZfNQ0YUm3KgzzmHsgWxu8iJ6frKpi/92rxQkVPG6jUzXJ8TfCrlN2+mQZZPXq/sl9yV+r6aiSh0vrzCLQx3x++1vgmHZk7HOkRLoc38=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=BDMU5P4Z; arc=none smtp.client-ip=209.85.214.172
+	 Content-Type:Content-Disposition:In-Reply-To; b=LRo48qaYvTZJlkqq8eNupQktr+ZijDRb/O3b/6uhECPWbnaxyxrd86kMUhgUlR8+lWFN18LGvFGdl8p/zwPHoySailqN08tj70SwUC3tjFmyygvowNDYuX+CGDO161Y+bD0XjxSzJlackq+5mS3tVIN6pBtLcnyoCYoxrdD83MU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=C/DgB42F; arc=none smtp.client-ip=209.85.214.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="BDMU5P4Z"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2ba3b9bcf69so1325ad.0
-        for <iommu@lists.linux.dev>; Mon, 18 May 2026 10:20:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="C/DgB42F"
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2b46da8c48eso65ad.1
+        for <iommu@lists.linux.dev>; Mon, 18 May 2026 10:22:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779124845; x=1779729645; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1779124937; x=1779729737; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=wacrkWwKLVRP9x12vc+54brUCUoi0SSZqKwPJxVr82E=;
-        b=BDMU5P4ZYvBPuOXx4cD0MK1AWG1IJxZmb8XSAX/BPO7bwnEbKxstbcZI9QrAspGIGx
-         6IM42L5WQTKtUkU16s2EEiEmFln1ArJGXMPkD+UkbPKBfxBMdfDqyfaKrblZ7qcHKUnz
-         4QdECbxPS2c04bLLm7XzJubdFm2TAjLkNJnJJ55OB7SG38UVFWJItOCqFMjJk1aDTlFm
-         wKywHT1VyRqBwINxYmBoV9b+AZzGNTbvSa6DYJtlvKb7narPRGnToScuzDX6OVWXIizx
-         WU1parsrWQXGaerilwJVqHJ+EOFXHQZ6u5vdd5LS0lQNOpxzU5RBb7H3JGJxV4/KIetN
-         Qayw==
+        bh=GOpQmNzrJoZpllcvwCwLtMCpq7AcJeE0RS7V56u/5aU=;
+        b=C/DgB42FUG7GwyyU4k7CGYdgQ+bHL0ZFwaIbcpZ70I75vEloOAFH+AX+vWMkH/mAN+
+         cPLKFd2uNNGZF+pGlJddF3ZTRJFdlZus7sJPYee9dMNrilPbRAGdu1ne14rDAaKIGH+I
+         gYc5Xd78rZXo3S6dh1itUPeLezt1MV3XtZFZlfjZbE9Cpnsin4F0LmZKzkhsd2qAwnqm
+         EwIpUGH7Om/22p5R3y6Q0GxURFXGHMxrO6tLVDOMq+4A2O90RtF4GLvo1h+NCqWZYP/p
+         qQoBy/E0Ll18UxOozXXF4iew/HX58gHyOctj7/av/MDYllKHpVEo3kSm+B0iQYcmYcui
+         rhBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779124845; x=1779729645;
+        d=1e100.net; s=20251104; t=1779124937; x=1779729737;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=wacrkWwKLVRP9x12vc+54brUCUoi0SSZqKwPJxVr82E=;
-        b=b5CvTiXCfS0FLlXgFP4+ewIZlWEAUczKjiohvH3dXxC2WglkbpYDE0PJmcPNrM13nj
-         8aQ9/Zz1vyvBp5nAi8pr8b1nvVZX9CEvv6UlRH/9YoSjhHvO/kFdx/1FCOJ33d37gO62
-         eG+ayHLlWrIV6FOtucEZ6NOoq/sKHJbNFkzHT/Sa3MT1/F+l77nyzdK5Du5vCCdpvwoh
-         Uvm1ZfFQYPAgbHNFvmtGdhcRK4yrGHQX62LufIZ9Bvf7MvTb5weZE5Vf1jRhtGeIlzy0
-         OlC+ZgUK+T+XQC5lPmT8JXj5jtyNmC+IeUFcP9m9NtffIwfH/WhHGIBi+s8PWVQNOVZ4
-         bjsw==
-X-Forwarded-Encrypted: i=1; AFNElJ/1EI5yZti63NIBpvd3qyoEM/VjKh4NgAkAUFKTFhqTJQFhtBiXY+6WoVyEfvnpJZ7lSb+Ahg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzVGtNHOsxtWPYXOe8+xba9Nnx7ar0wadRBw+9VTnRsZMwKeXKN
-	q68v//s5XuQYhy376bG5io0oraEpnHWX/HIN5M7oWF+bdewctO/9yAvux6rqvowg6A==
-X-Gm-Gg: Acq92OFJSmgW0Dm0QWCmTB9qjlvoaoPLvtx6ufU50fA6SovrD0IU8ImIXAbP5q8JAAx
-	x56TXrO3NS8yLiHoxmgSrDqyQNUGFKnvxsOiX7BaPhE9RSz1tFP3S6mIqphYd4DjeO7j8YZUWlT
-	TvFoIaNrB6xS7AqbfoH1taWhyLZpe8DqEmejDdReF/pwm8+i1KWKtqO3gMQxr7dnXSjXO1IvtqW
-	SRGuMrepMUwuRov/yjLSqBAobziLVz3+sILqyn2Y79Z0SQbOAeBvm4idR9knGkT9dAaIuylHUJS
-	m/dIGBOVxVvsurHfs0O8aJ53nu7gIuLXbVlRBmM/Zux4BkJn9DfiGbv22Gha1JL1HRety3Jqz//
-	fRqdXv3+T9kC2Qf1CuJ+61d2siNUQGSrjZakZ6LZgV6S1iAM7r5Mo3qmZtzyPNGUXBiu52hYRk5
-	BvVEjq8Yh6+tt49BNkfEg7yBbwzfA3S3+oVZAjN9s5WinsO+CLPrFdK6FvpPEeioOvNXBqtpMqx
-	hv65KiN
-X-Received: by 2002:a17:903:3205:b0:2b0:5193:1212 with SMTP id d9443c01a7336-2bdb03a2d06mr3134135ad.4.1779124844385;
-        Mon, 18 May 2026 10:20:44 -0700 (PDT)
+        bh=GOpQmNzrJoZpllcvwCwLtMCpq7AcJeE0RS7V56u/5aU=;
+        b=IcLbBdckKDHZ7cWOhWGIhomSw/mP43w2vK6gWlcKJsKYqCyhMDxDWzaBYCjrAuO7ZY
+         srVYCUtPguRpi+/6qy2PcmP1Apo5Zr7Y0DngXgfNDBm1BPoZDs/YaOZ8mcqXnhybPuM9
+         xe5Te5PNo+LiFjxv0s93TtBFXusKJ3pGIUakX6izQlzksqU9toUsV/7DEQW4R8iVs7vP
+         sM6SRrKy9d3ZR1SVRBaZAm1+kly1+E/zcvbQrI8VFg4h9XtU/s6UJf4cTT42YKdrrap2
+         6gXpYXxD3NTDenzvNjztvEO5jiEjGks1TYEJIs0hut5zcaDVsy9WlXi2zUli0gCf6uaa
+         8pDQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/n99eRh+ai0QTgvwN3owlHSGGqHFSCIRVzs9cAm2P0Fegu3LZh3hI8my2ZbRw8WbhijHjjeQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwdkR4FpFzPLTrmBfD+B4s8jrbrcQc6JV4lsP1v0YQj6OPhC2LT
+	9M4MtRqyWtEriVyO/Et1MTKHiBx23FhI2X7zlUKVY+jYXzVonDROrvtHoHK8AOu9tg==
+X-Gm-Gg: Acq92OHDqJMHQtYsn8dDyL3lPH7E2hmdIDL1PgciAs6CfK7gdoRSQn3qs3ua1t2LwCI
+	Z1HfxMWv7ECdsvggvIgMIPBXNTeFWnaxkxoKdcjna+zxt4OtzorfYpQlf9ZjDNOqNUGfI3LDqwu
+	L4z69FEKdCJFn1yJE+G4YNpfqIn/ZRe0DBX/Z5iIvE0ElgqgyJIZilLG29fY41SVCIPKy4yhVGf
+	hE2gMDtnhsN1NAadofD3LI9gHTRDSBeQRUumuATMb2JPoq/Nw9yYpHwsVgVN5YP+2NiCFqKVfaJ
+	G7leK7XHGNbvcosehS/92FgLtn4clnq4kuJ9UFmUbYZSIBsiWladbbQBBNsnVZPgWCSqs+PGfON
+	sMJ7LSBc+gMAxWBzrJ/hAa/HSPI7MvMt6/3VBg4qZePCqywCXSyJaSXpFr+GSXFjOSeW/ETSHcy
+	TgCPEwc8+/MWlflQvbrkHEGd+9uxOWOv7SMB+r/GoYtO8LBcE/yWfvCPvSezuHGFU5gC8GFapck
+	KgprinN
+X-Received: by 2002:a17:903:228e:b0:2b0:aee4:afe7 with SMTP id d9443c01a7336-2bdb03a197bmr3385745ad.10.1779124935806;
+        Mon, 18 May 2026 10:22:15 -0700 (PDT)
 Received: from google.com (153.46.83.34.bc.googleusercontent.com. [34.83.46.153])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-83f196660f9sm19017886b3a.10.2026.05.18.10.20.43
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-83f1977b779sm15315177b3a.23.2026.05.18.10.22.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 May 2026 10:20:43 -0700 (PDT)
-Date: Mon, 18 May 2026 17:20:40 +0000
+        Mon, 18 May 2026 10:22:15 -0700 (PDT)
+Date: Mon, 18 May 2026 17:22:12 +0000
 From: Samiullah Khawaja <skhawaja@google.com>
 To: Pranjal Shrivastava <praan@google.com>
-Cc: David Matlack <dmatlack@google.com>, 
-	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>, 
+Cc: David Woodhouse <dwmw2@infradead.org>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>, 
+	Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, 
+	Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>, 
 	Adithya Jayachandran <ajayachandra@nvidia.com>, Parav Pandit <parav@nvidia.com>, 
 	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
 	Pratyush Yadav <pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, Chris Li <chrisl@kernel.org>, Vipin Sharma <vipinsh@google.com>, 
+	David Matlack <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	Chris Li <chrisl@kernel.org>, Vipin Sharma <vipinsh@google.com>, 
 	YiFei Zhu <zhuyifei@google.com>
-Subject: Re: [PATCH v2 02/16] iommu: Implement IOMMU Live update FLB callbacks
-Message-ID: <agtHykqDImuLL6nU@google.com>
+Subject: Re: [PATCH v2 05/16] iommu/pages: Add APIs to
+ preserve/unpreserve/restore iommu pages
+Message-ID: <agtKjY_D2S6I_DVd@google.com>
 References: <20260427175633.1978233-1-skhawaja@google.com>
- <20260427175633.1978233-3-skhawaja@google.com>
- <afUe71D8JfgmA0BG@google.com>
- <agsHFbI_FQEXiZAA@google.com>
+ <20260427175633.1978233-6-skhawaja@google.com>
+ <agsg1esRdKwV3dxB@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -86,90 +87,142 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <agsHFbI_FQEXiZAA@google.com>
+In-Reply-To: <agsg1esRdKwV3dxB@google.com>
 
-On Mon, May 18, 2026 at 12:33:25PM +0000, Pranjal Shrivastava wrote:
->On Fri, May 01, 2026 at 09:45:19PM +0000, David Matlack wrote:
->> On 2026-04-27 05:56 PM, Samiullah Khawaja wrote:
->> > Add liveupdate FLB for IOMMU state preservation. Use KHO preserve memory
->> > alloc/free helper functions to allocate memory for the IOMMU Live update
->> > FLB object and the serialization structs for device, domain and iommu.
->> >
->> > During retrieve, walk through the preserved obj array headers and
->> > restore each folio. Also recreate the FLB obj.
->> >
->> > Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+On Mon, May 18, 2026 at 02:23:17PM +0000, Pranjal Shrivastava wrote:
+>On Mon, Apr 27, 2026 at 05:56:22PM +0000, Samiullah Khawaja wrote:
+>> IOMMU pages are allocated/freed using APIs using struct ioptdesc. For
+>> the proper preservation and restoration of ioptdesc add helper
+>> functions.
 >>
->> > +static void *iommu_liveupdate_restore_array(u64 array_phys)
->> > +{
->> > +	struct iommu_array_hdr_ser *array_hdr;
->> > +	void *vaddr = array_phys ? phys_to_virt(array_phys) : NULL;
->> > +
->> > +	while (array_phys) {
->> > +		/*
->> > +		 * Failure to restore preserved IOMMU state is considered fatal.
->> > +		 *
->> > +		 * This is because the IOMMU translations for preserved IOMMUs
->> > +		 * were kept enabled in the previous kernel and the preserved
->> > +		 * devices have their IOMMU domains still present. Not being
->> > +		 * able to restore means that the memory mapped into preserved
->> > +		 * domains might be already corrupted by the preserved devices.
->> > +		 *
->> > +		 * There is no way to confirm the integrity of the memory that
->> > +		 * was mapped. BUG_ON is the safest option at this point.
->> > +		 */
->> > +		BUG_ON(!kho_restore_folio(array_phys));
->> > +		array_hdr = phys_to_virt(array_phys);
->> > +		array_phys = array_hdr->next_array_phys;
->> > +	}
->> > +
->> > +	return vaddr;
->> > +}
+>> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+>> ---
+>>  drivers/iommu/iommu-pages.c | 108 ++++++++++++++++++++++++++++++++++--
+>>  drivers/iommu/iommu-pages.h |  30 ++++++++++
+>>  2 files changed, 134 insertions(+), 4 deletions(-)
 >>
->> > +static int iommu_liveupdate_flb_retrieve(struct liveupdate_flb_op_args *argp)
->> > +{
->> > +	struct iommu_flb_obj *obj;
->> > +	struct iommu_flb_ser *ser;
->> > +
->> > +	obj = kzalloc_obj(*obj, GFP_KERNEL);
->> > +	if (!obj)
->> > +		return -ENOMEM;
->>
->> Should this be considered fatal for the same reason
->> iommu_liveupdate_restore_array() is considered fatal? If anything in
->> iommu_liveupdate_flb_retrieve() fails then the risk of corruption as
->> described in iommu_liveupdate_restore_array() is possible.
+>> diff --git a/drivers/iommu/iommu-pages.c b/drivers/iommu/iommu-pages.c
+>> index 3bab175d8557..b1ffeb930e6d 100644
+>> --- a/drivers/iommu/iommu-pages.c
+>> +++ b/drivers/iommu/iommu-pages.c
+>> @@ -6,6 +6,7 @@
+>>  #include "iommu-pages.h"
+>>  #include <linux/dma-mapping.h>
+>>  #include <linux/gfp.h>
+>> +#include <linux/kexec_handover.h>
+>>  #include <linux/mm.h>
 >>
 >
->Righ... Nice catch. I suppose we should BUG_ON() this because
->luo_flb_file_finish_one [1] returns void. Thus, if we return -ENOMEM
->here all we get is a WARN_ON without panic.
-
-The error is propagated by get_flb_incoming(). The finish path has a
-WARN. But that is fine because finish won't be called as can_finish()
-will fail if FLB retrieve fails and restore cannot be done.
-
-I will add a comment about this here.
+>[snip]
 >
->We can't statically allocate obj in liveupdate_flb_op_args because obj
->is a void ptr. I believe we must add a BUG_ON() here.
+>> +
+>> +/**
+>> + * iommu_unpreserve_pages - Unpreserve pages that were preserved in KHO
+>> + * @list: List of pages to unpreserve
+>> + */
+>> +void iommu_unpreserve_pages(struct iommu_pages_list *list)
+>> +{
+>> +	struct ioptdesc *iopt;
+>> +
+>> +	list_for_each_entry(iopt, &list->pages, iopt_freelist_elm)
+>> +		kho_unpreserve_folio(ioptdesc_folio(iopt));
+>> +}
+>> +EXPORT_SYMBOL_GPL(iommu_unpreserve_pages);
+>> +
+>> +/**
+>> + * iommu_restore_page - Restore a page that was preserved in KHO
+>> + * @phys: Physical address of a page
+>> + */
+>> +void iommu_restore_page(u64 phys)
+>> +{
+>> +	struct ioptdesc *iopt;
+>> +	struct folio *folio;
+>> +	unsigned long pgcnt;
+>> +	unsigned int order;
+>> +
+>> +	folio = kho_restore_folio(phys);
+>> +	BUG_ON(!folio);
+>> +
+>> +	iopt = folio_ioptdesc(folio);
+>> +
+>> +	/*
+>> +	 * For the restored pages incoherent is set to false as these are not
+>> +	 * mapped using the DMA_API. The remapping of these pages using DMA_API
+>> +	 * is not needed as these are not going to be written to by the new
+>> +	 * kernel.
+>> +	 */
 >
->> > +
->> > +	/* Data must be present and valid from the previous kernel */
->> > +	BUG_ON(!kho_restore_folio(argp->data));
->> > +
->> > +	mutex_init(&obj->lock);
->> > +	ser = phys_to_virt(argp->data);
->> > +	obj->ser = ser;
->> > +
->> > +	obj->curr_domain_array = iommu_liveupdate_restore_array(ser->iommu_domain_array_phys);
->> > +	obj->curr_device_array = iommu_liveupdate_restore_array(ser->device_array_phys);
->> > +	obj->curr_iommu_array = iommu_liveupdate_restore_array(ser->iommu_array_phys);
->> > +	argp->obj = obj;
->> > +	return 0;
->> > +}
+>Looks good.
+>
+>> +	iopt->incoherent = false;
+>> +
+>> +	order = folio_order(folio);
+>> +	pgcnt = 1UL << order;
+>> +	iommu_folio_update_stats(folio, pgcnt);
+>> +}
+>> +EXPORT_SYMBOL_GPL(iommu_restore_page);
+>> +
+>> +/**
+>> + * iommu_preserve_pages - Preserve pages during kexec handover
+>> + * @list: List of pages to preserve
+>> + *
+>> + * Returns 0 on success, negative error on failure
+>> + */
+>> +int iommu_preserve_pages(struct iommu_pages_list *list)
+>> +{
+>> +	struct ioptdesc *iopt;
+>> +	int ret;
+>> +
+>> +	list_for_each_entry(iopt, &list->pages, iopt_freelist_elm) {
+>> +		ret = kho_preserve_folio(ioptdesc_folio(iopt));
+>> +		if (ret)
+>> +			goto err;
+>> +	}
+>> +
+>> +	return 0;
+>> +
+>> +err:
+>> +	list_for_each_entry_continue_reverse(iopt, &list->pages, iopt_freelist_elm)
+>> +		kho_unpreserve_folio(ioptdesc_folio(iopt));
+>> +
+>
+>Looks good.
+>
+>> +	return ret;
+>> +}
+>> +EXPORT_SYMBOL_GPL(iommu_preserve_pages);
+>> +#endif
+>> +
+>
+>[snip]
+>
+>> +static inline int iommu_preserve_pages(struct iommu_pages_list *list)
+>> +{
+>> +	return -EOPNOTSUPP;
+>> +}
+>> +
+>> +static inline void iommu_unpreserve_pages(struct iommu_pages_list *list, int count)
+>
+>Nit: This is inconsistent from the signature in it's counter part in
+>IS_ENABLED(CONFIG_IOMMU_LIVEUPDATE)
+
+Oh. I will update this in next revision
+>
+>Let's remove `int count` from the arguments to avoid broken builds.
+>
+>> +{
+>> +}
+>> +
+>> +static inline void iommu_restore_page(u64 phys)
+>> +{
+>> +}
+>> +#endif
+>> +
+>
+>With that stub argument fixed,
+>Reviewed-by: Pranjal Shrivastava praan@google.com
+
+Thanks Pranjal.
 >
 >Thanks,
 >Praan
->
->[1] https://elixir.bootlin.com/linux/v7.1-rc3/source/kernel/liveupdate/luo_flb.c#L208
