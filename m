@@ -1,273 +1,140 @@
-Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A6A0347505
-	for <iommu@lists.linux.dev>; Mon, 18 May 2026 18:44:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779129876; cv=none; b=PFDudmdY1QaleZlV6d8LOwZg+VR0PhFPUjkkvoWtyN8oLwL5sdKn8uww26OLOutsXfBpk6gnn1INrYRuzDOMeW/QIWb0eABgzy4dwPaZuOpH0UA5ybMFS9neEJ4rfLvgErxjcKs2akHREPwzGnfTU2tUPWmL8S52cU1CvvdoNRE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779129876; c=relaxed/simple;
-	bh=Ic1nHyDVe0+lHF29JSEClWUQfaRhDT14d/5L38QtIwY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=F8u6kJOgsvfOY4CcMI3V5JxdKSxiX5omb4Rqpu914Y+h29FaEvMy0xIfvhDIXPtqz+kRPho5JJyocBHV6TE9/pGmogcuDxvXaU9b9qxM3ysTh7WyjTl3+AoN/fha27dIAMD7ZMAfiuq+GZtywl1srEkndEv/8vX+b10XYGYcqfU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=BSdz7Uvy; arc=none smtp.client-ip=209.85.214.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 786623845B7
+	for <iommu@lists.linux.dev>; Mon, 18 May 2026 18:50:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.45
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779130214; cv=pass; b=k7P7bQYbrX33hyWKYOn7WeUSf5VAPtQI7gA22lfl4laoHKnEeZZugmkSVDQMe7vm95jsmQ8V+hYrgAlLjveqzxLmyQXVuch/XQ9BcR8BS5D4oprXiloBS6e+EY1KFYEvA1C2GxxTzPiT1g5592/mY9VXX1uh9mE1//WtvsgOEk8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779130214; c=relaxed/simple;
+	bh=ntjLPEYi5GRPAiZuo7cclkhEyY2tz4aKN8Y6WdSUrUE=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=QplcNSVOkUDviwcs3LDCZvdASbttMqtV9L9/E4uY3ALe2BoQhpoA7frhbnzb8wXkdb25/FxGqmIUqMwwpozl+expI+wHH0QjP5g1KJLxMtX87b58qSqOyWxngHBt6wQhbSXN1UmrnguM07naCibsBnIJxivmd02th/aUezjklkg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PTC2mDR2; arc=pass smtp.client-ip=209.85.128.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="BSdz7Uvy"
-Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2ba180a022dso75ad.1
-        for <iommu@lists.linux.dev>; Mon, 18 May 2026 11:44:35 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PTC2mDR2"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-488b150559bso20788175e9.1
+        for <iommu@lists.linux.dev>; Mon, 18 May 2026 11:50:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779130212; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Z0YxCb3fLGn3NaNnbqV+vZdafy7fAchI3BVtyvUbbhKxzkudQ5bbGz3sbi7uuDEhAt
+         WdanUux3V+CDZBZxvdr3kPNvbKzj9HCTFHi1FEDUAHfTbTwa5UzGHZe+pjuSkCv0rLUU
+         jirN6aXJeEJkBzuXfML6biu87oCbxOSdtik8mCyOV4aF1C/2tTV5TYc8SzFtCxYkD8v3
+         GSdg222bWRgCxW4zR1dRzJNGUkMvH1zpD/tWo8ZjMjv6wDvWhakjuesPCluXZWKPZx7k
+         Roa8b6WBmdbbvQCbizNAYpWj9mDkQKW76eMXSz/CbSdoJ1FFPjpN/ciUhlVwylKSTc+O
+         8OhA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=VqNnxkjBMmJhXWFpK+NCwtLhzLfiA5Rwy9PxwlrjgDo=;
+        fh=/UNQnTD35aKplFi3gjaOkjGdeDc1gaoJLqiAoMd+Klg=;
+        b=KLJsF9uRexPqxxBYOLagt5L7yam8Q0U4p48Wly7/HG5DZkExXpgWGAUxCNOZ2Xqfr0
+         qsJ4V/WenCrYPFwXaLZ1V4VWvRuBwCeF8HtnJ4e/Nw0QNX2B8RIRUDVmlz8dOH2iT5Id
+         oyON8or1YtH+RVHUQ7j56t1ACMP33rCXKKpCqEDCuMmry8FQoUwMBNU9xNPM5dV1tF1s
+         BDwEgso27hRic+Q7ghHuKBsQxza63miL7Am7Y3yk2+nSjbCpF84S4GMdLY/esulv5cCo
+         Dpqviu/jeWWAlFBtmk5Xh24KB8MNdY2qx2EK45JsJhPywsw+xmHDNKoJ4wKwYkbrWL3w
+         buBw==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779129875; x=1779734675; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=42Co3FfgxAP6Wa+6cQjpccW4rhzcESaNN3XiEoxLDQM=;
-        b=BSdz7UvyRNDNHMAhSIxsdXJwjBP3XWixr/7mBUm9LCHTDpnmHn8H7pYNecDM+5auPh
-         zpu+jsvWJhLVAekJkXeIZB/l8tK7u44CBrzXgTw4kar7bZBlssurg57wC71GFI1uiGa2
-         mkFm+ePGltmnSEnE7sM1TXSixRwe84HGY9fFqnW1s1c5Xen/ghDWl2cjiqr2lwVhCSLE
-         xWHGPdXBKUeo4Fh1/Xs3cBbOrJsOQvnBoSjjsC7Elf6FoA8G2xw7DMKYuVfEvxl+Ym20
-         e6eiDr+AIr5oQHdfEYVlDa/0CmWWPmQun85PDYOFatGSLF9YtEgHa/Dlq0fNpgv+/06b
-         6z3A==
+        d=gmail.com; s=20251104; t=1779130212; x=1779735012; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=VqNnxkjBMmJhXWFpK+NCwtLhzLfiA5Rwy9PxwlrjgDo=;
+        b=PTC2mDR24Kj/ogG4JyNXjKCIlz71UcZhD1db2WEBdT1X1PgKeN+nSR0IpIgrynnkAP
+         Tu0/fn70LiULoZMKIPjrj7iuV/XObqA3MG4htoawrG6WWsy4u/NJHRvldPX+UXxubO5E
+         YEsJT7DMWRFvxAGPz8ds3O6diUE28MnoGFG1h/cq1tngGbZInVV+AFZBsz29FVNb2mD1
+         j5AdzNKRuKIUl8E7uYoKu8nWTiSTWqnd5kFLf6sKitQx74q0lFCd2MKJ4loIfWH30CET
+         sH9GkartMf8RRx+O0HGhbWrQ7Q4UD2QHkkhVtylWfTeW6Uknsgsy2KwH8ztaAbOqzi7s
+         aXsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779129875; x=1779734675;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=42Co3FfgxAP6Wa+6cQjpccW4rhzcESaNN3XiEoxLDQM=;
-        b=fLL6UW4pd/KxO0HWopqRvxOVivuqq9tNJs9d5K6n8iQTG9Fiv4o/usCMhoo8yqHrQP
-         xWoEaxvvbiJDvucEIXriFnDFyfbO27P++hm3Rgb+3V0IYvCdIU1mo7VxXxOhaBLY6NEJ
-         hRfp/7RS2dKjy4ZP/SlAl+EMmZRJ1CfUGZGoSJ2oZAErm3d93rTTASNEbv5+7SZU0lsG
-         otltPDqTEMcdCZOU2e3LERcrYc6eGB/0WKP/MR62vQEuFdU7PQfHbk9BjAu0sutVGgbQ
-         5VFxIYoPEjs+BqZ77bOUhf9PfJGXVJNTSTUn69nXP/5MDyp0xCk95UmM0IJw3aD3pSnl
-         wnVw==
-X-Forwarded-Encrypted: i=1; AFNElJ9qh+mqe4AefQMDHv1G7uUURdz5IxBR5Vv6QuM/KOA7FSdCqIWyjmh4CPhg21WOM88UkpJhdA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzrfRwY+vv8ng9fXMXsBbG4MuOJKQjRDfJdnuaOZY1spJRmMWiB
-	+RylI06YjlLUA+NovKbExHL6NjX4VPiUC+cibISA6Q0KTJZZZ5pQNsqZahwhZJA++w==
-X-Gm-Gg: Acq92OGzZxca1Ry1JzUtUHdlDEgOVKDOtUI7B02jRJ6pJaG6cLuK8pS8xwmXDvAVT0s
-	kSw86ajkuiQnCEpS0t2idGjO7JcT/VHfXCRGVAq2gs0lz2SdsCa9mOzkvG+zsMu7kiPgF27REam
-	JjdLic8JJoL1Aprpqm2zn61CF6GZl2Y1OcE0T/ormuxcbL5RxAcwZ1k7dYqmbRNEWPgcMBAGiZG
-	AleuH/2xdJAgWYb6og/gxny8kw/V7EQgMMqnTEYTENnUR0uAxiHUc3WUxHALIfXS6oTfF6hyOrb
-	cLBPGlLPiNLHbFbL3lI8dEueEaT6dEcwflKGKEWsb6F/0c+yaF0oLOXBmcIuKXJw24n4255Imx4
-	0t6qNfv+nMsluRK0iz1VQp6yIbcV3YhuWyZpY7X3dO5Umy+rgo+c+JhHjxPfTzMhoAZkUENL1w8
-	iJ7zx9ct/8VizneNw9JAnOAmJjrObqWOGNWunvZSoI8ot/QUD1QV5DzRtpDF8UHsR1uE+SsUF68
-	Vl2ToG0
-X-Received: by 2002:a17:902:cf0d:b0:2b4:6529:7bae with SMTP id d9443c01a7336-2bdb329b56bmr3672775ad.17.1779129874166;
-        Mon, 18 May 2026 11:44:34 -0700 (PDT)
-Received: from google.com (153.46.83.34.bc.googleusercontent.com. [34.83.46.153])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2bd5cfe64a9sm158941345ad.53.2026.05.18.11.44.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 May 2026 11:44:33 -0700 (PDT)
-Date: Mon, 18 May 2026 18:44:30 +0000
-From: Samiullah Khawaja <skhawaja@google.com>
-To: Pranjal Shrivastava <praan@google.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, 
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>, 
-	Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, 
-	Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>, 
-	Adithya Jayachandran <ajayachandra@nvidia.com>, Parav Pandit <parav@nvidia.com>, 
-	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
-	Pratyush Yadav <pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	David Matlack <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
-	Chris Li <chrisl@kernel.org>, Vipin Sharma <vipinsh@google.com>, 
-	YiFei Zhu <zhuyifei@google.com>
-Subject: Re: [PATCH v2 04/16] iommu: Implement device and IOMMU HW
- preservation
-Message-ID: <agtcSw4s0M2ArWI4@google.com>
-References: <20260427175633.1978233-1-skhawaja@google.com>
- <20260427175633.1978233-5-skhawaja@google.com>
- <agsaY9714WS1N4Zu@google.com>
+        d=1e100.net; s=20251104; t=1779130212; x=1779735012;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=VqNnxkjBMmJhXWFpK+NCwtLhzLfiA5Rwy9PxwlrjgDo=;
+        b=p+lNzhg8VHYB3Ttzg/es9S/4RLNL38O/s+DonHAxk5zcGTPi2fi5XxZsZzZ1V5b7sW
+         bsgBZS6xb3sCHkZI4VUBu085lbBqO0AyNhHv4mBuGHmTL8Aic8+RyoQayXeQbltnjUms
+         pK6fJe/K+vmChkMGw/T40Nj0oWCMo3daQ6aVG7u6lPfAv2YxfpzlneHU6A5fQz+RbwlT
+         PHaAtMl8wZ4OYRpkElB2Lo0xuPQvu3tQ9RxRrmkoNdY4MbqXTHgWdTtL5rWYRIqZTXwv
+         sxPhAH8gZD4M2vRRu9tfXzXeT9BUqWFaX1QuNt0134mkb0WXQKgYOgvMTCQR3mAEKO+1
+         CTpA==
+X-Gm-Message-State: AOJu0YwoioXfrTHxKjJzuSHcRZaSuJ89o7kIJjWTmrm0VS7T7jOfJVnB
+	VofFOUzAWAS+gZ7bSK+YwBF2yaHnYFY7Ir4lAIToODjiYNq/fMjJPyam2dc5jJDL6NpJmWEFidu
+	bdSTk626kl1b17TrramTCw2Ef/BfUB+mYL7sESAc=
+X-Gm-Gg: Acq92OGUPk8Z+8DrxWs71gRqLRQdLbPxg7cyASn2SB04NQrWtiny5j/1HazPszjzfn1
+	VvyMh3EJdUF1AukWMPGf3d2AgYi+i6R3HusbyUai0xXk3En9kJjR6VQNftH33dbuZjG3TobA43L
+	Y5fhxX8GGUELFun76UJJldEyXOiDUt88wTmv9t+6mhW5Jh8ukON88UykwstP1x68u7QjLaRc/ec
+	l9cdZDdQPFz6G+iOyR+jT1j4wxCRJK0XiExG3rKhutq8Kv8cxNuorLM+eVEaL3LdRBj74XocLCr
+	vigBPEGw7dncFDrerpo=
+X-Received: by 2002:a05:600c:3506:b0:48f:e44c:e058 with SMTP id
+ 5b1f17b1804b1-48fe60e13e7mr243263145e9.1.1779130211678; Mon, 18 May 2026
+ 11:50:11 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <agsaY9714WS1N4Zu@google.com>
+From: Maoyi Xie <maoyixie.tju@gmail.com>
+Date: Tue, 19 May 2026 02:49:58 +0800
+X-Gm-Features: AVHnY4LP4WEjN53zWIvLnqiUH8Ng1-ziqjtJncIzUtEbTdyAtpzVtgYcIetns8s
+Message-ID: <CAHPEe=G-FZvEXjkE+vAXN5MHXCtsOaUoKwg2RQL6m=om+c20hQ@mail.gmail.com>
+Subject: iommu: iterator used after loop end in resv region insertion?
+To: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, jpb@kernel.org
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	virtualization@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, May 18, 2026 at 01:55:47PM +0000, Pranjal Shrivastava wrote:
->On Mon, Apr 27, 2026 at 05:56:21PM +0000, Samiullah Khawaja wrote:
->> Add IOMMU ops to preserve/unpreserve a device. These can be implemented
->> by the IOMMU drivers that support preservation of devices that have
->> their IOMMU domains preserved. During device preservation the state of
->> the associated IOMMU is also preserved as dependency.
->>
->> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
->> ---
->>  drivers/iommu/liveupdate.c       | 162 +++++++++++++++++++++++++++++++
->>  include/linux/iommu-liveupdate.h |  33 +++++++
->>  include/linux/iommu.h            |  20 ++++
->>  3 files changed, 215 insertions(+)
->>
->> diff --git a/drivers/iommu/liveupdate.c b/drivers/iommu/liveupdate.c
->> index f71f14518248..765d042e22e3 100644
->> --- a/drivers/iommu/liveupdate.c
->> +++ b/drivers/iommu/liveupdate.c
->> @@ -11,6 +11,7 @@
->>  #include <linux/liveupdate.h>
->>  #include <linux/iommu-liveupdate.h>
->>  #include <linux/iommu.h>
->> +#include <linux/pci.h>
->>  #include <linux/errno.h>
->>
->>  #define iommu_max_objs_per_page(_array) \
->> @@ -293,3 +294,164 @@ void iommu_domain_unpreserve(struct iommu_domain *domain)
->>  	domain->preserved_state = NULL;
->>  }
->>  EXPORT_SYMBOL_GPL(iommu_domain_unpreserve);
->> +
->> +static struct iommu_hw_ser *alloc_iommu_hw_ser(struct iommu_flb_obj *flb)
->> +{
->> +	int idx;
->> +
->> +	idx = alloc_object_ser((struct iommu_array_hdr_ser **)&flb->curr_iommu_array,
->> +			       iommu_max_objs_per_page(flb->curr_iommu_array));
->
->Nit: Same thing about brittle casts here, shall we make them void ** and
->cast then within alloc_object_set ?
+Hi all,
 
-Agreed. Will change this.
->
->
->> +	if (idx < 0)
->> +		return ERR_PTR(idx);
->> +
->> +	flb->curr_iommu_array->objects[idx].hdr.ref_count = 1;
->> +	return &flb->curr_iommu_array->objects[idx];
->> +}
->> +
->> +static int iommu_preserve_locked(struct iommu_device *iommu,
->> +				 struct iommu_flb_obj *flb_obj)
->> +{
->> +	struct iommu_hw_ser *iommu_hw_ser;
->> +	int ret;
->> +
->> +	if (!iommu->ops->preserve)
->> +		return -EOPNOTSUPP;
->> +
->> +	lockdep_assert_held(&flb_obj->lock);
->> +	if (iommu->outgoing_preserved_state) {
->> +		iommu->outgoing_preserved_state->hdr.ref_count++;
->> +		return 0;
->> +	}
->> +
->> +	iommu_hw_ser = alloc_iommu_hw_ser(flb_obj);
->> +	if (IS_ERR(iommu_hw_ser))
->> +		return PTR_ERR(iommu_hw_ser);
->> +
->> +	ret = iommu->ops->preserve(iommu, iommu_hw_ser);
->> +	if (ret) {
->> +		iommu_hw_ser->hdr.deleted = true;
->> +		return ret;
->> +	}
->> +
->> +	iommu->outgoing_preserved_state = iommu_hw_ser;
->> +	return ret;
->> +}
->> +
->> +static void iommu_unpreserve_locked(struct iommu_device *iommu,
->> +				    struct iommu_flb_obj *flb_obj)
->> +{
->> +	struct iommu_hw_ser *iommu_hw_ser = iommu->outgoing_preserved_state;
->> +
->> +	lockdep_assert_held(&flb_obj->lock);
->> +	iommu_hw_ser->hdr.ref_count--;
->> +	if (iommu_hw_ser->hdr.ref_count)
->
->Shall we add a defensive if (WARN_ON(!iommu_hw_ser)) ? I'm aware we
->check this on within iommu_unpreserve_device() but we don't seem to
->check it before calling iommu_unpreserve_locked() in the error path of
->iommu_preserve_device.
+While reading drivers/iommu/ I noticed two places that look
+like a past the end iterator pattern. I would appreciate it
+if you could take a look and let me know whether these are
+real issues and whether they are worth fixing.
 
-Agreed. I will add this.
->
->> +		return;
->> +
->> +	iommu->outgoing_preserved_state = NULL;
->> +	iommu->ops->unpreserve(iommu, iommu_hw_ser);
->
->We seem to assume we'll always have unpreserve implemented? If so, we
->should check it during the iommu registration itself and fail it, i.e.
->
->inside iommu_device_register() we could add something like:
->
->#ifdef CONFIG_IOMMU_LIVEUPDATE
->if ((iommu->ops->preserve && !iommu->ops->unpreserve) ||
->    (!iommu->ops->preserve && iommu->ops->unpreserve)) {
->        pr_err("IOMMU: %s: Asymmetric live-update operations detected\n",
->               dev_name(iommu->dev));
->        return -EINVAL;
->}
->#endif
->
->This prevents a half-baked iommu driver from ever spinning up, completely
->eliminating the need to check for it inside the live-update session paths.
+The first is iommu_insert_resv_region() in drivers/iommu/iommu.c
+(linux-7.1-rc1, around line 873):
 
-Replied to this in the other thread where you suggested this inline with
-Baolu's comment.
->
->> +	iommu_hw_ser->hdr.deleted = true;
->> +}
->> +
->> +static struct iommu_device_ser *alloc_iommu_device_ser(struct iommu_flb_obj *flb)
->> +{
->> +	int idx;
->> +
->> +	idx = alloc_object_ser((struct iommu_array_hdr_ser **)&flb->curr_device_array,
->
->Nit: Same thing about brittle casts here, shall we make them void ** and
->cast then within alloc_object_set ?
+    list_for_each_entry(iter, regions, list) {
+            if (nr->start < iter->start ||
+                (nr->start == iter->start && nr->type <= iter->type))
+                    break;
+    }
+    list_add_tail(&nr->list, &iter->list);
 
-Will update this in next revision.
->
->> +			       iommu_max_objs_per_page(flb->curr_device_array));
->> +	if (idx < 0)
->> +		return ERR_PTR(idx);
->> +
->> +	flb->curr_device_array->objects[idx].hdr.ref_count = 1;
->> +	return &flb->curr_device_array->objects[idx];
->> +}
->> +
+The second is viommu_add_resv_mem() in drivers/iommu/virtio-iommu.c
+(linux-7.1-rc1, around line 523):
 
-[snip]
->> +
->> +	ret = iommu_preserve_locked(iommu->iommu_dev, flb_obj);
->> +	if (ret) {
->> +		device_ser->hdr.deleted = true;
->> +		return ret;
->> +	}
->> +
->> +	device_ser->domain_iommu_ser.domain_phys = __pa(domain->preserved_state);
->> +	device_ser->domain_iommu_ser.iommu_phys = __pa(iommu->iommu_dev->outgoing_preserved_state);
->
->Nit: Should these be updated to use virt_to_phys as well?
+    list_for_each_entry(next, &vdev->resv_regions, list) {
+            if (next->start > region->start)
+                    break;
+    }
+    list_add_tail(&region->list, &next->list);
 
-Will update these.
->
->> +	device_ser->devid = pci_dev_id(pdev);
->> +	device_ser->pci_domain_nr = pci_domain_nr(pdev->bus);
->> +
->> +	ret = iommu->iommu_dev->ops->preserve_device(dev, device_ser);
->> +	if (ret) {
->> +		device_ser->hdr.deleted = true;
->> +		iommu_unpreserve_locked(iommu->iommu_dev, flb_obj);
->> +		return ret;
->> +	}
->> +
->> +	dev->iommu->device_ser = device_ser;
->> +	*preserved_state = virt_to_phys(device_ser);
->> +	return 0;
->> +}
->> +
->
->[...]
->
->Thanks,
->Praan
->
+In both cases, when the loop walks all entries without break,
+the iterator has gone one step past the last entry. &iter->list
+then aliases the list head via container_of offset cancellation,
+so the insert lands at the list tail. That is the intended
+behaviour, but the access is undefined per C11.
 
-Sami
+Jakob Koschel cleaned up many such sites in 2022, for example
+commits 99d8ae4ec8a (tracing: Remove usage of list iterator
+variable after the loop), 2966a9918df (clockevents: Use dedicated
+list iterator variable) and dc1acd5c946 (dlm: replace usage of
+found with dedicated list iterator variable). These two sites
+in drivers/iommu/ were not covered.
+
+A candidate fix would track an explicit insert_before pointer
+initialised to the list head and overwritten to &iter->list
+only when the loop breaks early. The observable behaviour is
+unchanged.
+
+If this is intentional or already known, please disregard.
+Otherwise, I am happy to send a [PATCH] or to leave the fix to
+you. Thank you for your time, and sorry for the noise if this
+is not actually worth fixing or has already been spotted.
+
+Thanks,
+Maoyi Xie
+https://maoyixie.com/
