@@ -1,86 +1,83 @@
-Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
+Received: from mail-qv1-f52.google.com (mail-qv1-f52.google.com [209.85.219.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8C64382293
-	for <iommu@lists.linux.dev>; Mon, 18 May 2026 17:52:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95876382293
+	for <iommu@lists.linux.dev>; Mon, 18 May 2026 17:54:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779126774; cv=none; b=MU9iQ4rpUNDFnvMKHlu4DExriMoleQaM2nNd8SWiPdIhB8P/iu1InK5DZiDVOhFGKKyVXpRKdy9pQiwUfWfRkLC4i0MfrgDK653xrU8dBHiBNPU3CBKjLWtJDuOiLA9HMDbFqR0KSNEeuGHNzv9ZWRLGp/a7lRVY7w3UY0ltjZw=
+	t=1779126879; cv=none; b=d3Li8CerNR+rHL7PMAhZmTxiwtEuvW69DrsoYbnfJRUW4M5IuEbr+6cyOxW5jaLR7H4G5yWdmYV3Pe2QNQ29UFYDKjtEV2TBukp3g+u5hdt/ifLKdloSJkkquHmwGiTihAEUDt+6WApDazaCa1+Cuf05H+UrV0hc+5sZLX5okGE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779126774; c=relaxed/simple;
-	bh=ZSi5qfcs0lvgwM64JjJnMNw7XMa1ww7Fp1AdGrKOChw=;
+	s=arc-20240116; t=1779126879; c=relaxed/simple;
+	bh=tTAesT9aCvHqy1aw1UCt0dGkyXqlxaqbXlnX4/OKvGA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FLDs0wco2Lh8wQ1wvwz+o3K0A6tbnnxT3VY9gM1q1abJplQrZU+C96Pu9KjVwe4Yk9pFN3uNrwZdISwf3CuSRhL49UecAbwsjf9O2qN/ZmIg9FLTFe3rpJvdFHs7GA+jLAwDBf7fZ4Y5hhi+deC1GEumNIHdYrZR5VAbzgJVgwE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=aG4hkAmZ; arc=none smtp.client-ip=209.85.219.53
+	 Content-Type:Content-Disposition:In-Reply-To; b=qul5J1H3SCnOW0MJf3yv/YaNGZx6wigXBSkgZcPS7WVKkxuUBxZu5mHRnvDYPx70zUIf9Lj+7x8sktti21f6YL6vxrw5pA9sn6pN97KdhMhbwBTzSmS9L87CZNp06LsR2VV3s8pD10G+h//W01Jlxns1niDsojD0LDFjC4kRYWE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=BjrD9QME; arc=none smtp.client-ip=209.85.219.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="aG4hkAmZ"
-Received: by mail-qv1-f53.google.com with SMTP id 6a1803df08f44-8b74b460d77so36208556d6.3
-        for <iommu@lists.linux.dev>; Mon, 18 May 2026 10:52:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="BjrD9QME"
+Received: by mail-qv1-f52.google.com with SMTP id 6a1803df08f44-8b3d6b215cfso48719416d6.3
+        for <iommu@lists.linux.dev>; Mon, 18 May 2026 10:54:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1779126771; x=1779731571; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1779126878; x=1779731678; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=aXTVKb/2WU7jKg8xUh4R5z6ws8fziXO1fuL1081Mb7M=;
-        b=aG4hkAmZCDLCd5waLwEbf5MEmTOWbSYN65emi1b0luKPn2uiB+dhx55mnI15zeY1bP
-         vhZWUrdXl4/NYKH3sJLYt6mAn3e5MiB5aPu0jXuSPf9S3NLCftQ4X48bnutrGqR+Lqd+
-         iy6adpST1X8albFSIpxUvbRy3i43nc4QrL+CEuanhxTY12EeqK+0QZmhh7aMLCJReZ4I
-         mfBasqUg6a8NmoxUvCmGOWg6VIm5EnWE2Q9lkb5g2j76Kur8joGqSk8YYqIbnomvj5TZ
-         n6QIyDIz5ZhkmXAXHReo0TEn2SY/I75UqWypRGGQPRRMc9YFzkoN6j39Q/9MuPhe5rmh
-         KkzA==
+        bh=tTAesT9aCvHqy1aw1UCt0dGkyXqlxaqbXlnX4/OKvGA=;
+        b=BjrD9QME3SEJxtxOyoHvapNtdF7YVFszMEzs52lRWLQmmG7yU51QdfW9JHfa7Ya91F
+         WTDIZ04KBgoXY5z/kfGQujqPpAerZZKVZmrctw32eH8XYR5M+7dHRoQ9e4YcwWY/uUdt
+         RzqF8tzTAG68y7spU1XkH3jv/6RtF8rHYz8Z23Mwyap/ZQVPSCYc17D8K7qW+PnmU9AJ
+         ECEIPoNIbQGptTA9mQO/d5EKasO/H5OGeOk/DpUtGawi8s3XXTYh0DR76xKCfume7QFI
+         GigU8nBfMCgzkcIjsdP11gc38eGm00OFzxnrKd1xRO/AN9lEvKptJUPnVKmN5TYCH9HV
+         yTXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779126771; x=1779731571;
+        d=1e100.net; s=20251104; t=1779126878; x=1779731678;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=aXTVKb/2WU7jKg8xUh4R5z6ws8fziXO1fuL1081Mb7M=;
-        b=Wvo557oLWqCxZ1c5ZLn3QWwxkh0EWeD7qx1IAvB7CZSLlXm0hSKILZ533LcwSv8Hrk
-         haFY71TQBlbraprUfS4lVQoWMiN0Z6WDIqPexXGALWDN7qXCUU+wa38p6YnlfZFNiu1v
-         z8IoUh/+HaD3wt9fBHMhVji0aVr3laToGEsABWxubT0EHbqVZ3ycR+jv8r/Ok37xDWpV
-         y7ogFRVNKolvFbsacj+QJgYBcItK6gYLj9zmwElkIh/0UyWFQYmLUq3l1vRgTg/lf55Y
-         oz+FJYpDwK13d6VxvMs4GA+a94PiK+Jkrz2XOGvyERjVXnLZdjn3bHcn5r1uxIBKB2H4
-         ZRfQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+bkpLULHs5IhY0bUh0I3eM7hLxXW9Q/9qa5Zhan3XEMzsn5eZPcPOs2GwcpaFYXMWy6HDV5g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwZof9L9cPWYa8T3ZbeyUJFaggnVMV3npEtcQ2zmp4pPeCrZIFn
-	vPqQLp4BYQ2s3b4uA0M12bttbdMjChRdtyHrp3ccUDC/WjVWD+bh7by48PFScqU4xD0=
-X-Gm-Gg: Acq92OHcnjZ6EA2LBuqbnveIH33ECnETL3bT6MBwsfPBhQAFpZcWduGtWUSJoNBZ6jX
-	srGAkjDn6VTvfY15I0XKLX8IpWwNwTQkXM4+zjnbogI5L4oyEIcRG9MmtRSu6Nk/GThkFcfQ4Nh
-	LHSv7Ry63cOQkwCgRjhDt0+J/l1pnWu0dlj05AXljaww+6THZQ0KG5VEiaNJAju3buB61F/IFz1
-	8RQSpKrtrzYjIvzBiT/6eniavlJ6bTu0xKKoxNJ6ZPJygRFLJWprmONHX+WlZdWmfMQIozKBnKI
-	ofMws3omFF5eorO9KhVmYmssXLIW+ri31kcVdIjD9hdPwDSNWsopPwqKMSR1lmuhQ0Nws2Xy3P4
-	pHKvr+IbdNDsNjYbgDiWQ0yTfTpba1uhn5nOzCNY5FHuAB6w5ShCzNXX43xUz7xkvMq6UKhHe29
-	fdKRQJ3PBaj1wKpsf0e7q9ou751MbNRVjrbKMqMGRtFXY6c0LySTceUqgE33jh4z2yk1jNfXz7a
-	roP+A==
-X-Received: by 2002:a0c:f109:0:b0:89c:cf63:438e with SMTP id 6a1803df08f44-8ca0f5f236bmr214082166d6.14.1779126771326;
-        Mon, 18 May 2026 10:52:51 -0700 (PDT)
+        bh=tTAesT9aCvHqy1aw1UCt0dGkyXqlxaqbXlnX4/OKvGA=;
+        b=AtpGpSPWtzQEzp6OsKPJIz/D1YUiU7rHZnz4mj0g29NBCrTjAQRUA75lYh66hGJ9KG
+         CS+TpPuz3CrAQJyh8i4HVAJ9iG0hffcbjEPunJyryvW2giOqBtZvIT+223UpfNe25yOZ
+         Cp/e4hvWUkhN02AWqLTJpODxn7HHJXoIt+Kzkuj3AMWbOADbmuQEPlV8F3m622mk/7nV
+         6ij1IzeE69BZMtclqcHRMpLsTSXCk+nf5L1RKwFdKF4q6Em9s8YZu0ghJW9cS6jaqkSc
+         hY7GjCLQcjnCcPDm9JcnntyjOYmuCRMDjTKOQjW11R7JFCkcuFAtVMC+67RiDWTnDin9
+         fdRQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+GnldThGHxshow32LpxYQG+a6NtyRt5AoW+gMcIHveiyhugcO5PtxS+EcgipqV0nLz13si5g==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxyahj+pkyCSmTX5s8dtArWnvgvxhrB18uVtGiOPNVu8pX0AVes
+	IKWQa/1/o1WFr41La3W6KTvwT7CCOgy9wCn0TL1ziyJ83OmE5VFgg+iF2UEJJSrH6vw=
+X-Gm-Gg: Acq92OFzKkYZsnSdj7N8aSLlhR3bJ9zEtVyTX3vxuzn8dwF8DrsXjt1VIJhSMOQ55je
+	uw5lv/2StfjFOGwsaHOYMpk+Xvqy942LUM5CjkjWJo+9EjmHtE+/4MzbUkLKf+qnS9kw5gtQ4Tl
+	IdczULV4gwRztwb4UptTAfwIdGP9Ew4EgRyDm3nU+NWNA4twWrDk6xV0jbbRrFNpIb3jPUDn0PQ
+	vjfXpW0OYgfO9N/m1qnOaDr6fGoYzvW5vKrXKao++ym9EkHzjUO3PRAKBmrb7aaHyB2lk2WzzIW
+	4SMtWnWSswIDTvC/nsOuE3XVgFF4OWvpk6Y3DStq3nt/RHESINoSfBxp8IrTpqxlzY6ZfomM/14
+	ypfEVnCr48LAoZEP2ntzlyv4qTx7ZeHBNCrpZ7YY0WcEPbIX2YaIi/c/ncpGa6+u9peK3NWlI0v
+	TnztKOa2YEBZjXDDT6yLAj9AUh2FIG5x5hBByWZDP3Cj2G7DkN8SohdrJ+x93fYOyXgszdqbNWU
+	hcYeRnUQx2X5Ya1
+X-Received: by 2002:a05:6214:2684:b0:8ca:1cee:7c58 with SMTP id 6a1803df08f44-8ca1cee93a8mr226863386d6.19.1779126877680;
+        Mon, 18 May 2026 10:54:37 -0700 (PDT)
 Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8ca36086a61sm63262406d6.4.2026.05.18.10.52.50
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8ca361aabe0sm63112726d6.44.2026.05.18.10.54.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 May 2026 10:52:50 -0700 (PDT)
+        Mon, 18 May 2026 10:54:36 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1wP293-0000000DUnE-2ZCv;
-	Mon, 18 May 2026 14:52:49 -0300
-Date: Mon, 18 May 2026 14:52:49 -0300
+	id 1wP2Am-0000000DUxu-0CPW;
+	Mon, 18 May 2026 14:54:36 -0300
+Date: Mon, 18 May 2026 14:54:36 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Joonwon Kang <joonwonkang@google.com>
-Cc: kirill.shutemov@linux.intel.com, Alexander.Grest@microsoft.com,
-	alexander.shishkin@linux.intel.com, amhetre@nvidia.com,
-	baolu.lu@linux.intel.com, bp@alien8.de, dave.hansen@linux.intel.com,
-	easwar.hariharan@linux.microsoft.com, hpa@zytor.com,
-	iommu@lists.linux.dev, jacob.jun.pan@linux.intel.com,
-	joro@8bytes.org, jpb@kernel.org, kas@kernel.org, kees@kernel.org,
-	kevin.tian@intel.com, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, mingo@redhat.com, nicolinc@nvidia.com,
-	peterz@infradead.org, praan@google.com, robin.murphy@arm.com,
-	ryasuoka@redhat.com, smostafa@google.com, sohil.mehta@intel.com,
-	tglx@kernel.org, will@kernel.org, x86@kernel.org, xin@zytor.com
-Subject: Re: [PATCH] iommu: Allow device driver to use its own PASID space
- for SVA
-Message-ID: <20260518175249.GS7702@ziepe.ca>
-References: <20260515231808.GQ7702@ziepe.ca>
- <20260518090654.730478-1-joonwonkang@google.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: "Oguz, Yigit" <yigitogu@amazon.de>, "joro@8bytes.org" <joro@8bytes.org>,
+	"will@kernel.org" <will@kernel.org>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"dwmw2@infradead.org" <dwmw2@infradead.org>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 0/3] iommu: Add PCI vendor:device ID to IOMMU fault logs
+Message-ID: <20260518175436.GT7702@ziepe.ca>
+References: <C1C278E8-E5F6-4701-9127-DCDBC64636E1@amazon.de>
+ <4cbd2bd2-9acc-4c72-a4f5-6c6cf31f71e1@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -89,48 +86,16 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260518090654.730478-1-joonwonkang@google.com>
+In-Reply-To: <4cbd2bd2-9acc-4c72-a4f5-6c6cf31f71e1@arm.com>
 
-On Mon, May 18, 2026 at 09:06:54AM +0000, Joonwon Kang wrote:
-> > On Fri, May 15, 2026 at 09:46:05AM +0000, Joonwon Kang wrote:
-> > > diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-> > > index 0ca3912ecb7f..61e2e52105e5 100644
-> > > --- a/arch/x86/kernel/traps.c
-> > > +++ b/arch/x86/kernel/traps.c
-> > > @@ -864,6 +864,8 @@ static bool try_fixup_enqcmd_gp(void)
-> > >  		return false;
-> > >  
-> > >  	pasid = mm_get_enqcmd_pasid(current->mm);
-> > > +	if (pasid == IOMMU_PASID_INVALID)
-> > > +		return false;
-> > 
-> > If you do this then probably you should get rid of mm_valid_pasid(),
-> > mm_get_enqcmd_pasid() already has the NULL check so the two functions
-> > are kind of pointless.
-> > 
-> > You also missed the other place calling mm_valid_pasid() that should
-> > really be sensitive to this as well:
-> > 
-> > static int prctl_enable_tagged_addr(struct mm_struct *mm, unsigned long nr_bits)
-> > {
-> > [..]
-> >         if (mm_valid_pasid(mm) &&
-> >             !test_bit(MM_CONTEXT_FORCE_TAGGED_SVA, &mm->context.flags))
-> >                 return -EINVAL;
-> > 
-> > Make that removal a prep patch
-> > 
-> 
-> Thanks for pointing this out. I think mm_valid_pasid() is to check if SVA
-> is currently in action while mm_get_enqcmd_pasid() is to get the PASID for
-> "ENQCMD instruction execution".
+On Mon, May 18, 2026 at 04:52:57PM +0100, Robin Murphy wrote:
 
-> Since it is now possible with this patch to activate SVA without involving
-> EL0(for ENQCMD-like instructions),
+> TBH I think the more appropriate solution would be to have vfio-pci register
+> its own fault handler, wherein it can properly deal with rate-limiting
+> and/or entirely suppressing fault reports from misbehaving userspace, and if
+> and when it does want to log something it is then free to do that in
+> whatever format it wants, independent of the underlying IOMMU driver.
 
-I see, this thing about which is about LAM should remain, yes
-
-But all the "EL0" machinery about trapping and enabling ENQCMD should
-be moved over to mm_get_enqcmd_pasid() and never call mm_valid_pasid()
++1
 
 Jason
