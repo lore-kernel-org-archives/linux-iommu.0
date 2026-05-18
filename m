@@ -1,67 +1,68 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B24E2D838E
-	for <iommu@lists.linux.dev>; Mon, 18 May 2026 18:33:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A6A0347505
+	for <iommu@lists.linux.dev>; Mon, 18 May 2026 18:44:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779129230; cv=none; b=RdUlJM4ZzScQiAwfIasrneyvqPv55kxJUZcVkMf7M/ignDK+NZ+5ns66K76GV/KeU7EuSVu52BkjbcLF9m5247gmz8m1gInlKd1OCV8oseMBI0A9lyEpwii85LQORCdEhSwsjuxnV0z9+ORoy2R+bqKiGXBAQqXncEVEaFOQ4Bg=
+	t=1779129876; cv=none; b=PFDudmdY1QaleZlV6d8LOwZg+VR0PhFPUjkkvoWtyN8oLwL5sdKn8uww26OLOutsXfBpk6gnn1INrYRuzDOMeW/QIWb0eABgzy4dwPaZuOpH0UA5ybMFS9neEJ4rfLvgErxjcKs2akHREPwzGnfTU2tUPWmL8S52cU1CvvdoNRE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779129230; c=relaxed/simple;
-	bh=TyOWWPWoGocXqSwMD+MG/Lr0Gd5wpTyR5wdZ+yXhOuM=;
+	s=arc-20240116; t=1779129876; c=relaxed/simple;
+	bh=Ic1nHyDVe0+lHF29JSEClWUQfaRhDT14d/5L38QtIwY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BjGNZ1csfDIie1f7REQVp/ZV1Vtfr5lB1GDHvannhVXNwqMJt9gxs8QbxWtfcJW8mqw++nfNwVXkZDdHb71n1dXKf1rLW57hZJPJG72WvRrk0hGTmvWQjjAJAivwiGsyxe4wHNnwIMCVbnqbwbUMlWfUT2tCwSKk+gkYykD9dUU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=HOZDXhBG; arc=none smtp.client-ip=209.85.214.174
+	 Content-Type:Content-Disposition:In-Reply-To; b=F8u6kJOgsvfOY4CcMI3V5JxdKSxiX5omb4Rqpu914Y+h29FaEvMy0xIfvhDIXPtqz+kRPho5JJyocBHV6TE9/pGmogcuDxvXaU9b9qxM3ysTh7WyjTl3+AoN/fha27dIAMD7ZMAfiuq+GZtywl1srEkndEv/8vX+b10XYGYcqfU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=BSdz7Uvy; arc=none smtp.client-ip=209.85.214.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="HOZDXhBG"
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2ba180a022dso1155ad.1
-        for <iommu@lists.linux.dev>; Mon, 18 May 2026 11:33:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="BSdz7Uvy"
+Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2ba180a022dso75ad.1
+        for <iommu@lists.linux.dev>; Mon, 18 May 2026 11:44:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779129229; x=1779734029; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1779129875; x=1779734675; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=1KANnHv0swkPJJWZfqLe5jM5UVpVbFidl0DzMhA68oc=;
-        b=HOZDXhBGQNjZt9aZUXwrPmrpIvJRHtq1T80ukbU40OYC5PGp7E7bIUlChjz1GM9QNZ
-         ld545ev4htZQY1L/KyDg/27wBTuaTz7SrFLwj1IKQRRkD+lZeEbt0Dp/SLciBDP1WwPU
-         3myGeGFY6xHEODID8lPxYHw67oDkDcJ18ocmDTm4N+bkgUPeu2OfAfuoW9Mz9stVQuU2
-         wvNXqa9It1WYvtwjeQfiQgmD9iMeWoZWYsSjYZ2TJNN9sXNYfo3WafkuS5ZqTWdCi0jH
-         xXE0CuCpR0hVLqe5xmpGUCtuw/SvfKdhPdxOzk8b1PhSXsdle4pl46blE5BKzIZ/SZZV
-         fcAA==
+        bh=42Co3FfgxAP6Wa+6cQjpccW4rhzcESaNN3XiEoxLDQM=;
+        b=BSdz7UvyRNDNHMAhSIxsdXJwjBP3XWixr/7mBUm9LCHTDpnmHn8H7pYNecDM+5auPh
+         zpu+jsvWJhLVAekJkXeIZB/l8tK7u44CBrzXgTw4kar7bZBlssurg57wC71GFI1uiGa2
+         mkFm+ePGltmnSEnE7sM1TXSixRwe84HGY9fFqnW1s1c5Xen/ghDWl2cjiqr2lwVhCSLE
+         xWHGPdXBKUeo4Fh1/Xs3cBbOrJsOQvnBoSjjsC7Elf6FoA8G2xw7DMKYuVfEvxl+Ym20
+         e6eiDr+AIr5oQHdfEYVlDa/0CmWWPmQun85PDYOFatGSLF9YtEgHa/Dlq0fNpgv+/06b
+         6z3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779129229; x=1779734029;
+        d=1e100.net; s=20251104; t=1779129875; x=1779734675;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=1KANnHv0swkPJJWZfqLe5jM5UVpVbFidl0DzMhA68oc=;
-        b=A8jdL15znv09JJ1s0uiyDEM6gj4o3dfeP5yhghhGnLB/4CDre5XMX592LCHm11G+MD
-         m/CcTK5THjzcpjXXn5scWoiYrgOKio88IwplGNvi/9X+F4nFpRB7hLk66LZoc3rG2qmS
-         h4oTwaEvK0m3dL+hDFir61dD8Q4fcQ9x7xskA8zMlX07aH6wgmlwIPT8sxHKDVAtOvpU
-         cZBT6QJuugUgjrALs7V9K++8tLoJe+VftDAuQrqySCVJsvh8cFK60SAgGTa0oG26ZeqC
-         3LChc4+SPp8BVoa1eEanrM9aKfhCcnFr74dtxEWmyKsfJ0BA0/YnN80Gdy8i0tiSj4Ej
-         Vomw==
-X-Forwarded-Encrypted: i=1; AFNElJ9EIQlxvyEzkzWvhpNu3whGuPVZf6fvRxSIkfq3FccE7inbhH5KWsq6a9y8KYAOIPdyRHJkCQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwF9uVptQM8gqqikOGcfGgN/PONPe/F90SPbzEMTceiwWWerWN9
-	DKhKTu0aoTYjzUlyEL9Lw2YX0ZtkoiYvXUFoKT+Re2ffTQ75Iv8F1nFC/ON4+Jhdjw==
-X-Gm-Gg: Acq92OEKH8M5uzE3L/GmyfCAT+Q34MMVRwh4lPlG8AYfWGxAtqIFAeP9B4bFrepcIVh
-	Ig+Rbdh+CRzscEXPIFE/VUIkVI5Vinx2lO+dhytlMfN/EhXjoSIgpmxcAEQ48dBeEaboT72rL92
-	vjHYwgzyu5BX+sC9jW/A5kWbJqoEUQ4K0RCpyZCFjuCpXy1VURgX8rNPkm/Ku04d33onx9sQ5nu
-	IiyU9CB2f57QuKakymJwFuauk7L9DS12ZitjlpFwn8otZiJ48dVnTfqOdwj3b7tMfJl5PXvDUoe
-	Xjuz+QZpWRce2E3SA1/RHNqyF5l0eUYN1jpskkFS5jEB+Ac7HWNWLKwpdir1LIncny2Dg1fD0Bf
-	ldvi/1DRv4FJ21fuEB7BijY4AG0JLbHCUWtT4uZd1A1RNITc7WSjCNGIyMgX5UT+Edflx2bbmS+
-	WRH7BVSTpUgoU25MwRkVRuqvKG9BdCQH46OUVjGgvS+XlPXDcCxcFlDfDigC7nzH83BRl+ZA==
-X-Received: by 2002:a17:903:32c5:b0:2b9:e831:5e5c with SMTP id d9443c01a7336-2bdb03a42c2mr3898675ad.4.1779129227834;
-        Mon, 18 May 2026 11:33:47 -0700 (PDT)
+        bh=42Co3FfgxAP6Wa+6cQjpccW4rhzcESaNN3XiEoxLDQM=;
+        b=fLL6UW4pd/KxO0HWopqRvxOVivuqq9tNJs9d5K6n8iQTG9Fiv4o/usCMhoo8yqHrQP
+         xWoEaxvvbiJDvucEIXriFnDFyfbO27P++hm3Rgb+3V0IYvCdIU1mo7VxXxOhaBLY6NEJ
+         hRfp/7RS2dKjy4ZP/SlAl+EMmZRJ1CfUGZGoSJ2oZAErm3d93rTTASNEbv5+7SZU0lsG
+         otltPDqTEMcdCZOU2e3LERcrYc6eGB/0WKP/MR62vQEuFdU7PQfHbk9BjAu0sutVGgbQ
+         5VFxIYoPEjs+BqZ77bOUhf9PfJGXVJNTSTUn69nXP/5MDyp0xCk95UmM0IJw3aD3pSnl
+         wnVw==
+X-Forwarded-Encrypted: i=1; AFNElJ9qh+mqe4AefQMDHv1G7uUURdz5IxBR5Vv6QuM/KOA7FSdCqIWyjmh4CPhg21WOM88UkpJhdA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzrfRwY+vv8ng9fXMXsBbG4MuOJKQjRDfJdnuaOZY1spJRmMWiB
+	+RylI06YjlLUA+NovKbExHL6NjX4VPiUC+cibISA6Q0KTJZZZ5pQNsqZahwhZJA++w==
+X-Gm-Gg: Acq92OGzZxca1Ry1JzUtUHdlDEgOVKDOtUI7B02jRJ6pJaG6cLuK8pS8xwmXDvAVT0s
+	kSw86ajkuiQnCEpS0t2idGjO7JcT/VHfXCRGVAq2gs0lz2SdsCa9mOzkvG+zsMu7kiPgF27REam
+	JjdLic8JJoL1Aprpqm2zn61CF6GZl2Y1OcE0T/ormuxcbL5RxAcwZ1k7dYqmbRNEWPgcMBAGiZG
+	AleuH/2xdJAgWYb6og/gxny8kw/V7EQgMMqnTEYTENnUR0uAxiHUc3WUxHALIfXS6oTfF6hyOrb
+	cLBPGlLPiNLHbFbL3lI8dEueEaT6dEcwflKGKEWsb6F/0c+yaF0oLOXBmcIuKXJw24n4255Imx4
+	0t6qNfv+nMsluRK0iz1VQp6yIbcV3YhuWyZpY7X3dO5Umy+rgo+c+JhHjxPfTzMhoAZkUENL1w8
+	iJ7zx9ct/8VizneNw9JAnOAmJjrObqWOGNWunvZSoI8ot/QUD1QV5DzRtpDF8UHsR1uE+SsUF68
+	Vl2ToG0
+X-Received: by 2002:a17:902:cf0d:b0:2b4:6529:7bae with SMTP id d9443c01a7336-2bdb329b56bmr3672775ad.17.1779129874166;
+        Mon, 18 May 2026 11:44:34 -0700 (PDT)
 Received: from google.com (153.46.83.34.bc.googleusercontent.com. [34.83.46.153])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2bd5cfe6487sm156913305ad.54.2026.05.18.11.33.47
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2bd5cfe64a9sm158941345ad.53.2026.05.18.11.44.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 May 2026 11:33:47 -0700 (PDT)
-Date: Mon, 18 May 2026 18:33:44 +0000
+        Mon, 18 May 2026 11:44:33 -0700 (PDT)
+Date: Mon, 18 May 2026 18:44:30 +0000
 From: Samiullah Khawaja <skhawaja@google.com>
 To: Pranjal Shrivastava <praan@google.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, 
-	David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+Cc: David Woodhouse <dwmw2@infradead.org>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
 	Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>, 
 	Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, 
 	Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
@@ -74,12 +75,10 @@ Cc: Baolu Lu <baolu.lu@linux.intel.com>,
 	YiFei Zhu <zhuyifei@google.com>
 Subject: Re: [PATCH v2 04/16] iommu: Implement device and IOMMU HW
  preservation
-Message-ID: <agtMUUYyc1qx6GG7@google.com>
+Message-ID: <agtcSw4s0M2ArWI4@google.com>
 References: <20260427175633.1978233-1-skhawaja@google.com>
  <20260427175633.1978233-5-skhawaja@google.com>
- <3874a086-98ae-4b94-8c1b-20e13f5a92fb@linux.intel.com>
- <afzcqWa8iVqrhJLs@google.com>
- <agsbtV4oargwX45d@google.com>
+ <agsaY9714WS1N4Zu@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -88,78 +87,113 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <agsbtV4oargwX45d@google.com>
+In-Reply-To: <agsaY9714WS1N4Zu@google.com>
 
-On Mon, May 18, 2026 at 02:01:25PM +0000, Pranjal Shrivastava wrote:
->On Thu, May 07, 2026 at 06:47:07PM +0000, Samiullah Khawaja wrote:
->> On Thu, May 07, 2026 at 10:07:43AM +0800, Baolu Lu wrote:
->> > On 4/28/26 01:56, Samiullah Khawaja wrote:
->> > > Add IOMMU ops to preserve/unpreserve a device. These can be implemented
->> > > by the IOMMU drivers that support preservation of devices that have
->> > > their IOMMU domains preserved. During device preservation the state of
->> > > the associated IOMMU is also preserved as dependency.
->> > >
->> > > Signed-off-by: Samiullah Khawaja<skhawaja@google.com>
->> > > ---
->> > >  drivers/iommu/liveupdate.c       | 162 +++++++++++++++++++++++++++++++
->> > >  include/linux/iommu-liveupdate.h |  33 +++++++
->> > >  include/linux/iommu.h            |  20 ++++
->> > >  3 files changed, 215 insertions(+)
->> > >
+On Mon, May 18, 2026 at 01:55:47PM +0000, Pranjal Shrivastava wrote:
+>On Mon, Apr 27, 2026 at 05:56:21PM +0000, Samiullah Khawaja wrote:
+>> Add IOMMU ops to preserve/unpreserve a device. These can be implemented
+>> by the IOMMU drivers that support preservation of devices that have
+>> their IOMMU domains preserved. During device preservation the state of
+>> the associated IOMMU is also preserved as dependency.
 >>
->> [snip]
->> > > +
->> > > +int iommu_preserve_device(struct iommu_domain *domain,
->> > > +			  struct device *dev, u64 *preserved_state)
->> > > +{
->> > > +	struct iommu_flb_obj *flb_obj;
->> > > +	struct iommu_device_ser *device_ser;
->> > > +	struct dev_iommu *iommu;
->> > > +	struct pci_dev *pdev;
->> > > +	int ret;
->> > > +
->> > > +	if (!dev_is_pci(dev))
->> > > +		return -EOPNOTSUPP;
->> > > +
->> > > +	if (!domain->preserved_state)
->> > > +		return -EINVAL;
->> > > +
->> > > +	if (!iommu_group_dma_owner_claimed(dev->iommu_group))
->> > > +		return -EINVAL;
->> > > +
->> > > +	pdev = to_pci_dev(dev);
->> > > +	iommu = dev->iommu;
->> > > +	if (!iommu->iommu_dev->ops->preserve_device ||
->> > > +	    !iommu->iommu_dev->ops->preserve)
->> > > +		return -EOPNOTSUPP;
+>> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+>> ---
+>>  drivers/iommu/liveupdate.c       | 162 +++++++++++++++++++++++++++++++
+>>  include/linux/iommu-liveupdate.h |  33 +++++++
+>>  include/linux/iommu.h            |  20 ++++
+>>  3 files changed, 215 insertions(+)
 >>
->> I will check for unpreserve ops here also.
+>> diff --git a/drivers/iommu/liveupdate.c b/drivers/iommu/liveupdate.c
+>> index f71f14518248..765d042e22e3 100644
+>> --- a/drivers/iommu/liveupdate.c
+>> +++ b/drivers/iommu/liveupdate.c
+>> @@ -11,6 +11,7 @@
+>>  #include <linux/liveupdate.h>
+>>  #include <linux/iommu-liveupdate.h>
+>>  #include <linux/iommu.h>
+>> +#include <linux/pci.h>
+>>  #include <linux/errno.h>
+>>
+>>  #define iommu_max_objs_per_page(_array) \
+>> @@ -293,3 +294,164 @@ void iommu_domain_unpreserve(struct iommu_domain *domain)
+>>  	domain->preserved_state = NULL;
+>>  }
+>>  EXPORT_SYMBOL_GPL(iommu_domain_unpreserve);
+>> +
+>> +static struct iommu_hw_ser *alloc_iommu_hw_ser(struct iommu_flb_obj *flb)
+>> +{
+>> +	int idx;
+>> +
+>> +	idx = alloc_object_ser((struct iommu_array_hdr_ser **)&flb->curr_iommu_array,
+>> +			       iommu_max_objs_per_page(flb->curr_iommu_array));
 >
->[snip]
+>Nit: Same thing about brittle casts here, shall we make them void ** and
+>cast then within alloc_object_set ?
+
+Agreed. Will change this.
 >
->> > > +	pdev = to_pci_dev(dev);
->> > > +	iommu = dev->iommu;
->> > > +	if (!iommu->iommu_dev->ops->unpreserve_device ||
->> > > +	    !iommu->iommu_dev->ops->unpreserve)
->> > > +		return;
->> >
->> > Is it considered a driver bug if it implements the preserve hooks but
->> > not unpreserve ones? This would at least cause a silent memory leak. How
->> > about adding a WARN like this?
->>
->> I think the preservation should not be done if the unpreserve ops are
->> not implemented by the driver. I will add these checks in the _preserve
->> functions and return EOPNOTSUPP if it is not implemented by the driver.
->> >
->> >    if (WARN_ON_ONCE(!iommu->iommu_dev->ops->unpreserve_device ||
->> >                     !iommu->iommu_dev->ops->unpreserve))
->> >        return;
->>
->> We can add this warning here also.
 >
->I'd rather have the iommu device registration fail instead of solely
->relying on these WARN_ONs here. We can simply add a snippet inside
->iommu_device_register():
+>> +	if (idx < 0)
+>> +		return ERR_PTR(idx);
+>> +
+>> +	flb->curr_iommu_array->objects[idx].hdr.ref_count = 1;
+>> +	return &flb->curr_iommu_array->objects[idx];
+>> +}
+>> +
+>> +static int iommu_preserve_locked(struct iommu_device *iommu,
+>> +				 struct iommu_flb_obj *flb_obj)
+>> +{
+>> +	struct iommu_hw_ser *iommu_hw_ser;
+>> +	int ret;
+>> +
+>> +	if (!iommu->ops->preserve)
+>> +		return -EOPNOTSUPP;
+>> +
+>> +	lockdep_assert_held(&flb_obj->lock);
+>> +	if (iommu->outgoing_preserved_state) {
+>> +		iommu->outgoing_preserved_state->hdr.ref_count++;
+>> +		return 0;
+>> +	}
+>> +
+>> +	iommu_hw_ser = alloc_iommu_hw_ser(flb_obj);
+>> +	if (IS_ERR(iommu_hw_ser))
+>> +		return PTR_ERR(iommu_hw_ser);
+>> +
+>> +	ret = iommu->ops->preserve(iommu, iommu_hw_ser);
+>> +	if (ret) {
+>> +		iommu_hw_ser->hdr.deleted = true;
+>> +		return ret;
+>> +	}
+>> +
+>> +	iommu->outgoing_preserved_state = iommu_hw_ser;
+>> +	return ret;
+>> +}
+>> +
+>> +static void iommu_unpreserve_locked(struct iommu_device *iommu,
+>> +				    struct iommu_flb_obj *flb_obj)
+>> +{
+>> +	struct iommu_hw_ser *iommu_hw_ser = iommu->outgoing_preserved_state;
+>> +
+>> +	lockdep_assert_held(&flb_obj->lock);
+>> +	iommu_hw_ser->hdr.ref_count--;
+>> +	if (iommu_hw_ser->hdr.ref_count)
+>
+>Shall we add a defensive if (WARN_ON(!iommu_hw_ser)) ? I'm aware we
+>check this on within iommu_unpreserve_device() but we don't seem to
+>check it before calling iommu_unpreserve_locked() in the error path of
+>iommu_preserve_device.
+
+Agreed. I will add this.
+>
+>> +		return;
+>> +
+>> +	iommu->outgoing_preserved_state = NULL;
+>> +	iommu->ops->unpreserve(iommu, iommu_hw_ser);
+>
+>We seem to assume we'll always have unpreserve implemented? If so, we
+>should check it during the iommu registration itself and fail it, i.e.
+>
+>inside iommu_device_register() we could add something like:
 >
 >#ifdef CONFIG_IOMMU_LIVEUPDATE
 >if ((iommu->ops->preserve && !iommu->ops->unpreserve) ||
@@ -172,14 +206,68 @@ On Mon, May 18, 2026 at 02:01:25PM +0000, Pranjal Shrivastava wrote:
 >
 >This prevents a half-baked iommu driver from ever spinning up, completely
 >eliminating the need to check for it inside the live-update session paths.
->We anyway don't support hot-pluggable liveupdate ops atm.
 
-Hmm.. I understand your point, But I think we should let the
-registration go through so the IOMMU can be used. Its just that the
-liveupdate preservation will not be supported. Failing the registration
-would be a big hammer that I think is not really needed.
+Replied to this in the other thread where you suggested this inline with
+Baolu's comment.
+>
+>> +	iommu_hw_ser->hdr.deleted = true;
+>> +}
+>> +
+>> +static struct iommu_device_ser *alloc_iommu_device_ser(struct iommu_flb_obj *flb)
+>> +{
+>> +	int idx;
+>> +
+>> +	idx = alloc_object_ser((struct iommu_array_hdr_ser **)&flb->curr_device_array,
+>
+>Nit: Same thing about brittle casts here, shall we make them void ** and
+>cast then within alloc_object_set ?
+
+Will update this in next revision.
+>
+>> +			       iommu_max_objs_per_page(flb->curr_device_array));
+>> +	if (idx < 0)
+>> +		return ERR_PTR(idx);
+>> +
+>> +	flb->curr_device_array->objects[idx].hdr.ref_count = 1;
+>> +	return &flb->curr_device_array->objects[idx];
+>> +}
+>> +
+
+[snip]
+>> +
+>> +	ret = iommu_preserve_locked(iommu->iommu_dev, flb_obj);
+>> +	if (ret) {
+>> +		device_ser->hdr.deleted = true;
+>> +		return ret;
+>> +	}
+>> +
+>> +	device_ser->domain_iommu_ser.domain_phys = __pa(domain->preserved_state);
+>> +	device_ser->domain_iommu_ser.iommu_phys = __pa(iommu->iommu_dev->outgoing_preserved_state);
+>
+>Nit: Should these be updated to use virt_to_phys as well?
+
+Will update these.
+>
+>> +	device_ser->devid = pci_dev_id(pdev);
+>> +	device_ser->pci_domain_nr = pci_domain_nr(pdev->bus);
+>> +
+>> +	ret = iommu->iommu_dev->ops->preserve_device(dev, device_ser);
+>> +	if (ret) {
+>> +		device_ser->hdr.deleted = true;
+>> +		iommu_unpreserve_locked(iommu->iommu_dev, flb_obj);
+>> +		return ret;
+>> +	}
+>> +
+>> +	dev->iommu->device_ser = device_ser;
+>> +	*preserved_state = virt_to_phys(device_ser);
+>> +	return 0;
+>> +}
+>> +
+>
+>[...]
 >
 >Thanks,
 >Praan
+>
 
 Sami
