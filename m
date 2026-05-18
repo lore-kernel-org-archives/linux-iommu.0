@@ -1,226 +1,147 @@
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazon11010028.outbound.protection.outlook.com [52.101.193.28])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58FDD477983
-	for <iommu@lists.linux.dev>; Mon, 18 May 2026 14:23:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779114215; cv=none; b=L8N88IwoSgjE8+qlxo9x5Q45PUDJrCMAi9py0A+2ys+XnLw7VFxYJIgtA/J7xTVK/A2ntTmN3kmROiykOgCp9exKXeHERtYtCplEpQ+jGC0TkPQtkXadS0kZXIDcCS9A52IVWkr58eankV0wTygp+UO/WCJmBItyjpLriOKLpCo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779114215; c=relaxed/simple;
-	bh=RK9scrGy766A6YXR54Pqoa2eq1DiOV7GVNJWPlAdn/8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SPtaic2eTkhOOvlDjyBmRlzYTDdV3q2io0R0R4fo9u9gqpDgiSqSXYGrs5oQRV1vuJSPQ40nyNAADg58vsz5RaMJkX8FxmiGU4UN4kNK/1cZ4lsgde+jptESi4yi+KCPnN4mmLbr7zf6LyEjrZfut1C3cosabkTIYk39NMR53tE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Oq5Usj7d; arc=none smtp.client-ip=209.85.214.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E08536212D;
+	Mon, 18 May 2026 14:40:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.193.28
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779115240; cv=fail; b=eZ3N5fKnYem+KsooBZhtNHvF9Ug/iGB3mlVo3tMVOtxfW7aNVrmjpwPWrlqDYEunmIt+yAxJlxjDjBaUrglPFb5zb0fKpp19aFUqbU4fjIy6M2Cqg1ui65a0FoansEwX4/1tjMe/lYQDJm/XybWYdFGMnGecdLChHLq5XJPaOM4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779115240; c=relaxed/simple;
+	bh=U4ShrQKry4IWqwNB2pxYejt+0hnjNCSyTOwu5niHIJ4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=U2uKPF2rsw+5XW9X0Vn9EuhVyAw0FnXJ852jd6be+doB4oipeqUZ+zSZ2U2R0zKv/JTqhGrIhhSiUOBk9GITZXEGAOP/ONNBubHFXui4QVS878HzisF0ez3/GTE2eLJoC811CGj4/LQWwR38sjhk/DwavG4DnKxHZK5C56q3Rc0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=okRBQ9HS; arc=fail smtp.client-ip=52.101.193.28
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Oq5Usj7d"
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2ba3b9bcf69so725ad.0
-        for <iommu@lists.linux.dev>; Mon, 18 May 2026 07:23:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779114207; x=1779719007; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+sZbZUHjZ//GhpOMWpDa3xawAFKF5ioAagbi5BAli/g=;
-        b=Oq5Usj7dHAr+iBeXknKBjiuPAcmUau0kWoU7t6lZmqMxYwX9RMwrNq+1vnzeLjTrvS
-         TJU1A71q5hP01XAMlRnXVE5BGByWT775eDcQMvOlnGDRiXECdNxOhV0/+/Fcp0FQEgnX
-         Zg5MuFgAfu3xmRPXh+WFYXoqPEXhh1ceXV28lu9yjWw1VLoHQICleRADt/cmSrv51cin
-         2bikAdRRHENAVfnoiEhDfinctrBSqEoJBisKUjXt+HRooi74m+hW4gBc44FZayzzk13j
-         Ueb3hbUWDMyxZEIeU2E8Jwc9lZvTWKQAoXdirPm6N5Ay8J932Bu20W83v71tfc66+1i4
-         VDxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779114207; x=1779719007;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=+sZbZUHjZ//GhpOMWpDa3xawAFKF5ioAagbi5BAli/g=;
-        b=amrzu8SU3hmgOqIrCBVUtJmL8epKuUQrpJvpfKBFNh5O/Mb+JsXDBEGJ4mcqDRRDUz
-         YXh+X8YVdBuiDE/ctB9JmU79pafAPs7Fjnnms3d6RA9BMhDbL80ts/QOeGtEkw4AdxGS
-         191lBSMDPE++O3CDSHVwuBFAft1bfNXiId837zTcZ4UeO3CqvW3uRRyEVpjue2/4OpsA
-         uE2Fvs79sCeohy8b8rP2TYvdCQhHJypYZ3bOmHBFa2UsnHxO/XARZ6gX4szWzUxBNoys
-         A8KYmIOtPE13fo5Bt3Cb3phPrz3D+HHx1barB5lREbuoTND+J3qyllHs33a4zbBsvFyZ
-         bSig==
-X-Forwarded-Encrypted: i=1; AFNElJ8SgFMrh6f+XoRILmtQu6SKAyeb1G+EZaVHwM289Lqa4tAj6HjqXxFLluDoIJQUGTeeH+6qpg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyc+UHNrASx9xGfRkM+ZNa12afYLmuPyM2s4tK3YasTI2k2CwwA
-	cFCaS+xbTUUgMI1OsCtHyhqqTDlZFRDRTMplktmaFgE5cgkgpQz2gsqa0TB4a7uHRQ==
-X-Gm-Gg: Acq92OE6M2NiT5PQQip/34O1QKIe+HwMkunwoCn2E8fYvwHDAkFfz7Nr3b430EwUeSr
-	zkzYZDC76MNiiEcewYz3TIKODUxW8K6Z683zye3gwN8O6G75P7e1euLJ5UEus+3YxBiLPDhCW79
-	OtGm8N4yb0kInWsOoRieCioJNzjMK04JQxEcXbLfQbysqwyfJbZzE7do3pDZ07TYbHoyz5dhKDm
-	AsGnHxvguW7uXRczWUBTlMLz/N9M9AoEq5OcNSykdhsaqlYbSO5uuzbe/ndNjPHKnz26SOfmbXi
-	Ah4PCdgv4PzcqdWT1rxLwU087fzNr3ev9RNVUWU3H7F0aPhLlitYisKCtcjWdFfbeh2weFrHtWG
-	glXsgTJrB5CaaE+PYPXpxdgpz9DNyVS68YiqPfSQYqxdA0kdk0b9LqaJlAO8aUWqp0yquy/iQJb
-	5QSPFg10dC/iQTWns0xcgFnLjQFr/oXQoU70jJmd6yZEwJnv5g4BK8iqFG6OZYijkrT7Sl
-X-Received: by 2002:a17:903:1a2d:b0:2b8:e82d:ff7c with SMTP id d9443c01a7336-2bdb32c3f0cmr2581525ad.9.1779114206217;
-        Mon, 18 May 2026 07:23:26 -0700 (PDT)
-Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2bd5d11b495sm159685695ad.69.2026.05.18.07.23.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 May 2026 07:23:25 -0700 (PDT)
-Date: Mon, 18 May 2026 14:23:17 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Samiullah Khawaja <skhawaja@google.com>
-Cc: David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="okRBQ9HS"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=jw8yKooUhaUhtxaoIjUCAEd8NKpwcv1Ln7o3VqaaJgJb/D/n5Ku+mg1UDRcN7Lquan/ry2WZWmgxHqoeYUdbD/ziuGuMQsAUxfYTnj4cpvn8XBh7cM/JDLKUkkrG4p2LSQJCz1NKCl30WwS5HRcuD0maVZaHMa7ucGdomAAE+Y31wgUE0iyMRmgIj1GXIYMN4e5MBnSO+s0/0ZtlI9Muydoy3GC0WYSRWbZG/Mvb6n3hbNc2UPfE+IZ3G218EzR+RRdg+/drykeGldJCn83h0Klw4EFV1CznFajdW5PLA/wYxiFEE2WRpfejVb42LRDHeNnimeFvA6+QyYGhPrHSmQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=EbZC8JzwIDcz4gBodRgQZqGtswqhri4rwzABGODtQM4=;
+ b=iay+PVblQUc8/IK45+fR40Ufagiq9a7qNNSqa2xu/l5VbB72GPfUD6eIso2jMVMs0wMDpSeoRNiPSaoxFzQw/862uyXmv8r2xpuGIeg4sg7wIY6mLhWvs2S8bHRfqnIZeTnmr+y6UI7V7Bssg1Q2/2v1P/31sTyaLh+rUop03qwmp6tbyrmDfBcfE2A2kDLS1oDFMFGazWOkPcAejqXEEZ8hu8BZgH1uK0L1x8AUuzQIYEBgljuv9Cod/WaLtKSiWDIIzrSbwiuEKlYWALJJNgQOi9dfnE3zTTsmYB0PoOgTvIouwakxSQPjenm1qLcYdrjCOavCmY/5ZUzlu2DCdg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EbZC8JzwIDcz4gBodRgQZqGtswqhri4rwzABGODtQM4=;
+ b=okRBQ9HSFHEO2jf+xHP6DhsRhiSOEHezBhqPgGNpOjephXQ00cQy6xa0LUFpVf1NYSkQ1YcH2juIuQQvkiiHDptH+bbl+NEZ7qQxP1Gzg+i2/vU9juBkxgM9BFLotV2MMV28H86M67wvOMo7QPULi2mvOgRWkqbBhu0LEcSoIH1LjFrVZy/ykCsl8bIu+lZY+3haHusaRJR+AY8JDPktJsZJoIzqRp3+YusjtGcIPGS8h91QO2avPEQhhkzHCieLFvj5bc97dSh9njFJSZQRHpn5RMuKIzpQ7b2zArAf8JK0fK1SvJDFFjZjEOU3ssjOSHot/3AOM6mhnvMiidmdxg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by SA1PR12MB7101.namprd12.prod.outlook.com (2603:10b6:806:29d::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.25.23; Mon, 18 May
+ 2026 14:40:32 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.21.0025.022; Mon, 18 May 2026
+ 14:40:32 +0000
+Date: Mon, 18 May 2026 11:40:31 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: iommu@lists.linux.dev, Jonathan Hunter <jonathanh@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
 	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-	Adithya Jayachandran <ajayachandra@nvidia.com>,
-	Parav Pandit <parav@nvidia.com>,
-	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>,
-	Pratyush Yadav <pratyush@kernel.org>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Krishna Reddy <vdumpa@nvidia.com>, Will Deacon <will@kernel.org>,
 	David Matlack <dmatlack@google.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Chris Li <chrisl@kernel.org>, Vipin Sharma <vipinsh@google.com>,
-	YiFei Zhu <zhuyifei@google.com>
-Subject: Re: [PATCH v2 05/16] iommu/pages: Add APIs to
- preserve/unpreserve/restore iommu pages
-Message-ID: <agsg1esRdKwV3dxB@google.com>
-References: <20260427175633.1978233-1-skhawaja@google.com>
- <20260427175633.1978233-6-skhawaja@google.com>
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	Pranjal Shrivastava <praan@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>,
+	Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH v2 7/9] iommu/arm-smmu-v3: Directly encode CMDQ_OP_ATC_INV
+Message-ID: <20260518144031.GM787748@nvidia.com>
+References: <0-v2-47b2bf710ad5+716ac-smmu_no_cmdq_ent_jgg@nvidia.com>
+ <7-v2-47b2bf710ad5+716ac-smmu_no_cmdq_ent_jgg@nvidia.com>
+ <agqHLMyWkWRlx0pU@Asurada-Nvidia>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <agqHLMyWkWRlx0pU@Asurada-Nvidia>
+X-ClientProxiedBy: BN9PR03CA0683.namprd03.prod.outlook.com
+ (2603:10b6:408:10e::28) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260427175633.1978233-6-skhawaja@google.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|SA1PR12MB7101:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8bce0057-7ab4-41d7-d73b-08deb4eb69e2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|1800799024|376014|7416014|11063799003|4143699003|18002099003|22082099003|56012099003;
+X-Microsoft-Antispam-Message-Info:
+	x8K/ZHQMzc+razI1vsliWiYARUopHJ4yfl5mDVvPs5ZBq9UQSRv+vdKhCEGA0JR+Yu8S+/dNZRVKbh7I9itPi21x6p7RYg0/kb2KZM5HPyXfLa10TKZZSYIUGLQx0g8bCC5ex3X+htcr+rKp/3rsX+HHmFt3JeWXiw01e7q3wPgtiLJE5SS4hlQLQJQ8KpZbzCajcUIMaj6dGKANjnKSDsQt5Cb2HyldNGFc5GYH1GV5WGJ5zlerWdBa7X9d9WSDqZcQTVYcUGQK1oKPPo35zb/6enwIrC/wtFLewxBNRZQOTMyRUmBMhctQIRZRa2MOth/ccLoj8b8Mxv+YKF5rjXhHj596ZAmXZdzVsDU23OqQ6XmRaVXapsJIvYgPH5ZIxXGPkapgngEDyBRPWEhTp76p8vz+IoQrozQtUECiYpAdgzyJ8uwqAlAnjJ5qOs6SxTY42aVEGJStozqTY8czhPQ28Qz2WerceEGAwWHVmv5a7NGwq+xgMJp86VzXgwBh81dsBlMbFpUfJ2Hw7RM2+8C1Nn7F0bYO9JfBldrzAUfy5AxdDBisNv2FLlwMV/MLLQDCbFfm7dQ/7/YuBJPtCe7TjeHqI6OUTlo9xwLisg1WNJ3/DhdbuRVWWMrr+EHZX+x8VDdeaEmHoaEKZTDGd0Qj2SyAbCL+WHqOasa2n1E/bvcbZM4dn/GlDA4bIlNW
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014)(11063799003)(4143699003)(18002099003)(22082099003)(56012099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?NKr92nb+gn4U+UtJ06Mx1UvXBc2NlHNfNDMJQnzuiSEq9DiNcQc/C/9A5sjS?=
+ =?us-ascii?Q?dC+9nWEkvXdmqejDLpi/cBscs4nJ5c2YJhVPeVxf2CBmNjCP1VnkrA3HWfgh?=
+ =?us-ascii?Q?09SF52/WNVujtBUsY4KJOOAva/e3kL1eOAWLhqDA7coIfCSTW+QE0DbjS3+w?=
+ =?us-ascii?Q?Q6Ok4fPPSuIGiQQgz1uoh5eh2GluvZBqgkNdu6F7EhATorU8LOwiXTTRdKK8?=
+ =?us-ascii?Q?WDCcKNfFE50nV+0kHxe5h24GoUM/ShkEsu6vyNzixgUsqxOYAx3seNgvcNPq?=
+ =?us-ascii?Q?1FF+RjZGTVMsQjPus+SEgrt8+73oEBS3YSydIm+GoryYKVL2qpMMFUwlZGOP?=
+ =?us-ascii?Q?IGCOvhJXUPcqYHLTBZJRrjIvYoaAlt3tkn1PwtTXkggkTAkaKOFBg+aDFtiI?=
+ =?us-ascii?Q?+BCcdi1f4nH4cbQ2G+sM5NU5FEkeEIDYwrY/4siNbXbNZ6WLfR8l+jwvGsJh?=
+ =?us-ascii?Q?a2GDihnnjo4IHLObncBPg3QTzkYTZd2/q2Mv1xxAAlnQ9hCXKxFo8N8ghsAz?=
+ =?us-ascii?Q?thwfkbk0ad1WxEb6X6Wuw/HhaEvz5xDTFIxWGQL2Lv6rk9UdjSFMRlk5Qm6Z?=
+ =?us-ascii?Q?Oxzo2ZLFu+BhPN6bOKtZ1GWu1eGD+iDIKjXz7xBneyd6WQG2eWc4y27XnOJ5?=
+ =?us-ascii?Q?gnQ7/B4xmszJ/rHk+9gRYXrF9C92OJwJhBtYtryYPkla7SymmMezXdN153eD?=
+ =?us-ascii?Q?NLQfYW9JUD178ooRuP1ho+ry6sBUQ4G/dcUNr0qBnDKs6QH/4DVMbnZGU7Lp?=
+ =?us-ascii?Q?TnoXjwAdQqs6fnFtUB0KQ4+x45PlqpPx63pRqYaUe3iKws7eYuIWsBZaIyXp?=
+ =?us-ascii?Q?s+eu+DJMMsxny/Sp2FLTHLlo2y48l5e+gh4+U/i/3oIYmh6r/MkgEust+X3D?=
+ =?us-ascii?Q?nqrcxhNykIyRUAIUGh8tXpzcdzdEi4Lgkk1GN/AgtHoZcAIAiQSogtEymwmi?=
+ =?us-ascii?Q?fYOi8PFRueDi05AX6DXMLFT9DckVkBr2tnXD1xen5U2QWrJvCQwWVJoFSKBV?=
+ =?us-ascii?Q?c6P+gu7r/PSIJIRbM7kv5KFc+kFbJYZtob/72f/peoLXFzbVWvMYmhUyuZRN?=
+ =?us-ascii?Q?hpAwq4XBwM8XH1Tl2eKIpVIcrT+XPAzbfG7/KGj07MWhCXbbJXY23EbuuMnK?=
+ =?us-ascii?Q?ktsZzTV3aQAmqxmDHb88FVVDOUYLp2Dz/GvtCflyVgTVHfafmAB5wbtc7+EW?=
+ =?us-ascii?Q?W6DBMcWTMpqtfZ2rB/fkY3gmt+9Wt8/inYKxV6I7syZyFwixxVOfHsan41g5?=
+ =?us-ascii?Q?0FjysosG6DBrUFvEgZ3SFy9dQh3tEemyPh7cWBYZvJhjARDnntkf00Z5azcL?=
+ =?us-ascii?Q?GHmSQ2J2xrIQVP8s8H5zMdXvexfQmNv7liWRpWv5SeyuDBNjagCOR9PIQK1V?=
+ =?us-ascii?Q?K3sfQxA+BJMUKaCK0Xx2yVi4qtqjjT478fuXNUN0h0mYEnOjqS9TikPqutTC?=
+ =?us-ascii?Q?BecGlISew9sy2yVT7vT0hVCisMKrCGWhIjY8AuNkqAOkoakDMaJOnsPLfOCV?=
+ =?us-ascii?Q?sNK7l7FkiCzE05frGwLFMBuoOBBZLhQYsLNcfdGEatXYaxkchzwnExaOXtz9?=
+ =?us-ascii?Q?ul/UY1FHNd/ULRFd2FNKNsUFtAOh0rxghr6SinDppJGeTr492SQvig/akxly?=
+ =?us-ascii?Q?p1o8sFTOyLMgFlHePm9EPIy439c1LoVDNYrbyG4oT8LmAO8FIauwSJXwwF9p?=
+ =?us-ascii?Q?Q8qi//y6XCs34eAooe8Alv+jld28PKcv224AkIWaNvC9rhXK?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8bce0057-7ab4-41d7-d73b-08deb4eb69e2
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2026 14:40:32.2003
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: YxdBQfvkhU2Oy73FNHfrGyey2l+z+8iyPLxIOrSl7pEco9dTq3Sa2j0OcHjAmiu/
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7101
 
-On Mon, Apr 27, 2026 at 05:56:22PM +0000, Samiullah Khawaja wrote:
-> IOMMU pages are allocated/freed using APIs using struct ioptdesc. For
-> the proper preservation and restoration of ioptdesc add helper
-> functions.
+On Sun, May 17, 2026 at 08:27:40PM -0700, Nicolin Chen wrote:
+> > -	*cmd = (struct arm_smmu_cmdq_ent) {
+> > -		.opcode			= CMDQ_OP_ATC_INV,
+> > -		.substream_valid	= (ssid != IOMMU_NO_PASID),
+> > -		.atc.ssid		= ssid,
+> > -	};
+> > -
+> > -	if (!size) {
+> > -		cmd->atc.size = ATC_INV_SIZE_ALL;
+> > -		return;
+> > -	}
 > 
-> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
-> ---
->  drivers/iommu/iommu-pages.c | 108 ++++++++++++++++++++++++++++++++++--
->  drivers/iommu/iommu-pages.h |  30 ++++++++++
->  2 files changed, 134 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu-pages.c b/drivers/iommu/iommu-pages.c
-> index 3bab175d8557..b1ffeb930e6d 100644
-> --- a/drivers/iommu/iommu-pages.c
-> +++ b/drivers/iommu/iommu-pages.c
-> @@ -6,6 +6,7 @@
->  #include "iommu-pages.h"
->  #include <linux/dma-mapping.h>
->  #include <linux/gfp.h>
-> +#include <linux/kexec_handover.h>
->  #include <linux/mm.h>
->  
+> .. should !size jump to arm_smmu_make_cmd_atc_inv_all()?
 
-[snip]
+I audited it, there are no !sizes anymore and there is only one caller
+that never does full invalidation
 
-> +
-> +/**
-> + * iommu_unpreserve_pages - Unpreserve pages that were preserved in KHO
-> + * @list: List of pages to unpreserve
-> + */
-> +void iommu_unpreserve_pages(struct iommu_pages_list *list)
-> +{
-> +	struct ioptdesc *iopt;
-> +
-> +	list_for_each_entry(iopt, &list->pages, iopt_freelist_elm)
-> +		kho_unpreserve_folio(ioptdesc_folio(iopt));
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_unpreserve_pages);
-> +
-> +/**
-> + * iommu_restore_page - Restore a page that was preserved in KHO
-> + * @phys: Physical address of a page
-> + */
-> +void iommu_restore_page(u64 phys)
-> +{
-> +	struct ioptdesc *iopt;
-> +	struct folio *folio;
-> +	unsigned long pgcnt;
-> +	unsigned int order;
-> +
-> +	folio = kho_restore_folio(phys);
-> +	BUG_ON(!folio);
-> +
-> +	iopt = folio_ioptdesc(folio);
-> +
-> +	/*
-> +	 * For the restored pages incoherent is set to false as these are not
-> +	 * mapped using the DMA_API. The remapping of these pages using DMA_API
-> +	 * is not needed as these are not going to be written to by the new
-> +	 * kernel.
-> +	 */
-
-Looks good.
-
-> +	iopt->incoherent = false;
-> +
-> +	order = folio_order(folio);
-> +	pgcnt = 1UL << order;
-> +	iommu_folio_update_stats(folio, pgcnt);
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_restore_page);
-> +
-> +/**
-> + * iommu_preserve_pages - Preserve pages during kexec handover
-> + * @list: List of pages to preserve
-> + *
-> + * Returns 0 on success, negative error on failure
-> + */
-> +int iommu_preserve_pages(struct iommu_pages_list *list)
-> +{
-> +	struct ioptdesc *iopt;
-> +	int ret;
-> +
-> +	list_for_each_entry(iopt, &list->pages, iopt_freelist_elm) {
-> +		ret = kho_preserve_folio(ioptdesc_folio(iopt));
-> +		if (ret)
-> +			goto err;
-> +	}
-> +
-> +	return 0;
-> +
-> +err:
-> +	list_for_each_entry_continue_reverse(iopt, &list->pages, iopt_freelist_elm)
-> +		kho_unpreserve_folio(ioptdesc_folio(iopt));
-> +
-
-Looks good.
-
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_preserve_pages);
-> +#endif
-> +
-
-[snip]
-
-> +static inline int iommu_preserve_pages(struct iommu_pages_list *list)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
-> +
-> +static inline void iommu_unpreserve_pages(struct iommu_pages_list *list, int count)
-
-Nit: This is inconsistent from the signature in it's counter part in
-IS_ENABLED(CONFIG_IOMMU_LIVEUPDATE)
-
-Let's remove `int count` from the arguments to avoid broken builds.
-
-> +{
-> +}
-> +
-> +static inline void iommu_restore_page(u64 phys)
-> +{
-> +}
-> +#endif
-> +
-
-With that stub argument fixed,
-Reviewed-by: Pranjal Shrivastava praan@google.com
-
-Thanks,
-Praan
+Jason
