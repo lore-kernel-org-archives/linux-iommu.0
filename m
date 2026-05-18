@@ -1,197 +1,170 @@
-Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C820396B99
-	for <iommu@lists.linux.dev>; Mon, 18 May 2026 21:06:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.53
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779138362; cv=pass; b=LQ06hjNqI3XuRIuE01VuzQtmb/luon22tXAK2yCTUNuA6FcliGMf85tQolxoOfLtPPZIPgLK+2qqnoOl3Cdwce3hpqke1WjzgK2JSECp+P3E3adsd06oVt1+RbOkAnwxSAkviI+o1ScBjc3wgLdiiCBzgxGJ1yRO/YELW/k3954=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779138362; c=relaxed/simple;
-	bh=neSpT0cJH2Dzv88zkoZu5BKRcd3x3NbQE1TjpkeO0vw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=UfIjshtvL74V5ixG9VK8MNhRUvhds8ra7nooN1CXcws8NYSpsFvQgmgJFL5Si7ZImUDEi3Hr/8TEXwMCJ8Hu9hVrofhLvbu9mSd2FlEwwud/6spKOgDVHZKTYwk5tLUHWMUrxVdzz6EV0yloFCZCLhzMgZ6njnfeormfLYYgF2c=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kQ3afz/x; arc=pass smtp.client-ip=209.85.218.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8890D39A050
+	for <iommu@lists.linux.dev>; Mon, 18 May 2026 21:36:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779140184; cv=none; b=Z+G7b6hKh26rpxf+PkeinXD68WZDkMBVywi00tKWoXELg4ag+BklAi1PbIsXtoLqGvLCCR/X8OxWwrPmE9pfgdgNb1t6ptqK5g0nVMvPUeL4wY0cg4yILOxVfh/exfNwbdx3Jj/C6/L8El/p46aDDjsni5M3pFRK5+vk37qqoYM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779140184; c=relaxed/simple;
+	bh=H7Xi63DWkfe1BGbqWjPfOELabonYMm/OP+GwrSijp68=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dI/LWUOEhZcmnpgV6WEW9e7Dd0Rlu9F8DxuJTJtdglubB1WGQfjor1eBxJfEtOJYzxvwEqu1icRM4iesOgIlDivftv7oqkX1BOXhWj4C4NdcWZTk5I3xEJHsRoLMasgzEbVXM3kO0VJignTIXHGpgdKWdL4LsQ5uLgCg6pTueoE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=mFAxmS3T; arc=none smtp.client-ip=209.85.214.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kQ3afz/x"
-Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-bcceb394417so338587866b.0
-        for <iommu@lists.linux.dev>; Mon, 18 May 2026 14:06:00 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779138359; cv=none;
-        d=google.com; s=arc-20240605;
-        b=HawTOkv9zwunSe+oOy2XiaXkf32M4esM9a17DO7HKaJVDoK5JHgJhPNMzzAR4/dhA4
-         +gl+BcSOzCN/mhSWrs2QhBS/Ml2Yk5nFUgKLrNPi/HnpZ4hGh1G3w5xgLVGXVnS2VAq7
-         bJ/sqFKAxBI0rQbTPqcbTVQFIKYcw6BDfV1aKnlYlT/RLlTOXCZAQWfzEWGAS21IzvRP
-         brHXMEJ0FV0D+EPsQs2ihGJynLLRGDrASniMxmHYt8K/bgOC7JpFGca8aBxHgPdnBqda
-         PpBNUy1OrEa3qjRdqdJDI1kej2QaUZ6vCgbskSAdfj4jR048Z7pQvc10DShw9mVK5Gpt
-         +fmQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=TLMXl0qpkPUxInkyk4MfYDrsORdc6W4QRpC2Vx6JBpk=;
-        fh=qxAlUEwuEzqqLxUEj0UTWwbdmjgKhoHBmaz68chIynw=;
-        b=VXSnFQ+JIJf8PjH2XrgYqoux/FbRqFfBfaTO29tyCnA574zz9y4CSb2vC2ENpImRzi
-         0FkYLQH/KLCTJt/jZcndC9GYtE0EbYtXvWq3jyXCnj8kqF45jIku1HuYmN0LGcsvbabq
-         FZAM2W+XY81e3jZxpoZlrDUWjkjRICchXt5JqRlbfR1mXIsRV+GqUvUClAxexw5Hjyda
-         25vgnV3IKq+cwIle11deHnRAeG9KLdLuYiqmJQib0BMwg0wjWRcIl/l9sDnHw9lkDOp+
-         /1EdVDbG7f/8FJae5O+8QD0mxfYAVCZwY6eEppiV4aSoYchz082T7IyPoIj9NXoCbNGy
-         Y0rQ==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="mFAxmS3T"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2ba3b9bcf69so895ad.0
+        for <iommu@lists.linux.dev>; Mon, 18 May 2026 14:36:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779138359; x=1779743159; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=TLMXl0qpkPUxInkyk4MfYDrsORdc6W4QRpC2Vx6JBpk=;
-        b=kQ3afz/xxnFq8NFqLLpofGcCUNO7BzPUhaUGZmfbpolkulVdjm1xI+T/8EHjJXE3Vy
-         gUyptk6XR4IXc1trz+7k0kkGGqLGLlpO+ExVQzda5ozQJGW3OAa18F1Nre53+EY6V5sv
-         aMGIzH6CchrfB8mrqQddrT2aE2O9OsE/fiWKTSBRW8LAqFPfNzKlb5OmIV4h9zsNd01c
-         P2A6HFWnAddfkVgQ6oiiO2MuiLxzVXfDDFpw4QDAcvUkbtEV/du3cmVaY7NG40LvFSa9
-         2B3LDAlejlkN34Uyh/AgQsDjrI6nqlw/fn0MQg19MFp9Iy00O6OKwYOIbMiLa4zctUVX
-         ZMAQ==
+        d=google.com; s=20251104; t=1779140182; x=1779744982; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=kdhq85Gg3A+NvWbGs+q4HdNVWYpVSS2dUxoGdw9nwVc=;
+        b=mFAxmS3T//VFM046rlca4pl5qPIhms+I/80UNUceVTTGIJCIsdmSoXq+lAKakibnbN
+         3EAqMNCS4CYQzJPonvz6ir3OENDcqU/lIDuD9PFyrj08QdkdkchQLJH0XVJAv9DKYvu7
+         mevZsSmt12aSTdaU5s1wxVoXfyekbeMxXFDcrvau46oCO2wuu2Tyg2G6UvBaGh3IsvKl
+         HPwgQs8MdZ1SvGizDKTYFlj3HyAdkBBxh7winhN6trZiIrZWwHb8lt5qla17rRgjwDMa
+         tjaAxWc38TpLJ/ETHc932olj9l2E8PsgTGwC7Z30rI73DIuwnSyBfMbQCRRYrk666gFD
+         wisw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779138359; x=1779743159;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=TLMXl0qpkPUxInkyk4MfYDrsORdc6W4QRpC2Vx6JBpk=;
-        b=CXldzh+rYIQ2JbqOa7ycyA9B8J+DcuOZFy+x2yHqeUHCmhKdNADpjxXFrEvo0gEuhK
-         i3bJ/6PoUXNvXxkDjaVeEk5Wh23YHUn75PAAm73W0yHaXZ0Hrgyx//I1ELH497Qjy8iN
-         n2a9dWXpaIHrysBfhjh6B0J4CmyiRz9HbH9f5k2ywdvR8lfCHjFOUFvCV3PzGAElbeuv
-         8B+1jQOlvQRCSqZUvwGeXcH8YNzBGfv7TfEW//6Rk+B2Boop1M5tCf4/Wb2pZAyVkDOT
-         R6iGLX5af5Qw1q2lB987S74gVW4clIilvoZL3jiFBSbYbwlCiOYIpsAJRxkL/95IqM8x
-         UUVg==
-X-Gm-Message-State: AOJu0YzTOm7n3I2MiH/EYZifpOStWp8pPvDvX79H5nqA/kZAd9J69z6c
-	mTNq9JpY7jgdhnDRNWmSDnDTwGyC98BTDkffOV9qR0z7WrKbF7V+gD0jHFQDyyeGGT1Pj9vUMlj
-	435qRLqWvrlrDlOHsbc8+sNcS3icuiWk=
-X-Gm-Gg: Acq92OF77tCt4n0XYGg47r5ytMIIwv9hgXuOvkC75BUi+5xJyFSYzQTQJJBmjqd3Q5H
-	mQfYNLmCm7MD+g4VEwwL1unrY5nC95Km+m1l+QtX5ED/36Z/uJS11NUeeWic29e9Z/MlwrD0tdE
-	XZfqckiqn4u4tDULFIzEI5sDRKQ1qXi+hrZRd3pktZLS/qLkfxdLnQeg/JBG4VJNCD2b4jquEzb
-	VnUVC6q46ALDdAq9Hz+lA5sfqAGNfUHmVPubemZLgSe4H24wog/aJrRpa/1NsQX0WCWvtVmLfZO
-	KJK+aYHII0CHnPazTqtGtHkSM91I/6SuIT57BscQFSn96lWCYwfa0TvIVzkZzFUHjmBqZcFi8x1
-	A2jA4GrQzph7xVirqbyZTbA88twY8RJ3sRdk6hWlM8m1XQk6OUKmtHVRUbg==
-X-Received: by 2002:a17:907:3c86:b0:bd6:5ab3:a63a with SMTP id
- a640c23a62f3a-bd65ab3b33cmr512415666b.45.1779138358549; Mon, 18 May 2026
- 14:05:58 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1779140182; x=1779744982;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=kdhq85Gg3A+NvWbGs+q4HdNVWYpVSS2dUxoGdw9nwVc=;
+        b=CkUYbi15AoUvF2efUuULg0201RUIx3Nzv9pCLVSIpGUBODqK0T+yX6HtpYlLHrrE2G
+         egPPWGTzyOoR3rA+nSFBydr37Bj97IG07ySkNt6gzzl+Q5pHcUHJumKLWEXYmjYzBLLP
+         DAO+LCCMNUiJeRABX5nQeDrAx8tbtpruwEIZU5JRi5pAVx7AqoNoe99CxSOll8qppTVc
+         uGCLB3Pl6+a83tbgMH7cwXi4f3JjJbBBdyuu01e/KRzQaAHTyahUnehG4U2r3Ql4ZJv/
+         ZIr2Iwn918X1P4AnnlrhfVdotzASWRdmi5kJi2K2IQHbLoDlvcOdiC30QSRp0qhsnVNR
+         Awtw==
+X-Forwarded-Encrypted: i=1; AFNElJ+KTJInRS229JRTsHoY0iGspT+MOBp7OzyWBlUHlY/qiJWEv2HKCMDN7stf5zg6STvHHVxLFQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxGnbVX3zMB+lMR/vP8in7iGHkBnaeUX9WuA1uwYkqmYeIYwaW4
+	4s/4pMM10gT+KfGfgAruxjLGd10ZD4IfC6315D/RfTGxqoXQ/sgC2UumotpiCQjsmg==
+X-Gm-Gg: Acq92OGIg2hdl3ZncdpHWHF4hF1cX6uv6ych/WJg5nq7jbrH8vGwxMgZsAzP7Cyp3j1
+	ZnaWiFIkUk3a5sYLKtfo9pjsxYTNUA5GlbLhuOWII2CjMitUf4CfqdrjIwUKka7t9pi4Zy5j9TH
+	QFP8tcbVYawizsOhSYZhnRWKXwYjjXIJrXi0+QkHIaXtiG8Hl4+P6Sa0SUFC3LRKKCQcg4KdbHK
+	jIQb9fnRT7Zj+Fxo+cVLwaxhTgU9SThiMcqDqo/6s73rHFGWTfHtdzHatTU8Sbcvw1f0MPwYIFc
+	mrSdFdJUiIqmGfPkdBVNa1YZNIZIhFEpOOpnLSAREb+RQnXwoytMk13UGaKdgRAlT4HiHhqsjF6
+	T8qdv0eBYeCAcuQnECkLELC0sVqfBgGehqVMGZtSFu86driYw0CrVU9Ze8fpn1ZvTukht9o2RR+
+	qIHP74AeKPeLAP8k6GkTI+9Kl+wQvUqPWxGKvjdlS2YFcfHNdTO4SkviKSWH2QAG7WxXOk
+X-Received: by 2002:a17:902:ebc2:b0:2ba:73c3:49b0 with SMTP id d9443c01a7336-2bdb03acb3dmr4353865ad.14.1779140181119;
+        Mon, 18 May 2026 14:36:21 -0700 (PDT)
+Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-369514aecaesm12378424a91.17.2026.05.18.14.36.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 May 2026 14:36:20 -0700 (PDT)
+Date: Mon, 18 May 2026 21:36:07 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Samiullah Khawaja <skhawaja@google.com>
+Cc: David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+	Adithya Jayachandran <ajayachandra@nvidia.com>,
+	Parav Pandit <parav@nvidia.com>,
+	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>,
+	Pratyush Yadav <pratyush@kernel.org>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	David Matlack <dmatlack@google.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Chris Li <chrisl@kernel.org>, Vipin Sharma <vipinsh@google.com>,
+	YiFei Zhu <zhuyifei@google.com>
+Subject: Re: [PATCH v2 03/16] iommu: Implement IOMMU domain preservation
+Message-ID: <aguGR98563NEUwdS@google.com>
+References: <20260427175633.1978233-1-skhawaja@google.com>
+ <20260427175633.1978233-4-skhawaja@google.com>
+ <agsQE1lFGdo-b_IF@google.com>
+ <agtenWUBOVosDCTU@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260517042955.2218649-1-rosenp@gmail.com> <d6366078-3eb9-4445-9f91-27e1dc15970e@arm.com>
-In-Reply-To: <d6366078-3eb9-4445-9f91-27e1dc15970e@arm.com>
-From: Rosen Penev <rosenp@gmail.com>
-Date: Mon, 18 May 2026 14:05:47 -0700
-X-Gm-Features: AVHnY4L2wE5z42c0QPh661vX8FWMfmmLBB6jtPfJ2cHD8NRF5bSBUk_GS03Nigg
-Message-ID: <CAKxU2N--t89Lj--8Fk2wdJDZrMwV1sqyO_iggSXmBLxMy7KgDQ@mail.gmail.com>
-Subject: Re: [PATCH] dma-direct: Clear pages before coherent remap
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <agtenWUBOVosDCTU@google.com>
 
-On Mon, May 18, 2026 at 5:40=E2=80=AFAM Robin Murphy <robin.murphy@arm.com>=
- wrote:
->
-> On 17/05/2026 5:29 am, Rosen Penev wrote:
-> > Clear pages through their page mapping before creating a coherent
-> > remap for dma-direct allocations. Some architectures implement the
-> > coherent remap as uncached memory, where the generic memset() path may
-> > use cache-only zeroing instructions that are not valid for the returned
-> > CPU mapping.
->
-> Which architectures?
-PowerPC 44x See:
-https://lore.kernel.org/all/2e3acfe63d289c6fba366e16973c9ab8369e8b75.163180=
-3922.git.christophe.leroy@csgroup.eu/
+On Mon, May 18, 2026 at 06:55:50PM +0000, Samiullah Khawaja wrote:
+> On Mon, May 18, 2026 at 01:13:49PM +0000, Pranjal Shrivastava wrote:
+> > On Mon, Apr 27, 2026 at 05:56:20PM +0000, Samiullah Khawaja wrote:
+> > > Add IOMMU domain ops that can be implemented by the IOMMU drivers if
+[snip]
+> > > +	ret = domain->ops->preserve(domain, domain_ser);
+> > > +	if (ret) {
+> > > +		domain_ser->hdr.deleted = true;
+> > 
+> > Nit: This will become domain_ser->hdr.flags |= IOMMU_SER_FLAG_DELETED;
+> > once we convert the bitfields in PATCH 2 to flags.
+> 
+> Agreed. I think it is being discussed that bitfields are fine in the
+> other thread, but I will switch it to flags for readibility anyway.
 
-Fixing it here exposed similar issues elsewhere. I've submitted
-patches for those.
-> I'd fear they're just broken in that case - there's
-> every chance that once the caller gets a coherent allocation back, they
-> could also invoke memset() on it - either explicitly, or automatically
-> inserted by the compiler for a structure/array initialisation, or if the
-> buffer subsequently gets mmap()ed to userspace then who knows what. If
-> that's really a problem, this patch isn't going to solve it.
->
-> It's rather the point that we clear the buffer the same way that the
-> caller is subsequently going to access it (not least to minimise the
-> chance of any other possible weird coherency side-effects).
->
-> Thanks,
-> Robin.
->
-> > Keep the existing memset() for non-remapped allocations, but avoid
-> > normal memset() on the remapped coherent allocation path.
-> >
-> > Assisted-by: Codex:GPT-5.5
-> > Signed-off-by: Rosen Penev <rosenp@gmail.com>
-> > ---
-> >   kernel/dma/direct.c | 20 ++++++++++++++++++--
-> >   1 file changed, 18 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> > index 583c5922bca2..76f7bf43bd28 100644
-> > --- a/kernel/dma/direct.c
-> > +++ b/kernel/dma/direct.c
-> > @@ -8,6 +8,7 @@
-> >   #include <linux/export.h>
-> >   #include <linux/mm.h>
-> >   #include <linux/dma-map-ops.h>
-> > +#include <linux/highmem.h>
-> >   #include <linux/scatterlist.h>
-> >   #include <linux/pfn.h>
-> >   #include <linux/vmalloc.h>
-> > @@ -104,6 +105,15 @@ static void __dma_direct_free_pages(struct device =
-*dev, struct page *page,
-> >       dma_free_contiguous(dev, page, size);
-> >   }
-> >
-> > +static void dma_direct_zero_pages(struct page *page, size_t size)
-> > +{
-> > +     unsigned long count =3D PAGE_ALIGN(size) >> PAGE_SHIFT;
-> > +     unsigned long i;
-> > +
-> > +     for (i =3D 0; i < count; i++)
-> > +             clear_highpage(page + i);
-> > +}
-> > +
-> >   static struct page *dma_direct_alloc_swiotlb(struct device *dev, size=
-_t size)
-> >   {
-> >       struct page *page =3D swiotlb_alloc(dev, size);
-> > @@ -268,6 +278,13 @@ void *dma_direct_alloc(struct device *dev, size_t =
-size,
-> >       if (remap) {
-> >               pgprot_t prot =3D dma_pgprot(dev, PAGE_KERNEL, attrs);
-> >
-> > +             /*
-> > +              * Zero via the page mapping before creating a potentiall=
-y
-> > +              * uncached remap.  Some architectures cannot safely run =
-normal
-> > +              * memset on uncached memory.
-> > +              */
-> > +             dma_direct_zero_pages(page, size);
-> > +
-> >               if (force_dma_unencrypted(dev))
-> >                       prot =3D pgprot_decrypted(prot);
-> >
-> > @@ -283,10 +300,9 @@ void *dma_direct_alloc(struct device *dev, size_t =
-size,
-> >               ret =3D page_address(page);
-> >               if (dma_set_decrypted(dev, ret, size))
-> >                       goto out_leak_pages;
-> > +             memset(ret, 0, size);
-> >       }
-> >
-> > -     memset(ret, 0, size);
-> > -
-> >       if (set_uncached) {
-> >               arch_dma_prep_coherent(page, size);
-> >               ret =3D arch_dma_set_uncached(ret, size);
->
+Ack. Thanks!
+
+> > 
+> > > +		return ret;
+> > > +	}
+> > > +
+> > > +	domain->preserved_state = domain_ser;
+> > > +	*ser = domain_ser;
+> > > +	return 0;
+> > > +}
+> > > +EXPORT_SYMBOL_GPL(iommu_domain_preserve);
+> > > +
+> > 
+> > [...]
+> > 
+> > >  static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
+> > > @@ -752,6 +757,11 @@ struct iommu_ops {
+> > >   *                           specific mechanisms.
+> > >   * @set_pgtable_quirks: Set io page table quirks (IO_PGTABLE_QUIRK_*)
+> > >   * @free: Release the domain after use.
+> > > + * @preserve: Preserve the iommu domain for liveupdate.
+> > > + *            Returns 0 on success, a negative errno on failure.
+> > > + * @unpreserve: Unpreserve the iommu domain that was preserved earlier.
+> > > + * @restore: Restore the iommu domain after liveupdate.
+> > > + *           Returns 0 on success, a negative errno on failure.
+> > >   */
+> > >  struct iommu_domain_ops {
+> > >  	int (*attach_dev)(struct iommu_domain *domain, struct device *dev,
+> > > @@ -782,6 +792,9 @@ struct iommu_domain_ops {
+> > >  				  unsigned long quirks);
+> > > 
+> > >  	void (*free)(struct iommu_domain *domain);
+> > > +	int (*preserve)(struct iommu_domain *domain, struct iommu_domain_ser *ser);
+> > > +	void (*unpreserve)(struct iommu_domain *domain, struct iommu_domain_ser *ser);
+> > > +	int (*restore)(struct iommu_domain *domain, struct iommu_domain_ser *ser);
+> > 
+> > Nit: Should we add restore in the patch we implement it?
+> 
+> The ops are implemented in iommupt (separate scope) and it is done after
+> the iommu pages patch as that is also required for it.
+
+I missed the restore implementation in Patch 6, I thought that'll be
+covered in a diff series. Mb. Please ignore this comment.
+
+> > 
+> > >  };
+> > 
+> > With the above nits,
+> > 
+> > Reviewed-by: Pranjal Shrivastava <praan@google.com>
+> 
+> Thanks Pranjal.
+> > 
+> > Thanks,
+> > Praan
+> 
+> Sami
+
+Thanks.
+Praan
