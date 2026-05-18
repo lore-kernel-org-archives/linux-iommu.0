@@ -1,390 +1,195 @@
-Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011022.outbound.protection.outlook.com [40.93.194.22])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 687EF390C8B;
-	Mon, 18 May 2026 19:44:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.194.22
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779133465; cv=fail; b=sVoQ7u86OaOzGrhZ1u/zO3FVWfDwdFmD0Twq3RwTlZYbzYLpaW4sFBbxBH72AN1OE37QC2uOp4/lukEvI5isKcSJyPOb9E3OsOrbrd9OTspcbIhW5z6FCys4cHPrDFO3xf6hDGAZ/A38aZW+rJgJZDxj1wio/CJT7COg85ddmyY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779133465; c=relaxed/simple;
-	bh=Wfd7Bb2wDAAacP/2G0iMWe4BHrDfM4lo1ZceE83k0cs=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=WSOTHrDeiKNMwD12A2jcsxe9Vg4tgMirDX2j3cyx39QPvEf32YGebhbEsun8Gl2qq2WsudBTmAypKEEOmBGJlYs1E6O2BfCX1DMEi0ybYkcpNYEMMCz0UxPml0/Otth9d/JHNNUQAgYrIvYlCbDcnl0B2Sw8ezLgY+i9bieFvfw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=o3CopqF9; arc=fail smtp.client-ip=40.93.194.22
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 360FC32B9B6
+	for <iommu@lists.linux.dev>; Mon, 18 May 2026 20:32:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779136368; cv=none; b=Wa8r/pI3d9SZKhdgIcmbcWEShZkQO8TskdE09zdrpFN9JzVZvgSKyRNfEQdEe2kZsQ77ATntYaRMLzcwQ6MKfq+uizH1Z9lHBiccjVNIiogbgENJBoa4Nim0rPOAe7U787qlBKXkxagZqTYr/4g4soQrVd0vWFF+pJ0AVhEHQmE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779136368; c=relaxed/simple;
+	bh=ueB0hMp+FeQZ2rw6x9BVNLt7mojoUSebvdMXIaLRWYA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=iabgzob8jW8WtqCsdqBQaZtJY3O24Q19jEW0ldc4uP9Bcx5PhrkM/nKLi8WARrGYwETFtwbqGhzQLvYHHbIjoR/riYIyJM/CUQJBg+8PH6KePq7EYZRRkN3oL9WPUHWoehcb61FjpYveXIKQZSUrn075cLk0E0RiDD24sB9iY/Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=IEV2tcaG; arc=none smtp.client-ip=209.85.214.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="o3CopqF9"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=RLSbzyM+3Nt1mcmYwVt3WIu+fBEupexbM5AtYda1LkNj6KO/ozRm1IDBkhE9/ca8fGZohWtG6GdHFT740vboUHE6EBaNc0wFDigVEmtuL+jW4UHR3YXlkfWJME2UvGDtarob/prrPGQUqvs49FUaIQw4hcABHaeakejTTa8BEF0h5A/9MSX78nN0gFqmPaGu6Y3hI4c3ox2uux5cgsID32LyivZR3TcHOotEsTB2fQ3rdJpPK8ik6hEHMSUcauK1eWVev0OIQDIUB+bfVx1iaZGkzPqyidjSOw80u7fVBdgmXezqPWfAl4xKh+xiLcvSqMptw2bPsBTweRJiFQxkhw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JZWHiELT+SKeD/VHhgOQrpDww5CYuKtPZAq1kcMnPBU=;
- b=Hy/XU0KVoNWD4ldD9iii05J8b4EJradCEKtswqpAEGWS3EGjrLKFgJy7NDcTP+AbxHvsVanAncvml4bIisOQ+xTPKkWe8IPfAbMok+MpN7mnP50KgMMCvzKUffgrlNmbDVYA1V0B4f+1dDZw8kkxDP8z0jor8VhaUtCMaVzXvn3GMG8EvDM2FXq/lqsXR4fiVzwbk2n8PMMuP4K1mZMoXBk8wYQfoEfZbW5+1wnzDL0QqhkNrCuQFOvjMREP9iZMzw7pbWL+nCy6aYMcRDb6krWYdijpt8vQjSYSEZOTu6/f/+LknbalwCV4vF5OTK3ZtYHg0hsFBWQykyU+8mMEpQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JZWHiELT+SKeD/VHhgOQrpDww5CYuKtPZAq1kcMnPBU=;
- b=o3CopqF97bTypzwzts4Vpk/7lsZZxxb5aQSyphKtDgqy8GfJ3q7c6tSAvKP09y8z5aXnGDVlaPaBDNiIUIArmy3xmgtALfL7Xe16od+HG7AfzWko0Uf7K0hI59+8PxnMBs69pO5lbR4oWVcUuc1PNUVT9Uc4kqGoixxD9WvScPHBkmo+lK+1hsJNnbqELbC9HJtpw5l2jDkiZz8ty3NNJpHS38bfcKq4Z5PCeveCkxdNldCuZryFJSqcFeF6uLWmBCNbc0D55nDhWiTinvfEMFNNFlk5bvy0ZilZK/jAzM1x8QKZuaP5j9NQ5Kau0JBCgC/j2/CEnHm5G7ipmdMjLA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by PH7PR12MB5951.namprd12.prod.outlook.com (2603:10b6:510:1da::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.25.23; Mon, 18 May
- 2026 19:44:15 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.21.0025.022; Mon, 18 May 2026
- 19:44:15 +0000
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Will Deacon <will@kernel.org>
-Cc: David Matlack <dmatlack@google.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	patches@lists.linux.dev,
-	Pranjal Shrivastava <praan@google.com>,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Mostafa Saleh <smostafa@google.com>
-Subject: [PATCH 5/8] iommu/arm-smmu-v3: Precompute the invalidation commands
-Date: Mon, 18 May 2026 16:43:42 -0300
-Message-ID: <5-v1-5b1ac97a5403+6588f-smmu_tlbi_jgg@nvidia.com>
-In-Reply-To: <0-v1-5b1ac97a5403+6588f-smmu_tlbi_jgg@nvidia.com>
-References:
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BLAPR03CA0144.namprd03.prod.outlook.com
- (2603:10b6:208:32e::29) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="IEV2tcaG"
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-2ba180a022dso155ad.1
+        for <iommu@lists.linux.dev>; Mon, 18 May 2026 13:32:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1779136366; x=1779741166; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=TNmFlCcVDbEeItJqA64fw5/4nyffyvxzQppQsiHP4dc=;
+        b=IEV2tcaG7frviiRriK3nb/cPM4l3u/JrC+B+4f0ExLTFTwUE/AdBtlqKkAjB23+r17
+         cOls8HU1blwjh0QIuehwBlJq3+9+oaSLC0kn+lgfkooFKtM0CNX0PdJGaJD/RI396Kt8
+         LqciziLjYkUFrAPex7oNg+YQEy5ymB2X4qhGQZcVKR6jCgvKTKY2BynXAEAS5lmOo5jN
+         dLoNxfPUFt2uMpk5O9oVdAhglwBd6YsHeTUwKo/s9xGlhn+XTlUy5yB8qsqQL0PPUr1z
+         aKv855qL9BXG5mf6k6j2zrpMfsmKjL0nM4mMiS6sg+nlO5ZTfhFQ/HHyLr4Mm7tE80kn
+         IwXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779136366; x=1779741166;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=TNmFlCcVDbEeItJqA64fw5/4nyffyvxzQppQsiHP4dc=;
+        b=Jn91PPWF50z3ShpdUZXTOhYuV0u2tMcOhUnmKo0Ng+xLxUduKpz+X0xIdH5ImM3nBL
+         BAp+KuvjNWuGOfEm9kWaEHg8oSTBoNCX2YwzgPoJL4Sa5PXn3YjVoWos2yFzKzEbazjo
+         eg52jIqDoHuDB6IiFwSar2ajMOCFGOWDPMLIQFudsKauyrLguEsPSmgSoLGXcyUEOfM/
+         N52eIl+yrUMp7VwEdBV5coWnRGMLT7iuHlCVcTuPXC6VrwfX3PR19VgD5P05AZVsgWvz
+         aR41MmYmJCj/XhgfjTGv2rBdOZ76JJnb3m6v4nnXXM+kSu532pHYk2u+2DJzTyb3zRDN
+         dZQw==
+X-Forwarded-Encrypted: i=1; AFNElJ91rGrXevttqgdaCamuXR6be6Td/BrQsjA97ynoDCgLQQt9Hr/0/W0afaNfL/h5CDNq0oH5Yw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzV+aAZEOakmaXxX7Wg2t5WpIafAz0mkjipe7/SLFTdtYGspNom
+	0M91tOBKwI6YZCW8ToJKXpOVRnNmzBK+Ja/gjeel14TkSs/9sKNiY2P52Wcajx+NNw==
+X-Gm-Gg: Acq92OGx+a+mhdZfmZaz9r/QrnnCEPZ1V8jnSdHoWH0bZTdR36XBolBUABx+6VtRU4/
+	sJddwz+nZLPWKidMFoOoK1RvUji3MjcM3rk9e1iDqkru+uFC1fsrtfHfS27udqYAqUUsZN631/8
+	dJfi0Waiu9qYc0c4/H39SBm5Y9TJ8u3UVhhDkJa8eDgF7Jk+173OKbFTVIPqARhFxJQDTKrgRfO
+	ZyrttPsKGBlf0ajH2QJ9jqvJFjSB73ROpaDWIU5COUPA3ItBtrbWIJwSQh1Rxuq8Ml9tKwkCsMh
+	rD7rxmXaljsKVTrt+K1D/EdpLxw0SC4lbxonCspxEa8Ml04wMAd+rlknl0I8IWNicKN0r0siMCB
+	jzNPm1biW7V8jPO628oecQA9kJrgHVM+DIH8DUyH8z+PG5REhatMFQNas41W+XkFOnLsoftK0No
+	to5S5Vf5tfG9RWiNcBUusGYbUAzT+/GVk1phQz0nckpTaJbMJw64d8S7FfM/CLQn2XCgiyXA==
+X-Received: by 2002:a17:903:17c3:b0:2ba:4749:c9a2 with SMTP id d9443c01a7336-2bdb03a17e1mr3609045ad.2.1779136365901;
+        Mon, 18 May 2026 13:32:45 -0700 (PDT)
+Received: from google.com (153.46.83.34.bc.googleusercontent.com. [34.83.46.153])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-369514361b6sm11821958a91.12.2026.05.18.13.32.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 May 2026 13:32:45 -0700 (PDT)
+Date: Mon, 18 May 2026 20:32:42 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
+	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>, 
+	Adithya Jayachandran <ajayachandra@nvidia.com>, Parav Pandit <parav@nvidia.com>, 
+	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
+	Pratyush Yadav <pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
+	David Matlack <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	Chris Li <chrisl@kernel.org>, Pranjal Shrivastava <praan@google.com>, 
+	Vipin Sharma <vipinsh@google.com>, YiFei Zhu <zhuyifei@google.com>
+Subject: Re: [PATCH v2 07/16] iommu/vt-d: Implement device and iommu
+ preserve/unpreserve ops
+Message-ID: <agtux6SrjpRYvMit@google.com>
+References: <20260427175633.1978233-1-skhawaja@google.com>
+ <20260427175633.1978233-8-skhawaja@google.com>
+ <a968550d-2cab-47fd-8639-a8747a8a7535@linux.intel.com>
+ <af023TAT1m3oA9ez@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|PH7PR12MB5951:EE_
-X-MS-Office365-Filtering-Correlation-Id: f309dfb6-ea13-4ff9-fe72-08deb515d78d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|7416014|376014|366016|11063799003|56012099003|22082099003|18002099003|3023799003;
-X-Microsoft-Antispam-Message-Info:
-	jeBltHideTtW+j5QuUmz4nHHGB8mPI39r6toQNaw53wCen3V3RL8G85zBy3naJDsDA9fDQendWbxtAnPUoHhL0w6oW13/6sMH9mFIreaNVsft/DE8JWEaIPIy6LwFT2+PfUCqSLqXoAKH4sfLgI12RofF9ia9xP8xmLWs0qxjfQJ3PPcdXkXb/B1k9Pa/AehICHq5iyzgct+tGcD3FvgbeUylMqfZdoXv/3S50bkyXG05WDh6DbYlzth8qr1e6affmod+QozeqOpl6m3BBEMQ/D/tbBofn4AhIadaC6gEmh4rkfBoqfFZtrAfz9a5zhpmlfJvrcaTZhmTgyh0bzP02yqrXIO7ohOwHIEKnAPZrA3sjOyHRfEEji/l1uxnzBG99kwK81J1FErGb/yhtW7JyesvDEt7x+cxRXEBTCqD0KzGACHd9F5cm5HBb/iJbatbdb/OjOA2swRubbfqpFUy1Ty2OkFGPzcMO3pjsvHCV5PBbtDr/gomgeBZCRvHvPMoZnueMNiBrQcd2Rj/166mImZRooFsRgrzLcMZ391+SDeQ8dxBHoj+TqHmI2qclhIwF3KV6s0YaUT+1zygpFDrTmnw+lk6wqcbTDyA8jpL5m6uLm0Nma8d+xc0pZ8Lp3O6N+YB1EmbYaZ7dliazXIo2FlbgTY0TQ3cGUY0GLP5oXpDp563IEv/3eomuv1FAlS
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016)(11063799003)(56012099003)(22082099003)(18002099003)(3023799003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?NrQuBx+R4CStvemefBXHxkT2U5duJtmJXAg8eqMWa4x0BEeB34y9xtIGDi+b?=
- =?us-ascii?Q?9qz+pjEHlHkdaqh/draAClsuf0jV5H9fe3XJO5dw8ZKbR+J6ZbP/u+UCcXgw?=
- =?us-ascii?Q?owxjZvOEuvqhnoIY1wIj3Xl2VrCgNzGGeRh/hKFp/dC50FnzHDoMrInpegcL?=
- =?us-ascii?Q?waC+l/mipzqVAb73PMoWQxI9lH0lSV0cOGCJCMvwm8p5pbDOhAMixXC+TSEJ?=
- =?us-ascii?Q?U/0JVaBBouKcRyEpjicd+zxUlkjSzthNV49Eukpl8X7EBcfoNqN3knJKBwjq?=
- =?us-ascii?Q?q3K/iDeIRSGL+rZk0+QsLcpiqEuvWryvunWKy5vaoNHtCj+WlXIQ/9BYNZ4u?=
- =?us-ascii?Q?2oIvrrLe1UlC/7hw+m+aZiNVyvDgYJTDzHcemwv4JrzOY/GL7o8Wo+P2xWT5?=
- =?us-ascii?Q?M+/FIaQC8F5FeV/h7lcMl/DAEKzrFNpQqd4bmzEk1gSyxU5hZwBEWRsNUyb7?=
- =?us-ascii?Q?9HmwDDIeSpu9ErxAXdBGBYh2Kel5GiexarXYSu8DvZu0D+EUnla07ke0h06H?=
- =?us-ascii?Q?0mdtaqmo3bE1zOQ0ImtMsjhNwr+vEAOZ7bqg0ZMWPQUiBQrM8ELLbdpS5wZ4?=
- =?us-ascii?Q?TPqqRz+MljfCN2ya7ApWlPLGP432dhZshxK9kjlivOiKXdqCw6j/Fcn7TBbj?=
- =?us-ascii?Q?5QsN7IRTvfdwh+kGcgHtdYmFLilt8c8v1Zln7Ojh560iTIezAiwpyYqHY0TS?=
- =?us-ascii?Q?D6HvZvk+qVfP04UvtLXIVI1h8k0AYP+CTXs3zc9rUTj2dDfq2PJageL/QPKZ?=
- =?us-ascii?Q?g/aELvSUZnPE2RYJgfq+9g/Li9E/v42enLlHhTv0edlyW+xBgivVUFkuPzZG?=
- =?us-ascii?Q?nCXebvqSp9i7M4/HHfGkhQ8Xo10pGSMVNsiFDvvEEu6Fdk9+t/XlBnIkIT/V?=
- =?us-ascii?Q?ligWwez+lafrPuDX07lhRRFX8vzAfaQG/tmVIvGZmHF+7AbXneMZEXIcTk/h?=
- =?us-ascii?Q?Zk+EBLf9uxoCU7p/520yOB4/kaN5Jy5cVAo2IwHgaOfwpe0aXl60EhfHTT2G?=
- =?us-ascii?Q?ctorsAmuk4lUY7WrKem1FA6kbAdfyjSObyZBYOgmtVfoy/kOyOZ8Xp67i2T5?=
- =?us-ascii?Q?XxRdokaHX+YhHbiPU5Pns0Q2awarSSkL/Zh1rkzup/iFLT1rWxSMYOXou+6m?=
- =?us-ascii?Q?XCPIiv031srGgWTkzHSQKmHo2bogTDCtXhlw6u44yueo6ieju9gDZUO8m25E?=
- =?us-ascii?Q?6lw7oIX2CKpaXl5baPlbsIpxC6qTBsVw8Kr8iG5iQxjJP6bEMcBUodgDo3Ms?=
- =?us-ascii?Q?vcbrdXHYfMAtZ7SKqEyW6pxWusFMVJ+8wFNbSXX6Ibk/PLQu/y4a+26FXFHk?=
- =?us-ascii?Q?/H2GB5izuNHMh7n7XXku9pi5ybCsURNfRNN9iaVisW03P5uwBn7CF7vJ4HV0?=
- =?us-ascii?Q?xTZbN/qKlIJd/fN8stISywBqz9UKYyO900tUyO+T/WxPLvgQ2PF4SLCH3aAE?=
- =?us-ascii?Q?XZ8wuTzvKnleMnFzCccLmIXLgeG+1NnuK6BrYYd/tueRV0P4ZKCIZzMoF5Bf?=
- =?us-ascii?Q?cNTJCod20Ryvkl6JZFo9dRDZCMT+FYCENkNpv1hA5Ql6B+/LXGQETymP0ksu?=
- =?us-ascii?Q?iBOh9lO6iICo2zcaBfuTyi8X/bvmV7nIvD9im2T+PyXU5HBkNTUkrfzAl2hH?=
- =?us-ascii?Q?PurRs8vmLpaEiiKsk2N1lBPn1vu+ABdc3S/bECd6OosMglsm7vwoEvBeIF5c?=
- =?us-ascii?Q?2f0G1Fj3YhEb3TfMcaYMJ7B0gC90SIVR5tdTwDIST2ogoxUa?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f309dfb6-ea13-4ff9-fe72-08deb515d78d
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2026 19:44:15.1030
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UfocH9TLYqVEs/T0KNYvaBDPGzbct9HFLY8ETt3pS6J4phN6GMCpycjy4PmSShn+
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5951
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <af023TAT1m3oA9ez@google.com>
 
-Store the required cmd data in the tlbi and just copy it out when
-processing each item in the invs list. The cmd form only depends on
-if the instance supports RIL or not, otherwise it is always the same.
+On Fri, May 08, 2026 at 02:36:56AM +0000, Samiullah Khawaja wrote:
+>On Thu, May 07, 2026 at 02:25:14PM +0800, Baolu Lu wrote:
+>>On 4/28/26 01:56, Samiullah Khawaja wrote:
+>>>Add implementation of the device and iommu presevation in a separate
+>>>file. Also set the device and iommu preserve/unpreserve ops in the
+>>>struct iommu_ops.
+>>>
+>>>During normal shutdown the iommu translation is disabled. Since the root
+>>>table is preserved during live update, it needs to be cleaned up and the
+>>>context entries of the unpreserved devices need to be cleared.
+>>
+>>This is not related to preserve/unpreserve ops and could be made in a
+>>separated patch?
+>
+>Agreed. I will move this stuff to a separate patch.
+>>
+>>>
+>>>Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+>>>---
+>>> MAINTAINERS                      |   1 +
+>>> drivers/iommu/intel/Makefile     |   1 +
+>>> drivers/iommu/intel/iommu.c      |  52 +++++++++++-
+>>> drivers/iommu/intel/iommu.h      |  28 +++++++
+>>> drivers/iommu/intel/liveupdate.c | 139 +++++++++++++++++++++++++++++++
+>>> drivers/iommu/iommu.c            |  18 ++++
+>>> include/linux/iommu-liveupdate.h |  10 +++
+>>> include/linux/iommu.h            |  14 ++++
+>>> include/linux/kho/abi/iommu.h    |  18 ++++
+>>> 9 files changed, 277 insertions(+), 4 deletions(-)
+>>> create mode 100644 drivers/iommu/intel/liveupdate.c
+>>>
 
-This avoids redundant calculations for each invs entry.
+[snip]
+>>
+>>>+{
+>>>+	struct context_entry *context;
+>>>+	int ret;
+>>>+	int i;
+>>>+
+>>>+	for (i = 0; i < ROOT_ENTRY_NR; i++) {
+>>>+		/*
+>>>+		 * Alloc the context tables now to make sure the iommu unit is
+>>>+		 * properly preserved. These might stay unused and wastes around
+>>>+		 * 32MB max in scalable mode.
+>>>+		 */
+>>
+>>Instead of allocating and preserving context tables for all root entries
+>>(as noted, can waste up to 32MB), could we restrict this only to the
+>>entries possibly in use by active PCI devices?
+>
+>I think the hotplug devices or VFs created through SR-IOV will be missed
+>that way. Lets say device A is preserved and the associated iommu is
+>also preserved. And then a new device B is hotplugged and preserved,
+>then the context table for that will be missed.
 
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 132 +++++++++++---------
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  11 ++
- 2 files changed, 81 insertions(+), 62 deletions(-)
+Ok I thought about it a little more and basically we have following
+things to consider when we preserve context tables,
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 3b0b273fcde829..9aa08f782e8986 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2398,32 +2398,15 @@ static bool arm_smmu_ttl_addr_aligned(u64 address, unsigned int tg,
- 	return !(address & GENMASK_U64(pgsz_lg2 - 1, 0));
- }
- 
--static void arm_smmu_cmdq_batch_add_ril(struct arm_smmu_device *smmu,
--					struct arm_smmu_cmdq_batch *cmds,
--					struct arm_smmu_cmd *cmd, bool leaf,
--					u64 address, unsigned int num,
--					unsigned int scale, u8 ttl, u8 tg_enc)
--{
--	cmd->data[0] |= FIELD_PREP(CMDQ_TLBI_0_NUM, num) |
--			FIELD_PREP(CMDQ_TLBI_0_SCALE, scale);
--	cmd->data[1] = FIELD_PREP(CMDQ_TLBI_1_LEAF, leaf) |
--		       FIELD_PREP(CMDQ_TLBI_1_TTL, ttl) |
--		       FIELD_PREP(CMDQ_TLBI_1_TG, tg_enc) | address;
--	arm_smmu_cmdq_batch_add_cmd_p(smmu, cmds, cmd);
--}
--
- /*
-- * Issue a single range TLBI command covering [iova, iova+size). Returns true if
-- * successful, false if the range is too large for a single command.
-+ * Generate a single range TLBI command covering [iova, iova+size). Sets
-+ * use_full_inv if the range is too large for a single command.
-  *
-  * The algorithm finds the smallest SCALE where the range (in tg-sized pages)
-  * fits in the 5-bit NUM field (max 32 units of 2^SCALE pages). This may widen
-  * the invalidation range.
-  */
--static bool arm_smmu_cmdq_batch_add_range(struct arm_smmu_device *smmu,
--					  struct arm_smmu_cmdq_batch *cmds,
--					  struct arm_smmu_cmd *cmd,
--					  struct arm_smmu_tlbi *tlbi)
-+static void arm_smmu_tlbi_calc_range(struct arm_smmu_tlbi *tlbi)
- {
- 	unsigned int tg_lg2 = tlbi->smmu_domain->tgsz_lg2;
- 	u64 cur_tg = tlbi->iova >> tg_lg2;
-@@ -2433,9 +2416,6 @@ static bool arm_smmu_cmdq_batch_add_range(struct arm_smmu_device *smmu,
- 	unsigned int scale;
- 	u8 ttl = 0;
- 
--	if (!tlbi->size)
--		return false;
--
- 	/*
- 	 * Determine what level the granule is at. For non-leaf, both
- 	 * io-pgtable and SVA pass a nominal last-level granule because they
-@@ -2452,10 +2432,13 @@ static bool arm_smmu_cmdq_batch_add_range(struct arm_smmu_device *smmu,
- 	if (num_tg == 1) {
- 		if (!ttl)
- 			ttl = 3;
--		arm_smmu_cmdq_batch_add_ril(smmu, cmds, cmd, tlbi->leaf_only,
--					    cur_tg << tg_lg2, 0, 0, ttl,
--					    tg_enc);
--		return true;
-+		tlbi->range.data0 = 0;
-+		tlbi->range.data1 =
-+			FIELD_PREP(CMDQ_TLBI_1_LEAF, tlbi->leaf_only) |
-+			FIELD_PREP(CMDQ_TLBI_1_TTL, ttl) |
-+			FIELD_PREP(CMDQ_TLBI_1_TG, tg_enc) |
-+			(cur_tg << tg_lg2);
-+		return;
- 	}
- 
- 	/*
-@@ -2474,7 +2457,8 @@ static bool arm_smmu_cmdq_batch_add_range(struct arm_smmu_device *smmu,
- 		/*
- 		 * Range too large for a single command, use full invalidation.
- 		 */
--		return false;
-+		tlbi->range.use_full_inv = true;
-+		return;
- 	}
- 
- 	/* 16K granule TTL=1 is reserved (Section 4.4.1) */
-@@ -2485,38 +2469,31 @@ static bool arm_smmu_cmdq_batch_add_range(struct arm_smmu_device *smmu,
- 	if (ttl && !arm_smmu_ttl_addr_aligned(cur_tg << tg_lg2, tg_lg2, ttl))
- 		ttl = 0;
- 
--	arm_smmu_cmdq_batch_add_ril(smmu, cmds, cmd, tlbi->leaf_only,
--				    cur_tg << tg_lg2,
--				    DIV_ROUND_UP_ULL(num_tg, 1ULL << scale) - 1,
--				    scale, ttl, tg_enc);
--	return true;
-+	tlbi->range.data0 =
-+		FIELD_PREP(CMDQ_TLBI_0_NUM,
-+			   DIV_ROUND_UP_ULL(num_tg, 1ULL << scale) - 1) |
-+		FIELD_PREP(CMDQ_TLBI_0_SCALE, scale);
-+	tlbi->range.data1 = FIELD_PREP(CMDQ_TLBI_1_LEAF, tlbi->leaf_only) |
-+			    FIELD_PREP(CMDQ_TLBI_1_TTL, ttl) |
-+			    FIELD_PREP(CMDQ_TLBI_1_TG, tg_enc) |
-+			    (cur_tg << tg_lg2);
- }
- 
- /*
-  * One TLBI command per IOTLB entry, assuming the entries are all at least
-- * iopte_granule sized. Returns false if too many commands would be needed which
-- * indicates too high a latency. The threshold is similar to MAX_DVM_OPS in
-- * arch/arm64/include/asm/tlbflush.h for the 4k PAGE_SIZE.
-+ * iopte_granule sized. Sets use_full_inv if too many commands would be needed
-+ * which indicates too high a latency. The threshold is similar to MAX_DVM_OPS
-+ * in arch/arm64/include/asm/tlbflush.h for the 4k PAGE_SIZE.
-  */
--static bool arm_smmu_cmdq_batch_add_single(struct arm_smmu_device *smmu,
--					   struct arm_smmu_cmdq_batch *cmds,
--					   struct arm_smmu_cmd *cmd,
--					   struct arm_smmu_tlbi *tlbi)
-+static void arm_smmu_tlbi_calc_single(struct arm_smmu_tlbi *tlbi)
- {
- 	unsigned long num_ops = tlbi->size / tlbi->iopte_granule;
--	unsigned long iova = tlbi->iova;
--	unsigned long i;
- 
--	if (!num_ops || num_ops > 512)
--		return false;
--
--	for (i = 0; i < num_ops; i++) {
--		cmd->data[1] = FIELD_PREP(CMDQ_TLBI_1_LEAF, tlbi->leaf_only) |
--			       (iova & ~GENMASK_U64(11, 0));
--		arm_smmu_cmdq_batch_add_cmd_p(smmu, cmds, cmd);
--		iova += tlbi->iopte_granule;
-+	if (!num_ops || num_ops > 512) {
-+		tlbi->single.use_full_inv = true;
-+		return;
- 	}
--	return true;
-+	tlbi->single.num = num_ops;
- }
- 
- static void arm_smmu_inv_all_cmd(struct arm_smmu_inv *inv,
-@@ -2536,16 +2513,32 @@ static bool arm_smmu_inv_to_cmdq_batch(struct arm_smmu_inv *inv,
- 				       struct arm_smmu_cmd *cmd,
- 				       struct arm_smmu_tlbi *tlbi)
- {
-+	u64 iova = tlbi->iova;
-+	unsigned int i;
-+
- 	if (inv->smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
--		if (arm_smmu_cmdq_batch_add_range(inv->smmu, cmds, cmd, tlbi))
--			return false;
--	} else {
--		if (arm_smmu_cmdq_batch_add_single(inv->smmu, cmds, cmd, tlbi))
--			return false;
-+		if (tlbi->range.use_full_inv) {
-+			arm_smmu_inv_all_cmd(inv, cmds, cmd);
-+			return true;
-+		}
-+		cmd->data[0] |= tlbi->range.data0;
-+		cmd->data[1] = tlbi->range.data1;
-+		arm_smmu_cmdq_batch_add_cmd_p(inv->smmu, cmds, cmd);
-+		return false;
- 	}
- 
--	arm_smmu_inv_all_cmd(inv, cmds, cmd);
--	return true;
-+	if (tlbi->single.use_full_inv) {
-+		arm_smmu_inv_all_cmd(inv, cmds, cmd);
-+		return true;
-+	}
-+
-+	for (i = 0; i < tlbi->single.num; i++) {
-+		cmd->data[1] = FIELD_PREP(CMDQ_TLBI_1_LEAF, tlbi->leaf_only) |
-+			       (iova & ~GENMASK_U64(11, 0));
-+		iova += tlbi->iopte_granule;
-+		arm_smmu_cmdq_batch_add_cmd_p(inv->smmu, cmds, cmd);
-+	}
-+	return false;
- }
- 
- static inline bool arm_smmu_invs_end_batch(struct arm_smmu_inv *cur,
-@@ -2564,8 +2557,8 @@ static inline bool arm_smmu_invs_end_batch(struct arm_smmu_inv *cur,
- 	return false;
- }
- 
--static void __arm_smmu_domain_inv_range(struct arm_smmu_tlbi *tlbi,
--					struct arm_smmu_invs *invs)
-+static void arm_smmu_domain_tlbi_inv(struct arm_smmu_tlbi *tlbi,
-+				     struct arm_smmu_invs *invs)
- {
- 	struct arm_smmu_cmdq_batch cmds = {};
- 	bool used_s12_vmall = false;
-@@ -2662,6 +2655,13 @@ void arm_smmu_domain_inv_range(struct arm_smmu_domain *smmu_domain,
- 	};
- 	struct arm_smmu_invs *invs;
- 
-+	if (!size || size == SIZE_MAX) {
-+		tlbi.single.use_full_inv = true;
-+		tlbi.range.use_full_inv = true;
-+	} else {
-+		arm_smmu_tlbi_calc_single(&tlbi);
-+	}
-+
- 	/*
- 	 * An invalidation request must follow some IOPTE change and then load
- 	 * an invalidation array. In the meantime, a domain attachment mutates
-@@ -2692,6 +2692,14 @@ void arm_smmu_domain_inv_range(struct arm_smmu_domain *smmu_domain,
- 	rcu_read_lock();
- 	invs = rcu_dereference(smmu_domain->invs);
- 
-+	/* Only precaculate RIL if it will be used. */
-+	if (invs->has_range_inv) {
-+		if (!tlbi.range.use_full_inv)
-+			arm_smmu_tlbi_calc_range(&tlbi);
-+	} else {
-+		tlbi.range.use_full_inv = true;
-+	}
-+
- 	/*
- 	 * Avoid locking unless ATS is being used. No ATC invalidation can be
- 	 * going on after a domain is detached.
-@@ -2700,10 +2708,10 @@ void arm_smmu_domain_inv_range(struct arm_smmu_domain *smmu_domain,
- 		unsigned long flags;
- 
- 		read_lock_irqsave(&invs->rwlock, flags);
--		__arm_smmu_domain_inv_range(&tlbi, invs);
-+		arm_smmu_domain_tlbi_inv(&tlbi, invs);
- 		read_unlock_irqrestore(&invs->rwlock, flags);
- 	} else {
--		__arm_smmu_domain_inv_range(&tlbi, invs);
-+		arm_smmu_domain_tlbi_inv(&tlbi, invs);
- 	}
- 
- 	rcu_read_unlock();
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index d58fe91a96325f..b5e214b428d644 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -809,6 +809,17 @@ struct arm_smmu_tlbi {
- 	size_t size;
- 	unsigned int iopte_granule;
- 	bool leaf_only;
-+
-+	struct {
-+		bool use_full_inv;
-+		u16 num;
-+	} single;
-+
-+	struct {
-+		bool use_full_inv;
-+		u32 data0;
-+		u64 data1;
-+	} range;
- };
- 
- struct arm_smmu_evtq {
--- 
-2.43.0
+- The devices can be hotplugged and preserved, so the context tables of
+   those need to be preserved if we don't allocate all of them first time
+   we preserve iommu, as done here.
+- New context tables can be added (after hotplug) for unpreserved
+   devices. And if we don't get another iommu preserve call after these
+   are added, those remain unpreserved, so during shutdown those entries
+   need to be removed from root table or preserved for simplicity.
 
+To solve this we can,
+
+1. Either preserve the new context table when it is added for a preserved
+   iommu. This can be done in iommu_context_addr(). This is simpler and
+   no tracking needed.
+
+2. Or track the preserved context tables using a bitmap and then preserve
+   them incremently whenever a device is preserved. On shutdown during
+   cleanup, we can clear the entries for unpreserved context tables from
+   root table.
+
+I am inclined towards second option. WDYT?
+
+I think we will have to do similar stuff for PASID also down the road to
+preserve pasid_tables in PASID directory.
+>
+>Since we don't track the context_tables that are preserved, there is no
+>way to incremently preserve the new-ones. Let me look into the behaviour
+>of KHO, maybe we can make the preserve call idempotent and do these
+>incrementally.
+>>
+>>>+		spin_lock(&iommu->lock);
+>>>+		context = iommu_context_addr(iommu, i, 0, 1);
+>>>+		spin_unlock(&iommu->lock);
+>>>+		if (!context) {
+>>>+			ret = -ENOMEM;
+>>>+			goto error;
+>>>+		}
+
+[snip]
+>>
+>>Thanks,
+>>baolu
+>>
+>
+>Thanks,
+>Sami
+
+Sami
