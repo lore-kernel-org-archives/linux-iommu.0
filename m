@@ -1,135 +1,115 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4EEBD33F595
-	for <iommu@lists.linux.dev>; Tue, 19 May 2026 05:41:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D1843612D8;
+	Tue, 19 May 2026 06:15:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779169301; cv=none; b=gccSR8RCsc8jv8niYQkP1AGnAAZxfoSFhu9VjsEjA7cauhp3YDsGd5Ka6Asyz0gm7vClrIpLPda1Z9RI6uC4yDmWhc4y5lVyls1lGg+Rge4jTJFsvJ8T9aQQ95Rzk6sapDTTSwEiVZlQyGVXdddKou3C4MRi7Y8i9nhNscq/SzE=
+	t=1779171355; cv=none; b=t0HUGae7GY9mVtcL4XZNQjMdQPldYYpd7cqtT5kAS9DpwGBkxJic4Z3t8kP+hbN5kVTMeF6+c0wacLJjnktz8rSROhCWaRwTjWv7rJ76rA+w30/KGmXZg50bIkHErxkzBOR6Sl9vW3Y/BU4SB4jlGuNG88SkKkIac9KERwITAbo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779169301; c=relaxed/simple;
-	bh=o/yS0uOYS4L22n6+JUVWldOroJpthMRMLg3OceU4NKQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=JgQv6xXT2AleoXDST26oz7qakMU62qy5S/iYAGKIv9xuuqJS90PVWZY7X2Gx4WGuoklIdZUXO/+Pqd0fkMK1jlWCgGZSYSoza6azWtYNq1ruwEkYLDHlP/diGvNPyQk/RlQQ+7lQqeo/qvq5PyPMZUy9cPl6fflOpIXmVYOK1jc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=QBHBXOX7; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1779171355; c=relaxed/simple;
+	bh=oPFAYDbcOdaONkTK3t8RuJ4HZ+KQnAEEZ3J8LUUbMv8=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=O5iUtlNCqlCPEEZF7BMYTcAhOeEtV85vUmWPvRtcrMCD8Cb6Av1up/34gNiqfhdfGQ/EfQO4QhoDCjbjnrpZLdViQWFJzpMh+VVV4xSTXBP06TNGvFkqDhHrn10cHQiQTCTn6qXn2DBvmM7fvp4mRQKkppFC7xazqlqjgzHC96E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=L8E9UP6J; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="QBHBXOX7"
-Received: from localhost (unknown [20.236.10.129])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 0A10320B7166;
-	Mon, 18 May 2026 22:41:31 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0A10320B7166
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1779169293;
-	bh=9aRpORwCZcDZFRWxP8HU9OITjEdjOoC0GPbZGiL6PAE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=QBHBXOX7NdP4TdXu30LQKuB2NYOv84+TiJbyOMei9/B5p2NONJonvvHwp8+UGl7Di
-	 xGY46GW2lgvUSxky3V6/VCwTuYnggPWiGgKUQD9n1qKLoY7She5JEnC9buZni3H2Cc
-	 bHezQ7XDvQcwggOxNVSG9QFaENzjE6xuHjR66ZHI=
-Date: Mon, 18 May 2026 22:41:36 -0700
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Mukesh R <mrathor@linux.microsoft.com>, hpa@zytor.com,
- robin.murphy@arm.com, robh@kernel.org, wei.liu@kernel.org,
- mhklinux@outlook.com, muislam@microsoft.com, namjain@linux.microsoft.com,
- magnuskulke@linux.microsoft.com, anbelski@linux.microsoft.com,
- linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
- iommu@lists.linux.dev, linux-pci@vger.kernel.org,
- linux-arch@vger.kernel.org, kys@microsoft.com, haiyangz@microsoft.com,
- decui@microsoft.com, longli@microsoft.com, tglx@kernel.org,
- mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
- x86@kernel.org, joro@8bytes.org, will@kernel.org, lpieralisi@kernel.org,
- kwilczynski@kernel.org, bhelgaas@google.com, arnd@arndb.de,
- jacob.pan@linux.microsoft.com
-Subject: Re: [PATCH V3 09/11] x86/hyperv: Implement Hyper-V virtual IOMMU
-Message-ID: <20260518224136.0000403e@linux.microsoft.com>
-In-Reply-To: <20260515182322.GI7702@ziepe.ca>
-References: <20260512020259.1678627-1-mrathor@linux.microsoft.com>
-	<20260512020259.1678627-10-mrathor@linux.microsoft.com>
-	<20260515182322.GI7702@ziepe.ca>
-Organization: LSG
-X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="L8E9UP6J"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4AFF5C2BCC6;
+	Tue, 19 May 2026 06:15:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1779171355;
+	bh=oPFAYDbcOdaONkTK3t8RuJ4HZ+KQnAEEZ3J8LUUbMv8=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=L8E9UP6JDabt600TvsCR9slzoGhC8Jwuiv7ar8SzlmQIT/5k4Ap/fBmT2Sp4/mBGi
+	 GkRCVI8vKNMEDIjQo5e+HBThyfqZOLIB3g42MxaA4VfW8vXPGelxTQ00XHskUqpVjR
+	 71f6xwdeuUhqEJ/qY6tV90GvdI+XxlwKEls7aL8AXm27Mfu7z3U5rvNxJ0W7C56GM2
+	 8+VC4dtJ1yrnvzCLcnl76SyXDtZfozios3ijPACRDedJ0gBECnQx6CkyrzhWae6605
+	 lZSIVwBRORUJjwkgZhb7RGt1Ek1/lcp9UhNfq6V1yNS4Nr+zSA/ijtNS/cVtPSvEl5
+	 5ypjvcl6TZGIA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37596CD4F3C;
+	Tue, 19 May 2026 06:15:55 +0000 (UTC)
+From: Ekansh Gupta via B4 Relay <devnull+ekansh.gupta.oss.qualcomm.com@kernel.org>
+Date: Tue, 19 May 2026 11:45:51 +0530
+Subject: [PATCH 01/15] MAINTAINERS: Add entry for Qualcomm DSP Accelerator
+ (QDA) driver
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260519-qda-series-v1-1-b2d984c297f8@oss.qualcomm.com>
+References: <20260519-qda-series-v1-0-b2d984c297f8@oss.qualcomm.com>
+In-Reply-To: <20260519-qda-series-v1-0-b2d984c297f8@oss.qualcomm.com>
+To: Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
+ Shuah Khan <skhan@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>, 
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+ Sumit Semwal <sumit.semwal@linaro.org>, 
+ =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+Cc: Bharath Kumar <quic_bkumar@quicinc.com>, 
+ Chenna Kesava Raju <quic_chennak@quicinc.com>, srini@kernel.org, 
+ dmitry.baryshkov@oss.qualcomm.com, andersson@kernel.org, 
+ konradybcio@kernel.org, robin.clark@oss.qualcomm.com, 
+ linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+ linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
+ iommu@lists.linux.dev, linux-media@vger.kernel.org, 
+ linaro-mm-sig@lists.linaro.org, 
+ Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1779171352; l=1114;
+ i=ekansh.gupta@oss.qualcomm.com; s=20260223; h=from:subject:message-id;
+ bh=AcTCOc39xB2eWZrt+ASexMe8l7bzMXO4brOtNDdJpLc=;
+ b=XwNsf2StpfGEc03MIN5ksLv66Pg0T/usYVgQPmqfzw5MxB6jXvhJsbXX7bTYyLF5Fy7wEzC3K
+ d5yJ5e27faWDfrCTzW5xSeogxKwAaQNBtjHjh56ZsIQNBZP6cslu86G
+X-Developer-Key: i=ekansh.gupta@oss.qualcomm.com; a=ed25519;
+ pk=n0SepARizye+pYjhjg1RA5J+Nq4+IJbyRcBybU+/ERQ=
+X-Endpoint-Received: by B4 Relay for ekansh.gupta@oss.qualcomm.com/20260223
+ with auth_id=647
+X-Original-From: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+Reply-To: ekansh.gupta@oss.qualcomm.com
 
-Hi Jason,
+From: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
 
-On Fri, 15 May 2026 15:23:22 -0300
-Jason Gunthorpe <jgg@ziepe.ca> wrote:
+Add a MAINTAINERS entry for the Qualcomm DSP Accelerator (QDA) driver,
+covering the driver source under drivers/accel/qda, documentation under
+Documentation/accel/qda, and the UAPI header
+include/uapi/drm/qda_accel.h. The linux-arm-msm and dri-devel mailing
+lists are listed as the relevant review lists.
 
-> On Mon, May 11, 2026 at 07:02:57PM -0700, Mukesh R wrote:
-> > +static struct iommu_domain *hv_iommu_domain_alloc_paging(struct
-> > device *dev) +{
-> > +	struct hv_domain *hvdom;
-> > +	int rc;
-> > +
-> > +	if (hv_l1vh_partition() && !hv_curr_thread_is_vmm()) {
-> > +		pr_err("Hyper-V: l1vh iommu does not support host
-> > devices\n");
-> > +		return NULL;
-> > +	}
-> > +
-> > +	hvdom =3D kzalloc(sizeof(struct hv_domain), GFP_KERNEL);
-> > +	if (hvdom =3D=3D NULL)
-> > +		return NULL;
-> > +
-> > +	spin_lock_init(&hvdom->mappings_lock);
-> > +	hvdom->mappings_tree =3D RB_ROOT_CACHED;
-> > +
-> > +	/* Called under iommu group mutex, so single threaded */
-> > +	if (++unique_id =3D=3D HV_DEVICE_DOMAIN_ID_S2_NULL)   /* ie,
-> > UINTMAX */
-> > +		goto out_err;
-> > +
-> > +	hvdom->domid_num =3D unique_id;
-> > +	hvdom->partid =3D hv_get_current_partid();
-> > +	hvdom->iommu_dom.geometry =3D default_geometry;
-> > +	hvdom->iommu_dom.pgsize_bitmap =3D HV_IOMMU_PGSIZES;
-> > +
-> > +	/* For guests, by default we do direct attaches, so no
-> > domain in hyp */
-> > +	if (hv_dom_owner_is_vmm(hvdom) && !hv_no_attdev)
-> > +		hvdom->attached_dom =3D true; =20
->=20
-> What are you thinking sending something like this?!?!?
->=20
-> The function is called *alloc domain PAGING*, it does not, and can not
-> allocate weird "special" domains that are not PAGING domains. I just
-> spent a long time removing all this kind of crazyness from drivers.
->=20
-> There is alot of other things I don't like in this patch, but this is
-> too much.
->=20
-> You have to drop this "direct attach" idea from the first iteration,
-> Linux can't do it without alot more work, you should start with the
-> basic paging domain mode.
->=20
-Just wondering what work is needed to support this "direct attach"? I
-felt this issue is due to trying to cram two distinct domain types
-(paging domain & direct attach) into the VFIO container model where
-only unmanaged paging domain is supported.
+Assisted-by: Claude:claude-4-6-sonnet
+Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+---
+ MAINTAINERS | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-I am thinking if we were to switch to iommufd and let user(vmm) have
-direct control of HWPT, vmm will be able to selectively use a
-different domain type to handle direct attach. IMHO, it is essentially
-the same as attaching nest parent domain without nested domain
-immediately attached. The unprivileged guest may attach nested domain
-directly with Hyper-V if nested translation is needed.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 3dd58a16f06a..c5c13ad1e6fe 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -22083,6 +22083,15 @@ S:	Maintained
+ F:	Documentation/devicetree/bindings/crypto/qcom-qce.yaml
+ F:	drivers/crypto/qce/
+ 
++QUALCOMM DSP ACCELERATOR (QDA) DRIVER
++M:	Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
++L:	linux-arm-msm@vger.kernel.org
++L:	dri-devel@lists.freedesktop.org
++S:	Supported
++F:	Documentation/accel/qda/
++F:	drivers/accel/qda/
++F:	include/uapi/drm/qda_accel.h
++
+ QUALCOMM EMAC GIGABIT ETHERNET DRIVER
+ M:	Timur Tabi <timur@kernel.org>
+ L:	netdev@vger.kernel.org
 
-I understand nest parent is still a paging domain today and it is
-expected to work with nested domain. So maybe we can make iommufd
-accept nest parent w/o paging? i.e. no map/unmap and do not call
-iopt_table_add_domain()? or maybe a new object?
+-- 
+2.34.1
 
-=46rom this driver POV, it will allocate a 2nd stage only domain with
-different domain ops (w/o map/unmap) for "direct attach" thus avoid this
-hack.
 
-Thanks,
-
-Jacob
