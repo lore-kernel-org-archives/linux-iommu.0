@@ -1,51 +1,52 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AE343EA95B;
-	Tue, 19 May 2026 15:24:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A3B2403EA1;
+	Tue, 19 May 2026 15:24:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779204241; cv=none; b=NxDiF3a35Wq8yaYPWN6BiYpeXNLuuZMLA3vmVh7eGOq3woVbCmseqCrWhJFSKA9VMRQs9UhiJiiJPxvF/he6l1xtnbgIE5xTCieDpZy5cYSdkAJR4rNojjgIElSz8T+y40YT12O+8JxFRG31iG8UBdWMWs8yDHpujPeqL9+MVzQ=
+	t=1779204247; cv=none; b=jyyB7NtdHMe56ZOqtvfx/bepJjKZe69ma3CPtp85mrDeLcHCaZlIdUplfdiR7JiASguNlUEIV1zakvFT2iG4W/MoxhdtXh7Jna1tiK4Nk32pYtsa412jaLWkTmzDe8D52jflOy561oW+lMwu9AVXXnqcRSipbdIABg19Ab3RBhQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779204241; c=relaxed/simple;
-	bh=D/PAHA23j1HXXTU2QCXdtDypXNlUffAPZMXfwziQEQI=;
+	s=arc-20240116; t=1779204247; c=relaxed/simple;
+	bh=T2/UZ6X0oL5N+IpYiiuiP8No68KS+6FoVP6cqqxB9Lw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Zz2B0KajfjbEzjYhvbWLLyyaPfFw+pl/qgQ2XUx1Z/RRokH7G5efeEzlBagOwetKcce6MT9Y5dnJ0C/KjdcWVocVNfavbSLfSHE9B7InMNWbdLrCbtAIVE6HxYQWl2fGzGj4bxW0bSFp9me9+TWF23Bc7PVuAhYLZ4/Hqgz89pk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=py1H1y27; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=NC/yk68Ajh+wsm96v0M23wyegQxU5mJdKvACT5/GFB2+We0sqda0V0HhBUOoXANmHLiwpyTvEC1+0bwyRjrLsMOB36u2lsroqsqCkd3oAYA4zV8u5DomVBNaY5zwDM4ANGjPVKKwjlwTIpvIRLYs07cu4xi+4lJmssVK+SfoY5M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=d8es0zpG; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="py1H1y27"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A2FEC2BCB3;
-	Tue, 19 May 2026 15:23:58 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="d8es0zpG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53394C2BD00;
+	Tue, 19 May 2026 15:24:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779204240;
-	bh=D/PAHA23j1HXXTU2QCXdtDypXNlUffAPZMXfwziQEQI=;
+	s=k20201202; t=1779204247;
+	bh=T2/UZ6X0oL5N+IpYiiuiP8No68KS+6FoVP6cqqxB9Lw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=py1H1y27Qw9ckoMFQ0oCPrD2GbTcv10C8kHet4RxQHAzv1OvXWprUioT5Pvc11PM1
-	 T3u4DsC+oCRxG3x/TsuIYMdQ7EE/2D1yjgKuDARYIR/cIhWfyIS1/EpMBEHMHHMFhk
-	 0nRchv8MLrsWONoS23+mF2L9yUrA1NNiXMcoVQwZAWdS/+nC91BM+Sh88nbTv8paHS
-	 LH4a1U5mog5VaIkY1eTvN5/aNfg5u/Xi8ofGj+F6MF+uQBUipZxf4/9Jl9LJHmcgwe
-	 3NNWrrE5KEFHEsR2ylArzy/KJNAClKTYrkZvVwKlUhwdnn1g3bf70Sq7c13oNiH1np
-	 iA6pQEdX1RJsQ==
+	b=d8es0zpGRVA5bOQn52Ey9+FnokqoG31xtshO7rf2q9VPQ2q3bmUUG1mcJePKSo4c/
+	 ydaM9jhSVHOaZYM83+BggOigk3JPqr6lUQtjVSssR+HS5Mb5g/E9y0EwRJJxo7HIa3
+	 IPNHj4CnsjghaiSbpL4uSk44+kZ+R+5kJSFISYSXf7upOvLKA5lEkHjVy9ncml9kQW
+	 h8cE9VK0MNVxFlpSAdxYig+gQO1FtwkE4JUvhGT2gE0Bfzh4ccrmlWBBkYBRefwkEl
+	 PHz5imCLjUxLiPGstfQy7rYVaDF/DxfjSKQAt3T7KuuGUUtyvUZ89lU7z3Fo/mQz1b
+	 p3F9zj7SWAwSg==
 From: Will Deacon <will@kernel.org>
 To: Robin Murphy <robin.murphy@arm.com>,
 	Joerg Roedel <joro@8bytes.org>,
 	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
-	Komal Bajaj <komal.bajaj@oss.qualcomm.com>
-Cc: catalin.marinas@arm.com,
-	kernel-team@android.com,
-	Will Deacon <will@kernel.org>,
 	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev,
 	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: arm-smmu: qcom: Add compatible for Qualcomm Shikra SoC
-Date: Tue, 19 May 2026 16:23:01 +0100
-Message-ID: <177919159473.817912.7697068787428918777.b4-ty@kernel.org>
+	linux-kernel@vger.kernel.org,
+	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Cc: catalin.marinas@arm.com,
+	kernel-team@android.com,
+	Will Deacon <will@kernel.org>,
+	Shawn Guo <shengchao.guo@oss.qualcomm.com>
+Subject: Re: [PATCH v2] dt-bindings: arm-smmu: Constrain clocks for newer Qualcomm variants
+Date: Tue, 19 May 2026 16:23:03 +0100
+Message-ID: <177919680700.851863.10253442471292780349.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260430-shikra-smmu-binding-v1-1-1a28572ebccf@oss.qualcomm.com>
-References: <20260430-shikra-smmu-binding-v1-1-1a28572ebccf@oss.qualcomm.com>
+In-Reply-To: <20260519074059.61405-2-krzysztof.kozlowski@oss.qualcomm.com>
+References: <20260519074059.61405-2-krzysztof.kozlowski@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -55,17 +56,27 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Thu, 30 Apr 2026 17:54:44 +0530, Komal Bajaj wrote:
-> Qualcomm Shikra SoC includes an apps SMMU that implements arm,mmu-500,
-> which is used to translate device-visible virtual addresses to physical
-> addresses. Add compatible for it.
+On Tue, 19 May 2026 09:41:00 +0200, Krzysztof Kozlowski wrote:
+> Many of SMMU on Qualcomm SoCs come in two flavors using the same front
+> compatible but a bit different fallback:
 > 
+> 1. For application processor, usually without any controllable
+>    clocks,
 > 
+> 2. For the Adreno GPU, with some controllable clock(s) and using
+>    additionally qcom,adreno-smmu fallback compatible.
+> 
+> [...]
+
+!! Please note: this conflicted with the Glymur GPU bindings update. That
+   was trivial to fix, but I've also queued an update adding
+   "qcom,shikra-smmu-500" which you may want in your list of platforms
+   where clocks are disallowed?
 
 Applied to iommu (arm/smmu/bindings), thanks!
 
-[1/1] dt-bindings: arm-smmu: qcom: Add compatible for Qualcomm Shikra SoC
-      https://git.kernel.org/iommu/c/5091bfe5d4c6
+[1/1] dt-bindings: arm-smmu: Constrain clocks for newer Qualcomm variants
+      https://git.kernel.org/iommu/c/75949eb02653
 
 Cheers,
 -- 
