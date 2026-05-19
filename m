@@ -1,57 +1,51 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CA423EA974;
-	Tue, 19 May 2026 15:23:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AE343EA95B;
+	Tue, 19 May 2026 15:24:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779204232; cv=none; b=fb++FhlZUVn/GqM+3O/dYZ2ItvSc+cjbEcfaDxkzABfGdTjlC1froqLsuJ/Eux82mUgyb2c1K2QNizOUyCcF6sgbO7hBVNvjmBERSiQyogYlp4OwcnrDzCj17XA3/vh41xTM2X0OJJPcp4wpiZrYrcLFDQe02enZJx2p5pkN4Og=
+	t=1779204241; cv=none; b=NxDiF3a35Wq8yaYPWN6BiYpeXNLuuZMLA3vmVh7eGOq3woVbCmseqCrWhJFSKA9VMRQs9UhiJiiJPxvF/he6l1xtnbgIE5xTCieDpZy5cYSdkAJR4rNojjgIElSz8T+y40YT12O+8JxFRG31iG8UBdWMWs8yDHpujPeqL9+MVzQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779204232; c=relaxed/simple;
-	bh=EcYgGA7+qxpGDVJn+BOWyz9F6ILNNr7DE0ak3LTgO3g=;
+	s=arc-20240116; t=1779204241; c=relaxed/simple;
+	bh=D/PAHA23j1HXXTU2QCXdtDypXNlUffAPZMXfwziQEQI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=m/ATJq1PsiRP/i+uRNTlQuY+Uk8Mh/MHXzWIGs7JvEjnQLo0lDHcdK5Ca3ccWWFk5O5gP7txTvNoftz01rdQqTcgov4S1ZKGHijNRUFhIpNHx4x1sKxSmdNwm67iSSnt+BswjZ6FBgB2wmdSCpwQKFzgRc3cSOUNxmhPoSLfgNg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uwVnXFU0; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=Zz2B0KajfjbEzjYhvbWLLyyaPfFw+pl/qgQ2XUx1Z/RRokH7G5efeEzlBagOwetKcce6MT9Y5dnJ0C/KjdcWVocVNfavbSLfSHE9B7InMNWbdLrCbtAIVE6HxYQWl2fGzGj4bxW0bSFp9me9+TWF23Bc7PVuAhYLZ4/Hqgz89pk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=py1H1y27; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uwVnXFU0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CD92C2BCB3;
-	Tue, 19 May 2026 15:23:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="py1H1y27"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A2FEC2BCB3;
+	Tue, 19 May 2026 15:23:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779204232;
-	bh=EcYgGA7+qxpGDVJn+BOWyz9F6ILNNr7DE0ak3LTgO3g=;
+	s=k20201202; t=1779204240;
+	bh=D/PAHA23j1HXXTU2QCXdtDypXNlUffAPZMXfwziQEQI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=uwVnXFU0sfkq9f5+QC+fiz9RkLgBmIu78FNEThTdjkRihuLffFJD+bjCOtRBBF4Tu
-	 qxYaQo0oLYzphwHooYty8/w2PUsj1WdRBUvmEBBXfjxLnmEAB9EK1Ic3faW9h1aInA
-	 SFvHAdif9+B8ooFvTohsIEQxdi1UFiZdejEOiL2KpBp42+qJuTVxndR19UVRpKEMpC
-	 5SYqYaNnlO9Oh2WR6rmfXVCkGzupA4IdHJiCa/suAhYyKPzFRRrJ6xT7kxBTCOpEgc
-	 ZKQNncFlTuZXJlLCvCu4UUILTCsK57QB7AA8xF8XkmIzWOdVh1K+1oWeimhB7aboX4
-	 roEEhF26lB/YQ==
+	b=py1H1y27Qw9ckoMFQ0oCPrD2GbTcv10C8kHet4RxQHAzv1OvXWprUioT5Pvc11PM1
+	 T3u4DsC+oCRxG3x/TsuIYMdQ7EE/2D1yjgKuDARYIR/cIhWfyIS1/EpMBEHMHHMFhk
+	 0nRchv8MLrsWONoS23+mF2L9yUrA1NNiXMcoVQwZAWdS/+nC91BM+Sh88nbTv8paHS
+	 LH4a1U5mog5VaIkY1eTvN5/aNfg5u/Xi8ofGj+F6MF+uQBUipZxf4/9Jl9LJHmcgwe
+	 3NNWrrE5KEFHEsR2ylArzy/KJNAClKTYrkZvVwKlUhwdnn1g3bf70Sq7c13oNiH1np
+	 iA6pQEdX1RJsQ==
 From: Will Deacon <will@kernel.org>
-To: iommu@lists.linux.dev,
-	Jonathan Hunter <jonathanh@nvidia.com>,
+To: Robin Murphy <robin.murphy@arm.com>,
 	Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-tegra@vger.kernel.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Krishna Reddy <vdumpa@nvidia.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Komal Bajaj <komal.bajaj@oss.qualcomm.com>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
-	David Matlack <dmatlack@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	patches@lists.linux.dev,
-	Pranjal Shrivastava <praan@google.com>,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Mostafa Saleh <smostafa@google.com>
-Subject: Re: [PATCH v2 0/9] Remove SMMUv3 struct arm_smmu_cmdq_ent
-Date: Tue, 19 May 2026 16:22:58 +0100
-Message-ID: <177919957385.1012282.14787407041669291032.b4-ty@kernel.org>
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: arm-smmu: qcom: Add compatible for Qualcomm Shikra SoC
+Date: Tue, 19 May 2026 16:23:01 +0100
+Message-ID: <177919159473.817912.7697068787428918777.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.47.3
-In-Reply-To: <0-v2-47b2bf710ad5+716ac-smmu_no_cmdq_ent_jgg@nvidia.com>
-References: <0-v2-47b2bf710ad5+716ac-smmu_no_cmdq_ent_jgg@nvidia.com>
+In-Reply-To: <20260430-shikra-smmu-binding-v1-1-1a28572ebccf@oss.qualcomm.com>
+References: <20260430-shikra-smmu-binding-v1-1-1a28572ebccf@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -61,37 +55,17 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Wed, 13 May 2026 20:57:39 -0300, Jason Gunthorpe wrote:
-> [ This is part of the patch pile to move SMMUv3 over to the generic page
-> table:
-> 1) Introduction of new gather items and RISCV usage
->   https://patch.msgid.link/r/0-v2-b5156f657dc1+25f-iommu_riscv_inv_jgg@nvidia.com
-> 2) Remove SMMUv3 struct arm_smmu_cmdq_ent
-> 3) Organize the SMMUv3 invalidation flow so iommupt can use it
-> 4) Use the generic iommu page table for SMMUv3
+On Thu, 30 Apr 2026 17:54:44 +0530, Komal Bajaj wrote:
+> Qualcomm Shikra SoC includes an apps SMMU that implements arm,mmu-500,
+> which is used to translate device-visible virtual addresses to physical
+> addresses. Add compatible for it.
 > 
-> [...]
+> 
 
-Applied to iommu (arm/smmu/updates), thanks!
+Applied to iommu (arm/smmu/bindings), thanks!
 
-[1/9] iommu/arm-smmu-v3: Add struct arm_smmu_cmd to represent the HW format command
-      https://git.kernel.org/iommu/c/bf00a29234a4
-[2/9] iommu/arm-smmu-v3: Use the HW arm_smmu_cmd in cmdq selection functions
-      https://git.kernel.org/iommu/c/f59c5b6858d8
-[3/9] iommu/arm-smmu-v3: Use the HW arm_smmu_cmd in cmdq submission functions
-      https://git.kernel.org/iommu/c/d455e3a7bf0a
-[4/9] iommu/arm-smmu-v3: Convert arm_smmu_cmdq_batch cmds to struct arm_smmu_cmd
-      https://git.kernel.org/iommu/c/27e02ca61552
-[5/9] iommu/arm-smmu-v3: Remove CMDQ_OP_CFGI_CD_ALL from arm_smmu_cmdq_build_cmd()
-      https://git.kernel.org/iommu/c/c5758947cb7b
-[6/9] iommu/arm-smmu-v3: Directly encode simple commands
-      https://git.kernel.org/iommu/c/6e771be45e8a
-[7/9] iommu/arm-smmu-v3: Directly encode CMDQ_OP_ATC_INV
-      https://git.kernel.org/iommu/c/2eedb906f9c6
-[8/9] iommu/arm-smmu-v3: Directly encode CMDQ_OP_SYNC
-      https://git.kernel.org/iommu/c/c3f84707ad4f
-[9/9] iommu/arm-smmu-v3: Directly encode TLBI commands
-      https://git.kernel.org/iommu/c/be0d0b858861
+[1/1] dt-bindings: arm-smmu: qcom: Add compatible for Qualcomm Shikra SoC
+      https://git.kernel.org/iommu/c/5091bfe5d4c6
 
 Cheers,
 -- 
