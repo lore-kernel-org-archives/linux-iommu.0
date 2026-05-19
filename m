@@ -1,190 +1,140 @@
-Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
+Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DB222F1FD0
-	for <iommu@lists.linux.dev>; Tue, 19 May 2026 13:15:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABA9740963B
+	for <iommu@lists.linux.dev>; Tue, 19 May 2026 13:29:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779196519; cv=none; b=Hv99RXcz6kRgEgB+BxwADh1C93t0TYVngGJzAKmJi5jXGo27ihsIGKNi6Y7glIB0QXWEoO6CkI1FmYTbj0BUzDXLpY+Y2m035X+vaZPJnIQd15Kafq3eWjr+O+BPppDHIbAQ8d73MEHCSo4P1YmEApkTzLIUYth6ccobrg1oCbs=
+	t=1779197355; cv=none; b=h5fGgvzhbPO5SvBauRikuevLyfGlWqrfvelWbNtuxbPpEuJkRMPlhh/a9gFBt6znl+sAXuhC+lmsL6MVsS0Uik5qDS/hl0yHXR3EIxQGno4MAV80pm1/TDRc10q8VEEOvTGoY8Cbd3eOMNwmxzthyvGZfiZPCAJImMWIyAKguQQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779196519; c=relaxed/simple;
-	bh=JDx2jF0ZO5E36Lw+1qDQU4xmk3oFKLnmUzLtiIUdQIE=;
+	s=arc-20240116; t=1779197355; c=relaxed/simple;
+	bh=dbxAh3jWVdvQ1+R108C1f7Lp/JMDaW8ElH0OVbL5tww=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=J7+UrxHY6djxnieRMCs8JBLbdifCSSKTnkCUwhMe38tn/HLWmydKQ2rDvoiq4G4iOCAvSCOTEUYdWblOC558X7KGwLMFXrR7KKGCoWcgpbhrbP032kQdEBL4JKFcWVTxpUG+thtndNQyS6aXsn/TpXugf1FPOlGW4dEC/U7ZfSo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=fWliMB/w; arc=none smtp.client-ip=209.85.214.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=qx4WVPnjpEg7jcsUPdtQMFD8k2Gu/jRTRcAb1QKZfZMX/aDoz4hUTAPb1Wpyxh7WZpTBrdZp/6LE7iriHEcvIGFQ3CXJnKNJKVq0Z5MIA+o/cRHDI6YrxFt5OddqpqCulUGIXwOPMhxqvGtEgmdfRrhPlHvyEO1d34TU2VFRALo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=SFzzMERM; arc=none smtp.client-ip=209.85.219.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="fWliMB/w"
-Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-2ba3b9bcf69so865ad.0
-        for <iommu@lists.linux.dev>; Tue, 19 May 2026 06:15:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="SFzzMERM"
+Received: by mail-qv1-f50.google.com with SMTP id 6a1803df08f44-8acb856a674so48209746d6.0
+        for <iommu@lists.linux.dev>; Tue, 19 May 2026 06:29:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779196518; x=1779801318; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=1fBCxwoiS3sf2RQXUwxoqVP717F35PJZZr1FHXrdR8c=;
-        b=fWliMB/wxlnchSa8ytv8Q9nSI0RD0I7epB+UzcYtHsEdYGBSXux4YnrI3cCmK05+/D
-         F6o9f9SHR2IpYGQSDLOuM0qy44HtlO6CpAU4TIdCoeUAtMvfSmJO1HdEBYUBfBxPZlBN
-         /cJJv/IAdeO+r7RYGkpvuXyY0VnzlD6GgwoG1n5HsmqpZZ7O68D+US3kduDujj6z4wB6
-         tyvVL3xM/jBEUMqcDBskY1/RAXABQmpBXWPCg9n2QmufOA2IjUPf45NPoT4pOO9/7wEg
-         EadnriruxZH5Gnze8uUlPSasMFOaUSOuFXnFl73ymiGgvvTf8bJwFZ6ErMCMdMF5Urup
-         Cvpw==
+        d=ziepe.ca; s=google; t=1779197353; x=1779802153; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=LrtAP8Eaa/f2vd8w85VzyR8xqf5rOlnG9+YArbfK2NQ=;
+        b=SFzzMERM3mkjP1aLWtGSysWk9HYRb2IH8eS+B+m27pSiqj9tqQ8B2iUuZP7PBZquFy
+         jdve4QlTlEnN8S48yqgyyRkrzNFR2rzKbdTb7/SmaPQyoPcKg+mFiiso6cHn2enrcANz
+         y4LtpH0gLActH6id519ZCCqvM9q6nO3zCAdu4LUDVQ8zev8pY8pjCGv5qaXx3ozicVFL
+         8oAmKADcYK9Js1GPgtIfAPUpGSci3NLA9IdErKKBjqLqvKGoCJjTLi7QSF3TZTrPBMN1
+         gjEWBvVv9fZdHGo/LAVNuWbvP8rIegp6jfOBaZL4J0Cz9T8ufhiXdiqhphTMuGm9pCk0
+         XPtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779196518; x=1779801318;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=1fBCxwoiS3sf2RQXUwxoqVP717F35PJZZr1FHXrdR8c=;
-        b=lBCaNkmfbDE6539L/nZUZi6MYS9/lY6YwkvwcBWufD5aJp3gtb9DoLY37y1DX2vy6A
-         NAR35aFnqmYFyGc8UvVfxsJu+N4ZUt7Mkbi8xQurT4X3Jr9znTIcUX1WpyMldZc45ICW
-         MPKWfmFPuRs5EDkCctWntQd8053wxuOBcgL3HWAGh4a2Qu1fHZiSlk7p4AA0x6qObj23
-         g0Jg+3ostY3axNI5DZJjQc83NZbbMDMOY0uUfji6AOxNCAi+eW5OzLvGPXtCXt4ijWip
-         P6kQhDEpmrByb/dDDsHp6KZofRAuO3JGPFX4W82IMve/gI6YIQNrMwvzRFd0QlBqodFQ
-         FZRw==
-X-Forwarded-Encrypted: i=1; AFNElJ9kataP9fjLlS9GeeaIU6W6Lp78xQ7bjLCv4bNtZ9KCIYmH6qZSs9juXykpVIHyjaOlapWTEA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxmtJ/Yspmio95zH1qhWS/jTsZoGajz26txx8VAQq3OIdXqcsHF
-	4q632Et/HRc8OFURH4/vcflopy98tb/HSjCH1TY0Ds8h6SReBiyhx5cPiEDsqrJjXQ==
-X-Gm-Gg: Acq92OHn+paasP19g1Z9Qxgz1mkibsFMjcWw4Y5AncOt1INOKg8msdK6VnAjakUQhvO
-	8awwkrQk8Qo3+MrfQWIUb/D21giwPKF8xBrWmcRTeJx//205AzVxB6VBjBPq//5I9Gx01vQXExt
-	aly53RYB2xcxfhfCCmpUwXIROJZluOpXJpSrybqB7MoBlvcHWwWk/enlvzdmGUpdthfG1T1yO40
-	beZA3YVW1rFZu5rpZzMawVyq81YuwMPW/jKvzj/k9rccFWGaG3NdXJF8/5swudBm9QCs7Z32vAS
-	OrqJ/tzVk3qPXw0DtoSf+IQKuAx4S+g7oHo/jk8Y2vty6riPktczVq4jp3Viywn/v+jdWJ2XS1D
-	oxOBJRI+24v7DUq5BZs1Sd1OBRLHleiesZNB4nFx0RL5f8YxnllOCgr3MxTPXEW3iAQjFVqNoQA
-	ftplTG0rkK8r0uLAkUwh2cEl+y0lafIint9ZiDDk7vJdYSU/e2mlz8qVFg3fQRx3fe31U7
-X-Received: by 2002:a17:903:1a2d:b0:2b4:58ad:e987 with SMTP id d9443c01a7336-2bdb32c212bmr5844565ad.17.1779196516969;
-        Tue, 19 May 2026 06:15:16 -0700 (PDT)
-Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-83f19f7ccc7sm21316591b3a.58.2026.05.19.06.15.11
+        d=1e100.net; s=20251104; t=1779197353; x=1779802153;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=LrtAP8Eaa/f2vd8w85VzyR8xqf5rOlnG9+YArbfK2NQ=;
+        b=OJ0Vy2MAC8aO5oMGxu3xrQDs254x1UCUV5aOTjQWtOH+RvlftzkqB9Nclshj1JmNEa
+         l7CZHccYxvsrl0EfN1tCIB1ALPZtDSKYAIJuqbkDgBCjX/N0i6aTxhw5eDgbDqbWJDJp
+         fW1vVzbyLeE50Y4EPlQJOVHgIqePBvQ/iWBMVorDERdd92JhXK2BN/Q7BQ8rPFMY5ne4
+         qaa7j7IyxZme8+5fafnHhKkqZ19rJzxhwsKPpXbini4/OJB68DuOw/n0iVO7ifSpEv+/
+         pDE7gmF/1MMWmz+IAFOcxM5L3p0VqGDSQ5IKuoOkwKl9QcyeoQO8Z5ajnfze6BIBFmGv
+         sGkA==
+X-Forwarded-Encrypted: i=1; AFNElJ9qqbXMfkAE+hzv7wmTjCfCl1xm7hKG5fbxg7jdc+7ZREPXvxbI7d/XHi6VAEtQRXRqxCcNUw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YznnXcYOpR9VQvhfCt/Q7I/3YrynGboDuRDJwIz0i0SmaSm7IPY
+	XJdJ6hhiVo8qJFk/yNO/P5xm/JGenvJ7t5tRs/yeMdPaiThltulepdrQseYln/NnAtE=
+X-Gm-Gg: Acq92OFbQPChOEzqJv2NeQ0/yRsStTL3oHGZWfodHIcRkoPxnhEVk78NF8REsaEetQC
+	o+aPU+CZPuLf6xNgGIS3rjPbG6hXhJC3arIW1p66hpzyeyBJSTFVw6I5R3KYKzHkhkmtYpQfgEj
+	A06eWuCb8h3HalXx2tU9YzsRy7P9AC/s+RiaYf6zWd4QDPPHCbZ2jFetKRKwsw6MxVsWRGVhned
+	GlQ8qfqkdlFYAK3kjeeajlKf9mD5bS+xTeUoXmabmOGlhk1q6wTMA+xbZEbmQ12RymhdCWa98K7
+	iBrUdmsE+eSFU1VBhTENLCkeuX3mBzJxG8E/yJxi88n5L9aU6cSHPPEgSo3C+326uT/lV713APD
+	+1ZPi2bhGFGEqIf3EQhv0rr+1jEVzFYfyQkIMHAzCIKNQhch1Lv6RBLDiQWPFf6SZ0YTYKLAWRK
+	LjCFZ0eMJrR/C+N7ZRgz8RDrHAYiZX3kx7reLFByHOkBv8V1D79BwZDgelfz+a1BP4oo+aRAl2m
+	pdOO2v0AonRp0dv
+X-Received: by 2002:ad4:5ca9:0:b0:8c2:7cc5:b5d5 with SMTP id 6a1803df08f44-8c8fda1ccb0mr344078466d6.17.1779197352561;
+        Tue, 19 May 2026 06:29:12 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8ca360979c2sm90678436d6.18.2026.05.19.06.29.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 May 2026 06:15:16 -0700 (PDT)
-Date: Tue, 19 May 2026 13:15:08 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Samiullah Khawaja <skhawaja@google.com>
-Cc: David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-	Adithya Jayachandran <ajayachandra@nvidia.com>,
-	Parav Pandit <parav@nvidia.com>,
-	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>,
-	Pratyush Yadav <pratyush@kernel.org>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	David Matlack <dmatlack@google.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Chris Li <chrisl@kernel.org>, Vipin Sharma <vipinsh@google.com>,
-	YiFei Zhu <zhuyifei@google.com>
-Subject: Re: [PATCH v2 06/16] iommupt: Implement preserve/unpreserve/restore
- callbacks
-Message-ID: <agxiXNalisHyNkGt@google.com>
-References: <20260427175633.1978233-1-skhawaja@google.com>
- <20260427175633.1978233-7-skhawaja@google.com>
+        Tue, 19 May 2026 06:29:12 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wPKVT-0000000EubB-2Vp2;
+	Tue, 19 May 2026 10:29:11 -0300
+Date: Tue, 19 May 2026 10:29:11 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-coco@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>, Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
+	linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
+Subject: Re: [PATCH v4 04/13] dma: swiotlb: track pool encryption state and
+ honor DMA_ATTR_CC_SHARED
+Message-ID: <20260519132911.GA7702@ziepe.ca>
+References: <20260512090408.794195-1-aneesh.kumar@kernel.org>
+ <20260512090408.794195-5-aneesh.kumar@kernel.org>
+ <agSKQrSIhizCXKwx@google.com>
+ <yq5ah5oaa63h.fsf@kernel.org>
+ <agW5rhE9n2gDQ0w5@google.com>
+ <yq5apl2y5f96.fsf@kernel.org>
+ <agXaby-7L7yS3Vva@google.com>
+ <yq5ah5oa59wy.fsf@kernel.org>
+ <agxDxdxynp4KEovA@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260427175633.1978233-7-skhawaja@google.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <agxDxdxynp4KEovA@google.com>
 
-On Mon, Apr 27, 2026 at 05:56:23PM +0000, Samiullah Khawaja wrote:
-> Implement the iommu domain ops for presevation, unpresevation and
-> restoration of iommu domains for liveupdate. Use the existing page
-> walker to preserve the ioptdesc of the top_table and the lower tables.
+On Tue, May 19, 2026 at 11:04:37AM +0000, Mostafa Saleh wrote:
+> On Thu, May 14, 2026 at 08:13:25PM +0530, Aneesh Kumar K.V wrote:
+> > >> 
+> > >> What I meant was that we need a generic way to identify a pKVM guest, so
+> > >> that we can use it in the conditional above.
+> > >
+> > > I have this patch, with that I can boot with your series unmodified,
+> > > but I will need to do more testing.
+> > >
+> > 
+> > Thanks, I can add this to the series once you complete the required testing.
+> > 
 > 
-> Preserve top_level, VASZ and FEAT Sign Extended to restore the domain in
-> the next kernel. On restore the domain has only the preserved features
-> enabled and all the other features are zeroed. This is ok since the
-> restored domain is made immutable and can only be freed. A kunit test is
-> added to verify that the IOMMU domain free can be done with trimmed
-> features.
-> 
-> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
-> ---
->  drivers/iommu/generic_pt/iommu_pt.h       | 131 ++++++++++++++++++++++
->  drivers/iommu/generic_pt/kunit_iommu_pt.h |  28 +++++
->  include/linux/generic_pt/iommu.h          |  19 +++-
->  3 files changed, 177 insertions(+), 1 deletion(-)
-> 
+> I am still running more tests, but looking more into it. Setting
+> force_dma_unencrypted() to true for pKVM guests is wrong, as the
+> guest shouldn’t try to decrypt arbitrary memory as it can include
+> sensitive information (for example in case of virtio sub-page
+> allocation) and should strictly rely on the restricted-dma-pool
+> for that.
 
-[...]
+??
 
-> +static const struct pt_iommu_ops NS(ops_immutable);
-> +
-> +/**
-> + * restore() - Restore page tables and other state of a domain.
-> + * @domain: Domain to preserve
-> + *
-> + * Returns: -ERRNO on failure, 0 on success.
-> + */
-> +int DOMAIN_NS(restore)(struct iommu_domain *domain, struct iommu_domain_ser *ser)
-> +{
-> +	struct pt_iommu *iommu_table =
-> +		container_of(domain, struct pt_iommu, domain);
-> +	struct pt_common *common = common_from_iommu(iommu_table);
-> +	struct pt_range range;
-> +
-> +	common->max_vasz_lg2 = ser->vasz;
-> +
-> +	/* Make this domain immutable.*/
-> +	iommu_table->ops = &NS(ops_immutable);
-> +
+Where does force_dma_unencrypted() cause arbitary memory passed into
+the DMA API to be decrypted? That should never happen???
 
-Nit: Let's consider adding a comment since we just have .deinit in ops:
-
-/*
- * Restored page tables are strictly transient and only permitted to be
- * destroyed via .deinit. Because we only preserve user-assigned devices
- * utilizing pass-through frameworks (VFIO / IOMMUFD), any concurrent or
- * subsequent map/unmap operations on a restored domain are explicitly
- * blocked at the subsystem boundary (e.g., via IOAS immutability seals).
- */
-
-This makes it explicitly clear that any nullptr dererfs occuring due to
-immutable_ops->map_range etc. (in the future) are considered as bugs.
-
-> +	/*
-> +	 * It is safe to override this here since this domain is immutable and
-> +	 * can only be freed.
-> +	 */
-> +	common->features = 0;
-> +	if (ser->sign_extend)
-> +		common->features |= BIT(PT_FEAT_SIGN_EXTEND);
-> +
-> +	range = pt_all_range(common);
-> +	iommu_restore_page(ser->top_table_phys);
-> +
-> +	/* Free new table */
-> +	iommu_free_pages(range.top_table);
-> +
-> +	/* Set the restored top table */
-> +	pt_top_set(common, phys_to_virt(ser->top_table_phys), ser->top_level);
-> +
-> +	/* Restore all pages*/
-> +	range = pt_all_range(common);
-> +	return pt_walk_range(&range, __restore_tables, NULL);
-> +}
-> +EXPORT_SYMBOL_NS_GPL(DOMAIN_NS(restore), "GENERIC_PT_IOMMU");
-> +#endif
-> +
->  struct pt_unmap_args {
->  	struct iommu_pages_list free_list;
->  	pt_vaddr_t unmapped;
-> @@ -1138,6 +1265,10 @@ static const struct pt_iommu_ops NS(ops) = {
->  	.deinit = NS(deinit),
->  };
->  
-> +static const struct pt_iommu_ops NS(ops_immutable) = {
-> +	.deinit = NS(deinit),
-> +};
-> +
-
-[...]
-
-Thanks,
-Praan
+Jason
