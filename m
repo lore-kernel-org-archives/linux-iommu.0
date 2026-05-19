@@ -1,123 +1,98 @@
-Received: from mail-pl1-f201.google.com (mail-pl1-f201.google.com [209.85.214.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB3FE3CDBB4
-	for <iommu@lists.linux.dev>; Tue, 19 May 2026 08:11:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7691C3E16A6
+	for <iommu@lists.linux.dev>; Tue, 19 May 2026 08:31:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779178311; cv=none; b=ehSoFKNX8MKxXM8Z2cI0gk/Fbkwz8dEwm7Yw8QXBwvACEBDkgWrPNBKn705U1m6EF8n1+A+RfxiOdF4VlCGBLSbI97C5jY4T5QFlXzChUOYpZ3t8pnjOBvucr7dZTNM4z+Qo+qpamJMuXkDmTgObLBARlE9HVxoUi8rIvXmI0Zc=
+	t=1779179480; cv=none; b=NhVIkadQfbE+VT/S2aJBkJHdQVKN22HPw5urONJWdQMVj2wuK/ncioRNTJIHiLzWH7wAVsicBV8SYUDkLvRIa4RLH7dR4oMuBuUFZMhmcu9JAANcLg7jmK/RYoIiorHQ7j/OtcSk+KYKwlCvjsKdavWU68MZl6m7oiIjqRdm4C0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779178311; c=relaxed/simple;
-	bh=yreApj1csXszXO5CKw+Pkc1FnIuaiI6WFdf2uHW2Ogs=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=IEJSflGcO6TZ0bfeIDpXdkvaCs8IaVishbjZIdrJ/CN4tYv/esH97qe+19kAKfwGLXB3BU2ALsbItFPwsMS4uZ4PE5dtNlryb+/rNuF3vPshxiXgckg392CYMtt9oHOn29ahrMI0kSSzAMwygSD9IaMuD6h1Rr0A+9elESIaAsk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=IYYxEEOe; arc=none smtp.client-ip=209.85.214.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com
+	s=arc-20240116; t=1779179480; c=relaxed/simple;
+	bh=gYstxcuWc96pDbCmO9hN3d3Df6cw8nt86KfRpF2dMc0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=hYm/E7M6I8E2cpdKlbSwkheOlqN5BRaLBoPGXip0ZFS+t/wH3+Qq/ooDGhwgqT+eWaCHDYjvChiVscUxuftDa9dZe+v13ErUwsCwWTfaYCOjJ9YCMW7eFBqhmA1TGby/AkuIfnxpd3r7mX8Js5yajTknDfLx5jT3rjBASXzGtTc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dcQmoS6G; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="IYYxEEOe"
-Received: by mail-pl1-f201.google.com with SMTP id d9443c01a7336-2bc763c7256so77632015ad.3
-        for <iommu@lists.linux.dev>; Tue, 19 May 2026 01:11:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779178310; x=1779783110; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7ut72Gkptn/NBySJV/auF15VVBqcdKlrwYtyzCOsNz0=;
-        b=IYYxEEOefyFENAH7OSNTLBISKcowyAUWFSyFVKFyAC1DWXHb3bsmy/uUhvNEEuD0BC
-         z2C87ce+bUazWEVYrLOlONpx1AwlObaz5RGzqQxTZcaWNG3cu1xC6Wu4v7TFQXlEf+LD
-         Wa3RvwVMB2Wvo+r7KQi3IXfsQyLgJH7ntjplrWKQ6itHGcF3TjuHf+zPJMe2z1gsPOyn
-         zh3ejVhiY1XfX8l/gF1VCSvF3Pe1ye6fj8wwJtgh1acMyAHaSUSC70U8pVy+Fkmm7S2M
-         /oGa3tEHx9OaxKLHRjyWbsCfh3bQCc8VEXrVuxxdx2X7DJp3fiBQBkb9pX2+nG8zvTXb
-         UGdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779178310; x=1779783110;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=7ut72Gkptn/NBySJV/auF15VVBqcdKlrwYtyzCOsNz0=;
-        b=tYwXumgpFt7SMJWhXrCgzW7Z/qarV53pKY4KyEm1l6MofbGQtjtPmLVtO1szk6dSh+
-         Uy7aU+m2EP9Qpaz1/nGdJRj3K9lh99MAH7LRKDjr+4adhqUz762dzMzkp+3/e9eOrL5A
-         GQD8+vOeySSM4+lR1I/ys/k5+1JX+fHr/bbMxkwSeezi2sNMFfW1k9WXoI5SG6MmAAqc
-         goxyepfLQD2IHXg7DEaktLypsE8/iZJM3keC7jwbjFIYD72VBbNRxA47HI2TdjdcFJaD
-         dSKnFueDfh5NIPH9sXf0s6S34Fjo9qa6QDujOkU6FagZtn3t0WFVztVMaZ8XeWv3OsBn
-         3tVA==
-X-Forwarded-Encrypted: i=1; AFNElJ9966XXQDzSVPxbJmn3nAzG+MME8yR4ByM04TJ4RgTEF2HnyK3aeu8NPhR89BWKXIRHBcjucw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywirp8XSASnPxxT8SZFatV5ZVLO8k9ki8HROAyGoMAJvJQVXZHE
-	DSa8rl9klpOy9HdlVKqSu7vj2rUBHF34nEKEcLzR3FfcW2ao8JjCraXVNRMtXYZIZVplEBZ6rra
-	6CJxEjJO01LsOjl2IJ301HlgwnA==
-X-Received: from plvv3.prod.google.com ([2002:a17:902:d083:b0:2be:3026:1d0f])
- (user=joonwonkang job=prod-delivery.src-stubby-dispatcher) by
- 2002:a17:902:f08d:b0:2bd:2051:13ed with SMTP id d9443c01a7336-2bd7e87ef1amr129360345ad.23.1779178309741;
- Tue, 19 May 2026 01:11:49 -0700 (PDT)
-Date: Tue, 19 May 2026 08:11:47 +0000
-In-Reply-To: <20260518175249.GS7702@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dcQmoS6G"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48CB3C4AF09
+	for <iommu@lists.linux.dev>; Tue, 19 May 2026 08:31:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1779179480;
+	bh=gYstxcuWc96pDbCmO9hN3d3Df6cw8nt86KfRpF2dMc0=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=dcQmoS6GLFi2R0yaK0C+WYP8gkJewzayiAjBXzXfT2KcyF9dSeBYIddmtSFZtBWHU
+	 O3DHth1w+2iP4VE1/+TCuDrZtuO/MvbRD+/IeJ7MCnPFz3/JCBhBrKwCjySS/kzVC6
+	 k0UtWCTfrG54Q87sNtpV2drr5qvL+Vh/SJi6BxmRE1hO/6PS9li7m+OvpeFZkNLibk
+	 oiEGK6BoYE7HYf8Q/6oXBtDdmTCTriNYHqCotL0fi4SZ09Wt21k4uNzeoakik30+lm
+	 xp/PeYQgwws2zh+kiQPKBaIpfFuiTkK9T+lvBcznaEzGQRP2vxEJqNZtuvC0yZzG9D
+	 /wIRXTeiCkuNA==
+Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-5a74ac8b40aso3737876e87.1
+        for <iommu@lists.linux.dev>; Tue, 19 May 2026 01:31:20 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ/vg/NwR981ywliN877vT3YiSmATZUDYQWvEOMuSsaPRdLnqU2z4wsdEEKbvr+9TAJhWSFPXg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxFYo8bDu8o2bF8Fg4+3qFXa0tJjdkWtTgQ4Xvf2Em7bM4IdjXR
+	ZoaeTuYMFwRUp0IanQECNjELLU8wWkV7Mqe6pZ+38jF9OdTHNAMFohUOkP/aSlFdSMBcmKyWg+R
+	UnSVA7GeKmwZQKXnq5ATtsgvDmUTKvgg=
+X-Received: by 2002:a05:6512:1286:b0:5a8:65c8:dd90 with SMTP id
+ 2adb3069b0e04-5aa0e73f4d5mr5272064e87.4.1779179478814; Tue, 19 May 2026
+ 01:31:18 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20260518175249.GS7702@ziepe.ca>
-X-Mailer: git-send-email 2.54.0.563.g4f69b47b94-goog
-Message-ID: <20260519081148.1301245-1-joonwonkang@google.com>
-Subject: Re: [PATCH] iommu: Allow device driver to use its own PASID space for SVA
-From: Joonwon Kang <joonwonkang@google.com>
-To: jgg@ziepe.ca
-Cc: Alexander.Grest@microsoft.com, alexander.shishkin@linux.intel.com, 
-	amhetre@nvidia.com, baolu.lu@linux.intel.com, bp@alien8.de, 
-	dave.hansen@linux.intel.com, easwar.hariharan@linux.microsoft.com, 
-	hpa@zytor.com, iommu@lists.linux.dev, jacob.jun.pan@linux.intel.com, 
-	joonwonkang@google.com, joro@8bytes.org, jpb@kernel.org, kas@kernel.org, 
-	kees@kernel.org, kevin.tian@intel.com, kirill.shutemov@linux.intel.com, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	mingo@redhat.com, nicolinc@nvidia.com, peterz@infradead.org, praan@google.com, 
-	robin.murphy@arm.com, ryasuoka@redhat.com, smostafa@google.com, 
-	sohil.mehta@intel.com, tglx@kernel.org, will@kernel.org, x86@kernel.org, 
-	xin@zytor.com
+MIME-Version: 1.0
+References: <20260519-mainline-send-v1-sending-v3-0-3dd7aa125353@alex-min.fr> <20260519-mainline-send-v1-sending-v3-3-3dd7aa125353@alex-min.fr>
+In-Reply-To: <20260519-mainline-send-v1-sending-v3-3-3dd7aa125353@alex-min.fr>
+From: Linus Walleij <linusw@kernel.org>
+Date: Tue, 19 May 2026 10:31:06 +0200
+X-Gmail-Original-Message-ID: <CAD++jLm=BxHsPJ4rgqwY8SvaefZUO+Pfv8E8xizqPsdJZw5weA@mail.gmail.com>
+X-Gm-Features: AVHnY4IFkYYcJkwE7oBtW7Rq4mnePDIoacVSym4JzKnPjR_3OiAFXxYaV2dbJIA
+Message-ID: <CAD++jLm=BxHsPJ4rgqwY8SvaefZUO+Pfv8E8xizqPsdJZw5weA@mail.gmail.com>
+Subject: Re: [PATCH v3 3/8] pinctrl: qcom: Register functions before enabling pinctrl
+To: contact@alex-min.fr
+Cc: Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	MyungJoo Ham <myungjoo.ham@samsung.com>, Chanwoo Choi <cw00.choi@samsung.com>, 
+	Guru Das Srinagesh <linux@gurudas.dev>, Rob Clark <robin.clark@oss.qualcomm.com>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>, 
+	"Guilherme G. Piccoli" <gpiccoli@igalia.com>, linux-arm-msm@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-gpio@vger.kernel.org, iommu@lists.linux.dev, 
+	phone-devel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-> On Mon, May 18, 2026 at 09:06:54AM +0000, Joonwon Kang wrote:
-> > > On Fri, May 15, 2026 at 09:46:05AM +0000, Joonwon Kang wrote:
-> > > > diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-> > > > index 0ca3912ecb7f..61e2e52105e5 100644
-> > > > --- a/arch/x86/kernel/traps.c
-> > > > +++ b/arch/x86/kernel/traps.c
-> > > > @@ -864,6 +864,8 @@ static bool try_fixup_enqcmd_gp(void)
-> > > >  		return false;
-> > > >  
-> > > >  	pasid = mm_get_enqcmd_pasid(current->mm);
-> > > > +	if (pasid == IOMMU_PASID_INVALID)
-> > > > +		return false;
-> > > 
-> > > If you do this then probably you should get rid of mm_valid_pasid(),
-> > > mm_get_enqcmd_pasid() already has the NULL check so the two functions
-> > > are kind of pointless.
-> > > 
-> > > You also missed the other place calling mm_valid_pasid() that should
-> > > really be sensitive to this as well:
-> > > 
-> > > static int prctl_enable_tagged_addr(struct mm_struct *mm, unsigned long nr_bits)
-> > > {
-> > > [..]
-> > >         if (mm_valid_pasid(mm) &&
-> > >             !test_bit(MM_CONTEXT_FORCE_TAGGED_SVA, &mm->context.flags))
-> > >                 return -EINVAL;
-> > > 
-> > > Make that removal a prep patch
-> > > 
-> > 
-> > Thanks for pointing this out. I think mm_valid_pasid() is to check if SVA
-> > is currently in action while mm_get_enqcmd_pasid() is to get the PASID for
-> > "ENQCMD instruction execution".
-> 
-> > Since it is now possible with this patch to activate SVA without involving
-> > EL0(for ENQCMD-like instructions),
-> 
-> I see, this thing about which is about LAM should remain, yes
-> 
-> But all the "EL0" machinery about trapping and enabling ENQCMD should
-> be moved over to mm_get_enqcmd_pasid() and never call mm_valid_pasid()
+Hi Alexandre,
 
-Yes, it makes sense. Let me fix that in the next version.
+thanks for your patch!
 
-Thanks,
-Joonwon Kang
+On Tue, May 19, 2026 at 9:16=E2=80=AFAM Alexandre MINETTE via B4 Relay
+<devnull+contact.alex-min.fr@kernel.org> wrote:
+
+> From: Alexandre MINETTE <contact@alex-min.fr>
+>
+> pinctrl consumers can request states while the pinctrl core enables the
+> controller. On Qualcomm pinctrl drivers this can happen before the SoC
+> function list has been registered, which leaves the function table
+> incomplete during state lookup.
+>
+> On APQ8064 this can fail while claiming pinctrl hogs:
+>
+>    apq8064-pinctrl 800000.pinctrl: invalid function ps_hold in map table
+>    apq8064-pinctrl 800000.pinctrl: error claiming hogs: -22
+>    apq8064-pinctrl 800000.pinctrl: could not claim hogs: -22
+>
+> Register Qualcomm pinctrl with devm_pinctrl_register_and_init(), add the
+> SoC pin functions, and only then enable the pinctrl device.
+>
+> Signed-off-by: Alexandre MINETTE <contact@alex-min.fr>
+
+I think I've seen this one before, if Bj=C3=B6rn or someone else from Qualc=
+omm
+can review this and test on some other hardware it would be great.
+
+But if there is no reaction I might just merge it so something happens.
+
+Yours,
+Linus Walleij
