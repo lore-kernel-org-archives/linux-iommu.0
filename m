@@ -1,163 +1,135 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB42624676D
-	for <iommu@lists.linux.dev>; Tue, 19 May 2026 05:31:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4EEBD33F595
+	for <iommu@lists.linux.dev>; Tue, 19 May 2026 05:41:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779168719; cv=none; b=VHAUDPHPSQrncmilDwdndhN57E7ZsU29xha1mgNiGsPMj1890jzTjlB8+D4itkuPlzu8i1UaKQjRcAwzY6KSHcyr/hVkMn1SmPTfIYWK7uzhPoURLiykuGzQlbhqyhaN4uEz0urzrvLtI8hUUscTgQwRvGoPgOYSazn2FE89fQ0=
+	t=1779169301; cv=none; b=gccSR8RCsc8jv8niYQkP1AGnAAZxfoSFhu9VjsEjA7cauhp3YDsGd5Ka6Asyz0gm7vClrIpLPda1Z9RI6uC4yDmWhc4y5lVyls1lGg+Rge4jTJFsvJ8T9aQQ95Rzk6sapDTTSwEiVZlQyGVXdddKou3C4MRi7Y8i9nhNscq/SzE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779168719; c=relaxed/simple;
-	bh=HjTkr/tPr7oETfZJGHuuDY+CDYpJn32WLeQGOszhU9w=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=cddn/XL4npfp3bEjYok5RX1ftYuDNKuQDHRZRMsAb3Mn87MCIULR2iv1SYbFSCl+p4Z7k6WzTc6uPVATKg88YnSmmxwKTzJp/Z8UkWw/U6olNcOZgq94NjQHvYSh/CTPG4Sp/Zb4mb1jx969idwZVdy/mSPnhMqpRWL6YjUfrHM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QepWzXLF; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1779169301; c=relaxed/simple;
+	bh=o/yS0uOYS4L22n6+JUVWldOroJpthMRMLg3OceU4NKQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=JgQv6xXT2AleoXDST26oz7qakMU62qy5S/iYAGKIv9xuuqJS90PVWZY7X2Gx4WGuoklIdZUXO/+Pqd0fkMK1jlWCgGZSYSoza6azWtYNq1ruwEkYLDHlP/diGvNPyQk/RlQQ+7lQqeo/qvq5PyPMZUy9cPl6fflOpIXmVYOK1jc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=QBHBXOX7; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QepWzXLF"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1779168717; x=1810704717;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=HjTkr/tPr7oETfZJGHuuDY+CDYpJn32WLeQGOszhU9w=;
-  b=QepWzXLFtX4Czj+XwZPyKk5Xe6NxH0ZegBhXty21Bc0LQ617BcXyXQIE
-   ZWO8Hj3I4dBJhtCo6nvZkdsrYEZZ2G1zFf6qKKo4l1CjbO8VEqEBvdxKr
-   b4BrEtO2Pyr+SAEeju78TRN3JTZjZyoe8FSTq5+v6hSxrHOwjPptWkCvE
-   9gUZeVh6CSaM9Q6c4gTu8Xa2vc5yti8FzY96FXpVt3vgrkqNu/UdjuBUu
-   J5968TJLSKHjthq6NGOXAHCE38U1RNhco/qO7skYbBQIWR028iSo1VzRn
-   Kso/ffMY7jxxpoB6R+ugPEm/NzG4NuNf9zNk0dxguRm2JeF1lXiRiByIM
-   w==;
-X-CSE-ConnectionGUID: 0keIQGm4QZa/loqXfRBeLg==
-X-CSE-MsgGUID: ZegCisfgRlm9Er5Cm9fS9A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11790"; a="90617166"
-X-IronPort-AV: E=Sophos;i="6.23,243,1770624000"; 
-   d="scan'208";a="90617166"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2026 22:31:56 -0700
-X-CSE-ConnectionGUID: OVVCC+xiSb+pt36LZi/tyA==
-X-CSE-MsgGUID: UpaDmT/0QkWL+hnTz60uWQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,243,1770624000"; 
-   d="scan'208";a="263177221"
-Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa002.fm.intel.com with ESMTP; 18 May 2026 22:31:54 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	stable@vger.kernel.org,
-	Nareshkumar Gollakoti <naresh.kumar.g@intel.com>
-Subject: [PATCH 1/1] iommu/vt-d: Avoid WARNING in sva unbind path
-Date: Tue, 19 May 2026 13:29:17 +0800
-Message-ID: <20260519052917.3729796-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="QBHBXOX7"
+Received: from localhost (unknown [20.236.10.129])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 0A10320B7166;
+	Mon, 18 May 2026 22:41:31 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0A10320B7166
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1779169293;
+	bh=9aRpORwCZcDZFRWxP8HU9OITjEdjOoC0GPbZGiL6PAE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=QBHBXOX7NdP4TdXu30LQKuB2NYOv84+TiJbyOMei9/B5p2NONJonvvHwp8+UGl7Di
+	 xGY46GW2lgvUSxky3V6/VCwTuYnggPWiGgKUQD9n1qKLoY7She5JEnC9buZni3H2Cc
+	 bHezQ7XDvQcwggOxNVSG9QFaENzjE6xuHjR66ZHI=
+Date: Mon, 18 May 2026 22:41:36 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Mukesh R <mrathor@linux.microsoft.com>, hpa@zytor.com,
+ robin.murphy@arm.com, robh@kernel.org, wei.liu@kernel.org,
+ mhklinux@outlook.com, muislam@microsoft.com, namjain@linux.microsoft.com,
+ magnuskulke@linux.microsoft.com, anbelski@linux.microsoft.com,
+ linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+ linux-arch@vger.kernel.org, kys@microsoft.com, haiyangz@microsoft.com,
+ decui@microsoft.com, longli@microsoft.com, tglx@kernel.org,
+ mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+ x86@kernel.org, joro@8bytes.org, will@kernel.org, lpieralisi@kernel.org,
+ kwilczynski@kernel.org, bhelgaas@google.com, arnd@arndb.de,
+ jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH V3 09/11] x86/hyperv: Implement Hyper-V virtual IOMMU
+Message-ID: <20260518224136.0000403e@linux.microsoft.com>
+In-Reply-To: <20260515182322.GI7702@ziepe.ca>
+References: <20260512020259.1678627-1-mrathor@linux.microsoft.com>
+	<20260512020259.1678627-10-mrathor@linux.microsoft.com>
+	<20260515182322.GI7702@ziepe.ca>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-The Intel IOMMU driver allows SVA on devices even if they do not support
-PCI/PRI. Commit 39c20c4e83b9 ("iommu/vt-d: Only handle IOPF for SVA when
-PRI is supported") modified the SVA bind path to allow this configuration
-by skipping IOPF enablement when PRI is missing. However, it failed to
-update the unbind path.
+Hi Jason,
 
-This creates an imbalance: the unbind path attempts to disable IOPF for
-a device that never had it enabled, triggering a WARNING in
-intel_iommu_disable_iopf():
+On Fri, 15 May 2026 15:23:22 -0300
+Jason Gunthorpe <jgg@ziepe.ca> wrote:
 
- WARNING: drivers/iommu/intel/iommu.c:3475 at intel_iommu_disable_iopf+0x4f/0x90d
- Call Trace:
-  <TASK>
-  blocking_domain_set_dev_pasid+0x50/0x70
-  iommu_detach_device_pasid+0x89/0xc0
-  iommu_sva_unbind_device+0x73/0x150
-  xe_vm_close_and_put+0x4d2/0x1200 [xe]
+> On Mon, May 11, 2026 at 07:02:57PM -0700, Mukesh R wrote:
+> > +static struct iommu_domain *hv_iommu_domain_alloc_paging(struct
+> > device *dev) +{
+> > +	struct hv_domain *hvdom;
+> > +	int rc;
+> > +
+> > +	if (hv_l1vh_partition() && !hv_curr_thread_is_vmm()) {
+> > +		pr_err("Hyper-V: l1vh iommu does not support host
+> > devices\n");
+> > +		return NULL;
+> > +	}
+> > +
+> > +	hvdom =3D kzalloc(sizeof(struct hv_domain), GFP_KERNEL);
+> > +	if (hvdom =3D=3D NULL)
+> > +		return NULL;
+> > +
+> > +	spin_lock_init(&hvdom->mappings_lock);
+> > +	hvdom->mappings_tree =3D RB_ROOT_CACHED;
+> > +
+> > +	/* Called under iommu group mutex, so single threaded */
+> > +	if (++unique_id =3D=3D HV_DEVICE_DOMAIN_ID_S2_NULL)   /* ie,
+> > UINTMAX */
+> > +		goto out_err;
+> > +
+> > +	hvdom->domid_num =3D unique_id;
+> > +	hvdom->partid =3D hv_get_current_partid();
+> > +	hvdom->iommu_dom.geometry =3D default_geometry;
+> > +	hvdom->iommu_dom.pgsize_bitmap =3D HV_IOMMU_PGSIZES;
+> > +
+> > +	/* For guests, by default we do direct attaches, so no
+> > domain in hyp */
+> > +	if (hv_dom_owner_is_vmm(hvdom) && !hv_no_attdev)
+> > +		hvdom->attached_dom =3D true; =20
+>=20
+> What are you thinking sending something like this?!?!?
+>=20
+> The function is called *alloc domain PAGING*, it does not, and can not
+> allocate weird "special" domains that are not PAGING domains. I just
+> spent a long time removing all this kind of crazyness from drivers.
+>=20
+> There is alot of other things I don't like in this patch, but this is
+> too much.
+>=20
+> You have to drop this "direct attach" idea from the first iteration,
+> Linux can't do it without alot more work, you should start with the
+> basic paging domain mode.
+>=20
+Just wondering what work is needed to support this "direct attach"? I
+felt this issue is due to trying to cram two distinct domain types
+(paging domain & direct attach) into the VFIO container model where
+only unmanaged paging domain is supported.
 
-Fix this by bypassing IOPF operations for SVA domains on non-PRI hardware
-in both the bind and unbind paths.
+I am thinking if we were to switch to iommufd and let user(vmm) have
+direct control of HWPT, vmm will be able to selectively use a
+different domain type to handle direct attach. IMHO, it is essentially
+the same as attaching nest parent domain without nested domain
+immediately attached. The unprivileged guest may attach nested domain
+directly with Hyper-V if nested translation is needed.
 
-Fixes: 39c20c4e83b9 ("iommu/vt-d: Only handle IOPF for SVA when PRI is supported")
-Cc: stable@vger.kernel.org
-Reported-by: Nareshkumar Gollakoti <naresh.kumar.g@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.h | 11 +++++++++++
- drivers/iommu/intel/svm.c   | 12 ++++--------
- 2 files changed, 15 insertions(+), 8 deletions(-)
+I understand nest parent is still a paging domain today and it is
+expected to work with nested domain. So maybe we can make iommufd
+accept nest parent w/o paging? i.e. no map/unmap and do not call
+iopt_table_add_domain()? or maybe a new object?
 
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index ef145560aa98..775f1c4ae346 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -1254,18 +1254,29 @@ void intel_iommu_disable_iopf(struct device *dev);
- static inline int iopf_for_domain_set(struct iommu_domain *domain,
- 				      struct device *dev)
- {
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+
- 	if (!domain || !domain->iopf_handler)
- 		return 0;
- 
-+	/* SVA with non-IOMMU/PRI IOPF handling is allowed. */
-+	if (domain->type == IOMMU_DOMAIN_SVA && !info->pri_supported)
-+		return 0;
-+
- 	return intel_iommu_enable_iopf(dev);
- }
- 
- static inline void iopf_for_domain_remove(struct iommu_domain *domain,
- 					  struct device *dev)
- {
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+
- 	if (!domain || !domain->iopf_handler)
- 		return;
- 
-+	if (domain->type == IOMMU_DOMAIN_SVA && !info->pri_supported)
-+		return;
-+
- 	intel_iommu_disable_iopf(dev);
- }
- 
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 57cd1db7207a..fea10acd4f02 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -164,12 +164,9 @@ static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
- 	if (IS_ERR(dev_pasid))
- 		return PTR_ERR(dev_pasid);
- 
--	/* SVA with non-IOMMU/PRI IOPF handling is allowed. */
--	if (info->pri_supported) {
--		ret = iopf_for_domain_replace(domain, old, dev);
--		if (ret)
--			goto out_remove_dev_pasid;
--	}
-+	ret = iopf_for_domain_replace(domain, old, dev);
-+	if (ret)
-+		goto out_remove_dev_pasid;
- 
- 	/* Setup the pasid table: */
- 	sflags = cpu_feature_enabled(X86_FEATURE_LA57) ? PASID_FLAG_FL5LP : 0;
-@@ -184,8 +181,7 @@ static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
- 
- 	return 0;
- out_unwind_iopf:
--	if (info->pri_supported)
--		iopf_for_domain_replace(old, domain, dev);
-+	iopf_for_domain_replace(old, domain, dev);
- out_remove_dev_pasid:
- 	domain_remove_dev_pasid(domain, dev, pasid);
- 	return ret;
--- 
-2.43.0
+=46rom this driver POV, it will allocate a 2nd stage only domain with
+different domain ops (w/o map/unmap) for "direct attach" thus avoid this
+hack.
 
+Thanks,
+
+Jacob
