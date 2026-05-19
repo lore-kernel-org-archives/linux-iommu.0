@@ -1,82 +1,139 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E824400DFE;
-	Tue, 19 May 2026 15:24:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17BF7408013
+	for <iommu@lists.linux.dev>; Tue, 19 May 2026 15:27:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779204258; cv=none; b=dqsW6rJUxMC35yA3XHlkO6GEAWWadyZRaM6n+isH65yUxQxdnPMdvdp5zmGEO5UQLWeyAni4iqQoFggVr18EHMFw2npUopSQPJkf2c0CdCKl1Z3kRALP0mjGzfWbEgI9qZC44HQ9Jf1frgjBvRZjvo8iHc5OlM9hu/6ph9UV6ls=
+	t=1779204465; cv=none; b=rNPnieIju0gdkmnLwecDxJwcLI8c7J5AWhAz3Q0l2k7x1zcv7U3mKFn/k41/W7aPIBhU7o2sxB8/PzmjDKlMbWo/GHsAR4CvVvSM1hPlM1fg7qJTGfo2vP9tpzwvWaA7xAVjQ0uJo1en8q6o4n3S0mtwcyOwFenuZDABSMfL7bo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779204258; c=relaxed/simple;
-	bh=WFSF8Bu9R2fWrWkPUVMtmNOhuTJlzJ38NfbwWlpjOi4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ATst5qSwDrdDK85TwZm1GefQaRgC8Z6jeUnE38X6wd79DmyVPt6jA2BwfvrvkS79f10idHXGNSO3r0UudIhgJZmPWAofCaFDrm3cyc3kAe9SVDN8RmKzF0fQJ35u+twJyJZ1WOoWz2gqARxGaAfNAcx2x8SKg1jXZ9iMpfPmcb8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BMlcohLd; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1779204465; c=relaxed/simple;
+	bh=uW4Yk0igRBmfLaBkig6+ozw+XI5e0m0/JIVGZ2INarE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZpO9ZScOuQSuLwkr77Iuv5VnrD3BURYsiXa9DFF9dGjto/ClvOyLafqFiXCtHYYOMxwzYvU/tL4c4tiVaNXAs4kFHWMLGmjgoKxc3xSGqffBgKo9ijNGlS73A003Xy3EXGY8aelTcky+2QmYtT0fqzbnyi7bhpMmCW9157yVClc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ewDS4UPq; arc=none smtp.client-ip=209.85.222.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BMlcohLd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6C66C2BCB8;
-	Tue, 19 May 2026 15:24:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779204258;
-	bh=WFSF8Bu9R2fWrWkPUVMtmNOhuTJlzJ38NfbwWlpjOi4=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=BMlcohLdEZrL13xN6TLZmNmot8IWhR8rpzqEtvnwz0KvBIb2zctMIZkpyTbZo4ZjG
-	 g/b2jtcsz57OhJiK1zZ7j8WjUqpD0qP503F585lLBRqykSIYRrW4SZVMw+vtUvscTJ
-	 +RcoSMRdTw+ApyLdzjz9N1O2ONBEKQApZ/0tPT/8YLLso8s0nD341bkJFWsp0h4RYr
-	 UwgJNwxbCT1tmXAysbevooLOy7ETaDZmPS6IG6CZDSEsqb1lW5ubLFh+pHCEblFHvw
-	 t8vc4tN6xZAKn7/k3KYXH2Pfj9z+kWA5BINzHqOKJSa0P3FbXLrLRKLkxKeBfFRujz
-	 Ic+20zJ1M4FWA==
-From: Will Deacon <will@kernel.org>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: catalin.marinas@arm.com,
-	kernel-team@android.com,
-	Will Deacon <will@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Pranjal Shrivastava <praan@google.com>,
-	=?UTF-8?q?Miko=C5=82aj=20Lenczewski?= <miko.lenczewski@arm.com>,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH] iommu/arm-smmu-v3-sva: Enable Hardware Access and Hardware Dirty bits
-Date: Tue, 19 May 2026 16:23:07 +0100
-Message-ID: <177919969031.1013920.6454574496615860619.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260503135413.1108138-1-nicolinc@nvidia.com>
-References: <20260503135413.1108138-1-nicolinc@nvidia.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ewDS4UPq"
+Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-902deb2412fso474735085a.3
+        for <iommu@lists.linux.dev>; Tue, 19 May 2026 08:27:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1779204463; x=1779809263; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Kt+hX5KDw0Kh9RBmOyjzabH+WBL9dObDUAkuMZR7Klg=;
+        b=ewDS4UPqLuAkKDvpdMv78yHUZSMMPt4qyIg2941bTPu81ULvSFjQGyB029B0iH9ock
+         lmUaGbou3PxMuHQiCNWjAf7d+Jd/xTn1HytIvJtBSwMgGXRnPVrRodl5l+heuzO5tqAP
+         ZBEGA8ZUhWHwA0WMgpf6v1aTsYUIYQ6kamPcJHMTjK6w7+ypBctYf8GYd3zaXshJK//R
+         LvDw/MWU9JIIEMOkWcfpx7RZtow5Iz/0ies4F8AJW1Jlk6AVvy+xYzKfRkK6+LwACDOV
+         0TP5vbEvAdQRTt8JyMF/vtu7HJjtbbEX1M8he+9iCp9qlwieyFTNQYbkO4ppX8FObq+Q
+         pr2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779204463; x=1779809263;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Kt+hX5KDw0Kh9RBmOyjzabH+WBL9dObDUAkuMZR7Klg=;
+        b=PWsxj1lu9op5cBNRaE8soV4mG3rkXs7qPqUpdxzLoQ9fHEz7takc7fT661Qlnvb0K0
+         WhRE9LWVrk5EwDwC9gLIW6c6UZ1EpMrpbitzUJP6Y5YvUobge0lnOfDisu3VSoMnTMjN
+         HTi0tV7VS2BWAqmKtqxnXiECr28txuMhl507/P6DAtVVdqtS4tsySRPhgA+6GgulqZb7
+         eenOV3En7RafsCoAeLhdJ6lwk7ZKgB8K9fXA6gP7ewLccBfopKxAnX4C6BIw6psK6tBW
+         6gK0yjkA193VYyMuVX1b8r0OP08XuWbTfteQSB7LFVNMP4rYG7n0NBpAa3FUIt+JrnGK
+         WpNg==
+X-Forwarded-Encrypted: i=1; AFNElJ/Y1YknBHy1mEdYD9yCUsjEBMxW/Mm9oufjAefMchxqMjsCx681n0gFFCFBfncaRw41qQykUA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw6G446ivldWW59Mk6Z9zYdG/+veaLIeULlV8I//YYvd2Lqwicx
+	85QoZc5i97f2i/FBwGOne39WjWBVHhaDTR0yxG6PeiMax12N1zbfQ2Q+8GqEAxsIRgE=
+X-Gm-Gg: Acq92OHsA4P7dLiNK4or/vwxBBTCjGGRa+RbK+6H8nxk728kK8SVojKGfozH5moJ2+q
+	4rmGpznFctxh6i96DKFFVrpOu0p/p+4aEtzSDpmADoVH6Wji8wEQ8ioxhjwQyJCqLqz/4qwgiw7
+	5O9Zb8TiFTa0d8pX3fuWfZ7wLqTW/+HMGR9uckGhYiFIFbXDDbjeQpMn62JykU6aldc1CsSsbE/
+	3o1yW8tcWlyQrqZTcHU2uvGHeTeF1MHLHu20miI6BSFJqPzRKC97XisSnckDuoVCDKAo1rUXzyi
+	avNjQonATg7QFWV2ltuyykUtjtt2dnLYSr8suSrhDAPmk1jOCnkJ2m/KWl24Hq2wrhesMzKvL6e
+	IEKBqgtaua50HN3aUiyiCkQPrjom+Iw+Ml5kk6C5amhSErAr6bAPJ3hVTCb2WdSVEF7L2Vq4KKI
+	wVifB5qc+sSKDvmGmKtXtPVhZKZvXBjr79mCvvARPy10v3vuWTybzSIsbJTtrhOPJgbW+1CVcd/
+	X5YlmWYKqHA9tSk
+X-Received: by 2002:a05:620a:45a5:b0:912:671b:d098 with SMTP id af79cd13be357-912671bd4e8mr2727065785a.51.1779204462879;
+        Tue, 19 May 2026 08:27:42 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-910ba943761sm1881906785a.11.2026.05.19.08.27.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 May 2026 08:27:42 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wPMM9-0000000FCKQ-2JCd;
+	Tue, 19 May 2026 12:27:41 -0300
+Date: Tue, 19 May 2026 12:27:41 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+Cc: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-coco@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>, Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
+	linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
+Subject: Re: [PATCH v4 04/13] dma: swiotlb: track pool encryption state and
+ honor DMA_ATTR_CC_SHARED
+Message-ID: <20260519152741.GM7702@ziepe.ca>
+References: <20260512090408.794195-5-aneesh.kumar@kernel.org>
+ <agSKQrSIhizCXKwx@google.com>
+ <yq5ah5oaa63h.fsf@kernel.org>
+ <agW5rhE9n2gDQ0w5@google.com>
+ <yq5apl2y5f96.fsf@kernel.org>
+ <agXaby-7L7yS3Vva@google.com>
+ <yq5ah5oa59wy.fsf@kernel.org>
+ <agxDxdxynp4KEovA@google.com>
+ <yq5amrxvshxg.fsf@kernel.org>
+ <yq5abjebsaid.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <yq5abjebsaid.fsf@kernel.org>
 
-On Sun, 03 May 2026 06:54:12 -0700, Nicolin Chen wrote:
-> HTTU is introduced by utilizing the Dirty Bit Modifier (DBM) in the PTE.
-> When kernel maps a clean but writable page, it will set PTE_READONLY and
-> PTE_DBM (aka PTE_WRITE) at the same time. When a write occurs, an HTTU-
-> capable MMU will automatically clear the PTE_RDONLY bit without software
-> intervention.
+On Tue, May 19, 2026 at 08:37:54PM +0530, Aneesh Kumar K.V wrote:
+
+> if we get force_dma_unencrypted(dev) correct, we won't need the above.
 > 
-> On the other hand, SMMU has the same HTTU feature, yet it is not enabled
-> in the SVA CD. As a result, SMMU will not clear the PTE_RDONLY bit while
-> sharing the CPU page table, resulting in unnecessary stalls.
+> for dma_direct_alloc and dma_direct_alloc_pages() we have
 > 
-> [...]
+> 	if (force_dma_unencrypted(dev))
+> 		attrs |= DMA_ATTR_CC_SHARED;
+> 
+> 
+> for dma_direct_map_phys(), if we have swiotlb bouncing forced,
+> 
+> swiotlb_tbl_map_single():
+> 
+> 	if ((attrs & DMA_ATTR_CC_SHARED) || force_dma_unencrypted(dev))
+> 		require_decrypted = true;
 
-Applied to iommu (arm/smmu/updates), thanks!
+IMHO I really do prefer the DMA_ATTR_CC_SHARED flows closer to the
+thing that did the decryption. While the above is possibly sound it is
+very obtuse to be guessing what kind of memory swiotlb decided to
+return..
 
-[1/1] iommu/arm-smmu-v3-sva: Enable Hardware Access and Hardware Dirty bits
-      https://git.kernel.org/iommu/c/74fa4c177ad0
+Can we pass a pointer to the attrs into the swiotlb stuff and it can
+update it based on the kind of memory it has allocated?
 
-Cheers,
--- 
-Will
-
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
+Jason
