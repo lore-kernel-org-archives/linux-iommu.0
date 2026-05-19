@@ -1,85 +1,61 @@
-Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010033.outbound.protection.outlook.com [52.101.56.33])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51E092DCF74
-	for <iommu@lists.linux.dev>; Tue, 19 May 2026 03:42:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.33
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779162140; cv=fail; b=bM9k5G1v2TxuwzF4UsaHBFSrZwz+daNkWC4n4P7rr7gm1wpf8cncfuDlf3PtKR9opoNlTPQVACv991TavnU4ytaBHuhtmQn35j341fm07/uKivhRFXWv9RXQf2Fb0Gd7L9xGC2MTvqabD8hN+QxbhK82NIAoXEbn+lUvNv9EkmE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779162140; c=relaxed/simple;
-	bh=T51tUcSdGMQVXbHUyEx1/nkgvmR0QtxkOCg+TfgkK/E=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QHXYzb6Bso7Y8oDPUjGPFZ8fkNyqZ08M3FVaPhn/9oW+M192ZT+3Fc/1uT/DjfJz8MR3X2/pev3RdqjobCYBsICiHzzlmQY1dU7eudrlHJlOD1mvTeSEZ2v1JD84ozs3n99nlCU+P6nnLYVe0bSOy9KVsMrr47qOctpIVy6aV3o=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=SqfmSvIo; arc=fail smtp.client-ip=52.101.56.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB42624676D
+	for <iommu@lists.linux.dev>; Tue, 19 May 2026 05:31:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779168719; cv=none; b=VHAUDPHPSQrncmilDwdndhN57E7ZsU29xha1mgNiGsPMj1890jzTjlB8+D4itkuPlzu8i1UaKQjRcAwzY6KSHcyr/hVkMn1SmPTfIYWK7uzhPoURLiykuGzQlbhqyhaN4uEz0urzrvLtI8hUUscTgQwRvGoPgOYSazn2FE89fQ0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779168719; c=relaxed/simple;
+	bh=HjTkr/tPr7oETfZJGHuuDY+CDYpJn32WLeQGOszhU9w=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=cddn/XL4npfp3bEjYok5RX1ftYuDNKuQDHRZRMsAb3Mn87MCIULR2iv1SYbFSCl+p4Z7k6WzTc6uPVATKg88YnSmmxwKTzJp/Z8UkWw/U6olNcOZgq94NjQHvYSh/CTPG4Sp/Zb4mb1jx969idwZVdy/mSPnhMqpRWL6YjUfrHM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QepWzXLF; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="SqfmSvIo"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=p97tbogOGrJXDJHj3BOTV8v2O+wXyX38torhtsXyonar2ffM07ysC/6yAwP/Ze1M4rpe4rFgjkbMFTtVO8KFAW2SHYldDnq/KRwZbf0dL6bYsNrQBKW0T2el3pD2cGfqweF2Ez6JdNJ1Ss/DrPFV5oV+3OK68MnxIAyWpCi9+1jSoVNE/T/R+NNeL/5xdJRFMLudfz+fUEUGVJWi/YwJQyiZzV/4KgGyx7ZpTCKiEPd5/XTZnjP2XVNCAr5Yui/D/mioCtcp9O60QXWpTZl7+4a9+6XSH2MZX2ZLtFfOaH6aRSoVaEPRtXC7z70Yj5iFS9wpnsGeT/hdP6yua2REXw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/UlGXjDvVXDgZudHIrIPROuqy4ey1Xw2b4fXp5zcl3A=;
- b=tX2equxchdqqhHi6iqfJCaUaXP8ImNG5q2Zzg6N+xkyaJ0fBmd/dQFFKFaNlCi/6pTKxGABY0iRt/NJDVFsfbnri1i0slTvfbeCDiIQjKWnvjHATTQghuMvlUsUhuAM+HgaxAbul5rNsFydByHf6zyO301OZPBr0BlniKDHD5Y7e5Y8R9eyh5EmvNfu09mnvAoyCgUbUr66ywDMOgf85uv0QjqVhpFj3I9I5uiLyBWP740nwgG9sax75oKt1CvVgyrdXe8TaNWhVIxZYJrYCLyr+iuFPiQwr70oqF7TxsWvLcbXHOU05HBtnLSz/NGGQF90gQQ2YbvlNTrQxkHsgDQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/UlGXjDvVXDgZudHIrIPROuqy4ey1Xw2b4fXp5zcl3A=;
- b=SqfmSvIohxfKBOPfXKjFw+pVX+TZXPBjvkAdetdcwHF70gwXVglMdDYm4HZN/OQwpUtmHAMDaRoKWzMKdsxLE73AvcHuBj5TyBw0NXbNpx+7Epghp1InlGH6u5ySDV5cVMx++S1fh93PBgag69BSe0wXFBdgzBEuiBUYMVplUvEk20AacrMYnU2Rku3jZnZIIrlXLde4VkDQseoZzsJNaDYN+DiXa/Og84JP6PmV9LPVhj1lyaUmJaocbgh5ClO1x9b3OO/ILixnxCOFOCQWDd1zyAQMcTJjqwa68JvWKVUnptCDwehZydd1DNcbhcB58pEzmXqMoM6qHMTns5K7oQ==
-Received: from DS1PR04CA0005.namprd04.prod.outlook.com (2603:10b6:8:44f::9) by
- SJ5PPF0C60B25BF.namprd12.prod.outlook.com (2603:10b6:a0f:fc02::98a) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9891.17; Tue, 19 May
- 2026 03:40:08 +0000
-Received: from DS2PEPF000061C3.namprd02.prod.outlook.com
- (2603:10b6:8:44f:cafe::34) by DS1PR04CA0005.outlook.office365.com
- (2603:10b6:8:44f::9) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.48.14 via Frontend Transport; Tue, 19
- May 2026 03:40:07 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- DS2PEPF000061C3.mail.protection.outlook.com (10.167.23.70) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.48.11 via Frontend Transport; Tue, 19 May 2026 03:40:07 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 18 May
- 2026 20:39:53 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 18 May
- 2026 20:39:52 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.9) by mail.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server id 15.2.2562.20 via Frontend
- Transport; Mon, 18 May 2026 20:39:51 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
- Roedel" <joro@8bytes.org>, Bjorn Helgaas <bhelgaas@google.com>, "Jason
- Gunthorpe" <jgg@nvidia.com>
-CC: "Rafael J . Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>,
-	Pranjal Shrivastava <praan@google.com>, Mostafa Saleh <smostafa@google.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
-	<linux-pci@vger.kernel.org>, <vsethi@nvidia.com>, Shuai Xue
-	<xueshuai@linux.alibaba.com>
-Subject: [PATCH v4 22/24] iommu/arm-smmu-v3: Introduce master->ats_invs
-Date: Mon, 18 May 2026 20:39:05 -0700
-Message-ID: <7fb3652c6448d757aa4b5e7bf32018333e1db1a9.1779161849.git.nicolinc@nvidia.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QepWzXLF"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1779168717; x=1810704717;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=HjTkr/tPr7oETfZJGHuuDY+CDYpJn32WLeQGOszhU9w=;
+  b=QepWzXLFtX4Czj+XwZPyKk5Xe6NxH0ZegBhXty21Bc0LQ617BcXyXQIE
+   ZWO8Hj3I4dBJhtCo6nvZkdsrYEZZ2G1zFf6qKKo4l1CjbO8VEqEBvdxKr
+   b4BrEtO2Pyr+SAEeju78TRN3JTZjZyoe8FSTq5+v6hSxrHOwjPptWkCvE
+   9gUZeVh6CSaM9Q6c4gTu8Xa2vc5yti8FzY96FXpVt3vgrkqNu/UdjuBUu
+   J5968TJLSKHjthq6NGOXAHCE38U1RNhco/qO7skYbBQIWR028iSo1VzRn
+   Kso/ffMY7jxxpoB6R+ugPEm/NzG4NuNf9zNk0dxguRm2JeF1lXiRiByIM
+   w==;
+X-CSE-ConnectionGUID: 0keIQGm4QZa/loqXfRBeLg==
+X-CSE-MsgGUID: ZegCisfgRlm9Er5Cm9fS9A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11790"; a="90617166"
+X-IronPort-AV: E=Sophos;i="6.23,243,1770624000"; 
+   d="scan'208";a="90617166"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2026 22:31:56 -0700
+X-CSE-ConnectionGUID: OVVCC+xiSb+pt36LZi/tyA==
+X-CSE-MsgGUID: UpaDmT/0QkWL+hnTz60uWQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,243,1770624000"; 
+   d="scan'208";a="263177221"
+Received: from allen-box.sh.intel.com ([10.239.159.52])
+  by fmviesa002.fm.intel.com with ESMTP; 18 May 2026 22:31:54 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	stable@vger.kernel.org,
+	Nareshkumar Gollakoti <naresh.kumar.g@intel.com>
+Subject: [PATCH 1/1] iommu/vt-d: Avoid WARNING in sva unbind path
+Date: Tue, 19 May 2026 13:29:17 +0800
+Message-ID: <20260519052917.3729796-1-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1779161849.git.nicolinc@nvidia.com>
-References: <cover.1779161849.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -87,172 +63,101 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS2PEPF000061C3:EE_|SJ5PPF0C60B25BF:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7cf07486-9003-4cf1-4ce0-08deb558528d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|376014|36860700016|1800799024|7416014|56012099003|22082099003|18002099003|11063799003;
-X-Microsoft-Antispam-Message-Info:
-	3YjgoxJdxDmC9UX49C8UKgFnlj55XABjT/5NgB6nGDtIu3O7Tv3n7WFJ4nofk1lBSmpaYRw3KFc3FiwSDsQ88ew5Et9k25WTJw3Ik5sQV3ZMQtJnIf3HVLHro8VroGqbwkWsyjemfL6JBxNZUIHlD5FPELxzu3YWsUDaEWvw0Y11N5/wW/4ilRfCaqm5U1dkcLXs24f4tLO5N30+KbpgGXcQ/mkxr0ugPhdZ9LySQB1yEERjSI19W8s8zCvcnYra9LNvWL1qtitc1AACSG9QZ6npwYnkl+Mv4d28v03Y/+bXd15TjOC9cPDTugTYKhfoXl5TbyrRxBwMqjXRszD/eOdKNxuHLodm96aXtBdLScUsgl7CqqCv2WI5/KaX4XlT6GR5Iuu2tUzif0PsecQHNfBe9bu0o4QfcVa1ffdOGQ9ak2yP4hW4xJcGMPQTH8VbWbr4l8NN/gaf1LLf6Q7q6InNIpZo0ePcrlXBqs/l4PHbXMtyhlUY1bx4Q7LvLMK2uuI7g0tjC3aHVz8ZJ8m568+hFi2aZJEd935R1M3vqMlEBEaj4PKURSKfINwrZsTb5K++KWcnhvWMWAHr0ViPd82TttSAcvf9TNuhI1TuCQcXYVsHVnrWd7Jm0aiVy/w3qSz5Q/WOM7fbynIOngKwspbagMY81nnM+xDrudNrTj/h86ewfoIGWXTMXycMOs+6K5hTWYPzXZ4X+k33ASck676apq88ZtNYW39SWmZZqPY=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(376014)(36860700016)(1800799024)(7416014)(56012099003)(22082099003)(18002099003)(11063799003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	rKgOwzUkDDsIpOgoALZC/XddMbKKf5L23+En98P4/6fTV/Dbsc/94MHuyoQBCt4Rd+KtJiauWvLFRowKGPcfTe+kO//V48tCEhkIsGJXwU4NN27kqosdhOjzU8xTsy/ZcNsE/EuVS+YiBO1n9glfubrLUnaL1xAprQfP8qge8NWkBzNADhLf13zED9M1O5v/B7L/S/E3aYTlSfCJbuv8LAabfy9Y7CMs0DoVNt5pZZTSHpdHwywPp+NTF/t68S89Ds6BdS+FE3RuiFvG7BFHd7UdTtoOwwl//IYkLBt6SkpM7V4qzTigdpaDE2Jybwy6ITT3h5v3v8HEggZBZs2AlPwPLEmRG4V2eneLqFHSrOqrBe/PBnbqYUzw4I+3coecRXgIHMp8XNitLrBCysi/wrX8uqQbleodCWAa5wpVxFIa5Dsd5/c+tY4a/hOL984f
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2026 03:40:07.8396
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7cf07486-9003-4cf1-4ce0-08deb558528d
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DS2PEPF000061C3.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ5PPF0C60B25BF
 
-Similar to master->build_invs used by a per-domain invalidation, add a new
-master->ats_invs to be used by arm_smmu_atc_inv_master().
+The Intel IOMMU driver allows SVA on devices even if they do not support
+PCI/PRI. Commit 39c20c4e83b9 ("iommu/vt-d: Only handle IOPF for SVA when
+PRI is supported") modified the SVA bind path to allow this configuration
+by skipping IOPF enablement when PRI is missing. However, it failed to
+update the unbind path.
 
-Since arm_smmu_cmdq_batch_init_cmd() now takes an invs pointer, pass it in.
+This creates an imbalance: the unbind path attempts to disable IOPF for
+a device that never had it enabled, triggering a WARNING in
+intel_iommu_disable_iopf():
 
-This will be useful by arm_smmu_cmdq_batch_issue() to backtrack the master
-pointer from a timed out ATC invalidation command in a subsequent change.
+ WARNING: drivers/iommu/intel/iommu.c:3475 at intel_iommu_disable_iopf+0x4f/0x90d
+ Call Trace:
+  <TASK>
+  blocking_domain_set_dev_pasid+0x50/0x70
+  iommu_detach_device_pasid+0x89/0xc0
+  iommu_sva_unbind_device+0x73/0x150
+  xe_vm_close_and_put+0x4d2/0x1200 [xe]
 
-Also replace the streams loop with arm_smmu_invs_for_each_entry() as it is
-initialized (except ssid) upon allocation.
+Fix this by bypassing IOPF operations for SVA domains on non-PRI hardware
+in both the bind and unbind paths.
 
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+Fixes: 39c20c4e83b9 ("iommu/vt-d: Only handle IOPF for SVA when PRI is supported")
+Cc: stable@vger.kernel.org
+Reported-by: Nareshkumar Gollakoti <naresh.kumar.g@intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  2 +
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 46 ++++++++++++++++++---
- 2 files changed, 43 insertions(+), 5 deletions(-)
+ drivers/iommu/intel/iommu.h | 11 +++++++++++
+ drivers/iommu/intel/svm.c   | 12 ++++--------
+ 2 files changed, 15 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index b5ace01c05a5d..186efcbed1ea9 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -1045,6 +1045,8 @@ struct arm_smmu_master {
- 	 * iommu_group mutex.
- 	 */
- 	struct arm_smmu_invs		*build_invs;
-+	/* Scratch memory for arm_smmu_atc_inv_master() to build an ATS array */
-+	struct arm_smmu_invs		*ats_invs;
- 	struct arm_smmu_vmaster		*vmaster; /* use smmu->streams_mutex */
- 	/* Locked by the iommu core using the group mutex */
- 	struct arm_smmu_ctx_desc_cfg	cd_table;
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index c95297acf2cfe..9591e4ab2b14a 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2407,21 +2407,28 @@ arm_smmu_atc_inv_to_cmd(u32 sid, int ssid, unsigned long iova, size_t size)
- static int arm_smmu_atc_inv_master(struct arm_smmu_master *master,
- 				   ioasid_t ssid)
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index ef145560aa98..775f1c4ae346 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -1254,18 +1254,29 @@ void intel_iommu_disable_iopf(struct device *dev);
+ static inline int iopf_for_domain_set(struct iommu_domain *domain,
+ 				      struct device *dev)
  {
--	int i;
-+	struct arm_smmu_invs *invs = master->ats_invs;
- 	struct arm_smmu_cmd cmd;
- 	struct arm_smmu_cmdq_batch cmds;
-+	struct arm_smmu_inv *inv;
-+	size_t i;
++	struct device_domain_info *info = dev_iommu_priv_get(dev);
 +
-+	/* No concurrent user on master->ats_invs */
-+	iommu_group_mutex_assert(master->dev);
- 
- 	/* Do not issue ATC_INV that will definitely time out */
- 	if (READ_ONCE(master->ats_broken))
+ 	if (!domain || !domain->iopf_handler)
  		return 0;
  
- 	cmd = arm_smmu_make_cmd_atc_inv_all(0, IOMMU_NO_PASID);
--	arm_smmu_cmdq_batch_init_cmd(master->smmu, &cmds, &cmd, NULL);
--	for (i = 0; i < master->num_streams; i++)
-+	arm_smmu_cmdq_batch_init_cmd(master->smmu, &cmds, &cmd, invs);
++	/* SVA with non-IOMMU/PRI IOPF handling is allowed. */
++	if (domain->type == IOMMU_DOMAIN_SVA && !info->pri_supported)
++		return 0;
 +
-+	arm_smmu_invs_for_each_entry(invs, i, inv) {
-+		inv->ssid = ssid;
- 		arm_smmu_cmdq_batch_add_cmd(
- 			master->smmu, &cmds,
--			arm_smmu_make_cmd_atc_inv_all(master->streams[i].id,
--						      ssid));
-+			arm_smmu_make_cmd_atc_inv_all(inv->id, ssid));
-+	}
- 
- 	return arm_smmu_cmdq_batch_submit(master->smmu, &cmds);
- }
-@@ -4087,6 +4094,18 @@ static int arm_smmu_stream_id_cmp(const void *_l, const void *_r)
- 	return cmp_int(*l, *r);
+ 	return intel_iommu_enable_iopf(dev);
  }
  
-+static void arm_smmu_master_init_ats_inv(struct arm_smmu_master *master,
-+					 struct arm_smmu_inv *inv, u32 sid)
-+{
-+	inv->id = sid;
-+	inv->users = 1;
-+	inv->master = master;
-+	inv->smmu = master->smmu;
-+	inv->type = INV_TYPE_ATS;
-+	inv->size_opcode = CMDQ_OP_ATC_INV;
-+	inv->nsize_opcode = CMDQ_OP_ATC_INV;
-+}
-+
- static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
- 				  struct arm_smmu_master *master)
+ static inline void iopf_for_domain_remove(struct iommu_domain *domain,
+ 					  struct device *dev)
  {
-@@ -4105,11 +4124,19 @@ static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
- 		/* Base case has 1 ASID entry or maximum 2 VMID entries */
- 		master->build_invs = arm_smmu_invs_alloc(2);
- 	} else {
-+		master->ats_invs = arm_smmu_invs_alloc(fwspec->num_ids);
-+		if (!master->ats_invs) {
-+			kfree(master->streams);
-+			return -ENOMEM;
-+		}
-+		master->ats_invs->has_ats = true;
++	struct device_domain_info *info = dev_iommu_priv_get(dev);
 +
- 		/* ATS case adds num_ids of entries, on top of the base case */
- 		master->build_invs = arm_smmu_invs_alloc(2 + fwspec->num_ids);
- 	}
- 	if (!master->build_invs) {
- 		kfree(master->streams);
-+		kfree(master->ats_invs);
- 		return -ENOMEM;
- 	}
+ 	if (!domain || !domain->iopf_handler)
+ 		return;
  
-@@ -4125,6 +4152,13 @@ static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
- 		       sizeof(master->streams[0]), arm_smmu_stream_id_cmp,
- 		       NULL);
- 
-+	if (master->ats_invs) {
-+		for (i = 0; i < fwspec->num_ids; i++)
-+			arm_smmu_master_init_ats_inv(master,
-+						     &master->ats_invs->inv[i],
-+						     master->streams[i].id);
-+	}
++	if (domain->type == IOMMU_DOMAIN_SVA && !info->pri_supported)
++		return;
 +
- 	mutex_lock(&smmu->streams_mutex);
- 	for (i = 0; i < fwspec->num_ids; i++) {
- 		struct arm_smmu_stream *new_stream = &master->streams[i];
-@@ -4159,6 +4193,7 @@ static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
- 		for (i--; i >= 0; i--)
- 			rb_erase(&master->streams[i].node, &smmu->streams);
- 		kfree(master->streams);
-+		kfree(master->ats_invs);
- 		kfree(master->build_invs);
- 	}
- 	mutex_unlock(&smmu->streams_mutex);
-@@ -4261,6 +4296,7 @@ static void arm_smmu_release_device(struct device *dev)
- 	 */
- 	synchronize_rcu();
- 	kfree(master->streams);
-+	kfree(master->ats_invs);
- 	kfree(master->build_invs);
- 	kfree(master);
+ 	intel_iommu_disable_iopf(dev);
  }
+ 
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index 57cd1db7207a..fea10acd4f02 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -164,12 +164,9 @@ static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
+ 	if (IS_ERR(dev_pasid))
+ 		return PTR_ERR(dev_pasid);
+ 
+-	/* SVA with non-IOMMU/PRI IOPF handling is allowed. */
+-	if (info->pri_supported) {
+-		ret = iopf_for_domain_replace(domain, old, dev);
+-		if (ret)
+-			goto out_remove_dev_pasid;
+-	}
++	ret = iopf_for_domain_replace(domain, old, dev);
++	if (ret)
++		goto out_remove_dev_pasid;
+ 
+ 	/* Setup the pasid table: */
+ 	sflags = cpu_feature_enabled(X86_FEATURE_LA57) ? PASID_FLAG_FL5LP : 0;
+@@ -184,8 +181,7 @@ static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
+ 
+ 	return 0;
+ out_unwind_iopf:
+-	if (info->pri_supported)
+-		iopf_for_domain_replace(old, domain, dev);
++	iopf_for_domain_replace(old, domain, dev);
+ out_remove_dev_pasid:
+ 	domain_remove_dev_pasid(domain, dev, pasid);
+ 	return ret;
 -- 
 2.43.0
 
