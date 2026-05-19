@@ -1,260 +1,164 @@
-Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012064.outbound.protection.outlook.com [52.101.53.64])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE2BA365A0B
-	for <iommu@lists.linux.dev>; Tue, 19 May 2026 18:26:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779215171; cv=none; b=TJqh3zLjP+TtxW0BucD0M0679Juc1q38TQRbdm0OGe117udA799HO9GIdDd+jBIPy1+KrbfrEOpFltGCRXX6Ll3/gYHrTyqkKuMdxJ6FDy6JRGsar0CO2AsqeqiiA/uVoAgZXBViALlMbPWwiix+Qu+8lErGvVKpt2mSXUiCsR8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779215171; c=relaxed/simple;
-	bh=czRIP9fPYWV1iXkGq8o8sM5pGSyI70HQ0UuHcLUB8gg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ie8FYw5uK0UaYPE3LGwS203x/+ImzrdEtyfZpc5lsX74w0pSvy1v41NRtMc7vKpRTSWifsQnpZl7fvsyFu/aJU+koLKBzUsTHclj4oc79EgsINOZkze19pOFaJbCJjbpptZn/j+LjC/LljPP1Of9eBOZlOR/mNDEMh/upnUpI24=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=pyJcUVWn; arc=none smtp.client-ip=209.85.214.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E305369965
+	for <iommu@lists.linux.dev>; Tue, 19 May 2026 18:29:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.53.64
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779215400; cv=fail; b=pGtF7LtoJ2DaOsBzr/IHXM+1C+a4Ca+JFRZjM5QdxOYxp7uXiCJKfV9dLsKpihyYi8lewkcO1YPVe2RBiCiOUX4bKwY3zrCP0okaKaLWKq/MjbtPLz+PUd0UIanycvL8PdKlE7Bjx9Ws6qr8rNMGeX18QjV24SC7dSGXpWfBwYM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779215400; c=relaxed/simple;
+	bh=rsLMJq1ZRC7LtffyuZBkBdvK0QL9Va0FyyKTJaQjoYM=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Nfe0JsRm0l6BDL7PwcOV2mJhYN5xmwHQaN8yExVh15GEbudVZDXCNlQfxPP0tAC9buNTqhmRwZP/IE17aawTjJVHMejMHT+vItUYe56+64gh56nvlnttIpZKIfA+BI230vOopU5nQXeAhjgks1otDQ1nXr7re8hzvkQVvNa7MdQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=eggrSqWJ; arc=fail smtp.client-ip=52.101.53.64
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="pyJcUVWn"
-Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2b2e8b95bdbso1935ad.0
-        for <iommu@lists.linux.dev>; Tue, 19 May 2026 11:26:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779215168; x=1779819968; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=UztCOzVT9zWGOulxXltF3roIbWFaiwmorl3lCjhP7nc=;
-        b=pyJcUVWn/OC0HOEH31Er1qxUVFhexm0hLCs4HjEOMLEG9O2pbxG2tJG7VHXQAKgPeL
-         bqHexJu1r6ATYjqggpkjifqGm4yJtG297obcd1RNBqV2/jR7PsvUJfHO7X5POo90ulCS
-         35X5Bg3C4E6Q2CAEkTThlWaS15lF6qMAC+T9I5Rq8godKtrpX9YK1mR8BKdv3bg9mYt6
-         aMtvhzKhYbtBrhi4uLZytsZlwpY6KBmXeLl0tMTu320IBU4caZLBbXnJ4nd+ymM35T44
-         O916ij49CMv5eFP4uZpfj71sCrSqvKLKgVgdo5hqU6xd0RmRgXvQF6rwJMewkDHpAeVX
-         huIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779215168; x=1779819968;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=UztCOzVT9zWGOulxXltF3roIbWFaiwmorl3lCjhP7nc=;
-        b=GVUafmXRKsDBLpZeuXhbBfhDTnbSEvaqlJieXquTcZ94ReI9kHsS9GeAFegtH4T69B
-         eGDaPEUgqom5sepQv3y51Rm6NsmlgUwNA+4Z3OQ2jk+0X+CCcSwAFoRPtoh60UCm4EwZ
-         1te13sTBGqI/iQ040bfEcJL3sL637UdJwEeNGDEDa9kBpl62gGU1QDGecODybqNvc3Yd
-         HfjDVVGSLRaoJNDd6X5xwN3TkdBsbIxnlcYjylHrApFkbwGbC1P+KCSK7OCRA8j+oTRN
-         7P5PcyeQbsSFE2Y+61vMLWlHZ4Nj5XzcMwDQXJih6EZbs7THysQsQ0fuAPYHPvQeuod3
-         yvPw==
-X-Forwarded-Encrypted: i=1; AFNElJ9AwP3MGR+JVL1j/112k2bx6MLJuuAGlBPw+v+Qj4QYVsnsx6TekvRu2GZiqvTpoXl6Siqr6g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyKEoa9xISZPz9SOhfPVPo0pDbzZETH6gmCU5LjvofDmubfON8F
-	qbnjsQktbVd8hHJIo6RMUQTcRadjK9E+Pjy3vdyAE4HjwkS2/jbOXinCrZ+2hXt6aw==
-X-Gm-Gg: Acq92OFFMlIQLQrCA8jfa2pVfsmPxRBEQQtSDW0vakpH+uNSivAheAWlzMIIjX8bn2O
-	d8fEPhUlzO9LYhDRLMcKnX0kyOmSjFLgWUfM9j2VoDC0jSoqfiDUHhZ5HUE1GPBMHsL80HyngR3
-	AYATRr2K9yYHeJmDoKfxxN0HyTJp3I0pIFvqqGRqwr9VfAoVKQpmj0bXjr4gfEF1ID+OaWVEcQE
-	mG+W0ym9sZ1bnfYgET/swJYHn47PEZiq1tqgQUb+RglTcFR7mxRsOkRp0UNOcLJQKjtQbHlbCHo
-	wigLoc/xel3r5Tecz/KDzUJnmX8I314F0YTfh42fkiluv7dWw57OhSS68tzoQ6FoD38ggxYVsKr
-	P8JmIn41exAevzVTjbRVujRhT2TXddJhNHz4KGZyn2HhriYodT3HTjQcks6mbWpEFm5YpBZN3FH
-	xp4gkD6hXUE8lG3FTjfKQcKhRXjd3mwh6Nx+CH8aPRvLmmJsxW/RbRjKhr7FeezwFG0yAIQw==
-X-Received: by 2002:a17:902:e788:b0:2b0:b0c9:96e2 with SMTP id d9443c01a7336-2bdb32c0349mr6068925ad.21.1779215167429;
-        Tue, 19 May 2026 11:26:07 -0700 (PDT)
-Received: from google.com (153.46.83.34.bc.googleusercontent.com. [34.83.46.153])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-369512424c2sm15165142a91.4.2026.05.19.11.26.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 May 2026 11:26:06 -0700 (PDT)
-Date: Tue, 19 May 2026 18:26:03 +0000
-From: Samiullah Khawaja <skhawaja@google.com>
-To: Pranjal Shrivastava <praan@google.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, 
-	David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>, 
-	Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, 
-	Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>, 
-	Adithya Jayachandran <ajayachandra@nvidia.com>, Parav Pandit <parav@nvidia.com>, 
-	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
-	Pratyush Yadav <pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	David Matlack <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
-	Chris Li <chrisl@kernel.org>, Vipin Sharma <vipinsh@google.com>, 
-	YiFei Zhu <zhuyifei@google.com>
-Subject: Re: [PATCH v2 07/16] iommu/vt-d: Implement device and iommu
- preserve/unpreserve ops
-Message-ID: <agyMsywb8KqBNu-S@google.com>
-References: <20260427175633.1978233-1-skhawaja@google.com>
- <20260427175633.1978233-8-skhawaja@google.com>
- <a968550d-2cab-47fd-8639-a8747a8a7535@linux.intel.com>
- <af023TAT1m3oA9ez@google.com>
- <agtux6SrjpRYvMit@google.com>
- <agx2RW_jujXbsiea@google.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="eggrSqWJ"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=mTrfA9Doch+UmYLxOcZELAKlE0ciw3DyBAHUvjLy5JsNfNGEuV2x+u+O4fGCOrCYtFBQSCY8RQnPt7pLNFi4JiWV2mxHREvebPo7HrdB6iPbogbXH8qaZ2CS5jHC33HBJ+aOJKRjD07pa6EbsBMvyJbmCdyZf0bWKf5/8upVz48OV9jcaViwAkQuKHeeTIcLfaRa8wD5vTzTL+XQIPYiTD3EfppDZqfu+WCpB+02ZtMYks+rdhcLhG78258XcZiCMJ930JT+iQPiKO8aOVXe4SWM+Jw9GEYMG9MDB6ZtvqysK64xBBTrH4KuXSsGekmXYoTlkg2qrn3Roc30oS2RVw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Q67EPzlY6/81vWsD6C2W3ik8HjFvq2cVFmvqAeUlKj0=;
+ b=QgQkaMa4DvPMe1zJdj3335YbjFusxwtA5b5wM1VDX96iH26GbPu+Jgz/ldapdv3ttGRZgz7xb3cZYteSBfp9Pjy4JslM1rouLZweFRQLF1tbFv3plAnqd8uKFUlnbDVWzgORsP78HSm1ej6TEt4xThW42U4t0Y9ecxUKnCw/rKS6+iy7w2rUtLQFAJvjKGC1vn/h3Qr6B7BIBF+kq0tbsRGm3Of+ftl8R0+D3/HiJX+GIMRAUjj0nc8qMVptY4Y9KKh50O+ZNfGoCkDFE5JEVfPuqmDzhvunWyJZ168zZt9DuVzDW2vs1LbtZ5kKoPL5sFGfLtxOny4MImNuUV8k7g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Q67EPzlY6/81vWsD6C2W3ik8HjFvq2cVFmvqAeUlKj0=;
+ b=eggrSqWJVBnB/2GyGk+7nEQx5bzKtHAKeoUjgzupKs14ij8oV8ioLM3KSYBuDBMzz2163OoGJf0rDsfm3s5u6hgWLKUJToLvThwCcsesxxiC6n2c039bpKLbUgC8gucKqDOXsBsbddXDBpygoY1/DIUCnzex/yP8r1Jp2zfIDEszROEuCMOOwJ8sqTQ/aJjmp4vHt8wZPd1tioKJJxxd7W61qPhc59zDHpGqRfJEMb0TRhJd7bbRYXXa3eUcMPOMxCDag8sU4rbHqwlOD8xnByWAoeKSHCpmoMjokNkFFyL37xdTHpGjjijQxDd0JDo2lGlkfV8W07x2MULxHiAcZQ==
+Received: from CYXP220CA0008.NAMP220.PROD.OUTLOOK.COM (2603:10b6:930:ee::15)
+ by PH8PR12MB8608.namprd12.prod.outlook.com (2603:10b6:510:1bc::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.25.24; Tue, 19 May
+ 2026 18:29:45 +0000
+Received: from CH1PEPF0000AD77.namprd04.prod.outlook.com
+ (2603:10b6:930:ee:cafe::ca) by CYXP220CA0008.outlook.office365.com
+ (2603:10b6:930:ee::15) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.48.14 via Frontend Transport; Tue, 19
+ May 2026 18:29:45 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ CH1PEPF0000AD77.mail.protection.outlook.com (10.167.244.55) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.48.11 via Frontend Transport; Tue, 19 May 2026 18:29:45 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 19 May
+ 2026 11:29:25 -0700
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.20; Tue, 19 May 2026 11:29:25 -0700
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.126.190.180)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Tue, 19 May 2026 11:29:24 -0700
+Date: Tue, 19 May 2026 11:29:23 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
+ Roedel" <joro@8bytes.org>, Bjorn Helgaas <bhelgaas@google.com>, "Rafael J .
+ Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>, "Pranjal
+ Shrivastava" <praan@google.com>, Mostafa Saleh <smostafa@google.com>, Lu
+ Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
+	<linux-pci@vger.kernel.org>, <vsethi@nvidia.com>, Shuai Xue
+	<xueshuai@linux.alibaba.com>
+Subject: Re: [PATCH v4 11/24] iommu: Add iommu_report_device_broken() to
+ quarantine a broken device
+Message-ID: <agysAyreCY4huf0I@Asurada-Nvidia>
+References: <cover.1779161849.git.nicolinc@nvidia.com>
+ <745da1a819eb943f2519e660c8bcfde715885c6c.1779161849.git.nicolinc@nvidia.com>
+ <20260519120737.GQ787748@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <agx2RW_jujXbsiea@google.com>
+In-Reply-To: <20260519120737.GQ787748@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH1PEPF0000AD77:EE_|PH8PR12MB8608:EE_
+X-MS-Office365-Filtering-Correlation-Id: 93a59d12-edc3-4e21-d6ba-08deb5d49a20
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|82310400026|36860700016|7416014|376014|11063799006|22082099003|18002099003|56012099003|4143699003;
+X-Microsoft-Antispam-Message-Info:
+	LQIBxNZLAC6j5mCxOxturxhkTlKynN/9mk6+I/Xmw2FAgFHWF6b8IBt/PaoY7Mo3wgiyqbmFdNAyJjDyaJi0jgc/2PTo1pu71yecM2Y+XYaJGnqXfzrj+Qb4WjOM7AWoyIPQl4jBZB4UUCr0MUX1CZMMxTfnia+ZcKoVs6quZKE4SvP4ARE815cG0V2npvAgkIqIuo0eyD7UO0TrUCv2Z5564TklgsZXF0Oa6NSOAH7EH11+qFkJTxBxMZ754sMYOQDzWy+ZSHvPpLpRDTor1i0PnGZ4bkU8n8rfqj+moAI4KCQ4W2+ljOrvAz1nYoKlD19bUftusK9SRBCT+VYLyPFtd+IoS/xfOIAX74ar6n75Z15rv+i+uBDOFUuX1ZgqAa0lx0VcL498y4hv/ThE4G/mLK0kbYB4jmkYbRNHJ4mRRthrBSvw3UOT29BdNFSTUIrCGkYuHg/8d4mLdoOlWQFHiMzZ06d0Rz8Oi45YD9tH9DiYhPuQpZEJ98W3aIcc2Dww1sAnuRWbu2V9cMWgtdxBS4HW6nrJK7Gsp/56kzprUiGZlZy0vuvltZx/Vv9ESXv6gg8ERxgP0mRGDcmj88MnutYGCFPBfDXUYQC+Ojg81Ps+awd5v9C7Crprbufe/F22Br659yzyJo203EMNvDGrekxGjY/kG6I7BxaHWnsccOVqYXHTQhQhtGJ1wXspeGhGsvlYIp4S4CUQuI1vEY+zUEJQ7PvDOSCN5VARGM4=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(36860700016)(7416014)(376014)(11063799006)(22082099003)(18002099003)(56012099003)(4143699003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	2vXT7NFimP7X9ZyeSTDyKCiFplNOFiCmGOUnmkDHHL+X25aG2ijC0J6VpM8dB2Vu8X3uLSU2LAhRzvni4BxNmsqi/ubBmgtCG5P+xJlNozKK1TdaTmOK/WJwbHTzqyuY1yq9QTbLA+iTfPJZVaj91TiUssGaCfMNlmjeI3DX3TYA85R1+EuiKYdkXIn9F7bcMijeVtynfK3aZEz9JGVr6X5SsaXMS/Oge2dLip6Vg5Un98pd2qWcJjuYZJIZaauhiJnZMAjrBODsVbakWmzWkeKqoMGkr2TN1v4OPEPxSacpGuMMxsGQmb/NDxZVA5F9hZdn3MkuyT3IUOQNDr57p/zq2oJuwaFkLalUlFp5NgM8rETuoMsivqvRI9dUHeGV6wCyONTNhph+37jg9dut245bzZV/jOtY+sqnLnNvGn1+UO1AQ416UFm3P2mqVxrY
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2026 18:29:45.5406
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 93a59d12-edc3-4e21-d6ba-08deb5d49a20
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CH1PEPF0000AD77.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB8608
 
-On Tue, May 19, 2026 at 02:40:05PM +0000, Pranjal Shrivastava wrote:
->On Mon, May 18, 2026 at 08:32:42PM +0000, Samiullah Khawaja wrote:
->> On Fri, May 08, 2026 at 02:36:56AM +0000, Samiullah Khawaja wrote:
->> > On Thu, May 07, 2026 at 02:25:14PM +0800, Baolu Lu wrote:
->> > > On 4/28/26 01:56, Samiullah Khawaja wrote:
->> > > > Add implementation of the device and iommu presevation in a separate
->> > > > file. Also set the device and iommu preserve/unpreserve ops in the
->> > > > struct iommu_ops.
->> > > >
->> > > > During normal shutdown the iommu translation is disabled. Since the root
->> > > > table is preserved during live update, it needs to be cleaned up and the
->> > > > context entries of the unpreserved devices need to be cleared.
->> > >
->> > > This is not related to preserve/unpreserve ops and could be made in a
->> > > separated patch?
->> >
->> > Agreed. I will move this stuff to a separate patch.
->> > >
->> > > >
->> > > > Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
->> > > > ---
->> > > > MAINTAINERS                      |   1 +
->> > > > drivers/iommu/intel/Makefile     |   1 +
->> > > > drivers/iommu/intel/iommu.c      |  52 +++++++++++-
->> > > > drivers/iommu/intel/iommu.h      |  28 +++++++
->> > > > drivers/iommu/intel/liveupdate.c | 139 +++++++++++++++++++++++++++++++
->> > > > drivers/iommu/iommu.c            |  18 ++++
->> > > > include/linux/iommu-liveupdate.h |  10 +++
->> > > > include/linux/iommu.h            |  14 ++++
->> > > > include/linux/kho/abi/iommu.h    |  18 ++++
->> > > > 9 files changed, 277 insertions(+), 4 deletions(-)
->> > > > create mode 100644 drivers/iommu/intel/liveupdate.c
->> > > >
->>
->> [snip]
->> > >
->> > > > +{
->> > > > +	struct context_entry *context;
->> > > > +	int ret;
->> > > > +	int i;
->> > > > +
->> > > > +	for (i = 0; i < ROOT_ENTRY_NR; i++) {
->> > > > +		/*
->> > > > +		 * Alloc the context tables now to make sure the iommu unit is
->> > > > +		 * properly preserved. These might stay unused and wastes around
->> > > > +		 * 32MB max in scalable mode.
->> > > > +		 */
->> > >
->> > > Instead of allocating and preserving context tables for all root entries
->> > > (as noted, can waste up to 32MB), could we restrict this only to the
->> > > entries possibly in use by active PCI devices?
->> >
->> > I think the hotplug devices or VFs created through SR-IOV will be missed
->> > that way. Lets say device A is preserved and the associated iommu is
->> > also preserved. And then a new device B is hotplugged and preserved,
->> > then the context table for that will be missed.
->>
->> Ok I thought about it a little more and basically we have following
->> things to consider when we preserve context tables,
->>
->> - The devices can be hotplugged and preserved, so the context tables of
->>   those need to be preserved if we don't allocate all of them first time
->>   we preserve iommu, as done here.
->> - New context tables can be added (after hotplug) for unpreserved
->>   devices. And if we don't get another iommu preserve call after these
->>   are added, those remain unpreserved, so during shutdown those entries
->>   need to be removed from root table or preserved for simplicity.
->>
->> To solve this we can,
->>
->> 1. Either preserve the new context table when it is added for a preserved
->>   iommu. This can be done in iommu_context_addr(). This is simpler and
->>   no tracking needed.
->>
->> 2. Or track the preserved context tables using a bitmap and then preserve
->>   them incremently whenever a device is preserved. On shutdown during
->>   cleanup, we can clear the entries for unpreserved context tables from
->>   root table.
->>
->> I am inclined towards second option. WDYT?
->
->Thinking out loud here, I agree that shifting away from the 32MB
+On Tue, May 19, 2026 at 09:07:37AM -0300, Jason Gunthorpe wrote:
+> On Mon, May 18, 2026 at 08:38:54PM -0700, Nicolin Chen wrote:
+> > +void iommu_report_device_broken(struct device *dev)
+> > +{
+> > +	struct group_device *gdev;
+> > +
+> > +	/*
+> > +	 * We cannot hold group->mutex here. Rely on iommu_group_broken_worker()
+> > +	 * to validate dev_has_iommu(). The iommu_group memory is RCU-protected
+> > +	 * via kfree_rcu() in iommu_group_release(), and group->devices is an
+> > +	 * RCU-protected list, so the lookup runs entirely under rcu_read_lock.
+> > +	 *
+> > +	 * Note the device might have been concurrently removed from the group
+> > +	 * (list_del_rcu) before iommu_deinit_device() cleared the dev->iommu.
+> > +	 */
+> > +	rcu_read_lock();
+> > +	gdev = __dev_to_gdev_rcu(dev);
+> > +	if (gdev) {
+> 
+> If this is why the RCU is being added it seems like overkill.
+> 
+> Just add the worker to struct dev_iommu and push it there so it can
+> use a mutex but I'm confused why are we even adding this function?
+> 
+> The entire design of this series was supposed to have the IOMMU driver
+> itself adjust it's "STE" to inhibit translated TLPs synchronosly
+> within its fully locked invalidation loop.
 
-Wait it should be 2MB (256 buses * 8K(low + Hi)), I miswrote it earlier.
->pre-allocation is the right direction. I'm wondering if we can avoid the
->overhead of introducing a new tracking bitmap (Option 2) altogether?
+Yes. Surgical STE is done in the driver. But, core-level attaching
+state doesn't reflect correctly. So the driver calls this function
+to notify the core (this is in an invalidation context -- not able
+to use mutex).
 
-ROOT_ENTRY_NR is 256 and has 2 context tables for scalable mode, so the
-max bitmap will be eight u64. It is per IOMMU, but still reasonable.
->
->Since the IOMMU serialization is a strict dependency for device tracking,
->could we move the context table preservation directly into the device
->level op: intel_iommu_preserve_device()?
->
->Whenever a specific device is preserved on-demand:
->
->1. It queries the parent IOMMU to fetch the allocated context table
->   backing its info->bus.
->
->2. It calls iommu_preserve_page(context) for that table. Because KHO's
->   tracking handles duplicates, this should be fine if multiple devices
->   reside on the same bus...
->
->Regarding Scalable Mode, we could just need a simple check in that path:
->
->
->/* intel_iommu_preserve_device */
->/* Preserve the primary/lower context table backing this bus */
->context = iommu_context_addr(info->iommu, info->bus, 0, 0);
->if (context)
->	iommu_preserve_page(context);
->
->/* If scalable mode is active, preserve the upper context table as well */
->if (sm_supported(info->iommu)) {
->	context = iommu_context_addr(info->iommu, info->bus, 0x80, 0);
->	if (context)
->		iommu_preserve_page(context);
->}
->
->WDYT?
+> Whats the async worker for?
 
-I was thinking on the same lines and was hinting to it in my earlier
-reply to Baolu. But then I didn't go for it as with this approach we
-introduce a bunch of complexity or lost state depending on the approach
-we take.
+Then, the core needs to block the device using the similar routine
+to the reset prepare(). And that needs to hold group->mutex, so it
+needs an async worker.
 
-Basically like I mentioned, the unpreserved context tables need to be
-removed from root table during shutdown. We can find out which ones are
-unpreserved by walking the preserved device list yes. But it complicates
-the overall preservation lifecycle of these context tables by
-introducing multiple preserved device list walks. Basically on every
-device unpreserve we will have to decide that whether we unpreserve the
-context table or some preserved device is still using it. Or if we
-choose to keep it preserved even if the device is unpreserved, then
-during cleanup we have no way of differentiation whether a context table
-was unpreserved and needs clearing in root table.
+Do you see a much simpler way?
 
-The bitmap approach is much simpler and only preserves the context
-tables for the active devices as suggested by Baolu earlier. Note with
-this approach we preserve the context tables of the active devices and
-not only the preserved ones, but since these are recreated after kexec
-anyway, so not really a waste as compared to preserving the maximum
-possible.
->
->>
->> I think we will have to do similar stuff for PASID also down the road to
->> preserve pasid_tables in PASID directory.
->> >
->> > Since we don't track the context_tables that are preserved, there is no
->> > way to incremently preserve the new-ones. Let me look into the behaviour
->> > of KHO, maybe we can make the preserve call idempotent and do these
->> > incrementally.
->> > >
->> > > > +		spin_lock(&iommu->lock);
->> > > > +		context = iommu_context_addr(iommu, i, 0, 1);
->> > > > +		spin_unlock(&iommu->lock);
->> > > > +		if (!context) {
->> > > > +			ret = -ENOMEM;
->> > > > +			goto error;
->> > > > +		}
->>
->[snip]
->
->Thanks,
->Praan
-
-Sami
+Thanks
+Nicolin
