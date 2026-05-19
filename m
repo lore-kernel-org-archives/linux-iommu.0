@@ -1,204 +1,100 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04DF83AFCF7;
-	Tue, 19 May 2026 15:08:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8173C3EA957;
+	Tue, 19 May 2026 15:23:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779203286; cv=none; b=eGcxswgc9qa/8bc1rHtxVfDdPeHEf9H65NaRxb5LFKfUbMLYls79T9wIbW/587p3fyZCfVWKZnbfq+qr/EZUET139qj3gsHPT3kdlnGoHMLmgTNUWuJ4N1fqbD6jYV7PwGHxxLk697GytIKoODNtgTynlxqYFh2l1emVDpqVZDI=
+	t=1779204207; cv=none; b=j5WwN6R/0eGDH9V9Z1AhIYpYTA86SK3Ts49rysWeRzQmGGGPuBzPdwxniRBorRWfVZOpihxmKFQ4nwCk4KR8ZCW0aUykrRZt5KSGWkQBj5QOqt6NJVOpkcHoncfrHmHB6eKFMUgYR9mFk96jKE/a1X/lXPc/fnZHK8EhXi7WrBI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779203286; c=relaxed/simple;
-	bh=KyaOKUufk660jyAnyO4dwLztr2A/5z8gocMgG2ZXcQM=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=FS+MecAv+8QO5NaNvz3YIVOik63U0a5pmGVYFtrjYLpesLzPGXzy2lvw+rEITaeEaYFZsTb9QO7WwQI4NluCOnZEYAi7pLUUp8dsSQRUwewnOU1XIX3BOm8inc3nptkQu3p6mHVUr1IW5AMG1hnPozSEiwP9SSoE6WclgEgvybg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gfCVmqRQ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1779204207; c=relaxed/simple;
+	bh=9t2LcnoGG/k1YKOm6YjM1CNX5Tv3sp5Ya2M6JAEa0UI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Q/h5QCmcugpBZA2xOBOAFZREvMDSkuO2XD3o2ViYRxE/ro/obpBwXEMY+eR2J59Ef4hBw7cjzLWkoVF+1BohsGvRdtFb1/yHO2jCjrKBkxLy87pUkbJQJ5wNOBJIlk8XTG028eJjQYjwkIBAShKUNl/9KxdP9yvW78+OxHXtXo4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eXmF0fTI; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gfCVmqRQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0CB7C2BCB3;
-	Tue, 19 May 2026 15:07:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eXmF0fTI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C271C2BCB3;
+	Tue, 19 May 2026 15:23:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779203285;
-	bh=KyaOKUufk660jyAnyO4dwLztr2A/5z8gocMgG2ZXcQM=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=gfCVmqRQQdy8M8HA+XstwwoOpKN65jH/uDBv2iWJ6wdryzFjV5aqQ5J5zLKpnXd1R
-	 MFePXRwJdlj0GE7vzB9h3mSdyYx+ToaECrqs8QXecIfN1ZsN3uSEg/aPjk5q3dnHDd
-	 6x79LO3IArWLhr/nYRTv/X7YOfD7PNsBnNqxTreMAIV0LA5SmVfv87HgZUtCD/QPrU
-	 ZbPRwVbbTLSoiNY4KtbyRJLSxc77SM+MLRmeWIXpFli++we4iwZ1y+H0UFcDRjYdiy
-	 f3BUle31jswVsGu+sQx5NS55VsHZxmeQelzm2Y/aOpkLXTQLxhx9k+011Cn+nvKBVz
-	 CMNlOzS75r7pw==
-X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
+	s=k20201202; t=1779204207;
+	bh=9t2LcnoGG/k1YKOm6YjM1CNX5Tv3sp5Ya2M6JAEa0UI=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=eXmF0fTIIuet4DYdesw2f7JeMrsmA3kwSf5TpMxAWx+l4Ch3NsSx16Du5Ga0klbNR
+	 e9ia0iLH+q6P55dDzZGzylYD+W6lV8mwKnZzyG+0/rbHjo8ZTy6TjXttm+HhJf4JqL
+	 KQWmGfkGmjNlUW9+V01HA6SNvo1Bu82JdfXJTKYv0LfcDTtbpRAFrXlm2D/GqOE9YQ
+	 N+2GvsHkCrpaiNE1Syam7c2CO0oy3ICX5Fr6vpYpmBJI7IcavSdB9JRTADZAgV+daI
+	 cP5ni4Clh3zxm2K6WsY52SRCLgXAagD3JBIvNERJ/5u96P7q3w6/lDX4/dc06W8Nw9
+	 V31yHYHhrCkGQ==
+From: Will Deacon <will@kernel.org>
+To: Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Rob Clark <robin.clark@oss.qualcomm.com>,
+	Sean Paul <sean@poorly.run>,
+	Dmitry Baryshkov <lumag@kernel.org>,
+	Abhinav Kumar <abhinav.kumar@linux.dev>,
+	Jessica Zhang <jesszhan0024@gmail.com>,
+	Marijn Suijten <marijn.suijten@somainline.org>,
+	David Airlie <airlied@gmail.com>,
+	Simona Vetter <simona@ffwll.ch>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
-Subject: Re: [PATCH v4 04/13] dma: swiotlb: track pool encryption state and
- honor DMA_ATTR_CC_SHARED
-In-Reply-To: <yq5amrxvshxg.fsf@kernel.org>
-References: <20260512090408.794195-1-aneesh.kumar@kernel.org>
- <20260512090408.794195-5-aneesh.kumar@kernel.org>
- <agSKQrSIhizCXKwx@google.com> <yq5ah5oaa63h.fsf@kernel.org>
- <agW5rhE9n2gDQ0w5@google.com> <yq5apl2y5f96.fsf@kernel.org>
- <agXaby-7L7yS3Vva@google.com> <yq5ah5oa59wy.fsf@kernel.org>
- <agxDxdxynp4KEovA@google.com> <yq5amrxvshxg.fsf@kernel.org>
-Date: Tue, 19 May 2026 20:37:54 +0530
-Message-ID: <yq5abjebsaid.fsf@kernel.org>
+	Joerg Roedel <joro@8bytes.org>,
+	Akhil P Oommen <akhilpo@oss.qualcomm.com>
+Cc: catalin.marinas@arm.com,
+	kernel-team@android.com,
+	Will Deacon <will@kernel.org>,
+	linux-arm-msm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	freedreno@lists.freedesktop.org,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	Rajendra Nayak <rajendra.nayak@oss.qualcomm.com>,
+	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+	Manaf Meethalavalappu Pallikunhi <manaf.pallikunhi@oss.qualcomm.com>
+Subject: Re: [PATCH v4 0/6] Devicetree support for Glymur GPU
+Date: Tue, 19 May 2026 16:22:50 +0100
+Message-ID: <177919251300.824194.8161105120233128741.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.47.3
+In-Reply-To: <20260513-glymur-gpu-dt-v4-0-f83832c3bc9a@oss.qualcomm.com>
+References: <20260513-glymur-gpu-dt-v4-0-f83832c3bc9a@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-Aneesh Kumar K.V <aneesh.kumar@kernel.org> writes:
+On Wed, 13 May 2026 00:51:17 +0530, Akhil P Oommen wrote:
+> This series adds the necessary Device Tree bits to enable GPU support
+> on the Glymur-based CRD devices. The Adreno X2-85 GPU present in Glymur
+> chipsets is based on the new Adreno A8x family of GPUs. It features a new
+> slice architecture with 4 slices, significantly higher bandwidth
+> throughput compared to mobile counterparts, raytracing support, and the
+> highest GPU Fmax seen so far on an Adreno GPU (1850 Mhz), among other
+> improvements.
+> 
+> [...]
 
-> Mostafa Saleh <smostafa@google.com> writes:
->
->> On Thu, May 14, 2026 at 08:13:25PM +0530, Aneesh Kumar K.V wrote:
->>> >>=20
->>> >> What I meant was that we need a generic way to identify a pKVM guest=
-, so
->>> >> that we can use it in the conditional above.
->>> >
->>> > I have this patch, with that I can boot with your series unmodified,
->>> > but I will need to do more testing.
->>> >
->>>=20
->>> Thanks, I can add this to the series once you complete the required tes=
-ting.
->>>=20
->>
->> I am still running more tests, but looking more into it. Setting
->> force_dma_unencrypted() to true for pKVM guests is wrong, as the
->> guest shouldn=E2=80=99t try to decrypt arbitrary memory as it can include
->> sensitive information (for example in case of virtio sub-page
->> allocation) and should strictly rely on the restricted-dma-pool
->> for that.
->>
->> However, with my patch and setting force_dma_unencrypted() to false
->> on top of this series, it fails on pKVM due to a missing shared
->> attribute as Alexey mentioned, as now SWIOTLB rejects non shared
->> attrs, so, the DMA-API has to pass it. With that, I can boot again:
->>
->> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
->> index 5103a04df99f..b19aeec03f27 100644
->> --- a/kernel/dma/direct.c
->> +++ b/kernel/dma/direct.c
->> @@ -286,6 +286,8 @@ void *dma_direct_alloc(struct device *dev, size_t si=
-ze,
->>  	}
->>=20=20
->>  	if (is_swiotlb_for_alloc(dev)) {
->> +		attrs |=3D DMA_ATTR_CC_SHARED;
->> +
->>  		page =3D dma_direct_alloc_swiotlb(dev, size, attrs);
->>  		if (page) {
->>  			/*
->> @@ -449,6 +451,8 @@ struct page *dma_direct_alloc_pages(struct device *d=
-ev, size_t size,
->>  						  &cpu_addr, gfp, attrs);
->>=20=20
->>  	if (is_swiotlb_for_alloc(dev)) {
->> +		attrs |=3D DMA_ATTR_CC_SHARED;
->> +
->>  		page =3D dma_direct_alloc_swiotlb(dev, size, attrs);
->>  		if (!page)
->>  			return NULL;
->> diff --git a/kernel/dma/direct.h b/kernel/dma/direct.h
->> index 4e35264ab6f8..8ee5bbf78cfb 100644
->> --- a/kernel/dma/direct.h
->> +++ b/kernel/dma/direct.h
->> @@ -92,6 +92,7 @@ static inline dma_addr_t dma_direct_map_phys(struct de=
-vice *dev,
->>  		if (attrs & (DMA_ATTR_MMIO | DMA_ATTR_REQUIRE_COHERENT))
->>  			return DMA_MAPPING_ERROR;
->>=20=20
->> +		attrs |=3D DMA_ATTR_CC_SHARED;
->>  		return swiotlb_map(dev, phys, size, dir, attrs);
->>  	}
->>=20=20
->> --
->>
->
-> How about the below?
->
-> modified   kernel/dma/direct.c
-> @@ -278,6 +278,10 @@ void *dma_direct_alloc(struct device *dev, size_t si=
-ze,
->  	}
->=20=20
->  	if (is_swiotlb_for_alloc(dev)) {
-> +
-> +		if (dev->dma_io_tlb_mem->unencrypted)
-> +			attrs |=3D DMA_ATTR_CC_SHARED;
-> +
->  		page =3D dma_direct_alloc_swiotlb(dev, size, attrs);
->  		if (page) {
->  			/*
-> @@ -451,6 +455,10 @@ struct page *dma_direct_alloc_pages(struct device *d=
-ev, size_t size,
->  						  &cpu_addr, gfp, attrs);
->=20=20
->  	if (is_swiotlb_for_alloc(dev)) {
-> +
-> +		if (dev->dma_io_tlb_mem->unencrypted)
-> +			attrs |=3D DMA_ATTR_CC_SHARED;
-> +
->  		page =3D dma_direct_alloc_swiotlb(dev, size, attrs);
->  		if (!page)
->  			return NULL;
-> modified   kernel/dma/direct.h
-> @@ -92,6 +92,9 @@ static inline dma_addr_t dma_direct_map_phys(struct dev=
-ice *dev,
->  		if (attrs & (DMA_ATTR_MMIO | DMA_ATTR_REQUIRE_COHERENT))
->  			return DMA_MAPPING_ERROR;
->=20=20
-> +		if (dev->dma_io_tlb_mem->unencrypted)
-> +			attrs |=3D DMA_ATTR_CC_SHARED;
-> +
->  		return swiotlb_map(dev, phys, size, dir, attrs);
->  	}
->=20=20
->
->
+Applied SMMU bindings update to iommu (arm/smmu/bindings), thanks!
 
-if we get force_dma_unencrypted(dev) correct, we won't need the above.
+[3/6] dt-bindings: arm-smmu: Update the description for Glymur GPU SMMU
+      https://git.kernel.org/iommu/c/23bc2dd17b20
 
-for dma_direct_alloc and dma_direct_alloc_pages() we have
+Cheers,
+-- 
+Will
 
-	if (force_dma_unencrypted(dev))
-		attrs |=3D DMA_ATTR_CC_SHARED;
-
-
-for dma_direct_map_phys(), if we have swiotlb bouncing forced,
-
-swiotlb_tbl_map_single():
-
-	if ((attrs & DMA_ATTR_CC_SHARED) || force_dma_unencrypted(dev))
-		require_decrypted =3D true;
-
--aneesh
+https://fixes.arm64.dev
+https://next.arm64.dev
+https://will.arm64.dev
