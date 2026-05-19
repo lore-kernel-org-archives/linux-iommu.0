@@ -1,88 +1,94 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8890D39A050
-	for <iommu@lists.linux.dev>; Mon, 18 May 2026 21:36:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 411062749CF
+	for <iommu@lists.linux.dev>; Tue, 19 May 2026 01:26:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779140184; cv=none; b=Z+G7b6hKh26rpxf+PkeinXD68WZDkMBVywi00tKWoXELg4ag+BklAi1PbIsXtoLqGvLCCR/X8OxWwrPmE9pfgdgNb1t6ptqK5g0nVMvPUeL4wY0cg4yILOxVfh/exfNwbdx3Jj/C6/L8El/p46aDDjsni5M3pFRK5+vk37qqoYM=
+	t=1779154007; cv=none; b=NGYXMJCjE2WwwqxqtRSMhHj4tmEkEFMfKOrgRJiSBHXgWE4bsmpB++I2fLmL2B5sb/7FjgWzOyP49niwiYBsBWc757NsW62rkPTtPu0/vHxcZ1Ur7fDSLx301UvV0OfrlM9i9OSGXzKbairdNbR4fYrh5ebWDN8WdEgEBfr3cV8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779140184; c=relaxed/simple;
-	bh=H7Xi63DWkfe1BGbqWjPfOELabonYMm/OP+GwrSijp68=;
+	s=arc-20240116; t=1779154007; c=relaxed/simple;
+	bh=g5ntTcRjA/DRx/Tc6WHE/ZwjZgOEEGC5sk0DCBMjbUM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dI/LWUOEhZcmnpgV6WEW9e7Dd0Rlu9F8DxuJTJtdglubB1WGQfjor1eBxJfEtOJYzxvwEqu1icRM4iesOgIlDivftv7oqkX1BOXhWj4C4NdcWZTk5I3xEJHsRoLMasgzEbVXM3kO0VJignTIXHGpgdKWdL4LsQ5uLgCg6pTueoE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=mFAxmS3T; arc=none smtp.client-ip=209.85.214.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=qiuIptDFWifKxaNDS1brYay244qNzxY3wXG2Y20Ko77Ii6Na5y4MPDLpfdYv6HmheC5gOnCZ8Zmqgvz+8hbH21cdq8rosBoOD2NHkcUcWqBErkcBXrBYjH25kzK8jDX7fqorcjeY52BeQc7SSYxi9S69gwYANQllHzKrdbOvyJs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=p5cDsLgo; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=VCG1sTKj; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="mFAxmS3T"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2ba3b9bcf69so895ad.0
-        for <iommu@lists.linux.dev>; Mon, 18 May 2026 14:36:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="p5cDsLgo";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="VCG1sTKj"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64IHKi422685229
+	for <iommu@lists.linux.dev>; Tue, 19 May 2026 01:26:44 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=1Pgq1DCRhxh3w2geotao8iZx
+	v8LzDha+tYB2biNcGVg=; b=p5cDsLgoOpzHCl4Uy7kxrXdGkGxwM0wAuq7kU6zo
+	hWMQMPDQ+K/B/qVz95z2RsflJTgTgBEshu4IUfA2j91V5FN5brqHcQTCO3u7QMK3
+	nha85kfzDR3iN+bmVFFLw7qOfqv4vojnoM4k3l57kMopBKmZV6z1Pc3HNyulVrjg
+	nDdpNf23VUlHaYupZrRLsnlEEgQqc35haKsPAm3B0uPdZfdmaJ/umbl74HJFGHeb
+	rbLTsUFRBnXg6HikIy2gztYa0G+cqeYQn190YRBgdr5hocvTkDygFWEfsikKGShK
+	znmFL4dCr/IJput/RclK+TBjf8bZjakqL3sV1gEWt1LuYw==
+Received: from mail-dy1-f198.google.com (mail-dy1-f198.google.com [74.125.82.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4e7vrbva77-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Tue, 19 May 2026 01:26:44 +0000 (GMT)
+Received: by mail-dy1-f198.google.com with SMTP id 5a478bee46e88-2ee5b73c5f2so1562538eec.0
+        for <iommu@lists.linux.dev>; Mon, 18 May 2026 18:26:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779140182; x=1779744982; darn=lists.linux.dev;
+        d=oss.qualcomm.com; s=google; t=1779154004; x=1779758804; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=kdhq85Gg3A+NvWbGs+q4HdNVWYpVSS2dUxoGdw9nwVc=;
-        b=mFAxmS3T//VFM046rlca4pl5qPIhms+I/80UNUceVTTGIJCIsdmSoXq+lAKakibnbN
-         3EAqMNCS4CYQzJPonvz6ir3OENDcqU/lIDuD9PFyrj08QdkdkchQLJH0XVJAv9DKYvu7
-         mevZsSmt12aSTdaU5s1wxVoXfyekbeMxXFDcrvau46oCO2wuu2Tyg2G6UvBaGh3IsvKl
-         HPwgQs8MdZ1SvGizDKTYFlj3HyAdkBBxh7winhN6trZiIrZWwHb8lt5qla17rRgjwDMa
-         tjaAxWc38TpLJ/ETHc932olj9l2E8PsgTGwC7Z30rI73DIuwnSyBfMbQCRRYrk666gFD
-         wisw==
+        bh=1Pgq1DCRhxh3w2geotao8iZxv8LzDha+tYB2biNcGVg=;
+        b=VCG1sTKjk7zhb7zr4ZcQfgbVlC90teeICopE1TbJscq9JkiTsb4a+QYsfud8cFKwXD
+         MEI1MmOwsr8Ki5qcqnguK50n0Ve1xLgo3DaDowa68iIPrHxLOe2E7DJgDec2qrS3fcAK
+         MGeC2S6z4bJip7x4+gVdHUnlow/Hm9gz2SURFQGo3+MLAJsF6+B/QlzFD9vUYQYxI3nU
+         mZtxtPEbWK6C8tfA8Fe98YO6PGiQtp4N5ppThRbXE41n0/vbWaMQh36OLgCaaF5MZkaf
+         5Rs+mVwikmOaNHI4QiYAX05YNDPNZe2vMweOYCXukN12S6wEBglt5u0QDhcnKXHty+CT
+         UW/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779140182; x=1779744982;
+        d=1e100.net; s=20251104; t=1779154004; x=1779758804;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=kdhq85Gg3A+NvWbGs+q4HdNVWYpVSS2dUxoGdw9nwVc=;
-        b=CkUYbi15AoUvF2efUuULg0201RUIx3Nzv9pCLVSIpGUBODqK0T+yX6HtpYlLHrrE2G
-         egPPWGTzyOoR3rA+nSFBydr37Bj97IG07ySkNt6gzzl+Q5pHcUHJumKLWEXYmjYzBLLP
-         DAO+LCCMNUiJeRABX5nQeDrAx8tbtpruwEIZU5JRi5pAVx7AqoNoe99CxSOll8qppTVc
-         uGCLB3Pl6+a83tbgMH7cwXi4f3JjJbBBdyuu01e/KRzQaAHTyahUnehG4U2r3Ql4ZJv/
-         ZIr2Iwn918X1P4AnnlrhfVdotzASWRdmi5kJi2K2IQHbLoDlvcOdiC30QSRp0qhsnVNR
-         Awtw==
-X-Forwarded-Encrypted: i=1; AFNElJ+KTJInRS229JRTsHoY0iGspT+MOBp7OzyWBlUHlY/qiJWEv2HKCMDN7stf5zg6STvHHVxLFQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxGnbVX3zMB+lMR/vP8in7iGHkBnaeUX9WuA1uwYkqmYeIYwaW4
-	4s/4pMM10gT+KfGfgAruxjLGd10ZD4IfC6315D/RfTGxqoXQ/sgC2UumotpiCQjsmg==
-X-Gm-Gg: Acq92OGIg2hdl3ZncdpHWHF4hF1cX6uv6ych/WJg5nq7jbrH8vGwxMgZsAzP7Cyp3j1
-	ZnaWiFIkUk3a5sYLKtfo9pjsxYTNUA5GlbLhuOWII2CjMitUf4CfqdrjIwUKka7t9pi4Zy5j9TH
-	QFP8tcbVYawizsOhSYZhnRWKXwYjjXIJrXi0+QkHIaXtiG8Hl4+P6Sa0SUFC3LRKKCQcg4KdbHK
-	jIQb9fnRT7Zj+Fxo+cVLwaxhTgU9SThiMcqDqo/6s73rHFGWTfHtdzHatTU8Sbcvw1f0MPwYIFc
-	mrSdFdJUiIqmGfPkdBVNa1YZNIZIhFEpOOpnLSAREb+RQnXwoytMk13UGaKdgRAlT4HiHhqsjF6
-	T8qdv0eBYeCAcuQnECkLELC0sVqfBgGehqVMGZtSFu86driYw0CrVU9Ze8fpn1ZvTukht9o2RR+
-	qIHP74AeKPeLAP8k6GkTI+9Kl+wQvUqPWxGKvjdlS2YFcfHNdTO4SkviKSWH2QAG7WxXOk
-X-Received: by 2002:a17:902:ebc2:b0:2ba:73c3:49b0 with SMTP id d9443c01a7336-2bdb03acb3dmr4353865ad.14.1779140181119;
-        Mon, 18 May 2026 14:36:21 -0700 (PDT)
-Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-369514aecaesm12378424a91.17.2026.05.18.14.36.15
+        bh=1Pgq1DCRhxh3w2geotao8iZxv8LzDha+tYB2biNcGVg=;
+        b=jnvFvPJXf1FpR/xXUrNyCORgJz29wko9lYh880QhngO/2/AXA3I4wwivftpeYx17cx
+         vEkhNqblQio7CmVxbzBoHB5xY41uvu5e4RnDapBpR9A+ZQiKCc5rsKDAso/NZGqvHh9h
+         xSEwiN9hopNya/B4q8kPK+Ksvz2oqiJdn8YcQbhbJL5cjbjlhurW70D3b03KVnIfkq3F
+         nCyobh/QnhM2cvODd5iP8cQHo13OBod2tg/SRUdbEt/omS01SPRQVuILhPNrFcAIL6Yk
+         aGnW11yhGpKeTa5/hWt7rm0sGyMQ8IMqdsZh7QsZMuFHy1odNLm/glkpoZQpr8ZdS74A
+         3m+w==
+X-Forwarded-Encrypted: i=1; AFNElJ+nt1Hd/ClRY5kS1tDhETzN9hGBtPg7VojhH0soM2OONVOEsUAn6DszTS+W2VlSStrNK9mNRA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwNqOLmdJfvo436lT4nF1/uSwxUb9uRCwqajyyCsjGwBCTQz8wL
+	+CKwhDtASPQXWzxapV50m6tneDzwUUmxUOc5l7iYmil0UrsY+4II3Ft0vOi7z5MIm9npLy6R+JL
+	w0tDtPJCzQptdeLgTOe5XXlf0PokY8AddvBTLmBK+SPrlIAGFj4vXh5G4rw==
+X-Gm-Gg: Acq92OHcJht1iWEYw7yeJ2IlfV73kUsj9CsAfspFLKxsCzeYz9szWkNsj2ZS1pySAQ/
+	7WJDD6LhSczJTHqMHwymUXy4/XM8n3YJv1a8F1j2DFlzFxo6eCcsr2uVHJt8HJNqNNV5QUumxLs
+	EyOa9vs0bdx1xehp+WLLvAqlZCBEmz2kWfLTwRCZb75Mo79+0NYFEmjR/PM6O3cHUxytuLIjPtM
+	gdfBOziNLsiJW8sl+tkTy8Yp7soE9tz2ebXET39lJu/xjLjW+wryOdyR0iKgupQB9HaPsqQUQA7
+	wdHLYG6p5jBBwJvWCv5uE8SSEmAgurYHo6Y0vSf2szUqFWK3IWrxdngpa5e0ARv8gknvoqVOM2P
+	3kNlhl5RUqqL1+Vwxx9cIfVKY1z2H2fzimAXVTzlizL5macyMY1V/zTSdGdQ6KgYl
+X-Received: by 2002:a05:7300:e125:b0:2f5:6d9c:7156 with SMTP id 5a478bee46e88-303986814f8mr8376361eec.17.1779154003779;
+        Mon, 18 May 2026 18:26:43 -0700 (PDT)
+X-Received: by 2002:a05:7300:e125:b0:2f5:6d9c:7156 with SMTP id 5a478bee46e88-303986814f8mr8376345eec.17.1779154003281;
+        Mon, 18 May 2026 18:26:43 -0700 (PDT)
+Received: from QCOM-aGQu4IUr3Y (i-global052.qualcomm.com. [199.106.103.52])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-302978b1a79sm15050372eec.28.2026.05.18.18.26.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 May 2026 14:36:20 -0700 (PDT)
-Date: Mon, 18 May 2026 21:36:07 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Samiullah Khawaja <skhawaja@google.com>
-Cc: David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-	Adithya Jayachandran <ajayachandra@nvidia.com>,
-	Parav Pandit <parav@nvidia.com>,
-	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>,
-	Pratyush Yadav <pratyush@kernel.org>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	David Matlack <dmatlack@google.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Chris Li <chrisl@kernel.org>, Vipin Sharma <vipinsh@google.com>,
-	YiFei Zhu <zhuyifei@google.com>
-Subject: Re: [PATCH v2 03/16] iommu: Implement IOMMU domain preservation
-Message-ID: <aguGR98563NEUwdS@google.com>
-References: <20260427175633.1978233-1-skhawaja@google.com>
- <20260427175633.1978233-4-skhawaja@google.com>
- <agsQE1lFGdo-b_IF@google.com>
- <agtenWUBOVosDCTU@google.com>
+        Mon, 18 May 2026 18:26:42 -0700 (PDT)
+Date: Tue, 19 May 2026 09:26:37 +0800
+From: Shawn Guo <shengchao.guo@oss.qualcomm.com>
+To: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: arm-smmu: Constrain clocks for newer
+ Qualcomm variants
+Message-ID: <agu8TRpjYRqs0Sja@QCOM-aGQu4IUr3Y>
+References: <20260505071453.34000-2-krzysztof.kozlowski@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -91,80 +97,46 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <agtenWUBOVosDCTU@google.com>
+In-Reply-To: <20260505071453.34000-2-krzysztof.kozlowski@oss.qualcomm.com>
+X-Proofpoint-GUID: ZbjyjxmkCzLp5uwrBE06xOUtmlIaZthx
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTE5MDAxMSBTYWx0ZWRfX5AcJtFtwiO2f
+ 6HTfRZBeQCBD9r5ZrW1RO2uZk86H0roPw7rJc8IMnMkKekgBmQdrW2SGxvHM1A4Kns1gHDia2ey
+ MEu8i2BTVNiTSur+IfyC6luvZOpKk7gRZkIC0/LgEi/XwjAt9+08g9znoKz3RwHhrf4bsGB7+Bx
+ 04EIE8e4lfZ7ZeVba8HaDJ2d14olz91Gnf4cF2F17N833hSvXy5h1OrG02kl0zH+k9yOmeY56ut
+ Zl9gK4u0m1OGJL07+IHd6OalUaU10RLK08ExmYsifl340wx/d5YnKtkc6SikJJ71jSvAfGcUJ/L
+ 80Jl7UIkcbAE/nmVG7wtEfz1NnXluULW0c7r/XrzfZtPINZagZ2dYr+sqlxTdnVDzrYAt22FOmj
+ MMUkMC6tNgdV48uAcUCeFVPpIHpUBgIGPyWrPhwppOobtdcInO8rqldiMU1MB1aBWEgAXnuYchz
+ v3hpoYPHXHMy/7apr+A==
+X-Authority-Analysis: v=2.4 cv=KZ3idwYD c=1 sm=1 tr=0 ts=6a0bbc54 cx=c_pps
+ a=wEP8DlPgTf/vqF+yE6f9lg==:117 a=b9+bayejhc3NMeqCNyeLQQ==:17
+ a=kj9zAlcOel0A:10 a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=Um2Pa8k9VHT-vaBCBUpS:22
+ a=EUspDBNiAAAA:8 a=I7k1zq4nAz8js2EDA9IA:9 a=CjuIK1q_8ugA:10
+ a=bBxd6f-gb0O0v-kibOvt:22
+X-Proofpoint-ORIG-GUID: ZbjyjxmkCzLp5uwrBE06xOUtmlIaZthx
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-05-19_01,2026-05-18_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 suspectscore=0 phishscore=0 priorityscore=1501 adultscore=0
+ clxscore=1015 spamscore=0 lowpriorityscore=0 bulkscore=0 impostorscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2605130000 definitions=main-2605190011
 
-On Mon, May 18, 2026 at 06:55:50PM +0000, Samiullah Khawaja wrote:
-> On Mon, May 18, 2026 at 01:13:49PM +0000, Pranjal Shrivastava wrote:
-> > On Mon, Apr 27, 2026 at 05:56:20PM +0000, Samiullah Khawaja wrote:
-> > > Add IOMMU domain ops that can be implemented by the IOMMU drivers if
-[snip]
-> > > +	ret = domain->ops->preserve(domain, domain_ser);
-> > > +	if (ret) {
-> > > +		domain_ser->hdr.deleted = true;
-> > 
-> > Nit: This will become domain_ser->hdr.flags |= IOMMU_SER_FLAG_DELETED;
-> > once we convert the bitfields in PATCH 2 to flags.
+On Tue, May 05, 2026 at 09:14:54AM +0200, Krzysztof Kozlowski wrote:
+> Many of SMMU on Qualcomm SoCs come in two flavors using same front
+> compatible but a bit different fallback:
 > 
-> Agreed. I think it is being discussed that bitfields are fine in the
-> other thread, but I will switch it to flags for readibility anyway.
-
-Ack. Thanks!
-
-> > 
-> > > +		return ret;
-> > > +	}
-> > > +
-> > > +	domain->preserved_state = domain_ser;
-> > > +	*ser = domain_ser;
-> > > +	return 0;
-> > > +}
-> > > +EXPORT_SYMBOL_GPL(iommu_domain_preserve);
-> > > +
-> > 
-> > [...]
-> > 
-> > >  static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
-> > > @@ -752,6 +757,11 @@ struct iommu_ops {
-> > >   *                           specific mechanisms.
-> > >   * @set_pgtable_quirks: Set io page table quirks (IO_PGTABLE_QUIRK_*)
-> > >   * @free: Release the domain after use.
-> > > + * @preserve: Preserve the iommu domain for liveupdate.
-> > > + *            Returns 0 on success, a negative errno on failure.
-> > > + * @unpreserve: Unpreserve the iommu domain that was preserved earlier.
-> > > + * @restore: Restore the iommu domain after liveupdate.
-> > > + *           Returns 0 on success, a negative errno on failure.
-> > >   */
-> > >  struct iommu_domain_ops {
-> > >  	int (*attach_dev)(struct iommu_domain *domain, struct device *dev,
-> > > @@ -782,6 +792,9 @@ struct iommu_domain_ops {
-> > >  				  unsigned long quirks);
-> > > 
-> > >  	void (*free)(struct iommu_domain *domain);
-> > > +	int (*preserve)(struct iommu_domain *domain, struct iommu_domain_ser *ser);
-> > > +	void (*unpreserve)(struct iommu_domain *domain, struct iommu_domain_ser *ser);
-> > > +	int (*restore)(struct iommu_domain *domain, struct iommu_domain_ser *ser);
-> > 
-> > Nit: Should we add restore in the patch we implement it?
+> 1. For application processor, usually without any controllable
+>    clocks,
 > 
-> The ops are implemented in iommupt (separate scope) and it is done after
-> the iommu pages patch as that is also required for it.
-
-I missed the restore implementation in Patch 6, I thought that'll be
-covered in a diff series. Mb. Please ignore this comment.
-
-> > 
-> > >  };
-> > 
-> > With the above nits,
-> > 
-> > Reviewed-by: Pranjal Shrivastava <praan@google.com>
+> 2. For the Adreno GPU, with some controllable clock(s) and using
+>    additionally qcom,adreno-smmu fallback compatible.
 > 
-> Thanks Pranjal.
-> > 
-> > Thanks,
-> > Praan
+> Add missing constraints for Glymur SMMU on Adreno GPU and several other
+> Qualcomm SMMUs for application processors, to restrict the clocks
+> property to a specific value.
 > 
-> Sami
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
-Thanks.
-Praan
+Reviewed-by: Shawn Guo <shengchao.guo@oss.qualcomm.com>
