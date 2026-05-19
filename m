@@ -1,123 +1,123 @@
-Received: from mail-ot1-f47.google.com (mail-ot1-f47.google.com [209.85.210.47])
+Received: from mail-pl1-f201.google.com (mail-pl1-f201.google.com [209.85.214.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 430583DA7CD
-	for <iommu@lists.linux.dev>; Tue, 19 May 2026 08:03:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.210.47
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779177802; cv=pass; b=cZM8F+J+5LrACjNcxygW70A6KHknCYXrDS534Ik2i0DranLW8qTm5gMZo1RC3C1OgZbz3iREPtLmDidqEKluJOPHFYSBg1vkbSqUI4CspGa5bGrCL5RQM7RC2D1PVXfb+BTfsT+MYSW6F4Dxyt6JNpVCc1WpJsKyoneqThnwNX4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779177802; c=relaxed/simple;
-	bh=K8dQnSD6WWaNaI0jk53u0fTtQE/jAooiTdvUuxwfkUc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=mlaIlrnnwsQ5Zu4zlunRJqWCi6jo5kNH85qsAG4KMG/uAQQOUfa6FYrs8ZpkmCgAVlSCtNDYctnOXrJQtl7LMJ/KR0adQtWJLppv85o3K4KfuuBbDp/G0/EDdQfrMjDeDptWXfyreWB5L8EW/UJZTbD05C6xVRdEE5TtKs1vMGk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HHCn7I64; arc=pass smtp.client-ip=209.85.210.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB3FE3CDBB4
+	for <iommu@lists.linux.dev>; Tue, 19 May 2026 08:11:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779178311; cv=none; b=ehSoFKNX8MKxXM8Z2cI0gk/Fbkwz8dEwm7Yw8QXBwvACEBDkgWrPNBKn705U1m6EF8n1+A+RfxiOdF4VlCGBLSbI97C5jY4T5QFlXzChUOYpZ3t8pnjOBvucr7dZTNM4z+Qo+qpamJMuXkDmTgObLBARlE9HVxoUi8rIvXmI0Zc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779178311; c=relaxed/simple;
+	bh=yreApj1csXszXO5CKw+Pkc1FnIuaiI6WFdf2uHW2Ogs=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=IEJSflGcO6TZ0bfeIDpXdkvaCs8IaVishbjZIdrJ/CN4tYv/esH97qe+19kAKfwGLXB3BU2ALsbItFPwsMS4uZ4PE5dtNlryb+/rNuF3vPshxiXgckg392CYMtt9oHOn29ahrMI0kSSzAMwygSD9IaMuD6h1Rr0A+9elESIaAsk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=IYYxEEOe; arc=none smtp.client-ip=209.85.214.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HHCn7I64"
-Received: by mail-ot1-f47.google.com with SMTP id 46e09a7af769-7dca00c1591so837161a34.3
-        for <iommu@lists.linux.dev>; Tue, 19 May 2026 01:03:21 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779177800; cv=none;
-        d=google.com; s=arc-20240605;
-        b=ZaEbi8SO+FjViyNrBxXpMM6zuFlKxiTNrP/ZGrlODej96dpaK+d0LbvbIMZO7RJLJv
-         NAPfATvrBhE7KvaeVzv6t0pej+o6OQhEPef6X2r3p6zKWxvZknZtdcZzp+glfZE7bYq6
-         cMTDlvISU3anVv5a9nctbxrZdIv6yZucdnS32aj9GDIn0I45/BbvwrX/x2mmz9JTkjEG
-         xbUGXFcSeB1PA2sqOoYvPv9t88f56YfnUNc4RF5qdX0Hg8c/maTgge7LzBqn6eQZuLEm
-         BeCDiVDuCErOcCqvjZlV2oyaJuCyBo5CCEtDMWSS/6IYGs0j4clFARIFWvIuvmlIIO7q
-         ZV5g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=Qd05AQ/Ebl+fCaojezMCrfifepauyMI3Ag+H+iuan5g=;
-        fh=Ne/hpCXs/bT4On1F397JhoiVgcVv/uSflf3jSxUBvDI=;
-        b=c04xapMqYhuFzWduRPW/BYwDU3PZs1zO1tzKAdeEoiKyh/SEE0x39Louu3+ke53QGz
-         zUcWME8gxRYF/gTPt3EOuOOMt0mTRIzrehGvsrVtSVddb7sE3UcPOhos8TaZVpXBYnRt
-         g8cupbr4yJkbXmPkcPc7Hi4u3CQ2DmrVmjmOfP6B8bOT4pfiLOtgaPLK/eOvJLlg+1zl
-         6wtBWcFOpd8JKETgmtP5H5ADqQRKOLYY1fWkHMc+xTDtpASrlF23RmDEQUzhnQ5+Ct99
-         I/FabGYMvZ+WNalrnHqdOBDyW0FuhJz4QtyrBaBukrYcUDCzc8cJ34Njgz508R4b6aw3
-         glkA==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="IYYxEEOe"
+Received: by mail-pl1-f201.google.com with SMTP id d9443c01a7336-2bc763c7256so77632015ad.3
+        for <iommu@lists.linux.dev>; Tue, 19 May 2026 01:11:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779177800; x=1779782600; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Qd05AQ/Ebl+fCaojezMCrfifepauyMI3Ag+H+iuan5g=;
-        b=HHCn7I64yG7ylkJBMCzLoZjM9f49Ihd8Gl9ajPyxlzysydKvpNlwrP4FCmq8ngLNHe
-         xIKoeB7xXSUbrb0nidQCEZyVCdN8IccW6muwUChahEndmq8MkGwiJzCz9neA8fvnUTuU
-         cb0JxKsEGwZBfs4Sp5QM2RfxD/r2PnM5ORN2mqi4SSLZ718koWwZkeWwiWCnUxeEP57r
-         DvxgFxN+DOSGoP886ywdrz82CjZtIYfR7jWfgciHgX0kty5Lz8YFyjLcyzUJCcXRloOH
-         31nAivp9FPHRvd1L+auVrn1/ZFVZ3BeyDboz0LD16ArEvQ5gNFB1uGowAojzGDn0fyLp
-         m00A==
+        d=google.com; s=20251104; t=1779178310; x=1779783110; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=7ut72Gkptn/NBySJV/auF15VVBqcdKlrwYtyzCOsNz0=;
+        b=IYYxEEOefyFENAH7OSNTLBISKcowyAUWFSyFVKFyAC1DWXHb3bsmy/uUhvNEEuD0BC
+         z2C87ce+bUazWEVYrLOlONpx1AwlObaz5RGzqQxTZcaWNG3cu1xC6Wu4v7TFQXlEf+LD
+         Wa3RvwVMB2Wvo+r7KQi3IXfsQyLgJH7ntjplrWKQ6itHGcF3TjuHf+zPJMe2z1gsPOyn
+         zh3ejVhiY1XfX8l/gF1VCSvF3Pe1ye6fj8wwJtgh1acMyAHaSUSC70U8pVy+Fkmm7S2M
+         /oGa3tEHx9OaxKLHRjyWbsCfh3bQCc8VEXrVuxxdx2X7DJp3fiBQBkb9pX2+nG8zvTXb
+         UGdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779177800; x=1779782600;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=Qd05AQ/Ebl+fCaojezMCrfifepauyMI3Ag+H+iuan5g=;
-        b=EE8hsWPvr4yx3ey3pvVIEYypSjySPHbmojiB8yDICfRlz9QyH7Brykc6riASnzPEAW
-         WrDtCuwbkpmDezD2IEb14RHSUeMeWQR083Z1HWyt7ohVFpPl0GtFPvJlobgZEWplipv+
-         ORqmqXIN6E2Kp70v5f83Iq+sVPgMVaHP/10tTROemoRYghWSAyM0b87+cBcjkN1TX6Rv
-         wTWERrKQ1SefWkzq4J6eDkbRhjHai/rfRXdbmEoiDH1jorGyb8gr4c+LYH5seSZJMpNX
-         Bz9gSmL9rEG2t2Ua6Bh6414AFng1ud2rJ0E4sLqfhM3UMNE5PPhFU8YzUmSzOSZsHvR9
-         Upbw==
-X-Forwarded-Encrypted: i=1; AFNElJ/80rMcKeFOGJa0iL8V9sdGG00Zc3qniD5GfNqKXtuN2ktT/uKD1D/3Tn+u+D11ERLPpr8MYg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzE5uVem8ccwBt747X0DaMFjTGefD7pNpAL3f7CyvM4IEQoBeTG
-	XHJPU0PZtNfnmHP/cIRL/acaU/0kAfqdhLS311bjTeCd66U0p0EKhmLYbccaPfoLM5SM6XbLboV
-	/qOtVt9s5Q25NKJv4LJZ7pDGiowjlImI=
-X-Gm-Gg: Acq92OEB3hTmrkHU7C5NxCi299QfsQ81t6tMVdOebrox+mpmt+MLYgQstRQCPzU2Lof
-	Zj/rabQYZuR5keN+Beq3RKT6vJsyBohUzs3Vu6rTpRC1sg8p9jvsEOQ5wF6Dy28nXQVBwLoExb2
-	KAx6byo9/tGsNEUM+LIO8sO3f+8+jVhsn8K96FOoQsYXQ4X6isOQYSmJWA8rNZgPP1zAJpbqMJk
-	kV8uxCzXuvLiUUZboai6OFKMf+hiM4O0MrpqFyAGeU3hdPpyfCpDuS+vW62cb7/dhcXiXXAwiEb
-	VR4BzWB5mw==
-X-Received: by 2002:a05:6830:83b9:b0:7e4:de59:41fd with SMTP id
- 46e09a7af769-7e4ea080469mr12422315a34.7.1779177800117; Tue, 19 May 2026
- 01:03:20 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1779178310; x=1779783110;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=7ut72Gkptn/NBySJV/auF15VVBqcdKlrwYtyzCOsNz0=;
+        b=tYwXumgpFt7SMJWhXrCgzW7Z/qarV53pKY4KyEm1l6MofbGQtjtPmLVtO1szk6dSh+
+         Uy7aU+m2EP9Qpaz1/nGdJRj3K9lh99MAH7LRKDjr+4adhqUz762dzMzkp+3/e9eOrL5A
+         GQD8+vOeySSM4+lR1I/ys/k5+1JX+fHr/bbMxkwSeezi2sNMFfW1k9WXoI5SG6MmAAqc
+         goxyepfLQD2IHXg7DEaktLypsE8/iZJM3keC7jwbjFIYD72VBbNRxA47HI2TdjdcFJaD
+         dSKnFueDfh5NIPH9sXf0s6S34Fjo9qa6QDujOkU6FagZtn3t0WFVztVMaZ8XeWv3OsBn
+         3tVA==
+X-Forwarded-Encrypted: i=1; AFNElJ9966XXQDzSVPxbJmn3nAzG+MME8yR4ByM04TJ4RgTEF2HnyK3aeu8NPhR89BWKXIRHBcjucw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Ywirp8XSASnPxxT8SZFatV5ZVLO8k9ki8HROAyGoMAJvJQVXZHE
+	DSa8rl9klpOy9HdlVKqSu7vj2rUBHF34nEKEcLzR3FfcW2ao8JjCraXVNRMtXYZIZVplEBZ6rra
+	6CJxEjJO01LsOjl2IJ301HlgwnA==
+X-Received: from plvv3.prod.google.com ([2002:a17:902:d083:b0:2be:3026:1d0f])
+ (user=joonwonkang job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a17:902:f08d:b0:2bd:2051:13ed with SMTP id d9443c01a7336-2bd7e87ef1amr129360345ad.23.1779178309741;
+ Tue, 19 May 2026 01:11:49 -0700 (PDT)
+Date: Tue, 19 May 2026 08:11:47 +0000
+In-Reply-To: <20260518175249.GS7702@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-References: <20260518113251.64844-1-mikhail.v.gavrilov@gmail.com>
- <20260518121047.GR33515@unreal> <CABXGCsMxZ7VieyzWEmpGdxohdbTJ_qf_1ZOw0eF5g9i0YeOc3w@mail.gmail.com>
- <20260518125330.GT33515@unreal> <CABXGCsMA+uZtoup+QtGsPQcyF6TZimxYFOR2sDQksNkLpJq+2g@mail.gmail.com>
- <20260519071758.GB10037@lst.de>
-In-Reply-To: <20260519071758.GB10037@lst.de>
-From: Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
-Date: Tue, 19 May 2026 13:03:08 +0500
-X-Gm-Features: AVHnY4Ja3gLC8ALmotexfJDUefPt-0oJZaDwUkBCdicQ0kv5qNCc18I95Rq9i-w
-Message-ID: <CABXGCsNg6NUefejbqGBpH1iff9H6mJ-3Zamb0A54ay1zrfuJeQ@mail.gmail.com>
-Subject: Re: [PATCH] dma-debug: skip cacheline overlap tracking on
- cache-coherent architectures
-To: Christoph Hellwig <hch@lst.de>
-Cc: Leon Romanovsky <leon@kernel.org>, m.szyprowski@samsung.com, robin.murphy@arm.com, 
-	djbw@kernel.org, akpm@linux-foundation.org, catalin.marinas@arm.com, 
-	harry@kernel.org, ming.lei@redhat.com, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, Keith Busch <kbusch@kernel.org>
+Mime-Version: 1.0
+References: <20260518175249.GS7702@ziepe.ca>
+X-Mailer: git-send-email 2.54.0.563.g4f69b47b94-goog
+Message-ID: <20260519081148.1301245-1-joonwonkang@google.com>
+Subject: Re: [PATCH] iommu: Allow device driver to use its own PASID space for SVA
+From: Joonwon Kang <joonwonkang@google.com>
+To: jgg@ziepe.ca
+Cc: Alexander.Grest@microsoft.com, alexander.shishkin@linux.intel.com, 
+	amhetre@nvidia.com, baolu.lu@linux.intel.com, bp@alien8.de, 
+	dave.hansen@linux.intel.com, easwar.hariharan@linux.microsoft.com, 
+	hpa@zytor.com, iommu@lists.linux.dev, jacob.jun.pan@linux.intel.com, 
+	joonwonkang@google.com, joro@8bytes.org, jpb@kernel.org, kas@kernel.org, 
+	kees@kernel.org, kevin.tian@intel.com, kirill.shutemov@linux.intel.com, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	mingo@redhat.com, nicolinc@nvidia.com, peterz@infradead.org, praan@google.com, 
+	robin.murphy@arm.com, ryasuoka@redhat.com, smostafa@google.com, 
+	sohil.mehta@intel.com, tglx@kernel.org, will@kernel.org, x86@kernel.org, 
+	xin@zytor.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 19, 2026 at 12:18=E2=80=AFPM Christoph Hellwig <hch@lst.de> wro=
-te:
->
-> It is not.  We could require direct I/O to/from devices that are
-> attached without DMA coherence to require cache line alignment.
->
-> Now that Keith pushed down the checking into the driver that's even
-> fairly easily doable.
->
+> On Mon, May 18, 2026 at 09:06:54AM +0000, Joonwon Kang wrote:
+> > > On Fri, May 15, 2026 at 09:46:05AM +0000, Joonwon Kang wrote:
+> > > > diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
+> > > > index 0ca3912ecb7f..61e2e52105e5 100644
+> > > > --- a/arch/x86/kernel/traps.c
+> > > > +++ b/arch/x86/kernel/traps.c
+> > > > @@ -864,6 +864,8 @@ static bool try_fixup_enqcmd_gp(void)
+> > > >  		return false;
+> > > >  
+> > > >  	pasid = mm_get_enqcmd_pasid(current->mm);
+> > > > +	if (pasid == IOMMU_PASID_INVALID)
+> > > > +		return false;
+> > > 
+> > > If you do this then probably you should get rid of mm_valid_pasid(),
+> > > mm_get_enqcmd_pasid() already has the NULL check so the two functions
+> > > are kind of pointless.
+> > > 
+> > > You also missed the other place calling mm_valid_pasid() that should
+> > > really be sensitive to this as well:
+> > > 
+> > > static int prctl_enable_tagged_addr(struct mm_struct *mm, unsigned long nr_bits)
+> > > {
+> > > [..]
+> > >         if (mm_valid_pasid(mm) &&
+> > >             !test_bit(MM_CONTEXT_FORCE_TAGGED_SVA, &mm->context.flags))
+> > >                 return -EINVAL;
+> > > 
+> > > Make that removal a prep patch
+> > > 
+> > 
+> > Thanks for pointing this out. I think mm_valid_pasid() is to check if SVA
+> > is currently in action while mm_get_enqcmd_pasid() is to get the PASID for
+> > "ENQCMD instruction execution".
+> 
+> > Since it is now possible with this patch to activate SVA without involving
+> > EL0(for ENQCMD-like instructions),
+> 
+> I see, this thing about which is about LAM should remain, yes
+> 
+> But all the "EL0" machinery about trapping and enabling ENQCMD should
+> be moved over to mm_get_enqcmd_pasid() and never call mm_valid_pasid()
 
-Good to hear. Is there a posted series or branch I could look at?
-If non-coherent DIO gets the alignment requirement, that addresses the
-corruption case at the source rather than papering over it in debug,
-which would be the cleaner outcome.
+Yes, it makes sense. Let me fix that in the next version.
 
-Happy to test on x86_64 when something is in flight (no non-coherent
-hardware here, but at least the no-regression side is covered).
-
---=20
-Best Regards,
-Mike Gavrilov.
+Thanks,
+Joonwon Kang
