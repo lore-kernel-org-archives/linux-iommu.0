@@ -1,52 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A3B2403EA1;
-	Tue, 19 May 2026 15:24:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78AF63EA974
+	for <iommu@lists.linux.dev>; Tue, 19 May 2026 15:24:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779204247; cv=none; b=jyyB7NtdHMe56ZOqtvfx/bepJjKZe69ma3CPtp85mrDeLcHCaZlIdUplfdiR7JiASguNlUEIV1zakvFT2iG4W/MoxhdtXh7Jna1tiK4Nk32pYtsa412jaLWkTmzDe8D52jflOy561oW+lMwu9AVXXnqcRSipbdIABg19Ab3RBhQ=
+	t=1779204249; cv=none; b=olHhruOF9DEkYNeu+OCF0E8t859/SlqtG5en+oJ9AyeM8D4JHLnfyC2rg9kb8YwUMErAmMaW+shSVnQar7rwbxUFSSXn4aRb9WixHUEiNXdwNurCFh4RJHcwWA8muOMBAR5WhsC51Ws1mORbX/d83Jn6s+0zzLbCHzLnb1S8DSk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779204247; c=relaxed/simple;
-	bh=T2/UZ6X0oL5N+IpYiiuiP8No68KS+6FoVP6cqqxB9Lw=;
+	s=arc-20240116; t=1779204249; c=relaxed/simple;
+	bh=KnwGe1PHQa7+ces6Rm383lcbh4DqxvuFpwRmHyUGOIc=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=NC/yk68Ajh+wsm96v0M23wyegQxU5mJdKvACT5/GFB2+We0sqda0V0HhBUOoXANmHLiwpyTvEC1+0bwyRjrLsMOB36u2lsroqsqCkd3oAYA4zV8u5DomVBNaY5zwDM4ANGjPVKKwjlwTIpvIRLYs07cu4xi+4lJmssVK+SfoY5M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=d8es0zpG; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=cVGGz49UiiSzU+7+rnHdeIxmQBWnOIZjmQ5zRwMqJl2nkZezqXGFC2yV05SSUrMFNPrlvqOUcj2wZNADsLKOTiE/p9NsXVLApZUEzle791NcDWOAtijoMwR4kGKXdkDrOusOf7nedd2mQ7sMbTZrr8Q4HsuucJnwee9BEm5FNZg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IdPkl6J0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="d8es0zpG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53394C2BD00;
-	Tue, 19 May 2026 15:24:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IdPkl6J0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83DD4C2BCB3;
+	Tue, 19 May 2026 15:24:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779204247;
-	bh=T2/UZ6X0oL5N+IpYiiuiP8No68KS+6FoVP6cqqxB9Lw=;
+	s=k20201202; t=1779204249;
+	bh=KnwGe1PHQa7+ces6Rm383lcbh4DqxvuFpwRmHyUGOIc=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=d8es0zpGRVA5bOQn52Ey9+FnokqoG31xtshO7rf2q9VPQ2q3bmUUG1mcJePKSo4c/
-	 ydaM9jhSVHOaZYM83+BggOigk3JPqr6lUQtjVSssR+HS5Mb5g/E9y0EwRJJxo7HIa3
-	 IPNHj4CnsjghaiSbpL4uSk44+kZ+R+5kJSFISYSXf7upOvLKA5lEkHjVy9ncml9kQW
-	 h8cE9VK0MNVxFlpSAdxYig+gQO1FtwkE4JUvhGT2gE0Bfzh4ccrmlWBBkYBRefwkEl
-	 PHz5imCLjUxLiPGstfQy7rYVaDF/DxfjSKQAt3T7KuuGUUtyvUZ89lU7z3Fo/mQz1b
-	 p3F9zj7SWAwSg==
+	b=IdPkl6J0Z0lwrY74J+6qVDWm/3tuvL1RSq9pBus1o0+aExZ9mmq0P06ogAkIf4MbS
+	 SG8pJUE7d2RNyFh65wVLMXD7nFTGFw1qQKI8xcAVzmnOPXVb1c23vytstZvTClXt+z
+	 m/44RL8c6mslAAf7jIKqNY0zfzmWlDxMISrokB6OpZDQ9RRcL8Osv2eGV9c8CmcKGW
+	 wen/BIJ8Y3b2v9JoAelHBzkn3uQN6pL3TTWSOq8+ERqxYtF2mtYpQWaGiICF3FCGY0
+	 0B7w66uxzaNwY4xZcA1Y4foOF38qTX1doanTI/ZgGF1gY9MyF3iHM5Yc0ImAAByRR0
+	 rSRa3NMFzKIxA==
 From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+To: Leo Jiang <leo.jiang1224@foxmail.com>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
-	Shawn Guo <shengchao.guo@oss.qualcomm.com>
-Subject: Re: [PATCH v2] dt-bindings: arm-smmu: Constrain clocks for newer Qualcomm variants
-Date: Tue, 19 May 2026 16:23:03 +0100
-Message-ID: <177919680700.851863.10253442471292780349.b4-ty@kernel.org>
+	Robin Murphy <robin.murphy@arm.com>,
+	Pranjal Shrivastava <praan@google.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Limit queue allocation retry boundary to PAGE_SIZE
+Date: Tue, 19 May 2026 16:23:04 +0100
+Message-ID: <177919187443.820140.8795243549242737796.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260519074059.61405-2-krzysztof.kozlowski@oss.qualcomm.com>
-References: <20260519074059.61405-2-krzysztof.kozlowski@oss.qualcomm.com>
+In-Reply-To: <tencent_F13723B53F68DC857410D3DBE4F6C895C106@qq.com>
+References: <tencent_F13723B53F68DC857410D3DBE4F6C895C106@qq.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,27 +51,15 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Tue, 19 May 2026 09:41:00 +0200, Krzysztof Kozlowski wrote:
-> Many of SMMU on Qualcomm SoCs come in two flavors using the same front
-> compatible but a bit different fallback:
+On Sat, 09 May 2026 15:07:33 +0800, Leo Jiang wrote:
+> Stop retrying queue allocation when qsz reaches PAGE_SIZE.
 > 
-> 1. For application processor, usually without any controllable
->    clocks,
 > 
-> 2. For the Adreno GPU, with some controllable clock(s) and using
->    additionally qcom,adreno-smmu fallback compatible.
-> 
-> [...]
 
-!! Please note: this conflicted with the Glymur GPU bindings update. That
-   was trivial to fix, but I've also queued an update adding
-   "qcom,shikra-smmu-500" which you may want in your list of platforms
-   where clocks are disallowed?
+Applied to iommu (arm/smmu/updates), thanks!
 
-Applied to iommu (arm/smmu/bindings), thanks!
-
-[1/1] dt-bindings: arm-smmu: Constrain clocks for newer Qualcomm variants
-      https://git.kernel.org/iommu/c/75949eb02653
+[1/1] iommu/arm-smmu-v3: Limit queue allocation retry boundary to PAGE_SIZE
+      https://git.kernel.org/iommu/c/2b9f593dad46
 
 Cheers,
 -- 
