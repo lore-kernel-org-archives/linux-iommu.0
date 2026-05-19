@@ -1,105 +1,164 @@
-Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A255C3546D6
-	for <iommu@lists.linux.dev>; Tue, 19 May 2026 14:44:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0D5A31AA8F
+	for <iommu@lists.linux.dev>; Tue, 19 May 2026 14:45:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779201883; cv=none; b=ZBEw5uKCdwUAjNf/fXGQDJt3QcIBFGyZYdsusR/a4wgnKA+NOt3x5+ShZo0X9yp7BfeTmfx75XBdSFo2puL+oII/9Kiyae6Ng4sfd8T7fEMlRv7jp97Pv3US3vEqi4DeRfxHR5eKyQs4Kq1RzsEk3ztVukDGa5NYkCahO+hmd34=
+	t=1779201943; cv=none; b=Ajxdhr99WA/1SAoh+6llGpIE6zWcaWuNPTSSHcYkf2Wsjqvt+ecZoDLf9uyZ53m55+SPobd9zbslWuAGEtg7NbPGdwsLZd+AXZbKKU2gHFCHLbsVQswzRfzUQOgw9F4Y+/Dm5zoGe4NlU3UQQxG/tp8G4untmSCURb2r3ypaXa0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779201883; c=relaxed/simple;
-	bh=ababuGkYXc1kwBB4VAaU12lszAJn+bUQOtY++53c6VM=;
+	s=arc-20240116; t=1779201943; c=relaxed/simple;
+	bh=cS793SwOviBnkbKXY6VDrZ6GHZeAkO5ji2zHNpUdkV4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dky44y7WeZLh3kFC0kAmZkFuIo1vMKKLLwCF8UvnGOdTsJW1rDBRPyEIu8Lo+XA5Fc0SsEsv1uC5IBatLtgFogJgbbp+4rK9iA7cjNVGdFsv8MC51K4MzaAR+AxjllVvXMKjXJPOc9sThhm4i+SLqvF6xN9ZXMxJbi6ypAMbg2U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=WdFGf1Ox; arc=none smtp.client-ip=209.85.222.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=bpBDiiguPt18K5IEODCsHJhnrYeZMa6kVi7yCEid/MLCTaNrv6u8/S+CcrY01T7jq5M5yuZhuA029yh4GGLKPMjXbNCJsNj98I403LId4i7MKNQVo8szBfAJDR8czUW7/z0wL66ZTUUo+fl/NiEq3SeC1WAfFON525/ma/lw/WI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=s/Hn76zC; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="WdFGf1Ox"
-Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-912475287a5so400763985a.2
-        for <iommu@lists.linux.dev>; Tue, 19 May 2026 07:44:37 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="s/Hn76zC"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4891ca4ce02so1865e9.1
+        for <iommu@lists.linux.dev>; Tue, 19 May 2026 07:45:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1779201871; x=1779806671; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=wk5x+E6XSA8178Vrjl/Xpe+vTMcrSAIJSeHPv64RB8s=;
-        b=WdFGf1OxPpwJyj6BHr33d558W9zD8BS/grcOBFrMnNr2yWRSP9otjGZKu74H94NPj+
-         zX1CO/tVLHBXTCMQDw/L7+VAGZdWowSsJAG/yRBfF6vjJ4YsOxSXVV1RvERdrbhNjuub
-         SkZtwQ140L6xuBkUwPO9XmM1Kd/u0odjIwe433+I5HSHVb7VQTXfc5VSoPal43jXcIN1
-         voQDHaLjFPcjXJLQnb3ZWaGwbJ6st0txnYk3bPF6QK994Mp5WjPruW96GW1ENT8RGXZv
-         qbbVMEjdMTZz5mR8KpB2+hNN+vuWaVC7Zoe4eEj5BnkBBlzTzrhSHj8owdyEVs8qY8pe
-         Aq6Q==
+        d=google.com; s=20251104; t=1779201940; x=1779806740; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=h7Nz6XFDKFDcI1TVcowrB8v0PKJyf/qnRnOMl+2I2pU=;
+        b=s/Hn76zCyIWdZ9gb3jCwPNTg3mmCHQSR9i/lbof7Ho5x7EkamFIXZcRXjJEvZ04tfC
+         T9A9ygDyxepm2JXMaQ8n1j/ZJhHbBuo90EzTdadV62Zj4upGjwwQsG7Mh6Xs+Qxv/itO
+         PXbG+WqZXPE1sOAxASv4FV5suyXcH70gl7ixV3lPmO2RuK4ynle21lZPLKS1Q8S3ydHz
+         N+KKg5fSOJouULtBeRKyaRctxa2HpJzdrlGap8LTK8RUnnZFCEY0DIctbgIPCYEIjtNT
+         /lSbl0MuKvSQhLRi6YoMVI7B9kTgFN/12IwG6MbXXtMHh+5YoRDYciV1zJb65eoSXD+W
+         kOMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779201871; x=1779806671;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=wk5x+E6XSA8178Vrjl/Xpe+vTMcrSAIJSeHPv64RB8s=;
-        b=lzIbOnVJiQsIWnvLjGrI/wqhVTiJxpEYxwCnD1cQmczY5LKFci/Z9SOZ9a00zNCGX0
-         IQXr51h91Ja5WEO549QZQLE3aP2JoAb+QDHxYmU8ey1LNe9WfinXz+LKngjdVARVimXj
-         1GCdxnBJuLt4P+EDu5C9HW2kLgmrYWi/9INP5NzpmjuRhtw/6sUAlcFOH2Cm/uKirbGy
-         2wtrVQmBXU+lPxbPPqyWUtFi4Sv73vmT80TRAUAEXs8QC9ts0121U7mcoKZ4G68iqTCz
-         a1HNlTM5YhW7fkf3V6hycjrHDo5q47T6bx8lz7JaViMaCHPBmtdQenRp2Igs0BSvjA/P
-         g8qA==
-X-Gm-Message-State: AOJu0YyZZTRE8nMRQfWBhqORdqsznDBphcHvSjvSVCUrdy7vTI/SQXoR
-	5evsvuEuL1nCdBMtu0/DiqErHsHpz9F1SjWfteEiIxo1aw1HPgX0JTrkjQ8cgS2+cO0=
-X-Gm-Gg: Acq92OF7Zcvb7cxv4T3hbopn6UgkScZzAPJbJzNd3qESIXpHObHitDEJrd4HS8ZPrs7
-	Gz81QS7RVzboTpImau5ZI8e1/Dyq0hXjYA4CT5zobinLXPkNnm6pOp9ddw0CdRUFjLJkeiUcHrf
-	swo8jmMpAfBwbD5ndrzg4iYyQWpS7eus7ol1EsxwcD5+9r476qWSBovdYlhDb2CQSdtWoVsftEX
-	WskOpdAojSrcsStvldNCdnMXMNlilgb3kZNYC6Xuma8rDFrAzTh+sAWk7F9BNNQEtAeUEayaQXO
-	ztmRTwfBhUfJH5BJzlBUuuSrL2TeCDFfMSgWNwHlN3rwT/cQVRw4xhUYDGpjpw/AtV2M7uqXLgm
-	Iq8JRU9dIteFWXMFK2S9v6gJUhR2hPVbxKfxwf23uhwnyL3uhADS3qU4XXY+HcRoMVNhCx1XJGS
-	oqqkEh1UbwjD9B1Ty+lp3zAhRle1Ys77TM7Of6MVKU3xNLTYpbsBQ+03i2t72BZwN+v22WUhxzo
-	7i3lw==
-X-Received: by 2002:a05:6214:21ef:b0:8ca:7f:89b2 with SMTP id 6a1803df08f44-8ca0f651b22mr304560826d6.12.1779201871273;
-        Tue, 19 May 2026 07:44:31 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8ca3618fdd7sm92678956d6.27.2026.05.19.07.44.30
+        d=1e100.net; s=20251104; t=1779201940; x=1779806740;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=h7Nz6XFDKFDcI1TVcowrB8v0PKJyf/qnRnOMl+2I2pU=;
+        b=BlVgjyx9dsq543xuXd970maYrN9zik2E3vOTbcpr3Cp2Ezacs0HH8fGh5xIYKRzORW
+         lThmUIvHTfp6ch8vFnlTWN8E34/u7VYkJPObTy3YPsnQdy4qtN24Fi434Y8nBN74gEmL
+         07K8sbLYUYeLV6TkugPdnaqvxefWmhtipP9CIdI/BwZK+Kd5IUC+AplszRqbqGn7ouO0
+         Hui9ygL669sFob/IqYtJnzw0oEBtvYczMSyd5cdzywyASJ+Dfk3BXOEF4m2rb2sZO3QR
+         xweXMXN5hjE/RnH6e95ZQ9hlGxmKJ3jbQurK4/wspATreLg3uRj20l81yTdL+Hy0PuaU
+         bXSw==
+X-Forwarded-Encrypted: i=1; AFNElJ/7zV7FL+Q+8vnBVkni7z2NxpwQ4/X8CI2tAdh19hZz7NI6ZZTvrp0zZK0whMZrT1pFwooFig==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxq+njXkZD+LJ7/9PkHJkdvvo7tPe/GBlm+dgrsNtBos6rc1na5
+	IUdOyYfkY76KuWPraT2B1CCKXUJ8ys2pNcjZ4esKA3B2Dl7XKalLFpfZZz7oWyiXeQ==
+X-Gm-Gg: Acq92OEBtRBc3mptFwNkaVxgDIDZCElfCa5GNlKYwCdZO4Db+KQ7/eclvKsH62wJkBb
+	YcfqqnTEsBgkOC+l4iioEdCMWEam+NrJOg7BqT3AzuX/+nYES5ZFFKgeeEpiFG2yJZGtdls+tes
+	orQZs7/n/mYof5pSaEFqY9hiuIAdDCDdLk1pC0vkUKh+aaGyD0SCwLe7M/RNM2VmmsLAkdXwW1d
+	GzzTi9oLfTSNXdmeGkyqz2xIUAK9Fel/dCnzfaRkaOT/l3FWyIUhlMkd3ppO7jg9RQP+wPAri6w
+	Ho3SFxczDlhGf8DyRairCNbKw+mKVhvWe/cKrUc3majtr39FWJC9xrcZxVWKMgZlsPewStZhia3
+	CrIqygkb+oRw9E5tRYpf8Cz0kEunqmS9NOSCj8qU+wdVn8N5bhclRpyYT8iHmsLD1SLnaMBDW4x
+	bcVxmVYhK9VbAP9jqvH+9AOsm1cY837wixOa5tr5KK/wm55UQywJ/BK9O10AQ27t9EpaMIP7eb0
+	II=
+X-Received: by 2002:a05:600d:6401:20b0:489:1f6a:4ac0 with SMTP id 5b1f17b1804b1-48ffa0627e7mr3099895e9.0.1779201939945;
+        Tue, 19 May 2026 07:45:39 -0700 (PDT)
+Received: from google.com (136.41.155.104.bc.googleusercontent.com. [104.155.41.136])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45da0a178adsm48721081f8f.18.2026.05.19.07.45.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 May 2026 07:44:30 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wPLgM-0000000F8gK-06mQ;
-	Tue, 19 May 2026 11:44:30 -0300
-Date: Tue, 19 May 2026 11:44:30 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Pranjal Shrivastava <praan@google.com>
-Cc: iommu@lists.linux.dev, linux-pci@vger.kernel.org,
-	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Daniel Mentz <danielmentz@google.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	David Matlack <dmatlack@google.com>
-Subject: Re: [PATCH v3 3/3] iommu/arm-smmu-v3: Fix ATS state tracking via
- ats_prepared gate
-Message-ID: <20260519144430.GI7702@ziepe.ca>
-References: <20260519135323.1558777-1-praan@google.com>
- <20260519135323.1558777-4-praan@google.com>
+        Tue, 19 May 2026 07:45:39 -0700 (PDT)
+Date: Tue, 19 May 2026 14:45:35 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-coco@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>, Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
+	linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
+Subject: Re: [PATCH v4 04/13] dma: swiotlb: track pool encryption state and
+ honor DMA_ATTR_CC_SHARED
+Message-ID: <agx3j6Oc8QivZ3RG@google.com>
+References: <agSKQrSIhizCXKwx@google.com>
+ <yq5ah5oaa63h.fsf@kernel.org>
+ <agW5rhE9n2gDQ0w5@google.com>
+ <yq5apl2y5f96.fsf@kernel.org>
+ <agXaby-7L7yS3Vva@google.com>
+ <yq5ah5oa59wy.fsf@kernel.org>
+ <agxDxdxynp4KEovA@google.com>
+ <20260519132911.GA7702@ziepe.ca>
+ <agxolksC_1nfO34X@google.com>
+ <20260519143529.GD7702@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260519135323.1558777-4-praan@google.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260519143529.GD7702@ziepe.ca>
 
-On Tue, May 19, 2026 at 01:53:22PM +0000, Pranjal Shrivastava wrote:
-> @@ -4450,7 +4450,8 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
->  	if (dev_is_pci(dev)) {
->  		unsigned int stu = __ffs(smmu->pgsize_bitmap);
->  
-> -		pci_prepare_ats(to_pci_dev(dev), stu);
-> +		if (!pci_prepare_ats(to_pci_dev(dev), stu))
-> +			master->ats_prepared = true;
->  	}
+On Tue, May 19, 2026 at 11:35:29AM -0300, Jason Gunthorpe wrote:
+> On Tue, May 19, 2026 at 01:41:42PM +0000, Mostafa Saleh wrote:
+> > On Tue, May 19, 2026 at 10:29:11AM -0300, Jason Gunthorpe wrote:
+> > > On Tue, May 19, 2026 at 11:04:37AM +0000, Mostafa Saleh wrote:
+> > > > On Thu, May 14, 2026 at 08:13:25PM +0530, Aneesh Kumar K.V wrote:
+> > > > > >> 
+> > > > > >> What I meant was that we need a generic way to identify a pKVM guest, so
+> > > > > >> that we can use it in the conditional above.
+> > > > > >
+> > > > > > I have this patch, with that I can boot with your series unmodified,
+> > > > > > but I will need to do more testing.
+> > > > > >
+> > > > > 
+> > > > > Thanks, I can add this to the series once you complete the required testing.
+> > > > > 
+> > > > 
+> > > > I am still running more tests, but looking more into it. Setting
+> > > > force_dma_unencrypted() to true for pKVM guests is wrong, as the
+> > > > guest shouldn’t try to decrypt arbitrary memory as it can include
+> > > > sensitive information (for example in case of virtio sub-page
+> > > > allocation) and should strictly rely on the restricted-dma-pool
+> > > > for that.
+> > > 
+> > > ??
+> > > 
+> > > Where does force_dma_unencrypted() cause arbitary memory passed into
+> > > the DMA API to be decrypted? That should never happen???
+> > 
+> > Sorry, maybe arbitrary is not the right expression again :)
+> > I mean that, with emulated devices that use the DMA-API under pKVM,
+> > they will map memory coming from other layers (VFS, net) through
+> > vitrio-block, virtio-net... These can be smaller than a page, and
+> > using force_dma_unencrypted() will share the whole page.
+> 
+> force_dma_unencrypted() should only trigger swiotlb and that never
+> memcpy's more than necessary?
+> 
+> Where does it do otherwise? That sounds like a bug?
 
-This should fail not keep going, it is a kernel bug if
-pci_prepare_ats() fails.
+Agh, I got confused and thought that it can be triggered from dma_map()
+too. I need to figure out why that made pKVM guests boot with broken
+restricted-dma-pool then.
 
-Jason
+However, it should not alway use SWIOTLB? It can trigger decryption for
+any memory returned from __dma_direct_alloc_pages() which can come
+from alloc_pages_node().
+
+Thanks,
+Mostafa
+
+
+> 
+> Jason
