@@ -1,138 +1,76 @@
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06410366DA3
-	for <iommu@lists.linux.dev>; Tue, 19 May 2026 20:50:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.173
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779223849; cv=pass; b=rpjIj6ZF5DkT5nUFWmsllaO+tLkxqBg070XtRCvNu59/bC+DGppnE9luv3Ovji3dghSBSfOEwjerby87ii8tbBFfyCkR7w0L4SXilpvZL/Bnw6JzJKoOc7A5QL+b6Zg/S5UrOXGN3M7v7dQltx1Wsb30G+Ng2AewymtepowWE9U=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779223849; c=relaxed/simple;
-	bh=UI7Yy/AUKawJ1CXhCsWZmhD6VQri2hzEYyhv8IKC608=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=UQT75DTxUw9GVyiFINbYJiyZl/7vKftvawd1Pf1vVPqGLPnLTQTE/q6WYuSzKuEpjGkbmqIPJXCG2AkICAiKrDhAOM5btBq8ziMvbAdDZufrKQMeDEHM1m+U1vKCjlwWpcHu9IS7eO77VWp/G5ZRQeMEeuqzSXfphlqfEPTWdW4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=eG0e1VZG; arc=pass smtp.client-ip=209.85.160.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2F0FD3E314D
+	for <iommu@lists.linux.dev>; Tue, 19 May 2026 21:03:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779224638; cv=none; b=Gg/igTfSE3BDDKUFMph2KTcjTXB+f2KJKhQrA4bxNdaUcOpS5REKpk0fBsfH2evPYp/I/dqaZ3dkD/F/rXJqVjqTWIHV4ao2wvPvzjFglP82ixLUiplos1NAmTZn9GDzecDZobvYwUREBiKRtu+tkmRuam7lLB392VbcB3uTV4Q=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779224638; c=relaxed/simple;
+	bh=7lskqn26rq6tTNwK1bV4v0JSuUkq9H1pEJwY2Ub670s=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=LzgpbLAImMXFQRpdGZjSD6CbUXTj2KW2KvbH6QoS54ngCdjgvWNn4FMmg/yaUmCLh3M0JMnEA0ymctIL3nv1FA0rKj6IWScQUYgE2s1+BTlgvalFud/Z0Qv8E6MD+VMC9daIU7szqMWNtpmemTnH77WGBpF+XQvTTb29EsTT+8E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=gX3o2Jag; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="eG0e1VZG"
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-515548f390fso13801cf.0
-        for <iommu@lists.linux.dev>; Tue, 19 May 2026 13:50:47 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779223847; cv=none;
-        d=google.com; s=arc-20240605;
-        b=Lafq5Po1eub8POBe+MRuqXrfwE1Q4+iEic99I8s42T0Xvf5+DtG9Yytp4WmTS1xsS3
-         ayS3IZ+E+4BBHooRh5gKFSPfoVBY4QVarJBkqwmG7GSnlMOkRsA1LTQvqeV75ZqyUUzJ
-         p7nlHKzSkGeqPMPmGG11qMNVL95BdU1FNcBjlpTNr87JQEkIROQRo7ucnOFEa3/nB31Q
-         aw0y8fC9U7UlhAOF5ge2AYpRPM4aotV1XqDXYJ9FhPGuqbmXdOpsh1Wh4mdxlDTSUjvX
-         5n2q9ZU534vQcmXvTul0XLBXSsY1Jq5HZYNhobqkyCu9PBz0kkbGTaz8GehDWc8cOTSk
-         8Wsg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=R4QDMEmsI+BnHnpkxFbvXdiT3cC8vd0R8/CbFZKp50g=;
-        fh=l6d/N6u1hLHPo4TGqiX7B6XhUFrf2YjgyiVnG6QkPqQ=;
-        b=XId8OBmWgB94iD37kQXBZ1l94jdM4M5zOZVW62m0zpHCdX/EKoez9gYA/KqpWq/eWV
-         18gdfVn3V6kqR/8BrDwHVnzJb0Oq4+ydBwm+nyeo1fCjZhuRG3anLXUL6C2Fl4DXYi/T
-         UNiNEpmHpukTEAgPRy+aA9cPvaJeZs0JArgaFehs6o8VAjjaybzfuXCWujdwUz6R11E1
-         Pk87xzIGXddUlNF2tmXel+QrQMr23TF+EeSOl/Dv/T0bbeCUDguRItzUffkHWWz3dsDA
-         XfLr8Zkwal9bE8HM71+ZRS71FTlib8XCcFpNaOZvROsAwj94UR2d3St56HkEStCLG+Bn
-         X3mw==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779223847; x=1779828647; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=R4QDMEmsI+BnHnpkxFbvXdiT3cC8vd0R8/CbFZKp50g=;
-        b=eG0e1VZGhL73pUcXLQv3inCTHNgMPbqO/CZpXsxeutTdu7T71Q6kV9KIdqmAolerSJ
-         Q1EMlPLtkltsqxmGmcLP6YZDngNhsIe7Lj4cHtxdi7YYD9SmgUHzamJ1n2uvQQwWnsCm
-         SHRWo5ldOKtsmRXP7OAxp1kOm82uT3HRD9O0mKyxXJJCOJbf09bgc4rzU2oOFFAmltYM
-         GM60Tij+NbffLISEdczQxzTz3f3g9axuBeJWjeCoP9Q4O05s2WpH6k8OedKr2Uc/ayV9
-         nOzwq+f0b8lxSveG/atQSIBpS/F9g2Ahc+v26kQxGmh/qsFe548vLshC6nYJxnfhkfVi
-         EENA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779223847; x=1779828647;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=R4QDMEmsI+BnHnpkxFbvXdiT3cC8vd0R8/CbFZKp50g=;
-        b=VI0M5tbBRdJkFwnaxBg7XFYuqdK3rVt6ILzeXRmxJcBjdD4GrXf/bgu8bw001fSWH/
-         hURK2rIkzYj0INxhzoojCrfAVQs8PygHiAK4VUQqGNEw+QJ9UvT/E/6iznM4sXGqeob5
-         cFHhmiuapoL8lJUgJwbagYizGe//uHZKgjC3Tg9n4KCsqf6fBxJMcDkjEt+x8T620E8i
-         w3G1mUfQb4rZvwDehUbjPJl866MHMlQ9vLi4UynMP5ULVksFkkvG9iohKKBuv1jSEVTW
-         0vONUZWlEqesMXWG6lRYijTEd4RJnPC2KROa2ybldBvf5L/s9p1E745sjDe4Sr5fPZm2
-         MTSQ==
-X-Gm-Message-State: AOJu0YzdRXeFSThmhhe4QyhRs8vAPVxtkJhwfqyRd/O/Y1EXh6ESsM6V
-	yVKPt82luvp5zIVk5X6ADVSXZn5QqIDlIhEiO66fYMYyp2lZi063dM7eERy+ss20e1DHx2NWG6l
-	hdxQytA1DGDSDqjPt6BKFFUjG6knT8zaxoxoNaYq4
-X-Gm-Gg: Acq92OENrqKdYuRSh9CJX4cQ1dfyatXKgbR5ZgwFDmEq6Xk8VBpiBckMRzulzVegZah
-	s/9RHub/5Eb6DYxTZvfVkc7d2mqj1sM90U1ddwomryGrj9RXzyK6ht06JBZpnax6+d0hC2hplcL
-	SHHmivFlpSoQd9ECUBmU87r2neiZoNpneCARSoG9WWgmydy7BduyMwupz6PoVas1kjT3AVzssAB
-	B62dm+KGGh64/Vn3pCbDHbg5ofWpWjBkLF22iPJ0eyTM4eAjw5EUzYR9psFLjheEqke7tfyZKhm
-	RLD91O0k44BI4MEc0Z3uNyMTs0pnJcfFmuLGRnsAUGFvaUsJ
-X-Received: by 2002:a05:622a:1f0c:b0:4f3:5475:6b10 with SMTP id
- d75a77b69052e-5167937eeeamr33662871cf.8.1779223846066; Tue, 19 May 2026
- 13:50:46 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="gX3o2Jag"
+Received: from localhost (unknown [20.236.10.206])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 9623420B7167;
+	Tue, 19 May 2026 14:03:43 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 9623420B7167
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1779224624;
+	bh=oWgyrpRAn58pjiIs+zN/w5MJ680FMEvCTgi9+J1g8zs=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=gX3o2JagM9yOXq+8mrjI11q2R99Kgah25cfcdFDTX+Qa2MaXAWlC6fSc34VAQQQZ5
+	 6BbN8GBHW1xGbD1/tgkUyhdEoeVKZGUrCH1tCd0O1E76f4rUul/w9KPUUO2zmOdrUC
+	 7NT2Qp3LbvWZW4wWJgAoAxB+2f4zZ9Lv/KhVBZA4=
+Date: Tue, 19 May 2026 14:03:48 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Alex Williamson <alex@shazbot.org>, linux-kernel@vger.kernel.org,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Joerg Roedel
+ <joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>, David Matlack
+ <dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen
+ <nicolinc@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
+ <yi.l.liu@intel.com>, Saurabh Sengar <ssengar@linux.microsoft.com>,
+ skhawaja@google.com, pasha.tatashin@soleen.com, Will Deacon
+ <will@kernel.org>, jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH v5 0/9] iommufd: Enable noiommu mode for cdev
+Message-ID: <20260519140348.00003c87@linux.microsoft.com>
+In-Reply-To: <20260519180156.GI3602937@nvidia.com>
+References: <20260511184116.3687392-1-jacob.pan@linux.microsoft.com>
+	<20260519180156.GI3602937@nvidia.com>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260414194702.1229094-1-praan@google.com> <20260414194702.1229094-8-praan@google.com>
- <CAE2F3rCaBWtRruBbZcedrsLnkkETSniTWoxxYn+Lkac9ttsshQ@mail.gmail.com> <aejP5Yk72_FtZnIo@google.com>
-In-Reply-To: <aejP5Yk72_FtZnIo@google.com>
-From: Daniel Mentz <danielmentz@google.com>
-Date: Tue, 19 May 2026 13:50:35 -0700
-X-Gm-Features: AVHnY4JwpFjkT9rm4MfBv1NN3q4y7OMopDf20ebfRmMrDdf5jsVUtIgiztKWXbQ
-Message-ID: <CAE2F3rAWu7v1OXuGuSOrKVXiaSe+ePP7mMVjYZ9z0P0181areQ@mail.gmail.com>
-Subject: Re: [PATCH v6 07/10] iommu/arm-smmu-v3: Implement pm_runtime & system
- sleep ops
-To: Pranjal Shrivastava <praan@google.com>
-Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, 
-	Nicolin Chen <nicolinc@nvidia.com>, Ashish Mhetre <amhetre@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, Apr 22, 2026 at 6:41=E2=80=AFAM Pranjal Shrivastava <praan@google.c=
-om> wrote:
-> > > +
-> > > +/*
-> > > + * This should always return true if devlinks are setup correctly
-> > > + * and the client using the SMMU is active.
-> > > + */
-> > > +__maybe_unused bool arm_smmu_rpm_get_if_active(struct arm_smmu_devic=
-e *smmu)
-> > > +{
-> > > +       if (!arm_smmu_is_active(smmu))
-> > > +               return false;
-> >
-> > I'm wondering if this check is redundant. What would happen if we remov=
-ed it?
-> >
->
-> You're right that pm_runtime_get_if_active() shall suffice. However, I
-> added the arm_smmu_is_active() check as a lockless fast path for maps
+Hi Jason,
 
-It appears as if you're optimizing the RPM_SUSPENDED case at the
-expense of the RPM_ACTIVE case. In the RPM_ACTIVE case, we now perform
-an additional READ_ONCE(smmu->cmdq.q.llq.prod) that wouldn't otherwise
-be necessary.
+On Tue, 19 May 2026 15:01:56 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-I expect unmap operations to complete much quicker in the
-RPM_SUSPENDED case anyway, as we skip all communication with the SMMU.
-Consequently, there is less motivation to optimize for that specific
-scenario.
+> On Mon, May 11, 2026 at 11:41:05AM -0700, Jacob Pan wrote:
+> > VFIO's unsafe_noiommu_mode has long provided a way for userspace
+> > drivers to operate on platforms lacking a hardware IOMMU. Today,
+> > IOMMUFD also supports No-IOMMU mode for group-based devices under
+> > vfio_compat mode. However, IOMMUFD's native character device (cdev)
+> > does not yet support No-IOMMU mode, which is the purpose of this
+> > patch.  
+> 
+> I would like to try to take this for this cycle, how are we doing for
+> a v6?
+I will send out v6 with Baolu's feedback in a couple of days.
 
->
-> Consider a scneario where there're high-frequency unmaps (unmap-storm)
-> while the SMMU is suspended. Without this check, every thread would
-> contend for the dev->power.lock spinlock inside the RPM core
-> (pm_runtime_get_if_active) just to discover the device is not active.
->
-> This check allows CPUs to elide the command immediately without
-> contending for the dev->power.lock spinlock inside the RPM core
-> (get_if_active call) and avoids unnecessary cacheline bouncing when the
-> SMMU is suspended.
+> Alex, did you have any remarks?
+> 
+> Thanks,
+> Jason
+
