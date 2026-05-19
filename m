@@ -1,143 +1,106 @@
-Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6429B23BD1B
-	for <iommu@lists.linux.dev>; Tue, 19 May 2026 12:52:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 669AD4EA388
+	for <iommu@lists.linux.dev>; Tue, 19 May 2026 12:57:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.132
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779195130; cv=none; b=XUeuZs3jVySav1VZYQtNTxBiuGEqx9Ew3J99fjmL80hJvYCVLpVeUg2CymmGNVeMpkcuC0y0fZML+UvXb12ShdxeFbDaLXc+y8Cx6yTH0hdmJ5/zbzm+4o3a/R4bJ18gwBfaETomG9Hio3qGM78p9eaQG/Pz78QvRoXpK6XwZfo=
+	t=1779195457; cv=none; b=K3puyHcZT1DMUrvv9KCQ9ov/3azKFl/A6i5m2Ef/ih8N2+Qj0qPLjMctxOAaZ2RxiRVXvw3BIvt936YcCgjupHwq6YbMHI4we/eSn0Qm509jThqyyLniclbPSy3KEJUsUBrWD1IPDCgqcjaVv2lN7MGHxwp34SleJDONRVTq3tE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779195130; c=relaxed/simple;
-	bh=Cj+9AGLaj6N5gNCq9PN/+geG3jfXVteqrgLjuRvx6n8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aPpT09dCdoihZ2hnKVrseRXbNsF+fEI+hBlwZLPd97DyVfarOT3/h4pw+VN7yvgYcMh7DrrQ0g986oQr5TUxXpxfetJyjY5mxtNAvImtkyLcsciaSBFX/X/Y3AmpvJ512ICM8oqsOSkdNPnsUDPMyND3ozUR9UuFTItSuQ7mJ4A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=J20bYQ4v; arc=none smtp.client-ip=209.85.222.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1779195457; c=relaxed/simple;
+	bh=KIQUkhSAF15c8pq3oo7yWwIcmCNSRsPc9tYtjHF2Dz8=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=FNu7XtQDt725bsIhmfwUnlLFiKsIzz+4HMVwK+F5OHrdTOjhVdgDVbvDm1KCK7y2kilvxKSXCmW0lhN2Cy+a6xsaxflKfntEsQ/4lNow+oi0jES474mnEx9G4YLLE7yiwA8mnyAYFU+vhONuBcVeX2K4YU8v1f0pGQDUxZBOIlU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=j78B6y81; arc=none smtp.client-ip=115.124.30.132
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="J20bYQ4v"
-Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-902deb2412fso451653485a.3
-        for <iommu@lists.linux.dev>; Tue, 19 May 2026 05:52:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1779195127; x=1779799927; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=DOCS522Pm9afH3DTI+hcdRgkcQjsqwF0dA1bA5ZkKZc=;
-        b=J20bYQ4vdm3EYGte+K6UnXFfQU6Pu9InYjRhG431GcVEgObEc6vU0WrizWyNH8L6Fd
-         UHyzLGF1E5eTOd74K8FGlmuOLOBw8Gl+p1YaUl+9dxXrvtKpV9+/ZRS1DAU004EGstPc
-         6DbFRvnvgW77X6KNVbbYT/xa+U3mtSoogKwqws+C7UHNnZsy/59HyeK3Sh3Qese+VHyK
-         wa+LBKYq3ZIu0K6M+FLFjybZKpS7hPcjtDyisRRDI9K/EO/SuCU/7zhKa53WThHbeywo
-         CzGZF+oyJYZmbk7i9ysFgi3JGX92WSuLl5Nx6PvSBioAWKBySg7HqIi2ff+ypBC8z5HE
-         7RmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779195127; x=1779799927;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=DOCS522Pm9afH3DTI+hcdRgkcQjsqwF0dA1bA5ZkKZc=;
-        b=QYrXK8767P6LMc0wdTNwYN2YAntGn4qaz8qiHdLs/fFYQqJDpW0mQSPr3AbwB/tnY+
-         HD4MPs3oxrFfqlGca20cXVbr9YfM0NCtS5TY+SgStyPZFQQ15+NWD9aQvNVF+nFuCrlA
-         tURhcOebh+PKNkq5XO4Ubgq6oedlOUzXvrUA0wdPV3RYypSAKXtzSm+PXCH/ajDKCu78
-         RYyqGqQeOcnVXeNFT6QoLnm+pYKS7MxSOIY7msjikQ8wVoqtX9udLkCWab++glKzneU5
-         Aqvm/KN5IT0BveKaIJsBAr0PtvsbE5Bs3llKRMstdzh5NQCh+bUr5ElpdmkvV9tlcy6h
-         IBcQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+mCZzZEQtwApPncGTTseSEbg2C4ifyVPgX2LZTxzCIlekr2IJhpxymAGasGE+AyH6eZqUMjA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YynhcG7FwPcz2t3vVQVS5AROfbLE6wSOY1G5Csd4ytXRWXtqZMP
-	ZPHzw/h6w0O5vxnvfTgp0WTNzbpJMa+J7Vg41spXCEvIEzhC3UjEtxhuFiz7hr7Pckw=
-X-Gm-Gg: Acq92OGqj/NOsCtIWR0MtQsZUwUC5od/G7oBvBvUus4xc2iXV/BmP295H4XM1qN4hUT
-	DDPANUHYh23zZS3Esccun8DNHmbglTEDIpqHUEBmqWZBQHe2eyh6dDqBEX7srbDHu+3h70oNdWR
-	59FeRIuUNOpslwRn7pbSZYh4wakEsthebYI3ZbXBH7Dq25XQ9AVwX7nLajfqBc3syPPrkZD2ENf
-	c5PjIqYeN/DHBclVYl/MJO8B2pEz6PQF82kmIjRTo2i0bjuFUFSH9euF8vcDiev+4C8B2BK52Bp
-	+91G38B8Ol4pZX0CZkyiVqVtpsZhSNZAn0UBvp3vXSXkZ1BGv32wMyja5XmwVoZRiqQYPYrSqs+
-	uYk5jd5A7CMnztpH2t6TcbqqSTDDR5J0UHN7kZBVxjET7VXGbm7uw1Aj9VQpPjvnYsWo/ZfZJ87
-	7OYCwfyOtKairrf2rmpioef0f6oaucJm2lEN+tEojsz9weX3qJEebtcexygpCzqsLz1Dojk6jgi
-	NX+yg==
-X-Received: by 2002:a05:620a:170c:b0:910:5637:4bec with SMTP id af79cd13be357-911cd1752admr2935359485a.18.1779195127354;
-        Tue, 19 May 2026 05:52:07 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-910baf2236fsm1823801385a.20.2026.05.19.05.52.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 May 2026 05:52:06 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wPJva-0000000Eg2n-14zp;
-	Tue, 19 May 2026 09:52:06 -0300
-Date: Tue, 19 May 2026 09:52:06 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Jacob Pan <jacob.pan@linux.microsoft.com>
-Cc: Mukesh R <mrathor@linux.microsoft.com>, hpa@zytor.com,
-	robin.murphy@arm.com, robh@kernel.org, wei.liu@kernel.org,
-	mhklinux@outlook.com, muislam@microsoft.com,
-	namjain@linux.microsoft.com, magnuskulke@linux.microsoft.com,
-	anbelski@linux.microsoft.com, linux-kernel@vger.kernel.org,
-	linux-hyperv@vger.kernel.org, iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-	kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
-	longli@microsoft.com, tglx@kernel.org, mingo@redhat.com,
-	bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-	joro@8bytes.org, will@kernel.org, lpieralisi@kernel.org,
-	kwilczynski@kernel.org, bhelgaas@google.com, arnd@arndb.de
-Subject: Re: [PATCH V3 09/11] x86/hyperv: Implement Hyper-V virtual IOMMU
-Message-ID: <20260519125206.GY7702@ziepe.ca>
-References: <20260512020259.1678627-1-mrathor@linux.microsoft.com>
- <20260512020259.1678627-10-mrathor@linux.microsoft.com>
- <20260515182322.GI7702@ziepe.ca>
- <20260518224136.0000403e@linux.microsoft.com>
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="j78B6y81"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1779195444; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=ORsC3jjziczAoDhmvkQwijx70HMiWpP5k92grPFcmws=;
+	b=j78B6y814X+eqGvHnDhiHsdH3NJvth4PHe65o4SKVoyMmmkiMarb4v+KFOj8FrAxzvWTUCIPl66jf4ex0gHyMYj9DJb6ZCgJ+d2wH3YHLxKlud20d1CH2d5I/4ZqwLdoD8OXtBpsaIdTqeXWOwjvWHbvHV19CGBIl7Iks8PtjQo=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037026112;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0X3FViH8_1779195442;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X3FViH8_1779195442 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Tue, 19 May 2026 20:57:23 +0800
+From: fangyu.yu@linux.alibaba.com
+To: tomasz.jeznach@linux.dev,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	pjw@kernel.org,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu,
+	alex@ghiti.fr,
+	ajones@ventanamicro.com,
+	andrew.jones@oss.qualcomm.com
+Cc: guoren@kernel.org,
+	iommu@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Fangyu Yu <fangyu.yu@linux.alibaba.com>
+Subject: [PATCH] iommu/riscv: prefer WSI on IGS=BOTH when wired IRQs are described
+Date: Tue, 19 May 2026 20:57:16 +0800
+Message-Id: <20260519125716.81594-1-fangyu.yu@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260518224136.0000403e@linux.microsoft.com>
+Content-Transfer-Encoding: 8bit
 
-On Mon, May 18, 2026 at 10:41:36PM -0700, Jacob Pan wrote:
+From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 
-> Just wondering what work is needed to support this "direct attach"? I
-> felt this issue is due to trying to cram two distinct domain types
-> (paging domain & direct attach) into the VFIO container model where
-> only unmanaged paging domain is supported.
+The RISC-V IOMMU spec defines IGS=BOTH as supporting both MSI and
+WSI, with software selecting the path. The DT path already behaves
+as expected by selecting WSI when wired IRQ resources are described.
+The ACPI path, however, currently falls back to MSI even when
+firmware describes wired IRQ resources.
 
-Xen has the same issue and you two need to come up with a uniform
-solution.
+Use firmware-described wired IRQ resources as the trigger to select
+WSI for IGS=BOTH:
+  - DT: "interrupts" present, no "msi-parent"
+  - ACPI: DSDT _CRS Interrupt() descriptors
+    (mainline does not yet parse the RIMT Interrupt Wire Array)
 
-VFIO container can't support it, that's out.
+When triggered, rewrite igs to IGS_WSI and reuse the existing WSI
+handling. Keep the existing behaviour otherwise.
 
-You should be focusing on a iommufd flow that accepts some FD
-representing the VM (ie KVM FD) that can be converted by the driver
-into a HWPT representing that FD's S2 translation.
+Fixes: d5f88acdd6ff ("iommu/riscv: Add support for platform msi")
+Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+---
+ drivers/iommu/riscv/iommu-platform.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-> I am thinking if we were to switch to iommufd and let user(vmm) have
-> direct control of HWPT, vmm will be able to selectively use a
-> different domain type to handle direct attach. 
+diff --git a/drivers/iommu/riscv/iommu-platform.c b/drivers/iommu/riscv/iommu-platform.c
+index 399ba8fe1b3e..bd7712231140 100644
+--- a/drivers/iommu/riscv/iommu-platform.c
++++ b/drivers/iommu/riscv/iommu-platform.c
+@@ -71,6 +71,21 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
+ 	iommu->irqs_count = RISCV_IOMMU_INTR_COUNT;
+ 
+ 	igs = FIELD_GET(RISCV_IOMMU_CAPABILITIES_IGS, iommu->caps);
++
++	/*
++	 * IGS=BOTH means the IOMMU supports either MSI or WSI;
++	 * the spec leaves the choice to software. Use the firmware-described
++	 * wired interrupt resources as the trigger:
++	 *   - DT  : "interrupts" property present, no "msi-parent"  -> WSI
++	 *   - ACPI: DSDT _CRS Interrupt() present  -> WSI
++	 * Otherwise default to the MSI path.
++	 */
++	if (igs == RISCV_IOMMU_CAPABILITIES_IGS_BOTH &&
++	    platform_irq_count(pdev) > 0) {
++		dev_info(dev, "firmware describes wired IRQs; preferring WSI on IGS=BOTH\n");
++		igs = RISCV_IOMMU_CAPABILITIES_IGS_WSI;
++	}
++
+ 	switch (igs) {
+ 	case RISCV_IOMMU_CAPABILITIES_IGS_BOTH:
+ 	case RISCV_IOMMU_CAPABILITIES_IGS_MSI:
+-- 
+2.50.1
 
-Yes
-
-> IMHO, it is essentially the same as attaching nest parent domain
-> without nested domain immediately attached. The unprivileged guest
-> may attach nested domain directly with Hyper-V if nested translation
-> is needed.
-
-nest parent domain is really for supporting the viommu objects.. If
-you don't have that flow you don't need to worry about that nest
-parent stuff.
-
-> From this driver POV, it will allocate a 2nd stage only domain with
-> different domain ops (w/o map/unmap) for "direct attach" thus avoid this
-> hack.
-
-Yes, from a driver POV you need a unique iommu_domain allocator that
-returns an iommu_domain without an ops.
-
-It should probably work similarly to the viommu where the iommufd path
-can send in a driver-specific tagged struct that can describe these
-special domains.
-
-But be mindful of the lifetime rules, whatever ID is used to describe
-the VM at the hypercall boundary has to be bound into a linux FD and
-become immutable. The driver has to hold that FD as long as the domain
-exists.
-
-Jason
