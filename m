@@ -1,194 +1,247 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BD223EAC82;
-	Wed, 20 May 2026 18:14:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 173173F86F4
+	for <iommu@lists.linux.dev>; Wed, 20 May 2026 18:15:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779300875; cv=none; b=kF2eQhpRWYdgjbngFciuE8fKkBN4C3j6KFgqeL+13N0rYS6k4xrNmGg2LBhiScuIxSgiDS3V8L3YzgPaC5iwvBuEsUtd9fy5d98jdZ/0qxP+/ODrSco2ihRM3rqyv3E/um8avuyn4AhQAHMaxZS5TLIbVLPHq3u6VoPgxV2b1ts=
+	t=1779300918; cv=none; b=BTXMI/XwG4CEL7cAlrF6kAZAl4YEkQSZw22Kz7yV5EaafQOgvaNiyG4p1CtK1mVjqZKgmRDu+oQK8hZb9l1N3npsZO+L93o74/WdzyoxZvIlWP2GHpH/VhVhWrK/6d19WB2T4bh+VUs47WPygd5MiaX1roFBBf1NZJmGPg+eevQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779300875; c=relaxed/simple;
-	bh=alXDT0HTDrZ0vU9K84ji4wLDOI8SK2YegmpOArGpruk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=o7JxxVTureshFNB+7OvywnaWf/zQITanWu5kP8k3/S0aCyQpolYiHoxuxVHwoodMsh7Eotoa/M/tu9gt+zUF84LZQFY9dV4s3QEYH3zOX62tmJTlH+ISDpj7E9fPFfpkJp3S36Jq4moRCOYRamG/cBa9RMXi/OV9g3ih62N99ik=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q4SI655J; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779300918; c=relaxed/simple;
+	bh=OS9DlG9+xP6pHRsPUNnJHBZKr4Dsc6g1NV9wQpL8+/E=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=bNgDjrWwHru4Kj7ty41kA0QeHkDJ4Od9ed8kpZ5tkrqgV9U/a07EyfrProt7Xj9USF1A0Em8OC94nSjvzVugRU6I7HMdPsRrFKwRj0GdgzC9dTeiQ4fwPeX3tpcnjjHHqsgORcimX0k5rmls9b5Vi/miX7p5mh5qKzr1AeY5bRE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=qexsou1h; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q4SI655J"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61D051F000E9;
-	Wed, 20 May 2026 18:14:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779300873;
-	bh=BGBszge9vQulelJ4juObSE+D6PPOGDG420pjFZMqYjE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Q4SI655JpsOeDedSSlGyk1TnKl4jp5wgVqnYn+Am9tukdG1cWsV6wErApbFCWzsCt
-	 +KaZ7b5TKTaSADkUydBu7Wuy+LR/p5kGWD2PZUicgKqCnCmyxgHVGfswvFjGS4zn3I
-	 qTBXYnafMw4J4eg73pr2eFS0dJSaHnWpS9CjKppvhMgZIXFM8c4zw7jjBLs/i81Wt+
-	 eCZqMQfWxVygUtMprU8iujT9wL9kiqve0enOEtSEiABfQ4ceH3f1TdJ5OHNVf76lWz
-	 d28l3xzlNr+pcrD3Ky2stPnHFlwmVrMoOBDhc0gVB9ih+UENCA3zi+CN5imNuhz2ru
-	 5Iy+cTgwsZ5dQ==
-Date: Wed, 20 May 2026 11:14:32 -0700
-From: Drew Fustini <fustini@kernel.org>
-To: Conor Dooley <conor@kernel.org>
-Cc: Tomasz Jeznach <tomasz.jeznach@linux.dev>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
-	iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Joel Stanley <joel@jms.id.au>, Joerg Roedel <joerg.roedel@amd.com>,
-	Nicholas Piggin <npiggin@gmail.com>
-Subject: Re: [PATCH v2] dt-bindings: iommu: riscv: Add bindings for
- Tenstorrent RISC-V IOMMU
-Message-ID: <ag36CHVAERc3ZYmi@x1>
-References: <20260520061855.1623468-4-fustini@kernel.org>
- <20260520-frayed-fervor-7c887193ab19@spud>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="qexsou1h"
+Received: from localhost (unknown [20.191.74.188])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 49F8020B7167;
+	Wed, 20 May 2026 11:15:08 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 49F8020B7167
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1779300908;
+	bh=t6C9qOV2fZgdqqDL8oC0l2IKVRKrv5LoXHVAZJGcQd4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=qexsou1htpNFxAtWhpS6rO6KKktY1eOK6SG6JcIXOsx0M/UdEil/KkdpDqhBEZ87T
+	 UixoMVQqFnD6/W3x4YHcfcQIzesd69xzjfxyjWWBWIbi3L1TP2tVsVCp9GJJ1C8QUp
+	 o8pL1w8VBZ5Gt0tc7w1NZJuD2eloVYEGxdODcz6Q=
+Date: Wed, 20 May 2026 11:15:13 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: Alex Williamson <alex@shazbot.org>, <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Jason Gunthorpe
+ <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Mostafa Saleh
+ <smostafa@google.com>, David Matlack <dmatlack@google.com>, Robin Murphy
+ <robin.murphy@arm.com>, Nicolin Chen <nicolinc@nvidia.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, Saurabh Sengar <ssengar@linux.microsoft.com>,
+ <skhawaja@google.com>, <pasha.tatashin@soleen.com>, Will Deacon
+ <will@kernel.org>, Baolu Lu <baolu.lu@linux.intel.com>,
+ jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH v5 7/9] vfio: Enable cdev noiommu mode under iommufd
+Message-ID: <20260520111513.0000188d@linux.microsoft.com>
+In-Reply-To: <95235a41-f9b3-4b5b-9a34-489a9ff7eac5@intel.com>
+References: <20260511184116.3687392-1-jacob.pan@linux.microsoft.com>
+	<20260511184116.3687392-8-jacob.pan@linux.microsoft.com>
+	<20260519214613.167e8d5b@shazbot.org>
+	<95235a41-f9b3-4b5b-9a34-489a9ff7eac5@intel.com>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="/FRbjWFmhZcRL80s"
-Content-Disposition: inline
-In-Reply-To: <20260520-frayed-fervor-7c887193ab19@spud>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
+Hi Yi,
 
---/FRbjWFmhZcRL80s
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Wed, 20 May 2026 15:20:26 +0800
+Yi Liu <yi.l.liu@intel.com> wrote:
 
-On Wed, May 20, 2026 at 05:17:41PM +0100, Conor Dooley wrote:
+> On 5/20/26 11:46, Alex Williamson wrote:
+> > On Mon, 11 May 2026 11:41:12 -0700
+> > Jacob Pan <jacob.pan@linux.microsoft.com> wrote:
+> >   
+> >> Now that devices under noiommu mode can bind with IOMMUFD and
+> >> perform IOAS operations, lift restrictions on cdev from VFIO side.
+> >>
+> >> Remove the vfio_device_is_group_noiommu() early returns in
+> >> vfio_df_iommufd_bind() and vfio_df_iommufd_unbind() so that both
+> >> group and cdev noiommu devices go through the standard iommufd bind
+> >> path. This is safe because iommufd_device_bind() now handles
+> >> noiommu devices via its own iommufd_device_is_noiommu() check.
+> >>
+> >> Add CAP_SYS_RAWIO checks for cdev open and bind under noiommu to
+> >> maintain security parity with the group noiommu path.
+> >>
+> >> No IOMMU cdevs are explicitly named with noiommu prefix. e.g.
+> >>
+> >>      /dev/vfio/
+> >>      |-- devices
+> >>      |   `-- noiommu-vfio0
+> >>      `-- vfio
+> >>
+> >> Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+> >> ---
+> >> v5:
+> >>     - Add Kconfig VFIO_CDEV_NOIOMMU to select IOMMUFD_NOIOMMU
+> >>       and its dependencies
+> >>     - Add comment to explain vfio_noiommu conditional definition
+> >> (Alex)
+> >>     - Removed early return for group noiommu in bind/unbind
+> >>     - Use consistent wording referring to VFIO noiommu mode (Kevin)
+> >>     - Update unsafe_noiommu Kconfig help text (Kevin)
+> >>     - Change dev_warn to dev_info for noiommu enabling msg (Kevin)
+> >> v4:
+> >>     - Remove early return in iommufd_bind for noiommu (Alex)
+> >> v3:
+> >>     - Consolidate into fewer patches
+> >> v2:
+> >>     - removed unnecessary device->noiommu set in
+> >>       iommufd_vfio_compat_ioas_get_id()
+> >> ---
+> >>   drivers/vfio/Kconfig       |  3 +--
+> >>   drivers/vfio/device_cdev.c | 10 ++++++++++
+> >>   drivers/vfio/iommufd.c     |  7 -------
+> >>   drivers/vfio/vfio.h        | 22 ++++++++++++++--------
+> >>   drivers/vfio/vfio_main.c   | 25 ++++++++++++++++++++-----
+> >>   include/linux/vfio.h       |  1 +
+> >>   6 files changed, 46 insertions(+), 22 deletions(-)
+> >>
+> >> diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
+> >> index b1b1633412a9..b1a260b6054c 100644
+> >> --- a/drivers/vfio/Kconfig
+> >> +++ b/drivers/vfio/Kconfig
+> >> @@ -22,8 +22,7 @@ config VFIO_DEVICE_CDEV
+> >>   	  The VFIO device cdev is another way for userspace to
+> >> get device access. Userspace gets device fd by opening device cdev
+> >> under /dev/vfio/devices/vfioX, and then bind the device fd with an
+> >> iommufd
+> >> -	  to set up secure DMA context for device access.  This
+> >> interface does
+> >> -	  not support noiommu.
+> >> +	  to set up secure DMA context for device access.
+> >>   
+> >>   	  If you don't know what to do here, say N.
+> >>   
+> >> diff --git a/drivers/vfio/device_cdev.c
+> >> b/drivers/vfio/device_cdev.c index 54abf312cf04..46a808244398
+> >> 100644 --- a/drivers/vfio/device_cdev.c
+> >> +++ b/drivers/vfio/device_cdev.c
+> >> @@ -27,6 +27,9 @@ int vfio_device_fops_cdev_open(struct inode
+> >> *inode, struct file *filep) struct vfio_device_file *df;
+> >>   	int ret;
+> >>   
+> >> +	if (device->noiommu && !capable(CAP_SYS_RAWIO))
+> >> +		return -EPERM;
+> >> +
+> >>   	/* Paired with the put in vfio_device_fops_release() */
+> >>   	if (!vfio_device_try_get_registration(device))
+> >>   		return -ENODEV;
+> >> @@ -110,6 +113,13 @@ long vfio_df_ioctl_bind_iommufd(struct
+> >> vfio_device_file *df, if (df->group)
+> >>   		return -EINVAL;
+> >>   
+> >> +	/*
+> >> +	 * CAP_SYS_RAWIO is already checked at cdev open, recheck
+> >> here
+> >> +	 * in case the fd was passed to a less privileged process.
+> >> +	 */
+> >> +	if (device->noiommu && !capable(CAP_SYS_RAWIO))
+> >> +		return -EPERM;
+> >> +
+> >>   	ret = vfio_device_block_group(device);
+> >>   	if (ret)
+> >>   		return ret;
+> >> diff --git a/drivers/vfio/iommufd.c b/drivers/vfio/iommufd.c
+> >> index 39079ab27f92..bc80056c74d3 100644
+> >> --- a/drivers/vfio/iommufd.c
+> >> +++ b/drivers/vfio/iommufd.c
+> >> @@ -25,10 +25,6 @@ int vfio_df_iommufd_bind(struct
+> >> vfio_device_file *df) 
+> >>   	lockdep_assert_held(&vdev->dev_set->lock);
+> >>   
+> >> -	/* Returns 0 to permit device opening under noiommu mode
+> >> */
+> >> -	if (vfio_device_is_group_noiommu(vdev))
+> >> -		return 0;
+> >> -
+> >>   	return vdev->ops->bind_iommufd(vdev, ictx, &df->devid);
+> >>   }
+> >>   
+> >> @@ -58,9 +54,6 @@ void vfio_df_iommufd_unbind(struct
+> >> vfio_device_file *df) 
+> >>   	lockdep_assert_held(&vdev->dev_set->lock);
+> >>   
+> >> -	if (vfio_device_is_group_noiommu(vdev))
+> >> -		return;
+> >> -
+> >>   	if (vdev->ops->unbind_iommufd)
+> >>   		vdev->ops->unbind_iommufd(vdev);
+> >>   }
+> >> diff --git a/drivers/vfio/vfio.h b/drivers/vfio/vfio.h
+> >> index 602623cacfc0..ac79b1a2fce9 100644
+> >> --- a/drivers/vfio/vfio.h
+> >> +++ b/drivers/vfio/vfio.h
+> >> @@ -36,7 +36,7 @@ vfio_allocate_device_file(struct vfio_device
+> >> *device); 
+> >>   extern const struct file_operations vfio_device_fops;
+> >>   
+> >> -#ifdef CONFIG_VFIO_GROUP_NOIOMMU
+> >> +#if IS_ENABLED(CONFIG_VFIO_GROUP_NOIOMMU) ||
+> >> IS_ENABLED(CONFIG_VFIO_CDEV_NOIOMMU)  
+> > 
+> > Have you considered what happens when these are y/n or n/y?
+> > 
+> > I think in the former case we can create cdev devices for
+> > group-noiommu devices that are not labeled noiommu, skip the
+> > CAP_SYS_RAWIO test, but will fail to bind.  In the latter case, I
+> > think we fail to setup an iommufd_device and unbind will segfault.
+> > 
+> > We really don't need to support independently setting GROUP vs CDEV
+> > NOIOMMU, the suggestion was to try to get NOIOMMU from depending on
+> > VFIO_GROUP.  We can do that other ways though and I think we can do
+> > it without the rename in patch 1 that will inevitably result in
+> > some lost config options for NOIOMMU on upgrade.
+> > 
+> > The Kconfig may get messy, perhaps something like:
+> > 
+> > config VFIO_NOIOMMU
+> > 	bool "VFIO No-IOMMU support"
+> > 	depends on VFIO_GROUP || VFIO_DEVICE_CDEV
+> > 	depends on !VFIO_GROUP || VFIO_CONTAINER ||
+> > IOMMUFD_VFIO_CONTAINER depends on !VFIO_DEVICE_CDEV ||
+> > !GENERIC_ATOMIC64 select IOMMUFD_NOIOMMU if VFIO_DEVICE_CDEV
+> > 
+> > Sorry if the previous suggestion sent us astray, but the subtleties
+> > of independent support look tricky.  Thanks,  
+> 
+> this also looks better to me. Less kconfigs. :)
+> 
+agreed, let me give it a try in v6.
 
-Thanks for the review...
+> just one nit: current VFIO_NOIOMMU only depends on VFIO_GROUP, maybe a
+> separate patch to extend it depends on 'VFIO_GROUP && (VFIO_CONTAINER
+> || IOMMUFD_VFIO_CONTAINER)' first, then add the cdev path noiommu
+> dependency.
 
-> On Tue, May 19, 2026 at 11:16:28PM -0700, Drew Fustini wrote:
-> > From: Nicholas Piggin <npiggin@gmail.com>
-> >=20
-> > Extend the binding to cover details specific to the Tenstorrent RISC-V
-> > IOMMU. In particular, a second register range is added which contains
-> > M-privileged registers, e.g., PMAs and PMPs.
-> >=20
-> > The RISC-V spec S-privileged registers remain in the first register
-> > range and are compatible with "riscv,iommu" so the Linux driver does not
-> > notice any difference, but the binding will be used by OpenSBI and
-> > potentially other M-mode software.
-> >=20
-> > Reviewed-by: Joel Stanley <joel@jms.id.au>
-> > Acked-by: Joerg Roedel <joerg.roedel@amd.com>
-> > Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
-> > [fustini: fix dt_binding_check errors]
-> > Signed-off-by: Drew Fustini <fustini@kernel.org>
-> > ---
-> > v2 changes:
-> > - Fix dt_binding_check errors
-> > - Add the Acked-by: from Joerg
-> > - Drop RFC prefix
-> >=20
-> > Link to v1:
-> > https://lore.kernel.org/lkml/20260310003850.3837030-1-npiggin@gmail.com/
-> >=20
-> >  .../bindings/iommu/riscv,iommu.yaml           | 62 ++++++++++++++++---
-> >  1 file changed, 55 insertions(+), 7 deletions(-)
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml b=
-/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
-> > index d4838c3b3741..5aad8cf67840 100644
-> > --- a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
-> > +++ b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
-> > @@ -32,22 +32,35 @@ properties:
-> >    # should be specified along with 'reg' property providing MMIO locat=
-ion.
-> >    compatible:
-> >      oneOf:
-> > -      - items:
-> > +      - description: Platform (non-PCIe) IOMMU implementations
-> > +        items:
-> >            - enum:
-> >                - qemu,riscv-iommu
-> >            - const: riscv,iommu
-> > -      - items:
-> > +      - description: PCIe IOMMU implementations
-> > +        items:
-> >            - enum:
-> >                - pci1efd,edf1
-> >            - const: riscv,pci-iommu
-> > +      - description: Tenstorrent IOMMUs implementing "riscv,iommu"
-> > +        items:
-> > +          - enum:
-> > +              - tenstorrent,riscv-iommu
-> > +          - const: riscv,iommu
->=20
-> You should be able to put this into the enum alongside the qemu
-> compatible, right?
+I had this below in patch 1/9. will do in a separate patch.
+Thanks,
 
-Good point, I'll move tenstorrent,riscv-iommu to the enum with
-qemu,riscv-iommu.
+Jacob
 
-> > +allOf:
-> > +  - if:
-> > +      properties:
-> > +        compatible:
-> > +          contains:
-> > +            enum:
-> > +              - tenstorrent,riscv-iommu
-> > +    then:
-> > +      properties:
-> > +        reg:
->=20
-> > +          items:
-> > +            - description: IOMMU base registers
-> > +            - description: Tenstorrent IOMMU machine mode registers.
->=20
-> Should this also have minItems: 2?
-
-I think items: with 2 items implies minItems: 2 but I see your later
-point about the description and names don't belong in the allOf: block.
-
->=20
-> > +        reg-names:
->=20
-> > +          items:
-> > +            - const: base
-> > +            - const: machine
-> > +              description:
-> > +                Region containing platform specific MMRs for machine-m=
-ode
-> > +                configuration, such as PMA and PMP registers.
->=20
-> And this you should replace with minItems: 2 or delete. The reg property
-> is where your description here belongs and all the names do here is
-> re-list what's available outside the condition.
-
-Ah, so I just have minItems: 2 here and rely on the reg: section to have
-the descriptions.
-
-> > +  - |+
-> > +    /* Example 5 (Tenstorrent IOMMU device with MSIs) */
-> > +    iommu5: iommu@d2020000 {
-> > +        compatible =3D "tenstorrent,riscv-iommu", "riscv,iommu";
-> > +        reg =3D <0xd2020000 0x10000 0xaa000000 0x10000>;
->=20
-> This is not the correct format for multiple reg properties. Hint: you're
-> missing ">, <".
-
-Thanks, I'll fix that.
-
--Drew
-
---/FRbjWFmhZcRL80s
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQSy8G7QpEpV9aCf6Lbb7CzD2SixDAUCag36AAAKCRDb7CzD2Six
-DAbHAQDI8harIo/I9V4a7tM1mvAiTRjwsbfDx9qcEXfqctGFxQEAqNTzD7k59K0s
-62Yzl0w6qzRZRPFcwzTyMIchGmGu0wI=
-=T+gz
------END PGP SIGNATURE-----
-
---/FRbjWFmhZcRL80s--
+--- a/drivers/vfio/Kconfig
++++ b/drivers/vfio/Kconfig
+@@ -60,9 +60,9 @@ config VFIO_IOMMU_SPAPR_TCE
+ 	default VFIO
+ endif
+ 
+-config VFIO_NOIOMMU
+-	bool "VFIO No-IOMMU support"
+-	depends on VFIO_GROUP
++config VFIO_GROUP_NOIOMMU
++	bool "VFIO group No-IOMMU support"
++	depends on VFIO_GROUP && (VFIO_CONTAINER ||
+IOMMUFD_VFIO_CONTAINER) help
