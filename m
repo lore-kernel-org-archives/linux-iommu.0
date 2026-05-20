@@ -1,40 +1,40 @@
 Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E8F43A451F
-	for <iommu@lists.linux.dev>; Wed, 20 May 2026 12:58:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 725DA24E4A1
+	for <iommu@lists.linux.dev>; Wed, 20 May 2026 12:59:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779281904; cv=none; b=Mp9xZ9iTaBnNsJiuVsV4OFnRbYbqv3ZAOWwZ7n2h0aGVqQG9I2ZYcD/OFPcJV6nD+tYFCjHGlGwt24Au4WlS2a3vtoBdWf9H5AG9j5E9NvC32WjsioMqppGk4O2EmS5ARrzjpQT66mDHXu01blUNV7pasBZ5vW9/sckhyPrfH1o=
+	t=1779281958; cv=none; b=lBO78MJmoPjQAOAtv9slE9wPjy8t0NfFGBLtf3PsAcR7beRHUKL/gfq8Ul3Y93GHZ+sdiia/CTdXchVlBlfbfggJLP68JxaQMGj39ORzX7+SRWrHbcNDw6JjNdT7h6h61QmlcvnwloSoGRiyI0aicHnHZYfFPlrkcMiG/TbKjD0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779281904; c=relaxed/simple;
-	bh=Q8BYt/zH8QAs9f/G4XlmE2TMZ1EhwSUQirokAPY+Vvk=;
+	s=arc-20240116; t=1779281958; c=relaxed/simple;
+	bh=REOM245G7CIl5zoT+snm7tQ+xPdTeWo5pJCFGFovHGU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=TFbs7jqyWqNqhZ+hwel/i6BIOsutx+41JQM2qfvPjKBRMn2MrSbRwuGbkjOYU9GUqy66fpoRtF4+rb8h8XJeipkO1xOZbMh/6Wk5T1nLsIE+MK5/2Qsh2GEFEK7o2zTRl8uX+sXNZmuOs8bbR00zu7lPVVpnKXbw3/F34YGwwkI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=FIeSzLfK; arc=none smtp.client-ip=148.251.105.195
+	 In-Reply-To:Content-Type; b=d2YvDyGcHK5T0AtxEa4Pz3U64U0Z0NPQtHPwpLqUtPiwwt6A7GjBxIv0NmR3h9YQTRgOLWo8P1oPMjaBmHP4l3qmqKBLm2+9qUuO8IDZC7McAcTZd8Rw4sxue5sR5/3JQJj8WLGi94+7LpNpnW1tv9TE9jrg+k4FAe6YkaHh+aw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=BxNmM/v1; arc=none smtp.client-ip=148.251.105.195
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="FIeSzLfK"
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="BxNmM/v1"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1779281900;
-	bh=Q8BYt/zH8QAs9f/G4XlmE2TMZ1EhwSUQirokAPY+Vvk=;
+	s=mail; t=1779281955;
+	bh=REOM245G7CIl5zoT+snm7tQ+xPdTeWo5pJCFGFovHGU=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=FIeSzLfKHyd9p1aoxRbumXfs6BMFc8aGadjo5/CTqF+xckgFNhQid5b8OBeKHQR+C
-	 VQUG+EP4pljLhjMl4mfpsgcHaJK3tlpgLO7BXp7WEupzAAWpodkaBrbFsDlTdw3EN3
-	 KElZmxoS6s8/qtdkNo3LTEt7931DFlN71z1P2RJm8Ain+Cso68xa58ZbqcfDxtUUyZ
-	 M5OBtaD/tZsqXdUGfkn03el2A9i5oGMQuEwqCmUEVwMyG6C9f2NV/jAwJuGcDjdsw2
-	 N0rnwHdpg72gUoUqa1CEb2fuTWX1wsJ+OXq/o1d4OdTXry0fuzVBEhgEznXXZn04ih
-	 z06oSa36gPVzg==
+	b=BxNmM/v11NdR4+bNKzLXUHVVgXvOVouczXVH8Rvp1MR8xShvuIUhc1FHMkzx9yBXp
+	 0C/BDXVQXknFEh7yFWsVPGNEvBVzoe7eMtkwV+FoM95c40s2ZmYarNjoRC4gwMXNhD
+	 tKX1x9eGsBGrMPlIy2qTzUBw5Di6V9Lh0vn/F9RyHsDO8j58uPFnnGnPgeWaKWR0qC
+	 rw9u2iEm8jJTf527X+BTtZkYdK3R3S0OJzDDDDThYjL0Artl2X4HnqJozUqpNUug8T
+	 JPgw8tKi+liUC/GqDU173oQsIHaihV8Macs6DZPGWncsNpzqEBWb2PLeOxfZ2mqcx5
+	 Mg0w3lhlNwN7w==
 Received: from [100.64.1.43] (unknown [100.64.1.43])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
 	(No client certificate requested)
 	(Authenticated sender: benjamin.gaignard)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id A962B17E0940;
-	Wed, 20 May 2026 14:58:20 +0200 (CEST)
-Message-ID: <9b5fe6af-0c06-4f51-bb33-9e0b47af7ea3@collabora.com>
-Date: Wed, 20 May 2026 14:58:20 +0200
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id A116117E0940;
+	Wed, 20 May 2026 14:59:15 +0200 (CEST)
+Message-ID: <fcedc7d8-f93e-4d96-b23a-fb9ad5a1f534@collabora.com>
+Date: Wed, 20 May 2026 14:59:15 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,52 +42,53 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/vsi: Use list_for_each_entry()
-To: Dan Carpenter <error27@gmail.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-References: <ag1N99H-xnmSh-hc@stanley.mountain>
+Subject: Re: [PATCH] iommu: vsi: avoid -Wformat-security warning
+To: Arnd Bergmann <arnd@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Robin Murphy <robin.murphy@arm.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20260519203658.1341889-1-arnd@kernel.org>
 Content-Language: en-US
 From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-In-Reply-To: <ag1N99H-xnmSh-hc@stanley.mountain>
+In-Reply-To: <20260519203658.1341889-1-arnd@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
 
-Le 20/05/2026 à 08:00, Dan Carpenter a écrit :
-> Smatch complains about the NULL check on "iommu" because list_entry()
-> can't be NULL.  Clean up this code by using list_for_each_entry().
+Le 19/05/2026 à 22:36, Arnd Bergmann a écrit :
+> From: Arnd Bergmann <arnd@arndb.de>
 >
-> Signed-off-by: Dan Carpenter <error27@gmail.com>
+> When -Wformat-security is enabled, it catches a call to
+> iommu_device_sysfs_add() that passes a string variable in
+> place of a format:
+>
+> drivers/iommu/vsi-iommu.c: In function 'vsi_iommu_probe':
+> drivers/iommu/vsi-iommu.c:717:9: error: format not a string literal and no format arguments [-Werror=format-security]
+>    717 |         err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, dev_name(dev));
+>        |         ^~~
+>
+> Pass this indirectly using "%s" as the format instead.
+>
+> Fixes: 917ace84b770 ("iommu: Add verisilicon IOMMU driver")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
 Reviewed-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
 
 > ---
-> Untested, but it compiled on the first try (no typos!)
->
->   drivers/iommu/vsi-iommu.c | 10 ++--------
->   1 file changed, 2 insertions(+), 8 deletions(-)
+>   drivers/iommu/vsi-iommu.c | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
 >
 > diff --git a/drivers/iommu/vsi-iommu.c b/drivers/iommu/vsi-iommu.c
-> index 5d0721bd2c7a..9954ed414526 100644
+> index 5d0721bd2c7a..23913720d484 100644
 > --- a/drivers/iommu/vsi-iommu.c
 > +++ b/drivers/iommu/vsi-iommu.c
-> @@ -366,15 +366,9 @@ static int vsi_iommu_map_iova(struct vsi_iommu_domain *vsi_domain, u32 *pte_addr
->   static void vsi_iommu_flush_tlb(struct iommu_domain *domain)
->   {
->   	struct vsi_iommu_domain *vsi_domain = to_vsi_domain(domain);
-> -	struct list_head *pos;
-> -
-> -	list_for_each(pos, &vsi_domain->iommus) {
-> -		struct vsi_iommu *iommu;
-> -
-> -		iommu = list_entry(pos, struct vsi_iommu, node);
-> -		if (!iommu)
-> -			continue;
-> +	struct vsi_iommu *iommu;
+> @@ -714,7 +714,8 @@ static int vsi_iommu_probe(struct platform_device *pdev)
+>   	pm_runtime_use_autosuspend(dev);
+>   	pm_runtime_enable(dev);
 >   
-> +	list_for_each_entry(iommu, &vsi_domain->iommus, node) {
->   		if (pm_runtime_get(iommu->dev) < 0)
->   			continue;
+> -	err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, dev_name(dev));
+> +	err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, "%s",
+> +				     dev_name(dev));
+>   	if (err)
+>   		goto err_runtime_disable;
 >   
