@@ -1,168 +1,95 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from sender4-of-o51.zoho.com (sender4-of-o51.zoho.com [136.143.188.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F2B933F8D6;
-	Wed, 20 May 2026 20:04:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779307452; cv=none; b=nw8yRg0mWUxo6vgrcJXFEaOWfXMMr6sr25f/3TzjflN1KBjONQd3bFebCN8sqXgzlOWHNuvfgHafrKmJPfBDDtvQwVOfAkmVELEbnIq5lc/N8g3peERUZKp/3sm5wz7T0kfd2GlNM8MommoBVKPC6YIh/T+F1DxmHsfMS8WbxRg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779307452; c=relaxed/simple;
-	bh=W8nCQ3SCzucynukoN8YbGS+yMwL3/FsKM/T/LgWo6Ec=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=A1BJfncW5OhnYWx518EDwtY1X5zoMKBQLkWzug/4k5lva5hvzeprtiDEnKsedBTrQ/2T/VROcoByGOwhiN0EyA35Pq/ylDj6uAckm8B4KgcANqJvTteYgnoaLuPuaGjtiZAsC3oBX7neaj4iFpQ1e8Q1lGsYldDFCAQzIv6Osyo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=H6U0xPSL; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F1803612F6
+	for <iommu@lists.linux.dev>; Wed, 20 May 2026 20:14:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.51
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779308092; cv=pass; b=HbcFEhSTUK8t5q19AuLtFNEHSfU90SoNs8r4h6x7JmZNiaZo9LyGpd3eVnabu2fkNDO4X1M/fiHH5iV8N5rNxhL17Kbh1kz2JiMUtAlPJ70xH6PA3B5vWJCcKGiALmkCk2FpglBk7mhGl4sxADXkS9KtnGFbqxzgTE06M/a5Ji4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779308092; c=relaxed/simple;
+	bh=3sQXcyhBMV7Fy/iPzt6jvnFx2tQnSeys6xAJHBKj0uM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=dE5fZNH2ZkknSKE/yqS4Eg6AQcZgjrXhAXFZmL2Te9PL9KxahCkMaSxrxXERk3alI0CdYREqVbw+Z5FkvKykKMQ2+z0C/kuU6HvKNLmg7ncVwKw4OPc5FPugTkwIp8GS0ezJjHwioDT1Q/QN0Kt+3YM4DI+HderTprw4OezkiRs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=apertussolutions.com; spf=pass smtp.mailfrom=apertussolutions.com; dkim=pass (1024-bit key) header.d=apertussolutions.com header.i=dpsmith@apertussolutions.com header.b=fk8v3jVU; arc=pass smtp.client-ip=136.143.188.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=apertussolutions.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=apertussolutions.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="H6U0xPSL"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 999201F000E9;
-	Wed, 20 May 2026 20:04:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779307450;
-	bh=hkMOwuQXaNBAdYLtFjUMiH4zzAgLe4SfdAgQtA8NLEY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To;
-	b=H6U0xPSL3mETPkYNlEvHXd+V/epjsiYOkKELhJ+VQ9RxenRE6BNg7pkfU1zPZKMce
-	 1l4kmN6pNKwx2DCM1QGjczc+7XVwj06EZrTwQvDDAgRSifS8kdbqKnkIS9XL99wsYn
-	 LjE8vw9aCHscUVLrdyrKGXkwKlYTkDNAKeTfw37GQyiiYa9NaflukSnvD8LXtWo49s
-	 XquntM5MidXCOJCEfTyd2xeCLUFpJsxob22wG7S9AW1OeJYIiSuX0hFETsMgJ21oAG
-	 sYw67xgEonHFKy5rJgRx8kSsYRqFryywGDI803ygEQfOo8vPmVxEv7BVkaTQsNfZcw
-	 m5RCk7+T+Pcyw==
-Date: Wed, 20 May 2026 15:04:09 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: jgg@nvidia.com, will@kernel.org, joro@8bytes.org, bhelgaas@google.com,
-	robin.murphy@arm.com, praan@google.com, baolu.lu@linux.intel.com,
-	kevin.tian@intel.com, miko.lenczewski@arm.com,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-	dan.j.williams@intel.com, jonathan.cameron@huawei.com,
-	vsethi@nvidia.com, linux-cxl@vger.kernel.org, nirmoyd@nvidia.com
-Subject: Re: [PATCH v5 2/3] PCI: Allow ATS to be always on for pre-CXL devices
-Message-ID: <20260520200409.GA88687@bhelgaas>
+	dkim=pass (1024-bit key) header.d=apertussolutions.com header.i=dpsmith@apertussolutions.com header.b="fk8v3jVU"
+ARC-Seal: i=1; a=rsa-sha256; t=1779307955; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=F7zGj1KM1ljluaeAwqLEa2lH3pOe1//+GG7dZFuLI/e7EOJSEDFz7r/ZwPSXFaSPBjGDaBPn0evtNpBB0l5HBIb1P/fUeLabzdyhNHqLjeuGkLBgHLLVm5EQYbq04+VcicZG0jspNbLDSTyh8zBgXeTRPE3fhkuzIUVlkN+Kuec=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1779307955; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=DRXXEptyfYW324C3Rd22g0Bz5yZ2Gjy/Wsltr9WZ4UU=; 
+	b=hXusYhMz5XryhCubUebQISLI6+Ine8ivFgl/WZxwfusR8AzqJt1V+wVNJ1i9TWR7yNFDBQ9P1WW0mt6jlGz1g2pHHPmso0vwRGEu9eaVKtrXAo7S1Y5RKpyMKe+t9oPlp1nQNrItH2A1Q5SC1l1Bp1tYeBQF55St1jRYRdhYFng=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=apertussolutions.com;
+	spf=pass  smtp.mailfrom=dpsmith@apertussolutions.com;
+	dmarc=pass header.from=<dpsmith@apertussolutions.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1779307955;
+	s=zoho; d=apertussolutions.com; i=dpsmith@apertussolutions.com;
+	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=DRXXEptyfYW324C3Rd22g0Bz5yZ2Gjy/Wsltr9WZ4UU=;
+	b=fk8v3jVUl1vMDS7ypit1OGgSRJCwy3CYGZ7bOP84cJvHacZTycXN7FVoTp+cYxXJ
+	4LosRO1EMAetAFMW4Gciwa6SnlryPlJl52AjnXmy+3NRWfGKGJgbzuGNwjhNhs3rEHq
+	zTT4q6Z7O0CO4d0W44EH8K4c898wh3G/6FtiBfXQ=
+Received: by mx.zohomail.com with SMTPS id 1779307952071689.0219932508874;
+	Wed, 20 May 2026 13:12:32 -0700 (PDT)
+Message-ID: <a5d70928-5d86-4439-a177-e5182552b3e2@apertussolutions.com>
+Date: Wed, 20 May 2026 16:12:28 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <35e75bf0abfa48f76bc87d73a772a3faf6271a9f.1779304390.git.nicolinc@nvidia.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v16 01/38] tpm: Initial step to reorganize TPM public
+ headers
+To: Dave Hansen <dave.hansen@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Jarkko Sakkinen <jarkko@kernel.org>
+Cc: Ross Philipson <ross.philipson@gmail.com>, linux-kernel@vger.kernel.org,
+ x86@kernel.org, linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
+ linux-efi@vger.kernel.org, iommu@lists.linux.dev, tglx@linutronix.de,
+ mingo@redhat.com, bp@alien8.de, hpa@zytor.com, dave.hansen@linux.intel.com,
+ ardb@kernel.org, mjg59@srcf.ucam.org, James.Bottomley@hansenpartnership.com,
+ peterhuewe@gmx.de, luto@amacapital.net, nivedita@alum.mit.edu,
+ herbert@gondor.apana.org.au, davem@davemloft.net, corbet@lwn.net,
+ ebiederm@xmission.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
+ kanth.ghatraju@oracle.com, daniel.kiper@oracle.com,
+ andrew.cooper3@citrix.com, trenchboot-devel@googlegroups.com
+References: <20260515211410.31440-1-ross.philipson@gmail.com>
+ <20260515211410.31440-2-ross.philipson@gmail.com>
+ <agemXwxVb9jvAbYM@kernel.org> <20260515230553.GO7702@ziepe.ca>
+ <8f8328d3-a7db-4a64-82f8-1e0e3eff93cf@intel.com>
+Content-Language: en-US
+From: "Daniel P. Smith" <dpsmith@apertussolutions.com>
+In-Reply-To: <8f8328d3-a7db-4a64-82f8-1e0e3eff93cf@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ZohoMailClient: External
 
-On Wed, May 20, 2026 at 12:46:09PM -0700, Nicolin Chen wrote:
-> Some NVIDIA GPU/NIC devices, though they don't implement CXL config space,
-> have many CXL-like properties. Call this kind "pre-CXL".
+On 5/15/26 7:10 PM, Dave Hansen wrote:
+> On 5/15/26 16:05, Jason Gunthorpe wrote:
+>> Can we please split out and progress the TPM reorg mini-series at the
+>> front?
 > 
-> Similar to CXL.cache capability, these pre-CXL devices also require the ATS
-> function even when their RIDs are IOMMU bypassed, i.e. keep ATS "always on"
-> v.s. "on demand" when a non-zero PASID line gets enabled in SVA use cases.
+> Yes, please.
 > 
-> Introduce pci_dev_specific_ats_required() quirk function to scan a list of
-> IDs for these devices. Then, include it in pci_ats_required().
-> 
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> Reviewed-by: Nirmoy Das <nirmoyd@nvidia.com>
-> Tested-by: Nirmoy Das <nirmoyd@nvidia.com>
-> Reviewed-by: Jonathan Cameron <jonathan.cameron@huawei.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Reviewed-by: Dave Jiang <dave.jiang@intel.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+Yes, we will split this out, address the Sashiko comments, and work on 
+getting it out next week.
 
-> ---
->  drivers/pci/pci.h    |  9 +++++++++
->  drivers/pci/ats.c    |  3 ++-
->  drivers/pci/quirks.c | 42 ++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 53 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-> index 4a14f88e543a2..e8ad27abb1cfe 100644
-> --- a/drivers/pci/pci.h
-> +++ b/drivers/pci/pci.h
-> @@ -1155,6 +1155,15 @@ static inline int pci_dev_specific_reset(struct pci_dev *dev, bool probe)
->  }
->  #endif
->  
-> +#if defined(CONFIG_PCI_QUIRKS) && defined(CONFIG_PCI_ATS)
-> +bool pci_dev_specific_ats_required(struct pci_dev *dev);
-> +#else
-> +static inline bool pci_dev_specific_ats_required(struct pci_dev *dev)
-> +{
-> +	return false;
-> +}
-> +#endif
-> +
->  #if defined(CONFIG_PCI_QUIRKS) && defined(CONFIG_ARM64)
->  int acpi_get_rc_resources(struct device *dev, const char *hid, u16 segment,
->  			  struct resource *res);
-> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-> index ebdf761843867..3a04d5b04c883 100644
-> --- a/drivers/pci/ats.c
-> +++ b/drivers/pci/ats.c
-> @@ -247,7 +247,8 @@ bool pci_ats_required(struct pci_dev *pdev)
->  	if (pdev->is_virtfn)
->  		pdev = pci_physfn(pdev);
->  
-> -	return pci_cxl_ats_required(pdev);
-> +	return pci_cxl_ats_required(pdev) ||
-> +	       pci_dev_specific_ats_required(pdev);
->  }
->  EXPORT_SYMBOL_GPL(pci_ats_required);
->  
-> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-> index caaed1a01dc02..c0242f3e9f063 100644
-> --- a/drivers/pci/quirks.c
-> +++ b/drivers/pci/quirks.c
-> @@ -5715,6 +5715,48 @@ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL, 0x1457, quirk_intel_e2000_no_ats);
->  DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL, 0x1459, quirk_intel_e2000_no_ats);
->  DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL, 0x145a, quirk_intel_e2000_no_ats);
->  DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL, 0x145c, quirk_intel_e2000_no_ats);
-> +
-> +static bool quirk_nvidia_gpu_ats_required(struct pci_dev *pdev)
-> +{
-> +	switch (pdev->device) {
-> +	case 0x2e00 ... 0x2e3f: /* GB20B */
-> +		return true;
-> +	}
-> +	return false;
-> +}
-> +
-> +static const struct pci_dev_ats_required {
-> +	u16 vendor;
-> +	u16 device;
-> +	bool (*ats_required)(struct pci_dev *dev);
-> +} pci_dev_ats_required[] = {
-> +	/* NVIDIA GPUs */
-> +	{ PCI_VENDOR_ID_NVIDIA, PCI_ANY_ID, quirk_nvidia_gpu_ats_required },
-> +	/* NVIDIA CX10 Family NVlink-C2C */
-> +	{ PCI_VENDOR_ID_MELLANOX, 0x2101, NULL },
-> +	{ 0 }
-> +};
-> +
-> +/*
-> + * Some NVIDIA devices do not implement CXL config space, but present as PCIe
-> + * devices that can issue CXL-like cache operations like CXL.cache. Thus, they
-> + * require ATS to obtain host physical addresses, like pci_cxl_ats_required().
-> + */
-> +bool pci_dev_specific_ats_required(struct pci_dev *pdev)
-> +{
-> +	const struct pci_dev_ats_required *i;
-> +
-> +	for (i = pci_dev_ats_required; i->vendor; i++) {
-> +		if (i->vendor != pdev->vendor)
-> +			continue;
-> +		if (i->ats_required && i->ats_required(pdev))
-> +			return true;
-> +		if (!i->ats_required && i->device == pdev->device)
-> +			return true;
-> +	}
-> +
-> +	return false;
-> +}
->  #endif /* CONFIG_PCI_ATS */
->  
->  /* Freescale PCIe doesn't support MSI in RC mode */
-> -- 
-> 2.43.0
-> 
+> Any way to break this down and merge in more bite-size pieces would be
+> better for everyone involved.
+
+I went through the TPM only part of the series and only one commit was 
+of substantial length, note I am not considering those that were only 
+moving headers around. That's the new buffer allocation patch from 
+Jarkko. We can see if there is a way to split it up without resulting in 
+either unused code or breaking the TPM driver.
+
+V/r,
+Daniel P. Smith
