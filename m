@@ -1,420 +1,141 @@
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 419E23368AF
-	for <iommu@lists.linux.dev>; Wed, 20 May 2026 15:47:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.222.172
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779292051; cv=pass; b=Cd+dp+JIPu/NfYTKRFDzPS7nwlwjURkfg1C0qD2P/3aYl6pawsxr/cXTlXtyV4i5pMxwXh3v3g6lSO8SHHo2yfvQr/usHDfGDiprcnM/cgoKP8uA80uJOatgQuCWsAmRRBlxagmPmuCQoEUmeiTYrC67u7uctJCmbwQg44WBmN0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779292051; c=relaxed/simple;
-	bh=AWGO8vhu+Zh92NgAY6Z9P494WPO1xIp3IJxl+CkGVDI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=UYPV1P7fgf1+PwiRfwde9gfSFuYf4oEL+18iJiWoUHa1emhlBHsxTwJb/VO16fAhYf1K0VKpPwb1zDP3uug9sDOr6GoyYrI9RZoFqnF/CjBun9ND71DGMyRKZpMQYPZ+zLLHwxwyKeHlWPJHR4xdzzsg6ndGfszufKW8bO6IQlI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tomeuvizoso.net; spf=pass smtp.mailfrom=tomeuvizoso.net; dkim=pass (2048-bit key) header.d=tomeuvizoso-net.20251104.gappssmtp.com header.i=@tomeuvizoso-net.20251104.gappssmtp.com header.b=NSYluTU3; arc=pass smtp.client-ip=209.85.222.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tomeuvizoso.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tomeuvizoso.net
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BC03C2D3EC1
+	for <iommu@lists.linux.dev>; Wed, 20 May 2026 15:50:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779292256; cv=none; b=f/jsfuI0oOYSubNs12+og/CvBc+qIo4eYtXMMLZ3+Ca03QvFI+SbHWxAUHOqW5da4DpyhO82fsYgiNAv8GxxUMnQLmRFWGcw+9+mQ2dYjhKQ9LXOCM1sZit35ZA4RQEOwfd76K6eUraIenwHkEMF5KlBNFIUSwmXkZANZ+l0CkY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779292256; c=relaxed/simple;
+	bh=RpaoUo25ECjWtwHsRvzBvqMTEK8AB1cJGeouPwGSCwM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nQO99YW9fWU1QacLxI18f49gPdsjLf6NILAcXZC1FThB093r2smyOkshVHAstiSF0bWQI/vfZA9zbPb/YwZ5hKFsehfy0h+LWicojahuTN8f6vu4EzpKWulPNqxoFpRci1UPBklbW41Ac4blljY1XfXgr7SHImLijgRiHWaPq6U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=OGojhXHV; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tomeuvizoso-net.20251104.gappssmtp.com header.i=@tomeuvizoso-net.20251104.gappssmtp.com header.b="NSYluTU3"
-Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-90d1f03238bso571086185a.1
-        for <iommu@lists.linux.dev>; Wed, 20 May 2026 08:47:26 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779292046; cv=none;
-        d=google.com; s=arc-20240605;
-        b=Szp/XIk5CUD7zQIGTj4e6c+LAfAreJdWkwPyGkWAlvE+KWxilxs5QnuojO+EM0QQY+
-         xDIbCmfrJEVOXSV+O2mZi4IqxHXlrXU4s38d18+hf7FKf2fIGwHwyJQp3MHgN6F8XZEf
-         aRhSCytte0uhHN7iq2qyQzTSwWhX5WbNAIK6kwpux1yTVukNdMUJyxXNU9XfSSm+yWS+
-         NbbcRzlRUyZBaIStIZu0NtfJXlrp9KLHD6MlnA5ITyIHjlw9FJV/nNq6j4LIruimZEzK
-         cdlyxRASaGzQ6s99BhFkAlQmgyMDcfGQPQQXN2Z+FVGjygm1KXLSjluAGQ0b7RD5oBSz
-         f7RQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=I5uPOQqH/io7bW7wdgpurqth07a6Aq9sxwItrhNv9yI=;
-        fh=ZwQ/72Vh6UfQTNZV7nH8WcDeVWumYyAS7AYrMiEKVCc=;
-        b=c+MrjFQKZMcbjmVzU+kUSgWaAdWqwwBrMNhvD7YCR/vOLALUL8nZj8/itX+ZO3bYDw
-         c0XZEzWeVAryrW5dOiSPJtFKgVlwTepWP1C6LdowdoyS6oVPPkOq/Jk15t2TZKgAepK0
-         xdtgCx4pSv7je1bUSLIrNN+vJoNnrGc19J/RuZLvbxzsDglg4qy/yBDuq/ThOl3OngkE
-         +2rxfz5tkNdth8laQXiENEWdChFaaEbyYJ3Q80Q3yPFS+BL5FbXa7JBNi0/Z1xLoA4to
-         vnsbPESYxT+0xpqnHIOK0Fr9bY4SJ6y+/APHOD+Kr+CXn8oMu0LByhnM2Qs7AG/ZAsyn
-         Fu4w==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tomeuvizoso-net.20251104.gappssmtp.com; s=20251104; t=1779292046; x=1779896846; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=I5uPOQqH/io7bW7wdgpurqth07a6Aq9sxwItrhNv9yI=;
-        b=NSYluTU3ex+Rrs1kMQRWmO5x7CR1p2Gi18SvrjBu4+jAKWKzXjFD2Z3QVy/RxYw6+H
-         hBfLDDcpfx4NkpMF+ca1l78EfNBHtfiXarHExZusEwVR3IgEMAJOqluyfIGwNOihZ2yp
-         XnScrSb0xzR+ucPMyezH2D+fnUblGF39UdnkWuENwZiY4RMYWgJ6SBb4bK2b1/eqALww
-         RIWZnWUiTLKa59vqX6S+P0QM8xvC/C3GAi95833z+ZNur4DiwIYrmfa3Xy6e0kUer82w
-         voDf4bbkrYhNkXEr41ovHNm+yrsx0qIHrBbXA/XaA74AfpQA6TG1QaqFuqEyjCKdwOB+
-         oOKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779292046; x=1779896846;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=I5uPOQqH/io7bW7wdgpurqth07a6Aq9sxwItrhNv9yI=;
-        b=RFK3DUfaBoQwB2D3MtfaxbtQspCDUMoU3Ojy7F7WSULxQ1b+lunukVYd211dF7pL78
-         TY/O/SzxHgEPYz6o8aC/g+13mG2/ACaUbQgboIIptk8KqY7h5s0aKZCbRLEvvVOrYPdn
-         PJsJ7QhHxeQq9QNbtoDdNrYBlT5bqd2t6oD6TTLp53WfNyi7b2DFQFLZd3VaIf3Kselr
-         SpjhcV7Bkc7VKyG6+3/WIRrArfs2lk3N0vra5FbbtLU9oYA0YdRkWDC/H8ywM0s7zO9W
-         hBo7isrqII3Cvas+Uz+W/FGWZY0IKFr0+hFAtX7Kquiot4sN2j0lY3kXSSjj+3Xl8Ywf
-         Oe9w==
-X-Forwarded-Encrypted: i=1; AFNElJ8BiCd6A40KN//In54eWV5qFxFIxUxf2Fb/qtaVW/GoUTHsOChtKn9JQzpTurCybQeqTRJYIA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy95RydiY4F3jSoykpaVn3sQLjTUr/W7HlxQ803G/l4hew8TmwX
-	Qp7rSdSU/oFLdbm/z9fTVbz2L/4TVDGOJ/wjIep3awfivPl+ujIHv2xmP9p4EnkUtg4JdNdEvRf
-	2+APkdfXkQOr8E9i0Bvrl/DENUtdrVQoCBtkdAozMIA==
-X-Gm-Gg: Acq92OHckB5UbgZW3uD+Kv4byxdhkwcVX0bXNji2/TTwq+JA1G68yPxU2X1mi7EIfBK
-	xGWQ7z5yyxvVh/4sKM+/DIUNfbPzUfpHHATNSrAh1TLYFp7rfv10CnrkNb7A6RgIsm9l9xbx3wV
-	ObVcBGP6ybcXoMzkKpi/2FdzbQXUgsiMUXJX8eY78xnw36TSCE5x0/oDBHSd/WHl3uJymo6B+6g
-	Nnt5Flvetu6KZu16JLK+qwnOZOaGhI7/va2QmcvbA27+dZk/EDqgFaWAKn+SULTcrKQtVLggmxs
-	I2KlT+ZaSKC/mrqWjQ==
-X-Received: by 2002:a05:620a:1d94:b0:911:fba0:6d02 with SMTP id
- af79cd13be357-914a0268c45mr5177385a.22.1779292045808; Wed, 20 May 2026
- 08:47:25 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="OGojhXHV"
+Received: from localhost (unknown [167.220.233.27])
+	by linux.microsoft.com (Postfix) with ESMTPSA id DA57220B7168;
+	Wed, 20 May 2026 08:50:45 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com DA57220B7168
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1779292246;
+	bh=l1D/wHEJEIsOiA8Sd48g6TEyzc1+Z3D0jNjjvbWptc8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=OGojhXHVLWqkRhIFoYuzDbMc85gCV3hkBREx+q4jcJ8gIwe1tRrC4HFbA8ZUQ7jXm
+	 oYOH6TxjGbswbYwCca/6dzs6hIkUarwEZjrt/yLTvM/DWT4QyUpapwfMLyOV3nxx/T
+	 sZ7WDa0AhSMNvoLUeIaf6gjVUfOe9FeVBJiFbzwM=
+Date: Wed, 20 May 2026 23:50:50 +0800
+From: Yu Zhang <zhangyu1@linux.microsoft.com>
+To: Michael Kelley <mhklinux@outlook.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, 
+	"wei.liu@kernel.org" <wei.liu@kernel.org>, "kys@microsoft.com" <kys@microsoft.com>, 
+	"haiyangz@microsoft.com" <haiyangz@microsoft.com>, "decui@microsoft.com" <decui@microsoft.com>, 
+	"longli@microsoft.com" <longli@microsoft.com>, "joro@8bytes.org" <joro@8bytes.org>, 
+	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com" <robin.murphy@arm.com>, 
+	"bhelgaas@google.com" <bhelgaas@google.com>, "kwilczynski@kernel.org" <kwilczynski@kernel.org>, 
+	"lpieralisi@kernel.org" <lpieralisi@kernel.org>, "mani@kernel.org" <mani@kernel.org>, 
+	"robh@kernel.org" <robh@kernel.org>, "arnd@arndb.de" <arnd@arndb.de>, "jgg@ziepe.ca" <jgg@ziepe.ca>, 
+	"jacob.pan@linux.microsoft.com" <jacob.pan@linux.microsoft.com>, "tgopinath@linux.microsoft.com" <tgopinath@linux.microsoft.com>, 
+	"easwar.hariharan@linux.microsoft.com" <easwar.hariharan@linux.microsoft.com>, Mukesh R <mrathor@linux.microsoft.com>
+Subject: Re: [PATCH v1 3/4] iommu/hyperv: Add para-virtualized IOMMU support
+ for Hyper-V guest
+Message-ID: <cecgndun5p7k53krzh2ffc7h3dl4o3br2s5dafc5qe7n7e7dbm@s5ovlevvle7s>
+References: <20260511162408.1180069-1-zhangyu1@linux.microsoft.com>
+ <20260511162408.1180069-4-zhangyu1@linux.microsoft.com>
+ <SN6PR02MB4157FB81CC9B6347DCCC8C56D4072@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <qeyycsdnejwrqle4zwrvkjvkvrpjifeanwxjaa7i7y2ab7rnt2@b6gvugqayarg>
+ <SN6PR02MB415734108A86BDFB66AEE4CED4042@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <fw2pruvjgo7yigtcxssf3xv27soibsj6hmw2ls5wj4rylfhdha@e63f32cwu2x5>
+ <SN6PR02MB4157A1B2D9B56062A0917BC5D4042@SN6PR02MB4157.namprd02.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260519-qda-series-v1-0-b2d984c297f8@oss.qualcomm.com>
- <20260519-qda-series-v1-2-b2d984c297f8@oss.qualcomm.com> <paiohsil5pmvm7cf6jxrhaj2225bgvlt3scrag4x6gbkyosow5@l4tbakbnxcvo>
-In-Reply-To: <paiohsil5pmvm7cf6jxrhaj2225bgvlt3scrag4x6gbkyosow5@l4tbakbnxcvo>
-From: Tomeu Vizoso <tomeu@tomeuvizoso.net>
-Date: Wed, 20 May 2026 17:47:14 +0200
-X-Gm-Features: AVHnY4JWUX0pXGJu6GgwPpdJDM8Jh8t09gfswovnCTuU2k-U-QKXEr_LdCOWDYs
-Message-ID: <CAPsqS2Tt0JbHhJLHBsbJ2YfZW913WNfoSXpSa+8TD1T9CV8V3g@mail.gmail.com>
-Subject: Re: [PATCH 02/15] accel/qda: Add QDA driver documentation
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Cc: ekansh.gupta@oss.qualcomm.com, Oded Gabbay <ogabbay@kernel.org>, 
-	Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
-	Bharath Kumar <quic_bkumar@quicinc.com>, Chenna Kesava Raju <quic_chennak@quicinc.com>, srini@kernel.org, 
-	andersson@kernel.org, konradybcio@kernel.org, robin.clark@oss.qualcomm.com, 
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-media@vger.kernel.org, 
-	linaro-mm-sig@lists.linaro.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <SN6PR02MB4157A1B2D9B56062A0917BC5D4042@SN6PR02MB4157.namprd02.prod.outlook.com>
 
-On Wed, May 20, 2026 at 4:12=E2=80=AFPM Dmitry Baryshkov
-<dmitry.baryshkov@oss.qualcomm.com> wrote:
->
-> On Tue, May 19, 2026 at 11:45:52AM +0530, Ekansh Gupta via B4 Relay wrote=
-:
-> > From: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
-> >
-> > Add documentation for the Qualcomm DSP Accelerator (QDA) driver under
-> > Documentation/accel/qda/. The documentation covers the driver
-> > architecture, GEM-based buffer management, IOMMU context bank
-> > isolation, and the RPMsg transport layer.
-> >
-> > The user-space API section describes the DRM IOCTLs for session
-> > management, GEM buffer allocation, and remote procedure invocation via
-> > the FastRPC protocol, along with a typical application lifecycle
-> > example. Sections for dynamic debug and basic testing are also
-> > included.
-> >
-> > Wire the new documentation into the Compute Accelerators index at
-> > Documentation/accel/index.rst.
-> >
-> > Assisted-by: Claude:claude-4-6-sonnet
-> > Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
-> > ---
-> >  Documentation/accel/index.rst     |   1 +
-> >  Documentation/accel/qda/index.rst |  13 ++++
-> >  Documentation/accel/qda/qda.rst   | 146 ++++++++++++++++++++++++++++++=
-++++++++
-> >  3 files changed, 160 insertions(+)
-> >
-> > diff --git a/Documentation/accel/index.rst b/Documentation/accel/index.=
-rst
-> > index cbc7d4c3876a..5901ea7f784c 100644
-> > --- a/Documentation/accel/index.rst
-> > +++ b/Documentation/accel/index.rst
-> > @@ -10,4 +10,5 @@ Compute Accelerators
-> >     introduction
-> >     amdxdna/index
-> >     qaic/index
-> > +   qda/index
-> >     rocket/index
-> > diff --git a/Documentation/accel/qda/index.rst b/Documentation/accel/qd=
-a/index.rst
-> > new file mode 100644
-> > index 000000000000..013400cf9c25
-> > --- /dev/null
-> > +++ b/Documentation/accel/qda/index.rst
-> > @@ -0,0 +1,13 @@
-> > +.. SPDX-License-Identifier: GPL-2.0-only
-> > +
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > +accel/qda Qualcomm DSP Accelerator
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > +
-> > +The QDA driver provides a DRM accel based interface for Qualcomm DSP o=
-ffload.
-> > +It uses the FastRPC protocol and integrates with DRM and GEM infrastru=
-cture
-> > +for device and buffer management.
-> > +
-> > +.. toctree::
-> > +
-> > +   qda
-> > diff --git a/Documentation/accel/qda/qda.rst b/Documentation/accel/qda/=
-qda.rst
-> > new file mode 100644
-> > index 000000000000..9f49af6e6acc
-> > --- /dev/null
-> > +++ b/Documentation/accel/qda/qda.rst
-> > @@ -0,0 +1,146 @@
-> > +.. SPDX-License-Identifier: GPL-2.0-only
-> > +
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > +Qualcomm DSP Accelerator (QDA) Driver
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > +
-> > +Introduction
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > +
-> > +The QDA driver is a DRM accel driver for Qualcomm's DSPs. It provides =
-a
-> > +DRM accel based interface for Qualcomm DSP offload, supporting workloa=
-ds
-> > +such as AI inference, computer vision, audio processing, and sensor of=
-fload
-> > +on Qualcomm SoCs. It uses the FastRPC protocol and integrates with DRM=
- and
-> > +GEM infrastructure for device and buffer management.
-> > +
-> > +Key Features
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > +
-> > +*   **DRM accel Interface**: Exposes a standard character device node
-> > +    (e.g., ``/dev/accel/accel0``) via the DRM accel subsystem.
-> > +*   **FastRPC Protocol**: Implements the FastRPC protocol for communic=
-ation
-> > +    between the application processor and the DSP.
-> > +*   **GEM Buffer Management**: Uses the DRM GEM interface for buffer
-> > +    allocation, lifecycle management, and DMA-BUF import/export.
-> > +*   **IOMMU Isolation**: Uses IOMMU context banks to enforce memory is=
-olation
-> > +    between different DSP user sessions.
-> > +*   **Modular Design**: Clean separation between the core DRM logic, t=
-he
-> > +    memory manager, and the RPMsg-based transport layer.
-> > +
-> > +Architecture
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > +
-> > +The QDA driver consists of several functional blocks:
-> > +
-> > +1.  **Core Driver (``qda_drv``)**: Manages device registration, file o=
-perations,
-> > +    and DRM accel integration.
-> > +2.  **Memory Manager (``qda_memory_manager``)**: A flexible memory man=
-agement
-> > +    layer that handles IOMMU context banks. It supports pluggable back=
-ends
-> > +    (such as DMA-coherent) to adapt to different SoC memory architectu=
-res.
-> > +3.  **GEM Subsystem**: Implements the DRM GEM interface for buffer man=
-agement:
-> > +
-> > +    * **``qda_gem``**: Core GEM object management, including allocatio=
-n, mmap
-> > +      operations, and buffer lifecycle management.
-> > +    * **``qda_prime``**: PRIME import functionality for DMA-BUF intero=
-perability
-> > +      with other kernel subsystems.
-> > +
-> > +4.  **Transport Layer (``qda_rpmsg``)**: Abstraction over the RPMsg fr=
-amework
-> > +    to handle low-level message passing with the DSP firmware.
-> > +5.  **Compute Bus (``qda_compute_bus``)**: A custom virtual bus used t=
-o
-> > +    enumerate and manage the specific compute context banks defined in=
- the
-> > +    device tree. The bus was introduced because IOMMU context banks (C=
-Bs) are
-> > +    synthetic constructs =E2=80=94 not real platform devices =E2=80=94=
- making a platform driver
-> > +    an incorrect abstraction for them. The earlier platform-driver app=
-roach also
-> > +    had a race condition: device nodes were created before the RPMsg c=
-hannel
-> > +    resources were fully initialized, and because ``probe`` runs async=
-hronously,
-> > +    applications could open a CB device and attempt to start a session=
- before
-> > +    the underlying transport was ready. The compute bus makes CB lifet=
-ime
-> > +    explicitly subordinate to the parent QDA device, closing that wind=
-ow.
-> > +6.  **FastRPC Core (``qda_fastrpc``)**: Implements the protocol logic =
-for
-> > +    marshalling arguments and handling remote invocations.
-> > +
-> > +User-Space API
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > +
-> > +The driver exposes a set of DRM-compliant IOCTLs:
-> > +
-> > +*   ``DRM_IOCTL_QDA_QUERY``: Query DSP type (e.g., "cdsp", "adsp")
-> > +    and capabilities.
-> > +*   ``DRM_IOCTL_QDA_REMOTE_SESSION_CREATE``: Initialize a new process =
-context
-> > +    on the DSP.
-> > +*   ``DRM_IOCTL_QDA_REMOTE_INVOKE``: Submit a remote method invocation=
- (the
-> > +    primary execution unit).
-> > +*   ``DRM_IOCTL_QDA_GEM_CREATE``: Allocate a GEM buffer object for DSP=
- usage.
-> > +*   ``DRM_IOCTL_QDA_GEM_MMAP_OFFSET``: Retrieve mmap offsets for memor=
-y mapping.
-> > +*   ``DRM_IOCTL_QDA_REMOTE_MAP`` / ``DRM_IOCTL_QDA_REMOTE_MUNMAP``: Ma=
-p or unmap
-> > +    buffers into the DSP's virtual address space. Each accepts a ``req=
-uest``
-> > +    field selecting between a legacy operation (``QDA_MAP_REQUEST_LEGA=
-CY`` /
-> > +    ``QDA_MUNMAP_REQUEST_LEGACY``) and an attribute-based operation
-> > +    (``QDA_MAP_REQUEST_ATTR`` / ``QDA_MUNMAP_REQUEST_ATTR``).
->
-> Explain, what happens in the users don't map the buffers into the DSP
-> space. Will DRM_IOCTL_QDA_REMOTE_INVOKE handle the mapping or not? What
-> is the difference between those two modes?
->
-> Would the driver benefit from using GPUVM?
->
-> > +
-> > +Usage Example
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > +
-> > +A typical lifecycle for a user-space application:
-> > +
-> > +1.  **Discovery**: Open ``/dev/accel/accel*`` and use
-> > +    ``DRM_IOCTL_QDA_QUERY`` to identify the DSP domain served by that
-> > +    device node.
-> > +2.  **Initialization**: Call ``DRM_IOCTL_QDA_REMOTE_SESSION_CREATE`` t=
-o
-> > +    establish a session and create a process context on the DSP.
-> > +3.  **Memory**: Allocate buffers via ``DRM_IOCTL_QDA_GEM_CREATE`` or i=
-mport
-> > +    DMA-BUFs (PRIME fd) from other drivers using ``DRM_IOCTL_PRIME_FD_=
-TO_HANDLE``.
-> > +4.  **Execution**: Use ``DRM_IOCTL_QDA_REMOTE_INVOKE`` to pass argumen=
-ts and
-> > +    execute functions on the DSP.
-> > +5.  **Cleanup**: Close file descriptors to automatically release resou=
-rces and
-> > +    detach the session.
->
-> I'd have expected the description of the actual example. I.e. clone the
-> app from https://the.addr, prepare clang >=3D NN.MM, QAIC (https://foo),
-> run make, run the app, check the results. I'd remind that DRM Accel has
-> a very specific requirement of having the working toolhain in the
-> open-source.
+On Fri, May 15, 2026 at 05:36:40PM +0000, Michael Kelley wrote:
+> From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Friday, May 15, 2026 9:54 AM
+> > 
+> > On Fri, May 15, 2026 at 02:51:38PM +0000, Michael Kelley wrote:
+> > > From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Friday, May 15, 2026 7:00 AM
+> > > >
+> > > > On Thu, May 14, 2026 at 06:13:24PM +0000, Michael Kelley wrote:
+> > > > > From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Monday, May 11, 2026 9:24 AM
+> 
+> [....]
+> 
+> > > > >
+> > > > > Previous versions of this function did hv_iommu_detach_dev(). With that call
+> > > > > removed from here, hv_iommu_detach_dev() is only called when attaching a
+> > > > > domain to a device that already has a domain attached. Is it the case that
+> > > > > Hyper-V doesn't require the detach as a cleanup step?
+> > > > >
+> > > >
+> > > > The IOMMU core attaches the device to release_domain (our blocking domain)
+> > > > before calling release_device(), so I believe the explicit detach in the RFC
+> > > > was redundant. I simply didn't realize that at the time.
+> > > >
+> > >
+> > > Got it. But after the IOMMU core attaches the device to the blocking
+> > > domain, there's the possibility that the vPCI device is rescinded by
+> > > Hyper-V and it goes away entirely. Or the device might be subjected
+> > > to an "unbind/bind" cycle in Linux. Does the detach need to be done
+> > > on the blocking domain in such cases? In this version of the patches, the
+> > > Hyper-V "attach" and "detach" hypercalls still end up unbalanced. That
+> > > seems a bit untidy at best, and I wonder if there are scenarios where
+> > > Hyper-V will complain about the lack of balance.
+> > >
+> > 
+> > Thank you, Michael. May I ask what "the vPCI device is rescinded by
+> > Hyper-V and it goes away entirely" mean?
+> > 
+> 
+> See the documentation at Documentation/virt/hyperv/vpci.rst in a
+> kernel source code tree, and particularly the section entitled "PCI Device
+> Removal". Such removals can and do happen in running Azure guest
+> VMs. Start with that info and then I'll do my best to answer follow-up
+> questions you may have.
+> 
+> The unbind/bind case is separate, but has some of the same effects in
+> that Linux should be removing all setup of the PCI device. There's actually
+> two unbind steps -- one to unbind the device-specific driver (e.g., the
+> Mellanox MLX5 driver or the NMVe driver) driver from the device, and
+> potentially a second to unbind the VMBus vPCI driver from the device.
+> These unbind/bind sequences can be done in the Linux guest without
+> the Hyper-V host rescinding the device.
 
-We have been getting submissions lately that don't fulfill that
-requirement so I will point to the precise part of the documentation
-that explains it:
+Thanks for pointing me to the vpci.rst doc, Michael!
 
-https://www.kernel.org/doc/html/latest/gpu/drm-uapi.html#open-source-usersp=
-ace-requirements
+IIUC, for the vPCI rescind case and the VMBus vPCI driver unbind
+case, both will trigger iommu_deinit_device(), in which IOMMU core
+attaches the device to our blocking domain. And hypervisor will
+handle such attaching to the blocking domain by essentially disable
+the DMA translation and IOPF for the device. Since the device is
+already in a safe state after that, I don't think an additional
+detach is necessary.
 
-For an example of a submissions that complies, see:
+For the device-specific driver unbind (e.g., unbind nvme then
+bind back, or bind to vfio-pci), that is transparent to the IOMMU
+layer.
 
-https://lore.kernel.org/dri-devel/20260114-thames-v2-0-e94a6636e050@tomeuvi=
-zoso.net/
+Also, while looking at Jason's comments on the detach/attach
+semantics, I'm now thinking that making the attach hypercall
+atomic (having the hypervisor handle the domain switch
+internally) might be a cleaner approach. That also eliminates
+the attach/detach imbalance issue entirely. I need to do some
+verification on the hypervisor side first, but will keep you
+posted. Thanks!
 
-Most importantly, notice how the proposed Thames Mesa driver generates
-machine code for all the hardware units, and doesn't use any blob for
-that.
+B.R.
+Yu
 
-Regards,
-
-Tomeu
-
-> > +
-> > +Internal Implementation
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > +
-> > +Memory Management
-> > +-----------------
-> > +The driver's memory manager creates virtual "IOMMU devices" that map t=
-o
-> > +hardware context banks. This allows the driver to manage multiple isol=
-ated
-> > +address spaces. The implementation uses a DMA-coherent backend to ensu=
-re data consistency
-> > +between the CPU and DSP without manual cache maintenance in most cases=
-.
->
-> GEM usage?
->
-> > +
-> > +Debugging
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > +The driver includes extensive dynamic debug support. Enable it via the
-> > +kernel's dynamic debug control:
-> > +
-> > +.. code-block:: bash
-> > +
-> > +    echo "file drivers/accel/qda/* +p" > /sys/kernel/debug/dynamic_deb=
-ug/control
-> > +
-> > +Testing
-> > +=3D=3D=3D=3D=3D=3D=3D
-> > +The QDA driver can be exercised using the ``fastrpc_test`` utility fro=
-m the
-> > +FastRPC userspace library. Run the test application:
->
-> pointer
->
-> > +
-> > +.. code-block:: bash
-> > +
-> > +    fastrpc_test -d 3 -U 1 -t linux -a v68
-> > +
-> > +**Options**
-> > +
-> > +``-d domain``
-> > +    Select the DSP domain to run on:
-> > +
-> > +    * ``0`` =E2=80=94 ADSP
-> > +    * ``1`` =E2=80=94 MDSP
-> > +    * ``2`` =E2=80=94 SDSP
-> > +    * ``3`` =E2=80=94 CDSP *(default on targets with CDSP)*
-> > +
-> > +``-U unsigned_PD``
-> > +    Select signed or unsigned protection domain:
-> > +
-> > +    * ``0`` =E2=80=94 signed PD
-> > +    * ``1`` =E2=80=94 unsigned PD *(default)*
-> > +
-> > +``-t target``
-> > +    Target platform: ``android`` or ``linux`` *(default: linux)*
-> > +
-> > +``-a arch_version``
-> > +    DSP architecture version, e.g. ``v68``, ``v75`` *(default: v68)*
-> >
-> > --
-> > 2.34.1
-> >
-> >
->
-> --
-> With best wishes
-> Dmitry
+> 
+> Michael
+> 
