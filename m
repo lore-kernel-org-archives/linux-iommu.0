@@ -1,64 +1,63 @@
 Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0B663403F3
-	for <iommu@lists.linux.dev>; Wed, 20 May 2026 19:54:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F0E73563E9
+	for <iommu@lists.linux.dev>; Wed, 20 May 2026 19:59:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779306892; cv=none; b=dE3b4P3xiT4SnbayzuR0uyPolgMPr+6Ju7GRBmUalVaGTenH+r5HQ4AMmA8nNjvufn+6pPIiSOM8RPHdQ9S8Mbef6XEzbakoxhB8ivI2XARt0N0yzUYblizUTVSv3AxZFqIoh2zRmpbf6sgAQ6i1VTwnre0F9XTLAWeNBX/2SW0=
+	t=1779307167; cv=none; b=jHGt/E5WuXBKX2+UTTEDcafjVkl8TxUzQGRMIubUyRDC99Qz6LY98qSSElS/VjG5CaWv/a3qESUUM/b3gjJ5LuYAtP0pytwwpahUJpYpvK1CNeEItw/VHGoSkdhscunOxkgelvPV4wkpUoHtyxZVLjK5mdAGFmv8ZPrH5ver/aQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779306892; c=relaxed/simple;
-	bh=DwoLvHtBsMr6cFX0X2XMLQenBS2lTQpE+ExMxyFn8EE=;
+	s=arc-20240116; t=1779307167; c=relaxed/simple;
+	bh=S7TAJoU+IMqYQKKwE9M0wXBnMWS7p5Uteu79IW573uY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ga9rbQi3dnSyeu8xiCdVWkdDKnZKPOOxmFbDyk856Txy9YV8VM1yFO6gY3hmrVu28Yi213KDY0Vm+N6KAq4UdVUz+aaS9RV6OmgwjAs2ajsYgonXTdZXLIdaWUkaTwHnE3Rck+g0diAJcw+/QLJ/+dCG/sdkqPlbTx3k218f8+o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=dNQag2Tw; arc=none smtp.client-ip=209.85.214.176
+	 Content-Type:Content-Disposition:In-Reply-To; b=GkzUaZp65qZ6FMGnAg44rWbyzX+s59CX/UfJ3Lv/OrI8GE/4WdOKy8xmKVizCy6eNyq5PIe4GD6jloMON4KJWvZsfhAGjWpVHjwDg7AhWZnginy/MDxt9oHHbAcBduQIepM/a8BurIgKC2RZyOHd/dmgRIry/cWGQDvex9UvTgI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=clJMrxE9; arc=none smtp.client-ip=209.85.214.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="dNQag2Tw"
-Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-2b2e8b95bdbso1675ad.0
-        for <iommu@lists.linux.dev>; Wed, 20 May 2026 12:54:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="clJMrxE9"
+Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-2b46da8c48eso2685ad.1
+        for <iommu@lists.linux.dev>; Wed, 20 May 2026 12:59:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779306890; x=1779911690; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1779307166; x=1779911966; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=odGUqTyiw+s+ktOv1sVN6kVyJPFqIH1UoIVnjwejXQY=;
-        b=dNQag2Tw4086dwdnZCjyT5vaUdFMOfS2newPR2fLvCzXyYqNW6GXu3Wuh2i6aqsRBm
-         avGKCJYyHue9UNulsxkOr1T5IVPmL/hAsA7VjTJDZQ25dqdApJteyqCCebTJBsKN3NaC
-         Z7Ggss7mgB+JOY9CV5jk6nL/AmsslMMn9bSoThUuHJu1TWEkdLIEQVMqKWE8s8oCNA+S
-         TpLOX08V9ry5srTi+byOJ0h4nuY2f51d8+rL2PE5c00L3ts3x4VgNtK2KR2pMW3SiECM
-         VKf0r2MJfS2v/1nBNe5uWTNAxXVp2U1HRJaOPxxlqtyb7Av7MNUwsjK5hyIJEU+qFSyf
-         TSNg==
+        bh=6s3nWbufKIAdpd+T1kqQvCCgsvhw2lBrbx69UeZQAOE=;
+        b=clJMrxE94ovOUA/xyA/fXOV6OFtjkmShFl0uRff+/LHXqnonW8snHyHYZlZFYD6luH
+         wd9B/0GhYDnm7/D+SlotKUUOhUCrgNFzHJO+kGYIkvTj43LEUXB4vujEslP7l2y40dmB
+         QMIokN3VB+dh38cbztG6WbGu1xGU0BE+BoINP6WhD2u3rdEDZU9rcaLX8F2aEkqNz3xD
+         p0E20uPsB2nFgjgSMdFggchJCYu+LgB3vVEoAgsHWf/dVTMG0FoxRfXUZsJFuCUuKy98
+         hkXlwalbPCQmLCMMLYXSU76S+hqDbeaArasA2jFQrUAdK3lJAACqPm96q/LYxJXiyniX
+         cfHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779306890; x=1779911690;
+        d=1e100.net; s=20251104; t=1779307166; x=1779911966;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=odGUqTyiw+s+ktOv1sVN6kVyJPFqIH1UoIVnjwejXQY=;
-        b=L6WM+26BCRA+JX1t1EMPITHH4323Dda798fGAj3b5Mno9RFWiCCS41dueY+Q/eJ2n2
-         NAocugtT79vaKxgZ9nE+GLc6chONL0gDHj6ghP27luSN6p5zvqLAD/8PXG4w1IYcNZYh
-         abYtDC4UWQmY0IAQSvz54kqRznbd6Ug8I7Tz/wVVMsQVD96P9YjJW7FjDf+buMnmog6j
-         T54kYz9w4XsxhpxH45DTWLpzqdytv/X4Xu03gRyOHdbfWwRE8uX9ZIgBHiNDCOe3ipZJ
-         fhl60h8iiIs/lCqIVfYq0RHD6+PXwPofB2zLe0QjvWJ3XmpfFp5IuQ5sm9cjhFhkHj3C
-         yf5g==
-X-Forwarded-Encrypted: i=1; AFNElJ/rWnnQisgd1ixDEPCpdjQ51z2Yd3BOoktHE0KfhvjINcvYQwBCKnkJnkp7kc9uHO0+9i1VUQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzMBsvIVEms1zX1mtFs94H2PGUQVp36HTVNoNUcdyebbAavoCG8
-	pAlt2fPWl55rYhn4gXdnk1IHfoLXYAES5qzjnHM7skjYZn8WttN4BD9Hax8uxoIYWg==
-X-Gm-Gg: Acq92OG0jyk13zPtxHdwZ5cGukXn/NvdRU/cCXQwE0zIZyJwNxD0HwYT5DY79fAGZRP
-	2i+ZK6k93GfP85u5SWa5WenUIl62jO6ZaxvS0SDn4pbML0a4FHZrKFHjHNVaeYTPa3orsExDOSc
-	CjbDxBp6tiyTSEltUaZeqjjqAQjFMJTWT5LrGR3vxKBc06qvt4iPjSOVUNdHpMddYCBHWEINx/v
-	HY9C4niFiWTf0YwRh5IeNs1Dkrvhv0P/OyNIFWHUtMj0OxrxSLro5yA16JfC91+XvEpwKgmSrFp
-	L14TLFxu1lwAsbE5N/I31VpO4Pn+baS9EIkmYuCDBHBZrRRyy+VrCcY/CpONtUA8GwieM1H/b9C
-	DZ4NmgR4A3MY+IsmGx4Kv0+zh+XTpXNbhzMWQOU7EfVGK3uUG1oYDnxzB0K2aV901BkqXYUZ5qK
-	IbFxO5T7SwVtJlKeHN3eket8Ds09piGPp9akDzFDCWK7JL53kpQQWF/jPysfJMd09stB3FIfO3I
-	Md4Db8y
-X-Received: by 2002:a17:903:1a84:b0:2bd:6dad:7ccd with SMTP id d9443c01a7336-2be9f6f3fb7mr619555ad.25.1779306889241;
-        Wed, 20 May 2026 12:54:49 -0700 (PDT)
+        bh=6s3nWbufKIAdpd+T1kqQvCCgsvhw2lBrbx69UeZQAOE=;
+        b=sJrELSDjrgn5dX90k6+sSJbcHdcmob8l0QnCILJr6733dqDwExggBB7etM6PUmZQST
+         sRQFbAaNigE9TLmvuDrVihfAWg4Um3HXme/xxMQtgE4lJc+8TP+vK7+OoXvDsLEtRgHq
+         aZ4aquo57HZYWrtMAeypLfna5BZU+ndIhcAWTYSKMm+hEyaCVIYCHzVDzXAVV3CRJJfq
+         Kb91CR7+9U5XDvm8fVSzaWQW8sfuE572iVnZXDp3xJ++Cjv92myV4sB3FDXAJXagb/CB
+         jp8WI3ESeoHBqwYdRk3j83Ji4mzKhWD9TnOJPRAxzrAZ61Fxn4JR/KbKwq8QqiOKu6ix
+         zftg==
+X-Forwarded-Encrypted: i=1; AFNElJ+ZM1jbjnlhZrUMQukzZmFB8b77SKJwe5+Cgv6QWJY+YYLcUouiwqWOm3f2KSjzs4sh1LEaTA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyXRPJ4unoDit2fi9eYHJWsYrh7+jb0NXePaJLvtlVJQtwn0/UC
+	Nnbl3OM7hmzYqwtmVv50n/wxHkSFPhY5QDw/czFZqT30pVZa/g9m1hpkGYPgjCSFqQ==
+X-Gm-Gg: Acq92OGLtl/8TRQ8Qr45HxMrSx9ulFtvVcmtzqWA9QWeFFZYWBi9tQBRcDyk/5WJ0yI
+	LRmboKuSrW/2drrXlbGMB+iJGN+zdfQ8e9Pl6ZtHcriToDIsLlcYq+VexRfqMOaoEcVxjFSppPW
+	GGOcLIBf8Fzw0nngHlWv5xukb0TMwTRt+DjLL/Z4FKIRed5n58ygrf5GDBwbyhPAei29TjYVzwv
+	wpOBktiOAl3XaknHrEtekul2z0VITgEpYAM3dn/6ZFXNqrDNi31Q3wQVtE0xzgkPGdTn4/Wi57/
+	oJDjx67SAWDKPWM/YZQ0eRWvjFYjVuHnP7XUTxJBZv6sZoJ7ZvomnNe+yZUsRWAbqU+n9rTM0qa
+	YNijlYkuwtkkyJK4oZEBSDWu/eNjnHHwylaJsyV0r0TlfZGNHyAm3ESQQ2veyvX6Pm7nzTOKj/f
+	naiGA7BbjNBjvBheeKobyTvn/fZGlew6Wxq20ofVMHfIpWHRgyi+GlZ7FCY8CBL2PwBw8KMw==
+X-Received: by 2002:a17:902:d487:b0:2bd:907:2ce5 with SMTP id d9443c01a7336-2be9f694c1bmr510145ad.7.1779307164981;
+        Wed, 20 May 2026 12:59:24 -0700 (PDT)
 Received: from google.com (153.46.83.34.bc.googleusercontent.com. [34.83.46.153])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-36a3f4ddc23sm206344a91.15.2026.05.20.12.54.48
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c82bb1006fbsm19676025a12.21.2026.05.20.12.59.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 May 2026 12:54:48 -0700 (PDT)
-Date: Wed, 20 May 2026 19:54:45 +0000
+        Wed, 20 May 2026 12:59:24 -0700 (PDT)
+Date: Wed, 20 May 2026 19:59:21 +0000
 From: Samiullah Khawaja <skhawaja@google.com>
 To: Pranjal Shrivastava <praan@google.com>
 Cc: David Woodhouse <dwmw2@infradead.org>, 
@@ -73,12 +72,12 @@ Cc: David Woodhouse <dwmw2@infradead.org>,
 	David Matlack <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
 	Chris Li <chrisl@kernel.org>, Vipin Sharma <vipinsh@google.com>, 
 	YiFei Zhu <zhuyifei@google.com>
-Subject: Re: [PATCH v2 15/16] vfio/pci: Preserve the iommufd state of the
- vfio cdev
-Message-ID: <ag4RchzcJkIlRbbR@google.com>
+Subject: Re: [PATCH v2 09/16] iommu/vt-d: Restore IOMMU state and reclaimed
+ domain ids
+Message-ID: <ag4Ront9mcdRDYBu@google.com>
 References: <20260427175633.1978233-1-skhawaja@google.com>
- <20260427175633.1978233-16-skhawaja@google.com>
- <ag0HBChHOn_czixb@google.com>
+ <20260427175633.1978233-10-skhawaja@google.com>
+ <agzaTPROvwVO-3lO@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -87,96 +86,94 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <ag0HBChHOn_czixb@google.com>
+In-Reply-To: <agzaTPROvwVO-3lO@google.com>
 
-On Wed, May 20, 2026 at 12:57:40AM +0000, Pranjal Shrivastava wrote:
->On Mon, Apr 27, 2026 at 05:56:32PM +0000, Samiullah Khawaja wrote:
->> If the vfio cdev is attached to an iommufd, preserve the state of the
->> attached iommufd also. Basically preserve the iommu specific state of
->> the device and also the attach iommu HW unit.
+On Tue, May 19, 2026 at 09:46:52PM +0000, Pranjal Shrivastava wrote:
+>On Mon, Apr 27, 2026 at 05:56:26PM +0000, Samiullah Khawaja wrote:
+>> During boot fetch the preserved state of IOMMU unit and if found then
+>> restore the state.
 >>
->> Once the device and its iommufd attachment is preserved, it cannot be
->> detached or attached to another IOAS until it is unpreserved.
+>> - Reuse the root_table that was preserved in the previous kernel.
+>> - Reclaim the domain ids of the preserved domains for each preserved
+>>   devices so these are not acquired by another domain.
 >>
 >> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
 >> ---
->>  drivers/vfio/device_cdev.c             | 10 ++++++++
->>  drivers/vfio/pci/vfio_pci_liveupdate.c | 33 +++++++++++++++++++++++++-
->>  2 files changed, 42 insertions(+), 1 deletion(-)
+>>  drivers/iommu/intel/iommu.c      | 55 ++++++++++++++++++++++--------
+>>  drivers/iommu/intel/iommu.h      |  7 ++++
+>>  drivers/iommu/intel/liveupdate.c | 57 ++++++++++++++++++++++++++++++++
+>>  3 files changed, 105 insertions(+), 14 deletions(-)
 >>
->
->[...]
->
->> diff --git a/drivers/vfio/pci/vfio_pci_liveupdate.c b/drivers/vfio/pci/vfio_pci_liveupdate.c
->> index 976ef17e6103..b56d80379ffc 100644
->> --- a/drivers/vfio/pci/vfio_pci_liveupdate.c
->> +++ b/drivers/vfio/pci/vfio_pci_liveupdate.c
->> @@ -108,10 +108,13 @@
->>  #include <linux/kho/abi/vfio_pci.h>
->>  #include <linux/liveupdate.h>
->>  #include <linux/errno.h>
->> +#include <linux/iommufd.h>
->>  #include <linux/vfio.h>
+>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+>> index 68fecd4e57fa..4118a0861f38 100644
+>> --- a/drivers/iommu/intel/iommu.c
+>> +++ b/drivers/iommu/intel/iommu.c
+>> @@ -670,10 +670,17 @@ void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
+>>  #endif
 >>
->>  #include "vfio_pci_priv.h"
->>
->> +MODULE_IMPORT_NS("IOMMUFD");
->> +
->>  static bool vfio_pci_liveupdate_can_preserve(struct liveupdate_file_handler *handler,
->>  					     struct file *file)
+>>  /* iommu handling */
+>> -static int iommu_alloc_root_entry(struct intel_iommu *iommu)
+>> +static int iommu_alloc_root_entry(struct intel_iommu *iommu,
+>> +				  struct iommu_hw_ser *iommu_ser)
 >>  {
->> @@ -153,9 +156,26 @@ static int vfio_pci_liveupdate_preserve(struct liveupdate_file_op_args *args)
->>  	vdev = container_of(device, struct vfio_pci_core_device, vdev);
->>  	pdev = vdev->pdev;
+>>  	struct root_entry *root;
 >>
->> +#ifdef CONFIG_IOMMU_LIVEUPDATE
->> +	/* If iommufd is attached, preserve the underlying domain */
->> +	mutex_lock(&device->dev_set->lock);
->> +	if (device->iommufd_attached) {
->> +		u64 token, preserved_state;
->> +
->> +		ret = iommufd_device_preserve(args->session,
->> +					      device->iommufd_device,
->> +					      &token, &preserved_state);
->> +		if (ret) {
->> +			mutex_unlock(&device->dev_set->lock);
->> +			return ret;
->> +		}
+>> +	if (iommu_ser) {
+>> +		intel_iommu_liveupdate_restore_root_table(iommu, iommu_ser);
+>> +		__iommu_flush_cache(iommu, iommu->root_entry, ROOT_SIZE);
+>> +		return 0;
 >> +	}
->> +	mutex_unlock(&device->dev_set->lock);
->> +#endif
 >> +
->>  	ret = pci_liveupdate_preserve(pdev);
->>  	if (ret)
->> -		return ret;
->> +		goto err_iommufd_unpreserve;
 >
->Nit: Would we hit the WARN in patch 14 if (device->iommufd_attached) was
->false here? Should we check if (device->iommufd_attached) below before
->calling unpreserve?
+>Minor nit: I still believe this condition block can be moved into the
+>caller? Since the called fetches iommu_ser, it can call this as a stand
+>alone helper and bypass calling iommu_alloc_root_entry if (iommu_ser).
 
-Agreed. I will update this.
+Agreed. Also as Baolu suggested the cache flush is not needed, so we can
+move it out as it is self-contained. Will update this.
 >
+>>  	root = iommu_alloc_pages_node_sz(iommu->node, GFP_ATOMIC, SZ_4K);
+>>  	if (!root) {
+>>  		pr_err("Allocating root entry for %s failed\n",
+>> @@ -992,15 +999,16 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
+>>  		iommu_disable_translation(iommu);
+>>  }
 >>
->>  	ser = kho_alloc_preserve(sizeof(*ser));
->>  	if (IS_ERR(ser)) {
->> @@ -170,6 +190,9 @@ static int vfio_pci_liveupdate_preserve(struct liveupdate_file_op_args *args)
->>  	args->serialized_data = virt_to_phys(ser);
->>  	return 0;
->>
->> +err_iommufd_unpreserve:
->> +	iommufd_device_unpreserve(args->session, device->iommufd_device);
+
+[snip]
+>
 >> +
->>  err_unpreserve:
->>  	pci_liveupdate_unpreserve(pdev);
->>  	return ret;
+>> +static int _restore_used_domain_ids(struct iommu_device_ser *ser, void *arg)
+>> +{
+>> +	int id = ser->domain_iommu_ser.attachment_id;
+>> +	struct iommu_hw_ser *iommu_hw_ser;
+>> +	struct intel_iommu *iommu = arg;
+>> +
+>> +	iommu_hw_ser = phys_to_virt(ser->domain_iommu_ser.iommu_phys);
 >
->With that nit:
+>We should check for iommu_phys being NULL here.. I know corruptions can
+>be funnier but a WARN_ON(!iommu_phys) could help catch NULL corruptions
+
+Agreed. I will add a WARN_ON here.
 >
->Reviewed-by: Pranjal Shrivastava <praan@google.com>
+>> +	if (iommu_hw_ser->type != IOMMU_INTEL)
+>> +		return 0;
+>> +
+>> +	/* Only allocate domain ID from associated IOMMU HW unit */
+>> +	if (iommu_hw_ser->intel.phys_addr != iommu->reg_phys)
+>> +		return 0;
+>> +
+>> +	/*
+>> +	 * This can fail as multiple preserved devices can share the same domain
+>> +	 * ID. Since this is done during DMAR init so these failures can be
+>> +	 * ignored.
+>> +	 */
+>> +	ida_alloc_range(&iommu->domain_ida, id, id, GFP_ATOMIC);
+>> +	return 0;
+>> +}
+>> +
 >
 >Thanks,
 >Praan
 
-Thanks,
 Sami
