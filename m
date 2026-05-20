@@ -1,525 +1,143 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 689283FE35E;
-	Wed, 20 May 2026 11:21:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 43D583A451F
+	for <iommu@lists.linux.dev>; Wed, 20 May 2026 12:25:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779276071; cv=none; b=porDfvUiIxb2O3Be8Mq+S/Hjdyo2MU9nxhvMzmu9rJNYVNGrwVSooP2sn9IRd7n7U0aSMzXQquckq/oPa1p7h726NhQN3pWPcJ1m4NJIR9JtonSuOfjbd6jdJYCok4g+iajr0qd99cQscWILlUBW2mNlpeXfFjrz5SI4RaUiCbw=
+	t=1779279942; cv=none; b=qxxyyKmigtsuohdqfRwMbmgIvAfbwl5W5rLNrTPq6HK0K2YOYBNv+0i/4SSsDpxBSARBT25n8XLpBKd54ZXAZttTMzHTTElXqyQ2ygD5To/HuQWy0ljhGRuV/ow+m65MFbjvWiSs9khql5Bkp7EcN1xrugW1B+uXUCJB/5M39jU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779276071; c=relaxed/simple;
-	bh=L86pyKWsxPvaB5adhMiA/7xl+or1ihECJG1ePo8bnEI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=btFXi1+nqWnnwEI0ZdwKZV+V4K5U3EmvmZb1IPn1bmsMAYMis2SDfrt0R2tM1xDfImpEx+t/O/v3HQHru/LibglSNMpTkUdnJQPwpdGfR+wrWWnkkvK6VXtrDkeMFuzi/v5TSRonyB1usqWpsfgO6gd6pHDep0ozm2HIDnQLrHU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XJCiEoYT; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779279942; c=relaxed/simple;
+	bh=r4MdZFtowyPpupGPpQIEXdP9NBQqXiB54/OWs7koQOg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=hYGHld2JTMRDZKgkbBZaOOiyRC4ZJhTmcYfgB0znXK/5gBbG+3AN62UXd4Teay94UslMQzs/RYFP8HLyolMNtEOT3mtDxhKHzItjI80Grp0N+lNtvLiMpQZ1gp/hYAzJ4vzbrAQ30+0iN2dFyoCxtZ/e2Ihv6pGO1PE/AFNy41Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=uFUScEO+; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XJCiEoYT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEBD11F000E9;
-	Wed, 20 May 2026 11:21:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779276069;
-	bh=0OlgCqTDYfKCTHRGdQ795Tb4OpvFd+O6nb1DALrEwxg=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=XJCiEoYTYAUnWeJXTQ5ueaIUV82nWtO2msoZH0MrFjnz3MLMw1Ff4BKo73GYjFtlb
-	 l0wMRRIAuEPhyEb8S6JlzMz+ovFHT489HW4OaBjfkOn7jRLh9tRAIpWxpQYQmUTXP+
-	 sShJl9u+nPM+s/IJjpvJjALEniTkQ24yuXkaYjv2jaZ/VL6ddqxyRnmhjif7A6TIGJ
-	 v5RlSYnBomAAj+hEQfQOBG/xjM3gEQA6QY3eSKVSzIu3R89CpLrobyZ0cYkhlFKSep
-	 c6n7HeOwq25EDcesShSt3lcnXvB8nI6mtRrxrL/m652gdRH71vaWe+e961+ty6OTVg
-	 faY91O3wl864g==
-From: Sasha Levin <sashal@kernel.org>
-To: patches@lists.linux.dev,
-	stable@vger.kernel.org
-Cc: Vasant Hegde <vasant.hegde@amd.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Joerg Roedel <joerg.roedel@amd.com>,
-	Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>,
-	Sasha Levin <sashal@kernel.org>,
-	joro@8bytes.org,
-	will@kernel.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH AUTOSEL 7.0-6.18] iommu/amd: Use maximum Event log buffer size when SNP is enabled on Family 0x19
-Date: Wed, 20 May 2026 07:19:31 -0400
-Message-ID: <20260520111944.3424570-59-sashal@kernel.org>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260520111944.3424570-1-sashal@kernel.org>
-References: <20260520111944.3424570-1-sashal@kernel.org>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="uFUScEO+"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 637E91AED;
+	Wed, 20 May 2026 05:25:34 -0700 (PDT)
+Received: from [10.57.34.79] (unknown [10.57.34.79])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0486B3F85F;
+	Wed, 20 May 2026 05:25:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1779279939; bh=r4MdZFtowyPpupGPpQIEXdP9NBQqXiB54/OWs7koQOg=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=uFUScEO+VDFo1Yng4NuDnsMF/miGjHvXJ8FilngCJQqFJaq8eZFNKMBuuthzdAZER
+	 yLOCNQ6Bk3vnNMCN0LTgcENfRn5nQT5Zluxxfn08TTnF9G780N1uOURGxohyGZ1Frh
+	 Z7uXsD5a+7KNVc0oQdfVLv16yVcughVRGzLtFI/g=
+Message-ID: <7dc61855-d916-4659-8137-7f3457f6a56d@arm.com>
+Date: Wed, 20 May 2026 13:25:27 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 7.0.9
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/riscv: prefer WSI on IGS=BOTH when wired IRQs are
+ described
+To: fangyu.yu@linux.alibaba.com, sunilvl@oss.qualcomm.com
+Cc: ajones@ventanamicro.com, alex@ghiti.fr, andrew.jones@oss.qualcomm.com,
+ aou@eecs.berkeley.edu, guoren@kernel.org, iommu@lists.linux.dev,
+ joro@8bytes.org, linux-kernel@vger.kernel.org,
+ linux-riscv@lists.infradead.org, palmer@dabbelt.com, pjw@kernel.org,
+ tomasz.jeznach@linux.dev, will@kernel.org
+References: <CAB19ukGk2AUA3yjsrBxjsUsH9pUSeeu5F6vo1FFBcd504VQPzg@mail.gmail.com>
+ <20260520095411.92045-1-fangyu.yu@linux.alibaba.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260520095411.92045-1-fangyu.yu@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-From: Vasant Hegde <vasant.hegde@amd.com>
+On 2026-05-20 10:54 am, fangyu.yu@linux.alibaba.com wrote:
+>>>
+>>> From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+>>>
+>>> The RISC-V IOMMU spec defines IGS=BOTH as supporting both MSI and
+>>> WSI, with software selecting the path. The DT path already behaves
+>>> as expected by selecting WSI when wired IRQ resources are described.
+>>> The ACPI path, however, currently falls back to MSI even when
+>>> firmware describes wired IRQ resources.
+>>>
+>>> Use firmware-described wired IRQ resources as the trigger to select
+>>> WSI for IGS=BOTH:
+>>>    - DT: "interrupts" present, no "msi-parent"
+>>>    - ACPI: DSDT _CRS Interrupt() descriptors
+>>>      (mainline does not yet parse the RIMT Interrupt Wire Array)
+>>>
+>>> When triggered, rewrite igs to IGS_WSI and reuse the existing WSI
+>>> handling. Keep the existing behaviour otherwise.
+>>>
+>>> Fixes: d5f88acdd6ff ("iommu/riscv: Add support for platform msi")
+>>> Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+>>> ---
+>>>   drivers/iommu/riscv/iommu-platform.c | 15 +++++++++++++++
+>>>   1 file changed, 15 insertions(+)
+>>>
+>>> diff --git a/drivers/iommu/riscv/iommu-platform.c b/drivers/iommu/riscv/iommu-platform.c
+>>> index 399ba8fe1b3e..bd7712231140 100644
+>>> --- a/drivers/iommu/riscv/iommu-platform.c
+>>> +++ b/drivers/iommu/riscv/iommu-platform.c
+>>> @@ -71,6 +71,21 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
+>>>          iommu->irqs_count = RISCV_IOMMU_INTR_COUNT;
+>>>
+>>>          igs = FIELD_GET(RISCV_IOMMU_CAPABILITIES_IGS, iommu->caps);
+>>> +
+>>> +       /*
+>>> +        * IGS=BOTH means the IOMMU supports either MSI or WSI;
+>>> +        * the spec leaves the choice to software. Use the firmware-described
+>>> +        * wired interrupt resources as the trigger:
+>>> +        *   - DT  : "interrupts" property present, no "msi-parent"  -> WSI
+>>> +        *   - ACPI: DSDT _CRS Interrupt() present  -> WSI
+>>> +        * Otherwise default to the MSI path.
+>>> +        */
+>>> +       if (igs == RISCV_IOMMU_CAPABILITIES_IGS_BOTH &&
+>>> +           platform_irq_count(pdev) > 0) {
+>>> +               dev_info(dev, "firmware describes wired IRQs; preferring WSI on IGS=BOTH\n");
+>>> +               igs = RISCV_IOMMU_CAPABILITIES_IGS_WSI;
+>>> +       }
+>>> +
+>> Won't it change the DT behavior as it doesn't check msi-parent
+>> anymore?  IOW, should this be made specific to ACPI
+>> by checking whether the device node is acpi node?
+>>
+> 
+> Thanks for the review, you're right that the current condition would
+> affect DT as well.
+> 
+> My assumption was that DT would describe either "interrupts" for WSI
+> or "msi-parent" for MSI, but not both, so platform_irq_count() > 0
+> would effectively imply "no msi-parent" in practice.
+> 
+> That said, I agree that this should be limited to the ACPI path. That
+> matches the actual bug scope — only ACPI was falling back to MSI when
+> wired IRQs were described — and leaves DT unchanged.
+> 
+> I'll respin a v2 to scope the fix to ACPI only, and tighten the commit
+> message accordingly.
 
-[ Upstream commit 58c0ac6125d89bf6ec65a521eaeb52a0e8e20a9f ]
+Why would this be specific to ACPI? AFAICS if DT specifies an 
+"msi-parent" property such that an MSI domain exists, then MSIs will be 
+preferred as well, since the entire function is structured to prefer 
+MSIs if available, and fall back to wired if not. If the system does 
+support both options then DT should describe that, same as ACPI; what 
+Linux chooses to use is entirely Linux's own policy.
 
-Due to CVE-2023-20585, the Event log buffer must use the maximum supported
-size (512K) on Milan/Genoa (Family 0x19) systems when SNP is enabled,
-to mitigate a potential security vulnerability. All other systems continue to
-use the default Event log buffer size (8K).
+But if you do want to change the Linux driver's policy for some reason 
+that the commit message isn't really explaining, then rearrange the 
+whole switch statement; don't just add a weird hack to try to defeat the 
+existing logic _in the same function_...
 
-Apply the errata fix by making the following changes:
+In general though, I would have thought preferring MSIs makes the most 
+sense, since MSI vectors are generally cheaper than wires, so there's a 
+better chance of being able to have unique IRQs per interrupt source, 
+whereas with wires you may be stuck with a combined IRQ.
 
-* Introduce new global variable (amd_iommu_evtlog_size) to have event log
-  buffer size. Adjust variable size for family 0x19.
+(As a side note, is there a reason this is calling of_msi_configure() on 
+a platform device when of_platform_device_create_pdata() will have done 
+that already?)
 
-* Since 'iommu_snp_enable()' must be called after the core IOMMU subsystem
-  is initialized, it cannot be moved to the early init stage. The SNP errata
-  must also be applied after the 'iommu_snp_enable()' check. Therefore,
-  'alloc_event_buffer()' and 'iommu_enable_event_buffer()' are now called
-  in the IOMMU_ENABLED state, after the errata is applied.
-
-* Adjust alloc_event_buffer() and iommu_enable_event_buffer() to handle
-  all IOMMU instances.
-
-* Also rename EVT_* macros to make it more readable.
-
-Link: https://www.amd.com/en/resources/product-security/bulletin/amd-sb-3016.html
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Cc: Joerg Roedel <joerg.roedel@amd.com>
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-Tested-by: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
-Signed-off-by: Joerg Roedel <joerg.roedel@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
-
-LLM Generated explanations, may be completely bogus:
-
-## Conclusion
-This commit should be backported to stable trees that carry AMD IOMMU
-SNP host support. It is a security mitigation for `CVE-2023-20585`,
-scoped to AMD Family `0x19` systems with SNP enabled, and it keeps all
-other systems on the existing 8K event log size.
-
-The patch is not feature enablement in the stable sense; it is a
-hardware erratum/security workaround. The main concern is backport
-mechanics: it applies cleanly to `stable/linux-7.0.y`, but failed a
-direct apply check on `6.12.y`, `6.18.y`, and `6.19.y`, so those need
-backport adjustment. For Genoa, the companion PPR-log patch should also
-be considered for the full series mitigation.
-
-## Phase Walkthrough
-Phase 1 Record:
-- Subject subsystem/action: `iommu/amd`, action is “Use maximum”, intent
-  is to use a 512K AMD IOMMU event log buffer for SNP on Family `0x19`.
-- Tags: `Link` to AMD-SB-3016, `Cc` to AMD/IOMMU maintainers, `Signed-
-  off-by` Vasant Hegde, `Tested-by` Dheeraj Kumar Srivastava, `Signed-
-  off-by` Joerg Roedel. No `Fixes:` tag.
-- Body: describes `CVE-2023-20585`, requiring max supported event log
-  buffer size on Milan/Genoa with SNP enabled; all other systems remain
-  at 8K.
-- Hidden bug fix: yes. This is phrased partly as buffer
-  sizing/refactoring, but the purpose is a CVE security mitigation.
-
-Phase 2 Record:
-- Files changed: `drivers/iommu/amd/amd_iommu.h`, `amd_iommu_types.h`,
-  `init.c`, `iommu.c`; fetched commit stat is 86 insertions, 38
-  deletions.
-- Functions modified/added: `alloc_event_buffer`,
-  `iommu_enable_event_buffer`, `remap_event_buffer`,
-  `early_enable_iommu`, `early_enable_iommus`, `amd_iommu_resume`, new
-  `amd_iommu_apply_erratum_snp`, `state_next`, `amd_iommu_snp_disable`,
-  `iommu_poll_events`.
-- Code flow: event buffer allocation/enable moves from early per-IOMMU
-  setup to after `iommu_snp_enable()`, allowing the erratum decision to
-  set 512K before allocation/programming. Polling and SNP shutdown now
-  use the variable size.
-- Bug category: hardware security erratum/workaround.
-- Fix quality: contained to AMD IOMMU event-log handling. Regression
-  risk is medium-low because init ordering changes, but it is subsystem-
-  contained, tested, and keeps non-SNP/non-Family-0x19 behavior at 8K.
-
-Phase 3 Record:
-- Blame/history: fixed 8K event buffer logic is long-standing; SNP
-  integration relevant to the erratum is present from the v6.9 era and
-  later. `6.12.y`, `6.18.y`, `6.19.y`, and `7.0.y` contain the
-  integrated SNP enable commit checked locally; `5.15.y`, `6.1.y`, and
-  `6.6.y` do not.
-- `Fixes:` tag: none, so no direct original-bug commit to follow.
-- Related file history: companion commit `1f44aab79bac3` does the same
-  for the PPR log. Patch 2 depends conceptually/codewise on patch 1;
-  patch 1 stands on its own for the event log.
-- Author context: Vasant Hegde has multiple recent AMD IOMMU fixes in
-  the fetched IOMMU fixes branch; Joerg Roedel committed the patch.
-- Dependencies: no semantic dependency on the NUMA log-buffer allocation
-  commit, but older stable branches have context differences requiring
-  backport edits.
-
-Phase 4 Record:
-- `b4 dig -c 58c0ac6125d89`: found the original lore submission at `http
-  s://patch.msgid.link/20260420084204.12263-2-vasant.hegde@amd.com`.
-- `b4 dig -a`: only v1 found.
-- `b4 dig -w`: original recipients included `iommu@lists.linux.dev`,
-  Joerg Roedel, Will Deacon, Robin Murphy, Suravee Suthikulpanit, and
-  Borislav Petkov.
-- Lore thread: Dheeraj Kumar Srivastava replied `Tested-by`; Joerg
-  Roedel replied “Applied to fixes”.
-- AMD bulletin: AMD-SB-3016 confirms potential SNP guest integrity loss
-  from an IOMMU host buffer out-of-bounds condition and says OS updates
-  are required along with firmware.
-
-Phase 5 Record:
-- Callers: event interrupt path uses `amd_iommu_int_thread_evtlog()` ->
-  `amd_iommu_handle_irq()` -> `iommu_poll_events()`. Interrupt setup is
-  via AMD IOMMU MSI/INTCAPXT setup in `init.c`.
-- Callees: allocation uses `iommu_alloc_4k_pages()`, which handles SNP
-  4K page setup; enable writes `MMIO_EVT_BUF_OFFSET`, head/tail
-  registers, and `CONTROL_EVT_LOG_EN`.
-- Reachability: reachable on AMD IOMMU systems through hardware event
-  interrupts and SNP init/shutdown paths, not through a direct userspace
-  syscall.
-- Similar pattern: companion PPR log patch in the same series mirrors
-  the variable-size/max-buffer handling.
-
-Phase 6 Record:
-- Stable code existence: `6.12.y`, `6.18.y`, `6.19.y`, and `7.0.y` have
-  the relevant AMD IOMMU SNP/event-log code. `5.15.y`, `6.1.y`, and
-  `6.6.y` lack the integrated SNP enable commit I checked; `6.6.y` has
-  an exported old SNP enable function but no in-tree caller was found.
-- Backport difficulty: clean on `7.0.y`; direct apply failed on
-  `6.12.y`, `6.18.y`, and `6.19.y`, so those need manual backporting.
-- Related stable discussion: no stable-list-specific discussion for this
-  CVE/patch was found by `lei`.
-
-Phase 7 Record:
-- Subsystem: AMD IOMMU driver under `drivers/iommu/amd`.
-- Criticality: important platform/virtualization security code,
-  affecting AMD EPYC SNP hosts rather than all systems.
-- Activity: actively maintained; recent AMD IOMMU fixes and the
-  maintainer-applied fixes branch confirm ongoing subsystem work.
-
-Phase 8 Record:
-- Affected users: AMD Family `0x19` Milan/Genoa systems with SNP
-  enabled.
-- Trigger/security conditions: AMD bulletin describes a privileged
-  attacker with a compromised hypervisor triggering an out-of-bounds
-  condition without RMP checks.
-- Failure severity: security integrity impact for confidential SNP
-  guests; AMD rates it Medium, but stable rules treat CVE/security
-  mitigations as strong candidates.
-- Benefit/risk: high benefit for affected SNP hosts; medium-low
-  regression risk due to contained but non-trivial init-order and
-  buffer-size changes.
-
-Phase 9 Record:
-- Evidence for: CVE/security mitigation, AMD bulletin requires OS
-  update, tested-by, maintainer applied to fixes, scoped to AMD IOMMU,
-  default behavior preserved for unaffected systems.
-- Evidence against/concerns: patch is larger than a trivial one-liner,
-  moves event buffer allocation/enable timing, and needs backport
-  adjustments for several stable branches. Genoa full mitigation also
-  needs the PPR companion patch.
-- Stable rules: fixes a real security issue; important; no new userspace
-  API; contained to one driver; tested; applies cleanly to `7.0.y` and
-  can be backported with adjustments elsewhere.
-- Exception category: hardware erratum/security workaround.
-
-## Verification
-- [Phase 1] Parsed fetched commit `58c0ac6125d89`: confirmed subject,
-  tags, `Tested-by`, no `Fixes:`, and AMD-SB-3016 link.
-- [Phase 2] Inspected diff/stat from fetched commit: 4 AMD IOMMU files,
-  86 insertions, 38 deletions.
-- [Phase 3] Ran `git blame` on event allocation, enable, SNP init, and
-  polling paths; confirmed relevant code history.
-- [Phase 3] Checked stable branch ancestry: `6.12.y+` contain integrated
-  SNP enable; `5.15.y`, `6.1.y`, `6.6.y` do not.
-- [Phase 4] Ran `b4 dig -c 58c0ac6125d89`, `-a`, and `-w`; found one v1
-  submission, maintainers/recipients, and lore URL.
-- [Phase 4] Fetched lore thread; confirmed `Tested-by` reply and
-  maintainer “Applied to fixes”.
-- [Phase 4] Fetched AMD bulletin; confirmed CVE impact and OS update
-  requirement.
-- [Phase 5] Traced event interrupt call path with source search/read:
-  `amd_iommu_int_thread_evtlog()` to `iommu_poll_events()`.
-- [Phase 6] Ran apply checks: clean on `stable/linux-7.0.y`; failed
-  direct apply on `6.12.y`, `6.18.y`, and `6.19.y`.
-- UNVERIFIED: I did not build-test the backport or test on AMD Family
-  `0x19` SNP hardware.
-
-**YES**
-
- drivers/iommu/amd/amd_iommu.h       |   2 +
- drivers/iommu/amd/amd_iommu_types.h |  10 ++-
- drivers/iommu/amd/init.c            | 110 +++++++++++++++++++---------
- drivers/iommu/amd/iommu.c           |   2 +-
- 4 files changed, 86 insertions(+), 38 deletions(-)
-
-diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index 1342e764a5486..f1c486dcf0f38 100644
---- a/drivers/iommu/amd/amd_iommu.h
-+++ b/drivers/iommu/amd/amd_iommu.h
-@@ -11,6 +11,8 @@
- 
- #include "amd_iommu_types.h"
- 
-+extern int amd_iommu_evtlog_size;
-+
- irqreturn_t amd_iommu_int_thread(int irq, void *data);
- irqreturn_t amd_iommu_int_thread_evtlog(int irq, void *data);
- irqreturn_t amd_iommu_int_thread_pprlog(int irq, void *data);
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index c685d3771436a..c3430c09bc5c9 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -15,6 +15,7 @@
- #include <linux/mutex.h>
- #include <linux/msi.h>
- #include <linux/list.h>
-+#include <linux/sizes.h>
- #include <linux/spinlock.h>
- #include <linux/pci.h>
- #include <linux/iommufd.h>
-@@ -141,7 +142,6 @@
- #define MMIO_STATUS_GALOG_INT_MASK		BIT(10)
- 
- /* event logging constants */
--#define EVENT_ENTRY_SIZE	0x10
- #define EVENT_TYPE_SHIFT	28
- #define EVENT_TYPE_MASK		0xf
- #define EVENT_TYPE_ILL_DEV	0x1
-@@ -259,8 +259,12 @@
- #define MMIO_CMD_BUFFER_TAIL(x) FIELD_GET(MMIO_CMD_TAIL_MASK, (x))
- 
- /* constants for event buffer handling */
--#define EVT_BUFFER_SIZE		8192 /* 512 entries */
--#define EVT_LEN_MASK		(0x9ULL << 56)
-+#define EVTLOG_ENTRY_SIZE	0x10
-+#define EVTLOG_SIZE_SHIFT	56
-+#define EVTLOG_SIZE_DEF		SZ_8K /* 512 entries */
-+#define EVTLOG_LEN_MASK_DEF	(0x9ULL << EVTLOG_SIZE_SHIFT)
-+#define EVTLOG_SIZE_MAX		SZ_512K /* 32K entries */
-+#define EVTLOG_LEN_MASK_MAX	(0xFULL << EVTLOG_SIZE_SHIFT)
- 
- /* Constants for PPR Log handling */
- #define PPR_LOG_ENTRIES		512
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index f3fd7f39efb48..74effb847f488 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -132,6 +132,8 @@ struct ivhd_entry {
- 	u8 uid;
- } __attribute__((packed));
- 
-+int amd_iommu_evtlog_size = EVTLOG_SIZE_DEF;
-+
- /*
-  * An AMD IOMMU memory definition structure. It defines things like exclusion
-  * ranges for devices and regions that should be unity mapped.
-@@ -864,35 +866,47 @@ void *__init iommu_alloc_4k_pages(struct amd_iommu *iommu, gfp_t gfp,
- }
- 
- /* allocates the memory where the IOMMU will log its events to */
--static int __init alloc_event_buffer(struct amd_iommu *iommu)
-+static int __init alloc_event_buffer(void)
- {
--	iommu->evt_buf = iommu_alloc_4k_pages(iommu, GFP_KERNEL,
--					      EVT_BUFFER_SIZE);
-+	struct amd_iommu *iommu;
- 
--	return iommu->evt_buf ? 0 : -ENOMEM;
-+	for_each_iommu(iommu) {
-+		iommu->evt_buf = iommu_alloc_4k_pages(iommu, GFP_KERNEL,
-+						      amd_iommu_evtlog_size);
-+		if (!iommu->evt_buf)
-+			return -ENOMEM;
-+	}
-+
-+	return 0;
- }
- 
--static void iommu_enable_event_buffer(struct amd_iommu *iommu)
-+static void iommu_enable_event_buffer(void)
- {
-+	struct amd_iommu *iommu;
- 	u64 entry;
- 
--	BUG_ON(iommu->evt_buf == NULL);
-+	for_each_iommu(iommu) {
-+		BUG_ON(iommu->evt_buf == NULL);
- 
--	if (!is_kdump_kernel()) {
--		/*
--		 * Event buffer is re-used for kdump kernel and setting
--		 * of MMIO register is not required.
--		 */
--		entry = iommu_virt_to_phys(iommu->evt_buf) | EVT_LEN_MASK;
--		memcpy_toio(iommu->mmio_base + MMIO_EVT_BUF_OFFSET,
--			    &entry, sizeof(entry));
--	}
-+		if (!is_kdump_kernel()) {
-+			/*
-+			 * Event buffer is re-used for kdump kernel and setting
-+			 * of MMIO register is not required.
-+			 */
-+			entry = iommu_virt_to_phys(iommu->evt_buf);
-+			entry |= (amd_iommu_evtlog_size == EVTLOG_SIZE_DEF) ?
-+				EVTLOG_LEN_MASK_DEF : EVTLOG_LEN_MASK_MAX;
-+
-+			memcpy_toio(iommu->mmio_base + MMIO_EVT_BUF_OFFSET,
-+				    &entry, sizeof(entry));
-+		}
- 
--	/* set head and tail to zero manually */
--	writel(0x00, iommu->mmio_base + MMIO_EVT_HEAD_OFFSET);
--	writel(0x00, iommu->mmio_base + MMIO_EVT_TAIL_OFFSET);
-+		/* set head and tail to zero manually */
-+		writel(0x00, iommu->mmio_base + MMIO_EVT_HEAD_OFFSET);
-+		writel(0x00, iommu->mmio_base + MMIO_EVT_TAIL_OFFSET);
- 
--	iommu_feature_enable(iommu, CONTROL_EVT_LOG_EN);
-+		iommu_feature_enable(iommu, CONTROL_EVT_LOG_EN);
-+	}
- }
- 
- /*
-@@ -981,15 +995,20 @@ static int __init alloc_cwwb_sem(struct amd_iommu *iommu)
- 	return 0;
- }
- 
--static int __init remap_event_buffer(struct amd_iommu *iommu)
-+static int __init remap_event_buffer(void)
- {
-+	struct amd_iommu *iommu;
- 	u64 paddr;
- 
- 	pr_info_once("Re-using event buffer from the previous kernel\n");
--	paddr = readq(iommu->mmio_base + MMIO_EVT_BUF_OFFSET) & PM_ADDR_MASK;
--	iommu->evt_buf = iommu_memremap(paddr, EVT_BUFFER_SIZE);
-+	for_each_iommu(iommu) {
-+		paddr = readq(iommu->mmio_base + MMIO_EVT_BUF_OFFSET) & PM_ADDR_MASK;
-+		iommu->evt_buf = iommu_memremap(paddr, amd_iommu_evtlog_size);
-+		if (!iommu->evt_buf)
-+			return -ENOMEM;
-+	}
- 
--	return iommu->evt_buf ? 0 : -ENOMEM;
-+	return 0;
- }
- 
- static int __init remap_command_buffer(struct amd_iommu *iommu)
-@@ -1041,10 +1060,6 @@ static int __init alloc_iommu_buffers(struct amd_iommu *iommu)
- 		ret = remap_command_buffer(iommu);
- 		if (ret)
- 			return ret;
--
--		ret = remap_event_buffer(iommu);
--		if (ret)
--			return ret;
- 	} else {
- 		ret = alloc_cwwb_sem(iommu);
- 		if (ret)
-@@ -1053,10 +1068,6 @@ static int __init alloc_iommu_buffers(struct amd_iommu *iommu)
- 		ret = alloc_command_buffer(iommu);
- 		if (ret)
- 			return ret;
--
--		ret = alloc_event_buffer(iommu);
--		if (ret)
--			return ret;
- 	}
- 
- 	return 0;
-@@ -2890,7 +2901,6 @@ static void early_enable_iommu(struct amd_iommu *iommu)
- 	iommu_init_flags(iommu);
- 	iommu_set_device_table(iommu);
- 	iommu_enable_command_buffer(iommu);
--	iommu_enable_event_buffer(iommu);
- 	iommu_set_exclusion_range(iommu);
- 	iommu_enable_gt(iommu);
- 	iommu_enable_ga(iommu);
-@@ -2954,7 +2964,6 @@ static void early_enable_iommus(void)
- 			iommu_disable_event_buffer(iommu);
- 			iommu_disable_irtcachedis(iommu);
- 			iommu_enable_command_buffer(iommu);
--			iommu_enable_event_buffer(iommu);
- 			iommu_enable_ga(iommu);
- 			iommu_enable_xt(iommu);
- 			iommu_enable_irtcachedis(iommu);
-@@ -3067,6 +3076,7 @@ static void amd_iommu_resume(void *data)
- 	for_each_iommu(iommu)
- 		early_enable_iommu(iommu);
- 
-+	iommu_enable_event_buffer();
- 	amd_iommu_enable_interrupts();
- }
- 
-@@ -3396,6 +3406,23 @@ static __init void iommu_snp_enable(void)
- #endif
- }
- 
-+static void amd_iommu_apply_erratum_snp(void)
-+{
-+#ifdef CONFIG_KVM_AMD_SEV
-+	if (!amd_iommu_snp_en)
-+		return;
-+
-+	/* Errata fix for Family 0x19 */
-+	if (boot_cpu_data.x86 != 0x19)
-+		return;
-+
-+	/* Set event log buffer size to max */
-+	amd_iommu_evtlog_size = EVTLOG_SIZE_MAX;
-+	pr_info("Applying erratum: Increase Event log size to 0x%x\n",
-+		amd_iommu_evtlog_size);
-+#endif
-+}
-+
- /****************************************************************************
-  *
-  * AMD IOMMU Initialization State Machine
-@@ -3432,6 +3459,21 @@ static int __init state_next(void)
- 	case IOMMU_ENABLED:
- 		register_syscore(&amd_iommu_syscore);
- 		iommu_snp_enable();
-+
-+		amd_iommu_apply_erratum_snp();
-+
-+		/* Allocate/enable event log buffer */
-+		if (is_kdump_kernel())
-+			ret = remap_event_buffer();
-+		else
-+			ret = alloc_event_buffer();
-+
-+		if (ret) {
-+			init_state = IOMMU_INIT_ERROR;
-+			break;
-+		}
-+		iommu_enable_event_buffer();
-+
- 		ret = amd_iommu_init_pci();
- 		init_state = ret ? IOMMU_INIT_ERROR : IOMMU_PCI_INIT;
- 		break;
-@@ -4034,7 +4076,7 @@ int amd_iommu_snp_disable(void)
- 		return 0;
- 
- 	for_each_iommu(iommu) {
--		ret = iommu_make_shared(iommu->evt_buf, EVT_BUFFER_SIZE);
-+		ret = iommu_make_shared(iommu->evt_buf, amd_iommu_evtlog_size);
- 		if (ret)
- 			return ret;
- 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 760d5f4623b55..02b5eaae6843d 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -1009,7 +1009,7 @@ static void iommu_poll_events(struct amd_iommu *iommu)
- 		iommu_print_event(iommu, iommu->evt_buf + head);
- 
- 		/* Update head pointer of hardware ring-buffer */
--		head = (head + EVENT_ENTRY_SIZE) % EVT_BUFFER_SIZE;
-+		head = (head + EVTLOG_ENTRY_SIZE) % amd_iommu_evtlog_size;
- 		writel(head, iommu->mmio_base + MMIO_EVT_HEAD_OFFSET);
- 	}
- 
--- 
-2.53.0
-
+Thanks,
+Robin.
