@@ -1,408 +1,144 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2CC582F5A36
-	for <iommu@lists.linux.dev>; Wed, 20 May 2026 15:55:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C638F2D94B5
+	for <iommu@lists.linux.dev>; Wed, 20 May 2026 16:03:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779292507; cv=none; b=YU6bv17msYsYlCJ+VTAWVRxlg4syQ6vgLTy+ajS6lcBpW1dQDmTsbHFWA5vz3hNwJu1zcCnZKox4JqkdOGC6mIv5r4eteO/Kkxot4MxM6Cw7nxnORaUeYa9gY6Kq4JK16u74adVk4ZBzb13DZ+PQ+qjn/Ytiuy9WkyRnJUSQiOE=
+	t=1779293008; cv=none; b=P681N3Rf4MH6XmkwNW1NAlA8lyrgUgo3SK39D9/c1khAta/x5CYWiTX237Zt2GFU2c2v8MkfWsjVUrugW27D6U+Mh2ciX20Rai0TCtxtUkncgVooROhPfyLeet3uX2lDJp7tlBFoY5hAuW+Pt1p4NhYVNuKG8/u3/rblkjaLRBw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779292507; c=relaxed/simple;
-	bh=X5usUAT9GcoxLrI3u58awR580PVQTyAas93BuH6o25A=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=IMd5s+if96+ZtZiosULF8OERRAy9SoZO7o652UW0wk1HCr4M2rCjDmS/dUE/RrovlG6YLZKorTdOwQ7aKXPICN9P5IFTmN3ugEw2smoYUObyGjiD0+XBVT5WliELYfBScRJkl4BV6oDliSImNCSGeq6i6uDacbmpLTfNNSZGTH8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Jc+6OzYQ; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1779293008; c=relaxed/simple;
+	bh=IcRNfO99rl3sMZAna09GufNUoyOZxCOeoNMfliN/qC4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=TLaa054AXQBDIoPHHAc02cYeif0DWdCzJLuHu0LhoY6GAiBGICnnglrcndPbZXYngEhInrq8Ze269qwvoHVE63cpAm/CqEECGWT7c9s6dbzolNfMONY0oPlh7MjjQWLnZiSPdSTg5bBX8Q/OIZNjw+AT56X/8uai6R60xsMfWrk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=coOk3mEj; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=bSzg4+0U; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Jc+6OzYQ"
-Received: from localhost (unknown [52.148.140.42])
-	by linux.microsoft.com (Postfix) with ESMTPSA id DA8DE20B7167;
-	Wed, 20 May 2026 08:54:54 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com DA8DE20B7167
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1779292495;
-	bh=/H4rjNosX305gOqhdHcx5Cy2xr4fIDvLtjdEV803Mkc=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Jc+6OzYQmSe4NmPfgVw9IG+fIWrKHqixTRnBxRgrc41fxOaYEo8Y/bhMLXX/GEqiK
-	 2QS2BKUTjBAoallvzKNVl3MX6nEwlnzC557Hov4QAHlNEo6qBrSbRppjecXMT/x1Vt
-	 FrgjJ4a9HR/OZhwbgxkqEiJGPm9v+rerGe/cFjY0=
-Date: Wed, 20 May 2026 08:54:59 -0700
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Yi Liu <yi.l.liu@intel.com>
-Cc: <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Alex Williamson
- <alex@shazbot.org>, Joerg Roedel <joro@8bytes.org>, Mostafa Saleh
- <smostafa@google.com>, David Matlack <dmatlack@google.com>, Robin Murphy
- <robin.murphy@arm.com>, Nicolin Chen <nicolinc@nvidia.com>, "Tian, Kevin"
- <kevin.tian@intel.com>, Saurabh Sengar <ssengar@linux.microsoft.com>,
- <skhawaja@google.com>, <pasha.tatashin@soleen.com>, Will Deacon
- <will@kernel.org>, Baolu Lu <baolu.lu@linux.intel.com>,
- jacob.pan@linux.microsoft.com
-Subject: Re: [PATCH v5 4/9] iommufd: Allow binding to a noiommu device
-Message-ID: <20260520085459.000067ac@linux.microsoft.com>
-In-Reply-To: <b9e3a3ef-086c-4284-94ce-8e7fafc22d85@intel.com>
-References: <20260511184116.3687392-1-jacob.pan@linux.microsoft.com>
-	<20260511184116.3687392-5-jacob.pan@linux.microsoft.com>
-	<b9e3a3ef-086c-4284-94ce-8e7fafc22d85@intel.com>
-Organization: LSG
-X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="coOk3mEj";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="bSzg4+0U"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64KDXhiG1798400
+	for <iommu@lists.linux.dev>; Wed, 20 May 2026 16:03:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=zA7pObzAMVJ588IBJt5ZdjHy
+	sWlv5exY/p5KZLGwEaI=; b=coOk3mEjiLOVItEW+pPAt/2bIGLAkiLk2KUps3rK
+	MnrH3SSw8Az/5hOsMGXJhk9nCQwDhLbp11FErLochf08cjSy2zrNyM7DGmdAcUIC
+	HrKP2x8sTZChMIm06e835jU5+Sa05jGew6KSNoUhwjUI41vevsgJ2E9nbjHj/hC2
+	etzQoKs+AgBEqVCCVLFNOeG2M+4UFiKZVog+BaN2MnQejtESS3IF1rje5QRq0uCH
+	2PFpA2o0fUKHYeNVg5yXiad8ZbIKk9k8wR1kD4ovtBoqLLDwFG+bhPxX438LD59w
+	JAlzSbPm/EAEVRCMDMHooD7PXHqSMRLP35Rdii9G5JtOuw==
+Received: from mail-dl1-f70.google.com (mail-dl1-f70.google.com [74.125.82.70])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4e9dxu0m7e-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 20 May 2026 16:03:27 +0000 (GMT)
+Received: by mail-dl1-f70.google.com with SMTP id a92af1059eb24-132d631edaaso32181740c88.0
+        for <iommu@lists.linux.dev>; Wed, 20 May 2026 09:03:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1779293006; x=1779897806; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=zA7pObzAMVJ588IBJt5ZdjHysWlv5exY/p5KZLGwEaI=;
+        b=bSzg4+0UO8wrk9ZJSWPTvFgkjAROXHEJ3jpXv/tk+InyMmty1UgDjt6cro7IprBlyp
+         1RYpLSTgKQzPADbXmv5uWzOnVhObzUtr+pOOaHEH3RfBowkq3soJG+oNQpj5RUBvL6A+
+         K7gZ5vHvJM3LdJmFoVwWd9IdyNLKYfTv8PkQVrJM3u1D2dfb0NH2vgDoRS/M9qA1AGyU
+         SUvX6HJgwg7gG5MnFQTki8zsDTaRMpC/NFvzmRAEcjHK9ddN9g4O9XrPnUusg9wRd3W3
+         wqJzwNKMAfq7Dvicqc9Gl2KqRPwtW5CNxIduTneakpzB6EGv7HZi/EJCBnmsHcLFXzE5
+         X4Lg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779293006; x=1779897806;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=zA7pObzAMVJ588IBJt5ZdjHysWlv5exY/p5KZLGwEaI=;
+        b=LEpXMy1yHKTCcqeOBT73BPFdygiMY8a6Lmh3U2qRCKpihwAmYV5xjo2VHMsyQ4QEDr
+         nCxlg548+UOpQEzRSSLUJgHf+cY41TRJ5kO+TRexxHLU7CMa1yudSxsJj8KmsiQR9ojh
+         uy+hNQRraBbNy0JZbvQBqkpUmfgdju2v6GYwFA56FQRBZPFobbceF4z9UCPWdiOlF0dA
+         pMjB2ftNHqAYqO0aueBFhl7admlkKFLxCDVimFeIaacgjOiBVR+SwZ2plJaxVGvHKJkJ
+         y3BUAA+VjvB7jxAkfmixtZoGvH6YAAyPiaman2P0vXYrfBN348+tFEDjb5P5omIC7d0c
+         ad4g==
+X-Forwarded-Encrypted: i=1; AFNElJ9w6fv5XGx9Gpby8AGIZafAuHXv4bCqscGmM5Nao0Bbz0MlmKRqOoJZrtOt9M3lFHUTa0GqyQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxaQGWGjGvnR2FsVrY0FKbgFUXbepiwWmDwMT4lOlpK/+k2n8GO
+	XYO9DuUssu0m3xz/3qTCXkEyDF3kRmTGindUuNE46EFQKYt4/aHQk5jPVXoKFgWYDCSwFI9C3cX
+	KK5UzSOy85ghAOKL0dt3ARn3TpAnwCVsBGC+66uYkd98wfST08Qm0F1QmAg==
+X-Gm-Gg: Acq92OHjh7LE28MjTEEAuXemDl8ohY+I4akOS3CQ6mOc8QuNSh22Prlhgu5r2EVCg3z
+	27y2/DAkSLEXb3tIRFMnmNYTnMj9XVAlEoISZGAzq9GFTaPWZhETK39rsSFHKujTrT1SVv1x/XW
+	beiC5MRyS7+typyyl//gBgml7ZcRorjYTlfih3TZzIsHDwxcPfgeDZmc2qUUmaPIJPfAMIQ+0nd
+	82x04eNety+PwDGviDLZqcStTqKD5CyoRb8A0dMmJhkitIHP0IpxkOOStXILgcH6ux0U8/9IBdK
+	NoNKNHEQvSDYfY2QT9GsYxIy7tHMP6WuMyHk7vpPe0emHx4U2P7csp7Gt4XHYez+WR0Km8zLeS0
+	Be7DSuMKYCTesjkGV21+aBZIkznfQ4vY=
+X-Received: by 2002:a05:7022:ebc5:b0:128:cedb:33c6 with SMTP id a92af1059eb24-1350451e5f6mr11410029c88.16.1779293006184;
+        Wed, 20 May 2026 09:03:26 -0700 (PDT)
+X-Received: by 2002:a05:7022:ebc5:b0:128:cedb:33c6 with SMTP id a92af1059eb24-1350451e5f6mr11409883c88.16.1779293005176;
+        Wed, 20 May 2026 09:03:25 -0700 (PDT)
+Received: from localhost ([140.82.166.162])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-134cb5b3c20sm27266669c88.0.2026.05.20.09.03.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 May 2026 09:03:24 -0700 (PDT)
+Date: Wed, 20 May 2026 11:03:23 -0500
+From: Andrew Jones <andrew.jones@oss.qualcomm.com>
+To: fangyu.yu@linux.alibaba.com
+Cc: robin.murphy@arm.com, ajones@ventanamicro.com, alex@ghiti.fr,
+        aou@eecs.berkeley.edu, guoren@kernel.org, iommu@lists.linux.dev,
+        joro@8bytes.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, palmer@dabbelt.com, pjw@kernel.org,
+        sunilvl@oss.qualcomm.com, tomasz.jeznach@linux.dev, will@kernel.org
+Subject: Re: [PATCH] iommu/riscv: prefer WSI on IGS=BOTH when wired IRQs are
+ described
+Message-ID: <kkx6nqyc3evbfeutxkzwv6kbrotsbxopkvit2e2qh6hljicq5m@x4bb54loffkk>
+References: <7dc61855-d916-4659-8137-7f3457f6a56d@arm.com>
+ <20260520134416.28552-1-fangyu.yu@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260520134416.28552-1-fangyu.yu@linux.alibaba.com>
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTIwMDE1NSBTYWx0ZWRfX0IUKT0u3Yvn4
+ 1GV+oC5oCuLSmpdLhwT86z3hQuv+y30mHF+RTL9hVKaa7LPX93nwOqUlRnE14koUbSh2RBxvZg9
+ Sw0Zsuh9N3ko2HB8x93KoWN2C3YuoHWGcN9skBRXWlRFmC+o1msfOQUfv/GwadsMdTGL21CR8a/
+ jCLXLGCO2nlKUROLPY/7l4fDXsRsGNyp136rhQGqw5ygoCmvBYmvN3XZH/5g29+2xppXfvvh2c/
+ 67s2JbNz7j/rFROX9d9LE3IRnKgHKOuh0AE0m7s6Dez3zS4WPbJG3TeFVurqS3zwz+tuRRUse2b
+ 0iLFmyDOGcNYt0tR3EACjBE30LpECve7jJ3kVGwgoTDyXUrYEjJjzecJ0j//80xExKdIDdATXJD
+ U+GPI0dshD66fWKLZbi3JEtO2lb/ZTzViE+iR+FGXZ8E3l89JIZmxJFWdkh/RNAKUfLxzzSgqlP
+ PnBcmo6r7DsTwnQ95SQ==
+X-Authority-Analysis: v=2.4 cv=Zckt8MVA c=1 sm=1 tr=0 ts=6a0ddb4f cx=c_pps
+ a=SvEPeNj+VMjHSW//kvnxuw==:117 a=cvcws7F5//HeuvjG1O1erQ==:17
+ a=kj9zAlcOel0A:10 a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=Um2Pa8k9VHT-vaBCBUpS:22
+ a=SRrdq9N9AAAA:8 a=GUY1ysHpEHdUDnuj3zYA:9 a=CjuIK1q_8ugA:10 a=zZCYzV9kfG8A:10
+ a=Kq8ClHjjuc5pcCNDwlU0:22
+X-Proofpoint-GUID: yL4M49Ct6oUw4fEzTHeVPbOFwuJYvN0w
+X-Proofpoint-ORIG-GUID: yL4M49Ct6oUw4fEzTHeVPbOFwuJYvN0w
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-05-20_03,2026-05-18_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 adultscore=0 priorityscore=1501 malwarescore=0 clxscore=1015
+ phishscore=0 bulkscore=0 lowpriorityscore=0 impostorscore=0 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2605130000 definitions=main-2605200155
 
-Hi Yi,
+On Wed, May 20, 2026 at 09:44:16PM +0800, fangyu.yu@linux.alibaba.com wrote:
+...
+> >(As a side note, is there a reason this is calling of_msi_configure() on 
+> >a platform device when of_platform_device_create_pdata() will have done 
+> >that already?)
+> 
+> Good catch, agreed.
+>
 
-On Wed, 20 May 2026 15:20:06 +0800
-Yi Liu <yi.l.liu@intel.com> wrote:
+This is here for a device creation order issue. We have similar patterns
+elsewhere, e.g. drivers/irqchip/irq-riscv-rpmi-sysmsi.c:268. When the
+device is created the MSI controller may not yet have been probed, so
+msi_domain will be NULL. The of_msi_configure() here ensures it gets a
+second chance. Anup says he has a device driver framework solution to
+avoid this pattern that he intends to post soon. I'll clean this up
+after that.
 
-> On 5/12/26 02:41, Jacob Pan wrote:
-> > From: Jason Gunthorpe <jgg@nvidia.com>
-> > 
-> > Allow iommufd to bind devices without an IOMMU (noiommu mode) by
-> > creating a dummy IOMMU group for such devices and skipping hwpt
-> > operations.
-> > 
-> > This enables noiommu devices to operate through the same iommufd
-> > API as IOMMU- capable devices.
-> > 
-> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> > Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
-> > ---
-> > v5:
-> >     - simplify logic and rename iommufd_device_is_noiommu (Kevin,
-> > Yi)
-> >     - use a helper iommufd_bind_noiommu instead of open coding
-> > (Kevin)
-> >     - move IOMMU cap check under iommufd_bind_iommu() (Yi)
-> >     - reword comments for partial init (Yi)
-> >     - misc minor clean up
-> > v4:
-> >     - Update the description of the module parameter (Alex)
-> > v3:
-> >     - Consolidate into fewer patches
-> > ---
-> >   drivers/iommu/iommufd/device.c | 148
-> > ++++++++++++++++++++++++--------- 1 file changed, 109
-> > insertions(+), 39 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/iommufd/device.c
-> > b/drivers/iommu/iommufd/device.c index d03076fcf3c2..4d75720432cc
-> > 100644 --- a/drivers/iommu/iommufd/device.c
-> > +++ b/drivers/iommu/iommufd/device.c
-> > @@ -23,6 +23,16 @@ struct iommufd_attach {
-> >   	struct xarray device_array;
-> >   };
-> >   
-> > +/*
-> > + * A noiommu device has no IOMMU driver attached regardless of
-> > whether it
-> > + * enters via the cdev path (no iommu_group) or the group path
-> > (fake
-> > + * noiommu iommu_group). In both cases dev->iommu is NULL.  
-> 
-> Are you trying to identify the case where both group and cdev
-> interfaces coexist? In such a scenario, the group path creates a fake
-> iommu group while the cdev path creates a dummy igroup. Both
-> operations need to be performed, but checking iommu_group might
-> interfere with the cdev noiommu path logic.
-> 
-> Is that why you're checking idev->dev->iommu here instead? If so,
-> could you please make this rationale more explicit in the comment?
-> 
-> At first glance, the comment is quite confusing. It's unclear why a
-> cdev-path-only helper function needs to reference the group path at
-> all. The last sentence in particular seems to suggest this helper
-> covers both paths, which adds to the confusion.
-> 
-Yes, Baolu also commented on this asking why not use
-device_iommu_mapped. I will update the comment as follows:
- /*
-- * A noiommu device has no IOMMU driver attached regardless of whether
-it
-- * enters via the cdev path (no iommu_group) or the group path (fake
-- * noiommu iommu_group). In both cases dev->iommu is NULL.
-+ * Detect a noiommu device for the cdev path. We check dev->iommu
-rather than
-+ * using device_iommu_mapped() (which checks dev->iommu_group) because
-when
-+ * both group and cdev interfaces coexist, the group path assigns a
-fake
-+ * noiommu iommu_group to the device. That would cause
-device_iommu_mapped()
-+ * to return true and hide the noiommu case from the cdev path.
-dev->iommu is
-+ * reliably NULL when no IOMMU driver is managing the device.
-  */
- static bool iommufd_device_is_noiommu(struct iommufd_device *idev)
- {
-
-> > + */
-> > +static bool iommufd_device_is_noiommu(struct iommufd_device *idev)
-> > +{
-> > +	return IS_ENABLED(CONFIG_IOMMUFD_NOIOMMU) &&
-> > !idev->dev->iommu; +}
-> > +
-> >   static void iommufd_group_release(struct kref *kref)
-> >   {
-> >   	struct iommufd_group *igroup =
-> > @@ -30,9 +40,11 @@ static void iommufd_group_release(struct kref
-> > *kref) 
-> >   	WARN_ON(!xa_empty(&igroup->pasid_attach));
-> >   
-> > -	xa_cmpxchg(&igroup->ictx->groups,
-> > iommu_group_id(igroup->group), igroup,
-> > -		   NULL, GFP_KERNEL);
-> > -	iommu_group_put(igroup->group);
-> > +	if (igroup->group) {
-> > +		xa_cmpxchg(&igroup->ictx->groups,
-> > iommu_group_id(igroup->group),
-> > +			   igroup, NULL, GFP_KERNEL);
-> > +		iommu_group_put(igroup->group);
-> > +	}
-> >   	mutex_destroy(&igroup->lock);
-> >   	kfree(igroup);
-> >   }
-> > @@ -204,32 +216,19 @@ void iommufd_device_destroy(struct
-> > iommufd_object *obj) struct iommufd_device *idev =
-> >   		container_of(obj, struct iommufd_device, obj);
-> >   
-> > -	iommu_device_release_dma_owner(idev->dev);
-> > +	if (!idev->igroup)
-> > +		return;
-> > +	if (!iommufd_device_is_noiommu(idev))
-> > +		iommu_device_release_dma_owner(idev->dev);
-> >   	iommufd_put_group(idev->igroup);
-> >   	if (!iommufd_selftest_is_mock_dev(idev->dev))
-> >   		iommufd_ctx_put(idev->ictx);
-> >   }
-> >   
-> > -/**
-> > - * iommufd_device_bind - Bind a physical device to an iommu fd
-> > - * @ictx: iommufd file descriptor
-> > - * @dev: Pointer to a physical device struct
-> > - * @id: Output ID number to return to userspace for this device
-> > - *
-> > - * A successful bind establishes an ownership over the device and
-> > returns
-> > - * struct iommufd_device pointer, otherwise returns error pointer.
-> > - *
-> > - * A driver using this API must set driver_managed_dma and must
-> > not touch
-> > - * the device until this routine succeeds and establishes
-> > ownership.
-> > - *
-> > - * Binding a PCI device places the entire RID under iommufd
-> > control.
-> > - *
-> > - * The caller must undo this with iommufd_device_unbind()
-> > - */
-> > -struct iommufd_device *iommufd_device_bind(struct iommufd_ctx
-> > *ictx,
-> > -					   struct device *dev, u32
-> > *id) +static int iommufd_bind_iommu(struct iommufd_device *idev)
-> >   {
-> > -	struct iommufd_device *idev;
-> > +	struct iommufd_ctx *ictx = idev->ictx;
-> > +	struct device *dev = idev->dev;
-> >   	struct iommufd_group *igroup;
-> >   	int rc;
-> >   
-> > @@ -238,11 +237,11 @@ struct iommufd_device
-> > *iommufd_device_bind(struct iommufd_ctx *ictx,
-> >   	 * to restore cache coherency.
-> >   	 */
-> >   	if (!device_iommu_capable(dev, IOMMU_CAP_CACHE_COHERENCY))
-> > -		return ERR_PTR(-EINVAL);
-> > +		return -EINVAL;
-> >   
-> >   	igroup = iommufd_get_group(ictx, dev);
-> >   	if (IS_ERR(igroup))
-> > -		return ERR_CAST(igroup);
-> > +		return PTR_ERR(igroup);
-> >   
-> >   	/*
-> >   	 * For historical compat with VFIO the insecure interrupt
-> > path is @@ -268,21 +267,80 @@ struct iommufd_device
-> > *iommufd_device_bind(struct iommufd_ctx *ictx, if (rc)
-> >   		goto out_group_put;
-> >   
-> > +	/* igroup refcount moves into iommufd_device */
-> > +	idev->igroup = igroup;
-> > +	idev->enforce_cache_coherency =
-> > +		device_iommu_capable(dev,
-> > IOMMU_CAP_ENFORCE_CACHE_COHERENCY);
-> > +	return 0;
-> > +
-> > +out_group_put:
-> > +	iommufd_put_group(igroup);
-> > +	return rc;
-> > +}
-> > +
-> > +/*
-> > + * Noiommu devices have no real IOMMU group. Create a dummy igroup
-> > so that
-> > + * internal code paths that expect idev->igroup to be present
-> > still work.
-> > + * A NULL igroup->group distinguishes this from a real
-> > IOMMU-backed group.
-> > + */
-> > +static int iommufd_bind_noiommu(struct iommufd_device *idev)
-> > +{
-> > +	struct iommufd_group *igroup;
-> > +
-> > +	igroup = iommufd_alloc_group(idev->ictx, NULL);
-> > +	if (IS_ERR(igroup))
-> > +		return PTR_ERR(igroup);
-> > +	idev->igroup = igroup;
-> > +	return 0;
-> > +}
-> > +
-> > +/**
-> > + * iommufd_device_bind - Bind a physical device to an iommu fd
-> > + * @ictx: iommufd file descriptor
-> > + * @dev: Pointer to a physical device struct
-> > + * @id: Output ID number to return to userspace for this device
-> > + *
-> > + * A successful bind establishes an ownership over the device and
-> > returns
-> > + * struct iommufd_device pointer, otherwise returns error pointer.
-> > + *
-> > + * A driver using this API must set driver_managed_dma and must
-> > not touch
-> > + * the device until this routine succeeds and establishes
-> > ownership.
-> > + *
-> > + * Binding a PCI device places the entire RID under iommufd
-> > control.
-> > + *
-> > + * The caller must undo this with iommufd_device_unbind()
-> > + */
-> > +struct iommufd_device *iommufd_device_bind(struct iommufd_ctx
-> > *ictx,
-> > +					   struct device *dev, u32
-> > *id) +{
-> > +	struct iommufd_device *idev;
-> > +	int rc;
-> > +
-> >   	idev = iommufd_object_alloc(ictx, idev,
-> > IOMMUFD_OBJ_DEVICE);
-> > -	if (IS_ERR(idev)) {
-> > -		rc = PTR_ERR(idev);
-> > -		goto out_release_owner;
-> > -	}
-> > +	if (IS_ERR(idev))
-> > +		return idev;
-> > +
-> >   	idev->ictx = ictx;
-> > +	idev->dev = dev;
-> > +
-> > +	if (!iommufd_device_is_noiommu(idev)) {
-> > +		rc = iommufd_bind_iommu(idev);
-> > +		if (rc)
-> > +			goto err_out;
-> > +	} else {
-> > +		rc = iommufd_bind_noiommu(idev);
-> > +		if (rc)
-> > +			goto err_out;
-> > +	}  
-> 
-> how about moving the 'if (rc)'out of the two branches?
-> 
-Sounds good!
-
-> > +
-> > +	/*
-> > +	 * Take a ctx reference after bind succeeds. This must
-> > happen here
-> > +	 * so that iommufd_device_destroy() can handle partial
-> > initialization
-> > +	 */  
-> 
-> s/after bind succeeds/after bind_iommu/noiommu() succeeds. or more
-> explicit, "idev->igroup is set." :)
-> 
-> Other parts LGTM, feel free to add my r-b tag after solving the above
-> nits.
-> 
-> Reviewed-by: Yi Liu <yi.l.liu@intel.com>
-will do.
-Thanks a lot!
-
-> 
-> >   	if (!iommufd_selftest_is_mock_dev(dev))
-> >   		iommufd_ctx_get(ictx);
-> > -	idev->dev = dev;
-> > -	idev->enforce_cache_coherency =
-> > -		device_iommu_capable(dev,
-> > IOMMU_CAP_ENFORCE_CACHE_COHERENCY); /* The calling driver is a user
-> > until iommufd_device_unbind() */ refcount_inc(&idev->obj.users);
-> > -	/* igroup refcount moves into iommufd_device */
-> > -	idev->igroup = igroup;
-> >   
-> >   	/*
-> >   	 * If the caller fails after this success it must call
-> > @@ -294,11 +352,14 @@ struct iommufd_device
-> > *iommufd_device_bind(struct iommufd_ctx *ictx, *id = idev->obj.id;
-> >   	return idev;
-> >   
-> > -out_release_owner:
-> > -	iommu_device_release_dma_owner(dev);
-> > -out_group_put:
-> > -	iommufd_put_group(igroup);
-> > +err_out:
-> > +	/*
-> > +	 * iommufd_device_destroy() handles partially initialized
-> > idev,
-> > +	 * so iommufd_object_abort_and_destroy() is safe to call
-> > here.
-> > +	 */
-> > +	iommufd_object_abort_and_destroy(ictx, &idev->obj);
-> >   	return ERR_PTR(rc);
-> > +
-> >   }
-> >   EXPORT_SYMBOL_NS_GPL(iommufd_device_bind, "IOMMUFD");
-> >   
-> > @@ -512,6 +573,9 @@ static int iommufd_hwpt_attach_device(struct
-> > iommufd_hw_pagetable *hwpt, struct iommufd_attach_handle *handle;
-> >   	int rc;
-> >   
-> > +	if (iommufd_device_is_noiommu(idev))
-> > +		return 0;
-> > +
-> >   	if (!iommufd_hwpt_compatible_device(hwpt, idev))
-> >   		return -EINVAL;
-> >   
-> > @@ -559,6 +623,9 @@ static void iommufd_hwpt_detach_device(struct
-> > iommufd_hw_pagetable *hwpt, {
-> >   	struct iommufd_attach_handle *handle;
-> >   
-> > +	if (iommufd_device_is_noiommu(idev))
-> > +		return;
-> > +
-> >   	handle = iommufd_device_get_attach_handle(idev, pasid);
-> >   	if (pasid == IOMMU_NO_PASID)
-> >   		iommu_detach_group_handle(hwpt->domain,
-> > idev->igroup->group); @@ -577,6 +644,9 @@ static int
-> > iommufd_hwpt_replace_device(struct iommufd_device *idev, struct
-> > iommufd_attach_handle *handle, *old_handle; int rc;
-> >   
-> > +	if (iommufd_device_is_noiommu(idev))
-> > +		return 0;
-> > +
-> >   	if (!iommufd_hwpt_compatible_device(hwpt, idev))
-> >   		return -EINVAL;
-> >   
-> > @@ -652,7 +722,7 @@ int iommufd_hw_pagetable_attach(struct
-> > iommufd_hw_pagetable *hwpt, goto err_release_devid;
-> >   	}
-> >   
-> > -	if (attach_resv) {
-> > +	if (attach_resv && !iommufd_device_is_noiommu(idev)) {
-> >   		rc = iommufd_device_attach_reserved_iova(idev,
-> > hwpt_paging); if (rc)
-> >   			goto err_release_devid;  
-
+Thanks,
+drew
