@@ -1,457 +1,368 @@
-Received: from mail-pg1-f202.google.com (mail-pg1-f202.google.com [209.85.215.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1928C3F20EE
-	for <iommu@lists.linux.dev>; Wed, 20 May 2026 15:07:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.202
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6D3C93EAC84
+	for <iommu@lists.linux.dev>; Wed, 20 May 2026 15:25:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779289675; cv=none; b=mxlmKrPhPLafe3x5YK9irQ/IyDfYK7ly2MkUlo/MEcE7KS6YPaKLrRMXYFesisCtorGUnJzSgf3y1Llzw8Qk/dGiGTRiMVn90ihyHJmXiyDyXIRkeZPqOvnhfAsJ6WfE82XkZqwaW/CR5HzPC5u3Ht8nBvB2YjlB6ydsOM6DqNI=
+	t=1779290749; cv=none; b=RHdWhpAwGSxbS8Q9QjYfiRPNxbAryiZxH9XvxUU57lsNU2G/04J2YtMk1yhjWIHd3B35mSo6tSJogiSAgIDEluSx3DUHm040qXcmxkjFFRIQTcGnr6zA2DIEDyNFClpxHfkkQc7x9zp1PI/837nNfHhR42eEzhhpteKY4iP7seY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779289675; c=relaxed/simple;
-	bh=MVlFuUdSxChHlFJctVr5HZW91xXQ5JrSnHn1IZklfaY=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=nB/T6AGOBiyGfHJ1ywtDwc7kRuJEZwEN2MY86vGuRneZQ1uS5NdNw61FiF1K7XvLVnqqmdpJsVlzCHM3FJvsFC4fpV5i4AwQMEHYVE9frbvQrEev9NIPBjQE9aSu5aTf0SjHBdCva/BJZhSa1VPyOr2DeOYEa8vnewkApFaOH0Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=QSHESwke; arc=none smtp.client-ip=209.85.215.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com
+	s=arc-20240116; t=1779290749; c=relaxed/simple;
+	bh=N8v1TFwIcRepmhHw+LYodNL/Ros4EWutz27w5aCYrcM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lSCdB2cOlMIflO3Dusfv2+YI2x/HRpFL+DVXgyAPCb4CHHMkJJbKbg/JnL4zs6fQF3cF+6FfXOB5lWJm5uJxmEZTNApFTFA4giqJt7BYDq+cwjSbZsJjhU8uFmvUdKiMGtOk6lPB9LvHIDRLTqiPJcKUoZr+tSni5ct8o/rj5Tc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=QDNWc/N/; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="QSHESwke"
-Received: by mail-pg1-f202.google.com with SMTP id 41be03b00d2f7-c82894155ceso7170061a12.1
-        for <iommu@lists.linux.dev>; Wed, 20 May 2026 08:07:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779289671; x=1779894471; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=wHUnnXFLKyxNLD+EvpucYoAufuRZ6w5hpv0Yeic6fcw=;
-        b=QSHESwke3BfC6n7s2KNg1uhJbk7U/t7oDOi477jPqOjvAZTb48NBwZnSohPTw0s5he
-         s3vDrz02/4u3dNMkRMwi3pTRdvNbwMI7XyMPz4WbeIgH0rWioCVal3MJjuVd9eSuhyY2
-         8yCBFEnRE2FEIXsZkvl8AwClrKQQROAgGjEeuQWszth2B+pZfZ11GHW1QtNw4RDxpjZH
-         +nYNar9Sz9DyU6O9EQk33vbXrMGnVcXKmUDpN7bRVwJBAims0fMGTi4jgLdsBCKZndN8
-         AXaYKib0b+qJh8tQg0lJUp57MECUfnO826AlRNZY6sQuvhtJimWwT5HPZW1J0tNKHqq6
-         KbPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779289671; x=1779894471;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=wHUnnXFLKyxNLD+EvpucYoAufuRZ6w5hpv0Yeic6fcw=;
-        b=sCHy9QQEZQ1D/gfHMNt/f1YdFPla3Zw712d/7ptuXQi/wA3mOfabqG41sYKraa6+Ep
-         pcG9OCoonv0QLR/TSpC2WKEsIXlY5LrZMgmReu0446wEA2WnjvNb4hD/8bYlny5BiV+P
-         3IjMADNCkCBH9VNVt9eDtbA7qYw767EQFiacvZG9ycwgTyGOiC0tglgK9G2Gwcw17EkP
-         yxHHpB7rMA9qN11x+ID6C2GNZWuzyMAAalAItSS035JG77HuWsGihnwbaLDxyIsy0FmN
-         UXHEyXru740Dblm4koC8RdQaATgza5BBsoZzbx7crLw4JRxOUmvXJs2GHhc6/+DJuJb2
-         lkCA==
-X-Forwarded-Encrypted: i=1; AFNElJ97TUJHfQVfOH1lYWIRLSIrDLmUEteEMyfGDsWUSv+yazGeAGO+p+beCid02QDkGweDa58ulw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YybIy++yAODxa4tH4IR5zpUsn6g1RFKGm50cnBloB/mgnQODiPM
-	xZqUchMq2qnSAVCFLI7YuN3rUa89UU7Rb5xbQlM0NurW7+DAfJ2tq1p08/Pda+6SauudK0HCueJ
-	h5WhrVFOiDvRj0QEAWiQWH98maA==
-X-Received: from pfbem50.prod.google.com ([2002:a05:6a00:3772:b0:82f:6a57:a9aa])
- (user=joonwonkang job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6a00:ab0d:b0:82f:5125:a327 with SMTP id d2e1a72fcca58-83f33d97ad5mr24114337b3a.27.1779289670994;
- Wed, 20 May 2026 08:07:50 -0700 (PDT)
-Date: Wed, 20 May 2026 15:07:43 +0000
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="QDNWc/N/"
+Received: from localhost (unknown [167.220.233.27])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 0AC1220B7167;
+	Wed, 20 May 2026 08:25:39 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0AC1220B7167
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1779290739;
+	bh=fuhHbAWU/Rywr/2br9PfQtPvQkxr3+PATatPCz/45xw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=QDNWc/N/td8GAkdHve4xy29qi1nqOsSi1dTH2agpxuaywjQKx+4/GCXhO5c5dW+xh
+	 VEFRsS1BYHYGwxj901Fkt0Yhej5+0xBrJ2pqrJCIQgVifeAvpnUUmWNhgkRgz20Lo6
+	 z5PlhjSt57RuLJ8Gu02vDynkkJGGqNNhn3Cd6eTI=
+Date: Wed, 20 May 2026 23:25:43 +0800
+From: Yu Zhang <zhangyu1@linux.microsoft.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-pci@vger.kernel.org, linux-arch@vger.kernel.org, 
+	wei.liu@kernel.org, kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com, 
+	longli@microsoft.com, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
+	bhelgaas@google.com, kwilczynski@kernel.org, lpieralisi@kernel.org, mani@kernel.org, 
+	robh@kernel.org, arnd@arndb.de, mhklinux@outlook.com, 
+	jacob.pan@linux.microsoft.com, tgopinath@linux.microsoft.com, 
+	easwar.hariharan@linux.microsoft.com
+Subject: Re: [PATCH v1 3/4] iommu/hyperv: Add para-virtualized IOMMU support
+ for Hyper-V guest
+Message-ID: <yqhb6vxoovscvfafgv6i6zn7uydpfxeff7hqmvbn6z7c2tjqp6@jn2vvtxqgfef>
+References: <20260511162408.1180069-1-zhangyu1@linux.microsoft.com>
+ <20260511162408.1180069-4-zhangyu1@linux.microsoft.com>
+ <20260515223139.GK7702@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.54.0.631.ge1b05301d1-goog
-Message-ID: <20260520150743.727106-1-joonwonkang@google.com>
-Subject: [PATCH v2] iommu: Allow device driver to use its own PASID space for SVA
-From: Joonwon Kang <joonwonkang@google.com>
-To: jgg@ziepe.ca, will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, 
-	jpb@kernel.org
-Cc: Alexander.Grest@microsoft.com, amhetre@nvidia.com, 
-	baolu.lu@linux.intel.com, easwar.hariharan@linux.microsoft.com, 
-	jacob.jun.pan@linux.intel.com, kees@kernel.org, kevin.tian@intel.com, 
-	nicolinc@nvidia.com, praan@google.com, smostafa@google.com, tglx@kernel.org, 
-	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org, 
-	hpa@zytor.com, peterz@infradead.org, sohil.mehta@intel.com, kas@kernel.org, 
-	alexander.shishkin@linux.intel.com, ryasuoka@redhat.com, xin@zytor.com, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, joonwonkang@google.com
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260515223139.GK7702@ziepe.ca>
 
-For SVA, the IOMMU core always allocates PASID from the global PASID
-space. The use of this global PASID space comes from the limitation of
-the ENQCMD instruction in Intel CPUs that it fetches its PASID operand
-from IA32_PASID, which is per-process; when a process wants to
-communicate with multiple devices with the ENQCMD instruction, it cannot
-change its PASID for each device without the kernel's intervention. Also
-note that ARM introduced a similar instruction, which is ST64BV0.
+On Fri, May 15, 2026 at 07:31:39PM -0300, Jason Gunthorpe wrote:
+> On Tue, May 12, 2026 at 12:24:07AM +0800, Yu Zhang wrote:
+> > +/*
+> > + * Identity and blocking domains are static singletons: identity is a 1:1
+> > + * passthrough with no page table, blocking rejects all DMA. Neither holds
+> > + * per-IOMMU state, so one instance suffices even with multiple vIOMMUs.
+> > + */
+> > +static struct hv_iommu_domain hv_identity_domain;
+> > +static struct hv_iommu_domain hv_blocking_domain;
+> > +static const struct iommu_domain_ops hv_iommu_identity_domain_ops;
+> > +static const struct iommu_domain_ops hv_iommu_blocking_domain_ops;
+> 
+> Please follow the format of other drivers and statically initialize
+> these here instead of in C code.
+> 
 
-Due to this nature, SVA with ARM SMMU v3 has been found not working in
-our environment when other modules/devices compete for PASID. The
-environment looks as follows:
+Thanks! Will do.
 
-- The device is not a PCIe device.
-- The device is to use SVA.
-- The supported SSID/PASID space is very small for the device; only 1 to
-  3 SSIDs are supported.
+> > +static struct iommu_ops hv_iommu_ops;
+> > +static LIST_HEAD(hv_iommu_pci_bus_list);
+> > +static DEFINE_SPINLOCK(hv_iommu_pci_bus_lock);
+> > +
+> > +#define hv_iommu_present(iommu_cap) (iommu_cap & HV_IOMMU_CAP_PRESENT)
+> > +#define hv_iommu_s1_domain_supported(iommu_cap) (iommu_cap & HV_IOMMU_CAP_S1)
+> > +#define hv_iommu_5lvl_supported(iommu_cap) (iommu_cap & HV_IOMMU_CAP_S1_5LVL)
+> > +#define hv_iommu_ats_supported(iommu_cap) (iommu_cap & HV_IOMMU_CAP_ATS)
+> 
+> prefer to see static inlines
+> 
 
-With this setup, when other modules have allocated all the PASIDs that
-our device is expected to use from the global PASID space via APIs like
-iommu_alloc_global_pasid() or iommu_sva_bind_device(), SVA binding to
-our device fails due to the lack of available PASIDs.
+Yes. Thanks.
 
-This commit resolves the issue by allowing device driver to maintain its
-own PASID space and assign a PASID from that for the process-device bond
-via a new API called `iommu_sva_bind_device_pasid(dev, mm, pasid)`. Doing
-that, however, will disallow the process to execute the ENQCMD-like
-instructions at EL0. It is because the process cannot change its PASID in
-IA32_PASID(or ACCDATA_EL1 on ARM) for each device without the kernel's
-intervention. For this reason, calling `iommu_sva_bind_device()` and then
-`iommu_sva_bind_device_pasid()` for the same process will not be allowed
-and vice versa.
+> > +static void hv_iommu_detach_dev(struct iommu_domain *domain, struct device *dev)
+> > +{
+> > +	u64 status;
+> > +	unsigned long flags;
+> > +	struct hv_input_detach_device_domain *input;
+> > +	struct pci_dev *pdev;
+> > +	struct hv_iommu_domain *hv_domain = to_hv_iommu_domain(domain);
+> > +	struct hv_iommu_endpoint *vdev = dev_iommu_priv_get(dev);
+> > +
+> > +	/* See the attach function, only PCI devices for now */
+> > +	if (!dev_is_pci(dev) || vdev->hv_domain != hv_domain)
+> > +		return;
+> > +
+> > +	pdev = to_pci_dev(dev);
+> > +
+> > +	dev_dbg(dev, "detaching from domain %d\n", hv_domain->device_domain.domain_id.id);
+> > +
+> > +	local_irq_save(flags);
+> > +
+> > +	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
+> > +	memset(input, 0, sizeof(*input));
+> > +	input->partition_id = HV_PARTITION_ID_SELF;
+> > +	if (hv_iommu_lookup_logical_dev_id(pdev, &input->device_id.as_uint64)) {
+> > +		local_irq_restore(flags);
+> > +		dev_warn(&pdev->dev, "no IOMMU registration for vPCI bus on detach\n");
+> > +		return;
+> > +	}
+> > +	status = hv_do_hypercall(HVCALL_DETACH_DEVICE_DOMAIN, input, NULL);
+> 
+> FWIW the hypervisor cannot implement the linux attach semantics if it
+> has detach/attach. It must support simply 'attach' which atomically
+> changes the translation. With detach you have a confusing problem if
+> errors happen in the middle of the sequence the device is left in an
+> unclear state. You should at least document what state the hypervisor
+> is supposed to leaave the translation iin during these failures..
+> 
 
-Currently, there is a limitation that a process simultaneously doing SVA
-with multiple devices with different PASIDs is not supported. So, calling
-`iommu_sva_bind_device_pasid()` multiple times for the same process with
-different devices will not be allowed for now while that for
-`iommu_sva_bind_device()` will be.
+Thanks for raising this!
 
-Another limitation is that a process cannot do `iommu_sva_bind_device()`
-if it has ever done `iommu_sva_bind_device_pasid()` even though it has
-been unbound after use.
+My understanding is that the detach hypercall just clears the HW
+IOMMU entry for the device (e.g., context table entry on VT-d, DTE
+on AMD IOMMU) and flushes the IOTLB. So after detach and before the
+subsequent attach, DMA from the device is blocked by the HW IOMMU
+- the device is not in an unprotected state.
 
-Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
-Suggested-by: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Joonwon Kang <joonwonkang@google.com>
----
-v2: Reuse iommu_mm->pasid after SVA bound by iommu_sva_bind_device_pasid()
-    is unbound.
-v1: Initial version.
+The detach shall not fail unless the pvIOMMU driver passes incorrect
+parameters or is otherwise in a buggy state, or Hyper-V itself has
+a bug. 
 
- arch/x86/kernel/traps.c   |   9 +--
- drivers/iommu/iommu-sva.c | 151 +++++++++++++++++++++++++++++---------
- include/linux/iommu.h     |  14 +++-
- 3 files changed, 134 insertions(+), 40 deletions(-)
+But making attach atomic might be a cleaner approach (drop the
+explicit detach and let the hypervisor handle the domain switch
+internally)? I'll look into making that work, though it needs
+verification (and possibly changes) on the hypervisor side (these
+hypercalls are not exclusively for Linux guest). If that doesn't
+work out, I'll keep the two-step approach with comments documenting
+the intermediate translation state.
 
-diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-index 0ca3912ecb7f..0131c8e5fb10 100644
---- a/arch/x86/kernel/traps.c
-+++ b/arch/x86/kernel/traps.c
-@@ -857,13 +857,12 @@ static bool try_fixup_enqcmd_gp(void)
- 		return false;
- 
- 	/*
--	 * If the mm has not been allocated a
--	 * PASID, the #GP can not be fixed up.
-+	 * If the mm has not been allocated a PASID or ENQCMD has been
-+	 * disallowed, the #GP can not be fixed up.
- 	 */
--	if (!mm_valid_pasid(current->mm))
--		return false;
--
- 	pasid = mm_get_enqcmd_pasid(current->mm);
-+	if (pasid == IOMMU_PASID_INVALID)
-+		return false;
- 
- 	/*
- 	 * Did this thread already have its PASID activated?
-diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-index bc7c7232a43e..a83333651ad0 100644
---- a/drivers/iommu/iommu-sva.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -10,6 +10,9 @@
- 
- #include "iommu-priv.h"
- 
-+/* Whether pasid is to be allocated from the global PASID space */
-+#define IOMMU_PASID_GLOBAL_ANY IOMMU_NO_PASID
-+
- static DEFINE_MUTEX(iommu_sva_lock);
- static bool iommu_sva_present;
- static LIST_HEAD(iommu_sva_mms);
-@@ -17,10 +20,11 @@ static struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
- 						   struct mm_struct *mm);
- 
- /* Allocate a PASID for the mm within range (inclusive) */
--static struct iommu_mm_data *iommu_alloc_mm_data(struct mm_struct *mm, struct device *dev)
-+static struct iommu_mm_data *iommu_alloc_mm_data(struct mm_struct *mm,
-+						 struct device *dev,
-+						 ioasid_t pasid)
- {
- 	struct iommu_mm_data *iommu_mm;
--	ioasid_t pasid;
- 
- 	lockdep_assert_held(&iommu_sva_lock);
- 
-@@ -30,8 +34,27 @@ static struct iommu_mm_data *iommu_alloc_mm_data(struct mm_struct *mm, struct de
- 	iommu_mm = mm->iommu_mm;
- 	/* Is a PASID already associated with this mm? */
- 	if (iommu_mm) {
-+		if ((pasid == IOMMU_PASID_GLOBAL_ANY && !iommu_mm->pasid_global) ||
-+		    (pasid != IOMMU_PASID_GLOBAL_ANY && iommu_mm->pasid_global))
-+			return ERR_PTR(-EBUSY);
-+
-+		if (!iommu_mm->pasid_global) {
-+			if (list_empty(&iommu_mm->sva_domains))
-+				iommu_mm->pasid = pasid;
-+
-+			if (pasid != iommu_mm->pasid) {
-+				/*
-+				 * Currently, a process simultaneously doing
-+				 * SVA with multiple devices with different
-+				 * PASIDs is not supported.
-+				 */
-+				return ERR_PTR(-ENOSPC);
-+			}
-+		}
-+
- 		if (iommu_mm->pasid >= dev->iommu->max_pasids)
- 			return ERR_PTR(-EOVERFLOW);
-+
- 		return iommu_mm;
- 	}
- 
-@@ -39,37 +62,30 @@ static struct iommu_mm_data *iommu_alloc_mm_data(struct mm_struct *mm, struct de
- 	if (!iommu_mm)
- 		return ERR_PTR(-ENOMEM);
- 
--	pasid = iommu_alloc_global_pasid(dev);
--	if (pasid == IOMMU_PASID_INVALID) {
--		kfree(iommu_mm);
--		return ERR_PTR(-ENOSPC);
-+	if (pasid == IOMMU_PASID_GLOBAL_ANY) {
-+		pasid = iommu_alloc_global_pasid(dev);
-+		if (pasid == IOMMU_PASID_INVALID) {
-+			kfree(iommu_mm);
-+			return ERR_PTR(-ENOSPC);
-+		}
-+		iommu_mm->pasid_global = true;
-+	} else {
-+		if (pasid >= dev->iommu->max_pasids) {
-+			kfree(iommu_mm);
-+			return ERR_PTR(-EOVERFLOW);
-+		}
-+		iommu_mm->pasid_global = false;
- 	}
- 	iommu_mm->pasid = pasid;
- 	iommu_mm->mm = mm;
- 	INIT_LIST_HEAD(&iommu_mm->sva_domains);
--	/*
--	 * Make sure the write to mm->iommu_mm is not reordered in front of
--	 * initialization to iommu_mm fields. If it does, readers may see a
--	 * valid iommu_mm with uninitialized values.
--	 */
--	smp_store_release(&mm->iommu_mm, iommu_mm);
-+
- 	return iommu_mm;
- }
- 
--/**
-- * iommu_sva_bind_device() - Bind a process address space to a device
-- * @dev: the device
-- * @mm: the mm to bind, caller must hold a reference to mm_users
-- *
-- * Create a bond between device and address space, allowing the device to
-- * access the mm using the PASID returned by iommu_sva_get_pasid(). If a
-- * bond already exists between @device and @mm, an additional internal
-- * reference is taken. Caller must call iommu_sva_unbind_device()
-- * to release each reference.
-- *
-- * On error, returns an ERR_PTR value.
-- */
--struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
-+static struct iommu_sva *iommu_sva_bind_device_internal(struct device *dev,
-+							struct mm_struct *mm,
-+							ioasid_t pasid)
- {
- 	struct iommu_group *group = dev->iommu_group;
- 	struct iommu_attach_handle *attach_handle;
-@@ -84,7 +100,7 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
- 	mutex_lock(&iommu_sva_lock);
- 
- 	/* Allocate mm->pasid if necessary. */
--	iommu_mm = iommu_alloc_mm_data(mm, dev);
-+	iommu_mm = iommu_alloc_mm_data(mm, dev, pasid);
- 	if (IS_ERR(iommu_mm)) {
- 		ret = PTR_ERR(iommu_mm);
- 		goto out_unlock;
-@@ -96,7 +112,7 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
- 		handle = container_of(attach_handle, struct iommu_sva, handle);
- 		if (attach_handle->domain->mm != mm) {
- 			ret = -EBUSY;
--			goto out_unlock;
-+			goto out_free_iommu_mm;
- 		}
- 		refcount_inc(&handle->users);
- 		mutex_unlock(&iommu_sva_lock);
-@@ -105,17 +121,17 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
- 
- 	if (PTR_ERR(attach_handle) != -ENOENT) {
- 		ret = PTR_ERR(attach_handle);
--		goto out_unlock;
-+		goto out_free_iommu_mm;
- 	}
- 
- 	handle = kzalloc_obj(*handle);
- 	if (!handle) {
- 		ret = -ENOMEM;
--		goto out_unlock;
-+		goto out_free_iommu_mm;
- 	}
- 
- 	/* Search for an existing domain. */
--	list_for_each_entry(domain, &mm->iommu_mm->sva_domains, next) {
-+	list_for_each_entry(domain, &iommu_mm->sva_domains, next) {
- 		ret = iommu_attach_device_pasid(domain, dev, iommu_mm->pasid,
- 						&handle->handle);
- 		if (!ret) {
-@@ -143,6 +159,15 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
- 		list_add(&iommu_mm->mm_list_elm, &iommu_sva_mms);
- 	}
- 	list_add(&domain->next, &iommu_mm->sva_domains);
-+	if (!mm->iommu_mm) {
-+		/*
-+		 * Make sure the write to mm->iommu_mm is not reordered in
-+		 * front of initialization to iommu_mm fields. If it does,
-+		 * readers may see a valid iommu_mm with uninitialized values.
-+		 */
-+		smp_store_release(&mm->iommu_mm, iommu_mm);
-+	}
-+
- out:
- 	refcount_set(&handle->users, 1);
- 	mutex_unlock(&iommu_sva_lock);
-@@ -153,12 +178,66 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
- 	iommu_domain_free(domain);
- out_free_handle:
- 	kfree(handle);
-+out_free_iommu_mm:
-+	if (!mm->iommu_mm) {
-+		if (iommu_mm->pasid_global)
-+			iommu_free_global_pasid(iommu_mm->pasid);
-+		kfree(iommu_mm);
-+	}
- out_unlock:
- 	mutex_unlock(&iommu_sva_lock);
- 	return ERR_PTR(ret);
- }
-+
-+/**
-+ * iommu_sva_bind_device() - Bind a process address space to a device
-+ * @dev: the device
-+ * @mm: the mm to bind, caller must hold a reference to mm_users
-+ *
-+ * Create a bond between device and address space, allowing the device to
-+ * access the mm using the PASID returned by iommu_sva_get_pasid(). If a
-+ * bond already exists between @device and @mm, an additional internal
-+ * reference is taken. Caller must call iommu_sva_unbind_device()
-+ * to release each reference.
-+ *
-+ * On error, returns an ERR_PTR value.
-+ */
-+struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
-+{
-+	return iommu_sva_bind_device_internal(dev, mm, IOMMU_PASID_GLOBAL_ANY);
-+}
- EXPORT_SYMBOL_GPL(iommu_sva_bind_device);
- 
-+/**
-+ * iommu_sva_bind_device_pasid() - Bind a process address space to a device
-+ * with a designated pasid
-+ * @dev: the device
-+ * @mm: the mm to bind, caller must hold a reference to mm_users
-+ * @pasid: the pasid to assign to the bond
-+ *
-+ * Create a bond between device and address space, allowing the device to
-+ * access the mm using the PASID returned by iommu_sva_get_pasid(). If a
-+ * bond already exists between @device and @mm, an additional internal
-+ * reference is taken. Caller must call iommu_sva_unbind_device()
-+ * to release each reference.
-+ *
-+ * It is the caller's responsibility to maintain the PASID space for @pasid.
-+ * After the bond is created, the process for @mm will not be able to execute
-+ * ENQCMD or similar instructions at EL0. To allow those instructions at EL0,
-+ * iommu_sva_bind_device() must be used instead.
-+ *
-+ * On error, returns an ERR_PTR value.
-+ */
-+struct iommu_sva *iommu_sva_bind_device_pasid(struct device *dev,
-+					      struct mm_struct *mm,
-+					      ioasid_t pasid)
-+{
-+	if (pasid == IOMMU_PASID_GLOBAL_ANY)
-+		return ERR_PTR(-EINVAL);
-+	return iommu_sva_bind_device_internal(dev, mm, pasid);
-+}
-+EXPORT_SYMBOL_GPL(iommu_sva_bind_device_pasid);
-+
- /**
-  * iommu_sva_unbind_device() - Remove a bond created with iommu_sva_bind_device
-  * @handle: the handle returned by iommu_sva_bind_device()
-@@ -198,9 +277,12 @@ EXPORT_SYMBOL_GPL(iommu_sva_unbind_device);
- 
- u32 iommu_sva_get_pasid(struct iommu_sva *handle)
- {
--	struct iommu_domain *domain = handle->handle.domain;
-+	struct iommu_mm_data *iommu_mm = handle->handle.domain->mm->iommu_mm;
-+
-+	if (!iommu_mm)
-+		return IOMMU_PASID_INVALID;
- 
--	return mm_get_enqcmd_pasid(domain->mm);
-+	return iommu_mm->pasid;
- }
- EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
- 
-@@ -211,7 +293,8 @@ void mm_pasid_drop(struct mm_struct *mm)
- 	if (!iommu_mm)
- 		return;
- 
--	iommu_free_global_pasid(iommu_mm->pasid);
-+	if (iommu_mm->pasid_global)
-+		iommu_free_global_pasid(iommu_mm->pasid);
- 	kfree(iommu_mm);
- }
- 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index e587d4ac4d33..5b6116e7152d 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -1140,6 +1140,7 @@ struct iommu_sva {
- 
- struct iommu_mm_data {
- 	u32			pasid;
-+	bool			pasid_global;
- 	struct mm_struct	*mm;
- 	struct list_head	sva_domains;
- 	struct list_head	mm_list_elm;
-@@ -1626,7 +1627,7 @@ static inline u32 mm_get_enqcmd_pasid(struct mm_struct *mm)
- {
- 	struct iommu_mm_data *iommu_mm = READ_ONCE(mm->iommu_mm);
- 
--	if (!iommu_mm)
-+	if (!iommu_mm || !iommu_mm->pasid_global)
- 		return IOMMU_PASID_INVALID;
- 	return iommu_mm->pasid;
- }
-@@ -1634,6 +1635,9 @@ static inline u32 mm_get_enqcmd_pasid(struct mm_struct *mm)
- void mm_pasid_drop(struct mm_struct *mm);
- struct iommu_sva *iommu_sva_bind_device(struct device *dev,
- 					struct mm_struct *mm);
-+struct iommu_sva *iommu_sva_bind_device_pasid(struct device *dev,
-+					      struct mm_struct *mm,
-+					      ioasid_t pasid);
- void iommu_sva_unbind_device(struct iommu_sva *handle);
- u32 iommu_sva_get_pasid(struct iommu_sva *handle);
- void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end);
-@@ -1644,6 +1648,14 @@ iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
- 	return ERR_PTR(-ENODEV);
- }
- 
-+static inline struct iommu_sva *
-+iommu_sva_bind_device_pasid(struct device *dev,
-+			    struct mm_struct *mm,
-+			    ioasid_t pasid)
-+{
-+	return ERR_PTR(-ENODEV);
-+}
-+
- static inline void iommu_sva_unbind_device(struct iommu_sva *handle)
- {
- }
--- 
-2.54.0.631.ge1b05301d1-goog
+> > +static void hv_iommu_release_device(struct device *dev)
+> > +{
+> > +	struct hv_iommu_endpoint *vdev = dev_iommu_priv_get(dev);
+> > +	struct pci_dev *pdev = to_pci_dev(dev);
+> > +
+> > +	if (pdev->ats_enabled)
+> > +		pci_disable_ats(pdev);
+> > +
+> > +	dev_iommu_priv_set(dev, NULL);
+> > +	set_dma_ops(dev, NULL);
+> 
+> Does the driver really need to mess with set_dma_ops ? I'd rather not
+> see that in new iommu drivers if at all possible :|
+> 
 
+No. I should have removed it. Thanks!
+
+> > +static int __init hv_initialize_static_domains(void)
+> > +{
+> > +	int ret;
+> > +	struct hv_iommu_domain *hv_domain;
+> > +
+> > +	/* Default stage-1 identity domain */
+> > +	hv_domain = &hv_identity_domain;
+> > +
+> > +	ret = hv_create_device_domain(hv_domain, HV_DEVICE_DOMAIN_TYPE_S1);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	ret = hv_configure_device_domain(hv_domain, IOMMU_DOMAIN_IDENTITY);
+> > +	if (ret)
+> > +		goto delete_identity_domain;
+> > +
+> > +	hv_domain->domain.type = IOMMU_DOMAIN_IDENTITY;
+> > +	hv_domain->domain.ops = &hv_iommu_identity_domain_ops;
+> > +	hv_domain->domain.owner = &hv_iommu_ops;
+> > +	hv_domain->domain.geometry = hv_iommu_device->geometry;
+> > +	hv_domain->domain.pgsize_bitmap = hv_iommu_device->pgsize_bitmap;
+> 
+> identity doesn't use geometry or pgsize_bitmap
+> 
+
+Sure. Will remove it.
+
+> > +	/* Default stage-1 blocked domain */
+> > +	hv_domain = &hv_blocking_domain;
+> > +
+> > +	ret = hv_create_device_domain(hv_domain, HV_DEVICE_DOMAIN_TYPE_S1);
+> > +	if (ret)
+> > +		goto delete_identity_domain;
+> > +
+> > +	ret = hv_configure_device_domain(hv_domain, IOMMU_DOMAIN_BLOCKED);
+> > +	if (ret)
+> > +		goto delete_blocked_domain;
+> > +
+> > +	hv_domain->domain.type = IOMMU_DOMAIN_BLOCKED;
+> > +	hv_domain->domain.ops = &hv_iommu_blocking_domain_ops;
+> > +	hv_domain->domain.owner = &hv_iommu_ops;
+> > +	hv_domain->domain.geometry = hv_iommu_device->geometry;
+> > +	hv_domain->domain.pgsize_bitmap = hv_iommu_device->pgsize_bitmap;
+> 
+> Nor does blocked
+> 
+
+Same. Will remove.
+
+> > +#define INTERRUPT_RANGE_START	(0xfee00000)
+> > +#define INTERRUPT_RANGE_END	(0xfeefffff)
+> > +static void hv_iommu_get_resv_regions(struct device *dev,
+> > +		struct list_head *head)
+> > +{
+> > +	struct iommu_resv_region *region;
+> > +
+> > +	region = iommu_alloc_resv_region(INTERRUPT_RANGE_START,
+> > +				      INTERRUPT_RANGE_END - INTERRUPT_RANGE_START + 1,
+> > +				      0, IOMMU_RESV_MSI, GFP_KERNEL);
+> 
+> Surprised these constants are not discovered from the hv?
+> 
+
+Thanks. Since the pvIOMMU currently only targets x86, hardcoding
+the x86 architectural MSI range should be reasonable?
+
+If in the future we need additional reserved regions (e.g.,
+RMRR-style identity-mapped ranges), those would be discovered
+from the hypervisor.
+
+> > +static void hv_iommu_flush_iotlb_all(struct iommu_domain *domain)
+> > +{
+> > +	hv_flush_device_domain(to_hv_iommu_domain(domain));
+> > +}
+> > +
+> > +static void hv_iommu_iotlb_sync(struct iommu_domain *domain,
+> > +				struct iommu_iotlb_gather *iotlb_gather)
+> > +{
+> > +	hv_flush_device_domain(to_hv_iommu_domain(domain));
+> > +
+> > +	iommu_put_pages_list(&iotlb_gather->freelist);
+> > +}
+> 
+> Full invalidation only huh?
+> 
+
+Page-selective IOTLB flush is added in patch 4/4.
+
+> > +static const struct iommu_domain_ops hv_iommu_identity_domain_ops = {
+> > +	.attach_dev	= hv_iommu_attach_dev,
+> > +};
+> > +
+> > +static const struct iommu_domain_ops hv_iommu_blocking_domain_ops = {
+> > +	.attach_dev	= hv_iommu_attach_dev,
+> > +};
+> 
+> Usually I would expect these to have their own attach
+> functions. blocking in particular must have an attach op that cannot
+> fail. It is used to recover the device back to a known translation in
+> case of cascading other errors.
+> 
+
+For blocking domain, the hypercall handler of such attach essentially
+disable the translation and IOPF for the device. It should not fail
+unless there is a bug in the driver or the hypervisor.
+How about something like this?
+
+	static int hv_blocking_attach_dev(domain, dev, old)
+	{
+		...
+		status = hv_do_hypercall(HVCALL_ATTACH, blocking, dev);
+		WARN_ON(!hv_result_success(status));
+		vdev->hv_domain = blocking;
+		return 0;
+	}
+
+For identity domain, would it be fine to keep sharing the same attach
+callback with paging domain?
+
+> > +static const struct iommu_domain_ops hv_iommu_paging_domain_ops = {
+> > +	.attach_dev	= hv_iommu_attach_dev,
+> > +	IOMMU_PT_DOMAIN_OPS(x86_64),
+> > +	.flush_iotlb_all = hv_iommu_flush_iotlb_all,
+> > +	.iotlb_sync = hv_iommu_iotlb_sync,
+> > +	.free = hv_iommu_paging_domain_free,
+> > +};
+> > +
+> > +static struct iommu_domain *hv_iommu_domain_alloc_paging(struct device *dev)
+> > +{
+> > +	int ret;
+> > +	struct hv_iommu_domain *hv_domain;
+> > +	struct pt_iommu_x86_64_cfg cfg = {};
+> > +
+> > +	hv_domain = kzalloc_obj(*hv_domain, GFP_KERNEL);
+> > +	if (!hv_domain)
+> > +		return ERR_PTR(-ENOMEM);
+> > +
+> > +	ret = hv_create_device_domain(hv_domain, HV_DEVICE_DOMAIN_TYPE_S1);
+> > +	if (ret) {
+> > +		kfree(hv_domain);
+> > +		return ERR_PTR(ret);
+> > +	}
+> > +
+> > +	hv_domain->domain.geometry = hv_iommu_device->geometry;
+> 
+> geoemtry shouldn't be set here, it is overriden by
+> pt_iommu_x86_64_init() with the exact page table configuration
+> 
+
+Right. Will remove.
+> > +static void __init hv_init_iommu_device(struct hv_iommu_dev *hv_iommu,
+> > +			struct hv_output_get_iommu_capabilities *hv_iommu_cap)
+> > +{
+> > +	ida_init(&hv_iommu->domain_ids);
+> > +
+> > +	hv_iommu->cap = hv_iommu_cap->iommu_cap;
+> > +	hv_iommu->max_iova_width = hv_iommu_cap->max_iova_width;
+> > +	if (!hv_iommu_5lvl_supported(hv_iommu->cap) &&
+> > +	    hv_iommu->max_iova_width > 48) {
+> > +		pr_info("5-level paging not supported, limiting iova width to 48.\n");
+> > +		hv_iommu->max_iova_width = 48;
+> > +	}
+> > +
+> > +	hv_iommu->geometry = (struct iommu_domain_geometry) {
+> > +		.aperture_start = 0,
+> > +		.aperture_end = (((u64)1) << hv_iommu->max_iova_width) - 1,
+> > +		.force_aperture = true,
+> > +	};
+> > +
+> > +	hv_iommu->first_domain = HV_DEVICE_DOMAIN_ID_DEFAULT + 1;
+> > +	hv_iommu->last_domain = HV_DEVICE_DOMAIN_ID_NULL - 1;
+> > +	/* Only x86 page sizes (4K/2M/1G) are supported */
+> > +	hv_iommu->pgsize_bitmap = hv_iommu_cap->pgsize_bitmap &
+> > +				  (SZ_4K | SZ_2M | SZ_1G);
+> > +	if (hv_iommu->pgsize_bitmap != hv_iommu_cap->pgsize_bitmap)
+> > +		pr_warn("unsupported page sizes masked: 0x%llx -> 0x%llx\n",
+> > +			hv_iommu_cap->pgsize_bitmap, hv_iommu->pgsize_bitmap);
+> 
+> IKD if you need this logic, the way the page table code is used it
+> just sort of falls out naturally that other page sizes are ignored.
+> 
+
+Right, the page table code can handle 4K/2M/1G naturally. We'd like
+hypervisor to be able to choose to support only a subset of {4K, 2M,
+1G}. This masking filters out any unexpected page sizes and falls
+back to 4K if nothing valid remains.
+
+The if statement may be a bit paranoid perhaps, but it felt safer
+to validate explicitly. Happy to drop it if you think it's unnecessary.
+
+
+> > +struct hv_iommu_domain {
+> > +	union {
+> > +		struct iommu_domain    domain;
+> > +		struct pt_iommu        pt_iommu;
+> > +		struct pt_iommu_x86_64 pt_iommu_x86_64;
+> > +	};
+> 
+> You should retain the build assertions here
+> 
+
+Sure. Thanks!
+
+B.R.
+Yu
+
+> Jason
+> 
