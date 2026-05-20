@@ -1,158 +1,151 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 235B23C8723
-	for <iommu@lists.linux.dev>; Wed, 20 May 2026 16:26:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D17D13EFD09
+	for <iommu@lists.linux.dev>; Wed, 20 May 2026 16:27:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779294393; cv=none; b=SqJfn2MHY7oRvUTVZFXr1Y+iE6oM3KPzS8S3V5NArfHpAxuqclEiCBQeq1nVOqpuifplVLHyX9HCYBK3mS34uDC6EB/zYHq+PUO3y8lRnsYaGpy/6owe4/YTelCHxMaLDVCMe1R+b5vAtFphPYnZ/dmMIt76Zq4bTyUkLTdjPIs=
+	t=1779294448; cv=none; b=a7TWgOd8LgacwTyv/C+wrqFNdk7/I5hev/iTWCtHYUDDzUN9PagbKHEk3FnqWbdQKz+wPmhQfljUR9tgGz8hOIqaDFB3HejsKsXDOYGwUAYi/z56ZotQxM5yZcx/XW+vofK1yv2Qdr5aEQM+41Bp5OdGkQXXq9lB+woQxYy6zGM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779294393; c=relaxed/simple;
-	bh=ySimN5oyA5V9fGsuaxQ7nfJoaAhy8Ac77HkroBZSY/U=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=eIVmttSXIRstTdFIuxe3YrISvrhKDysCQ9hRS1fO6L/EGiR/T8ZvKuGYST0bY4LEtGHvQf9r+3f/WIaum/31pxMJdsgSA81xdDQfJQ/56xFhxP4SOaU07SHk+C59ALZkAO1DG8w4MN0OxrmRke6Jccood33oygGrJJsCV69Xr5o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=ReZQWk/Y; arc=none smtp.client-ip=13.77.154.182
+	s=arc-20240116; t=1779294448; c=relaxed/simple;
+	bh=kn3O33iWkMRzrr20zxMKLIqtqvAJ2DDO+NvdjtjMqs4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=AvRzUlVTqXQBqqyUtlL6uzXTsGKKBJcp2LyxOvMp+j3CwGev6S08yEZ8HURIIiguoNifcmb77Ys79EaslFoICMnjqbTs3nqSH02Udraq9lFpnYJKFfmHn+0sjWaAOqaZz3qPfL1OLLJZtrDFjKpgkwnzfbPn67FjI8yEpk2u7pk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=NDcytCVR; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="ReZQWk/Y"
-Received: from localhost (unknown [52.148.171.5])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 566B820B7167;
-	Wed, 20 May 2026 09:26:24 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 566B820B7167
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="NDcytCVR"
+Received: from localhost (unknown [167.220.233.27])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 7751F20B7167;
+	Wed, 20 May 2026 09:27:18 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7751F20B7167
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1779294384;
-	bh=plhr38dide6W3O0lMP1T8Cwc0CHwNQ59/setgQoDvSw=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=ReZQWk/YS6sh1GXr2CJ1dgzCZqkY6dhtvCgt1Ahs4SgxYDY4vEbijpvwQq8ruM0A9
-	 jN7yDUbiqDY6Z5lB8lsM9/8t8sNBzjV3VkmSNQwAbTtytUpnbJ0GDP4zskda2daHsc
-	 U+XGwlZZqIM99eeeIYBLkyEXLuvrLDIHvPkxYpCM=
-Date: Wed, 20 May 2026 09:26:29 -0700
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Yi Liu <yi.l.liu@intel.com>
-Cc: <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Alex Williamson
- <alex@shazbot.org>, Joerg Roedel <joro@8bytes.org>, Mostafa Saleh
- <smostafa@google.com>, David Matlack <dmatlack@google.com>, Robin Murphy
- <robin.murphy@arm.com>, Nicolin Chen <nicolinc@nvidia.com>, "Tian, Kevin"
- <kevin.tian@intel.com>, Saurabh Sengar <ssengar@linux.microsoft.com>,
- <skhawaja@google.com>, <pasha.tatashin@soleen.com>, Will Deacon
- <will@kernel.org>, Baolu Lu <baolu.lu@linux.intel.com>,
- jacob.pan@linux.microsoft.com
-Subject: Re: [PATCH v5 9/9] Documentation: Update VFIO NOIOMMU mode
-Message-ID: <20260520092629.000053df@linux.microsoft.com>
-In-Reply-To: <19f8ef7f-2935-45e9-8139-4d7030629f49@intel.com>
-References: <20260511184116.3687392-1-jacob.pan@linux.microsoft.com>
-	<20260511184116.3687392-10-jacob.pan@linux.microsoft.com>
-	<19f8ef7f-2935-45e9-8139-4d7030629f49@intel.com>
-Organization: LSG
-X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+	s=default; t=1779294438;
+	bh=eFSEuj5heaGvT5YYlCZtFr/mwoAJcGEgrnYMPiZpO2U=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=NDcytCVR00bg66AVB3fasrb4xc5qJ3xzfPI3jmvJswTvEYEkJGazM/h4sOu4YTj0a
+	 KdGuCoYtIgqzcxkK8bTuGJrXa056BDTPEgoANUspQMnkeOQ0s5lZMqySnnd5IBY/lG
+	 R0KJomZUgXvcte1MldoOOFE5zTM7EJcOguTnGOAM=
+Date: Thu, 21 May 2026 00:27:23 +0800
+From: Yu Zhang <zhangyu1@linux.microsoft.com>
+To: Michael Kelley <mhklinux@outlook.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, 
+	"wei.liu@kernel.org" <wei.liu@kernel.org>, "kys@microsoft.com" <kys@microsoft.com>, 
+	"haiyangz@microsoft.com" <haiyangz@microsoft.com>, "decui@microsoft.com" <decui@microsoft.com>, 
+	"longli@microsoft.com" <longli@microsoft.com>, "joro@8bytes.org" <joro@8bytes.org>, 
+	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com" <robin.murphy@arm.com>, 
+	"bhelgaas@google.com" <bhelgaas@google.com>, "kwilczynski@kernel.org" <kwilczynski@kernel.org>, 
+	"lpieralisi@kernel.org" <lpieralisi@kernel.org>, "mani@kernel.org" <mani@kernel.org>, 
+	"robh@kernel.org" <robh@kernel.org>, "arnd@arndb.de" <arnd@arndb.de>, "jgg@ziepe.ca" <jgg@ziepe.ca>, 
+	"jacob.pan@linux.microsoft.com" <jacob.pan@linux.microsoft.com>, "tgopinath@linux.microsoft.com" <tgopinath@linux.microsoft.com>, 
+	"easwar.hariharan@linux.microsoft.com" <easwar.hariharan@linux.microsoft.com>
+Subject: Re: [PATCH v1 4/4] iommu/hyperv: Add page-selective IOTLB flush
+ support
+Message-ID: <3rqbtwl57wdaqgp3my5iajhaq5xb7qpbhbrrsuq6lme7rt7rxp@mcxvqww4tjkf>
+References: <20260511162408.1180069-1-zhangyu1@linux.microsoft.com>
+ <20260511162408.1180069-5-zhangyu1@linux.microsoft.com>
+ <SN6PR02MB41577D5EEC884EAE8AF5E14ED4072@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <7wil6tzqp74gdvhyjvpv47zhfernncs42wnfoueznneluz5zrp@pzr63lhy7s5f>
+ <SN6PR02MB4157F7758A127AA1E8096B6CD4042@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <BN7PR02MB4148D820AEBBBB9A1268D640D4042@BN7PR02MB4148.namprd02.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN7PR02MB4148D820AEBBBB9A1268D640D4042@BN7PR02MB4148.namprd02.prod.outlook.com>
 
-Hi Yi,
-
-On Wed, 20 May 2026 15:20:30 +0800
-Yi Liu <yi.l.liu@intel.com> wrote:
-
-> On 5/12/26 02:41, Jacob Pan wrote:
-> > Document the NOIOMMU mode with newly added cdev support under
-> > iommufd.
+On Fri, May 15, 2026 at 11:33:21PM +0000, Michael Kelley wrote:
+> From: Michael Kelley <mhklinux@outlook.com> Sent: Friday, May 15, 2026 11:00 AM
 > > 
-> > Cc: Jonathan Corbet <corbet@lwn.net>
-> > Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
-> > ---
-> >   Documentation/driver-api/vfio.rst | 46
-> > +++++++++++++++++++++++++++++-- 1 file changed, 44 insertions(+), 2
-> > deletions(-)
+> > From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Friday, May 15, 2026 9:24 AM
+> > >
+> > > On Thu, May 14, 2026 at 06:14:22PM +0000, Michael Kelley wrote:
+> > > > From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Monday, May 11, 2026 9:24 AM
+> > > > >
 > > 
-> > diff --git a/Documentation/driver-api/vfio.rst
-> > b/Documentation/driver-api/vfio.rst index
-> > 2a21a42c9386..d97017d80b98 100644 ---
-> > a/Documentation/driver-api/vfio.rst +++
-> > b/Documentation/driver-api/vfio.rst @@ -275,8 +275,6 @@ in a VFIO
-> > group. With CONFIG_VFIO_DEVICE_CDEV=y the user can now acquire a
-> > device fd by directly opening a character device
-> > /dev/vfio/devices/vfioX where "X" is the number allocated uniquely
-> > by VFIO for registered devices. -cdev interface does not support
-> > noiommu devices, so user should use -the legacy group interface if
-> > noiommu is wanted. 
-> >   The cdev only works with IOMMUFD.  Both VFIO drivers and
-> > applications must adapt to the new cdev security model which
-> > requires using @@ -370,6 +368,50 @@ IOMMUFD IOAS/HWPT to enable
-> > userspace DMA:: 
-> >   	/* Other device operations as stated in "VFIO Usage
-> > Example" */ 
-> > +VFIO NOIOMMU mode
-> > +-------------------------------------------------------------------------------
-> > +VFIO also supports a no-IOMMU mode, intended for usages where
-> > unsafe DMA can +be performed by userspace drivers w/o physical
-> > IOMMU protection. This mode +is controlled by the parameter:
-> > +
-> > +/sys/module/vfio/parameters/enable_unsafe_noiommu_mode
-> > +
-> > +Upon enabling this mode, with an assigned device, the user will be
-> > presented +with a VFIO group and device file, e.g.::
-> > +
-> > +  /dev/vfio/
-> > +  |-- devices
-> > +  |   `-- noiommu-vfio0	/* VFIO device cdev */
-> > +  |-- noiommu-0		/* VFIO group */
-> > +  `-- vfio  
+> > [....]
+> > 
+> > > > > +	unsigned long nr_pages = end_pfn - start_pfn;
+> > > > > +	u16 count = 0;
+> > > > > +
+> > > > > +	while (nr_pages > 0) {
+> > > > > +		unsigned long flush_pages;
+> > > > > +		int order;
+> > > > > +		unsigned long pfn_align;
+> > > > > +		unsigned long size_align;
+> > > > > +
+> > > > > +		if (count >= HV_IOMMU_MAX_FLUSH_VA_COUNT) {
+> > > > > +			count = HV_IOMMU_FLUSH_VA_OVERFLOW;
+> > > > > +			break;
+> > > > > +		}
+> > > > > +
+> > > > > +		if (start_pfn)
+> > > > > +			pfn_align = __ffs(start_pfn);
+> > > >
+> > > > I don't understand why __ffs() is correct here. I would expect
+> > > > __fls() so it is consistent with the calculation of size_align. But I
+> > > > can only surmise how the hypercall works since there's no
+> > > > documentation, so maybe my understanding of the hypercall is
+> > > > wrong.   If __ffs really is correct, a comment explaining why
+> > > > would help. :-)
+> > > >
+> > >
+> > > The use of __ffs() is intentional. Each flush entry invalidates a
+> > > naturally aligned 2^N page block, and the hypervisor requires the
+> > > page_number to be aligned to 2^page_mask_shift.
+> > >
+> > > Here __ffs() and __fls() serve different purposes:
+> > > - __ffs(start_pfn) is about the alignment constraint, e.g.,  how
+> > > large a block can this address support?
+> > > - __fls(nr_pages) is about  the size constraint, e.g., how large
+> > > a block can the remaining range hold?
+> > >
+> > > Taking min() of both ensures each entry is both properly aligned
+> > > and within bounds.
+> > >
+> > > Thanks for raising this - it definitely deserves a comment. I had to
+> > > stare at it for a while myself to remember why. :)
+> > 
+> > Hmmm. Something about this still nags at me. I'll run some
+> > experiments to either convince myself that you are right, or to
+> > come up with a counterexample.
 > 
-> how about noiommu-vfioX and noiommu-Y? Just want to deliver the
-> message that the two number is not 100% identical.
+> I have resolved what was nagging at me. My understanding of how
+> _ffs() and __fls() work was wrong. :-(  Your code is correct.
 > 
-good point.
-
-> > +The capabilities vary depending on the device programming
-> > interface and kernel +configuration used. The following table
-> > summarizes the differences: +
-> > ++-------------------+---------------------+----------------------+
-> > +| Feature           | VFIO group          | VFIO device cdev     |
-> > ++===================+=====================+======================+
-> > +| VFIO device UAPI  | Yes                 | Yes                  |
-> > ++-------------------+---------------------+----------------------+
-> > +| VFIO container    | No                  | No                   |
-> > ++-------------------+---------------------+----------------------+
-> > +| IOMMUFD IOAS      | No                  | Yes*                 |
-> > ++-------------------+---------------------+----------------------+
-> > +  
+> > 
+> > A related thought occurred to me. If each flush entry that is passed
+> > to Hyper-V describes a naturally aligned 2^N page block, I don't
+> > think the HV_IOMMU_MAX_FLUSH_VA_COUNT can ever
+> > be reached. The number of entries is limited by the number of
+> > bits in a PFN and the pages count, both of which are 64. And with
+> > 52 bit physical addressing and 4KiB pages, the actual size of
+> > a PFN and pages count is even smaller than 64.
+> > HV_IOMMU_MAX_FLUSH_VA_COUNT is the number of 8 byte
+> > union hv_iommu_flush_va entries that fit in a 4KiB page, so
+> > it's ~500.
+> > 
+> > My statement applies to a single flush range. If multiple flush
+> > ranges were strung together in a single hypercall, a larger count
+> > could be reached, but hv_flush_device_domain_list() only does
+> > a single range. So I don't think the overflow case in
+> > hv_flush_device_domain_list() can ever happen. But let me
+> > do my experiments, and I will also look at this aspect to confirm
+> > if it's right.
 > 
-> not quite the above table. Why 'VFIO container' is "No" for VFIO
-> group?
-> 
-I meant VFIO group interface has no access to VFIO container UAPIs,
-such as DMA MAP/UNMAP.
+> My experiments also convince me that the overflow case can't
+> happen as long as the hypercall is being populated with entries
+> derived from a single range.
 
-how about I will add the following:
+Gosh. You're right. I think I've been overthinking this :( 
 
- The capabilities vary depending on the device programming interface and kernel
--configuration used. The following table summarizes the differences:
-+configuration used. The following table summarizes the differences ("Yes" means
-+the UAPI is accessible and functional in noiommu mode, "No" means the UAPI is
-+not supported):
+So we can simplify this to just do the list flush and fall back
+to HVCALL_FLUSH_DEVICE_DOMAIN only if the list flush fails.
 
-> > +Note that the VFIO container case includes IOMMUFD provided VFIO
-> > compatibility +interfaces when either CONFIG_VFIO_CONTAINER or
-> > CONFIG_IOMMUFD_VFIO_CONTAINER is +enabled.
-> > +
-> > +* IOMMUFD UAPI is available for VFIO device cdev to pin and map
-> > user memory with
-> > +  the ability to retrieve physical addresses for DMA command
-> > submission. +
-> > +A new IOMMUFD ioctl IOMMU_IOAS_NOIOMMU_GET_PA is added to retrieve
-> > the physical +address for a given IOVA. Although there is no
-> > physical DMA remapping hardware, +IOMMU_IOAS_MAP_FIXED_IOVA is
-> > still used to establish IOVA-to-PA mappings in the +software page
-> > table for later IOMMU_IOAS_NOIOMMU_GET_PA lookups.
-> > +tools/testing/selftests/vfio/vfio_iommufd_noiommu_test.c provides
-> > an example of +using this ioctl in no-IOMMU mode. +
-> >   VFIO User API
-> >   -------------------------------------------------------------------------------
-> >     
-
+B.R.
+Yu
