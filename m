@@ -1,196 +1,238 @@
-Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013021.outbound.protection.outlook.com [40.93.201.21])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51FB23DC4DA
-	for <iommu@lists.linux.dev>; Wed, 20 May 2026 18:13:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.201.21
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779300831; cv=fail; b=ll9964XCWiOc6A94HbmAq30TxrwHjHZmNeoK+0J1Y9iZoWCGWXhZ5iCGK+M+cO9Nw6fsaQeYobz5EwOqo0t9Xb6xMWvQ3r2uvviRs9lpnQt7gc1OCm6apCSw409mfXNsYsdijjFj8eh573zwua14VTnXeUibSEQwPimU2kiAeT8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779300831; c=relaxed/simple;
-	bh=2QHmeTDWmI11zUsUCMBScSfAIXqc3pgGX6yCW7Bretg=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Q5IsDPFj2obGkX5tjWyAABxmOcykDqMPDtqULSsdSjBEQIRujUcPzIoCskRwtU1wVKtBFQK+Z1js9GG5J8WqEsguyKwv/HMyu1omdO7fmufeKFX3V6WoQeR/t90zvOZqJ+0Ea+j709wM3Z+zFW85ayZKCNYu65UP9YzoS+ruK70=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=fmXVk4ss; arc=fail smtp.client-ip=40.93.201.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03A113F86F4
+	for <iommu@lists.linux.dev>; Wed, 20 May 2026 18:13:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779300839; cv=none; b=V0wA+uHuB3Jz31Ftqdzh5jjUaRVz63jiYNgEADEZih9/Gv8nsCymzVyVKk1N5RLrMmKagD34N6P5oMY09WspA6YnH7zh6HJ+qCWCzVngnFEhtUojaLMxH9nEXoxaFmVo66zUziTINRxSAFOzCpPjMEnCsFWvGgtgKagjf0bQODs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779300839; c=relaxed/simple;
+	bh=WlGqgjyBORkJfksIFZslOeTBEP3DJ5gkhKNzkH/Egug=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=EAX4LqTfGlDk9dE7Fnbye+ifnhE3iqhuJ5ueKtFiRFGmY2yg7ZkNb83NhqfjQ3d/PcD5weAe6y6dgMHiMumyUoqHGFjkPZruJV436SS6boqHiT30RE9h9bW7wUxdgDDSoe5FrHpgawQ+yRmlcaGg0ChK/Svcdgz2acnr1vLIXek=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=bGGJ+X5S; arc=none smtp.client-ip=209.85.214.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="fmXVk4ss"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=R8zIb28dg9K0OTz6GG+9jnasE3LmNAamy5G7YCC28nbjZJHmX4hXXhopZz7O90vmN05d0yWnMEOynJsrehimP67Co9S8oKBuSTuZmsxv5KhvDzi8NInFcYMA24c3FOLnZwmqncv7zRsiev1o56dC6BNM/eoqoijzqch3YNZ/ciX4I24PeziH2Oy7BTAvO/kATHC0UZGu/LSf90RnCWE1VBuCud4ws7pTr23iHfbcBXnZYGxLrAAV4ttwG8YknKnPUiufBWwOkJLfc9DhwgnjW0mTDYCpskevA6w8PGgRq2ti07fyJCS58sWJ8fmrrHqE6W6zcr4dFztj6UVPcKR8uQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=leT0Ykt3R7iAgmve6jyCfz8AOhpa75O4X2OfPY8Fzgc=;
- b=haECTcG/WBCB0Th5+EVgokKZYWhIWnVW/Vb+9Kw4pLvIKRQPEJ5Jd5onTg61xRF1k6bPpzwmKN0kcyFGHnSFgUrlrP0ZTe0OoAz5X8Tzqmmjhf3w8ILE53aP/Fl4c+sXFnyI+ZdfvTSZmCtS8iLbv0AqNlDotJAMFPPCsbUPrvlR7BwoQ3OFldXufarCMVbQBIbrpbum1YljaZGu0Widecykn1x622ecLDbCpwtBeCgwq4oEbvVmJd2aeikoNiryrd9iJoMt800ZvdlbXpJRxSQ/YH1juafGGYgGapimzwjMbnHCb43YLsPrHI/PHwbwUeFbNFhMCZU2769PnaTgpQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=leT0Ykt3R7iAgmve6jyCfz8AOhpa75O4X2OfPY8Fzgc=;
- b=fmXVk4sspw1bly4BaiDmqF5yAlOrmkuIYoG0kYmgh/MqG/G/u9pJJ84NQfWpIdPraT3nF/hgi0YO2pA5eP+8PmUVr9kicZZvdRCswDp713AznBbctXkSNLfHNv4HOI9g6oOoCGzF7vBRpwQsu6hMzUg0oQykJNkIEkJswLYC3RaNS8T/rPFF0WNR5dOFYfRoTR7wHkF5Fz3MvHuiZaZx18YodKNnEyvONXyAc5M64ZS67xf5wBdiSAV6OWIRkDVczzlfEVB0eIayxYpXRfyIEz0bN8V9fcFV63yWOh+DQJyjf0govzNHvghTSj3RPyMnGTdcUM/XS9wafdEl6s7xWg==
-Received: from BY3PR10CA0024.namprd10.prod.outlook.com (2603:10b6:a03:255::29)
- by SN7PR12MB7129.namprd12.prod.outlook.com (2603:10b6:806:2a1::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.48.14; Wed, 20 May
- 2026 18:13:41 +0000
-Received: from CO1PEPF00012E7F.namprd03.prod.outlook.com
- (2603:10b6:a03:255:cafe::54) by BY3PR10CA0024.outlook.office365.com
- (2603:10b6:a03:255::29) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.48.16 via Frontend Transport; Wed, 20
- May 2026 18:13:40 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- CO1PEPF00012E7F.mail.protection.outlook.com (10.167.249.54) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.48.11 via Frontend Transport; Wed, 20 May 2026 18:13:40 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Wed, 20 May
- 2026 11:13:17 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Wed, 20 May
- 2026 11:13:17 -0700
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Wed, 20 May 2026 11:13:16 -0700
-Date: Wed, 20 May 2026 11:13:14 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
- Roedel" <joro@8bytes.org>, Bjorn Helgaas <bhelgaas@google.com>, "Rafael J .
- Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>, "Pranjal
- Shrivastava" <praan@google.com>, Mostafa Saleh <smostafa@google.com>, Lu
- Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
-	<linux-pci@vger.kernel.org>, <vsethi@nvidia.com>, Shuai Xue
-	<xueshuai@linux.alibaba.com>
-Subject: Re: [PATCH v4 11/24] iommu: Add iommu_report_device_broken() to
- quarantine a broken device
-Message-ID: <ag35umFgzIRGZAHA@Asurada-Nvidia>
-References: <745da1a819eb943f2519e660c8bcfde715885c6c.1779161849.git.nicolinc@nvidia.com>
- <20260519120737.GQ787748@nvidia.com>
- <agysAyreCY4huf0I@Asurada-Nvidia>
- <20260519191626.GJ3602937@nvidia.com>
- <agzkldmlG1cuDkj4@Asurada-Nvidia>
- <20260519230204.GM3602937@nvidia.com>
- <agz+kL2S8kcgHywG@Asurada-Nvidia>
- <20260520003023.GR3602937@nvidia.com>
- <ag1guf1fHg4fE7Lw@Asurada-Nvidia>
- <20260520175123.GZ3602937@nvidia.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="bGGJ+X5S"
+Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-2ba3b9bcf69so515ad.0
+        for <iommu@lists.linux.dev>; Wed, 20 May 2026 11:13:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1779300837; x=1779905637; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=FjVopLxhAIzTAf2Kz8X5x4L6V6oaH+XHeIW8ypuJnu8=;
+        b=bGGJ+X5SpWDzM9MqlJGiiHKqP+HCutusUjeWko7V97b5q28WyAKCIYKO+jGsU6S09O
+         o7indLm8ChszgC8TRsiJ1Eun2Pu0gtpgFc6Ip8f8ZEfj+zQ/19KHiXafvOjHluAD/guX
+         vLrdQHGpA0fYvAMlSsRfCrSWWRDA6pBzJ3QPASb3sf7QaykvbSR+AgHS17eCzIAUL44J
+         CxAdGmNbEyYGKXVkpfQmvk2poJxxdhAzrGDEVG4vQs7NItKHuW/eV+RFaCTUzBBwHaGJ
+         31p6LccoPHdL0sagsPpEd/V0IuCADW19pryMQJjT1jc9pJJVebeumHnNlIgcCDz+713a
+         ULxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779300837; x=1779905637;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=FjVopLxhAIzTAf2Kz8X5x4L6V6oaH+XHeIW8ypuJnu8=;
+        b=a88Og2VKMxzS11ewp6PaygqpC7h6t4f3wN58wdDmdITPjEpsD9aLD2lWr2x82GbFqP
+         v6n2DpBtBbnr5gr7LG9L844BAQdBYFx9u+2M9MmF9djbXSWy+UOdM3mdrbLh7v9vmBQd
+         30z70dxe+VINdhICI/dLhV0ujhNLbiOekbirAq2/z4uHKAeaSEt6wUbyeNNB5Zabld3W
+         ua2UBQqjJxRSzDMDjCZfAdVVNCwRF1QhJNnixYHPLzd96XuWsObfwuTaynOcSEzFwTAi
+         VIU9a7uslBltMqB1DCxicX27IQe3A4OYb7h4Ace9CvCtvFQneBfH/NSfyA6zPIIx27TK
+         PDgw==
+X-Forwarded-Encrypted: i=1; AFNElJ/sKSz6wU20d0HC/BeR2AF/uLgNIpJgl2AU0UCEZnGs6IGgkkHGre2+2h2wSVkLi5V4/Drv+A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzAdiUpmiUastDPGg82UFh25DTkNMixL1W9RBLpVVK2vWOBBMkV
+	InD6tUFUB6wLRBolcjs4IxdE7MImZtqVAS2l7Af+HTg0qTJ0cst9JxRDyu4iiHDa+Q==
+X-Gm-Gg: Acq92OG/gDw+z6TRcBw7hYjS+kTm2oqGfOt80Zv01lck50ZCjwukT4BvnYGdBZJNVtb
+	OvLZXWqpsPpZbddgteAyP5xTh5R6wEuX0o1TuozCxYNbn4GnaaUaJsIq4Fj1TlUxhtbd/Z0TxUQ
+	0n6QSvbCneuRfvVc6jh2VihOXNJgXep24PNxvfceU9DX11Wmwa4KJu+2bYHoAyOn3djdwFf4UtZ
+	+zu1GcZUQQOcYyAToIf53Vg2u/Rq7gcoVyCJob+c+ZNHqd9We6nEsw7OPvEBQkx6U6tOwGMhV1g
+	FzPtRtVLZXVQOBQHBAsu6L6dnN5LPVX4GrpghO+TiWITC7ssRkdpt+yhv4enAnn1VHhX4HqGFQr
+	yoPA7h6T972eYMorC7hYWkUMb67f2EXtm0gyPBsKkFCZf3MubCSvOtbgyypB9WzvioQQdMZ3M0G
+	FIppFkPljpVYEPuwLgG/0EjFAO2AFmVz1nGt58iwc4+1grurigWW0bxL3eqbWxzSf96Cowew==
+X-Received: by 2002:a17:903:2288:b0:2ba:6518:e4d8 with SMTP id d9443c01a7336-2be9f43b2edmr335725ad.20.1779300836839;
+        Wed, 20 May 2026 11:13:56 -0700 (PDT)
+Received: from google.com (153.46.83.34.bc.googleusercontent.com. [34.83.46.153])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-36a3cb327d3sm376037a91.3.2026.05.20.11.13.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 May 2026 11:13:56 -0700 (PDT)
+Date: Wed, 20 May 2026 18:13:52 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Pranjal Shrivastava <praan@google.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>, 
+	Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, 
+	Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>, 
+	Adithya Jayachandran <ajayachandra@nvidia.com>, Parav Pandit <parav@nvidia.com>, 
+	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
+	Pratyush Yadav <pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
+	David Matlack <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	Chris Li <chrisl@kernel.org>, Vipin Sharma <vipinsh@google.com>, 
+	YiFei Zhu <zhuyifei@google.com>
+Subject: Re: [PATCH v2 11/16] iommu/vt-d: preserve PASID table of preserved
+ device
+Message-ID: <ag32IV5JwCtQ2CSj@google.com>
+References: <20260427175633.1978233-1-skhawaja@google.com>
+ <20260427175633.1978233-12-skhawaja@google.com>
+ <agzlrsK1p7hf6DJE@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20260520175123.GZ3602937@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PEPF00012E7F:EE_|SN7PR12MB7129:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7c2a5b67-01c1-41a8-6edf-08deb69b857f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|82310400026|376014|7416014|1800799024|22082099003|18002099003|56012099003|4143699003|3023799007|11063799006|6133799003;
-X-Microsoft-Antispam-Message-Info:
-	fl50iSAGgAGzRyZDHou3rPH6SN5d7hmN4gHSjr9a9uQV69eTG/y6siJkVVuGyUb/kXGu0g1UhmqnQvP6b9f4uwvWcMliMtvk4Vxs9oqCcVyRbufkYZyiFDKI+ZFlf+GiX/wntxXtJ7iTE7XL8mJROvZsM0WRFMlbUXmt88VOKzup+UNkw+dmq1McbGjDEBQ4+MUhFVUp8GRQ96A09HTL7ZOfsP48KnnR+jU9dmXj8VAiXym9TdjuGDCupj7AHpD6aGUEq7/cm/pogxYEYCLBcIM1nQcS9CzG7bK+IWNiFxsRQfuwRVdfcViwCEKkzvCtB9KywVl+9JpZbcql7U55VG7mWjHWvO/nJB1PXNmmJiwov/n1mZ8s6er/Q9X9Qh42TdRIRwuirFZ+JNgdLirGxVyyHaoF0g1lyOHuB3CcTwLMq2bls3uoXIygcl8gNGige8DGw5scVm46Y/RtxTZ5o++ef9eBCIJIYJFieZg/l+fI5VJ6Z9PwBluQwWWNWI3LHdmpk5vRG0x4D2TzQZyWHBUGqOf052AxhS7Lu9RxbnCBbnOzaeYJTv/8rr+DqH8NEIB3NmYSnI0Mj1Smpm5WFwyniCCuBRwZGgJ3XXZfkgNcyFXdF2psO5mP+oic2PCDgWn3Nv2cDYQgySBvk1POFTbBhIo7BlUX6EGUoL2Q94h3q29XogDEo8/Ozo/W6DG2pNIZjFsXt4E+WhwM7cqIDJFzsH1w3+ODxjs27MsP+1c=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(82310400026)(376014)(7416014)(1800799024)(22082099003)(18002099003)(56012099003)(4143699003)(3023799007)(11063799006)(6133799003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	k6RKnpUcpsrh4dKbEa9bOvQBWzm83UZxcsSQMbEqGwc2Kb/s6jsjJsU7dQcFxY7X28XLihlJG+EHIikBNfVROh+m7X/MXYQ3H9qXx5X8v+gDntqg8BTZaATkumXWz8Qg+boOwgxLdxzGD4c5r+RBmZKpksMAqqEJGZU+6ZkdpUH5Kfmnn9+qBASYQV/tg9SkVgN6yDNv1EuYqi36xsVQnIF0q+Tqu6w1Iyhjtf2Wll6/GfpIGMh5ajHQ1of3c0873Yn1oJSZCrOpykxuodyXMkV+fqkY0CuiEgJsvMjALLXi/RC7pAFSsmAibrcJ8KmBdr2ByHD8uvhqUJxhvTj2hI6lFle4OpySmUEVUBVY1ZOTqcmCqh+pkfEKfMZXAKUoJc1PwKTsUNHBb2ITi1PcwJm1Y+GBpjBNIlnk/GzBn6QbJda5CH+eW3t/bkpEh24v
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 May 2026 18:13:40.7380
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7c2a5b67-01c1-41a8-6edf-08deb69b857f
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1PEPF00012E7F.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7129
+In-Reply-To: <agzlrsK1p7hf6DJE@google.com>
 
-On Wed, May 20, 2026 at 02:51:23PM -0300, Jason Gunthorpe wrote:
-> On Wed, May 20, 2026 at 12:20:25AM -0700, Nicolin Chen wrote:
-> > > > I see you suggest to treat the entire batch as ATS-broken. Just to
-> > > > confirm: without per-SID retry, that might falsely block a healthy
-> > > > device in the ATC batch, right? The driver now batches all ATC_INV
-> > > > commands via arm_smmu_invs_end_batch().
-> > > 
-> > > Yes, it is not good, but a giant complex series is not reviewable. So
-> > > I'd start with trashing all the devices, then come with a narrowing.
-> > 
-> > I can take that path for now and leave a FIXME.
-> > 
-> > Another option is to not batch multiple devices, until we support
-> > retry (which shouldn't be hard to add since we've already done the
-> > coding)?
-> 
-> That's an interesting idea, it undoes some of the meaningful
-> optimization we have recently done though :\
+On Tue, May 19, 2026 at 10:35:26PM +0000, Pranjal Shrivastava wrote:
+>On Mon, Apr 27, 2026 at 05:56:28PM +0000, Samiullah Khawaja wrote:
+>> In scalable mode the PASID table is used to fetch the io page tables.
+>> Preserve and restore the PASID table of the preserved devices.
+>>
+>> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+>> ---
+>>  drivers/iommu/intel/iommu.c      |   5 +-
+>>  drivers/iommu/intel/iommu.h      |  12 +++
+>>  drivers/iommu/intel/liveupdate.c | 141 +++++++++++++++++++++++++++++++
+>>  drivers/iommu/intel/pasid.c      |   7 +-
+>>  drivers/iommu/intel/pasid.h      |   9 ++
+>>  include/linux/kho/abi/iommu.h    |  13 +++
+>>  6 files changed, 184 insertions(+), 3 deletions(-)
+>>
 
-I remember you didn't like it. That's why we had the retry(), which
-I feel we should keep it..
+[snip]
+>> +
+>> +static int pasid_lu_do_op(void *table, enum pasid_lu_op op)
+>> +{
+>> +	int ret = 0;
+>> +
+>> +	switch (op) {
+>> +	case PASID_LU_OP_PRESERVE:
+>> +		ret = iommu_preserve_page(table);
+>
+>Nit: This is making me consider renaming the helper as
+>`iommu_preserve_folio`. I almost thought why are we preserving a single
+>page.
 
-> > > We cannot eliminate parallel ATS invalidation. Two threads could be
-> > > concurrently processing the invs list. So it has handle it, the driver
-> > > is going to have to tolerate a number of redundant error events.
-> > 
-> > OK. That sounds like we still need a flag or locking so that at
-> > least pci_disable_ats() would not be called again. I will see
-> > what I can do.
-> 
-> I think we can call pci_disable_ats() as many times as we want
+Interestingly the iommu pages API uses plural of page in API name as
+each iopt_desc can be backed by multiple pages:
 
-That triggers WARN_ON(!dev->ats_enabled) in pci_disable_ats :-(
+iommu_free_pages()
+iommu_alloc_pages_*()
 
-> we
-> mostly need the driver to merge multiple error notifications for the
-> same event.
+So I will rename these to:
 
-Yes.
+iommu_preserve_pages()
+iommu_preserve_pages_list(list)
+iommu_unpreserve_pages()
+iommu_unpreserve_pages_list(list)
+iommu_restore_pages()
+>
+>> +		break;
+>> +	case PASID_LU_OP_UNPRESERVE:
+>> +		iommu_unpreserve_page(table);
+>> +		break;
+>> +	case PASID_LU_OP_RESTORE:
+>> +		iommu_restore_page(virt_to_phys(table));
+>> +		break;
+>> +	case PASID_LU_OP_FREE:
+>> +		iommu_free_pages(table);
+>> +		break;
+>> +	}
+>> +
+>> +	return ret;
+>> +}
+>> +
+>
+>[snip]
+>
+>> +
+>> +void pasid_cleanup_preserved_table(struct device *dev)
+>> +{
+>> +	struct pasid_table *pasid_table;
+>> +	struct pasid_dir_entry *dir;
+>> +	struct pasid_entry *table;
+>> +	size_t dir_size;
+>> +
+>> +	pasid_table = intel_pasid_get_table(dev);
+>> +	if (!pasid_table)
+>> +		return;
+>> +
+>> +	dir = pasid_table->table;
+>> +	table = get_pasid_table_from_pde(&dir[0]);
+>> +	if (!table)
+>> +		return;
+>> +
+>> +	/* Clear everything except the first entry in table. */
+>> +	memset(&table[1], 0, SZ_4K - sizeof(*table));
+>
+>Nit: Is the first entry always 4K or could it change based on PAGE_SIZE?
 
-> > > But I wasn't thinking we can rely on existing AER events here, yes
-> > > probably there will be AERs associated with the device exploding so
-> > > badly it cannot do ATS, but also maybe not..
-> > 
-> > So, should I put the AER injection on hold for a future work? To
-> > be honest, I am still not very clear how AER injection could help
-> > here; or is it for a case where ATC times out while device isn't
-> > aware of any AER fault?
-> 
-> Right, if we don't get an AER fault then we should ensure the ATC is
-> surfaced, but you have a reasonable point that it isn't so likely the
-> get an ATC invalidation timeout without a corresponding related AER..
-> 
-> Still, I'd feel better if it is was definititive and we didn't rely on
-> this. This further points that the driver has to merge multiple error
-> notifications if it gets some AERs and a new "ATC ERROR" all for the
-> same key event.
+VT-d uses 4k always, but for clarity I will change this to
+VTD_PAGE_SIZE.
+>
+>> +
+>> +	/* Use the folio order to calculate the size of Pasid Directory */
+>> +	dir_size = (1 << (folio_order(virt_to_folio(dir)) + PAGE_SHIFT));
+>> +
+>> +	/* Clear everything except the first entry in directory */
+>> +	memset(&dir[1], 0, dir_size - sizeof(struct pasid_dir_entry));
+>> +
+>> +	clflush_cache_range(&table[0], SZ_4K);
+>> +	clflush_cache_range(&dir[0], dir_size);
+>> +}
+>> +
+>
+>[...]
+>
+>> +void *intel_pasid_try_restore_table(struct device *dev, u64 max_pasid)
+>> +{
+>> +	struct iommu_device_ser *ser = dev_iommu_restored_state(dev);
+>> +
+>> +	if (!ser)
+>> +		return NULL;
+>> +
+>> +	BUG_ON(pasid_lu_handle_pd(phys_to_virt(ser->intel.pasid_table),
+>> +				  PASID_LU_OP_RESTORE));
+>> +	if (WARN_ON_ONCE(ser->intel.max_pasid != max_pasid)) {
+>
+>I'm wondering if this could be slightly relaxed to:
+>if (ser->intel.max_pasid < max_pasid) to ensure it's a minimum
+>requirement rather than an exact match?
 
-I feel some race here... Part of the complexity of this v4 is to deal
-with concurrent device reset during the async report() between IOMMU
-core and driver. Now, we add AER that could compete on the device side
-as well...
+Makes sense. I will update this.
+>
+>> +		pasid_lu_handle_pd(phys_to_virt(ser->intel.pasid_table),
+>> +				   PASID_LU_OP_FREE);
+>> +		return NULL;
+>> +	}
+>> +
+>> +	return phys_to_virt(ser->intel.pasid_table);
+>> +}
+>> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+>> index 89541b74ab8c..5cac8e95f73b 100644
+>> --- a/drivers/iommu/intel/pasid.c
+>> +++ b/drivers/iommu/intel/pasid.c
+>> @@ -60,8 +60,11 @@ int intel_pasid_alloc_table(struct device *dev)
+>>
+>>  	size = max_pasid >> (PASID_PDE_SHIFT - 3);
+>>  	order = size ? get_order(size) : 0;
+>> -	dir = iommu_alloc_pages_node_sz(info->iommu->node, GFP_KERNEL,
+>> -					1 << (order + PAGE_SHIFT));
+>> +
+>> +	dir = intel_pasid_try_restore_table(dev, 1 << (order + PAGE_SHIFT + 3));
+>> +	if (!dir)
+>> +		dir = iommu_alloc_pages_node_sz(info->iommu->node, GFP_KERNEL,
+>> +						1 << (order + PAGE_SHIFT));
+>>  	if (!dir) {
+>>  		kfree(pasid_table);
+>>  		return -ENOMEM;
+>
+>Thanks,
+>Praan
 
-I will see what I can do here, yet likely would defer it to a followup
-series, given the direction is to shrink the size of the series.
-
-Thanks
-Nicolin
+Sami
