@@ -1,353 +1,231 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A61F5361666
-	for <iommu@lists.linux.dev>; Wed, 20 May 2026 16:15:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D8EB32B9B5;
+	Wed, 20 May 2026 16:17:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779293738; cv=none; b=U4hWLmjlTfSDGrrLekMEo/BgCZAyf1Ks6bcQX8CoO0bMQFqcy5+G3t7S++TZOQL0IPJ2HO5mY6ArnCI7RfiqSi+LDB5Fmh7KTGPELx2CB06DWJZB3JtLBj7TMKvFAqd6IUxEEEcsJ8Zup9CKXUiUsF5Iis2VaSYWNlS9A44xSyU=
+	t=1779293868; cv=none; b=bDPfxzkEyKHFFT+d43v4zHKM66PT9Vaq6EEVhALkNXb1MwqdEvMmr0esSamtfcOtTdhZ/sbpzrNB/S3tb+Eez4KuJP6SeRQTI1Lwzlks61KjCsuyzEISE191zEC7+lhuRqxAxZv+GxtUcglIHSQGXgogkgplm+PwAewztBwqemc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779293738; c=relaxed/simple;
-	bh=04qyCH0T+PgRBPa665VPNhRIa0xd5xAUpYOuLixKpVk=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=g8tS3NnTN/FGxrBahDn8Mn+7doxgMZ4UbZijLTGuPScGHbWHORlCGdDnPsYCdQjIKWl7JJ1padiNJTQSXLJuCub0Rnu6bi3Yz9aHnf8wd5iHgsnDSONeE1t76KuaXdjU94gtuh4UDjVtqQfuUQ24gU1f7+gOQ+l+61/N6WjB77Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=fm9xfCC4; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1779293868; c=relaxed/simple;
+	bh=b3vKhjIYlsPeDXkc73gbpzqKiZ/oByXD2DsPE/pC1+E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PH0w4iNTZY1AEBzpQjeEeiXo6SSC5t/DEd1JbJM9Q7NaotKWgZFPLWNPPPPTS+Z5Zrsy2dZc+WXu5Tzbdyz4yDEXydOzrr0jlB8G4u8Rv1OHpFX7cQAV6//oHRWxSf+n5QRKwzz34GxA3lLH+yivuShR1q+jjp4KnHdkkbMrv/A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iUvpkw++; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="fm9xfCC4"
-Received: from localhost (unknown [52.148.171.5])
-	by linux.microsoft.com (Postfix) with ESMTPSA id AAEBE20B7167;
-	Wed, 20 May 2026 09:15:28 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AAEBE20B7167
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1779293729;
-	bh=QNWnUMlS1+5B6fYHdpvU4VZYGC7Lvzjbt4BDuNYIOFY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=fm9xfCC4+EKe8JYEzx6RnqiyV9qXOjXhCMIXaJyxKe+w6z6sO1WABadm8eO5mcnqx
-	 tj7eHli9vwsyY5SLI289WgHPWNCRdMhnIjH0heXxniAshWmUfTOF/TVu9Lys/c1K61
-	 VSWuuxqod65zyzgIf7gAW8zELmjtiA2xtUu3Nxjo=
-Date: Wed, 20 May 2026 09:15:33 -0700
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Yi Liu <yi.l.liu@intel.com>
-Cc: <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Alex Williamson
- <alex@shazbot.org>, Joerg Roedel <joro@8bytes.org>, Mostafa Saleh
- <smostafa@google.com>, David Matlack <dmatlack@google.com>, Robin Murphy
- <robin.murphy@arm.com>, Nicolin Chen <nicolinc@nvidia.com>, "Tian, Kevin"
- <kevin.tian@intel.com>, Saurabh Sengar <ssengar@linux.microsoft.com>,
- <skhawaja@google.com>, <pasha.tatashin@soleen.com>, Will Deacon
- <will@kernel.org>, Baolu Lu <baolu.lu@linux.intel.com>,
- jacob.pan@linux.microsoft.com
-Subject: Re: [PATCH v5 2/9] iommufd: Support a HWPT without an iommu driver
- for noiommu
-Message-ID: <20260520091533.0000629e@linux.microsoft.com>
-In-Reply-To: <7297d32e-5f36-4996-8b9d-20acc94140a0@intel.com>
-References: <20260511184116.3687392-1-jacob.pan@linux.microsoft.com>
-	<20260511184116.3687392-3-jacob.pan@linux.microsoft.com>
-	<7297d32e-5f36-4996-8b9d-20acc94140a0@intel.com>
-Organization: LSG
-X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iUvpkw++"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89BEE1F000E9;
+	Wed, 20 May 2026 16:17:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779293867;
+	bh=50nNEwYXko+BmsraW2yGRNKOx6hjeiwEGQR9Xa9Nd+Y=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=iUvpkw++CXIDgG39Hc92KF9gYAxLGGJGnbXyRg4pKhWDoC3DfFeRUb3X9LuneUjao
+	 FXZ/2WUd3RR/KmWcQxc8Y+LTIHA8pAtaRS8sNpCuAoVMnRAZ2PIlWEazDltWGgR9ud
+	 CAu20QC9a2NmorfhH4yxKQV2gvL3jFfA2k4qGJ2sPw6MQSn5vDInLNTOIk1l5OAzbn
+	 s9i1VQZUa/kXQfJOIpqrjknzEJQR0W3l4O0Fi5e6s6x/pHCmGJK1w0+vQ2nNu5C0gU
+	 f1KthJu7CI80H1N9UL5aaMwgwTJoXyvpifKmMkkxWAC/N+WsmxZeHrdwgJ5B5FApkv
+	 AyigbNF5qMKgg==
+Date: Wed, 20 May 2026 17:17:41 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Drew Fustini <fustini@kernel.org>
+Cc: Tomasz Jeznach <tomasz.jeznach@linux.dev>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
+	iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Joel Stanley <joel@jms.id.au>, Joerg Roedel <joerg.roedel@amd.com>,
+	Nicholas Piggin <npiggin@gmail.com>
+Subject: Re: [PATCH v2] dt-bindings: iommu: riscv: Add bindings for
+ Tenstorrent RISC-V IOMMU
+Message-ID: <20260520-frayed-fervor-7c887193ab19@spud>
+References: <20260520061855.1623468-4-fustini@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="NGNLZDzmLzoPMudc"
+Content-Disposition: inline
+In-Reply-To: <20260520061855.1623468-4-fustini@kernel.org>
 
-Hi Yi,
 
-On Wed, 20 May 2026 15:19:13 +0800
-Yi Liu <yi.l.liu@intel.com> wrote:
+--NGNLZDzmLzoPMudc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> On 5/12/26 02:41, Jacob Pan wrote:
-> > From: Jason Gunthorpe <jgg@nvidia.com>
-> > 
-> > Create just a little part of a real iommu driver, enough to
-> > slot in under the dev_iommu_ops() and allow iommufd to call
-> > domain_alloc_paging_flags() and fail everything else.
-> > 
-> > This allows explicitly creating a HWPT under an IOAS.
-> > 
-> > A new Kconfig option IOMMUFD_NOIOMMU is introduced to differentiate
-> > from the VFIO group/container based noiommu mode.
-> > 
-> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> > Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
-> > ---
-> > v5:
-> >     - Use the new IOMMUFD_NOIOMMU Kconfig instead of VFIO_NOIOMMU
-> >     - Use consistent wording referring to VFIO noiommu mode (Kevin)
-> >     - Copyright date fix (Kevin)
-> > v4:
-> >     - Make iommufd_noiommu_ops const
-> > v3:
-> >     - Add comment to explain the design difference over the
-> >       legacy noiommu VFIO code.
-> > ---
-> >   drivers/iommu/iommufd/Kconfig           |  13 +++
-> >   drivers/iommu/iommufd/Makefile          |   1 +
-> >   drivers/iommu/iommufd/hw_pagetable.c    |  15 +++-
-> >   drivers/iommu/iommufd/hwpt_noiommu.c    | 102
-> > ++++++++++++++++++++++++ drivers/iommu/iommufd/iommufd_private.h |
-> >  2 + 5 files changed, 131 insertions(+), 2 deletions(-)
-> >   create mode 100644 drivers/iommu/iommufd/hwpt_noiommu.c
-> > 
-> > diff --git a/drivers/iommu/iommufd/Kconfig
-> > b/drivers/iommu/iommufd/Kconfig index 455bac0351f2..74d6ea5b5b3b
-> > 100644 --- a/drivers/iommu/iommufd/Kconfig
-> > +++ b/drivers/iommu/iommufd/Kconfig
-> > @@ -16,6 +16,19 @@ config IOMMUFD
-> >   	  If you don't know what to do here, say N.
-> >   
-> >   if IOMMUFD
-> > +config IOMMUFD_NOIOMMU
-> > +	bool
-> > +	depends on !GENERIC_ATOMIC64 # IOMMU_PT_AMDV1 requires
-> > cmpxchg64
-> > +	select GENERIC_PT
-> > +	select IOMMU_PT
-> > +	select IOMMU_PT_AMDV1
-> > +	help
-> > +	  Provides a SW-only IO page table for devices without
-> > hardware
-> > +	  IOMMU backing. This uses the AMDV1 page table format for
-> > +	  IOVA-to-PA lookups only, not for hardware DMA
-> > translation. +
-> > +	  Selected by VFIO_CDEV_NOIOMMU. Not intended to be
-> > enabled directly. +
-> >   config IOMMUFD_VFIO_CONTAINER
-> >   	bool "IOMMUFD provides the VFIO container /dev/vfio/vfio"
-> >   	depends on VFIO_GROUP && !VFIO_CONTAINER
-> > diff --git a/drivers/iommu/iommufd/Makefile
-> > b/drivers/iommu/iommufd/Makefile index 71d692c9a8f4..67207914bb6e
-> > 100644 --- a/drivers/iommu/iommufd/Makefile
-> > +++ b/drivers/iommu/iommufd/Makefile
-> > @@ -10,6 +10,7 @@ iommufd-y := \
-> >   	vfio_compat.o \
-> >   	viommu.o
-> >   
-> > +iommufd-$(CONFIG_IOMMUFD_NOIOMMU) += hwpt_noiommu.o
-> >   iommufd-$(CONFIG_IOMMUFD_TEST) += selftest.o
-> >   
-> >   obj-$(CONFIG_IOMMUFD) += iommufd.o
-> > diff --git a/drivers/iommu/iommufd/hw_pagetable.c
-> > b/drivers/iommu/iommufd/hw_pagetable.c index
-> > fe789c2dc0c9..0ae14cd3fc72 100644 ---
-> > a/drivers/iommu/iommufd/hw_pagetable.c +++
-> > b/drivers/iommu/iommufd/hw_pagetable.c @@ -8,6 +8,15 @@
-> >   #include "../iommu-priv.h"
-> >   #include "iommufd_private.h"
-> >   
-> > +static const struct iommu_ops *get_iommu_ops(struct iommufd_device
-> > *idev) +{
-> > +	if (IS_ENABLED(CONFIG_IOMMUFD_NOIOMMU) &&
-> > !idev->igroup->group)
-> > +		return &iommufd_noiommu_ops;
-> > +	if (WARN_ON_ONCE(!idev->dev->iommu))
-> > +		return NULL;
-> > +	return dev_iommu_ops(idev->dev);
-> > +}
-> > +
-> >   static void __iommufd_hwpt_destroy(struct iommufd_hw_pagetable
-> > *hwpt) {
-> >   	if (hwpt->domain)
-> > @@ -114,11 +123,13 @@ iommufd_hwpt_paging_alloc(struct iommufd_ctx
-> > *ictx, struct iommufd_ioas *ioas, IOMMU_HWPT_ALLOC_DIRTY_TRACKING |
-> >   				IOMMU_HWPT_FAULT_ID_VALID |
-> >   				IOMMU_HWPT_ALLOC_PASID;
-> > -	const struct iommu_ops *ops = dev_iommu_ops(idev->dev);
-> > +	const struct iommu_ops *ops = get_iommu_ops(idev);
-> >   	struct iommufd_hwpt_paging *hwpt_paging;
-> >   	struct iommufd_hw_pagetable *hwpt;
-> >   	int rc;
-> >   
-> > +	if (!ops)
-> > +		return ERR_PTR(-ENODEV);
-> >   	lockdep_assert_held(&ioas->mutex);
-> >   
-> >   	if ((flags || user_data) &&
-> > !ops->domain_alloc_paging_flags) @@ -229,7 +240,7 @@
-> > iommufd_hwpt_nested_alloc(struct iommufd_ctx *ictx, struct
-> > iommufd_device *idev, u32 flags, const struct iommu_user_data
-> > *user_data) {
-> > -	const struct iommu_ops *ops = dev_iommu_ops(idev->dev);
-> > +	const struct iommu_ops *ops = get_iommu_ops(idev);
-> >   	struct iommufd_hwpt_nested *hwpt_nested;
-> >   	struct iommufd_hw_pagetable *hwpt;
-> >   	int rc;
-> > diff --git a/drivers/iommu/iommufd/hwpt_noiommu.c
-> > b/drivers/iommu/iommufd/hwpt_noiommu.c new file mode 100644
-> > index 000000000000..b1efc4bca880
-> > --- /dev/null
-> > +++ b/drivers/iommu/iommufd/hwpt_noiommu.c
-> > @@ -0,0 +1,102 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +/*
-> > + * Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES
-> > + */
-> > +#include <linux/iommu.h>
-> > +#include <linux/generic_pt/iommu.h>
-> > +#include "iommufd_private.h"  
-> 
-> you missed the comments in the below link except for the kconfig
-> comment. :(
-> 
-indeed, sorry about that. will make the following change in v6:
+On Tue, May 19, 2026 at 11:16:28PM -0700, Drew Fustini wrote:
+> From: Nicholas Piggin <npiggin@gmail.com>
+>=20
+> Extend the binding to cover details specific to the Tenstorrent RISC-V
+> IOMMU. In particular, a second register range is added which contains
+> M-privileged registers, e.g., PMAs and PMPs.
+>=20
+> The RISC-V spec S-privileged registers remain in the first register
+> range and are compatible with "riscv,iommu" so the Linux driver does not
+> notice any difference, but the binding will be used by OpenSBI and
+> potentially other M-mode software.
+>=20
+> Reviewed-by: Joel Stanley <joel@jms.id.au>
+> Acked-by: Joerg Roedel <joerg.roedel@amd.com>
+> Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+> [fustini: fix dt_binding_check errors]
+> Signed-off-by: Drew Fustini <fustini@kernel.org>
+> ---
+> v2 changes:
+> - Fix dt_binding_check errors
+> - Add the Acked-by: from Joerg
+> - Drop RFC prefix
+>=20
+> Link to v1:
+> https://lore.kernel.org/lkml/20260310003850.3837030-1-npiggin@gmail.com/
+>=20
+>  .../bindings/iommu/riscv,iommu.yaml           | 62 ++++++++++++++++---
+>  1 file changed, 55 insertions(+), 7 deletions(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml b/D=
+ocumentation/devicetree/bindings/iommu/riscv,iommu.yaml
+> index d4838c3b3741..5aad8cf67840 100644
+> --- a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+> @@ -32,22 +32,35 @@ properties:
+>    # should be specified along with 'reg' property providing MMIO locatio=
+n.
+>    compatible:
+>      oneOf:
+> -      - items:
+> +      - description: Platform (non-PCIe) IOMMU implementations
+> +        items:
+>            - enum:
+>                - qemu,riscv-iommu
+>            - const: riscv,iommu
+> -      - items:
+> +      - description: PCIe IOMMU implementations
+> +        items:
+>            - enum:
+>                - pci1efd,edf1
+>            - const: riscv,pci-iommu
+> +      - description: Tenstorrent IOMMUs implementing "riscv,iommu"
+> +        items:
+> +          - enum:
+> +              - tenstorrent,riscv-iommu
+> +          - const: riscv,iommu
 
-+++ b/drivers/iommu/iommufd/hwpt_noiommu.c
-@@ -2,8 +2,8 @@
- /*
-  * Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES
-  */
--#include <linux/iommu.h>
- #include <linux/generic_pt/iommu.h>
-+#include <linux/iommu.h>
- #include "iommufd_private.h"
+You should be able to put this into the enum alongside the qemu
+compatible, right?
 
- static const struct iommu_domain_ops noiommu_amdv1_ops;
-@@ -62,7 +62,7 @@ noiommu_alloc_paging_flags(struct device *dev, u32 flags,
-        dom->amdv1.iommu.driver_ops = &noiommu_driver_ops;
-        dom->domain.ops = &noiommu_amdv1_ops;
+> =20
+>    reg:
+> -    maxItems: 1
+> +    minItems: 1
+> +    maxItems: 2
+>      description:
+> -      For non-PCI devices this represents base address and size of for t=
+he
+> -      IOMMU memory mapped registers interface.
+> -      For PCI IOMMU hardware implementation this should represent an add=
+ress
+> -      of the IOMMU, as defined in the PCI Bus Binding reference.
+> +      For non-PCI devices the first item represents base address and siz=
+e of
+> +      for the IOMMU memory mapped registers interface.
+> +      For PCI IOMMU hardware implementation the first item should repres=
+ent
+> +      an address of the IOMMU, as defined in the PCI Bus Binding referen=
+ce.
+> +
+> +  reg-names:
+> +    items:
+> +      - const: base
+> +      - const: machine
+> =20
+>    '#iommu-cells':
+>      const: 1
+> @@ -75,6 +88,31 @@ required:
+> =20
+>  additionalProperties: false
+> =20
+> +allOf:
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            enum:
+> +              - tenstorrent,riscv-iommu
+> +    then:
+> +      properties:
+> +        reg:
 
--       /* Use mock page table which is based on AMDV1 */
-+       /* Use SW-only page table which is based on AMDV1 */
-        rc = pt_iommu_amdv1_init(&dom->amdv1, &cfg, GFP_KERNEL);
-        if (rc) {
-                kfree(dom);
-@@ -82,15 +82,10 @@ static void noiommu_domain_free(struct iommu_domain *iommu_domain)
- }
+> +          items:
+> +            - description: IOMMU base registers
+> +            - description: Tenstorrent IOMMU machine mode registers.
 
- /*
-- * AMDV1 is used as a SW-only page table for no-IOMMU mode, similar to the
-- * iommufd selftest mock page table.
-- * Unlike the VFIO group-container based no-IOMMU mode, where no container
-- * level APIs are supported, this allows IOAS and hwpt objects to exist
-- * without hardware IOMMU support. IOVAs are used only for IOVA-to-PA
-- * lookups not for hardware translation in DMA.
-- *
-- * This is only used with iommufd and cdev-based interfaces and does not
-- * apply to the VFIO group-container based noiommu mode.
-+ * Domain ops for iommufd no-IOMMU mode. Uses AMDV1 format as a
-+ * SW-only IOPT because it has the best multi-page size options
-+ * of all the formats. IOVAs serve only for IOVA-to-PA lookups,
-+ * not for hardware DMA translation.
-  */
-> https://lore.kernel.org/linux-iommu/b0bf1e99-d7d0-4e62-8a97-114e8e990b58@intel.com/#t
-> 
-> 
-> > +
-> > +static const struct iommu_domain_ops noiommu_amdv1_ops;
-> > +
-> > +struct noiommu_domain {
-> > +	union {
-> > +		struct iommu_domain domain;
-> > +		struct pt_iommu_amdv1 amdv1;
-> > +	};
-> > +	spinlock_t lock;
-> > +};
-> > +PT_IOMMU_CHECK_DOMAIN(struct noiommu_domain, amdv1.iommu, domain);
-> > +
-> > +static void noiommu_change_top(struct pt_iommu *iommu_table,
-> > +			       phys_addr_t top_paddr, unsigned int
-> > top_level) +{
-> > +}
-> > +
-> > +static spinlock_t *noiommu_get_top_lock(struct pt_iommu *iommupt)
-> > +{
-> > +	struct noiommu_domain *domain =
-> > +		container_of(iommupt, struct noiommu_domain,
-> > amdv1.iommu); +
-> > +	return &domain->lock;
-> > +}
-> > +
-> > +static const struct pt_iommu_driver_ops noiommu_driver_ops = {
-> > +	.get_top_lock = noiommu_get_top_lock,
-> > +	.change_top = noiommu_change_top,
-> > +};
-> > +
-> > +static struct iommu_domain *
-> > +noiommu_alloc_paging_flags(struct device *dev, u32 flags,
-> > +			   const struct iommu_user_data *user_data)
-> > +{
-> > +	struct pt_iommu_amdv1_cfg cfg = {};
-> > +	struct noiommu_domain *dom;
-> > +	int rc;
-> > +
-> > +	if (flags || user_data)
-> > +		return ERR_PTR(-EOPNOTSUPP);
-> > +
-> > +	cfg.common.hw_max_vasz_lg2 = 64;
-> > +	cfg.common.hw_max_oasz_lg2 = 52;
-> > +	cfg.starting_level = 2;
-> > +	cfg.common.features =
-> > +		(BIT(PT_FEAT_DYNAMIC_TOP) |
-> > BIT(PT_FEAT_AMDV1_ENCRYPT_TABLES) |
-> > +		 BIT(PT_FEAT_AMDV1_FORCE_COHERENCE));
-> > +
-> > +	dom = kzalloc(sizeof(*dom), GFP_KERNEL);
-> > +	if (!dom)
-> > +		return ERR_PTR(-ENOMEM);
-> > +
-> > +	spin_lock_init(&dom->lock);
-> > +	dom->amdv1.iommu.nid = NUMA_NO_NODE;
-> > +	dom->amdv1.iommu.driver_ops = &noiommu_driver_ops;
-> > +	dom->domain.ops = &noiommu_amdv1_ops;
-> > +
-> > +	/* Use mock page table which is based on AMDV1 */
-> > +	rc = pt_iommu_amdv1_init(&dom->amdv1, &cfg, GFP_KERNEL);
-> > +	if (rc) {
-> > +		kfree(dom);
-> > +		return ERR_PTR(rc);
-> > +	}
-> > +
-> > +	return &dom->domain;
-> > +}
-> > +
-> > +static void noiommu_domain_free(struct iommu_domain *iommu_domain)
-> > +{
-> > +	struct noiommu_domain *domain =
-> > +		container_of(iommu_domain, struct noiommu_domain,
-> > domain); +
-> > +	pt_iommu_deinit(&domain->amdv1.iommu);
-> > +	kfree(domain);
-> > +}
-> > +
-> > +/*
-> > + * AMDV1 is used as a SW-only page table for no-IOMMU mode,
-> > similar to the
-> > + * iommufd selftest mock page table.
-> > + * Unlike the VFIO group-container based no-IOMMU mode, where no
-> > container
-> > + * level APIs are supported, this allows IOAS and hwpt objects to
-> > exist
-> > + * without hardware IOMMU support. IOVAs are used only for
-> > IOVA-to-PA
-> > + * lookups not for hardware translation in DMA.
-> > + *
-> > + * This is only used with iommufd and cdev-based interfaces and
-> > does not
-> > + * apply to the VFIO group-container based noiommu mode.
-> > + */
-> > +static const struct iommu_domain_ops noiommu_amdv1_ops = {
-> > +	IOMMU_PT_DOMAIN_OPS(amdv1),
-> > +	.free = noiommu_domain_free,
-> > +};
-> > +
-> > +const struct iommu_ops iommufd_noiommu_ops = {
-> > +	.domain_alloc_paging_flags = noiommu_alloc_paging_flags,
-> > +};
-> > diff --git a/drivers/iommu/iommufd/iommufd_private.h
-> > b/drivers/iommu/iommufd/iommufd_private.h index
-> > 6ac1965199e9..2682b5baa6e9 100644 ---
-> > a/drivers/iommu/iommufd/iommufd_private.h +++
-> > b/drivers/iommu/iommufd/iommufd_private.h @@ -464,6 +464,8 @@
-> > static inline void iommufd_hw_pagetable_put(struct iommufd_ctx
-> > *ictx, refcount_dec(&hwpt->obj.users); }
-> >   
-> > +extern const struct iommu_ops iommufd_noiommu_ops;
-> > +
-> >   struct iommufd_attach;
-> >   
-> >   struct iommufd_group {  
+Should this also have minItems: 2?
 
+> +        reg-names:
+
+> +          items:
+> +            - const: base
+> +            - const: machine
+> +              description:
+> +                Region containing platform specific MMRs for machine-mode
+> +                configuration, such as PMA and PMP registers.
+
+And this you should replace with minItems: 2 or delete. The reg property
+is where your description here belongs and all the names do here is
+re-list what's available outside the condition.
+
+> +    else:
+> +      properties:
+> +        reg:
+> +          maxItems: 1
+> +
+>  examples:
+>    - |+
+>      /* Example 1 (IOMMU device with wired interrupts) */
+> @@ -145,3 +183,13 @@ examples:
+>              };
+>          };
+>      };
+> +
+> +  - |+
+> +    /* Example 5 (Tenstorrent IOMMU device with MSIs) */
+> +    iommu5: iommu@d2020000 {
+> +        compatible =3D "tenstorrent,riscv-iommu", "riscv,iommu";
+> +        reg =3D <0xd2020000 0x10000 0xaa000000 0x10000>;
+
+This is not the correct format for multiple reg properties. Hint: you're
+missing ">, <".
+
+pw-bot: changes-requested
+
+Cheers,
+Conor.
+
+> +        reg-names =3D "base", "machine";
+> +        msi-parent =3D <&imsics_smode>;
+> +        #iommu-cells =3D <1>;
+> +    };
+> --=20
+> 2.43.0
+>=20
+
+--NGNLZDzmLzoPMudc
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCag3epQAKCRB4tDGHoIJi
+0kjMAQDoJlJN2dTEH+xMoB8Mnr78NFamKp3i7rYNk1U2RW83OQEA0Id4LMpNIS3S
+WT9+SVPfv7/qcHgFS9fmA8jE5nXmkgI=
+=qrOu
+-----END PGP SIGNATURE-----
+
+--NGNLZDzmLzoPMudc--
