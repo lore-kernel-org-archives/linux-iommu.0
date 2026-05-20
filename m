@@ -1,231 +1,128 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D8EB32B9B5;
-	Wed, 20 May 2026 16:17:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F119B363097
+	for <iommu@lists.linux.dev>; Wed, 20 May 2026 16:24:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779293868; cv=none; b=bDPfxzkEyKHFFT+d43v4zHKM66PT9Vaq6EEVhALkNXb1MwqdEvMmr0esSamtfcOtTdhZ/sbpzrNB/S3tb+Eez4KuJP6SeRQTI1Lwzlks61KjCsuyzEISE191zEC7+lhuRqxAxZv+GxtUcglIHSQGXgogkgplm+PwAewztBwqemc=
+	t=1779294253; cv=none; b=tNm7cbEFErM8A8w1PkdxAcK06+BJv0vV1kMo4lMXv0t9X/NxODh2qcUyiVaxTy7SyZM4bO6YSphHCVMpq/Ze0Jb54wFPxOoOGYdj5mF/MZuadqmYdXHJn2c3dqF1Pof8JCRjxCjqi4LC1n6ch7ii55f0ht+5h6+49IX7KzSeKvk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779293868; c=relaxed/simple;
-	bh=b3vKhjIYlsPeDXkc73gbpzqKiZ/oByXD2DsPE/pC1+E=;
+	s=arc-20240116; t=1779294253; c=relaxed/simple;
+	bh=yH95AfxzT/+D60H+ywAWLG6d24H32sb2arUyyKK1J+I=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PH0w4iNTZY1AEBzpQjeEeiXo6SSC5t/DEd1JbJM9Q7NaotKWgZFPLWNPPPPTS+Z5Zrsy2dZc+WXu5Tzbdyz4yDEXydOzrr0jlB8G4u8Rv1OHpFX7cQAV6//oHRWxSf+n5QRKwzz34GxA3lLH+yivuShR1q+jjp4KnHdkkbMrv/A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iUvpkw++; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=PWo3bgVCNhdGwwt13o/Ho8MIOfLKOR43ajN6i1O2OLCv7e480s9GB9Tq5jJZL9yIrDNYZ+tvBrdHbyZ8qK2sefBI2EITeodkid9v2l6ooZdxWxFSVzMRnKkklUzJNw1oEicacdbq677ZfSkyKLJ99dBoFK3UHz9JigehCstWBPc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=HJEj8bUQ; arc=none smtp.client-ip=209.85.214.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iUvpkw++"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89BEE1F000E9;
-	Wed, 20 May 2026 16:17:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779293867;
-	bh=50nNEwYXko+BmsraW2yGRNKOx6hjeiwEGQR9Xa9Nd+Y=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=iUvpkw++CXIDgG39Hc92KF9gYAxLGGJGnbXyRg4pKhWDoC3DfFeRUb3X9LuneUjao
-	 FXZ/2WUd3RR/KmWcQxc8Y+LTIHA8pAtaRS8sNpCuAoVMnRAZ2PIlWEazDltWGgR9ud
-	 CAu20QC9a2NmorfhH4yxKQV2gvL3jFfA2k4qGJ2sPw6MQSn5vDInLNTOIk1l5OAzbn
-	 s9i1VQZUa/kXQfJOIpqrjknzEJQR0W3l4O0Fi5e6s6x/pHCmGJK1w0+vQ2nNu5C0gU
-	 f1KthJu7CI80H1N9UL5aaMwgwTJoXyvpifKmMkkxWAC/N+WsmxZeHrdwgJ5B5FApkv
-	 AyigbNF5qMKgg==
-Date: Wed, 20 May 2026 17:17:41 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Drew Fustini <fustini@kernel.org>
-Cc: Tomasz Jeznach <tomasz.jeznach@linux.dev>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
-	iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Joel Stanley <joel@jms.id.au>, Joerg Roedel <joerg.roedel@amd.com>,
-	Nicholas Piggin <npiggin@gmail.com>
-Subject: Re: [PATCH v2] dt-bindings: iommu: riscv: Add bindings for
- Tenstorrent RISC-V IOMMU
-Message-ID: <20260520-frayed-fervor-7c887193ab19@spud>
-References: <20260520061855.1623468-4-fustini@kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="HJEj8bUQ"
+Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2b46da8c48eso95ad.1
+        for <iommu@lists.linux.dev>; Wed, 20 May 2026 09:24:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1779294251; x=1779899051; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ju9p5eoCrFSkfcsgNxlnvpqY2cZIwhwQVw4yR1FEmcE=;
+        b=HJEj8bUQDUvciFChz9vqUTpMO2eaocs5DKNHM+EAyKbbgI/GoZEC1Vfwt0nI0YR2MK
+         1AsNs1kajdst3e7/Amb6vf5wWYNFspCkwyh1MERVzjIZPQKCuft0mKuLAO5A4Mt0aXaJ
+         LxVfvlK+xyo6pIRCznYLOHmqP644UzSS/ZGCzmlza/SbcbQ6xSbEpl7HDVaQYvyU6xCO
+         OE4KypNyZrkqsU0G8PWMaMATIMBzIzzxe9VWT8SsTAcE/zET3Af3U1ml/mobHAk7MWCF
+         w9bPqe1t+7Wy12VWAnADXbK1TJra/7cIiY5AK+zdj7y/qMVZaRQXK00Tf+vgL9s9OGNe
+         3xiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779294251; x=1779899051;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ju9p5eoCrFSkfcsgNxlnvpqY2cZIwhwQVw4yR1FEmcE=;
+        b=OJfuUzzlIsaLmUw0bns7xzQY78LAv1d75dN7B0SScfRvfKB/p7kDc2zEpP/xX8ZESx
+         nae9Ozsb9tV1a2l16jsn4OS8TMfQEAkYm8DBA+hUvW82OFFpXhBsOtzufaXQSM+JXgYY
+         39EYuHouG8V1DvpvvTrJMAQeF9zuVeDT0OCug3FNV/6f83X4lC6v54qGE9Wm226Jfxha
+         +1QYUlbaFcZytfRPTnnKNHeT6K05+M0czpcfd8QvUcMNVCSJju+EWJ0Ouj8JpJ2tl8X6
+         3ujF/kiPgEH1BLqVi37UUMvRQAWbmrpeWKgW8jFR5dEjzpJjSb7SwYmscuIy4f/8SpZL
+         3kHQ==
+X-Gm-Message-State: AOJu0YxwlIruRJJ1YWLY0xiqYJzPUDbuualyW9KG+Ht3oNPdcrsa7etW
+	m2FjQg04bNJfMhJmjlhhArn8rYrEJM3vrXI7ZwF9hrifpleEC/90xKs9OMjTfyIEtg==
+X-Gm-Gg: Acq92OFJRJZmnuB5obyDVaU0c5H/76FErgjmsG0qIKnro5W5H8qWRPLGfxduHr5SoVf
+	gMX0WJDLiUYGtl9FXsjRJyfH3+Rab0lR84O8F7phzaVEiFhBq8nBwyyHn93iaxc5Qf8I+9S7jY3
+	PTD1gntubB4aIZYt1nxOKVZHx6Vp2UyUHEFdcaWw2Y/0Ay5fP2hHTkFMKNDbJWFVR1DDSpE74cj
+	THmk+0qiF8fIj0FP1yaG1WSs7iNQ1OnFDSlxDLLJXAFHmR6fIENpTbw5rfdNcNNTIZiyqOzijAa
+	ElglOXNwzTx5x1mA/jUp/Cq9HznaHhdQFQsfUaFFqZxQnkG7b70lNqo3bxNqm01BcAWixwTPXjP
+	iIYFizLau7BETloeQyaGOUZgxp5sbIwKa+trcYn6L/ffdBcg8fP5qGEuvh5jRYJA/jFHc3g7ZoP
+	tAQSReNRCwIrIqfuKWL7by/JfZfS4GG922GbMb8DmUS389UeIHHf6K4BaHtRHN6r01YiVd
+X-Received: by 2002:a17:903:3205:b0:2b0:5193:1212 with SMTP id d9443c01a7336-2bdb03a2d06mr8986155ad.4.1779294250730;
+        Wed, 20 May 2026 09:24:10 -0700 (PDT)
+Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c82bb114c08sm21188897a12.23.2026.05.20.09.24.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 May 2026 09:24:10 -0700 (PDT)
+Date: Wed, 20 May 2026 16:24:04 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Mostafa Saleh <smostafa@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Samiullah Khawaja <skhawaja@google.com>,
+	Daniel Mentz <danielmentz@google.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	David Matlack <dmatlack@google.com>
+Subject: Re: [PATCH v3 3/3] iommu/arm-smmu-v3: Fix ATS state tracking via
+ ats_prepared gate
+Message-ID: <ag3gJLtY1jnT17Zv@google.com>
+References: <20260519135323.1558777-1-praan@google.com>
+ <20260519135323.1558777-4-praan@google.com>
+ <20260519144430.GI7702@ziepe.ca>
+ <agx5-jFkU2skyEos@google.com>
+ <20260519145947.GK7702@ziepe.ca>
+ <ag3EL10WAIImL9XR@google.com>
+ <20260520145142.GU7702@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="NGNLZDzmLzoPMudc"
-Content-Disposition: inline
-In-Reply-To: <20260520061855.1623468-4-fustini@kernel.org>
-
-
---NGNLZDzmLzoPMudc
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20260520145142.GU7702@ziepe.ca>
 
-On Tue, May 19, 2026 at 11:16:28PM -0700, Drew Fustini wrote:
-> From: Nicholas Piggin <npiggin@gmail.com>
->=20
-> Extend the binding to cover details specific to the Tenstorrent RISC-V
-> IOMMU. In particular, a second register range is added which contains
-> M-privileged registers, e.g., PMAs and PMPs.
->=20
-> The RISC-V spec S-privileged registers remain in the first register
-> range and are compatible with "riscv,iommu" so the Linux driver does not
-> notice any difference, but the binding will be used by OpenSBI and
-> potentially other M-mode software.
->=20
-> Reviewed-by: Joel Stanley <joel@jms.id.au>
-> Acked-by: Joerg Roedel <joerg.roedel@amd.com>
-> Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
-> [fustini: fix dt_binding_check errors]
-> Signed-off-by: Drew Fustini <fustini@kernel.org>
-> ---
-> v2 changes:
-> - Fix dt_binding_check errors
-> - Add the Acked-by: from Joerg
-> - Drop RFC prefix
->=20
-> Link to v1:
-> https://lore.kernel.org/lkml/20260310003850.3837030-1-npiggin@gmail.com/
->=20
->  .../bindings/iommu/riscv,iommu.yaml           | 62 ++++++++++++++++---
->  1 file changed, 55 insertions(+), 7 deletions(-)
->=20
-> diff --git a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml b/D=
-ocumentation/devicetree/bindings/iommu/riscv,iommu.yaml
-> index d4838c3b3741..5aad8cf67840 100644
-> --- a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
-> @@ -32,22 +32,35 @@ properties:
->    # should be specified along with 'reg' property providing MMIO locatio=
-n.
->    compatible:
->      oneOf:
-> -      - items:
-> +      - description: Platform (non-PCIe) IOMMU implementations
-> +        items:
->            - enum:
->                - qemu,riscv-iommu
->            - const: riscv,iommu
-> -      - items:
-> +      - description: PCIe IOMMU implementations
-> +        items:
->            - enum:
->                - pci1efd,edf1
->            - const: riscv,pci-iommu
-> +      - description: Tenstorrent IOMMUs implementing "riscv,iommu"
-> +        items:
-> +          - enum:
-> +              - tenstorrent,riscv-iommu
-> +          - const: riscv,iommu
+On Wed, May 20, 2026 at 11:51:42AM -0300, Jason Gunthorpe wrote:
+> On Wed, May 20, 2026 at 02:24:47PM +0000, Pranjal Shrivastava wrote:
+> 
+> > However, I'm thinking what's the right thing to do if pci_enable_ats() 
+> > fails in attach_commit():
+> > 
+> > 1. Fail to attach but unmerging the invs_array entry is complicated.
+> 
+> Is it? We should be able to keep the the original invs and not free
+> it, just put the pointer back?
 
-You should be able to put this into the enum alongside the qemu
-compatible, right?
+Reverting the invs pointer itself is straightforward, but IIUC the 
+current implementation of arm_smmu_install_new_domain_invs() is a
+destructive update as it calls kfree_rcu() on the old list immediately
+after the swap.
 
-> =20
->    reg:
-> -    maxItems: 1
-> +    minItems: 1
-> +    maxItems: 2
->      description:
-> -      For non-PCI devices this represents base address and size of for t=
-he
-> -      IOMMU memory mapped registers interface.
-> -      For PCI IOMMU hardware implementation this should represent an add=
-ress
-> -      of the IOMMU, as defined in the PCI Bus Binding reference.
-> +      For non-PCI devices the first item represents base address and siz=
-e of
-> +      for the IOMMU memory mapped registers interface.
-> +      For PCI IOMMU hardware implementation the first item should repres=
-ent
-> +      an address of the IOMMU, as defined in the PCI Bus Binding referen=
-ce.
-> +
-> +  reg-names:
-> +    items:
-> +      - const: base
-> +      - const: machine
-> =20
->    '#iommu-cells':
->      const: 1
-> @@ -75,6 +88,31 @@ required:
-> =20
->  additionalProperties: false
-> =20
-> +allOf:
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - tenstorrent,riscv-iommu
-> +    then:
-> +      properties:
-> +        reg:
+Although, I guess we could refactor the RCU lifecycle to defer the 
+kfree_rcu until after pci_enable_ats() succeeds in the commit phase?
 
-> +          items:
-> +            - description: IOMMU base registers
-> +            - description: Tenstorrent IOMMU machine mode registers.
+> 
+> > 2. Move the pci_enable_ats() to attach_prepare()
+> 
+> IIRC ATS cannot be enabled until the invs are loaded with ATS
+> invalidations, hence the issue.
 
-Should this also have minItems: 2?
+Ahh, right.
+> 
+> So you'd put the new invs list, turn on ATS, if it fails restore the
+> invs list back to what it was and RCU free the new one(s).
 
-> +        reg-names:
+I guess we'll have to to do the following:
 
-> +          items:
-> +            - const: base
-> +            - const: machine
-> +              description:
-> +                Region containing platform specific MMRs for machine-mode
-> +                configuration, such as PMA and PMP registers.
+1. Defer kfree_rcu of the old invs until attach_commit succeeds.
+2. Implement a roll-back (writing the old STE/CD back) on enable failiure
 
-And this you should replace with minItems: 2 or delete. The reg property
-is where your description here belongs and all the names do here is
-re-list what's available outside the condition.
-
-> +    else:
-> +      properties:
-> +        reg:
-> +          maxItems: 1
-> +
->  examples:
->    - |+
->      /* Example 1 (IOMMU device with wired interrupts) */
-> @@ -145,3 +183,13 @@ examples:
->              };
->          };
->      };
-> +
-> +  - |+
-> +    /* Example 5 (Tenstorrent IOMMU device with MSIs) */
-> +    iommu5: iommu@d2020000 {
-> +        compatible =3D "tenstorrent,riscv-iommu", "riscv,iommu";
-> +        reg =3D <0xd2020000 0x10000 0xaa000000 0x10000>;
-
-This is not the correct format for multiple reg properties. Hint: you're
-missing ">, <".
-
-pw-bot: changes-requested
-
-Cheers,
-Conor.
-
-> +        reg-names =3D "base", "machine";
-> +        msi-parent =3D <&imsics_smode>;
-> +        #iommu-cells =3D <1>;
-> +    };
-> --=20
-> 2.43.0
->=20
-
---NGNLZDzmLzoPMudc
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCag3epQAKCRB4tDGHoIJi
-0kjMAQDoJlJN2dTEH+xMoB8Mnr78NFamKp3i7rYNk1U2RW83OQEA0Id4LMpNIS3S
-WT9+SVPfv7/qcHgFS9fmA8jE5nXmkgI=
-=qrOu
------END PGP SIGNATURE-----
-
---NGNLZDzmLzoPMudc--
+Thanks,
+Praan
