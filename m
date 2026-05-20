@@ -1,94 +1,226 @@
-Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 725DA24E4A1
-	for <iommu@lists.linux.dev>; Wed, 20 May 2026 12:59:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779281958; cv=none; b=lBO78MJmoPjQAOAtv9slE9wPjy8t0NfFGBLtf3PsAcR7beRHUKL/gfq8Ul3Y93GHZ+sdiia/CTdXchVlBlfbfggJLP68JxaQMGj39ORzX7+SRWrHbcNDw6JjNdT7h6h61QmlcvnwloSoGRiyI0aicHnHZYfFPlrkcMiG/TbKjD0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779281958; c=relaxed/simple;
-	bh=REOM245G7CIl5zoT+snm7tQ+xPdTeWo5pJCFGFovHGU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=d2YvDyGcHK5T0AtxEa4Pz3U64U0Z0NPQtHPwpLqUtPiwwt6A7GjBxIv0NmR3h9YQTRgOLWo8P1oPMjaBmHP4l3qmqKBLm2+9qUuO8IDZC7McAcTZd8Rw4sxue5sR5/3JQJj8WLGi94+7LpNpnW1tv9TE9jrg+k4FAe6YkaHh+aw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=BxNmM/v1; arc=none smtp.client-ip=148.251.105.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA3D33D76
+	for <iommu@lists.linux.dev>; Wed, 20 May 2026 13:04:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.13
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779282253; cv=fail; b=SzFCvFTkrirdon7bxQvNuPNuJ4DTUpOTm7OcceJEDV0VgelPC8OuQSck33SVTkNBTPlqCLGFTsp6KKukLjgwllQhbbKSNkFPMalId8P6eYMavy1Xq3PT344Y5r/tLWgSTeOoP7mNnihLkgfodGaEt2nT9dsd/poSIOMngWWOoyE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779282253; c=relaxed/simple;
+	bh=Y8Lnf1x7dSrC5VGNobecn7t3LGF2SnXTsTjFsXiX+CU=;
+	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=Gh8CdUABmvPpcLCcyHYLcAtzU5S7v81ocoNudLk4dpNkhiapWb5vKWX1QPSitTXQVWb+XzVSrE+RYzqaybZnvIEIzEA/MHho/RAjXvJ3GN5ZgMm3nSDHztK3LZkGNc9IRQV6pyKxVIVEv4Thz98p14YG8Q7ebALK/RChF9OK9nk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dpsNIiMJ; arc=fail smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="BxNmM/v1"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1779281955;
-	bh=REOM245G7CIl5zoT+snm7tQ+xPdTeWo5pJCFGFovHGU=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=BxNmM/v11NdR4+bNKzLXUHVVgXvOVouczXVH8Rvp1MR8xShvuIUhc1FHMkzx9yBXp
-	 0C/BDXVQXknFEh7yFWsVPGNEvBVzoe7eMtkwV+FoM95c40s2ZmYarNjoRC4gwMXNhD
-	 tKX1x9eGsBGrMPlIy2qTzUBw5Di6V9Lh0vn/F9RyHsDO8j58uPFnnGnPgeWaKWR0qC
-	 rw9u2iEm8jJTf527X+BTtZkYdK3R3S0OJzDDDDThYjL0Artl2X4HnqJozUqpNUug8T
-	 JPgw8tKi+liUC/GqDU173oQsIHaihV8Macs6DZPGWncsNpzqEBWb2PLeOxfZ2mqcx5
-	 Mg0w3lhlNwN7w==
-Received: from [100.64.1.43] (unknown [100.64.1.43])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
-	(No client certificate requested)
-	(Authenticated sender: benjamin.gaignard)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id A116117E0940;
-	Wed, 20 May 2026 14:59:15 +0200 (CEST)
-Message-ID: <fcedc7d8-f93e-4d96-b23a-fb9ad5a1f534@collabora.com>
-Date: Wed, 20 May 2026 14:59:15 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dpsNIiMJ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1779282250; x=1810818250;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=Y8Lnf1x7dSrC5VGNobecn7t3LGF2SnXTsTjFsXiX+CU=;
+  b=dpsNIiMJTifcUAJDIbFIauYErqtGwhYFj2YMLVCW5fKbTCeD0z6S59ih
+   8XQ48uswrMlTpEu0iez3jZq1ChbQ05UUljGXg64u6y7olROsNsJvgfchO
+   5q9fyj+eKe9SO5uVKffvk22m4r2JP7kklpPOsRwC1sJuOepSFxzmXmuFd
+   F274qcBve+VAOjVH5gOXDqGGgWRbj0oFZnY/jnGwMlTwFTOvZV/pKPukg
+   MkqdcWLYXUbrR1J0PdF/6tAlpKCDcXPKE/xVLcf2PrH31tEMnXqkHxIVb
+   p7V0XjFZi5IZF3g7BlGfVtW8Z86ynAe0ivz1NN4ULF8YcNvs4ihFaOSlW
+   w==;
+X-CSE-ConnectionGUID: Wl22eIp7RAem+cGwUWbTbw==
+X-CSE-MsgGUID: RZDl+PayRPOrTBz7yvR5gg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11792"; a="82755670"
+X-IronPort-AV: E=Sophos;i="6.23,244,1770624000"; 
+   d="scan'208";a="82755670"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2026 06:04:09 -0700
+X-CSE-ConnectionGUID: lVfwq//TTRWICxgW52s6zg==
+X-CSE-MsgGUID: 0gXFlpgRSFmVV/D8+0mouA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,244,1770624000"; 
+   d="scan'208";a="263967753"
+Received: from fmsmsx901.amr.corp.intel.com ([10.18.126.90])
+  by fmviesa001.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2026 06:04:09 -0700
+Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Wed, 20 May 2026 06:04:08 -0700
+Received: from fmsedg901.ED.cps.intel.com (10.1.192.143) by
+ FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37 via Frontend Transport; Wed, 20 May 2026 06:04:08 -0700
+Received: from MW6PR02CU001.outbound.protection.outlook.com (52.101.48.56) by
+ edgegateway.intel.com (192.55.55.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Wed, 20 May 2026 06:04:07 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=cIYxJxdtyJo59akgdoosk5aRUgyENbpAT9GxKEd7L6NTt8xk1K+uzOwutU90BmlFTzY+r/+JpcNzvGRxZQ9dt45/OpTAom9amaNWj63NZ2lzkg2BfsDjUzyAaa2FAIJoKYPRTZ2L3/DRkNXFxT9RILDwMl+yO+qJcE78BaX8u4tf0LicvAcUcDZETt72HhU+Ds21NB4H25nHAgnRYOSV7jkcWjrIQwfS0VeNJYx0kAgrBXCk/RUvwCJH82aY4GGzHpZuyCmZ58ov7asPUVusWl5TFumfrFAdZ4G8xTff7Iuyq3Bfk0tpIUxHYsGUnQxljpEM7/aDgD2f7ysacTKhfQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=WOhEZnNoaqSn3bdv3O1FPlBpho4cQgBcBbd1wlOTMYU=;
+ b=GR2K4hV8z0LizWtydl2zDN/vLfnZa+9So6qJtCva/33G8lLXUHRJTbba2if5p3ZhiIat94QDSJ1aiVu1nUjVceGsCKIo5mElNOyNcV9n6ZlJS2fMQ0k3Q8I2hagNjmJSlaX7qFWAYGVQnzmp9Fx9zBYqRhIL8xUer4NJhdmRd7V34devHcl1tv1nEn8ZmY8LOXp3QoHoWWwXtv/iF4VpFh3MTu+4gmQExGuBDoMMPwddQFawpevLE/H6ex8zGECEcGES7kE5E5uPx57o/o1ri7G4h/Ri0T//9RVhTiIZVqb3ZVFPt/zJR9aNTX5XbK96PTqiiGy0EBdWz77pX6ftcQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV8PR11MB8509.namprd11.prod.outlook.com (2603:10b6:408:1e6::15)
+ by MN0PR11MB6134.namprd11.prod.outlook.com (2603:10b6:208:3ca::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.25.21; Wed, 20 May
+ 2026 13:04:04 +0000
+Received: from LV8PR11MB8509.namprd11.prod.outlook.com
+ ([fe80::f5bd:4dde:4f2f:20b7]) by LV8PR11MB8509.namprd11.prod.outlook.com
+ ([fe80::f5bd:4dde:4f2f:20b7%5]) with mapi id 15.21.0025.022; Wed, 20 May 2026
+ 13:04:04 +0000
+Message-ID: <c556e432-0e80-463f-a924-83f8f1ab333b@intel.com>
+Date: Wed, 20 May 2026 21:12:13 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/1] iommu/vt-d: Avoid WARNING in sva unbind path
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Will
+ Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Kevin Tian
+	<kevin.tian@intel.com>
+CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<stable@vger.kernel.org>, Nareshkumar Gollakoti <naresh.kumar.g@intel.com>
+References: <20260519052917.3729796-1-baolu.lu@linux.intel.com>
+Content-Language: en-US
+From: Yi Liu <yi.l.liu@intel.com>
+In-Reply-To: <20260519052917.3729796-1-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: TP0P295CA0027.TWNP295.PROD.OUTLOOK.COM
+ (2603:1096:910:5::14) To LV8PR11MB8509.namprd11.prod.outlook.com
+ (2603:10b6:408:1e6::15)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu: vsi: avoid -Wformat-security warning
-To: Arnd Bergmann <arnd@kernel.org>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, Robin Murphy <robin.murphy@arm.com>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20260519203658.1341889-1-arnd@kernel.org>
-Content-Language: en-US
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-In-Reply-To: <20260519203658.1341889-1-arnd@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR11MB8509:EE_|MN0PR11MB6134:EE_
+X-MS-Office365-Filtering-Correlation-Id: d1ff6f15-3403-4415-e324-08deb67044ab
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|42112799006|1800799024|376014|366016|11063799006|5023799004|22082099003|18002099003|56012099003;
+X-Microsoft-Antispam-Message-Info: yvnG68ZrA4R6dT4UHSD0Tuk9TSA7Dia4Huy0GA5qSwFe07Bas8zfbanMQLpBRAWwc1NFIpJ2ik5tcanzWuCmJfp+n24IGCo8PSVJVbhWVXj8/ZXcZ0QeitxBAq8MgtDAndENhX1O46jgUoXjRrXZTXats1BNLfofuR0BHOoUIVNPCjj1soaaMxQ1bFdbizX9whcgebJUUrzM5WpoZCemxp3LtAArKEcdwTvcRzPTEFuKgwCLG9oIoVWOosG4OCpSE5neJj1eg3fv+7R3fKhj5118NmJi/tNdccGD/X+PEK+0NjaJHPRVmUIlpe5KjQ7ceWga/9qn9cBc+AYFkCplp818h5DBIl0+DfaJvQR+dv0Mm5GnuA1Ic2V1JLcAA4JD81Vdt1avHb2RjnlQ0+nrP+hITjTMo2V+qcZV2lg+f9PGPN4GOyrsuqUEuKoSIxbULKtrFTdeVEC//m0BU0ei/EvzQfb9btoon26kZPvzH2EWZCfT8gcbbtSbxpJ42Rq7s4jPJ6GuHhmt/d60zYO8r9s+jqr6LkyZPdDiWPm61L7WflCV+HOvBOlqgTo4w1TYpOKrts8TTdQe/6y96D2xXGcs/uMX9tMKrYgf/y8I9DOxneSeolzlBtHKFRicAyFWy9ZKOsiqF6piBCnXLzcoyWwuoDPW6Ft8FT+fTpL2KAXZDZ3n0cPWm1TKz2AmcB7G
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR11MB8509.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(42112799006)(1800799024)(376014)(366016)(11063799006)(5023799004)(22082099003)(18002099003)(56012099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YjF3TTFlQnVlcUlSZlQyNHRub1JrY1hhL0xmMUtNWXdvazlod25IL2VVUzIr?=
+ =?utf-8?B?T0xrT3BRWEdrUXQzd2xHc1JDUkZHRUE4bHVBMTJGNGJxTjZBZFMxdlZzQ1Q0?=
+ =?utf-8?B?bEtLRFlLaW9oUENTWDJDTDZpelNEWTVRLzQzdk1HeTQxVGpJWllnT2xKTmhq?=
+ =?utf-8?B?Y0VoQ0lRRlhCME9SYnZ4KzdIeUJhd2ZhNDNINzVCSVFQRG9kWUVIU0NnSWh4?=
+ =?utf-8?B?WnBmMWlvMWY0UiswMVhmTjdCUGh0NW1SVFhEQ2s5bU5LOFVacDEyb2xWSHpr?=
+ =?utf-8?B?MXl5Rzd2a0FKaEVpWGVObFB0THJtRkxBQkxTRm1DMEN6ZERWNXZmK25sWnpY?=
+ =?utf-8?B?Z2JrcjVEWm9Kem1qd216T2FHWmtHaGh5RjI0UkEzSmduVDNmVjFtdVpVdkFB?=
+ =?utf-8?B?TlM2Q0ljUVQ4WFJUMXBQNGwrREV1NFdZQi9DcmxJekFvMjBFdHROZUVscTND?=
+ =?utf-8?B?NHNkdnFSb3RLV3pkQnJjV3dsMDd2TlBEWFhLTTM5blMyUjhFcjd5Z3FPZGM2?=
+ =?utf-8?B?NnoySm5xcVliL1dYM1pUNllTTjExWVRBemUwUjNPWHhaTlBuMnF0dXFpVWZ1?=
+ =?utf-8?B?QThOOSt6TXBjY1FacGl6T043cjVYbUpCVlF1SnE4WEFIMWlDN0xXVXgxam1i?=
+ =?utf-8?B?cmhjZTFWNnlWZVdqb1JJUSs3Q0NzanJkVytWTG1qMnVWSUcxSjNsRng4eW90?=
+ =?utf-8?B?UEVGaXZIQXpxUUlYYUhaSndCWjNhenowTFdpcklsZk8xcktzTkd0UlRPcm5Y?=
+ =?utf-8?B?eFYvODAxcmtYTE9UaXlYYjlkQnIreVcza2FicHJ4TXl1eUV0YlU0eFpkUVVw?=
+ =?utf-8?B?WUNxSkhKR0VTWHlIZmwzSmdzMFljNmQyajVEQUNJbHMyY2wvakZEZkFuQS8x?=
+ =?utf-8?B?ajA5T1I0WUo5clZQT3VIRGNTSVNCYWZHd0k3T0toSUw1RU92MmJjMk11ZGdt?=
+ =?utf-8?B?UUh0SjhEckRBb2VtWER0MmNyanhhb1lPL1Y1RlFWaXJJZjVac2Q4b3JOU0lG?=
+ =?utf-8?B?dXlFaTFIZ0gxZUJVM1lvZzdoUTZjS1dKbFRob0FuTnRjc2tpV0pwcVFYY3pI?=
+ =?utf-8?B?Wm5zb240Y1FqdWd4T1pVS2VVY1E2TzViUlBYTlJzUWRHSXd3QTMzSFZkR0Vu?=
+ =?utf-8?B?bko0clhxczZOUDdXcWpmZm5tUFRobTVnMXduWHE2cUhoR29HdGVRaEVDMlpR?=
+ =?utf-8?B?QWtaZUhXSElvQmM5d0JlcnYyaEhpOEtJRHZNOXFPMkJPejhDSlkzeEwwOHBx?=
+ =?utf-8?B?YmRLMXU5S3prbVRCamdVWjRDTlFLWWFDTVRLMEQ4b29tbDd4WW9sZjBmdC9r?=
+ =?utf-8?B?bUVhUkZJc2NsamNFVkM4UE5tZkFHeVB3WjVTSGEwZ0F2bjNKUWlMMHpwWEtJ?=
+ =?utf-8?B?OGZjcVBadkFlK05Famk4MFZDczhLY0JqWmpRSGRwL2c2b1R2MnlWZGdyS1ht?=
+ =?utf-8?B?NGdIU1NhUlhZSisrTDA1RnJIMkJOeVUrYk12c1VpYmFuMkNkUm1wdFFaa3E3?=
+ =?utf-8?B?VkRJZ0NGWFRHM2Rvd2FSMk5XWWFveEkxUklHR2tobzF3Y256RUt1dFJ2RDVV?=
+ =?utf-8?B?VXhZeHdoblZWdFM2MTRjRzF1U0ZyRGxWa2l4bzJ2b1BKMHNGMDBhb2d4SURW?=
+ =?utf-8?B?N0RZZmxGelJsODVHQmpNbUFFYmw2M29xMisydzFuT2FtRm8vSFl6Qnc4WW5S?=
+ =?utf-8?B?U0h1b3pxcUxkZXZuWmlkb3NmcWtoSGdFQ3h1KzZrTHpiTDdJQkJ0cDNjWHVF?=
+ =?utf-8?B?bmxpS2VSQVliNlFGZDFUUmdaY3N3QjVVRjltbXo4NU1kUEJZK2lPdUNFWkxU?=
+ =?utf-8?B?dVo3OWZDOUNoUEh2TlJYVERYbkdIS2doRlpVOUFld1pEdlVHUS94RUplR3Y4?=
+ =?utf-8?B?TTVFSGVxeTVmTmM3M0xRLzlIOG5INjl0V3o0VWYwLyswdis5L1JBK3JPaWVi?=
+ =?utf-8?B?RkRRZVdyUTk1Z1RZaHFsaHhBTjYrS0owTW5tOXNtT2U0bHZuNHJtNVlCOS9X?=
+ =?utf-8?B?L29jVGJmYWZiQ1JvZXUrcnF1MU5FbEdkeDVHUXI5a3lvTGpTZWp1M090QlR5?=
+ =?utf-8?B?a3ZGK0gwOW40aGEzQktGTW9nVmxZSVFXbDFFRFBiaUgrS2ZOL1laUUhYS3Bo?=
+ =?utf-8?B?eWlmQ25zRHRNdU9OVHBVVmN5MlAxQ1oxUmhJbDlVUUxxZk9KTi9lMlNiZ1RI?=
+ =?utf-8?B?YWlXaDZLbC9PK0YwemUrbWpGZGxkRWttQ2dCdWs1azlicEl6bW11SEdMSlhM?=
+ =?utf-8?B?VXBDSmpMVHRvMnVNSkt4d0Y5ejBhdGlpNGM3cUI0K1F0ZmxTcVFiOVB2bmtn?=
+ =?utf-8?B?Z2Z1TkZlV0RZbzV6Z2QyMDUvUzFmRm01WEZHZUI3VExFSWNOWFIrdz09?=
+X-Exchange-RoutingPolicyChecked: Xrel+y/u+6CdhhUtwyrWWcZRCud3KaGRO8kjbALL7jyJJdAun1zTk3iyhbIPSlZaASSbL4XP89msQh5xYp4B1HRpmr26FJM9LIgfPtl62WLxyKdVCqnso1zYul76mYlfPz5cf83V9Zy8qwtO9QS0LceMAUXezCyHo1V7ohMoItJ3VoGGYCMYKMsp0BrVSj31Ik+ajdPjvbeAKygB+KmtJLs1Ob6tY+P8cT4HcHyKHCajyxZzpgDphmX7FvACGFDhtOCu5eoOyuJPiETLEppkiAlkYRPND8Zcq5kCdk/UoJg8AACbFCabEzfSW/zNzOFy2Emoad3TpOaywW5xV1nLfQ==
+X-MS-Exchange-CrossTenant-Network-Message-Id: d1ff6f15-3403-4415-e324-08deb67044ab
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR11MB8509.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 May 2026 13:04:04.3437
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SJaBnqkSLkIRiVoPmy8Z1HlpxgTJY/7/+Hviq0r5yPeyOTCUIc6NwS/fxakHmN2m3RwdR4OtXiJZ2uHfmuRvVw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR11MB6134
+X-OriginatorOrg: intel.com
 
-
-Le 19/05/2026 à 22:36, Arnd Bergmann a écrit :
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> When -Wformat-security is enabled, it catches a call to
-> iommu_device_sysfs_add() that passes a string variable in
-> place of a format:
->
-> drivers/iommu/vsi-iommu.c: In function 'vsi_iommu_probe':
-> drivers/iommu/vsi-iommu.c:717:9: error: format not a string literal and no format arguments [-Werror=format-security]
->    717 |         err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, dev_name(dev));
->        |         ^~~
->
-> Pass this indirectly using "%s" as the format instead.
->
-> Fixes: 917ace84b770 ("iommu: Add verisilicon IOMMU driver")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-
-Reviewed-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-
+On 5/19/26 13:29, Lu Baolu wrote:
+> The Intel IOMMU driver allows SVA on devices even if they do not support
+> PCI/PRI. Commit 39c20c4e83b9 ("iommu/vt-d: Only handle IOPF for SVA when
+> PRI is supported") modified the SVA bind path to allow this configuration
+> by skipping IOPF enablement when PRI is missing. However, it failed to
+> update the unbind path.
+> 
+> This creates an imbalance: the unbind path attempts to disable IOPF for
+> a device that never had it enabled, triggering a WARNING in
+> intel_iommu_disable_iopf():
+> 
+>   WARNING: drivers/iommu/intel/iommu.c:3475 at intel_iommu_disable_iopf+0x4f/0x90d
+>   Call Trace:
+>    <TASK>
+>    blocking_domain_set_dev_pasid+0x50/0x70
+>    iommu_detach_device_pasid+0x89/0xc0
+>    iommu_sva_unbind_device+0x73/0x150
+>    xe_vm_close_and_put+0x4d2/0x1200 [xe]
+> 
+> Fix this by bypassing IOPF operations for SVA domains on non-PRI hardware
+> in both the bind and unbind paths.
+> 
+> Fixes: 39c20c4e83b9 ("iommu/vt-d: Only handle IOPF for SVA when PRI is supported")
+> Cc: stable@vger.kernel.org
+> Reported-by: Nareshkumar Gollakoti <naresh.kumar.g@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > ---
->   drivers/iommu/vsi-iommu.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/iommu/vsi-iommu.c b/drivers/iommu/vsi-iommu.c
-> index 5d0721bd2c7a..23913720d484 100644
-> --- a/drivers/iommu/vsi-iommu.c
-> +++ b/drivers/iommu/vsi-iommu.c
-> @@ -714,7 +714,8 @@ static int vsi_iommu_probe(struct platform_device *pdev)
->   	pm_runtime_use_autosuspend(dev);
->   	pm_runtime_enable(dev);
+>   drivers/iommu/intel/iommu.h | 11 +++++++++++
+>   drivers/iommu/intel/svm.c   | 12 ++++--------
+>   2 files changed, 15 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+> index ef145560aa98..775f1c4ae346 100644
+> --- a/drivers/iommu/intel/iommu.h
+> +++ b/drivers/iommu/intel/iommu.h
+> @@ -1254,18 +1254,29 @@ void intel_iommu_disable_iopf(struct device *dev);
+>   static inline int iopf_for_domain_set(struct iommu_domain *domain,
+>   				      struct device *dev)
+>   {
+> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
+> +
+>   	if (!domain || !domain->iopf_handler)
+>   		return 0;
 >   
-> -	err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, dev_name(dev));
-> +	err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, "%s",
-> +				     dev_name(dev));
->   	if (err)
->   		goto err_runtime_disable;
->   
+> +	/* SVA with non-IOMMU/PRI IOPF handling is allowed. */
+> +	if (domain->type == IOMMU_DOMAIN_SVA && !info->pri_supported)
+> +		return 0;
+> +
+
+Looked into the history a bit, and this story begins with commit
+a86fb7717320 ("iommu/vt-d: Allow SVA with device-specific IOPF"). This
+commit enabled devices that support their own IOPF mechanism to use SVA
+even when the platform IOMMU doesn't support IOPF.
+
+However, SVA isn't the only fault-capable domain type. Other fault-capable
+domain types (e.g., paging domains) should also be able to leverage
+device-specific IOPF capabilities.
+
+My question is: can we drop the domain type check to support other types
+of fault-capable domains that rely on device-specific IOPF?
+
+Regards,
+Yi Liu
