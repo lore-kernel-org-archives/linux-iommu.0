@@ -1,248 +1,218 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012064.outbound.protection.outlook.com [52.101.43.64])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00C013644A6
-	for <iommu@lists.linux.dev>; Wed, 20 May 2026 07:12:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 855A7343894
+	for <iommu@lists.linux.dev>; Wed, 20 May 2026 07:20:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.64
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779261146; cv=fail; b=gdpTcRp8MjAXsQT18Mpgo/F+7t3XRR8bO6CNWBLuviSxvxgElhYT/nUolshrUljW1JfD3PE0LOqIcOxm79wy+pg73I8XadmvUf/gABmxlOsLFr+3on7dIq8BpQ7Q2YLMzQnL3JLDzacgbr7u0q5dwYji67VaL77viL4MTcrnga8=
+	t=1779261657; cv=fail; b=qaBVcw/QiaI6Z9B2lOflnK8Zdk91vm5rQkxDXbmRcgJrOUKCBmPjQDIz7Tc9s8fqCGpb53n0xWizTUgAA8AEr/o/aGFgt2C4BAMeUdgTnAGgzSoLJKCqjvKqgAl+9MdbTQDk5WbTx8s9UXMeiz1yuIRd1vyDNO1Xx++p0mWSvLQ=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779261146; c=relaxed/simple;
-	bh=VP66tOCtR7MQRWnACJWUnuV6IkAiLwu/6qgqk5dgR38=;
-	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=V4NAHP6Owq80DFKSp8n6RtU4ZBBRarwrDraLBnUgB1OiAipGqSMzZizX1/QFtvPPbgljJu4gcQj15OxWWGpijUqpDlhXWrDMYkzpHUOSCX3ReB9/e7N/kP9vOwHjfg3/TNr0symvZDwZu2EcE1j9l75WcPBrc5ISTh4jqu+syQk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KYFcXsOs; arc=fail smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1779261657; c=relaxed/simple;
+	bh=VrL6XZX8sl44W1xdhpn3KPVAsVh6K6EWoIPiHYa8Iw8=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=oQ3F6f1w336kDQE2jr6URcjLv6L9j7WvrEVY8G5Jb3xrTmdp0NWeKQ/QuKJO0JnulaftgzaCwvgq6ecqk38qiBHSumgafR+rmJ11LNxbt7ux6g7UQxRjVQQuebc7dASIB8JyHoHtoRt5JNKco+CW0B+gLkgtavYv35HAvKhxA7w=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=IUmdT6jP; arc=fail smtp.client-ip=52.101.43.64
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KYFcXsOs"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1779261145; x=1810797145;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=VP66tOCtR7MQRWnACJWUnuV6IkAiLwu/6qgqk5dgR38=;
-  b=KYFcXsOsnJ1L7SgPap/o/sppeJhJ1+Gs9uS9nRjz2QFduxIgWIz61cUa
-   7PbL/B2idZb0s5WlOgCeNcnvKhM98HnW+XvfPk9oslrTY8Ms3MmfoB2Xf
-   2fmnXyy8yTSDJFJcPEIIE0758KWIf/CfQvYWcK4If3KBkAV0OQk9LB0d+
-   zbO/X5A27cRCuctEQVCNvl42I8AD9fSEikfmFMjZY/Gd/TXcg7qRH5Cxw
-   YTuX4F43Dbb6hp2rJ4ugG0RYkSld/8wTK5DuHxQ7ar+cWrkvExWCUFOXV
-   FC2iYNSWCB1ixc5+oHxNexk+9BtofCp+BR4HjgOcwd+mZf0yyVNXJKpzB
-   Q==;
-X-CSE-ConnectionGUID: wMoCPm7bR2yWjwG0ve4U+w==
-X-CSE-MsgGUID: 7Og+TTkJSqK/jzpTBOZSqA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11791"; a="80268321"
-X-IronPort-AV: E=Sophos;i="6.23,243,1770624000"; 
-   d="scan'208";a="80268321"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2026 00:12:24 -0700
-X-CSE-ConnectionGUID: 4nXFZHbeSGChSlc4KIgVUw==
-X-CSE-MsgGUID: JONdsLccQ0+runl4mJWorQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,243,1770624000"; 
-   d="scan'208";a="237070992"
-Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
-  by fmviesa007.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2026 00:12:24 -0700
-Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
- ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Wed, 20 May 2026 00:12:23 -0700
-Received: from ORSEDG902.ED.cps.intel.com (10.7.248.12) by
- ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Wed, 20 May 2026 00:12:23 -0700
-Received: from BL2PR02CU003.outbound.protection.outlook.com (52.101.52.60) by
- edgegateway.intel.com (134.134.137.112) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Wed, 20 May 2026 00:12:23 -0700
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="IUmdT6jP"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=XsY3HLQWWZ/6GURw/RILkznYxIHgO1DaNloi5G2ugAYIjnRRrYrWM4ocHZZZtFNswmBSf4e3IdQl7kTCipfW0Qe1ww3c0AjIOEeZA5K1wM6UpIU0Nv9pOm8D2DaP8ENirig79zmaqva4kiPNJ7eNbnu8x2IIqq/q1qy3T9GFLPHDMse1KzbIHITPw2K+9IYo2T6GNwhHMfujQO4KDg+8Y+VhnXj7AFRxY49tDhQ3D+uDZSBpCiFtvkLddNeuC4XhThBM5Th9zAXDHJ00VoMAj/x9p8BTyNeShpoHgoW0L1n/4KZSOFCl6cp4dhbo63FusNJ0GwGq5xUkKyZjwMvstQ==
+ b=kzxf5+FAkLaHaXRW5TYPrePIKYGLCtcdCGnld9H1DNgeD2BZi8NQrYlLWNKlKahvGDylcTbV6d3CEl0JcLfNFM0aDgxp6UFuB4UzT6c/selIqoxVLc13Yqjwe5yKP7MbBxJD+8FbAqSgUZU0BZN0LNMz9UgIS7iN900GP7+63ISoROfnsrj38MY7QlkVhCiUj4Pb9r9TruEVtvX15tKOG/UEMt/LkoFdEcgrwZQovBBbfoHd/9dD0BYbA6tqFdCpHK4L+9QSIA0JYZRB4X/h/qfbulhm9rQxK5rntNVgOqopvzBqXPTkU0skocdYedtNV/SEeNljyjp53cH3fBcqIg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/TxK3hW115abCJ8Sl3ssYV24xX6rSBGTGLq74W0/9kw=;
- b=Ak0xJ1MZfc+aDpckaWqvJ8z9LytSdfA9ETh/OANdKvcvNB4bv9W5yo6Wq9JTVHUD8yCeFDWKiEjNhtLFuY94gJwzh5AJwC5fIrSjPY5mBowQ3XtGhZkqjlIYQU8e7YKOVyoiS8rORmUdDkxYRaG1eDk69JTt1tsH6c5I3kkuSnhh3L0+sxLIaGLsh/eQ3xccscccqyZsXwjiR5CRROIyVJ9QYU68H2zZKcm1B+QxxQaAmz2selzPEEfdnvmLBlNwtfvaFXhSInqpQSQF90vX8VcXkRUCkyQUugjBUlralCY71tpWvauF7JEWqNwcAvs9NGU5k+oRMWybuzc8Y8lDEA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV8PR11MB8509.namprd11.prod.outlook.com (2603:10b6:408:1e6::15)
- by SJ2PR11MB8424.namprd11.prod.outlook.com (2603:10b6:a03:53e::10) with
+ bh=fhOeUuTRNmh6V1MPjm98rvZOq1whC5w7W5ClRL6ssKA=;
+ b=hYC8Gc8BGIgGoaX4qvvkZGkWaHOLjsny3lK6oZ0pgPJUUzI0ZyiR2zeBQz6d+qEyt3HnL/+GenlFJid9TgCPngaO7mPYPFybC3styY2X7jyabqKRxSMjg8nGbaQ3mTOJ7Z9mCI1l0Hb4RUkuv+36SUKJKhb/LNyjI2e+AKl2IFfKaJS+DJljq9mPD96l/lwMg07bJQ9VX9h8vjFnWOMoI8Cp9lK4P5CLTRD6MCRDP+iQ0whwyI3/eiNGIQuvaSwZktY5HmDjaKSg9zmQeqftnlJIHdjnMnhiUZBEpZu/0sfth8KmxfgzWigbCKoJeL7XRsnF2LQwAXzA8/+TME8zUQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fhOeUuTRNmh6V1MPjm98rvZOq1whC5w7W5ClRL6ssKA=;
+ b=IUmdT6jPNw75EotYvlee/ot81GmNQz/cU3rhSg2sKNme7fnbwrMwlO5kuQrehjRGm1/R1Q3Xrrjkh1LznLZtfI7GJ1DGhAv4I2PywqSMT7ECxvbKHAAoiPg3UdypsLZbLVetqYA80cp1cCAKVvQsmX+7FwlVQ3mlFHlkHdtyYQqY22XySNLII1W/84esUSyNr5yU6I+lT0FhgqmB0ya1wjp3raQPxpaCR8GQT8zrtoeIEUGZBX2gLTQUP0YuKI5uvJxc6R1KADqA0CKAdqQiraD6nOrcifTw3oPTYW8+laCBAORM1kuexSIp7V6XM8FKMtbXmWFAHGMFc1+ZIQS3/w==
+Received: from SJ0PR03CA0206.namprd03.prod.outlook.com (2603:10b6:a03:2ef::31)
+ by DS0PR12MB7926.namprd12.prod.outlook.com (2603:10b6:8:14a::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9913.14; Wed, 20 May
- 2026 07:12:21 +0000
-Received: from LV8PR11MB8509.namprd11.prod.outlook.com
- ([fe80::f5bd:4dde:4f2f:20b7]) by LV8PR11MB8509.namprd11.prod.outlook.com
- ([fe80::f5bd:4dde:4f2f:20b7%5]) with mapi id 15.21.0025.022; Wed, 20 May 2026
- 07:12:20 +0000
-Message-ID: <19f8ef7f-2935-45e9-8139-4d7030629f49@intel.com>
-Date: Wed, 20 May 2026 15:20:30 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 9/9] Documentation: Update VFIO NOIOMMU mode
-To: Jacob Pan <jacob.pan@linux.microsoft.com>, <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, Jason Gunthorpe
-	<jgg@nvidia.com>, Alex Williamson <alex@shazbot.org>, Joerg Roedel
-	<joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>, David Matlack
-	<dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen
-	<nicolinc@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>
-CC: Saurabh Sengar <ssengar@linux.microsoft.com>, <skhawaja@google.com>,
-	<pasha.tatashin@soleen.com>, Will Deacon <will@kernel.org>, Baolu Lu
-	<baolu.lu@linux.intel.com>
-References: <20260511184116.3687392-1-jacob.pan@linux.microsoft.com>
- <20260511184116.3687392-10-jacob.pan@linux.microsoft.com>
-Content-Language: en-US
-From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <20260511184116.3687392-10-jacob.pan@linux.microsoft.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: TP0P295CA0048.TWNP295.PROD.OUTLOOK.COM
- (2603:1096:910:3::19) To LV8PR11MB8509.namprd11.prod.outlook.com
- (2603:10b6:408:1e6::15)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9891.21; Wed, 20 May
+ 2026 07:20:47 +0000
+Received: from SJ1PEPF00002324.namprd03.prod.outlook.com
+ (2603:10b6:a03:2ef:cafe::55) by SJ0PR03CA0206.outlook.office365.com
+ (2603:10b6:a03:2ef::31) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.48.14 via Frontend Transport; Wed, 20
+ May 2026 07:20:46 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ SJ1PEPF00002324.mail.protection.outlook.com (10.167.242.87) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.48.11 via Frontend Transport; Wed, 20 May 2026 07:20:46 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Wed, 20 May
+ 2026 00:20:29 -0700
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Wed, 20 May
+ 2026 00:20:29 -0700
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.8)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Wed, 20 May 2026 00:20:27 -0700
+Date: Wed, 20 May 2026 00:20:25 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
+ Roedel" <joro@8bytes.org>, Bjorn Helgaas <bhelgaas@google.com>, "Rafael J .
+ Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>, "Pranjal
+ Shrivastava" <praan@google.com>, Mostafa Saleh <smostafa@google.com>, Lu
+ Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
+	<linux-pci@vger.kernel.org>, <vsethi@nvidia.com>, Shuai Xue
+	<xueshuai@linux.alibaba.com>
+Subject: Re: [PATCH v4 11/24] iommu: Add iommu_report_device_broken() to
+ quarantine a broken device
+Message-ID: <ag1guf1fHg4fE7Lw@Asurada-Nvidia>
+References: <cover.1779161849.git.nicolinc@nvidia.com>
+ <745da1a819eb943f2519e660c8bcfde715885c6c.1779161849.git.nicolinc@nvidia.com>
+ <20260519120737.GQ787748@nvidia.com>
+ <agysAyreCY4huf0I@Asurada-Nvidia>
+ <20260519191626.GJ3602937@nvidia.com>
+ <agzkldmlG1cuDkj4@Asurada-Nvidia>
+ <20260519230204.GM3602937@nvidia.com>
+ <agz+kL2S8kcgHywG@Asurada-Nvidia>
+ <20260520003023.GR3602937@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20260520003023.GR3602937@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR11MB8509:EE_|SJ2PR11MB8424:EE_
-X-MS-Office365-Filtering-Correlation-Id: e67b6f61-40de-45ee-ec42-08deb63f2225
+X-MS-TrafficTypeDiagnostic: SJ1PEPF00002324:EE_|DS0PR12MB7926:EE_
+X-MS-Office365-Filtering-Correlation-Id: e4f19cb0-812d-4ce0-c452-08deb6404fde
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|42112799006|366016|376014|7416014|3023799007|921020|22082099003|11063799006|18002099003|56012099003|4143699003;
-X-Microsoft-Antispam-Message-Info: h3xRS49xoIClauJUT7XrQB4oWz/M3ya9ZZEQeJJrO5/T6n/hbW20cTDLlUveegrBNtrlIaho+I7QoFVv7eiCoHIcTFXJLfkK2fn6ruNAiiDXSPHXHZBTAkajMp13P1F2fE+yt9iEFHEEfBRH+sF8Z3bkXsCOgqXQHxuBCr+D4eo2XI+aTrOGmQRZqJG3eDkOKysaARC2mmrc/ZDmYnC81ytTGLuxhVpEYs3h0HRlhGyzhIJfS/Tx5L0oxvyQPNwdqJ6NZBDPm5LhyJCVTERZ1K4t5blXe6EdfbSG1GiYLPlPY1Qdp0JyHyieBd5GJUtH4IRR2TRe1oCFkLi4Y2BPrRVGo76uKrVuz2uvKEdPsP5oQstay0d0f6WSAEqKhV5qBx7LNDM5nXX+/+lxaxmmP8szwr2OhAb2k29pTbrH4gxrWrbqqew3kujrfc3nNOiRMgKLOVmobWPd0K82b3Q/Ez1CxBNquXnLPXa+5tZqOlRwNgngOIAKfz48poM4R2W+1xPSkz4/6XK+g3Hl0LMdxBvgBagqbuo/fmnYtuk361o1uFOF5AGVU6S+i+LFA3kEKsANnu9VSpYa5IKvfdzIV5WBCqma58Tq4kYYlWZWSrvy0FTzF3gwgCGHncpaB49J3pfo3w8zhKN8aGhwH4PsLvdRcPcjzeKTsi2PRMgfkoEBC52yT20uTNUDS4bQ9cyXJkZImyg5LaYmpOLEodEGKZy1L3Yvgs2yDyYXPvIA7z0=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR11MB8509.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(42112799006)(366016)(376014)(7416014)(3023799007)(921020)(22082099003)(11063799006)(18002099003)(56012099003)(4143699003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|36860700016|82310400026|1800799024|376014|18002099003|56012099003|22082099003|11063799006|4143699003|3023799007;
+X-Microsoft-Antispam-Message-Info:
+	U8MouGReJ5xTr6TUP3fO7Y6sAtBHv5c1Vk+eyN4pD8EV2tbUT5lzqM/wQA0QTVBgQ4rk74f0fUzeGhpfOtoWCBPv20thsa0f7YrP8BtvZP3WNur1tGYxTPhqC+iq7gjs07Yrx+bklx5kL5t8sAsfc0ar/PSpuTtwjrXHBd1Ors5uDv1D6r+EqvlyasXFutEk7DQc5PGL7wxKUUoS7YvG0oGpGBP7f4F0gjqIDb3yo7cE4Ubb8Gvh+GYQi3mDbK345WgaflovCU+cUdvssLL9qbWdxG/TaNOsviQVq7vkZxqRrKSMTQll5gRoDjP3xtJUH+sIBDDHrlzYBpW+WbDnksgPZ1PrPZuiy07x3exKNoz7Y1cArPaUEyHCVT4ZU5BKWoqzZVEa550ex6VtT0wZ+26kgMlY6eucz9MWLsL/mzttupMnZRfJ369wciN9V/N+P60qBnFmwEmNoHJcL2MwNfLHZBOUce9PkFqTCecHAd5sTbp8wqK3e3bjOZq28xxqeKmdIi5trTBkFwI6ohUARGq8ROZqZ0BgXaAeFXnkIWt3g+6LTb5hSBKgj+WvlnQv8aBfUi8vViJMDGUcy8SnDvV87vQo2YLphCldwV9hD0u38AWSdNcpWqzQBSNqUZRmP14gA5C23gpQsKFyMJw1vTqJumPPrvkIMPGJ8eSlPXHosEX2UN1Rti4kyIyA2lPuFc6JysgXXZXA7LIaopaLNbmdcYUNFaXaAMfVg/Gz9VE=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(36860700016)(82310400026)(1800799024)(376014)(18002099003)(56012099003)(22082099003)(11063799006)(4143699003)(3023799007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TGsrWkJjYVJIUUdubGxQcXdWam9RTjBtdEdWcVNpbythczhSMkkxNWpQaElx?=
- =?utf-8?B?akFPbWxzcjNpZ0VFUDh3L2RVZnBnNWI1RnF4dHVYSEQxbUc5RGt2SVVXWHpq?=
- =?utf-8?B?KzhtZ2YrVjRGMGRab2JJZ3MvaEtMaEgrQ1BkcUJGYmJtMFUvOGVsVXdxSndY?=
- =?utf-8?B?VHFuaWQ5bDRieU85cE1yVzZzTktqbXJKM2pCTXNTUElYYlJKbjZjSnFzamha?=
- =?utf-8?B?SnlML1F2bDBiSVRHNktHYUdXdUtMVm1URTg2VzZLZnc5SGloamFFekFaUjJQ?=
- =?utf-8?B?cy96SjhlYVJTaFRxcEJsbFhIaE9sWDJwM0t0S05YdnJtczJtaDVuYVVwUExq?=
- =?utf-8?B?SjFyL256QXpIem5hYWRnMEFBd3Uxbm5kOGJ5RFpVNkJUWk1obUpEUDdxdDk3?=
- =?utf-8?B?dTFmWUo5djZpMVNFc2w3OExWWlFSN2JNZFFOWmJmZTBzT1JMZktjc0ZXVHQx?=
- =?utf-8?B?YXY5enM4MlN6eUlKZk43SzA4NU83UnYzTzVLZmhZVk5vYnBJUDNLbG9MZXhs?=
- =?utf-8?B?OHB6MnM2K3VuSnJXQmdZcnp6ZzkwZWJiNW9FUW5DUGhQZGgvT1BaQkRHYy8y?=
- =?utf-8?B?bHJoVjdiN0R4MWhrd2VMTytETDZrb1RvQ0U2S05IaFdVLy9hdUZpN2tiZWFT?=
- =?utf-8?B?SlFxQkVteWJlSXZmcVUzZTlZVEl5UnZneWU2Q05NeDJtTE02RVVQbTRYL2Fa?=
- =?utf-8?B?eWJSSnYra0txVTdTTk8xV05TckdnT2hWYzBWc0RVZDlYU1JXYVZ4TEpyell6?=
- =?utf-8?B?M2kzaU9KNVp2RUZTcGVueHhnYWw0WWRUaUlHZmg5cWNRUVlaUFVSaktMQzZK?=
- =?utf-8?B?UHNtNFFpd1ZzeWViRWRuTkcwbkkvT2t4MHVMelhXRXBCODBSMlEzMGxCZWxB?=
- =?utf-8?B?a3FXNDc3aWE3QVBDNHQyZjNKZ3NZV0ZmRko5aHVpRDIrVmdlWEVRdkpsQkxo?=
- =?utf-8?B?MGhVTVhTSUhTWlorRSt4bWg4YXE1a3VuNE9aaHd4d1F5VVJHSFpIdXd1WnY3?=
- =?utf-8?B?VzhFb1dQcmRySVE0YklKSGplTmYxVngrdWx1OUhEMFNMSTlDa0crdVE0YVNH?=
- =?utf-8?B?ZVF4bUI0TmJudmFJQ0lITXV4M0E4SEFZZWxFTWxrT0RJZWt3ZDBGbWkvNUxn?=
- =?utf-8?B?VWJUN1ZGQ2kyajVzeW54RU1VaXVpSlZxL2VneE9CUDJ0Ulp4OG0ybmI1b1Bz?=
- =?utf-8?B?eU90WG5ybW9LT1JvNzF6NEtXWGJpc0JRMjJnZlY1WHBwbFN4Z1ZERCsvR2NM?=
- =?utf-8?B?N3VIenY5YUxwVW43aXFiOXhOMjJkSjgzMDFlS0JkdHhIN3o1c0dMbUt1TTho?=
- =?utf-8?B?RHJtVnFMUlFoZXZLc3RkcjM2VVFFaXBCZlE4RmIrMHhobnlsS2o3ajdHYTNM?=
- =?utf-8?B?TXVTVmRFNndQY1FTMThPZzdQZk1QYlZ6WnNHb280TnhhbmtseWlkbkVYUXVr?=
- =?utf-8?B?REs0REx1aWo3d2hNc1FpOTZOdytYa3ZBVDlzWk16OFlCS0hobWQ4SG9GdU1G?=
- =?utf-8?B?S3Y5M0M3NUR5aW9lRk9ZVGdUaGtnQ21BNHdwVndOc2I1eUJ4L1Z4SjBMd0xT?=
- =?utf-8?B?YmRDRmQ2N3JHSXlBUmJ3Z0ZaOWJLbWljSW1OZzkzY0VKY3Yrd0N4RFFBYUMx?=
- =?utf-8?B?a0hmVDZHRktBaTNCbGEzcHUvamZFMFVSV3Z1OTl1ano1UEZhNm1waGl5UjMv?=
- =?utf-8?B?bnJNQkxRRUFnZllpV0NiMFVPbElxemc3RC80SmJkQll4SDBhaDdDUWZtWnE5?=
- =?utf-8?B?eXMwOGdNMkd4REE4RHkrdVp3dDlsTUZBajkrUEV3K25LcklMTWlUbzA1MHl2?=
- =?utf-8?B?WjNieWdKaExPZlBPVU1IREM4UHVCM1o1U2lndlkzeGlrWnhoQ2x4eHRwL29D?=
- =?utf-8?B?ODgyS1pFcVhzbHZkcTZTVHJXQzJDMGM5R0tpa0hyQ2FKcTRIVUlTeHlFRmlR?=
- =?utf-8?B?dnlXeUl4MkYvTTFVS0cwcFpkeitJUVhvU3NGb0lLQWFmLzkxMVhBcGR5QnIv?=
- =?utf-8?B?c3ZDTkdlTHkvQnR0T2dRV1ZjeDVaK0ovS3JLTEVBbW1YQkh3N0VFQlNRS3l6?=
- =?utf-8?B?YkJOQ2U0SEFBK0Z5c1NmUytyV3ZUVTZMdU1wS1RSV3NyRXRKRzFpNzhaU1pr?=
- =?utf-8?B?SWp3MUVQbCtVZDBUdndmcCtzQTM4ci9CbUFMS2I4Nmt6ZFFDeFhrMWRxdEFm?=
- =?utf-8?B?Y3VzQXZKd0NkZ0NlRHc4MURLazBWUlYxZ1N0WWlNVGxnVGoxU2l6UFVrWmE5?=
- =?utf-8?B?VmZKc1hDa3JLdGpNQjZBTzRNbmx6L0prbE4rald4UXlOV1NTQmxjNWRjODQy?=
- =?utf-8?B?ZUlqNWdEc1NldytuQkpDT0Nhbm5sN2wwbkI5OFlCWDFRV0k2cmRudz09?=
-X-Exchange-RoutingPolicyChecked: XrN82QHPdtaR+o0Hfsv9KXc85dnuBw057095S69OS3Pz9Dd7AbjAFkcoKP9cdFlLJM4BU3l9slIShd5RoK0zHOez5J3rqt6HezpJ6PwIJOvZdjalPebwjT3Xan5wgvPe6V1/xmGidTsvxE9p32puAkpPcQCUOl+KRfHOSNaPkIoEHxk2JlF+SQUp3dzLmf33C2BCfz6wkkY4Su2n0oVd4cb1JdZeW3+8cUozg4XkIGwexwQsa4w9Q7uYiLZ6XeSejElvKp5BAQo5GvtuZLK05cAov+6eqX89JtW9iDqbcdEESXvR0x5hCSZaC6z2zewKUrJ0hiKPZX2P6MxUXZ8VMg==
-X-MS-Exchange-CrossTenant-Network-Message-Id: e67b6f61-40de-45ee-ec42-08deb63f2225
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR11MB8509.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 May 2026 07:12:20.8236
+X-MS-Exchange-AntiSpam-MessageData-0:
+	T7fpmfErv5t+RBFmzc3m+hU97lTIBTA754Wjary9y9YJ2o8PirnfmiB40cG0dcvnPbe5R/oHTM1kq1r5ylW7DVFshTVoQuzZF5ZEyEIzjlhP8gV18xFOgV8lBlL23HoorYA8pgUJNRER6whcrUyuF9WVKfxCqT53v/qCt1G/Zg/1uq8uhybpFXIRrrd7Qo8Ij0cnbdFBs96XYKBmxRTzTjTaLs7etjEmLx4xzmH0Z1IXJiknr/56aGF+DmgG95LrqoFSC2VUiRgOSyfILfdo5463BduHWsftGgmkR3aXQmyhn1c9IB9VstAWCjcsGBh/EYJ83KZ577O7jBi2VlQtUCq1LTsGfn2fcDpsrvCLrU21xT7Bt7hswPjgJmAtobjOEUyUBsUJMZJ2ztRyDgK651DoSyB36+lMAUEnuc5DcWOJnd0UvM6CWOa0WVyjoxJl
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 May 2026 07:20:46.6906
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HILdyN7rYIYiyXRZkQ4y/v8PaAwjXoh/iqd/atWNM6fyUkoP2zGW5Hr/KeMcnZXy1cOxKSvBqY4Hd/1Ynh9zLA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR11MB8424
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e4f19cb0-812d-4ce0-c452-08deb6404fde
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ1PEPF00002324.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7926
 
-On 5/12/26 02:41, Jacob Pan wrote:
-> Document the NOIOMMU mode with newly added cdev support under iommufd.
+On Tue, May 19, 2026 at 09:30:23PM -0300, Jason Gunthorpe wrote:
+> On Tue, May 19, 2026 at 05:21:36PM -0700, Nicolin Chen wrote:
+> > On Tue, May 19, 2026 at 08:02:04PM -0300, Jason Gunthorpe wrote:
+> > > > OK. So you are suggesting a quarantine at the driver-level only:
+> > > > 
+> > > > 1. Driver detects ATC_INV timeout during an invalidation.
+> > > > 2. Driver retries the commands to identify the master.
+> > > 
+> > > I might argue to push even this out to a followup series given it is
+> > > complex and I suspect it becomes much simpler after the batch
+> > > removal...
+> > 
+> > I see you suggest to treat the entire batch as ATS-broken. Just to
+> > confirm: without per-SID retry, that might falsely block a healthy
+> > device in the ATC batch, right? The driver now batches all ATC_INV
+> > commands via arm_smmu_invs_end_batch().
 > 
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
-> ---
->   Documentation/driver-api/vfio.rst | 46 +++++++++++++++++++++++++++++--
->   1 file changed, 44 insertions(+), 2 deletions(-)
+> Yes, it is not good, but a giant complex series is not reviewable. So
+> I'd start with trashing all the devices, then come with a narrowing.
+
+I can take that path for now and leave a FIXME.
+
+Another option is to not batch multiple devices, until we support
+retry (which shouldn't be hard to add since we've already done the
+coding)?
+
+> > > > 5. Driver sets master->ats_broken to fence concurrent attach:
+> > > >    arm_smmu_write_ste() and arm_smmu_ats_supported().
+> > > 
+> > > Not sure this is needed, if we race some attach then the attach will
+> > > re-set EATS, get another timeout and clear EATS. Doesn't seem worth
+> > > trying to optimize for.
+> > 
+> > I didn't see that coming. master->ats_enabled && state->ats_enabled
+> > in the commit() for a concurrent attachment would issue an ATC that
+> > may timeout again to re-start the step 1.
+> > 
+> > And since arm_smmu_atc_inv_master() doesn't use domain->invs, it is
+> > not affected by INV_TYPE_ATS_BROKEN. So, ATC_INV can continue to be
+> > issued in this case.
+> > 
+> > Ah, I feel that we are walking in the mine field where every single
+> > step could be a kaboom. But your insight is clearly a safe pathway.
 > 
-> diff --git a/Documentation/driver-api/vfio.rst b/Documentation/driver-api/vfio.rst
-> index 2a21a42c9386..d97017d80b98 100644
-> --- a/Documentation/driver-api/vfio.rst
-> +++ b/Documentation/driver-api/vfio.rst
-> @@ -275,8 +275,6 @@ in a VFIO group.
->   With CONFIG_VFIO_DEVICE_CDEV=y the user can now acquire a device fd
->   by directly opening a character device /dev/vfio/devices/vfioX where
->   "X" is the number allocated uniquely by VFIO for registered devices.
-> -cdev interface does not support noiommu devices, so user should use
-> -the legacy group interface if noiommu is wanted.
->   
->   The cdev only works with IOMMUFD.  Both VFIO drivers and applications
->   must adapt to the new cdev security model which requires using
-> @@ -370,6 +368,50 @@ IOMMUFD IOAS/HWPT to enable userspace DMA::
->   
->   	/* Other device operations as stated in "VFIO Usage Example" */
->   
-> +VFIO NOIOMMU mode
-> +-------------------------------------------------------------------------------
-> +VFIO also supports a no-IOMMU mode, intended for usages where unsafe DMA can
-> +be performed by userspace drivers w/o physical IOMMU protection. This mode
-> +is controlled by the parameter:
-> +
-> +/sys/module/vfio/parameters/enable_unsafe_noiommu_mode
-> +
-> +Upon enabling this mode, with an assigned device, the user will be presented
-> +with a VFIO group and device file, e.g.::
-> +
-> +  /dev/vfio/
-> +  |-- devices
-> +  |   `-- noiommu-vfio0	/* VFIO device cdev */
-> +  |-- noiommu-0		/* VFIO group */
-> +  `-- vfio
+> We cannot eliminate parallel ATS invalidation. Two threads could be
+> concurrently processing the invs list. So it has handle it, the driver
+> is going to have to tolerate a number of redundant error events.
 
-how about noiommu-vfioX and noiommu-Y? Just want to deliver the message
-that the two number is not 100% identical.
+OK. That sounds like we still need a flag or locking so that at
+least pci_disable_ats() would not be called again. I will see
+what I can do.
 
-> +The capabilities vary depending on the device programming interface and kernel
-> +configuration used. The following table summarizes the differences:
-> +
-> ++-------------------+---------------------+----------------------+
-> +| Feature           | VFIO group          | VFIO device cdev     |
-> ++===================+=====================+======================+
-> +| VFIO device UAPI  | Yes                 | Yes                  |
-> ++-------------------+---------------------+----------------------+
-> +| VFIO container    | No                  | No                   |
-> ++-------------------+---------------------+----------------------+
-> +| IOMMUFD IOAS      | No                  | Yes*                 |
-> ++-------------------+---------------------+----------------------+
-> +
+> > > We do need to push a pci error event (didn't see that in this series)
+> > > so the driver can catch it and start the FLR process. I suppose that
+> > > will still need to bounce through a workqueue, and once you have that
+> > > it can also set the blocked domain prior to calling out to the driver.
+> > 
+> > In the specific case that I am trying to tackle with this series, I
+> > do see AER error prints from the device already but there is no FLR
+> > process. 
+> 
+> It depends on the driver, mlx5 has a FLR RAS flow for instance.
 
-not quite the above table. Why 'VFIO container' is "No" for VFIO group?
+I assume a driver like that would trigger FLR flow on its own?
 
-> +Note that the VFIO container case includes IOMMUFD provided VFIO compatibility
-> +interfaces when either CONFIG_VFIO_CONTAINER or CONFIG_IOMMUFD_VFIO_CONTAINER is
-> +enabled.
-> +
-> +* IOMMUFD UAPI is available for VFIO device cdev to pin and map user memory with
-> +  the ability to retrieve physical addresses for DMA command submission.
-> +
-> +A new IOMMUFD ioctl IOMMU_IOAS_NOIOMMU_GET_PA is added to retrieve the physical
-> +address for a given IOVA. Although there is no physical DMA remapping hardware,
-> +IOMMU_IOAS_MAP_FIXED_IOVA is still used to establish IOVA-to-PA mappings in the
-> +software page table for later IOMMU_IOAS_NOIOMMU_GET_PA lookups.
-> +tools/testing/selftests/vfio/vfio_iommufd_noiommu_test.c provides an example of
-> +using this ioctl in no-IOMMU mode.
-> +
->   VFIO User API
->   -------------------------------------------------------------------------------
->   
+> A driver with a device that can blow up ATS should implement the FLR
+> flow if it wants automatic RAS. It requires driver co-ordination.
 
+Or FLR via sysfs, which I have been doing...
+
+> But I wasn't thinking we can rely on existing AER events here, yes
+> probably there will be AERs associated with the device exploding so
+> badly it cannot do ATS, but also maybe not..
+
+So, should I put the AER injection on hold for a future work? To
+be honest, I am still not very clear how AER injection could help
+here; or is it for a case where ATC times out while device isn't
+aware of any AER fault?
+
+> This is also a problem if we shoot healthy devices as the first stage,
+> there will not be an AER from heathly..
+> 
+> So I guess we need to decide which is better to tackle, the dedicated
+> event or the single invalidation sequence..
+
+I feel it safer to not break healthy devices. Otherwise, would a
+nesting parent invalidation falsely block all devices, if one of
+them times out?
+
+Thanks
+Nicolin
