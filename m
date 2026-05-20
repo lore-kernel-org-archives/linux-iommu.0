@@ -1,181 +1,525 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D21B3DA7CD
-	for <iommu@lists.linux.dev>; Wed, 20 May 2026 11:09:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 689283FE35E;
+	Wed, 20 May 2026 11:21:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779275364; cv=none; b=uWCqGcYnyhmbaZZb16DOdA6doibXgekdw8cs2JGJm/svdDNVEnMtgkBxUI3zJNh/LrwOG20gj6CDbIX141G8DbSIC8Yt1lShv0+4rMHwlNsCAAw8Bj3L/V51PmB4l84R2nbOntjY9k5itPLK/c1TG8JqEMKlqWMu/55Y+y8Rihk=
+	t=1779276071; cv=none; b=porDfvUiIxb2O3Be8Mq+S/Hjdyo2MU9nxhvMzmu9rJNYVNGrwVSooP2sn9IRd7n7U0aSMzXQquckq/oPa1p7h726NhQN3pWPcJ1m4NJIR9JtonSuOfjbd6jdJYCok4g+iajr0qd99cQscWILlUBW2mNlpeXfFjrz5SI4RaUiCbw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779275364; c=relaxed/simple;
-	bh=oCPQi6pqJjnzYEElWY4uswSYuY/PgQ7qdRL8tbXVe18=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=bkM/3yX/LLtR0FuVuzhYFRjhKi2wZS56ZnpAEjsSYv1w/HnxLf4j8DFSwftRgQ/cHJYNjQNOr4PrpunaeXvXruBQ7LRSvWXpEW5WGw38bBNN5teXlsl+iiTYtkcYxyr+wYy/rGDdadxW8VKMbph1m17lovoPQHXGJg2iqkG0a1U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=KXByLRgr; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=Xesq9Igb; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1779276071; c=relaxed/simple;
+	bh=L86pyKWsxPvaB5adhMiA/7xl+or1ihECJG1ePo8bnEI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=btFXi1+nqWnnwEI0ZdwKZV+V4K5U3EmvmZb1IPn1bmsMAYMis2SDfrt0R2tM1xDfImpEx+t/O/v3HQHru/LibglSNMpTkUdnJQPwpdGfR+wrWWnkkvK6VXtrDkeMFuzi/v5TSRonyB1usqWpsfgO6gd6pHDep0ozm2HIDnQLrHU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XJCiEoYT; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="KXByLRgr";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="Xesq9Igb"
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64K7ITwP1954131
-	for <iommu@lists.linux.dev>; Wed, 20 May 2026 11:09:23 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:date:from:message-id:mime-version
-	:subject:to; s=qcppdkim1; bh=LSzjyVjG6hrqp81++brPl8d5tvFxkXJ87i4
-	EMFI/KTw=; b=KXByLRgrJbKjITkMQNEpX6/TeDLS30yoyDNjFwTM08fdhjJ3aQv
-	oFwhGD5N9ogJP1TjxKmxHGIE488U+jjIA/LK4ntwuypi045iO2J62QFiKtnNePQS
-	uZD7YbR3jhWG9PPy5zwsiNX70iDnT5oWXqDf5Fn83kGZ9+7+qFnayFW8hzQAPA9y
-	DCy/dxLUoysibXScfjOIvjOSjkL+VZI3RfeEes4DIPcWyKmGJO74KEuxm+N16OU5
-	uE0SdFPxCa+jBRACKLSeuCQFzxipW8fvZBoWqyLXlE9j5KvPx++BTV/bUuUXYudT
-	mU+CbJ9AEwfFvOyu50VbsENpWFJxbaV6TKg==
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com [209.85.160.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4e8t3xven6-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Wed, 20 May 2026 11:09:22 +0000 (GMT)
-Received: by mail-qt1-f199.google.com with SMTP id d75a77b69052e-50fb6d713ddso40940761cf.1
-        for <iommu@lists.linux.dev>; Wed, 20 May 2026 04:09:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1779275362; x=1779880162; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=LSzjyVjG6hrqp81++brPl8d5tvFxkXJ87i4EMFI/KTw=;
-        b=Xesq9Igbq+KPTPPntn/pRC/p5gJVHTSCHWr5D9WvWXbaTHifq4G9ZeePQRL1jBsQOZ
-         /yvoOl0kpgzNO0YMWFBQ6952i6vQQgGM1npPdRfnN7We5K90PW1CDLfx1bj7LenJuDKa
-         O0XcUN+yHt3Oph7y8nQk8s6IrmkZGMd1AqzH/HllwOgF3G/1rRCo8yHPCq3LTHodNSXK
-         oXPxRaUmgC3Gum4V13Lt0RArzWnecGu1/YZgnciKshy7MtmuracyPXNemioWOplRfTlt
-         b/z1Lo0Ayg67uxZP7WYb9r4b4Q8E20mlkjQSAIXQwszQai6JKYNI75Y2mTlNcIc10Nvy
-         eflA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779275362; x=1779880162;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LSzjyVjG6hrqp81++brPl8d5tvFxkXJ87i4EMFI/KTw=;
-        b=avqVSlMWhPfyQCLfIVhVBg3Xgh+6J3fn1j51vNx6M4xSElFA3JHtqCG0VZVoJaiOgv
-         3A6qefp11+JnHWykQkgHDPKomJ1yv0Jsbj5c5II2g9StgRBUNju6Fijn8K1GwH9w41bJ
-         ESj8F1ewExQO+M2G5Deyd2ntqpRmfmK07BCGjMZjtA+h9WFawZxhhxmkUcVFCOhOboH+
-         h4JXNGHug8EaQZm5onTGZQWK6PTbAEm9hKzaW2Oy3K+1TAElpF6YWo4oKmY11gj/6wRY
-         udu0kRhWkcZBtFXRGpXem7XLTUIxbTM3uvdukbCOZibSQrx2GyOWFkQY65D+Snen0UQQ
-         8yhg==
-X-Forwarded-Encrypted: i=1; AFNElJ90TCSt6vJXRKx3g/esKesjcNTAvF8ae1JDc2gCw8FxT0iwTpv1II9ybAO6sDIzlXe+hG5eNw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxyL8sZMX79UgZYZvJ8Qui8iovsXUQa/XI95BVGuGTwwWeIsKyl
-	2YT6bemBYv1K2qsi7tds5neydx8SoXoSvJffjreXBIcRCyG/NDGmJa8wQLDKM6XErZurWVEhB6J
-	cVfyVQhFXzpvg3AzzQG0WfxcKX1mV5gqON1MM0m7vfxqTUEg90CG20GjCsw==
-X-Gm-Gg: Acq92OGyCpHYZr2FPSTXV3pSe2uqKRXUQ0g1vRFsjgfOYWn1Nd3y2t6m73Mi3gp6JiS
-	wInuvXCtotzbzl4WdM740qAS2lf2lGeuGr6xmfuRa9uCTGugF57rZ7C/1YBt619coAfkKHyfnaQ
-	Xckm3MxLDPALe2SPJlKw9taHq7TSHNGm7XCTV8w1nAGXJ9Qaq/LpCWgqhAq6yBamMLl10VBfpbq
-	Sd1jPkQs31mrwfRMp5TXBnVT1+hfRaoDifZgzRbRMZyVOia43KrpzHSr5NyXrPckKwPTFm8SP4V
-	AZ0VgXzHONlFN/jLVfvw2UXfEd3bAzYZag7fXjzmutkQK0w6OqkYwH8zmXt/SsVQs/4kb8HP0AI
-	B6s7GaD6swcLQP/PvYjGnn2BLGxAv5VTquh2+
-X-Received: by 2002:a05:622a:5e13:b0:50b:487c:f3d1 with SMTP id d75a77b69052e-5165a0703b6mr307282031cf.3.1779275361738;
-        Wed, 20 May 2026 04:09:21 -0700 (PDT)
-X-Received: by 2002:a05:622a:5e13:b0:50b:487c:f3d1 with SMTP id d75a77b69052e-5165a0703b6mr307281551cf.3.1779275361246;
-        Wed, 20 May 2026 04:09:21 -0700 (PDT)
-Received: from quoll ([178.197.219.94])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45da15a6454sm54498441f8f.34.2026.05.20.04.09.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 May 2026 04:09:20 -0700 (PDT)
-From: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-Subject: [PATCH] dt-bindings: arm-smmu: Correct and add constraints for Hawi, Shikra and Kaanapali
-Date: Wed, 20 May 2026 13:09:14 +0200
-Message-ID: <20260520110913.87271-2-krzysztof.kozlowski@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XJCiEoYT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEBD11F000E9;
+	Wed, 20 May 2026 11:21:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779276069;
+	bh=0OlgCqTDYfKCTHRGdQ795Tb4OpvFd+O6nb1DALrEwxg=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=XJCiEoYTYAUnWeJXTQ5ueaIUV82nWtO2msoZH0MrFjnz3MLMw1Ff4BKo73GYjFtlb
+	 l0wMRRIAuEPhyEb8S6JlzMz+ovFHT489HW4OaBjfkOn7jRLh9tRAIpWxpQYQmUTXP+
+	 sShJl9u+nPM+s/IJjpvJjALEniTkQ24yuXkaYjv2jaZ/VL6ddqxyRnmhjif7A6TIGJ
+	 v5RlSYnBomAAj+hEQfQOBG/xjM3gEQA6QY3eSKVSzIu3R89CpLrobyZ0cYkhlFKSep
+	 c6n7HeOwq25EDcesShSt3lcnXvB8nI6mtRrxrL/m652gdRH71vaWe+e961+ty6OTVg
+	 faY91O3wl864g==
+From: Sasha Levin <sashal@kernel.org>
+To: patches@lists.linux.dev,
+	stable@vger.kernel.org
+Cc: Vasant Hegde <vasant.hegde@amd.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Joerg Roedel <joerg.roedel@amd.com>,
+	Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>,
+	Sasha Levin <sashal@kernel.org>,
+	joro@8bytes.org,
+	will@kernel.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH AUTOSEL 7.0-6.18] iommu/amd: Use maximum Event log buffer size when SNP is enabled on Family 0x19
+Date: Wed, 20 May 2026 07:19:31 -0400
+Message-ID: <20260520111944.3424570-59-sashal@kernel.org>
 X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20260520111944.3424570-1-sashal@kernel.org>
+References: <20260520111944.3424570-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1877; i=krzysztof.kozlowski@oss.qualcomm.com;
- h=from:subject; bh=oCPQi6pqJjnzYEElWY4uswSYuY/PgQ7qdRL8tbXVe18=;
- b=owEBbQKS/ZANAwAKAcE3ZuaGi4PXAcsmYgBqDZZZc95YF3PNkoJLMoM0Gi3JS/r6PIDFTl9wM
- 0LSdyjF8TKJAjMEAAEKAB0WIQTd0mIoPREbIztuuKjBN2bmhouD1wUCag2WWQAKCRDBN2bmhouD
- 1w9zD/4vDQx7945Ay/ee+ltZNNEk+Qjl5p1UxHJ73ISPPzBJpbg3RF5YGSvGQWk+/KS0nnjzpjf
- gMI4+iLQC3cKX9la2sc4drK2nSpIP4dWS7OiCvpDPWQ3jC5a8sqGp+VT7RMKCdtxs6nMS+HsOmL
- luZb1chLuYTSL0Y8FqN2QyVWUZQCe3ZZNPrZBmu6nsVqvjJGkFA1l/Mkj67Lw/xdegpccqf1uyW
- WF3DTR32yyZJLFmvWyAUHyLBtx50Wi5ENU1yoYV/A6blEXSka7exP/x5mbl+Zws15iqF1Iscn+d
- ClzSWn3pxbLrzqXB+YgoStjQee9kzzfsSF3dzZqcC6iiNSUpfLaP169WMBP47SQ32LKYF0zSGAT
- bDgdS/vYJUxxjS3LQQmTZfGdpVp28xvrobWG79m4dHCE1cQOPA6tm0gILdOLRUX6K6yaFadBaF/
- A1rdPq2CORYpNEgmUBrn6wavKN586NjTnO4CKQ/MKgo8j6tcL8IzV9DmWr5S4O71aqk/P5yQl7o
- EbllfOHpktQHIIpTwVqbcScHjeITL39hDJmoDoU0S3/RlMQxyQbMc8izYQNjt/9zV6UthUBbRQB
- S4eUJyB9DdX1PC81DkzcBFskv/i0zVmEnt4+KoIl4vR202EX//xwNto9LFUmE4u1+IqxXlDo7s7 pPbZCchxmqJzrlg==
-X-Developer-Key: i=krzysztof.kozlowski@oss.qualcomm.com; a=openpgp; fpr=9BD07E0E0C51F8D59677B7541B93437D3B41629B
+X-stable: review
+X-Patchwork-Hint: Ignore
+X-stable-base: Linux 7.0.9
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Authority-Analysis: v=2.4 cv=WaY8rUhX c=1 sm=1 tr=0 ts=6a0d9662 cx=c_pps
- a=WeENfcodrlLV9YRTxbY/uA==:117 a=gOEeR9iKwsj33Yj5oN/cWg==:17
- a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=DJpcGTmdVt4CTyJn9g5Z:22 a=EUspDBNiAAAA:8
- a=LWJPcmncUgEYCnjaLLAA:9 a=kacYvNCVWA4VmyqE58fU:22
-X-Proofpoint-GUID: PJEyE9PKxef_-fTTN_wm-sJFdS3QGntA
-X-Proofpoint-ORIG-GUID: PJEyE9PKxef_-fTTN_wm-sJFdS3QGntA
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTIwMDEwNyBTYWx0ZWRfX3YRr4Sv35bpX
- 9Sb0UPc7MSr4ZSR/qi/1Ka4Z335cnqvfou88kk8WDXXsYp6z1UrL4JLkE6a9XFN2Jwx73VYKp2g
- zz/Lij9Bceeu39nb3KJBYxX5dsbw5l6xp14H7Jq4KZ5O0etfFfr6SKRsG0bmLKcsQKHbgrIGFgh
- 7c3e9Er+fpRfCxmmljbZ7mbcr+i7iIbMOoaLRL+CfFX/CH8icJ9LzzzVtsn+qBcbXfmNdJpPn6Y
- Al5fvmWW4eiiZH/LBMTBvFMPFD5s+49hW8idOxq8NDAa6BCD1pd3YOS6Yo/1KRUCneQ1dA9yAgF
- BTp9sWwzMl+xmpnOnurXIBX+PZrPqepZbSwCat6nk+ledcySTiyANy+aC2YCGtCQODRB1e+zBEK
- YY+rsiWwnZnDebPD+UnVwZhB9nsMD0VUq9ibP5UVbwOY6YLZnaNOVe1LjpafsOlTuJ3eHclJ2C7
- rgTl21vjO9ilPgNTKmw==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-05-20_02,2026-05-18_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- adultscore=0 priorityscore=1501 clxscore=1015 impostorscore=0 spamscore=0
- suspectscore=0 phishscore=0 bulkscore=0 lowpriorityscore=0 malwarescore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2605130000 definitions=main-2605200107
 
-Previous commit 75949eb02653 ("dt-bindings: arm-smmu: Constrain clocks
-for newer Qualcomm variants") duplicated constraints for
-qcom,sm6350-smmu-500 and qcom,sm6375-smmu-500 - these are already part
-of previous "if:" block.
+From: Vasant Hegde <vasant.hegde@amd.com>
 
-It also missed enforcing one clock for qcom,kaanapali-smmu-500 in GPU
-case and missed simultaneously added Shikra and Hawi.
+[ Upstream commit 58c0ac6125d89bf6ec65a521eaeb52a0e8e20a9f ]
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Due to CVE-2023-20585, the Event log buffer must use the maximum supported
+size (512K) on Milan/Genoa (Family 0x19) systems when SNP is enabled,
+to mitigate a potential security vulnerability. All other systems continue to
+use the default Event log buffer size (8K).
+
+Apply the errata fix by making the following changes:
+
+* Introduce new global variable (amd_iommu_evtlog_size) to have event log
+  buffer size. Adjust variable size for family 0x19.
+
+* Since 'iommu_snp_enable()' must be called after the core IOMMU subsystem
+  is initialized, it cannot be moved to the early init stage. The SNP errata
+  must also be applied after the 'iommu_snp_enable()' check. Therefore,
+  'alloc_event_buffer()' and 'iommu_enable_event_buffer()' are now called
+  in the IOMMU_ENABLED state, after the errata is applied.
+
+* Adjust alloc_event_buffer() and iommu_enable_event_buffer() to handle
+  all IOMMU instances.
+
+* Also rename EVT_* macros to make it more readable.
+
+Link: https://www.amd.com/en/resources/product-security/bulletin/amd-sb-3016.html
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: Joerg Roedel <joerg.roedel@amd.com>
+Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+Tested-by: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
+Signed-off-by: Joerg Roedel <joerg.roedel@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-index ed0d10157bd6..5103adeee6d4 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-@@ -568,6 +568,8 @@ allOf:
-           items:
-             - enum:
-                 - qcom,glymur-smmu-500
-+                - qcom,hawi-smmu-500
-+                - qcom,kaanapali-smmu-500
-                 - qcom,sm8750-smmu-500
-             - const: qcom,adreno-smmu
-             - const: qcom,smmu-500
-@@ -614,15 +616,15 @@ allOf:
-             - enum:
-                 - qcom,eliza-smmu-500
-                 - qcom,glymur-smmu-500
-+                - qcom,hawi-smmu-500
-                 - qcom,kaanapali-smmu-500
-                 - qcom,milos-smmu-500
-                 - qcom,qcs615-smmu-500
-                 - qcom,qcs8300-smmu-500
-                 - qcom,sa8775p-smmu-500
-+                - qcom,shikra-smmu-500
-                 - qcom,sm6115-smmu-500
-                 - qcom,sm6125-smmu-500
--                - qcom,sm6350-smmu-500
--                - qcom,sm6375-smmu-500
-                 - qcom,sm8150-smmu-500
-                 - qcom,sm8250-smmu-500
-                 - qcom,sm8350-smmu-500
+LLM Generated explanations, may be completely bogus:
+
+## Conclusion
+This commit should be backported to stable trees that carry AMD IOMMU
+SNP host support. It is a security mitigation for `CVE-2023-20585`,
+scoped to AMD Family `0x19` systems with SNP enabled, and it keeps all
+other systems on the existing 8K event log size.
+
+The patch is not feature enablement in the stable sense; it is a
+hardware erratum/security workaround. The main concern is backport
+mechanics: it applies cleanly to `stable/linux-7.0.y`, but failed a
+direct apply check on `6.12.y`, `6.18.y`, and `6.19.y`, so those need
+backport adjustment. For Genoa, the companion PPR-log patch should also
+be considered for the full series mitigation.
+
+## Phase Walkthrough
+Phase 1 Record:
+- Subject subsystem/action: `iommu/amd`, action is “Use maximum”, intent
+  is to use a 512K AMD IOMMU event log buffer for SNP on Family `0x19`.
+- Tags: `Link` to AMD-SB-3016, `Cc` to AMD/IOMMU maintainers, `Signed-
+  off-by` Vasant Hegde, `Tested-by` Dheeraj Kumar Srivastava, `Signed-
+  off-by` Joerg Roedel. No `Fixes:` tag.
+- Body: describes `CVE-2023-20585`, requiring max supported event log
+  buffer size on Milan/Genoa with SNP enabled; all other systems remain
+  at 8K.
+- Hidden bug fix: yes. This is phrased partly as buffer
+  sizing/refactoring, but the purpose is a CVE security mitigation.
+
+Phase 2 Record:
+- Files changed: `drivers/iommu/amd/amd_iommu.h`, `amd_iommu_types.h`,
+  `init.c`, `iommu.c`; fetched commit stat is 86 insertions, 38
+  deletions.
+- Functions modified/added: `alloc_event_buffer`,
+  `iommu_enable_event_buffer`, `remap_event_buffer`,
+  `early_enable_iommu`, `early_enable_iommus`, `amd_iommu_resume`, new
+  `amd_iommu_apply_erratum_snp`, `state_next`, `amd_iommu_snp_disable`,
+  `iommu_poll_events`.
+- Code flow: event buffer allocation/enable moves from early per-IOMMU
+  setup to after `iommu_snp_enable()`, allowing the erratum decision to
+  set 512K before allocation/programming. Polling and SNP shutdown now
+  use the variable size.
+- Bug category: hardware security erratum/workaround.
+- Fix quality: contained to AMD IOMMU event-log handling. Regression
+  risk is medium-low because init ordering changes, but it is subsystem-
+  contained, tested, and keeps non-SNP/non-Family-0x19 behavior at 8K.
+
+Phase 3 Record:
+- Blame/history: fixed 8K event buffer logic is long-standing; SNP
+  integration relevant to the erratum is present from the v6.9 era and
+  later. `6.12.y`, `6.18.y`, `6.19.y`, and `7.0.y` contain the
+  integrated SNP enable commit checked locally; `5.15.y`, `6.1.y`, and
+  `6.6.y` do not.
+- `Fixes:` tag: none, so no direct original-bug commit to follow.
+- Related file history: companion commit `1f44aab79bac3` does the same
+  for the PPR log. Patch 2 depends conceptually/codewise on patch 1;
+  patch 1 stands on its own for the event log.
+- Author context: Vasant Hegde has multiple recent AMD IOMMU fixes in
+  the fetched IOMMU fixes branch; Joerg Roedel committed the patch.
+- Dependencies: no semantic dependency on the NUMA log-buffer allocation
+  commit, but older stable branches have context differences requiring
+  backport edits.
+
+Phase 4 Record:
+- `b4 dig -c 58c0ac6125d89`: found the original lore submission at `http
+  s://patch.msgid.link/20260420084204.12263-2-vasant.hegde@amd.com`.
+- `b4 dig -a`: only v1 found.
+- `b4 dig -w`: original recipients included `iommu@lists.linux.dev`,
+  Joerg Roedel, Will Deacon, Robin Murphy, Suravee Suthikulpanit, and
+  Borislav Petkov.
+- Lore thread: Dheeraj Kumar Srivastava replied `Tested-by`; Joerg
+  Roedel replied “Applied to fixes”.
+- AMD bulletin: AMD-SB-3016 confirms potential SNP guest integrity loss
+  from an IOMMU host buffer out-of-bounds condition and says OS updates
+  are required along with firmware.
+
+Phase 5 Record:
+- Callers: event interrupt path uses `amd_iommu_int_thread_evtlog()` ->
+  `amd_iommu_handle_irq()` -> `iommu_poll_events()`. Interrupt setup is
+  via AMD IOMMU MSI/INTCAPXT setup in `init.c`.
+- Callees: allocation uses `iommu_alloc_4k_pages()`, which handles SNP
+  4K page setup; enable writes `MMIO_EVT_BUF_OFFSET`, head/tail
+  registers, and `CONTROL_EVT_LOG_EN`.
+- Reachability: reachable on AMD IOMMU systems through hardware event
+  interrupts and SNP init/shutdown paths, not through a direct userspace
+  syscall.
+- Similar pattern: companion PPR log patch in the same series mirrors
+  the variable-size/max-buffer handling.
+
+Phase 6 Record:
+- Stable code existence: `6.12.y`, `6.18.y`, `6.19.y`, and `7.0.y` have
+  the relevant AMD IOMMU SNP/event-log code. `5.15.y`, `6.1.y`, and
+  `6.6.y` lack the integrated SNP enable commit I checked; `6.6.y` has
+  an exported old SNP enable function but no in-tree caller was found.
+- Backport difficulty: clean on `7.0.y`; direct apply failed on
+  `6.12.y`, `6.18.y`, and `6.19.y`, so those need manual backporting.
+- Related stable discussion: no stable-list-specific discussion for this
+  CVE/patch was found by `lei`.
+
+Phase 7 Record:
+- Subsystem: AMD IOMMU driver under `drivers/iommu/amd`.
+- Criticality: important platform/virtualization security code,
+  affecting AMD EPYC SNP hosts rather than all systems.
+- Activity: actively maintained; recent AMD IOMMU fixes and the
+  maintainer-applied fixes branch confirm ongoing subsystem work.
+
+Phase 8 Record:
+- Affected users: AMD Family `0x19` Milan/Genoa systems with SNP
+  enabled.
+- Trigger/security conditions: AMD bulletin describes a privileged
+  attacker with a compromised hypervisor triggering an out-of-bounds
+  condition without RMP checks.
+- Failure severity: security integrity impact for confidential SNP
+  guests; AMD rates it Medium, but stable rules treat CVE/security
+  mitigations as strong candidates.
+- Benefit/risk: high benefit for affected SNP hosts; medium-low
+  regression risk due to contained but non-trivial init-order and
+  buffer-size changes.
+
+Phase 9 Record:
+- Evidence for: CVE/security mitigation, AMD bulletin requires OS
+  update, tested-by, maintainer applied to fixes, scoped to AMD IOMMU,
+  default behavior preserved for unaffected systems.
+- Evidence against/concerns: patch is larger than a trivial one-liner,
+  moves event buffer allocation/enable timing, and needs backport
+  adjustments for several stable branches. Genoa full mitigation also
+  needs the PPR companion patch.
+- Stable rules: fixes a real security issue; important; no new userspace
+  API; contained to one driver; tested; applies cleanly to `7.0.y` and
+  can be backported with adjustments elsewhere.
+- Exception category: hardware erratum/security workaround.
+
+## Verification
+- [Phase 1] Parsed fetched commit `58c0ac6125d89`: confirmed subject,
+  tags, `Tested-by`, no `Fixes:`, and AMD-SB-3016 link.
+- [Phase 2] Inspected diff/stat from fetched commit: 4 AMD IOMMU files,
+  86 insertions, 38 deletions.
+- [Phase 3] Ran `git blame` on event allocation, enable, SNP init, and
+  polling paths; confirmed relevant code history.
+- [Phase 3] Checked stable branch ancestry: `6.12.y+` contain integrated
+  SNP enable; `5.15.y`, `6.1.y`, `6.6.y` do not.
+- [Phase 4] Ran `b4 dig -c 58c0ac6125d89`, `-a`, and `-w`; found one v1
+  submission, maintainers/recipients, and lore URL.
+- [Phase 4] Fetched lore thread; confirmed `Tested-by` reply and
+  maintainer “Applied to fixes”.
+- [Phase 4] Fetched AMD bulletin; confirmed CVE impact and OS update
+  requirement.
+- [Phase 5] Traced event interrupt call path with source search/read:
+  `amd_iommu_int_thread_evtlog()` to `iommu_poll_events()`.
+- [Phase 6] Ran apply checks: clean on `stable/linux-7.0.y`; failed
+  direct apply on `6.12.y`, `6.18.y`, and `6.19.y`.
+- UNVERIFIED: I did not build-test the backport or test on AMD Family
+  `0x19` SNP hardware.
+
+**YES**
+
+ drivers/iommu/amd/amd_iommu.h       |   2 +
+ drivers/iommu/amd/amd_iommu_types.h |  10 ++-
+ drivers/iommu/amd/init.c            | 110 +++++++++++++++++++---------
+ drivers/iommu/amd/iommu.c           |   2 +-
+ 4 files changed, 86 insertions(+), 38 deletions(-)
+
+diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+index 1342e764a5486..f1c486dcf0f38 100644
+--- a/drivers/iommu/amd/amd_iommu.h
++++ b/drivers/iommu/amd/amd_iommu.h
+@@ -11,6 +11,8 @@
+ 
+ #include "amd_iommu_types.h"
+ 
++extern int amd_iommu_evtlog_size;
++
+ irqreturn_t amd_iommu_int_thread(int irq, void *data);
+ irqreturn_t amd_iommu_int_thread_evtlog(int irq, void *data);
+ irqreturn_t amd_iommu_int_thread_pprlog(int irq, void *data);
+diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+index c685d3771436a..c3430c09bc5c9 100644
+--- a/drivers/iommu/amd/amd_iommu_types.h
++++ b/drivers/iommu/amd/amd_iommu_types.h
+@@ -15,6 +15,7 @@
+ #include <linux/mutex.h>
+ #include <linux/msi.h>
+ #include <linux/list.h>
++#include <linux/sizes.h>
+ #include <linux/spinlock.h>
+ #include <linux/pci.h>
+ #include <linux/iommufd.h>
+@@ -141,7 +142,6 @@
+ #define MMIO_STATUS_GALOG_INT_MASK		BIT(10)
+ 
+ /* event logging constants */
+-#define EVENT_ENTRY_SIZE	0x10
+ #define EVENT_TYPE_SHIFT	28
+ #define EVENT_TYPE_MASK		0xf
+ #define EVENT_TYPE_ILL_DEV	0x1
+@@ -259,8 +259,12 @@
+ #define MMIO_CMD_BUFFER_TAIL(x) FIELD_GET(MMIO_CMD_TAIL_MASK, (x))
+ 
+ /* constants for event buffer handling */
+-#define EVT_BUFFER_SIZE		8192 /* 512 entries */
+-#define EVT_LEN_MASK		(0x9ULL << 56)
++#define EVTLOG_ENTRY_SIZE	0x10
++#define EVTLOG_SIZE_SHIFT	56
++#define EVTLOG_SIZE_DEF		SZ_8K /* 512 entries */
++#define EVTLOG_LEN_MASK_DEF	(0x9ULL << EVTLOG_SIZE_SHIFT)
++#define EVTLOG_SIZE_MAX		SZ_512K /* 32K entries */
++#define EVTLOG_LEN_MASK_MAX	(0xFULL << EVTLOG_SIZE_SHIFT)
+ 
+ /* Constants for PPR Log handling */
+ #define PPR_LOG_ENTRIES		512
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index f3fd7f39efb48..74effb847f488 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -132,6 +132,8 @@ struct ivhd_entry {
+ 	u8 uid;
+ } __attribute__((packed));
+ 
++int amd_iommu_evtlog_size = EVTLOG_SIZE_DEF;
++
+ /*
+  * An AMD IOMMU memory definition structure. It defines things like exclusion
+  * ranges for devices and regions that should be unity mapped.
+@@ -864,35 +866,47 @@ void *__init iommu_alloc_4k_pages(struct amd_iommu *iommu, gfp_t gfp,
+ }
+ 
+ /* allocates the memory where the IOMMU will log its events to */
+-static int __init alloc_event_buffer(struct amd_iommu *iommu)
++static int __init alloc_event_buffer(void)
+ {
+-	iommu->evt_buf = iommu_alloc_4k_pages(iommu, GFP_KERNEL,
+-					      EVT_BUFFER_SIZE);
++	struct amd_iommu *iommu;
+ 
+-	return iommu->evt_buf ? 0 : -ENOMEM;
++	for_each_iommu(iommu) {
++		iommu->evt_buf = iommu_alloc_4k_pages(iommu, GFP_KERNEL,
++						      amd_iommu_evtlog_size);
++		if (!iommu->evt_buf)
++			return -ENOMEM;
++	}
++
++	return 0;
+ }
+ 
+-static void iommu_enable_event_buffer(struct amd_iommu *iommu)
++static void iommu_enable_event_buffer(void)
+ {
++	struct amd_iommu *iommu;
+ 	u64 entry;
+ 
+-	BUG_ON(iommu->evt_buf == NULL);
++	for_each_iommu(iommu) {
++		BUG_ON(iommu->evt_buf == NULL);
+ 
+-	if (!is_kdump_kernel()) {
+-		/*
+-		 * Event buffer is re-used for kdump kernel and setting
+-		 * of MMIO register is not required.
+-		 */
+-		entry = iommu_virt_to_phys(iommu->evt_buf) | EVT_LEN_MASK;
+-		memcpy_toio(iommu->mmio_base + MMIO_EVT_BUF_OFFSET,
+-			    &entry, sizeof(entry));
+-	}
++		if (!is_kdump_kernel()) {
++			/*
++			 * Event buffer is re-used for kdump kernel and setting
++			 * of MMIO register is not required.
++			 */
++			entry = iommu_virt_to_phys(iommu->evt_buf);
++			entry |= (amd_iommu_evtlog_size == EVTLOG_SIZE_DEF) ?
++				EVTLOG_LEN_MASK_DEF : EVTLOG_LEN_MASK_MAX;
++
++			memcpy_toio(iommu->mmio_base + MMIO_EVT_BUF_OFFSET,
++				    &entry, sizeof(entry));
++		}
+ 
+-	/* set head and tail to zero manually */
+-	writel(0x00, iommu->mmio_base + MMIO_EVT_HEAD_OFFSET);
+-	writel(0x00, iommu->mmio_base + MMIO_EVT_TAIL_OFFSET);
++		/* set head and tail to zero manually */
++		writel(0x00, iommu->mmio_base + MMIO_EVT_HEAD_OFFSET);
++		writel(0x00, iommu->mmio_base + MMIO_EVT_TAIL_OFFSET);
+ 
+-	iommu_feature_enable(iommu, CONTROL_EVT_LOG_EN);
++		iommu_feature_enable(iommu, CONTROL_EVT_LOG_EN);
++	}
+ }
+ 
+ /*
+@@ -981,15 +995,20 @@ static int __init alloc_cwwb_sem(struct amd_iommu *iommu)
+ 	return 0;
+ }
+ 
+-static int __init remap_event_buffer(struct amd_iommu *iommu)
++static int __init remap_event_buffer(void)
+ {
++	struct amd_iommu *iommu;
+ 	u64 paddr;
+ 
+ 	pr_info_once("Re-using event buffer from the previous kernel\n");
+-	paddr = readq(iommu->mmio_base + MMIO_EVT_BUF_OFFSET) & PM_ADDR_MASK;
+-	iommu->evt_buf = iommu_memremap(paddr, EVT_BUFFER_SIZE);
++	for_each_iommu(iommu) {
++		paddr = readq(iommu->mmio_base + MMIO_EVT_BUF_OFFSET) & PM_ADDR_MASK;
++		iommu->evt_buf = iommu_memremap(paddr, amd_iommu_evtlog_size);
++		if (!iommu->evt_buf)
++			return -ENOMEM;
++	}
+ 
+-	return iommu->evt_buf ? 0 : -ENOMEM;
++	return 0;
+ }
+ 
+ static int __init remap_command_buffer(struct amd_iommu *iommu)
+@@ -1041,10 +1060,6 @@ static int __init alloc_iommu_buffers(struct amd_iommu *iommu)
+ 		ret = remap_command_buffer(iommu);
+ 		if (ret)
+ 			return ret;
+-
+-		ret = remap_event_buffer(iommu);
+-		if (ret)
+-			return ret;
+ 	} else {
+ 		ret = alloc_cwwb_sem(iommu);
+ 		if (ret)
+@@ -1053,10 +1068,6 @@ static int __init alloc_iommu_buffers(struct amd_iommu *iommu)
+ 		ret = alloc_command_buffer(iommu);
+ 		if (ret)
+ 			return ret;
+-
+-		ret = alloc_event_buffer(iommu);
+-		if (ret)
+-			return ret;
+ 	}
+ 
+ 	return 0;
+@@ -2890,7 +2901,6 @@ static void early_enable_iommu(struct amd_iommu *iommu)
+ 	iommu_init_flags(iommu);
+ 	iommu_set_device_table(iommu);
+ 	iommu_enable_command_buffer(iommu);
+-	iommu_enable_event_buffer(iommu);
+ 	iommu_set_exclusion_range(iommu);
+ 	iommu_enable_gt(iommu);
+ 	iommu_enable_ga(iommu);
+@@ -2954,7 +2964,6 @@ static void early_enable_iommus(void)
+ 			iommu_disable_event_buffer(iommu);
+ 			iommu_disable_irtcachedis(iommu);
+ 			iommu_enable_command_buffer(iommu);
+-			iommu_enable_event_buffer(iommu);
+ 			iommu_enable_ga(iommu);
+ 			iommu_enable_xt(iommu);
+ 			iommu_enable_irtcachedis(iommu);
+@@ -3067,6 +3076,7 @@ static void amd_iommu_resume(void *data)
+ 	for_each_iommu(iommu)
+ 		early_enable_iommu(iommu);
+ 
++	iommu_enable_event_buffer();
+ 	amd_iommu_enable_interrupts();
+ }
+ 
+@@ -3396,6 +3406,23 @@ static __init void iommu_snp_enable(void)
+ #endif
+ }
+ 
++static void amd_iommu_apply_erratum_snp(void)
++{
++#ifdef CONFIG_KVM_AMD_SEV
++	if (!amd_iommu_snp_en)
++		return;
++
++	/* Errata fix for Family 0x19 */
++	if (boot_cpu_data.x86 != 0x19)
++		return;
++
++	/* Set event log buffer size to max */
++	amd_iommu_evtlog_size = EVTLOG_SIZE_MAX;
++	pr_info("Applying erratum: Increase Event log size to 0x%x\n",
++		amd_iommu_evtlog_size);
++#endif
++}
++
+ /****************************************************************************
+  *
+  * AMD IOMMU Initialization State Machine
+@@ -3432,6 +3459,21 @@ static int __init state_next(void)
+ 	case IOMMU_ENABLED:
+ 		register_syscore(&amd_iommu_syscore);
+ 		iommu_snp_enable();
++
++		amd_iommu_apply_erratum_snp();
++
++		/* Allocate/enable event log buffer */
++		if (is_kdump_kernel())
++			ret = remap_event_buffer();
++		else
++			ret = alloc_event_buffer();
++
++		if (ret) {
++			init_state = IOMMU_INIT_ERROR;
++			break;
++		}
++		iommu_enable_event_buffer();
++
+ 		ret = amd_iommu_init_pci();
+ 		init_state = ret ? IOMMU_INIT_ERROR : IOMMU_PCI_INIT;
+ 		break;
+@@ -4034,7 +4076,7 @@ int amd_iommu_snp_disable(void)
+ 		return 0;
+ 
+ 	for_each_iommu(iommu) {
+-		ret = iommu_make_shared(iommu->evt_buf, EVT_BUFFER_SIZE);
++		ret = iommu_make_shared(iommu->evt_buf, amd_iommu_evtlog_size);
+ 		if (ret)
+ 			return ret;
+ 
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 760d5f4623b55..02b5eaae6843d 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -1009,7 +1009,7 @@ static void iommu_poll_events(struct amd_iommu *iommu)
+ 		iommu_print_event(iommu, iommu->evt_buf + head);
+ 
+ 		/* Update head pointer of hardware ring-buffer */
+-		head = (head + EVENT_ENTRY_SIZE) % EVT_BUFFER_SIZE;
++		head = (head + EVTLOG_ENTRY_SIZE) % amd_iommu_evtlog_size;
+ 		writel(head, iommu->mmio_base + MMIO_EVT_HEAD_OFFSET);
+ 	}
+ 
 -- 
 2.53.0
 
