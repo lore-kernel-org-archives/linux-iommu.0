@@ -1,371 +1,189 @@
-Received: from fout-b4-smtp.messagingengine.com (fout-b4-smtp.messagingengine.com [202.12.124.147])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6F0236DA0D
-	for <iommu@lists.linux.dev>; Wed, 20 May 2026 03:46:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.147
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779248782; cv=none; b=THJ+uCQgCaXfFl53vxeR5BF6KLrnJtyfEw1bS3MPwaSRAb1y1vh3fTpZQIgys8WscEfXCobB7AHKn7nbnut7uF0W8eWyUgmJN0qz1joe/gPEeNmQcAkIhWvAOU5Jnixex+2+Cht6HuYEahQJ/Tban4xRBkppV8+XWB+iHehia08=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779248782; c=relaxed/simple;
-	bh=kx3N/sF136lHAXv30jB/koQH8AcEEfY2J3ecwUrx7WA=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=P4uvy8a1tffmhUOPGdm/cq+NyhTw9pdVjkgrHacY/JTq8e1jK5HcbvemTNE387ANSr1TPZIaxKsVrXSHdqAOF2lk37PZRajiy0kqugVyp64o8bL9X3Zn3ARkd7Mi/V4MNBcCjaJ6ejH1pR/ejk3nsCuCmEwA1jhkahFt03idfhk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org; spf=pass smtp.mailfrom=shazbot.org; dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b=kH7hzUAY; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=tII8+cmo; arc=none smtp.client-ip=202.12.124.147
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shazbot.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C74836DA03
+	for <iommu@lists.linux.dev>; Wed, 20 May 2026 03:57:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779249439; cv=fail; b=MDn6dQnZLngfL9b7wOf0jq6wb5Na6HMxQjpGDsE698j6KQbpfp4VC7L4PCTLbCwiPMuO6q0OrEzKTVFuqU4mYrMN8sCO8MEVWeRmov2BlJBK2YIYgol0MIQXrUhUA51exAYtRRSca0UwIUMMXZcI3eBGr7IOe0k7daV3ALOfLQE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779249439; c=relaxed/simple;
+	bh=WYo1kuzQHSuHM/jkoxbwzJVw+9tzyUdmW1SOrjbNVFM=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=fhrqJ41wOSoLKNbkZuZ3oW7KhN9bR7HQTLoFJbBu1hQkjCqndI6OtWH9tHGEyVtP/c6Mh1cytjD9yj+ElGekpuF9ZIf7EY3OA4O0fbFVnn2XIpz3gEXUb8U7NlTS3rm79+D/hxntLw2QeIRMRdn0jvpcnEzYer8Z+aj+g/IMW+c=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BcXmpOBJ; arc=fail smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b="kH7hzUAY";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="tII8+cmo"
-Received: from phl-compute-05.internal (phl-compute-05.internal [10.202.2.45])
-	by mailfout.stl.internal (Postfix) with ESMTP id 821C91D000E6;
-	Tue, 19 May 2026 23:46:15 -0400 (EDT)
-Received: from phl-frontend-03 ([10.202.2.162])
-  by phl-compute-05.internal (MEProxy); Tue, 19 May 2026 23:46:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shazbot.org; h=
-	cc:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm2; t=1779248775;
-	 x=1779335175; bh=rMONDyfWciVe1ovXFzWpVrWYtQU7cLauCfv1EYgZ4XI=; b=
-	kH7hzUAYJnopikyamKANNplXYyuy1g1QjE8HKCvFb0LefKxWB8XCATEi99VlSXDc
-	6eesbtoPpJfJDXc+pAiz7rlZgWYAFvy0nhQ56+l2cRr2FfH2sWP/gOnBzOscOKIK
-	0nfLGTNeptiLtm3eUpcS0+lzRtkyTiSijYmXo9gSRUYjR8jCdFCQCYcYC1y1RdfT
-	1Gdvoxn4Fe5msUVzvzAjk3k+34yKmeGJ3kWuzHfgkKnOmeQsCR+uPVdS/QPgxckz
-	1NdKRe6GTD4cFentt+8S5q7/0M9V0ttMm+DJHpr+kUYjRIPnlpTgN614edCh7f5G
-	nOjC9d+0atjVjEQ/q8ZIHg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1779248775; x=
-	1779335175; bh=rMONDyfWciVe1ovXFzWpVrWYtQU7cLauCfv1EYgZ4XI=; b=t
-	II8+cmoz0nTffDwJ6Y0y3f+xEVgN5Goz0H0PFT/EVCj3KC41OAHTiOmCft2a0Jxd
-	XEHSzM+QwU2J3XoyZZmk9VbXK8p/li2dP5VYk41B2sh0MlhlSmqnl8qYSThycBMJ
-	gbW7y1N6WrTczF8/DF4/UxheBy2fpmqAJ10D9VgDZyIcHOLHqrNFhWwjkLeiL//8
-	FCqnwXWTCBM5prz/znoJUxjTDBSd5li9nWj/RSKrN9vTpp3D4YEPId8aIutniMWK
-	PIIEVB4sdhzDmp5Nm+Imn+1fl7+MiqQaRthHl48MYQyG5hvQuRK9cpt2dUCeJDKX
-	A28wTfOxgVKuGX/gMeTwQ==
-X-ME-Sender: <xms:hy4NaixeH7vnUKlEl2JFSxOo83-iDfFbw72OYle07QTn1ZcEoN1fmQ>
-    <xme:hy4Navw8aJatLyRuimarPjeTq4KDr6nYn2Jmxf-9VLpH-r-YsVFRkIRRNv9mcVdBA
-    h6gZSXoaFbluSBgXtgKXhim-uGR5ze_h4sefNV3VpcbJ3OBmUkz_w>
-X-ME-Received: <xmr:hy4Nah84IpSCUxdDIbWlWwOmDHrn36dJuSXZ1RL-3iWWBRZwhzZMu2Oksbc>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefhedrtddtgddugeefheelucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
-    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
-    gurhepfffhvfevuffkjghfofggtgfgsehtjeertdertddvnecuhfhrohhmpeetlhgvgicu
-    hghilhhlihgrmhhsohhnuceorghlvgigsehshhgriigsohhtrdhorhhgqeenucggtffrrg
-    htthgvrhhnpefhgefhteevffdvgeduhfegffettdekgfektefhhfeugfeggeeiveehfedu
-    leefffenucffohhmrghinhepghdruggvvhenucevlhhushhtvghrufhiiigvpedtnecurf
-    grrhgrmhepmhgrihhlfhhrohhmpegrlhgvgiesshhhrgiisghothdrohhrghdpnhgspghr
-    tghpthhtohepudejpdhmohguvgepshhmthhpohhuthdprhgtphhtthhopehjrggtohgsrd
-    hprghnsehlihhnuhigrdhmihgtrhhoshhofhhtrdgtohhmpdhrtghpthhtoheplhhinhhu
-    gidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtohepihhomh
-    hmuheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehjghhgsehnvhhiughi
-    rgdrtghomhdprhgtphhtthhopehjohhroheskegshihtvghsrdhorhhgpdhrtghpthhtoh
-    epshhmohhsthgrfhgrsehgohhoghhlvgdrtghomhdprhgtphhtthhopegumhgrthhlrggt
-    khesghhoohhglhgvrdgtohhmpdhrtghpthhtoheprhhosghinhdrmhhurhhphhihsegrrh
-    hmrdgtohhmpdhrtghpthhtohepnhhitgholhhinhgtsehnvhhiughirgdrtghomh
-X-ME-Proxy: <xmx:hy4Nav9xUXyuGr-r1WC3MxvKYxpBCKj5_n9VDisdsLbsBogrRG4jcw>
-    <xmx:hy4Nakc_VfF1j4aCY5wFQ_wLFQWtGqQi6I2SL2qrg1Idj4gBfqt6tg>
-    <xmx:hy4NarvaOIqhKHfKuG5C_BuH-1oZlDsnj5n3XDPwdLMFYAfMHKK2hg>
-    <xmx:hy4Nat26Nx-t2ywwsdc2SIVR2kavJ5lBNUnPr2LkDrTylCidHJoqNA>
-    <xmx:hy4NalZNbnRi4nxDYaugYaNBvwgAQDRH2VzPMn8JpvIUHPM6t_2v5UCk>
-Feedback-ID: i03f14258:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 19 May 2026 23:46:13 -0400 (EDT)
-Date: Tue, 19 May 2026 21:46:13 -0600
-From: Alex Williamson <alex@shazbot.org>
-To: Jacob Pan <jacob.pan@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel
- <joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>, David Matlack
- <dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen
- <nicolinc@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
- <yi.l.liu@intel.com>, Saurabh Sengar <ssengar@linux.microsoft.com>,
- skhawaja@google.com, pasha.tatashin@soleen.com, Will Deacon
- <will@kernel.org>, Baolu Lu <baolu.lu@linux.intel.com>, alex@shazbot.org
-Subject: Re: [PATCH v5 7/9] vfio: Enable cdev noiommu mode under iommufd
-Message-ID: <20260519214613.167e8d5b@shazbot.org>
-In-Reply-To: <20260511184116.3687392-8-jacob.pan@linux.microsoft.com>
-References: <20260511184116.3687392-1-jacob.pan@linux.microsoft.com>
-	<20260511184116.3687392-8-jacob.pan@linux.microsoft.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BcXmpOBJ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1779249435; x=1810785435;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=WYo1kuzQHSuHM/jkoxbwzJVw+9tzyUdmW1SOrjbNVFM=;
+  b=BcXmpOBJF06ATZDae5ZzDLcONfqsdcAmLP2K2fsOCNqfojGmmIV+B8CC
+   oMJRhufaKdxrDev/i/LyjrD469OXmqGEj+DywROf+mdpF6MWw1JU905IR
+   ULZJtiAwpEr3xVDUhQChqPuN+lfQlq4e3xgLTwDKWTp8H3QJFTi0W5ofL
+   bVYFYgWwcbG2XIZsDq6fvAR09lNNr+0uVyhxP5i+FP9EY2hvnQfQaD4Ln
+   dbtaz5dN3runB2ZYQ+lpzJt/3vlfyjN6FK1cTkW5L/8GQG4LHiktKDeK5
+   CPAMqRZdMgmDJMVeXXvqr1GbO0apJ1Z5D1p0AdQ4JjcP8QACLgKPYnLLA
+   Q==;
+X-CSE-ConnectionGUID: nPH7YttiRLOGgmSCxH/ubw==
+X-CSE-MsgGUID: qj6tUL9SSAq43XLdkZkryw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11791"; a="80193954"
+X-IronPort-AV: E=Sophos;i="6.23,243,1770624000"; 
+   d="scan'208";a="80193954"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2026 20:57:13 -0700
+X-CSE-ConnectionGUID: t4Pc/+K0QF+7bKkZ/eKPCQ==
+X-CSE-MsgGUID: XUMUi/ppSbi5fgGvhDt5ug==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,243,1770624000"; 
+   d="scan'208";a="239010439"
+Received: from fmsmsx902.amr.corp.intel.com ([10.18.126.91])
+  by orviesa006.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2026 20:57:13 -0700
+Received: from FMSMSX903.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Tue, 19 May 2026 20:57:12 -0700
+Received: from fmsedg902.ED.cps.intel.com (10.1.192.144) by
+ FMSMSX903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37 via Frontend Transport; Tue, 19 May 2026 20:57:12 -0700
+Received: from DM5PR21CU001.outbound.protection.outlook.com (52.101.62.46) by
+ edgegateway.intel.com (192.55.55.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Tue, 19 May 2026 20:57:11 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=PBzgWiws/2RlUuK69p2273hOwpudNvGyrCbS5YBbCj1VTddmEw15By6SV4akyL3smWB8GITXGCg690j2yuOxdeIJWZEhQuRAazx7NHDHdypRQ0N26JXWPa7HmpvsDrquBa5OQa9pvO4dijTFMJIQHQD0N/Xr9XuxNM8ubhc7Jxm+6DjnyOiyxLO1C5qfSAqNOe0/W4fvdJ/y7/N2fG9pKjxuXdJKHaG9vicNnz3Z8/LoQrKs+aSZB5TAjt6GvLKC/pxdJzfcwfsksZfv/d8Oh5vG5ZLHhSe08C0NNWltF/VLybwmKi17XkFqRl56Kpsy1ySpIqz/M5fivcm/2/3q0w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RzgjHayD+/U9wDdXuwvjCje7TyJbasZ0/q8I9OEY730=;
+ b=UM8Pir9KVaZt7UHjUfHSdGvHgMRVoeOCycxJKHJ2ckJRMYRprv1Yx4rkJ5eRfqWjE+mhZMXA2ZwFJNPqws8yWVesS2akYw2o55qcQqXg7UmWcjgWiancIRTLFm9T29Jwl7iILap+2hW9HUIn+JMH7dHubwxsMSaoHbNI8rQzey3+TddgS7Ha9rw1+Hc8JYE7CUWzX0ncnU0FPIUSnx6seuX3HR5MoSRC8QreTw/fGcdO5/qE6iAOouOrf2mbh0pIVdxaN/rmeT/sVErUl37c0+S4OOE6zfuBibPsSw6Lqb5YOF69+5Nfg25rwrha5hjIL0xRjPehTfKUXm0HJegx5w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by SA1PR11MB9873.namprd11.prod.outlook.com (2603:10b6:806:4d9::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.48.14; Wed, 20 May
+ 2026 03:57:09 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::f997:762f:f079:134f]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::f997:762f:f079:134f%5]) with mapi id 15.21.0048.013; Wed, 20 May 2026
+ 03:57:09 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Will
+ Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"stable@vger.kernel.org" <stable@vger.kernel.org>, "Kumar G, Naresh"
+	<naresh.kumar.g@intel.com>
+Subject: RE: [PATCH 1/1] iommu/vt-d: Avoid WARNING in sva unbind path
+Thread-Topic: [PATCH 1/1] iommu/vt-d: Avoid WARNING in sva unbind path
+Thread-Index: AQHc51DVDJgZGhnSx0SZSoZJBRDoI7YWSqAg
+Date: Wed, 20 May 2026 03:57:08 +0000
+Message-ID: <BN9PR11MB5276FE9C6396ED01D36CFFF98C012@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20260519052917.3729796-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20260519052917.3729796-1-baolu.lu@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|SA1PR11MB9873:EE_
+x-ms-office365-filtering-correlation-id: c2499a59-de54-4f87-5a5f-08deb623dd96
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|366016|376014|22082099003|18002099003|56012099003|38070700021|11063799006;
+x-microsoft-antispam-message-info: GydoGdIIvZ8Wn/BdvEDdacVLoGW4Fc80+talGs1d3c7H5NC2JOMj3S6OTq3mKPj3YgxieiwyoGBjJUnbc0pjutPG5WZpoyf2/XF0omGSIbSnoGP+J8mBWa/Z5S8tv2i2AeYgFYAIsE3zxN6Pyvs2pPr2J1lPn+LGnSwsyzkJatPUKn0S5uAJHu1fcZTtd3O/1HwrjTdrBBOy76rIzwyjjkRIvcsXh//B+OxgjMdzeTsq+VzYEv2qfTImTNlrqBLKcWMM5PDLPDox0eJTVLVMF+dH77N97X18REjCgs5KHYx9f7ctsrMBS5wRb2Z7oodDotM2c0WVixyKyCB4leNh5Y6w37A3KeYfyBQdp3YuIixCZiGT10fWP446ix6Vx0PyKpZSGUEZuekEwZa1+xt1v/UuQDW04Tm2nnjddmU8sytIezHJWEj/qw42jZYqqTQyDzzJJJXUYTYGxHnNf2Z/EsK+EN4fz0GSRDZR8FitybEB/zmyvvd5aoBO8hmEqR+YD/ln4IH+usTDvqTurVogCfZu9UZFyNQsXwMIOwkHvrr0bIKg3jiWOC//gr3sr34uNgLzLSVELmBLYV1D8LhHIq9bVXxM4vefdrGqeJyiKP8e8/PKW6Vi3Ia80EwYUlla2RT6Vpxuc0AfuD5M5nJt5JcgyfPVIlkyi12znd8idA6uxfcyIuVS51CPihg4df3gNqes9xgenmQ8Xho/1GV27S6PB3Ke89pISzNQR8q8xWc6wUYA80EdYttxV3eY0x1Q
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(22082099003)(18002099003)(56012099003)(38070700021)(11063799006);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?C8Wd3NbTjvUdh9ozt6t7xi6wqLMQ61MyJcU6erF1PqiWmpN1yLShuzKg86zm?=
+ =?us-ascii?Q?v97v3uV2GAR/yIhi5IA/MQmYxJ3U7RFQMpKGRvRUCsmeBg9IVn1XT2Pdhk7v?=
+ =?us-ascii?Q?9JbrgN71faZHmfZuIbP4wibCZpTZhR24Q0qGz1jzLrSGo5hV78FLtk5rsTC0?=
+ =?us-ascii?Q?RDpNZDdHg3A5P4R9ue1YPtX9y6Q7UoFecf2rt/RKYXTgE88RsaStZli16AUv?=
+ =?us-ascii?Q?FQTelxq5CZut1h64LsfJWzsTrXB4/k42m4HeS+qqBf9H4rRys5HKHgiUgpkI?=
+ =?us-ascii?Q?NZCAGQDHbUe/98BkSTDCMyuIso2CjXvZnxhYCkoC0Z6+3KvHUZwjkUIl41lo?=
+ =?us-ascii?Q?u42aPPpL9TEl/Wak7Yc42vFXeYSVaL6E4zef+c0Deb5Cnj9SkgtyjWp/DH86?=
+ =?us-ascii?Q?KeF8mw7NMqChqxSvFDSPsbpKSNWM0cwcX7OpKW34+bb139jToYe2RPNXG+tL?=
+ =?us-ascii?Q?MHEvF87RfYPt/3MmyQGKv+H7c+YvsA+XDvFkTyz6PBhGKYwU61WdPqrIJCdM?=
+ =?us-ascii?Q?qBjuhQ7X+1yUMuF3k7Vo9O1bbZfST/swHcolatSQvh8mig2lYkZrLyNnN/5J?=
+ =?us-ascii?Q?g+/aOF0KMbL0k3LUt2fKFVwkFufENdB4MnN9Z+pFyvzn1mnn9h7nlLNXm9NT?=
+ =?us-ascii?Q?MvDiueLLK1gzV93+g9v586l+cwHI2jDjKJDCgQyINvsGjoM9lPqZhXE89bPV?=
+ =?us-ascii?Q?zz1GHnU6aBezQI2taEUsdezH2GS8FuGNrMEztXuEsopPU0P4v8JWpelytDRp?=
+ =?us-ascii?Q?NGv8WM5q4Esl40lVlBDdWyzKS/ZVOialqpN3p2/0WIIEnb1rtHBz+nBIJZ31?=
+ =?us-ascii?Q?QIBKwkr6qIDlfL1iRqFi/O0knmWj4IugD568X7ceIiaQJwVRa4eNyxdKKgTy?=
+ =?us-ascii?Q?pj7SH5vq6QhngrYJCmmkQDU4xJtnpoi53g3nre50JlUcWAV7Et8Sza+W46SN?=
+ =?us-ascii?Q?FvgN19iouIpOi1f8BHvfzqHZsHhTd6ssd+QZk9tSw5oAZNHRzdbUjoV3Bo6s?=
+ =?us-ascii?Q?iPv3UVa2tkbwkNhfLr0t07REvPv7vM+F3bEE97juM1ZYQjsEPzjpjp5WqPan?=
+ =?us-ascii?Q?oyS4DH+8ygqZdZi6z2du8qMgi/pttU4LBXS2oYVzRYOJfVeduMKTvVQpuF8y?=
+ =?us-ascii?Q?T3W6BGWJIUSGpf63BLn/h785bxC2o01u1gTh85Hpj8+Vu+GZ8AyKcO9Ej54j?=
+ =?us-ascii?Q?hKs/ZlhfeGX68BeCKYIEKOD/zN0hwU86Uo3U5za+sVpdAbDAwBrohv+0BnTb?=
+ =?us-ascii?Q?PwZHQ401e6/aTnyhrrVC4fdyJ2S5Vln+/xZAqRYTOQGtNIytGAhFVlMsYuyJ?=
+ =?us-ascii?Q?i6jQAIElIgpBVy8dZSW3Sly9hI8NJUl0i7pFXuzZFB2sEEzkpkrQ97Qk+/oi?=
+ =?us-ascii?Q?iBrkjv3B6LCFcTPcq108fMpqjmHgDicC/6HTFItIlTYxJ3f//hG5TPHuStax?=
+ =?us-ascii?Q?hk1jUMZPeDJipUisi4jF0iPQagJ0KI1xUBc5n/25qRLHiBA/WuHJCZOKgoSD?=
+ =?us-ascii?Q?a7JKMHV1Gy++4j5TWDP9nItxYIljZhOSzDPNvQwzSxCLKene1KMI2yXt6zAY?=
+ =?us-ascii?Q?UpulE7ETqywfhSqeYsMuqWZdHjx/X34SAPfiUfOHU7rZkTU/nfjzvom/VJx8?=
+ =?us-ascii?Q?eA5jPGzS7DeoNUtV1hLw0tDK0Y0YH5Sv1AFJNAoj1pnphkHVRJyiSfaxO+8i?=
+ =?us-ascii?Q?Hh6/RxLvvbsj0AsptxAhvxru9hdCsVy2MvbYvJLJLrJ9u4OX+6ZYCSI3It+o?=
+ =?us-ascii?Q?eKsoB01EYA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Exchange-RoutingPolicyChecked: mxgat9WUl5F2FIZ2aHlR5ABGBa6yS27iuyP6p6kZHpiqYMWvrFtKoyMlQW0YBe3HIAWfIqXIaEte9cHhr/MGkXPzG70f+Yjl/qXrUodMtNODbNqX0hgnVL9C8WZ+UODwOMTDMYbgMKbzfTbGSoAhcc2sLs9Xl35fgGkGtfdbBL8V0VHbNdu3IWw9LGLqsW6GDCtnJfCo0c0toVZA2jHu62RNBUB8C5gOykyiSSflMCFyG/ZUXk+SRZl25KNgDuIfKtRwkXXNoVxZ41Jb38l67ywoIRnJUjcE3J440BnQ8Vd0Hjq7JIwJueEgb3ibWE5/EECyNZO3JR+0vxjXS2TgUw==
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c2499a59-de54-4f87-5a5f-08deb623dd96
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 May 2026 03:57:09.0437
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: sXze5Sl12vlh7AJOs+/MBuRrN2b+TYpmv8qZGKXlU+nMbX2/zK/LNKIUxoPVOoExpB/uvaZZi81xmyH+8HCMqQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB9873
+X-OriginatorOrg: intel.com
 
-On Mon, 11 May 2026 11:41:12 -0700
-Jacob Pan <jacob.pan@linux.microsoft.com> wrote:
+> From: Lu Baolu <baolu.lu@linux.intel.com>
+> Sent: Tuesday, May 19, 2026 1:29 PM
+>=20
+> The Intel IOMMU driver allows SVA on devices even if they do not support
+> PCI/PRI. Commit 39c20c4e83b9 ("iommu/vt-d: Only handle IOPF for SVA
+> when
+> PRI is supported") modified the SVA bind path to allow this configuration
+> by skipping IOPF enablement when PRI is missing. However, it failed to
+> update the unbind path.
+>=20
+> This creates an imbalance: the unbind path attempts to disable IOPF for
+> a device that never had it enabled, triggering a WARNING in
+> intel_iommu_disable_iopf():
+>=20
+>  WARNING: drivers/iommu/intel/iommu.c:3475 at
+> intel_iommu_disable_iopf+0x4f/0x90d
+>  Call Trace:
+>   <TASK>
+>   blocking_domain_set_dev_pasid+0x50/0x70
+>   iommu_detach_device_pasid+0x89/0xc0
+>   iommu_sva_unbind_device+0x73/0x150
+>   xe_vm_close_and_put+0x4d2/0x1200 [xe]
+>=20
+> Fix this by bypassing IOPF operations for SVA domains on non-PRI hardware
+> in both the bind and unbind paths.
+>=20
+> Fixes: 39c20c4e83b9 ("iommu/vt-d: Only handle IOPF for SVA when PRI is
+> supported")
+> Cc: stable@vger.kernel.org
+> Reported-by: Nareshkumar Gollakoti <naresh.kumar.g@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-> Now that devices under noiommu mode can bind with IOMMUFD and perform
-> IOAS operations, lift restrictions on cdev from VFIO side.
-> 
-> Remove the vfio_device_is_group_noiommu() early returns in
-> vfio_df_iommufd_bind() and vfio_df_iommufd_unbind() so that both
-> group and cdev noiommu devices go through the standard iommufd bind
-> path. This is safe because iommufd_device_bind() now handles noiommu
-> devices via its own iommufd_device_is_noiommu() check.
-> 
-> Add CAP_SYS_RAWIO checks for cdev open and bind under noiommu to
-> maintain security parity with the group noiommu path.
-> 
-> No IOMMU cdevs are explicitly named with noiommu prefix. e.g.
-> 
->     /dev/vfio/
->     |-- devices
->     |   `-- noiommu-vfio0
->     `-- vfio
-> 
-> Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
-> ---
-> v5:
->    - Add Kconfig VFIO_CDEV_NOIOMMU to select IOMMUFD_NOIOMMU
->      and its dependencies
->    - Add comment to explain vfio_noiommu conditional definition (Alex)
->    - Removed early return for group noiommu in bind/unbind
->    - Use consistent wording referring to VFIO noiommu mode (Kevin)
->    - Update unsafe_noiommu Kconfig help text (Kevin)
->    - Change dev_warn to dev_info for noiommu enabling msg (Kevin)
-> v4:
->    - Remove early return in iommufd_bind for noiommu (Alex)
-> v3:
->    - Consolidate into fewer patches
-> v2:
->    - removed unnecessary device->noiommu set in
->      iommufd_vfio_compat_ioas_get_id()
-> ---
->  drivers/vfio/Kconfig       |  3 +--
->  drivers/vfio/device_cdev.c | 10 ++++++++++
->  drivers/vfio/iommufd.c     |  7 -------
->  drivers/vfio/vfio.h        | 22 ++++++++++++++--------
->  drivers/vfio/vfio_main.c   | 25 ++++++++++++++++++++-----
->  include/linux/vfio.h       |  1 +
->  6 files changed, 46 insertions(+), 22 deletions(-)
-> 
-> diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
-> index b1b1633412a9..b1a260b6054c 100644
-> --- a/drivers/vfio/Kconfig
-> +++ b/drivers/vfio/Kconfig
-> @@ -22,8 +22,7 @@ config VFIO_DEVICE_CDEV
->  	  The VFIO device cdev is another way for userspace to get device
->  	  access. Userspace gets device fd by opening device cdev under
->  	  /dev/vfio/devices/vfioX, and then bind the device fd with an iommufd
-> -	  to set up secure DMA context for device access.  This interface does
-> -	  not support noiommu.
-> +	  to set up secure DMA context for device access.
->  
->  	  If you don't know what to do here, say N.
->  
-> diff --git a/drivers/vfio/device_cdev.c b/drivers/vfio/device_cdev.c
-> index 54abf312cf04..46a808244398 100644
-> --- a/drivers/vfio/device_cdev.c
-> +++ b/drivers/vfio/device_cdev.c
-> @@ -27,6 +27,9 @@ int vfio_device_fops_cdev_open(struct inode *inode, struct file *filep)
->  	struct vfio_device_file *df;
->  	int ret;
->  
-> +	if (device->noiommu && !capable(CAP_SYS_RAWIO))
-> +		return -EPERM;
-> +
->  	/* Paired with the put in vfio_device_fops_release() */
->  	if (!vfio_device_try_get_registration(device))
->  		return -ENODEV;
-> @@ -110,6 +113,13 @@ long vfio_df_ioctl_bind_iommufd(struct vfio_device_file *df,
->  	if (df->group)
->  		return -EINVAL;
->  
-> +	/*
-> +	 * CAP_SYS_RAWIO is already checked at cdev open, recheck here
-> +	 * in case the fd was passed to a less privileged process.
-> +	 */
-> +	if (device->noiommu && !capable(CAP_SYS_RAWIO))
-> +		return -EPERM;
-> +
->  	ret = vfio_device_block_group(device);
->  	if (ret)
->  		return ret;
-> diff --git a/drivers/vfio/iommufd.c b/drivers/vfio/iommufd.c
-> index 39079ab27f92..bc80056c74d3 100644
-> --- a/drivers/vfio/iommufd.c
-> +++ b/drivers/vfio/iommufd.c
-> @@ -25,10 +25,6 @@ int vfio_df_iommufd_bind(struct vfio_device_file *df)
->  
->  	lockdep_assert_held(&vdev->dev_set->lock);
->  
-> -	/* Returns 0 to permit device opening under noiommu mode */
-> -	if (vfio_device_is_group_noiommu(vdev))
-> -		return 0;
-> -
->  	return vdev->ops->bind_iommufd(vdev, ictx, &df->devid);
->  }
->  
-> @@ -58,9 +54,6 @@ void vfio_df_iommufd_unbind(struct vfio_device_file *df)
->  
->  	lockdep_assert_held(&vdev->dev_set->lock);
->  
-> -	if (vfio_device_is_group_noiommu(vdev))
-> -		return;
-> -
->  	if (vdev->ops->unbind_iommufd)
->  		vdev->ops->unbind_iommufd(vdev);
->  }
-> diff --git a/drivers/vfio/vfio.h b/drivers/vfio/vfio.h
-> index 602623cacfc0..ac79b1a2fce9 100644
-> --- a/drivers/vfio/vfio.h
-> +++ b/drivers/vfio/vfio.h
-> @@ -36,7 +36,7 @@ vfio_allocate_device_file(struct vfio_device *device);
->  
->  extern const struct file_operations vfio_device_fops;
->  
-> -#ifdef CONFIG_VFIO_GROUP_NOIOMMU
-> +#if IS_ENABLED(CONFIG_VFIO_GROUP_NOIOMMU) || IS_ENABLED(CONFIG_VFIO_CDEV_NOIOMMU)
-
-Have you considered what happens when these are y/n or n/y?
-
-I think in the former case we can create cdev devices for group-noiommu
-devices that are not labeled noiommu, skip the CAP_SYS_RAWIO test, but
-will fail to bind.  In the latter case, I think we fail to setup an
-iommufd_device and unbind will segfault.
-
-We really don't need to support independently setting GROUP vs CDEV
-NOIOMMU, the suggestion was to try to get NOIOMMU from depending on
-VFIO_GROUP.  We can do that other ways though and I think we can do it
-without the rename in patch 1 that will inevitably result in some lost
-config options for NOIOMMU on upgrade.
-
-The Kconfig may get messy, perhaps something like:
-
-config VFIO_NOIOMMU
-	bool "VFIO No-IOMMU support"
-	depends on VFIO_GROUP || VFIO_DEVICE_CDEV
-	depends on !VFIO_GROUP || VFIO_CONTAINER || IOMMUFD_VFIO_CONTAINER
-	depends on !VFIO_DEVICE_CDEV || !GENERIC_ATOMIC64
-	select IOMMUFD_NOIOMMU if VFIO_DEVICE_CDEV
-
-Sorry if the previous suggestion sent us astray, but the subtleties of
-independent support look tricky.  Thanks,
-
-Alex
-
->  extern bool vfio_noiommu __read_mostly;
->  #else
->  enum { vfio_noiommu = false };
-> @@ -358,19 +358,13 @@ void vfio_init_device_cdev(struct vfio_device *device);
->  
->  static inline int vfio_device_add(struct vfio_device *device)
->  {
-> -	/* cdev does not support noiommu device */
-> -	if (vfio_device_is_group_noiommu(device))
-> -		return device_add(&device->device);
->  	vfio_init_device_cdev(device);
->  	return cdev_device_add(&device->cdev, &device->device);
->  }
->  
->  static inline void vfio_device_del(struct vfio_device *device)
->  {
-> -	if (vfio_device_is_group_noiommu(device))
-> -		device_del(&device->device);
-> -	else
-> -		cdev_device_del(&device->cdev, &device->device);
-> +	cdev_device_del(&device->cdev, &device->device);
->  }
->  
->  int vfio_device_fops_cdev_open(struct inode *inode, struct file *filep);
-> @@ -420,6 +414,18 @@ static inline void vfio_cdev_cleanup(void)
->  }
->  #endif /* CONFIG_VFIO_DEVICE_CDEV */
->  
-> +#if IS_ENABLED(CONFIG_VFIO_CDEV_NOIOMMU)
-> +static inline bool vfio_device_is_cdev_noiommu(struct vfio_device *vdev)
-> +{
-> +	return vdev->noiommu;
-> +}
-> +#else
-> +static inline bool vfio_device_is_cdev_noiommu(struct vfio_device *vdev)
-> +{
-> +	return false;
-> +}
-> +#endif
-> +
->  #if IS_ENABLED(CONFIG_VFIO_VIRQFD)
->  int __init vfio_virqfd_init(void);
->  void vfio_virqfd_exit(void);
-> diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
-> index 4d940ce6f114..1ba0f282d746 100644
-> --- a/drivers/vfio/vfio_main.c
-> +++ b/drivers/vfio/vfio_main.c
-> @@ -54,7 +54,7 @@ static struct vfio {
->  	int				fs_count;
->  } vfio;
->  
-> -#ifdef CONFIG_VFIO_GROUP_NOIOMMU
-> +#if IS_ENABLED(CONFIG_VFIO_GROUP_NOIOMMU) || IS_ENABLED(CONFIG_VFIO_CDEV_NOIOMMU)
->  bool vfio_noiommu __read_mostly;
->  module_param_named(enable_unsafe_noiommu_mode,
->  		   vfio_noiommu, bool, S_IRUGO | S_IWUSR);
-> @@ -321,6 +321,20 @@ static int vfio_init_device(struct vfio_device *device, struct device *dev,
->  	return ret;
->  }
->  
-> +static int vfio_device_set_noiommu_and_name(struct vfio_device *device)
-> +{
-> +	if (IS_ENABLED(CONFIG_VFIO_CDEV_NOIOMMU) && vfio_noiommu && !device->dev->iommu) {
-> +		device->noiommu = true;
-> +		add_taint(TAINT_USER, LOCKDEP_STILL_OK);
-> +		dev_warn(device->dev,
-> +			 "Adding kernel taint for vfio-noiommu cdev on device\n");
-> +	}
-> +
-> +	/* Just to be safe, expose to user explicitly noiommu cdev node */
-> +	return dev_set_name(&device->device, "%svfio%d",
-> +		     device->noiommu ? "noiommu-" : "", device->index);
-> +}
-> +
->  static int __vfio_register_dev(struct vfio_device *device,
->  			       enum vfio_group_type type)
->  {
-> @@ -340,20 +354,21 @@ static int __vfio_register_dev(struct vfio_device *device,
->  	if (!device->dev_set)
->  		vfio_assign_device_set(device, device);
->  
-> -	ret = dev_set_name(&device->device, "vfio%d", device->index);
-> +	ret = vfio_device_set_group(device, type);
->  	if (ret)
->  		return ret;
->  
-> -	ret = vfio_device_set_group(device, type);
-> +	ret = vfio_device_set_noiommu_and_name(device);
->  	if (ret)
-> -		return ret;
-> +		goto err_out;
->  
->  	/*
->  	 * VFIO always sets IOMMU_CACHE because we offer no way for userspace to
->  	 * restore cache coherency. It has to be checked here because it is only
->  	 * valid for cases where we are using iommu groups.
->  	 */
-> -	if (type == VFIO_IOMMU && !vfio_device_is_group_noiommu(device) &&
-> +	if (type == VFIO_IOMMU && !(vfio_device_is_group_noiommu(device) ||
-> +				    vfio_device_is_cdev_noiommu(device)) &&
->  	    !device_iommu_capable(device->dev, IOMMU_CAP_CACHE_COHERENCY)) {
->  		ret = -EINVAL;
->  		goto err_out;
-> diff --git a/include/linux/vfio.h b/include/linux/vfio.h
-> index 31b826efba00..45f08986359e 100644
-> --- a/include/linux/vfio.h
-> +++ b/include/linux/vfio.h
-> @@ -74,6 +74,7 @@ struct vfio_device {
->  	u8 iommufd_attached:1;
->  #endif
->  	u8 cdev_opened:1;
-> +	u8 noiommu:1;
->  	/*
->  	 * debug_root is a static property of the vfio_device
->  	 * which must be set prior to registering the vfio_device.
-
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
