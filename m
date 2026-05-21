@@ -1,148 +1,207 @@
-Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012033.outbound.protection.outlook.com [52.101.48.33])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f43.google.com (mail-qv1-f43.google.com [209.85.219.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FD43385D85
-	for <iommu@lists.linux.dev>; Thu, 21 May 2026 17:45:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.48.33
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779385532; cv=fail; b=kVomW6p3um8COSsr3jTIExU3c2IwJUecaQqNILkqQ7idGphwz/kX5Z0AoaF3ossHKhey/PwA7ckpHPSjnbDGxJWR61WY2GCVGDve1FkYJ65iJSo9Kchfpoctz5pNuUTgwVggqTH3jzETKv6TfMTJ77h8fG5KYKiMpTqKNuvKXiE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779385532; c=relaxed/simple;
-	bh=FhVb14gDBFzkywu6gU/TUykG3/P6SOj1uHzMvcuEw8M=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JAl70p6JnxhWTTg8a/rn6Ajqv+H1l2adVK+IPo0m9cZCv2kh8pnfUrQy05xibU336c+DR3PpOSqLB1/PZ/OdxmILXDVHOWxXzrPkl4F9Isnza+WAqtZVGWLRkT5f9r6CRDGC94IMjEe1HB2pqSfzjwXOAg7hZWi14WPxJcJ/P24=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=FOYB4XGu; arc=fail smtp.client-ip=52.101.48.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB7F23D75B6
+	for <iommu@lists.linux.dev>; Thu, 21 May 2026 17:54:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.43
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779386066; cv=none; b=ui+wXj9uDQ41x8qxlWmckn0ow0R4Cf9gMHfheiqkP6EJse5QZOUdwZHIzQsDOMuTIJt1kx1oi/XoE7UM0gFOR2rp4i8Rmq6qrdv/cYMrAM7F8vLrhpyLXLxF55XjJ1EfnsEFFwRFy3z/jYYFA3gMR/uU5UEzgjuWUeSKDVkLO3M=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779386066; c=relaxed/simple;
+	bh=n2LNy9P3hRcmCt1g1+q+u9azF2YECAgiA8jjB7pwYI0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=BxG0G0GfvWGrMMyg4306xJmS1DEbZVNN8x/TDNXq4WfNG5MZMkSDtAq9WLp7p0t2/BeKPF4ksEdCvu+yNHG50xPP/y8kNLCS3XnB4qKgJ2vZIx+7K8rLglf9mxGLCz9dxwJk0n+IIsoL3LqK+RIhLf227bXO08FqAMFA+GfpZtc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=JXEAhYbu; arc=none smtp.client-ip=209.85.219.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="FOYB4XGu"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=LETUtezBm0wzqMjV+xVvh1zSYr4fT/TXQxJ9aIJrJy5XNh0+AUqR03WEHZNU0xRnlDv1h7BH539XKMvK1WNcEgSlU1Xtn+OkZ3viYOH/JGx5bLwsASfT/fo8Ed/S2f8d6Quep5wxEKn+dxXEDcWFa7iWfW+LmZHqAjPrxI4mmrf5sf2w/dEiSTUfJH2PlZ2Ctf1sGOK5Yv0TcQoizVq7n1qwYW0erYldlUK5vrLTgwxUccv6vPIcLzaUGsKtcaeoMWth7Vlhy70bP5Fbz1auHDWl9puptPSVgZbLw6CP35VPbU3SUYjLqVfpZgryk2Rm/K7dmXWmRS/xonn4H+OccA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cS6fnA3lU2D/+Z8LnfqqCPtAqVL4T2HGREkrLBAbKIc=;
- b=fgWOFM1MIvU77GWlf3o80++W7r4uE6rBFPsX6Qf+Woir3I4lPKjxilXDXJ7ENVBbAx9mE1hd5d1uPVWZZIHRGol501P+9NtS6bDvOuT3qdqluF/R7c5x7tCR2caxgEXmDH8vC/txbbJkkbyqRTWLdalX/yV081+BAcPChwhwMF5RNpZuV8nS3VfLq/uBtwtXa49yMJCSFWCZKx+qRMvjKAiZWLPQlVKuruc+x1owRA8VVdJLHyXTjpZJX5DHQEk28TYFI8Q5L5MVYbKHBjJqG0yawvArCeu78DJp5mkQq49jLD6lR4LGHV2OcQ67bvPZxBX+0Zl17UwArswOE1CmHA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cS6fnA3lU2D/+Z8LnfqqCPtAqVL4T2HGREkrLBAbKIc=;
- b=FOYB4XGuGq/41vvh3eL+vEJp2viDczaQYvtVC09HvFUTQ5qcdEpfG+gB5KhmIqO59O40Mo+LhaV3+4IIRfGScL5g+F8GpXGUiOtV+YvG5FiDYXy9sPYbbiI00pJ8bUvOKpocFaBNqFe5bik6xmoTM+Us+P1FUkT5a5oZbKlSQx0uzJJRJwldl/f56+ML508/E2ipka9cfwStgduXdlz9XhanwsMsCH1KYzuGkshVXhqMKIyRZoa4Ub394b1vTQRnBGli5uzdVxrvq+RF8vUbBFJo4ytYW1f/ZLqLsEGoseCoONh0fhxL2J1C6rwS21zyBC9/wyHxZhtJQC+GiVuYQw==
-Received: from MN0PR02CA0001.namprd02.prod.outlook.com (2603:10b6:208:530::21)
- by SJ0PR12MB6966.namprd12.prod.outlook.com (2603:10b6:a03:449::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.48.17; Thu, 21 May
- 2026 17:45:23 +0000
-Received: from BL02EPF00021F6E.namprd02.prod.outlook.com
- (2603:10b6:208:530:cafe::37) by MN0PR02CA0001.outlook.office365.com
- (2603:10b6:208:530::21) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.48.17 via Frontend Transport; Thu, 21
- May 2026 17:45:23 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- BL02EPF00021F6E.mail.protection.outlook.com (10.167.249.10) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.71.7 via Frontend Transport; Thu, 21 May 2026 17:45:22 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 21 May
- 2026 10:45:03 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.20; Thu, 21 May 2026 10:45:02 -0700
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.126.190.181)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Thu, 21 May 2026 10:45:01 -0700
-Date: Thu, 21 May 2026 10:44:55 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <will@kernel.org>, <joro@8bytes.org>, <bhelgaas@google.com>,
-	<robin.murphy@arm.com>, <praan@google.com>, <baolu.lu@linux.intel.com>,
-	<kevin.tian@intel.com>, <miko.lenczewski@arm.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-pci@vger.kernel.org>,
-	<dan.j.williams@intel.com>, <jonathan.cameron@huawei.com>,
-	<vsethi@nvidia.com>, <linux-cxl@vger.kernel.org>, <nirmoyd@nvidia.com>
-Subject: Re: [PATCH v5 3/3] iommu/arm-smmu-v3: Allow ATS to be always on
-Message-ID: <ag9El9N4CiBu4gPx@Asurada-Nvidia>
-References: <cover.1779304390.git.nicolinc@nvidia.com>
- <b6d2f24356621c504e47633d9e96a7274c2859f3.1779304390.git.nicolinc@nvidia.com>
- <ag43NP4UiS7Z9T6q@Asurada-Nvidia>
- <20260521134409.GG3602937@nvidia.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="JXEAhYbu"
+Received: by mail-qv1-f43.google.com with SMTP id 6a1803df08f44-8b1f2b7f1bcso96683566d6.1
+        for <iommu@lists.linux.dev>; Thu, 21 May 2026 10:54:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1779386062; x=1779990862; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=EC6XWlOYSm7qj75HyHmp0T60BsFS50VL7KHJNUynWLU=;
+        b=JXEAhYbubz/ewGL84eH8GYoCP4VKdI84HbLX7b8Y7DQRkYtdPS4bOHx0/to0i4prbr
+         XChLmJd6tIX/Hfd65sATcqA1jcPiVUE8TWYXrVeZs1DB90D1g2btH2tQDuIfvzp4cY1m
+         JnKE/NlTXOdf8bl97/AS+F5gn6mNff2nToaRXdUwitsSvHeoXKeiLt4grRqXcjcbJQf/
+         ulfSUdyEMZUjdmPVdmv83jbf31/kkmd9vjFpnLanaoC6U12jhoIa6y+rPnsYC/qXw3kI
+         DXRx6mFF+/6S/GlTOtewncG93TIRum1NrvT2dfK3Nj+F633iYCAGLUO7ktiNK2a4o1uM
+         p8gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779386062; x=1779990862;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=EC6XWlOYSm7qj75HyHmp0T60BsFS50VL7KHJNUynWLU=;
+        b=NxZ5r61oLPpfGX5/WcGoQuF9rUMi1hKfi8gLZJczuxClhFKrDzuVtDBxDyyEzLem6e
+         t4EuMJaoePa1mO26u/Gudi+r03TFV/bgaEyCmS/JDZx1b48xApWABo5AoFo10jbtFXzQ
+         mhvrlGCYrsUSqsAsl4hhJRi1MnszsXA8WpLZaKVscKceCW78klTy73TEbYOZ2bAHWtlk
+         UOnuIrbwjv03XP1cp33o2dUQT2Mr1/7PjR49SChBpRTdvoAluH/IvCvkLpzTJmA3Wqns
+         rxNFOBuDmdO/O3OA9vR3mzQ8xZxbR7t5ofO/+oz9EujJ0r9NjCU5CYKb3ZfmsmiYtWt7
+         4L7g==
+X-Forwarded-Encrypted: i=1; AFNElJ/AiofiJupIpRYhQ9buBEgQMN1mi3R0OI1rx4f8a3kbtJNC5cOqFBdTwEMCO6ZKGeAO5zzmVw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy02QvOiALPHtzGGgghmzPo5GAM6Uh8RiTfGiHmPZMtlXaZ3IW+
+	msAu24lufh8WSUfdBf/ywZn+DoGRSHqi9HmbHNEZOFWojSjhhTgo++R80aypNIy9Ygs=
+X-Gm-Gg: Acq92OFY85CSsQF5QdU2bWvF3jsC9QZWl4uNMl84rVdZZRwTG6XFOSMX3b0iWtCBzMM
+	5g+sGkTcpjhjGXXiy9cfbnIfZbhBQ/TP+2kUh+SnqrEjOlBYZF+e0K7ytUq061Vo6iRonEfQhRY
+	OENLvF8WutpwXUMf1LLUuqyAn/CVOf6KNaUQ95V0l42+tnwBR8B91lmP31Kq/2dBDSr4QNVjKWv
+	MZUYP4cHW9fjRSzhmlCEPHpp72iddITRtpDuGXiGStMBD6h2/igxqUQkmLFOKYj+fT+VTqcYsGf
+	MVdBficJoMjCm6JlMrmNVBHMRTTMacl1A3jMtSNm0MKc704lS3rKK94DWPhrNoxIZ4eOMyGowum
+	gOOo/yrnf0qEnp3SkEnzho+z5BhgTjwYje3RCFWACDOS+buFGVgl5A2760TwgROkn2OE3GMWsB5
+	5k0THTmsc058GCh0qjMS7Ru7FBbvYG7exLST0mSHwlG1kozZ2+njd5V6/AASgXhm8QZXl+zSstA
+	THHog==
+X-Received: by 2002:a05:6214:1c4e:b0:8ca:1e71:c5fb with SMTP id 6a1803df08f44-8cc6e91f389mr49249796d6.7.1779386061667;
+        Thu, 21 May 2026 10:54:21 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8cc768b6fc2sm11374296d6.6.2026.05.21.10.54.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 May 2026 10:54:21 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wQ7bA-000000020Ak-1yKK;
+	Thu, 21 May 2026 14:54:20 -0300
+Date: Thu, 21 May 2026 14:54:20 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+Cc: Jiri Pirko <jiri@resnulli.us>, dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev,
+	linux-media@vger.kernel.org, sumit.semwal@linaro.org,
+	benjamin.gaignard@collabora.com, Brian.Starkey@arm.com,
+	jstultz@google.com, tjmercier@google.com, christian.koenig@amd.com,
+	m.szyprowski@samsung.com, robin.murphy@arm.com, leon@kernel.org,
+	sean.anderson@linux.dev, ptesarik@suse.com, catalin.marinas@arm.com,
+	suzuki.poulose@arm.com, steven.price@arm.com,
+	thomas.lendacky@amd.com, john.allen@amd.com, ashish.kalra@amd.com,
+	suravee.suthikulpanit@amd.com, linux-coco@lists.linux.dev
+Subject: Re: [PATCH v5 1/2] dma-mapping: introduce DMA_ATTR_CC_SHARED for
+ shared memory
+Message-ID: <20260521175420.GA7702@ziepe.ca>
+References: <20260325192352.437608-2-jiri@resnulli.us>
+ <yq5atst6ywbl.fsf@kernel.org>
+ <4qdizkkoeke3cvkcf35upa7p7ick6s654eqlrizmi7ozkw5eze@tnpk2e34xgwl>
+ <yq5awly0d504.fsf@kernel.org>
+ <tteiecxfqy4k24wnzvp6ocxnuopyhmqtne2xwh5htwldlbzjnp@o6cbzdlurxld>
+ <20260421121004.GA3611611@ziepe.ca>
+ <yq5aik9jcpzm.fsf@kernel.org>
+ <20260424225514.GE804026@ziepe.ca>
+ <20260426130531.GF804026@ziepe.ca>
+ <yq5azf1s6aic.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260521134409.GG3602937@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF00021F6E:EE_|SJ0PR12MB6966:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2fc38333-d4de-4a95-6d4d-08deb760bb71
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|7416014|376014|1800799024|82310400026|11063799006|56012099003|18002099003|22082099003|4143699003;
-X-Microsoft-Antispam-Message-Info:
-	jVaCFrMgb8PVU44UR+FzIujRbMc/DWQ3InH8UF8wRt8lAwT5yfpjJ6Pa20LTBwivthoNvQe+gXy82ck6MTF10oc6V+fmuToD0HoM+ZkJ+ooDUbQ5oDwosaoW9VflDdS+VLOdt7DLpu0n1Z2ikz7LFUJxIY4hJpREeGRmlCC9XXeL9TpJiRG/xZXd+8LNZsfg/wlZSbNuL9lGFzuNZE/tL8zctgVRiV1+aR0JZQbu1g2vq2rnezjFf9zcRgfgEZYflZJp5pB8qUg2D3CWC9fv11GzLlJS8rpErQEUlgZoEzvRFs2WKdKerZQ6QyfoQ/31AkTcv8wrLk2vQva0EbufFyNDrXFC+cHC5xWjs5n/TLnIhFofWEje24poCKv/xLjlZRpTjO2630Klj5hR97s2XRcopzC46JLxRrTqawVfEFb0lZ3jLigmQKyY2OQgch3OZyw7myu42lIbYzXZ3FV6bYhcl8+oig5k3IPW/MrOWvmaVcrw9eD6R1SQdC2DAmhgEkO6FM+qitUtGW+ZctYKKNTPPdcPSvfVZ93v941VjWavgzl7gN3d1sPKc76rHfPpnuljxGhNxd4vw4PZBpkVpGT+51O22Z4+J3Wae7s9WOFIVC7rss7yurfISode8fHajMlgzXgCbw3diBcws/85c0tsDXwa3ec404862zeWxi1h8ZdwvdXJUdQYwKdms2a/CUUt1gIaItOrif6SPTqqcZNFKQzb0/Q6NC/AQaoP97Y=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(7416014)(376014)(1800799024)(82310400026)(11063799006)(56012099003)(18002099003)(22082099003)(4143699003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	5LSmE+lN7OMQsDlTrdNnXK3aw178rYJ/P4fIxzhQVNc5Sl/W2pG8YLbAfBejUgQleYtq7pyUzw3/64Hsts2KuS2pxDbLxDfq2qvKhkB8r6HH0t/h/hFRc3jHGO9sLvNeV6hRi+sa78gxrd0aBXv+Hdab7cij8JFl9a5qu3MuuSRSja/MmQi/rBBcRxaNaq+Awrc0PX+HlcMOST0QspixrlutykMROYEZViA6E5iCCCaGeNtYWb36cLk59l4GiUUcX1xsWA8sZBMGFQKqFYwwg/RG1qimeereUX9WwOfg+IGXh9ZUvRkvzA9EXiBX4hXZq5YoBrvmZZ5Z7uLlSiUI6YDXkaFHZYy23HIY33DXcOtMkvzUfHo/Y3U3PiLOsLQpBQ4ya8UfOaRkT4ynp9W0Gs3R30XWjFp+JZYtLxx4qqWYGleGYVeMFDAjm5nl5Rf5
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 May 2026 17:45:22.0719
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2fc38333-d4de-4a95-6d4d-08deb760bb71
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL02EPF00021F6E.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB6966
+In-Reply-To: <yq5azf1s6aic.fsf@kernel.org>
 
-On Thu, May 21, 2026 at 10:44:09AM -0300, Jason Gunthorpe wrote:
-> On Wed, May 20, 2026 at 03:35:32PM -0700, Nicolin Chen wrote:
-> > @ -3870,13 +3870,15 @@ static int arm_smmu_blocking_set_dev_pasid(struct iommu_domain *new_domain,
-> >          * When the last user of the CD table goes away downgrade the STE back
-> >          * to a non-cd_table one, by re-attaching its sid_domain.
-> >          */
-> > -       if (!master->ats_always_on &&
-> > -           !arm_smmu_ssids_in_use(&master->cd_table)) {
-> > +       if (!arm_smmu_ssids_in_use(&master->cd_table)) {
-> >                 struct iommu_domain *sid_domain =
-> >                         iommu_driver_get_domain_for_dev(master->dev);
-> > +               bool ats_always_on = master->ats_always_on &&
-> > +                                    sid_domain->type != IOMMU_DOMAIN_BLOCKED;
-> > +               bool downgrade = sid_domain->type == IOMMU_DOMAIN_IDENTITY ||
-> > +                                sid_domain->type == IOMMU_DOMAIN_BLOCKED;
-> > 
-> > -               if (sid_domain->type == IOMMU_DOMAIN_IDENTITY ||
-> > -                   sid_domain->type == IOMMU_DOMAIN_BLOCKED)
-> > +               if (!ats_always_on && downgrade)
-> >                         sid_domain->ops->attach_dev(sid_domain, dev,
-> >                                                     sid_domain);
+On Thu, May 21, 2026 at 09:05:39PM +0530, Aneesh Kumar K.V wrote:
+> I am wondering whether this is better
 > 
-> Only identity should remain with the CD S1DSS STE, BLOCKED should
-> attach the normal blocking domain still
+> static inline dma_addr_t dma_direct_map_phys(struct device *dev,
+> 		phys_addr_t phys, size_t size, enum dma_data_direction dir,
+> 		unsigned long attrs, bool flush)
+> {
+> 	dma_addr_t dma_addr;
+> 
+> 	/*
+> 	 * For a device requiring unencrypted DMA, MMIO memory is treated
+> 	 * as shared.
+> 	 */
+> 	if (force_dma_unencrypted(dev) && (attrs & DMA_ATTR_MMIO))
+> 		attrs |= DMA_ATTR_CC_SHARED;
 
-Yea. I have !ats_always_on guarding here.
+It is an option, I would be happier if we went and fixed the few
+callers to properly pass the shared. CC did this with the
+pgprot_decrypted() stuff, same reasoning:
 
-Thanks
-Nicolin
+diff --git a/block/blk-mq-dma.c b/block/blk-mq-dma.c
+index bfdb9ed7074116..e77f6404caa3db 100644
+--- a/block/blk-mq-dma.c
++++ b/block/blk-mq-dma.c
+@@ -90,7 +90,7 @@ static bool blk_dma_map_direct(struct request *req, struct device *dma_dev,
+ 	unsigned int attrs = 0;
+ 
+ 	if (iter->p2pdma.map == PCI_P2PDMA_MAP_THRU_HOST_BRIDGE)
+-		attrs |= DMA_ATTR_MMIO;
++		attrs |= iter->p2pdma.mem->dma_mapping_flags;
+ 
+ 	iter->addr = dma_map_phys(dma_dev, vec->paddr, vec->len,
+ 			rq_dma_dir(req), attrs);
+@@ -115,7 +115,7 @@ static bool blk_rq_dma_map_iova(struct request *req, struct device *dma_dev,
+ 	iter->len = dma_iova_size(state);
+ 
+ 	if (iter->p2pdma.map == PCI_P2PDMA_MAP_THRU_HOST_BRIDGE)
+-		attrs |= DMA_ATTR_MMIO;
++		attrs |= iter->p2pdma.mem->dma_mapping_flags;
+ 
+ 	do {
+ 		error = dma_iova_link(dma_dev, state, vec->paddr, mapped,
+diff --git a/drivers/dma-buf/dma-buf-mapping.c b/drivers/dma-buf/dma-buf-mapping.c
+index 794acff2546a34..96022fadc48245 100644
+--- a/drivers/dma-buf/dma-buf-mapping.c
++++ b/drivers/dma-buf/dma-buf-mapping.c
+@@ -147,7 +147,7 @@ struct sg_table *dma_buf_phys_vec_to_sgt(struct dma_buf_attachment *attach,
+ 			ret = dma_iova_link(attach->dev, dma->state,
+ 					    phys_vec[i].paddr, 0,
+ 					    phys_vec[i].len, dir,
+-					    DMA_ATTR_MMIO);
++					    provider->dma_mapping_flags);
+ 			if (ret)
+ 				goto err_unmap_dma;
+ 
+@@ -155,7 +155,7 @@ struct sg_table *dma_buf_phys_vec_to_sgt(struct dma_buf_attachment *attach,
+ 		} else {
+ 			addr = dma_map_phys(attach->dev, phys_vec[i].paddr,
+ 					    phys_vec[i].len, dir,
+-					    DMA_ATTR_MMIO);
++					    provider->dma_mapping_flags);
+ 			ret = dma_mapping_error(attach->dev, addr);
+ 			if (ret)
+ 				goto err_unmap_dma;
+diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
+index 7c898542af8d5e..e4229b4d35c767 100644
+--- a/drivers/pci/p2pdma.c
++++ b/drivers/pci/p2pdma.c
+@@ -282,6 +282,8 @@ int pcim_p2pdma_init(struct pci_dev *pdev)
+ 			continue;
+ 
+ 		p2p->mem[i].owner = &pdev->dev;
++		p2p->mem[i].dma_mapping_flags =
++			DMA_ATTR_MMIO | DMA_ATTR_CC_SHARED;
+ 		p2p->mem[i].bus_offset =
+ 			pci_bus_address(pdev, i) - pci_resource_start(pdev, i);
+ 	}
+diff --git a/include/linux/pci-p2pdma.h b/include/linux/pci-p2pdma.h
+index 873de20a224759..402dc5e5d62b0a 100644
+--- a/include/linux/pci-p2pdma.h
++++ b/include/linux/pci-p2pdma.h
+@@ -21,10 +21,12 @@ struct scatterlist;
+  *
+  * A p2pdma provider is a range of MMIO address space available to the CPU.
+  * @owner: Device to which this provider belongs.
++ * @dma_mapping_flags: DMA attributes to use for host bridge mappings.
+  * @bus_offset: Bus offset for p2p communication.
+  */
+ struct p2pdma_provider {
+ 	struct device *owner;
++	unsigned long dma_mapping_flags;
+ 	u64 bus_offset;
+ };
+ 
+diff --git a/mm/hmm.c b/mm/hmm.c
+index 5955f2f0c83db1..c3f445acddf873 100644
+--- a/mm/hmm.c
++++ b/mm/hmm.c
+@@ -811,7 +811,7 @@ dma_addr_t hmm_dma_map_pfn(struct device *dev, struct hmm_dma_map *map,
+ 	case PCI_P2PDMA_MAP_NONE:
+ 		break;
+ 	case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
+-		attrs |= DMA_ATTR_MMIO;
++		attrs |= p2pdma_state->mem->dma_mapping_flags;
+ 		pfns[idx] |= HMM_PFN_P2PDMA;
+ 		break;
+ 	case PCI_P2PDMA_MAP_BUS_ADDR:
