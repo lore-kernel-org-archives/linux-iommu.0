@@ -1,135 +1,197 @@
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00F8B383999
-	for <iommu@lists.linux.dev>; Thu, 21 May 2026 17:06:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.182
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779383187; cv=pass; b=PlxLRlFFFJKBwrFSgDq7kFGRqdmx5c8Nof8eXDbMEvKo8TNFlHYtd0M0lKVV+iWrLe1hZVqUYieQyo5y8P0dkOHBVIAomyJdL0aRFSOgXWSFgvU4umyyBwl6J7Eg7+qWfL4A8dR7eYZdJcvs3WrxdZAllD4Hmtx3mUpIuLAG0nA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779383187; c=relaxed/simple;
-	bh=6ScDZWa+hTLOkHKii79L+YYLthbYhtQWZThvRzyqBN4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=BU3ewXSJ5tXSMZCERWgtqywp/RuWt6GXnm5H9Tq0H0TAFlk8vxxaW0CGHnlwAqM4yyRQ2O7hOjL01q6e90Je4S67KXLj81MGR8PiGAqE5Cs9vn7eRFp/Kc6Q/x3A9RHnDdb+SyIGPkPFLeRbhjkLgDeJUW5e9/YbfK9yvxkI8Cw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=WdB5K6RR; arc=pass smtp.client-ip=209.85.160.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40031368D4F;
+	Thu, 21 May 2026 17:17:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779383825; cv=none; b=Ls3a97B0tb+e8Tzj1lM0ApMyiWK6KpLDYJGuV6GbCiTdmqZCN1kwN4Wyq2bZL4ftznEudyw/gMZ2WhGZHztM9zv8lsSSByriE7oBY+1+mshOmIBHNwURsuDWcSl6NtlRvEQb+gwCDTYfgqLMNB/C8UX8DDxWMQHGzlUf4lI8rlI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779383825; c=relaxed/simple;
+	bh=N6FoxpRJuTOXCqPUvQH+NFE5+mmoVpWbXtfGXeEKzdU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=qwwBOiiHzoYPr7voVkaPNHV3C1zRMpIKpFt/OdN9tI9lrQc0roF/wPtMg0wQLX9Ttu9qEdIxcQw7j09oAz4PZrHLyaqDDCO3lLjAMsUVme3llb1+SccdJIZLUBgI+vLJmdNfHIsa0AB5ejHisSv+tEHxt8UndieTnLSZkA954MM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=R03u+1Ih; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="WdB5K6RR"
-Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-50e61648f10so15591cf.1
-        for <iommu@lists.linux.dev>; Thu, 21 May 2026 10:06:25 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779383185; cv=none;
-        d=google.com; s=arc-20240605;
-        b=jnXBL8gvenlUPLh1CCmE+hGCn7wALyimeXMCeoVqBuhyJEWlwTAUobvysJMlGYmeSN
-         cEhnTYHGq1fE7Ho7/GxfyEB5fwK6NND0/6J2gLw+b+XU5Ca6dHguuwsiV6TFxLPa4O+8
-         PcTJchDrrSOAceDOCxOqjgjPBMZgty7WDTgCsIAPG5uTn10Z1pLQpD6enEPgdp/pVnb8
-         KsNJsNY9lJilRLklf19lpk676nBbWtjOKS0AK3/3Vc0Nt3C5HfwDeXWvMKyEPTjqzJn4
-         xuSZTk3QfMPqcsN1cr9yyJFirdT8bxa3aVyqBU27C/pKjreUnuJJTTCk0DQUJSVWdttw
-         ZExg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=mhUoyYsFnF9za8i7wBF/DE6TJUENWY+2L07rfya+Q9g=;
-        fh=/pCOAHhYgoSlSbvqqoudBR+qjRVSSzIESXqkJ6L1ZKE=;
-        b=bVAZASRatxR0P53Q43qQ515yg9MQ3LokCeKPi+o7AeFBppb2smpX1vd2QL5vuF6WYp
-         2dHGUIYiqNZAqHKJNVYsj01S9v0YCM5xlvoWMWezPc2Xim8x9zteIS+qhsBgF9Nskvx8
-         uw485BuKKpnB+vExPxGOrALu6oB2bpWk/zYGSmL6diRJvHS27pNAx5hZiRHJCGykBR8F
-         vzV7ztwOUJG2vJG2MMba0N/s/rjwXINeD9alEs70NEVZHBbi1c9WWrSkS30/heo5Sq9k
-         Pso9LzV7runyjpAhD+AEDutts1tO3mSGGAnNpvZCD0NIS058dSh5JDG0QSxZIX5vIUCs
-         Z2SA==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779383185; x=1779987985; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mhUoyYsFnF9za8i7wBF/DE6TJUENWY+2L07rfya+Q9g=;
-        b=WdB5K6RR4RNrPWHHViJrO9kOcOYmVXhO79WMu7s4BOT3zpytaDTNEmG5hoaIBJpKV0
-         oDa5cmBrpUs+E146fwlhW+DJREKDyfwytdA/X2eRa8/qk5/apBWRUIy71+Ea71J6yYi6
-         Pa9zDBp/qpzSE/RxAxWaXwBIvV8z2+Ki0QYLSn9aCvjiBKvVpDX4Wtuy0HPzC1IVbG0r
-         bQ9NdCIaMvxvPGRBHXJtI5UStOFk7yYZhgK8YIT+DrXOAEM9FL3IqudpdEoebCLxxtSF
-         yBTXVEYiL0awE9KuhtMptX3kxPDwvpCE7GW/BVedLFBMCcw5NLn/1QPWMVt2v7QGBI7K
-         enUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779383185; x=1779987985;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=mhUoyYsFnF9za8i7wBF/DE6TJUENWY+2L07rfya+Q9g=;
-        b=dzjinrPufxxiGppkUpI8hD6nUqhhiem28lcvJRksNPOJ0uvLxV5io2R1xjQbFMHKCd
-         9YxwMbA5Pwbm3maTgz1Ih/VBRez/BA6atTKSgDM6r//MDBF+hvwY2mX06lhQMSrDQJwG
-         pnbkZfM+zZQC7tiun3kBwBFTAHM2D2XHhBeC2lAC3KLt+x+shlIhhQW0AryfaC4nm+sr
-         7hikAIUWVHNSvvSNV1CgWn7ukJPLU4pa4xSGC/XoDL4QHFKlx7f8fyofrVhq0AVe8Cmc
-         45SY88Rn/7n5lxL6sa8ifxw9T5gsXKF6PA7B4v/Tk+E9EsoxUDf1MAcsSZEpzQo12d5D
-         8uoQ==
-X-Gm-Message-State: AOJu0YyBn07AekhNaBkmVr/WWwmGY+hF84lKPQxSDzy3fLwRMzHgRFOB
-	hsKRPOwMYr6ZydkuY8pn0vCw1AUyJhYD2h+6tg5qfDSx8OgTLkF9lVOSR0rp+SMMjMRX/BC6scr
-	mcXEn0XzhycwRiS+fQoXYxmLpYdmrA466c6ndhrhU
-X-Gm-Gg: Acq92OHr02RA3Ojohg+fPgdejtI2277mjseb1+TKm9+wDvWYUKuS/HB3+j6N3sUVItj
-	5xx+y/gY6y9q7QLEwoaUvVDUQMJoGfzqJ8gI+XGyXztj39VZj40ani78E7hyQ8W2DNj9rMXuD89
-	ikaxL1x6U1oI2UjUBkmlz0VZTPzw0iJ+fmifBESwaPFntEBw60iOBpU6n5MYzKvzBY9RKC9O/mm
-	X6m+rCvWYAhuVP6jUEqpDYx8tGD7obHL/USoBAIOjpql9m0JHhtYJNxZvxAZO0Xho3YfmLgITSQ
-	+22uXPG3NABnmUnOhD7Z4UyowABuTmIrLoGJcCu352mYO6FHZROC
-X-Received: by 2002:a05:622a:130d:b0:516:3def:1cf4 with SMTP id
- d75a77b69052e-516c52f91damr11257861cf.1.1779383184387; Thu, 21 May 2026
- 10:06:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="R03u+1Ih"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A3FC1F000E9;
+	Thu, 21 May 2026 17:17:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779383823;
+	bh=TzvtaM0HFO3hTTzXz7hMDZGf1pih4p7h/VA/ScQingo=;
+	h=From:To:Cc:Subject:Date;
+	b=R03u+1IhglKS+fD4HrN34UdKSTml7c8/JKlusR/RqHb/FhZug2oS3UjI+ZRWX6B9a
+	 7w9pbUIEUMOJV1dBfc71064/evHIVrgIwwlXgjACKIOUejQVQuVno5CToaMO/HiJKI
+	 KZfhzWsDwuw23BQt1xNqPVOoHeeif76+voYUku0cVNOTaDyU1VpZhVeR4l8oP3DcVp
+	 zv4zVWTN8JFVyKS1ehM7RqXoAiUsixu1AWXyeNilf23XMcruxVVdjliDOSX1Vm43uj
+	 euqBlmmpBCKfVgUm0J9e3iLRrQ92bxzTKpKf0Vc0iXYtATd2i9qItrbDY/dnq+EsP9
+	 ULXD7955uxeig==
+From: Drew Fustini <fustini@kernel.org>
+To: Tomasz Jeznach <tomasz.jeznach@linux.dev>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Paul Walmsley <pjw@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Alexandre Ghiti <alex@ghiti.fr>
+Cc: iommu@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Drew Fustini <fustini@kernel.org>,
+	Joel Stanley <joel@jms.id.au>,
+	Joerg Roedel <joerg.roedel@amd.com>,
+	Nicholas Piggin <npiggin@gmail.com>
+Subject: [PATCH v4] dt-bindings: iommu: riscv: Add bindings for Tenstorrent RISC-V IOMMU
+Date: Thu, 21 May 2026 10:06:33 -0700
+Message-ID: <20260521170652.1880662-2-fustini@kernel.org>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260512090408.794195-1-aneesh.kumar@kernel.org> <20260512090408.794195-5-aneesh.kumar@kernel.org>
-In-Reply-To: <20260512090408.794195-5-aneesh.kumar@kernel.org>
-From: Mostafa Saleh <smostafa@google.com>
-Date: Thu, 21 May 2026 18:06:09 +0100
-X-Gm-Features: AVHnY4ISudxxSxVvcLPDn4R1NI9d_Ojyz-0XSa_zA0I3j6uTkfH8ncuvoLHXOtc
-Message-ID: <CAFgf54o4ZnvnJ3369bHb10tvJJVP+5YWq=ec4Jh5K6S6U9uNEA@mail.gmail.com>
-Subject: Re: [PATCH v4 04/13] dma: swiotlb: track pool encryption state and
- honor DMA_ATTR_CC_SHARED
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev, 
-	Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Steven Price <steven.price@arm.com>, 
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>, Petr Tesarik <ptesarik@suse.com>, 
-	Alexey Kardashevskiy <aik@amd.com>, Dan Williams <dan.j.williams@intel.com>, 
-	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org, 
-	linux-s390@vger.kernel.org, Madhavan Srinivasan <maddy@linux.ibm.com>, 
-	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, Alexander Gordeev <agordeev@linux.ibm.com>, 
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>, 
-	Vasily Gorbik <gor@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>, 
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Tue, May 12, 2026 at 10:05=E2=80=AFAM Aneesh Kumar K.V (Arm)
-<aneesh.kumar@kernel.org> wrote:
-> @@ -1411,6 +1436,16 @@ phys_addr_t swiotlb_tbl_map_single(struct device *=
-dev, phys_addr_t orig_addr,
->         if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
->                 pr_warn_once("Memory encryption is active and system is u=
-sing DMA bounce buffers\n");
->
-> +       /*
-> +        * if we are trying to swiotlb map a decrypted paddr or the paddr=
- is encrypted
-> +        * but the device is forcing decryption, use decrypted io_tlb_mem
-> +        */
-> +       if ((attrs & DMA_ATTR_CC_SHARED) || force_dma_unencrypted(dev))
+From: Nicholas Piggin <npiggin@gmail.com>
 
-I don't think swiotlb needs to know about force_dma_unencrypted(), the
-dma/direct caller should have all the information to pass the
-appropriate flags.
+Extend the binding to cover details specific to the Tenstorrent RISC-V
+IOMMU. In particular, a second register range is added which contains
+M-privileged registers, e.g., PMAs and PMPs.
 
-Thanks.
-Mostafa
+The RISC-V spec S-privileged registers remain in the first register
+range and are compatible with "riscv,iommu" so the Linux driver does not
+notice any difference, but the binding will be used by OpenSBI and
+potentially other M-mode software.
 
-> +               require_decrypted =3D true;
-> +
-> +       if (require_decrypted !=3D mem->unencrypted)
-> +               return (phys_addr_t)DMA_MAPPING_ERROR;
-> +
+Reviewed-by: Joel Stanley <joel@jms.id.au>
+Acked-by: Joerg Roedel <joerg.roedel@amd.com>
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+[fustini: fix dt_binding_check errors]
+Signed-off-by: Drew Fustini <fustini@kernel.org>
+---
+v4 changes:
+- Add minItems: 1 to reg-names so it is legal to for platforms other
+  than tenstorrent,riscv-iommu to use "base"
+- Add reg-names constraints to the allOf: block
+- Sashiko review:
+  https://lore.kernel.org/lkml/20260521070154.9CAA41F000E9@smtp.kernel.org/
+- Link to v3:
+  https://lore.kernel.org/lkml/20260521064445.1740782-2-fustini@kernel.org/
+
+v3 changes:
+- Move tenstorrent,riscv-iommu to the enum with qemu,riscv-iommu
+- Move descriptions out of the allOf:
+- Add minItems: 2 for tenstorrent,riscv-iommu in allOf:
+- Fix reg syntax in Example 5
+- Link to v2:
+  https://lore.kernel.org/lkml/20260520061855.1623468-4-fustini@kernel.org/
+
+v2 changes:
+- Fix dt_binding_check errors
+- Add the Acked-by: from Joerg
+- Drop RFC prefix
+- Link to v1:
+  https://lore.kernel.org/lkml/20260310003850.3837030-1-npiggin@gmail.com/
+
+ .../bindings/iommu/riscv,iommu.yaml           | 59 ++++++++++++++++---
+ 1 file changed, 51 insertions(+), 8 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+index d4838c3b3741..f83efb3ee000 100644
+--- a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
++++ b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+@@ -32,22 +32,35 @@ properties:
+   # should be specified along with 'reg' property providing MMIO location.
+   compatible:
+     oneOf:
+-      - items:
++      - description: Platform (non-PCIe) IOMMU implementations
++        items:
+           - enum:
+               - qemu,riscv-iommu
++              - tenstorrent,riscv-iommu
+           - const: riscv,iommu
+-      - items:
++      - description: PCIe IOMMU implementations
++        items:
+           - enum:
+               - pci1efd,edf1
+           - const: riscv,pci-iommu
+ 
+   reg:
+-    maxItems: 1
+-    description:
+-      For non-PCI devices this represents base address and size of for the
+-      IOMMU memory mapped registers interface.
+-      For PCI IOMMU hardware implementation this should represent an address
+-      of the IOMMU, as defined in the PCI Bus Binding reference.
++    minItems: 1
++    items:
++      - description:
++          For non-PCI devices, base address and size of the IOMMU memory
++          mapped registers interface. For PCI IOMMU hardware
++          implementation, an address of the IOMMU, as defined in the PCI
++          Bus Binding reference.
++      - description:
++          Region containing platform specific MMRs for machine-mode
++          configuration, such as PMA and PMP registers.
++
++  reg-names:
++    minItems: 1
++    items:
++      - const: base
++      - const: machine
+ 
+   '#iommu-cells':
+     const: 1
+@@ -75,6 +88,26 @@ required:
+ 
+ additionalProperties: false
+ 
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - tenstorrent,riscv-iommu
++    then:
++      properties:
++        reg:
++          minItems: 2
++        reg-names:
++          minItems: 2
++    else:
++      properties:
++        reg:
++          maxItems: 1
++        reg-names:
++          maxItems: 1
++
+ examples:
+   - |+
+     /* Example 1 (IOMMU device with wired interrupts) */
+@@ -145,3 +178,13 @@ examples:
+             };
+         };
+     };
++
++  - |+
++    /* Example 5 (Tenstorrent IOMMU device with MSIs) */
++    iommu5: iommu@d2020000 {
++        compatible = "tenstorrent,riscv-iommu", "riscv,iommu";
++        reg = <0xd2020000 0x10000>, <0xaa000000 0x10000>;
++        reg-names = "base", "machine";
++        msi-parent = <&imsics_smode>;
++        #iommu-cells = <1>;
++    };
+
+base-commit: 80dd246accce631c328ea43294e53b2b2dd2aa32
+-- 
+2.43.0
+
