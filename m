@@ -1,157 +1,297 @@
-Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11011059.outbound.protection.outlook.com [52.101.62.59])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 190A932FA29
-	for <iommu@lists.linux.dev>; Thu, 21 May 2026 21:59:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.62.59
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779400792; cv=fail; b=mzusyRM13Ussfk8ZYMgfkwbNG9+hANQm8ORyqdU+I+/41gf+XmZP/nyWenzoX1MfSzwwfyZm1le6u1X4XgfTHX7AKlKJDyyyVI5MmIBsNmIS9SSkJOnboo/w1hSACx7pIhsS9ovJzTSI76lP90NLXlTaC/SsUKVr/NckWLYiT/4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779400792; c=relaxed/simple;
-	bh=wwf4BCxlKGGZ4u1wRUNykm5q+nyZplb+nkNYTVVUPo0=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=L2hLhnDr4aunY6iUWnP5yj59cdCTxibatB8w6hY0W//+VJQJNLNOffjsjm/W9S5Qf+w3hCyx41nHhG1BXbPnpQPzFASyoU5LYePZW4DHh0BRSAWRODEOVDWkl5TM+zgKw5zWD2qZC+jlAFXLn5a0qtH5gdftNQmJUOv49LY1isg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=XM5d9U+/; arc=fail smtp.client-ip=52.101.62.59
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9767933F39C
+	for <iommu@lists.linux.dev>; Thu, 21 May 2026 22:11:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779401518; cv=none; b=JegTkn4IUgK4TL9iVhs41HemWFkoSzKkZzecwGqowXsR0kSMJhd8BnYuNc1mTNpP1vi06k/42Ysx8BWExFVHzPfquLhwOXcdkfOS6yx/MObPkr2bODwtlsApTTFdRcIyU3gQ+9SfJYnkgDWqJRPDtt/cG4YyLkw6i0Rq1/XcDp0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779401518; c=relaxed/simple;
+	bh=ksSXMvM8ovZJlrtps9/d/1c9YjgeRB/oZs30xvfmRd8=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=TOOzGNqSgw9LWJBiqsR03NedZj7kaJqBhdTMsqHwZj/5Nx2Puo8V4vwmKD70DyNE5fVZn6wFQ67/GZVBOD+2ZvgVCmy7hBMxAcoNeL7yhaRCvXb6UEicjRUNKQM+NP5tnciKWszkxU9C7PpnVzgeq3gfXBsUftR/EIT6Jxo/VjA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=jKvSSUNX; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="XM5d9U+/"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=eXEBhyRdN5LzR1n/6fZxwyH+mHPhA7dBAq9xCpTq7NBF+3iR+PQzLJkut92luTrIn+szrI97y9TBvh5u+gM/3ZeDvv/gnLxdJXVt9ae34VtnB2B2lvymNMBoZYLOkYdMPDgPc2kMUcb/7NUH/WK1DjfNg6lfCLjfl5BFpdgLOzrYTkZAvNjBOjogVEVG8MGdYVKBa6IbhMBKUKe9+H57Vbd88aX9D6B79LEGY6YLvF1z5d/nJqtTNQ8ODGNsO1+jMxWtJue7k/nHcFkuqwqc+e3wrNqv4kz6dFc53PX/ur9FMlGwsPGnseyIdiqvvw3eSjpF8dzgAAe36Dr3PbDoHw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/A25vY2wwu+FxkZChatyc454HcHMRVq124kDP6lHcJA=;
- b=ZopKXVJM9HgWABf7h49sife2a2RcxThyS6dZR7aWDGSl49i4eU6Q9iXgtWzLsgyfj/tzB3AbMY7AAmuVMt8u60oTzslIjvAvzHVV7EpkSFadLXwbgbLUcR/9i95+lGLsog9JmMbTDF4Mjghj1Nn484I7k5Id6ef4eStd7AmHhfryyyN2OyTkVv/xpo+o3t97qFU7dzxskDKDIR3SGIqIDfJfLECXFJkO2r91ATyPmsrvtEVt4SvfnDJYqi06jELWziicfgQ/Bo8xX7To+PtjNXFpJVFQToiYM+oJ8TaxLWI1KLgHD6/8DQ6C7uiDmput1sWew0OBRo9srQXN4b2gng==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/A25vY2wwu+FxkZChatyc454HcHMRVq124kDP6lHcJA=;
- b=XM5d9U+/50TEZ2WdPUIgxSAEIc/1PimdkOhQmPD1eC1+NI983122j5RfthGwbMib/rAgJYQkTG6p8hFO9Ngn0WoyewN0l8MP5spOmSCxHUQvanl55FXMNa8qV3rKBQnnzVGN7EwtLfqbBRudy+v02S8t8SuoAVFc1PsQFN2NDHErxh1cyu5njSPVPWXX5dfsmqej6o7cXO1rYv4hJbrDSnOaMCeLl47Cvh5VMyUnKsiHHW9xGuGzw5vizyHfo8/wd0wQ4N5dNE0EC7XaZN7qPcYgYl8UKZGYQhreX0c70x1mwSwtg2w7ObNfykMXHGABcSe81v/DYPuA0UrjQvqW2g==
-Received: from DS7PR03CA0103.namprd03.prod.outlook.com (2603:10b6:5:3b7::18)
- by CH3PR12MB9454.namprd12.prod.outlook.com (2603:10b6:610:1c7::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.48.17; Thu, 21 May
- 2026 21:59:43 +0000
-Received: from DS1PEPF00017094.namprd03.prod.outlook.com
- (2603:10b6:5:3b7:cafe::3b) by DS7PR03CA0103.outlook.office365.com
- (2603:10b6:5:3b7::18) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.48.17 via Frontend Transport; Thu, 21
- May 2026 21:59:43 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DS1PEPF00017094.mail.protection.outlook.com (10.167.17.137) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.71.7 via Frontend Transport; Thu, 21 May 2026 21:59:42 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 21 May
- 2026 14:59:28 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 21 May
- 2026 14:59:27 -0700
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Thu, 21 May 2026 14:59:26 -0700
-Date: Thu, 21 May 2026 14:59:25 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Bjorn Helgaas <helgaas@kernel.org>
-CC: <jgg@nvidia.com>, <will@kernel.org>, <robin.murphy@arm.com>,
-	<joro@8bytes.org>, <bhelgaas@google.com>, <praan@google.com>,
-	<baolu.lu@linux.intel.com>, <kevin.tian@intel.com>,
-	<miko.lenczewski@arm.com>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-pci@vger.kernel.org>, <dan.j.williams@intel.com>,
-	<jonathan.cameron@huawei.com>, <vsethi@nvidia.com>,
-	<linux-cxl@vger.kernel.org>, <nirmoyd@nvidia.com>
-Subject: Re: [PATCH v6 1/3] PCI: Add pci_ats_required() for CXL.cache capable
- devices
-Message-ID: <ag+APX/6seVWrpvB@Asurada-Nvidia>
-References: <ag90FlOaljwa0qqU@Asurada-Nvidia>
- <20260521213123.GA186424@bhelgaas>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="jKvSSUNX"
+Received: from administrator-PowerEdge-R660.corp.microsoft.com (unknown [131.107.147.7])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 6A17120B7169;
+	Thu, 21 May 2026 15:11:49 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6A17120B7169
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1779401509;
+	bh=16gXjRM1XRgk54x3E/Rwenma3AATUdRyBgucO9DVGhA=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=jKvSSUNXKw3I3gSuK0b6P8liaer77Py0DgBt5dn5TxYbnBlICCYJqhbFq3yK4P3Iy
+	 w1rFXcFLfO04jHX/Wj8XimuSzAG7mC4fwMRTcHxds1PjGn3jA5rtJNROeetK7Z/IhC
+	 EZ4A6ix5U+MBwQ8pz/uxeVsp02SGx7JmuD2U3o2M=
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: linux-kernel@vger.kernel.org,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Alex Williamson <alex@shazbot.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	Mostafa Saleh <smostafa@google.com>,
+	David Matlack <dmatlack@google.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	Yi Liu <yi.l.liu@intel.com>,
+	Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Saurabh Sengar <ssengar@linux.microsoft.com>,
+	skhawaja@google.com,
+	pasha.tatashin@soleen.com,
+	Will Deacon <will@kernel.org>,
+	Jacob Pan <jacob.pan@linux.microsoft.com>
+Subject: [PATCH v6 1/7] iommufd: Support a HWPT without an iommu driver for noiommu
+Date: Thu, 21 May 2026 15:11:48 -0700
+Message-ID: <20260521221155.1375144-2-jacob.pan@linux.microsoft.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260521221155.1375144-1-jacob.pan@linux.microsoft.com>
+References: <20260521221155.1375144-1-jacob.pan@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20260521213123.GA186424@bhelgaas>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF00017094:EE_|CH3PR12MB9454:EE_
-X-MS-Office365-Filtering-Correlation-Id: b6fdac66-e07b-4a21-74f9-08deb784439d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|1800799024|82310400026|7416014|376014|56012099003|22082099003|18002099003|4143699003|11063799006;
-X-Microsoft-Antispam-Message-Info:
-	wxYe/OpKAAblObq5pQuDuSiY/LVEGDr6vUDCBgqXn4o1NA7K3e+fk+igfG9EYEdgCIJthwpt1nQCsIQx1fn2W9eQWH7Mnhga1FINt/E/kbV+BcZIqcwZroIYdom6UQs4vsia9yBAJkh6bIqpSi/+YR3wQ/b22dRLP0pk1sY+Ytgf0Meh9SsPy9Ov1hyJmG5jv0yUKkpe2Vb4KkeWKgtoipZPluUhthl7RF1GHl+iIJop5cXKR783AhIHnvW9Tl3A2SlXR/sLQPhcYO29tpODZnGyON434ZSESkSd+hpQZVXQhREZjZXNrz4etnG+YjUenPv0ZWpEDTTBfpT79tymHSeyu2hsXhh2WALxIhjQ1+5Z2IGaznIPyjMBcW1gcosFI5Q4VGO2BertbUBjbTMwM6a3oOzwOREAvm0ezkvT8AfrEJHOxF0OBuQbQQWoorzsfYFDQbDuQVHY4vftM51ISBKOB8ImUDNTbuMYdlMA1F5c5kyCB/1zB8gqNzHOeLrNJyXbKzT1gqKUaBNpsSmxNR2bqX3N0tXdtU5cf7JDbPSf3F7EdQBxoGIImx9U4+yGCzBhrBuompHi/DFeehjUCLFOQJFMuQSCVeOO/YkyJTdZwqrgFs59M48Vc+/LFCDe8H9EZ38Ii1loDdN6stYxUgBSQ1Wqnrn0ABbROxfOwEZM0EnNz0XaHWWs8m01+QM6a1lBfQqi4WYOfyWl7XF5cBXBVS54qloT3G4lyZuu+E8=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(1800799024)(82310400026)(7416014)(376014)(56012099003)(22082099003)(18002099003)(4143699003)(11063799006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	IGoMt7o/1TqrXPnXB7cXLH0jGmAeVqAcAu0XVJESXhmACZeOBB2BMPRfxZfuRP5hkVOy/QSqY5W9GXZYu7/+RnBHHPpK2epqdHlBrXq/Hgl2ZhYdf5/Elf10mScA26DmeiTQr9w4w+u1PrfzTAuVVv9v+Uq92EZGraO2PQ8s4syuYTyB0TMtSiUT7c8sHprJRAhBX/tS0JSUEmXfqDkNo2z0UqaR0i4VpyTHoxEO2QpmIYKAduFZ5EO68AWoZpDxJB3tVPhiw7qtSgpSpdVgEntWQ1Ffw5wlZ7MEjwM654duayXsOsjNRgxdN0fS29/SpoMFWWrCTUYYLfBuaC0PiVoXowWMFXAIvSOzsZWNgj2af+v677bWFuP+l76OOH20Hcz+AfbT3+6XsjnP1fANFUyWRbqdw01vuLjQYtTM+ey/4rBZAmGP1BZ0UnRSQHdW
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 May 2026 21:59:42.9621
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b6fdac66-e07b-4a21-74f9-08deb784439d
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DS1PEPF00017094.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9454
+Content-Transfer-Encoding: 8bit
 
-On Thu, May 21, 2026 at 04:31:23PM -0500, Bjorn Helgaas wrote:
-> On Thu, May 21, 2026 at 02:07:34PM -0700, Nicolin Chen wrote:
-> > On Thu, May 21, 2026 at 03:57:23PM -0500, Bjorn Helgaas wrote:
-> > > On Thu, May 21, 2026 at 01:34:20PM -0700, Nicolin Chen wrote:
-> > > > +bool pci_ats_required(struct pci_dev *pdev)
-> > > > +{
-> > > > +	if (!pci_ats_supported(pdev))
-> > > > +		return false;
-> > > > +
-> > > > +	/* A VF inherits its PF's requirement for ATS function */
-> > > > +	if (pdev->is_virtfn)
-> > > > +		pdev = pci_physfn(pdev);
-> > > > +
-> > > > +	return pci_cxl_ats_required(pdev);
-> > > 
-> > > I acked this before I saw this sashiko feedback, which looks like a
-> > > legit issue to me:
-> > > 
-> > >   Will this VF inheritance logic ever be reached?
-> > > 
-> > >   According to the PCIe SR-IOV specification (section 9.3.3.1), VFs do
-> > >   not implement the ATS Extended Capability, which means pdev->ats_cap
-> > >   is always 0 for VFs.
-> 
-> Huh.  I wish sashiko would include the spec revision because that sure
-> looks wrong.  In PCIe r7.0, there is no sec 9.3.3.1.  In PCIe r6.0,
-> sec 9.3.3.1 is the SR-IOV Extended Capability, which doesn't mention
-> ATS.  In both, sec 10.5.1 is the ATS Extended Capability and says both
-> PFs and VFs can implement it.
+From: Jason Gunthorpe <jgg@nvidia.com>
 
-I am glad you checked the spec. I should have done the same.
+Create just a little part of a real iommu driver, enough to
+slot in under the dev_iommu_ops() and allow iommufd to call
+domain_alloc_paging_flags() and fail everything else.
 
-> So I think this is OK as-is:
-> 
-> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+This allows explicitly creating a HWPT under an IOAS.
 
-Thanks!
-Nicolin
+A new Kconfig option IOMMUFD_NOIOMMU is introduced to differentiate
+from the VFIO group/container based noiommu mode.
+
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+---
+v6: (Yi)
+  - Sort includes alphabetically (iommu.h after generic_pt/iommu.h)
+  - Fix comment: s/mock page table/SW-only page table/ to avoid confusion
+    with selftest mock
+  - Rewrite noiommu_amdv1_ops comment: explain why AMDV1 format is chosen
+    (multi-page size options), remove references to group-container mode distinction
+v5:
+   - Use the new IOMMUFD_NOIOMMU Kconfig instead of VFIO_NOIOMMU
+   - Use consistent wording referring to VFIO noiommu mode (Kevin)
+   - Copyright date fix (Kevin)
+v4:
+   - Make iommufd_noiommu_ops const
+v3:
+   - Add comment to explain the design difference over the
+     legacy noiommu VFIO code.
+---
+ drivers/iommu/iommufd/Kconfig           | 12 +++
+ drivers/iommu/iommufd/Makefile          |  1 +
+ drivers/iommu/iommufd/hw_pagetable.c    | 15 +++-
+ drivers/iommu/iommufd/hwpt_noiommu.c    | 97 +++++++++++++++++++++++++
+ drivers/iommu/iommufd/iommufd_private.h |  2 +
+ 5 files changed, 125 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/iommu/iommufd/hwpt_noiommu.c
+
+diff --git a/drivers/iommu/iommufd/Kconfig b/drivers/iommu/iommufd/Kconfig
+index 455bac0351f2..6c3bea83631b 100644
+--- a/drivers/iommu/iommufd/Kconfig
++++ b/drivers/iommu/iommufd/Kconfig
+@@ -16,6 +16,18 @@ config IOMMUFD
+ 	  If you don't know what to do here, say N.
+ 
+ if IOMMUFD
++config IOMMUFD_NOIOMMU
++	bool
++	depends on !GENERIC_ATOMIC64 # IOMMU_PT_AMDV1 requires cmpxchg64
++	select GENERIC_PT
++	select IOMMU_PT
++	select IOMMU_PT_AMDV1
++	help
++	  Provides a SW-only IO page table for devices without hardware
++	  IOMMU backing. This uses the AMDV1 page table format for
++	  IOVA-to-PA lookups only, not for hardware DMA translation.
++	  To be selected by VFIO_NOIOMMU when VFIO_DEVICE_CDEV is enabled.
++
+ config IOMMUFD_VFIO_CONTAINER
+ 	bool "IOMMUFD provides the VFIO container /dev/vfio/vfio"
+ 	depends on VFIO_GROUP && !VFIO_CONTAINER
+diff --git a/drivers/iommu/iommufd/Makefile b/drivers/iommu/iommufd/Makefile
+index 71d692c9a8f4..67207914bb6e 100644
+--- a/drivers/iommu/iommufd/Makefile
++++ b/drivers/iommu/iommufd/Makefile
+@@ -10,6 +10,7 @@ iommufd-y := \
+ 	vfio_compat.o \
+ 	viommu.o
+ 
++iommufd-$(CONFIG_IOMMUFD_NOIOMMU) += hwpt_noiommu.o
+ iommufd-$(CONFIG_IOMMUFD_TEST) += selftest.o
+ 
+ obj-$(CONFIG_IOMMUFD) += iommufd.o
+diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
+index fe789c2dc0c9..0ae14cd3fc72 100644
+--- a/drivers/iommu/iommufd/hw_pagetable.c
++++ b/drivers/iommu/iommufd/hw_pagetable.c
+@@ -8,6 +8,15 @@
+ #include "../iommu-priv.h"
+ #include "iommufd_private.h"
+ 
++static const struct iommu_ops *get_iommu_ops(struct iommufd_device *idev)
++{
++	if (IS_ENABLED(CONFIG_IOMMUFD_NOIOMMU) && !idev->igroup->group)
++		return &iommufd_noiommu_ops;
++	if (WARN_ON_ONCE(!idev->dev->iommu))
++		return NULL;
++	return dev_iommu_ops(idev->dev);
++}
++
+ static void __iommufd_hwpt_destroy(struct iommufd_hw_pagetable *hwpt)
+ {
+ 	if (hwpt->domain)
+@@ -114,11 +123,13 @@ iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+ 				IOMMU_HWPT_ALLOC_DIRTY_TRACKING |
+ 				IOMMU_HWPT_FAULT_ID_VALID |
+ 				IOMMU_HWPT_ALLOC_PASID;
+-	const struct iommu_ops *ops = dev_iommu_ops(idev->dev);
++	const struct iommu_ops *ops = get_iommu_ops(idev);
+ 	struct iommufd_hwpt_paging *hwpt_paging;
+ 	struct iommufd_hw_pagetable *hwpt;
+ 	int rc;
+ 
++	if (!ops)
++		return ERR_PTR(-ENODEV);
+ 	lockdep_assert_held(&ioas->mutex);
+ 
+ 	if ((flags || user_data) && !ops->domain_alloc_paging_flags)
+@@ -229,7 +240,7 @@ iommufd_hwpt_nested_alloc(struct iommufd_ctx *ictx,
+ 			  struct iommufd_device *idev, u32 flags,
+ 			  const struct iommu_user_data *user_data)
+ {
+-	const struct iommu_ops *ops = dev_iommu_ops(idev->dev);
++	const struct iommu_ops *ops = get_iommu_ops(idev);
+ 	struct iommufd_hwpt_nested *hwpt_nested;
+ 	struct iommufd_hw_pagetable *hwpt;
+ 	int rc;
+diff --git a/drivers/iommu/iommufd/hwpt_noiommu.c b/drivers/iommu/iommufd/hwpt_noiommu.c
+new file mode 100644
+index 000000000000..62a44f4b9164
+--- /dev/null
++++ b/drivers/iommu/iommufd/hwpt_noiommu.c
+@@ -0,0 +1,97 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES
++ */
++#include <linux/generic_pt/iommu.h>
++#include <linux/iommu.h>
++#include "iommufd_private.h"
++
++static const struct iommu_domain_ops noiommu_amdv1_ops;
++
++struct noiommu_domain {
++	union {
++		struct iommu_domain domain;
++		struct pt_iommu_amdv1 amdv1;
++	};
++	spinlock_t lock;
++};
++PT_IOMMU_CHECK_DOMAIN(struct noiommu_domain, amdv1.iommu, domain);
++
++static void noiommu_change_top(struct pt_iommu *iommu_table,
++			       phys_addr_t top_paddr, unsigned int top_level)
++{
++}
++
++static spinlock_t *noiommu_get_top_lock(struct pt_iommu *iommupt)
++{
++	struct noiommu_domain *domain =
++		container_of(iommupt, struct noiommu_domain, amdv1.iommu);
++
++	return &domain->lock;
++}
++
++static const struct pt_iommu_driver_ops noiommu_driver_ops = {
++	.get_top_lock = noiommu_get_top_lock,
++	.change_top = noiommu_change_top,
++};
++
++static struct iommu_domain *
++noiommu_alloc_paging_flags(struct device *dev, u32 flags,
++			   const struct iommu_user_data *user_data)
++{
++	struct pt_iommu_amdv1_cfg cfg = {};
++	struct noiommu_domain *dom;
++	int rc;
++
++	if (flags || user_data)
++		return ERR_PTR(-EOPNOTSUPP);
++
++	cfg.common.hw_max_vasz_lg2 = 64;
++	cfg.common.hw_max_oasz_lg2 = 52;
++	cfg.starting_level = 2;
++	cfg.common.features =
++		(BIT(PT_FEAT_DYNAMIC_TOP) | BIT(PT_FEAT_AMDV1_ENCRYPT_TABLES) |
++		 BIT(PT_FEAT_AMDV1_FORCE_COHERENCE));
++
++	dom = kzalloc(sizeof(*dom), GFP_KERNEL);
++	if (!dom)
++		return ERR_PTR(-ENOMEM);
++
++	spin_lock_init(&dom->lock);
++	dom->amdv1.iommu.nid = NUMA_NO_NODE;
++	dom->amdv1.iommu.driver_ops = &noiommu_driver_ops;
++	dom->domain.ops = &noiommu_amdv1_ops;
++
++	/* Use SW-only page table which is based on AMDV1 */
++	rc = pt_iommu_amdv1_init(&dom->amdv1, &cfg, GFP_KERNEL);
++	if (rc) {
++		kfree(dom);
++		return ERR_PTR(rc);
++	}
++
++	return &dom->domain;
++}
++
++static void noiommu_domain_free(struct iommu_domain *iommu_domain)
++{
++	struct noiommu_domain *domain =
++		container_of(iommu_domain, struct noiommu_domain, domain);
++
++	pt_iommu_deinit(&domain->amdv1.iommu);
++	kfree(domain);
++}
++
++/*
++ * Domain ops for iommufd no-IOMMU mode. Uses AMDV1 format as a
++ * SW-only IOPT because it has the best multi-page size options
++ * of all the formats. IOVAs serve only for IOVA-to-PA lookups,
++ * not for hardware DMA translation.
++ */
++static const struct iommu_domain_ops noiommu_amdv1_ops = {
++	IOMMU_PT_DOMAIN_OPS(amdv1),
++	.free = noiommu_domain_free,
++};
++
++const struct iommu_ops iommufd_noiommu_ops = {
++	.domain_alloc_paging_flags = noiommu_alloc_paging_flags,
++};
+diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+index 6ac1965199e9..2682b5baa6e9 100644
+--- a/drivers/iommu/iommufd/iommufd_private.h
++++ b/drivers/iommu/iommufd/iommufd_private.h
+@@ -464,6 +464,8 @@ static inline void iommufd_hw_pagetable_put(struct iommufd_ctx *ictx,
+ 	refcount_dec(&hwpt->obj.users);
+ }
+ 
++extern const struct iommu_ops iommufd_noiommu_ops;
++
+ struct iommufd_attach;
+ 
+ struct iommufd_group {
+-- 
+2.43.0
+
