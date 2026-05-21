@@ -1,58 +1,66 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AB20364053;
-	Thu, 21 May 2026 15:35:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D12C2BDC32;
+	Thu, 21 May 2026 15:38:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779377752; cv=none; b=HhsPsumepOrxv0pqYoAFqdHOrTh5NipZxar7DakpW6oESn36P7EULMdW6St2dfBpRCiDCrLoMjxZL9cv6OWxZVPdxogNp2YNnVAg0JyWeF0vXB9WiwGL78AwwDeqDJ5efHh269iRKnY7sxKsMjtW1v3OXWFl9XaJYQjOF4Bb1Bg=
+	t=1779377884; cv=none; b=PCYBstV24qzUGTv+YXTAJ62prRwCVKeznjof0dIH2XM7vS9dSVGuIFF0EbWJPuByTpah5gD+FwKnFoi0g192LgHLqZoFKH1va7qncFlzDnQO1QPP4RWjfqtocmwIi5bmUyXhhyj65xUeqledF86fFGmWnP19g22iMp9tQTfxj0A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779377752; c=relaxed/simple;
-	bh=nTShFhtTFDx5K0LL6iQ8e4S3RlT5C2DB/RmwSrUra00=;
+	s=arc-20240116; t=1779377884; c=relaxed/simple;
+	bh=4v79JhfkK7irUQUXGMhr5/E/7yX1WhwQVD6Rpohut0c=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=Zfb99fY2S/r75DHNZvYI1sqJDVLyd9AVW+Ca9zf3OjnpL0MLyNg42UkeDmLvzRfXfkxTbKYrLHIdA7C2wo76hckq/QFBap/SW5GDYearvyo2YDvuthU+X9Ptbx2rYxi0q5BmUx5TM3Qja4zpewMeIFpXzta81m0sJ55R0Zfqfcs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bEhNVt1G; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=rddx3ij1DbtCSUDcmargZdiu41FW0zF2+86kb04g2IFcvpmTVIKX9VwwtnZcs7eKz0wpYoMyWMYZTty1e3rzVTH+dWl71cYcyQ2ysnlFdUTiuc87+e3/aaEDMKjDfZtKEBCJH6w91mOvlOQnnBGeuW8wMgm3VrO4oaUISOlsdCw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SKjGQCP1; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bEhNVt1G"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EBDC1F00A3B;
-	Thu, 21 May 2026 15:35:43 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SKjGQCP1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 055241F000E9;
+	Thu, 21 May 2026 15:37:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779377751;
-	bh=5PUD/3vmVzMg81CR18Fk250apIi9RXyWW+eG5eaM6s8=;
+	s=k20260515; t=1779377883;
+	bh=Qomyt6SRN6loAiKuzG+mnZMN+9NDAav5uB2vD7COXYY=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=bEhNVt1GsNTReAabbrbOrGd7094+P/Sa5116B7JLNnREdhOzMGX2Gz8rO+jhs2hjr
-	 zSsrlqBKOoM5flIzMvqZnYd7J9cRg2EDO74CdatpbE2YJ1B0uNV1ztRl6S0G+N0vsU
-	 yB1er4WO6TtsqsXhRMk1/TlGmKa+L1/FsD2GOdqw+oQm9GLeFT3Bj3KKSnDOBHF4B/
-	 U+yyOFENz4I54n62JgPRSNPUjWlQ+ltOi5Wo2jvwQbED3vUWkLuR6lXfvEDJvLC4tN
-	 p2nKWsvyoT705a20eObfWQInTblFf6CCtvyGPA+dGyxm9WCeiQxTawQdn76dB9GHg8
-	 A/2+Gwm/0LbAQ==
+	b=SKjGQCP1jUHZn8lGcvNb16fhytEsPovJvUrNUllKBoXBnYhKzZyiWFp5SXoR00qSh
+	 4Yi1RUq4BpLuoEGXd/ZfpfHeWAgR0+SKGaVyCv/OICsvCL8QuRGyjiXEjI5giDln+y
+	 nPHP27gGY79//Ncb34+zHprzV63ewWoOHLFrps3BSWb2kqL1XebtXJJN3TVZe3EV/k
+	 urWUK7qq4xQ19I8ijQAMN6p1ereVXTWRx1/nsAg3dl09jZhyb9oK04vIX/Z5RdNTgn
+	 97oMJkfi8HsdKYrcl3kj4rpuwHeCO8ecnTXfnja7vDYtRCrTlYPo8c5gdohMtv0jZ2
+	 UZTZ7iyYKVbCg==
 X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
 From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Jiri Pirko <jiri@resnulli.us>, dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev,
-	linux-media@vger.kernel.org, sumit.semwal@linaro.org,
-	benjamin.gaignard@collabora.com, Brian.Starkey@arm.com,
-	jstultz@google.com, tjmercier@google.com,
-	christian.koenig@amd.com, m.szyprowski@samsung.com,
-	robin.murphy@arm.com, leon@kernel.org, sean.anderson@linux.dev,
-	ptesarik@suse.com, catalin.marinas@arm.com,
-	suzuki.poulose@arm.com, steven.price@arm.com,
-	thomas.lendacky@amd.com, john.allen@amd.com,
-	ashish.kalra@amd.com, suravee.suthikulpanit@amd.com,
-	linux-coco@lists.linux.dev
-Subject: Re: [PATCH v5 1/2] dma-mapping: introduce DMA_ATTR_CC_SHARED for
- shared memory
-In-Reply-To: <20260426130531.GF804026@ziepe.ca>
-References: <20260325192352.437608-1-jiri@resnulli.us>
- <20260325192352.437608-2-jiri@resnulli.us> <yq5atst6ywbl.fsf@kernel.org>
- <4qdizkkoeke3cvkcf35upa7p7ick6s654eqlrizmi7ozkw5eze@tnpk2e34xgwl>
- <yq5awly0d504.fsf@kernel.org>
- <tteiecxfqy4k24wnzvp6ocxnuopyhmqtne2xwh5htwldlbzjnp@o6cbzdlurxld>
- <20260421121004.GA3611611@ziepe.ca> <yq5aik9jcpzm.fsf@kernel.org>
- <20260424225514.GE804026@ziepe.ca> <20260426130531.GF804026@ziepe.ca>
-Date: Thu, 21 May 2026 21:05:39 +0530
-Message-ID: <yq5azf1s6aic.fsf@kernel.org>
+To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
+Subject: Re: [PATCH v4 07/13] dma-direct: make dma_direct_map_phys() honor
+ DMA_ATTR_CC_SHARED
+In-Reply-To: <20260512090408.794195-8-aneesh.kumar@kernel.org>
+References: <20260512090408.794195-1-aneesh.kumar@kernel.org>
+ <20260512090408.794195-8-aneesh.kumar@kernel.org>
+Date: Thu, 21 May 2026 21:07:49 +0530
+Message-ID: <yq5awlww6aeq.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -61,84 +69,83 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
 
-Jason Gunthorpe <jgg@ziepe.ca> writes:
+"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> writes:
 
->> > static inline dma_addr_t dma_direct_map_phys(struct device *dev,
->> > 		phys_addr_t phys, size_t size, enum dma_data_direction dir,
->> > 		unsigned long attrs, bool flush)
->> > {
->> > 	dma_addr_t dma_addr;
->> > 
->> > 	if (is_swiotlb_force_bounce(dev)) {
->> > 		if (attrs & (DMA_ATTR_MMIO | DMA_ATTR_REQUIRE_COHERENT))
->> > 			return DMA_MAPPING_ERROR;
->> > 
->> > 		return swiotlb_map(dev, phys, size, dir, attrs);
->> > 	}
->> > 
->> > 	if (attrs & DMA_ATTR_MMIO) {
->> > 		dma_addr = phys;
->> > 		if (unlikely(!dma_capable(dev, dma_addr, size, false, attrs)))
->> > 			goto err_overflow;
->> > 		goto dma_mapped;
->> 
->> I suspect P2P is probably broken on CC because this doesn't make
->> sense..
->
-> Actually, I suppose it is fully broken because it will jump to swiotlb
-> and then should fail.
->
->> This should flow into the
->> phys_to_dma_unencrypted/phys_to_dma_encrypted block as well AFAICT, it
->> shouldn't just assign phys. Assigning phys to dma on a CC system is
->> always wrong, right?
->> 
->> It is is more like
->> 
->>         /* To be updated, callers should specify MMIO | CC_SHARED instead of
->> 	   * implying it. */
->>         if (attrs & DMA_ATTR_MMIO)
->> 	   attrs |= DMA_ATTR_CC_SHARED;
->
-> So no need for this if, we can go directly to marking the MMIO callers
-> with DMA_ATTR_CC_SHARED once this is fixed for mmio:
->
->>         if (attrs & DMA_ATTR_CC_SHARED) {
->>  		dma_addr = phys_to_dma_unencrypted(dev, phys);
->>  	} else {
->>  		dma_addr = phys_to_dma_encrypted(dev, phys);
->>  	}
->
-> Jasn
+> diff --git a/kernel/dma/direct.h b/kernel/dma/direct.h
+> index e05dc7649366..4e35264ab6f8 100644
+> --- a/kernel/dma/direct.h
+> +++ b/kernel/dma/direct.h
+> @@ -89,36 +89,32 @@ static inline dma_addr_t dma_direct_map_phys(struct device *dev,
+>  	dma_addr_t dma_addr;
+>  
+>  	if (is_swiotlb_force_bounce(dev)) {
+> -		if (!(attrs & DMA_ATTR_CC_SHARED)) {
+> -			if (attrs & (DMA_ATTR_MMIO | DMA_ATTR_REQUIRE_COHERENT))
+> -				return DMA_MAPPING_ERROR;
+> +		if (attrs & (DMA_ATTR_MMIO | DMA_ATTR_REQUIRE_COHERENT))
+> +			return DMA_MAPPING_ERROR;
+>  
+> -			return swiotlb_map(dev, phys, size, dir, attrs);
+> -		}
+> -	} else if (attrs & DMA_ATTR_CC_SHARED) {
+> -		return DMA_MAPPING_ERROR;
+> +		return swiotlb_map(dev, phys, size, dir, attrs);
+>  	}
+>  
+> -	if (attrs & DMA_ATTR_MMIO) {
+> -		dma_addr = phys;
+> -		if (unlikely(!dma_capable(dev, dma_addr, size, false, attrs)))
+> -			goto err_overflow;
+> -	} else if (attrs & DMA_ATTR_CC_SHARED) {
+> +	if (attrs & DMA_ATTR_CC_SHARED)
+>  		dma_addr = phys_to_dma_unencrypted(dev, phys);
+> +	else
+> +		dma_addr = phys_to_dma_encrypted(dev, phys);
+> +
+> +	if (attrs & DMA_ATTR_MMIO) {
+>  		if (unlikely(!dma_capable(dev, dma_addr, size, false, attrs)))
+>  			goto err_overflow;
+> -	} else {
+> -		dma_addr = phys_to_dma(dev, phys);
+> -		if (unlikely(!dma_capable(dev, dma_addr, size, true, attrs)) ||
+> -		    dma_kmalloc_needs_bounce(dev, size, dir)) {
+> -			if (is_swiotlb_active(dev) &&
+> -			    !(attrs & DMA_ATTR_REQUIRE_COHERENT))
+> -				return swiotlb_map(dev, phys, size, dir, attrs);
+> +		goto dma_mapped;
+> +	}
+>  
+> -			goto err_overflow;
+> -		}
+> +	if (unlikely(!dma_capable(dev, dma_addr, size, true, attrs)) ||
+> +	    dma_kmalloc_needs_bounce(dev, size, dir)) {
+> +		if (is_swiotlb_active(dev) &&
+> +		    !(attrs & DMA_ATTR_REQUIRE_COHERENT))
+> +			return swiotlb_map(dev, phys, size, dir, attrs);
+> +		goto err_overflow;
+>  	}
+>  
+> +dma_mapped:
+>  	if (!dev_is_dma_coherent(dev) &&
+>  	    !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO))) {
+>  		arch_sync_dma_for_device(phys, size, dir);
+> -- 
+> 2.43.0
 
-I am wondering whether this is better
+I guess we need this change on top of the above
 
-static inline dma_addr_t dma_direct_map_phys(struct device *dev,
-		phys_addr_t phys, size_t size, enum dma_data_direction dir,
-		unsigned long attrs, bool flush)
-{
-	dma_addr_t dma_addr;
-
-	/*
-	 * For a device requiring unencrypted DMA, MMIO memory is treated
-	 * as shared.
-	 */
-	if (force_dma_unencrypted(dev) && (attrs & DMA_ATTR_MMIO))
-		attrs |= DMA_ATTR_CC_SHARED;
-
-.....
-
-	if (attrs & DMA_ATTR_CC_SHARED)
-		dma_addr = phys_to_dma_unencrypted(dev, phys);
-	else
-		dma_addr = phys_to_dma_encrypted(dev, phys);
-
-	if (attrs & DMA_ATTR_MMIO) {
-		if (unlikely(!dma_capable(dev, dma_addr, size, false, attrs)))
-			goto err_overflow;
-		goto dma_mapped;
-	}
-
-
-....
--aneesh
+modified   kernel/dma/direct.h
+@@ -88,6 +88,13 @@ static inline dma_addr_t dma_direct_map_phys(struct device *dev,
+ {
+ 	dma_addr_t dma_addr;
+ 
++	/*
++	 * For a device requiring unencrypted DMA, MMIO memory is treated
++	 * as shared by default.
++	 */
++	if (force_dma_unencrypted(dev) && (attrs & DMA_ATTR_MMIO))
++		attrs |= DMA_ATTR_CC_SHARED;
++
+ 	if (is_swiotlb_force_bounce(dev)) {
+ 		if (attrs & (DMA_ATTR_MMIO | DMA_ATTR_REQUIRE_COHERENT))
+ 			return DMA_MAPPING_ERROR;
