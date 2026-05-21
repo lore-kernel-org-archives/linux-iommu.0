@@ -1,197 +1,171 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40031368D4F;
-	Thu, 21 May 2026 17:17:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8255C356772;
+	Thu, 21 May 2026 17:21:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779383825; cv=none; b=Ls3a97B0tb+e8Tzj1lM0ApMyiWK6KpLDYJGuV6GbCiTdmqZCN1kwN4Wyq2bZL4ftznEudyw/gMZ2WhGZHztM9zv8lsSSByriE7oBY+1+mshOmIBHNwURsuDWcSl6NtlRvEQb+gwCDTYfgqLMNB/C8UX8DDxWMQHGzlUf4lI8rlI=
+	t=1779384073; cv=none; b=MYu6FGpEmE2/C3rSiXvBa6rKTNmYeRSLrMBrppAK2Ekesfw4++I24w3EvILa0JG0j4w4NaRv7VnWBoc5ZSMLVX8vNEVhhLw+LVMHfQbfTKhyOFBEFz2qCQtmy0SPA4j27IV1rMa/6OmIWt3K/4+5INFi+3RAlRQhMQ4iHYTF0Dc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779383825; c=relaxed/simple;
-	bh=N6FoxpRJuTOXCqPUvQH+NFE5+mmoVpWbXtfGXeEKzdU=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=qwwBOiiHzoYPr7voVkaPNHV3C1zRMpIKpFt/OdN9tI9lrQc0roF/wPtMg0wQLX9Ttu9qEdIxcQw7j09oAz4PZrHLyaqDDCO3lLjAMsUVme3llb1+SccdJIZLUBgI+vLJmdNfHIsa0AB5ejHisSv+tEHxt8UndieTnLSZkA954MM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=R03u+1Ih; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779384073; c=relaxed/simple;
+	bh=lwdy4cZAxW2bSawm+sBQ0pJFmM28KRxt4Pqd+MzQzVM=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=uzVm5S77ZW8QYLWkp5ESVMZ/O18NjXduOF9OfGS8SSIx1c6QZzMwGbgTKpJdekf3H76Sp3LjoxHLQ5gSY6mxfZcTNd+YS8PpoUNb/cCtpdBhGWSK1M24QCwhZAAZuVGqY3cd6j1nCjZYnKNlofh4RkSL8qEJVM7btf8LXiuJOMk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=n8TPsNT5; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="R03u+1Ih"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A3FC1F000E9;
-	Thu, 21 May 2026 17:17:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="n8TPsNT5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 344331F000E9;
+	Thu, 21 May 2026 17:20:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779383823;
-	bh=TzvtaM0HFO3hTTzXz7hMDZGf1pih4p7h/VA/ScQingo=;
-	h=From:To:Cc:Subject:Date;
-	b=R03u+1IhglKS+fD4HrN34UdKSTml7c8/JKlusR/RqHb/FhZug2oS3UjI+ZRWX6B9a
-	 7w9pbUIEUMOJV1dBfc71064/evHIVrgIwwlXgjACKIOUejQVQuVno5CToaMO/HiJKI
-	 KZfhzWsDwuw23BQt1xNqPVOoHeeif76+voYUku0cVNOTaDyU1VpZhVeR4l8oP3DcVp
-	 zv4zVWTN8JFVyKS1ehM7RqXoAiUsixu1AWXyeNilf23XMcruxVVdjliDOSX1Vm43uj
-	 euqBlmmpBCKfVgUm0J9e3iLRrQ92bxzTKpKf0Vc0iXYtATd2i9qItrbDY/dnq+EsP9
-	 ULXD7955uxeig==
-From: Drew Fustini <fustini@kernel.org>
-To: Tomasz Jeznach <tomasz.jeznach@linux.dev>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
+	s=k20260515; t=1779384070;
+	bh=8+P0QoHoTHxpMs7EjsNIrR5Oc0zPqR8/3ahzhGgBQjY=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=n8TPsNT5xWOQ0ZbzyEP21CLY9l5MWJNGlKthwGOPoIGjoa5e48zuFBt+nL3maSNnj
+	 rNBVzfwTX1hh5zz9WEHGee/P5K+Y56Pp7SaNk6uICSM9/VPiT6pGp2lEfjvNjD/34T
+	 F/SoSbSYaiskuTt6m3QfIvA7actDo68ku+uQjU/bGEic7MasVfMV2AqB26qA3cV0oM
+	 iVcQz/OGOGRqMzzS2RJvnFirBiauNMW9kIyeW2XdqyYANYsuH63fKYd9+Pu50LkGzN
+	 6lxL+vreHASBDePhXYndBIEWFeq6v//OLfF0VFvKMPQQmCXb0JWSMeXnWOfqerLCtd
+	 jxf7Pc2APU6tA==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
 	Robin Murphy <robin.murphy@arm.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Paul Walmsley <pjw@kernel.org>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Alexandre Ghiti <alex@ghiti.fr>
-Cc: iommu@lists.linux.dev,
-	linux-riscv@lists.infradead.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Drew Fustini <fustini@kernel.org>,
-	Joel Stanley <joel@jms.id.au>,
-	Joerg Roedel <joerg.roedel@amd.com>,
-	Nicholas Piggin <npiggin@gmail.com>
-Subject: [PATCH v4] dt-bindings: iommu: riscv: Add bindings for Tenstorrent RISC-V IOMMU
-Date: Thu, 21 May 2026 10:06:33 -0700
-Message-ID: <20260521170652.1880662-2-fustini@kernel.org>
-X-Mailer: git-send-email 2.43.0
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
+Subject: Re: [PATCH v4 04/13] dma: swiotlb: track pool encryption state and
+ honor DMA_ATTR_CC_SHARED
+In-Reply-To: <CAFgf54o4ZnvnJ3369bHb10tvJJVP+5YWq=ec4Jh5K6S6U9uNEA@mail.gmail.com>
+References: <20260512090408.794195-1-aneesh.kumar@kernel.org>
+ <20260512090408.794195-5-aneesh.kumar@kernel.org>
+ <CAFgf54o4ZnvnJ3369bHb10tvJJVP+5YWq=ec4Jh5K6S6U9uNEA@mail.gmail.com>
+Date: Thu, 21 May 2026 22:50:51 +0530
+Message-ID: <yq5atss065n0.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-From: Nicholas Piggin <npiggin@gmail.com>
+Mostafa Saleh <smostafa@google.com> writes:
 
-Extend the binding to cover details specific to the Tenstorrent RISC-V
-IOMMU. In particular, a second register range is added which contains
-M-privileged registers, e.g., PMAs and PMPs.
+> On Tue, May 12, 2026 at 10:05=E2=80=AFAM Aneesh Kumar K.V (Arm)
+> <aneesh.kumar@kernel.org> wrote:
+>> @@ -1411,6 +1436,16 @@ phys_addr_t swiotlb_tbl_map_single(struct device =
+*dev, phys_addr_t orig_addr,
+>>         if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
+>>                 pr_warn_once("Memory encryption is active and system is =
+using DMA bounce buffers\n");
+>>
+>> +       /*
+>> +        * if we are trying to swiotlb map a decrypted paddr or the padd=
+r is encrypted
+>> +        * but the device is forcing decryption, use decrypted io_tlb_mem
+>> +        */
+>> +       if ((attrs & DMA_ATTR_CC_SHARED) || force_dma_unencrypted(dev))
+>
+> I don't think swiotlb needs to know about force_dma_unencrypted(), the
+> dma/direct caller should have all the information to pass the
+> appropriate flags.
+>
+> Thanks.
+> Mostafa
+>
+>> +               require_decrypted =3D true;
+>> +
+>> +       if (require_decrypted !=3D mem->unencrypted)
+>> +               return (phys_addr_t)DMA_MAPPING_ERROR;
+>> +
 
-The RISC-V spec S-privileged registers remain in the first register
-range and are compatible with "riscv,iommu" so the Linux driver does not
-notice any difference, but the binding will be used by OpenSBI and
-potentially other M-mode software.
+Based on other email threads, this is now updated to
 
-Reviewed-by: Joel Stanley <joel@jms.id.au>
-Acked-by: Joerg Roedel <joerg.roedel@amd.com>
-Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
-[fustini: fix dt_binding_check errors]
-Signed-off-by: Drew Fustini <fustini@kernel.org>
----
-v4 changes:
-- Add minItems: 1 to reg-names so it is legal to for platforms other
-  than tenstorrent,riscv-iommu to use "base"
-- Add reg-names constraints to the allOf: block
-- Sashiko review:
-  https://lore.kernel.org/lkml/20260521070154.9CAA41F000E9@smtp.kernel.org/
-- Link to v3:
-  https://lore.kernel.org/lkml/20260521064445.1740782-2-fustini@kernel.org/
-
-v3 changes:
-- Move tenstorrent,riscv-iommu to the enum with qemu,riscv-iommu
-- Move descriptions out of the allOf:
-- Add minItems: 2 for tenstorrent,riscv-iommu in allOf:
-- Fix reg syntax in Example 5
-- Link to v2:
-  https://lore.kernel.org/lkml/20260520061855.1623468-4-fustini@kernel.org/
-
-v2 changes:
-- Fix dt_binding_check errors
-- Add the Acked-by: from Joerg
-- Drop RFC prefix
-- Link to v1:
-  https://lore.kernel.org/lkml/20260310003850.3837030-1-npiggin@gmail.com/
-
- .../bindings/iommu/riscv,iommu.yaml           | 59 ++++++++++++++++---
- 1 file changed, 51 insertions(+), 8 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
-index d4838c3b3741..f83efb3ee000 100644
---- a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
-@@ -32,22 +32,35 @@ properties:
-   # should be specified along with 'reg' property providing MMIO location.
-   compatible:
-     oneOf:
--      - items:
-+      - description: Platform (non-PCIe) IOMMU implementations
-+        items:
-           - enum:
-               - qemu,riscv-iommu
-+              - tenstorrent,riscv-iommu
-           - const: riscv,iommu
--      - items:
-+      - description: PCIe IOMMU implementations
-+        items:
-           - enum:
-               - pci1efd,edf1
-           - const: riscv,pci-iommu
- 
-   reg:
--    maxItems: 1
--    description:
--      For non-PCI devices this represents base address and size of for the
--      IOMMU memory mapped registers interface.
--      For PCI IOMMU hardware implementation this should represent an address
--      of the IOMMU, as defined in the PCI Bus Binding reference.
-+    minItems: 1
-+    items:
-+      - description:
-+          For non-PCI devices, base address and size of the IOMMU memory
-+          mapped registers interface. For PCI IOMMU hardware
-+          implementation, an address of the IOMMU, as defined in the PCI
-+          Bus Binding reference.
-+      - description:
-+          Region containing platform specific MMRs for machine-mode
-+          configuration, such as PMA and PMP registers.
+@@ -1372,9 +1417,19 @@ static unsigned long mem_used(struct io_tlb_mem *mem)
+  *			any pre- or post-padding for alignment
+  * @alloc_align_mask:	Required start and end alignment of the allocated bu=
+ffer
+  * @dir:		DMA direction
+- * @attrs:		Optional DMA attributes for the map operation
++ * @attrs:		Optional DMA attributes for the map operation, updated
++ *			to match the selected SWIOTLB pool
+  *
+  * Find and allocate a suitable sequence of IO TLB slots for the request.
++ * The device's SWIOTLB pool must match the device's current DMA encryption
++ * requirements. If the device requires decrypted DMA, bouncing is done th=
+rough
++ * an unencrypted pool and the mapping is marked shared. If the device can=
+ DMA
++ * to encrypted memory, bouncing is done through an encrypted pool even wh=
+en the
++ * original DMA address was unencrypted. Enabling encrypted DMA for a devi=
+ce is
++ * therefore expected to update its default io_tlb_mem to an encrypted poo=
+l, so
++ * later bounce mappings for both encrypted and decrypted original memory =
+use
++ * that encrypted pool.
++ *
+  * The allocated space starts at an alignment specified by alloc_align_mas=
+k,
+  * and the size of the allocated space is rounded up so that the total amo=
+unt
+  * of allocated space is a multiple of (alloc_align_mask + 1). If
+@@ -1411,6 +1466,16 @@ phys_addr_t swiotlb_tbl_map_single(struct device *de=
+v, phys_addr_t orig_addr,
+ 	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
+ 		pr_warn_once("Memory encryption is active and system is using DMA bounce=
+ buffers\n");
+=20
++	/* swiotlb pool is incorrect for this device */
++	if (unlikely(mem->unencrypted !=3D force_dma_unencrypted(dev)))
++		return (phys_addr_t)DMA_MAPPING_ERROR;
 +
-+  reg-names:
-+    minItems: 1
-+    items:
-+      - const: base
-+      - const: machine
- 
-   '#iommu-cells':
-     const: 1
-@@ -75,6 +88,26 @@ required:
- 
- additionalProperties: false
- 
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - tenstorrent,riscv-iommu
-+    then:
-+      properties:
-+        reg:
-+          minItems: 2
-+        reg-names:
-+          minItems: 2
-+    else:
-+      properties:
-+        reg:
-+          maxItems: 1
-+        reg-names:
-+          maxItems: 1
++	/* Force attrs to match the kind of memory in the pool */
++	if (mem->unencrypted)
++		*attrs |=3D DMA_ATTR_CC_SHARED;
++	else
++		*attrs &=3D ~DMA_ATTR_CC_SHARED;
 +
- examples:
-   - |+
-     /* Example 1 (IOMMU device with wired interrupts) */
-@@ -145,3 +178,13 @@ examples:
-             };
-         };
-     };
+ 	/*
+ 	 * The default swiotlb memory pool is allocated with PAGE_SIZE
+ 	 * alignment. If a mapping is requested with larger alignment,
+@@ -1608,8 +1673,11 @@ dma_addr_t swiotlb_map(struct device *dev, phys_addr=
+_t paddr, size_t size,
+ 	if (swiotlb_addr =3D=3D (phys_addr_t)DMA_MAPPING_ERROR)
+ 		return DMA_MAPPING_ERROR;
+=20
+-	/* Ensure that the address returned is DMA'ble */
+-	dma_addr =3D phys_to_dma_unencrypted(dev, swiotlb_addr);
++	if (attrs & DMA_ATTR_CC_SHARED)
++		dma_addr =3D phys_to_dma_unencrypted(dev, swiotlb_addr);
++	else
++		dma_addr =3D phys_to_dma_encrypted(dev, swiotlb_addr);
 +
-+  - |+
-+    /* Example 5 (Tenstorrent IOMMU device with MSIs) */
-+    iommu5: iommu@d2020000 {
-+        compatible = "tenstorrent,riscv-iommu", "riscv,iommu";
-+        reg = <0xd2020000 0x10000>, <0xaa000000 0x10000>;
-+        reg-names = "base", "machine";
-+        msi-parent = <&imsics_smode>;
-+        #iommu-cells = <1>;
-+    };
-
-base-commit: 80dd246accce631c328ea43294e53b2b2dd2aa32
--- 
-2.43.0
-
+ 	if (unlikely(!dma_capable(dev, dma_addr, size, true))) {
+ 		__swiotlb_tbl_unmap_single(dev, swiotlb_addr, size, dir,
+ 			attrs | DMA_ATTR_SKIP_CPU_SYNC,
+@@ -1773,7 +1841,7 @@ static inline void swiotlb_create_debugfs_files(struc=
+t io_tlb_mem *mem,
