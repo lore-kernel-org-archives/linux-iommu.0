@@ -1,119 +1,138 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CC65370D6E
-	for <iommu@lists.linux.dev>; Thu, 21 May 2026 09:32:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 47BC72F362B;
+	Thu, 21 May 2026 09:44:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779355962; cv=none; b=E+Hz9Y4038ctcOsfjG01rTyDyiWYp31bC1YGepRSj4fZ0TQqfKuHXUfmAV+qgzErPUe0HOiVSf0VIxln7TK5vL5ruhrGOBwEsvM7zm2oIWnvE9QUXav4L9rKf1PhExgCs+MJea/LTyGhrVIeu3dznETUsJDKOSuEDu8HvswAphY=
+	t=1779356691; cv=none; b=D1BWJjIrqGYNwsS+EXdLeHTlyBjC9yBwtrIYmk9uzZHfxv0ErMuid87BkwHCJ99ii5MbS8ksZIN8o0NZsKM2npwsSvbDfLUYPZknk+/jUhR/KV1oBDjbkbyiYf31kJvIENYNcLZJQ1OL3GKzG6wOYDcUSvGlJVYS5WgrKpQBO0c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779355962; c=relaxed/simple;
-	bh=+cDRlUu2QCzryvbzD7LTu/UqKMvAgylgZ151GWHmn6k=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=OWcQVosRt7Qay5NI7hIGuvrfWDnT7RohSzljqPxjBzbOV374tosgeZqsYeu6Qmd6wX+wAZ3q8SR7/5MCc8zwwWZyOwpYy9eK3GmJGxb2vRVRmwwzNCy1/Ha+f/504Fx3zr1MTsx0NOAlUvNDlKZZ4Il4nh2jg86fLXa8o/CH638=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=INN9+ZN0; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1779356691; c=relaxed/simple;
+	bh=2rSja1deBM1iWbRkxcvTnfwNvq3KSkNDXw0R+RFBDSE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=T4b7LvN67SPMmypQu7wZ/uzGud91zqo57D9QcxZN14rhUXAdWVljPUd4AsscEZW9gXPOZ7JS43V501dXBGZUfpP0ziEUSRkqsk1mRIXIkVThWtOlEZQLXupjkfUtgUN69x0skukffyLK63ltc+ei+XLo/2zWWNcckqWt88204EQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=V8bj1nfh; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="INN9+ZN0"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-48e8132c6d0so38559125e9.1
-        for <iommu@lists.linux.dev>; Thu, 21 May 2026 02:32:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779355959; x=1779960759; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9EVWPWIDSLM3eafPF6uEWUcBfdQa+Lwt5Bo7lrpafPQ=;
-        b=INN9+ZN0dBfazlVBO12l9RWTgAJqgSri71bOgYnnwkth2vzUXjwZGtiRqklQhpnHfL
-         SpiuZdp6QI6q5XeeXqXT94JpeIwb4k2eHCrDwYp7MWuX1d/YtqypZdKAxRFVi5WZAk9e
-         Oitbj/OR6Gd7ce1rkyFsYKS6MQGH4kIRV2KKjMfJE7NzgNKLuv0RUfyGpAnTk1spOpQR
-         IOr7Va0K5M2ys1KypN45tATnk4+tP+N6Nmm9BGGE8gon9wOq8wODam8UHyH9QR4ZN/Nz
-         SBngEovnlXsM7n5iRToO7mBaK6Y46FKtDxZjCjWXJvEyO2l6yBLgkjEo20xIeo2Uzqs2
-         NlrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779355959; x=1779960759;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=9EVWPWIDSLM3eafPF6uEWUcBfdQa+Lwt5Bo7lrpafPQ=;
-        b=HWDdGXsGqJWr9iPs733tq7/CPNZvJySmNc0Mn0LfS+z3Pv828bMM7yLPwRIOxvSO5f
-         AhkUu3l9r+LAbQknUqtGdgBhGmr2Z0imIZb1zFe7iJJcKpR7vSXgey6NPxVuNb7rK2LR
-         w4sgQuPV3EAOZnwr64KHL3EPPvbz6Ak9gaXzHXSebIBLMNaifwbZwA+frbjhwF+wtQeQ
-         r7axcPMn6KvDHATx0bCpvg4UAXtPW9mVAVaeCCtQJWlPhlspMrPGQHKY64S1Ca/EX3s4
-         NzN9MsK8ctk9Pz39+TrUckZ5PeX+U2emxHCF8m5mXuFnzsG1pQ2YLl1FnXzYbvkuNHyP
-         Ze1A==
-X-Forwarded-Encrypted: i=1; AFNElJ9KCU2jnSJq2KmOYAOzqkcgqWzRRIHJ0TLMdNw404Yvsf6mtZviQphGH8DWnzzLJzHnNtBSlg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwakzWSPxtzx4rDEbCZEQFewf6VeVYqYXWdd6IDvckqNLSEoxva
-	X9yR2RX2MtaaS0dwjqJkOHUsSImk+T607Y7tSPjlOeV3B/3bihPQO2ty
-X-Gm-Gg: Acq92OGCCWwNL6rG6+VFea0+yyfE9HaUulEmPs9GHZW3t0DXVPeVfM8OTerKrB1O1Wk
-	42VOI/bX1Buw1/r/qzRj5bWBh58ap+45uGOagsJIqO4mkGUezqqx7fP9h/1Y2OFikPyMEG5lGHM
-	RwMoBz2SVnQiqNZagWECdFGOUerV5+6iBJa3eSEHAC8bxcDyL5wit0iz0TrkxjiRoGdeFJpfC9z
-	TVwQdf2dJkRu+dy8FLeZi573rgYO8mR3KVNkNAzoa1b8WGtuwhecJ4ap07F1KG+ZzSSikLPelUp
-	ppYFxvvBas4eqnvw5vA7V0tTnUX7MR7M1pTVY5o5IaKiW/c30/d0JVfEYNWulSdN0a0btg9qB3n
-	8Q0htXuVVH9SRVnKJ3h3ZmGiC0u62DeU7oUoVCtU8kTIJLLlRN165Xk+AGBTM/U+N0l4yTsQ+5Q
-	D//9qqsSV1xedX9JgzgVTIkrBm0hAn0ij3SwvXT65Xflxtz7VuCf8nUHFf+4KN/SciQyFEjE31Z
-	gZJvjoNc6o4aQ==
-X-Received: by 2002:a05:600c:26cb:b0:48e:6db3:ff33 with SMTP id 5b1f17b1804b1-4903605d502mr18288435e9.14.1779355958345;
-        Thu, 21 May 2026 02:32:38 -0700 (PDT)
-Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4903cae778asm11707075e9.13.2026.05.21.02.32.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 May 2026 02:32:38 -0700 (PDT)
-Date: Thu, 21 May 2026 10:32:36 +0100
-From: David Laight <david.laight.linux@gmail.com>
-To: 2564278112@qq.com
-Cc: Barry Song <baohua@kernel.org>, Qinxin Xia <xiaqinxin@huawei.com>, Marek
- Szyprowski <m.szyprowski@samsung.com>, Wang Jiang <jiangwang@kylinos.cn>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dma/dma_map_benchmark: fix fd leak on error and exit
-Message-ID: <20260521103236.747dceef@pumpkin>
-In-Reply-To: <tencent_E7BC2E2BDB10173E11B0FD519A84D414E509@qq.com>
-References: <tencent_E7BC2E2BDB10173E11B0FD519A84D414E509@qq.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="V8bj1nfh"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6EB8E35FA;
+	Thu, 21 May 2026 02:44:44 -0700 (PDT)
+Received: from [10.57.36.52] (unknown [10.57.36.52])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 339163F7B4;
+	Thu, 21 May 2026 02:44:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1779356689; bh=2rSja1deBM1iWbRkxcvTnfwNvq3KSkNDXw0R+RFBDSE=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=V8bj1nfhEwDhWcowxYHmM7Xnhl5rgFZyeqahTQ0ZRV9mLcDf3Ozjm5MGzpI+c1910
+	 XJnMbe6wjO4t7P/70yn6macR20HahHT1WyAarLF6Wb7rYAgJ6Mt3h0WXN9SXMbK7F5
+	 uXAKXzo6njxuRMgh1oQmzIpBuzaBPmmeqI3TXRP8=
+Message-ID: <ddc7098e-5674-4f40-a46b-776c5334bda0@arm.com>
+Date: Thu, 21 May 2026 10:44:24 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 12/23] iommu/fsl: use platform_device_set_of_node()
+To: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>,
+ Lee Jones <lee@kernel.org>, Mark Brown
+ <broonie@opensource.wolfsonmicro.com>,
+ Thierry Reding <thierry.reding@avionic-design.de>,
+ Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+ Andrew Lunn <andrew+netdev@lunn.ch>, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Srinivas Kandagatla <srini@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Vinod Koul <vkoul@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ Danilo Krummrich <dakr@kernel.org>, Rob Herring <robh@kernel.org>,
+ Saravana Kannan <saravanak@kernel.org>,
+ Madhavan Srinivasan <maddy@linux.ibm.com>,
+ Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
+ "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+ Andi Shyti <andi.shyti@kernel.org>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Doug Berger <opendmb@gmail.com>,
+ Florian Fainelli <florian.fainelli@broadcom.com>,
+ Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>, Ulf Hansson <ulfh@kernel.org>,
+ Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
+ Pengutronix Kernel Team <kernel@pengutronix.de>,
+ Fabio Estevam <festevam@gmail.com>, Matthew Brost <matthew.brost@intel.com>,
+ =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+ Rodrigo Vivi <rodrigo.vivi@intel.com>, David Airlie <airlied@gmail.com>,
+ Simona Vetter <simona@ffwll.ch>, Peter Chen <peter.chen@kernel.org>,
+ Paul Cercueil <paul@crapouillou.net>, Bin Liu <b-liu@ti.com>,
+ Philipp Zabel <p.zabel@pengutronix.de>,
+ Maximilian Luz <luzmaximilian@gmail.com>, Hans de Goede <hansg@kernel.org>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Krzysztof Kozlowski <krzk@kernel.org>,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: brgl@kernel.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, linux-sound@vger.kernel.org,
+ driver-core@lists.linux.dev, devicetree@vger.kernel.org,
+ linuxppc-dev@lists.ozlabs.org, linux-i2c@vger.kernel.org,
+ iommu@lists.linux.dev, linux-pm@vger.kernel.org, imx@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, intel-xe@lists.freedesktop.org,
+ dri-devel@lists.freedesktop.org, linux-usb@vger.kernel.org,
+ linux-mips@vger.kernel.org, platform-driver-x86@vger.kernel.org
+References: <20260521-pdev-fwnode-ref-v1-0-88c324a1b8d2@oss.qualcomm.com>
+ <20260521-pdev-fwnode-ref-v1-12-88c324a1b8d2@oss.qualcomm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260521-pdev-fwnode-ref-v1-12-88c324a1b8d2@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On Thu, 21 May 2026 16:02:41 +0800
-2564278112@qq.com wrote:
+On 2026-05-21 9:36 am, Bartosz Golaszewski wrote:
+> Ahead of reworking the reference counting logic for platform devices,
+> encapsulate the assignment of the OF node for dynamically allocated
+> platform devices with the provided helper.
 
-> From: Wang Jiang <jiangwang@kylinos.cn>
-> 
-> Close the file descriptor when ioctl fails and on normal exit
-> to fix file descriptor leak.
+FWIW,
 
-There isn't a leak, it is all tidied up by the kernel.
+Acked-by: Robin Murphy <robin.murphy@arm.com>
 
--- David
+Although I'm not sure the whole lot couldn't just be replaced with 
+of_platform_device_create(), but then frankly this driver is on life 
+support anyway as it only serves one very niche VFIO use-case and it's 
+not clear whether it has any real mainline users left.
 
-> 
-> Signed-off-by: Wang Jiang <jiangwang@kylinos.cn>
+> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
 > ---
->  tools/dma/dma_map_benchmark.c | 2 ++
->  1 file changed, 2 insertions(+)
+>   drivers/iommu/fsl_pamu.c | 7 +++----
+>   1 file changed, 3 insertions(+), 4 deletions(-)
 > 
-> diff --git a/tools/dma/dma_map_benchmark.c b/tools/dma/dma_map_benchmark.c
-> index eab0ac611a23..bdb8a837f020 100644
-> --- a/tools/dma/dma_map_benchmark.c
-> +++ b/tools/dma/dma_map_benchmark.c
-> @@ -130,6 +130,7 @@ int main(int argc, char **argv)
->  
->  	if (ioctl(fd, cmd, &map)) {
->  		perror("ioctl");
-> +		close(fd);
->  		exit(1);
->  	}
->  
-> @@ -140,5 +141,6 @@ int main(int argc, char **argv)
->  	printf("average unmap latency(us):%.1f standard deviation:%.1f\n",
->  			map.avg_unmap_100ns/10.0, map.unmap_stddev/10.0);
->  
-> +	close(fd);
->  	return 0;
->  }
+> diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
+> index 25aa477a95a95cb4fa4e132727cde0a936750ee2..012839fa0d8a27cafc6a441373f4f6da794388c1 100644
+> --- a/drivers/iommu/fsl_pamu.c
+> +++ b/drivers/iommu/fsl_pamu.c
+> @@ -973,7 +973,8 @@ static __init int fsl_pamu_init(void)
+>   		ret = -ENOMEM;
+>   		goto error_device_alloc;
+>   	}
+> -	pdev->dev.of_node = of_node_get(np);
+> +
+> +	platform_device_set_of_node(pdev, np);
+>   
+>   	ret = pamu_domain_init();
+>   	if (ret)
+> @@ -985,12 +986,10 @@ static __init int fsl_pamu_init(void)
+>   		goto error_device_add;
+>   	}
+>   
+> +	of_node_put(np);
+>   	return 0;
+>   
+>   error_device_add:
+> -	of_node_put(pdev->dev.of_node);
+> -	pdev->dev.of_node = NULL;
+> -
+>   	platform_device_put(pdev);
+>   
+>   error_device_alloc:
+> 
 
