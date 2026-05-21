@@ -1,158 +1,172 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F7DA3A6B91
-	for <iommu@lists.linux.dev>; Thu, 21 May 2026 10:42:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77B5B3BED78
+	for <iommu@lists.linux.dev>; Thu, 21 May 2026 11:21:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.113
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779360126; cv=none; b=FNc0s6KhWna+qYP5XURUVpa1kk4bzzbsZuw51caGO3XwJazBVS9mCOKvVRpnoHpqleCydAbYWb6hqB95qkWnhaNyrG1pN6w6JMDMYqIDg7pTwB1/zLfhaqhX69N3dEzkOTVFt8sVdIX/XGwJ+vGhMGPaEqwoYmOenR2Uy6fLV0Q=
+	t=1779362490; cv=none; b=MnHwFkcWVDgCAjWn52fUe4DAsLDG5tdB216iRB4sR3GKI6wgfPjBToj9N2HRONrpCefCxbnvczpIfIGXKXXca386d532D+bOgKxjIkl6zVgoIa3mSNXe/jPKQ3LYTOLE6Jm2iRyDYFNHbmypyr75C9Q2v23IaR9o26Mr/Cv0McA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779360126; c=relaxed/simple;
-	bh=OoG4A/nCjg1WGRfiXsW3OEJxdp06xTQX/WTx768OiUg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=RFyMu+39izqU6KNFVcd/GwYtaBZJk2LtRBSIC6c/vx1XamdZS8l8IFNCk4vv96uad1vBOW734lIFaBcWSgV1lZGH3n8YM5OxfGeaBnvmDVP7TV6ARLu7o/yM65Lz8HctqbAvjyvh5H9EzRMh12cZOwYV7PQB+qvTvDafGe+SlMw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=cDxGAXEG; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=QEO4SgYk; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1779362490; c=relaxed/simple;
+	bh=q2g5SnNiPHVc5+znooDXPpav9sPR3Tzk+XTyzCWhFb8=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=scVkJ2ddRRc2HYI6ukEKtSYWeDOTSoUN9ZMocnV7WENcoV3Y/kjUW8mWW1PkGAwWsinV2RgQBaY0go7QRSNoEm2jv6kuU1TG+itxacDT9imUkjatw2lXcrWTCj+Dn8OQcbhBp5Au9c6rBLnsyizzEe+sMLupbvHuvjxBt6TQ2i0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=t8S6AOn6; arc=none smtp.client-ip=115.124.30.113
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="cDxGAXEG";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="QEO4SgYk"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64L99nBd517710
-	for <iommu@lists.linux.dev>; Thu, 21 May 2026 10:42:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	TRweg34KvRj4taH5vYY7egOAVrFdTyCDwa/i6eW97uY=; b=cDxGAXEGlCfUNI3P
-	aRwNlqP+tB4kbW9UakvqPJNYMgSji/RS+EQEN1JApVu/K4ArR9yx6psHKUxY6QDE
-	tihgbXOIvQgqDR+fqoMKMnqRGShIwLNxguMLXgK8b1dWBffpyY4z1EENWdVRJW0K
-	sU1Z2NZVOOen1r7ZTM8e6gXHi2yrHQxFUbszz449NYFAwSPa2SMDCDmuFUbSvC/e
-	PatLI1zpYDHHLs7cmVN32oecqbZ2Z8f5akQf+WHOdybc3Y6mpkKuxtcGxeIeE2Kb
-	Lv2XiN9oLGC02ALr4PUE5jcKriA96rTEFw9sYjkTVRd03elxOIsnCRArN6AwmREy
-	RMMllw==
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com [209.85.222.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4e9saa1tv2-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 21 May 2026 10:42:01 +0000 (GMT)
-Received: by mail-qk1-f199.google.com with SMTP id af79cd13be357-91345d517bdso125398185a.3
-        for <iommu@lists.linux.dev>; Thu, 21 May 2026 03:42:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1779360120; x=1779964920; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=TRweg34KvRj4taH5vYY7egOAVrFdTyCDwa/i6eW97uY=;
-        b=QEO4SgYkF9pU3FD93Hyu+L+bGp2mJA4VB2YZBaRAgsSHvoNLeinsZNhQkctjXQxXmq
-         tp2GFbsuuinALcYC5oANqptfjQii0ZLv8MkMlhCWqNdRtC2x5G1jPJEPkES+gwTj/qlM
-         h1rOnAqEAV+JsLCm8z6uGF61KO/9+xO4Jigxuf8d32F76f07xhUlPYeEqF6Ye9RpMVF/
-         jKRQVaFXxml+yy+oBUKtbQV/pGUS03UPVLwo49ZoHShIIO8JP8vMXtdj+eZdeThXoTyo
-         Qgk1lwdLHsLR28Jhg1uRPcu+28Qt2YUM6N+zbwewOwz1aKAM4ItoyR4CB2WNvdUDbNR1
-         cT2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779360120; x=1779964920;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=TRweg34KvRj4taH5vYY7egOAVrFdTyCDwa/i6eW97uY=;
-        b=J3T1xDkSX06pTgPAM3aNcoP0brI7bU5RLk3NJXdbofNpUhIxzBKImFio9CCVLlS19m
-         C+jP7gu3u4pI98acwtAiD2u+c/SAb04SnYta4dDzmLmrtXqF8YR0eYgIsznYP+EGV91Z
-         cTUmjHc9DZThjcZ8LBtzsQ49TeaoH/cWYzk2P0mRmns4K3mSbNi/lh2JNyFFsci3IPYR
-         5ec/MgdLm9NCsJUikQ7+ewWWqijhx7uaknbMAzaXUfcqOkQI4U5PV8ViIA2ryPNM3ve+
-         vr41Si97fBF9yKDCN/XUjPterhGYCMdkbMGRaaD352TNIB5sUZQl555iOq/cnIkB4U5M
-         wE0Q==
-X-Forwarded-Encrypted: i=1; AFNElJ8xnENZVvXfwAJnWX0eb9YocXJjlYbqqI2bpnXXnEZ4FwWRs7CST56Qh7mnnC3rm16qeBcdYQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxpoWMYJaP4wDKDx+MmL4CnDrfnxEPNXuELFFRtEux6cZmIwL34
-	gk7d7MbLnxOIf2EdY9BF4+4R39Xp4jz+sjW5ghOD2eYRaIIUiXvJLMUyo4hTGPr/uK/P2+ja56G
-	B8KkeVM/LkoDpwHJuz4ZAxuYeDh7lkh3QzGDooIdsRrpS8TkaP/jls9OaNw==
-X-Gm-Gg: Acq92OFal7Ut8xuHDPtSa/SH/U7wZ7GivSwoqLyj5LpcfBC/xbX3qzDkaZarxBB8qHn
-	9VIH5c6w0tLTXc+YWYHJMCqiXpQUG66U2df/+/Rw41PBS+NYYJPwY1FEYADGxodSdy9lujwQZWL
-	PNpBKBfmdb1uzUX9pb85OYfZuyv+sN6NDlFHGpWa+QkDPY3pbsqgADYpIvmn3Q5vj+KXtfvra3y
-	Ohl6rn3hY5+rvjWvMpfhWzvM85P8G6/lr3i42BK6oVOWzE88+qz1o/T/c29rsZa2O8lkGu5HxNT
-	Y59jCcLiOIy78GPCRQ1QJLjtCSnJ6MuboRRWV72poBoLTPxj9QGyv2e/a+uXWccwUsdGGVtIDPO
-	/LW5dMBUnkcr3bqU/2TQaAb0ywUN1+ZkhD8b/wbZ8sPSVUnbPgn2+QsoPKmh7IbFbS6gc5lrAli
-	HsyVeWBOoqx70hFw==
-X-Received: by 2002:a05:620a:c45:b0:8cf:d289:d0f3 with SMTP id af79cd13be357-914a2cccdd1mr195784285a.4.1779360120569;
-        Thu, 21 May 2026 03:42:00 -0700 (PDT)
-X-Received: by 2002:a05:620a:c45:b0:8cf:d289:d0f3 with SMTP id af79cd13be357-914a2cccdd1mr195781785a.4.1779360120084;
-        Thu, 21 May 2026 03:42:00 -0700 (PDT)
-Received: from [192.168.119.254] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-68311670e02sm8737368a12.22.2026.05.21.03.41.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 May 2026 03:41:58 -0700 (PDT)
-Message-ID: <406514ab-bb74-4e5c-9348-64ededafa6f4@oss.qualcomm.com>
-Date: Thu, 21 May 2026 12:41:54 +0200
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="t8S6AOn6"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1779362476; h=From:To:Subject:Date:Message-Id:MIME-Version:Content-Type;
+	bh=/h49bQbKmtlO5PbHz54FRwxmNigpG7UoN7YHAxvgj88=;
+	b=t8S6AOn6pvfGOpLez4UA37or4Sn5Uxu7TjYLgAb5tKcn8skQ0d57QJwdn+O62npvjC11S0i12DuUWCiOOLd+t1zWUvAPGmrZ8xLBrSqKjhgkiLpxJCHb7eoT2P9glNgDOuFV2r2KXEk8nsxrgTq1+zM4r5vG1U3zVUkx/D57JUQ=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R441e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037033178;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0X3Le79C_1779362473;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X3Le79C_1779362473 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Thu, 21 May 2026 19:21:14 +0800
+From: fangyu.yu@linux.alibaba.com
+To: robin.murphy@arm.com
+Cc: ajones@ventanamicro.com,
+	alex@ghiti.fr,
+	andrew.jones@oss.qualcomm.com,
+	aou@eecs.berkeley.edu,
+	fangyu.yu@linux.alibaba.com,
+	guoren@kernel.org,
+	iommu@lists.linux.dev,
+	joro@8bytes.org,
+	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	palmer@dabbelt.com,
+	pjw@kernel.org,
+	sunilvl@oss.qualcomm.com,
+	tomasz.jeznach@linux.dev,
+	will@kernel.org
+Subject: Re: [PATCH] iommu/riscv: prefer WSI on IGS=BOTH when wired IRQs are described 
+Date: Thu, 21 May 2026 19:21:12 +0800
+Message-Id: <20260521112112.35022-1-fangyu.yu@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
+In-Reply-To: <c50a527c-83e7-439b-95a0-a38235c24de6@arm.com>
+References: <c50a527c-83e7-439b-95a0-a38235c24de6@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 8/8] ARM: dts: qcom: Add Samsung Galaxy S4
-To: contact@alex-min.fr, Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Guru Das Srinagesh
- <linux@gurudas.dev>,
-        Linus Walleij <linusw@kernel.org>,
-        Rob Clark <robin.clark@oss.qualcomm.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Kees Cook <kees@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        iommu@lists.linux.dev, phone-devel@vger.kernel.org
-References: <20260519-mainline-send-v1-sending-v3-0-3dd7aa125353@alex-min.fr>
- <20260519-mainline-send-v1-sending-v3-8-3dd7aa125353@alex-min.fr>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <20260519-mainline-send-v1-sending-v3-8-3dd7aa125353@alex-min.fr>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTIxMDEwNSBTYWx0ZWRfXy16CE5iH7vrx
- NfTeoZv4zSn2CpLzFUWACO9gvPzk2CRK1jG2uFNr8bov4WPUGHJwrk4Kr/EdpFHDNz2bEeTUwKc
- zgr4EU+tYlsT9pbmTC0fY9Qw48/CFWA8gy43RKjz2Qiz1wDE1kuJPKJeOX/trBh7ALaPcxm4hc+
- vWr6UCAi4hj//1VsjyK/CgrGaE39EoLZLNAoJX2SY84+N0BaifMVRKTE5lqeA+yaHP84nxOq7Gg
- Nfwpb0d+Yy/BNnH3cxZ2QjxF19bDoOeMiNY+39UhbmpZZekr6xOgEIrrKBUTq/pdmoiisLvRhOI
- IBiTHMRGjkH/iOBauBOx4VXixwOFxhsuNVoNWfMq2Yda3TG/VeEPGwdbqNwi+c0CaTDGkCObW17
- uWR6Pubi5/oT6IfEXkAMlG8hIBvakKnB0rHhVw9UdJt6T1q/JbuyuEE2K2XAGKTG1nVm0+kAgyh
- c+cphTJwGBgLTyq6LTw==
-X-Authority-Analysis: v=2.4 cv=Qe9WeMbv c=1 sm=1 tr=0 ts=6a0ee179 cx=c_pps
- a=HLyN3IcIa5EE8TELMZ618Q==:117 a=FpWmc02/iXfjRdCD7H54yg==:17
- a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_K5XuSEh1TEqbUxoQ0s3:22
- a=EUspDBNiAAAA:8 a=3BB4LYrPl4bHvSfQcI4A:9 a=QEXdDO2ut3YA:10
- a=bTQJ7kPSJx9SKPbeHEYW:22
-X-Proofpoint-ORIG-GUID: rXMhf_x9BEksYmRECIbE0jJg-F5n3w5y
-X-Proofpoint-GUID: rXMhf_x9BEksYmRECIbE0jJg-F5n3w5y
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-05-21_01,2026-05-18_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 lowpriorityscore=0 adultscore=0 phishscore=0
- suspectscore=0 clxscore=1015 impostorscore=0 bulkscore=0 malwarescore=0
- spamscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.22.0-2605130000
- definitions=main-2605210105
+Content-Transfer-Encoding: 8bit
 
-On 5/19/26 9:16 AM, Alexandre MINETTE via B4 Relay wrote:
-> From: Alexandre MINETTE <contact@alex-min.fr>
-> 
-> Add a device tree for the Samsung Galaxy S4, codenamed jflte.
-> 
-> This has been tested on a Samsung Galaxy S4 GT-I9505. The initial support
-> covers UART, USB peripheral mode with USB networking, the front LED and
-> the physical buttons.
-> 
-> Signed-off-by: Alexandre MINETTE <contact@alex-min.fr>
-> ---
+>>>>> Won't it change the DT behavior as it doesn't check msi-parent
+>>>>> anymore?  IOW, should this be made specific to ACPI
+>>>>> by checking whether the device node is acpi node?
+>>>>>
+>>>>
+>>>> Thanks for the review, you're right that the current condition would
+>>>> affect DT as well.
+>>>>
+>>>> My assumption was that DT would describe either "interrupts" for WSI
+>>>> or "msi-parent" for MSI, but not both, so platform_irq_count() > 0
+>>>> would effectively imply "no msi-parent" in practice.
+>>>>
+>>>> That said, I agree that this should be limited to the ACPI path. That
+>>>> matches the actual bug scope — only ACPI was falling back to MSI when
+>>>> wired IRQs were described — and leaves DT unchanged.
+>>>>
+>>>> I'll respin a v2 to scope the fix to ACPI only, and tighten the commit
+>>>> message accordingly.
+>>>
+>>> Why would this be specific to ACPI? AFAICS if DT specifies an
+>>> "msi-parent" property such that an MSI domain exists, then MSIs will be
+>>> preferred as well, since the entire function is structured to prefer
+>>> MSIs if available, and fall back to wired if not. If the system does
+>>> support both options then DT should describe that, same as ACPI; what
+>>> Linux chooses to use is entirely Linux's own policy.
+>>>
+>>> But if you do want to change the Linux driver's policy for some reason
+>>> that the commit message isn't really explaining, then rearrange the
+>>> whole switch statement; don't just add a weird hack to try to defeat the
+>>> existing logic _in the same function_...
+>>>
+>>> In general though, I would have thought preferring MSIs makes the most
+>>> sense, since MSI vectors are generally cheaper than wires, so there's a
+>>> better chance of being able to have unique IRQs per interrupt source,
+>>> whereas with wires you may be stuck with a combined IRQ.
+>> 
+>> Thanks, Robin.
+>> 
+>> To clarify, the goal here is not to change the general MSI-vs-WSI
+>> preference policy. The bug is that, when the hardware advertises
+>> IGS=BOTH, DT already provides a way to select WSI by describing wired
+>> IRQs without an msi-parent,
+>
+>And my point is that that sounds wrong - if the system can support both 
+>then DT should have both properties, because DT describes the system, 
+>not Linux policy. Of course it is presumably possible to have a reusable 
+>IOMMU IP that itself supports IGS=BOTH, integrated into systems which 
+>either don't have an MSI controller, or haven't connected the wires, in 
+>which case only one or other property is valid to describe anyway, but 
+>that's fine - IGS describes what the IOMMU is capable of sending, the 
+>firmware properties describe what the rest of the system is capable of 
+>receiving, and if there's any choice left in the intersection of the two 
+>then that's up to the OS.
 
-Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Agreed, Firmware describes hardware capability; when both options are
+properly described, prefer-MSI is the right default.
 
-Konrad
+>> but the ACPI path does not currently have
+>> an equivalent way to steer the driver to WSI.
+>> 
+>>      - DT: if "msi-parent" is omitted, of_msi_get_domain() returns NULL,
+>>        IGS=BOTH then falls through to the WSI path, so DT has a real knob
+>>        ("don't describe MSI") to select WSI.
+>>      - ACPI: there is no per-device equivalent. On systems with IMSIC, the
+>>        IGS=BOTH IOMMU always enters the MSI branch and resolves a non-NULL
+>>        msi_domain, regardless of what its own _CRS describes. The MSI fallback
+>>        only triggers when the system has no IMSIC at all, which is a
+>>        firmware-wide decision rather than a per-device one.
+>> 
+>> As a result, with ACPI and IGS=BOTH, the driver always uses MSI even when
+>> firmware describes wired IRQs, so the platform cannot express the same
+>> intent as it can with DT.
+>
+>What do you mean by "intent"? Again, people should not be hacking 
+>firmware just to influence OS driver policy.
+>
+>If you mean you have a case where a system does have an MSI controller, 
+>and a device which is capable of emitting MSIs, but the device's MSI 
+>writes cannot reach that MSI controller, and ACPI is incapable of 
+>describing that so Linux ends up incorrectly assuming that MSIs should 
+>work, then you have a spec-level ACPI problem and you need to fix RIMT 
+>and/or any other relevant tables/properties to be able to indicate that 
+>properly; bodging the Linux IOMMU driver alone does not help other OSes, 
+>nor even other MSI-capable devices under Linux.
+
+You're right - But RIMT v1.0 lacks a per-IOMMU equivalent of IORT SMMUv3
+Flags bit 4 (DeviceID mapping index valid).
+
+I was wondering whether the old ARM IORT compatibility pattern could be
+considered here: if a given RIMT IOMMU node fully populates its Interrupt
+Wire Array (civ, fiv, piv, pmiv), could that be treated as a temporary
+signal for the wired path until RIMT grows an explicit flag?
+
+If that is still too policy-like for ACPI, is there any comparable
+transitional pattern that would be more acceptable until RIMT gains the
+missing explicit signal?
+
+Thanks,
+Fangyu
+
+>Amusingly, that would then be the opposite problem from what we had with 
+>Arm SMMU, where initially we couldn't use MSIs with ACPI at all since 
+>early IORT version had no way to describe the necessary GIC DeviceID :)
+>
+>> So this patch is meant to fix that ACPI gap for IGS=BOTH, not to make
+>> WSI generally preferred over MSI. I agree the commit message should
+>> make that bug scope explicit.
+>
+>But even then it does change the policy in general for all ACPI systems 
+>that genuinely do have both and could happily still use MSIs.
+>
+>Thanks,
+>Robin.
