@@ -1,172 +1,127 @@
-Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77B5B3BED78
-	for <iommu@lists.linux.dev>; Thu, 21 May 2026 11:21:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.113
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97EC135F18A;
+	Thu, 21 May 2026 11:54:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779362490; cv=none; b=MnHwFkcWVDgCAjWn52fUe4DAsLDG5tdB216iRB4sR3GKI6wgfPjBToj9N2HRONrpCefCxbnvczpIfIGXKXXca386d532D+bOgKxjIkl6zVgoIa3mSNXe/jPKQ3LYTOLE6Jm2iRyDYFNHbmypyr75C9Q2v23IaR9o26Mr/Cv0McA=
+	t=1779364463; cv=none; b=tEZkH3hkfKHicfwF/7mkse+BI2o6fcg/Ut26iWTLTSWNxZibHfkc8JPoPb7uDARAPtHvD21sbcbOrAWjeFKWFbA/KmYI0eBRajghGxYq+YC0rkRv4CS7A1RBq+yiYg3uHg9ByWcSVUPCujtMDGCMs1ZgbH+1WO+tgMj1I5t/bwg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779362490; c=relaxed/simple;
-	bh=q2g5SnNiPHVc5+znooDXPpav9sPR3Tzk+XTyzCWhFb8=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=scVkJ2ddRRc2HYI6ukEKtSYWeDOTSoUN9ZMocnV7WENcoV3Y/kjUW8mWW1PkGAwWsinV2RgQBaY0go7QRSNoEm2jv6kuU1TG+itxacDT9imUkjatw2lXcrWTCj+Dn8OQcbhBp5Au9c6rBLnsyizzEe+sMLupbvHuvjxBt6TQ2i0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=t8S6AOn6; arc=none smtp.client-ip=115.124.30.113
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	s=arc-20240116; t=1779364463; c=relaxed/simple;
+	bh=ZgZIWjW+VmcEbqu15znYRaEOpX+b7l5mNLvU3xhgsCk=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=COVXIYdINCQmqICBtu9N4DqseiiXrI8TnMCGVyOS+8s1y88Ycrbk2OSWzn4cylKyLyIk/cZjhWipULDITU63/tE/sdD8dXXASFn/d9FlswPsIiTVyLNXclw9guy6R+/6KMeugUJm0IoLtw6VTwlvEefzYBKkkRWu9DMq7kJ7+0g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VRoV8Obk; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="t8S6AOn6"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1779362476; h=From:To:Subject:Date:Message-Id:MIME-Version:Content-Type;
-	bh=/h49bQbKmtlO5PbHz54FRwxmNigpG7UoN7YHAxvgj88=;
-	b=t8S6AOn6pvfGOpLez4UA37or4Sn5Uxu7TjYLgAb5tKcn8skQ0d57QJwdn+O62npvjC11S0i12DuUWCiOOLd+t1zWUvAPGmrZ8xLBrSqKjhgkiLpxJCHb7eoT2P9glNgDOuFV2r2KXEk8nsxrgTq1+zM4r5vG1U3zVUkx/D57JUQ=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R441e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037033178;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0X3Le79C_1779362473;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0X3Le79C_1779362473 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Thu, 21 May 2026 19:21:14 +0800
-From: fangyu.yu@linux.alibaba.com
-To: robin.murphy@arm.com
-Cc: ajones@ventanamicro.com,
-	alex@ghiti.fr,
-	andrew.jones@oss.qualcomm.com,
-	aou@eecs.berkeley.edu,
-	fangyu.yu@linux.alibaba.com,
-	guoren@kernel.org,
-	iommu@lists.linux.dev,
-	joro@8bytes.org,
-	linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	palmer@dabbelt.com,
-	pjw@kernel.org,
-	sunilvl@oss.qualcomm.com,
-	tomasz.jeznach@linux.dev,
-	will@kernel.org
-Subject: Re: [PATCH] iommu/riscv: prefer WSI on IGS=BOTH when wired IRQs are described 
-Date: Thu, 21 May 2026 19:21:12 +0800
-Message-Id: <20260521112112.35022-1-fangyu.yu@linux.alibaba.com>
-X-Mailer: git-send-email 2.39.3 (Apple Git-146)
-In-Reply-To: <c50a527c-83e7-439b-95a0-a38235c24de6@arm.com>
-References: <c50a527c-83e7-439b-95a0-a38235c24de6@arm.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VRoV8Obk"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D60901F000E9;
+	Thu, 21 May 2026 11:54:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779364462;
+	bh=AfaRmOFwq9PG0Q9lB7Y5h4Js0tCrSyooaZYJ9TAjF4I=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=VRoV8Obk6Db2yTrA5yAdD7bmtQFvSWYfd/ZMw0E5GBL5jIdP8p2frzgVjebJ/AI8N
+	 hR/ltXnLmqYytDDOSL4NfrAm8WWL6Eapslk7nKLHkiEPTsINTDc/s/wXE5nhOEOkw0
+	 ocFPhIherbIJmWmA0TT9aOS8dxo5zor2QipnNUscdwsm508C2EjBqUXMBblgS8bTHy
+	 VTwtO3pIzg195ryyporAX+AUffxjuJV03eR50aV96prxY5h11jwtvbWjHvTe3DepXz
+	 Q2BR9ERr09ummMuYbcfqyARU4HAkb3n2S7jWp660Rin4hD/1ttPs8n0zhk15N2/FrI
+	 IAG1as/hVnwgg==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
+Subject: Re: [PATCH v4 13/13] x86/amd-gart: preserve the direct DMA address
+ until GART mapping succeeds
+In-Reply-To: <20260512090408.794195-14-aneesh.kumar@kernel.org>
+References: <20260512090408.794195-1-aneesh.kumar@kernel.org>
+ <20260512090408.794195-14-aneesh.kumar@kernel.org>
+Date: Thu, 21 May 2026 17:24:07 +0530
+Message-ID: <yq5a4ik16krk.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
->>>>> Won't it change the DT behavior as it doesn't check msi-parent
->>>>> anymore?  IOW, should this be made specific to ACPI
->>>>> by checking whether the device node is acpi node?
->>>>>
->>>>
->>>> Thanks for the review, you're right that the current condition would
->>>> affect DT as well.
->>>>
->>>> My assumption was that DT would describe either "interrupts" for WSI
->>>> or "msi-parent" for MSI, but not both, so platform_irq_count() > 0
->>>> would effectively imply "no msi-parent" in practice.
->>>>
->>>> That said, I agree that this should be limited to the ACPI path. That
->>>> matches the actual bug scope — only ACPI was falling back to MSI when
->>>> wired IRQs were described — and leaves DT unchanged.
->>>>
->>>> I'll respin a v2 to scope the fix to ACPI only, and tighten the commit
->>>> message accordingly.
->>>
->>> Why would this be specific to ACPI? AFAICS if DT specifies an
->>> "msi-parent" property such that an MSI domain exists, then MSIs will be
->>> preferred as well, since the entire function is structured to prefer
->>> MSIs if available, and fall back to wired if not. If the system does
->>> support both options then DT should describe that, same as ACPI; what
->>> Linux chooses to use is entirely Linux's own policy.
->>>
->>> But if you do want to change the Linux driver's policy for some reason
->>> that the commit message isn't really explaining, then rearrange the
->>> whole switch statement; don't just add a weird hack to try to defeat the
->>> existing logic _in the same function_...
->>>
->>> In general though, I would have thought preferring MSIs makes the most
->>> sense, since MSI vectors are generally cheaper than wires, so there's a
->>> better chance of being able to have unique IRQs per interrupt source,
->>> whereas with wires you may be stuck with a combined IRQ.
->> 
->> Thanks, Robin.
->> 
->> To clarify, the goal here is not to change the general MSI-vs-WSI
->> preference policy. The bug is that, when the hardware advertises
->> IGS=BOTH, DT already provides a way to select WSI by describing wired
->> IRQs without an msi-parent,
+"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> writes:
+
+> gart_alloc_coherent() first allocates memory through dma_direct_alloc(),
+> which returns a direct-mapped DMA address in dma_addr. When force_iommu is
+> enabled, the buffer is then remapped.
 >
->And my point is that that sounds wrong - if the system can support both 
->then DT should have both properties, because DT describes the system, 
->not Linux policy. Of course it is presumably possible to have a reusable 
->IOMMU IP that itself supports IGS=BOTH, integrated into systems which 
->either don't have an MSI controller, or haven't connected the wires, in 
->which case only one or other property is valid to describe anyway, but 
->that's fine - IGS describes what the IOMMU is capable of sending, the 
->firmware properties describe what the rest of the system is capable of 
->receiving, and if there's any choice left in the intersection of the two 
->then that's up to the OS.
-
-Agreed, Firmware describes hardware capability; when both options are
-properly described, prefer-MSI is the right default.
-
->> but the ACPI path does not currently have
->> an equivalent way to steer the driver to WSI.
->> 
->>      - DT: if "msi-parent" is omitted, of_msi_get_domain() returns NULL,
->>        IGS=BOTH then falls through to the WSI path, so DT has a real knob
->>        ("don't describe MSI") to select WSI.
->>      - ACPI: there is no per-device equivalent. On systems with IMSIC, the
->>        IGS=BOTH IOMMU always enters the MSI branch and resolves a non-NULL
->>        msi_domain, regardless of what its own _CRS describes. The MSI fallback
->>        only triggers when the system has no IMSIC at all, which is a
->>        firmware-wide decision rather than a per-device one.
->> 
->> As a result, with ACPI and IGS=BOTH, the driver always uses MSI even when
->> firmware describes wired IRQs, so the platform cannot express the same
->> intent as it can with DT.
+> Do not overwrite dma_addr before dma_map_area() has succeeded. Keep the
+> dma_map_area result in a temporary variable so the direct DMA address
+> remains available for dma_direct_free() on the error path.
 >
->What do you mean by "intent"? Again, people should not be hacking 
->firmware just to influence OS driver policy.
+> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+> ---
+>  arch/x86/kernel/amd_gart_64.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
 >
->If you mean you have a case where a system does have an MSI controller, 
->and a device which is capable of emitting MSIs, but the device's MSI 
->writes cannot reach that MSI controller, and ACPI is incapable of 
->describing that so Linux ends up incorrectly assuming that MSIs should 
->work, then you have a spec-level ACPI problem and you need to fix RIMT 
->and/or any other relevant tables/properties to be able to indicate that 
->properly; bodging the Linux IOMMU driver alone does not help other OSes, 
->nor even other MSI-capable devices under Linux.
-
-You're right - But RIMT v1.0 lacks a per-IOMMU equivalent of IORT SMMUv3
-Flags bit 4 (DeviceID mapping index valid).
-
-I was wondering whether the old ARM IORT compatibility pattern could be
-considered here: if a given RIMT IOMMU node fully populates its Interrupt
-Wire Array (civ, fiv, piv, pmiv), could that be treated as a temporary
-signal for the wired path until RIMT grows an explicit flag?
-
-If that is still too policy-like for ACPI, is there any comparable
-transitional pattern that would be more acceptable until RIMT gains the
-missing explicit signal?
-
-Thanks,
-Fangyu
-
->Amusingly, that would then be the opposite problem from what we had with 
->Arm SMMU, where initially we couldn't use MSIs with ACPI at all since 
->early IORT version had no way to describe the necessary GIC DeviceID :)
+> diff --git a/arch/x86/kernel/amd_gart_64.c b/arch/x86/kernel/amd_gart_64.c
+> index b5f1f031d45b..a109649c5649 100644
+> --- a/arch/x86/kernel/amd_gart_64.c
+> +++ b/arch/x86/kernel/amd_gart_64.c
+> @@ -467,18 +467,20 @@ gart_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_addr,
+>  		    gfp_t flag, unsigned long attrs)
+>  {
+>  	void *vaddr;
+> +	dma_addr_t dma_map_addr;
+>  
+>  	vaddr = dma_direct_alloc(dev, size, dma_addr, flag, attrs);
+>  	if (!vaddr ||
+>  	    !force_iommu || dev->coherent_dma_mask <= DMA_BIT_MASK(24))
+>  		return vaddr;
+>  
+> -	*dma_addr = dma_map_area(dev, virt_to_phys(vaddr), size,
+> -				 DMA_BIDIRECTIONAL,
+> -				 (1UL << get_order(size)) - 1, attrs);
+> +	dma_map_addr = dma_map_area(dev, virt_to_phys(vaddr), size,
+> +				     DMA_BIDIRECTIONAL,
+> +				     (1UL << get_order(size)) - 1, attrs);
+>  	flush_gart();
+> -	if (unlikely(*dma_addr == DMA_MAPPING_ERROR))
+> +	if (unlikely(dma_map_addr == DMA_MAPPING_ERROR))
+>  		goto out_free;
+> +	*dma_addr = dma_map_addr;
+>  	return vaddr;
+>  out_free:
+>  	dma_direct_free(dev, size, vaddr, *dma_addr, attrs);
+> -- 
+> 2.43.0
 >
->> So this patch is meant to fix that ACPI gap for IGS=BOTH, not to make
->> WSI generally preferred over MSI. I agree the commit message should
->> make that bug scope explicit.
->
->But even then it does change the policy in general for all ACPI systems 
->that genuinely do have both and could happily still use MSIs.
->
->Thanks,
->Robin.
+
+This needs corresponding changes on the gart_free_coherent() side as well.
+
+https://sashiko.dev/#/patchset/20260512090408.794195-1-aneesh.kumar%40kernel.org?part=13
+
+I will avoid making that change as part of this series, since I assume
+it would require specific testing.
+
+-aneesh
