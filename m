@@ -1,287 +1,228 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B6C03BF673
-	for <iommu@lists.linux.dev>; Fri, 22 May 2026 09:34:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.19
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779442488; cv=fail; b=t9cfnLgNtlReYxOq6TbSifb7BIC1byZ7Y3OcdkUOSP+S70lrEAW/D5Q5n+jrtK9Z7rd6RL0zk/H52JKtFYy1+NI96ut2wJzZYLZK2ugZdR0Qysgx1qOI4g4+uTJGh8tpdLbe6qCKq08jZ3LFCJLn7WsClAQvXfsE23wMQmgRmTM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779442488; c=relaxed/simple;
-	bh=b50fjq2Gu4xD5jnpMl8ELqCf2Ug1bh/vu9g2CHiu6hc=;
-	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=kJ3hW8uM18v5h0OLJdeh3F0ZUgtS/mGS9hbOU/4GzwY5sfIij79M2/i9HmaXMrzHS4WCXkhT0zwno2bFjR9YoyqbqDKh5kN8ZPd8wq6mclweyVh6TndmlUtp1UpSIDDLpOvxPs2HJbfFB2Kd8X7Fq8Nwv9hY3hc/9qVxeSyymuA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Yb+YkgHp; arc=fail smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2DA63C76A1
+	for <iommu@lists.linux.dev>; Fri, 22 May 2026 10:12:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779444754; cv=none; b=bl+d36lprNkswvlql6FU8WcebFid/D1l9wb+CJ9QpNvhEz/x4F9mErtA7xAAGRxLkZOGl2KXog64/YFiX/OzBNOQOKSdWWY1UB0PPg9FgTP1Ifb75lbLFnRv6ntGHzn0kkdenQDtug6VmdkjgPwPcO1+1/vTK/zkPvhHWtX/9iQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779444754; c=relaxed/simple;
+	bh=kTZkqQMBsGBq0RgXdzBTEek0U9w6bkU5wpcpKO9PBwQ=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=s3WCMoxsBNh9EoiUJvKRtDSdYSRA5zzo/A8s/zF7fM1ZNM9BMfbcANThAnwzsagLtz0JZ2qnHBFOCpOzt1/L+ZaUBVzzd5BIFbGSergikzX31Ejc+nzAsJ5VRsqryYOC8giKeErskyiuTCnXOlk2hI+4cE0QM4ovfWKCJOqfn5U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=GeyoKsJL; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=UEh/UQdd; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Yb+YkgHp"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1779442486; x=1810978486;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=b50fjq2Gu4xD5jnpMl8ELqCf2Ug1bh/vu9g2CHiu6hc=;
-  b=Yb+YkgHp/vUqVii0dV70BXC1OfZRllbqglSa6qMJ7e0fJIneSowB80LR
-   jyk1tErTGz8XPdOMPLavXNUz9/xUEwUps6Kz3GapEq5k8UHFeCbPuKIg0
-   bI85z7+NMHTfllKqSO2QlqwM31ftx+YAmm51kmaCeY5/Po+ZNCY5taSpj
-   cr5UrYF9PME8w08cTqCRjbcUWjhACbpCbH2KwokBcM00mRaEBPjlvuUL2
-   f6rI2+aQS4ie4pPq81qluQf+94iUX/L8dDvzkQmd8FoCuh7yNnI8hQT68
-   IqRDFRLoRtvd1ocyaZehW0OKvHIKJ2tb9IgtfueOoq76BHBMFYM/W5HLo
-   g==;
-X-CSE-ConnectionGUID: 3/NmGAeTTEiTm8wOMLA43A==
-X-CSE-MsgGUID: DpDJa97SQCyAbXE26GP21Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11793"; a="79403378"
-X-IronPort-AV: E=Sophos;i="6.24,162,1774335600"; 
-   d="scan'208";a="79403378"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2026 02:34:45 -0700
-X-CSE-ConnectionGUID: mtLUe4GBSjKs+BE4R63DlA==
-X-CSE-MsgGUID: NZQ1wr06TxCeSwMbVq+CGw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,162,1774335600"; 
-   d="scan'208";a="264403773"
-Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
-  by fmviesa002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2026 02:34:45 -0700
-Received: from ORSMSX903.amr.corp.intel.com (10.22.229.25) by
- ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Fri, 22 May 2026 02:34:44 -0700
-Received: from ORSEDG903.ED.cps.intel.com (10.7.248.13) by
- ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Fri, 22 May 2026 02:34:44 -0700
-Received: from SJ2PR03CU001.outbound.protection.outlook.com (52.101.43.53) by
- edgegateway.intel.com (134.134.137.113) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Fri, 22 May 2026 02:34:40 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=QBN5EdmIpGcf42TIvafkuYZkgrwGxdso9mChqoXcv1sUNwuU+YmekwjvBlzmXd/IX1TycdMtJ1sJWuB9RrMPZanyDt6+/Iw85vcsrjAWBMzzoKIAokTTKyTzpw6b+/djG0mZexZ4PY31kdyCtTxFWy7jbqjlBPPtdqS341WZ0Pbep9BSEmHqNp89hPS48dvagT3FDfm0XH3GRnOtPDEDGTSdbmBPQzSc/wsmnVF2NTd2qtPI9G6MzWonBFTUEamxBD5Kt+gguyEZLanFTP9Pv0xWPEOgIJfXYQ8Ra6mRDdIs2BOzeCrmbXHdnMbM9PJVBU0noffA3PL3JOSaDA8ubg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5+aeWYM1kSbv7BEgOSWeQO5nZAZoUFZKn4soKKIHs5o=;
- b=ZvCvfuDCh1YPcnaorxvBM9+R1WCJ6G2TatQikaN/yy+TCPPZZoeocdVcN15hprOd/WGmpaRwXLIO7ea7PUOvZ4OYL+MeEGjji+oxjWyFVqYYcCCEJ6SE73eL8yWzUT/hFFBW+gweJhTF/w6DgtTuJe3qOt4d5qkMRcPqNqalei2nUOFogL3Cjzqnat+gDsxvalYpfwjqrTYiENiLr2B8A3FYT5q9CMft2likdcwYrTsGxT5+sFqOTkIewxdlJ4d638UOr8E94EASbkm43eoYLaIQj19CAngCIebnDFC7aGASRXFY7vpnk8ku7PDFtn+GRyAM+MfXBOoRWhhYGmleUg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV8PR11MB8509.namprd11.prod.outlook.com (2603:10b6:408:1e6::15)
- by DSWPR11MB9737.namprd11.prod.outlook.com (2603:10b6:8:354::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.48.17; Fri, 22 May
- 2026 09:34:34 +0000
-Received: from LV8PR11MB8509.namprd11.prod.outlook.com
- ([fe80::f5bd:4dde:4f2f:20b7]) by LV8PR11MB8509.namprd11.prod.outlook.com
- ([fe80::f5bd:4dde:4f2f:20b7%5]) with mapi id 15.21.0048.013; Fri, 22 May 2026
- 09:34:34 +0000
-Message-ID: <18733b82-9f59-4a4b-b37c-69a2e367a0ab@intel.com>
-Date: Fri, 22 May 2026 17:42:42 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 7/7] Documentation: Update VFIO NOIOMMU mode
-To: Jacob Pan <jacob.pan@linux.microsoft.com>, <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, Jason Gunthorpe
-	<jgg@nvidia.com>, Alex Williamson <alex@shazbot.org>, Joerg Roedel
-	<joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>, David Matlack
-	<dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen
-	<nicolinc@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>, Baolu Lu
-	<baolu.lu@linux.intel.com>
-CC: Saurabh Sengar <ssengar@linux.microsoft.com>, <skhawaja@google.com>,
-	<pasha.tatashin@soleen.com>, Will Deacon <will@kernel.org>
-References: <20260521221155.1375144-1-jacob.pan@linux.microsoft.com>
- <20260521221155.1375144-8-jacob.pan@linux.microsoft.com>
-Content-Language: en-US
-From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <20260521221155.1375144-8-jacob.pan@linux.microsoft.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: TP0P295CA0013.TWNP295.PROD.OUTLOOK.COM
- (2603:1096:910:2::18) To LV8PR11MB8509.namprd11.prod.outlook.com
- (2603:10b6:408:1e6::15)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="GeyoKsJL";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="UEh/UQdd"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64M8plRt1816067
+	for <iommu@lists.linux.dev>; Fri, 22 May 2026 10:12:32 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=ygzXnRmnIfi9PfYTeE5iFb
+	e27GiW5AXsmvzhwk2ysvQ=; b=GeyoKsJL9AsFkrxFikRPNe3HPwuc2BB+UxDYAU
+	VnsEI2Pni8YvCbejT4sOZr3ukWkukbsi2Y87g7L9O0qXX4F2QbpAzxS+rKpAWo5m
+	sjr/D6EP4yB/+G9x5/FqLbn0w6f2h8lOVcFvFejj8kFp4VnnNSIm97we2HRFFv8s
+	Y12dlxs8RnEjZF8dmNQXVG/lnZOFKvGstQKsY49NAo5Tt6FKZD4ogJx6q0XQEW6F
+	3iJKsgka3W4y3C7nKJNOmV6z6uUFPIn9gNGBShys1OMBFCfWdCqp5cZ0c+Cj6MGQ
+	XbhyMWnzwU41gPfOpKyEjCuk/m/CQMVCVwUfYxNwiCrMTPLQ==
+Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com [209.85.216.70])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4eafrm1g0c-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Fri, 22 May 2026 10:12:31 +0000 (GMT)
+Received: by mail-pj1-f70.google.com with SMTP id 98e67ed59e1d1-367cb6de61aso13012463a91.1
+        for <iommu@lists.linux.dev>; Fri, 22 May 2026 03:12:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1779444751; x=1780049551; darn=lists.linux.dev;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ygzXnRmnIfi9PfYTeE5iFbe27GiW5AXsmvzhwk2ysvQ=;
+        b=UEh/UQddqtTXVzrwhKwM0Q+i5pzBk5SFvWEiri6NvBJ4ZRDYUIcmV4AesOxzS+8Yj7
+         ENkUb5rdjhR8Z64fNpVlA/W3kxisVMEZeUSez2765IeYY0RaXBJJ+OCNwoTzy56D/Sot
+         koNbxIKyuaiJerM3SVbs8ukz4eeserh5nDTooZnTeo+DXB0zVr8YfrVjfnEoOp/Bl201
+         etS0VdUXMp/A2t6zKv1oHvxsiR8qzSxeC3LJVWVHAF3Dm98mvXI/9jjZvH0t+9OjANCa
+         DfN95t2/61BwKg3wcrdXsX3SDm9pMhGy4pqziw6+CBH0oJb1zBMwlpedyYZ+BlBg9IZS
+         Rlnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779444751; x=1780049551;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ygzXnRmnIfi9PfYTeE5iFbe27GiW5AXsmvzhwk2ysvQ=;
+        b=Htt0nKtbcvKqHoqmuvt32Q5GVe+X3N3KSD8wBUfaTzMIAEXmTCVG1NGVMHNzGOGp1u
+         5FBbVnCElr5JTcdW/0lxol/7wef2kp54QbK9g4fYxYTxbaOTEpsNWJspeJPckGWYBsZf
+         OsXiwk+HWS/irzQi63e133Uf8AUqvQUhJGXd6xVuVllxe3RFoYZKJr5q9YY8P66Hg59k
+         reDj6bxjOiDBcb4h+WsXcpWCIn9sVGwhDOPtbjC2Vvsu7TRSGNBWaeywSisqBY0I18AH
+         sUJRnVEMkB+v3LAwmtGt7WpOWeIXTbAeLIY/vGp8kJNDsqVyIr4e5z99UnFYtR5vhJ7f
+         p7zA==
+X-Forwarded-Encrypted: i=1; AFNElJ+3UcQt6YzJnqmzB5/LH4IZV4KlmO/l1K02QKmKip1QYPGlDhD3sefA6wU1046wKeoXNAxR9g==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw5kPomWBZK9ntlLUI/NynhpcVJkrxRgc8swSg537VqgBRvFDDm
+	c8Fw+JuRdscKgTg4Yah/OvLnqwrE3YIrI4IvsjuU8vQK7wDZ1ZQTB2q/qgSnBGn+36vSqq5K5Hn
+	Mf/kMVXxdrlMtK7PFp2quR7LCZ6wdqPNFaqC1vLlgHzQNfSb07O5euTQBzA==
+X-Gm-Gg: Acq92OE3hPM5AgAfdi/ltJgHK6pXsZUJ+W/TXL+V6JMix2wpbxpfosn/5CYcwvyDh4m
+	ptMpOSL1e+Hy++hpKrUhDhf5HXytjRJZNuvE2izim34QEyv+UMOG7Xg+e4KGIS0thRDfEOxbnEI
+	Q7h028zzYV+HHOQ8hucLeiKm5EeRNRQsXLSrGUbdYLzzX/6aJ5uNAjCnR5DS877+zOTysW6fS/q
+	j9KLr5pYMs0V5eAPdt3AwE0Jk7/HdRopc5MecehLvxMklKKVt03EE6+YhXMjD5mPl0xgohuJte4
+	yEGqc+KlWLOcyPRh1rj84LyezcgI6P2HX2r72Hu3R0K+dgobzVE6cbM+T32tWFl82qik6jbwPoH
+	lE/eWd6v1mFIGVs+nWJFSa5bZ7VxoG5rhCDkkJvNSIXM7cifyvwWDFySp
+X-Received: by 2002:a05:6a20:d709:b0:3b3:c28:45b3 with SMTP id adf61e73a8af0-3b328e4f8d7mr3008450637.26.1779444750735;
+        Fri, 22 May 2026 03:12:30 -0700 (PDT)
+X-Received: by 2002:a05:6a20:d709:b0:3b3:c28:45b3 with SMTP id adf61e73a8af0-3b328e4f8d7mr3008398637.26.1779444750288;
+        Fri, 22 May 2026 03:12:30 -0700 (PDT)
+Received: from hu-akhilpo-hyd.qualcomm.com ([202.46.23.25])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c85202b4442sm1143498a12.12.2026.05.22.03.12.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 May 2026 03:12:29 -0700 (PDT)
+From: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+Subject: [PATCH v5 0/5] Devicetree support for Glymur GPU
+Date: Fri, 22 May 2026 15:41:56 +0530
+Message-Id: <20260522-glymur-gpu-dt-v5-0-562c406b210c@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR11MB8509:EE_|DSWPR11MB9737:EE_
-X-MS-Office365-Filtering-Correlation-Id: b6a3f53e-e33c-469c-2cdd-08deb7e55529
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016|7416014|42112799006|3023799007|4143699003|11063799006|6133799003|22082099003|56012099003|18002099003|921020;
-X-Microsoft-Antispam-Message-Info: IuZNspYSlMMZHoAvRvtg1YYg9u5JubQw8Rjn/yhAOEEnuj9fpyE0gEkFSRyi+z3FSz4vQ+l2GP5XTaix1CBfsQEAO9+fmxo1HnbC+crZ4op1wNTCj/a/tCeiYj2Od0yzBOfOvL5p1Sc3GcN2UXuIyLE7+wU1U8jWeN69kDCr9NIidCvc+tJShPxmJCCgfNy5eivSBWRtWRnSptK9une4eE4qfSuH1jfDXxC92vROC/GK6VurzEVoHdN8Cx5wO4CFUwLU4uBsvdVTmlkU6TsXE5uDL5kOuwAp4KPEbK8Jq98RGUCz/j6IlEt0KMwxLx9aBs1qtzlArINmkkqgecdqnsJ/OP2dleoEsLkVwOz1CeAW+PWYD40ywiDIh5R7CzKfrIOkm2GBZ7KUnlVilGic5DsQu/2JR5rAYKYAYbILpxENs9Fbf9B1RGKcaWcrS97KBSz+EnSFSqO1Tjkuib8jq3PwD6dwYc1RViKBW4Wea+L9W4SIatXnN67O7HaQFjJwV72Ney26Pwq0FwAsNDjxLy0f+eEDoWGeVRU1//EQwe/laLOsA2BHuFSyEgxSNsKk3egXBNYp/WX/cEIOTl7GnInYac2GvxrQSq/s5ZmoS51qaU3UVAUsONuQZfsHt2i9ku+xlzjFIzZiJTYuxJruxrByfCjEL2I5V/K8TOE21A0WG2Toog21cl3UVX0e7LpAfvs02BOBhNDVFm9XHzcT6oa1zYNsx0RMoFQyHQaLlig=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR11MB8509.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(7416014)(42112799006)(3023799007)(4143699003)(11063799006)(6133799003)(22082099003)(56012099003)(18002099003)(921020);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZDVFeFRsQ1dWOTZ4bmF0SGN1cVN3VDhGZFJZeHNFSFRyVFdlbDBydDhtS2k2?=
- =?utf-8?B?Nk02WmVKVUQxczd0NlBzTHZWNU1mUWlDOWhudHBhK21HNU16ZnYzOThtMHQr?=
- =?utf-8?B?Zk9iUnVIUUV6NVFDOXZ5bVQ4Vm1vaE5TbmVoVFlpeEc5ZGVoRkVSK3F2S0p6?=
- =?utf-8?B?Vk41R1pER3BLdkJwT3FHeU1QZVlXZEFwMEU0Y0swRGw4eFdhTmJIWDhETUVF?=
- =?utf-8?B?a2l1Y29pbDVWejdYYStBMHZkKzdDU1drZmRVQWl2S3RMZDRUSm5jVk54WExo?=
- =?utf-8?B?QzM4emhaT3NwM1pvZXNGRnQ5RG5qOUhybkM0aGQvNlNGS0M3cFB6RkFwWmND?=
- =?utf-8?B?TkZTd2NOK0xJcGhEUWNnRkszY2lJaVpwZVU4OEpqMnJZbXhtUTFpMWx2Zmta?=
- =?utf-8?B?Snh4L1ZHTzhBWXlMVEdiRng3L0xJNzUraTBKUEphVldsZEk2UFcxa1VhZ2Nv?=
- =?utf-8?B?THQ0M29ORGpnY1grcmk1SjdURUYyUjV1aVNZK2ZLWU5RUHFKTWpwT2RNaGw3?=
- =?utf-8?B?NmNIcHZQbVgrMlpXU3RwWFp4NFRqRC9BbS9KYXBDbEhZNkFZZE51b0FEN29H?=
- =?utf-8?B?bG1oUFhZMk1CMUU1aWlEZFJqNkFBWC9xcEY5OGU4MVhCalpRbVQ3SnZFczBt?=
- =?utf-8?B?eldOSUoxZUVHVnZIeXV5RHlpcEM1cmI4NDE2Wm5ZZzQwQUh2Z2U0QVFvbGE3?=
- =?utf-8?B?MkFNeU9lWXoyaEs5SGt5Um1pY2pKVUNlY3AxT0tBdmpYZkJjWEpyNlgwTGwy?=
- =?utf-8?B?NFptaEdmOTBhVXQwTWx1K0Z2WTJySU9nN3U3NWs2NnRoTTJIaTY3ekg0OWNl?=
- =?utf-8?B?TXpyeEVZeVlMZlRHWXRId2lnNDZLWkFDOXZwc0xqMU5WZnQzMGRia2JIUzl5?=
- =?utf-8?B?M2kwRjNCTXpsdnExUlpObzRSVHFmc2VyTTI2aHY5UmxRL3Q0TVBKV0tjdy9J?=
- =?utf-8?B?NFpaK3FFc2tmeUFta2RqSC9CUzNoVENlT1hYcUJuQ2FkNi9rdG5VU0FBZHli?=
- =?utf-8?B?YThlamorVm1nUmk3Qk05WDBkMEpoREd2YTFDRENiQ2EvbWRTZCtocjhJOGFP?=
- =?utf-8?B?ZjFKRFNud1owb1hkQTdMcmkrcXJIQkFRMS8xR1UxbjFILyt1VWdja29PSGth?=
- =?utf-8?B?QU42RFUweWtKUlFhWmp1LzRxRXZ4eTBKU25qREM4UFV6eDJQVlpab05oYzlE?=
- =?utf-8?B?NXVnaUJUMlpUS25sbjVjNDMvQVB0U0tnQzZYUGRaMjBnWWNMMWJVa2NwbS9G?=
- =?utf-8?B?ajBJYWNNNkhNZU1UZm82WGl2N0hZMUJGTS9rMTQyT3B2cklwODJJczlDbitD?=
- =?utf-8?B?am5NRzRjeFg1b0l4SUowU1R2eDhBTUtxYUZOWHpnSHE2aklsMGVUeVhEaE1S?=
- =?utf-8?B?aXpJblR0RE0xeVRFTFBDOTRhUFpacEFWMzdPckIwZnA3WmRzVlB6TXAzUElF?=
- =?utf-8?B?NENQV1NzMmlXZzlxZmN1cmdoRFM1ZlYxaW54Mm54ZEt1cnE0TEJYaUJCaDV3?=
- =?utf-8?B?M1ZDc3dkdndSemNPVWhWeEZlRlY1bHdXcWRIZVpnRTg3RDU0L1ZmbWNRMnFn?=
- =?utf-8?B?Lyt6cTRjdHdSbXRMTmk2RnhvRUo1YVRUckVTMXZIWG1uaWcyQWJlMXBaVHU3?=
- =?utf-8?B?Mit4SXFOYlZrMjBhZHhXdlRhU0c0TkMzNGJDOUlCbXlQTUtYQzVVOW94Y3BD?=
- =?utf-8?B?Y2c0UVNaQzBWbmpVa1Q1ejlER2JQSmNoV2VyNDBPejNjMVMyTFNYS1g3QjIz?=
- =?utf-8?B?Vi95Yk5sa1BMYjNFU0tOTERzZmpDdVg1alBQdFdFMjRsS3J4T3IrRnovUE9v?=
- =?utf-8?B?ek4yekhKVFg3ZTBEd21aZFdCOS9JSDRjR0VCZVg2TUlNa1hUbHVtU281S1JJ?=
- =?utf-8?B?cjNlNHdITGNwQldFUklVWXQvdWE1K1hGWjFNZHQ5cnpnb3dacSt0YzhPZHZP?=
- =?utf-8?B?cW5FMG9BOWFGZ1NqS2V4MWQvQ1k0YytuK2hxK0xsY2pnOTFVOU1lL1h0UXIy?=
- =?utf-8?B?dERSTi8va1plb3J3Q05YdW9vY2JJN1dqQUlBeUV1UXI5WUtIWXJpUGZERzVY?=
- =?utf-8?B?S2MxTmdrY2ZGRVNOYW5nelY2Mnc5cUFnVjRDc2FNYUxndHlLelZac3VUMmRo?=
- =?utf-8?B?eVZVQkxzTjZlUFFFRjZ5T2pERG85c2wwc3BuU1o0UFVXaHlwSjVDVFZUQ2w4?=
- =?utf-8?B?R1RjdDJ4VUJQb1ZLekRzNDFDRmJ0SWJQV2hWaUVqVFNCOVltSThzbjNwWnBy?=
- =?utf-8?B?bjg3TEFaV25zT3hKT1EzNVJMK0VhRlRURDhtdjNLaEdFVmFpS0tJV2wxUml4?=
- =?utf-8?B?QVJjZmRFSVJ4SWNlakZhTjBpb2FxekMxL0VVblBZem9xSDRwdWFFQT09?=
-X-Exchange-RoutingPolicyChecked: MSNBbAqhqk14QY2ghBot5eQh1v8OsNlAxEaZGmbXSU3s2sARUNkqkaya1d7I8cdbHkRBud1kpcsrrQ8a2tPm8FQBIUB6Z8YbmlxX7amGuxSkkMizP+BeI7bCHJLD0fH2ftyznztT+6EfX7EVKkNNoVfkClQ8EyIv+ss7ptLRYq8B4RAQosRjyZhwsLXnpP6FwZrMWMHJ9QmWyFWGZaSErNIA5huGG9qSt1sbryyVWFt/WPIXKDvnq5xYUh7+XJWrvIL988Y+hoWzd8Xlv7RFcanhCU4EAzP2z48gBeK7MS2KvSMnUZMav2+G+wEgskolZW/Knv9H7GLYPQJkDYW3Nw==
-X-MS-Exchange-CrossTenant-Network-Message-Id: b6a3f53e-e33c-469c-2cdd-08deb7e55529
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR11MB8509.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 May 2026 09:34:34.0896
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: reJe5Bl1SGVNItvPYxSNQjjdS4kov5qAbB+fVayeS66tVwmSoTDMxYJZNVqM516cIrfX5KcUvb3qWKJBBFxtLQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DSWPR11MB9737
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAOwrEGoC/3XP4WqDMBAH8FeRfF5KcjFOZYy9xxiSxNMGGm2Nh
+ pbiuy/qYMWtXwL/HPe7uzvxOFj0pEzuZMBgve27GORLQsxRdS1SW8dMgEHGADLanm5uGmh7nmg
+ 9UiEKlKyItUyT2HMesLHX1fv82vKAlymy4/ZJtPJITe+cHcukw+tIVzoVbOl36L1ah5bJ21bg7
+ Gdm5ZwxVT1Wpu8a21YBaBCUUWUMFjVnGb7CR+/94TKp0zLhEJ93sqxxtH7sh9t6ZeDrHhvO5O6
+ gwKMIXEjUnBuZ/RVXMMAvIhnfI7AgDYdcS1lkWj9BxAPCYY8st+UpCKgNcMPEEyR9RMQeSSPS5
+ CIXYIQ2hfoHmef5G/eD6xwHAgAA
+X-Change-ID: 20260226-glymur-gpu-dt-339e5092606b
+To: Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Rob Clark <robin.clark@oss.qualcomm.com>, Sean Paul <sean@poorly.run>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jesszhan0024@gmail.com>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>
+Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux.dev, Akhil P Oommen <akhilpo@oss.qualcomm.com>,
+        Rajendra Nayak <rajendra.nayak@oss.qualcomm.com>,
+        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+        Manaf Meethalavalappu Pallikunhi <manaf.pallikunhi@oss.qualcomm.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1779444741; l=3476;
+ i=akhilpo@oss.qualcomm.com; s=20240726; h=from:subject:message-id;
+ bh=kTZkqQMBsGBq0RgXdzBTEek0U9w6bkU5wpcpKO9PBwQ=;
+ b=CHtXeQDP4hxrxwaBHy1GmF0IPY/324K7voescovnfbeHnVyH79TDAQ2nGYRnw6OvjvF6xeUS6
+ 9+M9+HCmwDFDj10U5kVChHguRZKqP5hOlDjVnNs+DcPMbLlLdR2EKjX
+X-Developer-Key: i=akhilpo@oss.qualcomm.com; a=ed25519;
+ pk=lmVtttSHmAUYFnJsQHX80IIRmYmXA4+CzpGcWOOsfKA=
+X-Proofpoint-ORIG-GUID: xBgBeFBObOQaGLfiXBwuk24Hy9IRH6WB
+X-Authority-Analysis: v=2.4 cv=Zekt8MVA c=1 sm=1 tr=0 ts=6a102c0f cx=c_pps
+ a=0uOsjrqzRL749jD1oC5vDA==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
+ a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
+ a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=-08r9DDlpfC4vgu8VQ8A:9 a=QEXdDO2ut3YA:10
+ a=mQ_c8vxmzFEMiUWkPHU9:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTIyMDEwMCBTYWx0ZWRfX2zAa0tjs8glE
+ rdlRj8IRkLoHHl/wNER1ghtdqlGBjpPGA9ehXRs2L5fKYBru7dXPkUIMkQz7+WCB94MUd2uvFrY
+ kOh4t2dOQ8DyUA2y2bbx2nK90HfVuTllslaESG02HOqsMDVBjjlXAw//BeqI/9YHTzfBAwFU3gE
+ XzZS9W2qCtO3MOjuauiH9ypHVlvGovdNJ7a1W66J5K6UmMHd/7KbxU4jONeM41M6f3jmAvMNTOk
+ uLyX+YM/Uu2d0ren9N1Jv23u5zGrrCVhWFD/ffAM/VSHPtt150DrCU4F7DP1sKoCBNk3jbMgOFo
+ hNVfynf1x49DJzPr3roHntlzptGbNEoP9eqgV3AeRwL+g1i8P1dO/9Q3YUoJ+hgySsgGUJ5NXnn
+ QMFuUcT7HrjZ+kaTLsXLcZSdPGkG29Oyh/fTKwc9zz1dtaTzW4qds1vF33Zu/bQNsoqPcbp8ULn
+ vRC8mr+7LiffpBXIiZg==
+X-Proofpoint-GUID: xBgBeFBObOQaGLfiXBwuk24Hy9IRH6WB
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-05-22_02,2026-05-18_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 malwarescore=0 adultscore=0 lowpriorityscore=0 phishscore=0
+ suspectscore=0 spamscore=0 bulkscore=0 clxscore=1015 priorityscore=1501
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2605130000 definitions=main-2605220100
 
-On 5/22/26 06:11, Jacob Pan wrote:
-> Document the NOIOMMU mode with newly added cdev support under iommufd.
-> 
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
-> ---
->   v6:
->   - Generalize device node names (noiommu-vfioX, noiommu-Y) in the tree
->     example (Yi)
->   - Clarify table column descriptions for Yes/No meanings (Yi)
-> ---
->   Documentation/driver-api/vfio.rst | 83 ++++++++++++++++++++++++++++++-
->   1 file changed, 81 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/driver-api/vfio.rst b/Documentation/driver-api/vfio.rst
-> index 2a21a42c9386..739576a22de6 100644
-> --- a/Documentation/driver-api/vfio.rst
-> +++ b/Documentation/driver-api/vfio.rst
-> @@ -275,8 +275,6 @@ in a VFIO group.
->   With CONFIG_VFIO_DEVICE_CDEV=y the user can now acquire a device fd
->   by directly opening a character device /dev/vfio/devices/vfioX where
->   "X" is the number allocated uniquely by VFIO for registered devices.
-> -cdev interface does not support noiommu devices, so user should use
-> -the legacy group interface if noiommu is wanted.
->   
->   The cdev only works with IOMMUFD.  Both VFIO drivers and applications
->   must adapt to the new cdev security model which requires using
-> @@ -370,6 +368,87 @@ IOMMUFD IOAS/HWPT to enable userspace DMA::
->   
->   	/* Other device operations as stated in "VFIO Usage Example" */
->   
-> +VFIO NOIOMMU mode
-> +-------------------------------------------------------------------------------
-> +VFIO also supports a no-IOMMU mode, intended for usages where unsafe DMA can
-> +be performed by userspace drivers w/o physical IOMMU protection. This mode
-> +is controlled by the parameter:
-> +
-> +/sys/module/vfio/parameters/enable_unsafe_noiommu_mode
-> +
-> +Upon enabling this mode, with an assigned device, the user will be presented
-> +with a VFIO group and device file, e.g.::
-> +
-> +  /dev/vfio/
-> +  |-- devices
-> +  |   `-- noiommu-vfioX	/* VFIO device cdev */
-> +  |-- noiommu-Y		/* VFIO group */
-> +  `-- vfio
-> +
-> +The capabilities vary depending on the device programming interface and kernel
-> +configuration used. The following table summarizes the differences ("Yes" means
-> +the UAPI is accessible and functional in noiommu mode, "No" means the UAPI is
-> +not supported):
-> +
-> ++-------------------+---------------------+----------------------+
-> +| Feature           | VFIO group          | VFIO device cdev     |
-> ++===================+=====================+======================+
-> +| VFIO device UAPI  | Yes                 | Yes                  |
-> ++-------------------+---------------------+----------------------+
-> +| VFIO container    | No                  | No                   |
-> ++-------------------+---------------------+----------------------+
-> +| IOMMUFD IOAS      | No                  | Yes*                 |
-> ++-------------------+---------------------+----------------------+
-> +
-> +Note that the VFIO container case includes IOMMUFD provided VFIO compatibility
-> +interfaces when either CONFIG_VFIO_CONTAINER or CONFIG_IOMMUFD_VFIO_CONTAINER is
-> +enabled.
-> +
-> +* IOMMUFD UAPI is available for VFIO device cdev to pin and map user memory with
-> +  the ability to retrieve physical addresses for DMA command submission.
-> +
-> +Kconfig Support Matrix
-> +^^^^^^^^^^^^^^^^^^^^^^
-> +
-> +The visibility of CONFIG_VFIO_NOIOMMU depends on the combination of
-> +CONFIG_VFIO_GROUP, CONFIG_VFIO_DEVICE_CDEV, and whether a container backend
-> +(CONFIG_VFIO_CONTAINER or CONFIG_IOMMUFD_VFIO_CONTAINER) is configured.  The
-> +Kconfig dependencies enforce the following constraints:
-> +
-> +- At least one access path (group or cdev) must be available.
-> +- If VFIO_GROUP is enabled, a container backend is required; otherwise the
-> +  group node would be unusable in noiommu mode.
-> +
-> +The resulting support matrix:
-> +
-> ++------+-------+-----------+------+---------+---------------------------+
-> +| Case | GROUP | Container | CDEV | NOIOMMU | Notes                     |
-> ++======+=======+===========+======+=========+===========================+
-> +|  1   |   y   |     y     |  n   |   yes   | Group noiommu works       |
-> ++------+-------+-----------+------+---------+---------------------------+
-> +|  2   |   y   |     n     |  n   |   no    | Blocked - no container    |
-> ++------+-------+-----------+------+---------+---------------------------+
-> +|  3   |   y   |     y     |  y   |   yes   | Both paths work           |
-> ++------+-------+-----------+------+---------+---------------------------+
-> +|  4   |   y   |     n     |  y   |   no    | Blocked - no container    |
-> ++------+-------+-----------+------+---------+---------------------------+
-> +|  5   |   n   |     -     |  y   |   yes   | Cdev-only works           |
-> ++------+-------+-----------+------+---------+---------------------------+
-> +|  6   |   n   |     -     |  n   |   no    | No access path            |
-> ++------+-------+-----------+------+---------+---------------------------+
-> +
+This series adds the necessary Device Tree bits to enable GPU support
+on the Glymur-based CRD devices. The Adreno X2-85 GPU present in Glymur
+chipsets is based on the new Adreno A8x family of GPUs. It features a new
+slice architecture with 4 slices, significantly higher bandwidth
+throughput compared to mobile counterparts, raytracing support, and the
+highest GPU Fmax seen so far on an Adreno GPU (1850 Mhz), among other
+improvements.
 
-Does "Bloked" mean no access path or no chance to compile? :)
+This series includes patches that updates DT schema, add GPU SMMU &
+GPU/GMU support. Keen-eyed readers may notice that the zap shader node
+is missing. This is intentional: The Glymur-based laptop platforms
+generally allow booting Linux at EL2 (yay!), which means the zap firmware
+is not required here.
 
-> +Container = CONFIG_VFIO_CONTAINER or CONFIG_IOMMUFD_VFIO_CONTAINER (either
-> +suffices).  Case 4 is intentionally blocked: allowing NOIOMMU with GROUP
-> +enabled but no container would create unusable group nodes.  Users who want
-> +cdev-only noiommu should set CONFIG_VFIO_GROUP=n (case 5).
-> +
-> +A new IOMMUFD ioctl IOMMU_IOAS_NOIOMMU_GET_PA is added to retrieve the physical
-> +address for a given IOVA. Although there is no physical DMA remapping hardware,
-> +IOMMU_IOAS_MAP_FIXED_IOVA is still used to establish IOVA-to-PA mappings in the
-> +software page table for later IOMMU_IOAS_NOIOMMU_GET_PA lookups.
-> +tools/testing/selftests/vfio/vfio_iommufd_noiommu_test.c provides an example of
-> +using this ioctl in no-IOMMU mode.
-> +
->   VFIO User API
->   -------------------------------------------------------------------------------
->   
+There is an update to the gxclkctl/drm drivers to properly support the IFPC
+feature across all A8x GPUs. That series [1] is necessary to properly
+support Glymur GPU:
+[1] https://lore.kernel.org/lkml/20260427-gfx-clk-fixes-v2-0-797e54b3d464@oss.qualcomm.com/
+
+Just FYI, on top of the linux-next, I had to pick below series [2] to boot
+the device properly. But it is unrelated to GPU or this series:
+[2] https://lore.kernel.org/all/20260331-qref_vote-v1-0-3fd7fbf87864@oss.qualcomm.com/
+
+Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+---
+Changes in v5:
+- Relax contraints for reg-names property (Krzysztof)
+- Drop the smmu binding doc patch as it got picked up
+- Link to v4: https://lore.kernel.org/r/20260513-glymur-gpu-dt-v4-0-f83832c3bc9a@oss.qualcomm.com
+
+Changes in v4:
+- Add a new patch for passive cooling support
+- Link to v3: https://lore.kernel.org/r/20260512-glymur-gpu-dt-v3-0-84232dc21c03@oss.qualcomm.com
+
+Changes in v3:
+- Add a new patch to fix RSCC base vaddr in drm-msm
+- Remove interconnect property from adreno smmu dt and the binding doc
+- Add a contrait in GPU binding doc to limit the reg entries for Glymur
+  (Krzysztof)
+- Link to v2: https://lore.kernel.org/r/20260501-glymur-gpu-dt-v2-0-2f128b5596bb@oss.qualcomm.com
+
+Changes in v2:
+- Keep GPU/GMU enabled by default and drop the enablement patch (Konrad)
+- Drop zap shader node from DT
+- A new patch to update GPU SMMU dt schema.
+- Adjust reg range in dt nodes to avoid overlap. 
+- Removed cx_dbgc range as it is already stable across chipsets. This
+  region is now part of kgsl_3d0_reg_memory range.
+- Link to v1: https://lore.kernel.org/r/20260405-glymur-gpu-dt-v1-0-2135eb11c562@oss.qualcomm.com
+
+---
+Akhil P Oommen (3):
+      drm/msm/a8xx: Fix RSCC offset
+      dt-bindings: display/msm: gpu: Document Adreno X2-185
+      arm64: dts: qcom: Add GPU support for Glymur
+
+Manaf Meethalavalappu Pallikunhi (1):
+      arm64: dts: qcom: glymur: Add GPU cooling
+
+Rajendra Nayak (1):
+      arm64: dts: qcom: glymur: Add GPU smmu node
+
+ .../devicetree/bindings/display/msm/gpu.yaml       |  16 +
+ arch/arm64/boot/dts/qcom/glymur.dtsi               | 461 ++++++++++++++++++---
+ drivers/gpu/drm/msm/adreno/a6xx_gmu.c              |   7 +-
+ 3 files changed, 427 insertions(+), 57 deletions(-)
+---
+base-commit: c9bd03db3e792a99e9789fde20e91898e3a29e8a
+change-id: 20260226-glymur-gpu-dt-339e5092606b
+prerequisite-message-id: <20260410-glymur_mmcc_dt_config_v2-v3-0-acce9d106e72@oss.qualcomm.com>
+prerequisite-patch-id: f7ab29f2f0241b6536d3b0c0593f0baa0e435221
+prerequisite-patch-id: 56c830b7718129323b006e492aed9822d7c30079
+
+Best regards,
+-- 
+Akhil P Oommen <akhilpo@oss.qualcomm.com>
 
