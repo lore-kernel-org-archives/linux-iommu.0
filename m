@@ -1,216 +1,177 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 379BE2367CF;
-	Fri, 22 May 2026 04:32:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67555258EFF;
+	Fri, 22 May 2026 04:39:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779424344; cv=none; b=CGNdoxPVH5DfgnZ23DRUq3SSPniN4Nea7PfXhKC4WoGKvG6vNzSnX7T5nmNsVIsRAimflNV6pqStKXtW0aBInOKCnlToZVCZf/cqQyiSHXLGMzC5yFJmr0WauIK35Ueq8dbNLOF0TgbP3jkm5yYOEzh7echle+FAiK1I/LuWkjQ=
+	t=1779424782; cv=none; b=O6GWGZWtykF1DNu9NDj8iabZodDOuFw1WTQq2TPDVIMUjIrpb8dBmQ1DBQbPZVBcQBlLBGFrL8xKch2DhqLrDbk1JTDwU5hwLR5znowYhsFbZQYsWZ7JmX5+STb79FzCe9mHnu6mMort39ojTyzgG/QptwwLK7QSXVYfqMuoo2s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779424344; c=relaxed/simple;
-	bh=7Db5F3WYzLzvHXC/08q2mn/xaHv85VelQsZvO4S1xKA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=GCYOkNp/qiv7fb3Qb/fOqSWt8dZR6qktDcPUzH5OHo3wPZIien4fCIKkgKgrWVlglwpA8X+JRos4fHE6HJzHRSaEuCCoB1O3H2UrJxgfyW5AL4gn/2pcA4/JyUGbz7ZsrXTvwe2B2+ZMWq06/ybQGAed7k3xNUd5/0EMVwG9qoE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N1Lo4X9/; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779424782; c=relaxed/simple;
+	bh=+dsgstTkfexVAOyHm1HibhXH9dt1eyexZo4iqkSC7jc=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=jHSVQJKhuJ+3CsVccglVk25LpDD7YrvsPgKDai5H8fxXTgp95n4dcnzHUhjlcoZTaelEjRouiHNq5tb3I4YU6EbTxamfgglLVajKF7SIyh2JVgaVTvd4SH0ZgeFSwmSo6Nml3x9sPeYbZWyIV8vxpg9jTTXGibBtmUQ0T9PboYM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=V+4OywB6; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N1Lo4X9/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6AC31F00A3D;
-	Fri, 22 May 2026 04:32:12 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="V+4OywB6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7E9D1F000E9;
+	Fri, 22 May 2026 04:39:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779424343;
-	bh=PnWTr5M4G1txOK8iaNSiBBsCv6diWB65cB7qFD+glq0=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=N1Lo4X9/X/2KPv5cK2+3UKHdUXj1cGz7UQ49YpR4OgSBfR0+o5/zbRv9Z7cltDb50
-	 FwgTU/8k/2hexHUy4YbuJemEE6lSzfhi66i39msOSQ4Bz6GNyATpcOm1rMYcXf9OWR
-	 clSxELElIXK8J5eNJg8255eiDlYEt34uyOkGHxaOA8zTgaijkHvaF4GQFHLw9OI/+1
-	 a3X51B2vggGH+Uo3Y7IFjEncwGqJZZBJcVWIhpJCeRKnOYZ/QJLuxl5i5wYmtzgx/h
-	 1Av8uIqZ12flfvo+MlDQ6FpOex14s+fq2H0CWER71C8OgvcFFRmUhvSte73qn524+a
-	 UwGNG8l5DiBgA==
-From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-To: iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
+	s=k20260515; t=1779424781;
+	bh=4R/ga3Po6rMY7/TfHCvcJNg7OZHy4BvhXq7wh2Ys9tU=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=V+4OywB6Ij3jKYq4K1WppfdDnOGW/1nY5Q2/4SqgmZPpjVOBYUPJ+fTM2TVkk2e7f
+	 MqQa0iuxW0neznyC2TdIWYM3VY+2AOBipiBvrDJk3zrJW56SjCy01RNAIJ7sKd/nIC
+	 Qsna44aTeQ33uTJ5F8NfW6w7tqVUrOy84giORHypM4QjxS1pxiC2Oa9v+NWqa9FD+b
+	 47gLjc36mPUK08epy/u9JaH5OaWahb/5Z8x/j+m21rtXOfj71sJ83rT6dF3VSxbzUf
+	 aWpsvqN5tVEPYq0uB40EFHbnFS9d8aHalB+h7XUfZyS9JFcnA4RycYNrsTZvJ7jesF
+	 Q/q1MiTqGtUaw==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Jiri Pirko <jiri@resnulli.us>, dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev,
+	linux-media@vger.kernel.org, sumit.semwal@linaro.org,
+	benjamin.gaignard@collabora.com, Brian.Starkey@arm.com,
+	jstultz@google.com, tjmercier@google.com,
+	christian.koenig@amd.com, m.szyprowski@samsung.com,
+	robin.murphy@arm.com, leon@kernel.org, sean.anderson@linux.dev,
+	ptesarik@suse.com, catalin.marinas@arm.com,
+	suzuki.poulose@arm.com, steven.price@arm.com,
+	thomas.lendacky@amd.com, john.allen@amd.com,
+	ashish.kalra@amd.com, suravee.suthikulpanit@amd.com,
 	linux-coco@lists.linux.dev
-Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>,
-	Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	x86@kernel.org
-Subject: [PATCH v5 20/20] swiotlb: Preserve allocation virtual address for dynamic pools
-Date: Fri, 22 May 2026 09:58:15 +0530
-Message-ID: <20260522042815.370873-21-aneesh.kumar@kernel.org>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260522042815.370873-1-aneesh.kumar@kernel.org>
-References: <20260522042815.370873-1-aneesh.kumar@kernel.org>
+Subject: Re: [PATCH v5 1/2] dma-mapping: introduce DMA_ATTR_CC_SHARED for
+ shared memory
+In-Reply-To: <20260521175420.GA7702@ziepe.ca>
+References: <20260325192352.437608-2-jiri@resnulli.us>
+ <yq5atst6ywbl.fsf@kernel.org>
+ <4qdizkkoeke3cvkcf35upa7p7ick6s654eqlrizmi7ozkw5eze@tnpk2e34xgwl>
+ <yq5awly0d504.fsf@kernel.org>
+ <tteiecxfqy4k24wnzvp6ocxnuopyhmqtne2xwh5htwldlbzjnp@o6cbzdlurxld>
+ <20260421121004.GA3611611@ziepe.ca> <yq5aik9jcpzm.fsf@kernel.org>
+ <20260424225514.GE804026@ziepe.ca> <20260426130531.GF804026@ziepe.ca>
+ <yq5azf1s6aic.fsf@kernel.org> <20260521175420.GA7702@ziepe.ca>
+Date: Fri, 22 May 2026 10:09:26 +0530
+Message-ID: <yq5aqzn45a81.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-swiotlb_alloc_tlb() can allocate from the DMA atomic pool when a decrypted
-pool is needed from atomic context. With CONFIG_DMA_DIRECT_REMAP, the
-atomic pool is backed by remapped virtual addresses, which are not the same
-as the direct-map addresses returned by phys_to_virt().
+Jason Gunthorpe <jgg@ziepe.ca> writes:
 
-swiotlb_init_io_tlb_pool() currently reconstructs the pool virtual address
-from the physical start address. For atomic-pool backed allocations this
-stores the wrong address in pool->vaddr. Later, swiotlb_free_tlb() passes
-that address to dma_free_from_pool(), which will fail to recognize the
-chunk
+> On Thu, May 21, 2026 at 09:05:39PM +0530, Aneesh Kumar K.V wrote:
+>> I am wondering whether this is better
+>> 
+>> static inline dma_addr_t dma_direct_map_phys(struct device *dev,
+>> 		phys_addr_t phys, size_t size, enum dma_data_direction dir,
+>> 		unsigned long attrs, bool flush)
+>> {
+>> 	dma_addr_t dma_addr;
+>> 
+>> 	/*
+>> 	 * For a device requiring unencrypted DMA, MMIO memory is treated
+>> 	 * as shared.
+>> 	 */
+>> 	if (force_dma_unencrypted(dev) && (attrs & DMA_ATTR_MMIO))
+>> 		attrs |= DMA_ATTR_CC_SHARED;
+>
+> It is an option, I would be happier if we went and fixed the few
+> callers to properly pass the shared. CC did this with the
+> pgprot_decrypted() stuff, same reasoning:
+>
+> diff --git a/block/blk-mq-dma.c b/block/blk-mq-dma.c
+> index bfdb9ed7074116..e77f6404caa3db 100644
+> --- a/block/blk-mq-dma.c
+> +++ b/block/blk-mq-dma.c
+> @@ -90,7 +90,7 @@ static bool blk_dma_map_direct(struct request *req, struct device *dma_dev,
+>  	unsigned int attrs = 0;
+>  
+>  	if (iter->p2pdma.map == PCI_P2PDMA_MAP_THRU_HOST_BRIDGE)
+> -		attrs |= DMA_ATTR_MMIO;
+> +		attrs |= iter->p2pdma.mem->dma_mapping_flags;
+>  
+>  	iter->addr = dma_map_phys(dma_dev, vec->paddr, vec->len,
+>  			rq_dma_dir(req), attrs);
+> @@ -115,7 +115,7 @@ static bool blk_rq_dma_map_iova(struct request *req, struct device *dma_dev,
+>  	iter->len = dma_iova_size(state);
+>  
+>  	if (iter->p2pdma.map == PCI_P2PDMA_MAP_THRU_HOST_BRIDGE)
+> -		attrs |= DMA_ATTR_MMIO;
+> +		attrs |= iter->p2pdma.mem->dma_mapping_flags;
+>  
+>  	do {
+>  		error = dma_iova_link(dma_dev, state, vec->paddr, mapped,
+> diff --git a/drivers/dma-buf/dma-buf-mapping.c b/drivers/dma-buf/dma-buf-mapping.c
+> index 794acff2546a34..96022fadc48245 100644
+> --- a/drivers/dma-buf/dma-buf-mapping.c
+> +++ b/drivers/dma-buf/dma-buf-mapping.c
+> @@ -147,7 +147,7 @@ struct sg_table *dma_buf_phys_vec_to_sgt(struct dma_buf_attachment *attach,
+>  			ret = dma_iova_link(attach->dev, dma->state,
+>  					    phys_vec[i].paddr, 0,
+>  					    phys_vec[i].len, dir,
+> -					    DMA_ATTR_MMIO);
+> +					    provider->dma_mapping_flags);
+>  			if (ret)
+>  				goto err_unmap_dma;
+>  
+> @@ -155,7 +155,7 @@ struct sg_table *dma_buf_phys_vec_to_sgt(struct dma_buf_attachment *attach,
+>  		} else {
+>  			addr = dma_map_phys(attach->dev, phys_vec[i].paddr,
+>  					    phys_vec[i].len, dir,
+> -					    DMA_ATTR_MMIO);
+> +					    provider->dma_mapping_flags);
+>  			ret = dma_mapping_error(attach->dev, addr);
+>  			if (ret)
+>  				goto err_unmap_dma;
+> diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
+> index 7c898542af8d5e..e4229b4d35c767 100644
+> --- a/drivers/pci/p2pdma.c
+> +++ b/drivers/pci/p2pdma.c
+> @@ -282,6 +282,8 @@ int pcim_p2pdma_init(struct pci_dev *pdev)
+>  			continue;
+>  
+>  		p2p->mem[i].owner = &pdev->dev;
+> +		p2p->mem[i].dma_mapping_flags =
+> +			DMA_ATTR_MMIO | DMA_ATTR_CC_SHARED;
+>  		p2p->mem[i].bus_offset =
+>  			pci_bus_address(pdev, i) - pci_resource_start(pdev, i);
+>  	}
+> diff --git a/include/linux/pci-p2pdma.h b/include/linux/pci-p2pdma.h
+> index 873de20a224759..402dc5e5d62b0a 100644
+> --- a/include/linux/pci-p2pdma.h
+> +++ b/include/linux/pci-p2pdma.h
+> @@ -21,10 +21,12 @@ struct scatterlist;
+>   *
+>   * A p2pdma provider is a range of MMIO address space available to the CPU.
+>   * @owner: Device to which this provider belongs.
+> + * @dma_mapping_flags: DMA attributes to use for host bridge mappings.
+>   * @bus_offset: Bus offset for p2p communication.
+>   */
+>  struct p2pdma_provider {
+>  	struct device *owner;
+> +	unsigned long dma_mapping_flags;
+>  	u64 bus_offset;
+>  };
+>  
+> diff --git a/mm/hmm.c b/mm/hmm.c
+> index 5955f2f0c83db1..c3f445acddf873 100644
+> --- a/mm/hmm.c
+> +++ b/mm/hmm.c
+> @@ -811,7 +811,7 @@ dma_addr_t hmm_dma_map_pfn(struct device *dev, struct hmm_dma_map *map,
+>  	case PCI_P2PDMA_MAP_NONE:
+>  		break;
+>  	case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
+> -		attrs |= DMA_ATTR_MMIO;
+> +		attrs |= p2pdma_state->mem->dma_mapping_flags;
+>  		pfns[idx] |= HMM_PFN_P2PDMA;
+>  		break;
+>  	case PCI_P2PDMA_MAP_BUS_ADDR:
 
-Pass the virtual address returned by the allocation path into
-swiotlb_init_io_tlb_pool(), and store that address in pool->vaddr. This
-keeps the pool free path using the same virtual address as the allocator.
+Can I convert this as an independent patch with your SOB?
 
-Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
----
- kernel/dma/swiotlb.c | 32 +++++++++++++++++++-------------
- 1 file changed, 19 insertions(+), 13 deletions(-)
-
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 14d834ca298b..e4bd8c9eaeda 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -302,9 +302,9 @@ void __init swiotlb_update_mem_attributes(void)
- }
- 
- static void swiotlb_init_io_tlb_pool(struct io_tlb_pool *mem, phys_addr_t start,
--		unsigned long nslabs, bool late_alloc, unsigned int nareas)
-+		void *vaddr, unsigned long nslabs, bool late_alloc,
-+		unsigned int nareas)
- {
--	void *vaddr = phys_to_virt(start);
- 	unsigned long bytes = nslabs << IO_TLB_SHIFT, i;
- 
- 	mem->nslabs = nslabs;
-@@ -445,7 +445,7 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
- 		return;
- 	}
- 
--	swiotlb_init_io_tlb_pool(mem, __pa(tlb), nslabs, false, nareas);
-+	swiotlb_init_io_tlb_pool(mem, __pa(tlb), tlb, nslabs, false, nareas);
- 	add_mem_pool(&io_tlb_default_mem, mem);
- 
- 	if (flags & SWIOTLB_VERBOSE)
-@@ -553,7 +553,7 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
- 		}
- 	}
- 
--	swiotlb_init_io_tlb_pool(mem, virt_to_phys(vstart), nslabs, true,
-+	swiotlb_init_io_tlb_pool(mem, virt_to_phys(vstart), vstart, nslabs, true,
- 				 nareas);
- 	add_mem_pool(&io_tlb_default_mem, mem);
- 
-@@ -664,25 +664,26 @@ static struct page *alloc_dma_pages(gfp_t gfp, size_t bytes,
-  * @phys_limit:	Maximum allowed physical address of the buffer.
-  * @attrs:	DMA attributes for the allocation.
-  * @gfp:	GFP flags for the allocation.
-+ * @vaddr:	Receives the virtual address for the allocated buffer.
-  *
-  * Return: Allocated pages, or %NULL on allocation failure.
-  */
- static struct page *swiotlb_alloc_tlb(struct device *dev, size_t bytes,
--		u64 phys_limit, unsigned long attrs, gfp_t gfp)
-+		u64 phys_limit, unsigned long attrs, gfp_t gfp, void **vaddr)
- {
- 	struct page *page;
- 
-+	*vaddr = NULL;
-+
- 	/*
- 	 * Allocate from the atomic pools if memory is encrypted and
- 	 * the allocation is atomic, because decrypting may block.
- 	 */
- 	if (!gfpflags_allow_blocking(gfp) && (attrs & DMA_ATTR_CC_SHARED)) {
--		void *vaddr;
--
- 		if (!IS_ENABLED(CONFIG_DMA_COHERENT_POOL))
- 			return NULL;
- 
--		return dma_alloc_from_pool(dev, bytes, &vaddr, gfp,
-+		return dma_alloc_from_pool(dev, bytes, vaddr, gfp,
- 					   attrs, dma_coherent_ok);
- 	}
- 
-@@ -705,6 +706,8 @@ static struct page *swiotlb_alloc_tlb(struct device *dev, size_t bytes,
- 			return NULL;
- 	}
- 
-+	if (page)
-+		*vaddr = phys_to_virt(page_to_phys(page));
- 	return page;
- }
- 
-@@ -750,6 +753,7 @@ static struct io_tlb_pool *swiotlb_alloc_pool(struct device *dev,
- {
- 	struct io_tlb_pool *pool;
- 	unsigned int slot_order;
-+	void *tlb_vaddr;
- 	struct page *tlb;
- 	size_t pool_size;
- 	size_t tlb_size;
-@@ -767,7 +771,8 @@ static struct io_tlb_pool *swiotlb_alloc_pool(struct device *dev,
- 	pool->unencrypted = !!(attrs & DMA_ATTR_CC_SHARED);
- 
- 	tlb_size = nslabs << IO_TLB_SHIFT;
--	while (!(tlb = swiotlb_alloc_tlb(dev, tlb_size, phys_limit, attrs, gfp))) {
-+	while (!(tlb = swiotlb_alloc_tlb(dev, tlb_size, phys_limit, attrs, gfp,
-+					 &tlb_vaddr))) {
- 		if (nslabs <= minslabs)
- 			goto error_tlb;
- 		nslabs = ALIGN(nslabs >> 1, IO_TLB_SEGSIZE);
-@@ -781,12 +786,12 @@ static struct io_tlb_pool *swiotlb_alloc_pool(struct device *dev,
- 	if (!pool->slots)
- 		goto error_slots;
- 
--	swiotlb_init_io_tlb_pool(pool, page_to_phys(tlb), nslabs, true, nareas);
-+	swiotlb_init_io_tlb_pool(pool, page_to_phys(tlb), tlb_vaddr, nslabs,
-+				 true, nareas);
- 	return pool;
- 
- error_slots:
--	swiotlb_free_tlb(page_address(tlb), tlb_size,
--			 !!(attrs & DMA_ATTR_CC_SHARED));
-+	swiotlb_free_tlb(tlb_vaddr, tlb_size, !!(attrs & DMA_ATTR_CC_SHARED));
- error_tlb:
- 	kfree(pool);
- error:
-@@ -1995,7 +2000,8 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
- 			mem->unencrypted = false;
- 		}
- 
--		swiotlb_init_io_tlb_pool(pool, rmem->base, nslabs,
-+		swiotlb_init_io_tlb_pool(pool, rmem->base, phys_to_virt(rmem->base),
-+					 nslabs,
- 					 false, nareas);
- 		mem->force_bounce = true;
- 		mem->for_alloc = true;
--- 
-2.43.0
-
+-aneesh
