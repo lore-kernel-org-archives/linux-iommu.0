@@ -1,143 +1,177 @@
-Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC8CE3F0A94
-	for <iommu@lists.linux.dev>; Mon, 25 May 2026 15:29:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73DC8405E7;
+	Mon, 25 May 2026 15:48:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779722968; cv=none; b=iDH5esWiK8jmIeAOfuRL/hqQu7TvzPFkCiZgP54n8MBKgshbp6EzGAF1g+SBU42zawkcE0cPEu+VrAENdVTg0fo4OW5VUNRTzmYb0nxVtoLQaWUlv3I5f3Cthw31UNyAzK5f2AdH1BxUqIVYewFKbx4qeG0GSVqbil1iSy1AYhs=
+	t=1779724115; cv=none; b=UhGYoo19gOYLsLpN2HNiHBRy98dWg5iY5VXl7JnFxEsTYN/oRpCakZPTc16XyME6puhY+CQZvjz7wySMo4uSZiWu2hnpVWoOGJVu5Qrjiv/zuSVrjCluOf/UJSuB3FoMqMPZcoT8OxXuZLzAFRQzjGFav+j/hKHi1vQLZEIoa7k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779722968; c=relaxed/simple;
-	bh=fKq4aVwbvax1aR4yy8POrWwpM2YYfG4hq56u4z+Cm4w=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=bfR9tlZQwp68IiG6EgV09rRFZRh4btNoVEtQcpbXGpgbLugUrljrREf8ZxXcvCxPH7XjQxyM2h/4LEQ7koDGosam72dt8k2haSgOcHvY3HDIIoFdac3jN81loBETxGHqvZlxTXhFjD8oZPKwEn9DrEsY2Vdn/sq9HZpHjwj2uKE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=VotLtTy+; arc=none smtp.client-ip=209.85.210.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--joonwonkang.bounces.google.com
+	s=arc-20240116; t=1779724115; c=relaxed/simple;
+	bh=f882XrKvM09N7CRjBJtApWaYaJjhkjDUely+o87lB90=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=OxmPBLiI8iFElQNIc2SAOcgli9mh3yx+ItdN5ElXaFULBAy4fVN1g7rkiW/hGNCjSGKoSVDsYAkMpXsLm52dwN45plrbmXE8rLyqSTLv+/q6qNGrxgvrj7+gEc/VTHtbGk9vTL3gS9h5ggLYtGTpyN5WYmcoxTRS5CJNr8LB7Tc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UKmWQezL; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="VotLtTy+"
-Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-836cfd84728so4954326b3a.0
-        for <iommu@lists.linux.dev>; Mon, 25 May 2026 08:29:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779722966; x=1780327766; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=4b1oC5HhUnRhm7z2afBn84VUcPa5B5EWRXQvz0Iqfxc=;
-        b=VotLtTy+pJet1CxUU2MhFWpKTATIVKMIuWxrDPTWOI3b1zkact8CHZd4iiaHWU5tBD
-         k6wdKRrLp7RuAGD7KVYPrzbA43LjuaaGhXXMmHDH6BLfpXJRSn5z8lXuZckTbPWdVf3T
-         6lZ9TBGuyXMaaCDnHDZYcnUuJnhTCpFBBLAKY+w3hGgSIDzBhCPTl8AAC+iqjVV4gjHI
-         Z+GpxBV35oPUMqVF1gBLHu7GGBcnWfoW2H6o7oYLAGVuS0gtpYuQVawvv3F7K87X7dNV
-         iIL0/+A9rda4Awxkzmp2AwepqZQhmvwtlG14JXvX75fI5iKSuvOWAics7NhoFpZX1E4c
-         2t7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779722966; x=1780327766;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=4b1oC5HhUnRhm7z2afBn84VUcPa5B5EWRXQvz0Iqfxc=;
-        b=Q9D56JG969nDh9bbgRjp9oM/E+/urizMgNrs9XJsGqc51TRAkY0/Jj3TgQmdPgG3v4
-         KZc2IbFPZp2Ih7XsyIDkiou6N4elC6jmfiXMuVydCVe8lY4/Kdp4H5J6xO8UIwokks0G
-         dPpS8J71h5dQWERWk9HcMzgBdPqdNQR7+uj8AvBqh9026YyFesu6RZarAmHl9UPKe/Nt
-         oK4NXgzSWTZA1APEJm8ektjCj2DXrOurIg3y8ZB9tMjf1eHLEymnoOQtFN8FFKfm2VOC
-         WjwPw14eowyyU8w9DKyU3gCTgyTLsW+lg2fKujkn/kRSwYkFjh9uoPpAcepoDt0pypXi
-         FAIw==
-X-Forwarded-Encrypted: i=1; AFNElJ9Odt7LmEwxIGo08fMGUZPwiH48Ul+NMLZTBYXVrZWyDSuV74pBYMURgPRBEwA4KB3M4OeyFA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyhR8z1PQ9kRRfXBps+j91VHoLvHxRHLdCtRMN6/tyjzhcD/CCu
-	K8jkim6THE/jUvzDxP2JeUoQAqIG9qMv/uMKj2iMaM9Iued9IgEwi2BgaNNAiGsW/7KJ4IE3rUH
-	LWaGiOpKCSnqPVsbpGsHhTAoNAA==
-X-Received: from pffv22.prod.google.com ([2002:aa7:8096:0:b0:83f:8b6a:7319])
- (user=joonwonkang job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6a00:808f:b0:837:21dc:6ad4 with SMTP id d2e1a72fcca58-84160b8441cmr10891888b3a.2.1779722965809;
- Mon, 25 May 2026 08:29:25 -0700 (PDT)
-Date: Mon, 25 May 2026 15:29:24 +0000
-In-Reply-To: <BL1PR11MB52710D3CCFA2F75F6B540A468C0A2@BL1PR11MB5271.namprd11.prod.outlook.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UKmWQezL"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7D031F00A3D;
+	Mon, 25 May 2026 15:48:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779724114;
+	bh=oebx5jVTWzlAdeowK/9f21mNYv0EhBbhUPOCHZE9q/c=;
+	h=From:To:Cc:Subject:Date;
+	b=UKmWQezLhzUGzskNztQQ5ffqnihBCJkW05NPbv557X+gk7bAG4zxFmwZ48ebjKlLb
+	 g5OYAAJIjG2W25ABEPdfFxjTJ1BNvcrvrrWrMsv14K8JdZXGmJO9ELveXPLt88OTgK
+	 tnNCiRj+D21kPiKV8FSnK62qzHM09RzMTKgmi0wf+Tj2D028Znxt31QPvV+pC0CJDE
+	 XFAtBqEg1uiJzZa2xuAwn75EELsO+eYFvjhwsBZC1YR/Xwd/x5f2xmNypEbCGZEotR
+	 J3TRlG+Qy7AQ/0C3737tYG1s+I5MEvl4F1ZZfhvFuzbF8tFkKfEDqD3ssNLyVlyyRc
+	 xBUFIlz3KnzMg==
+From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+To: linux-coco@lists.linux.dev,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	kvm@vger.kernel.org
+Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Bjorn Helgaas <helgaas@kernel.org>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Joerg Roedel <joro@8bytes.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Samuel Ortiz <sameo@rivosinc.com>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Tony Krowiak <akrowiak@linux.ibm.com>,
+	Halil Pasic <pasic@linux.ibm.com>,
+	Jason Herne <jjherne@linux.ibm.com>,
+	Harald Freudenberger <freude@linux.ibm.com>,
+	Holger Dengler <dengler@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Alex Williamson <alex@shazbot.org>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Farhan Ali <alifm@linux.ibm.com>,
+	Eric Farman <farman@linux.ibm.com>,
+	linux-s390@vger.kernel.org
+Subject: [PATCH v5 0/5] Add iommufd ioctls to support TSM operations
+Date: Mon, 25 May 2026 21:18:11 +0530
+Message-ID: <20260525154816.1029642-1-aneesh.kumar@kernel.org>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <BL1PR11MB52710D3CCFA2F75F6B540A468C0A2@BL1PR11MB5271.namprd11.prod.outlook.com>
-X-Mailer: git-send-email 2.54.0.746.g67dd491aae-goog
-Message-ID: <20260525152924.524721-1-joonwonkang@google.com>
-Subject: RE: [PATCH v2] iommu: Allow device driver to use its own PASID space
- for SVA
-From: Joonwon Kang <joonwonkang@google.com>
-To: kevin.tian@intel.com
-Cc: Alexander.Grest@microsoft.com, alexander.shishkin@linux.intel.com, 
-	amhetre@nvidia.com, baolu.lu@linux.intel.com, bp@alien8.de, 
-	dave.hansen@linux.intel.com, easwar.hariharan@linux.microsoft.com, 
-	hpa@zytor.com, iommu@lists.linux.dev, jacob.jun.pan@linux.intel.com, 
-	jgg@ziepe.ca, joonwonkang@google.com, joro@8bytes.org, jpb@kernel.org, 
-	kas@kernel.org, kees@kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, mingo@redhat.com, nicolinc@nvidia.com, 
-	peterz@infradead.org, praan@google.com, robin.murphy@arm.com, 
-	ryasuoka@redhat.com, smostafa@google.com, sohil.mehta@intel.com, 
-	tglx@kernel.org, will@kernel.org, x86@kernel.org, xin@zytor.com
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Hi Kevin, thanks for your review.
+This patch series adds iommufd ioctl support for TSM-related operations.
+These ioctls allow VMMs to perform TSM management tasks such as bind and
+unbind operations, and to handle guest requests.
 
-> > This commit resolves the issue by allowing device driver to maintain its
-> > own PASID space and assign a PASID from that for the process-device bond
-> > via a new API called `iommu_sva_bind_device_pasid(dev, mm, pasid)`. Doing
-> > that, however, will disallow the process to execute the ENQCMD-like
-> > instructions at EL0. It is because the process cannot change its PASID in
-> > IA32_PASID(or ACCDATA_EL1 on ARM) for each device without the kernel's
-> > intervention. For this reason, calling `iommu_sva_bind_device()` and then
-> > `iommu_sva_bind_device_pasid()` for the same process will not be allowed
-> > and vice versa.
-> > 
-> > Currently, there is a limitation that a process simultaneously doing SVA
-> > with multiple devices with different PASIDs is not supported. So, calling
-> > `iommu_sva_bind_device_pasid()` multiple times for the same process with
-> > different devices will not be allowed for now while that for
-> > `iommu_sva_bind_device()` will be.
-> > 
-> > Another limitation is that a process cannot do `iommu_sva_bind_device()`
-> > if it has ever done `iommu_sva_bind_device_pasid()` even though it has
-> > been unbound after use.
-> 
-> Why not making it clean in one step instead of leaving many unsupported
-> cases which are likely required soon in this "1" to "many" transition?
-> 
+Changes from v4:
+https://lore.kernel.org/all/20260427061005.901854-1-aneesh.kumar@kernel.org
+* Switch VFIO/iommufd to use struct file *kvm_file instead of relying on
+  kvm->users_count references.
+* Define TSM request scope values globally in iommufd.
+* Rename the ioctl to IOMMU_VDEVICE_TSM_REQ.
+* Address other review feedback.
 
-Since I did not know much about the IOMMU team's future plans on the IOMMU
-core structure, I narrowed down the scope just enough to resolve our
-specific problem and avoided introducing big change. But now that I have
-two queries to support the 1-to-many relationships in this patchset, not
-in a later one, I think it is fair enough to start working on it now. I
-will try it and lift the limitations.
+Changes from v2:
+https://lore.kernel.org/all/20260309111704.2330479-1-aneesh.kumar@kernel.org
+* Bump the series revision to v4 to keep it in sync with the dependent CCA DA
+  patchsets. There was no v3 posting.
+* Drop [PATCH v2 1/3] iommufd/viommu: Allow associating a KVM VM fd with a
+  vIOMMU
+* Add two new patches to associate a struct kvm * with iommufd objects:
+  iommufd/device: Associate a kvm pointer to iommufd_device
+  iommufd/viommu: Associate a kvm pointer to iommufd_viommu
+* Address review feedback
 
-> for each mm:
-> - one global pasid for ENQCMD or ST64BV0
-> - an array of device local pasids tracked in [struct device *, pasid] tuple.
-> 
-> upon gp fault or equivalent, fetch the global pasid.
-> 
-> upon device-specific bind, match [dev, pasid].
-> 
-> > 
-> > Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
-> > Suggested-by: Kevin Tian <kevin.tian@intel.com>
-> > Signed-off-by: Joonwon Kang <joonwonkang@google.com>
-> > ---
-> > v2: Reuse iommu_mm->pasid after SVA bound by
-> > iommu_sva_bind_device_pasid()
-> >     is unbound.
-> 
-> No idea what it talks about.
-> 
+Changes from v1:
+https://lore.kernel.org/all/20250728135216.48084-8-aneesh.kumar@kernel.org
+* Rebase onto the latest kernel
+* Address review feedback
+* Drop the TSM map ioctl; the KVM prefault patch will be used instead to
+  ensure that private memory is preallocated
 
-There was a bug in v1 that the second call for `iommu_sva_bind_device_pasid()`
-failed after the first call with a different PASID was released. Will
-rephrase it in a clearer language in v3.
+Cc: Alexey Kardashevskiy <aik@amd.com>
+Cc: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Dan Williams <dan.j.williams@intel.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Kevin Tian <kevin.tian@intel.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Samuel Ortiz <sameo@rivosinc.com>
+Cc: Steven Price <steven.price@arm.com>
+Cc: Suzuki K Poulose <Suzuki.Poulose@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Xu Yilun <yilun.xu@linux.intel.com>
+Cc: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Tony Krowiak <akrowiak@linux.ibm.com>
+Cc: Halil Pasic <pasic@linux.ibm.com>
+Cc: Jason Herne <jjherne@linux.ibm.com>
+Cc: Harald Freudenberger <freude@linux.ibm.com>
+Cc: Holger Dengler <dengler@linux.ibm.com>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Cc: Alexander Gordeev <agordeev@linux.ibm.com>
+Cc: Christian Borntraeger <borntraeger@linux.ibm.com>
+Cc: Sven Schnelle <svens@linux.ibm.com>
+Cc: Alex Williamson <alex@shazbot.org>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>
+Cc: Farhan Ali <alifm@linux.ibm.com>
+Cc: Eric Farman <farman@linux.ibm.com>
+Cc: linux-s390@vger.kernel.org
 
-> btw a new kAPI always needs accompanied users to review together.
+Aneesh Kumar K.V (Arm) (3):
+  vfio: cache KVM VM file references instead of raw struct kvm pointers
+  iommufd/tsm: add vdevice TSM bind/unbind ioctl
+  iommufd/vdevice: add TSM request ioctl
 
-Currently, the only known expected user of the new kAPI is our team. Since
-I test if the patch resolves our problem before sending it, I believe it
-should be good enough. Do you mean more than our team by "accompanied
-users"?
+Nicolin Chen (1):
+  iommufd/viommu: Keep a reference to the KVM file
 
-Thanks,
-Joonwon Kang
+Shameer Kolothum (1):
+  iommufd/device: Associate KVM file pointer with iommufd_device
+
+ drivers/iommu/iommufd/Makefile          |   2 +
+ drivers/iommu/iommufd/device.c          |   7 +-
+ drivers/iommu/iommufd/iommufd_private.h |  16 +++
+ drivers/iommu/iommufd/main.c            |   6 ++
+ drivers/iommu/iommufd/selftest.c        |   2 +-
+ drivers/iommu/iommufd/tsm.c             | 130 ++++++++++++++++++++++++
+ drivers/iommu/iommufd/viommu.c          |   9 ++
+ drivers/s390/crypto/vfio_ap_ops.c       |   5 +-
+ drivers/vfio/device_cdev.c              |  10 +-
+ drivers/vfio/group.c                    |  14 ++-
+ drivers/vfio/iommufd.c                  |   3 +-
+ drivers/vfio/pci/vfio_pci_zdev.c        |   7 +-
+ drivers/vfio/vfio.h                     |  16 ++-
+ drivers/vfio/vfio_main.c                |  81 ++++++++-------
+ drivers/virt/coco/tsm-core.c            |  58 +++++++++++
+ include/linux/iommufd.h                 |   5 +-
+ include/linux/kvm_host.h                |   3 +
+ include/linux/pci-tsm.h                 |   9 +-
+ include/linux/tsm.h                     |  42 ++++++++
+ include/linux/vfio.h                    |  17 +++-
+ include/uapi/linux/iommufd.h            | 106 +++++++++++++++++++
+ virt/kvm/kvm_main.c                     |   2 +
+ 22 files changed, 478 insertions(+), 72 deletions(-)
+ create mode 100644 drivers/iommu/iommufd/tsm.c
+
+
+base-commit: 50897c955902c93ae71c38698abb910525ebdc89
+-- 
+2.43.0
+
