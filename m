@@ -1,59 +1,61 @@
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E8843451B3
-	for <iommu@lists.linux.dev>; Mon, 25 May 2026 22:40:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCB4239734D
+	for <iommu@lists.linux.dev>; Mon, 25 May 2026 22:40:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779748832; cv=none; b=JdG+2Iw/5RmC/eMARRKZzuthVNL1s3Y8NdJfCB03syEGtx6bXwzMSl3TbrktVuH5GtCJPNC+rYqgO5rhovffVrtolMV9lzBFXK3KEBZ6Vp9W+CaSTnStHn0DbAv1LuHuzaPOLZUeGUDSPnF9bKHPVZ8lq3uxcbs88pFXkiVRJRg=
+	t=1779748832; cv=none; b=NOSK1Kg88thkQdQo03DLuIKteBxJQdSYylQZ0KVsMlNvaVG+WdncKZAdsXgphxJmtd/LUmet4e/nK5gZOxIn7Qr7vW5H3ktj7vauC46LZDx5vMFtzXvibecC55iS6Ga1hE+q3C5Gfr0DiSlQKps+pZZWWzdjEi9jwGbOa8PWvOM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1779748832; c=relaxed/simple;
-	bh=2RzNkKwetFofmnxT1tcNG47QenWWWU9I7On/kK57yZI=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=ZRDCw2Wch8K+d7Xw4YEhkUEy/DKKhj7ClDWlr0huk4w/44EQPBHT3GqQpN6f3vVMeuqdxelaPhWzCiTRfKvvYK96CgBmUIkUzfx36+erRfS7JpyE3bwGgecV8dRTZLwt9rRkTqz9W0LCueEPlSgBC1Lio5xpOVUYKDr0z71il5w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=j5emE693; arc=none smtp.client-ip=209.85.221.54
+	bh=EHVF3OoQ0xcoo1UWUU/e+4tWEOg9jKAhzWorS7fFAzI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=Axc5dI7Rj8lDgFo8jo0sV9EZVTUrkyLP1ANiqcTRQj4agBQx66Eobvdauy5pAGe0i91MuBQ1sI9/xpbpPl1nDnRAbGMove/nDOPritCO0I4iZsT9zJztKdFk6XEAg7/NGTvNisoDfYJjBbgt8NfCQiT+phCSewaZmxf7NAM0ddo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=VI1lZo4F; arc=none smtp.client-ip=209.85.221.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="j5emE693"
-Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-43d75312379so8352183f8f.1
-        for <iommu@lists.linux.dev>; Mon, 25 May 2026 15:40:28 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="VI1lZo4F"
+Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-44a14580111so7481109f8f.0
+        for <iommu@lists.linux.dev>; Mon, 25 May 2026 15:40:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1779748827; x=1780353627; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=FCNEMRfVAfQ2RnOZqQgzm8k10hADzyebYuU6fM/XQNQ=;
-        b=j5emE693/DV7ujpkMxuw9RrvtkLBpLibPP/JL0O+3hM6pM3zTWjKvp7rifKtVX5lxu
-         6piXZzyNs+cpqqol1bhXKHJ6bIZYjfKxS9TzVYYL+g3hKRKMe6zjmlAI57TzH7EHefut
-         dJRlYQAtrWbQ7vPmyTUux2u9F5o+8iAZpgPOw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779748827; x=1780353627;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=chromium.org; s=google; t=1779748829; x=1780353629; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=FCNEMRfVAfQ2RnOZqQgzm8k10hADzyebYuU6fM/XQNQ=;
-        b=VliF1/ZX7P1rcX1Pf4Q6sXWqr+9/UegA3Fb6ZUv7On55k7wa6u68SrSsyMpJHIIq77
-         5Go0+alblOxjQ6HMaPLiMxVc6+cLCM7uszjamQoIEeTvg7nVmIlfD8uZDX1EM0L+dm45
-         1U/I2VlZpS+dq5ZWR0hzKSs/bc1ASqrGIoNhA7O09S3FYKD7/vT5y15xuk9lplgujUWS
-         LKskb+F1ndkKZenrG+RYJroGLkFiXOJv78KdSLebvU4Hr0t85M7Z8l/FPAMlo/GvthUX
-         0ze+k2q1AZV0+S8vKWkc2gb2wbRMWsMavvKeRX5DSK+yIHzaLYegkYOntQ1MCTxeNUSI
-         nyNg==
-X-Forwarded-Encrypted: i=1; AFNElJ+2C9qKb0jN6+IwkZ5V3IfXsrW0/teaBnwBY7CxrmcJCFDxbkvMfft1RlPxR9JH8ucHiKbDcQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyw5OdihiMDiYzJFVeQbzW/j9brIYnffpeXbbs4ssHzgM1boYoO
-	aBOicINSFpkEP3nVPkyK0cXP8bPSSlhsIo4ocVvLtteMBUojspwnXzww54RmfVksBQ==
-X-Gm-Gg: Acq92OFwmDXRnx8Sg0Q6CsmLl4dtoPfdS+d7zoowfpMzKQVHIHp3dAdVXIWyd0RwXby
-	S0lV4kSlhRa7kgt8dRGJitZgvVLHt/Nxk1oACt5ooNFx44XPm9ZlniFcJqus8BM/rg4r+ZPtm+5
-	EH8GgvZa//lhMHXetztcGSFDKQedO+jfuey+6KrFYaNOiStYThJEgYkFQNGGo95jNBhJQ8b7X91
-	J9xoijUnvyTna5nT/5Po9ttB5nVB0c1SOoRWqxyqgBYBxw/xoLo04VHxwiPCUAD/E9nvMVdlTAW
-	DyR/X37i7HHWZ4kxUn9J4H7fcVdIU9RDCDH7P1WBHqi47F5Yjs6mCf+UvI5C+HngtBR2LEvLBtv
-	TOsxXs+zxBaYNrCbXRpDc7ofE3WK4GyJmXnB0AYC1+K5CuoD/O+fUh8AVGKmWz4+Vxv9DE7Zk29
-	xLr3etqVD/FPoDM/bbbICuTsB3XJf1SlkQQ4RO6876xLAL8BIgxP6ZtrWQmiOt6ienGc2VB9iAB
-	LB3T6n/+MKAlwNTjJOIzDI=
-X-Received: by 2002:a05:6000:1787:b0:456:d742:8b4f with SMTP id ffacd0b85a97d-45ea315dd44mr31292058f8f.12.1779748827458;
-        Mon, 25 May 2026 15:40:27 -0700 (PDT)
+        bh=cDF5x9QlmGVwcjggxZgQQzyaoVhgZDvbIBslvHYHL5Y=;
+        b=VI1lZo4FQ7gez5hjwzPFH+t86sb1+Y9LCbaxu67LOIXCfIunPnwsLDuYM6/5xrnfyG
+         dQ9y0oJGa7Cc5P84WVnhfEIlhtcvQQ7ocPVsd3hpqrNElSxTvcE0TL5LDGxp1Kl9r1to
+         2yAXbA4je8XQiPiddKunMGYBzI6zi9f1rdF8M=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779748829; x=1780353629;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=cDF5x9QlmGVwcjggxZgQQzyaoVhgZDvbIBslvHYHL5Y=;
+        b=O24SrfmCcwB99X5NkJR3X42CURlsfivMy4USmNKt+WSv/3BTdmEnqfmdyf0axUe7RL
+         XIJoBZgDFrhZCMFihKrIpDZ57Cohuqfce9dlU+isuNvzo2rLF+E1hHMs09tTNOfNDhHI
+         /zXBVshGOBfxFNnIMGj/wXftUza1F3h+rf0JuB1G5yAMz12eNf0bLw5jiRNfgm902llo
+         52NlcBE0HreXcSOjp7GsDhEIsfHjestKpB1L8ySmBe3ad5eR17FVCHQpmOMTNRT+VFLO
+         abv3v/LZQ+f7O+wZoD71TY35nmbAxe6H2yA4dSrZFES2z5ZKMlJkwUI5115m0FEewVlA
+         V1gg==
+X-Forwarded-Encrypted: i=1; AFNElJ9rTbNreusEEMTAQIuPZrO3juOLRTkq3jB9MyWGIRicgSblsajwQMJvC9G9ZHL7TrrwUHuvZQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxakpakDudYkdwTnycspdHVxqsBmYkXj82e7oYCxRW8TKUk5zU1
+	mDZCOKVFdnaG/1k+KoxNJK0nJrH5tjw6ZTc2ZnPMUmHl7w60meAgewbPFZMx0BLgrg==
+X-Gm-Gg: Acq92OEQtrjPgDme1gic2ag5PYQoxIh5dJLZVXvG1Gxwc3jYxvSe1iR5/F1mdk2L4qg
+	zpFvMiCTCMr7OcFW//eqr0xLDci4iccIYsCe3Mgj4oD4ModGrLF7DUl+oWpZDyUFShFURoED1JN
+	oZi2Q3LVPZ4m4RchKhh2eZ9r4HKSRpdLQVm5yd56WnC4qFILNQ1A6NNWJ7WJrQGiirNcN1D1Kw/
+	J6qPiOjjmy89wDoJwBp9xUngaY2x8k+OckSN2B2YTnV87871mbE83DrdSCY9eQG7RhSznB7I4Gy
+	TJe1T3lF3s8LKSN8vDfYnqeHJczO9b6DQMorUX35Qj3m46WXPYsizqCJ1ImnXPpM8fVPz9JAshe
+	J5ntNDAvcDjbnKpUFGyVUBbF66JrprFQr+/R/oQSvI6pZQXkNL76ycbifPR3RFyjpMy0nWoO9+A
+	18YpiXjTrLuX+09FdFDmGTI7Km59Y+PYk255imlNJcXMGBaqPFBl2aq9qlOhbphfLiSf9mzMB2E
+	03QRTJ7ogKM
+X-Received: by 2002:a05:6000:2412:b0:43d:77c6:be78 with SMTP id ffacd0b85a97d-45eb38c5644mr28199474f8f.39.1779748828975;
+        Mon, 25 May 2026 15:40:28 -0700 (PDT)
 Received: from dmaluka.c.googlers.com.com (202.88.205.35.bc.googleusercontent.com. [35.205.88.202])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45eb6d5cb76sm26467837f8f.25.2026.05.25.15.40.26
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45eb6d5cb76sm26467837f8f.25.2026.05.25.15.40.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 May 2026 15:40:26 -0700 (PDT)
+        Mon, 25 May 2026 15:40:28 -0700 (PDT)
 From: Dmytro Maluka <dmaluka@chromium.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Lu Baolu <baolu.lu@linux.intel.com>,
@@ -83,137 +85,102 @@ Cc: Lu Baolu <baolu.lu@linux.intel.com>,
 	Aashish Sharma <aashish@aashishsharma.net>,
 	Grzegorz Jaszczyk <jaszczyk@chromium.org>,
 	Tomasz Nowicki <tnowicki@google.com>,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
 	Dmytro Maluka <dmaluka@chromium.org>
-Subject: [PATCH v10 0/2] PCI/ACPI: Support Microsoft's "DmaProperty"
-Date: Mon, 25 May 2026 22:40:18 +0000
-Message-ID: <20260525224023.2753569-1-dmaluka@chromium.org>
+Subject: [PATCH v10 1/2] PCI/ACPI: Support Microsoft's "DmaProperty"
+Date: Mon, 25 May 2026 22:40:19 +0000
+Message-ID: <20260525224023.2753569-2-dmaluka@chromium.org>
 X-Mailer: git-send-email 2.54.0.794.g4f17f83d09-goog
+In-Reply-To: <20260525224023.2753569-1-dmaluka@chromium.org>
+References: <20260525224023.2753569-1-dmaluka@chromium.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-[ Resending a series which was last submitted by Joshua and acked by
-  Greg over a year ago [7]. ]
+From: Rajat Jain <rajatja@google.com>
 
-Threat model: An overview of the security implications of non-strict
-IOMMU is presented at [1]. This change is motivated by “Case 1” where
-a DMA-capable device is processing untrusted inputs, e.g. network
-devices.
+The "DmaProperty" is supported and currently documented and used by
+Microsoft [link 1 below], to flag internal PCIe root ports that need
+DMA protection [link 2 below]. We have discussed with them and reached
+a common understanding that they shall change their MSDN documentation
+to say that the same property can be used to protect any PCI device,
+and not just internal PCIe root ports (since there is no point
+introducing yet another property for arbitrary PCI devices). This helps
+with security from internal devices that offer an attack surface for
+DMA attacks (e.g. internal network devices).
 
-This patchset proposes using “DMA protection” to mitigate these risks.
-This has the following effects, currently controlled by the
-“pci_dev::untrusted” flag.
+Support DmaProperty to mark DMA from a PCI device as untrusted.
 
-- Separate IOMMU DMA domains
-- Use of SWIOTLB if CONFIG_SWIOTLB
-- Disables quirks in Intel IOMMU
-- Disables Address Translation Services
+Link: [1] https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#identifying-internal-pcie-ports-accessible-to-users-and-requiring-dma-protection
+Link: [2] https://docs.microsoft.com/en-us/windows/security/information-protection/kernel-dma-protection-for-thunderbolt
+Signed-off-by: Rajat Jain <rajatja@google.com>
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Joshua Peraza <jperaza@google.com>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Dmytro Maluka <dmaluka@chromium.org>
+---
+ drivers/acpi/property.c |  3 +++
+ drivers/pci/pci-acpi.c  | 22 ++++++++++++++++++++++
+ 2 files changed, 25 insertions(+)
 
-The “untrusted” flag was introduced in 2018 in [2]. The motivation for
-that change was to enable using IOMMU to protect against DMA attacks
-from externally facing devices such as thunderbolt ports. The patchset
-introduces the “untrusted” flag which “is supposed to cover various
-PCIe devices that may be used to conduct DMA attacks.” The patchset
-originally proposes naming the flag “is_external” but is renamed to
-“is_untrusted” and then “untrusted” supposing that it could apply to
-more than just externally facing thunderbolt devices. The fact that
-“ExternalFacingPort” is not part of any standard is called out during
-review but also that Windows expecting firmware to identify external
-facing ports makes it “as good as a formal standard in the Windows
-world.”
-
-This current patch series was first proposed in January 2022 [3]. It
-originally proposed a new property “UntrustedDevice” which would cause
-the untrusted flag to be set. In V1 Greg questions whether the new
-property is part of the ACPI standard and asks who is making this
-policy decision. Mika links to Microsoft's documentation of
-“DmaProperty” and suggests that property should be adopted instead.
-Greg objects that Linux does not have “dma protection” but Mika says
-that this is the IOMMU. Today, the term “DMA protection” is used in
-thunderbolt driver code with the same meaning and in an Intel white
-paper [4] describing the technique. Mika also observes that Linux has
-recognized several properties documented by Microsoft but not part of
-the ACPI standard. There is discussion between Mika, Rafael, and Rajat
-about seeking to align with Microsoft on the semantics of
-“DmaProperty” for compatibility with firmware produced for Windows.
-
-V2 of this patch series [5] again proposed an “UntrustedDevice”
-property which Greg objects to because it is not sufficiently
-descriptive, not sufficiently documented, and policies about trust
-don’t belong in the kernel. Rajat describes the “untrusted” flag’s
-current use, controlling IOMMU and Greg suggests naming the flag
-“use_iommu” or “able to do DMA.”
-
-V3 of this patch series [6] proposes recognizing “DmaProperty” with
-slightly altered semantics from Microsoft’s documentation. Greg
-suggests adhering to Microsoft’s semantics for “DmaProperty” and to
-introduce a new property with new semantics instead. Greg again states
-that the flag being named “untrusted” is confusing.
-
-V4 renames “untrusted” to “poses_dma_risk”. Christoph suggests
-“untrusted_dma” and Rafael agrees.
-
-V5 renames the flag to “untrusted_dma”. Bjorn asks for clarification
-about whether the semantics of this flag will match Microsoft’s
-documentation. Rajat responds that Microsoft has agreed to update
-their documentation to have aligned semantics, in particular “the
-property is not restricted to identify ‘internal PCIe hierarchies’
-(starting at root port), but to "any PCI device". As of today,
-Microsoft’s documentation does not appear to have been updated.
-
-In V6 Rajat updates a link to Microsoft’s documentation, renames a
-function to pci_dev_has_dma_property() and uses
-acpi_dev_get_property() to read “DmaProperty”.
-
-In V7 (Nov 2024) Joshua re-sends and Greg requests a summary of the
-history of discussion about the name for the “untrusted” flag and
-justification of the new name.
-
-In V8 Joshua renames the “untrusted” flag to
-“requires_dma_protection”. Greg requests more information about the
-threat model, what does this property convey, and why we should use
-Microsoft’s DmaProperty and its semantics instead of inventing
-something new.
-
-In V9 Joshua updates the cover letter with more information from
-previous submissions in this series and the “untrusted” flag’s
-introduction.
-
-In V10 Dmytro rebases the patches onto the newest kernel (v7.1-rc5)
-and applies s/system may need protection/system needs protection/
-per Greg's suggestion in V9. No other changes since V9.
-
-Links:
-[1] https://lore.kernel.org/linux-arm-msm/20210624101557.v2.3.Icde6be7601a5939960caf802056c88cd5132eb4e@changeid/
-[2] https://lore.kernel.org/lkml/20181129155153.35840-1-mika.westerberg@linux.intel.com/
-[3] https://lore.kernel.org/all/20220120000409.2706549-1-rajatja@google.com/
-[4] https://www.intel.com/content/dam/develop/external/us/en/documents/intel-whitepaper-using-iommu-for-dma-protection-in-uefi-820238.pdf
-[5] https://lore.kernel.org/all/20220202020103.2149130-1-rajatja@google.com/
-[6] https://lore.kernel.org/all/20220216220541.1635665-1-rajatja@google.com/
-[7] https://lore.kernel.org/all/20250221000943.973221-1-jperaza@google.com/
-
-Rajat Jain (2):
-  PCI/ACPI: Support Microsoft's "DmaProperty"
-  PCI: Rename pci_dev->untrusted to pci_dev->requires_dma_protection
-
- drivers/acpi/property.c     |  3 +++
- drivers/iommu/amd/iommu.c   |  3 +--
- drivers/iommu/dma-iommu.c   | 16 ++++++++--------
- drivers/iommu/intel/iommu.c | 10 +++++-----
- drivers/iommu/iommu.c       |  5 ++---
- drivers/pci/ats.c           |  2 +-
- drivers/pci/pci-acpi.c      | 22 ++++++++++++++++++++++
- drivers/pci/pci.c           |  2 +-
- drivers/pci/probe.c         | 10 +++++-----
- drivers/pci/quirks.c        |  4 ++--
- include/linux/pci.h         |  7 ++++---
- 11 files changed, 54 insertions(+), 30 deletions(-)
-
+diff --git a/drivers/acpi/property.c b/drivers/acpi/property.c
+index 8ee5a1f0eb48..77f97e5fa20b 100644
+--- a/drivers/acpi/property.c
++++ b/drivers/acpi/property.c
+@@ -56,6 +56,9 @@ static const guid_t prp_guids[] = {
+ 	/* Storage device needs D3 GUID: 5025030f-842f-4ab4-a561-99a5189762d0 */
+ 	GUID_INIT(0x5025030f, 0x842f, 0x4ab4,
+ 		  0xa5, 0x61, 0x99, 0xa5, 0x18, 0x97, 0x62, 0xd0),
++	/* DmaProperty for PCI devices GUID: 70d24161-6dd5-4c9e-8070-705531292865 */
++	GUID_INIT(0x70d24161, 0x6dd5, 0x4c9e,
++		  0x80, 0x70, 0x70, 0x55, 0x31, 0x29, 0x28, 0x65),
+ };
+ 
+ /* ACPI _DSD data subnodes GUID [1]: dbb8e3e6-5886-4ba6-8795-1319f52a966b */
+diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
+index 4d0f2cb6c695..9af1bab27841 100644
+--- a/drivers/pci/pci-acpi.c
++++ b/drivers/pci/pci-acpi.c
+@@ -1430,12 +1430,34 @@ static void pci_acpi_set_external_facing(struct pci_dev *dev)
+ 		dev->external_facing = 1;
+ }
+ 
++static int pci_dev_has_dma_property(struct pci_dev *dev)
++{
++	struct acpi_device *adev;
++	const union acpi_object *obj;
++
++	adev = ACPI_COMPANION(&dev->dev);
++	if (!adev)
++		return 0;
++
++	/*
++	 * Property used by Microsoft Windows to enforce IOMMU DMA
++	 * protection from any device, that the system may not fully trust;
++	 * we'll honour it the same way.
++	 */
++	if (!acpi_dev_get_property(adev, "DmaProperty", ACPI_TYPE_INTEGER,
++				   &obj) && obj->integer.value == 1)
++		return 1;
++
++	return 0;
++}
++
+ void pci_acpi_setup(struct device *dev, struct acpi_device *adev)
+ {
+ 	struct pci_dev *pci_dev = to_pci_dev(dev);
+ 
+ 	pci_acpi_optimize_delay(pci_dev, adev->handle);
+ 	pci_acpi_set_external_facing(pci_dev);
++	pci_dev->untrusted |= pci_dev_has_dma_property(pci_dev);
+ 	pci_acpi_add_edr_notifier(pci_dev);
+ 
+ 	pci_acpi_add_pm_notifier(adev, pci_dev);
 -- 
 2.54.0.794.g4f17f83d09-goog
 
