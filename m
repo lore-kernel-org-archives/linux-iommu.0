@@ -1,475 +1,104 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B20143F54DD;
-	Mon, 25 May 2026 15:49:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E52A730C34A
+	for <iommu@lists.linux.dev>; Mon, 25 May 2026 16:47:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779724177; cv=none; b=cDp0vKIkXI52WB7rffy9Xjs6wjwphYMS4tPbUfBSMMWLqac3v/Be6+DuNhop5b466RCNDvq/3/b7mTLX/zvIOAO/eIhZQfUHbagw09ZSBUQCGyU09ZALQvorEzYrPNrCFidHCNMNWX82tbU0HU+mmKaz7p4Syq8+SJ4OZGPENlU=
+	t=1779727639; cv=none; b=rgRTSU6Wd64pB01cc+CVLsyjouWiwYMXYnAwefJrIQ16bzDAMEeAKRnY5QAzI/SGvGzd1T361xcfJgM8BDSPHS1clBdwLmjb1i875fKiqRCbac2gmZfFozL1IJlbuHc2VvydFN7dl+lwxN/dOtCUDwxxktwZrfyB3aGDHedFKNQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779724177; c=relaxed/simple;
-	bh=mz34hRDMF21LfmIAT/xWLZOphwveic0Tu0PLIIlD28E=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Np4+C5o7j9NtPu/Z60UnF1OeEfbr11B4WcsXt2uYJBbxSiQzdd/9uyTGBxv5H0Guc5kx7CEwwfla5ADAb4eB3aAyluhKqfrUHGtyB+nxs9n+K6RZvNsjwoJIuf1THZ2IXCX8xqLKBRMAvhCLQ/WAmiIu+hrMnJ4cj2aVQtXkpJ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RACJSIzX; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779727639; c=relaxed/simple;
+	bh=ICS7Dz29jLrJ1wTqVXTj0KDShL8/FYLDELZ9YhttbOo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZLQRIAVv15l82pqQZrAIJXpiKUq7yACu+1wY7Hw4/TSozdVThQFjr6vVRtL4gbvlsNzwkpzaAobJjK530TaF87ge8o54a0fqRrVYBMFLNlcEAXHb/G2R+XRp3ntESydJIimjNOA+qI4pYeFy/wiwlElamtV43C9cyOXFG/BwpPQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=m15TvQYb; arc=none smtp.client-ip=209.85.222.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RACJSIzX"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D7881F00A3A;
-	Mon, 25 May 2026 15:49:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779724175;
-	bh=VJSEaUEBwx/9WnTU9c3kp52xIPJugmYjuIP87ViR1aY=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=RACJSIzXD/o0IaFudAv/OVa1Nhqmw/adkCtpzjYWPkFTgb3mG+FVLhIq6gCainsmt
-	 jR7KveRH8E5xKAW5xsqOjFQ2pSdspXSR58NUbUPfyuoxdrFefhtYzN23LUyapTL4Nx
-	 jzOl2Ev7jm6uwcoTW1U0ZWtSuMC1qPWePYLpKihU6SCSf4jjDgCqdl6wm9g867chKj
-	 nzACLw2on0y1EPbbEW/SbECrzF+Ux64ZGFSmkvw6cEYnkqYXZAavMxm+iMbYPRRBWs
-	 ldj3KtNW0drYNxb0jwfwis63cGYA6eDRrqdd1g6O18KWp06kX+dXXWkoCGycQZqkbw
-	 2hhig+BgoBwTA==
-From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-To: linux-coco@lists.linux.dev,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	kvm@vger.kernel.org
-Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Bjorn Helgaas <helgaas@kernel.org>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Samuel Ortiz <sameo@rivosinc.com>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Will Deacon <will@kernel.org>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Tony Krowiak <akrowiak@linux.ibm.com>,
-	Halil Pasic <pasic@linux.ibm.com>,
-	Jason Herne <jjherne@linux.ibm.com>,
-	Harald Freudenberger <freude@linux.ibm.com>,
-	Holger Dengler <dengler@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Alex Williamson <alex@shazbot.org>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Farhan Ali <alifm@linux.ibm.com>,
-	Eric Farman <farman@linux.ibm.com>,
-	linux-s390@vger.kernel.org
-Subject: [PATCH v5 5/5] iommufd/vdevice: add TSM request ioctl
-Date: Mon, 25 May 2026 21:18:16 +0530
-Message-ID: <20260525154816.1029642-6-aneesh.kumar@kernel.org>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260525154816.1029642-1-aneesh.kumar@kernel.org>
-References: <20260525154816.1029642-1-aneesh.kumar@kernel.org>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="m15TvQYb"
+Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-90d042fa745so1754212585a.1
+        for <iommu@lists.linux.dev>; Mon, 25 May 2026 09:47:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1779727637; x=1780332437; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ICS7Dz29jLrJ1wTqVXTj0KDShL8/FYLDELZ9YhttbOo=;
+        b=m15TvQYbYBk6DkY2ffDtXvxE2tTwVGmWbhLmesCBy+3dHW63BF249soitJ+oiDDemO
+         69SULYUxj5KB6h3Zu9DxfQdEiI25didMVfvs/jC98kPpVtk/mb58kgSh6FnAr8U6zRgd
+         p8k0nUvaVCua1XCskT6GNrGa6nW7PTt0GdZ7rWcxjwD56/62OJpZ6c2Q2MVveeDJgNwd
+         lseCCwSDswvuxhZZEQtv4bapvxk6gCJDRXwTUdI6+aq6tU88KspgWtUp4PJTiceu6nzX
+         sDbk8KqPfvECjeOhOEqQR7tx557lf7TbCgKZS68ImCXNxeIpeJ9oxt6OmhzLw2pRDZwP
+         LXLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779727637; x=1780332437;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ICS7Dz29jLrJ1wTqVXTj0KDShL8/FYLDELZ9YhttbOo=;
+        b=C1r1rotmEmlT7TTw7+ZH+sEhU/xrKhwlB39JvnhpgzOewdAbnRiECwLlz5BfHbsuDx
+         2Eav6yF0qiwxsf2TSnE/rylXt6OSRwPbMGnQ+bLC4pL+/yLXCfEDfg9gmqPncw6K8wZo
+         AsfapwbTtvPTo0CIJ71HbdHx2+FUuwuseSzPFgLX0OVG896koZXuOxLFRy2q4mTNRWF1
+         8NT6tUqLAYPbtoSLoirjDEHYy0eU0aRwqYYGPHAjyZ4evhEgVJktHXg8dX1rr4YXAVKm
+         DUD0KYY1SxAQoK66Y6x9kORcdK26X/HUeddXeUBggQFIiJ5UDN4QXr/q7SI98xMClM1Z
+         0GAA==
+X-Forwarded-Encrypted: i=1; AFNElJ8t/7T73/JY9Sc1zP1cML0Lcnm68QJPuh3jYRvpccLoRSQssh9p5ItBYmPFUxyt6XC2H0P7dA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwxJE4dTB/8IREdXbO4YZfEOiH5THp4fXiimNN3ipIY0JkzpasJ
+	sWaE6WdvSmpPqfxZ6O+2FoCvsespPKUHPjryYDROB8KGL0by0+d2+gIZehtCOC53hlI=
+X-Gm-Gg: Acq92OEk0n0MISvnVgmfLlEzoWGH7DFhtwrl3UeY8MN1G6I+kY1vOIB5sRXFPnmbfAL
+	8PaZu8ZvlW5EDOPsgvfEY93VHIC/WR9ek7/chcxLvzTC1djxdA+gMYjGrfYQZhIiex2pqYNwfCo
+	CZ2WclQd3OxzYqpCqs332gs7rXpJzNpaaqzb31UYfDjbouYVD9ei4TIrTKI3CA6hAvvo0vkf4bw
+	zrgtDEDb1e8WBDiCs7mdCRjizbQwzIWST4gvL1EbcsOJtkqnSgN3cjtdxcLys1TechJdovtdk0Y
+	yMrAQaaYIWKdJn5TqwRG1ssYMZQNKkP6VxubI43SdpLFgatQPS+ZLyuhhmlZyWZJRBQxQjeYIxP
+	NiOPu1hGUQA31J6PQ5F1qJkSNi7Njsflt3Cz4lCe9Okm2r5jUGqKCpFUpjIgcGcklGnmcq3z2GB
+	tzwBk8Mtzpo4aNls9Vx2MzxuG7V3bWNwxws0CiRShzGp8YnOiBzBxC7GWQD36oltweLkOEClh2h
+	U8ohGmP7kVPG9xy
+X-Received: by 2002:a05:620a:690f:b0:914:cad9:fa2b with SMTP id af79cd13be357-914cad9fac8mr1258537585a.55.1779727636838;
+        Mon, 25 May 2026 09:47:16 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-914bb9d6b1dsm1068052185a.26.2026.05.25.09.47.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 May 2026 09:47:16 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wRYSR-0000000AbRY-2eeV;
+	Mon, 25 May 2026 13:47:15 -0300
+Date: Mon, 25 May 2026 13:47:15 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Joonwon Kang <joonwonkang@google.com>
+Cc: kevin.tian@intel.com, Alexander.Grest@microsoft.com,
+	alexander.shishkin@linux.intel.com, amhetre@nvidia.com,
+	baolu.lu@linux.intel.com, bp@alien8.de, dave.hansen@linux.intel.com,
+	easwar.hariharan@linux.microsoft.com, hpa@zytor.com,
+	iommu@lists.linux.dev, jacob.jun.pan@linux.intel.com,
+	joro@8bytes.org, jpb@kernel.org, kas@kernel.org, kees@kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	mingo@redhat.com, nicolinc@nvidia.com, peterz@infradead.org,
+	praan@google.com, robin.murphy@arm.com, ryasuoka@redhat.com,
+	smostafa@google.com, sohil.mehta@intel.com, tglx@kernel.org,
+	will@kernel.org, x86@kernel.org, xin@zytor.com
+Subject: Re: [PATCH v2] iommu: Allow device driver to use its own PASID space
+ for SVA
+Message-ID: <20260525164715.GA2487554@ziepe.ca>
+References: <BL1PR11MB52710D3CCFA2F75F6B540A468C0A2@BL1PR11MB5271.namprd11.prod.outlook.com>
+ <20260525152924.524721-1-joonwonkang@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260525152924.524721-1-joonwonkang@google.com>
 
-Add IOMMU_VDEVICE_TSM_REQUEST for issuing TSM guest request/response
-transactions against an iommufd vdevice.
+On Mon, May 25, 2026 at 03:29:24PM +0000, Joonwon Kang wrote:
 
-The ioctl takes a vdevice_id plus request/response user buffers and length
-fields, and forwards the request through tsm_guest_req() to the PCI TSM
-backend. This provides the host-side passthrough path used by CoCo guests
-for TSM device attestation and acceptance flows after the device has been
-bound to TSM.
+> Currently, the only known expected user of the new kAPI is our team. Since
+> I test if the patch resolves our problem before sending it, I believe it
+> should be good enough. Do you mean more than our team by "accompanied
+> users"?
 
-Also add the supporting tsm_guest_req() helper and associated TSM core
-interface definitions.
+He means you cannot send patches like this that only serve OOT drivers
+to the mainline kernel.
 
-Based on changes from: Alexey Kardashevskiy <aik@amd.com>
-
-Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
----
- drivers/iommu/iommufd/iommufd_private.h |  6 ++
- drivers/iommu/iommufd/main.c            |  3 +
- drivers/iommu/iommufd/tsm.c             | 68 +++++++++++++++++++++
- drivers/virt/coco/tsm-core.c            | 39 ++++++++++++
- include/linux/pci-tsm.h                 |  9 +--
- include/linux/tsm.h                     | 25 ++++++++
- include/uapi/linux/iommufd.h            | 80 +++++++++++++++++++++++++
- 7 files changed, 226 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 8eea0c2c332b..0080895e9e92 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -701,11 +701,17 @@ int iommufd_hw_queue_alloc_ioctl(struct iommufd_ucmd *ucmd);
- void iommufd_hw_queue_destroy(struct iommufd_object *obj);
- #ifdef CONFIG_TSM
- int iommufd_vdevice_tsm_op_ioctl(struct iommufd_ucmd *ucmd);
-+int iommufd_vdevice_tsm_req_ioctl(struct iommufd_ucmd *ucmd);
- #else
- static inline int iommufd_vdevice_tsm_op_ioctl(struct iommufd_ucmd *ucmd)
- {
- 	return -EOPNOTSUPP;
- }
-+
-+static inline int iommufd_vdevice_tsm_req_ioctl(struct iommufd_ucmd *ucmd)
-+{
-+	return -EOPNOTSUPP;
-+}
- #endif
- 
- static inline struct iommufd_vdevice *
-diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-index d73e6b391c6f..5f49b546ec92 100644
---- a/drivers/iommu/iommufd/main.c
-+++ b/drivers/iommu/iommufd/main.c
-@@ -433,6 +433,7 @@ union ucmd_buffer {
- 	struct iommu_vfio_ioas vfio_ioas;
- 	struct iommu_viommu_alloc viommu;
- 	struct iommu_vdevice_tsm_op tsm_op;
-+	struct iommu_vdevice_tsm_req tsm_req;
- #ifdef CONFIG_IOMMUFD_TEST
- 	struct iommu_test_cmd test;
- #endif
-@@ -496,6 +497,8 @@ static const struct iommufd_ioctl_op iommufd_ioctl_ops[] = {
- 		 struct iommu_viommu_alloc, out_viommu_id),
- 	IOCTL_OP(IOMMU_VDEVICE_TSM_OP, iommufd_vdevice_tsm_op_ioctl,
- 		 struct iommu_vdevice_tsm_op, vdevice_id),
-+	IOCTL_OP(IOMMU_VDEVICE_TSM_REQ, iommufd_vdevice_tsm_req_ioctl,
-+		 struct iommu_vdevice_tsm_req, resp_uptr),
- #ifdef CONFIG_IOMMUFD_TEST
- 	IOCTL_OP(IOMMU_TEST_CMD, iommufd_test, struct iommu_test_cmd, last),
- #endif
-diff --git a/drivers/iommu/iommufd/tsm.c b/drivers/iommu/iommufd/tsm.c
-index 09ee668dbed9..342fbdb6a6b9 100644
---- a/drivers/iommu/iommufd/tsm.c
-+++ b/drivers/iommu/iommufd/tsm.c
-@@ -60,3 +60,71 @@ int iommufd_vdevice_tsm_op_ioctl(struct iommufd_ucmd *ucmd)
- 	iommufd_put_object(ucmd->ictx, &vdev->obj);
- 	return rc;
- }
-+
-+static bool iommufd_vdevice_tsm_req_scope_valid(u32 scope)
-+{
-+	if (scope > IOMMU_VDEVICE_TSM_REQ_SCOPE_PCI_LAST)
-+		return false;
-+
-+	switch (scope) {
-+	case IOMMU_VDEVICE_TSM_REQ_PCI_INFO:
-+	case IOMMU_VDEVICE_TSM_REQ_PCI_STATE_CHANGE:
-+	case IOMMU_VDEVICE_TSM_REQ_PCI_DEBUG_READ:
-+	case IOMMU_VDEVICE_TSM_REQ_PCI_DEBUG_WRITE:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
-+/**
-+ * iommufd_vdevice_tsm_req_ioctl - Forward TSM requests
-+ * @ucmd: user command data for IOMMU_VDEVICE_TSM_REQ
-+ *
-+ * Resolve @iommu_vdevice_tsm_req::vdevice_id to a vdevice and pass the
-+ * request/response buffers to the TSM core.
-+ *
-+ * Return:
-+ *  -errno on error.
-+ *  positive residue if response/request bytes were left unconsumed.
-+ *    if response buffer is provided, residue indicates the number of bytes
-+ *    not used in response buffer
-+ *    if there is no response buffer, residue indicates the number of bytes
-+ *    not consumed in req buffer
-+ *  0 otherwise.
-+ */
-+int iommufd_vdevice_tsm_req_ioctl(struct iommufd_ucmd *ucmd)
-+{
-+	int rc;
-+	struct iommufd_vdevice *vdev;
-+	struct iommu_vdevice_tsm_req *cmd = ucmd->cmd;
-+	struct tsm_guest_req_info info = {
-+		.scope = cmd->scope,
-+		.req   = {
-+			.user = u64_to_user_ptr(cmd->req_uptr),
-+			.is_kernel = false,
-+		},
-+		.req_len = cmd->req_len,
-+		.resp    =  {
-+			.user = u64_to_user_ptr(cmd->resp_uptr),
-+			.is_kernel = false,
-+		},
-+		.resp_len = cmd->resp_len,
-+	};
-+
-+	if (cmd->__reserved)
-+		return -EOPNOTSUPP;
-+
-+	if (!iommufd_vdevice_tsm_req_scope_valid(cmd->scope))
-+		return -EINVAL;
-+
-+	vdev = iommufd_get_vdevice(ucmd->ictx, cmd->vdevice_id);
-+	if (IS_ERR(vdev))
-+		return PTR_ERR(vdev);
-+
-+	rc = tsm_guest_req(vdev->idev->dev, &info);
-+
-+	/* No inline response, hence we don't need to copy the response */
-+	iommufd_put_object(ucmd->ictx, &vdev->obj);
-+	return rc;
-+}
-diff --git a/drivers/virt/coco/tsm-core.c b/drivers/virt/coco/tsm-core.c
-index 3870d08ffe0d..c24886851f9e 100644
---- a/drivers/virt/coco/tsm-core.c
-+++ b/drivers/virt/coco/tsm-core.c
-@@ -8,6 +8,7 @@
- #include <linux/module.h>
- #include <linux/cleanup.h>
- #include <linux/pci-tsm.h>
-+#include <uapi/linux/iommufd.h>
- 
- static void tsm_release(struct device *);
- static const struct class tsm_class = {
-@@ -127,6 +128,44 @@ int tsm_unbind(struct device *dev)
- }
- EXPORT_SYMBOL_GPL(tsm_unbind);
- 
-+static int tsm_pci_req_scope(u32 scope, enum pci_tsm_req_scope *pci_scope)
-+{
-+	switch (scope) {
-+	case IOMMU_VDEVICE_TSM_REQ_PCI_INFO:
-+		*pci_scope = PCI_TSM_REQ_INFO;
-+		return 0;
-+	case IOMMU_VDEVICE_TSM_REQ_PCI_STATE_CHANGE:
-+		*pci_scope = PCI_TSM_REQ_STATE_CHANGE;
-+		return 0;
-+	case IOMMU_VDEVICE_TSM_REQ_PCI_DEBUG_READ:
-+		*pci_scope = PCI_TSM_REQ_DEBUG_READ;
-+		return 0;
-+	case IOMMU_VDEVICE_TSM_REQ_PCI_DEBUG_WRITE:
-+		*pci_scope = PCI_TSM_REQ_DEBUG_WRITE;
-+		return 0;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+ssize_t tsm_guest_req(struct device *dev, struct tsm_guest_req_info *info)
-+{
-+	int ret;
-+	enum pci_tsm_req_scope pci_scope;
-+
-+	if (!dev_is_pci(dev))
-+		return -EINVAL;
-+
-+	ret = tsm_pci_req_scope(info->scope, &pci_scope);
-+	if (ret)
-+		return ret;
-+
-+	return pci_tsm_guest_req(to_pci_dev(dev), pci_scope, info->req,
-+				 info->req_len, info->resp, info->resp_len,
-+				 NULL);
-+}
-+EXPORT_SYMBOL_GPL(tsm_guest_req);
-+
- static void tsm_release(struct device *dev)
- {
- 	struct tsm_dev *tsm_dev = container_of(dev, typeof(*tsm_dev), dev);
-diff --git a/include/linux/pci-tsm.h b/include/linux/pci-tsm.h
-index a6435aba03f9..ec2236a7a279 100644
---- a/include/linux/pci-tsm.h
-+++ b/include/linux/pci-tsm.h
-@@ -4,6 +4,7 @@
- #include <linux/mutex.h>
- #include <linux/pci.h>
- #include <linux/sockptr.h>
-+#include <uapi/linux/iommufd.h>
- 
- struct pci_tsm;
- struct tsm_dev;
-@@ -173,7 +174,7 @@ enum pci_tsm_req_scope {
- 	 * typical TDISP collateral information like Device Interface Reports.
- 	 * No device secrets are permitted, and no device state is changed.
- 	 */
--	PCI_TSM_REQ_INFO = 0,
-+	PCI_TSM_REQ_INFO = IOMMU_VDEVICE_TSM_REQ_PCI_INFO,
- 	/**
- 	 * @PCI_TSM_REQ_STATE_CHANGE: Request to change the TDISP state from
- 	 * UNLOCKED->LOCKED, LOCKED->RUN, or other architecture specific state
-@@ -181,14 +182,14 @@ enum pci_tsm_req_scope {
- 	 * to TDISP) device / host state, configuration, or data change is
- 	 * permitted.
- 	 */
--	PCI_TSM_REQ_STATE_CHANGE = 1,
-+	PCI_TSM_REQ_STATE_CHANGE = IOMMU_VDEVICE_TSM_REQ_PCI_STATE_CHANGE,
- 	/**
- 	 * @PCI_TSM_REQ_DEBUG_READ: Read-only request for debug information
- 	 *
- 	 * A method to facilitate TVM information retrieval outside of typical
- 	 * TDISP operational requirements. No device secrets are permitted.
- 	 */
--	PCI_TSM_REQ_DEBUG_READ = 2,
-+	PCI_TSM_REQ_DEBUG_READ = IOMMU_VDEVICE_TSM_REQ_PCI_DEBUG_READ,
- 	/**
- 	 * @PCI_TSM_REQ_DEBUG_WRITE: Device state changes for debug purposes
- 	 *
-@@ -196,7 +197,7 @@ enum pci_tsm_req_scope {
- 	 * the TDISP operational model. If allowed, requires CAP_SYS_RAW_IO, and
- 	 * will taint the kernel.
- 	 */
--	PCI_TSM_REQ_DEBUG_WRITE = 3,
-+	PCI_TSM_REQ_DEBUG_WRITE = IOMMU_VDEVICE_TSM_REQ_PCI_DEBUG_WRITE,
- };
- 
- #ifdef CONFIG_PCI_TSM
-diff --git a/include/linux/tsm.h b/include/linux/tsm.h
-index 7b6df827321b..6101a2a1db61 100644
---- a/include/linux/tsm.h
-+++ b/include/linux/tsm.h
-@@ -6,6 +6,7 @@
- #include <linux/types.h>
- #include <linux/uuid.h>
- #include <linux/device.h>
-+#include <linux/sockptr.h>
- 
- #define TSM_REPORT_INBLOB_MAX 64
- #define TSM_REPORT_OUTBLOB_MAX SZ_16M
-@@ -128,6 +129,23 @@ struct kvm;
- #ifdef CONFIG_TSM
- int tsm_bind(struct device *dev, struct kvm *kvm, u64 tdi_id);
- int tsm_unbind(struct device *dev);
-+
-+/**
-+ * struct tsm_guest_req_info - parameter for tsm_guest_req()
-+ * @scope: iommufd allocated scope for tsm guest request
-+ * @req: request data buffer filled by guest
-+ * @req_len: the size of @req filled by guest
-+ * @resp: response data buffer filled by host
-+ * @resp_len: the size of @resp buffer filled by guest
-+ */
-+struct tsm_guest_req_info {
-+	u32 scope;
-+	sockptr_t req;
-+	size_t req_len;
-+	sockptr_t resp;
-+	size_t resp_len;
-+};
-+ssize_t tsm_guest_req(struct device *dev, struct tsm_guest_req_info *info);
- #else
- static inline int tsm_bind(struct device *dev, struct kvm *kvm, u64 tdi_id)
- {
-@@ -138,6 +156,13 @@ static inline int tsm_unbind(struct device *dev)
- {
- 	return 0;
- }
-+
-+struct tsm_guest_req_info;
-+static inline ssize_t tsm_guest_req(struct device *dev,
-+		struct tsm_guest_req_info *info)
-+{
-+	return -EINVAL;
-+}
- #endif
- 
- #endif /* __TSM_H */
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index 66398efa31d1..7953e99a9671 100644
---- a/include/uapi/linux/iommufd.h
-+++ b/include/uapi/linux/iommufd.h
-@@ -58,6 +58,7 @@ enum {
- 	IOMMUFD_CMD_VEVENTQ_ALLOC = 0x93,
- 	IOMMUFD_CMD_HW_QUEUE_ALLOC = 0x94,
- 	IOMMUFD_CMD_VDEVICE_TSM_OP = 0x95,
-+	IOMMUFD_CMD_VDEVICE_TSM_REQ = 0x96,
- };
- 
- /**
-@@ -1373,4 +1374,83 @@ struct iommu_hw_queue_alloc {
- 	__aligned_u64 length;
- };
- #define IOMMU_HW_QUEUE_ALLOC _IO(IOMMUFD_TYPE, IOMMUFD_CMD_HW_QUEUE_ALLOC)
-+
-+/*
-+ * TSM request scope values are allocated by iommufd. Each device-bus transport
-+ * gets a range from this number space.
-+ */
-+#define IOMMU_VDEVICE_TSM_REQ_SCOPE_PCI_BASE	0
-+
-+enum iommu_vdevice_tsm_req_scope {
-+	/*
-+	 * Read-only, without side effects, request for typical TDISP
-+	 * collateral information like Device Interface Reports. No device
-+	 * secrets are permitted, and no device state is changed.
-+	 */
-+	IOMMU_VDEVICE_TSM_REQ_PCI_INFO =
-+		IOMMU_VDEVICE_TSM_REQ_SCOPE_PCI_BASE,
-+	/*
-+	 * Request to change the TDISP state from UNLOCKED->LOCKED,
-+	 * LOCKED->RUN, or other architecture specific state changes to
-+	 * support those transitions for a TDI. No other device or host state,
-+	 * configuration, or data change is permitted.
-+	 */
-+	IOMMU_VDEVICE_TSM_REQ_PCI_STATE_CHANGE =
-+		IOMMU_VDEVICE_TSM_REQ_SCOPE_PCI_BASE + 1,
-+	/*
-+	 * Read-only request for debug information outside of typical TDISP
-+	 * operational requirements. No device secrets are permitted.
-+	 */
-+	IOMMU_VDEVICE_TSM_REQ_PCI_DEBUG_READ =
-+		IOMMU_VDEVICE_TSM_REQ_SCOPE_PCI_BASE + 2,
-+	/*
-+	 * Device state changes for debug purposes. The request may affect the
-+	 * operational state of the device outside of the TDISP operational
-+	 * model. If allowed, this requires CAP_SYS_RAW_IO and taints the
-+	 * kernel.
-+	 */
-+	IOMMU_VDEVICE_TSM_REQ_PCI_DEBUG_WRITE =
-+		IOMMU_VDEVICE_TSM_REQ_SCOPE_PCI_BASE + 3,
-+	IOMMU_VDEVICE_TSM_REQ_SCOPE_PCI_LAST =
-+		IOMMU_VDEVICE_TSM_REQ_PCI_DEBUG_WRITE,
-+};
-+
-+/**
-+ * struct iommu_vdevice_tsm_req - ioctl(IOMMU_VDEVICE_TSM_REQ)
-+ * @size: sizeof(struct iommu_vdevice_tsm_req)
-+ * @vdevice_id: vDevice ID the guest request is for
-+ * @scope: One of enum iommu_vdevice_tsm_req_scope
-+ * @req_len: Size in bytes of the input payload at @req_uptr
-+ * @resp_len: Size in bytes of the output buffer at @resp_uptr
-+ * @__reserved: Must be 0
-+ * @req_uptr: Userspace pointer to the guest-provided request payload
-+ * @resp_uptr: Userspace pointer to the guest response buffer
-+ *
-+ * Forward a TSM request to the TSM bound vDevice. This is intended for
-+ * guest TSM/TDISP message transport where the host kernel only marshals
-+ * bytes between userspace and the TSM implementation.
-+ *
-+ * Requests outside the iommufd allocated scope values are rejected. Lower
-+ * layers may reject scope values that are valid in the global iommufd
-+ * namespace, but not permitted for a specific bus.
-+ *
-+ * The request payload is read from @req_uptr/@req_len. If a response is
-+ * expected, userspace provides @resp_uptr/@resp_len as writable storage for
-+ * response bytes returned by the TSM path.
-+ *
-+ * The ioctl is only suitable for commands and results that the host kernel
-+ * has no use, the host is only facilitating guest to TSM communication.
-+ */
-+struct iommu_vdevice_tsm_req {
-+	__u32 size;
-+	__u32 vdevice_id;
-+	__u32 scope;
-+	__u32 req_len;
-+	__u32 resp_len;
-+	__u32 __reserved;
-+	__aligned_u64 req_uptr;
-+	__aligned_u64 resp_uptr;
-+};
-+
-+#define IOMMU_VDEVICE_TSM_REQ _IO(IOMMUFD_TYPE, IOMMUFD_CMD_VDEVICE_TSM_REQ)
- #endif
--- 
-2.43.0
-
+Jason
