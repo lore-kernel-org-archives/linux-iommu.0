@@ -1,167 +1,427 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CAC9405C22
-	for <iommu@lists.linux.dev>; Tue, 26 May 2026 14:42:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1802400E04;
+	Tue, 26 May 2026 14:53:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779806562; cv=none; b=Qd8rGCfKKpypj50NSCL0P9bkw1PccnTMDP5mIsDJS85Z/xQSzXATTl6tcLdc2bC1Otk8uFk66iLDxyCn4UBh4AKoTWKI+NtqqZGsREZCabwKATKglT9iRaZcnSLv1cR4aDO1j90pG93EOX/fO0nPz5aIZDL3J2l3rK9TETC/rsc=
+	t=1779807224; cv=none; b=JE/rcLwgMIgTb+yzzkcNY9dwSkV2us/VApOTde8BFF9QWmiicJ6rHF3YnhN1DStjv0eUtmpIoOstMccmEtHWhe5c6EXpF/9JSox5ygRJkPgjNeo946KRpDti1toQ6VvaDmKZ23jxkcG99tOT900mb4WIIdnV6aCIOeAu/dT4tRo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779806562; c=relaxed/simple;
-	bh=b9Rdi+IfVGJGVd0iCHEmLl2F9yeoA7YYGwM/7TZc/sc=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=YRe+sbIHcgPYwPxf8TtssI75KOxg4AJamlNgXq5lHmKz3RwAtnNzwZhlEPOSg49YqvXuQDGU8d1156IbI31leI4uWmQqfFMvi8bK9OCfm0yaO9cZONaFY6hGy+zgh+urfGip03UV1QxSnpXa1wjZOetSvKy0tRg/iwdvt4gh/vE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Qayyh9Sn; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=ja4lrt9T; arc=none smtp.client-ip=205.220.180.131
+	s=arc-20240116; t=1779807224; c=relaxed/simple;
+	bh=mrdlOoKNFYSoZV05qStZtthKTUH+7JSmhh200dUELcQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=MBndJVX91G6TUg6PzxhNOHf+ca9K4MFRv4y3mS31r5iFtsIOkz0ozeQXZ8AdF2GCGM/BGQIkAfjuGIsR+zAcwoiUmXa7Lbb12tmC1wom2zjJAMK1ZmEw+zRQgNcCs6BQaSU4ZR1QyN8B/acvDCIb1asKwnXjc167Gz6w6WWfqu0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=VDJqhJKH; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Qayyh9Sn";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="ja4lrt9T"
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64QDhrqW2528461
-	for <iommu@lists.linux.dev>; Tue, 26 May 2026 14:42:40 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="VDJqhJKH"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64QDFiMb2437640;
+	Tue, 26 May 2026 14:52:51 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	QU6H474a0YDo59Ajjy8caYGbQkw3XHZEy73rL2NPd8U=; b=Qayyh9SnNbcVlqD4
-	48hf350bK8RsqsDr4NQ0GNVo/s7hSkJZalrF35arJTah0tBe2W7pLXHpZkfQ2875
-	LBBhAwETUVZ3b7bAcKC4mRRDSJx6jJ1LTEaFQtxzA+XUll8FglUHiQGONllLVYSm
-	gG+j+NhEuqa7KdeQdz+sQx/CuURgX+nSWSFnrnqi3wi9kH/Rg+XE8fWBGr3B1Uyc
-	TfRCGam9YacO9G+/kbwHIJPt3hSmnhLIOYQISqbiT6NcHeAQSd4X1oLDWBVVoyQT
-	5PzYpYw/uJjSejAYzDgFH4lOtZjLanZpFq5WD6Zrto6n5wkI4maKSW2d5iZZ4Ni9
-	eJp8Gg==
-Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com [209.85.215.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4edcnnr8p1-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 26 May 2026 14:42:40 +0000 (GMT)
-Received: by mail-pg1-f199.google.com with SMTP id 41be03b00d2f7-c8279604464so13460277a12.1
-        for <iommu@lists.linux.dev>; Tue, 26 May 2026 07:42:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1779806559; x=1780411359; darn=lists.linux.dev;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=QU6H474a0YDo59Ajjy8caYGbQkw3XHZEy73rL2NPd8U=;
-        b=ja4lrt9TmZUDcXBAcpTEWZjZPpn1N5f3Vb8ge14llC5iYJ47EBRgweBuJHVtaNdHp3
-         euQVX8tUYylr79m3inj9RJc/oF2iiGVpooiv9q3C4lw+eYM+1drK07vfwM16VLpOrSOX
-         rrcfZTv5SXlk/4eqYXKFEbOxS8OVZw5/sqeSZRUK9lB3mPsFO8OjFriaJAJdgyTmG6Ef
-         gvhGssrg2Cpe/+On4bs7pBsEPmxBLJp0/7fYU9LbD05ou6xP9cXqQhseuf3CE1pMrdAJ
-         oP7ZXugChSsg2H8fJhk8iAT2v8WXqXtbXipCZpe65GUPboTzJLpjTcJoENoulCsVhd8r
-         ABRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779806559; x=1780411359;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=QU6H474a0YDo59Ajjy8caYGbQkw3XHZEy73rL2NPd8U=;
-        b=rwCtfiiTKDn/Kcw7nw1RtcpsSn/41Rg50HAGEyXY95CwLuxGugEhl5+NdxjuMHiW5p
-         SkB1/d34KqY5PvU/E+EaQK0IIGItG05kNRJNExRrwg1RzyTLyimhl4FypQk1G/Xki/5E
-         yWZokQwMx2msDeeYsYwzZeEnt1Aqzsp8AxkhI2KpzpNtTQK7pYe3rAJ8cP0YWcYxnuQ6
-         bQKwfOYtrCr9Y7Eqbr3hF6BhhBVFO2OyIkBqBXtIZMIydCPwh+3l9ATSvvmbibum/L7D
-         J3VZyecr+GBPhqwEalYM3zXE9CbXCRVRyd+McoAGzjVSYRvs/3/s5G5r7/1Hp89r2NaK
-         xEIw==
-X-Forwarded-Encrypted: i=1; AFNElJ8UIKr9gSg1ink0tqpyfMUwthQ4e5CraWsTTH4yD/IRHaZ6iTNdQiWpK6wUq729tfewtjryCA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzvyfJdX0DH9a3VoOGgYXpyT8Agx66YoyBh1JgHZUnRrHEjEPbP
-	10ctv53Ce2yc4RRjRnz2NEnphZGGABtCcugbCDqMLrK6POU4DCyxtf+PoY7YlBzJKZWgnGZizdN
-	L/V7xYSE93Fk6V3rW7BWh2cpBy61q4W+YAcPXz8OcW6AgkRlCBosn+uEghQ==
-X-Gm-Gg: Acq92OGe7J6K8+P5SXhszEpv7kE6ab0UPhDAiyfOaNOQJUOL0SGxCAzQhFl09p9EExF
-	gW0QdWp5ZdgJCYPmvqn7qk79lvlX+5Wp8sq4YzGKFgakixKAmzK+aKvOr6tgs4yf7A9NQSiZiic
-	LOEnd+7VlCHSuO10qr+sJ7mgnfLUC5R30UKqUrIESEfqTfymyjqdd0UewTzU1rsrfD0jd1qfm47
-	DfbYImaMWgZ8tKUoOkg3t5Ij8CesZZwBrm9sngjggagLZFsvFz9eX2jro3+RkUrvpEtw0P6ekVd
-	EAB826MzGJWQEhnExbMSeHAosRAW6Uw0t5KIUIvNapapX7hq8ywO5+PcxM//pKzh9AmWF8VrjaL
-	3GTtlNydjCql5VaycfZaP5cS9hAXO59u31pRzlW6N0le6BJKW8Q6Z
-X-Received: by 2002:aa7:9a85:0:b0:82f:2243:e445 with SMTP id d2e1a72fcca58-8415f301995mr17730389b3a.32.1779806559087;
-        Tue, 26 May 2026 07:42:39 -0700 (PDT)
-X-Received: by 2002:aa7:9a85:0:b0:82f:2243:e445 with SMTP id d2e1a72fcca58-8415f301995mr17730340b3a.32.1779806558448;
-        Tue, 26 May 2026 07:42:38 -0700 (PDT)
-Received: from hu-bibekkum-hyd.qualcomm.com ([202.46.22.19])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84164acc288sm15362019b3a.10.2026.05.26.07.42.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 May 2026 07:42:38 -0700 (PDT)
-From: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
-Date: Tue, 26 May 2026 20:12:07 +0530
-Subject: [PATCH v2 6/6] arm64: dts: qcom: talos: Add GEM_NOC interconnect
- for adreno SMMU
+	cc:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=qcppdkim1; bh=DtEI7WfC5+U62ltVi9RfCYz6d6BvUdBEhCw
+	V0F2LcJ0=; b=VDJqhJKHNju8IKcn9t1qu43G/VBPuu9ARS2y2EHvztuTyMiyhFf
+	rgfRLg3okTLGVE+M5WkAJO/YtpNKW3OSPPoBWDKXkfKpB8qm669C+M4QwHET92wt
+	1twqVleeMF5w82rDDpTDX1fH2WvkAifaCtMhcAV4ZopkCPHBboXxR5oNoixkJdBX
+	ZnHAgBFrJy85LCwpOCfPfg+2HxGCovmUyCfnadbgqUUsPdhxMVmWawVtAWO7rzWK
+	g+PcqmqN/7R+p6P37XDhEgGVJKrKCp3drYp2/0qZ1CB/hXSz/zo6yD8f3g+FJiD8
+	FWEhWjco2Me5GT3f9prBfmnZnd+qI+QVE8Q==
+Received: from apblrppmta01.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ecnhs5ay0-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 26 May 2026 14:52:51 +0000 (GMT)
+Received: from pps.filterd (APBLRPPMTA01.qualcomm.com [127.0.0.1])
+	by APBLRPPMTA01.qualcomm.com (8.18.1.7/8.18.1.7) with ESMTP id 64QEqlWb017831;
+	Tue, 26 May 2026 14:52:47 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTPS id 4eb5aj97q3-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 26 May 2026 14:52:47 +0000 (GMT)
+Received: from APBLRPPMTA01.qualcomm.com (APBLRPPMTA01.qualcomm.com [127.0.0.1])
+	by pps.reinject (8.18.1.12/8.18.1.12) with ESMTP id 64QEqlkU017823;
+	Tue, 26 May 2026 14:52:47 GMT
+Received: from hu-devc-blr-u24-a.qualcomm.com (hu-anuppate-blr.qualcomm.com [10.131.36.165])
+	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTPS id 64QEql8L017820
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 26 May 2026 14:52:47 +0000 (GMT)
+Received: by hu-devc-blr-u24-a.qualcomm.com (Postfix, from userid 486687)
+	id 6A81F21A82; Tue, 26 May 2026 20:22:46 +0530 (+0530)
+From: Anup Patel <anup.patel@oss.qualcomm.com>
+To: Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <pjw@kernel.org>,
+        Alexandre Ghiti <alex@ghiti.fr>, Thomas Gleixner <tglx@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Danilo Krummrich <dakr@kernel.org>,
+        Tomasz Jeznach <tomasz.jeznach@linux.dev>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jassi Brar <jassisinghbrar@gmail.com>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>
+Cc: Saket Dumbre <saket.dumbre@intel.com>, Rahul Pathak <rahul@summations.net>,
+        Atish Patra <atish.patra@linux.dev>, Anup Patel <anup@brainfault.org>,
+        Andrew Jones <andrew.jones@oss.qualcomm.com>,
+        linux-acpi@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        driver-core@lists.linux.dev, iommu@lists.linux.dev,
+        acpica-devel@lists.linux.dev, Anup Patel <anup.patel@oss.qualcomm.com>,
+        Sunil V L <sunilvl@oss.qualcomm.com>
+Subject: [PATCH] driver core: platform: Setup device MSI domain just before driver probe
+Date: Tue, 26 May 2026 20:22:40 +0530
+Message-ID: <20260526145240.1627200-1-anup.patel@oss.qualcomm.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260526-smmu_interconnect_addition-v2-6-2a6d8ca30d63@oss.qualcomm.com>
-References: <20260526-smmu_interconnect_addition-v2-0-2a6d8ca30d63@oss.qualcomm.com>
-In-Reply-To: <20260526-smmu_interconnect_addition-v2-0-2a6d8ca30d63@oss.qualcomm.com>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org,
-        Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1779806527; l=1048;
- i=bibek.patro@oss.qualcomm.com; s=20260408; h=from:subject:message-id;
- bh=b9Rdi+IfVGJGVd0iCHEmLl2F9yeoA7YYGwM/7TZc/sc=;
- b=fsVa27Uyywz9GSHvUf8xB88UX1ed1IqGjTVwOaAancFT19+AlIGoYxRrcONbOk+rVEKKqPWBt
- 6fOQgHbCzBjBJxlRuYKC/eAdYk7fc38gv1W36Pb5JsyTAc5NJjajy43
-X-Developer-Key: i=bibek.patro@oss.qualcomm.com; a=ed25519;
- pk=V4oTa+TgRi7dib76fc92V+rslyRCAKbK8D4b2RVsMbc=
-X-Proofpoint-GUID: 9lMWatLlrvkCoJlL3PbzNecy8rs8Fxl_
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTI2MDEyNiBTYWx0ZWRfX1Y48X6iczxpM
- h36wAPZZ5FVXzW9SWZuXC4kG3Xs9CDwHBJaE/pp0tDXhMd7g6kudiVzlPiaiaFxrP2I3QnT8eiW
- ZLu3UyZofT+SMuEMQKKmLPnK+zOFhGhgAmO+UzyUYPwCLRW7aPFzXFseVccrkYwdTzlpW+vzV7I
- pomTZj7cT4ou8G0HuG4mNJ8xoguevB0UtXmVsK/hsHY/jgKdQf4smL15FBtmYSh+lPFnvxY5ezh
- Dk2iyB3TvrG0JySocWwy221zOx9wETrkgYzIWKQpNfq1LRny5yUfGhAbgLT5TUh1LMjDp/nxJlw
- oCp0e/ySqqbt+5FW97i1LgmaGjaS2YQ8+/cgobHkQOYPraqISgzGj3bsRmd5zvcHAsRjA5+bC8/
- +xxvUGH3OmKjnXlqE787IFVBAPD41m6o3DEcCADIKEgFjuej05SLqavHrJUILjjrtit2Q8usW0l
- UFk+rQ4lm40jgvn1iwg==
-X-Authority-Analysis: v=2.4 cv=VPHtWdPX c=1 sm=1 tr=0 ts=6a15b160 cx=c_pps
- a=Oh5Dbbf/trHjhBongsHeRQ==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
- a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22
- a=EUspDBNiAAAA:8 a=55tFDwK73Rs-p4iooc0A:9 a=QEXdDO2ut3YA:10
- a=_Vgx9l1VpLgwpw_dHYaR:22
-X-Proofpoint-ORIG-GUID: 9lMWatLlrvkCoJlL3PbzNecy8rs8Fxl_
+Content-Transfer-Encoding: 8bit
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Authority-Analysis: v=2.4 cv=Vd3H+lp9 c=1 sm=1 tr=0 ts=6a15b3c3 cx=c_pps
+ a=Ou0eQOY4+eZoSc0qltEV5Q==:117 a=Ou0eQOY4+eZoSc0qltEV5Q==:17
+ a=NGcC8JguVDcA:10 a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22
+ a=rJkE3RaqiGZ5pbrm-msn:22 a=EUspDBNiAAAA:8 a=XO0VMO9KiYcrIKbrk7YA:9
+X-Proofpoint-GUID: lty04NSPDty1OQPPj3lse-ZDKCwr8rqX
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTI2MDEyNyBTYWx0ZWRfXybDV0cdVrn9a
+ cW4JY0oYmLmSW9VtMnddMU+ogYKG7BxrIRKYvaGEdEC24+aqrpRRl4JBanv5SINeJSvLH8ll+5D
+ yKrHOhKDhbIOnFw3o5jQLT6FqfoQDT/gWpPZV53pZu5IETVaw1dWVvSmPakzpBiVuYC6CuymSA6
+ j0ZBjZuldEWEOyzxl7/Nlpje0izBxmun/cuDxVlI0kNkWfyO9uWU+o/yFxEuWijsDqn/o+ChRp6
+ NwbALiSEe1r+goStmolCJFb3ib/JdXldKU2Uffx1j4/uyK4/UC5zq3dHlcUAMobJXwkawa/a5DF
+ LL7PcUxQLWK2DWPChqb657ugZiqoxeldJBznayQzhdLvgITOr6/YcYOzyxkEPs7UphfEuHSV5G1
+ l5aduVCwtbflDAT0VstEzFFmDbql4XqsoZ2nIuzq4f89BpdqazopkvOwqHYYU9xgpAqeNzfbk8p
+ 61D9FGO5KBYoXt5pYPQ==
+X-Proofpoint-ORIG-GUID: lty04NSPDty1OQPPj3lse-ZDKCwr8rqX
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
  definitions=2026-05-26_03,2026-05-26_03,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 spamscore=0 clxscore=1015 impostorscore=0 lowpriorityscore=0
- adultscore=0 malwarescore=0 priorityscore=1501 bulkscore=0 suspectscore=0
+ impostorscore=0 suspectscore=0 malwarescore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 phishscore=0 adultscore=0 priorityscore=1501 bulkscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2605130000 definitions=main-2605260126
+ reason=mlx scancount=1 engine=8.22.0-2605130000 definitions=main-2605260127
 
-On Talos platforms, the Adreno SMMU requires a bandwidth vote on
-the GEM_NOC path (MASTER_GPU_TCU -> SLAVE_EBI1) before its registers
-are accessible. Without this vote, the SMMU may become unreachable,
-leading to intermittent probe failures and runtime issues.
+On RISC-V, the MSI controller (aka RISC-V IMSIC) is probed as a regular
+platform device and MSI client drivers are always probed after the MSI
+controller driver using fw_devlink. Unfortunately, this is not sufficient
+to ensure device MSI domain is set for MSI client devices before driver
+probe because OF framework sets device MSI domain at the time of platform
+device creation whereas ACPI framework expects arch specific code to set
+the device MSI domain at the time of platform device creation.
 
-Add the required interconnect to ensure reliable register access.
+Currently, to work-around the problem of missing device MSI domain,
+various RISC-V MSI client drivers explicitly set device MSI domain
+in the driver probe function using below code pattern:
 
-Signed-off-by: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
+	/*
+	 * The device MSI domain for platform devices on RISC-V architecture
+	 * is only available after the MSI controller driver is probed so,
+	 * explicitly configure here.
+	 */
+	if (!dev_get_msi_domain(dev)) {
+		/*
+		 * The device MSI domain for OF devices is only set at the
+		 * time of populating/creating OF device. If the device MSI
+		 * domain is discovered later after the OF device is created
+		 * then we need to set it explicitly before using any platform
+		 * MSI functions.
+		 */
+		if (is_of_node(fwnode)) {
+			of_msi_configure(dev, dev_of_node(dev));
+		} else if (is_acpi_device_node(fwnode)) {
+			struct irq_domain *msi_domain;
+			msi_domain = irq_find_matching_fwnode(imsic_acpi_get_fwnode(dev),
+							      DOMAIN_BUS_PLATFORM_MSI);
+			dev_set_msi_domain(dev, msi_domain);
+		}
+
+		if (!dev_get_msi_domain(dev))
+			return -EPROBE_DEFER;
+	}
+
+Instead of the above approach, extend the platform_dma_configure() to set
+device MSI domain for both OF and ACPI based platform devices before driver
+probe and remove the duplicate code pattern from RISC-V MSI client drivers.
+
+Co-developed-by: Sunil V L <sunilvl@oss.qualcomm.com>
+Signed-off-by: Sunil V L <sunilvl@oss.qualcomm.com>
+Signed-off-by: Anup Patel <anup.patel@oss.qualcomm.com>
 ---
- arch/arm64/boot/dts/qcom/talos.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/acpi/riscv/irq.c                | 13 +++++++++++
+ drivers/acpi/scan.c                     | 10 +++++++++
+ drivers/base/platform.c                 |  4 ++++
+ drivers/iommu/riscv/iommu-platform.c    |  9 --------
+ drivers/irqchip/irq-riscv-aplic-msi.c   | 27 -----------------------
+ drivers/irqchip/irq-riscv-rpmi-sysmsi.c | 29 -------------------------
+ drivers/mailbox/riscv-sbi-mpxy-mbox.c   | 29 -------------------------
+ include/acpi/acpi_bus.h                 |  1 +
+ include/linux/acpi.h                    | 10 +++++++++
+ 9 files changed, 38 insertions(+), 94 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/talos.dtsi b/arch/arm64/boot/dts/qcom/talos.dtsi
-index fb1bbc51bb8a45832568da26847312e00cae722a..74322507f4e8c796bf9529a9f0adcafbd725ac73 100644
---- a/arch/arm64/boot/dts/qcom/talos.dtsi
-+++ b/arch/arm64/boot/dts/qcom/talos.dtsi
-@@ -2090,6 +2090,8 @@ adreno_smmu: iommu@50a0000 {
- 				      "iface";
- 			power-domains = <&gpucc CX_GDSC>;
- 			dma-coherent;
-+			interconnects = <&gem_noc MASTER_GPU_TCU QCOM_ICC_TAG_ALWAYS
-+					 &mc_virt SLAVE_EBI1 QCOM_ICC_TAG_ALWAYS>;
- 		};
+diff --git a/drivers/acpi/riscv/irq.c b/drivers/acpi/riscv/irq.c
+index 9b88d0993e88..17fa5dcdd2c0 100644
+--- a/drivers/acpi/riscv/irq.c
++++ b/drivers/acpi/riscv/irq.c
+@@ -5,8 +5,11 @@
+  */
  
- 		stm@6002000 {
-
+ #include <linux/acpi.h>
++#include <linux/device.h>
+ #include <linux/sort.h>
+ #include <linux/irq.h>
++#include <linux/irqdomain.h>
++#include <linux/irqchip/riscv-imsic.h>
+ 
+ #include "init.h"
+ 
+@@ -397,6 +400,16 @@ static u32 riscv_acpi_add_irq_dep(acpi_handle handle)
+ 	return count;
+ }
+ 
++void acpi_arch_msi_configure(struct device *dev)
++{
++	struct irq_domain *msi_domain;
++
++	msi_domain = irq_find_matching_fwnode(imsic_acpi_get_fwnode(dev),
++					      DOMAIN_BUS_PLATFORM_MSI);
++	if (msi_domain)
++		dev_set_msi_domain(dev, msi_domain);
++}
++
+ u32 arch_acpi_add_auto_dep(acpi_handle handle)
+ {
+ 	if (acpi_has_method(handle, "_PRT"))
+diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+index 530547cda8b2..e50e5d246a54 100644
+--- a/drivers/acpi/scan.c
++++ b/drivers/acpi/scan.c
+@@ -1648,6 +1648,16 @@ static int acpi_iommu_configure_id(struct device *dev, const u32 *id_in)
+ 
+ #endif /* !CONFIG_IOMMU_API */
+ 
++/**
++ * acpi_msi_configure - Set-up MSI domain for the device.
++ * @dev: The pointer to the device
++ */
++void acpi_msi_configure(struct device *dev)
++{
++	acpi_arch_msi_configure(dev);
++}
++EXPORT_SYMBOL_GPL(acpi_msi_configure);
++
+ /**
+  * acpi_dma_configure_id - Set-up DMA configuration for the device.
+  * @dev: The pointer to the device
+diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+index a19dd22deef2..225e33080bc6 100644
+--- a/drivers/base/platform.c
++++ b/drivers/base/platform.c
+@@ -1470,8 +1470,12 @@ static int platform_dma_configure(struct device *dev)
+ 	int ret = 0;
+ 
+ 	if (is_of_node(fwnode)) {
++		if (!dev_get_msi_domain(dev))
++			of_msi_configure(dev, dev->of_node);
+ 		ret = of_dma_configure(dev, to_of_node(fwnode), true);
+ 	} else if (is_acpi_device_node(fwnode)) {
++		if (!dev_get_msi_domain(dev))
++			acpi_msi_configure(dev);
+ 		attr = acpi_get_dma_attr(to_acpi_device_node(fwnode));
+ 		ret = acpi_dma_configure(dev, attr);
+ 	}
+diff --git a/drivers/iommu/riscv/iommu-platform.c b/drivers/iommu/riscv/iommu-platform.c
+index 399ba8fe1b3e..ddc6370b96b0 100644
+--- a/drivers/iommu/riscv/iommu-platform.c
++++ b/drivers/iommu/riscv/iommu-platform.c
+@@ -48,7 +48,6 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
+ 	enum riscv_iommu_igs_settings igs;
+ 	struct device *dev = &pdev->dev;
+ 	struct riscv_iommu_device *iommu = NULL;
+-	struct irq_domain *msi_domain;
+ 	struct resource *res = NULL;
+ 	int vec, ret;
+ 
+@@ -74,14 +73,6 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
+ 	switch (igs) {
+ 	case RISCV_IOMMU_CAPABILITIES_IGS_BOTH:
+ 	case RISCV_IOMMU_CAPABILITIES_IGS_MSI:
+-		if (is_of_node(dev_fwnode(dev))) {
+-			of_msi_configure(dev, to_of_node(dev->fwnode));
+-		} else {
+-			msi_domain = irq_find_matching_fwnode(imsic_acpi_get_fwnode(dev),
+-							      DOMAIN_BUS_PLATFORM_MSI);
+-			dev_set_msi_domain(dev, msi_domain);
+-		}
+-
+ 		if (!dev_get_msi_domain(dev)) {
+ 			dev_warn(dev, "failed to find an MSI domain\n");
+ 			goto msi_fail;
+diff --git a/drivers/irqchip/irq-riscv-aplic-msi.c b/drivers/irqchip/irq-riscv-aplic-msi.c
+index fb8d1838609f..2cf5d42cd66a 100644
+--- a/drivers/irqchip/irq-riscv-aplic-msi.c
++++ b/drivers/irqchip/irq-riscv-aplic-msi.c
+@@ -175,7 +175,6 @@ static const struct msi_domain_template aplic_msi_template = {
+ int aplic_msi_setup(struct device *dev, void __iomem *regs)
+ {
+ 	const struct imsic_global_config *imsic_global;
+-	struct irq_domain *msi_domain;
+ 	struct aplic_priv *priv;
+ 	struct aplic_msicfg *mc;
+ 	phys_addr_t pa;
+@@ -245,32 +244,6 @@ int aplic_msi_setup(struct device *dev, void __iomem *regs)
+ 	/* Setup global config and interrupt delivery */
+ 	aplic_init_hw_global(priv, true);
+ 
+-	/* Set the APLIC device MSI domain if not available */
+-	if (!dev_get_msi_domain(dev)) {
+-		/*
+-		 * The device MSI domain for OF devices is only set at the
+-		 * time of populating/creating OF device. If the device MSI
+-		 * domain is discovered later after the OF device is created
+-		 * then we need to set it explicitly before using any platform
+-		 * MSI functions.
+-		 *
+-		 * In case of APLIC device, the parent MSI domain is always
+-		 * IMSIC and the IMSIC MSI domains are created later through
+-		 * the platform driver probing so we set it explicitly here.
+-		 */
+-		if (is_of_node(dev->fwnode)) {
+-			of_msi_configure(dev, to_of_node(dev->fwnode));
+-		} else {
+-			msi_domain = irq_find_matching_fwnode(imsic_acpi_get_fwnode(dev),
+-							      DOMAIN_BUS_PLATFORM_MSI);
+-			if (msi_domain)
+-				dev_set_msi_domain(dev, msi_domain);
+-		}
+-
+-		if (!dev_get_msi_domain(dev))
+-			return -EPROBE_DEFER;
+-	}
+-
+ 	if (!msi_create_device_irq_domain(dev, MSI_DEFAULT_DOMAIN, &aplic_msi_template,
+ 					  priv->nr_irqs + 1, priv, priv)) {
+ 		dev_err(dev, "failed to create MSI irq domain\n");
+diff --git a/drivers/irqchip/irq-riscv-rpmi-sysmsi.c b/drivers/irqchip/irq-riscv-rpmi-sysmsi.c
+index 612f3972f7af..e6cdb4b635a6 100644
+--- a/drivers/irqchip/irq-riscv-rpmi-sysmsi.c
++++ b/drivers/irqchip/irq-riscv-rpmi-sysmsi.c
+@@ -260,35 +260,6 @@ static int rpmi_sysmsi_probe(struct platform_device *pdev)
+ 			riscv_acpi_update_gsi_range(priv->gsi_base, priv->nr_irqs);
+ 	}
+ 
+-	/*
+-	 * The device MSI domain for platform devices on RISC-V architecture
+-	 * is only available after the MSI controller driver is probed so,
+-	 * explicitly configure here.
+-	 */
+-	if (!dev_get_msi_domain(dev)) {
+-		/*
+-		 * The device MSI domain for OF devices is only set at the
+-		 * time of populating/creating OF device. If the device MSI
+-		 * domain is discovered later after the OF device is created
+-		 * then we need to set it explicitly before using any platform
+-		 * MSI functions.
+-		 */
+-		if (is_of_node(fwnode)) {
+-			of_msi_configure(dev, dev_of_node(dev));
+-		} else if (is_acpi_device_node(fwnode)) {
+-			struct irq_domain *msi_domain;
+-
+-			msi_domain = irq_find_matching_fwnode(imsic_acpi_get_fwnode(dev),
+-							      DOMAIN_BUS_PLATFORM_MSI);
+-			dev_set_msi_domain(dev, msi_domain);
+-		}
+-
+-		if (!dev_get_msi_domain(dev)) {
+-			mbox_free_channel(priv->chan);
+-			return -EPROBE_DEFER;
+-		}
+-	}
+-
+ 	if (!msi_create_device_irq_domain(dev, MSI_DEFAULT_DOMAIN,
+ 					  &rpmi_sysmsi_template,
+ 					  priv->nr_irqs, priv, priv)) {
+diff --git a/drivers/mailbox/riscv-sbi-mpxy-mbox.c b/drivers/mailbox/riscv-sbi-mpxy-mbox.c
+index 7c9c006b7244..759512aba19f 100644
+--- a/drivers/mailbox/riscv-sbi-mpxy-mbox.c
++++ b/drivers/mailbox/riscv-sbi-mpxy-mbox.c
+@@ -902,35 +902,6 @@ static int mpxy_mbox_probe(struct platform_device *pdev)
+ 
+ 	/* Setup MSIs for mailbox (if required) */
+ 	if (mbox->msi_count) {
+-		/*
+-		 * The device MSI domain for platform devices on RISC-V architecture
+-		 * is only available after the MSI controller driver is probed so,
+-		 * explicitly configure here.
+-		 */
+-		if (!dev_get_msi_domain(dev)) {
+-			struct fwnode_handle *fwnode = dev_fwnode(dev);
+-
+-			/*
+-			 * The device MSI domain for OF devices is only set at the
+-			 * time of populating/creating OF device. If the device MSI
+-			 * domain is discovered later after the OF device is created
+-			 * then we need to set it explicitly before using any platform
+-			 * MSI functions.
+-			 */
+-			if (is_of_node(fwnode)) {
+-				of_msi_configure(dev, dev_of_node(dev));
+-			} else if (is_acpi_device_node(fwnode)) {
+-				struct irq_domain *msi_domain;
+-
+-				msi_domain = irq_find_matching_fwnode(imsic_acpi_get_fwnode(dev),
+-								      DOMAIN_BUS_PLATFORM_MSI);
+-				dev_set_msi_domain(dev, msi_domain);
+-			}
+-
+-			if (!dev_get_msi_domain(dev))
+-				return -EPROBE_DEFER;
+-		}
+-
+ 		mbox->msi_index_to_channel = devm_kcalloc(dev, mbox->msi_count,
+ 							  sizeof(*mbox->msi_index_to_channel),
+ 							  GFP_KERNEL);
+diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
+index c41d9a7565cf..b31ba661245e 100644
+--- a/include/acpi/acpi_bus.h
++++ b/include/acpi/acpi_bus.h
+@@ -744,6 +744,7 @@ bool acpi_dma_supported(const struct acpi_device *adev);
+ enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev);
+ int acpi_iommu_fwspec_init(struct device *dev, u32 id,
+ 			   struct fwnode_handle *fwnode);
++void acpi_msi_configure(struct device *dev);
+ int acpi_dma_get_range(struct device *dev, const struct bus_dma_region **map);
+ int acpi_dma_configure_id(struct device *dev, enum dev_dma_attr attr,
+ 			   const u32 *input_id);
+diff --git a/include/linux/acpi.h b/include/linux/acpi.h
+index 67effb91fa98..e8829be3ca55 100644
+--- a/include/linux/acpi.h
++++ b/include/linux/acpi.h
+@@ -260,6 +260,12 @@ acpi_numa_processor_affinity_init(struct acpi_srat_cpu_affinity *pa) { }
+ 
+ void acpi_numa_x2apic_affinity_init(struct acpi_srat_x2apic_cpu_affinity *pa);
+ 
++#if defined(CONFIG_RISCV)
++void acpi_arch_msi_configure(struct device *dev);
++#else
++static inline void acpi_arch_msi_configure(struct device *dev) { }
++#endif
++
+ #if defined(CONFIG_ARM64) || defined(CONFIG_LOONGARCH)
+ void acpi_arch_dma_setup(struct device *dev);
+ #else
+@@ -1058,6 +1064,10 @@ static inline int acpi_dma_get_range(struct device *dev, const struct bus_dma_re
+ 	return -ENODEV;
+ }
+ 
++static inline void acpi_msi_configure(struct device *dev)
++{
++}
++
+ static inline int acpi_dma_configure(struct device *dev,
+ 				     enum dev_dma_attr attr)
+ {
 -- 
-2.34.1
+2.43.0
 
