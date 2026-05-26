@@ -1,86 +1,60 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7FF23D79FF
-	for <iommu@lists.linux.dev>; Tue, 26 May 2026 09:46:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA5093DD85F;
+	Tue, 26 May 2026 10:52:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779788772; cv=none; b=RMXE7Jx+3YBsVAdq7AFeEjcSZAsDyWla9uPdNuPydjSccadXxkl0aLq4ws5gyxkIrsSXAhXWKINr9MLjghrmveH8h7BOF3j8bJorf+TKlf4JUirvcdmyh8rE3olDgnJeQKzNueQ9LjJa+oAKcEvWrvY2b6/YC8mx7Mpv5XHxKPw=
+	t=1779792749; cv=none; b=G/D2hbd5DJYnY3nmnbk9aPLsBS3RNkBot4oSna+y2AvuuQxd6SEL5Zh+YgNsKQJvjVPyoV8UoasKDxNzJQBKe8VGANKYkTi/pr+KVoeBl21e02zaRvDJ4+Lw20lyEq2sx8TvdS/iWnnJdpj1czppzXZQU+xnWZX/ZMIS4BVzU4k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779788772; c=relaxed/simple;
-	bh=ZCAvrcBAJIXTnHEvSKz8Yq0JKkscj5TsSoJRyS3heaY=;
+	s=arc-20240116; t=1779792749; c=relaxed/simple;
+	bh=1B2PpBRms+zDeZ++5vUTuODu64CSCkvh8N+3W7gmNXg=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=PTlGQgBGtm5tCZe1Trck6lIlz6jURNIcNpLwRTFtQfLdxbiOThuiRs/lbfxVOOtWsQhmVx7njQGjB3N9dNl7PMgQG0Sq8Lsat24oo6FFMrJ0cdGMGHc37yldtP5dgCAoAPXzpgJrGcaME6qmBxnG4Cs5liZKVmpnyU6DMQG/8bA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=fr1+vbDE; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=T0dAxKgD; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	 In-Reply-To:Content-Type; b=kJvPqE6UJBqt1DR04rvbCmR2gUR2haJAy+3OSfMm4vFDrwFBAED9OIPujzGY4B1M6WZu1AjuDBOYt/eBEj0gI3WlBXWD7LCn7lRkcupH2p5XJviDJRDkgm8u0Df5ti94KhMtXCnxf0h+eJI8/PeU6VluNhLpgtFyp2m+0hwNGXM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=UDojngOX; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="fr1+vbDE";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="T0dAxKgD"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64Q8exBi4117909
-	for <iommu@lists.linux.dev>; Tue, 26 May 2026 09:46:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	+tNWCjXxY3vDlbxeyc6dAiioLTzJiUtHmEfK77uv8QU=; b=fr1+vbDENVQY5Zkc
-	AWKEyhljX0yFvxH6I1SvWUMTfp19xN/S0yh+TGoyD9Cl2mMP1B+cxYr4CMbB+3HK
-	i6mgb6GJt0ChQnVW/edYstQ2ZQ/3qEyz7787O7HhTjAw4XPZE3hs5gii8npI7Amv
-	SV4YTLdzF9yQsyRYbZhe8MXQpEJ8I1OBPDETlM0oT+VsBZIO/86gjRfEn9vRxRhD
-	fa7RK+Fn5PB0Yls+1QT2cAgdVoCp2+ET9/qfV+TNX1+bxgF2y68cg7pgqK+nzx0o
-	z9PP/dkyTpf4v2k4Ml/cIFZEvKeM5ltrMipw4x5NALhFjWWhKMw9d8b7GJjlf880
-	lK0fmQ==
-Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com [209.85.214.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ecqudb8pu-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 26 May 2026 09:46:09 +0000 (GMT)
-Received: by mail-pl1-f199.google.com with SMTP id d9443c01a7336-2bc6899bfb1so109017425ad.2
-        for <iommu@lists.linux.dev>; Tue, 26 May 2026 02:46:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1779788768; x=1780393568; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=+tNWCjXxY3vDlbxeyc6dAiioLTzJiUtHmEfK77uv8QU=;
-        b=T0dAxKgDfEDoBnXif3zQrP131tWG4YzmgHiRIyE0zlklmtLcJ9yGyxZMWg5pDyC+1J
-         /zwnvcYZvz2UlGz9NiESWjAb27F8/Jw9DGItGMOz/khmMjXvRiCjktW59KCdp2EPJVmJ
-         nRtkbhF9CbeMO/lx0tkH+aCWaERSxBKUECyVpwxCKnAjlUhkQpbc5EeTVaC/O3wDAPL+
-         8B6CnxnziBr1cKQ6KwWTDP9jnZs2BzpGkxu9XPH+LkovrofSPSLJuwGPYW8GzVTUzZiC
-         yyTBNDqZksRdSWlvcVFX56PVTaVnp2q7T3a0O8N30Fpwhr/xD6+M686cvhXD+L845R2P
-         Y6NA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779788768; x=1780393568;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=+tNWCjXxY3vDlbxeyc6dAiioLTzJiUtHmEfK77uv8QU=;
-        b=WowY479GDmUEJ3ICLLyQWEkX28hgjSwin2kUeN9KtlLC+4XRA7ipC6+EynKJd4Nh3G
-         /XU4sqeZ7ubWsJpxitht2li5JVufHMx6CwUyka+Zq1osTFjyGXpnYZ2+zwj+AJcAT9XH
-         PJDEgShlW4xU3jMQUT2vx0sj1bF10hqJ1GbZJHZco326haDrJRbA6cWqbmBvEIaSmsmb
-         ef0ILiZcmguSZHp16elf7lSRhd2RTWjmUMaSgcry6yBHudBnGGUF2VNc1NcZnwxE6625
-         Bj+rPZnCAKg/Iqbf3lk60e4/bjc+yaYNJd14jeIZu39GDvYM64e+R8ouBCbOjrrsRBL1
-         ViRw==
-X-Forwarded-Encrypted: i=1; AFNElJ+t1Lpm+xgouYOs244lKA6r/50tvR1djDRGzaTeyEsjb2CGZ7lGeTu4kJsHGMIyoR/Jviy+Bw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzB9/rSLdC90KwihRq9k6Gyl8SfOriSlKRzU3KtRpCcwWNFTeCA
-	m9Y0lf374WnKQcm8Zaf+fzNsUPhXi6RZfRAEohE+wtKA+gR5EbFcMD3hkF3bDNkS+ufuhFEn9OI
-	t7k6y1bhV5zpr3Lb43Z0DwbSSJiNm6JjqK0aTGZXXisNUBOr+Mco0j6LVlw==
-X-Gm-Gg: Acq92OE7hiqVIiRcDqyYEc6XzPKcFRzAr+Ev0Sl6Pivof7ERxQsxbqhqnXazSS9Ye0d
-	O9YEwjFAPkeUp2kzKRUMIegWk4wH0bLEV88FvfprFeaVs3/gdAjZoGyo+x3KimcGEwwFS//nR0M
-	llZqmsS2qG6G/V0G0+chBwS1hJqWbjPYTBrjW6k+mdyQjQwXv0mTEeU1jGNrNoy3SRNXTSkv0bs
-	9nNNbQ+M9H9pb+1dL8nM5w3o8/f9j4DsxEMv/fQnpA+MWVodguWWl+InFArBZSBQRJEaQ3ufNse
-	d367nJ1zenrLr/GFrkFDWst1oLk50Lxm+rOSzt9y95aGQyUd4PY09kFqY7cXp+Jcyj8lYMTUBML
-	Z0onc/FaWTTJzDiDyId5ra5981JfSwrYKfVdqp80eoqJsz/RDYr6jpdi8
-X-Received: by 2002:a17:903:41c2:b0:2ba:e42a:231e with SMTP id d9443c01a7336-2beb064837dmr200645605ad.37.1779788768357;
-        Tue, 26 May 2026 02:46:08 -0700 (PDT)
-X-Received: by 2002:a17:903:41c2:b0:2ba:e42a:231e with SMTP id d9443c01a7336-2beb064837dmr200645035ad.37.1779788767805;
-        Tue, 26 May 2026 02:46:07 -0700 (PDT)
-Received: from [10.219.57.109] ([202.46.23.19])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2beb58b2ebcsm121223885ad.49.2026.05.26.02.45.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 May 2026 02:46:07 -0700 (PDT)
-Message-ID: <f2eb5c9d-a78b-401c-8796-f7ef7a8d7386@oss.qualcomm.com>
-Date: Tue, 26 May 2026 15:15:55 +0530
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="UDojngOX"
+Received: from pps.filterd (m0360083.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64PH4IdS2604055;
+	Tue, 26 May 2026 10:52:11 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=kfKJxz
+	nRYJwdyHyIJxpk/vIAkXnkav0LywGz6xytoEc=; b=UDojngOXHDfhxB0PKvK9vH
+	RfoCMqgAUAlZkOYpYA+Vv4p47UHaHTj2tuFV0HIFNn3QpAteB/d/N83lGZXdBcEP
+	Vi3eNjQ5JEv3Aa7s8siE2olXiMaF170OLKP7iE/IVSaQhyyqDPtR2OWyX26HktfF
+	w0VaXzCnfJax5SXjnbivjyUylbMAueFuF79okNOJVVPrvNSbtVK2WapoQyAqq1TG
+	lqskfllYAY54gMWp5v5zsOTugPg46o6GcmO9Pg9rJQalzfbPvVGEkhNj4b4m/B6Z
+	aq8AJV7lXFwYS0rv2Jp3+1eQjvdsC2DFIEzoE/clGG+M18ffwFnOfhArgDXUk75A
+	==
+Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4eb4nukq14-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 26 May 2026 10:52:10 +0000 (GMT)
+Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma12.dal12v.mail.ibm.com (8.18.1.7/8.18.1.7) with ESMTP id 64QAdBlm013911;
+	Tue, 26 May 2026 10:52:09 GMT
+Received: from smtprelay04.dal12v.mail.ibm.com ([172.16.1.6])
+	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 4ebpjq9432-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 26 May 2026 10:52:09 +0000 (GMT)
+Received: from smtpav02.dal12v.mail.ibm.com (smtpav02.dal12v.mail.ibm.com [10.241.53.101])
+	by smtprelay04.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 64QAq9Gl21496548
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 26 May 2026 10:52:09 GMT
+Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id E8B3B5805C;
+	Tue, 26 May 2026 10:52:08 +0000 (GMT)
+Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 5A84A58051;
+	Tue, 26 May 2026 10:52:06 +0000 (GMT)
+Received: from [9.61.173.49] (unknown [9.61.173.49])
+	by smtpav02.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Tue, 26 May 2026 10:52:06 +0000 (GMT)
+Message-ID: <12c55949-73f2-4ee3-b960-955335f4308f@linux.ibm.com>
+Date: Tue, 26 May 2026 06:52:05 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -88,132 +62,489 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v15 0/3] of: parsing of multi #{iommu,msi}-cells in maps
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Nipun Gupta <nipun.gupta@amd.com>,
-        Nikhil Agarwal
- <nikhil.agarwal@amd.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Marc Zyngier <maz@kernel.org>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Thomas Gleixner <tglx@kernel.org>,
-        Saravana Kannan <saravanak@kernel.org>,
-        Richard Zhu <hongxing.zhu@nxp.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Bjorn Helgaas
- <bhelgaas@google.com>, Frank Li <Frank.Li@nxp.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>, Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-        Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>,
-        Rob Herring <robh@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Prakash Gupta <prakash.gupta@oss.qualcomm.com>,
-        Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
-        linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-pci@vger.kernel.org, imx@lists.linux.dev,
-        xen-devel@lists.xenproject.org, linux-arm-msm@vger.kernel.org,
-        Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
-References: <20260520-parse_iommu_cells-v15-0-b5f99ad4e7e8@oss.qualcomm.com>
- <20260526-finicky-crafty-hare-eae27c@quoll>
+Subject: Re: [PATCH v5 1/5] vfio: cache KVM VM file references instead of raw
+ struct kvm pointers
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+        linux-coco@lists.linux.dev, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc: Alexey Kardashevskiy <aik@amd.com>, Bjorn Helgaas <helgaas@kernel.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
+        Jonathan Cameron <jic23@kernel.org>, Kevin Tian <kevin.tian@intel.com>,
+        Nicolin Chen <nicolinc@nvidia.com>, Samuel Ortiz <sameo@rivosinc.com>,
+        Steven Price <steven.price@arm.com>,
+        Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+        Will Deacon <will@kernel.org>, Xu Yilun <yilun.xu@linux.intel.com>,
+        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+        Paolo Bonzini <pbonzini@redhat.com>, Halil Pasic <pasic@linux.ibm.com>,
+        Jason Herne <jjherne@linux.ibm.com>,
+        Harald Freudenberger <freude@linux.ibm.com>,
+        Holger Dengler <dengler@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev
+ <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Alex Williamson <alex@shazbot.org>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Farhan Ali <alifm@linux.ibm.com>, Eric Farman <farman@linux.ibm.com>,
+        linux-s390@vger.kernel.org
+References: <20260525154816.1029642-1-aneesh.kumar@kernel.org>
+ <20260525154816.1029642-2-aneesh.kumar@kernel.org>
 Content-Language: en-US
-From: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
-In-Reply-To: <20260526-finicky-crafty-hare-eae27c@quoll>
-Content-Type: text/plain; charset=UTF-8
+From: Anthony Krowiak <akrowiak@linux.ibm.com>
+In-Reply-To: <20260525154816.1029642-2-aneesh.kumar@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-ORIG-GUID: DSbysjJheoQyuRrHjy8fFZY565c1AXcz
-X-Proofpoint-GUID: DSbysjJheoQyuRrHjy8fFZY565c1AXcz
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTI2MDA4NCBTYWx0ZWRfX9WQ84rbT8ehg
- iAEzyDU/fyCYCtF/8wXlDvQB0YsTbDZKSSBGUSBdgf7soF7cu/QtmIALInOr80G+WoVGxRlEnvc
- +8nnstt4w2WZsLh5iN2zSaWh9t5UAJKe5Hu69vJt41daok4lZUt0M/KZRRpIb12IeXIcKUD0ZTe
- MV6Z6Q+mW6eGnRMcDsqPKILRVUjRPOn+isNFP+oZohlONmjyu/stVWcpqEo6o6SySXKeyHVJom2
- tzKIrCK/+Sj7+j3tpL6GMWRQ1lmyalQp6nRgiAf/ktMZaytvINvfWhUQNPYGiD+0dLmLIVZDfbs
- n7vzQo46EL3PVngJ7WKUKh5D43/q5HsJq0/akYza/+7v5vYDdotk/qK1aGk1RnTn3bOfAtKLRND
- NB7qD4MalbXcGp+4as1+3FhSKWw8h6SbTPBsBDkkEdc+0b35PwHrg1qKt8rTLBNC56TuP35DOWu
- cDd74epah/+uO/AFl8Q==
-X-Authority-Analysis: v=2.4 cv=C9jZDwP+ c=1 sm=1 tr=0 ts=6a156be1 cx=c_pps
- a=JL+w9abYAAE89/QcEU+0QA==:117 a=j4ogTh8yFefVWWEFDRgCtg==:17
- a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
- a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=Jo8nEopC4ZUABtMbiE8A:9 a=QEXdDO2ut3YA:10
- a=324X-CrmTo6CU4MGRt3R:22
+X-TM-AS-GCONF: 00
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTI2MDA5MiBTYWx0ZWRfX7o/qVmOEQt69
+ ZXpN6vbPCBTHtw7cqaxPptgCIIQ6TpsJWNopZHwccljlmumOsfuTNWZwK7YpDtomngaN6Yr4/0b
+ hGzJ5n8sW5Ak7nYU8imQnqwsxXGxDQ5b7TAaRvnDwzFXzjkL5higGMo36uoxoIvzIOWt9ZZJUQc
+ WwBNR/icISvVRMOuAORYWc8Mzb4MrMudZ4TXKuK4ptg7v49Cg7zuuAMVEZImz+3kCmd+/iQCr6v
+ gWt8jhzEfwUX3BMrtaNy3Cd50G6P+Sj0881J2bswHAWEIc1KUD/CxhR4yxQBXK1tDq3g4TYQyKr
+ aqca1BuZteb9j5Ri3QJq51sQ+QszJLlbbPfrcB+m8vwXIPT/P76XHEAmdIpp7o3TyUjSaElj3a8
+ 0302eL1SFIT0FvzSiE45e8NJsx1GG4+n2ealJD3qp7yOCzlUrQMx1ePTTPH5Xydv4jyW9ZBjBR5
+ O8udXtHRTvofVBCtSHw==
+X-Authority-Analysis: v=2.4 cv=UtJT8ewB c=1 sm=1 tr=0 ts=6a157b5a cx=c_pps
+ a=bLidbwmWQ0KltjZqbj+ezA==:117 a=bLidbwmWQ0KltjZqbj+ezA==:17
+ a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=RnoormkPH1_aCDwRdu11:22 a=iQ6ETzBq9ecOQQE5vZCe:22 a=VwQbUJbxAAAA:8
+ a=VnNF1IyMAAAA:8 a=xQhe5w7CTnWIMBQ0vvEA:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-ORIG-GUID: 2SGcXYzw01ErDbjc3oPAqUby1r2sOgK4
+X-Proofpoint-GUID: 2SGcXYzw01ErDbjc3oPAqUby1r2sOgK4
 X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-05-26_02,2026-05-18_01,2025-10-01_01
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
+ definitions=2026-05-26_02,2026-05-26_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 priorityscore=1501 impostorscore=0 lowpriorityscore=0 bulkscore=0
- malwarescore=0 suspectscore=0 clxscore=1015 phishscore=0 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2605130000 definitions=main-2605260084
+ spamscore=0 suspectscore=0 adultscore=0 clxscore=1011 bulkscore=0
+ phishscore=0 impostorscore=0 malwarescore=0 lowpriorityscore=0
+ priorityscore=1501 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2605130000
+ definitions=main-2605260092
 
 
 
-On 5/26/2026 11:42 AM, Krzysztof Kozlowski wrote:
-> On Wed, May 20, 2026 at 01:32:39PM +0530, Vijayanand Jitta wrote:
->> So far our parsing of {iommu,msi}-map properties has always blindly
->> assumed that the output specifiers will always have exactly 1 cell.
->> This typically does happen to be the case, but is not actually enforced
->> (and the PCI msi-map binding even explicitly states support for 0 or 1
->> cells) - as a result we've now ended up with dodgy DTs out in the field
->> which depend on this behaviour to map a 1-cell specifier for a 2-cell
->> provider, despite that being bogus per the bindings themselves.
->>
->> Since there is some potential use[1] in being able to map at least
->> single input IDs to multi-cell output specifiers (and properly support
->> 0-cell outputs as well), add support for properly parsing and using the
->> target nodes' #cells values, albeit with the unfortunate complication of
->> still having to work around expectations of the old behaviour too.
->> 							-- Robin.
->>
->> Unlike single #{}-cell, it is complex to establish a linear relation
->> between input 'id' and output specifier for multi-cell properties, thus
->> it is always expected that len never going to be > 1.
->>
->> These changes have been tested on QEMU for the arm64 architecture.
-> 
-> So there is no real user for that. That's unconvincing. I would assume
-> that at least you have real user where you test it.
-> 
-> If you want to speed up acceptance of your patches, then also I would
-> prefer to see at least one more user, beside Qualcomm. IOW, show how you
-> solve other people problems, not only yours.
-> 
-> Best regards,
-> Krzysztof
-> 
+On 5/25/26 11:48 AM, Aneesh Kumar K.V (Arm) wrote:
+> VFIO currently records struct kvm pointers on vfio_group, vfio_device_file
+> and the opened vfio_device. Switch VFIO to track the VM's struct file
+> instead, so VFIO and iommufd can use normal file references for VM lifetime
+> instead of depending on KVM's internal struct kvm refcounting.
+>
+> KVM_CREATE_DEVICE binds the KVM VM lifetime to the KVM device fd lifetime.
+> For KVM_DEV_TYPE_VFIO, the KVM VFIO device fd also takes references to each
+> VFIO file added through KVM_DEV_VFIO_FILE_ADD. The KVM VFIO device fd
+> therefore owns both the internal KVM reference and the VFIO file references
+> in kvf->file.
+>
+> KVM_DEV_VFIO_FILE_ADD further installs the VM file association into the
+> VFIO file. VFIO converts the struct kvm pointer to a VM file reference with
+> get_file_active(&kvm->_file), because the KVM device fd can keep struct kvm
+> alive after the original VM fd is already in final release.
+>
+> The association intentionally pins the VM file until KVM_DEV_VFIO_FILE_DEL
+> or until the KVM VFIO device fd is released. This gives VFIO/iommufd a
+> stable VM file reference source without taking a dependency on KVM's struct
+> kvm lifetime. The KVM VFIO device release path clears the VFIO-side
+> association before dropping its VFIO file references.
+>
+> When a VFIO device is opened or bound, VFIO takes an additional reference
+> from the associated VM file and stores it in vfio_device::kvm_file for
+> driver and iommufd use. That open-time reference is released from
+> vfio_device_put_kvm() when the VFIO device is closed or unbound.
+>
+> This gives the ownership model:
+>
+>    - KVM device fd pins struct kvm through kvm->users_count
+>    - KVM VFIO device fd pins VFIO files through kvf->file
+>    - VFIO group/device-file state pins the VM file while associated with KVM
+>    - vfio_device::kvm_file pins the VM file during active VFIO device use
+>
+> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 
-Hi Krzysztof,
+Acked-by: Anthony Krowiak <akrowiak@linxux.ibm.com>
 
-Thank you for the feedback.
+> ---
+>   drivers/s390/crypto/vfio_ap_ops.c |  5 +-
+>   drivers/vfio/device_cdev.c        | 10 ++--
+>   drivers/vfio/group.c              | 14 +++---
+>   drivers/vfio/pci/vfio_pci_zdev.c  |  7 +--
+>   drivers/vfio/vfio.h               | 16 ++++--
+>   drivers/vfio/vfio_main.c          | 81 ++++++++++++++++---------------
+>   include/linux/kvm_host.h          |  3 ++
+>   include/linux/vfio.h              | 17 ++++++-
+>   virt/kvm/kvm_main.c               |  2 +
+>   9 files changed, 91 insertions(+), 64 deletions(-)
+>
+> diff --git a/drivers/s390/crypto/vfio_ap_ops.c b/drivers/s390/crypto/vfio_ap_ops.c
+> index 44b3a1dcc1b3..05996a8fd860 100644
+> --- a/drivers/s390/crypto/vfio_ap_ops.c
+> +++ b/drivers/s390/crypto/vfio_ap_ops.c
+> @@ -2054,11 +2054,12 @@ static int vfio_ap_mdev_open_device(struct vfio_device *vdev)
+>   {
+>   	struct ap_matrix_mdev *matrix_mdev =
+>   		container_of(vdev, struct ap_matrix_mdev, vdev);
+> +	struct kvm *kvm = vfio_device_get_kvm(vdev);
+>   
+> -	if (!vdev->kvm)
+> +	if (!kvm)
+>   		return -EINVAL;
+>   
+> -	return vfio_ap_mdev_set_kvm(matrix_mdev, vdev->kvm);
+> +	return vfio_ap_mdev_set_kvm(matrix_mdev, kvm);
+>   }
+>   
+>   static void vfio_ap_mdev_close_device(struct vfio_device *vdev)
+> diff --git a/drivers/vfio/device_cdev.c b/drivers/vfio/device_cdev.c
+> index 54abf312cf04..ca75ab8eb7bd 100644
+> --- a/drivers/vfio/device_cdev.c
+> +++ b/drivers/vfio/device_cdev.c
+> @@ -56,7 +56,7 @@ int vfio_device_fops_cdev_open(struct inode *inode, struct file *filep)
+>   static void vfio_df_get_kvm_safe(struct vfio_device_file *df)
+>   {
+>   	spin_lock(&df->kvm_ref_lock);
+> -	vfio_device_get_kvm_safe(df->device, df->kvm);
+> +	vfio_device_get_kvm_safe(df->device, df->kvm_file);
+>   	spin_unlock(&df->kvm_ref_lock);
+>   }
+>   
+> @@ -133,10 +133,10 @@ long vfio_df_ioctl_bind_iommufd(struct vfio_device_file *df,
+>   	}
+>   
+>   	/*
+> -	 * Before the device open, get the KVM pointer currently
+> -	 * associated with the device file (if there is) and obtain
+> -	 * a reference.  This reference is held until device closed.
+> -	 * Save the pointer in the device for use by drivers.
+> +	 * Before the device open, get the VM struct file currently
+> +	 * associated with the device file (if there is one) and obtain a
+> +	 * reference. This reference is held until the device is closed.
+> +	 * Save the file in the device for use by drivers.
+>   	 */
+>   	vfio_df_get_kvm_safe(df);
+>   
+> diff --git a/drivers/vfio/group.c b/drivers/vfio/group.c
+> index b2299e5bc6df..8950cfb9405d 100644
+> --- a/drivers/vfio/group.c
+> +++ b/drivers/vfio/group.c
+> @@ -163,7 +163,7 @@ static int vfio_group_ioctl_set_container(struct vfio_group *group,
+>   static void vfio_device_group_get_kvm_safe(struct vfio_device *device)
+>   {
+>   	spin_lock(&device->group->kvm_ref_lock);
+> -	vfio_device_get_kvm_safe(device, device->group->kvm);
+> +	vfio_device_get_kvm_safe(device, device->group->kvm_file);
+>   	spin_unlock(&device->group->kvm_ref_lock);
+>   }
+>   
+> @@ -181,10 +181,10 @@ static int vfio_df_group_open(struct vfio_device_file *df)
+>   	mutex_lock(&device->dev_set->lock);
+>   
+>   	/*
+> -	 * Before the first device open, get the KVM pointer currently
+> -	 * associated with the group (if there is one) and obtain a reference
+> -	 * now that will be held until the open_count reaches 0 again.  Save
+> -	 * the pointer in the device for use by drivers.
+> +	 * Before the first device open, get the VM struct file currently
+> +	 * associated with the group (if there is one) and obtain a
+> +	 * reference now that will be held until the open_count reaches 0
+> +	 * again. Save the file in the device for use by drivers.
+>   	 */
+>   	if (device->open_count == 0)
+>   		vfio_device_group_get_kvm_safe(device);
+> @@ -862,9 +862,7 @@ bool vfio_group_enforced_coherent(struct vfio_group *group)
+>   
+>   void vfio_group_set_kvm(struct vfio_group *group, struct kvm *kvm)
+>   {
+> -	spin_lock(&group->kvm_ref_lock);
+> -	group->kvm = kvm;
+> -	spin_unlock(&group->kvm_ref_lock);
+> +	vfio_kvm_file_replace(&group->kvm_file, &group->kvm_ref_lock, kvm);
+>   }
+>   
+>   /**
+> diff --git a/drivers/vfio/pci/vfio_pci_zdev.c b/drivers/vfio/pci/vfio_pci_zdev.c
+> index 0990fdb146b7..a9d8e6aa3839 100644
+> --- a/drivers/vfio/pci/vfio_pci_zdev.c
+> +++ b/drivers/vfio/pci/vfio_pci_zdev.c
+> @@ -144,15 +144,16 @@ int vfio_pci_info_zdev_add_caps(struct vfio_pci_core_device *vdev,
+>   int vfio_pci_zdev_open_device(struct vfio_pci_core_device *vdev)
+>   {
+>   	struct zpci_dev *zdev = to_zpci(vdev->pdev);
+> +	struct kvm *kvm = vfio_device_get_kvm(&vdev->vdev);
+>   
+>   	if (!zdev)
+>   		return -ENODEV;
+>   
+> -	if (!vdev->vdev.kvm)
+> +	if (!kvm)
+>   		return 0;
+>   
+>   	if (zpci_kvm_hook.kvm_register)
+> -		return zpci_kvm_hook.kvm_register(zdev, vdev->vdev.kvm);
+> +		return zpci_kvm_hook.kvm_register(zdev, kvm);
+>   
+>   	return -ENOENT;
+>   }
+> @@ -161,7 +162,7 @@ void vfio_pci_zdev_close_device(struct vfio_pci_core_device *vdev)
+>   {
+>   	struct zpci_dev *zdev = to_zpci(vdev->pdev);
+>   
+> -	if (!zdev || !vdev->vdev.kvm)
+> +	if (!zdev || !vfio_device_get_kvm(&vdev->vdev))
+>   		return;
+>   
+>   	if (zpci_kvm_hook.kvm_unregister)
+> diff --git a/drivers/vfio/vfio.h b/drivers/vfio/vfio.h
+> index e4b72e79b7e3..41032104eb36 100644
+> --- a/drivers/vfio/vfio.h
+> +++ b/drivers/vfio/vfio.h
+> @@ -22,8 +22,8 @@ struct vfio_device_file {
+>   
+>   	u8 access_granted;
+>   	u32 devid; /* only valid when iommufd is valid */
+> -	spinlock_t kvm_ref_lock; /* protect kvm field */
+> -	struct kvm *kvm;
+> +	spinlock_t kvm_ref_lock; /* protect kvm_file */
+> +	struct file *kvm_file;
+>   	struct iommufd_ctx *iommufd; /* protected by struct vfio_device_set::lock */
+>   };
+>   
+> @@ -88,7 +88,7 @@ struct vfio_group {
+>   #endif
+>   	enum vfio_group_type		type;
+>   	struct mutex			group_lock;
+> -	struct kvm			*kvm;
+> +	struct file			*kvm_file;
+>   	struct file			*opened_file;
+>   	struct iommufd_ctx		*iommufd;
+>   	spinlock_t			kvm_ref_lock;
+> @@ -434,11 +434,17 @@ static inline void vfio_virqfd_exit(void)
+>   #endif
+>   
+>   #if IS_ENABLED(CONFIG_KVM)
+> -void vfio_device_get_kvm_safe(struct vfio_device *device, struct kvm *kvm);
+> +void vfio_kvm_file_replace(struct file **dst, spinlock_t *lock, struct kvm *kvm);
+> +void vfio_device_get_kvm_safe(struct vfio_device *device, struct file *kvm_file);
+>   void vfio_device_put_kvm(struct vfio_device *device);
+>   #else
+> +static inline void vfio_kvm_file_replace(struct file **dst,
+> +		spinlock_t *lock, struct kvm *kvm)
+> +{
+> +}
+> +
+>   static inline void vfio_device_get_kvm_safe(struct vfio_device *device,
+> -					    struct kvm *kvm)
+> +					    struct file *kvm_file)
+>   {
+>   }
+>   
+> diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
+> index 6222376ab6ab..88c85a7b98c0 100644
+> --- a/drivers/vfio/vfio_main.c
+> +++ b/drivers/vfio/vfio_main.c
+> @@ -442,55 +442,61 @@ void vfio_unregister_group_dev(struct vfio_device *device)
+>   EXPORT_SYMBOL_GPL(vfio_unregister_group_dev);
+>   
+>   #if IS_ENABLED(CONFIG_KVM)
+> -void vfio_device_get_kvm_safe(struct vfio_device *device, struct kvm *kvm)
+> +void vfio_kvm_file_replace(struct file **dst, spinlock_t *lock, struct kvm *kvm)
+>   {
+> -	void (*pfn)(struct kvm *kvm);
+> -	bool (*fn)(struct kvm *kvm);
+> -	bool ret;
+> +	struct file *old_kvm_file, *new_kvm_file = NULL;
+>   
+> -	lockdep_assert_held(&device->dev_set->lock);
+> +	/*
+> +	 * @kvm can outlive the VM fd and its final __fput(). Only take a
+> +	 * new reference if the VM file is still active.
+> +	 */
+> +	if (kvm)
+> +		new_kvm_file = get_file_active(&kvm->_file);
+>   
+> -	if (!kvm)
+> -		return;
+> +	spin_lock(lock);
+> +	old_kvm_file = *dst;
+> +	*dst = new_kvm_file;
+> +	spin_unlock(lock);
+>   
+> -	pfn = symbol_get(kvm_put_kvm);
+> -	if (WARN_ON(!pfn))
+> -		return;
+> +	if (old_kvm_file)
+> +		fput(old_kvm_file);
+> +}
+>   
+> -	fn = symbol_get(kvm_get_kvm_safe);
+> -	if (WARN_ON(!fn)) {
+> -		symbol_put(kvm_put_kvm);
+> -		return;
+> -	}
+> +void vfio_device_get_kvm_safe(struct vfio_device *device, struct file *kvm_file)
+> +{
+> +	lockdep_assert_held(&device->dev_set->lock);
+>   
+> -	ret = fn(kvm);
+> -	symbol_put(kvm_get_kvm_safe);
+> -	if (!ret) {
+> -		symbol_put(kvm_put_kvm);
+> -		return;
+> -	}
+> +	/*
+> +	 * Take a VM file reference if the KVM fd is still active.
+> +	 */
+> +	if (kvm_file)
+> +		kvm_file = get_file(kvm_file);
+>   
+> -	device->put_kvm = pfn;
+> -	device->kvm = kvm;
+> +	device->kvm_file = kvm_file;
+>   }
+>   
+>   void vfio_device_put_kvm(struct vfio_device *device)
+>   {
+> +	struct file *kvm_file;
+> +
+>   	lockdep_assert_held(&device->dev_set->lock);
+>   
+> -	if (!device->kvm)
+> +	kvm_file = device->kvm_file;
+> +	if (!kvm_file)
+>   		return;
+>   
+> -	if (WARN_ON(!device->put_kvm))
+> -		goto clear;
+> +	device->kvm_file = NULL;
+> +	fput(kvm_file);
+> +}
+>   
+> -	device->put_kvm(device->kvm);
+> -	device->put_kvm = NULL;
+> -	symbol_put(kvm_put_kvm);
+> +struct kvm *vfio_device_get_kvm(struct vfio_device *device)
+> +{
+> +	if (!device->kvm_file)
+> +		return NULL;
+>   
+> -clear:
+> -	device->kvm = NULL;
+> +	return device->kvm_file->private_data;
+>   }
+> +EXPORT_SYMBOL_GPL(vfio_device_get_kvm);
+>   #endif
+>   
+>   /* true if the vfio_device has open_device() called but not close_device() */
+> @@ -1518,13 +1524,10 @@ static void vfio_device_file_set_kvm(struct file *file, struct kvm *kvm)
+>   	struct vfio_device_file *df = file->private_data;
+>   
+>   	/*
+> -	 * The kvm is first recorded in the vfio_device_file, and will
+> -	 * be propagated to vfio_device::kvm when the file is bound to
+> -	 * iommufd successfully in the vfio device cdev path.
+> +	 * Cache the VM file reference associated with this VFIO file so it
+> +	 * can be pinned into vfio_device while the device is open.
+>   	 */
+> -	spin_lock(&df->kvm_ref_lock);
+> -	df->kvm = kvm;
+> -	spin_unlock(&df->kvm_ref_lock);
+> +	vfio_kvm_file_replace(&df->kvm_file, &df->kvm_ref_lock, kvm);
+>   }
+>   
+>   /**
+> @@ -1532,8 +1535,8 @@ static void vfio_device_file_set_kvm(struct file *file, struct kvm *kvm)
+>    * @file: VFIO group file or VFIO device file
+>    * @kvm: KVM to link
+>    *
+> - * When a VFIO device is first opened the KVM will be available in
+> - * device->kvm if one was associated with the file.
+> + * When a VFIO device is first opened, VFIO caches a VM file reference if
+> + * one was associated with the file.
+>    */
+>   void vfio_file_set_kvm(struct file *file, struct kvm *kvm)
+>   {
+> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+> index 4c14aee1fb06..31afac5fb0ea 100644
+> --- a/include/linux/kvm_host.h
+> +++ b/include/linux/kvm_host.h
+> @@ -45,6 +45,8 @@
+>   #include <asm/kvm_host.h>
+>   #include <linux/kvm_dirty_ring.h>
+>   
+> +struct file;
+> +
+>   #ifndef KVM_MAX_VCPU_IDS
+>   #define KVM_MAX_VCPU_IDS KVM_MAX_VCPUS
+>   #endif
+> @@ -861,6 +863,7 @@ struct kvm {
+>   	struct srcu_struct srcu;
+>   	struct srcu_struct irq_srcu;
+>   	pid_t userspace_pid;
+> +	struct file __rcu *_file;
+>   	bool override_halt_poll_ns;
+>   	unsigned int max_halt_poll_ns;
+>   	u32 dirty_ring_size;
+> diff --git a/include/linux/vfio.h b/include/linux/vfio.h
+> index 31b826efba00..bca1d00f7845 100644
+> --- a/include/linux/vfio.h
+> +++ b/include/linux/vfio.h
+> @@ -22,8 +22,22 @@ struct kvm;
+>   struct iommufd_ctx;
+>   struct iommufd_device;
+>   struct iommufd_access;
+> +struct vfio_device;
+>   struct vfio_info_cap;
+>   
+> +#if IS_ENABLED(CONFIG_KVM)
+> +/*
+> + * Return the KVM associated with @vdev's kvm_file. The returned pointer
+> + * is valid only while VFIO device open holds the kvm_file reference.
+> + */
+> +struct kvm *vfio_device_get_kvm(struct vfio_device *vdev);
+> +#else
+> +static inline struct kvm *vfio_device_get_kvm(struct vfio_device *vdev)
+> +{
+> +	return NULL;
+> +}
+> +#endif
+> +
+>   /*
+>    * VFIO devices can be placed in a set, this allows all devices to share this
+>    * structure and the VFIO core will provide a lock that is held around
+> @@ -54,7 +68,7 @@ struct vfio_device {
+>   	struct list_head dev_set_list;
+>   	unsigned int migration_flags;
+>   	u8 precopy_info_v2;
+> -	struct kvm *kvm;
+> +	struct file *kvm_file;
+>   
+>   	/* Members below here are private, not for driver use */
+>   	unsigned int index;
+> @@ -66,7 +80,6 @@ struct vfio_device {
+>   	unsigned int open_count;
+>   	struct completion comp;
+>   	struct iommufd_access *iommufd_access;
+> -	void (*put_kvm)(struct kvm *kvm);
+>   	struct inode *inode;
+>   #if IS_ENABLED(CONFIG_IOMMUFD)
+>   	struct iommufd_device *iommufd_device;
+> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+> index 89489996fbc1..011819c5c47c 100644
+> --- a/virt/kvm/kvm_main.c
+> +++ b/virt/kvm/kvm_main.c
+> @@ -1351,6 +1351,7 @@ static int kvm_vm_release(struct inode *inode, struct file *filp)
+>   
+>   	kvm_irqfd_release(kvm);
+>   
+> +	RCU_INIT_POINTER(kvm->_file, NULL);
+>   	kvm_put_kvm(kvm);
+>   	return 0;
+>   }
+> @@ -5500,6 +5501,7 @@ static int kvm_dev_ioctl_create_vm(unsigned long type)
+>   		r = PTR_ERR(file);
+>   		goto put_kvm;
+>   	}
+> +	rcu_assign_pointer(kvm->_file, file);
+>   
+>   	/*
+>   	 * Don't call kvm_put_kvm anymore at this point; file->f_op is
 
-The upstream user for the multi-cell iommu-map support is the Lemans
-platform's VPU device, which requires iommu-map entries targeting a
-2-cell IOMMU node. We are currently working on the glymur series [1]
-and once that is finalized we will post the Lemans patches as well.
-
-That said, I think this series can go through independently for the
-following reasons:
-
-1. Correctness fix: The iommu-map/msi-map bindings have always
-   specified that the output cell count is determined by
-   #iommu-cells/#msi-cells on the target node. The kernel has been
-   silently ignoring this and assuming 1 cell. This patch makes the
-   kernel respect the binding specification.
-
-2. Backward compatibility preserved: The of_check_bad_map() workaround
-   handles existing deployed DTs that target 2-cell IOMMU nodes with
-   1-cell entries. This series has been tested on the glymur platform
-   [1], which uses iommu-map with 1-cell specifiers, and the existing
-   parsing continues to work correctly.
-
-Thanks,
-Vijay
-
-[1] https://lore.kernel.org/all/20260515-glymur-v6-5-f6a99cb43a24@oss.qualcomm.com/
