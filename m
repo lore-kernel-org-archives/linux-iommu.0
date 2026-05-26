@@ -1,121 +1,169 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 41A263A6B8A
-	for <iommu@lists.linux.dev>; Tue, 26 May 2026 15:59:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from fhigh-a4-smtp.messagingengine.com (fhigh-a4-smtp.messagingengine.com [103.168.172.155])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B93333710F
+	for <iommu@lists.linux.dev>; Tue, 26 May 2026 17:57:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.155
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779811174; cv=none; b=V23sAFpRtHWAnXZJhzpQ/5hfGg82WaDA3kKXiKzEmVSJRuq/qM3Uqw8g979ivEEHhSUHfH42+gF73genq4JdqE9tptbqxFos2NEuE2XIFmZPE80c97nPt5Ls8mYx+UPhHCFKJ8p/z2jpQgcZlyAGZ7tGx+9cGCH9DlwZPQbkrFo=
+	t=1779818236; cv=none; b=U0DdRWSYNZuYDEl9eYIHNL5QMkG/z4wo6jzAEyPxkKhvUDvpRa1ipHK6sirM5zJO+Q27EfAktjfxvBeUv+SC5OzhidyCy1A/4GeTqfBCzIv2x1s+lxMLEYdFiLX0VeC1Dzd7DCGgdDyKGXm3PHzrckttYEqArkkap+lyda7aNgo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779811174; c=relaxed/simple;
-	bh=zMxD3VFMtLBC+cWWCo5EuPrYgR+8m01z1rYD6jA7JfM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=b7pLmaPkQeQU1YuVMaeCtCrmXEytnvDZDyzGWovbXArYgctbrgeylXI3nbkC9kV+6BMuexyuDs3RugQqGxASf2Wzrgut8q/55Y8Gms+sDw8Iny2iYo+Vcb3szm60KRhrdBl0tw8Qqs01uFPxLwar9NaHOqRkTUXTC+iXTx88Hqc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Wb5ulU78; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1779818236; c=relaxed/simple;
+	bh=05cJLYOftj8cARNWJ6hHU345Ux3gbpbIJ8Pet3K4X0o=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=okktywiigbzw5RjrBP6Fmp377ozrei4lnlFx+LiHVSxhK6/vzUbkBZjWp2GLDEuRTvkiGH9W/vGXnQdxuFO1dWQhWBhK9VhIpx+9KMxQxcEHN+4ieb30w9Mr5/CftiqWpDzBXrhXdVPowvaF9QDQAayAFLenY0OKbvFFGVN2lJw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org; spf=pass smtp.mailfrom=shazbot.org; dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b=l/W2Py1o; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=DcoYmcVA; arc=none smtp.client-ip=103.168.172.155
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shazbot.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Wb5ulU78"
-Received: from localhost (unknown [167.220.233.27])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 230F020B7167;
-	Tue, 26 May 2026 08:59:20 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 230F020B7167
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1779811161;
-	bh=zFzV3Un4dqyonf7aw2EN42W6GrQT5R1zy8VSVcK8S5I=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Wb5ulU78Hy9cU3laPGu/qlSfqxt3+H6DhLEw4ypsEHlaQMJ8Lo6M2izZ4O3xyrJuj
-	 7GIAyB1ouQQS9kEEbxHg4RJQOFcF7x7+R49Re6p5MQGe49GXmYoR/+ylG8x4CTYb0G
-	 ZJLC6hOjXJmHcJ7SaLZrzGG/R6vXJpQ8gRCqhmQA=
-Date: Tue, 26 May 2026 23:59:28 +0800
-From: Yu Zhang <zhangyu1@linux.microsoft.com>
-To: Mukesh R <mrathor@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	mhklinux@outlook.com, wei.liu@kernel.org, jacob.pan@linux.microsoft.com, 
-	schakrabarti@linux.microsoft.com
-Subject: Re: [PATCH V0] iommu/hyperv: Create hyperv subdirectory under iommu
-Message-ID: <kqzr5ue5g5pdlp6pei37mfrymoln6y63iizzuiehtj3uiurfod@54fugjcdtuqr>
-References: <20260526012037.3874959-1-mrathor@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b="l/W2Py1o";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="DcoYmcVA"
+Received: from phl-compute-02.internal (phl-compute-02.internal [10.202.2.42])
+	by mailfhigh.phl.internal (Postfix) with ESMTP id 69C5A1400079;
+	Tue, 26 May 2026 13:57:12 -0400 (EDT)
+Received: from phl-frontend-03 ([10.202.2.162])
+  by phl-compute-02.internal (MEProxy); Tue, 26 May 2026 13:57:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shazbot.org; h=
+	cc:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm2; t=1779818232;
+	 x=1779904632; bh=3Tz4SyNSylIx5p8MFGqusUPHV/hF87n9RPlbNKzQtJ4=; b=
+	l/W2Py1olpeLCVaeMmKlXZfCFSms4RdPZUGmeh/yekNJPxLRSwRcyTJV5oWhhmMZ
+	LxRyKl2DeSmkniduOTgZFpnsnsoNwyUK5Zc2ZyWZaWpV/vsgZ0Rb/nLYI4I1iehr
+	dCN2dEa/ENqODVkToHLRQ2Ys16+fAN8A6WB/L7+RakZSi05tBZ5KyeNu+DXM/a/4
+	APE5u9kH/nYgOLf/hnFrX1gr/kwiIQjMXTBxmVr7iCqrbscNzPB7wjJzbadUFqSV
+	hbCcnL8SFL5GTT2xhSSK8G35WPrXMdB3T/4zff3B2kEAW2Aa4q93BHusAkQ4zbr5
+	AGfVVb750A2bx0fgkODWCQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1779818232; x=
+	1779904632; bh=3Tz4SyNSylIx5p8MFGqusUPHV/hF87n9RPlbNKzQtJ4=; b=D
+	coYmcVAuOxlkTxbbEIiqL5VZ57fkxg0heuOWA++WaWQLeah5FPml0AEU2dJQSiPp
+	CNsbfefxy3DAi/wP6IT4cXjaNFACr5IRoqzxnESO14C8EADKC1uJ4vGUsmyXyAFv
+	y3AuELR9Shzoj8lGB0esU1Ny9fRnPhFN0gqq+AuKQi/TKGoE23z3iJEohhpOLf8m
+	KhcXqWgFaDQJuHFw1+aiELCuHX9sd2SZz9h3JygPvzQfxE1Nf0sw+d60Bz+0gxBw
+	TS5og24I04H+ksjN77Eztu3yH7H/ge5Y/S7+TxZGiw6aiCc04SaGd3lw+20RnyOZ
+	pqVa6znYoMhpSA3nMN+xw==
+X-ME-Sender: <xms:994VagPiYHzRsYZKq74Hd6Y-Ap3RAnHFXLAG2hGmztkJlXCkJAQNzQ>
+    <xme:994Vai6sVz5xdDzCJ2UUEhhoZ79hdbDg-8OHgsBia445JCylotV-q0_oqLIzcZN05
+    jzFSD7_kfg22LKn-3F7Bk8HxbXNMXsXxXesW7rSetmwBMxcNOrMjw>
+X-ME-Received: <xmr:994VatY_T7FOIpX6gQ6pqKcTSspwGsExXlQKtxmerBu_o1gBZ7LofD6_RPg>
+X-ME-Proxy-Cause: dmFkZTEpotd757c1o7ymOOmd37BGMYC+ZCW/0EpD3ru4zDWJlL8ljpELDq7b/ko73Ok102
+    SZyHwr+MgyQ1LJzkvsBhksjhPmRGxu2HrVC8h9AW8mI2BVMqAjHOEpKaY2SzoR1JnRJdyV
+    p0oJ1o1d4FATaNtFa2Osv0J9K+4RrLdpw6+YCrQSdivSjna8R7VzBYUVTzc/gFVRhbnfKw
+    xFMMZ3mZ3EH72PDvZ3XgYxMTU3MA/ilsOUMiMzojGdpW0EoiFWBFJ6ufej97fli3i68EBq
+    qAhBOtTO+vct7WLWHgatSCyRaHk3xJGQ1cDLDlPhMiRoH+ztkznudWysbtoEx2OYWuENMT
+    L33U2bLkvAh6kWqhQSf07UOn0EJen7qyPAH8nmkp/a910yk67mrf2hHEypRfBt3TqCoUbO
+    azagTRVQFm/6fuw66pH+iC41V6Q4NlXtfbaPi5iJIusS0Ug1lBzeYGtg2Nt05/Uprb6/G3
+    tS6qSdxPlLjb6HZSCqekTdUrDVq+KOvV+JgQzS5kd2pOQrNurDhW0hS9X5dh7bOQN/lktn
+    DCftWG4qTid9w/6cDrLfaSxuvR5XK1Q0VM6QSkfayjyzh71TVNnwCoa8ee9vnuO/GlYkzZ
+    uzYo6TAhuu4iu9bjVIividFuIKkSGgH1Xpj0+D0fMRJ68xHVAzub9AHed9Zg
+X-ME-Proxy: <xmx:-N4VavFKBkL77JN-_8kfaasb1ZcmmjNHyFdUMtnbltek5LlIdp9c-w>
+    <xmx:-N4Vamkh7uQ0LScXrSW75rT7tcqIMD-h83EGq-60L7hon-cqFSqgew>
+    <xmx:-N4VamkrXeMQ2yKnANMUCQkk_xps_f9w2JFiJGRRnFVxwW47GyTC9Q>
+    <xmx:-N4VajXxFuHEYugEg-5YyT9XGeVqxipkJubA3AH-mOxitc0ne0a47Q>
+    <xmx:-N4Val2YxlEw6ePT-UU1UJuHJ7mK6Jjve4xf7K2Jsyz7ZBUN6vYVbqCa>
+Feedback-ID: i03f14258:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 26 May 2026 13:57:10 -0400 (EDT)
+Date: Tue, 26 May 2026 11:57:09 -0600
+From: Alex Williamson <alex@shazbot.org>
+To: Jacob Pan <jacob.pan@linux.microsoft.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel
+ <joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>, David Matlack
+ <dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen
+ <nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>, Baolu Lu
+ <baolu.lu@linux.intel.com>, Saurabh Sengar <ssengar@linux.microsoft.com>,
+ "skhawaja@google.com" <skhawaja@google.com>, "pasha.tatashin@soleen.com"
+ <pasha.tatashin@soleen.com>, Will Deacon <will@kernel.org>,
+ alex@shazbot.org
+Subject: Re: [PATCH v6 0/7] iommufd: Enable noiommu mode for cdev
+Message-ID: <20260526115709.5344f00f@shazbot.org>
+In-Reply-To: <20260526083237.00006a6c@linux.microsoft.com>
+References: <20260521221155.1375144-1-jacob.pan@linux.microsoft.com>
+	<BL1PR11MB52717A74E37BDED067EA45018C0A2@BL1PR11MB5271.namprd11.prod.outlook.com>
+	<20260526083237.00006a6c@linux.microsoft.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260526012037.3874959-1-mrathor@linux.microsoft.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, May 25, 2026 at 06:20:37PM -0700, Mukesh R wrote:
-> Create hyperv subdirectory under drivers/iommu in anticipation of more
-> hyperv related files for upcoming PCI passthru and pv IOMMU patches.
-> Also, the current file hyperv-iommu.c actually implements irq remapping,
-> so rename to more appropriate hv-irq-remap.c and move it under the new
-> hyperv subdirectory. Lastly, this file should not be tied to
-> CONFIG_HYPERV_IOMMU, but to CONFIG_HYPERV and CONFIG_IRQ_REMAP.
+On Tue, 26 May 2026 08:32:37 -0700
+Jacob Pan <jacob.pan@linux.microsoft.com> wrote:
+
+> Hi Kevin,
 > 
-
-Thanks for this pathch, Mukesh!
-
-Jason raised a question about whether Hyper-V's IRQ remapping file belongs
-under drivers/iommu/hyperv/ at all, since unlike Intel/AMD, Hyper-V's IRQ
-remapping is not co-mingled with the IOMMU hardware:
-
-	https://lore.kernel.org/all/20260520133807.GS7702@ziepe.ca/
-
-Though we don't end up moving it elsewhere (the IRQ remapping framework
-and its internal header, irq_remapping.h, live under drivers/iommu/, and
-all existing backends sit alongside them), it would be good to acknowledge
-this in the commit message and explain the rationale,
-
-
-> Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
-> ---
->  MAINTAINERS                                             | 2 +-
->  drivers/iommu/Makefile                                  | 2 +-
->  drivers/iommu/hyperv/Makefile                           | 2 ++
->  drivers/iommu/{hyperv-iommu.c => hyperv/hv-irq-remap.c} | 8 +-------
->  drivers/iommu/irq_remapping.c                           | 2 +-
->  5 files changed, 6 insertions(+), 10 deletions(-)
->  create mode 100644 drivers/iommu/hyperv/Makefile
->  rename drivers/iommu/{hyperv-iommu.c => hyperv/hv-irq-remap.c} (99%)
+> On Mon, 25 May 2026 08:30:12 +0000
+> "Tian, Kevin" <kevin.tian@intel.com> wrote:
 > 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index d1cc0e12fe1f..b651ee0c6e6b 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -11914,7 +11914,7 @@ F:	drivers/clocksource/hyperv_timer.c
->  F:	drivers/hid/hid-hyperv.c
->  F:	drivers/hv/
->  F:	drivers/input/serio/hyperv-keyboard.c
-> -F:	drivers/iommu/hyperv-iommu.c
-> +F:	drivers/iommu/hyperv/hv-irq-remap.c
->  F:	drivers/net/ethernet/microsoft/
->  F:	drivers/net/hyperv/
->  F:	drivers/pci/controller/pci-hyperv-intf.c
-> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-> index 0275821f4ef9..d9683422aecb 100644
-> --- a/drivers/iommu/Makefile
-> +++ b/drivers/iommu/Makefile
-> @@ -4,6 +4,7 @@ obj-$(CONFIG_AMD_IOMMU) += amd/
->  obj-$(CONFIG_INTEL_IOMMU) += intel/
->  obj-$(CONFIG_RISCV_IOMMU) += riscv/
->  obj-$(CONFIG_GENERIC_PT) += generic_pt/fmt/
-> +obj-$(CONFIG_HYPERV) += hyperv/
->  obj-$(CONFIG_IOMMU_API) += iommu.o
->  obj-$(CONFIG_IOMMU_SUPPORT) += iommu-pages.o
->  obj-$(CONFIG_IOMMU_API) += iommu-traces.o
-> @@ -30,7 +31,6 @@ obj-$(CONFIG_TEGRA_IOMMU_SMMU) += tegra-smmu.o
->  obj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o
->  obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
->  obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
-> -obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
+> > Could you address the findings from Sashiko?
+> > 
+> > https://sashiko.dev/#/patchset/20260521221155.1375144-1-jacob.pan%40linux.microsoft.com
+> >   
+> I have go over my Sashiko review setup, but there are lots of
+> false positives, like this one below we already discussed in earlier
+> version. Is there a specific concern?
+> 
+> e.g.
+> > +static bool iommufd_device_is_noiommu(struct iommufd_device *idev)
+> > +{
+> > +	return IS_ENABLED(CONFIG_IOMMUFD_NOIOMMU) &&
+> > !idev->dev->iommu; +}  
+> Does dynamically evaluating dev->iommu here allow the noiommu state to
+> flip during the device's lifetime?
 
-Any reason why we are removing the CONFIG_HYPERV_IOMMU? You are leaving
-CONFIG_HYPERV_IOMMU an orphan configuration now (and also the  backward
-compatibility issue?).
+Yes, that one is at best a theoretical issue, but the next two NULL
+pointer dereference if user passes noiommu device fd through an
+unexpected iommufd interface appear quite real.
 
->  obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
->  obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o
->  obj-$(CONFIG_IOMMU_IOPF) += io-pgfault.o
+We're also still struggling with the Kconfig in patch 5, this Sashiko
+comment is valid:
 
-B.R.
-Yu
+>> @@ -62,7 +61,10 @@ endif
+>>  
+>>  config VFIO_NOIOMMU
+>>  	bool "VFIO No-IOMMU support"
+>> -	depends on VFIO_GROUP
+>> +	depends on VFIO_GROUP || VFIO_DEVICE_CDEV
+>> +	depends on !VFIO_GROUP || VFIO_CONTAINER || IOMMUFD_VFIO_CONTAINER
+>> +	depends on !VFIO_DEVICE_CDEV || !GENERIC_ATOMIC64
+>
+> Does this disable VFIO_NOIOMMU completely for legacy group users on
+> architectures using generic atomic64 implementations?
+>
+> On architectures like 32-bit ARM or x86, !GENERIC_ATOMIC64 evaluates
+> to false.  If a distribution enables VFIO_DEVICE_CDEV, this dependency
+> resolves to false, silently breaking backwards compatibility and
+> depriving legacy group-based users of noiommu support.
+
+That's true, the question is do we care (I'd prefer to) and if so,
+should we block the relevant interfaces from working though iommufd
+rather than disallowing the Kconfig option.
+
+The next issue regarding classifying emulated IOMMU devices as no-iommu
+also appears valid, mdev devices like kvmgt for example.
+
+The next issue raises a valid concern whether the dev_warn() should be
+a dev_warn_once().
+
+The sysfs naming comment is invalid, we intentionally name noiommu
+devices uniquely to force userspace opt-in.
+
+In patch 6, adding dead code is a valid comment, the unchecked asprintf
+does seem to be an outlier in selftest code, the unmap comment may be a
+false positive, as is the hugepage size, but the masked return comments
+could arguably be skips or asserts.  There are potentially a couple
+remaining nits and style issues noted.
+
+Overall, more signal than noise afaict.  Thanks,
+
+Alex
