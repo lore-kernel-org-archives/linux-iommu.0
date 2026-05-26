@@ -1,400 +1,241 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4414C1D9663;
-	Tue, 26 May 2026 15:23:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E5BFA364942
+	for <iommu@lists.linux.dev>; Tue, 26 May 2026 15:32:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779808986; cv=none; b=B0ZABxdXDp4pgGklwktDdcbMDY7Zc/KHFbrmPZEo0erYXw5VFdAVjflbNjWnbokjQ3e+TqgVJZD8+nPkXsZZp02ydfuf/OqP4JIxJxSCngKsd04steeapAwAedxh1hJdx6qfiekTOeJss3xINRmQnUClCA+4OP3ONg/Y0iOrWnc=
+	t=1779809563; cv=none; b=rrhK5hE5DZh/xoi71Va0E5CMJte/8IrDGaPQjMBYqU7cv02jyUO0mfl1T/RdRhWFNl6DN+ir+RXmjDQnQ42Llm2SpdYkT+Sx65G4Jv/ImcagT9dWZyRokskMA7PcmzehpmojBE/7y2EPft+lNMNt6AXDS3I+VpJ/0O15dbA/Cyc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779808986; c=relaxed/simple;
-	bh=0pDFhumsa3vTjiaPkvUbz5lnrEHyve7nJpoI3TlIiFw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=XaVDnI32qdAGZSXF5wg5W3JKjlNN3vgD0fiwW/ZuSs+DjW0B9KcWBpteCmTAgC9DK71UJjyZmhA9ToCffZKOTmP7fEVbcjeBgVjw+1CBFtieypIlDSTzyrLHcCIevxyPDDYi30fn9SwaQqVl/eCN6oH5UghOi+EEsm/leyDyM/U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=BxbZybGF; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1779809563; c=relaxed/simple;
+	bh=6Smg0+H001X4vpfcregQqRYkuGL6BlqFqwfdc8V5ATA=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Jvlz6dEoyJt97amhsjYmhg6mmibt9e+BHzx0nX2xt/2dyUvHM+XJD79prtOKAqzjshqHwdAKaVZ5CC+9iWGd9nEpEABwHCCOwhBdiFTuR0iR0auTyWnWT/9zal/yohJk/BzAQddkPTQo7Y9pof1hCq5vruM7QHtklFyZitC6TdI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=dwuP54HW; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="BxbZybGF"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1440B168F;
-	Tue, 26 May 2026 08:22:56 -0700 (PDT)
-Received: from [10.1.196.85] (e121345-lin.cambridge.arm.com [10.1.196.85])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4E52F3F7D8;
-	Tue, 26 May 2026 08:22:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1779808981; bh=0pDFhumsa3vTjiaPkvUbz5lnrEHyve7nJpoI3TlIiFw=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=BxbZybGFTyOP9/m2PZ/AdlYTYEjU7b4EsFVcf9e9Y4AuHP3qYvO79b+TV5ThrCj4s
-	 gQ9SGLhxeSEJJzzRnUUDU/7H11iAvSTz+SOH9FbSPe9dMcqVzEm9o1nJxGKq11v+VV
-	 WiNuIXC0uxpvSrxkLNwn/O4dul7WqrF46gFN28dY=
-Message-ID: <89e1334f-e7c2-4992-ba39-0d23f5605275@arm.com>
-Date: Tue, 26 May 2026 16:22:54 +0100
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="dwuP54HW"
+Received: from localhost (unknown [20.236.11.29])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 955DA20B7167;
+	Tue, 26 May 2026 08:32:29 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 955DA20B7167
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1779809550;
+	bh=yA1277Aom5IgUUdoO1QcFFxCDVopNuaso7fvmwQT7vk=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=dwuP54HW4IGSI9FjGUMkm6jnG/s4nq7v3jwAMlL6JcC//Z2/Ehevsh3MGqeCYZsIN
+	 T3JTcGvdNzpchSFXYWX9VonwNLtb32B+2+ManDuWN7skLNAHIZtXzeXN02+Vd0pPl/
+	 1POMAXIxvyBQPOLERc5oxmM2XfQKtPInJYsOyFuU=
+Date: Tue, 26 May 2026 08:32:37 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Jason Gunthorpe
+ <jgg@nvidia.com>, Alex Williamson <alex@shazbot.org>, Joerg Roedel
+ <joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>, David Matlack
+ <dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen
+ <nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>, Baolu Lu
+ <baolu.lu@linux.intel.com>, Saurabh Sengar <ssengar@linux.microsoft.com>,
+ "skhawaja@google.com" <skhawaja@google.com>, "pasha.tatashin@soleen.com"
+ <pasha.tatashin@soleen.com>, Will Deacon <will@kernel.org>,
+ jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH v6 0/7] iommufd: Enable noiommu mode for cdev
+Message-ID: <20260526083237.00006a6c@linux.microsoft.com>
+In-Reply-To: <BL1PR11MB52717A74E37BDED067EA45018C0A2@BL1PR11MB5271.namprd11.prod.outlook.com>
+References: <20260521221155.1375144-1-jacob.pan@linux.microsoft.com>
+	<BL1PR11MB52717A74E37BDED067EA45018C0A2@BL1PR11MB5271.namprd11.prod.outlook.com>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] driver core: platform: Setup device MSI domain just
- before driver probe
-To: Anup Patel <anup.patel@oss.qualcomm.com>,
- Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <pjw@kernel.org>,
- Alexandre Ghiti <alex@ghiti.fr>, Thomas Gleixner <tglx@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Danilo Krummrich <dakr@kernel.org>, Tomasz Jeznach
- <tomasz.jeznach@linux.dev>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- "Rafael J . Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>
-Cc: Saket Dumbre <saket.dumbre@intel.com>, Rahul Pathak
- <rahul@summations.net>, Atish Patra <atish.patra@linux.dev>,
- Anup Patel <anup@brainfault.org>,
- Andrew Jones <andrew.jones@oss.qualcomm.com>, linux-acpi@vger.kernel.org,
- linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, driver-core@lists.linux.dev,
- iommu@lists.linux.dev, acpica-devel@lists.linux.dev,
- Sunil V L <sunilvl@oss.qualcomm.com>
-References: <20260526145240.1627200-1-anup.patel@oss.qualcomm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260526145240.1627200-1-anup.patel@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 26/05/2026 3:52 pm, Anup Patel wrote:
-> On RISC-V, the MSI controller (aka RISC-V IMSIC) is probed as a regular
-> platform device and MSI client drivers are always probed after the MSI
-> controller driver using fw_devlink. Unfortunately, this is not sufficient
-> to ensure device MSI domain is set for MSI client devices before driver
-> probe because OF framework sets device MSI domain at the time of platform
-> device creation whereas ACPI framework expects arch specific code to set
-> the device MSI domain at the time of platform device creation.
+Hi Kevin,
+
+On Mon, 25 May 2026 08:30:12 +0000
+"Tian, Kevin" <kevin.tian@intel.com> wrote:
+
+> Could you address the findings from Sashiko?
 > 
-> Currently, to work-around the problem of missing device MSI domain,
-> various RISC-V MSI client drivers explicitly set device MSI domain
-> in the driver probe function using below code pattern:
+> https://sashiko.dev/#/patchset/20260521221155.1375144-1-jacob.pan%40linux.microsoft.com
 > 
-> 	/*
-> 	 * The device MSI domain for platform devices on RISC-V architecture
-> 	 * is only available after the MSI controller driver is probed so,
-> 	 * explicitly configure here.
-> 	 */
-> 	if (!dev_get_msi_domain(dev)) {
-> 		/*
-> 		 * The device MSI domain for OF devices is only set at the
-> 		 * time of populating/creating OF device. If the device MSI
-> 		 * domain is discovered later after the OF device is created
-> 		 * then we need to set it explicitly before using any platform
-> 		 * MSI functions.
-> 		 */
-> 		if (is_of_node(fwnode)) {
-> 			of_msi_configure(dev, dev_of_node(dev));
-> 		} else if (is_acpi_device_node(fwnode)) {
-> 			struct irq_domain *msi_domain;
-> 			msi_domain = irq_find_matching_fwnode(imsic_acpi_get_fwnode(dev),
-> 							      DOMAIN_BUS_PLATFORM_MSI);
-> 			dev_set_msi_domain(dev, msi_domain);
-> 		}
-> 
-> 		if (!dev_get_msi_domain(dev))
-> 			return -EPROBE_DEFER;
-> 	}
-> 
-> Instead of the above approach, extend the platform_dma_configure() to set
-> device MSI domain for both OF and ACPI based platform devices before driver
-> probe and remove the duplicate code pattern from RISC-V MSI client drivers.
-> 
-> Co-developed-by: Sunil V L <sunilvl@oss.qualcomm.com>
-> Signed-off-by: Sunil V L <sunilvl@oss.qualcomm.com>
-> Signed-off-by: Anup Patel <anup.patel@oss.qualcomm.com>
-> ---
->   drivers/acpi/riscv/irq.c                | 13 +++++++++++
->   drivers/acpi/scan.c                     | 10 +++++++++
->   drivers/base/platform.c                 |  4 ++++
->   drivers/iommu/riscv/iommu-platform.c    |  9 --------
->   drivers/irqchip/irq-riscv-aplic-msi.c   | 27 -----------------------
->   drivers/irqchip/irq-riscv-rpmi-sysmsi.c | 29 -------------------------
->   drivers/mailbox/riscv-sbi-mpxy-mbox.c   | 29 -------------------------
->   include/acpi/acpi_bus.h                 |  1 +
->   include/linux/acpi.h                    | 10 +++++++++
->   9 files changed, 38 insertions(+), 94 deletions(-)
-> 
-> diff --git a/drivers/acpi/riscv/irq.c b/drivers/acpi/riscv/irq.c
-> index 9b88d0993e88..17fa5dcdd2c0 100644
-> --- a/drivers/acpi/riscv/irq.c
-> +++ b/drivers/acpi/riscv/irq.c
-> @@ -5,8 +5,11 @@
->    */
->   
->   #include <linux/acpi.h>
-> +#include <linux/device.h>
->   #include <linux/sort.h>
->   #include <linux/irq.h>
-> +#include <linux/irqdomain.h>
-> +#include <linux/irqchip/riscv-imsic.h>
->   
->   #include "init.h"
->   
-> @@ -397,6 +400,16 @@ static u32 riscv_acpi_add_irq_dep(acpi_handle handle)
->   	return count;
->   }
->   
-> +void acpi_arch_msi_configure(struct device *dev)
+I have go over my Sashiko review setup, but there are lots of
+false positives, like this one below we already discussed in earlier
+version. Is there a specific concern?
+
+e.g.
+> +static bool iommufd_device_is_noiommu(struct iommufd_device *idev)
 > +{
-> +	struct irq_domain *msi_domain;
-> +
-> +	msi_domain = irq_find_matching_fwnode(imsic_acpi_get_fwnode(dev),
-> +					      DOMAIN_BUS_PLATFORM_MSI);
-> +	if (msi_domain)
-> +		dev_set_msi_domain(dev, msi_domain);
-> +}
-> +
->   u32 arch_acpi_add_auto_dep(acpi_handle handle)
->   {
->   	if (acpi_has_method(handle, "_PRT"))
-> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-> index 530547cda8b2..e50e5d246a54 100644
-> --- a/drivers/acpi/scan.c
-> +++ b/drivers/acpi/scan.c
-> @@ -1648,6 +1648,16 @@ static int acpi_iommu_configure_id(struct device *dev, const u32 *id_in)
->   
->   #endif /* !CONFIG_IOMMU_API */
->   
-> +/**
-> + * acpi_msi_configure - Set-up MSI domain for the device.
-> + * @dev: The pointer to the device
-> + */
-> +void acpi_msi_configure(struct device *dev)
-> +{
-> +	acpi_arch_msi_configure(dev);
-> +}
-> +EXPORT_SYMBOL_GPL(acpi_msi_configure);
-> +
->   /**
->    * acpi_dma_configure_id - Set-up DMA configuration for the device.
->    * @dev: The pointer to the device
-> diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-> index a19dd22deef2..225e33080bc6 100644
-> --- a/drivers/base/platform.c
-> +++ b/drivers/base/platform.c
-> @@ -1470,8 +1470,12 @@ static int platform_dma_configure(struct device *dev)
->   	int ret = 0;
->   
->   	if (is_of_node(fwnode)) {
-> +		if (!dev_get_msi_domain(dev))
-> +			of_msi_configure(dev, dev->of_node);
->   		ret = of_dma_configure(dev, to_of_node(fwnode), true);
->   	} else if (is_acpi_device_node(fwnode)) {
-> +		if (!dev_get_msi_domain(dev))
-> +			acpi_msi_configure(dev);
+> +	return IS_ENABLED(CONFIG_IOMMUFD_NOIOMMU) &&
+> !idev->dev->iommu; +}
+Does dynamically evaluating dev->iommu here allow the noiommu state to
+flip during the device's lifetime?
 
-But surely this needs to handle the deferral case that's being removed 
-from some of the users below?
 
-Also I'm not really convinced about bundling it into dma_configure, 
-since it's mroe about IRQs than DMA. I wonder if overall it wouldn't be 
-better with a flow closer to regular request_irq(), with 
-msi_create_device_irq_domain() growing the ability to distingush between 
-"there is no domain" and "there is no domain now, but could be if we try 
-again later", such that drivers can handle deferral at the point where 
-they request MSI vectors?
-
-Thanks,
-Robin.
-
->   		attr = acpi_get_dma_attr(to_acpi_device_node(fwnode));
->   		ret = acpi_dma_configure(dev, attr);
->   	}
-> diff --git a/drivers/iommu/riscv/iommu-platform.c b/drivers/iommu/riscv/iommu-platform.c
-> index 399ba8fe1b3e..ddc6370b96b0 100644
-> --- a/drivers/iommu/riscv/iommu-platform.c
-> +++ b/drivers/iommu/riscv/iommu-platform.c
-> @@ -48,7 +48,6 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
->   	enum riscv_iommu_igs_settings igs;
->   	struct device *dev = &pdev->dev;
->   	struct riscv_iommu_device *iommu = NULL;
-> -	struct irq_domain *msi_domain;
->   	struct resource *res = NULL;
->   	int vec, ret;
->   
-> @@ -74,14 +73,6 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
->   	switch (igs) {
->   	case RISCV_IOMMU_CAPABILITIES_IGS_BOTH:
->   	case RISCV_IOMMU_CAPABILITIES_IGS_MSI:
-> -		if (is_of_node(dev_fwnode(dev))) {
-> -			of_msi_configure(dev, to_of_node(dev->fwnode));
-> -		} else {
-> -			msi_domain = irq_find_matching_fwnode(imsic_acpi_get_fwnode(dev),
-> -							      DOMAIN_BUS_PLATFORM_MSI);
-> -			dev_set_msi_domain(dev, msi_domain);
-> -		}
-> -
->   		if (!dev_get_msi_domain(dev)) {
->   			dev_warn(dev, "failed to find an MSI domain\n");
->   			goto msi_fail;
-> diff --git a/drivers/irqchip/irq-riscv-aplic-msi.c b/drivers/irqchip/irq-riscv-aplic-msi.c
-> index fb8d1838609f..2cf5d42cd66a 100644
-> --- a/drivers/irqchip/irq-riscv-aplic-msi.c
-> +++ b/drivers/irqchip/irq-riscv-aplic-msi.c
-> @@ -175,7 +175,6 @@ static const struct msi_domain_template aplic_msi_template = {
->   int aplic_msi_setup(struct device *dev, void __iomem *regs)
->   {
->   	const struct imsic_global_config *imsic_global;
-> -	struct irq_domain *msi_domain;
->   	struct aplic_priv *priv;
->   	struct aplic_msicfg *mc;
->   	phys_addr_t pa;
-> @@ -245,32 +244,6 @@ int aplic_msi_setup(struct device *dev, void __iomem *regs)
->   	/* Setup global config and interrupt delivery */
->   	aplic_init_hw_global(priv, true);
->   
-> -	/* Set the APLIC device MSI domain if not available */
-> -	if (!dev_get_msi_domain(dev)) {
-> -		/*
-> -		 * The device MSI domain for OF devices is only set at the
-> -		 * time of populating/creating OF device. If the device MSI
-> -		 * domain is discovered later after the OF device is created
-> -		 * then we need to set it explicitly before using any platform
-> -		 * MSI functions.
-> -		 *
-> -		 * In case of APLIC device, the parent MSI domain is always
-> -		 * IMSIC and the IMSIC MSI domains are created later through
-> -		 * the platform driver probing so we set it explicitly here.
-> -		 */
-> -		if (is_of_node(dev->fwnode)) {
-> -			of_msi_configure(dev, to_of_node(dev->fwnode));
-> -		} else {
-> -			msi_domain = irq_find_matching_fwnode(imsic_acpi_get_fwnode(dev),
-> -							      DOMAIN_BUS_PLATFORM_MSI);
-> -			if (msi_domain)
-> -				dev_set_msi_domain(dev, msi_domain);
-> -		}
-> -
-> -		if (!dev_get_msi_domain(dev))
-> -			return -EPROBE_DEFER;
-> -	}
-> -
->   	if (!msi_create_device_irq_domain(dev, MSI_DEFAULT_DOMAIN, &aplic_msi_template,
->   					  priv->nr_irqs + 1, priv, priv)) {
->   		dev_err(dev, "failed to create MSI irq domain\n");
-> diff --git a/drivers/irqchip/irq-riscv-rpmi-sysmsi.c b/drivers/irqchip/irq-riscv-rpmi-sysmsi.c
-> index 612f3972f7af..e6cdb4b635a6 100644
-> --- a/drivers/irqchip/irq-riscv-rpmi-sysmsi.c
-> +++ b/drivers/irqchip/irq-riscv-rpmi-sysmsi.c
-> @@ -260,35 +260,6 @@ static int rpmi_sysmsi_probe(struct platform_device *pdev)
->   			riscv_acpi_update_gsi_range(priv->gsi_base, priv->nr_irqs);
->   	}
->   
-> -	/*
-> -	 * The device MSI domain for platform devices on RISC-V architecture
-> -	 * is only available after the MSI controller driver is probed so,
-> -	 * explicitly configure here.
-> -	 */
-> -	if (!dev_get_msi_domain(dev)) {
-> -		/*
-> -		 * The device MSI domain for OF devices is only set at the
-> -		 * time of populating/creating OF device. If the device MSI
-> -		 * domain is discovered later after the OF device is created
-> -		 * then we need to set it explicitly before using any platform
-> -		 * MSI functions.
-> -		 */
-> -		if (is_of_node(fwnode)) {
-> -			of_msi_configure(dev, dev_of_node(dev));
-> -		} else if (is_acpi_device_node(fwnode)) {
-> -			struct irq_domain *msi_domain;
-> -
-> -			msi_domain = irq_find_matching_fwnode(imsic_acpi_get_fwnode(dev),
-> -							      DOMAIN_BUS_PLATFORM_MSI);
-> -			dev_set_msi_domain(dev, msi_domain);
-> -		}
-> -
-> -		if (!dev_get_msi_domain(dev)) {
-> -			mbox_free_channel(priv->chan);
-> -			return -EPROBE_DEFER;
-> -		}
-> -	}
-> -
->   	if (!msi_create_device_irq_domain(dev, MSI_DEFAULT_DOMAIN,
->   					  &rpmi_sysmsi_template,
->   					  priv->nr_irqs, priv, priv)) {
-> diff --git a/drivers/mailbox/riscv-sbi-mpxy-mbox.c b/drivers/mailbox/riscv-sbi-mpxy-mbox.c
-> index 7c9c006b7244..759512aba19f 100644
-> --- a/drivers/mailbox/riscv-sbi-mpxy-mbox.c
-> +++ b/drivers/mailbox/riscv-sbi-mpxy-mbox.c
-> @@ -902,35 +902,6 @@ static int mpxy_mbox_probe(struct platform_device *pdev)
->   
->   	/* Setup MSIs for mailbox (if required) */
->   	if (mbox->msi_count) {
-> -		/*
-> -		 * The device MSI domain for platform devices on RISC-V architecture
-> -		 * is only available after the MSI controller driver is probed so,
-> -		 * explicitly configure here.
-> -		 */
-> -		if (!dev_get_msi_domain(dev)) {
-> -			struct fwnode_handle *fwnode = dev_fwnode(dev);
-> -
-> -			/*
-> -			 * The device MSI domain for OF devices is only set at the
-> -			 * time of populating/creating OF device. If the device MSI
-> -			 * domain is discovered later after the OF device is created
-> -			 * then we need to set it explicitly before using any platform
-> -			 * MSI functions.
-> -			 */
-> -			if (is_of_node(fwnode)) {
-> -				of_msi_configure(dev, dev_of_node(dev));
-> -			} else if (is_acpi_device_node(fwnode)) {
-> -				struct irq_domain *msi_domain;
-> -
-> -				msi_domain = irq_find_matching_fwnode(imsic_acpi_get_fwnode(dev),
-> -								      DOMAIN_BUS_PLATFORM_MSI);
-> -				dev_set_msi_domain(dev, msi_domain);
-> -			}
-> -
-> -			if (!dev_get_msi_domain(dev))
-> -				return -EPROBE_DEFER;
-> -		}
-> -
->   		mbox->msi_index_to_channel = devm_kcalloc(dev, mbox->msi_count,
->   							  sizeof(*mbox->msi_index_to_channel),
->   							  GFP_KERNEL);
-> diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
-> index c41d9a7565cf..b31ba661245e 100644
-> --- a/include/acpi/acpi_bus.h
-> +++ b/include/acpi/acpi_bus.h
-> @@ -744,6 +744,7 @@ bool acpi_dma_supported(const struct acpi_device *adev);
->   enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev);
->   int acpi_iommu_fwspec_init(struct device *dev, u32 id,
->   			   struct fwnode_handle *fwnode);
-> +void acpi_msi_configure(struct device *dev);
->   int acpi_dma_get_range(struct device *dev, const struct bus_dma_region **map);
->   int acpi_dma_configure_id(struct device *dev, enum dev_dma_attr attr,
->   			   const u32 *input_id);
-> diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-> index 67effb91fa98..e8829be3ca55 100644
-> --- a/include/linux/acpi.h
-> +++ b/include/linux/acpi.h
-> @@ -260,6 +260,12 @@ acpi_numa_processor_affinity_init(struct acpi_srat_cpu_affinity *pa) { }
->   
->   void acpi_numa_x2apic_affinity_init(struct acpi_srat_x2apic_cpu_affinity *pa);
->   
-> +#if defined(CONFIG_RISCV)
-> +void acpi_arch_msi_configure(struct device *dev);
-> +#else
-> +static inline void acpi_arch_msi_configure(struct device *dev) { }
-> +#endif
-> +
->   #if defined(CONFIG_ARM64) || defined(CONFIG_LOONGARCH)
->   void acpi_arch_dma_setup(struct device *dev);
->   #else
-> @@ -1058,6 +1064,10 @@ static inline int acpi_dma_get_range(struct device *dev, const struct bus_dma_re
->   	return -ENODEV;
->   }
->   
-> +static inline void acpi_msi_configure(struct device *dev)
-> +{
-> +}
-> +
->   static inline int acpi_dma_configure(struct device *dev,
->   				     enum dev_dma_attr attr)
->   {
+> > From: Jacob Pan <jacob.pan@linux.microsoft.com>
+> > Sent: Friday, May 22, 2026 6:12 AM
+> > 
+> > VFIO's unsafe_noiommu_mode has long provided a way for userspace
+> > drivers
+> > to operate on platforms lacking a hardware IOMMU. Today, IOMMUFD
+> > also supports No-IOMMU mode for group-based devices under
+> > vfio_compat mode.
+> > However, IOMMUFD's native character device (cdev) does not yet
+> > support No-IOMMU mode, which is the purpose of this patch.
+> > 
+> > In summary, we have:
+> > 
+> > |-------------------------+------+---------------|
+> > | Device access mode      | VFIO | IOMMUFD       |
+> > |-------------------------+------+---------------|
+> > | group /dev/vfio/$GROUP  | Yes  | Yes           |
+> > |-------------------------+------+---------------|
+> > | cdev /dev/vfio/devices/ | No   | This patch    |
+> > |-------------------------+------+---------------|
+> > 
+> > Beyond enabling cdev for IOMMUFD, this patch also addresses the
+> > following deficiencies in the current No-IOMMU mode suggested by
+> > Jason[1]:
+> > - Devices operating under No-IOMMU mode are limited to device-level
+> > UAPI access, without container or IOAS-level capabilities.
+> > Consequently, user-space drivers lack structured mechanisms for
+> > page pinning and often resort to mlock(), which is less robust than
+> > pin_user_pages() used for devices backed by a physical IOMMU. For
+> > example, mlock() does not prevent
+> >   page migration.
+> > - There is no architectural mechanism for obtaining physical
+> > addresses for DMA. As a workaround, user-space drivers frequently
+> > rely on /proc/pagemap
+> >   tricks or hardcoded values.
+> > 
+> > By allowing noiommu device access to IOMMUFD IOAS and HWPT objects,
+> > this
+> > patch brings No-IOMMU mode closer to full citizenship within the
+> > IOMMU subsystem. In addition to addressing the two deficiencies
+> > mentioned above, the expectation is that it will also enable
+> > No-IOMMU devices to seamlessly participate in live update sessions
+> > via KHO [2].
+> > 
+> > Furthermore, these devices will use the IOMMUFD-based ownership
+> > checking model for
+> > VFIO_DEVICE_PCI_HOT_RESET, eliminating the need for an
+> > iommufd_access object
+> > as required in a previous attempt [3].
+> > 
+> > ChangeLog:
+> > V6:
+> >   - Delete rename VFIO_IOMMU patch
+> >   - Revert back to unified VFIO_NOIOMMU Kconfig for both cdev and
+> > group. Use Kconfig dependency to restrict usages and avoid null
+> > group checks. (Alex & Yi)
+> >   - Add CAP_SYS_RAWIO checks for cdev open to maintain security
+> > parity with the group noiommu path. (Alex)
+> >   - Updated documentation with Kconfig usage matrix
+> >   - Added max length limit to get_pa ioctl (Baolu & Jason)
+> > V5:
+> >   - Split CONFIG_VFIO_NOIOMMU into CONFIG_VFIO_GROUP_NOIOMMU
+> > and
+> >     CONFIG_VFIO_CDEV_NOIOMMU so cdev noiommu is independent of
+> >     VFIO_GROUP (Alex)
+> >   - Add CAP_SYS_RAWIO check for cdev open and bind under noiommu,
+> >     security parity with group noiommu (Alex)
+> >   - Add IS_ENABLED(CONFIG_IOMMUFD_NOIOMMU) guard in
+> >     iommufd_device_is_noiommu() to prevent noiommu bind when feature
+> >     is disabled
+> >   - Add prep patch to tolerate NULL group for cdev noiommu devices
+> >     when CONFIG_VFIO_GROUP_NOIOMMU is not set [7/9]
+> >   - Rename IOCTL to IOMMUFD_CMD_IOAS_NOIOMMU_GET_PA to be more
+> >     specific (Kevin)
+> >   - Simplify iommufd_device_is_noiommu, use iommufd_bind_noiommu
+> >     helper (Kevin, Yi)
+> >   - Move IOMMU cap check under iommufd_bind_iommu() (Yi)
+> >   - Fix next_iova exceeding iopt_area_last_iova in GET_PA (Alex)
+> >   - Fix const hwpt, copyright date, typo in moved comment (Kevin)
+> >   - Add Reviewed-by tags
+> >   - Squash noiommu cdev selftest fix into selftest patch
+> >   - Drop DSA selftest patch
+> >   - Details in each patch changelog.
+> > 
+> > V4:
+> >   - Fix various corner cases pointed out by (Sashiko)
+> >     Details in each patch changelog.
+> > 
+> > V3:
+> >   - Improve error handling [3/10] (Mostafa)
+> >   - Simplify vfio_device_is_noiommu logic and merged in [6/10]
+> > (Mostafa)
+> >   - Add comment to explain the design difference over the legacy
+> > noiommu VFIO code.[1/10]
+> > 
+> > V2:
+> >   - Fix build dependency by adding IOMMU_SUPPORT in [8/11]
+> >   - Add an optimization to scan beyond the first page for a
+> > contiguous physical address range and return its length instead of
+> > a single page.[4/11]
+> > 
+> > Since RFC[4]:
+> >   - Abandoned dummy iommu driver approach as patch 1-3 absorbed the
+> >     changes into iommufd.
+> > 
+> > [1] https://lore.kernel.org/linux-
+> > iommu/20250603175403.GA407344@nvidia.com/
+> > [2] https://lore.kernel.org/linux-
+> > pci/20251027134430.00007e46@linux.microsoft.com/
+> > [3] https://lore.kernel.org/kvm/20230522115751.326947-1-
+> > yi.l.liu@intel.com/
+> > [4] https://lore.kernel.org/linux-iommu/20251201173012.18371-1-
+> > jacob.pan@linux.microsoft.com/
+> > 
+> > Future cleanup: consolidate all CONFIG_IOMMUFD_NOIOMMU code
+> > (iopt_get_phys, iommufd_ioas_noiommu_get_pa, iommufd_noiommu_ops)
+> > into
+> > hwpt_noiommu.c to eliminate #ifdef guards from ioas.c and
+> > io_pagetable.c.
+> > 
+> > Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+> > 
+> > 
+> > Jacob Pan (4):
+> >   iommufd: Add an ioctl to query PA from IOVA for noiommu mode
+> >   vfio: Enable cdev noiommu mode under iommufd
+> >   selftests/vfio: Add iommufd noiommu mode selftest for cdev
+> >   Documentation: Update VFIO NOIOMMU mode
+> > 
+> > Jason Gunthorpe (3):
+> >   iommufd: Support a HWPT without an iommu driver for noiommu
+> >   iommufd: Move igroup allocation to a function
+> >   iommufd: Allow binding to a noiommu device
+> > 
+> >  Documentation/driver-api/vfio.rst             |  83 ++-
+> >  drivers/iommu/iommufd/Kconfig                 |  12 +
+> >  drivers/iommu/iommufd/Makefile                |   1 +
+> >  drivers/iommu/iommufd/device.c                | 192 +++--
+> >  drivers/iommu/iommufd/hw_pagetable.c          |  15 +-
+> >  drivers/iommu/iommufd/hwpt_noiommu.c          |  97 +++
+> >  drivers/iommu/iommufd/io_pagetable.c          |  72 ++
+> >  drivers/iommu/iommufd/ioas.c                  |  30 +
+> >  drivers/iommu/iommufd/iommufd_private.h       |  20 +
+> >  drivers/iommu/iommufd/main.c                  |   3 +
+> >  drivers/vfio/Kconfig                          |   8 +-
+> >  drivers/vfio/device_cdev.c                    |   3 +
+> >  drivers/vfio/iommufd.c                        |   6 +-
+> >  drivers/vfio/vfio.h                           |  20 +-
+> >  drivers/vfio/vfio_main.c                      |  23 +-
+> >  include/linux/vfio.h                          |   1 +
+> >  include/uapi/linux/iommufd.h                  |  27 +
+> >  tools/testing/selftests/vfio/Makefile         |   1 +
+> >  .../lib/include/libvfio/vfio_pci_device.h     |  16 +
+> >  .../selftests/vfio/lib/vfio_pci_device.c      |   5 +-
+> >  .../vfio/vfio_iommufd_noiommu_test.c          | 664
+> > ++++++++++++++++++ 21 files changed, 1221 insertions(+), 78
+> > deletions(-) create mode 100644 drivers/iommu/iommufd/hwpt_noiommu.c
+> >  create mode 100644
+> > tools/testing/selftests/vfio/vfio_iommufd_noiommu_test.c
+> > 
+> > --
+> > 2.43.0  
 
