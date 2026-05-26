@@ -1,105 +1,39 @@
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AF87372ECC
-	for <iommu@lists.linux.dev>; Tue, 26 May 2026 15:39:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.180
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 41A263A6B8A
+	for <iommu@lists.linux.dev>; Tue, 26 May 2026 15:59:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779809992; cv=none; b=TeyzFM7I3TP2Zqh6h8YAD1b/2Adz5CU0OCV38667bbU5dcdm7/p9pJUSPciIRrdCf8oCBbB80Y4FzqsFDZXS0/5jE6/4ZLdjYeujYLCJI4GJ8APdEhMBNXuPMpQLX+OkrVr20FcpCZM9e8yFl4vES0BZ4PZ6s9nhvAev3fPOmx0=
+	t=1779811174; cv=none; b=V23sAFpRtHWAnXZJhzpQ/5hfGg82WaDA3kKXiKzEmVSJRuq/qM3Uqw8g979ivEEHhSUHfH42+gF73genq4JdqE9tptbqxFos2NEuE2XIFmZPE80c97nPt5Ls8mYx+UPhHCFKJ8p/z2jpQgcZlyAGZ7tGx+9cGCH9DlwZPQbkrFo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779809992; c=relaxed/simple;
-	bh=ItPd3iMhIb7X3YkSIy7+Cw4n/7vOFcAzSgB6r5JqsAg=;
+	s=arc-20240116; t=1779811174; c=relaxed/simple;
+	bh=zMxD3VFMtLBC+cWWCo5EuPrYgR+8m01z1rYD6jA7JfM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Seuq5ILWzWSVQkpBRzU4/MK586GObJOU+ID9EcigoFTKGPp35LsqwxOJMfGqYZzudP8qbJxkbeHp11KZJy2ecQK/Y0F3hXr8a+d3+TMSwO3HVrW2RD3QdOcFR7JDSnlZ2NXXJo5zPOqIwPZGYiohM2Q96naJQuBCackyd+Dd+LY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=YN4tnjoI; arc=none smtp.client-ip=209.85.160.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=b7pLmaPkQeQU1YuVMaeCtCrmXEytnvDZDyzGWovbXArYgctbrgeylXI3nbkC9kV+6BMuexyuDs3RugQqGxASf2Wzrgut8q/55Y8Gms+sDw8Iny2iYo+Vcb3szm60KRhrdBl0tw8Qqs01uFPxLwar9NaHOqRkTUXTC+iXTx88Hqc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Wb5ulU78; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="YN4tnjoI"
-Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-516cbde40f2so58121431cf.3
-        for <iommu@lists.linux.dev>; Tue, 26 May 2026 08:39:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1779809990; x=1780414790; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ItPd3iMhIb7X3YkSIy7+Cw4n/7vOFcAzSgB6r5JqsAg=;
-        b=YN4tnjoIqf20BEH1nUmokEWllLURU1kJWEu3Wdy0cN/cuGpdt5NnC2OnJwdlIEipF3
-         XXKLdoJMK4TAEJ44pemPIPCi4Hxxoat5U92FmSh3wLcxz0Hxj4zAwhs1/a82ZZ05PePB
-         IEU1vZlADBi3r5HZqwCHc76eafRDPFQ82jGiFrQi5NputYzlRsdUNcqjzvlwQ7EftSXG
-         9xOTZ0QDaP57rfFuaUJV8QQsGoWk4HQiDDj9ckDGN0nDwo3DEC7t3wTsfORWs0LYICRp
-         f3AhqrP0VJN7fE8nwKszbskR58kY4qX1/NDDp5rD0VUlGrfE6z1GcMpi3wwcSoBaleoW
-         tbNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779809990; x=1780414790;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ItPd3iMhIb7X3YkSIy7+Cw4n/7vOFcAzSgB6r5JqsAg=;
-        b=B9I8eS3GvMVq+Pyk8CEBP9h5mS8OMWy5NvValk7yD1aXygmPM0zgxPgHtrzE2rXuWq
-         nSnCmS9lx8qx4zphEMgWn9lfhJ4+qUpBKhe2gQcVghM3nBk2gs6llWAX5wQry1HsLGtN
-         xtu55cFNKnqmMCEjAk2+eKw4z2U2T25hSTewC1FmvnckkfxckX1KPL8Rj5nl+QQkT/zc
-         JrLLPpwY7k6Uf70oUbyxQnQ+SUZoho9i/7ykWSefoXbr5KX4Jv6ji0LS2hkZpCN31CcW
-         tuwKQicsTx+I4dpNPGf6FCcr5jScCtuDKDFlIDQpuU9eJtPr7hIz8vC96YuLC9D0nV8/
-         1q/Q==
-X-Forwarded-Encrypted: i=1; AFNElJ/Ry3gYlgYPSmjLOemEBAXjWjIZTk344qAgD1aiT8cTx3yLHwAbeCJF6NusTK9onIfD29U88Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzpNdwnCbPVvA72qJMZ1q+ijS+4tQr7dgoDSl1by4jyWib9GJ8K
-	2RuWUCrOaqk1vcjMoaQxrbSlLz1MbsuiTIFvFTLx96DAbScdte1q1ikRgsxhHLhEvNg=
-X-Gm-Gg: Acq92OHQF0OhdTVE8Yg11152OArwQjKJKqNJJuGlVJhQWSilh1PDQhv+EW4meIgPCsU
-	lZ1qecZq/pWrPKy/zOLwLM/EIbpML0aU8xEQocuTRRrW0/esoh8eD7YPcSf8dqv/NSd+Ntu/VcH
-	Ult/VBca+R81oEjx6HY15/ivahbzOra2ZAuYNzsWBP9bfWdIdmj46SoV4bEVBiI5T90G/PXeDy4
-	7ZT5HjVdnEyoOiLLgCxIGhbRgB4KJd/+wzzFCcTcpLysvN3EHSsYuxT5/kaujFG86XrZoprSWnZ
-	+WoW0dzZk/2N5uwf+7Dr4KxrM98H2mVCuxPNw3o8aoUWnHx3o8ZiwEmDX39uzcUbpkGAaa2dUXd
-	3dxcteqTe9qiMye0GMQGbXX/ANERia6lwoh0aD7u34cK74HiQo+WnAAmefcfe6VIk1E+kZlHtky
-	rlSq2swvaJrz33ORJUSZs3ycSm3Nvmoenp/joAWTv3v0/VdD1VbnfqypJcwMb7+wt7py59zXWQi
-	MUeeg==
-X-Received: by 2002:a05:622a:1452:b0:50e:5cc3:6f3a with SMTP id d75a77b69052e-516d45eaf62mr265877421cf.26.1779809990039;
-        Tue, 26 May 2026 08:39:50 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-5170c403529sm7414661cf.10.2026.05.26.08.39.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 May 2026 08:39:49 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wRtsi-0000000DiUf-2t1G;
-	Tue, 26 May 2026 12:39:48 -0300
-Date: Tue, 26 May 2026 12:39:48 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Michael Kelley <mhklinux@outlook.com>
-Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	"linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-	"linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	"x86@kernel.org" <x86@kernel.org>, Jiri Pirko <jiri@nvidia.com>
-Subject: Re: [PATCH v5 10/20] dma-direct: make dma_direct_map_phys() honor
- DMA_ATTR_CC_SHARED
-Message-ID: <20260526153948.GH2487554@ziepe.ca>
-References: <20260522042815.370873-1-aneesh.kumar@kernel.org>
- <20260522042815.370873-11-aneesh.kumar@kernel.org>
- <SN6PR02MB41574064D14D4A2734222C51D40B2@SN6PR02MB4157.namprd02.prod.outlook.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Wb5ulU78"
+Received: from localhost (unknown [167.220.233.27])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 230F020B7167;
+	Tue, 26 May 2026 08:59:20 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 230F020B7167
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1779811161;
+	bh=zFzV3Un4dqyonf7aw2EN42W6GrQT5R1zy8VSVcK8S5I=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Wb5ulU78Hy9cU3laPGu/qlSfqxt3+H6DhLEw4ypsEHlaQMJ8Lo6M2izZ4O3xyrJuj
+	 7GIAyB1ouQQS9kEEbxHg4RJQOFcF7x7+R49Re6p5MQGe49GXmYoR/+ylG8x4CTYb0G
+	 ZJLC6hOjXJmHcJ7SaLZrzGG/R6vXJpQ8gRCqhmQA=
+Date: Tue, 26 May 2026 23:59:28 +0800
+From: Yu Zhang <zhangyu1@linux.microsoft.com>
+To: Mukesh R <mrathor@linux.microsoft.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	mhklinux@outlook.com, wei.liu@kernel.org, jacob.pan@linux.microsoft.com, 
+	schakrabarti@linux.microsoft.com
+Subject: Re: [PATCH V0] iommu/hyperv: Create hyperv subdirectory under iommu
+Message-ID: <kqzr5ue5g5pdlp6pei37mfrymoln6y63iizzuiehtj3uiurfod@54fugjcdtuqr>
+References: <20260526012037.3874959-1-mrathor@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -108,16 +42,80 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <SN6PR02MB41574064D14D4A2734222C51D40B2@SN6PR02MB4157.namprd02.prod.outlook.com>
+In-Reply-To: <20260526012037.3874959-1-mrathor@linux.microsoft.com>
 
-On Tue, May 26, 2026 at 02:56:57AM +0000, Michael Kelley wrote:
+On Mon, May 25, 2026 at 06:20:37PM -0700, Mukesh R wrote:
+> Create hyperv subdirectory under drivers/iommu in anticipation of more
+> hyperv related files for upcoming PCI passthru and pv IOMMU patches.
+> Also, the current file hyperv-iommu.c actually implements irq remapping,
+> so rename to more appropriate hv-irq-remap.c and move it under the new
+> hyperv subdirectory. Lastly, this file should not be tied to
+> CONFIG_HYPERV_IOMMU, but to CONFIG_HYPERV and CONFIG_IRQ_REMAP.
+> 
 
-> With this patch removing SWIOTLB_FORCE from four places in
-> kernel code, there are no remaining places where it is set.
-> The test of SWIOTLB_FORCE could be removed from
-> swiotlb_init_remap(), and its definition could be deleted
-> from include/linux/swiotlb.h.
+Thanks for this pathch, Mukesh!
 
-That's great! I think it shows this is the right approach!
+Jason raised a question about whether Hyper-V's IRQ remapping file belongs
+under drivers/iommu/hyperv/ at all, since unlike Intel/AMD, Hyper-V's IRQ
+remapping is not co-mingled with the IOMMU hardware:
 
-Jason
+	https://lore.kernel.org/all/20260520133807.GS7702@ziepe.ca/
+
+Though we don't end up moving it elsewhere (the IRQ remapping framework
+and its internal header, irq_remapping.h, live under drivers/iommu/, and
+all existing backends sit alongside them), it would be good to acknowledge
+this in the commit message and explain the rationale,
+
+
+> Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
+> ---
+>  MAINTAINERS                                             | 2 +-
+>  drivers/iommu/Makefile                                  | 2 +-
+>  drivers/iommu/hyperv/Makefile                           | 2 ++
+>  drivers/iommu/{hyperv-iommu.c => hyperv/hv-irq-remap.c} | 8 +-------
+>  drivers/iommu/irq_remapping.c                           | 2 +-
+>  5 files changed, 6 insertions(+), 10 deletions(-)
+>  create mode 100644 drivers/iommu/hyperv/Makefile
+>  rename drivers/iommu/{hyperv-iommu.c => hyperv/hv-irq-remap.c} (99%)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index d1cc0e12fe1f..b651ee0c6e6b 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -11914,7 +11914,7 @@ F:	drivers/clocksource/hyperv_timer.c
+>  F:	drivers/hid/hid-hyperv.c
+>  F:	drivers/hv/
+>  F:	drivers/input/serio/hyperv-keyboard.c
+> -F:	drivers/iommu/hyperv-iommu.c
+> +F:	drivers/iommu/hyperv/hv-irq-remap.c
+>  F:	drivers/net/ethernet/microsoft/
+>  F:	drivers/net/hyperv/
+>  F:	drivers/pci/controller/pci-hyperv-intf.c
+> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+> index 0275821f4ef9..d9683422aecb 100644
+> --- a/drivers/iommu/Makefile
+> +++ b/drivers/iommu/Makefile
+> @@ -4,6 +4,7 @@ obj-$(CONFIG_AMD_IOMMU) += amd/
+>  obj-$(CONFIG_INTEL_IOMMU) += intel/
+>  obj-$(CONFIG_RISCV_IOMMU) += riscv/
+>  obj-$(CONFIG_GENERIC_PT) += generic_pt/fmt/
+> +obj-$(CONFIG_HYPERV) += hyperv/
+>  obj-$(CONFIG_IOMMU_API) += iommu.o
+>  obj-$(CONFIG_IOMMU_SUPPORT) += iommu-pages.o
+>  obj-$(CONFIG_IOMMU_API) += iommu-traces.o
+> @@ -30,7 +31,6 @@ obj-$(CONFIG_TEGRA_IOMMU_SMMU) += tegra-smmu.o
+>  obj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o
+>  obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
+>  obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
+> -obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
+
+Any reason why we are removing the CONFIG_HYPERV_IOMMU? You are leaving
+CONFIG_HYPERV_IOMMU an orphan configuration now (and also the  backward
+compatibility issue?).
+
+>  obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
+>  obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o
+>  obj-$(CONFIG_IOMMU_IOPF) += io-pgfault.o
+
+B.R.
+Yu
