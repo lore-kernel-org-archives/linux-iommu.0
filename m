@@ -1,166 +1,150 @@
-Received: from pdx-out-011.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-011.esa.us-west-2.outbound.mail-perimeter.amazon.com [52.35.192.45])
+Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011061.outbound.protection.outlook.com [52.101.52.61])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0090D3AF665
-	for <iommu@lists.linux.dev>; Tue, 26 May 2026 19:24:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=52.35.192.45
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779823459; cv=none; b=QLG25q2CauPeXRmmaK/mmCHLTgTzOosh7Q/1Bn/XEZzDVSlcreh3kP4p+HiKyp6nlKQciOCOuIQOFVoEOCZdG3zWDefH4DXos/o/M8BxJRyj6rQEHtcSQIE1gt9Pz9dTSEssf6iZ8QPc/i/I2bpttajbpxI7H464/UO97cSRMjw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779823459; c=relaxed/simple;
-	bh=b7knZEsKgztU7WLv9ZOnwEFzNElW4kOlPx2dOWsnXe0=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=lN8kMOZQ9gHgX30OQI2aT4YbZIXBvuUZF2uPBAG59sTCXrwpkzsFvdF8tyjnnS/aOWneap4itrTYLkCLTkggM6gRvIWiYO+OR//bz2aN84x9o4Xff9uIq6pyc/lfeu8FrzflbzpqKBzCfj5GWY1+8Bjux1MT88SSnNCLIVr9IKg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.de; spf=pass smtp.mailfrom=amazon.de; dkim=pass (2048-bit key) header.d=amazon.de header.i=@amazon.de header.b=I5cfoJve; arc=none smtp.client-ip=52.35.192.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D01551427A
+	for <iommu@lists.linux.dev>; Wed, 27 May 2026 00:07:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.61
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779840471; cv=fail; b=TkEt2sGT+yF0W8EUF2bi932vAyj2B4EVz0JDbm1PyUD6LkA/qmvbcSazdFFPONIGDMKhX3sfgt6pUAJZloIAGAPlKNcASPYlHq1zhpil3oVp5SSWtaNYwkwum1Eq73Qa9j13bN9MTbKSh7WwvcW6TGJ1CBbudY9sa/ddU4T3kqw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779840471; c=relaxed/simple;
+	bh=5ZOf4J/DZYuAP1JzfMoCUxdykw2+Cavqwp6M3XDQCmE=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=SNys42OMiRL82BjRbdmWECIMt/xWWpUVIEh8747eR07MLNNc+SeRgF4hRhe2BwEVOrpfS+HlrYIw83yiaCB5HLFrHNbRPOZlGf2CoR37f866aAh3Uar5NIoP1btD9x/8GqmcwyfpglFKIaHdhS7HuC6hIbkv4sJ/PMpzS393RcE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=SUeN6nyX; arc=fail smtp.client-ip=52.101.52.61
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=amazon.de header.i=@amazon.de header.b="I5cfoJve"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazoncorp2;
-  t=1779823458; x=1811359458;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=dIFTq2/xrr+CIxR+YfNM4pVNUWYzoSduvpea0XgoZPQ=;
-  b=I5cfoJveOy/KGM0iFXyHon6wdICvFAEmx0118f6fRnGdII2o4ecibJG2
-   lXny7EAkAWsvnp/NENbhun9XJtOsdUZq+eJrAcsO8eu36/77KuQipoP5Z
-   xh8gJzdwxcIRYqTx6iBo969VGyGTdcAfaIAQWcmqDVEfhrC5YdLbn5S+n
-   PEZvTtowPSTtkWrE+ZqADTbNXsm1U8D40/jN9d3hV8T/nsUj2kj8PAvpv
-   caIo3mHj8gAXGslp6+wQ6C1s37RP0gmuM7WRGdA/B6urY98NzYes9MoFE
-   qaVrfxlsCUroqH+ZaahXHxSzEJJ6tN8jWgOP9yD1Hp8Nhidw577wFnOV5
-   w==;
-X-CSE-ConnectionGUID: WRN7OjDnSPa39RVebJZ87A==
-X-CSE-MsgGUID: YajV3FNISHuUQQU1jlPgpw==
-X-IronPort-AV: E=Sophos;i="6.24,170,1774310400"; 
-   d="scan'208";a="20280870"
-Received: from ip-10-5-12-219.us-west-2.compute.internal (HELO smtpout.naws.us-west-2.prod.farcaster.email.amazon.dev) ([10.5.12.219])
-  by internal-pdx-out-011.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2026 19:24:14 +0000
-Received: from EX19MTAUWC001.ant.amazon.com [205.251.233.53:5632]
- by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.62.206:2525] with esmtp (Farcaster)
- id fcdc6c9a-2802-48a0-bdaf-cab70f4081d8; Tue, 26 May 2026 19:24:14 +0000 (UTC)
-X-Farcaster-Flow-ID: fcdc6c9a-2802-48a0-bdaf-cab70f4081d8
-Received: from EX19D001UWA001.ant.amazon.com (10.13.138.214) by
- EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.37;
- Tue, 26 May 2026 19:24:13 +0000
-Received: from dev-dsk-gyokhan-1b-83b48b3c.eu-west-1.amazon.com (10.13.234.1)
- by EX19D001UWA001.ant.amazon.com (10.13.138.214) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.37;
- Tue, 26 May 2026 19:24:11 +0000
-From: Gyokhan Kochmarla <gyokhan@amazon.de>
-To: <stable@vger.kernel.org>, <gregkh@linuxfoundation.org>
-CC: <baolu.lu@linux.intel.com>, <kevin.tian@intel.com>, <dwmw2@infradead.org>,
-	<joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
-	<iommu@lists.linux.dev>, Joerg Roedel <jroedel@suse.de>, Gyokhan Kochmarla
-	<gyokhan@amazon.de>
-Subject: [PATCH 6.12] iommu/vt-d: Draining PRQ in sva unbind path when FPD bit set
-Date: Tue, 26 May 2026 19:24:01 +0000
-Message-ID: <20260526192401.80768-1-gyokhan@amazon.de>
-X-Mailer: git-send-email 2.47.3
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="SUeN6nyX"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=NmiSb3P5w0Kozb9pv/yNpvqN4CIsfwRSqAeHIbmV4Tg4g/xCgzMCO3n/BAyMfkO68qgt/makCCDVS3SON70kns3aGnHTqF5L4AD5RgalbaggWrkO84Gk373ffAsP+9dIE7e2A5E4TmoBS0PNg9LNz7kxSCWv/REXsaVPIzajCUQRC1fqEdz13qeMwuUCMUfaZ/4B1huG2Vue9oUk4nesmdhDA7Yjqw3O6k9XhQtbBO5W8BaHsHap+j4hkXRip+eRa0+Zew6k0VedCq0drhXgnPv1QBXsGkXkY8vG5VDIUpbm8kKKxcDIA4UWAPFKCTPnCrBgFoqQHjHA5XygirLr1Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Wde17v1Jf/TnKIUzENXzMqpVxR313zjptt5UYyvo3uQ=;
+ b=iswk4fmezd5Ikhhf+H5fe7jvIMcsFmtZJ8n52OJPSHEywmA0mp1SXoehNTpTlpMlKCSqdfLjzptgnmBuo8PDhH9sQ5ApRoVuXztsXWsuec3xx/GNUwkzl3t/s+JWwB3NePjjYi6ar6YQWxFrqNrw78jd7fGt7qSdUeguY9Nb8GvFiiVNBwDOFqZXyi30BMneMvBDwqLKIYC3pEXSUfHw8fLF8eKGy0fOqmWDiBpuOyESOvGkmyj9sqnbi0251MK7GZllZ0+r0j6jMikYCPedlsoVpYIDhbpUBVVxxHjftJH4pJWbM8QNHqrc9HXEjYlzRLYi8mRibYqjPjrlA6480Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Wde17v1Jf/TnKIUzENXzMqpVxR313zjptt5UYyvo3uQ=;
+ b=SUeN6nyXlIaaY+YYs2/a9WVmKjjDHWU1npXHSX82a7pyjukhyUKfPOhmkE2XAd9WU7Uo+tSYudaQX+xDJSL1NhB75y17EMqn559bRYwbpTq3muEhr9kA8O7CI6OnuUcPNUvkyB9a31FBp3fiQCZsYT+NDbiivbjtxdtGVZ/7Ftsv5a0m3zJ52OPwqQYE0oTYKlyaA8dvS0/VFDZY7VwXmlFPOlQaGfiuelSH4qlvzv4HYN4pp+GfbDxheIMF6OrNKLIAk8B2+ExOkysxGRxhurSWGd7clCxg8VdL0QfJEaRRJilFDyUYzIuK06wVpY+eR4DXnQNF/pUGYX6d1splEw==
+Received: from SN7PR04CA0223.namprd04.prod.outlook.com (2603:10b6:806:127::18)
+ by SA1PR12MB999107.namprd12.prod.outlook.com (2603:10b6:806:4a2::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.71.12; Wed, 27 May
+ 2026 00:07:38 +0000
+Received: from SA2PEPF00003AE4.namprd02.prod.outlook.com
+ (2603:10b6:806:127:cafe::1c) by SN7PR04CA0223.outlook.office365.com
+ (2603:10b6:806:127::18) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.71.12 via Frontend Transport; Wed, 27
+ May 2026 00:07:38 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ SA2PEPF00003AE4.mail.protection.outlook.com (10.167.248.4) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.71.7 via Frontend Transport; Wed, 27 May 2026 00:07:37 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 26 May
+ 2026 17:07:20 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 26 May
+ 2026 17:07:19 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Tue, 26 May 2026 17:07:18 -0700
+Date: Tue, 26 May 2026 17:07:17 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Qinxin Xia <xiaqinxin@huawei.com>
+CC: <robin.murphy@arm.com>, <will@kernel.org>, <jpb@kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<wangzhou1@hisilicon.com>, <prime.zeng@hisilicon.com>,
+	<fanghao11@huawei.com>, <jonathan.cameron@huawei.com>,
+	<wuyifan50@huawei.com>, <linuxarm@huawei.com>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 0/5] Add debugfs support for ARM SMMUv3
+Message-ID: <ahY1tY/KL4ynWghX@Asurada-Nvidia>
+References: <20260328101706.3448655-1-xiaqinxin@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-ClientProxiedBy: EX19D040UWA003.ant.amazon.com (10.13.139.6) To
- EX19D001UWA001.ant.amazon.com (10.13.138.214)
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260328101706.3448655-1-xiaqinxin@huawei.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SA2PEPF00003AE4:EE_|SA1PR12MB999107:EE_
+X-MS-Office365-Filtering-Correlation-Id: 630051d1-6731-49f2-054b-08debb83f62b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|1800799024|7416014|36860700016|376014|56012099006|13003099007|6133799003|11063799006|22082099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	MXkoo5JK5jAo2xe6wM5OBmeoqXcGC4vA5RMcCLEaVSn9atJx7bXN6qsp3Z8eGcy9BPJdg1F522RA1H1YUoIjwyJhT2P1dNmiR1Ce+8SRcaGvbUjMm21PiIiBeJTQZSZu49jOYCXdFX1PqJnCpN1KIhKmMcW0LsZIErHV12rlDaBwCj+rhEmj9iuZbhZslJYcbD6Vh8A+rG7PbSq/6a3Sivg0BTiOTjFrhYp4Sw6aUNLfHHFqzLWGs0HcqG1Bwf4Lix9/sTyw7rMnUsYG5CwX8EjTimvXHT17FI11LGcAUHOuwcQAQYpe6SixoiqaDHPq7w1CDokxaJUgEIwWcTOrW4AAaUyhLAwEpqhXWgHFtHtDh5do53bUkpsMlhFY2GK2iUvo+NQcR5RozTtVsAGYRVVFNGGWOxjceh4yjlF7DuWkuEAVYltDdNdy+r+CM8n5LDGbPTfQC3gFb5O8wdu9Y9Xx3jybdsMxfua1cXwdz87ylzA8zfv4Tr8DOXHodAlmGQEjkbYm7tFfh0gkKVSXoF7EZMBWf/YkijHIjjeHf4Kh1qDliZHUa80zmRh1UDpJo5BY4YAQ4r9GRbnqL5XLEw/V5qOL2TLgEjogqjjRyDbcjCDkifReu7Pv+eNVnlsPqYZKd/wF55lmrDFPeVaLeRGafDxDP1piFu+zxbSGEjkByDSRblljei9xREDu6cHiMc7Rtw4109xYT1YHM/xYlikDLJUITnkBHUeV7zBRxno=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(7416014)(36860700016)(376014)(56012099006)(13003099007)(6133799003)(11063799006)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	7zEcqGtUYR6Bf3MZuFn5kuSKiikjzEnY6fUEtNkfxmd9WodIriRCBZO19QmyOJKbQqBdxxWJgC4znkQaImiWZ1QYUxG/LxD8K5h+OxFfBYuwo5yOaJ8MveA0II4RWxm/2dmLBGPZZ9sfGIxYl6SMzaAzDyLQDUKfjxb2K9LMDpit0Z+FQM24fjFEU1Fhc9hhnRChTrdNXIHT3Z+fxDYt+5RQVgB8X2l4PNnikiUQbdfOf41KT4x7vFcwQvnDJwhb5I+Fm7hUIQRWPKsv6S9RaCnTt4AIIs0ENiBc9hS9243evriUqYMupxmLLHJanh8tKgJRMhXfRCihl7NoXB2KMGz8myi7UbTfz/eiJXFbeJO8ax+rfUs/eiSDA0X7bfw3Z325SleTr1CEueacr3JsegFeX2Z5eTcGyflf5qYYNLS2m4HZ0C5MD1k+ReJzHf7E
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2026 00:07:37.6756
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 630051d1-6731-49f2-054b-08debb83f62b
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SA2PEPF00003AE4.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB999107
 
-From: Lu Baolu <baolu.lu@linux.intel.com>
+On Wed, May 20, 2026 at 02:37:06PM +0800, Qinxin Xia wrote:
+> Add a comprehensive debugfs framework to the ARM SMMUv3 driver,
+> providing visibility into internal hardware state for debugging
+> and performance analysis. The debugfs entries are organized under
+> /sys/kernel/debug/iommu/arm_smmu_v3/, with per-SMMU instance directories
+> and per-device stream table entries.
+> 
+> Each SMMU instance provides:
+> - capabilities – static SMMU features and queue sizes.
+> - registers – SMMU key registers.
+> - stream_table/ – a directory per device with subdirectories per Stream ID.
+> 
+> Each Stream ID subdirectory contains:
+> - ste – the Stream Table Entry in decoded and raw format.
+> - cd – all valid Context Descriptors (Stage 1 translation tables) associated with the device.
+> - a symlink named with the device's BDF/name pointing to its sysfs directory for easy navigation.
+> 
+> /sys/kernel/debug/iommu/arm_smmu_v3/smmu0/stream_table/
+>     ├── <sid>/
+>     │   ├── ste
+>     │   ├── cd
+>     │   └── <dev_name>
+> 
+> Changes since RFCv2:
+>   Address review comments from Nicolin Chen, kernel test robot, and Sashiko
+>   automated review:
 
-commit cf08ca81d08a04b3b304e8fb4e052f323a09783d upstream.
+This seems to reuse the same message ID as RFCv2's?
 
-When a device uses a PASID for SVA (Shared Virtual Address), it's possible
-that the PASID entry is marked as non-present and FPD bit set before the
-device flushes all ongoing DMA requests and removes the SVA domain. This
-can occur when an exception happens and the process terminates before the
-device driver stops DMA and calls the iommu driver to unbind the PASID.
+So, it ended up with attaching to RFCv2, on my side (mutt).
 
-There's no need to drain the PRQ in the mm release path. Instead, the PRQ
-will be drained in the SVA unbind path. But in such case,
-intel_pasid_tear_down_entry() only checks the presence of the pasid entry
-and returns directly.
+Sashiko also failed to review against the new patches:
+https://sashiko.dev/#/patchset/20260328101706.3448655-1-xiaqinxin%40huawei.com
 
-Add the code to clear the FPD bit and drain the PRQ.
-
-Fixes: c43e1ccdebf2 ("iommu/vt-d: Drain PRQs when domain removed from RID")
-Suggested-by: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Link: https://lore.kernel.org/r/20241217024240.139615-1-baolu.lu@linux.intel.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Gyokhan Kochmarla <gyokhan@amazon.de>
----
- drivers/iommu/intel/pasid.c | 22 +++++++++++++++++++++-
- drivers/iommu/intel/pasid.h |  6 ++++++
- 2 files changed, 27 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index 3d1d43675bf2..74be6b547fc0 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -245,11 +245,31 @@ void intel_pasid_tear_down_entry(struct intel_iommu *iommu, struct device *dev,
- 
- 	spin_lock(&iommu->lock);
- 	pte = intel_pasid_get_entry(dev, pasid);
--	if (WARN_ON(!pte) || !pasid_pte_is_present(pte)) {
-+	if (WARN_ON(!pte)) {
- 		spin_unlock(&iommu->lock);
- 		return;
- 	}
- 
-+	if (!pasid_pte_is_present(pte)) {
-+		if (!pasid_pte_is_fault_disabled(pte)) {
-+			WARN_ON(READ_ONCE(pte->val[0]) != 0);
-+			spin_unlock(&iommu->lock);
-+			return;
-+		}
-+
-+		/*
-+		 * When a PASID is used for SVA by a device, it's possible
-+		 * that the pasid entry is non-present with the Fault
-+		 * Processing Disabled bit set. Clear the pasid entry and
-+		 * drain the PRQ for the PASID before return.
-+		 */
-+		pasid_clear_entry(pte);
-+		spin_unlock(&iommu->lock);
-+		intel_iommu_drain_pasid_prq(dev, pasid);
-+
-+		return;
-+	}
-+
- 	did = pasid_get_domain_id(pte);
- 	pgtt = pasid_pte_get_pgtt(pte);
- 	pasid_clear_present(pte);
-diff --git a/drivers/iommu/intel/pasid.h b/drivers/iommu/intel/pasid.h
-index 55cad7bfa294..8ffb01163f0e 100644
---- a/drivers/iommu/intel/pasid.h
-+++ b/drivers/iommu/intel/pasid.h
-@@ -80,6 +80,12 @@ static inline bool pasid_pte_is_present(struct pasid_entry *pte)
- 	return READ_ONCE(pte->val[0]) & PASID_PTE_PRESENT;
- }
- 
-+/* Get FPD(Fault Processing Disable) bit of a PASID table entry */
-+static inline bool pasid_pte_is_fault_disabled(struct pasid_entry *pte)
-+{
-+	return READ_ONCE(pte->val[0]) & PASID_PTE_FPD;
-+}
-+
- /* Get PGTT field of a PASID table entry */
- static inline u16 pasid_pte_get_pgtt(struct pasid_entry *pte)
- {
--- 
-2.47.3
-
-
-
-
-Amazon Web Services Development Center Germany GmbH
-Tamara-Danz-Str. 13
-10243 Berlin
-Geschaeftsfuehrung: Christof Hellmis, Andreas Stieger
-Eingetragen am Amtsgericht Charlottenburg unter HRB 257764 B
-Sitz: Berlin
-Ust-ID: DE 365 538 597
-
+Nicolin
