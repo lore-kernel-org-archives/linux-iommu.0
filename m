@@ -1,54 +1,54 @@
-Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
+Received: from mail-pg1-f202.google.com (mail-pg1-f202.google.com [209.85.215.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F24A3CAE73
-	for <iommu@lists.linux.dev>; Wed, 27 May 2026 22:14:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74DC73C942C
+	for <iommu@lists.linux.dev>; Wed, 27 May 2026 22:14:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779920067; cv=none; b=qROhFtp1eXUe30Mppldmqt51ajXOuukEcCPU1+qRtTceFtV5+D6Wv2gl7hsCoaGCHa/iCph5+vcyAV7uRoazWel9NtDfmIwyKY5QDJGSatbdhI4YpXf3YQ3+WeAsYy2BD+K+60Co01s+yC4CoUUnb6LwageWTvMAcHSL7wxV8Hw=
+	t=1779920068; cv=none; b=ZxMcsV5NsI4u8EaMOOfr32RUxNs9V9ROaF6ZQRWawtY56ELEliUr3DSJdknZNQ457pPL6kRaeZHSu3IcpnrS1kBnEs2HLWhJdkxWSK26STEnM35YKDINXiudrrbQGpFgHeA6UFl5CoETPzPPDk72tIDMLjPsUKBkGGxaxU5b3NE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779920067; c=relaxed/simple;
-	bh=tqzlfY2gP+OfsrwO4tJNez/zWqdmcR++WYjib0DuV0g=;
+	s=arc-20240116; t=1779920068; c=relaxed/simple;
+	bh=pEGxpvvAuGEkpQ0XqYwd0ie/hYW5lWWKz+XPEVa2B2w=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=eOm7GleCqDZuCqMKCz0Bx8ChPYhULHJ1W2BEodUs9ZdstD32L+iQjaLcEyuozlCC+NX4ORPAxyHzd+2I/hZhpdv8Louf4LG56oRQ1zNkX74DOroQNDGuEEWqXjkbkGDlkhIEZuUHB6swmnwDOqIfoPeg1zG2Q6+e2p6PxqJB98k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=NpX55NzH; arc=none smtp.client-ip=209.85.216.74
+	 To:Cc:Content-Type; b=K+Q5wjo9pLvx+8RZT7BpUnTw/LZzXyd737G8lDgpgBN1s36/DhBooWBjtb/YEbiBPBXpEXAfjvuEZWgZp/iof2TIyHqS+dggbRWkJXTU7DdZNJkp4BAmQzvzq49/IZ/4dZssYdEJHdWjThicWvK1XBlldlK0+Z49ISAo0/2B2NE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Mx787VqX; arc=none smtp.client-ip=209.85.215.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="NpX55NzH"
-Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-3662990c03fso9530660a91.0
-        for <iommu@lists.linux.dev>; Wed, 27 May 2026 15:14:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Mx787VqX"
+Received: by mail-pg1-f202.google.com with SMTP id 41be03b00d2f7-c82c935e048so7481778a12.0
+        for <iommu@lists.linux.dev>; Wed, 27 May 2026 15:14:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779920064; x=1780524864; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1779920067; x=1780524867; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=DsoenszedeSjTu5gG8Ot5kkuypT3biJ+H2calxCYQ+I=;
-        b=NpX55NzHFyuwlnP3UVGnGzdWpORcq+y1C/au03r7T3gXbHsfOOHwKo+WbqBfRkawoj
-         VoplZ+/Q1XdALbFak4m+fIcYGz+KvFNIs0rKLwjG3ZK05u9jaEsXX/BtJgxtt/EhARGL
-         GolLidfyhctPp2VyEjvQZbbCmGutf9TVEfA88hDEWcMx9JkSxqnsv98Ae40HeHvc9bby
-         CeYLjWbCwQxKewEdX0sTgbQMGEDTg3YGHTLj+30Fp99ggw2jOpshQmTzBaJCh/AP8UoR
-         NefAERO/FxeSwFph0oABLMp90pWK19OuJxxzkW1G1RnivM4fWQAtpWIUnoTKl42emuYH
-         eYvQ==
+        bh=4i7eZYDXTe/LeahengnEklx9Y8dIPjrFEcOyyIxBlpQ=;
+        b=Mx787VqXq5OVOHPVCYCPQTDUj8BC2cMtnN+fUPEr2oYhoAIO6hR7+EDY3OXlJ7Bwqo
+         iVI/6Cq1FhrDGgK7eK9vRr5+cfxuBhoH24l73F2jbQ3UPS/SB1ck9sjqjzboiJ+pOogT
+         wthNdsJHtZlZAptXi3f7m5oS7L5Gkou6nXK2Z+74qrW326Ru8Q/bQG6/SikxJhRBjJxG
+         h+6P1BfQHOXiY1ySj7rTwNS+y56OJ5ma+5to6GEZR13sL8zOXZsilXYNAQA9lNXEGShU
+         o4Qx1Keb6FZiPsao5WDFcfMs7CfOdwxD8tdBZVwj1NOD5kqAx/AfynHbB9ByC9bOPjmI
+         iOww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779920064; x=1780524864;
+        d=1e100.net; s=20251104; t=1779920067; x=1780524867;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=DsoenszedeSjTu5gG8Ot5kkuypT3biJ+H2calxCYQ+I=;
-        b=AY5+6/oPTTQmyRHpGz9X3XqX/YP4qV11E/L4UWpcx0HGk8CVLO8S3XcOVZhCoKn1sL
-         HFSteQ66D4lciDQ4hiXtzdvBcmR7RkI0WsgU4hdQztKOfeXEQixxpwOSJUV4mdI2gnhz
-         3o49mnlSe/2NqKlo2k0jVFuko2Vx3jWTRqpluUXEM234sp8168nCzqG6L2E3wwo6Nbqs
-         rwMXlVFwONZErKq0UssLakmlN+hTjzgv9WKqvI96Pra8tD/9szOMV7PaH4lJ6fY8mJ3O
-         woCL2n2IYemxiGyl0bAQn5/lIRb3BMdBOHKm3MN98i/uR2dwGuQbK5SU6J5h8WeJXpaA
-         mP+w==
-X-Gm-Message-State: AOJu0YzPc4qJ2e357IYJfv9x9CUz8TOaWOoutTzm1wfwTScHoV4ln4OW
-	fvrvouO2SpxqK55QQvhDtb+E1X5/4IsCMCNXK7ctWaUFm3l7C+EFVuzOrlDyAmWsExhATdFO1AL
-	q+zIW5pDYO2L+YdLB8G2ezvo34t7Ga+5fzPyYcFpFMX70YjUvK6WCvunzW8zzAjYBdPdCM3Nou+
-	Vn3Z1rmuFA2JXb/+iRz8uCn4bsD8UTvQ==
-X-Received: from plda12.prod.google.com ([2002:a17:902:ee8c:b0:2bd:4b8c:fd31])
- (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a17:902:f709:b0:2bc:dca9:f0ed
- with SMTP id d9443c01a7336-2beb087b062mr204197725ad.15.1779920064134; Wed, 27
- May 2026 15:14:24 -0700 (PDT)
-Date: Wed, 27 May 2026 22:14:01 +0000
+        bh=4i7eZYDXTe/LeahengnEklx9Y8dIPjrFEcOyyIxBlpQ=;
+        b=pE8Svdo8jAy0LTpNql2hE6lvXR1NZQimLB441xSR7qh0RqKrHW2BiFMyIP/OL2o0sp
+         hAvu9Xoj4iMhbM1MbzarEz/kHCPBqCyAjcb3RKSHeNfq4wUTk9UA74aoj0Cq4Cwl5wSi
+         aR2zLOxrnZNBzqU/RGReVIHlQHXWqVKfeeesr1GGTBmpTDm1K4ekHEwrBtowrLCXpxhK
+         eg1qyNLM9+A70POoo5E4ewEmisKfkjQINalw9sQuBGqn3Qq2AN1ooqNnKkgpfxz8ovef
+         I6Z5FKG4HhPo9twdyTFwTahGO7776reGTqvJHrXK0IZFm5yar9EzOaLEhALH49ahQXt3
+         AIYg==
+X-Gm-Message-State: AOJu0YzHHEQnKhugUsacgFTB+OMfuOf+OD7et3XhiAMGuqeiws6/UD1Y
+	nOo63DZTXpyr1qfLVqu7aOmambWMMyBc1wSzYMv1rBDSYST/GduNvTLFi5u+9oc8Nam/ZxSGMgi
+	gDl7V9pKPwj9SDtu9tyKscVxNwoP0W8XLJ1DM6ZxEyglebVOJMFsebYVquQmxthRDS4ix8003Ze
+	2yy2tQxILNhveMmzWvKTdeKkosg0BB7g==
+X-Received: from pfbmu16.prod.google.com ([2002:a05:6a00:6e90:b0:83f:24a9:a829])
+ (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a20:a108:b0:3a2:ebfc:6bfc
+ with SMTP id adf61e73a8af0-3b3296aed5bmr18621407637.17.1779920066375; Wed, 27
+ May 2026 15:14:26 -0700 (PDT)
+Date: Wed, 27 May 2026 22:14:02 +0000
 In-Reply-To: <20260527221407.1756491-1-praan@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -58,92 +58,65 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20260527221407.1756491-1-praan@google.com>
 X-Mailer: git-send-email 2.54.0.794.g4f17f83d09-goog
-Message-ID: <20260527221407.1756491-6-praan@google.com>
-Subject: [PATCH v7 05/11] iommu/arm-smmu-v3: Cache and restore MSI config
+Message-ID: <20260527221407.1756491-7-praan@google.com>
+Subject: [PATCH v7 06/11] iommu/arm-smmu-v3: Handle gerror during suspend
 From: Pranjal Shrivastava <praan@google.com>
 To: iommu@lists.linux.dev
 Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
 	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, 
 	Nicolin Chen <nicolinc@nvidia.com>, Daniel Mentz <danielmentz@google.com>, 
 	Ashish Mhetre <amhetre@nvidia.com>, linux-arm-kernel@lists.infradead.org, 
-	Pranjal Shrivastava <praan@google.com>
+	Pranjal Shrivastava <praan@google.com>, Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="UTF-8"
 
-The SMMU's MSI configuration registers (*_IRQ_CFGn) containing target
-address, data and memory attributes lose their state when the SMMU is
-powered down. We'll need to cache and restore their contents to ensure
-that MSIs work after the system resumes.
+The GERROR register's state might be lost when the SMMU is powered down
+during runtime suspend. Handle any pending errors before suspending.
 
-To address this, cache the original `msi_msg` within the `msi_desc`
-when the configuration is first written by `arm_smmu_write_msi_msg`.
-This primarily includes the target address and data since the memory
-attributes are fixed.
+Refactor the gerror handling logic into a helper function and invoke it
+from the runtime suspend callback after disabling the SMMU. This ensures
+that any late-breaking gerrors are logged and ack'ed before the hardware
+state is lost.
 
-Introduce a new helper `arm_smmu_resume_msis` which will later be called
-during the driver's resume callback. The helper would retrieve the
-cached MSI message for each relevant interrupt (evtq, gerr, priq) via
-get_cached_msi_msg & re-config the registers via arm_smmu_write_msi_msg.
-
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Pranjal Shrivastava <praan@google.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 37 +++++++++++++++++++++
- 1 file changed, 37 insertions(+)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 8682be5060ed..93cee32f6c99 100644
+index 93cee32f6c99..191b5b5b805c 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -4551,6 +4551,9 @@ static void arm_smmu_write_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
- 	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
- 	phys_addr_t *cfg = arm_smmu_msi_cfg[desc->msi_index];
+@@ -2257,10 +2257,9 @@ static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
  
-+	/* Cache the msi_msg for resume */
-+	desc->msg = *msg;
+ static int arm_smmu_device_disable(struct arm_smmu_device *smmu);
+ 
+-static irqreturn_t arm_smmu_gerror_handler(int irq, void *dev)
++static irqreturn_t arm_smmu_handle_gerror(struct arm_smmu_device *smmu)
+ {
+ 	u32 gerror, gerrorn, active;
+-	struct arm_smmu_device *smmu = dev;
+ 
+ 	gerror = readl_relaxed(smmu->base + ARM_SMMU_GERROR);
+ 	gerrorn = readl_relaxed(smmu->base + ARM_SMMU_GERRORN);
+@@ -2300,9 +2299,17 @@ static irqreturn_t arm_smmu_gerror_handler(int irq, void *dev)
+ 		arm_smmu_cmdq_skip_err(smmu);
+ 
+ 	writel(gerror, smmu->base + ARM_SMMU_GERRORN);
 +
- 	doorbell = (((u64)msg->address_hi) << 32) | msg->address_lo;
- 	doorbell &= MSI_CFG0_ADDR_MASK;
- 
-@@ -4559,6 +4562,40 @@ static void arm_smmu_write_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
- 	writel_relaxed(ARM_SMMU_MEMATTR_DEVICE_nGnRE, smmu->base + cfg[2]);
+ 	return IRQ_HANDLED;
  }
  
-+static void arm_smmu_resume_msi(struct arm_smmu_device *smmu,
-+				unsigned int irq, const char *name)
++static irqreturn_t arm_smmu_gerror_handler(int irq, void *dev)
 +{
-+	struct msi_desc *desc;
-+	struct msi_msg msg;
++	struct arm_smmu_device *smmu = dev;
 +
-+	if (!irq)
-+		return;
-+
-+	desc = irq_get_msi_desc(irq);
-+	if (!desc) {
-+		dev_err(smmu->dev, "Failed to resume msi: %s", name);
-+		return;
-+	}
-+
-+	get_cached_msi_msg(irq, &msg);
-+	arm_smmu_write_msi_msg(desc, &msg);
++	return arm_smmu_handle_gerror(smmu);
 +}
 +
-+static void arm_smmu_resume_msis(struct arm_smmu_device *smmu)
-+{
-+	if (!(smmu->features & ARM_SMMU_FEAT_MSI))
-+		return;
-+
-+	if (!dev_get_msi_domain(smmu->dev))
-+		return;
-+
-+	arm_smmu_resume_msi(smmu, smmu->gerr_irq, "gerror");
-+	arm_smmu_resume_msi(smmu, smmu->evtq.q.irq, "evtq");
-+
-+	if (smmu->features & ARM_SMMU_FEAT_PRI)
-+		arm_smmu_resume_msi(smmu, smmu->priq.q.irq, "priq");
-+}
-+
- static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
+ static irqreturn_t arm_smmu_combined_irq_thread(int irq, void *dev)
  {
- 	int ret, nvec = ARM_SMMU_MAX_MSIS;
+ 	struct arm_smmu_device *smmu = dev;
 -- 
 2.54.0.794.g4f17f83d09-goog
 
