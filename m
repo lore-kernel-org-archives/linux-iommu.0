@@ -1,114 +1,181 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EC3E44CAEC
-	for <iommu@lists.linux.dev>; Wed, 27 May 2026 17:11:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEDA2453495;
+	Wed, 27 May 2026 17:49:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779901877; cv=none; b=eGCBauA2HPCSo72BgqHMt/18ZF3qAxVujS6QgqGdX81zgUBZYRcrtRQjDkKHwCQcZbbVnSQSI697sCu9MMPnQwUUnZ92lsO0ZabTxIz0qz2jDnoRgP7XfI1ddPnMe/WNiXSS55SJWI4CLATSMi+RMLXSVqdUxYqrfrBfG9I+fZI=
+	t=1779904172; cv=none; b=eOlyilXIuBwLuZyp5s2BsKu50xi9KYDFxivjl8ddib3b6/1MnpDmQuGmXkvq3CWncyzM9t/XD3gSdGuefpClYI6uQeGhLeRJq+Y/t5qCPdXGQuGPB+zO7NeUjQrKWRnGPTTyKgpAXiF0RahzWLDmeIf0C5z5SRpc0nq1YWw32j0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779901877; c=relaxed/simple;
-	bh=5dhYnTz29zgsmBRPPybd5CWIS+uX9bZsxkT+ovNyCbw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OQWfaHQUoFJewwq6JOzL3CLIOWCGUhDLg1QG4mESjj+wykgsDOC2tlEAyodj8zdjsmMa53ojqWDOm5q0xH89LniTi8FHi+EdL+uOekTca+FU72rLHb6dQ41odtxwX7e6UeDL8NjxNCa/XaPBJ3ioQ4k6+EFy8WtBddipX7/1Ew4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=C2rb0WuJ; arc=none smtp.client-ip=209.85.214.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1779904172; c=relaxed/simple;
+	bh=QHo4vfpTo+OuuUOJhK/ykgVt9OF28GCINhc8L0+DwLY=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=fiyJhb5cvnenwkyAJFA6taOBPqVNkVMNmqxcTHPR5Ov+mS3Os5368YxSY8A+uF6pgBFxeP7f21FXO3NT+MZ7T40S7l8ZohPDOWm3FF5r+8v65rgEAZWdWxNc1YiM3e5NEvz7iwaDG2YMAm6u75Ki5dRs2bQ8ypPelvZktMsmK3E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QmO3s03N; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="C2rb0WuJ"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2ba180a022dso415ad.1
-        for <iommu@lists.linux.dev>; Wed, 27 May 2026 10:11:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779901876; x=1780506676; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=vvAhvfUYiK9fAI1qqXG1UgLn6BZJB8NhaqamtOZNNLY=;
-        b=C2rb0WuJQacVSXvySl4YsXwqzCnWpClepYjdx8XkFfg5sa5ocpxjICd+VXl4t+mt1c
-         5/9zYqxUxUiSNM8OJ2BdifeRIxr74XC4bZcNmoydpbORpMehT00cZNnRLFFX8ZSybASF
-         5IZQrPDzL6lZz5xGaNeb1ecAaZLkzBJuLCIcXPEmeTPDgrVi9+ONDhpt8OaJ04gngbE7
-         4PRd/hMc0P8SKub+yyYTaMzVKcbOoB9mSQhY+Xblyp1eJnTPKtOHZLVWDc2saD2aV0BF
-         9JM9adnTyFTx3KapcZamTfL4R3Hstp6sohszqvtJKoDKRiEZZ8UmraeEMqEw5QdBFT+Y
-         t7aQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779901876; x=1780506676;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=vvAhvfUYiK9fAI1qqXG1UgLn6BZJB8NhaqamtOZNNLY=;
-        b=X5ixXPR2R0LbAcev0XKPr2C/zNdDXHlLyO/dPrHIFy1vR5kfyuoIABshj8syauIuuW
-         qCJT3dfpKddJQUYfXHxlDXJ96Da6g9R+poZc6NazBsb00hPU8f7sharoZEU+OZ91+CeM
-         I8b+F9AAVkvnGviXSirQm1ytFNtv797tbWG489FPv+1a0zJ362GEGBKC6RDcUxvbmpuF
-         DbmVhi2SQCElq8+m0IBkkJT10vOA/kaArLMl775l4i1Q1RKc+lRmv43JXYpAHdXrG0Cw
-         Hw4qWP+eSQlDLyaLLqrUgJmWvEEoxAmlHH6Ki+TLf5pLZQbc79E4FbXAi17uXK0P5Rs7
-         pMNA==
-X-Forwarded-Encrypted: i=1; AFNElJ/5PWZRCgVNvbSFpdN4JMHHImaYtJH7k0gMfTd34d3qiBQM0v2Nqi5ecJbKijuTfsS/tpcfJg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx2opRNUc9KNbfF1eDGfC6hNHNpmlinjNTJod+Nu8sZXaGq2aoW
-	Rc9i3YAF3DVazyCCQ0rMN2mRi9vFiWhSn2/ZfIYbX3MAaiMoTIy1cQ1G3BUsZxyhJg==
-X-Gm-Gg: Acq92OH9vIiIzExVgPxHK+MWy85a5+Xz5NvbdV869wI78Qex2uqTjuW3g5yU5CU60Yj
-	GPevcGo8xjdUh5LBXfzSOBo1BNeQni4FBYRm+2jM3Y6Kpj3K6HWJQNzZZ2VXjxorTIl2ZFARbII
-	5u3sDpJEybQneIkps3qYltI5XH9GhNVvh5H7Gz+KVQUNL7UWDn58Q7rxj2Kbg+O98CFoyf7vlJK
-	K2FICTZFOgAwZex0izoj1J4zdmfghHVZeEPaR1mSN8XFPu3Bb3E2oEvIj66uMi1ZJvNIzx24cT7
-	Falfl+ldOI8pVPPd3ABFiizFSJdN/ZwoifMBOs6YQQFGqK31zSmdyql8Rh8YZcpgpLN2jTefVzk
-	B9hUBiSpNWjIL7yUW/g3PMlokXYsupP5jgdVv9x34uuhCeNXASL9pQ3wXeRyCz0CN9JZryAovo4
-	iS70QF2zhlw10pG30oEckEV1t+cvlKURGvKXbw9i6luytktB0r313nqvAcd4LLdTezDpU/3A==
-X-Received: by 2002:a17:902:cf11:b0:2bd:7bec:f0e6 with SMTP id d9443c01a7336-2bec116b716mr9444575ad.1.1779901875118;
-        Wed, 27 May 2026 10:11:15 -0700 (PDT)
-Received: from google.com (153.46.83.34.bc.googleusercontent.com. [34.83.46.153])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2beb5900b8bsm155801785ad.76.2026.05.27.10.11.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 May 2026 10:11:14 -0700 (PDT)
-Date: Wed, 27 May 2026 17:11:10 +0000
-From: Samiullah Khawaja <skhawaja@google.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: David Woodhouse <dwmw2@infradead.org>, 
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>, 
-	Adithya Jayachandran <ajayachandra@nvidia.com>, Parav Pandit <parav@nvidia.com>, 
-	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
-	Pratyush Yadav <pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	David Matlack <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
-	Chris Li <chrisl@kernel.org>, Pranjal Shrivastava <praan@google.com>, 
-	Vipin Sharma <vipinsh@google.com>, YiFei Zhu <zhuyifei@google.com>
-Subject: Re: [PATCH v2 06/16] iommupt: Implement preserve/unpreserve/restore
- callbacks
-Message-ID: <ahclK4Pky0huLpoJ@google.com>
-References: <20260427175633.1978233-1-skhawaja@google.com>
- <20260427175633.1978233-7-skhawaja@google.com>
- <20260523133357.GH7702@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QmO3s03N"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4D841F000E9;
+	Wed, 27 May 2026 17:49:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779904171;
+	bh=SGme9EGefoC4cL8s1RAk5wHcM5ST2icrcVT0s+6JiQc=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=QmO3s03NUjN2KFqtIUNtplCgcfaiu+Zcwi+mR9p0ChcHpkFSiBa0c8XOUU77YxoRC
+	 EC+3w96HLGEGLX4iD+1lIV1YJB2h6ncGaOV1DRryGf8wiB26VaRL2WTfu258Kmv5bR
+	 9tJMY3nZ/suiqDc9/rWUBVC85sqTB51FU27hoFmjA/mIY50pjtjg2DEyP+xmAhKoWi
+	 VylILIA7GlyRI9PuJlsSklRpORIYI4TWUAWhtTUvqOy6DyFkVqoQZCTx7cDZUbtGd+
+	 D3A+64reAFfrEt8eJ7xuksT7wzZdkmXU91SPyGB6Sq1fXqjNLqLp3x9pnD417T3vMq
+	 fRws0Ks1kio+g==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: "Dan Williams (nvidia)" <djbw@kernel.org>,
+	Alexey Kardashevskiy <aik@amd.com>, linux-coco@lists.linux.dev,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	kvm@vger.kernel.org
+Cc: Bjorn Helgaas <helgaas@kernel.org>,
+	Dan Williams <djbw@kernel.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Joerg Roedel <joro@8bytes.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Samuel Ortiz <sameo@rivosinc.com>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Tony Krowiak <akrowiak@linux.ibm.com>,
+	Halil Pasic <pasic@linux.ibm.com>,
+	Jason Herne <jjherne@linux.ibm.com>,
+	Harald Freudenberger <freude@linux.ibm.com>,
+	Holger Dengler <dengler@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Alex Williamson <alex@shazbot.org>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Farhan Ali <alifm@linux.ibm.com>,
+	Eric Farman <farman@linux.ibm.com>, linux-s390@vger.kernel.org
+Subject: Re: [PATCH v5 5/5] iommufd/vdevice: add TSM request ioctl
+In-Reply-To: <yq5apl2gsw6y.fsf@kernel.org>
+References: <20260525154816.1029642-1-aneesh.kumar@kernel.org>
+ <20260525154816.1029642-6-aneesh.kumar@kernel.org>
+ <becd865d-09a4-4ac3-b719-4a0deae2692a@amd.com>
+ <6a168c8ea7d10_2129b2100e@djbw-dev.notmuch> <yq5apl2gsw6y.fsf@kernel.org>
+Date: Wed, 27 May 2026 23:19:15 +0530
+Message-ID: <yq5aldd4spyc.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20260523133357.GH7702@ziepe.ca>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, May 23, 2026 at 10:33:57AM -0300, Jason Gunthorpe wrote:
->On Mon, Apr 27, 2026 at 05:56:23PM +0000, Samiullah Khawaja wrote:
->> @@ -266,12 +273,22 @@ struct pt_iommu_cfg {
->>  	};                              \
->>  	IOMMU_PROTOTYPES(fmt)
+Aneesh Kumar K.V <aneesh.kumar@kernel.org> writes:
+
+> "Dan Williams (nvidia)" <djbw@kernel.org> writes:
+>
+>> Alexey Kardashevskiy wrote:
+>>>
+
+......
+
+>>>=20
+>>> I have 3 types of requests to fit here, all go via VM -> KVM -> QEMU ->=
+ IOMMUFD -> TSM.
+>>>=20
+>>> 1) bind/unbind TDI <- moves to CONFIG_LOCKED, this is "OP";
+>>> 2) start/stop TDI <- moves to RUN, this is "GR"? Right now I route it v=
+ia "OP";
+>>> 3) enable/disable MMIO/DMA <- no TDI state change, this is "GR" but whi=
+ch scope is it here?
 >>
->> +#ifdef CONFIG_IOMMU_LIVEUPDATE
->> +#define IOMMU_PT_LIVEUPDATE_OPS(fmt)			\
->> +	, .preserve = &pt_iommu_##fmt##_preserve,	\
->> +	.unpreserve = &pt_iommu_##fmt##_unpreserve,	\
->> +	.restore = &pt_iommu_##fmt##_restore
->> +#else
->> +#define IOMMU_PT_LIVEUPDATE_OPS(fmt)
->> +#endif
+>> The scope parameter was meant to enumerate a security model for classes
+>> of commands that are otherwise opaque to the kernel. However, none of
+>> the commands we are targeting are opaque (private specification with
+>> unknown effect). It now turns out there is no role for @scope for
+>> security.
+>>
+>> Now a command family that iommufd can validate seems useful. As it
+>> stands this implementation aliases command codes across TSMs. Do we
+>> proceed with creating an actual shared command uapi for the truly shared
+>> commands:
+>>
+>> TSM_REQ_TYPE_DEFAULT: Commands every arch needs
+>> TSM_REQ_READ_OBJECT
+>> TSM_REQ_REGEN_OBJECT
+>> TSM_REQ_OBJECT_INFO
+>> TSM_REQ_VALIDATE_MMIO
+>> TSM_REQ_SET_TDI_STATE
+>>
+>> TSM_REQ_TYPE_SEV: Commands only SEV needs
+>> TSM_REQ_SEV_ENABLE_DMA
+>> TSM_REQ_SEV_DISABLE_DMA
+>>
+>> ...or just observe that per CC arch commands are needed to setup the VM
+>> so per CC arch commands are needed to marshal device assignment support
+>> requests.
+>>
+>> In that case pci_tsm_req_scope becomes tsm_req_type and is just:
+>>
+>> TSM_REQ_TYPE_CCA
+>> TSM_REQ_TYPE_SEV
+>> TSM_REQ_TYPE_TDX
+>>
+>> I am leaning towards the latter at this point.
 >
->Don't do it like this at all, new iommupt unique ops should be routed
->through struct pt_iommu_ops
+> But we already have struct pci_tsm_ops::guest_req, which is specific to
+> the underlying CC architecture. From the above, pci_tsm_req_scope also
+> appears to carry the same information. Is that useful?
 >
->See how map_range/unmap_range now work
 
-Ah yes. That also looks much cleaner. I will update this.
->
->Jason
+I think there is value in having the VMM express the guest=E2=80=99s
+confidential computing architecture, so that the TSM backend can
+validate whether it should handle that guest request ?.
 
-Sami
+So it would not be the IOMMU validating the scope value, but rather
+pci_tsm_ops::guest_req.
+
+static ssize_t cca_tsm_guest_req(struct pci_tdi *tdi, enum pci_tsm_req_scop=
+e scope,
+		sockptr_t req, size_t req_len, sockptr_t resp,
+		size_t resp_len, u64 *tsm_code)
+{
+	struct pci_dev *pdev =3D tdi->pdev;
+
+	/* reject the guest request if VMM was using the link tsm wrongly. The gue=
+st
+	 * was using a wrong CC archiecture with this link tsm
+	 */
+	if (scope !=3D TSM_REQ_TYPE_CCA)
+		return -EINVAL;
+
+
+Jason Gunthorpe <jgg@ziepe.ca> writes:
+
+> On Tue, May 26, 2026 at 11:17:50PM -0700, Dan Williams (nvidia) wrote:
+>
+>> In that case pci_tsm_req_scope becomes tsm_req_type and is just:
+>>=20
+>> TSM_REQ_TYPE_CCA
+>> TSM_REQ_TYPE_SEV
+>> TSM_REQ_TYPE_TDX
+>>=20
+>> I am leaning towards the latter at this point.
+>
+> Yeah, this sounds good. I would also include an common op field that
+> can be decoded by the TSM driver based on the TYPE above, and the
+> usual in/out message buffers.
+
+We already have iommufd_vdevice_tsm_op_ioctl() to handle common
+operations. Right now, it handles IOMMU_VDEVICE_TSM_BIND and
+IOMMU_VDEVICE_TSM_UNBIND. I guess we should move TSM_REQ_SET_TDI_STATE
+operations to that as well?
+
+-aneesh
