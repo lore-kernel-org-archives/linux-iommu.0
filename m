@@ -1,218 +1,249 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58ABA3B5304;
-	Wed, 27 May 2026 06:56:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.16
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779864982; cv=fail; b=mfADM1wfiFKab7ORIb/GWzBo8YEzx/JZrnR5aHab5dIy1hOlhnqzRjeMQaubWm9gN/zn7Q6HC61SfX6mYG3rvhf9nf3ixrGM6kz/TFFpJTrO76Sx447fNv2UiTS+tqFvT2G3Rz1S52EaRrSW6O6M+kOsSQNILkqMVBdJ+Rj+RyY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779864982; c=relaxed/simple;
-	bh=8h+vD6tn1Ia7uoLGzZmdq2+R6KwUGYGvWoMe4tYQfjo=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=uwrzsSnIklWiEUqyvQu9z8BacYRCp+5BHILS7OP6uP16pjDQm8GiMHBJ0ylrsc3fGSWz7szdntVBN0WW8K4pSyPTuwbyVSCXysV/J8B2R4UHhX8kaN22YP/zZIZh13rAF3QTWRaDlBEyQvu/ZnWfwi4kJiNWB5Uv2bzVmfKJpi8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QHG4ZEKa; arc=fail smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BA923DEAE3
+	for <iommu@lists.linux.dev>; Wed, 27 May 2026 08:32:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779870749; cv=none; b=O+r8fJCgxhC9FfOe36gRJJRgM2VdEOGDCifNkuu+Otv5TB3jmbUygmi5rsdyCHMeiXd34pSEgCBpWWZaXO26GAcdhiE7TeTuhnuB/nGhxbFkfcwS+IRRK3HMrtklnCnszxN7HlBGWeIAGmZ7kz+GtHbi/hn7znxdtefTyB7q/50=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779870749; c=relaxed/simple;
+	bh=cwHIjHAe8KJf/GMsGK3Swi8r1zcSw/mau5aBaAmzT30=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=iCjxJIPRv68sB3321UpFgqzWQ1qUoLSlk17I8BEF+9tPH6yooJu3kEy2riv7O2m0Dmm2ZTiuCirIwcGSvNupU+W6DovLOUKSMvhDEIELt/7B58r6oDJYAsH+AY6CiN8menfEHx7tHHTHW69Nr2Nm/VjneTQtP5eL1WOtrzVqJew=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OKycEHQY; arc=none smtp.client-ip=209.85.221.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QHG4ZEKa"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1779864982; x=1811400982;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=8h+vD6tn1Ia7uoLGzZmdq2+R6KwUGYGvWoMe4tYQfjo=;
-  b=QHG4ZEKa/fWfJThr/l+rrSS9lxNGjZykg+4NVcmWsRXZ8s5JVy+fcOxk
-   RZnpghlTthxHCt2IG55Ok04rIZ0McQ5HiFpjCmFlyFO3NDITUheb9+6yj
-   mxXxEIGxKdiTI8GvuQ4jdd0QKHfropqejTItCo3wdxvYF0TxuQDx+cWft
-   Hm+doA6NGNTMgjoKzRfujHkYBB7kPwG5amwEcVlKfU8tr1OZU8cjPDUi6
-   mG3VjWhQ8uAvrF43NNt9HKdkVr/C2tbKz0ZBP8/4j4PxfIurMuFaB+tuK
-   f/iam9uFU6F0eJWs3e6rdu0hI1/SIXQKKy/w+PCYcLXsLVnMDGrOto/M1
-   w==;
-X-CSE-ConnectionGUID: hTPbeRc7SEmDjH0EVhIwlg==
-X-CSE-MsgGUID: xnG6V80rQC+u1+3SrVfFbA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11798"; a="80874620"
-X-IronPort-AV: E=Sophos;i="6.24,171,1774335600"; 
-   d="scan'208";a="80874620"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2026 23:56:21 -0700
-X-CSE-ConnectionGUID: pCxM1vI5Q8WLYzjFS/HBQQ==
-X-CSE-MsgGUID: APlJOW4jSo+OtL8M8IIbWg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,171,1774335600"; 
-   d="scan'208";a="235786705"
-Received: from fmsmsx903.amr.corp.intel.com ([10.18.126.92])
-  by fmviesa009.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2026 23:56:20 -0700
-Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
- fmsmsx903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Tue, 26 May 2026 23:56:19 -0700
-Received: from fmsedg902.ED.cps.intel.com (10.1.192.144) by
- FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Tue, 26 May 2026 23:56:19 -0700
-Received: from PH8PR06CU001.outbound.protection.outlook.com (40.107.209.52) by
- edgegateway.intel.com (192.55.55.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Tue, 26 May 2026 23:56:19 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=o97TNKsQjPPmjStGL6sN0nW4c79v2iuPEy6zlfrfLEYwa17TrYEtCgn8DDVxArI6nNxvr+3LzDQNSzS8qSqVa1GVfSSAo8nRJsIL8IbMADvtd9w3cz3Yz8LlVlcC4td0ZGFexjgu+GLkvLEc+uvoWfze/8xly43bpKNf4v7dz5e0TNfPfZWj56XkwyGmL0kiR3ZqroEO8Mh7jWCeLviv2GI27dckALUGSvx1AJrVerx9xSLdFccPze3V61o4lJKNsrmtBe9S5+Hod1pUbFTPvbGN/SFeexlSKwLa/k9f0wc7NqjUwVZFD+ezGwwiUkN+BV6+mAb9zblJSNGyGjsTXw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8h+vD6tn1Ia7uoLGzZmdq2+R6KwUGYGvWoMe4tYQfjo=;
- b=n3CpElkvePp/QizXPPfqHdeEJ+hwtQIlvwlRY0BJeDnrd98f2wlbtLTARPNvokDFqTpvnhnZ0XdZOTM5FqI+yCnJ7jOaRlYHdD7RvTtCbLsDQdOmeEZUqf3WIlN2UYfMGXMhtt3oGJJedN97gqFCGEMfWCq9+X8wu55aafSj/+AydV7NTB3fK3IBY9uC6Qbyhx0D5m3EST2iQ0vkq5rOMdDPl0KfsoO4aXyT/LaYoPhwupc/G6lTpxxQLBPtOx9shzx3+zqKkPYaBG3O5/ZUnv8YtRFp6ykWWX7zUggIOtWPQOjtsLMtvMfOpUOtnYuChYHMV7rD8i3oRa43rBjfqg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from DM6PR11MB3690.namprd11.prod.outlook.com (2603:10b6:5:13d::32)
- by SJ5PPF77ABF615C.namprd11.prod.outlook.com (2603:10b6:a0f:fc02::836) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.48.17; Wed, 27 May
- 2026 06:56:17 +0000
-Received: from DM6PR11MB3690.namprd11.prod.outlook.com
- ([fe80::7db8:f6b3:30f8:ee4b]) by DM6PR11MB3690.namprd11.prod.outlook.com
- ([fe80::7db8:f6b3:30f8:ee4b%4]) with mapi id 15.21.0048.016; Wed, 27 May 2026
- 06:56:17 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: "Dan Williams (nvidia)" <djbw@kernel.org>, Alexey Kardashevskiy
-	<aik@amd.com>, "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>
-CC: Bjorn Helgaas <helgaas@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>, "Joerg
- Roedel" <joro@8bytes.org>, Jonathan Cameron <jic23@kernel.org>, Nicolin Chen
-	<nicolinc@nvidia.com>, Samuel Ortiz <sameo@rivosinc.com>, Steven Price
-	<steven.price@arm.com>, Suzuki K Poulose <Suzuki.Poulose@arm.com>, "Will
- Deacon" <will@kernel.org>, Xu Yilun <yilun.xu@linux.intel.com>, "Shameer
- Kolothum" <shameerali.kolothum.thodi@huawei.com>, Paolo Bonzini
-	<pbonzini@redhat.com>, Tony Krowiak <akrowiak@linux.ibm.com>, Halil Pasic
-	<pasic@linux.ibm.com>, Jason Herne <jjherne@linux.ibm.com>, "Harald
- Freudenberger" <freude@linux.ibm.com>, Holger Dengler
-	<dengler@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik
-	<gor@linux.ibm.com>, Alexander Gordeev <agordeev@linux.ibm.com>, "Christian
- Borntraeger" <borntraeger@linux.ibm.com>, Sven Schnelle
-	<svens@linux.ibm.com>, Alex Williamson <alex@shazbot.org>, Matthew Rosato
-	<mjrosato@linux.ibm.com>, Farhan Ali <alifm@linux.ibm.com>, Eric Farman
-	<farman@linux.ibm.com>, "linux-s390@vger.kernel.org"
-	<linux-s390@vger.kernel.org>
-Subject: RE: [PATCH v5 5/5] iommufd/vdevice: add TSM request ioctl
-Thread-Topic: [PATCH v5 5/5] iommufd/vdevice: add TSM request ioctl
-Thread-Index: AQHc7F4e17RJh85db0aDel7MBcIAD7YhA0YAgABlFACAAAl0UA==
-Date: Wed, 27 May 2026 06:56:17 +0000
-Message-ID: <DM6PR11MB3690AC082E231282BE7352038C082@DM6PR11MB3690.namprd11.prod.outlook.com>
-References: <20260525154816.1029642-1-aneesh.kumar@kernel.org>
- <20260525154816.1029642-6-aneesh.kumar@kernel.org>
- <becd865d-09a4-4ac3-b719-4a0deae2692a@amd.com>
- <6a168c8ea7d10_2129b2100e@djbw-dev.notmuch>
-In-Reply-To: <6a168c8ea7d10_2129b2100e@djbw-dev.notmuch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DM6PR11MB3690:EE_|SJ5PPF77ABF615C:EE_
-x-ms-office365-filtering-correlation-id: c03333e2-fd66-4fcd-70cb-08debbbd0ced
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|366016|376014|7416014|1800799024|11063799006|4143699003|38070700021|3023799007|56012099006|22082099003|18002099003;
-x-microsoft-antispam-message-info: 1oioqySxnwCtIBvLK+FyRp9XOmYt/aAQAQO8ZwWsXbEub4RhP2T6mLfumk1y1mMrxvOxbOnwMFLwy+2sozbQGyl5tNwn9VLFbSlVRNisADqt10nYmyWLAQveK4oW03E5SsW7Ik6w+k56+No1FXIhL2CU6RwcdbpR9Xak1sTV9EZE2UA3qx6FovIZ692zS0d32ZnYKrVt6dgFEbV/AZ5vJeAuOSxUO8OIyC9dqDSjWB8+Lb5gfLzzp1wmepK2GTm5GnurUK5utdVeTPpFAfXXsvqMLTyF8A1rdSoHi8HO0TefuUCZTL5GtxJESJvzwLQJQLIZe94E4eYSgoDzPimHWgftVxmXi6+Xrd/VUNPpW/okYgtW9hzovRgLzSdVNCnk/09HrCQq4hyCMCo3ZpH90bBVePGi3x8hpZFHz7bMHVl/X3IX9rnsmU4hd7a5vNmQQgIMOaH1lMRwnut4qLVSdRjl6B+QTYPrzd+r/aiI9XuoY/73tGetisCHCAMotKCYr3JKCzUg5yvMf2yPmGjFQVKNf8P9LSBgLtrupr41lBuBQ/hDsOcaa7blgg+MktZVW+QhAiHn03cwURYKAZCgk8arVj4aeTM64Mh4PHFNjgOuPy6E/HpdpQHFUijVHAw7vMxbEuVP6y+Zvfbam1DNDXh1fZooBgpPvZ/fojT9ojiscZvNEivJoDTycAnaBt/JYcdKx3ILdN1kP8hQSVg8DHt80wCcAgBAY9LdBT7erJwwsqKALhSQjE3Mkq7GlmuS
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3690.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024)(11063799006)(4143699003)(38070700021)(3023799007)(56012099006)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?cTFObjNBQVZnSEFJVEpqT3JvdFpUWWk5Zy90WUVxVUx2NmpIai93aXRrYnBT?=
- =?utf-8?B?aWFTUVpCbXVKalFnajZGdUpwVURjU3lkWms5enJiWXBqWHVVTmoyaHdnTGUr?=
- =?utf-8?B?Z3hpTHFzQlZLaXBCbXQzYjVKSGlNM1EvY3plbGFmYkVOR2ZvSDJXWFJ3aTVK?=
- =?utf-8?B?OERjTzViUTQ4VitwS3VqWmtSc3NyQmxSOHY1Z0IxWHhYdmJvSjR3NzVzUUJy?=
- =?utf-8?B?L2xSYmpYOWdXVjRNaUhLT3pXOGVwTmdzbjNiK2JBUzV5MmhWRTIxSFhXbmt0?=
- =?utf-8?B?WHJsMHJocTBnTDFhNm5YTDdITlJRdEJxYXRJS0FTSGRVMXlVbFljRHNtbU1I?=
- =?utf-8?B?ZVQ3cktZcDBHWVk0aTYvMm9rOU1BV0FTUk5CaUw2dHNoVy9iZ2FWMCs5NVhP?=
- =?utf-8?B?MW4yQ2JKcHErRmcwcFVtYU5USUFZTkY0UmZMRkVQZTMzYnNQdDNQcnJhM1lL?=
- =?utf-8?B?WWlCOTVLRTdIM2oxdmwvWnpnL0xrRTNwYVM2Tm9KQXVBdHkrTEpGZTFDYzBW?=
- =?utf-8?B?UHJjMWgvT1lyUXdaY3gwajdSSys2T3FNZ09kSFZsY2pkb2JMWHphVnh5L2xw?=
- =?utf-8?B?eEhQcUtzekRCSDVGMVdrQ3J5Yk9mbGhIZ2gzcmxUUTRWbGdvUlNTdVlNMHJr?=
- =?utf-8?B?eG5DL3NKZE9GM0c4NEUyS0dQUnA2cjI1ak80RE1lWXR3Z043WVdUZzVIUVc5?=
- =?utf-8?B?ZEZpcW1xOXJLTW9yYkFFS01kaWcyLy9KQTRGZ1RJaEI4cjNIaXN1M1hsTk0v?=
- =?utf-8?B?N3ZUMWtyeTFCcmVBOXRsekNwa2VaMU53WXlZcEUrVWpWNUI4ZCtVTWZ5T0hZ?=
- =?utf-8?B?YUtteHRnUXZpSVh5YUo1MUxuME5nL0pFWUQ4THdhMVJKWnBoV05rQ3VHT0Zr?=
- =?utf-8?B?MERJN1pnZmlwV1c3U3YyQVg0U2x0bCtiVzRuMkREdmIwNlN0NUZ3WFB4SFRR?=
- =?utf-8?B?cXlWWDVhNDFxTzl3VlB0c1VmRStYdXR3enU0UG1ZNVRtcmVHNFNDU3JUVng5?=
- =?utf-8?B?bndMYUREVkdRSVpEY2liMjB2T2tNdlBqNHJkUXFPeVd3ZFgwRW9IUnhDb2x4?=
- =?utf-8?B?c1VDWkRmQ3RsZWtBblNxdHdYVngzMkpOMUV5VmNGME9JVDhKUDQ1Ynd0cmxZ?=
- =?utf-8?B?a3hNMUp6S3FHUkYxY3VwNEI0SWtOM2dKelR1Q1RNMW4xZ1Npd3RncTlZdXJP?=
- =?utf-8?B?RTJIbm5wcjBUc3grQnNmRHJxek5waS9JeXcvZUxXTWZDOGVQZDlLZEkrRVp5?=
- =?utf-8?B?VDJEcmVhZUkwaUVFbXMrWS8zbzA3YVZ5SnAzb2lYbURNOWdqRXJjdFNYREI0?=
- =?utf-8?B?VjVYU3lSUlQ4TkFrQUluNm9DMnYxQmR5ajU5T3hYVVNsUTdVQWU5cGRmejc4?=
- =?utf-8?B?RjB2VkVtWUVHeEFRd1MxV1dTQ0k2UXUvNmlyMG52QzIxUEJubWZGblI5NW5u?=
- =?utf-8?B?Tyt5bkhXNEZyQW1JNkZQUXFNY3ZocXBhY3grMlJzQkgrQ0UrN1I1UHZ3bnYw?=
- =?utf-8?B?TWFTaDJyUEdYdGhvYXVjWUJpK0YrRG4wWnpYTE5VNURwZmJHOGxlUWIzR21a?=
- =?utf-8?B?UlFmU2p2QkdqMHVLTnJjbnRucmhwYUtOYS9HT1hLcTBUMHRxZUhZQVRIamR5?=
- =?utf-8?B?TDFPbFZqQzV5SDhxMFZpYXJramZmdHZDbUFXaUppcFYva24vbGl0QnhxQTI5?=
- =?utf-8?B?bWc3aTdwSmF5bU01TTlSVFFvV2VuakhvdGJlVy9rR1dzUGVwRnY5NmQ1SGtt?=
- =?utf-8?B?eUtMa202bVZ3V1k1eUpwMm1iNXBzUUZHUmhsSk9KUGx5MnZKMXZ2M1A1RkVL?=
- =?utf-8?B?VllDc0hCb3JibktJZ2hIYTFlRTJIMTdUYW5DK1hCRmM4MlRLUlJ1bWRpYThz?=
- =?utf-8?B?czRkeWl1YkdXbzh2eitwM2Nya0ZhdlJ5S1ZRVlMxc2lqbXluZS9VZk5oa0w3?=
- =?utf-8?B?Zy93RjRFNnRDSmhJTktQbDA0SU9wTnBNOERrYy9Mc2gwYUhnMmMwb3ZIYVNa?=
- =?utf-8?B?YUZFcStvd001aTJIaG1DY3FmNFA3ZTRkSWk5OTR5czRRN3RMNjJZckFBaWl6?=
- =?utf-8?B?S0NWbDAyY2JLYVk5Q0x6V3c4MEx4cVh2MzRITWpJMnRkbUttUS81NVdJVlhl?=
- =?utf-8?B?czFuWXU5ZXVNUURJY1BNdWMvbU9QWDdqU1UwTGFmci9BSThTUzFqNkN0bnlq?=
- =?utf-8?B?MmxYNnBXSzA0WnlpVkRidGFZVTh1K0VBWk1tZ2VtNWdNK1pHdzh6SnducDhk?=
- =?utf-8?B?bGFUV29Bem1yVXpCZXFBQnR0LzFiZGVsZEplOW0yc0FmSVJTRitxcnFJb1Rl?=
- =?utf-8?B?NW9nbEkvcG5qdlluS0N4Y1RGeitPOGdIRGF0RDc3eHRjMkxGb1FSUT09?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OKycEHQY"
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-45ed9336049so1164338f8f.0
+        for <iommu@lists.linux.dev>; Wed, 27 May 2026 01:32:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779870746; x=1780475546; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7dy1tdo3WsNXJ1hXO7TcI9ffqFZPej1pmbFWn2tPCdc=;
+        b=OKycEHQYkSkggcR5p2govBL2KZ1la6awHidp2bJX2gbxPOq6yOzIw8IF8H0d6NZh7k
+         s7YRVO5Yt0spiIfafbiMOaQL1wUigiUuEJni//+v2OrjlJobVwm8DSgPYM0l0QmIl3C1
+         dID7tQGL6bBk2gXE0ix2wpDrhUXqh32jBVS65my5CtvI5Vegtv22Cg3IHIpx2ZJeU/Za
+         WPtgvefFY81DFgSVst+1ogcJDd+SI+hJzOzCuA5tqj9sS/NmhgM9N8Idcfz5HqrkEMhQ
+         /bEsHw0vi+wNV9y+sNQXZaQ6BY2xsEDCe2UfCmtvgZPh3YzpIuZyzdGuk9jJ9xHmnuNA
+         zBeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779870746; x=1780475546;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=7dy1tdo3WsNXJ1hXO7TcI9ffqFZPej1pmbFWn2tPCdc=;
+        b=GiyFhyyENRIU9VUclBZHeU03mmz7tr5cecy8OWn7OjlL/K+h53cNxMDgrDnPmsrZtI
+         OkSbdpm/tcOMrigUnFDRjR5ICEBgS/cc5gZC0hBYhoziWlqQFeJd82Vv77FojR50uhes
+         TJoM9BVMy+yccM3YCHAv2zukz3VDmAuBmykGkzIPr+BFDeUpF3rH9eM7arhebsrHyC6r
+         TUwqalImdMJUd3FzRdV30V7UdBPLFVCco71VE00X3npLhBwyBuIDNBVfj49u8+f38Dni
+         EKniYeS8F/AByd3iV6YQcYjLVXNpaVpW+oBVy721eNqL8ES77OYOlzFH7OBhOmIBpYYx
+         EjBw==
+X-Forwarded-Encrypted: i=1; AFNElJ8iSfguZCHHPv+Nl4YCkIhnSYGdJv3iKDQXlnaaoefVZXocvZXv8epXGdL9LEss6rjAFSd5rA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwInzbfZgK5ov8PODgABMRRNbDRZ3v9cHOZAy2726DjU8WYNE3t
+	I6z5LHcSOPoiadSIYF0YsLJnNVyscqtETTlv/YdZvPd1vUmMAhnvZElE
+X-Gm-Gg: Acq92OEtupq2CjUZyfjq0uW5wWX21uTjmarKCwNik7BRQ2ZpyKbMwoaiJh+z0jZwkNh
+	XmBEBfqIuzERfpRgIbqRBV3As3AdDfrO/urs8gh3DzzLAGkNjA6OPEjU8nhNoo2khrOkP51ckdg
+	I4GDMS1VvSAsG/ZNjE/tBkT1dP/Sgg4FCjMil0pLfl17CWXNF6X6hri74tDmm2b9rlulDa36XIe
+	9cwftw7rJDqA1RBKApetajTJATrfSLUkelUOVTxLZH3PmQRL93x+QHRgJ1NxW0TRgjoTZNntGu6
+	c1mTvgjxZKDiMZAbSZBq/QhQcJwV+dcgIBbMTHwGdgWblnpZz9ZmMD99zLv6yZg9Icdn1cSVFLs
+	KasVdEmXWWQLCkJr+zMl1iGPo4OpmJns+vi9vhppNTqk8Drr2KcILZwESRRbIf1ufinWOhq5kDH
+	1sWl2iKCbU399n5jHwFXfkzxKiTIXcUDdiQ9A=
+X-Received: by 2002:a05:6000:25e3:b0:45e:73b4:85cc with SMTP id ffacd0b85a97d-45eb38a6b5amr32754854f8f.35.1779870745674;
+        Wed, 27 May 2026 01:32:25 -0700 (PDT)
+Received: from foxbook (bfe246.neoplus.adsl.tpnet.pl. [83.28.42.246])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45edb557679sm7444880f8f.10.2026.05.27.01.32.24
+        (version=TLS1_2 cipher=AES128-SHA bits=128/128);
+        Wed, 27 May 2026 01:32:25 -0700 (PDT)
+Date: Wed, 27 May 2026 10:32:21 +0200
+From: Michal Pecio <michal.pecio@gmail.com>
+To: Desnes Nunes <desnesn@redhat.com>, David Woodhouse
+ <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>
+Cc: linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+ gregkh@linuxfoundation.org, mathias.nyman@intel.com,
+ stable@vger.kernel.org, iommu@lists.linux.dev
+Subject: Re: [PATCH RFT RFC] usb: xhci: Kill hosts with HCE or HSE on
+ command timeout
+Message-ID: <20260527103221.7f8b15b0.michal.pecio@gmail.com>
+In-Reply-To: <CACaw+ezMnQh2_oqbZ0jF99+wOADMU2vSMqxh9BoJoefjAC_ixw@mail.gmail.com>
+References: <20260430014817.2006885-1-desnesn@redhat.com>
+	<CACaw+eyKh7buHDoDyTOe8O65FP5cSXYdzCcQvwqKw=1DwX26oA@mail.gmail.com>
+	<20260502235517.089ba5bf.michal.pecio@gmail.com>
+	<CACaw+ewOTVh49tnkz+cRr0SD_Z-LmYrMWhFUrsik6YF83mPBtA@mail.gmail.com>
+	<20260503071749.6abda137.michal.pecio@gmail.com>
+	<CACaw+ew8uV5g1G-6qZGtVBEYZ3k+fvFrOq3XMyq-Nuhbq5mdnA@mail.gmail.com>
+	<20260503213111.117db3a1.michal.pecio@gmail.com>
+	<20260504093118.615ff480.michal.pecio@gmail.com>
+	<20260518083339.507e24bd.michal.pecio@gmail.com>
+	<CACaw+ewSWTo72fSk2Q7ZzCM8pNuyrX5ua+qA=SZOQuNNMKSA5Q@mail.gmail.com>
+	<20260522110328.0d3eecd8.michal.pecio@gmail.com>
+	<CACaw+ezqEO_PgjGeYCLq5hA2eKczFXgmZLa8qjPtVJZCGwsdsg@mail.gmail.com>
+	<20260523022944.59799d83.michal.pecio@gmail.com>
+	<CACaw+exPdwXVsJc5Xr=vN1WJt8XR46=X0-8PP=+5dWY5zUrKeQ@mail.gmail.com>
+	<20260523102815.5c05c70a.michal.pecio@gmail.com>
+	<CACaw+ezMnQh2_oqbZ0jF99+wOADMU2vSMqxh9BoJoefjAC_ixw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Exchange-RoutingPolicyChecked: KiusO7FsVyHqrFUxm3UEWF48W1YL/KFUDFC1jHhCXC+ZiRAwJ+LsNt4uGfDJu69jtFD1A7uzAS8nb7CP7noQg6pEz/oDez9xL15WaEOidgVzARvVCIY4YsYJpvAFgvzHdacQLgM9nnyfG1teVXENxsco8W1xrsD3/8VXwpKCYHnqmuSWuLkWOFUv1mK8Enm105YlTVdG12RR29kOioXjcwsj6LlmyGeLhLq4+Wsae+wLGXPtfMxnXt8tywI24zUz4u2DZzDIbmwUbTTjA25LDcAuCys4HQyZ266S85apUcfSjYEuNd40U6VEe4jzUhwx/E/e18FYW2McxldQC1FG3Q==
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3690.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c03333e2-fd66-4fcd-70cb-08debbbd0ced
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 May 2026 06:56:17.2954
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: cDvovSZZRJFJyIwTh84avqPcp6DnJx5W3PzcsjfRIem7DJ0cm+NkJ20NDYRyBnV+4cybHVO8gAzP1KVccWoefw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ5PPF77ABF615C
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-PiBGcm9tOiBEYW4gV2lsbGlhbXMgKG52aWRpYSkgPGRqYndAa2VybmVsLm9yZz4NCj4gU2VudDog
-V2VkbmVzZGF5LCBNYXkgMjcsIDIwMjYgMjoxOCBQTQ0KPiANCj4gQWxleGV5IEthcmRhc2hldnNr
-aXkgd3JvdGU6DQo+ID4NCj4gPg0KPiA+IE9uIDI2LzUvMjYgMDE6NDgsIEFuZWVzaCBLdW1hciBL
-LlYgKEFybSkgd3JvdGU6DQo+ID4gPiArc3RhdGljIGJvb2wgaW9tbXVmZF92ZGV2aWNlX3RzbV9y
-ZXFfc2NvcGVfdmFsaWQodTMyIHNjb3BlKQ0KPiA+ID4gK3sNCj4gPiA+ICsJaWYgKHNjb3BlID4g
-SU9NTVVfVkRFVklDRV9UU01fUkVRX1NDT1BFX1BDSV9MQVNUKQ0KPiA+ID4gKwkJcmV0dXJuIGZh
-bHNlOw0KPiA+ID4gKw0KPiA+ID4gKwlzd2l0Y2ggKHNjb3BlKSB7DQo+ID4gPiArCWNhc2UgSU9N
-TVVfVkRFVklDRV9UU01fUkVRX1BDSV9JTkZPOg0KPiA+ID4gKwljYXNlIElPTU1VX1ZERVZJQ0Vf
-VFNNX1JFUV9QQ0lfU1RBVEVfQ0hBTkdFOg0KPiA+ID4gKwljYXNlIElPTU1VX1ZERVZJQ0VfVFNN
-X1JFUV9QQ0lfREVCVUdfUkVBRDoNCj4gPiA+ICsJY2FzZSBJT01NVV9WREVWSUNFX1RTTV9SRVFf
-UENJX0RFQlVHX1dSSVRFOg0KPiA+DQo+ID4gVGhpcyBzY29wZSB0aGluZyBzdGlsbCBuZWVkcyBj
-bGFyaWZpY2F0aW9uLg0KPiA+DQo+ID4gSSBoYXZlIDMgdHlwZXMgb2YgcmVxdWVzdHMgdG8gZml0
-IGhlcmUsIGFsbCBnbyB2aWEgVk0gLT4gS1ZNIC0+IFFFTVUgLT4NCj4gSU9NTVVGRCAtPiBUU00u
-DQo+ID4NCj4gPiAxKSBiaW5kL3VuYmluZCBUREkgPC0gbW92ZXMgdG8gQ09ORklHX0xPQ0tFRCwg
-dGhpcyBpcyAiT1AiOw0KPiA+IDIpIHN0YXJ0L3N0b3AgVERJIDwtIG1vdmVzIHRvIFJVTiwgdGhp
-cyBpcyAiR1IiPyBSaWdodCBub3cgSSByb3V0ZSBpdCB2aWEgIk9QIjsNCj4gPiAzKSBlbmFibGUv
-ZGlzYWJsZSBNTUlPL0RNQSA8LSBubyBUREkgc3RhdGUgY2hhbmdlLCB0aGlzIGlzICJHUiIgYnV0
-DQo+IHdoaWNoIHNjb3BlIGlzIGl0IGhlcmU/DQo+IA0KPiBUaGUgc2NvcGUgcGFyYW1ldGVyIHdh
-cyBtZWFudCB0byBlbnVtZXJhdGUgYSBzZWN1cml0eSBtb2RlbCBmb3IgY2xhc3Nlcw0KPiBvZiBj
-b21tYW5kcyB0aGF0IGFyZSBvdGhlcndpc2Ugb3BhcXVlIHRvIHRoZSBrZXJuZWwuIEhvd2V2ZXIs
-IG5vbmUgb2YNCj4gdGhlIGNvbW1hbmRzIHdlIGFyZSB0YXJnZXRpbmcgYXJlIG9wYXF1ZSAocHJp
-dmF0ZSBzcGVjaWZpY2F0aW9uIHdpdGgNCj4gdW5rbm93biBlZmZlY3QpLiBJdCBub3cgdHVybnMg
-b3V0IHRoZXJlIGlzIG5vIHJvbGUgZm9yIEBzY29wZSBmb3INCj4gc2VjdXJpdHkuDQoNCnllYWgs
-IEkgaGF2ZW4ndCBzdWNjZWVkZWQgb24gZmlndXJpbmcgb3V0IHRoYXQgcm9sZSBmb3Igbm93LiBJ
-dCBzb3VuZHMgYW4NCnVubmVjZXNzYXJ5IGFic3RyYWN0aW9uIGFza2luZyB2ZW5kb3Igc3BlY2lm
-aWMgY29kZSB0byB0cmFuc2xhdGUgaXRzDQpjb21tYW5kIGludG8gb3BhcXVlIHRoZW4gaW4gdGhl
-IGVuZCB3ZSBnbyBiYWNrIHRvIHRoZSB2ZW5kb3IgY29kZQ0KdG8gZGVjaWRlIHRoZSBzZWN1cml0
-eSBzY29wZSBvZiB0aGF0IG9wYXF1ZS4NCg0KWy4uLl0NCj4gLi4ub3IganVzdCBvYnNlcnZlIHRo
-YXQgcGVyIENDIGFyY2ggY29tbWFuZHMgYXJlIG5lZWRlZCB0byBzZXR1cCB0aGUgVk0NCj4gc28g
-cGVyIENDIGFyY2ggY29tbWFuZHMgYXJlIG5lZWRlZCB0byBtYXJzaGFsIGRldmljZSBhc3NpZ25t
-ZW50IHN1cHBvcnQNCj4gcmVxdWVzdHMuDQo+IA0KPiBJbiB0aGF0IGNhc2UgcGNpX3RzbV9yZXFf
-c2NvcGUgYmVjb21lcyB0c21fcmVxX3R5cGUgYW5kIGlzIGp1c3Q6DQo+IA0KPiBUU01fUkVRX1RZ
-UEVfQ0NBDQo+IFRTTV9SRVFfVFlQRV9TRVYNCj4gVFNNX1JFUV9UWVBFX1REWA0KPiANCj4gSSBh
-bSBsZWFuaW5nIHRvd2FyZHMgdGhlIGxhdHRlciBhdCB0aGlzIHBvaW50Lg0KDQorMQ0K
+Adding Intel IOMMU people.
+
+Context:
+
+Desnes reported xHCI issues duing crash kernel boot after SysRq
+triggered panic. Turns out, the chip gets an IOMMU fault, some other
+devices also do. Faulting address is a successful dma_alloc_coherent()
+allocation in xhci_alloc_erst(), no evidence that it's freed before
+the fault occurs. No problems during normal boot.
+
+On Wed, 27 May 2026 00:47:53 -0300, Desnes Nunes wrote:
+> # grep "alloc ERST\|free ERST\|ERST\|Device context\|fault addr" kexec-dmesg.log
+> [Tue May 26 08:41:56 2026] DMAR: [DMA Write NO_PASID] Request device
+> [80:1f.6] fault addr 0x106f06000 [fault reason 0x39] SM: Present bit
+> in Root Entry is clear
+> [Tue May 26 08:41:56 2026] DMAR: [DMA Write NO_PASID] Request device
+> [80:1f.6] fault addr 0x106f19000 [fault reason 0x39] SM: Present bit
+> in Root Entry is clear
+> [Tue May 26 08:41:57 2026] DMAR: [DMA Write NO_PASID] Request device
+> [80:1f.6] fault addr 0x106f1c000 [fault reason 0x39] SM: Present bit
+> in Root Entry is clear
+> [...]
+> [Tue May 26 08:42:01 2026] xhci_hcd 0000:80:14.0: alloc ERST at
+> 0x0000001075140000
+> [Tue May 26 08:42:01 2026] xhci_hcd 0000:80:14.0: ERST deq = 64'h107513e000
+> [Tue May 26 08:42:02 2026] DMAR: [DMA Read NO_PASID] Request device
+> [80:14.0] fault addr 0x1075140000 [fault reason 0x39] SM: Present bit
+> in Root Entry is clear
+> 
+> ^ PS: Different address alloc on kdump though
+> 
+> > Otherwise, it seems you were right that you have some IOMMU problem.  
+> 
+> Thus, I started to investigate this front now. This time I gave some
+> more attention to these dmar messages:
+> 
+>      [Tue May 19 08:17:49 2026] DMAR: Intel-IOMMU force enabled due to
+> platform opt in
+>      [Tue May 19 08:17:49 2026] DMAR: No RMRR found
+>      [Tue May 19 08:17:49 2026] DMAR: No ATSR found
+>      [Tue May 19 08:17:49 2026] DMAR: dmar0: Using Queued invalidation
+> => [Tue May 19 08:17:49 2026] DMAR: Translation already enabled -  
+> trying to copy translation structures
+> => [Tue May 19 08:17:49 2026] DMAR: Copied translation tables from  
+> previous kernel for dmar0
+>      [Tue May 19 08:17:49 2026] DMAR: dmar1: Using Queued invalidation
+> => [Tue May 19 08:17:49 2026] DMAR: Translation already enabled -  
+> trying to copy translation structures
+> => [Tue May 19 08:17:49 2026] DMAR: Copied translation tables from  
+> previous kernel for dmar1
+> 
+> I started wondering if maybe on my system these translation tables
+> can't be fully trusted for some reason during kdump?
+> Maybe iommu is copying root_entries with the Present bit clear, and
+> thus generating the fault reason 0x39?
+>    -> bus 0x80's? Both ethernet and xhci_hcd fault addr were on this bus  
+> 
+> So, to test this theory out, I tried to disable translation and
+> allocate a clean root-entry table right away if I am running a kdump
+> kernel:
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index e236c7ec221f..de673f34f4e1 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -2135,24 +2135,31 @@ static int __init init_dmars(void)
+>                 if (translation_pre_enabled(iommu)) {
+>                         pr_info("Translation already enabled - trying
+> to copy translation structures\n");
+> 
+> -                       ret = copy_translation_tables(iommu);
+> -                       if (ret) {
+> -                               /*
+> -                                * We found the IOMMU with translation
+> -                                * enabled - but failed to copy over the
+> -                                * old root-entry table. Try to proceed
+> -                                * by disabling translation now and
+> -                                * allocating a clean root-entry table.
+> -                                * This might cause DMAR faults, but
+> -                                * probably the dump will still succeed.
+> -                                */
+> -                               pr_err("Failed to copy translation
+> tables from previous kernel for %s\n",
+> -                                      iommu->name);
+> +                       if (is_kdump_kernel()) {
+> +                               pr_info("DESNES V2 IOMMU kdump kernel,
+> disabilng translation and allocating clean root-entry for %s\n",
+> +                                       iommu->name);
+>                                 iommu_disable_translation(iommu);
+>                                 clear_translation_pre_enabled(iommu);
+>                         } else {
+> -                               pr_info("Copied translation tables
+> from previous kernel for %s\n",
+> -                                       iommu->name);
+> +                               ret = copy_translation_tables(iommu);
+> +                               if (ret) {
+> +                                       /*
+> +                                        * We found the IOMMU with translation
+> +                                        * enabled - but failed to copy over the
+> +                                        * old root-entry table. Try to proceed
+> +                                        * by disabling translation now and
+> +                                        * allocating a clean root-entry table.
+> +                                        * This might cause DMAR faults, but
+> +                                        * probably the dump will still succeed.
+> +                                        */
+> +                                       pr_err("DESNES V2 Failed to
+> copy translation tables from previous kernel for %s\n",
+> +                                              iommu->name);
+> +                                       iommu_disable_translation(iommu);
+> +                                       clear_translation_pre_enabled(iommu);
+> +                               } else {
+> +                                       pr_info("DESNES V2 Copied
+> translation tables from previous kernel for %s\n",
+> +                                               iommu->name);
+> +                               }
+>                         }
+>                 }
+> 
+> Didn't had time to check ERST or HSE yet, but with this I didn't had
+> any DMAR faults, vmcore was collected normally and system rebooted
+> smoothly afterwards:
+> 
+>      [Tue May 26 22:52:58 2026] DMAR: Intel-IOMMU force enabled due to
+> platform opt in
+>      [Tue May 26 22:52:58 2026] DMAR: No RMRR found
+>      [Tue May 26 22:52:58 2026] DMAR: No ATSR found
+>      [Tue May 26 22:52:58 2026] DMAR: dmar0: Using Queued invalidation
+> => [Tue May 26 22:52:58 2026] DMAR: Translation already enabled -  
+> trying to copy translation structures
+> => [Tue May 26 22:52:58 2026] DMAR: DESNES V2 IOMMU kdump kernel,  
+> disabilng translation and allocating clean root-entry for dmar0
+>      [Tue May 26 22:52:58 2026] DMAR: dmar1: Using Queued invalidation
+> => [Tue May 26 22:52:58 2026] DMAR: Translation already enabled -  
+> trying to copy translation structures
+> => [Tue May 26 22:52:58 2026] DMAR: DESNES V2 IOMMU kdump kernel,  
+> disabilng translation and allocating clean root-entry for dmar1
+> 
+> Seems like a lead on this iommu front.
+> 
+> The funny thing is that the comment in this section literaly says that
+> doing this could cause faults, but here clearing it actually seemed to
+> solve them and made kdump succeed - commit
+> 091d42e43d21b6ca7ec39bf5f9e17bc0bd8d4312 ("iommu/vt-d: Copy
+> translation tables from old kernel")
+> 
+> Let me do some more tests to dump and check the root-entry table
+> before clearing, as well as to check ERST allocations and HSE value,
+> and I'll get back to you Michal.
+> 
+> Best Regards,
+> 
+> Desnes
+> 
