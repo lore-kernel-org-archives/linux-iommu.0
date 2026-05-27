@@ -1,112 +1,114 @@
-Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F4BE3E8354
-	for <iommu@lists.linux.dev>; Wed, 27 May 2026 16:07:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EC3E44CAEC
+	for <iommu@lists.linux.dev>; Wed, 27 May 2026 17:11:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779898039; cv=none; b=sfZsIU88NHQHDEORsFz+ufr32g9F0FpHjyzWWz9lYcWlXnTWTAKpHAYDiVFLZF0LgU6tYY+twqLH1Ih8aRiMlwxs1v9Wq+iNWp2sLbEuPbD3XIBmKxXqqb/mOt+1XgHuLZc0jR66z7BWmSTvw9YleTBczq00vC/AsMY46KtYyPg=
+	t=1779901877; cv=none; b=eGCBauA2HPCSo72BgqHMt/18ZF3qAxVujS6QgqGdX81zgUBZYRcrtRQjDkKHwCQcZbbVnSQSI697sCu9MMPnQwUUnZ92lsO0ZabTxIz0qz2jDnoRgP7XfI1ddPnMe/WNiXSS55SJWI4CLATSMi+RMLXSVqdUxYqrfrBfG9I+fZI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779898039; c=relaxed/simple;
-	bh=aval9P+49I+gSSuUWbQmWVLEEDNUMRnbLgYtSiXlBo4=;
+	s=arc-20240116; t=1779901877; c=relaxed/simple;
+	bh=5dhYnTz29zgsmBRPPybd5CWIS+uX9bZsxkT+ovNyCbw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Nk0QBJmDHqi+yx6/5CqxavXsR3Hww+uyABwRd39CP6THQJ6fTG7uWpwxNzY8JfnGGVfhjHLTl+MvJXNMmrOylyGfQSufpCwNNqPtsiO2K3FUv4Hk4uCjbIEACItOq5qBZFAZsS9K3RaBY8FxxNstCkPrwcsUSCa7crcV5Hw6+4k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=e5TzTmmT; arc=none smtp.client-ip=209.85.222.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=OQWfaHQUoFJewwq6JOzL3CLIOWCGUhDLg1QG4mESjj+wykgsDOC2tlEAyodj8zdjsmMa53ojqWDOm5q0xH89LniTi8FHi+EdL+uOekTca+FU72rLHb6dQ41odtxwX7e6UeDL8NjxNCa/XaPBJ3ioQ4k6+EFy8WtBddipX7/1Ew4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=C2rb0WuJ; arc=none smtp.client-ip=209.85.214.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="e5TzTmmT"
-Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-914bbfc2464so421564285a.1
-        for <iommu@lists.linux.dev>; Wed, 27 May 2026 09:07:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="C2rb0WuJ"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2ba180a022dso415ad.1
+        for <iommu@lists.linux.dev>; Wed, 27 May 2026 10:11:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1779898037; x=1780502837; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1779901876; x=1780506676; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=STKe203GtXAmunHIdMeMAq0fDblU9FAY1byc40VlLXM=;
-        b=e5TzTmmT1fSpbbUVV3oRTkqT2VODTEI+fIuy/iaXh4ULvB35rRzUnBune5y/8LesT6
-         LCjzFlztDZHyw6Pl/6vIKtVCZ5CPby8jw+vwMltyUnmuskaFcjm8UtwAVxTugkRzZZT2
-         N1K+c/SPlIBrDyCQXCM/nyZHtsR4jgBRgFlPooB4PW8Ge/Dof5N2TiY4/UwcN6BQJh2O
-         DajQUuCJWR7GyrBuJ8pw3fKY7EQiqtu7FSFpd4cHfQh4ljZWVeeAAFXfmkiRi1LdtoBF
-         eR9F5/WZ6cjV1ktoC61MdovXHhmHmO9c+VwfBXkVxfAlrMdUI8FUtYDhsgtiJVZkjm7Y
-         QN1w==
+        bh=vvAhvfUYiK9fAI1qqXG1UgLn6BZJB8NhaqamtOZNNLY=;
+        b=C2rb0WuJQacVSXvySl4YsXwqzCnWpClepYjdx8XkFfg5sa5ocpxjICd+VXl4t+mt1c
+         5/9zYqxUxUiSNM8OJ2BdifeRIxr74XC4bZcNmoydpbORpMehT00cZNnRLFFX8ZSybASF
+         5IZQrPDzL6lZz5xGaNeb1ecAaZLkzBJuLCIcXPEmeTPDgrVi9+ONDhpt8OaJ04gngbE7
+         4PRd/hMc0P8SKub+yyYTaMzVKcbOoB9mSQhY+Xblyp1eJnTPKtOHZLVWDc2saD2aV0BF
+         9JM9adnTyFTx3KapcZamTfL4R3Hstp6sohszqvtJKoDKRiEZZ8UmraeEMqEw5QdBFT+Y
+         t7aQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779898037; x=1780502837;
+        d=1e100.net; s=20251104; t=1779901876; x=1780506676;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=STKe203GtXAmunHIdMeMAq0fDblU9FAY1byc40VlLXM=;
-        b=dRlO9UBeLyQpUfDMvEHyjhVAB5wrC97bI32PgnrNC11FWPG73l7c5rG9Fbsz/3BfuD
-         DSSTsLI8u7Q3QFii23eqFzh/hQWPNch57wLeDZ0U87+xXTRPkcnez4f8sbPmguaJc1o3
-         qz8kNc44oL94vriBUxTFss7LxVN8K2DyQ7xVo5FmFJcY1Q5rsU38HKh9Ulqm8KkJTy/7
-         5luHczXKhP36+CuZ3VXqdaagOFPfD0Opjqj6HlzGhWWew/vbb605wbvsioCsbP2ZL5iu
-         b6YV2Qiw7/SA5GBdhtNoPoRtZUTWdouqo29+9QnVkTBvdFfXa4Md0Sb3D9wKHs3DL8f7
-         JzDQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+cGr4a6UTk/sF9lwnbWHW2l13EflzhlMZvilDG0cnO6HLUGnZjnD5OkIbrDf+SD9LugEZMpw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxG/fO7T17tQzjjSso3tffkRqtk219bFI5FW72MeAXs2RkR31a8
-	K2SPu30+S3GA83uroHlo0coh+zIXXPO1/1lV83bibKSNHXhCglNmHlUYkYQS26wWTok=
-X-Gm-Gg: Acq92OHP4dBVPnsdvaC8YIcz18PoA7OGKBKclCFQGd78FHrQatQXxIKOB0/1B4haVnS
-	l3mqOUboLxfbqLPlGqGw+rnCf0fCRurqpEL2jc05MB2eRhqmdbggpcALSkMXzT9/0Bzv5xcRrQ/
-	X8aSV85ve91YtrDn85TR9FGrYYJLMR2bNC7qkRpk5sxI38liUhQbJ7FT7JIrr57psp7z1Orq+gJ
-	/CHH+IfxPODaw7DONknacox+aQIrzHtBjODWYwOtRAsHX5H3E6paw7CZOEG1ShCUWI1zdklQ8qe
-	Bw2urVVWfllAGNMPhPnpvFuHrlgj8WJrpFSmVXYDGTa1jhrNyJ9AAOJplrluL0w70P49fcrjrvv
-	J1tbyi/8bBwIvPSQUtvm+AT6V1TRux2TsvbsIqSmLtovnB1tkFgWnVmP6NLmtC3BcUIszHKNObF
-	TJvlGKNNuT1nPL1hTfqd3bZQTdYByWpboQ+kot24X9AO0fC5EIGuGsI5KPpqTEOMu3ixF9IDTnK
-	2uG4A==
-X-Received: by 2002:a05:620a:1b89:b0:914:c246:aca0 with SMTP id af79cd13be357-914c246b146mr2808635885a.36.1779898037030;
-        Wed, 27 May 2026 09:07:17 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-914f86e8e13sm505133685a.2.2026.05.27.09.07.16
+        bh=vvAhvfUYiK9fAI1qqXG1UgLn6BZJB8NhaqamtOZNNLY=;
+        b=X5ixXPR2R0LbAcev0XKPr2C/zNdDXHlLyO/dPrHIFy1vR5kfyuoIABshj8syauIuuW
+         qCJT3dfpKddJQUYfXHxlDXJ96Da6g9R+poZc6NazBsb00hPU8f7sharoZEU+OZ91+CeM
+         I8b+F9AAVkvnGviXSirQm1ytFNtv797tbWG489FPv+1a0zJ362GEGBKC6RDcUxvbmpuF
+         DbmVhi2SQCElq8+m0IBkkJT10vOA/kaArLMl775l4i1Q1RKc+lRmv43JXYpAHdXrG0Cw
+         Hw4qWP+eSQlDLyaLLqrUgJmWvEEoxAmlHH6Ki+TLf5pLZQbc79E4FbXAi17uXK0P5Rs7
+         pMNA==
+X-Forwarded-Encrypted: i=1; AFNElJ/5PWZRCgVNvbSFpdN4JMHHImaYtJH7k0gMfTd34d3qiBQM0v2Nqi5ecJbKijuTfsS/tpcfJg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx2opRNUc9KNbfF1eDGfC6hNHNpmlinjNTJod+Nu8sZXaGq2aoW
+	Rc9i3YAF3DVazyCCQ0rMN2mRi9vFiWhSn2/ZfIYbX3MAaiMoTIy1cQ1G3BUsZxyhJg==
+X-Gm-Gg: Acq92OH9vIiIzExVgPxHK+MWy85a5+Xz5NvbdV869wI78Qex2uqTjuW3g5yU5CU60Yj
+	GPevcGo8xjdUh5LBXfzSOBo1BNeQni4FBYRm+2jM3Y6Kpj3K6HWJQNzZZ2VXjxorTIl2ZFARbII
+	5u3sDpJEybQneIkps3qYltI5XH9GhNVvh5H7Gz+KVQUNL7UWDn58Q7rxj2Kbg+O98CFoyf7vlJK
+	K2FICTZFOgAwZex0izoj1J4zdmfghHVZeEPaR1mSN8XFPu3Bb3E2oEvIj66uMi1ZJvNIzx24cT7
+	Falfl+ldOI8pVPPd3ABFiizFSJdN/ZwoifMBOs6YQQFGqK31zSmdyql8Rh8YZcpgpLN2jTefVzk
+	B9hUBiSpNWjIL7yUW/g3PMlokXYsupP5jgdVv9x34uuhCeNXASL9pQ3wXeRyCz0CN9JZryAovo4
+	iS70QF2zhlw10pG30oEckEV1t+cvlKURGvKXbw9i6luytktB0r313nqvAcd4LLdTezDpU/3A==
+X-Received: by 2002:a17:902:cf11:b0:2bd:7bec:f0e6 with SMTP id d9443c01a7336-2bec116b716mr9444575ad.1.1779901875118;
+        Wed, 27 May 2026 10:11:15 -0700 (PDT)
+Received: from google.com (153.46.83.34.bc.googleusercontent.com. [34.83.46.153])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2beb5900b8bsm155801785ad.76.2026.05.27.10.11.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 May 2026 09:07:16 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wSGmq-0000000FI8B-0NaX;
-	Wed, 27 May 2026 13:07:16 -0300
-Date: Wed, 27 May 2026 13:07:16 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Christoph Hellwig <hch@infradead.org>
-Cc: "T.J. Mercier" <tjmercier@google.com>, maddy@linux.ibm.com,
-	mpe@ellerman.id.au, npiggin@gmail.com, chleroy@kernel.org,
-	linuxppc-dev@lists.ozlabs.org, mripard@kernel.org,
-	sumit.semwal@linaro.org, lkp@intel.com,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-mm@kvack.org, agordeev@linux.ibm.com,
-	gerald.schaefer@linux.ibm.com, linux-s390@vger.kernel.org,
-	Dan Williams <djbw@kernel.org>,
-	Tom Lendacky <thomas.lendacky@amd.com>, x86@kernel.org
-Subject: Re: [PATCH] powerpc: Export set_memory_encrypted and
- set_memory_decrypted
-Message-ID: <20260527160716.GN2487554@ziepe.ca>
-References: <20260522225853.878411-1-tjmercier@google.com>
- <ahPqbfH54R3JJyaV@infradead.org>
+        Wed, 27 May 2026 10:11:14 -0700 (PDT)
+Date: Wed, 27 May 2026 17:11:10 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: David Woodhouse <dwmw2@infradead.org>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
+	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>, 
+	Adithya Jayachandran <ajayachandra@nvidia.com>, Parav Pandit <parav@nvidia.com>, 
+	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
+	Pratyush Yadav <pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
+	David Matlack <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	Chris Li <chrisl@kernel.org>, Pranjal Shrivastava <praan@google.com>, 
+	Vipin Sharma <vipinsh@google.com>, YiFei Zhu <zhuyifei@google.com>
+Subject: Re: [PATCH v2 06/16] iommupt: Implement preserve/unpreserve/restore
+ callbacks
+Message-ID: <ahclK4Pky0huLpoJ@google.com>
+References: <20260427175633.1978233-1-skhawaja@google.com>
+ <20260427175633.1978233-7-skhawaja@google.com>
+ <20260523133357.GH7702@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <ahPqbfH54R3JJyaV@infradead.org>
+In-Reply-To: <20260523133357.GH7702@ziepe.ca>
 
-On Sun, May 24, 2026 at 11:21:33PM -0700, Christoph Hellwig wrote:
-> On Fri, May 22, 2026 at 03:58:53PM -0700, T.J. Mercier wrote:
-> > After commit fd55edff8a0a ("dma-buf: heaps: system: Turn the heap into a
-> > module") the system dma-buf heaps can be built as a module. The
-> > system_cc_shared heap uses set_memory_encrypted and set_memory_decrypted
-> > but those functions are not exported on powerpc. This can result in a
-> > build error like:
-> 
-> I'd much rather revert the above commit.  Yes, x86 has exported these
-> since 2017, but that's a really bad idea, and we should fix it instead
-> of spreading the export.
-> 
-> Setting memory decrypted is a dangerous operations and should only
-> be available to core code.  We should have various allocators for
-> decrypted code, but not export the functionality to random code.
+On Sat, May 23, 2026 at 10:33:57AM -0300, Jason Gunthorpe wrote:
+>On Mon, Apr 27, 2026 at 05:56:23PM +0000, Samiullah Khawaja wrote:
+>> @@ -266,12 +273,22 @@ struct pt_iommu_cfg {
+>>  	};                              \
+>>  	IOMMU_PROTOTYPES(fmt)
+>>
+>> +#ifdef CONFIG_IOMMU_LIVEUPDATE
+>> +#define IOMMU_PT_LIVEUPDATE_OPS(fmt)			\
+>> +	, .preserve = &pt_iommu_##fmt##_preserve,	\
+>> +	.unpreserve = &pt_iommu_##fmt##_unpreserve,	\
+>> +	.restore = &pt_iommu_##fmt##_restore
+>> +#else
+>> +#define IOMMU_PT_LIVEUPDATE_OPS(fmt)
+>> +#endif
+>
+>Don't do it like this at all, new iommupt unique ops should be routed
+>through struct pt_iommu_ops
+>
+>See how map_range/unmap_range now work
 
-At the very least an EXPORT_SYMBOL_NS.
+Ah yes. That also looks much cleaner. I will update this.
+>
+>Jason
 
-Looks like there are about 3 modules using it already..
-
-Jason
+Sami
