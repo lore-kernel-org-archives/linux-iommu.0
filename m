@@ -1,267 +1,192 @@
-Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47C563CA491
-	for <iommu@lists.linux.dev>; Wed, 27 May 2026 22:14:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 784622D2488
+	for <iommu@lists.linux.dev>; Wed, 27 May 2026 22:34:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779920081; cv=none; b=ff689eq6sTAROcwW1pQosKiQuQwpULQq/hdfYOOyFUpq61IFqvPXh+x2NAdqIRolYbe8PvH5T+4QSr6q5xakSWzSYv/KJ/2c+NHMTqNu/XL+24dDQOefwe6M0XssQkATyxsb5q4QyjYcCkuP3IJ8XAmtclR+gHGE13XxS7VVnk8=
+	t=1779921281; cv=none; b=rYbtvdLNnG5rHi8NUIyFjpqmUez3jpIBntJYKCBjRb8mXk7iGFvVqH2Rmsql19PYjMpJQw/unCrYxIHVI1vF01s3Cz+o9rnoY24hrhTP9vdfHexIBostuq0EN1CQq/cJew/tTf23+nSn57iA/ZVO2HUG5wChpKEBHZMceOtsLrY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779920081; c=relaxed/simple;
-	bh=9xe/ZawcHlHdik179vlJOTC8QOkXkjuKRy8LOVU2O0c=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=LjjxcO0qrZGJv3IuVcRrAhhN4/ax8FDMoUnE48OEMmTroRyIW9zu8/CJyZ4l/rBpQ340sJm2/3Nr7mkYZCjhpho+3BlBfd1H8Of8vU7FkYjkN5YGa6EIv4yDx6nRnxODhBZCGJLcWCCmRZW/s9sRk+82ujCQvq29wtCX9ZSJ9ZM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=FJ/rDvwb; arc=none smtp.client-ip=209.85.216.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
+	s=arc-20240116; t=1779921281; c=relaxed/simple;
+	bh=I7sUU0CrvDHVShsHZ2ZUGiCnZ904P37469uqXo2Ssuw=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=F+Uf+wqxsAeRD24qaZsHIx1d7qXjzR7n+mOBa0MAGGO97OlBddqNL2XFngOiE2qLh8yqFeBvrwalXP5i/dOcJiUIVXWoaTZ+8JTA7C+MYtXJ6olA4TXQEv6nf/b69ScxzC7dn8+g+ECArVbjvtLATiOOXcTGkmIiqgjb1MmHxtM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=H9HbnA42; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="FJ/rDvwb"
-Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-3663cbff31cso6155193a91.2
-        for <iommu@lists.linux.dev>; Wed, 27 May 2026 15:14:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779920078; x=1780524878; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=S7BBhgFZ8Ma4OIokkNAhr8EAGinTewemkDEloxmI0Rw=;
-        b=FJ/rDvwb3cHudoIm0B+WYqV05kcEkq5kJE5vHJ3Y5YGCQsULN4IVHZhVR5JCPBuDCE
-         n5DzP2D5qErgvBBe7fwR94wsyTsID8uxD7+yIP+KLq4WPreGzlyUotM2KgBHitdqo4Yo
-         TbD8Ir+ur2uJrMP9Qw0YXeZqYkTvvRmWlv8+pWaKT205RIClAyTcpCojPxaabyyCeRd8
-         40HkRznFEuXo0iKPnUkTjmc1TcEpEyn7kLwvyBTnGTJ1bZYAkZCKr/JBehYcox2deZ1j
-         gbBuxDG1rTP5IjUr+XVYjjnPTbmp9nPEsYjmnBvtg1AxTpR3UpF/mGNi5NixKba/3j4A
-         qKBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779920078; x=1780524878;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=S7BBhgFZ8Ma4OIokkNAhr8EAGinTewemkDEloxmI0Rw=;
-        b=OA7Xf+B6cat2FE3oAqnopoggFP4U5JpmExxmHoq4sGi7Lz7oXXfp7HhF9J4B9zC2u6
-         qlztGPl/E2zTPZZ+pFHeLbduEAz85UyqW/4OVXEt3CTiZ1qTwUnmn+N0rZq4TjLfa9xR
-         fW5AW1NSme5PKIhvc+ntRttUGP4jK927Tkyyb23Z2/gIj6/mS+POF9cW64YYJxIlpiYG
-         EAjyBtJcN5dbFHvJB3EFOUU1sqgY6SuSGjN47jWu0NToJE6RNJMcBdKVoAZ9kkZjNuIq
-         wKNEfQl3/aHP/FWqoKMgRA1buHIPgBgGTWVm3SfNprtYuZ51P2X/opApTuOrHsFTtm2i
-         g5LQ==
-X-Gm-Message-State: AOJu0YySU+CeIlayknje+4opFnqvoI3vk5B8NfoLSH3ZpaaC7oq6kmRw
-	y6nG3iLCUmspaz6S7cXI/WrRWT9Uc1ucKyfhsxd6lOZ9K1oB0VlWBRVlVPFErEc7sUzz9KxFOlN
-	bzRfmZ1/7PtvakjRHt3f0reqew0lv8n1Lh+XeOmJ/SY3Nqln46DPttTsZ4mrY2i8WZGFmOgKsJm
-	7VRIK8dtG84n9pJuqytUbMHY5QE8Fv5g==
-X-Received: from pjbgz7.prod.google.com ([2002:a17:90b:ec7:b0:366:3a03:b66d])
- (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:3882:b0:366:132:fda7
- with SMTP id 98e67ed59e1d1-36a6771a702mr25194976a91.10.1779920078032; Wed, 27
- May 2026 15:14:38 -0700 (PDT)
-Date: Wed, 27 May 2026 22:14:07 +0000
-In-Reply-To: <20260527221407.1756491-1-praan@google.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="H9HbnA42"
+Received: from localhost (unknown [20.236.11.29])
+	by linux.microsoft.com (Postfix) with ESMTPSA id B985620B7167;
+	Wed, 27 May 2026 15:34:28 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com B985620B7167
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1779921269;
+	bh=EGNzJh9AuLyEweCtmpQGDEojek1qc2oN5vhszzwvK9I=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=H9HbnA42fbhcMHyWVyfs+A/8Tn5On4vP0Axro3LeP4TfFtjdOAOeSjD/oWjuHoFDg
+	 85hQ2P45mPhqexvZ4oAy+tJYMhFfR90VnW1SINeWggehfi6CgvzUW8XTNGDpZvUFDN
+	 G1gyh60vOeQssXCrPwxSBuzEJdTI4FhxHI2T3PI8=
+Date: Wed, 27 May 2026 15:34:38 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Alex Williamson <alex@shazbot.org>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel
+ <joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>, David Matlack
+ <dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen
+ <nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>, Baolu Lu
+ <baolu.lu@linux.intel.com>, Saurabh Sengar <ssengar@linux.microsoft.com>,
+ "skhawaja@google.com" <skhawaja@google.com>, "pasha.tatashin@soleen.com"
+ <pasha.tatashin@soleen.com>, Will Deacon <will@kernel.org>,
+ jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH v6 0/7] iommufd: Enable noiommu mode for cdev
+Message-ID: <20260527153438.0000377a@linux.microsoft.com>
+In-Reply-To: <20260526115709.5344f00f@shazbot.org>
+References: <20260521221155.1375144-1-jacob.pan@linux.microsoft.com>
+	<BL1PR11MB52717A74E37BDED067EA45018C0A2@BL1PR11MB5271.namprd11.prod.outlook.com>
+	<20260526083237.00006a6c@linux.microsoft.com>
+	<20260526115709.5344f00f@shazbot.org>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20260527221407.1756491-1-praan@google.com>
-X-Mailer: git-send-email 2.54.0.794.g4f17f83d09-goog
-Message-ID: <20260527221407.1756491-12-praan@google.com>
-Subject: [PATCH v7 11/11] iommu/arm-smmu-v3: Add KUnit unit tests for Runtime PM
-From: Pranjal Shrivastava <praan@google.com>
-To: iommu@lists.linux.dev
-Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, 
-	Nicolin Chen <nicolinc@nvidia.com>, Daniel Mentz <danielmentz@google.com>, 
-	Ashish Mhetre <amhetre@nvidia.com>, linux-arm-kernel@lists.infradead.org, 
-	Pranjal Shrivastava <praan@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Introduce a kunit selftests to verify the Runtime PM elision gating,
-post-suspend elisions and progress on resumption under active
-invalidation load. Simulate concurrent HW suspension using a timer.
-Mock all HW registers and CMDQ buffers by allocating them on RAM.
-Make the mock CMDQ self-consuming to avoid hitting queue_full scenarios.
+Hi Alex,
 
-Signed-off-by: Pranjal Shrivastava <praan@google.com>
----
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c  | 150 ++++++++++++++++++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |   1 +
- 2 files changed, 151 insertions(+)
+On Tue, 26 May 2026 11:57:09 -0600
+Alex Williamson <alex@shazbot.org> wrote:
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
-index add671363c82..ef9a17343ed8 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
-@@ -3,6 +3,10 @@
-  * Copyright 2024 Google LLC.
-  */
- #include <kunit/test.h>
-+#include <linux/delay.h>
-+#include <linux/kthread.h>
-+#include <linux/sched.h>
-+#include <linux/timer.h>
- #include <linux/io-pgtable.h>
+> On Tue, 26 May 2026 08:32:37 -0700
+> Jacob Pan <jacob.pan@linux.microsoft.com> wrote:
+> 
+> > Hi Kevin,
+> > 
+> > On Mon, 25 May 2026 08:30:12 +0000
+> > "Tian, Kevin" <kevin.tian@intel.com> wrote:
+> >   
+> > > Could you address the findings from Sashiko?
+> > > 
+> > > https://sashiko.dev/#/patchset/20260521221155.1375144-1-jacob.pan%40linux.microsoft.com
+> > >     
+> > I have go over my Sashiko review setup, but there are lots of
+> > false positives, like this one below we already discussed in earlier
+> > version. Is there a specific concern?
+> > 
+> > e.g.  
+> > > +static bool iommufd_device_is_noiommu(struct iommufd_device
+> > > *idev) +{
+> > > +	return IS_ENABLED(CONFIG_IOMMUFD_NOIOMMU) &&
+> > > !idev->dev->iommu; +}    
+> > Does dynamically evaluating dev->iommu here allow the noiommu state
+> > to flip during the device's lifetime?  
+> 
+> Yes, that one is at best a theoretical issue, but the next two NULL
+> pointer dereference if user passes noiommu device fd through an
+> unexpected iommufd interface appear quite real.
+> 
+> We're also still struggling with the Kconfig in patch 5, this Sashiko
+> comment is valid:
+> 
+> >> @@ -62,7 +61,10 @@ endif
+> >>  
+> >>  config VFIO_NOIOMMU
+> >>  	bool "VFIO No-IOMMU support"
+> >> -	depends on VFIO_GROUP
+> >> +	depends on VFIO_GROUP || VFIO_DEVICE_CDEV
+> >> +	depends on !VFIO_GROUP || VFIO_CONTAINER ||
+> >> IOMMUFD_VFIO_CONTAINER
+> >> +	depends on !VFIO_DEVICE_CDEV || !GENERIC_ATOMIC64  
+> >
+> > Does this disable VFIO_NOIOMMU completely for legacy group users on
+> > architectures using generic atomic64 implementations?
+> >
+> > On architectures like 32-bit ARM or x86, !GENERIC_ATOMIC64 evaluates
+> > to false.  If a distribution enables VFIO_DEVICE_CDEV, this
+> > dependency resolves to false, silently breaking backwards
+> > compatibility and depriving legacy group-based users of noiommu
+> > support.  
+> 
+> That's true, the question is do we care (I'd prefer to) and if so,
+> should we block the relevant interfaces from working though iommufd
+> rather than disallowing the Kconfig option.
+> 
+Yes, I think we should preserve the legacy VFIO_GROUP/VFIO_CONTAINER
+noiommu path and only disable the IOMMUFD/cdev noiommu support on
+GENERIC_ATOMIC64 platforms.
+How about:
+diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
+index d3d8fef2855c..b9d6e1c22aed 100644
+--- a/drivers/vfio/Kconfig
++++ b/drivers/vfio/Kconfig
+@@ -61,10 +61,9 @@ endif
  
- #include "arm-smmu-v3.h"
-@@ -771,7 +775,153 @@ static void arm_smmu_v3_invs_test(struct kunit *test)
- 	kfree(test_b);
- }
+ config VFIO_NOIOMMU
+        bool "VFIO No-IOMMU support"
+-       depends on VFIO_GROUP || VFIO_DEVICE_CDEV
++       depends on VFIO_GROUP || (VFIO_DEVICE_CDEV && !GENERIC_ATOMIC64)
+        depends on !VFIO_GROUP || VFIO_CONTAINER || IOMMUFD_VFIO_CONTAINER
+-       depends on !VFIO_DEVICE_CDEV || !GENERIC_ATOMIC64
+-       select IOMMUFD_NOIOMMU if VFIO_DEVICE_CDEV
++       select IOMMUFD_NOIOMMU if VFIO_DEVICE_CDEV && !GENERIC_ATOMIC64
+
+With this, VFIO_NOIOMMU remains selectable for legacy group/container users
+on GENERIC_ATOMIC64 architectures, e.g. on ARM I can have
+CONFIG_VFIO_DEVICE_CDEV=y
+CONFIG_VFIO_GROUP=y
+CONFIG_VFIO_CONTAINER=y
+CONFIG_VFIO_IOMMU_TYPE1=y
+CONFIG_VFIO_NOIOMMU=y
+CONFIG_GENERIC_ATOMIC64=y
+
+Also, gate this on iommufd:
+ static int vfio_device_set_noiommu_and_name(struct vfio_device *device, enum vfio_group_type type)
+ {
+-       if (IS_ENABLED(CONFIG_VFIO_DEVICE_CDEV) && vfio_noiommu &&
++       if (IS_ENABLED(CONFIG_IOMMUFD_NOIOMMU) && vfio_noiommu &&
+
+> The next issue regarding classifying emulated IOMMU devices as
+> no-iommu also appears valid, mdev devices like kvmgt for example.
+> 
+I will fix this by adding vfio_group_type check.
+-static int vfio_device_set_noiommu_and_name(struct vfio_device *device)
++static int vfio_device_set_noiommu_and_name(struct vfio_device *device, enum vfio_group_type type)
+ {
+-       if (IS_ENABLED(CONFIG_VFIO_DEVICE_CDEV) && vfio_noiommu && !device->dev->iommu) {
++       if (IS_ENABLED(CONFIG_VFIO_DEVICE_CDEV) && vfio_noiommu &&
++           !device->dev->iommu && type == VFIO_IOMMU) {
+
+> The next issue raises a valid concern whether the dev_warn() should be
+> a dev_warn_once().
+> 
+I think dev_warn() is appropriate here, matching the existing group
+path. The warning is per device per path. Using dev_warn_once() would
+suppress warnings for later devices at the same callsite, which would
+hide which devices were exposed through the unsafe noiommu path.
  
-+struct arm_smmu_test_pm_context {
-+	u32 *mock_prod_reg;
-+	u64 *mock_base;
-+	unsigned long *mock_valid_map;
-+};
-+
-+/*
-+ * Shared helper to allocate and map a fully functional, self-consuming mock
-+ * CMDQ. By redirecting both prod_reg and cons_reg to the same memory location,
-+ * every producer write is instantly reflected as a consumer completion.
-+ */
-+static struct arm_smmu_test_pm_context *
-+arm_smmu_v3_test_init_mock_cmdq(struct kunit *test, struct arm_smmu_device *smmu)
-+{
-+	struct arm_smmu_test_pm_context *ctx;
-+	struct arm_smmu_cmdq *cmdq = &smmu->cmdq;
-+
-+	ctx = kunit_kzalloc(test, sizeof(*ctx), GFP_KERNEL);
-+	KUNIT_ASSERT_NOT_NULL(test, ctx);
-+
-+	/* Use a standard 1024-entry queue for safe word bitmask alignment */
-+	ctx->mock_prod_reg = kunit_kzalloc(test, sizeof(u32), GFP_KERNEL);
-+	ctx->mock_base = kunit_kzalloc(test, 1024 * 16, GFP_KERNEL);
-+	ctx->mock_valid_map = kunit_kzalloc(test, BITS_TO_LONGS(1024) * sizeof(long), GFP_KERNEL);
-+
-+	KUNIT_ASSERT_NOT_NULL(test, ctx->mock_prod_reg);
-+	KUNIT_ASSERT_NOT_NULL(test, ctx->mock_base);
-+	KUNIT_ASSERT_NOT_NULL(test, ctx->mock_valid_map);
-+
-+	smmu->features = 0;
-+	/* 1024 entries */
-+	cmdq->q.llq.max_n_shift = 10;
-+	/* SMMUv3 commands are 2 dwords (16 bytes) */
-+	cmdq->q.ent_dwords = 2;
-+	cmdq->q.base = (__le64 *)ctx->mock_base;
-+	cmdq->valid_map = (atomic_long_t *)ctx->mock_valid_map;
-+
-+	/* Self-Consuming, prod == cons always ensures queue empty */
-+	cmdq->q.prod_reg = (__force u32 __iomem *)ctx->mock_prod_reg;
-+	cmdq->q.cons_reg = (__force u32 __iomem *)ctx->mock_prod_reg;
-+
-+	/* Initialize memory indices */
-+	atomic_set(&cmdq->q.llq.atomic.prod, 0);
-+	atomic_set(&cmdq->q.llq.atomic.cons, 0);
-+	atomic_set(&cmdq->owner_prod, 0);
-+	*ctx->mock_prod_reg = 0;
-+
-+	return ctx;
-+}
-+
-+struct arm_smmu_test_timer_context {
-+	struct kunit *test;
-+	struct arm_smmu_device *smmu;
-+	struct arm_smmu_test_pm_context *pm_ctx;
-+	struct timer_list timer;
-+	bool stopped;
-+};
-+
-+/* Asynchronous timer callback running in softirq context */
-+static void arm_smmu_v3_test_rpm_timer_callback(struct timer_list *t)
-+{
-+	struct arm_smmu_test_timer_context *ctx =
-+		timer_container_of(ctx, t, timer);
-+	struct arm_smmu_cmdq *cmdq = &ctx->smmu->cmdq;
-+
-+	/*
-+	 * Asynchronously set the STOP_FLAG (Close the gate).
-+	 * Simulate a concurrent runtime suspend event interrupting
-+	 * the invalidations happening under active load.
-+	 */
-+	atomic_or(CMDQ_PROD_STOP_FLAG, &cmdq->q.llq.atomic.prod);
-+
-+	/* Signal to the main storm loop that suspend has triggered */
-+	WRITE_ONCE(ctx->stopped, true);
-+}
-+
-+/*
-+ * Verify SMMU PM Runtime gating, elision, and post-suspend resumption
-+ * safety sequentially under active stress.
-+ */
-+static void arm_smmu_v3_test_rpm_stress_race(struct kunit *test)
-+{
-+	struct arm_smmu_device *smmu = kunit_kzalloc(test, sizeof(*smmu), GFP_KERNEL);
-+	struct arm_smmu_test_pm_context *pm_ctx;
-+	struct arm_smmu_test_timer_context *timer_ctx;
-+	struct arm_smmu_cmdq *cmdq = &smmu->cmdq;
-+	struct arm_smmu_cmd cmd = arm_smmu_make_cmd_cfgi_all();
-+	u32 stopped_prod;
-+	int i, ret;
-+
-+	KUNIT_ASSERT_NOT_NULL(test, smmu);
-+	pm_ctx = arm_smmu_v3_test_init_mock_cmdq(test, smmu);
-+
-+	timer_ctx = kunit_kmalloc(test, sizeof(*timer_ctx), GFP_KERNEL);
-+	KUNIT_ASSERT_NOT_NULL(test, timer_ctx);
-+	timer_ctx->test = test;
-+	timer_ctx->smmu = smmu;
-+	timer_ctx->pm_ctx = pm_ctx;
-+	timer_ctx->stopped = false;
-+
-+	/* Setup the kernel software timer */
-+	timer_setup(&timer_ctx->timer, arm_smmu_v3_test_rpm_timer_callback, 0);
-+
-+	/* Start the timer to fire in 10 jiffies */
-+	mod_timer(&timer_ctx->timer, jiffies + msecs_to_jiffies(10));
-+
-+	/* Execute the unmap storm until the timer triggers */
-+	while (!READ_ONCE(timer_ctx->stopped)) {
-+		ret = arm_smmu_cmdq_issue_cmdlist(smmu, cmdq, &cmd, 1, false);
-+		if (ret != 0) {
-+			KUNIT_FAIL(test, "Unmap Storm loop failed to submit cmd list: %d\n", ret);
-+			break;
-+		}
-+
-+		usleep_range(50, 100);
-+	}
-+
-+	timer_delete_sync(&timer_ctx->timer);
-+
-+	/* Establish the globally stable, post-storm register baseline index */
-+	stopped_prod = *pm_ctx->mock_prod_reg;
-+
-+	/*
-+	 * Attempt multiple unmaps while the SMMU is disabled (STOP_GATE is set)
-+	 * Every single invalidation must be instantly elided, returning 0
-+	 * immediately and leaving the mock MMIO register completely frozen.
-+	 */
-+	for (i = 0; i < 1000; i++) {
-+		ret = arm_smmu_cmdq_issue_cmdlist(smmu, cmdq, &cmd, 1, false);
-+		if (ret != 0) {
-+			KUNIT_FAIL(test, "Gated storm loop failed at iteration %d: %d\n", i, ret);
-+			break;
-+		}
-+	}
-+	KUNIT_EXPECT_EQ(test, stopped_prod, *pm_ctx->mock_prod_reg);
-+
-+	/*
-+	 * Clear the STOP_FLAG (resume SMMU). A new invalidation must now
-+	 * successfully commit, moving the prod_reg by exactly 1 slot
-+	 */
-+	atomic_andnot(CMDQ_PROD_STOP_FLAG, &cmdq->q.llq.atomic.prod);
-+	KUNIT_EXPECT_EQ(test, 0, arm_smmu_cmdq_issue_cmdlist(smmu, cmdq, &cmd, 1, false));
-+	KUNIT_EXPECT_EQ(test, stopped_prod + 1, *pm_ctx->mock_prod_reg);
-+}
-+
- static struct kunit_case arm_smmu_v3_test_cases[] = {
-+	KUNIT_CASE(arm_smmu_v3_test_rpm_stress_race),
- 	KUNIT_CASE(arm_smmu_v3_write_ste_test_bypass_to_abort),
- 	KUNIT_CASE(arm_smmu_v3_write_ste_test_abort_to_bypass),
- 	KUNIT_CASE(arm_smmu_v3_write_ste_test_cdtable_to_abort),
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index d42f78777571..dd7cfd3c16f4 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -871,6 +871,7 @@ int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
- 	local_irq_restore(flags);
- 	return ret;
- }
-+EXPORT_SYMBOL_IF_KUNIT(arm_smmu_cmdq_issue_cmdlist);
+For example, with both group and cdev enabled today we get:
  
- static int arm_smmu_cmdq_issue_cmd_p(struct arm_smmu_device *smmu,
- 				     struct arm_smmu_cmd *cmd, bool sync)
--- 
-2.54.0.794.g4f17f83d09-goog
+vfio-pci 0000:01:00.0: Adding kernel taint for vfio-noiommu group on
+device
+vfio-pci 0000:01:00.0: Adding kernel taint for vfio-noiommu cdev
+on device
+
+> The sysfs naming comment is invalid, we intentionally name noiommu
+> devices uniquely to force userspace opt-in.
+> 
+> In patch 6, adding dead code is a valid comment, the unchecked
+> asprintf does seem to be an outlier in selftest code, the unmap
+> comment may be a false positive, as is the hugepage size, but the
+> masked return comments could arguably be skips or asserts.  There are
+> potentially a couple remaining nits and style issues noted.
+> 
+yeah, I will fix the test code, bsed on David's feedback also.
+
+> Overall, more signal than noise afaict.  Thanks,
+> 
+> Alex
 
