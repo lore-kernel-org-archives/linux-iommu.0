@@ -1,176 +1,107 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 370783D525E;
-	Wed, 27 May 2026 15:34:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 292623D1AB5;
+	Wed, 27 May 2026 15:36:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779896090; cv=none; b=qovODJWy3a3W0pzpg14QErV+lgsJ4d8ZanwmzT+gozn2oESU2WjoyVP4yyu/a5AyK60p9fSzAyNqtWMZUQbReNFcjSVjwYMSmbq6fXSKidS7YGpYnGsOSmiuBytPnIARPK/cKNn/4ZfcXbA4zplq8S4oPwB6JO4ofCLGqH4cB4o=
+	t=1779896174; cv=none; b=j9XX/fvTI0gX1PzuGDBXPmh7aV0ahfxW0UB6Mmgl6NM+ksAqcrbY6xZA0lQ8hUt7V8BYnrRjJmXITegYBSbA8hCOdKYoPbLtSpbIDU0Qi4sQC3JV3TFyITH7K8ERl8ONDwgRhJo5xueMEW/C6/mVVKZTG9Qgfbuy9mgMgcGQbPw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779896090; c=relaxed/simple;
-	bh=eYVYYSuFVGmwCEA1eQW+wxuiUuETdO6GAvZY6GYSRBI=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=uPqoXveINm6y5XotvW9ckVkSsVBf/LSfJKlSy7HY4I8DfXeW/eO1F2Z0AMyvCSU7zvz0JiFd0X7U4WTQpLKifZQF+6j1YHtikido+4xjLkvmtvVgQHSO1gnCssDr7TKtmxQEQWVUKHHCAMp4ajJyDP+WwMBDSWrA/ofGR0Lt+CY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cRPgykzH; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779896174; c=relaxed/simple;
+	bh=Ovp+K4FnIuO8i9CGXqYhA/YWXaEutFtXl4uEiD4jDVo=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
+	 MIME-Version:Content-Type; b=Ue8iK9Zzh52GhsOl0J+eHlvIY2lY4jPck17H65GG6vVxTgNlwbFpLaYJV6GWjWvMT8lAelD99yPrz4XEQiv+ernDbcJeq4NWxxCZI1KUPoDF7gSdldJEOXlScvKPqsFZvCx8nWegkd61b+G7dqhkrm+01dvEqOGVEknnZneW878=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CO7NzX0a; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cRPgykzH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF14D1F000E9;
-	Wed, 27 May 2026 15:34:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CO7NzX0a"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 142B81F000E9;
+	Wed, 27 May 2026 15:36:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779896086;
-	bh=Qxk8LHEih46ikb9+5L8RXjEX9FaNqLHHuYYo/bGlo+Q=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=cRPgykzHCaDaqPzIDLPcbYrF2yAeUbZQs/LCNaCCcaTYYXFUr8NOYjCZYJttqRqoH
-	 WgIDMzJMOfjtDQn5VA2Y4ylF19CJ26VwyK4P6zIfeku4eibJ43A/b/6S6Df7m9slJQ
-	 dX8f3VVU6JpNGGdPJ9bF0ykKlEm7GwC39FeY6xH+Ik7sIxZqmnf0PjOz3Fini74040
-	 yu+P78KT19LV/gZK0h08q4Qt/S4NO3AzAaUWGvOSXjvY1bipzp+CkcPdudfCa+MQn8
-	 +S1VEaH4rLtMfpGnzAK/qlNr43ILziLgY67YfRoMKwn7F12Sa9BFgQGMUmEw1UnSO3
-	 +BlfMwjxvqJ+Q==
-X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: "Dan Williams (nvidia)" <djbw@kernel.org>,
-	Alexey Kardashevskiy <aik@amd.com>, linux-coco@lists.linux.dev,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	kvm@vger.kernel.org
-Cc: Bjorn Helgaas <helgaas@kernel.org>,
-	Dan Williams <djbw@kernel.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Samuel Ortiz <sameo@rivosinc.com>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Will Deacon <will@kernel.org>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Tony Krowiak <akrowiak@linux.ibm.com>,
-	Halil Pasic <pasic@linux.ibm.com>,
-	Jason Herne <jjherne@linux.ibm.com>,
-	Harald Freudenberger <freude@linux.ibm.com>,
-	Holger Dengler <dengler@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Alex Williamson <alex@shazbot.org>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Farhan Ali <alifm@linux.ibm.com>,
-	Eric Farman <farman@linux.ibm.com>, linux-s390@vger.kernel.org
-Subject: Re: [PATCH v5 5/5] iommufd/vdevice: add TSM request ioctl
-In-Reply-To: <6a168c8ea7d10_2129b2100e@djbw-dev.notmuch>
-References: <20260525154816.1029642-1-aneesh.kumar@kernel.org>
- <20260525154816.1029642-6-aneesh.kumar@kernel.org>
- <becd865d-09a4-4ac3-b719-4a0deae2692a@amd.com>
- <6a168c8ea7d10_2129b2100e@djbw-dev.notmuch>
-Date: Wed, 27 May 2026 21:04:29 +0530
-Message-ID: <yq5apl2gsw6y.fsf@kernel.org>
+	s=k20260515; t=1779896172;
+	bh=tyMTaumHRjBinJdhP3tD87rZtnu90BQDmn//aI/sKmo=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Date;
+	b=CO7NzX0aE0E+SHj+82S+F/U8cAQzuwA8hkUPUNhJLQ2phlY3RB4OcpfkpOC+dW4us
+	 qjbQuYT4T45deTaGv3FFA8SHPEUNFhx94kaWnwwyDuaie2bUyyAN0N5GPX9GmjjbT8
+	 yx2NyadlN03P0nR703Zi77z6eXdY9EVjHiC85zMb1twHn3rLnsS+bt/vbWFG2XZ5J/
+	 7fNu4YopxFJ1v2ZqzTS3CpuuX1QzQ6zn1hKuaz5vYmfBQaCyMiCiE685vOoS+B+oKi
+	 t8mW6mahwlddIi1E01MbB0ycvEVyQW350njEZzE+LYQZHRbCx9c6rKFsuimdasqz1e
+	 VM+dsl4Rrhleg==
+From: Lee Jones <lee@kernel.org>
+To: Lee Jones <lee@kernel.org>, 
+ Mark Brown <broonie@opensource.wolfsonmicro.com>, 
+ Thierry Reding <thierry.reding@avionic-design.de>, 
+ Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, 
+ Andrew Lunn <andrew+netdev@lunn.ch>, 
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+ Srinivas Kandagatla <srini@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Vinod Koul <vkoul@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Danilo Krummrich <dakr@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Saravana Kannan <saravanak@kernel.org>, 
+ Madhavan Srinivasan <maddy@linux.ibm.com>, 
+ Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
+ "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, 
+ Andi Shyti <andi.shyti@kernel.org>, 
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Doug Berger <opendmb@gmail.com>, 
+ Florian Fainelli <florian.fainelli@broadcom.com>, 
+ Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, 
+ Ulf Hansson <ulfh@kernel.org>, Frank Li <Frank.Li@nxp.com>, 
+ Sascha Hauer <s.hauer@pengutronix.de>, 
+ Pengutronix Kernel Team <kernel@pengutronix.de>, 
+ Fabio Estevam <festevam@gmail.com>, Matthew Brost <matthew.brost@intel.com>, 
+ =?utf-8?q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, 
+ Rodrigo Vivi <rodrigo.vivi@intel.com>, David Airlie <airlied@gmail.com>, 
+ Simona Vetter <simona@ffwll.ch>, Peter Chen <peter.chen@kernel.org>, 
+ Paul Cercueil <paul@crapouillou.net>, Bin Liu <b-liu@ti.com>, 
+ Philipp Zabel <p.zabel@pengutronix.de>, 
+ Maximilian Luz <luzmaximilian@gmail.com>, Hans de Goede <hansg@kernel.org>, 
+ =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+ Krzysztof Kozlowski <krzk@kernel.org>, 
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>, 
+ Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+Cc: brgl@kernel.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
+ linux-arm-msm@vger.kernel.org, linux-sound@vger.kernel.org, 
+ driver-core@lists.linux.dev, devicetree@vger.kernel.org, 
+ linuxppc-dev@lists.ozlabs.org, linux-i2c@vger.kernel.org, 
+ iommu@lists.linux.dev, linux-pm@vger.kernel.org, imx@lists.linux.dev, 
+ linux-arm-kernel@lists.infradead.org, intel-xe@lists.freedesktop.org, 
+ dri-devel@lists.freedesktop.org, linux-usb@vger.kernel.org, 
+ linux-mips@vger.kernel.org, platform-driver-x86@vger.kernel.org, 
+ stable@vger.kernel.org
+In-Reply-To: <20260521-pdev-fwnode-ref-v1-1-88c324a1b8d2@oss.qualcomm.com>
+References: <20260521-pdev-fwnode-ref-v1-1-88c324a1b8d2@oss.qualcomm.com>
+Subject: Re: (subset) [PATCH 01/23] mfd: tps6586x: fix OF node refcount
+Message-Id: <177989616081.737612.15563215651036638106.b4-ty@b4>
+Date: Wed, 27 May 2026 16:36:00 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Mailer: b4 0.16-dev-ad80c
 
-"Dan Williams (nvidia)" <djbw@kernel.org> writes:
+On Thu, 21 May 2026 10:36:24 +0200, Bartosz Golaszewski wrote:
+> Platform devices created with platform_device_alloc() call
+> platform_device_release() when the last reference to the device's
+> kobject is dropped. This function calls of_node_put() unconditionally.
+> This works fine for devices created with platform_device_register_full()
+> but users of the split approach (platform_device_alloc() +
+> platform_device_add()) must bump the reference of the of_node they
+> assign manually. Add the missing call to of_node_get().
+> 
+> [...]
 
-> Alexey Kardashevskiy wrote:
->> 
->> 
->> On 26/5/26 01:48, Aneesh Kumar K.V (Arm) wrote:
->> > Add IOMMU_VDEVICE_TSM_REQUEST for issuing TSM guest request/response
->> > transactions against an iommufd vdevice.
->> > 
->> > The ioctl takes a vdevice_id plus request/response user buffers and length
->> > fields, and forwards the request through tsm_guest_req() to the PCI TSM
->> > backend. This provides the host-side passthrough path used by CoCo guests
->> > for TSM device attestation and acceptance flows after the device has been
->> > bound to TSM.
->> > 
->> > Also add the supporting tsm_guest_req() helper and associated TSM core
->> > interface definitions.
->> > 
->> > Based on changes from: Alexey Kardashevskiy <aik@amd.com>
->> > 
->> > Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
->> > ---
->> >   drivers/iommu/iommufd/iommufd_private.h |  6 ++
->> >   drivers/iommu/iommufd/main.c            |  3 +
->> >   drivers/iommu/iommufd/tsm.c             | 68 +++++++++++++++++++++
->> >   drivers/virt/coco/tsm-core.c            | 39 ++++++++++++
->> >   include/linux/pci-tsm.h                 |  9 +--
->> >   include/linux/tsm.h                     | 25 ++++++++
->> >   include/uapi/linux/iommufd.h            | 80 +++++++++++++++++++++++++
->> >   7 files changed, 226 insertions(+), 4 deletions(-)
-> [..]
->> > diff --git a/drivers/iommu/iommufd/tsm.c b/drivers/iommu/iommufd/tsm.c
->> > index 09ee668dbed9..342fbdb6a6b9 100644
->> > --- a/drivers/iommu/iommufd/tsm.c
->> > +++ b/drivers/iommu/iommufd/tsm.c
->> > @@ -60,3 +60,71 @@ int iommufd_vdevice_tsm_op_ioctl(struct iommufd_ucmd *ucmd)
->> >   	iommufd_put_object(ucmd->ictx, &vdev->obj);
->> >   	return rc;
->> >   }
->> > +
->> > +static bool iommufd_vdevice_tsm_req_scope_valid(u32 scope)
->> > +{
->> > +	if (scope > IOMMU_VDEVICE_TSM_REQ_SCOPE_PCI_LAST)
->> > +		return false;
->> > +
->> > +	switch (scope) {
->> > +	case IOMMU_VDEVICE_TSM_REQ_PCI_INFO:
->> > +	case IOMMU_VDEVICE_TSM_REQ_PCI_STATE_CHANGE:
->> > +	case IOMMU_VDEVICE_TSM_REQ_PCI_DEBUG_READ:
->> > +	case IOMMU_VDEVICE_TSM_REQ_PCI_DEBUG_WRITE:
->> 
->> This scope thing still needs clarification.
->> 
->> I have 3 types of requests to fit here, all go via VM -> KVM -> QEMU -> IOMMUFD -> TSM.
->> 
->> 1) bind/unbind TDI <- moves to CONFIG_LOCKED, this is "OP";
->> 2) start/stop TDI <- moves to RUN, this is "GR"? Right now I route it via "OP";
->> 3) enable/disable MMIO/DMA <- no TDI state change, this is "GR" but which scope is it here?
->
-> The scope parameter was meant to enumerate a security model for classes
-> of commands that are otherwise opaque to the kernel. However, none of
-> the commands we are targeting are opaque (private specification with
-> unknown effect). It now turns out there is no role for @scope for
-> security.
->
-> Now a command family that iommufd can validate seems useful. As it
-> stands this implementation aliases command codes across TSMs. Do we
-> proceed with creating an actual shared command uapi for the truly shared
-> commands:
->
-> TSM_REQ_TYPE_DEFAULT: Commands every arch needs
-> TSM_REQ_READ_OBJECT
-> TSM_REQ_REGEN_OBJECT
-> TSM_REQ_OBJECT_INFO
-> TSM_REQ_VALIDATE_MMIO
-> TSM_REQ_SET_TDI_STATE
->
-> TSM_REQ_TYPE_SEV: Commands only SEV needs
-> TSM_REQ_SEV_ENABLE_DMA
-> TSM_REQ_SEV_DISABLE_DMA
->
-> ...or just observe that per CC arch commands are needed to setup the VM
-> so per CC arch commands are needed to marshal device assignment support
-> requests.
->
-> In that case pci_tsm_req_scope becomes tsm_req_type and is just:
->
-> TSM_REQ_TYPE_CCA
-> TSM_REQ_TYPE_SEV
-> TSM_REQ_TYPE_TDX
->
-> I am leaning towards the latter at this point.
+Applied, thanks!
 
-But we already have struct pci_tsm_ops::guest_req, which is specific to
-the underlying CC architecture. From the above, pci_tsm_req_scope also
-appears to carry the same information. Is that useful?
+[01/23] mfd: tps6586x: fix OF node refcount
+        commit: 60a28e85ba5c0707b743857a3304107f2f9d0482
 
--aneesh
+--
+Lee Jones [李琼斯]
+
