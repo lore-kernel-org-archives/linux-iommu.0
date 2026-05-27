@@ -1,249 +1,126 @@
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BA923DEAE3
-	for <iommu@lists.linux.dev>; Wed, 27 May 2026 08:32:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20E96283FF5
+	for <iommu@lists.linux.dev>; Wed, 27 May 2026 12:51:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779870749; cv=none; b=O+r8fJCgxhC9FfOe36gRJJRgM2VdEOGDCifNkuu+Otv5TB3jmbUygmi5rsdyCHMeiXd34pSEgCBpWWZaXO26GAcdhiE7TeTuhnuB/nGhxbFkfcwS+IRRK3HMrtklnCnszxN7HlBGWeIAGmZ7kz+GtHbi/hn7znxdtefTyB7q/50=
+	t=1779886308; cv=none; b=hjbGt7eynAxJmWftnHZL36BL7pNtwZYm5+PHphK5lqloZOwipe4MYJf/TsBdGPFyH8zzRNdh6wvxXoFLFXFfieWZ2ccR/OHv2mdkWkG6+iv0Pcb+rlfSosxGppYlbZk9FPShpDF/GjMUnjZ4ZDiOXmd9vn7WP/JZuwN3dajoAOw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779870749; c=relaxed/simple;
-	bh=cwHIjHAe8KJf/GMsGK3Swi8r1zcSw/mau5aBaAmzT30=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=iCjxJIPRv68sB3321UpFgqzWQ1qUoLSlk17I8BEF+9tPH6yooJu3kEy2riv7O2m0Dmm2ZTiuCirIwcGSvNupU+W6DovLOUKSMvhDEIELt/7B58r6oDJYAsH+AY6CiN8menfEHx7tHHTHW69Nr2Nm/VjneTQtP5eL1WOtrzVqJew=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OKycEHQY; arc=none smtp.client-ip=209.85.221.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1779886308; c=relaxed/simple;
+	bh=3YV519fCLQr/dcnqiYK/3hUmKBEJM/JaljBjBD9SBqU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rSZVyIBmHjNUs4Oy8pFMTH+wM5WH4eOztDUaolsun/kWtR7OqxKAjNbevD2Sdn0Uo+ftL6LZLuFFxKgGJhLj5M04Uq0pOXlC15s1O33TwehULZqmOA8I4ObihADEy7IobiBDZz0RFnEHXu3CmxchRSyR9rHe3JtTrjDnZDAiv44=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ZrSdpOQL; arc=none smtp.client-ip=209.85.160.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OKycEHQY"
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-45ed9336049so1164338f8f.0
-        for <iommu@lists.linux.dev>; Wed, 27 May 2026 01:32:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ZrSdpOQL"
+Received: by mail-qt1-f172.google.com with SMTP id d75a77b69052e-516e1525aa3so47207041cf.3
+        for <iommu@lists.linux.dev>; Wed, 27 May 2026 05:51:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779870746; x=1780475546; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7dy1tdo3WsNXJ1hXO7TcI9ffqFZPej1pmbFWn2tPCdc=;
-        b=OKycEHQYkSkggcR5p2govBL2KZ1la6awHidp2bJX2gbxPOq6yOzIw8IF8H0d6NZh7k
-         s7YRVO5Yt0spiIfafbiMOaQL1wUigiUuEJni//+v2OrjlJobVwm8DSgPYM0l0QmIl3C1
-         dID7tQGL6bBk2gXE0ix2wpDrhUXqh32jBVS65my5CtvI5Vegtv22Cg3IHIpx2ZJeU/Za
-         WPtgvefFY81DFgSVst+1ogcJDd+SI+hJzOzCuA5tqj9sS/NmhgM9N8Idcfz5HqrkEMhQ
-         /bEsHw0vi+wNV9y+sNQXZaQ6BY2xsEDCe2UfCmtvgZPh3YzpIuZyzdGuk9jJ9xHmnuNA
-         zBeA==
+        d=ziepe.ca; s=google; t=1779886306; x=1780491106; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Q4NRS1K5QNG7yp7e4rqW6uFiLphCUgs0ec2fYNP5HFo=;
+        b=ZrSdpOQL/RgfO2XJCSZwbDeXmpZubB7/KoOzhbZJKmmIXxf2BGHdfgt5Fj+jRlWtp1
+         SpgqCpc2nhJv8SEZa/n4/+HB8IHGnbQxG1AEfgI1cTstf+0WJGnkau6pr9v4kDy9eMCN
+         Pdr3QnGlpHsvMNhA2ScRslp9kHj+HYLwcpgfxFOw6KXli8CUFknTYHdrNavjETtSalsw
+         QoM/GuPKFsLdyEnlCTCzBq9yMBRKphC7vDSc/nmhvIH1FV7u19QfBz2TsoRYg6gMP/yt
+         C3ggvaE/InK4KWgeV/6mcy79EA9OKQGinHbyxoWpg5f2z+2Sd2VN0oOCYjbWUAuVoSCN
+         sN3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779870746; x=1780475546;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=7dy1tdo3WsNXJ1hXO7TcI9ffqFZPej1pmbFWn2tPCdc=;
-        b=GiyFhyyENRIU9VUclBZHeU03mmz7tr5cecy8OWn7OjlL/K+h53cNxMDgrDnPmsrZtI
-         OkSbdpm/tcOMrigUnFDRjR5ICEBgS/cc5gZC0hBYhoziWlqQFeJd82Vv77FojR50uhes
-         TJoM9BVMy+yccM3YCHAv2zukz3VDmAuBmykGkzIPr+BFDeUpF3rH9eM7arhebsrHyC6r
-         TUwqalImdMJUd3FzRdV30V7UdBPLFVCco71VE00X3npLhBwyBuIDNBVfj49u8+f38Dni
-         EKniYeS8F/AByd3iV6YQcYjLVXNpaVpW+oBVy721eNqL8ES77OYOlzFH7OBhOmIBpYYx
-         EjBw==
-X-Forwarded-Encrypted: i=1; AFNElJ8iSfguZCHHPv+Nl4YCkIhnSYGdJv3iKDQXlnaaoefVZXocvZXv8epXGdL9LEss6rjAFSd5rA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwInzbfZgK5ov8PODgABMRRNbDRZ3v9cHOZAy2726DjU8WYNE3t
-	I6z5LHcSOPoiadSIYF0YsLJnNVyscqtETTlv/YdZvPd1vUmMAhnvZElE
-X-Gm-Gg: Acq92OEtupq2CjUZyfjq0uW5wWX21uTjmarKCwNik7BRQ2ZpyKbMwoaiJh+z0jZwkNh
-	XmBEBfqIuzERfpRgIbqRBV3As3AdDfrO/urs8gh3DzzLAGkNjA6OPEjU8nhNoo2khrOkP51ckdg
-	I4GDMS1VvSAsG/ZNjE/tBkT1dP/Sgg4FCjMil0pLfl17CWXNF6X6hri74tDmm2b9rlulDa36XIe
-	9cwftw7rJDqA1RBKApetajTJATrfSLUkelUOVTxLZH3PmQRL93x+QHRgJ1NxW0TRgjoTZNntGu6
-	c1mTvgjxZKDiMZAbSZBq/QhQcJwV+dcgIBbMTHwGdgWblnpZz9ZmMD99zLv6yZg9Icdn1cSVFLs
-	KasVdEmXWWQLCkJr+zMl1iGPo4OpmJns+vi9vhppNTqk8Drr2KcILZwESRRbIf1ufinWOhq5kDH
-	1sWl2iKCbU399n5jHwFXfkzxKiTIXcUDdiQ9A=
-X-Received: by 2002:a05:6000:25e3:b0:45e:73b4:85cc with SMTP id ffacd0b85a97d-45eb38a6b5amr32754854f8f.35.1779870745674;
-        Wed, 27 May 2026 01:32:25 -0700 (PDT)
-Received: from foxbook (bfe246.neoplus.adsl.tpnet.pl. [83.28.42.246])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45edb557679sm7444880f8f.10.2026.05.27.01.32.24
-        (version=TLS1_2 cipher=AES128-SHA bits=128/128);
-        Wed, 27 May 2026 01:32:25 -0700 (PDT)
-Date: Wed, 27 May 2026 10:32:21 +0200
-From: Michal Pecio <michal.pecio@gmail.com>
-To: Desnes Nunes <desnesn@redhat.com>, David Woodhouse
- <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>
-Cc: linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
- gregkh@linuxfoundation.org, mathias.nyman@intel.com,
- stable@vger.kernel.org, iommu@lists.linux.dev
-Subject: Re: [PATCH RFT RFC] usb: xhci: Kill hosts with HCE or HSE on
- command timeout
-Message-ID: <20260527103221.7f8b15b0.michal.pecio@gmail.com>
-In-Reply-To: <CACaw+ezMnQh2_oqbZ0jF99+wOADMU2vSMqxh9BoJoefjAC_ixw@mail.gmail.com>
-References: <20260430014817.2006885-1-desnesn@redhat.com>
-	<CACaw+eyKh7buHDoDyTOe8O65FP5cSXYdzCcQvwqKw=1DwX26oA@mail.gmail.com>
-	<20260502235517.089ba5bf.michal.pecio@gmail.com>
-	<CACaw+ewOTVh49tnkz+cRr0SD_Z-LmYrMWhFUrsik6YF83mPBtA@mail.gmail.com>
-	<20260503071749.6abda137.michal.pecio@gmail.com>
-	<CACaw+ew8uV5g1G-6qZGtVBEYZ3k+fvFrOq3XMyq-Nuhbq5mdnA@mail.gmail.com>
-	<20260503213111.117db3a1.michal.pecio@gmail.com>
-	<20260504093118.615ff480.michal.pecio@gmail.com>
-	<20260518083339.507e24bd.michal.pecio@gmail.com>
-	<CACaw+ewSWTo72fSk2Q7ZzCM8pNuyrX5ua+qA=SZOQuNNMKSA5Q@mail.gmail.com>
-	<20260522110328.0d3eecd8.michal.pecio@gmail.com>
-	<CACaw+ezqEO_PgjGeYCLq5hA2eKczFXgmZLa8qjPtVJZCGwsdsg@mail.gmail.com>
-	<20260523022944.59799d83.michal.pecio@gmail.com>
-	<CACaw+exPdwXVsJc5Xr=vN1WJt8XR46=X0-8PP=+5dWY5zUrKeQ@mail.gmail.com>
-	<20260523102815.5c05c70a.michal.pecio@gmail.com>
-	<CACaw+ezMnQh2_oqbZ0jF99+wOADMU2vSMqxh9BoJoefjAC_ixw@mail.gmail.com>
+        d=1e100.net; s=20251104; t=1779886306; x=1780491106;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Q4NRS1K5QNG7yp7e4rqW6uFiLphCUgs0ec2fYNP5HFo=;
+        b=dJEvqaaeWzNTAuky9d36uqSanf6GolXfxs/wwcKsn9TESxkGM2wfM5cN5UWKdTn5aK
+         iDNO3BcCAAB5IIky2VneEXdNSiYNofVMcKSUMtgtL865quTtr9+sG6Da3uGjOOg6i7Er
+         HiwttUQGpI6jpzyLlq7iQVQ6CodOFtNXvaiU+lOAzvLUb6ISlvYqo/qDjl0nwg0xLjAf
+         FVDg9+TdJGAsM6nwUtD1PhgIPHyVQzCwDiZr9cncUNDKCMRKEtg/VtURLWaPnLTAXGQD
+         xtjuIUJ4nfykmTf3+T/00xycDSC0RMRvz3ZwcwvQEYqxzy65XjoHYFstotiWO/O+wQLW
+         9HOg==
+X-Forwarded-Encrypted: i=1; AFNElJ+bzawQ8XRvjrruql80yX5bfxdLYwoXDmxWP3ZXvzLC6x2Q4qRU+DExhlGtu1WLtgtPtqXScQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxKWAE49GIC4P1oGl9QP8e6+S4aFGjGqrsus7sGyhAaJmppFJA/
+	YKCUrgzzNJsWjqzgVNEZkZ07ouvcSuH9omAAX/dHPlrENFzFSEAsoU4vf0/tXsoXNx0=
+X-Gm-Gg: Acq92OF5HCvEpDMjX9C6xgcrYxsZWLM0KsQChQ1gUnDwCB0S+dq/PXWkEY19ZmfiZvh
+	ScF7a0C4ysfzOEbE8OxpW1dX0UBYadtkAAI1aQ+oRT5IZx7XeI1yjsXkaGDMIg5YoMscrmJN3zl
+	RFmkMWHeS+IiW34kZjG92n0CTmqZ91lI4T2cUJapu1nwBflbMcmCwzePf5MoDkIacywz+nofIKZ
+	sEbtdPjDz2YmRK0u//ivE22uT0hJ0ngAYmqwdCCPE4o4tcW+BSMgDZUbONVaFeW7PX1c1nBqguh
+	2ptnxY+FjImm5Sa7w4RneSaLdJ7YRBrNNHEbagz104RZ3W44n7U74EvqaBU3m8sgHzWB+flFgZN
+	368zQFcCOSJeIqvsZfcS0C48Roa9BQpb9plfmbcQcgpQHyHNSpz6+mqvd2cZ+qVcY8v2HjFoese
+	LCMk7bn9OkyZ3M3zyxn1t4WVqY3290i9Af19VRSZS3dVT1a2bmenNQHUiCdhbmTBIHMLSCT1nzE
+	ZSnOXpjHAGl62JV
+X-Received: by 2002:a05:622a:1809:b0:517:1481:54a with SMTP id d75a77b69052e-51714810844mr23315551cf.53.1779886301081;
+        Wed, 27 May 2026 05:51:41 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-517069f2464sm41772341cf.2.2026.05.27.05.51.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 May 2026 05:51:40 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wSDjX-0000000EOpm-3BXO;
+	Wed, 27 May 2026 09:51:39 -0300
+Date: Wed, 27 May 2026 09:51:39 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Dan Williams (nvidia)" <djbw@kernel.org>
+Cc: Alexey Kardashevskiy <aik@amd.com>,
+	"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	linux-coco@lists.linux.dev, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+	Bjorn Helgaas <helgaas@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Samuel Ortiz <sameo@rivosinc.com>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Will Deacon <will@kernel.org>, Xu Yilun <yilun.xu@linux.intel.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Tony Krowiak <akrowiak@linux.ibm.com>,
+	Halil Pasic <pasic@linux.ibm.com>,
+	Jason Herne <jjherne@linux.ibm.com>,
+	Harald Freudenberger <freude@linux.ibm.com>,
+	Holger Dengler <dengler@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Alex Williamson <alex@shazbot.org>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Farhan Ali <alifm@linux.ibm.com>,
+	Eric Farman <farman@linux.ibm.com>, linux-s390@vger.kernel.org
+Subject: Re: [PATCH v5 5/5] iommufd/vdevice: add TSM request ioctl
+Message-ID: <20260527125139.GL2487554@ziepe.ca>
+References: <20260525154816.1029642-1-aneesh.kumar@kernel.org>
+ <20260525154816.1029642-6-aneesh.kumar@kernel.org>
+ <becd865d-09a4-4ac3-b719-4a0deae2692a@amd.com>
+ <6a168c8ea7d10_2129b2100e@djbw-dev.notmuch>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6a168c8ea7d10_2129b2100e@djbw-dev.notmuch>
 
-Adding Intel IOMMU people.
+On Tue, May 26, 2026 at 11:17:50PM -0700, Dan Williams (nvidia) wrote:
 
-Context:
+> In that case pci_tsm_req_scope becomes tsm_req_type and is just:
+> 
+> TSM_REQ_TYPE_CCA
+> TSM_REQ_TYPE_SEV
+> TSM_REQ_TYPE_TDX
+> 
+> I am leaning towards the latter at this point.
 
-Desnes reported xHCI issues duing crash kernel boot after SysRq
-triggered panic. Turns out, the chip gets an IOMMU fault, some other
-devices also do. Faulting address is a successful dma_alloc_coherent()
-allocation in xhci_alloc_erst(), no evidence that it's freed before
-the fault occurs. No problems during normal boot.
+Yeah, this sounds good. I would also include an common op field that
+can be decoded by the TSM driver based on the TYPE above, and the
+usual in/out message buffers.
 
-On Wed, 27 May 2026 00:47:53 -0300, Desnes Nunes wrote:
-> # grep "alloc ERST\|free ERST\|ERST\|Device context\|fault addr" kexec-dmesg.log
-> [Tue May 26 08:41:56 2026] DMAR: [DMA Write NO_PASID] Request device
-> [80:1f.6] fault addr 0x106f06000 [fault reason 0x39] SM: Present bit
-> in Root Entry is clear
-> [Tue May 26 08:41:56 2026] DMAR: [DMA Write NO_PASID] Request device
-> [80:1f.6] fault addr 0x106f19000 [fault reason 0x39] SM: Present bit
-> in Root Entry is clear
-> [Tue May 26 08:41:57 2026] DMAR: [DMA Write NO_PASID] Request device
-> [80:1f.6] fault addr 0x106f1c000 [fault reason 0x39] SM: Present bit
-> in Root Entry is clear
-> [...]
-> [Tue May 26 08:42:01 2026] xhci_hcd 0000:80:14.0: alloc ERST at
-> 0x0000001075140000
-> [Tue May 26 08:42:01 2026] xhci_hcd 0000:80:14.0: ERST deq = 64'h107513e000
-> [Tue May 26 08:42:02 2026] DMAR: [DMA Read NO_PASID] Request device
-> [80:14.0] fault addr 0x1075140000 [fault reason 0x39] SM: Present bit
-> in Root Entry is clear
-> 
-> ^ PS: Different address alloc on kdump though
-> 
-> > Otherwise, it seems you were right that you have some IOMMU problem.  
-> 
-> Thus, I started to investigate this front now. This time I gave some
-> more attention to these dmar messages:
-> 
->      [Tue May 19 08:17:49 2026] DMAR: Intel-IOMMU force enabled due to
-> platform opt in
->      [Tue May 19 08:17:49 2026] DMAR: No RMRR found
->      [Tue May 19 08:17:49 2026] DMAR: No ATSR found
->      [Tue May 19 08:17:49 2026] DMAR: dmar0: Using Queued invalidation
-> => [Tue May 19 08:17:49 2026] DMAR: Translation already enabled -  
-> trying to copy translation structures
-> => [Tue May 19 08:17:49 2026] DMAR: Copied translation tables from  
-> previous kernel for dmar0
->      [Tue May 19 08:17:49 2026] DMAR: dmar1: Using Queued invalidation
-> => [Tue May 19 08:17:49 2026] DMAR: Translation already enabled -  
-> trying to copy translation structures
-> => [Tue May 19 08:17:49 2026] DMAR: Copied translation tables from  
-> previous kernel for dmar1
-> 
-> I started wondering if maybe on my system these translation tables
-> can't be fully trusted for some reason during kdump?
-> Maybe iommu is copying root_entries with the Present bit clear, and
-> thus generating the fault reason 0x39?
->    -> bus 0x80's? Both ethernet and xhci_hcd fault addr were on this bus  
-> 
-> So, to test this theory out, I tried to disable translation and
-> allocate a clean root-entry table right away if I am running a kdump
-> kernel:
-> 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index e236c7ec221f..de673f34f4e1 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -2135,24 +2135,31 @@ static int __init init_dmars(void)
->                 if (translation_pre_enabled(iommu)) {
->                         pr_info("Translation already enabled - trying
-> to copy translation structures\n");
-> 
-> -                       ret = copy_translation_tables(iommu);
-> -                       if (ret) {
-> -                               /*
-> -                                * We found the IOMMU with translation
-> -                                * enabled - but failed to copy over the
-> -                                * old root-entry table. Try to proceed
-> -                                * by disabling translation now and
-> -                                * allocating a clean root-entry table.
-> -                                * This might cause DMAR faults, but
-> -                                * probably the dump will still succeed.
-> -                                */
-> -                               pr_err("Failed to copy translation
-> tables from previous kernel for %s\n",
-> -                                      iommu->name);
-> +                       if (is_kdump_kernel()) {
-> +                               pr_info("DESNES V2 IOMMU kdump kernel,
-> disabilng translation and allocating clean root-entry for %s\n",
-> +                                       iommu->name);
->                                 iommu_disable_translation(iommu);
->                                 clear_translation_pre_enabled(iommu);
->                         } else {
-> -                               pr_info("Copied translation tables
-> from previous kernel for %s\n",
-> -                                       iommu->name);
-> +                               ret = copy_translation_tables(iommu);
-> +                               if (ret) {
-> +                                       /*
-> +                                        * We found the IOMMU with translation
-> +                                        * enabled - but failed to copy over the
-> +                                        * old root-entry table. Try to proceed
-> +                                        * by disabling translation now and
-> +                                        * allocating a clean root-entry table.
-> +                                        * This might cause DMAR faults, but
-> +                                        * probably the dump will still succeed.
-> +                                        */
-> +                                       pr_err("DESNES V2 Failed to
-> copy translation tables from previous kernel for %s\n",
-> +                                              iommu->name);
-> +                                       iommu_disable_translation(iommu);
-> +                                       clear_translation_pre_enabled(iommu);
-> +                               } else {
-> +                                       pr_info("DESNES V2 Copied
-> translation tables from previous kernel for %s\n",
-> +                                               iommu->name);
-> +                               }
->                         }
->                 }
-> 
-> Didn't had time to check ERST or HSE yet, but with this I didn't had
-> any DMAR faults, vmcore was collected normally and system rebooted
-> smoothly afterwards:
-> 
->      [Tue May 26 22:52:58 2026] DMAR: Intel-IOMMU force enabled due to
-> platform opt in
->      [Tue May 26 22:52:58 2026] DMAR: No RMRR found
->      [Tue May 26 22:52:58 2026] DMAR: No ATSR found
->      [Tue May 26 22:52:58 2026] DMAR: dmar0: Using Queued invalidation
-> => [Tue May 26 22:52:58 2026] DMAR: Translation already enabled -  
-> trying to copy translation structures
-> => [Tue May 26 22:52:58 2026] DMAR: DESNES V2 IOMMU kdump kernel,  
-> disabilng translation and allocating clean root-entry for dmar0
->      [Tue May 26 22:52:58 2026] DMAR: dmar1: Using Queued invalidation
-> => [Tue May 26 22:52:58 2026] DMAR: Translation already enabled -  
-> trying to copy translation structures
-> => [Tue May 26 22:52:58 2026] DMAR: DESNES V2 IOMMU kdump kernel,  
-> disabilng translation and allocating clean root-entry for dmar1
-> 
-> Seems like a lead on this iommu front.
-> 
-> The funny thing is that the comment in this section literaly says that
-> doing this could cause faults, but here clearing it actually seemed to
-> solve them and made kdump succeed - commit
-> 091d42e43d21b6ca7ec39bf5f9e17bc0bd8d4312 ("iommu/vt-d: Copy
-> translation tables from old kernel")
-> 
-> Let me do some more tests to dump and check the root-entry table
-> before clearing, as well as to check ERST allocations and HSE value,
-> and I'll get back to you Michal.
-> 
-> Best Regards,
-> 
-> Desnes
-> 
+Jason
