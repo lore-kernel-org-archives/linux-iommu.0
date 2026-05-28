@@ -1,202 +1,215 @@
-Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011032.outbound.protection.outlook.com [52.101.52.32])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D490C367B6A
-	for <iommu@lists.linux.dev>; Thu, 28 May 2026 08:00:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.32
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779955253; cv=fail; b=SNBC5FH7EsI6gARDdQdOBFllbuKe9mVjsgfkxCz7fkZ2Cx61RBBTS5jl6/JRs+TDk8mQ9STVL9Ls/XCqwkib1KrqaakGPcBnag6qF93OrphGorZpjOIv5llmBpqGdFQTbP5s75z0spQ/P7DMaVlfLhSVg4DNYm4oB85fBJUPjAg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779955253; c=relaxed/simple;
-	bh=m6RMiMRwMJMU38tNU0fm5j6RS+n9sn+QXCo6DLKUDws=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=MRoKibylY2j7q5fgATi4GukYkQsz0qm16JDInVGr7XGkWv2/FzaENykWNl07psGrrFLPMTH5oe9/KmZRBNvzuptILzMNFtAJw8S556Ix5LubryzazHBWq/kDuup3XqoKftR8O+HAJAgoH/4KaFLULdyih019n/yNFybp4Cqfdzg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=POGdm0ud; arc=fail smtp.client-ip=52.101.52.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AA7A36C0CE
+	for <iommu@lists.linux.dev>; Thu, 28 May 2026 08:15:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779956132; cv=none; b=csMsRrGoD6n4DU87Wm2GfzTmp8uTxIFqBJc4DGVNsepOe1W3vRw3HeJgFzzubF15D6gldFmf5LeXFdVzYc9kxsWGXZ2+PCjS5E+BKy0b1AJ+1nc2PVIZDtk9KFt/apEWB3g1I2XIB0v5Pug7cXjPc/pqv29rrZRGWQfCI1+iSys=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779956132; c=relaxed/simple;
+	bh=ph6AVxU2mN85eYp4CXUuth8twL1G3NolslbRj7aatRk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=QTAGGAlKWqvR6S6af85ZdV3unYXvqenIus9qPhZY1rFXMncqY9Pl++YymhtPEU8jfGlCsA1YSLEF6Sg0loDAB+pZIJfZCXQX7XDnEBVj9CUJQVEPtN2usCh9mpqYmsMBLZrr5i03Wtmkjw/vJx9vWO/FoUgU+GUjBTFaz3IHl68=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=X/ijxmwM; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="POGdm0ud"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=wWPS47dr9r56VwvgOVxNY/tWqfqvx+FBCcHpIXh6mKYF2cCKLychSyKi6zkEy/8vdjCb4nuaecLn7C1K8NBZEaQmsyI/LoLTpygh69/HhVYJD/JVf+mfIC4mW3L84OZs3NWNvyyo8RP/ecGJKFWSn0dggqQbnTfw6qrf6HM+kw4UPN09Zp6gt9Ym4cGhg5C3Wm37vkfsqyaydpOJJ/7hYz9bBxARbujHOoqAUTbLYtiElfTmpIXbcg0q3V3OEnCCugAeTmR9r1L7G8PQ2/HY2ZaPaAr+q/Jah6glPVC7tYLgRMVSKSral8L+BohI/4JPFCIjc89q5eekEdiROimTGw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=L2g1a1Y74zi+hqBeMpghH3gdvCBJLSJljjzmMP/xazY=;
- b=pTGUmAGa07NUuOOHJO5cYELmIQoMXtk0Yp/kFIAun9RqC+mKkiBOdXY4zto0MVULEo0ay2eOTQOCVBJXmh9/gJPI/cDM7vn9RQGuVSZJSaBzEZp4wUvCkTRL9MpZ2Bg4BQHWVjOcfiHat2GUjOgYJwPgKSeL3vKphxV1r1gobd6t9YKczl+auaJ/KXIVF36zAYdzqbH1d1MTxUTsV9iU4JCjdCwwOrJNGFSvhtLg4j2EdCMKHYNtwdKX8jh4D1/a3nhfKSieqlT6qh6Iqvz/3J3hf0qa5SXsbipZ7pWuTX7Jvpsgv4QQRJmT0LhSR95rj1bwNIVvJ2NOsoAShykrIQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L2g1a1Y74zi+hqBeMpghH3gdvCBJLSJljjzmMP/xazY=;
- b=POGdm0udMSwWl0NGrVDMue4RYpkyRa/mpiC/DHSsayYkiBTY9wU7KhIfaM+U6BZ+sMmnzWOpKzFHfRRZIFJpI2PXFmIHaSzzJYbM2luyhoRZsbd3daP9ckFLmCKdSGWbGs0UJz1KdnziLnj+PSfCOappBCLXx/IJ1jqUXJkMVEWQaYkLxECdw0BWOUUYFiBrWWmxspUWZMwX5ycEqt64YWVGcFA4DiNaoJQu6zz3ycmmLjAEcxsJYq5ny2CBDv+2oFp+4VNjfxvlY939SWBF7yEAk2ZsqzApzMhcVscemax3BQWBFNSZs/ar5ZwKXAFPVR1xV9LsqLMkksWgFRUqxw==
-Received: from SJ0PR05CA0100.namprd05.prod.outlook.com (2603:10b6:a03:334::15)
- by CH3PR12MB8754.namprd12.prod.outlook.com (2603:10b6:610:170::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.71.12; Thu, 28 May
- 2026 08:00:42 +0000
-Received: from SJ5PEPF00000203.namprd05.prod.outlook.com
- (2603:10b6:a03:334:cafe::67) by SJ0PR05CA0100.outlook.office365.com
- (2603:10b6:a03:334::15) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.71.11 via Frontend Transport; Thu, 28
- May 2026 08:00:42 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- SJ5PEPF00000203.mail.protection.outlook.com (10.167.244.36) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.71.7 via Frontend Transport; Thu, 28 May 2026 08:00:42 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 28 May
- 2026 01:00:16 -0700
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 28 May
- 2026 01:00:14 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.13) by mail.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server id 15.2.2562.20 via Frontend
- Transport; Thu, 28 May 2026 01:00:13 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <will@kernel.org>, <robin.murphy@arm.com>, <jgg@nvidia.com>
-CC: <joro@8bytes.org>, <bhelgaas@google.com>, <praan@google.com>,
-	<kevin.tian@intel.com>, <kees@kernel.org>, <smostafa@google.com>,
-	<baolu.lu@linux.intel.com>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-pci@vger.kernel.org>, <skaestle@nvidia.com>, <mmarrid@nvidia.com>,
-	<skolothumtho@nvidia.com>, <bbiber@nvidia.com>
-Subject: [PATCH v2 11/11] iommu/arm-smmu-v3: Enable PRI for PCI device in arm_smmu_probe_device()
-Date: Thu, 28 May 2026 00:59:39 -0700
-Message-ID: <fb2e8029f051a14fb7c91bd895fbfbcd3e5cec17.1779944354.git.nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1779944354.git.nicolinc@nvidia.com>
-References: <cover.1779944354.git.nicolinc@nvidia.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="X/ijxmwM"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260528081522euoutp01aea263400f7d1c6f36f89fedef371e1d~zrKmcA5b81062910629euoutp01e
+	for <iommu@lists.linux.dev>; Thu, 28 May 2026 08:15:22 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260528081522euoutp01aea263400f7d1c6f36f89fedef371e1d~zrKmcA5b81062910629euoutp01e
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1779956122;
+	bh=IbG5k8tuaI3ySlwPK27Q1QWmqnOtdP159Rj033Gk+vY=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=X/ijxmwM8b1885B/lHJcusc1+3nBMqeTO+fgfQyDBl8ndmgCqOske0KLa/aI6xYjZ
+	 a+oWdAog75k4WNRaPNmCKcDuy8IuucvjMAKXfXBfWphpNGJAqNbFetloybWbMjbsCj
+	 Kqw+FWBaUOp2wO5ffupdj+wToUmN9RxLWQhQz0Yo=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20260528081521eucas1p2bc331b88ce47a15e48d45c18d6c8f016~zrKmJ0S0W1498614986eucas1p2F;
+	Thu, 28 May 2026 08:15:21 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20260528081521eusmtip2ca6d181521a06dab5847ee55a6f16654~zrKlpirKv3211632116eusmtip2r;
+	Thu, 28 May 2026 08:15:21 +0000 (GMT)
+Message-ID: <f1188fbb-74a8-492c-ba84-37cdec1dc38f@samsung.com>
+Date: Thu, 28 May 2026 10:15:20 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ5PEPF00000203:EE_|CH3PR12MB8754:EE_
-X-MS-Office365-Filtering-Correlation-Id: 940768bf-5790-4213-5384-08debc8f371c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|1800799024|376014|7416014|82310400026|6133799003|11063799006|5023799004|56012099006|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	b8mGDgJFbc7pitL43YO5AFEX6LPDhNIr4R9fpzl0kJepFuau94TFpZ0tfdhFS0cDtMO2sUM6L+NpTqsEsjuXn0KB7mucW5rvyccJ7dES15c/jSQ9FNN2ZT121sbAfSkJhd8rCNqAZTXsuSvkzdzRIH8H2a6aoEb4T31V3Oom9pdhTeRAnzJjH6+AIu8/Xdv/S/ZF2P+F5g2zPF5pOSzLwN+FdHJaE2RlH5VUVjfEhlnO3qtF3skeR0q0/lUSK4o06wMCtAKyCKmaNp3bowkxG1ovHt4mZtBgEOVZm4O5z+DoDIBleaFdSknH2mNClAos/9nROVRNDkfI5ogQ+C9Xk8jlh/8nJ7wslBZjownpk7NN7DrrnAZdcLuAt4ll1ZD7+46SmJsSrfJmNjiZ0ncWi3BvB2GtWcDbaS4C7EgvyIXPYmd+czQfxfNJbW6mV8wQTPD+6vND524bACCRGol2L+7M2Ns5MwPx7w60PB5OOgFRWGzcww5fLxBVG/Qsw4C/b7+Nct2+EzwNad3oXfxEluyEj/q8qVnsS+tvUtonOnCZsicVLIPcEOZ1Ql8sLXG/bgV5ng/0tGDXeh+0KV8vUcSrYswCMKtbfLYQloStHfLyMq052i1P1DfAcEsaYzlvtHgj+6dsNlH2pUZcN7rBz8rLqfrU/hbjbRz9u2e2PabQFx1iWNSSBQkuxOPtvlZjXmRzMRyYbPgcurquSuj/E98ggTpOjdxy5lhEwFkqb10=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(1800799024)(376014)(7416014)(82310400026)(6133799003)(11063799006)(5023799004)(56012099006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	ZdgdARrmWRd8d7wqNk4UQbHts0xD3XLHkqW0BJRxiQMleZVFfVMxHugUjno8aNophk9qoYPARaerUihz2vevFfcNFwK8YjDSp/ear08xk2TjuLfh8hi3W2RjLMU5N2001wvsdhnq2f4h5tZQ0Ygt3LE5iMrq4aX+X9Uy8GI3EkcmJ+4t7G2rbshyhh6OVm8G4D0QFRbYd3nL771fSD3hiEvy4jPmdQMs1waq6zYjU8Tpjbpn+TC+k201vtNGNQ4D8l3AEQFScP0cLKyDjs39wszBFrEplcJK4b0mq1tk9Drm5SqWx1WO0gT2MsFHW/LE33qI0h1EWjeFZ6AToUlPHBE52xKPIz8V6olsvatyX5cNeA/uptvGonOfN9Y9IUV976EloVW4qeJKkqieV93U/tSfozvtKbsklq2OAaqx5FmF8L73trEyV/GYlXfOWyzy
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2026 08:00:42.3784
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 940768bf-5790-4213-5384-08debc8f371c
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ5PEPF00000203.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8754
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH] dma-contiguous: simplify numa cma area handling
+To: Feng Tang <feng.tang@linux.alibaba.com>, Robin Murphy
+	<robin.murphy@arm.com>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
+	<skhan@linuxfoundation.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20260525015111.6267-1-feng.tang@linux.alibaba.com>
+Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20260528081521eucas1p2bc331b88ce47a15e48d45c18d6c8f016
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260525015116eucas1p2a5c7b0c3eb05630b892ff23e16875fd2
+X-EPHeader: CA
+X-CMS-RootMailID: 20260525015116eucas1p2a5c7b0c3eb05630b892ff23e16875fd2
+References: <CGME20260525015116eucas1p2a5c7b0c3eb05630b892ff23e16875fd2@eucas1p2.samsung.com>
+	<20260525015111.6267-1-feng.tang@linux.alibaba.com>
 
-Now PRI requests can be correctly handled. Enable the PCI cap when probing
-a PCI device. Also flush the priq in arm_smmu_attach_release().
+On 25.05.2026 03:51, Feng Tang wrote:
+> Currently, there are 2 kernel cmdline ways to setup numa cma area:
+> "cma_pernuma=" and "numa_cma=", and there are 2 cma arrays as well,
+> while they have no difference technically. Robin suggested to cleanup
+> the code and only use one array [1], as "the apparent intent that
+> users only want one _or_ the other".
+>
+> Simplify the code by only using one array to save the numa cma area.
+> And in rare case that a user really setup the 2 cmdline parameters
+> at the same time,  let the per-node specific size setting 'numa_cma='
+> take priority over the global numa cma setting.
+>
+> Link[1]: https://lore.kernel.org/lkml/43c5301c-fe6a-41e4-9482-ccfc7b62f2a7@arm.com/
+>
+> Suggested-by: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Feng Tang <feng.tang@linux.alibaba.com>
 
-Set the per-device outstanding request budget to the full priq depth, same
-as intel-iommu's per-device PRQ_DEPTH choice. A fixed per-device cap won't
-prevent multiple PRI-capable devices from potentially exceeding the priq's
-capacity; priq overflow is recoverable per the SMMUv3 spec, and it is rare
-in practice.
+Applied to dma-mapping-for-next. Thanks!
 
-select PCI_PRI in Kconfig like other IOMMUs, gated on PCI so the build can
-stay clean for non-PCI ARM SMMUv3 configurations.
 
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
- drivers/iommu/arm/Kconfig                   |  1 +
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 21 +++++++++++++++++++--
- 2 files changed, 20 insertions(+), 2 deletions(-)
+> ---
+>  .../admin-guide/kernel-parameters.txt         |  4 ++
+>  kernel/dma/Kconfig                            |  4 +-
+>  kernel/dma/contiguous.c                       | 46 +++++--------------
+>  3 files changed, 19 insertions(+), 35 deletions(-)
+>
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index 4d0f545fb3ec..8e717a587870 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -895,6 +895,10 @@ Kernel parameters
+>  			contiguous memory allocations. It will reserve CMA
+>  			area for the specified node.
+>  
+> +			If it is setup together with upper 'cmd_pernuma='
+> +			(unlikely), its size setting takes priority for the
+> +			specified numa nodes.
+> +
+>  			With numa CMA enabled, DMA users on node nid will
+>  			first try to allocate buffer from the numa area
+>  			which is located in node nid, if the allocation fails,
+> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+> index c9fa0a922cba..0a4ba21a57a7 100644
+> --- a/kernel/dma/Kconfig
+> +++ b/kernel/dma/Kconfig
+> @@ -179,7 +179,9 @@ config DMA_NUMA_CMA
+>  
+>  	  You can set the size of pernuma CMA by specifying "cma_pernuma=size"
+>  	  or set the node id and its size of CMA by specifying "numa_cma=
+> -	  <node>:size[,<node>:size]" on the kernel's command line.
+> +	  <node>:size[,<node>:size]" on the kernel's command line. And in
+> +	  rare case that the above 2 are both setup, then the "numa_cma="
+> +	  takes priority for the specified numa nodes.
+>  
+>  config CMA_SIZE_PERNUMA
+>  	bool "Default CMA area per NUMA node"
+> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+> index 799f6e9c88bd..f754079a287d 100644
+> --- a/kernel/dma/contiguous.c
+> +++ b/kernel/dma/contiguous.c
+> @@ -134,7 +134,6 @@ EXPORT_SYMBOL_GPL(dev_get_cma_area);
+>  
+>  static struct cma *dma_contiguous_numa_area[MAX_NUMNODES];
+>  static phys_addr_t numa_cma_size[MAX_NUMNODES] __initdata;
+> -static struct cma *dma_contiguous_pernuma_area[MAX_NUMNODES];
+>  static phys_addr_t pernuma_size_bytes __initdata;
+>  static bool numa_cma_configured __initdata;
+>  
+> @@ -208,7 +207,7 @@ static void __init dma_numa_cma_reserve(void)
+>  		pernuma_size_bytes = cma_get_size(dma_contiguous_default_area);
+>  
+>  	for_each_node(nid) {
+> -		int ret;
+> +		int size, ret;
+>  		char name[CMA_MAX_NAME];
+>  		struct cma **cma;
+>  
+> @@ -218,27 +217,17 @@ static void __init dma_numa_cma_reserve(void)
+>  			continue;
+>  		}
+>  
+> -		if (pernuma_size_bytes) {
+> -
+> -			cma = &dma_contiguous_pernuma_area[nid];
+> -			snprintf(name, sizeof(name), "pernuma%d", nid);
+> -			ret = cma_declare_contiguous_nid(0, pernuma_size_bytes, 0, 0,
+> -							 0, false, name, cma, nid);
+> -			if (ret)
+> -				pr_warn("%s: reservation failed: err %d, node %d", __func__,
+> -					ret, nid);
+> -		}
+> -
+> -		if (numa_cma_size[nid]) {
+> +		/* per-node numa setting has the priority */
+> +		size = numa_cma_size[nid] ?: pernuma_size_bytes;
+> +		if (!size)
+> +			continue;
+>  
+> -			cma = &dma_contiguous_numa_area[nid];
+> -			snprintf(name, sizeof(name), "numa%d", nid);
+> -			ret = cma_declare_contiguous_nid(0, numa_cma_size[nid], 0, 0, 0, false,
+> -							 name, cma, nid);
+> -			if (ret)
+> -				pr_warn("%s: reservation failed: err %d, node %d", __func__,
+> -					ret, nid);
+> -		}
+> +		cma = &dma_contiguous_numa_area[nid];
+> +		snprintf(name, sizeof(name), "numa%d", nid);
+> +		ret = cma_declare_contiguous_nid(0, size, 0, 0, 0, false, name, cma, nid);
+> +		if (ret)
+> +			pr_warn("%s: reservation failed: err %d, node %d", __func__,
+> +				ret, nid);
+>  	}
+>  }
+>  #else
+> @@ -437,16 +426,8 @@ struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
+>  
+>  #ifdef CONFIG_DMA_NUMA_CMA
+>  	if (nid != NUMA_NO_NODE && !(gfp & (GFP_DMA | GFP_DMA32))) {
+> -		struct cma *cma = dma_contiguous_pernuma_area[nid];
+> +		struct cma *cma = dma_contiguous_numa_area[nid];
+>  		struct page *page;
+> -
+> -		if (cma) {
+> -			page = cma_alloc_aligned(cma, size, gfp);
+> -			if (page)
+> -				return page;
+> -		}
+> -
+> -		cma = dma_contiguous_numa_area[nid];
+>  		if (cma) {
+>  			page = cma_alloc_aligned(cma, size, gfp);
+>  			if (page)
+> @@ -484,9 +465,6 @@ void dma_free_contiguous(struct device *dev, struct page *page, size_t size)
+>  		 * otherwise, page is from either per-numa cma or default cma
+>  		 */
+>  #ifdef CONFIG_DMA_NUMA_CMA
+> -		if (cma_release(dma_contiguous_pernuma_area[page_to_nid(page)],
+> -					page, count))
+> -			return;
+>  		if (cma_release(dma_contiguous_numa_area[page_to_nid(page)],
+>  					page, count))
+>  			return;
+>
+> base-commit: 7e6ace2535d032c908e4d8747d9a7952617c001a
 
-diff --git a/drivers/iommu/arm/Kconfig b/drivers/iommu/arm/Kconfig
-index 5fac08b89deea..855934d08f866 100644
---- a/drivers/iommu/arm/Kconfig
-+++ b/drivers/iommu/arm/Kconfig
-@@ -79,6 +79,7 @@ config ARM_SMMU_V3
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
- 	select GENERIC_MSI_IRQ
-+	select PCI_PRI if PCI
- 	select IOMMUFD_DRIVER if IOMMUFD
- 	help
- 	  Support for implementations of the ARM System MMU architecture
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 87e4880a145f1..648db9a24b582 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -3149,7 +3149,7 @@ static int arm_smmu_enable_iopf(struct arm_smmu_master *master,
- 	 * device-specific fault handlers and don't need IOPF, so this is not a
- 	 * failure.
- 	 */
--	if (!master->stall_enabled)
-+	if (!master->stall_enabled && !master->pri_enabled)
- 		return 0;
- 
- 	/* We're not keeping track of SIDs in fault events */
-@@ -3352,6 +3352,12 @@ void arm_smmu_attach_release(struct arm_smmu_attach_state *state)
- 			if (smmu->evtq.q.irq)
- 				synchronize_irq(smmu->evtq.q.irq);
- 		}
-+		/* Drain the hardware priq */
-+		if (master->pri_enabled) {
-+			arm_smmu_drain_queue_for_iopf(smmu, &smmu->priq.q);
-+			if (smmu->priq.q.irq)
-+				synchronize_irq(smmu->priq.q.irq);
-+		}
- 		/* Pending events might be in the combined_irq handler */
- 		if (smmu->combined_irq)
- 			synchronize_irq(smmu->combined_irq);
-@@ -4282,8 +4288,17 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
- 
- 	if (dev_is_pci(dev)) {
- 		unsigned int stu = __ffs(smmu->pgsize_bitmap);
-+		struct pci_dev *pdev = to_pci_dev(dev);
- 
--		pci_prepare_ats(to_pci_dev(dev), stu);
-+		if (!pci_prepare_ats(pdev, stu) && pci_pri_supported(pdev) &&
-+		    (smmu->features & ARM_SMMU_FEAT_PRI) && smmu->evtq.iopf) {
-+			unsigned int reqs = 1 << smmu->priq.q.llq.max_n_shift;
-+
-+			if (!pci_reset_pri(pdev) && !pci_enable_pri(pdev, reqs))
-+				master->pri_enabled = true;
-+			else
-+				dev_warn(master->dev, "failed to enable PRI\n");
-+		}
- 	}
- 
- 	return &smmu->iommu;
-@@ -4299,6 +4314,8 @@ static void arm_smmu_release_device(struct device *dev)
- 
- 	WARN_ON(master->iopf_refcount);
- 
-+	if (master->pri_enabled)
-+		pci_disable_pri(to_pci_dev(master->dev));
- 	arm_smmu_disable_pasid(master);
- 	arm_smmu_remove_master(master);
- 	if (arm_smmu_cdtab_allocated(&master->cd_table))
+Best regards
 -- 
-2.43.0
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
