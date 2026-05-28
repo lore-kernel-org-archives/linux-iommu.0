@@ -1,46 +1,46 @@
-Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011027.outbound.protection.outlook.com [52.101.52.27])
+Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012003.outbound.protection.outlook.com [52.101.53.3])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7685331716E
-	for <iommu@lists.linux.dev>; Thu, 28 May 2026 05:19:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.27
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 262A531E844
+	for <iommu@lists.linux.dev>; Thu, 28 May 2026 05:19:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.53.3
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779945570; cv=fail; b=Sa1a05NIH9b4zbd6p4TUZhpCixZYsHgS6o0kis147m3RqDfh7FjU1dlzs8PLhZD0WbN8IfqQ1MYju50YYywFicacV02f7HAkhitegkaAV+vvtlnSa3kVtB75LITJWaHjsCoEaDjU0IurC95LxfxIe9aWe84Gud0yQYSZNZ18y5w=
+	t=1779945575; cv=fail; b=Sp3t5towxcCb0eGDnhIm4f8V0PxOhDeW5Omy7ig3UjKdYCGup0pxQx+DqqwHi6AIXzn2U4b5jDBYdFHcTejnfRalp4Xsp207G2t5YRPHZ0aDofrVXjJncZAT23eCurnpTV1eRGMzDq8nwucDYU5ejWNT/U9E1PlB2QM4YzcRK6o=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779945570; c=relaxed/simple;
-	bh=xZcRY8nknHRyQ8jR73yciPqIYBtft7gVPGk5MMp/xzI=;
+	s=arc-20240116; t=1779945575; c=relaxed/simple;
+	bh=YFhIIfFwyfkoWBsvYcbSQ75H7zy0QCjWOEPERjUSIhA=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=kRiutO32F+zHldJysqyXwGobeD/Lp7RA76cA8cfmGl+PAEFEIL2yZYGQ4bhrcwjMuEpmPGGBBUbiFGGeBtmD9PX9RWw7NOSn4Lm6kNEo+3kmPrl13lpp3Y4aeewKBmCHAuSe7yrnX6ffNjleuM467Jow6hqzlonOmPVKBd1ANrA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=f7rQjCPo; arc=fail smtp.client-ip=52.101.52.27
+	 MIME-Version:Content-Type; b=oX9VjsNK5KdMqrmV6HQayn32IfikbqBLuiNzb6GLH30PWZYboPEiFhYxHmp5TEQxmAIa5LU1C8wTo/qRs7Uv4PvRAbRlWgAC8XZbT9D4cYu5HrL8LmTPrZ2cKQkCnlPN+QCbbgSzV1y/gWiQhFWipJlqud7tP0bp2DoxG+UcIi4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=c2tS6rwJ; arc=fail smtp.client-ip=52.101.53.3
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="f7rQjCPo"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="c2tS6rwJ"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=k2qkfv/G2/pW709vkLz3yJtOmbgm1UN2iGU0dATK/1JZwH9/XDlv2PEEiSLgG4dHajF3Hbus9cYjLCXCsVgb+qZM3w4Af+HElG+NEVDM49xsWX4Wi6wfZQ6vr6UYPjA6XqYh6aKEKribN9XRVxCARBa3yoUc/X6gCNdJPhyfFWmXMCHKtOU/5HebwZRktLFhz7Ct4uwKHGnSaWHfgECt8AAxE59cCNWwXnwPciJdOjbe4fwGeE45Z9NZWG3bLb51Cg1mss9Jlc889/yiCTL0dPiCCkoH0H5Hbtw7xccQBr1jbwhm+kT7CoG5QniA5DlWcBqO4/X9PMQ1/gMQqgsIPA==
+ b=iyjTvF+HFipiKDzDcz+wm5LgyMSpE+CQW1qDQj69rYJoKYqgw96kE0CerJDQLK+HnxX/Tn+/HoP2MPWy3xh5ha2IeEvE3+ylaYTCvt02qfVF+BXrtOZICUlX1+jzGfFaXL/1nZv/MfIWszFfrol6w0dqzi4v29tVv0ylYDnAXxxTMvb/Z8lJMSr9ts5xMwJqLAgxA/2RlMZWTAJW2yHu2VSUUCbpw+N4aU0o7mA1+Wux9dRl4RhgyStOcEUDjirz9aaVh9gNLhmph+8+cEMo7uYdInVm33YjW2ygrIBQVW0+Ai7c/azgJ+1VkHy08ECESE90qVwDpgU6/DOaFx6uwA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=liUs//QCuBPnucrw5CaCgDgeIefNCbpXhRv3NtHnkv4=;
- b=uAsFkJwPw5uFIRkGEXcvQGhu4oWatjQFVoA7/TbYb3GXf4GMe9lchCE9/XDZ0hHPc6sbq5k1PAF0yAjzUESmpsXSShBHbZPglZ61L/TvOd88B6PmlzJVe0yQWRyVFgaAN/0uPj67OoSKNryPT5V+/0sF3c5lXJJxb1azfphVCW7IKHOKs4Kswc6A99XwUSxpNgsahFQ22tHu3rklfvFhLkVkbsbGXmu5+95y6zRMKf7mSsfPdiPZ2jsCsa6Uhg5vfwOT+OQjvMwmHgAO3DcGqWT6+pLE91x0k1WXJcIkWvLiSimapItXnkjBG0COPxX1I5Z8Bvka3DBRzhe+c6pNtg==
+ bh=eFYA5+gAAJ91xWMxnfnIA0zz6rE5qyp16zoafBmyI60=;
+ b=rv1iA/9df2xjogakztAQam5q+/gLLx2XXSlxztGW9WVZow3y0iKHz3kkr5040fWJy0Zy+stoCAIDdlx+dbDJHm5WlE1JiAzkNh1ltjSDOSFUl/nKnLqADuKDDLVpA37FnqdgaMbeiTuaQk0Li5Iraw6lfgxSn4K9VLDRwY8SovwrEjEh2ZDKaXgCV1C9Kt8ABtWPPvnhsGXfKxxDjgWJ3/oHsroZckzK7/JoIhOGjEVNeB7ANTo79/QgYOJEGHnRGahcSnmURjkaqGHEu6BQRNmw4EFztqXdBaWW4/SDhUK9B2IE6dsi392nzTldzR6h1dx3OU6or1u6qvlJV5jhYQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=liUs//QCuBPnucrw5CaCgDgeIefNCbpXhRv3NtHnkv4=;
- b=f7rQjCPoxwDRfFmPOwk8GfdvcDKnstCxKzltJTFRmp0QTKvUCRNEiwfydOzNmRQZYIu8dEIBUKGQglnn2CfUohccizlDTIj5xWcWwpvYaUE/UePVJv2TY6jmeEI+/4oniwJb3Ta3Fs65HWSP3/Yi27q5wsHVBUDD+Wv/6bQCdNU=
-Received: from SN6PR2101CA0005.namprd21.prod.outlook.com
- (2603:10b6:805:106::15) by SA0PR12MB4397.namprd12.prod.outlook.com
- (2603:10b6:806:93::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.71.11; Thu, 28 May
- 2026 05:19:24 +0000
-Received: from SN1PEPF00036F3D.namprd05.prod.outlook.com
- (2603:10b6:805:106:cafe::5a) by SN6PR2101CA0005.outlook.office365.com
- (2603:10b6:805:106::15) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.92.4 via Frontend Transport; Thu, 28
- May 2026 05:19:24 +0000
+ bh=eFYA5+gAAJ91xWMxnfnIA0zz6rE5qyp16zoafBmyI60=;
+ b=c2tS6rwJEUNEc/1nlYAui2VnixCZx5VKcpkKuAVtkO0b4iorW7acHCkpVN8ZbnrF+txkMhLGr9QcFE28vcflEpIxpi/2VDYEh/B+upNEimFKTlKnJ0r6egtOJbZEEpncPIVfK9lz7Lw0ofaJiAgqerGgjlbIQtJc4NKM5J+ZLBQ=
+Received: from PH7PR10CA0015.namprd10.prod.outlook.com (2603:10b6:510:23d::17)
+ by SA1PR12MB8885.namprd12.prod.outlook.com (2603:10b6:806:376::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.71.12; Thu, 28 May
+ 2026 05:19:29 +0000
+Received: from SN1PEPF00036F3E.namprd05.prod.outlook.com
+ (2603:10b6:510:23d:cafe::a6) by PH7PR10CA0015.outlook.office365.com
+ (2603:10b6:510:23d::17) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.71.13 via Frontend Transport; Thu, 28
+ May 2026 05:19:29 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -48,13 +48,13 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
 Received: from satlexmb07.amd.com (165.204.84.17) by
- SN1PEPF00036F3D.mail.protection.outlook.com (10.167.248.21) with Microsoft
+ SN1PEPF00036F3E.mail.protection.outlook.com (10.167.248.22) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.71.7 via Frontend Transport; Thu, 28 May 2026 05:19:24 +0000
+ 15.21.71.7 via Frontend Transport; Thu, 28 May 2026 05:19:29 +0000
 Received: from purico-ed03host.amd.com (10.180.168.240) by satlexmb07.amd.com
  (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Thu, 28 May
- 2026 00:19:19 -0500
+ 2026 00:19:24 -0500
 From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
 	<joro@8bytes.org>, <jgg@nvidia.com>
@@ -63,9 +63,9 @@ CC: <yi.l.liu@intel.com>, <kevin.tian@intel.com>, <nicolinc@nvidia.com>,
 	<sairaj.arunkodilkar@amd.com>, <jay.chen@amd.com>, <wvw@google.com>,
 	<wnliu@google.com>, <dantuluris@google.com>, <chriscli@google.com>,
 	<kpsingh@google.com>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [PATCH v2 17/26] iommu/amd: Pass KVM FD from userspace when initializing vIOMMU
-Date: Thu, 28 May 2026 05:17:29 +0000
-Message-ID: <20260528051738.596013-18-suravee.suthikulpanit@amd.com>
+Subject: [PATCH v2 18/26] iommu/amd: Add translation DTE and VFctrl TransDevID helpers
+Date: Thu, 28 May 2026 05:17:30 +0000
+Message-ID: <20260528051738.596013-19-suravee.suthikulpanit@amd.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260528051738.596013-1-suravee.suthikulpanit@amd.com>
 References: <20260528051738.596013-1-suravee.suthikulpanit@amd.com>
@@ -81,155 +81,144 @@ X-ClientProxiedBy: satlexmb08.amd.com (10.181.42.217) To satlexmb07.amd.com
  (10.181.42.216)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PEPF00036F3D:EE_|SA0PR12MB4397:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3d1b150c-b19f-48de-9b1b-08debc78aeab
+X-MS-TrafficTypeDiagnostic: SN1PEPF00036F3E:EE_|SA1PR12MB8885:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7406fb4e-aee4-4fa9-9243-08debc78b185
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|36860700016|376014|7416014|82310400026|18002099003|22082099003|11063799006|56012099006;
+	BCL:0;ARA:13230040|376014|7416014|36860700016|1800799024|82310400026|22082099003|18002099003|5023799004|11063799006|56012099006;
 X-Microsoft-Antispam-Message-Info:
-	H7B143QqUhuw1OZAQOv8P/cx29YQ5xrwKBrFlQHI77KD91ZHumS1luO5v6C6+Rvydp0tGCWmnk1md/mhLWLBE9s/VqHYFg5lgIkQRMHZr5bVzvyQvU/xB7yH35VDkXSJEgekAQI8itp98QYBVoXKeUKRbeWSZH2DYC8Qxri8OBc+WACFUu/MEarTpMg7SyYJIENCkVrJhLG2xGrpAOADXt/DvgLCy4/Da+liM0r0zNdnozhkOoh3yq39fJbuJFfG8QXYc49XJe+Ssr9iymxSUNQ3ZLf9w1/WMkwEogKFdNR63wwzRnKT9KzVcghhFsGUupSiWXP+1tn0FUP+iWQMrssE0d/Jbq9J6U3kgiyAdiWCHaEMtaIUHuQ1o2UfUCjkB1EhqWVHDsYEn12Z75Awi0NybgfIFqPJEIn3iDWrl00XRXbgK2BrvhaGipXB/C2rWp4p6+xEB5MC5FIHLXJgYDFqTKxwvZ22lq+DHyfolBZN78iZnMBziL2BD0uxfSPvpezykRbLVQ2XlcThxH0mNLyFxGnuYbSAvHZdZ+a7oFZM/IdXMeqk9nAyAzd8DcFzWQIBzkI9kiMIQy/FgEpMC3pYWeJcFy5owPKhcvze/tKrOacvt9jC+wBpMrw1vBRH0TWmfShVjs0W8bgjkyUkZZsbkVlnAn3GE85o3xpQjKfNPhCHLv9OdOnBo0mZA3U6C8TLGgP9KXQ00dIasABD1wiWkaXJKGWidJXyPM5gXgM=
+	nzRLBy7fc/D7kZOTMHNFTyL6WEyu5zvcR1k36pzelYud5/WesUa0sq9hOfhN06yJvgF+VITs0IQL0f3oLGIqMNSykwdeqtRNLaz4lFHbsajQoBuQ1fG9//4RVBb5A7/fzpkyZ2tou5gVU4lAaD1V/jmOeIiuPUb5Ywpqmjfr5IuvtqqwYERmKZ9QC5va/dgAYBMUkIaxOm55qbFwujcm4pvM/EXzKJSE/JZCTxtY7wAzkvmTnMMiArVq785FWivx6I4zlX/qIP455Fesj7deD3FnWbu69tr9UOkXh7sYsWL1nyTtybRZ4QcdsCKn0fmgGpQszUQcnqzPYsEEZjmki7czsH1wJnQ/z+vJhGAp38hyf9XAZFWZyDPSZTjA6lB6BUC5Sjx1fgc4RwGoWqE5hKxaMc6jQ9bwq4KAWE+zSDkY9MTKlKTtvP0+QYJQ7q4mZrJ0usecxBOoRYGeQPUD3U/foNY8JOPELPb54nZE/RfYaGNHIOjvAPaF9zppTmcka8g8Nm7YspZvFg79IoiNeul9IN4V/qhOdGZx9kTVT/vR8gcrWCGUeMhBM6B2Ty5zjWn3P9MIsvJrmAGK0l4ybQtsZcF+mXFw7HgPiBRX2hifmxV/l0N8ws/oxTA3Z3/IuyU7ZzywSCb71dUAKdND9ImXMaaZpBASy+GpY6CNqKwxrTTei7rxj/kfdVT50ruHSjXtpaCXBlT7kEeNJhW2uzp57LqG/qDPmraY1QSflSc=
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(36860700016)(376014)(7416014)(82310400026)(18002099003)(22082099003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(7416014)(36860700016)(1800799024)(82310400026)(22082099003)(18002099003)(5023799004)(11063799006)(56012099006);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	w+vEQPgJUOXj3dbinGxl6fVYwpFS3jQRaaW88PQSmDqoAw7xcuiDqMGcwehXHmnBc6Z4oYtrMjN5oboiKTmObJoOo7tJPeT45D6Pg7F3NuEH7DXlFi6g4wD/kRHlurMv7c3zaJgqYSPjrzGOl2Y0MoIuDD1Nzz5HIZHfUcX1YopGc2bz93vY7XuEeTMCeK0DhIxPvY84ICIyxAFxbWC3KaIVtXvmIhmP1jqu45yucVsJ1imJZlYbS3qhni5iqOQjAlezekeqbdq1rX0NoH1Shl/S3yIVrbD/dAK5bBK1g7hk5L8v4j10GcV9yzgre1LJu9RQKP5jS63BDYSptKuBL7ABx0Ls0RNyjAQaUE5h3MFV6EhOP6kx9TObj7lOyTEd2ugYEs8e4qNbFwbmOajK9oud2Y+iAfceHdTpb++ylqnTtA4kB/6FVrFvs+Yu2icO
+	Ds3yCwrL/2r7RND3mRRS8cLcT9+g1kIp/IK4Tajuyv8QQ7pcv9CWXGN6GdMCisILGd4YUiO8wP6L5DwXm77ekLDuGcy7V+p8YknSMEiJDP16g2Tztdr869rPTqUOHhe/7NmnFCGYv0wldCeFLLDyjKSQoxa4cqkRGipkir8AdL2ELN4pKkzn82rpuiu7YH6FDV97gPTFUPC4lFpzvOcdwGjmHicjtJaDvP7EAS2qGQsoW/V9sqNlo6h0iRLu2p4E8ADX4uS+I+evbohCBsIOHfcVRWsYnCtcT0489OxVJr4gJvQ5LYcRvvJwUOE/meU+aKHPRcSboZlfXnK9+qYRqlv2HtJbPifzInqjOSHJbJmJeD6JCPbV/EUz9GVvXfjUrbRjJTjICek7a71WdldOlw7mOxWMDcuZoyCpMrb7iVzjHF3fmGhnR5eceeqpIkoG
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2026 05:19:24.5378
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2026 05:19:29.2998
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3d1b150c-b19f-48de-9b1b-08debc78aeab
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7406fb4e-aee4-4fa9-9243-08debc78b185
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	SN1PEPF00036F3D.namprd05.prod.outlook.com
+	SN1PEPF00036F3E.namprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4397
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8885
 
-AMD HW-vIOMMU feature requires IOMMU driver to keep track of each guest.
-This information is used by AMD IOMMU driver to manage the following:
+The hardware vIOMMU uses a per-VM translate device ID (TransDevID) to
+index the host device table when guest IOMMU traffic needs GPA->SPA
+translation.  The VF Control guest miscellaneous register tells the
+IOMMU which TransDevID to use; the corresponding device table entry
+(DTE) points at the nested IOMMU v1 page table that performs the walk
+from guest physical to system physical addresses.
 
-* GID: Each  guest is assigned a unique 16-bit Guest ID (GID), which is
-used to index into various data structures for configuring the hardware.
-
-* Translation-devid: Each guest has one GPA->SPA mapping, which requires
-one trans_devid to program the v1 page table in the DTE[trans_devid].
-
-* Extended interrupt remapping: The AMD HW-vIOMMU uses AVIC to implement
-extended interrupt remapping to virtualize Event/PPR log interrupts.
-A KVM reference is neeed to get the AVIC vm_id.
-
-The KVM FD can be used for these purposes.
+Add amd_iommu_set_translate_dte() and amd_iommu_clear_translate_dte()
+to install or clear that DTE for a given TransDevID slot, using the
+AMDv1 page table root and mode from the protection domain.  Add
+amd_iommu_update_vfctrl_mmio_translate_devid() to publish the
+TransDevID in VFctrl guest-misc MMIO, and
+VIOMMU_VFCTRL_GUEST_MISC_CONTROL_OFFSET for the register offset.
 
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 ---
- drivers/iommu/amd/amd_iommu_types.h |  2 ++
- drivers/iommu/amd/iommufd.c         | 27 ++++++++++++++++++++++++++-
- include/uapi/linux/iommufd.h        |  2 ++
- 3 files changed, 30 insertions(+), 1 deletion(-)
+ drivers/iommu/amd/amd_iommu.h       |  7 ++++
+ drivers/iommu/amd/amd_iommu_types.h |  1 +
+ drivers/iommu/amd/iommu.c           | 51 +++++++++++++++++++++++++++++
+ 3 files changed, 59 insertions(+)
 
+diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+index 1d8727c16840..d1640181b292 100644
+--- a/drivers/iommu/amd/amd_iommu.h
++++ b/drivers/iommu/amd/amd_iommu.h
+@@ -216,6 +216,13 @@ void amd_iommu_update_dte(struct amd_iommu *iommu,
+ 			  struct dev_table_entry *new);
+ int amd_iommu_completion_wait(struct amd_iommu *iommu);
+ 
++void amd_iommu_set_translate_dte(struct amd_iommu *iommu, u16 gid,
++				 struct protection_domain *pdom,
++				 u32 devid);
++void amd_iommu_clear_translate_dte(struct amd_iommu *iommu, u16 gid, u32 devid);
++void amd_iommu_update_vfctrl_mmio_translate_devid(struct amd_iommu *iommu,
++						  u16 gid, u32 trans_devid);
++
+ static inline void
+ amd_iommu_make_clear_dte(struct iommu_dev_data *dev_data, struct dev_table_entry *new)
+ {
 diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 836d5cd08134..e9b49f0b9051 100644
+index e9b49f0b9051..2d7bc791dbd9 100644
 --- a/drivers/iommu/amd/amd_iommu_types.h
 +++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -547,6 +547,8 @@ struct amd_iommu_viommu {
- 	struct protection_domain *parent; /* nest parent domain for this viommu */
- 	struct list_head pdom_list;	  /* For protection_domain->viommu_list */
- 	u16 gid;			  /* Guest ID for the vIOMMU */
-+	u32 kvmfd;			  /* KVM fd from VMM */
-+	void *kvm;			  /* Hold struct kvm pointer */
+@@ -495,6 +495,7 @@ extern bool amdr_ivrs_remap_support;
+ /* VIOMMU stuff */
+ #define VIOMMU_VF_MMIO_ENTRY_SIZE		4096
+ #define VIOMMU_VFCTRL_MMIO_ENTRY_SIZE		64
++#define VIOMMU_VFCTRL_GUEST_MISC_CONTROL_OFFSET	0x10
  
- 	/*
- 	 * Per-vIOMMU guest domain ID to host domain ID mapping.
-diff --git a/drivers/iommu/amd/iommufd.c b/drivers/iommu/amd/iommufd.c
-index 6020f2caf445..7c7ef267088b 100644
---- a/drivers/iommu/amd/iommufd.c
-+++ b/drivers/iommu/amd/iommufd.c
-@@ -4,6 +4,8 @@
-  */
- 
- #include <linux/iommu.h>
-+#include <linux/file.h>
-+#include <linux/amd-iommu.h>
- 
- #include "iommufd.h"
- #include "amd_iommu.h"
-@@ -42,13 +44,27 @@ size_t amd_iommufd_get_viommu_size(struct device *dev, enum iommu_viommu_type vi
- 	return VIOMMU_STRUCT_SIZE(struct amd_iommu_viommu, core);
+ /* Host ioremap/request_mem_region sizes for VF / VF_CNTL BARs */
+ #define VIOMMU_VF_MMIO_MAP_SIZE		0x10000000UL
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 44d20e598d85..6c4c4f62ddde 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -3242,6 +3242,57 @@ static bool amd_iommu_enforce_cache_coherency(struct iommu_domain *domain)
+ 	return true;
  }
  
-+static void *get_kvm_handler(u32 kvmfd)
++#if IS_ENABLED(CONFIG_AMD_IOMMU_IOMMUFD)
++
++void amd_iommu_update_vfctrl_mmio_translate_devid(struct amd_iommu *iommu,
++						  u16 gid, u32 devid)
 +{
-+	struct fd f;
-+
-+	f = fdget(kvmfd);
-+
-+	if (fd_empty(f)) {
-+		pr_warn("%s: fdget failed\n", __func__);
-+		return NULL;
-+	}
-+
-+	return fd_file(f)->private_data;
++	writeq((devid & 0xFFFFULL) << 16,
++	       VIOMMU_VFCTRL_MMIO_BASE(iommu, gid) +
++	       VIOMMU_VFCTRL_GUEST_MISC_CONTROL_OFFSET);
 +}
 +
- int amd_iommufd_viommu_init(struct iommufd_viommu *viommu, struct iommu_domain *parent,
- 			    const struct iommu_user_data *user_data)
- {
- 	int ret;
- 	phys_addr_t page_base;
- 	unsigned long flags;
--	struct iommu_viommu_amd data;
-+	struct iommu_viommu_amd data = {};
- 	struct protection_domain *pdom = to_pdomain(parent);
- 	struct amd_iommu *iommu = container_of(viommu->iommu_dev, struct amd_iommu, iommu);
- 	struct amd_iommu_viommu *aviommu = container_of(viommu, struct amd_iommu_viommu, core);
-@@ -81,6 +97,13 @@ int amd_iommufd_viommu_init(struct iommufd_viommu *viommu, struct iommu_domain *
- 
- 	aviommu->vfmmio_mmap_offset = data.out_vfmmio_mmap_offset;
- 
-+	aviommu->kvm = get_kvm_handler(data.kvmfd);
-+	if (aviommu->kvm == NULL) {
-+		pr_err("%s: Failed to get KVM handler (kvmfd=%#x)\n", __func__, data.kvmfd);
-+		ret = -EINVAL;
-+		goto err_kvmfd;
-+	}
++void amd_iommu_set_translate_dte(struct amd_iommu *iommu, u16 gid,
++				 struct protection_domain *pdom,
++				 u32 devid)
++{
++	u64 tmp0 = 0ULL, tmp1 = 0ULL;
++	struct pt_iommu_amdv1_hw_info pt_info;
++	struct dev_table_entry *dev_table = get_dev_table(iommu);
 +
- 	/* Reset vIOMMU MMIOs to initialize the vIOMMU */
- 	iommu_reset_vmmio(iommu, aviommu->gid);
- 
-@@ -94,6 +117,7 @@ int amd_iommufd_viommu_init(struct iommufd_viommu *viommu, struct iommu_domain *
- 	if (ret)
- 		goto err_init;
- 
-+	aviommu->kvmfd = data.kvmfd;
- 	viommu->ops = &amd_viommu_ops;
- 
- 	spin_lock_irqsave(&pdom->lock, flags);
-@@ -102,6 +126,7 @@ int amd_iommufd_viommu_init(struct iommufd_viommu *viommu, struct iommu_domain *
- 
- 	return 0;
- err_init:
-+err_kvmfd:
- 	iommufd_viommu_destroy_mmap(&aviommu->core, aviommu->vfmmio_mmap_offset);
- err_mmap:
- 	amd_iommu_gid_free(iommu, aviommu->gid);
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index 0b7a3e5b057c..69aa44bba95a 100644
---- a/include/uapi/linux/iommufd.h
-+++ b/include/uapi/linux/iommufd.h
-@@ -1085,10 +1085,12 @@ struct iommu_viommu_tegra241_cmdqv {
- /**
-  * struct iommu_viommu_amd - AMD vIOMMU Interface (IOMMU_VIOMMU_TYPE_AMD)
-  * @out_vfmmio_mmap_offset: (out) mmap offset for vIOMMU VF-MMIO
-+ * @kvmfd: KVM FD handler
-  * @reserved: Must be zero
-  */
- struct iommu_viommu_amd {
- 	__aligned_u64 out_vfmmio_mmap_offset;
-+	__u32 kvmfd;
- 	__u32 reserved; /* must be last */
- };
- 
++	pt_iommu_amdv1_hw_info(&pdom->amdv1, &pt_info);
++
++	pr_debug("%s: gid=%#x, iommu_devid=%#x, devid=%#x, host_pt_root=%#llx, mode=%#x\n",
++		 __func__, gid, iommu->devid, devid, pt_info.host_pt_root, pt_info.mode);
++
++	/* Setup DTE for v1 page table at the offset specified by devid */
++	tmp0 |=	FIELD_PREP(DTE_HOST_TRP, pt_info.host_pt_root >> 12);
++	tmp0 |= FIELD_PREP(DTE_MODE_MASK, pt_info.mode);
++	tmp0 |= (DTE_FLAG_IR | DTE_FLAG_IW | DTE_FLAG_TV | DTE_FLAG_V);
++	tmp1 |= FIELD_PREP(DTE_DOMID_MASK, pdom->id);
++
++	dev_table[devid].data[0] = tmp0;
++	dev_table[devid].data[1] = tmp1;
++
++	iommu_flush_dte(iommu, devid);
++	amd_iommu_completion_wait(iommu);
++}
++
++void amd_iommu_clear_translate_dte(struct amd_iommu *iommu, u16 gid, u32 devid)
++{
++	struct dev_table_entry *dev_table = get_dev_table(iommu);
++
++	pr_debug("%s: gid=%#x, iommu_devid=%#x, devid=%#x\n",
++		 __func__, gid, iommu->devid, devid);
++
++	dev_table[devid].data[0] = 0ULL;
++	dev_table[devid].data[1] = 0ULL;
++
++	iommu_flush_dte(iommu, devid);
++	amd_iommu_completion_wait(iommu);
++}
++#endif /* CONFIG_AMD_IOMMU_IOMMUFD */
++
+ const struct iommu_ops amd_iommu_ops = {
+ 	.capable = amd_iommu_capable,
+ 	.hw_info = amd_iommufd_hw_info,
 -- 
 2.34.1
 
