@@ -1,183 +1,135 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011029.outbound.protection.outlook.com [40.93.194.29])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B7623B5F50
-	for <iommu@lists.linux.dev>; Wed, 27 May 2026 22:49:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779922146; cv=none; b=KmjBWRsY2yDFQSjifkEjFqy9HsySBOxejIrLkIM2MfUT89H9DQ7cnwJrjEfwluOT4+JuA6io/u7Xz2j9hBcFVdBL2fL1457McPt9V/bDNv735ga2CGJ/3BvEg88CPMNqZ7Gir/sWFfHT3ZBYxrSx2rRYVz8PHZQSkU7kYcvInhU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779922146; c=relaxed/simple;
-	bh=XgCimAoT7hxbVKi27EM2uVlOhhGmrOb94/8bSorKk6o=;
-	h=Date:From:To:Cc:Message-ID:In-Reply-To:References:Subject:
-	 Mime-Version:Content-Type; b=lCveeWXPtIGs0CJQ8vPtldn0zHWmRRvxhDfSnoCT6hcPouLLzityAVbPe5+L54Gj0FH5fM7uVQVQRjdu2jBeRNrtSUSr4Bye9jagg8L+sodOrj4uxOwqeVTzBMUHlnWZaw6D4LsMuNm+ys2EpyeKZawNjbi33zH0o68iKxKniSA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZfXIZS1L; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76DC9175A9C
+	for <iommu@lists.linux.dev>; Thu, 28 May 2026 01:36:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.194.29
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779932180; cv=fail; b=nFnEGKVfcnQUwKH9H/dRCuMVgJdtjFAFTEnEx/Lj2dS9ApHZoV+ZkaIkmyz26YqfSmaVlI2lgz3kqlw5QidCDVqr+plIloW0LuTLiHACuVGiBU2OEuLXp/Fa6H/Uz+/acrKQVM48pAZA4TKclxSBi8vDKmP/m8EHjfMjIWWiFV4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779932180; c=relaxed/simple;
+	bh=7Q63BxWlIwc1T2K/m7Qf1q1x3xHPwigBfOP4mafpW9Q=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lpMQOM1qSQnEmmHlhnRfTGdNShRyMGm5ssSCl5E5beTKSoz02t/sI+NkebAWLmICEpxWtMINUHNlJ1/UvY+8ATMWY/eLOT7flagetyEHSPn0TL3ceyXL05rjct8/w1b6XGE3YKVVRBAbvZWP7fbq+27rqVoELEV9DEf6PltiAyQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=uKS652Iv; arc=fail smtp.client-ip=40.93.194.29
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZfXIZS1L"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BDF21F00A3E;
-	Wed, 27 May 2026 22:49:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779922145;
-	bh=kbwvCEgGUo53H1eMdHinsXodo5C04fK1nklZJsj/WrU=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject;
-	b=ZfXIZS1Ls2HEsX0SlQYoXjWfo4DV+yfsRZo6fAPXpYNLbaKANgvkILGMArld3S/zj
-	 Kl9L+PVwAM9iVCd6ayt1ecyj2PIFBa/HoxpcLq64RWXKA1kY+ckBHfdIsfvsmD6+AA
-	 q8Y7ok0dljyVyUi2HNrJ1ADSolklhHqzH12ygiwE724mSDofrSYq6Tnibrhq6Sqeji
-	 UhPU6Psy+RpY7uirQCbkmhhXCzd+TBsbPCrwfibePFDG3vKQJYp6Iet6oSJz3xpZTG
-	 NSS1V/Fq0n2+GkAB8++1mFf9rC5nCjtEdX7Fv38isZAUS/hzyIJVWvW5kCN5ikGLFI
-	 xSigt28Vy/gYA==
-Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
-	by mailfauth.phl.internal (Postfix) with ESMTP id 5353AF4006B;
-	Wed, 27 May 2026 18:49:03 -0400 (EDT)
-Received: from phl-frontend-04 ([10.202.2.163])
-  by phl-compute-04.internal (MEProxy); Wed, 27 May 2026 18:49:03 -0400
-X-ME-Sender: <xms:33QXampOgvj0FTxfrrqvIaE2WkPjN4ZzJPeT7HLRAO703M5bbVhwQg>
-    <xme:33QXak_Ng1KpK1W3mzSKlCKYUqCS3oTxMAXUt2FXME0GQjoHgFhMWxhLzn6CciYqD
-    9SsY4d-krsQC2UkWuE6VAvdEwKZ4ehCyL2BmduTVTzPq-B5N1cM7Bg>
-X-ME-Received: <xmr:33QXai1I8lAnYd5E04lWVxWavWDl5KTjJfgqWjQAvIVzWMRYHkSiABWI9DPINF-1Cd57hmWuX9cQcFB39p8RBMgv0YkN36Om1lU>
-X-ME-Proxy-Cause: dmFkZTEKosdjcGQ0fUzOjNmQ2DaCEkmXgDIgGtQ7CeozMDS1NKqLYgRoYzp4SrcRkoePGh
-    I3/0gP8U7PceQZ5VeBofkCCiqKdtXu/IVi1l7qzDRfWoqulRf4ZxWwe+5xsnELv45z+f/G
-    MaW/6HK6PZ9Po7ctNfm2S2K8YTLug1Wy65sJ4o5Ro+jeumn5uaFuZ85G3XiIiuz96lPvyJ
-    5fVFLuiNLia/ofcgArMi7jyfqb+AyocmjpvFTrvevVedErrFHWQvg4mrVFRK+7hxI8TP9M
-    mH1GI7EFK4AsYlNCrehRXq0VRcua8GPJN1WdVOwJgcw1qyxxLSJNDVONOXjRw9Ti6ErZO8
-    IrHD8LSA2YBfCifjnv7QIoH3nmTTq5UhqXrsa2xxfEYB5iGFJ+/B967wkejXSzOP9s9tkv
-    UziHZTPytzoznWs846mNcKteLWm5xtwTynhnjOrk5gw8NB5l1etb2x+/nrPDugBmnBBK/v
-    1D0lDSGZ10+FSjJsdy6DjVLLoKrjKk78XVjOo/5ByP2KjEIVJvPtPm0VVSuBJj4eR3Sjyv
-    V6VDIJElnseu4xowOBfRXXRYf2l5RdjZ7CSob4xY0gEA9sCwels/KxGLYUc6MfH6UAP10J
-    Ki7RBESOfd6GCyV5R5advgpW4KSHN05EtIQ+9TPuuk3AJBaPYbxgY5UdHtyA
-X-ME-Proxy: <xmx:33QXagjbrn0N50-mkQRVcaem9HyvUmPsqN33puowc7OUHE5Za155kQ>
-    <xmx:33QXaucHNUjz6CMg_eWGBI2GVA5a4BRjQ0__UGwjLXLtFONMDBhu8w>
-    <xmx:33QXas0GqdHzsaxMbrruKhhHapNJW6YuDhyVjV57fZSmFdQuhJRAPA>
-    <xmx:33QXaiN8g3Bd53M7QMBeTuH-AWTijtnsJaP1eq_qSAR8M3WMXLjMYA>
-    <xmx:33QXarTzdGYhkry-UZRJtm3zXrRdJgI-w69jvHYiJrkKw_kYebPLmtte>
-Feedback-ID: i67ae4b3e:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 27 May 2026 18:49:02 -0400 (EDT)
-Date: Wed, 27 May 2026 15:49:01 -0700
-From: "Dan Williams (nvidia)" <djbw@kernel.org>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, 
- "Dan Williams (nvidia)" <djbw@kernel.org>, 
- Alexey Kardashevskiy <aik@amd.com>, 
- linux-coco@lists.linux.dev, 
- iommu@lists.linux.dev, 
- linux-kernel@vger.kernel.org, 
- kvm@vger.kernel.org
-Cc: Bjorn Helgaas <helgaas@kernel.org>,  Dan Williams <djbw@kernel.org>,
-  Jason Gunthorpe <jgg@ziepe.ca>,  Joerg Roedel <joro@8bytes.org>,
-  Jonathan Cameron <jic23@kernel.org>,  Kevin Tian <kevin.tian@intel.com>,
-  Nicolin Chen <nicolinc@nvidia.com>,  Samuel Ortiz <sameo@rivosinc.com>,
-  Steven Price <steven.price@arm.com>,
-  Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-  Will Deacon <will@kernel.org>,  Xu Yilun <yilun.xu@linux.intel.com>,
-  Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-  Paolo Bonzini <pbonzini@redhat.com>,
-  Tony Krowiak <akrowiak@linux.ibm.com>,
-  Halil Pasic <pasic@linux.ibm.com>,  Jason Herne <jjherne@linux.ibm.com>,
-  Harald Freudenberger <freude@linux.ibm.com>,
-  Holger Dengler <dengler@linux.ibm.com>,
-  Heiko Carstens <hca@linux.ibm.com>,  Vasily Gorbik <gor@linux.ibm.com>,
-  Alexander Gordeev <agordeev@linux.ibm.com>,
-  Christian Borntraeger <borntraeger@linux.ibm.com>,
-  Sven Schnelle <svens@linux.ibm.com>,
-  Alex Williamson <alex@shazbot.org>,
-  Matthew Rosato <mjrosato@linux.ibm.com>,
-  Farhan Ali <alifm@linux.ibm.com>,  Eric Farman <farman@linux.ibm.com>,
-  linux-s390@vger.kernel.org
-Message-ID: <6a1774dd80f74_19737610095@djbw-dev.notmuch>
-In-Reply-To: <yq5aldd4spyc.fsf@kernel.org>
-References: <20260525154816.1029642-1-aneesh.kumar@kernel.org>
- <20260525154816.1029642-6-aneesh.kumar@kernel.org>
- <becd865d-09a4-4ac3-b719-4a0deae2692a@amd.com>
- <6a168c8ea7d10_2129b2100e@djbw-dev.notmuch>
- <yq5apl2gsw6y.fsf@kernel.org>
- <yq5aldd4spyc.fsf@kernel.org>
-Subject: Re: [PATCH v5 5/5] iommufd/vdevice: add TSM request ioctl
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="uKS652Iv"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=db+z5HBP6Dvbre3mPZGKlCRFHkh0JMy9Rhxl5bjZPR9dv2w/n2P4bcMaX+2xoDdBz8kLT0cWgzhzJK3tBADCLTubqTNVs+a5cN5ybDr1hgnmRzpwsyLSjs71PSo+mhCo59RYMsZzrV+819ANr1uXCheeQCIu+wWwG8FItw5tjEhYtTGrPqemwU/S4bL99tz9PJqpeZO+el0U9hoZ4NpMCcjcgQvyS4vqbZnnPgeDEs2B4QGdamIzV8J/aY64rSeAVTW0s9mddOseppagb47OOUqI6RToOhj3aiL0fVYq1LBtIhJkNDxiClmylRLuWS7mTUAfJng3pxyTnqXDXswOFg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9kOW9uNz85iqupxfqoOIFDBv7dt/aXLiDgPa6sRcwmk=;
+ b=V+1hRGB/ljiVL+Oxn5EYRLbYpDJkMutA1IM4tm2S8a5JbrPFBahNS2222DTEekPpu9EdjiH1F0BwbTI45c+GdGnwKnJge76DfRDWs1h2f72Amt6XLOrQ6OH3sVNh/SWpReI6g13RdjBPUkkRs0S4rreFpWg4+PjOHpHDPj1NtCACew3IRVsrtmBZPLf4gaUMqB12fMKeGxhI9+CLP163KVHiEAowHz1SHyNlq/2cUqwgddrIaXzIDmmomdP33tQXPG9DNQH9hn+9FwzG5/6AFr9UmHNvhIxVJBznKyHG63yCSviCGcod4RCZVM2TYW1veRBmjcPPhioOpyyFfwDXCg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9kOW9uNz85iqupxfqoOIFDBv7dt/aXLiDgPa6sRcwmk=;
+ b=uKS652IvCNX/JOdzn5W1F0v/4OfS13htWMiHTHLZZ9IolXUcYW1bnFEVpe3bOQLkp4cVfPOzE4A3A+QejwUKetU1WqjTWqX62bHPgOioInitTEJW+FDMTM393CHokMp0yBOx+AzHcd+xKEoEXuWNa5y6SOGyRcqGT96mQ01yIa9y6jji7RC8Gk+/ePDaUaVvy7XF6MYyUuaCsCnVSh8A9Uii7efgcWmAiyNKQXTduHX2cJR8hvnOj3Qw9dWDWbe0LKNHGS29NouwpSdMLy4WLHdgyAv4dWY1oASpyCt15C3MinR0a3+raVg1T+e4SqznZg1qyirQ2g6a4VQ3wv8SaQ==
+Received: from BLAPR05CA0024.namprd05.prod.outlook.com (2603:10b6:208:36e::20)
+ by DM3PR12MB9416.namprd12.prod.outlook.com (2603:10b6:0:4b::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.71.12; Thu, 28 May 2026 01:36:12 +0000
+Received: from BN3PEPF0000B073.namprd04.prod.outlook.com
+ (2603:10b6:208:36e:cafe::43) by BLAPR05CA0024.outlook.office365.com
+ (2603:10b6:208:36e::20) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.92.4 via Frontend Transport; Thu, 28
+ May 2026 01:36:12 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BN3PEPF0000B073.mail.protection.outlook.com (10.167.243.118) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.71.7 via Frontend Transport; Thu, 28 May 2026 01:36:12 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Wed, 27 May
+ 2026 18:35:58 -0700
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Wed, 27 May
+ 2026 18:35:58 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Wed, 27 May 2026 18:35:57 -0700
+Date: Wed, 27 May 2026 18:35:56 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Pranjal Shrivastava <praan@google.com>
+CC: <iommu@lists.linux.dev>, Will Deacon <will@kernel.org>, Joerg Roedel
+	<joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe
+	<jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, Daniel Mentz
+	<danielmentz@google.com>, Ashish Mhetre <amhetre@nvidia.com>,
+	<linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH v7 02/11] iommu/arm-smmu-v3: Add a helper to drain cmd
+ queues
+Message-ID: <aheb/OLd9AQO6rD8@Asurada-Nvidia>
+References: <20260527221407.1756491-1-praan@google.com>
+ <20260527221407.1756491-3-praan@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20260527221407.1756491-3-praan@google.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN3PEPF0000B073:EE_|DM3PR12MB9416:EE_
+X-MS-Office365-Filtering-Correlation-Id: 22e3bfbd-0f00-4020-c30f-08debc59807c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|82310400026|376014|36860700016|18002099003|22082099003|4143699003|11063799006|56012099006;
+X-Microsoft-Antispam-Message-Info:
+	FQlX3zfsBSVwV17L+0iK0F7St2aeIatcSre0xtpLoCRiJwI+SV/F8mxXlYo29Xs5fWFuRK+Zb1d9+QdgHnKubaQ7sD6PHuUPeLvP3fjk7s32TdbTRTvdZ+VIVvlwd5DsAC8J1TztWsH0UTijb/DwmVZT+KfDRg1XHFddoTn6k+4E3GJwFIYIjFdBwJNBMY9WxDxEWao1+2FkxU6q2A8I++FeUqqxb5Z8u/yesOLfbUXlqLhbBeeW6jSfVNQeqfrA/2nGbt6s1/aYgZp5sMX36rH0A77HecS0ruUreB05VPC65qHGb0DtVcFMUilBdwqrvQ0Qej3O12A+B97Kcc2X421b6/WVFO41Dh6Qzgc5eNTn7m5BX+vPeB/8F2Rcxb4HFQI9oAHatbBCsbaljnqpEFvS+JyQlf+bWFsoBBMe5uKkBjadrSpnu6MIwxglNpz3GgmurC+VZltjpv+yYmDzPIvjCIhgToTgb/WqjLs1OfT4WfVJigZs4Qzu0LqN22LEBiwx9p6Ha3CTobFPFjtAhQcUz1Qr4VDIggFHklHLi8VzXVXU3UvSOqxSzBmXLg00pPGDIRG4ugQadA7X62QFps9ekvZIxuKGrCXwD9GipswtoHaDYs8Df55iS8QSJjsw6vKJLccpTfjQ4GIbJAn3w0iokzwhzNl0mOYPLv/Z7LPHwQBTdPdDNoHiye6gnWZIxq7IhS+DukVc/1SBLUN9nzxSttg8h3KA8nvA8RhMQxk=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(376014)(36860700016)(18002099003)(22082099003)(4143699003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	nBChoswQDjkWoeWdNzxMR2ZFix6M7qzOGUMRtEqHMB/16ri1Gwk4Pw8KVinGIfDZE6FYYHa1CEJCWCVaCTqa22ae4g+Cs3IwLv3spMwrRjgC9AxSRSb+HHs2zL0DYgwzh3Tgfmwwo0U4mqdjDcBF8/euSzjCRUFtIPvtNNUn6VvJVB+KHaS+2hDPal90FFmXCBPPWqmQ18GJeg5DlwOo2q25DnRRRUZZdLVh9gOA0Y9NBQ2WWpl7RCt99eFhZLgtwXKUuelxlojBFYXzpLO7k8odi19sQAopK0GoWb9q6PL/ldSZtuSGLQofPD1EueAGowMTvrNMnseX4Ijb6t+/3reP4xXIngz1DJJoczLcA8KpUfoJI/xX6HzdMaxPBSkB3SJCqN5HUfRrlXjJmnm2v3LSHgIx/eFvvojIkhXVHoBUbxkTISHM3bvGPU/qmIw7
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2026 01:36:12.5183
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 22e3bfbd-0f00-4020-c30f-08debc59807c
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN3PEPF0000B073.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM3PR12MB9416
 
-Aneesh Kumar K.V wrote:
-> >> I am leaning towards the latter at this point.
-> >
-> > But we already have struct pci_tsm_ops::guest_req, which is specific =
-to
-> > the underlying CC architecture. From the above, pci_tsm_req_scope als=
-o
-> > appears to carry the same information. Is that useful?
-> >
-> =
+On Wed, May 27, 2026 at 10:13:58PM +0000, Pranjal Shrivastava wrote:
+> +static int arm_smmu_drain_queues(struct arm_smmu_device *smmu)
 
-> I think there is value in having the VMM express the guest=E2=80=99s
-> confidential computing architecture, so that the TSM backend can
-> validate whether it should handle that guest request ?.
+So, this function has a very generic name for queues but its use
+case is limited to cmdq in a suspend context, and might not work
+for other queues.
 
-Yes, that is the idea.
+I am adding another helper for in-flight evetq and priq:
+ - Drain a queue for a detaching master; other attached masters
+   might still advance the prod, so queue wouldn't be empty.
+ - evtq and priq sets wfe=false.
 
-> So it would not be the IOMMU validating the scope value, but rather
-> pci_tsm_ops::guest_req.
-> =
+So, there is a naming conflict here.
 
-> static ssize_t cca_tsm_guest_req(struct pci_tdi *tdi, enum pci_tsm_req_=
-scope scope,
-> 		sockptr_t req, size_t req_len, sockptr_t resp,
-> 		size_t resp_len, u64 *tsm_code)
-> {
-> 	struct pci_dev *pdev =3D tdi->pdev;
-> =
+Maybe:
+  arm_smmu_drain_queue_for_cmdq()
+  arm_smmu_drain_queue_for_iopf()
+?
 
-> 	/* reject the guest request if VMM was using the link tsm wrongly. The=
- guest
-> 	 * was using a wrong CC archiecture with this link tsm
-> 	 */
-> 	if (scope !=3D TSM_REQ_TYPE_CCA)
-> 		return -EINVAL;
-
-Right, iommufd is tunneling TSM requests. The tunnel should have an
-envelope of TSM_REQ_TYPE_* and an @op field. The TSM driver gets those
-from iommufd, validates the envelope and then processes @req.
-
-This self-consistency and explicitness also buys some future-proofing.
-It allows for alternate command sets within an arch, cross TSM
-implementation shared commands, IOMMUFD-to-TSM requests outside of guest
-requests.
-
-> Jason Gunthorpe <jgg@ziepe.ca> writes:
-> =
-
-> > On Tue, May 26, 2026 at 11:17:50PM -0700, Dan Williams (nvidia) wrote=
-:
-> >
-> >> In that case pci_tsm_req_scope becomes tsm_req_type and is just:
-> >> =
-
-> >> TSM_REQ_TYPE_CCA
-> >> TSM_REQ_TYPE_SEV
-> >> TSM_REQ_TYPE_TDX
-> >> =
-
-> >> I am leaning towards the latter at this point.
-> >
-> > Yeah, this sounds good. I would also include an common op field that
-> > can be decoded by the TSM driver based on the TYPE above, and the
-> > usual in/out message buffers.
-> =
-
-> We already have iommufd_vdevice_tsm_op_ioctl() to handle common
-> operations.
-
-Per above, I believe this is about an @op value in a common location
-that iommufd can forward to the backend for validation of guest
-requests.
-
-> Right now, it handles IOMMU_VDEVICE_TSM_BIND and
-> IOMMU_VDEVICE_TSM_UNBIND. I guess we should move TSM_REQ_SET_TDI_STATE
-> operations to that as well?
-
-I think we can wait to move it to its own IOMMU operation unless/until
-there is a need to set RUN outside of an explicit guest request, right?=
+Nicolin
