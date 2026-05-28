@@ -1,62 +1,62 @@
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B9F217745
-	for <iommu@lists.linux.dev>; Thu, 28 May 2026 21:57:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCCBE17745
+	for <iommu@lists.linux.dev>; Thu, 28 May 2026 21:58:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780005433; cv=none; b=O9fy7shIQV9nJQmIFrYMsYKTej349IeKL3vmhNvFrRgWym+erj7DDH2xwqEya+IuRrBHe35uTC/TCQ3sUKzLfnLSyS9MwHeZDYBkA71FzPIxWresJwRQMDM5rvTkr21vFdgAMNgBa/lS3CjxrbHY4rKeH+uQp3vA9Gptq4LVgcY=
+	t=1780005482; cv=none; b=MlhH4tnghw7T/DI68N7cGa1288GdkygZMbX2ptMBSYQ/YmTUCADYN6eusSg0hARR6u8nSqxY0TBD919kRHKYpW6FScudTJcQGcilgSVHIS0GdJ279OHBBkeZ97aK09OJ/jUT7TvPmF0VJxyaa4gcjFSiHV/HwBynEgUHfXLDmrA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780005433; c=relaxed/simple;
-	bh=LjiKCqOO2mfryQqvbQEkYi6M4VahEZhDeMv2JiXIWl4=;
+	s=arc-20240116; t=1780005482; c=relaxed/simple;
+	bh=3ywHycKquNtOTUyz6p8agG4v01Qkr2SAMkv5GwA3ivs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VyH/lZDTHfjgEc1f5BmOvwFnv0mMXvwhjuDXHJMyNt6Vt7QQ2nzSuXxdXzuzJtjJZOxM/SO78ZMagiuW9i92uLaBLdgGpTFngIbsWVpcDp2xghrlT6mHxzrFZ/FZE6kzTOHJyeaCpr44y+k6FPk2WtM3AZ7r+67KFnyeGdmekMU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=TYdEcBKH; arc=none smtp.client-ip=209.85.214.181
+	 Content-Type:Content-Disposition:In-Reply-To; b=gqQZx0cgZSSrzAvuuB2Y3LHDCckploCXtWaASn4NEhkCXwfK4+5levvQjOoHrOVk1snHdT9J/Mz8vKDAnsPQKOnW/go0rFmRjEUZODUgu6Wlv3+eFCTD/Spz3eLrrtajcPpvar+Exk9AZ1m+C63dPVVHAoEEZemuScqPL232yMw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=fvj3dmcr; arc=none smtp.client-ip=209.85.214.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="TYdEcBKH"
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2b2e8b95bdbso185ad.0
-        for <iommu@lists.linux.dev>; Thu, 28 May 2026 14:57:12 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="fvj3dmcr"
+Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2b46da8c48eso1195ad.1
+        for <iommu@lists.linux.dev>; Thu, 28 May 2026 14:58:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780005432; x=1780610232; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1780005480; x=1780610280; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=W2GShboWfCH+geXdhp6U7pMNHFToJXb2v7Io6huPy9A=;
-        b=TYdEcBKH05Fvs5OEnQsblz4Re3JXGVBBFPZ+C6lzrp2zyBTWN/199AhLpBRXtxiz+L
-         9eYt5mFbfHOrhaP9qH8Y7GGTRcgazbxiGanL1AagG9oAJZtPDjfguDu1gkOzHhj9Xev6
-         Io4TZgO0XkniNXiUyy4pS6hTtk1mU3zQC5bDgOBciz1ZLanrLDmXkVwYaofJUmYz08lG
-         2LUwZ1Mpm0NP4mPKJjA4DebWSV7/FWiLNzK3M3BQ2Sk+mnXYWe+Gs/br8ixBmYHPmwMx
-         lG706fSGbHr+UeYyr9XBkD53JlGtDNDcHkhO2nmapEja58WRFJUYmvc+9ZsfVifYbq9Y
-         sInw==
+        bh=XoyeFNyeO4llx95lndb6Ryz5Ip3RITBdTtIpINeqybQ=;
+        b=fvj3dmcrSMmTlWhiYYtuMTpYy7L5cLKYvMGKuv2aOJaqV1pxqm5jGdVrJugycoDv0t
+         DCoz/LT8/AYtkyu7G7xeQc8asjTuXcwThR5Clqv6JGdwDjHuAW98JKNkeippuV5WqCuK
+         pEZH3hC/aiKew3+BYHRgaTf4jtABR3J8PJaXvZV+Id/0IlcII5CVXgWkJ/+7fPFrLh4d
+         aHc0t4bNjzwGxKYa3OUqvZed95d1tptk/ysGmgZxypIE/vENN0iXlQNkcUdCDzXaKJRO
+         RS3cMqjZq/2wbC1Ye0OI1x/Ly+2FtgcS2Cdd2lr7kulWQUVL4/eDTUluz4v7z3T0d3gb
+         Q+7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780005432; x=1780610232;
+        d=1e100.net; s=20251104; t=1780005480; x=1780610280;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=W2GShboWfCH+geXdhp6U7pMNHFToJXb2v7Io6huPy9A=;
-        b=HcyZgPV7SOE5HtZ2YAwtoAEwmkTqNrLYkxhevli6slhNSp4V9mIlfvAbaV1kLwooYx
-         9DM3+lKtFOYFOFiyL16icZozuhL2P7Eaai3DcZcvfPGtcq1eW+vwmlPPoTy9vNqzCQtf
-         bGS24nss4dFDMARunbpvNlJzO04Cp2cpVyjL3fsJniJftgJINS8H9T1klUF05n0lPv35
-         WFOEjDLcVLdLfmw5ko/H/yfTMZStkyeAQtISP6Dft5JemIb/Hg0MDNWulKUzqqzL5ujh
-         X9Uxy+FklFu2swHOPkNKf/3p9Me77TRmFnsNrYJt4cjytgBd5SZ+THnFSg5XFTyUCu4K
-         fHFw==
-X-Gm-Message-State: AOJu0YzXBvUAW5RCjJfcDtOe5Pq1CGSCEnt/DN8SRIwpgdTBJMpcM40T
-	CZ5VFqaFqyQCbdb6exJ2LkiBVkkz3+1NaQa2y/4Akf0R2IynaLDN5nA2YRNEyqEzSw==
-X-Gm-Gg: Acq92OFxwlh4pCH81hqm+WHPmvMCQPU14nKbI0n0KCuxXWDhwLy1uUVnCQAvsF5LE+Y
-	ItVr3q7pTQ8YDlVpPKpDp99bV9pqdEBGouJDcFt0qEni4gv4klcUCl558bXs+tyrELeYj/ykT8g
-	15idaQLhnvcwMp+ihrP7XjY/gnYOOvWQ/QNkasgeMg0pKrqsVRGtJYlU7XOOUJun5LbllE/t/1p
-	4NXLNU7i8aLJywNSyXXJJRvA2wO3BoumSERZtrQWJuMzK0oBr+HKZenqAcFEvVNLLePJEunuNdl
-	BHytegKBhAj8QQ25sZXW+A7UiueWgA1osU1UVIQQQ1fFhzhWz+Z7AvXKQVR67xa9SA/abX8yxJ/
-	tyeko+F8c8WIclotdeYOyTFZ8ww3LNUHT4McGqIklp+Qu/Mrw0O88eKBmJ5Fd0aI2kaKD/3SqYN
-	QjDlfehJaPq3p8z66uT5FFRq15lphDiWl1rzMa9ixp6dzvWaTo9s9+7KSQbgcW6zoREoDt
-X-Received: by 2002:a17:902:e844:b0:2b0:7a9b:82f3 with SMTP id d9443c01a7336-2bf2097502dmr215445ad.8.1780005431489;
-        Thu, 28 May 2026 14:57:11 -0700 (PDT)
+        bh=XoyeFNyeO4llx95lndb6Ryz5Ip3RITBdTtIpINeqybQ=;
+        b=VSe0MCICzqojmfEA/yiIPs5175JHlngQ4J3GZUAHEYz3eJwN6xziw+Q/CBy9e8Dcqb
+         U7iWiYbdTUIx9iRjytScB/wqCx46OW3iYCF1cHh8PWmJImOOkCypBbjv61enQeRdh/cX
+         5gy6wSkhVacoNunzyvmcghi71mxQn/XNVuP7UqHEcnvQj8olHJxjkdbwFsIvqzAPrO4F
+         G92qlIbNMwSp8qxqgoavsTHJNKaa2UY4lFPWVz5j3s4j6MfL14F/pKtLQwV51k7dm3LE
+         k9zszmtqcCZt5qdUloQRp8seSYw1s1rPG5VBcxQ/ib+7Maj4oyw9jm1tFVMY/+qA62ox
+         FXYg==
+X-Gm-Message-State: AOJu0YwjB7Xb1QWvNn1l/SjPRAhqqWFI7mGp96xpsPEw65XiuGchZVJt
+	qK101lBqx69a4gT/bgTv+N+98G2wxLDUcvUHK0Wr7sooJeD6h7k1wuwZ4yz6/r/0Dw==
+X-Gm-Gg: Acq92OF5LfVwV4Pe6deVtR4pyum+f/LKeHA08Fv+bODheUrFZW/UMYknvuLa7tYNa5y
+	spYf2nWxuvc/vWPd4Ec7P7wVbUDFul2C+sw/oXqIyVh4nuGsTivtFyjE8C0ltx9OdshWCk5qoLT
+	Uqs48FURsdD6veFqKVupGEauvV2ZLh0MBoYdk1mSZdCGOZh6MBzrYkzazXEm6FK5npabBxBvEXT
+	w5ClowwNJIxKepBWIYXdYldh+fKJpc348MrCljIRMh9HdJptQhF9MZ/MgYJMTw4QfLiy64udDVn
+	p3bPn+7Y2Cf+nmK9a+42i8Jh9nHMhV+tPw0/BPzFiAhvC3AFDgtx0skBzFKl2O0eyoqOmlZwpnp
+	RdbZILooSvTUBQu0DlWd+1YNS8oevR57Si3AdPMovtx5bQUPRSV95soCNTY7g4y+XrAxOkBNMky
+	nAZ2t9yaURM/kaDYQ8GDd0AOGwfSeoUNHB98uowoeFfYvXCDYoip6sG5Zb5yKmDIQQSgAK
+X-Received: by 2002:a17:903:110d:b0:2bf:1ae5:2c51 with SMTP id d9443c01a7336-2bf20d81bf6mr227635ad.1.1780005479653;
+        Thu, 28 May 2026 14:57:59 -0700 (PDT)
 Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-36bbe1f9377sm46400a91.13.2026.05.28.14.57.08
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2bf218a2535sm343525ad.29.2026.05.28.14.57.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 May 2026 14:57:10 -0700 (PDT)
-Date: Thu, 28 May 2026 21:57:04 +0000
+        Thu, 28 May 2026 14:57:59 -0700 (PDT)
+Date: Thu, 28 May 2026 21:57:53 +0000
 From: Pranjal Shrivastava <praan@google.com>
 To: Nicolin Chen <nicolinc@nvidia.com>
 Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
@@ -65,11 +65,12 @@ Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
 	Daniel Mentz <danielmentz@google.com>,
 	Ashish Mhetre <amhetre@nvidia.com>,
 	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v7 05/11] iommu/arm-smmu-v3: Cache and restore MSI config
-Message-ID: <ahi6MJaAene0ogY8@google.com>
+Subject: Re: [PATCH v7 07/11] iommu/arm-smmu-v3: Add CMDQ_PROD_STOP_FLAG to
+ gate CMDQ submissions
+Message-ID: <ahi6YeIypLKYyBTJ@google.com>
 References: <20260527221407.1756491-1-praan@google.com>
- <20260527221407.1756491-6-praan@google.com>
- <ahiLFoRk4xaxr2vn@Asurada-Nvidia>
+ <20260527221407.1756491-8-praan@google.com>
+ <ahiabwoaBdYwbtar@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -78,54 +79,38 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ahiLFoRk4xaxr2vn@Asurada-Nvidia>
+In-Reply-To: <ahiabwoaBdYwbtar@Asurada-Nvidia>
 
-On Thu, May 28, 2026 at 11:36:06AM -0700, Nicolin Chen wrote:
-> On Wed, May 27, 2026 at 10:14:01PM +0000, Pranjal Shrivastava wrote:
-> > The SMMU's MSI configuration registers (*_IRQ_CFGn) containing target
-> > address, data and memory attributes lose their state when the SMMU is
-> > powered down. We'll need to cache and restore their contents to ensure
-> > that MSIs work after the system resumes.
+On Thu, May 28, 2026 at 12:41:35PM -0700, Nicolin Chen wrote:
+> On Wed, May 27, 2026 at 10:14:03PM +0000, Pranjal Shrivastava wrote:
+> > Introduce a new bit flag, CMDQ_PROD_STOP_FLAG (bit 30), in the command
+> > queue's producer index to safely gate command submissions during device
+> > suspension.
 > > 
-> > To address this, cache the original `msi_msg` within the `msi_desc`
-> > when the configuration is first written by `arm_smmu_write_msi_msg`.
-> > This primarily includes the target address and data since the memory
-> > attributes are fixed.
+> > The flag embeds the suspend state directly into the existing global state
+> > The flag checked in the compxchg loop in arm_smmu_cmdq_issue_cmdlist(),
+> 
+> s/compxchg/cmpxchg
+
+Ack. I'll fix it.
+
+> 
+> > which acts as a Point of Commitment, ensuring that no indices are
+> > reserved or committed once the SMMU begins suspending.
 > > 
-> > Introduce a new helper `arm_smmu_resume_msis` which will later be called
-> > during the driver's resume callback. The helper would retrieve the
-> > cached MSI message for each relevant interrupt (evtq, gerr, priq) via
-> > get_cached_msi_msg & re-config the registers via arm_smmu_write_msi_msg.
+> > This prevents a situation of "abandoned batches" where indices are
+> > incremented but commands are never written, which would otherwise
+> > lead to timeout during the drain poll.
 > > 
+> > Update queue_inc_prod_n() to preserve this flag during index
+> > calculations, ensuring that any in-flight commands that successfully
+> > passed the point of commitment can proceed to completion while the
+> > flag remains set.
+> > 
+> > Suggested-by: Daniel Mentz <danielmentz@google.com>
 > > Signed-off-by: Pranjal Shrivastava <praan@google.com>
-> 
+>  
 > Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-> 
-> > +static void arm_smmu_resume_msi(struct arm_smmu_device *smmu,
-> > +				unsigned int irq, const char *name)
-> > +{
-> > +	struct msi_desc *desc;
-> > +	struct msi_msg msg;
-> > +
-> > +	if (!irq)
-> > +		return;
-> > +
-> > +	desc = irq_get_msi_desc(irq);
-> > +	if (!desc) {
-> > +		dev_err(smmu->dev, "Failed to resume msi: %s", name);
-> > +		return;
-> > +	}
-> > +
-> > +	get_cached_msi_msg(irq, &msg);
-> 
-> I wonder if we could use __get_cached_msi_msg() since we got desc?
 
-We could've (and that's a nice suggestion), but unfortunately it 
-(__get_cached_msi_msg) is not exported via EXPORT_SYMBOL_GPL() :(
-We could break modular builds as CONFIG_ARM_SMMU_V3 is tristate.
-
-Let me know if you have a strong preference about exporting it, we can
-add a patch in the next versions.
-
-Thanks,
+Thanks!
 Praan
