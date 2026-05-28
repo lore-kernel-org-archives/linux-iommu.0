@@ -1,445 +1,160 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8E154262D0B
-	for <iommu@lists.linux.dev>; Thu, 28 May 2026 16:46:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779986791; cv=none; b=I44b1ohzD/EPW9jLqUhuuavquj8mRtMc2EpGeKCGK2y/wwJzbZjnD3JDqPCYHk6jLnL2JYNLiKSPQlcov1Bi7hS1ZmZ7KjOkvU96qKL3YIDC8zvCAKsmopX8GJYpG6Xvz9DxPvdhhr97XM93gNXI6+YMIqRh7fQ+yJN2JMHrpqk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779986791; c=relaxed/simple;
-	bh=1BLMG2vhOFT+AuZXQiO0J4B0H7DULIFdokrN1EQDu2s=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=RrUE84wEvCPGCHPi87f4z3WoDibJi/q8ikQbUqcSwFqPH5PrOUTvUZ4/1qdKyGoa1a4fHD+QB9XUDAJ20M8YBwivBo5quUBYj1G9SRey1a+soHFCE/qL61eebCj+GCMWfYXuxh2UkWQ7OPzIkxpo1dL1SFeSLEV2ZpTxIHKanC8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=YQPApQAC; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013062.outbound.protection.outlook.com [40.107.201.62])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F17B0403E81
+	for <iommu@lists.linux.dev>; Thu, 28 May 2026 18:00:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.201.62
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779991227; cv=fail; b=n4uYW8ugJLMy9RZSnx515a4M8jfJNEfAOJAQAiaEq8tcTP8g/4qC0h/b/DIvAuivdKiCI+h41e0XMBXm03x/KVIDKz8t5HI5ozgtKmADHl3Zshav0Xtj40Ijgt/XVOZdnaBsaoVytywSL48okswqR6iA9hg5hjbdjcMEmAT711I=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779991227; c=relaxed/simple;
+	bh=rKssWHfeVieaEeHuM4kJ3seDiS6CduyJ1AYfIC3rsCs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=mEwL9X9fKa6L9Onr73gNeWOMbOkNadRcrI1y+JWuOsG6z/FlCCSN+ouy1KETLv/17F7rRcCVB0VkKn7312sWtO40MaB1qy8n8UdVqRtakhKtHqE0/+4yl4MjSbnag1F1laipRtzFvYI60uGM2QRLfzrcRx8O6WVvt1r58ZjUVFM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Qa6O1VmE; arc=fail smtp.client-ip=40.107.201.62
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="YQPApQAC"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0573022EE;
-	Thu, 28 May 2026 09:46:23 -0700 (PDT)
-Received: from [10.1.196.85] (e121345-lin.cambridge.arm.com [10.1.196.85])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B7E203FB3E;
-	Thu, 28 May 2026 09:46:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1779986788; bh=1BLMG2vhOFT+AuZXQiO0J4B0H7DULIFdokrN1EQDu2s=;
-	h=Date:From:Subject:To:Cc:References:In-Reply-To:From;
-	b=YQPApQAC1Ol7CcQg9/Y+pDV9PXgcJlNoKiNbM0IHsp5Z+/KSntTBUkqEi6XJyy3yg
-	 LxcsUErSackHv98JXcPra51wcA4YovFO/rJ7N5qSx9ibZS5H9gvr/R2Yfi0NSs2yrK
-	 yPqe9LPPV9bevCOPEUalKvOrfCmzRpVVYqIXx204=
-Message-ID: <59e0476c-a2bf-42f3-8244-d8a4828da64a@arm.com>
-Date: Thu, 28 May 2026 17:46:24 +0100
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Qa6O1VmE"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=FJaRRPxqcIoSn5/l4m9leTUY4KS0cd2PYEtXlkcoIyY9KQXR29QQFLvewohwjw2JyKZo5tkkU0QZMh5n2VCEtPoPBSfqPJTwFAWQGwrz6pScicT0M6VBHqoryiXd3EgeM8q9G1fhTjC0rMc78+PUrTKl1IUJdGHDoKdm/NuRBBW586eafBT5iGv+Gtod2FvSxUkX9wtNqQ8fvempBYOgzNe1L4Il9IrGLprgaRaMdwYF87MWhntcw8QFZe1sogs1cR/YCMgyVxG05i4AHAVL1zfPE6AKrQ1UT3OfKHsIhX4C5srg5LlqQJnk2scnjeoy9QLpSC0esVtA8u+ywJMpdg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FLtmPVRMf4S3y7Z+8yTD283vsq7I2KJ7f9qkhDqSMFs=;
+ b=fWNqlzlHdSD9f1OfZW518s30e+yIWjfVDNQOrSbn2Du04Pk+fnoHatAsRdH6S8lPwi6qNSGOFLG7a5mQN5i7Xpgbfml83TqqUgg75OTPiq9ZohKF6VM1U3qx7xw5TtFyXwShtFlWUf+kHvHpOUboVknEq9GkDdwJpw5nQZgDvSPS12gH1k1+41x62vYSRYDA99O9oKKroL/u4gl4gyLl+TBqNHh0a9nT+oVbypLpEbtRdpw44nO1+L+qJaUzmFgDAEc0+dKSM7Jq8P7rkz37yBwNH38EJMklwTiGve5b+z5ZenLXUFY0H2gj8IDx6cFW1EMwN4fOwEh6iXCMI13kyQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FLtmPVRMf4S3y7Z+8yTD283vsq7I2KJ7f9qkhDqSMFs=;
+ b=Qa6O1VmEToVtzvRE7oFfpj4i/8qtgKvSlyoVQnyZi0sSAkVuZvn72MqdJ3Mdkrwe9xeBxlwBp/oRAUGBSaqBqllBhtR977wH2wjisRrc6Rz/UF94tcznW79zQCYto8wO3+IXHoleZpeTkt+Jt4ZQ38O2ZeWgRb7xvpZRYZ0uOfRAuj+qCFa0m51/pFh3wAhkKIJjOwCFm/+T/CPBp7aiYJRaUL1iPn5QIBbStGVngG1nqio7CSAF+POgW+TbgwqdkII3BtQPIoQmg1Q/Cg1b8nld0JGzRub08Py5NrWhi5FVezqb88jFRHUbuEJg3fpXYmIZTXFX9KHegt2n6mIB+A==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by SA0PR12MB7089.namprd12.prod.outlook.com (2603:10b6:806:2d5::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.48.20; Thu, 28 May
+ 2026 18:00:21 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0071.011; Thu, 28 May 2026
+ 18:00:20 +0000
+Date: Thu, 28 May 2026 15:00:18 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Pranjal Shrivastava <praan@google.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
+	robin.murphy@arm.com, joro@8bytes.org, bhelgaas@google.com,
+	baolu.lu@linux.intel.com, kevin.tian@intel.com,
+	miko.lenczewski@arm.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-pci@vger.kernel.org, dan.j.williams@intel.com,
+	jonathan.cameron@huawei.com, vsethi@nvidia.com,
+	linux-cxl@vger.kernel.org, nirmoyd@nvidia.com
+Subject: Re: [PATCH v6 3/3] iommu/arm-smmu-v3: Allow ATS to be always on
+Message-ID: <20260528180018.GB3195266@nvidia.com>
+References: <cover.1779392420.git.nicolinc@nvidia.com>
+ <18bb6f421b3be891caa8f1fb50f3a4d56b52d5be.1779392420.git.nicolinc@nvidia.com>
+ <ahheOF8L0aGMttcI@google.com>
+ <20260528152930.GA3195266@nvidia.com>
+ <ahhuFw3ZJpy48xkH@google.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ahhuFw3ZJpy48xkH@google.com>
+X-ClientProxiedBy: BN1PR13CA0002.namprd13.prod.outlook.com
+ (2603:10b6:408:e2::7) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 3/4] iova: limit_pfn-aware augmentation for log(n) 32-bit
- alloc
-To: Rik van Riel <riel@surriel.com>, linux-kernel@vger.kernel.org
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev, jgg@ziepe.ca,
- kyle@mcmartin.ca, kernel-team@meta.com, Rik van Riel <riel@meta.com>,
- Claude Opus <claude-opus-4-6@anthropic.com>
-References: <20260518180545.2286608-1-riel@surriel.com>
- <20260518180545.2286608-4-riel@surriel.com>
-Content-Language: en-GB
-In-Reply-To: <20260518180545.2286608-4-riel@surriel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|SA0PR12MB7089:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6b0b436e-6d78-4f6e-02c8-08debce2fbd9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|7416014|1800799024|376014|22082099003|18002099003|56012099006|4143699003|11063799006;
+X-Microsoft-Antispam-Message-Info:
+	D1449oyTxnsWjS4MUNMHxrncsf5nIrNFkO9W0aswxCqBL2pF13aY3gJC6+fFKKTgcvwtFi7xI8f9ZHp2mzYm1yht3G2miwwFsK+FQV+CA0DaPQ4akNRdv4hhwAj9nZc87QcEzoDIXV9qlQU0eeOCJIOEvtftG3fu2ECkwyh9RJwubGu/tN1UlBg0Nrr+HWOCwBYQI+lqSciUjUazWSrGPKXlA/bledsCtP4LuatXcv+3aoyvFhEQM+7ytOUBCYD1EmGqpAXmIKJWeUgZ4EF90bWvhT7fWGmH0TsN84tm/CAtQ4KQP4Q0dYlqJx7IUQpC0qInpcs2H5D4fLn900ZV/piTQyCPC73LoTaR7u4+sOdFHZKzKtvbzG2NSUVp3uxE12CNhHa9M3qN+eE2s5P4KkmWaKQ1sKEA2PpARiAnD/Cm16GBl92AjFEBS34X06k1/E+3MyxT8lfxhsPyPC9zhf4DVnJBfrino3bnnP5awScXDThJlcmqdG/NEUeQGWmJoS94QbIrXalpGWmKaM+scThvgs9S5SOD7mt6x/zOLf8nhRwgUSfLy4ax2RoKU/jRWcUeMNbHDOnhHsCJpMLOWzdB8ECSIqV783BsM6GwGxKfCRB+jYMH5a5a1zXDGbvPy8d3n8ccLmLqSLh2lGsA7g/Zps1Uw+kL2H+etPr8vE3O1eiUJCXTCuggGyXEIdg6
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(1800799024)(376014)(22082099003)(18002099003)(56012099006)(4143699003)(11063799006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?WRDT+GT9I9wqPyLHW5l15hQnevtThyl4kb5jcbZuLMdsjyklYsWgrHTS0RH9?=
+ =?us-ascii?Q?JRjC1Z2l7qxU3qyiSxogm0zgkFzFge7o4xaFZi9EsxrV5zugs+wndECF+FnY?=
+ =?us-ascii?Q?vAhwyorZVGMT6TqljW+qVXeXIV6ziuBcTL3DHo9SuiVyk0kFknJFg9AIOqL/?=
+ =?us-ascii?Q?4A9az416rI/7rGjAfvVmwFLxUQYgztUbYGX2VTMswd/Y5WlTs66dRIcbQcMw?=
+ =?us-ascii?Q?nf7KALA1Q2lNF5nO88WQ9Kg23TZhDmclpj8Q9zKRiioE8/OZdnEnU6QPbnSi?=
+ =?us-ascii?Q?V5xBmQRi8eMp2kvHfrc8iJgKrXby5q/IKIe2T6FvZo9kLNLh31CCMDTgPIOr?=
+ =?us-ascii?Q?zT8WQQHOuLo4XGqMsB1zuKscxoYBhmGhKc1bqr9sLsfDd1Ld0PE/dDWSeggV?=
+ =?us-ascii?Q?05jDjl+ycgsjw6rvj9E65qqHAvfZ3JxIjY0DpLyx4qXsg77BJAp5z9/2GSKq?=
+ =?us-ascii?Q?TUQ1dX8OVDqxsn2/4IdWYioMq08WOu4Z86MWNEEaDr22qS1F+yXdK4y6qbJd?=
+ =?us-ascii?Q?auaIjEV/cUUXinnB0rgU/45vWBqrGRSK72ven8L0vu65oGZNQIBbVd5xZtpP?=
+ =?us-ascii?Q?XBNsg/CICBpos2jh2tlvwNOrLEdt4YyF9GKIhT/Si+p4qpTeStRCu2scsd3a?=
+ =?us-ascii?Q?IdGLzsWu8ZjpfxI6jmVwMmBARNCwMxZ1gtVBUnHYPeg6w4ptc8I4F3e79Izg?=
+ =?us-ascii?Q?5lXjC9ZO2nUf2egFSXh97KbHMbDj+nzkF7/pVUrrdzm6Wa5en74AVSIIQ+Gn?=
+ =?us-ascii?Q?4OMbnbIHslbyQRaEXdmi6FGyvJUW8WxuzgusO9+5fbgBa7xbFxKyjEjcyz49?=
+ =?us-ascii?Q?RvONLPr9nomiIlx6lf9u91z5kUVNHPBrqpsaOnY/DcqwBaFfyEs4pMyB9Iep?=
+ =?us-ascii?Q?gh2s5Ae+9QT3ynH6KyYg26XV+kmtMKjtMp4px1x/qTD51U3sS79pbOXYrW6D?=
+ =?us-ascii?Q?gEptt2qrhVrJO82wGPP8zFPrt1P3aHCk/hrkO/DRuq4BAAtoLkG/5xkcTDz1?=
+ =?us-ascii?Q?lvfwE9B2k46JnXcjZj3eUmEcYsvM7g/Uk6V4SI/Bak+i6s1k3QrB5U9Af8TF?=
+ =?us-ascii?Q?Ka2pNMfAq0pnrLzQbg/GKWqE1tNXpCU+a93ZabFRQIwTfIih5eWGaBmk0xt0?=
+ =?us-ascii?Q?Yntish9uCAvk6ToNhTeS460MF3WPpJYfxcDYMcQvPDd2UWJsi3Eglf1XGo3a?=
+ =?us-ascii?Q?wMLZ3ei4epHlpboUbJOyuoLDpFdKbDmuKPjIRAmbwNGQmRLBv0yimsEXurIH?=
+ =?us-ascii?Q?QKQhBhyLiVU0+es+5cOP2SyHIvM4jZQ5Q1i7HOegw/qUPC78FMqs4Smo+5lU?=
+ =?us-ascii?Q?PVdxOLJunkOb2sp5D4zylLyeE0sv5NZeN1ZCfESGoWj4CVBwV99sC/aTpbgq?=
+ =?us-ascii?Q?3Md1gPzkNX02dv6nKRFZT5qrN4prUIyou0w+Ehvy6csJlBKZ+MnKVqXy2st4?=
+ =?us-ascii?Q?Iqzdnr1V3MkaQsCSAWUI2XLCRgVM21XUYM977H4kXAj5nZuPVZRnMwerwBmM?=
+ =?us-ascii?Q?Q4N6Eh9x3LUy8FvyUumD7JB1ta0guLCEmGw1rnazZpOwXJP31afkoqCFMDZy?=
+ =?us-ascii?Q?CsLJygabz9PaWPWRiFiati7y5jVr0ULIhb3qFNE9XnTS8PhVWNDlDoEYmbQN?=
+ =?us-ascii?Q?JCdFXijKSCX2TDxP6dlzJ5o/rFg+bBNPmXQRMcj9OUK/pUmlAitlD+XVUqct?=
+ =?us-ascii?Q?kKf0I4jUzu5sQV01GGH45EfsVAgKyKN38Ao2A533DAPEHRFQ?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6b0b436e-6d78-4f6e-02c8-08debce2fbd9
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2026 18:00:20.8697
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: S6NP7IzHfC2U+As7ZnHG11aEtmW5LJc1OuZpGhN6qo0/k8UBZifjXIvyY0l7EKY9
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB7089
 
-Hi Rik,
-
-I'm certainly interested to see this series, as improving the allocator 
-has been on my to-do list for a very long time now. It might take me a 
-while to page all the details back in, but some higher-level things 
-stand out already...
-
-On 2026-05-18 7:05 pm, Rik van Riel wrote:
-> From: Rik van Riel <riel@meta.com>
+On Thu, May 28, 2026 at 04:32:23PM +0000, Pranjal Shrivastava wrote:
+> On Thu, May 28, 2026 at 12:29:30PM -0300, Jason Gunthorpe wrote:
+> > On Thu, May 28, 2026 at 03:24:40PM +0000, Pranjal Shrivastava wrote:
+> > 
+> > > > +	master->ats_always_on = true;
+> > > > +
+> > > > +	return arm_smmu_alloc_cd_tables(master);
+> > > 
+> > > Nit: I'm not sure if I'm getting this right, are we saying we *need* to
+> > > allocate CDs for CXL.cache cases in the probe itself because STE.EATS
+> > > requires Config=Translate with S1DSS in bypass?
+> > 
+> > Yeah, basically.
+> > 
+> > Effectively the ARM rules for enabling ATS and Bypass together require
+> > a valid CD table pointer.
 > 
-> The augmented-rbtree port made __iova_search_free_gap O(log n) when
-> limit_pfn doesn't bind any candidate gap, but degrades to O(n) when
-> limit_pfn is small relative to the gaps in the tree. The classic case
-> is a 32-bit DMA allocation on a domain dominated by 64-bit allocations:
-> the augmented invariant __subtree_max_gap is satisfied everywhere (the
-> huge gap between the highest 64-bit allocation and the IOVA_ANCHOR
-> dominates), so pruning never fires, and every node above limit_pfn must
-> be visited and rejected before falling through to the 32-bit region.
+> Ack. But do we expect transactions before attach_dev? What'd happen if
+> we don't allocate CDs here?
 
-The main reason the anchor node exists is to ensure that cached_node can 
-always be a valid place to start an allocation walk - if we're no longer 
-using the latter, there's little point in keeping the former either, 
-especially if it starts causing undesirable issues. It does also help as 
-an optimisation to avoid a couple of special cases in the current 
-algorithm, but again if we're completely changing the algorithm then 
-those may well no longer apply either.
+It can be done at any point before a non-abort STE is formed.
 
-> Add a second augmented field that bounds the search by 32-bit-clamped
-> gap size:
-> 
->    clamped_gap32(node) =
->        0                                if gap_to_prev == 0
->        0                                if gap_lo >= dma_32bit_pfn
->        min(gap_hi, dma_32bit_pfn-1) - gap_lo + 1   otherwise
-> 
->    __subtree_max_gap32 = max(clamped_gap32) over subtree
-> 
-> clamped_gap32 is precomputed and stored on each iova whenever
-> gap_to_prev changes (insert, remove, reserve overlap fix-up), so the
-> augmented callbacks remain pure functions of the node and don't need
-> domain context.
-> 
-> The compute helper iova_compute_max() updates both __subtree_max_gap
-> and __subtree_max_gap32 in one pass; the hand-rolled propagate / copy
-> / rotate callbacks (replacing the single-field RB_DECLARE_CALLBACKS_MAX
-> expansion) maintain both fields per insert/erase. Pruning in
-> __iova_search_free_gap selects between them based on whether the
-> caller is doing a 32-bit allocation.
+The core code pretty much does this immediately after probe so there
+isn't much point in moving it later.
 
-I would think that if we still need a special case for this then we 
-don't really have the right allocation algorithm - I recall getting as 
-far as concluding that it would be hard to do with the generic interval 
-tree, but with the right subtree data I would think we ought to be able 
-to walk directly from the root towards the highest free space under the 
-given limit_pfn, for any value of limit_pfn. In fact I'd rather hope 
-that the general case could get good enough to no longer need the 
-max32_alloc_size bodge either (especially since pci_32bit_workaround 
-will now already give up trying at all after the first failure).
+> Am I missing the fact that CXL hardware could be already active and
+> using ATS after the device_probe succeeds?
 
-Furthermore I'm also wary of growing struct iova any more than 
-absolutely necessary, since people have sometimes complained about 
-iova_cache usage being a large number on big, busy systems.
+The STEs are preloaded with abort when the driver starts, so that
+should not be possible.
 
-> For 64-bit allocations the behaviour is unchanged. For 32-bit
-> allocations on mixed-DMA-mask domains the search is now O(log n).
-
-And what about all the 33 to 56-bit DMA masks? They're not all that 
-uncommon and deserve some love too. FWIW I'd imagine a general algorithm 
-should be something like:
-
-- while pfn_lo > limit_pfn && left->max_gap >= size, go left
-- while pfn_hi + size <= limit_pfn && right->max_gap >= size, go right
-- if sufficient space to right, insert right and stop.
-- if left->max_gap > size, go left, else go up and left
-- repeat
-
-(If anything that then leans towards maintaining a dummy node down at 
-start_pfn, such that we could avoid a special case for allocating off 
-the leftmost end of the tree...)
-
-I guess another question to ask these days is perhaps whether rbtree is 
-still even the best choice at all, or if something newer like maple tree 
-might be able to be even better?
-
-Thanks,
-Robin.
-
-> Assisted-by: Claude Opus <claude-opus-4-6@anthropic.com>
-> Signed-off-by: Rik van Riel <riel@surriel.com>
-> ---
->   drivers/iommu/iova.c | 163 ++++++++++++++++++++++++++++++++++++-------
->   include/linux/iova.h |   6 +-
->   2 files changed, 140 insertions(+), 29 deletions(-)
-> 
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index 4848a7c202be..3cdee4870efe 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -35,14 +35,97 @@ static struct iova *to_iova(struct rb_node *node)
->   	return rb_entry(node, struct iova, node);
->   }
->   
-> -static inline unsigned long iova_gap_value(struct iova *iova)
-> +/*
-> + * Portion of @iova->gap_to_prev that lies strictly below @dma_32bit_pfn,
-> + * i.e. the largest contiguous sub-gap that a 32-bit-restricted allocation
-> + * could possibly use. Maintained alongside gap_to_prev so the augmented
-> + * callbacks can compare against it without needing per-iova access to the
-> + * domain's dma_32bit_pfn.
-> + */
-> +static unsigned long
-> +iova_compute_clamped_gap32(struct iova *iova, unsigned long dma_32bit_pfn)
-> +{
-> +	unsigned long gap_lo, gap_hi;
-> +
-> +	if (iova->gap_to_prev == 0)
-> +		return 0;
-> +	gap_lo = iova->pfn_lo - iova->gap_to_prev;
-> +	if (gap_lo >= dma_32bit_pfn)
-> +		return 0;
-> +	gap_hi = iova->pfn_lo - 1;
-> +	if (gap_hi >= dma_32bit_pfn)
-> +		gap_hi = dma_32bit_pfn - 1;
-> +	return gap_hi - gap_lo + 1;
-> +}
-> +
-> +/*
-> + * Recompute @node's __subtree_max_gap and __subtree_max_gap32 from its
-> + * own gap fields and its children's subtree maxes. Returns true (for
-> + * propagate's early-termination) if neither value would change.
-> + */
-> +static bool iova_compute_max(struct iova *node, bool exit)
-> +{
-> +	unsigned long max_gap = node->gap_to_prev;
-> +	unsigned long max_gap32 = node->clamped_gap32;
-> +	struct iova *child;
-> +
-> +	if (node->node.rb_left) {
-> +		child = to_iova(node->node.rb_left);
-> +		if (child->__subtree_max_gap > max_gap)
-> +			max_gap = child->__subtree_max_gap;
-> +		if (child->__subtree_max_gap32 > max_gap32)
-> +			max_gap32 = child->__subtree_max_gap32;
-> +	}
-> +	if (node->node.rb_right) {
-> +		child = to_iova(node->node.rb_right);
-> +		if (child->__subtree_max_gap > max_gap)
-> +			max_gap = child->__subtree_max_gap;
-> +		if (child->__subtree_max_gap32 > max_gap32)
-> +			max_gap32 = child->__subtree_max_gap32;
-> +	}
-> +	if (exit && node->__subtree_max_gap == max_gap &&
-> +	    node->__subtree_max_gap32 == max_gap32)
-> +		return true;
-> +	node->__subtree_max_gap = max_gap;
-> +	node->__subtree_max_gap32 = max_gap32;
-> +	return false;
-> +}
-> +
-> +static void iova_gap_propagate(struct rb_node *rb, struct rb_node *stop)
-> +{
-> +	while (rb != stop) {
-> +		struct iova *node = to_iova(rb);
-> +
-> +		if (iova_compute_max(node, true))
-> +			break;
-> +		rb = rb_parent(&node->node);
-> +	}
-> +}
-> +
-> +static void iova_gap_copy(struct rb_node *rb_old, struct rb_node *rb_new)
->   {
-> -	return iova->gap_to_prev;
-> +	struct iova *old = to_iova(rb_old);
-> +	struct iova *new = to_iova(rb_new);
-> +
-> +	new->__subtree_max_gap = old->__subtree_max_gap;
-> +	new->__subtree_max_gap32 = old->__subtree_max_gap32;
->   }
->   
-> -RB_DECLARE_CALLBACKS_MAX(static, iova_gap_callbacks,
-> -			 struct iova, node, unsigned long, __subtree_max_gap,
-> -			 iova_gap_value)
-> +static void iova_gap_rotate(struct rb_node *rb_old, struct rb_node *rb_new)
-> +{
-> +	struct iova *old = to_iova(rb_old);
-> +	struct iova *new = to_iova(rb_new);
-> +
-> +	new->__subtree_max_gap = old->__subtree_max_gap;
-> +	new->__subtree_max_gap32 = old->__subtree_max_gap32;
-> +	iova_compute_max(old, false);
-> +}
-> +
-> +static const struct rb_augment_callbacks iova_gap_callbacks = {
-> +	.propagate = iova_gap_propagate,
-> +	.copy = iova_gap_copy,
-> +	.rotate = iova_gap_rotate,
-> +};
->   
->   void
->   init_iova_domain(struct iova_domain *iovad, unsigned long granule,
-> @@ -64,6 +147,9 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
->   	iovad->anchor.pfn_lo = iovad->anchor.pfn_hi = IOVA_ANCHOR;
->   	iovad->anchor.gap_to_prev = IOVA_ANCHOR;
->   	iovad->anchor.__subtree_max_gap = IOVA_ANCHOR;
-> +	iovad->anchor.clamped_gap32 = iova_compute_clamped_gap32(&iovad->anchor,
-> +								 iovad->dma_32bit_pfn);
-> +	iovad->anchor.__subtree_max_gap32 = iovad->anchor.clamped_gap32;
->   	rb_link_node(&iovad->anchor.node, NULL, &iovad->rbroot.rb_node);
->   	rb_insert_color(&iovad->anchor.node, &iovad->rbroot);
->   }
-> @@ -71,9 +157,10 @@ EXPORT_SYMBOL_GPL(init_iova_domain);
->   
->   /* Insert the iova into domain rbtree by holding writer lock */
->   static void
-> -iova_insert_rbtree(struct rb_root *root, struct iova *iova,
-> +iova_insert_rbtree(struct iova_domain *iovad, struct iova *iova,
->   		   struct rb_node *start)
->   {
-> +	struct rb_root *root = &iovad->rbroot;
->   	struct rb_node **new, *parent = NULL;
->   	struct rb_node *prev_node, *next_node;
->   
-> @@ -101,12 +188,18 @@ iova_insert_rbtree(struct rb_root *root, struct iova *iova,
->   		iova->gap_to_prev = iova->pfn_lo - to_iova(prev_node)->pfn_hi - 1;
->   	else
->   		iova->gap_to_prev = iova->pfn_lo;
-> +	iova->clamped_gap32 = iova_compute_clamped_gap32(iova, iovad->dma_32bit_pfn);
->   	iova->__subtree_max_gap = iova->gap_to_prev;
-> +	iova->__subtree_max_gap32 = iova->clamped_gap32;
->   
->   	next_node = rb_next(&iova->node);
-> -	if (next_node)
-> -		to_iova(next_node)->gap_to_prev =
-> -			to_iova(next_node)->pfn_lo - iova->pfn_hi - 1;
-> +	if (next_node) {
-> +		struct iova *next_iova = to_iova(next_node);
-> +
-> +		next_iova->gap_to_prev = next_iova->pfn_lo - iova->pfn_hi - 1;
-> +		next_iova->clamped_gap32 = iova_compute_clamped_gap32(next_iova,
-> +								      iovad->dma_32bit_pfn);
-> +	}
->   
->   	if (parent)
->   		iova_gap_callbacks.propagate(parent, NULL);
-> @@ -119,29 +212,40 @@ iova_insert_rbtree(struct rb_root *root, struct iova *iova,
->   /*
->    * Search the augmented rbtree for the highest-addressed free gap of at least
->    * @size pages, with the allocation fitting below @limit_pfn and at or above
-> - * @start_pfn. Returns the node whose gap_to_prev is used, or NULL.
-> + * @start_pfn. When @is_32bit, prune by the 32-bit-clamped subtree max so
-> + * that 32-bit-restricted allocations on a domain dominated by high-pfn
-> + * allocations stay O(log n) instead of degrading to O(n). Returns the node
-> + * whose gap_to_prev is used, or NULL.
->    *
->    * Reverse in-order walk (right->node->left) with subtree pruning. Uses
->    * parent pointers to traverse back up the tree instead of an explicit stack,
->    * following the same strategy as drm_mm.c's DECLARE_NEXT_HOLE_ADDR.
->    */
-> -static bool iova_subtree_usable(struct rb_node *node, unsigned long size)
-> +static bool iova_subtree_usable(struct rb_node *node, unsigned long size,
-> +				bool is_32bit)
->   {
-> -	return node && to_iova(node)->__subtree_max_gap >= size;
-> +	struct iova *iova;
-> +
-> +	if (!node)
-> +		return false;
-> +	iova = to_iova(node);
-> +	return (is_32bit ? iova->__subtree_max_gap32
-> +			 : iova->__subtree_max_gap) >= size;
->   }
->   
->   static struct rb_node *
->   __iova_search_free_gap(struct rb_node *root_node, unsigned long size,
->   		       unsigned long limit_pfn, unsigned long start_pfn,
-> -		       unsigned long align_mask, unsigned long *new_pfn)
-> +		       unsigned long align_mask, bool is_32bit,
-> +		       unsigned long *new_pfn)
->   {
->   	struct rb_node *node;
->   
-> -	if (!iova_subtree_usable(root_node, size))
-> +	if (!iova_subtree_usable(root_node, size, is_32bit))
->   		return NULL;
->   
->   	node = root_node;
-> -	while (iova_subtree_usable(node->rb_right, size))
-> +	while (iova_subtree_usable(node->rb_right, size, is_32bit))
->   		node = node->rb_right;
->   
->   	for (;;) {
-> @@ -163,9 +267,9 @@ __iova_search_free_gap(struct rb_node *root_node, unsigned long size,
->   			}
->   		}
->   
-> -		if (iova_subtree_usable(node->rb_left, size)) {
-> +		if (iova_subtree_usable(node->rb_left, size, is_32bit)) {
->   			node = node->rb_left;
-> -			while (iova_subtree_usable(node->rb_right, size))
-> +			while (iova_subtree_usable(node->rb_right, size, is_32bit))
->   				node = node->rb_right;
->   		} else {
->   			struct rb_node *parent;
-> @@ -188,20 +292,21 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
->   	unsigned long new_pfn;
->   	unsigned long align_mask = ~0UL;
->   	struct rb_node *gap_node;
-> +	bool is_32bit;
->   
->   	if (size_aligned)
->   		align_mask <<= fls_long(size - 1);
->   
->   	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
-> -	if (limit_pfn <= iovad->dma_32bit_pfn &&
-> -			size >= iovad->max32_alloc_size)
-> +	is_32bit = limit_pfn <= iovad->dma_32bit_pfn;
-> +	if (is_32bit && size >= iovad->max32_alloc_size)
->   		goto iova32_full;
->   
->   	gap_node = __iova_search_free_gap(iovad->rbroot.rb_node, size,
->   					  limit_pfn, iovad->start_pfn,
-> -					  align_mask, &new_pfn);
-> +					  align_mask, is_32bit, &new_pfn);
->   	if (!gap_node) {
-> -		if (limit_pfn <= iovad->dma_32bit_pfn)
-> +		if (is_32bit)
->   			iovad->max32_alloc_size = size;
->   		goto iova32_full;
->   	}
-> @@ -209,7 +314,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
->   	new->pfn_lo = new_pfn;
->   	new->pfn_hi = new_pfn + size - 1;
->   
-> -	iova_insert_rbtree(&iovad->rbroot, new, gap_node);
-> +	iova_insert_rbtree(iovad, new, gap_node);
->   
->   	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
->   	return 0;
-> @@ -310,13 +415,15 @@ static void remove_iova(struct iova_domain *iovad, struct iova *iova)
->   				next_iova->pfn_lo - to_iova(prev_node)->pfn_hi - 1;
->   		else
->   			next_iova->gap_to_prev = next_iova->pfn_lo;
-> +		next_iova->clamped_gap32 = iova_compute_clamped_gap32(next_iova,
-> +								      iovad->dma_32bit_pfn);
->   		/*
->   		 * Propagate next_iova's new augmented values to the root BEFORE
->   		 * the erase. Otherwise rotations inside rb_erase_augmented may
-> -		 * copy a stale __subtree_max_gap from next_iova to other nodes,
-> -		 * leaving ancestors in an inconsistent state that the post-erase
-> -		 * propagate cannot fully repair (early-termination at matching
-> -		 * intermediate values).
-> +		 * copy a stale __subtree_max_gap or __subtree_max_gap32 from
-> +		 * next_iova to other nodes, leaving ancestors in an inconsistent
-> +		 * state that the post-erase propagate cannot fully repair
-> +		 * (early-termination at matching intermediate values).
->   		 */
->   		iova_gap_callbacks.propagate(&next_iova->node, NULL);
->   	}
-> @@ -512,7 +619,7 @@ __insert_new_range(struct iova_domain *iovad,
->   
->   	iova = alloc_and_init_iova(pfn_lo, pfn_hi);
->   	if (iova)
-> -		iova_insert_rbtree(&iovad->rbroot, iova, NULL);
-> +		iova_insert_rbtree(iovad, iova, NULL);
->   
->   	return iova;
->   }
-> @@ -563,6 +670,8 @@ reserve_iova(struct iova_domain *iovad,
->   				gap = iova->pfn_lo;
->   			if (iova->gap_to_prev != gap) {
->   				iova->gap_to_prev = gap;
-> +				iova->clamped_gap32 = iova_compute_clamped_gap32(iova,
-> +										 iovad->dma_32bit_pfn);
->   				iova_gap_callbacks.propagate(node, NULL);
->   			}
->   			if ((pfn_lo >= iova->pfn_lo) &&
-> diff --git a/include/linux/iova.h b/include/linux/iova.h
-> index 3c4cc81e5182..d262c6d88d6c 100644
-> --- a/include/linux/iova.h
-> +++ b/include/linux/iova.h
-> @@ -19,8 +19,10 @@ struct iova {
->   	struct rb_node	node;
->   	unsigned long	pfn_hi; /* Highest allocated pfn */
->   	unsigned long	pfn_lo; /* Lowest allocated pfn */
-> -	unsigned long	gap_to_prev;       /* Gap (in pfns) to predecessor */
-> -	unsigned long	__subtree_max_gap; /* Max gap_to_prev in subtree */
-> +	unsigned long	gap_to_prev;         /* Gap (in pfns) to predecessor */
-> +	unsigned long	clamped_gap32;       /* gap_to_prev portion below dma_32bit_pfn */
-> +	unsigned long	__subtree_max_gap;   /* Max gap_to_prev in subtree */
-> +	unsigned long	__subtree_max_gap32; /* Max clamped_gap32 in subtree */
->   };
->   
->   
+Jason
