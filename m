@@ -1,142 +1,153 @@
-Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013034.outbound.protection.outlook.com [40.93.196.34])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f201.google.com (mail-qt1-f201.google.com [209.85.160.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B52C82641CA
-	for <iommu@lists.linux.dev>; Thu, 28 May 2026 15:29:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.34
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779982179; cv=fail; b=j68rqr2/4hLQuGndMtPJzMNrrlYK3TwPpP0MLv2ySR9606fRQWR/845pbfnb9bMoaIgEpT9LQXvQG6r6S6xV2H2QVjM8th5ysjISYqo23CWGSVczgkYnWV6miHNLpoa/OLhtVWou0ZPHkXeXHAV8ipdcS81RG1mOohwKVVfE4+8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779982179; c=relaxed/simple;
-	bh=qW5GMJe8qVDzAiO/DJG5L+rD3xpoKfYp/G3p1txJ4dM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=cTvDC7DeDgE2bGeN83zkC27DjnL5T2U/3WBkeY/Vxi627b2V5xoblHdcEJJjkYWMFsSjKY7vGvT7BJMl1oxtOWQ1lwRpfDeJTgVXfuc12F7C20NhwU6ZLnzouM/rJkoGpdZHApWX0PQszmc+H3dzrf9YPNR5SsxT+OCGc6A2goU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=X95gSd/E; arc=fail smtp.client-ip=40.93.196.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C62330BF6B
+	for <iommu@lists.linux.dev>; Thu, 28 May 2026 16:00:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779984009; cv=none; b=U3IIJo/KJ+M8fezFLqTJ5szrLtLVTmGkTIBNgSxl9zvqtG3Fn6Yq7ipo/lRaK6MXJzFp07S4cGuzrCWSJS+YljycdSDiU5lRDVOL84/cx0ccAbspvJ7IQdY4nel2KZTbg/5a1yQlhzWqInxcX6U2aTWnCOimqik4j6kQkp2s+D8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779984009; c=relaxed/simple;
+	bh=k10mRhLr6t76p4jkzZqe4TGLVfCDjV4dlalSEfzSMXc=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=SJUkqpo92md46iOAQh2f85XZVLTrdk2Vc8s3PP7ikElK4UCuxwqZwZjpXSb221ztUJLXlzfNMtnW+JJsicfrrmFsllOwXi57D4uSwwNUye2j104gZaLKF2IRWaIdRv6dpLNYxzjS/7/GrTCvpTD0LnWNdpOsIWXNasSTIn+mCms=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--xuehaohu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=TU67PEhJ; arc=none smtp.client-ip=209.85.160.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--xuehaohu.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="X95gSd/E"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=SgnYrgaJSAMbR/tKMh6InRzwA2R3OzQ/2EJa0pStXIYXsx9kP15nB+koDgJfTafJDc+/Tm86MYX0enf3YogZrT/jH62r5uODeLF2eyyzi0XW51iXNpXSvX7eekPJvY6QW2hzIxGdlWwyFMUpuHqDDpPRE7cKEF/aL19AtaYOJUdxzWIZsUfXZ374gtDqf3drjn8N3jvXCiFwY40LT7XkEhzkPOVkvrY0dgjEU3zIizXDudihPr4yhREowP2SYkjrotHG+MSajfCr4nH+dsnZc7TVo2hPBlLeSItwS3kXDV9AowcEe6tzj54wtM1svJGh2rki8ATxYgJBoaxA/Gjv1A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6dNFlFRiJS08tWuA2gJmanMlJh8nkQPLZ0xAGbsMpjY=;
- b=JfM0O2Jzu0t40lLqIaenIG2qgrPdAjD8jITZcM4/joDEp/7m8+Rs1sWK+g1CLIv0u78Z1ndaT0vKCOx0ZdwuPDZCF6Ps+olcW5GEYqw438fHJUWoZ9HaG1T6niMHpHK24z5qpHY9cutROb0u1y1C861Jy5EeYmKYP6WY7zG/ntg+DEg9E8Bi0Rf3gJMxjCZDNSTSSPwzoqpvuKrjb0M6obOHiwr4mE4Eq2hYqaoNsofkupY58AaG6JGOHTH2B/25ccjnGodTHFbWELE5hNPr0MURgbi/MvNAqj7dh9Y2yLFwrXC34JcotU35qWj27JWsBrhypY+j4LVYAsWxT5TxEQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6dNFlFRiJS08tWuA2gJmanMlJh8nkQPLZ0xAGbsMpjY=;
- b=X95gSd/EiriVHlrggVujX8WUKxB2hR9Ed90jlt2+Z6q4lZU3oUsx5W/CnVAeUo1JmOknr1fyWHdxnd96vbQfWJd7pOlwo7QyPP/A0KFNNUxQmlXE1aPXeQeLpSAST8cCmz5svBCS64EHV8GBv48QXejye/TRuT1IMV3A5V1NfJn2p1gAcMYQM3TxnmtwDER/Ixm8uEVVcmY0Quupak0TaqLZNiecuGopT4DzHjrgxMnSG/hsyDLHtsRIGugco1A8iJJzNZpqef1nlfcgY4fX3JoiU0pfrPmmNg/UCzi7Tet30/A+0W898t9rlwewcCnsnQVB8klHR00AU86vnt4o1g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by CH3PR12MB7499.namprd12.prod.outlook.com (2603:10b6:610:142::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.71.13; Thu, 28 May
- 2026 15:29:32 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0071.011; Thu, 28 May 2026
- 15:29:32 +0000
-Date: Thu, 28 May 2026 12:29:30 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Pranjal Shrivastava <praan@google.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
-	robin.murphy@arm.com, joro@8bytes.org, bhelgaas@google.com,
-	baolu.lu@linux.intel.com, kevin.tian@intel.com,
-	miko.lenczewski@arm.com, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-pci@vger.kernel.org, dan.j.williams@intel.com,
-	jonathan.cameron@huawei.com, vsethi@nvidia.com,
-	linux-cxl@vger.kernel.org, nirmoyd@nvidia.com
-Subject: Re: [PATCH v6 3/3] iommu/arm-smmu-v3: Allow ATS to be always on
-Message-ID: <20260528152930.GA3195266@nvidia.com>
-References: <cover.1779392420.git.nicolinc@nvidia.com>
- <18bb6f421b3be891caa8f1fb50f3a4d56b52d5be.1779392420.git.nicolinc@nvidia.com>
- <ahheOF8L0aGMttcI@google.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ahheOF8L0aGMttcI@google.com>
-X-ClientProxiedBy: YT4P288CA0046.CANP288.PROD.OUTLOOK.COM
- (2603:10b6:b01:d3::28) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="TU67PEhJ"
+Received: by mail-qt1-f201.google.com with SMTP id d75a77b69052e-50edf01172bso183176331cf.2
+        for <iommu@lists.linux.dev>; Thu, 28 May 2026 09:00:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1779984007; x=1780588807; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=MmPFy91yuYd+9nLUOi1wu2JWcf7o4ksos6H5oNntzCU=;
+        b=TU67PEhJxlnzwTQi6m+N3kv6/qk7h0mgVVL17r2pbwBbetR2tMLu4hoyhvqS+cfJlw
+         bZcMeudKS2tAPeDLEkmygiUmtUhx32fHLc30FfARvjIsVQDYQWO4ZKs1W/fGy6kwFlHI
+         MekxZSiPe4ioJf0mgSy3om08E1+56+QlVbrBzocvMQBLJCXU0M3Q7MVHCfsg7Q4RYeg1
+         SS/4CvubXUnmysOEB4otiim+2RDWoY+d5nrHOibd0CUjOEZ+UGcKq6i/kBJqthPdKSLH
+         7jaq6GDuO6edrKfFsVwKePEHlaDXcNt4+i+NHLRpPa9ErvIfWolQb4VnqzgEy6TOXH5P
+         RJ7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779984007; x=1780588807;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=MmPFy91yuYd+9nLUOi1wu2JWcf7o4ksos6H5oNntzCU=;
+        b=jPHLtUJfXftA0xnYxywI00ukbjKnCFTcF5Fwf2pwTyeXsReAnFgbHBihLaBOZM2ahg
+         tasBHHcA5PlUd1ueQSfOwWDAuY6qFxHgznRL+6O+L5Nv4rXTh2aEoO4K2mEV7ZF1GUbG
+         5m0QhHuuhBls1+0gYJ05LbUZtrFa2fTzI+arXSiwUVzBtgnIt43/C6LcKD++IQGGDs6o
+         JwRGzICDZXW5ubVF+fHXoD+xJ5MezDukreB606KjymMnhFYt57j22pn9UGUKfLywFgUV
+         pXOCLzFxFWAlIH5rpGoxb/p5XsbvAuoYZLyQ+wmD2XGXK+uKYED4G+qH9kcytiFT5UFe
+         3SlA==
+X-Forwarded-Encrypted: i=1; AFNElJ/SwaxWb7GeGmMVQwLfjFIEF60PNKbHHKwSAcKL26U02wmL4MlkRdJejNKcHrTVYbw6sW5hkQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxblgUVKHdk0O7h3YESbzEb5Qhlz9GMyHlPH2lS8A4TG9aBRKUI
+	ZNwdJ1WHanIC1uk7X+Z6k9eN6DJyejwgem3Ji1LGhWkNxkeEfmvUyLCMKDiU6zD2M0vRDmZfrPw
+	jlBYbnmwW1iFO
+X-Received: from qtxy12.prod.google.com ([2002:a05:622a:120c:b0:516:373e:a942])
+ (user=xuehaohu job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:622a:1488:b0:516:d6a4:fd69 with SMTP id d75a77b69052e-516d6a4fe46mr371616761cf.12.1779984005890;
+ Thu, 28 May 2026 09:00:05 -0700 (PDT)
+Date: Thu, 28 May 2026 16:00:04 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|CH3PR12MB7499:EE_
-X-MS-Office365-Filtering-Correlation-Id: 68ac0a08-5e8f-47c6-291d-08debccdea57
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|7416014|376014|1800799024|22082099003|18002099003|11063799006|4143699003|56012099006;
-X-Microsoft-Antispam-Message-Info:
-	EjYNhiPSEJESEEbICCrxPiJa1B0GZC8V28nH51ClKJKlrb9mx1oUWqkHX/u12zmsEV+7ZkCY70YAY1lZHNFHmNtu/OxH0Grt+cNm3+OoP7vOY74W329BcRj+FATN8PlvsJpOvDUdcrO85lEFjNTz0nMLlQlc0AFH1WMZvNg22YIBheGy6Y9cX2aw4it4I9osMIwh8H1ev6E/tQvQXvE8O0O/19j0Ctuw0DsTUMMLA3r8TWf1KnC++Gb+n+auB3Nl9D6CZ/1TUfZy8NF+B3mTMS4r4Ko5Q/e+s15Kj02qWp0hnTbOqe99rCo8CojkvabmOCqkilJxxGyewvFpx0tAQhbSGt3TNeNClPcTF/7o8vqtLTYQYGESOAc/hsCR5nboVPVyi+M8WIh7mzxx+/e9KCJOMpUDfamrBR5JOOQ0OCVhfmo9zxd57xqUgPkUGfqvTuPM40CbR+Fs1MnhQrcD6twq1Ob2ZcHkblTxZPT9zs+wIKFpZ1q9DI84htj+TDfXbGTyiG3p/2Uf3nlR9UgFzncjX5MBqigWkpTWrhs+M0yjVgW1LZjnmn0wJFUheJt0sxyAVJzJqj2vrkbzW+H6X8Hc4wnhFcKoOCrchYXw95NfgAtp9I8p7r0+XviCPq+uQeuoSLZnBhHHOmOm4rD4z2+HjDbQ11sD3NwH6GUnLsm1GZ8mK/1r4IQwAqHjTRDV
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024)(22082099003)(18002099003)(11063799006)(4143699003)(56012099006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?SqG8gdqkMHewYb8CNGAOxDevcU168QTu97B+uEdBdCnnSWiOJ7Tn1GMX7iz4?=
- =?us-ascii?Q?Uo+NQ7LsBDRB+rE4XsSAqagdlocqaz2D4utwttzzB57OUONvB1qAIddyRwb+?=
- =?us-ascii?Q?AcBpqnjIc6C2FWoMKeYNQqdoSjNY+0XkWSgQCrasOHbwwB/pWneEmEv5+1vG?=
- =?us-ascii?Q?4/lIa6fpRrCu4SW0zjPTM8prJ7vAeux2r4OsLonzGMMrjNXmT5EuasCDflrq?=
- =?us-ascii?Q?UpmM+CzBQFak70uLHqystQrqe0yV1uSystDMueqg3Zn3ZZHHQT1+j8SVhFNs?=
- =?us-ascii?Q?o3UX98NKRAjKskPBcXre9fF/nMH0ReLOFlRoJCBoAOlCGAsEbPBuvASob8Tx?=
- =?us-ascii?Q?H9wWL0ZNcJMS8vLtS9HuHn2XYNVAoUkgsIei3v7Qfz8cAFfCINd7KqANyWBj?=
- =?us-ascii?Q?1KKM/0fu+cloTXzh0jv7QixZMc1qboMVgQKiXMVHPJeMgWbvHAanZZd3Xuua?=
- =?us-ascii?Q?JCqI5Suj/13ZHmaHT8ze+rTKElDInVmkUbpdzZWgAGlI6Hhe7KQibTctSaxA?=
- =?us-ascii?Q?tl4p5NX5UX9qLRQrp1D8OmdHYX0PCojLeO+xp20TTTGT7p4n0DWdvpmabykw?=
- =?us-ascii?Q?0b8oSScyQNcGnlSOuVf9UAp+TfdBnE00Dck0TdG1PrxKoVV+PS4hoWTCqvsJ?=
- =?us-ascii?Q?aZvMZNUECbuYoM9b0vbz5nqX56rLAKphTW5V3A7IjSe6PcqS6nTyn8k30MBt?=
- =?us-ascii?Q?Y2l+WiGaHDmuQMhzWxWfVZDUa/g2fw1O3P5cbxmzewtZVLlrqvLWESyU4SaD?=
- =?us-ascii?Q?6MjbhnERauvSxOX6GnjgL4ujwvauu7TdaH7NVfWMFyCn7wtPg4yEkLSUCXAZ?=
- =?us-ascii?Q?3YLer+PlMnIuf8L/zCSx9vr79oR708FKt/P2z/+6ZLHeUQkKev7T33KXgAe+?=
- =?us-ascii?Q?WJ1eR8sxjQDBNENWgUAyibnznOvfZs4kjZrJ/WAg1WLEAp0tLIdXnPLL1C9O?=
- =?us-ascii?Q?EGMMgg1uV1q4laug0t1LyeYZc9O/kD6ePIA/PDuDaZlg/RR4i6fKYUZb/o9k?=
- =?us-ascii?Q?HuqyXxDObMydpfknDjlSfHmDGI17W4GJO1og4JqEYRgtljlZkvrLCJsDUa7P?=
- =?us-ascii?Q?A8mEd8P3D2hz0mc//hIauGT1Tf4K6yAxBbx0hvNIaEJS7MC4bpxLuKppDZnx?=
- =?us-ascii?Q?65M0oHs1TCC4ngXMOJlsaISQXJYZGTWidGPpldHg235CG3a181gXJUSLNLGd?=
- =?us-ascii?Q?vDMmB/BzpaUh/OIJUDJx2khHdYS32rmWQfJP6hsUcnB3NU4Dr5fLldtBViuM?=
- =?us-ascii?Q?zeeGrzNdnEBciDJ308fnlHMmaSZLfg4UgPsGhgRnKr0n4ORVI5q5xTw7GpYv?=
- =?us-ascii?Q?SXPkVz4M94GrLQ/9kdVSyTZiSChqrYqthc5MszhgdGAn0jOu6oCHU3oVS0cQ?=
- =?us-ascii?Q?AC2xoFzcNzKfWyBwC2V+tU9zck6GHuE+KFEXmBKSrtcsjhkxslYp9uu8mMvl?=
- =?us-ascii?Q?aYuHRjiJG1TRL15jYgbHwHwfB2HqW/iXOSx9oYHF3jiZ8OJwlPji6hVNIDU4?=
- =?us-ascii?Q?mV6yrM5XX+9KNkpeXxFhuav2s08T9SjZVZuBqHx+mOXzDV+0Ub8d+M8GBxCT?=
- =?us-ascii?Q?zPcaw4gawOs5nM9xVnPUaYLV8iBCpvV/hbcED+PccSqJfQyI4f8XlXAGXc6U?=
- =?us-ascii?Q?oMv1qEJR3uvP9U92vICjsDe9NllOSTfz+2vM2hgetw70rAoyCgZpDF09bP9F?=
- =?us-ascii?Q?HVfM/KxLz3hyM14bzVjfiUuvGDohLcYcjz2urUHbxHRpBMrw?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 68ac0a08-5e8f-47c6-291d-08debccdea57
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2026 15:29:32.2490
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Nos9y5pj0Fiw+zH/MVwgZlYb8VfIfiX3N1d3UQiGQpD1hpOMzTsFRqEfZKvG+UR/
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB7499
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.54.0.794.g4f17f83d09-goog
+Message-ID: <20260528160004.2452461-1-xuehaohu@google.com>
+Subject: [PATCH v3] dma-buf: Fix silent overflow for phys vec to sgt
+From: David Hu <xuehaohu@google.com>
+To: Sumit Semwal <sumit.semwal@linaro.org>, 
+	"=?UTF-8?q?Christian=20K=C3=B6nig?=" <christian.koenig@amd.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, Leon Romanovsky <leon@kernel.org>, 
+	Kevin Tian <kevin.tian@intel.com>, Ankit Agrawal <ankita@nvidia.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Alex Williamson <alex@shazbot.org>, linux-media@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
+	linux-kernel@vger.kernel.org, jmoroni@google.com, praan@google.com, 
+	David Hu <xuehaohu@google.com>, stable@vger.kernel.org, iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, May 28, 2026 at 03:24:40PM +0000, Pranjal Shrivastava wrote:
+In case MMIO size is bigger than 4G and peer2peer DMA goes
+through host bridge, we trigger a code path that assigns the
+total linked IOVA (which is greater than 4G) to mapped_len.
 
-> > +	master->ats_always_on = true;
-> > +
-> > +	return arm_smmu_alloc_cd_tables(master);
-> 
-> Nit: I'm not sure if I'm getting this right, are we saying we *need* to
-> allocate CDs for CXL.cache cases in the probe itself because STE.EATS
-> requires Config=Translate with S1DSS in bypass?
+Previously, `mapped_len` was declared as 32-bit `unsigned int`.
+When accumulating `size_t` lengths, this leads to a silent wrap-around.
+This truncation causes truncated lengths to be passed to functions
+like `fill_sg_entry()`.
 
-Yeah, basically.
+Fix this by changing `mapped_len` to `size_t` (64-bit). While
+at it, fix similar potential overflow issues in `calc_sg_nents`
+by using `size_t` for `nents` and checking against `UINT_MAX`
+and using `unsigned int` for the loop iterator in `fill_sg_entry`
+to match.
 
-Effectively the ARM rules for enabling ATS and Bypass together require
-a valid CD table pointer.
+Fixes: 3aa31a8bb11e ("dma-buf: provide phys_vec to scatter-gather mapping routine")
+Cc: stable@vger.kernel.org
+Cc: iommu@lists.linux.dev
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
+Signed-off-by: David Hu <xuehaohu@google.com>
+---
+Changes in v3:
+ - Removed leftover sentence fragment from the commit message.
+ - Kept `nents = 0` initialization (previously stated as removed in the
+   v2 changelog) as it is strictly required for the `+=` accumulation
+   loop in `calc_sg_nents()`.
 
-Jason
+Changes in v2:
+ - Fixed 'IVOA' -> 'IOVA' typo and expanded commit message (Claude Bot).
+ - Added Reverse Xmas tree formatting (Pranjal).
+ - Folded in extra bounds checking for calc_sg_nents() (Pranjal).
+ - Folded in type consistency fix for fill_sg_entry() (Pranjal).
+
+ drivers/dma-buf/dma-buf-mapping.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/dma-buf/dma-buf-mapping.c b/drivers/dma-buf/dma-buf-mapping.c
+index 794acff2546a..5bc769fc42ea 100644
+--- a/drivers/dma-buf/dma-buf-mapping.c
++++ b/drivers/dma-buf/dma-buf-mapping.c
+@@ -10,7 +10,7 @@ static struct scatterlist *fill_sg_entry(struct scatterlist *sgl, size_t length,
+ 					 dma_addr_t addr)
+ {
+ 	unsigned int len, nents;
+-	int i;
++	unsigned int i;
+ 
+ 	nents = DIV_ROUND_UP(length, UINT_MAX);
+ 	for (i = 0; i < nents; i++) {
+@@ -36,7 +36,7 @@ static unsigned int calc_sg_nents(struct dma_iova_state *state,
+ 				  struct phys_vec *phys_vec, size_t nr_ranges,
+ 				  size_t size)
+ {
+-	unsigned int nents = 0;
++	size_t nents = 0;
+ 	size_t i;
+ 
+ 	if (!state || !dma_use_iova(state)) {
+@@ -51,6 +51,9 @@ static unsigned int calc_sg_nents(struct dma_iova_state *state,
+ 		nents = DIV_ROUND_UP(size, UINT_MAX);
+ 	}
+ 
++	if (nents > UINT_MAX)
++		return 0;
++
+ 	return nents;
+ }
+ 
+@@ -95,9 +98,10 @@ struct sg_table *dma_buf_phys_vec_to_sgt(struct dma_buf_attachment *attach,
+ 					 size_t nr_ranges, size_t size,
+ 					 enum dma_data_direction dir)
+ {
+-	unsigned int nents, mapped_len = 0;
+ 	struct dma_buf_dma *dma;
+ 	struct scatterlist *sgl;
++	size_t mapped_len = 0;
++	unsigned int nents;
+ 	dma_addr_t addr;
+ 	size_t i;
+ 	int ret;
+-- 
+2.54.0.794.g4f17f83d09-goog
+
