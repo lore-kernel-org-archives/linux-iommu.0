@@ -1,175 +1,105 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AD551940B0;
-	Thu, 28 May 2026 05:46:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DB76313550;
+	Thu, 28 May 2026 06:10:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779947186; cv=none; b=j+UxHBWKJKbv8QFSQ5L7OyE/aNsYW+r7aVqmtCubZ0E7jCQXbvpwVPqREOQuqSUs9WlOveEyxGKHHpDYkYvnQiafqwNBA0krVcP+E2jHxAMjVbvnUsl1TxDgvLRXjDBsTbjA6mGN4pDz9V2WmpVgkh39V3uSzKRPR+wiiuRypNc=
+	t=1779948607; cv=none; b=sJhlQsIES1znwGH6pY0sYKSeehu8RkYFM/GTKnVasWq8kzOkho5OKOma4KJTVXwWE9SWoyG1de5CCjAxIBxCWTTg7c6hmHF/SKU6wX3wWQQ9sbwO4iTRHEP2Dwi4gl8d134Ex5KC8mJkHf6ageHE8QHpUHJRkULHkLl8H9XmF7M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779947186; c=relaxed/simple;
-	bh=vRplcPPetVrP41t9VSybTHS8jAdvhvc/utVsjAH6HOo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=rfppKuwa2tm3viw/k0wy1fdgAbFTjDPI8lJE5hp6NH89b5n8qDba/WW7c2K6IQA5dG9Vv3P9uPK7GkJCaIKMPNlSUzfNElpuoQeGjYYjJr/M1FZ2Pehtfl9vVIEMZAliAUcvc+uJLYDLvrDwiT2QuqdmFbTc1PmO8+KnKIhxHbM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=xVlWgDX/; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	s=arc-20240116; t=1779948607; c=relaxed/simple;
+	bh=fVaHuTW8d467YcfkPblgYHpsyrC0RvuaO2guMO2TPYM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=N/BvDn1MBKs261F9JoZaV/XOkCEAM9Zm4Bt087aRlpYtFsvhgfWCVo8e9C0sCixoPmwWKOr4aV06zH6QWt0RQHEzWgKy693ysj4SuLqLOYDC1nq3SSf2Ceq3gHnXMOIvZ/bERnw1LAjkzP1ijzxVQmrBNYEUAT66vOwRSF4Qr0k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NT0EAz3l; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="xVlWgDX/"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	MIME-Version:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-	Content-ID:Content-Description:In-Reply-To:References;
-	bh=PjXuJQaHKPAZNAO+ZnE/uu4HDeWWeRJ7hBGHk01iNq0=; b=xVlWgDX/8ECEyuaGDngqYtcU02
-	AkQ11NX0Mo7KeR4uIjQglim7quo5/a1Ab3B8BQh1yj6pM3R0p9BmzezSZ+cU3YUjZFKCvpzeq+dAM
-	9BN5eQV92rsm7SYZ5baZXI8ODI9MDc+BfCZt2pkwYbfhltpvAP2oWnYEC6N0qvwBrXoF6B1Ll5I5L
-	gpnkEK34ol/joGNBygbsgGsaXFp0WgU1Xo3wVZ735edkoP7C7eDnk6YdENi/G24Nv+cRmC1/eOKsY
-	Y0TrSpqZyV4FvewmMmsJU6QC87BdiuyfrDLYQynLgi/gQmvW6AiMUNyunPWkMm1CaJKkxtpJ7Mxz2
-	k60FLnAA==;
-Received: from [50.53.43.113] (helo=bombadil.infradead.org)
-	by bombadil.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
-	id 1wSTZN-000000059ys-1IH7;
-	Thu, 28 May 2026 05:46:13 +0000
-From: Randy Dunlap <rdunlap@infradead.org>
-To: linux-kernel@vger.kernel.org
-Cc: Randy Dunlap <rdunlap@infradead.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	linux-doc@vger.kernel.org,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev,
-	Borislav Petkov <bp@alien8.de>
-Subject: [PATCH] iommu: Documentation: rearrange, update kernel-parameters
-Date: Wed, 27 May 2026 22:46:11 -0700
-Message-ID: <20260528054611.1524937-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.54.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NT0EAz3l"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1779948605; x=1811484605;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=fVaHuTW8d467YcfkPblgYHpsyrC0RvuaO2guMO2TPYM=;
+  b=NT0EAz3lZMa/hgm7qCjYTkjaitUnRAd1RV0NaFcOsJRarg4LqrvZ4vbC
+   T5HPMAouU4P5oFdoeZVV4vNf2moSvbHtbWrcQ9FeKvCllPWH6JnmJoLLv
+   TjOusqeRGEaR4Q3cUnDkpbCyeQkrR3GDMg6PYyVZFTD4h5S65M77MR4mL
+   q5/pqX5eWOw0zj44yZ/Sj45Z4l1qeyuju+kPnXg+Zbps/lYl1K/CG2oHT
+   9sEKvPAEGBEJzeR/oxodewc3aaZ0cM0U4RbY1q/FthE3kU+DUTpSYhflq
+   xYAFrBsNIzXFgo/1Fpvb2HPqestgUDx1ghHXdl0lTWDnwk3+5jqQUH+1z
+   A==;
+X-CSE-ConnectionGUID: oRWE8f/xSiuzhlcz+tpshg==
+X-CSE-MsgGUID: ii5JESO7Q/mDfQ1OKlS0bQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11799"; a="80512459"
+X-IronPort-AV: E=Sophos;i="6.24,172,1774335600"; 
+   d="scan'208";a="80512459"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2026 23:10:05 -0700
+X-CSE-ConnectionGUID: BfavsKTDR2G1EdVf1RqJRQ==
+X-CSE-MsgGUID: mIH4ex+cT+evy/Qoo5QfKQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,172,1774335600"; 
+   d="scan'208";a="238036948"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2026 23:10:03 -0700
+Message-ID: <82662a17-f9e2-46dd-9881-792412c1dc50@linux.intel.com>
+Date: Thu, 28 May 2026 14:09:19 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [REGRESSION] GPU passes into VM improperly after c376a3456d8b or
+ a98db518dde2
+To: 70sp <70sp@protonmail.com>
+Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+References: <z7Rkts0EsooZcnCjNfJaK6ursftFU8ubOkH0hcNjzxugEAwGsHLMblOdfoAx-gJzBZ-TMmeUtD7iWBngbFY5UCJCwdSmYqmCVMy-yhbirUk=@protonmail.com>
+ <56ce85d5-e0b9-407c-9a86-708111a8a509@linux.intel.com>
+ <C4BK-Bp_FII0EkxSHQxBS2wO-Age-UxFrp_KfmYzb8cnQ8ZndzBBIPD8S9T86wOifBP0tysQGCFtGQsBsBvG2IzIMw3jb3NF5HGbS3tsawA=@protonmail.com>
+ <d6a7f70c-5a8a-4be6-abdd-5b3decbb602a@linux.intel.com>
+ <7ec374cb-9a0a-4e30-8410-3a028e46cacd@linux.intel.com>
+ <5bVscg7a2_H1PPW3HmVtrYv_Xwtti2hzjD065W4OdwsD9rC2gw7sGVEg-2U596VZn8O2LAEfhWeZklRk63ymqNW9220R6R_jjif7BaWol9o=@protonmail.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <5bVscg7a2_H1PPW3HmVtrYv_Xwtti2hzjD065W4OdwsD9rC2gw7sGVEg-2U596VZn8O2LAEfhWeZklRk63ymqNW9220R6R_jjif7BaWol9o=@protonmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-Add text for some undescribed iommu= parameters (merge, nomerge,
-biomerge, panic, nopanic, pt, nopt). Add "usedac" and its description.
-Add that iommu=pt is equivalent to iommu.passthrough=1
-and that iommu=nopt is equivalent to iommu.passthrough=0.
+On 5/26/26 03:57, 70sp wrote:
+>> Have you tried this patch? It dumps the context and PASID table entries
+>> after a domain is attached to the device. Hopefully, you can find some
+>> clues by comparing the good and bad kernels.
+>>
+>> Thanks,
+>> baolu
+> 
+> https://lore.kernel.org/linux-iommu/uaUIyysjsnLHVLladjVXkuU63CTRoEzcw3BdlDX2cdkt8T82i0AX79VQAJo08uMKvpnn20xyK0Pu2PrtyMV3hmSgcwutWhV14fgjyTW3aiQ=@protonmail.com/
+> 
+> I did, as I already wrote before. I looked through everything I could and was related, but I just haven't found anything. I don't know where else to look than I already did and documented before. If you have any idea where should I look for something, I will do so.
 
-Move the PPC/POWERNV heading & its option "nobypass" to a separate
-area since the current "iommu=" applies only to X86 (according to
-its heading).
+I’m having trouble accessing the links you provided.
 
-Unindent the AMD GART IOMMU options heading to make it stand out.
-Also add its kconfig symbol name to be explicit about what these
-options apply to.
+As you noted, the first bad commit is either commit a98db518dde2
+("iommu/vt-d: Enhance compatibility check for paging domain attach") or
+commit c376a3456d8b ("iommu/vt-d: Remove domain_update_iommu_cap()").
+These commits refactored the code to move hardware compatibility checks
+into a helper, enforcing a policy where domain attachment fails if the
+domain is incompatible with the hardware.
 
-Make sure that the IOMMU options that are listed under AMD Gart
-HW IOMMU-specific options are only for that product; i.e., add "force"
-there and move "merge", "nomerge", and "panic" to the general IOMMU
-options area.
+You confirmed that the domain attachment itself still succeeds both with
+and without these commits. This suggests that the refactoring hasn't
+altered the final result of the attachment process.
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
----
-NB: Wording suggestions welcome.
+I am now investigating whether these changes affect the context or PASID
+table entries. If the entries remain identical regardless of these
+patches, it would indicate that these commits have no functional impact
+on the hardware state. However, if there is a difference, we can then
+analyze how that relates to the regression.
 
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: Shuah Khan <skhan@linuxfoundation.org>
-Cc: linux-doc@vger.kernel.org
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev
-Cc: Borislav Petkov <bp@alien8.de>
-
- Documentation/admin-guide/kernel-parameters.txt |   48 +++++++++-----
- 1 file changed, 32 insertions(+), 16 deletions(-)
-
---- linux-next-20260527.orig/Documentation/admin-guide/kernel-parameters.txt
-+++ linux-next-20260527/Documentation/admin-guide/kernel-parameters.txt
-@@ -2548,23 +2548,41 @@ Kernel parameters
- 			Don't force hardware IOMMU usage when it is not
- 			needed. (default).
- 
-+		merge
-+			Do scatter-gather (SG) merging. Implies "force"
-+			(experimental).
-+
-+		nomerge
-+			Don't do scatter-gather (SG) merging.
-+
- 		biomerge
-+			Do scatter-gather (SG) merging. Implies "force"
-+			(experimental). [same as "merge"]
-+
- 		panic
-+			Always panic when IOMMU overflows.
-+
- 		nopanic
--		merge
--		nomerge
-+			Don't panic on IOMMU overflows.
-+
-+		pt
-+			Use passththrough mode by default
-+			(Equivalent to iommu.passthrough=1)
-+
-+		nopt
-+			Use translated mode for DMA by default
-+			(Equivalent to iommu.passthrough=0)
- 
- 		soft
- 			Use software bounce buffering (SWIOTLB) (default for
- 			Intel machines). This can be used to prevent the usage
- 			of an available hardware IOMMU.
- 
--		pt
--		nopt
--		nobypass	[PPC/POWERNV]
--			Disable IOMMU bypass, using IOMMU for PCI devices.
-+		usedac
-+			Use the DAC on VIA PCI bridge
-+			(default: disable the VIA PCI bridge DAC)
- 
--		AMD Gart HW IOMMU-specific options:
-+	    AMD Gart HW IOMMU-specific options: (CONFIG_GART_IOMMU)
- 
- 		<size>
- 			Set the size of the remapping area in bytes.
-@@ -2572,6 +2590,9 @@ Kernel parameters
- 		allowed
- 			Overwrite iommu off workarounds for specific chipsets
- 
-+		force
-+			Overwrite iommu off workarounds for specific chipsets
-+
- 		fullflush
- 			Flush IOMMU on each allocation (default).
- 
-@@ -2582,21 +2603,16 @@ Kernel parameters
- 			Allocate an own aperture over RAM with size
- 			32MB<<order.  (default: order=1, i.e. 64MB)
- 
--		merge
--			Do scatter-gather (SG) merging. Implies "force"
--			(experimental).
--
--		nomerge
--			Don't do scatter-gather (SG) merging.
--
- 		noaperture
- 			Ask the IOMMU not to touch the aperture for AGP.
- 
- 		noagp
- 			Don't initialize the AGP driver and use full aperture.
- 
--		panic
--			Always panic when IOMMU overflows.
-+	iommu=		[PPC/POWERNV]
-+
-+		nobypass
-+			Disable IOMMU bypass, using IOMMU for PCI devices.
- 
- 	iommu.forcedac=	[ARM64,X86,EARLY] Control IOVA allocation for PCI devices.
- 			Format: { "0" | "1" }
+Thanks,
+baolu
