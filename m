@@ -1,74 +1,49 @@
-Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azon11012014.outbound.protection.outlook.com [40.107.209.14])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 460D52E4257
-	for <iommu@lists.linux.dev>; Thu, 28 May 2026 05:20:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.209.14
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779945616; cv=fail; b=mNjNZm3TYGH9yPB5GXFEu3lp/s6yrejE+V3wb9/UNl5IiDt6iMLsWLWWB3P2zi170EOUKyszkgsnHRIw0Z0w1P5VZ4i5ePLlO9kRk/DPEniDUiBP6eX5KnOXkpGp9d6J5ZwcTZPMa6nHreRYr8IUxdryfCgkpaKN8UUdSha5R/o=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779945616; c=relaxed/simple;
-	bh=oaLgEEylO9d9QNvJ2Xbi0+ahvD9rVgeIJ3cv3TYC4jA=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pszDovuPOnqBEYzSms0EzLWD69E131A9nZul685g+MN2BINL0ROI2oIE2JFQp7aFGsV4vttd7r43euegOsJeJjqiJugvHGwFZeNHc4TvzHv/NTk6EbqLjS/3zcFUnc9bDiXmkOsQYy69nWV4GUcHpl7gjO+3oL60GPDaYt0cliI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=Wy7vu/aQ; arc=fail smtp.client-ip=40.107.209.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AD551940B0;
+	Thu, 28 May 2026 05:46:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779947186; cv=none; b=j+UxHBWKJKbv8QFSQ5L7OyE/aNsYW+r7aVqmtCubZ0E7jCQXbvpwVPqREOQuqSUs9WlOveEyxGKHHpDYkYvnQiafqwNBA0krVcP+E2jHxAMjVbvnUsl1TxDgvLRXjDBsTbjA6mGN4pDz9V2WmpVgkh39V3uSzKRPR+wiiuRypNc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779947186; c=relaxed/simple;
+	bh=vRplcPPetVrP41t9VSybTHS8jAdvhvc/utVsjAH6HOo=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=rfppKuwa2tm3viw/k0wy1fdgAbFTjDPI8lJE5hp6NH89b5n8qDba/WW7c2K6IQA5dG9Vv3P9uPK7GkJCaIKMPNlSUzfNElpuoQeGjYYjJr/M1FZ2Pehtfl9vVIEMZAliAUcvc+uJLYDLvrDwiT2QuqdmFbTc1PmO8+KnKIhxHbM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=xVlWgDX/; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="Wy7vu/aQ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=QceeBE73BrFfkmK7uvdUv28ASgU1NRgGwLPX+pn/iqT9PdtPPD69Bl82a+/JX7Xqerq9XzEYd46GbPulJsMZrTxuiFULc8ucB82sEx680QEegvalmCa/kQfJMpgzmoAxGJRZBAnr3VKJpjA1FIiaJ4R29Uqnt6eyo74ta2XBE34FJpX2dTiIw5InMzfirBrudrf9E8mqEh+1l2M3fwNeaLR/ch8aaghN7KG8at7yA3Axp/0zf29tpF/T+wJ5jzhqFRqaKHgOUv3099Ce2FX6tk2MA5JSPtEMq+kgn+d5/mSIozGr6yCjWXD7SPwDcbCpFmvhDMlkPb8d1N3VQW0GpA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JFAh9xfHDv5mkuFe1tN7lG5a5llNPZodvcHon0cqLY0=;
- b=Tl0Ne34c0rdjrD0PGoCaOCo91VzT5gCQuoKBi2butcdqLuRpDerIn9irpUxWhffXdocUS0NPL6aPfSZjYEqt8bZVBSlqi5n/SMSyMRcASu7G0savfP3boHN1SLbNUIcMRygMAO56kmbCaKMvC2phKUVvDgFGrzk879BT9m+aOw22qaBULcmI9gvMAroUb03e+aoxgM0IjC6US449/nDclLdRYxBsSs/1xF1KPGBmQCGYf2+ZO5JeG/ZiYg33NzvLrJ4LiWioZnYkZlFGgnMRfLu1zchgDkuZSfUMmLcDAmYG0hn7qVz/1SmMGskGtdlt1wll6LCIsjjW5V92XcjuWQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JFAh9xfHDv5mkuFe1tN7lG5a5llNPZodvcHon0cqLY0=;
- b=Wy7vu/aQGBe+yIg0Z8BYjg/C3Nn6ur1zc4nATUhh4siQqvVDoW10JnDOR9SZU+1b2KCxSZLiUz8ZqPOtTbF0DfYpdIl0L4LCgjdI9RrqO7pRwNSQM+Mp6RvxBMQN/zdo5IrhhnGD9vlqntVvl2dUwJyhSIXn7IDtN/cpZ3csPvM=
-Received: from BN0PR04CA0184.namprd04.prod.outlook.com (2603:10b6:408:e9::9)
- by PH8PR12MB6795.namprd12.prod.outlook.com (2603:10b6:510:1c6::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.71.11; Thu, 28 May
- 2026 05:20:11 +0000
-Received: from BN2PEPF00004FBB.namprd04.prod.outlook.com
- (2603:10b6:408:e9:cafe::2a) by BN0PR04CA0184.outlook.office365.com
- (2603:10b6:408:e9::9) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.71.13 via Frontend Transport; Thu, 28
- May 2026 05:20:10 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- BN2PEPF00004FBB.mail.protection.outlook.com (10.167.243.181) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.71.7 via Frontend Transport; Thu, 28 May 2026 05:20:09 +0000
-Received: from purico-ed03host.amd.com (10.180.168.240) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Thu, 28 May
- 2026 00:20:02 -0500
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<joro@8bytes.org>, <jgg@nvidia.com>
-CC: <yi.l.liu@intel.com>, <kevin.tian@intel.com>, <nicolinc@nvidia.com>,
-	<vasant.hegde@amd.com>, <jon.grimm@amd.com>, <santosh.shukla@amd.com>,
-	<sairaj.arunkodilkar@amd.com>, <jay.chen@amd.com>, <wvw@google.com>,
-	<wnliu@google.com>, <dantuluris@google.com>, <chriscli@google.com>,
-	<kpsingh@google.com>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [PATCH v2 26/26] iommu/amd: Introduce logic to check and enable vIOMMU feature
-Date: Thu, 28 May 2026 05:17:38 +0000
-Message-ID: <20260528051738.596013-27-suravee.suthikulpanit@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260528051738.596013-1-suravee.suthikulpanit@amd.com>
-References: <20260528051738.596013-1-suravee.suthikulpanit@amd.com>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="xVlWgDX/"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	MIME-Version:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+	Content-ID:Content-Description:In-Reply-To:References;
+	bh=PjXuJQaHKPAZNAO+ZnE/uu4HDeWWeRJ7hBGHk01iNq0=; b=xVlWgDX/8ECEyuaGDngqYtcU02
+	AkQ11NX0Mo7KeR4uIjQglim7quo5/a1Ab3B8BQh1yj6pM3R0p9BmzezSZ+cU3YUjZFKCvpzeq+dAM
+	9BN5eQV92rsm7SYZ5baZXI8ODI9MDc+BfCZt2pkwYbfhltpvAP2oWnYEC6N0qvwBrXoF6B1Ll5I5L
+	gpnkEK34ol/joGNBygbsgGsaXFp0WgU1Xo3wVZ735edkoP7C7eDnk6YdENi/G24Nv+cRmC1/eOKsY
+	Y0TrSpqZyV4FvewmMmsJU6QC87BdiuyfrDLYQynLgi/gQmvW6AiMUNyunPWkMm1CaJKkxtpJ7Mxz2
+	k60FLnAA==;
+Received: from [50.53.43.113] (helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
+	id 1wSTZN-000000059ys-1IH7;
+	Thu, 28 May 2026 05:46:13 +0000
+From: Randy Dunlap <rdunlap@infradead.org>
+To: linux-kernel@vger.kernel.org
+Cc: Randy Dunlap <rdunlap@infradead.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	linux-doc@vger.kernel.org,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev,
+	Borislav Petkov <bp@alien8.de>
+Subject: [PATCH] iommu: Documentation: rearrange, update kernel-parameters
+Date: Wed, 27 May 2026 22:46:11 -0700
+Message-ID: <20260528054611.1524937-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -76,151 +51,125 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: satlexmb08.amd.com (10.181.42.217) To satlexmb07.amd.com
- (10.181.42.216)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN2PEPF00004FBB:EE_|PH8PR12MB6795:EE_
-X-MS-Office365-Filtering-Correlation-Id: b7bdf4a9-c162-4579-ba99-08debc78c9b1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|82310400026|7416014|376014|1800799024|22082099003|18002099003|56012099006|11063799006;
-X-Microsoft-Antispam-Message-Info:
-	yZZeciwUEl8vx6ppqaJXfIpb6awuQgyCYCKiHx0OetI6IgDn/JNwoXJHgmVQXG+fViBQVnru8LcK3zEu0ZPf5gRarafkiWHZPENXHOV8+WhB4SLqHqt7prbfKCj2dCdx/27npufSd9Oi+ZmbIfm/xS30kdc7yelS9Nx7mrAbyCRmTH7RyoeEG9qPHO4wXNDCx6bVI+JvVVv5fTjXSKQ69pbT8svvNiw3mkVD2HXMkQc7xZV1dDDzB5SW8SLHc/Cmqpv3RhUTu8lPiTZwZQGaFiyWTLXtZn09cSWQoUmuzkkERlVmL8OUiki2yfn/A1uzmo1mDzq5KCT3VMrDWtOWgwPPdf8L1mXBQcRJpGarQ2+nh60TpRaDd3Zi3yfeIAnvoPBvPDGCYYtsZ0TKD38xcY7VRmWZdQ055HPbXlQhRRuOFD0h9KH8xa1cPDh7/sxMCywwHjbtBlEZ7ha6jEXrgEfNv/o/u2l5ch7Gh/PVa05z/mmwFRfuRbvcNWt1Ix2NUrlWpqBHUWGt/RfAzeAdS/vxOwErNDg4PkhX66r0k8Dl/XqF4a8XwSc3NdDH2vj8lILbgfTgc8eH9IvlkdHBM/uk/8iPlFSAI8JiJVrhJncI25yeHMcgFgPMfpq0iqTqSfZ1B4UxJpvvmPFbZSR48YA70kAHvN4vhMwPwXK/kz/b3DpNSPvuv9HxMsPBw3WzSxSEzA/swdquRU/EW4ShZBsrboWZm0GIsI4aEUUp/mY=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(82310400026)(7416014)(376014)(1800799024)(22082099003)(18002099003)(56012099006)(11063799006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	ykTKaPRPpPq4Io505IyIDMZk6WXguNItTOWV5lws/6SaLS1t4GT2b5USFQxZOVvYvFKtfVu7VBwsP4dLmPbCQrWolYWr40TtBl/Xs8rJ76MTX+qA9ELH00Q/dJzksAIcle1oZ8L5AmSUHXj5dMj6udbYXnvC12kWOPW6UZCkceUU30aLYivzkcrp743+pmN9JB8pwBE07smipy0dLsrS+5GWBGYTpE2A4au9nZ0EMNyBbmbKDRXaYAWzYWMcp2rPkLIl9kFXrfmzpmilSNQZ7UWKikGxsOi2ILvTIsBMNEMNrrp49SGB0pgdD1GOQXonph8y6TAZZ7TxXkKwdflV8xW2reopZGYt8kIcYg6RTU3oCBvqhHq9GjCYymxCh4DfyxQbBg4WBBwdDoqz2lB/aD9039rkfHg0xw/yOTINzf1zQKgjmYhbMuqQ65gsspnf
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2026 05:20:09.8766
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b7bdf4a9-c162-4579-ba99-08debc78c9b1
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN2PEPF00004FBB.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6795
 
-Also switch to enable vIOMMU by default.
+Add text for some undescribed iommu= parameters (merge, nomerge,
+biomerge, panic, nopanic, pt, nopt). Add "usedac" and its description.
+Add that iommu=pt is equivalent to iommu.passthrough=1
+and that iommu=nopt is equivalent to iommu.passthrough=0.
 
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Move the PPC/POWERNV heading & its option "nobypass" to a separate
+area since the current "iommu=" applies only to X86 (according to
+its heading).
+
+Unindent the AMD GART IOMMU options heading to make it stand out.
+Also add its kconfig symbol name to be explicit about what these
+options apply to.
+
+Make sure that the IOMMU options that are listed under AMD Gart
+HW IOMMU-specific options are only for that product; i.e., add "force"
+there and move "merge", "nomerge", and "panic" to the general IOMMU
+options area.
+
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
 ---
- drivers/iommu/amd/amd_iommu.h       |  1 +
- drivers/iommu/amd/amd_iommu_types.h |  3 +++
- drivers/iommu/amd/init.c            | 12 +++++++++++-
- drivers/iommu/amd/viommu.c          | 24 +++++++++++++++++++++++-
- 4 files changed, 38 insertions(+), 2 deletions(-)
+NB: Wording suggestions welcome.
 
-diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index cf2b051948a3..e505c5420255 100644
---- a/drivers/iommu/amd/amd_iommu.h
-+++ b/drivers/iommu/amd/amd_iommu.h
-@@ -27,6 +27,7 @@ void amd_iommu_restart_ga_log(struct amd_iommu *iommu);
- void amd_iommu_restart_ppr_log(struct amd_iommu *iommu);
- void amd_iommu_set_rlookup_table(struct amd_iommu *iommu, u16 devid);
- void iommu_feature_enable(struct amd_iommu *iommu, u8 bit);
-+bool iommu_feature_enable_and_check(struct amd_iommu *iommu, u8 bit);
- void *__init iommu_alloc_4k_pages(struct amd_iommu *iommu,
- 				  gfp_t gfp, size_t size);
- u8 __iomem * __init iommu_map_mmio_space(u64 address, u64 end);
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 44a185bfa39e..7ff714ce79b8 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -201,9 +201,12 @@
- #define CONTROL_EPH_EN		45
- #define CONTROL_PPR_AUTO_RSP_AON 48
- #define CONTROL_XT_EN		50
-+#define CONTROL_VCMD_EN         52
-+#define CONTROL_VIOMMU_EN       53
- #define CONTROL_INTCAPXT_EN	51
- #define CONTROL_GCR3TRPMODE	58
- #define CONTROL_IRTCACHEDIS	59
-+#define CONTROL_GSTBUFFERTRPMODE	60
- #define CONTROL_SNPAVIC_EN	61
- 
- #define CTRL_INV_TO_MASK	7
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 622bc0337eda..a66a5089bf91 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -198,7 +198,7 @@ bool amdr_ivrs_remap_support __read_mostly;
- bool amd_iommu_force_isolation __read_mostly;
- 
- /* VIOMMU enabling flag */
--bool amd_iommu_viommu;
-+bool amd_iommu_viommu = true;
- 
- unsigned long amd_iommu_pgsize_bitmap __ro_after_init = AMD_IOMMU_PGSIZES;
- 
-@@ -417,6 +417,16 @@ void iommu_feature_enable(struct amd_iommu *iommu, u8 bit)
- 	iommu_feature_set(iommu, 1ULL, 1ULL, bit);
- }
- 
-+bool iommu_feature_enable_and_check(struct amd_iommu *iommu, u8 bit)
-+{
-+	u64 ctrl;
-+
-+	iommu_feature_enable(iommu, bit);
-+
-+	ctrl = readq(iommu->mmio_base +  MMIO_CONTROL_OFFSET);
-+	return (ctrl & (1ULL << bit));
-+}
-+
- static void iommu_feature_disable(struct amd_iommu *iommu, u8 bit)
- {
- 	iommu_feature_set(iommu, 0ULL, 1ULL, bit);
-diff --git a/drivers/iommu/amd/viommu.c b/drivers/iommu/amd/viommu.c
-index d2c883e314f8..4dcd781bc35a 100644
---- a/drivers/iommu/amd/viommu.c
-+++ b/drivers/iommu/amd/viommu.c
-@@ -45,6 +45,18 @@
- 
- LIST_HEAD(viommu_devid_map);
- 
-+static int viommu_enable(struct amd_iommu *iommu)
-+{
-+	/* The GstBufferTRPMode feature is checked by set and test */
-+	if (!iommu_feature_enable_and_check(iommu, CONTROL_GSTBUFFERTRPMODE))
-+		return -EINVAL;
-+
-+	iommu_feature_enable(iommu, CONTROL_VCMD_EN);
-+	iommu_feature_enable(iommu, CONTROL_VIOMMU_EN);
-+
-+	return 0;
-+}
-+
- static int viommu_init_pci_vsc(struct amd_iommu *iommu)
- {
- 	iommu->vsc_offset = pci_find_capability(iommu->dev, PCI_CAP_ID_VNDR);
-@@ -308,11 +320,21 @@ int __init amd_viommu_init(struct amd_iommu *iommu)
- 
- 	ret = viommu_private_space_init(iommu);
- 	if (ret)
--		return ret;
-+		goto err_unmap_vf;
- 
- 	set_iommu_dte(iommu);
- 
-+	ret = viommu_enable(iommu);
-+	if (ret)
-+		goto err_private_space;
-+
- 	return 0;
-+
-+err_private_space:
-+	viommu_private_space_uninit(iommu);
-+err_unmap_vf:
-+	amd_viommu_uninit(iommu);
-+	return ret;
- }
- 
- static int __maybe_unused alloc_private_vm_region(struct amd_iommu *iommu, u64 **entry,
--- 
-2.34.1
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Shuah Khan <skhan@linuxfoundation.org>
+Cc: linux-doc@vger.kernel.org
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev
+Cc: Borislav Petkov <bp@alien8.de>
 
+ Documentation/admin-guide/kernel-parameters.txt |   48 +++++++++-----
+ 1 file changed, 32 insertions(+), 16 deletions(-)
+
+--- linux-next-20260527.orig/Documentation/admin-guide/kernel-parameters.txt
++++ linux-next-20260527/Documentation/admin-guide/kernel-parameters.txt
+@@ -2548,23 +2548,41 @@ Kernel parameters
+ 			Don't force hardware IOMMU usage when it is not
+ 			needed. (default).
+ 
++		merge
++			Do scatter-gather (SG) merging. Implies "force"
++			(experimental).
++
++		nomerge
++			Don't do scatter-gather (SG) merging.
++
+ 		biomerge
++			Do scatter-gather (SG) merging. Implies "force"
++			(experimental). [same as "merge"]
++
+ 		panic
++			Always panic when IOMMU overflows.
++
+ 		nopanic
+-		merge
+-		nomerge
++			Don't panic on IOMMU overflows.
++
++		pt
++			Use passththrough mode by default
++			(Equivalent to iommu.passthrough=1)
++
++		nopt
++			Use translated mode for DMA by default
++			(Equivalent to iommu.passthrough=0)
+ 
+ 		soft
+ 			Use software bounce buffering (SWIOTLB) (default for
+ 			Intel machines). This can be used to prevent the usage
+ 			of an available hardware IOMMU.
+ 
+-		pt
+-		nopt
+-		nobypass	[PPC/POWERNV]
+-			Disable IOMMU bypass, using IOMMU for PCI devices.
++		usedac
++			Use the DAC on VIA PCI bridge
++			(default: disable the VIA PCI bridge DAC)
+ 
+-		AMD Gart HW IOMMU-specific options:
++	    AMD Gart HW IOMMU-specific options: (CONFIG_GART_IOMMU)
+ 
+ 		<size>
+ 			Set the size of the remapping area in bytes.
+@@ -2572,6 +2590,9 @@ Kernel parameters
+ 		allowed
+ 			Overwrite iommu off workarounds for specific chipsets
+ 
++		force
++			Overwrite iommu off workarounds for specific chipsets
++
+ 		fullflush
+ 			Flush IOMMU on each allocation (default).
+ 
+@@ -2582,21 +2603,16 @@ Kernel parameters
+ 			Allocate an own aperture over RAM with size
+ 			32MB<<order.  (default: order=1, i.e. 64MB)
+ 
+-		merge
+-			Do scatter-gather (SG) merging. Implies "force"
+-			(experimental).
+-
+-		nomerge
+-			Don't do scatter-gather (SG) merging.
+-
+ 		noaperture
+ 			Ask the IOMMU not to touch the aperture for AGP.
+ 
+ 		noagp
+ 			Don't initialize the AGP driver and use full aperture.
+ 
+-		panic
+-			Always panic when IOMMU overflows.
++	iommu=		[PPC/POWERNV]
++
++		nobypass
++			Disable IOMMU bypass, using IOMMU for PCI devices.
+ 
+ 	iommu.forcedac=	[ARM64,X86,EARLY] Control IOVA allocation for PCI devices.
+ 			Format: { "0" | "1" }
