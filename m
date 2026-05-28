@@ -1,157 +1,189 @@
-Received: from mail-qt1-f201.google.com (mail-qt1-f201.google.com [209.85.160.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010067.outbound.protection.outlook.com [52.101.46.67])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55DA13FB07F
-	for <iommu@lists.linux.dev>; Thu, 28 May 2026 19:17:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779995824; cv=none; b=SZ5aBywZdlqhuiMr1vF5s762XGnJOOqcTpmwlIMMkZe51devPuCX3ZuUzDKEQzoNfU1xfDcLBOHXffzxWiH7ZSmLPCJRjajCP9L37adPQUtIH8iI/PR14koLIlgxj+mHXYwT+3ckye3LOLPKJjJShwknN7boxQMREUeU6Ru+OhQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779995824; c=relaxed/simple;
-	bh=7nsiCepyNb7uhyn7v++Qgh6kBtGu5mTdr2I4JeUzJwg=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=nGwYYbWIju+3SbSxxGDkoqsM1Y3Kupf1XupIjH3jQelAtG+FTPlTsPASNSNutcoaff3mW3RGXQ4/ebcE5oQQW9WpU9whL7cen0ZGd0EsLJcesEov19N9zKvavRDz/QDPkSKWoFX6P+clo3j1TaKGV2GUoHxVpmQAwmEJcBYEEmU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--xuehaohu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=NsYZvTiW; arc=none smtp.client-ip=209.85.160.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--xuehaohu.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75F14409107
+	for <iommu@lists.linux.dev>; Thu, 28 May 2026 19:40:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.46.67
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779997222; cv=fail; b=e6jtOnwP02RUPEVQXz1+hZgYDLTPE2CPcIxi1gPsSAY7YpcdUh5akeWJMTolf74XiYg+tLWTfqrBQDqk6x/Z+02mxAFYh3vcBQsd1W8W/YaYDsQQHD/bMhH6Mc6j+uRLWDwI64bKKoeJWq1U50a/fTFlXugeuQkgfbI6cJO6URU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779997222; c=relaxed/simple;
+	bh=7YDd4hthFHNmNKCrgtmGk3P42UF7HGAWO/i7CXgrSTM=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=sb2L4NxqM6YMwx2nwK4qlgQQyWjqRhZaoINrTUs5scuJ3hmdRWYGpK3CIYh6mYo0tQP+tDr5sA11TVzSsocBMBQBsd13HGTwAhK3C/ffqxQtj6rQE3jtj+aqtZK3NkU1ZcPzUO3m0VkrRN9RtQxPzRfM8yFJYI0y8BGSVXwA3aI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=t5sXV7mS; arc=fail smtp.client-ip=52.101.46.67
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="NsYZvTiW"
-Received: by mail-qt1-f201.google.com with SMTP id d75a77b69052e-515224a8aa0so64276541cf.0
-        for <iommu@lists.linux.dev>; Thu, 28 May 2026 12:17:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779995821; x=1780600621; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=ruTGaXcXn18lBWCvQSOsc+J+nN/WfLLq3tF9jPQMx3w=;
-        b=NsYZvTiWwzJsctcH9BNIoGqnDD65LcxkH2a7cOeTf243KkfrTqRX9L/sXX2h6o3qIk
-         gtyhKOIfKh8vMVew0qfq7S0vN1itI6OXAn7ZpZ+3tkc4PlV+YDjyqbHXjtQzoJYbzgTy
-         I7uNkGC6LLFVD4XhYTsG3KF5DB2c1a3XZbZAxejR9dbVd4BhRcSJoXzLJBIZttvKTZdv
-         hwCcYsLV2KjdHYSCrOtyHFoTfgu+jWcid/omCH6HwERyj0vHE4OlZHZJbfjgLb2i7vre
-         HGwSv4VicFKxElyFcfLhjtaFFiR+BMSHxYQz/2DKemDGrQsDWItrj5Tc09R6VyATVWaM
-         lUMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779995821; x=1780600621;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ruTGaXcXn18lBWCvQSOsc+J+nN/WfLLq3tF9jPQMx3w=;
-        b=BIt8jgW6y4ABR4OxPwmNI6BIdONgW64wxegU3QcegqwfV8IrAAn7OqQNMZiNfLuzfz
-         /8NGWJ1knuYPKDHiUAKRl9bEfzz7YRpMSsNwJlHOq1EoGrFaVDcDP7BIwb2HwQodAYTJ
-         udzodjdhjK7Dc4F+djmPH/4toeHIcldEh3C722X8dwWTSZ7lJ+LPtkatRaaITIZ+L1FS
-         x3JG1SAXFEbkGhlaj4r7WAdHPJ6quG5W+uq+vsPfRPIyH6kpGdzzm0tgafTtjzyahtg4
-         EBKMmne9NXfeGdutZfXwGA1Gtijc5cg3oxd00qYFcDBVO3DXxnbjpR6f+VxI+zIdwkw4
-         7Lgg==
-X-Forwarded-Encrypted: i=1; AFNElJ/uc+ow+fqrjDVzkBWSESOMj37OxFqGLhLo6J0qWlVANlLzzeZpCspFV4mQbYZKB1zRtWG2hQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwYmXk07NbixANBn/ToAZ1zvPYM7WkSGZwR95peRysW8q67BqiJ
-	s/jOVgKLKHTFcasjPxl8ORcsN26UBK3qjBF/OHeFnbP3ToRcc030HdF0rCODUQE5MVgCniqvCbm
-	bO49k+pKfcGdN
-X-Received: from qtlo20.prod.google.com ([2002:ac8:4294:0:b0:50f:d8f5:705f])
- (user=xuehaohu job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:622a:4c8c:b0:516:e8aa:271 with SMTP id d75a77b69052e-5172cb95a12mr2327291cf.26.1779995821046;
- Thu, 28 May 2026 12:17:01 -0700 (PDT)
-Date: Thu, 28 May 2026 19:16:58 +0000
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="t5sXV7mS"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=b+mdL+wvFm+0Cybo5FceB5SrOFk0DPMHip8xZpufI+1ohhspJMT8reTv2+xWYhU+iDALurzIj/9hUgdn2pAIojBC4xj+ENtRf8ro3hZu1JXiwIsQFJh98kbAQXov6j2+0F8hT6cpqK3fh4SUJT8gQ0+HEw70EYiEfSTjS9OTwl3sfozOmZGr3u0hnc7ZJ/Jez+nYkUFI/mviM0ALtGyYfGshLTkmVPTQsmZDRvhnIEO3BlZYaADe62tOuvePRbL0r2WtIJXW3SLppoPh84s0wbwizbmXMVlPk9CeZpqIjkL00AKy6dHoAr2m9egipO+PU4ItQPgqM3OWYMgEd3r9cA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3mtBMugCVyN1tObiuKGa7UFWb2rEK54nRyJbUVnqRrk=;
+ b=bfXgx4rvZEhfo0yHErHvMiWEJxfttqe94t1RIUO/ChFoa2fyNlHyAkGZGmEM/I6c2V7pkMwvoYgHRBcRyStOjNr+8jkCTHq5jAoQJPKztCaXWXJ+qkmSjWZAdgvTSFk8TVLrh4FClhVAGePBTW2QZdGknM55gsBZ8255RPT/fOJnBKDmOVovWpkoGP4ZeM9OLurrrUAGSrKZE0tYzh9UlpLdBaFO7E+lLdQJzQluYOdrwgDyaqO56A4CwgfpglQdTP+G1YoJaPjz8WMnHbIE2Zyv8pRiYoXbSEHmGEOKzXHlgX6quEz4Pr18kzFYyO+KqZq0ChU1aCn/BfejOTR6SQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3mtBMugCVyN1tObiuKGa7UFWb2rEK54nRyJbUVnqRrk=;
+ b=t5sXV7mSm4YuJhOzp2sgEPUQZdBlEUVPUM+tSKilJtypXQFBAFAgyX5L/uRzQP0hQIEduHIliCCm1qZZTtZuL3SKMF4AjVoSPW0Ht7tRmEPceJB7neQ0HO64StvHtB2qgEh37i3PAjMswPkWEi7+qdIFeB9I7i7hCJACsUecX4OghE6sLp9HiKxEKCRLs7wWmkq75nRUuZS4J8QZ/5vvKGu7hU4efMN6pm+O56VGqhNJjJCpUbtLMRJRkE+Pr0Oxwu+13gFYLbg1OZppDD/mbSz4oLOJdnEzPONS7QlkExZNqi2oB+wRH391Qr2WuFBaWdqJPx19TcQPCaTHGxx55A==
+Received: from BY3PR03CA0012.namprd03.prod.outlook.com (2603:10b6:a03:39a::17)
+ by PH7PR12MB9176.namprd12.prod.outlook.com (2603:10b6:510:2e9::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.48.20; Thu, 28 May
+ 2026 19:40:14 +0000
+Received: from MWH0EPF000C6187.namprd02.prod.outlook.com
+ (2603:10b6:a03:39a:cafe::77) by BY3PR03CA0012.outlook.office365.com
+ (2603:10b6:a03:39a::17) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.71.13 via Frontend Transport; Thu, 28
+ May 2026 19:40:13 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ MWH0EPF000C6187.mail.protection.outlook.com (10.167.249.119) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.92.5 via Frontend Transport; Thu, 28 May 2026 19:40:13 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 28 May
+ 2026 12:39:49 -0700
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 28 May
+ 2026 12:39:48 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Thu, 28 May 2026 12:39:48 -0700
+Date: Thu, 28 May 2026 12:39:46 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Pranjal Shrivastava <praan@google.com>
+CC: <iommu@lists.linux.dev>, Will Deacon <will@kernel.org>, Joerg Roedel
+	<joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe
+	<jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, Daniel Mentz
+	<danielmentz@google.com>, Ashish Mhetre <amhetre@nvidia.com>,
+	<linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH v7 08/11] iommu/arm-smmu-v3: Implement pm_runtime &
+ system sleep ops
+Message-ID: <ahiaApzK1/nBwr2R@Asurada-Nvidia>
+References: <20260527221407.1756491-1-praan@google.com>
+ <20260527221407.1756491-9-praan@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.54.0.929.g9b7fa37559-goog
-Message-ID: <20260528191658.2506362-1-xuehaohu@google.com>
-Subject: [PATCH v4] dma-buf: Fix silent overflow for phys vec to sgt
-From: David Hu <xuehaohu@google.com>
-To: Sumit Semwal <sumit.semwal@linaro.org>, 
-	"=?UTF-8?q?Christian=20K=C3=B6nig?=" <christian.koenig@amd.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, Leon Romanovsky <leon@kernel.org>, 
-	Kevin Tian <kevin.tian@intel.com>, Ankit Agrawal <ankita@nvidia.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Alex Williamson <alex@shazbot.org>, linux-media@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
-	linux-kernel@vger.kernel.org, jmoroni@google.com, praan@google.com, 
-	David Hu <xuehaohu@google.com>, stable@vger.kernel.org, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20260527221407.1756491-9-praan@google.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWH0EPF000C6187:EE_|PH7PR12MB9176:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2cf89bd6-3ebd-4590-1fb2-08debcf0efb8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700016|1800799024|82310400026|376014|4143699003|11063799006|18002099003|22082099003|56012099006;
+X-Microsoft-Antispam-Message-Info:
+	p7XKzhl/y8Ef7VO10TqqSzEMtx9CtVK+WxTn1bIVXCYjQjKaq2Y6ANN4QtUrpSbILFsH26X/VDRuhaQ2VQo/qwq+S3UrJbFUtD/h5bnTWD1LpUxC1CfYSKH6+7gp6sIPutUX+Konh9LebANG+qagX0AKQFERrJjeqjpyXtvaNs3IWHgLlS0SPuCYSf7rajgBjG4Vc29FMv4I52mnac+MBmQQ4JnMrMDQXvqOGH+p0YWyBYvWLQgPR6s9DvY1/qpXB8/5DkNkX0jXhk/GCW7GFMIlzd97RIwW5sXFVMb1kXkF3gGRM4heWnk6uIBjB7gijzjkJsxXswLK76Xq2eH/2bpSweebUFJdIXcQd9xDtdorYOS+gmhC36adrHvz9tfh02huKZWNGhfyJVNILi0xPFk+wJFF/hi6cSWyg4Gm64fble2YsWUYAvGHjdA4Io4rlvrV2/A6vdD5u1WSXVBnIVvKU6OuAMA0Xu9hSgC02gNmF8+Cl/JIaXiZJ7ZfPoJHtFszYzWy0lLWfem2QxL3rTXQtK+krtCPeHQgYC5gLS7eWAfPKfvtmYqIJh76pMMztndazU5zenLQDryMf3wtzmZYGnQHY95VAzix+GoQC7qTBatn5LafzyhY+FJ16skwY/sJ/yyyjIipHvDhJBrIHdElzmTq9yoWVYfmwqKhf+0Fle/iNJu/kpomViHivrPphVP75rYhHgDCT2q7GNLblLTaMgmUucweG8ej0/N67oc=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(1800799024)(82310400026)(376014)(4143699003)(11063799006)(18002099003)(22082099003)(56012099006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	dBFzWC5/kXKYTeA59ZxtXfqy/ayCexBUjbBBEoFxcUszFni8WgIM2nv0Ouexqzo7veFRn1xfo/DgPlRkYOgsrVbrK/jE6R7O2GHfwHKDYJQei/2RsGVI4rW4BF1aE4ljSWw3cg7yjkmy4QJ8/j3bzQHyilgVrojrpsZig2WhfJSS6h8+X3RCLkSppNJIwY3WQrJ+GNT++Ujg3b0Ny34LbQeDlTqT0ZC818gu1BaxovT44HHw6AW4oqkP29dTBzBjdwFJqybPt5MO3HrbOHULIyU2Nj7Ag+G7k+a/ZZwji9krRRPJaL6M5TnbSUEQVrsRQYiJSy4J4Zb2BikiwBzbhT6jQSuDXrj4dGZXyWkFnD0bmzo9AEAuFM4R1QeHJuyxfSWwBLDKF6cEwp4TUCPAKQyWy+xBtRN3pVCFr+ZlEVangLlk0s9wLgDLHKcBQDMB
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2026 19:40:13.2105
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2cf89bd6-3ebd-4590-1fb2-08debcf0efb8
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MWH0EPF000C6187.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB9176
 
-In case MMIO size is bigger than 4G and peer2peer DMA goes
-through host bridge, we trigger a code path that assigns the
-total linked IOVA (which is greater than 4G) to mapped_len.
+On Wed, May 27, 2026 at 10:14:04PM +0000, Pranjal Shrivastava wrote:
+> +/* Runtime PM helpers */
+> +__maybe_unused static int arm_smmu_rpm_get(struct arm_smmu_device *smmu)
+> +{
+> +	int ret;
+> +
+> +	if (pm_runtime_enabled(smmu->dev)) {
+> +		ret = pm_runtime_resume_and_get(smmu->dev);
+> +		if (ret < 0) {
+> +			dev_err(smmu->dev, "failed to resume device: %d\n", ret);
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	return 0;
 
-Previously, `mapped_len` was declared as 32-bit `unsigned int`.
-When accumulating `size_t` lengths, this leads to a silent wrap-around.
-This truncation causes truncated lengths to be passed to functions
-like `fill_sg_entry()`.
+Nit: ret is used within the first if.
 
-Fix this by changing `mapped_len` to `size_t` (64-bit). While
-at it, fix similar potential overflow issues in `calc_sg_nents`
-by using `size_t` for `nents` and checking against `UINT_MAX`
-and using `unsigned int` for the loop iterator in `fill_sg_entry`
-to match.
+Yet, I wouldn't like it to move. So, maybe do an early return:
 
-Fixes: 3aa31a8bb11e ("dma-buf: provide phys_vec to scatter-gather mapping routine")
-Cc: stable@vger.kernel.org
-Cc: iommu@lists.linux.dev
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
-Signed-off-by: David Hu <xuehaohu@google.com>
----
-Changes in v4:
- - Added WARN_ON_ONCE() to the nents overflow check to prevent silent
-   failures (Claude Bot).
+	if (!pm_runtime_enabled(smmu->dev))
+		return 0;
 
-Changes in v3:
- - Removed leftover sentence fragment from the commit message.
- - Kept `nents = 0` initialization (previously stated as removed in the
-   v2 changelog) as it is strictly required for the `+=` accumulation
-   loop in `calc_sg_nents()`.
+> +__maybe_unused static void arm_smmu_rpm_put(struct arm_smmu_device *smmu)
+> +{
+> +	int ret;
+> +
+> +	if (pm_runtime_enabled(smmu->dev)) {
+> +		ret = pm_runtime_put_autosuspend(smmu->dev);
+> +		if (ret < 0)
+> +			dev_err(smmu->dev, "failed to suspend device: %d\n", ret);
+> +	}
+> +}
 
-Changes in v2:
- - Fixed 'IVOA' -> 'IOVA' typo and expanded commit message (Claude Bot).
- - Added Reverse Xmas tree formatting (Pranjal).
- - Folded in extra bounds checking for calc_sg_nents() (Pranjal).
- - Folded in type consistency fix for fill_sg_entry() (Pranjal).
+Ditto
 
- drivers/dma-buf/dma-buf-mapping.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+> +
+> +static inline u32 arm_smmu_cmdq_owner_prod_idx(struct arm_smmu_cmdq *cmdq)
+> +{
+> +	return atomic_read(&cmdq->owner_prod) & CMDQ_PROD_IDX_MASK;
+> +}
+> +
+>  static void parse_driver_options(struct arm_smmu_device *smmu)
+>  {
+>  	int i = 0;
+> @@ -789,7 +822,8 @@ int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
+>  		/* b. Stop gathering work by clearing the owned flag */
+>  		prod = atomic_fetch_andnot_relaxed(CMDQ_PROD_OWNED_FLAG,
+>  						   &cmdq->q.llq.atomic.prod);
+> -		prod &= ~CMDQ_PROD_OWNED_FLAG;
+> +		/* Strip all metadata flags */
+> +		prod &= CMDQ_PROD_IDX_MASK;
 
-diff --git a/drivers/dma-buf/dma-buf-mapping.c b/drivers/dma-buf/dma-buf-mapping.c
-index 794acff2546a..1aabc0ee70bb 100644
---- a/drivers/dma-buf/dma-buf-mapping.c
-+++ b/drivers/dma-buf/dma-buf-mapping.c
-@@ -10,7 +10,7 @@ static struct scatterlist *fill_sg_entry(struct scatterlist *sgl, size_t length,
- 					 dma_addr_t addr)
- {
- 	unsigned int len, nents;
--	int i;
-+	unsigned int i;
- 
- 	nents = DIV_ROUND_UP(length, UINT_MAX);
- 	for (i = 0; i < nents; i++) {
-@@ -36,7 +36,7 @@ static unsigned int calc_sg_nents(struct dma_iova_state *state,
- 				  struct phys_vec *phys_vec, size_t nr_ranges,
- 				  size_t size)
- {
--	unsigned int nents = 0;
-+	size_t nents = 0;
- 	size_t i;
- 
- 	if (!state || !dma_use_iova(state)) {
-@@ -51,6 +51,9 @@ static unsigned int calc_sg_nents(struct dma_iova_state *state,
- 		nents = DIV_ROUND_UP(size, UINT_MAX);
- 	}
- 
-+	if (WARN_ON_ONCE(nents > UINT_MAX))
-+		return 0;
-+
- 	return nents;
- }
- 
-@@ -95,9 +98,10 @@ struct sg_table *dma_buf_phys_vec_to_sgt(struct dma_buf_attachment *attach,
- 					 size_t nr_ranges, size_t size,
- 					 enum dma_data_direction dir)
- {
--	unsigned int nents, mapped_len = 0;
- 	struct dma_buf_dma *dma;
- 	struct scatterlist *sgl;
-+	size_t mapped_len = 0;
-+	unsigned int nents;
- 	dma_addr_t addr;
- 	size_t i;
- 	int ret;
--- 
-2.54.0.929.g9b7fa37559-goog
+Should its prior atomic_fetch_andnot_relaxed() call do something
+about the CMDQ_PROD_STOP_FLAG as well?
 
+> +/*
+> + * Lockless pre-check to elide invalidations if SMMU is suspended.
+> + * Races with concurrent suspend are benign: the cmpxchg loop in
+> + * arm_smmu_cmdq_issue_cmdlist() acts as the true commit point.
+> + * If we lose the race, that loop observes Q_STOP == 1 and safely
+> + * drops the command. If we win, the suspend thread waits for us.
+> + */
+> +static inline bool arm_smmu_can_elide(struct arm_smmu_device *smmu)
+> +{
+> +	return !!Q_STOP(READ_ONCE(smmu->cmdq.q.llq.prod));
+> +}
+
+arm_smmu_cmdq_can_elide()
+
+Should it handle a secondary_cmdq?
+
+Nicolin
