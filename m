@@ -1,140 +1,112 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 240B535A381
-	for <iommu@lists.linux.dev>; Thu, 28 May 2026 20:39:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780000761; cv=none; b=Gk2G2KoYdDindjuzmEuXZF06tuxVPhHzKHVvSUQCsNG11DmkoNnx6mjim6LO3/ykjscQHwqBfW7o+yRL8bHzdEhxmuRo00C4/8/a1P66HzbGy8scmD04FurAet0MdzY51oiY/G0+OkVVO+KLZNnDb9aErnralrzzJGRONue/7PA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780000761; c=relaxed/simple;
-	bh=KqExw4yVF8fFYi6V24rBae9JPYjDk4kcYZvI5BlVCOw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iTJkcDGhnoehsCRbDGVRnPw8Qsece0tKQ1QmVG0wizzRi36nbFm+9Y3YkPoDV/EQEbhvgdE4Iar2z5uaiF8H8GhtWqI9ZuM3gk3xD32+jHNfUVF1wDX9NwmSv+jPgas3ZxTyT79U02V4nr5rI7tSXpcYtwXsnnqvtEeUK7QyN6M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=HcDksEXQ; arc=none smtp.client-ip=209.85.214.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F680352008
+	for <iommu@lists.linux.dev>; Thu, 28 May 2026 21:03:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.41
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780002186; cv=pass; b=B9aGtTi6V5YnO8o2YqQq28eJuWTl8MS+5NBipjJAIW41M9YSRCroHfUS4up9JWR5+4Q2PmHbYg8KE2ADieeoikgdvzjMF07a6ngyW4Jydy9mV+nPVyZWMna1/9fax5BLLLrkp/g9iaQzSuIK0byw+ruyIP5w1CQsKeq+VGy8nRE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780002186; c=relaxed/simple;
+	bh=8/H0s5ObSXuYN0fXRn8e8f15KeuvhPQzxR4j5wSdGW8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=LAraKKPP/+A1Vm+oMZHJBsfAbwNxEmeooYuFmIdRxGMujpIs9VVVVi6BlqsQ88MgheSJg/2FSiJSDAhRB0OuxHLovKgZN6DubL3bzM0VmBXJtykbKJsWUJpfavAD1GM8HrURJgkz9L4IPDe4HrRh0nVUO+Sli7kJVFWmmXDKmfc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=FqDJDKq2; arc=pass smtp.client-ip=209.85.167.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="HcDksEXQ"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2ba3b9bcf69so1055ad.0
-        for <iommu@lists.linux.dev>; Thu, 28 May 2026 13:39:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="FqDJDKq2"
+Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-5a8bd9a881eso99e87.1
+        for <iommu@lists.linux.dev>; Thu, 28 May 2026 14:03:04 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780002183; cv=none;
+        d=google.com; s=arc-20240605;
+        b=hZ2N9JB6N42Ny5aztIUio3CJ0vZLCJ0OXDrceM8cX2KikED0PxG+QS59g1wWLpDSFu
+         MTTTkxHl5kJKUeBRiHVKhbo50EI3gEVjgwTAXS7VdLjGuD5nibNkTSwBeckzOg08mQxt
+         Fnk54mtrQFc0cKUa5vGJyURGXpHFKscEYu9p6s/PQuCLla5UDinI53qu4TQDjesQ2r1x
+         YB7GckZLxv5xZU9DZrQf3szIFjAk99/TKoaqMc0rlpTMmNtxv5xeN5gp4tBkY92CV+QH
+         Uz+SNR2cgjx6PFVx/Ed8UbGESZm4hNL0cSlZl6Jn5Cw3f0wtVet96oQSitPwoGUb03Uc
+         Ylhw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=aO12JApDqdyz9RPHxp/SAH2mf80I46UDQfAPg6V7HWE=;
+        fh=DUIRIKNixXWvMZMswXfqP7RGL+VDbEMRSgN37XpFpIc=;
+        b=CWkSonnJFHynfRzWv16f3O1Sobvrbf0HF1CvSVKZpmflMSXZsEeFxI/ur1uhNiOoD3
+         NJC3UpFsDeVyOkjB/nLQtuYlwf6BfvwmnPH/MoYYf2NgdYyT9CLX8mBAK1EUyHsAO5ep
+         JpbOoZ2AKAWuBaBvcQayADBHLLs+GPo1MS5GpZTiUstPsxh0feWX6gybQPLq10VO6g+4
+         fMhJkfqjMH+RmbIcSufp7whs2yBs0FtXpj5ULLQ3x/Znb/hhI5xJx3YPcuAeXny8XBNW
+         x1dAbTGkpqKzDp6HSOiWQQmRCxtShwrudyoJphuo94BGLVyOcbOwPgOo99ENbXn2s18n
+         1hkg==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780000759; x=1780605559; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=meonzuuyclWLVGJV9U6aQdhritntP0vgCuzICbgArsQ=;
-        b=HcDksEXQJRIYp1h1SLrS9zsLZxq3moHitNY/XaSg1WOOMIwFkFmuZuy9pDNODlrcty
-         I9fsQ+xibq0ykE3mCmUpnrxyrZ0tunnJf39EBurHWkZxmb2Q1cz28ksi7t3sPhVGEb7a
-         +r7z7WetONCmuCjy1fjWPUaLG61UySPNngl9/cbjYrUJmWk+eCkYNXNtjMagA/b6IrZI
-         ihZU0QXYQpX00gZN7QXn9Mg+rPXkghnnfvv7a/JVHKkjUgmeitXtWJ0bWrn+LGkRLOHf
-         SK6la4WPPKEOvVh1/rI/LR3cuOtQYymSG50PZbT8qnAxlU1NXfNt6wiHZlYmUkbNX9qt
-         IBFg==
+        d=google.com; s=20251104; t=1780002183; x=1780606983; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=aO12JApDqdyz9RPHxp/SAH2mf80I46UDQfAPg6V7HWE=;
+        b=FqDJDKq2uYWiMdnrA7jkk0xR2Dh1J6rVaqczTyf2sZH3LYsx2WhM5If8Coi/O0u/vo
+         HuvhU5SrtVF4AEMLdZcDlfQRXE8GJTyIDv7kgSwJ2zOmNx/MY+FSyQ9x2U/DrlpdzSt/
+         EcPgLO435Yq2MYEd+WlFfKe+p1DvytwcUwBJ1NeyhKlVx9Yu6BzloDWLK2yIl6oIIJNm
+         dR/UcRHe4uC6iG918Z3B9Tp5Pv61SdL3yLgVUZvPHwK1ZPgQJtLpN0p0/vy0kIckQtAc
+         Pzqt13DaYQGT6B+l+lblmjUF40lQGNy8LhpIAMLpx4ouue/clzavdHyUemqnvt9704v/
+         0eiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780000759; x=1780605559;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=meonzuuyclWLVGJV9U6aQdhritntP0vgCuzICbgArsQ=;
-        b=tVZNm4H+yuMPzI3MYYGY04bBsiR8sDnHA+rBjzQn8S4vtPFMK1/7tMhn/bUbWaZv9i
-         VypTxpszVRE9j/GZRj/pj3Y9q0RJDauJgQ4HSpl+QxZOIiSIz88FvZV/pgCANINJ2G4m
-         aJ93Hf5H0BuGK8U8ZmZKYc45ZEOw/3WyEEiqRG/buq8wIXXLppk5cLmEwzGR8QBAKeUK
-         BIXVdi0VXqNJE0IOS47gmCSitr8b+b7+WxguzPtQBCiv/822b8TNaEl3G8YHGaqB4nQu
-         Dpd6hJj5KAnjrmTK6NOCtEt1aEII9cu/p3QGlxmtOy0itE4hoaZ2BGmYpRJXphTen7AI
-         Jwfg==
-X-Forwarded-Encrypted: i=1; AFNElJ/7/lmAbzZ2f7/v1s38/U6J9TDWuXyUjn6jGTW3PPK/YfDRkdMM2T3F6zF5nXRIAX7T7KQeww==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzIrn2zkY8FdEtdJAsp6Hsaq/ScjZ04hG4n9NOXFHf73JkI71dw
-	55hTspzFnkuP6dRiHopRosbJTyUgBHFNuONFQZBMX8EDb01Ig1Nz0wuUSUZldExgvw==
-X-Gm-Gg: Acq92OEfpKNenW5r7B6MaHB1yTwJ/UDsRrvxDqim2OeT/BAApLSB/iCn0wgj06ZxIdD
-	nWMGN/+ObmCwZqdQhtrimq1cBvLMzbrCSMO5Btt8nQCcqyMX7jX8JqpMUWcb0TBdSEycVfIGDZP
-	8Ok6KrnUXxtaxLDgm/OOH2kARgcYAQ1F1LhWgNT8HoU1Z9lNGHdBwnKCw6r01UccIO1jFIyPp2m
-	rKaFgafYVBDjTRdAxZMHWQIP0RJdOPPqFUG4EHnO8HdESsysHjlYV3NSTUeWNn4kn72EzSgAg/K
-	8yZ6yVjo7hsedZSypLefC5TtExN8pmTaaGuCi8JSSy8S0u8uIi1xWCzJEOaYWGDZeFQPzMKSo0w
-	GJ2nzZQmzwa5kIAhjuY8MRmxDQY0/k/Geon+oUXHOtL82werE117gl8hS0CWtS3rqpK8C39xIK5
-	6G1sdgRVaalykdFNlgduW4mN6lJ7wK0esF6XMDGKWSF+rrfVTL0A+yQkzRQVIYOr2XxiG8
-X-Received: by 2002:a17:903:1a67:b0:2bd:6dad:3dfb with SMTP id d9443c01a7336-2bf2046519bmr79225ad.25.1780000759071;
-        Thu, 28 May 2026 13:39:19 -0700 (PDT)
-Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2bf1e609a0asm1939385ad.26.2026.05.28.13.39.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 May 2026 13:39:18 -0700 (PDT)
-Date: Thu, 28 May 2026 20:39:11 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
-	robin.murphy@arm.com, joro@8bytes.org, bhelgaas@google.com,
-	baolu.lu@linux.intel.com, kevin.tian@intel.com,
-	miko.lenczewski@arm.com, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-pci@vger.kernel.org, dan.j.williams@intel.com,
-	jonathan.cameron@huawei.com, vsethi@nvidia.com,
-	linux-cxl@vger.kernel.org, nirmoyd@nvidia.com
-Subject: Re: [PATCH v6 3/3] iommu/arm-smmu-v3: Allow ATS to be always on
-Message-ID: <ahin734hJ0CSSepe@google.com>
-References: <cover.1779392420.git.nicolinc@nvidia.com>
- <18bb6f421b3be891caa8f1fb50f3a4d56b52d5be.1779392420.git.nicolinc@nvidia.com>
- <ahheOF8L0aGMttcI@google.com>
- <20260528152930.GA3195266@nvidia.com>
- <ahhuFw3ZJpy48xkH@google.com>
- <20260528180018.GB3195266@nvidia.com>
- <ahiGIUDG2uvA6usM@google.com>
- <ahiHc3y4wAxxtpLT@Asurada-Nvidia>
- <20260528200450.GC3195266@nvidia.com>
+        d=1e100.net; s=20251104; t=1780002183; x=1780606983;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=aO12JApDqdyz9RPHxp/SAH2mf80I46UDQfAPg6V7HWE=;
+        b=kb9sKtKio0q49OTF93ZhZuvfHiTVzBvMv0v+niVoK5vG5goVirEwcrMibAf+0dlJTK
+         2Zk14HK5IJYtQH5CLOeEm28Y2zKuvAfUJz48W8GWswjov+JxEd9mNLyqWFXi+bI4Vll5
+         zYCIkfXHpj0J49ze/uH1zYEFVc0xqvIV63sSB7weGXR3lqIOv40h/zQoAxuf62xR56nL
+         PbX/s8CRg9WhTs2VK4sZdtYrwuy4+uRDRTxca42tHjRdc/Gh2FjnqVjRSDeZMBpqv4yV
+         aqUKyawshpybAI4+QprDCs/w8ChFSUuTHhtuzkirjIVWsnrtxcu4CiwLGmk4ELlHB0Ey
+         ZGMw==
+X-Gm-Message-State: AOJu0YzvfBoOjgPo5u91H7ldTw661Tq6eT6JzJkaQhGwhqV+7Rk1MYUp
+	DBHPoAltVsAXaU9f2Fg4BABSnJFRcaVP7paTbVZkwZjs8ePCkqoChadcU5w6I0OzjmiOxN1LyZy
+	xLW000K71JMAsE7G85c+fPO6CNtQaImzXsvLkut7R
+X-Gm-Gg: Acq92OEauRp4NPM31dsHhNMrWvc4yl5duG3DNyPU2F/l+D2NLLX9T8U2DJGwtrZUIEl
+	hUCxTZ0T+vbGqoEEvmuKiEKYhYMvKAW5iJ2RhzVC76+t9sTyi9wjnL/mzxllLsDydzAybOfJAN6
+	rQA28SwTU7VcFebyQMyese5udkIUmlUV6iAimixhdwcSVV6M3WJC7LSQwMI0SpcM/6IipX61Srv
+	Xi+V4KDGIKVJmgZXlDFSc1Q1N8Pzr50pbyEVs0PtbgMaDqmw1/GZtDOkGRXGURbVsupoXkxXqdH
+	5U9hr0sBTMjpioW8HFWsguIQZ2v+EZLpbpAgvdMBFMYEj+A=
+X-Received: by 2002:a05:6512:234d:b0:5a4:b0e:d756 with SMTP id
+ 2adb3069b0e04-5aa58f9c0a2mr11796e87.0.1780002182945; Thu, 28 May 2026
+ 14:03:02 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260528200450.GC3195266@nvidia.com>
+References: <20260414210626.2097722-1-wnliu@google.com> <ahftwWxiL9NlJ5g6@8bytes.org>
+In-Reply-To: <ahftwWxiL9NlJ5g6@8bytes.org>
+From: Weinan Liu <wnliu@google.com>
+Date: Thu, 28 May 2026 14:02:51 -0700
+X-Gm-Features: AVHnY4LPgbWDgplNNi5uPg9sYMAtw_Ybfu0DFYLHcXRDXVQxdtLgvA5J223arPw
+Message-ID: <CAPhhraxy5Bey67Psynqvsp37cW3HfYdWEU8+n_3YVqPAqt5TnQ@mail.gmail.com>
+Subject: Re: [PATCH v1 0/1] Don't split flush for amd_iommu_domain_flush_all()
+To: =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
+Cc: iommu@lists.linux.dev, jgg@nvidia.com, patches@lists.linux.dev, 
+	robin.murphy@arm.com, suravee.suthikulpanit@amd.com, wei.w.wang@hotmail.com, 
+	will@kernel.org, kpsingh@kernel.org, josef@toxicpanda.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, May 28, 2026 at 05:04:50PM -0300, Jason Gunthorpe wrote:
-> On Thu, May 28, 2026 at 11:20:35AM -0700, Nicolin Chen wrote:
-> > On Thu, May 28, 2026 at 06:14:57PM +0000, Pranjal Shrivastava wrote:
-> > > On Thu, May 28, 2026 at 03:00:18PM -0300, Jason Gunthorpe wrote:
-> > > > On Thu, May 28, 2026 at 04:32:23PM +0000, Pranjal Shrivastava wrote:
-> > > > > On Thu, May 28, 2026 at 12:29:30PM -0300, Jason Gunthorpe wrote:
-> > > > > > On Thu, May 28, 2026 at 03:24:40PM +0000, Pranjal Shrivastava wrote:
-> > > > > > 
-> > > > > > > > +	master->ats_always_on = true;
-> > > > > > > > +
-> > > > > > > > +	return arm_smmu_alloc_cd_tables(master);
-> > > > > > > 
-> > > > > > > Nit: I'm not sure if I'm getting this right, are we saying we *need* to
-> > > > > > > allocate CDs for CXL.cache cases in the probe itself because STE.EATS
-> > > > > > > requires Config=Translate with S1DSS in bypass?
-> > > > > > 
-> > > > > > Yeah, basically.
-> > > > > > 
-> > > > > > Effectively the ARM rules for enabling ATS and Bypass together require
-> > > > > > a valid CD table pointer.
-> > > > > 
-> > > > > Ack. But do we expect transactions before attach_dev? What'd happen if
-> > > > > we don't allocate CDs here?
-> > > > 
-> > > > It can be done at any point before a non-abort STE is formed.
-> > > > 
-> > > > The core code pretty much does this immediately after probe so there
-> > > > isn't much point in moving it later.
-> > > > 
-> > > 
-> > > Right.. that's what I'm not understanding clearly, if the STE is Abort
-> > > anyway during probe, why are we breaking the alloc-at-attach convention? 
-> > > Usually, we allocate CD tables in the first attach_dev call. Why does
-> > > that not work here?
-> > 
-> > It would work in attach_dev(). I just felt cleaner to have it in
-> > probe(), paired with arm_smmu_free_cd_tables() in the release().
-> 
-> I thought it was like this because we don't have an alloc on attach
-> flow for the identity domain, so add it there or add it here..
+Thanks for the feedback. I will update the patch, gather the necessary
+tags, and re-send it as a new thread shortly.
 
-Right, doing it in attach would've been cleaner, but I don't mind the
-existing way too (since it's merged anyway)
+Weinan
 
-I went down this hole since the reason for the convention change wasn't
-immediately clear.
-
-Thanks for the clarification!
-Praan
+On Thu, May 28, 2026 at 12:25=E2=80=AFAM J=C3=B6rg R=C3=B6del <joro@8bytes.=
+org> wrote:
+>
+> Hi,
+>
+> There is an updated patch in this thread, can you please re-send with the
+> correct diff as a new thread and all Acks/Reviewed-by tags added?
+>
+> Thanks,
+>
+>         Joerg
