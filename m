@@ -1,125 +1,113 @@
-Received: from mail-dl1-f73.google.com (mail-dl1-f73.google.com [74.125.82.73])
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DD2E363C61
-	for <iommu@lists.linux.dev>; Thu, 28 May 2026 22:31:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 178C3361DDC
+	for <iommu@lists.linux.dev>; Thu, 28 May 2026 23:10:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780007521; cv=none; b=BPQ+xq7W1XubABr0OL8Of0yxzcT9yrLBV0WTiKFuMdHKPoeTevV/hkCorkXyWRD+QqzZZ1MwoP7DE5MSqhcPychjxc8+aDZnSu/spK72qYgD/YcFTVwkUdCNp13iM0oUty0tdl/EEb4rqNKcFV9qWhAikg+kgnzyivy587PqCr8=
+	t=1780009859; cv=none; b=LJWETBvzFTgWBdMV4skmdonhnaHEKRD3bN5wE04rZi4Ia3cWJ1HfOQTPH2XAJGTh2eq+8gDUs8khhyYEwLF45C3c2Nra+WCSXfW7iPwkq051zAn/CMso1dRVpDT9l5BsvSoDwzFueuUQi0HHhhijCGvTGvWOt2E0lOCtMl4Uu3k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780007521; c=relaxed/simple;
-	bh=0yNCf/FZmVdH7OxyVcTRK0azQYedr/GytLYxP6I0HHc=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=OwRSKoy2YDMAObX5y+Fb/EZX7WOFXaonz4W2sEn7vnSmn77TUIGyr5YV72xbwxpjCV6AMsrIMR4jFIVuHysDwwQZyaC698dTqjyVtg9BcoiXQi1wW1r3itoYMrnIu+7vSveBA8KpE0xFXbjNLkM3nUBKlSRU9QjgSSS9HIfsH08=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=UehXJjzz; arc=none smtp.client-ip=74.125.82.73
+	s=arc-20240116; t=1780009859; c=relaxed/simple;
+	bh=O/lF2sV9F4KwCT/yxe2azpOzWpaq9WrgXBpmzMy9Kww=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=SbDFrVM1ooG9pSAkmdk+WreJitJvb1yw2ydD7faVTmtRsAyH5Ibw+/2ywynWwy8fCBdLaVE5G1Wz7h+hU4qvcW0Dsd51DTxvscVvktSQIbwyMV0lFFiCnlHmb93ABvKJHmHQx+HYrcgMuNwR8e91APHFuRsLICrFb2bOU+kj5Bc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=YToxYb1F; arc=none smtp.client-ip=209.85.214.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="UehXJjzz"
-Received: by mail-dl1-f73.google.com with SMTP id a92af1059eb24-135f2aa4742so3728851c88.1
-        for <iommu@lists.linux.dev>; Thu, 28 May 2026 15:31:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="YToxYb1F"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2b46da8c48eso2015ad.1
+        for <iommu@lists.linux.dev>; Thu, 28 May 2026 16:10:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780007519; x=1780612319; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=qnJY90lzCZa7sp51vCdlrsdl5wBeEKPOKUYIM3PKwp4=;
-        b=UehXJjzzNBYSXL4qOZbrAF6Hf4dVFAxJVGL8E33wIpYXHQEqS2Vv2jxMbZd0fqVomv
-         M80BS/QxOGHZQvCdanF/LaEDJEEV0Eti8TLdEEjuVpBXGtVMzvfminJ0ePvvDbDyDOMm
-         Zwh+vB7hk/Xc5wZvlhpWEMfNpsWzIVWgIqAhxJl6QosBjK+DormrE/vntBeSN47BHf6N
-         ffSQ+DN9S6BEXuRoy7jXAnO7VySaFiosnGzKd24zcqw8IKCPd3H3Yet1uFku5e5MoAhy
-         mi+O4W25qWIaz6OedyrNszBqS8BA/UrnIPEsNXJ/lf+gvl7f7f/OvrmEbyZSXzl5vdJT
-         S42w==
+        d=google.com; s=20251104; t=1780009857; x=1780614657; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=etZpU7Yp9Hm6cYfSBeTGXh+SR9t2+n6rYsabbI1Ed3U=;
+        b=YToxYb1FEV3RDKRz2I2fD755dIq9Fo14SDISa5Y9w+8VbA9jDZ9Sz9Vkz4Icd6a/r8
+         pU7Nr2HmgoMs6LqA8Jxye974T2H9my7J4T/Sofi6OO/zOgjkCN4zj+iUXYk8WL6zONEY
+         tcnGoV7o6S+TRg7QfTn5kQ0fLMfkqcvi49WnptTmWnNfbdVpaDuA2TVfcIF6Wx4Y+hvS
+         m2rILAhwCJs7UOGv1W1r7GCjpJ1YNcmtczwArI3OeFyoBPtHsz6nnYM/+3YXnNS4MTPR
+         nJHWPZdIwDuK3bboUZJuqyWXSL+hbeBJhz1xv4lzq9llj8eg+OjtwXXuXV0Qxd3/wvfS
+         vDcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780007519; x=1780612319;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=qnJY90lzCZa7sp51vCdlrsdl5wBeEKPOKUYIM3PKwp4=;
-        b=DmUqy9WJAt/ugbQB+sgibUpWjR4B6WQyQb+E5/lLWVQgxKuvt8MmMjO5e1QIbQR0yo
-         0ZbXvyjnndCxe8P15mkf1p+H1V4yy2lHUW4V4T/p09pirwcX6ISnjmHIhyOfEW4p1Iwm
-         H1WfCqv3QOB5SMn+2vIKAs/mE19+Qo0E+KsaBjV/gIDqMOEqI9eVjfBh7dxAybJb5+QM
-         UaDlOC7mYzxBYHNoGNfW44H4jNjKmk7WRrg+70ny6SeV13gD33Ralrk4aOJzHiDEynZY
-         EH73MJdymqlNZYWoaLcyJ+/JxYHsa3XR28mImdtJuYnTV673fstX7i9TZgHcANHsJu0i
-         MwUA==
-X-Gm-Message-State: AOJu0YxOiDHIZqgdHCvDJUcra3Cy7yV8MHfyHqPC2FQ6+Nk3hEbtzXTU
-	FFQVrTrT2CBWir7+9gLEIT9aVc3yP8hqJU0YcHFiWp7Z/kGDwEFb+4yilc7acBwnu3hfYsWaEQT
-	LNjQ3V5sYt6PBR0eW0eNyDqmBsZVoi5Sveojd42hMC6yDSYHNf4FNyohOoSwHXYXnniNl7WTgKw
-	ksGGAZfNIkl55I2p2nemd0AxjMnN0JuQ==
-X-Received: from dlbrl13.prod.google.com ([2002:a05:7022:f50d:b0:136:f9e9:6d7a])
- (user=wnliu job=prod-delivery.src-stubby-dispatcher) by 2002:a05:7022:ebc5:b0:12c:856:ddcc
- with SMTP id a92af1059eb24-137aeff8d97mr118590c88.27.1780007518036; Thu, 28
- May 2026 15:31:58 -0700 (PDT)
-Date: Thu, 28 May 2026 22:31:47 +0000
-In-Reply-To: <20260528223147.750229-1-wnliu@google.com>
+        d=1e100.net; s=20251104; t=1780009857; x=1780614657;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=etZpU7Yp9Hm6cYfSBeTGXh+SR9t2+n6rYsabbI1Ed3U=;
+        b=LEtVOKbNjefAU5UHsMJHrXlERcdokUkwOXiYZivTBaHpYEhofBj2OxrSUEf2eA3Xsv
+         esQ3jjUiD9jPsWz0HmT6uv4HBLHjVMkyhxzBO+X36Q4UzQPcLLOvwAV7tukD5RTiA2qN
+         M8+ksrbz6M034GHn6a9wSGu79U8dVfJmrY6JAHRWLRq8MxedCqbVGbTOpMUOCcX7iKa+
+         nho9Fns0dRSRF6Cv+eJD/WY1xWWY1lE603+pCEfnXPgYO4UmfBH2+zSG6avGTEIkvg+1
+         WKrmF/xAPEkAgoB3LLGVHQ9pJbX9e1mMhjlx6AsBYDO0CwQa1/ocK48fJg7sz+Toop0r
+         JtKQ==
+X-Gm-Message-State: AOJu0YwwnWiq5NEFNsZVXA1eh3vZwYgYg4TCvmJETy7hOIV3xbfUmvPJ
+	v71T/isWTiN7Np3xcD4xc8JXlQdCyD5Z9AGG7x6XBQ3gCmZfEOONnmJxDiW1FYIvRw==
+X-Gm-Gg: Acq92OHrHXcKFoacHspu0BJVH2wEUuNlnQwskS5QjDfVxXQUrS8KxyE1k/AP07BbGAa
+	jnBo47CYFHOmswlgkBCV9BRw9soEYetlXqV4Niy4Z2ajZKBr/NT4QB9Leyc9+AR2qc9LUuubyI0
+	e+yf0mMum73fyEddlmzjVOsTTsl27cXEErgzwgQ7lfFi7viYfjxz2R7PS6XL+FXkr1yXekNZE6O
+	Fc+66SRG62kPea4cX7/U06IGTioZraDo6xRARqEbE/TeoKCxRPWKChKrn2eO9ZkNI45uN/idZ+k
+	xZEoFxSGKqdTLlh1OxF3B3a/IWVrdrj4Htcx191i4efNpA5t+wOmr/Xl705kD8lduLfkCyPWLRC
+	eEBPFgtCAiE7OgCQnn+9E8tGmneCE+eMjoera7flBoQ31OLaPob4ZQiOxmgYAsg2uwhKXbHMZmN
+	mbiqTej6/laHn4CmWIXWj8ljwhGdI+eluugugzu5CrvQTZYOXLoKi6Qqebt2PPgZEtczumnMgJl
+	rDfrv0=
+X-Received: by 2002:a17:903:2409:b0:2ba:6518:e4d8 with SMTP id d9443c01a7336-2bf20d124a0mr536595ad.20.1780009856790;
+        Thu, 28 May 2026 16:10:56 -0700 (PDT)
+Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c8575b7bd15sm94187a12.15.2026.05.28.16.10.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 May 2026 16:10:56 -0700 (PDT)
+Date: Thu, 28 May 2026 23:10:50 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>,
+	Daniel Mentz <danielmentz@google.com>,
+	Ashish Mhetre <amhetre@nvidia.com>,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v7 11/11] iommu/arm-smmu-v3: Add KUnit unit tests for
+ Runtime PM
+Message-ID: <ahjLeryndiVuTULP@google.com>
+References: <20260527221407.1756491-1-praan@google.com>
+ <20260527221407.1756491-12-praan@google.com>
+ <ahi3HYssUY9mjjbg@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20260528223147.750229-1-wnliu@google.com>
-X-Mailer: git-send-email 2.54.0.823.g6e5bcc1fc9-goog
-Message-ID: <20260528223147.750229-2-wnliu@google.com>
-Subject: [PATCH v2 1/1] iommu/amd: Don't split flush for amd_iommu_domain_flush_all()
-From: Weinan Liu <wnliu@google.com>
-To: iommu@lists.linux.dev, jgg@nvidia.com, joro@8bytes.org, 
-	suravee.suthikulpanit@amd.com
-Cc: will@kernel.org, patches@lists.linux.dev, stable@vger.kernel.org, 
-	robin.murphy@arm.com, vasant.hegde@amd.com, santosh.shukla@amd.com, 
-	chrisl@kernel.org, josef@toxicpanda.com, Weinan Liu <wnliu@google.com>, 
-	Wei Wang <wei.w.wang@hotmail.com>, Samiullah Khawaja <skhawaja@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ahi3HYssUY9mjjbg@Asurada-Nvidia>
 
-We have observed multiple full invalidations occurring during device
-detach when we are done using the vfio-device.
+On Thu, May 28, 2026 at 02:43:57PM -0700, Nicolin Chen wrote:
+> On Wed, May 27, 2026 at 10:14:07PM +0000, Pranjal Shrivastava wrote:
+> > Introduce a kunit selftests to verify the Runtime PM elision gating,
+> > post-suspend elisions and progress on resumption under active
+> > invalidation load. Simulate concurrent HW suspension using a timer.
+> > Mock all HW registers and CMDQ buffers by allocating them on RAM.
+> > Make the mock CMDQ self-consuming to avoid hitting queue_full scenarios.
+> > 
+> > Signed-off-by: Pranjal Shrivastava <praan@google.com>
+> 
+> Maybe I am wrong, yet this reads like an entirely AI-generated code.
+> So, should it have an Assisted-by?
+> 
 
-blocked_domain_attach_device()
-  -> detach_device()
-    -> amd_iommu_domain_flush_all()
-      -> amd_iommu_domain_flush_pages(..., CMD_INV_IOMMU_ALL_PAGES_ADDRESS)
+Agh, It appears I made an error during the final send and mistakenly
+posted an old WIP version of this patch! I created a patch file before
+committing the final changes. This has remnants of older experiments and 
+lacks severals other cleanups!
 
-      	while (size != 0) {
+I'm aware of the AI usage guidelines. However, this is not an entirely AI
+generated patch, it's a pre-cleanup snapshot of a WIP version where I had
+multiple rpm tests (an attempt to use kthreads to simulate races) that
+were using shared functions like the mock_cmdq etc. remnants of which 
+are seen in this patch. *FACEPALM*.
 
-          -> __domain_flush_pages( flush_size /* power of 2 flush_size */)
-            -> domain_flush_pages_v1()
-              -> build_inv_iommu_pages()
-                -> build_inv_address()
+I'll send out a v8 soon!
 
-         }
-
-build_inv_address() will trigger a full invalidation  if the chunk
-size > (1 << 51). Consequently, the guest will issue multiple full
-invalidations for a single call to  amd_iommu_domain_flush_all()
-
-Without this patch, we will see 10 time instead of 1 time full
-invalidations for every amd_iommu_domain_flush_all().
-
-Cc: stable@vger.kernel.org
-Fixes: a270be1b3fdf ("iommu/amd: Use only natural aligned flushes in a VM")
-Suggested-by: Josef Bacik <josef@toxicpanda.com>
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Weinan Liu <wnliu@google.com>
-Reviewed-by: Wei Wang <wei.w.wang@hotmail.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
-Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- drivers/iommu/amd/iommu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 57dc8fabc7d9..15ffc4742183 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -1774,7 +1774,8 @@ void amd_iommu_domain_flush_pages(struct protection_domain *domain,
- {
- 	lockdep_assert_held(&domain->lock);
- 
--	if (likely(!amd_iommu_np_cache)) {
-+	if (likely(!amd_iommu_np_cache) ||
-+		size >= (1ULL<<52)) {
- 		__domain_flush_pages(domain, address, size);
- 
- 		/* Wait until IOMMU TLB and all device IOTLB flushes are complete */
--- 
-2.54.0.823.g6e5bcc1fc9-goog
-
+Thanks!
+Praan
