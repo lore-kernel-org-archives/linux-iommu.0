@@ -1,158 +1,129 @@
-Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010029.outbound.protection.outlook.com [40.93.198.29])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E51C83672AB
-	for <iommu@lists.linux.dev>; Thu, 28 May 2026 22:14:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.29
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780006460; cv=fail; b=pMtBmSWBSkJKFrXX8fTCjOvQVAZi+Qo9TNyY9jxLvYVIORV/VhTyTW0EGae3/jSYd56H8Be5UeCD67w8hZJR4sKmU30NRPfTu3uYbOuuf2i+P4ckt8Vz168hx+TnWe9ijwTubeWFHOvYI+UTDC4ZE84G6av0mdxLO/5yx2Uxnzo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780006460; c=relaxed/simple;
-	bh=8KjkUvYgeooygNaQdpdSXcrxCFlIdH1BerZpjO4q1xM=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qDGrBWojqaQC6WhHYqeqsSkUgR6EIqfJjKniwr2ga8bjMOCeCdDlV9EaIGTuPgK7vRh10WsmUGq9nCNchx8cbePhQIU96MUEyLkJc3qroo1KBAcVtzqVEyVh/9l2/9ZKb/r6dikI/CvL120bfz8z1tpj3/gd8YiulJGZH1hH65M=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=V8cFD2fp; arc=fail smtp.client-ip=40.93.198.29
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 225D52E4257
+	for <iommu@lists.linux.dev>; Thu, 28 May 2026 22:25:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.169
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780007120; cv=none; b=qS66G0s+uhxom9AVUFPmvTm+MLrhD3+Lo5Yc17OSimkljDhhu73Z3QqxajMzxgnJYQan9w8to8eG6G7UGANV6OH9+/ijQjQ0KYBjEKY+EdofcSWsidHu3afmR/Y1n/XpIyMo42nW22FYvU3r2w6Nl5iFVegkAiNhWVx7xvImwN0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780007120; c=relaxed/simple;
+	bh=zYxnUWoxzsLfDARQUd4y71jgV6OD9Q+8M6hZ6AH1mnY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Z1YZGBbd/S00ZkNx+PJSm1qxVFS8aXLW9FMSjG9SfrZaazPLtMtB3LYz9Y6LZ1rIih3yQteZfTT38Ao97ABxpruaUQJiqdRJ3CC4o+xmI+G7sVDyAiHb/eNZumP5eZdhYsDHn5VkJLe6WOu8DT4wlTxWiLWs197hh6xlF71YqvM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Ezj2cJgh; arc=none smtp.client-ip=209.85.214.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="V8cFD2fp"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=bIyHsps/YZfl1M30Gy8Kxbgrpt0IfFp87XhrlfYLGVWqwE30u+E1mM3a46bfMgVUAqAQb+rgaKB20x7l/6SKk7mQJl5SnKa1ArdKWjMb9rHDmWJx89Xo7j/a0YeeS+gcgdR9FW9maATGi3eSDPXdAYZKMoyN+u0MjppW4MF1pJ6J2iaqQ4e95JqzflA7XVGcbcdcMnach4SlGYahwybqac3rr+yKrc+IVJDrMeuFt/6z0fh6FNYme1bH4EKaukRJngCFaGKENgd4zDw1XJsYo6XtRIR4RRLAzxaolHuXY5ljw2HB8ehoF/WbZMGG/6ofQY8oZU569Q5rYRSNtqbLSA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PFcemdiuIEethHAaRtPGcR6AjPbwfGlp0P1zo4oyo2U=;
- b=pfV5GoBwtMJg7RbrjzF6McQiIPcD8UwgwrKRHOGR2J+n1nPrKf+5PSKUFNznl/owhbUvPTq+l7jjHsNEffDGEdoUyoZRJ13New6g67x0hSrVeAM4XztEvtISWkOG52CdaHaYf93NlONJp8pqaQdj/Ex3IXWF7lbTUx19OgVCjKDsqFwbsuppM3kAVxRX2GygZPU3IoOoFGcr62P59dkM+wDGLMVfInsMOvKbJtsyESCVt+NFVbI5L+nsgtgXud0AJrB0OFOARTql8kqTGIVMpAq6BH+ZX9Ez8n4EBgx7726aEn3mGZfUMq+C5VT77javFTKp3cN/ZIhjrvH48wV7tg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PFcemdiuIEethHAaRtPGcR6AjPbwfGlp0P1zo4oyo2U=;
- b=V8cFD2fpcuGWPO7+srASP1UgCo1a6EZRNqrQoIpIFcQ6Q6brRu6q4SvxkAEUMN6qH/fgyBAwbw63Wlq2iw2694HVHSZlBVdulIjSZ4mXqSAeAA/JvFv3YPC9Q8d8S0DHVZ1uUapmBFuw4JSQDjw6ZjwYK1+NSIC9voowNUapC7tgGDxNzXdSAZML8hXnuaPWkf2MTKXCN66QYrPQ8JMNDbF606Tl+K5YkU2L8WWplI7bJXRNii4HBZaae5TOF3PEwwy0nMOIdE7SeSIj1mrJUDfssD+HTFzoqjZDoh1dzX1gOTeIpwerIuug2Lj2YInEgaaF9D7jCXrptX1aWjGvYA==
-Received: from PH8P222CA0028.NAMP222.PROD.OUTLOOK.COM (2603:10b6:510:2d7::9)
- by SN7PR12MB8770.namprd12.prod.outlook.com (2603:10b6:806:34b::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.48.17; Thu, 28 May
- 2026 22:14:12 +0000
-Received: from SN1PEPF000397B0.namprd05.prod.outlook.com
- (2603:10b6:510:2d7:cafe::54) by PH8P222CA0028.outlook.office365.com
- (2603:10b6:510:2d7::9) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.71.13 via Frontend Transport; Thu, 28
- May 2026 22:14:12 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- SN1PEPF000397B0.mail.protection.outlook.com (10.167.248.54) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.92.5 via Frontend Transport; Thu, 28 May 2026 22:14:12 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 28 May
- 2026 15:13:51 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 28 May
- 2026 15:13:51 -0700
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Thu, 28 May 2026 15:13:50 -0700
-Date: Thu, 28 May 2026 15:13:48 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Pranjal Shrivastava <praan@google.com>
-CC: <iommu@lists.linux.dev>, Will Deacon <will@kernel.org>, Joerg Roedel
-	<joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe
-	<jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, Daniel Mentz
-	<danielmentz@google.com>, Ashish Mhetre <amhetre@nvidia.com>,
-	<linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v7 08/11] iommu/arm-smmu-v3: Implement pm_runtime &
- system sleep ops
-Message-ID: <ahi+HFgBDYmByAtb@Asurada-Nvidia>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Ezj2cJgh"
+Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-2b2e8b95bdbso565ad.0
+        for <iommu@lists.linux.dev>; Thu, 28 May 2026 15:25:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1780007118; x=1780611918; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=K3lH3cjkzIHlx4Slw2VWW5sli+Rig7PDMVIlCqK59Mc=;
+        b=Ezj2cJghIbHYE0G9DpamUJSxLsHQ+lYbPRm5u+wfa81fCa3sYaoYcTsVdCBSKqQ+U+
+         sD2hUiD/ersvV6XMubNSBJIIjo84P7I9S1TyTHz9KdVcpEcBK8Du7MuQ1mke+invwwgz
+         T7bu7/4M9zQ8WHGgDJrU7SWopPihUGLAtwABBmsu43/l0Qpgu+fw2ifXAqmtw4zLTogi
+         GB+8NQqfmxdbjzN5jtHMf3crS7dnEmT2sSfgGfxwHQwhIJABpPezGZcD/XK5juQmLS19
+         CyvyXpguCRxtf2zkcIDe/tBe/Ww1UfpHSTQjxx4WD3Kmmbzaaux2yq13nVGBRQ9vMJJi
+         1S4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780007118; x=1780611918;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=K3lH3cjkzIHlx4Slw2VWW5sli+Rig7PDMVIlCqK59Mc=;
+        b=XwKnGByVZ/ZOYLcCtxgdHtMPzcrQdiaqfhL2Ns9Ofzo3q+aOQKN439PeG9NWRS/my6
+         D5YnAFMLYxuS6mE8o7D9zhVqz/P0ocfb3vRh5FnWOpm7o8FxvaNCY0l+VhJaCMjc/KjJ
+         tN6LkQMu+0Of65lpMlCHE1/Fydjmq1tOhbtZaZXJQPnd/73kb/gn9nKA+1I9DIoO/1kL
+         8vNUylqMj/+ptE3N8wZzbLIfxICNe0DJkTmBghb0wuPP1LxGsBQdA4IJlylUhJ0+xlw6
+         qJw58iIpwr32Op8RJ1YbBhnCyBz41yQzJICiClZyp7KEQjDYQpvtTgMhUoJPmGfJmixF
+         fibw==
+X-Gm-Message-State: AOJu0Ywgss9jytbNrCkhcE8tIfzt4USZZhCWBo/+kyAGVDCg9rZo5BQF
+	Pq0GyazbtZUqvx+w/M5oCFAhjUg2RLCyBhfyRYqkO66tChOY5RViA2helWO+Bi8S/A==
+X-Gm-Gg: Acq92OE3NJkx54CfZE7Crel0u9+dX6tfFhHtVfzy7zHYZX7+8wZVvostXTdKr0naQsU
+	KOzQ0io68rBQJJz5QBQrScC181kCSuRCrnfBijygC7a2wgFeeiC/cHM751BdMEKiTSJ/Z+VRYXa
+	yJarH5Y+IMDoctOBvQ/CJSRDjXj+ko0I2UgGJy0deZO33VtDNsQqp8KHEZsKHat+l4AiOS53szw
+	lwfgqZL+j+5OICZqTu8N6U/m1wme1uIS3pbZQbmjm2O3a1Ud3y5aCn1mD7s2fffGkKfBKq+P3pM
+	0cK8BrbsP7XvlK9rwoU/+4/m4l/8EC2QxaU37kI4kTn65BPOSxupBoS8607pDdaZLHcLmHQdhPV
+	PgYFwr1l3eDRcotTlZ08Da7Kr3X/YxWc9gsvqleYpNSwdTWjl8Q7leNwhZaLopVK3pBG/AFkDVU
+	V2f7tXS8bGsCgVrGfGqtC4fvSSijScgZsAztwOwLw2IkOjI/fhuWM5g0qt6KisGEHBmU5TSZ9wr
+	6dQy7E=
+X-Received: by 2002:a17:902:e884:b0:2bf:28d:87ad with SMTP id d9443c01a7336-2bf204cdd20mr428735ad.0.1780007118059;
+        Thu, 28 May 2026 15:25:18 -0700 (PDT)
+Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2bf218530c0sm647205ad.20.2026.05.28.15.25.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 May 2026 15:25:17 -0700 (PDT)
+Date: Thu, 28 May 2026 22:25:11 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>,
+	Daniel Mentz <danielmentz@google.com>,
+	Ashish Mhetre <amhetre@nvidia.com>,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v7 10/11] iommu/arm-smmu-v3: Invoke pm_runtime before hw
+ access
+Message-ID: <ahjAxx-cyww2va__@google.com>
 References: <20260527221407.1756491-1-praan@google.com>
- <20260527221407.1756491-9-praan@google.com>
- <ahiaApzK1/nBwr2R@Asurada-Nvidia>
- <ahix0vUm03lxDwAC@google.com>
+ <20260527221407.1756491-11-praan@google.com>
+ <ahilX8Za1NRCH3ik@Asurada-Nvidia>
+ <ahi3uY9YZZtR1Lq5@google.com>
+ <ahi7KWov1+GC3xVx@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ahix0vUm03lxDwAC@google.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PEPF000397B0:EE_|SN7PR12MB8770:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2f3079a1-f67d-4818-271c-08debd067286
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|82310400026|376014|36860700016|18002099003|11063799006|4143699003|22082099003|56012099006;
-X-Microsoft-Antispam-Message-Info:
-	DLvL9c6DKWHe+5wY+lIqzYSVQw5qAA1EZV98HajALyBFmPzT4jhW37Skhjp7g+nO2VOR/F/QVzN3w0OVuUgU1jPBkkl8ymXtLWy3I5c43HAXtuLnMUsrgK27MFg7DZ+VEzG1jBZvmlHp/FVfIHN3Gve+uXnJnN1BejwiN21KLpZM6jPL7T75SDCj7nr5O1yUi0s4t3w0Ju67rdm/O9HsT9Zsr8j/ptKtepMDg2cbN8nIvlcf3x4c/8CiA+VDGRVgcFl2yt4OIc0bXZdK+X8x5ji7TjR8dN84YDDf+YFZibvka5Jc+JE12BK9tD7msPp3A5Mn7KfBW/hK12DLqjMd71uec7LjWTgXLOxBBDIbVNycU87QEpvtWhtUU1fmZSYhVSTPFLBgODaAGU8DnaWamk29nOsW3mzNcIWMC4EE5pruH57rljBP8QfijkVcNiaxG2mRUT/fQyfif1Sg0UhZoAiimM1p2I3YXqe9giGLzzsE7y6hdtWjwgAaGdzJB42HBHNhlJUMyTVK8mGkgG/csF1do+jg84cqINKys9MKF9t/Bj3Fny8cPJ8zH9BgWdEmZXqUihHvcyWPyP7EGPc1gUza0znytBwzRuQhYb3HIISNKu42pci2UM3VXVo5N10wNvEY/MvK+KcLXN1+wp4bUqVg3kZObXPfSyMBXpiHXe6MnLxHeRfAQGYUji0Njm7OCg0eapH/FpwYdyonaH8OFenKAn6PQRry2sBcKQr1t6M=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(376014)(36860700016)(18002099003)(11063799006)(4143699003)(22082099003)(56012099006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	1t1tq+PPZBHNDQDE15HxlwdXAfbopBEKkEUWvlHlK9l8YCyZ2HG6Co2LOpXCFmhRe2HdPg4iTOMQWBJ/pflWOHwnjXXlMoaG+0bWaWbEzZEVPTVj4p3f0mi4V64WjzApQTUFzF2su/4R35g7OlbIFCfQAFvKPr4Gu3prn7+JtsexPSRBU/Tno0Jwqws8XNT+HzfBUy7/6LKTySSaIwGVSuFHPHYSvO0qWyhMfNAvHuxFfbALEdcGT3ACVaNWMVZZJWGtGO1xXFQIUr2fC8IchggTxNnABAVDHD+fHFkg5fpDDzpqiMkSSIdXDpGUyU6cvEnA0j3IJSGkeMgkhyKrB4zq4PBqVAkiyiELQnp/Ce3+LGks1gLF2+IN19KR6YjAjLj8LyjepU3N/b26rzW/8Bj90agSWJd9bsayZxKJpSavpeqpmfJf4tQqL8tqy9k8
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2026 22:14:12.0483
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2f3079a1-f67d-4818-271c-08debd067286
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SN1PEPF000397B0.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB8770
+In-Reply-To: <ahi7KWov1+GC3xVx@Asurada-Nvidia>
 
-On Thu, May 28, 2026 at 09:21:22PM +0000, Pranjal Shrivastava wrote:
-> On Thu, May 28, 2026 at 12:39:46PM -0700, Nicolin Chen wrote:
-> > On Wed, May 27, 2026 at 10:14:04PM +0000, Pranjal Shrivastava wrote:
-> > > @@ -789,7 +822,8 @@ int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
-> > >  		/* b. Stop gathering work by clearing the owned flag */
-> > >  		prod = atomic_fetch_andnot_relaxed(CMDQ_PROD_OWNED_FLAG,
-> > >  						   &cmdq->q.llq.atomic.prod);
-> > > -		prod &= ~CMDQ_PROD_OWNED_FLAG;
-> > > +		/* Strip all metadata flags */
-> > > +		prod &= CMDQ_PROD_IDX_MASK;
+On Thu, May 28, 2026 at 03:01:13PM -0700, Nicolin Chen wrote:
+> On Thu, May 28, 2026 at 09:46:33PM +0000, Pranjal Shrivastava wrote:
+> > On Thu, May 28, 2026 at 01:28:15PM -0700, Nicolin Chen wrote:
+> > > On Wed, May 27, 2026 at 10:14:06PM +0000, Pranjal Shrivastava wrote:
+> > > > TLB and CFG invalidations are
+> > > > elided if the SMMU is suspended by observing the CMDQ_PROD_STOP_FLAG via
+> > > > the arm_smmu_can_elide() helper.
+> > > 
+> > > All the arm_smmu_can_elide() call sites here would eventually elide
+> > > the commands in arm_smmu_cmdq_issue_cmdlist() that is already gated
+> > > by CMDQ_PROD_STOP_FLAG? It doesn't seem necessary to gate again?
 > > 
-> > Should its prior atomic_fetch_andnot_relaxed() call do something
-> > about the CMDQ_PROD_STOP_FLAG as well?
+> > While issue_cmdlist() would eventually elide these commands, the 
+> > can_elide() check is necessary to return early during suspension. 
+> > 
+> > This avoids unnecessary stack allocation, cmd building, and spinlock
+> > contention on the cmdq->lock for threads that are anyway about to be 
+> > elided. 
 > 
-> Umm.. No, the atomic_fetch_andnot_relaxed() call must leave the STOP_FLAG.
-> This block is the owner-publish phase, which occurs *after* the Point of
-> Commitment. If a submission successfully reserved its indices before the
-> gate closed, it shall be allowed to finish.
+> We aren't in the perf sensitive path.. most of those aren't going
+> to be that bad.
 > 
-> If the owner thread cleared the STOP_FLAG here in the global memory, it
-> would prematurely re-open the gate, allowing new racing submissions to 
-> leak in during the suspend sequence. 
+> arm_smmu_cmdq_shared_lock() on the other hand is taken at step 2,
+> and the STOP flag in the same function is gated at step 1?
+
+DMA unmaps frequently occur from atomic contexts, interrupt handlers etc
+Thee Step 1 check in issue_cmdlist() happens under local_irq_save().
+We may argue that it doesn't happen for long though..
 > 
-> The algorithm works mainly because the RPM callbacks are the only ones
-> that are allowed to manipulate this flag.
-
-That reads plausible to me. It would be nicer to leave a brief note
-inline.
-
-> > Should it handle a secondary_cmdq?
+> > By dropping these requests immediately, we significantly reduce cacheline
+> > bouncing and contention during unmap storms.
 > 
-> No, I don't think we need to check secondary queues here. The STOP_FLAG
-> being set on the primary CMDQ during the suspend should suffice to 
-> indicate the entire SMMU's power state. That's why the function takes in
-> the smmu ptr and not the cmdq.
+> How significantly, so as to justify invading every command issue()
+> call site, which would be difficult to maintain? If we really need
+> an early return, it would be nicer to have a common place at least.
 
-But if we don't set STOP flag to the secondary_cmdq, wouldn't the
-drain() timeout on the secondary_cmdq that does not elide?
+Eliding early is more of an early-exit from the DMA unmap paths really..
+If maintaining these high-level elision checks at 4 or 5 call sites is
+a maintenance burden, maybe we could move the logic into the issue_cmd
+macros? 
 
-Nicolin
+Thanks,
+Praan
