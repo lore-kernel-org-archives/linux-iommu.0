@@ -1,172 +1,198 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D60D3783A0
-	for <iommu@lists.linux.dev>; Fri, 29 May 2026 17:03:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC82638F62F;
+	Fri, 29 May 2026 17:41:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=96.67.55.147
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780074215; cv=none; b=uVaTEWZq/2gJgBLBhtqzslFoxVkw9e4bgFTFrsafTKsk6DfSB4V3M2AYJm0WqXSYEHcnEfQ7H0DBLzUD7AxNsxFmLe5ed/v1qzvGHFKFOqMspSmvVRGy8dp1BEvOQfz+vMCfFScdDHZOvmQrXsfWAelHS0Wb+NZCddKZozaozIQ=
+	t=1780076468; cv=none; b=lLQ7sZZiFu2kwRAjiKWC4V237xT+HJpQdywft12TPRj4ctnlba69hMtzVanmD0RlqaeMi3NqKSKPil1G8ZHu3KitmsZ7SYw4eLQnM8CJAHXLrNip6Me/HR1re10ZryTHLebHGRbljy8+aoViQOR2lKbYFBYWpMOhcDnj/EhllQ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780074215; c=relaxed/simple;
-	bh=uYdO0Zb0EMGnJnig6FT1XOpGRq5xI3F+BHn+7Ktj+UE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Hlc1/8yPrd0mJDPX2hGCXrWOjlCOVNHqI9nMVs0W3yg72HllzMkWmGgFhvzzx3mTkgYu0/2FQcV5w7rHKUs/fsfJ7pYxTQ6Q2jYfY0DrUJoWav4zoRx4uCtPhgpueqTBFHTrb+MUp5EXG0BGrFcLsemM+z0wrSXyHHwHRC5LnkI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=u07Q634C; arc=none smtp.client-ip=209.85.214.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1780076468; c=relaxed/simple;
+	bh=E7VW9hZwuvj77qhuAUAYhVfdwDVo7cAQLmVLMZXPkto=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=GuqhEz4zJxpR7BdNllZml+cuTpzl90h7l15RL+xnlWfWLndRL/qfYPeli/nuW6FOuWLnPMRTfiUX+YlWJ3hDb77bSm6vEeU0yBB5MIb95/d6MbDPVIUsKDiEDDjMbqCy0QWn5J/j1lYI9nbF2CNRNUTKyFTtjWGsHMc5mptX5Fc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com; spf=pass smtp.mailfrom=surriel.com; dkim=pass (2048-bit key) header.d=surriel.com header.i=@surriel.com header.b=Q1qzpcIl; arc=none smtp.client-ip=96.67.55.147
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=surriel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="u07Q634C"
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2bf2d865383so1615ad.1
-        for <iommu@lists.linux.dev>; Fri, 29 May 2026 10:03:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780074213; x=1780679013; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=IvcYM9yAFt1S3eUjneK8l3ddApYMEHlD7c1/gPxFFF8=;
-        b=u07Q634CuxRgx7ZkyAkP5M7yuuCB8KcNhdSb0uYVZtVyfTl0ZOkXDVEuPvZ2dghmSv
-         m5gzedYGEyYt7E8M2JpkcceN5BjTQoDh/dVySHQI1sfSQpgRPluR3Q2g6taapE9wgogf
-         Qq56CDfupE9+dP6WhuBsXAQQnfmxlnidJJF9/LvXD7WOfNlxLJ6zb6I0QQK2pWyTNBlQ
-         YJGx4fZuxaDr2gBMsJdhaAgfaNG8idGAhZxmrTDMT0SlM45DU94YPmZ9Se2c4yNoz6GE
-         d+A2AI83Dr0Uh5I4T0+IBz1HMIBSAR05H2bGtmQbPMbOyS8LzPhBwlXEFjThwn/pYghu
-         bGwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780074213; x=1780679013;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=IvcYM9yAFt1S3eUjneK8l3ddApYMEHlD7c1/gPxFFF8=;
-        b=e+tW0+9qbqUtRqtdD+/FelKrt0QavjnYJGUSjfV+wvc4tgibpC3DQdz4LXcxPSRz/s
-         21Jv3YiVJIvMsfGWYwxYPANMnc3uF+ly9YCBKJjm8uBB+gfOLnVOtdDkJ81/DbNBQrD4
-         Q81VuXK9i0q7urZ7i+DVLMokEZdNzdJ1HpSSAtiZNoWJxuGY5GTwgy7y7o9wrFgvj9fx
-         806kODghhD0K7iU6sRlLXt89Nizs6MMoGudnp5qkQcJi/+Byva/ZKlSKRqeAuTB38sPa
-         n7H+DL4KhsDyrvt6EUp/8N+hxy3O7s6vDoNrZLEWPosmP3IY8xhlEXxYxhKLcQM9TCqt
-         HJpg==
-X-Forwarded-Encrypted: i=1; AFNElJ/r5gz5+keJnewGQtyZOHqNl+CS6gJkXyE+PHmwsiLBKuKga+/EFWBWrSi+wtJgVDhDt/ZWHg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxTUnMBz44LYplXfLI1wEFbjpMtreZSC4tG1b8RLYGKnreETWyV
-	f9URLSInDVyi5RacR6YlxpnWjigMBMsbxqwo9hVm4mE9zruDow7+KsOSVpndMqDNuA==
-X-Gm-Gg: Acq92OEFImsz6cSsQ4ouNPzsnVBt0oDA06qo04uSyw796dcpe+cWQQugvpT6v8+ACCC
-	DVHkLTguGooNcil8knM1LzvStkNmmaIBZaBwERw6MjnETVXMiPgE99BIn/5dqm8YGmxgyIoRqko
-	LmGKS8BY5IfQet5dO4ya0zWIKluSVfi9urCC3z/cl6nNXGc3Zy6nC53g6EepJoTF9+mCEdljzHI
-	Y0LWz3QBPvBnHe9aN0/S7z5bQJumGrSZKCwYyhqoxR8N/rhdJjwR+OGTLWa6kr4SqWdpegvtG0j
-	1ptai8rkdkAIZPmpbUIoHPMpRZYCR9DfYmt1OimAGeeSg+E6CDjOzZ6KEYHWXibLFpqcEbaPzw1
-	X9GWUBMdLj8bLr1HWthXki3oCgiy7VTqz3BBsau5Dj79B4b0xfhuZL0OA0W9iDBztqUZiJ2dKnQ
-	Zz5+e7pIVTsg77bzzD8rnzHh67irbIU+NFEV6YNAyHontQoHhutPrXEC2HiXofiVjmib81Rw==
-X-Received: by 2002:a17:902:e889:b0:2ba:4749:c9a2 with SMTP id d9443c01a7336-2bf97507257mr30445ad.2.1780074212695;
-        Fri, 29 May 2026 10:03:32 -0700 (PDT)
-Received: from google.com (153.46.83.34.bc.googleusercontent.com. [34.83.46.153])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2bf23a10165sm24198555ad.31.2026.05.29.10.03.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 May 2026 10:03:32 -0700 (PDT)
-Date: Fri, 29 May 2026 17:03:28 +0000
-From: Samiullah Khawaja <skhawaja@google.com>
-To: Ankit Soni <Ankit.Soni@amd.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, 
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>, 
-	Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, 
-	Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	kvm@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>, 
-	Adithya Jayachandran <ajayachandra@nvidia.com>, Parav Pandit <parav@nvidia.com>, 
-	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
-	Pratyush Yadav <pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	David Matlack <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
-	Chris Li <chrisl@kernel.org>, Pranjal Shrivastava <praan@google.com>, 
-	Vipin Sharma <vipinsh@google.com>, YiFei Zhu <zhuyifei@google.com>
-Subject: Re: [PATCH v2 10/16] iommu: Restore and reattach preserved domains
- to devices
-Message-ID: <ahnGsfuKSwgt3b_T@google.com>
-References: <20260427175633.1978233-1-skhawaja@google.com>
- <20260427175633.1978233-11-skhawaja@google.com>
- <zgdfgca45ealra5cckvsgeugfkuwdv6kima5f7hbun4m6lnjjo@bqxhvyoeovyz>
+	dkim=pass (2048-bit key) header.d=surriel.com header.i=@surriel.com header.b="Q1qzpcIl"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=surriel.com
+	; s=mail; h=MIME-Version:Content-Transfer-Encoding:Content-Type:References:
+	In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=E7VW9hZwuvj77qhuAUAYhVfdwDVo7cAQLmVLMZXPkto=; b=Q1qzpcIl4Y1RibKdZwR+fwFOhU
+	vcb/T9C1QhahJ6/064wbSupycxVrJQ2F/4I4gESl2TWu91m5b5tSjDY+XBVnyp4sx4g535haLfgFu
+	mjc0IbRolCBdEhpBH/JQ/+i+nxMTBabpf/X9BEhCVyYSNeIcbNQYS45b1IMi7t9hl50Rl/q28K8A3
+	j/2mWOALqftP5F/OA8sXWA/dRQgaHapqdUlmtk0kaQjvYAFzaekEpMTSTNeL1qVAEAFPtBJUn0H/6
+	wXfhP5QCtPYLGg9jdUPdAmr+gDrwh9stpTRYEReW/8tRe7unDYVM8WeDOx9vOK2u5M/WETTH7b0A5
+	l4hV0P0A==;
+Received: from fangorn.home.surriel.com ([10.0.13.7])
+	by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.97.1)
+	(envelope-from <riel@surriel.com>)
+	id 1wT1CS-000000007Js-2pa4;
+	Fri, 29 May 2026 13:40:48 -0400
+Message-ID: <ea3e3c47094253b392603615cd42df3329dd9865.camel@surriel.com>
+Subject: Re: [PATCH 3/4] iova: limit_pfn-aware augmentation for log(n)
+ 32-bit alloc
+From: Rik van Riel <riel@surriel.com>
+To: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev, jgg@ziepe.ca, 
+	kyle@mcmartin.ca, kernel-team@meta.com, Rik van Riel <riel@meta.com>,
+ Claude Opus	 <claude-opus-4-6@anthropic.com>
+Date: Fri, 29 May 2026 13:40:48 -0400
+In-Reply-To: <59e0476c-a2bf-42f3-8244-d8a4828da64a@arm.com>
+References: <20260518180545.2286608-1-riel@surriel.com>
+	 <20260518180545.2286608-4-riel@surriel.com>
+	 <59e0476c-a2bf-42f3-8244-d8a4828da64a@arm.com>
+Autocrypt: addr=riel@surriel.com; prefer-encrypt=mutual;
+ keydata=mQENBFIt3aUBCADCK0LicyCYyMa0E1lodCDUBf6G+6C5UXKG1jEYwQu49cc/gUBTTk33A
+ eo2hjn4JinVaPF3zfZprnKMEGGv4dHvEOCPWiNhlz5RtqH3SKJllq2dpeMS9RqbMvDA36rlJIIo47
+ Z/nl6IA8MDhSqyqdnTY8z7LnQHqq16jAqwo7Ll9qALXz4yG1ZdSCmo80VPetBZZPw7WMjo+1hByv/
+ lvdFnLfiQ52tayuuC1r9x2qZ/SYWd2M4p/f5CLmvG9UcnkbYFsKWz8bwOBWKg1PQcaYHLx06sHGdY
+ dIDaeVvkIfMFwAprSo5EFU+aes2VB2ZjugOTbkkW2aPSWTRsBhPHhV6dABEBAAG0HlJpayB2YW4gU
+ mllbCA8cmllbEByZWRoYXQuY29tPokBHwQwAQIACQUCW5LcVgIdIAAKCRDOed6ShMTeg05SB/986o
+ gEgdq4byrtaBQKFg5LWfd8e+h+QzLOg/T8mSS3dJzFXe5JBOfvYg7Bj47xXi9I5sM+I9Lu9+1XVb/
+ r2rGJrU1DwA09TnmyFtK76bgMF0sBEh1ECILYNQTEIemzNFwOWLZZlEhZFRJsZyX+mtEp/WQIygHV
+ WjwuP69VJw+fPQvLOGn4j8W9QXuvhha7u1QJ7mYx4dLGHrZlHdwDsqpvWsW+3rsIqs1BBe5/Itz9o
+ 6y9gLNtQzwmSDioV8KhF85VmYInslhv5tUtMEppfdTLyX4SUKh8ftNIVmH9mXyRCZclSoa6IMd635
+ Jq1Pj2/Lp64tOzSvN5Y9zaiCc5FucXtB9SaWsgdmFuIFJpZWwgPHJpZWxAc3VycmllbC5jb20+iQE
+ +BBMBAgAoBQJSLd2lAhsjBQkSzAMABgsJCAcDAgYVCAIJCgsEFgIDAQIeAQIXgAAKCRDOed6ShMTe
+ g4PpB/0ZivKYFt0LaB22ssWUrBoeNWCP1NY/lkq2QbPhR3agLB7ZXI97PF2z/5QD9Fuy/FD/jddPx
+ KRTvFCtHcEzTOcFjBmf52uqgt3U40H9GM++0IM0yHusd9EzlaWsbp09vsAV2DwdqS69x9RPbvE/Ne
+ fO5subhocH76okcF/aQiQ+oj2j6LJZGBJBVigOHg+4zyzdDgKM+jp0bvDI51KQ4XfxV593OhvkS3z
+ 3FPx0CE7l62WhWrieHyBblqvkTYgJ6dq4bsYpqxxGJOkQ47WpEUx6onH+rImWmPJbSYGhwBzTo0Mm
+ G1Nb1qGPG+mTrSmJjDRxrwf1zjmYqQreWVSFEt26tBpSaWsgdmFuIFJpZWwgPHJpZWxAZmIuY29tP
+ okBPgQTAQIAKAUCW5LbiAIbIwUJEswDAAYLCQgHAwIGFQgCCQoLBBYCAwECHgECF4AACgkQznneko
+ TE3oOUEQgAsrGxjTC1bGtZyuvyQPcXclap11Ogib6rQywGYu6/Mnkbd6hbyY3wpdyQii/cas2S44N
+ cQj8HkGv91JLVE24/Wt0gITPCH3rLVJJDGQxprHTVDs1t1RAbsbp0XTksZPCNWDGYIBo2aHDwErhI
+ omYQ0Xluo1WBtH/UmHgirHvclsou1Ks9jyTxiPyUKRfae7GNOFiX99+ZlB27P3t8CjtSO831Ij0Ip
+ QrfooZ21YVlUKw0Wy6Ll8EyefyrEYSh8KTm8dQj4O7xxvdg865TLeLpho5PwDRF+/mR3qi8CdGbkE
+ c4pYZQO8UDXUN4S+pe0aTeTqlYw8rRHWF9TnvtpcNzZw==
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <zgdfgca45ealra5cckvsgeugfkuwdv6kima5f7hbun4m6lnjjo@bqxhvyoeovyz>
 
-On Fri, May 29, 2026 at 04:43:42PM +0000, Ankit Soni wrote:
->On Mon, Apr 27, 2026 at 05:56:27PM +0000, Samiullah Khawaja wrote:
->> Restore the preserved domains by restoring the page tables using restore
->> IOMMU domain op. Reattach the preserved domain to the device during
->> default domain setup. While attaching, reuse the domain ID that was used
->> in the previous kernel. The context entry setup is not needed as that is
->> preserved during liveupdate.
->>
->> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
->> ---
->>  drivers/iommu/intel/iommu.c      | 49 ++++++++++++++------
->>  drivers/iommu/intel/iommu.h      |  3 +-
->>  drivers/iommu/intel/nested.c     |  2 +-
->>  drivers/iommu/iommu.c            | 61 ++++++++++++++++++++++++-
->>  drivers/iommu/liveupdate.c       | 78 ++++++++++++++++++++++++++++++++
->>  include/linux/iommu-liveupdate.h | 50 ++++++++++++++++++++
->>  6 files changed, 224 insertions(+), 19 deletions(-)
->>
->> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->> index 4118a0861f38..b90757164cd8 100644
->> --- a/drivers/iommu/intel/iommu.c
->> +++ b/drivers/iommu/intel/iommu.c
->> @@ -1031,7 +1031,8 @@ static bool first_level_by_default(struct intel_iommu *iommu)
->>  	return true;
->>  }
->>
->> -int domain_attach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu)
->> +int domain_attach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu,
->> +			int restore_did)
->>  {
->>  	struct iommu_domain_info *info, *curr;
->>  	int num, ret = -ENOSPC;
->> @@ -1051,8 +1052,11 @@ int domain_attach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu)
->>  		return 0;
->>  	}
->>
->> -	num = ida_alloc_range(&iommu->domain_ida, IDA_START_DID,
->> -			      cap_ndoms(iommu->cap) - 1, GFP_KERNEL);
->> +	if (restore_did >= IDA_START_DID)
->> +		num = restore_did;
->> +	else
->> +		num = ida_alloc_range(&iommu->domain_ida, IDA_START_DID,
->> +				      cap_ndoms(iommu->cap) - 1, GFP_KERNEL);
->>  	if (num < 0) {
->>  		pr_err("%s: No free domain ids\n", iommu->name);
->>  		goto err_unlock;
->> @@ -1320,10 +1324,14 @@ static int dmar_domain_attach_device(struct dmar_domain *domain,
->>  {
->>  	struct device_domain_info *info = dev_iommu_priv_get(dev);
->>  	struct intel_iommu *iommu = info->iommu;
->> +	struct device_ser *device_ser = NULL;
->
->Typo here? iommu_device_ser.
->compiles because dev_iommu_restored_state() returns void * and the
->variable is only null-checked, never dereferenced.
+On Thu, 2026-05-28 at 17:46 +0100, Robin Murphy wrote:
+> Hi Rik,
+>=20
+> I'm certainly interested to see this series, as improving the
+> allocator=20
+> has been on my to-do list for a very long time now. It might take me
+> a=20
+> while to page all the details back in, but some higher-level things=20
+> stand out already...
+>=20
+> On 2026-05-18 7:05 pm, Rik van Riel wrote:
+> > From: Rik van Riel <riel@meta.com>
+> >=20
+> > The augmented-rbtree port made __iova_search_free_gap O(log n) when
+> > limit_pfn doesn't bind any candidate gap, but degrades to O(n) when
+> > limit_pfn is small relative to the gaps in the tree. The classic
+> > case
+> > is a 32-bit DMA allocation on a domain dominated by 64-bit
+> > allocations:
+> > the augmented invariant __subtree_max_gap is satisfied everywhere
+> > (the
+> > huge gap between the highest 64-bit allocation and the IOVA_ANCHOR
+> > dominates), so pruning never fires, and every node above limit_pfn
+> > must
+> > be visited and rejected before falling through to the 32-bit
+> > region.
+>=20
+> The main reason the anchor node exists is to ensure that cached_node
+> can=20
+> always be a valid place to start an allocation walk - if we're no
+> longer=20
+>=20
+We kind of still need the anchor node, as the highest thing
+in the rbtree, so we can use that as bookkeeping for the
+largest gap.
 
-Agreed. Will update this.
->
->Ankit
->
->>  	unsigned long flags;
->>  	int ret;
->>
->> -	ret = domain_attach_iommu(domain, iommu);
->> +	device_ser = dev_iommu_restored_state(dev);
->> +
->> +	ret = domain_attach_iommu(domain, iommu,
->> +				  dev_iommu_restore_did(dev, &domain->domain));
->>  	if (ret)
->>  		return ret;
->>
+Without it, we would not know there was an enormous 64 bit
+gap if the first iova allocation is made with a 32 bit
+mask.
 
-[snip]
->>  static inline struct iommu_hw_ser *iommu_get_preserved_data(u64 token, enum iommu_type_ser type)
->>  {
->>  	return NULL;
->> --
->> 2.54.0.545.g6539524ca2-goog
->>
+We could add special casing, but the anchor node might be
+simpler and smaller.
 
-Thanks,
-Sami
+
+> > Add a second augmented field that bounds the search by 32-bit-
+> > clamped
+> > gap size:
+>=20
+> I would think that if we still need a special case for this then we=20
+> don't really have the right allocation algorithm - I recall getting
+> as=20
+> far as concluding that it would be hard to do with the generic
+> interval=20
+> tree,=20
+
+You are right, we do not need this. Walking the rbtree
+from the root can bring us to the right address range
+in O(log n) time, without any need for additional
+augmented data.
+
+> > For 64-bit allocations the behaviour is unchanged. For 32-bit
+> > allocations on mixed-DMA-mask domains the search is now O(log n).
+>=20
+> And what about all the 33 to 56-bit DMA masks? They're not all that=20
+> uncommon and deserve some love too. FWIW I'd imagine a general
+> algorithm=20
+> should be something like:
+>=20
+> - while pfn_lo > limit_pfn && left->max_gap >=3D size, go left
+> - while pfn_hi + size <=3D limit_pfn && right->max_gap >=3D size, go
+> right
+> - if sufficient space to right, insert right and stop.
+> - if left->max_gap > size, go left, else go up and left
+> - repeat
+
+I have this implemented here now.
+
+I can send out v3 if you would like to see that version,
+but you are right that the maple tree may be better!
+
+>=20
+> (If anything that then leans towards maintaining a dummy node down at
+> start_pfn, such that we could avoid a special case for allocating off
+> the leftmost end of the tree...)
+>=20
+> I guess another question to ask these days is perhaps whether rbtree
+> is=20
+> still even the best choice at all, or if something newer like maple
+> tree=20
+> might be able to be even better?
+>=20
+
+Doing this allows the struct iova to shrink from
+40 bytes down to 16 bytes. However the iova slab
+cache seems to specify SLAB_HWCACHE_ALIGN, resulting
+in 64 bytes used per iova.
+
+If we drop SLAB_HWCACHE_ALIGN and assume 70-90%
+full maple tree nodes (I assume many iova requests
+are of same/similar size - let me know if that's
+wrong), we are looking at a reduction of memory
+use per iova from 64 bytes allocated, to around
+44-60 bytes per iova on average.
+
+This is with allocation becoming O(log n).
+
+Maple tree may be the way to go.
+
+Let me go test this code, and I'd be happy
+to post this as v3, instead of the latest
+augmented rbtree code :)
+
+
+--=20
+All Rights Reversed.
