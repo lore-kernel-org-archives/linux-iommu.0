@@ -1,239 +1,175 @@
-Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012011.outbound.protection.outlook.com [52.101.48.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EEC13E5ED0
-	for <iommu@lists.linux.dev>; Fri, 29 May 2026 14:09:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.48.11
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780063752; cv=fail; b=q+o1jcSRy2Mouu2gT0WeA4KSupovZT/eSwIXY/K16rqS2nE37MEa6lSpHMZUsI9W5lbIQh8jtAgcXkuludy7/W/7L64i0I1RFk4q1AYVnGWTqBh0MiMp2nZsNQMUTgV5u9aISKzF2TZBNIkwMn5L6z0IcBwK+yDWPDS9fHyW0Ek=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780063752; c=relaxed/simple;
-	bh=1BMEUfEUtRwiY0UKEuwyxww5wZjYh4hQxRct2D3xAnA=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZnfDK1yaPx1io1YDXPJvHITnGBAydPDsLOgAf1JvL5u5UYv5nC+oK7IfErLoBqJh+6VVm/U0meVy0r2LB1UYrg3fvSJJO/SAcVuFwSFBgWzPZA64jz1NC7O5Aa4lYP90ou6moMzuqs4mC1ZR4Dxpar76NM+Ibf18yflcqgAcksU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=XurRQhjQ; arc=fail smtp.client-ip=52.101.48.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE4373D16EF
+	for <iommu@lists.linux.dev>; Fri, 29 May 2026 14:32:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.181
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780065152; cv=none; b=H38T1iuoVowQqH7hwSTztiADezseino8RP24bkXyarC4vxDyLtX6VBCti+rc4GzIRK8micESqShZ++jm//NpwCe84ZPb0FSMTNI7w06gOusXZxMryQOEXbFE7lBJIDvCIBMrj7Y2nzCKfEiztupytHCM+qdVlyig53JMiOBHIrY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780065152; c=relaxed/simple;
+	bh=ai9qc1lPJY+Yjfa+voLyahiV/loyiFjcD0nuhpD6/1U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=k8acOrSxz6iXvuWW9H5qPkDtgwaJ14426q2gqo77SwuRxPn4gHrHnoPmst4mSFxzJ8mKS7Eh8hNVCInBYgRCjiVdT94kv9+JvLp173p4TjLV2aXqVTipfBt7WMEzUzUsyXMuY73HlGa66Wgu6G/7jNcl34dOPShvSwDjABTXLgg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=kbkQD79O; arc=none smtp.client-ip=209.85.160.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="XurRQhjQ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=XaLABZ61sWwuyEZTMnVR8+aXLaFrvn+LU3lUjpVUYJAQrA5s+KKdUCslPVbYBkCPID5LAGOKW5fFrQVXfrgWLSfkebgrxmGhIinsi8Xwfzxa/rbFW5hnnPalLZHQN1rV6afZL86WpY3S041NO4BoI+ywAMDi6j4kT/Ut/Jhl6Y1Q80dV17PyOAWsOSy2FroXzFmu/BPbp9y/Fkg1WHKbDwwCTMxbdo4JflX92H0O7SSbqA03W8vLrE61vynm9VjjoMuZRaHj1xyU4FOUKePK8hM7XJlkgY44UPI9MeLnW3ibZxZJ7HgYBVU+wv/W9tnCjqIkgHi9a5nznYjEU4df6g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9ihMHP1kiSQo7PDS0ImGe3qoqy0nxILnU9Qm29gSEZE=;
- b=QJFhOtAGHeWocdukt0P+Sjue6oizT7chhMtxCO7wKJafIEqzS1pEiahFOcTWbdHXGmK0ki/Cmbv7w3jln8DvP6QW/8CxrOuLvrKvDdZ+r8D7lr1FWv0zXI4zeE008Ha3uNF0eiqyll4/chHyYexZ166tMdxscn6QTqa3nUnQZzqEKKkHv+nV21iwlul+qEjFWTkCmN27xrlIAXtFvPNP30vtlCK1RX07fWKrC0hJr/iGTt8ioA78K7f2f4inpxw/YxPV4Li6LllECU+1+8+TqvkKFM6nRmVd9PInmgGLPAykab+7nvVr/Rydn07CvKSkZG9DqbJ+jYfdf2dym3s8xQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9ihMHP1kiSQo7PDS0ImGe3qoqy0nxILnU9Qm29gSEZE=;
- b=XurRQhjQcAQ59jaGLIUNClf2OmCq/4PN1kFXhD8rqJx4hLFcqNLN1z3HHypHUc5GIW9CTU+J/Pub9051Q/5pnYQqTJp5pfNlvPJerFH96EB3koMLEMWvqAiZ4hHYmeHo5GSm0HMMFuQF2mQAlRp3/eRHm8deN+CW/MHj1ZZDEB1ghtlBqD9kJS2Dg6g351WdFCqVNM6kO1S/oqmlSYaTl9aF72s4NyGZQoygdPvo7G7U/fuN3dQQjwAc37Om9gej5fpCv0rU/KDXgV+DMnEg39yAX3y6kpEF4pK344zpP5t1NG4x57UObg/5ZzGpXPGdq2KC+BrwBs4xgQ20pheL5Q==
-Received: from BY3PR04CA0016.namprd04.prod.outlook.com (2603:10b6:a03:217::21)
- by IA0PR12MB8932.namprd12.prod.outlook.com (2603:10b6:208:492::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.71.14; Fri, 29 May
- 2026 14:09:05 +0000
-Received: from CO1PEPF000066E7.namprd05.prod.outlook.com
- (2603:10b6:a03:217:cafe::4a) by BY3PR04CA0016.outlook.office365.com
- (2603:10b6:a03:217::21) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.71.13 via Frontend Transport; Fri, 29
- May 2026 14:09:03 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CO1PEPF000066E7.mail.protection.outlook.com (10.167.249.9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.92.5 via Frontend Transport; Fri, 29 May 2026 14:09:02 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 29 May
- 2026 07:08:38 -0700
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 29 May
- 2026 07:08:37 -0700
-Received: from build-amhetre-focal-20250829.internal (10.127.8.12) by
- mail.nvidia.com (10.129.68.7) with Microsoft SMTP Server id 15.2.2562.20 via
- Frontend Transport; Fri, 29 May 2026 07:08:37 -0700
-From: Ashish Mhetre <amhetre@nvidia.com>
-To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-	<jgg@ziepe.ca>, <nicolinc@nvidia.com>
-CC: <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-tegra@vger.kernel.org>, Ashish Mhetre
-	<amhetre@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH v2 2/2] iommu/arm-smmu-v3: Issue CFGI/TLBI twice on Tegra264
-Date: Fri, 29 May 2026 14:08:30 +0000
-Message-ID: <20260529140830.629738-3-amhetre@nvidia.com>
-X-Mailer: git-send-email 2.50.1
-In-Reply-To: <20260529140830.629738-1-amhetre@nvidia.com>
-References: <20260529140830.629738-1-amhetre@nvidia.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="kbkQD79O"
+Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-516d1ddcdf4so2321cf.0
+        for <iommu@lists.linux.dev>; Fri, 29 May 2026 07:32:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1780065149; x=1780669949; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=P2Vt6NJ/1ID8MCy+YuGg9aIM9aiVrg+WLBywxH6BVRc=;
+        b=kbkQD79OHw/djIhkNmcrkPiL2v5qa6mGGYUwi1pOrsl8uSI26SF3Qcqzn40d1lsjiG
+         w5v8DCfxbHefL9sHQUYvZXZhYYhl+pEcsL7obLwyfD/f/aWr147xf7W7sL0Uikhe/irO
+         R4f2eAxjqkHLRuDR9WMFEc1kj2KmyFEsa2wWvZJil/KPL7jMOAtwQtRFMdC4Mn2XZetZ
+         mv73sIuB4UzAZ4fW1WZEhqGX5ueTKs9Tj5A2KQPDFApvlafFlyqq0g840LfU85coT4sJ
+         T2uJ3tQIG1IcVbh9q/HFO8W6mYe2O3Wb+vT2dMxl3jo06IQQfWMDRP1Hw9EFsZeAIxXC
+         cJ5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780065149; x=1780669949;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=P2Vt6NJ/1ID8MCy+YuGg9aIM9aiVrg+WLBywxH6BVRc=;
+        b=eY8i3DIu0JmEDjMRqqNBC5o6wbGC3Mot8KguF/ONQCTw5SWO7wm7rpeWWe0xnqLnHI
+         GXmEFvnq6szVUXM3M1ehiJPIO7vEAG3iGKQ9csPwgyBvPxgxG0GzrkeTX2fFLGlRl2kv
+         bLNrkWoI2VEbdHI9FNaJ/4OiAzfHUA8Ptzeql3T15ZgCJdc4m1Nrl0zqvyw7Qen33kcr
+         L961FfS/jPuyfPIeWgkXct06ADZlMIfmIvOPPega7WUEX/Z75n+VIrPnUHjPz8fLB0jC
+         PfJvX64gv8UKhZ9Fkj4A1CkdDdKE94nIz5XKZ+ltccJyNdQrV7LAN8UTzrCrsE6498Ap
+         ZoTw==
+X-Gm-Message-State: AOJu0YzVg93VIldEY1M7Kh7ZCq2MqfyPYXHX9saM1rUzwFR2dkgKTaf7
+	sQyTk9OB21Hs5SPCbcH/JT0D34yjQEybf/690BtXkW1RWJpqEFcvWF/wWXLp0sZdtw==
+X-Gm-Gg: Acq92OGSufWlKI99WTH0X8k9+7FFncKLs8qWDxCi1RmMuwMkvbJZ0jv+ZocRpt6Mqwa
+	hbKHsbfXL3lPK2bfgmmgLZCknpPvhilhema4ITG6h+3XT6g9SW0roYf9EERjFkjHg1eWVND2Dvg
+	wcNDRPs3PVGCjUwDKUyEoMcOC3d6yXlqSN9HSW2oVCxHHFqqGrhF6w+IO1y5iGGSnELZY5uvJk0
+	+Qs9ZeDTVc78ZqBpyU0qQ9mhq6jYOpgiZUoXw9tjIZ3GE5jL3U/0gMgxZvm8p/W1Rz6AwR/MvTp
+	9qz4/0WVYQf3auvcO+KswXdeV/umBceaRFgh40s+hLWh50NrZehevLRZ0GPE2w2R+WVSxVgFYgB
+	Pv1akkWVGAx4r0PO9yAXpJSGhIdUOnHoZ9io3gKjqz/h7SR+tU0J0/juXmoLHU8U5jdACcTPvkG
+	gOlFKkhTIZ73I0i4TKUkcZA7bdQysksLTaYZUFPiq/EnG88+WVhLLW4qwIqAD6JYz66X3f
+X-Received: by 2002:a17:902:db07:b0:2b9:a39a:e5db with SMTP id d9443c01a7336-2bf22eb6216mr1645625ad.7.1780065148948;
+        Fri, 29 May 2026 07:32:28 -0700 (PDT)
+Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2bf239fd85dsm20999405ad.25.2026.05.29.07.32.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 May 2026 07:32:28 -0700 (PDT)
+Date: Fri, 29 May 2026 14:32:22 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>,
+	Daniel Mentz <danielmentz@google.com>,
+	Ashish Mhetre <amhetre@nvidia.com>,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v7 02/11] iommu/arm-smmu-v3: Add a helper to drain cmd
+ queues
+Message-ID: <ahmjdjkhCHWpD10P@google.com>
+References: <20260527221407.1756491-1-praan@google.com>
+ <20260527221407.1756491-3-praan@google.com>
+ <aheb/OLd9AQO6rD8@Asurada-Nvidia>
+ <ahgaQm5y_9mISKg0@google.com>
+ <ahi8/7NnqW5TzY4P@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-NVConfidentiality: public
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PEPF000066E7:EE_|IA0PR12MB8932:EE_
-X-MS-Office365-Filtering-Correlation-Id: e5cae11b-971e-47dd-b30a-08debd8bd687
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|82310400026|36860700016|18002099003|22082099003|3023799007|11063799006|56012099006;
-X-Microsoft-Antispam-Message-Info:
-	CF+avVXLuCRdbmnT7EP53xa9B369WrWsTdV0LKxInBarQuVfNuoYirXBGJJKWV+dPvgnEID7J1YfwsbgFWqiMS2DozyPdjOsghivPc3V2VgqN9b/ViC70HQwF1qmIkbh1m3G340SV1qjMS1H0rjC3MHt8MOL9QxR47N72lqsaSnpF7Ghn2Gc4HJhC9kl9jsweStj/+KcI95Vb71R8gkUB/7OIo8OZ0ZBSD+ATRTpLHD7hofZ68pme25AQ5RUYRbDa2gYfJXb7pEZU6i8WA0n9fbuBq9Noa1h2tBP7d5ZfO05RCOi+m5spubUnxQlOJwtpetFxdhZitCR7stEuba13v1xxnamcuLrFywQmjXOp82x1jtgEwuEbBlleQgEhAyZqJqfdgNYEYTsVxcfRFA16G9LLvM8JF45jXGRmHsSe4nPA5ds0bCKvUrNrwvxTyvnPY4MBzqG9EmrzNU6SmNZHd8AQwzxr3yOhZvaXhdwByZwiCNeJs8/CCgcf3MfkVm67dHREQMCZV0G7Expubajdgi0wAdjavAz80w/x5Zw1PW1GNCa5FF42L09+nGFwIwu7odp9BRc1nCT0vYklvFyEm9YwKuovOUcSUFs3GQMbkAKxW/9KZnEzDwKfTRK3xIYGtlexkuIUtUDFEJOIuJXKm+IxN7L/s63BYUzMc/IqvwKNWc8LS0NLdqIUfyIEXmSog3AoaqUz00pwk1fZNHe3+0iUhUHWSBHPa/tj95qbEc=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(376014)(82310400026)(36860700016)(18002099003)(22082099003)(3023799007)(11063799006)(56012099006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	/SYYuNSX/Z2VozLNOGsQN1MK7mkq9Rw1xZpiZVii1RZe+o5ts6hmZMEIrL14dl9agrkIbC9Vrd0C6z8Zyz7Adghe2zVl+JtUoFI8jtWws1dzii/JKBv6VJCgS64xUOtu6tbo0ORoJfyEmuC9380vvtLp/BhOXv0ESnzQGUEkBY4iqfMKDf8i8rU9sAAD/XKXm55xz3xcC0GyqxEwMjSQOC2CUMuN+XBl1ajsN8SL2KPg/NBBHTzARkw6EpDpXcr0GNNHPAWBrbckorSKGxIawsncU1yzb8HgER328ncLgtd5Yfmt99keQYN7tYHmIZdeNXkUQt4cP6Arl5iMgtMbXtgi35lorv0g6CSSI9zqfxKE0vtLkfuPntV+3JLLfIIeQRY6JS3XRQYdq83/1Y+T+0Da0r8Rqdv/VZ1YqzkSwLslMrK64+eePCKKp29xoJK9
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 May 2026 14:09:02.9564
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e5cae11b-971e-47dd-b30a-08debd8bd687
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1PEPF000066E7.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8932
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ahi8/7NnqW5TzY4P@Asurada-Nvidia>
 
-Apply the workaround for Tegra264 erratum by issuing every CFGI/TLBI
-command twice on affected SMMU instances, with CMD_SYNC after each.
-The erratum requires this exact sequencing:
+On Thu, May 28, 2026 at 03:09:03PM -0700, Nicolin Chen wrote:
+> On Thu, May 28, 2026 at 10:34:42AM +0000, Pranjal Shrivastava wrote:
+> > On Wed, May 27, 2026 at 06:35:56PM -0700, Nicolin Chen wrote:
+> > > On Wed, May 27, 2026 at 10:13:58PM +0000, Pranjal Shrivastava wrote:
+> > I'm planning to rename it to arm_smmu_drain_cmdq(), sounds good?
+> 
+> That sounds okay.
+> 
+> Though my series is still at the early review stage, I would like
+> to merge those two functions at some point
 
-    TLBI/CFGI ... CMD_SYNC TLBI/CFGI ... CMD_SYNC
+Makes sense.
 
-To get this sequence with minimal surgery, hook the workaround into
-arm_smmu_cmdq_issue_cmdlist(). Rename the original function to
-__arm_smmu_cmdq_issue_cmdlist() and add a thin wrapper that, on
-affected SMMUs and when @sync is true, re-issues the same cmdlist a
-second time.
+> 
+> Do you know if my implementation can work for cmdq too? Seems that
+> only the WFE would be different, which can be a bool?
 
-A new arm_smmu_cmd_needs_tlbi_twice() helper classifies which opcodes
-need the doubling: CFGI_* and TLBI_*.
+I think we can definitely unify these. I had a similar approach in my v2. 
+I've reviewed your PRI series and I think it would be best to use a common 
+helper for both use cases. 
 
-For batches that exceed CMDQ_BATCH_ENTRIES commands,
-arm_smmu_cmdq_batch_add_cmd_p() normally flushes the full buffer with
-sync=false, deferring the SYNC to the eventual batch_submit(). On
-affected SMMUs this would leave the first chunk's commands issued
-only once, since the WAR hook in arm_smmu_cmdq_issue_cmdlist() only
-fires on synced submissions. Force a SYNC on the capacity rollover
-when the buffer carries CFGI/TLBI commands so every flushed chunk is
-correctly doubled.
+Maybe you include this patch in your series to combine the draining logic
+It leverages the helpers you factored out in your Patch 2 and adds a 
+toggle for the queue_empty requirement of Runtime PM. It also checks for 
+WFE appropriately:
 
-Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH] iommu/arm-smmu-v3: Add a unified arm_smmu_drain_queue() helper
+
+Introduce a unified arm_smmu_drain_queue() helper to handle both 
+snapshot-based cohort draining (for IOPF) and polling until queue_empty 
+(required for Runtime PM).
+
+The helper dynamically checks for the WFE requirement when targeting the 
+CMDQ and uses cond_resched() to avoid starving the threaded IRQ handlers 
+responsible for consuming entries from other queues.
+
+Signed-off-by: Pranjal Shrivastava <praan@google.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 66 +++++++++++++++++++--
- 1 file changed, 61 insertions(+), 5 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 32 +++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 88296c0a5337..38d45f175a2c 100644
+index 866c711b118b..cf41b3cf5985f 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -698,10 +698,10 @@ static void arm_smmu_cmdq_write_entries(struct arm_smmu_cmdq *cmdq,
-  *   insert their own list of commands then all of the commands from one
-  *   CPU will appear before any of the commands from the other CPU.
-  */
--int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
--				struct arm_smmu_cmdq *cmdq,
--				struct arm_smmu_cmd *cmds, int n,
--				bool sync)
-+static int __arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
-+					 struct arm_smmu_cmdq *cmdq,
-+					 struct arm_smmu_cmd *cmds, int n,
-+					 bool sync)
- {
- 	struct arm_smmu_cmd cmd_sync;
- 	u32 prod;
-@@ -820,6 +820,52 @@ int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
- 	return ret;
+@@ -894,6 +894,38 @@ static int arm_smmu_cmdq_batch_submit(struct arm_smmu_device *smmu,
+ 					   cmds->num, true);
  }
  
-+/*
-+ * Returns true if @opcode is a CFGI_* or TLBI_* command, i.e. one of the
-+ * invalidations covered by Tegra264 erratum (see ARM_SMMU_OPT_TLBI_TWICE).
-+ */
-+static bool arm_smmu_cmd_needs_tlbi_twice(u8 opcode)
++static int arm_smmu_drain_queue(struct arm_smmu_device *smmu,
++				struct arm_smmu_queue *q,
++				bool until_empty)
 +{
-+	switch (opcode) {
-+	case CMDQ_OP_CFGI_STE:
-+	case CMDQ_OP_CFGI_ALL:
-+	case CMDQ_OP_CFGI_CD:
-+	case CMDQ_OP_CFGI_CD_ALL:
-+	case CMDQ_OP_TLBI_NH_ALL:
-+	case CMDQ_OP_TLBI_NH_ASID:
-+	case CMDQ_OP_TLBI_NH_VA:
-+	case CMDQ_OP_TLBI_NH_VAA:
-+	case CMDQ_OP_TLBI_EL2_ALL:
-+	case CMDQ_OP_TLBI_EL2_ASID:
-+	case CMDQ_OP_TLBI_EL2_VA:
-+	case CMDQ_OP_TLBI_S12_VMALL:
-+	case CMDQ_OP_TLBI_S2_IPA:
-+	case CMDQ_OP_TLBI_NSNH_ALL:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
++	struct arm_smmu_queue_poll qp;
++	u32 snapshot_prod, cons;
++	int ret = 0;
 +
-+int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
-+				struct arm_smmu_cmdq *cmdq,
-+				struct arm_smmu_cmd *cmds, int n,
-+				bool sync)
-+{
-+	int ret = __arm_smmu_cmdq_issue_cmdlist(smmu, cmdq, cmds, n, sync);
++	queue_poll_init(smmu, &qp);
 +
-+	/*
-+	 * The driver's batch invariants keep a single submission's
-+	 * opcode class uniform, so checking the first command is enough.
-+	 */
-+	if (!ret && sync && (smmu->options & ARM_SMMU_OPT_TLBI_TWICE) &&
-+	    arm_smmu_cmd_needs_tlbi_twice(FIELD_GET(CMDQ_0_OP,
-+						    cmds[0].data[0])))
-+		ret = __arm_smmu_cmdq_issue_cmdlist(smmu, cmdq, cmds, n, sync);
++	/* Secondary CMDQs don't support WFE*/
++	qp.wfe &= (q == &smmu->cmdq.q);
 +
++	snapshot_prod = readl_relaxed(q->prod_reg);
++
++	do {
++		u32 target_prod;
++
++		cons = readl_relaxed(q->cons_reg);
++		target_prod = until_empty ? readl_relaxed(q->prod_reg) : snapshot_prod;
++
++		if (__queue_empty(&q->llq, cons, target_prod) ||
++		    __queue_consumed(&q->llq, cons, target_prod))
++			return 0;
++
++		cond_resched();
++	} while (!(ret = queue_poll(&qp)));
++
++	dev_warn_ratelimited(smmu->dev,
++			     "queue drain timed out at prod=0x%x cons=0x%x\n",
++			     readl_relaxed(q->prod_reg), cons);
 +	return ret;
 +}
 +
- static int arm_smmu_cmdq_issue_cmd_p(struct arm_smmu_device *smmu,
- 				     struct arm_smmu_cmd *cmd, bool sync)
+ static void arm_smmu_page_response(struct device *dev, struct iopf_fault *unused,
+ 				   struct iommu_page_response *resp)
  {
-@@ -863,8 +909,18 @@ static void arm_smmu_cmdq_batch_add_cmd_p(struct arm_smmu_device *smmu,
- 	}
- 
- 	if (cmds->num == CMDQ_BATCH_ENTRIES) {
-+		/*
-+		 * Force a SYNC only when the batch carries commands that
-+		 * have to be doubled (see ARM_SMMU_OPT_TLBI_TWICE).
-+		 * The batch holds a uniform opcode class, so checking
-+		 * the first command is sufficient.
-+		 */
-+		bool need_sync = (smmu->options & ARM_SMMU_OPT_TLBI_TWICE) &&
-+				 arm_smmu_cmd_needs_tlbi_twice(FIELD_GET(CMDQ_0_OP,
-+									 cmds->cmds[0].data[0]));
-+
- 		arm_smmu_cmdq_issue_cmdlist(smmu, cmds->cmdq, cmds->cmds,
--					    cmds->num, false);
-+					    cmds->num, need_sync);
- 		arm_smmu_cmdq_batch_init_cmd(smmu, cmds, cmd);
- 	}
- 
--- 
-2.50.1
+--
 
+Thanks,
+Praan
