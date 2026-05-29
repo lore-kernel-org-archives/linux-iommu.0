@@ -1,305 +1,356 @@
-Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B5D2352031
-	for <iommu@lists.linux.dev>; Fri, 29 May 2026 07:09:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.113
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780038594; cv=none; b=UIizf/pPsQaa/in+4yLpW0SDdFSFytcJpkyTH3wM8JdUzbWQFAuhsnya8oRnexWPristKfGgO/hvWfnOXzX3oO27xzh6ZP1GV/4YuwcwhaebPkIcLnEgoRxUwedW/xBX3zlJTrX/uG6IKR4dxNa9HpqkHVMrISEn9a0eaJF1QfE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780038594; c=relaxed/simple;
-	bh=mcDPQ10OhT5h2kEYG1dHSv6QYaJYoPvImMxULNHllTY=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version; b=TVZEcEI9T6eMPZ5rFxqzjnPN8F0uLXVGjFQ2MXBq/XMP73GILGBZTp1Fu8fhPcs33HylklhJVfg+Zfs3QJVq0pIy8qAF0K7W6o06UVX9BZ83LRVDwyIjCX8gjiIS5/uSBT0wTmh7RGFMtmB91oU2Q2wivHE7g9zOHZsLQquspIs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=S4XF418F; arc=none smtp.client-ip=115.124.30.113
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE73C348C51
+	for <iommu@lists.linux.dev>; Fri, 29 May 2026 07:19:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.13
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780039149; cv=fail; b=F3FnCUTjzXhM5FxmcSYHnP2e5YXQwqIulrZW1+syboVh08qTddLa/ctL//WMZRHgbJFWpTdH7DrrmK012cf98B1U144shAisR4/gpDTrgk/EHaWhTO77NJPPV1Oijq8cq4kBohqJp2XvNxDDLFlC9UrC59YMQMLm/EACrXlDkIY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780039149; c=relaxed/simple;
+	bh=o8o6IU7zoWSwojrCNvm87BtLeiTib5K7c0f+VcdO0Ao=;
+	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=PQXAZpsAtfsXy9QFMDn9jcItZU2oWdN0t3NdtQT5xEm6y6T9TpoYajnvcFWnqf97ZtlRcw4g5mkIjj1XN8QOT2Iq5C1Zs86AuZzI+p6pHe9RMLk9coZ/X1r6ZIKpDizpULugEFtisQUAqKcaXKzutt9swpnXuoa9dN2tU+OZbJI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OOR4x07N; arc=fail smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="S4XF418F"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1780038583; h=From:To:Subject:Date:Message-ID:MIME-Version;
-	bh=AfOoAZRsoTHl03d+h7HBqGhrZdH7nmpYogtqIGY7Tdc=;
-	b=S4XF418FqbAl/+2vTh80Nr1jlFL7rTAdCnMX222/vsSzI7+ESpTcTW/8aWjKKrSZlhUGRYiOrh9iZNaeAf08g/AZlbLHqSZnSF0ssBJXCpRmrlHmS4tx8n+I8TebQxprOkRwkfkh1mwyaQrBXWBkhOfRAbbIAufGJ26PgnGKhiM=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R991e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045133197;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0X3oeHbx_1780038572;
-Received: from VM20241011-104.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0X3oeHbx_1780038572 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Fri, 29 May 2026 15:09:42 +0800
-From: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-To: joro@8bytes.org,
-	suravee.suthikulpanit@amd.com,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	dwmw2@infradead.org,
-	baolu.lu@linux.intel.com,
-	alex@shazbot.org,
-	jgg@ziepe.ca,
-	kevin.tian@intel.com,
-	skhawaja@google.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	kvm@vger.kernel.org
-Subject: [RFC PATCH] Optimize VFIO and IOMMU mapping traversal
-Date: Fri, 29 May 2026 15:09:32 +0800
-Message-ID: <20260529070932.2632907-1-guanghuifeng@linux.alibaba.com>
-X-Mailer: git-send-email 2.43.7
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OOR4x07N"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1780039148; x=1811575148;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=o8o6IU7zoWSwojrCNvm87BtLeiTib5K7c0f+VcdO0Ao=;
+  b=OOR4x07Nhjt7bYiEi7FTaZ3HMn9UU3SCWXGUg6kmdMVGi2aKoPbE2tsD
+   e0Gx6wkgzV9Y9cROkbxjwKVGfXN3rk0EB15MvrOT0dwylHZASpSUc5NwV
+   3mGSm0inL9ptahOuDiMDmr1Ckm7JhIGLheS3BfQTPhRahOjHlrTkCQQoC
+   o/fm9J1ulmhb1wyhLaNhgldtf3+kzg8rLyxHJjqE9smZmWvZXjByetkly
+   SnUvUNKtVd7Czlpw0NYUGGJWJ/99Yqzufs3rNKsvpTmf8csCafxT3+cHa
+   e5vPmNvL2BNt05wS6DqqzYx9SDUD3zr8hu3DU+Jwk3sKfxbZ/iZx5VI57
+   Q==;
+X-CSE-ConnectionGUID: DIQToIfkQeeJyLNoSukkcw==
+X-CSE-MsgGUID: QOtYgONmRaqcIdID27mnIA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11800"; a="83462744"
+X-IronPort-AV: E=Sophos;i="6.24,175,1774335600"; 
+   d="scan'208";a="83462744"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2026 00:19:07 -0700
+X-CSE-ConnectionGUID: F52XnuukTWGDP2TVy7Lj0g==
+X-CSE-MsgGUID: K+U5JdswQTG4UXe1Lf15Ag==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,175,1774335600"; 
+   d="scan'208";a="239761057"
+Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
+  by fmviesa007.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2026 00:19:06 -0700
+Received: from ORSMSX903.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Fri, 29 May 2026 00:19:05 -0700
+Received: from ORSEDG902.ED.cps.intel.com (10.7.248.12) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37 via Frontend Transport; Fri, 29 May 2026 00:19:05 -0700
+Received: from DM5PR21CU001.outbound.protection.outlook.com (52.101.62.27) by
+ edgegateway.intel.com (134.134.137.112) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Fri, 29 May 2026 00:19:04 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=q2RWz9qONhHxrgRpgHoS8uCAZ5JGbKkkJNjWsFe36knmrHU4+WoUOhyGuOB1MHr9wG2Agl7QfaJ3zmyZ2XujfXkJMOUkkeeWBL+WPUWryH81fdB0nDNb4rJ6QHigWh0zAD8iQzGoPL5d/NfakUxJE1vT0axP2X4brhTGdVYVyOlnN3fdiCfzTvWi3rTBCKdhkNA3mOcCGeAxFHdwslKMkm6pTI8V8OqZCYX5FddaBSZw0pQTHmuvd75pjnSTFlR8ACDoKujFBoTC0zTu/jjyGoioUXfrlxiU71FoPH7+VHrNwNVsdHgBepZpoeDfqqZ2bpNpJBNHParpQOSo4SWYnw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dH+xTeNmFotqcxL1DtfQRAm7mgRtHwCQLIVzwPkegjw=;
+ b=OxuBohEnlWULkoZeuLvWFyAScFAaeeHLCImeJ+n9H3aWtcf67tOg6PIRSZGTIJh85+wP2DCnN4bl1qJb5pLks5SqxybWXWtvOiCE1lpyLHVvnqvErXt0HwNPXCoJkYLiqcTUe9H7AUpN95g1zXF3iFC2YtmNRlQ8TwlXksD12ySiNlERYGrOkPupxeK9l4WMz1o211YCZwPBTaIipDX66Ta3gohoYywznjL4t+NPES1pqS/tMZQCspCiVXAFR+TDQW80GQCz+nLFS4QAjks5d+xz8sLEQf7PLFz3MJ693RSmVmBurGTXsAnsLnUBvzb7SnIksfvIvcoH6t14ywYSJA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV8PR11MB8509.namprd11.prod.outlook.com (2603:10b6:408:1e6::15)
+ by PH7PR11MB6858.namprd11.prod.outlook.com (2603:10b6:510:1ee::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.71.14; Fri, 29 May
+ 2026 07:19:01 +0000
+Received: from LV8PR11MB8509.namprd11.prod.outlook.com
+ ([fe80::f5bd:4dde:4f2f:20b7]) by LV8PR11MB8509.namprd11.prod.outlook.com
+ ([fe80::f5bd:4dde:4f2f:20b7%5]) with mapi id 15.21.0071.010; Fri, 29 May 2026
+ 07:19:01 +0000
+Message-ID: <272da9f1-74ac-47df-b40f-3488f2cd4781@intel.com>
+Date: Fri, 29 May 2026 15:27:08 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 5/7] vfio: Enable cdev noiommu mode under iommufd
+To: Jacob Pan <jacob.pan@linux.microsoft.com>
+CC: <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Alex Williamson
+	<alex@shazbot.org>, Joerg Roedel <joro@8bytes.org>, Mostafa Saleh
+	<smostafa@google.com>, David Matlack <dmatlack@google.com>, Robin Murphy
+	<robin.murphy@arm.com>, Nicolin Chen <nicolinc@nvidia.com>, "Tian, Kevin"
+	<kevin.tian@intel.com>, Baolu Lu <baolu.lu@linux.intel.com>, Saurabh Sengar
+	<ssengar@linux.microsoft.com>, <skhawaja@google.com>,
+	<pasha.tatashin@soleen.com>, Will Deacon <will@kernel.org>
+References: <20260521221155.1375144-1-jacob.pan@linux.microsoft.com>
+ <20260521221155.1375144-6-jacob.pan@linux.microsoft.com>
+ <e431af3d-b19a-45d2-a58d-e400d43141f0@intel.com>
+ <20260523150147.00001c38@linux.microsoft.com>
+ <a9024812-5486-4d16-b451-a75181f304c0@intel.com>
+ <20260528115227.000027a1@linux.microsoft.com>
+Content-Language: en-US
+From: Yi Liu <yi.l.liu@intel.com>
+In-Reply-To: <20260528115227.000027a1@linux.microsoft.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: TP0P295CA0005.TWNP295.PROD.OUTLOOK.COM (2603:1096:910:2::8)
+ To LV8PR11MB8509.namprd11.prod.outlook.com (2603:10b6:408:1e6::15)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR11MB8509:EE_|PH7PR11MB6858:EE_
+X-MS-Office365-Filtering-Correlation-Id: d1a9ec19-7fc4-4bc2-d258-08debd528e87
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|1800799024|42112799006|376014|366016|22082099003|56012099006|11063799006|6133799003|4143699003|18002099003;
+X-Microsoft-Antispam-Message-Info: VEismOko1jZG1BGSy1Jw8PsaXmAUN9WP3IsCzr9JS7znRbQgDDYQejQQCVBqDl4CR9kLbTjPo3cbeRJcrMMJToCy1L0JhEsSRNU52Iu9e3Ynj9S6L30KT4ZaLBsk0q4Mm5S0x8OpS2LXFTGAPrU4c4KKWQlR/9EXXQYzdOOL3ZALB58TLeeMJl10eJO102h5bJ+B452Cvbo5LBkVJs8se1dcdlPBGXiBlSMb3lprCT4btJM4osBZaoikS3RNbzRfaSTLWqxmUw8ZE7+315V+AiVrSwYJ/0c9LznRm2xbHoLuYqL9tgyNbzZCY64vIwjfdKCvus+1t8gdxyTa5L4m3OlABWXP3YoOMWLxM+j3G/blntGzFpb4NxOwYe44ExMMT3NQsxGx213rRsp+1cYYjQ0EHcm9bHbJ/D0FD+cnbpAIXgz9ZyMCfOxf+Ri7GaMAY2I7tn9cJWqijl/ouyNHa9oGjCEAxwPu1QyOaCc8HK3MHTLOUXkyHZDoYtdbpF2LLriy74V2iKY4SebMNYMERuSRJiS7mxOv4vCE7btNXJAUNEQQqw3McUdDEd5zxcHFtv+6/Z6BfVzkSmER2SYSydt6oGI7Av+TkTghoZvX6uTmE/brIVlZ5OMac91aqqTVQ38vSPsb7nKlBRwdz3obQn3kPZ0mJza67in613LZVzu4FqXSVYYJayiWHCjKYegAzqLj3N1UonpFdkVmIkPjKw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR11MB8509.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(1800799024)(42112799006)(376014)(366016)(22082099003)(56012099006)(11063799006)(6133799003)(4143699003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TDRsb2NIdUE3YVhpUVVpZHl4UDdLb1RKb0Nsc0NYZUQ4RG9WZVV3NTJxSnVQ?=
+ =?utf-8?B?d3RNU3R2cGZtUTJ3MkhSNk0wUDZ4b2JZZDhEUmxmL2pNNHRBYkh2MytrcGsv?=
+ =?utf-8?B?SVoyUisvbXFzeVNBQmo2YWNXQkUyc3ZSL00zQ0MwZU5CQnp1MWNXYldDM2VB?=
+ =?utf-8?B?R0c4bDRUTUtadUUrdWNYZlZUaE1UQTFkcVpNS2oyaDFSY2ZmZlNVbHpJY2tG?=
+ =?utf-8?B?ckVEZTBQMFFkSFlHNGlTT3RBYlg0TzRXUzUvNnJ0eVlJZ3FKMnl4QVVuazlk?=
+ =?utf-8?B?aU0wTk1kWGdPaWpPcU1rbi8rM2ZoaWlhcWNKYlVGQ3Jod01uUDFkL0pBRHBu?=
+ =?utf-8?B?V2tBc1JwVXV6dzdxNFh3MkY4VXpYVWI1Tzc0V2pNNTErMjY5Z3NhSEJReWsw?=
+ =?utf-8?B?QVhTWWJjNFF5NmRXL3JJN0RyNU1hSXFXSmloWU1XYnp3NDMxUEwrTFNpOUVw?=
+ =?utf-8?B?bGNwQXduZlhuQzg0YVBCcFNJbURMdjVYNExvVHlIYTl0ZmxQRk91Tjd3ejZl?=
+ =?utf-8?B?aXd1TU5HczNNZTNMRkF3Y2pSL2trcnRYZ21TWjJ1cHh6YkUrMGYraVNaNG9Z?=
+ =?utf-8?B?ZzAxR2V5cGU1KzFkMCsxemFURWRFaTVQdTFyRHRTREwvNlFseUpwVS96QVFM?=
+ =?utf-8?B?WS9Yb24rbS83VVVIcGhvTmxpbkhiV0UzRytjVnQ3Z3RvNDVVS0pNNTJsMUVu?=
+ =?utf-8?B?USs4bkxmYTgvRXpaQm5reFVZU3haazhkK0N6TFJnYVJsazM2MUtrZjVXV1lZ?=
+ =?utf-8?B?MExOTXNSak5rNks0MWcyL0pNM0FWSG1sZ2h1Z2R0WVJOeG0xOGtETUxTSlhi?=
+ =?utf-8?B?QXBFeFN2NEJLckJFVFJJbk1LM21uY0VvWlNmblJ2eXV1Q0MzSGVSL3M3bXFm?=
+ =?utf-8?B?Ulh6V0F1RS9LY0xNbzhoT3k5WEx1bEhIemFqSDA5RWFiajFJRWxsazBKQlVV?=
+ =?utf-8?B?Wm9ZM0hpV0trY1ZhUjFqN0REOWU0UjdoRnMwZzVRbUJ1QkRKSGU4N3lTL0M2?=
+ =?utf-8?B?OUxwVlg0UkMzaS8rMVhNUGlBV0syV04yUUczV1pHeDJGZ1ZGQ1ArVGxkc04y?=
+ =?utf-8?B?U3lDblZqZnd4dTJCMzQ0Ukp1STN4NWZSSFFQamM4K3VYZ0h4elFYYjBORURL?=
+ =?utf-8?B?OU52K1Q0NnRRT21wRWdtUGlwTVhYNUtBL1R1WDRNSm9GT01lZW9UQnphRzJC?=
+ =?utf-8?B?SkhBS2tYd2d2Znc0RllTZnVLNTF3eEhvRXB4VGlDU0JpN3o4ajIveVRUNWxG?=
+ =?utf-8?B?Yk84cjJ1ZlhpVWF0OHFTZzNlNU1MZkhydkp4cUJIMmh5U21aOUp2MEhxa1k4?=
+ =?utf-8?B?MzEwZlhPaWhNdVF5VzFrMHRDVVVCRzVwZzhCZjFYcnVRVisxdGZBMUx5dnB5?=
+ =?utf-8?B?OGJFY1Jub0J4Q3JCMnpmNTVBYzBqVzBoZnRad2pKSXV3NmxKaWJqUjhBVStj?=
+ =?utf-8?B?Q1BJUHU1VlhQbUticEQvTXh2dnBocmtjelY2NnhmUWc3WVkvMTVGaGtxSTFI?=
+ =?utf-8?B?Rm9pNmhWOTc2N0tzTHl5ME5oQ0ZCRVJaZnA4M1ZrbjdwVTdhbEt0T2VXWFJJ?=
+ =?utf-8?B?WHRkQTFTbm10WU93ZkJPZGY0L2lqRkJ1UFB4S00xRnhabStScjJ2S0dnWEJh?=
+ =?utf-8?B?Uk1Sc2xMaFIrdWxnZzNxaU1zT1ZJdzBnaGhMVzk5ZnhWUmRKWVpkc0gvYW1I?=
+ =?utf-8?B?R3hOMVNEWHNpTk1ybUxyY1pHOVVBdjdyOFhGZUlYcWtqeWtRd29HaHZYb2Ny?=
+ =?utf-8?B?T1RtWkk2enMzM2cxZ0Q1TkpCR2ttekpGVVZqZlZmckp5enVGZTladjVleUZV?=
+ =?utf-8?B?RkQyRUIraG10Rmk1UGlRSTBtbmlxeE15QlpqR0pvN2IyVlFCNVZXeGdYZlNB?=
+ =?utf-8?B?ZVdkbmswQkJGNUI5SHRnRUZCZkFJbVRDcjBrOFBtc2liNlI3SFJUbnFhQUMr?=
+ =?utf-8?B?SWNZSHdyU2J6VzVsaU1PRDlWSC9DQ0RrWnVjT20yQmc5SU9kc3R1WWtUUm9o?=
+ =?utf-8?B?cWsxekxqTDVPY1VXVHF6NEFWcUU0UGk1ZXA0Z3lhcHppdEg3T3JIelQyVDBL?=
+ =?utf-8?B?NXNGY2g5RGdpclVqNi9acTlOT05QTHVzK3dHNnFVT0F1Mkk1U0V1S1lQaFdx?=
+ =?utf-8?B?UjBFeFJsOW41ZGFZQ0J6L25VRFY2MFNQcWFyVlUrSWYvL1dlTHZ3N0ErNTMw?=
+ =?utf-8?B?UFlId1V6clRVcEMweGRxQ0NjeUZtMXlGMXRKWThKbVJDNW80L09zREZOeU5t?=
+ =?utf-8?B?VEhYVG05RFUyYkRyL05vWmc1S2VUV0pXSndvamFjaHl6cnpzemdUbldXRzBm?=
+ =?utf-8?B?U2tPTmR2M0JKRGRaVWNraDVESGdmYnl6RVcvV1MwZm93UUdnR2owZz09?=
+X-Exchange-RoutingPolicyChecked: IVmsCcQUcr5TA3cP45WfUOaDGgRRc69JcJefGPR4gt/x4G40kYz0QLWJ3GZQHH/Llaiwy0++e4tNPy+y3UQh7j+z92+cb6bMnkw0Y6bBAwLMH3/LJH1oPqeyiaGBpuc9rFbqXJXN8XdNCcFlrGhUotPfxDkG4UZF+Pa7L4eszi7NlmJJd5rL24og9agxmgcjPmMQDJLSrA2kE8Jym2GlTS54Z6loYqMSGLiK39BPG0HXpUuxab4MM9TLp73AianUO9965ckZudTHpb+0J8X7SqUQJv4E2k+/nMRR9yqTgqXKmEejpVyAy1tPGazJtwrO5ymil/6qU9w5fNEzsINNzw==
+X-MS-Exchange-CrossTenant-Network-Message-Id: d1a9ec19-7fc4-4bc2-d258-08debd528e87
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR11MB8509.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 May 2026 07:19:01.2673
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ltadKZic91CxgeocRYPWWGrg/KH6+qJMxRy4ygfJxolRdaQMNkLDTOphihd4JHfQLUGim6GdqjMnADE1sYQRsQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB6858
+X-OriginatorOrg: intel.com
 
-In VFIO, vfio_unmap_unpin requires performing iommu unmap and mm
-unpin on the address space. However, VFIO doesn't record the PHY
-address corresponding to iova, but instead obtains the iova-PHY
-mapping through iommu_iommu_iova_to_phys.
+On 5/29/26 02:52, Jacob Pan wrote:
 
-In IOMMU, under conditions such as address alignment, it prioritizes
-mapping iova-PHY based on bigpages. Therefore, during the
-vfio_unmap_unpin process, traversal can be performed at the
-granularity of the IOMMU map, reducing the number of
-iommu_iova_to_phys queries and significantly improving conversion
-efficiency.
+>>>> static inline bool vfio_device_is_noiommu(struct vfio_device *vdev)
+>>>> {
+>>>>        return IS_ENABLED(CONFIG_VFIO_NOIOMMU) &&
+>>>>               vdev->group->type == VFIO_NO_IOMMU;
+>>>> }
+>>>>   
+>>>>>     		return 0;
+>>>>>     
+>>>>>     	return vdev->ops->bind_iommufd(vdev, ictx, &df->devid);
+>>>>> @@ -58,7 +58,7 @@ void vfio_df_iommufd_unbind(struct
+>>>>> vfio_device_file *df)
+>>>>>     	lockdep_assert_held(&vdev->dev_set->lock);
+>>>>>     
+>>>>> -	if (vfio_device_is_noiommu(vdev))
+>>>>> +	if (df->group && vfio_device_is_noiommu(vdev))
+>>>>>     		return;
+>>>>>     
+>>>>>     	if (vdev->ops->unbind_iommufd)
+>>>>> diff --git a/drivers/vfio/vfio.h b/drivers/vfio/vfio.h
+>>>>> index e4b72e79b7e3..6f0a2dfc8a00 100644
+>>>>> --- a/drivers/vfio/vfio.h
+>>>>> +++ b/drivers/vfio/vfio.h
+>>>>> @@ -358,19 +358,13 @@ void vfio_init_device_cdev(struct
+>>>>> vfio_device *device);
+>>>>>     static inline int vfio_device_add(struct vfio_device *device)
+>>>>>     {
+>>>>> -	/* cdev does not support noiommu device */
+>>>>> -	if (vfio_device_is_noiommu(device))
+>>>>> -		return device_add(&device->device);
+>>>>>     	vfio_init_device_cdev(device);
+>>>>>     	return cdev_device_add(&device->cdev, &device->device);
+>>>>>     }
+>>>>>     
+>>>>>     static inline void vfio_device_del(struct vfio_device *device)
+>>>>>     {
+>>>>> -	if (vfio_device_is_noiommu(device))
+>>>>> -		device_del(&device->device);
+>>>>> -	else
+>>>>> -		cdev_device_del(&device->cdev, &device->device);
+>>>>> +	cdev_device_del(&device->cdev, &device->device);
+>>>>>     }
+>>>>>     
+>>>>>     int vfio_device_fops_cdev_open(struct inode *inode, struct file
+>>>>> *filep); @@ -420,6 +414,18 @@ static inline void
+>>>>> vfio_cdev_cleanup(void) }
+>>>>>     #endif /* CONFIG_VFIO_DEVICE_CDEV */
+>>>>>     
+>>>>> +#if IS_ENABLED(CONFIG_VFIO_NOIOMMU)
+>>>>> +static inline bool vfio_device_is_cdev_noiommu(struct vfio_device
+>>>>> *vdev) +{
+>>>>> +	return vdev->noiommu;
+>>>>> +}
+>>>>> +#else
+>>>>> +static inline bool vfio_device_is_cdev_noiommu(struct vfio_device
+>>>>> *vdev) +{
+>>>>> +	return false;
+>>>>> +}
+>>>>> +#endif
+>>>>> +
+>>>>>     #if IS_ENABLED(CONFIG_VFIO_VIRQFD)
+>>>>>     int __init vfio_virqfd_init(void);
+>>>>>     void vfio_virqfd_exit(void);
+>>>>> diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
+>>>>> index 6222376ab6ab..84381c500623 100644
+>>>>> --- a/drivers/vfio/vfio_main.c
+>>>>> +++ b/drivers/vfio/vfio_main.c
+>>>>> @@ -321,6 +321,20 @@ static int vfio_init_device(struct
+>>>>> vfio_device *device, struct device *dev, return ret;
+>>>>>     }
+>>>>>     
+>>>>> +static int vfio_device_set_noiommu_and_name(struct vfio_device
+>>>>> *device) +{
+>>>>> +	if (IS_ENABLED(CONFIG_VFIO_DEVICE_CDEV) && vfio_noiommu
+>>>>> && !device->dev->iommu) {
+>>>>> +		device->noiommu = true;
+>>>>> +		add_taint(TAINT_USER, LOCKDEP_STILL_OK);
+>>>>> +		dev_warn(device->dev,
+>>>>> +			 "Adding kernel taint for vfio-noiommu
+>>>>> cdev on device\n");
+>>>>> +	}
+>>>>> +
+>>>>> +	/* Just to be safe, expose to user explicitly noiommu
+>>>>> cdev node */
+>>>>> +	return dev_set_name(&device->device, "%svfio%d",
+>>>>> +		     device->noiommu ? "noiommu-" : "",
+>>>>> device->index); +}
+>>>>> +
+>>>>>     static int __vfio_register_dev(struct vfio_device *device,
+>>>>>     			       enum vfio_group_type type)
+>>>>>     {
+>>>>> @@ -340,20 +354,21 @@ static int __vfio_register_dev(struct
+>>>>> vfio_device *device, if (!device->dev_set)
+>>>>>     		vfio_assign_device_set(device, device);
+>>>>>     
+>>>>> -	ret = dev_set_name(&device->device, "vfio%d",
+>>>>> device->index);
+>>>>> +	ret = vfio_device_set_group(device, type);
+>>>>>     	if (ret)
+>>>>>     		return ret;
+>>>>>     
+>>>>> -	ret = vfio_device_set_group(device, type);
+>>>>> +	ret = vfio_device_set_noiommu_and_name(device);
+>>>>
+>>>> the order of dev_set_name and vfio_device_set_group() are swapped,
+>>>> any special reason?
+>>> The ordering was intentional in an earlier version where the cdev
+>>> noiommu check depended on device->group. With the current check
+>>> using !device->dev->iommu, the ordering is no longer strictly
+>>> required for that test.
+>>>    
+>>> I kept vfio_device_set_group() first because the rest of
+>>> registration already treats group setup as the first VFIO state to
+>>> unwind, and this lets the existing err_out path handle failures
+>>> after group assignment, including dev_set_name(). I can restore the
+>>> old order if you prefer, since it is not functionally required
+>>> anymore.
+>>
+>> I think it's better to keep the original order if no functional
+>> requirement anymore.
+> will do,
+> 
+>>
+>>>>>     	if (ret)
+>>>>> -		return ret;
+>>>>> +		goto err_out;
+>>>>>     
+>>>>>     	/*
+>>>>>     	 * VFIO always sets IOMMU_CACHE because we offer no way
+>>>>> for userspace to
+>>>>>     	 * restore cache coherency. It has to be checked here
+>>>>> because it is only
+>>>>>     	 * valid for cases where we are using iommu groups.
+>>>>>     	 */
+>>>>> -	if (type == VFIO_IOMMU && !vfio_device_is_noiommu(device)
+>>>>> &&
+>>>>> +	if (type == VFIO_IOMMU &&
+>>>>> !(vfio_device_is_noiommu(device) ||
+>>>>> +
+>>>>> vfio_device_is_cdev_noiommu(device)) &&
+>>>>
+>>>> now, the group path and cdev path have their own is_noiommu helper,
+>>>> can the two helpers be consolidated?
+>>>>   
+>>> They could be consolidated mechanically, but I feel they are
+>>> checking different things it is more clear to keep them separate?
+>>
+>> IMHO. They are actually checking if the device is noiommu. I found the
+>> current usage of vfio_device_is_noiommu(). #1 is totally specific for
+>> group path. #2, #3 and #4 are for the common path to identify the
+>> noiommu of group. It also implies the info of the open path (group
+>> path?). #7 and #8 is going to be dropped. And 9 is totally for
+>> checking noiommu attribute. So I'm wondering if using !dev->iommu is
+>> a good choice. Should be able to cover both group and cdev path. Let
+>> me know if this is not workable.
+> I'm not sure I follow -- do you mean using !dev->iommu as the common
+> no-IOMMU check?
+>   
+> I don't think that should be the helper condition directly. !dev->iommu
+> is the low-level device state, but VFIO no-IOMMU is a VFIO mode. For
+> example, VFIO_EMULATED_IOMMU devices may also not have dev->iommu, but
+> they should not be treated as VFIO_NO_IOMMU.
 
-Therefore, an iommu_iova_to_pgsize implementation is added to the
-IOMMU driver to return the pagesize used for the iova mapping.
+you are right. :)
 
-Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-Signed-off-by: Shiqiang Zhang <shiyu.zsq@linux.alibaba.com>
-Signed-off-by: Simon Guo <wei.guo.simon@linux.alibaba.com>
----
- drivers/iommu/amd/iommu.c           |  2 ++
- drivers/iommu/generic_pt/iommu_pt.h | 53 +++++++++++++++++++++++++++++
- drivers/iommu/intel/iommu.c         |  2 ++
- drivers/iommu/iommu.c               | 25 ++++++++++++++
- drivers/vfio/vfio_iommu_type1.c     | 17 +++++++--
- include/linux/generic_pt/iommu.h    |  4 +++
- include/linux/iommu.h               |  3 ++
- 7 files changed, 104 insertions(+), 2 deletions(-)
+> What I can do is consolidate the helpers around the VFIO state instead:
+> legacy group no-IOMMU is represented by group->type, while the cdev
+> path uses vdev->noiommu
+> 
+> static inline bool vfio_device_is_noiommu(struct vfio_device *vdev)
+> {
+> #if IS_ENABLED(CONFIG_VFIO_GROUP)
+> 	if (vdev->group && vdev->group->type == VFIO_NO_IOMMU)
+> 		return true;
+> #endif
+> 
+> 	return IS_ENABLED(CONFIG_IOMMUFD_NOIOMMU) && vdev->noiommu;
+> }
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 57dc8fabc7d9..36ffeb96c454 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2662,6 +2662,7 @@ static const struct pt_iommu_driver_ops amd_hw_driver_ops_v1 = {
- 
- static const struct iommu_domain_ops amdv1_ops = {
- 	IOMMU_PT_DOMAIN_OPS(amdv1),
-+	IOMMU_PT_PGSIZE_OPS(amdv1),
- 	.iotlb_sync_map = amd_iommu_iotlb_sync_map,
- 	.flush_iotlb_all = amd_iommu_flush_iotlb_all,
- 	.iotlb_sync = amd_iommu_iotlb_sync,
-@@ -2740,6 +2741,7 @@ static struct iommu_domain *amd_iommu_domain_alloc_paging_v1(struct device *dev,
- 
- static const struct iommu_domain_ops amdv2_ops = {
- 	IOMMU_PT_DOMAIN_OPS(x86_64),
-+	IOMMU_PT_PGSIZE_OPS(x86_64),
- 	.iotlb_sync_map = amd_iommu_iotlb_sync_map,
- 	.flush_iotlb_all = amd_iommu_flush_iotlb_all,
- 	.iotlb_sync = amd_iommu_iotlb_sync,
-diff --git a/drivers/iommu/generic_pt/iommu_pt.h b/drivers/iommu/generic_pt/iommu_pt.h
-index dc91fb4e2f61..de861d8b6ce2 100644
---- a/drivers/iommu/generic_pt/iommu_pt.h
-+++ b/drivers/iommu/generic_pt/iommu_pt.h
-@@ -199,6 +199,59 @@ phys_addr_t DOMAIN_NS(iova_to_phys)(struct iommu_domain *domain,
- }
- EXPORT_SYMBOL_NS_GPL(DOMAIN_NS(iova_to_phys), "GENERIC_PT_IOMMU");
- 
-+static __always_inline int __do_iova_to_pgsize(struct pt_range *range,
-+					       void *arg, unsigned int level,
-+					       struct pt_table_p *table,
-+					       pt_level_fn_t descend_fn)
-+{
-+	struct pt_state pts = pt_init(range, level, table);
-+	size_t *pgsize = arg;
-+
-+	switch (pt_load_single_entry(&pts)) {
-+	case PT_ENTRY_EMPTY:
-+		return -ENOENT;
-+	case PT_ENTRY_TABLE:
-+		return pt_descend(&pts, arg, descend_fn);
-+	case PT_ENTRY_OA:
-+		*pgsize = BIT(pt_entry_oa_lg2sz(&pts));
-+		return 0;
-+	}
-+	return -ENOENT;
-+}
-+PT_MAKE_LEVELS(__iova_to_pgsize, __do_iova_to_pgsize);
-+
-+/**
-+ * iova_to_pgsize() - Return the page size of the mapping at the given IOVA
-+ * @domain: Table to query
-+ * @iova: IO virtual address to query
-+ *
-+ * Walk the IOMMU page table to determine the actual page size of the PTE
-+ * entry that maps the given IOVA.
-+ *
-+ * Context: The caller must hold a read range lock that includes @iova.
-+ *
-+ * Return: The page size in bytes, or 0 if there is no translation.
-+ */
-+size_t DOMAIN_NS(iova_to_pgsize)(struct iommu_domain *domain,
-+				 dma_addr_t iova)
-+{
-+	struct pt_iommu *iommu_table =
-+		container_of(domain, struct pt_iommu, domain);
-+	struct pt_range range;
-+	size_t pgsize;
-+	int ret;
-+
-+	ret = make_range(common_from_iommu(iommu_table), &range, iova, 1);
-+	if (ret)
-+		return 0;
-+
-+	ret = pt_walk_range(&range, __iova_to_pgsize, &pgsize);
-+	if (ret)
-+		return 0;
-+	return pgsize;
-+}
-+EXPORT_SYMBOL_NS_GPL(DOMAIN_NS(iova_to_pgsize), "GENERIC_PT_IOMMU");
-+
- struct pt_iommu_dirty_args {
- 	struct iommu_dirty_bitmap *dirty;
- 	unsigned int flags;
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 4d0e65bc131d..f992162cfa67 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -3890,6 +3890,7 @@ static struct iommu_domain identity_domain = {
- 
- const struct iommu_domain_ops intel_fs_paging_domain_ops = {
- 	IOMMU_PT_DOMAIN_OPS(x86_64),
-+	IOMMU_PT_PGSIZE_OPS(x86_64),
- 	.attach_dev = intel_iommu_attach_device,
- 	.set_dev_pasid = intel_iommu_set_dev_pasid,
- 	.iotlb_sync_map = intel_iommu_iotlb_sync_map,
-@@ -3901,6 +3902,7 @@ const struct iommu_domain_ops intel_fs_paging_domain_ops = {
- 
- const struct iommu_domain_ops intel_ss_paging_domain_ops = {
- 	IOMMU_PT_DOMAIN_OPS(vtdss),
-+	IOMMU_PT_PGSIZE_OPS(vtdss),
- 	.attach_dev = intel_iommu_attach_device,
- 	.set_dev_pasid = intel_iommu_set_dev_pasid,
- 	.iotlb_sync_map = intel_iommu_iotlb_sync_map,
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index d1a9e713d3a0..e27f26bc1851 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2557,6 +2557,31 @@ phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
- }
- EXPORT_SYMBOL_GPL(iommu_iova_to_phys);
- 
-+/**
-+ * iommu_iova_to_pgsize - Get the page size of the mapping at a given IOVA
-+ * @domain: IOMMU domain to query
-+ * @iova: IO virtual address to query
-+ *
-+ * Walk the IOMMU page table to determine the actual page size of the PTE
-+ * entry that maps the given IOVA. This reflects the real mapping granularity,
-+ * not an inferred value from alignment.
-+ *
-+ * Returns the page size in bytes, or 0 if the mapping doesn't exist or the
-+ * domain doesn't support this query.
-+ */
-+size_t iommu_iova_to_pgsize(struct iommu_domain *domain, dma_addr_t iova)
-+{
-+	if (domain->type == IOMMU_DOMAIN_IDENTITY ||
-+	    domain->type == IOMMU_DOMAIN_BLOCKED)
-+		return 0;
-+
-+	if (!domain->ops->iova_to_pgsize)
-+		return 0;
-+
-+	return domain->ops->iova_to_pgsize(domain, iova);
-+}
-+EXPORT_SYMBOL_GPL(iommu_iova_to_pgsize);
-+
- static size_t iommu_pgsize(struct iommu_domain *domain, unsigned long iova,
- 			   phys_addr_t paddr, size_t size, size_t *count)
- {
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index c8151ba54de3..bf918a93a159 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -1177,7 +1177,7 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
- 
- 	iommu_iotlb_gather_init(&iotlb_gather);
- 	while (pos < dma->size) {
--		size_t unmapped, len;
-+		size_t unmapped, len, pgsize;
- 		phys_addr_t phys, next;
- 		dma_addr_t iova = dma->iova + pos;
- 
-@@ -1191,11 +1191,24 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
- 		 * To optimize for fewer iommu_unmap() calls, each of which
- 		 * may require hardware cache flushing, try to find the
- 		 * largest contiguous physical memory chunk to unmap.
-+		 *
-+		 * Query the actual IOMMU PTE mapping granularity at this IOVA
-+		 * to determine the guaranteed contiguous range. Use only the
-+		 * remaining portion within the current PTE from our position,
-+		 * in case we start from the middle of a large page mapping.
- 		 */
--		for (len = PAGE_SIZE; pos + len < dma->size; len += PAGE_SIZE) {
-+		pgsize = iommu_iova_to_pgsize(domain->domain, iova);
-+		if (!pgsize)
-+			pgsize = PAGE_SIZE;
-+		len = pgsize - (iova & (pgsize - 1));
-+		for (; pos + len < dma->size; len += pgsize) {
- 			next = iommu_iova_to_phys(domain->domain, iova + len);
- 			if (next != phys + len)
- 				break;
-+			pgsize = iommu_iova_to_pgsize(domain->domain,
-+						      iova + len);
-+			if (!pgsize)
-+				pgsize = PAGE_SIZE;
- 		}
- 
- 		/*
-diff --git a/include/linux/generic_pt/iommu.h b/include/linux/generic_pt/iommu.h
-index dd0edd02a48a..2f30ae73a9eb 100644
---- a/include/linux/generic_pt/iommu.h
-+++ b/include/linux/generic_pt/iommu.h
-@@ -251,6 +251,8 @@ struct pt_iommu_cfg {
- #define IOMMU_PROTOTYPES(fmt)                                                  \
- 	phys_addr_t pt_iommu_##fmt##_iova_to_phys(struct iommu_domain *domain, \
- 						  dma_addr_t iova);            \
-+	size_t pt_iommu_##fmt##_iova_to_pgsize(struct iommu_domain *domain,    \
-+					       dma_addr_t iova);               \
- 	int pt_iommu_##fmt##_read_and_clear_dirty(                             \
- 		struct iommu_domain *domain, unsigned long iova, size_t size,  \
- 		unsigned long flags, struct iommu_dirty_bitmap *dirty);        \
-@@ -272,6 +274,8 @@ struct pt_iommu_cfg {
-  */
- #define IOMMU_PT_DOMAIN_OPS(fmt)                        \
- 	.iova_to_phys = &pt_iommu_##fmt##_iova_to_phys
-+#define IOMMU_PT_PGSIZE_OPS(fmt)                        \
-+	.iova_to_pgsize = &pt_iommu_##fmt##_iova_to_pgsize
- #define IOMMU_PT_DIRTY_OPS(fmt) \
- 	.read_and_clear_dirty = &pt_iommu_##fmt##_read_and_clear_dirty
- 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index e587d4ac4d33..d04dc7dcfb1e 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -776,6 +776,8 @@ struct iommu_domain_ops {
- 
- 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain,
- 				    dma_addr_t iova);
-+	size_t (*iova_to_pgsize)(struct iommu_domain *domain,
-+				 dma_addr_t iova);
- 
- 	bool (*enforce_cache_coherency)(struct iommu_domain *domain);
- 	int (*set_pgtable_quirks)(struct iommu_domain *domain,
-@@ -930,6 +932,7 @@ extern ssize_t iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
- 			    struct scatterlist *sg, unsigned int nents,
- 			    int prot, gfp_t gfp);
- extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova);
-+extern size_t iommu_iova_to_pgsize(struct iommu_domain *domain, dma_addr_t iova);
- extern void iommu_set_fault_handler(struct iommu_domain *domain,
- 			iommu_fault_handler_t handler, void *token);
- 
--- 
-2.43.7
+looks good. :)
+
+Regards,
+Yi Liu
 
