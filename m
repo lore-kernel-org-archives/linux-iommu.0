@@ -1,118 +1,186 @@
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 068AC34A3DB
-	for <iommu@lists.linux.dev>; Fri, 29 May 2026 00:59:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.172
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 615C535DA49
+	for <iommu@lists.linux.dev>; Fri, 29 May 2026 01:42:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780016380; cv=none; b=ZDW7kvxoGHbC2wKYxJkPQjaOteGiaiCxaNtRMBk2B47IXP16xYAi7Zsda6Ol3Awyana7EsKHr6dZ1t9YFVvBKHc1wXUHHorDHU3ionF+AOBkX3XZ+RQMDrtNN9EptpAfjU/rFfbDBOrQTULkr/5CdksAoswG/m/XyGSJLsreOR4=
+	t=1780018971; cv=none; b=P204nUdvT3yCmFqBrS2OtNzCPxmTf5FPr7Q1WHyS971Rw8bXTjyKEnDnhejfWxtyejIv4YBie7KN5AFgB3Ckd74X8c7az7IlXNeW7y2U1/CNNzWApxxsObZ15ukdwQwhWcb0uycuPPAPAOgpJ+gc34uA32OXFpG17lAGcbqArE0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780016380; c=relaxed/simple;
-	bh=Dkas1iK2Ba2wQu/7/v+v06OiX4DNgNdf6buX7x/57o8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=F0cvKrVw+RK9Y4suKtzC1GB1ficUZQSRzfJSVaxMqLWrQm7r6+m62m5bEpDZn+Y0FeRyCc8ERM3Kfds+VkdMFsOLyDbjGGWX30niJlW0FG4v67k4KUsqFdw0CELlpntG5I3TkXsMsli4ObgwU6BV/DiAC++SJImyj9cWwz57nwQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=DmtTDdgS; arc=none smtp.client-ip=209.85.222.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1780018971; c=relaxed/simple;
+	bh=rvWqM5AJP4TslqeE4XcHc6YuFZk337vT0jJyKfXWZGA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=izK1kReQttqcW94XZj8sgJtAI74fOIpKMjh9g+6x3TkOYMoARS8q4xskzg+Xm+4S892oQjDEX309B07qcAKGQpMQxX6gF1zKy88ioZcSChnStRmfibrXxkWZYfhi3IRv4+lERRRfVrsqfzWQ/wK4FX762+xe0oZ/esoryd+bqa0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=s9VTD7W7; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="DmtTDdgS"
-Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-913cc4d7c71so1464623185a.2
-        for <iommu@lists.linux.dev>; Thu, 28 May 2026 17:59:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1780016377; x=1780621177; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=2tFoYpzfMUAkB3JpfkER88CdCEd7iFUbwdJ47mVqnAQ=;
-        b=DmtTDdgS1V2YoNunWRpuZo0CnS3rkNUZ/+95ty/NNc7dPqtPla/8cOvRfMJvFNBaxf
-         LpkrSnxOaBp2VOFNnJW70rRiiQYHLoVwMaB7b6Chojugm9wpJ9QOeZsW4O6h/Fzj2Ido
-         zquUv6G8adziGh/gz1NVknygOvHznYQKVaB4j00WusVDxhj7E5/EHfEh1dShoN2X05Ta
-         TMBzotjjT5Oxqv4QvhMVUoTT6yD+IFhGXvyV3RD70hZ4yVi7hy/30gFyAUQ1BHQ/9L2l
-         ZLj1E37ciyx2OsOyWIq8iFBj9l+VJKmfGsJgy5mKuTYhd/7TbzLKAPSzaPAVHSwZVLV2
-         z6zQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780016377; x=1780621177;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=2tFoYpzfMUAkB3JpfkER88CdCEd7iFUbwdJ47mVqnAQ=;
-        b=QmYgDGZONqtKRStlTajzDXaDOmGicnKPJVO0T2EAlc4FKCoeY5PafGuOOKIdNGyfpD
-         EiInwSmtu6CjYwHG8VOX4UmFL7DVdXIoqERP2bt1WmewtzalzpxzOpDmvWm5n5phaEqo
-         M0sexLaePl1kvNQPFrOfuB2nXmEHToG0FGCsu+OqWKrgqPaYnpDfp6i4KEqlZhk97YKm
-         JIJ4pnscY7MuLzJaoUfqfZsB7RtSiYsCm7Jf1CZrh5beGc+nrPCLIczzToEEJFWcIYbb
-         7kEX5Fw9ii7cqfTeOSe0P7+jnJyjr/Ywg80J5eI+SNVMUynnYRjGSoWm/aJQF86Ek9x2
-         KHdQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9rRuYLbpC9GDT9gSYTlzJ8bYty8fjn6P/PlPz1XlKCuqJQJt1ue3vA2DH7wQx82T8mcnjaRw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YywHA1awVok1Xm1j+37GKS8gGLFG2qRDr20nHYqX9oD7rbXd/Og
-	nFhEqcKGLm5Z09ivT/DCCFST4RvaS1/TB/7GcK/1rb2NxRnBD/edyocEYeNrZdZ7CPE=
-X-Gm-Gg: Acq92OHkUTaBt4qyMDdF7CniwmuzItibYvLMl8Ms5v3hj5k66nCHOWObAZiGsHgzU8x
-	dJBfGAmXTKNzwrp8nKUS5G2rhFyhXbCB5zxO8LduIfV1McGJdwB3XnkFAtitR+5QYHyIDxBaoW5
-	jhCK20ConOcFx0hHvKYr3JFnaNUPevEi7zsqs5YDritIjUqiOzHdgm0ULHbSkl85kr/hrMHfnHZ
-	tBQ52z8HGEvKM5N9F5UC2ncgO5UHB+CLxOr/tQqpdeTnJeI4TD6p8UOYtZOdkNWJFvuLeFxQMxV
-	bcBefJuptw5mlMwrxBw4Lfq0GdeDjwEuqlIvEQtP71XYJPhIe5XGfjM0ZrNYegLKNcYDTJFOPiD
-	BYQojebdl17nsVUPMcp/CNp87Sv93yRbFti9z/R9SQ3vvETi/AZjDqi1bdK8zCHfTwo6WcZ2ATt
-	wS9xBAflY2D+wRmupGyLtZRARKOlXV5fx3l76xnlCsVmPq/joz5MGQjRQTKSZ3GPGMvb/PqoDir
-	jc1Q1DhGtedxDha
-X-Received: by 2002:a05:620a:6cc6:b0:914:aa0d:aa87 with SMTP id af79cd13be357-9152fd2d425mr108562785a.23.1780016376749;
-        Thu, 28 May 2026 17:59:36 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-91530135f92sm52883085a.47.2026.05.28.17.59.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 May 2026 17:59:34 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wSlZV-0000000HBjx-3ea1;
-	Thu, 28 May 2026 21:59:33 -0300
-Date: Thu, 28 May 2026 21:59:33 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Ashish Mhetre <amhetre@nvidia.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
-	nicolinc@nvidia.com, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-tegra@vger.kernel.org
-Subject: Re: [PATCH 2/2] iommu/arm-smmu-v3: Issue CFGI/TLBI twice on Tegra264
-Message-ID: <20260529005933.GQ2487554@ziepe.ca>
-References: <20260528101617.4068249-1-amhetre@nvidia.com>
- <20260528101617.4068249-3-amhetre@nvidia.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="s9VTD7W7"
+Received: from mrdev.corp.microsoft.com (unknown [40.86.183.173])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 63D4A20B7167;
+	Thu, 28 May 2026 18:42:38 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 63D4A20B7167
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1780018958;
+	bh=5bqqEwLTEJDww2bV2cCS6/CLxtZa5fhnAGBKbAe3tCU=;
+	h=From:To:Cc:Subject:Date:From;
+	b=s9VTD7W7XQujNk+kDoBQUxEDgwXoJD+WtLhqFZ3VeX6uLV6DDFGECeVAvT33CG1sj
+	 9+9QoZJfRHSnbjv7oeJksqB7aIjp7D1oboeytjlOnJLg/GFnwXJm7axIGqisGbuLe5
+	 EIOOO+3Tj2MfYgCktqaLrq8I/fJLHtaSwdXxzATM=
+From: Mukesh R <mrathor@linux.microsoft.com>
+To: linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Cc: mhklinux@outlook.com,
+	wei.liu@kernel.org,
+	zhangyu1@linux.microsoft.com,
+	jacob.pan@linux.microsoft.com,
+	schakrabarti@linux.microsoft.com,
+	mrathor@linux.microsoft.com
+Subject: [PATCH V1] iommu/hyperv: Create hyperv subdirectory under drivers/iommu
+Date: Thu, 28 May 2026 18:41:48 -0700
+Message-ID: <20260529014148.297154-1-mrathor@linux.microsoft.com>
+X-Mailer: git-send-email 2.51.2.vfs.0.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260528101617.4068249-3-amhetre@nvidia.com>
+Content-Transfer-Encoding: 8bit
 
-On Thu, May 28, 2026 at 10:16:17AM +0000, Ashish Mhetre wrote:
-> Apply the workaround for Tegra264 erratum by issuing every CFGI/TLBI
-> command twice on affected SMMU instances, with CMD_SYNC after each.
-> The erratum requires this exact sequencing:
-> 
->     TLBI/CFGI ... CMD_SYNC TLBI/CFGI ... CMD_SYNC
-> 
-> To get this sequence with minimal surgery, hook the workaround into
-> arm_smmu_cmdq_issue_cmdlist(). Rename the original function to
-> __arm_smmu_cmdq_issue_cmdlist() and add a thin wrapper that, on
-> affected SMMUs and when @sync is true, re-issues the same cmdlist a
-> second time.
-> 
-> A new arm_smmu_cmd_needs_tlbi_twice() helper classifies which opcodes
-> need the doubling: CFGI_* and TLBI_*.
-> 
-> For batches that exceed CMDQ_BATCH_ENTRIES commands,
-> arm_smmu_cmdq_batch_add_cmd_p() normally flushes the full buffer with
-> sync=false, deferring the SYNC to the eventual batch_submit(). On
-> affected SMMUs this would leave the first chunk's commands issued
-> only once, since the WAR hook in arm_smmu_cmdq_issue_cmdlist() only
-> fires on synced submissions. Force a SYNC on the capacity rollover
-> when the buffer carries CFGI/TLBI commands so every flushed chunk is
-> correctly doubled.
-> 
-> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 66 +++++++++++++++++++--
->  1 file changed, 61 insertions(+), 5 deletions(-)
+Create hyperv subdirectory under drivers/iommu in anticipation of more
+hyperv related files from upcoming PCI passthru and pv-IOMMU patches.
+Also, the current file hyperv-iommu.c actually implements irq remapping,
+so rename to more appropriate hv-irq-remap.c and move it under the new
+hyperv subdirectory. Since this file implements irq_remap_ops exposed
+by drivers/iommu/irq_remapping.h, it cannot be relocated to the irq
+directory. This is in sync with other backend directories like amd and
+intel there.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Lastly, this file should not be tied to CONFIG_HYPERV_IOMMU, but to
+CONFIG_HYPERV and CONFIG_IRQ_REMAP.
 
-Jason
+Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
+---
+ MAINTAINERS                                             | 2 +-
+ drivers/iommu/Kconfig                                   | 9 ---------
+ drivers/iommu/Makefile                                  | 2 +-
+ drivers/iommu/hyperv/Makefile                           | 2 ++
+ drivers/iommu/{hyperv-iommu.c => hyperv/hv-irq-remap.c} | 8 +-------
+ drivers/iommu/irq_remapping.c                           | 2 +-
+ 6 files changed, 6 insertions(+), 19 deletions(-)
+ create mode 100644 drivers/iommu/hyperv/Makefile
+ rename drivers/iommu/{hyperv-iommu.c => hyperv/hv-irq-remap.c} (99%)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index b539be153f6a..93a7105e9cef 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -11988,7 +11988,7 @@ F:	drivers/clocksource/hyperv_timer.c
+ F:	drivers/hid/hid-hyperv.c
+ F:	drivers/hv/
+ F:	drivers/input/serio/hyperv-keyboard.c
+-F:	drivers/iommu/hyperv-iommu.c
++F:	drivers/iommu/hyperv/
+ F:	drivers/net/ethernet/microsoft/
+ F:	drivers/net/hyperv/
+ F:	drivers/pci/controller/pci-hyperv-intf.c
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index f86262b11416..1becc0f20222 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -351,15 +351,6 @@ config MTK_IOMMU_V1
+ 
+ 	  if unsure, say N here.
+ 
+-config HYPERV_IOMMU
+-	bool "Hyper-V IRQ Handling"
+-	depends on HYPERV && X86
+-	select IOMMU_API
+-	default HYPERV
+-	help
+-	  Stub IOMMU driver to handle IRQs to support Hyper-V Linux
+-	  guest and root partitions.
+-
+ config VIRTIO_IOMMU
+ 	tristate "Virtio IOMMU driver"
+ 	depends on VIRTIO
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index 0275821f4ef9..d9683422aecb 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -4,6 +4,7 @@ obj-$(CONFIG_AMD_IOMMU) += amd/
+ obj-$(CONFIG_INTEL_IOMMU) += intel/
+ obj-$(CONFIG_RISCV_IOMMU) += riscv/
+ obj-$(CONFIG_GENERIC_PT) += generic_pt/fmt/
++obj-$(CONFIG_HYPERV) += hyperv/
+ obj-$(CONFIG_IOMMU_API) += iommu.o
+ obj-$(CONFIG_IOMMU_SUPPORT) += iommu-pages.o
+ obj-$(CONFIG_IOMMU_API) += iommu-traces.o
+@@ -30,7 +31,6 @@ obj-$(CONFIG_TEGRA_IOMMU_SMMU) += tegra-smmu.o
+ obj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o
+ obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
+ obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
+-obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
+ obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
+ obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o
+ obj-$(CONFIG_IOMMU_IOPF) += io-pgfault.o
+diff --git a/drivers/iommu/hyperv/Makefile b/drivers/iommu/hyperv/Makefile
+new file mode 100644
+index 000000000000..0053e00e08e6
+--- /dev/null
++++ b/drivers/iommu/hyperv/Makefile
+@@ -0,0 +1,2 @@
++# SPDX-License-Identifier: GPL-2.0
++obj-$(CONFIG_IRQ_REMAP) += hv-irq-remap.o
+diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv/hv-irq-remap.c
+similarity index 99%
+rename from drivers/iommu/hyperv-iommu.c
+rename to drivers/iommu/hyperv/hv-irq-remap.c
+index 479103261ae6..b34ee9589190 100644
+--- a/drivers/iommu/hyperv-iommu.c
++++ b/drivers/iommu/hyperv/hv-irq-remap.c
+@@ -7,13 +7,11 @@
+  *
+  * Author : Lan Tianyu <Tianyu.Lan@microsoft.com>
+  */
+-
+ #include <linux/types.h>
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
+ #include <linux/iommu.h>
+ #include <linux/module.h>
+-
+ #include <asm/apic.h>
+ #include <asm/cpu.h>
+ #include <asm/hw_irq.h>
+@@ -22,9 +20,7 @@
+ #include <asm/hypervisor.h>
+ #include <asm/mshyperv.h>
+ 
+-#include "irq_remapping.h"
+-
+-#ifdef CONFIG_IRQ_REMAP
++#include "../irq_remapping.h"
+ 
+ /*
+  * According 82093AA IO-APIC spec , IO APIC has a 24-entry Interrupt
+@@ -330,5 +326,3 @@ static const struct irq_domain_ops hyperv_root_ir_domain_ops = {
+ 	.alloc = hyperv_root_irq_remapping_alloc,
+ 	.free = hyperv_root_irq_remapping_free,
+ };
+-
+-#endif
+diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
+index c2443659812a..41bf65e4ea88 100644
+--- a/drivers/iommu/irq_remapping.c
++++ b/drivers/iommu/irq_remapping.c
+@@ -108,7 +108,7 @@ int __init irq_remapping_prepare(void)
+ 	else if (IS_ENABLED(CONFIG_AMD_IOMMU) &&
+ 		 amd_iommu_irq_ops.prepare() == 0)
+ 		remap_ops = &amd_iommu_irq_ops;
+-	else if (IS_ENABLED(CONFIG_HYPERV_IOMMU) &&
++	else if (IS_ENABLED(CONFIG_HYPERV) &&
+ 		 hyperv_irq_remap_ops.prepare() == 0)
+ 		remap_ops = &hyperv_irq_remap_ops;
+ 	else
+-- 
+2.51.2.vfs.0.1
+
