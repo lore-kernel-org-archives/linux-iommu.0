@@ -1,80 +1,50 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBC4B3FC5BF
-	for <iommu@lists.linux.dev>; Fri, 29 May 2026 14:48:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C88D523D7C2;
+	Fri, 29 May 2026 15:08:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780066124; cv=none; b=ZANLowJorZZ68/+OdUK4w46+IGpZ7XERjVPbnktZkSXX6kAkZpLABUSCIXVNwfdBKfrcm9z8F+CO6oVj0Tz3iWzlu/qqOe0iDAD1kCS8fxwxIif8afPdLBX2kiJ0K+fgDPGAnJ4xka6AfniquH1U/CIiUm6PMJYz3FUazzULedI=
+	t=1780067332; cv=none; b=IF33EBpIbeVeIWgLADNtEryaDbWT+epffyUrQD/IHsmG1iuRCmvSTceiWgb6Ykj6f85+fH1n7ksMST0I4bEJC3BkN5LD5934EPHKR3rLo7ji84v+Or4U31Mv11rMQNBmddNncfwkGCVPic2xjyW3FKZ50or+dtN5dQv3jvE3tw4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780066124; c=relaxed/simple;
-	bh=7GC6ZK+/IW1XiXsDatZ81r0bEX4yT0zf28CIFwYZuRk=;
+	s=arc-20240116; t=1780067332; c=relaxed/simple;
+	bh=1bbXIq51DuToLc697H/y4vnrxG/K8cvg3p+FPcmg9BM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=F/qrdyumOAlHm61CNItiL2Av5V2kCZApG5o+qG1l5pwow/WlmbGQI29j9nOIbleQ23b8+5nqbYaiCWasDEp5VH/Zbqt1HJxAvKIrt4T5CHw/YJ+mEvfW5wrkpDAOPBBr1g/+0Ay9XDVzuNoWCraNWRMxhwkYK4UvBvZtCwezhhw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=JqrP5a2w; arc=none smtp.client-ip=209.85.214.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=XvO/FCAOdW6ElQMOBo4+mP1uAB2Up4NBDd9Z1wnUvhFAnnmaGG6VjxtM7qjwtxbD3q+z2uxbzdNwn0I/MhuVYOlomZixvICwVVprynpzfLzVgYAio0wy3YcQPZzAryHNFwJL14CNE7HCidUXTqCNyEoulexR1CJU+i4e06lHjEo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lR2pXawp; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="JqrP5a2w"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2bf2d865383so1945ad.1
-        for <iommu@lists.linux.dev>; Fri, 29 May 2026 07:48:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780066119; x=1780670919; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=tQnvUAMDcWre1zb+1ZQyKPWolVXCfJctmWLTOardQGc=;
-        b=JqrP5a2wQsGSy2t2lJ8MP+AJn0XwjgbAeDMb5dvtk6OoiP5mqNpjrC7dwY1beCMtr0
-         y/h8wwoxWnu1bIa8/87kTQLgmMDeSrmR2HrSoom0aJr3SRlAFwa8dqWO0EP3M9Z17ANH
-         t7z9ncjKTAV/tI/PskbtfK/vi85UvaR7ZpaJOr69tc1pPeJ4GqSfqCcceJDDHNOCn54X
-         uStm9ep6ywF5Fimp6xKuxyOMoMqERu8nqBS+1NneLYUK8KfLj/95cR2R2bUhB0VUzlRX
-         LVI4wS9D66QgMigF0Gh5drr6nncvHv5KUR7EfY3vnDSvg1cwwnpXyknLTiJwFYxgyn4n
-         qgZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780066119; x=1780670919;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tQnvUAMDcWre1zb+1ZQyKPWolVXCfJctmWLTOardQGc=;
-        b=aZQEaMmjF9+y2Rw1EKbkzgQPaFLpqvIGJ3tv/pOooVZF4IrmAxR0JEpq6lKIuEIpM7
-         hTQVuR4VEK0UqEvo+WqX6/cmELUfdIHRvpzdp14wRNkS8Ximvbapkkc9m6ez0TQeznlc
-         D4sKwF8YND/SLGuixth1yVEnyBcOqZE/ehKgpoiTYMMbRNoccArqx3SrfHHoQLofYFE1
-         QdvLhXUEXKTNlV/7pa6XaJtQ9jTXW3+uthf66X1tBN9yQ1k/wPrAT/QXFwescpAe4NWA
-         mptVAoN2flkC+WGKD3RN7eB1qa3MMAg/r2C3PAKWwvYW8Z7gL6MCb7LO3EGdHOQKLPzh
-         aAKA==
-X-Gm-Message-State: AOJu0YyjhRifFBFplGnUAvfCMwal/JMGsL9T80/WXkO0aiuimu8FO64T
-	Po8F9tbOD+KpU+5WbUvzkLeLdt5j4cDwAIFu8ke+oTUvzvlDRgYWear75QdX6oJWWQ==
-X-Gm-Gg: Acq92OGnIpFkOAZb7eaInd5rc41egf5dJdr7x2A/BYZKTUb+IljAZzPslInPeylpjkT
-	924XbSG0AVwnyhuMhNCGN2ta3Y3eCp+XbCGlADXRqgzq8Otuau9Gwj2rNOcgIG4oYejM2BSlWqr
-	vkIpJNxtro2uuMQjegTNefbm9NglQw6hlZJFRFXYm6HGBnRg3ZVEEQ9WuvRRhucT5XrUxuy8Dp6
-	LxDY76E3+5hwSt9DC1B3yCKgg1bbTEoHA32uaffTxVUWPWEsqHLd3j/Xa8IJZCp1fsolAXr2AVh
-	j1cgJ7avqoFDaNuZfe/f3FsDiCP6NKh9EPwXC6iN0dUFuB9UmJ37goaza/QK2SrAw3JmGsUoW2E
-	fTeInwsVVe+Ch+YfXdh+kRtzXMqkjLf/r3nz1mmxkttne+5gsPY4uAxi1C+oDvLWp74pku3/7jW
-	tsvRqMXJ6hV1AYNaNBv1QZO2oi9ZcWem6ZlTiEF065CNN456fB6oiOOBE4T3voOrk8uRMC
-X-Received: by 2002:a17:902:f70b:b0:2bd:5fc9:27b9 with SMTP id d9443c01a7336-2bf22e48888mr1870215ad.3.1780066118300;
-        Fri, 29 May 2026 07:48:38 -0700 (PDT)
-Received: from google.com (44.234.124.34.bc.googleusercontent.com. [34.124.234.44])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2bf23c57283sm22636595ad.81.2026.05.29.07.48.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 May 2026 07:48:37 -0700 (PDT)
-Date: Fri, 29 May 2026 14:48:32 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>,
-	Daniel Mentz <danielmentz@google.com>,
-	Ashish Mhetre <amhetre@nvidia.com>,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v7 10/11] iommu/arm-smmu-v3: Invoke pm_runtime before hw
- access
-Message-ID: <ahmnQN5xatcaF5hT@google.com>
-References: <20260527221407.1756491-1-praan@google.com>
- <20260527221407.1756491-11-praan@google.com>
- <ahilX8Za1NRCH3ik@Asurada-Nvidia>
- <ahi3uY9YZZtR1Lq5@google.com>
- <ahi7KWov1+GC3xVx@Asurada-Nvidia>
- <ahjAxx-cyww2va__@google.com>
- <ahjNYqe8hjPUQIQD@Asurada-Nvidia>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lR2pXawp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 879E21F00893;
+	Fri, 29 May 2026 15:08:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780067330;
+	bh=Z+neS3Llvyfy3P4tauMZpeOCQxOmOPM92PXLEWzDVW0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=lR2pXawpPwU7zOlNmNYRWyqr6Rs8IREQyqXMAgYbEUQnkqvx5JDHA1xCz0bi7n4E5
+	 FvbfKcblWQTnP5e/D/SsEZl0f8k2dCUK+A6vkCoMuv0DrYH6JlkQ8mzfqdsO2rb3yy
+	 Ii03QBrvON1RZGmF0snsD1x+dVkZ74002GDXbRNsK3428w0kwgNIABDZygdD2YlsyK
+	 Et+xwQ2V5wuhOItthhp2u/f1mFJ/EAX7OrQ1vi30I0PkzggRH6bRUz60RJJwtEplpE
+	 buDUncSPwMsci9bBxMrD7aHU3hDo4xpDCHbrh5H8bQOLqgyOjvPiHe3IFaYQXPN3hU
+	 NRKVFqyew03qQ==
+Date: Fri, 29 May 2026 16:08:41 +0100
+From: Will Deacon <will@kernel.org>
+To: Wandun Chen <chenwandun1@gmail.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	loongarch@lists.linux.dev, linux-riscv@lists.infradead.org,
+	devicetree@vger.kernel.org, kexec@lists.infradead.org,
+	iommu@lists.linux.dev, zhaomeijing@lixiang.com,
+	catalin.marinas@arm.com, chenhuacai@kernel.org, kernel@xen0n.name,
+	pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu,
+	alex@ghiti.fr, robh@kernel.org, saravanak@kernel.org,
+	akpm@linux-foundation.org, bhe@redhat.com, rppt@kernel.org,
+	pasha.tatashin@soleen.com, pratyush@kernel.org,
+	ruirui.yang@linux.dev, m.szyprowski@samsung.com,
+	robin.murphy@arm.com, quic_obabatun@quicinc.com
+Subject: Re: [PATCH v3 09/11] arm64: kdump: exclude non-dumpable reserved
+ memory regions from vmcore
+Message-ID: <ahmr-UjoApj2j5JS@willie-the-truck>
+References: <20260527032917.3385849-1-chenwandun1@gmail.com>
+ <20260527032917.3385849-10-chenwandun1@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -83,80 +53,70 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ahjNYqe8hjPUQIQD@Asurada-Nvidia>
+In-Reply-To: <20260527032917.3385849-10-chenwandun1@gmail.com>
 
-On Thu, May 28, 2026 at 04:18:58PM -0700, Nicolin Chen wrote:
-> On Thu, May 28, 2026 at 10:25:11PM +0000, Pranjal Shrivastava wrote:
-> > On Thu, May 28, 2026 at 03:01:13PM -0700, Nicolin Chen wrote:
-> > > On Thu, May 28, 2026 at 09:46:33PM +0000, Pranjal Shrivastava wrote:
-> > > > On Thu, May 28, 2026 at 01:28:15PM -0700, Nicolin Chen wrote:
-> > > > > On Wed, May 27, 2026 at 10:14:06PM +0000, Pranjal Shrivastava wrote:
-> > > > > > TLB and CFG invalidations are
-> > > > > > elided if the SMMU is suspended by observing the CMDQ_PROD_STOP_FLAG via
-> > > > > > the arm_smmu_can_elide() helper.
-> > > > > 
-> > > > > All the arm_smmu_can_elide() call sites here would eventually elide
-> > > > > the commands in arm_smmu_cmdq_issue_cmdlist() that is already gated
-> > > > > by CMDQ_PROD_STOP_FLAG? It doesn't seem necessary to gate again?
-> > > > 
-> > > > While issue_cmdlist() would eventually elide these commands, the 
-> > > > can_elide() check is necessary to return early during suspension. 
-> > > > 
-> > > > This avoids unnecessary stack allocation, cmd building, and spinlock
-> > > > contention on the cmdq->lock for threads that are anyway about to be 
-> > > > elided. 
-> > > 
-> > > We aren't in the perf sensitive path.. most of those aren't going
-> > > to be that bad.
-> > > 
-> > > arm_smmu_cmdq_shared_lock() on the other hand is taken at step 2,
-> > > and the STOP flag in the same function is gated at step 1?
-> > 
-> > DMA unmaps frequently occur from atomic contexts, interrupt handlers etc
-> > Thee Step 1 check in issue_cmdlist() happens under local_irq_save().
-> > We may argue that it doesn't happen for long though..
+On Wed, May 27, 2026 at 11:29:15AM +0800, Wandun Chen wrote:
+> From: Wandun Chen <chenwandun@lixiang.com>
 > 
-> It shouldn't IMHO. At least most of the call sites in this patch
-> are right before calling issue() functions, so they are merely a
-> few cycles away from the STOP gate in issue_cmdlist()?
->
-
-I agree that eliding right before calling issue_cmdlist() might seem
-like an over-optimization. I guess we had this earlier because we didn't
-have ellision in the CMDQ. I'll think more about it (just in case we're
-missing some scenario) and try to perf it to confirm there's no big diff
-
-Otherwise, I guess I'll drop the "early-exit" in v8..
-
-> The only place that might be slightly longer is the inv_range(),
-> if the domain->invs is really long (e.g. nesting parent for VM),
-> in which case, it might be plausible to add a gate. And even with
-> that being said, it should be add to the top of the iteration (on
-> invs->has_ats) rather than before submit()?
+> Reserved memory regions are excluded from vmcore by default unless
+> marked dumpable. Honor the dumpable flag to filter out device firmware
+> regions (e.g., GPU, DSP, modem) reserved via device tree, since they
+> typically contain data not useful for kernel crash analysis and can
+> significantly increase vmcore size.
 > 
-
-I agree.. but I'm thinking if we plan to remove the early exits, does it
-make sense to keep this one? Ideally, we shouldn't be dealing with a
-long domain->invs if we are in VMs (IOMMUFD & VFIO both get a pm_ref).
-So, I guess if we're dropping elisions from everywhere it would be fine
-
-> > > > By dropping these requests immediately, we significantly reduce cacheline
-> > > > bouncing and contention during unmap storms.
-> > > 
-> > > How significantly, so as to justify invading every command issue()
-> > > call site, which would be difficult to maintain? If we really need
-> > > an early return, it would be nicer to have a common place at least.
-> > 
-> > Eliding early is more of an early-exit from the DMA unmap paths really..
-> > If maintaining these high-level elision checks at 4 or 5 call sites is
-> > a maintenance burden, maybe we could move the logic into the issue_cmd
-> > macros? 
+> Use of_reserved_mem_kdump_exclude() to perform the exclusion, and
+> pre-size the crash_mem array via of_reserved_mem_kdump_nr_ranges().
 > 
-> What kinda of macro? Again, if it is added to just a few cycles
-> right before issue_cmdlist(), it still wouldn't seem necessary.
+> Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
+> Tested-by: Meijing Zhao <zhaomeijing@lixiang.com>
+> ---
+>  arch/arm64/kernel/machine_kexec_file.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/arch/arm64/kernel/machine_kexec_file.c b/arch/arm64/kernel/machine_kexec_file.c
+> index e31fabed378a..1d65320c6ba4 100644
+> --- a/arch/arm64/kernel/machine_kexec_file.c
+> +++ b/arch/arm64/kernel/machine_kexec_file.c
+> @@ -17,6 +17,7 @@
+>  #include <linux/memblock.h>
+>  #include <linux/of.h>
+>  #include <linux/of_fdt.h>
+> +#include <linux/of_reserved_mem.h>
+>  #include <linux/slab.h>
+>  #include <linux/string.h>
+>  #include <linux/types.h>
+> @@ -51,6 +52,7 @@ static int prepare_elf_headers(void **addr, unsigned long *sz)
+>  	nr_ranges = 2; /* for exclusion of crashkernel region */
+>  	for_each_mem_range(i, &start, &end)
+>  		nr_ranges++;
+> +	nr_ranges += of_reserved_mem_kdump_nr_ranges();
+>  
+>  	cmem = kmalloc_flex(*cmem, ranges, nr_ranges);
+>  	if (!cmem)
+> @@ -75,6 +77,10 @@ static int prepare_elf_headers(void **addr, unsigned long *sz)
+>  			goto out;
+>  	}
+>  
+> +	ret = of_reserved_mem_kdump_exclude(cmem);
+> +	if (ret)
+> +		goto out;
+> +
+>  	ret = crash_prepare_elf64_headers(cmem, true, addr, sz);
 
-I was referring to the arm_smmu_cmdq_issue_cmd* macros here.
-But I suppose you're right..
+This looks fine to me:
 
-Thanks,
-Praan
+Acked-by: Will Deacon <will@kernel.org>
+
+Although I do wonder whether there's scope to consolidate some of the
+arch code here. Now that you have a helper for reserved memory, perhaps
+the core code could also handle the crashkernel reservation itself as
+well? If the arch code passed in its number of memory regions, the
+core code could take care of (a) allocating the crash_mem ranges array
+(b) excluding the crashkernel and (c) excluding the reserved regions
+(the part you have here).
+
+Obviously that would be follow-up work, but the fact that you're having
+to apply basically the same diff to three architectures is a bit of a
+giveaway that this could benefit from some wider cleanup.
+
+Will
