@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E15E03A2540
-	for <iommu@lists.linux.dev>; Fri, 29 May 2026 06:30:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52011352031
+	for <iommu@lists.linux.dev>; Fri, 29 May 2026 06:40:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780036210; cv=none; b=jyB1q2yTKDETVC8DPuQn6GIHU63VEjiwnCopcaOD9NCv/R/9jjYo2HHBlkzQ4uXYoBpgxSB0ub/gsdmHpEPCgGAUmmWC1mL6RTA0W8e9H22bk5+8CEhUtYQ1qoOyi3FTCN5/Eo258E/JOtQJOU6tzJCs/g0QG8MzNUwqZgW3ZPE=
+	t=1780036818; cv=none; b=jT+dwmGer/grv2ESLhBcIy5CpoNonhdiQdM2IzbgKZjj18SF/DRG+3GQpvMVZRSOHL6JtjCwZ8++jFep1K4Pehd2CTWnvIaPIDCkhpje4mc+CgnkAl3lC5nSk2cLv0F4yCd1I9ULlCo21KwlaFUsBcK/iZHJ8whb77Phfxx7AdM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780036210; c=relaxed/simple;
-	bh=XVFL5+u3D8+RPR15Py+42blBLqa7fTFoC0PlHXHmIt4=;
+	s=arc-20240116; t=1780036818; c=relaxed/simple;
+	bh=RuPeE6gjPC40qKPJlamS/Aiu1t3G8drwyUhBpAA62Es=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=stYJkwV8gENuW8AjFQuEC6Z1TBCerqv+TP+U2+DcF/G1DNJvZKgYny+qvrnkjA07aPQnY7jAmqRJ7XRk3K4psLLIRZJEtpJdSB7ndl+1u7LaDIqErsO7b85wUbCmKdnlVLAISbIxXPH/6GQvX/b8hkUJEhv1lEpTNVofCneRbyI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PMhYoAq9; arc=none smtp.client-ip=198.175.65.10
+	 In-Reply-To:Content-Type; b=OEKjbjaqXPDafS2YYiXqS2YCXzYmVTBxPt1kq4WPVNUaTZGgtuwJDXLhk1iTo0QNYIaQ7HVEPlr6P4GpxT6yaYnbqIi7/s3Z+umVNEK3GWaighfL2w+1Wf67xoyRr3bg1F06qHrHQCO/pBBC+qwVMx6N1rTCPq+P8CmtuBHUKS4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hvgQv2f0; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PMhYoAq9"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hvgQv2f0"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780036208; x=1811572208;
+  t=1780036817; x=1811572817;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=XVFL5+u3D8+RPR15Py+42blBLqa7fTFoC0PlHXHmIt4=;
-  b=PMhYoAq9XXjIjWwdpR9i+WAYKLEtDO/1UdCzEh6fh9CEW6SzDdcu6u3l
-   emc0j/RCIc5TYXJ6DwKtpcqo1DLUujTfZg99yCIo7GRy+I7T0wnrpD89W
-   YCoqDjgYCMMdVt51jblVYMkzOyM151MyPCduW/FzuoB+4vnRV4WN7UOCS
-   PIrcdLsJtmUGRnIWJjX2Iy6/FXWwJDSk27kPhkAbpsN8CY8j1p6HTsa06
-   BaX3EsO/418IVENyicnJLFIdsdx68HjcN2gEsf6oWOIJJ9UdQH7Q9zcHh
-   1sx9KDzluKbvbIucZDH80pnwZCrvbjVCufq07NIa8+/ByuYOoRVQpdxHw
-   w==;
-X-CSE-ConnectionGUID: +Dr2bLZRTza1ufhTCr8DqA==
-X-CSE-MsgGUID: DuK4/WgeQJW6ICLqn8NP8g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11800"; a="98301256"
+  bh=RuPeE6gjPC40qKPJlamS/Aiu1t3G8drwyUhBpAA62Es=;
+  b=hvgQv2f0twK6GFicWULbgPsQsc2s65XtoY+CgrmO9KfUUAUODEnMQ7+Q
+   JTbBvXCtNSuH3OMVz0f+gJDE7PWRNUPUv3/93/KvUNXOxF86x5M94RuyV
+   4m2rA8nT0QD9BmSa7mMjSbI4j02b6CCW6BzCdv4tvMifN4dcbXdSk9VTe
+   hKBnMPqCOeuqgoUyYI19rnL1oOwmteN9wygepqaAb2fTET3mR8B3b6uZT
+   bVGB1JlcwDwgeR0RJ/762RWQkGmILbranrkrNmBAllX53WoobowJmGUuy
+   pVG5akHz72VrRYCF/9cZfbYcS8H6abu9h98yZquSmH5Ei24jIAqevExVg
+   Q==;
+X-CSE-ConnectionGUID: hWWbySKsSYaNzH8FwyC5nw==
+X-CSE-MsgGUID: ZhCUy53BT/Shb4sSnJAKtg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11800"; a="84743552"
 X-IronPort-AV: E=Sophos;i="6.24,174,1774335600"; 
-   d="scan'208";a="98301256"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2026 23:30:07 -0700
-X-CSE-ConnectionGUID: +jpgAPLmQcWBIl/7yRujyw==
-X-CSE-MsgGUID: gAS04WXOTxOmUFitPNnflQ==
+   d="scan'208";a="84743552"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2026 23:40:17 -0700
+X-CSE-ConnectionGUID: f2+Pz2IRQwO0yTKeVeEmcA==
+X-CSE-MsgGUID: O7ZOH8EvRFmSYEg28QuzHw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,174,1774335600"; 
-   d="scan'208";a="241947410"
+   d="scan'208";a="246777942"
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2026 23:30:03 -0700
-Message-ID: <2693467a-eb86-4cb9-9161-db6042b0335d@linux.intel.com>
-Date: Fri, 29 May 2026 14:29:16 +0800
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2026 23:40:13 -0700
+Message-ID: <3fa3d4c9-c083-4167-93fe-814f0ecfcb7f@linux.intel.com>
+Date: Fri, 29 May 2026 14:39:26 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,8 +52,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 3/7] PCI/ATS: Decouple pci_ats_supported() from
- pci_prepare_ats()
+Subject: Re: [PATCH v5 6/7] iommu/vt-d: Fail probe on ATS configuration
+ failure
 To: Pranjal Shrivastava <praan@google.com>, iommu@lists.linux.dev,
  linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  linux-kernel@vger.kernel.org
@@ -67,75 +67,75 @@ Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Pasha Tatashin <pasha.tatashin@soleen.com>,
  Mostafa Saleh <smostafa@google.com>
 References: <20260528202353.3422206-1-praan@google.com>
- <20260528202353.3422206-4-praan@google.com>
+ <20260528202353.3422206-7-praan@google.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20260528202353.3422206-4-praan@google.com>
+In-Reply-To: <20260528202353.3422206-7-praan@google.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 5/29/26 04:23, Pranjal Shrivastava wrote:
-> Currently, pci_prepare_ats() internally calls pci_ats_supported() and
-> returns -EINVAL if the device does not support ATS. While this provides
-> a safety check, it conflates support detection with configuration.
+> Update the Intel VT-d driver to handle ATS configuration and enablement
+> more strictly. Specifically, update the device probe to fail if
+> pci_prepare_ats() returns an error. This ensures that any ATS-capable
+> master reaching the attach phase is guaranteed to have a valid config.
 > 
-> Update pci_prepare_ats() to remove the internal support check. This
-> decouples support verification from the configuration phase, ensuring
-> that drivers can distinguish between a device that does not support ATS
-> and one that has a true configuration error (e.g. STU mismatch).
-> 
-> Update the function documentation to mandate that callers must verify
-> ATS support (via pci_ats_supported()) before calling pci_prepare_ats().
+> Additionally, update iommu_enable_pci_ats() to WARN() if pci_enable_ats
+> fails. Since earlier checks in the probe phase preclude config-related
+> failures, any failure during hardware enablement is considered a kernel
+> bug.
 > 
 > Signed-off-by: Pranjal Shrivastava <praan@google.com>
 > ---
->   drivers/pci/ats.c | 7 +++----
->   1 file changed, 3 insertions(+), 4 deletions(-)
+>   drivers/iommu/intel/iommu.c | 15 ++++++++++++---
+>   1 file changed, 12 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-> index 8057c24b0469..92c2a6bc2dcc 100644
-> --- a/drivers/pci/ats.c
-> +++ b/drivers/pci/ats.c
-> @@ -56,7 +56,9 @@ EXPORT_SYMBOL_GPL(pci_ats_supported);
->    * @ps: the IOMMU page shift
->    *
->    * This must be done by the IOMMU driver on the PF before any VFs are created to
-> - * ensure that the VF can have ATS enabled.
-> + * ensure that the VF can have ATS enabled. Callers must verify that ATS is
-> + * supported by the device (e.g. via pci_ats_supported()) before calling this
-> + * function.
->    *
->    * Returns 0 on success, or negative on failure.
->    */
-> @@ -64,9 +66,6 @@ int pci_prepare_ats(struct pci_dev *dev, int ps)
->   {
->   	u16 ctrl;
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index ed6d3a0203f5..f13da16717fe 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -876,8 +876,14 @@ static void iommu_enable_pci_ats(struct device_domain_info *info)
+>   	if (!pci_ats_page_aligned(pdev))
+>   		return;
 >   
-> -	if (!pci_ats_supported(dev))
-> -		return -EINVAL;
-> -
->   	if (WARN_ON(dev->ats_enabled))
->   		return -EBUSY;
+> -	if (!pci_enable_ats(pdev, VTD_PAGE_SHIFT))
+> -		info->ats_enabled = 1;
+> +	/*
+> +	 * pci_enable_ats() should not fail here because earlier checks
+> +	 * have already verified support and configuration.
+> +	 */
+> +	if (WARN_ON(pci_enable_ats(pdev, VTD_PAGE_SHIFT)))
+> +		return;
+> +
+> +	info->ats_enabled = 1;
+>   }
 >   
+>   static void iommu_disable_pci_ats(struct device_domain_info *info)
+> @@ -3292,7 +3298,10 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+>   
+>   	dev_iommu_priv_set(dev, info);
+>   	if (pdev && pci_ats_supported(pdev)) {
+> -		pci_prepare_ats(pdev, VTD_PAGE_SHIFT);
+> +		ret = pci_prepare_ats(pdev, VTD_PAGE_SHIFT);
+> +		if (ret)
+> +			goto free;
+> +
+>   		ret = device_rbtree_insert(iommu, info);
+>   		if (ret)
+>   			goto free;
 
-I am not sure that the removal above ensures that 'drivers can
-distinguish between a device that does not support ATS and one that has
-a true configuration error (e.g., STU mismatch)', especially considering
-that this helper already has a return value that explicitly conveys the
-failure reason.
+Sashiko made a valuable review comment, and I believe it applies here as
+well:
 
-Furthermore, if a caller misuses this API by calling it against a non-
-ATS device, the following code executes:
+[Severity: High]
+Since ATS is an optional performance optimization, does failing the
+IOMMU probe when pci_prepare_ats() fails break backward compatibility?
 
-         ctrl = PCI_ATS_CTRL_STU(dev->ats_stu - PCI_ATS_MIN_STU);
-         pci_write_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, ctrl);
+This completely prevents devices with buggy ATS capabilities (or VF/PF
+STU mismatches) from attaching to the IOMMU.
 
-This causes the driver to attempt a write to an invalid or non-existent
-PCI configuration space address. Instead of removing the check from the
-function entirely, how about adding a WARN_ON() around it?
-
-	if (WARN_ON(!pci_ats_supported(dev)))
-		return -EINVAL;
+Could this disable DMA translation entirely for hardware that would
+otherwise work correctly without ATS?
 
 Thanks,
 baolu
