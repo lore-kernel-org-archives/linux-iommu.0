@@ -1,78 +1,77 @@
-Received: from mail-qv1-f47.google.com (mail-qv1-f47.google.com [209.85.219.47])
+Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A86BF3D9DC5
-	for <iommu@lists.linux.dev>; Fri, 29 May 2026 11:51:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B58C83DE423
+	for <iommu@lists.linux.dev>; Fri, 29 May 2026 11:53:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780055482; cv=none; b=gAv9pHNebf1CYD8DAKId8vq3XmSmqlh6+eI2RVAa2dSztPWyAk+Azf5e407RS4dsCWQa43AY6vdHLpLyARFA2YkhioipLur870qPMSBU5KU9uPVUz8wYjUd8klOqhWr95mY0xR2ZXqZZuYzJiVDtqfr5QSDCPMxC7grfnN6Z8wE=
+	t=1780055619; cv=none; b=XsjXuzzlqaZYhucFxYzdE5rRoa+caXuiBFzKnNeWBJiQxxcKZRCoIJyX9mNCrV6NEYZzlloE8e30NzWsCLqAgQYygvgG1EOdpdJKZK7mpyTSpK+m1ymnlHM54cogNFd/Z2FGWlMp4kzspPDZyWJqx6dU5OlgVKH5+5FEVTZx+e8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780055482; c=relaxed/simple;
-	bh=54vAzaIEYqsXM3xuiGWXl2HbeuhzM33ptPMT3OM8+FI=;
+	s=arc-20240116; t=1780055619; c=relaxed/simple;
+	bh=G5xyrYCedBBiBjXLX9BpdfYmvPBNHuGbUEBN61ILOAE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uFW8MD4SCcp8lyeANgG+GIsNKVe0Yo4hQtp9zQ+hv+oWqfAHQJQQ48+hKjC4AB/F+0UnyjtZT/KlcieDjdxz/9Za/TIpcQt58yAobd4wttooJeeawCwBeTenDWFXzUpgjgkPmq56Uuka8XUOjjoW1yoeDMVsgdgybhfpsq9F9W4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=UBlxds/F; arc=none smtp.client-ip=209.85.219.47
+	 Content-Type:Content-Disposition:In-Reply-To; b=JE7FwiEG4zqZp1cEXJ+81GrrUIYyHCAZN0B23DIzXZiaT9qN6Y8b4NIm0BWq4iqYNKOXVI6t8nSdb0VWMlFOc7oQv+MzO56MWiYdFUTODFyf8R30xFSUoMU9VQCdQzHOjhRqa4CHuL6S9yrMfb9oZe6aYIGy7x0FZcyrc0j85fE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=eItjbaSS; arc=none smtp.client-ip=209.85.219.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="UBlxds/F"
-Received: by mail-qv1-f47.google.com with SMTP id 6a1803df08f44-8ccea53f35cso4449466d6.1
-        for <iommu@lists.linux.dev>; Fri, 29 May 2026 04:51:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="eItjbaSS"
+Received: by mail-qv1-f44.google.com with SMTP id 6a1803df08f44-8cc0ef7c306so112863386d6.3
+        for <iommu@lists.linux.dev>; Fri, 29 May 2026 04:53:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1780055479; x=1780660279; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1780055618; x=1780660418; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=MawsOr5g5TsZEGLcgJS401SzBvbOX6ouP0Fchc3e/Ro=;
-        b=UBlxds/FrMMG1khhSHQe69oiHGhSAmKKFHXvV2ykMg/v3HsaXbgfCcPCPTtLHUkB8P
-         5ynWJNc0EtAYDUgdxhtQa8s7ysqc7zHKAy95z+KQB+rl0g5IoW9ly5U9fToLipD6+XUP
-         QAgt+PhDGOxaYJlqpoc17BHCAEK1spw0h1EkM1b86W7h0VNU7r43BB6EfLVInshKlD4m
-         PbNja1XWF3LaJM9MqTCG165qzipBFt6+cJm6qkBhnAb5IDeLzAQfcy583/1lUsOLj5oc
-         xafJ2jr955D2Ozs+rf02owphKrNsc1aNkj1hihrp6yb45YPTg54BRKGxDKOmrHHoxU2l
-         da7w==
+        bh=SdNhpYSdJLZFqMwO9tkYt495l1ZUqFPFFf63TsgVKd0=;
+        b=eItjbaSSsIA0MnzmyPR00tpqUHWdzQK/74v9V0JBmoIdAYiUE6gbk7RKWmuTpchISr
+         uMa604YGApCFYeVQkaQfEwbBDwdCr0BNMT/PqhZWs9L2om/mcBHzYw8+E19pK0F+M3rd
+         k5RmktMGjE+vOOa7Oh5fxb0bjx3hute2Fr8hLEdF0+IaAdB++8KduWlRP57X2jYN76FI
+         s9k4NiwdlJrzK1zu5r7o9gonEHyYMOhDGtsz5gAlDuiszEHQJ//Qf1euYZgoHQUxvDgE
+         p4qrOFac/ZKBnOGroOr2TEN10c9nVijtvl0aMqe0hHnvBaufhG8tXMWsTK7k0eh9xWiu
+         e8yQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780055479; x=1780660279;
+        d=1e100.net; s=20251104; t=1780055618; x=1780660418;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=MawsOr5g5TsZEGLcgJS401SzBvbOX6ouP0Fchc3e/Ro=;
-        b=ftwg2OY2Rzmv4yU9VkvLMvI+BdAg0kmFk4z4ToBwu09v81MizKguJ9FCHbGzOjbFUF
-         fbSufrPtTALQX9qnMCKJxHNm+S2RwesEX7MwwswthValbQxD4DUIESAMpU8o+GlpwHpz
-         eLykrpY60DviVzzQHYHwEAH4pobWKGmm5F0erV7KkA//A29Yf9/u5SlgavrOuxEw6jXr
-         0OOEImcwj53LTl4RLkgGkIqqLNwh/m4GAOpzCRIll5EixXpws7f3MCkqNOz6sNey5ZnI
-         TQSyn/gKBoC1xSmE11w2mnjNSHrebqgENMibq016CEQRCGwOmfG/FaqFR8XrT5TDvQ4Z
-         rEBA==
-X-Forwarded-Encrypted: i=1; AFNElJ9cJdkilm+HOmCZK4slfdI4nMlbqkxu22MfJQ3BQVCIl3dBChbqBZf25K8itVFAqlaupWPmOw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyzgYvHq0qEPYW7NQu7o5+VfXTa/GOo8Ys1BgHtDlXyr2imW4I3
-	k2yEcWA5JYuA+rW9qeLnt5lAAzFOtBy51l6Dc7FziLQn8766lFNXT6GOD1TwehCp4EE=
-X-Gm-Gg: Acq92OFvRQO3aMSLPgAQSdZk7hWFTkbqCMFXmnELyz1jcY3lb8DpBY5mTXUqTFyb5cQ
-	Mzw1maF/30FlnmQg2orm0iW+A8Gyc+H8a6gbq0nM9aIqF/pDNG1olrHYahcmfY1BMDdg54dc7Tr
-	HpgtOhwUn7tD1vhXmkHtJUARRv0ZYLEh6AQ93ATvJx52ewJOQ6OY0w/SotUK9eQMZPsfraE/HRi
-	+Ix9tree0vZv0ukJ+dEj26J1P3vkFMSmJJ313ihRUl9de0GauWTXnT3xzKtHy4ilN72v+JZj4Bq
-	MDnCwSGZtUM+s07w4uZGd+/C3BGt4tPgvVrI5Cz+CK23uHsChDxIn+gj6s6IJrmCYfPpkVcm2U2
-	ivFipjC9ffg4ZJ8wE+TUjrnc1Zfjwz/BDJL4zxwyEyp9xNwn1schvA4GPXJoZJQvO9vqePFZV6t
-	iifeGAxMsApK9FyeXhGQuIwMW7YeLXFtL17qQPKBsn+aDMFf/gQSGgtJdhV5HO3QOBwKRZRV9cs
-	JkU8b1KhhKtrqA/
-X-Received: by 2002:a05:6214:3d08:b0:8cc:e14:9594 with SMTP id 6a1803df08f44-8cce829b0admr31409816d6.33.1780055478649;
-        Fri, 29 May 2026 04:51:18 -0700 (PDT)
+        bh=SdNhpYSdJLZFqMwO9tkYt495l1ZUqFPFFf63TsgVKd0=;
+        b=kpen7jhslzYwLkLq/FPHQKWa0X4sGyR4FiHTtSwxtlJ0sauxKS3Etvfb6jxNkbetq2
+         jfYEHxigvI5vV6rxH2Jw0ifYayTnkTo5EVf0ZMfI+YZQPeRR09LJJVHDJHDV7vmapJ6u
+         JTG8MeiyWQqz7pUOQk32sR5bS2cNGCRNIH0mdhnMlmO9E3AlyK+4bQyMgxWwt4G6wP3L
+         N3LYzzwnMtnz7wDEe7EjOtX7OMeQUL4eZdfWXXlBOtC+Rdu/WiLXFKmLOkwc1EpKaxy7
+         GOINN/McwhVto2495dqTAelrdY1roJKb1mqqYX8G6E1tWlw4kuPS1/H9AvFB9w/bP953
+         utLQ==
+X-Gm-Message-State: AOJu0YxEuaiEJSO2k+n/o9+KOtLeOgtg+v7anHHo0jj+4fF6PHIpL4D4
+	3BkKUGkIQdYodVJLWCoD62D1pN5s3HmJ3/4DfB4xxISOejxWMjvwHNzmQQWyEjZaO2nJW1G729D
+	DhbBD
+X-Gm-Gg: Acq92OFsj0+MoO02gA8pdnWJTUuC2IP4q+1Ku2rgP15T/UsL7SVxkI0z5fRgQufLpaV
+	nwttu9LMFSJJi2gOouxIkVxInFYxcb99JRi8gq1yvQbEPvwrTEbgvltR63WYPTP2h9HjZyOOzGv
+	G4W6SPl1ZK+h+yDquY0Pcdj0YbPx5DBn97PAWFhTBV9H5tNS+PgRg7mZSctawgYdu61I83GJWgZ
+	pqTttKy4wq8CJEa4TiDJpaMfPyTCexy7iqnjE2chnFeQ87w59DmWV4w24IoWMngKRSfAIFb/RJQ
+	lqW1etrZXlohFjrxuDypr5hTovI0B7JoEHK7A1fk33KZgKD9oRYqQpoNM0Zwm0/4GZ5t2g0/ctg
+	AWpuzYWgb1U7GkCOhoWB+1XUWkT9H5Nu5cJChVfi8zMPtCL7joBF2iW+M+iV9ujebq0kcZdqMbP
+	wAZfx6bXgzEKqbtorm7OP2xggiWgMWVK6KDkcFEBIUO9dnVstU9pw6CERCqU0EKx4H+mCaqTbFP
+	DJ9zCY5+vE1Vc7iB4RiMIsF9zI=
+X-Received: by 2002:a05:6214:626:b0:8ba:ad10:97b with SMTP id 6a1803df08f44-8cce8035ea7mr28459056d6.41.1780055617749;
+        Fri, 29 May 2026 04:53:37 -0700 (PDT)
 Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8ccea0451c7sm12666566d6.6.2026.05.29.04.51.17
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8ccea245e56sm14706746d6.43.2026.05.29.04.53.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 May 2026 04:51:17 -0700 (PDT)
+        Fri, 29 May 2026 04:53:36 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1wSvkC-00000000SKF-3RtJ;
-	Fri, 29 May 2026 08:51:16 -0300
-Date: Fri, 29 May 2026 08:51:16 -0300
+	id 1wSvmR-00000000SVP-1Len;
+	Fri, 29 May 2026 08:53:35 -0300
+Date: Fri, 29 May 2026 08:53:35 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-Cc: joro@8bytes.org, suravee.suthikulpanit@amd.com, will@kernel.org,
-	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
-	alex@shazbot.org, kevin.tian@intel.com, skhawaja@google.com,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	kvm@vger.kernel.org
-Subject: Re: [RFC PATCH] Optimize VFIO and IOMMU mapping traversal
-Message-ID: <20260529115116.GR2487554@ziepe.ca>
-References: <20260529070932.2632907-1-guanghuifeng@linux.alibaba.com>
+To: Shameer Kolothum <skolothumtho@nvidia.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, nicolinc@nvidia.com,
+	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+	nathanc@nvidia.com, mochs@nvidia.com
+Subject: Re: [PATCH] iommu/tegra241-cmdqv: Skip CMD_SYNC flush during remove
+Message-ID: <20260529115335.GS2487554@ziepe.ca>
+References: <20260529091052.317102-1-skolothumtho@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -81,47 +80,23 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260529070932.2632907-1-guanghuifeng@linux.alibaba.com>
+In-Reply-To: <20260529091052.317102-1-skolothumtho@nvidia.com>
 
-On Fri, May 29, 2026 at 03:09:32PM +0800, Guanghui Feng wrote:
-> In VFIO, vfio_unmap_unpin requires performing iommu unmap and mm
-> unpin on the address space. However, VFIO doesn't record the PHY
-> address corresponding to iova, but instead obtains the iova-PHY
-> mapping through iommu_iommu_iova_to_phys.
-> 
-> In IOMMU, under conditions such as address alignment, it prioritizes
-> mapping iova-PHY based on bigpages. Therefore, during the
-> vfio_unmap_unpin process, traversal can be performed at the
-> granularity of the IOMMU map, reducing the number of
-> iommu_iova_to_phys queries and significantly improving conversion
-> efficiency.
-> 
-> Therefore, an iommu_iova_to_pgsize implementation is added to the
-> IOMMU driver to return the pagesize used for the iova mapping.
+On Fri, May 29, 2026 at 10:10:52AM +0100, Shameer Kolothum wrote:
 
-This is the wrong API, what we need here is an iova_to_phys variation
-that returns a size so physically contiguous IOPTEs can be joined.
+> @@ -789,6 +794,13 @@ static void tegra241_cmdqv_remove(struct arm_smmu_device *smmu)
+>  		container_of(smmu, struct tegra241_cmdqv, smmu);
+>  	u16 idx;
+>  
+> +	/*
+> +	 * tegra241_cmdqv_remove() is added to devres at the very beginning. So,
+> +	 * at this point, devres has already freed the SMMU resources that this
+> +	 * path must not access to avoid a UAF.
+> +	 */
+> +	cmdqv->removing = true;
 
->  drivers/iommu/amd/iommu.c           |  2 ++
->  drivers/iommu/generic_pt/iommu_pt.h | 53 +++++++++++++++++++++++++++++
->  drivers/iommu/intel/iommu.c         |  2 ++
->  drivers/iommu/iommu.c               | 25 ++++++++++++++
->  drivers/vfio/vfio_iommu_type1.c     | 17 +++++++--
-
-If you care about performance use iommufd, and patches like this have
-to update iommfd too.
-
->  static const struct iommu_domain_ops amdv1_ops = {
->  	IOMMU_PT_DOMAIN_OPS(amdv1),
-> +	IOMMU_PT_PGSIZE_OPS(amdv1),
->  	.iotlb_sync_map = amd_iommu_iotlb_sync_map,
->  	.flush_iotlb_all = amd_iommu_flush_iotlb_all,
->  	.iotlb_sync = amd_iommu_iotlb_sync,
-
-It should be routed through the private ops structure, and even if not
-no reason to make another macro.
-
-This would also need to be split into a patch adding the core API
-function and then updating callers.
+Please don't add random bools to avoid devm bugs. Just don't use devm,
+or maybe fix the devm ordering.. These ordering bugs are a well known
+problem with using devm :(
 
 Jason
