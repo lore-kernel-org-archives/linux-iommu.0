@@ -1,107 +1,135 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B3723546C2
-	for <iommu@lists.linux.dev>; Sat, 30 May 2026 13:33:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C0CA284896;
+	Sat, 30 May 2026 16:25:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780147999; cv=none; b=ScWd5vkjGY9rZkq3oCNZL3peRL7fmP0kPbwqiW2uq5atyeNNHgICD3SGN7oKoCsZszFBJ7w+fYlOXdSJ4yQPItROuROlDYupbD9XUxIj56cUbO2yaxkr05lgrt2x1AGuCVqHQt+mVhCQ3/dMfODkCSE9Io+9dU8vD+/LDy2b1sY=
+	t=1780158335; cv=none; b=cwhWopL2xD1Umg46DC+dKvBm2pLvCozeyFFYcRsBIycvUK0Cee1xHVEqRrLo4esQTonn94CAmPJgAYcXeXABklh839YMpuWyMfbQ/aGrQOPWECespuY+HXKO9o1kAaCv7iup98QEyEUuhG2ULJ5YT5U14uCWwE6UETrGqAAtpME=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780147999; c=relaxed/simple;
-	bh=DV8avSd2gR/xIE3FWT+avQsI+z9YZ+nQwoYVboIYLIE=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=RF0vIDU/56lWE1Qo8S5hDNlQPjDnwPpqaDhO+C8oauryZVk9lMsJuaNgXXpahjSF3DNfc69zO4rqN487sN/Vx6FaXN1pVA9cJ2xS5hec2pmEQmB1hCVjj+/UBN4kcnlPVtVq2xAh5wPwRGnbNpu7rNCZX/EAK0OeyTVNOELYejA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YDYdP5kl; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1780158335; c=relaxed/simple;
+	bh=UI6qIUcdsGpcmlZEaRcN8lnF8eMeDTz+BLiIgpkN3xo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CogE72AEwKuhotX86FtgOv8pzBN12Zir3P+XaRuvQD7JucQSUj/YQvihsThgSOTyY48vsvfT0PpNlukdrKi78V/ulo92/fienGAo07k8I2dMyGk3lIleiUDlcMWqIXPQekNJ0nxe4UOzpAxugoJXfFaLrAxbdNYTK6Dc3mp4HuI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZNZulNZW; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YDYdP5kl"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780147998; x=1811683998;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=DV8avSd2gR/xIE3FWT+avQsI+z9YZ+nQwoYVboIYLIE=;
-  b=YDYdP5klTXjobgPN0ZJWggGrjF8YIWqOgLfGfrybmNzrla27k0yHkKoi
-   kY915ik6MRP7OvqqsAr3X2hi3OPMysq7QPz5gG/1SE6/5G61wnbOUCXBp
-   PjwQL+IelNYdCdP0RDq/6loWUowwh8WZe6ZxRVVwcNGBSJfZihNgaInSA
-   /pyVWU3nBZ6m2gQdaMkxg1GWAcC/QA4HfWWgHQKtmu0bn48BP9z4ATi/D
-   PcCFNAbnnrllOT85Ms+1Ta7DNNTMK2YNnS96+rmSwt+aqHoJTcp8JEZ9r
-   6zbzGP+01YNtz8ACvKJw5RuvrsQ89EVjsfzE0cfkddxSztJ7jgjaljRfu
-   g==;
-X-CSE-ConnectionGUID: XaaP/RYLS/iukit1QllRhw==
-X-CSE-MsgGUID: EKn4XDmfSFGxgNyes+YxhA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11801"; a="98547931"
-X-IronPort-AV: E=Sophos;i="6.24,177,1774335600"; 
-   d="scan'208";a="98547931"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2026 06:33:18 -0700
-X-CSE-ConnectionGUID: AQWeH3t5SPazRAC00+l+ZA==
-X-CSE-MsgGUID: uo024BNSRNiSHhfP9rRR8Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,177,1774335600"; 
-   d="scan'208";a="266739136"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.248.249]) ([10.124.248.249])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2026 06:33:15 -0700
-Message-ID: <fa33f355-a21d-4d6c-ad45-c2bd455a9eab@linux.intel.com>
-Date: Sat, 30 May 2026 21:33:12 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZNZulNZW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB20F1F00893;
+	Sat, 30 May 2026 16:25:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780158334;
+	bh=1suTZzjeKKm1M2CPVaqVj1nFGVAvH1OGHJ6QIFVOJpU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=ZNZulNZWopBoouy0/z4gcjC11VMW+fTvUrQ09qpmPKznqSj+bQDP9lcOybTNBz00u
+	 jq7ay/ejY+Cb+GCmiHvxtp2t6DeCzHRKhhyy+f5sufkOPpJR0B+nFfwxWfJvFRce2s
+	 VqGaGsio2ebJiwUKmS4D+Mr1+pnZZjeL8cHrQV8cEEaGQoQExr8ByXCCUH5EpMbUp4
+	 NNX5fsoQ/L/HfuSCRU2U4PvdPmeW8OcKs8RQkEBbDMlPiVfQTcx3Eaz1uAR/9130L6
+	 Mi2kaeXpxLG0x3MrzfXvcWrftE68RFqLXGMiYQs8S31o7y6Phs/1MZY6/armSuLsIF
+	 hk7vRncNndt8w==
+Date: Sat, 30 May 2026 19:25:22 +0300
+From: Mike Rapoport <rppt@kernel.org>
+To: Will Deacon <will@kernel.org>
+Cc: Wandun Chen <chenwandun1@gmail.com>,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	loongarch@lists.linux.dev, linux-riscv@lists.infradead.org,
+	devicetree@vger.kernel.org, kexec@lists.infradead.org,
+	iommu@lists.linux.dev, zhaomeijing@lixiang.com,
+	catalin.marinas@arm.com, chenhuacai@kernel.org, kernel@xen0n.name,
+	pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu,
+	alex@ghiti.fr, robh@kernel.org, saravanak@kernel.org,
+	akpm@linux-foundation.org, bhe@redhat.com,
+	pasha.tatashin@soleen.com, pratyush@kernel.org,
+	ruirui.yang@linux.dev, m.szyprowski@samsung.com,
+	robin.murphy@arm.com, quic_obabatun@quicinc.com
+Subject: Re: [PATCH v3 09/11] arm64: kdump: exclude non-dumpable reserved
+ memory regions from vmcore
+Message-ID: <ahsPcv8G1BR9rLah@kernel.org>
+References: <20260527032917.3385849-1-chenwandun1@gmail.com>
+ <20260527032917.3385849-10-chenwandun1@gmail.com>
+ <ahmr-UjoApj2j5JS@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Samiullah Khawaja <skhawaja@google.com>, sashiko-bot@kernel.org
-Subject: Re: [PATCH 2/2] iommu/vt-d: Fix Use-After-Free in probe error path
-To: Pranjal Shrivastava <praan@google.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20260529113410.491538-1-praan@google.com>
- <20260529113410.491538-3-praan@google.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20260529113410.491538-3-praan@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ahmr-UjoApj2j5JS@willie-the-truck>
 
-On 5/29/2026 7:34 PM, Pranjal Shrivastava wrote:
-> When intel_iommu_probe_device() fails after the info structure has
-> been linked to the device via dev_iommu_priv_set(), the error path
-> calls kfree(info) but does not clear the pointer in the device
-> structure.
+On Fri, May 29, 2026 at 04:08:41PM +0100, Will Deacon wrote:
+> On Wed, May 27, 2026 at 11:29:15AM +0800, Wandun Chen wrote:
+> > From: Wandun Chen <chenwandun@lixiang.com>
+> > 
+> > Reserved memory regions are excluded from vmcore by default unless
+> > marked dumpable. Honor the dumpable flag to filter out device firmware
+> > regions (e.g., GPU, DSP, modem) reserved via device tree, since they
+> > typically contain data not useful for kernel crash analysis and can
+> > significantly increase vmcore size.
+> > 
+> > Use of_reserved_mem_kdump_exclude() to perform the exclusion, and
+> > pre-size the crash_mem array via of_reserved_mem_kdump_nr_ranges().
+> > 
+> > Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
+> > Tested-by: Meijing Zhao <zhaomeijing@lixiang.com>
+> > ---
+> >  arch/arm64/kernel/machine_kexec_file.c | 6 ++++++
+> >  1 file changed, 6 insertions(+)
+> > 
+> > diff --git a/arch/arm64/kernel/machine_kexec_file.c b/arch/arm64/kernel/machine_kexec_file.c
+> > index e31fabed378a..1d65320c6ba4 100644
+> > --- a/arch/arm64/kernel/machine_kexec_file.c
+> > +++ b/arch/arm64/kernel/machine_kexec_file.c
+> > @@ -17,6 +17,7 @@
+> >  #include <linux/memblock.h>
+> >  #include <linux/of.h>
+> >  #include <linux/of_fdt.h>
+> > +#include <linux/of_reserved_mem.h>
+> >  #include <linux/slab.h>
+> >  #include <linux/string.h>
+> >  #include <linux/types.h>
+> > @@ -51,6 +52,7 @@ static int prepare_elf_headers(void **addr, unsigned long *sz)
+> >  	nr_ranges = 2; /* for exclusion of crashkernel region */
+> >  	for_each_mem_range(i, &start, &end)
+> >  		nr_ranges++;
+> > +	nr_ranges += of_reserved_mem_kdump_nr_ranges();
+> >  
+> >  	cmem = kmalloc_flex(*cmem, ranges, nr_ranges);
+> >  	if (!cmem)
+> > @@ -75,6 +77,10 @@ static int prepare_elf_headers(void **addr, unsigned long *sz)
+> >  			goto out;
+> >  	}
+> >  
+> > +	ret = of_reserved_mem_kdump_exclude(cmem);
+> > +	if (ret)
+> > +		goto out;
+> > +
+> >  	ret = crash_prepare_elf64_headers(cmem, true, addr, sz);
 > 
-> This results in a Use-After-Free regression if the pointer is accessed
-> by a subsequent IOMMU core call or a re-probe.
+> This looks fine to me:
 > 
-> Fix this by ensuring dev_iommu_priv_set(dev, NULL) is called before
-> freeing the info structure in the error path.
+> Acked-by: Will Deacon <will@kernel.org>
 > 
-> Fixes: 89436f4f5412 ("iommu/vt-d: Fix WARN_ON in iommu probe path")
+> Although I do wonder whether there's scope to consolidate some of the
+> arch code here. Now that you have a helper for reserved memory, perhaps
+> the core code could also handle the crashkernel reservation itself as
+> well? If the arch code passed in its number of memory regions, the
+> core code could take care of (a) allocating the crash_mem ranges array
+> (b) excluding the crashkernel and (c) excluding the reserved regions
+> (the part you have here).
+> 
+> Obviously that would be follow-up work, but the fact that you're having
+> to apply basically the same diff to three architectures is a bit of a
+> giveaway that this could benefit from some wider cleanup.
 
-Fixes: eda1a94caf6b ("iommu: Mark dev_iommu_priv_set() with a lockdep")
+There are patches that move common code to kernel/crash_core.c:
 
-> Reported-by: sashiko-bot@kernel.org
-> Closes: https://lore.kernel.org/all/20260525205628.CD4431F000E9@smtp.kernel.org/
-> Signed-off-by: Pranjal Shrivastava <praan@google.com>
-> ---
->   drivers/iommu/intel/iommu.c | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 2702e9aa2241..6c718adf97ae 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -3320,6 +3320,7 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
->   clear_rbtree:
->   	device_rbtree_remove(info);
->   free:
-> +	dev_iommu_priv_set(dev, NULL);
->   	kfree(info);
->   
->   	return ERR_PTR(ret);
+https://lore.kernel.org/all/20260525084932.934910-1-ruanjinjie@huawei.com
+ 
+Review from arch maintainers would be helpful there ;-)
 
-Thanks,
-baolu
+> Will
+
+-- 
+Sincerely yours,
+Mike.
