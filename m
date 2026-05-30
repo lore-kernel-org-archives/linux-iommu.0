@@ -1,147 +1,144 @@
-Received: from mail-dy1-f201.google.com (mail-dy1-f201.google.com [74.125.82.201])
+Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7D1A375ADD
-	for <iommu@lists.linux.dev>; Sat, 30 May 2026 21:26:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1E4730FC03
+	for <iommu@lists.linux.dev>; Sat, 30 May 2026 21:39:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780176376; cv=none; b=I8pcbCBjjY2nZWEbK+LzfF2JJmeb/pbO46Q+2nL1rHWs2k1u0DLElIIAV6oTNaMMaw1XGCwqNl27r0nOuhj0EocHKORxszFxzg3V8kjA2+OpIoXayIBV5XCXz1PNI+kC6t+LyS3s3LOkqIvg3TCNAUZr6LN8Dfu/WhRBmSC6ths=
+	t=1780177188; cv=none; b=FVI8L8bwj4U7JH1xyeVsWWDoZB8KFDfAVbZuQPFidMk9K7kbe2pgW+ANpXbNl1pD/PO/qctn7Gj/IKJl5a3Dwnubs4ofCsDRZsMuasV2fnkV5+Kg00U69J57o1g3vc0Ago7uxs9fwcK0+HGT+lEf2OofmHcNRzUVcDz/x/auD/c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780176376; c=relaxed/simple;
-	bh=FKeXBMG4Cj7Cyt3ypaR9eRSU6jdrCpJQcLrE7d8WCyk=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=EJ6LYJRAPVKJPLtKFLlqK45nlSp0y7HUfJo8KX06RKqjXQAVCz0BjcMFKYFuMpwPnl955Qhcc1YqDviMe2QK8tvvhnHPqJ65sHnU1+rK03REyO57P50HeHkWS0m9ZMS9mZ1h1pwtFa13Phbjz9KIw4qCLipel7aW0KawnQMdmKk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=qRN8cSJK; arc=none smtp.client-ip=74.125.82.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com
+	s=arc-20240116; t=1780177188; c=relaxed/simple;
+	bh=CkAwCQ70kgagdEEU0IM9lUp5FDHJMlhvJgev/qc90gc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=bN+oFwPnPkKE1hM30pfXLjXod0aQkuqEAWE7tRPgOrIK1lEq4Exk7eIFjZq5pO/Geh0jrgWZQckA3MpH8uXvkm8gTAgHS+t1+Vr9+KrJM/t9KdQhqHTrPDQ4wauDV3ZX1MfsNh/Q4idUyrzs9jR8eod1WxyeG6m32sLP0MqquxI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=gKEIyIDp; arc=none smtp.client-ip=209.85.208.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="qRN8cSJK"
-Received: by mail-dy1-f201.google.com with SMTP id 5a478bee46e88-304dd917645so2584690eec.1
-        for <iommu@lists.linux.dev>; Sat, 30 May 2026 14:26:14 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="gKEIyIDp"
+Received: by mail-lj1-f169.google.com with SMTP id 38308e7fff4ca-3965f215817so11311411fa.3
+        for <iommu@lists.linux.dev>; Sat, 30 May 2026 14:39:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780176374; x=1780781174; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:references
-         :mime-version:in-reply-to:date:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=FKeXBMG4Cj7Cyt3ypaR9eRSU6jdrCpJQcLrE7d8WCyk=;
-        b=qRN8cSJKKm6gCFwpI2hkrABmzBgxMpdXZfYrauh2Dw0Lu/2FZ9CIZ7Ee+MwMHxKsOR
-         H1KZMBAvLYs6f5B7lEk3xoaFJtVEaN2MLnPVu2+VNazxpZyHSDjM49mRWjHj4naW4QsX
-         t1JBI7MCwol3BL+sl+QSLP7thRqPx7/AaBnDk/SguXNt+LARcHDyd0MMGfSmweXWnuE0
-         o00MMPOCk612jsOVxKZLAlR46xACqKp4ERHe4sE9iG7bQEmrMUUHUmMq3xA54g2iANfw
-         Tspoux5Jprse3KII0YoyaY2sfT1r9JAY27G8tt4JG3Ed6nGnnTdyHfsDgltdD0GmW0KZ
-         dWUg==
+        d=chromium.org; s=google; t=1780177185; x=1780781985; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=uHjLm5yZVaqWyJ02pwhoH7CQXdVKY/DTm5HnPQmN1y8=;
+        b=gKEIyIDphFv/wYK8RUfG+eC6p/aC5PeS3SkAjkFTBvlnhiuzb1T6u5Wjf/YSDLDd4m
+         KkgoyQDgvSkuJTh4YWPTLjkk5wl1N6ouipIblD+5lhH/sftU8ri/91YqkkrcNSNRhBHs
+         yxbCKoNfBO1WYkf7nxxN6764BRRDBTDfXwgzU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780176374; x=1780781174;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:references
-         :mime-version:in-reply-to:date:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=FKeXBMG4Cj7Cyt3ypaR9eRSU6jdrCpJQcLrE7d8WCyk=;
-        b=ip2ZzfFHvH/GAa+8rOVDWVMC6vZJB3iiGrFXQjWv+346aiN+y7SDP35dY+f2bvOrTe
-         53DudX1GYZQhjM21IlVjw/sDrumFTiMjjjtMp9G0lw4nLEx1juN1141AFcdeY90cOG+H
-         /R49aKH+jr8l7pmWMF7fbeb7cbC8pZRHZpjuFj4B8pbur1mhARCdxstTP5JV6AfEa1LI
-         p7vdDWG9/0Z/9lcCOxkHtgAvFW+pXoch5IMy7Klto1ILngiIXbrC5MklcAZnBYTzBEq5
-         TwBvl+SOV+KkMZZyfrjSJGnxi0cDZAG5pXRZ3mLW3nF5Mjb4qIcDWKaa54tCq4+t6SdI
-         MJTA==
-X-Forwarded-Encrypted: i=1; AFNElJ/j809o0AWhgUa/TxwPjH4GWPgVGIRZapZF1SlWLQDvHe8zO7zMYQdveLH0SAQ06SMr7RnIBQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwO2cPmVNEPtYksUa8gojks5Fib1fJ+HlLO6eOZjO7cAt5pKA+D
-	MVVRe7N3KMSf9r4dHakvKpEOCv2Ym5zlArQKQnMibyk8rSaMI+fulPuIiwEz/yjtfVZgHJ/6O2l
-	rmA==
-X-Received: from dybts9.prod.google.com ([2002:a05:7300:f589:b0:303:9bd4:479a])
- (user=wnliu job=prod-delivery.src-stubby-dispatcher) by 2002:a05:7301:290b:b0:2ed:e12:3769
- with SMTP id 5a478bee46e88-304fa6b6007mr2483916eec.31.1780176373775; Sat, 30
- May 2026 14:26:13 -0700 (PDT)
-Date: Sat, 30 May 2026 21:26:12 +0000
-In-Reply-To: <20260528051738.596013-14-suravee.suthikulpanit@amd.com>
+        d=1e100.net; s=20251104; t=1780177185; x=1780781985;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=uHjLm5yZVaqWyJ02pwhoH7CQXdVKY/DTm5HnPQmN1y8=;
+        b=fcqyNLJYBjw/MLbaKCkqi/ivda+pYgZdUx9aV3ZxT6wcvrCM0QdxMM+/OdWrCx+ecZ
+         BQTEeYsPs00uwMYhYcBh+TTAR9u2dEqOzl5tWec1EzKduXGOfj3xdBiVik6L864+KN63
+         Al3r1QXYdibcvExcUFF0u6GRZ89JDslCtKNsA4gyZBZS0QFRSI8kiXxBWNaZFzO6X0V1
+         UpGzxp/nxWSisrtq29QvKu5qtpNWn1hMIGVuTS2MVyBB1Nc2HsAnYdA0ralcV4tXDAdO
+         k0oIM/23ebXM8baSEoXCYt5DrHpPFakoczSD8eazuBQNzxjtRx3gFsPnV+niidl8d8IG
+         pLnA==
+X-Forwarded-Encrypted: i=1; AFNElJ8YFScMFGcuj/NsQDk9iCUlS6SuNINWvfoQoKRi87x/2FY2zQn4XETuAxrkccNkasF3leRZnA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxLSwmxJ81f2POlG4FtX76on9Tsy9dz42FLqWDaioGWWg7u60zU
+	TgbJiuen189zXu/0CiVso3jSS8XoZ8nM877o4tPeCrhDLpwQoAR1vAdSy0jjn9IyUg==
+X-Gm-Gg: Acq92OGy6HOwLkifvfJiS8Z7SaQlexEWJCLwsFgYwziA7L0BuyxIn6ASi0OsD012jbK
+	YWc8wwuvkbY8xT4umNFnuGsnA4UjOeO6Tc03QBhVzb6mS0x8gIuKUhGVWjPgnOM3TkKJnx+4bPC
+	yJ7Bj0lF+PLP29IlfIc/ZMk5x0DZvjf3PsPe/39i6OtHbtxnrsKhrvijxnO0em6Ew2jvZX0OePJ
+	RQTfFeydeq1zoexCu/Viq5gxE8rZW0ROQc7kMfMg8EUT79HS3LuxBxjcLTRe2nk4rkZxwXTpA2v
+	Sn9lk+FadBFUe7oPfyjkIex9baZaYsBR74mAQGe7UpLpGlEEkRZjM/VmwNfnyGb6XXT6Tl6Ng+W
+	qGHIxidLN7xzpMbCSma7KveWhqnclY65qqnwaLaopbr1ZNrlrazsr7hsZav7ggWqI1ATmV69zFT
+	RpAuNBxeaEAFwI8pBozm/eF9KvYOA0PFnQ33PG
+X-Received: by 2002:a05:651c:1198:b0:393:e571:277a with SMTP id 38308e7fff4ca-39664f0be9bmr10766131fa.9.1780177184987;
+        Sat, 30 May 2026 14:39:44 -0700 (PDT)
+Received: from google.com ([2a02:a31b:20c3:6680:a425:7ae:4d82:6214])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-39661e708ddsm9882101fa.22.2026.05.30.14.39.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 30 May 2026 14:39:43 -0700 (PDT)
+Date: Sat, 30 May 2026 23:39:34 +0200
+From: Dmytro Maluka <dmaluka@chromium.org>
+To: kan.liang@linux.intel.com
+Cc: joro@8bytes.org, will@kernel.org, baolu.lu@linux.intel.com,
+	dwmw2@infradead.org, robin.murphy@arm.com, robert.moore@intel.com,
+	rafael.j.wysocki@intel.com, lenb@kernel.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, yu-cheng.yu@intel.com,
+	vineeth@bitbyteword.org, aashish@aashishsharma.net,
+	jaszczyk@chromium.org
+Subject: Re: [PATCH V4 2/7] iommu/vt-d: Retrieve IOMMU perfmon capability
+ information
+Message-ID: <ahtZFmndygWdQU3r@google.com>
+References: <20230128200428.1459118-1-kan.liang@linux.intel.com>
+ <20230128200428.1459118-3-kan.liang@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20260528051738.596013-14-suravee.suthikulpanit@amd.com>
-X-Mailer: git-send-email 2.54.0.823.g6e5bcc1fc9-goog
-Message-ID: <20260530212613.3060363-1-wnliu@google.com>
-Subject: Re: [PATCH v2 13/26] iommu/amd: Add helper functions to manage DevID
- / DomID mapping tables
-From: Weinan Liu <wnliu@google.com>
-To: suravee.suthikulpanit@amd.com
-Cc: chriscli@google.com, dantuluris@google.com, iommu@lists.linux.dev, 
-	jay.chen@amd.com, jgg@nvidia.com, jon.grimm@amd.com, joro@8bytes.org, 
-	kevin.tian@intel.com, kpsingh@google.com, linux-kernel@vger.kernel.org, 
-	nicolinc@nvidia.com, sairaj.arunkodilkar@amd.com, santosh.shukla@amd.com, 
-	vasant.hegde@amd.com, wnliu@google.com, wvw@google.com, yi.l.liu@intel.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230128200428.1459118-3-kan.liang@linux.intel.com>
 
-On Wed, May 27, 2026 at 10:19=E2=80=AFPM Suravee Suthikulpanit <suravee.sut=
-hikulpanit@amd.com> wrote:
+Sorry for the late reply, I've just stumbled upon this code and a few
+things look confusing to me:
 
-> diff --git a/drivers/iommu/amd/iommufd.c b/drivers/iommu/amd/iommufd.c
-> index 42307ae71b24..efa9e1f49550 100644
-> --- a/drivers/iommu/amd/iommufd.c
-> +++ b/drivers/iommu/amd/iommufd.c
-> @@ -83,6 +83,10 @@ int amd_iommufd_viommu_init(struct iommufd_viommu *vio=
-mmu, struct iommu_domain *
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 /* Reset vIOMMU MMIOs to initialize the vIOMM=
-U */
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 iommu_reset_vmmio(iommu, aviommu->gid);
->
-> + =C2=A0 =C2=A0 =C2=A0 ret =3D amd_viommu_init_one(iommu, aviommu);
-> + =C2=A0 =C2=A0 =C2=A0 if (ret)
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 goto err_init;
+On Sat, Jan 28, 2023 at 12:04:23PM -0800, kan.liang@linux.intel.com wrote:
+<...>
+> +	/*
+> +	 * Check per-counter capabilities. All counters should have the
+> +	 * same capabilities on Interrupt on Overflow Support and Counter
+> +	 * Width.
+> +	 */
+> +	for (i = 0; i < iommu_pmu->num_cntr; i++) {
+> +		cap = dmar_readl(iommu_pmu->cfg_reg +
+> +				 i * IOMMU_PMU_CFG_OFFSET +
+> +				 IOMMU_PMU_CFG_CNTRCAP_OFFSET);
+> +		if (!iommu_cntrcap_pcc(cap))
+> +			continue;
 > +
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 ret =3D iommu_copy_struct_to_user(user_data, =
-&data,
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 IOMMU_VI=
-OMMU_TYPE_AMD,
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 reserved=
-);
-> @@ -120,6 +124,7 @@ static void amd_iommufd_viommu_destroy(struct iommufd=
-_viommu *viommu)
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (aviommu->vfmmio_mmap_offset)
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 iommufd_viommu_de=
-stroy_mmap(&aviommu->core, aviommu->vfmmio_mmap_offset);
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 amd_iommu_gid_free(iommu, aviommu->gid);
-> + =C2=A0 =C2=A0 =C2=A0 amd_viommu_uninit_one(iommu, aviommu);
-> =C2=A0}
->
-The finalization order should be the reverse of the initialization order.
+> +		/*
+> +		 * It's possible that some counters have a different
+> +		 * capability because of e.g., HW bug. Check the corner
+> +		 * case here and simply drop those counters.
+> +		 */
+> +		if ((iommu_cntrcap_cw(cap) != iommu_pmu->cntr_width) ||
+> +		    !iommu_cntrcap_ios(cap)) {
+> +			iommu_pmu->num_cntr = i;
+> +			pr_warn("PMU counter capability inconsistent, counter number reduced to %d\n",
+> +				iommu_pmu->num_cntr);
 
-If amd_iommu_gid_free() is called before amd_viommu_uninit_one(), the gid c=
-ould be reallocated to a new
-vIOMMU instance before the cleanup is complete.
-Please consider moving amd_viommu_uninit_one() before the GID free call.
+1. AFAICS according to the VT-d spec section 11.4.13.2 (about the global
+Counter Width in the PERFCAP register): "If per-counter capabilities are
+supported, the counter width indicated in the PERFCNTRCAP registers
+overrides this value."
 
+which, I'd assume, means that a per-counter Counter Width is allowed
+to be different from the global one (i.e. it is not necessarily a HW
+bug)?
 
-> diff --git a/drivers/iommu/amd/viommu.c b/drivers/iommu/amd/viommu.c
-> index 6dcb02b12a28..3636093732ce 100644
-> --- a/drivers/iommu/amd/viommu.c
-> +++ b/drivers/iommu/amd/viommu.c
+2. By truncating the number of counters here, we disregard all
+subsequent counters, including possibly valid ones (which would pass
+this check)?
+
+3. If we disregard all subsequent counters anyway, why don't we break
+from the loop here?
+
+> +		}
 > +
-[...]
-> +void amd_viommu_uninit_one(struct amd_iommu *iommu, struct amd_iommu_vio=
-mmu *aviommu)
-> +{
-> + =C2=A0 =C2=A0 =C2=A0 pr_debug("%s: gid=3D%u\n", __func__, aviommu->gid)=
-;
+> +		/* Clear the pre-defined events group */
+> +		for (j = 0; j < iommu_pmu->num_eg; j++)
+> +			iommu_pmu->cntr_evcap[i][j] = 0;
 > +
-> + =C2=A0 =C2=A0 =C2=A0 free_private_vm_region(iommu, &aviommu->devid_tabl=
-e,
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0VIOMMU_DEVID_MAPPING_BASE,
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0VIOMMU_DEVID_MAPPING_ENTRY_SIZE,
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0aviommu->gid);
-> + =C2=A0 =C2=A0 =C2=A0 free_private_vm_region(iommu, &aviommu->domid_tabl=
-e,
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0VIOMMU_DOMID_MAPPING_BASE,
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0VIOMMU_DOMID_MAPPING_ENTRY_SIZE,
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0aviommu->gid);
-> +}
-> +
+> +		/* Override with per-counter event capabilities */
+> +		for (j = 0; j < iommu_cntrcap_egcnt(cap); j++) {
+> +			cap = dmar_readl(iommu_pmu->cfg_reg + i * IOMMU_PMU_CFG_OFFSET +
+> +					 IOMMU_PMU_CFG_CNTREVCAP_OFFSET +
+> +					 (j * IOMMU_PMU_OFF_REGS_STEP));
+> +			iommu_pmu->cntr_evcap[i][iommu_event_group(cap)] = iommu_event_select(cap);
+> +			/*
+> +			 * Some events may only be supported by a specific counter.
+> +			 * Track them in the evcap as well.
+> +			 */
+> +			iommu_pmu->evcap[iommu_event_group(cap)] |= iommu_event_select(cap);
+> +		}
+> +	}
+<...>
