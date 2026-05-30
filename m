@@ -1,135 +1,114 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dl1-f73.google.com (mail-dl1-f73.google.com [74.125.82.73])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C0CA284896;
-	Sat, 30 May 2026 16:25:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13F521DFF0
+	for <iommu@lists.linux.dev>; Sat, 30 May 2026 20:44:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780158335; cv=none; b=cwhWopL2xD1Umg46DC+dKvBm2pLvCozeyFFYcRsBIycvUK0Cee1xHVEqRrLo4esQTonn94CAmPJgAYcXeXABklh839YMpuWyMfbQ/aGrQOPWECespuY+HXKO9o1kAaCv7iup98QEyEUuhG2ULJ5YT5U14uCWwE6UETrGqAAtpME=
+	t=1780173850; cv=none; b=OVhJT1/cMySXprI+jNP/9PNtYgbjnIyMw64wZ76YotE/mEhyA6KnfCYEuDzmYGHRsg1IcldlRWeX1vJ3iju87P/shfd6JT+FUYnu3CioY3YC5UY2jRBBwebWQj90ON2Aob7kFUk4iU5w3J0mugvzVMayFyVdT6quiTmJoXvniuA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780158335; c=relaxed/simple;
-	bh=UI6qIUcdsGpcmlZEaRcN8lnF8eMeDTz+BLiIgpkN3xo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CogE72AEwKuhotX86FtgOv8pzBN12Zir3P+XaRuvQD7JucQSUj/YQvihsThgSOTyY48vsvfT0PpNlukdrKi78V/ulo92/fienGAo07k8I2dMyGk3lIleiUDlcMWqIXPQekNJ0nxe4UOzpAxugoJXfFaLrAxbdNYTK6Dc3mp4HuI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZNZulNZW; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780173850; c=relaxed/simple;
+	bh=LI2N6DhAF4cWYQbU1hA9nfoLMmZJwBfeUmpXKjK+ons=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=qXzd/t0hi1ZigWWdYYNXrmJcPgCqeLK+mbB7VHSRuyDC1MMU3yGp7YuH0BOeue/trSo18xSdUm5kulZVrS8VaGmkoWfL9RzI1hdJuxun/UgYu2i68bvUKil5m9sZ2sSVTT6jB5+lVO3NgV3F9Iv09WLU11AE8y7w6nb/jiTCnK0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=G/AjyR5P; arc=none smtp.client-ip=74.125.82.73
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--wnliu.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZNZulNZW"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB20F1F00893;
-	Sat, 30 May 2026 16:25:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780158334;
-	bh=1suTZzjeKKm1M2CPVaqVj1nFGVAvH1OGHJ6QIFVOJpU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=ZNZulNZWopBoouy0/z4gcjC11VMW+fTvUrQ09qpmPKznqSj+bQDP9lcOybTNBz00u
-	 jq7ay/ejY+Cb+GCmiHvxtp2t6DeCzHRKhhyy+f5sufkOPpJR0B+nFfwxWfJvFRce2s
-	 VqGaGsio2ebJiwUKmS4D+Mr1+pnZZjeL8cHrQV8cEEaGQoQExr8ByXCCUH5EpMbUp4
-	 NNX5fsoQ/L/HfuSCRU2U4PvdPmeW8OcKs8RQkEBbDMlPiVfQTcx3Eaz1uAR/9130L6
-	 Mi2kaeXpxLG0x3MrzfXvcWrftE68RFqLXGMiYQs8S31o7y6Phs/1MZY6/armSuLsIF
-	 hk7vRncNndt8w==
-Date: Sat, 30 May 2026 19:25:22 +0300
-From: Mike Rapoport <rppt@kernel.org>
-To: Will Deacon <will@kernel.org>
-Cc: Wandun Chen <chenwandun1@gmail.com>,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	loongarch@lists.linux.dev, linux-riscv@lists.infradead.org,
-	devicetree@vger.kernel.org, kexec@lists.infradead.org,
-	iommu@lists.linux.dev, zhaomeijing@lixiang.com,
-	catalin.marinas@arm.com, chenhuacai@kernel.org, kernel@xen0n.name,
-	pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu,
-	alex@ghiti.fr, robh@kernel.org, saravanak@kernel.org,
-	akpm@linux-foundation.org, bhe@redhat.com,
-	pasha.tatashin@soleen.com, pratyush@kernel.org,
-	ruirui.yang@linux.dev, m.szyprowski@samsung.com,
-	robin.murphy@arm.com, quic_obabatun@quicinc.com
-Subject: Re: [PATCH v3 09/11] arm64: kdump: exclude non-dumpable reserved
- memory regions from vmcore
-Message-ID: <ahsPcv8G1BR9rLah@kernel.org>
-References: <20260527032917.3385849-1-chenwandun1@gmail.com>
- <20260527032917.3385849-10-chenwandun1@gmail.com>
- <ahmr-UjoApj2j5JS@willie-the-truck>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="G/AjyR5P"
+Received: by mail-dl1-f73.google.com with SMTP id a92af1059eb24-137731eae44so11710706c88.0
+        for <iommu@lists.linux.dev>; Sat, 30 May 2026 13:44:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1780173848; x=1780778648; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:references
+         :mime-version:in-reply-to:date:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=/c8iwXysjou1uiYhNQmPGoQNB8sBZpJc56AO9jQd4l0=;
+        b=G/AjyR5PDufXho6FX8XjDQuNzi+gcV28pDuTDKM2c/vb9iXBo9jRuyZWIKnvkND4d0
+         aV0C53Vr3K9nwhHAvxDtBtKGsA2OzBlOsKzcOU7YuLjq8Lb77JVX8PW3GGXo0ANtB+Nv
+         HAn/X5Y8zoQ98rb8lTHyc5x/IFSmwGJ0ejeStYMpUUyLcI0hbYCx9gWjT/gc7dnU8AMn
+         ZBFFYnyddi5KvJvbOA0KPLwxY+PdBiqRRAgUQXmtsBBpOUZhPVesSK0bP0Yx6c3r+nXe
+         vNDrTnGMebaDdHpxpDglcFKT3cjTJKVmvc+hZ5b5CS2yhNxMc32aOCYcjahi6PZrTwzS
+         ybQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780173848; x=1780778648;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:references
+         :mime-version:in-reply-to:date:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=/c8iwXysjou1uiYhNQmPGoQNB8sBZpJc56AO9jQd4l0=;
+        b=I1AqtEjCXIxehoDdJZCpmOPXqxGs+FuRIArGC1euiWym6SMhc6xbOa8jbOBy7CXKVZ
+         hXXUh8GChQOx4i+azWNMo3FgbkFvFErmNbBvPP5I64UmSqu/hmVbDWJ3Ed7mljyBu/41
+         1F8BIXlOpCjYg0M4iF6R/VSN4CrQnwHRQGkL/RO5b2EC1TmLTlVkACn3JKI2S6SHFqXu
+         wEOJmJnVj3IjiCRr39DaXHRQW+J48FyHX/XmwoqOSAfJQincUbWxg6R0uODGAk26n70m
+         HnHFkngCIWC/dCb5LA5C4aAOXGbR+kHIe1dCAuHy7hMKufja7V24xKSYW5ONpsDewtPX
+         t26w==
+X-Forwarded-Encrypted: i=1; AFNElJ9lhxucDk8zuSWNlq7RWdYSmtzX5jVnUbmrC62YxiK/yfYnPtr4ZkQoqIIHtzCrgIZgKC7mXQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzaNp5ufm+1g8sDyMdR35+4oavQFvL6x9w63AZWzH5FEb0/QBdv
+	DqSFRYIGjITJmR9dhgXLAXe1OjYWnZzkGAH2+4slDUOMQ9FuQlw97zaZf61CXVcaSD0rPH6a2xt
+	CZw==
+X-Received: from dlee16.prod.google.com ([2002:a05:7022:6290:b0:136:3f5e:fe1c])
+ (user=wnliu job=prod-delivery.src-stubby-dispatcher) by 2002:a05:7022:429:b0:137:1ae1:bc01
+ with SMTP id a92af1059eb24-137d4026936mr2275329c88.8.1780173847871; Sat, 30
+ May 2026 13:44:07 -0700 (PDT)
+Date: Sat, 30 May 2026 20:44:05 +0000
+In-Reply-To: <20260528051738.596013-13-suravee.suthikulpanit@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ahmr-UjoApj2j5JS@willie-the-truck>
+Mime-Version: 1.0
+References: <20260528051738.596013-13-suravee.suthikulpanit@amd.com>
+X-Mailer: git-send-email 2.54.0.823.g6e5bcc1fc9-goog
+Message-ID: <20260530204407.3017798-1-wnliu@google.com>
+Subject: Re: [PATCH v2 12/26] iommu/amd: Add per-VM private IPA alloc/map helpers
+From: Weinan Liu <wnliu@google.com>
+To: suravee.suthikulpanit@amd.com
+Cc: chriscli@google.com, dantuluris@google.com, iommu@lists.linux.dev, 
+	jay.chen@amd.com, jgg@nvidia.com, jon.grimm@amd.com, joro@8bytes.org, 
+	kevin.tian@intel.com, kpsingh@google.com, linux-kernel@vger.kernel.org, 
+	nicolinc@nvidia.com, sairaj.arunkodilkar@amd.com, santosh.shukla@amd.com, 
+	vasant.hegde@amd.com, wnliu@google.com, wvw@google.com, yi.l.liu@intel.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 29, 2026 at 04:08:41PM +0100, Will Deacon wrote:
-> On Wed, May 27, 2026 at 11:29:15AM +0800, Wandun Chen wrote:
-> > From: Wandun Chen <chenwandun@lixiang.com>
-> > 
-> > Reserved memory regions are excluded from vmcore by default unless
-> > marked dumpable. Honor the dumpable flag to filter out device firmware
-> > regions (e.g., GPU, DSP, modem) reserved via device tree, since they
-> > typically contain data not useful for kernel crash analysis and can
-> > significantly increase vmcore size.
-> > 
-> > Use of_reserved_mem_kdump_exclude() to perform the exclusion, and
-> > pre-size the crash_mem array via of_reserved_mem_kdump_nr_ranges().
-> > 
-> > Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
-> > Tested-by: Meijing Zhao <zhaomeijing@lixiang.com>
-> > ---
-> >  arch/arm64/kernel/machine_kexec_file.c | 6 ++++++
-> >  1 file changed, 6 insertions(+)
-> > 
-> > diff --git a/arch/arm64/kernel/machine_kexec_file.c b/arch/arm64/kernel/machine_kexec_file.c
-> > index e31fabed378a..1d65320c6ba4 100644
-> > --- a/arch/arm64/kernel/machine_kexec_file.c
-> > +++ b/arch/arm64/kernel/machine_kexec_file.c
-> > @@ -17,6 +17,7 @@
-> >  #include <linux/memblock.h>
-> >  #include <linux/of.h>
-> >  #include <linux/of_fdt.h>
-> > +#include <linux/of_reserved_mem.h>
-> >  #include <linux/slab.h>
-> >  #include <linux/string.h>
-> >  #include <linux/types.h>
-> > @@ -51,6 +52,7 @@ static int prepare_elf_headers(void **addr, unsigned long *sz)
-> >  	nr_ranges = 2; /* for exclusion of crashkernel region */
-> >  	for_each_mem_range(i, &start, &end)
-> >  		nr_ranges++;
-> > +	nr_ranges += of_reserved_mem_kdump_nr_ranges();
-> >  
-> >  	cmem = kmalloc_flex(*cmem, ranges, nr_ranges);
-> >  	if (!cmem)
-> > @@ -75,6 +77,10 @@ static int prepare_elf_headers(void **addr, unsigned long *sz)
-> >  			goto out;
-> >  	}
-> >  
-> > +	ret = of_reserved_mem_kdump_exclude(cmem);
-> > +	if (ret)
-> > +		goto out;
-> > +
-> >  	ret = crash_prepare_elf64_headers(cmem, true, addr, sz);
-> 
-> This looks fine to me:
-> 
-> Acked-by: Will Deacon <will@kernel.org>
-> 
-> Although I do wonder whether there's scope to consolidate some of the
-> arch code here. Now that you have a helper for reserved memory, perhaps
-> the core code could also handle the crashkernel reservation itself as
-> well? If the arch code passed in its number of memory regions, the
-> core code could take care of (a) allocating the crash_mem ranges array
-> (b) excluding the crashkernel and (c) excluding the reserved regions
-> (the part you have here).
-> 
-> Obviously that would be follow-up work, but the fact that you're having
-> to apply basically the same diff to three architectures is a bit of a
-> giveaway that this could benefit from some wider cleanup.
+On Wed, May 27, 2026 at 10:19=E2=80=AFPM Suravee Suthikulpanit <suravee.sut=
+hikulpanit@amd.com> wrote:
+>
+> +static void __maybe_unused free_private_vm_region(struct amd_iommu *iomm=
+u, u64 **entry,
+> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 u64 base, size_t size, u16 gid)
+> +{
+> + =C2=A0 =C2=A0 =C2=A0 size_t unmapped;
+> + =C2=A0 =C2=A0 =C2=A0 u64 addr =3D base + (gid * size);
+> +
+> + =C2=A0 =C2=A0 =C2=A0 pr_debug("%s: entry=3D%#llx(%#llx), base=3D%#llx, =
+addr=3D%#llx, size=3D%#lx\n",
+> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0__func__, (unsig=
+ned long =C2=A0long)*entry,
+> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0iommu_virt_to_ph=
+ys(*entry), base, addr, size);
+> +
+> + =C2=A0 =C2=A0 =C2=A0 if (!iommu || !iommu->viommu_pdom)
+> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return;
 
-There are patches that move common code to kernel/crash_core.c:
+Should check if the page pointer *entry is non-NULL before operating on it.
+*entry  will be  NULL if the caller encounters an error during alloc_privat=
+e_vm_region(),
+it may attempt to unmap and free a NULL pointer below:
 
-https://lore.kernel.org/all/20260525084932.934910-1-ruanjinjie@huawei.com
- 
-Review from arch maintainers would be helpful there ;-)
 
-> Will
-
--- 
-Sincerely yours,
-Mike.
+> +
+> + =C2=A0 =C2=A0 =C2=A0 unmapped =3D iommu_unmap(&iommu->viommu_pdom->doma=
+in, addr, size);
+> + =C2=A0 =C2=A0 =C2=A0 if (unmapped !=3D size)
+> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 pr_warn("%s: unmapped =
+%#zx of %#lx at %#llx\n", __func__, unmapped, size, addr);
+> +
+> + =C2=A0 =C2=A0 =C2=A0 set_memory_wb((unsigned long)*entry, size >> PAGE_=
+SHIFT);
+> + =C2=A0 =C2=A0 =C2=A0 iommu_free_pages(*entry);
+> + =C2=A0 =C2=A0 =C2=A0 *entry =3D NULL;
+> +}
