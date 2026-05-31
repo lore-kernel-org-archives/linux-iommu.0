@@ -1,93 +1,116 @@
-Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
+Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86A732DCC08
-	for <iommu@lists.linux.dev>; Sun, 31 May 2026 17:02:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B12243914ED
+	for <iommu@lists.linux.dev>; Sun, 31 May 2026 17:03:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780246979; cv=none; b=kFrv2U5SBH//xfKcDMYjUdzfrywrnuFdYv9m/Qk4WnTRumolWPtEF4BzuulFpVH0eGE2BGjAzmiyLWLRr554rTU7FkHFVwYVuMAzvZj/tZ0crTgRbW5mNtcd02dAHVlI/CkCW9/9l4O9XMYUiPy5ngx5woBZXN3HieIZuEb21dg=
+	t=1780246981; cv=none; b=t7Y9ktaHJ9i2olchTv+ssVrzNYhcqw3zWjmSkMJUhyGJ/UI0Euyd7ncfaAcmIclRtTcUbcIRGZfdU5PBgGm8CKeNq4Dxjya1e38Q1Z2ydTzvk8lAtXQ2KKWw5gf19ipRSzAdXyZbBju5rKxS4hiEZ8UQmBwfrqpjeh/FI6De2+Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780246979; c=relaxed/simple;
-	bh=h2LShkgTS4F6cLrC17qtgcJSfn+9wJYzg3Z0SdOtgEk=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=q9gK3DnrmadlkRuwaKHndnfMvJXPOIrbRtofIfvH5gtqt9CwZO/H7l0A5Vllc7sSKCKo9GTcBCtQMXSqRDhKqix15fZLNjaWH0JsKwuUzCMJwfJ69zpJKVvAniNn4QbiGwRGGfNeqvjwn5hAZfweibDX5cK4gr/QjyS+ZsFOieY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=BFE4sRee; arc=none smtp.client-ip=209.85.216.74
+	s=arc-20240116; t=1780246981; c=relaxed/simple;
+	bh=FWe+zkG6d1dSp2BnJpzvZr07OMSiwnHIAa4IQItE6Ig=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=LoEsAHfx6q8gdPKT33aUyjC5tbzz+AEES2GbTF62PYWGOD+ohtzpsrOIdzkFb6AdKiU7LwvjdbwhpClT76fuzvhRRai+nMIxxrt4UYyYZA0AH3XwMiuwq2afY3z4SDJEdm8Mr3p8T4mvx/YoDeR5iyLrmwyQS6KUGfsF+X9RF+s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=pOSx1p2X; arc=none smtp.client-ip=209.85.214.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="BFE4sRee"
-Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-36d98b76d12so387810a91.2
-        for <iommu@lists.linux.dev>; Sun, 31 May 2026 10:02:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="pOSx1p2X"
+Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-2c0c272e532so6551385ad.1
+        for <iommu@lists.linux.dev>; Sun, 31 May 2026 10:03:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780246978; x=1780851778; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=f5OhZ1yeh0sgmy7BgKOMHnhO6M1dzf06o5FBbczTnR8=;
-        b=BFE4sReeZ9S7z9gYWkf+BEEFqub24voEwiK07UvUWvwdN6YSqlBpBJ8j3l/6LAlUf8
-         MH4FTOPiuUTsw58PlmzTGXRVnemwafuDq5XsE8eikil+N+oGHASxM1FHhbzgMRsiavJh
-         YnnP+Tufvgi5tL6raO/8N+8qLBkaVbBZRSPp/TBfQAJ3o+bGQ0MRpJjaiz6513S+nK84
-         il+vco0EV0OTlO9o0h6jqjj9sy69UpFa65xf/do0LfuKHuXX/1KFbnithILekC0jO/qB
-         yAM6VgQkK1bA0UONC9uzqAnBiMc0EaK3FzPAwBazNkx0fu16EPPYixCEhIv3mf5DGHeZ
-         n7gw==
+        d=google.com; s=20251104; t=1780246980; x=1780851780; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=QWXlHKTSa6jbTlPQqXflZFEjWNMHtxbOFAcz50SUsYQ=;
+        b=pOSx1p2XGriWVtjwLoYWdxhW9WTO3yrgKCNJJcc6rj+KoldokNQWWgChnug5/telDl
+         BuMEjk4P/ADDIn1I/bDnIP52+jqt5zoE4bH/1ZWt5YXjB6PSZRNDTGxRQaoNdbEiRqQA
+         tMOLWiwBoggX9hfMP25I5uC7gOfiDwE6lth6jadzTppeROPyHsb4+lriIrwLDr/F9W86
+         vmxoFX8zP5qeA+4FOAzrAg6+3Hr5r0gqLjjjx7V9itf7Px5pkBob+pg21Fo607G+mFBS
+         dvPh7W2Ho8RliR/zyklq8poCzivE5SyqPVQybaOC1PkfWmx8AC0ddjw0T27saULNfvlg
+         skhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780246978; x=1780851778;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=f5OhZ1yeh0sgmy7BgKOMHnhO6M1dzf06o5FBbczTnR8=;
-        b=ZD2JYfKI3At0DvrVcgx0b4QSpC5kcS5Fg8ZipCmv4L/nEze5rXqxGSVa0qnj8dtX43
-         jcsoYxZ9oXvKlrrwWnCK+0BZFZ4T3kRBdJPzFmIjXrq6+YQ/3WNKh3P3AdkJwIYdruwl
-         2TFLMqhFRRPjs8CeKa0f2wlWv3PavwcF8HorCIAht6nJF/a/pauBsyKaU62p9uLcMEVz
-         VhA+qwUe+s0i8qC0JhzwG9ALnYDLISPCvd7PS59IjklWAetb4akPTuBTepQs+AKMaiel
-         xOptxmAwUOigKQqeD7J9yb2UQgbwuineskFETvimfngikGwxy1ON30eDyl+zcLsSulnx
-         N0Dw==
-X-Gm-Message-State: AOJu0YwiP14Qjzuo90d0ofpPocg3m3bpDtfRmR8iFEgwtEAgfScAnQ2i
-	MAnUurYZZ4wnd5d6WQH3pRgb/WKdgPMtLav2sX9iu4n36j4R6ZibRs9EFo48xEWOUoI45Hzif4c
-	xnhCYsNmryXTFREoE/qWAFZV/DcLQmNdE2FXvqTpx2Pab4MuSKBcmgBc3W2adRwrggez5E4ZBef
-	kijleYk8uQAzrUTlfQN6GKZAZyv1VZ4A==
-X-Received: from pjbnb13.prod.google.com ([2002:a17:90b:35cd:b0:365:d006:6df7])
- (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:2247:b0:362:e826:cefe
- with SMTP id 98e67ed59e1d1-36c5afb8e7cmr7852408a91.23.1780246977491; Sun, 31
- May 2026 10:02:57 -0700 (PDT)
-Date: Sun, 31 May 2026 17:02:52 +0000
+        d=1e100.net; s=20251104; t=1780246980; x=1780851780;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=QWXlHKTSa6jbTlPQqXflZFEjWNMHtxbOFAcz50SUsYQ=;
+        b=qUMP9inbuG3QZmL/MaVN/JxSkzB4RrXrNZofofd4hbz1Hn0KfemobIhU1FFQlgGrPj
+         uzojJjBva0L+9JB2BcAXtIdJABDS1U7Z6xqRmTH3+bNc6+1tJ2CjTambEHwtZfNmd6RG
+         hz+gvc6sv8WGA3CaURNOBGgE7G46f2t38c8LTtptVCXTaZ2gLbwPmpkC3bDgyeAgDE4F
+         bQAvlyUaiOvYftdQxw/M070txrkRSiwNf0QaZxSBYe5OxudLSTbAVP3edZPnSFF2aBw5
+         89SGFzBFs3m5TqFZvytwcOYy8ynRjd/iwQn2d0b18b5Qm2bl359ToONOvcBcDrSwsUcK
+         aSoA==
+X-Gm-Message-State: AOJu0Yw7ef7vGJMWYawnLl9VeuUhbCMt26dzfD3EDb7NzkX/xVbwDBmy
+	Wng2djhfSiWUCpQ7egGdyPdo3/96AJxMT8Ijcvtjp+l6KQQceT24PaWp9+Bw+ax21ZqRzZgM0z6
+	ER+AkHEdKQ2/poT8tDSf7M0Q61svq2wJDBhbgo/yM742Y+8GUV7vRXLhbIMg0clr8NbyZUf2qkU
+	PsCbuSsUEspzqp0Pqfe5TCH8xP5n9Dsg==
+X-Received: from plqu18.prod.google.com ([2002:a17:902:a612:b0:2c0:b770:dccc])
+ (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a17:902:ccc8:b0:2bd:ba44:6c07
+ with SMTP id d9443c01a7336-2bf367f292cmr78806815ad.16.1780246979738; Sun, 31
+ May 2026 10:02:59 -0700 (PDT)
+Date: Sun, 31 May 2026 17:02:53 +0000
+In-Reply-To: <20260531170254.60493-1-praan@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
+References: <20260531170254.60493-1-praan@google.com>
 X-Mailer: git-send-email 2.54.0.823.g6e5bcc1fc9-goog
-Message-ID: <20260531170254.60493-1-praan@google.com>
-Subject: [PATCH 0/2] iommu/vt-d: Fix issues on probe error path
+Message-ID: <20260531170254.60493-2-praan@google.com>
+Subject: [PATCH v2 1/2] iommu/vt-d: Fix RB-tree corruption in probe error path
 From: Pranjal Shrivastava <praan@google.com>
 To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
 Cc: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
 	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
 	Kevin Tian <kevin.tian@intel.com>, Samiullah Khawaja <skhawaja@google.com>, 
-	Pranjal Shrivastava <praan@google.com>
+	Pranjal Shrivastava <praan@google.com>, sashiko-bot@kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-This series addresses two pre-existing issues in the Intel VT-d driver's
-probe error path. These issues were identified by Sashiko during the
-review of the ATS series [1].
+The info->node RB-tree member is zero-initialized via kzalloc. If
+a device does not support ATS, the device_rbtree_insert() call is
+skipped. If a subsequent probe step fails, the error path jumps to
+device_rbtree_remove(), which misinterprets the zeroed node as
+a tree root and corrupts the device RB-tree.
 
-The first patch fixes an RB-tree corruption that occurs when probing
-non-ATS devices. The second patch fixes a UAF by ensuring the per-device
-private data pointer is cleared before freeing memory on failure.
+Fix this by explicitly initializing the RB-node as empty using
+RB_CLEAR_NODE() during initialization and guarding the removal with
+RB_EMPTY_NODE().
 
-[1] https://sashiko.dev/#/patchset/20260525184347.4059549-1-praan@google.com?part=4
+Fixes: 4f1492efb495 ("iommu/vt-d: Revert ATS timing change to fix boot failure")
+Reported-by: sashiko-bot@kernel.org
+Closes: https://lore.kernel.org/all/20260525205628.CD4431F000E9@smtp.kernel.org/
+Suggested-by: Baolu Lu <baolu.lu@linux.intel.com>
+Signed-off-by: Pranjal Shrivastava <praan@google.com>
+---
+ drivers/iommu/intel/iommu.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-v2
-- Updated the Fixes tag for Patch 2 based on feedback from Lu.
-
-Thanks,
-Praan
-
-Pranjal Shrivastava (2):
-  iommu/vt-d: Fix RB-tree corruption in probe error path
-  iommu/vt-d: Fix Use-After-Free in probe error path
-
- drivers/iommu/intel/iommu.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index c3d18cd77d2f..2702e9aa2241 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -157,7 +157,10 @@ static void device_rbtree_remove(struct device_domain_info *info)
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&iommu->device_rbtree_lock, flags);
+-	rb_erase(&info->node, &iommu->device_rbtree);
++	if (!RB_EMPTY_NODE(&info->node)) {
++		rb_erase(&info->node, &iommu->device_rbtree);
++		RB_CLEAR_NODE(&info->node);
++	}
+ 	spin_unlock_irqrestore(&iommu->device_rbtree_lock, flags);
+ }
+ 
+@@ -3254,6 +3257,7 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+ 
+ 	info->dev = dev;
+ 	info->iommu = iommu;
++	RB_CLEAR_NODE(&info->node);
+ 	if (dev_is_pci(dev)) {
+ 		if (ecap_dev_iotlb_support(iommu->ecap) &&
+ 		    pci_ats_supported(pdev) &&
 -- 
 2.54.0.823.g6e5bcc1fc9-goog
 
