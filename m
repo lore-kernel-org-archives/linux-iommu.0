@@ -1,54 +1,54 @@
-Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
+Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 322523AE19F
-	for <iommu@lists.linux.dev>; Mon,  1 Jun 2026 13:42:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C58F3B19B4
+	for <iommu@lists.linux.dev>; Mon,  1 Jun 2026 13:42:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780321341; cv=none; b=KLwqk+yDZcE37ZKvKO3UQEePRq6umT1pf2oHTw/MTmZb/6j84TtV1JZLn0rXewodXzYBep2InLbmRNaq8YIABFPVffwkWyGtqMgLjey2fPmNhvhkGs9zs88L3xKNPZW++bclpObZth8mGq2zHcQ2e805ERTglEDXwLr24U8b+bw=
+	t=1780321344; cv=none; b=Ep3E1aLIZzP9tF9CKNCngPLTVFOcvOeRT32HctfCIFDpovFLLeWL2SwXI1DLRpFlAA4IUNiLkdFOFFzRMLK7wmpm6yfYt49RBWlfqgwTsvue0j7BCNJf2psA0oQ8U9BT5w69KEcLhbolsL7hoC7hSh1UDSWclayua87uIkuGfwQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780321341; c=relaxed/simple;
-	bh=d9ra7+VpNlaICDKwllpNtvFlzWuKQw76LK9YtUjnPP0=;
+	s=arc-20240116; t=1780321344; c=relaxed/simple;
+	bh=auMnztirMjgLsVdaqQpnSuNWy8GRXz3WqB05wPcZf6k=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=VrNiejKhKylqJsTslLcO0ADkLOXyGBgzlQ/NO0EyG4rUPzMN0TRV+9cKfiJA/ZVzajVuWQxVX+tHbQ+Rl7WaJKGZ+OrHik6IUokUUQXXTU2f4Ilz2jTWwIurJjnPhGpSzTJhu8zj9msJzkYYcvYBHdOsb8v75GT/eTXg6jFv0Bg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=od4gQAT3; arc=none smtp.client-ip=209.85.210.202
+	 To:Cc:Content-Type; b=g0oTaT8wJsN7gTx9JdxOm0bKAuj4Ch5DTZ05ONZToVvpVEU/YGUL3jHWLh6rg1N3hPO5h2BTwF63W0hNXPAT0Fp6G5vrjaqLT2sysmJkl1EvDIKo90R1hymvv2mpLvK604HPVzdUfT/U0OjickRtglCuPU0qDS8VhG2wPQIjQnM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Ibvve3F0; arc=none smtp.client-ip=209.85.214.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="od4gQAT3"
-Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-84240683a82so1120449b3a.1
-        for <iommu@lists.linux.dev>; Mon, 01 Jun 2026 06:42:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Ibvve3F0"
+Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-2bf08c2a24bso45538255ad.2
+        for <iommu@lists.linux.dev>; Mon, 01 Jun 2026 06:42:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780321338; x=1780926138; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1780321341; x=1780926141; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=qHVa4tUQPxfN3QUwaWtlq81eFxiSoG8gp/4WszuwXdI=;
-        b=od4gQAT3izWaGTfJ1KzH7eifT7Bq9gg7H/22y61gHIoYQ7bkc/GVyGJi0i7n1YF7eS
-         8lfj7svxiA0+EdMvayEcFEd8le8lfjLkxIamTUUFRArCg0MZFNrnZYWDipdZ8qSmo8Oq
-         Eao9soMV9G8GTCk9wrTs7PxpCqOHD2hPQKO+tT4vEfPsikO3lfPXsoSsAH5HB/77NmO3
-         csuW2JjHidV0th73v+s8xzjUG6/ibL2Rrb4ohOJI0+MpkBBeR9wGZtTvvAF7QX+98hMF
-         1TYnf6QJv+ICtYGF07/Aglh2bDWzRLE0IiMUByAUrsfQQyA4ExaF9MwJlACgchLOhDV1
-         GnZg==
+        bh=7R6BZcslBAGGRXzQms4jp3f5RHV26tlAI7OzQzhdeIE=;
+        b=Ibvve3F0Qc9klyxKBqJX1uhNtVFNFpU1QVSSDnkNLXVw0fZTM0H5chd/JcrnPktV8m
+         xJdAN2MiQZnKzgupBYynfv9Ber4y5m8hD5kz+N5WyWjCH+furtv3vjR9AqCox5ouyF0l
+         ymO/w5VjGI6P1OU/Qh4w49rKWJF4HZtCAcessZAANuOi+tQNXi9asyOgBIc2hGHMBijy
+         nkLVzdW48e/yT6zDtuvaInhmViPS501viTCduThwhlzY2vn388OzPDwxIe8S0C4iS9Nj
+         j1aYomfbQ5x/L+4ynoTbCW+seRspEi7q/IfH6EKz5XBVIVv92OA+fIjwHXHhOwKF67av
+         ruGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780321338; x=1780926138;
+        d=1e100.net; s=20251104; t=1780321341; x=1780926141;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=qHVa4tUQPxfN3QUwaWtlq81eFxiSoG8gp/4WszuwXdI=;
-        b=PCmfSbdG9FQmkPj4SDpDlgEkCTpRT6bv+aeKT2WmQCfQKvzAIGLYfxBsmB2DOLgN0Q
-         GjcvFLtwwHepwrEisf2GkTcC40wrpsgHAnDU5IqSpwTYDQ+Q6+Llwk2OOCb3/OqkbXfu
-         YHbPQ1YoxeMzvHFAqh9m9FuXOhn4VXAxVu6G+o0Mw7bUEqCT8/UOjTYvRlklchC7Kk29
-         eAbbk0Eh+idJfwcuP/VnR5Ecfpkv4mGBIEE7TyU1xuNwTPxQjfopVJ+qwE4mBpjCP/fN
-         yD2sFepQoe70bIZerkM3esCedEzVa3uEBqv2eC0NSR0oU6av9+OhiwQNZo4fZDxLo1vl
-         a9zw==
-X-Gm-Message-State: AOJu0YwUwwJekkpiFiobJ/GWZY+wILCKfTTRQRTHoUEd7N4QckrSaq6C
-	mWZ89m1ffMWVrWzzunKS0xu2k9ujXcRIT1S2IbmsgV7PA/Jhn7LXDpasIQPQpxjzlYRm0GK9wim
-	9fN8uIAdm2dqhCS1WJgtyIX1bASWAlETrT6DYo/l2mfD0kkgvQXGVLdMiBAlltfgXt8NN4wh6Ni
-	cXHgciXGXDlP9cj8Hr1qNa0wuF2/8usQ==
-X-Received: from pfbdi4.prod.google.com ([2002:a05:6a00:4804:b0:842:3a6c:99f5])
- (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:278b:b0:842:4c2f:a576
- with SMTP id d2e1a72fcca58-8424c2fc01dmr3577714b3a.16.1780321338241; Mon, 01
- Jun 2026 06:42:18 -0700 (PDT)
-Date: Mon,  1 Jun 2026 13:42:02 +0000
+        bh=7R6BZcslBAGGRXzQms4jp3f5RHV26tlAI7OzQzhdeIE=;
+        b=EFowHFNFJGuHRuAAhjJtp1axl8N6fe735KYcczwQDfBEMrLX6yUa/BvYsgPsWCX+kt
+         fJQc0O7JdWELXQsE/W6wBmsB5P4Vlbld9wKWxCW71dhK10urL8D6c7KLZohyRL+xd/BC
+         TQjKp6HgYSKlCOwafQDvqfSPJQs8XhQ+5Qrj1BnqTjLOHjQ7/HFU/Sx0R70d04TOXtv/
+         pil4mpJRVqDIuCYC0BPxnTJPx511h/1q5TF9ZIzOOvX4afCoWIJ6cj+QXgU+BgBwgdtp
+         iVlgVbC1+NCIwu49BnzLuga+dzKhvfJZAfcZK2oplcS1BrGkPxxjl4agWmq27/4H/5gE
+         utQg==
+X-Gm-Message-State: AOJu0YzgjGhmxkxdYCtQ98puqm100zK/gu/hZeLTijDSvkl4+MKl6GvQ
+	163+Elk+doHwWZpIWgU2mALcdXVS+20Nl0k+47eim38u2rWGwrYL3KSuEkAoW7BaTpIbrRk3ljK
+	6M1KyvNQ9Vah/QAMyxVgczVj7aDakhJcjel/JcR3T0DXL1k3/ihcIqm2kF3oMupreNF8MvY1GGx
+	peSggoQqroZcPESETcGW+N04dd7WWrow==
+X-Received: from pgbgc5.prod.google.com ([2002:a05:6a02:4b85:b0:c85:80d8:9229])
+ (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a21:8213:b0:3b3:f46:1f0a
+ with SMTP id adf61e73a8af0-3b427f5bd3cmr12362565637.42.1780321340582; Mon, 01
+ Jun 2026 06:42:20 -0700 (PDT)
+Date: Mon,  1 Jun 2026 13:42:03 +0000
 In-Reply-To: <20260601134204.2150602-1-praan@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -58,82 +58,72 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20260601134204.2150602-1-praan@google.com>
 X-Mailer: git-send-email 2.54.0.823.g6e5bcc1fc9-goog
-Message-ID: <20260601134204.2150602-5-praan@google.com>
-Subject: [PATCH 4/6] iommu/amd: Fix Use-After-Free in non-fatal probe error path
+Message-ID: <20260601134204.2150602-6-praan@google.com>
+Subject: [PATCH 5/6] iommu/amd: Fail probe on ATS configuration failure
 From: Pranjal Shrivastava <praan@google.com>
 To: iommu@lists.linux.dev, linux-pci@vger.kernel.org, 
 	linux-kernel@vger.kernel.org
 Cc: Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
 	Vasant Hegde <vasant.hegde@amd.com>, Ankit Soni <ankit.soni@amd.com>, 
 	Jason Gunthorpe <jgg@nvidia.com>, Bjorn Helgaas <bhelgaas@google.com>, 
-	Samiullah Khawaja <skhawaja@google.com>, Pranjal Shrivastava <praan@google.com>, sashiko-bot@kernel.org
+	Samiullah Khawaja <skhawaja@google.com>, Pranjal Shrivastava <praan@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-When amd_iommu_probe_device() fails for optional features (e.g.
-PD_MODE_NONE), the dev_data remains globally linked with a pointer
-to the struct device. Since the IOMMU core does not invoke
-release_device() after a probe failure, this could lead to a UAF once
-the physical device is removed.
+Update the driver to call pci_prepare_ats() after checking if
+pci_ats_supported() and fail the probe_device if pci_prepare_ats()
+returns an error. Additionally, update pdev_enable_cap_ats() to WARN_ON()
+a failure in pci_enable_ats().
 
-Fix this by introducing amd_iommu_clear_device_dte() to clear the HW
-state and setting dev_data->dev = NULL on the non-fatal error path.
-
-Reported-by: sashiko-bot@kernel.org
-Closes: https://lore.kernel.org/all/20260529153216.2AD1E1F00899@smtp.kernel.org/
 Signed-off-by: Pranjal Shrivastava <praan@google.com>
 ---
- drivers/iommu/amd/iommu.c | 24 +++++++++++++++++-------
- 1 file changed, 17 insertions(+), 7 deletions(-)
+ drivers/iommu/amd/iommu.c | 28 ++++++++++++++++++++++------
+ 1 file changed, 22 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index c3b3750d4a22..4ef6024c5a4e 100644
+index 4ef6024c5a4e..783f53cb8599 100644
 --- a/drivers/iommu/amd/iommu.c
 +++ b/drivers/iommu/amd/iommu.c
-@@ -734,6 +734,15 @@ static int iommu_init_device(struct amd_iommu *iommu, struct device *dev)
- 	return 0;
- }
- 
-+static void amd_iommu_clear_device_dte(struct amd_iommu *iommu,
-+				       struct iommu_dev_data *dev_data)
-+{
-+	struct dev_table_entry new = {};
+@@ -566,10 +566,17 @@ static inline int pdev_enable_cap_ats(struct pci_dev *pdev)
+ 	if (amd_iommu_iotlb_sup &&
+ 	    (dev_data->flags & AMD_IOMMU_DEVICE_FLAG_ATS_SUP)) {
+ 		ret = pci_enable_ats(pdev, PAGE_SHIFT);
+-		if (!ret) {
+-			dev_data->ats_enabled = 1;
+-			dev_data->ats_qdep    = pci_ats_queue_depth(pdev);
+-		}
 +
-+	amd_iommu_make_clear_dte(dev_data, &new);
-+	update_dte256(iommu, dev_data, &new);
-+}
++		/*
++		 * pci_enable_ats() should not fail here because earlier
++		 * checks have already verified support & config.
++		 */
++		if (WARN_ON(ret))
++			return ret;
 +
- static void iommu_ignore_device(struct amd_iommu *iommu, struct device *dev)
- {
- 	struct amd_iommu_pci_seg *pci_seg = iommu->pci_seg;
-@@ -753,14 +762,10 @@ static void iommu_ignore_device(struct amd_iommu *iommu, struct device *dev)
- 	pci_seg->rlookup_table[devid] = NULL;
++		dev_data->ats_enabled = 1;
++		dev_data->ats_qdep    = pci_ats_queue_depth(pdev);
++		ret = 0;
+ 	}
  
- 	/* Clear DTE if we have a live entry */
--	if (dev_data) {
--		struct dev_table_entry new = {};
--
--		amd_iommu_make_clear_dte(dev_data, &new);
--		update_dte256(iommu, dev_data, &new);
--	} else {
-+	if (dev_data)
-+		amd_iommu_clear_device_dte(iommu, dev_data);
-+	else
- 		memset(&dev_table[devid], 0, sizeof(struct dev_table_entry));
--	}
- }
+ 	return ret;
+@@ -2514,8 +2521,17 @@ static struct iommu_device *amd_iommu_probe_device(struct device *dev)
+ 	else
+ 		dev_data->max_irqs = MAX_IRQS_PER_TABLE_512;
  
- 
-@@ -2517,6 +2522,11 @@ static struct iommu_device *amd_iommu_probe_device(struct device *dev)
- err_deinit:
- 	iommu_ignore_device(iommu, dev);
- out_err:
-+	if (dev_data) {
-+		amd_iommu_clear_device_dte(iommu, dev_data);
-+		dev_data->dev = NULL;
+-	if (dev_is_pci(dev))
+-		pci_prepare_ats(to_pci_dev(dev), PAGE_SHIFT);
++	if (dev_is_pci(dev)) {
++		struct pci_dev *pdev = to_pci_dev(dev);
++
++		if (pci_ats_supported(pdev)) {
++			ret = pci_prepare_ats(pdev, PAGE_SHIFT);
++			if (ret) {
++				iommu_dev = ERR_PTR(ret);
++				goto out_err;
++			}
++		}
 +	}
-+
+ 
  	return iommu_dev;
- }
  
 -- 
 2.54.0.823.g6e5bcc1fc9-goog
