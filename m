@@ -1,107 +1,145 @@
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
+Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A50E33BED24
-	for <iommu@lists.linux.dev>; Mon,  1 Jun 2026 14:32:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADC0D3B8D4A
+	for <iommu@lists.linux.dev>; Mon,  1 Jun 2026 14:36:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780324374; cv=none; b=pcYjh+Umqy4FjvuWEXRG9UVvNuOGLgk6egyypHRaAHIQAXxpuLLZQfDEtG1ArA3XGALOXnfOQYiZveW9nlT4qblkB3/5hXxUAG4k320OKljQ9QHrp6OTlG4v83Mh8ZSB43aTRuvX2rsi7hxid0CmJiHScybPofOu+my7QivcIPQ=
+	t=1780324609; cv=none; b=ruwm0kVjQoskwiUxj8YySpQuMq17MzTjbNyPuxhwAdAUaCJY7msTc/NCXE4QViDLbE1UGKAUz9uMqXKhtBCBNpn7AUKgg3cF8TDvIFJCHK0s1pwMHLZPZ8JrJM+U23+OCL37zOdmGmOTbiUAG4nS8LFYIc1CjzKfSgiQNekJEds=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780324374; c=relaxed/simple;
-	bh=GWT9f5g5xTs3pgj7dYhq926onG7epK/eJHZ5TO13AI0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lRasoLw0Xu1HqrFsvP3ICk29g6dH5IEUMVSzt0lwAG/Xf8sXb0EB7HB2KbjdKru7WCG4gRhlRiYfhg1AYZc5AB5fMUbGQcEvJ8KOxzCO3fqbsNk6hc2KaT890WrU28Ul0lepl03nvbL1rLr9ovRn0JCfZQo17WnDN4VEaXZwIm4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=lGjNZt5v; arc=none smtp.client-ip=209.85.222.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1780324609; c=relaxed/simple;
+	bh=+aUZFujOJt1HzKW2d/02qPS6+H/Sp7A9/BMfcdW8tvE=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=MWNDBmQfn3zP0ukA4txwmeKzXMRTuzjTPAFPKIMFcjnPMYGGcUheoTdUIHJI0Sm+OzTK3OMfrTD0SbKIV5aKa51CREpTDB9poOi/X4RqgUzbPa+RRT5OhIpt1t0B1D3hJWpnQAgapBZ17XhkwlemUlxVbfYfL2a5dYx79U1Q93U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=MGxJDDdg; arc=none smtp.client-ip=209.85.216.73
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="lGjNZt5v"
-Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-9156b74006aso44570385a.0
-        for <iommu@lists.linux.dev>; Mon, 01 Jun 2026 07:32:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="MGxJDDdg"
+Received: by mail-pj1-f73.google.com with SMTP id 98e67ed59e1d1-36d985df4cfso1110666a91.1
+        for <iommu@lists.linux.dev>; Mon, 01 Jun 2026 07:36:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1780324373; x=1780929173; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=mi2AxBnDBuiwVVwwXIXlKf9rcXdvhFLnG5wAFAlVNdc=;
-        b=lGjNZt5vjvSDJe+BiFhSYnrRzDHQsS446rKbPVAXSJYH+9EjTKigrFdsezMdlxCgI+
-         lC5l5XSbK2n+g0/JJhnr2x5KkVGMneLkGmuDzYCw0Ghwhd3JF2306J4UQCInBiAa+xrZ
-         fbIZHmcQZ/kI8omWW9n+i4YstpUCrNM8zULmlMLd8qXuTo39nlwHHErFFQEgWYdchnyW
-         o1KifxYsABOfqHzzTpvWz4YtDs2GPqycIG5/lv10zKRTMxwbmKFZ7R8Wpid0G3/piUDG
-         ABANZhSLc9FNkZ+/5iEFDnPbTWxXOFAsg2sOUauj2zEF9LW8+Cy0FYUaFJUUJ/E8Iq8y
-         7GqQ==
+        d=google.com; s=20251104; t=1780324607; x=1780929407; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=mq680t4Gx83PdTUYD69e7f2qCRhIL2CvllXumPUWfXM=;
+        b=MGxJDDdg0V81pof4QbEJcLXxMb+Py2D02awNItK9+2tUByxHb+ttqAjm0zRWN9WCCD
+         bEOpAS6v2wjfpspSWl9A9eAXg46EiUbgT0tIcPUfgfnRo/1v4whajT/gBo3NUUNpTdh/
+         hTcWBtJnSHlY8OrQ8p0LQhdYNKjmN1wcWwRLQHWNaXMA3riN5+B6OkzGoqIhJ8JgFs+m
+         +GQrF3zOs91fD67bdSOCd/VEKvIcwxZzIzc+q2Z4lXadpGQ7RM+cEZObLBPLdvWMy3mh
+         REsfxrqqSaIAKDCs3FYIWKk0HpruibKgvC7LN+bPcJmreQICZQ3LGzbZqovzfm8aRlTh
+         v23Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780324373; x=1780929173;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mi2AxBnDBuiwVVwwXIXlKf9rcXdvhFLnG5wAFAlVNdc=;
-        b=a+NQTpt7Q8fM6fXKA+VcAXJoqaHyPK6VoVBsfOJiZzKeCfyL5FwNZm84+KRbXmnebA
-         FOBhBe+GRpJCmnxU7KfFirGMo7jNPIcszA+P/0TD0We4nNDs+97/XQ+4fMntGn2Hdn0T
-         FkK8iy01J+FUNYmUROg5wRcuc/gGCuzvSRnrUampjRwJ5FT9sXUUXCoI/vMUNwg2w1Gd
-         7LkayGW4sADZGIoG5HEmUBR376Lj3U+kAhKnW7MnnLYoC7Ve3FqsZnsCyLDztNDe1tvy
-         VjjBv3PyawwP1/CA43xmsWSJXbx0SVTFDDNUwWqjmgNvWs2zIIVkISdyouijMLmTTlKu
-         gqew==
-X-Forwarded-Encrypted: i=1; AFNElJ99oqmPLQQIlAyRVjvHH0FceuNGt0s/vhi52KUFrFs8TxFxguSCV9A0RYd/gENEUmGxRGZ0tg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzZHjiogc6TWCmyRgRPMaqt4JEaNGdjPkZ9A8+51NtPGxMyUh1H
-	8s1b02tmF4xCNQa2D2dG5DsPPOfm6KIejTX4VbnpGvja1pGJ5tZT/pE/rWz92RuAdCw=
-X-Gm-Gg: Acq92OH9l9lHbu3wQF2AZ3q0LMQIVxCgp1RVYaTzVisfwZ5VTv0USQIzHpK8IA453Tw
-	BDF1D9ZQekL6jp+1fMIx7twS4FXaQGbNvo/O155vTUx19FgWq8/sFKKUFqJYcb3mOaFKJC2HXir
-	XBBQpCn8Zv0HHDXSfl5pqBAjgnHKLd4bZNFUcA8Zm05rd4Q+32hzm8cMGAcE4maevSOwH4CyVr/
-	0S1xe/ZmjcUOok9beL2G+LKDbHX/SWR5D9dZvr6hzEV/XaktmWcS4gbRJvEY5b5OkSxPLSefG7/
-	RTl793XWReSWNueUND4MN/2BPMQwI9Gxy0WgPwqFOWkSLPzvQaosSWwsbqrf97v1HDA4a4QXtqv
-	SFTJAak9wgiTMT/yq+cfQ6XJqaF+5+uG98XuBS/Fn00ymsAWqBr8J+0mVTB6WoHliSNiCy2b3zA
-	ScQ8Jd5PdgudLgyBDj+dGjAWr8pel+pjLWSNprJkPZbe+Edy4vFEa1roAegbcpEyFEsbwwMWKcq
-	NJk1rOB8iq2r3jY
-X-Received: by 2002:a05:620a:701b:b0:915:4213:eb98 with SMTP id af79cd13be357-91542140a21mr1632452385a.56.1780324372641;
-        Mon, 01 Jun 2026 07:32:52 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-91570271853sm113463685a.24.2026.06.01.07.32.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Jun 2026 07:32:51 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wU3hC-00000001n2t-2ubv;
-	Mon, 01 Jun 2026 11:32:50 -0300
-Date: Mon, 1 Jun 2026 11:32:50 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "guanghuifeng@linux.alibaba.com" <guanghuifeng@linux.alibaba.com>
-Cc: boris.brezillon@collabora.com, robh@kernel.org, steven.price@arm.com,
-	adrian.larumbe@collabora.com, maarten.lankhorst@linux.intel.com,
-	mripard@kernel.org, tzimmermann@suse.de, airlied@gmail.com,
-	liviu.dudau@arm.com, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, alex@shazbot.org,
-	dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, kvm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, kevin.tian@intel.com,
-	baolu.lu@linux.intel.com, suravee.suthikulpanit@amd.com,
-	dwmw2@infradead.org, xlpang@linux.alibaba.com,
-	oliver.yang@linux.alibaba.com, shiyu.zsq@linux.alibaba.com,
-	wei.guo.simon@linux.alibaba.com,
-	alikernel-developer <alikernel-developer@linux.alibaba.com>
-Subject: Re: [PATCH 3/9] iommu/generic_pt: implement iova_to_phys_length
-Message-ID: <20260601143250.GA2487554@ziepe.ca>
-References: <20260529115116.GR2487554@ziepe.ca>
- <20260531093637.3893199-1-guanghuifeng@linux.alibaba.com>
- <20260531093637.3893199-4-guanghuifeng@linux.alibaba.com>
- <20260531235421.GW2487554@ziepe.ca>
- <fa924b86-1ca9-4819-8330-0d5f6ede8923@linux.alibaba.com>
+        d=1e100.net; s=20251104; t=1780324607; x=1780929407;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=mq680t4Gx83PdTUYD69e7f2qCRhIL2CvllXumPUWfXM=;
+        b=DFM+pJVMdpDbQdHvUYXRNmHndtelL+P0HIWHiYMDBXVlj76yknkzo7n35nMh3bU9LP
+         9bZLIKWzpDVvs36AnJd3ejJFIYvseQ2DhpQGWLjKF1PjWUUOwNQGpt29mivm/jh1E/h+
+         MxicHiZw8PwPvrI7FktpsG9r7EQNnwQDeFgWU/HXYb7BVPXs7zafucVHjyPxpl4XLGMF
+         9MyKQf/2WdN+7x0HlNRLSLFT2AH6dl+lxVSNszFUgc+Z/HsqkUqaG4BuKRi5ACM6nMfm
+         C54QUcqyQ7MUCayKrylqKrs6g4QcBwuocYzyso/PvgqHllPF/GbuflEzFbB0sGm/SF2q
+         NgYw==
+X-Gm-Message-State: AOJu0YwxijBp34Sd33vD7cj6hv7vLeJyc9PqkAeJc/YmWFgROM4cqY/j
+	JMfo5VFJFaqZRLH4h+bXfGP/mKO+/nZNRfCQFm3zRu7yY0dNE6zUjX6UOTD5gylADYApMLupkNx
+	pC5FS5/la0XmvDFqxLQcKFXZPR7wa0kiTori1glIZm+mkUclvld8ifoYazYYn7aeomJKJRQEn6G
+	xFL7pnld1uX62+3Hlc+rbr6GAelPyylQ==
+X-Received: from pjsg9.prod.google.com ([2002:a17:90a:7149:b0:36b:b005:e76b])
+ (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:564c:b0:366:10f1:3d91
+ with SMTP id 98e67ed59e1d1-36c4fef3035mr11248821a91.1.1780324606616; Mon, 01
+ Jun 2026 07:36:46 -0700 (PDT)
+Date: Mon,  1 Jun 2026 14:36:39 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fa924b86-1ca9-4819-8330-0d5f6ede8923@linux.alibaba.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.54.0.823.g6e5bcc1fc9-goog
+Message-ID: <20260601143644.2358771-1-praan@google.com>
+Subject: [PATCH v7 0/5] iommu: Standardize ATS robustness and state tracking
+From: Pranjal Shrivastava <praan@google.com>
+To: iommu@lists.linux.dev, linux-pci@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Baolu Lu <baolu.lu@linux.intel.com>, 
+	Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>, 
+	Bjorn Helgaas <bhelgaas@google.com>, Samiullah Khawaja <skhawaja@google.com>, 
+	Pranjal Shrivastava <praan@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, Jun 01, 2026 at 10:24:14PM +0800, guanghuifeng@linux.alibaba.com wrote:
- 
->    Therefore, currently only the PTE mapping size of the iova is returned.
->    The current commit has a large number of changes; this issue will be
->    fixed  in a subsequent series patch.
+The primary motivation for this series is an ATS state mismatch observed
+under heavy load (via iova_stress). A failure in pci_enable_ats() leaves
+IOMMU drivers like arm-smmu-v3 with inconsistent state leading to PCI core
+warnings during device detach.
 
-No, do not introduce the wrong API to start. The iommupt version
-should be easy enough to do this.
+While David's recent work [1] addressed a discovery race for specific
+quirked devices by moving them to the HEADER phase, gaps remained
+regarding how Virtual Functions (VFs) inherit state from their Physical
+Functions (PFs). Specifically, pci_ats_supported() did not account for
+PF-level quirked status, and pci_prepare_ats() lacked STU validation for
+VFs.
 
-Jason
+Based on discussion with Jason and Baolu in v3/v5, it was decided that the
+IOMMU drivers should explicitly check pci_ats_supported() before calling
+pci_prepare_ats(). To enforce this, pci_prepare_ats() now noisily checks
+for support via WARN_ON(). Furthermore, the device probe should fail if
+pci_prepare_ats() fails. Since these early gates preclude software
+configuration errors, any remaining failure during pci_enable_ats() is
+treated as a kernel bug.
+
+Additionally, while fixing probe paths for Intel, I also spotted a
+minor fix for arm-smmu-v3 (patch 3).
+
+Following the discussion with the community, the driver-specific series
+have been posted separately:
+
+ - Intel IOMMU fixes reported by Sashiko [2]
+ - Refactors for AMD IOMMU [3]
+
+[1] https://lore.kernel.org/linux-pci/20260403222750.1215002-1-dmatlack@google.com/
+[2] https://lore.kernel.org/all/20260531170254.60493-1-praan@google.com/
+[3] https://lore.kernel.org/all/20260601134204.2150602-1-praan@google.com/
+
+[v7]
+ - Moved patch PCI/ATS: Mandate checking pci_ats_supported() before pci_prepare_ats()
+    to the AMD series [3] to maintain bisectibility
+ - Added a UAF fix for arm-smmu-v3 to set iommu->priv = NULL
+
+[v6]
+  - Reverted the decoupling of pci_ats_supported() from pci_prepare_ats().
+  - Added a WARN_ON() to the internal support check in pci_prepare_ats().
+  - Dropped the standalone Intel bugfixes (RB-tree and UAF) to be sent as a
+   separate standalone series per maintainer request.
+  - Kept the folded UAF fix in the AMD IOMMU patch to ensure the new error
+   path is immediately safe.
+  - Collected Reviewed-by tags from Lu Baolu for PCI core patches.
+
+[v5]
+  - https://lore.kernel.org/all/20260528202353.3422206-1-praan@google.com/
+  - Decoupled pci_ats_supported() from pci_prepare_ats() in the PCI core.
+  - Rebased SMMUv3 support on top of Nicolin Chen's "Always-On ATS" series.
+  - Fixed pre-existing RB-tree corruption in VT-d probe (Baolu/Sashiko).
+  - Addressed the pre-existing UAF in AMD IOMMU probe suggested by Sashiko.
+
+[v4]
+  - https://lore.kernel.org/all/20260525184347.4059549-1-praan@google.com/
+  - Standardized the pattern across Intel VT-d and AMD IOMMU drivers.
+  - Replaced the SMMUv3 ats_prepared gate with a fatal probe-fail logic.
+  - Utilized WARN() macros for runtime enablement failures in all drivers.
+  - Collected R-b tags from Jason and Sami.
+
+Pranjal Shrivastava (5):
+  PCI/ATS: Ensure pci_ats_supported() is PF-aware for VFs
+  PCI/ATS: Validate STU for VFs in pci_prepare_ats()
+  iommu/arm-smmu-v3: Fix a UAF in the probe_device error path
+  iommu/arm-smmu-v3: Standardize ATS enablement failure reporting
+  iommu/vt-d: Fail probe on ATS configuration failure
+
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  8 +++++++-
+ drivers/iommu/intel/iommu.c                 | 15 ++++++++++++---
+ drivers/pci/ats.c                           | 13 ++++++++++---
+ 3 files changed, 29 insertions(+), 7 deletions(-)
+
+-- 
+2.54.0.823.g6e5bcc1fc9-goog
+
