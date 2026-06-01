@@ -1,54 +1,54 @@
-Received: from mail-pg1-f201.google.com (mail-pg1-f201.google.com [209.85.215.201])
+Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67038349CE1
-	for <iommu@lists.linux.dev>; Mon,  1 Jun 2026 21:59:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CE6F342526
+	for <iommu@lists.linux.dev>; Mon,  1 Jun 2026 21:59:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780351160; cv=none; b=kVen1CXQY72L6U2E6JrV1svxOH3FjpSQ6b3ZpxWQTUi2f0j0WFLyncgd5rfPON8Fi1GTaGYPTmNbA6oB5vdnmBgvVpePEBddLFfZOrNa7wPCfVuxIcyBdJL5Xk7Gq3o+UF/prrqCLnT3RkxQd+eQ0Vl3NbTiXWCK9Kq14Y4LjKY=
+	t=1780351162; cv=none; b=hmrbuxpLiI2quUujsbVmEzD6XIjyXs/bacKSP/HYb5Lh3eCdyK3Fstyal07l/ne7jbMi6ejexMhtlPNQAedIUwW5Rrjw3g9qakCbVYzoMyLMXlncoobOhSSWuBdrPWW5fv06VXpx61bYQLDMxIyD/T7kMcN0H5hYSnE6qCpusaA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780351160; c=relaxed/simple;
-	bh=vSKQFPy3be/5jz3I79sysw9FQaKRp1nHBy09iO4OFgg=;
+	s=arc-20240116; t=1780351162; c=relaxed/simple;
+	bh=xWe5lrAka48SsNsq+rRDJlkZ9YwBUh8wW8cee+515d0=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=Dtx38tqYJqCuoHzkCeCa2GpD5lN9J3LslqlbHDBtlVDTvVlsXVgd4UHEwA4SnXd3JhC2XxOXuRHBma6Oam682J7rMD0xnvgrmwdA8v+eFj1cS/AwQ3BR/Xp45Jmdb35SS1admU3+QZ7JqAWqiM14F4M0BpVaWYpCEY2bFbkIr3U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=n3B9mUVq; arc=none smtp.client-ip=209.85.215.201
+	 To:Cc:Content-Type; b=It8M1FLbVz+jSfcEnUM/j8yLxkQr7ySd7nNWVbRuRVNSVotGqNltZrItwdAqGdwpRCpUSd70w+CFyI/bSYPrv4lxV2DcVUeyvU6eLtU5oNyCRk+GMJu8YueIhc+UQhCYRqXUzuFBK6rn/WQlG2oD7F0kx0A4jvYAya+03xK1rrw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Scc0s81s; arc=none smtp.client-ip=209.85.216.73
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="n3B9mUVq"
-Received: by mail-pg1-f201.google.com with SMTP id 41be03b00d2f7-c8584e3fc96so1294790a12.1
-        for <iommu@lists.linux.dev>; Mon, 01 Jun 2026 14:59:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Scc0s81s"
+Received: by mail-pj1-f73.google.com with SMTP id 98e67ed59e1d1-36d99333358so1689807a91.3
+        for <iommu@lists.linux.dev>; Mon, 01 Jun 2026 14:59:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780351158; x=1780955958; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1780351161; x=1780955961; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=UiMB5GJ3G5FDErhVSMyBY6oKC/dH+Rh8Dxtui0QM9OY=;
-        b=n3B9mUVqtWnAPVFrHvDTS5qY2j7OPzd3rlSqictP0pMM2v3g5FnBi1Ul+BDyS8MO8T
-         v7sQAbY//1tXoh/zPbiogEl3p8QTLfCUg1DUCFw9vuqYOkSWIV70JQZyRsiBvXBiWexA
-         RKauhdKGnZqUrphpYR14bTZfC7SGuDnyyDHM4cF6JSHSj60kKvqmU2k4PvzyP9+SAcuB
-         vMJV6Fg13nCp3erNf327yylRUg60dhcLejkkBuEv8JFZcqgrix+2ssGsIGVAagwqG6RQ
-         3H5GX1jFFW42KBi/KotI853yFaZjtWv8cTHLAvwvZC3T56XEPB8ovTcMN3f8qUQIwS5a
-         XSuA==
+        bh=bXqkopj6Oh5WtyGQaum1YKVEZGGYYtaMkCtOohru3Bs=;
+        b=Scc0s81sApLr9mYNvF3bDrH5s1ze5yQo+FnduH4yVybN9faa7RopXp8epjFQj3K98Z
+         uJGF9OcLWfvNtwZf3YdD++K98bE0aHlf+HVHnLB9avN6jF3pesu17Iu13glxGKSKB5cI
+         xmpfXrj80TRZ39xjUZq1xzgUUpcRnxM1WX5H/Mtc9smCr1x+ACdDyS2qojyotyL5lIps
+         DHh9yHZBVbp49hF+s3ciQTBpECMrEtNAj79fUhLoN9ZT+ezduPMeOJZcg2IMWA6S/4of
+         NTKkOuiHx4i00I6BrTsFmYTo4zGcbhMqH9+VfUvQDOwfhfTD70w/e85BrsnYnnE6xIML
+         zLQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780351158; x=1780955958;
+        d=1e100.net; s=20251104; t=1780351161; x=1780955961;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=UiMB5GJ3G5FDErhVSMyBY6oKC/dH+Rh8Dxtui0QM9OY=;
-        b=PzzwHAPYHqTp/F86wA8iMyNr2s05B9NXnLOmHmxoQO9gSccoqEMYJwmI4NxCGpwBHU
-         Qj+vNstfajFn1B5JAMMpVs+biIEAHh3xG7ib9SfhcjVupvIRFtVrLf50TSwXeaoL3crV
-         fcYj7fdQBai05nD/Ru6jn2LD5WcQ6EMeFMm59073FhF0fURs7dzCspjs/+vI5YmFmNkO
-         oyIAM8Fy42rrkCrMHodz/gWR8WSK8Com/jdpuCu+TN9RqszkSsQQQZSD8QPyo1gampjk
-         oUaiIGESQnrGOW9CfFIjAWk2hP5by+Ul0Pwm9zCokY/v6VYvRsQ8IF9ryay8Q5Ng1K+Z
-         EMnw==
-X-Gm-Message-State: AOJu0YwjsZfKwYUaPlU162Ca4iosHDnCh8y/HY92VxuZbkK3QbjzlI3m
-	SOL3mfTOJ/Nd1JfesdYc253NeJL4xZtVgLt+mxJ/ADc5fuuHRJdpJ2J/7xw9NVEhMe07J04M84N
-	16xX9BYoINSF54sThzpoirG5D2ck6TaN3ImXlTKVuwzYfvwfLMhix1t/ASVIzgj6PR3+SpW5wJQ
-	uBDjrJPSCkakEsod3B9FKgf2o8PSnHjA==
-X-Received: from pgcl27.prod.google.com ([2002:a63:701b:0:b0:c85:104d:a751])
- (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a21:7a96:b0:3b1:884a:c3d5
- with SMTP id adf61e73a8af0-3b42823a975mr14463013637.24.1780351158251; Mon, 01
- Jun 2026 14:59:18 -0700 (PDT)
-Date: Mon,  1 Jun 2026 21:59:00 +0000
+        bh=bXqkopj6Oh5WtyGQaum1YKVEZGGYYtaMkCtOohru3Bs=;
+        b=NbrcNncBr2E6hjkml3Qc+nVeQiSXEiTCbpNFUYWs0gg5MX1iLWDG2xqm42+rWonrlX
+         4XbzrnpCJsRgnuJy0eZVxT2pq5dAnoq4Sgpt6ZqWnl6eRY1VFPYlMGyIbyvwmXRmn4hv
+         pqM3KShLItn/Bk08DGnDkquNnG0kbYfoUe98yo3nbP6Zr9zozlrc0l3lKXWiZWymhLwz
+         vysyXrIo6G3whpMuR5p9IsnOf14cfHdZdvPaNsN3BiUlmpcgnwbhbxHKb0NqN7uoxQWM
+         c7DvH17RHCEyclonoGYwaxQdHiktKcPGLelfK+BqIidLbHbASILR1mJmmG6qkHMOeoJr
+         5jfg==
+X-Gm-Message-State: AOJu0YzoDfMqjEiIW9K5SuslfgiQZAvyA6pbqj/t/eZHb8t3BrE/mhdD
+	mQzuyEPmiwWshjY8UMD2dmNEmc7Evk2CyS6NMbDnD0pnC+4LzB3wBVJm7vR5XVvc1V4J7A7TRgh
+	OMyqrWYCjnqcnjKNr6DTYjk26q3ZnxGYHfLLOyze3YX1FKQG6DZ5bKeXjFgwT8z7Zejoe39ksw+
+	441HUhxXFWSVVuI6mtrxyae6WMzoIPog==
+X-Received: from pgbct3.prod.google.com ([2002:a05:6a02:2103:b0:c73:fc44:8baf])
+ (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:264e:b0:369:7433:2fe
+ with SMTP id 98e67ed59e1d1-36c4ff25853mr12026633a91.6.1780351160239; Mon, 01
+ Jun 2026 14:59:20 -0700 (PDT)
+Date: Mon,  1 Jun 2026 21:59:01 +0000
 In-Reply-To: <20260601215909.3958732-1-praan@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -58,8 +58,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20260601215909.3958732-1-praan@google.com>
 X-Mailer: git-send-email 2.54.0.1013.g208068f2d8-goog
-Message-ID: <20260601215909.3958732-4-praan@google.com>
-Subject: [PATCH v8 03/12] iommu/tegra241-cmdqv: Add a helper to drain VCMDQs
+Message-ID: <20260601215909.3958732-5-praan@google.com>
+Subject: [PATCH v8 04/12] iommu/tegra241-cmdqv: Restore PROD and CONS after resume
 From: Pranjal Shrivastava <praan@google.com>
 To: iommu@lists.linux.dev
 Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
@@ -69,97 +69,33 @@ Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
 	Pranjal Shrivastava <praan@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-The tegra241-cmdqv driver supports vCMDQs which need to be drained
-before suspending the SMMU. The current driver implementation only uses
-VINTF0 for vCMDQs owned by the kernel which need to be drained. Add a
-helper that drains all the enabled vCMDQs under VINTF0.
+From: Ashish Mhetre <amhetre@nvidia.com>
 
-Add another function ptr to arm_smmu_impl_ops to drain implementation
-specified queues and call it within `arm_smmu_drain_queues`.
+PROD and CONS indices for vcmdqs are getting set to 0 after resume.
+Because of this the vcmdq is not consuming commands after resume.
+Fix this by restoring PROD and CONS indices after resume from
+saved pointers.
 
 Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
 Signed-off-by: Pranjal Shrivastava <praan@google.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  7 +++++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  1 +
- .../iommu/arm/arm-smmu-v3/tegra241-cmdqv.c    | 27 +++++++++++++++++++
- 3 files changed, 35 insertions(+)
+ drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 0e77ef1e4523..8682be5060ed 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -915,6 +915,13 @@ static int arm_smmu_drain_queues(struct arm_smmu_device *smmu)
- 	 */
- 	ret = arm_smmu_queue_poll_until_empty(smmu, &smmu->cmdq.q);
- 
-+	if (ret)
-+		goto out;
-+
-+	/* Drain all implementation-specific queues */
-+	if (smmu->impl_ops && smmu->impl_ops->drain_queues)
-+		ret = smmu->impl_ops->drain_queues(smmu);
-+out:
- 	return ret;
- }
- 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index c855ab4962ed..24d5e28eea88 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -885,6 +885,7 @@ struct arm_smmu_impl_ops {
- 	size_t (*get_viommu_size)(enum iommu_viommu_type viommu_type);
- 	int (*vsmmu_init)(struct arm_vsmmu *vsmmu,
- 			  const struct iommu_user_data *user_data);
-+	int (*drain_queues)(struct arm_smmu_device *smmu);
- };
- 
- /* An SMMUv3 instance */
 diff --git a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
-index 67be62a6e764..cb1e75e4ee91 100644
+index cb1e75e4ee91..866cae7b73e5 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
-@@ -414,6 +414,32 @@ tegra241_cmdqv_get_cmdq(struct arm_smmu_device *smmu,
- 	return &vcmdq->cmdq;
- }
+@@ -511,6 +511,8 @@ static int tegra241_vcmdq_hw_init(struct tegra241_vcmdq *vcmdq)
  
-+static int tegra241_cmdqv_drain_vintf0_lvcmdqs(struct arm_smmu_device *smmu)
-+{
-+	struct tegra241_cmdqv *cmdqv =
-+		container_of(smmu, struct tegra241_cmdqv, smmu);
-+	struct tegra241_vintf *vintf = cmdqv->vintfs[0];
-+	int ret = 0;
-+	u16 lidx;
-+
-+	/* Kernel only uses VINTF0. Return if it's disabled */
-+	if (!READ_ONCE(vintf->enabled))
-+		return 0;
-+
-+	for (lidx = 0; lidx < cmdqv->num_lvcmdqs_per_vintf; lidx++) {
-+		struct tegra241_vcmdq *vcmdq = vintf->lvcmdqs[lidx];
-+
-+		if (!vcmdq || !READ_ONCE(vcmdq->enabled))
-+			continue;
-+
-+		ret = arm_smmu_queue_poll_until_empty(smmu, &vcmdq->cmdq.q);
-+		if (ret)
-+			break;
-+	}
-+
-+	return ret;
-+}
-+
- /* HW Reset Functions */
+ 	/* Configure and enable VCMDQ */
+ 	writeq_relaxed(vcmdq->cmdq.q.q_base, REG_VCMDQ_PAGE1(vcmdq, BASE));
++	writel_relaxed(vcmdq->cmdq.q.llq.prod, REG_VCMDQ_PAGE0(vcmdq, PROD));
++	writel_relaxed(vcmdq->cmdq.q.llq.cons, REG_VCMDQ_PAGE0(vcmdq, CONS));
  
- /*
-@@ -845,6 +871,7 @@ static struct arm_smmu_impl_ops tegra241_cmdqv_impl_ops = {
- 	.get_secondary_cmdq = tegra241_cmdqv_get_cmdq,
- 	.device_reset = tegra241_cmdqv_hw_reset,
- 	.device_remove = tegra241_cmdqv_remove,
-+	.drain_queues = tegra241_cmdqv_drain_vintf0_lvcmdqs,
- 	/* For user-space use */
- 	.hw_info = tegra241_cmdqv_hw_info,
- 	.get_viommu_size = tegra241_cmdqv_get_vintf_size,
+ 	ret = vcmdq_write_config(vcmdq, VCMDQ_EN);
+ 	if (ret) {
 -- 
 2.54.0.1013.g208068f2d8-goog
 
