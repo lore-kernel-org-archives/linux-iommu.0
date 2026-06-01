@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40D9733507C
-	for <iommu@lists.linux.dev>; Mon,  1 Jun 2026 05:26:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9E56218EBA
+	for <iommu@lists.linux.dev>; Mon,  1 Jun 2026 05:36:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780291584; cv=none; b=go+1Tv35nOyJfGeNd7jDniBEeJXI0cogYHMEGwB32G1saH01/Ke9NLZpCTEMCXuCLckjyfLvVOpA1L+aV5qOCigIBgzd+Bq8gECQUL2ZQMKCcvQ71gO5vFfo52OEzXZmJ5drsZ07+XmSBkR1RF817HltzQzH8HTGBVJuVbOk+LQ=
+	t=1780292163; cv=none; b=rrLimF08PzbEfmr2Hbq+5+u7lj7pNB6F3t1scxnTNio4jhWt12D4NoX13ETJWqOFdBvF1rdtjXN4LZaHzo7AAH/JlTtpm/26dQVx3510jWqe7TAstV1L7zH6E4nwSJ8QsMAPUoIGJ4hXBZ7CH9rRLkOeeYv9YlIDUXFXckLaAms=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780291584; c=relaxed/simple;
-	bh=7Lno7VUT+W9NMyRxGJ35v8leg2gHPldFG6ujAfmnYzk=;
+	s=arc-20240116; t=1780292163; c=relaxed/simple;
+	bh=og6jG5cg3kX4d88390kMEssuiV7CR/MNor/2WX50QK8=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=rn8Q/ZV/WJ1A/MKbpr+JCBjYc61RSVEL5eJNjkCPTvE7CaTXNa02vOU9rZWaKwZQgw13ZBuGcj94LWm7MumTZMZty0TIFwoYZcT8GMJDJquKilhbASB+uGBBWxtVcETeMcqZoSlYchYAupXbXsJEGY4mNK6g72F1R4KDT8uRnZE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lECFPW16; arc=none smtp.client-ip=192.198.163.16
+	 In-Reply-To:Content-Type; b=PxZ2YL339a3WUiqsxOPIW2Lcr9PVBWqZMxsVs04gcpZIm9YQszxjmDUu7m6nWOiVRCRPJB6Fdj3G0cKWo3SDpHs9cpUBp+BOzlQyW8pkJkcObZKAQbXnP2z+7VgHWoaiUUE8sDdCLD6DU8tsxooDul7li8KkRzAKqRZMeS/ai8A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WvpB0NlA; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lECFPW16"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WvpB0NlA"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780291583; x=1811827583;
+  t=1780292162; x=1811828162;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=7Lno7VUT+W9NMyRxGJ35v8leg2gHPldFG6ujAfmnYzk=;
-  b=lECFPW16QGHKxiIt0H08J5AYTMvzjA6DshgLLTz9mSh7JHzXMIrJGPSj
-   GO8wi8mEMBoqg0dtA8CzE0c8KEUt24OqYFAU3cC/L38NPjd38dQ917U+V
-   BtywnlluJq2V+wDhe1iSTwXOJqAguCQrD1jMsG90yZE//hEAf1iwWqJA+
-   Q7+AFmhM38yU9n95NmRX9l7HD1GSq8wSpZcDXpCz1uKOprETL50aUK80U
-   TWCisQbnw34rOqJkBdEpMp7zG/OvrXRbTdYvnoeCG1yyxWwzcNB2zDKyt
-   EQSdMtMrbH2JmeksbkFq99XsTAKmiK8sVjZhPZHRaK9ZmCh9g9y72adxS
-   Q==;
-X-CSE-ConnectionGUID: lFu9PLsDRVuBReyUlEIhKQ==
-X-CSE-MsgGUID: rlVQU7FJTQKHdRhCg+YOWQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11803"; a="68575621"
+  bh=og6jG5cg3kX4d88390kMEssuiV7CR/MNor/2WX50QK8=;
+  b=WvpB0NlABWuzSiN6c9N7Q73jRkoDtN9FDB0bHAyjHWCX0qQF8ob0fn60
+   eSB2D25AOwITK98XB8/Yvagx3xs9nOD+achPt2T36COP/P1xmFb5R6ZAB
+   4oKMsG+hpYnDPdGSg71FBCpa75Kg363Vsq6gRriZJFJyQPqwxijQwv0V8
+   X0LM3gVwgE00ZTg+cEjnWVeeZrFSS3FG5RtQlMFSdzwWBE3LTWs23DDPH
+   KruHeW2znSypahfss0EK3hkR8xisXodWG7DMZ+uolLwWrMaNJU7XYrVGW
+   mgP/4Hdv/dVG8LeNmRiwhmQh2VkIk8s59SFz8wFcOEUKifER+UXslXlVR
+   w==;
+X-CSE-ConnectionGUID: hCNxKuYHRu+1VsLSMgVozw==
+X-CSE-MsgGUID: qoe+W6CkRYWXdTPp4PiRFw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11803"; a="92516447"
 X-IronPort-AV: E=Sophos;i="6.24,180,1774335600"; 
-   d="scan'208";a="68575621"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2026 22:26:22 -0700
-X-CSE-ConnectionGUID: vaQiSiCGT+mrGjS1E/ejZw==
-X-CSE-MsgGUID: K1ucyTREQ2qpeKq2ulR88Q==
+   d="scan'208";a="92516447"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2026 22:36:01 -0700
+X-CSE-ConnectionGUID: 5zX3G/IcS/GCHBaKFGBJYA==
+X-CSE-MsgGUID: k5y+/ucQQ0WAYdbzq1vmfA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,180,1774335600"; 
-   d="scan'208";a="242412888"
+   d="scan'208";a="248389777"
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2026 22:26:20 -0700
-Message-ID: <b9696ee1-d502-463f-9925-f1a24fdcdbec@linux.intel.com>
-Date: Mon, 1 Jun 2026 13:25:29 +0800
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2026 22:36:00 -0700
+Message-ID: <b0278f4d-681c-4731-bc8d-130a56e6d935@linux.intel.com>
+Date: Mon, 1 Jun 2026 13:35:08 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,47 +52,55 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/1] iommu/vt-d: Avoid WARNING in sva unbind path
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org, Nareshkumar Gollakoti <naresh.kumar.g@intel.com>
-References: <20260519052917.3729796-1-baolu.lu@linux.intel.com>
+Subject: Re: [PATCH] iommu/vt-d: Clear Present bit before tearing down
+ scalable-mode context entry
+To: Michael Bommarito <michael.bommarito@gmail.com>,
+ David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20260528025557.3209367-1-michael.bommarito@gmail.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20260519052917.3729796-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20260528025557.3209367-1-michael.bommarito@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 5/19/26 13:29, Lu Baolu wrote:
-> The Intel IOMMU driver allows SVA on devices even if they do not support
-> PCI/PRI. Commit 39c20c4e83b9 ("iommu/vt-d: Only handle IOPF for SVA when
-> PRI is supported") modified the SVA bind path to allow this configuration
-> by skipping IOPF enablement when PRI is missing. However, it failed to
-> update the unbind path.
+On 5/28/26 10:55, Michael Bommarito wrote:
+> device_pasid_table_teardown() zeroes the 128-bit scalable-mode context
+> entry with context_clear_entry() while the Present bit is still set. This
+> creates a window where the hardware can fetch a torn entry, with some
+> fields already zeroed while Present is still set, leading to unpredictable
+> behavior or spurious faults. The context-cache invalidation is issued only
+> after the entry has been zeroed, and intel_pasid_free_table() then frees
+> the PASID directory pages, so the IOMMU can keep walking a stale Present=1
+> entry that points at freed memory.
 > 
-> This creates an imbalance: the unbind path attempts to disable IOPF for
-> a device that never had it enabled, triggering a WARNING in
-> intel_iommu_disable_iopf():
+> While x86 provides strong write ordering, the compiler may reorder the two
+> 64-bit writes to the entry, and the hardware fetch is not guaranteed to be
+> atomic with respect to multiple CPU writes.
 > 
->   WARNING: drivers/iommu/intel/iommu.c:3475 at intel_iommu_disable_iopf+0x4f/0x90d
->   Call Trace:
->    <TASK>
->    blocking_domain_set_dev_pasid+0x50/0x70
->    iommu_detach_device_pasid+0x89/0xc0
->    iommu_sva_unbind_device+0x73/0x150
->    xe_vm_close_and_put+0x4d2/0x1200 [xe]
+> Commit c1e4f1dccbe9d ("iommu/vt-d: Clear Present bit before tearing down
+> context entry") fixed this exact pattern in domain_context_clear_one() and
+> the copied-context path, but device_pasid_table_teardown() was not
+> converted.
 > 
-> Fix this by bypassing IOPF operations for SVA domains on non-PRI hardware
-> in both the bind and unbind paths.
+> Align it with the "Guidance to Software for Invalidations" in the VT-d
+> spec, Section 6.5.3.3, using the same ownership handshake as the sibling
+> fix: clear only the Present bit, flush it to the IOMMU, perform the
+> context-cache invalidation, and only then zero the rest of the entry.
 > 
-> Fixes: 39c20c4e83b9 ("iommu/vt-d: Only handle IOPF for SVA when PRI is supported")
-> Cc:stable@vger.kernel.org
-> Reported-by: Nareshkumar Gollakoti<naresh.kumar.g@intel.com>
-> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+> Fixes: 81e921fd32161 ("iommu/vt-d: Fix NULL domain on device release")
+> Signed-off-by: Michael Bommarito<michael.bommarito@gmail.com>
+> Assisted-by:Claude:claude-opus-4-7
 > ---
->   drivers/iommu/intel/iommu.h | 11 +++++++++++
->   drivers/iommu/intel/svm.c   | 12 ++++--------
->   2 files changed, 15 insertions(+), 8 deletions(-)
+> Found by static analysis while auditing the callers of context_clear_entry()
+> for the same teardown ordering that c1e4f1dccbe9d addressed. This site is
+> reachable only in scalable mode, so it does not manifest on the legacy-mode
+> hardware available to me; I could not trigger a runtime fault and the change
+> is verified by code inspection only, on the same basis as the sibling fix.
+> Compile-tested on x86_64 with CONFIG_INTEL_IOMMU; no new warnings.
+> 
+>   drivers/iommu/intel/pasid.c | 4 +++-
+>   1 file changed, 3 insertions(+), 1 deletion(-)
 
-Queued for linux-next.
+Queued for linux-next. Thank you!
