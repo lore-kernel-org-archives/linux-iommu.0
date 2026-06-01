@@ -1,141 +1,211 @@
-Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011038.outbound.protection.outlook.com [40.107.208.38])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66F613F9293
-	for <iommu@lists.linux.dev>; Mon,  1 Jun 2026 20:43:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.38
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780346610; cv=fail; b=f6t1um15WKv6BonZt3J+24NCp+SrpYztZLoM4UPqmcztdKyEFwVs/+S5VR4qI0OkuVyqubD0LnblgTxTXHH1eyWMllsYHraEtJuXf9oGSNgflHEGMfZvQ5o+PXF/7YlS+PMz6f5nOyQMwUmxJZXg5Y76mhJLEyQd+OpSq9y7+9M=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780346610; c=relaxed/simple;
-	bh=l8DRyxc3BEGZ+DtrKLh89xFQrScMLfOWL508uSTYE1g=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=sjr0EqBg0j8ZU06GBoyDeWasxbP+ANW3zIvSs4hzjG4N1XiHs1FoHk5pUYe1xLY+lsnQCmcfdhjtIhIdW/3fTTJ5/COhP6bBup7OojlN/L2DxMxwCw7aH1EWFsw940/vcvB2TVy18YELOkERBwoTfRLgeVZqsdCUQtTPMzC+9Tk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=HUuY5Adk; arc=fail smtp.client-ip=40.107.208.38
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 97FF0363C62
+	for <iommu@lists.linux.dev>; Mon,  1 Jun 2026 21:23:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780349001; cv=none; b=WwLNs7VGZS2fZ6l1kZ/Or4kEEcuX3RugoGYuy4ZuHj2QOHksIMcp3/Vc8nVeFoITWAOTkvW79CqZqCtE2xlWHGwjYAlU+VWxF5usLCCuPDjigI0LlA2RfVu3AP7dE+ovJdj/TKUT9GH+ECqDBeLd/j7y1whogBBWK/g+uak46zI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780349001; c=relaxed/simple;
+	bh=OkglKhf/e4Ihij+LZLsfFyDEAiFhUwVwN1Isl5FwdHQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=T8WbJgGFBUFBSVKM1bhyyFznLOG+dY0FFPPiDn75l89vNO3dLnmPoqg0UjHy4ad/2yqMRTX6HCJ9KERmH0ZlEeczYs34YkqQfe3/u1GmE3xiT50VlB3JDmwpeOoEeXa074Oh8Qau4+RYvrvWTwfoU7MH2+HYzf4MlqdULA7E4fw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=TT1RVCnR; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="HUuY5Adk"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=YtB4OQKezgcjO9y/CdRGW3zURsFv/G4d+G3EajpWw0BTTsnp8lSfSqSWdKbJG6pYrw1aYdDdsbK2r/7kbouXUqCqbcRpkwNH6DOgtcSetA1qQuCGiREuZTxV9xd6/C+HgoMzzimgIjmw395KsMPavkgEpPBw1GUjf5bxRJxfkXpXtXfKClYSQlauo8a3AVrEStj/3gfFCtCNC1F75puIYopGZmoNQwCiZiOW2y/zaEIasEXwOMJ1t+VC7X9uhV+PpvYVgbRs8mT4in2zrCJ7+hgFY5KFemWg6AsMjrIOKizhnb6tQnYNaprauz9Sf7PLxDykOOTE8U9fTUAj6A/l6w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oHzPqikahsSOHDfoWnamNXsKZE7HD2IguEH+X5fM06s=;
- b=ydsxPnI/mngGMUf+PZkMpRAdpdQVHTJynbub84Y1JiNQKyVIMR41JmDlx0W0GPxW4xd3RJHo+B1xXgek1WFkXcSfJskxyTcTeZB5idPtYa6QgFNkOAgjtMJKcNGMCRgN/HnHxEcsQfWqJ/yZkFjgVCOYdIbedI31+Hy0nHNbnTw9e0EJMzlF47MzHeoqMr/dbHKBRAbPGXXEHvOKwixA1U64CIZWmN3mZ3E9VaXDX2l9XjEKzPjdvfBDmX7jclvHuL2lzQGssH2Xomrv7PquPWHpFf4c8XCvlexCSyfWebSHozFycs4Lzi2HPoGJ5Kcp+2tsLNv7it1qnwDOHnRkXg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oHzPqikahsSOHDfoWnamNXsKZE7HD2IguEH+X5fM06s=;
- b=HUuY5Adkfz2cx2GmJOuRDCgWeJ5+yjiMMutnJ2zG8huK19sXupwWqZFuzE5Yqy5IbDPfJMD1G06WgWMdbKHREz8DQiGO0MGPTV9jdZSHr+r6DnOrlQu3XmgRcQd5YKq3WqXqvayeA5Fdga1a5cw2KS8Bh4XMoFYp5h6q3CFmLn8dnDsEYMek1LEgArnivVeQAPQubGZBMHv26M/C3AchO25A0RTdiu2An827JhNySzHER315b0HdT7FTdoqBGeZW1BKQqr3wJensgg2uKnUYEeyyP49AObgUDLK7gBO1vsuEbOb4NOCpwp7lwtyAMksG+iNpXg02zXLjlwMkHr1VCQ==
-Received: from MN2PR22CA0030.namprd22.prod.outlook.com (2603:10b6:208:238::35)
- by SJ0PR12MB6736.namprd12.prod.outlook.com (2603:10b6:a03:47a::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.71.15; Mon, 1 Jun 2026
- 20:43:21 +0000
-Received: from MN1PEPF0000ECDB.namprd02.prod.outlook.com
- (2603:10b6:208:238:cafe::2c) by MN2PR22CA0030.outlook.office365.com
- (2603:10b6:208:238::35) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.71.17 via Frontend Transport; Mon, 1
- Jun 2026 20:43:21 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- MN1PEPF0000ECDB.mail.protection.outlook.com (10.167.242.139) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.92.5 via Frontend Transport; Mon, 1 Jun 2026 20:43:21 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 1 Jun
- 2026 13:42:57 -0700
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 1 Jun
- 2026 13:42:56 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.9) by mail.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server id 15.2.2562.20 via Frontend
- Transport; Mon, 1 Jun 2026 13:42:56 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <jgg@nvidia.com>, <kevin.tian@intel.com>
-CC: <joro@8bytes.org>, <baolu.lu@linux.intel.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>
-Subject: [PATCH v1 5/7] iommufd: Break the loop on failure in iommufd_fault_fops_read()
-Date: Mon, 1 Jun 2026 13:42:36 -0700
-Message-ID: <336a9b6e44fe66a24199d3be777c405c85c98622.1780343944.git.nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1780343944.git.nicolinc@nvidia.com>
-References: <cover.1780343944.git.nicolinc@nvidia.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="TT1RVCnR"
+Received: from [192.168.0.88] (192-184-212-33.fiber.dynamic.sonic.net [192.184.212.33])
+	by linux.microsoft.com (Postfix) with ESMTPSA id EAE9E20B7166;
+	Mon,  1 Jun 2026 14:23:05 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com EAE9E20B7166
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1780348986;
+	bh=GX7y2/x1j07in9PdQjtP0lVXFQBVcWgLycYttpqiiCA=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=TT1RVCnRPRxuTTv1+Y6Y923LIryi2X+5lt/IXEU372GeV1F3kY5NSEGsSmyyu+ad6
+	 qYiTFLZaQQOKTBq0vART6J1aJ0FWF1pIK9iPSuN9vJlYJLkO9FBJOOouiKrK2myCaH
+	 GZR7sd3SJ2LCA+TiHLD3q/AaV3T/I28m5CA2LCw8=
+Message-ID: <99bc22c3-0fa9-044d-071c-53cc8c2b7548@linux.microsoft.com>
+Date: Mon, 1 Jun 2026 14:23:18 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN1PEPF0000ECDB:EE_|SJ0PR12MB6736:EE_
-X-MS-Office365-Filtering-Correlation-Id: e2fe9f7a-533d-4db8-944a-08dec01e6b22
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|36860700016|82310400026|22082099003|18002099003|11063799006|56012099006;
-X-Microsoft-Antispam-Message-Info:
-	nucHATeke0wpMyNJBbgGZjMxDllBRZc7kaqe1bsATNAXw+QxMyAlwYcM/iEG4MYLDRRz1jolBC0MJ5ROgWvRybl0V3q/loBZWxoq3657KedlX6mT7xK3gc6omCpgtAFp4a7odAnasKsw8rUvp2f98iRAnN5JYKhqGUnw87n+GXfgDqKh90CnW8wcfDgqL/5seu84sYTiHfL7IH97PAKFeW3xDofB4fBlrX26aZwY+NP0nA+nU+67FPW4C+2CtZdLXaOrNG6a/vQuFXgSNv5DeWRHowGhcmoj3q8CbKKulDq6gq6TjCFhPD7WJM89nybQ63p8t+oGYCnsq4Rz8HhzLDnBXalq6sDyu3xV/mhSj1yxazERYLzUeBu9sQ/ZthhsxDDEdtVBJ/ERt+h52GqRgUfP01d/8Go/6KiQ59wQH9oaH3KcZmer8U4/odK8F6iH2DPGNlr6t3xjv8Q2WM7d56dMTzOIJh47QaPzrM7TnOp0JZREA94il5cMEGHbo92hEzmZHEqjKA9Y8kTfNlVRlLkd7wpedtaTYlcA4CiDKGp2kiYIjbn7d6u7Y5JO6ZFpI4jWlegi5qMs7fKt5FiEAGiRE9LSFILcE/Kyqn977VWY5wJwYdgZvsA7HYXqMWPzvOWQMOXi6Wn1bpWoYUwVp4e23GLElX8swLuSC0y26DZbHWRz0Yqd+6j6WApSOB+sRdMWAOJ4fyqu8fBR76RF7J4sbbvUjN/fsp26MYOPNvc=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(376014)(36860700016)(82310400026)(22082099003)(18002099003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	uscitzQ5U4+bvGkQSQgNFlx0yQsNoaUBtWfEpa2IxJB8wE4nJIFW/qEcQHjDmsTl8HIQOPMehn7PY/oB0vAJRV66IDyfJ3wHETNoKLLk/Rhv2tsgZmC6wRksFZrU7IzTqYCUQVHS6oDAIUarAYur/Vtp9RjSe0x/L/G2QXMEy0isCdluZVRfiWjvYP9IfwNUR/eBTemNvCvFIMxCSIFaFIN5HYjQGMyR9u3pfpxo7gliYVyLRcxknGxOHS49H7PEkYwzQCWD5YgGojahSq1qXlN6v4PWTvPUTpOsH5Ey8K99glonkUvQmq8y1APo8AGMaZadtM/SpLMwj6SbJJFKfV6mLqXzUn4t+oQmromN5nuBNrQif4rbRu+kEZ7p9ldae06oreFCmOSqibLsGdVjOGsmwex0I9M7b+Nfc2pkUIbxv5B9RDFgKKF4ypw86ECX
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2026 20:43:21.0109
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e2fe9f7a-533d-4db8-944a-08dec01e6b22
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	MN1PEPF0000ECDB.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB6736
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.1
+Subject: Re: [PATCH V1] iommu/hyperv: Create hyperv subdirectory under
+ drivers/iommu
+Content-Language: en-US
+To: Jacob Pan <jacob.pan@linux.microsoft.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ mhklinux@outlook.com, wei.liu@kernel.org, zhangyu1@linux.microsoft.com,
+ schakrabarti@linux.microsoft.com
+References: <20260529014148.297154-1-mrathor@linux.microsoft.com>
+ <20260601090735.00005f55@linux.microsoft.com>
+From: Mukesh R <mrathor@linux.microsoft.com>
+In-Reply-To: <20260601090735.00005f55@linux.microsoft.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On a copy_to_user() failure inside the inner list_for_each_entry, only the
-inner loop breaks; the outer while re-fetches the just-restored fault group
-and retries the failing copy_to_user() forever, spinning the reader at 100%
-CPU with fault->mutex held.
+On 6/1/26 09:07, Jacob Pan wrote:
+> Hi Mukesh,
+> 
+> On Thu, 28 May 2026 18:41:48 -0700
+> Mukesh R <mrathor@linux.microsoft.com> wrote:
+> 
+>> Create hyperv subdirectory under drivers/iommu in anticipation of more
+>> hyperv related files from upcoming PCI passthru and pv-IOMMU patches.
+>> Also, the current file hyperv-iommu.c actually implements irq
+>> remapping, so rename to more appropriate hv-irq-remap.c and move it
+>> under the new hyperv subdirectory. Since this file implements
+>> irq_remap_ops exposed by drivers/iommu/irq_remapping.h, it cannot be
+>> relocated to the irq directory. This is in sync with other backend
+>> directories like amd and intel there.
+>>
+>> Lastly, this file should not be tied to CONFIG_HYPERV_IOMMU, but to
+>> CONFIG_HYPERV and CONFIG_IRQ_REMAP.
+>>
+>> Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
+>> ---
+>>   MAINTAINERS                                             | 2 +-
+>>   drivers/iommu/Kconfig                                   | 9 ---------
+>>   drivers/iommu/Makefile                                  | 2 +-
+>>   drivers/iommu/hyperv/Makefile                           | 2 ++
+>>   drivers/iommu/{hyperv-iommu.c => hyperv/hv-irq-remap.c} | 8 +-------
+>>   drivers/iommu/irq_remapping.c                           | 2 +-
+>>   6 files changed, 6 insertions(+), 19 deletions(-)
+>>   create mode 100644 drivers/iommu/hyperv/Makefile
+>>   rename drivers/iommu/{hyperv-iommu.c => hyperv/hv-irq-remap.c} (99%)
+>>
+>> diff --git a/MAINTAINERS b/MAINTAINERS
+>> index b539be153f6a..93a7105e9cef 100644
+>> --- a/MAINTAINERS
+>> +++ b/MAINTAINERS
+>> @@ -11988,7 +11988,7 @@ F:	drivers/clocksource/hyperv_timer.c
+>>   F:	drivers/hid/hid-hyperv.c
+>>   F:	drivers/hv/
+>>   F:	drivers/input/serio/hyperv-keyboard.c
+>> -F:	drivers/iommu/hyperv-iommu.c
+>> +F:	drivers/iommu/hyperv/
+>>   F:	drivers/net/ethernet/microsoft/
+>>   F:	drivers/net/hyperv/
+>>   F:	drivers/pci/controller/pci-hyperv-intf.c
+>> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+>> index f86262b11416..1becc0f20222 100644
+>> --- a/drivers/iommu/Kconfig
+>> +++ b/drivers/iommu/Kconfig
+>> @@ -351,15 +351,6 @@ config MTK_IOMMU_V1
+>>   
+>>   	  if unsure, say N here.
+>>   
+>> -config HYPERV_IOMMU
+>> -	bool "Hyper-V IRQ Handling"
+>> -	depends on HYPERV && X86
+>> -	select IOMMU_API
+>> -	default HYPERV
+>> -	help
+>> -	  Stub IOMMU driver to handle IRQs to support Hyper-V Linux
+>> -	  guest and root partitions.
+>> -
+>>   config VIRTIO_IOMMU
+>>   	tristate "Virtio IOMMU driver"
+>>   	depends on VIRTIO
+>> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+>> index 0275821f4ef9..d9683422aecb 100644
+>> --- a/drivers/iommu/Makefile
+>> +++ b/drivers/iommu/Makefile
+>> @@ -4,6 +4,7 @@ obj-$(CONFIG_AMD_IOMMU) += amd/
+>>   obj-$(CONFIG_INTEL_IOMMU) += intel/
+>>   obj-$(CONFIG_RISCV_IOMMU) += riscv/
+>>   obj-$(CONFIG_GENERIC_PT) += generic_pt/fmt/
+>> +obj-$(CONFIG_HYPERV) += hyperv/
+>>   obj-$(CONFIG_IOMMU_API) += iommu.o
+>>   obj-$(CONFIG_IOMMU_SUPPORT) += iommu-pages.o
+>>   obj-$(CONFIG_IOMMU_API) += iommu-traces.o
+>> @@ -30,7 +31,6 @@ obj-$(CONFIG_TEGRA_IOMMU_SMMU) += tegra-smmu.o
+>>   obj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o
+>>   obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
+>>   obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
+>> -obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
+>>   obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
+>>   obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o
+>>   obj-$(CONFIG_IOMMU_IOPF) += io-pgfault.o
+>> diff --git a/drivers/iommu/hyperv/Makefile
+>> b/drivers/iommu/hyperv/Makefile new file mode 100644
+>> index 000000000000..0053e00e08e6
+>> --- /dev/null
+>> +++ b/drivers/iommu/hyperv/Makefile
+>> @@ -0,0 +1,2 @@
+>> +# SPDX-License-Identifier: GPL-2.0
+>> +obj-$(CONFIG_IRQ_REMAP) += hv-irq-remap.o
+> Should the name be x86 specific? This file will never be built for ARM
+> because:
+>   CONFIG_IRQ_REMAP depends on:
+>   depends on X86_64 && X86_IO_APIC && PCI_MSI && ACPI
+> 
+> perhaps, hv-x86-irq-remap.c? hv-irq-remap.c sounds like a
+> generic Hyper-V IRQ-remapping backend and may be misleading once arm64
+> Hyper-V IOMMU/interrupt support grows under this directory.
 
-Check rc after the inner loop and break the outer while as well.
+we could, but looking at early version of hyperv-iommu-arm.c, it looks
+very similar, and so if there are very few ifdefs, we could just
+keep one file rather than replicating bunch of code.
 
-Fixes: 07838f7fd529 ("iommufd: Add iommufd fault object")
-Cc: stable@vger.kernel.org
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
- drivers/iommu/iommufd/eventq.c | 2 ++
- 1 file changed, 2 insertions(+)
+Thanks,
+-Mukesh
 
-diff --git a/drivers/iommu/iommufd/eventq.c b/drivers/iommu/iommufd/eventq.c
-index 613024ca8f1ff..1c010e691f972 100644
---- a/drivers/iommu/iommufd/eventq.c
-+++ b/drivers/iommu/iommufd/eventq.c
-@@ -168,6 +168,8 @@ static ssize_t iommufd_fault_fops_read(struct file *filep, char __user *buf,
- 			}
- 			done += fault_size;
- 		}
-+		if (rc)
-+			break;
- 	}
- 	mutex_unlock(&fault->mutex);
- 
--- 
-2.43.0
+
+>> diff --git a/drivers/iommu/hyperv-iommu.c
+>> b/drivers/iommu/hyperv/hv-irq-remap.c similarity index 99%
+>> rename from drivers/iommu/hyperv-iommu.c
+>> rename to drivers/iommu/hyperv/hv-irq-remap.c
+>> index 479103261ae6..b34ee9589190 100644
+>> --- a/drivers/iommu/hyperv-iommu.c
+>> +++ b/drivers/iommu/hyperv/hv-irq-remap.c
+>> @@ -7,13 +7,11 @@
+>>    *
+>>    * Author : Lan Tianyu <Tianyu.Lan@microsoft.com>
+>>    */
+>> -
+>>   #include <linux/types.h>
+>>   #include <linux/interrupt.h>
+>>   #include <linux/irq.h>
+>>   #include <linux/iommu.h>
+>>   #include <linux/module.h>
+>> -
+>>   #include <asm/apic.h>
+>>   #include <asm/cpu.h>
+>>   #include <asm/hw_irq.h>
+>> @@ -22,9 +20,7 @@
+>>   #include <asm/hypervisor.h>
+>>   #include <asm/mshyperv.h>
+>>   
+>> -#include "irq_remapping.h"
+>> -
+>> -#ifdef CONFIG_IRQ_REMAP
+>> +#include "../irq_remapping.h"
+>>   
+>>   /*
+>>    * According 82093AA IO-APIC spec , IO APIC has a 24-entry Interrupt
+>> @@ -330,5 +326,3 @@ static const struct irq_domain_ops
+>> hyperv_root_ir_domain_ops = { .alloc =
+>> hyperv_root_irq_remapping_alloc, .free =
+>> hyperv_root_irq_remapping_free, };
+>> -
+>> -#endif
+>> diff --git a/drivers/iommu/irq_remapping.c
+>> b/drivers/iommu/irq_remapping.c index c2443659812a..41bf65e4ea88
+>> 100644 --- a/drivers/iommu/irq_remapping.c
+>> +++ b/drivers/iommu/irq_remapping.c
+>> @@ -108,7 +108,7 @@ int __init irq_remapping_prepare(void)
+>>   	else if (IS_ENABLED(CONFIG_AMD_IOMMU) &&
+>>   		 amd_iommu_irq_ops.prepare() == 0)
+>>   		remap_ops = &amd_iommu_irq_ops;
+>> -	else if (IS_ENABLED(CONFIG_HYPERV_IOMMU) &&
+>> +	else if (IS_ENABLED(CONFIG_HYPERV) &&
+>>   		 hyperv_irq_remap_ops.prepare() == 0)
+>>   		remap_ops = &hyperv_irq_remap_ops;
+>>   	else
 
