@@ -1,134 +1,174 @@
-Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
+Received: from mail-qk1-f202.google.com (mail-qk1-f202.google.com [209.85.222.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7061937BE72
-	for <iommu@lists.linux.dev>; Mon,  1 Jun 2026 19:26:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.45
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780341995; cv=pass; b=C8U7D+XfTAiNR42gbR8S4kjHpkO+SOPq6Sfl0lUbBtZ1cMY0g1QxyBHbkYe0oe2bXuORmAHAIHYuiVkh7DVUM4oBD9tqme8bj6M6nr0cphHHE1qMuy3Aax0ufsC6yPfw73R0O9+0P50VwX0jP3gq6Bf280P5y6x2X09o2r5sd6A=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780341995; c=relaxed/simple;
-	bh=hpACHX8gpPgUdVyv1/sEpHCxZ58roJACIEZKoxqYnKk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=sRNF3dehuHJGR//ABC3eg9w4uK2vn3YmM8n17oQGeJnJR7KQHTaET5cK/kUSePtksWbm9VvIlJ72WXKZ1k6dW4p85VFUVrJsWaf25Sl4GTH9pkOXJk9Hscmr5BL6oLxidUldg6ZseHMXqYJi58yUBz3k7DajGVq2YCoRt55fjRw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=pLu0uF2Y; arc=pass smtp.client-ip=209.85.167.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC2E0387590
+	for <iommu@lists.linux.dev>; Mon,  1 Jun 2026 20:00:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.202
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780344018; cv=none; b=noj9C1s9rV/2LN7xzvwxVaogcdTlgbJ9q7n4JDCB+UUKLEq6iNvwc5H8P7kuQkaaDFQ5t5psc/jePag5rsdOtlFDphOulLkURZGnKYJp+meuoGrkxvCL6VB3dhprZS/IuQNyLdBIeZcVRAFe109SEUakqz3YN0oU4UI98aYzjgI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780344018; c=relaxed/simple;
+	bh=oyRMYCBipJFGfyqAL11a48wj6WtAhuqVNSVZiDf1eLI=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=BBk3r6eHtTuI8tD6/Czn1f7PySDCsh1ZhW0/ek9Z2JhRBMigjSoOViLuCMHWyov27ScNKC0Osp329aRzz9PY9EOBfl2GfTMTNjILBXt1YFq24kwboWtqM3VPmL9bWHxKjZIjLGLdJN6JBW5R9tYLo/dovbNe85Yt4FWAKefRMOY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--xuehaohu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=vsRDaeLp; arc=none smtp.client-ip=209.85.222.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--xuehaohu.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="pLu0uF2Y"
-Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-5aa67ddcf56so162e87.1
-        for <iommu@lists.linux.dev>; Mon, 01 Jun 2026 12:26:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780341993; cv=none;
-        d=google.com; s=arc-20240605;
-        b=fkMK8j+fUTWeBA2LMirh/g+9ygEkbJCWHqmk3X4/+C8cEeU8Y8qilOUYyKv0ev88aq
-         DM7JHDXds+2kG72CBGx1wJ98bNYdIA2mFXxywQ8mKLZOQZs9xPKH9AOkVqTgXqoPo/Mv
-         D31yfKVLe1dlsc2/GX071U1l6CXsep5FOqwzbA/o1jIXyRQ8UsTmzgA9XRtRhmYfkODJ
-         ciCtCWE8+cvybadJwNiAigQV3PHc/9GRjukTJjeqnHzTITS6JZaodVbuGFZEeXx60thG
-         tPyBWQOHFIlTjSIoi9FYZM0V88gMMG1iwnEd8QOcMfDBnuC+rNSodtweYpUaFeStGIs+
-         b9nA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=RUETtszvlgjxvwcIcmAnMCzPRiN6e9NnLidclBHMCNQ=;
-        fh=vLCOWOTLRScN/2nnEhfMZp1gYHExq/E/6g0dJFwrjI0=;
-        b=PmLrOwEeYUvFu67hSxryeriSIz4EyPoKjmHVdhjPB66SZoTjpQUBO6XjccMwgCuNaM
-         twL/1DZDUkmelVVllfE2CfNtyvQJXVSwJn1PoHnfYUMsh2VfA1vwhmH1nHt4sYUGZL1R
-         Q5xTwxEJo7ilq0vBFMaPKqA5FYh820+hqws4muHQTVZGeoHB1nfmUE7OVAozdQ7g39Dt
-         kMEE7kL/JxUnCv7asng1NOcmzvCFsNw8eXPOOUeSPf4+1EqQPKTN09MyUoetKQwNEmV5
-         VjO3F8GCc7AAaDcvNqTe0zLivdGF1L7GMUd+VVgy18URrdVMXbwoG03EgdEzGo1xoZms
-         fc0w==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="vsRDaeLp"
+Received: by mail-qk1-f202.google.com with SMTP id af79cd13be357-914f037b7dfso1363258885a.3
+        for <iommu@lists.linux.dev>; Mon, 01 Jun 2026 13:00:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780341993; x=1780946793; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RUETtszvlgjxvwcIcmAnMCzPRiN6e9NnLidclBHMCNQ=;
-        b=pLu0uF2YT0pHja0aLuJq2fGnDwDpBTPpiY1YInL5489Pol6Qbl0iDVvxc2Z3+2HtQa
-         Ldo41Wg1gOnGTF+LRQduqjZFwfF7XeEABUQJvfacdmDo7boAdy0MJ8j7w3YzKbwMUmAf
-         ITWEmu6YNkRmpj5MeoJuWO+KExS19vy2R7SSFPv+D8rblehrw91PheZppMF/q+OgjE43
-         vWDm87yo41yTNwpUQmtqaQgTCh9cf0GL5AO791y7KrXGt/GbKO9djAZ1GTE9q202UNeP
-         TziRkoUG7r0Rh11Q32TNSHypYYGdSPZ6PY21TFTgBzGpBKdIPkqUK3PqAM0+Ajk1S4Fx
-         6DFg==
+        d=google.com; s=20251104; t=1780344016; x=1780948816; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=msbNDh9TiShw7R12hj6rcfm+XGYU44qZJxoBlWEONAk=;
+        b=vsRDaeLpNtMK7KSb8rPeNYtli1JTxtoS1fcnXeJquOojnWd8HVtZCJZgWB387E8NB3
+         0gdpRLaZIh5f1QzB5kLK+zbIlKCtSvEFhTnLUPmb9puCVRb1LeM14yeHzuJPCyFpNetN
+         btpqUwdNAoBPUYOAXHfLkSIUGia8hG2wsXlmpme+d18rrjGEIyg7yQBw+WS7Hz92P9y/
+         +DgxvTj6+HuKQm6GPZoVP/VwsujjylUN4Ct1ngbUHW3fIRxWG14+XYa4GcQRNscIu81i
+         SSBMNt5TwF2A7w91ssXHWDygwejm9h7iGd6UnX8Bk7mySzdYqFKMSNZ0oxgTx2xPqozA
+         j2oA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780341993; x=1780946793;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=RUETtszvlgjxvwcIcmAnMCzPRiN6e9NnLidclBHMCNQ=;
-        b=jo6VMxQU5B6m7tjZKG8oEMQeMT+MX6XlgNvuE9CGWnvjZ0BtjMYCGyLQrNNu6BYiTp
-         NnmR/vfah5FMMWrNJi8lTohSEhUJkDtNP3YxdHzvHyZPIHZXGs0xs6RPhxGRG9TQIpA0
-         qFcg/+2gE0Et74ii8harbw1t4Lkjhraun2N33VS9ZBuRlQm22/CCkWswPF9puMtV5SzI
-         EBfW9F366p2Owk3tu6kwq3xhW+a7CtTJz4tlRsnI8vZvpImU2FQSdvYH0ZkUXC0OH8w3
-         7GetnbLQ7pgEKt/B/HEgIXLofhlFgw0rb+186nMvATWgIhdHc+i86fvALJTcm7ZNi1Df
-         t+Gw==
-X-Forwarded-Encrypted: i=1; AFNElJ9X0+r8NC+O5Ryozgl5bwgvPq5pwWw7focMEsriNX0OppBisOpmZ9UjgrcVC7h8GMn62w7HuQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxEARgxoYKOQRDKb757e4wz1zU7XVH3HJ5v1ZRfeEkU2fhNWTy/
-	W/b/fhf3Ans0UDhY9SrmjlKS0LOceRNSasbhRsN5IQhaomIiwcLtURyqcg3sE2gm9fAIqorEl7f
-	1z/QsQPhTGb7FlOv58MxPr0dS6wi0GGUhp9D1SKk=
-X-Gm-Gg: Acq92OFns9kDEd7RQvw1sqiktPLb6LW3Yvgr5KjfyQViEFAxRFblxfdmjs/xzCqIgxA
-	132MnpiD9XC2JGsRkGCtlmpDMpcW4UgzfeBNtHbcHx6Llv4/KFu2cKyx3jXbjEIyupiN47XfEel
-	aU0PjDxuqN3QkR3wULe2ssaXJL1rGDBpIZCnVNPxwEi7L0lX8+wRYiIz9h2wcTOJZ+WLt0smjWc
-	ULLgAXEH8ePhhZTXRJ3UiNxGe8nLNc8+LA6DjxkjPRL7QjUsVpW169LVrKFqtKOhRr4BwCcS8uP
-	ON7rhO5VA9MUQRrUgf2HsDTSfgu/lb+SgyZnD4doSO7nEoQ=
-X-Received: by 2002:a05:6512:3a8d:b0:5a2:9b28:d64a with SMTP id
- 2adb3069b0e04-5aa75b3495amr52247e87.8.1780341992156; Mon, 01 Jun 2026
- 12:26:32 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1780344016; x=1780948816;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=msbNDh9TiShw7R12hj6rcfm+XGYU44qZJxoBlWEONAk=;
+        b=N4z2fk98GUEYHldQ65ehtKI/f7sMx9uDIFsYooftjG6vpVroCbGxIROKjJunv+szqY
+         g3SAB2ZFOpJdxE18fsDN202CdWCv9Ooz+l2EC6C99hYj3zfYlCyvkvK5+m+Q489X1426
+         cOSqG2w61emKNwApsPPqIdRQTUZvKUbbLAsJACBdEARaHdG4pmt9TUd+/OFpaviOwwCP
+         UAMKhEJE3kYny3oGQQTSfy6kIdHm7CP0FlxX3/N26eOOF6K68TIo/OibWjcKT6oMMZgT
+         6yx+MrhC27Lp5mtUiNU2IOR0wJ7YCpX/CZRC1ZPXSNN4kpKOeyfq4GrN0dK2rkpK3pL4
+         7/mw==
+X-Forwarded-Encrypted: i=1; AFNElJ/866e6XD05mxZmZLgMPkP6h2wtnaiyLwMhdaurLGJQbFp22Sd80lS5DQ9FrSVZ/eFCi4PPXQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwQG4OYpKzUys/hOgeDEq/xvJ05jVUHIiEIo0CZsLCM3hrduB5j
+	PviyPrJ+vXFtFX5am06idDKd6Y1z9Jd5lnb+QqRZ9G3mEsKVNtGW8nhCt8z1frNpFI8Dzkqnjsn
+	09PLwXsks6dlK
+X-Received: from qknxz25.prod.google.com ([2002:a05:620a:5e19:b0:910:b90:6ec6])
+ (user=xuehaohu job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:620a:4612:b0:915:5930:94f1 with SMTP id af79cd13be357-91559309603mr1224141185a.47.1780344015096;
+ Mon, 01 Jun 2026 13:00:15 -0700 (PDT)
+Date: Mon,  1 Jun 2026 20:00:12 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-References: <20260528191658.2506362-1-xuehaohu@google.com> <20260601175252.GD2487554@ziepe.ca>
-In-Reply-To: <20260601175252.GD2487554@ziepe.ca>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.54.0.929.g9b7fa37559-goog
+Message-ID: <20260601200012.3872274-1-xuehaohu@google.com>
+Subject: [PATCH v5] dma-buf: Fix silent overflow for phys vec to sgt
 From: David Hu <xuehaohu@google.com>
-Date: Mon, 1 Jun 2026 15:26:19 -0400
-X-Gm-Features: AVHnY4KmXOz7naPVQt3RnYf5-sps0yuGM1iGSV6Zi0v2ewCpGm4R4O7z_6CO-gk
-Message-ID: <CAPd9Lg8Um=0LJWB-QCqLyFksX=dTsu3hwuVXK9_CGRWTVBJppQ@mail.gmail.com>
-Subject: Re: [PATCH v4] dma-buf: Fix silent overflow for phys vec to sgt
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
-	Nicolin Chen <nicolinc@nvidia.com>, Leon Romanovsky <leon@kernel.org>, Kevin Tian <kevin.tian@intel.com>, 
-	Ankit Agrawal <ankita@nvidia.com>, Alex Williamson <alex@shazbot.org>, linux-media@vger.kernel.org, 
+To: Sumit Semwal <sumit.semwal@linaro.org>, 
+	"=?UTF-8?q?Christian=20K=C3=B6nig?=" <christian.koenig@amd.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>, Leon Romanovsky <leon@kernel.org>, 
+	Kevin Tian <kevin.tian@intel.com>, Ankit Agrawal <ankita@nvidia.com>, 
+	Alex Williamson <alex@shazbot.org>, linux-media@vger.kernel.org, 
 	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
-	linux-kernel@vger.kernel.org, jmoroni@google.com, praan@google.com, 
-	stable@vger.kernel.org, iommu@lists.linux.dev
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, jmoroni@google.com, 
+	praan@google.com, David Hu <xuehaohu@google.com>, stable@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jun 1, 2026 at 1:52=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca> wrote=
-:
->
-> On Thu, May 28, 2026 at 07:16:58PM +0000, David Hu wrote:
-> > diff --git a/drivers/dma-buf/dma-buf-mapping.c b/drivers/dma-buf/dma-bu=
-f-mapping.c
-> > index 794acff2546a..1aabc0ee70bb 100644
-> > --- a/drivers/dma-buf/dma-buf-mapping.c
-> > +++ b/drivers/dma-buf/dma-buf-mapping.c
-> > @@ -51,6 +51,9 @@ static unsigned int calc_sg_nents(struct dma_iova_sta=
-te *state,
-> >               nents =3D DIV_ROUND_UP(size, UINT_MAX);
-> >       }
-> >
-> > +     if (WARN_ON_ONCE(nents > UINT_MAX))
-> > +             return 0;
->
-> The WARN seems a bit much, but if you have it then it should be
-> arranged so the caller ultimately fails.
->
-> But otherwise I think correcting the types is a good idea
->
-> Jason
-Hi Jason,
+In case MMIO size is bigger than 4G and peer2peer DMA goes
+through host bridge, we trigger a code path that assigns the
+total linked IOVA (which is greater than 4G) to mapped_len.
 
-Thank you for the feedback. That makes complete sense. I will remove
-WARN_ON_ONCE() to avoid dmesg noise, and instead add an explicit check
-in dma_buf_phys_vec_to_sgt() to fail with -EINVAL if calc_sg_nents()
-returns 0 (on overflow).
+Previously, `mapped_len` was declared as 32-bit `unsigned int`.
+When accumulating `size_t` lengths, this leads to a silent wrap-around.
+This truncation causes truncated lengths to be passed to functions
+like `fill_sg_entry()`.
 
-I will send out v5 with these changes shortly.
+Fix this by changing `mapped_len` to `size_t` (64-bit). While
+at it, fix similar potential overflow issues in `calc_sg_nents`
+by using `size_t` for `nents` and checking against `UINT_MAX`
+and using `unsigned int` for the loop iterator in `fill_sg_entry`
+to match.
 
-Regards,
-David
+Fixes: 3aa31a8bb11e ("dma-buf: provide phys_vec to scatter-gather mapping routine")
+Cc: stable@vger.kernel.org
+Cc: iommu@lists.linux.dev
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
+Signed-off-by: David Hu <xuehaohu@google.com>
+---
+Changes in v5:
+ - Removed WARN_ON_ONCE from calc_sg_nents() to avoid log noise (Jason).
+ - Added explicit check for `!nents` in dma_buf_phys_vec_to_sgt() to
+   cleanly return -EINVAL on overflow (Jason).
+
+Changes in v4:
+ - Added WARN_ON_ONCE() to the nents overflow check to prevent silent
+   failures (Claude Bot).
+
+Changes in v3:
+ - Removed leftover sentence fragment from the commit message.
+ - Kept `nents = 0` initialization (previously stated as removed in the
+   v2 changelog) as it is strictly required for the `+=` accumulation
+   loop in `calc_sg_nents()`.
+
+Changes in v2:
+ - Fixed 'IVOA' -> 'IOVA' typo and expanded commit message (Claude Bot).
+ - Added Reverse Xmas tree formatting (Pranjal).
+ - Folded in extra bounds checking for calc_sg_nents() (Pranjal).
+ - Folded in type consistency fix for fill_sg_entry() (Pranjal).
+
+ drivers/dma-buf/dma-buf-mapping.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/dma-buf/dma-buf-mapping.c b/drivers/dma-buf/dma-buf-mapping.c
+index 794acff2546a..607b7998463d 100644
+--- a/drivers/dma-buf/dma-buf-mapping.c
++++ b/drivers/dma-buf/dma-buf-mapping.c
+@@ -10,7 +10,7 @@ static struct scatterlist *fill_sg_entry(struct scatterlist *sgl, size_t length,
+ 					 dma_addr_t addr)
+ {
+ 	unsigned int len, nents;
+-	int i;
++	unsigned int i;
+ 
+ 	nents = DIV_ROUND_UP(length, UINT_MAX);
+ 	for (i = 0; i < nents; i++) {
+@@ -36,7 +36,7 @@ static unsigned int calc_sg_nents(struct dma_iova_state *state,
+ 				  struct phys_vec *phys_vec, size_t nr_ranges,
+ 				  size_t size)
+ {
+-	unsigned int nents = 0;
++	size_t nents = 0;
+ 	size_t i;
+ 
+ 	if (!state || !dma_use_iova(state)) {
+@@ -51,6 +51,9 @@ static unsigned int calc_sg_nents(struct dma_iova_state *state,
+ 		nents = DIV_ROUND_UP(size, UINT_MAX);
+ 	}
+ 
++	if (nents > UINT_MAX)
++		return 0;
++
+ 	return nents;
+ }
+ 
+@@ -95,9 +98,10 @@ struct sg_table *dma_buf_phys_vec_to_sgt(struct dma_buf_attachment *attach,
+ 					 size_t nr_ranges, size_t size,
+ 					 enum dma_data_direction dir)
+ {
+-	unsigned int nents, mapped_len = 0;
+ 	struct dma_buf_dma *dma;
+ 	struct scatterlist *sgl;
++	size_t mapped_len = 0;
++	unsigned int nents;
+ 	dma_addr_t addr;
+ 	size_t i;
+ 	int ret;
+@@ -133,6 +137,11 @@ struct sg_table *dma_buf_phys_vec_to_sgt(struct dma_buf_attachment *attach,
+ 	}
+ 
+ 	nents = calc_sg_nents(dma->state, phys_vec, nr_ranges, size);
++	if (!nents) {
++		ret = -EINVAL;
++		goto err_free_state;
++	}
++
+ 	ret = sg_alloc_table(&dma->sgt, nents, GFP_KERNEL | __GFP_ZERO);
+ 	if (ret)
+ 		goto err_free_state;
+-- 
+2.54.0.929.g9b7fa37559-goog
+
