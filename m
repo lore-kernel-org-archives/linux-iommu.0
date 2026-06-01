@@ -1,118 +1,94 @@
-Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C716E37B000
-	for <iommu@lists.linux.dev>; Mon,  1 Jun 2026 14:36:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8233929BDB5;
+	Mon,  1 Jun 2026 16:02:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=204.191.154.188
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780324619; cv=none; b=U3oKcEF6p3NH37oVF00D4Z8NfefT3bl0KAWEj3+/HklqXUZ5JtSCYPx4WRoUOR3VPCUOXrYgEAk+7/883Sg4lnk/6bEYSV84zi2QY2pZ9QMB8g+6Rw0QY53YIFSIJKCR4OCDkCm35s4vclG6aMH+eMniAr5ypu0GxG1PB1G/ej8=
+	t=1780329767; cv=none; b=eAqjfhTfnVk4iwOrkH53kJja5SuvFGm3NCcIGn9BNhaZvahwXWx87BJnzUTmXvRjpktdFXU4kl5odWxeHxyK+1E/8YGJV8U3wT0QRpCyTh3OoL2ha8JiTEoOkH9dYtVKqAAL6Bhyor1quPMXgQkwpPEYOJIgMwYaZM3aAdqTevw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780324619; c=relaxed/simple;
-	bh=QMWF1Nn5UhAxAEgwX3QVOSlhArpqB7BokO3nvPMLRNI=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=YNFMPi3LrHP9D1WCmJMGnS1xhBI6KCogHDSDsiPsUzHqtbeewuCeftdy2Tph2Pb4kZZzzN5ctcjDQMIaBNEWfgaaLTHSZP+m8iyG7jFnq6zeQfWVl/4FilRTpjWdjsa+F0JWM0PV4x7HaC6LkFmlPTKBAR9YFIKxgLeYNn3AxqU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=aR8D0fjB; arc=none smtp.client-ip=209.85.214.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
+	s=arc-20240116; t=1780329767; c=relaxed/simple;
+	bh=XwXaBy7eLMVDvdp2vKiEICl2LxNB+LZ/zcEEoNKVLFM=;
+	h=Message-ID:Date:MIME-Version:To:References:From:In-Reply-To:
+	 Content-Type:Subject; b=QR1m7f0HrB0kEpAWS9vpiSZDspOqX/3l8WxqXzLbabckCcKLMF3TDVJxDzOvB7tNMweHq+RlyWArHgbv2RVfV0oAtfTc7BDOO7At/W1dA8AUd9Gshv+erzyeWGNHDLf7wJV0lpADowVrC02L+0ZgmtZXFdR4lGXwgrq9lTaeIKM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=deltatee.com; spf=pass smtp.mailfrom=deltatee.com; dkim=pass (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.b=ROvl2zl8; arc=none smtp.client-ip=204.191.154.188
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=deltatee.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=deltatee.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="aR8D0fjB"
-Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-2bf1845bddfso35408385ad.1
-        for <iommu@lists.linux.dev>; Mon, 01 Jun 2026 07:36:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780324611; x=1780929411; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=V1OhefJlO7SddiDjet5+3aQQ9KCjHVV2cUEJthb1Tt4=;
-        b=aR8D0fjBZ98M3YaRT2Iv7AWTlvpmjnRZ0ASca33drUYY8bNdstFmTlvFg92cPjgxG3
-         HKJX30rkecu9EkPD+gmTVzX4gVI4XS6PxJY9B5vObTStznJvn1V2V0XBZyr6Ik2U4FtZ
-         L1AAlIQ2SSAMyGTeq4a9iWWO6M3N9XraY+cZuRwjy9TVpWm9YdLnb/Vp2Bmp8vPTzm0N
-         5DFir6NTltyE0gaD9rFQORHEAyvTR4ocqg8s+YPVv2W3qycqoySho79jk3bZAuNIqC+5
-         XVLG3JWA+ATUiIB57n3o7t6Fak+bF5w/epp/dqWUN8oMawsxfRfhm/zYDKWSGqKj8gqy
-         IEwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780324611; x=1780929411;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=V1OhefJlO7SddiDjet5+3aQQ9KCjHVV2cUEJthb1Tt4=;
-        b=LC0duGQ60LopvUCWfdLTF6kd2qVLamWnx/SulxsgLqXAQyjIsOM0iTzR9YHRJk0kMK
-         cZ+3xHtkucFkd7fU1hAlJIwAzQCsrrLb0SYpsahnC68Nv475Q/SEkQSmpRb7sHDS13+8
-         x6PrVvn+xE9ZFVIu0unEuXdNFXMg0SpyN4DSnah7m5VX8FNK9VpH2bwbTU1G4bkJLh8J
-         t13oSWmnzfaeznKjTnXesiCIpBc56TiAwfzrtzulqour6tfJg71MNszIcDtS2Kn409n8
-         lWMUfMp20V1o/ocfhxZiVENVtbHX98+PxSTe6ZisO5CwsojmC236XGnqyBjQcyPUHV7E
-         ScIw==
-X-Gm-Message-State: AOJu0YyBgoXNCdYe0iyWA+ADUg0iThBZiZLYyWlU9kNijPkK+xaN0vPd
-	iTaPP9LTBo1FVLcu7tBvZtL1AuhV+sxMeCtPybt6kWMPPcy/e2r2K7xmnBxsE0haltha0IF8yLY
-	7J+8cYHPH0QbhjeE+4v6JAnPii3OsCLeIEmdpmNjnRnarwl8iwRiUk+lq+Mrmi7PRSwXZi/wh/9
-	9FJr7LGkeHWd+Czr7jr9gZFRogX2wvCA==
-X-Received: from plqu9.prod.google.com ([2002:a17:902:a609:b0:2bd:106:8ad0])
- (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a17:903:22d2:b0:2c0:a360:45e9
- with SMTP id d9443c01a7336-2c0a36046d6mr119940385ad.29.1780324610786; Mon, 01
- Jun 2026 07:36:50 -0700 (PDT)
-Date: Mon,  1 Jun 2026 14:36:41 +0000
-In-Reply-To: <20260601143644.2358771-1-praan@google.com>
+	dkim=pass (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.b="ROvl2zl8"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:To:
+	MIME-Version:Date:Message-ID:cc:content-disposition;
+	bh=7vBaZtv7BBkFGYWf3wqp7S/gBi3+eiCEAzetVCeRUsU=; b=ROvl2zl82MWFiJV7CRJo1peecS
+	UDd7IfLO7YEaheotGHoNSKPiqnAtyKOxh2YvvazdvBozotG1dKE+SQmmqSDo9r/Zt3E7oXAIxcca3
+	6V9MYPBYmFDgDom4OZeegyHNBaspWY3ksDZM38TUBmXNzUqbWpPtLj8VEZ1+YN2ok5QHmJfXVZqbm
+	uvFcH+wNH9zpFw4UG3koZkrejEuf7Z/BfwI8BVVyPsTiZ/C/S3++78C6Zwb+IxP8MDURKf2xBLf8H
+	MYYxqN1xRLpsyxUGqYzs4geXn+ZHZVV1W7BPksj1khhupkMquu+KoiYU6w4WaHa/ORgRWrw5eRko8
+	3J3z92mQ==;
+Received: from guinness.priv.deltatee.com ([172.16.1.162])
+	by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+	(Exim 4.98.2)
+	(envelope-from <logang@deltatee.com>)
+	id 1wU565-00000005R1Q-1BOA;
+	Mon, 01 Jun 2026 10:02:38 -0600
+Message-ID: <c666e384-b365-4891-a01d-736948b995bc@deltatee.com>
+Date: Mon, 1 Jun 2026 10:02:33 -0600
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20260601143644.2358771-1-praan@google.com>
-X-Mailer: git-send-email 2.54.0.823.g6e5bcc1fc9-goog
-Message-ID: <20260601143644.2358771-3-praan@google.com>
-Subject: [PATCH v7 2/5] PCI/ATS: Validate STU for VFs in pci_prepare_ats()
-From: Pranjal Shrivastava <praan@google.com>
-To: iommu@lists.linux.dev, linux-pci@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Baolu Lu <baolu.lu@linux.intel.com>, 
-	Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Bjorn Helgaas <bhelgaas@google.com>, Samiullah Khawaja <skhawaja@google.com>, 
-	Pranjal Shrivastava <praan@google.com>, Nicolin Chen <nicolinc@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+To: lirongqing <lirongqing@baidu.com>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>, Luis Chamberlain <mcgrof@kernel.org>,
+ Leon Romanovsky <leon@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20260530112852.2321-1-lirongqing@baidu.com>
+Content-Language: en-CA
+From: Logan Gunthorpe <logang@deltatee.com>
+In-Reply-To: <20260530112852.2321-1-lirongqing@baidu.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 172.16.1.162
+X-SA-Exim-Rcpt-To: lirongqing@baidu.com, robin.murphy@arm.com, joro@8bytes.org, will@kernel.org, baolu.lu@linux.intel.com, mcgrof@kernel.org, leon@kernel.org, bhelgaas@google.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: logang@deltatee.com
+X-Spam-Level: 
+Subject: Re: [PATCH] iommu/dma-iommu: Fix wrong scatterlist length assignment
+ in P2PDMA path
+X-SA-Exim-Version: 4.2.1 (built Sun, 23 Feb 2025 07:57:16 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 
-While every PCI Function that implements ATS has an independent ATS
-Extended Capability structure with a Read/Write Smallest Translation
-Unit (STU) field, the kernel manages SR-IOV ATS by requiring the IOMMU
-driver to configure the STU on the Physical Function (PF) before any
-any Virtual Functions (VFs) are created.
 
-Currently, pci_prepare_ats() bails out early for VFs, assuming that the
-PF has already been correctly prepared. However, this creates a potential
-mismatch if a VF is subsequently prepared with a different page shift.
 
-Update pci_prepare_ats() to validate that the requested page shift (ps)
-matches the STU already configured in the associated PF. This ensures
-early detection of incompatible configurations and maintains the kernel's
-policy of consistent STU sizing across all functions associated with a
-given SMMU.
+On 2026-05-30 05:28, lirongqing wrote:
+> From: Li RongQing <lirongqing@baidu.com>
+> 
+> In iommu_dma_map_sg(), when handling PCI P2PDMA cases, the DMA length
+> of the current scatterlist segment `s` is incorrectly assigned from the
+> head entry `sg->length` instead of the current entry `s->length`.
+> 
+> This typo causes all P2PDMA segments in the scatterlist to inherit the
+> length of the first segment, leading to corrupted DMA lengths for multi-
+> segment scatterlists.
+> 
+> Fix this by using `s->length` instead of `sg->length`.
+> 
+> Fixes: a25e7962db ("PCI/P2PDMA: Refactor the p2pdma mapping helpers")
+> Signed-off-by: Li RongQing <lirongqing@baidu.com>
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Pranjal Shrivastava <praan@google.com>
----
- drivers/pci/ats.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Hmm, I thought I had tested this stuff pretty thoroughly so I'm
+surprised I missed that. But I guess seeing the users of these
+specifically don't allow mixing with anonymous memory the vast majority
+of tests would only have one segment.
 
-diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-index 679a3c3c1d54..9cb23780093d 100644
---- a/drivers/pci/ats.c
-+++ b/drivers/pci/ats.c
-@@ -73,8 +73,12 @@ int pci_prepare_ats(struct pci_dev *dev, int ps)
- 	if (ps < PCI_ATS_MIN_STU)
- 		return -EINVAL;
- 
--	if (dev->is_virtfn)
-+	if (dev->is_virtfn) {
-+		if (pci_physfn(dev)->ats_stu != ps)
-+			return -EINVAL;
-+
- 		return 0;
-+	}
- 
- 	dev->ats_stu = ps;
- 	ctrl = PCI_ATS_CTRL_STU(dev->ats_stu - PCI_ATS_MIN_STU);
--- 
-2.54.0.823.g6e5bcc1fc9-goog
+Can you confirm that you've reproduced and tested this and it actually
+fixes a bug? Not just seeing something that looks strange. I have a
+vague feeling it was intentional but looking at the code it looks wrong
+to me too.
+
+Thanks,
+
+Logan
 
