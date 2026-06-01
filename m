@@ -1,50 +1,48 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9E56218EBA
-	for <iommu@lists.linux.dev>; Mon,  1 Jun 2026 05:36:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C8EC4369A
+	for <iommu@lists.linux.dev>; Mon,  1 Jun 2026 05:47:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780292163; cv=none; b=rrLimF08PzbEfmr2Hbq+5+u7lj7pNB6F3t1scxnTNio4jhWt12D4NoX13ETJWqOFdBvF1rdtjXN4LZaHzo7AAH/JlTtpm/26dQVx3510jWqe7TAstV1L7zH6E4nwSJ8QsMAPUoIGJ4hXBZ7CH9rRLkOeeYv9YlIDUXFXckLaAms=
+	t=1780292824; cv=none; b=gxny/j/jfGYRIj6pAYbdYdTox9rOwdn6fkFIqi//7iT2uhIqdljA06CI6hMnyHXYJFaS7Nr+jJQT9tG5Th7DuUwNXabMm7Isuxn6Wv4kMVaJimrl37OIUA5hAg4DYF1EzkTvQHk1s7bA9htw/EKbizWI4xydVmtaoxuLIs3yrt0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780292163; c=relaxed/simple;
-	bh=og6jG5cg3kX4d88390kMEssuiV7CR/MNor/2WX50QK8=;
+	s=arc-20240116; t=1780292824; c=relaxed/simple;
+	bh=Z5R1xGmokUBdnq6ygG70pKfSM0qXM+I+wqu1K0VRv+0=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=PxZ2YL339a3WUiqsxOPIW2Lcr9PVBWqZMxsVs04gcpZIm9YQszxjmDUu7m6nWOiVRCRPJB6Fdj3G0cKWo3SDpHs9cpUBp+BOzlQyW8pkJkcObZKAQbXnP2z+7VgHWoaiUUE8sDdCLD6DU8tsxooDul7li8KkRzAKqRZMeS/ai8A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WvpB0NlA; arc=none smtp.client-ip=198.175.65.12
+	 In-Reply-To:Content-Type; b=UswpdKda0yJcL5a7njXEmLHdNHUoO6aqTNrFUuKezDqoFJywc9y3AAbQ0S1km3QIrbKAzA2fplUDiQoqAkmZNvMVMQEmOVADs9H7MrG9kl26u5wR53aDCGNP5s7eUNabrlNjDTOJL0eayGI9h+SqzSVC1M/1v4E3GTCmLcZNKpQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EyyjxPQu; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WvpB0NlA"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EyyjxPQu"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780292162; x=1811828162;
+  t=1780292821; x=1811828821;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=og6jG5cg3kX4d88390kMEssuiV7CR/MNor/2WX50QK8=;
-  b=WvpB0NlABWuzSiN6c9N7Q73jRkoDtN9FDB0bHAyjHWCX0qQF8ob0fn60
-   eSB2D25AOwITK98XB8/Yvagx3xs9nOD+achPt2T36COP/P1xmFb5R6ZAB
-   4oKMsG+hpYnDPdGSg71FBCpa75Kg363Vsq6gRriZJFJyQPqwxijQwv0V8
-   X0LM3gVwgE00ZTg+cEjnWVeeZrFSS3FG5RtQlMFSdzwWBE3LTWs23DDPH
-   KruHeW2znSypahfss0EK3hkR8xisXodWG7DMZ+uolLwWrMaNJU7XYrVGW
-   mgP/4Hdv/dVG8LeNmRiwhmQh2VkIk8s59SFz8wFcOEUKifER+UXslXlVR
-   w==;
-X-CSE-ConnectionGUID: hCNxKuYHRu+1VsLSMgVozw==
-X-CSE-MsgGUID: qoe+W6CkRYWXdTPp4PiRFw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11803"; a="92516447"
+  bh=Z5R1xGmokUBdnq6ygG70pKfSM0qXM+I+wqu1K0VRv+0=;
+  b=EyyjxPQuA6cKbezT7uzVwUBtAb+damxynlDdhwdrxw0cYfZ5L7UvpeNo
+   O6tlWIBRPdFnp/Kmsn8z7bYqYLSf/B9Kn5tFqJIRcV8EThCYXat9MxIsd
+   GXaUn4oLI3VYDb0pW8s7W7FDi96g16OhErqlcjn77hVE5R9sIIAvVQ6Uw
+   CHM9WS2np+YDWuuVPfedK+M8W6Dd+ZH7moLXvEqv5aqgfVknIkjnrYRr3
+   0X8AM44Kj4srEIi+GNl2QPzARHC/YY2eNWZLL89Wws9WWFJRZEJ8LvdZw
+   KrN/0ogtLcOhtvcIrGNu7tzu9p4gDwBmP6Is9Zvf72+CG3TRdSevprloq
+   g==;
+X-CSE-ConnectionGUID: uRb4rgu9TDuT5rlMp+ympw==
+X-CSE-MsgGUID: pn/teT3HQgORNqoKKyOfhw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11803"; a="84902910"
 X-IronPort-AV: E=Sophos;i="6.24,180,1774335600"; 
-   d="scan'208";a="92516447"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2026 22:36:01 -0700
-X-CSE-ConnectionGUID: 5zX3G/IcS/GCHBaKFGBJYA==
-X-CSE-MsgGUID: k5y+/ucQQ0WAYdbzq1vmfA==
+   d="scan'208";a="84902910"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2026 22:47:01 -0700
+X-CSE-ConnectionGUID: sFzJLnMvQ/CN/BYogl2GrQ==
+X-CSE-MsgGUID: 3dvkfYytQYWMOisCEcbdhQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,180,1774335600"; 
-   d="scan'208";a="248389777"
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2026 22:36:00 -0700
-Message-ID: <b0278f4d-681c-4731-bc8d-130a56e6d935@linux.intel.com>
-Date: Mon, 1 Jun 2026 13:35:08 +0800
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2026 22:46:59 -0700
+Message-ID: <fd3f4dc1-a3f7-4b0b-9624-78dec1dc8392@linux.intel.com>
+Date: Mon, 1 Jun 2026 13:46:08 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -103,4 +101,28 @@ On 5/28/26 10:55, Michael Bommarito wrote:
 >   drivers/iommu/intel/pasid.c | 4 +++-
 >   1 file changed, 3 insertions(+), 1 deletion(-)
 
-Queued for linux-next. Thank you!
+Sashiko reported a pre-existing issue:
+
+https://sashiko.dev/#/patchset/20260528025557.3209367-1-michael.bommarito%40gmail.com
+
+I have added it to my task list and will follow up with a fix in a
+separate patch.
+
+[Severity: Critical]
+This is a pre-existing issue, but does this context cache flush actually
+invalidate the alias BDF?
+
+It looks like intel_context_flush_no_pasid() issues a device-selective
+invalidation that is hardcoded to use the primary device's BDF from info
+(PCI_DEVID(info->bus, info->devfn)), completely ignoring the alias's bus
+and devfn parameters passed into device_pasid_table_teardown().
+
+If device_pasid_table_teardown() is called for a DMA alias, the IOMMU
+context cache for the alias BDF might never be invalidated.
+
+When the domain's page tables or scalable-mode PASID directories are
+subsequently freed, could any DMA arriving under the alias BDF cause the
+IOMMU hardware to walk the stale cache entry into freed system memory?
+
+Thanks,
+baolu
