@@ -1,111 +1,98 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 179272D2382;
-	Tue,  2 Jun 2026 06:10:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from outbound.baidu.com (mx22.baidu.com [220.181.50.185])
+	by smtp.subspace.kernel.org (Postfix) with SMTP id 111343A6F00
+	for <iommu@lists.linux.dev>; Tue,  2 Jun 2026 06:13:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.181.50.185
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780380616; cv=none; b=dsoeW6QWCDWtiLy1bGTKT7ccpbyYXv/7PywkZKbHR90z8gjmOeRFQK3SIhtPHbhLI1BsJsdCB5X7bXBv7qtiql4idbZwHfgYOHS29GWCDn5RW5tEAsac6pwWbsRuRHQH63/fxLA5MwvZ7FA9+mCGsZt/XL9ZgOqu3N3TWaTUtYs=
+	t=1780380790; cv=none; b=TKk4mg8UnbBgxS80YzWZFrkOK3+C0CQSxzSUI7oj6Dr2DSxXW5nGg+Y7ia63TC0jabE2muNjvmQpJqgXcwk0suJTAc/+D2c7d9PBei39g94OLQZyfMAFEi9mBnpvJj88ZHN4f6m3NZnp0N/JTbAlhitQ9I3cmY5S8Xvo+GpbuI8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780380616; c=relaxed/simple;
-	bh=tFMH5l5MTUaf6Xe98VNs76Ti6mPZN2RO0Y2Ijj9ZpVQ=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=uavwt5WzG+FCf33yw6XgvuXsPUWpBsdk+zRg9Jc0UldQYXeQTWN4GWA2HkrxDACQPowL2GA8bSfplXY7lJiHpwtLTRbIA/N0VaFyUQxSvdWgE/Md4L5V20vddPkSBMNLmPSijwRHYBEExcNO89TahfLZ1K7jyatGUz7mnCe1Gag=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fZHJyOBo; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780380790; c=relaxed/simple;
+	bh=j8XkaFnC+tR0rsFSAgivf5+ys/9MUe+F5qo2sbZJ60Q=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=pSjyi2ap3k+XeTdUtAzcIJ+lrZSzvjOIvSM7lhUYB1suQtm0hoVuj6VqkTOKyaN12EifkMBtXE1M6wMOgzV/Fv/LqKFQ8+WTZS/AJsu4xA2K5PL0yyAn2qwJ8yZ/ILwQYSDx8NcCp4hVJVAa3ZeG+UrWUAquLRtiaSrGcT5W+0Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com; spf=pass smtp.mailfrom=baidu.com; dkim=pass (2048-bit key) header.d=baidu.com header.i=@baidu.com header.b=XNA7Rzt5; arc=none smtp.client-ip=220.181.50.185
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baidu.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fZHJyOBo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F4341F00893;
-	Tue,  2 Jun 2026 06:10:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780380614;
-	bh=tFMH5l5MTUaf6Xe98VNs76Ti6mPZN2RO0Y2Ijj9ZpVQ=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=fZHJyOBoEGHiD16yVMLzAjbsRhIR7CFE9cGa8xrtaW1fYnxZpDeAP0dlt+35R/Mt6
-	 lwiApCD3vWaU5f/ov1UftsC46EHnWWu9gVCnryDWlTRVbG8/Awo2j7YCs1kkoKzFUW
-	 CLiouOcaFGFR32sW24z1VM1bmsWZYup1WOlxsoyfafKWKAqaMUDNcPp6rSaZlrOose
-	 2+KdIT0Et7q2lWeCijk6GKIW77oJ2/Hmw08YSLGVBKiEFhtlIH4Duf/oWZrG7NccM7
-	 XJbsbh+yK33nHz1p9/ZqYXK8Iv1em79IHjEcPrS+wx+QrhI/G32wo36vWwfGqLIiXr
-	 rc4x3UNOXfQIA==
-X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Michael Kelley <mhklinux@outlook.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	"linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-	"linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	"x86@kernel.org" <x86@kernel.org>,
-	Jiri Pirko <jiri@nvidia.com>
-Subject: RE: [PATCH v5 10/20] dma-direct: make dma_direct_map_phys() honor
- DMA_ATTR_CC_SHARED
-In-Reply-To: <SN6PR02MB41574064D14D4A2734222C51D40B2@SN6PR02MB4157.namprd02.prod.outlook.com>
-References: <20260522042815.370873-1-aneesh.kumar@kernel.org>
- <20260522042815.370873-11-aneesh.kumar@kernel.org>
- <SN6PR02MB41574064D14D4A2734222C51D40B2@SN6PR02MB4157.namprd02.prod.outlook.com>
-Date: Tue, 02 Jun 2026 11:40:00 +0530
-Message-ID: <yq5acxy9scav.fsf@kernel.org>
+	dkim=pass (2048-bit key) header.d=baidu.com header.i=@baidu.com header.b="XNA7Rzt5"
+X-MD-Sfrom: lirongqing@baidu.com
+X-MD-SrcIP: 172.31.3.12
+From: "Li,Rongqing" <lirongqing@baidu.com>
+To: Logan Gunthorpe <logang@deltatee.com>, Robin Murphy
+	<robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+	<will@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>, Luis Chamberlain
+	<mcgrof@kernel.org>, Leon Romanovsky <leon@kernel.org>, Bjorn Helgaas
+	<bhelgaas@google.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC: "hch@lst.de" <hch@lst.de>
+Subject: =?utf-8?B?562U5aSNOiBb5aSW6YOo6YKu5Lu2XSBSZTogW1BBVENIXSBpb21tdS9kbWEt?=
+ =?utf-8?B?aW9tbXU6IEZpeCB3cm9uZyBzY2F0dGVybGlzdCBsZW5ndGggYXNzaWdubWVu?=
+ =?utf-8?Q?t_in_P2PDMA_path?=
+Thread-Topic: =?utf-8?B?W+WklumDqOmCruS7tl0gUmU6IFtQQVRDSF0gaW9tbXUvZG1hLWlvbW11OiBG?=
+ =?utf-8?B?aXggd3Jvbmcgc2NhdHRlcmxpc3QgbGVuZ3RoIGFzc2lnbm1lbnQgaW4gUDJQ?=
+ =?utf-8?Q?DMA_path?=
+Thread-Index: AQHc8CeCWq5soguHakyPgVn1i3dxJrYpWbGAgAFzGHA=
+Date: Tue, 2 Jun 2026 06:12:50 +0000
+Message-ID: <5e2f30a4121e4672ab309460630d011b@baidu.com>
+References: <20260530112852.2321-1-lirongqing@baidu.com>
+ <c666e384-b365-4891-a01d-736948b995bc@deltatee.com>
+In-Reply-To: <c666e384-b365-4891-a01d-736948b995bc@deltatee.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=baidu.com;
+	s=selector1; t=1780380775;
+	bh=j8XkaFnC+tR0rsFSAgivf5+ys/9MUe+F5qo2sbZJ60Q=;
+	h=From:To:CC:Subject:Date:Message-ID:Content-Type;
+	b=XNA7Rzt5TvJlax3CL9sePA96jgTnVt6ShxjXDFGVqDqyuybcZHYmHdb8lM4SPT1g2
+	 WS18TFOipt8B6RdqiHdAy3OdEnVE2mmmQsq1XGflDS6Ry45RXIZjuv/imMSPqO5NvI
+	 KE1UALkch6izzM6p9YJS7BIS8NWarDQi0Gvw0nsVzhQFJBPVsHDwyTaW1lITLKOLwW
+	 OLIllHBAOlZhMPWA7ymD94Y671RHMgF9JrQqgaCZgJ79/0TZiZfJ7FzLiLnOv9aw/H
+	 KuG0Q2UKs+AhacaRH9SGh7jS+X/hmO+hlX7XuLeXYj1IuHAV3xllc/VdBMwmu3l/39
+	 Ob9kOsFNBMtWQ==
 
-Michael Kelley <mhklinux@outlook.com> writes:
-
-> From: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org> Sent: Thursday, Ma=
-y 21, 2026 9:28 PM
->>=20
->> Teach dma_direct_map_phys() to select the DMA address encoding based on
->> DMA_ATTR_CC_SHARED.
->>=20
->> Use phys_to_dma_unencrypted() for decrypted mappings and
->> phys_to_dma_encrypted() otherwise. If a device requires unencrypted DMA
->> but the source physical address is still encrypted, force the mapping
->> through swiotlb so the DMA address and backing memory attributes remain
->> consistent.
->>=20
->> Update the arm64, x86, s390 and powerpc secure-guest setup to not use
->> swiotlb force option
->>=20
->> Tested-by: Jiri Pirko <jiri@nvidia.com>
->> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
-
-...
-
-> With this patch removing SWIOTLB_FORCE from four places in
-> kernel code, there are no remaining places where it is set.
-> The test of SWIOTLB_FORCE could be removed from
-> swiotlb_init_remap(), and its definition could be deleted
-> from include/linux/swiotlb.h.
->
-
-Sure, I=E2=80=99ll add that as a separate patch in the series.
-
--aneesh
+DQo+IE9uIDIwMjYtMDUtMzAgMDU6MjgsIGxpcm9uZ3Fpbmcgd3JvdGU6DQo+ID4gRnJvbTogTGkg
+Um9uZ1FpbmcgPGxpcm9uZ3FpbmdAYmFpZHUuY29tPg0KPiA+DQo+ID4gSW4gaW9tbXVfZG1hX21h
+cF9zZygpLCB3aGVuIGhhbmRsaW5nIFBDSSBQMlBETUEgY2FzZXMsIHRoZSBETUENCj4gbGVuZ3Ro
+DQo+ID4gb2YgdGhlIGN1cnJlbnQgc2NhdHRlcmxpc3Qgc2VnbWVudCBgc2AgaXMgaW5jb3JyZWN0
+bHkgYXNzaWduZWQgZnJvbQ0KPiA+IHRoZSBoZWFkIGVudHJ5IGBzZy0+bGVuZ3RoYCBpbnN0ZWFk
+IG9mIHRoZSBjdXJyZW50IGVudHJ5IGBzLT5sZW5ndGhgLg0KPiA+DQo+ID4gVGhpcyB0eXBvIGNh
+dXNlcyBhbGwgUDJQRE1BIHNlZ21lbnRzIGluIHRoZSBzY2F0dGVybGlzdCB0byBpbmhlcml0IHRo
+ZQ0KPiA+IGxlbmd0aCBvZiB0aGUgZmlyc3Qgc2VnbWVudCwgbGVhZGluZyB0byBjb3JydXB0ZWQg
+RE1BIGxlbmd0aHMgZm9yDQo+ID4gbXVsdGktIHNlZ21lbnQgc2NhdHRlcmxpc3RzLg0KPiA+DQo+
+ID4gRml4IHRoaXMgYnkgdXNpbmcgYHMtPmxlbmd0aGAgaW5zdGVhZCBvZiBgc2ctPmxlbmd0aGAu
+DQo+ID4NCj4gPiBGaXhlczogYTI1ZTc5NjJkYiAoIlBDSS9QMlBETUE6IFJlZmFjdG9yIHRoZSBw
+MnBkbWEgbWFwcGluZyBoZWxwZXJzIikNCj4gPiBTaWduZWQtb2ZmLWJ5OiBMaSBSb25nUWluZyA8
+bGlyb25ncWluZ0BiYWlkdS5jb20+DQo+IA0KPiBIbW0sIEkgdGhvdWdodCBJIGhhZCB0ZXN0ZWQg
+dGhpcyBzdHVmZiBwcmV0dHkgdGhvcm91Z2hseSBzbyBJJ20gc3VycHJpc2VkIEkNCj4gbWlzc2Vk
+IHRoYXQuIEJ1dCBJIGd1ZXNzIHNlZWluZyB0aGUgdXNlcnMgb2YgdGhlc2Ugc3BlY2lmaWNhbGx5
+IGRvbid0IGFsbG93DQo+IG1peGluZyB3aXRoIGFub255bW91cyBtZW1vcnkgdGhlIHZhc3QgbWFq
+b3JpdHkgb2YgdGVzdHMgd291bGQgb25seSBoYXZlDQo+IG9uZSBzZWdtZW50Lg0KPiANCj4gQ2Fu
+IHlvdSBjb25maXJtIHRoYXQgeW91J3ZlIHJlcHJvZHVjZWQgYW5kIHRlc3RlZCB0aGlzIGFuZCBp
+dCBhY3R1YWxseSBmaXhlcyBhDQo+IGJ1Zz8gTm90IGp1c3Qgc2VlaW5nIHNvbWV0aGluZyB0aGF0
+IGxvb2tzIHN0cmFuZ2UuIEkgaGF2ZSBhIHZhZ3VlIGZlZWxpbmcgaXQNCj4gd2FzIGludGVudGlv
+bmFsIGJ1dCBsb29raW5nIGF0IHRoZSBjb2RlIGl0IGxvb2tzIHdyb25nIHRvIG1lIHRvby4NCj4g
+DQo+IFRoYW5rcywNCj4gDQpDYzogQ2hyaXN0b3BoIEhlbGx3aWcNCg0KVGhhbmtzIGZvciB5b3Vy
+IGZlZWRiYWNrIQ0KDQpUaGlzIHdhcyBmb3VuZCB2aWEgY29kZSBpbnNwZWN0aW9uLiBZb3UgYXJl
+IHJpZ2h0IHRoYXQgaWYgbmVudHMgPT0gMSwgb3IgaWYgbmVudHMgPiAxIGJ1dCBhbGwgc2VnbWVu
+dHMgaGFwcGVuIHRvIGhhdmUgdGhlIGV4YWN0IHNhbWUgbGVuZ3RoLCB0aGlzIHR5cG8gcmVtYWlu
+cyBiZW5pZ24gYnkgcHVyZSBjb2luY2lkZW5jZS4NCg0KSG93ZXZlciwgZm9yIGEgbXVsdGktc2Vn
+bWVudCBzY2F0dGVybGlzdCB3aXRoIHZhcnlpbmcgbGVuZ3RocyAoZS5nLiwgYSBzaG9ydCAyS0Ig
+aGVhZCBzZWdtZW50IGZvbGxvd2VkIGJ5IHN0YW5kYXJkIDRLQiBzZWdtZW50cyksIHNnX2RtYV9s
+ZW4ocykgd2lsbCBtaXN0YWtlbmx5IGFzc2lnbiB0aGUgMktCIGhlYWQgbGVuZ3RoIHRvIGFsbCBz
+dWJzZXF1ZW50IDRLQiBzZWdtZW50cy4gVGhpcyB3aWxsIGluZXZpdGFibHkgbGVhZCB0byBzaWxl
+bnQgZGF0YSB0cnVuY2F0aW9uIG9yIElPTU1VIHBhZ2UgZmF1bHRzLg0KDQpTaW5jZSBzZ19waHlz
+KHMpIGNvcnJlY3RseSB0YWtlcyB0aGUgY3VycmVudCBzZWdtZW50J3MgYWRkcmVzcywgc2dfZG1h
+X2xlbihzKSBzaG91bGQgZGVmaW5pdGVseSB1c2Ugcy0+bGVuZ3RoIHRvIG1hdGNoIGl0Lg0KDQpJ
+IGRvbid0IGhhdmUgYSBzcGVjaWZpYyBQMlBETUEgdGVzdCByaWcgdG8gZm9yY2UgbXVsdGktc2Vn
+bWVudCBsaXN0cyBvbiBoYW5kIHJpZ2h0IG5vdywgYnV0IHRoZSB0eXBvIGFuZCBpdHMgaW1wYWN0
+IG9uIHZhcmllZCBzZWdtZW50IGxlbmd0aHMgc2VlbSBkZXRlcm1pbmlzdGljLg0KDQpUaGFua3MN
+Cg0KW0xpLFJvbmdxaW5nXSANCg0KPiBMb2dhbg0KDQo=
