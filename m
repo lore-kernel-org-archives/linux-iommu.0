@@ -1,90 +1,89 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BDD6C3909B8
-	for <iommu@lists.linux.dev>; Tue,  2 Jun 2026 19:20:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D5F52DCF55;
+	Tue,  2 Jun 2026 19:55:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780428032; cv=none; b=ML5nhpLvZJUBzkPlnmiXCIvzFMwmDRcY3eFdFuDU8NCjBVWZRIIrOizm3ma/1fRSZkLk3qAiFaH2kCwv3p3Ihv9ajmMVvlHWjeEaZIfmHZLW8czVo1QM52JPirJnfkJAo1koOiwNtXjgyzLOfAxelyu6h0C4z9FrakPMeIZviMQ=
+	t=1780430118; cv=none; b=R6jt0yvNg2IAGoPHtdGQicCYiDUzyZgsRBwsS2AVuJbsP5u5xNqv0GkIgEKuhE+g2nZvtHrRBcbxkR9ogPI7o1YTfGSDXQ4hK1D7EOYN4YxJrkZ0p77vyXCd/UmPi7/YeelFp5eREp2CrNdRysNhFLE80KnhqluLAcua+XhxpMM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780428032; c=relaxed/simple;
-	bh=Fwe9A2F4ce1V8se4ofrmXlCPqaQ1ErESwoHSJzzJAI8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ZCdTPnLJe4Thh7pWcTy76DN5grJ71m3aGpCrwE7B7aKRh5L2s485RJfxQuw4RMNkRFlWIPlC7tcjM0MYqHXFN+SHhj3IRNQivnPwyQOT4hg2DM3WgPxZywy3SRjm8yJ9tAFPMfJbEUpo1LyMrS5HJQPswRDU1tkGhl/XQ/ADSOE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Zf4Tdsui; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1780430118; c=relaxed/simple;
+	bh=b4YeU9QgP4KINmACbxRLdcc2G0YEIxlXTdEweqpKAn0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=iRYUB3rh3xPsFS3wpSMkKuZDeq5eCGgG4OpRgKwsgyYPE04fDC2c8o+fsfqKOTuvPUvv6IHvWwoiIdACCMKXFMc0NReykt+xZtN+MThKokXqLPfJe6gvopRK+X9xsJ46RZ54St8Ldk11QlTair56lUuFIWuJY6s0x4vsGR+s3c8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bGOerLGi; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Zf4Tdsui"
-Received: from [192.168.0.88] (192-184-212-33.fiber.dynamic.sonic.net [192.184.212.33])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 8644F20B7167;
-	Tue,  2 Jun 2026 12:20:14 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 8644F20B7167
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1780428014;
-	bh=GtEdPMddYvUUSkxNI69UEpAyRWJR7CHrB3WyTxhx0+8=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Zf4Tdsui7EBsCc49cp7VQRY0VZW3oaRl79YvdEORVRgMs9CyLAFKElC2gEufRHfTa
-	 AQQgrVrfNLydpCPtuYuTMZMOtw3waPhtJsDhjELtAi2xbFvddh/gBEmxTF2q3aZ6bg
-	 xEQC2tzKHuZOecS/NkYrMaB+i5fIaOn3WJjMQFHw=
-Message-ID: <1ca3f050-bcda-00e3-23be-0172a48c3257@linux.microsoft.com>
-Date: Tue, 2 Jun 2026 12:20:27 -0700
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bGOerLGi"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 461E91F00893;
+	Tue,  2 Jun 2026 19:55:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780430116;
+	bh=ftOIpII2o5BHlSrpYjdtnSczjR8NYdTjJYRnMSN/BTM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=bGOerLGi9R5hKth9QMPVvN8b5Ds4rpn8aJMi2p2Qe5KjZxinm0fUynTnZXzRaMUDC
+	 r9pNx4zbJ6VuFllwfLUpJyxEGxBxdyXiggpPSW1hCVsVFJfiueOVZfdfSw1jR8Hgia
+	 Bpy7b609LIotTjG0zVmaAEP74TXkqY7nj1E/g444K9C+K45X2zPMamz8lCQtiUfYPY
+	 51O85iXZumK49wtOfL5+ONJtxWAQWaTwwOaakRVdpiJAFxIXPr7paXH+xqfnEJDGNA
+	 TWFt+s0rnkr/ibIForY/iVSaCNdZu3eLSGbZh/3LxrovMEP+rsfM/Yp07S0FPwoq58
+	 ApUDj+6WcAFOA==
+Date: Tue, 2 Jun 2026 20:55:10 +0100
+From: Will Deacon <will@kernel.org>
+To: Ashish Mhetre <amhetre@nvidia.com>
+Cc: robin.murphy@arm.com, joro@8bytes.org, jgg@ziepe.ca,
+	nicolinc@nvidia.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-tegra@vger.kernel.org
+Subject: Re: [PATCH v3 1/3] iommu/arm-smmu-v3: Factor out CMDQ batch
+ force-sync conditions
+Message-ID: <ah81HhVW7_h9xyDM@willie-the-truck>
+References: <20260601104845.995005-1-amhetre@nvidia.com>
+ <20260601104845.995005-2-amhetre@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.1
-Subject: Re: [PATCH V1] iommu/hyperv: Create hyperv subdirectory under
- drivers/iommu
-Content-Language: en-US
-To: Jacob Pan <jacob.pan@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- mhklinux@outlook.com, wei.liu@kernel.org, zhangyu1@linux.microsoft.com,
- schakrabarti@linux.microsoft.com
-References: <20260529014148.297154-1-mrathor@linux.microsoft.com>
- <20260601090735.00005f55@linux.microsoft.com>
- <99bc22c3-0fa9-044d-071c-53cc8c2b7548@linux.microsoft.com>
- <20260601214514.00003833@linux.microsoft.com>
-From: Mukesh R <mrathor@linux.microsoft.com>
-In-Reply-To: <20260601214514.00003833@linux.microsoft.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260601104845.995005-2-amhetre@nvidia.com>
 
-On 6/1/26 21:45, Jacob Pan wrote:
-> Hi Mukesh,
+On Mon, Jun 01, 2026 at 10:48:43AM +0000, Ashish Mhetre wrote:
+> From: Nicolin Chen <nicolinc@nvidia.com>
 > 
-> On Mon, 1 Jun 2026 14:23:18 -0700
-> Mukesh R <mrathor@linux.microsoft.com> wrote:
+> arm_smmu_cmdq_batch_add_cmd_p() carries two distinct reasons for
+> flushing the current batch with a CMD_SYNC before appending the
+> new command:
 > 
->>>> diff --git a/drivers/iommu/hyperv/Makefile
->>>> b/drivers/iommu/hyperv/Makefile new file mode 100644
->>>> index 000000000000..0053e00e08e6
->>>> --- /dev/null
->>>> +++ b/drivers/iommu/hyperv/Makefile
->>>> @@ -0,0 +1,2 @@
->>>> +# SPDX-License-Identifier: GPL-2.0
->>>> +obj-$(CONFIG_IRQ_REMAP) += hv-irq-remap.o
->>> Should the name be x86 specific? This file will never be built for
->>> ARM because:
->>>    CONFIG_IRQ_REMAP depends on:
->>>    depends on X86_64 && X86_IO_APIC && PCI_MSI && ACPI
->>>
->>> perhaps, hv-x86-irq-remap.c? hv-irq-remap.c sounds like a
->>> generic Hyper-V IRQ-remapping backend and may be misleading once
->>> arm64 Hyper-V IOMMU/interrupt support grows under this directory.
->>
->> we could, but looking at early version of hyperv-iommu-arm.c, it looks
->> very similar, and so if there are very few ifdefs, we could just
->> keep one file rather than replicating bunch of code.
+>   - The batch's pre-assigned cmdq does not support the new command.
+>   - The Arm erratum 2812531 workaround (ARM_SMMU_OPT_CMDQ_FORCE_SYNC)
+>     forces a SYNC at one entry before the batch is full.
 > 
-> With this patch as is, how could you keep one file for both ARM and X86
-> where hv-irq-remap.c does not build on ARM?
+> Lift those checks into a new arm_smmu_cmdq_batch_force_sync() helper
+> so that adding another force-sync condition becomes a one-line
+> addition. No functional change.
+> 
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 26 ++++++++++++++++-----
+>  1 file changed, 20 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 9be589d14a3b..4d29bd343460 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -847,16 +847,30 @@ static void arm_smmu_cmdq_batch_init_cmd(struct arm_smmu_device *smmu,
+>  	cmds->cmdq = arm_smmu_get_cmdq(smmu, cmd);
+>  }
+>  
+> +static bool arm_smmu_cmdq_batch_force_sync(struct arm_smmu_device *smmu,
+> +					   struct arm_smmu_cmdq_batch *cmds,
+> +					   struct arm_smmu_cmd *cmd)
+> +{
+> +	if (!cmds->num)
+> +		return false;
 
-We can remove the x86 restriction, make sure it builds on arm. Then
-during arm patch, I can help decide whether to fork or just add ifdefs
-in the file. I'll submit V2 with x86 restriction removed.
+This check seems new?
 
-Thanks,
--Mukesh
-
+Will
