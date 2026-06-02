@@ -1,30 +1,30 @@
 Received: from out30-124.freemail.mail.aliyun.com (out30-124.freemail.mail.aliyun.com [115.124.30.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FF6A3806AF
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E99753C7692
 	for <iommu@lists.linux.dev>; Tue,  2 Jun 2026 10:46:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780397216; cv=none; b=PYfoLLpi2g2HGyzkwVN9bspLFlo4k4P+i75RJ1vBToK8oHqHRpvoNfCOxYx4AwXXBCzkRXkdA0Cqe76zKyzdw6cylKQPpc3v85GsdV7iwOzim3ISuDPCQQXI5qEcGZcm9q6g8t7yVlBePfEAPWX7V9XlItvFRbZ7rkueIRRu0dk=
+	t=1780397216; cv=none; b=VySdQ1RmQIaQlUP/DKTGGgc5JArP20o3Dwb7Sv4kuY1CrRUxY18e40/CsykAblTKVac4XSICfQZxfw2maL5ckzRwMjQCIYi7fUV4xu+zX3iDi8p9K7u4diqnrY1FKhEtYFhupAMuSdN4eGN4MBcvj35jx8w0QYkkVw568M/Ss2s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1780397216; c=relaxed/simple;
-	bh=24W9IxqMVTohjC3Md1Ifb5ypnUAmrxqp2hkrF3RYkeo=;
+	bh=YqTLlp4rQ5N80NTs3rOrlqQxzoKiBhSW5JW4kktMGXY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=mhp6eJ4p3cZWHm5zxpQ5vUZl3kaNWoqqfqpIwGtUyphD5/g9ZJHy0a0Wqnj9EWe+zc6fzu4XQFrZmChg5jdLkodvNUR0w+p5i/zOiUjx7TO6+1XeE1rFljtF8CDcp037ZQViNQ3HvxRdGLlSTcuEBqfFAPEcv/jN+pw5i7JWATw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=YXPTGHjH; arc=none smtp.client-ip=115.124.30.124
+	 MIME-Version; b=QR4SgdoT1KkabmyyHP7jn3ozQ7/Jks2z/znSdYleMcfc+R7qWbw0L+V5OO/k6uSzfKMm+FH83G5ov3PgSf4JPZYRpodrefCNUkXtS2h22gysuOBa0Yuz1Sa5kPqnOHCFtRGBLmbRIqYb+I/IuaQvK//TVfOfsc0recoAa8p35Fs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=bvXGLXGz; arc=none smtp.client-ip=115.124.30.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="YXPTGHjH"
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="bvXGLXGz"
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
-	t=1780397212; h=From:To:Subject:Date:Message-ID:MIME-Version;
-	bh=NEcdkKuIoYfcjbKM7WhKOeSFYFCWaJe62lwiuJRVrJ0=;
-	b=YXPTGHjHGC1JjXPkuAjGSHxn0Z//22h6Dy5TjFDeP6mxWhDBz//uQ3Lfa8hyuZ22xeLz/sTsOtx606mr5QYgirZOd5TuNnEGISVhgt9U1U9Bg+fEVKZoartPqSXEUofmfH9rC9jNUk/qUcjk5cfNd7tq/xWntbg3lRYtsYFasLk=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R391e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045133197;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=28;SR=0;TI=SMTPD_---0X44E92e_1780397209;
-Received: from VM20241011-104.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0X44E92e_1780397209 cluster:ay36)
+	t=1780397213; h=From:To:Subject:Date:Message-ID:MIME-Version;
+	bh=5K9kQ+7O2to9AMrCCxHb12XQWSw4xjjz1YrQKtCPM08=;
+	b=bvXGLXGz+TRaIpPNZz1UarXjx3wFFd5w1hORWLuVvqOoBcXbWt3QWMnGFEcPdwapcKzgBmGBQPTP1y4AYWMrQf09jBjIPYJn+Ik5MICj1yCs/NytDRGls6l8pjIJlGH6RJgZuGBUyvAWxayDr9EtzGjtnn26w5ElyzLYFcJ89Ac=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R621e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037009110;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=28;SR=0;TI=SMTPD_---0X44E92z_1780397210;
+Received: from VM20241011-104.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0X44E92z_1780397210 cluster:ay36)
           by smtp.aliyun-inc.com;
-          Tue, 02 Jun 2026 18:46:50 +0800
+          Tue, 02 Jun 2026 18:46:51 +0800
 From: Guanghui Feng <guanghuifeng@linux.alibaba.com>
 To: adrian.larumbe@collabora.com,
 	airlied@gmail.com,
@@ -54,9 +54,9 @@ To: adrian.larumbe@collabora.com,
 	will@kernel.org,
 	xlpang@linux.alibaba.com
 Cc: alikernel-developer@linux.alibaba.com
-Subject: [PATCH v2 03/30] iommu/io-pgtable-arm-v7s: introduce iova_to_phys_length in io_pgtable_ops
-Date: Tue,  2 Jun 2026 18:46:10 +0800
-Message-ID: <20260602104637.1219810-4-guanghuifeng@linux.alibaba.com>
+Subject: [PATCH v2 04/30] iommu/io-pgtable-dart: introduce iova_to_phys_length in io_pgtable_ops
+Date: Tue,  2 Jun 2026 18:46:11 +0800
+Message-ID: <20260602104637.1219810-5-guanghuifeng@linux.alibaba.com>
 X-Mailer: git-send-email 2.43.7
 In-Reply-To: <20260602104637.1219810-1-guanghuifeng@linux.alibaba.com>
 References: <20260531093637.3893199-1-guanghuifeng@linux.alibaba.com>
@@ -69,116 +69,84 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Implement iova_to_phys_length in ARM v7s backend: returns block size
-derived from level mask. The old iova_to_phys is kept as a thin wrapper.
+Implement iova_to_phys_length in DART backend: returns pgsize from
+cfg.pgsize_bitmap (single fixed page size). The old iova_to_phys is kept
+as a thin wrapper.
 
 Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
 ---
- drivers/iommu/io-pgtable-arm-v7s.c | 34 ++++++++++++++++++++++++------
- 1 file changed, 27 insertions(+), 7 deletions(-)
+ drivers/iommu/io-pgtable-dart.c | 32 +++++++++++++++++++++++++-------
+ 1 file changed, 25 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-index 1dbef8c55007..5868d68e8a85 100644
---- a/drivers/iommu/io-pgtable-arm-v7s.c
-+++ b/drivers/iommu/io-pgtable-arm-v7s.c
-@@ -641,13 +641,27 @@ static size_t arm_v7s_unmap_pages(struct io_pgtable_ops *ops, unsigned long iova
- 	return unmapped;
+diff --git a/drivers/iommu/io-pgtable-dart.c b/drivers/iommu/io-pgtable-dart.c
+index cbc5d6aa2daa..2dac21a578a7 100644
+--- a/drivers/iommu/io-pgtable-dart.c
++++ b/drivers/iommu/io-pgtable-dart.c
+@@ -333,29 +333,46 @@ static size_t dart_unmap_pages(struct io_pgtable_ops *ops, unsigned long iova,
+ 	return i * pgsize;
  }
  
-+static phys_addr_t arm_v7s_iova_to_phys_length(struct io_pgtable_ops *ops,
-+						unsigned long iova,
-+						size_t *mapped_length);
++static phys_addr_t dart_iova_to_phys_length(struct io_pgtable_ops *ops,
++					    unsigned long iova,
++					    size_t *mapped_length);
 +
- static phys_addr_t arm_v7s_iova_to_phys(struct io_pgtable_ops *ops,
- 					unsigned long iova)
+ static phys_addr_t dart_iova_to_phys(struct io_pgtable_ops *ops,
+-					 unsigned long iova)
++				     unsigned long iova)
 +{
-+	phys_addr_t phys = arm_v7s_iova_to_phys_length(ops, iova, NULL);
++	phys_addr_t phys = dart_iova_to_phys_length(ops, iova, NULL);
 +
 +	return (phys == PHYS_ADDR_MAX) ? 0 : phys;
 +}
 +
-+static phys_addr_t arm_v7s_iova_to_phys_length(struct io_pgtable_ops *ops,
-+						unsigned long iova,
-+						size_t *mapped_length)
++static phys_addr_t dart_iova_to_phys_length(struct io_pgtable_ops *ops,
++					    unsigned long iova,
++					    size_t *mapped_length)
  {
- 	struct arm_v7s_io_pgtable *data = io_pgtable_ops_to_data(ops);
- 	arm_v7s_iopte *ptep = data->pgd, pte;
- 	int lvl = 0;
- 	u32 mask;
-+	size_t blk_size;
+ 	struct dart_io_pgtable *data = io_pgtable_ops_to_data(ops);
+ 	dart_iopte pte, *ptep;
++	size_t pgsize;
  
- 	do {
- 		ptep += ARM_V7S_LVL_IDX(iova, ++lvl, &data->iop.cfg);
-@@ -656,11 +670,16 @@ static phys_addr_t arm_v7s_iova_to_phys(struct io_pgtable_ops *ops,
- 	} while (ARM_V7S_PTE_IS_TABLE(pte, lvl));
+ 	ptep = dart_get_last(data, iova);
  
- 	if (!ARM_V7S_PTE_IS_VALID(pte))
+ 	/* Valid L2 IOPTE pointer? */
+ 	if (!ptep)
 -		return 0;
 +		return PHYS_ADDR_MAX;
  
- 	mask = ARM_V7S_LVL_MASK(lvl);
- 	if (arm_v7s_pte_is_cont(pte, lvl))
- 		mask *= ARM_V7S_CONT_PAGES;
-+
-+	blk_size = ~mask + 1U;
-+	if (mapped_length)
-+		*mapped_length = blk_size;
-+
- 	return iopte_to_paddr(pte, lvl, &data->iop.cfg) | (iova & ~mask);
+ 	ptep += dart_get_last_index(data, iova);
+ 
+ 	pte = READ_ONCE(*ptep);
+ 	/* Found translation */
+ 	if (pte) {
+-		iova &= (data->iop.cfg.pgsize_bitmap - 1);
++		pgsize = data->iop.cfg.pgsize_bitmap;
++		if (mapped_length)
++			*mapped_length = pgsize;
++		iova &= (pgsize - 1);
+ 		return iopte_to_paddr(pte, data) | iova;
+ 	}
+ 
+ 	/* Ran out of page tables to walk */
+-	return 0;
++	return PHYS_ADDR_MAX;
  }
  
-@@ -714,6 +733,7 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
- 		.map_pages	= arm_v7s_map_pages,
- 		.unmap_pages	= arm_v7s_unmap_pages,
- 		.iova_to_phys	= arm_v7s_iova_to_phys,
-+		.iova_to_phys_length	= arm_v7s_iova_to_phys_length,
+ static struct dart_io_pgtable *
+@@ -397,9 +414,10 @@ dart_alloc_pgtable(struct io_pgtable_cfg *cfg)
+ 	data->bits_per_level = bits_per_level;
+ 
+ 	data->iop.ops = (struct io_pgtable_ops) {
+-		.map_pages	= dart_map_pages,
+-		.unmap_pages	= dart_unmap_pages,
+-		.iova_to_phys	= dart_iova_to_phys,
++		.map_pages		= dart_map_pages,
++		.unmap_pages		= dart_unmap_pages,
++		.iova_to_phys		= dart_iova_to_phys,
++		.iova_to_phys_length	= dart_iova_to_phys_length,
  	};
  
- 	/* We have to do this early for __arm_v7s_alloc_table to work... */
-@@ -843,13 +863,13 @@ static int __init arm_v7s_do_selftests(void)
- 	 * Initial sanity checks.
- 	 * Empty page tables shouldn't provide any translations.
- 	 */
--	if (ops->iova_to_phys(ops, 42))
-+	if (ops->iova_to_phys_length(ops, 42, NULL) != PHYS_ADDR_MAX)
- 		return __FAIL(ops);
- 
--	if (ops->iova_to_phys(ops, SZ_1G + 42))
-+	if (ops->iova_to_phys_length(ops, SZ_1G + 42, NULL) != PHYS_ADDR_MAX)
- 		return __FAIL(ops);
- 
--	if (ops->iova_to_phys(ops, SZ_2G + 42))
-+	if (ops->iova_to_phys_length(ops, SZ_2G + 42, NULL) != PHYS_ADDR_MAX)
- 		return __FAIL(ops);
- 
- 	/*
-@@ -870,7 +890,7 @@ static int __init arm_v7s_do_selftests(void)
- 				    &mapped))
- 			return __FAIL(ops);
- 
--		if (ops->iova_to_phys(ops, iova + 42) != (iova + 42))
-+		if (ops->iova_to_phys_length(ops, iova + 42, NULL) != (iova + 42))
- 			return __FAIL(ops);
- 
- 		iova += SZ_16M;
-@@ -884,7 +904,7 @@ static int __init arm_v7s_do_selftests(void)
- 		if (ops->unmap_pages(ops, iova, size, 1, NULL) != size)
- 			return __FAIL(ops);
- 
--		if (ops->iova_to_phys(ops, iova + 42))
-+		if (ops->iova_to_phys_length(ops, iova + 42, NULL) != PHYS_ADDR_MAX)
- 			return __FAIL(ops);
- 
- 		/* Remap full block */
-@@ -892,7 +912,7 @@ static int __init arm_v7s_do_selftests(void)
- 				   GFP_KERNEL, &mapped))
- 			return __FAIL(ops);
- 
--		if (ops->iova_to_phys(ops, iova + 42) != (iova + 42))
-+		if (ops->iova_to_phys_length(ops, iova + 42, NULL) != (iova + 42))
- 			return __FAIL(ops);
- 
- 		iova += SZ_16M;
+ 	return data;
 -- 
 2.43.7
 
