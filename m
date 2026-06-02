@@ -1,165 +1,130 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42C223246FE;
-	Tue,  2 Jun 2026 20:13:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C35E325B0B1
+	for <iommu@lists.linux.dev>; Tue,  2 Jun 2026 20:14:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780431226; cv=none; b=LRrcEuA+kRyzaqx5YtMkOW5eEATKffTXNuWW5VjgSqcHIkdh8LwTmPUMV89E+3j4I4D2U5JzcJR5oOWPq7+RGR07lIqiEUUc/6u32r0XSoHpWT/A4aKMqeWUKVvvrwDDzEqG4BtGzflJMjOVD94VyEHyIJaWWSVkqp1KgYm6YbU=
+	t=1780431284; cv=none; b=YnYqq7vuekoxipEqrG0nfA7sd5T6ZxeX7SjaPE/mEjWejqDv4LteZb3Y/fKsb8sTIASy/pZY79qka/Uaz5P2LgD6ky+AeFOjKsbiw2hZ2cvUNeOnP6g18VHuyy5VaXUY01iJ9bEqZEjPnvulmY2es42tZPdENolVuQK+TcZK+OY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780431226; c=relaxed/simple;
-	bh=4gAukCpyrQFo8VTPmnrhVpITJSMNhMls9U2xD/Sj5A8=;
+	s=arc-20240116; t=1780431284; c=relaxed/simple;
+	bh=he33nU9JPm0menDe3NJIvjrjiIhsUVKO9W0TKnELQCQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TvboBBPSGQPsrOsXzicg9TTzFEgA5OBiDqj/GkvoYoQ19mpBY1kMeKFsoYTdlO8W8xZjiYLK8r3G2twu7usW/snFG663ew3Ts638shvaNZPqhYfEsB2o6V9gV6HP2rYq1XmuyhJbTWL8IihWS9m0pCPMI3z6KawkkNvl/PRNOLw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XGkUmtl7; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=d/wUz70nMcccCMWqAUagBsiYBd/h6n0JgmkMFqS+GFPpOu3J3SYmLDI/LetvY4Jb3rQkuI1F2Qe4XHiBsuDOK5tURIi9725ujgQWTYyFFnhjFjKLE1C7GSyjvjfRCIUfvQl1Ka+5Udu6sySgCBvGXi6Hx9t5oFA9cxCR+1sP+CE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=DlK/T9cJ; arc=none smtp.client-ip=209.85.214.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XGkUmtl7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 356C11F00893;
-	Tue,  2 Jun 2026 20:13:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780431225;
-	bh=ib+9T4X2yh5YoVE1sAOpYN8KBkp47dokmYCpMBUL0BA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=XGkUmtl7qa2HKhRZdd7lmc09JTZpZfmN5eioG5YRmvuLfRgu176rkIKto/0YREB50
-	 iKn+E0LoFsPI0T/3fJYjrvsksMlvDhQisMbHtm6oxxc9fdFOcnvlUwXyHotVMXpAhw
-	 +TCz9L4hjcfFx4zfbMM7kOV7s2wEejiS0GPnxbLVQSmPYHfPSC9kj14FgBVJo98/Y7
-	 7G2BzuPHWBu9120hSodYVOBnYzKNB5xpIc9y1ewD4dL4edTrv9DG8AYp7HLwV4LuZn
-	 AYvEIUxfq0oDGGh/BO1jtpHxEApGIpzJPZLLFheXXPpYrIY/48EXOxCZyr8e8VduL1
-	 Qsftpm/ngEbzw==
-Date: Tue, 2 Jun 2026 21:13:39 +0100
-From: Will Deacon <will@kernel.org>
-To: Ashish Mhetre <amhetre@nvidia.com>
-Cc: robin.murphy@arm.com, joro@8bytes.org, jgg@ziepe.ca,
-	nicolinc@nvidia.com, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-tegra@vger.kernel.org
-Subject: Re: [PATCH v3 2/3] iommu/arm-smmu-v3: Detect Tegra264 erratum
-Message-ID: <ah85c4u011WNJQgE@willie-the-truck>
-References: <20260601104845.995005-1-amhetre@nvidia.com>
- <20260601104845.995005-3-amhetre@nvidia.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="DlK/T9cJ"
+Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2bf2d865383so4815ad.1
+        for <iommu@lists.linux.dev>; Tue, 02 Jun 2026 13:14:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1780431283; x=1781036083; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=AXf/DhYEKv4KfJHG3trdQ5N+MNYdsl2DFczEDRjtzB8=;
+        b=DlK/T9cJOxidhkTAj1fIBP/p5Xqxb0XrGhQyK0bQM/54XH1aLCxRciBCijeURbw6Oa
+         6w+lVKjRh7tYoynz+k2S0FDxguaQAaD73/Fbx0UU8PAD6IpF7OlEZI4gjJAHVEo20t6H
+         VXeBUdSUPW0nDsc9hwmQkUUguGPevMO4HbkIMQFRKeXz+sdJvzk4YJ95U+BE8E8sn+Kx
+         XKDfMyVpoT/iHPYzcBPvw4Eo7UWPAAk0X6oZTQZJ0nKbYN8wYH2qWjBNr3a9KbvZ/NRE
+         ukIaPuim+zUFT24fs7rLNvaEkJ9p7ICpNiPDlaD5dytFfsF54V4su6JXr0AwebiSvq44
+         zpyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780431283; x=1781036083;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=AXf/DhYEKv4KfJHG3trdQ5N+MNYdsl2DFczEDRjtzB8=;
+        b=OnUkPgkZFIEwmJ30YyaPdjvZZdfT/9Mtyv2LiPSLg4VA2j6vRrCWDQyWzeddxfa+ys
+         pWjeU/5hblPZ98szRLngRj0CQAh2HrdscXh7o+6Updj48mFXQVuNGtv69HapXfsMcydp
+         iDFraiWui83Gmz6EJvGdyOXiIcbqU1unr5MKPSEhlYe6BiO4M0mTpGeScfSkzBj3kdTs
+         KePKlcTkD3WF1JvvGnilerOBalgBRN4kRgO1WvLLfA037TOwGfMviqx76zmx0rxu5+QS
+         NCG40FlzsSFTCJa8QBcqWngiQu9d2HHdTgQ32S7XD4yCdq96ljy234aThN8OpEacxMiX
+         cJFw==
+X-Forwarded-Encrypted: i=1; AFNElJ9OENOxIkF5M7ZT3695/eobGPyZs72MGok+BIo+QeCidDwQOvSpFpcyV/nIR9e2BhqpmKjtdg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxb1Bbu7IDHjLmWj29W1nXcXplJNlIvj3w9aCOnIwF57Yw192WM
+	lV1WQbLCpChqkPQSen2BukHpLIWca8T/A8T0Em9PmKdeKZ8HGa4ODLCzXFyZFexicQ==
+X-Gm-Gg: Acq92OHWXa/mN82bo4atW86V19Z12mMkzw6WjuX1L3PxRHuF96WxUTnunNh2OCXyPOE
+	UVQofnzzxrJOr0VDWYpTHPok8s/CZZWpNOenA7fe5rODnEpeGMxbEPx9hdDr1pzvURJxP8jjre9
+	FTetldgrhAAvbIHsW6lltnGUorNwrP8i4oYxSfbjwmowr4QMTin7c6OkG0PnHqLYMpKuWp7nyOO
+	S1zD/iAvbQ0UxmVF79mGcPSh7H1fWUddUYeENnwtDWJV4tLku7Rm0UpH0Exh8s39USrzYFLlWjT
+	YmQtN9Mlkg5rz69S9/xaIWec/28lCIg5Z+LcRT0COzMOOVt7cA8aebwIb1dCfJ8y02xD0nTmmY1
+	pUuWMWrFMms+v+HjMk0HhJSYEBZJsBqhHnJMLLBVXiYIclWbWvFCpY6SRLRHcS8Ol3c0piYNlZN
+	UiDHFkq9+uK0WV4T0V+Y0MeQGuJAo7KtxsfdaMLCvDwH0G1ZQOh7QPdCj4CmV2jw+GTPHzv4qSR
+	mpmb69DWynkEg+Y8pYHoNNhxq+OIA==
+X-Received: by 2002:a17:902:f70c:b0:2bf:3579:cdaa with SMTP id d9443c01a7336-2c10e8606b5mr4060495ad.10.1780431282360;
+        Tue, 02 Jun 2026 13:14:42 -0700 (PDT)
+Received: from google.com (25.75.145.34.bc.googleusercontent.com. [34.145.75.25])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c85df0a63b3sm90737a12.21.2026.06.02.13.14.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Jun 2026 13:14:41 -0700 (PDT)
+Date: Tue, 2 Jun 2026 20:14:37 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Will Deacon <will@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
+	Mike Rapoport <rppt@kernel.org>, Pratyush Yadav <pratyush@kernel.org>, 
+	Alexander Graf <graf@amazon.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev, kexec@lists.infradead.org, 
+	linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
+	David Matlack <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>
+Subject: Re: [RFC PATCH 3/4] dma-direct: Add API to preserve/restore
+ allocations
+Message-ID: <ah8srv7dvO4OIii8@google.com>
+References: <20260505002737.2213734-1-skhawaja@google.com>
+ <20260505002737.2213734-4-skhawaja@google.com>
+ <ah18hDhjSLxIvb-Y@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20260601104845.995005-3-amhetre@nvidia.com>
+In-Reply-To: <ah18hDhjSLxIvb-Y@willie-the-truck>
 
-On Mon, Jun 01, 2026 at 10:48:44AM +0000, Ashish Mhetre wrote:
-> Tegra264 SMMU is affected by erratum where a TLB entry can survive an
-> invalidation that races with concurrent traffic targeting the same
-> entry. The hardware-recommended software workaround is to issue every
-> CFGI/TLBI command (each followed by CMD_SYNC) twice. The second issue
-> is guaranteed to evict the entry. ATC_INV is not affected and must not
-> be doubled.
-> 
-> The erratum is not flagged by any SMMUv3 IDR/IIDR register, so it
-> cannot be detected from hardware ID. Tegra264 boots from device tree
-> only and has no ACPI/IORT support, so detection is through device
-> tree only.
+On Mon, Jun 01, 2026 at 01:35:16PM +0100, Will Deacon wrote:
+>On Tue, May 05, 2026 at 12:27:36AM +0000, Samiullah Khawaja wrote:
+>> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+>> index ec887f443741..c2b98f91900a 100644
+>> --- a/kernel/dma/direct.c
+>> +++ b/kernel/dma/direct.c
+>> @@ -6,6 +6,8 @@
+>>   */
+>>  #include <linux/memblock.h> /* for max_pfn */
+>>  #include <linux/export.h>
+>> +#include <linux/kexec_handover.h>
+>> +#include <linux/kho/abi/dma_alloc.h>
+>>  #include <linux/mm.h>
+>>  #include <linux/dma-map-ops.h>
+>>  #include <linux/scatterlist.h>
+>> @@ -307,6 +309,167 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+>>  	return NULL;
+>>  }
+>>
+>> +#ifdef CONFIG_DMA_LIVEUPDATE
+>> +int dma_direct_preserve_allocation(struct device *dev, void *cpu_addr,
+>> +				   size_t size, dma_addr_t dma_handle,
+>> +				   unsigned long attrs, u64 *state)
+>> +{
+>> +	struct dma_alloc_ser *ser;
+>> +	int ret;
+>> +
+>> +	if (!kho_is_enabled())
+>> +		return -EOPNOTSUPP;
+>> +
+>> +	if (IS_ENABLED(CONFIG_DMA_CMA))
+>> +		return -EOPNOTSUPP;
+>
+>Hmm, it seems a bit overkill to do this just because CMA is compiled
+>in, especially as it's user-selectable in kconfig.
+>
+>Maybe you need to iterate over the CMA areas using cma_for_each_area(),
+>similarly to how you do with the pools?
 
-That seems odd to me -- whether the hardware has the erratum is
-completely unrelated to whether it probes using DT or ACPI, so I find it
-really weird to have the workaround enabled when booting with DT and not
-when booting with ACPI. We should have consistent behaviour between the
-two.
-
-> Add the ARM_SMMU_OPT_TLBI_TWICE option and set it on instances matching
-> the existing "nvidia,tegra264-smmu" compatible. Also add a
-> static-inline arm_smmu_cmd_needs_tlbi_twice() classifier in
-> arm-smmu-v3.h so that subsequent changes wiring the workaround into the
-> CMDQ submission and iommufd batching paths can share a single
-> predicate.
-> 
-> No callers consume the option yet; a subsequent change will wire the
-> workaround into the CMDQ issue paths.
-> 
-> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
-> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  4 ++-
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h | 40 +++++++++++++++++++++
->  2 files changed, 43 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 4d29bd343460..08684bd40a6d 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -5243,8 +5243,10 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev,
->  	if (of_dma_is_coherent(dev->of_node))
->  		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
->  
-> -	if (of_device_is_compatible(dev->of_node, "nvidia,tegra264-smmu"))
-> +	if (of_device_is_compatible(dev->of_node, "nvidia,tegra264-smmu")) {
->  		tegra_cmdqv_dt_probe(dev->of_node, smmu);
-> +		smmu->options |= ARM_SMMU_OPT_TLBI_TWICE;
-> +	}
->  
->  	return ret;
->  }
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 16353596e08a..106034c348a1 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -928,6 +928,14 @@ struct arm_smmu_device {
->  #define ARM_SMMU_OPT_MSIPOLL		(1 << 2)
->  #define ARM_SMMU_OPT_CMDQ_FORCE_SYNC	(1 << 3)
->  #define ARM_SMMU_OPT_TEGRA241_CMDQV	(1 << 4)
-> +/*
-> + * Tegra264 erratum: a TLB entry can survive an invalidation that races
-> + * with concurrent traffic targeting the same entry. The software
-> + * workaround is to issue every CFGI/TLBI command twice, each followed
-> + * by CMD_SYNC. The second issue is guaranteed to evict the entry.
-> + * ATC_INV commands are not affected and must not be doubled.
-> + */
-> +#define ARM_SMMU_OPT_TLBI_TWICE		(1 << 5)
-
-nit: I think this should be named slightly differently as it covers CFGI
-as well. Maybe ARM_SMMU_OPT_REPEAT_TLBI_CFGI ?
-
-The comment can be simpler too and avoid being specific to Tegra264. The
-main things to say are that it repeats {CFGI,TLBI}; SYNC sequences and
-does not apply to ATC_INV.
-
-> +/*
-> + * Returns true if @cmd is one of the CFGI_* or TLBI_* commands covered
-> + * by the Tegra264 erratum (see ARM_SMMU_OPT_TLBI_TWICE) on an affected
-> + * SMMU instance.
-> + */
-
-(remove the comment)
-
-> +static inline bool arm_smmu_cmd_needs_tlbi_twice(struct arm_smmu_device *smmu,
-> +						 struct arm_smmu_cmd *cmd)
-
-Rename the function to something like arm_smmu_erratum_cmd_needs_repeating()?
-
-> +{
-> +	if (!(smmu->options & ARM_SMMU_OPT_TLBI_TWICE))
-> +		return false;
-
-Maybe we should make this a static key?
-
-> +	switch (FIELD_GET(CMDQ_0_OP, cmd->data[0])) {
-> +	case CMDQ_OP_CFGI_STE:
-> +	case CMDQ_OP_CFGI_ALL:
-> +	case CMDQ_OP_CFGI_CD:
-> +	case CMDQ_OP_CFGI_CD_ALL:
-> +	case CMDQ_OP_TLBI_NH_ALL:
-> +	case CMDQ_OP_TLBI_NH_ASID:
-> +	case CMDQ_OP_TLBI_NH_VA:
-> +	case CMDQ_OP_TLBI_NH_VAA:
-> +	case CMDQ_OP_TLBI_EL2_ALL:
-> +	case CMDQ_OP_TLBI_EL2_ASID:
-> +	case CMDQ_OP_TLBI_EL2_VA:
-> +	case CMDQ_OP_TLBI_S12_VMALL:
-> +	case CMDQ_OP_TLBI_S2_IPA:
-> +	case CMDQ_OP_TLBI_NSNH_ALL:
-> +		return true;
-
-Isn't this just everything < ATC_INV || >= CFGI_STE? Seems better than
-enumerating everything.
-
-Will
+Agreed. So basically return error if the range belongs to one of the
+CMAs. I will update this.
+>
+>Will
