@@ -1,77 +1,91 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C451A3B95E3
-	for <iommu@lists.linux.dev>; Tue,  2 Jun 2026 12:12:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A16D21B192
+	for <iommu@lists.linux.dev>; Tue,  2 Jun 2026 12:32:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780402345; cv=none; b=p2ezKBr2B/nDj6nPL8WmVEmYjQhQ64fXeP78Az8WCnM9+FBtVxtZUquN4zdKQx3HGJiTtqW7Dg+a20Tvd55YVCkF4d90vUStFgZfZ2MkoAcFyIE4qlP6+wevTTu3rkC3LaMQfepg3wHck379CAsHSFai3oaDtYxb0V5sZ/crIcM=
+	t=1780403553; cv=none; b=m33/SlJM3N8WS7+uHr6+VT4zQ/NDszCWhrDFYV2zsNVxlkcbZtqqXacKT2KeMPVMydzrCehmDPFvXvRQVIbTa/KyB3fK8Gb5sNkGmBmIpi0gwlisCDPMWIHbJVaMY/ZPYdouHJMjS9Z8XSxHZgMdQyO/AsES2IBjcS2pQvYZzQY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780402345; c=relaxed/simple;
-	bh=ten1Sp9/vQsynOHTzkDBSArSsPQrqyXK7FNX8Rz0PgA=;
+	s=arc-20240116; t=1780403553; c=relaxed/simple;
+	bh=RGYqPBR/VpcBLc8w2RhIcs3a2GH1EopSFsJsqLkkWF4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KY6cAmHZPOSvCyXTT0wVV57Qu8f7reB2rKCS971xpGCmB3ZZL07s6PF7B7Spe8cTYlUPEkoIup9Y4CQaD1bm3xYAxRnv5fK1yoG8OuIfm1ae3jG7o+/zgZJCyxPTG5gQj2SuZ0rEmPRWamZBRlstzR6SIbXYMolcvMbPAu0hn7s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=cKqbKLDX; arc=none smtp.client-ip=209.85.214.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=Tz5KnVDaQXaDLoX9Zaz1Jmtz1kmo4xvxalTwhZ+kvFm1Q5Y9ECCLAK3MoDFw91gGU6gnkMzpY9EDv5HykHChNvbpk1uLxmv0p2NRfPMt3aVPXl8Qg/oP3I9eiagq/l7raUT9PsFtExynxkB+8RtRAVvQ3axCVK9dVMc1Ei7A9zA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Cl5MEWBx; arc=none smtp.client-ip=209.85.222.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="cKqbKLDX"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2bf22c18ad3so715ad.0
-        for <iommu@lists.linux.dev>; Tue, 02 Jun 2026 05:12:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Cl5MEWBx"
+Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-914c12b9458so620866785a.2
+        for <iommu@lists.linux.dev>; Tue, 02 Jun 2026 05:32:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780402344; x=1781007144; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1780403550; x=1781008350; darn=lists.linux.dev;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=l68RUmvnVcTMObrLGNummA84I2vZ1XwcyaM+Znecl0o=;
-        b=cKqbKLDXaSa5T6FER+qhWA5OvdEUEKYOrKB2GiYlxUkj4aNkRx8NCvmGluQ1lvd7EF
-         6ou6EW52nzmR5BGYzhc36HXMzWvHUkzR38PZNpOVLg/Qb3KmtGl7jTuDjXUpPYn9Luzq
-         KeJgJbMoRisfWCpzwiMuAlVTJMVMD/qk8bHrB+96gSPqHnczy5U6+BRawuKw5yEInrNG
-         aBmQvBf930qWz663PaOitBacXvw9QkIeX69ktcre0AelHyi3HE6EPe72gNgiWGj5XpQN
-         666bSFM7ooFuTgNN3E8q4ujwx0a/polhfXdnU+4A2f2/cexMLEHuvQMbtdx0+H6BPaoQ
-         K0dw==
+        bh=c4LbN0qMsJPM0M7wr5pjCmaihB2Av83fU87UeNOOiAM=;
+        b=Cl5MEWBxJBJAAUj/dhq0EsMgGq4tsEKZfIo6oaQWwaznQxX5H12Z61EFDDqlxXLB7x
+         6ttWVVYQq3ori13i7GOV7xCopUk9/vImI3UgZGmt9xdAkj60FSY08WKbhT/WWYy6ZWZ2
+         imGjpthw9CCUZROE/aJ1moJB9V1R1XHOzIG0GlM+4bwyzuJlK4YBIKeoCG8l4pApLrEu
+         9ad0sdw6YVfTvqs8/lpaF/sN3l1WEyN837StxLlTpV74+xX2DCJkSMkgYiLcHAwLUeRp
+         08O/tkHfDfEEGIBO1tfILM4+miCyTH1maa/Cd2wSCAvwjVe6zglqzFJUHOK4iOxeO9Ty
+         JBiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780402344; x=1781007144;
+        d=1e100.net; s=20251104; t=1780403550; x=1781008350;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=l68RUmvnVcTMObrLGNummA84I2vZ1XwcyaM+Znecl0o=;
-        b=D6Ko0vvGGO9/MObXZyLKPSlgWoxD3zj/qUqSYaP5VP5SSq+OUXNfXkFwNW66+AirPC
-         OnqgvISopE1gA5T7P6cp9NEfz7swAeAD5DcRks1fxwMN+wYz/1dkpbywIkvG9FdwvSFg
-         eswgivwVvQpqfXtUee4krkpJ6VeDUdXDhpKSZzIsfDvy4xFSnDPhHRBEehCN1b8tsoYE
-         oJQRGAp81jYRqMhzWFwbGwVz6ukAw9qrAxLuHPAq1yXNX5dB1RPQy5zTtrdGrzDLFJ+Z
-         pUNHfY25ZT8Mwk2c/acTdsKIhkRicbjxl0baPfjnYSB4S773qQfUSmVUj/IUYIeZJT0c
-         WJgw==
-X-Gm-Message-State: AOJu0YzCyzc1K6FmLaDcR08UwXUWXLRT8d7yUTTK/ihEJxfrzGfECwml
-	kYMtKyBl59KvTG3oDcUcy3JNXArfUavyHutuerzzHo6+4QHk+OGjxOD0g+TNQwhFcg==
-X-Gm-Gg: Acq92OHKoxR7do23BX8KxqLYUfmsue9Dtoi5u8oSTuWrMO6wdIfYGILR9XvQsS5oQGy
-	BIkv5PWSVkSb+z+cw7iIz6xUCBqgdB5bOc7etCaOD55dFdQgJ/zE45B5vW4Z95OEDk07g+DiWNN
-	CJO1bE3WwA6M6+b77iw9dpJRRELZec3m1aUwtMZH0BjkFd8yFvdxyC3E/6EZAsUuiAQyvxj4ZaB
-	VIapIiQzDoJILC1/VohiSbGn1yJ63xlqEFMcrB2AkPj1fHfAMmIgEGi1Trfqja3f/pc5wW9kifR
-	JQD7HHUoljHQTzfqCGt4r90+Dbycxa00sv1InCfrwkchYtCLxuIj7w8KVpoF1kTtprwrtaEqE8i
-	jVZ9WfFCaqqPJWikyhDioPCLWC+h7rjWUmS+L5sySRYr0jeWkBQgFLdbMttGKQRpwm9qRmeybXr
-	9YETa3COvHuEL147vuclfEx9e0cfRQme5inDxlD2YUfsaN6jXuCJS4EraGyGNvFdbhHEY60rM=
-X-Received: by 2002:a17:903:249:b0:2b0:aee4:afe7 with SMTP id d9443c01a7336-2c10e85e5dbmr2816395ad.10.1780402343406;
-        Tue, 02 Jun 2026 05:12:23 -0700 (PDT)
-Received: from google.com (199.255.142.34.bc.googleusercontent.com. [34.142.255.199])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8422e712309sm10139561b3a.59.2026.06.02.05.12.20
+        bh=c4LbN0qMsJPM0M7wr5pjCmaihB2Av83fU87UeNOOiAM=;
+        b=YxrS8UAvDKwyjcyjhpppCHtWfoDysZi+EAPDXMcKJh5a7x0ADleAoRx4/7mAtYavvf
+         tX8iiNDiPJuaPDN9BdiHiq14Nseu2He/34dN/W380/eE/vkuRetcGR2yJh+owLdKZjOk
+         FzF+wdr8ksXjB9z4F2wf4wRkBl9YlAMvc2d1REK58b2Sz4SkqmJxuuHs2zCKb2HJERwG
+         2nLgLENM1P7CTQ2r8kqJu4As48LFpj99MMc2vQAgSdSnN4gu3lkm1UPAD6iZCdh9wwdi
+         S4cucg2U0ZvdTVfgTbmyR5L7C6CAk8N5gFBBDbVGPClaiIdp+ksBrpwYkugWg8zaBhOz
+         3odA==
+X-Forwarded-Encrypted: i=1; AFNElJ/YnXWbVrplUPSNFcaIR5EP84Xio20Fh3+6QjYhuyAz2zS1QhFPI972xzEJgVJkaGkwTOKJsg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzZPFt0n9QnXVRXTRbq0MUaiOtKnkNJJ9uMtBaJaTqWRktyLcIk
+	jyrqWbwVpP2nWLmGBkJluP131Ewnzz8be5x+RZShxoCPp9xebDKer4CIFp1F3d5p5Ys=
+X-Gm-Gg: Acq92OEysFpUCCUXfdvN37QLPDQNCNMR/xO4MqadkS7vQUlccpvz25yWOOjUzWgDKjT
+	mFChnH5gyX1wJUEyMV2VgavLejlCEjWhmcFG8Q3zOGpPOFPEttklVRoBJMLvQJC4JvoSxvQrLvB
+	DIyt/w701AoBw6qsDaoBljeZHUJAx7oZ+KOBRJoCYL1kS3fAjbb21M0at/Bkd4VjkeV7gZXOYFT
+	HBw1b00XVwEXPrnIR2cZyF5p8SO1tptg8gVZ0iDzFlORfoIbUWwzb4hXNonSPKuRA9PP3S5H+ps
+	jRiYJXNhZd4hRZQgeMfa2pWrEwLGWPYR6cRdSld6fxAdcyo0bNy4vCRXuG8ceBPJc7UZELHzNPU
+	JSprktLyyDNigh8hutybrerv/ackwUTqsGYtCqxA0lbZ8sYN4Fwt7d82BgqpVU1Ourm6al+a0ye
+	UrmWHGv4NpuKt3Aw+60BlaXGvHVGN32PjuWek+iF5Ql/mg3WqK8eeb5NKkyfmW/09v2RYaeYbct
+	q582Y5FfIxcNKrMRTwnT7Bxx0s=
+X-Received: by 2002:a05:620a:2587:b0:915:5576:df09 with SMTP id af79cd13be357-9155576e1ebmr1554899685a.3.1780403550019;
+        Tue, 02 Jun 2026 05:32:30 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-91532445a83sm1272224185a.10.2026.06.02.05.32.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Jun 2026 05:12:22 -0700 (PDT)
-Date: Tue, 2 Jun 2026 12:12:16 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Daniel Mentz <danielmentz@google.com>
-Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Ashish Mhetre <amhetre@nvidia.com>,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v8 09/12] iommu/arm-smmu-v3: Implement pm_runtime &
- system sleep ops
-Message-ID: <ah7IoJqmRbK7xK5-@google.com>
-References: <20260601215909.3958732-1-praan@google.com>
- <20260601215909.3958732-10-praan@google.com>
- <CAE2F3rAYWMq6DO5k20e4iMtPbh_X9JeiU8kUfw8nsS5xs42F_Q@mail.gmail.com>
+        Tue, 02 Jun 2026 05:32:29 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wUOIG-00000003lvt-3BeT;
+	Tue, 02 Jun 2026 09:32:28 -0300
+Date: Tue, 2 Jun 2026 09:32:28 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "guanghuifeng@linux.alibaba.com" <guanghuifeng@linux.alibaba.com>
+Cc: boris.brezillon@collabora.com, robh@kernel.org, steven.price@arm.com,
+	adrian.larumbe@collabora.com, maarten.lankhorst@linux.intel.com,
+	mripard@kernel.org, tzimmermann@suse.de, airlied@gmail.com,
+	liviu.dudau@arm.com, joro@8bytes.org, will@kernel.org,
+	robin.murphy@arm.com, alex@shazbot.org,
+	dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, kvm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, kevin.tian@intel.com,
+	baolu.lu@linux.intel.com, suravee.suthikulpanit@amd.com,
+	dwmw2@infradead.org, xlpang@linux.alibaba.com,
+	oliver.yang@linux.alibaba.com, shiyu.zsq@linux.alibaba.com,
+	wei.guo.simon@linux.alibaba.com,
+	alikernel-developer <alikernel-developer@linux.alibaba.com>
+Subject: Re: [PATCH 3/9] iommu/generic_pt: implement iova_to_phys_length
+Message-ID: <20260602123228.GF2487554@ziepe.ca>
+References: <20260529115116.GR2487554@ziepe.ca>
+ <20260531093637.3893199-1-guanghuifeng@linux.alibaba.com>
+ <20260531093637.3893199-4-guanghuifeng@linux.alibaba.com>
+ <20260531235421.GW2487554@ziepe.ca>
+ <605cbc0f-dcfb-4edd-8756-1c376c9bb6ef@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -81,34 +95,34 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAE2F3rAYWMq6DO5k20e4iMtPbh_X9JeiU8kUfw8nsS5xs42F_Q@mail.gmail.com>
+In-Reply-To: <605cbc0f-dcfb-4edd-8756-1c376c9bb6ef@linux.alibaba.com>
 
-On Mon, Jun 01, 2026 at 10:25:41PM -0700, Daniel Mentz wrote:
-> On Mon, Jun 1, 2026 at 2:59 PM Pranjal Shrivastava <praan@google.com> wrote:
+On Tue, Jun 02, 2026 at 03:20:05PM +0800, guanghuifeng@linux.alibaba.com wrote:
 > 
-> > +       /* Drain the CMDQs */
-> > +       ret = arm_smmu_drain_queues(smmu);
-> > +       if (ret)
-> > +               dev_warn(smmu->dev, "failed to drain queues, forcing suspend\n");
+> 在 2026/6/1 7:54, Jason Gunthorpe 写道:
+> > On Sun, May 31, 2026 at 05:36:31PM +0800, Guanghui Feng wrote:
+> > > @@ -159,45 +164,51 @@ static __always_inline int __do_iova_to_phys(struct pt_range *range, void *arg,
+> > >   	case PT_ENTRY_TABLE:
+> > >   		return pt_descend(&pts, arg, descend_fn);
+> > >   	case PT_ENTRY_OA:
+> > > -		*res = pt_entry_oa_exact(&pts);
+> > > +		data->phys = pt_entry_oa_exact(&pts);
+> > > +		data->length = BIT(pt_entry_oa_lg2sz(&pts));
+> > BIT is the wrong function, it uses the wrong type. log2_to_int() is
+> > type'd properly
+> > 
+> > This also needs to keep walking and accumulating length for
+> > consecutive PTEs until it reaches a non-contiguity.
+> > 
+> > The other drivers don't need to have that complexity.
+> > 
+> > Jason
 > 
-> Can arm_smmu_drain_queues() be called after cmdq->lock is 0? I think
-> that way we can be sure that no other thread updates smmu->cmdq.q.cons
->
+> pt_entry_oa_lg2sz has already considered continuous PTEs.
+> 
+> Does this mean that multiple PTEs need to be traversed additionally for
+> consecutive PA address mappings?
 
-Hmm.. that wouldn't work for impl-specific CMDQs as we STOP and drain
-them together in a single function.. maybe I'll factor out setting the
-STOP_FLAG on impl-specific queues as another impl_op, gate the queues
-first, wait for lock == 0 and then drain_queues?
+yes
 
-> > +
-> > +       /* Wait for cmdq->lock == 0 to ensure last CMDQ_CONS_REG is written */
-> > +       timeout = ARM_SMMU_SUSPEND_TIMEOUT_US;
-> > +       while (atomic_read(&cmdq->lock) != 0 && --timeout)
-> > +               udelay(1);
-> > +
-> > +       /* Timing out here implies misconfigured Runtime PM or broken devlinks */
-> > +       if (!timeout)
-> > +               dev_err(smmu->dev, "cmdq lock != 0, forcing suspend. Polling CPUs may fault.\n");
-
-Thanks,
-Praan
+Jason
