@@ -1,154 +1,88 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 836D53793CB;
-	Tue,  2 Jun 2026 16:52:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AF2803CB8FD
+	for <iommu@lists.linux.dev>; Tue,  2 Jun 2026 17:22:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780419161; cv=none; b=Gp5wNLW4bNvk3WY9cvKkxP2DFBdXvqj36VThM7mWMW7sIcvumfUhLGjUZLIH8K1555yVdiDk6QhCkJU1JpIKMDwVVYQ+ZVp/KS5VkVfp/DLdJc49oUe2jemb6G+4BwBRwnzI93TQw9ZLguW07pxkO8Qtx7ut2dfXRwETSAErJh0=
+	t=1780420969; cv=none; b=QY5Ry66Gif8H4t1bB+EDRRJXd7QYAhhR3WdEDE/c6Xg7MXvbNQcNIFCmlqX53h1kerfeT66X2I6ZTwKVS4sTKq4oFwv04KjCnLfsrsjpFacQbaNWJbwDRyfk5wsIA+bOglAh4TGbp2znzBTHs5VCGJHjlLCBrnPmkIwXLFK5wEM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780419161; c=relaxed/simple;
-	bh=MZg5xlfaZe2c3NW/NL+KbbyfpaQGrJTutc1FRzMdNvc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nvyWfZqYPJmy6Z29TIyJeUijVwAJ51XAn6JZm8MzShQyALMUDZmgyS2pv/XHpzSP/4FnHGuxRwd8QjpYM1KbTQjj66ttrjIDyUUEk3UYgDeb1J6D3ftZkthiKMQFppip6VQfacY+neviSB7565e9NqxZih7/OhuLR/EkdmQMPtA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b2bkUhD5; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780420969; c=relaxed/simple;
+	bh=WYsb+5RGJ1mOR0vVEDLBdXvK68a9UzTXUy3uk/nYveY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Z+vC3Sl+nkpmU49T+SuCTlKzB2UzFLfOHkagzy/jEnMPL87Mxkw0KZJKcsbgWZCKEB5YiHAdEvKDoBDmCB5R7DnUPBK647xMhoNY3mZ1h6TpHzSabliC2oTfhFnPGMM1rBgi6qurfS5DCLhrCr7BgC2ZRzXhDDsYiFXfcY+ItPE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=NjFyXtjK; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b2bkUhD5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E4241F00893;
-	Tue,  2 Jun 2026 16:52:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780419160;
-	bh=lXQ0xBb2uV/cy6GFqv10Fq7wGDS1tDJr6eDAK2jyzL4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=b2bkUhD5eK60ZTOk8HI5lyFLhMPfIIm3aya54sr+Vtt1KLB/kPR/4jcduOIF1XZy0
-	 SlSM+6BXD5rKxtF6X9vaEgeP5/+Z/kHQkbLiudZReASwmjfea7WmvYAWMOZEik6/ag
-	 cM/vEvteIO0XGSlBZtP9TJ2vOhpgXcnUD5MMSot4BJXqAsUEI3NjDBYWUFcHmhrZ69
-	 qOzesm3kkkqkUtI1hqniZzXubpaWxxKrpbRLdLq3XfZCGCDG7qnzUYfAG7IrPvOKP5
-	 cqjP3nZlhCerzW1/zgOXR//V9mFYfnsT/kqT6FUbhNWuazO519intywX7puuZ0N/I7
-	 9m5U4MS+BxOHQ==
-Date: Tue, 2 Jun 2026 09:52:40 -0700
-From: Kees Cook <kees@kernel.org>
-To: Rosen Penev <rosenp@gmail.com>
-Cc: iommu@lists.linux.dev, Barry Song <baohua@kernel.org>,
-	linusw@kernel.org, Qinxin Xia <xiaqinxin@huawei.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
-	open list <linux-kernel@vger.kernel.org>,
-	"open list:KERNEL HARDENING (not covered by other areas):Keyword:b__counted_by(_le|_be|_ptr)?b" <linux-hardening@vger.kernel.org>
-Subject: Re: [PATCH] dma: map_benchmark: turn dma_sg_map_param buf into a
- flexible array
-Message-ID: <202606020951.6AD1467B@keescook>
-References: <20260525220628.94833-1-rosenp@gmail.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="NjFyXtjK"
+Received: from [192.168.0.88] (192-184-212-33.fiber.dynamic.sonic.net [192.184.212.33])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 4F2E020B7167;
+	Tue,  2 Jun 2026 10:22:32 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 4F2E020B7167
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1780420952;
+	bh=n8/+t25C8pj1Mz13m+ub0BOWl8DxDz1B2Z46LebxbW0=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=NjFyXtjKl7qQJRvyAhZ9wL8YFD9IXBU21iT4LpUmsC9F/wfzuuxIE2ixP2asOPdqm
+	 Xy0KE1oTTX8Ye4fmnzWeT06tULpBiNiyM6Jyr/XpiJ8THPHgTqCK209p5R9m77hCGY
+	 k2hcQctjG5KTRW2vpWBexGK6ir4zJB+fD+kVsKGA=
+Message-ID: <995ae142-d580-e3c3-70c6-d23e9b0763c2@linux.microsoft.com>
+Date: Tue, 2 Jun 2026 10:22:45 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260525220628.94833-1-rosenp@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.1
+Subject: Re: [PATCH V1] iommu/hyperv: Create hyperv subdirectory under
+ drivers/iommu
+Content-Language: en-US
+To: Jacob Pan <jacob.pan@linux.microsoft.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ mhklinux@outlook.com, wei.liu@kernel.org, zhangyu1@linux.microsoft.com,
+ schakrabarti@linux.microsoft.com
+References: <20260529014148.297154-1-mrathor@linux.microsoft.com>
+ <20260601090735.00005f55@linux.microsoft.com>
+ <99bc22c3-0fa9-044d-071c-53cc8c2b7548@linux.microsoft.com>
+ <20260601214514.00003833@linux.microsoft.com>
+From: Mukesh R <mrathor@linux.microsoft.com>
+In-Reply-To: <20260601214514.00003833@linux.microsoft.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, May 25, 2026 at 03:06:28PM -0700, Rosen Penev wrote:
-> The buf pointer was kmalloc_array()'d immediately after the parent
-> struct allocation, with the count (granule, validated to 1..1024 by
-> the ioctl) trivially available beforehand.  Move buf to the struct
-> tail as a flexible array member and fold the two allocations into a
-> single kzalloc_flex(), dropping the kfree(params->buf) in both the
-> prepare error path and unprepare.
+On 6/1/26 21:45, Jacob Pan wrote:
+> Hi Mukesh,
 > 
-> Add __counted_by for extra runtime analysis.
+> On Mon, 1 Jun 2026 14:23:18 -0700
+> Mukesh R <mrathor@linux.microsoft.com> wrote:
 > 
-> Assisted-by: Claude:Opus-4.7
-> Signed-off-by: Rosen Penev <rosenp@gmail.com>
-> ---
->  kernel/dma/map_benchmark.c | 29 +++++++++++++----------------
->  1 file changed, 13 insertions(+), 16 deletions(-)
+>>>> diff --git a/drivers/iommu/hyperv/Makefile
+>>>> b/drivers/iommu/hyperv/Makefile new file mode 100644
+>>>> index 000000000000..0053e00e08e6
+>>>> --- /dev/null
+>>>> +++ b/drivers/iommu/hyperv/Makefile
+>>>> @@ -0,0 +1,2 @@
+>>>> +# SPDX-License-Identifier: GPL-2.0
+>>>> +obj-$(CONFIG_IRQ_REMAP) += hv-irq-remap.o
+>>> Should the name be x86 specific? This file will never be built for
+>>> ARM because:
+>>>    CONFIG_IRQ_REMAP depends on:
+>>>    depends on X86_64 && X86_IO_APIC && PCI_MSI && ACPI
+>>>
+>>> perhaps, hv-x86-irq-remap.c? hv-irq-remap.c sounds like a
+>>> generic Hyper-V IRQ-remapping backend and may be misleading once
+>>> arm64 Hyper-V IOMMU/interrupt support grows under this directory.
+>>
+>> we could, but looking at early version of hyperv-iommu-arm.c, it looks
+>> very similar, and so if there are very few ifdefs, we could just
+>> keep one file rather than replicating bunch of code.
 > 
-> diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
-> index 29eeb5fdf199..a65da5c7710c 100644
-> --- a/kernel/dma/map_benchmark.c
-> +++ b/kernel/dma/map_benchmark.c
-> @@ -121,35 +121,35 @@ static struct map_benchmark_ops dma_single_map_benchmark_ops = {
->  struct dma_sg_map_param {
->  	struct sg_table sgt;
->  	struct device *dev;
-> -	void **buf;
->  	u32 npages;
->  	u32 dma_dir;
-> +	void *buf[] __counted_by(npages);
->  };
->  
->  static void *dma_sg_map_benchmark_prepare(struct map_benchmark_data *map)
->  {
-> +	struct dma_sg_map_param *params;
->  	struct scatterlist *sg;
-> +	u32 npages;
->  	int i;
->  
-> -	struct dma_sg_map_param *params = kzalloc(sizeof(*params), GFP_KERNEL);
-> -
-> -	if (!params)
-> -		return NULL;
->  	/*
->  	 * Set the number of scatterlist entries based on the granule.
->  	 * In SG mode, 'granule' represents the number of scatterlist entries.
->  	 * Each scatterlist entry corresponds to a single page.
->  	 */
-> -	params->npages = map->bparam.granule;
-> +	npages = map->bparam.granule;
-> +
-> +	params = kzalloc_flex(*params, buf, npages);
-> +	if (!params)
-> +		return NULL;
-> +
-> +	params->npages = npages;
->  	params->dma_dir = map->bparam.dma_dir;
->  	params->dev = map->dev;
-> -	params->buf = kmalloc_array(params->npages, sizeof(*params->buf),
-> -				    GFP_KERNEL);
-> -	if (!params->buf)
-> -		goto out;
->  
-> -	if (sg_alloc_table(&params->sgt, params->npages, GFP_KERNEL))
-> -		goto free_buf;
-> +	if (sg_alloc_table(&params->sgt, npages, GFP_KERNEL))
+> With this patch as is, how could you keep one file for both ARM and X86
+> where hv-irq-remap.c does not build on ARM?
 
-nit: I think it's better to use the params->npages here just because it
-is obviously tied to params->sgt, and reduces code churn for this patch
-(i.e. that line would be left alone).
+By removing the x86 restriction from kconfig once arm changes are merged
+in and tested by arm folks. So, arm folks do their changes, test on arm,
+and if very small delta, just change this file and remove x86 restriction.
 
-Otherwise looks good.
 
--Kees
-
-> +		goto free_params;
->  
->  	for_each_sgtable_sg(&params->sgt, sg, i) {
->  		params->buf[i] = (void *)__get_free_page(GFP_KERNEL);
-> @@ -166,9 +166,7 @@ static void *dma_sg_map_benchmark_prepare(struct map_benchmark_data *map)
->  		free_page((unsigned long)params->buf[i]);
->  
->  	sg_free_table(&params->sgt);
-> -free_buf:
-> -	kfree(params->buf);
-> -out:
-> +free_params:
->  	kfree(params);
->  	return NULL;
->  }
-> @@ -183,7 +181,6 @@ static void dma_sg_map_benchmark_unprepare(void *mparam)
->  
->  	sg_free_table(&params->sgt);
->  
-> -	kfree(params->buf);
->  	kfree(params);
->  }
->  
-> -- 
-> 2.54.0
-> 
-
--- 
-Kees Cook
