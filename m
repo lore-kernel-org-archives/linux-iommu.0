@@ -1,98 +1,127 @@
-Received: from outbound.baidu.com (mx22.baidu.com [220.181.50.185])
-	by smtp.subspace.kernel.org (Postfix) with SMTP id 111343A6F00
-	for <iommu@lists.linux.dev>; Tue,  2 Jun 2026 06:13:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.181.50.185
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29BC12E7F39
+	for <iommu@lists.linux.dev>; Tue,  2 Jun 2026 06:21:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780380790; cv=none; b=TKk4mg8UnbBgxS80YzWZFrkOK3+C0CQSxzSUI7oj6Dr2DSxXW5nGg+Y7ia63TC0jabE2muNjvmQpJqgXcwk0suJTAc/+D2c7d9PBei39g94OLQZyfMAFEi9mBnpvJj88ZHN4f6m3NZnp0N/JTbAlhitQ9I3cmY5S8Xvo+GpbuI8=
+	t=1780381315; cv=none; b=Nx/joFpAQTZaY3hNiXQXIOCFRexoN1UDHfNI/ZzIhLyW8frUm5vjqrkrogrdtkIp5naYhlf7L3h0AD0XyvwWOIdw9SGpMAf2cWzt3Ue2grEYW2RpdNeGseWvsudwOT7rkVPhI/Q3FOrbf7A9n+5B2DDEZCPSI6CuCYzEPaWAElg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780380790; c=relaxed/simple;
-	bh=j8XkaFnC+tR0rsFSAgivf5+ys/9MUe+F5qo2sbZJ60Q=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=pSjyi2ap3k+XeTdUtAzcIJ+lrZSzvjOIvSM7lhUYB1suQtm0hoVuj6VqkTOKyaN12EifkMBtXE1M6wMOgzV/Fv/LqKFQ8+WTZS/AJsu4xA2K5PL0yyAn2qwJ8yZ/ILwQYSDx8NcCp4hVJVAa3ZeG+UrWUAquLRtiaSrGcT5W+0Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com; spf=pass smtp.mailfrom=baidu.com; dkim=pass (2048-bit key) header.d=baidu.com header.i=@baidu.com header.b=XNA7Rzt5; arc=none smtp.client-ip=220.181.50.185
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baidu.com
+	s=arc-20240116; t=1780381315; c=relaxed/simple;
+	bh=nFwdP6FG3H9vidU3eJpv2t5nglumplndU/PxXifeTSY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CTqda7DWVTB9+ZSmfnPMmRDWpoa+kLnUdfQMa8C6ZuG1LU/g6ADwPXQNF0jaj40QZeo9zeXnbp9bURXmRIOIgcJSvJaDIkmDMzs9ENi/VMFDuGXNm/1O3iCNUkb/SaGIs6szGWegON2mdDmnAjsUKmSk5N0hSu0cHqtZWZeSE6A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=KAIlr88g; arc=none smtp.client-ip=209.85.214.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baidu.com header.i=@baidu.com header.b="XNA7Rzt5"
-X-MD-Sfrom: lirongqing@baidu.com
-X-MD-SrcIP: 172.31.3.12
-From: "Li,Rongqing" <lirongqing@baidu.com>
-To: Logan Gunthorpe <logang@deltatee.com>, Robin Murphy
-	<robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
-	<will@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>, Luis Chamberlain
-	<mcgrof@kernel.org>, Leon Romanovsky <leon@kernel.org>, Bjorn Helgaas
-	<bhelgaas@google.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC: "hch@lst.de" <hch@lst.de>
-Subject: =?utf-8?B?562U5aSNOiBb5aSW6YOo6YKu5Lu2XSBSZTogW1BBVENIXSBpb21tdS9kbWEt?=
- =?utf-8?B?aW9tbXU6IEZpeCB3cm9uZyBzY2F0dGVybGlzdCBsZW5ndGggYXNzaWdubWVu?=
- =?utf-8?Q?t_in_P2PDMA_path?=
-Thread-Topic: =?utf-8?B?W+WklumDqOmCruS7tl0gUmU6IFtQQVRDSF0gaW9tbXUvZG1hLWlvbW11OiBG?=
- =?utf-8?B?aXggd3Jvbmcgc2NhdHRlcmxpc3QgbGVuZ3RoIGFzc2lnbm1lbnQgaW4gUDJQ?=
- =?utf-8?Q?DMA_path?=
-Thread-Index: AQHc8CeCWq5soguHakyPgVn1i3dxJrYpWbGAgAFzGHA=
-Date: Tue, 2 Jun 2026 06:12:50 +0000
-Message-ID: <5e2f30a4121e4672ab309460630d011b@baidu.com>
-References: <20260530112852.2321-1-lirongqing@baidu.com>
- <c666e384-b365-4891-a01d-736948b995bc@deltatee.com>
-In-Reply-To: <c666e384-b365-4891-a01d-736948b995bc@deltatee.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="KAIlr88g"
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2bf2911f93cso1255ad.1
+        for <iommu@lists.linux.dev>; Mon, 01 Jun 2026 23:21:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1780381313; x=1780986113; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=sYd3amg0E6+q9+HAfqzMshV6/sBvgCSxshzNIgfKNSA=;
+        b=KAIlr88gg8Hu3Re9fzMDL5fa6oRQNIkUtxOk813GHuNY9jIMprxf9QcwLpm1m0ziVz
+         F7UBwEh5pYmCOMrWgpfayqNuue7RZOFndXalqYExAB/vgfCMkbXgubJMUyUJR3/FJI7y
+         iDPl6DOcTbu8RHR1b5BcVJiKjODVgQgn3F8kS+nJuf0lFj1ngMFwBkWt7rG8hXJqyCSi
+         oube6QBMJUXGJeknUVw/Kq1pUGj7C2OC7JhohY85Pn1kmV93BRqj9YDGP3bw8qfGCkSP
+         ZiaAaDpRes+z2xLipFSWz5ShBKO2t9i3ThBNWym3JBqUajtqzqOBrEky+2ngEsOfP2MD
+         Mq5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780381313; x=1780986113;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=sYd3amg0E6+q9+HAfqzMshV6/sBvgCSxshzNIgfKNSA=;
+        b=c8uyJ01NOnsXztzJbhwkeNsHH7h7iHsvsI0qITeaXBQ2aACq72mNUyGqUq0duVgiZI
+         9kRBoRKaU3BaWDfpCIK0Krjsb0tshgdAhIu930WaxXwdRKIUoCq1j6ZEo2bMHumUEcsX
+         Z69DeQkxeoCDcTaA007oT/FYYDIm5EI8JhADyDBZ6WQ0cORhHZrWLXHFqrlwIYud/38p
+         KthpVLS6BQURtEiR95zQgnDvzg3dnF9e3dKN+scA66NToLNUO8leXSVNH3Wlzkx5LHv5
+         O18m/Sf+AAEujhb9sbxBFizdpnUTcuh+9ItjtN7SRmmRQT/8i6CXXEXem4bvA51E699J
+         O8wA==
+X-Gm-Message-State: AOJu0Yx2MQjaIjl/UVQIEfOdVEywqTMLVTVkD0pxOyazmZTMtXK6ZUxX
+	bjGvk0r6J60uSmfThdMtQFBeMnqXBM3Vw8hyuH2ugiTRGGRRM9AHQBCvGXf8j9zlPg==
+X-Gm-Gg: Acq92OFfF859a6+vbdz0Sr5s4ISUHepeSICf6wCLqS3oWSbTsNI2edn/4TFMj00Y+os
+	MrYMfmKJo9eXN8VMKyZO/+5gdxbnxuKUh883Rr0vnfcsqWKpv+1dJHuvxP8ByRinILYCINspoeu
+	LiRn2tGkQEEjYZssL4esl8hhViQQcP0iE7GmpT+rOn/HJm5Fs9DuBhyoCvtIwZUJukFcZjWniSN
+	xoXz84oPNQr6F1zJ9DrXEF45Mdl9/OhYORygLrGpb+EtggUOL+2OTy+K/ehlDB+cWFnvbOrwDg6
+	cb4Qo5KecwbsV44ff1tNisGvNoZ8YN0MtsAz3RUZCMu1PT238Yz8wmP9PmHODitbQcZsXuNJ6A6
+	AEdfhP4swN9hQzAheGRL7V7TiK1ynqN509hvqeAIA28oRM65SkKm7Gzyi0r9dhB0n7HeEXpisq9
+	0vf9hBPxmJpsCUrHAoWAmrGQkVAz+dcCKjqv+iF+NdFeoO4yIe8hQSxgcZnKFxfxgEU2E+y3yLQ
+	p6sxOl84Q==
+X-Received: by 2002:a17:903:3846:b0:2bf:3741:5b76 with SMTP id d9443c01a7336-2c1129aa450mr1509075ad.3.1780381312701;
+        Mon, 01 Jun 2026 23:21:52 -0700 (PDT)
+Received: from google.com (199.255.142.34.bc.googleusercontent.com. [34.142.255.199])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-842498819e3sm6575263b3a.34.2026.06.01.23.21.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Jun 2026 23:21:51 -0700 (PDT)
+Date: Tue, 2 Jun 2026 06:21:45 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>,
+	Daniel Mentz <danielmentz@google.com>,
+	Ashish Mhetre <amhetre@nvidia.com>,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v8 08/12] iommu/tegra241-cmdqv: Add a helper to quiesce
+ VCMDQs
+Message-ID: <ah52eZh0DJ8LFL0x@google.com>
+References: <20260601215909.3958732-1-praan@google.com>
+ <20260601215909.3958732-9-praan@google.com>
+ <ah4gYCgSO1bBOUTj@Asurada-Nvidia>
+ <ah5QB0Hfpi9wZMLY@google.com>
+ <ah5xRRn0IjdWiF8F@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=baidu.com;
-	s=selector1; t=1780380775;
-	bh=j8XkaFnC+tR0rsFSAgivf5+ys/9MUe+F5qo2sbZJ60Q=;
-	h=From:To:CC:Subject:Date:Message-ID:Content-Type;
-	b=XNA7Rzt5TvJlax3CL9sePA96jgTnVt6ShxjXDFGVqDqyuybcZHYmHdb8lM4SPT1g2
-	 WS18TFOipt8B6RdqiHdAy3OdEnVE2mmmQsq1XGflDS6Ry45RXIZjuv/imMSPqO5NvI
-	 KE1UALkch6izzM6p9YJS7BIS8NWarDQi0Gvw0nsVzhQFJBPVsHDwyTaW1lITLKOLwW
-	 OLIllHBAOlZhMPWA7ymD94Y671RHMgF9JrQqgaCZgJ79/0TZiZfJ7FzLiLnOv9aw/H
-	 KuG0Q2UKs+AhacaRH9SGh7jS+X/hmO+hlX7XuLeXYj1IuHAV3xllc/VdBMwmu3l/39
-	 Ob9kOsFNBMtWQ==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ah5xRRn0IjdWiF8F@Asurada-Nvidia>
 
-DQo+IE9uIDIwMjYtMDUtMzAgMDU6MjgsIGxpcm9uZ3Fpbmcgd3JvdGU6DQo+ID4gRnJvbTogTGkg
-Um9uZ1FpbmcgPGxpcm9uZ3FpbmdAYmFpZHUuY29tPg0KPiA+DQo+ID4gSW4gaW9tbXVfZG1hX21h
-cF9zZygpLCB3aGVuIGhhbmRsaW5nIFBDSSBQMlBETUEgY2FzZXMsIHRoZSBETUENCj4gbGVuZ3Ro
-DQo+ID4gb2YgdGhlIGN1cnJlbnQgc2NhdHRlcmxpc3Qgc2VnbWVudCBgc2AgaXMgaW5jb3JyZWN0
-bHkgYXNzaWduZWQgZnJvbQ0KPiA+IHRoZSBoZWFkIGVudHJ5IGBzZy0+bGVuZ3RoYCBpbnN0ZWFk
-IG9mIHRoZSBjdXJyZW50IGVudHJ5IGBzLT5sZW5ndGhgLg0KPiA+DQo+ID4gVGhpcyB0eXBvIGNh
-dXNlcyBhbGwgUDJQRE1BIHNlZ21lbnRzIGluIHRoZSBzY2F0dGVybGlzdCB0byBpbmhlcml0IHRo
-ZQ0KPiA+IGxlbmd0aCBvZiB0aGUgZmlyc3Qgc2VnbWVudCwgbGVhZGluZyB0byBjb3JydXB0ZWQg
-RE1BIGxlbmd0aHMgZm9yDQo+ID4gbXVsdGktIHNlZ21lbnQgc2NhdHRlcmxpc3RzLg0KPiA+DQo+
-ID4gRml4IHRoaXMgYnkgdXNpbmcgYHMtPmxlbmd0aGAgaW5zdGVhZCBvZiBgc2ctPmxlbmd0aGAu
-DQo+ID4NCj4gPiBGaXhlczogYTI1ZTc5NjJkYiAoIlBDSS9QMlBETUE6IFJlZmFjdG9yIHRoZSBw
-MnBkbWEgbWFwcGluZyBoZWxwZXJzIikNCj4gPiBTaWduZWQtb2ZmLWJ5OiBMaSBSb25nUWluZyA8
-bGlyb25ncWluZ0BiYWlkdS5jb20+DQo+IA0KPiBIbW0sIEkgdGhvdWdodCBJIGhhZCB0ZXN0ZWQg
-dGhpcyBzdHVmZiBwcmV0dHkgdGhvcm91Z2hseSBzbyBJJ20gc3VycHJpc2VkIEkNCj4gbWlzc2Vk
-IHRoYXQuIEJ1dCBJIGd1ZXNzIHNlZWluZyB0aGUgdXNlcnMgb2YgdGhlc2Ugc3BlY2lmaWNhbGx5
-IGRvbid0IGFsbG93DQo+IG1peGluZyB3aXRoIGFub255bW91cyBtZW1vcnkgdGhlIHZhc3QgbWFq
-b3JpdHkgb2YgdGVzdHMgd291bGQgb25seSBoYXZlDQo+IG9uZSBzZWdtZW50Lg0KPiANCj4gQ2Fu
-IHlvdSBjb25maXJtIHRoYXQgeW91J3ZlIHJlcHJvZHVjZWQgYW5kIHRlc3RlZCB0aGlzIGFuZCBp
-dCBhY3R1YWxseSBmaXhlcyBhDQo+IGJ1Zz8gTm90IGp1c3Qgc2VlaW5nIHNvbWV0aGluZyB0aGF0
-IGxvb2tzIHN0cmFuZ2UuIEkgaGF2ZSBhIHZhZ3VlIGZlZWxpbmcgaXQNCj4gd2FzIGludGVudGlv
-bmFsIGJ1dCBsb29raW5nIGF0IHRoZSBjb2RlIGl0IGxvb2tzIHdyb25nIHRvIG1lIHRvby4NCj4g
-DQo+IFRoYW5rcywNCj4gDQpDYzogQ2hyaXN0b3BoIEhlbGx3aWcNCg0KVGhhbmtzIGZvciB5b3Vy
-IGZlZWRiYWNrIQ0KDQpUaGlzIHdhcyBmb3VuZCB2aWEgY29kZSBpbnNwZWN0aW9uLiBZb3UgYXJl
-IHJpZ2h0IHRoYXQgaWYgbmVudHMgPT0gMSwgb3IgaWYgbmVudHMgPiAxIGJ1dCBhbGwgc2VnbWVu
-dHMgaGFwcGVuIHRvIGhhdmUgdGhlIGV4YWN0IHNhbWUgbGVuZ3RoLCB0aGlzIHR5cG8gcmVtYWlu
-cyBiZW5pZ24gYnkgcHVyZSBjb2luY2lkZW5jZS4NCg0KSG93ZXZlciwgZm9yIGEgbXVsdGktc2Vn
-bWVudCBzY2F0dGVybGlzdCB3aXRoIHZhcnlpbmcgbGVuZ3RocyAoZS5nLiwgYSBzaG9ydCAyS0Ig
-aGVhZCBzZWdtZW50IGZvbGxvd2VkIGJ5IHN0YW5kYXJkIDRLQiBzZWdtZW50cyksIHNnX2RtYV9s
-ZW4ocykgd2lsbCBtaXN0YWtlbmx5IGFzc2lnbiB0aGUgMktCIGhlYWQgbGVuZ3RoIHRvIGFsbCBz
-dWJzZXF1ZW50IDRLQiBzZWdtZW50cy4gVGhpcyB3aWxsIGluZXZpdGFibHkgbGVhZCB0byBzaWxl
-bnQgZGF0YSB0cnVuY2F0aW9uIG9yIElPTU1VIHBhZ2UgZmF1bHRzLg0KDQpTaW5jZSBzZ19waHlz
-KHMpIGNvcnJlY3RseSB0YWtlcyB0aGUgY3VycmVudCBzZWdtZW50J3MgYWRkcmVzcywgc2dfZG1h
-X2xlbihzKSBzaG91bGQgZGVmaW5pdGVseSB1c2Ugcy0+bGVuZ3RoIHRvIG1hdGNoIGl0Lg0KDQpJ
-IGRvbid0IGhhdmUgYSBzcGVjaWZpYyBQMlBETUEgdGVzdCByaWcgdG8gZm9yY2UgbXVsdGktc2Vn
-bWVudCBsaXN0cyBvbiBoYW5kIHJpZ2h0IG5vdywgYnV0IHRoZSB0eXBvIGFuZCBpdHMgaW1wYWN0
-IG9uIHZhcmllZCBzZWdtZW50IGxlbmd0aHMgc2VlbSBkZXRlcm1pbmlzdGljLg0KDQpUaGFua3MN
-Cg0KW0xpLFJvbmdxaW5nXSANCg0KPiBMb2dhbg0KDQo=
+On Mon, Jun 01, 2026 at 10:59:33PM -0700, Nicolin Chen wrote:
+> On Tue, Jun 02, 2026 at 03:37:43AM +0000, Pranjal Shrivastava wrote:
+> > On Mon, Jun 01, 2026 at 05:14:24PM -0700, Nicolin Chen wrote:
+> > > On Mon, Jun 01, 2026 at 09:59:05PM +0000, Pranjal Shrivastava wrote:
+> > > > @@ -887,7 +887,7 @@ struct arm_smmu_impl_ops {
+> > > >  	size_t (*get_viommu_size)(enum iommu_viommu_type viommu_type);
+> > > >  	int (*vsmmu_init)(struct arm_vsmmu *vsmmu,
+> > > >  			  const struct iommu_user_data *user_data);
+> > > > -	int (*drain_queues)(struct arm_smmu_device *smmu);
+> > > > +	int (*quiesce_and_drain_queues)(struct arm_smmu_device *smmu);
+> > > 
+> > > Hmm? What's the point in PATCH-3 adding drain_queues then?
+> > 
+> > Well, you suggested in the previous version that STOP_FLAG needs to be
+> > set for the secondary CMDQs too
+> > 
+> > All we're doing here is renaming this function as it also sets the
+> > STOP_FLAG on impl-specific CMDQs now. We can still call it drain_queues
+> > if you prefer not renaming this.
+> > 
+> > On the other hand, we can add a dedicated queisce_queues() op too that's
+> > called before draining queues. I found that to be unnecessary as I'd rather
+> > have one impl-specific op handle everything for impl-specific queues.
+> 
+> The renaming is very confusing... I'd leave it as drain_queues.
+
+Ack.
+
+> 
+> Arguably,
+> 	atomic_or(CMDQ_PROD_STOP_FLAG, &vcmdq->cmdq.q.llq.atomic.prod);
+> could be even stuffed into tegra241_cmdqv_drain_vintf0_lvcmdqs(),
+> where there is a for loop already.
+
+That would be slow IMO, because we'd set the the STOP_FLAG on ONE queue,
+then wait for it to drain and repeat this pattern for all vCMDQs.
+Ideally, we should set the STOP_FLAG on all vCMDQs first and then wait
+for them to drain.
+
+Thanks,
+Praan
