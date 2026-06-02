@@ -1,30 +1,30 @@
-Received: from out30-98.freemail.mail.aliyun.com (out30-98.freemail.mail.aliyun.com [115.124.30.98])
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E7343D9DA6
-	for <iommu@lists.linux.dev>; Tue,  2 Jun 2026 10:47:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.98
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 517183F164C
+	for <iommu@lists.linux.dev>; Tue,  2 Jun 2026 10:47:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780397241; cv=none; b=A7Tcry2IEBKc71ZEsNVQ5NjJZ+d/KCmIKtTJ92KTn2EJSTkf39foRLDL7NA7CC2YObaA3Gx39UZrO84gddTVk/w6Mu8fSKuPLz0LoTqRa21vheuzBzoDB7Bj5IBxtB2J+/U80chXoSlljB617PmqNlz7St2/tJu4ICA2Whh0DqU=
+	t=1780397243; cv=none; b=EbzdQVB04w7XroTrPuG5KgPd5WMumxEd/YqE2jGKpD8F3WymqicZE2wsguj5FC1Z9ivmthDP6PZ9kwqE0P/I/NVvBDbTF/CUTaNOaKDhm/7uHWZemVaMf8OZCMK3Cfe9L358fNG0yT7BDgWEyfrRH9HT+29wo4fXgczB6vtdksg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780397241; c=relaxed/simple;
-	bh=lI3x7qiBpStf7+riMLkavf19/hS8Q6Sn6QyC7laDlJM=;
+	s=arc-20240116; t=1780397243; c=relaxed/simple;
+	bh=SgGT2XtlwIW25fqqcH2sbNLX2j3WfGy10H1kAkmPCi0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=idFdPeTqMEzq1sv7IjcBj/vsV8UHO1+x8yg0C3P84xHsWbmLNAWEjiqo4nFhs2JCcHjoqt1ml4NN/GPsJz6LM2q5gJRVfSV/xCDjSXsUkESBC0KFMURI1I3wWiWAo0/fA77o6r0pTIEQdja27DFtxNer4xzyEUchSBtTsOv+EDU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=cARLhbUE; arc=none smtp.client-ip=115.124.30.98
+	 MIME-Version; b=a31B7j4EMphLFKrJ/Qw4W4tP6T4B3OWgAdOfqmupsFHRMWwhzeM2aotYxFPPuoGKRei8eMdVwdpkOtW2OAkqPro0y4KGB7/Flmkti5ZBYyZ36D2hfyAEi9PUyk5EZPVisqlOy1J17XxG/V3zVJq+jOqJcjebmNcq30/7TWmdpA8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=fO1ZEZB6; arc=none smtp.client-ip=115.124.30.133
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="cARLhbUE"
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="fO1ZEZB6"
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
-	t=1780397236; h=From:To:Subject:Date:Message-ID:MIME-Version;
-	bh=FtoAZ4ObIrgN8RB/Z4MrgWEyJCArPPBpz4yofnEwwtU=;
-	b=cARLhbUEDHW8HzSoTo1RpHxukxpFCaDCXs1HO1YjokxCMmyEhvzEnR2ZWLWlhmxImtI+5v/qFtLHK6RZrFmgfuRsCLPWo55eLEE1tZ73n7lvHoZ+NmUHDxKs7SErZrMZgUrM2iS0VV0Q8c8bELD7KNr870s/kyL2ZxIfwl0hNKk=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045133197;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=28;SR=0;TI=SMTPD_---0X44E98Q_1780397231;
-Received: from VM20241011-104.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0X44E98Q_1780397231 cluster:ay36)
+	t=1780397239; h=From:To:Subject:Date:Message-ID:MIME-Version;
+	bh=NV6kghCBJQvJsA0TcHTO4AYvesR8GtGwk13ibtGQHRk=;
+	b=fO1ZEZB6hnVh9dOsSAtsTnyLpek8BRd/odhWWySBc5zv/rnK8wYc/HWgooGx/psCK0C7zTcdVfCiHmq/KF20sJKEDrh8m79FqhhW1eVOGrlcuosQn4nWYdx4ZQq0AsAJR6F3EE6NPw0mtVimCw9obJB7yYPUBhuj0gNzApVWSH4=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045098064;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=28;SR=0;TI=SMTPD_---0X44E99j_1780397235;
+Received: from VM20241011-104.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0X44E99j_1780397235 cluster:ay36)
           by smtp.aliyun-inc.com;
-          Tue, 02 Jun 2026 18:47:12 +0800
+          Tue, 02 Jun 2026 18:47:16 +0800
 From: Guanghui Feng <guanghuifeng@linux.alibaba.com>
 To: adrian.larumbe@collabora.com,
 	airlied@gmail.com,
@@ -54,9 +54,9 @@ To: adrian.larumbe@collabora.com,
 	will@kernel.org,
 	xlpang@linux.alibaba.com
 Cc: alikernel-developer@linux.alibaba.com
-Subject: [PATCH v2 24/30] drm/panfrost: switch to iova_to_phys_length
-Date: Tue,  2 Jun 2026 18:46:31 +0800
-Message-ID: <20260602104637.1219810-25-guanghuifeng@linux.alibaba.com>
+Subject: [PATCH v2 28/30] iommu/io-pgtable-arm-v7s: remove deprecated iova_to_phys wrapper
+Date: Tue,  2 Jun 2026 18:46:35 +0800
+Message-ID: <20260602104637.1219810-29-guanghuifeng@linux.alibaba.com>
 X-Mailer: git-send-email 2.43.7
 In-Reply-To: <20260602104637.1219810-1-guanghuifeng@linux.alibaba.com>
 References: <20260531093637.3893199-1-guanghuifeng@linux.alibaba.com>
@@ -69,27 +69,45 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Migrate panfrost_mmu to use ops->iova_to_phys_length(ops, iova, NULL)
-instead of the deprecated ops->iova_to_phys.
+Remove the iova_to_phys wrapper function and .iova_to_phys assignment
+from ARM v7s io-pgtable, as all callers now use iova_to_phys_length.
 
 Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
 ---
- drivers/gpu/drm/panfrost/panfrost_mmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/io-pgtable-arm-v7s.c | 13 -------------
+ 1 file changed, 13 deletions(-)
 
-diff --git a/drivers/gpu/drm/panfrost/panfrost_mmu.c b/drivers/gpu/drm/panfrost/panfrost_mmu.c
-index 4a3162c3b659..aa0bc82deaf6 100644
---- a/drivers/gpu/drm/panfrost/panfrost_mmu.c
-+++ b/drivers/gpu/drm/panfrost/panfrost_mmu.c
-@@ -514,7 +514,7 @@ void panfrost_mmu_unmap(struct panfrost_gem_mapping *mapping)
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index 5868d68e8a85..2f954842b052 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -641,18 +641,6 @@ static size_t arm_v7s_unmap_pages(struct io_pgtable_ops *ops, unsigned long iova
+ 	return unmapped;
+ }
  
- 		if (bo->is_heap)
- 			pgcount = 1;
--		if (!bo->is_heap || ops->iova_to_phys(ops, iova)) {
-+		if (!bo->is_heap || ops->iova_to_phys_length(ops, iova, NULL) != PHYS_ADDR_MAX) {
- 			unmapped_page = ops->unmap_pages(ops, iova, pgsize, pgcount, NULL);
- 			WARN_ON(unmapped_page != pgsize * pgcount);
- 		}
+-static phys_addr_t arm_v7s_iova_to_phys_length(struct io_pgtable_ops *ops,
+-						unsigned long iova,
+-						size_t *mapped_length);
+-
+-static phys_addr_t arm_v7s_iova_to_phys(struct io_pgtable_ops *ops,
+-					unsigned long iova)
+-{
+-	phys_addr_t phys = arm_v7s_iova_to_phys_length(ops, iova, NULL);
+-
+-	return (phys == PHYS_ADDR_MAX) ? 0 : phys;
+-}
+-
+ static phys_addr_t arm_v7s_iova_to_phys_length(struct io_pgtable_ops *ops,
+ 						unsigned long iova,
+ 						size_t *mapped_length)
+@@ -732,7 +720,6 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 	data->iop.ops = (struct io_pgtable_ops) {
+ 		.map_pages	= arm_v7s_map_pages,
+ 		.unmap_pages	= arm_v7s_unmap_pages,
+-		.iova_to_phys	= arm_v7s_iova_to_phys,
+ 		.iova_to_phys_length	= arm_v7s_iova_to_phys_length,
+ 	};
+ 
 -- 
 2.43.7
 
