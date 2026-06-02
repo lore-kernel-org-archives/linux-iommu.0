@@ -1,111 +1,183 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6951C3D522C;
-	Tue,  2 Jun 2026 10:44:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from out30-101.freemail.mail.aliyun.com (out30-101.freemail.mail.aliyun.com [115.124.30.101])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19FCF38B7B1
+	for <iommu@lists.linux.dev>; Tue,  2 Jun 2026 10:46:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.101
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780397075; cv=none; b=sh0Sltk4ziex2oZ+NyjVPmvNtc1tEAHw9tyPP6RfiFMsRAlHeQIvUmD0C1J3yOE7dUMubh3gh6VKc5pMX0gB0RberT0V0FWX3s+CXUOXz3xfcLT1/808GE6gFB3jL9GXr7pGl1HwfLp80DLu6jJtBNiPMj2/VKriubAbQfd59D8=
+	t=1780397214; cv=none; b=IG5uT27Ry6jikCpgB7Wf3JLqHabdAi9ET/mtMPOsbNV+8LF4PrMhwsFEprndmBcHhnsQxKj/IFSwKxgfzyZT/ZZosYKKRomJjZWIcoeVgz32/nqGyOpmesEfZgelDZgMBrWPSyf4neZfPOoZ5PLBMpvDOzbTQrUAT4w7Bnq5q8w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780397075; c=relaxed/simple;
-	bh=MSt0dFIE3zZ+3m+M6rCatXZghC+L+yZ0BE65LAyDFgs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=I3bHOKgTFEKgD9kI9pn1hnNM1KmtjDzjLa+Qc5rtY9ZfpLLjgNIS8K0eqsDMXiPFJ5Q0YqVCBeLfTcbRm8nwVPDiAqlMB7qyVRAzQEcloykUOzDvXaQqFhJ/v3hpCKaLa4GNEk0MTUS2Xh3ObzyzS9tSSW8d8cmaY4zOUfnyaus=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=PWFVOqmz; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1780397214; c=relaxed/simple;
+	bh=m+bZcTdvgDzPvchrK1/J/VO8YA/JQIElabuc1D09npI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=ruXO6GbHwLQtedwqlEhzrP6zkMjilRV8hKGhJ1BkDQSiCXsqaTzdgEAd4AmGtL8O3GwZOPj7pHP5qkjSMYXDOB9TU8WKY+0mSOG2HmjWXk+53J4sEBaImCfCQCs99fBf4/U9q5dkYjkirlxRw6DSxF67yluE+A06hMToIVvgNnY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=Zhc3I6k1; arc=none smtp.client-ip=115.124.30.101
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="PWFVOqmz"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E0FFD176C;
-	Tue,  2 Jun 2026 03:44:28 -0700 (PDT)
-Received: from [10.57.36.237] (unknown [10.57.36.237])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 878DA3F632;
-	Tue,  2 Jun 2026 03:44:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1780397073; bh=MSt0dFIE3zZ+3m+M6rCatXZghC+L+yZ0BE65LAyDFgs=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=PWFVOqmzpNUzjPHytWy/+8xkfmCjfzHK73knjSv4qsGpRDCiFvUWPEt/JEDBMD2Vx
-	 +oOR/xDP0IF8P0wQrY7cXOBNjMlvqWRbdiNJNYcfSQqo+mvb36geqM3+HK0kzY3bDQ
-	 /lLrJnWB2D6iYLshuhwaLyjcBQnlaLdxR5FVjA5E=
-Message-ID: <c23cc27e-80bc-4295-944b-4cdefd85b544@arm.com>
-Date: Tue, 2 Jun 2026 11:44:24 +0100
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="Zhc3I6k1"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1780397210; h=From:To:Subject:Date:Message-ID:MIME-Version;
+	bh=dfeUzwK3Vykd8PqKTRs5NqT5hfv04UcKedfq7xRHrho=;
+	b=Zhc3I6k1G1qYUubrjaXnRwc2ccnHu74wNNoHbxHVQaLLSlq4y00GSJlnvzhlJG/zyu0MWZAnefOH+qWnpOn8SY5a/XNzw88HmpaxKf7u4Xq/PCxoxaBV1S1kmJ1hBksVAfzkdKuPPvSHLE81Wt8Xajt4C+IcKkn98j2hHouXVBs=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam011083073210;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=28;SR=0;TI=SMTPD_---0X44E923_1780397207;
+Received: from VM20241011-104.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0X44E923_1780397207 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Tue, 02 Jun 2026 18:46:48 +0800
+From: Guanghui Feng <guanghuifeng@linux.alibaba.com>
+To: adrian.larumbe@collabora.com,
+	airlied@gmail.com,
+	alex@shazbot.org,
+	baolu.lu@linux.intel.com,
+	boris.brezillon@collabora.com,
+	dri-devel@lists.freedesktop.org,
+	dwmw2@infradead.org,
+	iommu@lists.linux.dev,
+	jgg@ziepe.ca,
+	joro@8bytes.org,
+	kevin.tian@intel.com,
+	kvm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	liviu.dudau@arm.com,
+	maarten.lankhorst@linux.intel.com,
+	mripard@kernel.org,
+	oliver.yang@linux.alibaba.com,
+	robh@kernel.org,
+	robin.murphy@arm.com,
+	shiyu.zsq@linux.alibaba.com,
+	steven.price@arm.com,
+	suravee.suthikulpanit@amd.com,
+	tzimmermann@suse.de,
+	wei.guo.simon@linux.alibaba.com,
+	will@kernel.org,
+	xlpang@linux.alibaba.com
+Cc: alikernel-developer@linux.alibaba.com
+Subject: [PATCH v2 01/30] iommu: introduce iova_to_phys_length in iommu_domain_ops
+Date: Tue,  2 Jun 2026 18:46:08 +0800
+Message-ID: <20260602104637.1219810-2-guanghuifeng@linux.alibaba.com>
+X-Mailer: git-send-email 2.43.7
+In-Reply-To: <20260602104637.1219810-1-guanghuifeng@linux.alibaba.com>
+References: <20260531093637.3893199-1-guanghuifeng@linux.alibaba.com>
+ <20260602104637.1219810-1-guanghuifeng@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: iommu: iterator used after loop end in resv region insertion?
-To: Will Deacon <will@kernel.org>, Maoyi Xie <maoyixie.tju@gmail.com>
-Cc: joro@8bytes.org, jpb@kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, virtualization@lists.linux.dev
-References: <CAHPEe=G-FZvEXjkE+vAXN5MHXCtsOaUoKwg2RQL6m=om+c20hQ@mail.gmail.com>
- <ah6wYJM4g-GTBTCL@willie-the-truck>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <ah6wYJM4g-GTBTCL@willie-the-truck>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2026-06-02 11:28 am, Will Deacon wrote:
-> On Tue, May 19, 2026 at 02:49:58AM +0800, Maoyi Xie wrote:
->> Hi all,
->>
->> While reading drivers/iommu/ I noticed two places that look
->> like a past the end iterator pattern. I would appreciate it
->> if you could take a look and let me know whether these are
->> real issues and whether they are worth fixing.
->>
->> The first is iommu_insert_resv_region() in drivers/iommu/iommu.c
->> (linux-7.1-rc1, around line 873):
->>
->>      list_for_each_entry(iter, regions, list) {
->>              if (nr->start < iter->start ||
->>                  (nr->start == iter->start && nr->type <= iter->type))
->>                      break;
->>      }
->>      list_add_tail(&nr->list, &iter->list);
->>
->> The second is viommu_add_resv_mem() in drivers/iommu/virtio-iommu.c
->> (linux-7.1-rc1, around line 523):
->>
->>      list_for_each_entry(next, &vdev->resv_regions, list) {
->>              if (next->start > region->start)
->>                      break;
->>      }
->>      list_add_tail(&region->list, &next->list);
->>
->> In both cases, when the loop walks all entries without break,
->> the iterator has gone one step past the last entry. &iter->list
->> then aliases the list head via container_of offset cancellation,
->> so the insert lands at the list tail. That is the intended
->> behaviour, but the access is undefined per C11.
->>
->> Jakob Koschel cleaned up many such sites in 2022, for example
->> commits 99d8ae4ec8a (tracing: Remove usage of list iterator
->> variable after the loop), 2966a9918df (clockevents: Use dedicated
->> list iterator variable) and dc1acd5c946 (dlm: replace usage of
->> found with dedicated list iterator variable). These two sites
->> in drivers/iommu/ were not covered.
->>
->> A candidate fix would track an explicit insert_before pointer
->> initialised to the list head and overwritten to &iter->list
->> only when the loop breaks early. The observable behaviour is
->> unchanged.
->>
->> If this is intentional or already known, please disregard.
->> Otherwise, I am happy to send a [PATCH] or to leave the fix to
->> you. Thank you for your time, and sorry for the noise if this
->> is not actually worth fixing or has already been spotted.
-> 
-> Given that there's some precedent for "fixing" these type of things,
-> it's probably best if you just send some patches for these new instances
-> if you don't mind.
+Add iova_to_phys_length callback to struct iommu_domain_ops alongside
+the existing iova_to_phys. The new callback returns both the physical
+address and the PTE mapping page size in a single page table walk.
 
-Agreed, given that the intent in both cases is only to find a list_head 
-to use as an insertion point, rather than operate on the entries per se, 
-for clarity I'd suggest changing the whole iteration to list_for_each(), 
-and keeping the list_entry() dereference strictly inside the loop body.
+Add iommu_iova_to_phys_length() core function that:
+- Checks ops->iova_to_phys_length first (preferred path)
+- Falls back to ops->iova_to_phys for unmigrated drivers
 
-Thanks,
-Robin.
+This enables callers like VFIO to efficiently traverse IOVA space
+by actual mapping granularity instead of fixed PAGE_SIZE steps.
+
+Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
+Acked-by: Shiqiang Zhang <shiyu.zsq@linux.alibaba.com>
+Acked-by: Simon Guo <wei.guo.simon@linux.alibaba.com>
+---
+ drivers/iommu/iommu.c | 40 ++++++++++++++++++++++++++++++++++++----
+ include/linux/iommu.h |  9 +++++++++
+ 2 files changed, 45 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index d1a9e713d3a0..1b1aaa53dd16 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2545,15 +2545,47 @@ void iommu_detach_group(struct iommu_domain *domain, struct iommu_group *group)
+ }
+ EXPORT_SYMBOL_GPL(iommu_detach_group);
+ 
+-phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
++/**
++ * iommu_iova_to_phys_length - Translate IOVA and return mapping page size
++ * @domain: IOMMU domain to query
++ * @iova: IO virtual address to translate
++ * @mapped_length: Output parameter for the PTE page size (e.g. 4KB/2MB/1GB)
++ *
++ * Like iommu_iova_to_phys() but additionally returns the page size of the
++ * PTE mapping at @iova through @mapped_length.
++ *
++ * Return: The physical address for the given IOVA, or PHYS_ADDR_MAX if no translation.
++ */
++phys_addr_t iommu_iova_to_phys_length(struct iommu_domain *domain,
++				       dma_addr_t iova,
++				       size_t *mapped_length)
+ {
++	if (mapped_length)
++		*mapped_length = 0;
++
+ 	if (domain->type == IOMMU_DOMAIN_IDENTITY)
+ 		return iova;
+ 
+-	if (domain->type == IOMMU_DOMAIN_BLOCKED)
+-		return 0;
++	if (!domain->ops->iova_to_phys_length) {
++		/* Fallback to legacy iova_to_phys without length info */
++		if (domain->ops->iova_to_phys) {
++			phys_addr_t phys = domain->ops->iova_to_phys(domain, iova);
++			if (phys && mapped_length)
++				*mapped_length = PAGE_SIZE;
++			return phys ? phys : PHYS_ADDR_MAX;
++		}
++		return PHYS_ADDR_MAX;
++	}
++
++	return domain->ops->iova_to_phys_length(domain, iova, mapped_length);
++}
++EXPORT_SYMBOL_GPL(iommu_iova_to_phys_length);
++
++phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
++{
++	phys_addr_t phys = iommu_iova_to_phys_length(domain, iova, NULL);
+ 
+-	return domain->ops->iova_to_phys(domain, iova);
++	return (phys == PHYS_ADDR_MAX) ? 0 : phys;
+ }
+ EXPORT_SYMBOL_GPL(iommu_iova_to_phys);
+ 
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index e587d4ac4d33..19da84c2922c 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -747,6 +747,9 @@ struct iommu_ops {
+  *                         invalidation requests. The driver data structure
+  *                         must be defined in include/uapi/linux/iommufd.h
+  * @iova_to_phys: translate iova to physical address
++ * @iova_to_phys_length: translate iova to physical address and additionally
++ *                       return the page size of the PTE mapping at @iova
++ *                       through @mapped_length.
+  * @enforce_cache_coherency: Prevent any kind of DMA from bypassing IOMMU_CACHE,
+  *                           including no-snoop TLPs on PCIe or other platform
+  *                           specific mechanisms.
+@@ -776,6 +779,9 @@ struct iommu_domain_ops {
+ 
+ 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain,
+ 				    dma_addr_t iova);
++	phys_addr_t (*iova_to_phys_length)(struct iommu_domain *domain,
++					    dma_addr_t iova,
++					    size_t *mapped_length);
+ 
+ 	bool (*enforce_cache_coherency)(struct iommu_domain *domain);
+ 	int (*set_pgtable_quirks)(struct iommu_domain *domain,
+@@ -930,6 +936,9 @@ extern ssize_t iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+ 			    struct scatterlist *sg, unsigned int nents,
+ 			    int prot, gfp_t gfp);
+ extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova);
++extern phys_addr_t iommu_iova_to_phys_length(struct iommu_domain *domain,
++					      dma_addr_t iova,
++					      size_t *mapped_length);
+ extern void iommu_set_fault_handler(struct iommu_domain *domain,
+ 			iommu_fault_handler_t handler, void *token);
+ 
+-- 
+2.43.7
+
