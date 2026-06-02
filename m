@@ -1,139 +1,179 @@
-Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010027.outbound.protection.outlook.com [40.93.198.27])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 142372DA76C
-	for <iommu@lists.linux.dev>; Tue,  2 Jun 2026 06:04:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.27
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780380246; cv=fail; b=BGcwSSpXQ5/nGO0+cyNzYXYFmNmzogk9aJu11PnJvV/DdKIIEqvJCDwryGVo2qX4S18OT4r7azIloSeKM/HKsKvjrl2qIXlFUV3czpzENq9MR5biMXYsGKRd1WvxZeqsXW4ulgOkNO3uihkwzXb6k6XBvX3EsUXtm5bzs2O6eFA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780380246; c=relaxed/simple;
-	bh=gf3S4T02EuAwiz/sjcezheQyzLQwF1EqZWu1rmGSiBs=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qiEkAbMAGPBrGtUcMuFEF26tdcURIEW/O/JX6PcnllYrKnHnmIKEFf/A9jSqmrIiEU9n3OgkE+wJ6KfBFfk6rwSVtt9cqBye/0fd0VHOmOvOGxGKvgSbIMnZ1sQT4FVCzccP9gQIAjIAYIKX0B3bKRJAMNsuS7a9pkbrYOvnunY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=MMkkPqTd; arc=fail smtp.client-ip=40.93.198.27
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B3183A784F;
+	Tue,  2 Jun 2026 06:05:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780380327; cv=none; b=d+6ccpnh5acKt9NkqJWBN/luNwFfBmFapEvlcPgwIztlWcjIZnwIs7/YtKUzv5DI/Qit46AZnrxb6uqJmNiLDSsW3+Y33bEpmOLDDdbvz3b+7O8NYHo2E71RkiSAQ4f+Z+5aZORCD8i16LTxn+mhrwObIYCWvHkZZRb27NbxHGQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780380327; c=relaxed/simple;
+	bh=sGkdUrXjc/S/iTQHXL4VyRlHCWbw/zKujLEsL4iGQSg=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=oQgkxen4up/boXVDQVpc/MuEBkFeYOel70413xuExPoAUN9xVy0GU8vu32G6BkUsbkuoTdvu3X46V5XEJrjHaImZpVl7Y5oHvKzNKVZPqWsvYoBVMmhdkbqFk1ft4Oy13zwIekqW1PyAjdLuZ3XU5EdojO5yGuGfyyKyE5fJTVc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ejiohwvK; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="MMkkPqTd"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ceiIx4MpYHg50Hj6JTayXNzn+mKbby3xauPgj1ny14RBPia3dLUGiTTNrgJz5DM+vGclKYQRuRUU2shdUVIqMLiUT8hFIJ0iJNdseI6+n5QlLYh8GvqnsTmnqbyJp4wDPUycsDYp9bREXcgOHoA2muA/2szQEW4pPuURUjHLOw+aPY8kvmCF9yEEqJCElF+YFaj1rJJMdz4Pe+yfTbeSKD89bK61rhNgqZ9pWcnH9Igzn5y2fZ3hJYv9kC1PlhEn8O7Lh4VTP31ncOHV5MoCx8DrHQiFdSchewnaYQSZAWU00SC/OfEcSz/8cYLGi2xmkOVwl8cTggR1+ckmFoBBXw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=j7sm8HNC1m7cxWSRUAZSUX7WOootqwWJRpN6whIhDb0=;
- b=bIzUwiHu9VhXSzziGcD53DwYuleut5k/lY9xj7G0Tz/paajoqZRqVKnMuI9J6t1xSN9YJ/IXOL82jvkrZW+yMN4Zx4br1VE6vr2PfORprSuQBwCq6xSYxeUvWtE1Ao4h4jrciNqxYOT5JeButJjuXpYQ+EZ6fqTdvGQoMsT7T530kLvojBpV8CCPdR8qlhgVkhKhKpoHxrTn2ukXuYHGgixnVkSiuJ11qyREO/cRV5pwE3i+8GVp/jZFz4BO1uA8GxV31hSmUYAg5SGSk5RAZ5LzQ02A8Vf+m8egdOi0WY0hjqiPUHyIAz49yghd/3KyWxwYtDDNg+CfQ/oZ4daCkw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=j7sm8HNC1m7cxWSRUAZSUX7WOootqwWJRpN6whIhDb0=;
- b=MMkkPqTdEFH0u3mfAmzPsF+0fuwmhNMbeKDdPQvZ2lx9wP1wsiIUSe92q3cTn01F7wtrAhjYKMkKHzsRsfn/lFphe1CS999XcH+tKSvv8zPHTx4FQGshyBKFUvEoksCgQJdYE+8heWGTOc5s6ihF+RToAc5YEwH89M2J+a4fECSKqmlxk2OAC4KUyY/EO+kmyuH183ZKr5uBFUFhAy9HcyFzT4XPNy3B7GhRwxPqXA1U7GvBptunclGQovlQYgDck+o/6BTniUe4EV5OkWecx2FYtnGJ28BSzrvsNP7H94q4Ed5kWs9QkmDQ3Sl4tdqTVkPuZVebhrNW2fi0c/nmdg==
-Received: from SJ0PR05CA0057.namprd05.prod.outlook.com (2603:10b6:a03:33f::32)
- by MN2PR12MB4424.namprd12.prod.outlook.com (2603:10b6:208:26a::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.71.14; Tue, 2 Jun 2026
- 06:04:00 +0000
-Received: from SJ1PEPF000026C8.namprd04.prod.outlook.com
- (2603:10b6:a03:33f:cafe::1d) by SJ0PR05CA0057.outlook.office365.com
- (2603:10b6:a03:33f::32) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.92.5 via Frontend Transport; Tue, 2
- Jun 2026 06:03:57 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- SJ1PEPF000026C8.mail.protection.outlook.com (10.167.244.105) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.92.5 via Frontend Transport; Tue, 2 Jun 2026 06:03:57 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 1 Jun
- 2026 23:03:44 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 1 Jun
- 2026 23:03:43 -0700
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Mon, 1 Jun 2026 23:03:43 -0700
-Date: Mon, 1 Jun 2026 23:03:41 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Pranjal Shrivastava <praan@google.com>
-CC: <iommu@lists.linux.dev>, Will Deacon <will@kernel.org>, Joerg Roedel
-	<joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe
-	<jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, Daniel Mentz
-	<danielmentz@google.com>, Ashish Mhetre <amhetre@nvidia.com>,
-	<linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v8 00/10] iommu/arm-smmu-v3: Implement Runtime/System
- Sleep ops
-Message-ID: <ah5yPciJTVTjkMfJ@Asurada-Nvidia>
-References: <20260601215909.3958732-1-praan@google.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ejiohwvK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7D3E1F00893;
+	Tue,  2 Jun 2026 06:05:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780380326;
+	bh=cAu2ieVtzIhvmbt6JTRjoa4pjjACO3xCWLdKRptxTOw=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=ejiohwvKFgfnFx2XmQJmWogP6srPvXp1qAFLczY5GJb2HIDlqC3HdYIisxlQOoTDQ
+	 9d0+q911Tt8whJu2idWQDouQLkgMw3HeyJvVoxRRyBIgLaKly8hsqH4jEpW+7FZx3s
+	 uW8DJTgURj2lZ3d9qzDtsfpCLzCdGNUwL+gJXBSvIFJFhxQx9XD/vL5XTqzERi1f3r
+	 PDVdUnUWGoUUukbyfqIke1SklIUshmo3/e0PrLxKpBC+oHEhWRrh8oC5zA+uiWqHfP
+	 vDywZwBvCrB+DEAZKH4p7uw+B8oQEoDGQq3nD2heY/9UFLiC0v8sbZ1HIQJgro2CaY
+	 kqhJ0j5Dfw4Lg==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Michael Kelley <mhklinux@outlook.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	"linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+	"linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	"x86@kernel.org" <x86@kernel.org>,
+	Jiri Pirko <jiri@nvidia.com>
+Subject: RE: [PATCH v5 05/20] dma-pool: track decrypted atomic pools and
+ select them via attrs
+In-Reply-To: <SN6PR02MB415754E94A9505C2B9739E4DD4092@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20260522042815.370873-1-aneesh.kumar@kernel.org>
+ <20260522042815.370873-6-aneesh.kumar@kernel.org>
+ <SN6PR02MB415754E94A9505C2B9739E4DD4092@SN6PR02MB4157.namprd02.prod.outlook.com>
+Date: Tue, 02 Jun 2026 11:35:13 +0530
+Message-ID: <yq5afr35sciu.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20260601215909.3958732-1-praan@google.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF000026C8:EE_|MN2PR12MB4424:EE_
-X-MS-Office365-Filtering-Correlation-Id: e7798af5-8b04-462d-b614-08dec06cbc21
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|36860700016|82310400026|6133799003|18002099003|22082099003|3023799007|11063799006|56012099006|13003099007;
-X-Microsoft-Antispam-Message-Info:
-	K25crhW4juqEPBy7SiC7zxLQiwc0mJA1H5QkCH4YrbklNyym+UoUtVYCvesthxPY8vbSs6hdoYZ6IA8gsfv7P7KHXPBwq/tCIHeZp6z6iKBZ0hkgE5iILec3BQb1TlHbzRac7ROoxFbQ7k0oMfp1qM4nMh8hpHExtVFCQGuzIvUyAdujBBFqfNG614CCqfw29/+n67IuwlpqQTL/qPDyECLlY9TD5z60RWfvhKgmv1HEVccKg7P8HDMeq1XmRbRxoIzLF0jZBKRJF3lGrxkPiUEN8nTj9DSWb/HpFJjz5YR9K60/R9kEk/aqumQcX0BaOwzK6TYR9jtCCEM0zccgvni79qZznInnVwkJhHWTw19GNVdwwhmPEqpvjaZlglZE/6l0zx+cpVbhNchpLfNleObWy5Hr4WfhPt0ndDh5rORLnak8ugt51slhQThJXP/O8f52I2f1nnisDpYpbzKfy08LZZ8EtOLvkNoN1IBV6R1yrA9KWGmBZ9aF1Q6Myx7sdZ4VXXuHYzg7QveS5wgTOgPrWEvdaP37oPQ55dXGhPUfM62VNqDqw3ZKdc8pihN9hhVCWNyrttrXFpa1jeWKlIdEPCH0A4tZXWxjTY7WBaqdlensHkr7spo4KLVpJ2H8IuM/MsIuXR5r3xRx9o9osPSD3vap+09lTFRyGSVtEL0vvvjl5Vi40XTuX2XKg6aqQtu97+sNqWj/tIWpVy2lB6hlqmCbgEKzdy8+GDZJirA=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(376014)(36860700016)(82310400026)(6133799003)(18002099003)(22082099003)(3023799007)(11063799006)(56012099006)(13003099007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	F34nU4zEmkacgWr/YPV5Q8WmTslrS9G+JeyWzic9zHlSGozf71eDM1WWP3j95rVl3p8W1CdOCiqk3DgXdqi6RRLlInfKUP+14w5OOghl+EiEu3R5TvpXCpo3Y0s0YTsL/UGMbngO5v8sTmTYvUK/VRmUTnadWeumGPWNbvtSEG7miwZFUV4mQsFLpwnx6LpHmuGOQUnBW+PhAPO+sms9I/sL9lhxn43re051Jq15ZzAZWlMC8lf5fo3qTsjptOcO9hEQwh+CVWLE7Dn4LxC+aIdF2BW7mwo4g6WRq0P7rfidgKQX38B1LOrXSBQUVroSwjT/KTIYRuyqQ+0IZjiwncDpLFjiQHQJm976+QX031Qjsf0/TjWXqP+FqE/gNvFPLVTLMYwuXCmUbzFbmyIKtOH/vRNB/A3k8Xm3wh9Zks209xgrb+Jk5L7+IZXBWFdk
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2026 06:03:57.8168
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e7798af5-8b04-462d-b614-08dec06cbc21
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF000026C8.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4424
+Content-Type: text/plain
 
-On Mon, Jun 01, 2026 at 09:58:57PM +0000, Pranjal Shrivastava wrote:
-> [v8]
->  - Centralized elision logic: dropped redundant checks from invalidation
->    call-sites; elision is now authoritative within the CMDQ layer.
->  - Renamed elision helper to arm_smmu_cmdq_can_elide() and preserved it
->    only for diagnostic/safety paths (ATC, GERROR, Page Response).
->  - Consolidated implementation-specific gating and draining into a 
->    unified quiesce_and_drain_queues callback.
->  - Updated tegra241-cmdqv to gate virtual queues before draining,
->    addressing non-deterministic timeouts from guest-side submissions.
->  - Re-ordered probe sequence to enable pm_runtime only at the end, 
->    aligning with SMMUv2 and simplifying error paths.
->  - Refactored KUnit tests for better, addressed Nicolin's comments & added
->    a multi-threaded kthread race test.
->  - Refactored RPM helpers to use early-return patterns for improved clarity.
->  - Collected R-bs from Nicolin.
+Michael Kelley <mhklinux@outlook.com> writes:
 
-FWIW, v8 is still missing a base-commit and Sashiko fails to review:
-https://sashiko.dev/#/patchset/20260601215909.3958732-1-praan%40google.com
+> From: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>Sent: Thursday, May 21, 2026 9:28 PM
+>> 
+>> Teach the atomic DMA pool code to distinguish between encrypted and
+>> unencrypted pools, and make pool allocation select the matching pool based
+>> on DMA attributes.
+>> 
+>> Introduce a dma_gen_pool wrapper that records whether a pool is
+>> unencrypted, initialize that state when the atomic pools are created, and
+>> use it when expanding and resizing the pools. Update dma_alloc_from_pool()
+>> to take attrs and skip pools whose encrypted state does not match
+>> DMA_ATTR_CC_SHARED. Update dma_free_from_pool() accordingly.
+>> 
+>> Also pass DMA_ATTR_CC_SHARED from the swiotlb atomic allocation path so
+>> decrypted swiotlb allocations are taken from the correct atomic pool.
+>> 
+>> Tested-by: Jiri Pirko <jiri@nvidia.com>
+>> Reviewed-by: Mostafa Saleh <smostafa@google.com>
+>> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+>> ---
+>>  drivers/iommu/dma-iommu.c   |   2 +-
+>>  include/linux/dma-map-ops.h |   2 +-
+>>  kernel/dma/direct.c         |  11 ++-
+>>  kernel/dma/pool.c           | 167 +++++++++++++++++++++++-------------
+>>  kernel/dma/swiotlb.c        |   7 +-
+>>  5 files changed, 123 insertions(+), 66 deletions(-)
+>>
+>
+> [snip]
+>  
+>> +static __init struct dma_gen_pool *__dma_atomic_pool_init(struct dma_gen_pool *dma_pool,
+>> +		size_t pool_size, gfp_t gfp)
+>>  {
+>> -	struct gen_pool *pool;
+>>  	int ret;
+>> 
+>> -	pool = gen_pool_create(PAGE_SHIFT, NUMA_NO_NODE);
+>> -	if (!pool)
+>> +	dma_pool->pool = gen_pool_create(PAGE_SHIFT, NUMA_NO_NODE);
+>> +	if (!dma_pool->pool)
+>>  		return NULL;
+>> 
+>> -	gen_pool_set_algo(pool, gen_pool_first_fit_order_align, NULL);
+>> +	gen_pool_set_algo(dma_pool->pool, gen_pool_first_fit_order_align, NULL);
+>> +
+>> +	/* if platform is using memory encryption atomic pools are by default decrypted. */
+>> +	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
+>> +		dma_pool->unencrypted = true;
+>> +	else
+>> +		dma_pool->unencrypted = false;
+>
+> I'm curious about the name of the "unencrypted" field in struct dma_gen_pool,
+> and similarly in Patch 7 of the series for the swiotlb struct io_tlb_pool and
+> struct io_tlb_mem. Up through v3 of this series, you used "decrypted", but
+> starting in v4 switched to "unencrypted".
+>
+> To me, the above "if" statement has some cognitive dissonance in that if
+> CC_ATTR_MEM_ENCRYPT is false (i.e., a normal VM), "unencrypted" is set
+> to false. But I think of memory in a normal VM as "unencrypted" since it
+> was never encrypted. A similar "if" statement occurs in your swiotlb changes.
+>
+> Two related concepts are captured by the field:
+> 1) Is some action needed to put the memory into the unencrypted state,
+> and to remove it from that state? This applies when assigning memory to the
+> pool, or freeing the memory in the pool.
+> 2) Is the memory currently in the unencrypted state? This applies when
+> allocating memory from the pool to a caller.
+>
+> It's hard to capture all that in a short field name. But I think I prefer "decrypted"
+> over "unencrypted".  The former implies that some action was taken. It's a
+> little easier to think of a normal VM as *not* having decrypted memory. The
+> memory was never encrypted in the first place, so no decryption action was taken.
+>
+> Throughout the kernel, "decrypted" occurs much more frequently than
+> "unencrypted".  We have set_memory_encrypted() and set_memory_decrypted()
+> that are "take action" names.  But we also have force_dma_unencrypted(),
+> phys_to_dma_unencrypted(), and dma_addr_unencrypted(). So it's a bit
+> of a mess.
+>
+>
+> But maybe there's more background here that led to the change
+> between your v3 and v4.
+>
+> Michael
 
-Please make sure v9 patches are formatted with "--base=" and a public
-commit.
+The current APIs, phys_to_dma_unencrypted() and dma_addr_unencrypted(),
+are the reason I changed the pool attribute name from decrypted to
+unencrypted. The rationale was that nobody actually decrypted the
+memory; the memory was already in an unencrypted state.
 
-Nicolin
+In other words, the DMA pool did not contain encrypted content that was
+later decrypted. Rather, the DMA pool itself was in an unencrypted
+state.
+
+IMHO, set_memory_decrypted()/set_memory_encrypted() is the right naming
+because those APIs describe an operation that transitions memory between
+states. In contrast, the pool attribute describes the state of the
+memory itself, which is why I used unencrypted rather than decrypted.
+
+-aneesh
