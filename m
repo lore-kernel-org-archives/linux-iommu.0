@@ -1,168 +1,156 @@
-Received: from BN8PR05CU002.outbound.protection.outlook.com (mail-eastus2azon11011043.outbound.protection.outlook.com [52.101.57.43])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0D59309EF4
-	for <iommu@lists.linux.dev>; Tue,  2 Jun 2026 21:07:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.57.43
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780434433; cv=fail; b=i2M5fodHya0iPvk1j41+yjn06H22LNLzwGuZ6ojD/OnlQ56QzAlQ5qRjUocXfZrro2MrLJ/bnoCInVI5FKboD3OxQO/Ds97iAMxx9nFChhJ9o6KX8iwoWvFEE7M9ge2+vz5PbrYlUIjYWUjZOOmbGu/gr5zUuemlUa6bd5yDxBY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780434433; c=relaxed/simple;
-	bh=k50uyfRZk+2x52PURnx7WnI+NeRR12M3qy8QfH1n0D4=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dmMyMEuXyvvwEOI//t22mf6t79dFQKjBKfEsO7EqxOSALo0fc7OEWQd+98IjDUFi4JrgEkhcCy1wAVcP9LjSNGwurDVCxsiI0TEsGtGwvEvATfejBSL0uo7j2LxarrTsbLe3kxKzLoyllS0Gd77wTcVUnx4IvodpJ7Q2UAIVVkA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=D2xPwoEF; arc=fail smtp.client-ip=52.101.57.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCDD53939B2;
+	Tue,  2 Jun 2026 21:40:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780436426; cv=none; b=hG1oAR4KGjTTcYBlH+fghBotxTnMZVki4ChAPUn1smESfg84PEOO8UGmTQg/rPypw1yz6YDAjfC+L7O36u7rNqg/G1GLMro+7+M36uF2GYxOUVvKjZRTMjs57h7ORblmbeztBsKrunq5qEPmax0NW7XsTC9jvRQRvvi8tWq6BmA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780436426; c=relaxed/simple;
+	bh=4eyZw4UOnHhwv4cFQ/JjHG+RrOIvOOmydNLwutjD+3M=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=QRu7q33Kb4LOlBIbQqlj7aYJtj1Lzq+sBxAP2CumSXJOKhS0BP3cc77Yw2xv15+e++kC3xhsg+XKglLv4rRBOy3Cnx74gQkX6FBmCvx1dPExSBhnc5Fy4UVlmNxeikVIpAXGYISO3E18zF+6Q2voXZzLNtGZuoOuI5EuU11dvDQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bOrxwt7d; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="D2xPwoEF"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=YWBvZO5wfRH/6Ntt/P7B2iudd5WI/GQpsu8czv6Nn6RXZ9nsoxL+5ML2tJtZ8C43D6AGwBMq0mDQi2xSoFJBP4yNewif7i4fBeL1orY0fF72RhsQNfiu4L1wtpGvRt+W8zUVD+ZDukHx8LKKmBhXk+Nnb1UXDTdGgjo3Jdi0vSng8rfjejdO7/KlKijamKkU+tMymUEoQEn1DppqIvcVcOq+EyU8Xj1ABcPFGgxlCweYcAitYTo08e/XQBWSY8olqIvPSFQmc7TOsb8aGC7jKZ1zh6wtnxiABZnXCALxPQ9OVjzRSLMjI0aL++HqIMyE69UiXZ2ICpXRdqlaJrE3Lw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0VrRhDMs//pfjWvMtl0p6S2y/Xfy899r0rDeBGPgNOs=;
- b=djBrF9MgZltdiwhAqGMpUYH2nTcImpC8hgTprFHzfTtcq6Htm66Lk9An56QCO6f9me4F/u6gkOTxf15IMhHpQ/TJhAW88b4u5RV9g43KEOSVlQRSzQUM9ILSqJpIagiQO2FBKr7QWaVj6HnV1TnCCzl6V1trhzIVtptpy6MllrvC9u0XEXyeDsUqvSPEN/hwi70rWrlhwtxRNez7hPlUikytrUPFJw1W/nA9+zZC+3bYblVWDXZMzVUoaDGEVKZznBURBG8EXWcow8y3JfrP3nenLqVYpcweAUlH31SIe7HPPWrc0UYu7Lh58RaRvQh/a4XEsm9XAR2P4vv/Ug/oqw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0VrRhDMs//pfjWvMtl0p6S2y/Xfy899r0rDeBGPgNOs=;
- b=D2xPwoEFcww4okwNblsxZz3vFHOelnYxh+fWoNOiegFlsddW+c+sGFp9Ftf/9KcQ5ehAyvCgV/gLbO/AlWGMTD39epbwEZV+L04zW02BHwt440417hbR1Nv0aXC0mgkCVWAOFCa07bjHEDh+VsRVQoho9h2ETSJxQglivOfQ4a44/2/95WAWWu7wZrnNl9rN2P0DCFjShzCobUEPXuJOlYjd2WDKIbNSuBacpXPw9FKhgnF/yl87i/9Ix+6i2fuASItSTDNgkOza5pTZC1r62+0Jjh1CgZkSiEQ+ULMpPcCUVumGgFTaYzE5adnUU4Xcac8ROTYdo7aXm6JJNvakOg==
-Received: from BL1P221CA0044.NAMP221.PROD.OUTLOOK.COM (2603:10b6:208:5b5::16)
- by MW3PR12MB4473.namprd12.prod.outlook.com (2603:10b6:303:56::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.92.7; Tue, 2 Jun 2026
- 21:07:06 +0000
-Received: from MN1PEPF0000F0E4.namprd04.prod.outlook.com
- (2603:10b6:208:5b5:cafe::1a) by BL1P221CA0044.outlook.office365.com
- (2603:10b6:208:5b5::16) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.92.7 via Frontend Transport; Tue, 2
- Jun 2026 21:07:05 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- MN1PEPF0000F0E4.mail.protection.outlook.com (10.167.242.42) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.92.5 via Frontend Transport; Tue, 2 Jun 2026 21:07:05 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 2 Jun
- 2026 14:06:47 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.20; Tue, 2 Jun 2026 14:06:46 -0700
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.126.190.181)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Tue, 2 Jun 2026 14:06:46 -0700
-Date: Tue, 2 Jun 2026 14:06:44 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Will Deacon <will@kernel.org>
-CC: Ashish Mhetre <amhetre@nvidia.com>, <robin.murphy@arm.com>,
-	<joro@8bytes.org>, <jgg@ziepe.ca>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-tegra@vger.kernel.org>
-Subject: Re: [PATCH v3 2/3] iommu/arm-smmu-v3: Detect Tegra264 erratum
-Message-ID: <ah9F5Fy4KMqbStcq@Asurada-Nvidia>
-References: <20260601104845.995005-1-amhetre@nvidia.com>
- <20260601104845.995005-3-amhetre@nvidia.com>
- <ah85c4u011WNJQgE@willie-the-truck>
- <ah89vg26255v4lqF@Asurada-Nvidia>
- <ah9EO-djR3Tf9ohf@willie-the-truck>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bOrxwt7d"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1780436425; x=1811972425;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=4eyZw4UOnHhwv4cFQ/JjHG+RrOIvOOmydNLwutjD+3M=;
+  b=bOrxwt7dDdlu+tP9OU2MHGU2Tagrr5urXNNZGyFg9SW7iyaS4ycJF/jt
+   G7DzFSRuUviQCr4+/0YBH90Zi26k4nKHka39YsxJ6e/ItU1hjSddgaOze
+   Zrnu4wLJG/HAnwt4N4+RhcBYjnjIc4fWKDvu32buOY4fA8jSOILZRuc6/
+   Oquoy7V+wOXq3BuLTRFX4PV1ZZJLwm4xqKhixuJqCflyB/YT3R+DxvCGn
+   X+w/m00sEp/majR84hpYlILQE6N1uFcoiv4u+uasR+bJNnBpo3/gQxMNF
+   9HnQztpLpcpEsMpDc608AE4H5W8Evy7VyjMoMUy/vB74FP2Ok41osAO+j
+   A==;
+X-CSE-ConnectionGUID: gardEjdqS7WtnWv38qn4eA==
+X-CSE-MsgGUID: b39zWS6MSCGxgfBjo9pPXg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11805"; a="80972405"
+X-IronPort-AV: E=Sophos;i="6.24,183,1774335600"; 
+   d="scan'208";a="80972405"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 14:40:24 -0700
+X-CSE-ConnectionGUID: PcIQbEzqTbKa1yc0yhfIOQ==
+X-CSE-MsgGUID: nO91ZzCfR2qu25nrSJCLRw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,183,1774335600"; 
+   d="scan'208";a="239575909"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.116])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 14:40:11 -0700
+Date: Wed, 3 Jun 2026 00:40:08 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+Cc: Lee Jones <lee@kernel.org>,
+	Mark Brown <broonie@opensource.wolfsonmicro.com>,
+	Thierry Reding <thierry.reding@avionic-design.de>,
+	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+	Andrew Lunn <andrew+netdev@lunn.ch>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Srinivas Kandagatla <srini@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Vinod Koul <vkoul@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>, Rob Herring <robh@kernel.org>,
+	Saravana Kannan <saravanak@kernel.org>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Andi Shyti <andi.shyti@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Doug Berger <opendmb@gmail.com>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Ulf Hansson <ulfh@kernel.org>, Frank Li <Frank.Li@nxp.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	Matthew Brost <matthew.brost@intel.com>,
+	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Peter Chen <peter.chen@kernel.org>,
+	Paul Cercueil <paul@crapouillou.net>, Bin Liu <b-liu@ti.com>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Maximilian Luz <luzmaximilian@gmail.com>,
+	Hans de Goede <hansg@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>, brgl@kernel.org,
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org, linux-sound@vger.kernel.org,
+	driver-core@lists.linux.dev, devicetree@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org, linux-i2c@vger.kernel.org,
+	iommu@lists.linux.dev, linux-pm@vger.kernel.org,
+	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	intel-xe@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+	linux-usb@vger.kernel.org, linux-mips@vger.kernel.org,
+	platform-driver-x86@vger.kernel.org
+Subject: Re: [PATCH 06/23] driver core: platform: provide
+ platform_device_set_of_node()
+Message-ID: <ah9NXwJFrkK_yuw8@ashevche-desk.local>
+References: <20260521-pdev-fwnode-ref-v1-0-88c324a1b8d2@oss.qualcomm.com>
+ <20260521-pdev-fwnode-ref-v1-6-88c324a1b8d2@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ah9EO-djR3Tf9ohf@willie-the-truck>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN1PEPF0000F0E4:EE_|MW3PR12MB4473:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8013b1b5-a01a-4bac-8ad5-08dec0eae6b5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|82310400026|1800799024|376014|56012099006|4143699003|3023799007|11063799006|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	SZd+5c+K5AdOXdWwovQ62l6PGJaN+e0sfGbOcsZP9GteH9jbrESQfZWOl3M0iovqkyJhUSMQfsMp5AHZjH1gT2thAu2u64AbTe/pOYxPuGlcpBvxV92t505EII7ouWjf0TI2sGCx7gStWavWeGsVBtXxm8luAf9Yij1Zowb/05ql0LAvkWx4QIfz/iXmmC62UOweibmh8jJ68V6s9K1OsnOf4lgc0b5mnVJkd0tk4wFl76XbP3wz+Eei0nd91g4P+mmJC/U/jm4Dg/ibGkFi2oSqrCJRsij1qZ7dYuKJUizr+OTTHzkEzJNoDFyMyQ4/Xk7cvr84zpS6ShMfogQk4VsusBDY4E9Hn2i2eehV5ar7DRWxm/JFIR6r44LzTdwb3tlviRkQ24iLMhrEapGndUbqX5ajVc2MbmqVAkR8toQcujCuaQmUWoK+0VTXrbI8GBYGO01I5J9j46aPikXnDryfGj+meoyo891Gg4dGPPA9ScZayl9zOK+OKFjs+u6+TEUnu+GySIkTnXsX0Nelm+pnABtmh5DKobFQvfA8I6DpePf9GPeM48LF4LIIpULna1XO6s2r06B0UOCzSL+fCTbRaTzGl9cYGF1ikzwddUB57C/SN+lQHhpFklZAQicpsmBFvx9vpP3d3p7ppp8Zi9XXgUOZmbK8TF4nHfy72OBEzpSjKuGEUpAnwlYIWsX+x8XgM9CowPFe1pARrmGYQsgz0/b+b9fl/pOQHYA3R84=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(82310400026)(1800799024)(376014)(56012099006)(4143699003)(3023799007)(11063799006)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	wiGNHpoK6p0mOZbSLKiKBwaJOPHd8Sm8w2seQxqjzzWrTAC67iTYEm2gRTgRG2HJiSsr4O2P5kol0ncU89CQmC22wPKnUxaJBr/nZVlbi5ewahCbVaHwBmVqJ7nOh4j2pj5Ijrwfpzol/7PJGgS5JsT9R3a10NdlHnQ5YTf56zy+zaSr/q0FPonNeBy8PBiF0Xs9y8uaOI3ahGjZueiZ4tP0Bu98nExe2Bviuxpb/d40MKfXNzzHjQDrWkt7fZWgV63lydl1s8Wc0mLwp3xqGlbLUlu1sTOpxay7AoZckyzom+rS5rvDQQ3hBAecRCUT3f6ChioEJsn/Agm1wWt8dbgC4fEwaMZAJxHFWIIMq0EUOEW78e2OkgOiq8qKRxQfJuiUUeuQEqhV39JkBDVRIpAMWdvOQ1mP+NJZ1UIJ5IkokdxVKA/mbxtcs6v+SHL2
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2026 21:07:05.6741
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8013b1b5-a01a-4bac-8ad5-08dec0eae6b5
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	MN1PEPF0000F0E4.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4473
+In-Reply-To: <20260521-pdev-fwnode-ref-v1-6-88c324a1b8d2@oss.qualcomm.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Jun 02, 2026 at 09:59:39PM +0100, Will Deacon wrote:
-> On Tue, Jun 02, 2026 at 01:31:58PM -0700, Nicolin Chen wrote:
-> > On Tue, Jun 02, 2026 at 09:13:39PM +0100, Will Deacon wrote:
-> > > On Mon, Jun 01, 2026 at 10:48:44AM +0000, Ashish Mhetre wrote:
-> > > > Tegra264 SMMU is affected by erratum where a TLB entry can survive an
-> > > > invalidation that races with concurrent traffic targeting the same
-> > > > entry. The hardware-recommended software workaround is to issue every
-> > > > CFGI/TLBI command (each followed by CMD_SYNC) twice. The second issue
-> > > > is guaranteed to evict the entry. ATC_INV is not affected and must not
-> > > > be doubled.
-> > > > 
-> > > > The erratum is not flagged by any SMMUv3 IDR/IIDR register, so it
-> > > > cannot be detected from hardware ID. Tegra264 boots from device tree
-> > > > only and has no ACPI/IORT support, so detection is through device
-> > > > tree only.
-> > > 
-> > > That seems odd to me -- whether the hardware has the erratum is
-> > > completely unrelated to whether it probes using DT or ACPI, so I find it
-> > > really weird to have the workaround enabled when booting with DT and not
-> > > when booting with ACPI. We should have consistent behaviour between the
-> > > two.
-> > 
-> > That's a good point. Yet, for ACPI to detect the erratum, we would
-> > need a new IORT model or flag, right? That would need to go through
-> > the entire ACPI protocol to update SMMU's IORT spec and the header
-> > accordingly, which we don't have a use case to do so or to test it.
-> > 
-> > What would you like us to do here for the consistency?
-> 
-> Gah, I now realise I've mixed up Tegra264 and Tegra241 because
-> tegra_cmdqv_dt_probe() is only called if the compatible string matches
-> "nvidia,tegra264-smmu" yet all the cmdqv stuff talks only about
-> Tegra241. So I was surprised that the ACPI probing code for Tegra241
-> wasn't enabling the workaround.
+On Thu, May 21, 2026 at 10:36:29AM +0200, Bartosz Golaszewski wrote:
+> Encapsulate the reference counting logic for OF nodes assigned to
+> platform devices created with platform_device_alloc() in a helper
+> function. Make the kerneldoc state that this is the proper interface for
+> assigning OF nodes to dynamically allocated platform devices. This will
+> allow us to switch to counting the references of the device's firmware
+> nodes, not only the OF nodes.
 
-I see. Numbers could be indeed confusing :)
+...
 
-> But if you're saying that:
-> 
-> 1. Tegra264 never uses ACPI
-> 2. Tegra241 doesn't have the invalidation erratum
+> +/**
+> + * platform_device_set_of_node - assign an OF node to device
+> + * @pdev: platform device to add the node for
+> + * @np: new device node
+> + *
+> + * Assign an OF node to this platform device. Internally keep track of the
+> + * reference count. Devices created with platform_device_alloc() must use this
+> + * function instead of assigning the node manually.
+> + */
+> +void platform_device_set_of_node(struct platform_device *pdev,
+> +				 struct device_node *np)
 
-Yes.
+Why not fwnode to begin with?
 
-> Then I'm less worried (even though it's a shame that we can't detect
-> the erratum from the hardware itself).
+> +{
+> +	of_node_put(pdev->dev.of_node);
 
-Agreed, though I think the compatible string is already a life
-saver as we wouldn't need to go through the whole ACPI route..
+And if it has an fwnode?
 
-Nicolin
+> +	pdev->dev.of_node = of_node_get(np);
+> +	pdev->dev.fwnode = of_fwnode_handle(np);
+
+This looks like
+
+	device_set_node(&pdev->dev, fwnode_handle_get(...));
+
+> +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
