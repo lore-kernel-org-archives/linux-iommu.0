@@ -1,200 +1,358 @@
-Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012045.outbound.protection.outlook.com [40.93.195.45])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EFF030C141
-	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 13:40:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.195.45
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780494025; cv=fail; b=St6pLMUUN3U8kXZZtIfJ0pV87WYgvuVzoaEOtDQ7Hn9zdHQgN1Ccvt6GHj+whlUjSw+9L+ELof+h8lOglGzr0h279/FMonIv+o96tC/fZY4cVNRQbT8yV0yhdNuiYLLoY5dYzBLgr/e54m9Zjk3itMLL2+llnFTomh2Uk3beJmw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780494025; c=relaxed/simple;
-	bh=70dRiDAY2qjKa0FU8ykvF7RlrcPNjmj3XCDrWfBhY0o=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=M2F3HfFz4LtOpGpcBfrcGXDWeh7Gwn4vvXlKgi1e9V405j1RkDSzyiloYeaYc5H882/j4koIvd8P2iSHy6xvoYh/zNVVvTQeF8e/bUrETdSw9L0IphjIg8LdcXRGqjpq683YhJK6Dn+B+GGoZ8zJOEYaL36H89+y5+5FbBx9OyU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=WkOl1BsB; arc=fail smtp.client-ip=40.93.195.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2486B30C17D
+	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 13:44:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780494242; cv=none; b=BjejIB/QqeorEFiHQNusIXkRetg+uTMgJelOPTojuLrSFbva6wAoAoY5QuV999U8UOfK0CjJlsn4NETST4HRuvSCrYvhxccZQCqcwP12T/g4oRPtO4jLHeBU/521EoLD58egEvh92qmLDfkz+eWVSxmOxRyhnXsMmdEpyQU8hr8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780494242; c=relaxed/simple;
+	bh=a8BDW+CrunOYbTFlwKZkd/OyryCGgg8B9X++SYgSnD8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Jxt8fJz7XMpAFtliEVyoCVyuPsC2WR4NQKrzlaC21xumuDD8chLgIjqekTB0wjxn6B+3zjp9yd6+omB3jpHdyYi2qaG5Qmub1Wu833OVprdsw0Ga91v3zbciPvNpSBIVqP+tBYPUbUwDlEOG443Hm4QfO80J3H0qP2uG4RFJaNQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=EyyhwZTb; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=C3Tb8Bki; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="WkOl1BsB"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=N3NExXJQ6oWekVnMMDfE+xEsboKkduMI3+TBZer+//I0be1nWIgB9MPeFDPiXcx680UMEetCO1j4zER5/YxLvFpZQsCxlXZSkphKhl+OFRWAO+NswV9N00DtuXL6suD++81GDWnHGyoCqSptyhQOFHg+6UiwfmW9LpwT+ncsnJ7yG9LvLjo6WC407b/HvCfrDykWHbZKStYXSt0SiU0vuILfzaEEj5U6UjjGbrpXh0pUWLLGfEf/AZdAto6Adngl3eS0B0lK2OF1AYyhIUKbrz7OfRHf5+xXz7Q/LkN3Rwyl1Lw7xw7Hu46ZAHonuv1F20a2nWTz0ifSKA5j6iVgzQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XX5kWf/hBf1QlFB99I7mhEf/2cvKTzGcDwVH0Dpl5Ho=;
- b=Zah1/h/FE19PrLjY6UbNlFh+xLqUmhOTfdJlr5iNKd8gEsfPFugAZcQrs5bvFwQP2cVLZq9oXA061unzY7MjJ3rUPaBgLLAm+qXYU0ljv+YoDIg6uUpzAOv0bfCz9O3xoiGNTf/GSKdy3n7R24guWsQfvX4afkQ5F0N/OScbsg4fG+tjln4e4cjg3Ghw9Q86aGQ3sZdkntYFM3yIoBxWtsJQVC5b5BBPCpEKNy24YeT3ZyZw5utdGoYkvE+CvfefXI1QAmswxfVdVs9B4uDC6YJfb5YRbTvxqxozwcHkWBGD2v9Dk8DcSe/BKR//pOX8KDMInTQpAooMLX6YfnfpWA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XX5kWf/hBf1QlFB99I7mhEf/2cvKTzGcDwVH0Dpl5Ho=;
- b=WkOl1BsB8+5BaWT6l571Js9uqXiO58+NyA/R6Ur7U1X0pycsV/Kerjm6BQ1jSMKsHsgTgd9JcoRhBIYsVftz6ky5JUVZr0VBwcW7L4gZz2sjd1Xbmdb+k7LWZIHB5hNuE8ZXMiWWf+or+x2QooxuW9ZERFda+yb/FwBpTTC+Y7c=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
- by PH8PR12MB7304.namprd12.prod.outlook.com (2603:10b6:510:217::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.92.7; Wed, 3 Jun 2026
- 13:40:19 +0000
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c%5]) with mapi id 15.21.0071.011; Wed, 3 Jun 2026
- 13:40:19 +0000
-Message-ID: <0feaad40-8bde-46c4-a251-07a1bd6ac79d@amd.com>
-Date: Wed, 3 Jun 2026 15:40:10 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 11/15] accel/qda: Add PRIME DMA-BUF import support
-To: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>,
- Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
- Shuah Khan <skhan@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- Sumit Semwal <sumit.semwal@linaro.org>
-Cc: Bharath Kumar <quic_bkumar@quicinc.com>,
- Chenna Kesava Raju <quic_chennak@quicinc.com>, srini@kernel.org,
- dmitry.baryshkov@oss.qualcomm.com, andersson@kernel.org,
- konradybcio@kernel.org, robin.clark@oss.qualcomm.com,
- linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
- linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- iommu@lists.linux.dev, linux-media@vger.kernel.org,
- linaro-mm-sig@lists.linaro.org
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="EyyhwZTb";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="C3Tb8Bki"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6539vYdT2368138
+	for <iommu@lists.linux.dev>; Wed, 3 Jun 2026 13:44:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	kRbnU8V6Zsc+nav/FJky6GGhRnGxbQyRHCJCHQ8YEm0=; b=EyyhwZTbQfhFDZMd
+	7/4fMwTCUpSRhTNsWsHAyx8UwJfcKZIMQ4/sbAEpnkbOlhoUJvKrU3m/nGKyn5mG
+	rSnp6b+aFYgaLyXIQZsfy0p73XLEmKHqgQJVSe4CNf1IL2ZH2BZfT0VZdw8yAQ2u
+	2qe4dGi/2pzYRIsbCkw8p8gWxLJAdlIz7PRyqJEzN0XIkosS0/k7uTzC1HrNn3ki
+	vBV3JDExkb/BOU8kc6q1ZmOJ5OVpYxY1AwVdbUrQku1ZO2MkOmndJD73lqU/QRtM
+	fxQuxERcwTum1w1uAJbJ2maUN57342AI6ICT5qZzpKAuV0frf2oeH8Hu15aw2X93
+	IiT8vQ==
+Received: from mail-vs1-f71.google.com (mail-vs1-f71.google.com [209.85.217.71])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ejj3ggtrv-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 03 Jun 2026 13:44:00 +0000 (GMT)
+Received: by mail-vs1-f71.google.com with SMTP id ada2fe7eead31-6c554284973so4986656137.2
+        for <iommu@lists.linux.dev>; Wed, 03 Jun 2026 06:43:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1780494239; x=1781099039; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=kRbnU8V6Zsc+nav/FJky6GGhRnGxbQyRHCJCHQ8YEm0=;
+        b=C3Tb8BkidqEvr9tNIq0fmZRcbTrx8kRI147ic09S8rPaQPfVCyZ1eEoqbTMr6Cnm4P
+         o0GaEgczM719dqhteBIsKZlI+tmZrmerx0+lQLwdxKJ9KiFtKewofryskMdLZc4pWoz1
+         G6NZ9LNfjzD6JwNbii2X/6EHgfZxE6f6QA5kqVcoP9wfWAp4O0TOBdeaeBJju6z0TgWa
+         lPymP/NPZIGgmB71tKTEyItCr0gIUU4o/8k4xyjqAaPRjso05v9vEzvI/1AEw4hRW46V
+         WHT0USsTh39h/M2zghI4cco7qrjR2tipu4YCOUEr0g8XhCKg5wpy9SZuAfLEcI18dfBd
+         M+LQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780494239; x=1781099039;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=kRbnU8V6Zsc+nav/FJky6GGhRnGxbQyRHCJCHQ8YEm0=;
+        b=FNoFYWFf2JVpjrrUrgSLOAXj2ZtAG2457HThhLp6VrBVtzmrnU76TFPhaAGiyQMidd
+         mU1dcuSaQvvQN19UX6zKrW2oEsBZb+/uD6X5CGOqw2xFjeWQpccyFHP0PLmZjX1t6Te5
+         vTyQs+dVwwFle/Dms8iEso6+3VhVY2R6VBhF0bdjCzGu0mFEYBjST8vmUE/zd2ozp59y
+         yf+evuGSCdLr1IjNPC+iGlxLzssE2sc/E7T7g4IbpIQ0Um/zOoRYX5g/75drU33/Mqo8
+         fuXuVus1fvfZ/zZ8dJFWciB0YRDWwZl2fqADrdUV+3/Wye04Mct16ZrFhCZauL9Y7bfE
+         ADew==
+X-Forwarded-Encrypted: i=1; AFNElJ89gIE8lJyfxymMPs14VFSf1lKz4l5I4Syw9RgvZ8VdNekE5l3sLwuq+822eJT//+JWJWqsqg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz6QMP1GfOaj+bAYuPsvQ716naSUI7O0Yut1EtP29V92jq+de+2
+	up846ze6xj6Y10mhV3FAsy4XNsT+ADNlkUvyOCdg4Oum9cK218TDCHrV0HxGBkFhjgR3pi4uAHF
+	KNMTm3bBX1ZMiCMRoOYA7FUT4StcLhWHeoZkqn7VLCcaYOVMhBtZFFp30lA==
+X-Gm-Gg: Acq92OElspZFlE5eB6m7X/8MDMckRGXKp4LrQgk/Dy9V0HZVx7vRiIm95M8FmVzmVaq
+	dzdSAqoeThRV3GovOVirRibVK4r2fkXRGwxJnEawpnzlxpKxVWWli8dBI+M+/pKC6p1Ejm3Ibyk
+	Kj+Rq35bpqPe+GNzDbA4eMpwJ3rnRg8sxAXMql/cafL8ZngygubPPMtUc6lqNr8omXqvjtWy3Ue
+	S3smibx+7Qf/Tcd/hGfDVsus/DusN8TnaA+WFM5xzTDXNrL+P4zdy6PB2isgCxJ0rMwubvMn6zX
+	1qobK4gCapgUwlitiRp3jKlmxpK1om9NW/Lx62n6sLIzDm7IDMwYXVSSNSGamR066L7r/JVLgCM
+	ndYyxxbxVbuqaqpcWMX5gRE+z5LYF5pby7KLTJFzj3/HIZzvH+e5Q1agrnimO+VsNwgY+j9U2gA
+	ewh3JMGpRXYwMHJ6ioh3GvuqZ6aW1Vn4Bh0ae16iMgeFu9WQ==
+X-Received: by 2002:a05:6102:dd0:b0:631:2973:5c2c with SMTP id ada2fe7eead31-6ec469592aamr1534026137.21.1780494239381;
+        Wed, 03 Jun 2026 06:43:59 -0700 (PDT)
+X-Received: by 2002:a05:6102:dd0:b0:631:2973:5c2c with SMTP id ada2fe7eead31-6ec469592aamr1533992137.21.1780494238918;
+        Wed, 03 Jun 2026 06:43:58 -0700 (PDT)
+Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-396ac2ed56fsm9210311fa.37.2026.06.03.06.43.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Jun 2026 06:43:58 -0700 (PDT)
+Date: Wed, 3 Jun 2026 16:43:56 +0300
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+To: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+Cc: Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+        Shuah Khan <skhan@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        Bharath Kumar <quic_bkumar@quicinc.com>,
+        Chenna Kesava Raju <quic_chennak@quicinc.com>, srini@kernel.org,
+        andersson@kernel.org, konradybcio@kernel.org,
+        robin.clark@oss.qualcomm.com, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
+        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org
+Subject: Re: [PATCH 08/15] accel/qda: Add QUERY IOCTL and QDA UAPI header
+Message-ID: <2ztwmdejpkp3f3naz3g2fkjkpd6iomlb34bqnpnp6bhzn27vbb@wnd3fjcz6tgx>
 References: <20260519-qda-series-v1-0-b2d984c297f8@oss.qualcomm.com>
- <20260519-qda-series-v1-11-b2d984c297f8@oss.qualcomm.com>
- <3dddb7e8-5837-4038-9823-ce419cb49ec2@amd.com>
- <e465ed15-1568-467b-ac6b-94f903b46776@oss.qualcomm.com>
-Content-Language: en-US
-From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-In-Reply-To: <e465ed15-1568-467b-ac6b-94f903b46776@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: BL0PR0102CA0023.prod.exchangelabs.com
- (2603:10b6:207:18::36) To PH7PR12MB5685.namprd12.prod.outlook.com
- (2603:10b6:510:13c::22)
+ <20260519-qda-series-v1-8-b2d984c297f8@oss.qualcomm.com>
+ <m4zo2nkxtl5yeyo7riuata6r5saflmdgqf37cz2g2ezrwhk53m@mnad6bb7n3ik>
+ <b5c9d149-1a48-4c0d-aa0d-9ad331896f47@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|PH8PR12MB7304:EE_
-X-MS-Office365-Filtering-Correlation-Id: 521eb7a3-aee8-40fa-f56b-08dec175a6eb
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|1800799024|376014|7416014|921020|6133799003|3023799007|22082099003|18002099003|11063799006|5023799004|4143699003|56012099006;
-X-Microsoft-Antispam-Message-Info:
-	kW2ouNX2OIqk+EsytkWS+zXSF1Y8ehOjjPFR1L/K+zn7keV7dVAL3qSu1KhZhd+sr6nxL5OM7n5HqTWgNeuKRBqjvfdcFD1li/JUsopOdPOGym2ekBnHjLS6OV/p6uq9A1Dj2NcPItn3/ff8Z5uZw1IvlsfHCBVYgY4tYh9h7iwh2k4w7krKcUr07L9JR9XgEWBLAF4qzKzEfx8TsOCcDCcW5vYCrVVt9ZRZ3dRDAN9LxG7YoVcVSsBugnyTZrkSLA4r/bQEENTQ1uLZ+jPDbQ4H2MS4f4bZqfm6c2Q2Wfeq2MB4rDAFSwehKmLWVCduSAHpsfp+SScDbljRrFF9GQzSduLz5qUwlykN958tq0akzdPpkkeW1uqec84vTH3gYDOFOdreU8VMGTfy7ej7vhOwUfq26wuLxgWGPCisqK7NGXiyg5Ozq2B8GLo4TjNk2f4JTTcYWeSgz9F85hU7iOB8ELX/k8mWpEoGED1Qn8aG0oZqb0w7bAfoepdgNKMJV6+lMYpTZcPEfnbiozBlh44oEp34dvY86WMSf23h47s7N/fyef8UyzRGUN+hvTpPbesml8AFjg3ImkTIyh3Ie4sg76wmMREmUKbcR1227x2GJDLjefsSY+xEhzC937ePo++Zci4vVRMCDwXJPhyRE1xYBgXBVPv0HBbNEypM55deRIBSez10hDjIY0LNuM1DgYa8keC6ks3Ts6uT1FyfJcGER/Jen8UFh89wGU8k/5k=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014)(921020)(6133799003)(3023799007)(22082099003)(18002099003)(11063799006)(5023799004)(4143699003)(56012099006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?TWJ5a0RvQlJRRTRCbklsYjI5MlVxalBpM3UwcGR4cmVTMmF3UjFza01naHM3?=
- =?utf-8?B?UGtGb29CUFQyYmNtNDVGbXZ3SEl0d1BaNkw5ODBDNXYrU1BwdVVZOTJtd2Rr?=
- =?utf-8?B?ay9hSWcwV3Z2aDBJK0U1Zk03ZlBGZ2MzNm43c2RKQUNEbnBEOVM3NkVUTTRM?=
- =?utf-8?B?UW9NZTY5SWVLb2traUlVZWZqZSszNXpTQi9oaUZQa0FMOHVieThaYWViVVNO?=
- =?utf-8?B?QzF1RitEdkxPVFhkRTNUMGVsZHFVRVgvMTNMRVE0VW94bnlBUmdlR0x0TmNm?=
- =?utf-8?B?UXpnZ0w2MERxU2Q2UVdQTG8rUldwL3F2OVhLTU1zUy9QdGRjbWNrVEhHUHZl?=
- =?utf-8?B?RlVQMUZNVUpTd3hPamFFMTlpUitOV0dQTjE4M3dob3VGb21kMmpBNE53cU1w?=
- =?utf-8?B?YWI4MDF0VkNBOWZwdlAyM3lnMTFmZk5GTHNuMVNobXZsRUZhVWd0TE9UcXRs?=
- =?utf-8?B?d1c0aDROcDZ6RTZZMjFhVWErbkJpWGQwUEEwdUI4cjF1UklaS1NrOHRrS3VE?=
- =?utf-8?B?QWtnM05mMDRuL3RYbkpyRVJKNHdzcDBvdFlyNitTVmdXY0hLQlcrWEZFaEJt?=
- =?utf-8?B?RllRZ1dlT2Q1UXdwMldZNlZac050bHVxVHFZZTZSSThTeXNrYTdmcXZ0UWx0?=
- =?utf-8?B?OFpNUHpiT0UyR1I5UWduOFVLSWNuMWQ5ODloTm9SNlhWeXdxL05VeWNnQU82?=
- =?utf-8?B?MmJxemVCOTlUTXFIUUZ4R2NDWmxFTzV4M1Rud1l4L2oyR1RUbnNzZFpVMmI4?=
- =?utf-8?B?VVVFOGVSTVNRQWg3VE10MHpHREk4bVVMS3RHVDRsNk9YVEpwVUw2b05TeTlW?=
- =?utf-8?B?NXBUaGVLMk9CSklpL1MxNFJiZzE3RERPSmJWTk51OTVsZ1BFbVZQbEZZNHhB?=
- =?utf-8?B?NVExYnFCQXFXMlhCVXp4YlJ5cUlNK2dkSmpaN2RMbEJiNWw5dXlYTmxOQVNG?=
- =?utf-8?B?NWhUNVZjMDZ5SDQvd3RTOGhFMUVQNkZXMWtYa3JIR2dQTUR1VlMvbWNKVFZq?=
- =?utf-8?B?M0NJUzQyb0RXV0JHYnRXMXI3OVovbVM5WnpZUzNqVVdGVThSSTVqWnkwSno1?=
- =?utf-8?B?bVJOUHFZWUEvNVgxMkhaODEvRG5JZ2ZFTVo3UmpocmN5Sy9QUmdENll6SkJ5?=
- =?utf-8?B?cEIrWUkzM1BSejVEZlpheGVNc3lBWVl5TkpPY1lCNS9CdE5tM0Y5OUp4N0k2?=
- =?utf-8?B?aEtOZ0VjSXAyRTJXVTM5WVpUZVh2c0s0WkpRNXQ1amNjaHVhSWpmQzh4cG1X?=
- =?utf-8?B?NXdOUkNJS3p4OVI3WklhUmllbDRDZ0NuZFJKZHN4cjJvQlpob0Fzb3ZZZTFY?=
- =?utf-8?B?bm8yRHYyNDgxZUhnK09tRjB6VjVvaU01QXVWMTBZR04rYWhIeVZXYnQ5cnJs?=
- =?utf-8?B?NEI2R1N3RnJ6M0lvSFNCT2Ixc1dabEJFM3hMVExQbFljenRwT2tuL1RRSXhY?=
- =?utf-8?B?cGxycFQwNFNvYzQ5eUdmWGIxcDUrQllwSEQ3OThoT3l1TVVBZG1vNVd3K3la?=
- =?utf-8?B?cjArbStlM2lldEV6MFowV3ZYTHFiRW4rR0NnZjRTMGg3dUNjMWlmaUMzc3B2?=
- =?utf-8?B?bkcwV2tpNzNhclY0dFAyYnhNMjduTHZhWVNBZ3liUnNPSzlFQ0xaK0hvd1U4?=
- =?utf-8?B?blNURC8xekJBSG5pOUNGV29DbDRmelJwWTBkNWZGYWloK2crcWtxOXpNaFlO?=
- =?utf-8?B?WlNzNDFpTmhLVW5TYUE1LzBxWFZ6Q3JOeGdidG9Id1k1N3hobHU2WHFoSkJZ?=
- =?utf-8?B?RXY0bkJZVExWbWwxY1Jzb2NFUEh0TFVBb3dZUmRiYmhENEhFZXhyUGRCZHEv?=
- =?utf-8?B?eUNVbHNoYVBDS0xPSHBGN2F5ak9wUjhNbzhNYkF6cHo2ZVBGZjN4YURneTBU?=
- =?utf-8?B?Uld3REo5Nk9yZllMQ3FOYmZhUmh3VXRXUDJ0RnVQTGg0TFF2NWxGUXJWQUVG?=
- =?utf-8?B?dzNqQk5tNFdDdmRkcVVFbSswVnBaaHgzZWhQZEpKZ2FsRFp4M2FXZWxxRTJ3?=
- =?utf-8?B?dGcva1FOalNCTFF5bFR6T0gyL3J2czU4b3lJM0laZHNhcU8ramZVOHVRUkoy?=
- =?utf-8?B?RGJ4b29RWkNVcmh2L0RJdkpSQUdwTlZCUTZyNWFGdXFpT21Qd2NpZERYU1ln?=
- =?utf-8?B?MjNDU3dWMVFmaXlHMHNjNWpFbHBpU2oxc0NFZXRydHpLOFJGWVFhdUcvM2JF?=
- =?utf-8?B?d0Y4YS92Nlo5a1ZkRGZJUGVLUGJXT1RZakNFc29xWVdEc21pUi9yU2RTejI4?=
- =?utf-8?B?cGFIOCtvOVhwUzdMQm1uUWVqMkxuU2k5c3g1TFNYVkRyQVhpWmVLREdEYUQy?=
- =?utf-8?Q?80QWgYVnKaw57Q5lmz?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 521eb7a3-aee8-40fa-f56b-08dec175a6eb
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jun 2026 13:40:19.2817
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OiBtNsdpWeQ8Iauq4qFrZ+y6c7FET0EUW4zZ7CgueU5WnkzUhWDWUNzGTbEN9dSz
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7304
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b5c9d149-1a48-4c0d-aa0d-9ad331896f47@oss.qualcomm.com>
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjAzMDEzMSBTYWx0ZWRfX+BAZQHVwei65
+ wfJ900JIsppzfNYSqTnjYTKM7Yg30yqbwO99SdM6eZq2ukFQR/QUCFAc8VR6VW9S4l0hbT7dWek
+ OyiVGVqTRjP8GdH5jfNaARDbHM4yRSgGy3nhqowK2O6/pKuBOwjHuK5BBkDT4ySdHCMwlpHO77g
+ 1pGJMuuvHFct3OE/5ngHj40/7MiIECGmD6PyjNjg43HQYBgIBd6dJctvW9WWJuHL2+Tk8HgIjsw
+ ZyJnM0jvTZ8KbhD8aejmJKLMMDss4ygBjvRAb+fMysZfL8aENgJ4GlVXDQ5KKAiNeSvP/m9WKBI
+ kGqB8iohZp5O7cvh1rkmGrfI03EcisW1qNlVM63CMgHp9nv/niEkxAH5hLS5D0/ei0DdkShp4g1
+ zkKY9sR8Ft5bKaITNNJz0ir8Udkwzxr/jI/arm4TRCFH9OG6A3i7AEKoClIMGqYsaxtBqRjW1SU
+ aF9iN0y7Y0Rj2I/SuqQ==
+X-Proofpoint-GUID: q-vfhD-oOmmIi3_Bqk4OAVzN84OUg81d
+X-Proofpoint-ORIG-GUID: q-vfhD-oOmmIi3_Bqk4OAVzN84OUg81d
+X-Authority-Analysis: v=2.4 cv=UvhT8ewB c=1 sm=1 tr=0 ts=6a202fa0 cx=c_pps
+ a=P2rfLEam3zuxRRdjJWA2cw==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
+ a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=ZpdpYltYx_vBUK5n70dp:22 a=VwQbUJbxAAAA:8
+ a=EUspDBNiAAAA:8 a=LflQWrLztFwobrB7iZEA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=ODZdjJIeia2B_SHc_B0f:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
+ definitions=2026-06-03_04,2026-05-28_03,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 phishscore=0 malwarescore=0 lowpriorityscore=0
+ clxscore=1015 suspectscore=0 spamscore=0 impostorscore=0 adultscore=0
+ bulkscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.22.0-2605210000
+ definitions=main-2606030131
 
-On 6/3/26 08:11, Ekansh Gupta wrote:
-> On 19-05-2026 12:25, Christian König wrote:
->> On 5/19/26 08:16, Ekansh Gupta via B4 Relay wrote:
->>> From: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
-...
->>> +static int qda_memory_manager_map_imported(struct qda_memory_manager *mem_mgr,
->>> +                                          struct qda_gem_obj *gem_obj,
->>> +                                          struct qda_iommu_device *iommu_dev)
->>> +{
->>> +       struct scatterlist *sg;
->>> +       dma_addr_t dma_addr;
->>> +
->>> +       if (!gem_obj->is_imported || !gem_obj->sgt || !iommu_dev) {
->>> +               drm_err(gem_obj->base.dev, "Invalid parameters for imported buffer mapping\n");
->>> +               return -EINVAL;
->>> +       }
->>> +
->>> +       sg = gem_obj->sgt->sgl;
->>> +       if (!sg) {
->>> +               drm_err(gem_obj->base.dev, "Invalid scatter-gather list for imported buffer\n");
->>> +               return -EINVAL;
->>> +       }
->>> +
->>> +       gem_obj->iommu_dev = iommu_dev;
->>> +
->>> +       /*
->>> +        * After dma_buf_map_attachment_unlocked(), sg_dma_address() returns the
->>> +        * IOMMU virtual address, not the physical address. The IOMMU maps the
->>> +        * entire buffer as a contiguous range in the IOMMU address space even if
->>> +        * the underlying physical memory is non-contiguous. Therefore the first
->>> +        * sg entry's DMA address is the start of the complete contiguous
->>> +        * IOMMU-mapped range and is sufficient to describe the buffer to the DSP.
->>> +        */
->>> +       dma_addr = sg_dma_address(sg);
->>> +       dma_addr += ((u64)iommu_dev->sid << 32);
->>> +       gem_obj->dma_addr = dma_addr;
->>
->> That handling here is completely broken since it assumes that the exporter maps the buffer as contigious range.
->>
->> But that's in no way guaranteed.
-> I'll collect more details and will try to implement this in the right
-> way, maybe by iterating the full sg_table.>
+On Wed, Jun 03, 2026 at 11:21:43AM +0530, Ekansh Gupta wrote:
+> On 20-05-2026 19:59, Dmitry Baryshkov wrote:
+> > On Tue, May 19, 2026 at 11:45:58AM +0530, Ekansh Gupta via B4 Relay wrote:
+> >> From: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+> >>
+> >> Introduce the DRM_IOCTL_QDA_QUERY IOCTL, which allows user-space to
+> >> identify which DSP domain a given /dev/accel/accel* node represents
+> >> (e.g. "cdsp", "adsp").
+> >>
+> >> include/uapi/drm/qda_accel.h
+> >>   Defines the QDA IOCTL command numbers and the associated data
+> >>   structures. The header follows the standard DRM UAPI conventions:
+> >>   __u8/__u32 types, a C++ extern "C" guard, and GPL-2.0-only WITH
+> >>   Linux-syscall-note licensing.
+> >>
+> >> drivers/accel/qda/qda_ioctl.c / qda_ioctl.h
+> >>   Implements qda_ioctl_query(), which copies the DSP domain name
+> >>   stored in qda_dev.dsp_name into the user-supplied drm_qda_query
+> >>   buffer using strscpy().
+> >>
+> >> drivers/accel/qda/qda_drv.c
+> >>   Registers the qda_ioctls[] table with the drm_driver so that the
+> >>   DRM core dispatches DRM_IOCTL_QDA_QUERY to qda_ioctl_query().
+> >>
+> >> Assisted-by: Claude:claude-4-6-sonnet
+> >> Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+> >> ---
+> >>  drivers/accel/qda/Makefile    |  1 +
+> >>  drivers/accel/qda/qda_drv.c   |  8 +++++++
+> >>  drivers/accel/qda/qda_ioctl.c | 26 +++++++++++++++++++++++
+> >>  drivers/accel/qda/qda_ioctl.h | 13 ++++++++++++
+> >>  include/uapi/drm/qda_accel.h  | 49 +++++++++++++++++++++++++++++++++++++++++++
+> >>  5 files changed, 97 insertions(+)
+> >>
+> >> diff --git a/drivers/accel/qda/Makefile b/drivers/accel/qda/Makefile
+> >> index 701fad5ffb50..b658dad35fee 100644
+> >> --- a/drivers/accel/qda/Makefile
+> >> +++ b/drivers/accel/qda/Makefile
+> >> @@ -8,6 +8,7 @@ obj-$(CONFIG_DRM_ACCEL_QDA)	:= qda.o
+> >>  qda-y := \
+> >>  	qda_cb.o \
+> >>  	qda_drv.o \
+> >> +	qda_ioctl.o \
+> >>  	qda_memory_manager.o \
+> >>  	qda_rpmsg.o
+> >>  
+> >> diff --git a/drivers/accel/qda/qda_drv.c b/drivers/accel/qda/qda_drv.c
+> >> index 0ad5d9873d7e..becd831d10be 100644
+> >> --- a/drivers/accel/qda/qda_drv.c
+> >> +++ b/drivers/accel/qda/qda_drv.c
+> >> @@ -8,8 +8,10 @@
+> >>  #include <drm/drm_gem.h>
+> >>  #include <drm/drm_ioctl.h>
+> >>  #include <drm/drm_print.h>
+> >> +#include <drm/qda_accel.h>
+> >>  
+> >>  #include "qda_drv.h"
+> >> +#include "qda_ioctl.h"
+> >>  #include "qda_rpmsg.h"
+> >>  
+> >>  static int qda_open(struct drm_device *dev, struct drm_file *file)
+> >> @@ -36,11 +38,17 @@ static void qda_postclose(struct drm_device *dev, struct drm_file *file)
+> >>  
+> >>  DEFINE_DRM_ACCEL_FOPS(qda_accel_fops);
+> >>  
+> >> +static const struct drm_ioctl_desc qda_ioctls[] = {
+> >> +	DRM_IOCTL_DEF_DRV(QDA_QUERY, qda_ioctl_query, 0),
+> >> +};
+> >> +
+> >>  static const struct drm_driver qda_drm_driver = {
+> >>  	.driver_features = DRIVER_COMPUTE_ACCEL,
+> >>  	.fops = &qda_accel_fops,
+> >>  	.open = qda_open,
+> >>  	.postclose = qda_postclose,
+> >> +	.ioctls = qda_ioctls,
+> >> +	.num_ioctls = ARRAY_SIZE(qda_ioctls),
+> >>  	.name = QDA_DRIVER_NAME,
+> >>  	.desc = "Qualcomm DSP Accelerator Driver",
+> >>  };
+> >> diff --git a/drivers/accel/qda/qda_ioctl.c b/drivers/accel/qda/qda_ioctl.c
+> >> new file mode 100644
+> >> index 000000000000..761d3567c33f
+> >> --- /dev/null
+> >> +++ b/drivers/accel/qda/qda_ioctl.c
+> >> @@ -0,0 +1,26 @@
+> >> +// SPDX-License-Identifier: GPL-2.0-only
+> >> +// Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+> >> +#include <drm/drm_ioctl.h>
+> >> +#include <drm/qda_accel.h>
+> >> +#include "qda_drv.h"
+> >> +#include "qda_ioctl.h"
+> >> +
+> >> +/**
+> >> + * qda_ioctl_query() - Query DSP device information
+> >> + * @dev: DRM device structure
+> >> + * @data: User-space data (struct drm_qda_query)
+> >> + * @file_priv: DRM file private data
+> >> + *
+> >> + * Return: 0 on success, negative error code on failure
+> >> + */
+> >> +int qda_ioctl_query(struct drm_device *dev, void *data, struct drm_file *file_priv)
+> >> +{
+> >> +	struct drm_qda_query *args = data;
+> >> +	struct qda_dev *qdev;
+> >> +
+> >> +	qdev = qda_dev_from_drm(dev);
+> >> +
+> >> +	strscpy(args->dsp_name, qdev->dsp_name, sizeof(args->dsp_name));
+> >> +
+> >> +	return 0;
+> >> +}
+> >> diff --git a/drivers/accel/qda/qda_ioctl.h b/drivers/accel/qda/qda_ioctl.h
+> >> new file mode 100644
+> >> index 000000000000..b8fd536a111f
+> >> --- /dev/null
+> >> +++ b/drivers/accel/qda/qda_ioctl.h
+> >> @@ -0,0 +1,13 @@
+> >> +/* SPDX-License-Identifier: GPL-2.0-only */
+> >> +/*
+> >> + * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+> >> + */
+> >> +
+> >> +#ifndef __QDA_IOCTL_H__
+> >> +#define __QDA_IOCTL_H__
+> >> +
+> >> +#include "qda_drv.h"
+> >> +
+> >> +int qda_ioctl_query(struct drm_device *dev, void *data, struct drm_file *file_priv);
+> >> +
+> >> +#endif /* __QDA_IOCTL_H__ */
+> >> diff --git a/include/uapi/drm/qda_accel.h b/include/uapi/drm/qda_accel.h
+> >> new file mode 100644
+> >> index 000000000000..1971a4263065
+> >> --- /dev/null
+> >> +++ b/include/uapi/drm/qda_accel.h
+> >> @@ -0,0 +1,49 @@
+> >> +/* SPDX-License-Identifier: GPL-2.0-only WITH Linux-syscall-note */
+> >> +/*
+> >> + * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+> >> + */
+> >> +
+> >> +#ifndef __QDA_ACCEL_H__
+> >> +#define __QDA_ACCEL_H__
+> >> +
+> >> +#include "drm.h"
+> >> +
+> >> +#if defined(__cplusplus)
+> >> +extern "C" {
+> >> +#endif
+> >> +
+> >> +/*
+> >> + * QDA IOCTL command numbers
+> >> + *
+> >> + * These define the command numbers for QDA-specific IOCTLs.
+> >> + * They are used with DRM_COMMAND_BASE to create the full IOCTL numbers.
+> >> + */
+> >> +#define DRM_QDA_QUERY		0x00
+> >> +
+> >> +/*
+> >> + * QDA IOCTL definitions
+> >> + *
+> >> + * These macros define the actual IOCTL numbers used by userspace applications.
+> >> + * They combine the command numbers with DRM_COMMAND_BASE and specify the
+> >> + * data structure and direction (read/write) for each IOCTL.
+> >> + */
+> >> +#define DRM_IOCTL_QDA_QUERY		DRM_IOR(DRM_COMMAND_BASE + DRM_QDA_QUERY, \
+> >> +					 struct drm_qda_query)
+> >> +
+> >> +/**
+> >> + * struct drm_qda_query - Device information query structure
+> >> + * @dsp_name: Name of DSP (e.g., "adsp", "cdsp", "cdsp1", "gdsp0", "gdsp1")
+> >> + *
+> >> + * This structure is used with DRM_IOCTL_QDA_QUERY to query device type,
+> >> + * allowing userspace to identify which DSP a device node represents. The
+> >> + * kernel provides the DSP name directly as a null-terminated string.
+> >> + */
+> >> +struct drm_qda_query {
+> >> +	__u8 dsp_name[16];
+> > 
+> > Are you sure that you want to query only the name? No extra options, no
+> > attributes, no hardware capabilities?
+> There are plans to extend this ioctl to support DSP capabilities and few
+> other query options, but as per my understanding, I don't need to add
+> reserved IOCTLs in drm case and I can extend it in future. Please
+> correct me if my understanding is wrong and I should add reserved fields.
+> 
+> Copying the statement from the doc[1].
+> "Note that drm_ioctl() automatically zero-extends structures, hence make
+> sure you can add more stuff at the end, i.e. don’t put a variable sized
+> array there."
 
-You could also document explicitly that you can only import contiguous buffers (e.g. DMA-buf heap CMA etc....) and then cleanly reject non contiguous buffers here.
+I'd rather have a query type as an input here, to be able to return one
+of querried params.
 
-We have quite a number of drivers/HW with that limitation, so only accepting contiguous buffers is perfectly ok.
+> 
+> [1]
+> https://www.kernel.org/doc/html/v7.0/gpu/drm-uapi.html#ioctl-support-on-device-nodes>
+> 
+> >> +};
+> >> +
+> >> +#if defined(__cplusplus)
+> >> +}
+> >> +#endif
+> >> +
+> >> +#endif /* __QDA_ACCEL_H__ */
+> >>
+> >> -- 
+> >> 2.34.1
+> >>
+> >>
+> > 
+> 
 
-You just can't silently assume that IOMMU would always map the entire buffer as one contiguous range, cause that is certainly not true.
-
-Regards,
-Christian.
-
-
->> Regards,
->> Christian.
+-- 
+With best wishes
+Dmitry
