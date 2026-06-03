@@ -1,134 +1,187 @@
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 124D93D9029
-	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 22:18:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.171
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780525126; cv=pass; b=O2NMj1AiAFwyMT/4WjJMKtNyJ4Pe0fM7g2UGAVvkoMJosWOa0Sza4dgygSpvYvxzNUCWc8EQ8Gm/nLBUuQwn8srQsG+RUdosKKfE+SA/5ZQ1mzfo3PdplYUrpp/Ov9oC795EaoEH0jlcdOYb2Fpqt/Tk/hpbxOUVST24/G4LyGY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780525126; c=relaxed/simple;
-	bh=YEnl0CjbpYzEzr2ANZLBuMg/VY55F7qyhRm6Ui2g+y8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=RWWWga49iO5Jzjj8abKxn7t+5yAukj67jOXfyGmE6OGg/UXHZgTJgQBMhrnJcp7kekiq7Nyla+gZoL5b+nYj1mmouIlevVAb6IulaIe1INyAbg/QNvpTasWyqPiwWDuLnaBU/GndLOyt72FTc2xr+e8dhbjJV/5gQDLWTIKu5D8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=CvJ74ox1; arc=pass smtp.client-ip=209.85.160.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B197F3B3C06
+	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 22:50:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780527039; cv=none; b=Ui4mD4dyh9Kw7mrtRWySmnV7Cxg5ESCmJdcLhUzIhSUXkY7RK2/gIEt2sVR49SbZDRcLkKAqMJIWsQt8MDr0pQxw/E396K+oXdaWIgwZJpeInufVQKjyoevzSfKKlyhhD0FKHnfLGrFgw7QM3poUQd7Z2DfLYF8Cws0SlvA5HIo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780527039; c=relaxed/simple;
+	bh=dPClAJ7bQrMHWz9e1VgHw+Oi4pN1KEPH8SsmyjoU01Q=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=UbwPCY1zvTUIUc9SijBqGVFC37JqlWpoXhdnoq3/YnlbDqmSDBVygCEvg7sWcJvuypfJIUvxxf+THzVbR7E2vuDDaZGMM+Fpq9eLvbvfH8RhtuJa+80KCqBIwwsoqifM4qG08D9/TAxmbmSAiOmWKLm7KAKpY4xUNa7oHHXZDXk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=U4uoATHV; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="CvJ74ox1"
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-5175d339e8bso203041cf.0
-        for <iommu@lists.linux.dev>; Wed, 03 Jun 2026 15:18:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780525124; cv=none;
-        d=google.com; s=arc-20240605;
-        b=WGxUH+yCoYXNla4mAbfGMdf5HWpJtr6tV1SC1J+t4KVv4NrSZrhPtG8SlMTFBlM/Bs
-         dUcHVEgbTNOJ6LMqJC128qRh7Dlp9SD1PL33DErDy7DXNmdQ6YgO5wCMkIGaEZREKbmT
-         JsC1iwh5LwwAX6BoyBmIxTGzghLLoMnB57xkQaLU+PEm4QwUnT5+17eGELl6xzpN5tKh
-         6yJ44Wr0ehZraQ4UgCHM2TJUoqRf21pRjWD6yreBGUWWLwkRo3vE5efF2wRCYbTGddUN
-         eLLyYh3xh5K5LJFjnu5rM0WH/9IIohrndKDa9pAGlKUg+WPj296UGh19xNehjj4ZqFU8
-         AKMQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=YEnl0CjbpYzEzr2ANZLBuMg/VY55F7qyhRm6Ui2g+y8=;
-        fh=LzKtVEQ1JIuAgC2toWU3z56gbGJiWUjM6UnM6nAef2o=;
-        b=T/sYoeZKuM27VcFPzJ3NVj3dT13V4wBbdPAAs9nqRZEXtCpgcSr9vPmz+7askuEPLu
-         zcoQosYwyM6c1PXTieCIOVhKcXLLdn2p8a5DKneBifbtj5ojd8n8a/v8BOo3r9KoVCoA
-         MIHD9+jcbvjVowDEQeVYgmA5XyJjDc8F7Te/o0k31qXY1at8twuy4G+Y2xYC+RcLNOE/
-         uYTXJczR26U7gg963n2Jc95lpK0ad2EeYrMYtHF71spr0UE5NmnyABAfVdrj1gX7VHda
-         kqC6Lo8qnKNYjdVtRJ3V1sQICZrfn1PpZVio5vPOyBb13rf7RCdDxhORsA5p+0Owd2BG
-         z8ew==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780525124; x=1781129924; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YEnl0CjbpYzEzr2ANZLBuMg/VY55F7qyhRm6Ui2g+y8=;
-        b=CvJ74ox1tVMF3OYdGNZLd/GXmLfEzVJE/qQMGtG9nZdG/jpHo/hCXnjJiwm/l31hu4
-         6Z0BCZaBHY/jnFodY6EE4T9N/83mXP5pBGdCDqOLgDHQktUMYCRkaGcH9bfW0r5v1fzU
-         K+HjX7OkpOJ7XHCa29Wt/A06MuurVfO9T7xX9aNyz+dRSrmKSMu36ldgGgPnQhPnK5Vo
-         4Ex5LpID85JT0wOxXkoFXN7jxKtrUOHnC0slTG4wAnVvH8CO1JigxVXJP7Pw/JA0idzz
-         FgwIy/zmfdq1hZranl85+RRE+ebuoFEAAwfyZyLBITRtRaSWllJWsCaHSKC9UaVCgGIx
-         +WWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780525124; x=1781129924;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=YEnl0CjbpYzEzr2ANZLBuMg/VY55F7qyhRm6Ui2g+y8=;
-        b=EKbbjR5xWVMNLd9NSUSAUsXOhnuoLtiqw+SLOKyUzz/ClMMTjT/P7ddTJ+oXtQY0GI
-         r2vbezkHZVoBx/M0wr6kI2pgomvKrMmibOcHhNKEb57cIqMerUJTLXHqIj99AuTK0qgl
-         hcPrlWdbpGQoyQYdDMdcJKn3lP5VQrKsJ336VOrEv3CW4IYorLF2PVuhuewlN360O7XJ
-         KBpPfb9IeUsxzFhtHSo4+DFv/LtGuBru8cLgFVxScGj5l9yhgm8Tp8NpuSMys10Y8hTV
-         czftGoSMFMISNxpSl9lnU3S/SMGuesCtSiT+S2JcVJXSd7+nd67fNJXJwzNZOTWWL6hY
-         pv3A==
-X-Forwarded-Encrypted: i=1; AFNElJ+h7vAgrbDB1m90aDSRNaFKQnu+cQRTioIA38kCkqXAeBJgQXz9dSrxrYRpxhZ7OabgWwlGjQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyHEJNXp6GVpQZ02tjHtyJKLVJBpvIdHe4rJPLbe6U6iywtuW9H
-	kmBUZ1UCYvksYiujg4PkX7s0WqYVBNMy6n6nRPaxjZS9Fssjksyf3o2YhVtLbmg1hX4O8vzKFXk
-	3I55Sw/nNz4V/LAMuZdmZMi/fowTtZN22amU8fv3+
-X-Gm-Gg: Acq92OFHcmot/3OggBbe3wwgO9euXpyxV30lpNvoiXkbGDdb0ZjTTA3WBxOhlWXL86E
-	8i/X1VMDnpBQ3WXWJ2yjKPyrsbk8e4vq6L1pWPuIDbv77K5OzhWwk2khBHwAXj8xmV39q9YUseH
-	EKQ0LVmJEKjohvo+RpYOUjtm7iFfAsRQLmaUy6j2t+ndxawhobkwC9URQNoUzMg1PCqsT2rFHDd
-	diM8hSikCbiKxkNSjJ/3e4hgah7dm1oDV47b0cwJ2QCiWOZsRoK8B9xKL/U4G9Eld3DOG9iSibz
-	yURII1/lNPSz5xgRbgzn392xR6y711ATXYGTl3J1bn+JnkXd95C13r5ZZaU=
-X-Received: by 2002:a05:622a:1801:b0:516:4f62:85f1 with SMTP id
- d75a77b69052e-51787ab8be4mr3489001cf.22.1780525123437; Wed, 03 Jun 2026
- 15:18:43 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="U4uoATHV"
+Received: from mrdev.corp.microsoft.com (192-184-212-33.fiber.dynamic.sonic.net [192.184.212.33])
+	by linux.microsoft.com (Postfix) with ESMTPSA id B4F2F20B7168;
+	Wed,  3 Jun 2026 15:50:15 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com B4F2F20B7168
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1780527015;
+	bh=RMiaE7oR+D/CfvUkePMEhFg25b4TTde633hXyQ/6gTo=;
+	h=From:To:Cc:Subject:Date:From;
+	b=U4uoATHVQv5pjHQq9mdW52K3h/7+FJXi3BhXaG2gFrc+E3G1Vm/aBZIp1KshMXJhs
+	 pbTgDoNwt3Lxu3+Gx3kqrHr2Q5KzhWLS5AupziHqWJsFADU30TWBXN7LUIrlGwXxfv
+	 azG3fIdkaljXXwF01SlfOHyS9cNF44d2Uj+Aq7Uw=
+From: Mukesh R <mrathor@linux.microsoft.com>
+To: linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Cc: mhklinux@outlook.com,
+	wei.liu@kernel.org,
+	zhangyu1@linux.microsoft.com,
+	jacob.pan@linux.microsoft.com,
+	schakrabarti@linux.microsoft.com
+Subject: [PATCH V2] iommu/hyperv: Create hyperv subdirectory under drivers/iommu
+Date: Wed,  3 Jun 2026 15:50:10 -0700
+Message-ID: <20260603225010.1347623-1-mrathor@linux.microsoft.com>
+X-Mailer: git-send-email 2.51.2.vfs.0.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260527221407.1756491-1-praan@google.com> <20260527221407.1756491-11-praan@google.com>
- <ahilX8Za1NRCH3ik@Asurada-Nvidia> <ahi3uY9YZZtR1Lq5@google.com>
-In-Reply-To: <ahi3uY9YZZtR1Lq5@google.com>
-From: Daniel Mentz <danielmentz@google.com>
-Date: Wed, 3 Jun 2026 15:18:32 -0700
-X-Gm-Features: AVHnY4ILrsvBe4oXAMQWWdFEm4mbOUJGKXcyXE1-JTxXk1zIsDS0pKvD5RiQwxo
-Message-ID: <CAE2F3rDeZe+w7-V6hyJtSOwCj619E5SNtjJjZ1-yu1sVdf=35A@mail.gmail.com>
-Subject: Re: [PATCH v7 10/11] iommu/arm-smmu-v3: Invoke pm_runtime before hw access
-To: Pranjal Shrivastava <praan@google.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev, 
-	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, Ashish Mhetre <amhetre@nvidia.com>, 
-	linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Thu, May 28, 2026 at 2:46=E2=80=AFPM Pranjal Shrivastava <praan@google.c=
-om> wrote:
->
-> On Thu, May 28, 2026 at 01:28:15PM -0700, Nicolin Chen wrote:
-> > On Wed, May 27, 2026 at 10:14:06PM +0000, Pranjal Shrivastava wrote:
-> > > TLB and CFG invalidations are
-> > > elided if the SMMU is suspended by observing the CMDQ_PROD_STOP_FLAG =
-via
-> > > the arm_smmu_can_elide() helper.
-> >
-> > All the arm_smmu_can_elide() call sites here would eventually elide
-> > the commands in arm_smmu_cmdq_issue_cmdlist() that is already gated
-> > by CMDQ_PROD_STOP_FLAG? It doesn't seem necessary to gate again?
->
-> While issue_cmdlist() would eventually elide these commands, the
-> can_elide() check is necessary to return early during suspension.
->
-> This avoids unnecessary stack allocation, cmd building, and spinlock
-> contention on the cmdq->lock for threads that are anyway about to be
-> elided.
->
-> By dropping these requests immediately, we significantly reduce cacheline
-> bouncing and contention during unmap storms. Furthermore, the early check
-> also allows us to specifically trigger the WARN_ON_ONCE() for broken
-> devlinks.
+Create hyperv subdirectory under drivers/iommu in anticipation of more
+hyperv related files from upcoming PCI passthru and pv-IOMMU patches.
+Also, the current file hyperv-iommu.c actually implements irq remapping on
+x86, so rename to more appropriate hv-irq-remap-x86.c and move it under
+the new hyperv subdirectory. Since this file implements irq_remap_ops
+exposed by drivers/iommu/irq_remapping.h, it cannot be relocated to the
+irq directory. This is in sync with other backend directories like amd
+and intel there.
 
-Hi Pranjal,
+Lastly, this file should not be tied to CONFIG_HYPERV_IOMMU, but to
+CONFIG_HYPERV and CONFIG_IRQ_REMAP.
 
-Have you observed unmap storms in a real-world use case, or is this a
-preemptive optimization? I would not expect a high rate of map/unmap
-operations while the SMMU is suspended. If a client device calls
-iommu_map/iommu_unmap (directly or indirectly), it suggests the client
-device is RPM_ACTIVE, meaning the SMMU should be active as well.
+Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
+---
+V2: rename hv-irq-remap.c to hv-irq-remap-x86.c
+---
+ MAINTAINERS                                              | 2 +-
+ drivers/iommu/Kconfig                                    | 9 ---------
+ drivers/iommu/Makefile                                   | 2 +-
+ drivers/iommu/hyperv/Makefile                            | 2 ++
+ .../iommu/{hyperv-iommu.c => hyperv/hv-irq-remap-x86.c}  | 8 +-------
+ drivers/iommu/irq_remapping.c                            | 2 +-
+ 6 files changed, 6 insertions(+), 19 deletions(-)
+ create mode 100644 drivers/iommu/hyperv/Makefile
+ rename drivers/iommu/{hyperv-iommu.c => hyperv/hv-irq-remap-x86.c} (99%)
 
-I am in favor of removing arm_smmu_can_elide().
+diff --git a/MAINTAINERS b/MAINTAINERS
+index b539be153f6a..93a7105e9cef 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -11988,7 +11988,7 @@ F:	drivers/clocksource/hyperv_timer.c
+ F:	drivers/hid/hid-hyperv.c
+ F:	drivers/hv/
+ F:	drivers/input/serio/hyperv-keyboard.c
+-F:	drivers/iommu/hyperv-iommu.c
++F:	drivers/iommu/hyperv/
+ F:	drivers/net/ethernet/microsoft/
+ F:	drivers/net/hyperv/
+ F:	drivers/pci/controller/pci-hyperv-intf.c
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index f86262b11416..1becc0f20222 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -351,15 +351,6 @@ config MTK_IOMMU_V1
+ 
+ 	  if unsure, say N here.
+ 
+-config HYPERV_IOMMU
+-	bool "Hyper-V IRQ Handling"
+-	depends on HYPERV && X86
+-	select IOMMU_API
+-	default HYPERV
+-	help
+-	  Stub IOMMU driver to handle IRQs to support Hyper-V Linux
+-	  guest and root partitions.
+-
+ config VIRTIO_IOMMU
+ 	tristate "Virtio IOMMU driver"
+ 	depends on VIRTIO
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index 0275821f4ef9..d9683422aecb 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -4,6 +4,7 @@ obj-$(CONFIG_AMD_IOMMU) += amd/
+ obj-$(CONFIG_INTEL_IOMMU) += intel/
+ obj-$(CONFIG_RISCV_IOMMU) += riscv/
+ obj-$(CONFIG_GENERIC_PT) += generic_pt/fmt/
++obj-$(CONFIG_HYPERV) += hyperv/
+ obj-$(CONFIG_IOMMU_API) += iommu.o
+ obj-$(CONFIG_IOMMU_SUPPORT) += iommu-pages.o
+ obj-$(CONFIG_IOMMU_API) += iommu-traces.o
+@@ -30,7 +31,6 @@ obj-$(CONFIG_TEGRA_IOMMU_SMMU) += tegra-smmu.o
+ obj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o
+ obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
+ obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
+-obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
+ obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
+ obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o
+ obj-$(CONFIG_IOMMU_IOPF) += io-pgfault.o
+diff --git a/drivers/iommu/hyperv/Makefile b/drivers/iommu/hyperv/Makefile
+new file mode 100644
+index 000000000000..6ef0ef97f3dd
+--- /dev/null
++++ b/drivers/iommu/hyperv/Makefile
+@@ -0,0 +1,2 @@
++# SPDX-License-Identifier: GPL-2.0
++obj-$(CONFIG_IRQ_REMAP) += hv-irq-remap-x86.o
+diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv/hv-irq-remap-x86.c
+similarity index 99%
+rename from drivers/iommu/hyperv-iommu.c
+rename to drivers/iommu/hyperv/hv-irq-remap-x86.c
+index 479103261ae6..b34ee9589190 100644
+--- a/drivers/iommu/hyperv-iommu.c
++++ b/drivers/iommu/hyperv/hv-irq-remap-x86.c
+@@ -7,13 +7,11 @@
+  *
+  * Author : Lan Tianyu <Tianyu.Lan@microsoft.com>
+  */
+-
+ #include <linux/types.h>
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
+ #include <linux/iommu.h>
+ #include <linux/module.h>
+-
+ #include <asm/apic.h>
+ #include <asm/cpu.h>
+ #include <asm/hw_irq.h>
+@@ -22,9 +20,7 @@
+ #include <asm/hypervisor.h>
+ #include <asm/mshyperv.h>
+ 
+-#include "irq_remapping.h"
+-
+-#ifdef CONFIG_IRQ_REMAP
++#include "../irq_remapping.h"
+ 
+ /*
+  * According 82093AA IO-APIC spec , IO APIC has a 24-entry Interrupt
+@@ -330,5 +326,3 @@ static const struct irq_domain_ops hyperv_root_ir_domain_ops = {
+ 	.alloc = hyperv_root_irq_remapping_alloc,
+ 	.free = hyperv_root_irq_remapping_free,
+ };
+-
+-#endif
+diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
+index c2443659812a..41bf65e4ea88 100644
+--- a/drivers/iommu/irq_remapping.c
++++ b/drivers/iommu/irq_remapping.c
+@@ -108,7 +108,7 @@ int __init irq_remapping_prepare(void)
+ 	else if (IS_ENABLED(CONFIG_AMD_IOMMU) &&
+ 		 amd_iommu_irq_ops.prepare() == 0)
+ 		remap_ops = &amd_iommu_irq_ops;
+-	else if (IS_ENABLED(CONFIG_HYPERV_IOMMU) &&
++	else if (IS_ENABLED(CONFIG_HYPERV) &&
+ 		 hyperv_irq_remap_ops.prepare() == 0)
+ 		remap_ops = &hyperv_irq_remap_ops;
+ 	else
+-- 
+2.51.2.vfs.0.1
+
