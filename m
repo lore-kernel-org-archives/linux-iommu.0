@@ -1,126 +1,131 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DB6736A36E;
-	Wed,  3 Jun 2026 09:05:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55EE7382291
+	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 09:12:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780477503; cv=none; b=qXrGWnKct0RBMVnIWHIgJaRJM4Y9tk1FkvExd7tPUOSWmA10bGICpLQg36hCtvROFr+nYRR+cGzgbP8f85sA9tL5fCxBJmWUEBsIQcuvQLfZ8ZsQ9zAMRgqkpzWw1y4Z9c70Z51kd6lRNRj+OYSMik2eO1C5U8rKuGcUBMSKWa8=
+	t=1780477932; cv=none; b=rM6s4v9rx+9AquHhyGPDmn7EszNWVZyb2w51iNBza0hfZjSkAuOZIrkeWerxXklsD0yG05HRU2PmCGbEO/mmkGXQODwPOnSi2wFYTY7Jkb2uD84fIx3mr/5SNa9kOQMQqlC82/cyEu+tctppEuxFl5apU+sZqdZZfOnob8CQ79Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780477503; c=relaxed/simple;
-	bh=HxldAff/4Pxj6IFeKMxms8dDi0QFV22v2tPe8P6kMLY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ucwOmzmtSyGOegWwIz3/BushP2Pp2jHitjeXQsYPuUNeZtds+sQc+cRS9fLbO7LVIt3pKbbcGiICbD2VfxT0NKTiiDF5/RWMUwhv22q4t3ChLAL3cJtIPWL5ZfnQKbWbEBFsHV40tI4EeC9U945cwgBwtTG9XRSZjzYFGhg4yEY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dmFDoASZ; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780477932; c=relaxed/simple;
+	bh=aWJJYsImjMlpCgcuTspHg9B1jrZFFSK8m1eqcj4coS4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UQ+deUS5LiX8/R6fpcIBAn/KjJMP8Vxotdo203ZGgT2Xib8N1NiygUhE74jVuqGFQXTakgyOtf5HjFETB6bkKBrvMvmsrwKtFeEjIIVqTyliSyiz5b7Q9kwg1mOrl8liwhi3k1ucGkfW2TcJ5gxuBPFfM6SNz237hHm8U/20zGg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=txQYHfDN; arc=none smtp.client-ip=209.85.214.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dmFDoASZ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E53E1F00893;
-	Wed,  3 Jun 2026 09:04:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780477502;
-	bh=eRTBLDMmxO3KN70i0D2BO9g1Dk3UAuQDRb5bZ2lLMHI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=dmFDoASZ2KMqTeROIdjxiiKy2lHUHeOiYkxtz/Y1+bx6R18wv8namMZUTHitw9Fpv
-	 udW7h38kMUFOPp2pG6kqgloJZEvX9YZvKx1MJNBK25TKrpIyz8Oaocrpjx31H1ZJr8
-	 zvm+RaJloclFKWwIlRz8+uWNcdnBZPigr2myt5XcZbincJQmaNyswwgfSNThhtg9kz
-	 B69RHklNH6xiR8rEzeiAv8V3VIqJ8uzwgN9Ytjk5lV4/VMBUuEeJhmclyDF7WvT9Y3
-	 JqOcHiqDEKhzTX/poYidQXYDs8aVIxi/EJAFY5Eq28OSCXRx8jd9kK6zx/YZy4tUdN
-	 PTFTagtwohu3w==
-Message-ID: <1f9bd9fc-e482-494a-b923-abfa01c510c6@kernel.org>
-Date: Wed, 3 Jun 2026 11:04:25 +0200
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="txQYHfDN"
+Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-2c0b1a48855so60205ad.0
+        for <iommu@lists.linux.dev>; Wed, 03 Jun 2026 02:12:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1780477930; x=1781082730; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=SX4ayXZOGYaHHJyUgP6DHUBZW5VCIsd9Cb8QwmYDehQ=;
+        b=txQYHfDNW0z+HyzHRq4H4Q2bbfJ2lc/Tm8rbpxF2hh4UrthTcyPv9/Xl/KY4RP2kO1
+         UT7EAwc9SzuuWiDwQQvtzfWpuoHKJuPWtfjJee0leiQqpGHGKhkSmgrNGE1go8UfbMyz
+         OFZVmrQ8292hsor+c9FT4cncjuNgLazncv3c6YGKBovd3egFrxkTQLLNdkHZsxqJv6iQ
+         yKGT7WOQG7cCgcSQaCYAFnpE+7RVwjBZ50SKLiRkzEnmqSZVjBExyn+KA18Y5RgrDywt
+         AaFV3Kn+xbRcV3THMaq/GyeWiaMJAQ3MNR3BoNKUDcf/fpSuAREF7Q5WkSaQxAakH/Yg
+         lPXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780477930; x=1781082730;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=SX4ayXZOGYaHHJyUgP6DHUBZW5VCIsd9Cb8QwmYDehQ=;
+        b=GGIG0yAjWE0QM928GkFdLGivm6Ku0lZtvFTashmVLjXPlVcgYbXWtee1g/0vMkVnOo
+         ELmLFxeh6kdojNLPF/2WpLylRyRp4aqP48YzakYVs9lXlyrkEuOI3+1JY0E/sbEcgXEq
+         FhJZh/oIXCU8kXa7zLzoqDJYneYEXICHUfTNlrg0NdERj3FJc5YJrgnbRmjEIS7tOck4
+         fM0mOaao1t4DACKoC3GQzHoXq36X8KxzwXysppbdy27uBh1YxLk68/KskjmxudAT1MYw
+         e9f9xQ7mS1u3bVWPMa6qVWr70f1dhK+n+PGWcxH4jCMCxPoWl9i3/2rVNoAiHlZlUWmQ
+         5FyQ==
+X-Gm-Message-State: AOJu0YyJjX95w4xs/R9FCOf3FDK0HGZC5djLqr6MpsY4oppXIKF9z04m
+	45cTqcYujdUHz38F3arVxsdi3zQVTyQdhCryr2Stw9IcEy4IJXoePcCmgGX8C7eDLw==
+X-Gm-Gg: Acq92OFNgXL2ar+6RXTnHAJ7P30V4OK/N4207x/sDiZH8EjkE6uoVoB3tVwHJeydFTR
+	2YaAdZdpvsQatbXQbLVb7Z4nexJ9A/cvmYkxJ8+84plvAp9lNiPnsLrTqarMKW5ub5IaYR1aqIk
+	Nw1J16evEcsJ5i3A7L0o/y4r8uv79+w1HqVNNGeH31ybym3iYMeJR/cFLzG4ZyqjL1aJrcWyNEc
+	vGfm0LLCYrDlFo/S3r9Jk6ZS21GRuvm8oWK7XGFk8slkGAtgU6D7/u8nli9/NRYbq+JFaxEh2Eq
+	XdMnmkS5ivoAtu/mE196bW8dJ2V0TdlHyGFGemX+/tWN/DmxQyulqX7bU376gNwXL6GQx+sRm9d
+	AtyEXSHyyhThY7F/fHpbP4hcVpIDau4dLGoIylagCFqZMY/rU31fdWi6TaG4f5fKaXRIikZYehX
+	LsmZcwgtO9136Ar3fFoh4pTIN1IRuIsnXwMXHe+bI2imPHw0aNpDofPWfzMbrK5KPDi2kmIjg=
+X-Received: by 2002:a17:902:c405:b0:2bd:5fc9:27b9 with SMTP id d9443c01a7336-2c16fa720bamr937125ad.3.1780477929972;
+        Wed, 03 Jun 2026 02:12:09 -0700 (PDT)
+Received: from google.com (199.255.142.34.bc.googleusercontent.com. [34.142.255.199])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c1664ad172sm18571895ad.83.2026.06.03.02.12.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Jun 2026 02:12:09 -0700 (PDT)
+Date: Wed, 3 Jun 2026 09:12:03 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Baolu Lu <baolu.lu@linux.intel.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>
+Subject: Re: [PATCH v7 4/5] iommu/arm-smmu-v3: Standardize ATS enablement
+ failure reporting
+Message-ID: <ah_v48zPNHoZb8D9@google.com>
+References: <20260601143644.2358771-1-praan@google.com>
+ <20260601143644.2358771-5-praan@google.com>
+ <DM6PR11MB3690D6851AE3354AC55CA2368C132@DM6PR11MB3690.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 7/8] ARM: dts: qcom: pm8921: Add USB ID extcon
-To: MINETTE Alexandre <contact@alex-min.fr>
-Cc: Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, MyungJoo Ham <myungjoo.ham@samsung.com>,
- Chanwoo Choi <cw00.choi@samsung.com>, Guru Das Srinagesh
- <linux@gurudas.dev>, Linus Walleij <linusw@kernel.org>,
- Rob Clark <robin.clark@oss.qualcomm.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>,
- "Guilherme G. Piccoli" <gpiccoli@igalia.com>, linux-arm-msm@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-gpio@vger.kernel.org, iommu@lists.linux.dev,
- phone-devel@vger.kernel.org
-References: <20260427-mainline-send-v1-sending-v2-0-dcaa9178007b@alex-min.fr>
- <20260427-mainline-send-v1-sending-v2-7-dcaa9178007b@alex-min.fr>
- <20260428-jumping-discerning-oarfish-d2caf1@quoll>
- <50c433df-d737-45da-93dc-76d365052a6c@app.fastmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <50c433df-d737-45da-93dc-76d365052a6c@app.fastmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DM6PR11MB3690D6851AE3354AC55CA2368C132@DM6PR11MB3690.namprd11.prod.outlook.com>
 
-On 03/06/2026 10:39, MINETTE Alexandre wrote:
-> Thanks for the feedback, Krzysztof.
+On Wed, Jun 03, 2026 at 07:34:14AM +0000, Tian, Kevin wrote:
+> > From: Pranjal Shrivastava <praan@google.com>
+> > Sent: Monday, June 1, 2026 10:37 PM
+> > 
+> > Update arm_smmu_enable_ats() to wrap the pci_enable_ats() call in
+> > WARN_ON(). Since probe-time checks now preclude configuration errors
+> > any failure during hardware enablement is considered a kernel bug.
+> > 
+> > Signed-off-by: Pranjal Shrivastava <praan@google.com>
+> > ---
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 7 ++++++-
+> >  1 file changed, 6 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > index 54c7f1ae3a84..dfb2b0d2d2a5 100644
+> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > @@ -2956,7 +2956,12 @@ static void arm_smmu_enable_ats(struct
+> > arm_smmu_master *master)
+> >  	 * ATC invalidation of PASID 0 causes the entire ATC to be flushed.
+> >  	 */
+> >  	arm_smmu_atc_inv_master(master, IOMMU_NO_PASID);
+> > -	if (pci_enable_ats(pdev, stu))
+> > +
+> > +	 /*
+> > +	  * Since pci_prepare_ats() has already verified the HW capability
+> > +	  * and programmed the STE, pci_enable_ats() should not fail here.
+> > +	  */
+> > +	if (WARN_ON(pci_enable_ats(pdev, stu)))
+> >  		dev_err(master->dev, "Failed to enable ATS (STU %zu)\n",
+> > stu);
+> >  }
+> > 
 > 
-> Do you mean that the PM8921 USB ID handling should be exposed by the
-> PM8921 parent node itself, so USB consumers would reference the PMIC
-> directly, e.g.:
-> 
->   	extcon = <&muic>, <&pm8921>;
-> 
-> I am fine with that model, but it would require more driver changes: the
-> current extcon driver binds to a separate platform device, while the
-> PM8921 parent node is already handled by the PM8xxx MFD driver.
-> 
-> Is that the direction you would prefer for v4?
+> looks smmu driver doesn't check return value of pci_prepare_ats() too.
 
+It does check the reval of pci_prepare_ats() now with the a recent 
+patch [1] (merged in Joerg's tree) that adds a new 
+"arm_smmu_master_prepare_ats" helper function.
 
-Unfortunately, I do not get what you refer to. There is no context - no
-comments from me.
+Thanks,
+Praan
 
-Best regards,
-Krzysztof
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git/commit/?h=core&id=5ff98a0da6b48d8722eac0080e4185c417925d05
