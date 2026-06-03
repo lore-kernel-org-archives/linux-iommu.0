@@ -1,105 +1,91 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3C0B2DC344
-	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 16:25:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CB6143D7D87
+	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 16:56:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780503945; cv=none; b=YWg9fEx6QvVzFtqQFU/+p+tEECDOPkrnPpWrU1GFuXsU8eqynerRvcWmrRpGygva7fOtQx2FgAPSALmBGXGicQb8CGSY0wj15njWTlg/ORO/3cOc8IQIESMG5D7K72kDbdXO+GunIaca1isG7GsyTHgZHktOzNjKXWRhABU03To=
+	t=1780505784; cv=none; b=Hsjb7ISMB092k1bL26WaCdwcr/PHeK2YlY2282vHKP++h9e4PhDJz0LQj/k/5XaD8xobTQVHtbl8khNWNmKbrZpnlet5m1oB2bkWFPO8hBjMb+t+ZWiCYCpKF1K1r6d7v9Gi1P3uYUgac7fZIFQAmO+CVZpw8v2qewk+bvAv9dA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780503945; c=relaxed/simple;
-	bh=7B84NCfZuKG4Hsg7BG5/Xe3IgPqV7+Fphl+XrLNEEc4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:From:In-Reply-To:
-	 Content-Type:References; b=bcJ9UtfFZYYDvYbSObfBV663xseWalBB66HER81n03lxeDfIwZTwg6xXJFL/6qhAvTrzyCDVkAXNHacSHtFuZFJ5urYwP872u53RTVxEdVJxITvkL/FNhlJNuyO8n53x4U4OayzdZ70Ge/MAjqDQTx6T5MwUQSvE7f0N99VM5Ug=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=Tc++dRfH; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1780505784; c=relaxed/simple;
+	bh=D/T+S1u5dXoaEx6uI6fXKUALhijqa9eWR5IFV7Nds/U=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=OSZBw967r1RXbj6+J7XN0FPpBplA28z/RiuEhNCOPkD4LCd+aid6edetDRQjzEGWhh1NSryLvRBVAs3b50GKANQYw5SyPKP0s3v/GbAJQgBUhtT2XeJOWmyQsoEkErOKPdXk7qumgz23KtBPBtTqctTwW+VhPXLpJFew3TVwRWU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=AOwE3E/O; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="Tc++dRfH"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260603162542euoutp01c577f540e073176759fd2f8aed901db0~1nubjZcbH2305223052euoutp01Q
-	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 16:25:42 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260603162542euoutp01c577f540e073176759fd2f8aed901db0~1nubjZcbH2305223052euoutp01Q
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1780503942;
-	bh=pJROqRmgyExK5WmWqqHQO2qY5/C8xYxRor0VJyZDfFs=;
-	h=Date:Subject:To:From:In-Reply-To:References:From;
-	b=Tc++dRfHj9bw44505VnMEVV7IoKmyepIob/ZuoBZ6c9LAvmDYe0+FIpGyrTtu8WnP
-	 JL4hc1x5Zd/atsi5XyYebU22kSOMlbBGT8kFNl7oRWINTn7eI2UTK/YX7V+HxENaK6
-	 IWyflvBQwzjMseBPnZAs5ktybDvZymcx+NyEdtYM=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20260603162541eucas1p200481d8b862c8add3bd298a8b813f036~1nubQ_coa2350723507eucas1p2k;
-	Wed,  3 Jun 2026 16:25:41 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20260603162541eusmtip2ebd3ce541445a264719262f3a4fdd4f2~1nubCILXA0040900409eusmtip2x;
-	Wed,  3 Jun 2026 16:25:41 +0000 (GMT)
-Message-ID: <fbce1140-eb8d-4afd-a92a-424859bcbeca@samsung.com>
-Date: Wed, 3 Jun 2026 18:25:41 +0200
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="AOwE3E/O"
+Received: from localhost (unknown [52.148.140.42])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 30D1320B7168;
+	Wed,  3 Jun 2026 09:56:07 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 30D1320B7168
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1780505767;
+	bh=dJOJv7cU/Zcf6xn2D3pgZgbDLjsqPOix/9NIjv/vTME=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=AOwE3E/Oa9EHKUu/qjvvkn42GQZvNT5RoBBD+x4N9V6N6qFiS2DOFobdUrwvm+3cV
+	 ZC5IOUVVCszNNPm3AP44q6Ijf3Gurh6jtX0yCkCwii/73zJjeXjWaNpTe4BNX8bUmL
+	 OjLJ6SyqWFVsSxST/R3xaUUo1asfJUwbrVWVItNY=
+Date: Wed, 3 Jun 2026 09:56:20 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Jason Gunthorpe
+ <jgg@nvidia.com>, Alex Williamson <alex@shazbot.org>, Joerg Roedel
+ <joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>, David Matlack
+ <dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen
+ <nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>, Baolu Lu
+ <baolu.lu@linux.intel.com>, Saurabh Sengar <ssengar@linux.microsoft.com>,
+ "skhawaja@google.com" <skhawaja@google.com>, "pasha.tatashin@soleen.com"
+ <pasha.tatashin@soleen.com>, Will Deacon <will@kernel.org>,
+ jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH v7 1/6] iommufd: Support a HWPT without an iommu driver
+ for noiommu
+Message-ID: <20260603095620.00004a2e@linux.microsoft.com>
+In-Reply-To: <DM6PR11MB369077ABB0DBC1633A76E9648C132@DM6PR11MB3690.namprd11.prod.outlook.com>
+References: <20260603054438.2450130-1-jacob.pan@linux.microsoft.com>
+	<20260603054438.2450130-2-jacob.pan@linux.microsoft.com>
+	<DM6PR11MB369077ABB0DBC1633A76E9648C132@DM6PR11MB3690.namprd11.prod.outlook.com>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH] dma-debug: fix physical address retrieval in
- debug_dma_sync_sg_for_device
-To: lirongqing <lirongqing@baidu.com>, Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20260603123708.1665-1-lirongqing@baidu.com>
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20260603162541eucas1p200481d8b862c8add3bd298a8b813f036
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260603123724eucas1p1d84be25a6da439618a24931e65315cd8
-X-EPHeader: CA
-X-CMS-RootMailID: 20260603123724eucas1p1d84be25a6da439618a24931e65315cd8
-References: <CGME20260603123724eucas1p1d84be25a6da439618a24931e65315cd8@eucas1p1.samsung.com>
-	<20260603123708.1665-1-lirongqing@baidu.com>
 
-On 03.06.2026 14:37, lirongqing wrote:
-> From: Li RongQing <lirongqing@baidu.com>
->
-> In debug_dma_sync_sg_for_device(), when iterating over a scatterlist,
-> the debug entry population mistakenly uses the head of the scatterlist
-> 'sg' to fetch the physical address via sg_phys(), instead of using the
-> current iterator variable 's'.
->
-> This causes dma-debug to track the physical address of the very first
-> scatterlist entry for all subsequent entries in the list.
->
-> Fix this by passing the correct loop iterator 's' to sg_phys()
->
-> Fixes: 9d4f645a1fd49ee ("dma-debug: store a phys_addr_t in struct dma_debug_entry")
-> Signed-off-by: Li RongQing <lirongqing@baidu.com>
+Hi Kevin,
 
-Nice catch! Applied to dma-mapping-fixes, thanks!
+On Wed, 3 Jun 2026 06:30:57 +0000
+"Tian, Kevin" <kevin.tian@intel.com> wrote:
 
+> > From: Jacob Pan <jacob.pan@linux.microsoft.com>
+> > Sent: Wednesday, June 3, 2026 1:45 PM
+> > 
+> > +static const struct iommu_ops *get_iommu_ops(struct iommufd_device
+> > *idev)
+> > +{
+> > +	if (IS_ENABLED(CONFIG_IOMMUFD_NOIOMMU) && !idev->igroup-  
+> > >group)  
+> > +		return &iommufd_noiommu_ops;
+> > +	if (WARN_ON_ONCE(!idev->dev->iommu))
+> > +		return NULL;
+> > +	return dev_iommu_ops(idev->dev);
+> > +}  
+> 
+> Sashiko gave a valid comment:
+> 
+> "
+> While get_iommu_ops() correctly handles NO-IOMMU devices for
+> hw_pagetable allocations, do the vIOMMU and vDevice allocation paths
+> also need similar protection against NULL pointer dereferences?
+> "
+> 
+right, will fix in v8.
 
-> ---
->  kernel/dma/debug.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-> index 3248f8b..2c0e2cd 100644
-> --- a/kernel/dma/debug.c
-> +++ b/kernel/dma/debug.c
-> @@ -1556,7 +1556,7 @@ void debug_dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
->  		struct dma_debug_entry ref = {
->  			.type           = dma_debug_sg,
->  			.dev            = dev,
-> -			.paddr		= sg_phys(sg),
-> +			.paddr		= sg_phys(s),
->  			.dev_addr       = sg_dma_address(s),
->  			.size           = sg_dma_len(s),
->  			.direction      = direction,
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+> with that fixed:
+> 
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 
