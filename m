@@ -1,30 +1,30 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B99933D647B
-	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 05:44:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 564C239A4A7
+	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 05:44:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780465486; cv=none; b=C2w5jKJj2P/wlMRn3KJRJxYLYUvJpfOsyYkmaj5wE/MLZKZRq3itoZYxcj2emOB4v6w5iNQqBtM/gG4KaxNsCxAAw9C9a2ZX8rwnXGX7CESLSveDv11F4+nMpktQxfxDUeVpLU3IdEyBZwigXKe21YSnsU8nIsjAFDB88UUQa4Q=
+	t=1780465486; cv=none; b=Sh8JiAJucqAaNv0XF3OWFCIIlA8pm5vTgnibL8spWYovzi/XDcDcxOsnjmQ6lL/w6Wg9Gm5XQ/B6uBD7p3U+YE5aLLMdMnFljWJlppcAIGnT9OCSB9U7MlT288zAGkszBfnk3Gv6XraV6+cJi6j46oK5RStqQ+7jl7QfjMPnJ+w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1780465486; c=relaxed/simple;
-	bh=iPlq0G2l6pzT4mhO4cP23j1HcRAgXUGdq/Bob2n/pxs=;
+	bh=23M/jmS17X/wVH1bdrIEMjUUOV6pbiJ+VNxNyMXd6PI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=E6ptaHm1r2pY5LHkZfchAgnPjI3RiHAN6BBVhs44dBL88nL+W0D9vcCzpIbpe+bmdcuPqo24J3jebu5+MeKvnSuzYenrJyDJxCoJ1MCJFy5KFuGvz4Xy+N4inQkjvz1I/qD4hFjmdUQdgtEHpE+/CVv5QSwiOCHLH+KNh7TjCEk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=ZMzGk4pB; arc=none smtp.client-ip=13.77.154.182
+	 MIME-Version; b=CkMW2aHsEdg/Dh8r4obcBYopABqdmbAF+5eDOjevqca07vdbEPtYRx+vQ5dEiraudClaTIMstoVQKxrkz9K6pSLlqZ20x/KEEcpeudnON1vs1HJRbOERZsIpoO1JvFSOmJheKBIOE73AUK8CwApeXQxRVbo8WywC9GQl93eOyVs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=NAgStJBP; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="ZMzGk4pB"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="NAgStJBP"
 Received: from administrator-PowerEdge-R660.corp.microsoft.com (unknown [131.107.147.7])
-	by linux.microsoft.com (Postfix) with ESMTPSA id E85E820B716D;
-	Tue,  2 Jun 2026 22:44:28 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E85E820B716D
+	by linux.microsoft.com (Postfix) with ESMTPSA id A563A20B716E;
+	Tue,  2 Jun 2026 22:44:29 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A563A20B716E
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
 	s=default; t=1780465469;
-	bh=E7vmE5tZtItlI+VstNoWJcWFglR5X753Y5u52kpjXRY=;
+	bh=97o4X1u1LGXaHBPw4ejRKkcyR+QSopiKHJrk1F5Em3U=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=ZMzGk4pBJooAwAXgw3t2FaSC3ZHlRRTdgOE+WFUov+tyVOmCS/0kddDOFrVoobfAk
-	 T/0blt7f/kyVburdc5aOQuZIM3wP2te0tEkfeGioWw2DNvIZ2p5ElZmrSWL7fzNnAd
-	 /OZodLAijgQ3t2PfpqFA2Tngodv7qD/ur6YL6Pzc=
+	b=NAgStJBPbI1VPnFkVJNuHlp5H94WrX/FS2wWFPD5IY91Omw6bwHxTdfpcSWXBR7+4
+	 Igf/TwYP/EjSPqbx7kwJuFDxfViWozlvv4vb7GRLYxHdyGbDGYSEm8+roNXTcBPKGw
+	 04DGaCVsMdRJ7/Mc85n5HMWHtke+X57qO72IKmgs=
 From: Jacob Pan <jacob.pan@linux.microsoft.com>
 To: linux-kernel@vger.kernel.org,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
@@ -43,9 +43,9 @@ Cc: Saurabh Sengar <ssengar@linux.microsoft.com>,
 	pasha.tatashin@soleen.com,
 	Will Deacon <will@kernel.org>,
 	Jacob Pan <jacob.pan@linux.microsoft.com>
-Subject: [PATCH v7 4/6] iommufd: Add an ioctl to query PA from IOVA for noiommu mode
-Date: Tue,  2 Jun 2026 22:44:36 -0700
-Message-ID: <20260603054438.2450130-5-jacob.pan@linux.microsoft.com>
+Subject: [PATCH v7 5/6] vfio: Enable cdev noiommu mode under iommufd
+Date: Tue,  2 Jun 2026 22:44:37 -0700
+Message-ID: <20260603054438.2450130-6-jacob.pan@linux.microsoft.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260603054438.2450130-1-jacob.pan@linux.microsoft.com>
 References: <20260603054438.2450130-1-jacob.pan@linux.microsoft.com>
@@ -57,276 +57,244 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-To support no-IOMMU mode where userspace drivers perform unsafe DMA
-using physical addresses, introduce a new API to retrieve the
-physical address of a user-allocated DMA buffer that has been mapped to
-an IOVA via IOMMU_IOAS_MAP. The mapping is backed by SW-only I/O page
-tables maintained by the generic IOMMUPT framework.
+Now that devices under noiommu mode can bind with IOMMUFD and perform
+IOAS operations, lift restrictions on cdev from VFIO side.
+Use cases are documented in Documentation/driver-api/vfio.rst
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-Co-developed-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
 ---
 v7:
-   - Fix commit message (Yi)
-   - Avoid duplicated tmp_length settting (yi)
-   - Handle race with dma-buf revoke pages (Sashiko)
+  - Avoid treating emulated device as noiommu device (Sashiko)
+  - Keep platforms w/ GENERIC_ATOMIC64 to use VFIO group noiommu as
+    before (Sashiko)
+  - Restore order of group & cdev init for noiommu (Yi)
+  - Consolidate noiommu helper for cdev & group (Yi)
 v6:
-   - Limit search length (Baolu, Jason)
+  - Revert back to unified VFIO_NOIOMMU Kconfig for both cdev and group.
+    Use Kconfig dependency to restrict usages and avoid null group
+    checks. (Alex & Yi)
+  - Add CAP_SYS_RAWIO checks for cdev open to maintain security parity
+    with the group noiommu path. (Alex)
 v5:
-   - Fix next_iova exceeds iopt_area_last_iova (Alex)
-   - Rename IOCTL more specific to NOIOMMU, i.e.
-	 IOMMUFD_CMD_IOAS_NOIOMMU_GET_PA (Kevin)
-   - Add header stubs for iopt_get_phys()
+   - Add Kconfig VFIO_CDEV_NOIOMMU to select IOMMUFD_NOIOMMU
+     and its dependencies
+   - Add comment to explain vfio_noiommu conditional definition (Alex)
+   - Removed early return for group noiommu in bind/unbind
+   - Use consistent wording referring to VFIO noiommu mode (Kevin)
+   - Update unsafe_noiommu Kconfig help text (Kevin)
+   - Change dev_warn to dev_info for noiommu enabling msg (Kevin)
 v4:
-   - Fix ioctl return type (Yi Liu)
+   - Remove early return in iommufd_bind for noiommu (Alex)
+v3:
+   - Consolidate into fewer patches
+v2:
+   - removed unnecessary device->noiommu set in
+     iommufd_vfio_compat_ioas_get_id()
 ---
- drivers/iommu/iommufd/io_pagetable.c    | 80 +++++++++++++++++++++++++
- drivers/iommu/iommufd/ioas.c            | 33 ++++++++++
- drivers/iommu/iommufd/iommufd_private.h | 18 ++++++
- drivers/iommu/iommufd/main.c            |  3 +
- include/uapi/linux/iommufd.h            | 27 +++++++++
- 5 files changed, 161 insertions(+)
+ drivers/vfio/Kconfig       |  7 ++++---
+ drivers/vfio/device_cdev.c |  3 +++
+ drivers/vfio/iommufd.c     | 12 ++++++++----
+ drivers/vfio/vfio.h        | 23 +++++++++--------------
+ drivers/vfio/vfio_main.c   | 26 +++++++++++++++++++++++++-
+ include/linux/vfio.h       |  1 +
+ 6 files changed, 50 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
-index 24d4917105d9..667c2d07e08b 100644
---- a/drivers/iommu/iommufd/io_pagetable.c
-+++ b/drivers/iommu/iommufd/io_pagetable.c
-@@ -859,6 +859,86 @@ int iopt_unmap_iova(struct io_pagetable *iopt, unsigned long iova,
- 	return iopt_unmap_iova_range(iopt, iova, iova_last, unmapped);
- }
+diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
+index ceae52fd7586..b9d6e1c22aed 100644
+--- a/drivers/vfio/Kconfig
++++ b/drivers/vfio/Kconfig
+@@ -22,8 +22,7 @@ config VFIO_DEVICE_CDEV
+ 	  The VFIO device cdev is another way for userspace to get device
+ 	  access. Userspace gets device fd by opening device cdev under
+ 	  /dev/vfio/devices/vfioX, and then bind the device fd with an iommufd
+-	  to set up secure DMA context for device access.  This interface does
+-	  not support noiommu.
++	  to set up secure DMA context for device access.
  
-+#ifdef CONFIG_IOMMUFD_NOIOMMU
-+int iopt_get_phys(struct io_pagetable *iopt, unsigned long iova, u64 *paddr,
-+		  u64 *length)
-+{
-+	struct iopt_area *area;
-+	struct iopt_pages *pages;
-+	u64 max_length = *length;
-+	u64 tmp_length = 0;
-+	u64 tmp_paddr = 0;
-+	int rc = 0;
-+
-+	down_read(&iopt->iova_rwsem);
-+	area = iopt_area_iter_first(iopt, iova, iova);
-+	if (!area || !area->pages) {
-+		rc = -ENOENT;
-+		goto unlock_exit;
-+	}
-+
-+	pages = area->pages;
-+	mutex_lock(&pages->mutex);
-+	if (iopt_dmabuf_revoked(pages)) {
-+		rc = -EINVAL;
-+		goto unlock_pages;
-+	}
-+
-+	if (!area->storage_domain ||
-+	    area->storage_domain->owner != &iommufd_noiommu_ops) {
-+		rc = -EOPNOTSUPP;
-+		goto unlock_pages;
-+	}
-+
-+	*paddr = iommu_iova_to_phys(area->storage_domain, iova);
-+	if (!*paddr) {
-+		rc = -EINVAL;
-+		goto unlock_pages;
-+	}
-+
-+	tmp_length = PAGE_SIZE - offset_in_page(iova);
-+	tmp_paddr = *paddr;
-+	/*
-+	 * Scan the domain for the contiguous physical address length so that
-+	 * userspace search can be optimized for fewer ioctls. A max_length of
-+	 * 0 means no limit.
-+	 */
-+	while (iova < iopt_area_last_iova(area)) {
-+		unsigned long next_iova;
-+		u64 next_paddr;
-+
-+		if (max_length && tmp_length >= max_length)
-+			break;
-+
-+		if (check_add_overflow(iova, PAGE_SIZE, &next_iova))
-+			break;
-+
-+		if (next_iova > iopt_area_last_iova(area))
-+			break;
-+
-+		next_paddr = iommu_iova_to_phys(area->storage_domain, next_iova);
-+
-+		if (!next_paddr || next_paddr != tmp_paddr + PAGE_SIZE)
-+			break;
-+
-+		iova = next_iova;
-+		tmp_paddr += PAGE_SIZE;
-+		tmp_length += PAGE_SIZE;
-+	}
-+
-+	if (max_length && tmp_length > max_length)
-+		tmp_length = max_length;
-+	*length = tmp_length;
-+
-+unlock_pages:
-+	mutex_unlock(&pages->mutex);
-+unlock_exit:
-+	up_read(&iopt->iova_rwsem);
-+
-+	return rc;
-+}
-+#endif
-+
- int iopt_unmap_all(struct io_pagetable *iopt, unsigned long *unmapped)
- {
- 	/* If the IOVAs are empty then unmap all succeeds */
-diff --git a/drivers/iommu/iommufd/ioas.c b/drivers/iommu/iommufd/ioas.c
-index fed06c2b728e..ad1c3031f6a9 100644
---- a/drivers/iommu/iommufd/ioas.c
-+++ b/drivers/iommu/iommufd/ioas.c
-@@ -375,6 +375,39 @@ int iommufd_ioas_unmap(struct iommufd_ucmd *ucmd)
- 	return rc;
- }
+ 	  If you don't know what to do here, say N.
  
-+#ifdef CONFIG_IOMMUFD_NOIOMMU
-+int iommufd_ioas_noiommu_get_pa(struct iommufd_ucmd *ucmd)
-+{
-+	struct iommu_ioas_noiommu_get_pa *cmd = ucmd->cmd;
-+	struct iommufd_ioas *ioas;
-+	int rc;
-+
-+	if (!capable(CAP_SYS_RAWIO))
+@@ -62,7 +61,9 @@ endif
+ 
+ config VFIO_NOIOMMU
+ 	bool "VFIO No-IOMMU support"
+-	depends on VFIO_GROUP
++	depends on VFIO_GROUP || (VFIO_DEVICE_CDEV && !GENERIC_ATOMIC64)
++	depends on !VFIO_GROUP || VFIO_CONTAINER || IOMMUFD_VFIO_CONTAINER
++	select IOMMUFD_NOIOMMU if VFIO_DEVICE_CDEV && !GENERIC_ATOMIC64
+ 	help
+ 	  VFIO is built on the ability to isolate devices using the IOMMU.
+ 	  Only with an IOMMU can userspace access to DMA capable devices be
+diff --git a/drivers/vfio/device_cdev.c b/drivers/vfio/device_cdev.c
+index 54abf312cf04..5ca14979b56e 100644
+--- a/drivers/vfio/device_cdev.c
++++ b/drivers/vfio/device_cdev.c
+@@ -27,6 +27,9 @@ int vfio_device_fops_cdev_open(struct inode *inode, struct file *filep)
+ 	struct vfio_device_file *df;
+ 	int ret;
+ 
++	if (vfio_device_is_noiommu(device) && !capable(CAP_SYS_RAWIO))
 +		return -EPERM;
 +
-+	if (cmd->flags || cmd->__reserved)
-+		return -EOPNOTSUPP;
-+
-+	if (cmd->iova >= ULONG_MAX)
-+		return -EOVERFLOW;
-+
-+	ioas = iommufd_get_ioas(ucmd->ictx, cmd->ioas_id);
-+	if (IS_ERR(ioas))
-+		return PTR_ERR(ioas);
-+
-+	rc = iopt_get_phys(&ioas->iopt, cmd->iova, &cmd->out_phys,
-+			   &cmd->length);
-+	if (rc)
-+		goto out_put;
-+
-+	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
-+out_put:
-+	iommufd_put_object(ucmd->ictx, &ioas->obj);
-+
-+	return rc;
-+}
-+#endif
-+
- static void iommufd_release_all_iova_rwsem(struct iommufd_ctx *ictx,
- 					   struct xarray *ioas_list)
+ 	/* Paired with the put in vfio_device_fops_release() */
+ 	if (!vfio_device_try_get_registration(device))
+ 		return -ENODEV;
+diff --git a/drivers/vfio/iommufd.c b/drivers/vfio/iommufd.c
+index a38d262c6028..e9893d34d07b 100644
+--- a/drivers/vfio/iommufd.c
++++ b/drivers/vfio/iommufd.c
+@@ -25,8 +25,8 @@ int vfio_df_iommufd_bind(struct vfio_device_file *df)
+ 
+ 	lockdep_assert_held(&vdev->dev_set->lock);
+ 
+-	/* Returns 0 to permit device opening under noiommu mode */
+-	if (vfio_device_is_noiommu(vdev))
++	/* Group noiommu via iommufd compat needs no device binding */
++	if (df->group && vfio_device_is_noiommu(vdev))
+ 		return 0;
+ 
+ 	return vdev->ops->bind_iommufd(vdev, ictx, &df->devid);
+@@ -40,7 +40,11 @@ int vfio_iommufd_compat_attach_ioas(struct vfio_device *vdev,
+ 
+ 	lockdep_assert_held(&vdev->dev_set->lock);
+ 
+-	/* compat noiommu does not need to do ioas attach */
++	/*
++	 * Compat noiommu does not need to do ioas attach. This helper is
++	 * only called from the legacy group/iommufd compat path, so no
++	 * explicit df->group check is needed.
++	 */
+ 	if (vfio_device_is_noiommu(vdev))
+ 		return 0;
+ 
+@@ -58,7 +62,7 @@ void vfio_df_iommufd_unbind(struct vfio_device_file *df)
+ 
+ 	lockdep_assert_held(&vdev->dev_set->lock);
+ 
+-	if (vfio_device_is_noiommu(vdev))
++	if (df->group && vfio_device_is_noiommu(vdev))
+ 		return;
+ 
+ 	if (vdev->ops->unbind_iommufd)
+diff --git a/drivers/vfio/vfio.h b/drivers/vfio/vfio.h
+index e4b72e79b7e3..7728bc99b63d 100644
+--- a/drivers/vfio/vfio.h
++++ b/drivers/vfio/vfio.h
+@@ -112,11 +112,6 @@ bool vfio_device_has_container(struct vfio_device *device);
+ int __init vfio_group_init(void);
+ void vfio_group_cleanup(void);
+ 
+-static inline bool vfio_device_is_noiommu(struct vfio_device *vdev)
+-{
+-	return IS_ENABLED(CONFIG_VFIO_NOIOMMU) &&
+-	       vdev->group->type == VFIO_NO_IOMMU;
+-}
+ #else
+ struct vfio_group;
+ 
+@@ -188,11 +183,17 @@ static inline void vfio_group_cleanup(void)
  {
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 2682b5baa6e9..13f1506d8066 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -118,6 +118,16 @@ int iopt_map_pages(struct io_pagetable *iopt, struct list_head *pages_list,
- int iopt_unmap_iova(struct io_pagetable *iopt, unsigned long iova,
- 		    unsigned long length, unsigned long *unmapped);
- int iopt_unmap_all(struct io_pagetable *iopt, unsigned long *unmapped);
-+#ifdef CONFIG_IOMMUFD_NOIOMMU
-+int iopt_get_phys(struct io_pagetable *iopt, unsigned long iova, u64 *paddr,
-+		  u64 *length);
-+#else
-+static inline int iopt_get_phys(struct io_pagetable *iopt, unsigned long iova,
-+				u64 *paddr, u64 *length)
-+{
-+	return -EOPNOTSUPP;
-+}
-+#endif
+ }
  
- int iopt_read_and_clear_dirty_data(struct io_pagetable *iopt,
- 				   struct iommu_domain *domain,
-@@ -346,6 +356,14 @@ int iommufd_ioas_map_file(struct iommufd_ucmd *ucmd);
- int iommufd_ioas_change_process(struct iommufd_ucmd *ucmd);
- int iommufd_ioas_copy(struct iommufd_ucmd *ucmd);
- int iommufd_ioas_unmap(struct iommufd_ucmd *ucmd);
-+#ifdef CONFIG_IOMMUFD_NOIOMMU
-+int iommufd_ioas_noiommu_get_pa(struct iommufd_ucmd *ucmd);
-+#else
-+static inline int iommufd_ioas_noiommu_get_pa(struct iommufd_ucmd *ucmd)
-+{
-+	return -EOPNOTSUPP;
-+}
-+#endif
- int iommufd_ioas_option(struct iommufd_ucmd *ucmd);
- int iommufd_option_rlimit_mode(struct iommu_option *cmd,
- 			       struct iommufd_ctx *ictx);
-diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-index f6ae60bd3f70..a4668995269c 100644
---- a/drivers/iommu/iommufd/main.c
-+++ b/drivers/iommu/iommufd/main.c
-@@ -424,6 +424,7 @@ union ucmd_buffer {
- 	struct iommu_ioas_alloc alloc;
- 	struct iommu_ioas_allow_iovas allow_iovas;
- 	struct iommu_ioas_copy ioas_copy;
-+	struct iommu_ioas_noiommu_get_pa noiommu_get_pa;
- 	struct iommu_ioas_iova_ranges iova_ranges;
- 	struct iommu_ioas_map map;
- 	struct iommu_ioas_unmap unmap;
-@@ -482,6 +483,8 @@ static const struct iommufd_ioctl_op iommufd_ioctl_ops[] = {
- 	IOCTL_OP(IOMMU_IOAS_MAP, iommufd_ioas_map, struct iommu_ioas_map, iova),
- 	IOCTL_OP(IOMMU_IOAS_MAP_FILE, iommufd_ioas_map_file,
- 		 struct iommu_ioas_map_file, iova),
-+	IOCTL_OP(IOMMU_IOAS_NOIOMMU_GET_PA, iommufd_ioas_noiommu_get_pa, struct iommu_ioas_noiommu_get_pa,
-+		 out_phys),
- 	IOCTL_OP(IOMMU_IOAS_UNMAP, iommufd_ioas_unmap, struct iommu_ioas_unmap,
- 		 length),
- 	IOCTL_OP(IOMMU_OPTION, iommufd_option, struct iommu_option, val64),
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index e998dfbd6960..26b4998439e8 100644
---- a/include/uapi/linux/iommufd.h
-+++ b/include/uapi/linux/iommufd.h
-@@ -57,6 +57,7 @@ enum {
- 	IOMMUFD_CMD_IOAS_CHANGE_PROCESS = 0x92,
- 	IOMMUFD_CMD_VEVENTQ_ALLOC = 0x93,
- 	IOMMUFD_CMD_HW_QUEUE_ALLOC = 0x94,
-+	IOMMUFD_CMD_IOAS_NOIOMMU_GET_PA = 0x95,
- };
- 
- /**
-@@ -219,6 +220,32 @@ struct iommu_ioas_map {
- };
- #define IOMMU_IOAS_MAP _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_MAP)
- 
-+/**
-+ * struct iommu_ioas_noiommu_get_pa - ioctl(IOMMU_IOAS_NOIOMMU_GET_PA)
-+ * @size: sizeof(struct iommu_ioas_noiommu_get_pa)
-+ * @flags: Reserved, must be 0 for now
-+ * @ioas_id: IOAS ID to query IOVA to PA mapping from
-+ * @__reserved: Must be 0
-+ * @iova: IOVA to query
-+ * @length: On input, maximum number of bytes to scan for contiguity (0 means
-+ *          no limit). On output, actual number of contiguous bytes starting
-+ *          from out_phys.
-+ * @out_phys: Output physical address the IOVA maps to
-+ *
-+ * Query the physical address backing an IOVA range. The entire range must be
-+ * mapped already. For noiommu devices doing unsafe DMA only.
-+ */
-+struct iommu_ioas_noiommu_get_pa {
-+	__u32 size;
-+	__u32 flags;
-+	__u32 ioas_id;
-+	__u32 __reserved;
-+	__aligned_u64 iova;
-+	__aligned_u64 length;
-+	__aligned_u64 out_phys;
-+};
-+#define IOMMU_IOAS_NOIOMMU_GET_PA _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_NOIOMMU_GET_PA)
++#endif /* CONFIG_VFIO_GROUP */
 +
+ static inline bool vfio_device_is_noiommu(struct vfio_device *vdev)
+ {
+-	return false;
++#if IS_ENABLED(CONFIG_VFIO_GROUP)
++	if (vdev->group && vdev->group->type == VFIO_NO_IOMMU)
++		return true;
++#endif
++
++	return IS_ENABLED(CONFIG_IOMMUFD_NOIOMMU) && vdev->noiommu;
+ }
+-#endif /* CONFIG_VFIO_GROUP */
+ 
+ #if IS_ENABLED(CONFIG_VFIO_CONTAINER)
  /**
-  * struct iommu_ioas_map_file - ioctl(IOMMU_IOAS_MAP_FILE)
-  * @size: sizeof(struct iommu_ioas_map_file)
+@@ -358,19 +359,13 @@ void vfio_init_device_cdev(struct vfio_device *device);
+ 
+ static inline int vfio_device_add(struct vfio_device *device)
+ {
+-	/* cdev does not support noiommu device */
+-	if (vfio_device_is_noiommu(device))
+-		return device_add(&device->device);
+ 	vfio_init_device_cdev(device);
+ 	return cdev_device_add(&device->cdev, &device->device);
+ }
+ 
+ static inline void vfio_device_del(struct vfio_device *device)
+ {
+-	if (vfio_device_is_noiommu(device))
+-		device_del(&device->device);
+-	else
+-		cdev_device_del(&device->cdev, &device->device);
++	cdev_device_del(&device->cdev, &device->device);
+ }
+ 
+ int vfio_device_fops_cdev_open(struct inode *inode, struct file *filep);
+diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
+index 6222376ab6ab..e5107387fb77 100644
+--- a/drivers/vfio/vfio_main.c
++++ b/drivers/vfio/vfio_main.c
+@@ -321,6 +321,24 @@ static int vfio_init_device(struct vfio_device *device, struct device *dev,
+ 	return ret;
+ }
+ 
++static int vfio_device_set_noiommu_and_name(struct vfio_device *device, enum vfio_group_type type)
++{
++	if (IS_ENABLED(CONFIG_IOMMUFD_NOIOMMU) && vfio_noiommu &&
++	    !device->dev->iommu && type == VFIO_IOMMU)
++		device->noiommu = true;
++
++	/*
++	 * device->noiommu records no-IOMMU support for the standalone cdev
++	 * interface. VFIO_NOIOMMU enables both group and cdev no-IOMMU; when
++	 * cdev no-IOMMU is available, device->noiommu is set before
++	 * vfio_device_set_group(), so the cdev is named noiommu-vfio%d up
++	 * front. There cannot be a combination of a plain vfio%d cdev name and
++	 * a no-IOMMU group because VFIO_NOIOMMU selects IOMMUFD_NOIOMMU.
++	 */
++	return dev_set_name(&device->device, "%svfio%d",
++		     device->noiommu ? "noiommu-" : "", device->index);
++}
++
+ static int __vfio_register_dev(struct vfio_device *device,
+ 			       enum vfio_group_type type)
+ {
+@@ -340,7 +358,7 @@ static int __vfio_register_dev(struct vfio_device *device,
+ 	if (!device->dev_set)
+ 		vfio_assign_device_set(device, device);
+ 
+-	ret = dev_set_name(&device->device, "vfio%d", device->index);
++	ret = vfio_device_set_noiommu_and_name(device, type);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -348,6 +366,12 @@ static int __vfio_register_dev(struct vfio_device *device,
+ 	if (ret)
+ 		return ret;
+ 
++	if (vfio_device_is_noiommu(device) && IS_ENABLED(CONFIG_IOMMUFD_NOIOMMU)) {
++		add_taint(TAINT_USER, LOCKDEP_STILL_OK);
++		dev_warn(device->dev,
++			 "Adding kernel taint for vfio-noiommu cdev on device\n");
++	}
++
+ 	/*
+ 	 * VFIO always sets IOMMU_CACHE because we offer no way for userspace to
+ 	 * restore cache coherency. It has to be checked here because it is only
+diff --git a/include/linux/vfio.h b/include/linux/vfio.h
+index 31b826efba00..45f08986359e 100644
+--- a/include/linux/vfio.h
++++ b/include/linux/vfio.h
+@@ -74,6 +74,7 @@ struct vfio_device {
+ 	u8 iommufd_attached:1;
+ #endif
+ 	u8 cdev_opened:1;
++	u8 noiommu:1;
+ 	/*
+ 	 * debug_root is a static property of the vfio_device
+ 	 * which must be set prior to registering the vfio_device.
 -- 
 2.43.0
 
