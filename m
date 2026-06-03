@@ -1,74 +1,74 @@
-Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29F293A9DAE
-	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 14:08:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 386AE34E75A
+	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 14:13:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780495734; cv=none; b=gTROTTMc+dotXgWon7WQvTUvEqm690GEnD/fsGcd6PiPjaHkOuynW54iS/G4qvINpKHBa/euOsX/0jqnx0UZfYqdwHJnHq+YUQkXtlGhFDIFj2+epzb07+1stvKZD9D7FqIfkCuL1G40qrgbp0XJjcgYWPIWCHDRsR1+oLy/oaU=
+	t=1780496001; cv=none; b=f5FwdgIfxs/7JC5U7P+OXqo3vfKl2TrBxAlN4h79QDt+BvsTLn7u+S4J19KLXQ1WmIwqVTnlVqX/chSjQQhaEKuyj5tiIGtP14mKRlFDIK+GHIFR9nZH9QH70AeIvQhInvkjZsGZZHJZiHx8L3lfLW4EL6gVjJt/d+VJJTGL4oQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780495734; c=relaxed/simple;
-	bh=mpS386OIWn/1uIQD+RKTH9RuXoPv4nzB312kCyDGUao=;
+	s=arc-20240116; t=1780496001; c=relaxed/simple;
+	bh=CRJtyzPVwZ27iPdMdn+YffG3q+hwHsP+3emZ2ABQJ2k=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eB/wMtsIvDmHYfhsDnGJgKCN5JKR4g2RQgeXr3hPnDvE9kxpUAkH8XMshZbtuJayPBvKKREvG5uVQZykNKMH/k/hCddiqureUxr1Rrb81GCsHb73RU+gFiTHSYEnZTqrBg10na3kKJlUpyPEkj/o5thq39c7wOjtsz+ifqdPJms=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=uT8EVgjT; arc=none smtp.client-ip=209.85.160.181
+	 Content-Type:Content-Disposition:In-Reply-To; b=qCRDrLa/UHhjeTLbY5Z9ibpbhqHd7EgMrnqZiFaGe/4iOtvI1t8sRYu6E/tnGDPQRWuZNPtiLArtAXrhebHOGshGbyXDEncyHAJ1zucwNldKjjNiC0Pxs3NddhP7OqglQebgWMFII4SPebr3iBYhDM3X8LoyAO/ol6gSoQBOeEA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Se+A3Yvs; arc=none smtp.client-ip=209.85.214.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="uT8EVgjT"
-Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-5177d1ff061so366501cf.1
-        for <iommu@lists.linux.dev>; Wed, 03 Jun 2026 07:08:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Se+A3Yvs"
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2bf2911f93cso61395ad.1
+        for <iommu@lists.linux.dev>; Wed, 03 Jun 2026 07:13:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780495732; x=1781100532; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1780495999; x=1781100799; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=vrZsZos3Mt/QxzkZ4e65PaNc9Xnu5WiDW2BXX/YqZXg=;
-        b=uT8EVgjTo3iZ5z2hfnb4OZ8ZCzXuVlwXJUEgs9HlNqfYRwKYPXXrCyj2Uwp1UN3W30
-         tl7N7NqNskdfZnShV6M7aPtYn4llCa3Hl+oKDibza1j1Tnw7ZtN4/UgdWJiWApYj6Z7l
-         sOE9sxCLAu/xU992X0aMI8oIq4X9/4KC45vf51iWDrX6zdKNXMj56LY0AUnG/vjLDNpD
-         D3/KKV2fTI4hwa4dxIta3p4r+nHlsX210dvUZQHXwwH8JnWZ9RyBFpzqECyFBASc9wBA
-         OIEMj3JKHJB18/nXqXkM1smSA/HYlwSDnGT0fEZi+yJfmqxGDAOPX8+gQb/12B/wglDD
-         rkJA==
+        bh=Gl2/sR4bOkCw/IHgANyX/OAo2qKH6Z+1HugGtGKRHMc=;
+        b=Se+A3YvsDvzzcm+StQwCvaVOCLJUgHVZopHMJpJENajDCzWvnjPIMhBuG09x7Bw9Wi
+         lb2/fgXgOfdEMEQBereBOxc6cBX+kPV7dAUMF/DJl6i+aGDwhVyTCd6mQKx3TLBD8ZFG
+         Vxg6h8+u8KhjTKmyWpDv7HzWbfUp9+sYv7lGH3NMO30J23r1jBM1gmpil6q3WrHr+6Ag
+         aZ4g8bm62tJFcoHzoj8UtQv0xwmjyu2Za9wgsk5FKETT8evofl7u2DPWvmEgnr2ixtHp
+         Y0ZZfGhK4yIC16BI1gnTPaug5GJfrt+bUWEvjA+IJ5jGW9TwicX1YzAkUnqk2XvKFSPv
+         NT1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780495732; x=1781100532;
+        d=1e100.net; s=20251104; t=1780495999; x=1781100799;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=vrZsZos3Mt/QxzkZ4e65PaNc9Xnu5WiDW2BXX/YqZXg=;
-        b=X3eUVPHjwRps1BoqVl6hR3t5vYYKPJ2AoR+MUQwO3nBkbINKuFUtpuR23KXnsBuxQ1
-         HIfIzEoGgJWLgBVRpQOj3TqYkRfiu/Jr4C4HlZnqbwod818xvvT2edjkk8q7g/sWt9F9
-         q8Dw9lXtXw95U4XKLHs/EmGHnkQ9gWjhjM0PU+IfEXN7y2HWyqwbRipp2hcQaxxcuMEz
-         v+u7uT61ZAlAO2miBLT3zKXPsS28nXhOreQwtZnxkqyG3rkAPZM0osMvf1KnQ72B7ep9
-         GrP1iApfDSD2NiUFsOoEKavnes0AOZUX/8TQdKVJb1ehDF7Gm9jqna/3TkZx48rtc7Lr
-         RwCg==
-X-Forwarded-Encrypted: i=1; AFNElJ8L2TjgKknlGK7IyCB/0BM+BZg9H9XrJjgLeTdDvqVDUAk0SK2/3uqo15VOO3z5IjC/9POQpA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw6p0yt84J1ct7n7yaQR7+pocJeSHd2fDtBE0NrMmeWnUPCvCOw
-	GsmK+uF3kyUWHF4cfVaI9jydizeNAZufqZ56o9v7chSoEKL0vBxbZ4/+/Ihft1yYIA==
-X-Gm-Gg: Acq92OER1eHfNByNkiZAGsIW7IzzJZaj93eVM5g4REl4RUutB0u6fc+O4MCnNUEH1xw
-	YF6lCd4A2aY4fOuzIN6qvH8SY+uB2k9wyZkGwEIA1oQkt8+OZdIuVxWDwUBgItpJO/GR2h+1jc5
-	sc1qFkqs7AfyMlD2MSe0P0nan2+OKBRiEajTtE0tH7j2Xyx+BwNls0SPAqUIgTt0RnHV3pwm1el
-	2DTzZWLV9OTzsEkKrLf2xM5gcc6NWKYXHbQ9URv2N9JOrf5lKZ2K3ByahYf3MN6QZgucuzrb3Sa
-	h0gBkX/HbvSYY91uSp5lpKZdPqdT4HaCHWb2uip4hRAiGpTI23V1WGKDrdQw7KlS4ftdSNXAh6D
-	1FzrHlIDyS68wp2fk2lRkDE92Edw4/VSnEQRvCfNBKvQZcPtNW9Ycs4tw58pZe8qXUOo691N+uo
-	udHsGTz6pQYCoxafKVldo43UwiLfX+asyvhXT7x/94U2vAtnIh/6SR2fH69hUFRmERAJsspNYe2
-	U9QTYwbBw==
-X-Received: by 2002:ac8:67ce:0:b0:510:f9b:fb5f with SMTP id d75a77b69052e-5177bad00a6mr6870781cf.16.1780495731395;
-        Wed, 03 Jun 2026 07:08:51 -0700 (PDT)
+        bh=Gl2/sR4bOkCw/IHgANyX/OAo2qKH6Z+1HugGtGKRHMc=;
+        b=KhpZPfE6JvucY8fdYO25nYd1b1NZ5m1ZsHUuRWB0U91RFyc8bHH9riSpEQt0TVHzIp
+         aIndw90DoR6zdv1vThl9rP3UOgmClaxkJYj7IDdE17QisnMLDFDL795KjlGh1+QnzjdD
+         vLi5XGHoexg19/UeZD8YracCt7qj5iUNiw2QQPWa5WIsoIUzXERJ9fPyNK2r6/Os1rtu
+         MLBe2Km2QMHXSPZLsKopWKxpNcATD5IP7Sbs5egj1qhTxS13Zj0csiu3X1SALYlIudlm
+         kqxvgaVQ5kduL9EeqWaZ+jZEvjkjGvLCCxpmvKPmXtaGbXPDrjwEQ0Z4veo61zG7HWhb
+         eWjw==
+X-Forwarded-Encrypted: i=1; AFNElJ/ZDBXJhMzdeXN+8RUUc0USrrOdnJ65yrOWscoU4n+ra+e3MAmBbjxxFdizM9XWUsSDfZ2HyQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzrqRnAxW9z/Za7tHr2GJj/pMytQ7SoNtbfh3/qfx/3XKY6O/xI
+	UHXBEbuLpFpaAH8tVA7KzWT40S3VlX/E5q76fhrFPf2AtknKPryouTQJUn/HXPiO9A==
+X-Gm-Gg: Acq92OFmx9jhOhyrmZpEIl6KM2KFb1ws+HGmOilIpcJqFe/tL9+r0kzcNxcpg+hU0r5
+	cC2UYcwVBVjFT8Twcp/dc7t60VNg+Z4BwM7HGTPKMqgxH9hRHnuLrdJZQYUdA9NIGe0Gp8B/0EM
+	JmfpirVdZ+fh6z3YGQK4o/7T/9pMdsslVmv6Rr3/ecoSG1E7EL2P8jv1UgZ8uzR0R7dOinnTb8h
+	g5BUR6JWDJErzswFTdGekRfkLSormdsaaefLCETIRvlkYcimeKkxXcP2oSK15ZF91plDLZWwf/0
+	2z4Kr8LJx0c1KrkGebzivh3CnIgTXKn3gEaPuM5n/dRf0J7bVbai9klsRp7LJD3Cmo8d1Fb3kd4
+	oTwEiLgzSD4uAXxaUxYtUXfOXgd1UNli8FG4gMjxL7B4a8u5Qtt0Xt3SI1PxmRcwi4MeL0bISKr
+	U61+Kl4lBMI6B4wnuyooElghKC/0g7C3fTmASLImMnzmNRVo7qG67Iev34rdjblRmbdsNXbRJMh
+	tPSxHreEw==
+X-Received: by 2002:a17:902:ecc3:b0:2c0:c14c:bf37 with SMTP id d9443c01a7336-2c16c13a022mr1861355ad.16.1780495998924;
+        Wed, 03 Jun 2026 07:13:18 -0700 (PDT)
 Received: from google.com (199.255.142.34.bc.googleusercontent.com. [34.142.255.199])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-51775c08234sm24412491cf.6.2026.06.03.07.08.48
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-842828d6bc5sm3061356b3a.43.2026.06.03.07.13.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Jun 2026 07:08:50 -0700 (PDT)
-Date: Wed, 3 Jun 2026 14:08:44 +0000
+        Wed, 03 Jun 2026 07:13:18 -0700 (PDT)
+Date: Wed, 3 Jun 2026 14:13:13 +0000
 From: Pranjal Shrivastava <praan@google.com>
 To: Nicolin Chen <nicolinc@nvidia.com>
 Cc: jgg@nvidia.com, kevin.tian@intel.com, joro@8bytes.org,
 	baolu.lu@linux.intel.com, iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v1 2/7] iommufd: Reject invalid read count in
- iommufd_veventq_fops_read()
-Message-ID: <aiA1bBMVyur0Rntu@google.com>
+Subject: Re: [PATCH v1 3/7] iommufd: Propagate allocation failure in
+ iommufd_veventq_deliver_fetch()
+Message-ID: <aiA2ee3lqxFgXZLO@google.com>
 References: <cover.1780343944.git.nicolinc@nvidia.com>
- <e1111adcc8a8882fbfd84accd6674dc846dc5689.1780343944.git.nicolinc@nvidia.com>
+ <25d29feac909e36f78c145fa99ef2d4cb7a415da.1780343944.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -77,16 +77,13 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <e1111adcc8a8882fbfd84accd6674dc846dc5689.1780343944.git.nicolinc@nvidia.com>
+In-Reply-To: <25d29feac909e36f78c145fa99ef2d4cb7a415da.1780343944.git.nicolinc@nvidia.com>
 
-On Mon, Jun 01, 2026 at 01:42:33PM -0700, Nicolin Chen wrote:
-> The read count must be large enough to hold a vEVENT header. For a normal
-> vEVENT, it must also hold the trailing data following the header.
+On Mon, Jun 01, 2026 at 01:42:34PM -0700, Nicolin Chen wrote:
+> When the kzalloc_obj() fails in iommufd_veventq_deliver_fetch(), it returns
+> NULL, falsely advertising to userspace that the queue is empty.
 > 
-> iommufd_veventq_fops_read() does not validate the count, but returns 0 as
-> if the read had succeeded while leaving the pending event in the queue.
-> 
-> Return -EINVAL in both undersize cases.
+> Propagate the -ENOMEM properly to the caller.
 > 
 > Fixes: e36ba5ab808e ("iommufd: Add IOMMUFD_OBJ_VEVENTQ and IOMMUFD_CMD_VEVENTQ_ALLOC")
 > Cc: stable@vger.kernel.org
