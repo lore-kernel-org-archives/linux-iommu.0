@@ -1,162 +1,207 @@
-Received: from BYAPR05CU005.outbound.protection.outlook.com (mail-westusazon11010021.outbound.protection.outlook.com [52.101.85.21])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFE5838D40E
-	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 14:59:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.85.21
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780498750; cv=fail; b=gA3bFVIbV/s4S+Pi7vq1xU3ug2SbCMdK97EClPADdSsEXW1J41+KGATgaKf5JzZ78xHLKnyWsYhXjfKyG/BbWhNfz0+opBG+eaS5LqLjNU0hsEbqqK6AS4RiJs3nYw3nTHOdqzRkExBfngjvWvrbwonKau6BsrinJX49WKB2u9E=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780498750; c=relaxed/simple;
-	bh=5i0Q068sqhy8K2CUSotsFX6DBRXl5eZc0Qda0RV2Ves=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=aVSw1Nh/ugsSpCMp64Bfp8v1usEG8vIymykuyAox5ul1TQQDqQKfvwlrvLoB6oFtjxY2RySWz7USuGMUW+IkDmOBfge2IKWbbN3YeqNhmx9s/D3A8PMi/CuZ0vNxTb5BTw4z7SoZ34M59TzzzCRySsOfQYqZ2k5ep5LN0xlh0Q0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=m7ZeVPVa; arc=fail smtp.client-ip=52.101.85.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 201BE31C567
+	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 14:59:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780498782; cv=none; b=dTsceaceKCtGpak3UpZ0i+jyrEx+0XsCDGe5Vb9KGYB5iXXwOCFbybKPi6WA7ROiqHgNQ3/37j9IIKkpZ3r2dZvACfUawEZA9QXrvCHFjWjyQviyTnAX0cgtneyg/lrPK3kxLQ7WQreXIEg5Uy9ZJobbNluunLbp8oTiPLDcBro=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780498782; c=relaxed/simple;
+	bh=tlczd3hbO7jRStxmbXwY/7Pvez+jwqK8qrOvD2gZiqc=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=n2ZyiLtfbOeJmUHsnJPgnNgHjutlK9EIFpNXGMVhi+WPQVt0dw4X9EQ7rSb32ixm1ITAJoOFAwrKIbCeVmQ2UgJ6KauhI2U0H74Z72pnl1XsUp0OssQIdu9GQR4THlvV75HAwPCSgQkPkPb9mNQF7G/Hn4NRQb/jGc9VYXzHsJo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=LGP0dkdD; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=glt3jjkV; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="m7ZeVPVa"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=C9NfMKRE9CdfAwqCYy+7rV5XuKpElLFk0SeNrCVNXyLod54jj+BcQARyMDIN7UiKJSvz4yTd3rCUR7jaPr4IAQcmgKZyTR4K8Wssv7D53mvQZSVxGoH+H8S7WLK4W1+0cNGmpWwYSnyiWNL3lo3P/rrHgqmXc8cY6CctJGEXRBSLWyKTtKga72rQIlGiJdi8WaDbVYAlWr4I6mbUgSeQuG1YBE6TlQuM9uIGYCBuYP2RAGzNTNuBp7+0NjAHgMZUiPgQ717YOY/wo13ZiAbvmatBjZsY7u/aFCChiezg6my0VPLH3ev0H9ZKy8KMbbAsLGXHNqCbU0tTrCpASFaw0g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NqiwRyFN5jLyuJDGd0kn5KlwKvpXEe50apNPd39VIcQ=;
- b=JDsm2umfqXA5/cAxkSQL8no131xOGV6gO9KVsujP/6QlzhrIJCBxTVKVf2u816nKI7sAxpESTvmNID0X6thj4N1piHnbGo8sB89iowl+qXcn957n/gbfHK3rDsCzo5JWYxuuZ7n/EGJBU2ebfdy1DiXZbH13eoZJlgE/CF4AU81FLMo5QIfPKnPbWi37SXbsiwyGWhTbJTEKvKFaUYCYK9C5KWneteDnR/IXi6DNjHvUBL+q4jbH+7F6AP0DW3EctQ3f8ISwebwrQkd+QPhnDybIj7GzcQlmw5M3VPJpj5MiyNK/MHz8XYVWWPr7POWwuXrTgaj3DJyLEVuIMMVdrg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NqiwRyFN5jLyuJDGd0kn5KlwKvpXEe50apNPd39VIcQ=;
- b=m7ZeVPVaNPd5W+LS6322xvNBMqlGqMvOTweufDgQvmahethsMVSJ+kLcJrX0xMmNwQWVBS3dK3SmpQch7E7BkssfAdSoSMZaZR9ZDgqiwmBnxN78YhxOgF8feOtVyOUj0sDArQlwIYQJ3CDNUodxvbvUaO5ErdZJdKHgZSHtLPIPI9q/WKIGziquUcMMdLB1O7mlxxNNTbaGmi+MLD6laUqtSc2BKXD4g2H/sZ1ypLG8NBT9csP93r2rcrqBPFnEmsVwBzSwcQfF860861YLOlGsjAy5qrS4UcbF4DZ5mtJVHMozozBEQ8F1CCjkFgJx9QTLgwlegF4oewGQIk4yig==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by CH8PR12MB999205.namprd12.prod.outlook.com (2603:10b6:610:35a::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.25.23; Wed, 3 Jun 2026
- 14:59:04 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0092.006; Wed, 3 Jun 2026
- 14:59:03 +0000
-Date: Wed, 3 Jun 2026 11:59:03 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Pranjal Shrivastava <praan@google.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Baolu Lu <baolu.lu@linux.intel.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Samiullah Khawaja <skhawaja@google.com>
-Subject: Re: [PATCH v7 3/5] iommu/arm-smmu-v3: Fix a UAF in the probe_device
- error path
-Message-ID: <20260603145903.GC1170766@nvidia.com>
-References: <20260601143644.2358771-1-praan@google.com>
- <20260601143644.2358771-4-praan@google.com>
- <DM6PR11MB369078B4E5BC3C6514A99AFE8C132@DM6PR11MB3690.namprd11.prod.outlook.com>
- <aiAr_YZqVwijXyQ5@google.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aiAr_YZqVwijXyQ5@google.com>
-X-ClientProxiedBy: MN2PR11CA0025.namprd11.prod.outlook.com
- (2603:10b6:208:23b::30) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="LGP0dkdD";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="glt3jjkV"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 653C4sqa2076419
+	for <iommu@lists.linux.dev>; Wed, 3 Jun 2026 14:59:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=OHsKV+ltiKXXlmj8cUFWo9
+	IbTkRATlv2GK6UqkbO9h4=; b=LGP0dkdDB/zIX1VP4TSAhzZdDunN+X8a21fjfc
+	kWdA25gpjcSUH4hBGFoMDe15TSA5J62MDzzfPpR33WVdWY5QlZ++2ocwmD8DT0im
+	/CSnTGyUec9kqbVoNIzXvCLbZ8wHhm/fdT8tjf8lY5rs/G3h0wUxJWQGUg7JqnT9
+	tbuLiIZTgtxwggkRGdUQshxJsIEP8se1b4FYjiD4OHnlhAKYXP3p4k4qBszLFiS+
+	89EVsCwGN9DfKnutMcAfcVKnQrhO3cxak98I09t18A514ss5hzrWZIPhKJD8GTdA
+	JrkY9YAEbCBdbioM3v58dOE13HczH2Ce4JRf5CnK/KXN9Hbw==
+Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com [209.85.210.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ejev1a4sc-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 03 Jun 2026 14:59:40 +0000 (GMT)
+Received: by mail-pf1-f199.google.com with SMTP id d2e1a72fcca58-8423f1fe39eso4538110b3a.1
+        for <iommu@lists.linux.dev>; Wed, 03 Jun 2026 07:59:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1780498779; x=1781103579; darn=lists.linux.dev;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=OHsKV+ltiKXXlmj8cUFWo9IbTkRATlv2GK6UqkbO9h4=;
+        b=glt3jjkVb51LgzZbrLA2KASEL7OcMoEPLjfhfxGfcg3go22Y8ki2eqvaMmveCkbRza
+         eXAWOB7T2EEEX/bqCjbLmSM9yoBuK3dq8ELPXawIw0ony/puT3AV6woR4QWo4w8DuWy4
+         kKyXHT/Hj98J6FDcB8iE1oo6xKX51LTCIBmUIKpbfassWJWfEH+u1HPvw+0AIaD4D3kk
+         /o2cXK3jQUbO8EZalu7Az4lVczfpo1VZtvga3tltoXXKpmWCTev+yB/fb+B2lx05zyLW
+         1/JR+f8Hf18ZpFEV6xGXKBKHjGYGrZTZ9Nw37oZ11AQ7PdVV1/yf5Hrk+Z1SVWwgR4Q7
+         ERzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780498779; x=1781103579;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=OHsKV+ltiKXXlmj8cUFWo9IbTkRATlv2GK6UqkbO9h4=;
+        b=P1bL3k2y5R9glwLk10VKHyz8Nn8XhsQQXJBbxTS1z8ykz7MNso6CrKU823nPS/WFMb
+         LPIBwGo/8qxhILF7eWgpoLptcRBhPltVv5cZb+acGKrGifeZM2Y3Y3ugBk7GXHG/qtBT
+         FrFWOzmutReFkNtPefMgWwbsc01RUXh+WSSEaVoMHkWlcydhTNcoGmQi89fdRJe2H0AW
+         qsOyhtzDLr3jp510sViQIoC3j9zCYVjqXOyoo7kLvq2llcINF+K7yTXGfe060XkLXgnQ
+         iQAZi9mI3MflkFrMZxggVSkm4CGf44TvacwAx3FGrJdGsSjwBbhmtrhjalN95ddrCA/e
+         d4xw==
+X-Forwarded-Encrypted: i=1; AFNElJ/e4x+YCsTcnbGl7BJ5t3fWRx5Rpu5REoKJL12g+y/ULWK3mc4a67BQr9LkMVKqDbZ5+d5C/g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YydMMUGlb2a4WzVPBn/MqhrBbmXP6OZKIC5/4RNrKxPBThNID7d
+	Jlhw5P3dLqq3XpZRPXLiF7846IxlmO4kuKwSSpYzX1/rKOCGPBQUDmcFnHODxRbhQGO+BN1Qc6d
+	lmg6xyRMX5CyYkPu0roDq4TO6PNJU06aXFAMjNGswBq7eZ5EPRSw9zl4B3Q==
+X-Gm-Gg: Acq92OGCfFLiYvBsuUgnjba+0PjWAPpDliD+J2cM1Jrur/EJYa1Z9mhRJHMEUIC/Rr0
+	Z3UROtIMTfMeABRJ7Zv0gIQBCX+cqPgGgMRIZKoKQfaPUiMMj34lIuuYKuT54iBJOysNH64d38g
+	0138G/gg57Y2BdDTAAhE03qJUThviDWiHzm9jBHN+g9MzUklyv+ISAhlDEK0K+oaYoOz/mt37H1
+	swyG2CGiAivI/cRkn2l1zVZwNrexOZjW/se5AzH0O2ouHrNwCpkqzfQpGWpKWToBmGGNvxENtEu
+	q2Z94xCi9PlQlW7aMyNKBdZb2uEJbzzrvenl+SDCz3pvJH+7db25yn8I6Nd5hIYRHET9Dk/wE34
+	q+Ei7VVv9zE9a9scUGJYdT/Ks783NaAanfc5R4my58dEHEmNtQOxnLlDT6ng=
+X-Received: by 2002:a05:6a00:4085:b0:82f:6e9:d1c3 with SMTP id d2e1a72fcca58-84284ef2c4cmr4096582b3a.29.1780498779041;
+        Wed, 03 Jun 2026 07:59:39 -0700 (PDT)
+X-Received: by 2002:a05:6a00:4085:b0:82f:6e9:d1c3 with SMTP id d2e1a72fcca58-84284ef2c4cmr4096526b3a.29.1780498778597;
+        Wed, 03 Jun 2026 07:59:38 -0700 (PDT)
+Received: from hu-naala-hyd.qualcomm.com ([202.46.22.19])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84282882170sm3747409b3a.30.2026.06.03.07.59.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Jun 2026 07:59:38 -0700 (PDT)
+From: Nabige Aala <nabige.aala@oss.qualcomm.com>
+Subject: [PATCH 0/5] Subject: [PATCH 0/5] Add Shikra (QCM2290) display
+ support
+Date: Wed, 03 Jun 2026 20:29:25 +0530
+Message-Id: <20260603-shikra-display-v1-0-aeac1b94faa7@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|CH8PR12MB999205:EE_
-X-MS-Office365-Filtering-Correlation-Id: 44b528c1-fb12-42c7-9a5a-08dec180a727
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|1800799024|366016|56012099006|4143699003|11063799006|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	In157+WET4FQm1i0HmMAInmxFDGSgT15puNrGSEskpjlyYOPhlEkVw7MAykmKv3Qp0tw6sXSy8jvxwznvzqpXaYEMpQ1zaI2kstMTFZ4ebFAPYIHBUG8YVRdOxfVae3aWehSOkNo2YTuzy2HwQrU/AX+q/hCIq8pnNcBe7aWIcXscOPkl+zwtFY3rrojdlNeX0AAHBYaCuyiVX3o4ENp7NKd0c3Mm8rsv5xThu4LnUAjBTMj13eR6Gbakm+ILq8/r0rwVQhOVjfQvC36ncxjMThcZc2tvR3nDITD+qu5UUFuzd6WWDRLjvHl9OfRD8KV8Py7M9nRoZsHfAborB0ys0h9xOEvAs87Riv8HaYAooy2GYgewOV3k5w2Ecr0mqDm/Ex3gwieciubkG1CK3OHzx+Zxv3NqQUrs63gBFIed1JPMvUIt2LKySZsLf+EUR0U1I/4fGFmELqzEd88ZP4PZbUt98Tb/WE0b7UOr5u/ierptqA0nZ/vSI+nb4k3s1IId5kZEs1Aazdwbsmr+gMehCUm5VO+TM4ZEYxShz4R8EPB150L5rQPE+yhsCxzLmjDyfa+SD6LgvqQk1O3YYoDyPIhP8gaqbtBs3LB76B0LyJ+wYee/xRexi0AQs9uQ2oaqW9lnIPhCgnkx2IaxmBApIT8er0q41bAVKHYTmtzS7V5XOgVRtfZlEula1fw2RNw
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(366016)(56012099006)(4143699003)(11063799006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?gzQhNrbVUdpO7sp8me/6XsI8auIaRSAa8ZfIwB/KgmYytHqtPAoEoOavRMG6?=
- =?us-ascii?Q?/Mg9+16yAsR/Jg1BaIxlmT4S+nDH2UXUbuejeeBEVkJfdNVLa5PM3oDe3Bz9?=
- =?us-ascii?Q?XJPXaqjIAoWojxNYT2DBczp0K7q3O913ujGM1PdDttVpHPDcXpWWuTDxs145?=
- =?us-ascii?Q?y/AgA7TwtADFiJCeFgBaRcIUxZksUVLun45ouTu+vDicZDHm1KmdMhPE7W9k?=
- =?us-ascii?Q?/ht4Kz0GNn1hhA5Ip0SHvLMfyRW1ZOykpANnvz+rxp4GxYMgTY36xTcGMf/p?=
- =?us-ascii?Q?mUuZT5fPaakRkYayc7C2cZ4z4hvqrEtp8ieTXfO6BrPYGfk/jkp6MQI7PabW?=
- =?us-ascii?Q?Kxpxb2i03tXwOQwCFh695mAy5pPeDOmNEK4bl18tH2/HZD7iUS57XnHjMyDh?=
- =?us-ascii?Q?WHwCHcWSu+xYlKCg3uLN0oB847Jk/a5pFJ+MX2iYye6UOOO16cY2LvFmlYSw?=
- =?us-ascii?Q?l2/91Z+UhVZ5O+a4aabs/kJc+5QK7BdA3TBszczRx5NcE1rLikqAIQYEDBVC?=
- =?us-ascii?Q?mvz5RmAaYTn0qFRTmXtnx99no7lPMUKy9Zh60eaCPeCNFDEJbATm4aAnASvy?=
- =?us-ascii?Q?MoaSO22nfMY3Y229UpYr/6B08CcPLoorJHIM7tFf1IfBZ4sWCX32ziorHi7O?=
- =?us-ascii?Q?VWPipxEqrHlimE3VsUIi3CUt9BgOM3+OMm4PTOhxPmJhXrteUG6tEi1Yrb+C?=
- =?us-ascii?Q?nFQp9J2LOv/u2Z1TAz8gEMnuBBHjWxxX2a/YkmzNQlMitVDLGVwBOEO40FcL?=
- =?us-ascii?Q?YgdrdWx7HSGZaFnSH7z7KaHOwAwsDY4vbfaww0CPEeEzKchco2mrodVosNT2?=
- =?us-ascii?Q?rFa8MyfS3/Ap3NoHujvmrjoOu9X64k95wo9C4i68m0hDNVyNjlEdOOORpO4g?=
- =?us-ascii?Q?cpkt2+DXcUdHEYmVoKdxKhy8hAJrINimRusYXn0mUlsHqEJ2Yc7ZhWk5UAUT?=
- =?us-ascii?Q?u4L/atmkyiRyvkn8+cL6rA3folATxM6SOzFE4QiHVOFjYNOn0p0OXdG6IvQi?=
- =?us-ascii?Q?UZ7YvMzIffU+C5UnWwe3+2ELTcJ7easuuXzBZ/J6dDwSgsWJg5hqLdJYIVGE?=
- =?us-ascii?Q?P3aQSERK1DdWWsY5hmuqp50yejGqyDpQesTS63OsquNYbTLuX3naCdAvH0Fo?=
- =?us-ascii?Q?v4GZOTNLaL8F3W04pQvdw40pVJe9VNRAY+ITRI58lFXsuuVvcr125vDWm0dS?=
- =?us-ascii?Q?glPGkPip0B4uc2MQNj2pK796oOKkTkLa5aaTumFa8nI+gQUbpCUlMnqW+6WK?=
- =?us-ascii?Q?39mHQ1+jDifcqhjx5Pi75F/kKCtLt39X8WM6bfesYkSeVR84l7fMLEAC/OXc?=
- =?us-ascii?Q?6jmL2P8UXgzR3/PpJePMJ6JKPpuWVxr817Ly49katvq7SPcOyrQen4GIaaQS?=
- =?us-ascii?Q?ITsuUIRN4o18ck1t665vRQ+UsRSnnNg5EUmj1mAq17JjnOofdzDD50MdEToo?=
- =?us-ascii?Q?ee6xP06bVexT5J6spY/5a0Vfjv+HMMjbMy06ktdB+ENl/bMVka0yrTK/wF2j?=
- =?us-ascii?Q?MH/27IrpPkWJhOPLZAG5h+tJ6pOiPvROuG33lrsc3o7WzJc86SRgVwhbDsWc?=
- =?us-ascii?Q?ejxf/KRkw5fB4KySLbVa6oEQ4941DegyC8Yq2sWqDVtK6Yc850O0cfNFtIHn?=
- =?us-ascii?Q?XHpU3AG1gmMc1FPuDPvcmgTuU0CC9GvrTXC//nt1H/ufawXWsO35uSA+oFVf?=
- =?us-ascii?Q?79M8q2lIoXQIjj9QzhDAJMUclG05pTN6Gh+sWqNcoJgyAiR4?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 44b528c1-fb12-42c7-9a5a-08dec180a727
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jun 2026 14:59:03.9017
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HFMRry6lbR7UjigZ6+jGB6FwfM21WWikaCuqJimX48EOhxWNesFqK/5Xa+c/XwVK
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH8PR12MB999205
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAE1BIGoC/yXMQQ6CMBBA0auQWTvJUJMWuQpxUdsBRg2QDhAN4
+ e4UXb7F/xsoJ2GFutgg8Soq45BRXgoIvR86RonZYMhYsnRF7eWVPEbR6e2/SM5ZZ6hq/Y0gR1P
+ iVj6/YXP/W5fHk8N8XmDfD+zSrYlyAAAA
+X-Change-ID: 20260603-shikra-display-07767208fa90
+To: Rob Clark <robin.clark@oss.qualcomm.com>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Krishna Manikandan <quic_mkrishn@quicinc.com>,
+        Loic Poulain <loic.poulain@oss.qualcomm.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>
+Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org,
+        Nabige Aala <nabige.aala@oss.qualcomm.com>
+X-Mailer: b4 0.16-dev-d5d98
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1780498770; l=2627;
+ i=nabige.aala@oss.qualcomm.com; s=20260520; h=from:subject:message-id;
+ bh=tlczd3hbO7jRStxmbXwY/7Pvez+jwqK8qrOvD2gZiqc=;
+ b=NuBmKboJ2e9mtFWMrrsLSiNUZwFZCNOuWYAD9ECbT/obdMO75IR3X0zKzn8SsFhx1YCJYfXpd
+ t5w8rKtPPLWAIxXudncUKr9Kq4VWoutNylTrUaf1UuMDOP8r2sgYGcu
+X-Developer-Key: i=nabige.aala@oss.qualcomm.com; a=ed25519;
+ pk=PYHJom8sPos1IGkrbCCsWiE7XTBQrQZd9jzAo051tgw=
+X-Proofpoint-ORIG-GUID: xNUA4o2lRld0bvk11DKd-R-4Uk0FsELb
+X-Authority-Analysis: v=2.4 cv=PNE/P/qC c=1 sm=1 tr=0 ts=6a20415c cx=c_pps
+ a=WW5sKcV1LcKqjgzy2JUPuA==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
+ a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
+ a=EUspDBNiAAAA:8 a=sFAlhcv5WihPgsyf0pgA:9 a=QEXdDO2ut3YA:10
+ a=OpyuDcXvxspvyRM73sMx:22
+X-Proofpoint-GUID: xNUA4o2lRld0bvk11DKd-R-4Uk0FsELb
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjAzMDE0NCBTYWx0ZWRfXwMfsb8ULJYSD
+ NrSxeiEemeXz61uvXDEEuE4dMS1/vmZnxVFd1L6cluPlzaS5M6fcs765hIFqJpYcd12Xw9Azuw4
+ yeUS0C+9yFJ++osAcXmxO8WCL67HBwfxof7LtXGktGI87WA2sAxn5hOd8Bspw8q0XkRAzondtdE
+ Mk9bdQNVcysD1jQeS7KfD8XwqvlKJp2cXb/rGZq9fnH4mzxJgk2i1R3wdUwXYf1r3Hn5rsWRqMC
+ 6sTQO34OUY9N6s2GFC7ehzb5cw0E/U1YPw5xCYXvxaldZUMLbbm6LztwBFhq3lsfeITVvlYNHPP
+ nRr/UFIyNSesl8FO71FKE3JxAwZnr4rz/f8k1iJ1RvDaeQflwCJFchdzc239zWGHTd/D6sAJoel
+ ZxQ5U1Nx8WcjT71G7Fg3lEjTo0povlQiHBZkg1S+SBcwXVK6eV8HIfex5K3lcpURvYkVwMXtb3c
+ 5qvCTeEhoqaGQKP1VSw==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
+ definitions=2026-06-03_05,2026-05-28_03,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 bulkscore=0 clxscore=1011 malwarescore=0 spamscore=0
+ adultscore=0 impostorscore=0 suspectscore=0 priorityscore=1501
+ lowpriorityscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2605210000
+ definitions=main-2606030144
 
-On Wed, Jun 03, 2026 at 01:28:29PM +0000, Pranjal Shrivastava wrote:
-> On Wed, Jun 03, 2026 at 07:31:38AM +0000, Tian, Kevin wrote:
-> > > From: Pranjal Shrivastava <praan@google.com>
-> > > Sent: Monday, June 1, 2026 10:37 PM
-> > > 
-> > > Clear the iommu->priv to NULL while returning an error from probe_device.
-> > > 
-> > > Fixes: a2be6218e649 ("iommu/arm-smmu-v3: Improve add_device() error
-> > > handling")
-> > > Signed-off-by: Pranjal Shrivastava <praan@google.com>
-> > 
-> > probably add a note that UAF is theoretical at this point.
-> > 
-> > iommu_init_device() calls dev_iommu_free() right after @probe_device()
-> > fails...
-> 
-> Ack. This is just to prevent a UAF against future refactors. I saw the
-> intel & amd iommu drivers doing it and felt this is missing from smmuv3
+Shikra (QCM2290) is a Qualcomm SoC based on the QCM2290 family that
+reuses the same MDSS/DPU 6.5 hardware as QCM2290. This series enables
+the display subsystem for Shikra by adding DT binding updates for MDSS,
+DSI controller and DPU, drm/msm driver entries reusing the QCM2290
+AHB clock and DPU catalog, UBWC configuration (no_ubwc_data), arm64
+defconfig enablement for the ILI7807S DSI panel, and explicit SMMU
+client table entries for qcom,shikra-mdss.
 
-That is just pointless dead code, the core code immediately frees the
-memory this is NULLing
+Tested on Shikra EVK board with ILI7807S DSI panel. Display
+pipeline probes cleanly and panel renders correctly.
 
-static int iommu_init_device(struct device *dev)
-{
-[..]
-err_free:
-	dev->iommu->iommu_dev = NULL;
-	dev_iommu_free(dev);
-	return ret;
+Signed-off-by: Nabige Aala <nabige.aala@oss.qualcomm.com>
+---
+Nabige Aala (5):
+  dt-bindings: display: msm: qcm2290: Add Shikra MDSS
+  drm/msm/mdss: Add Shikra support
+  arm64: defconfig: Enable ILI7807S DSI panel driver
+  soc: qcom: ubwc: Add Shikra UBWC config
+  iommu/arm-smmu: Add qcom,shikra-mdss to Qualcomm SMMU client tables
 
-I would remove it from the other drivers not addd it here..
+ Documentation/devicetree/bindings/display/msm/dsi-controller-main.yaml		|  1 +
+ Documentation/devicetree/bindings/display/msm/qcom,qcm2290-dpu.yaml		|  4 +++-
+ Documentation/devicetree/bindings/display/msm/qcom,qcm2290-mdss.yaml		| 34 +++++++++++++++++++++++++++-------
+ arch/arm64/configs/defconfig							|  1 +
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c					|  1 +
+ drivers/gpu/drm/msm/msm_mdss.c							|  1 +
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c					|  3 +++
+ drivers/soc/qcom/ubwc_config.c							|  1 +
+ 8 files changed, 38 insertions(+), 8 deletions(-)
+---
+Prerequisite-Message-Id: <20260518-ili7807s-panel-v1-0-d7b048163b1c@oss.qualcomm.com>
 
-Jason
+---
+Nabige Aala (5):
+      dt-bindings: display: msm: qcm2290: Add Shikra MDSS
+      drm/msm/mdss: Add Shikra support
+      arm64: defconfig: Enable ILI7807S DSI panel driver
+      soc: qcom: ubwc: Add Shikra UBWC config
+      iommu/arm-smmu: Add qcom,shikra-mdss to Qualcomm SMMU client tables
+
+ .../bindings/display/msm/dsi-controller-main.yaml  |  1 +
+ .../bindings/display/msm/qcom,qcm2290-dpu.yaml     |  4 ++-
+ .../bindings/display/msm/qcom,qcm2290-mdss.yaml    | 34 +++++++++++++++++-----
+ arch/arm64/configs/defconfig                       |  1 +
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c            |  1 +
+ drivers/gpu/drm/msm/msm_mdss.c                     |  1 +
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |  3 ++
+ drivers/soc/qcom/ubwc_config.c                     |  1 +
+ 8 files changed, 38 insertions(+), 8 deletions(-)
+---
+base-commit: 3a34f9c13cc0688f8db2a0db8506bf8c0d90737d
+change-id: 20260603-shikra-display-07767208fa90
+
+Best regards,
+--  
+Nabige Aala <nabige.aala@oss.qualcomm.com>
+
