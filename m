@@ -1,303 +1,172 @@
-Received: from mail-oo1-f44.google.com (mail-oo1-f44.google.com [209.85.161.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8828738D3F7
-	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 06:44:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.161.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F31D39B4BB
+	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 07:00:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.11
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780469090; cv=pass; b=DLNc1ZgmsSuDRT2vwk2hR6TqFdGc0v374OKlqMfX277k2PwKR05DI9bNFKezCYv8ipD8rcIQo13ACb5DWNrzT16QLFClucQZuFGAWIijHoMzbPWkm0hIq1gZuR1Q2CNb3DbC7nh5pdp44HlNZSghxzc68su6UHkZk9i+Skx0Lro=
+	t=1780470044; cv=fail; b=U8SCC8ZtoOyINULNu8pVTX0rKluB5LKZjDcc9OeR5Jk7svAjL43KLPNTu4sM565G3/OeRO7Rxxz+8dktBUkKrVENxth7Q74wCB0HPqpsdWbdaYEvprIRTRtXgIR5tVrR3yLzcroZDhJSNPS+PQE38JUsZH069sTjW2zjdagXhSU=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780469090; c=relaxed/simple;
-	bh=56G+6KSF26fnjlqQuQaSxXvZtnVr1hBfZPPvTYbNb3A=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=AIuT/rcnP62SCQxp1msWrBsskcdyVUVqhuvMKOx7zRCLl4HPIPlUEJhFgf4pPp1E5pNH/p8qO4A0ay169/RFDeu32LI7LDUkXASxleCyWFmFPy8DedQNnTMTE8vC3wmsZnhFGJlebaTRjxj22h8TtAhwmgIoO6MDK4/sV3PIHMg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=brainfault.org; spf=none smtp.mailfrom=brainfault.org; dkim=pass (2048-bit key) header.d=brainfault-org.20251104.gappssmtp.com header.i=@brainfault-org.20251104.gappssmtp.com header.b=GTAkC2kp; arc=pass smtp.client-ip=209.85.161.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=brainfault.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=brainfault.org
+	s=arc-20240116; t=1780470044; c=relaxed/simple;
+	bh=JNc/TDL0hibjCMMyjmTszYS2lZhSZAFXEUmKBL5yVhE=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=aFc8LZ2iUu14lx8W73PL4+EYZurJxS+rYOkicGlNyB8fWiDmeOMV1NQ9zQwrhuKZg+rRhzmSo0CJKFk/UtM4dap2sk2+16ljOL6QcOPTZwKUMjL2cmk3DKUC7G9YF0WrkHYblSBEQFfaFo8jprwpL56CeZipxEoPSwhTsYJhbRY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KEgxnmbC; arc=fail smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=brainfault-org.20251104.gappssmtp.com header.i=@brainfault-org.20251104.gappssmtp.com header.b="GTAkC2kp"
-Received: by mail-oo1-f44.google.com with SMTP id 006d021491bc7-69e1f777bcaso279769eaf.1
-        for <iommu@lists.linux.dev>; Tue, 02 Jun 2026 23:44:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780469087; cv=none;
-        d=google.com; s=arc-20240605;
-        b=jcKhcaS6bdEafhHytzV6Rcr9dbf7j69aprsC5rtkqzCzJOqDVNU1enJ/p9HnsuY6J2
-         rt2GzTdr8BgaJX4Yofu1cdTI+AmtpOcKvyOCcAMKEPlD/p05R6Su5/rFrQJVB73efktX
-         dkbd1eUQsNMwdqxT9rGs9xRwqEd65CDoLw51e5sRGxMsZsP7QFXd6JmafGHJ1zNeQ6ZE
-         Lrp23Sjj2sdnWdCyIpWtSS/crwS4gLHcpU9sM5yg+ti19bRZ2f8VJ+hq9sLoyOX93cf9
-         KjThv98+3Uy/7d6mCUOtRjULLblBSNLXlyabmYuU99K3O771MbC25JdMLNce8kOx43fD
-         XDgA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=vguV3vMU4h/2CSVTFHkBd4daU9WvVPcYCYkqg5eye6Q=;
-        fh=R3Js417fZ/UsBd7QWz6MdtWRUBB85Svnto1DtNoQIu0=;
-        b=bUHQP6gvaUVwPsCq0wsgE9a15DtRChHWiLzTBTwCcjejZe1t8xumfHmWJi9/VBV7f0
-         sxBB7dBgD8uD/qCskL8QK4sOpc+u4xZJKBV+nvhbTapissOFSfXq80rDVwDaYJlQ7it0
-         5zVWwfUqUMZpSFiAxEj5LZuIPTbAT5y6iLQn5PlYltdp6tSTctJDihmXmJhxFRfmDDsg
-         rxOhcMuQ+EclgFUuYZyOTOz+aoLzxjzOzw4lI3GDZRq9IUzqTNitPf6VjyC3AhHtmZxe
-         I87Bx5xDLSv3bk67iVOizKt8zmJG4UnhSmRVkEyaWSsDoMKIbI33LpiOJoE+pUbV3p59
-         Xr2w==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20251104.gappssmtp.com; s=20251104; t=1780469087; x=1781073887; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=vguV3vMU4h/2CSVTFHkBd4daU9WvVPcYCYkqg5eye6Q=;
-        b=GTAkC2kp5Pf2Rlsyfee4x0GvWRGtaaYb/ON1APEHZ+Z9osbCotzuYYpPfo7tDqtiMe
-         FOizPG1M41NM60B3pDl3Fa3qZP7/5KBow2jF4xBLiV2oMsuDkNEmgyRJfH4cCbmo5rWr
-         JRCkZ3E6PE6Xammb+Pem4xQ8Llw6jB+KB11iJKmL5amKAxNApQlL9Rdzw4R+rCkZIK5N
-         Dw+TVk00cyiaO3fjChdp5KV6kEqBWLBbUOwLhKimA2PEDV5p7qnvyFY5NZO9X1m4q2cF
-         jCfT9095q4iI23ZbtRqISxiW2mM7fCVvc0hTq8/kQMDAW2mnlm+TVCo8mNHj7LYXg4Bg
-         74Jw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780469087; x=1781073887;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=vguV3vMU4h/2CSVTFHkBd4daU9WvVPcYCYkqg5eye6Q=;
-        b=sE5yw+dFmYFoDPD58A7ul/3y1z7EdHNcUoYlAqZ5DqafPMhng1tH8aAhAR/QEmSbJZ
-         z2w0x9HxNTD3e2hyOAhlmPBHKhZMcLhJfnUBcJgFuSp7p+PA9CaGIH1UrB0WRA9+U5Ni
-         ic17PN9EyVCZXtnnRIzZDjhvXXVPvmscdlHcB3RAzpuVpDntHAVvTNF+cvSQ9HksZIrK
-         0BlcTpTDMl9TZXu71WKMr4ZWlzlF13xCnTCCheRpb98+EioMU4AaJ+pzhgsTdq7nUEEI
-         t8x322n5KfmUFO2boyHCNoagbuiQLZDv2+qEEGYnqnH1onXuTp7unZ3860LZYsmB22dG
-         Cy+A==
-X-Forwarded-Encrypted: i=1; AFNElJ+dDhKO7ul0wFauw+mIAtRAucPjtYtUs8wfV2Cn4UOhEtUZSX/npi+KSt14BJDST77+0N9mDw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YynS68q1fWniWscAQcZ4tCyn/dr1JD3aqAajTwA8DL1uB8jxgbe
-	9dJiZkrvse86fg+tAy4h++sirJ9a5zh+8oL79F+kMGgteu3W3DhywJRvo4ltd3MCy5kp0fevf62
-	QBy1LIP0jLKyWAc8lCfgw+c2vWoVsNHK8woAvoRnEWg==
-X-Gm-Gg: Acq92OG+E4gB3dCwr7zQrwC3G54hi9A14CpkU1cMbYt8TCBcq/xltFi9sxPk4Y/T6DL
-	f8AhcLG5QOSzu3EM3Mh7hxaZEZIPefrGplavjEdS0pN9n84c4LhIpfzyMjxIlni624q8WgKo/Gl
-	JKPci7LMlxiI7h+HVvgPaY5NLk2Mr0XZ8Y5JOqmVZpbLH2DHsMe/SRjIJTqOnyuyVXLoxmw2BaZ
-	1o38GRTuCHOcdJm9iIhVvK/Nyp3Gs+0OHZJ+hDcsRVhS2/APGDdW2g4AmqVOY3sNyrg5Pu4pHjP
-	MsaCtUKtfIAE+dQcwgiaMxWT91KUwFyHYcUXP45VX0YPg2hg8VwAkMyGzB3xwZ3MfLOSYjxKQeZ
-	+m1y/87KacjnvbTztEpL0Z+AXor6rfLG0mdbEyA==
-X-Received: by 2002:a05:6820:f014:b0:694:8fe0:152e with SMTP id
- 006d021491bc7-69e48cf5960mr936756eaf.31.1780469087406; Tue, 02 Jun 2026
- 23:44:47 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KEgxnmbC"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1780470044; x=1812006044;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=JNc/TDL0hibjCMMyjmTszYS2lZhSZAFXEUmKBL5yVhE=;
+  b=KEgxnmbCmVmEC+oy4clLX/Dfsys/ur5qKka6QA9Gbof4iURCbNop7KG4
+   h0ZFaIAVI4DNY42k8J5wWqPrra+sn7LVSzpfm8ux27OPRD7Q0HPYXFExq
+   SazEQh6AhxJn1F7DGHXSMC5EravMaqdBHa4IjcOsy6jdFjyOsuTxNmxkq
+   olhIfj5z+eqSSLy0F6jvoWibl25524hRIKLEGrto0xvwYcnhDxyjw0ZIC
+   Ko/acb24XzGG4CTVnwmW6UDhNfru8bSikvq7I+TmQx9ZxHEcOdSvhv2ic
+   /bipOFKxsYbrvmY+zA2/nGskoWcEytWkdvR+9qhr2szJEdDPlP7Jj+8VA
+   A==;
+X-CSE-ConnectionGUID: vSHLAlAbQuuriI/KNHO3QA==
+X-CSE-MsgGUID: 4SEBlB6DQE6udXnEPs4WHA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11805"; a="91581335"
+X-IronPort-AV: E=Sophos;i="6.24,184,1774335600"; 
+   d="scan'208";a="91581335"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 23:59:50 -0700
+X-CSE-ConnectionGUID: 2LY6lGHVQdO3W4czhrzSUA==
+X-CSE-MsgGUID: F87y5jR+RjuT3/D1q3pqZw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,184,1774335600"; 
+   d="scan'208";a="237780533"
+Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
+  by fmviesa009.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 23:59:49 -0700
+Received: from ORSMSX903.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Tue, 2 Jun 2026 23:59:48 -0700
+Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37 via Frontend Transport; Tue, 2 Jun 2026 23:59:48 -0700
+Received: from CH5PR02CU005.outbound.protection.outlook.com (40.107.200.55) by
+ edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Tue, 2 Jun 2026 23:59:47 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=bIuu9TaczmXpmNqnIT2fGjR/S1QF6AgxWmpLHUFiHaDIHAvN5hkUmbppzXBJEOGF2Pb9A+m0BgxZ+HIMFvxiskkhwBRT+ruv2G8DQle9tLIQpygXq0mKLLqhXdQ+jMPwkucIMIaGTv01Yj5lS8vkxHw0esd+PaggiheWmvuyyai0BQQV1PGtwRrDaJ2DU6H9KchAmBXVgKdxgfHoMM4N3aiDrRvLmBF+esKnaQ2ol7hhl3vER3/w6yxfIIdKg13z/ywdgOVJMdZXrA6Uy+q74AGTvr5Ay9O/aA6k4Br9qDblhAktTs9DaJ1PNpVdQHZjf1+6RAKqEnWk8uF2ydRFNw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=H8SmTnoeODkFwL6k/EX18Tr+Vicfv1J4tlW1NOzQQ+E=;
+ b=uKeG2YyFvpPlj1dCMwpM6wOBqTpYCP4Pn15f41A/h4q7Bjm6kRGd4tKc8ZogM37BCnl6mHiUAusILP72f9qjEC/4ZHGF+gc19p8NfgVrpqIbKQA8ABLF2D5lOZkZ6FnCzi3ol0+K5QMR45xxYhgEikXTMoChydwDIzSfNQlOVy27dpHfAnDQ1y+znK5cAwpkjV5zT6eQDjKpEIshRvGjm8+2A9CgZ3A9bbBWv0mqLDnOWYvot93z0ltCBOHQaCup2QB+0a/m/KIt5n9vxEWa3GHHgBxyHDXeWLUGeKUbf3rPZB1qX0WTsXyw1wTa24Sa2T05XAezoDKLhyzx+aitqw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from DM6PR11MB3690.namprd11.prod.outlook.com (2603:10b6:5:13d::32)
+ by SN7PR11MB6726.namprd11.prod.outlook.com (2603:10b6:806:266::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.92.7; Wed, 3 Jun 2026
+ 06:59:40 +0000
+Received: from DM6PR11MB3690.namprd11.prod.outlook.com
+ ([fe80::7db8:f6b3:30f8:ee4b]) by DM6PR11MB3690.namprd11.prod.outlook.com
+ ([fe80::7db8:f6b3:30f8:ee4b%4]) with mapi id 15.21.0092.006; Wed, 3 Jun 2026
+ 06:59:39 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Nicolin Chen <nicolinc@nvidia.com>, "jgg@nvidia.com" <jgg@nvidia.com>
+CC: "joro@8bytes.org" <joro@8bytes.org>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
+Subject: RE: [PATCH v1 0/7] iommufd: Fix bugs in eventq fops_read paths
+Thread-Topic: [PATCH v1 0/7] iommufd: Fix bugs in eventq fops_read paths
+Thread-Index: AQHc8gdYgVWj/59OVkS3cJAhFt44T7YsaN8A
+Date: Wed, 3 Jun 2026 06:59:39 +0000
+Message-ID: <DM6PR11MB36903163D496ADF2632D40EE8C132@DM6PR11MB3690.namprd11.prod.outlook.com>
+References: <cover.1780343944.git.nicolinc@nvidia.com>
+In-Reply-To: <cover.1780343944.git.nicolinc@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM6PR11MB3690:EE_|SN7PR11MB6726:EE_
+x-ms-office365-filtering-correlation-id: 879a9df6-18cc-4c8b-798f-08dec13dae49
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|376014|366016|1800799024|38070700021|56012099006|18002099003|22082099003|11063799006;
+x-microsoft-antispam-message-info: UVII3nPskXVvJoBrzyKyLi58PUb+GyqLDrQYVjoqH3QKnaiB7qG9zCbkIxUndMcU2Txasv+ROHP2y2HN/3bxYE1oBIREBC4OZ0NmMUqvFL1X/eK4ZQs0gW4V5kmxWQNmpMgMDFQ9xSfxXfh0P2UmjyIZrMuJZV7cxnUD0cptG1xbirW8pBUuizRas4BMWFqln0ZSFoV+NYStl2MVQ/9HV6XsDNdwqL9dC720Hu3HaczckhXAyHBLq61SmNsvZKp3rjPHQGIiBSlj34mhKYemMYrDWDlA94kiuCL5P5jFP9kPb5PnnUENjmffFYbyvIvSV/uwVsXFgtfDLauv4EIR6BbhJRhwxU5wg5n2GBl/Gtwpw9ogPMOtUx3BzmRHUaKGKwrPAoTt8ebp0Une1fRswVWwv3r98/TQKOHCUB2nHiTbxoGLKNuGl9mjbqiqmHgvclCpfunOZ7xt0I+1h4+8mYrDoDI7a28OGzgn/aq2UeHZ+j7PeORAnYmAHTleAgbEgFt2i9UyISnbWrQaEFgfz4shZP89UhhpE3xsZdYasgMznPscEdHq39YjFjVnwD8kANwlhRN/wzPFA4MxGAey40Jl+MYsZnyym468XdWs/eU990+IWmIjGkquQ/4OHVqp3rFX05tksaNDxcAANN9EAastXDx8uBNNxvS0paU4uqFA79PB3vQxBetrcOhxS8No53YBESotUlEPxXQUY6XDW+rHTKXvmKiJ3lZv7Sf8OTRhuXDdqPhhTOwVn3uEeJye
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3690.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(38070700021)(56012099006)(18002099003)(22082099003)(11063799006);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?/xAW2lhKyELf8sWv7QjiMJpOPEgTDwdoamSf6BYJ/q8ZNV6oBwZSV47rJUWa?=
+ =?us-ascii?Q?+IksMzuBK0gvzo4VdIQ0hdj1Z+2HNvMhgu/+fmwOEZ2zVpZL1zI/k/I5uRlH?=
+ =?us-ascii?Q?ThfD+YKtcDySV+TihfjLmxK3J7ErGxWIQ//kapduXZlSh2EWrYXOkXxSD9E4?=
+ =?us-ascii?Q?K+Es32ttLhbgtZnT7W6b1ZjpqZ/ATdESU8OMrZipjLgGJMMEYLL12IVn5FKj?=
+ =?us-ascii?Q?xPA07IGBAyMYu22fouupufkijSLpv9g7bjMKLn+RCXj6Nv7HW9lMKe/9/Ghf?=
+ =?us-ascii?Q?WvzBT+1x9VAMlMxNvo9mLHYH3x7Xn5lkAg/7rVHmZ4fR31yLOFZeh8AYhBVA?=
+ =?us-ascii?Q?0M9NY0bfIL9t46R3RBVlFdTTPVsZush5gZHf15IppQi1ZRYK6eqWe8vfPufb?=
+ =?us-ascii?Q?Gsvu9tMRd1HMXmYM7MKKiYrKM/eYwF8LN9P3n0r0Wt68yuucgaIW+ru1gOGU?=
+ =?us-ascii?Q?4Kj1peLLbstXUsxyfd549zmGVsgpl7BT+dbKiy7lAVShyedAVEgAslGgddHq?=
+ =?us-ascii?Q?/yBCq4FBhK2KtSdbEC26t5UnakAQJRe2R0VDOZ4/CGJoSgcOAHBGEL1GBgLS?=
+ =?us-ascii?Q?s6bO6kuMcYYD65Abe6JgDZUOAn0oe4VA7TyiK2LyJYM9W6UVGrBtGCC8zeZN?=
+ =?us-ascii?Q?OgtlH+aqVYkCoexZNVIrOK3efUlFkBELbpv0DNxD+0oa4eQzE0bRzNZEJj/C?=
+ =?us-ascii?Q?TC/pFF1uEkWsLGyq/wf7hqzYeLv2ATgdXOKKCnXWy8c7twtJewk13GEZiscT?=
+ =?us-ascii?Q?StEUAZpuCx2WEd7a+/AcKb+D7UHMJbybEkuUu8/PFbNlXC2VU9cfaos1DRgv?=
+ =?us-ascii?Q?TsBchAMxXMiFxBidELPVPnIl+T2X3KITw+3xX3ooa6deNJLYdzoQYqCoFTis?=
+ =?us-ascii?Q?najwyLxic0U9rk5MbRcyTclvRPWHcFUt6kBrHCFYbs9PqE2nmawtBSCOpxme?=
+ =?us-ascii?Q?qdxc3GVS8cuZBawt/tJxAtDYvx9HM5o8ApuT0DDpVv1MZ6B3mIFNLowJu4tA?=
+ =?us-ascii?Q?KUHBsX0lmyTOdEC9ILL9lrlbEOKgxaltRtA/jvHgURLLcSLQEWswnGDxi0lN?=
+ =?us-ascii?Q?VidT1o8yuJPalc32AfUk2OOm21xB69IXcPO/J5Uo+oUs0dbmN4HZyUJARfyf?=
+ =?us-ascii?Q?HD83Je26QW9UGZNpKoWPIqidBurG/F/IxrBaYfAmRBtp3Cb4mTBKjp7ijPlB?=
+ =?us-ascii?Q?atfX4KEr9hSCLc6XzjnLQFI7WwNVaUJOofJ4iMWkXV7Eh0RkCuFwF7z5x8fG?=
+ =?us-ascii?Q?z1z/1vQ/v4jRFnqAnmCs6VZ/dJS5ecZmE5DiVKlEQ8VoiIOF5/oRVlaUEerq?=
+ =?us-ascii?Q?Oe1ZWC1O5CjNuEoIsoz7kGhseTr0RZbl3ARBPA62agz6siyE5wseOAkjwkbD?=
+ =?us-ascii?Q?cyiUnW4/r+cEU1HgJ4h2KqsLR3T0D2B/hBxbbG9MlxJ0zqiwWnF6iYEAo2vu?=
+ =?us-ascii?Q?GtIB1D4LSponIIpfSBpG2FbIXRVaAz0qRRvqfW76NRhE4N0CRdtoojCxKheH?=
+ =?us-ascii?Q?4DmpnpLocty5gfLLAQM5r4NW9l/rlXRJ+A9OFp4J3BmfJIrAsc9TbvHavSgq?=
+ =?us-ascii?Q?CLv4e/nwRZsbx3hnBpWdi8wIPyWhfbLFkPtHll3F1IjN6CnI8VkBok/bxK8s?=
+ =?us-ascii?Q?JNztEytBSUKybNhE4lNYZQx24LQOKorGvM3dQd1pQjcDI7m7OkWEL+VoSmiX?=
+ =?us-ascii?Q?Fs9HGZCZT7Q5BGrO6fPuuUVv8xtGgRapyVQIJDjhfwonaeD0heFySsh7Y1Jg?=
+ =?us-ascii?Q?p2tK0tm0Kg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260526145240.1627200-1-anup.patel@oss.qualcomm.com> <89e1334f-e7c2-4992-ba39-0d23f5605275@arm.com>
-In-Reply-To: <89e1334f-e7c2-4992-ba39-0d23f5605275@arm.com>
-From: Anup Patel <anup@brainfault.org>
-Date: Wed, 3 Jun 2026 12:14:36 +0530
-X-Gm-Features: AVHnY4JmV0zm-0tTvkp_o34WcjHkNEMQ2AMhT0fQwQmHlV9bWdR1bNfsmtDJXa0
-Message-ID: <CAAhSdy0dOeCrH2YEkEyrNQU2nyO-41AT3m4-BaYJuQ3GbocqmQ@mail.gmail.com>
-Subject: Re: [PATCH] driver core: platform: Setup device MSI domain just
- before driver probe
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Anup Patel <anup.patel@oss.qualcomm.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Paul Walmsley <pjw@kernel.org>, Alexandre Ghiti <alex@ghiti.fr>, Thomas Gleixner <tglx@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Danilo Krummrich <dakr@kernel.org>, 
-	Tomasz Jeznach <tomasz.jeznach@linux.dev>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	"Rafael J . Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>, 
-	Saket Dumbre <saket.dumbre@intel.com>, Rahul Pathak <rahul@summations.net>, 
-	Atish Patra <atish.patra@linux.dev>, Andrew Jones <andrew.jones@oss.qualcomm.com>, 
-	linux-acpi@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
-	driver-core@lists.linux.dev, iommu@lists.linux.dev, 
-	acpica-devel@lists.linux.dev, Sunil V L <sunilvl@oss.qualcomm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Exchange-RoutingPolicyChecked: o/U1BBOPg2gl/JBfASEma5v/dPvHzvozElsYpPiV2CuUL4xZ8mEteHmqJVGESC5Gl4OEI14hXJX5HH1IkijSsjkV3fwoDGuabfrM0ePvkI6Xi3sR4OP96+aufCpBFj7GkECqN2+TK8l39Wu/SiPMzWxvITdzqUySaSuoBptijk9lJmrvZsFyfNN/yevWeheJ7yBCJqtD46CsaJsk52B7NlhUWRbgcF1L0+1ZqFJuzPhDm3Qtq8apHNkFXStG5+eaSJGF3RiWjiUsP9YutOfeGz0Neu2CHWzKzsTtv8loMA4+RLOt2FBe1mQw7SBJgWHDHVFJsrhxwNKU0hGxI//lMg==
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3690.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 879a9df6-18cc-4c8b-798f-08dec13dae49
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jun 2026 06:59:39.3982
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: mSeA1leleP4YB8Inig1jJ+j49fEO9hW+9qk4D7VXS7ESMyuqYSSmzw+Q++AP3l0r3LOlqXEuw2Z0iQHj1YX35g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB6726
+X-OriginatorOrg: intel.com
 
-On Tue, May 26, 2026 at 8:53=E2=80=AFPM Robin Murphy <robin.murphy@arm.com>=
- wrote:
->
-> On 26/05/2026 3:52 pm, Anup Patel wrote:
-> > On RISC-V, the MSI controller (aka RISC-V IMSIC) is probed as a regular
-> > platform device and MSI client drivers are always probed after the MSI
-> > controller driver using fw_devlink. Unfortunately, this is not sufficie=
-nt
-> > to ensure device MSI domain is set for MSI client devices before driver
-> > probe because OF framework sets device MSI domain at the time of platfo=
-rm
-> > device creation whereas ACPI framework expects arch specific code to se=
-t
-> > the device MSI domain at the time of platform device creation.
-> >
-> > Currently, to work-around the problem of missing device MSI domain,
-> > various RISC-V MSI client drivers explicitly set device MSI domain
-> > in the driver probe function using below code pattern:
-> >
-> >       /*
-> >        * The device MSI domain for platform devices on RISC-V architect=
-ure
-> >        * is only available after the MSI controller driver is probed so=
-,
-> >        * explicitly configure here.
-> >        */
-> >       if (!dev_get_msi_domain(dev)) {
-> >               /*
-> >                * The device MSI domain for OF devices is only set at th=
-e
-> >                * time of populating/creating OF device. If the device M=
-SI
-> >                * domain is discovered later after the OF device is crea=
-ted
-> >                * then we need to set it explicitly before using any pla=
-tform
-> >                * MSI functions.
-> >                */
-> >               if (is_of_node(fwnode)) {
-> >                       of_msi_configure(dev, dev_of_node(dev));
-> >               } else if (is_acpi_device_node(fwnode)) {
-> >                       struct irq_domain *msi_domain;
-> >                       msi_domain =3D irq_find_matching_fwnode(imsic_acp=
-i_get_fwnode(dev),
-> >                                                             DOMAIN_BUS_=
-PLATFORM_MSI);
-> >                       dev_set_msi_domain(dev, msi_domain);
-> >               }
-> >
-> >               if (!dev_get_msi_domain(dev))
-> >                       return -EPROBE_DEFER;
-> >       }
-> >
-> > Instead of the above approach, extend the platform_dma_configure() to s=
-et
-> > device MSI domain for both OF and ACPI based platform devices before dr=
-iver
-> > probe and remove the duplicate code pattern from RISC-V MSI client driv=
-ers.
-> >
-> > Co-developed-by: Sunil V L <sunilvl@oss.qualcomm.com>
-> > Signed-off-by: Sunil V L <sunilvl@oss.qualcomm.com>
-> > Signed-off-by: Anup Patel <anup.patel@oss.qualcomm.com>
-> > ---
-> >   drivers/acpi/riscv/irq.c                | 13 +++++++++++
-> >   drivers/acpi/scan.c                     | 10 +++++++++
-> >   drivers/base/platform.c                 |  4 ++++
-> >   drivers/iommu/riscv/iommu-platform.c    |  9 --------
-> >   drivers/irqchip/irq-riscv-aplic-msi.c   | 27 -----------------------
-> >   drivers/irqchip/irq-riscv-rpmi-sysmsi.c | 29 ------------------------=
--
-> >   drivers/mailbox/riscv-sbi-mpxy-mbox.c   | 29 ------------------------=
--
-> >   include/acpi/acpi_bus.h                 |  1 +
-> >   include/linux/acpi.h                    | 10 +++++++++
-> >   9 files changed, 38 insertions(+), 94 deletions(-)
-> >
-> > diff --git a/drivers/acpi/riscv/irq.c b/drivers/acpi/riscv/irq.c
-> > index 9b88d0993e88..17fa5dcdd2c0 100644
-> > --- a/drivers/acpi/riscv/irq.c
-> > +++ b/drivers/acpi/riscv/irq.c
-> > @@ -5,8 +5,11 @@
-> >    */
-> >
-> >   #include <linux/acpi.h>
-> > +#include <linux/device.h>
-> >   #include <linux/sort.h>
-> >   #include <linux/irq.h>
-> > +#include <linux/irqdomain.h>
-> > +#include <linux/irqchip/riscv-imsic.h>
-> >
-> >   #include "init.h"
-> >
-> > @@ -397,6 +400,16 @@ static u32 riscv_acpi_add_irq_dep(acpi_handle hand=
-le)
-> >       return count;
-> >   }
-> >
-> > +void acpi_arch_msi_configure(struct device *dev)
-> > +{
-> > +     struct irq_domain *msi_domain;
-> > +
-> > +     msi_domain =3D irq_find_matching_fwnode(imsic_acpi_get_fwnode(dev=
-),
-> > +                                           DOMAIN_BUS_PLATFORM_MSI);
-> > +     if (msi_domain)
-> > +             dev_set_msi_domain(dev, msi_domain);
-> > +}
-> > +
-> >   u32 arch_acpi_add_auto_dep(acpi_handle handle)
-> >   {
-> >       if (acpi_has_method(handle, "_PRT"))
-> > diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-> > index 530547cda8b2..e50e5d246a54 100644
-> > --- a/drivers/acpi/scan.c
-> > +++ b/drivers/acpi/scan.c
-> > @@ -1648,6 +1648,16 @@ static int acpi_iommu_configure_id(struct device=
- *dev, const u32 *id_in)
-> >
-> >   #endif /* !CONFIG_IOMMU_API */
-> >
-> > +/**
-> > + * acpi_msi_configure - Set-up MSI domain for the device.
-> > + * @dev: The pointer to the device
-> > + */
-> > +void acpi_msi_configure(struct device *dev)
-> > +{
-> > +     acpi_arch_msi_configure(dev);
-> > +}
-> > +EXPORT_SYMBOL_GPL(acpi_msi_configure);
-> > +
-> >   /**
-> >    * acpi_dma_configure_id - Set-up DMA configuration for the device.
-> >    * @dev: The pointer to the device
-> > diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-> > index a19dd22deef2..225e33080bc6 100644
-> > --- a/drivers/base/platform.c
-> > +++ b/drivers/base/platform.c
-> > @@ -1470,8 +1470,12 @@ static int platform_dma_configure(struct device =
-*dev)
-> >       int ret =3D 0;
-> >
-> >       if (is_of_node(fwnode)) {
-> > +             if (!dev_get_msi_domain(dev))
-> > +                     of_msi_configure(dev, dev->of_node);
-> >               ret =3D of_dma_configure(dev, to_of_node(fwnode), true);
-> >       } else if (is_acpi_device_node(fwnode)) {
-> > +             if (!dev_get_msi_domain(dev))
-> > +                     acpi_msi_configure(dev);
->
-> But surely this needs to handle the deferral case that's being removed
-> from some of the users below?
+> From: Nicolin Chen <nicolinc@nvidia.com>
+> Sent: Tuesday, June 2, 2026 4:43 AM
+>=20
+> Bugs were found in iommufd_veventq/fault_fops_read(), where userspace
+> may:
+>  - Receive a corrupted byte stream after a partial copy_to_user
+>  - Spin in a poll/read loop when reading with an undersized buffer
+>  - Miss notifications when the kernel cannot allocate a lost-events copy
+>  - Receive duplicate faults with stale cookies after a mid-group failure
+>  - Cause the kernel to retry the same failed copy_to_user indefinitely
+>=20
+> Fix them, then add selftest coverage for the vEVENTQ count validation.
+>=20
 
-The deferral cases removed by this patch are redundant because:
-1) For device tree, the fw_devlink support in Linux DD core takes
-case of probe ordering and individual driver don't need to explicitly
-do EPROBE_DEFER
-2) For ACPI, the _DEP objects helps us ensure probe ordering.
+for the whole series:
 
-In other words, the issue of probe ordering or deferral is already
-handled for both device tree and ACPI.
-
-The only problem which remains is msi_domain pointer not set
-in struct device before the driver is probed. This happens because
-MSI controller driver is a regular platform driver hence MSI domain
-pointer is not set when platform devices are created.
-
->
-> Also I'm not really convinced about bundling it into dma_configure,
-> since it's mroe about IRQs than DMA. I wonder if overall it wouldn't be
-
-Using platform_dma_configure() to update the MSI domain
-in struct device is appropriate because:
-1) MSIs are device initiated writes just like DMA writes
-    initiated by the device.
-2) The iommu_device_use_default_domain() called by
-   platform_dma_configure() will override MSI domain
-   in struct device for architectures (such as x86 and
-   RISC-V) where IOMMU driver implements a IRQ
-   remap MSI domain for MSI capable devices.
-
-> better with a flow closer to regular request_irq(), with
-> msi_create_device_irq_domain() growing the ability to distingush between
-> "there is no domain" and "there is no domain now, but could be if we try
-> again later", such that drivers can handle deferral at the point where
-> they request MSI vectors?
-
-Like mentioned above, the problem is not about probe deferral
-(aka returning EPROBE_DEFER) from request_irq() or
-msi_create_device_irq_domain() rather about updating the
-MSI domain pointer in struct device before driver probe.
-
-Regards,
-Anup
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
