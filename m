@@ -1,29 +1,30 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1A7A939E18E
-	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 05:44:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0961D38D3E0
+	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 05:44:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780465484; cv=none; b=T1qD15gQaGSbbEIYeDsDso2BxYk32RK/VhgLV43vB2UYca4tuVjjB7HXumadxPRlZUS0PxY3smvSqRTNvmbHCjvO3ZZn4vMy7JcJm1QflRxWaJa6twOxWKP7NhvyQFGffEC/r8ADfoXhVSu+gjMkuuk6ijcrimWm6WO2/kpKbp8=
+	t=1780465485; cv=none; b=C7wHMxcmLtnC/29Ds2uN/LIkY+2PfjUgeCIY7Fp88AP57Yn6v6jDuIom3T89BcPVW5N/nFfORVJtr7p8sXvAjmm9xgnP3wZv2n/5r+1ClulV2B1LiuAVhwz99AgdeoYiP4Xw/0jhOaGtwnbHZf35Imcbd46j/UOCp4CgqdL7Jl4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780465484; c=relaxed/simple;
-	bh=t6eo8TwuB283GmkmRPiDJ6NSiS5Beyk944tJHV9KC7Y=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=S/14s5d6MNbgF0MMpkrPvaUWGSd2NBR/8O5IBA7E0gglYol46A0Q4pezTeuHajnwLNMliR1Z5MMNuycjns+ArK1M+nmtY7pujskecTQQ9ZRrqq4WILwi8L9Y9OZ79FSq9cG8t+kC6SMdYTSjiyZ6U3RXgt6eGNe8kP/52kXLNx8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=BeT4MzZK; arc=none smtp.client-ip=13.77.154.182
+	s=arc-20240116; t=1780465485; c=relaxed/simple;
+	bh=1XRg1k/b6cNiPvIdx9/bMCoRiwPpnRg1h0XrEaQejiU=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=ps/QxUT6iF9rigq3LsF3ZbZVqn/3rx8LXcBjfqu87E5WPsXJJBorDXY83WNI5Nq5myy0Wx9HLFos2LUFMciPcLTB3/6QmyX00k/d26N3gEwcgvfAV+v04a5cU0CS5pKPmR1E0raMLaSvBeCjxQHZV7GGK/9u7AS4IGNVPFK7Vxk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=aVG2SN1c; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="BeT4MzZK"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="aVG2SN1c"
 Received: from administrator-PowerEdge-R660.corp.microsoft.com (unknown [131.107.147.7])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 0E9D520B7167;
-	Tue,  2 Jun 2026 22:44:25 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0E9D520B7167
+	by linux.microsoft.com (Postfix) with ESMTPSA id 0F86020B716C;
+	Tue,  2 Jun 2026 22:44:28 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0F86020B716C
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1780465465;
-	bh=jQ9a/x1wl9L8iFNldrwfJxXeb2t5IYLItBpRwSEnCkY=;
-	h=From:To:Cc:Subject:Date:From;
-	b=BeT4MzZKDazFjcySvm8wZBzp3pFH0a6mGrbqPxP4lLG5bKdZw08HYc89fzsCk98cP
-	 BzFxWDnDYRhz5f6xMguw73wv3M3tIF40jHSX6gS0KTphuryJSUX0ehcucf6uA9Pvuo
-	 qv4yWtWexxHhbPbvvwqs+OdkFJY8379KCCNxX1h8=
+	s=default; t=1780465468;
+	bh=xnd4XbxsM/EFpC2lh+rEdlQ7dz82BSqH0YUanSA9D/w=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=aVG2SN1crkRifLhN+FIdApiAHHdVqhgXHDX00s5Is2nNn0/FducJzLIEB3X/ZdTJd
+	 9T08y0rt39tz9WBQgJ8BA5mjwTeAxPp4amWa4hW6LFUC6vt0ZYtUYe2QAOVVjkLgzq
+	 EzcbG1VBuEJd7McomtwIUQ4N2Z0fwyc71Uu9JODY=
 From: Jacob Pan <jacob.pan@linux.microsoft.com>
 To: linux-kernel@vger.kernel.org,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
@@ -42,10 +43,12 @@ Cc: Saurabh Sengar <ssengar@linux.microsoft.com>,
 	pasha.tatashin@soleen.com,
 	Will Deacon <will@kernel.org>,
 	Jacob Pan <jacob.pan@linux.microsoft.com>
-Subject: [PATCH v7 0/6] iommufd: Enable noiommu mode for cdev
-Date: Tue,  2 Jun 2026 22:44:32 -0700
-Message-ID: <20260603054438.2450130-1-jacob.pan@linux.microsoft.com>
+Subject: [PATCH v7 3/6] iommufd: Allow binding to a noiommu device
+Date: Tue,  2 Jun 2026 22:44:35 -0700
+Message-ID: <20260603054438.2450130-4-jacob.pan@linux.microsoft.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260603054438.2450130-1-jacob.pan@linux.microsoft.com>
+References: <20260603054438.2450130-1-jacob.pan@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,138 +57,290 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
+From: Jason Gunthorpe <jgg@nvidia.com>
 
-VFIO's unsafe_noiommu_mode has long provided a way for userspace drivers
-to operate on platforms lacking a hardware IOMMU. Today, IOMMUFD also
-supports No-IOMMU mode for group-based devices under vfio_compat mode.
-However, IOMMUFD's native character device (cdev) does not yet support
-No-IOMMU mode, which is the purpose of this patch.
+Allow iommufd to bind devices without an IOMMU (noiommu mode) by creating
+a dummy IOMMU group for such devices and skipping hwpt operations.
 
-In summary, we have:
+This enables noiommu devices to operate through the same iommufd API as IOMMU-
+capable devices.
 
-|-------------------------+------+---------------|
-| Device access mode      | VFIO | IOMMUFD       |
-|-------------------------+------+---------------|
-| group /dev/vfio/$GROUP  | Yes  | Yes           |
-|-------------------------+------+---------------|
-| cdev /dev/vfio/devices/ | No   | This patch    |
-|-------------------------+------+---------------|
-
-Beyond enabling cdev for IOMMUFD, this patch also addresses the following
-deficiencies in the current No-IOMMU mode suggested by Jason[1]:
-- Devices operating under No-IOMMU mode are limited to device-level UAPI
-  access, without container or IOAS-level capabilities. Consequently,
-  user-space drivers lack structured mechanisms for page pinning and often
-  resort to mlock(), which is less robust than pin_user_pages() used for
-  devices backed by a physical IOMMU. For example, mlock() does not prevent
-  page migration.
-- There is no architectural mechanism for obtaining physical addresses for
-  DMA. As a workaround, user-space drivers frequently rely on /proc/pagemap
-  tricks or hardcoded values.
-
-By allowing noiommu device access to IOMMUFD IOAS and HWPT objects, this
-patch brings No-IOMMU mode closer to full citizenship within the IOMMU
-subsystem. In addition to addressing the two deficiencies mentioned above,
-the expectation is that it will also enable No-IOMMU devices to seamlessly
-participate in live update sessions via KHO [2].
-
-Furthermore, these devices will use the IOMMUFD-based ownership checking model for
-VFIO_DEVICE_PCI_HOT_RESET, eliminating the need for an iommufd_access object
-as required in a previous attempt [3].
-
-ChangeLog (details in each patch):
-
-v7: 
-  - Handle Sashiko reviews.
-  - Dropped selftest for now, will submit separately for v7.2 to use
-    new lib helpers
-v6: Undo CDEV-GROUP NOIOMMU split, use Kconfig to restrict unwanted
-    combo.
-V5:
-  - Split CONFIG_VFIO_NOIOMMU into CONFIG_VFIO_GROUP_NOIOMMU and
-    CONFIG_VFIO_CDEV_NOIOMMU so cdev noiommu is independent of
-    VFIO_GROUP (Alex)
-  - Add CAP_SYS_RAWIO check for cdev open and bind under noiommu,
-    security parity with group noiommu (Alex)
-  - Add IS_ENABLED(CONFIG_IOMMUFD_NOIOMMU) guard in
-    iommufd_device_is_noiommu() to prevent noiommu bind when feature
-    is disabled
-  - Add prep patch to tolerate NULL group for cdev noiommu devices
-    when CONFIG_VFIO_GROUP_NOIOMMU is not set [7/9]
-  - Rename IOCTL to IOMMUFD_CMD_IOAS_NOIOMMU_GET_PA to be more
-    specific (Kevin)
-  - Simplify iommufd_device_is_noiommu, use iommufd_bind_noiommu
-    helper (Kevin, Yi)
-  - Move IOMMU cap check under iommufd_bind_iommu() (Yi)
-  - Fix next_iova exceeding iopt_area_last_iova in GET_PA (Alex)
-  - Fix const hwpt, copyright date, typo in moved comment (Kevin)
-  - Add Reviewed-by tags
-  - Squash noiommu cdev selftest fix into selftest patch
-  - Drop DSA selftest patch
-  - Details in each patch changelog.
-
-V4:
-  - Fix various corner cases pointed out by (Sashiko)
-    Details in each patch changelog.
-
-V3:
-  - Improve error handling [3/10] (Mostafa)
-  - Simplify vfio_device_is_noiommu logic and merged in [6/10] (Mostafa)
-  - Add comment to explain the design difference over the legacy noiommu
-    VFIO code.[1/10]
-
-V2:
-  - Fix build dependency by adding IOMMU_SUPPORT in [8/11]
-  - Add an optimization to scan beyond the first page for a contiguous
-    physical address range and return its length instead of a single
-    page.[4/11]
-
-Since RFC[4]:
-  - Abandoned dummy iommu driver approach as patch 1-3 absorbed the
-    changes into iommufd.
-
-[1] https://lore.kernel.org/linux-iommu/20250603175403.GA407344@nvidia.com/
-[2] https://lore.kernel.org/linux-pci/20251027134430.00007e46@linux.microsoft.com/
-[3] https://lore.kernel.org/kvm/20230522115751.326947-1-yi.l.liu@intel.com/
-[4] https://lore.kernel.org/linux-iommu/20251201173012.18371-1-jacob.pan@linux.microsoft.com/
-
-Future cleanup: consolidate all CONFIG_IOMMUFD_NOIOMMU code
-(iopt_get_phys, iommufd_ioas_noiommu_get_pa, iommufd_noiommu_ops) into
-hwpt_noiommu.c to eliminate #ifdef guards from ioas.c and io_pagetable.c.
-
+Reviewed-by: Yi Liu <yi.l.liu@intel.com>
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+---
+v7:
+  - Block get hw info for noiommu
+v6:
+  - Expand iommufd_device_is_noiommu() comment to explain why dev->iommu
+    is checked instead of device_iommu_mapped() (Yi & Baolu)
+  - Simplify bind error handling by factoring out duplicated rc check (Yi)
+v5:
+   - simplify logic and rename iommufd_device_is_noiommu (Kevin, Yi)
+   - use a helper iommufd_bind_noiommu instead of open coding (Kevin)
+   - move IOMMU cap check under iommufd_bind_iommu() (Yi)
+   - reword comments for partial init (Yi)
+   - misc minor clean up
+v4:
+   - Update the description of the module parameter (Alex)
+v3:
+   - Consolidate into fewer patches
+---
+ drivers/iommu/iommufd/device.c | 154 ++++++++++++++++++++++++---------
+ 1 file changed, 115 insertions(+), 39 deletions(-)
 
-
-Jacob Pan (3):
-  iommufd: Add an ioctl to query PA from IOVA for noiommu mode
-  vfio: Enable cdev noiommu mode under iommufd
-  Documentation: Update VFIO NOIOMMU mode
-
-Jason Gunthorpe (3):
-  iommufd: Support a HWPT without an iommu driver for noiommu
-  iommufd: Move igroup allocation to a function
-  iommufd: Allow binding to a noiommu device
-
- Documentation/driver-api/vfio.rst       |  83 +++++++++-
- drivers/iommu/iommufd/Kconfig           |  12 ++
- drivers/iommu/iommufd/Makefile          |   1 +
- drivers/iommu/iommufd/device.c          | 197 +++++++++++++++++-------
- drivers/iommu/iommufd/hw_pagetable.c    |  15 +-
- drivers/iommu/iommufd/hwpt_noiommu.c    | 105 +++++++++++++
- drivers/iommu/iommufd/io_pagetable.c    |  80 ++++++++++
- drivers/iommu/iommufd/ioas.c            |  33 ++++
- drivers/iommu/iommufd/iommufd_private.h |  20 +++
- drivers/iommu/iommufd/main.c            |   4 +
- drivers/vfio/Kconfig                    |   7 +-
- drivers/vfio/device_cdev.c              |   3 +
- drivers/vfio/iommufd.c                  |  12 +-
- drivers/vfio/vfio.h                     |  23 ++-
- drivers/vfio/vfio_main.c                |  26 +++-
- include/linux/vfio.h                    |   1 +
- include/uapi/linux/iommufd.h            |  27 ++++
- 17 files changed, 568 insertions(+), 81 deletions(-)
- create mode 100644 drivers/iommu/iommufd/hwpt_noiommu.c
-
+diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+index d03076fcf3c2..670349ff65ea 100644
+--- a/drivers/iommu/iommufd/device.c
++++ b/drivers/iommu/iommufd/device.c
+@@ -23,6 +23,19 @@ struct iommufd_attach {
+ 	struct xarray device_array;
+ };
+ 
++/*
++ * Detect a noiommu device for the cdev path. We check dev->iommu rather than
++ * using device_iommu_mapped() (which checks dev->iommu_group) because when
++ * both group and cdev interfaces coexist, the group path assigns a fake
++ * noiommu iommu_group to the device. That would cause device_iommu_mapped()
++ * to return true and hide the noiommu case from the cdev path. dev->iommu is
++ * reliably NULL when no IOMMU driver is managing the device.
++ */
++static bool iommufd_device_is_noiommu(struct iommufd_device *idev)
++{
++	return IS_ENABLED(CONFIG_IOMMUFD_NOIOMMU) && !idev->dev->iommu;
++}
++
+ static void iommufd_group_release(struct kref *kref)
+ {
+ 	struct iommufd_group *igroup =
+@@ -30,9 +43,11 @@ static void iommufd_group_release(struct kref *kref)
+ 
+ 	WARN_ON(!xa_empty(&igroup->pasid_attach));
+ 
+-	xa_cmpxchg(&igroup->ictx->groups, iommu_group_id(igroup->group), igroup,
+-		   NULL, GFP_KERNEL);
+-	iommu_group_put(igroup->group);
++	if (igroup->group) {
++		xa_cmpxchg(&igroup->ictx->groups, iommu_group_id(igroup->group),
++			   igroup, NULL, GFP_KERNEL);
++		iommu_group_put(igroup->group);
++	}
+ 	mutex_destroy(&igroup->lock);
+ 	kfree(igroup);
+ }
+@@ -204,32 +219,20 @@ void iommufd_device_destroy(struct iommufd_object *obj)
+ 	struct iommufd_device *idev =
+ 		container_of(obj, struct iommufd_device, obj);
+ 
+-	iommu_device_release_dma_owner(idev->dev);
++	/* igroup is NULL when destroy called during bind error cleanup */
++	if (!idev->igroup)
++		return;
++	if (!iommufd_device_is_noiommu(idev))
++		iommu_device_release_dma_owner(idev->dev);
+ 	iommufd_put_group(idev->igroup);
+ 	if (!iommufd_selftest_is_mock_dev(idev->dev))
+ 		iommufd_ctx_put(idev->ictx);
+ }
+ 
+-/**
+- * iommufd_device_bind - Bind a physical device to an iommu fd
+- * @ictx: iommufd file descriptor
+- * @dev: Pointer to a physical device struct
+- * @id: Output ID number to return to userspace for this device
+- *
+- * A successful bind establishes an ownership over the device and returns
+- * struct iommufd_device pointer, otherwise returns error pointer.
+- *
+- * A driver using this API must set driver_managed_dma and must not touch
+- * the device until this routine succeeds and establishes ownership.
+- *
+- * Binding a PCI device places the entire RID under iommufd control.
+- *
+- * The caller must undo this with iommufd_device_unbind()
+- */
+-struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
+-					   struct device *dev, u32 *id)
++static int iommufd_bind_iommu(struct iommufd_device *idev)
+ {
+-	struct iommufd_device *idev;
++	struct iommufd_ctx *ictx = idev->ictx;
++	struct device *dev = idev->dev;
+ 	struct iommufd_group *igroup;
+ 	int rc;
+ 
+@@ -238,11 +241,11 @@ struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
+ 	 * to restore cache coherency.
+ 	 */
+ 	if (!device_iommu_capable(dev, IOMMU_CAP_CACHE_COHERENCY))
+-		return ERR_PTR(-EINVAL);
++		return -EINVAL;
+ 
+ 	igroup = iommufd_get_group(ictx, dev);
+ 	if (IS_ERR(igroup))
+-		return ERR_CAST(igroup);
++		return PTR_ERR(igroup);
+ 
+ 	/*
+ 	 * For historical compat with VFIO the insecure interrupt path is
+@@ -268,21 +271,77 @@ struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
+ 	if (rc)
+ 		goto out_group_put;
+ 
++	/* igroup refcount moves into iommufd_device */
++	idev->igroup = igroup;
++	idev->enforce_cache_coherency =
++		device_iommu_capable(dev, IOMMU_CAP_ENFORCE_CACHE_COHERENCY);
++	return 0;
++
++out_group_put:
++	iommufd_put_group(igroup);
++	return rc;
++}
++
++/*
++ * Noiommu devices have no real IOMMU group. Create a dummy igroup so that
++ * internal code paths that expect idev->igroup to be present still work.
++ * A NULL igroup->group distinguishes this from a real IOMMU-backed group.
++ */
++static int iommufd_bind_noiommu(struct iommufd_device *idev)
++{
++	struct iommufd_group *igroup;
++
++	igroup = iommufd_alloc_group(idev->ictx, NULL);
++	if (IS_ERR(igroup))
++		return PTR_ERR(igroup);
++	idev->igroup = igroup;
++	return 0;
++}
++
++/**
++ * iommufd_device_bind - Bind a physical device to an iommu fd
++ * @ictx: iommufd file descriptor
++ * @dev: Pointer to a physical device struct
++ * @id: Output ID number to return to userspace for this device
++ *
++ * A successful bind establishes an ownership over the device and returns
++ * struct iommufd_device pointer, otherwise returns error pointer.
++ *
++ * A driver using this API must set driver_managed_dma and must not touch
++ * the device until this routine succeeds and establishes ownership.
++ *
++ * Binding a PCI device places the entire RID under iommufd control.
++ *
++ * The caller must undo this with iommufd_device_unbind()
++ */
++struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
++					   struct device *dev, u32 *id)
++{
++	struct iommufd_device *idev;
++	int rc;
++
+ 	idev = iommufd_object_alloc(ictx, idev, IOMMUFD_OBJ_DEVICE);
+-	if (IS_ERR(idev)) {
+-		rc = PTR_ERR(idev);
+-		goto out_release_owner;
+-	}
++	if (IS_ERR(idev))
++		return idev;
++
+ 	idev->ictx = ictx;
++	idev->dev = dev;
++
++	if (!iommufd_device_is_noiommu(idev))
++		rc = iommufd_bind_iommu(idev);
++	else
++		rc = iommufd_bind_noiommu(idev);
++	if (rc)
++		goto err_out;
++
++	/*
++	 * Take a ctx reference after bind succeeds. This must happen here
++	 * so that iommufd_device_destroy() can handle partial initialization
++	 */
+ 	if (!iommufd_selftest_is_mock_dev(dev))
+ 		iommufd_ctx_get(ictx);
+-	idev->dev = dev;
+-	idev->enforce_cache_coherency =
+-		device_iommu_capable(dev, IOMMU_CAP_ENFORCE_CACHE_COHERENCY);
+ 	/* The calling driver is a user until iommufd_device_unbind() */
+ 	refcount_inc(&idev->obj.users);
+-	/* igroup refcount moves into iommufd_device */
+-	idev->igroup = igroup;
+ 
+ 	/*
+ 	 * If the caller fails after this success it must call
+@@ -294,11 +353,14 @@ struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
+ 	*id = idev->obj.id;
+ 	return idev;
+ 
+-out_release_owner:
+-	iommu_device_release_dma_owner(dev);
+-out_group_put:
+-	iommufd_put_group(igroup);
++err_out:
++	/*
++	 * iommufd_device_destroy() handles partially initialized idev,
++	 * so iommufd_object_abort_and_destroy() is safe to call here.
++	 */
++	iommufd_object_abort_and_destroy(ictx, &idev->obj);
+ 	return ERR_PTR(rc);
++
+ }
+ EXPORT_SYMBOL_NS_GPL(iommufd_device_bind, "IOMMUFD");
+ 
+@@ -512,6 +574,9 @@ static int iommufd_hwpt_attach_device(struct iommufd_hw_pagetable *hwpt,
+ 	struct iommufd_attach_handle *handle;
+ 	int rc;
+ 
++	if (iommufd_device_is_noiommu(idev))
++		return 0;
++
+ 	if (!iommufd_hwpt_compatible_device(hwpt, idev))
+ 		return -EINVAL;
+ 
+@@ -559,6 +624,9 @@ static void iommufd_hwpt_detach_device(struct iommufd_hw_pagetable *hwpt,
+ {
+ 	struct iommufd_attach_handle *handle;
+ 
++	if (iommufd_device_is_noiommu(idev))
++		return;
++
+ 	handle = iommufd_device_get_attach_handle(idev, pasid);
+ 	if (pasid == IOMMU_NO_PASID)
+ 		iommu_detach_group_handle(hwpt->domain, idev->igroup->group);
+@@ -577,6 +645,9 @@ static int iommufd_hwpt_replace_device(struct iommufd_device *idev,
+ 	struct iommufd_attach_handle *handle, *old_handle;
+ 	int rc;
+ 
++	if (iommufd_device_is_noiommu(idev))
++		return 0;
++
+ 	if (!iommufd_hwpt_compatible_device(hwpt, idev))
+ 		return -EINVAL;
+ 
+@@ -652,7 +723,7 @@ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
+ 		goto err_release_devid;
+ 	}
+ 
+-	if (attach_resv) {
++	if (attach_resv && !iommufd_device_is_noiommu(idev)) {
+ 		rc = iommufd_device_attach_reserved_iova(idev, hwpt_paging);
+ 		if (rc)
+ 			goto err_release_devid;
+@@ -1585,6 +1656,11 @@ int iommufd_get_hw_info(struct iommufd_ucmd *ucmd)
+ 	if (IS_ERR(idev))
+ 		return PTR_ERR(idev);
+ 
++	if (iommufd_device_is_noiommu(idev)) {
++		rc = -EOPNOTSUPP;
++		goto out_put;
++	}
++
+ 	ops = dev_iommu_ops(idev->dev);
+ 	if (ops->hw_info) {
+ 		data = ops->hw_info(idev->dev, &data_len, &cmd->out_data_type);
 -- 
 2.43.0
 
