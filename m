@@ -1,192 +1,475 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A80263F8712
-	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 07:04:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.20
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780470273; cv=fail; b=KGExk9/uk2SVxccN3EgQAWbJ/HP0nZRw/LQmTWufQQfVaeEQUrmmp5yx1OVhQ9nX4AmS3XWlieWvT4jnceVfbdnTeINyyB6m/kU94PAhPdXw81skS7nltkW7WeHYz8Q1PlhxQu/kvPVut7wImCzl8xvFB2MW9k/F3zmcyu6bQSY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780470273; c=relaxed/simple;
-	bh=1sUt5u0+PCjV++obu5+rjIdFMHlnJ041Vy4zlto2H8o=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=F/P4CoL9U+69TZfvm3Puzp43l7F1lUlRJaO7IeXvRhWOo4WPFXynldg14kNVJ8QKmKuaDj8GKgdRG/jX0ZcOSxMHcUIwWCvFdX5/qYMzamU9m8qfzFZMpYao0ohR4OojJ+v30FKaQn1NhCPuciGPgeZVa2BgkEJbrM3J/GmSPnQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BvPf5LDs; arc=fail smtp.client-ip=198.175.65.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 555D23F9F50
+	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 07:13:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780470841; cv=none; b=TjJCH6sC1HmcybtID2p8bZTAshAupBCRd4wfKxQVKWQNaN0a8hU2smBX6oUKkeGC7NsbTaChEFUC2asjw1JHRxdDFoiGti7g79KkbdRTs52EIKtCAQl5Mq2LIxP5Z2gIGvX29Rws276H9KNxYKioWyp74XaB12E2ncyIpj20BB4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780470841; c=relaxed/simple;
+	bh=Apl5n/Pzjd9vmSQSRMgkpTLVqhSrFq2QSBpaHbx7a8I=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=JZ/N1dlkpqbabDU+/ZxvfyGSLpGR4aOrwL0LpczNNWJ/+mJ349KJ1F68oqBmKLZhDArUK3/CjslX6m127B3D5cAbr+8aQ4GE28lWBqcKfVfAmVUbq8uAQEGlOazTb31rlyDfR1ae3Wu4mvX8BjeN0Lmd6aNYXQRus8kfdx78gjY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=kBuLX+pW; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=KTjzX6md; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BvPf5LDs"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780470270; x=1812006270;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=1sUt5u0+PCjV++obu5+rjIdFMHlnJ041Vy4zlto2H8o=;
-  b=BvPf5LDsgwVLe+LM3v1Y1bkaMTcg76/aaHb8Zp96i5iA6TX9M3l7T0He
-   /G/APbX4afZ3AsB+XGqwVW8W6niwnAMIygOCytM5LKKJ7A1JD14mnmVkJ
-   5FvzcWOnf8R10FECCb0wY5gsF0dJ7tjB1WFjFb/iVfSZ9sHMEZ6HWHH/2
-   ALTdJq5qKyZbaxePz1aezCjUo4ieKjSL56kR+bpa/g51fl8mffHEBSl+J
-   E6oOad7PDyuS3zFxpq/bAh1J/z0918boaHEREzEUnN4w+6nRjC014hsb6
-   rn68iGQLFVbryjHOFhz0Vh+a/mQrdzSnhMSE2uNWP8cymV03uzMzwrO/B
-   Q==;
-X-CSE-ConnectionGUID: EYyMcNYSQaG78l7OLFkFUw==
-X-CSE-MsgGUID: gY4S852XQU+eGrFTbmB/XQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11805"; a="81008291"
-X-IronPort-AV: E=Sophos;i="6.24,184,1774335600"; 
-   d="scan'208";a="81008291"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2026 00:04:28 -0700
-X-CSE-ConnectionGUID: dKLQYd0eT8evTA1BNsjyNg==
-X-CSE-MsgGUID: gIAJGDTcSES4Q7BCpPqaUQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,184,1774335600"; 
-   d="scan'208";a="243087069"
-Received: from fmsmsx902.amr.corp.intel.com ([10.18.126.91])
-  by orviesa006.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2026 00:04:28 -0700
-Received: from FMSMSX903.amr.corp.intel.com (10.18.126.92) by
- fmsmsx902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Wed, 3 Jun 2026 00:04:26 -0700
-Received: from fmsedg902.ED.cps.intel.com (10.1.192.144) by
- FMSMSX903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Wed, 3 Jun 2026 00:04:26 -0700
-Received: from BN1PR04CU002.outbound.protection.outlook.com (52.101.56.46) by
- edgegateway.intel.com (192.55.55.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Wed, 3 Jun 2026 00:04:24 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=UgO0SyhItPoKOFYWBNFl5krgXdKpsdbWkA1FZlY0r2ZMxPILqv6V3czbhLxaNkcuRUKHvEOmWy6N0a8UoFwctMjmruBAEy98H3+EjnmF3MxxkYcWwoFqPB+SOMWWd1DLQxqhmI/ufL/wH9xUf/2K7Oy6MirCv8U0RIwQCW8hn5IWRVc5r9b6JNvVqNNuUlLv9bjATKzDqMNffxzN0XCgTDt1SfrcEiAq8goKz7AnjSSX3Q3FvNut6t1Wh+lmQLlAmaaFMKT9EkgTBc4bxYI/1EPMAUajGSqBkxNWjxlbnFRHxoEf8s6Ln7YQ0NMl47kPlOlctwHxqHPr8eQJ220L1A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1sUt5u0+PCjV++obu5+rjIdFMHlnJ041Vy4zlto2H8o=;
- b=Rxg3xU55KWXnJlDPxCZFztDW2T2rGdh1Pe6rn2kqsXQ221cfKud/gWsW27XqG7gq7TXIIpg3/BeBHAuXRmS4wCDbw/Zg9tf+FEeD69UrshkVP11co113ex0tyx/8m+DQF7nzKgAyFpRdlMY0/vVo9tTqVHgKYgAFSOYWyst+cJk6wbXd4pCHbyaIaDlmPY0dCGFm5xuyTFdL01Q1K729bBlhPJxmaaiGD2Emy19fJQrP3WC/GyG+7WQmW8WDUFdsunIf/+07cazW6m6+C9AA5HCWCQbvWlKgLBtiNtsDKVdPQMNJfKmJSlQrRLts9IYChUOz9FjRSikcnkzrg6UhYA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from DM6PR11MB3690.namprd11.prod.outlook.com (2603:10b6:5:13d::32)
- by SN7PR11MB6726.namprd11.prod.outlook.com (2603:10b6:806:266::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.92.7; Wed, 3 Jun 2026
- 07:04:11 +0000
-Received: from DM6PR11MB3690.namprd11.prod.outlook.com
- ([fe80::7db8:f6b3:30f8:ee4b]) by DM6PR11MB3690.namprd11.prod.outlook.com
- ([fe80::7db8:f6b3:30f8:ee4b%4]) with mapi id 15.21.0092.006; Wed, 3 Jun 2026
- 07:04:11 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: "David, Hu" <xuehaohu@google.com>, Sumit Semwal <sumit.semwal@linaro.org>,
-	=?utf-8?B?Q2hyaXN0aWFuIEvDtm5pZw==?= <christian.koenig@amd.com>
-CC: Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>, "Leon
- Romanovsky" <leon@kernel.org>, Ankit Agrawal <ankita@nvidia.com>, "Alex
- Williamson" <alex@shazbot.org>, "linux-media@vger.kernel.org"
-	<linux-media@vger.kernel.org>, "dri-devel@lists.freedesktop.org"
-	<dri-devel@lists.freedesktop.org>, "linaro-mm-sig@lists.linaro.org"
-	<linaro-mm-sig@lists.linaro.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "jmoroni@google.com" <jmoroni@google.com>,
-	"praan@google.com" <praan@google.com>, "David, Hu" <xuehaohu@google.com>,
-	"stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: RE: [PATCH v5] dma-buf: Fix silent overflow for phys vec to sgt
-Thread-Topic: [PATCH v5] dma-buf: Fix silent overflow for phys vec to sgt
-Thread-Index: AQHc8gFVLsg23RDxwEGXFvwv1wqsKLYsaj7A
-Date: Wed, 3 Jun 2026 07:04:10 +0000
-Message-ID: <DM6PR11MB369065C9128545535BE343458C132@DM6PR11MB3690.namprd11.prod.outlook.com>
-References: <20260601200012.3872274-1-xuehaohu@google.com>
-In-Reply-To: <20260601200012.3872274-1-xuehaohu@google.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DM6PR11MB3690:EE_|SN7PR11MB6726:EE_
-x-ms-office365-filtering-correlation-id: f24ce12b-6f72-404f-56e6-08dec13e5023
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|7416014|376014|366016|1800799024|38070700021|56012099006|18002099003|22082099003|11063799006|6133799003;
-x-microsoft-antispam-message-info: Pbag1Msi2uBvDpCRMTvdMSP0Vs8bZUZ0LCe/eyoZeM7TouXDCBu5p0hDsFJ2UZHIs8/u2UtNOZ0K7Ps4fBKH9UsaHrbuZ+D/TU3cegrcXXyjDExqtWPVQCJLqBq1F2XMGmwxc1wghNtqSP72myezq/ueWFExPV38vsc5sv6WuiVIhkXMFIHx+zDHy7ntDJMEux+Tgw6cb0Tv9vFPBemaASICMmf/1XqmsMmxNOmcReO98AdP+UFubz5PSkERwt2GjJCP+dL6MMog3MoVfWtSMbfY5xPDhvUZAhKHvDYxtS+PVMhelCqgLKZPhf2DOQVh7GfNmOoQqoim803+9QWe11jrM39C6JkLZF8OQC98mTP59WuxwgeduX5ZEhbPbGSeMi28eHNQqI2fklZzqY7wozchrwojEzoW4kRor+ndraSH1PCu7Z7kp5ISrLfO+j7nY4inNXOhLo19HA/VdiCnoXoaXNbG3XMvDx8uAi2PkmRz66rETG5WZyV5+/4GDrQ6TAEXsXT24p4WKsx5sPf/W4sbBK5VF/LzcHlkzREcWU7MIOhMJeiwJrQtcdh1jIc+TWddAAWNLDtp3AdD5ppgIObri8gspyPj2a0fKYrijmW0Mqp7mYDcXgBcdUWaPg/ja2PDVWR/8ObceZFOy5TosYUctu7JduNBavX7OquYvQMAHghYW4xctxqFwRv8lbJgifgtIau8C+VWn9aEi5i8lbCcUKMOaVHJ1AypvsXPGOuSrcefjZaqaJCWNgrWZII5
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3690.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024)(38070700021)(56012099006)(18002099003)(22082099003)(11063799006)(6133799003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?MzJTbnVtMzMxczFDU2czOXM0RFRia0hVZDdiZkUzU29NWVBwTTNnTVVveXVV?=
- =?utf-8?B?RGF1YWJkcnZ2RVV1dWx3R3RkYVVseHIrb2xNK1QwVXBrcnhBMGlOL1lkdkZl?=
- =?utf-8?B?WlNWbUlkYTRsbUVnNUV1OERNNk9zOElVcmN4UmRUSi9wVVREdGVsdUl5bjJP?=
- =?utf-8?B?dkdldGtwN3R2L0ZOZndWV3hMaEoxNUlLTndZUGFtTzU4d21sbGZUUHFGUm9U?=
- =?utf-8?B?T0ZKRHYxWkhPdTJmbEhHbGJIV0k4MDdJTjFaVnh4WjVSM0lhcWpQS2pZci95?=
- =?utf-8?B?ODU5NTd4eDRaamZOYmUxbmVoR0hKeTZzNk0xNzVUaFRXajZjQ1doK1dEUThL?=
- =?utf-8?B?N0ZwblhsRmxBbFJFZTN4dmZBNVpyLzY0V1lXZktmcUNTbU13QitpUHdRbnk1?=
- =?utf-8?B?YnpDTXYyaEZoemU5RjJaV3FmVzNJekFwVUFWdFFadFlNdlhaTlgwNzJPWE94?=
- =?utf-8?B?ZjZ1U0JZeURuNi9vUGNVRDlvMDJLL1JmbmdBS3VFYU94eUx1TDl4a1ZpZ3R3?=
- =?utf-8?B?MzArNUVQY1ZYMDI1VHV2ZzhRd2luV0hHYmlCWkozb2w3TnRFcUcrUFpZa04z?=
- =?utf-8?B?ckxNako5SG1qRWhwaXdtd1dZcGYvamdEMlljSEIyQk1ZRUpxL0ZxWXQwQUZ1?=
- =?utf-8?B?TFNjSm1ncGFqeHJJVEtNWC96eG0veXA3ZVUwV21QN1I0UmFIYUxnNjIrdmNq?=
- =?utf-8?B?SEV6U3d6M2hWbEkzR0k0Q21LYVd5dERLU3Y0d3RYdkZ0VXlsQzk2KzgrQ0xC?=
- =?utf-8?B?NmMyS2JjbWgvK21HV1FkSHQ3R2RRK1hFOGZNQTk5YXJudGs2RE9LTk5WcGV2?=
- =?utf-8?B?L2R1RnhYR2NMSm1pY1AxaFp5ZkNITUdnc3JDcWF1M2NlOGxxNUtsRlpSdW56?=
- =?utf-8?B?d0UrdWM0SDkwREpzQkJ4MlNOSnJPN1ErZ0dQaHRZK1dGeGdyY21oUk5EdDVU?=
- =?utf-8?B?V2JQMDhuRm1PeUFFV2p3SG1qeEhYcGdINWpickdUZjZHWGF0Z0hmS0lQZDM2?=
- =?utf-8?B?RTVCanNrWDdETFhwankyLy9ScXFYTmg3SzgwNWdKSzR6NDhiZkNhUDRpTHlo?=
- =?utf-8?B?Y0N4em9aeUJlV3FFZnczejNBOVBUMjVWWG5SVHlKSm1MWUZGSTl1M0pXaHp0?=
- =?utf-8?B?OHZMT1lrSldZTnRQSkZZbmRVYWV5MFpVMDdVNE1neXJMNlc4M2ZqVThtbGJn?=
- =?utf-8?B?RFRBYkxlZTkwSmFmdkpxMGpNbStwOG9lVlBldG9kVWYzTGlFQ0U2RlpqVlN0?=
- =?utf-8?B?ZW9UR2tXQlArSmprcmc5dGZtR0p5Z2hBRGJ3V2N6cE9EcGhoYUtZYVlqSEg4?=
- =?utf-8?B?aUlsS2JVSUVqOWk4MUszc1c4OUgwWmZmdjRSVHBnL1RYR3Z5TDVNQnNLeEZs?=
- =?utf-8?B?MEQvUGU5OGo3UHgrQ2pwR0hJN3RPZ1IvaTRBenpDOFZGTDlQRUQzOHVMQ0NJ?=
- =?utf-8?B?MG9DVVFMZEcwRlVLajRxWDRiRWkzdTlITFBPOHNsenU3NnFRaXZReFVUZFpK?=
- =?utf-8?B?NTFDZUY3MEtaUWRPeFNlbEx4eWtSMzJ1aUdyU1Nxd0dZMlg4d2pyM3FwMUFV?=
- =?utf-8?B?dURRZWx4OW80WHRaVFRBcENKOXNrMG1GN3Q2cTQ0VHlFcXMvTzdRYWlabStB?=
- =?utf-8?B?RnB2WE5TVktGd1ZEWGg2eURXZHducWdLWXpMeURQaGd0S0M5NE1BSU83cXdT?=
- =?utf-8?B?cUhRTXVycVFieU94QTI0aUJwUUFzbjFhcVppVTZqR01jQUxMaWh5U1VYY1ND?=
- =?utf-8?B?azBtMDNtUXNicTZ2WXByZFVpUmxzZnk4ZU1LeVp4UkY4UGo2ZGlMWmdGbnRj?=
- =?utf-8?B?YXUvNlBza3MrbTRwb1l5dXg0N1VxRFVvUDhOQjE1T2o2NVJnMzdYV0JkT1pz?=
- =?utf-8?B?K0VwMnVWV20xRm5hZVp0dUJ1Qm1LTHVTZnRKZEdrdzRXSmx2WGNFNmtjeVRG?=
- =?utf-8?B?ZE55aVRDMGNNUFh0elIyQW1ZZnZVallhcG93N0x0UEUxS3I5WERpYUdsTmNn?=
- =?utf-8?B?d0wxN0xYVmlNLzQ1NDFRZS9NYktUQzdkZVVrRktsVGFLU05WTGIrWWFWeWV0?=
- =?utf-8?B?QS9WdFBTUjNMVmtpa3NXM3UvNlZrYjJ3aHZ6SDRhc2tzdm1iZVpXOTU1U01v?=
- =?utf-8?B?ZmZva0prNkpZaXh3SXNyYTRCNjZmN1dYSE4rUWtTeVMrMDlqN2lxM0hvaHFq?=
- =?utf-8?B?OXk2bGRja2xnVXg3cUFDclMyMnFMNndUVE52ckEyVkVwWHBCWVFrRUxQNVlv?=
- =?utf-8?B?SjZ1d09QQTZadDhpUHdFRlpSRmdlNlY1cHp4Qlo2ZFUwaGR0R2xFTFlPK0tq?=
- =?utf-8?B?WUtzczI0UHAzVklJKzJKZlhOYlRlQWVZcUEzYmJKVnB0SzViRFhqQT09?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="kBuLX+pW";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="KTjzX6md"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6536v6Jt1755366
+	for <iommu@lists.linux.dev>; Wed, 3 Jun 2026 07:13:56 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=a90V1I1+DRANjjP0Y4PAIs
+	EY9nHVftwWmZpEDYnlklE=; b=kBuLX+pWYaJODgNPBQaQuHB4h9D/x4GNB5grET
+	aS0VYppmZ9NM5T2jQ3MilDj/uPWDeheHshsvCcmqAxn2XqctjV0pe7C7gKAurCk3
+	AveUvPBtHda8UHWP6uwTwChCxJfupMjGmJp8BNbIF4xXxK5y78Bo2Qe8IGlu95zy
+	VW346GYSYoRSsokJPcYqFLRh38B4tNkheZFt95JYQ89wN3a5O9kMkmS8WlDy5jhl
+	VEpc5iHLAYwNrnSFWdGNo/05AdDAKx54fpXXbzfclf93Afz4IQuCTz5n0DOMEpCn
+	7V9+wCorH4hX7LXV87P6aZSS0MyP3L4HEfdn9HZKwWZr840A==
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ejff0029t-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 03 Jun 2026 07:13:55 +0000 (GMT)
+Received: by mail-pl1-f197.google.com with SMTP id d9443c01a7336-2c0c32f4b1bso36284285ad.2
+        for <iommu@lists.linux.dev>; Wed, 03 Jun 2026 00:13:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1780470835; x=1781075635; darn=lists.linux.dev;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=a90V1I1+DRANjjP0Y4PAIsEY9nHVftwWmZpEDYnlklE=;
+        b=KTjzX6mdRbWwWvkVzlpKlvnJZO6vK9niiI8Gfv+jarobIzBqlkLBueUxxjSDt6nxWZ
+         J5cqpTUQfl9fTJes1Y/FoJfl2m4+rFq1iELSKShTt/gFEHnubx3HuaPCPjBKo9jB7f7U
+         r17rayORRGfUrUBS3UJBkDeTp3LkMyj8B1dUEqLfYtE5gV8ycs++bjpRrdLKW4b+ouoY
+         GwoUelOPyw39+yk1Go3H6DnkGIbj0knNNB9UU5ADcYCbpzN5p/ZmmILnqF/Y9NRdkpfD
+         l6PLT/9azJHiA9M7+VsyXFGFfyexX9IuUegXRrlkLYDP+ZyfIK9dzcPPcMRzvLi06WjH
+         8wBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780470835; x=1781075635;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=a90V1I1+DRANjjP0Y4PAIsEY9nHVftwWmZpEDYnlklE=;
+        b=UFMryQyiQg7jy/3w0ctGcvMtL0nobcjkNRsdMhWnynFBcAmmk1i6oN/J40LmzcZApV
+         7wnNc5QyV7C4WwHMhswe1hDyIeE5WSXOjC7t16FDl8mVX6BfPCOuM8rCbL6Gz4kxAcOb
+         HXU7/ktXdtwZClIE8cnkwxswPKgrCJz4WRabkqRi+S/tZQmXFIoH/irzFnG5cq3U5wdt
+         9xb9qLqpGMGZn5U0yacXFSiRkVUxKDUw5bGmsluY0jNC9CqAbnevKHHBcIkBBrRePBpE
+         49LdUiuvXjFo0mLGAyW6SlXzJUMYXvhJ0NViU8LEd4SUYc2W9GJlB8Swy/qXvVt+pRsl
+         sxjg==
+X-Forwarded-Encrypted: i=1; AFNElJ+ly/cy5hc1fLn47ITuMsFGzVlKTyuwOk58yzCkg3XHrammsSYj0a8mfgzLANANKW8pFwBcBg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyqWBV5ynaaXg1us/QIfGHPzWbqyeBzHJ7oCkJtrWM540bISgpN
+	UvzJZV4jx7LAHMV8ToyJDZR6/oAmNVkTynIdGepGRHObrlcfEpO5cFmE3mc4MoblhSXeS7UnyAH
+	Ms6p68Ycyfd2aoZmeJqarU2JFXCO3Wo1eDnKqJztg19B5bh2asMCbXmW8pw==
+X-Gm-Gg: Acq92OFqa97ed+ep/Hhjkdhe5xSXrrg2sVdKhUVtmie+bYvKk8Qb1eQpTqRGZAY6JBa
+	OSpurt9/QOHnzb0jqtUd1KQb80aoUgoXlhXzGathYQgikezNGjrFI64wK7au3FmNflXH0S2yqlw
+	yNY/4Vf4N8tZXZovMNGYCVTZiktoFpeWntbgF5vvp38gZD0mR41+lMjE08Nl6yAyVh28kGmUwT1
+	tI8I3bJ7+6dJhnJOCjA1+QciMfpf/ya7ZLEiTvJMkU3LOboFFQrHU7B6YvoDhdpJ7UwOiBHSlUI
+	n2Xt9zd9qTnz+VW1fbCZuexX3quV72GzlE88bQIu0SlxHLzEOsffll3ibFq60gVgnD8DDizHFZN
+	9Yc0Fm5c4mqwESBoUiEkOFmfXXHoWVw3qFJSMZKS0w3pRTQ0dthFCIBGvuRJGjYeKRUk=
+X-Received: by 2002:a17:903:2ac7:b0:2b4:6d92:b002 with SMTP id d9443c01a7336-2c1643aafcbmr22605175ad.37.1780470834387;
+        Wed, 03 Jun 2026 00:13:54 -0700 (PDT)
+X-Received: by 2002:a17:903:2ac7:b0:2b4:6d92:b002 with SMTP id d9443c01a7336-2c1643aafcbmr22604615ad.37.1780470833821;
+        Wed, 03 Jun 2026 00:13:53 -0700 (PDT)
+Received: from hu-vjitta-hyd.qualcomm.com ([202.46.23.25])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c164f8429fsm17249725ad.18.2026.06.03.00.13.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Jun 2026 00:13:53 -0700 (PDT)
+From: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+Subject: [PATCH v16 0/3] of: parsing of multi #{iommu,msi}-cells in maps
+Date: Wed, 03 Jun 2026 12:43:11 +0530
+Message-Id: <20260603-parse_iommu_cells-v16-0-dc509dacb19a@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Exchange-RoutingPolicyChecked: mjO/nqzPmHp8xDHdreg1+Fb1LuGCzE8CgGUyBo4F6Na2wvbsJftcl0/KtzgmBqbI5A6NJGo5m8sg/hl1IuS6QguIOtURsI4i5lhlevMHEC8qV7PaglPaDMmVqTPyikwP9xAcLYhziIbFfzJPZW3leGg+dJ5lQ++e1u02Ge4qJ7mVxvDd332nuKA1oA6uENlOuQNDrDW+OsN+VhK9oHuy4ApLab1p14/4owpuXaZhnRtnmA9ViPd6iMVdfx/OXLkQmwTj1jqrSQ2wBMrCuO38rMVy6/p8cmwsBTg3xmFy3PRmVmlTP2FufVP1hlKgdqjRu7reBd1hRpIeso+yYO9JgA==
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3690.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f24ce12b-6f72-404f-56e6-08dec13e5023
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jun 2026 07:04:10.9363
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: iFenc/n4zHArtpMyCeg+ZFZOirLb/6bwKZUVOlJppO0/U0T/AOf8yk8xxaQYBE4GwB0N+7L0c0WM1n3va42vXQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB6726
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAfUH2oC/33QzWrDMAwA4FcpPi/F8l/jnfYeYxRFlldD2nTxG
+ jZK3n1OL83B2UUgIX1CuovMY+IsXnd3MfKUchouJQH3shN0wssnNymUglBSOaklNFccMx/TcD7
+ fjsR9nxsgrQ+uRe46FGXuOnJMPw/0/aPkp5S/h/H3sWPyS/U/bfKNbEyAjpiJLMPbkPP+64Y9l
+ a59CWJBJ5BrydckkIUipyIhWoTQblGwopStUlAoiBzRkuRW0RalVpSu3geqUIEpBi0tM/otSj8
+ pI9sqpQsV0Stgr5yDbosyK0qZKmUWKkgVATpHevNX9klZJauULVRno/cYDB+4Rs3z/Ad2ByTlf
+ AIAAA==
+X-Change-ID: 20260301-parse_iommu_cells-1c33768aebba
+To: Nipun Gupta <nipun.gupta@amd.com>, Nikhil Agarwal <nikhil.agarwal@amd.com>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Marc Zyngier <maz@kernel.org>, Thomas Gleixner <tglx@kernel.org>,
+        Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@kernel.org>,
+        Richard Zhu <hongxing.zhu@nxp.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        =?utf-8?q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>, Frank Li <Frank.Li@nxp.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>, Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-pci@vger.kernel.org,
+        imx@lists.linux.dev, xen-devel@lists.xenproject.org,
+        Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>,
+        Charan Teja Kalla <charan.kalla@oss.qualcomm.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1780470825; l=13317;
+ i=vijayanand.jitta@oss.qualcomm.com; s=20260301; h=from:subject:message-id;
+ bh=Apl5n/Pzjd9vmSQSRMgkpTLVqhSrFq2QSBpaHbx7a8I=;
+ b=QFGRXpY+qWmK+T7ctaWDbrINLCs1a9+0pUeDE1gl/BFcv55CiE90+ngTegwN4D1pcQzq3q59E
+ NMVAa6JhzU8AzrSXEKGgT9s2yVMyWrIE5DzBeuN0+uwPYqDe9KB2fVF
+X-Developer-Key: i=vijayanand.jitta@oss.qualcomm.com; a=ed25519;
+ pk=Lpi7Cs3wHe8KZtqvyci7FTOLzsKpEHKGCaPNZw+1zRI=
+X-Proofpoint-GUID: hP1ojHSQxYzSWJPIzUym9Sx8pVxfqTcm
+X-Proofpoint-ORIG-GUID: hP1ojHSQxYzSWJPIzUym9Sx8pVxfqTcm
+X-Authority-Analysis: v=2.4 cv=LYwMLDfi c=1 sm=1 tr=0 ts=6a1fd433 cx=c_pps
+ a=cmESyDAEBpBGqyK7t0alAg==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
+ a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=rJkE3RaqiGZ5pbrm-msn:22
+ a=VwQbUJbxAAAA:8 a=COk6AnOGAAAA:8 a=NEAV23lmAAAA:8 a=EUspDBNiAAAA:8
+ a=c92rfblmAAAA:8 a=bC-a23v3AAAA:8 a=zd2uoN0lAAAA:8 a=tA7aZXjiAAAA:8
+ a=7CQSdrXTAAAA:8 a=8AirrxEcAAAA:8 a=1XWaLZrsAAAA:8 a=pGLkceISAAAA:8
+ a=iox4zFpeAAAA:8 a=DBfv99YmAAAA:8 a=JfrnYn6hAAAA:8 a=cWRNjhkoAAAA:8
+ a=HuIPyozGVqDkMI16_zEA:9 a=QEXdDO2ut3YA:10 a=1OuFwYUASf3TG4hYMiVC:22
+ a=TjNXssC_j7lpFel5tvFf:22 a=GvGzcOZaWPEFPQC_NcjD:22 a=FO4_E8m0qiDe52t0p3_H:22
+ a=kIIFJ0VLUOy1gFZzwZHL:22 a=a-qgeE7W1pNrGK8U0ZQC:22 a=ST-jHhOKWsTCqRlWije3:22
+ a=WzC6qhA0u3u7Ye7llzcV:22 a=1CNFftbPRP8L7MoqJWF3:22 a=sVa6W5Aao32NNC1mekxh:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjAzMDA2NiBTYWx0ZWRfX7XVU+WUOKWMc
+ XkyT1z+NeV/AKoS3Mu6hA8d9N2eO5rECsRN8G0Fo2bG2mHCGuQi5pYMebWfCMcwHnECUHGAJ44y
+ kexnYHxdZIgeH4e5hbcxeUlDqKY2pegp6lcomO6oBQ50GdYiegMmossyTlwzGRfZpb2zwJKz0fE
+ eQg/pKgxAm/Hk4SQU7UoVCnzhFic32zXd3NJPpmCK3gthpR+P4sCReflMwFixgPgG9S3bevP5Wz
+ NuxkawR8/R18vY6tyIcPX59eU3PDQe2Pw/EtI4BKLgRhrtmJmmuWBQOqA1RTZ1dDCnxdpmDwbK0
+ nxlj+t6eq0U8lRd3VbmtL/AttCwl+2eTZj2xsuZ6Iy5HxwGCjrcgAnCXqukbk99f5qZrEGj6nhs
+ FN51SzMJNy1nt4pSXwzUwyeVSwM0NobRcs/1XbYvHY0jtRTpblXlvji7mnfB4toelns9dC0UelE
+ kX84NmzA3uDeR0S+mmg==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
+ definitions=2026-06-03_02,2026-05-28_03,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ bulkscore=0 clxscore=1015 malwarescore=0 phishscore=0 lowpriorityscore=0
+ adultscore=0 impostorscore=0 suspectscore=0 spamscore=0 priorityscore=1501
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2605210000 definitions=main-2606030066
 
-PiBGcm9tOiBEYXZpZCBIdSA8eHVlaGFvaHVAZ29vZ2xlLmNvbT4NCj4gU2VudDogVHVlc2RheSwg
-SnVuZSAyLCAyMDI2IDQ6MDAgQU0NCj4gDQo+IEluIGNhc2UgTU1JTyBzaXplIGlzIGJpZ2dlciB0
-aGFuIDRHIGFuZCBwZWVyMnBlZXIgRE1BIGdvZXMNCj4gdGhyb3VnaCBob3N0IGJyaWRnZSwgd2Ug
-dHJpZ2dlciBhIGNvZGUgcGF0aCB0aGF0IGFzc2lnbnMgdGhlDQo+IHRvdGFsIGxpbmtlZCBJT1ZB
-ICh3aGljaCBpcyBncmVhdGVyIHRoYW4gNEcpIHRvIG1hcHBlZF9sZW4uDQo+IA0KPiBQcmV2aW91
-c2x5LCBgbWFwcGVkX2xlbmAgd2FzIGRlY2xhcmVkIGFzIDMyLWJpdCBgdW5zaWduZWQgaW50YC4N
-Cj4gV2hlbiBhY2N1bXVsYXRpbmcgYHNpemVfdGAgbGVuZ3RocywgdGhpcyBsZWFkcyB0byBhIHNp
-bGVudCB3cmFwLWFyb3VuZC4NCj4gVGhpcyB0cnVuY2F0aW9uIGNhdXNlcyB0cnVuY2F0ZWQgbGVu
-Z3RocyB0byBiZSBwYXNzZWQgdG8gZnVuY3Rpb25zDQo+IGxpa2UgYGZpbGxfc2dfZW50cnkoKWAu
-DQo+IA0KPiBGaXggdGhpcyBieSBjaGFuZ2luZyBgbWFwcGVkX2xlbmAgdG8gYHNpemVfdGAgKDY0
-LWJpdCkuIFdoaWxlDQo+IGF0IGl0LCBmaXggc2ltaWxhciBwb3RlbnRpYWwgb3ZlcmZsb3cgaXNz
-dWVzIGluIGBjYWxjX3NnX25lbnRzYA0KPiBieSB1c2luZyBgc2l6ZV90YCBmb3IgYG5lbnRzYCBh
-bmQgY2hlY2tpbmcgYWdhaW5zdCBgVUlOVF9NQVhgDQo+IGFuZCB1c2luZyBgdW5zaWduZWQgaW50
-YCBmb3IgdGhlIGxvb3AgaXRlcmF0b3IgaW4gYGZpbGxfc2dfZW50cnlgDQo+IHRvIG1hdGNoLg0K
-PiANCj4gRml4ZXM6IDNhYTMxYThiYjExZSAoImRtYS1idWY6IHByb3ZpZGUgcGh5c192ZWMgdG8g
-c2NhdHRlci1nYXRoZXIgbWFwcGluZw0KPiByb3V0aW5lIikNCj4gQ2M6IHN0YWJsZUB2Z2VyLmtl
-cm5lbC5vcmcNCj4gQ2M6IGlvbW11QGxpc3RzLmxpbnV4LmRldg0KPiBSZXZpZXdlZC1ieTogUHJh
-bmphbCBTaHJpdmFzdGF2YSA8cHJhYW5AZ29vZ2xlLmNvbT4NCj4gU2lnbmVkLW9mZi1ieTogRGF2
-aWQgSHUgPHh1ZWhhb2h1QGdvb2dsZS5jb20+DQoNClJldmlld2VkLWJ5OiBLZXZpbiBUaWFuIDxr
-ZXZpbi50aWFuQGludGVsLmNvbT4NCg==
+So far our parsing of {iommu,msi}-map properties has always blindly
+assumed that the output specifiers will always have exactly 1 cell.
+This typically does happen to be the case, but is not actually enforced
+(and the PCI msi-map binding even explicitly states support for 0 or 1
+cells) - as a result we've now ended up with dodgy DTs out in the field
+which depend on this behaviour to map a 1-cell specifier for a 2-cell
+provider, despite that being bogus per the bindings themselves.
+
+Since there is some potential use[1] in being able to map at least
+single input IDs to multi-cell output specifiers (and properly support
+0-cell outputs as well), add support for properly parsing and using the
+target nodes' #cells values, albeit with the unfortunate complication of
+still having to work around expectations of the old behaviour too.
+							-- Robin.
+
+Unlike single #{}-cell, it is complex to establish a linear relation
+between input 'id' and output specifier for multi-cell properties, thus
+it is always expected that len never going to be > 1.
+
+These changes have been tested on QEMU for the arm64 architecture and
+on the glymur platform [3].
+
+Since, this would also need update in dt-schema, raised PR[2] for the
+same.
+
+[1] https://lore.kernel.org/all/20250627-video_cb-v3-0-51e18c0ffbce@quicinc.com/
+[2] PR for iommu-map dtschema: https://github.com/devicetree-org/dt-schema/pull/184
+[3] https://lore.kernel.org/all/20260515-glymur-v6-5-f6a99cb43a24@oss.qualcomm.com/
+
+V16:
+  - Patch 2: Fix potential NULL pointer dereference in of_msi_xlate()
+    when msi_np is NULL. Guard the of_check_msi_parent() call with
+    "if (msi_np && ...)" to handle the case where the caller passes
+    NULL for msi_np, as documented. Reported by Sashiko [1].
+  - Patch 2: Fix OF node refcount leak in of_msi_map_get_device_domain():
+    np was never released after of_msi_xlate() transferred ownership.
+  - Patch 3: Default to 1-cell output specifier when the target node
+    lacks the #iommu-cells/#msi-cells property, for backward
+    compatibility with controllers that predate the property
+    (e.g. arm,gic-v2m-frame). Reported by Sashiko [1].
+  - Patch 3: Add !cells_name to the initial parameter guard in
+    of_map_id() to prevent a crash if cells_name is NULL.
+    Reported by Sashiko [1].
+
+  [1] https://sashiko.dev/#/patchset/20260520-parse_iommu_cells-v15-0-b5f99ad4e7e8@oss.qualcomm.com
+
+  Link to V15:
+  https://lore.kernel.org/all/20260520-parse_iommu_cells-v15-0-b5f99ad4e7e8@oss.qualcomm.com/
+
+V15:
+  Address Sashiko AI review comments on v14:
+
+  Patch 2:
+  - [Critical] pci-imx6: pass &msi_filter (not NULL) to of_map_msi_id()
+    so that of_map_id() returns -ENODEV when msi-map is absent, preventing
+    the '!err_m && !msi_spec.np' path from incorrectly returning -EINVAL
+  - [High] of_map_id(): explicitly set arg->np = NULL before any bypass
+    path so callers can safely call of_node_put(arg->np) on all return paths
+  - [Medium] of_msi_xlate(): pass msi_np directly to of_map_msi_id() and
+    of_check_msi_parent() (removing the local_np/np indirection), and use
+    'break' (not 'continue') when msi_spec.np is NULL so that msi-parent
+    bindings are still checked when msi-map is present but has no match
+  - Guard 'id_out = msi_spec.args[0]' with 'args_count > 0' in
+    of_msi_xlate() to correctly handle 0-cell MSI output specifiers
+  - Use of_node_get() + unconditional of_node_put() in of_msi_xlate()
+    for clearer reference ownership
+
+  Patch 3:
+  - [Critical] of_map_id(): add 'cells > MAX_PHANDLE_ARGS' check before
+    using cells as an array index to prevent stack buffer overflow
+  - [High] of_map_id(): the MAX_PHANDLE_ARGS bound on cells also prevents
+    integer overflow in the '3 + cells' length check
+  - [High] of_map_id(): fix misleading bad-map workaround message from
+    "assuming extra cell of 0" to "treating as 1-cell output" to accurately
+    describe the actual behavior
+  - [Medium] of_msi_xlate(): guard 'id_out = msi_spec.args[0]' with
+    'args_count > 0' to preserve id_in for 0-cell MSI output specifiers
+
+  Link to v14:
+  https://patch.msgid.link/20260424-parse_iommu_cells-v14-0-fd02f11b6c38@oss.qualcomm.com
+
+V14:
+  - Updated Patch 2 ("of: Factor arguments passed to of_map_id() into a struct") to
+    fix below two issues in of_msi_xlate() that were introduced by the API refactoring:
+
+    1) The refactoring changed of_map_id()'s dual-purpose **target parameter to
+    an explicit filter_np parameter. In of_msi_xlate(), this caused
+    of_map_msi_id() to return 0 (pass-through) instead of -ENODEV when a node
+    has no msi-map, terminating the device hierarchy walk prematurely before
+    reaching the root complex node that has the msi-map. This broke MSI
+    allocation for PCIe endpoint devices (e.g., wcn7850 Wi-Fi on ARM64).
+
+    2) Additionally, fsl_mc_get_msi_id() passes msi_np == NULL to of_msi_xlate(),
+    which would dereference NULL with the new API.
+
+  Link to v13:
+  https://patch.msgid.link/20260408-parse_iommu_cells-v13-0-fa921e92661b@oss.qualcomm.com
+
+V13:
+  - Fix bad_map handling in of_map_id(): 'cells' is re-initialized to 0
+    on each loop iteration, so the !bad_map guard was insufficient, cells
+    stayed 0 for all entries after the first. Fix by explicitly setting
+    cells=1 when bad_map is true on every iteration.
+  - Collected Acked-by from Frank Li.
+
+  Link to v12:
+  https://patch.msgid.link/20260331-parse_iommu_cells-v12-0-decfd305eea9@oss.qualcomm.com
+
+V12:
+  - Call of_node_put() unconditionally in imx_pcie_add_lut_by_rid()
+    thereby addressing comments from Bjorn Helgaas.
+
+  Link to v11:
+  https://lore.kernel.org/r/20260325-parse_iommu_cells-v11-0-1fefa5c0e82c@oss.qualcomm.com
+
+V11:
+  - Added explicit filter_np parameter to of_map_id() and of_map_msi_id()
+    per Dmitry Baryshkov's review feedback, making the filter explicit
+    instead of overloading arg->np as both input filter and output parameter.
+  - Removed of_node_put() from inside of_map_id(), making the caller responsible
+    for reference management. Updated of_msi_xlate() to properly handle reference counting.
+  - Collected ACKed by tags, and fixed minor typos.
+  Link to v10:
+  https://lore.kernel.org/r/20260309-parse_iommu_cells-v10-0-c62fcaa5a1d8@oss.qualcomm.com
+
+V10:
+  - Move of_map_iommu_id()/of_map_msi_id() from include/linux/of.h to
+    drivers/of/base.c as out-of-line helpers per feedback from Marc Zyngier
+    and Rob Herring.
+  - Add kernel-doc to document both helpers for discoverability and
+    usage clarity.
+  - Fix of_map_msi_id() wrapper and all its callers (cdx_msi.c,
+    irq-gic-its-msi-parent.c, drivers/of/irq.c) to correctly use the new
+    struct of_phandle_args-based API with proper of_node_put() handling
+    as per feeback from Dmitry.
+  Link to v9:
+  https://lore.kernel.org/r/20260301-parse_iommu_cells-v9-0-4d1bceecc5e1@oss.qualcomm.com
+
+V9:
+  - Updated TO/CC list based on feedback to include all relevant
+    maintainers.
+  - No functional changes to the patches themselves.
+
+  Link to V8:
+  https://lore.kernel.org/all/20260226074245.3098486-1-vijayanand.jitta@oss.qualcomm.com/
+
+V8:
+  - Removed mentions of of_map_args from commit message to match code.
+
+  Link to V7:
+  https://lore.kernel.org/all/20260210101157.2145113-1-vijayanand.jitta@oss.qualcomm.com/
+
+V7:
+  - Removed of_map_id_args structure and replaced it with
+    of_phandle_args as suggested by Dmitry.
+
+  Link to V6:
+  https://lore.kernel.org/all/20260121055400.937856-1-vijayanand.jitta@oss.qualcomm.com/
+
+V6:
+  - Fixed build error reported by kernel test bot.
+
+  Link to V5:
+  https://lore.kernel.org/all/20260118181125.1436036-1-vijayanand.jitta@oss.qualcomm.com/
+
+V5:
+  - Fixed Build Warnings.
+  - Raised PR for iommu-map dtschema: https://github.com/devicetree-org/dt-schema/pull/184
+
+  Link to V4:
+  https://lore.kernel.org/all/20251231114257.2382820-1-vijayanand.jitta@oss.qualcomm.com/
+
+V4:
+  - Added Reviewed-by tag.
+  - Resolved warnings reported by kernel test bot, minor code
+    reorganization.
+
+  Link to V3:
+  https://lore.kernel.org/all/20251221213602.2413124-1-vijayanand.jitta@oss.qualcomm.com/
+
+V3:
+  - Added Reviewed-by tag.
+  - Updated of_map_id_args struct as a wrapper to of_phandle_args and
+    added comment description as suggested by Rob Herring.
+
+  Link to V2:
+  https://lore.kernel.org/all/20251204095530.8627-1-vijayanand.jitta@oss.qualcomm.com/
+
+V2:
+  - Incorporated the patches from Robin that does the clean implementation.
+  - Dropped the patches the were adding multi-map support from this series
+    as suggested.
+
+V1:
+ https://lore.kernel.org/all/cover.1762235099.git.charan.kalla@oss.qualcomm.com/
+
+RFC:
+ https://lore.kernel.org/all/20250928171718.436440-1-charan.kalla@oss.qualcomm.com/#r
+
+Signed-off-by: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+---
+To: Nipun Gupta <nipun.gupta@amd.com>
+To: Nikhil Agarwal <nikhil.agarwal@amd.com>
+To: Joerg Roedel <joro@8bytes.org>
+To: Will Deacon <will@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+To: Lorenzo Pieralisi <lpieralisi@kernel.org>
+To: Marc Zyngier <maz@kernel.org>
+To: Thomas Gleixner <tglx@kernel.org>
+To: Rob Herring <robh@kernel.org>
+To: Saravana Kannan <saravanak@kernel.org>
+To: Richard Zhu <hongxing.zhu@nxp.com>
+To: Lucas Stach <l.stach@pengutronix.de>
+To: Krzysztof Wilczy\u0144ski <kwilczynski@kernel.org>
+To: Manivannan Sadhasivam <mani@kernel.org>
+To: Bjorn Helgaas <bhelgaas@google.com>
+To: Frank Li <Frank.Li@nxp.com>
+To: Sascha Hauer <s.hauer@pengutronix.de>
+To: Pengutronix Kernel Team <kernel@pengutronix.de>
+To: Fabio Estevam <festevam@gmail.com>
+To: Juergen Gross <jgross@suse.com>
+To: Stefano Stabellini <sstabellini@kernel.org>
+To: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Cc: linux-arm-msm@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: iommu@lists.linux.dev
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: devicetree@vger.kernel.org
+Cc: linux-pci@vger.kernel.org
+Cc: imx@lists.linux.dev
+Cc: xen-devel@lists.xenproject.org
+
+---
+
+To: Nipun Gupta <nipun.gupta@amd.com>
+To: Nikhil Agarwal <nikhil.agarwal@amd.com>
+To: Joerg Roedel <joro@8bytes.org>
+To: Will Deacon <will@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+To: Lorenzo Pieralisi <lpieralisi@kernel.org>
+To: Marc Zyngier <maz@kernel.org>
+To: Thomas Gleixner <tglx@kernel.org>
+To: Rob Herring <robh@kernel.org>
+To: Saravana Kannan <saravanak@kernel.org>
+To: Richard Zhu <hongxing.zhu@nxp.com>
+To: Lucas Stach <l.stach@pengutronix.de>
+To: Krzysztof Wilczy\u0144ski <kwilczynski@kernel.org>
+To: Manivannan Sadhasivam <mani@kernel.org>
+To: Bjorn Helgaas <bhelgaas@google.com>
+To: Frank Li <Frank.Li@nxp.com>
+To: Sascha Hauer <s.hauer@pengutronix.de>
+To: Pengutronix Kernel Team <kernel@pengutronix.de>
+To: Fabio Estevam <festevam@gmail.com>
+To: Juergen Gross <jgross@suse.com>
+To: Stefano Stabellini <sstabellini@kernel.org>
+To: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Cc: linux-arm-msm@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: iommu@lists.linux.dev
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: devicetree@vger.kernel.org
+Cc: linux-pci@vger.kernel.org
+Cc: imx@lists.linux.dev
+Cc: xen-devel@lists.xenproject.org
+
+---
+Charan Teja Kalla (1):
+      of: Factor arguments passed to of_map_id() into a struct
+
+Robin Murphy (2):
+      of: Add convenience wrappers for of_map_id()
+      of: Respect #{iommu,msi}-cells in maps
+
+ drivers/cdx/cdx_msi.c                    |  10 +-
+ drivers/iommu/of_iommu.c                 |   6 +-
+ drivers/irqchip/irq-gic-its-msi-parent.c |  10 +-
+ drivers/of/base.c                        | 227 +++++++++++++++++++++++++------
+ drivers/of/irq.c                         |  25 +++-
+ drivers/pci/controller/dwc/pci-imx6.c    |  55 ++++----
+ drivers/pci/controller/pcie-apple.c      |   6 +-
+ drivers/xen/grant-dma-ops.c              |   5 +-
+ include/linux/of.h                       |  32 ++++-
+ 9 files changed, 277 insertions(+), 99 deletions(-)
+---
+base-commit: e98d21c170b01ddef366f023bbfcf6b31509fa83
+change-id: 20260301-parse_iommu_cells-1c33768aebba
+
+Best regards,
+--  
+Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+
+---
+Charan Teja Kalla (1):
+      of: Factor arguments passed to of_map_id() into a struct
+
+Robin Murphy (2):
+      of: Add convenience wrappers for of_map_id()
+      of: Respect #{iommu,msi}-cells in maps
+
+ drivers/cdx/cdx_msi.c                    |  10 +-
+ drivers/iommu/of_iommu.c                 |   6 +-
+ drivers/irqchip/irq-gic-its-msi-parent.c |  10 +-
+ drivers/of/base.c                        | 227 +++++++++++++++++++++++++------
+ drivers/of/irq.c                         |  32 +++--
+ drivers/pci/controller/dwc/pci-imx6.c    |  55 ++++----
+ drivers/pci/controller/pcie-apple.c      |   6 +-
+ drivers/xen/grant-dma-ops.c              |   5 +-
+ include/linux/of.h                       |  32 ++++-
+ 9 files changed, 282 insertions(+), 101 deletions(-)
+---
+base-commit: cdf5682bcd98422242d95c4e6c10f9c38bcf56c7
+change-id: 20260301-parse_iommu_cells-1c33768aebba
+
+Best regards,
+--  
+Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+
