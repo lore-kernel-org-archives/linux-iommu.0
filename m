@@ -1,30 +1,30 @@
-Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B8453D667B
-	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 15:19:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.99
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E60A848A2AA
+	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 15:19:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780499947; cv=none; b=TVJ0pVEooxmho2VTaDELBELcklZqqscSTmcuK6hfe1NVQslB91RBHtAR9pFJPTPY4X/TlZVnIhW7JI9why78rGMG+B5A0s4KhUVGHkgs/D6osveT6vMG1NInr6hdxYAhkWUGr5cchJt++7BbfIqAdMVWIT153ayZBoxwSH15Kyk=
+	t=1780499948; cv=none; b=tbEUqF0cIuTe3C0geJyQjMRHxOS6xg/M8TOvYjw26BEZU8uUgbhHANJPeRR7mFFNmXwjVyxDmk88qWicuxeI8fLsORuZdw0Swj5qL5YFVttXZl923psgwI9wXRHN+zk6egu6EiHs/KMkkfJj5y+nwEVUe5fXqDQjhQeKlV748MY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780499947; c=relaxed/simple;
-	bh=N45UaRkAIDuOj4Dj0THubpkg6DN1fU/9LvwjP4ESOvc=;
+	s=arc-20240116; t=1780499948; c=relaxed/simple;
+	bh=dOIhvIj09bSbAHxDeeWgK/ZzYKkMjOrx3T8+F4WlSsY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=kcb1gwNukrd/2UrfacJNOQtt9fPZ5w6PHQ1x1M2WcielTFprxo6xsJ7SBzvuGT04BRdlXiBUCpDpRtmAFKIx/IgkmAP1ejmygLEQLtJ8n4aRZP6H0BObWmBsbXuxPNcqtHNm2FwDKLJLrp7p2WEDCOLaFl2X70FLvAgtCSEWHms=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=awewpfsc; arc=none smtp.client-ip=115.124.30.99
+	 MIME-Version; b=IE8SWDkP1eIs4UAHGuuAnbXfP1jqAk3znx8f6HWcH5ZjtrHisENVg1akbGM+oRcvW6lR7s9F8jEp4O23j4rD+AEGHIMWU9jLM3ybdvaZ0egIwxKNyBMFamMY87UcS/G18pjZQ7AFmSyz1HHIjyFov0bsPpVXbwdOwoeMZVESeYE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=tPNIvZoc; arc=none smtp.client-ip=115.124.30.130
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="awewpfsc"
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="tPNIvZoc"
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
-	t=1780499939; h=From:To:Subject:Date:Message-ID:MIME-Version;
-	bh=BNZF/SaFZFt3zbn7FrmeyBMohohJiu4c3VZtwUCcXEg=;
-	b=awewpfscssXT+IGRO/8VdG7D6VvIjJuM7DJdOFRI4rJV5+ESk4E6W1ZRFzsDsFRhGvfOG45zsu/53qcU6MlUtSK/aUIMHvf0NksCEyk9xMRuEJVSYuwEDpCUSTij6ha5Hp3rVhw9QCal1K+Zi89XkYIU0qfjKlm4GtLqlglgRNw=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037033178;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=28;SR=0;TI=SMTPD_---0X47fR51_1780499936;
-Received: from VM20241011-104.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0X47fR51_1780499936 cluster:ay36)
+	t=1780499942; h=From:To:Subject:Date:Message-ID:MIME-Version;
+	bh=Zkn8atwigb0RDyBkQZl4U8k5iUnpgoKnP+BxdtigQbU=;
+	b=tPNIvZocCmGgTPirhfZyAaDCqo65mWvGZoXWW5oZahDv8iDPKz+ERFwz0+dxtvzopOh7PzBCOqogc4RH3lo0bKyBMDlT24fqZOH+gBVM/BcycmsNSZCW83sXQGVvh28sro6TUrpIN7k36qQwmGFbS5pAEE9oUEr+CU3FVFXZm5s=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037009110;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=28;SR=0;TI=SMTPD_---0X47fR6P_1780499940;
+Received: from VM20241011-104.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0X47fR6P_1780499940 cluster:ay36)
           by smtp.aliyun-inc.com;
-          Wed, 03 Jun 2026 23:18:56 +0800
+          Wed, 03 Jun 2026 23:19:00 +0800
 From: Guanghui Feng <guanghuifeng@linux.alibaba.com>
 To: jgg@ziepe.ca
 Cc: adrian.larumbe@collabora.com,
@@ -54,9 +54,9 @@ Cc: adrian.larumbe@collabora.com,
 	wei.guo.simon@linux.alibaba.com,
 	will@kernel.org,
 	xlpang@linux.alibaba.com
-Subject: [PATCH v3 18/32] iommu/s390: implement iova_to_phys_length
-Date: Wed,  3 Jun 2026 23:17:50 +0800
-Message-ID: <20260603151804.1963871-19-guanghuifeng@linux.alibaba.com>
+Subject: [PATCH v3 22/32] iommu/virtio: implement iova_to_phys_length
+Date: Wed,  3 Jun 2026 23:17:54 +0800
+Message-ID: <20260603151804.1963871-23-guanghuifeng@linux.alibaba.com>
 X-Mailer: git-send-email 2.43.7
 In-Reply-To: <20260603151804.1963871-1-guanghuifeng@linux.alibaba.com>
 References: <20260602104637.1219810-1-guanghuifeng@linux.alibaba.com>
@@ -69,69 +69,52 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Implement iova_to_phys_length for s390 IOMMU driver,
+Implement iova_to_phys_length for virtio IOMMU driver,
 returning the actual PTE mapping size.
 
 Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
 ---
- drivers/iommu/s390-iommu.c | 18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
+ drivers/iommu/virtio-iommu.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index f148f559ac56..6cfcc55ef59f 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -986,22 +986,23 @@ static unsigned long *get_rto_from_iova(struct s390_domain *domain,
- 	}
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 587fc13197f1..b92316257e42 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -912,10 +912,11 @@ static size_t viommu_unmap_pages(struct iommu_domain *domain, unsigned long iova
+ 	return ret ? 0 : unmapped;
  }
  
--static phys_addr_t s390_iommu_iova_to_phys(struct iommu_domain *domain,
--					   dma_addr_t iova)
-+static phys_addr_t s390_iommu_iova_to_phys_length(struct iommu_domain *domain,
-+						  dma_addr_t iova,
-+						  size_t *mapped_length)
+-static phys_addr_t viommu_iova_to_phys(struct iommu_domain *domain,
+-				       dma_addr_t iova)
++static phys_addr_t viommu_iova_to_phys_length(struct iommu_domain *domain,
++					      dma_addr_t iova,
++					      size_t *mapped_length)
  {
- 	struct s390_domain *s390_domain = to_s390_domain(domain);
- 	unsigned long *rto, *sto, *pto;
- 	unsigned long ste, pte, rte;
- 	unsigned int rtx, sx, px;
--	phys_addr_t phys = 0;
-+	phys_addr_t phys = PHYS_ADDR_MAX;
- 
- 	if (iova < domain->geometry.aperture_start ||
- 	    iova > domain->geometry.aperture_end)
--		return 0;
-+		return PHYS_ADDR_MAX;
- 
- 	rto = get_rto_from_iova(s390_domain, iova);
- 	if (!rto)
--		return 0;
-+		return PHYS_ADDR_MAX;
- 
- 	rtx = calc_rtx(iova);
- 	sx = calc_sx(iova);
-@@ -1014,8 +1015,11 @@ static phys_addr_t s390_iommu_iova_to_phys(struct iommu_domain *domain,
- 		if (reg_entry_isvalid(ste)) {
- 			pto = get_st_pto(ste);
- 			pte = READ_ONCE(pto[px]);
--			if (pt_entry_isvalid(pte))
-+			if (pt_entry_isvalid(pte)) {
- 				phys = pte & ZPCI_PTE_ADDR_MASK;
-+				if (mapped_length)
-+					*mapped_length = SZ_4K;
-+			}
- 		}
+-	u64 paddr = 0;
++	u64 paddr = PHYS_ADDR_MAX;
+ 	unsigned long flags;
+ 	struct viommu_mapping *mapping;
+ 	struct interval_tree_node *node;
+@@ -926,6 +927,9 @@ static phys_addr_t viommu_iova_to_phys(struct iommu_domain *domain,
+ 	if (node) {
+ 		mapping = container_of(node, struct viommu_mapping, iova);
+ 		paddr = mapping->paddr + (iova - mapping->iova.start);
++		if (mapped_length)
++			*mapped_length = mapping->iova.last -
++					 mapping->iova.start + 1;
  	}
+ 	spin_unlock_irqrestore(&vdomain->mappings_lock, flags);
  
-@@ -1183,7 +1187,7 @@ static struct iommu_domain blocking_domain = {
- 		.flush_iotlb_all = s390_iommu_flush_iotlb_all, \
- 		.iotlb_sync      = s390_iommu_iotlb_sync, \
- 		.iotlb_sync_map  = s390_iommu_iotlb_sync_map, \
--		.iova_to_phys	= s390_iommu_iova_to_phys, \
-+		.iova_to_phys_length	= s390_iommu_iova_to_phys_length, \
- 		.free		= s390_domain_free, \
- 	}
- 
+@@ -1102,7 +1106,7 @@ static const struct iommu_ops viommu_ops = {
+ 		.attach_dev		= viommu_attach_dev,
+ 		.map_pages		= viommu_map_pages,
+ 		.unmap_pages		= viommu_unmap_pages,
+-		.iova_to_phys		= viommu_iova_to_phys,
++		.iova_to_phys_length	= viommu_iova_to_phys_length,
+ 		.flush_iotlb_all	= viommu_flush_iotlb_all,
+ 		.iotlb_sync		= viommu_iotlb_sync,
+ 		.iotlb_sync_map		= viommu_iotlb_sync_map,
 -- 
 2.43.7
 
