@@ -1,960 +1,183 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 46165126BF7
-	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 00:14:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780445643; cv=none; b=dVcJTjunCv7ibuVHC+aBxgg3kfMiMvfFrhmZHe29l0J77kdJqKHvlpFAZXB+TAu/MSir0NxdWP175FhpiKRY575C4c6YW0QSrAyQUH0s1ZwPCESwfc6S5ajqnhvlcXhsVXJRgg+S7bmLiCez9I5NqIA25gsT50DEXw3zfaa0i9Y=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780445643; c=relaxed/simple;
-	bh=mm6gIzHOWGbrvkXaFbokVrxr3Q0o/TKu8pJ9KA+4QtU=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=FpGm95bKuz8OLqvtClW+1CRXFzfwklvbK5rkMcdzfXoIPw3b0oNzdKWuFWpI8HH4sm27vGq3W9FaxS1Zfv//CWlOnJeLwEAPcvsQN1gTOvjC6rWOLWLp5cfN6j1Zbz/6fN7cz6FEdrb4VX2eYv818b2K0Uq/Ym5lq/7/Yu0/TLw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Ea9dOxiE; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013000.outbound.protection.outlook.com [40.93.196.0])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6799A1DB95E
+	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 00:31:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.0
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780446671; cv=fail; b=Qhr/W+BBJhmR6ci9u9v1w2i2JjoJ5kwCPUzr1UrQ/n1ytQCNvAjFlUC/9QFrDPFKF2e4NexgsvXsvz0DqYoJ3uh3RHx8vMqFNKWHLh7lgZOX0SGYTrA+KD3ZzBWnyvY2IpLFRlSuSaNovoJcnyhYl603O33R6csbII24nc1c19o=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780446671; c=relaxed/simple;
+	bh=MUJ8BVx6CJDX6a7UlDcw25miOXqZQIQYvTgMO33Yuf8=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=kWnSFg0ML2h1+cPCLshYjrA6B/5dTxUe06shwrdwvJX/5FyP7K8q4wEkWf2BH4/Ruf03mJ4nnzWF9jZP7C1GffNObfPKu+F1u/4H73LRqL5dxKcuLQ9fwo3T2UvEZSizSCZpTPxvblgUEMJ2sjZ5TsE1YoeNyMNGNIOgz2ZFWXQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=FEaHTn4N; arc=fail smtp.client-ip=40.93.196.0
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Ea9dOxiE"
-Received: from localhost (unknown [20.236.10.163])
-	by linux.microsoft.com (Postfix) with ESMTPSA id A601F20B7167;
-	Tue,  2 Jun 2026 17:13:45 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A601F20B7167
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1780445626;
-	bh=QvHYLeeq22LXTOOSt4403Vmw/wB8KeMBnUaZfgPXSSY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Ea9dOxiE5c6woNZHSoWWN2BfMM+pqVwoeI9Vb/2ORXj5DOoa/HVubB3RkNXbS3/ch
-	 7nxzt8Kn7dm0nUmvXKdUJNaghig79qPcQ1YAbhnVa/k2jpzPtA41yyCpiX+DEzAP31
-	 y0vaJooCW+h03dvuIC9byhgQNUrx8evqDjpNdkHI=
-Date: Tue, 2 Jun 2026 17:13:57 -0700
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: David Matlack <dmatlack@google.com>
-Cc: linux-kernel@vger.kernel.org, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Alex Williamson
- <alex@shazbot.org>, Joerg Roedel <joro@8bytes.org>, Mostafa Saleh
- <smostafa@google.com>, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen
- <nicolinc@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
- <yi.l.liu@intel.com>, Baolu Lu <baolu.lu@linux.intel.com>, Saurabh Sengar
- <ssengar@linux.microsoft.com>, skhawaja@google.com,
- pasha.tatashin@soleen.com, Will Deacon <will@kernel.org>,
- jacob.pan@linux.microsoft.com
-Subject: Re: [PATCH v6 6/7] selftests/vfio: Add iommufd noiommu mode
- selftest for cdev
-Message-ID: <20260602171357.00001666@linux.microsoft.com>
-In-Reply-To: <ag-JpivaL4ORKVT5@google.com>
-References: <20260521221155.1375144-1-jacob.pan@linux.microsoft.com>
-	<20260521221155.1375144-7-jacob.pan@linux.microsoft.com>
-	<ag-JpivaL4ORKVT5@google.com>
-Organization: LSG
-X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="FEaHTn4N"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Gg191iNrgirlycxwUeCyxBgtNKNorwLp1YuuaVHSypvQDUtWW9OVelfXI1lYv3ywRlexLtn10fSXtlqfqnLOZO12+K5kWfhiI6Dq6Ir9hja68NyfmrNG2ZxVJxO4PfbBN/1i4oxdB1YDq5mp6ITPAQDsGjnHNMnMblkF1dxETl2Wv4C7RKdJ4iEat+OydR7s7Vkyb2U8JkCmHOmE+zi0ZF+mrYVp2a5/RGI9+dC6ck6RI3st7HTWhG8hBNaEORKuysiRR5lc7Bk77PrDOzNNNGjcOdq5t50Byl01FDAOWmxwG2Hy8oAwAMCo4S1j7hrIxOmvDYOwTe8EaugM76CftA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2rUhUaOAEqkW272M7gEVGR+Yu4hOJ+LEbW/zL5Yg5xs=;
+ b=MoK3eeYCOgVZDDKxh4/KNFtvOzBwgSMTiv6ezT1aXxpmAjjpn/aWOoG9aoyKk4hOF86mYQIsaCifDABN9kwZtNiUybmswTOV+wlUoa21oXPyjlGgqCk/gcBzg/EM69lsMHRcQXNLApVy6cxq8uvQws60YVJuxShHIfnTjcNC4sKBMfRbMv2vcpap+xQeznAY/TJgxh2XlpkPzkUr2tF5NdG0T2ZqxAXEyPwLjUBiRoyQ3ThFF2O/HYwY45evQqn1Hkciii5+ERw6Rw9Xy/fM2RanQUYJNthQK2rJ/Ub3Ea/rGK+5nm6brNRHA2xjFeRqPvhsmz9v+WF39ZmGEcVwdg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2rUhUaOAEqkW272M7gEVGR+Yu4hOJ+LEbW/zL5Yg5xs=;
+ b=FEaHTn4N63UsnoSTpmUpTpi5dPrIkob7v8bulei2MvjjIFaDr2GMIR6n4ruo/ErO5csj7KFQqSpymCOA+WjNLffqUQw68fbCU/aCDT1pEP/JGm1+8F/M2pKNudbRuO4KWbstTgi+QVl7ZjgnWxjCJ4WflNyDAup8cIH5MdL7J0o=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DSSPR12MB999236.namprd12.prod.outlook.com (2603:10b6:8:374::10)
+ by PH7PR12MB5594.namprd12.prod.outlook.com (2603:10b6:510:134::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.92.7; Wed, 3 Jun 2026
+ 00:31:06 +0000
+Received: from DSSPR12MB999236.namprd12.prod.outlook.com
+ ([fe80::8a48:f674:71b8:d21e]) by DSSPR12MB999236.namprd12.prod.outlook.com
+ ([fe80::8a48:f674:71b8:d21e%5]) with mapi id 15.21.0092.006; Wed, 3 Jun 2026
+ 00:31:06 +0000
+Message-ID: <b906f204-f751-400a-999b-e18cc75e9502@amd.com>
+Date: Wed, 3 Jun 2026 07:30:56 +0700
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 22/26] iommufd: Add hw_queue_init and split queue alloc
+ paths
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
+ jgg@nvidia.com, yi.l.liu@intel.com, kevin.tian@intel.com,
+ vasant.hegde@amd.com, jon.grimm@amd.com, santosh.shukla@amd.com,
+ sairaj.arunkodilkar@amd.com, jay.chen@amd.com, wvw@google.com,
+ wnliu@google.com, dantuluris@google.com, chriscli@google.com,
+ kpsingh@google.com
+References: <20260528051738.596013-1-suravee.suthikulpanit@amd.com>
+ <20260528051738.596013-23-suravee.suthikulpanit@amd.com>
+ <ahjabc5FruCGlfwE@Asurada-Nvidia>
+Content-Language: en-US
+From: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
+In-Reply-To: <ahjabc5FruCGlfwE@Asurada-Nvidia>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: JH0PR01CA0058.apcprd01.prod.exchangelabs.com
+ (2603:1096:990:5d::14) To CHAPR12MB999248.namprd12.prod.outlook.com
+ (2603:10b6:610:2ff::22)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DSSPR12MB999236:EE_|PH7PR12MB5594:EE_
+X-MS-Office365-Filtering-Correlation-Id: 28a145c6-9d8b-4779-ba35-08dec1076640
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|7416014|366016|376014|22082099003|6133799003|18002099003|11063799006|4143699003|56012099006;
+X-Microsoft-Antispam-Message-Info:
+	MtX51rt3BgCzzWDKZHj6j0Q+BBALird/SAu6GtxpIZG3pFH4IgtQA+PsPjyiyigjgdE86sof6wMKFg39Rfo6jGJp+uD8oU2EkRpIbrxCQ6KV/ZarzJ+7OLDK1wtZfsbP4OpGK77xtTy0YTXSddAzQY+YTGe+9f8G9vwU181t1TAqCB66yH0uRsQkRvFNiULYnVJD2oJgRBoSrHPqsS3yNwAwQvfCtiFAWG6s0KX9/1LeHNlAPF1gwYqeqKjVO8YqKOmgN8NtF6oaNVWLtbfKHP64/ZkJ3KdhacFGT1+75NgfLV0yHJHW9l0YaJPf/qFNCVf5ejcp0NP8RMpZfrh+pMoEqvXSsckuB/pyMPENOR18IJ2UO70mOHwbQd4CdDl+bzRXSh0Wpci448nYnphrdTvPKS7/btMdTZs7n+iflqwzaDm7v7seD7y6T0MjsCibiJizI9GVHFj7eDWAZm9HvlgoL2F7w6XW59anZZLNuBLssc05LOE+J/wgaNgvUO5iidlDhKB3xpa1n8Cz3+GsGHK8CGLkJHEpmdVG56mDBnxK1fWA+MBERFj6pfgtTg5RyAal4jLVSEDmDn4DLIBoQ17a8siQZH5BvkFItYdPHkaSCCJMfRgJ0A8XyKuGQTVveCPKBk1DZj3IBCHSImLAVmDb8RDAE6Y7cOBjE4nSGAnmrDIA55rAla5OI7Q4VubR
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DSSPR12MB999236.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(366016)(376014)(22082099003)(6133799003)(18002099003)(11063799006)(4143699003)(56012099006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?SktEYzF5dFNOUitkNXNoRVhGQ1k5b09acEswVnVyd0pBV2QyaVhnenFKTVBi?=
+ =?utf-8?B?NmkxT2h4dzR2Z3NVNHhSd3ZsSm1pYzNQMC9QU21lYUxraytvZVcyRW5iWm9R?=
+ =?utf-8?B?V2E5VDJWOXZBZCtNajEvRUJwYVBXb0N1Y3dNenZpdU5semRhdE15SjdyQ2Ez?=
+ =?utf-8?B?Y3ZLVklRM2N0dWUxNGxhditnbUxWYVphQjN4UktKVmYxL3QwU1V3b0V5a01t?=
+ =?utf-8?B?UVJUZmxKbXlDRkJzRVJyZDFpbmVRZHI0U0FSNkRmOFlWNWdwaGlyVlh5ZWE5?=
+ =?utf-8?B?MmFibGdOTEdacjNTMGNpeHBTb3N6U0hCUnU4TElsSUxZMUtGQkJ0V1JHbXp4?=
+ =?utf-8?B?SllCUzlEQldqNk9uMmYxRS9Gd2d5Kzd3Tm5TbkF1dHpYTWZqcVRDRUl0VXh1?=
+ =?utf-8?B?QVFlS0gzcmVnRU5JZklCOFlDYXZQc1o0eWFMaEhwcUdEQXp6MzEybVU4bkVj?=
+ =?utf-8?B?VEdXMnlRMjNzWElCeWVYMTJuZ2dTQzl0d0JDcUNMa0hlc0JGNE5TTER6NC9R?=
+ =?utf-8?B?d2ZIYm9md01RSkFUQWJVcUxiTENDSVBkWEVVYXVvN3lieHRIT0RhdEFKS2JY?=
+ =?utf-8?B?TWlneXhrZXNJcTJtc3pDaWJsMlkycVZYb21sTHN0YkRDc0N1eEZjTGxHNVM4?=
+ =?utf-8?B?QkxWS3VCaE5jZWJoaTIwT25iSktZZDhmYlpMd2ZwbnBNQVk1bGlTL25pakoz?=
+ =?utf-8?B?RTNzUWJ6NG1xK1FRdjcxV2h1ekhzMmt6bEVtUHhiK0FmNmFJTllvT0lGSFdU?=
+ =?utf-8?B?ZlhFZDVKQjBXTGYwLzFwbWxuU0J6d0RJMXJrUklQN1pMVDlMbTZJU211MFpI?=
+ =?utf-8?B?Ni9zdk1iTURYTjFHQitmU0tvbjVaM3hFdXFCT0U1TnpWTnlaazF6eUVmMUhh?=
+ =?utf-8?B?SmVBNlJxRXFvR2Z4aG41L0tVMzlKVEdEdk9KNTl4M3QxRnJrcFc4czNRTTRY?=
+ =?utf-8?B?STBBUjVmbVpxZkROajZaa3FmRWxSTlZKVFpITG9uQjFRK2Q4MmY1SUl3WHZy?=
+ =?utf-8?B?UVNQNmpHbVdFbGlaZVBCVzByY0lCWDBuNUxZM2xtNVY3eWlJbjhYWVZhdzNs?=
+ =?utf-8?B?QWdqSXcyT1d1MVpjamNadTRxWk1INmVLdDIxUG1OVjZDajk5ZnZXYmNjVitD?=
+ =?utf-8?B?UFFjcE41Ym00cTlFbEZKK2FxTEdPTTR0K2tUUXRlQUNoanJvUmFNSlhCUDh6?=
+ =?utf-8?B?RXZnd1hPRDkzV3pZSjJKUlhsQ3U2V0FXTG95dVBYZzFaSVVqazZCbEUxVHhP?=
+ =?utf-8?B?ZFcxbCt5dGEweVZNckFxZHJWOE10dU5PcFlKRDBwMi91eWNTQzQ1VUtVK3Uy?=
+ =?utf-8?B?TXZIYjgzWGsrRFlFa3M3MUxjSlh2eStpenErS1dqdkZDTFFDMjhmRnVwd01W?=
+ =?utf-8?B?eklQQjAvRlo0Qk1tL3pTS1FTakRnOURFT3Bqd2tBd0VLazNWVnRhZllzMFlT?=
+ =?utf-8?B?YjhJMzdoYjEyMUZXWGRRUmJwbTVQS2VwVDRpMERENjJpUXZMQ2hQNVNyMGs3?=
+ =?utf-8?B?SlZvQmZROS9kT1lpUHBXY2Fzc1dhb211cEY0dHlHV0NYRVZ3N0x5MGVPaHJR?=
+ =?utf-8?B?cmxJalV3OFhPSkxuWVZDVFVxdExlRk9UcDltcnNHemhXTjZOOHhDZjRUM21x?=
+ =?utf-8?B?YXNweEpPRnpUcThKMTliekdMWVZpT1FpWUlCTWN0WVlmTkg0ZzNHVlJ0NlJk?=
+ =?utf-8?B?Z0N4MGdtSGFNeXBnMDM2S1M0VUVXMWc5dXBBdTJtWnhITjBYbVpOYVNwQVQ5?=
+ =?utf-8?B?Zk0xdmppSzdyODFOay9KenF4N2ZrQlk5YWdsWjVxVlNmV3pTaTI3dVh5MlAw?=
+ =?utf-8?B?N0RVMVcyUHlQZmtrQlRSZmRzd1RSaDhmRjRmVGliaFZqVGtmYk1XTjRENWl2?=
+ =?utf-8?B?VnlKK0duNnd3OHJBUUdDSWs5dFptTlBKazJwcnZSemxxLzlsbGdDdjFCS0c5?=
+ =?utf-8?B?Si9SbExaaHRhMno0M0NpM0hHbWMxSXpBTGVhUExHS2RlTHhDRS8yNHpUeW9p?=
+ =?utf-8?B?dEMwRVdpVThJTDljN3hYTk5IYUcyWVhIenZFcVFjb0l4SnI0MkU0dzZsVi9w?=
+ =?utf-8?B?RVhpVjl6N3lxUVVraVpFWE45aTdwYnp4ZFVKOTc3S0o2V3hZU2IxNmV1V3h3?=
+ =?utf-8?B?L3BBUUtRTXpzUU0veTVTL1B0VzY0L0pRR2VvN3pDWE95UDVLVWpKeVBZbmVs?=
+ =?utf-8?B?dUxvK0l3Z3pzRW9ONGtGY0MxK1hWS3RvK2RJUXFQZkY4NVFZL2Z4MUREN3lo?=
+ =?utf-8?B?SUxXSkppNXdXbzF1WldCNkJ2bVVmNnFHV0J5YWgzbFdSMmJ4eEJjb3dYaFBX?=
+ =?utf-8?Q?aAJ0w4g/XknNS8TbK+?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 28a145c6-9d8b-4779-ba35-08dec1076640
+X-MS-Exchange-CrossTenant-AuthSource: CHAPR12MB999248.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jun 2026 00:31:06.3898
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: v2jCLYAC2zuOVvC7NUM51ENcoGPnZaobhfxLZF0ojjJyYu4P0f6d6Ncd2+3QRzJa4OtGRe0VpXrhatoszWi4bA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5594
 
-Hi David,
 
-On Thu, 21 May 2026 22:39:34 +0000
-David Matlack <dmatlack@google.com> wrote:
 
-> On 2026-05-21 03:11 PM, Jacob Pan wrote:
->=20
-> For the shortlog, please use "vfio: selftests: ..."
->=20
-> > Add comprehensive selftest for VFIO device operations with iommufd
-> > in noiommu mode. Tests cover:
-> > - Device binding to iommufd
-> > - IOAS (I/O Address Space) allocation, mapping with dummy IOVA
-> > - Retrieve PA from dummy IOVA
-> > - Device attach/detach operations as usual =20
->=20
-> High level feedback: Can you use the library for all the standard
-> setup and ioas mapping instead of reimplementing it in this test?
->=20
-> 	iommu =3D iommu_init(MODE_IOMMUFD);
-> 	device =3D vfio_pci_device_init(iommu, bdf);
->=20
-> 	__iommu_map(...);
-> 	__iommu_unma(...);
->=20
-> 	iommu_cleanup(iommu);
-> 	vfio_pci_device_cleanup(device);
->=20
-> If not, what are the gaps? It would be useful to fill in those gaps so
-> that it is easier to use VFIO selftests with noiommu setups.
->=20
-I will use the library, there is no gap, just that the test was written
-a while ago did not catch up with the current VFIO selftest helpers.
+On 5/29/2026 7:14 AM, Nicolin Chen wrote:
+> On Thu, May 28, 2026 at 05:17:34AM +0000, Suravee Suthikulpanit wrote:
+>> Splitting helpers and dispatching from the ioctl keeps
+>> one uAPI while making the contract explicit.
+> 
+> Why split? Those two new ioctl functions look quite redundant..
+> 
+> I imagined that the original ioctl function just needed:
+> [...]
+> -	struct iommufd_access *access;
+> +	struct iommufd_access *access = NULL;
+> [...]
+>   	if (!viommu->ops || !viommu->ops->get_hw_queue_size ||
+> -	    !viommu->ops->hw_queue_init_phys) {
+> +	    (!viommu->ops->hw_queue_init_phys && !viommu->ops->hw_queue_init)) {
+> 		rc = -EOPNOTSUPP;
+> 		goto out_put_viommu;
+> 	}
+> [...]
+> -	access = iommufd_hw_queue_alloc_phys(cmd, viommu, &base_pa);
+> -	if (IS_ERR(access)) {
+> -		rc = PTR_ERR(access);
+> -		goto out_put_viommu;
+> -	}
+> +	if (viommu->ops->hw_queue_init_phys) {
+> +		access = iommufd_hw_queue_alloc_phys(cmd, viommu, &base_pa);
+> +		if (IS_ERR(access)) {
+> +			rc = PTR_ERR(access);
+> +			goto out_put_viommu;
+> +		}
+> +	}
+> [...]
+> 	rc = viommu->ops->hw_queue_init_phys(hw_queue, cmd->index, base_pa);
+> + 	if (viommu->ops->hw_queue_init_phys)
+> +		rc = viommu->ops->hw_queue_init_phys(hw_queue, cmd->index,
+> +						     base_pa);
+> +	else
+> +		rc = viommu->ops->hw_queue_init(hw_queue, cmd->index);
+> 
+> and then it should work?
 
-> >=20
-> > Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
-> > ---
-> > v6:
-> >    - Add test cases for get_pa length limit
-> > v4:
-> >    - squash DSA specific selftest changes
-> > v2:
-> >    - New selftest for generic noiommu bind/unbind
-> > ---
-> >  tools/testing/selftests/vfio/Makefile         |   1 +
-> >  .../lib/include/libvfio/vfio_pci_device.h     |  16 +
-> >  .../selftests/vfio/lib/vfio_pci_device.c      |   5 +-
-> >  .../vfio/vfio_iommufd_noiommu_test.c          | 664
-> > ++++++++++++++++++ 4 files changed, 684 insertions(+), 2
-> > deletions(-) create mode 100644
-> > tools/testing/selftests/vfio/vfio_iommufd_noiommu_test.c
-> >=20
-> > diff --git a/tools/testing/selftests/vfio/Makefile
-> > b/tools/testing/selftests/vfio/Makefile index
-> > 0684932d91bf..c9c02fdfd946 100644 ---
-> > a/tools/testing/selftests/vfio/Makefile +++
-> > b/tools/testing/selftests/vfio/Makefile @@ -9,6 +9,7 @@ CFLAGS =3D
-> > $(KHDR_INCLUDES) TEST_GEN_PROGS +=3D vfio_dma_mapping_test
-> >  TEST_GEN_PROGS +=3D vfio_dma_mapping_mmio_test
-> >  TEST_GEN_PROGS +=3D vfio_iommufd_setup_test
-> > +TEST_GEN_PROGS +=3D vfio_iommufd_noiommu_test
-> >  TEST_GEN_PROGS +=3D vfio_pci_device_test
-> >  TEST_GEN_PROGS +=3D vfio_pci_device_init_perf_test
-> >  TEST_GEN_PROGS +=3D vfio_pci_driver_test
-> > diff --git
-> > a/tools/testing/selftests/vfio/lib/include/libvfio/vfio_pci_device.h
-> > b/tools/testing/selftests/vfio/lib/include/libvfio/vfio_pci_device.h
-> > index 2858885a89bb..6218c91776b3 100644 ---
-> > a/tools/testing/selftests/vfio/lib/include/libvfio/vfio_pci_device.h
-> > +++
-> > b/tools/testing/selftests/vfio/lib/include/libvfio/vfio_pci_device.h
-> > @@ -122,4 +122,20 @@ static inline bool
-> > vfio_pci_device_match(struct vfio_pci_device *device, const char
-> > *vfio_pci_get_cdev_path(const char *bdf); +static inline bool
-> > vfio_pci_noiommu_mode_enabled(void) +{
-> > +	char buf[8] =3D {};
-> > +	int fd, n;
-> > +
-> > +	fd =3D
-> > open("/sys/module/vfio/parameters/enable_unsafe_noiommu_mode",
-> > +		  O_RDONLY); =20
->=20
-> Can you rebase on top of the latest changes Alex merged for 7.2? It
-> introduces the sysfs library from Raghu. Please add a helper there for
-> reading module parameters in a precursor patch.
->=20
-ok, or if the timing is better, I will wait for 7.2 then submit this
-selftest separately?
+Good point. I'll clean this up and send out new version.
 
-> > +	if (fd < 0)
-> > +		return false;
-> > +
-> > +	n =3D read(fd, buf, sizeof(buf) - 1);
-> > +	close(fd);
-> > +
-> > +	return n > 0 && buf[0] =3D=3D 'Y';
-> > +}
-> > +
-> >  #endif /* SELFTESTS_VFIO_LIB_INCLUDE_LIBVFIO_VFIO_PCI_DEVICE_H */
-> > diff --git a/tools/testing/selftests/vfio/lib/vfio_pci_device.c
-> > b/tools/testing/selftests/vfio/lib/vfio_pci_device.c index
-> > fc75e04ef010..1a91658e812d 100644 ---
-> > a/tools/testing/selftests/vfio/lib/vfio_pci_device.c +++
-> > b/tools/testing/selftests/vfio/lib/vfio_pci_device.c @@ -308,8
-> > +308,9 @@ const char *vfio_pci_get_cdev_path(const char *bdf)
-> > VFIO_ASSERT_NOT_NULL(dir, "Failed to open directory %s\n",
-> > dir_path); while ((entry =3D readdir(dir)) !=3D NULL) {
-> > -		/* Find the file that starts with "vfio" */
-> > -		if (strncmp("vfio", entry->d_name, 4))
-> > +		/* Find the file that starts with "vfio" or
-> > "noiommu-vfio" */
-> > +		if (strncmp("vfio", entry->d_name, 4) &&
-> > +		    strncmp("noiommu-vfio", entry->d_name, 12))
-> >  			continue;
-> > =20
-> >  		snprintf(cdev_path, PATH_MAX,
-> > "/dev/vfio/devices/%s", entry->d_name); diff --git
-> > a/tools/testing/selftests/vfio/vfio_iommufd_noiommu_test.c
-> > b/tools/testing/selftests/vfio/vfio_iommufd_noiommu_test.c new file
-> > mode 100644 index 000000000000..d91b505fc60d --- /dev/null
-> > +++ b/tools/testing/selftests/vfio/vfio_iommufd_noiommu_test.c
-> > @@ -0,0 +1,664 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * VFIO iommufd NoIOMMU Mode Selftest
-> > + *
-> > + * Tests VFIO device operations with iommufd in noiommu mode,
-> > including:
-> > + * - Device binding to iommufd
-> > + * - IOAS (I/O Address Space) allocation and management
-> > + * - Device attach/detach to IOAS
-> > + * - Memory mapping in IOAS
-> > + * - Device info queries and reset
-> > + */
-> > +
-> > +#include <linux/limits.h>
-> > +#include <linux/vfio.h>
-> > +#include <linux/iommufd.h>
-> > +
-> > +#include <stdint.h>
-> > +#include <stdio.h>
-> > +#include <stdlib.h>
-> > +#include <string.h>
-> > +#include <dirent.h>
-> > +#include <sys/ioctl.h>
-> > +#include <sys/mman.h>
-> > +#include <unistd.h>
-> > +#include <errno.h>
-> > +
-> > +#include <libvfio.h>
-> > +#include "kselftest_harness.h"
-> > +
-> > +static const char iommu_dev_path[] =3D "/dev/iommu"; =20
->=20
-> I don't see why this needs to be global variables.
->=20
-> > +static const char *cdev_path;
-> > +
-> > +static char *vfio_noiommu_get_device_id(const char *bdf)
-> > +{
-> > +	char *path =3D NULL;
-> > +	char *vfio_id =3D NULL;
-> > +	struct dirent *dentry;
-> > +	DIR *dp;
-> > +
-> > +	if (asprintf(&path, "/sys/bus/pci/devices/%s/vfio-dev",
-> > bdf) < 0)
-> > +		return NULL;
-> > +
-> > +	dp =3D opendir(path);
-> > +	if (!dp) {
-> > +		free(path);
-> > +		return NULL;
-> > +	}
-> > +
-> > +	while ((dentry =3D readdir(dp)) !=3D NULL) {
-> > +		if (strncmp("noiommu-vfio", dentry->d_name, 12) =3D=3D
-> > 0) {
-> > +			vfio_id =3D strdup(dentry->d_name);
-> > +			break;
-> > +		}
-> > +	}
-> > +
-> > +	closedir(dp);
-> > +	free(path);
-> > +	return vfio_id;
-> > +}
-> > +
-> > +static char *vfio_noiommu_get_cdev_path(const char *bdf)
-> > +{
-> > +	char *vfio_id =3D vfio_noiommu_get_device_id(bdf);
-> > +	char *cdev =3D NULL;
-> > +
-> > +	if (vfio_id) {
-> > +		asprintf(&cdev, "/dev/vfio/devices/%s", vfio_id);
-> > +		free(vfio_id);
-> > +	}
-> > +	return cdev;
-> > +} =20
->=20
-> Can we put this in the library and find a way to share code with
-> vfio_pci_get_cdev_path()?
->=20
-I will delete/merge this, vfio_pci_get_cdev_path will scan
-/sys/bus/pci/devices/<bdf>/vfio-dev/ and accepts both vfio* and
-noiommu-vfio*, then returns /dev/vfio/devices/<name>.
-
-> > +
-> > +static int vfio_device_bind_iommufd_ioctl(int cdev_fd, int iommufd)
-> > +{
-> > +	struct vfio_device_bind_iommufd bind_args =3D {
-> > +		.argsz =3D sizeof(bind_args),
-> > +		.iommufd =3D iommufd,
-> > +	};
-> > +
-> > +	return ioctl(cdev_fd, VFIO_DEVICE_BIND_IOMMUFD,
-> > &bind_args); +} =20
->=20
-> Please add the ioctl wrappers to the library so they can be used by
-> other tests or library code in the future.
->=20
-> VFIO device ioctls can go in vfio_pci_device.c and iommufd ioctls can
-> go in iommu.c.
->=20
-ok, will do.
-
-> > +
-> > +static int vfio_device_get_info_ioctl(int cdev_fd,
-> > +				      struct vfio_device_info
-> > *info) +{
-> > +	info->argsz =3D sizeof(*info);
-> > +	return ioctl(cdev_fd, VFIO_DEVICE_GET_INFO, info);
-> > +}
-> > +
-> > +static int vfio_device_ioas_alloc_ioctl(int iommufd,
-> > +					struct iommu_ioas_alloc
-> > *alloc_args) +{
-> > +	alloc_args->size =3D sizeof(*alloc_args);
-> > +	alloc_args->flags =3D 0;
-> > +	return ioctl(iommufd, IOMMU_IOAS_ALLOC, alloc_args);
-> > +}
-> > +
-> > +static int vfio_device_attach_iommufd_pt_ioctl(int cdev_fd, u32
-> > pt_id) +{
-> > +	struct vfio_device_attach_iommufd_pt attach_args =3D {
-> > +		.argsz =3D sizeof(attach_args),
-> > +		.pt_id =3D pt_id,
-> > +	};
-> > +
-> > +	return ioctl(cdev_fd, VFIO_DEVICE_ATTACH_IOMMUFD_PT,
-> > &attach_args); +}
-> > +
-> > +static int vfio_device_detach_iommufd_pt_ioctl(int cdev_fd)
-> > +{
-> > +	struct vfio_device_detach_iommufd_pt detach_args =3D {
-> > +		.argsz =3D sizeof(detach_args),
-> > +	};
-> > +
-> > +	return ioctl(cdev_fd, VFIO_DEVICE_DETACH_IOMMUFD_PT,
-> > &detach_args); +}
-> > +
-> > +static int vfio_device_get_region_info_ioctl(int cdev_fd, uint32_t
-> > index,
-> > +					     struct
-> > vfio_region_info *info) +{
-> > +	info->argsz =3D sizeof(*info);
-> > +	info->index =3D index;
-> > +	return ioctl(cdev_fd, VFIO_DEVICE_GET_REGION_INFO, info);
-> > +}
-> > +
-> > +static int vfio_device_reset_ioctl(int cdev_fd)
-> > +{
-> > +	return ioctl(cdev_fd, VFIO_DEVICE_RESET);
-> > +}
-> > +
-> > +static int ioas_map_pages(int iommufd, uint32_t ioas_id, uint64_t
-> > iova,
-> > +			  size_t length, bool hugepages)
-> > +{
-> > +	struct iommu_ioas_map map_args =3D {
-> > +		.size =3D sizeof(map_args),
-> > +		.ioas_id =3D ioas_id,
-> > +		.iova =3D iova,
-> > +		.length =3D length,
-> > +		.flags =3D IOMMU_IOAS_MAP_READABLE |
-> > IOMMU_IOAS_MAP_WRITEABLE | IOMMU_IOAS_MAP_FIXED_IOVA,
-> > +	};
-> > +	void *pages;
-> > +	int ret;
-> > +
-> > +	/* Allocate test pages */
-> > +	if (hugepages)
-> > +		pages =3D mmap(NULL, length, PROT_READ | PROT_WRITE,
-> > +			     MAP_PRIVATE | MAP_ANONYMOUS |
-> > MAP_HUGETLB, -1, 0);
-> > +	else
-> > +		pages =3D mmap(NULL, length, PROT_READ | PROT_WRITE,
-> > +			     MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-> > +	if (pages =3D=3D MAP_FAILED) {
-> > +		printf("mmap failed for length 0x%lx\n", (unsigned
-> > long)length);
-> > +		return -ENOMEM;
-> > +	}
-> > +
-> > +	/* Set up page pointer for mapping */
-> > +	map_args.user_va =3D (uintptr_t)pages;
-> > +
-> > +	printf("  ioas_map_pages: ioas_id=3D%u, iova=3D0x%lx,
-> > length=3D0x%lx, user_va=3D%p\n",
-> > +	       ioas_id, (unsigned long)iova, (unsigned
-> > long)length, pages); +
-> > +	/* Map into IOAS */
-> > +	ret =3D ioctl(iommufd, IOMMU_IOAS_MAP, &map_args);
-> > +	if (ret !=3D 0)
-> > +		printf("  IOMMU_IOAS_MAP failed: %d (%s)\n", ret,
-> > strerror(errno));
-> > +	else
-> > +		printf("  IOMMU_IOAS_MAP succeeded, IOVA=3D0x%lx\n",
-> > (unsigned long)map_args.iova); +
-> > +	munmap(pages, length);
-> > +	return ret;
-> > +}
-> > +
-> > +static int ioas_unmap_pages(int iommufd, uint32_t ioas_id,
-> > uint64_t iova,
-> > +			    size_t length)
-> > +{
-> > +	struct iommu_ioas_unmap unmap_args =3D {
-> > +		.size =3D sizeof(unmap_args),
-> > +		.ioas_id =3D ioas_id,
-> > +		.iova =3D iova,
-> > +		.length =3D length,
-> > +	};
-> > +
-> > +	return ioctl(iommufd, IOMMU_IOAS_UNMAP, &unmap_args);
-> > +}
-> > +
-> > +static int ioas_destroy_ioctl(int iommufd, uint32_t ioas_id)
-> > +{
-> > +	struct iommu_destroy destroy_args =3D {
-> > +		.size =3D sizeof(destroy_args),
-> > +		.id =3D ioas_id,
-> > +	};
-> > +
-> > +	return ioctl(iommufd, IOMMU_DESTROY, &destroy_args);
-> > +}
-> > +
-> > +static int ioas_noiommu_get_pa_ioctl_len(int iommufd, uint32_t
-> > ioas_id,
-> > +			     uint64_t iova, uint64_t max_length,
-> > +			     uint64_t *phys_out, uint64_t
-> > *length_out) +{
-> > +	struct iommu_ioas_noiommu_get_pa get_pa =3D {
-> > +		.size =3D sizeof(get_pa),
-> > +		.flags =3D 0,
-> > +		.ioas_id =3D ioas_id,
-> > +		.iova =3D iova,
-> > +		.length =3D max_length,
-> > +	};
-> > +
-> > +	printf("  ioas_noiommu_get_pa_ioctl: ioas_id=3D%u,
-> > iova=3D0x%lx, max_length=3D0x%lx\n",
-> > +	       ioas_id, (unsigned long)iova, (unsigned
-> > long)max_length); +
-> > +	if (ioctl(iommufd, IOMMU_IOAS_NOIOMMU_GET_PA, &get_pa) !=3D
-> > 0) {
-> > +		printf("  IOMMU_IOAS_NOIOMMU_GET_PA failed: %s
-> > (errno=3D%d)\n",
-> > +		       strerror(errno), errno);
-> > +		return -1;
-> > +	}
-> > +
-> > +	printf("  IOMMU_IOAS_NOIOMMU_GET_PA succeeded: PA=3D0x%lx,
-> > length=3D0x%lx\n",
-> > +	       (unsigned long)get_pa.out_phys, (unsigned
-> > long)get_pa.length); +
-> > +	if (phys_out)
-> > +		*phys_out =3D get_pa.out_phys;
-> > +	if (length_out)
-> > +		*length_out =3D get_pa.length;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int ioas_noiommu_get_pa_ioctl(int iommufd, uint32_t
-> > ioas_id, uint64_t iova,
-> > +			     uint64_t *phys_out, uint64_t
-> > *length_out) +{
-> > +	return ioas_noiommu_get_pa_ioctl_len(iommufd, ioas_id,
-> > iova, 0,
-> > +					     phys_out, length_out);
-> > +}
-> > +
-> > +FIXTURE(vfio_noiommu) {
-> > +	int cdev_fd;
-> > +	int iommufd;
-> > +};
-> > +
-> > +FIXTURE_SETUP(vfio_noiommu)
-> > +{
-> > +	ASSERT_LE(0, (self->cdev_fd =3D open(cdev_path, O_RDWR, 0)));
-> > +	ASSERT_LE(0, (self->iommufd =3D open(iommu_dev_path, O_RDWR,
-> > 0))); +}
-> > +
-> > +FIXTURE_TEARDOWN(vfio_noiommu)
-> > +{
-> > +	if (self->cdev_fd >=3D 0)
-> > +		close(self->cdev_fd);
-> > +	if (self->iommufd >=3D 0)
-> > +		close(self->iommufd);
-> > +}
-> > +
-> > +/*
-> > + * Test: Device cdev can be opened
-> > + */
-> > +TEST_F(vfio_noiommu, device_cdev_open)
-> > +{
-> > +	ASSERT_LE(0, self->cdev_fd);
-> > +} =20
->=20
-> This is already tested by the FIXTURE_SETUP(). No need for a TEST_F().
->=20
-will remove
-
-> > +
-> > +/*
-> > + * Test: Device can be bound to iommufd
-> > + */
-> > +TEST_F(vfio_noiommu, device_bind_iommufd)
-> > +{
-> > +	ASSERT_EQ(0, vfio_device_bind_iommufd_ioctl(self->cdev_fd,
-> > +
-> > self->iommufd)); +}
-> > +
-> > +/*
-> > + * Test: Device info can be queried after binding
-> > + */
-> > +TEST_F(vfio_noiommu, device_get_info_after_bind)
-> > +{
-> > +	struct vfio_device_info info;
-> > +
-> > +	ASSERT_EQ(0, vfio_device_bind_iommufd_ioctl(self->cdev_fd,
-> > +
-> > self->iommufd));
-> > +	ASSERT_EQ(0, vfio_device_get_info_ioctl(self->cdev_fd,
-> > &info));
-> > +	ASSERT_NE(0, info.argsz);
-> > +}
-> > +
-> > +/*
-> > + * Test: Getting device info fails without bind
-> > + */
-> > +TEST_F(vfio_noiommu, device_get_info_without_bind_fails)
-> > +{
-> > +	struct vfio_device_info info;
-> > +
-> > +	ASSERT_NE(0, vfio_device_get_info_ioctl(self->cdev_fd,
-> > &info)); +}
-> > +
-> > +/*
-> > + * Test: Binding with invalid iommufd fails
-> > + */
-> > +TEST_F(vfio_noiommu, device_bind_bad_iommufd_fails)
-> > +{
-> > +	ASSERT_NE(0, vfio_device_bind_iommufd_ioctl(self->cdev_fd,
-> > -2)); +} =20
->=20
-> Are all these tests really specific to noiommu?
->=20
-no, will remove this and other duplicated tests.
-
-> > +
-> > +/*
-> > + * Test: Cannot bind twice to same device
-> > + */
-> > +TEST_F(vfio_noiommu, device_repeated_bind_fails)
-> > +{
-> > +	ASSERT_EQ(0, vfio_device_bind_iommufd_ioctl(self->cdev_fd,
-> > +
-> > self->iommufd));
-> > +	ASSERT_NE(0, vfio_device_bind_iommufd_ioctl(self->cdev_fd,
-> > +
-> > self->iommufd)); +}
-> > +
-> > +/*
-> > + * Test: IOAS can be allocated
-> > + */
-> > +TEST_F(vfio_noiommu, ioas_alloc)
-> > +{
-> > +	struct iommu_ioas_alloc alloc_args;
-> > +
-> > +	ASSERT_EQ(0, vfio_device_ioas_alloc_ioctl(self->iommufd,
-> > +						  &alloc_args));
-> > +	ASSERT_NE(0, alloc_args.out_ioas_id);
-> > +}
-> > +
-> > +/*
-> > + * Test: IOAS can be destroyed
-> > + */
-> > +TEST_F(vfio_noiommu, ioas_destroy)
-> > +{
-> > +	struct iommu_ioas_alloc alloc_args;
-> > +
-> > +	ASSERT_EQ(0, vfio_device_ioas_alloc_ioctl(self->iommufd,
-> > +						  &alloc_args));
-> > +	ASSERT_EQ(0, ioas_destroy_ioctl(self->iommufd,
-> > +					alloc_args.out_ioas_id));
-> > +}
-> > +
-> > +/*
-> > + * Test: Device can attach to IOAS after binding
-> > + */
-> > +TEST_F(vfio_noiommu, device_attach_to_ioas)
-> > +{
-> > +	struct iommu_ioas_alloc alloc_args;
-> > +
-> > +	ASSERT_EQ(0, vfio_device_bind_iommufd_ioctl(self->cdev_fd,
-> > +
-> > self->iommufd));
-> > +	ASSERT_EQ(0, vfio_device_ioas_alloc_ioctl(self->iommufd,
-> > +						  &alloc_args));
-> > +	ASSERT_EQ(0,
-> > vfio_device_attach_iommufd_pt_ioctl(self->cdev_fd,
-> > +
-> > alloc_args.out_ioas_id)); +}
-> > +
-> > +/*
-> > + * Test: Attaching to invalid IOAS fails
-> > + */
-> > +TEST_F(vfio_noiommu, device_attach_invalid_ioas_fails)
-> > +{
-> > +	ASSERT_EQ(0, vfio_device_bind_iommufd_ioctl(self->cdev_fd,
-> > +
-> > self->iommufd));
-> > +	ASSERT_NE(0,
-> > vfio_device_attach_iommufd_pt_ioctl(self->cdev_fd,
-> > +
-> > UINT32_MAX)); +}
-> > +
-> > +/*
-> > + * Test: Device can detach from IOAS
-> > + */
-> > +TEST_F(vfio_noiommu, device_detach_from_ioas)
-> > +{
-> > +	struct iommu_ioas_alloc alloc_args;
-> > +
-> > +	ASSERT_EQ(0, vfio_device_bind_iommufd_ioctl(self->cdev_fd,
-> > +
-> > self->iommufd));
-> > +	ASSERT_EQ(0, vfio_device_ioas_alloc_ioctl(self->iommufd,
-> > +						  &alloc_args));
-> > +	ASSERT_EQ(0,
-> > vfio_device_attach_iommufd_pt_ioctl(self->cdev_fd,
-> > +
-> > alloc_args.out_ioas_id));
-> > +	ASSERT_EQ(0,
-> > vfio_device_detach_iommufd_pt_ioctl(self->cdev_fd)); +}
-> > +
-> > +/*
-> > + * Test: Full lifecycle - bind, attach, detach, reset
-> > + */
-> > +TEST_F(vfio_noiommu, device_lifecycle)
-> > +{
-> > +	struct iommu_ioas_alloc alloc_args;
-> > +	struct vfio_device_info info;
-> > +
-> > +	/* Bind device to iommufd */
-> > +	ASSERT_EQ(0, vfio_device_bind_iommufd_ioctl(self->cdev_fd,
-> > +
-> > self->iommufd)); +
-> > +	/* Allocate IOAS */
-> > +	ASSERT_EQ(0, vfio_device_ioas_alloc_ioctl(self->iommufd,
-> > +						  &alloc_args));
-> > +
-> > +	/* Attach device to IOAS */
-> > +	ASSERT_EQ(0,
-> > vfio_device_attach_iommufd_pt_ioctl(self->cdev_fd,
-> > +
-> > alloc_args.out_ioas_id)); +
-> > +	/* Query device info */
-> > +	ASSERT_EQ(0, vfio_device_get_info_ioctl(self->cdev_fd,
-> > &info)); +
-> > +	/* Detach device from IOAS */
-> > +	ASSERT_EQ(0,
-> > vfio_device_detach_iommufd_pt_ioctl(self->cdev_fd)); +
-> > +	/* Reset device */
-> > +	ASSERT_EQ(0, vfio_device_reset_ioctl(self->cdev_fd));
-> > +}
-> > +
-> > +/*
-> > + * Test: Get region info
-> > + */
-> > +TEST_F(vfio_noiommu, device_get_region_info)
-> > +{
-> > +	struct vfio_device_info dev_info;
-> > +	struct vfio_region_info region_info;
-> > +
-> > +	ASSERT_EQ(0, vfio_device_bind_iommufd_ioctl(self->cdev_fd,
-> > +
-> > self->iommufd));
-> > +	ASSERT_EQ(0, vfio_device_get_info_ioctl(self->cdev_fd,
-> > &dev_info)); +
-> > +	/* Try to get first region info if device has regions */
-> > +	if (dev_info.num_regions > 0) {
-> > +		ASSERT_EQ(0,
-> > vfio_device_get_region_info_ioctl(self->cdev_fd, 0,
-> > +
-> > &region_info));
-> > +		ASSERT_NE(0, region_info.argsz);
-> > +	}
-> > +}
-> > +
-> > +TEST_F(vfio_noiommu, device_reset)
-> > +{
-> > +	ASSERT_EQ(0, vfio_device_bind_iommufd_ioctl(self->cdev_fd,
-> > +
-> > self->iommufd));
-> > +	ASSERT_EQ(0, vfio_device_reset_ioctl(self->cdev_fd));
-> > +}
-> > +
-> > +TEST_F(vfio_noiommu, ioas_map_pages)
-> > +{
-> > +	struct iommu_ioas_alloc alloc_args;
-> > +	long page_size =3D sysconf(_SC_PAGESIZE);
-> > +	uint64_t iova =3D 0x10000;
-> > +	int i;
-> > +
-> > +	ASSERT_GT(page_size, 0);
-> > +
-> > +	ASSERT_EQ(0, vfio_device_ioas_alloc_ioctl(self->iommufd,
-> > +						  &alloc_args));
-> > +
-> > +	printf("Page size: %ld bytes\n", page_size);
-> > +	/* Test mapping regions of different sizes: 1, 2, 4, 8
-> > pages */
-> > +	for (i =3D 0; i < 4; i++) {
-> > +		size_t map_size =3D page_size * (1 << i);  /* 1, 2,
-> > 4, 8 pages */
-> > +		uint64_t test_iova =3D iova + (i * 0x100000);
-> > +
-> > +		/* Attempt to map each region (may fail if not
-> > supported) */
-> > +		ioas_map_pages(self->iommufd,
-> > alloc_args.out_ioas_id,
-> > +			       test_iova, map_size, false);
-> > +	}
-> > +}
-> > +
-> > +TEST_F(vfio_noiommu, multiple_ioas_alloc)
-> > +{
-> > +	struct iommu_ioas_alloc alloc1, alloc2;
-> > +
-> > +	ASSERT_EQ(0, vfio_device_ioas_alloc_ioctl(self->iommufd,
-> > &alloc1));
-> > +	ASSERT_EQ(0, vfio_device_ioas_alloc_ioctl(self->iommufd,
-> > &alloc2));
-> > +	ASSERT_NE(alloc1.out_ioas_id, alloc2.out_ioas_id);
-> > +}
-> > +
-> > +/*
-> > + * Test: Query physical address for IOVA
-> > + * Tests IOMMU_IOAS_NOIOMMU_GET_PA ioctl to translate IOVA to
-> > physical address
-> > + * Note: Device must be attached to IOAS for PA query to work
-> > + */
-> > +#define NR_PAGES 32
-> > +TEST_F(vfio_noiommu, ioas_noiommu_get_pa_mapped)
-> > +{
-> > +	struct iommu_ioas_alloc alloc_args;
-> > +	long page_size =3D sysconf(_SC_PAGESIZE);
-> > +	uint64_t iova =3D 0x200000;
-> > +	uint64_t phys =3D 0;
-> > +	uint64_t length =3D 0;
-> > +	int ret;
-> > +
-> > +	ASSERT_GT(page_size, 0);
-> > +
-> > +	ASSERT_EQ(0, vfio_device_bind_iommufd_ioctl(self->cdev_fd,
-> > +
-> > self->iommufd)); +
-> > +	ASSERT_EQ(0, vfio_device_ioas_alloc_ioctl(self->iommufd,
-> > +						  &alloc_args));
-> > +
-> > +	ASSERT_EQ(0,
-> > vfio_device_attach_iommufd_pt_ioctl(self->cdev_fd,
-> > +
-> > alloc_args.out_ioas_id)); +
-> > +	/*
-> > +	 * Map a page into an arbitrary IOAS, used as a cookie for
-> > lookup.
-> > +	 * Use hugepages to test contiguous PA. Make sure
-> > hugepages are
-> > +	 * available. e.g.  echo 64 > /proc/sys/vm/nr_hugepages
-> > +	 */
-> > +	ret =3D ioas_map_pages(self->iommufd, alloc_args.out_ioas_id,
-> > +			     iova, page_size * NR_PAGES, true);
-> > +	if (ret !=3D 0)
-> > +		return;
-> > +
-> > +	/* Query the physical address for the mapped dummy IOVA */
-> > +	ret =3D ioas_noiommu_get_pa_ioctl(self->iommufd,
-> > alloc_args.out_ioas_id,
-> > +			       iova, &phys, &length);
-> > +
-> > +	if (ret =3D=3D 0) {
-> > +		/* If we got a result, verify it's valid */
-> > +		ASSERT_NE(0, phys);
-> > +		ASSERT_GE((uint64_t)page_size * NR_PAGES, length);
-> > +	}
-> > +
-> > +	/*
-> > +	 * Query with a non-page-aligned IOVA. The returned length
-> > must
-> > +	 * not exceed the actual contiguous range starting from
-> > that
-> > +	 * offset, i.e. it must be reduced by the sub-page offset.
-> > +	 */
-> > +	phys =3D 0;
-> > +	length =3D 0;
-> > +	ret =3D ioas_noiommu_get_pa_ioctl(self->iommufd,
-> > alloc_args.out_ioas_id,
-> > +				iova + 0x80, &phys, &length);
-> > +	if (ret =3D=3D 0) {
-> > +		ASSERT_NE(0, phys);
-> > +		/* Length must account for the sub-page offset */
-> > +		ASSERT_GE((uint64_t)page_size * NR_PAGES - 0x80,
-> > length);
-> > +		ASSERT_LE(length, (uint64_t)page_size * NR_PAGES -
-> > 0x80);
-> > +		/* Must not overshoot into the next page boundary
-> > */
-> > +		ASSERT_EQ(0, (phys + length) % page_size);
-> > +	}
-> > +}
-> > +
-> > +TEST_F(vfio_noiommu, ioas_noiommu_get_pa_unmapped_fails)
-> > +{
-> > +	struct iommu_ioas_alloc alloc_args;
-> > +
-> > +	ASSERT_EQ(0, vfio_device_ioas_alloc_ioctl(self->iommufd,
-> > +						  &alloc_args));
-> > +
-> > +	/* Try to retrieve unmapped IOVA (should fail) */
-> > +	ASSERT_NE(0, ioas_noiommu_get_pa_ioctl(self->iommufd,
-> > alloc_args.out_ioas_id,
-> > +				       0x10000, NULL, NULL));
-> > +}
-> > +
-> > +/*
-> > + * Test: length =3D=3D 0 means no limit (backward compat default)
-> > + */
-> > +TEST_F(vfio_noiommu, ioas_noiommu_get_pa_length_zero_no_limit)
-> > +{
-> > +	struct iommu_ioas_alloc alloc_args;
-> > +	long page_size =3D sysconf(_SC_PAGESIZE);
-> > +	uint64_t iova =3D 0x200000;
-> > +	uint64_t phys_nolimit =3D 0, phys_zero =3D 0;
-> > +	uint64_t len_nolimit =3D 0, len_zero =3D 0;
-> > +	int ret;
-> > +
-> > +	ASSERT_GT(page_size, 0);
-> > +
-> > +	ASSERT_EQ(0, vfio_device_bind_iommufd_ioctl(self->cdev_fd,
-> > +
-> > self->iommufd));
-> > +	ASSERT_EQ(0, vfio_device_ioas_alloc_ioctl(self->iommufd,
-> > &alloc_args));
-> > +	ASSERT_EQ(0,
-> > vfio_device_attach_iommufd_pt_ioctl(self->cdev_fd,
-> > +
-> > alloc_args.out_ioas_id)); +
-> > +	ret =3D ioas_map_pages(self->iommufd, alloc_args.out_ioas_id,
-> > +			     iova, page_size * NR_PAGES, true);
-> > +	if (ret !=3D 0)
-> > +		return;
-> > +
-> > +	/* Query with length=3D0 (no limit, default behavior) */
-> > +	ret =3D ioas_noiommu_get_pa_ioctl_len(self->iommufd,
-> > alloc_args.out_ioas_id,
-> > +					    iova, 0, &phys_zero,
-> > &len_zero);
-> > +	if (ret !=3D 0)
-> > +		return;
-> > +
-> > +	/* Query with the wrapper (also passes 0) =E2=80=94 must match */
-> > +	ret =3D ioas_noiommu_get_pa_ioctl(self->iommufd,
-> > alloc_args.out_ioas_id,
-> > +					iova, &phys_nolimit,
-> > &len_nolimit);
-> > +	ASSERT_EQ(0, ret);
-> > +	ASSERT_EQ(phys_zero, phys_nolimit);
-> > +	ASSERT_EQ(len_zero, len_nolimit);
-> > +}
-> > +
-> > +/*
-> > + * Test: length caps the returned contiguous range
-> > + */
-> > +TEST_F(vfio_noiommu, ioas_noiommu_get_pa_length_capped)
-> > +{
-> > +	struct iommu_ioas_alloc alloc_args;
-> > +	long page_size =3D sysconf(_SC_PAGESIZE);
-> > +	uint64_t iova =3D 0x200000;
-> > +	uint64_t phys =3D 0;
-> > +	uint64_t len_full =3D 0, len_capped =3D 0;
-> > +	uint64_t cap;
-> > +	int ret;
-> > +
-> > +	ASSERT_GT(page_size, 0);
-> > +
-> > +	ASSERT_EQ(0, vfio_device_bind_iommufd_ioctl(self->cdev_fd,
-> > +
-> > self->iommufd));
-> > +	ASSERT_EQ(0, vfio_device_ioas_alloc_ioctl(self->iommufd,
-> > &alloc_args));
-> > +	ASSERT_EQ(0,
-> > vfio_device_attach_iommufd_pt_ioctl(self->cdev_fd,
-> > +
-> > alloc_args.out_ioas_id)); +
-> > +	ret =3D ioas_map_pages(self->iommufd, alloc_args.out_ioas_id,
-> > +			     iova, page_size * NR_PAGES, true);
-> > +	if (ret !=3D 0)
-> > +		return;
-> > +
-> > +	/* First get the full uncapped length */
-> > +	ret =3D ioas_noiommu_get_pa_ioctl(self->iommufd,
-> > alloc_args.out_ioas_id,
-> > +					iova, &phys, &len_full);
-> > +	if (ret !=3D 0)
-> > +		return;
-> > +
-> > +	ASSERT_NE(0, phys);
-> > +	ASSERT_NE(0, len_full);
-> > +
-> > +	/* Cap to a single page =E2=80=94 returned length must not exceed
-> > it */
-> > +	cap =3D page_size;
-> > +	ret =3D ioas_noiommu_get_pa_ioctl_len(self->iommufd,
-> > alloc_args.out_ioas_id,
-> > +					    iova, cap, &phys,
-> > &len_capped);
-> > +	ASSERT_EQ(0, ret);
-> > +	ASSERT_LE(len_capped, cap);
-> > +	ASSERT_NE(0, len_capped);
-> > +
-> > +	/*
-> > +	 * If full length was larger than one page, confirm
-> > capping works.
-> > +	 * Otherwise the mapping wasn't contiguous enough to test.
-> > +	 */
-> > +	if (len_full > cap)
-> > +		ASSERT_GT(len_full, len_capped);
-> > +
-> > +	/* Cap to a very large value =E2=80=94 should return the same as
-> > uncapped */
-> > +	ret =3D ioas_noiommu_get_pa_ioctl_len(self->iommufd,
-> > alloc_args.out_ioas_id,
-> > +					    iova, UINT64_MAX,
-> > &phys, &len_capped);
-> > +	ASSERT_EQ(0, ret);
-> > +	ASSERT_EQ(len_full, len_capped);
-> > +}
-> > +
-> > +int main(int argc, char *argv[])
-> > +{
-> > +	const char *device_bdf =3D vfio_selftests_get_bdf(&argc,
-> > argv);
-> > +	char *cdev =3D NULL;
-> > +
-> > +	if (!device_bdf) {
-> > +		ksft_print_msg("No device BDF provided\n");
-> > +		return KSFT_SKIP;
-> > +	} =20
->=20
-> vfio_selftests_get_bdf() already handles exiting with KSFT_SKIP if it
-> can't find a BDF.
->=20
-will remove.
-
-> > +
-> > +	cdev =3D vfio_noiommu_get_cdev_path(device_bdf);
-> > +	if (!cdev) {
-> > +		ksft_print_msg("Could not find cdev for device
-> > %s\n",
-> > +			       device_bdf); =20
->=20
-> nit: "Could not find niommu cdev for ..."
->=20
-not needed as no-IOMMU-specific helper will be removed :)
-
-> > +		return KSFT_SKIP;
-> > +	}
-> > +
-> > +	cdev_path =3D cdev;
-> > +	ksft_print_msg("Using cdev device %s for BDF %s\n",
-> > cdev_path,
-> > +		       device_bdf);
-> > +
-> > +	return test_harness_run(argc, argv);
-> > +}
-> > --=20
-> > 2.43.0
-> >  =20
-
+Thanks,
+Suravee
