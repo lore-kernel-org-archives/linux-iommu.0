@@ -1,62 +1,62 @@
-Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52])
+Received: from mail-pj1-f43.google.com (mail-pj1-f43.google.com [209.85.216.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DFE633E374
-	for <iommu@lists.linux.dev>; Thu,  4 Jun 2026 05:18:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 661773BB669
+	for <iommu@lists.linux.dev>; Thu,  4 Jun 2026 05:18:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780550303; cv=none; b=Kv6rx9fSsC0pwfKiefn18KJQp0EOF/nYxFYMi9jSAhf2lEVTUQSTmwFqknq3xSWokUhVjuTdOmcrz7zItif8t7XaQ/UhWnRfwuq9knrMzgKcGThhrrv8/cuW1KuM0XTdfFv3P9zqxynY5j1vV232WUAbU/YXSAT9Ltk9m6rlkY8=
+	t=1780550306; cv=none; b=Pf0y1vIjXGDQJEvHgSqHUBJJnbMjaL0Ead3agIgo1AzZsmEyHR7g0TB8MqXNIuiAtcH0ooVrGZQjH/6ZiVPqnWqVqCQQqIHaPojuAWYxnpFafCfI9wL8TeLCX33dyMEiwx37qI82KYoZlTJWhKpTCnZgQrwXDPvvssTKMYogBD4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780550303; c=relaxed/simple;
-	bh=5zP8QkeIldQR8oeH0HhV4V/mXJJGJNin7wI2cdBzMBM=;
+	s=arc-20240116; t=1780550306; c=relaxed/simple;
+	bh=swCN0pyL9on2TRI3+1vBUIXQTmxVF54W3TG1qGC77p4=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=pQmb/3wHIPnMry/s5EC1mkeV0sNI0InwtXiikG2fqaLWGtqvcqac0Te8O0V2Edp06j6C0GsDHW35xplDlsrAbfR4SFq9u8oXJXCZwutaBT2zDqhvS1l+IU2qgNY8W/aFkCMSjm8Ool5AMleI5IQh+/YTJZ+1XH1vixv+zwfEQnY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qGd6tsXw; arc=none smtp.client-ip=209.85.216.52
+	 MIME-Version; b=ICE0yIrhEsVTCeEwsY455S70xz8rgCvr1LbeU3RVYZObNUkuwWV24vpwK37wmpB6hSqzNc+L3tUZqCAiIyUOKzY8ASWvac1e5NWgQavqt/AQgh/K1eNejg+brXYenzD6dPJE0BszCLzdXjZrakWb4KrzLuE89lQmmOM20++/9Cs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MgY8uctj; arc=none smtp.client-ip=209.85.216.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qGd6tsXw"
-Received: by mail-pj1-f52.google.com with SMTP id 98e67ed59e1d1-36b7b7b7a80so758097a91.1
-        for <iommu@lists.linux.dev>; Wed, 03 Jun 2026 22:18:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MgY8uctj"
+Received: by mail-pj1-f43.google.com with SMTP id 98e67ed59e1d1-36b95eb4bb4so164936a91.3
+        for <iommu@lists.linux.dev>; Wed, 03 Jun 2026 22:18:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780550302; x=1781155102; darn=lists.linux.dev;
+        d=gmail.com; s=20251104; t=1780550304; x=1781155104; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=RuBmEOIOOIyUhW5B0cAmum3h3GyphcqhgceqYCZrJ+8=;
-        b=qGd6tsXw48JQWsE8OI3QzbP5jiJTZmvxWMMTQn2qK7cdQRFahMAxsEXecIaj7IyaBb
-         TehCPFLLbX1yhXES3QuxrD1v7XZaD/2wDQeLL/OXI4wQyYhbSaFjvCzhe7yHJSoGKMjh
-         v2wMmbdH3q+N/J6TtDON4X5ik7RrDkS4Rpgkub4LJwfeyxgikE1z9KqEXoY5jtLqfqvU
-         xp66Vd2ddX3czITA3XwacOkgGsWFGWv9yRaZNqOEH4GaQ9/972lOXT9ZRx17nHRc8bgi
-         UROFZH0h2jbqkpaDLiJdC+PFesBXEyf/cURXRjnvlO+erUH7kiwMW6LkE/+RFwv65wgi
-         mFKg==
+        bh=VzXAoL8G5yh9nalpFe2jIG9YHdbmlWG6e7G4yOR+whk=;
+        b=MgY8uctjhAassXPP6Nx9YlNFa99f9+puFWISAgp1SJlf8zLhvTgecorz3FC44g66kr
+         HPxgTgnB1NI/c6GJpma9LU6R7pIqKiNriytaJ3uqn6hWSC0vn+dwu9vo2q2goGLOGisY
+         V0PCEaWDmYN9aqyr8vd8aP/dDlXNxeIy2FBegAyOv/baFY841621giumJcrffJbe18QR
+         84DtRvikDbaV9sXS4qmjsQ4Vw+e3CVpELooyXBdn6tryLrQGoIo5TtWgfk0H93pLqtP7
+         I4EkCtatMxWZB3G+wSx7xLyYMFsG+PnJ2IqMKHc9C+F6okm19g2CajuopoaOrssPS8X4
+         OMIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780550302; x=1781155102;
+        d=1e100.net; s=20251104; t=1780550304; x=1781155104;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=RuBmEOIOOIyUhW5B0cAmum3h3GyphcqhgceqYCZrJ+8=;
-        b=hmJs06YGD4SDLo/982TwkLk1ub1hCGuRtDzRpIoya/KgyO8GAwyeQl/+4pGTfIe3J5
-         KErenS6B6BVhHDXPzZKxc9BzvIcvUrKj7K19RPDQV0zNg/qA2bELofoV2WsksPG3Vph+
-         1EXtR95Ph0twzuHICpbudVRZYCDiZFnNVwJaRqnlPTEDqAYmhh+vvef7H0QTzRNGwlxl
-         THnIW4TvFBhcreRT6ZUeqazXXuAf4Ii91s8ZtqYj6iPja9yPR9xkQ7fxn+hRwQ1IvLVP
-         2poJKpi/esojpT5m1Gh5el3777+qUXemMvBqIqCn+kZF4AVnyKnVNjR2M1T0BzkWW2vq
-         0Oow==
-X-Gm-Message-State: AOJu0Yyg+2WFg3EyFmO1TAvKb93rLOqGMFFyITea5dd719b2ZCkzHCGg
-	SQPAEIRHLC5ZtXxTGcF3q4cgokrz+QhbBTtpaO+DCd3qpM7RP781GOOt
-X-Gm-Gg: Acq92OEObSlA5+RrHv/sxnYYrEo6ApNM9h6wFYfQFsFH8aFakzv1uluEKckYzwzR4SG
-	cUnB4S5mnU6RFRRvtFNTIwG39YIFBFBcYn4PzkjCmW4wSsTmVs0YnJDdZ/Cpw9Fe0ou5+6DdsCN
-	14u48abAPJyjQN9E5NClzHVkYXKsRXBfDd0MZszkJpn4wAdMsJjkKqv++RXyGfHuIaim7bRvnor
-	MABR6JJYUtcO2P2ntretPcOmDsLVJ+i3qyXlRTzpmzkr4VN4poiTrW28VUvON1DDqqtUV6tdSVp
-	BGsrgdphQKgq8BkekO2LgR4S0zlVyaZKjSh6MhG8iVnjBZIFCMdAWVJtICQdWBExbC0Xf2cwXlK
-	UVBOunuX3Ihat3oiXayfrepB8rHeKbDahw8CEWYowsOcNJ50ivZS4M9Uzp6RBDwc2t5Wbt6sBYk
-	J1pYBCLTFSoxImyfl8aLNPg3qtBPA2du+rUrP5G6SK0IUum5P99fJ1/ZKZiuM=
-X-Received: by 2002:a17:90b:1d82:b0:35f:c493:cac5 with SMTP id 98e67ed59e1d1-36f782b56b8mr1727051a91.16.1780550301842;
-        Wed, 03 Jun 2026 22:18:21 -0700 (PDT)
+        bh=VzXAoL8G5yh9nalpFe2jIG9YHdbmlWG6e7G4yOR+whk=;
+        b=htFTOjcr6lbb0e6DXe+B0QQPuHWiIo4IN0s5rQP0dAsDgeve5/W/UrmABzlor9unvI
+         1fNYcGGEodmiNSOY847pCOy2xR87acOLpSzZ4YA7DzygWTMMpDh5NEi3J08P6cZCAMKq
+         4B41OSPmD/jBo5zv4YssyKZJvai6VT+aQcqOmVZ2NMu4NZAIF8SlvKpqiEuzRe2sKjHB
+         ABoXVEmnNEVSFCtdHoDIaxysfJD1I5nCttSTs3xYHnK6qnadUM7KYnI1Xtu263zGMJ3o
+         hyIErZXX1427bSWVk+qo4SU/ZYmazGdrjL7VDs23h5xhjsDnRrg9jIc6Gwy2+Y4PTWc/
+         TvTw==
+X-Gm-Message-State: AOJu0YwBEY/XQzEPt2XXhp7Ct07E+cqHHbDDFVo/tLzOBlttQpWFev0S
+	YLHlsXUvI4Ulh4vywZ7ex4SziGlW5FknK4MDmKiTdfzQTuT1HYiQTrO2
+X-Gm-Gg: Acq92OE80yp36aXalXGXkQYwIZKSy7SRMO8xcLE/JJZVKokR868BRR/xbowvybKUh6j
+	nqiGThPITCx5oTDpqIPq9OtsJPyIM3843lBmShHiPd3pJaC7icLGNkpRlaVF6ig45MHjksff4/y
+	nAIu98MQAAwrj3OMAgpp80LPg/V/5hqtDGemPVX32W+0ZFarVYo8o1D1jeMUXZZdQ0Cl+6ZoFQT
+	3jlHqFt4rsdZup8+xKtWMWUICiLDwmNHn6d5XDzkfp/Y14tuKrVWqYWTGB6hRSuFvUlXngZnmzC
+	5YypQZ1kAuwTPWtDuMuC9ZH6lgUuEnYBYkW0GDopLJ7OEU2zaEcnzio22cnc/+rMF6ioecZj6bM
+	OUjBvmR+quB+NtEmaNplIIVgJzl2V3dIhwrd1QxvfVt4ePLazEeedHrc4MieYUxeD322BI3angn
+	Tlh3HxoVPi6Z6/AXVw2wpB/qNeRd5aP9oklV5dGSpoY8f/4meUFdAzWA8c8SU=
+X-Received: by 2002:a17:90a:e710:b0:368:83e6:ca95 with SMTP id 98e67ed59e1d1-36e2dd4c595mr6569489a91.0.1780550304582;
+        Wed, 03 Jun 2026 22:18:24 -0700 (PDT)
 Received: from csl-conti-dell7858.ntu.edu.sg ([155.69.195.57])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-36f6bf827e6sm2009262a91.1.2026.06.03.22.18.19
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-36f6bf827e6sm2009262a91.1.2026.06.03.22.18.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Jun 2026 22:18:21 -0700 (PDT)
+        Wed, 03 Jun 2026 22:18:24 -0700 (PDT)
 From: Maoyi Xie <maoyixie.tju@gmail.com>
 To: joro@8bytes.org,
 	will@kernel.org,
@@ -66,12 +66,13 @@ Cc: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	virtualization@lists.linux.dev,
 	Maoyi Xie <maoyixie.tju@gmail.com>
-Subject: [PATCH 0/2] iommu: avoid using list iterators past the loop in resv region insertion
-Date: Thu,  4 Jun 2026 13:18:14 +0800
-Message-Id: <20260604051816.2976221-1-maoyixie.tju@gmail.com>
+Subject: [PATCH 1/2] iommu: Avoid using the list iterator past the loop in iommu_insert_resv_region()
+Date: Thu,  4 Jun 2026 13:18:15 +0800
+Message-Id: <20260604051816.2976221-2-maoyixie.tju@gmail.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <CAHPEe=G-FZvEXjkE+vAXN5MHXCtsOaUoKwg2RQL6m=om+c20hQ@mail.gmail.com>
+In-Reply-To: <20260604051816.2976221-1-maoyixie.tju@gmail.com>
 References: <CAHPEe=G-FZvEXjkE+vAXN5MHXCtsOaUoKwg2RQL6m=om+c20hQ@mail.gmail.com>
+ <20260604051816.2976221-1-maoyixie.tju@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -80,30 +81,52 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This follows up the inquiry at [1], where Will and Robin agreed that the
-two list iterator sites in drivers/iommu/ that run past the loop end are
-worth fixing.
+iommu_insert_resv_region() walks @regions to find the insertion point.
+When no element compares greater, the list_for_each_entry() iterator ends
+up one past the last entry, so &iter->list aliases the list head through
+container_of() offset cancellation and the following list_add_tail() still
+targets the tail. The result is correct, but using the iterator after the
+loop is undefined per the list_for_each_entry() contract.
 
-Both loops only walk a list to find a list_head to insert before, not to
-operate on the entries. Per Robin's suggestion, rather than tracking an
-explicit insert_before pointer, each loop now iterates with list_for_each()
-and keeps the list_entry() dereference inside the loop body. There is no
-functional change in either patch.
+The loop only needs a list_head to use as the insertion point, not the
+entry itself, so iterate with list_for_each() and keep the typed
+list_entry() dereference inside the loop body. No functional change.
 
-[1] https://lore.kernel.org/all/CAHPEe=G-FZvEXjkE+vAXN5MHXCtsOaUoKwg2RQL6m=om+c20hQ@mail.gmail.com/
+Suggested-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Maoyi Xie <maoyixie.tju@gmail.com>
+---
+ drivers/iommu/iommu.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-Maoyi Xie (2):
-  iommu: Avoid using the list iterator past the loop in
-    iommu_insert_resv_region()
-  iommu/virtio: Avoid using the list iterator past the loop in
-    viommu_add_resv_mem()
-
- drivers/iommu/iommu.c        |  7 +++++--
- drivers/iommu/virtio-iommu.c | 10 +++++++---
- 2 files changed, 12 insertions(+), 5 deletions(-)
-
-
-base-commit: 254f49634ee16a731174d2ae34bc50bd5f45e731
---
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 61c12ba78206..f9f53db9696f 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -862,6 +862,7 @@ static int iommu_insert_resv_region(struct iommu_resv_region *new,
+ 				    struct list_head *regions)
+ {
+ 	struct iommu_resv_region *iter, *tmp, *nr, *top;
++	struct list_head *pos;
+ 	LIST_HEAD(stack);
+ 
+ 	nr = iommu_alloc_resv_region(new->start, new->length,
+@@ -870,12 +871,14 @@ static int iommu_insert_resv_region(struct iommu_resv_region *new,
+ 		return -ENOMEM;
+ 
+ 	/* First add the new element based on start address sorting */
+-	list_for_each_entry(iter, regions, list) {
++	list_for_each(pos, regions) {
++		iter = list_entry(pos, struct iommu_resv_region, list);
++
+ 		if (nr->start < iter->start ||
+ 		    (nr->start == iter->start && nr->type <= iter->type))
+ 			break;
+ 	}
+-	list_add_tail(&nr->list, &iter->list);
++	list_add_tail(&nr->list, pos);
+ 
+ 	/* Merge overlapping segments of type nr->type in @regions, if any */
+ 	list_for_each_entry_safe(iter, tmp, regions, list) {
+-- 
 2.34.1
 
