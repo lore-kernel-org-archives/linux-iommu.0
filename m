@@ -1,63 +1,63 @@
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9DFC47ECDE
-	for <iommu@lists.linux.dev>; Thu,  4 Jun 2026 13:52:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3271747F2F3
+	for <iommu@lists.linux.dev>; Thu,  4 Jun 2026 13:53:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780581181; cv=none; b=dQc6IklbOUDZWJDX4hNdUUnIT5asqEKMb/Hm4gzygpdYR550K9FeRk0NANmbjmH3mYuKqyZUoOWd52esBMusuHo5HOCJRktKhJ015MxTtY71kJiq6mRkt/DJIStseLa3FGMg0+akeEC7alTVfBy3iKaRt9BiM99lKrDv9T0N+8k=
+	t=1780581183; cv=none; b=n6+aox0h1BVyoGQddGvxXn9en1AaS7hEjqNv8DPafdUecP9lKYnl+Wc8PSXTKCcxbrHQk619XZFXHGLJ/5gKD7fGTNbYvdNF5B+qUENxuPUD0ux4KvAZNISHU96FgkIar1Br/DcDR5o4bmlXr1VlEJjEBxpDmEH04S6lngNKgBw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780581181; c=relaxed/simple;
-	bh=DzZKakHuN52Xow3vnp9cNnLc4W+yXF/Ljm2JhcvRG7o=;
+	s=arc-20240116; t=1780581183; c=relaxed/simple;
+	bh=3gEVhhj+iXOXtZyQzBEw1EMPFfRMLcnW4HxpQXk5wqE=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=aNnnxwFG1vk1O+TPjmdRRa5J+bH5a5XtS3PB/mjxe2X3ML+oKN/Jft2TGrJEf+3CX3vq6MtheybVs23mJT1wEj/h+sB1PADEJe/8+9aKQtOXCXmEYCsSs2s8ZxAMQvA5x+TcQfxevxOmmd6TgnWnvhLMQl+HR/SSG7P9xHEWZtk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pxidnXOF; arc=none smtp.client-ip=209.85.221.41
+	 MIME-Version; b=TjxrSKSBuawKPCQq+8FoFBS6UBlbdZ+v/f1yHc8qzgRovOK9Vm90naJaHvXYogqtL6yZtuLYg6mXCpQpiAD9Mq7YqClJiT78bfG2uSVuHdogE30Xox3E4FFm0Sd4MFYrHBbHIBX1wAAQlAvK01oXlsdlavcPHIrMbIa8IK6IDdg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pYVsuBLI; arc=none smtp.client-ip=209.85.128.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pxidnXOF"
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-45ef82204c6so426080f8f.3
-        for <iommu@lists.linux.dev>; Thu, 04 Jun 2026 06:52:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pYVsuBLI"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-490ae94a89eso7271435e9.1
+        for <iommu@lists.linux.dev>; Thu, 04 Jun 2026 06:53:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780581178; x=1781185978; darn=lists.linux.dev;
+        d=gmail.com; s=20251104; t=1780581180; x=1781185980; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=CoHc1Zlbr3pNOE70Y4k5QiMyrmoz//QwwHMvtTDGYPc=;
-        b=pxidnXOFixPH4xgeFm8U/t9G4iGSL+WzPTHystVtnGQQCy5rImRX0Xy6ttc0jsDYch
-         Z84SW53U2UE94cBBxMSokfuREg5zY0yBsvnys8Z9f6aK4y2U1mk+CYevtx3PbQBd5LJE
-         T+CFam+MjPKyBlIGBeCK2BZO0zek1A4ZpS66d6i9/+jDV5zwSRJMKvPDQyEjONpzHukg
-         H2a1JFmtCWbQebpwb1S0OHifBhc+evf25WdmzJgHd9RrwExsQDs5seL55e0F10fBJmD5
-         GDGb/YubFRYK3hls/DPqyeFW+3NxNKl53lSrx/8QT0T4/zyx1zicqHfSmhdzTY8YFUjK
-         CoNA==
+        bh=9Un/RS4Nm0nYyy9KkMqgz4u8u1TfsaZHefTb9UE6rtQ=;
+        b=pYVsuBLIclvRHJocThWIlvxkEXlqoiPIYd1n2oGZ4bHhNc1BNtXWrDpVvjil+gqIak
+         xV2KD7bO8/wkuCNJWTsC4+Ax6DCgzL2KqNssTln0/jbKq5WK7CTabPU5L6EDlI6Imjs5
+         eX6FoGSgV29b2+S4CfvmdlOzKu18k4epW2thiv/vTp5Gmkrwyqtcj9rJCQQjNzIiRk1G
+         lzf/U8vk2FDusNtmHwRRVpqPaeLzJM76/AxhG3LWH3P0RFwVXB9Sb4zvPfuGussCDmMk
+         0A3cKi5C+/2Jcr34oXRWq39O7IyW71Cl+jCY2Yd+t0dImtiQDDWpQEOzniPfshAKiXQ+
+         4fzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780581178; x=1781185978;
+        d=1e100.net; s=20251104; t=1780581180; x=1781185980;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=CoHc1Zlbr3pNOE70Y4k5QiMyrmoz//QwwHMvtTDGYPc=;
-        b=LPH95wiZ+ZcHk1/HhIuH+eAg+LUS6AaJ1DkVnDec9SVWYyWjY0D+Z+ClZFRS35LyXF
-         1d5NJVtwbPG2bNjjFwyXhJrnPqInmXo20Gvs/vps0T1VllwA9LdgTLxbpN6agPr7c5Eq
-         CkLCcElkYBnwGlOrDOLhdI7HCqrhL2xPyu1UBFGemHKuRxwrKRUt1BvVEhE+C6EqSZBk
-         pM9a/nh7cTNT/o8/Lq1MQpEgctT0+bO1vodG3YmyIU9DhrMcn6ZZj0vLL7Z9Onk+Hdwm
-         AwOB86bQjRkvrbmt/ZNUpnM2GWcjnunjkIIcedqzGKkyVuHqhEwkKUMFGfLhsor2wa69
-         piMw==
-X-Forwarded-Encrypted: i=1; AFNElJ9JEIUNbg9SiauvOv+6dghw23Pwpzanctqu30CUhoAgYX7muH7l5/FN/BW1gYNVB7cL9Debog==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyefgZ1wGzSZFc5PFIp7DVjJC2HfxrmLN5sQxmvC3ZAmoEOWmcv
-	lXkOxo3PgQoo6lKE22wcupdBQvueUn3kSkXF1h+av6D5OXbz+8+XTMAy
-X-Gm-Gg: Acq92OF6gslVvj+WlqtVAmf7Bo5BpajgPGYDsduHwYUU3MwncldyAw0boDe16FAkkAP
-	u1yJeOc+PfzQ6f4thbIgNhkRwsBzqAAvpPlOrgy3I1CA++swejwfoymwx8Ya42L7Re55W/fH/qr
-	Dh2JGtceaKuOFKRaLxOx3bPr3q9FxiJnsM0EgJC7BROKfB6QC2TopNqCzQRnNh4+mMKaNWCj2yP
-	tgQ2Sh7uQY0S4E11OnF9JZ0phPUbFUawypa/yJQuZcXGeSJumneIAZDEaxnNKB9isVedQLEVAdB
-	mx+Pb+dbS+h8XOHG04YW2adOrhOQ8PGesFSD4RUlj7hBPAlg/PDMqGZ/xoUMUqOskNV62uDd5qi
-	xKgC3cM29u6GV9hkXtRTOTYBMNlxMlpGy84OzZObejT3N93O40PKUX5otGvVAzD55H8DDstK1eY
-	8eL1MnuyJ3QKaD+OuXPJmPAOKEjPfFJgHk2q4sdCM9y/nyHcvffJHpqzAC6oW4MA4=
-X-Received: by 2002:adf:f8c4:0:b0:460:e0f:8d19 with SMTP id ffacd0b85a97d-4602179121cmr10232727f8f.9.1780581177846;
-        Thu, 04 Jun 2026 06:52:57 -0700 (PDT)
+        bh=9Un/RS4Nm0nYyy9KkMqgz4u8u1TfsaZHefTb9UE6rtQ=;
+        b=aOg0s6ubA8obDhjA9T5J/moxWdT2tQSe/HUQdNpMOm4s2Ly6cYsYS6w+XTdfPPgbBO
+         tiSHaXc8g5IIgTk8GfKbSHE7uk0Wvj1YYWCFt1UqAmJe9UhscN4IDk1VlSf8iLBuRd5M
+         LxWplBsUKoN1I++Z2S7TegBTDUkPqKQ5sUvHTBOFKBQiKn8eNHUyb3L1UT1uIFbkuws+
+         iIC8faD5YS6ISAJ/JqV2guqjyYO941u7uEGpe6H52NDnprKmLxRRsqoFkabiB+ayP/z7
+         i2oYJtnf5TCnf7eeKl/lU+a3ANVHEtiBDxaOTk3gfijd2WWe042Ozld6Jar1LfMR9EfR
+         NFrQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+YHzxwBZk+JjY8wSJjkrik7GjtZkDoJPYRlrD6n0GZ53ay4lkJ6vjAf/xVZjPNugVKlDtG9A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzAj9Imt8c57fNT0atAadz5gIE32bUCdVBGnpAlV1o5tCtp3x4F
+	vWcvxOxEZAIzC0OMNFEjccPVRHmuAjM5t/RT8P7Vmq1RaGS7IGmSveek
+X-Gm-Gg: Acq92OHWqLHxQqqqpgno9qfAUIzacnNIKNtT8xQjiVhykyrNNJCfFwMaQUWz9U52l3n
+	rnECJjr9t/YwOicT8Nk1bqZycwuxl5cJS7D5OQHzFCWMNLoquQOdWuncKF8mW7qWKMTIJzyWh3d
+	2OSRrETI61Gd1acYJ7uKFuX/rjCExZVFxUCvq7NJ/MrZ2nbUfVx0/+X7InFJQ0t/sxVY0pLvrbQ
+	GvEgWmhHoMu6wt8CKXY8RY+DdqwPV4X14VQ4v5fnngkT4xSxXTNCZaA9nllvdl+OBIcJsAkytc9
+	CXw4QWf1xNQJTgSYVVJJf0gSZIvza+ZslF3/CAs4Zp5525UPY34A+2YJ/U7h+y79aTMEYPdfAva
+	D0oyHAJr8wf7p3KA6ux13ll+GzFwFCNzKjVB7cV4YIyKEcHXxQ9aYrXuOnVZ7doM3PYBaZElm2g
+	oL+IvFvwZXPAsStZ5kq48Nb5Ot1zXPlEe8E6c50HkBx640iF2s0fdw7mVYXnzEpeA=
+X-Received: by 2002:a05:600c:1551:b0:490:5466:8576 with SMTP id 5b1f17b1804b1-490b5e9fca9mr132980675e9.1.1780581179316;
+        Thu, 04 Jun 2026 06:52:59 -0700 (PDT)
 Received: from compiler-rock3b.tailb81abf.ts.net ([2a01:e0a:104a:4d80:be24:11ff:fe12:2776])
         by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4601f0a43e9sm16661068f8f.0.2026.06.04.06.52.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Jun 2026 06:52:57 -0700 (PDT)
+        Thu, 04 Jun 2026 06:52:58 -0700 (PDT)
 From: Midgy BALON <midgy971@gmail.com>
 To: tomeu@tomeuvizoso.net,
 	ogabbay@kernel.org,
@@ -74,9 +74,9 @@ Cc: robin.murphy@arm.com,
 	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [RFC PATCH v3 1/9] accel: rocket: Introduce per-SoC rocket_soc_data
-Date: Thu,  4 Jun 2026 13:52:47 +0000
-Message-Id: <20260604135255.62682-2-midgy971@gmail.com>
+Subject: [RFC PATCH v3 2/9] accel: rocket: Derive DMA width and core count from match data
+Date: Thu,  4 Jun 2026 13:52:48 +0000
+Message-Id: <20260604135255.62682-3-midgy971@gmail.com>
 X-Mailer: git-send-email 2.39.5
 In-Reply-To: <20260604135255.62682-1-midgy971@gmail.com>
 References: <20260604135255.62682-1-midgy971@gmail.com>
@@ -88,98 +88,124 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add a per-SoC data structure carried in the OF match table, currently
-holding only the NPU AXI address width, and use it for the per-core DMA
-mask instead of a hardcoded 40-bit value.  No functional change: the
-RK3588 AXI master is 40-bit.  This prepares for SoCs with a narrower
-address width.
+The probe already has the per-SoC match data, which now records the core
+count and DMA width.  Use it for the cores array allocation and the
+device DMA mask instead of re-scanning the device tree for available core
+nodes.
 
 Signed-off-by: Midgy BALON <midgy971@gmail.com>
 ---
- drivers/accel/rocket/rocket_core.c |  7 ++++++-
- drivers/accel/rocket/rocket_core.h | 11 +++++++++++
- drivers/accel/rocket/rocket_drv.c  |  6 +++++-
- 3 files changed, 22 insertions(+), 2 deletions(-)
+ drivers/accel/rocket/rocket_core.h   |  2 ++
+ drivers/accel/rocket/rocket_device.c | 15 +++++----------
+ drivers/accel/rocket/rocket_device.h |  3 ++-
+ drivers/accel/rocket/rocket_drv.c    |  7 ++++++-
+ 4 files changed, 15 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/accel/rocket/rocket_core.c b/drivers/accel/rocket/rocket_core.c
-index b3b2fa9ba645a..09c445af7de73 100644
---- a/drivers/accel/rocket/rocket_core.c
-+++ b/drivers/accel/rocket/rocket_core.c
-@@ -7,6 +7,7 @@
- #include <linux/dma-mapping.h>
- #include <linux/err.h>
- #include <linux/iommu.h>
-+#include <linux/of.h>
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
- #include <linux/reset.h>
-@@ -21,6 +22,10 @@ int rocket_core_init(struct rocket_core *core)
- 	u32 version;
- 	int err = 0;
+diff --git a/drivers/accel/rocket/rocket_core.h b/drivers/accel/rocket/rocket_core.h
+index 8ee105a0be40e..d6421251670dc 100644
+--- a/drivers/accel/rocket/rocket_core.h
++++ b/drivers/accel/rocket/rocket_core.h
+@@ -16,9 +16,11 @@ struct rocket_core;
  
-+	core->soc_data = of_device_get_match_data(dev);
-+	if (!core->soc_data)
-+		return dev_err_probe(dev, -EINVAL, "missing SoC match data\n");
-+
- 	core->resets[0].id = "srst_a";
- 	core->resets[1].id = "srst_h";
- 	err = devm_reset_control_bulk_get_exclusive(&pdev->dev, ARRAY_SIZE(core->resets),
-@@ -52,7 +57,7 @@ int rocket_core_init(struct rocket_core *core)
+ /**
+  * struct rocket_soc_data - per-SoC configuration data
++ * @num_cores: Number of NPU cores in this SoC.
+  * @dma_bits: Physical address width reachable by the NPU's AXI master.
+  */
+ struct rocket_soc_data {
++	unsigned int num_cores;
+ 	unsigned int dma_bits;
+ };
+ 
+diff --git a/drivers/accel/rocket/rocket_device.c b/drivers/accel/rocket/rocket_device.c
+index 46e6ee1e72c5f..6186f4faa3a2a 100644
+--- a/drivers/accel/rocket/rocket_device.c
++++ b/drivers/accel/rocket/rocket_device.c
+@@ -6,18 +6,16 @@
+ #include <linux/clk.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/platform_device.h>
+-#include <linux/of.h>
+ 
+ #include "rocket_device.h"
+ 
+ struct rocket_device *rocket_device_init(struct platform_device *pdev,
+-					 const struct drm_driver *rocket_drm_driver)
++					 const struct drm_driver *rocket_drm_driver,
++					 const struct rocket_soc_data *soc_data)
+ {
+ 	struct device *dev = &pdev->dev;
+-	struct device_node *core_node;
+ 	struct rocket_device *rdev;
+ 	struct drm_device *ddev;
+-	unsigned int num_cores = 0;
+ 	int err;
+ 
+ 	rdev = devm_drm_dev_alloc(dev, rocket_drm_driver, struct rocket_device, ddev);
+@@ -27,17 +25,14 @@ struct rocket_device *rocket_device_init(struct platform_device *pdev,
+ 	ddev = &rdev->ddev;
+ 	dev_set_drvdata(dev, rdev);
+ 
+-	for_each_compatible_node(core_node, NULL, "rockchip,rk3588-rknn-core")
+-		if (of_device_is_available(core_node))
+-			num_cores++;
+-
+-	rdev->cores = devm_kcalloc(dev, num_cores, sizeof(*rdev->cores), GFP_KERNEL);
++	rdev->cores = devm_kcalloc(dev, soc_data->num_cores, sizeof(*rdev->cores),
++				   GFP_KERNEL);
+ 	if (!rdev->cores)
+ 		return ERR_PTR(-ENOMEM);
  
  	dma_set_max_seg_size(dev, UINT_MAX);
  
 -	err = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(40));
-+	err = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(core->soc_data->dma_bits));
++	err = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(soc_data->dma_bits));
  	if (err)
- 		return err;
+ 		return ERR_PTR(err);
  
-diff --git a/drivers/accel/rocket/rocket_core.h b/drivers/accel/rocket/rocket_core.h
-index f6d7382854ca9..8ee105a0be40e 100644
---- a/drivers/accel/rocket/rocket_core.h
-+++ b/drivers/accel/rocket/rocket_core.h
-@@ -12,6 +12,16 @@
+diff --git a/drivers/accel/rocket/rocket_device.h b/drivers/accel/rocket/rocket_device.h
+index ce662abc01d3d..2f74e078974e3 100644
+--- a/drivers/accel/rocket/rocket_device.h
++++ b/drivers/accel/rocket/rocket_device.h
+@@ -22,7 +22,8 @@ struct rocket_device {
+ };
  
- #include "rocket_registers.h"
- 
-+struct rocket_core;
-+
-+/**
-+ * struct rocket_soc_data - per-SoC configuration data
-+ * @dma_bits: Physical address width reachable by the NPU's AXI master.
-+ */
-+struct rocket_soc_data {
-+	unsigned int dma_bits;
-+};
-+
- #define rocket_pc_readl(core, reg) \
- 	readl((core)->pc_iomem + (REG_PC_##reg))
- #define rocket_pc_writel(core, reg, value) \
-@@ -31,6 +41,7 @@ struct rocket_core {
- 	struct device *dev;
- 	struct rocket_device *rdev;
- 	unsigned int index;
-+	const struct rocket_soc_data *soc_data;
- 
- 	int irq;
- 	void __iomem *pc_iomem;
+ struct rocket_device *rocket_device_init(struct platform_device *pdev,
+-					 const struct drm_driver *rocket_drm_driver);
++					 const struct drm_driver *rocket_drm_driver,
++					 const struct rocket_soc_data *soc_data);
+ void rocket_device_fini(struct rocket_device *rdev);
+ #define to_rocket_device(drm_dev) \
+ 	((struct rocket_device *)(container_of((drm_dev), struct rocket_device, ddev)))
 diff --git a/drivers/accel/rocket/rocket_drv.c b/drivers/accel/rocket/rocket_drv.c
-index 8bbbce594883e..384c38e13acce 100644
+index 384c38e13acce..c18840e5aff76 100644
 --- a/drivers/accel/rocket/rocket_drv.c
 +++ b/drivers/accel/rocket/rocket_drv.c
-@@ -213,8 +213,12 @@ static void rocket_remove(struct platform_device *pdev)
- 	}
+@@ -159,11 +159,15 @@ static const struct drm_driver rocket_drm_driver = {
+ 
+ static int rocket_probe(struct platform_device *pdev)
+ {
++	const struct rocket_soc_data *soc_data = of_device_get_match_data(&pdev->dev);
+ 	int ret;
+ 
++	if (!soc_data)
++		return -EINVAL;
++
+ 	if (rdev == NULL) {
+ 		/* First core probing, initialize DRM device. */
+-		rdev = rocket_device_init(drm_dev, &rocket_drm_driver);
++		rdev = rocket_device_init(drm_dev, &rocket_drm_driver, soc_data);
+ 		if (IS_ERR(rdev)) {
+ 			dev_err(&pdev->dev, "failed to initialize rocket device\n");
+ 			return PTR_ERR(rdev);
+@@ -214,6 +218,7 @@ static void rocket_remove(struct platform_device *pdev)
  }
  
-+static const struct rocket_soc_data rk3588_soc_data = {
-+	.dma_bits = 40,
-+};
-+
- static const struct of_device_id dt_match[] = {
--	{ .compatible = "rockchip,rk3588-rknn-core" },
-+	{ .compatible = "rockchip,rk3588-rknn-core", .data = &rk3588_soc_data },
- 	{}
+ static const struct rocket_soc_data rk3588_soc_data = {
++	.num_cores = 3,
+ 	.dma_bits = 40,
  };
- MODULE_DEVICE_TABLE(of, dt_match);
+ 
 -- 
 2.39.5
 
