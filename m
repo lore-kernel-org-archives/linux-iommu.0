@@ -1,158 +1,178 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA92636F91F
-	for <iommu@lists.linux.dev>; Thu,  4 Jun 2026 06:27:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10B793CEBAA
+	for <iommu@lists.linux.dev>; Thu,  4 Jun 2026 06:52:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780554443; cv=none; b=V1G1LA3WRye0ecdqAFHCqiS6sTpYkkfZMqY52/5WKuYQJA9ynGIZC9/GUPyByompWn831Ysaq/9hO8mN6j7ibVb1lwEeDVbHX7ItUo1AXWbLYuPcSpSwjH2uSRKF8LkdUlbMh4Qpsl7mWO/Q9UVu8V/p3qOBpuZ7cCSVz4wiqfg=
+	t=1780555943; cv=none; b=R6sBJ2Py8+KWENkW9eYCb9PQUdMcp2yxnVJ82p34Bfa2b/DtTXtgDIr7nhWJDqzfw3uoTfmg0fR3fNkNQUAkjyvz3IzR9JNV6RRSaDajbMCFr+zim9Gzsw5RkzdKr/oE92WVLg5Dbykh8AhY0+qQ2wnEF0zKa6O5HO8tkayqyoI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780554443; c=relaxed/simple;
-	bh=NZERs8wx80yARkytyQpZqVQr77EzJSMIZuUlqv9WUlE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cKJo9w9S1rRNlMH4pqee7PPVFrnpNH+RJvDNEk/5kZyEWXw2JTVIjTRbFzvlaxIzF+e8mutz7SBbX6lS/JGjq2V+5Oo4trUtVESb6wRMwSxUfomNHFjtOZ/WUnkaD1vExc6WakNb5UbWjxxD+fz2h9o2X2Pyv3xCwYHECW+tF94=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=XqvpaIUB; arc=none smtp.client-ip=209.85.214.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1780555943; c=relaxed/simple;
+	bh=GY9HWYcYN2vZxgT/IMPbqLYpuIufDKnKhahxeGgORFg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=m9QTFuXxAvtFXWRNxJVYj85PDyIQBAWWJLGawHvgwk9KuspU8m5oMROROcUADbjPiL2wsUiYbQo5hPI5Oy1417+6EQWa3Yl7T7yI6BTqqK4/+FmdA/APzdkKrVu6CWcbRxVh6FpU6GRrhlYEmlioykCwaL+CxFI0Qb0YktuG62A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=UsvTztIu; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=ZR7Fc+UN; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="XqvpaIUB"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2bf2d865383so54275ad.1
-        for <iommu@lists.linux.dev>; Wed, 03 Jun 2026 23:27:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="UsvTztIu";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="ZR7Fc+UN"
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6546mrJZ1476762
+	for <iommu@lists.linux.dev>; Thu, 4 Jun 2026 06:52:21 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	QH3Q7a4QvIm0LvJnWjiUGy2awEMq59GNhr6w+819oZw=; b=UsvTztIukAjLYmBe
+	JIt0gPAqHJgHNuaWhw07hXE6Yj0D0umA+iNeSyjT8pdpP99BdENsPRlLPNm9fjBM
+	CCz8+7MuuUsT9z4V1D0wyXO00okNExyq1lJn3s7p7AoegTBharldE8s8kvu3dH1Z
+	YreOzaJ3q4BPRyjwfjKdiPnRxxx5zbuuZ/kdey0z9vbJ5hrwLrSzFl3lGPCxfz2O
+	CJ2+iw8jW4iaHMFMTGHMncjzecjEjTnY4de5A7EwFXn9qSsIHeuoO1/2e0XeTp16
+	J3ilqimm6Tce1w0yMDxOVlWZtajLxhKAvZdc1SHWrLfk3jqt+7jJ7ipxAMtwDVob
+	MlNeTw==
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ejp6nudkg-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Thu, 04 Jun 2026 06:52:21 +0000 (GMT)
+Received: by mail-qt1-f200.google.com with SMTP id d75a77b69052e-51768072950so4851201cf.1
+        for <iommu@lists.linux.dev>; Wed, 03 Jun 2026 23:52:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780554441; x=1781159241; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=TUX4p+/g3In60o10PoOm58/dfPztgEd/GT0xX0N5jBE=;
-        b=XqvpaIUBXQpcRYOdC2tl/cpMZuXMmyCQNfmY9RbNcWAaIkMBm1/2QpH41kdS948Q71
-         2Lqt1yFYsRp8Akbj0gftYICw0DF/YKpiNKmzLSdr36EipHlIwQJxtLSIX5cD8wUBi8UK
-         CunavwnKGzjd8dvMEvZlmPo8Grgfxu2p/166AAh0sl9y4prl5oOfqmUlYxOudLB1EXlN
-         5wkJL13KiSBAP4Y+d+ZHOb9LXLr3bUj+mkq2X0CQksOuOjc2GcPVP0p4U+Y6wl9aEy5A
-         HlzjQ2x31pJVLJcqmbwXho95xw5UH0h5xEb9e2p6UlajG5eqKvh3euEzNCKqLUnZ1MNg
-         HZWA==
+        d=oss.qualcomm.com; s=google; t=1780555940; x=1781160740; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=QH3Q7a4QvIm0LvJnWjiUGy2awEMq59GNhr6w+819oZw=;
+        b=ZR7Fc+UNpwLe2HwZhv8DRQyT7Ta1V9IMBECs7N618nZoW31B843h8B8bYS9uOABRe0
+         7L+7dTjF3nM7hHJ7PC6ZZinGrcJZSzAhWVNF7hQDrC3aJykyEEstvs0BigTUhpoo0bEs
+         3mW2iwPqHa1kr2yudxPBt8M1PGqNFb1kvw2+N7Nm5GDv7yeKXtpZxd1SLqKXf60wJx9N
+         0daDX0z/dBo7rlKN1VGWiHjt8Pm72tqqPHXLjcKX5jc5LswifJmhY/tSxBzVm1ndzPxv
+         PZOC0xsLoqOIyRCP+hikWsSe/snwBMnQB8X4Mf1ozncKllfcCH8osg8naDye/RctqOwA
+         +hnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780554441; x=1781159241;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=TUX4p+/g3In60o10PoOm58/dfPztgEd/GT0xX0N5jBE=;
-        b=fx9USD6Tfl061CpAqqKzVqq9DDI5ibARQIi64jT61NO+iaGQixMirARqi+C8f1XQkT
-         0lNJix19WF8Bk1jwzYFH9aE3qqz35tS7ymeQebbPzUuYwIRR7eUm579QIBNc7+t0JXGC
-         ldCAbmFe4f5Px27aOH+ztX85o4DCr8CrKcKZHeIaIM5Orxt7GqkeaZ0oxq2HliCakWTo
-         tCYXpdbwheWRuPSqE56VR4Kc5VDAld00NdlIXoxLdcxj+jbWr/P+554dcq0eRmo7o8fp
-         Swk+ktAgO0Iw4J2RrMByIarwHRsAEFJyfxIQSzUfK/ndRZppPNP4xSPIxe++5iIB2DUS
-         gjuA==
-X-Gm-Message-State: AOJu0Yy1UYv5lhDukr2ioX06GKkiQixmuFIssaNFoMk7fErUMiPBKB5Y
-	qO8gjj/FX13olfhbfKxbEd2JoPpySFNmxeTUdARaTlUOfj2nA8Q6eir78V/2nSsC3A==
-X-Gm-Gg: Acq92OHW0NpMT3iVL3Q7bw6GInRaVBqlgjZyh81wLrGVl3D71yYI3rgv8EsUicVPMJj
-	xAF7OaesYw5PIJiKSqmBDvQD8qI+tkEyaUExtiLrUwz2fkV9KtRAiq8nPv3KqHpWwyd+Xz/AuM1
-	c2SdeRMeox8kNsSqjlwzg881Q53i4OZcWFZWQzo6xDBrAaO9VYrGtBzUNn8DwVbRWj8S4dqhChe
-	7R2l3lV8jhAE0A5ztQkM4XYnYUviHUtj6rMFibL1myRkNbhTZfe7XueEjWsDQBy52gQyLYwjQ9b
-	zoUJaJwtl+BDc2NrEAjSMGJFnINSh58jT1l4amA77pukNEXuX6mT1eAWAHyWdCvax1JE6EW3g8y
-	Da2PFQ1QrHa4XsvLVRsAp71TuJTbjgIV9vXNXdJoUQRUE6Os5MuFYPOKqUPbi8sbPVIrc44wQF7
-	BA7S1vCrIuuD40lz7YFMRh79OFB4gk1han+EnCbNOa9QXDul2ii2zH8n/epAdDFWlB9dCsq9XMM
-	TEA/X745w==
-X-Received: by 2002:a17:902:f745:b0:2bd:3c1b:3073 with SMTP id d9443c01a7336-2c198b2b92fmr2310625ad.16.1780554440352;
-        Wed, 03 Jun 2026 23:27:20 -0700 (PDT)
-Received: from google.com (199.255.142.34.bc.googleusercontent.com. [34.142.255.199])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c16649293esm47008075ad.68.2026.06.03.23.27.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Jun 2026 23:27:19 -0700 (PDT)
-Date: Thu, 4 Jun 2026 06:27:12 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Daniel Mentz <danielmentz@google.com>
-Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Ashish Mhetre <amhetre@nvidia.com>,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v8 11/12] iommu/arm-smmu-v3: Invoke pm_runtime before hw
- access
-Message-ID: <aiEawEFsnG-LIahW@google.com>
-References: <20260601215909.3958732-1-praan@google.com>
- <20260601215909.3958732-12-praan@google.com>
- <CAE2F3rCPgnFU=d5At1zrOLhsuVEbsweogOHGz9gDddRx73zRtw@mail.gmail.com>
+        d=1e100.net; s=20251104; t=1780555940; x=1781160740;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=QH3Q7a4QvIm0LvJnWjiUGy2awEMq59GNhr6w+819oZw=;
+        b=BlqWcF6AyJI50rAK9Xx2GtwmFZgTvHQEjukoJRKKE/wLKPzO1Xe/GOmspJKXmcORwX
+         edd1ld5b6hMCNaK4F4mXbmG4Us8M3tp7NLRbj+YfZe+BfN7s0rzOhVS8yQ6RmRyydlKU
+         FRaFg+ORtYgUCtFRAgTRo590QlkkJ5Gx6I8PFr73vtYgklHfze++/yiTyZoS7+ve+boM
+         PsBhwgrx1dE15n+USgq6AXvU0RQiXQsJ8lF0oZJTzLKvzk+hqzQWDdCJwfWakLhnrmTC
+         Y+UPHkPW7zN+nYdWmbnzAXEpejf92nWVDirgcBCbOMEVBQgd8b+88S9zOuG8IJ5BlFeV
+         +JCA==
+X-Forwarded-Encrypted: i=1; AFNElJ+2TXhw4duBsBm3a5/WnxroljCw9ertWapFrUuLDobM7/y6iB1MO2N7VLreFKLQBsWOJk79cg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxkgnzNjnoD1gXAgU/VnlDI9TU0sTzRg0qSJB6B99HW2RQ7fNe+
+	KS5JFqFOeUWBIK1Cq7qmQgDTEHWNPURlBSmtNtEoi8sRXPBZrr8HFUshgMROVfPRHjEe1Jm6t0d
+	1zvu2lWI2fkvZ4WusqIlyfvVuDDyhl8lGHwZqbM9xiDxH7Tz1PtMVP1TtMQ==
+X-Gm-Gg: Acq92OHZETIzwUMlLgjR7aOZqi8D1RKwTvV7KGXkcFbZrEX82r3Yhb17VetrDWu0LXJ
+	hVVF2rY/+bCHxLmFFcWB3S8t1Yz8D+x2WyR4r/ZE4bNPEwg+0gxrGWAdsEejcwZe39fa73Nahxj
+	D2tx8Rgn5FEwkrHDp1UOODh3+8aXNHpRcz2E1QAhpGuXgA82OOKD1uldYPu4zO0tfpWQPBV9jrB
+	gVUauf9tJDCFiNxsJEV0OeR4939Tq8AhVheEN+v+pTsjsfa6ZO1HwqgarC/7XcyGG6hlN5DgGyJ
+	YFOGWlO2FpljjbGLCznKvyt/heRycTjv//5YbTF+g5cY/U+v/7Qc0FMiXz7DV3q5+zTbYHC0CNa
+	SeuYmiMU89BxzLRFs1+PCIKKtuyC7p5bgkp5kOQP7d5BTVBOMXK+OSp7os7HHcEPV+nU=
+X-Received: by 2002:a05:622a:d0a:b0:517:85d7:f5cc with SMTP id d75a77b69052e-51785d7f8acmr41866481cf.16.1780555940304;
+        Wed, 03 Jun 2026 23:52:20 -0700 (PDT)
+X-Received: by 2002:a05:622a:d0a:b0:517:85d7:f5cc with SMTP id d75a77b69052e-51785d7f8acmr41866271cf.16.1780555939874;
+        Wed, 03 Jun 2026 23:52:19 -0700 (PDT)
+Received: from [192.168.0.172] ([49.205.249.168])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bf054e06dddsm262483066b.36.2026.06.03.23.52.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Jun 2026 23:52:18 -0700 (PDT)
+Message-ID: <9d0224f0-efb7-4bc2-8f09-70a9b4d62810@oss.qualcomm.com>
+Date: Thu, 4 Jun 2026 12:22:05 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAE2F3rCPgnFU=d5At1zrOLhsuVEbsweogOHGz9gDddRx73zRtw@mail.gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 00/14] media: iris: Add support for glymur platform
+To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+        Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+Cc: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Bryan O'Donoghue <bod@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Hans Verkuil <hverkuil@kernel.org>,
+        Stefan Schmidt <stefan.schmidt@linaro.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+ <conor+dt@kernel.org>,
+        Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        iommu@lists.linux.dev, devicetree@vger.kernel.org,
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
+        Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>
+References: <20260515-glymur-v6-0-f6a99cb43a24@oss.qualcomm.com>
+ <kunwuij4ntmh2hwxdrfwlpiza7kbcwtdlty2cai3xlxybkn2er@7wmo5irzum44>
+Content-Language: en-US
+From: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+In-Reply-To: <kunwuij4ntmh2hwxdrfwlpiza7kbcwtdlty2cai3xlxybkn2er@7wmo5irzum44>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-GUID: 585RTK56pdvMiY05PiLO5tFNE_ScLUor
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjA0MDA2NSBTYWx0ZWRfX9iPlQehtI/2r
+ EclWOtGgGK+w3S38viI5SiEC5UboaJDTk2WfnA9bBD8TKk8hOGxEB0qd1eRx++FxhIGDcE4jxtg
+ jWsh4HQ8+voUhA3z8FtKuS03BAYjLUh7uEn0w3QnFsOjJHz6VZk2ftKMZ7VQfegzGfB2AwA1DK5
+ +k/6TUh/0gGWmWo5M6rgWKuluDK0Pm4+tTetmtU3dly3CTpTHONLvBrOde/RtCoJW1UgWZKTXFn
+ YS2B8egPo1bkUczXTwaFuK3e5CbohHNnIc7WitzHOa0OXoLajd1r6TJztQSLXSGVeeMuTioLHNd
+ ygDkhCKABjp8Cc/JvcFUPUbsixb0820UDPdJtAkblv6bgJrtQS+AeIQZ6iHMYvxnVjndqKtYDDI
+ AorKCnAM+HU7cWYscLZfXXPGL3Th6jgjPKiQE1BoEW8vx6MoobP9vnL9S3vj79Z1WYZrrAivaHF
+ ymXQ2wDw1f70d2HbAPQ==
+X-Authority-Analysis: v=2.4 cv=DbcnbPtW c=1 sm=1 tr=0 ts=6a2120a5 cx=c_pps
+ a=JbAStetqSzwMeJznSMzCyw==:117 a=QLLTW4K7kuvKcNWOCmVsWg==:17
+ a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22
+ a=MmbEFYbivRMSk88UmGwA:9 a=QEXdDO2ut3YA:10 a=uxP6HrT_eTzRwkO_Te1X:22
+X-Proofpoint-ORIG-GUID: 585RTK56pdvMiY05PiLO5tFNE_ScLUor
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
+ definitions=2026-06-04_02,2026-05-28_03,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 malwarescore=0 adultscore=0 spamscore=0 phishscore=0
+ bulkscore=0 lowpriorityscore=0 clxscore=1015 impostorscore=0 suspectscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2605210000 definitions=main-2606040065
 
-On Wed, Jun 03, 2026 at 01:28:19PM -0700, Daniel Mentz wrote:
-> On Mon, Jun 1, 2026 at 2:59 PM Pranjal Shrivastava <praan@google.com> wrote:
-> > @@ -2361,8 +2394,33 @@ static irqreturn_t arm_smmu_handle_gerror(struct arm_smmu_device *smmu)
-> >  static irqreturn_t arm_smmu_gerror_handler(int irq, void *dev)
-> >  {
-> >         struct arm_smmu_device *smmu = dev;
-> > +       irqreturn_t ret;
-> > +
-> > +       /*
-> > +        * Global Errors are only processed if the SMMU is active.
-> > +        *
-> > +        * If the STOP_FLAG is set (can_elide == true), the hardware is
-> > +        * either already disabled or in the process of being disabled.
-> > +        * Any errors captured during the quiesce/drain phase will be
-> > +        * handled by the explicit arm_smmu_handle_gerror() call at the
-> > +        * end of arm_smmu_runtime_suspend() callback. On resume, the
-> > +        * STOP_FLAG is cleared before interrupts are re-enabled, ensuring
-> > +        * no valid errors are missed.
-> > +        *
-> > +        * A lockless check is favoured here over a dynamic PM core check
-> > +        * since the runtime_pm_get_if_active would return false during
-> > +        * transient states like RPM_RESUMING & ignore level-triggered
-> > +        * interrupts.
-> > +        */
-> > +       if (arm_smmu_cmdq_can_elide(smmu)) {
-> > +               dev_err(smmu->dev,
-> > +                       "Ignoring gerror interrupt because the SMMU is suspended\n");
-> > +               return IRQ_NONE;
-> > +       }
+Hi Robin, Will,
+
+On 5/28/2026 4:24 PM, Dmitry Baryshkov wrote:
+> On Fri, May 15, 2026 at 04:51:15PM +0530, Vishnu Reddy wrote:
+>> Glymur is a new generation video codec that supports dual hardware cores
+>> along with additional power domains and clocks.
+>>
+>> This series adds platform specific support in the iris driver to handle
+>> the extra cores, power domains, and clock requirements introduced by
+>> glymur. Add support for firmware loading through context bank firmware
+>> device.
+>>
+>> Dependencies and merge strategy:
+>>
+>> Patch[1-2]: IOMMU maintainer need to apply and provide an immutable tag
+>> which can merged into media tree.
 > 
-> Have you considered using arm_smmu_rpm_get() here instead?
-> I can see two issues with the currenlty proposal:
->  * Returning IRQ_NONE when an interrupt is indeed active and needs to
-> be handled. This might be interpreted as a spurious interrupt
->  * Nothing is preventing the suspend handler from running while
-> arm_smmu_gerror_handler is in the middle of handling an interrupt
+> [...]
 > 
-> I understand that using arm_smmu_rpm_get() also has downsides,
-> including an unnecessary resume operation when the SMMU is already in
-> RPM_SUSPENDING state. However, using arm_smmu_rpm_get() would make it
-> easier to ensure correctness.
+>> Vikash Garodia (2):
+>>        media: iris: Add iris vpu bus support
+>>        iommu: Add iris-vpu-bus to iommu_buses
+>>
+> 
+> Robin, Will, do we stand a chance of getting these two patches in 7.2?
+> Or should we use some other approach?
 > 
 
-I don't think using arm_smmu_rpm_get() here is possible..
+Could you please comment if the patches are good to go or any 
+suggestions you have ?
 
-GERROR is registered as a hard IRQ handler, so calling rpm_get (which
-can sleep) would be wrong.
+Regards,
+Vikash
 
-Regarding the race, the STOP_FLAG is set at the very beginning of the
-suspend sequence. If an IRQ fires after that, we return IRQ_NONE and
-let the explicit arm_smmu_handle_gerror() call at the end of
-runtime_suspend catch and clear it. After CMDQEN, PRIQEN, EVTQEN &
-SMMUEN are all cleared, getting a Gerror should be treated as spurious
-
-That said, I understand your concerns about a real IRQ being interpreted
-as a spurious one, and creating an IRQ storm since the gerror register
-isn't really written. I have 2 ideas here:
-
-1. We could have a "suspended" flag and check it with can_elide here:
-arm_smmu_cmdq_can_elide() && is_suspended() to correctly return IRQ_NONE
-
-2. We could explicitly disable Gerror in IRQ_CTRL write after setting
-the CMDQ_STOP_FLAG. Even if there are Gerrors during the CMDQ drain,
-we'll catcup to those at the end of our suspend callback.
-
-I'm more inclined towards 2 as it prevents potential races (execution of
-an IRQ handler with handle_gerror calls at the end of the suspend).
-
-WDYT?
-
-Thanks.
-Praan
