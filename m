@@ -1,125 +1,128 @@
-Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FAEE3BC68E
-	for <iommu@lists.linux.dev>; Thu,  4 Jun 2026 18:21:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCD3637E2E5
+	for <iommu@lists.linux.dev>; Thu,  4 Jun 2026 18:24:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780597292; cv=none; b=gMXswxcq4ENnp/cCc3lsP7s3A1TJVBNc/HBHk5Edinwh69G4XtTYOwdV8AXjJA81AKD7Ndq1z3JVEE7Ale/slkt5nczaAQJb8UHEQqw7U4l8Q3iShKhOgFHSg/3aHw1PlyKfBeZvpaQBohcw9Zg5GI8fIqCUSCI+0a1/cobY3FE=
+	t=1780597462; cv=none; b=sHx8kV+YGMQPZnhYXgUQAF0px7Nsh0+qOWA4rowKpcxUMSORVhnOjakVlx8pM1DTzfmLgRivcdIRujkmPVHPUfuClKXyGo8sf7sypya3FSh/rEWqMSc9ZDZQBEynm6GbsN7Rg1LNavmrKKP6xRK6y4hnYTwtULU2HC5EbQ0s140=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780597292; c=relaxed/simple;
-	bh=w57WWqbuVg1C46CefALqiJ2Pvgfc2qJJo+gvJ+wT4u0=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=g76v3QZyA7qnD4fLQAWV5yoUAL2rj+xol6nLa/FTMUsE6gsKCkVf5bxsnmONeqe5Y//MQQGUfYj6HNOQEagQcI88jPvyapVVE19h7gYwB70I6a1NJSYWzkeINKA65esR3jTQd21SkkOr6gvdYhm/XA/P3vasyKx8BvmGEWn+txQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=IQKuHDkG; arc=none smtp.client-ip=209.85.216.73
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
+	s=arc-20240116; t=1780597462; c=relaxed/simple;
+	bh=nZk6YMYYl+ylqDKIH+EcQ0Ik0ycwrFRfvhKkDvlO978=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=gwwyVT11GjnPsn52QU+LlXC3TyoDccMW1pkEKX7vF9v7XuaQKIX+37u+A3pXGZCodzBq+yKTd97CJT940AXmdtpQsL8NUByELCwvdKlFRVPhy1Rxiyssf5zPG5Eti9N2OIZ5F1xT8KmcNOTX3SLFggyjPNzcGbWhFdvFRfzunKc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=LG36FHZv; arc=none smtp.client-ip=209.85.160.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="IQKuHDkG"
-Received: by mail-pj1-f73.google.com with SMTP id 98e67ed59e1d1-36d98b828c8so177694a91.2
-        for <iommu@lists.linux.dev>; Thu, 04 Jun 2026 11:21:30 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="LG36FHZv"
+Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-5176d4c14f5so8498841cf.0
+        for <iommu@lists.linux.dev>; Thu, 04 Jun 2026 11:24:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780597289; x=1781202089; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=lIiNR1cRpyTRt2RrDtP+DBDRqvojsy7fBnMse0sQxKI=;
-        b=IQKuHDkGBEIYG+H95UILm5/3SzFdNYidVEuWV/g2fUuyzsMDVwHWouhY3kDjTfJ+Od
-         Lvd1ntCCNSyPFdEJyYnMZWjNZhaVGeM8a/iEQfCCa8j2y1wCU98rqZX0AcLM/QvdQXHA
-         1m9/Lk7XV0gljOYeNZzK0EZ1EgzgEaJTlRX93TI82My1lgEuIUtwTE52vqDuaY/mcgWe
-         y9DvZEpPZ1SvW9lhTS94hjzzmqpZ8eM07NuienTpd9KiJwwsG6OJWA949aUVz6OtKOVO
-         6KSS3tH5ULONJ4y0Tr1EPPgQDLXCFkdbO5DTj2OolQtPDv9yBcsGkOCV7F86KYJlxtG3
-         HRoA==
+        d=ziepe.ca; s=google; t=1780597461; x=1781202261; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=nZk6YMYYl+ylqDKIH+EcQ0Ik0ycwrFRfvhKkDvlO978=;
+        b=LG36FHZvJdJeNzcPEuB0D4VE+a5XsVfj1XQb+WpRWwDNvknunU+dx4yMGdPu1fjqIh
+         Vs8diZSCBIxzK7pQuBBw7qO1m1PUUlkvpYBb1Wl76BQWrvcapMWT1SqdmoMQefNbq467
+         HnrPrA+l4JLiaqEyR1ImIHFXg4UQDG/yInvqlZ7ddKzM6W/eCXa7bFg8nplt+pRyFQpB
+         BkHoGYN0Ffx0fpsDhzbqitmunRjmuakoqPCXAS6FdWOnS+tDCnZ38HSXz2Jhf1/eofWd
+         po9Okvm4ThMOFDXBQBn7CSg9rUWP7OLNtrLscQyN/jvJDuok1QnZj9waPIp8bCO+DoD4
+         Tocw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780597289; x=1781202089;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=lIiNR1cRpyTRt2RrDtP+DBDRqvojsy7fBnMse0sQxKI=;
-        b=kq2QMYRAdb/BhvViDdd4NK8zn6EIfeshIDpg4bVYbYM5ts/3j7JQwORkZrZukpREbW
-         5iyWb5tCGX9NVV5sI4r9UAZGBnX2ZWH8NXUyfhWErWV4ij5y8G/EKoa4rwleKIxZwcuJ
-         YNNgTPLFSqLENKKwzQJY2NO9YCNZ/mRDOYesSxFnzVX3f5qLsqbNgihHLWebMUkUBYbR
-         XrPmiqJDlsid/6EQLJ7RiXvdvMaTnZ0YSc0q4umXeqejBsECudLNsHawTlfDO+aB2cMY
-         m/PKVwMn+QpudYvW3O3OVv7z2NviO+sCzj6C2+fH7xpbQc+YF7Gn5iv/OkArgtQXX7Lk
-         JBTg==
-X-Gm-Message-State: AOJu0Yyij3JJuHXKbyukWQoioRkD6eVyW9lVGRh7ti7r6HmbYadCNDyv
-	zCvLeUWp6C89tMgISxI2kgjOWABVCoF01V0tLl2zDJV7RLzKV8X2P9+CwMKAiGYC5ZKpuO93Q5I
-	/qPuhee99gNnudkQxcbc2SB15mkELIalNCP3M8WYpb0Ymq+/5f3gS/ZBgGvN9ZETdaZJgvWN4YD
-	RCIwt1Rbj8CS2P7CtOyPS/4tOHI/ABsA==
-X-Received: from pjez16.prod.google.com ([2002:a17:90a:150:b0:36b:be09:e0f7])
- (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:1ccd:b0:368:a297:bd38
- with SMTP id 98e67ed59e1d1-370eedfff8dmr139009a91.7.1780597289305; Thu, 04
- Jun 2026 11:21:29 -0700 (PDT)
-Date: Thu,  4 Jun 2026 18:21:16 +0000
-In-Reply-To: <20260604182116.3179005-1-praan@google.com>
+        d=1e100.net; s=20251104; t=1780597461; x=1781202261;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=nZk6YMYYl+ylqDKIH+EcQ0Ik0ycwrFRfvhKkDvlO978=;
+        b=Mco4Y50Lr9uc2d5rqStBy2iryDmPJPVcG1OE8LeYwy1YyhisLVHY6FEmzknJWXiBTs
+         xuF/SRfSHDIJW+07ZgwxPAjK8TwIP/nWhXZH/5Kd7dC1gQjUmEjdedqZupWa5meh+wTw
+         Z+d283+aDC+1KE5WgPjxyYyJQ5tz9mxD6BAnlsn/BYDHLygFENI9XP8u/kq2JyUqq5V1
+         zCbL9Fq/szPsPqPGiftPwYdI7p60XUeq40TjUvTneodauwf2ymTZuJCPLg+fLp1ktVmZ
+         +rA5tzsXDbiXxFBPKEH9V11wsG1VBZq4KUYKUgm5wp57iLTQN5iqPe9IZH70Ntgfi+Xy
+         mfbw==
+X-Forwarded-Encrypted: i=1; AFNElJ/jFm2YZA4l9ZXAA//G64o01wk4DDIHBPJOi9ZtU00wU6kr4T9Htd2A87hb6Tx48N8282jj4w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyglWuxFctvk64+749UMy5w7meHeJsFvl5eEBs9Edq9wLOSidDL
+	3DuTQYh80X9ukerqlLCgeCGnGHMegEBI6/cADUHtiYEWu5vo9ZumlWgcazeH5mW03Rw=
+X-Gm-Gg: Acq92OEadZYvLk9hPUHss8AX/LUhLRvnOvNmV3CEAmx7G2lbnTtjJIy1C/usv15kx5I
+	dtR666E39QsTOAYWk3E1Mta0hSMXTMEC/o3wRCL30Tete2TDUQyTrvMXTj8xgBtTTmP7mULb8Ps
+	7ZYfaWfxSDumlNlJA7igRkFW6YktpNyZA0X8+PFxxoHHXBxkMqhuFOOFNuQ2s6R2fwnY60MQcCN
+	p5rgrszG96C3qBWVOZqCkXg6WPJIABTWgv59870yz+OvkGQtgf3iQihKQdZ0q8fcydjJga2au74
+	rjGr5en6RfwcSf8a5VZ+0DX5gScoL3CdJA09rSYSOWkwDAOImYQCIFVC0SDg2RqsoWA6feYa+TC
+	jlvj38OZe6Q3BZs4/Hh4BPSIlUmdnzlTUOIW9GQSQMSZZYDhRU52MS66RD/ZkWSFle6zjqkviZP
+	k8tbtGvxA2TuUG0AB0WSYO2vS3V2DVMjrCBS3MrtSv01FH4dqqLz9TCgwzS9NgIy0g29p7p3Gib
+	KT580pcf0tJNITC
+X-Received: by 2002:ac8:598a:0:b0:517:7277:9362 with SMTP id d75a77b69052e-51778751a59mr126094041cf.48.1780597460764;
+        Thu, 04 Jun 2026 11:24:20 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-51775dd2e53sm57509021cf.24.2026.06.04.11.24.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 Jun 2026 11:24:20 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wVCjr-00000008f4K-2dN0;
+	Thu, 04 Jun 2026 15:24:19 -0300
+Date: Thu, 4 Jun 2026 15:24:19 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+Cc: Michael Kelley <mhklinux@outlook.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	"linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+	"linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	"x86@kernel.org" <x86@kernel.org>, Jiri Pirko <jiri@nvidia.com>
+Subject: Re: [PATCH v5 05/20] dma-pool: track decrypted atomic pools and
+ select them via attrs
+Message-ID: <20260604182419.GC2487554@ziepe.ca>
+References: <20260522042815.370873-1-aneesh.kumar@kernel.org>
+ <20260522042815.370873-6-aneesh.kumar@kernel.org>
+ <SN6PR02MB415754E94A9505C2B9739E4DD4092@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <yq5afr35sciu.fsf@kernel.org>
+ <SN6PR02MB4157D9955A93244014AB7978D4122@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <20260603005454.GM2487554@ziepe.ca>
+ <SN6PR02MB4157F94C902B78E55E99372DD4102@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <yq5apl26qrof.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20260604182116.3179005-1-praan@google.com>
-X-Mailer: git-send-email 2.54.0.1032.g2f8565e1d1-goog
-Message-ID: <20260604182116.3179005-5-praan@google.com>
-Subject: [PATCH v8 4/4] iommu/vt-d: Fail probe on ATS configuration failure
-From: Pranjal Shrivastava <praan@google.com>
-To: iommu@lists.linux.dev, linux-pci@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Baolu Lu <baolu.lu@linux.intel.com>, 
-	Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Bjorn Helgaas <bhelgaas@google.com>, Samiullah Khawaja <skhawaja@google.com>, 
-	Pranjal Shrivastava <praan@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <yq5apl26qrof.fsf@kernel.org>
 
-Update the Intel VT-d driver to handle ATS configuration and enablement
-more strictly. Specifically, update the device probe to fail if
-pci_prepare_ats() returns an error. This ensures that any ATS-capable
-master reaching the attach phase is guaranteed to have a valid config.
+On Thu, Jun 04, 2026 at 08:27:36PM +0530, Aneesh Kumar K.V wrote:
+> I already sent a v6 in the hope of getting this merged for the next
+> merge window. Should I send a v7, or would you prefer that I do the
+> rename on top of v6?
 
-Additionally, update iommu_enable_pci_ats() to WARN() if pci_enable_ats
-fails. Since earlier checks in the probe phase preclude config-related
-failures, any failure during hardware enablement is considered a kernel
-bug.
+I think it is too late for such a major change, but this should be
+imaginged to be for rc2ish next cycle. You also have to spell out how
+the pkvm patch will get sequenced as well, it would be best to push
+that it gets picked up right away.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Pranjal Shrivastava <praan@google.com>
----
- drivers/iommu/intel/iommu.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 849d06dfe1ae..f39451323553 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -876,8 +876,14 @@ static void iommu_enable_pci_ats(struct device_domain_info *info)
- 	if (!pci_ats_page_aligned(pdev))
- 		return;
- 
--	if (!pci_enable_ats(pdev, VTD_PAGE_SHIFT))
--		info->ats_enabled = 1;
-+	/*
-+	 * pci_enable_ats() should not fail here because earlier checks
-+	 * have already verified support and configuration.
-+	 */
-+	if (WARN_ON(pci_enable_ats(pdev, VTD_PAGE_SHIFT)))
-+		return;
-+
-+	info->ats_enabled = 1;
- }
- 
- static void iommu_disable_pci_ats(struct device_domain_info *info)
-@@ -3292,7 +3298,10 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
- 
- 	dev_iommu_priv_set(dev, info);
- 	if (pdev && pci_ats_supported(pdev)) {
--		pci_prepare_ats(pdev, VTD_PAGE_SHIFT);
-+		ret = pci_prepare_ats(pdev, VTD_PAGE_SHIFT);
-+		if (ret)
-+			goto free;
-+
- 		ret = device_rbtree_insert(iommu, info);
- 		if (ret)
- 			goto free;
--- 
-2.54.0.1032.g2f8565e1d1-goog
-
+Jason
