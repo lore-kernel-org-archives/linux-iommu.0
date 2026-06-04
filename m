@@ -1,128 +1,157 @@
-Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCD3637E2E5
-	for <iommu@lists.linux.dev>; Thu,  4 Jun 2026 18:24:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.177
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780597462; cv=none; b=sHx8kV+YGMQPZnhYXgUQAF0px7Nsh0+qOWA4rowKpcxUMSORVhnOjakVlx8pM1DTzfmLgRivcdIRujkmPVHPUfuClKXyGo8sf7sypya3FSh/rEWqMSc9ZDZQBEynm6GbsN7Rg1LNavmrKKP6xRK6y4hnYTwtULU2HC5EbQ0s140=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780597462; c=relaxed/simple;
-	bh=nZk6YMYYl+ylqDKIH+EcQ0Ik0ycwrFRfvhKkDvlO978=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gwwyVT11GjnPsn52QU+LlXC3TyoDccMW1pkEKX7vF9v7XuaQKIX+37u+A3pXGZCodzBq+yKTd97CJT940AXmdtpQsL8NUByELCwvdKlFRVPhy1Rxiyssf5zPG5Eti9N2OIZ5F1xT8KmcNOTX3SLFggyjPNzcGbWhFdvFRfzunKc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=LG36FHZv; arc=none smtp.client-ip=209.85.160.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0422C3C276F
+	for <iommu@lists.linux.dev>; Thu,  4 Jun 2026 19:37:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.54
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780601827; cv=pass; b=X1GMAK7YeLm9XlHizT01ifHHopelap8TjjQccWOSLPKpT8ynAoqkFGCPXHKFPPOM4peMsTRvisScoi9mhLt/cQ5PrZZlyurDsDhkCuG8uqcZf7KXeBdpo445QHobFpK3qHCeLqmlSIqHe8fk2K4LTLL3A1MAG6wetk5wVHsNS3o=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780601827; c=relaxed/simple;
+	bh=4ny8mDdyqCfb4288ejqLKiubk6+o7RxTB1IiqZu7ppU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ZntRdvyFV4SuZxw+BGIY1wZEZp1Iz1k7iPGgF5ScZWrxnzj32hesJ2kzgkE+H1Qn+v13oRaM3d09pyfugLeoE/NhreldLwaWcTloECpdnpPUIkaGK0SY/qVRcPU07zrQV0Ew322JRQ5dgbdomJlBVOlbivLO596GUo4My9XDcNA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=mnMZ6KYE; arc=pass smtp.client-ip=209.85.167.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="LG36FHZv"
-Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-5176d4c14f5so8498841cf.0
-        for <iommu@lists.linux.dev>; Thu, 04 Jun 2026 11:24:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="mnMZ6KYE"
+Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-5aa64afcfdfso285e87.1
+        for <iommu@lists.linux.dev>; Thu, 04 Jun 2026 12:37:02 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780601821; cv=none;
+        d=google.com; s=arc-20240605;
+        b=IFdye59lorDZeMO1Xby2260m7LElM9pNbBISQiV27eyfxrW27P0/xZvwKyJfnXzw72
+         /6A/K+qXRwHXF81ZazfUhgkgPPDSCgYsbjxsaHYs0EZljGOzJLO+lo3CRLJ1zDLLXVto
+         QE00UQpftOoKWR64oJmVMAkhCQB+dSOjAkU7+1SdS6GniloBAz+3CKSVUh5LN9CteOsU
+         Zy+qcQWMKMllUVQo1e9zAnZki+FJSJryvQfqmD1XSA/bzjbht9jeiUwmX87q74/aXyiY
+         RkQHPeKJiGDfhRMGohgkF4pjCKLfB3gkWGZ3HjNTOpMStKS72W4uqxfV1w707DSOd8zv
+         vpUg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=KUiC23PK8EOFQC+N7GaZpdkePm+wStyLtAYgas7c/7M=;
+        fh=XebutidmHIVVDsAyWYY0111cwbmrWryszsNxXF1PKEc=;
+        b=NOJRaXlpBhbWKb9r8EVTbtvjgidbiqfmNzyJj0PNx97Mdgr8BEhbV+DgRWmeXERsRd
+         SeZ1Ijnhc//EkL30tFbUu7WpxlymQn1KGOupbDTfofjxBElxeQ/FcF2OVMJ+uzQmACPF
+         ddTxmfxZD2OzM4D4vLqOukdu057YllpFdaSzmsqP69JYxbhfyscXyeGQn8xZKoSxe4El
+         MwogfSRzE4YcR7Ua10al8IDcoEnFaNZBEiweCRsrSCro07IvJ2rOrQjzcPpuwRa1VhRh
+         L2p0Rt1J+LNQgBRnAXiDSzJANhRjuxxftbrqAUnCGAFjU1rxOObLgf/k9ngT90t+H5C8
+         nVPQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1780597461; x=1781202261; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=nZk6YMYYl+ylqDKIH+EcQ0Ik0ycwrFRfvhKkDvlO978=;
-        b=LG36FHZvJdJeNzcPEuB0D4VE+a5XsVfj1XQb+WpRWwDNvknunU+dx4yMGdPu1fjqIh
-         Vs8diZSCBIxzK7pQuBBw7qO1m1PUUlkvpYBb1Wl76BQWrvcapMWT1SqdmoMQefNbq467
-         HnrPrA+l4JLiaqEyR1ImIHFXg4UQDG/yInvqlZ7ddKzM6W/eCXa7bFg8nplt+pRyFQpB
-         BkHoGYN0Ffx0fpsDhzbqitmunRjmuakoqPCXAS6FdWOnS+tDCnZ38HSXz2Jhf1/eofWd
-         po9Okvm4ThMOFDXBQBn7CSg9rUWP7OLNtrLscQyN/jvJDuok1QnZj9waPIp8bCO+DoD4
-         Tocw==
+        d=google.com; s=20251104; t=1780601821; x=1781206621; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KUiC23PK8EOFQC+N7GaZpdkePm+wStyLtAYgas7c/7M=;
+        b=mnMZ6KYE9mW9JF82czCk6ccE5pHlSzVhGZvGlERd17lV8uTRdWKA1PAkd3kHFdHAnE
+         aK8wxC9+Key9mXeojgpWiwuMxFxVZKETy0CGX3zHoArY+6ErP4j0j+xMcpMzFhoXa83x
+         XwllDiBycy1VLtLfLBfvPO/VU03ZCRxfs771GMCE1ej8qvC5a+rBPyZWnOVuRZAJGXzO
+         6APhUvPGffGTNKljID4/ngSP3NIu72N4O+zXD+/U0jVEOWapSK+kzjQZ2hnO3NH7Gl50
+         C7Y5+5JlgfzMPtEkFk08HaKAOmCtU2FeNZPSLlAwofg2EJlguSIsDYK6bZ/LPuPHf87/
+         VAUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780597461; x=1781202261;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=nZk6YMYYl+ylqDKIH+EcQ0Ik0ycwrFRfvhKkDvlO978=;
-        b=Mco4Y50Lr9uc2d5rqStBy2iryDmPJPVcG1OE8LeYwy1YyhisLVHY6FEmzknJWXiBTs
-         xuF/SRfSHDIJW+07ZgwxPAjK8TwIP/nWhXZH/5Kd7dC1gQjUmEjdedqZupWa5meh+wTw
-         Z+d283+aDC+1KE5WgPjxyYyJQ5tz9mxD6BAnlsn/BYDHLygFENI9XP8u/kq2JyUqq5V1
-         zCbL9Fq/szPsPqPGiftPwYdI7p60XUeq40TjUvTneodauwf2ymTZuJCPLg+fLp1ktVmZ
-         +rA5tzsXDbiXxFBPKEH9V11wsG1VBZq4KUYKUgm5wp57iLTQN5iqPe9IZH70Ntgfi+Xy
-         mfbw==
-X-Forwarded-Encrypted: i=1; AFNElJ/jFm2YZA4l9ZXAA//G64o01wk4DDIHBPJOi9ZtU00wU6kr4T9Htd2A87hb6Tx48N8282jj4w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyglWuxFctvk64+749UMy5w7meHeJsFvl5eEBs9Edq9wLOSidDL
-	3DuTQYh80X9ukerqlLCgeCGnGHMegEBI6/cADUHtiYEWu5vo9ZumlWgcazeH5mW03Rw=
-X-Gm-Gg: Acq92OEadZYvLk9hPUHss8AX/LUhLRvnOvNmV3CEAmx7G2lbnTtjJIy1C/usv15kx5I
-	dtR666E39QsTOAYWk3E1Mta0hSMXTMEC/o3wRCL30Tete2TDUQyTrvMXTj8xgBtTTmP7mULb8Ps
-	7ZYfaWfxSDumlNlJA7igRkFW6YktpNyZA0X8+PFxxoHHXBxkMqhuFOOFNuQ2s6R2fwnY60MQcCN
-	p5rgrszG96C3qBWVOZqCkXg6WPJIABTWgv59870yz+OvkGQtgf3iQihKQdZ0q8fcydjJga2au74
-	rjGr5en6RfwcSf8a5VZ+0DX5gScoL3CdJA09rSYSOWkwDAOImYQCIFVC0SDg2RqsoWA6feYa+TC
-	jlvj38OZe6Q3BZs4/Hh4BPSIlUmdnzlTUOIW9GQSQMSZZYDhRU52MS66RD/ZkWSFle6zjqkviZP
-	k8tbtGvxA2TuUG0AB0WSYO2vS3V2DVMjrCBS3MrtSv01FH4dqqLz9TCgwzS9NgIy0g29p7p3Gib
-	KT580pcf0tJNITC
-X-Received: by 2002:ac8:598a:0:b0:517:7277:9362 with SMTP id d75a77b69052e-51778751a59mr126094041cf.48.1780597460764;
-        Thu, 04 Jun 2026 11:24:20 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-51775dd2e53sm57509021cf.24.2026.06.04.11.24.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Jun 2026 11:24:20 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wVCjr-00000008f4K-2dN0;
-	Thu, 04 Jun 2026 15:24:19 -0300
-Date: Thu, 4 Jun 2026 15:24:19 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Cc: Michael Kelley <mhklinux@outlook.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	"linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-	"linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	"x86@kernel.org" <x86@kernel.org>, Jiri Pirko <jiri@nvidia.com>
-Subject: Re: [PATCH v5 05/20] dma-pool: track decrypted atomic pools and
- select them via attrs
-Message-ID: <20260604182419.GC2487554@ziepe.ca>
-References: <20260522042815.370873-1-aneesh.kumar@kernel.org>
- <20260522042815.370873-6-aneesh.kumar@kernel.org>
- <SN6PR02MB415754E94A9505C2B9739E4DD4092@SN6PR02MB4157.namprd02.prod.outlook.com>
- <yq5afr35sciu.fsf@kernel.org>
- <SN6PR02MB4157D9955A93244014AB7978D4122@SN6PR02MB4157.namprd02.prod.outlook.com>
- <20260603005454.GM2487554@ziepe.ca>
- <SN6PR02MB4157F94C902B78E55E99372DD4102@SN6PR02MB4157.namprd02.prod.outlook.com>
- <yq5apl26qrof.fsf@kernel.org>
+        d=1e100.net; s=20251104; t=1780601821; x=1781206621;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=KUiC23PK8EOFQC+N7GaZpdkePm+wStyLtAYgas7c/7M=;
+        b=lerGCI6kIR1xAQSqmb79IgGbeOPib6x+xv5MJghbJxuoSr2itDd0b9AGWgPdhYZfid
+         YKZgQitjq7vXwd6i2H9aGgjkV2tZXr65UGjIdT/ZsqbTXVaUXCH1lGiMLRCzbL1rhGAl
+         hH8fEVh0QI4N3sjsQHzl4yO/zKYlxsLd8bhwDPDb6lUiynXQrcvQjxKDqIszhVSiers2
+         to72z0aUcPpuuMu+eVFDJll7CUAeN+rUri6hpL8+49Sw2tN7lEu+2/anHUdpnIfnzdy4
+         NRpN48EBujIVmI76OCFnCMRsDHCl6ya1K8DfsLZbfnZw2iaU3RSxvgPnJDWiEQQySfMG
+         6slw==
+X-Forwarded-Encrypted: i=1; AFNElJ9vMY/LpD01rtIiQ32rvrU7Lp3exss41pMohCYNtsFbF0HDimAFCE7eKCh4sK5LYnIySaaqdA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx+GoafHYnmJ8J/xYgEf1qdI6UDSAel2ki2G3E63/jdC2v36LZw
+	I+rA8FTlVo028Jca4RqaSCUoYQswwgWbRluELEQfVONCFiEr5t6TF8s/9gbnYpfRllrHNnxIvTw
+	r/BqSPM7pPZ0XIVCfUYDxE9jZSt5PmslXqrM4ZnM=
+X-Gm-Gg: Acq92OGRZfuzyKHl1Pz0AOjjgDR3uDWNnBZanVdPTP/H3RINJt0/lvWucQyYNIlL+Tb
+	UU0zgNxZsgGfIGZ5QD/yLLBetwxwOE24JNEN3b9+m+6nkpOQB8tiEB1dNUlzBqGQcdZunEhfyDb
+	a25+Iie9xc2Uyszaqp0JE9jvO+DjrAbRbJJdL7Nss8vnEHu1jhNGIcjTykNbDGXCYKANbyS/lLc
+	5SwhuTDGuuB65PngEhM0djbLvuBA5ejqWXdmiNgKg3KZ4ypC6f3elxJ7oK7cn3OpNrnVjG40b1U
+	rjI33XaaYA0mJ4oeshH4mOPEwz3OiUpboArPIgHfIz7TYmU=
+X-Received: by 2002:a05:6512:2446:b0:5aa:6ede:1a68 with SMTP id
+ 2adb3069b0e04-5aa877c6752mr44886e87.10.1780601820811; Thu, 04 Jun 2026
+ 12:37:00 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <yq5apl26qrof.fsf@kernel.org>
+References: <20260601200012.3872274-1-xuehaohu@google.com> <20260604094344.GB245424@unreal>
+In-Reply-To: <20260604094344.GB245424@unreal>
+From: David Hu <xuehaohu@google.com>
+Date: Thu, 4 Jun 2026 15:36:48 -0400
+X-Gm-Features: AVHnY4I667s8Q-kTs7E7YlSR5Fzg5WrO7fnNQmow9VUJtwR-GDJeAyWDhu8beOk
+Message-ID: <CAPd9Lg_JkRdtNa=n+HE9SP+NFCSB+X_97eiPBqiONVLwV0pHwQ@mail.gmail.com>
+Subject: Re: [PATCH v5] dma-buf: Fix silent overflow for phys vec to sgt
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Sumit Semwal <sumit.semwal@linaro.org>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>, Kevin Tian <kevin.tian@intel.com>, 
+	Ankit Agrawal <ankita@nvidia.com>, Alex Williamson <alex@shazbot.org>, linux-media@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, jmoroni@google.com, 
+	praan@google.com, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 04, 2026 at 08:27:36PM +0530, Aneesh Kumar K.V wrote:
-> I already sent a v6 in the hope of getting this merged for the next
-> merge window. Should I send a v7, or would you prefer that I do the
-> rename on top of v6?
+On Thu, Jun 4, 2026 at 5:43=E2=80=AFAM Leon Romanovsky <leon@kernel.org> wr=
+ote:
+>
+> On Mon, Jun 01, 2026 at 08:00:12PM +0000, David Hu wrote:
+> > @@ -36,7 +36,7 @@ static unsigned int calc_sg_nents(struct dma_iova_sta=
+te *state,
+> >                                 struct phys_vec *phys_vec, size_t nr_ra=
+nges,
+> >                                 size_t size)
+> >  {
+> > -     unsigned int nents =3D 0;
+> > +     size_t nents =3D 0;
+> >       size_t i;
+> >
+> >       if (!state || !dma_use_iova(state)) {
+> > @@ -51,6 +51,9 @@ static unsigned int calc_sg_nents(struct dma_iova_sta=
+te *state,
+> >               nents =3D DIV_ROUND_UP(size, UINT_MAX);
+> >       }
+> >
+> > +     if (nents > UINT_MAX)
+>
+> I would suggest to use check_add_overflow() while calculating nents
+> instead of this check.
 
-I think it is too late for such a major change, but this should be
-imaginged to be for rc2ish next cycle. You also have to spell out how
-the pkvm patch will get sequenced as well, it would be best to push
-that it gets picked up right away.
+Hi Leon,
 
-Jason
+Thank you for the review. Using `check_add_overflow()` is a great
+suggestion and definitely
+cleaner for the accumulation loop. I'll update this for v6.
+
+> > @@ -133,6 +137,11 @@ struct sg_table *dma_buf_phys_vec_to_sgt(struct dm=
+a_buf_attachment *attach,
+> >       }
+> >
+> >       nents =3D calc_sg_nents(dma->state, phys_vec, nr_ranges, size);
+> > +     if (!nents) {
+> > +             ret =3D -EINVAL;
+> > +             goto err_free_state;
+> > +     }
+>
+> Technically, this hunk is not necessary, since sg_alloc_table() will
+> return -EINVAL when nents =3D=3D 0. At least, that is the behavior I reli=
+ed on.
+
+I originally added this explicit check in v5 to address Jason's
+feedback, and to make the
+failure explicit rather than relying on `sg_alloc_table()` failing
+silently on `nents=3D0`.
+
+Jason, do you have a strong preference here? I am happy to drop the
+hunk and rely on
+`sg_alloc_table()` returning `-EINVAL` if you are both comfortable with tha=
+t.
+
+Thanks,
+David
