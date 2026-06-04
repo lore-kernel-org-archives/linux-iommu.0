@@ -1,134 +1,106 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 246DF481652
-	for <iommu@lists.linux.dev>; Thu,  4 Jun 2026 13:53:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B85E3410D3C
+	for <iommu@lists.linux.dev>; Thu,  4 Jun 2026 13:57:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780581188; cv=none; b=H8QtV+EOZ+KKjIDeFMJtq/JwRjhhAI0Acf4hHS2ntaBuqQJZ2LaqQQ5+oVgasms+hHbn1SsXlrBkiJeWA+7su3dJaTPHM5zzKklsd/pJvlGkyDJ9twjkC0j5XkbI7oIofCDo8jO9uOq1n1U0rUo5PgpdZCf4HIn5yNjd/OQGheE=
+	t=1780581435; cv=none; b=uBY6Yrk0cP1vIJ3Hemfknxl78Sl6nWgZ4imVn+qxWE02bz+mtOuePS82979zPaaa+LmioOGnPsRtWYIaJWaggDX6AvjDuy/+oh2WfjnZxvtIdGGF3iNsbSOPES/Ni+U8A88hf41BxytxsWekHkVhfrJiFTQAXRFsKwHdT1i9idM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780581188; c=relaxed/simple;
-	bh=ilepAD978lUz3gU2spyy41VvdLx7IfB2hzbepfux7ew=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=nXKKZcx0DbJUZ0W9XfYedlklbWKfDGMHT4GO1Vz3z6w6Ke48NStKIxXNoJZlHhvq3Nh4PjIpVjMLt9gImS2AfaJe2EjmU1LAPPQPfjvLBFNxPmLr5OqhoaUdsr5ulYWsMKVE4RjDUTBca2tgydhiMiiGNvxoQgMGWB40DVG75wk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lnAli4Q9; arc=none smtp.client-ip=209.85.128.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1780581435; c=relaxed/simple;
+	bh=xdOeHpgtDPCXpgtRakSCpJbRBMD6e6ZeQ1aGekC0AxI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=l3fNdG41q03s0OU1n+wSy97v3rHI/VSkQZ/t7DA2kmIBiapS7FOqPh/MzUJHfioAQ+MNc+8CQ6rXQCDCylLvpFzeMDYFb60+wFXLeQA8fgrHY7fqm5LIEolhXT9R8jn2R+oui+NHZroPdboND42PwkDUFhNKeEK4b/kIcoueHDc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=kqG33lU1; arc=none smtp.client-ip=209.85.219.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lnAli4Q9"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-490ace40f4bso9105635e9.3
-        for <iommu@lists.linux.dev>; Thu, 04 Jun 2026 06:53:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="kqG33lU1"
+Received: by mail-qv1-f54.google.com with SMTP id 6a1803df08f44-8ccdef9f3d4so7641916d6.2
+        for <iommu@lists.linux.dev>; Thu, 04 Jun 2026 06:57:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780581184; x=1781185984; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6AgZYnyS4i6ey0fjJps0/Fygo8+mCWzQwi4kSxOwSD0=;
-        b=lnAli4Q9oWQZheSpGymbpxOJ7cQYL/qREBJqVNwLrYWUXUo4/YhiHXhQiHGYDmAFT1
-         KNLsUihRsJ+eHj17Q7FGLimvWGnlUPBYQDNvBhqxbqQ0T7eArlTggkF8MKPEL56uCvRf
-         8oUZsQHC8wbIz35et8BtR0FZ7+5dC6pDoVaL2IZJyq5BEMPRzk29f82TEJIrogYSu3Sh
-         edt7F/rfSJVZRrubcF3+BLXw7OxFa8EaQ1XduZRaNbGvtygPPllRzc2OFp3PCGXoucXj
-         /oAQQREuNu8oKVLUsodl2oot07yoStYYQtDPZ/o6PiiaiRGzgo1c+a9Yx8g2Z+SnYEYc
-         uKew==
+        d=ziepe.ca; s=google; t=1780581434; x=1781186234; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=xdOeHpgtDPCXpgtRakSCpJbRBMD6e6ZeQ1aGekC0AxI=;
+        b=kqG33lU1QCnXWAJGWub4b5yUrDFW9x9HswzbZ970xseFk2Vgo25JZY2PQ2Pndv3Ago
+         uYkJ5JZO0X90Eyh1GKMHxiYG/Ocw+Ej0JP8GY6pIuNNWDEDlkCTwlvw9+gpcnpYsvuBv
+         u1WwBTFdPCmC8yYIbwtXD393Rzcp4v4cRjPT6gPZsllJ6vB0veGoR+ptkLpixve8o673
+         gbozEuLrK0ZzYyJ3LCudnGAGWR4SmBYWB7NGghHovckX5W1/VQDD2Gz6JeQw0CO7kfLH
+         7tjjO/TJvBoQ5JMpAN010En/TCOvExMi3icrrjCjC1VW5eNHB/zpBxd5JSFFC+GhW0Wu
+         wn6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780581184; x=1781185984;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=6AgZYnyS4i6ey0fjJps0/Fygo8+mCWzQwi4kSxOwSD0=;
-        b=SHlsjcYX4xK05cjFDY8KYN2oXkh9+I/jLP/9tITTYDdqUmBSlKiWrRe/JitrU6qLSK
-         HgkJpGPZHR1CjyY6YYjqmOyWSbpGLh22j5LfE0b62j6WmIzIk3ylm71YfOSD75/ml8r9
-         eUCrlCrNLgSo5n3b1CTlVs8qTZdoP2Hl9DbOH40knHHBBsOWhBmzQBXyXBlpJcq4NdKZ
-         Hm1Ql8ES2kiisWTT+yYmomc9L5gX7AO/MZPUxi7BKBeQbuNLtIh+maC76pZ5I/VtfxZ3
-         HdMSgVxJLObSs0vjqJSaXDJo50rkN4Leg+HDvqvrWoiBJFC3ckkr+ddr8Y1ZxcuXwnGq
-         FDzA==
-X-Forwarded-Encrypted: i=1; AFNElJ8r5033Lvv+nKHKRPNmwPHDrsO1AmLhO0K4XXZa8GNh1UKDr3h33fstAz/Fr++2Q4t9vnxSyw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy50XIfZkVrbI9qeTNKrebKRRmk1HJ7b3GRXYY8BH5lkpMa67Ld
-	KwB4yRDw6zxumTr+yNDRzmUCD68WSJVvwpe8YeAHVnyXyaKKSz9sL9VT
-X-Gm-Gg: Acq92OF8eJEJO2iYH4SI7rj6Qf3BCB5BxFwqxQ6TTNNH5KUhLWUvSR3MEqn42yX3sB4
-	xv7MqCePaSLaZ6MMmNucHgimPshBOJvAQcBCaQS9koQA+JZ5Qo1ebt9Cwj1Yyh2HZ+4pU0XmBdy
-	qpf40Ld+fBXWtTFZLYAHISYYQbD/IMwuxkUWUd0Eh29g4HzPSuP9A7A9whiGR/genFTssBSBU5W
-	SmVSwOGyFmbThWui6BGgpqXzk3sINNnRbg6C3Ptc5RL8NGiKhPX82mr2aM2xrFquRSY2eaDzl53
-	wslTPEQx/L312BefgUZveaxzyo0dIxOJbU8j5KtXTrU5Nqe3zpZlk60dPF9HeJ7BSxV5x2QvM+1
-	I4r4LBiYL6cWO9AKjIM72q6cdt98G8leULAw3CSOZPz7EpZ7CoWXX2jwYCb7bB9RAlDdo3OOKuj
-	C74KuAe3hdeIUaGMxT32zPCHRHyYzwhvTV90tIf/9bOOpOPuEhUSlQP2ARCRR0z4Q=
-X-Received: by 2002:a05:600c:5288:b0:490:b473:8f78 with SMTP id 5b1f17b1804b1-490b5ec3ae6mr133508845e9.17.1780581184471;
-        Thu, 04 Jun 2026 06:53:04 -0700 (PDT)
-Received: from compiler-rock3b.tailb81abf.ts.net ([2a01:e0a:104a:4d80:be24:11ff:fe12:2776])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4601f0a43e9sm16661068f8f.0.2026.06.04.06.53.03
+        d=1e100.net; s=20251104; t=1780581434; x=1781186234;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=xdOeHpgtDPCXpgtRakSCpJbRBMD6e6ZeQ1aGekC0AxI=;
+        b=Ur5xg3S2xQVcTbAyp8K3NnqhOwLXCAIChW+Ikq3mGo8V8K4RkAyU6gAozhyIBkeIMt
+         lc0seM3e5RjLA2fK27SzZQ52TtKFlPssYRJEExs7YNXTwtV6psN048l9swyDLaY0mfsP
+         zldcmDYEzfS7rvobFfUN5FsYgTUPi6LBZ0mD7YIMTXiicCJMhCWLuHOCi2leW3A9KZaF
+         N/PO9jdRO6FR8BxN6wP2jBahTU8Atk0gbPFw/oMeRCs94xnreVjSS+y3zoH0XkxMpcZX
+         hk/6zlJ9oxAaCAujMVJVGWe9BJ/UDyM85dCTYX2e2WfkmOd0asavaJQvDQeGP2Gy5d6j
+         T1vA==
+X-Forwarded-Encrypted: i=1; AFNElJ97AZ6DPRnDFTqH1we07ejY45xRW14AfI9wkWSWBugym+M78ei533wzn5TecHfHL7MerxxyZA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyo93OkVFLUQvObwv7VZ7NOHucgVvN1q3qfi8QAuAjpp1rIGSfc
+	eqw+6c/CBG3DTeJJ3qqQ2249eD0XlS73EHlxeF+gDmn/5+K3nB1iKC5FqaboxPBLzBU=
+X-Gm-Gg: Acq92OEIkD6DGQbDrU0lY4+SVOXuJCDzmcVFvYnMUZtmtLu57/E/fdd6TTgeSX2wEXH
+	N8gFopMc0lTNoQz2LN2kUwNO2ja30mb6tr0o3bpuVig4QY1P4Jchxw96U6Fx8VS8KGV+cM2G4e7
+	+AEbTWFH8wY6NQZoQMj8K9rhwzsKTDWRAvlf84uwwouM8HGepVcBnOi203I0X++URKpQh7GOUXP
+	AbyIPg3yit2D1J6KNkpRmEAXK7JqMJQrGvQQK5eZ7ucMBi/VV1GHm8/SqWqhNOsQzIbQ2Vns1ZJ
+	7b9/N2VquS3caKzkpRH8Bd/Ua880YCtHyOx2pOo2cJq9AjwGc6oBJJxf8VE38c9E7JZdOTumY/2
+	wqVnM6WaejoarNTsp4f86t0y9UVBqsMyzlrj550dmN51A+sRubmybtqHy+/GD+JB+NzREk96i5c
+	6UhKpVf1KrZlqT95nMvt1+S/czMPxpG0UHgqr1QYYYdXBE/3NaR9iSPfncO+RgKecSe2oC861Su
+	7hxgbUuh2qdSFOWxdr1jzPEpbE=
+X-Received: by 2002:a05:6214:800c:b0:8ce:e098:d974 with SMTP id 6a1803df08f44-8cee098dc5emr22722786d6.6.1780581433691;
+        Thu, 04 Jun 2026 06:57:13 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8cecd07629dsm53598296d6.39.2026.06.04.06.57.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Jun 2026 06:53:04 -0700 (PDT)
-From: Midgy BALON <midgy971@gmail.com>
-To: tomeu@tomeuvizoso.net,
-	ogabbay@kernel.org,
-	heiko@sntech.de,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	joro@8bytes.org,
-	will@kernel.org
-Cc: robin.murphy@arm.com,
-	dri-devel@lists.freedesktop.org,
-	linux-rockchip@lists.infradead.org,
-	devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [RFC PATCH v3 9/9] arm64: dts: rockchip: rk3568-rock-3b: Enable the NPU
-Date: Thu,  4 Jun 2026 13:52:55 +0000
-Message-Id: <20260604135255.62682-10-midgy971@gmail.com>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20260604135255.62682-1-midgy971@gmail.com>
-References: <20260604135255.62682-1-midgy971@gmail.com>
+        Thu, 04 Jun 2026 06:57:13 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wV8ZM-00000008FiY-2nrt;
+	Thu, 04 Jun 2026 10:57:12 -0300
+Date: Thu, 4 Jun 2026 10:57:12 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Sumit Semwal <sumit.semwal@linaro.org>
+Cc: Maxime Ripard <mripard@kernel.org>, Jiri Pirko <jiri@resnulli.us>,
+	Christoph Hellwig <hch@infradead.org>,
+	"T.J. Mercier" <tjmercier@google.com>, maddy@linux.ibm.com,
+	mpe@ellerman.id.au, npiggin@gmail.com, chleroy@kernel.org,
+	linuxppc-dev@lists.ozlabs.org, lkp@intel.com,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-mm@kvack.org, agordeev@linux.ibm.com,
+	gerald.schaefer@linux.ibm.com, linux-s390@vger.kernel.org,
+	Dan Williams <djbw@kernel.org>,
+	Tom Lendacky <thomas.lendacky@amd.com>, x86@kernel.org
+Subject: Re: [PATCH] powerpc: Export set_memory_encrypted and
+ set_memory_decrypted
+Message-ID: <20260604135712.GV2487554@ziepe.ca>
+References: <20260522225853.878411-1-tjmercier@google.com>
+ <ahPqbfH54R3JJyaV@infradead.org>
+ <20260527160716.GN2487554@ziepe.ca>
+ <20260604-dangerous-tuatara-of-sympathy-28e05e@houat>
+ <CAO_48GEJsg4X7++zg-ztQgVibY_FjjManaA5_W3usjicGUQPdg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAO_48GEJsg4X7++zg-ztQgVibY_FjjManaA5_W3usjicGUQPdg@mail.gmail.com>
 
-Enable the NPU and its IOMMU on ROCK 3B.
+On Thu, Jun 04, 2026 at 12:51:49PM +0530, Sumit Semwal wrote:
 
-vdd_npu is marked always-on so the rail is up before genpd de-idles the
-NPU NoC at power-on: the PMU de-idle handshake needs the rail powered.
-The PVTPLL compute clock is brought up later by the driver.
+> Given that Christoph's objection is not really about the modules part,
+> but that the set_memory_{encrypted,decrypted} should not be used here,
+> one option is to revert 78b30c50a7ac until that issue is sorted out?
 
-Signed-off-by: Midgy BALON <midgy971@gmail.com>
----
- arch/arm64/boot/dts/rockchip/rk3568-rock-3b.dts | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+Please no, we have stuff already using this so it would be a
+functional regression. Revert making heaps into a module since that
+doesn't have a functional regression.
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3568-rock-3b.dts b/arch/arm64/boot/dts/rockchip/rk3568-rock-3b.dts
-index 69001e453732e..7ac780ed313d5 100644
---- a/arch/arm64/boot/dts/rockchip/rk3568-rock-3b.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3568-rock-3b.dts
-@@ -330,8 +330,10 @@ regulator-state-mem {
- 
- 			vdd_npu: DCDC_REG4 {
- 				regulator-name = "vdd_npu";
-+				regulator-always-on;
-+				regulator-boot-on;
- 				regulator-initial-mode = <0x2>;
--				regulator-min-microvolt = <500000>;
-+				regulator-min-microvolt = <825000>;
- 				regulator-max-microvolt = <1350000>;
- 				regulator-ramp-delay = <6001>;
- 
-@@ -787,3 +789,13 @@ vp0_out_hdmi: endpoint@ROCKCHIP_VOP2_EP_HDMI0 {
- 		remote-endpoint = <&hdmi_in_vp0>;
- 	};
- };
-+
-+&rknn_core_0 {
-+	npu-supply = <&vdd_npu>;
-+	status = "okay";
-+};
-+
-+&rknn_mmu_0 {
-+	status = "okay";
-+};
-+
--- 
-2.39.5
-
+Jason
