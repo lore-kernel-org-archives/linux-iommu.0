@@ -1,131 +1,116 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA961304976;
-	Thu,  4 Jun 2026 14:57:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 191663C09EB;
+	Thu,  4 Jun 2026 16:04:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780585073; cv=none; b=dLIXsapRUswz5TncDYffzaMLOAleLxQEPm/5+udEAtJmQCCBSenXkUX+dXJmScef3NG+3CRgEdiqEA0NZr0NlRfrOz7eXkRmMNXqHyywrLLykwMf4JVEeINd3yD5RZkFP01jxNHAPQjPkQgp5cYjmVS4f9Y7GG+/itPYMBigvv4=
+	t=1780589070; cv=none; b=PXCFDhuBzVcTEyGPD1QjoeDVYWauDSJqrkeFQxXQ2gj4LXN91Y3nIrxUN0xPXRdMY0SHGaR7xjZS5LiKx5f1NCzhdSEiePdpdpvb6T+RfT3Q4yQlFnsqptCbJ/WWmKvLdXFqZH7jXOygbGAZxwR5H/gtuCKVEyQecavQicBTjDA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780585073; c=relaxed/simple;
-	bh=8cpjPIvztbnevrPtt4AvyqY6O2DjvwxefutWTr7MmSQ=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=to4jr29QO2f8v7SGTDPesh3mbfinuxRlkunrN1yR9rDPlMniciaBJS+P8Tu33e8jllk9QkI2JLk/A45pWYPDu52mULSRLL3XPVY+meqSlNJu31nhYq0yNWl19BSDKqkDXk52YUPHIftI7vjCO85nVnsrLEz4yFhFYkKj4Oruhck=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kPWVmrL8; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780589070; c=relaxed/simple;
+	bh=+XICY+YDEgurFpXgath+1laCa4If6hpRbFiUZcxI3W4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=T9fIscoBHA4MM8WqYx9IkkHhMPZsoKBi3wv3onwapfzDOXqHnLv58EG/sICRu5pd7yCWA2qoFXpjR0/lc3zO7WtFPTe//mPQ26sImiqFcVwUUV0rWPHDTtOZF2DPqvdhywEwAYk8cRyqCfZW2Aojv6XIg0dFBZrCcx8y99HmZqA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bhvU6qpa; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kPWVmrL8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44FCF1F00898;
-	Thu,  4 Jun 2026 14:57:40 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bhvU6qpa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45C3D1F00893;
+	Thu,  4 Jun 2026 16:04:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780585071;
-	bh=hYpE8ScA3WgBcN3vhg/AglZszMwb5uF85NWSIx0kbMQ=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=kPWVmrL8guiyc8M71azpVpri2D/uzclh6JoLyKNzyoo4OxN4agAWchTRxJjWIqJ2q
-	 UtcCBus1mVx0a/I8DtboPOq/GBjzm61oZmXhDyCjcmifakXbxSMF72Q9Vr5TzFoFkh
-	 Q8TOXNTKOqDXevhNGLhbxVb/6qqknzC5ebPnVeNlk37O5tQ+YjJ50srz4rcVPiOTCZ
-	 zoUWZTgYQ9VSABiBHxcdG4TxBCB9zKt/fo3E0ZZLIZoVDRDTTcOdIoi6vJKJ2Dg7L3
-	 j32qrNj5EkbQiih4TEEVu90fxL2Lx7UWE3w8deLFZ3bhMFmkT/hb4euyZAfcM9jKg8
-	 bkPIf1Pnb7Z4A==
-X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Michael Kelley <mhklinux@outlook.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Michael Kelley <mhklinux@outlook.com>
-Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>,
-	Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	"linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-	"linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	"x86@kernel.org" <x86@kernel.org>,
-	Jiri Pirko <jiri@nvidia.com>
-Subject: RE: [PATCH v5 05/20] dma-pool: track decrypted atomic pools and
- select them via attrs
-In-Reply-To: <SN6PR02MB4157F94C902B78E55E99372DD4102@SN6PR02MB4157.namprd02.prod.outlook.com>
-References: <20260522042815.370873-1-aneesh.kumar@kernel.org>
- <20260522042815.370873-6-aneesh.kumar@kernel.org>
- <SN6PR02MB415754E94A9505C2B9739E4DD4092@SN6PR02MB4157.namprd02.prod.outlook.com>
- <yq5afr35sciu.fsf@kernel.org>
- <SN6PR02MB4157D9955A93244014AB7978D4122@SN6PR02MB4157.namprd02.prod.outlook.com>
- <20260603005454.GM2487554@ziepe.ca>
- <SN6PR02MB4157F94C902B78E55E99372DD4102@SN6PR02MB4157.namprd02.prod.outlook.com>
-Date: Thu, 04 Jun 2026 20:27:36 +0530
-Message-ID: <yq5apl26qrof.fsf@kernel.org>
+	s=k20260515; t=1780589068;
+	bh=7mgnBtdEgLUmZt02VyMe6Hui1aO83yGWW+LKR/CGzm8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=bhvU6qparCN4gzuFi2YM/txdBRxic4bIE1acQCa3EysEVT2ygI6dS8PULlfI3ynOp
+	 IJQpmFLMNXmC94p0H6sV0LdgkHG13rQ8J04IjCkVSvMrJRy/Tyf6zHIKsVjF/mpXAv
+	 EKkJ8hkCHLW0dWF4OjuADN2K9zzuGcU5xSqL4uEct90cKf4QoBo7p9cKjIBQ31NnWD
+	 fPs4Xo+bDvQQJmJvdB8V0aulluzcjInFGZH+VLy0z/uNFV7Og/CVu/wqZu0zk3mprn
+	 Arf3zwmx3vhtvC9RlZphW0cj/oDBmAAmhsdVr7HqudMjlJ2syKR2LvwpDWzV5mvtV0
+	 g51BAIvoNjsXg==
+Date: Thu, 4 Jun 2026 17:04:49 +0100
+From: Jean-Philippe Brucker <jpb@kernel.org>
+To: Maoyi Xie <maoyixie.tju@gmail.com>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	virtualization@lists.linux.dev
+Subject: Re: [PATCH 2/2] iommu/virtio: Avoid using the list iterator past the
+ loop in viommu_add_resv_mem()
+Message-ID: <20260604160449.GA1619938@myrica>
+References: <CAHPEe=G-FZvEXjkE+vAXN5MHXCtsOaUoKwg2RQL6m=om+c20hQ@mail.gmail.com>
+ <20260604051816.2976221-1-maoyixie.tju@gmail.com>
+ <20260604051816.2976221-3-maoyixie.tju@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260604051816.2976221-3-maoyixie.tju@gmail.com>
 
-Michael Kelley <mhklinux@outlook.com> writes:
+On Thu, Jun 04, 2026 at 01:18:16PM +0800, Maoyi Xie wrote:
+> viommu_add_resv_mem() walks vdev->resv_regions to find the insertion
+> point. When every element has a smaller start address, the
+> list_for_each_entry() iterator ends up one past the last entry, and
+> &next->list then aliases the list head, so the following list_add_tail()
+> still appends at the tail. The result is correct, but using the iterator
+> after the loop is undefined per the list_for_each_entry() contract.
 
-> From: Jason Gunthorpe <jgg@ziepe.ca> Sent: Tuesday, June 2, 2026 5:55 PM
->> 
->> On Tue, Jun 02, 2026 at 02:24:40PM +0000, Michael Kelley wrote:
->> 
->> > Except that in a normal VM, the "unencrypted" pool attribute does *not*
->> > describe the state of the memory itself.  In a normal VM, the memory is
->> > unencrypted, but the "unencrypted" pool attribute is false. That
->> > contradiction is the essence of my concern.
->> 
->> I would argue no..
->> 
->> When CC is enabled the default state of memory in a Linux environment
->> is "encrypted". You have to take a special action to "decrypt" it.
->> 
->> Thus the default state of memory in a non-CC environment is also
->> paradoxically "encrypted" too. 
->
-> The need to have such an unnatural premise is usually an indication
-> of a conceptual problem with the overall model, or perhaps just a
-> terminology problem. 
->
-> Here's a proposal. The new DMA attribute is DMA_ATTR_CC_SHARED.
-> Name the pool attribute "cc_shared" instead of "unencrypted". Having
-> "cc_shared" set to false in a normal VM doesn't lead to the non-sensical
-> situation of claiming that a normal VM is encrypted. The boolean
-> "unencrypted" parameter that has been added to various calls also
-> becomes "cc_shared".  If "CC_SHARED" is a suitable name for the DMA
-> attribute, it ought to be suitable as the pool attribute. And everything
-> matches as well.
->
+Thank you for removing this hack, though I don't find a contract in the
+list_for_each_entry() doc, and the fix still accesses a cursor outside the
+loop. Since you mentioned C11 UB in another email, do you have more info
+on the precise operation which is undefined in the kernel (container_of
+into an invalid object or the &next->list addition)?  Just so I can avoid
+it in the future.
 
-That is better. It would also simplify:
+Anyway, thanks for the patch. If this is just general cleanup that's fine
+too.
 
-	if (mem->unencrypted != !!(attrs & DMA_ATTR_CC_SHARED))
-		return NULL;
+Reviewed-by: Jean-Philippe Brucker <jpb@kernel.org>
 
-to
-	if (mem->cc_shared != !!(attrs & DMA_ATTR_CC_SHARED))
-		return NULL;
+> 
+> The loop only needs a list_head as the insertion point, so iterate with
+> list_for_each() and keep the typed list_entry() dereference inside the loop
+> body. No functional change.
+> 
+> Suggested-by: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Maoyi Xie <maoyixie.tju@gmail.com>
 
-
-I already sent a v6 in the hope of getting this merged for the next
-merge window. Should I send a v7, or would you prefer that I do the
-rename on top of v6?
-
--aneesh
+> ---
+>  drivers/iommu/virtio-iommu.c | 10 +++++++---
+>  1 file changed, 7 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+> index 587fc13197f1..1d58d6b626a5 100644
+> --- a/drivers/iommu/virtio-iommu.c
+> +++ b/drivers/iommu/virtio-iommu.c
+> @@ -486,7 +486,8 @@ static int viommu_add_resv_mem(struct viommu_endpoint *vdev,
+>  	size_t size;
+>  	u64 start64, end64;
+>  	phys_addr_t start, end;
+> -	struct iommu_resv_region *region = NULL, *next;
+> +	struct iommu_resv_region *region = NULL;
+> +	struct list_head *pos;
+>  	unsigned long prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+>  
+>  	start = start64 = le64_to_cpu(mem->start);
+> @@ -520,11 +521,14 @@ static int viommu_add_resv_mem(struct viommu_endpoint *vdev,
+>  		return -ENOMEM;
+>  
+>  	/* Keep the list sorted */
+> -	list_for_each_entry(next, &vdev->resv_regions, list) {
+> +	list_for_each(pos, &vdev->resv_regions) {
+> +		struct iommu_resv_region *next =
+> +			list_entry(pos, struct iommu_resv_region, list);
+> +
+>  		if (next->start > region->start)
+>  			break;
+>  	}
+> -	list_add_tail(&region->list, &next->list);
+> +	list_add_tail(&region->list, pos);
+>  	return 0;
+>  }
+>  
+> -- 
+> 2.34.1
+> 
