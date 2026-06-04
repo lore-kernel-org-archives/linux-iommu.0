@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FBDF3D47A9
-	for <iommu@lists.linux.dev>; Thu,  4 Jun 2026 06:05:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5ABBA3D565A
+	for <iommu@lists.linux.dev>; Thu,  4 Jun 2026 06:05:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780553133; cv=none; b=bRBQPrceWOxwDZCIuc2QF5VbOwqC0T0xO+f8Q3ndOfWS8srWKcN8CptbUmD89y/wDLMtv69bBGjFIWRW2infHsrSA1x7NbsQICYq5EnyCJpVIm2v5aQNAODroLrxXQpOeh4IMnHlqyixQuQlbNh887OEgzH4bYw35swFoufHMhg=
+	t=1780553135; cv=none; b=e3G6wqJLeNRMKx5AXYhsbBsl7nOBV8RAO7JbZdhYjRh3IQWcgidVsD/0CA9JGD7dfr3ftJ3X3nRD48Dc2z9vgYpfamRwgF3eut9nJBRZPzVQ7o1ZdFjX8KAvu3RDAs1pQvAQHCLGYuUMlbRypx/OoZkUaJL6hLVDqrmNWhL8aqo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780553133; c=relaxed/simple;
-	bh=xm53TpFRrN5dL4C2+v5j9/m5g0/qjhftnOUG7WU1TT0=;
+	s=arc-20240116; t=1780553135; c=relaxed/simple;
+	bh=ZNuUnQtm2QZ2JMwplBFeCc5TjvOkVGByw+irME/PHDE=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=LLzxraQfzZ+4h/nXEaRoj1A2yOa2w8WABr3oRtEGmQZoi1JSYMOTY8ej87Y0us9fzMB4AgKb86znyhJczMVZix5f83+IjIKEVmRn+oLuxYgFWiVeyCB2PXNrEeDqnRYh1p/k2tmTt22K/X8eHnjWQKZw0IH1Y/8Gbh7/mj9mNEw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fS03G2si; arc=none smtp.client-ip=198.175.65.16
+	 MIME-Version; b=NIIDsRFrUOqCgRBlASJlj64dUGxzHU6uWKRZt+aT6hF8exmXwIozm41fif1k7iZIE3a9NubgkUpcq5rFQfJ4LEiCjvKsKHmm+x4XNeCKmonY6K+5RpP4Os2cnZ1Xuac0V2/1WAsGAffVUeXzYE5MDLTPOCCJmNf6qieochUxt0w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Eu5o/8oD; arc=none smtp.client-ip=198.175.65.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fS03G2si"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Eu5o/8oD"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780553133; x=1812089133;
+  t=1780553135; x=1812089135;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=xm53TpFRrN5dL4C2+v5j9/m5g0/qjhftnOUG7WU1TT0=;
-  b=fS03G2siZgLsyc7656MI6LqMxeiyJQAp3UsumPmkVy4ADjJWOxKnFEfh
-   NcywFl6E369NH34OAJ5yQPjdKiUBsIQ0tFXplgrVoS1q3twI4H1BL4BmO
-   4vIG6ybICQi6TeTNRPX5uPPIQCixT7BXkuwCrSNHJzn2lmdJ6zoHwiSvV
-   938KQBziW9gXvBLhLA2hr4noQqCV2TGcqJBWRb2iFGvU7MkdKHvE2jwkP
-   PCbpt+WQhCEtlgWVLnVv7WSp4w7oiFYSqV2UuxRdD2H/GxebgF8FAZbzt
-   e3LQzCplrGKhIopexgL1D7yaZ7qZgoYUSW5hK9qvSZ+pDa9fCXslS9uCD
-   w==;
-X-CSE-ConnectionGUID: bpsZlhpxS36CNF3mb+hkTQ==
-X-CSE-MsgGUID: HGfL54JXSEGPgdCD+8m1nw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11806"; a="81554235"
+  bh=ZNuUnQtm2QZ2JMwplBFeCc5TjvOkVGByw+irME/PHDE=;
+  b=Eu5o/8oDvzIr569IFXsDGBgbWu0faROx2NENNxpnF7GjMtWef9/4NqMl
+   idT3wlxSIyBPeicuU0EtoeTeGMmBFd1XbBO3nFLxFSt1HZvQuiKe+Wu1i
+   0wxUE1Gp4BAhOBop99y4VHhbPvh4LWGvGvY8/lVPDx6tjhojIaqq4V43m
+   cMZLn9E3KKlHpIvc5apbPNimM5ikXOt61yJj1f+/tU5pItnOT57ps5LlC
+   BkPPElZXMTuiGm9dbnZOntxJLQHXcafRhhb0VgYJVRUeHSyTfgiYj6H7t
+   Uih2BUYQHYnmv5m/uxlGjFayBDfn6a6KfSxdqqEwvC+W6HPjlAO4ma2O4
+   g==;
+X-CSE-ConnectionGUID: RQih4SkJQem5omiCVJwoPA==
+X-CSE-MsgGUID: VmdJs2cBQIKg8p4kY9bBBg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11806"; a="81554242"
 X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
-   d="scan'208";a="81554235"
+   d="scan'208";a="81554242"
 Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2026 23:05:33 -0700
-X-CSE-ConnectionGUID: Ku4LxLOlS2CqEfM8umyqIA==
-X-CSE-MsgGUID: IKkWEaOhRt2uftN5QLxqWA==
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2026 23:05:35 -0700
+X-CSE-ConnectionGUID: fFARWh9CSsyHr6vzFbJjVg==
+X-CSE-MsgGUID: gOU0XIbgT8iOclobibFcwg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
-   d="scan'208";a="268112151"
+   d="scan'208";a="268112158"
 Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa002.fm.intel.com with ESMTP; 03 Jun 2026 23:05:30 -0700
+  by fmviesa002.fm.intel.com with ESMTP; 03 Jun 2026 23:05:32 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: Pranjal Shrivastava <praan@google.com>,
@@ -51,9 +51,9 @@ Cc: Pranjal Shrivastava <praan@google.com>,
 	Michael Bommarito <michael.bommarito@gmail.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/5] iommu/vt-d: Avoid WARNING in sva unbind path
-Date: Thu,  4 Jun 2026 14:03:06 +0800
-Message-ID: <20260604060311.365074-2-baolu.lu@linux.intel.com>
+Subject: [PATCH v2 2/5] iommu/vt-d: Clear Present bit before tearing down scalable-mode context entry
+Date: Thu,  4 Jun 2026 14:03:07 +0800
+Message-ID: <20260604060311.365074-3-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260604060311.365074-1-baolu.lu@linux.intel.com>
 References: <20260604060311.365074-1-baolu.lu@linux.intel.com>
@@ -65,102 +65,58 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The Intel IOMMU driver allows SVA on devices even if they do not support
-PCI/PRI. Commit 39c20c4e83b9 ("iommu/vt-d: Only handle IOPF for SVA when
-PRI is supported") modified the SVA bind path to allow this configuration
-by skipping IOPF enablement when PRI is missing. However, it failed to
-update the unbind path.
+From: Michael Bommarito <michael.bommarito@gmail.com>
 
-This creates an imbalance: the unbind path attempts to disable IOPF for
-a device that never had it enabled, triggering a WARNING in
-intel_iommu_disable_iopf():
+device_pasid_table_teardown() zeroes the 128-bit scalable-mode context
+entry with context_clear_entry() while the Present bit is still set. This
+creates a window where the hardware can fetch a torn entry, with some
+fields already zeroed while Present is still set, leading to unpredictable
+behavior or spurious faults. The context-cache invalidation is issued only
+after the entry has been zeroed, and intel_pasid_free_table() then frees
+the PASID directory pages, so the IOMMU can keep walking a stale Present=1
+entry that points at freed memory.
 
- WARNING: drivers/iommu/intel/iommu.c:3475 at intel_iommu_disable_iopf+0x4f/0x90d
- Call Trace:
-  <TASK>
-  blocking_domain_set_dev_pasid+0x50/0x70
-  iommu_detach_device_pasid+0x89/0xc0
-  iommu_sva_unbind_device+0x73/0x150
-  xe_vm_close_and_put+0x4d2/0x1200 [xe]
+While x86 provides strong write ordering, the compiler may reorder the two
+64-bit writes to the entry, and the hardware fetch is not guaranteed to be
+atomic with respect to multiple CPU writes.
 
-Fix this by bypassing IOPF operations for SVA domains on non-PRI hardware
-in both the bind and unbind paths.
+Commit c1e4f1dccbe9d ("iommu/vt-d: Clear Present bit before tearing down
+context entry") fixed this exact pattern in domain_context_clear_one() and
+the copied-context path, but device_pasid_table_teardown() was not
+converted.
 
-Fixes: 39c20c4e83b9 ("iommu/vt-d: Only handle IOPF for SVA when PRI is supported")
-Cc: stable@vger.kernel.org
-Reported-by: Nareshkumar Gollakoti <naresh.kumar.g@intel.com>
+Align it with the "Guidance to Software for Invalidations" in the VT-d
+spec, Section 6.5.3.3, using the same ownership handshake as the sibling
+fix: clear only the Present bit, flush it to the IOMMU, perform the
+context-cache invalidation, and only then zero the rest of the entry.
+
+Fixes: 81e921fd32161 ("iommu/vt-d: Fix NULL domain on device release")
+Signed-off-by: Michael Bommarito <michael.bommarito@gmail.com>
+Assisted-by: Claude:claude-opus-4-7
+Link: https://lore.kernel.org/r/20260528025557.3209367-1-michael.bommarito@gmail.com
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Link: https://lore.kernel.org/r/20260519052917.3729796-1-baolu.lu@linux.intel.com
 ---
- drivers/iommu/intel/iommu.h | 11 +++++++++++
- drivers/iommu/intel/svm.c   | 12 ++++--------
- 2 files changed, 15 insertions(+), 8 deletions(-)
+ drivers/iommu/intel/pasid.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index ef145560aa98..775f1c4ae346 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -1254,18 +1254,29 @@ void intel_iommu_disable_iopf(struct device *dev);
- static inline int iopf_for_domain_set(struct iommu_domain *domain,
- 				      struct device *dev)
- {
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+
- 	if (!domain || !domain->iopf_handler)
- 		return 0;
+diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+index 89541b74ab8c..40910dc7363b 100644
+--- a/drivers/iommu/intel/pasid.c
++++ b/drivers/iommu/intel/pasid.c
+@@ -748,10 +748,12 @@ static void device_pasid_table_teardown(struct device *dev, u8 bus, u8 devfn)
+ 	}
  
-+	/* SVA with non-IOMMU/PRI IOPF handling is allowed. */
-+	if (domain->type == IOMMU_DOMAIN_SVA && !info->pri_supported)
-+		return 0;
-+
- 	return intel_iommu_enable_iopf(dev);
+ 	did = context_domain_id(context);
+-	context_clear_entry(context);
++	context_clear_present(context);
+ 	__iommu_flush_cache(iommu, context, sizeof(*context));
+ 	spin_unlock(&iommu->lock);
+ 	intel_context_flush_no_pasid(info, context, did);
++	context_clear_entry(context);
++	__iommu_flush_cache(iommu, context, sizeof(*context));
  }
  
- static inline void iopf_for_domain_remove(struct iommu_domain *domain,
- 					  struct device *dev)
- {
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+
- 	if (!domain || !domain->iopf_handler)
- 		return;
- 
-+	if (domain->type == IOMMU_DOMAIN_SVA && !info->pri_supported)
-+		return;
-+
- 	intel_iommu_disable_iopf(dev);
- }
- 
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 57cd1db7207a..fea10acd4f02 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -164,12 +164,9 @@ static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
- 	if (IS_ERR(dev_pasid))
- 		return PTR_ERR(dev_pasid);
- 
--	/* SVA with non-IOMMU/PRI IOPF handling is allowed. */
--	if (info->pri_supported) {
--		ret = iopf_for_domain_replace(domain, old, dev);
--		if (ret)
--			goto out_remove_dev_pasid;
--	}
-+	ret = iopf_for_domain_replace(domain, old, dev);
-+	if (ret)
-+		goto out_remove_dev_pasid;
- 
- 	/* Setup the pasid table: */
- 	sflags = cpu_feature_enabled(X86_FEATURE_LA57) ? PASID_FLAG_FL5LP : 0;
-@@ -184,8 +181,7 @@ static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
- 
- 	return 0;
- out_unwind_iopf:
--	if (info->pri_supported)
--		iopf_for_domain_replace(old, domain, dev);
-+	iopf_for_domain_replace(old, domain, dev);
- out_remove_dev_pasid:
- 	domain_remove_dev_pasid(domain, dev, pasid);
- 	return ret;
+ static int pci_pasid_table_teardown(struct pci_dev *pdev, u16 alias, void *data)
 -- 
 2.43.0
 
