@@ -1,199 +1,182 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6D8E237C930
-	for <iommu@lists.linux.dev>; Wed,  3 Jun 2026 23:56:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mail-pf1-f193.google.com (mail-pf1-f193.google.com [209.85.210.193])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DC2627FD4F
+	for <iommu@lists.linux.dev>; Thu,  4 Jun 2026 01:49:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.193
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780530970; cv=none; b=jgwjtICSK0Y/GkoogSPzdogoxJknYitqM6Z4cif5bnx4Rsf5r39CrKTJLHH7jrKNA/50Y9X9KYA7bTrT2gDBBk6AQ2lYVxqiNFAquLJH40MicpA23/x9nItZGMDR017aypAHelLSwdmbcIyTXi1FfzJFq8GJA0oP0E31IWNfKCk=
+	t=1780537744; cv=none; b=Y1hhGMuSjW0C09IpQ9wXW5YRjbtgutgN3Z/n1SSQY6iXH/YWPM0+QUZVF7AB9YrCEbNzp40K4bSxiAu0hS5bqBrAFh0V8yNYdcA3MP3NQY2iAqfJbzsPbDD7voyg5dEe+USavZiLq0NiCVXMuBS0A2nisJ9dVpStAQtuo2IL5eU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780530970; c=relaxed/simple;
-	bh=WPPaD+cosOhIgBRIvRgBpZDA9QOcO9PXvpxxnO+Y6ic=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=cjU07VtTfso4Dt7d2KPTKc0YiFMyNYyIKmbqoJhX9nYHKFUnMbOUDC/hOv35XRk3wg3TQNRVlJ/CkOsalxfGouOKABsqB6QEMVk8Zc3awP4ylCY9nLDsn0atEgDqgRdwJpHd/YvyRfuMfs0993SzQE9s1FEYMeFOGEGpIThUriI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=fPeHkIoS; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1780537744; c=relaxed/simple;
+	bh=gamBR4h2rf1Imsoj8RobEGb1Bt2afo71z/VsoMkVocw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=DHsvBVzbIRzUZrQijVe/WVDxL0/QbCPTMfXZj7RWPPD0RNvfh8TL2uY/DlMPk/zhcTK7NAIoyNjCK2XcdYnb40hvA0pUOYv9toR6Xz5IFANT60ihLFOrsnMnoSfzhQwAhxc/+5SREG+RP+RnUlIbNmkQE8aYcYZ6XPhFLVhFTZs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YCEWfmnx; arc=none smtp.client-ip=209.85.210.193
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="fPeHkIoS"
-Received: from localhost (unknown [52.148.140.42])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 686B620B7168;
-	Wed,  3 Jun 2026 16:55:51 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 686B620B7168
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1780530951;
-	bh=M6jDSCL48RubWv6igHsQlwzlRhKiRg4iJ9FQaJmT6hU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=fPeHkIoSJdsAltLiKHpjs383o0Q9HTlt7cR/k1ToFwYettIdRlt/1Jciyo0E9rQI+
-	 zA25qehpfEC2s0uCxQmovK+QS1+VPY8L4GaVFcOKcQN001y/BV9aAXiUhUsVzCcO7Y
-	 myjk5cl8R1pnxwLpefEnfXN4fSljh5XtxPX6pdeY=
-Date: Wed, 3 Jun 2026 16:56:04 -0700
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Mukesh R <mrathor@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- mhklinux@outlook.com, wei.liu@kernel.org, zhangyu1@linux.microsoft.com,
- schakrabarti@linux.microsoft.com, jacob.pan@linux.microsoft.com
-Subject: Re: [PATCH V2] iommu/hyperv: Create hyperv subdirectory under
- drivers/iommu
-Message-ID: <20260603165604.00006e9f@linux.microsoft.com>
-In-Reply-To: <20260603225010.1347623-1-mrathor@linux.microsoft.com>
-References: <20260603225010.1347623-1-mrathor@linux.microsoft.com>
-Organization: LSG
-X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YCEWfmnx"
+Received: by mail-pf1-f193.google.com with SMTP id d2e1a72fcca58-842307473b5so113577b3a.2
+        for <iommu@lists.linux.dev>; Wed, 03 Jun 2026 18:49:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1780537741; x=1781142541; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=R9vTs/JHnHpc6BmzGsq91wlnVhg5cqc1lx/XeBVEZpQ=;
+        b=YCEWfmnxtoldt9WwZZWFU1mk86ArLHOugPaqXDiVYMY2tjt0FPHlqVjc4ZO81mOikw
+         TzqCNT5mpbx/0SVunQcY/luC58X8pQAXh84pVMnyvVd58nc8JpSMNKWZAbyRdQWj+4ho
+         f792gSgBXt9sIz0RH4w1mFUPpCJ/xmNLoklLassuJiLGzJc5i9uuYb8JtotSfDQob1VT
+         OVpJOMPw8FqD8aJDuS0vNSdLdp2aNx/hdqUGXSeczY5iEpiUAzk9pI/wXGfucSXFutHY
+         Ke7PulJUnIrnHhY9LV/sEaRN044xrKDEs+JdOB76jOZjR2htROQFKuC+WxThfhhMHtR5
+         sfHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780537741; x=1781142541;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=R9vTs/JHnHpc6BmzGsq91wlnVhg5cqc1lx/XeBVEZpQ=;
+        b=sFJrz1BWgVkJSN+XCjHv/96XqSeMlZmFN/gGuqMT8/EsIuQa1EMsbMxzgpln9vefP9
+         QeCzm+QobSzS8Bp65F2d+pacYME8cHfFRVPluhux5pohHYs9dR6p2rppm7QaAMTWXnxV
+         vU2HiZawE+sBbHLM8zYXR5CugFhEsgVHBVAzHk1v8Io9ouspWS89twbCCexZKFl3iQ62
+         tPVwvyqcN+qWBiwRTyrh/tOiS4rZuVppjnfEF84x8A2ymXe6nNIFRJMv+3psoLKIhNAt
+         B//0GldbWlLHHgBG4DLp5EaFxquUEhHfxzL74xTmPj+hiZnMNvH7HRmWK5HSlUILMidd
+         CFIg==
+X-Forwarded-Encrypted: i=1; AFNElJ8voabAQpKnZ0y+dmLwZwIyA/CtbV6+g7rv/gsXAcFjCpaHpiFHOEg1LxEXZGOtkCotVUy3sg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyVUfQHR39S7y3RGPt1DZCDNQce5sq2EsbzndskLB/7BNUuGmeO
+	7bKnc0VydJXyS9xeOa8pqOJt5NVXFB9ySZiDpzcxa/6HdpVw2f8i2wEV
+X-Gm-Gg: Acq92OFfye8fVxtgQTQhxIT8xOfC3Egx/f+ymOoW+NgcKLzsr+4fT0f3+iCeAT+OKhp
+	Tt46qVp8EswjnC1zR9L0p1FDXYCICV8eVhTuiwBG8BKT1p7uhlFOeaaXWJPq1BGyjbTtSItw6Nh
+	kKgNVCAWKRz9NDSeWbQN00fyiUTCHlcYxm16LcnL+tZYlNRUSq4/0XAid2vmr4Y0agsySmCYl6V
+	NumQOG2LNXv8ZjJI2SHmZ5F33Ec4eh2kLNpAzcLf+/B6qDwNGuZWRWGpXnPexru66AegA4J8Dq4
+	VrLBH4cgijUWBkAtXRG1PDh/UQA6CDf8J7e9ByjjjAYyoSsI5ifLxUCMDsbo8kMeoN54dbtcqeJ
+	mNTmx3W2mW1gpp62q80I4hs3u7u4gIZtNsZIVlgquUBhDXKfQn7um/JXYx936L8xkNJN0Faw0B1
+	ksHu3/LuxRFcITl9ZakdyxEDAMxiZd4BbNCPOBzVQH8g==
+X-Received: by 2002:aa7:8882:0:b0:842:38d2:a35f with SMTP id d2e1a72fcca58-84284e8dc75mr6032800b3a.31.1780537741272;
+        Wed, 03 Jun 2026 18:49:01 -0700 (PDT)
+Received: from [10.125.112.20] ([210.184.73.204])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84282350f8csm4439444b3a.14.2026.06.03.18.48.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Jun 2026 18:49:00 -0700 (PDT)
+Message-ID: <8e088395-c22d-4bc8-9e58-84235af1e56b@gmail.com>
+Date: Thu, 4 Jun 2026 09:48:44 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 03/11] of: reserved_mem: avoid post-init UAF when
+ alloc_reserved_mem_array() fails
+To: Rob Herring <robh@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ loongarch@lists.linux.dev, linux-riscv@lists.infradead.org,
+ devicetree@vger.kernel.org, kexec@lists.infradead.org,
+ iommu@lists.linux.dev, zhaomeijing@lixiang.com, catalin.marinas@arm.com,
+ will@kernel.org, chenhuacai@kernel.org, kernel@xen0n.name, pjw@kernel.org,
+ palmer@dabbelt.com, aou@eecs.berkeley.edu, alex@ghiti.fr,
+ saravanak@kernel.org, akpm@linux-foundation.org, bhe@redhat.com,
+ rppt@kernel.org, pasha.tatashin@soleen.com, pratyush@kernel.org,
+ ruirui.yang@linux.dev, m.szyprowski@samsung.com, robin.murphy@arm.com,
+ quic_obabatun@quicinc.com
+References: <20260527032917.3385849-1-chenwandun1@gmail.com>
+ <20260527032917.3385849-4-chenwandun1@gmail.com>
+ <20260602162450.GA442759-robh@kernel.org>
+ <79932afc-2e91-4a54-aff9-f550be784c36@gmail.com>
+ <CAL_JsqJOC1ko1Len3Dyc5SNKrHmhQn9uiDAkFfVbYa2wAfFUTg@mail.gmail.com>
+Content-Language: en-US
+From: Wandun <chenwandun1@gmail.com>
+In-Reply-To: <CAL_JsqJOC1ko1Len3Dyc5SNKrHmhQn9uiDAkFfVbYa2wAfFUTg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Hi Mukesh,
 
-On Wed,  3 Jun 2026 15:50:10 -0700
-Mukesh R <mrathor@linux.microsoft.com> wrote:
 
-> Create hyperv subdirectory under drivers/iommu in anticipation of more
-> hyperv related files from upcoming PCI passthru and pv-IOMMU patches.
-> Also, the current file hyperv-iommu.c actually implements irq
-> remapping on x86, so rename to more appropriate hv-irq-remap-x86.c
-> and move it under the new hyperv subdirectory. Since this file
-> implements irq_remap_ops exposed by drivers/iommu/irq_remapping.h, it
-> cannot be relocated to the irq directory. This is in sync with other
-> backend directories like amd and intel there.
-> 
-> Lastly, this file should not be tied to CONFIG_HYPERV_IOMMU, but to
-> CONFIG_HYPERV and CONFIG_IRQ_REMAP.
-> 
-> Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
-> ---
-> V2: rename hv-irq-remap.c to hv-irq-remap-x86.c
-> ---
->  MAINTAINERS                                              | 2 +-
->  drivers/iommu/Kconfig                                    | 9
-> --------- drivers/iommu/Makefile                                   |
-> 2 +- drivers/iommu/hyperv/Makefile                            | 2 ++
->  .../iommu/{hyperv-iommu.c => hyperv/hv-irq-remap-x86.c}  | 8 +-------
->  drivers/iommu/irq_remapping.c                            | 2 +-
->  6 files changed, 6 insertions(+), 19 deletions(-)
->  create mode 100644 drivers/iommu/hyperv/Makefile
->  rename drivers/iommu/{hyperv-iommu.c => hyperv/hv-irq-remap-x86.c}
-> (99%)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index b539be153f6a..93a7105e9cef 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -11988,7 +11988,7 @@ F:	drivers/clocksource/hyperv_timer.c
->  F:	drivers/hid/hid-hyperv.c
->  F:	drivers/hv/
->  F:	drivers/input/serio/hyperv-keyboard.c
-> -F:	drivers/iommu/hyperv-iommu.c
-> +F:	drivers/iommu/hyperv/
->  F:	drivers/net/ethernet/microsoft/
->  F:	drivers/net/hyperv/
->  F:	drivers/pci/controller/pci-hyperv-intf.c
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index f86262b11416..1becc0f20222 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -351,15 +351,6 @@ config MTK_IOMMU_V1
->  
->  	  if unsure, say N here.
->  
-> -config HYPERV_IOMMU
-> -	bool "Hyper-V IRQ Handling"
-> -	depends on HYPERV && X86
-> -	select IOMMU_API
-> -	default HYPERV
-> -	help
-> -	  Stub IOMMU driver to handle IRQs to support Hyper-V Linux
-> -	  guest and root partitions.
-> -
->  config VIRTIO_IOMMU
->  	tristate "Virtio IOMMU driver"
->  	depends on VIRTIO
-> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-> index 0275821f4ef9..d9683422aecb 100644
-> --- a/drivers/iommu/Makefile
-> +++ b/drivers/iommu/Makefile
-> @@ -4,6 +4,7 @@ obj-$(CONFIG_AMD_IOMMU) += amd/
->  obj-$(CONFIG_INTEL_IOMMU) += intel/
->  obj-$(CONFIG_RISCV_IOMMU) += riscv/
->  obj-$(CONFIG_GENERIC_PT) += generic_pt/fmt/
-> +obj-$(CONFIG_HYPERV) += hyperv/
->  obj-$(CONFIG_IOMMU_API) += iommu.o
->  obj-$(CONFIG_IOMMU_SUPPORT) += iommu-pages.o
->  obj-$(CONFIG_IOMMU_API) += iommu-traces.o
-> @@ -30,7 +31,6 @@ obj-$(CONFIG_TEGRA_IOMMU_SMMU) += tegra-smmu.o
->  obj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o
->  obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
->  obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
-> -obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
->  obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
->  obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o
->  obj-$(CONFIG_IOMMU_IOPF) += io-pgfault.o
-> diff --git a/drivers/iommu/hyperv/Makefile
-> b/drivers/iommu/hyperv/Makefile new file mode 100644
-> index 000000000000..6ef0ef97f3dd
-> --- /dev/null
-> +++ b/drivers/iommu/hyperv/Makefile
-> @@ -0,0 +1,2 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +obj-$(CONFIG_IRQ_REMAP) += hv-irq-remap-x86.o
-> diff --git a/drivers/iommu/hyperv-iommu.c
-> b/drivers/iommu/hyperv/hv-irq-remap-x86.c similarity index 99%
-> rename from drivers/iommu/hyperv-iommu.c
-> rename to drivers/iommu/hyperv/hv-irq-remap-x86.c
-> index 479103261ae6..b34ee9589190 100644
-> --- a/drivers/iommu/hyperv-iommu.c
-> +++ b/drivers/iommu/hyperv/hv-irq-remap-x86.c
-> @@ -7,13 +7,11 @@
->   *
->   * Author : Lan Tianyu <Tianyu.Lan@microsoft.com>
->   */
-> -
-nit:  we can avoid unrelated whitespace churn.
+On 6/4/26 01:44, Rob Herring wrote:
+> On Wed, Jun 3, 2026 at 1:44 AM Wandun <chenwandun1@gmail.com> wrote:
+>>
+>>
+>> On 6/3/26 00:24, Rob Herring wrote:
+>>> On Wed, May 27, 2026 at 11:29:09AM +0800, Wandun Chen wrote:
+>>>> From: Wandun Chen <chenwandun@lixiang.com>
+>>>>
+>>>> The global pointer 'reserved_mem' continues to reference the
+>>>> reserved_mem_array which lives in __initdata if
+>>>> alloc_reserved_mem_array() fails. of_reserved_mem_lookup() is
+>>>> exported for post-init use, that would dereference freed memory
+>>>> and trigger a use-after-free.
+>>>>
+>>>> So reset reserved_mem_count to 0 when alloc_reserved_mem_array()
+>>>> fails.
+>>>>
+>>>> Fixes: 00c9a452a235 ("of: reserved_mem: Add code to dynamically allocate reserved_mem array")
+>>> Fixes should come first in a series.
+>> Understood, will do in future submissions.
+>>>> Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
+>>>> ---
+>>>>    drivers/of/of_reserved_mem.c | 20 ++++++++++++++------
+>>>>    1 file changed, 14 insertions(+), 6 deletions(-)
+>>>>
+>>>> diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
+>>>> index 313cbc57aa45..6d479381ff1f 100644
+>>>> --- a/drivers/of/of_reserved_mem.c
+>>>> +++ b/drivers/of/of_reserved_mem.c
+>>>> @@ -69,29 +69,31 @@ static int __init early_init_dt_alloc_reserved_memory_arch(phys_addr_t size,
+>>>>     * the initial static array is copied over to this new array and
+>>>>     * the new array is used from this point on.
+>>>>     */
+>>>> -static void __init alloc_reserved_mem_array(void)
+>>>> +static bool __init alloc_reserved_mem_array(void)
+>>>>    {
+>>>>       struct reserved_mem *new_array;
+>>>>       size_t alloc_size, copy_size, memset_size;
+>>>>
+>>>> +    if (!total_reserved_mem_cnt)
+>>>> +            return true;
+>>>> +
+>>>>       alloc_size = array_size(total_reserved_mem_cnt, sizeof(*new_array));
+>>>>       if (alloc_size == SIZE_MAX) {
+>>>>               pr_err("Failed to allocate memory for reserved_mem array with err: %d", -EOVERFLOW);
+>>>> -            return;
+>>>> +            goto fail;
+>>>>       }
+>>>>
+>>>>       new_array = memblock_alloc(alloc_size, SMP_CACHE_BYTES);
+>>>>       if (!new_array) {
+>>>>               pr_err("Failed to allocate memory for reserved_mem array with err: %d", -ENOMEM);
+>>>> -            return;
+>>>> +            goto fail;
+>>>>       }
+>>>>
+>>>>       copy_size = array_size(reserved_mem_count, sizeof(*new_array));
+>>>>       if (copy_size == SIZE_MAX) {
+>>>>               memblock_free(new_array, alloc_size);
+>>>> -            total_reserved_mem_cnt = MAX_RESERVED_REGIONS;
+>>>>               pr_err("Failed to allocate memory for reserved_mem array with err: %d", -EOVERFLOW);
+>>> These prints could be moved to 'fail'. Perhaps instead of just printing
+>>> an error value, you can return the error value instead of boolean.
+>> Will do, consolidating pr_err() under 'fail' and changing the return type
+>> to int.
+>>> If you respin just this patch, I can pick it up for 7.2.
+>> Before I respin, I'd like to flag a dependency:
+>> patch 05/07 in this series build on the signature change introduced by this
+>> patch ("the void -> bool return type change of alloc_reserved_mem_array()")
+>>
+>> Could you let me know which of the following you'd prefer:
+>> a) Take patch 03 alone via your tree as you suggested, after it lands, I'll
+>>      respin the remaining patches of this series.
+> I would go with this option. AIUI, this series isn't going to land in
+> 7.2, so ultimately you will rebase on v7.2-rc1 which will have the
+> fix.
+OK, will send v4.
 
->  #include <linux/types.h>
->  #include <linux/interrupt.h>
->  #include <linux/irq.h>
->  #include <linux/iommu.h>
->  #include <linux/module.h>
-> -
-ditto
+Best regards,
+Wandun
+>
+>> b) Keep patch 03 in the v4 respin of the full series, reordered to the front
+>>      per your earlier comment.
+>
+> Rob
 
->  #include <asm/apic.h>
->  #include <asm/cpu.h>
->  #include <asm/hw_irq.h>
-> @@ -22,9 +20,7 @@
->  #include <asm/hypervisor.h>
->  #include <asm/mshyperv.h>
->  
-> -#include "irq_remapping.h"
-> -
-> -#ifdef CONFIG_IRQ_REMAP
-> +#include "../irq_remapping.h"
->  
->  /*
->   * According 82093AA IO-APIC spec , IO APIC has a 24-entry Interrupt
-> @@ -330,5 +326,3 @@ static const struct irq_domain_ops
-> hyperv_root_ir_domain_ops = { .alloc =
-> hyperv_root_irq_remapping_alloc, .free =
-> hyperv_root_irq_remapping_free, };
-> -
-> -#endif
-> diff --git a/drivers/iommu/irq_remapping.c
-> b/drivers/iommu/irq_remapping.c index c2443659812a..41bf65e4ea88
-> 100644 --- a/drivers/iommu/irq_remapping.c
-> +++ b/drivers/iommu/irq_remapping.c
-> @@ -108,7 +108,7 @@ int __init irq_remapping_prepare(void)
->  	else if (IS_ENABLED(CONFIG_AMD_IOMMU) &&
->  		 amd_iommu_irq_ops.prepare() == 0)
->  		remap_ops = &amd_iommu_irq_ops;
-> -	else if (IS_ENABLED(CONFIG_HYPERV_IOMMU) &&
-> +	else if (IS_ENABLED(CONFIG_HYPERV) &&
->  		 hyperv_irq_remap_ops.prepare() == 0)
->  		remap_ops = &hyperv_irq_remap_ops;
->  	else
-Other than the above nits, feel free to add:
-Reviewed-by: Jacob Pan <jacob.pan@linux.microsoft.com>
