@@ -1,178 +1,153 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [160.30.148.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10B793CEBAA
-	for <iommu@lists.linux.dev>; Thu,  4 Jun 2026 06:52:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25B583DA7D4
+	for <iommu@lists.linux.dev>; Thu,  4 Jun 2026 06:55:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=160.30.148.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780555943; cv=none; b=R6sBJ2Py8+KWENkW9eYCb9PQUdMcp2yxnVJ82p34Bfa2b/DtTXtgDIr7nhWJDqzfw3uoTfmg0fR3fNkNQUAkjyvz3IzR9JNV6RRSaDajbMCFr+zim9Gzsw5RkzdKr/oE92WVLg5Dbykh8AhY0+qQ2wnEF0zKa6O5HO8tkayqyoI=
+	t=1780556124; cv=none; b=t57SzHscje0jZEELpy/QQR8yl7IjJF64ziI7rH8CBnnpZGfVGPMXmm0H5rrnZeImPQk9bqIStbW7uMsKxlPAGR6TLhI5JV2vvYKbIF5Q9p8WL8e0lMaRCyWPgRnJ8IrZkoa9FLX6lARsdEh6ujhnAwOqTDxLm8AVH3QqCrvW874=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780555943; c=relaxed/simple;
-	bh=GY9HWYcYN2vZxgT/IMPbqLYpuIufDKnKhahxeGgORFg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=m9QTFuXxAvtFXWRNxJVYj85PDyIQBAWWJLGawHvgwk9KuspU8m5oMROROcUADbjPiL2wsUiYbQo5hPI5Oy1417+6EQWa3Yl7T7yI6BTqqK4/+FmdA/APzdkKrVu6CWcbRxVh6FpU6GRrhlYEmlioykCwaL+CxFI0Qb0YktuG62A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=UsvTztIu; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=ZR7Fc+UN; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="UsvTztIu";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="ZR7Fc+UN"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6546mrJZ1476762
-	for <iommu@lists.linux.dev>; Thu, 4 Jun 2026 06:52:21 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	QH3Q7a4QvIm0LvJnWjiUGy2awEMq59GNhr6w+819oZw=; b=UsvTztIukAjLYmBe
-	JIt0gPAqHJgHNuaWhw07hXE6Yj0D0umA+iNeSyjT8pdpP99BdENsPRlLPNm9fjBM
-	CCz8+7MuuUsT9z4V1D0wyXO00okNExyq1lJn3s7p7AoegTBharldE8s8kvu3dH1Z
-	YreOzaJ3q4BPRyjwfjKdiPnRxxx5zbuuZ/kdey0z9vbJ5hrwLrSzFl3lGPCxfz2O
-	CJ2+iw8jW4iaHMFMTGHMncjzecjEjTnY4de5A7EwFXn9qSsIHeuoO1/2e0XeTp16
-	J3ilqimm6Tce1w0yMDxOVlWZtajLxhKAvZdc1SHWrLfk3jqt+7jJ7ipxAMtwDVob
-	MlNeTw==
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ejp6nudkg-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 04 Jun 2026 06:52:21 +0000 (GMT)
-Received: by mail-qt1-f200.google.com with SMTP id d75a77b69052e-51768072950so4851201cf.1
-        for <iommu@lists.linux.dev>; Wed, 03 Jun 2026 23:52:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1780555940; x=1781160740; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=QH3Q7a4QvIm0LvJnWjiUGy2awEMq59GNhr6w+819oZw=;
-        b=ZR7Fc+UNpwLe2HwZhv8DRQyT7Ta1V9IMBECs7N618nZoW31B843h8B8bYS9uOABRe0
-         7L+7dTjF3nM7hHJ7PC6ZZinGrcJZSzAhWVNF7hQDrC3aJykyEEstvs0BigTUhpoo0bEs
-         3mW2iwPqHa1kr2yudxPBt8M1PGqNFb1kvw2+N7Nm5GDv7yeKXtpZxd1SLqKXf60wJx9N
-         0daDX0z/dBo7rlKN1VGWiHjt8Pm72tqqPHXLjcKX5jc5LswifJmhY/tSxBzVm1ndzPxv
-         PZOC0xsLoqOIyRCP+hikWsSe/snwBMnQB8X4Mf1ozncKllfcCH8osg8naDye/RctqOwA
-         +hnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780555940; x=1781160740;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=QH3Q7a4QvIm0LvJnWjiUGy2awEMq59GNhr6w+819oZw=;
-        b=BlqWcF6AyJI50rAK9Xx2GtwmFZgTvHQEjukoJRKKE/wLKPzO1Xe/GOmspJKXmcORwX
-         edd1ld5b6hMCNaK4F4mXbmG4Us8M3tp7NLRbj+YfZe+BfN7s0rzOhVS8yQ6RmRyydlKU
-         FRaFg+ORtYgUCtFRAgTRo590QlkkJ5Gx6I8PFr73vtYgklHfze++/yiTyZoS7+ve+boM
-         PsBhwgrx1dE15n+USgq6AXvU0RQiXQsJ8lF0oZJTzLKvzk+hqzQWDdCJwfWakLhnrmTC
-         Y+UPHkPW7zN+nYdWmbnzAXEpejf92nWVDirgcBCbOMEVBQgd8b+88S9zOuG8IJ5BlFeV
-         +JCA==
-X-Forwarded-Encrypted: i=1; AFNElJ+2TXhw4duBsBm3a5/WnxroljCw9ertWapFrUuLDobM7/y6iB1MO2N7VLreFKLQBsWOJk79cg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxkgnzNjnoD1gXAgU/VnlDI9TU0sTzRg0qSJB6B99HW2RQ7fNe+
-	KS5JFqFOeUWBIK1Cq7qmQgDTEHWNPURlBSmtNtEoi8sRXPBZrr8HFUshgMROVfPRHjEe1Jm6t0d
-	1zvu2lWI2fkvZ4WusqIlyfvVuDDyhl8lGHwZqbM9xiDxH7Tz1PtMVP1TtMQ==
-X-Gm-Gg: Acq92OHZETIzwUMlLgjR7aOZqi8D1RKwTvV7KGXkcFbZrEX82r3Yhb17VetrDWu0LXJ
-	hVVF2rY/+bCHxLmFFcWB3S8t1Yz8D+x2WyR4r/ZE4bNPEwg+0gxrGWAdsEejcwZe39fa73Nahxj
-	D2tx8Rgn5FEwkrHDp1UOODh3+8aXNHpRcz2E1QAhpGuXgA82OOKD1uldYPu4zO0tfpWQPBV9jrB
-	gVUauf9tJDCFiNxsJEV0OeR4939Tq8AhVheEN+v+pTsjsfa6ZO1HwqgarC/7XcyGG6hlN5DgGyJ
-	YFOGWlO2FpljjbGLCznKvyt/heRycTjv//5YbTF+g5cY/U+v/7Qc0FMiXz7DV3q5+zTbYHC0CNa
-	SeuYmiMU89BxzLRFs1+PCIKKtuyC7p5bgkp5kOQP7d5BTVBOMXK+OSp7os7HHcEPV+nU=
-X-Received: by 2002:a05:622a:d0a:b0:517:85d7:f5cc with SMTP id d75a77b69052e-51785d7f8acmr41866481cf.16.1780555940304;
-        Wed, 03 Jun 2026 23:52:20 -0700 (PDT)
-X-Received: by 2002:a05:622a:d0a:b0:517:85d7:f5cc with SMTP id d75a77b69052e-51785d7f8acmr41866271cf.16.1780555939874;
-        Wed, 03 Jun 2026 23:52:19 -0700 (PDT)
-Received: from [192.168.0.172] ([49.205.249.168])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bf054e06dddsm262483066b.36.2026.06.03.23.52.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Jun 2026 23:52:18 -0700 (PDT)
-Message-ID: <9d0224f0-efb7-4bc2-8f09-70a9b4d62810@oss.qualcomm.com>
-Date: Thu, 4 Jun 2026 12:22:05 +0530
+	s=arc-20240116; t=1780556124; c=relaxed/simple;
+	bh=lxfDI/CI5VlYeUePE7k6ldgnppsOlKa/jNLXmGk3OZM=;
+	h=Message-ID:Date:Mime-Version:From:To:Cc:Subject:Content-Type; b=Rg2mCQzXTrB+TqfXnMVaFnWl8HFukr7s6sN118Sevd6sPz+K6CYnDRAM8UZQefmCas6feZ0W2sDoDdqWcw+FDzccoKWXfgGpMvZIY8RGHZRDA46Aqtk0+LXtzDvPpKEZFVABBlI7K0JpDbNCP2VGDdOjWXtxRfD7+NU+5IsEZpw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zte.com.cn; spf=pass smtp.mailfrom=zte.com.cn; arc=none smtp.client-ip=160.30.148.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zte.com.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zte.com.cn
+Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4gWFgn4Mv7z5B13c;
+	Thu, 04 Jun 2026 14:55:17 +0800 (CST)
+Received: from szxlzmapp01.zte.com.cn ([10.5.231.85])
+	by mse-fl2.zte.com.cn with SMTP id 6546t9Gn017570;
+	Thu, 4 Jun 2026 14:55:09 +0800 (+08)
+	(envelope-from wang.yechao255@zte.com.cn)
+Received: from mapi (szxlzmapp04[null])
+	by mapi (Zmail) with MAPI id mid12;
+	Thu, 4 Jun 2026 14:55:10 +0800 (CST)
+X-Zmail-TransId: 2b066a21214ec27-b4cdb
+X-Mailer: Zmail v1.0
+Message-ID: <20260604145510898G2kTwM2Pr25QE5H8T4Wh6@zte.com.cn>
+Date: Thu, 4 Jun 2026 14:55:10 +0800 (CST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 00/14] media: iris: Add support for glymur platform
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-        Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-Cc: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Bryan O'Donoghue <bod@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Hans Verkuil <hverkuil@kernel.org>,
-        Stefan Schmidt <stefan.schmidt@linaro.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>,
-        Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        iommu@lists.linux.dev, devicetree@vger.kernel.org,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
-        Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>
-References: <20260515-glymur-v6-0-f6a99cb43a24@oss.qualcomm.com>
- <kunwuij4ntmh2hwxdrfwlpiza7kbcwtdlty2cai3xlxybkn2er@7wmo5irzum44>
-Content-Language: en-US
-From: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-In-Reply-To: <kunwuij4ntmh2hwxdrfwlpiza7kbcwtdlty2cai3xlxybkn2er@7wmo5irzum44>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: 585RTK56pdvMiY05PiLO5tFNE_ScLUor
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjA0MDA2NSBTYWx0ZWRfX9iPlQehtI/2r
- EclWOtGgGK+w3S38viI5SiEC5UboaJDTk2WfnA9bBD8TKk8hOGxEB0qd1eRx++FxhIGDcE4jxtg
- jWsh4HQ8+voUhA3z8FtKuS03BAYjLUh7uEn0w3QnFsOjJHz6VZk2ftKMZ7VQfegzGfB2AwA1DK5
- +k/6TUh/0gGWmWo5M6rgWKuluDK0Pm4+tTetmtU3dly3CTpTHONLvBrOde/RtCoJW1UgWZKTXFn
- YS2B8egPo1bkUczXTwaFuK3e5CbohHNnIc7WitzHOa0OXoLajd1r6TJztQSLXSGVeeMuTioLHNd
- ygDkhCKABjp8Cc/JvcFUPUbsixb0820UDPdJtAkblv6bgJrtQS+AeIQZ6iHMYvxnVjndqKtYDDI
- AorKCnAM+HU7cWYscLZfXXPGL3Th6jgjPKiQE1BoEW8vx6MoobP9vnL9S3vj79Z1WYZrrAivaHF
- ymXQ2wDw1f70d2HbAPQ==
-X-Authority-Analysis: v=2.4 cv=DbcnbPtW c=1 sm=1 tr=0 ts=6a2120a5 cx=c_pps
- a=JbAStetqSzwMeJznSMzCyw==:117 a=QLLTW4K7kuvKcNWOCmVsWg==:17
- a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22
- a=MmbEFYbivRMSk88UmGwA:9 a=QEXdDO2ut3YA:10 a=uxP6HrT_eTzRwkO_Te1X:22
-X-Proofpoint-ORIG-GUID: 585RTK56pdvMiY05PiLO5tFNE_ScLUor
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
- definitions=2026-06-04_02,2026-05-28_03,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 malwarescore=0 adultscore=0 spamscore=0 phishscore=0
- bulkscore=0 lowpriorityscore=0 clxscore=1015 impostorscore=0 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2605210000 definitions=main-2606040065
+Mime-Version: 1.0
+From: <wang.yechao255@zte.com.cn>
+To: <linux-acpi@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
+Cc: <sunilvl@ventanamicro.com>, <rafael@kernel.org>, <lenb@kernel.org>,
+        <pjw@kernel.org>, <palmer@dabbelt.com>, <aou@eecs.berkeley.edu>,
+        <alex@ghiti.fr>, <tomasz.jeznach@linux.dev>
+Subject: =?UTF-8?B?W1BBVENIXSBpb21tdS9yaXNjdjogQWRkIGRlcGVuZGVuY3kgYmV0d2VlbiBpb21tdSBhbmQgZGV2aWNlcw==?=
+Content-Type: text/plain;
+	charset="UTF-8"
+X-MAIL:mse-fl2.zte.com.cn 6546t9Gn017570
+X-TLS: YES
+X-ENVELOPE-SENDER: wang.yechao255@zte.com.cn
+X-SOURCE-IP: 10.5.228.133 unknown Thu, 04 Jun 2026 14:55:17 +0800
+X-CLEAN: YES
+X-Fangmail-Anti-Spam-Filtered: true
+X-Fangmail-MID-QID: 6A212155.001/4gWFgn4Mv7z5B13c
 
-Hi Robin, Will,
+From: Wang Yechao <wang.yechao255@zte.com.cn>
 
-On 5/28/2026 4:24 PM, Dmitry Baryshkov wrote:
-> On Fri, May 15, 2026 at 04:51:15PM +0530, Vishnu Reddy wrote:
->> Glymur is a new generation video codec that supports dual hardware cores
->> along with additional power domains and clocks.
->>
->> This series adds platform specific support in the iris driver to handle
->> the extra cores, power domains, and clock requirements introduced by
->> glymur. Add support for firmware loading through context bank firmware
->> device.
->>
->> Dependencies and merge strategy:
->>
->> Patch[1-2]: IOMMU maintainer need to apply and provide an immutable tag
->> which can merged into media tree.
-> 
-> [...]
-> 
->> Vikash Garodia (2):
->>        media: iris: Add iris vpu bus support
->>        iommu: Add iris-vpu-bus to iommu_buses
->>
-> 
-> Robin, Will, do we stand a chance of getting these two patches in 7.2?
-> Or should we use some other approach?
-> 
+Commit 9156585280f1 ("ACPI: RIMT: Add dependency between iommu and
+devices") adds the dependency between iommu and devices on ACPI
+systems. On devicetree systems, the incorrect removal order also
+occurs.
 
-Could you please comment if the patches are good to go or any 
-suggestions you have ?
+It can be reproduced on the QEMU RISC-V machine if the kernel enables
+IOMMU_DMA:
 
-Regards,
-Vikash
+[  635.081530] e1000e: EEE TX LPI TIMER: 00000000
+[  656.100306] rcu: INFO: rcu_sched self-detected stall on CPU
+[  656.101374] rcu:     5-....: (5250 ticks this GP) idle=d774/1/0x4000000000000000 softirq=5173/5185 fqs=2625
+[  656.102237] rcu:     (t=5251 jiffies g=36825 q=101 ncpus=16)
+[  656.103801] CPU: 5 UID: 0 PID: 1958 Comm: reboot Tainted: G        W           7.1.0-rc5 #31 PREEMPTLAZY
+[  656.104127] Tainted: [W]=WARN
+[  656.104182] Hardware name: QEMU QEMU Virtual Machine, BIOS 2.7 02/02/2022
+[  656.104339] epc : riscv_iommu_cmd_sync.constprop.0+0xb8/0x148
+[  656.105352]  ra : riscv_iommu_cmd_sync.constprop.0+0xa8/0x148
+[  656.105433] epc : ffffffff807ca980 ra : ffffffff807ca970 sp : ff60000085dbf960
+[  656.105475]  gp : ffffffff81e0d798 tp : ff60000084b58e00 t0 : ffffffff80021048
+[  656.105514]  t1 : ff60000081b18400 t2 : 45203a6530303031 s0 : ff60000085dbf9c0
+[  656.105554]  s1 : 00000098c92a567c a0 : 00000098c03986f0 a1 : ff60000085dbf970
+[  656.105594]  a2 : 000024bb5cac6aee a3 : ff200000004f1000 a4 : ff6000008140a040
+[  656.105632]  a5 : 0000000000000669 a6 : 0000000000000000 a7 : 00000000ffffa000
+[  656.105669]  s2 : 0000000000000000 s3 : 00000098c0398308 s4 : 000000000000066a
+[  656.105706]  s5 : 0000000008f0d180 s6 : 000000a8d08b8de9 s7 : 0000000000001fff
+[  656.105743]  s8 : ff6000008140a040 s9 : ff6000008484cb00 s10: ff200000005cc000
+[  656.105781]  s11: ff600000814652a0 t3 : 000000f000000000 t4 : 0000000000000000
+[  656.105845]  t5 : 0000000000000003 t6 : ff600000841666b0 ssp : 0000000000000000
+[  656.105883] status: 0000000200000120 badaddr: 0000000000000000 cause: 8000000000000005
+[  656.106072] riscv_iommu_cmd_sync.constprop.0+0xb8/0x148
+[  656.106321] riscv_iommu_iotlb_inval+0x120/0x160
+[  656.106373] riscv_iommu_iotlb_sync+0x48/0x60
+[  656.106422] __iommu_dma_unmap+0xca/0xf8
+[  656.106470] iommu_dma_unmap_phys+0x58/0xc8
+[  656.106517] dma_unmap_phys+0x15c/0x248
+[  656.106564] dma_unmap_page_attrs+0x1e/0x30
+[  656.106915] e1000_clean_rx_ring+0x1d2/0x200 [e1000e]
+[  656.107668] e1000e_down+0x168/0x1c8 [e1000e]
+[  656.107995] e1000e_pm_freeze+0x94/0x128 [e1000e]
+[  656.108328] e1000_shutdown+0x28/0x48 [e1000e]
+[  656.108652] pci_device_shutdown+0x34/0x48
+[  656.108706] device_shutdown+0x104/0x1e8
+[  656.108752] kernel_restart+0x46/0xb8
+[  656.108797] __do_sys_reboot+0xc0/0x1c8
+[  656.108840] __riscv_sys_reboot+0x22/0x38
+[  656.108882] do_trap_ecall_u+0x236/0x3f8
+[  656.108947] handle_exception+0x15a/0x166
 
+So move the device link into the iommu driver to fix both ACPI and
+devicetree systems.
+
+Fixes: 488ffbf18171 ("iommu/riscv: Paging domain support")
+Signed-off-by: Wang Yechao <wang.yechao255@zte.com.cn>
+---
+ drivers/acpi/riscv/rimt.c   | 7 -------
+ drivers/iommu/riscv/iommu.c | 7 +++++++
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/acpi/riscv/rimt.c b/drivers/acpi/riscv/rimt.c
+index 906282b0e63c..229c4a0d47a3 100644
+--- a/drivers/acpi/riscv/rimt.c
++++ b/drivers/acpi/riscv/rimt.c
+@@ -263,13 +263,6 @@ static int rimt_iommu_xlate(struct device *dev, struct acpi_rimt_node *node, u32
+ 	if (!rimt_fwnode)
+ 		return -EPROBE_DEFER;
+
+-	/*
+-	 * EPROBE_DEFER ensures IOMMU is probed before the devices that
+-	 * depend on them. During shutdown, however, the IOMMU may be removed
+-	 * first, leading to issues. To avoid this, a device link is added
+-	 * which enforces the correct removal order.
+-	 */
+-	device_link_add(dev, rimt_fwnode->dev, DL_FLAG_AUTOREMOVE_CONSUMER);
+ 	return acpi_iommu_fwspec_init(dev, deviceid, rimt_fwnode);
+ }
+
+diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+index a31f50bbad35..f9368e977346 100644
+--- a/drivers/iommu/riscv/iommu.c
++++ b/drivers/iommu/riscv/iommu.c
+@@ -1385,6 +1385,13 @@ static struct iommu_device *riscv_iommu_probe_device(struct device *dev)
+
+ 	dev_iommu_priv_set(dev, info);
+
++	/*
++	 * During shutdown, however, the IOMMU may be removed first, leading
++	 * to issues. To avoid this, a device link is added which enforces
++	 * the correct removal order.
++	 */
++	device_link_add(dev, fwspec->iommu_fwnode->dev, DL_FLAG_AUTOREMOVE_CONSUMER);
++
+ 	return &iommu->iommu;
+ }
+
+-- 
+2.43.5
