@@ -1,68 +1,68 @@
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E61D347ECD2
-	for <iommu@lists.linux.dev>; Thu,  4 Jun 2026 14:26:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5990413D96
+	for <iommu@lists.linux.dev>; Thu,  4 Jun 2026 14:27:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780583168; cv=none; b=Q8pLOkYRezunRSpRL3TCayw6fviVy0Zw9lcKcxYgA2KnMO6ZS7wvlxdCTuqcS5l7es3nNdLnDlLcI9nEa2BNCLdfrIiTrwtMtqql6O3sML2SF8BaqkHOV7rkmfhXScaoady4POPhBatyOP9syL00GYYKd1Z0OSTXUk5+kH66Tew=
+	t=1780583229; cv=none; b=JVhzwZsI57x/f7ZfqMKm3WipMTC+NC7k72P9rJQq5g3p+avG+yuwuVJayju74M+W/9iW5LdA+gwiemwEsYRf4qqZcEWIFUc8oDrjBmyZd1SDhPnRattzaLA3+ijMxeRWlNez/36g01rHJ/6+va6Xn5fLpIi0oiey7VcsPfn099k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780583168; c=relaxed/simple;
-	bh=RpbeXNzXxaadmZyS/Fy/cu0dWgb+zuhOaJLik03FN/0=;
+	s=arc-20240116; t=1780583229; c=relaxed/simple;
+	bh=R5hMbnNS12FEIZNlNB/bpEoNfDKSllPhXOnCYKccGQM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OHRwYv/3HBeeasABmGk1yKAM5ptab4OPM3dn0qtk9hExCajMiBOTY8SFpaYzQuRzKAzcUK80d8yujIXx0EKWD43yrZdCOHKJPmyO0Hq9MtXgivgWRHjTs8sgqMcVCIUApMRFfvk2RDi+Bus2H7H/7uIjJhKaoiQ5kn6tWPJ31+8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=oN+jtV3d; arc=none smtp.client-ip=209.85.160.182
+	 Content-Type:Content-Disposition:In-Reply-To; b=hvH1/u1TluhP6dZ9AKc8Jji61AUPJBskNAbXqVbsL3xommmNIncgbFR7OuPHUrYpwl9pvRUQEb3T87iK6XTspY179X41DQGY/MHscpxinOEQUb7fdxuL8dZmvN3/UW8snKoBCaexykeU9z7Zve6c2zB+0N9PlcRSmSDfTJ7X42A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=A1ighxUc; arc=none smtp.client-ip=209.85.222.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="oN+jtV3d"
-Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-5174a3d9598so7008641cf.3
-        for <iommu@lists.linux.dev>; Thu, 04 Jun 2026 07:26:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="A1ighxUc"
+Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-91574384cc2so89778985a.2
+        for <iommu@lists.linux.dev>; Thu, 04 Jun 2026 07:27:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1780583166; x=1781187966; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1780583228; x=1781188028; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=clkIHT02uZl46rCjOXn4DL3sKNX9XCKfChcmoui9JdM=;
-        b=oN+jtV3d6GICHYOHA3iAAU9PAUjNpFuLYbyWMS8iY/taR3F8GXqEddccXv9G/+b59A
-         LHOAKDOYub/qPOkLvRB9qNWtqwBSqHVdH6Xb9jqUB8AMnBwjxpRCpndz1Tndqc3kLzld
-         cOEQbMIj/0xPpT5d8U3M5UcTrXGe/a3haEmLnK1tiURYA8LzWepBaEt5/PRzvJKWLVkR
-         qgHbPNBElpEVCxqRpstSHxfT6ZEFP/wIWzfruReGcdKRAvwZna3xYUtX+vxHQvKfLIZu
-         HcYKGIJYjsD+G4g3l08lJA3um0K0u1MK3lanWRWDFAeMC70PH7fJTt3vONeYk2o/XUF7
-         FYGg==
+        bh=rHKibgV+RCLusPgB3KbLwXXB/tqYgf/ZSAW8CwOeGIc=;
+        b=A1ighxUcXjfV7X+h6CR21LWl6Ynyc6ZcDyprMPUSCsmgJIeMHI88TkpbP7/1mG1mz1
+         P+5qXs6lQ4wmo8I85yS36O8F8QRZMTc490v3fxoKA9potnWNtILjZZjkaeYAVYXbFnfj
+         oTc3gY2ybrJx86ihVy3V3Ct/9I+u++S3K6pW7lLMcRENs4jmVVQ1T+QGcTVJu6ULxFUR
+         mfa14LrEgM6sIw5r661vYNpDHd2NVJPmTqzU+iNK5yiYRu96Wsv+wRPq+E0Ndm3p5h4m
+         KxE9srtNXzkD8HmfqW+znzTNwX71A0b8JlIbJR4cYSCGdFmGYawcPbls9Z5SZmLsF+2e
+         yTKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780583166; x=1781187966;
+        d=1e100.net; s=20251104; t=1780583228; x=1781188028;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=clkIHT02uZl46rCjOXn4DL3sKNX9XCKfChcmoui9JdM=;
-        b=cKxIAYE7pi2BLZEcl+n6sPo2hJWZVG92fT7sAAZm8UY438QjYlpu1VrzjBlfqsqr/Y
-         aGN5YeYq76oFR52aJj9WoGy+YZoeuaj8OgFyM5inB60dx+X6yDedKylGBu0t6seM5auS
-         YD+BXj8BJIi1yXfi3j2Y0Zb8cauX5AeTxLNc09DL7FGxcCmk+mt8Z8njYLaVdnm1tQEP
-         jexQXfPOturOOpsntssNbeZxaSQGHDaw43oDb2VgGzXo76BVQ1+wz9RTYXkLJqrtkDhV
-         MJAQCXYtad7z3d4d8Zynoar1LI4rnWLUqbuWeAS9mq+AfdN6F6djpbgH/ykdkN/j1siQ
-         i7qQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+ESz/iwblCbfykLpYKUONsZ+0a76x2aRNTexm9W6/PhHpmLRaj/QmJwzzSrLzQgjjG3CiK7A==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxjUGjB2QWYN6+uuy6j8B1uhfRBvXnxFYMhOJUxkSzp1aiNwZD7
-	dgY9U/Tigza2C068L3yN+aayglotbN+rURAQh/vtMFBtEmsAy3iVO9rB6bRJ2RECD/Y=
-X-Gm-Gg: Acq92OGu2wfog73vRJgb1aT9ditLyIcL0W3n/772X4VZHdO0un3MyD02/r8XBn+fToB
-	O/2yViV/8F2zNcFSFXDa/Dj1GSvhuN46wZf1pVqpF3dn1/yENNcn+QA5b03m+lvn+4t1Mjdi+Oy
-	Jzu2yVIQm7RLN7bZGxNsmx34uv1joJynk51qN8x4qOkfhEl0X/TLz4+1xWoUqpBK5iqC6IhP9pi
-	pmBrdlahlWOY87VL/HKj3VvHJyaYU4Or9jNAiFLImPbifbppoaEapw21ucveBzf977YCwvVvVuF
-	VwYmnW460puevLw56cLxdUqnwr/DY4Qt/s2OaLcnvOgMOi6yT3pCtHlhhQqB/LsHrFUT3E4y7rq
-	8O80iOHfvnob1++7xBQpDuCM8PO0mwSCXGYi5bYMdLscxbB32xAdYurjqcWFJHiPBd5cbJuR0V8
-	uzGCB2E8tAjKjOTvXx8eUuK+7w0ma9GYGbmGPIxSgRckw+lkFPeyLusSYFgu31my3vOeonJ58Uz
-	gbsLvabs4RW3dxM
-X-Received: by 2002:ac8:7dc6:0:b0:50d:7aa1:f405 with SMTP id d75a77b69052e-517785ada2amr113397751cf.9.1780583165966;
-        Thu, 04 Jun 2026 07:26:05 -0700 (PDT)
+        bh=rHKibgV+RCLusPgB3KbLwXXB/tqYgf/ZSAW8CwOeGIc=;
+        b=Mt53fBL8pJjl443Df720juVsRCq0pPIkQqtEHHLpRJAEuv9iIwoi2PGpQfROIo0hYG
+         mqHpAqVaK7+XcoBiNLHLVVmCw6hQSOdGEmi8ahKg6E03b+C3wBpAjarxajY/vTeimdyp
+         E7KNhywa0aOJJYDrgOzMOgea668cX40O7k62zVHy0Wev3HUPlWUbw3jbxiD0FFiQZaGd
+         +tRFdd/81EnNHg8/uR5+IMiAULF9eM902uWHGFf0jYo8r0XYeYdqY075qber3g/nDv9D
+         I6vrJI0/VpzZGSjTGp6SljrKjH5Gyq8L/KBbs0M1XeLT5qHh2g+icODr5z1+GgwzNI8w
+         ALcw==
+X-Forwarded-Encrypted: i=1; AFNElJ+IfgUqt7SbMtWBVpwIh1gE3aUL7WTtffiwQjgUScceoMfiTmsLQeNi831xZuSQMVWpP+xzYA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzUb0/19K7NCPNFfzriCGa6M+1TMDzCtdOrM0h8dHZ3Emvg7qFw
+	jObK1Ydr1AOx+xTukwXUIftIAo5GL2Q2s3KSi1TJqB/E4SpC1oEJxsCwpcJPG3SsrI4=
+X-Gm-Gg: Acq92OHEIrTn6c4/4sTcENw/F8GkYVcUNOz2Cb80EVr0hP8L0vA7eV6BTCBIJsnJBlj
+	kEiNxfi3RLE/fXHR0og+Qn6zXJZ6GMUBZx0W2HesnBhwuGRWcciTlGRWjIrgHLlN3K9YmKXYlo7
+	LwK1vdt+W552HNnAxGY86dxJGjp7bMtTXSzyGPtAGpHOpYuFHSZGHo86kIQw01aKvEg4mqKV93Z
+	wN+zd0ZatuK6Hw0pUlMJimGxLEVuYzoSYpZxbmi+sn0KM6gSkt/5lOPDtp2xm5Ndx+QjBUcpCSW
+	aJOwjXPvXwOqI3/FyTWfilN9q9R/CXVtkqlfVDB9wYipOptvdVluiVp8FvXhwwUU8xURHmoEjdN
+	N20/B/WFJIuCpzxtnKyda3UuQF/Rdu2WgTzHuVB5qNBlzcupH3bz4vmq8nPYxpF1ECQ6r+bq617
+	5UjnNWA6ueoluEQSiuQcyqZxs2jrnQD2u8YQYwY3E0DQw93pJARTspDxg771SoLATsUYmLTfjIO
+	ayUYHnbTJF1xkwt3FeZM6KXZoU=
+X-Received: by 2002:a05:620a:6cc2:b0:90f:b39e:ec8 with SMTP id af79cd13be357-9158a6998c8mr1313811585a.17.1780583227568;
+        Thu, 04 Jun 2026 07:27:07 -0700 (PDT)
 Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-51790d965e8sm4420111cf.16.2026.06.04.07.26.05
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-9158a3e0d55sm600410185a.43.2026.06.04.07.27.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Jun 2026 07:26:05 -0700 (PDT)
+        Thu, 04 Jun 2026 07:27:07 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1wV91J-00000008IF6-09MR;
-	Thu, 04 Jun 2026 11:26:05 -0300
-Date: Thu, 4 Jun 2026 11:26:05 -0300
+	id 1wV92I-00000008IGV-29F2;
+	Thu, 04 Jun 2026 11:27:06 -0300
+Date: Thu, 4 Jun 2026 11:27:06 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Guanghui Feng <guanghuifeng@linux.alibaba.com>
 Cc: adrian.larumbe@collabora.com, airlied@gmail.com, alex@shazbot.org,
@@ -77,12 +77,12 @@ Cc: adrian.larumbe@collabora.com, airlied@gmail.com, alex@shazbot.org,
 	steven.price@arm.com, suravee.suthikulpanit@amd.com,
 	tzimmermann@suse.de, wei.guo.simon@linux.alibaba.com,
 	will@kernel.org, xlpang@linux.alibaba.com
-Subject: Re: [PATCH v3 24/32] iommufd: use iova_to_phys_length for efficient
+Subject: Re: [PATCH v3 23/32] vfio: use iova_to_phys_length for efficient
  unmap
-Message-ID: <20260604142605.GY2487554@ziepe.ca>
+Message-ID: <20260604142706.GZ2487554@ziepe.ca>
 References: <20260602104637.1219810-1-guanghuifeng@linux.alibaba.com>
  <20260603151804.1963871-1-guanghuifeng@linux.alibaba.com>
- <20260603151804.1963871-25-guanghuifeng@linux.alibaba.com>
+ <20260603151804.1963871-24-guanghuifeng@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -91,17 +91,66 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260603151804.1963871-25-guanghuifeng@linux.alibaba.com>
+In-Reply-To: <20260603151804.1963871-24-guanghuifeng@linux.alibaba.com>
 
-On Wed, Jun 03, 2026 at 11:17:56PM +0800, Guanghui Feng wrote:
-> Use iommu_iova_to_phys_length() to get PTE page size in
-> +		for (i = 0; i < npages; i++) {
-> +			if (!batch_add_pfn(batch, PHYS_PFN(phys) + i))
-> +				return;
+On Wed, Jun 03, 2026 at 11:17:55PM +0800, Guanghui Feng wrote:
+> Use iommu_iova_to_phys_length() to get PTE page size, allowing
+> traversal by actual mapping granularity instead of PAGE_SIZE steps.
+> 
+> Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
+> Acked-by: Shiqiang Zhang <shiyu.zsq@linux.alibaba.com>
+> Acked-by: Simon Guo <wei.guo.simon@linux.alibaba.com>
+> ---
+>  drivers/vfio/vfio_iommu_type1.c | 27 ++++++++++++++++++++++-----
+>  1 file changed, 22 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index c8151ba54de3..115d88d7003e 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -1177,25 +1177,42 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
+>  
+>  	iommu_iotlb_gather_init(&iotlb_gather);
+>  	while (pos < dma->size) {
+> -		size_t unmapped, len;
+> +		size_t unmapped, len, pgsize;
+>  		phys_addr_t phys, next;
+>  		dma_addr_t iova = dma->iova + pos;
+>  
+> -		phys = iommu_iova_to_phys(domain->domain, iova);
+> -		if (WARN_ON(!phys)) {
+> +		/* Single page table walk returns both phys and PTE size */
+> +		phys = iommu_iova_to_phys_length(domain->domain, iova,
+> +						  &pgsize);
+> +		if (WARN_ON(phys == PHYS_ADDR_MAX)) {
+>  			pos += PAGE_SIZE;
+>  			continue;
+>  		}
+> +		if (WARN_ON(!pgsize || pgsize < PAGE_SIZE))
+> +			pgsize = PAGE_SIZE;
+>  
+>  		/*
+>  		 * To optimize for fewer iommu_unmap() calls, each of which
+>  		 * may require hardware cache flushing, try to find the
+>  		 * largest contiguous physical memory chunk to unmap.
+> +		 *
+> +		 * mapped_length already accounts for contiguous entries
+> +		 * from iova, then try to join following physically
+> +		 * contiguous PTEs.
+>  		 */
+> -		for (len = PAGE_SIZE; pos + len < dma->size; len += PAGE_SIZE) {
+> -			next = iommu_iova_to_phys(domain->domain, iova + len);
+> +		len = min_t(size_t, pgsize, dma->size - pos);
+> +		for (; pos + len < dma->size; ) {
+> +			size_t next_pgsize;
+> +
+> +			next = iommu_iova_to_phys_length(domain->domain,
+> +							  iova + len,
+> +							  &next_pgsize);
 
-batch_add_pfn_num()
+vfio should not be calling it twice, the core code needs to give the
+best length as efficiently as it can. not open coding this in callers.
 
-Be mindful that the num is purposfully a u32 so that will need some
-attention.
+I think I've said this three times now
 
 Jason
