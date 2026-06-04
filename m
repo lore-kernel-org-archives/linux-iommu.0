@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1259F2EB10
-	for <iommu@lists.linux.dev>; Thu,  4 Jun 2026 02:30:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 030D9175A9D
+	for <iommu@lists.linux.dev>; Thu,  4 Jun 2026 02:45:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780540254; cv=none; b=IiaQFaOgpdqJm6ikMPjLtNeg0QcyvWIkvb51j1xfpBzQlOn+44wBoQUXSJxQFy6Q24QPJJyYw1yq+fUdTRoHk5QW3o40lMUQKz6XOaY9n2hEjh+Klx97BeZ72RI17BkL0SDWYfMClJ1DHjDjhBfYt7ghiQLsGeNe/L6RFomXAQc=
+	t=1780541151; cv=none; b=f4yXxMMK3poe8od9tpVMnT5kFaO9/l//tcfp5skJQvS7oNVBEdJRnwtWi9RjnCfq5zVg2xCXv5WQkCJEIDMNpzPtJeSgTy8JBLVnTx3LzblUXO6ALkdQ9i2X/CZ+2IF5t9yVziNBzqHE5Pj95PudklbvrN93qw+DtuoBBV75qJ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780540254; c=relaxed/simple;
-	bh=GrPBaqz4vJW6+l3zDtgP/2CO7SuG3mrR9GDbr1wFqMs=;
+	s=arc-20240116; t=1780541151; c=relaxed/simple;
+	bh=zwaEOC72aj4r75+dKErQgCh/I2UYQPGFQIzWi9Bh55Y=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Szz7zBMncSfO1f5YI+q0v/QwPHMvWqDlc25DDp+6XPhpWf/AeW5mHnFAMKI88uT3t2nwflZz5b/l7LFWyl5IlHchyvFhmk4e8Ihh4rzHbrK2QvcrLDq0gxpL7WJXY/z/cwjwU6prqzWoIZttjXGnZy9MsCUuMV621//jqr+YK7o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=episOf1X; arc=none smtp.client-ip=192.198.163.9
+	 In-Reply-To:Content-Type; b=HZptAujP1C0T9u09hA6xE2AP8Yl1ykSDJxu1WGJFRpX9Om02OXOEW9HBgpgrD1JzuDySszQiG95fIdWnZG7ieclJQwgytAeCc5NWsnVImPWcB7f5GgxkU8ZT0prLlW1uQlXjgzlzg5J9KXwkcNiiyJI+Mq7+Y7emh7xs2Eu9J3Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Q59NykEs; arc=none smtp.client-ip=192.198.163.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="episOf1X"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Q59NykEs"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780540253; x=1812076253;
+  t=1780541150; x=1812077150;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=GrPBaqz4vJW6+l3zDtgP/2CO7SuG3mrR9GDbr1wFqMs=;
-  b=episOf1XVbRT2JG7yqcjc6XVQGbADHtVPzKrkP/h/rm6cNFwgNYsx6RI
-   HABMdIei5pIqU8Hn4pkB10HqSTPkxh0ZKSw8F14L+0Uipu+XTL03fowBZ
-   +cgHcpum9bMOFl/z35rz10gdEF1F5iiiSXN4Z6XZKQwmiPuAkiPQ8+1Zr
-   HO4XBlZuQiiw4QR35OukT+ObhRjMvllBSuUe8xH7ZSMpoI42Ufhds1qKl
-   qG7gK4o16MdO6AR2poIJw5/IIHjWN3x72dBWKDmxgddJyPaqyH8LMSh5M
-   JSi9tQiIhjspUZllDs1N+3RELv8CAF4dWrwljGd8jrCasq0YAq9BmW4mL
-   g==;
-X-CSE-ConnectionGUID: FSuvNS/kSoe1jb8yGqmndw==
-X-CSE-MsgGUID: C7NVcvPlR6mFZ5oL/UGHcw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11806"; a="92045335"
+  bh=zwaEOC72aj4r75+dKErQgCh/I2UYQPGFQIzWi9Bh55Y=;
+  b=Q59NykEs2yiaUSVoE6zHmVyHmAlYiQWZoyUWIqOpCXQczH1Db19kIbI6
+   tM8jOtLfB1Z9DpVrxE3DdrLKSFgdW8A/mDBgNVvhGWFCCiFnMsdGIIZYY
+   pt3wPm/OnNvvH0UIBPc4ogwzBek0ap8FokWdymTKQuWom9BGHF3a47Ljm
+   PftZ9Zb4nTQajqZ7x+Af+IBJDejklY/fr7Wf3rsgKDysAco2AwCK4DKEK
+   2fBrzXrKtU4bcYwbRXPr1TOxrl7+jbKjzTXiAyIKiZII8wZE2qTCo8K1k
+   tdISjGMnMewAfbmcWWSl8e8BJXtLX34GFZhh1/M2IzeYwvRZ1VH2wNeb8
+   A==;
+X-CSE-ConnectionGUID: eUUDjYtXQ1SHl4P18KrOfg==
+X-CSE-MsgGUID: BP/vPkXUQVqHojaIB8rd9g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11806"; a="81394977"
 X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
-   d="scan'208";a="92045335"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2026 19:30:53 -0700
-X-CSE-ConnectionGUID: aH5hQDTLTVyD5bBUEvs16A==
-X-CSE-MsgGUID: 4BwfoSKKSvaArjJVkD5/zQ==
+   d="scan'208";a="81394977"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2026 19:45:49 -0700
+X-CSE-ConnectionGUID: S4I3acvjTca0y7rBk61R5g==
+X-CSE-MsgGUID: OCypOtVWTQWlA8M8EeXAjg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
-   d="scan'208";a="241910640"
+   d="scan'208";a="244260671"
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2026 19:30:50 -0700
-Message-ID: <505c8f52-2526-4d78-bdff-1bf67f49129d@linux.intel.com>
-Date: Thu, 4 Jun 2026 10:29:54 +0800
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2026 19:45:43 -0700
+Message-ID: <633995b3-f534-49ef-9bb5-2ebebfc2d443@linux.intel.com>
+Date: Thu, 4 Jun 2026 10:44:46 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,66 +52,46 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 3/5] iommu/arm-smmu-v3: Fix a UAF in the probe_device
- error path
-To: Jason Gunthorpe <jgg@nvidia.com>, Pranjal Shrivastava <praan@google.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Bjorn Helgaas <bhelgaas@google.com>,
- Samiullah Khawaja <skhawaja@google.com>
-References: <20260601143644.2358771-1-praan@google.com>
- <20260601143644.2358771-4-praan@google.com>
- <DM6PR11MB369078B4E5BC3C6514A99AFE8C132@DM6PR11MB3690.namprd11.prod.outlook.com>
- <aiAr_YZqVwijXyQ5@google.com> <20260603145903.GC1170766@nvidia.com>
+Subject: Re: [PATCH v3 01/32] iommu: introduce iova_to_phys_length in
+ iommu_domain_ops
+To: Guanghui Feng <guanghuifeng@linux.alibaba.com>, jgg@ziepe.ca
+Cc: adrian.larumbe@collabora.com, airlied@gmail.com, alex@shazbot.org,
+ alikernel-developer@linux.alibaba.com, boris.brezillon@collabora.com,
+ dri-devel@lists.freedesktop.org, dwmw2@infradead.org, iommu@lists.linux.dev,
+ joro@8bytes.org, kevin.tian@intel.com, kvm@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ liviu.dudau@arm.com, maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+ oliver.yang@linux.alibaba.com, robh@kernel.org, robin.murphy@arm.com,
+ shiyu.zsq@linux.alibaba.com, steven.price@arm.com,
+ suravee.suthikulpanit@amd.com, tzimmermann@suse.de,
+ wei.guo.simon@linux.alibaba.com, will@kernel.org, xlpang@linux.alibaba.com
+References: <20260602104637.1219810-1-guanghuifeng@linux.alibaba.com>
+ <20260603151804.1963871-1-guanghuifeng@linux.alibaba.com>
+ <20260603151804.1963871-2-guanghuifeng@linux.alibaba.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20260603145903.GC1170766@nvidia.com>
+In-Reply-To: <20260603151804.1963871-2-guanghuifeng@linux.alibaba.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 6/3/26 22:59, Jason Gunthorpe wrote:
-> On Wed, Jun 03, 2026 at 01:28:29PM +0000, Pranjal Shrivastava wrote:
->> On Wed, Jun 03, 2026 at 07:31:38AM +0000, Tian, Kevin wrote:
->>>> From: Pranjal Shrivastava<praan@google.com>
->>>> Sent: Monday, June 1, 2026 10:37 PM
->>>>
->>>> Clear the iommu->priv to NULL while returning an error from probe_device.
->>>>
->>>> Fixes: a2be6218e649 ("iommu/arm-smmu-v3: Improve add_device() error
->>>> handling")
->>>> Signed-off-by: Pranjal Shrivastava<praan@google.com>
->>> probably add a note that UAF is theoretical at this point.
->>>
->>> iommu_init_device() calls dev_iommu_free() right after @probe_device()
->>> fails...
->> Ack. This is just to prevent a UAF against future refactors. I saw the
->> intel & amd iommu drivers doing it and felt this is missing from smmuv3
-> That is just pointless dead code, the core code immediately frees the
-> memory this is NULLing
+On 6/3/26 23:17, Guanghui Feng wrote:
+> Add iova_to_phys_length callback to struct iommu_domain_ops alongside
+> the existing iova_to_phys. The new callback returns both the physical
+> address and the PTE mapping page size in a single page table walk.
 > 
-> static int iommu_init_device(struct device *dev)
-> {
-> [..]
-> err_free:
-> 	dev->iommu->iommu_dev = NULL;
-> 	dev_iommu_free(dev);
-> 	return ret;
+> Add iommu_iova_to_phys_length() core function that:
+> - Checks ops->iova_to_phys_length first (preferred path)
+> - Falls back to ops->iova_to_phys for unmigrated drivers
 > 
-> I would remove it from the other drivers not addd it here..
+> This enables callers like VFIO to efficiently traverse IOVA space
+> by actual mapping granularity instead of fixed PAGE_SIZE steps.
+> 
+> Signed-off-by: Guanghui Feng<guanghuifeng@linux.alibaba.com>
+> Acked-by: Shiqiang Zhang<shiyu.zsq@linux.alibaba.com>
+> Acked-by: Simon Guo<wei.guo.simon@linux.alibaba.com>
+> ---
+>   drivers/iommu/iommu.c | 50 ++++++++++++++++++++++++++++++++++++++-----
+>   include/linux/iommu.h |  9 ++++++++
+>   2 files changed, 54 insertions(+), 5 deletions(-)
 
-You are right. I ever mistakenly thought that release_device would be
-called in the error path, as I noticed the following:
-
-err_release:
-         if (ops->release_device)
-                 ops->release_device(dev);
-
-That actually is not executed when probe_device() fails, so there is no
-UAF issue here. Anyway, it would be better to add a comment line in the
-driver to prevent any future misunderstandings.
-
-Thanks,
-baolu
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
