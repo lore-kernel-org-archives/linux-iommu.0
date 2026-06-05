@@ -1,87 +1,108 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B13DF1ACED5;
-	Thu,  4 Jun 2026 23:51:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from outbound.baidu.com (mx22.baidu.com [220.181.50.185])
+	by smtp.subspace.kernel.org (Postfix) with SMTP id 39F9B21883E
+	for <iommu@lists.linux.dev>; Fri,  5 Jun 2026 00:40:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.181.50.185
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780617112; cv=none; b=MQOcjBY182Joh6vSdEl2q2J2KFSfpuLBBgR4tIFpiwjmAThOnoCYtBjdjbq+Dr5KNVdEKMeY9PawtRDWzZ8RKlelejqnRJSLmTomIWmF07yJgYWMIGEGT3x/9paiBiYHUK1w8Kl1YZ+pRTteaLvtq7CciVQhmJU4n/op3xNi0kk=
+	t=1780620025; cv=none; b=lT6ZSc1WgTkScBBGFcpB010vscfJ+Ghox7JYIa6tMgxyb8wAWQIrVl3u7C1NViH4hJeD+BIGvHifV3kBTBUMKWBjcKnVx6hqxAqZTB0Uj+yXATCIw8OV5LW/iZYCLe1OrzzuaInivptbrs7zX8W4uxXKcIyhuhr48XwUDKDC5Tg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780617112; c=relaxed/simple;
-	bh=Qsbe+Zr03M6GgtVi4XR4r7M6OAh7koJDCDJUXBghNFY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ld2gVpYWTswbNciZ4Vj0f+5LWHaVDiPt5yw+AvB2o2IelZvjyZxMYCm0MksSuRlCPrTAr0odeFOFKboxb72Jt4Yauf31Rq2zXyT5d//KWkAs4THMHrtjQbjJXdXRbgVVJzolSylEhNl2fSLPNJ38f6Wo7jI8bGfMtqxZSHhsOi8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jKcw/Idx; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780620025; c=relaxed/simple;
+	bh=KPj9bNQzAWWv6RiO1fk9816+3TLZ4d6u5NN4FM8XAfw=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=jVeWsreefnEevdGpZEn7mS9oiydH0zUyBxzckPLnHHuqKpGb8OenpF0ksEJTpXbymtAjnY6QSMerpUHr6bxtX0I9UEWaQ162kSXXCQTWTDCaTcIlyplp5NnxGp//b8MAIPegrfuVbcFmVXZ3JVF9WennBl+pji0MuGhfxNkunNM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com; spf=pass smtp.mailfrom=baidu.com; dkim=pass (2048-bit key) header.d=baidu.com header.i=@baidu.com header.b=N9HfUPxb; arc=none smtp.client-ip=220.181.50.185
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baidu.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jKcw/Idx"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4175F1F00893;
-	Thu,  4 Jun 2026 23:51:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780617111;
-	bh=qh7GaHudWqFS4OaIxaBj0xspMhNwznx2VYShs8Ojxj0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=jKcw/IdxZ03ISnE0pAxKMesbvA2zH37ofT1ZM6iLvTf8bkoWUUHHP7DKIvnR++TXM
-	 Sf/wygPpPp5JQO1CJSW1ZQaN6+Pv3ZCFh5pYEcCejg/80HHXVHtqZ36q4p0FYJWVvk
-	 uVCsNmN/MfBHpIYpTx/TRT9f0uQ9tCK7jkJNiyBu5hRdCIuL+1XgLZGfizTG4R9PHg
-	 9HPvfyNATXVxxjTv8Ex0EVM1wPYQKGO7hWZsyb+6gcqoT7SlSB30uBN1rZq2p3zYTz
-	 +QjuVQm/o5LXS9vCa6l2pSEEjJiVgs4nBu8n1ALFSUX0BbHDFAxRy6BKcGRNGYOB3J
-	 ku1q3xR/wKM4w==
-Date: Fri, 5 Jun 2026 01:51:47 +0200
-From: Andi Shyti <andi.shyti@kernel.org>
-To: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
-Cc: Lee Jones <lee@kernel.org>, 
-	Mark Brown <broonie@opensource.wolfsonmicro.com>, Thierry Reding <thierry.reding@avionic-design.de>, 
-	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Andrew Lunn <andrew+netdev@lunn.ch>, 
-	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Srinivas Kandagatla <srini@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Vinod Koul <vkoul@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
-	Danilo Krummrich <dakr@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Saravana Kannan <saravanak@kernel.org>, Madhavan Srinivasan <maddy@linux.ibm.com>, 
-	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Doug Berger <opendmb@gmail.com>, 
-	Florian Fainelli <florian.fainelli@broadcom.com>, 
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, Ulf Hansson <ulfh@kernel.org>, Frank Li <Frank.Li@nxp.com>, 
-	Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, 
-	Fabio Estevam <festevam@gmail.com>, Matthew Brost <matthew.brost@intel.com>, 
-	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>, 
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
-	Peter Chen <peter.chen@kernel.org>, Paul Cercueil <paul@crapouillou.net>, Bin Liu <b-liu@ti.com>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Maximilian Luz <luzmaximilian@gmail.com>, 
-	Hans de Goede <hansg@kernel.org>, Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, 
-	Krzysztof Kozlowski <krzk@kernel.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, 
-	brgl@kernel.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
-	linux-arm-msm@vger.kernel.org, linux-sound@vger.kernel.org, driver-core@lists.linux.dev, 
-	devicetree@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-i2c@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-pm@vger.kernel.org, imx@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, intel-xe@lists.freedesktop.org, dri-devel@lists.freedesktop.org, 
-	linux-usb@vger.kernel.org, linux-mips@vger.kernel.org, platform-driver-x86@vger.kernel.org
-Subject: Re: [PATCH 11/23] i2c: pxa-pci: use platform_device_set_of_node()
-Message-ID: <aiIOrXwc4pNk8ihI@zenone.zhora.eu>
-References: <20260521-pdev-fwnode-ref-v1-0-88c324a1b8d2@oss.qualcomm.com>
- <20260521-pdev-fwnode-ref-v1-11-88c324a1b8d2@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=baidu.com header.i=@baidu.com header.b="N9HfUPxb"
+X-MD-Sfrom: lirongqing@baidu.com
+X-MD-SrcIP: 172.31.50.47
+From: lirongqing <lirongqing@baidu.com>
+To: David Woodhouse <dwmw2@infradead.org>, Lu Baolu
+	<baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+CC: Li RongQing <lirongqing@baidu.com>
+Subject: [PATCH] iommu/intel: Prevent variable pollution in cache_tag_flush_range()
+Date: Fri, 5 Jun 2026 08:39:50 +0800
+Message-ID: <20260605003950.1720-1-lirongqing@baidu.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260521-pdev-fwnode-ref-v1-11-88c324a1b8d2@oss.qualcomm.com>
+Content-Type: text/plain
+X-ClientProxiedBy: bjhj-exc10.internal.baidu.com (172.31.3.20) To
+ bjkjy-exc3.internal.baidu.com (172.31.50.47)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=baidu.com;
+	s=selector1; t=1780620010;
+	bh=hB+Iq6Djm8O3GHlZoIyH0vDln+WNC/ceWfjCPNDcgQg=;
+	h=From:To:CC:Subject:Date:Message-ID:Content-Type;
+	b=N9HfUPxbijVIIbJoAZPaxC+jAJO7o1I88YW/ugMZtmgmDCJNNx9M/ammhIxCQgK6D
+	 BjhB1LrzpYMaC7xOip19/jaISW3l/95PhPAWEryl1XnKjMLEPoYjPilfyDLr7eXS1m
+	 dnjxQLeL9DXhnDlwVrQegVwnpsZEVHhtTjs1seT/cEpIretL0SkGVe30dBW0wxC+UC
+	 oC+R65hziD1jmS5EnNCuVTrsSv/2WVabx+JORJfWSQ3k09iioqwGNXuQuFUuoUa8x7
+	 3UgHJGDugjf0UQhXe9fcS52WvOjlIyNBWzUAt32cHSj5HzkzetW17+aVVWor0RNIO3
+	 0Ou8pkmBuZ0fQ==
 
-Hi Bartosz,
+From: Li RongQing <lirongqing@baidu.com>
 
-On Thu, May 21, 2026 at 10:36:34AM +0200, Bartosz Golaszewski wrote:
-> Ahead of reworking the reference counting logic for platform devices,
-> encapsulate the assignment of the OF node for dynamically allocated
-> platform devices with the provided helper.
-> 
-> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+The loop in cache_tag_flush_range() modifies local 'addr' and 'mask'
+variables that persist across iterations. When CACHE_TAG_NESTING_DEVTLB
+overrides them for a full flush and falls through, subsequent tags
+incorrectly receive the modified values instead of the original range.
 
-Acked-by: Andi Shyti <andi.shyti@kernel.org>
+Fix by creating per-iteration local copies initialized from the original
+parameters, ensuring each tag processes the intended flush range.
 
-Thanks,
-Andi
+Signed-off-by: Li RongQing <lirongqing@baidu.com>
+---
+ drivers/iommu/intel/cache.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iommu/intel/cache.c b/drivers/iommu/intel/cache.c
+index fdc8881..9253025 100644
+--- a/drivers/iommu/intel/cache.c
++++ b/drivers/iommu/intel/cache.c
+@@ -437,6 +437,9 @@ void cache_tag_flush_range(struct dmar_domain *domain, unsigned long start,
+ 
+ 	spin_lock_irqsave(&domain->cache_lock, flags);
+ 	list_for_each_entry(tag, &domain->cache_tags, node) {
++		unsigned long flush_addr = addr;
++		unsigned long flush_mask = mask;
++
+ 		if (iommu && iommu != tag->iommu)
+ 			qi_batch_flush_descs(iommu, domain->qi_batch);
+ 		iommu = tag->iommu;
+@@ -444,7 +447,7 @@ void cache_tag_flush_range(struct dmar_domain *domain, unsigned long start,
+ 		switch (tag->type) {
+ 		case CACHE_TAG_IOTLB:
+ 		case CACHE_TAG_NESTING_IOTLB:
+-			cache_tag_flush_iotlb(domain, tag, addr, mask, ih);
++			cache_tag_flush_iotlb(domain, tag, flush_addr, flush_mask, ih);
+ 			break;
+ 		case CACHE_TAG_NESTING_DEVTLB:
+ 			/*
+@@ -454,15 +457,15 @@ void cache_tag_flush_range(struct dmar_domain *domain, unsigned long start,
+ 			 * affected by a change in S2. So just flush the entire
+ 			 * device cache.
+ 			 */
+-			addr = 0;
+-			mask = MAX_AGAW_PFN_WIDTH;
++			flush_addr = 0;
++			flush_mask = MAX_AGAW_PFN_WIDTH;
+ 			fallthrough;
+ 		case CACHE_TAG_DEVTLB:
+-			cache_tag_flush_devtlb_psi(domain, tag, addr, mask);
++			cache_tag_flush_devtlb_psi(domain, tag, flush_addr, flush_mask);
+ 			break;
+ 		}
+ 
+-		trace_cache_tag_flush_range(tag, start, end, addr, mask);
++		trace_cache_tag_flush_range(tag, start, end, flush_addr, flush_mask);
+ 	}
+ 	qi_batch_flush_descs(iommu, domain->qi_batch);
+ 	spin_unlock_irqrestore(&domain->cache_lock, flags);
+-- 
+2.9.4
+
