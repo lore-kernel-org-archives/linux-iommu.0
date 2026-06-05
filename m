@@ -1,84 +1,64 @@
-Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012034.outbound.protection.outlook.com [52.101.53.34])
+Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013042.outbound.protection.outlook.com [40.93.201.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DFAE19D8AC
-	for <iommu@lists.linux.dev>; Fri,  5 Jun 2026 21:56:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.53.34
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FF3E368299
+	for <iommu@lists.linux.dev>; Fri,  5 Jun 2026 23:03:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.201.42
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780696593; cv=fail; b=RR6kyFOrGeQQsmhHMQNAj5r4VUBkNwUIlsaW2SEBz2gT5Y+gVycgXZkbKoOoHjLGXsy63E0y2Vq5asf6JaJXMuUt+EMOEtr5IkiijaNpgXehlZWoDYAEvB8CQtMB6qvEwIi7kiEPYXrvo3715ouwJnSkkCLHFKsdABu25MYtZwE=
+	t=1780700605; cv=fail; b=YXRPmGDBwasezmUn8z0WJdSoCo3J6S8XLhNFMrBwt7ToQGJ95zTlCchBCLHkR1H67EjBqEgIGsuibqy0svrIl6tfPgLQ86HV3QW37oT+rC+g/FZSK21OlvrTZF4fVioXorftyXvZKW3VFdH63VNLrgHk9HW95tBXXYdS7SmKxMo=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780696593; c=relaxed/simple;
-	bh=wzwAMj7h8/fX0fFvSfro6o2R5l9JfBuG/Lf5XcfwaF0=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pw8ABQvvOHUNu+65oFY460QluIh5uc3cbp6/QDlgQcEbr5L1jSKfCTNLp6xJ0FECu36tRUzZk6caHmDJOCb42VsAK8WcqCMwSInBVNQQNY1PW5fTTO3ccdAywSU/nHOCh0iEhpHJl63eRj1dMd43pqrm+bX57ErMdBvL4lmdmRU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Q+IbS9JL; arc=fail smtp.client-ip=52.101.53.34
+	s=arc-20240116; t=1780700605; c=relaxed/simple;
+	bh=uaomvVnKPACTsnbewZlbIOwmISUhXwKVgGuKCSNCl9s=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=Y23E8kRpjrV0wNIprfJGtmzuErk/ncSiAbRGfqdVK96VGlcWEJJKm8VF2/suy6ZbQG3xRL7FwjkfsXbY8Kq6vv4O35f49csKRdWAA9F3dmdEq5XpxENgwmbC62c+JkBgJuX9uQljpqkd+dJH71TahlmPbOmywytP2a5GAXca4FM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=I79br5XY; arc=fail smtp.client-ip=40.93.201.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Q+IbS9JL"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="I79br5XY"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=BsXhR4UYy5iyI5ABV4Vm4ZbdSKuSDN7Js+FStUMglwsIPPlo5SSn6vKMlTycXTZsmWu2aN9knSgksRZrtXAYE8xnqTL5z0iv3pPQZLySlaPA5hzNxdpR+7tjvjydIsbhqnu1uGxMxrz7MmMiCaH8X12aL4/aR5JDIuHpbo9Ju8lfbI4RCDqi5VPuiT2MfZl7FkQ0Bq7K2IS3yuJwvrC5m0zpRaUFAiam1TvJa80zSvlGK1jsvkJehsOpn3vuNwmXm7VfIiyCqPQKbGBgw4aH+vK5qWRr9vV8xqvuvsg6aX0xWBS6yup0lwIjvEB8SuExTZKqSvyDuhF/VP/851tnJw==
+ b=ZfPPtl9Dn7Msk/heGEyB6giz+VhMxAQxDTsdXAI6RMq87zsECsGmHbGywcY2IZbl8EUZrViiuwQI97iTcvsO1Dww/8bbLxRYYwxMlhJF5u5fa2kuC1AoAvzU1zgJAnhc2GJf7x4FVSZM2FocmWrNUzy50Tc56OTWOQlpgUhflYU5t5IphiMVNWcvL0Go+8UFJgmrKrXCsgS86XtJdPb8XFf2fH1IWpyb265FyNNurPJ3dmTYd35u7QcYS0nXNl8CJAxD5EXvL16fkFho0Is6X+1p8enQMEcF3N3dumPaODvPxaj88BgteTwFvw7i+ipxgEaYyUwgG0BIqf+3pJdKFw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QE0Md98pudZWMbItmpFfbAzubbC0Gb9q7XvgkEpElx4=;
- b=YW5jsrJSQt8gHQx+hdfk34I3oY5JK3ksuglRbB1WK76PxRUSS+D9rZHbeFFp0sqyS0VSM9vgWXjj58lROE3zosudkSQrwe6/BiIcu/dxf+FEqzXEV6bsagQH9Ir3cUYyiskwIj0Y4jtLKLqM0BlTi3ZcXTBaT7SfGo4f/HA45fZ0WVgj+bnwdxj3ki65LB8/1anbZjfGN7ksq/8bSHD45xZxN8DaNTUxTpRExgcOL0NeFUSxnwD4CX9GlKJfN+FtZyIbQa201uiBxkFP1fk/dgiFZco6VUz1yGCauuRjeE11i8bxRQPK1EHs++Wg2nkUG1xcwwsknZtF7Cyj1L3efQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
+ bh=NJXBtCaiiZlydeySBJ0Sh8PMzpq2y3Y8HSAq3152oo4=;
+ b=D/fuSI5NPkfTktIaOpogomqYIUBxkG0HxxplpwjURyYGa0dHZZ12N3+0NEwr8MC0TghSzZ5In5w+IBhf/g1XnZAa9+WgMu1eiaT8Y2jqUrJScRJ0NJFF6czWreiZv1o8PBBjMy140/jRIz2TYEZFiCQqNcrkbYZBsOttKFOO9+5n1pBSz09R3yJ83aiAWQ2v/66eI02sDWs8hKcpkL1H1wWzic0iWoE0d7XFPdL7zpiCmErwDbV6xyplqsXXRTQflSfVzjeRxwzfNhx8bL6l1grLrzTA3wAYfp1ytn11aaqCexVBaFnCctBOHWqNmnc0tCgqPGkUIP6COHXAkvH8Hg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QE0Md98pudZWMbItmpFfbAzubbC0Gb9q7XvgkEpElx4=;
- b=Q+IbS9JL/o1/2FrwtqPBEiJWypUZE4Se6AQXjFmU1qWNsik4qhwtd5NEnYtcyW6v+ZFAvmDycZcg+g6XYUh1ogixiSGk8tapPIpl28adrjtfrFwBUnkA7gnDsZ0PRB3jdGcSPLolfrob/IYHANJspZ30EhIJCY9MfjRRcooAyynY1kVNQ0zDg4EbA8GGLuxn8FxD1TyBUhNeE3Pca0kclcYDo2y7mSpRa//kaUebnh3ST4KiWkNelenNolu1auMPO2oq8BtSvrnSjhzXZAyYGq31kzHjpsHBG5KfgfB9BW+KnghVPdq3H098LUZi3CMBEmn0KN6wqXHBqmZVIxxMpA==
-Received: from DS1P221CA0025.NAMP221.PROD.OUTLOOK.COM (2603:10b6:8:242::16) by
- SA3PR12MB9180.namprd12.prod.outlook.com (2603:10b6:806:39b::18) with
+ bh=NJXBtCaiiZlydeySBJ0Sh8PMzpq2y3Y8HSAq3152oo4=;
+ b=I79br5XYuPK5e4KOJzzVoA+OCFT3cAbRCBi2XjSCJ6KN6r6ska2TLPJn1JSB8qcC8ttXhegRSSWat3WXdn4BqdnXWCodMP7VwyCsrLi2gxelmCA/myDBbD1VD4CTzIjnSG0ReyYYnqPOL4aprejumx64VnTjkjESEc47w4T8pmggdOGZ7/xPM+AxshDg+ipT02C4tAQTTfZx+lqFW7X0tFELB7lwvbYOwq4rr1NWBo77V7ub4JbEP1fL+9C598RoUgPLYjt4ogLf/WmGw8Vi3kNQSyOeyvXviSyTFL48EmLbB7PmmF/auXnxvTgX6u26gKRcU52lwwi1H4FPHDHRhQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by CH2PR12MB4037.namprd12.prod.outlook.com (2603:10b6:610:7a::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.92.8; Fri, 5 Jun 2026
- 21:56:26 +0000
-Received: from SN1PEPF0002BA4B.namprd03.prod.outlook.com
- (2603:10b6:8:242:cafe::68) by DS1P221CA0025.outlook.office365.com
- (2603:10b6:8:242::16) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.92.10 via Frontend Transport; Fri, 5
- Jun 2026 21:56:26 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- SN1PEPF0002BA4B.mail.protection.outlook.com (10.167.242.68) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.92.5 via Frontend Transport; Fri, 5 Jun 2026 21:56:26 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 5 Jun
- 2026 14:56:09 -0700
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.20; Fri, 5 Jun 2026 14:56:08 -0700
-Received: from nvidia.com (10.127.8.12) by mail.nvidia.com (10.126.190.182)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Fri, 5 Jun 2026 14:56:07 -0700
-Date: Fri, 5 Jun 2026 14:56:06 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
- Roedel" <joro@8bytes.org>, Bjorn Helgaas <bhelgaas@google.com>, "Rafael J .
- Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>, "Pranjal
- Shrivastava" <praan@google.com>, Mostafa Saleh <smostafa@google.com>, Lu
- Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
-	<linux-pci@vger.kernel.org>, <vsethi@nvidia.com>, Shuai Xue
-	<xueshuai@linux.alibaba.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.71.15; Fri, 5 Jun 2026
+ 23:03:17 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0092.007; Fri, 5 Jun 2026
+ 23:03:17 +0000
+Date: Fri, 5 Jun 2026 20:03:15 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Bjorn Helgaas <bhelgaas@google.com>,
+	"Rafael J . Wysocki" <rafael@kernel.org>,
+	Len Brown <lenb@kernel.org>, Pranjal Shrivastava <praan@google.com>,
+	Mostafa Saleh <smostafa@google.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+	linux-pci@vger.kernel.org, vsethi@nvidia.com,
+	Shuai Xue <xueshuai@linux.alibaba.com>
 Subject: Re: [PATCH v4 18/24] iommu/arm-smmu-v3: Introduce master->ats_broken
  flag
-Message-ID: <aiNF9kzjzDY/u1NG@nvidia.com>
+Message-ID: <20260605230315.GF1962447@nvidia.com>
 References: <cover.1779161849.git.nicolinc@nvidia.com>
  <49dde0a2e2dc88e421a3010956db33d47cc92aa8.1779161849.git.nicolinc@nvidia.com>
  <20260519120658.GB3477375@nvidia.com>
@@ -88,150 +68,154 @@ References: <cover.1779161849.git.nicolinc@nvidia.com>
  <20260602001547.GR3195266@nvidia.com>
  <ah5txKCvspL8zMeG@Asurada-Nvidia>
  <20260605194259.GE1962447@nvidia.com>
+ <aiNF9kzjzDY/u1NG@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aiNF9kzjzDY/u1NG@nvidia.com>
+X-ClientProxiedBy: YT4PR01CA0230.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:eb::10) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20260605194259.GE1962447@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PEPF0002BA4B:EE_|SA3PR12MB9180:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5cce636c-5e0d-4f55-4378-08dec34d4a7b
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|CH2PR12MB4037:EE_
+X-MS-Office365-Filtering-Correlation-Id: 23d646a1-7480-4246-d124-08dec356a11a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|1800799024|7416014|376014|36860700016|6133799003|22082099003|18002099003|11063799006|5023799004|4143699003|56012099006;
+	BCL:0;ARA:13230040|376014|7416014|1800799024|366016|18002099003|56012099006|4143699003|5023799004|11063799006|6133799003|22082099003;
 X-Microsoft-Antispam-Message-Info:
-	kWYh64XT6jWgjeqwkAXffr1Q1PF6L4T6tBSB9b2BGZ1UK6rS/GLxD2w+GRlDBdxZU5ZUzgl3rHYaG+srL7PrdTKWoMvomrGh/w7hdVIUIIqE6WxnGFbz2iS2ebsNPCmt1bi9bnugxLXUkWZB8nDGOKiIN9+iOYZK1PO2Vr/1oWrppBo48/E1Ns3QD1TFE3d9297bw2E8BPXeexKvajSdJ2fBuf+5NIt4OS/TlshRkiAXnlkkFJVJXVGYR94pgdWLjf2n2SVPCGXeKjmmtzFSR8t9F9uhjOKIjHvncAJVx3XWxUA3WDVJqaoXc00QPXfTgNSv6qCb36OSkhl844MswdSEZl0M2uFMbfbDhUU/6KwO6G/YvC1t8i37JC7xrPbNFk9DnnUllHh87dcbpXFE4ztsxu5YZbOkUwgWy9aa8gQQOlPmIL9UVrI+fhiync18JSXtrjmM8Nslk4Uc9yM67jiroCS6y6pe5VoijnyKiWvNP9CBvlF7kfKztw562lkO+aW0nd6YJtsWVk6SMOi73MOY+fJ50KY4Q+uHRJRyc/FeT4CrQOAFgVYR8YUptpCh2kdq3PQl/PHhhh6KOGYwEUf/9KPIMnvbMMkBY3UrEUbQdFO5uB3OGh6tnBNhewVrWKvokYxm9K8WR2nW9nARv9f802y4udzMn8EHY0w9j0XlH2SpJ9LIAfKLA8qTrq8vSnUm7tdIMEJTzhWibxjhIzqRHuZgOV8zN4nBB0FRmss=
+	H6PAANQSch6H12G36TPVcgUzTqjvE7YYIHxR77c2nHP1c7ultVaHTKRJRIwLJwLIUMFMfUbVAGe6rBKbQtW3jUhA/sqgw5wHDkEJDoVfP9YT3Y06apCtlzZ1Xl27FZ1I7wQKN0uj/AzAPPZugHNL9+LORX3JZkMv1qjsTYG5dtIJRj1RfcBj+i8QKVjhPHdtjBTqTiMbe8P9q29Y7J3dvZtiaIUEMvo+4wZsW5aWND/IzpPD13GdHy+JP98KiJrNPt0c3sknBHZd7kmi/tFZOeWuLxzvqZ4VJhyB1K4mHbPtANcvAtmnrJRzD8XhoztLQp9Y5px6CroW2+u5fqfdCAAsSUf6D2XfMGCEct0J/onNc2dXxj6uA9PreGFBpVouBk7aBFnTlY00wDuBVMgq/yHj0Z3/e+U9X4CHzgwjdo3XPYk5Ap341MTazjSJ558jIHclimYAhVtUpTsrA9pjckR8HRVvuQdJEj6f0uKVEeAK5TrVr1LdumZcga0SDxTMfYQZ9u0LWBQw5Oq2T9GReNeSxZRFRoPRFyZHS+7NLu4CMqXWgC8KE6Ypzwpgw2sTLQlfzKKbfAp1YOxKGNhY7RvquTrwgFPF1jm0+Ex1LC8Hv0qluXZXo+GexuupARZyJwjc+Zekp0NYlIVxquCbtGSkMeIqG+9Q2ri3M6LxlJVN4KBU6+YYTqkNRHYUVN2C
 X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(7416014)(376014)(36860700016)(6133799003)(22082099003)(18002099003)(11063799006)(5023799004)(4143699003)(56012099006);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(366016)(18002099003)(56012099006)(4143699003)(5023799004)(11063799006)(6133799003)(22082099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	A4ejibje7oSZtyJKVdoGrdIlILpl0J0KqobTYIarvo8szqlmhSJqwkm6ncpR5KXgnR39ZDCb62rBnkv5yBxxOH3JCETMTVauMUzIkd7iFhv1UAdLk2klu/z9Kn8w5oyfJlZZEvlClkjevXtqTUXL00BuD/HInO2yXqz5H0RPoDHiH3qkJ/i/WCweWyfblHX9H4WEuS38bkWKhAPnGHZfiODQl3EAVtIOB63hSfoafiBS8YuYtWU50SVHaZLemNVq6d6N8M3s4Kne/6mMiAk2XJFVYiWAA387EmFJ9iLGWVDuGo4qVZz2NarZaKAJIaEUnYxU2tpylUlKw3u6+LV5ZoGecUCG+I+YsZEHfMUkQGbRZjemu/RNnVDIC9UR4tznSlyfb0fwGh0rUMrhmEmKeJJt+Re1zoGKCamqBeJDqDkfrnith60UqvWrkFeCAdfE
+	=?us-ascii?Q?LiVeC43xLZ9q9lFn02mDLV5Htl+oHV2bDdMu8R0f+Sn4+eTqwVkHWSV4qQkM?=
+ =?us-ascii?Q?qoK22wT47OZPVeSiB6sCEvwFV/PC+qvTMnmvw2etZPohtGTKE1LmedLXhZVQ?=
+ =?us-ascii?Q?DJb2UXQRGlkkivJM/6CKACIt6484DWY49PZBeDZ4sy9Rd66fAvWR1HnCOlac?=
+ =?us-ascii?Q?KqqxwPm6eoWFD5fAEQXp684XZRA1HKns7BfYj/Vf9laX33CNJM+5Gdg4EWqE?=
+ =?us-ascii?Q?q7YUyP0rVE9ABtCurIT0sceDYdR8+AbTLcohier3Dyu1lER53Qum5VYKBrkS?=
+ =?us-ascii?Q?p4qEf4U2jS+Cxnwk/St3uw2tuFMAoOsh++8cwMspj56SSO8yUZOVG+xqROQG?=
+ =?us-ascii?Q?exKZL3ObAbgTzW4ZHu3L5XAYK+EFn7Etl0X2DjTPYrljPHd/YJTKDjb7HC8x?=
+ =?us-ascii?Q?Vop4AOTQWIQD/BdqvpsjGFJTNyhpej5mrQyobqWxhA+l0iGE5756xoZWGxfT?=
+ =?us-ascii?Q?udtrHYBsitWFqPbuAEzBZ46pWD/Ju+hyVsJ5BVSBQ0h8i457yY5X0EO2lk/7?=
+ =?us-ascii?Q?ux9sGYauPE0fy8ct93i59BZDfsFxYxJu+txz38SaNh0X0pxq2g+unynqM7Q5?=
+ =?us-ascii?Q?ispVqqz6hkAh57ocTnSDBVuLkNhsGgqb1vxmzVTel/9hWoqhdhSvL3ziPsjd?=
+ =?us-ascii?Q?m70kdeIhVsJAJ6AE7i4X8rupfFUNOP9dAqx+jju7W7BGQFZaBrlw6E72xEu5?=
+ =?us-ascii?Q?005IRYYTmY665ClW1DTZuaAmKW2BtLlUEHdTCJGp44naa2JJ8eg4ZUANe6K2?=
+ =?us-ascii?Q?TSDAp/xsT5lxvb+/6nMNL9/ArTZNcvDgw8l9WAwha9rZZxAC5z8UcGqcnRgU?=
+ =?us-ascii?Q?7GkwtscGGYQHCnWKy4RpCYVB+gcTm05yuhqhWYmQh36khwb8IHApJunGdfww?=
+ =?us-ascii?Q?XQNwwJpXHgTkaGL9b0OTYu3HubURa+3EzZr6YW31IzYnEYrpivAunem0Ivpy?=
+ =?us-ascii?Q?iClUwXyTxebeRzS22nwH4msqYAOfCJqX7bPY+5/o3KWL4lYgSWaaDiFUWKXk?=
+ =?us-ascii?Q?RMndByMbIg3uwel5cZEdQ7DL3FMOjJG2xR0fu5/+nvSPHvji3/mGlGDN5YoB?=
+ =?us-ascii?Q?A8ijaHce89MDCKWNgwtevPvE71hUijOBeviQxsGJs9DoWAPMhrW40lpapaHG?=
+ =?us-ascii?Q?ASHvJ5PYsVCELadjoRxcMWhj3bk0Nhb+aqVRX7Kw6gApVpYKoQEFM07aEhyX?=
+ =?us-ascii?Q?ndLnZ1h2Nv5OCdGwDTS3Hli9uycazrgzvZL6DD+2zI+NVQzP1o066Fdnbdco?=
+ =?us-ascii?Q?OkRSIFvwegUx5rnz8zjEJT1kfqD9Bzio3GCIpdSdecrKdTP5+v26h5cTi0rn?=
+ =?us-ascii?Q?eaChEcloZiRogRYhrfPFeSEjAhBfMQjjOblKiqUYQRLYHUly77x9T60ZrU6X?=
+ =?us-ascii?Q?hm11Eat/HNGzmCvG0Pn/1W+dwJaGUvt7mzcye7s4EyN/E8DglQOL2l1fTYd0?=
+ =?us-ascii?Q?GWFTFT9bjVbueNnMvI2Mt2pm54vw4LZirvaWIXD+Ybhe7ERoP2PlTMVf72OM?=
+ =?us-ascii?Q?YITHNG8A3JYAUvsWe8ica0GROqQktOyBfksmXkP8v2Rse9swbCKSmWyanN1H?=
+ =?us-ascii?Q?EWg36j6gcrjD3bcQd5jXmH/7UB2GYL5KYqBNg3VIcdtWHZLCkBtB7QklcyqD?=
+ =?us-ascii?Q?unGxH7p/VmORzPkx0NceGRFT5WSbRpR2ndA/GUjUjUpfgNGLrLO0Z+OmYYwR?=
+ =?us-ascii?Q?+XbTv4+W8rY0Hu+sHH0Pv+ghmpegVQt9Oj/q91zB3qXuVvyX?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jun 2026 21:56:26.1191
+X-MS-Exchange-CrossTenant-Network-Message-Id: 23d646a1-7480-4246-d124-08dec356a11a
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jun 2026 23:03:17.2893
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5cce636c-5e0d-4f55-4378-08dec34d4a7b
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SN1PEPF0002BA4B.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB9180
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: CP0T6J6QuBrrIhla0lUrxHYv52E3mAZX8bkeP9OBPOWNeeI8qIcpQ3HXFOQOtviZ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4037
 
-Thanks for the reply.
-
-This is indeed a very complex and sophisticated topic..
-
-On Fri, Jun 05, 2026 at 04:42:59PM -0300, Jason Gunthorpe wrote:
-> I don't see any of these options as appealing. We have to maintain a
-> few key invariants, and I think it cannot be done without a way to
-> find all the domains that are using the STE.
+On Fri, Jun 05, 2026 at 02:56:06PM -0700, Nicolin Chen wrote:
+> On Fri, Jun 05, 2026 at 04:42:59PM -0300, Jason Gunthorpe wrote:
+> > I don't see any of these options as appealing. We have to maintain a
+> > few key invariants, and I think it cannot be done without a way to
+> > find all the domains that are using the STE.
+> > 
+> > One way or another you have to be using the invs list rw locks to
+> > synchronize the EATS state changes.
+> > 
+> > It is okayish to be sloppy when turning EATS off, but when turning it
+> > back on we do need to cycle through every invs list and toggle its
+> > lock to ensure that the invalidations are synchronized before
+> > EATS=enable happens.
 > 
-> One way or another you have to be using the invs list rw locks to
-> synchronize the EATS state changes.
+> I think the core guarantees that "cycle through every invs list"
+> happens: a PCI reset calls reset_prepare() blocking all the RID
+> and PASID domains and removing ATS entries from every invs list,
+> and then calls reset_done() that re-attach RID/PASID domains so
+> freshly new ATS entries will be installed before EATS=enable.
+
+I think this whole thing is so async and racy this is not something we
+can truely rely on. The driver is going to have to make sure it
+doesn't get turned on accidentally while the CD is still populated.
+
+> > Given you must have a way to go from STE -> master -> all invs lists
+> > I'm not sure either option really makes such a large difference.
+> > 
+> > If so then adjusting the invs to disable the ATS is pretty simple, run
+> > over the xarray and set them all off. Yes you could find the master
+> > through a SID lookup with some locking adjustment.
+> > > 
+> > > (1) Per-invs marker: INV_TYPE_ATS_BROKEN + master_domains
+> > >     disable_ats() in the timeout path walks master->master_domains
+> > >     and flips matching ATS invs entries to the BROKEN type.
+> > > 
+> > >   + invs walker is free (one case label in the existing type switch).
+> > >   + No lock or pointer deref in the invs walker.
+> > >   + No master pointer stored in invs; no lifetime concern.
+> > > 
+> > >   - disable_ats() walks every (master, domain) and marks each invs
+> > >     set; the list needs locking usable from atomic.
+> > 
+> > This doesn't seem so bad
 > 
-> It is okayish to be sloppy when turning EATS off, but when turning it
-> back on we do need to cycle through every invs list and toggle its
-> lock to ensure that the invalidations are synchronized before
-> EATS=enable happens.
+> Yea, the only thing is that the disable path has to deal with a
+> complexity from going through a per-device domain list. Maybe it
+> can reuse iommu_group->pasid_array by taking xa_lock?
 
-I think the core guarantees that "cycle through every invs list"
-happens: a PCI reset calls reset_prepare() blocking all the RID
-and PASID domains and removing ATS entries from every invs list,
-and then calls reset_done() that re-attach RID/PASID domains so
-freshly new ATS entries will be installed before EATS=enable.
+Maybe the locking seems tricky as the locks might end up nesting in
+weird ways.
 
-So, I think the enable path is not an issue, though the disable
-path or the invalidation path would need "a way to find all the
-domains that are using the STE".
+The streams rb tree and existing master domains linked list seems
+appealing if the locking can nest acceptably.
 
-> Given you must have a way to go from STE -> master -> all invs lists
-> I'm not sure either option really makes such a large difference.
+> > > (3) Per-master flag + inv->master pointer (v4)
+> > >     invs entry carries a master pointer; the invs walker reads
+> > >     cur->master->ats_broken directly.
+> > > 
+> > >   + invs walker is one READ_ONCE through a cached pointer.
+> > >   + disable_ats is one WRITE_ONCE.
+> > >   + atc_inv_master early-skip via one READ_ONCE.
+> > >   + attach gate + post-attach re-check, same as (2).
+> > > 
+> > >   - invs holds a master ptr, so release_device must synchronize_rcu()
+> > >     before freeing the master to drain walkers under rcu_read_lock().
+> > >     We dropped this from v4 for that reason.
+> > 
+> > synchronize_rcu is not right because you have to have gone through the
+> > rwlock so there can be no readers.
 > 
-> If so then adjusting the invs to disable the ATS is pretty simple, run
-> over the xarray and set them all off. Yes you could find the master
-> through a SID lookup with some locking adjustment.
-> > 
-> > (1) Per-invs marker: INV_TYPE_ATS_BROKEN + master_domains
-> >     disable_ats() in the timeout path walks master->master_domains
-> >     and flips matching ATS invs entries to the BROKEN type.
-> > 
-> >   + invs walker is free (one case label in the existing type switch).
-> >   + No lock or pointer deref in the invs walker.
-> >   + No master pointer stored in invs; no lifetime concern.
-> > 
-> >   - disable_ats() walks every (master, domain) and marks each invs
-> >     set; the list needs locking usable from atomic.
+> Ah, I think you are right! When release_device() is invoked, the
+> device must be already in the release (blocked) domain. So there
+> should be no domain->invs in the system holding its ATS entries.
+> And the enable part would work as (2).
 > 
-> This doesn't seem so bad
+> In this case, (3) seems the best? It's fast on every aspect.
 
-Yea, the only thing is that the disable path has to deal with a
-complexity from going through a per-device domain list. Maybe it
-can reuse iommu_group->pasid_array by taking xa_lock?
+I don't like it mainly because of the sketch enable side, and if we
+tighten that then you can just do 1 which doesn't have a perf impact..
 
-> > (2) Per-master flag + streams_lock
-> >     invs walker resolves SID -> master via streams_lock and reads
-> >     master->ats_broken.
-> > 
-> >   + Single source of truth on the master.
-> >   + disable_ats() is one WRITE_ONCE.
-> >   + atc_inv_master early-skips via one READ_ONCE.
-> >   + attach gates ats_enabled on the flag; a concurrent quarantine
-> >     race can be closed by a short post-attach re-check in commit()
-> >   + No master pointer in invs; no lifetime concern.
-> > 
-> >   - invs walker pays streams_lock + rb_find(SID) per ATS entry on
-> >     every invalidation. Measurable on ATS-heavy workloads.
-> 
-> Doesn't consider how to enable
+But still, I'm not sure how all the asyncess and races will resolve in
+any of these cases.
 
-The enable side is core-driven: when reset_done() re-attaches
-the device from blocked_domain back to its RID/PASID domains,
-the new attach_dev callback (old_domain == blocked_domain) can
-clear the per-master flag. If the device is still broken, then
-arm_smmu_atc_inv_master() at the end of attach_commit() times
-out and re-triggers quarantine.
-
-The flaw lives in the invalidation path as it must translate
-every SID to master using streams_lock + rb_find(SID) per ATS
-entry, which make it very less attractive.
-
-> > (3) Per-master flag + inv->master pointer (v4)
-> >     invs entry carries a master pointer; the invs walker reads
-> >     cur->master->ats_broken directly.
-> > 
-> >   + invs walker is one READ_ONCE through a cached pointer.
-> >   + disable_ats is one WRITE_ONCE.
-> >   + atc_inv_master early-skip via one READ_ONCE.
-> >   + attach gate + post-attach re-check, same as (2).
-> > 
-> >   - invs holds a master ptr, so release_device must synchronize_rcu()
-> >     before freeing the master to drain walkers under rcu_read_lock().
-> >     We dropped this from v4 for that reason.
-> 
-> synchronize_rcu is not right because you have to have gone through the
-> rwlock so there can be no readers.
-
-Ah, I think you are right! When release_device() is invoked, the
-device must be already in the release (blocked) domain. So there
-should be no domain->invs in the system holding its ATS entries.
-And the enable part would work as (2).
-
-In this case, (3) seems the best? It's fast on every aspect.
-
-And I think it would fit we plan to generalize the invs design:
-
-struct inv {
-	struct arm_smmu_device *smmu; // => struct iommu_device *iommu;
-	struct arm_smmu_master *master; // => void *priv;
-					//    (dev->iommu->priv)
-
-Thanks
-Nicolin
+Jason
