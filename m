@@ -1,141 +1,116 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58D683DDDC3;
-	Fri,  5 Jun 2026 14:54:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39A44404BD5
+	for <iommu@lists.linux.dev>; Fri,  5 Jun 2026 16:18:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780671269; cv=none; b=XURFfdMpC/md6jqHfwBOB9U8ftXfzpl1ZkqI/2XmO8AOsB7oKqDqMIS1JHgEzW3OI1dTGSiohkOeiWBBgIrSWNLN2eOja0JBVhLsu33ZKToXg9bJO0aB9yPfkYK2+XIv0Jqqh8C4FVizPvRM35QV9NIcK4WYTYdCXTNWWZH5iY4=
+	t=1780676289; cv=none; b=MmUtYyjsh2bkY8m6lvnVybbjen+5mC+A2JeKpBhlVD7u19ypBe3F+9yekMNT5Py5GSTSPmoba0RvNKsW8Pn/1lPbl0PeTtkiD8zgG7VtFA/pZcwHq54DlPOzDwk0hgNKWvYisvTfB0pLTcF3DHiFAnLdfTksBTLvWimOtdy6dpk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780671269; c=relaxed/simple;
-	bh=4tMeiKXzH2reWHQd2Do3LiCn4ypOHk0Io4ayzbOXR2A=;
+	s=arc-20240116; t=1780676289; c=relaxed/simple;
+	bh=XRGI76MigkpSmoBHVTbHez1J+BmuHbL3tcuBjvVJSVU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uE69f7oEiRrURVD1baumey7QqDInL9iiWqiBfGrbP5jySeDDdkIWnvId4Zf4wiZOFUXt7Fyis0KDmSaGMqnDlbDIpCmY4fdq7H7yRTtig4qNyHktkoRtpRpFzScC1n7mwTj9WBhmpQ79TwXmcWmtMrlDOHt6uy4wEdK01J2e/nQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ViCrIBCD; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=LvEzeu93A0JMyTP3qwwiOdhR2XM728siT8yv9RVUM4WXx0c3yDkaWH9kUGsWxYaxEWGYrCsuVYrkpXMYmxYyr+Bg+FqzmIvoGE31YjUoKASGPiMG0GaYlr2hnCrIBKp0eCjttVW7ZSt0c04KGnhOSe5IMLOvsvaptKY0bOafeoA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=XWUiuNjV; arc=none smtp.client-ip=209.85.214.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ViCrIBCD"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780671269; x=1812207269;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=4tMeiKXzH2reWHQd2Do3LiCn4ypOHk0Io4ayzbOXR2A=;
-  b=ViCrIBCD8lCv6XAbtpT81FQ631uftKlCzal7av3ErRIqeaKCKymlgqn6
-   AoZVkeupiO2Xg79jhTTe77rFaGCtOmmBblSg8R0tb2lR31byKp3B6Y335
-   GzHmCh/RAMtIxamW2Ot1DumW6coJAGxX3Vv2f6pQRwLXWS8yBRVHbJkNO
-   SvAu7aJAScvOVWTCSvnnIfXc42pEaCW2PeESJFwBerwUF2SaUh2QdynjL
-   KUhMC7j1zNE5snvNw7VYH2wqff3SV/h/qaLcJm79GCnPjGAIeIkytw/fO
-   rLX/Vk9j3d+uZk9UOSchtxYi9OaNPMkWQ0LMC21U27AagpVieYbzloWS5
-   Q==;
-X-CSE-ConnectionGUID: uYbmXHtTQ86IhGzKOTpI1Q==
-X-CSE-MsgGUID: u+NlcL4dR/+mCAwczrC8KQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11807"; a="81565436"
-X-IronPort-AV: E=Sophos;i="6.24,188,1774335600"; 
-   d="scan'208";a="81565436"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2026 07:54:28 -0700
-X-CSE-ConnectionGUID: h9Rk7ixqSzO/yh1S6oBceQ==
-X-CSE-MsgGUID: mgvGmj4gSWyogJmBey9GTw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,188,1774335600"; 
-   d="scan'208";a="243768683"
-Received: from ettammin-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.178])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2026 07:54:14 -0700
-Date: Fri, 5 Jun 2026 17:54:11 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Johan Hovold <johan@kernel.org>
-Cc: Philipp Zabel <p.zabel@pengutronix.de>,
-	Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>,
-	Lee Jones <lee@kernel.org>,
-	Mark Brown <broonie@opensource.wolfsonmicro.com>,
-	Thierry Reding <thierry.reding@avionic-design.de>,
-	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Srinivas Kandagatla <srini@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Vinod Koul <vkoul@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>, Rob Herring <robh@kernel.org>,
-	Saravana Kannan <saravanak@kernel.org>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Andi Shyti <andi.shyti@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Doug Berger <opendmb@gmail.com>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	Ulf Hansson <ulfh@kernel.org>, Frank Li <Frank.Li@nxp.com>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	Matthew Brost <matthew.brost@intel.com>,
-	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Peter Chen <peter.chen@kernel.org>,
-	Paul Cercueil <paul@crapouillou.net>, Bin Liu <b-liu@ti.com>,
-	Maximilian Luz <luzmaximilian@gmail.com>,
-	Hans de Goede <hansg@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>, brgl@kernel.org,
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org, linux-sound@vger.kernel.org,
-	driver-core@lists.linux.dev, devicetree@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org, linux-i2c@vger.kernel.org,
-	iommu@lists.linux.dev, linux-pm@vger.kernel.org,
-	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	intel-xe@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-	linux-usb@vger.kernel.org, linux-mips@vger.kernel.org,
-	platform-driver-x86@vger.kernel.org
-Subject: Re: [PATCH 22/23] reset: rzg2l: use
- platform_device_set_of_node_from_dev()
-Message-ID: <aiLjE0SLwrDytyw0@ashevche-desk.local>
-References: <20260521-pdev-fwnode-ref-v1-0-88c324a1b8d2@oss.qualcomm.com>
- <20260521-pdev-fwnode-ref-v1-22-88c324a1b8d2@oss.qualcomm.com>
- <6af284545729f03a60d06479339862a2f08c6b7e.camel@pengutronix.de>
- <ah9QtExF2rUUTMNo@ashevche-desk.local>
- <aiK-qZqpuC-OEigf@hovoldconsulting.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="XWUiuNjV"
+Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2c0b1a48855so142135ad.0
+        for <iommu@lists.linux.dev>; Fri, 05 Jun 2026 09:18:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1780676287; x=1781281087; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=0Kt2tlKaxHAEAtMQ5U0c1x3clX9wtZ7zN2hv6EXts24=;
+        b=XWUiuNjVg+e+DF3Ut7N2V3GRg/JKHMHfZZeylwhY8N0hq8R932RW25p4qvz6Jjaqu5
+         +LCqObEP7uwUUH4WtNauT8pr+BQY9eUvp2IZj7MADbY8mMnu4MYu98Ux01GR80KeVWiE
+         nU4IMtMwB1PHboqJtggH4lpuwpFp9KC5TwZhVNj7ft7wwwQCS0tBqX6n+1alugG3R9Mo
+         GtSgSKeGMhaem87QOXSMCEh38xwEPJgtUDeglJ+Bg5xBcGepx7UXeSza56usWfRJ59F6
+         hCaGlhM+Iedy50uSj/KV/HoLIS5lz/HA0fXwT/iGfBySG+KixNPlH4frzlHQo5FFi6U7
+         SIPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780676287; x=1781281087;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=0Kt2tlKaxHAEAtMQ5U0c1x3clX9wtZ7zN2hv6EXts24=;
+        b=QJAQ4paAGbHeBX2lMLapVtS+T3YIoplBAzoqPL6vLLTn/TO56elqJaSTdcZMRsc7Qw
+         X27wUjia7Mb7tfZoQeG1nQKoultvMytgFul9um5i60cAB6EhWBg+34Sb4QdRyg30L+iv
+         3fVn5juBuLKq+8aGVD3eUmmqfBBWJiI0c6qArEk+LE/hmbRIeD8Vforf3aJVkTEtI/oc
+         2JiRGcLbBMKkoMrwelSZK+E2RESIf+nA97DpIArCjBx4Q4wAe+DHfx73xG/zp8jTvT2N
+         sQyrCp1YqN8hKD5bVBKCaHhUZPNhYF2DabKm35uAZQn9xYkPa65Xh6JYOEtPukBsiclH
+         t5zw==
+X-Gm-Message-State: AOJu0YyTvajoemH2pq5NPClwxqF3P93EPbIuiHFtMfz4ZbKWYB1Bn42/
+	865LXV4z9003ZoZaplTaWbvGUE99Hjb0TcR3bruTBt8owCYXQ1G3xlVHDZuE8gtJbw==
+X-Gm-Gg: Acq92OE1KmwV8gbVUz1vzMN04oKmD2nFUyPt/vINP/9hLUb51NVYDmYmh5YmAZGcz2Z
+	wM8WMtJLilcHg+vcvx0ewSoKgo7XFa1B8nZ13+Af1GZmMPYVaJV04wbehaIh0JCJnK4utxiOM50
+	S4Lp85KDUdSpWupZmesaC0bXrTRTWXBwndiwcWeqxBxFqqAcbrcjcVr13spThqU5a9PxAp6GbbO
+	iiaLwUfj5g+8O9uTJ58L+ibZxL4ZH3QqvFinu42K08nUhji3OKbWMR/oIQ1wt8aSdR+AU8fvKWl
+	UumX1fd1l+325o/FslX3y4Fpn784TsBMEK89qSIrDggl5d0mxUobCy3Bjss9pm/TG6F31YROREI
+	EtVaWwdh5pXCxx5hFZD8f5KDfevzv2jWE3O60nYFEW6Teo87qrWnUlt+wFvyLvnPLN4Vzv1EOQ/
+	dy7DU3vqnfJYhd9Ti+BTZKFZ2XelnME1f2K/5V68M7p8omabVZl+iBcPNX5BNI9ZRuy9EpPqVwV
+	qU/dbaPtzJWj4qclosnvQ5yXcslAA==
+X-Received: by 2002:a17:903:2349:b0:2bd:a61:8536 with SMTP id d9443c01a7336-2c1eb74103fmr1371525ad.6.1780676286817;
+        Fri, 05 Jun 2026 09:18:06 -0700 (PDT)
+Received: from google.com (25.75.145.34.bc.googleusercontent.com. [34.145.75.25])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c164f890b2sm97716405ad.26.2026.06.05.09.18.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Jun 2026 09:18:06 -0700 (PDT)
+Date: Fri, 5 Jun 2026 16:18:02 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Pranjal Shrivastava <praan@google.com>
+Cc: iommu@lists.linux.dev, linux-pci@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Baolu Lu <baolu.lu@linux.intel.com>, 
+	Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>, 
+	Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH v8 3/4] iommu/arm-smmu-v3: Standardize ATS enablement
+ failure reporting
+Message-ID: <aiL2spW1i0cwqh-Y@google.com>
+References: <20260604182116.3179005-1-praan@google.com>
+ <20260604182116.3179005-4-praan@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <aiK-qZqpuC-OEigf@hovoldconsulting.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260604182116.3179005-4-praan@google.com>
 
-On Fri, Jun 05, 2026 at 02:18:49PM +0200, Johan Hovold wrote:
-> On Wed, Jun 03, 2026 at 12:52:52AM +0300, Andy Shevchenko wrote:
-> > On Tue, Jun 02, 2026 at 10:24:41AM +0200, Philipp Zabel wrote:
-> > > On Do, 2026-05-21 at 10:36 +0200, Bartosz Golaszewski wrote:
+On Thu, Jun 04, 2026 at 06:21:15PM +0000, Pranjal Shrivastava wrote:
+>Update arm_smmu_enable_ats() to wrap the pci_enable_ats() call in
+>WARN_ON(). Since probe-time checks now preclude configuration errors
+>any failure during hardware enablement is considered a kernel bug.
+>
+>Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+>Signed-off-by: Pranjal Shrivastava <praan@google.com>
+>---
+> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 7 ++++++-
+> 1 file changed, 6 insertions(+), 1 deletion(-)
+>
+>diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>index a10affb483a4..0494c68daa19 100644
+>--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>@@ -2956,7 +2956,12 @@ static void arm_smmu_enable_ats(struct arm_smmu_master *master)
+> 	 * ATC invalidation of PASID 0 causes the entire ATC to be flushed.
+> 	 */
+> 	arm_smmu_atc_inv_master(master, IOMMU_NO_PASID);
+>-	if (pci_enable_ats(pdev, stu))
+>+
+>+	 /*
+>+	  * Since pci_prepare_ats() has already verified the HW capability
+>+	  * and programmed the STE, pci_enable_ats() should not fail here.
+>+	  */
+>+	if (WARN_ON(pci_enable_ats(pdev, stu)))
+> 		dev_err(master->dev, "Failed to enable ATS (STU %zu)\n", stu);
+> }
+>
+>-- 
+>2.54.0.1032.g2f8565e1d1-goog
+>
 
-...
-
-> > > > -	device_set_of_node_from_dev(&vdev->dev, dev);
-> > > > +	platform_device_set_of_node_from_dev(vdev, dev);
-> > 
-> > Same Q here, why it uses inherited call? Cargo cult?
-> > 
-> > 'reused' flag is solely pin control (provider!) thingy as far as I remember.
-> 
-> No, it's needed for pin control *consumers*, which can be any device,
-> and potentially any other resource managed by driver core or bus code.
-
-Why don't we set it for every pin control consumer automatically?
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
