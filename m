@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C138730C155;
-	Sat,  6 Jun 2026 19:50:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E3B12E62B4;
+	Sat,  6 Jun 2026 19:51:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780775440; cv=none; b=GHw+YS9NxYY0nnPREyVW64KzQzIwQoCH3JnATnKRqYaDXcIr5UfqMjKPAifQshI57FbhJhA1ZnLO7QQTGwe6NKW97AhahhhfiiOhQwCO7XEidRQOv0wL3WiVomJSjWoZzDH6fNLSyZFvRy7WbNALlybfGiZkFxyAvA1joq2VL9M=
+	t=1780775509; cv=none; b=OvbXXfaUwP9s1eFoYbd/RxG2x7t+3ymRtS1gy5Cc+n75Rj3RhMhRfiMmMD3gBF5mukVP+4fsEpGrqCWr7dADv+/BdCDEIcVfVrwNUyK0dEQhC3FtUINRBataoutVRpBiY32fFcRav7Ij/tGG9bcX+qbrtSk01oqbVmAt+yvaaL4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780775440; c=relaxed/simple;
-	bh=cpE0hhVkOHu+hhw4alYKWyWhbPKMuKDGDSqK9fiwrBM=;
+	s=arc-20240116; t=1780775509; c=relaxed/simple;
+	bh=VF1lXzSHRjsTN6Jjr/wjSGbrJWeWxYZXfwynZT8I+/I=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=RUeLokRgP1fJ4JhCgS0AQ/87GmK3pDV8EFR0E9GItAz1klydy0L64TMqfOIBZeKrHLqGL+oyjbUCCJ3CtmcDPwS2uws+pB5Mw/tv/Qq6lVU4+YhG8UND7okmk1IKleWX10Zcd6IaVFHm0RfZu71WS70LREwGDaTOxh3LZAkYTHQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BBatmmhG; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=SGbxJuhFD/gjQXOEbFAiJ2qr3w5jAVYVHSJif+LmhMqS0xKo9TOiWeGyB3jiSJs/BYsXUTjzOONtFN06UhhXl3NjGVStpuxCZ+HqsC/d3Q88pwEq2IgRlpvFOmEAlnzkITJsUUQPwaMBQ9ZUYM6NYidjO0s3aA9xRq13OwDcZTA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=f2UwGJ+G; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BBatmmhG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 284441F00893;
-	Sat,  6 Jun 2026 19:50:28 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f2UwGJ+G"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5CD61F00893;
+	Sat,  6 Jun 2026 19:51:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780775439;
-	bh=aipNwt5sgwd6I2ivj9RCM0/ZrytwIZT9mhs5XO0w3Nc=;
+	s=k20260515; t=1780775508;
+	bh=VF1lXzSHRjsTN6Jjr/wjSGbrJWeWxYZXfwynZT8I+/I=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=BBatmmhGWqi9eJTmjrUzToe40xnJnfEp0udQE+1O5/+aleAB1H/Zi3VOv7FLJi+3u
-	 QvaRez4MZSYvtwnKKom2Hsh3F9Mj+qrOie85lL/AzZPxsdqHEhTgKPajHXKvc8+AUY
-	 uZ8QYb1AfNk2VhHvsMLdUS0TLHWJRmVFrdKsO7QdMLizHFFgANjeakGSPA09oRvZQO
-	 nXqX3+PEtBK2j/voxnOlBhHX5lN4cyuPy/rgeRNlIZ+EgFMV48ELubRdd6Ho9BjJpd
-	 rpSasQ4syxftD+jk9zkACGjYTw5Ig81g43VP8L21E7PmUTmosTWPIPk26jEam6lk/A
-	 UpwOL8HYf0zAA==
-Message-ID: <1661f2c0-2fbe-4ae3-a08f-1b31183eca16@kernel.org>
-Date: Sat, 6 Jun 2026 21:50:26 +0200
+	b=f2UwGJ+GPBR0kjeEWcSIUJz5qV+/KOUuEm218rA0AylA4nm8shjZUE87TTun3q2s0
+	 4AJLPqJsSHOHK4rnut61ZP4tIcOHUrLhQtLYyc2XTREOxAAa9oxOHmctS4BYaT9BjB
+	 ZCTJMmwMCqgGnDhAhvcCPpB1j7VBJZgmEqVgdlg4GFIV8Hqa038GPY18o8rzK/94kW
+	 Hajb0zq9G+W305SsSAPy/T7ukKKvHulLxJW3a8iLDXeZ6sksokrqiq2PYYoCCGWVKN
+	 s9ISCu53mVOI4l+JenT+cECZgmwPepHp8XnB3GGCglnbDwM2UYItHgeSac4tFoaarp
+	 cLzk/Rc10pJ9A==
+Message-ID: <a3edf316-e82d-4ef4-bef0-081952ede049@kernel.org>
+Date: Sat, 6 Jun 2026 21:51:33 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,8 +35,7 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/3] dt-bindings: display: msm: qcm2290: Add Shikra
- MDSS
+Subject: Re: [PATCH v3 2/3] arm64: defconfig: Enable ILI7807S DSI panel driver
 To: Nabige Aala <nabige.aala@oss.qualcomm.com>,
  Rob Clark <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov
  <lumag@kernel.org>, Abhinav Kumar <abhinav.kumar@linux.dev>,
@@ -55,9 +54,10 @@ To: Nabige Aala <nabige.aala@oss.qualcomm.com>,
 Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
  freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org
+ linux-arm-kernel@lists.infradead.org,
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
 References: <20260605-shikra-display-v3-0-9846ba5fe635@oss.qualcomm.com>
- <20260605-shikra-display-v3-1-9846ba5fe635@oss.qualcomm.com>
+ <20260605-shikra-display-v3-2-9846ba5fe635@oss.qualcomm.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -103,23 +103,17 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
  zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
  XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <20260605-shikra-display-v3-1-9846ba5fe635@oss.qualcomm.com>
+In-Reply-To: <20260605-shikra-display-v3-2-9846ba5fe635@oss.qualcomm.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 05/06/2026 12:18, Nabige Aala wrote:
-> diff --git a/Documentation/devicetree/bindings/display/msm/qcom,qcm2290-dpu.yaml b/Documentation/devicetree/bindings/display/msm/qcom,qcm2290-dpu.yaml
-> index be6cd8adb3b6..e166a73651df 100644
-> --- a/Documentation/devicetree/bindings/display/msm/qcom,qcm2290-dpu.yaml
-> +++ b/Documentation/devicetree/bindings/display/msm/qcom,qcm2290-dpu.yaml
-> @@ -13,8 +13,11 @@ $ref: /schemas/display/msm/dpu-common.yaml#
->  
->  properties:
->    compatible:
-> -    const: qcom,qcm2290-dpu
-> -
+> Enable the ILI7807S 1080x1920 video-mode DSI panel driver as a module,
+> used on the Shikra CQM EVK board.
 
-Do not introduce additional changes. Blank line was there on purpose.
+Please use git log in case my comment was not clear.
+
+NAK because you keep sending the same and ignoring feedback.
 
 Best regards,
 Krzysztof
