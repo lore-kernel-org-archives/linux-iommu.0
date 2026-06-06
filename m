@@ -1,221 +1,200 @@
-Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013042.outbound.protection.outlook.com [40.93.201.42])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FF3E368299
-	for <iommu@lists.linux.dev>; Fri,  5 Jun 2026 23:03:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.201.42
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780700605; cv=fail; b=YXRPmGDBwasezmUn8z0WJdSoCo3J6S8XLhNFMrBwt7ToQGJ95zTlCchBCLHkR1H67EjBqEgIGsuibqy0svrIl6tfPgLQ86HV3QW37oT+rC+g/FZSK21OlvrTZF4fVioXorftyXvZKW3VFdH63VNLrgHk9HW95tBXXYdS7SmKxMo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780700605; c=relaxed/simple;
-	bh=uaomvVnKPACTsnbewZlbIOwmISUhXwKVgGuKCSNCl9s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=Y23E8kRpjrV0wNIprfJGtmzuErk/ncSiAbRGfqdVK96VGlcWEJJKm8VF2/suy6ZbQG3xRL7FwjkfsXbY8Kq6vv4O35f49csKRdWAA9F3dmdEq5XpxENgwmbC62c+JkBgJuX9uQljpqkd+dJH71TahlmPbOmywytP2a5GAXca4FM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=I79br5XY; arc=fail smtp.client-ip=40.93.201.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C6CF1A6823;
+	Sat,  6 Jun 2026 00:35:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780706121; cv=none; b=GYVG3Wb/kvM2W1unz6WyInMJ8dkgcs2v1wVsmMB27aZv7rVLcFhFX8x9vYXm8BKSBCBjHspqzSeKLUi+j9JiYpAJe1Wnhd6KiRUY9+gwkAGJoVlLSKncJyVzHiulEmB2s1xBJBerT4/s7H1UMJbZRpDUl7kl2dZh0RBZqUYVqi8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780706121; c=relaxed/simple;
+	bh=kRuUTHyC1UVjCHxIFx/pGev+tDI7tyOrbtbkozT1AyM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ZVOK0idDAbwrLX7jrdA+slQPwhIL0+CsORaiHr/TYUcO3hmU2S8ocEn9kNcNH+gGSJJpQPGrNBL5lWxlfHJKMxQGFfw7o1c9B8xnHQwJjcyigwir2TZS4liYu433r02ZIK/3mKWk8SX7MqLfEWGS9gN7Rr54Jdfq2JCfPoq8BfI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=RoUHrZSB; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="I79br5XY"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ZfPPtl9Dn7Msk/heGEyB6giz+VhMxAQxDTsdXAI6RMq87zsECsGmHbGywcY2IZbl8EUZrViiuwQI97iTcvsO1Dww/8bbLxRYYwxMlhJF5u5fa2kuC1AoAvzU1zgJAnhc2GJf7x4FVSZM2FocmWrNUzy50Tc56OTWOQlpgUhflYU5t5IphiMVNWcvL0Go+8UFJgmrKrXCsgS86XtJdPb8XFf2fH1IWpyb265FyNNurPJ3dmTYd35u7QcYS0nXNl8CJAxD5EXvL16fkFho0Is6X+1p8enQMEcF3N3dumPaODvPxaj88BgteTwFvw7i+ipxgEaYyUwgG0BIqf+3pJdKFw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NJXBtCaiiZlydeySBJ0Sh8PMzpq2y3Y8HSAq3152oo4=;
- b=D/fuSI5NPkfTktIaOpogomqYIUBxkG0HxxplpwjURyYGa0dHZZ12N3+0NEwr8MC0TghSzZ5In5w+IBhf/g1XnZAa9+WgMu1eiaT8Y2jqUrJScRJ0NJFF6czWreiZv1o8PBBjMy140/jRIz2TYEZFiCQqNcrkbYZBsOttKFOO9+5n1pBSz09R3yJ83aiAWQ2v/66eI02sDWs8hKcpkL1H1wWzic0iWoE0d7XFPdL7zpiCmErwDbV6xyplqsXXRTQflSfVzjeRxwzfNhx8bL6l1grLrzTA3wAYfp1ytn11aaqCexVBaFnCctBOHWqNmnc0tCgqPGkUIP6COHXAkvH8Hg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NJXBtCaiiZlydeySBJ0Sh8PMzpq2y3Y8HSAq3152oo4=;
- b=I79br5XYuPK5e4KOJzzVoA+OCFT3cAbRCBi2XjSCJ6KN6r6ska2TLPJn1JSB8qcC8ttXhegRSSWat3WXdn4BqdnXWCodMP7VwyCsrLi2gxelmCA/myDBbD1VD4CTzIjnSG0ReyYYnqPOL4aprejumx64VnTjkjESEc47w4T8pmggdOGZ7/xPM+AxshDg+ipT02C4tAQTTfZx+lqFW7X0tFELB7lwvbYOwq4rr1NWBo77V7ub4JbEP1fL+9C598RoUgPLYjt4ogLf/WmGw8Vi3kNQSyOeyvXviSyTFL48EmLbB7PmmF/auXnxvTgX6u26gKRcU52lwwi1H4FPHDHRhQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by CH2PR12MB4037.namprd12.prod.outlook.com (2603:10b6:610:7a::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.71.15; Fri, 5 Jun 2026
- 23:03:17 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0092.007; Fri, 5 Jun 2026
- 23:03:17 +0000
-Date: Fri, 5 Jun 2026 20:03:15 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Bjorn Helgaas <bhelgaas@google.com>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Len Brown <lenb@kernel.org>, Pranjal Shrivastava <praan@google.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-	linux-pci@vger.kernel.org, vsethi@nvidia.com,
-	Shuai Xue <xueshuai@linux.alibaba.com>
-Subject: Re: [PATCH v4 18/24] iommu/arm-smmu-v3: Introduce master->ats_broken
- flag
-Message-ID: <20260605230315.GF1962447@nvidia.com>
-References: <cover.1779161849.git.nicolinc@nvidia.com>
- <49dde0a2e2dc88e421a3010956db33d47cc92aa8.1779161849.git.nicolinc@nvidia.com>
- <20260519120658.GB3477375@nvidia.com>
- <aho9DB6it2R5O5Nm@Asurada-Nvidia>
- <20260601123231.GG3195266@nvidia.com>
- <ah3udmX5SIO9lAXR@Asurada-Nvidia>
- <20260602001547.GR3195266@nvidia.com>
- <ah5txKCvspL8zMeG@Asurada-Nvidia>
- <20260605194259.GE1962447@nvidia.com>
- <aiNF9kzjzDY/u1NG@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aiNF9kzjzDY/u1NG@nvidia.com>
-X-ClientProxiedBy: YT4PR01CA0230.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:eb::10) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="RoUHrZSB"
+Received: from pps.filterd (m0353725.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 655KPGLH3165334;
+	Sat, 6 Jun 2026 00:34:50 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=10R7bp
+	EJTdOdzVayFD9Q6l+SCZSwLyUlb7ZztL7dxms=; b=RoUHrZSBgzuGWiJYOobbkB
+	/uQkABo/YV4/wSRYGiwn9Ynd3JL66r4IQeDQvzBMEgK3kIX0ZxDPjx2aNkSaTOVs
+	gTquWUfkdJp4D41f8WqPwCGXecmnbTJYjOSAkisQRTD5eWdvIlADCk0h+ymg9sqe
+	ytafL6jBkxQn3Y+qxgVP9e42FMaX1eCiCBRPx1sy0V7uItqD3CJWavhEiEclAYIN
+	4+mS9hCXrkzBjH0VZP3xbY4y4HCfp9bXE2sYFBWify0bxsKhFP/TJoNtj1tuq+VE
+	4ytyKsZpXDnSEN1FkNsq/pCg6+k3ih0UWLoz7Bz8L5CZGjM0/fACZpgM+qBmTn5w
+	==
+Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4efpaep0sr-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 06 Jun 2026 00:34:49 +0000 (GMT)
+Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma12.dal12v.mail.ibm.com (8.18.1.7/8.18.1.7) with ESMTP id 6560O6gk027834;
+	Sat, 6 Jun 2026 00:34:48 GMT
+Received: from smtprelay05.dal12v.mail.ibm.com ([172.16.1.7])
+	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 4ega7qv6fn-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 06 Jun 2026 00:34:48 +0000 (GMT)
+Received: from smtpav01.wdc07v.mail.ibm.com (smtpav01.wdc07v.mail.ibm.com [10.39.53.228])
+	by smtprelay05.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 6560YlZk30933536
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Sat, 6 Jun 2026 00:34:47 GMT
+Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id B8FA95804B;
+	Sat,  6 Jun 2026 00:34:46 +0000 (GMT)
+Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 147E058063;
+	Sat,  6 Jun 2026 00:34:45 +0000 (GMT)
+Received: from [9.61.255.106] (unknown [9.61.255.106])
+	by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Sat,  6 Jun 2026 00:34:44 +0000 (GMT)
+Message-ID: <fbf37e22-8698-4688-9fe2-9e38658920cb@linux.ibm.com>
+Date: Fri, 5 Jun 2026 19:34:43 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|CH2PR12MB4037:EE_
-X-MS-Office365-Filtering-Correlation-Id: 23d646a1-7480-4246-d124-08dec356a11a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|7416014|1800799024|366016|18002099003|56012099006|4143699003|5023799004|11063799006|6133799003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	H6PAANQSch6H12G36TPVcgUzTqjvE7YYIHxR77c2nHP1c7ultVaHTKRJRIwLJwLIUMFMfUbVAGe6rBKbQtW3jUhA/sqgw5wHDkEJDoVfP9YT3Y06apCtlzZ1Xl27FZ1I7wQKN0uj/AzAPPZugHNL9+LORX3JZkMv1qjsTYG5dtIJRj1RfcBj+i8QKVjhPHdtjBTqTiMbe8P9q29Y7J3dvZtiaIUEMvo+4wZsW5aWND/IzpPD13GdHy+JP98KiJrNPt0c3sknBHZd7kmi/tFZOeWuLxzvqZ4VJhyB1K4mHbPtANcvAtmnrJRzD8XhoztLQp9Y5px6CroW2+u5fqfdCAAsSUf6D2XfMGCEct0J/onNc2dXxj6uA9PreGFBpVouBk7aBFnTlY00wDuBVMgq/yHj0Z3/e+U9X4CHzgwjdo3XPYk5Ap341MTazjSJ558jIHclimYAhVtUpTsrA9pjckR8HRVvuQdJEj6f0uKVEeAK5TrVr1LdumZcga0SDxTMfYQZ9u0LWBQw5Oq2T9GReNeSxZRFRoPRFyZHS+7NLu4CMqXWgC8KE6Ypzwpgw2sTLQlfzKKbfAp1YOxKGNhY7RvquTrwgFPF1jm0+Ex1LC8Hv0qluXZXo+GexuupARZyJwjc+Zekp0NYlIVxquCbtGSkMeIqG+9Q2ri3M6LxlJVN4KBU6+YYTqkNRHYUVN2C
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(366016)(18002099003)(56012099006)(4143699003)(5023799004)(11063799006)(6133799003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?LiVeC43xLZ9q9lFn02mDLV5Htl+oHV2bDdMu8R0f+Sn4+eTqwVkHWSV4qQkM?=
- =?us-ascii?Q?qoK22wT47OZPVeSiB6sCEvwFV/PC+qvTMnmvw2etZPohtGTKE1LmedLXhZVQ?=
- =?us-ascii?Q?DJb2UXQRGlkkivJM/6CKACIt6484DWY49PZBeDZ4sy9Rd66fAvWR1HnCOlac?=
- =?us-ascii?Q?KqqxwPm6eoWFD5fAEQXp684XZRA1HKns7BfYj/Vf9laX33CNJM+5Gdg4EWqE?=
- =?us-ascii?Q?q7YUyP0rVE9ABtCurIT0sceDYdR8+AbTLcohier3Dyu1lER53Qum5VYKBrkS?=
- =?us-ascii?Q?p4qEf4U2jS+Cxnwk/St3uw2tuFMAoOsh++8cwMspj56SSO8yUZOVG+xqROQG?=
- =?us-ascii?Q?exKZL3ObAbgTzW4ZHu3L5XAYK+EFn7Etl0X2DjTPYrljPHd/YJTKDjb7HC8x?=
- =?us-ascii?Q?Vop4AOTQWIQD/BdqvpsjGFJTNyhpej5mrQyobqWxhA+l0iGE5756xoZWGxfT?=
- =?us-ascii?Q?udtrHYBsitWFqPbuAEzBZ46pWD/Ju+hyVsJ5BVSBQ0h8i457yY5X0EO2lk/7?=
- =?us-ascii?Q?ux9sGYauPE0fy8ct93i59BZDfsFxYxJu+txz38SaNh0X0pxq2g+unynqM7Q5?=
- =?us-ascii?Q?ispVqqz6hkAh57ocTnSDBVuLkNhsGgqb1vxmzVTel/9hWoqhdhSvL3ziPsjd?=
- =?us-ascii?Q?m70kdeIhVsJAJ6AE7i4X8rupfFUNOP9dAqx+jju7W7BGQFZaBrlw6E72xEu5?=
- =?us-ascii?Q?005IRYYTmY665ClW1DTZuaAmKW2BtLlUEHdTCJGp44naa2JJ8eg4ZUANe6K2?=
- =?us-ascii?Q?TSDAp/xsT5lxvb+/6nMNL9/ArTZNcvDgw8l9WAwha9rZZxAC5z8UcGqcnRgU?=
- =?us-ascii?Q?7GkwtscGGYQHCnWKy4RpCYVB+gcTm05yuhqhWYmQh36khwb8IHApJunGdfww?=
- =?us-ascii?Q?XQNwwJpXHgTkaGL9b0OTYu3HubURa+3EzZr6YW31IzYnEYrpivAunem0Ivpy?=
- =?us-ascii?Q?iClUwXyTxebeRzS22nwH4msqYAOfCJqX7bPY+5/o3KWL4lYgSWaaDiFUWKXk?=
- =?us-ascii?Q?RMndByMbIg3uwel5cZEdQ7DL3FMOjJG2xR0fu5/+nvSPHvji3/mGlGDN5YoB?=
- =?us-ascii?Q?A8ijaHce89MDCKWNgwtevPvE71hUijOBeviQxsGJs9DoWAPMhrW40lpapaHG?=
- =?us-ascii?Q?ASHvJ5PYsVCELadjoRxcMWhj3bk0Nhb+aqVRX7Kw6gApVpYKoQEFM07aEhyX?=
- =?us-ascii?Q?ndLnZ1h2Nv5OCdGwDTS3Hli9uycazrgzvZL6DD+2zI+NVQzP1o066Fdnbdco?=
- =?us-ascii?Q?OkRSIFvwegUx5rnz8zjEJT1kfqD9Bzio3GCIpdSdecrKdTP5+v26h5cTi0rn?=
- =?us-ascii?Q?eaChEcloZiRogRYhrfPFeSEjAhBfMQjjOblKiqUYQRLYHUly77x9T60ZrU6X?=
- =?us-ascii?Q?hm11Eat/HNGzmCvG0Pn/1W+dwJaGUvt7mzcye7s4EyN/E8DglQOL2l1fTYd0?=
- =?us-ascii?Q?GWFTFT9bjVbueNnMvI2Mt2pm54vw4LZirvaWIXD+Ybhe7ERoP2PlTMVf72OM?=
- =?us-ascii?Q?YITHNG8A3JYAUvsWe8ica0GROqQktOyBfksmXkP8v2Rse9swbCKSmWyanN1H?=
- =?us-ascii?Q?EWg36j6gcrjD3bcQd5jXmH/7UB2GYL5KYqBNg3VIcdtWHZLCkBtB7QklcyqD?=
- =?us-ascii?Q?unGxH7p/VmORzPkx0NceGRFT5WSbRpR2ndA/GUjUjUpfgNGLrLO0Z+OmYYwR?=
- =?us-ascii?Q?+XbTv4+W8rY0Hu+sHH0Pv+ghmpegVQt9Oj/q91zB3qXuVvyX?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 23d646a1-7480-4246-d124-08dec356a11a
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jun 2026 23:03:17.2893
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CP0T6J6QuBrrIhla0lUrxHYv52E3mAZX8bkeP9OBPOWNeeI8qIcpQ3HXFOQOtviZ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4037
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 01/20] s390: Expose protected virtualization through
+ cc_platform_has()
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>, iommu@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-coco@lists.linux.dev
+Cc: Robin Murphy <robin.murphy@arm.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Mostafa Saleh <smostafa@google.com>, Petr Tesarik <ptesarik@suse.com>,
+        Alexey Kardashevskiy <aik@amd.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Xu Yilun
+ <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
+        linux-s390@vger.kernel.org, Madhavan Srinivasan <maddy@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>
+References: <20260604083959.1265923-1-aneesh.kumar@kernel.org>
+ <20260604083959.1265923-2-aneesh.kumar@kernel.org>
+Content-Language: en-US
+From: JAEHOON KIM <jhkim@linux.ibm.com>
+In-Reply-To: <20260604083959.1265923-2-aneesh.kumar@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Reinject: loops=2 maxloops=12
+X-Authority-Analysis: v=2.4 cv=Zt3d7d7G c=1 sm=1 tr=0 ts=6a236b29 cx=c_pps
+ a=bLidbwmWQ0KltjZqbj+ezA==:117 a=bLidbwmWQ0KltjZqbj+ezA==:17
+ a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=RnoormkPH1_aCDwRdu11:22 a=V8glGbnc2Ofi9Qvn3v5h:22 a=VwQbUJbxAAAA:8
+ a=VnNF1IyMAAAA:8 a=blRdvrxeXnuE--CKtYQA:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-GUID: ggpQfBSPHMe1E8vMi3W1YAcBxeGqHkU7
+X-Proofpoint-ORIG-GUID: R-cCnVSeKSEuXI4kZncs7oFO8xtbizvI
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjA1MDIzOCBTYWx0ZWRfX9CWxwkp73QOf
+ ZCH4PcwFj7hkSywfl53gPqnUYZONt+fisFvoWdZOYTyT/hiKmJ9eU+cj3qU6bOdD1JUJjUTnFwa
+ ucoZ3M+XIX/H7cgV5kPBdBK5BaKIZSeRJbxRpdepy5t8VxGknQ853KyhwMtTE/YQ2FN+AFuAGWL
+ d9i4B/tfPrel1DUWKv+3FV71IZJI4IX6EyXoSz/8AnFWX1hASHDLUA/+OpTgKTnZkjMBBvWY4az
+ ooWmu/2NwO95b7RZWbB5O/Pj1qgGuwwJZtlZkf6UxLW9lLcU9vvHHM201Mu0ZikAVCd0fMGCHHp
+ 9ns2dJJMnWbtvb2lhH1iR2pZGU73I+zgWWuTpgupFrYDkoYrbQCdgou2J4ENmDyinF5Jimv+1Yl
+ JX76uXu3wzudOrj/Ql4gsBnWAA+lAuSIXm00ffyXp7fu1ZI0zbiwzHJS/MepnwU8HYqA7viDiba
+ mDkSbz2OSX92hxN+c4w==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
+ definitions=2026-06-05_05,2026-06-05_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 suspectscore=0 priorityscore=1501 bulkscore=0 clxscore=1015
+ phishscore=0 spamscore=0 malwarescore=0 adultscore=0 lowpriorityscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2605210000 definitions=main-2606050238
 
-On Fri, Jun 05, 2026 at 02:56:06PM -0700, Nicolin Chen wrote:
-> On Fri, Jun 05, 2026 at 04:42:59PM -0300, Jason Gunthorpe wrote:
-> > I don't see any of these options as appealing. We have to maintain a
-> > few key invariants, and I think it cannot be done without a way to
-> > find all the domains that are using the STE.
-> > 
-> > One way or another you have to be using the invs list rw locks to
-> > synchronize the EATS state changes.
-> > 
-> > It is okayish to be sloppy when turning EATS off, but when turning it
-> > back on we do need to cycle through every invs list and toggle its
-> > lock to ensure that the invalidations are synchronized before
-> > EATS=enable happens.
-> 
-> I think the core guarantees that "cycle through every invs list"
-> happens: a PCI reset calls reset_prepare() blocking all the RID
-> and PASID domains and removing ATS entries from every invs list,
-> and then calls reset_done() that re-attach RID/PASID domains so
-> freshly new ATS entries will be installed before EATS=enable.
+On 6/4/2026 3:39 AM, Aneesh Kumar K.V (Arm) wrote:
+> Protected virtualization guests use memory encryption, so advertise that to
+> the rest of the kernel through cc_platform_has(CC_ATTR_MEM_ENCRYPT).
+>
+> s390 already forces DMA mappings to be unencrypted for protected
+> virtualization guests through force_dma_unencrypted(). Add
+> ARCH_HAS_CC_PLATFORM and provide the matching cc_platform_has()
+> implementation
+>
+> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 
-I think this whole thing is so async and racy this is not something we
-can truely rely on. The driver is going to have to make sure it
-doesn't get turned on accidentally while the CD is still populated.
+Tested-by: Jaehoon Kim <jhkim@linux.ibm.com>
 
-> > Given you must have a way to go from STE -> master -> all invs lists
-> > I'm not sure either option really makes such a large difference.
-> > 
-> > If so then adjusting the invs to disable the ATS is pretty simple, run
-> > over the xarray and set them all off. Yes you could find the master
-> > through a SID lookup with some locking adjustment.
-> > > 
-> > > (1) Per-invs marker: INV_TYPE_ATS_BROKEN + master_domains
-> > >     disable_ats() in the timeout path walks master->master_domains
-> > >     and flips matching ATS invs entries to the BROKEN type.
-> > > 
-> > >   + invs walker is free (one case label in the existing type switch).
-> > >   + No lock or pointer deref in the invs walker.
-> > >   + No master pointer stored in invs; no lifetime concern.
-> > > 
-> > >   - disable_ats() walks every (master, domain) and marks each invs
-> > >     set; the list needs locking usable from atomic.
-> > 
-> > This doesn't seem so bad
-> 
-> Yea, the only thing is that the disable path has to deal with a
-> complexity from going through a per-device domain list. Maybe it
-> can reuse iommu_group->pasid_array by taking xa_lock?
+Tested on s390 PV guest with swiotlb_dynamic configuration. SWIOTLB
+bounce buffer allocation and dynamic pool management work correctly.
+Also concurrent I/O stress completed successfully.
 
-Maybe the locking seems tricky as the locks might end up nesting in
-weird ways.
+Thanks,
+Jaehoon.
 
-The streams rb tree and existing master domains linked list seems
-appealing if the locking can nest acceptably.
+> ---
+> Cc: Halil Pasic <pasic@linux.ibm.com>
+> Cc: Matthew Rosato <mjrosato@linux.ibm.com>
+> Cc: Jaehoon  Kim <jhkim@linux.ibm.com>
+> ---
+>   arch/s390/Kconfig   |  1 +
+>   arch/s390/mm/init.c | 14 ++++++++++++++
+>   2 files changed, 15 insertions(+)
+>
+> diff --git a/arch/s390/Kconfig b/arch/s390/Kconfig
+> index ecbcbb781e40..9b5e6029e043 100644
+> --- a/arch/s390/Kconfig
+> +++ b/arch/s390/Kconfig
+> @@ -87,6 +87,7 @@ config S390
+>   	select ARCH_ENABLE_SPLIT_PMD_PTLOCK if PGTABLE_LEVELS > 2
+>   	select ARCH_ENABLE_THP_MIGRATION if TRANSPARENT_HUGEPAGE
+>   	select ARCH_HAS_CC_CAN_LINK
+> +	select ARCH_HAS_CC_PLATFORM
+>   	select ARCH_HAS_CPU_FINALIZE_INIT
+>   	select ARCH_HAS_CURRENT_STACK_POINTER
+>   	select ARCH_HAS_DEBUG_VIRTUAL
+> diff --git a/arch/s390/mm/init.c b/arch/s390/mm/init.c
+> index 1f72efc2a579..ad3c6d92b801 100644
+> --- a/arch/s390/mm/init.c
+> +++ b/arch/s390/mm/init.c
+> @@ -50,6 +50,7 @@
+>   #include <linux/virtio_anchor.h>
+>   #include <linux/virtio_config.h>
+>   #include <linux/execmem.h>
+> +#include <linux/cc_platform.h>
+>   
+>   pgd_t swapper_pg_dir[PTRS_PER_PGD] __section(".bss..swapper_pg_dir");
+>   pgd_t invalid_pg_dir[PTRS_PER_PGD] __section(".bss..invalid_pg_dir");
+> @@ -140,6 +141,19 @@ bool force_dma_unencrypted(struct device *dev)
+>   	return is_prot_virt_guest();
+>   }
+>   
+> +
+> +bool cc_platform_has(enum cc_attr attr)
+> +{
+> +	switch (attr) {
+> +	case CC_ATTR_MEM_ENCRYPT:
+> +		return is_prot_virt_guest();
+> +
+> +	default:
+> +		return false;
+> +	}
+> +}
+> +EXPORT_SYMBOL_GPL(cc_platform_has);
+> +
+>   /* protected virtualization */
+>   static void __init pv_init(void)
+>   {
 
-> > > (3) Per-master flag + inv->master pointer (v4)
-> > >     invs entry carries a master pointer; the invs walker reads
-> > >     cur->master->ats_broken directly.
-> > > 
-> > >   + invs walker is one READ_ONCE through a cached pointer.
-> > >   + disable_ats is one WRITE_ONCE.
-> > >   + atc_inv_master early-skip via one READ_ONCE.
-> > >   + attach gate + post-attach re-check, same as (2).
-> > > 
-> > >   - invs holds a master ptr, so release_device must synchronize_rcu()
-> > >     before freeing the master to drain walkers under rcu_read_lock().
-> > >     We dropped this from v4 for that reason.
-> > 
-> > synchronize_rcu is not right because you have to have gone through the
-> > rwlock so there can be no readers.
-> 
-> Ah, I think you are right! When release_device() is invoked, the
-> device must be already in the release (blocked) domain. So there
-> should be no domain->invs in the system holding its ATS entries.
-> And the enable part would work as (2).
-> 
-> In this case, (3) seems the best? It's fast on every aspect.
 
-I don't like it mainly because of the sketch enable side, and if we
-tighten that then you can just do 1 which doesn't have a perf impact..
-
-But still, I'm not sure how all the asyncess and races will resolve in
-any of these cases.
-
-Jason
