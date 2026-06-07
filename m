@@ -1,165 +1,157 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from BN8PR05CU002.outbound.protection.outlook.com (mail-eastus2azon11011040.outbound.protection.outlook.com [52.101.57.40])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6F6D375F6C
-	for <iommu@lists.linux.dev>; Sun,  7 Jun 2026 08:53:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780822417; cv=none; b=uoYnTlwzGvdXB65yWmhVAUhAUXD2DCiRR8KqUN9yXnEsPlJ24zhxMM1ypTngmQsObm6152QKx6LiXDy/l0L13Q1hkhjmWKeosFOekb0pmn+0XTewfXllhdMuboO7wsxbj3t2kcvBAvjL1UxVfu1HvyswE0vVf0tlCQzen6ysblM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780822417; c=relaxed/simple;
-	bh=G4NwAmdQYNsaz3MOxXsSex5bQIwUllTzHht3/K7h/rA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=UpCN7P7AQ3ioPYgg6KMM7ko2jEdOVqOTr6NeygtczU78E0cuLU+bOMJVi5SHJlBeZDj3eeTSi2/ipB2bRsYKTKQqgj2LDC9SWoe4d0Glt1bJ7yUzJ+tJiGrzy1tFUUTyLFwPAaOBEgGGIuDD9wrCUU+gYLg+8Q/b7XYUZtOM6rM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=syJ6Isth; arc=none smtp.client-ip=209.85.214.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29E293A5E6C
+	for <iommu@lists.linux.dev>; Sun,  7 Jun 2026 12:09:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.57.40
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780834183; cv=fail; b=RM9oTuPv9/UjR8Bs/NyUqwW+rpExbl0LGSSXPNvXj2RvO8xK7fFM+PGgywkOAWqo83TBJJJCP6J71oX4sx2/I9J6jYRKwUlyysb00v88wCrOMetH6pxQ7c89z4JTRLB8SvXRHmuPF1pkb7hDx5szPUPZ2Bw3XzLQWVyvQQssPYU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780834183; c=relaxed/simple;
+	bh=Gvpj3yrf0vzS1Z3DnBg4IqHtPmnX3PPvXJL2YZ3ZELM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=C90xQ4GGVxnFqaDdzr0N8kOG6II38RB32y97o4WB3a/pBMBmeBo3hwrZtpaBC3exkV4iUn5s/nAf3zWrbpN5WcrtZoYALDz2feIPM63Wrb+NxEuuKKaEMW9BKZkJYTp/ZsflHfSZeZopTNpEB0JsBBl+QwXYYtXkqLWjIDnbZDM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=GWnGHAtp; arc=fail smtp.client-ip=52.101.57.40
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="syJ6Isth"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2c0a5354da1so26726845ad.0
-        for <iommu@lists.linux.dev>; Sun, 07 Jun 2026 01:53:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780822414; x=1781427214; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=5/fHXPpv25IIf+IqumkILHnKbLJe6zPc+sZq7buAPJg=;
-        b=syJ6IsthnYqB9qIqz8JKNRXjg287Jamt6ima4BirsP5jeAWnU3dRKEz7ToMO7JMelq
-         TYkSYZ/pKpX+RhNZc3J1W6MxFgGXirbrUOTHE9JKh6C4m9BQ/d4GTVNqTW76RpnxzoWi
-         NNeHxZ18ZPp0g9nFJovvZ2eJpwQxr9q/Isp08HlGrxH2NX8nCdc5nLAcqU7IIgpoXYDg
-         4pKYYPcyGrcCj4a7MZ17OkLI80aoJTlpUU6AqSIbp5MC/5vmPsFV7qbFGdpf2S6jqAGz
-         IN4BvIz7eu2NUbP7mMVoqZXn0Ldkg3zs8iePJMBJFQKHF7I001P3gXOGbIBtT3g376wq
-         kqIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780822414; x=1781427214;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5/fHXPpv25IIf+IqumkILHnKbLJe6zPc+sZq7buAPJg=;
-        b=qLS74WPwvgzvQ5Ijag0m8uNYUpYFTXZsBftk6v0fzurJQ85w2gcfUOs9O5ImlSsonI
-         lrN0NnE6oxQLLvZila/EuLjjWLDkcsTDE2TKnfaiITljNM2+Y+tFxdICoOkU3s3pnlVL
-         iwzdyq3crvqKJhxfsMhlLDsWEp6EkRS7nz+p03/oitxvYtk2p9TLLJ0QPvsyG1nD65ri
-         5ccG2ZpGtmGSnYbisDvggJXzJD3y+Os0zmG91/sjQ9/rZv4cjMpvWh/OlkEOkp3BE9Ke
-         GUGqEbOKCnCHt0OuHqMosbX+nUGc7vNi2KfOmMO9Rj9jV5fd+58Ft9UxMyiMlpo2LIUU
-         5O/A==
-X-Forwarded-Encrypted: i=1; AFNElJ9L3rIFoTYjMMvo2z+rrEbUz86C9IlL5MOpoiWF7Zmuk7qNBCMic8LxR4XoXpdnAriliUol9Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxA5wnwMR9lLZUqbgEc51iIzqPttKb6Gu1GCxB6DAVq4mx5JbD+
-	c4qIpwbERDPYseqNyK5Aav5cKbDWpczgZEDycsZ+6A0ptgnKd18P1nB/
-X-Gm-Gg: Acq92OG5qJRFo9jp7JwjUGTRP4TPdsc3AoLoF7TLtV8/CSvlN4HipRRF7yUQIIIXXOF
-	n+ST84omHYQzd6XgIIDRVYow5HunZVigU8WNB+dKGjuIFizEt4X6dYZZsr/d2nI/yHszVh8YMXk
-	C6dyqg1ts2ymjpFGwokK8hJHrgI7QWzZJdwlENLAclGAcOG5lJ3yE0YqAltBvBGroOY8M5NkEs4
-	6QIIFn5cm/T479D0mCUsiyvsxiybESbu+7OoWoK4H9kSafF1CEtDI1Lsdhy9X5kaeyf1WMBjRry
-	3Qs3Vz8TMsufAJCnYeI5ONeB6vAqoR3wTag58lTdmiD7Fi4pr2V/cbKj8wF3Sda91yGA3soIqp1
-	5UPE9bkg6NA4i2eI/sQtW1JGfLTrC4vBXjZWEaCPUwMVUss+PwQXA+9LeC3Y/EieuG4Xnt1XUBa
-	XQTcU/YQp+JKac2Ss7UQV2trxtEe4QUyk48TJJjJvBVoCsnICof9CKc5YdGQ==
-X-Received: by 2002:a17:903:11c9:b0:2b9:6cde:c34b with SMTP id d9443c01a7336-2c1ec7982f5mr94110965ad.15.1780822413844;
-        Sun, 07 Jun 2026 01:53:33 -0700 (PDT)
-Received: from kfuzz ([202.120.234.33])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c16609e636sm145529555ad.51.2026.06.07.01.53.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Jun 2026 01:53:33 -0700 (PDT)
-From: Yiming Qian <yimingqian591@gmail.com>
-To: Jason Gunthorpe <jgg@nvidia.com>,
-	Kevin Tian <kevin.tian@intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	keenanat2000@gmail.com,
-	yimingqian591@gmail.com,
-	stable@vger.kernel.org
-Subject: [PATCH] iommu/iommufd: Require write access for writable MAP_FILE mappings
-Date: Sun,  7 Jun 2026 08:53:18 +0000
-Message-ID: <20260607085320.73274-1-yimingqian591@gmail.com>
-X-Mailer: git-send-email 2.50.1
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="GWnGHAtp"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=inKUO0LuN+Uc5GbJ0HQYKYaVSvyDwcG98bD7RCMqj9OSa6aiWOeGaVuDJH5tKNlZWY7PCdJw462ZcTvU5shLgghVozREJC6hICwrnE/x6tpHOuGGK6f5M6GirZED/XioadJLExGgxBmBH8BWB47ok0VFDEoUqPREPFCeskDUvBhb1KkSVGtV+R8/OJ3uiSaK732prT5A5dSMsQ9BXk5bw873QMyeOsS/2ixSx7t+01mBG/PHSyzoBhmLG3CtBncohsu4twBeHDIVCMFIfgoUG3aJ7dknAlZChSMIY2/AGOMyHVDnx1WjKbcOAtye75+61nPOMCbKv1xmyieAFaljOQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pFXDSCKXAKi4kGupRZ5SQ9xE2oWSRiN0xua6nRQuhrs=;
+ b=qmRpKvtFBAotyjH3l0axZfDDpXyx7Ivq1zUc5tDXf6mK0mo/db9+8uhdqx0Wdw/gzlVAl1SlPJLXidzM2HNUTLcql/sYwlYh28vlqXCBZY+gF24dAGn44Zzf/+JT8Z0zUIK25tAXxqU85c7BFitwLtmOHk/K80Yn2YXsURS/FxId/H+KnHLrx/EG7U1usuoaJn/9PmJU57C3Hrahr81I0Ao3b39imYxTvUR00qzrQlEkKlndc5tY5xeNpvSSvdrg/E/Bn+6sUHgOzcDvJOv1FMYfzrhbKpPW+/ycbj15i/DZfXCtcNslpp3bSH66AjEsqWybZuK4lN024nWCzhRixw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pFXDSCKXAKi4kGupRZ5SQ9xE2oWSRiN0xua6nRQuhrs=;
+ b=GWnGHAtp0MEVqtiAwMCwORdH7K4vrvlKG2ULLsMcESRiheacyH807vC/MPRaeCjwnvjW+tn+ao3MuLWeI2KyNvTtr9Bh02Tp5Os5lvxrt1vJJcwFGAnBOOEz9Ss7JKqvyzeUJUnYwoOlG8+dNU8DNLPwuxspdCEWB8N0V3YhusFk0ZZcvqapOrD2JquPuKcm8Xdi6RHePm9k40+l29jxgYyNnDnHdJS0C69BIsMlKcTw5clS9YBUyhTSId5nr0qQtCGtUfelFgyI9IOOaH1T1QEYe/tK1c8QCyA3HQ9zhSLyMwVFngrusl+jtvyI3KwPItynx5cZquIIYWrNhlie0Q==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by SN7PR12MB8146.namprd12.prod.outlook.com (2603:10b6:806:323::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.92.11; Sun, 7 Jun 2026
+ 12:09:36 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0092.011; Sun, 7 Jun 2026
+ 12:09:36 +0000
+Date: Sun, 7 Jun 2026 09:09:35 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Yiming Qian <yimingqian591@gmail.com>,
+	David Hildenbrand <david@kernel.org>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	keenanat2000@gmail.com, linux-mm@kvack.org,
+	Christoph Hellwig <hch@lst.de>, John Hubbard <jhubbard@nvidia.com>,
+	Peter Xu <peterx@redhat.com>
+Subject: Re: [PATCH] iommu/iommufd: Require write access for writable
+ MAP_FILE mappings
+Message-ID: <20260607120935.GG1962447@nvidia.com>
+References: <20260607085320.73274-1-yimingqian591@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260607085320.73274-1-yimingqian591@gmail.com>
+X-ClientProxiedBy: BL1PR13CA0421.namprd13.prod.outlook.com
+ (2603:10b6:208:2c3::6) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|SN7PR12MB8146:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4ab97a8d-6488-4952-5abc-08dec48da481
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|1800799024|7416014|366016|56012099006|11063799006|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	5J8DUZpcT35yiUeS05SFaISnTzIH2tRZNa/Dc10RAK6dmogF3jqDaY2fcg/Xnjm0N86ei9L+4jxvx3vXEMwNOlst5yY5O0A5tx0hsQgQrqIq/XQKnn/sf8mcy0cQfvHCQqn6Tiqe4yz8ejUKnAj0ZeicI1+ueAN1rjTE38o734FszloI9Xxlyr6apMijhRSEqnayMRL7AhKHcxcqOrUk8JUi+BnKpnCDh+k8Zixt6MUsORtDZKh/A94598xuKIrQxBqobp0G7FGfdmxxMel/hnwUzwS9xjwLOonIKopDdASDYMO413EKPa0ydqR5f/OCDVfSCuQodPVr3CiMdDH6VVP9PsDs/J61J5zDJyHcdTSODf/0o31zPdPi0QZdDdvasipj2N3LYfpyGkumCnZjwYh1dxEe7/pMsRq/rdkIC8F6x9ovBi0TF5hBaqP/9D6/SeNPx/Pc67qYxWXzYWSL1+CgMvWl9OBfqxUozIa3bM3E2hgOeAJOHDO2G7ycCHlW80PgXz0SVWGpkcgojiWgpNOUqQ7Uvnz2qSQBKhtbVawoAi9vBz9O5lSqSE/UBTdi0gOn+k+OizxxzNXVEEQ46a4B1tIBTGOQ9EW9LwMq5fV1e8qNyic99xgnDHTui4z+GDwnyiWaL53LkdUXvj8qn8gF31/XcRadPbitRzT97/2nUpaUZpzv62VFAfFsa+r4
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(7416014)(366016)(56012099006)(11063799006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?AzpxnDcF6dOjDWt5abnnuq6B1WjDUwQxAsdCetKuiULpygNxSaoz9l79tSj6?=
+ =?us-ascii?Q?VilVwLTH2DRxxAKOCxFOFHSAo85fnmTxuD/+eL4syh5FDPXKexokd/oYylAw?=
+ =?us-ascii?Q?z/ndU488LyImfK9P5HjP/7VgNSdu1ZPocukaTBp8wyKqQsMiSEYH+Xh/CSIQ?=
+ =?us-ascii?Q?hca3KIiGoKZZnLSNgQudf6aDiDkkVGVOeRweLU2qB9L8wWw5x0N2jCRa/XQK?=
+ =?us-ascii?Q?8AqVWpKIRGJrKjKfm+wn76nymHFaVqJYzqZsSoF1ElLAYIKWBhM8As36gHPz?=
+ =?us-ascii?Q?+4OpbLN47L5FXYiIFXXsg8KPxmBKOo5NYDjZlEobm+WzD2KpoOqsHc4vX8qr?=
+ =?us-ascii?Q?jTn08tV8fOugqjcE6HEzbYm+MuZEgz7OHuR1dhiWS6z1sX+8d/0jLMn0MJRS?=
+ =?us-ascii?Q?kNPCRLIwVQTgqLvgTjCsBDgxoUw27J5Iy2CYZ13x50k+CXpsdqLrQrsUniZJ?=
+ =?us-ascii?Q?8J5BWDjUOh/N2LeEkLokO3cc2CS0E2JYzmHSHmbmEJkTLy04Qz5bfl6F28wK?=
+ =?us-ascii?Q?JS1n6NdBwhYZptJz87Er4YzEjJIWCY/uh2f7vIH1G6Q9R12BcO+LxMr6KusS?=
+ =?us-ascii?Q?B4LWGRVPbNFtMIeIRf2mdgsCjARG1zVP7vNUzkJjEnzsC4UZMl0RR1rXsgAa?=
+ =?us-ascii?Q?oHO3Z14SeJV7dJ3Mk3ZIg6tDyo8P28GjwMCVSo8eyFhBnRjqSGdKkb4XvHkz?=
+ =?us-ascii?Q?Q3Zx99iiiT3IykNGTjJnYEfqBpMjRRCnN8OK+QsbnTPkgsjQSdSmoCxLJnXY?=
+ =?us-ascii?Q?XLHUa+1kkkqp3s1hrtPrtbuo0isAzqYBQL8306BN79bC8QAMggWAUi9K8Tff?=
+ =?us-ascii?Q?e/tTTnaAtHlOUn+iETv7WBaPE5r/pkG7BcrPQoKcRG8GmuhPp7FpZ7WaYp9w?=
+ =?us-ascii?Q?5a5aIIiPJzezIFsL7CeZA6UJUsV8+UkD+NQYHVboFop+aB36IydfZdCtLSdP?=
+ =?us-ascii?Q?Galucc8ScwnZa589SyHPyw5VOdlX/Tg2+KxTaa179gANO1O/yZzoE2QuILMw?=
+ =?us-ascii?Q?bQBprWX8zKAl77LxwsDUXBtf6cnwtrRFZRk5lLidr4+M0YGHQu1ijtzgH06u?=
+ =?us-ascii?Q?QVHVKUXxyot3f3EnLM6eHs5AIetwK9DSXSnA//3vmPHSGYnEAkHzFgUAIa9p?=
+ =?us-ascii?Q?RZeidGyfDWofdebyQecH4Co3i8euSvMhHwGkYBkgdOYAizC0Sl5hHPUtI9Ys?=
+ =?us-ascii?Q?knwMH5azcnZRLsTRjLeKyzUNSTqLc/8hR5v0vKWbkoXJLX/x2rHo99Hl1sFh?=
+ =?us-ascii?Q?B0pi1F2uS9COjQ0XY6g9MQgbL1zK0C3EKib20RLZOfGUrcuwA9PhlNSw2/Uo?=
+ =?us-ascii?Q?rAL9EkSwKrFR4roAHJqIGRGaclNUdOUhhqV5tCeYrXjoXdAcWpEqe9Uw22+3?=
+ =?us-ascii?Q?Y+JeDp0Om/a4j0DUk5RNmHFUt1WyZwwLvJd8J7EnmpTwup0+weHF4f8yib5h?=
+ =?us-ascii?Q?35U2+gLEX0dx0eE2mz7eJMiU6ldyCB6s6TxkBC2Vadxy+EYnsN18VQjyuykA?=
+ =?us-ascii?Q?rPBN8HOg6M5etibN0nSZDx9xQm4U0eJ5+kNGyWsJeIVIjeKjJ+p5du2uZ1lg?=
+ =?us-ascii?Q?KwxvI9ZmkeWzAHqJqNOBc3cTBg9qfT8xeXXzO+fsEBtW9eKO/NfwE6b+HL7z?=
+ =?us-ascii?Q?joZ/YuF/iYiZgqzVF+NhEU5rjgk8/+QbZrafAcsT10QIno0oVLm9MsCUCI2/?=
+ =?us-ascii?Q?C2AYuIzNMfkqMyV37q0LCGlRP2w9KNWQj2yScW3dBMB+WaAs?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4ab97a8d-6488-4952-5abc-08dec48da481
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2026 12:09:36.5414
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Gu1YS7D97qKzrFX0KfiGkMVK5QB0BEz9TpIxIbig4qmJAuSkwk8y+6gwoORMThvu
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB8146
 
-IOMMU_IOAS_MAP_FILE pins folios from a shmem/tmpfs or hugetlb file and
-uses them as the backing storage for an IOAS mapping.  When userspace sets
-IOMMU_IOAS_MAP_WRITEABLE, the resulting IOMMU PTEs allow DMA writes to the
-file-backed folios.
+On Sun, Jun 07, 2026 at 08:53:18AM +0000, Yiming Qian wrote:
+> IOMMU_IOAS_MAP_FILE pins folios from a shmem/tmpfs or hugetlb file and
+> uses them as the backing storage for an IOAS mapping.  When userspace sets
+> IOMMU_IOAS_MAP_WRITEABLE, the resulting IOMMU PTEs allow DMA writes to the
+> file-backed folios.
 
-The file path currently records the IOMMU mapping as writable, but it does
-not require the source file descriptor to have write permission.  It also
-bypasses the address_space writable-mapping accounting used by memfd
-sealing.  As a result, an O_RDONLY fd for a root-owned mode 0444 shmem file
-can be mapped as DMA-writeable and a device, or the IOMMUFD selftest access
-path, can write into the file page cache.  The same missing accounting also
-means writable IOMMU mappings are not excluded by F_SEAL_WRITE or
-F_SEAL_FUTURE_WRITE.
+This looks like an issue with the API design in memfd_pin_folios(),
+all users would have a similar bug I think.
 
-Treat writable MAP_FILE mappings like shared writable mappings: require an
-FMODE_WRITE fd, call mapping_map_writable() when creating the backing
-file-pages object, and hold that accounting until the iopt_pages object is
-released.  This rejects already sealed files and prevents new write seals
-from being installed while the IOMMU write mapping exists.
+I don't know much about memfd but this seems like a legitimate issue.
 
-Cc: stable@vger.kernel.org
-Reported-by: Yiming Qian <yimingqian591@gmail.com>
-Reported-by: Keenan Dong <keenanat2000@gmail.com>
-Signed-off-by: Yiming Qian <yimingqian591@gmail.com>
-Signed-off-by: Keenan Dong <keenanat2000@gmail.com>
----
- drivers/iommu/iommufd/io_pagetable.h |  1 +
- drivers/iommu/iommufd/pages.c        | 18 +++++++++++++++++-
- 2 files changed, 18 insertions(+), 1 deletion(-)
+Add those involved with gup.c and the patch adding memfd_pin_folios()
 
-diff --git a/drivers/iommu/iommufd/io_pagetable.h b/drivers/iommu/iommufd/io_pagetable.h
-index 27e3e311d395b..63e3fd738faf2 100644
---- a/drivers/iommu/iommufd/io_pagetable.h
-+++ b/drivers/iommu/iommufd/io_pagetable.h
-@@ -234,6 +234,7 @@ struct iopt_pages {
- 		struct {			/* IOPT_ADDRESS_FILE */
- 			struct file *file;
- 			unsigned long start;
-+			bool mapping_writable;
- 		};
- 		/* IOPT_ADDRESS_DMABUF */
- 		struct iopt_pages_dmabuf dmabuf;
-diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
-index 9bdb2945afe1e..f97d94d9eddd1 100644
---- a/drivers/iommu/iommufd/pages.c
-+++ b/drivers/iommu/iommufd/pages.c
-@@ -1421,13 +1421,27 @@ struct iopt_pages *iopt_alloc_file_pages(struct file *file,
- 
- {
- 	struct iopt_pages *pages;
-+	int rc;
-+
-+	if (writable) {
-+		if (!(file->f_mode & FMODE_WRITE))
-+			return ERR_PTR(-EPERM);
-+
-+		rc = mapping_map_writable(file->f_mapping);
-+		if (rc)
-+			return ERR_PTR(rc);
-+	}
- 
- 	pages = iopt_alloc_pages(start_byte, length, writable);
--	if (IS_ERR(pages))
-+	if (IS_ERR(pages)) {
-+		if (writable)
-+			mapping_unmap_writable(file->f_mapping);
- 		return pages;
-+	}
- 	pages->file = get_file(file);
- 	pages->start = start - start_byte;
- 	pages->type = IOPT_ADDRESS_FILE;
-+	pages->mapping_writable = writable;
- 	return pages;
- }
- 
-@@ -1668,6 +1682,8 @@ void iopt_release_pages(struct kref *kref)
- 		dma_buf_put(dmabuf);
- 		WARN_ON(!list_empty(&pages->dmabuf.tracker));
- 	} else if (pages->type == IOPT_ADDRESS_FILE) {
-+		if (pages->mapping_writable)
-+			mapping_unmap_writable(pages->file->f_mapping);
- 		fput(pages->file);
- 	}
- 	kfree(pages);
+>  {
+>  	struct iopt_pages *pages;
+> +	int rc;
+> +
+> +	if (writable) {
+> +		if (!(file->f_mode & FMODE_WRITE))
+> +			return ERR_PTR(-EPERM);
+> +
+> +		rc = mapping_map_writable(file->f_mapping);
+> +		if (rc)
+> +			return ERR_PTR(rc);
+> +	}
+
+We probably need some kind of companion API for memfd_pin_folios(), a
+start/pin/destroy kind of thing to manage this?
+
+It should not be open coded like this.
+
+Jason
