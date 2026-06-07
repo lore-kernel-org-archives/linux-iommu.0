@@ -1,119 +1,115 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E3B12E62B4;
-	Sat,  6 Jun 2026 19:51:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4141A2E6CC0;
+	Sun,  7 Jun 2026 08:02:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780775509; cv=none; b=OvbXXfaUwP9s1eFoYbd/RxG2x7t+3ymRtS1gy5Cc+n75Rj3RhMhRfiMmMD3gBF5mukVP+4fsEpGrqCWr7dADv+/BdCDEIcVfVrwNUyK0dEQhC3FtUINRBataoutVRpBiY32fFcRav7Ij/tGG9bcX+qbrtSk01oqbVmAt+yvaaL4=
+	t=1780819371; cv=none; b=aM9f5zf2lSSMeTDVbNBm7ByoRri5zk8l7ukjK5nsl2rvNTtqQ0A0M/L3lARVoIkeUOMdGC9W9u7n+ettAmN6qy15WXQ3wEAeQau1W3vsFSk+ME0E5fqGP5qOaQ8vqkogP9FJgNenjztq8m5uPbwuRmKnqW3ozs3ch7qqvAJiFmw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780775509; c=relaxed/simple;
-	bh=VF1lXzSHRjsTN6Jjr/wjSGbrJWeWxYZXfwynZT8I+/I=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=SGbxJuhFD/gjQXOEbFAiJ2qr3w5jAVYVHSJif+LmhMqS0xKo9TOiWeGyB3jiSJs/BYsXUTjzOONtFN06UhhXl3NjGVStpuxCZ+HqsC/d3Q88pwEq2IgRlpvFOmEAlnzkITJsUUQPwaMBQ9ZUYM6NYidjO0s3aA9xRq13OwDcZTA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=f2UwGJ+G; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780819371; c=relaxed/simple;
+	bh=fK33aw+FsNr4Lb4q2rl/jIj5PcYXk9p91/x81Ou+R/8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Yfe9wYALfRbA1BMOzCD9aKRD/+pgaYd1iMXfZ/QsNMUuomMV7MG3K30w5D+PkHorXhIMXiiFABTtXFJ1ezIbskJ0b4WFa285ecicE2xh/xkjRckjXx5Hpmd8tVWTgOBQTj15v1pIDakS5FiYWrCDDIyFuu5Cs2gaXAIjvdyGp+U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aE1SY8r9; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f2UwGJ+G"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5CD61F00893;
-	Sat,  6 Jun 2026 19:51:36 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aE1SY8r9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32A9B1F00893;
+	Sun,  7 Jun 2026 08:02:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780775508;
-	bh=VF1lXzSHRjsTN6Jjr/wjSGbrJWeWxYZXfwynZT8I+/I=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=f2UwGJ+GPBR0kjeEWcSIUJz5qV+/KOUuEm218rA0AylA4nm8shjZUE87TTun3q2s0
-	 4AJLPqJsSHOHK4rnut61ZP4tIcOHUrLhQtLYyc2XTREOxAAa9oxOHmctS4BYaT9BjB
-	 ZCTJMmwMCqgGnDhAhvcCPpB1j7VBJZgmEqVgdlg4GFIV8Hqa038GPY18o8rzK/94kW
-	 Hajb0zq9G+W305SsSAPy/T7ukKKvHulLxJW3a8iLDXeZ6sksokrqiq2PYYoCCGWVKN
-	 s9ISCu53mVOI4l+JenT+cECZgmwPepHp8XnB3GGCglnbDwM2UYItHgeSac4tFoaarp
-	 cLzk/Rc10pJ9A==
-Message-ID: <a3edf316-e82d-4ef4-bef0-081952ede049@kernel.org>
-Date: Sat, 6 Jun 2026 21:51:33 +0200
+	s=k20260515; t=1780819369;
+	bh=743mquA8eUU6nXfjkJF2bDmypYOyMCpDQhfZo28zoc8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=aE1SY8r9jkNr36mu/YYJAsW8bfiM7zw1BjgwI5hH9xzAqeIuvpxF5a5xHVcykvRhE
+	 5rv4zb7l0fL/AVhPq95kRC309GpG2LYn9Tk0LfK0EftcbiMuP0mz7jwTgGkVUiskib
+	 FsdBfriQjkjAOSaoOuF08eSIjgEI606M97YlP4uHMmQ2uHpzNScMRGEPVja8VRAJvY
+	 PNxXin2R+XTuVfb00frIhDpIHsfV00jTfMFLAAGOUorTUFWPoAM25MVttHHa4l78o7
+	 2BvhsE3Q4tELG3Xi5Wreq/lCyzxgWM6T3E3A4pyK+yA89GXQXm4j8JddNoJQxLgi0i
+	 ymCQKza5mtMTA==
+Date: Sun, 7 Jun 2026 11:02:44 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: David Hu <xuehaohu@google.com>
+Cc: Sumit Semwal <sumit.semwal@linaro.org>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Ankit Agrawal <ankita@nvidia.com>,
+	Alex Williamson <alex@shazbot.org>, linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	jmoroni@google.com, praan@google.com, stable@vger.kernel.org
+Subject: Re: [PATCH v5] dma-buf: Fix silent overflow for phys vec to sgt
+Message-ID: <20260607080244.GA327369@unreal>
+References: <20260601200012.3872274-1-xuehaohu@google.com>
+ <20260604094344.GB245424@unreal>
+ <CAPd9Lg_JkRdtNa=n+HE9SP+NFCSB+X_97eiPBqiONVLwV0pHwQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/3] arm64: defconfig: Enable ILI7807S DSI panel driver
-To: Nabige Aala <nabige.aala@oss.qualcomm.com>,
- Rob Clark <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov
- <lumag@kernel.org>, Abhinav Kumar <abhinav.kumar@linux.dev>,
- Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
- Marijn Suijten <marijn.suijten@somainline.org>,
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>,
- Krishna Manikandan <quic_mkrishn@quicinc.com>,
- Loic Poulain <loic.poulain@oss.qualcomm.com>,
- Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>
-Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
- freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org,
- Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-References: <20260605-shikra-display-v3-0-9846ba5fe635@oss.qualcomm.com>
- <20260605-shikra-display-v3-2-9846ba5fe635@oss.qualcomm.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <20260605-shikra-display-v3-2-9846ba5fe635@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAPd9Lg_JkRdtNa=n+HE9SP+NFCSB+X_97eiPBqiONVLwV0pHwQ@mail.gmail.com>
 
-On 05/06/2026 12:18, Nabige Aala wrote:
-> Enable the ILI7807S 1080x1920 video-mode DSI panel driver as a module,
-> used on the Shikra CQM EVK board.
+On Thu, Jun 04, 2026 at 03:36:48PM -0400, David Hu wrote:
+> On Thu, Jun 4, 2026 at 5:43 AM Leon Romanovsky <leon@kernel.org> wrote:
+> >
+> > On Mon, Jun 01, 2026 at 08:00:12PM +0000, David Hu wrote:
+> > > @@ -36,7 +36,7 @@ static unsigned int calc_sg_nents(struct dma_iova_state *state,
+> > >                                 struct phys_vec *phys_vec, size_t nr_ranges,
+> > >                                 size_t size)
+> > >  {
+> > > -     unsigned int nents = 0;
+> > > +     size_t nents = 0;
+> > >       size_t i;
+> > >
+> > >       if (!state || !dma_use_iova(state)) {
+> > > @@ -51,6 +51,9 @@ static unsigned int calc_sg_nents(struct dma_iova_state *state,
+> > >               nents = DIV_ROUND_UP(size, UINT_MAX);
+> > >       }
+> > >
+> > > +     if (nents > UINT_MAX)
+> >
+> > I would suggest to use check_add_overflow() while calculating nents
+> > instead of this check.
+> 
+> Hi Leon,
+> 
+> Thank you for the review. Using `check_add_overflow()` is a great
+> suggestion and definitely
+> cleaner for the accumulation loop. I'll update this for v6.
+> 
+> > > @@ -133,6 +137,11 @@ struct sg_table *dma_buf_phys_vec_to_sgt(struct dma_buf_attachment *attach,
+> > >       }
+> > >
+> > >       nents = calc_sg_nents(dma->state, phys_vec, nr_ranges, size);
+> > > +     if (!nents) {
+> > > +             ret = -EINVAL;
+> > > +             goto err_free_state;
+> > > +     }
+> >
+> > Technically, this hunk is not necessary, since sg_alloc_table() will
+> > return -EINVAL when nents == 0. At least, that is the behavior I relied on.
+> 
+> I originally added this explicit check in v5 to address Jason's
+> feedback, and to make the
+> failure explicit rather than relying on `sg_alloc_table()` failing
+> silently on `nents=0`.
 
-Please use git log in case my comment was not clear.
+I prefer explicit checks, but I am not in favor of duplicating them.
+Since sg_alloc_table() already validates this condition, we do not need
+to repeat the same check in dma-buf. A comment should be sufficient to
+inform future reviewers that nents == 0 is already handled.
 
-NAK because you keep sending the same and ignoring feedback.
+Thanks
 
-Best regards,
-Krzysztof
+> 
+> Jason, do you have a strong preference here? I am happy to drop the
+> hunk and rely on
+> `sg_alloc_table()` returning `-EINVAL` if you are both comfortable with that.
+> 
+> Thanks,
+> David
