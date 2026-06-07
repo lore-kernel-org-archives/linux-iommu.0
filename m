@@ -1,188 +1,213 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B25F2DAFB0
-	for <iommu@lists.linux.dev>; Sun,  7 Jun 2026 21:38:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780868324; cv=none; b=TPHmjVTMtMK+/8UGqmVI60YRCmpFdoD7KOYv2F47Dn1KhZrL/nCeEKU3h1Fz+NIXiSbUGvuw5Kc4DrUW3We44FSk36R2zkJNL0kKBVStjRsInc5BzycrPeWTaL07deBSlYtcmjvw8i9Wx34o5bZvUq0xz0rAqiKgJTjSU+EGtMA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780868324; c=relaxed/simple;
-	bh=VAgBwjDSeNlnZ4qckfBu5Y1PBlob+5OYl4nU7oWlIok=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mZKYmKwS2Wk/QVOe3qwTqX03y07Gd68XLpKFEXm0rxVcMnbH3xliin024+KR1TVbPo2507t0YdGF3OFrxJ5vhtBnFbn2qg5AOsJ4r14LdBydvaRBL+7NRXRT2ojLkZI0yQmQIi7c6KKkmDu9NL6VWnZxp1iNV/naw+ugA+mL4zs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=g4CVZ1tY; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=LTzKthny; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD0A327A123
+	for <iommu@lists.linux.dev>; Sun,  7 Jun 2026 21:42:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.178
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780868571; cv=pass; b=Yiumhyb61VYgBa3xYCo80xWeV4gaEgKdSS3ADdO7PHHtdbJFuSfzr4cxk5Dsx37xaAV9HDwzx4LAPNvSzceZOj/3gpvPORFf4owIWg7515GS6e9Mlrzjxet9M5BAt1Hp3Vf+o3cGNL17Ib6qdY4iEhZq81D7fQy+pN/jHbt3zVA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780868571; c=relaxed/simple;
+	bh=JcXslbvH1I8goZHOmV6zrmSyQrWDxpEMx44DBzaANDE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=m1p2CbnI3OClGd+IXfD6Uu5PJQ92Gbzg0vNDEqM1yGQYmD8hPp5yrHVvTjmIVwQ6K7y/UGGM49kkZX9Na+4jM2ZAL2wFkK2yV+7E76IvN6pPLmm68rGRttOQ4H4w/UAZlLkZrGzazFqOKnp1r7J9V9EQ4ux0dxO1rpL6xLRV/nE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=nxAQtzD8; arc=pass smtp.client-ip=209.85.160.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="g4CVZ1tY";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="LTzKthny"
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 657EkuUk847154
-	for <iommu@lists.linux.dev>; Sun, 7 Jun 2026 21:38:42 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=92I4yuoS22Z9HO3EyiCCTVSZ
-	iS8+EKZGlOF800tslZs=; b=g4CVZ1tYnf18m/FzTun8nLzBWNZ8weQeE2NaPEIq
-	F7ZUCjB7roM0/g7YcSURCGSxbZVUUeaOZ7SIY/knkn+7Fq3hiu4RVJH8PzWnTRcy
-	Wja6yNcnIBDLE2dhJ7nCCOg8tWbwgwkeJQXm4B3rYK/49AmjqJ+Af4TnmV80gfM8
-	+8ONUWSmeFeZrbZBRRRZGSBaVXLpoXVfzvIp37kIIEpXu/uYFpulfMnSUpLscSDM
-	uvWRabQGM7R/TWt0kz8JRrGKaaYZTQ++iTpMasWy1I3SPh7FeEBruIiK6qZ25Jou
-	fjVbnFXfdWnfUlESk0Btt7VlWPq3BTTjJIArA6moBnghug==
-Received: from mail-vk1-f198.google.com (mail-vk1-f198.google.com [209.85.221.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4em9k3n7dw-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Sun, 07 Jun 2026 21:38:41 +0000 (GMT)
-Received: by mail-vk1-f198.google.com with SMTP id 71dfb90a1353d-5a94a743521so2906002e0c.2
-        for <iommu@lists.linux.dev>; Sun, 07 Jun 2026 14:38:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="nxAQtzD8"
+Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-5177d1ff061so1234271cf.1
+        for <iommu@lists.linux.dev>; Sun, 07 Jun 2026 14:42:49 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780868569; cv=none;
+        d=google.com; s=arc-20240605;
+        b=NO0/BSSNkIWheI0YUY0EWOwwv+i3XHnAkTSXn8YRsejC2EJWiZy2O3KioK+pPHRWRG
+         vy1uPc5S0K1RdE2ZR2nGrt/eNwJ6oVgsSt6z4IjfFzLlzg89g48hT3YwfpWi/6MvnGZg
+         dv2fzJOjBTk7Zir4ls5Q++7x8Xtf1386Xmn8LjDMu4y4LFDiU0IZrtmaDE6Hf8xQ+It0
+         UmXfE3M9yj4ulMtC1Wym/8TAdSBKu8xibw5NOX4ngpVpxnyoSQXx+zLVGJ6elou9/Gsj
+         yXf+KklFhHuZWH/dh3saiO6rPyQha4i3p3/s/R07Exa7UOye4SizQItWhg+DCInY35L4
+         mh0w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=Vyqe1/V8LOLZRRB2tkc6YkttN2Ie/2+WN0mY7kcvXhU=;
+        fh=0u6trxL0zZwA0/1Sge/7uQQnOlSSVTu7AIo0GAZRpig=;
+        b=Uf4c8kDnYwSHCvHv5GOesb1jlHdrZCZR5x+dClQuDP09OkfGZLBgu/1BrFSR3Ksdaf
+         4UzckQIMLYJtIGPmUXlCY+QGvF4zdvL2Gv+LgUPNVUtnF6OcUZDb1TBvKbM7yTYDTbde
+         FYtaY7hCUYmgUXSYsjtp0/LiPrcpXVUkmXa9v1gaO2q4pHCgSYTT3p88jcUcGHBL1Whf
+         R5ZvmWBOhy6ICyfnH0+iJxpiAZ3Dm+7CZ2jA9g2537UvayqdxeeXPDl6zQSHpatmohaR
+         L2qeUbmBSTQE+fy8kDZKcbhZYDRXUdsp+E4vEJI8N7XcAH7tiNcHiCOYdogpNEC9BxqF
+         IB7w==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1780868321; x=1781473121; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=92I4yuoS22Z9HO3EyiCCTVSZiS8+EKZGlOF800tslZs=;
-        b=LTzKthnyHV75BIhowltu1JNQiMCITq1xwJDbmPwxcrYqnXYsJFfi2LugSO45MJ8KLY
-         P925RZ178XB7IcWhKk0r1ZiTTDMSHDHOaf36+xX1nfL9pyoIznWadyIrGwA0SCnyhyVt
-         ZNavoAXWcMGgYZyvh/KJ/7VTR6QgMUU0el/jpUyyygiPoTDrx2NKN2IbdEpUY6814Iz9
-         803hnEqtnGxqoEguKHW4wW8ypPfuMVJAm9nberjza1PJeaPgqdp200DVQEbEwpahD4XR
-         xg3e9vt7JYSXUxmpmXEpsICI+lpy/YeWzbFrbur9dX8Iv0TuvNUvuKIlNTwccQdvQSCo
-         VJ3Q==
+        d=google.com; s=20251104; t=1780868569; x=1781473369; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Vyqe1/V8LOLZRRB2tkc6YkttN2Ie/2+WN0mY7kcvXhU=;
+        b=nxAQtzD8XDxii2AvVitEc/g5OgZOsoPPwSS6o9CR0MhpJ9hrSaFa7IIrLPx+7+5UP8
+         3PXm2K/0sjN3RVeAL22OJeQ4UlBl1DIfeaoC1ZgfEPP7xEd8Rw588H6/G3pNif0Scm9/
+         US5vqBUAHhfrSsLlx9HfNquSlms62Fe1teidYVoaG5UoSgOHlESXLgN184TTz0xT6MG6
+         5zyCeuiOALveknVN58isp3QK5U4ef8e2sZrULx2jHZ/VzMFl7UHJjZKl9OyWsgDn4gbn
+         OZb+KXDBJwNQxjI8uwoCUyT/blFGSUwVlK6CAn2Oug2Rg3dWjyIn0Hih4PMFADGA3BJ3
+         v/+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780868321; x=1781473121;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=92I4yuoS22Z9HO3EyiCCTVSZiS8+EKZGlOF800tslZs=;
-        b=Qfb1TbiWyH4YDwVBc+nWn3zgCV2jhavBbLD7rVKChx2YmoLBLkxumk17qwawjvhI7A
-         2Vuj6HuDtfim1/x3gaL6OrK3Vigo5IWGgxU9luSH0l87V2yI7mA9J1wJ7KUJinL6UFOz
-         q6eODLfmVSaDcCTvy69GagP+qm9HALOqbdgDxcBZBapIqjSQygKD/hf88Ut9ZDZX0HEl
-         +10mgV6hP4SOTsLiwJ6NTpisctvtDkBxN9ll8YyAphnGsNEdnqQWk+p7g07Ux6GOhvT2
-         g+rhoTmv8q0bfcDJUVSoxaGeXYJaagoWC0rPdtO+qKqUkm3U9yjlGCEXym81OFtG85Sn
-         dECA==
-X-Forwarded-Encrypted: i=1; AFNElJ81PJZH/DllMWR0zb7jzOSyPVqGjs+G6phKL+bE0vedkr/vlEcYa3ZOYK4+hFIof3as4ZRKPQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwAFZbaRBtV7nhkoCgJlimbYmOWabA5NmmyVufGzyYySBLR881D
-	Oo2RmNOGY+48KpoxvaAyJYv/y/BiyB42jcjNB2+L0VRkgTxcnnwVk0DX8fsmRW7RarZX3/2vEuh
-	vXSv2JwbNCr030bha9Qgy32zRBcnpYByGkfPZBZaCCgJjUyPnugIKqCFXKw==
-X-Gm-Gg: Acq92OFGTySIV8Oy35yrscJqRTnvQKIxYIReZRG5RZ0LT/68J2UaWQrXscNOsB468Yc
-	Ferxba8i92zcvUJTX2HgMrZoCyd8bLM+sXl9EmUwxkx+Dp7KhcLZ3n65sobMs0zoV0gzfzhcZXi
-	XdF8QzFmTMZxge89KZ7uhCqY7NksDvACivK/Wj9jBOl1YSUJu0QX5wqO5X5wQUew33FBCkz/P4H
-	lQTL/yTaCbZago35HNscDSvk8BPX2hzRwnlw42ku+Daoj5WrqLVwQarv8XXTQ1oiL/hoqXWMddQ
-	yM0QxrVIzGSuBI6aRh6qNIZ6GmMbutu//gKBCeO6EI2YxN5U9w+fVeKCoP3HeduhJW2H5LkCVvf
-	VpXaa9x4HO3qNoN7OgRXcuBzXzEjYyqgEK4KwGgxDfDtz7A5gGvpTTIONpXceX7/HYA8BV8azw+
-	5v4OB5RTeRqivlHwNAkFv7H0ULV6xTbDK46WkaC+CnGjBjdw==
-X-Received: by 2002:a05:6122:54a:b0:5a1:edab:f216 with SMTP id 71dfb90a1353d-5ac5197b908mr5984175e0c.11.1780868321396;
-        Sun, 07 Jun 2026 14:38:41 -0700 (PDT)
-X-Received: by 2002:a05:6122:54a:b0:5a1:edab:f216 with SMTP id 71dfb90a1353d-5ac5197b908mr5984169e0c.11.1780868320935;
-        Sun, 07 Jun 2026 14:38:40 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5aa7b8fdc6bsm3299246e87.29.2026.06.07.14.38.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Jun 2026 14:38:39 -0700 (PDT)
-Date: Mon, 8 Jun 2026 00:38:36 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-Cc: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
-        Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Bryan O'Donoghue <bod@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        iommu@lists.linux.dev, devicetree@vger.kernel.org,
-        Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>
-Subject: Re: [PATCH v7 05/12] media: iris: Enable Secure PAS support with
- IOMMU managed by Linux
-Message-ID: <7jqvyudwdngiln4mv5752qpv37zc7fu3donqrzzpjt4olug427@5lcbz27qzumu>
-References: <20260603-glymur-v7-0-afaa55d11fe0@oss.qualcomm.com>
- <20260603-glymur-v7-5-afaa55d11fe0@oss.qualcomm.com>
+        d=1e100.net; s=20251104; t=1780868569; x=1781473369;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=Vyqe1/V8LOLZRRB2tkc6YkttN2Ie/2+WN0mY7kcvXhU=;
+        b=sYTbwodhcBjZMU+uZ2SKA++cWtBqFpv6R9HqJxU4SOb6DAMp+HbC9OR2FgfwdJCUtj
+         KHuxZIxA30hmqI3qqfxfzEaTu8eH+PEZebbzR1YPHMR309r4iwul/dp92sMTaLDu7miZ
+         LlZRgEiFFsd166+4OXuhuy1gyRjCZnNWZnh06YMpP8DqSPfKA6MW0GzReNk1ytASOKGs
+         vBHnZFal8ezro1w73Q4Cwek9ISOTFYJVpBkcyoCV3XB5CZ79gdkFNNZqFt9MXwImqpHA
+         j11BzDWTuOQ4b7wibn6o3iUD+fAAZt6yhJhRPd+A/dBJMI+ZXCtanUwpfRmn6xsHG0sr
+         5MFA==
+X-Gm-Message-State: AOJu0Yw6NgDMaEkKRYFYMdfFeoV4bGYDh7cyRYDZ6WBG/1TPR1+rNomQ
+	PTrbZ6SZS9fbXiauG8THIuOuXD03j2EsbcZoJM4qJqdXFWQa3OpTDoAh+XzxmWXTbf/FBXEHWav
+	GSsJdCcqOI/0MhAjGKjBPXqwTfIVlmQVbaT4Ym3NR
+X-Gm-Gg: Acq92OEmqhw71y7TkvoVvU/gTOGjPlJa1ApYbFATxA71R5RlSqpaKXkEKeOU5Kg03Pc
+	ZFgcoCpsxZKlDm7Am+y+dxtv7rN9OJz39QaxBuvup3Y0bGKUhP6mAlEJeRIbZysU53cnjMY0aKx
+	jFDazRY5NuhxZJyHJ1EOBUmZfQNplnCE4I4RMSOxpslhokw9fyglum8w21BZLcxlIvCt3nuYCeo
+	JpA50b2sZriCtvRyiRDM75GMLFqbx+/yMd8VT/NymaNB+7sxAUX5RtrEC8P+UCziJm9HeOKLsYa
+	noeNyWYdeqZVqO0=
+X-Received: by 2002:a05:622a:178a:b0:517:99ea:ab7c with SMTP id
+ d75a77b69052e-51799eabedcmr13790861cf.28.1780868568251; Sun, 07 Jun 2026
+ 14:42:48 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260603-glymur-v7-5-afaa55d11fe0@oss.qualcomm.com>
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjA3MDIxNyBTYWx0ZWRfX22MaUko4lWt6
- Ch8Vuj3TImSnHBdvuB6/LDil2PVflj3wYP7kLhY3YVkYUuBhXTO4f66+QQWfVkSXYsyGZgVIbmD
- 53kqDXPW7CHaA1KPbmOdWiGlWXK8ctSAlZHE06yasqXJIt2AqebpzNwcB23OYC7jFrkZEzNCSpU
- rmeesgrVACJ4CBdYVgmdx9jR1sHzz4w2bx0nKHU3P7K9KCVBZNu7UoSA5I3NDk9xvTSRIVHNjb7
- fokUSRuFvAk6yeXrEIddCuwX7McEvGYiqX/d4Uv0dpN3ocVafXC+leNKeQsRO0O43BbWXSgAq6H
- L/BjJNOnR9b1+DcFR/qeYgT6E5QRFYj9MKrEXxCeHPAQzJSineoaEPiu4R1FOe2rexceJKfV9kW
- Wmq8B7NXy+vDYY7JAz6M7rl0m2Ylv4l6PINyZpPOcMZhcpX/ErufVXVtRJGPsJdAimBH7D+miGm
- UrwuT41CmQo7T9zkGng==
-X-Proofpoint-ORIG-GUID: PbKKAtTA9TQFZYdN8NFt2SgperCvnCHF
-X-Proofpoint-GUID: PbKKAtTA9TQFZYdN8NFt2SgperCvnCHF
-X-Authority-Analysis: v=2.4 cv=TIB1jVla c=1 sm=1 tr=0 ts=6a25e4e1 cx=c_pps
- a=1Os3MKEOqt8YzSjcPV0cFA==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=rJkE3RaqiGZ5pbrm-msn:22 a=VwQbUJbxAAAA:8
- a=EUspDBNiAAAA:8 a=hsWotPrWWJX8LXFSPeoA:9 a=CjuIK1q_8ugA:10
- a=hhpmQAJR8DioWGSBphRh:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
- definitions=2026-06-07_04,2026-06-05_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- lowpriorityscore=0 phishscore=0 clxscore=1015 adultscore=0 priorityscore=1501
- bulkscore=0 malwarescore=0 suspectscore=0 spamscore=0 impostorscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2605210000 definitions=main-2606070217
+References: <20260601215909.3958732-1-praan@google.com> <20260601215909.3958732-8-praan@google.com>
+In-Reply-To: <20260601215909.3958732-8-praan@google.com>
+From: Daniel Mentz <danielmentz@google.com>
+Date: Sun, 7 Jun 2026 14:42:37 -0700
+X-Gm-Features: AVVi8Cc7vDwsTYlZ7xArJ-OaI4SeEU2xRhvF0rVcM1tRP9imeosdVyxxnu47IE0
+Message-ID: <CAE2F3rDF5dVJip2gc+vaxtM-FRttnUEnAetUYz6qDCXRM=fNYg@mail.gmail.com>
+Subject: Re: [PATCH v8 07/12] iommu/arm-smmu-v3: Add CMDQ_PROD_STOP_FLAG to
+ gate CMDQ submissions
+To: Pranjal Shrivastava <praan@google.com>
+Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, 
+	Nicolin Chen <nicolinc@nvidia.com>, Ashish Mhetre <amhetre@nvidia.com>, 
+	linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 03, 2026 at 07:48:43PM +0530, Vishnu Reddy wrote:
-> From: Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>
-> 
-> On platforms where a hypervisor is present, all Secure Monitor Calls
-> (SMC) are intercepted. For qcom_scm_pas_auth_and_reset(), the hypervisor
-> registers a Shared Memory (SHM) bridge over the Peripheral Image Loader
-> (PIL) memory region so that TrustZone (TZ) can access it, forwards the
-> authentication SMC to TZ, and upon return maps the PIL region and
-> triggers the co-processor bring-up sequence:
-> 
-> HLOS -> Hypervisor(SHM setup) -> TZ(auth) -> Hypervisor(map+reset) -> IRIS
-> 
-> On platforms without a hypervisor, Linux drives these steps directly.
-> The SHM bridge infrastructure required for this is already upstream [1].
-> 
-> To isolate firmware memory in its own Input-Output Memory Management
-> Unit (IOMMU) context, a dedicated stream ID (SID) is required, tied to
-> the firmware function ID. This SID is specified via the iommu-map
-> property in the device tree using the firmware function ID as the lookup
-> key. A firmware device is created and mapped to this SID.
-> 
-> The presence of a SID mapped to the firmware device via iommu-map is
-> used to detect whether a hypervisor is absent: when the firmware device
-> has a SID mapped, Linux manages the IOMMU directly; when no SID is
-> mapped, a hypervisor is assumed to be present and these steps are
-> skipped.
-> 
-> Extend the Iris driver to support Secure Peripheral Authentication
-> Service (PAS) on platforms where Linux manages the IOMMU, by creating
-> the firmware context device and performing the necessary IOMMU mapping
-> when the firmware device SID is present.
-> 
-> [1] https://lore.kernel.org/lkml/20260105-kvmrprocv10-v10-0-022e96815380
-> @oss.qualcomm.com/
-> 
-> Reviewed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-> Co-developed-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-> Signed-off-by: Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>
-> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+On Mon, Jun 1, 2026 at 2:59=E2=80=AFPM Pranjal Shrivastava <praan@google.co=
+m> wrote:
+>
+> Introduce a new bit flag, CMDQ_PROD_STOP_FLAG (bit 30), in the command
+> queue's producer index to safely gate command submissions during device
+> suspension.
+>
+> The flag embeds the suspend state directly into the existing global state
+> The flag checked in the cmpxchg loop in arm_smmu_cmdq_issue_cmdlist(),
+> which acts as a Point of Commitment, ensuring that no indices are
+> reserved or committed once the SMMU begins suspending.
+>
+> This prevents a situation of "abandoned batches" where indices are
+> incremented but commands are never written, which would otherwise
+> lead to timeout during the drain poll.
+>
+> Update queue_inc_prod_n() to preserve this flag during index
+> calculations, ensuring that any in-flight commands that successfully
+> passed the point of commitment can proceed to completion while the
+> flag remains set.
+>
+> Suggested-by: Daniel Mentz <danielmentz@google.com>
+> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Pranjal Shrivastava <praan@google.com>
 > ---
->  drivers/media/platform/qcom/iris/iris_core.h     |  4 ++
->  drivers/media/platform/qcom/iris/iris_firmware.c | 73 ++++++++++++++++++++----
->  2 files changed, 67 insertions(+), 10 deletions(-)
-> 
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 20 +++++++++++++++++++-
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  2 ++
+>  2 files changed, 21 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/=
+arm/arm-smmu-v3/arm-smmu-v3.c
+> index 6c8631e2f153..c4315bdde7d5 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -210,7 +210,8 @@ static int queue_sync_prod_in(struct arm_smmu_queue *=
+q)
+>  static u32 queue_inc_prod_n(struct arm_smmu_ll_queue *q, int n)
+>  {
+>         u32 prod =3D (Q_WRP(q, q->prod) | Q_IDX(q, q->prod)) + n;
+> -       return Q_OVF(q->prod) | Q_WRP(q, prod) | Q_IDX(q, prod);
+> +
+> +       return Q_OVF(q->prod) | Q_STOP(q->prod) | Q_WRP(q, prod) | Q_IDX(=
+q, prod);
+>  }
+>
+>  static void queue_poll_init(struct arm_smmu_device *smmu,
+> @@ -718,8 +719,25 @@ int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_devi=
+ce *smmu,
+>         do {
+>                 u64 old;
+>
+> +               /*
+> +                * If the SMMU is suspended/suspending, any new CMDs are =
+elided.
+> +                * This loop is the Point of Commitment. If we haven't cm=
+pxchg'd
+> +                * our new indices yet, we can safely bail. Once the indi=
+ces are
+> +                * committed, we MUST write valid commands to those slots=
+ to
+> +                * avoid indefinite polling in the drain function.
+> +                */
+> +               if (Q_STOP(llq.prod)) {
+> +                       local_irq_restore(flags);
+> +                       return 0;
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+On second thought, I no longer believe that this is safe. I understand
+that READ_ONCE(cmdq->q.llq.val) implies no ordering guarantees with
+respect to any writes to translation tables. In the non-stopped case,
+we can rely on the call to dma_wmb() further down in this function.
+However, for the stopped case, I can't identify any barriers that
+would ensure that the STOP flag is checked only after the writes are
+visible to SMMU. Here is an example: Let's assume the following
+program order:
 
+ * Write to invalidate PTE
+ * Read from cmdq->q.llq.val, determine STOP flag is set, elide TLBI
 
--- 
-With best wishes
-Dmitry
+What prevents the CPU from reordering these operations as follows?
+
+ * Read from cmdq->q.llq.val, determine STOP flag is set, elide TLBI
+ * Write to invalidate PTE
+
+Can the following situation occur?
+
+ * Read from cmdq->q.llq.val, determine STOP flag is set, elide TLBI
+ * (Different CPU resumes SMMU)
+ * SMMU loads old PTE value into TLB
+ * Write to invalidate PTE
+ * (stale PTE remains in TLB)
+
+I propose the following: If you find the STOP flag set, run dma_mb()
+and check again. I'm afraid that running dma_mb() unconditionally
+might incur too much of a performance penalty.
+
+I have the same concerns with arm_smmu_cmdq_can_elide(): That
+READ_ONCE in arm_smmu_cmdq_can_elide() provides no guarantees in
+regards to ordering relative to PTE writes.
+
+>
+> +               }
+> +
+>                 while (!queue_has_space(&llq, n + sync)) {
+>                         local_irq_restore(flags);
+> +
+> +                       /* Avoid waiting for space if the SMMU is suspend=
+ing */
+> +                       if (Q_STOP(READ_ONCE(cmdq->q.llq.prod)))
+> +                               return 0;
+> +
+>                         if (arm_smmu_cmdq_poll_until_not_full(smmu, cmdq,=
+ &llq))
+>                                 dev_err_ratelimited(smmu->dev, "CMDQ time=
+out\n");
+>                         local_irq_save(flags);
