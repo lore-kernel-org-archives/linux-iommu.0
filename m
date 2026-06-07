@@ -1,322 +1,236 @@
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 577182F361E
-	for <iommu@lists.linux.dev>; Sun,  7 Jun 2026 21:00:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2753E28727D
+	for <iommu@lists.linux.dev>; Sun,  7 Jun 2026 21:02:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.52
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780866026; cv=pass; b=lPBauxlf4PKH/DRlclhFLC4ZdR0k84rOVnaiFkFNQHcSUhk0LSUMdu4BRMlWB/gD2Y4IcgEMV6ODbWNO2LZ0vIQfnp2kZHrFchBfwrffBzYEUNgkRG3J86URKitF6E99Z0E8cNf3pO+uijN6JZHZTwVPGSJsPNPquDtX7Y06cTc=
+	t=1780866139; cv=pass; b=WPzAqoM2q1zsWir/H90RL/WgCA1J/qRsoF+lY5FGMSwXxQWmfaRMVHYM9gtIpgURlB6JRV5yoQAIrYgGpHnnPE/irZPqfkN5POghvx0tAhvwkgCoxAvYhTPFcy1TSAxcRyiC5i7cloCAkmpzaQKgJCrYv6wEZTmQEJPwhpgSugg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780866026; c=relaxed/simple;
-	bh=G+HvROUFtSgMmsk49gO9w19nLvoqyb3fxbxS9M8djJE=;
+	s=arc-20240116; t=1780866139; c=relaxed/simple;
+	bh=+8UdWvNZOrMkx3IvycG3o83qj4YVhpznC6XOZkbSFus=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=k2vB6SM/fg5XdQCznN9xqEb9BdIt5gUr6IfFyc2jpp2jsdeEO7YwO5nLmsMN2qII8LhnIvUxtm30OTg6/figT8Jc402iD3c9ESRcn0lGwcEeWOIh4DcRzlsNM10O/zQ/wh1OvUvMWuob6rqsf5qXRsvwLMUpxD2rX/FxFNnI7ZQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=r3FriVJd; arc=pass smtp.client-ip=209.85.218.43
+	 To:Cc:Content-Type; b=a7KoatYiXcaUek2g8k/t05WSXntKf/gFQGi+UnOFI9VW6Xqy4DReBCAXUOjGZd2EmzveeFIVJzpK5xtu5i4rSZWe6J0IX8KUPSMOoJ64uLlMOrgrv8j5LTSAapLAYmBuP1ur7FSX7dBJIT3t0IJqry2LgBmMjyALXZlKKCvwm/0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qBufIAjA; arc=pass smtp.client-ip=209.85.208.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="r3FriVJd"
-Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-bebc80100efso387492366b.1
-        for <iommu@lists.linux.dev>; Sun, 07 Jun 2026 14:00:24 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780866023; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qBufIAjA"
+Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-68e5f7c1131so6854884a12.2
+        for <iommu@lists.linux.dev>; Sun, 07 Jun 2026 14:02:17 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780866137; cv=none;
         d=google.com; s=arc-20240605;
-        b=I/v0/MuJWCNF1E7ZrzaYVdxrR+kMsNf2fSKlZJ6skvYJohM4XK12FUFPuCWWRNtNzP
-         klFFcEt9G139NBKh+PSV/WOMVBz85iz6wawjroQXYVPCMfVvT+GbGXroLBXh+BdKXxC7
-         FafNRbY4Fix6CmrKPPThzFCTCo4/gbTbGd2DEDZEwgKysuXZte8u7jtpcnOSjuhvFCni
-         DPTmpiS3GvFyKkDOTqht9YLcBl8ZjyDlMDaD8EbX26IvZ+ZMqJPgPpy8nOyYwFqbBE2N
-         ZW0hHd/yBVrNqWn5uFuawBgBbl/mO1gkNjRdrw9HIVIUsjBsoibqZSqutxIV7Lz16vac
-         kCww==
+        b=fyTXTaD1XZow1gJGF0aKd2ySPnz+c6VHGMxxQ324uoQ22ZUN+jezZcxfaTtH2I9qlk
+         0Q0ot3ifnubEx8JbSHRLQSdib/Hjd7omvCcrqNuLRejBkaj5tMA4Ulh//unE34YKOjcu
+         +bYU5RwJ5nPaWB+ghIfxBPLGKdD6VpsW+Tvnpio5G/fQOL8brT0qaL6+lRDu3Sp+EyBf
+         PVKtkzxDIbUMbzjAoRcqODpzSMba8ASBBy4rMRwPv1/TBIn9vPaloked1CLtGnZTGGTv
+         20EEpCSNEJ4Hz02NOo2esBCptvOyVuv8czWtDyzPnoFNveKmgPSoAavSSb1+jf9WX0CE
+         Wvjg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=ab6NkRbgO8MmT1srYNgG1RYGxHSJUAoP80C+AxzOUBY=;
-        fh=QRpp7pJtmchAX9gvXYYOCXgrWkb9N6fr+xdqwZndpLw=;
-        b=eXVldUD8E8PHGNsZOF7UQN6JfbdUJ6I4pJGaZUUpgQ3qzrfg3qgaKg6UiAMMGHgX2Y
-         Kivlsq+X3kctEulBHMzBxqsSNMIna3l1vV4GIr+uDvxW77tWXu6HqPNNmCfKjIpLJRrQ
-         J6tCTjKvuAZzD2Z32+EgiHY6HVYjAnKsWhEPS8eSIJgYdQYErTAILizAf6ERerm9w9yA
-         3jl3K8xCdCAivnpqdJzl41iucjgsu2vOOXsb0dGJfJ0oMs3CdmBnRaRaDY9+XrpPWVnQ
-         jpbGJVZ+KEJmLPiO6MW/2WSVmJishViZ/qIMcjv5zLdT1z6qXL3x1qI9AP70V/nM1aBG
-         tLGQ==;
+        bh=A+9fNpCsE6s4qptEKDyb1NK+xycGWP9ueu0opDX1ZcA=;
+        fh=uQO+x/pfVs29nap3u8BrtwGObUK/h65bQlMd7p52WbE=;
+        b=d4Ng/GFA4nt8uA8dmQFxsQI9PLo/CpahjlYQk2JbvmCCmh2pc8dhQahC00B6rHVpy6
+         c5tnWveYlQeUubCBRGS/ogTOTT5EzhvmGCWbIEcGZuWfPQcKtDspMEk5otdlkHAthn4m
+         ewr0boPWtctQesVmK6kUB/lFLzMu2M+q/iTGVl9havcspYFF8hxnG98VNdijfWAzHKnc
+         jQeol16CmVm0KR5/oDhtCT7BbUJ0CpfzmjVaQgmHLgwc/9bnUxFuF6kjbWL9+qTrpjHD
+         QOMndT5sQQEBtZgCWzgMymzEzxGjhKu6H3G+WuletqTrvqrz3bW7Yxx8W6DXr01e0x+v
+         y4tQ==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780866023; x=1781470823; darn=lists.linux.dev;
+        d=gmail.com; s=20251104; t=1780866137; x=1781470937; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ab6NkRbgO8MmT1srYNgG1RYGxHSJUAoP80C+AxzOUBY=;
-        b=r3FriVJdhXKDt/ONGSUvO1GPT80VpWPbsCjb113pjZPUi7Io4D39K4odhAjJrjuyPL
-         mofMWZzaC8YVE1YptQdqRGV8YNXFeP2fWGam9hUFNEDbRbFyxre/JejxFQzs3soBFb3i
-         GDTW6S8dimylPpmm5gu8buvSQfhrgeoiJf2ZjflrYCQ22PObbdaWFvir88Dt9MCBg68o
-         zc9OToUSXzPYimsKouTASoqz3r0f/seLsMgeUhU5LDdTAGWNhf9q3F7paXr3kO8ikNuM
-         t4nRmjXCZ/WUFtzk2hUisgCsnmh4PXI3cks4s1Sxl2Ktsf2AM2hgQ3Czt/4WzvKOGchL
-         slUw==
+        bh=A+9fNpCsE6s4qptEKDyb1NK+xycGWP9ueu0opDX1ZcA=;
+        b=qBufIAjAIh/bP5CMVwEAZoR2JNWWKGvKhKnqGtWSBgdc2kdDXCteg9wy/DNlczfOP7
+         87fesCNvKKB5AinBhL/Z6qkVNV4PAXqtpRUWzPhw/wBh4wyiMNIOlEBpOb3S8paZXlUk
+         hUS3w1g3+vK0EEmD4fRP6hfDapRfUQIgG5/e7rpajlhm8oCBE3pvndtDvBvI3H1N5a1M
+         tOr76HP61+bT4iADEyYzDt7lVdqSnicuL/eWjRRfmGUXsFApEsvDdJwNU5xNc8bz6q93
+         qAiypzbH97F5hjMghp2KjelUvYORZKuPMx7ydlhz/yQuppcqNoFJp4CyRBQwFNklfg1D
+         UFFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780866023; x=1781470823;
+        d=1e100.net; s=20251104; t=1780866137; x=1781470937;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=ab6NkRbgO8MmT1srYNgG1RYGxHSJUAoP80C+AxzOUBY=;
-        b=nGUWfYFiWaVZ7vOsP9DAWyIvMAJA2h2A3OeW2EJTatVag3ElRudY26TSaO9mRelPR8
-         +HZFDgCrxE1bydBOL5+8myXdbykrEWnTow+14/FdzdOM9yIZD+3nVgYhqdX/w6RXbLq6
-         Kw149i5dTbbGh0fcP9lgpyV9tz7xqp73Fi9YN7hEwbVisQKYkayESOxeWiRMo8Rqb3Wz
-         MlvvPS5szEHn60GiVvagm6+uyZQ9auVCfldwPm2x8cxNASE0a5At3Kd/b7Fl7yc+MSNd
-         Vub96F+EegJs7BayRlno954FcTHhQwZ+ISINyM/yyeqoVOFgyu1VX4DXS0akYovYLye0
-         Rc+Q==
-X-Forwarded-Encrypted: i=1; AFNElJ/ZlMCNmsPkPe2aW/f7ndMpqAhCT/JMN8gIOmR8PbM67QycnRPoTWRVNQLMrFq7ZoSxz1xPLw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yznwm0xkwyEncbX4TlHKZA94E1g/K6lcmhCCU+Hi7+odvfNuEl8
-	gQco1BnxAu5ke7LC5kt3HRp00Q2QwfBQJRLqyr1PPuE4vnGGuytY0NtW8tiIt2xvj2+uMDW/X36
-	T5+6Xwy5zDoWGc52EDd0sPp7gvYN0dsA=
-X-Gm-Gg: Acq92OFnZpdPFLRBEsKk52iho8k8Kkk5x79THu+ufwvBFffCy2yddtvyXGlVLUxwhAm
-	1RDFHVuu7c0K6jAtQQm9kiZzWXz1tpwtyGutjgCghqXh8CkbUMz4+3CeY2Wu67XJtbOkfZ1S7s7
-	Sw7KnGqMp+dt32sAGvVr41qT9k0T9Ixx+P1axrqehhUKPuDR5UUM0CePVaZFPIKltyvfZ36KS2w
-	4/d3F1Bwn4sQoRkbWbIBD+BswfWGaA7Din9TXfnnef1ahFpaUyDnw6/9pllye85mUdrgL75WqEd
-	Fdea8GEJUJgPFZw67glNdlruDvnx8vbAJCHpLN0YAzaiFDQYjG7H4MGEvR82Bw==
-X-Received: by 2002:a17:906:8a42:b0:bb8:fdf7:e132 with SMTP id
- a640c23a62f3a-bf370a673a2mr449071866b.18.1780866022378; Sun, 07 Jun 2026
- 14:00:22 -0700 (PDT)
+        bh=A+9fNpCsE6s4qptEKDyb1NK+xycGWP9ueu0opDX1ZcA=;
+        b=gqiDh/LkYU+ufrzPbLDBEJWOqEy9vodN5DpBc7S3sNDYj6KH26sdtX6ApeEkKV8DpU
+         A3OXmJ2g5KaYScG+/F8jX/o23JoiSgQGcabrduQEa3cpoVvRooFtHvbChw/U3qQKcOQ2
+         AEm+f0Za1I4IF97q4aegmiL/g1brgI/VnVeYcf2C8JXmYllkaNSrzMGJNwyCrCHK/R67
+         FhGhGrEfcAqbvNIEPtsK+Z9bQ6CiqOFTHQwlAaWCdUiwjmklSzgHNf5kW35awsim/7l5
+         i9OD2Qf8QMK1Ecd0A8d2UgP1TGb7DO375foxU0bd9GoJh3KLevHmnCCYol+l7QvXz/Kw
+         bfAA==
+X-Forwarded-Encrypted: i=1; AFNElJ+lHr6eZcZN9Eg1IKYgaGI/U4ALmSkoX32UAjtk6/lLP7l7dCyBgUA73305aun45kK3BvbUKw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Ywk5XrAY2IuU4Vq0V7iDDCWEjF3atRE3tN/5wABv5MnpclH3YqT
+	T8VOsA9fTQXrazDeg8ecmH7iF6l99yhGGbGncHQOy01aaIsLixJRCNJXz14BWKL7wo4Jhub9loO
+	X4BHBVoj+ML8MFWc1hSBZBKmdQYJohAU=
+X-Gm-Gg: Acq92OHkcizkzUVrjUTIlWQbreuuq1XA3v8Gx09FZk5jHrA53ntHbuXJKqihnpdWCpF
+	/lDvb5stzdn4erfVNV4KkLMQ5L61FlZaELnQyB77lOoVfF6JSzpTIn+coWYCigemykvjJoIVb1Y
+	U7u39Tzau1mKMjO5uwbMw1jhZBvgRpE8kADD3F8BHY7jJTYuXoYG0eQKMFli9H0Ao53EWdiuaW3
+	FTHLvLZtT9ecvggewi0WKhH73fZBlOa8jx7N4MTRcYVZvWBaVv9VtVfW+qzwvUAGpSKa56LaAfM
+	jJRH3kRBYwz1V9mt8eY1L1cifvj14uAGGlw0n9Rn3UG0j7qzSsM=
+X-Received: by 2002:a17:907:2718:b0:bea:f4e0:c7b9 with SMTP id
+ a640c23a62f3a-bf370d638ccmr437637066b.19.1780866136465; Sun, 07 Jun 2026
+ 14:02:16 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260604135255.62682-1-midgy971@gmail.com> <3d99569e-9c3a-49d1-93fb-1335382523e9@rock-chips.com>
-In-Reply-To: <3d99569e-9c3a-49d1-93fb-1335382523e9@rock-chips.com>
+References: <20260604135255.62682-1-midgy971@gmail.com> <20260604135255.62682-7-midgy971@gmail.com>
+ <e44b506e-e9d2-48e3-acea-ab28b7be9b37@rock-chips.com>
+In-Reply-To: <e44b506e-e9d2-48e3-acea-ab28b7be9b37@rock-chips.com>
 From: Midgy Balon <midgy971@gmail.com>
-Date: Sun, 7 Jun 2026 23:03:08 +0200
-X-Gm-Features: AVVi8CeDCIQ6l1Xo0XYKychXQqz8K96nj5PXcE7mUgH_L3ruXovyZGyMkFh5fkU
-Message-ID: <CA+GS1Y1s78PwN63X2YJoS8VEGp7CpTERo_K65yKs00U4VRAw4Q@mail.gmail.com>
-Subject: Re: [RFC PATCH v3 0/9] accel: rocket: Add RK3568 NPU support
+Date: Sun, 7 Jun 2026 23:05:03 +0200
+X-Gm-Features: AVVi8Cf-JVkWYJtDYXL1xfOVyosnpbnb7w4PJV4kFFggOhSQTxoQOwyJz0V_ZFQ
+Message-ID: <CA+GS1Y16++cztPxdUGLrPA73ENm4vJGFrjm-jP8r=8OQqcMJGA@mail.gmail.com>
+Subject: Re: [RFC PATCH v3 6/9] iommu/rockchip: Clear AUTO_GATING bit 1 on the
+ RK356x v1 IOMMU
 To: Chaoyi Chen <chaoyi.chen@rock-chips.com>
-Cc: tomeu@tomeuvizoso.net, ogabbay@kernel.org, heiko@sntech.de, 
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, joro@8bytes.org, 
-	will@kernel.org, robin.murphy@arm.com, dri-devel@lists.freedesktop.org, 
-	linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
+Cc: Simon Xue <xxm@rock-chips.com>, tomeu@tomeuvizoso.net, ogabbay@kernel.org, 
+	heiko@sntech.de, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
+	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
+	dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org, 
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Hi Chaoyi,
 
-Thanks a lot for looking at this -- input from Rockchip is exactly what thi=
-s
-series needs.
+> As I said, it is v2. Could you please try using the code below instead an=
+d
+> see if it works?
+> [ auto_gate =3D read(RK_MMU_AUTO_GATING); auto_gate |=3D BIT(31); write(.=
+..) ]
 
-> Hmmm. If I understand correctly, the NPU IOMMU should be v2 rather than v=
-1,
-> implying it should support 40-bit PAs. Nevertheless, please note that the
-> upper limit for DTE is 32 bits.
+Thanks -- that's clearly the right shape (read-modify-write, before paging =
+is
+enabled, keeping the reset value instead of my clobbering 0x2).
 
-Understood, and that 32-bit-DTE note is the crux of the trouble I had, so l=
-et
-me lay out what I see and ask how you'd prefer to solve it.
+I rebuilt v7.1-rc6 (with the rocket RK3568 series + your per-device-ops wor=
+k)
+using your bit-31 version and tested it on a ROCK 3B: the NPU IOMMU comes u=
+p and
+services the NPU's DMA cleanly -- the NPU probes, attaches its domain, and =
+runs
+repeated conv submissions with no DMA_READ_ERROR and no page-walk stall. No
+regression from the write.
 
-The mainline node is already v2 (rockchip,rk3568-iommu in rk356x-base.dtsi)=
-.
-The problem on this 8 GiB board: with the v2 ops the page-table allocations
-(gfp_flags =3D=3D 0) can land above 4 GiB, so the DTE ends up > 32 bits and=
- the
-NPU's first translation faults with DMA_READ_ERROR. To work around that I h=
-ad
-switched the NPU MMU to the v1 compatible (rockchip,iommu), whose ops set
-GFP_DMA32 and keep the DTE sub-4 GiB. That works in isolation, but because =
-the
-driver keeps a single global rk_ops, a v1 NPU MMU then trips
-WARN_ON(rk_ops !=3D ops) against the SoC's v2 instances (VOP/VDEC), which i=
-s why
-I based the series on Simon's per-device-ops work.
+To be precise about what I can and can't show: I tested both ways on v7.1-r=
+c6 --
+with your bit-31 write, and on the reset value (0x3) -- and the NPU
+IOMMU services
+the NPU's reads with zero faults in both cases (no DMA_READ_ERROR, no page-=
+walk
+stall). So I don't have a failing baseline here that bit-31 visibly
+fixes. Is the
+AUTO_GATING write needed on current mainline, or only under conditions I'm =
+not
+reproducing (a particular traffic pattern / silicon rev)? I'll keep the pat=
+ch in
+your form unless you'd prefer to drop it.
 
-So my question: with per-device ops in place, what's the intended way to ke=
-ep
-the NPU MMU on v2 *and* cap its DTE at 32 bits on boards with >4 GiB of RAM=
-?
-A v2 ops variant carrying GFP_DMA32 for this device, or is there a register=
-/
-config bit that constrains the DTE address? I'd rather follow the Rockchip
-intent here than carry the v1 workaround. (Simon, cc'd -- this is right nex=
-t to
-your per-device-ops series.)
+One question so I document it correctly: what does bit 31 of RK_MMU_AUTO_GA=
+TING
+control on the v2 block -- is it a master "disable internal auto clock-gati=
+ng"
+for the page-table walker (i.e. so a TLB-miss walk's AXI master keeps its c=
+lock
+to completion)? The RK3568 TRM I have doesn't cover the IOMMU registers, so=
+ a
+one-line description would let me write an accurate comment.
 
-> Can these operations not be completed via the pmdomain driver?
-> If some operations are controlled by TF-A, are you using open source TF-A=
-?
 
-Most of it is in pmdomain already. Power-on and NoC de-idle are done by the
-RK3568 NPU power domain (genpd) at power-on -- the driver no longer pokes t=
-he
-PMU directly. Two things remain outside it:
-
- - vdd_npu: I mark it regulator-always-on in DT rather than wiring it as th=
-e
-   domain's domain-supply, because as a domain-supply it created a device-l=
-ink
-   to the I2C PMIC (rk809) and genpd's power-off QoS-save path then hung
-   reading the NPU QoS registers behind the (gated) NoC. If there's a clean=
- way
-   to let genpd own vdd_npu without that I2C ordering deadlock I'd much pre=
-fer
-   that -- pointers welcome.
-
- - the NPU compute clock (PVTPLL): set from the driver via SCMI, and only
-   needed for actual compute, not for bring-up.
-
-One more pmdomain observation from testing, possibly relevant to how the NP=
-U
-domain should be modelled: the domain's power-off/on cycle doesn't reliably
-re-de-idle the NoC. If the NPU is probed after genpd has already powered th=
-e
-(unused) domain off, the power-on de-idle fails ("failed to set idle on dom=
-ain
-'npu'") and the NPU IOMMU then takes an external abort on its first MMIO ac=
-cess.
-Probing the NPU before the unused-domain power-off, or marking the domain
-always-on, both avoid it. Is the NoC de-idle expected to work on a genpd
-re-power here, or should this domain effectively stay on?
-
-On TF-A: yes -- bl31 is built from upstream arm-trusted-firmware
-(github.com/ARM-software/arm-trusted-firmware, RK3568 platform), providing =
-PSCI
-and the SCMI clock service. The only closed blob in the boot chain is Rockc=
-hip's
-DDR init (rkbin), which is the standard situation for mainline RK356x.
 
 Kind regards,
 Midgy
 
-Le ven. 5 juin 2026 =C3=A0 03:36, Chaoyi Chen <chaoyi.chen@rock-chips.com> =
+Le ven. 5 juin 2026 =C3=A0 03:59, Chaoyi Chen <chaoyi.chen@rock-chips.com> =
 a =C3=A9crit :
 >
 > Hello Midgy,
 >
 > On 6/4/2026 9:52 PM, Midgy BALON wrote:
-> > RFC, not for merge. End-to-end inference does not produce correct outpu=
-t
-> > yet (see Status), so per the v2 discussion this is a request for design
-> > feedback. It now probes, attaches, and submits cleanly on a stock
-> > v7.1-rc6 tree; what remains is one hardware-internal issue.
+> > On the RK356x v1 IOMMU, RK_MMU_AUTO_GATING resets to 0x3. Bit 1 enables
+> > auto clock-gating of the page-table walker, so the walker's AXI master
+> > loses its clock between transactions; a TLB-miss page walk then never
+> > completes and the IOMMU is left stuck (PAGING_ENABLED, never IDLE).
 > >
-> > The RK3568 has a single NVDLA-derived NPU core, the same IP family as t=
-he
-> > RK3588 NPU the driver already supports; the register layout matches. Th=
-e
-> > RK3568 differences are a 32-bit NPU AXI/IOMMU (vs 40-bit) and explicit
-> > PVTPLL/PMU bring-up to power and de-idle the NPU before it is reachable=
-.
+> > Clear bit 1 (keeping bit 0, the slave-port gate) once paging is enabled
+> > so the walker keeps its clock. This is required for the RK3568 NPU MMU.
 > >
-> > Patches:
-> >   1-2  rocket: per-SoC data struct, then derive DMA width and core coun=
-t
-> >        from match data (refactors, no functional change).
-> >   3    rocket: RK3568 SoC data + PVTPLL/PMU/NOC bring-up.
-> >   4    rocket: reset the NPU before detaching the IOMMU on a job timeou=
-t
-> >        (the detach otherwise stalls a wedged AXI master and WARNs).
-> >   5    rocket: keep the IOMMU domain attached across jobs instead of
-> >        re-attaching per job (the per-job rk_iommu handshake on the idle
-> >        NPU MMU is slow and noisy).
-> >   6    iommu/rockchip: clear AUTO_GATING bit 1 on the RK356x v1 IOMMU s=
-o
-> >        the page-walker keeps its clock (else a TLB-miss walk never
-> >        completes).
-> >   7    dt-bindings: add the RK3568 NPU compatible.
-> >   8-9  arm64 dts: add the NPU and its IOMMU, and enable them on ROCK 3B=
-.
+> > Signed-off-by: Midgy BALON <midgy971@gmail.com>
+> > ---
+> >  drivers/iommu/rockchip-iommu.c | 12 ++++++++++++
+> >  1 file changed, 12 insertions(+)
 > >
-> > Dependency. The NPU MMU is rockchip-iommu v1 (32-bit) while the rest of
-> > the RK3568 uses v2 (40-bit). They cannot coexist until the driver carri=
-es
-> > per-device ops; this series is developed on top of Simon Xue's
-> > "iommu/rockchip: Drop global rk_ops in favor of per-device ops" [1].
-> > Without it the NPU IOMMU fails to probe on a full RK3568 boot.
+> > diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-io=
+mmu.c
+> > index 4da80136933c4..e3d8b6e9ca12b 100644
+> > --- a/drivers/iommu/rockchip-iommu.c
+> > +++ b/drivers/iommu/rockchip-iommu.c
+> > @@ -953,6 +953,18 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
 > >
+> >       ret =3D rk_iommu_enable_paging(iommu);
+> >
+> > +     if (!ret) {
+> > +             /*
+> > +              * RK356x v1 IOMMU: RK_MMU_AUTO_GATING bit 1 enables page=
+-walker
+> > +              * auto clock-gating; the walker's AXI master then loses =
+its clock
+> > +              * between transactions and a TLB-miss page walk never co=
+mpletes,
+> > +              * leaving the IOMMU stuck (PAGING_ENABLED, never IDLE). =
+ Clear
+> > +              * bit 1 (keep bit 0, the slave-port gate) once paging is=
+ enabled.
+> > +              */
+> > +             for (i =3D 0; i < iommu->num_mmu; i++)
+> > +                     rk_iommu_write(iommu->bases[i], RK_MMU_AUTO_GATIN=
+G, 0x2);
+> > +     }
+> > +
+> >  out_disable_stall:
+> >       rk_iommu_disable_stall(iommu);
+> >  out_disable_clocks:
 >
-> Hmmm. If I understand correctly, the NPU IOMMU should be v2 rather than
-> v1, implying it should support 40-bit PAs. Nevertheless, please note that
-> the upper limit for DTE is 32 bits.
+> As I said, it is v2. Could you please try using the code below
+> instead and see if it works? Thank you.
 >
-> > Power bring-up. The NPU is brought up through the power-domain layer (n=
-o
-> > driver hack): the NPU power-domain keeps its clocks but drops the pm_qo=
-s
-> > phandle (qos_npu sits behind the gated NPU NoC, so genpd's power-off Qo=
-S
-> > save faults reading it), and vdd_npu is marked always-on so the rail is
-> > up before genpd de-idles the NoC at power-on. The PMU de-idle then ACKs
-> > without PVTPLL running; PVTPLL is only needed for compute.
-> >
+> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iomm=
+u.c
+> index 0013cf196c57..89e3a83a0251 100644
+> --- a/drivers/iommu/rockchip-iommu.c
+> +++ b/drivers/iommu/rockchip-iommu.c
+> @@ -930,6 +930,7 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
+>         struct iommu_domain *domain =3D iommu->domain;
+>         struct rk_iommu_domain *rk_domain =3D to_rk_domain(domain);
+>         int ret, i;
+> +       u32 auto_gate;
 >
-> Can these operations not be completed via the pmdomain driver?
-> If some operations are controlled by TF-A, are you using open
-> source TF-A? Thank you.
+>         ret =3D clk_bulk_enable(iommu->num_clocks, iommu->clocks);
+>         if (ret)
+> @@ -948,6 +949,10 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
+>                                rk_ops->mk_dtentries(rk_domain->dt_dma));
+>                 rk_iommu_base_command(iommu->bases[i], RK_MMU_CMD_ZAP_CAC=
+HE);
+>                 rk_iommu_write(iommu->bases[i], RK_MMU_INT_MASK, RK_MMU_I=
+RQ_MASK);
+> +
+> +               auto_gate =3D rk_iommu_read(iommu->bases[i], RK_MMU_AUTO_=
+GATING);
+> +               auto_gate |=3D BIT(31);
+> +               rk_iommu_write(iommu->bases[i], RK_MMU_AUTO_GATING, auto_=
+gate);
+>         }
 >
-> > Status. On v7.1-rc6 the driver probes, creates /dev/accel/accel0,
-> > attaches an IOMMU domain, and submits jobs; the program controller
-> > fetches and broadcasts the command list. Inference output is still wron=
-g,
-> > and the cause is split across three layers:
-> >   - kernel (this series): the RK3568 differences appear handled;
-> >   - mesa/Teflon userspace: still emits RK3588-tuned config, wrong for
-> >     RK3568 (to be filed separately on mesa-dev);
-> >   - hardware: with corrected config the NPU's DMA reads the full input
-> >     and weight tensors (confirmed via its DMA bandwidth counters), but
-> >     the MAC/output stage never completes, the job times out, and the
-> >     output stays at the buffer's zero-point. I have not found the missi=
-ng
-> >     step; it is not in the command list (replaying the vendor's
-> >     byte-exact command list behaves the same). Pointers welcome,
-> >     especially from anyone with RK3568 NPU experience.
-> >
-> > Known residual. On the first IOMMU attach the NPU MMU is idle with pagi=
-ng
-> > already enabled; the rk_iommu stall/reset handshake does not complete i=
-n
-> > that state and logs one burst of timeouts before the (kept) domain
-> > settles. It is harmless here because the job times out regardless, but =
-it
-> > points at an idle-MMU reconfiguration corner the rk_iommu code does not
-> > handle on this block.
-> >
-> > [1] https://lore.kernel.org/linux-rockchip/20260310105303.128859-1-xxm@=
-rock-chips.com/
-> >
-> > Changes since v2:
-> >   - Tagged RFC; now tested on a stock v7.1-rc6 tree.
-> >   - Bring-up moved into the power-domain/DT layer (no initcall hack).
-> >   - Added the IOMMU detach-on-timeout and attach-once driver fixes.
-> >   - Split the driver patch (Heiko): soc_data / match-data / RK3568.
-> >   - Derive DMA width and core count from match data; drop the DT rescan=
-s.
-> >   - Binding describes the hardware; added the missing $ref on rockchip,=
-pmu.
-> >   - Disclosed the per-device-ops IOMMU dependency.
-> >
-> > Midgy BALON (9):
-> >   accel: rocket: Introduce per-SoC rocket_soc_data
-> >   accel: rocket: Derive DMA width and core count from match data
-> >   accel: rocket: Add RK3568 SoC support
-> >   accel: rocket: Reset the NPU before detaching the IOMMU on timeout
-> >   accel: rocket: Keep the IOMMU domain attached across jobs
-> >   iommu/rockchip: Clear AUTO_GATING bit 1 on the RK356x v1 IOMMU
-> >   dt-bindings: npu: rockchip,rk3588-rknn-core: Add RK3568
-> >   arm64: dts: rockchip: rk356x: Add the NPU and its IOMMU
-> >   arm64: dts: rockchip: rk3568-rock-3b: Enable the NPU
-> >
-> >  .../npu/rockchip,rk3588-rknn-core.yaml        | 18 ++++-
-> >  .../boot/dts/rockchip/rk3568-rock-3b.dts      | 14 +++-
-> >  arch/arm64/boot/dts/rockchip/rk356x-base.dtsi | 38 +++++++++++
-> >  drivers/accel/rocket/rocket_core.c            | 22 ++++++-
-> >  drivers/accel/rocket/rocket_core.h            | 19 ++++++
-> >  drivers/accel/rocket/rocket_device.c          | 15 ++---
-> >  drivers/accel/rocket/rocket_device.h          |  3 +-
-> >  drivers/accel/rocket/rocket_drv.c             | 66 ++++++++++++++++++-
-> >  drivers/accel/rocket/rocket_job.c             | 35 ++++++++--
-> >  drivers/iommu/rockchip-iommu.c                | 12 ++++
-> >  10 files changed, 219 insertions(+), 23 deletions(-)
-> >
-> >
-> > base-commit: 52c800fdcf11888ebeb50c3d707f782cc15b66eb
+>         ret =3D rk_iommu_enable_paging(iommu);
 >
 > --
 > Best,
