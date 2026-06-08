@@ -1,155 +1,146 @@
-Received: from mail-dl1-f53.google.com (mail-dl1-f53.google.com [74.125.82.53])
+Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 898532F8E8C
-	for <iommu@lists.linux.dev>; Mon,  8 Jun 2026 18:10:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.53
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780942214; cv=none; b=FWVAlJEivpATsn4JNcL8xUs/N6wZ3EKmDLg6bRcYFpXU8qNBi4kO4rR0HTnim+qgg7n4zSfTBaBwvtdf5MDJ6jqzEvUoVSqvTHI2ZHT3z7b6rD3c+hFriOWf6mY6zna7AVDwuiGYmNdfJKaSvuqENGwTkXLDqt6s9ga95c/ASA8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780942214; c=relaxed/simple;
-	bh=iw8L7cyxexJ3K2ZorONexK5r71ok4kUGe42dCeb3D3k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SV78wdRDcW8pWdJah0Yd0f2IWPTKzTtOn9LlY8DMK4IVZqyCA6qHg64ed8zYySk9hGuhR4rR1LevjCZjHrT2hYuCEdqZL2/wxCXHOZEGCiIKkK+j1VENNKM9VaVGK1lffna0R5bS3dDRpGJIYS2E7LyzwFA/asSmhmG3N5+iwa8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=dLCfDZ/C; arc=none smtp.client-ip=74.125.82.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0E7136C9EC
+	for <iommu@lists.linux.dev>; Mon,  8 Jun 2026 18:55:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780944916; cv=pass; b=WVg+pMkLglENYLK2lwrqc4yzpySYuy0YqNdrG/cmzcK64VPpB5xLjEV9EuKQBfUeg97odOmWjz82Vj8LbtEgZP33oROF7uZQq/m26l3gH3OzVudTodC/mj/ZYlm70WZehdJCPBKW/ryrY0ihhScPAbpS0fp/8MHTulT+kWfqSF4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780944916; c=relaxed/simple;
+	bh=zKNEWyIdx6AUnE+D5RSyECXmUt7mDFTSd+8dDxmh9dw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=kPDWzpAClYk5xd/SsUpJMdvatyT1YAaQUuaLl3iIdQbQV8/1Nhwk0CezRB9UtohWcU4cZUBo7BNI70fuP38OcYkYKHbd6QN3+A6lbrA8ug/FjuGBvnaBJvDNwDJHq7zDqw/Gksgz0EBLxiM0RaUhVDuyk8l+9Mkzkg/5ZlBV2ms=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=OWh9vQmN; arc=pass smtp.client-ip=209.85.167.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="dLCfDZ/C"
-Received: by mail-dl1-f53.google.com with SMTP id a92af1059eb24-1336742714fso34359c88.1
-        for <iommu@lists.linux.dev>; Mon, 08 Jun 2026 11:10:12 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="OWh9vQmN"
+Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-5aa62bd04fbso22922e87.0
+        for <iommu@lists.linux.dev>; Mon, 08 Jun 2026 11:55:14 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780944913; cv=none;
+        d=google.com; s=arc-20240605;
+        b=HSnaQQb5fiEI7MCheDWVpjyWD5NQXq2Xb7Zuej9ns9SeCBTAN3uDrQRdBSMK1u/mNP
+         9xFJ4OncBaREBF1G1mhjU5926yRk5Q6Avm/EdbejPdW3Q9SKsCKXOo3FvT103263WR7E
+         m6aGfwf2d/CuAjtH7BpwRXi+0N2cKZIoZb8BgUHuc83rYgIzhxQuvGy3pa26fpidTEUZ
+         YVMntF31uAXopj32A4vqtmPTfObwCwyXxVnN8EALaXcIx33162qg41MsL+uXZ8XZfg8e
+         369lNipn/CAgOBiyM9wBk1OhAF0YfxY1nLYF5VeSjl2jTHUPed3+BRbdaUHvg7QwRIXm
+         OWuA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=Dw+WR3kgPsmomU5BDy/wi1DbnucrDq50YuLE+lo/Shg=;
+        fh=5Kr7ew0cIdblcZWF7lgMMiy+uIP0zODUJr4MgzI5GZ4=;
+        b=al/rPPK2tHXgwFpeekxk2pB+19WXL0KLYY4vTpgIl+H6xZ3gH5+lOqm4+CJFoQ0+3M
+         nDv++OyEnvhgSet7oRXTkzujzhbTUtBiMrzoQEJKIMTxZmYWDHXhDFwFlr5oUcpZmIdL
+         mLUVHfwqyOpWqP/VHhoVtYDiPUV+fxURjbOx7XXTq5N4POeVcfcXp7SymVZA+E/B0bzM
+         uQPcyR/8e/hYwrtdMKqh55v02TvWHp2bvNHWPPdtMBai4OVuC+apfREs312ErEykV3T6
+         vLz2gzFkmT7AHZ8sjaBhhzF5Q0ERUWudnPdW6c7PV1MPlc2ALSi+gSGcX3bDfpCDLObD
+         ThXg==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780942212; x=1781547012; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=xEllMNXAKazcdxTo09h79Zq4pXvu6XvS48U9FqZI2UI=;
-        b=dLCfDZ/ChrwbOTOfhpH0pT93Pzm0BX6/y1KkxablAm8NIGJnugLSW6U6+lpfeMmR9Z
-         VmmtEef7b85tCT7q1Z1IMwk8mlBi5xGUk66DoyuRGABdQ84aAo9ZCPEHVjhQeETiTNE9
-         FetESvjcQ+Kqoj2xqnT3PPlnvW2LWKyvF0BTqr3ODwhtfbx93X+txASj8j/e6CmQzUrV
-         m/p9yAusRDuy/dGxlE3jBpUAj0p8RXI13abIdJH2dqYG5F/260SxdTwC97QKS76Tm44i
-         Z7Eqe4BXsLXkKhWCet4iPqxTgEAfUlt0L4wvE1gEz7lWArnY6LrJQ5qkxpBOHyp9r3T6
-         nSRg==
+        d=google.com; s=20251104; t=1780944913; x=1781549713; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Dw+WR3kgPsmomU5BDy/wi1DbnucrDq50YuLE+lo/Shg=;
+        b=OWh9vQmNpxFQlle2HCxI9TLOTPh7bcrHa3weCDuxxRCRhxck/MPkJdvK7AAI5jr8XX
+         HPWH6FoU9GnXLWyIYC4QQgdz6kB7D1kzrHIdsUmEW5oiR+t+zpneF84CZ3lGntCl97Zw
+         SM/a15/ugRxljk/XjpZe936B3WoGBlssjkCZY6AlTVoeh7Qn7sQz++NZE1WWkXe5x0Km
+         CvkDfiuP4AILRjFMEYOQ2Ej8kYHeRx6nfRGSrIietaY0tcC+GbuWNFgVKEOZy8Oau9fa
+         uVuktEMGatJtsrqxBBswI85NsY33GR/mCJCodNeTWEEMuI6mPNwEq7dof8fmKbNVHzI1
+         odfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780942212; x=1781547012;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=xEllMNXAKazcdxTo09h79Zq4pXvu6XvS48U9FqZI2UI=;
-        b=MMLE+WU9K0C3Vzv1rql6u3tKme4ewOcgEgnkpr/bRnQ6iRpl5F7xRTEjtk6mysuLQq
-         D+/KxSHmRbaMkfRg2vmgdo8h8crX0cAoUEs5OPgjwJUS/jzLwr8yXxNUMTLQT5D8O8rA
-         tayV28WtjcWzgN3CHBTaV33n0hBwfQF43K7Dl7AsHBqMIqYT6s5vFWCreViKTbpspuyG
-         o3mqeveKYefjYJm/MK42ijQf35h9JsmNoDlWqvaF9uLgWw2oVxQ6RGVq0aeVR49I3Pmj
-         mK9ryjqYtX9QCGZfZ2CFtUTNPt2D3QntRwrIp1IEq5WdcV8HTjW4t+TfNn4z8tGPKcNS
-         bKSQ==
-X-Forwarded-Encrypted: i=1; AFNElJ8aA9LtJiMfCA/YkqNMR+E790M2aYHJihS3RBkDJ4q1XHpqEkzF1yvLrrf6FLxD/zgRgTpFrg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywgc5gy0djIAcOprwMgQhgS13l8QDED5mXZZ8UNqIXA8sXTKn9v
-	YrwOrzNw6Roy41HAHDsAHQp1BocLqV+9GNTGIIwwSgkIMQEq5OiCQpWe7+QINbjxMg==
-X-Gm-Gg: Acq92OE6tAtGYn4Hs6rDK76GjJC1e+LiXt1YFdRJgMOpN+UbMITI0pC51uG3yotJZD4
-	Fn6uoMlI8JDyanfpdRFhwFQCO1954fZ9TmvHu2j5r7IZGh5l/ZqWdOsh2+30zkhm7kXzCej7Kc0
-	hlPF/I/pMUSf0eMtj3LkwVnim5/mTDXPDvmS/hqtkKHtXDSTzD+kZYvVuC3oRquWPUMEow8KRdh
-	2dlmc5w5IWuJu8UxaUKmt/eQXlETSbZZDEP2GZvkOmj0O+UkYegNBY4ANOfY3hre7NWN9MbtCeS
-	xS4afLTfWP1ilPNk9Re8+8RBufeDSSxIAfe+e4vNJZke1EHk5+bFgcTVgU3Cy+HqCb7pvGAz/4C
-	dQ+SMqnAjknwe7IFHN4911MKqTu9QoK4p6+SynvIb8pAZZOcNuHBGeRR+Ah8cbQF2vPW576DP04
-	Tx7wUYN961j5EAc8dEaywmnnUsOnHeyIGHqggLutuAcKtg9AdYwhFne02l4qPddNzof3N+5SQ=
-X-Received: by 2002:a05:7022:38f:b0:11a:2c18:9e70 with SMTP id a92af1059eb24-13807c516c0mr439910c88.11.1780942210090;
-        Mon, 08 Jun 2026 11:10:10 -0700 (PDT)
-Received: from google.com (199.255.142.34.bc.googleusercontent.com. [34.142.255.199])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-137f5550bcdsm13363034c88.14.2026.06.08.11.10.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Jun 2026 11:10:09 -0700 (PDT)
-Date: Mon, 8 Jun 2026 18:10:02 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Samiullah Khawaja <skhawaja@google.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	Mike Rapoport <rppt@kernel.org>,
-	Pratyush Yadav <pratyush@kernel.org>,
-	Alexander Graf <graf@amazon.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
-	kexec@lists.infradead.org, linux-mm@kvack.org,
-	linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Vipin Sharma <vipinsh@google.com>
-Subject: Re: [RFC PATCH 2/4] dma/pool: Add an API to check if DMA allocation
- is from pool
-Message-ID: <aicFes0uxUFQAduC@google.com>
-References: <20260505002737.2213734-1-skhawaja@google.com>
- <20260505002737.2213734-3-skhawaja@google.com>
+        d=1e100.net; s=20251104; t=1780944913; x=1781549713;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=Dw+WR3kgPsmomU5BDy/wi1DbnucrDq50YuLE+lo/Shg=;
+        b=fRkftVeV6ox75tnumFVBKsW0/wl2V2icZjb3XbNnOfsWmLtcn+/a5iSMAlywVN/p2L
+         2hfrfsjYVlpGSUUuCpDx06saNu1B3NLlMCtGztxx1j44mdrw2xir8kBn4w3GPAvA2En5
+         gRNOzA29eYBj30TtruPf9qBKxZhiTSSbKWF46li1BGjE/EZat0e255JpuifyJkUu1wQP
+         wmL21W4o8xklQ+FysCSNpN38hmOWjlLDDyAnc2yZiNgYFIJ8Fo0nmzlTCxBwfZW2zQ0z
+         JjF7+9hCrSEkDVMHKWDBA/+nkZZNt3Q0ONFGSvzxkK8sUmXC/MeIP3twPE/izskBgYRt
+         bQrw==
+X-Forwarded-Encrypted: i=1; AFNElJ92xvu0ZRnGI9GYxMeKX1bkrXVZslmGwbEye/JtYUmZtn2OceIh2X4bp6nBZTHyYT7ZvMMgYA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwztE7O4R/Qn99P2mPW0/AgiOIAR6hO+p/K5ITMx4jIWizW75Ms
+	mC1UWvZIDs1JqPgFyiTz2LGyml8ua6ZxqNQhidp9EX02j+H4ahGjHGH+msZFO8UO+PmgipEIKxO
+	tzEaQMgq3UUyYXwwfU13unBLiWU+8AjKrewS1bcI=
+X-Gm-Gg: Acq92OH+HjBDzyBzRq+ccBABDK4JJUqbF2Til948BmLRZAdQvd3Kl3bwTFM/XtfKdVp
+	fTwKZIuhu1RRDctTmngsFoB78zbT5qX4utj1pT4tpUGRcbuCzqBC7lW9etttBBTbOwh+nsR89MR
+	e/0jzAPF23fGjL8suEHL9BvQUeeOLe5r3O9Fj3vjTr37oASARUqvYFTqYjCtJb7vfTuv5dxDDRD
+	WO83yY1tB7at0JlNdlkCrqbgyUlsvaqE74vNTG2IZdUgeabHwM4lES12rbLiW9WgQ7SCosuv/nV
+	Z0UqyZ3b+L8nCtmzdyeVkyjTWfUqP/H0T9Lu7JhFX39GQZncsxKWki8=
+X-Received: by 2002:a05:6512:3341:b0:5a1:274b:de2b with SMTP id
+ 2adb3069b0e04-5aa88640402mr537440e87.9.1780944912435; Mon, 08 Jun 2026
+ 11:55:12 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260505002737.2213734-3-skhawaja@google.com>
+References: <20260601200012.3872274-1-xuehaohu@google.com> <20260604094344.GB245424@unreal>
+ <CAPd9Lg_JkRdtNa=n+HE9SP+NFCSB+X_97eiPBqiONVLwV0pHwQ@mail.gmail.com> <20260607080244.GA327369@unreal>
+In-Reply-To: <20260607080244.GA327369@unreal>
+From: David Hu <xuehaohu@google.com>
+Date: Mon, 8 Jun 2026 14:54:59 -0400
+X-Gm-Features: AVVi8CcrgIqNX---JRMNN-9SsXpCXMWpb_Y08c-v1_nrKhDd232Ciz6Ae661o0I
+Message-ID: <CAPd9Lg94nGnn7HQPNiSS7w2QQjVAuJ_FkMggR=JfSGVJyAsgeg@mail.gmail.com>
+Subject: Re: [PATCH v5] dma-buf: Fix silent overflow for phys vec to sgt
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Sumit Semwal <sumit.semwal@linaro.org>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>, Kevin Tian <kevin.tian@intel.com>, 
+	Ankit Agrawal <ankita@nvidia.com>, Alex Williamson <alex@shazbot.org>, linux-media@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, jmoroni@google.com, 
+	praan@google.com, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 05, 2026 at 12:27:35AM +0000, Samiullah Khawaja wrote:
-> DMA allocations can be done through DMA pools, add an API that can be
-> used to check if an allocation is done from a pool. This will be used in
-> the later commit during preservation of DMA allocation.
-> 
-> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
-> ---
->  include/linux/dma-map-ops.h |  1 +
->  kernel/dma/pool.c           | 13 +++++++++++++
->  2 files changed, 14 insertions(+)
-> 
-> diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-> index 6a1832a73cad..6a0bc4ea2467 100644
-> --- a/include/linux/dma-map-ops.h
-> +++ b/include/linux/dma-map-ops.h
-> @@ -216,6 +216,7 @@ struct page *dma_alloc_from_pool(struct device *dev, size_t size,
->  		bool (*phys_addr_ok)(struct device *, phys_addr_t, size_t));
->  bool dma_free_from_pool(struct device *dev, void *start, size_t size);
->  
-> +bool dma_is_from_pool(struct device *dev, void *start, size_t size);
->  int dma_direct_set_offset(struct device *dev, phys_addr_t cpu_start,
->  		dma_addr_t dma_start, u64 size);
->  
-> diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
-> index 2b2fbb709242..32ce4d6d7683 100644
-> --- a/kernel/dma/pool.c
-> +++ b/kernel/dma/pool.c
-> @@ -307,3 +307,16 @@ bool dma_free_from_pool(struct device *dev, void *start, size_t size)
->  
->  	return false;
->  }
-> +
-> +bool dma_is_from_pool(struct device *dev, void *start, size_t size)
+On Sun, Jun 7, 2026 at 4:02=E2=80=AFAM Leon Romanovsky <leon@kernel.org> wr=
+ote:
+>
+> On Thu, Jun 04, 2026 at 03:36:48PM -0400, David Hu wrote:
+> > On Thu, Jun 4, 2026 at 5:43=E2=80=AFAM Leon Romanovsky <leon@kernel.org=
+> wrote:
+> > >
+> > > On Mon, Jun 01, 2026 at 08:00:12PM +0000, David Hu wrote:
+> > > > @@ -133,6 +137,11 @@ struct sg_table *dma_buf_phys_vec_to_sgt(struc=
+t dma_buf_attachment *attach,
+> > > >       }
+> > > >
+> > > >       nents =3D calc_sg_nents(dma->state, phys_vec, nr_ranges, size=
+);
+> > > > +     if (!nents) {
+> > > > +             ret =3D -EINVAL;
+> > > > +             goto err_free_state;
+> > > > +     }
+> > >
+> > > Technically, this hunk is not necessary, since sg_alloc_table() will
+> > > return -EINVAL when nents =3D=3D 0. At least, that is the behavior I =
+relied on.
+> >
+> > I originally added this explicit check in v5 to address Jason's
+> > feedback, and to make the
+> > failure explicit rather than relying on `sg_alloc_table()` failing
+> > silently on `nents=3D0`.
+>
+> I prefer explicit checks, but I am not in favor of duplicating them.
+> Since sg_alloc_table() already validates this condition, we do not need
+> to repeat the same check in dma-buf. A comment should be sufficient to
+> inform future reviewers that nents =3D=3D 0 is already handled.
+>
+> Thanks
 
-Do we need struct device here? It seems unused?
+Hi Leon,
 
-Nit: we only ever pass 0 gfp_flags to dma_guess_pool, should we instead
-name it: dma_is_from_atomic_pool() to be more accurate?
+Thank you for clarifying this further. Removing the duplication here
+sounds good to
+me. I'll drop the hunk, add a comment for posterity noting that `nents
+=3D 0` is
+handled by `sg_alloc_table()`, and send out a v6 shortly.
 
-> +{
-> +	struct gen_pool *pool = NULL;
-> +
-> +	while ((pool = dma_guess_pool(pool, 0))) {
-> +		if (!gen_pool_has_addr(pool, (unsigned long)start, size))
-> +			continue;
-> +		return true;
-> +	}
-
-Nit: The loop looks slightly ugly, can we have:
-
-struct gen_pool *pool;
-
-for (pool = dma_guess_pool(NULL, 0); pool != NULL; pool = dma_guess_pool(pool, 0)) {
-	if (gen_pool_has_addr(pool, (unsigned long)start, size))
-		return true;
-}
-
-> +
-> +	return false;
-> +}
-> -- 
-> 2.54.0.545.g6539524ca2-goog
-> 
-
-Thanks,
-Praan
+Thanks a bunch,
+David
