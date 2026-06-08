@@ -1,179 +1,146 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dl1-f53.google.com (mail-dl1-f53.google.com [74.125.82.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79D6E31F990
-	for <iommu@lists.linux.dev>; Mon,  8 Jun 2026 17:35:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=205.220.168.131
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780940133; cv=pass; b=Tv7Sf7Uq7MnKwuJMIvmEP7EA7O4iVAj9JPsJ+xeOFEs4vieZ8DODy+5babHUTzS9dq9+hoQFlD4vPQb/r5Pgux0X+kh4fprHV67PMSEfrfEoM/FRfLn4mVR4D9HVCTDn04p7nyVZR87IvY1+mfI9D2wUGR3CmcmB9hCXVa8w2NQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780940133; c=relaxed/simple;
-	bh=mlZU0/pgW+ejL50FpauU5Ho0DNaF5PbUOlmB72X0Aj8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=iXn4XEfvs9yuugPKVYCIYhmDcnalIdaJjOH74PYo2bXjFb/kIyZdl+4zkJ64gWYYM6d/71FChynjw4Jgfa/4cJ0f56mG5np1lU3IOWOotJgGZZUGuSMoib320FxhtWQXdXfGoMMwWDJPlob4MeL/vY8CIYvLFbrheYcAY1gcQLs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=DvTb5UH8; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=Ej7Cwdna; arc=pass smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07620352021
+	for <iommu@lists.linux.dev>; Mon,  8 Jun 2026 17:53:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.53
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780941233; cv=none; b=LcoxAJ9B4cIL07nSHOHE0lTVYQE3y6OCO70F779umBDN+g9n2x8641nhkziA1llg89JhzjURpBhbmb0rSC4NRx8Hq/gWUfC7E2/rd3ZVJKAD/K1bVsCbhnfwBfRi0IZV7A+lr8g0K2uyi5slvKJre9oH0xBLP9Y+wR0ADzrchWU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780941233; c=relaxed/simple;
+	bh=wjx7h6/LhfgVxFR0HSIvfScSOwxHs//v8YEIn3jJqUg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=c7BFiBE4V9Hc9etAifnE1ZyKHrgbHA4qCA7YnBdUNz6TT2anTgjbaIjlrT1G6ekDIKAaHpMJ4nO2uIfEv8oNGc8yF7G4Z9yHl+2PjpdM3R1QsS43fI2GjgcE4nm3XHpunvKdnrpCq0yLjBFrZSUzTfmKkeY9vRH1gqzlM+F0rVI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=HF5d0Nfr; arc=none smtp.client-ip=74.125.82.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="DvTb5UH8";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="Ej7Cwdna"
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 658FFTad3588401
-	for <iommu@lists.linux.dev>; Mon, 8 Jun 2026 17:35:31 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:reply-to:subject:to; s=
-	qcppdkim1; bh=mlZU0/pgW+ejL50FpauU5Ho0DNaF5PbUOlmB72X0Aj8=; b=Dv
-	Tb5UH8ccM2oDsgKng2asrIeWtqzQCmYGDd08K8abr6WXPMPSilYEE+fNjH9+wLqq
-	uiUYbkNN+XYso/8c9e9dTT8mmXVUzailRpo/OSWzz98UFA75e27we0p9IDj0BdB8
-	gVaQ40tm+xjpCx9t0vJ4I8I8a75dO3I65N0lSm+eRB+EOX187AbT5nPd/iDYJZIf
-	69+ikXT9VQ2Z/1tUQSApeDZG8Xur1SXZVeyNlGqMD8jKoLCVez+1C4PIJPtnwueK
-	M6KDdDAhla51X686JX4H4W8G1VlkgYrIhj7+qG3EI++/Ik8lKqC2GaRznlKgQ+Xa
-	8ar8m/oRojBK9UhbvKWQ==
-Received: from mail-yw1-f197.google.com (mail-yw1-f197.google.com [209.85.128.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4enun424d1-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Mon, 08 Jun 2026 17:35:31 +0000 (GMT)
-Received: by mail-yw1-f197.google.com with SMTP id 00721157ae682-7e87d888ca0so28226427b3.0
-        for <iommu@lists.linux.dev>; Mon, 08 Jun 2026 10:35:31 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780940131; cv=none;
-        d=google.com; s=arc-20240605;
-        b=J3UZDZtD4a56aXNN21g8m9UeZQMeo7xzAPuQL0+3MjW/uuHlAmCTnGBSvenzW0XGIN
-         qdswc2UemeEUVzm1yh7KSVwy+zlLcQH1jTrBKHCluR9gLCatoxSamiT/wvWJH1M0l5d8
-         BsyzEDo/FrmpWJSNcI15zVAKjnjBfEpHroLqamoQWaOhGr8Kmzp9ASgWT7n+wgx/vigK
-         704pajDFi3G0d+r+sYE2F+quOi0khYvZb3x93RWayrRCc2viYwde16aPyub/jy8iP6l6
-         /hDRvTddBDe3GeHDI+sOrqkqA+0qh0GNjvDSnmNb40R/tSLAFKzOCmbm5sPZ3eaTT+fU
-         PGrQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :reply-to:in-reply-to:references:mime-version:dkim-signature;
-        bh=mlZU0/pgW+ejL50FpauU5Ho0DNaF5PbUOlmB72X0Aj8=;
-        fh=1hhnpRpzF6PQauQ/cVjHAi/ILxU8lW5lzMwNuukFVb8=;
-        b=QnbuBDqVDXZRN8spxdsOgohHPsfFwCcj4Q51naB/zvHdzFrJ71GtI+pBxEtCDLia6Q
-         cVyGOKXPm7bpy8mEk503d4sO7BIyIgklznjAlN4CBgmT7i0/0YRXY3kCbHZ/gRsWCLGc
-         lmO2v+e/xtjUbOGLMb9gHxtQkQcLq1L7dliqvlDdZekvZrUq1MJ2KEWa9RQo7w0NTC9P
-         +sumD5KQZ4MzLDvsh69BvFy0zQpEjTX2yIDs7PolcyvH/oPTsvipi2XqIR1djiigyPtN
-         zamlnVbh0iF/2t0cG9DKnvZ390baNpRhuFgkpuOgQ7ywlDdVzuVzFNfGh8bqr1RvJmYQ
-         rzfA==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="HF5d0Nfr"
+Received: by mail-dl1-f53.google.com with SMTP id a92af1059eb24-133362c30cfso32319c88.0
+        for <iommu@lists.linux.dev>; Mon, 08 Jun 2026 10:53:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1780940131; x=1781544931; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :reply-to:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=mlZU0/pgW+ejL50FpauU5Ho0DNaF5PbUOlmB72X0Aj8=;
-        b=Ej7CwdnaTjX2jzqtZm4glJSn6LwoqAhp8eE0a54U1AWD2xLxfxh9Y6njZfQ2wVbqas
-         ihlOv/nu3O0i2A/23tSFQqQ+TrTkLtAL3QTY2xwiretX0Hf5s3rcElao0ayoenMQeO9X
-         ZeWtvaegxgIwQE/EfeCZE+nwNEmxEcp7My0U51d9TGn4SVUyz4gYlsS4w3OSNQ9TPObM
-         y48t0ln+AkZ+SaF9MStRFH8KnuqRWkC1C6NfGn7t834chutn4zop9nEq2sfazNBcdb30
-         5dgjmNzud5xfBJCxGwBfuYwaynjMeHVw/1AbolPHTX+YbSmQT6LBaZ62NmlAQabtf7yD
-         3nfw==
+        d=google.com; s=20251104; t=1780941231; x=1781546031; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=HKaJq/FqOrnnsfhBbbAGAUYIrDaTZV/8Gb9XfRMpf40=;
+        b=HF5d0Nfry3uFm5n1CLPJ2eOOAzWRKqjsxnwZGwUNdMg9gqffy9KxCwjn0N4a6zz5qj
+         9zEpAsubTX+nov8lHaMn/T6JJ/fWLwBigGm4qvtBuXD9NBD5moxUavmT3RTYE73pUYi9
+         6T8R4rWhPgkDTmaYqgKtbNtb/HIsM40/YjtwywNzEPch8LW9pg+qi8kKBsaDgV9zDegh
+         Xd/XXzas4cY/ypAimm8ok7Q1prDAjIkDNXScBSmKnbLAyV2LRLinptvwqYpwtaiybZa6
+         A4B0BM0ohAzZd6a4BCPOXm7tQWBnU3mQNEkSfN8WeMr++M40tP4ZTGUj0B+OBd1dIivc
+         RxJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780940131; x=1781544931;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :reply-to:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mlZU0/pgW+ejL50FpauU5Ho0DNaF5PbUOlmB72X0Aj8=;
-        b=fFFXyCKE9EdcYnoshKxEjj8hm/0Z5CXvJE+H7J3NWmLaUa2//xFfW+XL0vzK3OHBJ2
-         0Mwg1FENxNmmf4hUcoM3wWanCsVHaRwmnxPdzPT2gGLMIlNillklsTSFI9aWEaxnL2A/
-         rRilvWaF39ElW7ZF28sG3G7CBvzm2kNClSX2BmwcWbYGwjpUiQH+l4WC1VnwbTUtI3aM
-         h15qFhxddvUEYYSgzhX9bXIKpyDnV+kRNWnwpU5EPmbwNVCzmqYcf+MXWZmmmWwH3tCH
-         C4swh0kWGqw3mqqVSu4vg8zQZxeySKLlKrNuPPUr9yRvcdyqjwtrQKoDEJhcGdA05gza
-         BrPA==
-X-Forwarded-Encrypted: i=1; AFNElJ+8ZnokZamx/S88jgEuDiNs7VFLmkQZNt1+E2pgpiXgHYRBStKtdAaQtWcmZO8b1K57q83SbQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzQWH9g8mbb1gBMXssIOFlYgN1V7/S6DMvMwg2A6wdO5OgZXSrr
-	e4OdD27lqUzhVSzxE9+cMZE+7SqCOHq6AZ8M+MfoysTu/0upHw9OIw3anXZ/X9BuWFtbt2iWAkn
-	CKN+IAoa5MFxXeHh16gOaetqbNaHITYkqGv/obNk9ru2GfMwS/2yT+xQWGEUkFmlxldUXy55loV
-	DIgwy84Mhf4KaJ/iXxoyQGWPR91hYZ4dBu
-X-Gm-Gg: Acq92OEofUXqqKcWG6icdzX8JxTXbMAc+P2GIbh9hTQ5iNJhq7IEqs1Cq3tusnW90xp
-	kxm7JDHPaMxCJcIiI+yhdS9tC1mQShmlZeTi6aP38d+m0vLeeZCAx7Tb+ekgd/+LjRdjDyyuMlR
-	ukjXJzX6NTjbkuJkfkO/wKldZReW5NH70DPFM3m74DkgJgyM3yC3bwSJwOocaoTl6sStCo4AsOs
-	JjEF8quZe8/lQqUFQ==
-X-Received: by 2002:a05:690c:e3d2:b0:7dd:3f36:59d8 with SMTP id 00721157ae682-7ed0cfdfdcbmr158839327b3.13.1780940130878;
-        Mon, 08 Jun 2026 10:35:30 -0700 (PDT)
-X-Received: by 2002:a05:690c:e3d2:b0:7dd:3f36:59d8 with SMTP id
- 00721157ae682-7ed0cfdfdcbmr158839047b3.13.1780940130520; Mon, 08 Jun 2026
- 10:35:30 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1780941231; x=1781546031;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=HKaJq/FqOrnnsfhBbbAGAUYIrDaTZV/8Gb9XfRMpf40=;
+        b=hYM7MviJ5N2BGmuQvQz3aV+cf/O2GJt68gU4+W6l+E3lhcDdqu31UeCiWrrM9m77Gx
+         S640Vp76/I6PmMtK8EOA8pbulunn3QfahDSc2lPZk8GKrZnlhTNWR9rxpvLyPnqC8w/r
+         Hv6TLJ+7gmAeYNX3mSm7fRPd38XttisuH90RPptbX4DwcKLEangQFUGOXY7/CbU/1TFT
+         vmWd0FD8Il6IdQx7mfAbLT7RhVMkj/gtvbOu89oSrSstsa+oXjOH0zLEf4LRanmMhZzL
+         PHpbUYZfUyppz8u2dWTCOjqzW9OzjVfmNQwWGHXMMdq4eqrdPdzbtufQ94kFYP8lgWxF
+         VfbA==
+X-Forwarded-Encrypted: i=1; AFNElJ9LwVMn/sFPXvqkkBGdy9UBDJBsgYM3GIIPqQ2jBIz8yv8BsNnzFjQ9Tj5cpNBUGNToXpAl1w==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy28+LBnHykClMyVr5jCSGlFWU2GTrH3lQkLI+IrT8KoI+muXuS
+	EyZA+Km4PTK+kbctzlJ1pag6qtxXb2UYaR7bvJRCVNox1wQ6U6AyraNvISHu9G4MUA==
+X-Gm-Gg: Acq92OGZnoHebHLfnzqO8WJlWHEwtS6al3EkV/lPGhlDXbCrvZkdn7ZurhJz4KByBVq
+	CnURmkmJCu0tDB8ktOVzOjfZfoh5P2CPM+cFIYBvFT2FmCAoEtJyEAM78UebnhwFVWyZux13vDz
+	hWWCZ8R0Cwb52Wp30qW3UQ9EZ8ObKF6uBYBKGf4PLC2JyQpmS/KzuOQP6L30W/GD3tEa2bxGqxC
+	y9/tHcyBcl6rQU4S/uHwO7AF+mZra+cC+8WGKVXmbSlAyvviW2i51cd0ec626GE+0frB3/nYozz
+	qm6P79XV42LssYWvq7Ed86BWj2E3EqZMXaffyNwFDlNIvmooQ+PRI+aKyyrX827ELEN7z0fSEq0
+	psrsMwuOTVkApfYDHsGg0m7Z4KTg/dUcbxuZD7W9/BOa84/CVJx+sjhZmZYUezqxYJ/z3dVbc4u
+	dp52yhqG4Sx6/xOin4KyYRKephEDrr4roL1k7YL+gJvzABqG7kV9qDMOd6RKxKSiIw7fw1c08=
+X-Received: by 2002:a05:7022:48f:b0:137:ead9:4608 with SMTP id a92af1059eb24-13807cbdceamr310348c88.17.1780941230355;
+        Mon, 08 Jun 2026 10:53:50 -0700 (PDT)
+Received: from google.com (199.255.142.34.bc.googleusercontent.com. [34.142.255.199])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3074db528dcsm21257291eec.3.2026.06.08.10.53.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Jun 2026 10:53:49 -0700 (PDT)
+Date: Mon, 8 Jun 2026 17:53:43 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Samiullah Khawaja <skhawaja@google.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	Mike Rapoport <rppt@kernel.org>,
+	Pratyush Yadav <pratyush@kernel.org>,
+	Alexander Graf <graf@amazon.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
+	kexec@lists.infradead.org, linux-mm@kvack.org,
+	linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Vipin Sharma <vipinsh@google.com>
+Subject: Re: [RFC PATCH 1/4] dma: Add DMA allocation preservation KHO ABI
+Message-ID: <aicBp4tSyzyYBnzn@google.com>
+References: <20260505002737.2213734-1-skhawaja@google.com>
+ <20260505002737.2213734-2-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAB19ukEzQZktJcBAXi8X2Pwz+hO_FcR+iiaK9nsCAumP9BrHnw@mail.gmail.com>
- <20260608142206426CGB5DlYd1xVlR8wrOawWH@zte.com.cn>
-In-Reply-To: <20260608142206426CGB5DlYd1xVlR8wrOawWH@zte.com.cn>
-Reply-To: sunilvl@oss.qualcomm.com
-From: Sunil V L <sunilvl@oss.qualcomm.com>
-Date: Mon, 8 Jun 2026 23:05:17 +0530
-X-Gm-Features: AVVi8CcOHTT-aaiAsTR3LDPlyvyK1Yv-Td6vF48uAWWN7KC86YUXl0j5J289Oso
-Message-ID: <CAB19ukFMu1tW5QkCOY2e=DWbKrehEDv_iO5T7vEfKEGkbTFEEw@mail.gmail.com>
-Subject: Re: [PATCH] iommu/riscv: Add dependency between iommu and devices
-To: wang.yechao255@zte.com.cn
-Cc: linux-acpi@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-        sunilvl@ventanamicro.com, rafael@kernel.org, lenb@kernel.org,
-        pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu,
-        alex@ghiti.fr, tomasz.jeznach@linux.dev, anup.patel@oss.qualcomm.com,
-        andrew.jones@oss.qualcomm.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjA4MDE2NSBTYWx0ZWRfX9V2YQo43o0UZ
- njT71OzM6oyqRfTfhcl4yId1y/q92RkU8sDaEAy+yZWAJuDKmwCLU022UAagkhjLsbCxNx2oJvS
- IWtti7e9n+kbV+cbRYkLTyncOosIZlu5QUUdj/AaEdoj9JhZMjmgBIH7JyHnOFRPw78q7My2bhh
- ccD25xJg5PvEdZ1LpRxCRl5wUFuXBAEq13+Qrv/QhQt0NlRsyRtKQZdt6I0q8GFrZZucAzOY8bm
- 8T7juOpL3DkMZB/ZTb62kE4Mv65w52WyiDZjeCkqn8CS4YaLSgdiAd5zCwcvKNKXXklZDJg9c+W
- cN3paWZRt1MnuRKifkNN4EEk8S305TR1AkpCyDjLGv75D7q2bnyEiGnOVs/kHhxOIarxTtYv1zD
- ZLNDERraW1/iXOf1zRLAHdF4QiEAL1mizMZqvglb7Ng+x8WeorBoiEDhRzoTxFudx1KFqskIHgi
- E784Z2/6hOnW2G7LWzQ==
-X-Proofpoint-ORIG-GUID: k-_IqW-vHH0G9A0uSi41czMBicgVQ6-C
-X-Authority-Analysis: v=2.4 cv=ZY4t8MVA c=1 sm=1 tr=0 ts=6a26fd63 cx=c_pps
- a=0mLRTIufkjop4KoA/9S1MA==:117 a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10
- a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22
- a=eoimf2acIAo5FJnRuUoq:22 a=1RTuLK3dAAAA:8 a=90lprICnAGeg8zAacqkA:9
- a=QEXdDO2ut3YA:10 a=WgItmB6HBUc_1uVUp3mg:22 a=kRpfLKi8w9umh8uBmg1i:22
-X-Proofpoint-GUID: k-_IqW-vHH0G9A0uSi41czMBicgVQ6-C
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
- definitions=2026-06-08_04,2026-06-05_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 phishscore=0 adultscore=0 priorityscore=1501 impostorscore=0
- lowpriorityscore=0 spamscore=0 malwarescore=0 bulkscore=0 clxscore=1015
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2605210000 definitions=main-2606080165
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260505002737.2213734-2-skhawaja@google.com>
 
-On Mon, Jun 8, 2026 at 11:52=E2=80=AFAM <wang.yechao255@zte.com.cn> wrote:
->
-> > >
-> > > From: Wang Yechao <wang.yechao255@zte.com.cn>
-> > >
-> > > Commit 9156585280f1 ("ACPI: RIMT: Add dependency between iommu and
-> > > devices") adds the dependency between iommu and devices on ACPI
-> > > systems. On devicetree systems, the incorrect removal order also
-> > > occurs.
-> > >
-> > Interesting. Why is it not handled by the fw_devlink infrastructure in =
-DT?
-> >
-> > Thanks,
-> > Sunil
->
-> Thank you. I have noticed that commit e149573b2f84 ("of: property: Add de=
-vice
-> link support for "iommu-map"") adds support for "iommu-map" to the device=
- link
-> supplier bindings, so that probing of PCI devices can be deferred until a=
-fter
-> the IOMMU is available.
->
-> The QEMU RISC-V virt machine currently lacks the "iommu-map" property for=
- the
-> PCIe bus when the iommu-pci device is used, which leads to this issue. Th=
-erefore,
-> I believe the correct fix is to add the "iommu-map" property for PCIe in =
-QEMU.
->
-For PCI IOMMU, the dependency should be automatically taken care since iomm=
-u
-should always be the first device in the hierarchy and scanned first.
+On Tue, May 05, 2026 at 12:27:34AM +0000, Samiullah Khawaja wrote:
+> The DMA allocations can be backed by a variety of allocators. Add KHO
+> ABI for the preservation of contiguous allocations that are done through
+> dma-direct.
+> 
+> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+> ---
+>  include/linux/kho/abi/dma_alloc.h | 30 ++++++++++++++++++++++++++++++
+>  1 file changed, 30 insertions(+)
+>  create mode 100644 include/linux/kho/abi/dma_alloc.h
+> 
+> diff --git a/include/linux/kho/abi/dma_alloc.h b/include/linux/kho/abi/dma_alloc.h
+> new file mode 100644
+> index 000000000000..46e61db81abe
+> --- /dev/null
+> +++ b/include/linux/kho/abi/dma_alloc.h
+> @@ -0,0 +1,30 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef _LINUX_KHO_ABI_DMA_ALLOC_H
+> +#define _LINUX_KHO_ABI_DMA_ALLOC_H
+> +
+> +#include <linux/types.h>
+> +
+> +/**
+> + * DOC: DMA Alloc ABI
+> + *
+> + * This header defines the structures used to serialize the state of DMA
+> + * allocations, done by device driver, across a Live Update.
+> + *
+> + * Only DMA allocations done through dma-direct that are contiguous and
+> + * allocated using alloc_page are supported.
+> + */
+> +
+> +/**
+> + * struct dma_alloc_ser - Serialized state of a single DMA allocation
+> + * @page_phys: Physical address of the preserved pages
+> + * @size: Size of the DMA allocation
+> + * @force_decrypted: Whether the memory is force decrypted in previous kernel
+> + */
+> +struct dma_alloc_ser {
+> +	u64 page_phys;
+> +	u64 size;
+> +	u8 force_decrypted;
+
+Should we also stope attrs in this ser state here? There might be flags
+like DMA_ATTR_NO_KERNEL_MAPPING which would need to be preserved across
+a kexec? 
+
+> +	u8 padding[7];
+> +} __packed;
+> +
+> +#endif /* _LINUX_KHO_ABI_DMA_ALLOC_H */
+> -- 
+> 2.54.0.545.g6539524ca2-goog
+> 
+
+Thanks,
+Praan
