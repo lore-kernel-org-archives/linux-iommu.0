@@ -1,322 +1,174 @@
-Received: from mail-dl1-f50.google.com (mail-dl1-f50.google.com [74.125.82.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 036193859CE
-	for <iommu@lists.linux.dev>; Mon,  8 Jun 2026 19:55:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A94C33ACEE9;
+	Mon,  8 Jun 2026 20:58:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780948533; cv=none; b=o4iLI+7mGHVbIzPvKKVBnZhvxlX7gd4LjrmrLB86XL3UJkJncCij0Tb0FIr81++9kP61knqwI+Y8Jjv11uAzlasiiE9UJNOU+K7mMbh0dr2RE9THU5O5iPd4iFiaHNyRtMUPxz9Mv7RCYE1QEsnGKZ1x/POJSozd0vgB5sbU6sA=
+	t=1780952304; cv=none; b=aMXJXcls4aPgvJJGqyvSJpHngFElTflcet5NK/z6Kjq4CantGb9Bha0L18CxYEWVS0CFvwVWcFGPTbZnhm9MF3XK3+pilxSC7wttpuHGYOtHeCFHUjOXsGDzLnci8Z3l7qxUAqrM0le7rCQqVWOgY5ksaAJHu29t8oj7kRrmX1A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780948533; c=relaxed/simple;
-	bh=6+HXf+FDYiwTqChwNe1Waa3meZ8yJYGg35Bx3IDfIRk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qqe11h4jkLwisWJ96vMGD1DpIbURuVLa3TlMhcuvySiIDA0+vuOKSrbJlUxe9R52zsb+KjbEGOOOtv8/uvmt+JJl4+0r23vwCcndE7XXnKHno6Lv+ewvgQDc8h4s6yt4Q12JK85vbfcYFwpRKbDl5cGTCQ5r1OuXS0t97BLNy1c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ccygvPTi; arc=none smtp.client-ip=74.125.82.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1780952304; c=relaxed/simple;
+	bh=Q27Zdb+kF51K+jdqLK0AruNnM8NCFFoZ7m413Ngs/cc=;
+	h=Date:From:To:Cc:Message-ID:In-Reply-To:References:Subject:
+	 Mime-Version:Content-Type; b=lmVav7JanCt3pVi8zdhP+Sre7sGTFYRzwqGe3JQ2AJXwEUUTMXOKLavQUYHPiJczq853lX0xwouMkHUYZ+Y6oDv4tINKKuzu/17WHBMuI3Pd4syembKYmOCkolqRauMCqTpDbPfNDzgRC9J0wzCnO2MF5CI5qKETY+7QNSM/dMo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ih0Yppl7; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ccygvPTi"
-Received: by mail-dl1-f50.google.com with SMTP id a92af1059eb24-133362c30cfso33853c88.0
-        for <iommu@lists.linux.dev>; Mon, 08 Jun 2026 12:55:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780948530; x=1781553330; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ns7tVcW9XWyLcZvttsJ0K9GITGIgrVGAf3TGrFOv8Tc=;
-        b=ccygvPTiS3d+nth93FO9C+V1suFFMGgvA2QenwXTqZe5S7oBtJe4Sf5peAlrGbnsYL
-         12ZUBBGbxFvKFhe0fKM2M7qzRehkNFF5cdOqJ9diF753nIkhB3LjqYDyAPxsjhLe7jaH
-         V6UybSSHOoR1lR/p4Wm6K+jYG6b+PBxcBe/RwG3uPEftD8V4gAlNkVb3Dw/cYKudkLmd
-         oZAwGkAg+HW0/VVCum1tZFPXch+tLcc7lTRPL+XkJ2jzzza9ecSfiz8aRxDtgs9CnVaq
-         fJ4XqRKvYXuPH+3wpdrbfzEuNh+K/6br0XZicjmQPXwKHPksw2RR1PzAFKy4PZFj7zk4
-         hObA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780948530; x=1781553330;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ns7tVcW9XWyLcZvttsJ0K9GITGIgrVGAf3TGrFOv8Tc=;
-        b=izgiEwpjxMDUO+8TMdMmV5iCvK9XOWyCcCqohBTacZy0iI4qM9WOPSp85KxthjU8qy
-         Fx9KyzouRr5RbG8+q7ym9KL1c+cJpsPRvnHnNuVdP2PneU/iaZKhGOi3h5QmsXtwg73R
-         ROx1mhgzMykR/hTwtSOwNy8cZ60U6uNW2oPywNYoupHLEt8FodGEe1OvhNOfGFD224oX
-         k8RyIHhzOydEz3vKx71iqdXGZTqDmn6BhXOi3zziOUPsb5HfrLpqT/8/uvnclYi0dDYA
-         nSIShoYiOhssEayJNlVZDU+h39IF7sNRzyyxsg2EJEWKAyYbkhOQNasqa58IiQaX3J0T
-         A+7g==
-X-Forwarded-Encrypted: i=1; AFNElJ9/AaX+T58/544qfgTFx81lEvG7fioq7gKE/XISSQ7re58tV6V43PQzhBiWvupyYSXAJSe0XQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxFK1pvaF0EDWj74mq7rWcdKRUnPQSIkm0SsVblUuEw6AeGYX2B
-	J/di+Pg3ABTQHD2RO1AnN6zujJS/zEK3FNdIKR0tYJx/j+yGuJtr8YeKNaz3NC/ugQ==
-X-Gm-Gg: Acq92OEzzpu6iEUiLYFGq4+LI+qUk1X5qSBFo1IUTcqnJ1Pgfovcojjr/shAb4kJnWu
-	I8R8d4tODU8o4Ur24VXQfQ/wm2GLCpNepG5LvrVfm2zFthL4W89uHqR7ASRuChYZccbMDC6kzfw
-	OQi0q7D8xkrU7lsA3qfWVDo7O/0HWIKopt7EcwHDJeQUypm8/O0CbBDXXOTLr+shBzOvEBEwKp4
-	2KQPjqT95yazV/t6rb906dSoCJ+DGScsVfKLXLZC38GTXnPcTExr8L3lYsbfwhLaQnIdkTyJj8B
-	ORHTIwbzxjG0etX+Yl58XDTEp9Dw5y7ZNabw1tBHCvoupQEKaUOwRScDRSZMY+6p/7ei1jPouEB
-	7YHLfVIUzj0N49ovoZaCTLFzLCcLYnaaaGFaQWTdgc09uNn2plXM69g96Ib4RGX1KC3Uv91e9mT
-	dZX78DTM+4lNGx/qwt0yHK9/FVFzD33XtlIe8bsGIohEw4MwYF+5wxJdx/IZfCa3F8rE4GyU0=
-X-Received: by 2002:a05:7022:170e:b0:138:888:e99d with SMTP id a92af1059eb24-1380888eb22mr103345c88.32.1780948529234;
-        Mon, 08 Jun 2026 12:55:29 -0700 (PDT)
-Received: from google.com (199.255.142.34.bc.googleusercontent.com. [34.142.255.199])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30791f6381fsm9666160eec.0.2026.06.08.12.55.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Jun 2026 12:55:28 -0700 (PDT)
-Date: Mon, 8 Jun 2026 19:55:21 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Samiullah Khawaja <skhawaja@google.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	Mike Rapoport <rppt@kernel.org>,
-	Pratyush Yadav <pratyush@kernel.org>,
-	Alexander Graf <graf@amazon.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
-	kexec@lists.infradead.org, linux-mm@kvack.org,
-	linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Vipin Sharma <vipinsh@google.com>
-Subject: Re: [RFC PATCH 3/4] dma-direct: Add API to preserve/restore
- allocations
-Message-ID: <aiceKYmc323G7tBs@google.com>
-References: <20260505002737.2213734-1-skhawaja@google.com>
- <20260505002737.2213734-4-skhawaja@google.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ih0Yppl7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2FE91F00898;
+	Mon,  8 Jun 2026 20:58:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780952303;
+	bh=MnnYMxjYrpHOw7mwTYOO6RexMQiDhUDcBZsiKTjwfkM=;
+	h=Date:From:To:Cc:In-Reply-To:References:Subject;
+	b=Ih0Yppl7pFXzMm4unDKUWZADI+HdUUopOs1VjiFQFxDBFXeV/jgy6S0NLcOUynuzn
+	 ceUbDC7ME4k3aRYbEaI6bjcIn2Ah0iToiUoMufU3E8bne5kwULoAg0qedzw1YK6PVF
+	 okzf/1McD96k886/SOgRqROygwN6JNM2P2a+pyW0PPr+PhE6IQefzzBqXIGEQKfH3C
+	 JgPaNvWy0fwpBBDMQitMo6Qkjj7pytBbW/HUGfNj81LhgY4wcVBX9F3FozqsrXMrsD
+	 FBphSKVSYyptZp0Ucty3008+vHDuWFz82MVfKQqwsKJhqXgE1u8YPj7L1VSJJ1gT2j
+	 uS7VwxoasBd4w==
+Received: from phl-compute-05.internal (phl-compute-05.internal [10.202.2.45])
+	by mailfauth.phl.internal (Postfix) with ESMTP id F2973F40076;
+	Mon,  8 Jun 2026 16:58:21 -0400 (EDT)
+Received: from phl-frontend-04 ([10.202.2.163])
+  by phl-compute-05.internal (MEProxy); Mon, 08 Jun 2026 16:58:22 -0400
+X-ME-Sender: <xms:7SwnasK1vwPI6yq-jWrrV-wxSqWYp3h-BhXqa1MPoRYCCuhdjvqHlQ>
+    <xme:7SwnanQYOOVXFJv5iW1n2ySdZYJL2Znm2HmUHYvbzEt8O-axb4B9HIue7KfgNZl4I
+    LkBYQO8zaOni7Fe4nEJ6_YZa-Q4h7RW7rTkxT93fxbMretR-vp05N0>
+X-ME-Received: <xmr:7SwnajFIeLRrVS89yZM79i49yQfqWUrK-WbleevLjNRwgl5ePK7_tCU5o1cUAZuyhwgEODFAJuBDaZj6DNBakENJ17MzDCNJihI>
+X-ME-Proxy-Cause: dmFkZTGP9x8buTQcIGw9eBuielzgRk78B5z7jEIpxuXdhXbMY3b3bCj/WyeIYQV5NgDglD
+    q1JwUuBggNZgjADQ893ZM+dthjPdfnhQFB6H/PFmyV1IWif+adhfC/SUsoHRe+1JQxW9DJ
+    t5bcS7GNIvRhD/mIVeBtbBVzzbBYL8rlYKCUVly1FzibZDeyWk7STAmZ1Z1+DAKo6nG7mL
+    neUTtcjh7VPvYOJQggjAJvMUVnzWceSVmbvLONMxv11siBHty2D7S8UUXQAnBCGxnXtc7O
+    E57znILnfs0VWSi8HPlmq7Q2jhdz8+M+Vj7JGz9oPJk41BLvML9M/sVsnEyPstBwSpY2F7
+    uEHHp3kXXNWii6ZfOjNgkPOnhF9qAM9wJHMLNeIeJHiulCnDy4wW+G4Pna5nJHJ5w9DqZ2
+    Ns+OpB6nkDmr3J6KyHmaelXoff8wLwTux+u+HKBHjlY7bZZkGnmv9eDXZWw+1m6u/371Az
+    4fuOOJ6PSINwESQ72WLkMfLv+BMq4p+TADU0Ic93rVPTCgYvHrGKnTEakCaKiPiEQzKXPG
+    SebO2OVdAWAnp16t3mo5+7tBm0pj+I0us0+OCpzl9M+7FDjn3tyMM0N1ZgzDcnnEanhWIk
+    6j9V3wdt5JT5oxi8nhukS74Dh9/kX2/rHSTe0uVjoh+w5QUx0RLyM9E0Kkww
+X-ME-Proxy: <xmx:7SwnakWz0TW4RvbJ4B5HPTaGRQO8RQXSlE9eFO__EkBXtSomkENEXA>
+    <xmx:7SwnalyHpT4bamDdI_8r50K51151jtoYe40VtT52cgmVoNr-3SL1ow>
+    <xmx:7Swnag-Y6ol94bkeTGOS5GYWpOGvHtsk4sUlOrq6tFIFWVpxS2snMQ>
+    <xmx:7Swnai_Wj2ffpyXcI2n777ZFPFkk3u6OihrgqhODTv6Oq98DKB1kBg>
+    <xmx:7Swnanw6AnXrPO7wNAQIUI1IMUMNYVpe2JnNzz2l8pSPo5TOS6_GOHE6>
+Feedback-ID: i67ae4b3e:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 8 Jun 2026 16:58:21 -0400 (EDT)
+Date: Mon, 08 Jun 2026 13:58:19 -0700
+From: "Dan Williams (nvidia)" <djbw@kernel.org>
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, 
+ "Dan Williams (nvidia)" <djbw@kernel.org>, 
+ "Dan Williams (nvidia)" <djbw@kernel.org>, 
+ Alexey Kardashevskiy <aik@amd.com>, 
+ linux-coco@lists.linux.dev, 
+ iommu@lists.linux.dev, 
+ linux-kernel@vger.kernel.org, 
+ kvm@vger.kernel.org
+Cc: Bjorn Helgaas <helgaas@kernel.org>,  Dan Williams <djbw@kernel.org>,
+  Jason Gunthorpe <jgg@ziepe.ca>,  Joerg Roedel <joro@8bytes.org>,
+  Jonathan Cameron <jic23@kernel.org>,  Kevin Tian <kevin.tian@intel.com>,
+  Nicolin Chen <nicolinc@nvidia.com>,  Samuel Ortiz <sameo@rivosinc.com>,
+  Steven Price <steven.price@arm.com>,
+  Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+  Will Deacon <will@kernel.org>,  Xu Yilun <yilun.xu@linux.intel.com>,
+  Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+  Paolo Bonzini <pbonzini@redhat.com>,
+  Tony Krowiak <akrowiak@linux.ibm.com>,
+  Halil Pasic <pasic@linux.ibm.com>,  Jason Herne <jjherne@linux.ibm.com>,
+  Harald Freudenberger <freude@linux.ibm.com>,
+  Holger Dengler <dengler@linux.ibm.com>,
+  Heiko Carstens <hca@linux.ibm.com>,  Vasily Gorbik <gor@linux.ibm.com>,
+  Alexander Gordeev <agordeev@linux.ibm.com>,
+  Christian Borntraeger <borntraeger@linux.ibm.com>,
+  Sven Schnelle <svens@linux.ibm.com>,
+  Alex Williamson <alex@shazbot.org>,
+  Matthew Rosato <mjrosato@linux.ibm.com>,
+  Farhan Ali <alifm@linux.ibm.com>,  Eric Farman <farman@linux.ibm.com>,
+  linux-s390@vger.kernel.org
+Message-ID: <6a272cebec4af_4fa7810048@djbw-dev.notmuch>
+In-Reply-To: <yq5aik81sf22.fsf@kernel.org>
+References: <20260525154816.1029642-1-aneesh.kumar@kernel.org>
+ <20260525154816.1029642-6-aneesh.kumar@kernel.org>
+ <becd865d-09a4-4ac3-b719-4a0deae2692a@amd.com>
+ <6a168c8ea7d10_2129b2100e@djbw-dev.notmuch>
+ <yq5apl2gsw6y.fsf@kernel.org>
+ <yq5aldd4spyc.fsf@kernel.org>
+ <6a1774dd80f74_19737610095@djbw-dev.notmuch>
+ <yq5aik81sf22.fsf@kernel.org>
+Subject: Re: [PATCH v5 5/5] iommufd/vdevice: add TSM request ioctl
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260505002737.2213734-4-skhawaja@google.com>
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 
-On Tue, May 05, 2026 at 12:27:36AM +0000, Samiullah Khawaja wrote:
-> Add an API to preserve/restore the DMA direct allocation for liveupdate.
-> The underlying memory is preserved/restored using KHO. During restore
-> the memory is setup based on the device configuration, gfp flags and
-> allocation attributes. Once restored, the driver can use the usual
-> dma_free* API to deallocate the restored DMA allocation.
+Aneesh Kumar K.V wrote:
+[..]
+> > I think we can wait to move it to its own IOMMU operation unless/until
+> > there is a need to set RUN outside of an explicit guest request, right?
 > 
-> This API will be used to add support in dma_alloc* APIs to
-> preseve/restore the DMA allocations.
+> Something like the below? (the diff against this series)
 > 
-> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
-> ---
->  include/linux/dma-direct.h |  29 +++++++
->  kernel/dma/Kconfig         |   3 +
->  kernel/dma/direct.c        | 163 +++++++++++++++++++++++++++++++++++++
->  3 files changed, 195 insertions(+)
-> 
-
-[...]
-
-> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-> index bfef21b4a9ae..d92852942c6c 100644
-> --- a/kernel/dma/Kconfig
-> +++ b/kernel/dma/Kconfig
-> @@ -265,3 +265,6 @@ config DMA_MAP_BENCHMARK
->  	  performance of dma_(un)map_page.
->  
->  	  See tools/testing/selftests/dma/dma_map_benchmark.c
-> +
-> +config DMA_LIVEUPDATE
-> +	bool "Enable preservation of DMA direct allocations"
-
-Nit: depends on LIVEUPDATE?
-
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index ec887f443741..c2b98f91900a 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -6,6 +6,8 @@
->   */
->  #include <linux/memblock.h> /* for max_pfn */
->  #include <linux/export.h>
-> +#include <linux/kexec_handover.h>
-> +#include <linux/kho/abi/dma_alloc.h>
->  #include <linux/mm.h>
->  #include <linux/dma-map-ops.h>
->  #include <linux/scatterlist.h>
-> @@ -307,6 +309,167 @@ void *dma_direct_alloc(struct device *dev, size_t size,
->  	return NULL;
->  }
->  
-> +#ifdef CONFIG_DMA_LIVEUPDATE
-> +int dma_direct_preserve_allocation(struct device *dev, void *cpu_addr,
-> +				   size_t size, dma_addr_t dma_handle,
-> +				   unsigned long attrs, u64 *state)
-> +{
-> +	struct dma_alloc_ser *ser;
-> +	int ret;
-> +
-> +	if (!kho_is_enabled())
-> +		return -EOPNOTSUPP;
-> +
-> +	if (IS_ENABLED(CONFIG_DMA_CMA))
-> +		return -EOPNOTSUPP;
-> +
-> +	if ((attrs & DMA_ATTR_NO_KERNEL_MAPPING) &&
-> +	    !force_dma_unencrypted(dev) && !is_swiotlb_for_alloc(dev))
-> +		return -EOPNOTSUPP;
-> +
-> +	if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_ALLOC) &&
-> +	    !dev_is_dma_coherent(dev) &&
-> +	    !is_swiotlb_for_alloc(dev))
-> +		return -EOPNOTSUPP;
-> +
-> +	if (IS_ENABLED(CONFIG_DMA_GLOBAL_POOL) &&
-> +	    !dev_is_dma_coherent(dev))
-> +		return -EOPNOTSUPP;
-> +
-> +	if (IS_ENABLED(CONFIG_DMA_COHERENT_POOL) &&
-> +	    dma_is_from_pool(dev, cpu_addr, PAGE_ALIGN(size)))
-> +		return -EOPNOTSUPP;
-> +
-> +	ser = kho_alloc_preserve(sizeof(*ser));
-> +	if (IS_ERR(ser))
-> +		return PTR_ERR(ser);
-> +
-> +	ser->page_phys = dma_to_phys(dev, dma_handle);
-> +	ser->force_decrypted = force_dma_unencrypted(dev);
-> +	ser->size = size;
-> +
-> +	ret = kho_preserve_pages(phys_to_page(ser->page_phys),
-> +				 size >> PAGE_SHIFT);
-
-Should this be `PAGE_ALIGN(size) >> PAGE_SHIFT` OR 
-`DIV_ROUND_UP(size, PAGE_SIZE)`?
-
-Otherwise, if size is small, say, size == 64-bytes, we preserve 0 pages?
-
-Also, IIRC, even with PAGE_ALIGN, preserving just the requested pgcount
-is not enough because buddy allocator allocates in order-N.
-
-For e.g. if a driver requests 20KB (5 pages), the buddy allocator 
-fulfills it with an order-3 block (8 pages).
-
-Now, if we only tell KHO to preserve 5 pages, the remaining 3 pages are 
-free in the new kernel. When the driver eventually tears down and calls
-dma_free_coherent(), dma_direct_free() will call 
-__free_pages(page, get_order(size)), which will attempt to free all 8 
-pages, causing a double-free panic on the 3 unpreserved pages?
-
-Should we be preserving exactly 1 << get_order(size) pages as per buddy?
-Same applies to unpreserve, and restore.
-
-> +	if (ret) {
-> +		kho_unpreserve_free(ser);
-> +		return ret;
-> +	}
-> +
-> +	*state = virt_to_phys(ser);
-> +	return 0;
-> +}
-> +
-> +void dma_direct_unpreserve_allocation(struct device *dev, u64 state)
-> +{
-> +	struct dma_alloc_ser *ser;
-> +
-> +	if (!kho_is_enabled())
-> +		return;
-> +
-> +	ser = phys_to_virt(state);
-> +	kho_unpreserve_pages(phys_to_page(ser->page_phys),
-> +			     ser->size >> PAGE_SHIFT);
-> +	kho_unpreserve_free(ser);
-> +}
-> +
-> +void *dma_direct_restore_allocation(struct device *dev, size_t size,
-> +				    dma_addr_t *dma_handle, gfp_t gfp,
-> +				    unsigned long attrs, u64 state)
-
-Are we relying on the caller to pass same attrs? So, a buffer with 
-non-coherent attrs can be mapped with coherent attrs in the new kernel.
-Could this cause side-effects? Should we check for such driver bugs with
-a WARN here while comparing older attrs with the newer ones too?
-
-Coherency breaking due to subtle driver bugs is very painful to debug :/
-
-> +{
-> +	bool remap = false, set_uncached = false;
-> +	struct dma_alloc_ser *ser = NULL;
-> +	struct page *page;
-> +	void *cpu_addr;
-> +
-> +	if (!kho_is_enabled())
-> +		return NULL;
-> +
-> +	ser = phys_to_virt(state);
-> +	page = phys_to_page(ser->page_phys);
-
-[...]
-
-> +
-> +	/*
-> +	 * Remapping will be blocking so return error. The preserved memory
-> +	 * might be already decrypted in the previous kernel, but the decryption
-> +	 * call is not guaranteed to be non-blocking so return error always if
-> +	 * decryption is required.
-> +	 */
-> +	if ((remap || force_dma_unencrypted(dev)) &&
-> +	    dma_direct_use_pool(dev, gfp))
-> +		return NULL; 
-> +
-> +	/*
-> +	 * Encryption scheme changed between two kernels and this might cause
-> +	 * issues if device/driver is not handling it properly.
-> +	 */
-> +	WARN_ON_ONCE(ser->force_decrypted != force_dma_unencrypted(dev));
-> +
-> +	/*
-> +	 * arch_dma_prep_coherent() should make sure that any cache lines from
-> +	 * the previous kernel, if the device was coherent previously or cached
-> +	 * mapping in this kernel during init are not problamatic for
-> +	 * non-coherent allocations.
-> +	 */
-> +	if (remap) {
-> +		pgprot_t prot = dma_pgprot(dev, PAGE_KERNEL, attrs);
-> +
-> +		if (force_dma_unencrypted(dev))
-> +			prot = pgprot_decrypted(prot);
-> +
-> +		arch_dma_prep_coherent(page, size);
-> +
-> +		cpu_addr = dma_common_contiguous_remap(page, size, prot,
-> +						       __builtin_return_address(0));
-> +		if (!cpu_addr)
-> +			return NULL;
-
-Should we be kho_restore_free-ing on all these error paths?
-We only seem to be kho_restore_free-ing on the success path.
-Same for kho_restore_pages.. if we return an error here, we don't
-restore the preserved pages? Are we leaking those too?
-
-> +	} else {
-> +		cpu_addr = page_address(page);
-> +		if (dma_set_decrypted(dev, cpu_addr, size))
-> +			return NULL;
-> +	}
-> +
-> +	if (set_uncached) {
-> +		arch_dma_prep_coherent(page, size);
-> +		cpu_addr = arch_dma_set_uncached(cpu_addr, size);
-> +		if (IS_ERR(cpu_addr))
-> +			return NULL;
-> +	}
-> +
-> +	*dma_handle = phys_to_dma_direct(dev, ser->page_phys);
-> +
-> +	/*
-> +	 * Cannot free the restored pages on error here as these might be in use
-> +	 * by a device with direct allocation in the previous kernel.
-> +	 */
-> +	WARN_ON(!kho_restore_pages(ser->page_phys,
-> +				   ser->size >> PAGE_SHIFT));
-> +	kho_restore_free(ser);
-> +	return cpu_addr;
-> +}
-> +#endif
-> +
->  void dma_direct_free(struct device *dev, size_t size,
->  		void *cpu_addr, dma_addr_t dma_addr, unsigned long attrs)
+> I have not yet integrated this into the full CCA patchset for testing,
+> but I wanted to make sure we are aligned on the UAPI.
+[..]
+> -static bool iommufd_vdevice_tsm_req_scope_valid(u32 scope)
+> +static bool iommufd_vdevice_tsm_req_arch_valid(u32 tvm_arch)
 >  {
+> -	if (scope > IOMMU_VDEVICE_TSM_REQ_SCOPE_PCI_LAST)
+> +	switch (tvm_arch) {
+> +	case IOMMU_VDEVICE_TSM_TVM_ARCH_CCA:
+> +	case IOMMU_VDEVICE_TSM_TVM_ARCH_SEV:
+> +	case IOMMU_VDEVICE_TSM_TVM_ARCH_TDX:
 
-Thanks,
-Praan
+Makes sense for any command that needs tunneling. However, see below, what is
+that set, and do we need a IOMMU_VDEVICE_TSM_COMMON when architecture
+differentiation is not required?
+
+> +		return true;
+> +	default:
+>  		return false;
+> +	}
+> +}
+>  
+> -	switch (scope) {
+> -	case IOMMU_VDEVICE_TSM_REQ_PCI_INFO:
+> -	case IOMMU_VDEVICE_TSM_REQ_PCI_STATE_CHANGE:
+> -	case IOMMU_VDEVICE_TSM_REQ_PCI_DEBUG_READ:
+> -	case IOMMU_VDEVICE_TSM_REQ_PCI_DEBUG_WRITE:
+> +static bool iommufd_vdevice_tsm_req_op_valid(u32 op, u32 tvm_arch)
+> +{
+> +	switch (op) {
+> +	case TSM_REQ_READ_OBJECT:
+> +	case TSM_REQ_REGEN_OBJECT:
+> +	case TSM_REQ_OBJECT_INFO:
+
+The design goal of the netlink device-evidence interface is to be able
+to respond to all shapes of requests for evidence. So netlink caches
+objects that the hypercall handler can fill responses from.
+
+It eliminates a class of commands that need tunneling.
+
+> +	case TSM_REQ_VALIDATE_MMIO:
+> +	case TSM_REQ_SET_TDI_STATE:
+
+Are these potentially candidates for a IOMMU_VDEVICE_TSM_COMMON? The
+handler knows how to do the arch-specific response from the common
+iommufd result, or is there TSM-specific payload beyond @tsm_code for
+these.
+
+Make it the case that guest_req only needs non-common arch for
+operations that are implementation unique, or where the response payload
+exceeds what can be conveyed via @tsm_code.
+
+>  		return true;
+> +	case TSM_REQ_SEV_ENABLE_DMA:
+> +	case TSM_REQ_SEV_DISABLE_DMA:
+> +		return tvm_arch == IOMMU_VDEVICE_TSM_TVM_ARCH_SEV;
+
+Right, this appears to be the only case where the command is
+implementation unique. The handler can only ask iommufd to take
+arch-specific action.
