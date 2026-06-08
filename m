@@ -1,180 +1,322 @@
-Received: from mail-qt1-f202.google.com (mail-qt1-f202.google.com [209.85.160.202])
+Received: from mail-dl1-f50.google.com (mail-dl1-f50.google.com [74.125.82.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DA3E3E6DD4
-	for <iommu@lists.linux.dev>; Mon,  8 Jun 2026 19:43:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 036193859CE
+	for <iommu@lists.linux.dev>; Mon,  8 Jun 2026 19:55:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780947807; cv=none; b=GQpJGB61qlk7Rlwb/DghRwIZov3UKN0nXH9OlPeeLtwS01E2UlkBwoDMzrGWbMLKSQXKzW2xRRX4HMHihk5hE7JrqzNlEsPSvoEgJWP02j89VzvsI2I2WLs2U+k2Oj5dzvtcQ/Gj9dRizZBo88JeXfC55AIP4YZoH87uA6YASZ0=
+	t=1780948533; cv=none; b=o4iLI+7mGHVbIzPvKKVBnZhvxlX7gd4LjrmrLB86XL3UJkJncCij0Tb0FIr81++9kP61knqwI+Y8Jjv11uAzlasiiE9UJNOU+K7mMbh0dr2RE9THU5O5iPd4iFiaHNyRtMUPxz9Mv7RCYE1QEsnGKZ1x/POJSozd0vgB5sbU6sA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780947807; c=relaxed/simple;
-	bh=gJ6qO82cunFkHH/YI0cpZWB+99vzwtO076qzoKQb8zA=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=m4ipUXhT8a9th1gG0fWd7Mmyqo9M5BvGSBqqRe2D62FFgVErb+LF+K1nHTaMFFoui917NtWvHChHb8hgfkziD62xMPT5pbIwuRLZlSL2jYlTegKNQf5GFrSoP9O/TpQFZmVVR6wBQi7vch2jPEoN/PmEmkrr8VNjWRi7AUpjZHc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--xuehaohu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=S3QaQNt5; arc=none smtp.client-ip=209.85.160.202
+	s=arc-20240116; t=1780948533; c=relaxed/simple;
+	bh=6+HXf+FDYiwTqChwNe1Waa3meZ8yJYGg35Bx3IDfIRk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qqe11h4jkLwisWJ96vMGD1DpIbURuVLa3TlMhcuvySiIDA0+vuOKSrbJlUxe9R52zsb+KjbEGOOOtv8/uvmt+JJl4+0r23vwCcndE7XXnKHno6Lv+ewvgQDc8h4s6yt4Q12JK85vbfcYFwpRKbDl5cGTCQ5r1OuXS0t97BLNy1c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ccygvPTi; arc=none smtp.client-ip=74.125.82.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--xuehaohu.bounces.google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="S3QaQNt5"
-Received: by mail-qt1-f202.google.com with SMTP id d75a77b69052e-5174a236220so92971261cf.3
-        for <iommu@lists.linux.dev>; Mon, 08 Jun 2026 12:43:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ccygvPTi"
+Received: by mail-dl1-f50.google.com with SMTP id a92af1059eb24-133362c30cfso33853c88.0
+        for <iommu@lists.linux.dev>; Mon, 08 Jun 2026 12:55:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780947804; x=1781552604; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=v1WPgK4XhrSsWKxtc0VlcZjNH1lHogrTgrVmSMDXRnU=;
-        b=S3QaQNt5YbnSd/z9XqAjg4agpdmNbSq8Ih6lsspFFmcPIi9FgOZrPXyNyS08fcFoue
-         Bberfn9roi2ilRlDwQB+nNeeqzAIQjLxSlhuazWqGTyCI3TdCpPTagu0Ffzri0QDpgfN
-         vdqe34Ns2awBOusJXWYF0IYP8+13DfECWkZFsbcEIT0Wdxhcz7OcmZPx7KD032uK0UaY
-         VYJDamU5yAfFzGGcGWs4cAfeCVLT0jU9xfP2Wku7LOFaQX2AC+hYK+SiBdOBkS3i/g5T
-         vVus2MSYZwlqz7JwofQdznM40mdm6ghZ7jfDoF+6PnHMsCiys311C14srGevbl6GenBl
-         ZYRA==
+        d=google.com; s=20251104; t=1780948530; x=1781553330; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ns7tVcW9XWyLcZvttsJ0K9GITGIgrVGAf3TGrFOv8Tc=;
+        b=ccygvPTiS3d+nth93FO9C+V1suFFMGgvA2QenwXTqZe5S7oBtJe4Sf5peAlrGbnsYL
+         12ZUBBGbxFvKFhe0fKM2M7qzRehkNFF5cdOqJ9diF753nIkhB3LjqYDyAPxsjhLe7jaH
+         V6UybSSHOoR1lR/p4Wm6K+jYG6b+PBxcBe/RwG3uPEftD8V4gAlNkVb3Dw/cYKudkLmd
+         oZAwGkAg+HW0/VVCum1tZFPXch+tLcc7lTRPL+XkJ2jzzza9ecSfiz8aRxDtgs9CnVaq
+         fJ4XqRKvYXuPH+3wpdrbfzEuNh+K/6br0XZicjmQPXwKHPksw2RR1PzAFKy4PZFj7zk4
+         hObA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780947804; x=1781552604;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=v1WPgK4XhrSsWKxtc0VlcZjNH1lHogrTgrVmSMDXRnU=;
-        b=aVbOw2hwGhME+7jzP90+FUr2w2JA2ZIjpdqklDKmxKfDOwhy5uMh/lBw+NjX0qUpV2
-         08zaD/Lts9wrJB3F9uBr0kLCuvBiN+ufwIBM8WnQ4frUCUFlRNofk3xX3kGE7nnBGQQ7
-         HJW/EqZhBlQjw8WQAqtZLWyLq9OetxbMP57s96uzTh+GkDUxoYBuKRtytLCK8n8/bOhD
-         0gjZmg8CXsiZ7hE5qCrXaZ8MgPJ8rwpyRUsCD+9V1FZD4KXFiUPi45NkS9rVSwrKZHDg
-         cqh16kb/6wJv0zS7N9Rf1Aqvw+gXsW1kZ0d9XkvHO+FWe6yX1oTjlblTADqTJcyYhO9P
-         8+YA==
-X-Forwarded-Encrypted: i=1; AFNElJ+1Q9/sWG53E5M+M6gtTzfNk7wPqWnhlz5j9/tjxbGeZOr6s7pYnr/EK9L/lhhqThypmHBX/g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwI/oX8BUaFIBNw0q0FXPvuRV47J2DF7XHv8UUEhOlaDlx69Omj
-	1jjJoVhdt+Y2bf0515PBqwhO4+ekDPHmfWNPmCYJIhRU7CW7d5CArfVEnEOkn/ApXWsAuB1MEoe
-	08O3ekxUU8iUU
-X-Received: from qtss4-n2.prod.google.com ([2002:a05:622a:a9c4:20b0:517:85d0:ad3a])
- (user=xuehaohu job=prod-delivery.src-stubby-dispatcher) by
- 2002:ac8:5cd1:0:b0:516:df62:bde3 with SMTP id d75a77b69052e-51795c47f23mr242075611cf.54.1780947803937;
- Mon, 08 Jun 2026 12:43:23 -0700 (PDT)
-Date: Mon,  8 Jun 2026 19:43:21 +0000
+        d=1e100.net; s=20251104; t=1780948530; x=1781553330;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ns7tVcW9XWyLcZvttsJ0K9GITGIgrVGAf3TGrFOv8Tc=;
+        b=izgiEwpjxMDUO+8TMdMmV5iCvK9XOWyCcCqohBTacZy0iI4qM9WOPSp85KxthjU8qy
+         Fx9KyzouRr5RbG8+q7ym9KL1c+cJpsPRvnHnNuVdP2PneU/iaZKhGOi3h5QmsXtwg73R
+         ROx1mhgzMykR/hTwtSOwNy8cZ60U6uNW2oPywNYoupHLEt8FodGEe1OvhNOfGFD224oX
+         k8RyIHhzOydEz3vKx71iqdXGZTqDmn6BhXOi3zziOUPsb5HfrLpqT/8/uvnclYi0dDYA
+         nSIShoYiOhssEayJNlVZDU+h39IF7sNRzyyxsg2EJEWKAyYbkhOQNasqa58IiQaX3J0T
+         A+7g==
+X-Forwarded-Encrypted: i=1; AFNElJ9/AaX+T58/544qfgTFx81lEvG7fioq7gKE/XISSQ7re58tV6V43PQzhBiWvupyYSXAJSe0XQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxFK1pvaF0EDWj74mq7rWcdKRUnPQSIkm0SsVblUuEw6AeGYX2B
+	J/di+Pg3ABTQHD2RO1AnN6zujJS/zEK3FNdIKR0tYJx/j+yGuJtr8YeKNaz3NC/ugQ==
+X-Gm-Gg: Acq92OEzzpu6iEUiLYFGq4+LI+qUk1X5qSBFo1IUTcqnJ1Pgfovcojjr/shAb4kJnWu
+	I8R8d4tODU8o4Ur24VXQfQ/wm2GLCpNepG5LvrVfm2zFthL4W89uHqR7ASRuChYZccbMDC6kzfw
+	OQi0q7D8xkrU7lsA3qfWVDo7O/0HWIKopt7EcwHDJeQUypm8/O0CbBDXXOTLr+shBzOvEBEwKp4
+	2KQPjqT95yazV/t6rb906dSoCJ+DGScsVfKLXLZC38GTXnPcTExr8L3lYsbfwhLaQnIdkTyJj8B
+	ORHTIwbzxjG0etX+Yl58XDTEp9Dw5y7ZNabw1tBHCvoupQEKaUOwRScDRSZMY+6p/7ei1jPouEB
+	7YHLfVIUzj0N49ovoZaCTLFzLCcLYnaaaGFaQWTdgc09uNn2plXM69g96Ib4RGX1KC3Uv91e9mT
+	dZX78DTM+4lNGx/qwt0yHK9/FVFzD33XtlIe8bsGIohEw4MwYF+5wxJdx/IZfCa3F8rE4GyU0=
+X-Received: by 2002:a05:7022:170e:b0:138:888:e99d with SMTP id a92af1059eb24-1380888eb22mr103345c88.32.1780948529234;
+        Mon, 08 Jun 2026 12:55:29 -0700 (PDT)
+Received: from google.com (199.255.142.34.bc.googleusercontent.com. [34.142.255.199])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30791f6381fsm9666160eec.0.2026.06.08.12.55.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Jun 2026 12:55:28 -0700 (PDT)
+Date: Mon, 8 Jun 2026 19:55:21 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Samiullah Khawaja <skhawaja@google.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	Mike Rapoport <rppt@kernel.org>,
+	Pratyush Yadav <pratyush@kernel.org>,
+	Alexander Graf <graf@amazon.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
+	kexec@lists.infradead.org, linux-mm@kvack.org,
+	linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Vipin Sharma <vipinsh@google.com>
+Subject: Re: [RFC PATCH 3/4] dma-direct: Add API to preserve/restore
+ allocations
+Message-ID: <aiceKYmc323G7tBs@google.com>
+References: <20260505002737.2213734-1-skhawaja@google.com>
+ <20260505002737.2213734-4-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.54.0.1064.gd145956f57-goog
-Message-ID: <20260608194321.150838-1-xuehaohu@google.com>
-Subject: [PATCH v6] dma-buf: Fix silent overflow for phys vec to sgt
-From: David Hu <xuehaohu@google.com>
-To: Sumit Semwal <sumit.semwal@linaro.org>, 
-	"=?UTF-8?q?Christian=20K=C3=B6nig?=" <christian.koenig@amd.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>, Leon Romanovsky <leon@kernel.org>, 
-	Kevin Tian <kevin.tian@intel.com>, Ankit Agrawal <ankita@nvidia.com>, 
-	Alex Williamson <alex@shazbot.org>, linux-media@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, jmoroni@google.com, 
-	praan@google.com, David Hu <xuehaohu@google.com>, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260505002737.2213734-4-skhawaja@google.com>
 
-In case MMIO size is bigger than 4G and peer2peer DMA goes
-through host bridge, we trigger a code path that assigns the
-total linked IOVA (which is greater than 4G) to mapped_len.
+On Tue, May 05, 2026 at 12:27:36AM +0000, Samiullah Khawaja wrote:
+> Add an API to preserve/restore the DMA direct allocation for liveupdate.
+> The underlying memory is preserved/restored using KHO. During restore
+> the memory is setup based on the device configuration, gfp flags and
+> allocation attributes. Once restored, the driver can use the usual
+> dma_free* API to deallocate the restored DMA allocation.
+> 
+> This API will be used to add support in dma_alloc* APIs to
+> preseve/restore the DMA allocations.
+> 
+> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+> ---
+>  include/linux/dma-direct.h |  29 +++++++
+>  kernel/dma/Kconfig         |   3 +
+>  kernel/dma/direct.c        | 163 +++++++++++++++++++++++++++++++++++++
+>  3 files changed, 195 insertions(+)
+> 
 
-Previously, `mapped_len` was declared as 32-bit `unsigned int`.
-When accumulating `size_t` lengths, this leads to a silent wrap-around.
-This truncation causes truncated lengths to be passed to functions
-like `fill_sg_entry()`.
+[...]
 
-Fix this by changing `mapped_len` to `size_t` (64-bit). While
-at it, fix similar potential overflow issues in `calc_sg_nents`
-by using `check_add_overflow()` for `nents` and using
-`unsigned int` for the loop iterator in `fill_sg_entry` to match.
+> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+> index bfef21b4a9ae..d92852942c6c 100644
+> --- a/kernel/dma/Kconfig
+> +++ b/kernel/dma/Kconfig
+> @@ -265,3 +265,6 @@ config DMA_MAP_BENCHMARK
+>  	  performance of dma_(un)map_page.
+>  
+>  	  See tools/testing/selftests/dma/dma_map_benchmark.c
+> +
+> +config DMA_LIVEUPDATE
+> +	bool "Enable preservation of DMA direct allocations"
 
-Fixes: 3aa31a8bb11e ("dma-buf: provide phys_vec to scatter-gather mapping routine")
-Cc: stable@vger.kernel.org
-Cc: iommu@lists.linux.dev
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: David Hu <xuehaohu@google.com>
----
-Changes in v6:
- - Used `check_add_overflow()` in `calc_sg_nents()` for safer
-   accumulation (Leon).
- - Dropped explicit `!nents` check and added a comment noting that
-   `sg_alloc_table` handles `nents == 0` (Leon).
- - Collected Reviewed-by from Kevin Tian.
+Nit: depends on LIVEUPDATE?
 
-Changes in v5:
- - Removed WARN_ON_ONCE from calc_sg_nents() to avoid log noise (Jason).
- - Added explicit check for `!nents` in dma_buf_phys_vec_to_sgt() to
-   cleanly return -EINVAL on overflow (Jason).
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index ec887f443741..c2b98f91900a 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -6,6 +6,8 @@
+>   */
+>  #include <linux/memblock.h> /* for max_pfn */
+>  #include <linux/export.h>
+> +#include <linux/kexec_handover.h>
+> +#include <linux/kho/abi/dma_alloc.h>
+>  #include <linux/mm.h>
+>  #include <linux/dma-map-ops.h>
+>  #include <linux/scatterlist.h>
+> @@ -307,6 +309,167 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+>  	return NULL;
+>  }
+>  
+> +#ifdef CONFIG_DMA_LIVEUPDATE
+> +int dma_direct_preserve_allocation(struct device *dev, void *cpu_addr,
+> +				   size_t size, dma_addr_t dma_handle,
+> +				   unsigned long attrs, u64 *state)
+> +{
+> +	struct dma_alloc_ser *ser;
+> +	int ret;
+> +
+> +	if (!kho_is_enabled())
+> +		return -EOPNOTSUPP;
+> +
+> +	if (IS_ENABLED(CONFIG_DMA_CMA))
+> +		return -EOPNOTSUPP;
+> +
+> +	if ((attrs & DMA_ATTR_NO_KERNEL_MAPPING) &&
+> +	    !force_dma_unencrypted(dev) && !is_swiotlb_for_alloc(dev))
+> +		return -EOPNOTSUPP;
+> +
+> +	if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_ALLOC) &&
+> +	    !dev_is_dma_coherent(dev) &&
+> +	    !is_swiotlb_for_alloc(dev))
+> +		return -EOPNOTSUPP;
+> +
+> +	if (IS_ENABLED(CONFIG_DMA_GLOBAL_POOL) &&
+> +	    !dev_is_dma_coherent(dev))
+> +		return -EOPNOTSUPP;
+> +
+> +	if (IS_ENABLED(CONFIG_DMA_COHERENT_POOL) &&
+> +	    dma_is_from_pool(dev, cpu_addr, PAGE_ALIGN(size)))
+> +		return -EOPNOTSUPP;
+> +
+> +	ser = kho_alloc_preserve(sizeof(*ser));
+> +	if (IS_ERR(ser))
+> +		return PTR_ERR(ser);
+> +
+> +	ser->page_phys = dma_to_phys(dev, dma_handle);
+> +	ser->force_decrypted = force_dma_unencrypted(dev);
+> +	ser->size = size;
+> +
+> +	ret = kho_preserve_pages(phys_to_page(ser->page_phys),
+> +				 size >> PAGE_SHIFT);
 
-Changes in v4:
- - Added WARN_ON_ONCE() to the nents overflow check to prevent silent
-   failures (Claude Bot).
+Should this be `PAGE_ALIGN(size) >> PAGE_SHIFT` OR 
+`DIV_ROUND_UP(size, PAGE_SIZE)`?
 
-Changes in v3:
- - Removed leftover sentence fragment from the commit message.
- - Kept `nents = 0` initialization (previously stated as removed in the
-   v2 changelog) as it is strictly required for the `+=` accumulation
-   loop in `calc_sg_nents()`.
+Otherwise, if size is small, say, size == 64-bytes, we preserve 0 pages?
 
-Changes in v2:
- - Fixed 'IVOA' -> 'IOVA' typo and expanded commit message (Claude Bot).
- - Added Reverse Xmas tree formatting (Pranjal).
- - Folded in extra bounds checking for calc_sg_nents() (Pranjal).
- - Folded in type consistency fix for fill_sg_entry() (Pranjal).
- - Collected Reviewed-by from Pranjal Shrivastava.
+Also, IIRC, even with PAGE_ALIGN, preserving just the requested pgcount
+is not enough because buddy allocator allocates in order-N.
 
- drivers/dma-buf/dma-buf-mapping.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+For e.g. if a driver requests 20KB (5 pages), the buddy allocator 
+fulfills it with an order-3 block (8 pages).
 
-diff --git a/drivers/dma-buf/dma-buf-mapping.c b/drivers/dma-buf/dma-buf-mapping.c
-index 794acff2546a..67a8ff52fb8f 100644
---- a/drivers/dma-buf/dma-buf-mapping.c
-+++ b/drivers/dma-buf/dma-buf-mapping.c
-@@ -5,12 +5,13 @@
-  */
- #include <linux/dma-buf-mapping.h>
- #include <linux/dma-resv.h>
-+#include <linux/overflow.h>
- 
- static struct scatterlist *fill_sg_entry(struct scatterlist *sgl, size_t length,
- 					 dma_addr_t addr)
- {
- 	unsigned int len, nents;
--	int i;
-+	unsigned int i;
- 
- 	nents = DIV_ROUND_UP(length, UINT_MAX);
- 	for (i = 0; i < nents; i++) {
-@@ -40,8 +41,11 @@ static unsigned int calc_sg_nents(struct dma_iova_state *state,
- 	size_t i;
- 
- 	if (!state || !dma_use_iova(state)) {
--		for (i = 0; i < nr_ranges; i++)
--			nents += DIV_ROUND_UP(phys_vec[i].len, UINT_MAX);
-+		for (i = 0; i < nr_ranges; i++) {
-+			unsigned int added = DIV_ROUND_UP(phys_vec[i].len, UINT_MAX);
-+			if (check_add_overflow(nents, added, &nents))
-+				return 0;
-+		}
- 	} else {
- 		/*
- 		 * In IOVA case, there is only one SG entry which spans
-@@ -95,9 +99,10 @@ struct sg_table *dma_buf_phys_vec_to_sgt(struct dma_buf_attachment *attach,
- 					 size_t nr_ranges, size_t size,
- 					 enum dma_data_direction dir)
- {
--	unsigned int nents, mapped_len = 0;
- 	struct dma_buf_dma *dma;
- 	struct scatterlist *sgl;
-+	size_t mapped_len = 0;
-+	unsigned int nents;
- 	dma_addr_t addr;
- 	size_t i;
- 	int ret;
-@@ -133,6 +138,8 @@ struct sg_table *dma_buf_phys_vec_to_sgt(struct dma_buf_attachment *attach,
- 	}
- 
- 	nents = calc_sg_nents(dma->state, phys_vec, nr_ranges, size);
-+
-+	/* sg_alloc_table will cleanly fail and return -EINVAL if nents == 0 */
- 	ret = sg_alloc_table(&dma->sgt, nents, GFP_KERNEL | __GFP_ZERO);
- 	if (ret)
- 		goto err_free_state;
--- 
-2.54.0.1064.gd145956f57-goog
+Now, if we only tell KHO to preserve 5 pages, the remaining 3 pages are 
+free in the new kernel. When the driver eventually tears down and calls
+dma_free_coherent(), dma_direct_free() will call 
+__free_pages(page, get_order(size)), which will attempt to free all 8 
+pages, causing a double-free panic on the 3 unpreserved pages?
 
+Should we be preserving exactly 1 << get_order(size) pages as per buddy?
+Same applies to unpreserve, and restore.
+
+> +	if (ret) {
+> +		kho_unpreserve_free(ser);
+> +		return ret;
+> +	}
+> +
+> +	*state = virt_to_phys(ser);
+> +	return 0;
+> +}
+> +
+> +void dma_direct_unpreserve_allocation(struct device *dev, u64 state)
+> +{
+> +	struct dma_alloc_ser *ser;
+> +
+> +	if (!kho_is_enabled())
+> +		return;
+> +
+> +	ser = phys_to_virt(state);
+> +	kho_unpreserve_pages(phys_to_page(ser->page_phys),
+> +			     ser->size >> PAGE_SHIFT);
+> +	kho_unpreserve_free(ser);
+> +}
+> +
+> +void *dma_direct_restore_allocation(struct device *dev, size_t size,
+> +				    dma_addr_t *dma_handle, gfp_t gfp,
+> +				    unsigned long attrs, u64 state)
+
+Are we relying on the caller to pass same attrs? So, a buffer with 
+non-coherent attrs can be mapped with coherent attrs in the new kernel.
+Could this cause side-effects? Should we check for such driver bugs with
+a WARN here while comparing older attrs with the newer ones too?
+
+Coherency breaking due to subtle driver bugs is very painful to debug :/
+
+> +{
+> +	bool remap = false, set_uncached = false;
+> +	struct dma_alloc_ser *ser = NULL;
+> +	struct page *page;
+> +	void *cpu_addr;
+> +
+> +	if (!kho_is_enabled())
+> +		return NULL;
+> +
+> +	ser = phys_to_virt(state);
+> +	page = phys_to_page(ser->page_phys);
+
+[...]
+
+> +
+> +	/*
+> +	 * Remapping will be blocking so return error. The preserved memory
+> +	 * might be already decrypted in the previous kernel, but the decryption
+> +	 * call is not guaranteed to be non-blocking so return error always if
+> +	 * decryption is required.
+> +	 */
+> +	if ((remap || force_dma_unencrypted(dev)) &&
+> +	    dma_direct_use_pool(dev, gfp))
+> +		return NULL; 
+> +
+> +	/*
+> +	 * Encryption scheme changed between two kernels and this might cause
+> +	 * issues if device/driver is not handling it properly.
+> +	 */
+> +	WARN_ON_ONCE(ser->force_decrypted != force_dma_unencrypted(dev));
+> +
+> +	/*
+> +	 * arch_dma_prep_coherent() should make sure that any cache lines from
+> +	 * the previous kernel, if the device was coherent previously or cached
+> +	 * mapping in this kernel during init are not problamatic for
+> +	 * non-coherent allocations.
+> +	 */
+> +	if (remap) {
+> +		pgprot_t prot = dma_pgprot(dev, PAGE_KERNEL, attrs);
+> +
+> +		if (force_dma_unencrypted(dev))
+> +			prot = pgprot_decrypted(prot);
+> +
+> +		arch_dma_prep_coherent(page, size);
+> +
+> +		cpu_addr = dma_common_contiguous_remap(page, size, prot,
+> +						       __builtin_return_address(0));
+> +		if (!cpu_addr)
+> +			return NULL;
+
+Should we be kho_restore_free-ing on all these error paths?
+We only seem to be kho_restore_free-ing on the success path.
+Same for kho_restore_pages.. if we return an error here, we don't
+restore the preserved pages? Are we leaking those too?
+
+> +	} else {
+> +		cpu_addr = page_address(page);
+> +		if (dma_set_decrypted(dev, cpu_addr, size))
+> +			return NULL;
+> +	}
+> +
+> +	if (set_uncached) {
+> +		arch_dma_prep_coherent(page, size);
+> +		cpu_addr = arch_dma_set_uncached(cpu_addr, size);
+> +		if (IS_ERR(cpu_addr))
+> +			return NULL;
+> +	}
+> +
+> +	*dma_handle = phys_to_dma_direct(dev, ser->page_phys);
+> +
+> +	/*
+> +	 * Cannot free the restored pages on error here as these might be in use
+> +	 * by a device with direct allocation in the previous kernel.
+> +	 */
+> +	WARN_ON(!kho_restore_pages(ser->page_phys,
+> +				   ser->size >> PAGE_SHIFT));
+> +	kho_restore_free(ser);
+> +	return cpu_addr;
+> +}
+> +#endif
+> +
+>  void dma_direct_free(struct device *dev, size_t size,
+>  		void *cpu_addr, dma_addr_t dma_addr, unsigned long attrs)
+>  {
+
+Thanks,
+Praan
