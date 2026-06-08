@@ -1,137 +1,137 @@
-Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail-m19731119.qiye.163.com (mail-m19731119.qiye.163.com [220.197.31.119])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22DD7367B6E
-	for <iommu@lists.linux.dev>; Sun,  7 Jun 2026 22:36:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.181
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780871797; cv=pass; b=hgUOG9MxsxtkYqs4kYy2x28dddlz8pPTxVIoiXtmeyql8FeOATUgZLYOHWfdY86nghRjSnHoYvjREbC4e1neLi84HhFq2jXJyjE/U+iInuu1E80ZW/gpy6CdjzWBnHvfShjEDtEosTn6HPUnL9PMYEQIsRNJIy1r3M/RqWrg0mQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780871797; c=relaxed/simple;
-	bh=iiRNonkrU9OEnrLXum+KhTdP8Fdh43k1RmgZBjBlxoY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=AmFQ/0KkdiVe4d6tYXOmFvmDHf96zYv1Ei7D01kkRjOkENaV9l01J3MJbL4xuU8wcFcf4gdUuggsZI4bgnKdPXXoBo+kPNTOpG11ydRiIvYz5bJlRynSfH0Y1PAsJsQPExpokQKQoZGsUU3bBTeKyN75Wf2YmsclzJpIE7ZMbe4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=VfoVf0cB; arc=pass smtp.client-ip=209.85.160.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA7C4311940
+	for <iommu@lists.linux.dev>; Mon,  8 Jun 2026 02:16:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.119
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780884983; cv=none; b=ElbWHb/ppGaht3xklLh7pi3Xte/apDRjzg0fLpLVbgQDLGW0AneN+1iuj1BkJyi4VZGW/oQvJUhR9h3p+KNeF1XmRr2JvOxbNQ/s6xogHs5RaahW9O2hiiyYzGGNRIdb9VyZEn3Zw1okS/QHkQUkL4oCV1oILzVtWqBU0tY1GaA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780884983; c=relaxed/simple;
+	bh=lWrFFzVFH+uZI4fq9CcaXDY6AJ+jlr3YcKA5DCz9wfI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=i7InsNXaKoD183+3VUrFEAEpIz+QcLKkqhByPSbAPRb0Dg2fY4cHFUU8/JcuEQs0oHOU1qqnU+Zhu7bS1k4n3n4nFfEOKqT5U9qXc70GzuojDIbksqPT4+ISWQEXwU+iEo5KrDU8g1VrRpZ0vq/20E6Yi8GmKbigb06P0PL/MUo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=fd9Fgd70; arc=none smtp.client-ip=220.197.31.119
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="VfoVf0cB"
-Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-51765531803so1579901cf.0
-        for <iommu@lists.linux.dev>; Sun, 07 Jun 2026 15:36:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780871795; cv=none;
-        d=google.com; s=arc-20240605;
-        b=RCouRMwQAdulXkdig0gRRbd/hMY4JKjW8luwm453VNuK2zwn9ovZcH6gQmvrV1Zi6C
-         CRTtbhq1+aFFucFm7Dw5gB9yq2ctc4420UkShLy6fTr1JTNB8D/pIcFIpdmDTPqii7bc
-         i9cD1A5Iu/bppK/epN+h0nZwt7ykAEiByAu/TL2A8NpfJUPPuzOZfFRAWjBcIEJgbL3Y
-         oLZMKxhTWTGi70ROIiuqKo0bnz8e955peQD2nEhP6YMZxIuC6/CO0v1MZcRhqFCv4Djy
-         DVvUY6uInaoFpVG60L58Jm3hbyA2chYR92a1Fnn0vrZprxXN89T5sZ/X7kdqREcpggn2
-         modQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=NzQapWcP2ymqddngP+24xFPJC/OcI9E0rn+PY/NrRy8=;
-        fh=0u6trxL0zZwA0/1Sge/7uQQnOlSSVTu7AIo0GAZRpig=;
-        b=XWL7Qy8K6HzZ4YmVroj1LU2G7NEGmciCoKA6gKR/M2ya9MRVH2qG3d/t/zl6brruvl
-         QeBN3BuRr1bfBuL1fu8drVIVXQEVNswOvbXjF8Yr+IXIzX0yN9N09dHdMo33MISPcp9R
-         JKHJpIFzvzMZD0SH4pcc0f3/P7000sc67CVjfIos03n+5UFVPH0WGt8I04qY9cdKSN1c
-         aXLm0o746e4G2aDFPXf6/G9XKNASJSwXBdLlhy2enuNnaAs9ZO6fLcPY4+GxnHUCq++8
-         Cy+PFWyiLu/577SqAh54Y0w6wAK9B6tq5G2chWdHfsligSRWPgPxiVD3MjEujbtg//iy
-         MrWQ==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780871795; x=1781476595; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=NzQapWcP2ymqddngP+24xFPJC/OcI9E0rn+PY/NrRy8=;
-        b=VfoVf0cBp2sHKrPvM78c7As7/HQ1J8Lg855sbYfQqEMaZjhkzXlRHQRLBUSEFjGNGk
-         NQc9s7dB29zM2HqId5z/a5I0XJEAyFVIEcuq1dZK1kQBL6spBqXxChoUGq8ALBxecM/+
-         md2qgzOnrWgP37/pJ96la6S3pa28/9h23rI+K6scn9ISzaMJxU4k9RcQcKL3ZitZ4vua
-         5LoNucI05S1B544QgflQBMIb3T8rge3SvuuKyudqhGmExtvU9tWSch4NtLWtW8CIT4e1
-         ev8xtbYOvfi0GdTD3k4PxThbaQW/wx4jl1/v4aj7dPQZUkrQTI+2GV2b5RMhNjSHurdJ
-         dGmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780871795; x=1781476595;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=NzQapWcP2ymqddngP+24xFPJC/OcI9E0rn+PY/NrRy8=;
-        b=DxnFiqLOcww3qJUcMOXnVSZwc7RSSkhxDm1xNDuAnehzRpA/MWaxcmh7Dy9XEW995t
-         VBRQAaKtFW0KgvCnE35ZoIHpDu4GwI0jB/dEOCy22mAoyRxx6udk4aG+lO9JdL2wHRZj
-         eH7o/AXTSiSBhF/16W0jerwZZYg0erP1ME49h0ilS/LpdrvxhcfxEOyGN7pg3Qyd9/Jq
-         mbynGUj4mFJEWE1HYS6bKHpFdrrLFUf1+8aSGrE5BCVBa81WTMsU8zQtWI2JwNDnVwYD
-         /gR2hQ5o1yuYiACl1nwRPpCmwcSssZd2bym16m/g9ap8n+ocFDoU0TCbfleWaPMvZlAR
-         rYfA==
-X-Gm-Message-State: AOJu0YyOw7TQp68TJYsEfzvI3GBnyYJlHg/2n65zfMeXY4oNQXJ526O9
-	2sbZHDuh1cz9x+9BgLIBUkYdwuDwSSWXldyF/EGP980IOyCJhSr2/lfYL8pLRY1mJSyhoXA8bMP
-	YVCDCzt2KEV6DCObvtq7bo3KIjFnir+tAo+l3Izey
-X-Gm-Gg: Acq92OFHkzaYjZ53E8gs/zlJYqksppWWwPnXzfxaJpZAuDwE3nu7znfeNnOlbQIxMHX
-	ALRNpxdgBjzRt+EWOHVCQCH2rq9c3shMXzqdw7AFGS+5+xBY/Me1j/PNYcRVBhB6c6XkticTORv
-	Ub8xSiGPD2typD77/eC6uTxXIduDT6dcUYa9DoK8BHdsjQvIOGwIbno3Sa1r6AODDVOYUfWFyfX
-	hcDZRdT4BB1QlDXUvuaOp1prbkyaSVl/P/w6jsO36OGMSjGhsn4q4Nz9biW7oV/RvMKaqE6p9l+
-	lh8NY1DYgwcZQSw=
-X-Received: by 2002:a05:622a:7b13:b0:517:5c70:46bd with SMTP id
- d75a77b69052e-51798cae59dmr16918231cf.11.1780871794443; Sun, 07 Jun 2026
- 15:36:34 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="fd9Fgd70"
+Received: from [172.16.12.90] (unknown [61.154.14.86])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 416b76aca;
+	Mon, 8 Jun 2026 09:40:38 +0800 (GMT+08:00)
+Message-ID: <e5058919-9485-4de5-8eea-331ebfc2987c@rock-chips.com>
+Date: Mon, 8 Jun 2026 09:40:36 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260601215909.3958732-1-praan@google.com> <20260601215909.3958732-10-praan@google.com>
- <CAE2F3rAYWMq6DO5k20e4iMtPbh_X9JeiU8kUfw8nsS5xs42F_Q@mail.gmail.com> <ah7IoJqmRbK7xK5-@google.com>
-In-Reply-To: <ah7IoJqmRbK7xK5-@google.com>
-From: Daniel Mentz <danielmentz@google.com>
-Date: Sun, 7 Jun 2026 15:36:23 -0700
-X-Gm-Features: AVVi8CcBpwT5j7IGxPrmPgiLAQbAn4sKZqb1wXuCaNfPlpIEArZNRn7dVWRuI0A
-Message-ID: <CAE2F3rDuq4FYrQSZ0dK535DB0uOUgCZdsRvGy0JVeaOR_fLbgw@mail.gmail.com>
-Subject: Re: [PATCH v8 09/12] iommu/arm-smmu-v3: Implement pm_runtime & system
- sleep ops
-To: Pranjal Shrivastava <praan@google.com>
-Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, 
-	Nicolin Chen <nicolinc@nvidia.com>, Ashish Mhetre <amhetre@nvidia.com>, 
-	linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH v3 0/9] accel: rocket: Add RK3568 NPU support
+To: Midgy Balon <midgy971@gmail.com>
+Cc: tomeu@tomeuvizoso.net, ogabbay@kernel.org, heiko@sntech.de,
+ robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, joro@8bytes.org,
+ will@kernel.org, robin.murphy@arm.com, dri-devel@lists.freedesktop.org,
+ linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, Simon Xue <xxm@rock-chips.com>,
+ Finley Xiao <finley.xiao@rock-chips.com>
+References: <20260604135255.62682-1-midgy971@gmail.com>
+ <3d99569e-9c3a-49d1-93fb-1335382523e9@rock-chips.com>
+ <CA+GS1Y1s78PwN63X2YJoS8VEGp7CpTERo_K65yKs00U4VRAw4Q@mail.gmail.com>
+Content-Language: en-US
+From: Chaoyi Chen <chaoyi.chen@rock-chips.com>
+In-Reply-To: <CA+GS1Y1s78PwN63X2YJoS8VEGp7CpTERo_K65yKs00U4VRAw4Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-HM-Tid: 0a9ea4e3928003a7kunm2dc5485516737a
+X-HM-MType: 1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVkZHRhMVk8eQxpNQxkaSkIYTlYVFA
+	kWGhdVEwETFhoSFyQUDg9ZV1kYEgtZQVlNSlVKTk9VSk9VQ01ZV1kWGg8SFR0UWUFZT0tIVUpLSE
+	pKQk1VSktLVUpCWQY+
+DKIM-Signature: a=rsa-sha256;
+	b=fd9Fgd70jQYunloQSZc2Sw1ViLh44FaOLEhh8/tp6FuCuEqh+zQpvglmCBICWSNY4eMQ2EG3F6nYIRDMlWBfyr07TaYpQAnqsDsnK7+my9QhXHjn1qw65oOnV0stueIXxBjcZ5b29o9ukMPv35PD2ONVCXGOSRJMTHrJjXosvds=; c=relaxed/relaxed; s=default; d=rock-chips.com; v=1;
+	bh=UrntyxENooj6wbeRVkJOCbYDj96squyuxfsHscwtUdc=;
+	h=date:mime-version:subject:message-id:from;
 
-On Tue, Jun 2, 2026 at 5:12=E2=80=AFAM Pranjal Shrivastava <praan@google.co=
-m> wrote:
->
-> On Mon, Jun 01, 2026 at 10:25:41PM -0700, Daniel Mentz wrote:
-> > On Mon, Jun 1, 2026 at 2:59=E2=80=AFPM Pranjal Shrivastava <praan@googl=
-e.com> wrote:
-> >
-> > > +       /* Drain the CMDQs */
-> > > +       ret =3D arm_smmu_drain_queues(smmu);
-> > > +       if (ret)
-> > > +               dev_warn(smmu->dev, "failed to drain queues, forcing =
-suspend\n");
-> >
-> > Can arm_smmu_drain_queues() be called after cmdq->lock is 0? I think
-> > that way we can be sure that no other thread updates smmu->cmdq.q.cons
-> >
->
-> Hmm.. that wouldn't work for impl-specific CMDQs as we STOP and drain
-> them together in a single function.. maybe I'll factor out setting the
-> STOP_FLAG on impl-specific queues as another impl_op, gate the queues
-> first, wait for lock =3D=3D 0 and then drain_queues?
+Hi Midgy,
 
-I'm not familiar with impl-specific CMDQs, but what you are suggesting
-sounds plausible to me.
-
+On 6/8/2026 5:03 AM, Midgy Balon wrote:
+> Hi Chaoyi,
+> 
+> Thanks a lot for looking at this -- input from Rockchip is exactly what this
+> series needs.
+> 
+>> Hmmm. If I understand correctly, the NPU IOMMU should be v2 rather than v1,
+>> implying it should support 40-bit PAs. Nevertheless, please note that the
+>> upper limit for DTE is 32 bits.
+> 
+> Understood, and that 32-bit-DTE note is the crux of the trouble I had, so let
+> me lay out what I see and ask how you'd prefer to solve it.
+> 
+> The mainline node is already v2 (rockchip,rk3568-iommu in rk356x-base.dtsi).
+> The problem on this 8 GiB board: with the v2 ops the page-table allocations
+> (gfp_flags == 0) can land above 4 GiB, so the DTE ends up > 32 bits and the
+> NPU's first translation faults with DMA_READ_ERROR. To work around that I had
+> switched the NPU MMU to the v1 compatible (rockchip,iommu), whose ops set
+> GFP_DMA32 and keep the DTE sub-4 GiB. That works in isolation, but because the
+> driver keeps a single global rk_ops, a v1 NPU MMU then trips
+> WARN_ON(rk_ops != ops) against the SoC's v2 instances (VOP/VDEC), which is why
+> I based the series on Simon's per-device-ops work.
+> 
+> So my question: with per-device ops in place, what's the intended way to keep
+> the NPU MMU on v2 *and* cap its DTE at 32 bits on boards with >4 GiB of RAM?
+> A v2 ops variant carrying GFP_DMA32 for this device, or is there a register/
+> config bit that constrains the DTE address? I'd rather follow the Rockchip
+> intent here than carry the v1 workaround. (Simon, cc'd -- this is right next to
+> your per-device-ops series.)
 >
-> > > +
-> > > +       /* Wait for cmdq->lock =3D=3D 0 to ensure last CMDQ_CONS_REG =
-is written */
-> > > +       timeout =3D ARM_SMMU_SUSPEND_TIMEOUT_US;
-> > > +       while (atomic_read(&cmdq->lock) !=3D 0 && --timeout)
-> > > +               udelay(1);
-> > > +
-> > > +       /* Timing out here implies misconfigured Runtime PM or broken=
- devlinks */
-> > > +       if (!timeout)
-> > > +               dev_err(smmu->dev, "cmdq lock !=3D 0, forcing suspend=
-. Polling CPUs may fault.\n");
+
+If Simon's method works, please use it :)
+
+>> Can these operations not be completed via the pmdomain driver?
+>> If some operations are controlled by TF-A, are you using open source TF-A?
+> 
+> Most of it is in pmdomain already. Power-on and NoC de-idle are done by the
+> RK3568 NPU power domain (genpd) at power-on -- the driver no longer pokes the
+> PMU directly. Two things remain outside it:
+> 
+>  - vdd_npu: I mark it regulator-always-on in DT rather than wiring it as the
+>    domain's domain-supply, because as a domain-supply it created a device-link
+>    to the I2C PMIC (rk809) and genpd's power-off QoS-save path then hung
+>    reading the NPU QoS registers behind the (gated) NoC. If there's a clean way
+>    to let genpd own vdd_npu without that I2C ordering deadlock I'd much prefer
+>    that -- pointers welcome.
+>
+
+Please refer to the patch below regarding the RK3588 NPU pmdomain.
+In short, you need to set a "need_regulator" for the RK3568 NPU pmdomain.
+
+https://lore.kernel.org/all/20251216055247.13150-1-rmxpzlb@gmail.com/
+
+>  - the NPU compute clock (PVTPLL): set from the driver via SCMI, and only
+>    needed for actual compute, not for bring-up.
+> 
+> One more pmdomain observation from testing, possibly relevant to how the NPU
+> domain should be modelled: the domain's power-off/on cycle doesn't reliably
+> re-de-idle the NoC. If the NPU is probed after genpd has already powered the
+> (unused) domain off, the power-on de-idle fails ("failed to set idle on domain
+> 'npu'") and the NPU IOMMU then takes an external abort on its first MMIO access.
+> Probing the NPU before the unused-domain power-off, or marking the domain
+> always-on, both avoid it. Is the NoC de-idle expected to work on a genpd
+> re-power here, or should this domain effectively stay on?
+>
+
+Not quite sure what's going on with PVTPLL and NOC.
+Maybe @Finley knows about this?
+
+> On TF-A: yes -- bl31 is built from upstream arm-trusted-firmware
+> (github.com/ARM-software/arm-trusted-firmware, RK3568 platform), providing PSCI
+> and the SCMI clock service. The only closed blob in the boot chain is Rockchip's
+> DDR init (rkbin), which is the standard situation for mainline RK356x.
+
+-- 
+Best, 
+Chaoyi
