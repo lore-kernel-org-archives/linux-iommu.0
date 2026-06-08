@@ -1,95 +1,97 @@
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C61913793DC
-	for <iommu@lists.linux.dev>; Mon,  8 Jun 2026 05:31:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17C393783A1
+	for <iommu@lists.linux.dev>; Mon,  8 Jun 2026 05:39:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780896666; cv=none; b=o3CLx2D2Ksi+3MtuML1c/coDmC4BXmwW/PmZyjL0LSJrB4iY25XRaP501ajclpCFGpC+jlQnDcvB5HdZ0e5GIYIDAm/q8Zy5DNM4SUnkGY63FxtaJUfBiWiQczhlebdalkHoCiINjOx5GWIpuZj4Kigb17fbWet/f+veUgXr1+w=
+	t=1780897173; cv=none; b=jVua3oSk9tTvXWBBKfL2jSb4yThF0O1lruZuU6BE8oXjVuJYqimdZLcfMkvpkVlOIf77/YQGPN/hjV5pzyIl7Ycugsjr67JAEeLsoWvSNxo6q6HRnFfq9QBhaMUH1Jg5Fd0rcNVYI1qehYU00XhIHSKYzaej/40hPs++MHJFk9g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780896666; c=relaxed/simple;
-	bh=qTx+DHtWre/vWRqrd4nb+kTk0I/WA3gYh9rVEZ8lRMo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=h8lVRxragzyohIzz/nrEeu+EkCQNpZTwDFuW7/uNLgKWN1I+PrkKDZQUfWXu06P8YmSQOb7yXkKX23h5JxmOQ7CPuzyu7qgL7tT/b3jGawha0v8gKea+4GkVJFeSgVsKh3F1C39x65XnpUxXHEMnQq3qSV2ogEHsFCg6nG1ocaI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=SQlEaXTc; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=aeVOl1Ad; arc=none smtp.client-ip=205.220.168.131
+	s=arc-20240116; t=1780897173; c=relaxed/simple;
+	bh=cMCkxruPB0+/BzQoZuFiIbm/OEHgsUhSYjlGeEC+JAM=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=po1tUfbpknFKeEsAnnxSEy+TxlxcSHvxjh03d03Gm2fM+gS27TZi1YpaGq1iga0+kNlNz9fu48IkjhpkeTdJObmvbupgpmLzvq0cLdftZ1kZZU36fSAsBSZZnlFwivOCQ3KHch4+y3eTB3a/0Xce3alHnwnAZitpyxEc4jejDoQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Aux8Bjki; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=dfWR0SYt; arc=none smtp.client-ip=205.220.168.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="SQlEaXTc";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="aeVOl1Ad"
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6580ECOX1574271
-	for <iommu@lists.linux.dev>; Mon, 8 Jun 2026 05:31:04 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Aux8Bjki";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="dfWR0SYt"
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6580ECwU1575140
+	for <iommu@lists.linux.dev>; Mon, 8 Jun 2026 05:39:31 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	hi15Xm8d7G0ExlIDhiqsbLHBGa3znaUw7XkKqHIeAEw=; b=SQlEaXTc2HTwUtKl
-	vP6UjSZZiZ+KL94k8tWgc4R7n/XHQkay/RttbnXeazEA0guDyjMTBAy1uYo8xSST
-	t5B6ig7rpZqMbcURmD2VdCoEpCCK12OS15fJo/hMf815er7dl7o5MMYAt/lDvqXC
-	QZdsOyrhVgt5uE947omn+btpmZkXpEHuCGLL2IQOCCu5q0IS/9dhWuwTZa58sIE4
-	KhPTpInViGAYiZq34qIPqyRe5BerWVAR0eoVRjFRBX314tLZ0Mg3i3oOAhgYhi37
-	S4154se3lJV+B5mY/8TQJD2Ys2UfWE3yIgHPotvaTXkA+NmZvfS3fwXC5+DXyLjO
-	VvNQsw==
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com [209.85.160.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4em98cxf3v-1
+	0HUAabhh/cNwlZD3LTk55FqmkLMmZVgRrQqnCafWe2g=; b=Aux8BjkioW1WDjDC
+	fiEEiqjE79eRs9GyMm9EA+dmldhCR5bCbUFu+lz8UOy9hlUWW88+WrcujAF365p8
+	Lqf9vwGHMkWekA/kQtBM3bO20YYIdLDkn+ZaCpSRTeV+eAJ2MYbZKDoVjeihkzOM
+	tFMGttspDZOdqccrwqmKzNqmaJ8KapXcE3qFy+eHM8etnIJ3Xhq1Mp1ME7CJ+glT
+	RaZomr6hDzH+JydZ5acKIPaEWfMuBZ/Rw7ckBOEYXzmPlog2TstOQNY5FhEO/eU2
+	UOZsxN3N0Vq+KqN1i15kIfW6wECKDBytGdpmiZnKW2HgOuidvcZzNn+ROL56jzC2
+	qaIVRw==
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4embs1dv1s-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Mon, 08 Jun 2026 05:31:03 +0000 (GMT)
-Received: by mail-qt1-f197.google.com with SMTP id d75a77b69052e-51758177935so30878241cf.1
-        for <iommu@lists.linux.dev>; Sun, 07 Jun 2026 22:31:03 -0700 (PDT)
+	for <iommu@lists.linux.dev>; Mon, 08 Jun 2026 05:39:31 +0000 (GMT)
+Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-36bbcd40642so2864104a91.0
+        for <iommu@lists.linux.dev>; Sun, 07 Jun 2026 22:39:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1780896663; x=1781501463; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=hi15Xm8d7G0ExlIDhiqsbLHBGa3znaUw7XkKqHIeAEw=;
-        b=aeVOl1AdqCgpsHy/WDYUfe9ASkMkrZ6jDk4psGhoM5+mWbuQ//3+auEbR+yi1AlDSk
-         3EIDw7RN0TNCaZuYIrQSxzBy7mymUjYUKl+kdXh4AQqi8cHWR3Vuq0KZccey8BgRqFpX
-         T89gR6+Ae0fHaGz65YdEmtlwfuJOnvKvl09zb4FnmI9t2Nno4Gk/yyOg/eMvuc4B3Q/v
-         22DyepDxBdSGAkHuykVVssMc5UTvibsgu5B/GOpVgeKA+bXouvkpeqczMQ06Gnb35Jgk
-         J72+06vyg/BWWDch2EmaU3+fQN1l//zENUmk/53V0ZsPMqXViK6/7+EBG7dfHAaD3v26
-         vppg==
+        d=oss.qualcomm.com; s=google; t=1780897170; x=1781501970; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:subject:from:user-agent:mime-version:date:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=0HUAabhh/cNwlZD3LTk55FqmkLMmZVgRrQqnCafWe2g=;
+        b=dfWR0SYted7R6fhYwWlRt26B87u0S4RkzqfGNlOkK4nUb4kJ5wJm+xbKhfJ9ZJmzkr
+         EjR0UtN08mQXfguUxt7o7IlPAf2v22ycz9c+rTC/Z4ZFzBIY0rtlxFkVperk2d27fMQf
+         T6waDrSTyfYZlmiLFyv5z1PSoYLFB2l/pEOfvbdiKHx/kpoIgpL83kAbe73/NZDUmWyj
+         n6e5GbSx/M7F2JeE/oPCWpzOtrQQTvqciL/xf2fXUOb0C7Nc3TlKlzSZ21IfBDbPUFLI
+         Uq4Q+mzWm8eST03aqDll7FrFWPOyyP4KPbwXH9YiBc4moOQ0t3znwPXEd1yYvDEhdTVa
+         Thyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780896663; x=1781501463;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=hi15Xm8d7G0ExlIDhiqsbLHBGa3znaUw7XkKqHIeAEw=;
-        b=JdNiE7Jd448rBpXEGzJduSrswiXC4im+Edm8q9oNbonP9ACjQZHxheL4yvOcQQVT+f
-         9D199ITKxGEAM5yVNMhnzjOCy+dDsH5LAv7ga/0JH+if87faI/C+pr2J5WLYPMby+SH0
-         E4JC9B1BcyPATfYhdK1n+Wyw7LpIX/CRHYzlLY8FSYL3aZg+VRURWHvbY3SQVnE/Njwt
-         X0cJlvtZ7lfDm0HOZdlnBSmgSrxx6jg3ugI7as6EVPEcHpFJMQYBylIDyN7NoC4Splnh
-         51oukestyN4jeouRacZyBjc3vx4VziX1F4kQPwfkwocBuBnInpeqNCehZNt8rXtBZ1iM
-         pUWQ==
-X-Forwarded-Encrypted: i=1; AFNElJ8W5V2LDFqQM0unGAR7C+MelzrFl9g7eFt/Ee5XmwcXvP7NsZolUdDH9h3gttrtoRqDLqd+bw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzs0XJboI+UsWd/M7AjMrmX5ua8PatHSkrdZ4MnikO1KfOGrncF
-	o8RHXuG/murgACZfqrvCiJOfm4xm3yRY7WGnBU9NfzdDsIe/uL8qzamdiogG6oFMQDIsYrb3jIz
-	rAgGJNjtEU+TCeQb6GSJjr5lpSTNiUyCP29/nRTjs+xmt8Fz8Al2ga2KREg==
-X-Gm-Gg: Acq92OHGisPLjbmjAUC7AIqVBfShXOHDngWUtAXjCa6abeWgJquckabUvr4CD/yUWA5
-	ClAVqeZMrrnw43AFhz85fdH/G/tfLvdpOmpkvlbivnJWK4qj2FlxmU1rR4eH/gflOh834P67DzS
-	zQTAE7U/7tUZQnAD30fsLMw6S5aAAX7fdGPRcHsxUw9u2V00nLQDkhrbO61gHzf667oMT0ZPuT/
-	3hXwgeBfeOhO1lsOQ6DVBLelEE3s5rr7f5W5KtIQ5Wj3MpJQ1AYuIn1M8UXo1ZKaROR613CrAqz
-	BLBHM2Dd1oIfWltdiYmz41gvql2hWLy0ahrQ1fveuRJ8+rstHT3Gc8ivIm5FucgH/RTt65C4JGU
-	f6ypvtYjxgwD7JWw5DpGdtxGEp1KrTawV1wpvLzr6KfU6uYvc8UOcdCQXb35R5R5V0g==
-X-Received: by 2002:a05:622a:98d:b0:516:ef49:f6f5 with SMTP id d75a77b69052e-51795c5306emr207093251cf.39.1780896662657;
-        Sun, 07 Jun 2026 22:31:02 -0700 (PDT)
-X-Received: by 2002:a05:622a:98d:b0:516:ef49:f6f5 with SMTP id d75a77b69052e-51795c5306emr207092961cf.39.1780896662245;
-        Sun, 07 Jun 2026 22:31:02 -0700 (PDT)
-Received: from [192.168.0.172] ([49.205.249.90])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-68e65851d7bsm6551413a12.14.2026.06.07.22.30.50
+        d=1e100.net; s=20251104; t=1780897170; x=1781501970;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:subject:from:user-agent:mime-version:date:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=0HUAabhh/cNwlZD3LTk55FqmkLMmZVgRrQqnCafWe2g=;
+        b=O6Lublxt22Zeh3jmLXUFufbmvuCaJkHTUWBcOSiKBL+wh4Pnizp/WM26cfaEwzr0Zq
+         EGaL0Vs2Xn2sRqAyWBG1O/9BQ/yC5uY9v4awXoXi81oT1m4W4YSnbc7I1+Ud9x3avaXS
+         wDEtIt0FXzJ6Gtcn9mEpfnkqDZxGaGuVq1/Tr9+r0xMSu3qFAesNTRq9oKYMzLOTwFeN
+         2tpJ9T2EfsnXysWkszVANpanDvFQjN4EYDlk/10QnyB8/DohESizpwvrJsIYsfKIRRNY
+         RQ7h7K2QuOpZF2yhIV7WQMQte5uDR/D2FMrUkUEAkuLWFX8FXvCL3OR6FfwBhNNHZFds
+         uNRQ==
+X-Forwarded-Encrypted: i=1; AFNElJ9vExGk5IA3vPU78S57TCVDecIyqRofx4GYfqy0jGKP89BEqnpHR6XH6cd+Ejl2uQX/UxronQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwVdNTyFJ9ThAqLhI40qgLXMQtHKw3O8iPI3T0ou0XrQHM2SR9I
+	ocwUDiu4HRQJJm9rI2pfXHLH1yXLRkMmbT3eBsZCgy1nj0IO9DJzscDuR/PllojsQoHtLm9nEzE
+	eWs1VOKaZox7x/zFSNicaoigBxeFYxcmT87s9EWi5OafQOXCfI+ZfIC/G3w==
+X-Gm-Gg: Acq92OGwPL/kSqEztmUq3nZ9ABLt8z11qnuUYyQoG66EXd3TzD8MUJbI9r+4G3QSGs1
+	VJldkCbmhTmKfKHgy++XU58bxmLelqzNqZh2dIvR/I+ru+T1NJPxL9cex8xN2Ff4MMOHKLwCZxf
+	SntY95s6lUHhpzT8glQPdYFnYMYK3qZWvOlxueTcAeNTIiZ7uWq/9ydRxPEt5ZOrPlhRb1DVr2a
+	2eTfl0NO6y25I/HZOUmZepH/yS2jH28i/Ub1cAHMJGvSv8Tm+QHZqmbuK38qk6EcEu8kLF8BxTS
+	ubQ3lLcDkzOp3UzgiRnrDJwra5U2N/72lZFdZIXotyrFZyeuYNE0J4ebLUnKl/18+7x55hAJCc9
+	ECABW93SO/Vh29Yw1WtmX8khPmcUDK+BYXSZ3IvJRXz73h525+duHwoI5npfYFIV/
+X-Received: by 2002:a17:90b:548e:b0:369:e4d4:79c6 with SMTP id 98e67ed59e1d1-370f0b55fbemr14256607a91.20.1780897170487;
+        Sun, 07 Jun 2026 22:39:30 -0700 (PDT)
+X-Received: by 2002:a17:90b:548e:b0:369:e4d4:79c6 with SMTP id 98e67ed59e1d1-370f0b55fbemr14256589a91.20.1780897170005;
+        Sun, 07 Jun 2026 22:39:30 -0700 (PDT)
+Received: from [10.206.105.200] ([202.46.23.25])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3712ef0add7sm8612386a91.0.2026.06.07.22.39.24
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 07 Jun 2026 22:31:00 -0700 (PDT)
-Message-ID: <75755586-0cc6-4dce-a1e2-726b33623eab@oss.qualcomm.com>
-Date: Mon, 8 Jun 2026 11:00:46 +0530
+        Sun, 07 Jun 2026 22:39:29 -0700 (PDT)
+Message-ID: <b9a11d38-13f7-ee33-0537-2557050afdfa@oss.qualcomm.com>
+Date: Mon, 8 Jun 2026 11:09:22 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 00/12] media: iris: Add support for glymur platform
-To: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+From: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+Subject: Re: [PATCH v7 07/12] media: iris: Add power sequence for glymur
+To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Cc: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
         Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
         Abhinav Kumar <abhinav.kumar@linux.dev>,
         Bryan O'Donoghue <bod@kernel.org>,
@@ -101,68 +103,179 @@ To: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
  <conor+dt@kernel.org>,
         Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
         Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
-        devicetree@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
-        Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>
+        Konrad Dybcio <konradybcio@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        iommu@lists.linux.dev, devicetree@vger.kernel.org
 References: <20260603-glymur-v7-0-afaa55d11fe0@oss.qualcomm.com>
+ <20260603-glymur-v7-7-afaa55d11fe0@oss.qualcomm.com>
+ <g5fpxwtlajz4p6gn55pjtgb2czjkbjyjlii2zkznle6lbtdgzb@zsiafc57gaco>
 Content-Language: en-US
-From: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-In-Reply-To: <20260603-glymur-v7-0-afaa55d11fe0@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <g5fpxwtlajz4p6gn55pjtgb2czjkbjyjlii2zkznle6lbtdgzb@zsiafc57gaco>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjA4MDA0NyBTYWx0ZWRfX5HbiaQQK4B/I
- R1M+/mpIdeE52c3uRRHpIlw2WiLhuOUoMXi4R648anCzEhhMcQYIlkyXtRDIBU9CpmsXQkzg2f5
- a/YZ39Ne34NDNz7j+dOKCgVSDvD2AgUuE0u7owcq2SdZNdo4Q7mQr3Czq2n+MK6ot/rXv2qJp9W
- acr/ktn3rB8lz5gEW4Q0KFB0yb8dDaLSYxp41xmAA4qb1k8oJO4E0t6l0Be5gcbyz9t8t4AAuyD
- xuwLiTxGbkAKiFebU8H/mRhOP8bXFEYEtFMwj7kWTZs2Bl2nH/BgKjDRoCN4EhKEMNO00iFyeRn
- CThTr+mjcjdMZZaUK3w4G8FJ18HsYDoKNcRuKPSKU47ghLhkGhZnW7hn6OLh+kc/Enm/LYBkoRm
- nssIqFWXPLcLZGJS0HWBjtTninuNpDDTDbbaZ79k6pH7CkjY3dNcQ82t4qA2+2fx5yzWJ7TrL3r
- M/Nyc+zUDA5lItkaFEQ==
-X-Proofpoint-ORIG-GUID: ERgvt1ZyZyG8cxnTjfLDN1FcE4E5XnEO
-X-Proofpoint-GUID: ERgvt1ZyZyG8cxnTjfLDN1FcE4E5XnEO
-X-Authority-Analysis: v=2.4 cv=A/pc+aWG c=1 sm=1 tr=0 ts=6a265397 cx=c_pps
- a=EVbN6Ke/fEF3bsl7X48z0g==:117 a=LkejVvrHZj9QS69ASjwr7Q==:17
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjA4MDA0OSBTYWx0ZWRfX1w2OiJXIAYue
+ e9nEodwkFNvFZHgsTt1CIYTX8FBq/Z8+3feKJ27vD+pxU2AmaYn24aLCbtRrMcOwVt7OKA7SnWv
+ MjCMuoS/D5KJRzZs0Wn/nVNhn2j2qm+Exq20fsYQx7KtHf5fsxbQq/LB6HJh4RWcKMfybFio3K4
+ 4zXD6S2TnCKbPn5aPjSNKOehivWJyqcCSQI3yR7XpfXdmLxwcfIwrSlvUv1e1pd8UpcGn/EhVzI
+ gCORt4NCnfJ/GBKi6TUWQtbguZyWErUpDb2fhYPvde14tspkeDtnfgVs7atsLKZEHBgOZsjrCP5
+ KccR3dqIukybvpBM05EWvszeAOq0B8vquh/WSueRN/FqcA2AFSl/95U9nsLwBh4VGNhFs5bur1y
+ xo8Gc+hB4wtpocXtBZFWzMoieZuvSdaDz6gRNH0Wkj25OGmwuXk88Ep9NHJBbwyv8b7ic6OKWDh
+ xtvX4H3eSC8FmujAm6A==
+X-Authority-Analysis: v=2.4 cv=CeY4Irrl c=1 sm=1 tr=0 ts=6a265593 cx=c_pps
+ a=UNFcQwm+pnOIJct1K4W+Mw==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
  a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=eoimf2acIAo5FJnRuUoq:22
- a=kk5GEcIQhxhgB6gqvmQA:9 a=QEXdDO2ut3YA:10 a=a_PwQJl-kcHnX1M80qC6:22
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22
+ a=EUspDBNiAAAA:8 a=XOSsvO-zd5c9LZtoon0A:9 a=QEXdDO2ut3YA:10
+ a=uKXjsCUrEbL0IQVhDsJ9:22
+X-Proofpoint-ORIG-GUID: ucjVaw9yInEs9iTxg__Ffj2xsWJ_XSVC
+X-Proofpoint-GUID: ucjVaw9yInEs9iTxg__Ffj2xsWJ_XSVC
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
  definitions=2026-06-08_01,2026-06-05_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 suspectscore=0 bulkscore=0 spamscore=0 malwarescore=0
- adultscore=0 priorityscore=1501 phishscore=0 impostorscore=0
- lowpriorityscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2605210000
- definitions=main-2606080047
+ lowpriorityscore=0 impostorscore=0 suspectscore=0 adultscore=0
+ priorityscore=1501 spamscore=0 malwarescore=0 phishscore=0 clxscore=1015
+ bulkscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.22.0-2605210000
+ definitions=main-2606080049
 
 
-On 6/3/2026 7:48 PM, Vishnu Reddy wrote:
-> Glymur is a new generation video codec that supports dual hardware cores
-> along with additional power domains and clocks.
-> 
-> This series adds platform specific support in the iris driver to handle
-> the extra cores, power domains, and clock requirements introduced by
-> glymur. Add support for firmware loading through context bank firmware
-> device.
-> 
+On 6/8/2026 3:17 AM, Dmitry Baryshkov wrote:
+> On Wed, Jun 03, 2026 at 07:48:45PM +0530, Vishnu Reddy wrote:
+>> Glymur platform has two video codec cores: vcodec0 and vcodec1.
+>>
+>> Both cores share a common clock source (video_cc_mvs0_clk_src) and the
+>> same power rails. The clock dividers between the source and the branch
+>> clocks are fixed. So when both cores are running, the source clock always
+>> runs at the highest frequency requested by either core.
+>>
+>> Since both cores share the same power rails, the power corner cannot be
+>> voted independently. Scaling one core's power corner up or down would
+>> directly affect the other, leading to under or over-voting.
+>>
+>> For these reasons, both cores should voted the clock and power rail must
+>> be based on the workload of both cores.
+>>
+>> Reviewed-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+>> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+>> ---
+>>  drivers/media/platform/qcom/iris/iris_vpu3x.c      | 111 ++++++++++++++++++++-
+>>  drivers/media/platform/qcom/iris/iris_vpu_common.h |   1 +
+>>  .../platform/qcom/iris/iris_vpu_register_defines.h |  10 ++
+>>  3 files changed, 117 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/media/platform/qcom/iris/iris_vpu3x.c b/drivers/media/platform/qcom/iris/iris_vpu3x.c
+>> index 7cda94601555..f07eaf4b3be2 100644
+>> --- a/drivers/media/platform/qcom/iris/iris_vpu3x.c
+>> +++ b/drivers/media/platform/qcom/iris/iris_vpu3x.c
+>> @@ -17,14 +17,14 @@
+>>  #define NOC_HALT				BIT(0)
+>>  #define AON_WRAPPER_SPARE			(AON_BASE_OFFS + 0x28)
+>>  
+>> -static bool iris_vpu3x_hw_power_collapsed(struct iris_core *core)
+>> +static bool iris_vpu3x_hw_power_collapsed(struct iris_core *core, u32 pwr_status_bit)
+>>  {
+>>  	u32 value, pwr_status;
+>>  
+>>  	value = readl(core->reg_base + WRAPPER_CORE_POWER_STATUS);
+>> -	pwr_status = value & BIT(1);
+>> +	pwr_status = value & pwr_status_bit;
+>>  
+>> -	return pwr_status ? false : true;
+>> +	return !pwr_status;
+>>  }
+>>  
+>>  static void iris_vpu3_power_off_hardware(struct iris_core *core)
+>> @@ -32,7 +32,7 @@ static void iris_vpu3_power_off_hardware(struct iris_core *core)
+>>  	u32 reg_val = 0, value, i;
+>>  	int ret;
+>>  
+>> -	if (iris_vpu3x_hw_power_collapsed(core))
+>> +	if (iris_vpu3x_hw_power_collapsed(core, VCODEC0_POWER_STATUS))
+>>  		goto disable_power;
+>>  
+>>  	dev_err(core->dev, "video hw is power on\n");
+>> @@ -78,7 +78,7 @@ static void iris_vpu33_power_off_hardware(struct iris_core *core)
+>>  	u32 count = 0;
+>>  	int ret;
+>>  
+>> -	if (iris_vpu3x_hw_power_collapsed(core))
+>> +	if (iris_vpu3x_hw_power_collapsed(core, VCODEC0_POWER_STATUS))
+>>  		goto disable_power;
+>>  
+>>  	dev_err(core->dev, "video hw is power on\n");
+>> @@ -221,6 +221,98 @@ static void iris_vpu35_power_off_hw(struct iris_core *core)
+>>  	iris_vpu33_power_off_hardware(core);
+>>  }
+>>  
+>> +static void iris_vpu36_power_off_vcodec(struct iris_core *core, u32 core_id)
+>> +{
+>> +	u32 value, i;
+>> +	int ret;
+>> +
+>> +	if (iris_vpu3x_hw_power_collapsed(core,
+>> +					  core_id ? VCODEC1_POWER_STATUS : VCODEC0_POWER_STATUS))
+>> +		goto disable_power;
+>> +
+>> +	value = readl(core->reg_base + WRAPPER_CORE_CLOCK_CONFIG);
+>> +	if (value)
+>> +		writel(CORE_CLK_RUN, core->reg_base + WRAPPER_CORE_CLOCK_CONFIG);
+>> +
+>> +	for (i = 0; i < core->iris_platform_data->num_vpp_pipe; i++) {
+>> +		ret = readl_poll_timeout(core->reg_base + (core_id ? VCODEC1_SS_IDLE_STATUSN :
+>> +					 VCODEC_SS_IDLE_STATUSN) + 4 * i, value,
+>> +					 value & DMA_NOC_IDLE, 2000, 20000);
+> Unreadable. Extract register addresses to separate variables.
 
-<snip>
+Ack
 
-> 
-> Vikash Garodia (2):
->        media: iris: Add iris vpu bus support
->        iommu: Add iris-vpu-bus to iommu_buses
-> 
+>> +		if (ret)
+>> +			goto disable_power;
+>> +	}
+>> +
+>> +	writel(core_id ? REQ_VCODEC1_POWER_DOWN_PREP : REQ_POWER_DOWN_PREP,
+>> +	       core->reg_base + AON_WRAPPER_MVP_NOC_LPI_CONTROL);
+>> +	ret = readl_poll_timeout(core->reg_base + AON_WRAPPER_MVP_NOC_LPI_STATUS, value,
+>> +				 value & (core_id ? NOC_LPI_VCODEC1_STATUS_DONE :
+>> +				 NOC_LPI_STATUS_DONE), 2000, 20000);
+>> +	if (ret)
+>> +		goto disable_power;
+>> +
+>> +	writel(0, core->reg_base + AON_WRAPPER_MVP_NOC_LPI_CONTROL);
+>> +
+>> +	writel((core_id ? VCODEC1_BRIDGE_SW_RESET | VCODEC1_BRIDGE_HW_RESET_DISABLE :
+>> +	       CORE_BRIDGE_SW_RESET | CORE_BRIDGE_HW_RESET_DISABLE),
+>> +	       core->reg_base + CPU_CS_AHB_BRIDGE_SYNC_RESET);
+>> +	writel(core_id ? VCODEC1_BRIDGE_HW_RESET_DISABLE : CORE_BRIDGE_HW_RESET_DISABLE,
+>> +	       core->reg_base + CPU_CS_AHB_BRIDGE_SYNC_RESET);
+>> +	writel(0x0, core->reg_base + CPU_CS_AHB_BRIDGE_SYNC_RESET);
+>> +
+>> +disable_power:
+>> +	dev_pm_genpd_set_hwmode(core->vcodec[core_id].dev, false);
+>> +	iris_disable_power_domain_and_clocks(core, &core->vcodec[core_id]);
+>> +}
+>> +
+>> +static void iris_vpu36_power_off_hw(struct iris_core *core)
+>> +{
+>> +	u32 num_cores = max(core->iris_platform_data->num_cores, 1);
+> Can we trust the patch authors that VPU3.6 hardware data will have at
+> least 1 core?
 
-Bryan,
+On Glymur (VPU3.6), num_cores is 2. The max() guard is unnecessary.
+Will access num_cores directly.
 
-AFAIU, if media maintainer can review and ack these patches, then we can 
-check with iommu maintainers to pick these ?
+>> +	int i;
+>> +
+>> +	for (i = 0; i < num_cores; i++)
+>> +		iris_vpu36_power_off_vcodec(core, i);
+>> +}
+>> +
+>>  #define WRAPPER_DEBUG_BRIDGE_LPI_STATUS		(WRAPPER_BASE_OFFS + 0x58)
+>>  #define WRAPPER_IRIS_CPU_NOC_LPI_CONTROL	(WRAPPER_BASE_OFFS + 0x5C)
+> Lowercase hex.
 
-Regards,
-Vikash
+Ack
 
+>>  #define REQ_POWER_DOWN_PREP			BIT(0)
+>> +#define REQ_VCODEC1_POWER_DOWN_PREP		BIT(1)
+>>  
