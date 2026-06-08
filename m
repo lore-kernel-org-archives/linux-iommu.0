@@ -1,84 +1,129 @@
-Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [160.30.148.35])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4027B2609C5
-	for <iommu@lists.linux.dev>; Mon,  8 Jun 2026 06:22:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=160.30.148.35
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65B84385D8F;
+	Mon,  8 Jun 2026 06:53:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780899742; cv=none; b=Nz6/H+JGJqqY0+XSCj+tEQT1bhNWPGynkJ6m1nsZp6rEyfm+ymbb2jeC+mftywtXTJqnVOkfnP+/GAZO0OpoVVDVV1gmg3CUrkGl7fEZhSm3M/4AuEX3yKNXG/i7DJqzakTr+s6iGlwiAuJYXpy160tmG0qgo4xt6HSx7ZmWtMA=
+	t=1780901584; cv=none; b=q+BmtHPmmo9D5opDdPPCqkRvjtkczTMXOxD6jqD4X3lC/LOB+xpB12hJc9emszrj5VZFUhe7vqbeVtIOpkoNFJNhJO/vXfQVlpUbUQsSpI3svijoOOEUNg2Qc8/7/QREr6Ol/dEZppI79Hvm3SHwh4mvzARASkRM9oeBRVfOHjA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780899742; c=relaxed/simple;
-	bh=7qAmCdAUmowrtnJvbQzXjHqFfTbeuO7/02h2swwvVIs=;
-	h=Message-ID:In-Reply-To:References:Date:Mime-Version:From:To:Cc:
-	 Subject:Content-Type; b=GyAhCN0KGuPoj73/KAWpnFiAWi6C8Ez/i0880wz+x2vSQad3zntSs59i5P0VMaKcsVeIQWoEZvbcfI04JpTYomN5SFPTHNSLfjyV9FlrRiNrIk4K9WtFLcLhibD9CfsTyq+VyLUKPgfK/8jdozNpqTuLrPxDRSX/9ZsCejt/u24=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zte.com.cn; spf=pass smtp.mailfrom=zte.com.cn; arc=none smtp.client-ip=160.30.148.35
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zte.com.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zte.com.cn
-Received: from mse-fl1.zte.com.cn (unknown [10.5.228.132])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4gYhll4jZSz7Qxs2;
-	Mon, 08 Jun 2026 14:22:11 +0800 (CST)
-Received: from szxl2zmapp06.zte.com.cn ([10.1.32.108])
-	by mse-fl1.zte.com.cn with SMTP id 6586M46N071766;
-	Mon, 8 Jun 2026 14:22:04 +0800 (+08)
-	(envelope-from wang.yechao255@zte.com.cn)
-Received: from mapi (szxlzmapp01[null])
-	by mapi (Zmail) with MAPI id mid12;
-	Mon, 8 Jun 2026 14:22:06 +0800 (CST)
-X-Zmail-TransId: 2b036a265f8e79d-24602
-X-Mailer: Zmail v1.0
-Message-ID: <20260608142206426CGB5DlYd1xVlR8wrOawWH@zte.com.cn>
-In-Reply-To: <CAB19ukEzQZktJcBAXi8X2Pwz+hO_FcR+iiaK9nsCAumP9BrHnw@mail.gmail.com>
-References: 20260604145510898G2kTwM2Pr25QE5H8T4Wh6@zte.com.cn,CAB19ukEzQZktJcBAXi8X2Pwz+hO_FcR+iiaK9nsCAumP9BrHnw@mail.gmail.com
-Date: Mon, 8 Jun 2026 14:22:06 +0800 (CST)
+	s=arc-20240116; t=1780901584; c=relaxed/simple;
+	bh=/i0oSk0OKgLBWCqcsuxynAGu+4KYjigz39mykr2/kUo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=l7ETRd7LVwS3zhYLnnL+YzvpB/6I+MfC3HB0+WHziSnh+RM8L1Mk0Y+/m4O4MfYHimYznZYIWA2tKfhJmGZMtyUXsvgAVCdodcZetyBLdC7uEQaO1p9bHIJHZ47cq24SI7auUE0Ynq3si8TZtdfl2OtOp8Sfjox1044t6xRcsFA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=L1813wxY; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="L1813wxY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC2AF1F00893;
+	Mon,  8 Jun 2026 06:53:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780901583;
+	bh=havdYnCEiwh5vTCKe1DHbkaoT5AWDXTLJ1Y7Ln7iWgw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=L1813wxYCSG23bMqgH0ctBCaj9Bpvn+Mzei1rNqsq0WCcwGOsXm6XM2KGxAXsFIYY
+	 PNDm8BVVIy+mxZVPKU4wVu6h4p0KPjoC1XxutYgkz/tkmmhAG8rVrOOKTNPIdmEki7
+	 ZhxSUdrBlMWLeL8QBDbyNq9XDMsiOMNBfZ2GhLV/YwyVuA/eN004Tel/YWmS0caTVI
+	 1Ki3J3QunXEpB3QhQYJVMtlF0mA4AxTKTG00ZLd+5TQtr+P/xrxmp+UI8GKHBADra+
+	 51Vuz5yLHqFvIOweKB/4wkDinKL1buqvy1wE9fbYOVn6sWyc24920VQdY8amOd7RLf
+	 3b6jOlh5wB1iw==
+Received: from johan by xi.lan with local (Exim 4.99.3)
+	(envelope-from <johan@kernel.org>)
+	id 1wWTr1-00000000Lrw-2QFM;
+	Mon, 08 Jun 2026 08:52:59 +0200
+Date: Mon, 8 Jun 2026 08:52:59 +0200
+From: Johan Hovold <johan@kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Philipp Zabel <p.zabel@pengutronix.de>,
+	Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>,
+	Lee Jones <lee@kernel.org>,
+	Mark Brown <broonie@opensource.wolfsonmicro.com>,
+	Thierry Reding <thierry.reding@avionic-design.de>,
+	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+	Andrew Lunn <andrew+netdev@lunn.ch>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Srinivas Kandagatla <srini@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Vinod Koul <vkoul@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>, Rob Herring <robh@kernel.org>,
+	Saravana Kannan <saravanak@kernel.org>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Andi Shyti <andi.shyti@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Doug Berger <opendmb@gmail.com>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Ulf Hansson <ulfh@kernel.org>, Frank Li <Frank.Li@nxp.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	Matthew Brost <matthew.brost@intel.com>,
+	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Peter Chen <peter.chen@kernel.org>,
+	Paul Cercueil <paul@crapouillou.net>, Bin Liu <b-liu@ti.com>,
+	Maximilian Luz <luzmaximilian@gmail.com>,
+	Hans de Goede <hansg@kernel.org>,
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>, brgl@kernel.org,
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org, linux-sound@vger.kernel.org,
+	driver-core@lists.linux.dev, devicetree@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org, linux-i2c@vger.kernel.org,
+	iommu@lists.linux.dev, linux-pm@vger.kernel.org,
+	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	intel-xe@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+	linux-usb@vger.kernel.org, linux-mips@vger.kernel.org,
+	platform-driver-x86@vger.kernel.org
+Subject: Re: [PATCH 22/23] reset: rzg2l: use
+ platform_device_set_of_node_from_dev()
+Message-ID: <aiZmy1lxcYzMF78e@hovoldconsulting.com>
+References: <20260521-pdev-fwnode-ref-v1-0-88c324a1b8d2@oss.qualcomm.com>
+ <20260521-pdev-fwnode-ref-v1-22-88c324a1b8d2@oss.qualcomm.com>
+ <6af284545729f03a60d06479339862a2f08c6b7e.camel@pengutronix.de>
+ <ah9QtExF2rUUTMNo@ashevche-desk.local>
+ <aiK-qZqpuC-OEigf@hovoldconsulting.com>
+ <aiLjE0SLwrDytyw0@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-From: <wang.yechao255@zte.com.cn>
-To: <sunilvl@oss.qualcomm.com>
-Cc: <linux-acpi@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-        <sunilvl@ventanamicro.com>, <rafael@kernel.org>, <lenb@kernel.org>,
-        <pjw@kernel.org>, <palmer@dabbelt.com>, <aou@eecs.berkeley.edu>,
-        <alex@ghiti.fr>, <tomasz.jeznach@linux.dev>,
-        <anup.patel@oss.qualcomm.com>, <andrew.jones@oss.qualcomm.com>
-Subject: =?UTF-8?B?UmU6IFtQQVRDSF0gaW9tbXUvcmlzY3Y6IEFkZCBkZXBlbmRlbmN5IGJldHdlZW4gaW9tbXUgYW5kIGRldmljZXM=?=
-Content-Type: text/plain;
-	charset="UTF-8"
-X-MAIL:mse-fl1.zte.com.cn 6586M46N071766
-X-TLS: YES
-X-ENVELOPE-SENDER: wang.yechao255@zte.com.cn
-X-SOURCE-IP: 10.5.228.132 unknown Mon, 08 Jun 2026 14:22:11 +0800
-X-CLEAN: YES
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 6A265F93.001/4gYhll4jZSz7Qxs2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aiLjE0SLwrDytyw0@ashevche-desk.local>
 
-> >
-> > From: Wang Yechao <wang.yechao255@zte.com.cn>
-> >
-> > Commit 9156585280f1 ("ACPI: RIMT: Add dependency between iommu and
-> > devices") adds the dependency between iommu and devices on ACPI
-> > systems. On devicetree systems, the incorrect removal order also
-> > occurs.
-> >
-> Interesting. Why is it not handled by the fw_devlink infrastructure in DT?
->
-> Thanks,
-> Sunil
+On Fri, Jun 05, 2026 at 05:54:11PM +0300, Andy Shevchenko wrote:
+> On Fri, Jun 05, 2026 at 02:18:49PM +0200, Johan Hovold wrote:
+> > On Wed, Jun 03, 2026 at 12:52:52AM +0300, Andy Shevchenko wrote:
+> > > On Tue, Jun 02, 2026 at 10:24:41AM +0200, Philipp Zabel wrote:
+> > > > On Do, 2026-05-21 at 10:36 +0200, Bartosz Golaszewski wrote:
+> 
+> ...
+> 
+> > > > > -	device_set_of_node_from_dev(&vdev->dev, dev);
+> > > > > +	platform_device_set_of_node_from_dev(vdev, dev);
+> > > 
+> > > Same Q here, why it uses inherited call? Cargo cult?
+> > > 
+> > > 'reused' flag is solely pin control (provider!) thingy as far as I remember.
+> > 
+> > No, it's needed for pin control *consumers*, which can be any device,
+> > and potentially any other resource managed by driver core or bus code.
+> 
+> Why don't we set it for every pin control consumer automatically?
 
-Thank you. I have noticed that commit e149573b2f84 ("of: property: Add device
-link support for "iommu-map"") adds support for "iommu-map" to the device link
-supplier bindings, so that probing of PCI devices can be deferred until after
-the IOMMU is available.
+It must only be set on the second (child) one to prevent driver core
+from trying to acquire resources already claimed by the parent.
 
-The QEMU RISC-V virt machine currently lacks the "iommu-map" property for the
-PCIe bus when the iommu-pci device is used, which leads to this issue. Therefore,
-I believe the correct fix is to add the "iommu-map" property for PCIe in QEMU.
+Setting it on both would break things.
 
-Best regards,
-Yechao
+Johan
