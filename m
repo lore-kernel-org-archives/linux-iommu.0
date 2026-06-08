@@ -1,155 +1,179 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2FAF330D4C
-	for <iommu@lists.linux.dev>; Mon,  8 Jun 2026 16:04:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79D6E31F990
+	for <iommu@lists.linux.dev>; Mon,  8 Jun 2026 17:35:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=205.220.168.131
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780934691; cv=pass; b=Tq6ZLWDN/Xj86dDvOY1DuBXthUYUd2GQxFP1CzlFohOpe73S2WPXqiMJmfOlBKD6+MHOMywEjYH4NJjfxl9V9ToQD61wnaL9CTEAgjiSzIm2NFS82Cwmbt9miYOsP9olaIxD6OZO3O9sJXea46SDsmjgDdpSp4xHlhyKYZbR43o=
+	t=1780940133; cv=pass; b=Tv7Sf7Uq7MnKwuJMIvmEP7EA7O4iVAj9JPsJ+xeOFEs4vieZ8DODy+5babHUTzS9dq9+hoQFlD4vPQb/r5Pgux0X+kh4fprHV67PMSEfrfEoM/FRfLn4mVR4D9HVCTDn04p7nyVZR87IvY1+mfI9D2wUGR3CmcmB9hCXVa8w2NQ=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780934691; c=relaxed/simple;
-	bh=itDKg5VHTo1QlVDvtR/ptqkY/rb9iX9OeM5STd1MO0s=;
+	s=arc-20240116; t=1780940133; c=relaxed/simple;
+	bh=mlZU0/pgW+ejL50FpauU5Ho0DNaF5PbUOlmB72X0Aj8=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=bdMjpOcJesz6rma+PZRzht+PkSE/iwqNWecb+X1qsIPBur5L2ntMQ0U7GCpMsJyG5QEZ1cL2Hitft0LXFmr4GafHeoWio1D81sCJLwWoAu5AgyHYR4Srb56QP4WrjJsjX4CstGqqfdv8qgB3FVHDKsYi85PNLIJEg6bI7e+1h/o=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=rX9KEJPl; arc=pass smtp.client-ip=209.85.128.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 To:Cc:Content-Type; b=iXn4XEfvs9yuugPKVYCIYhmDcnalIdaJjOH74PYo2bXjFb/kIyZdl+4zkJ64gWYYM6d/71FChynjw4Jgfa/4cJ0f56mG5np1lU3IOWOotJgGZZUGuSMoib320FxhtWQXdXfGoMMwWDJPlob4MeL/vY8CIYvLFbrheYcAY1gcQLs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=DvTb5UH8; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=Ej7Cwdna; arc=pass smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="rX9KEJPl"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4891b4934ffso227715e9.0
-        for <iommu@lists.linux.dev>; Mon, 08 Jun 2026 09:04:49 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780934688; cv=none;
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="DvTb5UH8";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="Ej7Cwdna"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 658FFTad3588401
+	for <iommu@lists.linux.dev>; Mon, 8 Jun 2026 17:35:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:reply-to:subject:to; s=
+	qcppdkim1; bh=mlZU0/pgW+ejL50FpauU5Ho0DNaF5PbUOlmB72X0Aj8=; b=Dv
+	Tb5UH8ccM2oDsgKng2asrIeWtqzQCmYGDd08K8abr6WXPMPSilYEE+fNjH9+wLqq
+	uiUYbkNN+XYso/8c9e9dTT8mmXVUzailRpo/OSWzz98UFA75e27we0p9IDj0BdB8
+	gVaQ40tm+xjpCx9t0vJ4I8I8a75dO3I65N0lSm+eRB+EOX187AbT5nPd/iDYJZIf
+	69+ikXT9VQ2Z/1tUQSApeDZG8Xur1SXZVeyNlGqMD8jKoLCVez+1C4PIJPtnwueK
+	M6KDdDAhla51X686JX4H4W8G1VlkgYrIhj7+qG3EI++/Ik8lKqC2GaRznlKgQ+Xa
+	8ar8m/oRojBK9UhbvKWQ==
+Received: from mail-yw1-f197.google.com (mail-yw1-f197.google.com [209.85.128.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4enun424d1-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Mon, 08 Jun 2026 17:35:31 +0000 (GMT)
+Received: by mail-yw1-f197.google.com with SMTP id 00721157ae682-7e87d888ca0so28226427b3.0
+        for <iommu@lists.linux.dev>; Mon, 08 Jun 2026 10:35:31 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780940131; cv=none;
         d=google.com; s=arc-20240605;
-        b=cMpirz8zzEXOFjzkQ4iJ2sF2vmVkfqcFtEFFZzauGwL5+YjfPwyR5meXDPt2uCBAVp
-         92XTo4IK7kDiqThzYS6KzdUQnv2s8sqbe3KVo5/ocPvBusmpSyScQ6RoawdkxEcF+Irz
-         CE82BI3U4fLy0qaSx+h+Ll7YnxV/8HcjMbh/F5iixbwsbDpD/59Bb8pmdH3tetd+qzIk
-         hmwv6DcdaG/tr4Nc1x7lU07yH/j/GqqKDJlQ/OcqeEuRzHH5+/SdsFoqZ6wQpcYbPUGg
-         3W27sEYckkPfFT5ZfH/6gchiTL6dl7JCgloYDQ+p+1dxeNeZd7ZhXF6MC/J4xeR+7/DQ
-         KxnA==
+        b=J3UZDZtD4a56aXNN21g8m9UeZQMeo7xzAPuQL0+3MjW/uuHlAmCTnGBSvenzW0XGIN
+         qdswc2UemeEUVzm1yh7KSVwy+zlLcQH1jTrBKHCluR9gLCatoxSamiT/wvWJH1M0l5d8
+         BsyzEDo/FrmpWJSNcI15zVAKjnjBfEpHroLqamoQWaOhGr8Kmzp9ASgWT7n+wgx/vigK
+         704pajDFi3G0d+r+sYE2F+quOi0khYvZb3x93RWayrRCc2viYwde16aPyub/jy8iP6l6
+         /hDRvTddBDe3GeHDI+sOrqkqA+0qh0GNjvDSnmNb40R/tSLAFKzOCmbm5sPZ3eaTT+fU
+         PGrQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=CDdhbWCx9VsAlPpkbZ7T/pVekmt8/mWg3u3kSPoOV2c=;
-        fh=Ljef0Hr17A7VlD2YGv8+Wh2pTNaJohj4wuSD2gEOPy8=;
-        b=KiLq+TUsMj933InB6VK7+8o2gy3PSOFhiCQFjp2GqXkN4U0cMb/XY/eBOGAnfGY3oO
-         OTy9nvGfYHpugMp4WqEDBh9LWphMvcDUflamrlH+PG7WO8AwvtvQUe7SpXmxQ0E53/m/
-         Wjbdo6lUUSQzJjRizJ6l6b1HgdZRBlF8cu35kOxiUQ/N7rDdDFrd9zGMUacdfWXKvUcn
-         3N/WypzQVfTlDvwRduplHwtyhs3UMqRyKbVk7z5/GnYFRhWMRhS9BtyPIRTfl3c1mQaH
-         fhArG+uZnquGbiiIrGaTVyi28vEZwOGTyAYgPsFWECn5tAs5oE1O/4TYTlbM1FqswtSh
-         xkNw==;
+         :reply-to:in-reply-to:references:mime-version:dkim-signature;
+        bh=mlZU0/pgW+ejL50FpauU5Ho0DNaF5PbUOlmB72X0Aj8=;
+        fh=1hhnpRpzF6PQauQ/cVjHAi/ILxU8lW5lzMwNuukFVb8=;
+        b=QnbuBDqVDXZRN8spxdsOgohHPsfFwCcj4Q51naB/zvHdzFrJ71GtI+pBxEtCDLia6Q
+         cVyGOKXPm7bpy8mEk503d4sO7BIyIgklznjAlN4CBgmT7i0/0YRXY3kCbHZ/gRsWCLGc
+         lmO2v+e/xtjUbOGLMb9gHxtQkQcLq1L7dliqvlDdZekvZrUq1MJ2KEWa9RQo7w0NTC9P
+         +sumD5KQZ4MzLDvsh69BvFy0zQpEjTX2yIDs7PolcyvH/oPTsvipi2XqIR1djiigyPtN
+         zamlnVbh0iF/2t0cG9DKnvZ390baNpRhuFgkpuOgQ7ywlDdVzuVzFNfGh8bqr1RvJmYQ
+         rzfA==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780934688; x=1781539488; darn=lists.linux.dev;
+        d=oss.qualcomm.com; s=google; t=1780940131; x=1781544931; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=CDdhbWCx9VsAlPpkbZ7T/pVekmt8/mWg3u3kSPoOV2c=;
-        b=rX9KEJPl+TseWXrAEVZYR7EGLY8PYczlSSfIrhGnscXfRRcGTzLq5tlt0uGlSMhpbo
-         ads8NgUbxCTyMLOkweA9BX9zdomtz8WdlChgvEri+R6nR/s5WotNWH8tfxdAMRq7M0Ds
-         E86ZqMBNUaoy4KuuBwFJ27XNX44VcbOjdCFwUAK3xWtW5LnPzW+fAUgc4yLUH+Pb3tlt
-         QGsldt2/XCU2vb/aXi7FHuOogqGmf32iGGHICxjEN9WUHLAi96jevf7225oLzLUmAL0G
-         94gaoGwp5mnLvrpl8pRgM90Sv36Z03AMhizlNkMOHMta+7ijLRp3azA1ck0gt6uT3U1W
-         8dFg==
+         :reply-to:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=mlZU0/pgW+ejL50FpauU5Ho0DNaF5PbUOlmB72X0Aj8=;
+        b=Ej7CwdnaTjX2jzqtZm4glJSn6LwoqAhp8eE0a54U1AWD2xLxfxh9Y6njZfQ2wVbqas
+         ihlOv/nu3O0i2A/23tSFQqQ+TrTkLtAL3QTY2xwiretX0Hf5s3rcElao0ayoenMQeO9X
+         ZeWtvaegxgIwQE/EfeCZE+nwNEmxEcp7My0U51d9TGn4SVUyz4gYlsS4w3OSNQ9TPObM
+         y48t0ln+AkZ+SaF9MStRFH8KnuqRWkC1C6NfGn7t834chutn4zop9nEq2sfazNBcdb30
+         5dgjmNzud5xfBJCxGwBfuYwaynjMeHVw/1AbolPHTX+YbSmQT6LBaZ62NmlAQabtf7yD
+         3nfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780934688; x=1781539488;
+        d=1e100.net; s=20251104; t=1780940131; x=1781544931;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=CDdhbWCx9VsAlPpkbZ7T/pVekmt8/mWg3u3kSPoOV2c=;
-        b=TglKqftTbF6xKOVnVcOS51zKU8XvyDb5aA3uYAUkdMbXqFylaaSV8BxwKMwzcwIJFX
-         oVdTd6vloArbMuaon3IporBO26W9RFb4QGdjhxyvlhlw77LnzH5VU4ccuD5n8po/iQjk
-         Kb8lNhdav4tpTlKtEeodbj9IkSu/XhyCoIqp1NA89761aZf8IPKUS4+DnwJhl4eFbNoE
-         R59JwqggxVg6LTldQs6P98qJTWtnBoeiRS6uu40KwaNahiU1G1YW7bqyJiwwnNc6681B
-         56FiqjuVaq+0t1eb2wO9B9rzIFU6qd6oevBsN9k6xzIXmR7s+Ba4JXH4CekJB/wVanM+
-         s6ag==
-X-Forwarded-Encrypted: i=1; AFNElJ9SCqpWO6tsAcyEyP9EuvFE4XUk78c9BXZb1CqcRFMYCwdfnRgkdkVTG4tb9sTAaTE2BiRnGg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyaDYDjt5+YYAL2oBJz2/vk19R52biKhyF2DcKp6ztImj0O008h
-	uSxASNyS/bceSuwu5x9/nteSpWwIGy0DZ9Iep/Tn+UN4XXeta7ci6NpPHd5Qn59GzBWV8GV0wcF
-	ip2lJgOqaouMlna7/eHqyaTXy25r9pKu/97vobJjX
-X-Gm-Gg: Acq92OG7AHrmmj9uKHDfRvb0XTNWDWsQn5UPur385fc+zGtAMue+1+DAMKOerz7izPL
-	mk0nev+9DUu9EHAZavgDtqzzJqD3VN+BYUkjmPlXPbIEr7wjky3D5N/sf8ks94jExn3pweMerxZ
-	hepb2Vc48EYFS384Ibj9di+IGKr3cqn32W0+mqALKXnLm28YEEUH1DEBkryTWPvrFn/ypelaBo+
-	vtxhH0jxdIIiG2tPS44SC5rI7VRA/510fwSFP3ng5zOvrrs3s5+HeZbl+aRidJxjaobSsSbxvpu
-	uHC8T+jLHgcP7lifjvG+CKYY6c+p4RkdgKtYwnmycfYSWuIk
-X-Received: by 2002:a05:600c:3495:b0:490:b0f1:3422 with SMTP id
- 5b1f17b1804b1-490c2ca21f1mr5078185e9.10.1780934688036; Mon, 08 Jun 2026
- 09:04:48 -0700 (PDT)
+         :reply-to:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=mlZU0/pgW+ejL50FpauU5Ho0DNaF5PbUOlmB72X0Aj8=;
+        b=fFFXyCKE9EdcYnoshKxEjj8hm/0Z5CXvJE+H7J3NWmLaUa2//xFfW+XL0vzK3OHBJ2
+         0Mwg1FENxNmmf4hUcoM3wWanCsVHaRwmnxPdzPT2gGLMIlNillklsTSFI9aWEaxnL2A/
+         rRilvWaF39ElW7ZF28sG3G7CBvzm2kNClSX2BmwcWbYGwjpUiQH+l4WC1VnwbTUtI3aM
+         h15qFhxddvUEYYSgzhX9bXIKpyDnV+kRNWnwpU5EPmbwNVCzmqYcf+MXWZmmmWwH3tCH
+         C4swh0kWGqw3mqqVSu4vg8zQZxeySKLlKrNuPPUr9yRvcdyqjwtrQKoDEJhcGdA05gza
+         BrPA==
+X-Forwarded-Encrypted: i=1; AFNElJ+8ZnokZamx/S88jgEuDiNs7VFLmkQZNt1+E2pgpiXgHYRBStKtdAaQtWcmZO8b1K57q83SbQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzQWH9g8mbb1gBMXssIOFlYgN1V7/S6DMvMwg2A6wdO5OgZXSrr
+	e4OdD27lqUzhVSzxE9+cMZE+7SqCOHq6AZ8M+MfoysTu/0upHw9OIw3anXZ/X9BuWFtbt2iWAkn
+	CKN+IAoa5MFxXeHh16gOaetqbNaHITYkqGv/obNk9ru2GfMwS/2yT+xQWGEUkFmlxldUXy55loV
+	DIgwy84Mhf4KaJ/iXxoyQGWPR91hYZ4dBu
+X-Gm-Gg: Acq92OEofUXqqKcWG6icdzX8JxTXbMAc+P2GIbh9hTQ5iNJhq7IEqs1Cq3tusnW90xp
+	kxm7JDHPaMxCJcIiI+yhdS9tC1mQShmlZeTi6aP38d+m0vLeeZCAx7Tb+ekgd/+LjRdjDyyuMlR
+	ukjXJzX6NTjbkuJkfkO/wKldZReW5NH70DPFM3m74DkgJgyM3yC3bwSJwOocaoTl6sStCo4AsOs
+	JjEF8quZe8/lQqUFQ==
+X-Received: by 2002:a05:690c:e3d2:b0:7dd:3f36:59d8 with SMTP id 00721157ae682-7ed0cfdfdcbmr158839327b3.13.1780940130878;
+        Mon, 08 Jun 2026 10:35:30 -0700 (PDT)
+X-Received: by 2002:a05:690c:e3d2:b0:7dd:3f36:59d8 with SMTP id
+ 00721157ae682-7ed0cfdfdcbmr158839047b3.13.1780940130520; Mon, 08 Jun 2026
+ 10:35:30 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260522225853.878411-1-tjmercier@google.com> <ahPqbfH54R3JJyaV@infradead.org>
- <20260527160716.GN2487554@ziepe.ca> <20260604-dangerous-tuatara-of-sympathy-28e05e@houat>
- <CAO_48GEJsg4X7++zg-ztQgVibY_FjjManaA5_W3usjicGUQPdg@mail.gmail.com>
- <20260604135712.GV2487554@ziepe.ca> <CAO_48GH3NP09U6TdB5drbKY0TpwvtBXwrf=Jajsr5ttNbC_u9g@mail.gmail.com>
- <20260608152743.GD2764304@ziepe.ca>
-In-Reply-To: <20260608152743.GD2764304@ziepe.ca>
-From: "T.J. Mercier" <tjmercier@google.com>
-Date: Mon, 8 Jun 2026 09:04:35 -0700
-X-Gm-Features: AVVi8CdkX2dlLd8iv_kbStMI93TXdDT01BqcU1-TGKHekXSJtH26ENHtm_IhVVA
-Message-ID: <CABdmKX18EXsL48Cv1Kxrp0g6bVndZfU9b5pfeGgQyvMREk5PSA@mail.gmail.com>
-Subject: Re: [PATCH] powerpc: Export set_memory_encrypted and set_memory_decrypted
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>, Jiri Pirko <jiri@resnulli.us>, 
-	Maxime Ripard <mripard@kernel.org>, Christoph Hellwig <hch@infradead.org>, maddy@linux.ibm.com, 
-	mpe@ellerman.id.au, npiggin@gmail.com, chleroy@kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, lkp@intel.com, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-mm@kvack.org, agordeev@linux.ibm.com, 
-	gerald.schaefer@linux.ibm.com, linux-s390@vger.kernel.org, 
-	Dan Williams <djbw@kernel.org>, Tom Lendacky <thomas.lendacky@amd.com>, x86@kernel.org, 
-	Arnd Bergmann <arnd@linaro.org>
+References: <CAB19ukEzQZktJcBAXi8X2Pwz+hO_FcR+iiaK9nsCAumP9BrHnw@mail.gmail.com>
+ <20260608142206426CGB5DlYd1xVlR8wrOawWH@zte.com.cn>
+In-Reply-To: <20260608142206426CGB5DlYd1xVlR8wrOawWH@zte.com.cn>
+Reply-To: sunilvl@oss.qualcomm.com
+From: Sunil V L <sunilvl@oss.qualcomm.com>
+Date: Mon, 8 Jun 2026 23:05:17 +0530
+X-Gm-Features: AVVi8CcOHTT-aaiAsTR3LDPlyvyK1Yv-Td6vF48uAWWN7KC86YUXl0j5J289Oso
+Message-ID: <CAB19ukFMu1tW5QkCOY2e=DWbKrehEDv_iO5T7vEfKEGkbTFEEw@mail.gmail.com>
+Subject: Re: [PATCH] iommu/riscv: Add dependency between iommu and devices
+To: wang.yechao255@zte.com.cn
+Cc: linux-acpi@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+        sunilvl@ventanamicro.com, rafael@kernel.org, lenb@kernel.org,
+        pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu,
+        alex@ghiti.fr, tomasz.jeznach@linux.dev, anup.patel@oss.qualcomm.com,
+        andrew.jones@oss.qualcomm.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjA4MDE2NSBTYWx0ZWRfX9V2YQo43o0UZ
+ njT71OzM6oyqRfTfhcl4yId1y/q92RkU8sDaEAy+yZWAJuDKmwCLU022UAagkhjLsbCxNx2oJvS
+ IWtti7e9n+kbV+cbRYkLTyncOosIZlu5QUUdj/AaEdoj9JhZMjmgBIH7JyHnOFRPw78q7My2bhh
+ ccD25xJg5PvEdZ1LpRxCRl5wUFuXBAEq13+Qrv/QhQt0NlRsyRtKQZdt6I0q8GFrZZucAzOY8bm
+ 8T7juOpL3DkMZB/ZTb62kE4Mv65w52WyiDZjeCkqn8CS4YaLSgdiAd5zCwcvKNKXXklZDJg9c+W
+ cN3paWZRt1MnuRKifkNN4EEk8S305TR1AkpCyDjLGv75D7q2bnyEiGnOVs/kHhxOIarxTtYv1zD
+ ZLNDERraW1/iXOf1zRLAHdF4QiEAL1mizMZqvglb7Ng+x8WeorBoiEDhRzoTxFudx1KFqskIHgi
+ E784Z2/6hOnW2G7LWzQ==
+X-Proofpoint-ORIG-GUID: k-_IqW-vHH0G9A0uSi41czMBicgVQ6-C
+X-Authority-Analysis: v=2.4 cv=ZY4t8MVA c=1 sm=1 tr=0 ts=6a26fd63 cx=c_pps
+ a=0mLRTIufkjop4KoA/9S1MA==:117 a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10
+ a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22
+ a=eoimf2acIAo5FJnRuUoq:22 a=1RTuLK3dAAAA:8 a=90lprICnAGeg8zAacqkA:9
+ a=QEXdDO2ut3YA:10 a=WgItmB6HBUc_1uVUp3mg:22 a=kRpfLKi8w9umh8uBmg1i:22
+X-Proofpoint-GUID: k-_IqW-vHH0G9A0uSi41czMBicgVQ6-C
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
+ definitions=2026-06-08_04,2026-06-05_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 phishscore=0 adultscore=0 priorityscore=1501 impostorscore=0
+ lowpriorityscore=0 spamscore=0 malwarescore=0 bulkscore=0 clxscore=1015
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2605210000 definitions=main-2606080165
 
-On Mon, Jun 8, 2026 at 8:27=E2=80=AFAM Jason Gunthorpe <jgg@ziepe.ca> wrote=
-:
+On Mon, Jun 8, 2026 at 11:52=E2=80=AFAM <wang.yechao255@zte.com.cn> wrote:
 >
-> On Mon, Jun 08, 2026 at 08:47:15PM +0530, Sumit Semwal wrote:
-> > Hi Jason,
-> >
-> > On Thu, 4 Jun 2026 at 19:27, Jason Gunthorpe <jgg@ziepe.ca> wrote:
 > > >
-> > > On Thu, Jun 04, 2026 at 12:51:49PM +0530, Sumit Semwal wrote:
+> > > From: Wang Yechao <wang.yechao255@zte.com.cn>
 > > >
-> > > > Given that Christoph's objection is not really about the modules pa=
-rt,
-> > > > but that the set_memory_{encrypted,decrypted} should not be used he=
-re,
-> > > > one option is to revert 78b30c50a7ac until that issue is sorted out=
-?
+> > > Commit 9156585280f1 ("ACPI: RIMT: Add dependency between iommu and
+> > > devices") adds the dependency between iommu and devices on ACPI
+> > > systems. On devicetree systems, the incorrect removal order also
+> > > occurs.
 > > >
-> > > Please no, we have stuff already using this so it would be a
-> > > functional regression. Revert making heaps into a module since that
-> > > doesn't have a functional regression.
+> > Interesting. Why is it not handled by the fw_devlink infrastructure in =
+DT?
 > >
-> > Thanks for your comments.
-> >
-> > To me, it looks like while system and system_cc_shared heaps share a
-> > lot of code, their user bases have different needs. It's apparent that
-> > system_cc_heap users don't care about it being a module while system
-> > heap users would very much like so.
-> >
-> > I also discussed this with Arnd, and he suggested we could rearrange
-> > the code so that system_heap_cc_shared_priv depends on a new Kconfig
-> > symbol like
-> >
-> > config DMABUF_HEAPS_CC_SYSTEM
-> >         bool "DMA-BUF System Heap for memory encryption"
-> >         depends on ARCH_HAS_MEM_ENCRYPT && DMABUF_HEAPS_SYSTEM=3Dy
-> >
-> > This allows building both into the kernel or leave encryption choice
-> > up to the consumers of the system heap.
-> >
-> > If this is agreeable to everyone, I can post Arnd's patch.
+> > Thanks,
+> > Sunil
 >
-> Yeah, that's fine for me for now
+> Thank you. I have noticed that commit e149573b2f84 ("of: property: Add de=
+vice
+> link support for "iommu-map"") adds support for "iommu-map" to the device=
+ link
+> supplier bindings, so that probing of PCI devices can be deferred until a=
+fter
+> the IOMMU is available.
 >
-> Jason
-
-+1 SGTM
-
-Thanks,
-T.J.
+> The QEMU RISC-V virt machine currently lacks the "iommu-map" property for=
+ the
+> PCIe bus when the iommu-pci device is used, which leads to this issue. Th=
+erefore,
+> I believe the correct fix is to add the "iommu-map" property for PCIe in =
+QEMU.
+>
+For PCI IOMMU, the dependency should be automatically taken care since iomm=
+u
+should always be the first device in the hierarchy and scanned first.
