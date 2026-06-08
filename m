@@ -1,161 +1,263 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AB87378D9F
-	for <iommu@lists.linux.dev>; Mon,  8 Jun 2026 07:19:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780903185; cv=none; b=tUiJYXyrd+74sdGj9FtgjfaD9PlqEd3KUOfzm3Izt83YViSJXXCnH3UTypVyHLbJ5sJIsAq373y0K0xPjFyh3Fcjh4ZRTK9he3v197gueBYouxRM0kAK+lmAj5vWwSiRnyTcuGjr421C+rU4ytlrFC892me66xv4Y0uzQ7Fr+sw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780903185; c=relaxed/simple;
-	bh=qD9e4KyK1fIzkRMHO6aMKPF96czRHshznS/0D0FaTMI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hh6fNewlTAAYqQdx/uMy9IIPbLtzQ8i942GU1h243OBWhdw2+UhVeTlMK4clDLhGhpgJiLexgM6zHAyCGQTRof555oRngYk9fV7Fm3IraDjR+AxGxYUJLkkR6vZbOpX73qgFI/c4Dn+6/S9ZGigPpAegO8444Fh0pRb732xr+Yk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=jpcG/D0X; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=WrGDawtM; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A07B395AF2
+	for <iommu@lists.linux.dev>; Mon,  8 Jun 2026 08:02:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.49
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780905768; cv=pass; b=hbIn1i7LE3bg51wZ/T3QRQlWAawORX4jRRgfPipCWvHtHhkk06MpyDSG3WvyaWwMB72011cB3xgPdPM1xzRbj2PoSPuwcFVh4gOJCErFRe3R022UesTGwMmU4/LTD6J8ZQNTDfiwmFFCDWuAkWPuz5z+FCN+WMZ35w/K9TTVjMk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780905768; c=relaxed/simple;
+	bh=L+PASBKZU5VOSi5OLxHETsujAKlLOtM0nYg9yVoQr/g=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=nas0tYUNijdScw2Dso7jr5SyjdV9Tfakr6RGZemq4tUaPTJGsCeSbeCf7BRX7BEIo0JSjnlVEmX9Lp6oBjG3fPZma6DAFuptMq1njQQSQsXOxNAbsm9CD9pY9Q2bUWQal3WRlDpegaUOnTGOl1GGqx6fzyiyd4Ad5hLjKVUtryQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gfDLcahD; arc=pass smtp.client-ip=209.85.208.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="jpcG/D0X";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="WrGDawtM"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6586P76T2386295
-	for <iommu@lists.linux.dev>; Mon, 8 Jun 2026 07:19:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=TszHFZ7K4js/ZAFR2FtK66NQ
-	PI9cujME4oGOjetByeg=; b=jpcG/D0X2/E/WrFN1uFBDKV/q4WUAZwxEvep5M1J
-	j1BiCdduPfaq02JEUHAzRRGLIAwq7CjazfFRjN+HyM+LAM2dyysoT7hDLqIfAvXz
-	9Nwg5sfFc+41cIR/o+5tI5fRue7n2BZoRBGGIh5VJLcSrlIjAnd39++ucNtF89fP
-	bKfGg8DXlFg8BDDJFMlnFQDFUXh/JXj1VoZYWzUC8f/bcUENSh+7CQoCmrODHd/2
-	YiSkB7eeV7/TuLUszkH9X6BWGlPIN4wX9gb26VtOQ97G5a10pPn7UCuS583WphJE
-	jp469EdWpssWsVebwH5dn3ZN4TXUWvfxF6wbVymaoP7obQ==
-Received: from mail-ua1-f71.google.com (mail-ua1-f71.google.com [209.85.222.71])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4embs1ecfv-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Mon, 08 Jun 2026 07:19:43 +0000 (GMT)
-Received: by mail-ua1-f71.google.com with SMTP id a1e0cc1a2514c-963d7670e38so5094308241.1
-        for <iommu@lists.linux.dev>; Mon, 08 Jun 2026 00:19:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gfDLcahD"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-68bac6e24fdso5351911a12.1
+        for <iommu@lists.linux.dev>; Mon, 08 Jun 2026 01:02:47 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780905765; cv=none;
+        d=google.com; s=arc-20240605;
+        b=DDq6HLy+x1bsZ0MKwNoYqkoah6ydc4o3M7yxRzuulS/W5EsD5SLkigyWoB3Z8NyFGK
+         dY3QqGbIzKnNbnZPDNCT8lDXI7i5rgdeIGjBdxYXruzuTmUIP/kcRP0v2ugW7o+u/kwh
+         3BboOJPdKhzKIOO+Akg1Cyk5MGnSLNYjcHgq2wyAYUCWaZnVKVC04MXneRITjmY51zTW
+         LSUDmSzUoDlBZ7Iub8vJY3YG0s0WhcA96kqvpr1nRTmsBT2YYvfpgLYwXEBgipPt2y+w
+         m4Ak8gujYMHpZ5SyK4+rexf0ngpSABv1Z3RUG6qZIEHb3YYGvHSWa/3q0vCkUXTgdbf0
+         prsA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=bLq1D7uP5MxHvai6FqrEhNmJ5qKAoR2b/ce+Jxe1kds=;
+        fh=c9hid4QU8N+JKCXIFK2rI9Wz8kpZU7bm7jUFAsK7B9A=;
+        b=IYvJqPCNfLhuvRZZ9BDZ7ycewZwY8E+k7HMW506U8GKuYmyEVrPulW+BUzmzyuYVQk
+         vytaHDKy98VEkjwUTHWVeY3resCBxJkecp9Fgvkc/XdajHUl0G5pmDDrIY4rSvemDBbC
+         SDO55uHAPEGqrG4o6BNvtHoPoN6gfsOlyxisPHzAVPMAIBpMokDjm8WFIgLuLKh2V047
+         a1BjC6CH8R31TRDN3GzKHPuncj33n5SElhj5BVsUFp5/YbD/vt21dgmJ7dVuFKy6J/1+
+         S85NX8/1K1T37jCLfF71uuYnuKHz/cqr49bjL0mzWgTwuz7nM4tWLv0+u89V5Erq5ysQ
+         pX5Q==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1780903183; x=1781507983; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=TszHFZ7K4js/ZAFR2FtK66NQPI9cujME4oGOjetByeg=;
-        b=WrGDawtMv3I7UqAzdWOE2KP99/7x9o8ZQjWxbdl2qBIkPy5PNu7lvHseQky7HLlNpd
-         guqTBwRk+cPGfK+enRFxu801Fbe/Xucwwx+CQpsz9LKbXPmi/KaA0nC5dv/OUmj+movF
-         rmFFkR/+SJ6VPJ3r9DuG/PkPIayMcg868imfKXU4rnwhonTfQ3u10jNj+oXO4mEdxkGP
-         yVr6ADYypkxHGRGeTXzx6YP7o+i4Qx44y9pGtdYhJGBpDh2klUOypYnfws+CeR4Iz6IQ
-         9mLOUwsbvNSBgkyrtwqTymSwoE5y6NXKqecYhflnvWvY/bV+L9rvhcoJvnRJ/eLwS8v+
-         Gg3Q==
+        d=gmail.com; s=20251104; t=1780905765; x=1781510565; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=bLq1D7uP5MxHvai6FqrEhNmJ5qKAoR2b/ce+Jxe1kds=;
+        b=gfDLcahDaGHkmP7327+QGs5KRmmPu/NSdLVAuuumLUwHAhrgfH4JY9W7sFXzcqgUwy
+         rfhr47xIy+eOLh5npWfHAyaFEiFUQTBr7gC7r4sOaJK3sjhaMT6rvKPG8Vo8pB1zAHVz
+         DqshFGf6AggbpdJ1vOsqBMNM/ekyfGQNhh+yOhl3mcBnn0m58gtVbn7E8dvE2OcnsS7u
+         qLTeg1t0Pns4VvFTpFt6hpttKghs9D0o2lRmWVU+fXUZBOu2Qb2bgF6OxHTOonM9tuNe
+         htfDdmsJ/JjP6Z6s2P19ouki/LTjEebTkAo5owith9PFqhlTuHT0MryGVabihoKZYLZd
+         9qqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780903183; x=1781507983;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=TszHFZ7K4js/ZAFR2FtK66NQPI9cujME4oGOjetByeg=;
-        b=pElT3NhuN393LXO9zPCo+AAmYq0r+O/Y2VUzaYCeSmTs7TyLxfocR80Ndzjo8S4vtV
-         q4wJkdqORAhzlRKHcsENqqUKQL+9T8mqgDj2ePc1qh3E6yFO0LA7PlPYPxkO28+tpNXP
-         aGHT+7sDHEWblZApCeKdP0GnkNeZ2h6XV6M1XV3A5f8RdJzFLzqLcf7g/kafrifGdOxM
-         5D0g3ADLOkwo0EwChWqIq6yUH7Rz1yMFZo1SNaIi0zzQyWXFH88bX20h8fLob9LTwCPW
-         4ZC5aqdi7szfDtbBshm7s0sf4n757X4jI9e3M/s0abXXyWNKdY5Es+urkl6j82OmAXOz
-         DH1Q==
-X-Forwarded-Encrypted: i=1; AFNElJ+TFLbGz02C2UFTjy+r5OJ7f+Pd5JqTqBKTwaYJEwjZxdkdBy2moGmhx1h/zAZjAId0mHK/PQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyBkzPf5+j9e3Lm0b/yCcyNcCH3g9LmIjRd1g91wZb9sPJXv+Al
-	dZGaRwdiNdYF8JrCjIyofV0QWlWQlpANuiX/mDjFsdW5unB86BG71FRoEcrc+g3L8NI3GKdwuGn
-	11HkKjFlPMJ6KeqVzi3I7mUIVIhoEM/ZXNeHTfmmA56xMZQ3jlIN3x+xFvg==
-X-Gm-Gg: Acq92OHMLBiHXyV1ZQ2irexYsUStthYr7hFFiV39NlWX9XILzpyxVCDH6uA7iDfzQd4
-	PXSX2gi1oGY03crcmdkx6kUMXqGmt//tGetBUomoVKnuwzuuADnc0tCXXUottbav4RE2XWmiYPG
-	VPIGGPFCrR11ezj4Wg2hiugpoqg5ASj9RtMmN/avXZLDdFMLuB+Lx2yaRd8TxKQ5QeWJ50CD8eV
-	gbK6NZrYJT16/rl2Oj3c79DFE2LlOcfYIOM8vzyytootKEGR9NXL+0DNWMbi9YiUVaXdzVfISwM
-	vqbG1o1ZFHCDxZMaJuGGORouOCzwnaC4hCpvDJUni8HRj8xfsWxv7YBWefMTSDLyrlGR5nMejmL
-	9/headfYx10tZWz1llNzyPbWv0xOkRYuDEi/T6w2HAHZxheXoKwqzDcC4aTwjG1UE9+cqszDQcr
-	fTQC9icueS6MhkX8LVowN86/RXYg5QNJo4f2A7lc2monvVlA==
-X-Received: by 2002:a05:6102:6204:10b0:6cb:b3db:c31c with SMTP id ada2fe7eead31-7001b3c61d6mr2919804137.0.1780903182937;
-        Mon, 08 Jun 2026 00:19:42 -0700 (PDT)
-X-Received: by 2002:a05:6102:6204:10b0:6cb:b3db:c31c with SMTP id ada2fe7eead31-7001b3c61d6mr2919793137.0.1780903182529;
-        Mon, 08 Jun 2026 00:19:42 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5aa7b8fbcc7sm3605566e87.23.2026.06.08.00.19.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Jun 2026 00:19:41 -0700 (PDT)
-Date: Mon, 8 Jun 2026 10:19:39 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Nabige Aala <nabige.aala@oss.qualcomm.com>
-Cc: Rob Clark <robin.clark@oss.qualcomm.com>,
-        Dmitry Baryshkov <lumag@kernel.org>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Krishna Manikandan <quic_mkrishn@quicinc.com>,
-        Loic Poulain <loic.poulain@oss.qualcomm.com>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v4 1/2] dt-bindings: display: msm: qcm2290: Add Shikra
- MDSS
-Message-ID: <dhtuvm4ejg456jy65kwbejdo2amrg2khaljlmurse4vkjok25p@rd6wd7tp4rwd>
-References: <20260608-shikra-display-v4-0-88a846afdd5d@oss.qualcomm.com>
- <20260608-shikra-display-v4-1-88a846afdd5d@oss.qualcomm.com>
+        d=1e100.net; s=20251104; t=1780905765; x=1781510565;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=bLq1D7uP5MxHvai6FqrEhNmJ5qKAoR2b/ce+Jxe1kds=;
+        b=Ch9+4Ki5zMOM54EHp/8eY9wqrEHJY8FL8nOXnRtrNYG4mS07vMou2deiVPQom+P0gu
+         ZviX5uPQfD77zVR9ZnOa4mSu+hkhG9KCyTKrUrAsanShhX/y3wrDSENh/D7skLOdj/3C
+         jM/y1OjvzcoxXmllBAhGKYOfJ4lxTQmesQ2TiV+7UBLneOj4h8ThahIb10sxp3+oq5MX
+         L4S27sOb10xehJCa6lM+ZjyKENlMtLFWsi5y91sQfiakdZkNBt6Po1ahJZD09c2LWtZW
+         3eAru4rddDo4Pkua4f7Q+naP/cp+UPJd4OaWJf8KsTYJk2wtdmFXbz6GgnsSLUhhClxR
+         rm7w==
+X-Forwarded-Encrypted: i=1; AFNElJ+MuO9OQkTGhlkT2Mrp4563H4366977zpdB+VWSAfnQ5qVear0p6PfezhFaI+JIJHiq8opzAA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxjw6V470IXplZ/xYiI2DRBmzdZERnLMeoMrdqY9GM/dkYlVcXF
+	53GoysxACyGQhLxlr7Ij4ev/pXi+y3dUtM1BbHKs06Y000hP86Msmc3dPIHRkbyB6mj1EhNnqjB
+	Fu1+VI/5RH8EM1sWh7AbiTF36zzJB54I=
+X-Gm-Gg: Acq92OFjyY7OOe8qtsIPdLdrm9uSQxnp6Z32VGYhMfTNeUlQTOCKyV/djPJ25/j/TUz
+	+LSkyt8fLJ6JIZqKJjxtZVuobBq8YRhs7Cqkg2SfJJyG0ih6rEPZKyGwQWfQgbdINcazjZ/EO2o
+	1msRYT3odbKvPu4JRfN+TafK5VEDmRf+QKI1+NM9adqD8+PPg34OiXZWwIIB1AUY0k+W4c6iqst
+	a49//CsNwEeFLJVAE2u/hsZQdskZRB7d/1HHnY15RVk+ux8ocHmwHuj4LKb9kxdszkNElmtaYxk
+	STwGEFLcV4q00/UTfQ==
+X-Received: by 2002:a17:906:8a46:b0:bec:4b96:5fb9 with SMTP id
+ a640c23a62f3a-bf3701806dcmr422529166b.3.1780905765057; Mon, 08 Jun 2026
+ 01:02:45 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260608-shikra-display-v4-1-88a846afdd5d@oss.qualcomm.com>
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjA4MDA2NiBTYWx0ZWRfX4dUpaByIcm5u
- Nop/6J+3X66jjnXFw6t5kqbjKVBWLbCaitO3qE0bHMbwlzicF6h2iqixBg2jPePvDkQgkp9NJhg
- hJTu4JQpFItmuzh5sxLdQB7/9A9rSMiAlzKpUz+ogplZr6BaOygWBJlsLdxmgVGyMN09ec4e+Ld
- 9JMU1Jq3eHUCNfd7UsUMuUSoqFejKWFyamYGFpcXBAZhbkJWit2emIPnDJPd8xY5EvRbBtRSl8F
- /L8h/IFDBT/Twp4vIz56ezhYIWpD38F5aGXJ5fbdy2Vh+2CLZIVXGhsaIzfT8J7FLmQn+Z2gKoW
- ZSuzKZoZTkx8cDzQ/qgIH6lAJ8YAuwi/NJVZnvYHzFCCuEz1L6RQBW774EmLVWnsugzWcd8do3s
- 7apwacm4yJRG1O4gJNX7EI2tOKYktG98++mPb68/hEkGaiAKqpOs4+4k9on9V9STSGE7XjtmY/7
- 6qiPvMmcmOeLbxJnwxw==
-X-Authority-Analysis: v=2.4 cv=CeY4Irrl c=1 sm=1 tr=0 ts=6a266d0f cx=c_pps
- a=KB4UBwrhAZV1kjiGHFQexw==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22 a=EUspDBNiAAAA:8
- a=h5pAuauRZTFNeIU57NgA:9 a=CjuIK1q_8ugA:10 a=o1xkdb1NAhiiM49bd1HK:22
-X-Proofpoint-ORIG-GUID: hdL4urtHukQEVcC4sS0pEjs8Kqg6TfUh
-X-Proofpoint-GUID: hdL4urtHukQEVcC4sS0pEjs8Kqg6TfUh
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
- definitions=2026-06-08_02,2026-06-05_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- lowpriorityscore=0 impostorscore=0 suspectscore=0 adultscore=0
- priorityscore=1501 spamscore=0 malwarescore=0 phishscore=0 clxscore=1015
- bulkscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.22.0-2605210000
- definitions=main-2606080066
+References: <20260604135255.62682-1-midgy971@gmail.com> <3d99569e-9c3a-49d1-93fb-1335382523e9@rock-chips.com>
+ <CA+GS1Y1s78PwN63X2YJoS8VEGp7CpTERo_K65yKs00U4VRAw4Q@mail.gmail.com> <e5058919-9485-4de5-8eea-331ebfc2987c@rock-chips.com>
+In-Reply-To: <e5058919-9485-4de5-8eea-331ebfc2987c@rock-chips.com>
+From: Midgy Balon <midgy971@gmail.com>
+Date: Mon, 8 Jun 2026 10:05:33 +0200
+X-Gm-Features: AVVi8Cc-kS2uobepJQqeen5fwApM6uunQz9mBN_BXk5X1LlYp7Vi43yabrw2ZY0
+Message-ID: <CA+GS1Y3ysdWZ3qCq3ip_Pbw+v4LxHZd95aBo=jwB+orYaMBBNw@mail.gmail.com>
+Subject: Re: [RFC PATCH v3 0/9] accel: rocket: Add RK3568 NPU support
+To: Chaoyi Chen <chaoyi.chen@rock-chips.com>
+Cc: tomeu@tomeuvizoso.net, ogabbay@kernel.org, heiko@sntech.de, 
+	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, joro@8bytes.org, 
+	will@kernel.org, robin.murphy@arm.com, dri-devel@lists.freedesktop.org, 
+	linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, Simon Xue <xxm@rock-chips.com>, 
+	Finley Xiao <finley.xiao@rock-chips.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jun 08, 2026 at 12:31:42PM +0530, Nabige Aala wrote:
-> Shikra reuses the same MDSS/DPU 6.5 hardware as QCM2290. Extend
-> the existing qcm2290 bindings to cover Shikra by adding fallback
-> compatible chains for MDSS, DPU and DSI controller nodes rather
-> than introducing a separate binding file.
-> 
-> Signed-off-by: Nabige Aala <nabige.aala@oss.qualcomm.com>
-> ---
->  .../bindings/display/msm/dsi-controller-main.yaml     |  4 ++++
->  .../bindings/display/msm/qcom,qcm2290-dpu.yaml        |  6 +++++-
->  .../bindings/display/msm/qcom,qcm2290-mdss.yaml       | 19 ++++++++++++-------
->  3 files changed, 21 insertions(+), 8 deletions(-)
-> 
+Hello Chaoyi,
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Thanks -- this is exactly what I needed.
 
+- v2/DTE: will do. I'll keep building on Simon's per-device-ops series -- w=
+ith
+  that in place the NPU MMU can use the 32-bit-DTE ops (the per-ops GFP_DMA=
+32
+  that's already in mainline) without the global rk_ops conflict. I'll
+keep it as
+  a stated dependency of the v4 cover letter.
 
--- 
-With best wishes
-Dmitry
+- vdd_npu:  I'll switch the RK3568 NPU
+  power domain to need_regulator + domain-supply =3D <&vdd_npu> and drop th=
+e
+  regulator-always-on workaround. I suspect that's also the right fix for t=
+he
+  power-off/on de-idle issue I described -- the always-on was really
+just papering
+  over the domain not being modelled with a regulator. I'll confirm on
+the board.
+
+- AUTO_GATING: thanks for the commit references -- I'll keep the bit-31
+  read-modify-write form with your Suggested-by and write the comment
+from those.
+  For the record: on v7.1-rc6 the NPU MMU also completes translations
+on the reset
+  value (I couldn't reproduce a page-walk stall without the write), so I'll=
+ note
+  in the commit that it matches the vendor clock-gating handling rather tha=
+n
+  fixing a failure I can reproduce here -- happy to drop it if the iommu
+  maintainers would prefer.
+
+- PVTPLL/NoC: I'll follow up with Finley. First I'll check whether the
+  need_regulator change resolves the NoC re-power de-idle on its own;
+if it still
+  I'll bring him the details (the genpd power-on de-idle ack and the
+  BUS_IDLE_ST state).
+
+I'll send a v4 with these. Thanks again for the quick, detailed answers.
+
+Kind regards,
+Midgy
+
+Le lun. 8 juin 2026 =C3=A0 03:40, Chaoyi Chen <chaoyi.chen@rock-chips.com> =
+a =C3=A9crit :
+>
+> Hi Midgy,
+>
+> On 6/8/2026 5:03 AM, Midgy Balon wrote:
+> > Hi Chaoyi,
+> >
+> > Thanks a lot for looking at this -- input from Rockchip is exactly what=
+ this
+> > series needs.
+> >
+> >> Hmmm. If I understand correctly, the NPU IOMMU should be v2 rather tha=
+n v1,
+> >> implying it should support 40-bit PAs. Nevertheless, please note that =
+the
+> >> upper limit for DTE is 32 bits.
+> >
+> > Understood, and that 32-bit-DTE note is the crux of the trouble I had, =
+so let
+> > me lay out what I see and ask how you'd prefer to solve it.
+> >
+> > The mainline node is already v2 (rockchip,rk3568-iommu in rk356x-base.d=
+tsi).
+> > The problem on this 8 GiB board: with the v2 ops the page-table allocat=
+ions
+> > (gfp_flags =3D=3D 0) can land above 4 GiB, so the DTE ends up > 32 bits=
+ and the
+> > NPU's first translation faults with DMA_READ_ERROR. To work around that=
+ I had
+> > switched the NPU MMU to the v1 compatible (rockchip,iommu), whose ops s=
+et
+> > GFP_DMA32 and keep the DTE sub-4 GiB. That works in isolation, but beca=
+use the
+> > driver keeps a single global rk_ops, a v1 NPU MMU then trips
+> > WARN_ON(rk_ops !=3D ops) against the SoC's v2 instances (VOP/VDEC), whi=
+ch is why
+> > I based the series on Simon's per-device-ops work.
+> >
+> > So my question: with per-device ops in place, what's the intended way t=
+o keep
+> > the NPU MMU on v2 *and* cap its DTE at 32 bits on boards with >4 GiB of=
+ RAM?
+> > A v2 ops variant carrying GFP_DMA32 for this device, or is there a regi=
+ster/
+> > config bit that constrains the DTE address? I'd rather follow the Rockc=
+hip
+> > intent here than carry the v1 workaround. (Simon, cc'd -- this is right=
+ next to
+> > your per-device-ops series.)
+> >
+>
+> If Simon's method works, please use it :)
+>
+> >> Can these operations not be completed via the pmdomain driver?
+> >> If some operations are controlled by TF-A, are you using open source T=
+F-A?
+> >
+> > Most of it is in pmdomain already. Power-on and NoC de-idle are done by=
+ the
+> > RK3568 NPU power domain (genpd) at power-on -- the driver no longer pok=
+es the
+> > PMU directly. Two things remain outside it:
+> >
+> >  - vdd_npu: I mark it regulator-always-on in DT rather than wiring it a=
+s the
+> >    domain's domain-supply, because as a domain-supply it created a devi=
+ce-link
+> >    to the I2C PMIC (rk809) and genpd's power-off QoS-save path then hun=
+g
+> >    reading the NPU QoS registers behind the (gated) NoC. If there's a c=
+lean way
+> >    to let genpd own vdd_npu without that I2C ordering deadlock I'd much=
+ prefer
+> >    that -- pointers welcome.
+> >
+>
+> Please refer to the patch below regarding the RK3588 NPU pmdomain.
+> In short, you need to set a "need_regulator" for the RK3568 NPU pmdomain.
+>
+> https://lore.kernel.org/all/20251216055247.13150-1-rmxpzlb@gmail.com/
+>
+> >  - the NPU compute clock (PVTPLL): set from the driver via SCMI, and on=
+ly
+> >    needed for actual compute, not for bring-up.
+> >
+> > One more pmdomain observation from testing, possibly relevant to how th=
+e NPU
+> > domain should be modelled: the domain's power-off/on cycle doesn't reli=
+ably
+> > re-de-idle the NoC. If the NPU is probed after genpd has already powere=
+d the
+> > (unused) domain off, the power-on de-idle fails ("failed to set idle on=
+ domain
+> > 'npu'") and the NPU IOMMU then takes an external abort on its first MMI=
+O access.
+> > Probing the NPU before the unused-domain power-off, or marking the doma=
+in
+> > always-on, both avoid it. Is the NoC de-idle expected to work on a genp=
+d
+> > re-power here, or should this domain effectively stay on?
+> >
+>
+> Not quite sure what's going on with PVTPLL and NOC.
+> Maybe @Finley knows about this?
+>
+> > On TF-A: yes -- bl31 is built from upstream arm-trusted-firmware
+> > (github.com/ARM-software/arm-trusted-firmware, RK3568 platform), provid=
+ing PSCI
+> > and the SCMI clock service. The only closed blob in the boot chain is R=
+ockchip's
+> > DDR init (rkbin), which is the standard situation for mainline RK356x.
+>
+> --
+> Best,
+> Chaoyi
