@@ -1,26 +1,86 @@
-Received: from mail-m1973197.qiye.163.com (mail-m1973197.qiye.163.com [220.197.31.97])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE953367297
-	for <iommu@lists.linux.dev>; Mon,  8 Jun 2026 05:15:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.97
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C61913793DC
+	for <iommu@lists.linux.dev>; Mon,  8 Jun 2026 05:31:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780895725; cv=none; b=UA6fxaXxvV49hIdGFl9JEKx6bsxnyKLJ9vr7B7BD1gFu2fbYkwHvr4KAiOp3u7P6Y4aY5vIlbI9Mxv+RC4wUJVyaQzGD4IoeQ0YrKLCLIwXfdkRLoGBH7+J0EPe2X+ISUqyLzyN5CMmlSAcgaKq3I6aPUAAidVRE4MPqq/LqoL4=
+	t=1780896666; cv=none; b=o3CLx2D2Ksi+3MtuML1c/coDmC4BXmwW/PmZyjL0LSJrB4iY25XRaP501ajclpCFGpC+jlQnDcvB5HdZ0e5GIYIDAm/q8Zy5DNM4SUnkGY63FxtaJUfBiWiQczhlebdalkHoCiINjOx5GWIpuZj4Kigb17fbWet/f+veUgXr1+w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780895725; c=relaxed/simple;
-	bh=ivtol/J+iFUXgjxze69yMpBtbl+ljp6Q1P7Qq6Rk76A=;
+	s=arc-20240116; t=1780896666; c=relaxed/simple;
+	bh=qTx+DHtWre/vWRqrd4nb+kTk0I/WA3gYh9rVEZ8lRMo=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Wk6CpFB2hggifrIKbrak8RDSDFOsoYLr12QAXHza/SuTsTMGVNQNJuT+1tIOkDRgik2fKzgNsTK+y0U9o4Yy0oEhq8uRg2BYr0QlsbI0p0X/RsmtCnd3n4bu/B7uvIqg3Y0VIHqKhw43lGBRmDa0lBkiF82OpbudOmbXNQ8vbcw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=jIgtsz0T; arc=none smtp.client-ip=220.197.31.97
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
+	 In-Reply-To:Content-Type; b=h8lVRxragzyohIzz/nrEeu+EkCQNpZTwDFuW7/uNLgKWN1I+PrkKDZQUfWXu06P8YmSQOb7yXkKX23h5JxmOQ7CPuzyu7qgL7tT/b3jGawha0v8gKea+4GkVJFeSgVsKh3F1C39x65XnpUxXHEMnQq3qSV2ogEHsFCg6nG1ocaI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=SQlEaXTc; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=aeVOl1Ad; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="jIgtsz0T"
-Received: from [172.16.12.90] (unknown [61.154.14.86])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 416bb7c88;
-	Mon, 8 Jun 2026 09:45:55 +0800 (GMT+08:00)
-Message-ID: <0919ffcc-81c3-483a-a3ba-404b455c2040@rock-chips.com>
-Date: Mon, 8 Jun 2026 09:45:53 +0800
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="SQlEaXTc";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="aeVOl1Ad"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6580ECOX1574271
+	for <iommu@lists.linux.dev>; Mon, 8 Jun 2026 05:31:04 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	hi15Xm8d7G0ExlIDhiqsbLHBGa3znaUw7XkKqHIeAEw=; b=SQlEaXTc2HTwUtKl
+	vP6UjSZZiZ+KL94k8tWgc4R7n/XHQkay/RttbnXeazEA0guDyjMTBAy1uYo8xSST
+	t5B6ig7rpZqMbcURmD2VdCoEpCCK12OS15fJo/hMf815er7dl7o5MMYAt/lDvqXC
+	QZdsOyrhVgt5uE947omn+btpmZkXpEHuCGLL2IQOCCu5q0IS/9dhWuwTZa58sIE4
+	KhPTpInViGAYiZq34qIPqyRe5BerWVAR0eoVRjFRBX314tLZ0Mg3i3oOAhgYhi37
+	S4154se3lJV+B5mY/8TQJD2Ys2UfWE3yIgHPotvaTXkA+NmZvfS3fwXC5+DXyLjO
+	VvNQsw==
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com [209.85.160.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4em98cxf3v-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Mon, 08 Jun 2026 05:31:03 +0000 (GMT)
+Received: by mail-qt1-f197.google.com with SMTP id d75a77b69052e-51758177935so30878241cf.1
+        for <iommu@lists.linux.dev>; Sun, 07 Jun 2026 22:31:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1780896663; x=1781501463; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=hi15Xm8d7G0ExlIDhiqsbLHBGa3znaUw7XkKqHIeAEw=;
+        b=aeVOl1AdqCgpsHy/WDYUfe9ASkMkrZ6jDk4psGhoM5+mWbuQ//3+auEbR+yi1AlDSk
+         3EIDw7RN0TNCaZuYIrQSxzBy7mymUjYUKl+kdXh4AQqi8cHWR3Vuq0KZccey8BgRqFpX
+         T89gR6+Ae0fHaGz65YdEmtlwfuJOnvKvl09zb4FnmI9t2Nno4Gk/yyOg/eMvuc4B3Q/v
+         22DyepDxBdSGAkHuykVVssMc5UTvibsgu5B/GOpVgeKA+bXouvkpeqczMQ06Gnb35Jgk
+         J72+06vyg/BWWDch2EmaU3+fQN1l//zENUmk/53V0ZsPMqXViK6/7+EBG7dfHAaD3v26
+         vppg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780896663; x=1781501463;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=hi15Xm8d7G0ExlIDhiqsbLHBGa3znaUw7XkKqHIeAEw=;
+        b=JdNiE7Jd448rBpXEGzJduSrswiXC4im+Edm8q9oNbonP9ACjQZHxheL4yvOcQQVT+f
+         9D199ITKxGEAM5yVNMhnzjOCy+dDsH5LAv7ga/0JH+if87faI/C+pr2J5WLYPMby+SH0
+         E4JC9B1BcyPATfYhdK1n+Wyw7LpIX/CRHYzlLY8FSYL3aZg+VRURWHvbY3SQVnE/Njwt
+         X0cJlvtZ7lfDm0HOZdlnBSmgSrxx6jg3ugI7as6EVPEcHpFJMQYBylIDyN7NoC4Splnh
+         51oukestyN4jeouRacZyBjc3vx4VziX1F4kQPwfkwocBuBnInpeqNCehZNt8rXtBZ1iM
+         pUWQ==
+X-Forwarded-Encrypted: i=1; AFNElJ8W5V2LDFqQM0unGAR7C+MelzrFl9g7eFt/Ee5XmwcXvP7NsZolUdDH9h3gttrtoRqDLqd+bw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yzs0XJboI+UsWd/M7AjMrmX5ua8PatHSkrdZ4MnikO1KfOGrncF
+	o8RHXuG/murgACZfqrvCiJOfm4xm3yRY7WGnBU9NfzdDsIe/uL8qzamdiogG6oFMQDIsYrb3jIz
+	rAgGJNjtEU+TCeQb6GSJjr5lpSTNiUyCP29/nRTjs+xmt8Fz8Al2ga2KREg==
+X-Gm-Gg: Acq92OHGisPLjbmjAUC7AIqVBfShXOHDngWUtAXjCa6abeWgJquckabUvr4CD/yUWA5
+	ClAVqeZMrrnw43AFhz85fdH/G/tfLvdpOmpkvlbivnJWK4qj2FlxmU1rR4eH/gflOh834P67DzS
+	zQTAE7U/7tUZQnAD30fsLMw6S5aAAX7fdGPRcHsxUw9u2V00nLQDkhrbO61gHzf667oMT0ZPuT/
+	3hXwgeBfeOhO1lsOQ6DVBLelEE3s5rr7f5W5KtIQ5Wj3MpJQ1AYuIn1M8UXo1ZKaROR613CrAqz
+	BLBHM2Dd1oIfWltdiYmz41gvql2hWLy0ahrQ1fveuRJ8+rstHT3Gc8ivIm5FucgH/RTt65C4JGU
+	f6ypvtYjxgwD7JWw5DpGdtxGEp1KrTawV1wpvLzr6KfU6uYvc8UOcdCQXb35R5R5V0g==
+X-Received: by 2002:a05:622a:98d:b0:516:ef49:f6f5 with SMTP id d75a77b69052e-51795c5306emr207093251cf.39.1780896662657;
+        Sun, 07 Jun 2026 22:31:02 -0700 (PDT)
+X-Received: by 2002:a05:622a:98d:b0:516:ef49:f6f5 with SMTP id d75a77b69052e-51795c5306emr207092961cf.39.1780896662245;
+        Sun, 07 Jun 2026 22:31:02 -0700 (PDT)
+Received: from [192.168.0.172] ([49.205.249.90])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-68e65851d7bsm6551413a12.14.2026.06.07.22.30.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 07 Jun 2026 22:31:00 -0700 (PDT)
+Message-ID: <75755586-0cc6-4dce-a1e2-726b33623eab@oss.qualcomm.com>
+Date: Mon, 8 Jun 2026 11:00:46 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -28,75 +88,81 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH v3 6/9] iommu/rockchip: Clear AUTO_GATING bit 1 on the
- RK356x v1 IOMMU
-To: Midgy Balon <midgy971@gmail.com>
-Cc: Simon Xue <xxm@rock-chips.com>, tomeu@tomeuvizoso.net,
- ogabbay@kernel.org, heiko@sntech.de, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
- dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20260604135255.62682-1-midgy971@gmail.com>
- <20260604135255.62682-7-midgy971@gmail.com>
- <e44b506e-e9d2-48e3-acea-ab28b7be9b37@rock-chips.com>
- <CA+GS1Y16++cztPxdUGLrPA73ENm4vJGFrjm-jP8r=8OQqcMJGA@mail.gmail.com>
+Subject: Re: [PATCH v7 00/12] media: iris: Add support for glymur platform
+To: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
+        Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Bryan O'Donoghue <bod@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+ <conor+dt@kernel.org>,
+        Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
+        devicetree@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
+        Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>
+References: <20260603-glymur-v7-0-afaa55d11fe0@oss.qualcomm.com>
 Content-Language: en-US
-From: Chaoyi Chen <chaoyi.chen@rock-chips.com>
-In-Reply-To: <CA+GS1Y16++cztPxdUGLrPA73ENm4vJGFrjm-jP8r=8OQqcMJGA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+From: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+In-Reply-To: <20260603-glymur-v7-0-afaa55d11fe0@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-HM-Tid: 0a9ea4e8693b03a7kunm5581ce41167e8e
-X-HM-MType: 1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVlCH0lLVhlNHkJLHRlDGU9CSFYVFA
-	kWGhdVEwETFhoSFyQUDg9ZV1kYEgtZQVlNSlVKTk9VSk9VQ01ZV1kWGg8SFR0UWUFZT0tIVUpLSU
-	9PT0hVSktLVUpCS0tZBg++
-DKIM-Signature: a=rsa-sha256;
-	b=jIgtsz0TyrcFAl+irGQT/FzW/PHecgbmGKsmkt1lnYbbFGDHi1B7akwRMLwY6y/4vFy4+FD+auD6oR1rDOMqmmDFeT8wfSpcb6uQYaIlHVgWzsfkXqJCGQLq4+vHplwYP9NJaOVglVtq7rO5PPu+Hx5XWacT4HRifZn4QvoaS0g=; c=relaxed/relaxed; s=default; d=rock-chips.com; v=1;
-	bh=gtF5hamNMT8w7gwfV8u7Brm72XuPs2uaU6pQ7P0r8NA=;
-	h=date:mime-version:subject:message-id:from;
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjA4MDA0NyBTYWx0ZWRfX5HbiaQQK4B/I
+ R1M+/mpIdeE52c3uRRHpIlw2WiLhuOUoMXi4R648anCzEhhMcQYIlkyXtRDIBU9CpmsXQkzg2f5
+ a/YZ39Ne34NDNz7j+dOKCgVSDvD2AgUuE0u7owcq2SdZNdo4Q7mQr3Czq2n+MK6ot/rXv2qJp9W
+ acr/ktn3rB8lz5gEW4Q0KFB0yb8dDaLSYxp41xmAA4qb1k8oJO4E0t6l0Be5gcbyz9t8t4AAuyD
+ xuwLiTxGbkAKiFebU8H/mRhOP8bXFEYEtFMwj7kWTZs2Bl2nH/BgKjDRoCN4EhKEMNO00iFyeRn
+ CThTr+mjcjdMZZaUK3w4G8FJ18HsYDoKNcRuKPSKU47ghLhkGhZnW7hn6OLh+kc/Enm/LYBkoRm
+ nssIqFWXPLcLZGJS0HWBjtTninuNpDDTDbbaZ79k6pH7CkjY3dNcQ82t4qA2+2fx5yzWJ7TrL3r
+ M/Nyc+zUDA5lItkaFEQ==
+X-Proofpoint-ORIG-GUID: ERgvt1ZyZyG8cxnTjfLDN1FcE4E5XnEO
+X-Proofpoint-GUID: ERgvt1ZyZyG8cxnTjfLDN1FcE4E5XnEO
+X-Authority-Analysis: v=2.4 cv=A/pc+aWG c=1 sm=1 tr=0 ts=6a265397 cx=c_pps
+ a=EVbN6Ke/fEF3bsl7X48z0g==:117 a=LkejVvrHZj9QS69ASjwr7Q==:17
+ a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=eoimf2acIAo5FJnRuUoq:22
+ a=kk5GEcIQhxhgB6gqvmQA:9 a=QEXdDO2ut3YA:10 a=a_PwQJl-kcHnX1M80qC6:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
+ definitions=2026-06-08_01,2026-06-05_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 suspectscore=0 bulkscore=0 spamscore=0 malwarescore=0
+ adultscore=0 priorityscore=1501 phishscore=0 impostorscore=0
+ lowpriorityscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2605210000
+ definitions=main-2606080047
 
-Hi Midgy,
 
-On 6/8/2026 5:05 AM, Midgy Balon wrote:
-> Hi Chaoyi,
+On 6/3/2026 7:48 PM, Vishnu Reddy wrote:
+> Glymur is a new generation video codec that supports dual hardware cores
+> along with additional power domains and clocks.
 > 
->> As I said, it is v2. Could you please try using the code below instead and
->> see if it works?
->> [ auto_gate = read(RK_MMU_AUTO_GATING); auto_gate |= BIT(31); write(...) ]
-> 
-> Thanks -- that's clearly the right shape (read-modify-write, before paging is
-> enabled, keeping the reset value instead of my clobbering 0x2).
-> 
-> I rebuilt v7.1-rc6 (with the rocket RK3568 series + your per-device-ops work)
-> using your bit-31 version and tested it on a ROCK 3B: the NPU IOMMU comes up and
-> services the NPU's DMA cleanly -- the NPU probes, attaches its domain, and runs
-> repeated conv submissions with no DMA_READ_ERROR and no page-walk stall. No
-> regression from the write.
-> 
-> To be precise about what I can and can't show: I tested both ways on v7.1-rc6 --
-> with your bit-31 write, and on the reset value (0x3) -- and the NPU
-> IOMMU services
-> the NPU's reads with zero faults in both cases (no DMA_READ_ERROR, no page-walk
-> stall). So I don't have a failing baseline here that bit-31 visibly
-> fixes. Is the
-> AUTO_GATING write needed on current mainline, or only under conditions I'm not
-> reproducing (a particular traffic pattern / silicon rev)? I'll keep the patch in
-> your form unless you'd prefer to drop it.
-> 
-> One question so I document it correctly: what does bit 31 of RK_MMU_AUTO_GATING
-> control on the v2 block -- is it a master "disable internal auto clock-gating"
-> for the page-table walker (i.e. so a TLB-miss walk's AXI master keeps its clock
-> to completion)? The RK3568 TRM I have doesn't cover the IOMMU registers, so a
-> one-line description would let me write an accurate comment.
+> This series adds platform specific support in the iris driver to handle
+> the extra cores, power domains, and clock requirements introduced by
+> glymur. Add support for firmware loading through context bank firmware
+> device.
 > 
 
-Glad to hear this works. Please refer to the commit below.
+<snip>
 
-[0]: https://github.com/rockchip-linux/kernel/commit/7f8158fb41b5cc8e738aaeebc3637c50ebd74cae
-[1]: https://github.com/rockchip-linux/kernel/commit/6a355e5f9a2069a2309e240791bc3aad63b7324e
+> 
+> Vikash Garodia (2):
+>        media: iris: Add iris vpu bus support
+>        iommu: Add iris-vpu-bus to iommu_buses
+> 
 
--- 
-Best, 
-Chaoyi
+Bryan,
+
+AFAIU, if media maintainer can review and ack these patches, then we can 
+check with iommu maintainers to pick these ?
+
+Regards,
+Vikash
+
