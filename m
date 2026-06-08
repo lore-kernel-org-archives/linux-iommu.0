@@ -1,111 +1,119 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from mail-m3295.qiye.163.com (mail-m3295.qiye.163.com [220.197.32.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85AA138A72B
-	for <iommu@lists.linux.dev>; Mon,  8 Jun 2026 09:13:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E89C3AA50A
+	for <iommu@lists.linux.dev>; Mon,  8 Jun 2026 09:43:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.32.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780910026; cv=none; b=Y0qjUuvMKykyQcrVHG6KLNpaelg+vFMn5iU90DVYNd756AWlkGu8URRHvdtnjAL70TmcBsSpeFy3+djVkHk2KFT5K3gcdq7qPY0T8grUkWparxlf527mYEL42Tr13GNef6+oJvcS5bRIIUaiUNPSIDHmjrvNcqundA7Rb2jziYE=
+	t=1780911834; cv=none; b=jdikfeji2Bfx75gWaGNQXyYvRtNIQUoxDzT8qYgSwdyTAhk5C+Og37fEiNcZk6kqiG6H6KwD0UUBWoCiGeFa8scAZbmAb5Bou0zFnhK6cz8LKJzzZ1r9rTcoMxfzTDDlZ4+hOXyOZ86j+1RfN//MxyzTaxYPafPOa/BlviEk0kQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780910026; c=relaxed/simple;
-	bh=fXRaIH7G5I/CJQmH/yV/VJE8LdcbwzpBIBhaAGzGxQE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=kBinHJDAtmkHaPiBKt+Dpt2CPkqSlYiGWlGyInmSs0lCGMa4Q8W+4+NuKCBRYM7hDpNKvItfTHsqz+rSWlr8qMaTWY4e2BkvYRJa9YA9iGuhOXlKDzdycpi6H2OYZ1llmtXpmKYis9S2D381eFqjndZBElokrU3bW1n2zoNl+qw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=AZ64TEi3; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1780911834; c=relaxed/simple;
+	bh=choLjfNKc+mCYGJz549OBfiKlQYheFl74TmgEs0LqwE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=rkYoSrxt55Cld6qbopDQuPa0wAIehFVVHQDy4N7DX5jIK3r7denn0jQLoxyRp+aPvA554HveaJU/UFOVcjdjqrpXm/+vr3udxuVRlpQL51i4YerXhCKuZMGePV68esWwyOmreC4CR/RmtOE+rglz3A+o/olJ0cJEGDOg+k+fFto=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=YNISX9hX; arc=none smtp.client-ip=220.197.32.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="AZ64TEi3"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260608091341euoutp0208676e16af8010c400a970010abac3ad~3EDqtaQMp1821918219euoutp02E
-	for <iommu@lists.linux.dev>; Mon,  8 Jun 2026 09:13:41 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260608091341euoutp0208676e16af8010c400a970010abac3ad~3EDqtaQMp1821918219euoutp02E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1780910021;
-	bh=pLOka3cfdFyJbdnNVzmj0WLUciaMGtcVVnmR+UwEEQU=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=AZ64TEi30oMTpDqY8UobC66MDLhC4S7beA9BGec+woiCx65Bqt2oRromNmpfrpn8V
-	 9QU+xdCppfH1jZgKPUSqHjZDzo8aNdcIN1sFkT9yjuawcVfSinwyCv/y5m1SWzi+qZ
-	 MsDWElVu5kTgax298Lze05cQwFPm4XwOOkE278Vc=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20260608091341eucas1p12fe29f238227562cb2cb44b27600bf58~3EDqZ6hKp2978129781eucas1p13;
-	Mon,  8 Jun 2026 09:13:41 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20260608091340eusmtip2adbe0fecda225c8937409868b3a652fa~3EDp6Fr8J0947509475eusmtip2e;
-	Mon,  8 Jun 2026 09:13:40 +0000 (GMT)
-Message-ID: <ad25bfe7-feb8-427d-8b0f-f9828e18a917@samsung.com>
-Date: Mon, 8 Jun 2026 11:13:40 +0200
+	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="YNISX9hX"
+Received: from [172.16.12.90] (unknown [61.154.14.86])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 41806bd9a;
+	Mon, 8 Jun 2026 17:38:33 +0800 (GMT+08:00)
+Message-ID: <bcedaff0-abf8-4585-a0ea-057062cd0411@rock-chips.com>
+Date: Mon, 8 Jun 2026 17:38:32 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH] dma-mapping: direct: fix missing mapping for
- THRU_HOST_BRIDGE segments
-To: Leon Romanovsky <leon@kernel.org>
-Cc: lirongqing <lirongqing@baidu.com>, Robin Murphy <robin.murphy@arm.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Luis Chamberlain <mcgrof@kernel.org>,
-	Logan Gunthorpe <logang@deltatee.com>, Bjorn Helgaas <bhelgaas@google.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, hch@lst.de
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH v3 0/9] accel: rocket: Add RK3568 NPU support
+To: Midgy Balon <midgy971@gmail.com>
+Cc: tomeu@tomeuvizoso.net, ogabbay@kernel.org, heiko@sntech.de,
+ robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, joro@8bytes.org,
+ will@kernel.org, robin.murphy@arm.com, dri-devel@lists.freedesktop.org,
+ linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, Simon Xue <xxm@rock-chips.com>,
+ Finley Xiao <finley.xiao@rock-chips.com>
+References: <20260604135255.62682-1-midgy971@gmail.com>
+ <3d99569e-9c3a-49d1-93fb-1335382523e9@rock-chips.com>
+ <CA+GS1Y1s78PwN63X2YJoS8VEGp7CpTERo_K65yKs00U4VRAw4Q@mail.gmail.com>
+ <e5058919-9485-4de5-8eea-331ebfc2987c@rock-chips.com>
+ <CA+GS1Y3ysdWZ3qCq3ip_Pbw+v4LxHZd95aBo=jwB+orYaMBBNw@mail.gmail.com>
+ <CA+GS1Y0kAM_XGLQuKPTphif2HcQg18ZXhd8RHHr2xPOEMCDvXA@mail.gmail.com>
 Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20260604071856.GA245424@unreal>
+From: Chaoyi Chen <chaoyi.chen@rock-chips.com>
+In-Reply-To: <CA+GS1Y0kAM_XGLQuKPTphif2HcQg18ZXhd8RHHr2xPOEMCDvXA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20260608091341eucas1p12fe29f238227562cb2cb44b27600bf58
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260603013739eucas1p2acd3cd59c1083639deb58723d57558af
-X-EPHeader: CA
-X-CMS-RootMailID: 20260603013739eucas1p2acd3cd59c1083639deb58723d57558af
-References: <CGME20260603013739eucas1p2acd3cd59c1083639deb58723d57558af@eucas1p2.samsung.com>
-	<20260603013723.2439-1-lirongqing@baidu.com>
-	<d5b8f939-02d5-4016-9ccb-dd0be0714abb@samsung.com>
-	<20260604071856.GA245424@unreal>
+X-HM-Tid: 0a9ea6991e1403a7kunm0ef6a63b1a581f
+X-HM-MType: 1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVlDHhlLVk9CH0lMHxgYTU4dSFYVFA
+	kWGhdVEwETFhoSFyQUDg9ZV1kYEgtZQVlNSlVKTk9VSk9VQ01ZV1kWGg8SFR0UWUFZT0tIVUpLSU
+	9PT0hVSktLVUpCS0tZBg++
+DKIM-Signature: a=rsa-sha256;
+	b=YNISX9hXTWB3JU79qXo0H1zIQ3fh38Q/5YMbGdbMb6fd15wfuSsjyr7euUN2kozRagih1CHfmjtNNcmqUqwDywkoiTwCLvwuXuGsg2ymzSQ1eBEYvRSSQEBl3Ac3zBVDZQENXtUYPsMZtRymEl4yLSxI4jnHatTSgFvAzWIKVPg=; c=relaxed/relaxed; s=default; d=rock-chips.com; v=1;
+	bh=ge2Ka7ZiWTZZ4XiOiKgnqGsdGuGGJlMJ7SGwJ0Ypbdk=;
+	h=date:mime-version:subject:message-id:from;
 
-On 04.06.2026 09:18, Leon Romanovsky wrote:
-> On Wed, Jun 03, 2026 at 06:25:22PM +0200, Marek Szyprowski wrote:
->> On 03.06.2026 03:37, lirongqing wrote:
->>> From: Li RongQing <lirongqing@baidu.com>
->>>
->>> In dma_direct_map_sg(), the case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE
->>> incorrectly used 'break' instead of falling through to MAP_NONE.
->>> As a result, segments traversing the host bridge skipped the required
->>> dma_direct_map_phys() call entirely, leaving sg->dma_address
->>> uninitialized and leading to DMA failures. Fix this by using
->>> 'fallthrough;'.
->>>
->>> Fixes: a25e7962db0d79 ("PCI/P2PDMA: Refactor the p2pdma mapping helpers")
->>> Reviewed-by: Logan Gunthorpe <logang@deltatee.com>
->>> Signed-off-by: Li RongQing <lirongqing@baidu.com>
->> Applied to dma-mapping-fixes, thanks!
-> The change looks correct, but it will be better if this change will
-> improve d0d08f4bd7f6 ("dma-direct: Fix missing sg_dma_len assignment in
-> P2PDMA bus mappings") too.
->
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index ec887f443741..e98b6547c950 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -489,9 +489,8 @@ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
->                 case PCI_P2PDMA_MAP_BUS_ADDR:
->                         sg->dma_address = pci_p2pdma_bus_addr_map(
->                                 p2pdma_state.mem, sg_phys(sg));
-> -                       sg_dma_len(sg) = sg->length;
->                         sg_dma_mark_bus_address(sg);
-> -                       continue;
-> +                       break;
->                 default:
->                         ret = -EREMOTEIO;
->                         goto out_unmap;
->
-This makes the code a bit more consistent, but it doesn't fix any bug, so I would prefer it as a separate patch, which would go to -next.
+Hi Midgy,
 
-Best regards
+On 6/8/2026 5:14 PM, Midgy Balon wrote:
+> Hello Chaoyi,
+> 
+> Following up on the need_regulator suggestion -- I implemented and
+> tested it on the
+> board, and unfortunately it doesn't avoid the deadlock on RK3568; it
+> moves it from
+> boot to the NPU job submit.
+> 
+> What I did: gave the RK3568 NPU power domain a regulator (a DOMAIN_M_R
+> variant with
+> need_regulator = true), wired domain-supply = <&vdd_npu>, and dropped the
+> regulator-always-on workaround.
+> 
+> Boot is now clean and the NPU probes, but there is a warning during boot:
+> 
+>   rockchip-pm-domain ...: Failed to create device link (0x180) with supplier
+>   0-0020 for .../power-domain@6
+> 
+> (0-0020 is the rk809 PMIC that supplies vdd_npu.) Then on the first NPU job
+> submit the board hard-hangs with an RCU stall:
+> 
+>   rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+>   rcu:     3-...!: (1 GPs behind) ...
+>   rcu: rcu_preempt kthread starved for 5115 jiffies! ... RCU_GP_WAIT_FQS(5)
+>   rcu: Unless rcu_preempt kthread gets sufficient CPU time, OOM is now expected
+> 
+> My reading: vdd_npu is on the rk809 *I2C* PMIC, so when genpd
+> enables/disables the
+> regulator during the NPU's runtime-PM power transition, the I2C
+> transfer runs in a
+> context that starves RCU and the box freezes. (I suspect
+> need_regulator is fine on
+> the RK3588 NPU because its supply isn't behind an I2C PMIC.) The always-on
+> workaround avoids this precisely because genpd never touches the I2C
+> regulator in
+> that path.
+>
+
+No, they are all controlled by RK809.
+
+And This looks werid. Is your rocket driver compiled as a module? 
+Please try compiling it as a module. When is the above error printed? 
+Please provide the complete boot log.
+
+> So: for an NPU domain whose supply is an I2C PMIC, is there a
+> supported way to let
+> genpd own the regulator without performing the I2C op in the
+> power-transition path
+> (a deferred/async regulator enable, or a flag), or should RK3568 keep vdd_npu as
+> regulator-always-on? For v4 I'll keep always-on unless there's a cleaner path.
+> 
+
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+Best, 
+Chaoyi
