@@ -1,135 +1,112 @@
-Received: from mail-dl1-f50.google.com (mail-dl1-f50.google.com [74.125.82.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EDB423EAB8
-	for <iommu@lists.linux.dev>; Mon,  8 Jun 2026 10:27:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6617A3BBFBF;
+	Mon,  8 Jun 2026 10:44:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780914438; cv=none; b=mekYeL2N+LP+N4DWpU7j8Eb738Jszl1uMTTcE22PUeIQbskCb0+pjhv1JHU85SNot2IAGwJZYc4fgtCHKMZOvNW+Enb/sfAhtwn6kx6DLHo8TVCO2bw8EtKWcP9Yo0x90mjpJk7yvxuQykx5DSPOCqC0KDBmLciaPJerTbzF0AU=
+	t=1780915492; cv=none; b=JnkXL0B8QAlHdqc6Jfu/7c29aU1eD1sIzkOfTfy6s8GpzmJtOxCsKTL83a1Yu5q2HwOI1uvmXOTXnLx00ZusQUgCOwmWK13GU/fnrlECPvdMTVRFF7ALFh5kFC/uY6Tq8/EY7pL/eGa28D/i0GkSESczzft81OyvkZXXtXR4A14=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780914438; c=relaxed/simple;
-	bh=vqGYOyZ/CKCoJXA5G4nX1aArmwlyTudasFqGj1P9K1U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OkUEEgEhgeA5MdeqY4a+jxxDolUDpmw+7hygrzvhewmtFThFHl3BQABdnbUDt4x1WkldQewDsg6UElRtUafdHd/BSAzDgEXGfrDZrCq8l4TwfnAOtHX8BpaBBvtgZWM+7LvaTcSqIHkbyjc8DO3TYyVfQZ841O/9GXQXjdYKb3c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=GjMyUA4A; arc=none smtp.client-ip=74.125.82.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1780915492; c=relaxed/simple;
+	bh=S39wh1Aor7xPqz2F0/ELhdZtaK0sGHh/tjvXrBVkkHY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=VC8grHNAnMYhfHfMDexi7TV+c+v5bFPKH3npni/v1mfCWkecNWW82+FCyG2SmKAkSS08176mcOzsPaXU+GnyirrEMuzr26Ux/HHO8x1oOfNdEnKC03QbitmKDRm+YI6PlSCIMAbEtBcfAEeq+tLanzy1uw7GYFFUdhBHl3uotao=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=JoCZ/WKI; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="GjMyUA4A"
-Received: by mail-dl1-f50.google.com with SMTP id a92af1059eb24-1380104f31eso23218c88.0
-        for <iommu@lists.linux.dev>; Mon, 08 Jun 2026 03:27:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780914436; x=1781519236; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=b4M7oLkbEYpMFnDXvWy4q+ZCA9NW6fdqs7xW4QLchcE=;
-        b=GjMyUA4AoOd339KvYWSELXlXx60Sjfz5nyl+yuB/1aVyORqaNWK+clhz0tvRyXVrtp
-         JGFbX4N7OD0qu+LIHaXxSKv9+JM4aBSPogTvDqhU2BrOEXmV+HdCt/Du5ZASRVuM/dwo
-         WwY2MS44x2iJY9m1+4JIHRsLydOx19Qpx3dbCinsm2d8Ue4rcZj6hcq1qb4cKY3ucwp/
-         OaluJyoI/TCLAv/dC1OBBWqF8O2rouiB8N02XyLMWAUH3l398CPW8q0myM5cWm5YXvj3
-         bOoMsy1nVF68o32dGt3V6LLgZ9j8RaAcmv9g7fucTm1L2VCNLUUT4cyt7+rXdJPSvV3L
-         WoYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780914436; x=1781519236;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=b4M7oLkbEYpMFnDXvWy4q+ZCA9NW6fdqs7xW4QLchcE=;
-        b=cDVzu3iCd1HnkidpbwhiRfdQGqCYgQGTLFfQ1j169FXvIy5ppbfnzwLnkVgsjkskP/
-         PHrCMK6wlexWhmLs/KK6b2BWdLi7TJAgTqUD3MKAtkmm0/HBtQtYUq/sja7BBMnqJOEi
-         /t7gyWQ4iBayp/9whnI2qTR6z62PS6I1Js3zktbdxrIkcyEKAm4pDCdACbeBRAlHr/AF
-         ccfFAwds2lfzu5zGBsO2GBHIoIMymJWcJLYQmBIs5/yrsf4ok2dCAk9JtoQxee8oTMEO
-         ch8b8bnOLtj4rFh4L161Gq/d+ul4KwChecHlqeEpYTTkpLapeFv40v2SVYBcJgXDeAZh
-         ai3w==
-X-Forwarded-Encrypted: i=1; AFNElJ+4aUkPFunRDu7wheSF0q7jgLu91b4u9JuHdvjhrjmFWwZrA9wAre9U5oIeA7SZra4i88jYcw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyoADz1qgs+bLbAvOw5ZPT9BCliD5ZLOsu+rggAdsqWdUq3Uzvc
-	8ekIl+XfZ0fpYUXuqFiu7v83c3SCjLIAwxH53EV2r36c2PD1+gexvomK9QTr2iTijA==
-X-Gm-Gg: Acq92OHkSbvNHDFk0M31z5ud90+kx3PL7Cg91w8LogrGKIX9X2g+cIMokA3ac9VdecH
-	vZ86fruE5PO0osS81ZIKgqLqbnz9lqZNvr7OlFDNEKzl8yzzNLEcCiTe7DmyEoi1DHBBaaoPlFP
-	21//Ffxhc/3L+PVwTskmVY5GulNXpruy+XvcxPfQn+LiTPHtHx4xhd/bdUjmAc9EZS5MTjhXXbG
-	TJ805KheIHWdqCZLZ4AHWT0tpD3+ZV//ic80xx1fkt5APNDJTOhAHVza5eaPfptYtU6YB/czu2+
-	HWpNlC4Um9DRzyXBAAAufG+lxpXrzn2nBdTKRG7zd6ZvWRF4SRkhxQ8jYRt32FCn5Da3WDu5xDc
-	dZl2rvg1JTVwbhBah8cBJ/q6LXHDWT8YqPwTakQIjNbYGE9VdxQBbQe7QbZY4eL+PPbFDJDjyIZ
-	EBmy1Kjr7qLtzHq48QMAbB42V3U2LdBzJBTwJeqchjl54VgAqkjOgfw2YFox9xQeA191ZB9Nw=
-X-Received: by 2002:a05:7022:38f:b0:11a:2c18:9e70 with SMTP id a92af1059eb24-13807c516c0mr363192c88.11.1780914434891;
-        Mon, 08 Jun 2026 03:27:14 -0700 (PDT)
-Received: from google.com (199.255.142.34.bc.googleusercontent.com. [34.142.255.199])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3074dba9d43sm15284369eec.10.2026.06.08.03.27.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Jun 2026 03:27:14 -0700 (PDT)
-Date: Mon, 8 Jun 2026 10:27:08 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Daniel Mentz <danielmentz@google.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
-	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Mostafa Saleh <smostafa@google.com>,
-	Ashish Mhetre <amhetre@nvidia.com>,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v7 10/11] iommu/arm-smmu-v3: Invoke pm_runtime before hw
- access
-Message-ID: <aiaY_EmbRxDxSe8-@google.com>
-References: <20260527221407.1756491-1-praan@google.com>
- <20260527221407.1756491-11-praan@google.com>
- <ahilX8Za1NRCH3ik@Asurada-Nvidia>
- <ahi3uY9YZZtR1Lq5@google.com>
- <CAE2F3rDeZe+w7-V6hyJtSOwCj619E5SNtjJjZ1-yu1sVdf=35A@mail.gmail.com>
- <aiEm0yuNtG3PGJ4D@google.com>
- <CAE2F3rDwx9qX3O0GQOJ-CQ1dqREKNp3vf_PkWWP+xmyEHRuOnQ@mail.gmail.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="JoCZ/WKI"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260608104448euoutp02462bcf49bb960e5e74d4dfba6373e0ce~3FTN8Nl8Y2450824508euoutp02S;
+	Mon,  8 Jun 2026 10:44:48 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260608104448euoutp02462bcf49bb960e5e74d4dfba6373e0ce~3FTN8Nl8Y2450824508euoutp02S
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1780915488;
+	bh=plNYBzzaUu+CjxUfVgmwKMU0d70IRGPw0rK3BmwuPjc=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=JoCZ/WKIAI4ynKcKsLsemvNM9WajLCXA73D5zw2xoD7lCL3z54ZkMrkLh/JyPdEyE
+	 /kqCaIilwuycoqSIz0z02aXZrhcLMotd35EHMU7drq2vG8mZar/SYgy1xT2vcdWCN6
+	 uGoRfxIdzyZOSLqUCzO80yrI3lBIVEMsvs8BDl3o=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20260608104448eucas1p1685dd3246a9e2b35613d32758481919c~3FTNnAVOb0713807138eucas1p1-;
+	Mon,  8 Jun 2026 10:44:48 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20260608104446eusmtip22e466d5ec2468bd35b4ff28e72e16298~3FTMH8FJe2930429304eusmtip2T;
+	Mon,  8 Jun 2026 10:44:46 +0000 (GMT)
+Message-ID: <4d30ec2d-72e4-4d5d-98aa-d2519ed6737e@samsung.com>
+Date: Mon, 8 Jun 2026 12:44:45 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH v5 05/20] dma-pool: track decrypted atomic pools and
+ select them via attrs
+To: Jason Gunthorpe <jgg@ziepe.ca>, "Aneesh Kumar K.V"
+	<aneesh.kumar@kernel.org>
+Cc: Michael Kelley <mhklinux@outlook.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-coco@lists.linux.dev"
+	<linux-coco@lists.linux.dev>, Robin Murphy <robin.murphy@arm.com>, Will
+	Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Steven Price
+	<steven.price@arm.com>, Suzuki K Poulose <Suzuki.Poulose@arm.com>, Catalin
+	Marinas <catalin.marinas@arm.com>, Jiri Pirko <jiri@resnulli.us>, Mostafa
+	Saleh <smostafa@google.com>, Petr Tesarik <ptesarik@suse.com>, Alexey
+	Kardashevskiy <aik@amd.com>, Dan Williams <dan.j.williams@intel.com>, Xu
+	Yilun <yilun.xu@linux.intel.com>, "linuxppc-dev@lists.ozlabs.org"
+	<linuxppc-dev@lists.ozlabs.org>, "linux-s390@vger.kernel.org"
+	<linux-s390@vger.kernel.org>, Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, Alexander Gordeev
+	<agordeev@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle
+	<svens@linux.ibm.com>, "x86@kernel.org" <x86@kernel.org>, Jiri Pirko
+	<jiri@nvidia.com>
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20260604182419.GC2487554@ziepe.ca>
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAE2F3rDwx9qX3O0GQOJ-CQ1dqREKNp3vf_PkWWP+xmyEHRuOnQ@mail.gmail.com>
+X-CMS-MailID: 20260608104448eucas1p1685dd3246a9e2b35613d32758481919c
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260604182425eucas1p172fc82b218cbed92f71a093549902d3a
+X-EPHeader: CA
+X-CMS-RootMailID: 20260604182425eucas1p172fc82b218cbed92f71a093549902d3a
+References: <20260522042815.370873-1-aneesh.kumar@kernel.org>
+	<20260522042815.370873-6-aneesh.kumar@kernel.org>
+	<SN6PR02MB415754E94A9505C2B9739E4DD4092@SN6PR02MB4157.namprd02.prod.outlook.com>
+	<yq5afr35sciu.fsf@kernel.org>
+	<SN6PR02MB4157D9955A93244014AB7978D4122@SN6PR02MB4157.namprd02.prod.outlook.com>
+	<20260603005454.GM2487554@ziepe.ca>
+	<SN6PR02MB4157F94C902B78E55E99372DD4102@SN6PR02MB4157.namprd02.prod.outlook.com>
+	<yq5apl26qrof.fsf@kernel.org>
+	<CGME20260604182425eucas1p172fc82b218cbed92f71a093549902d3a@eucas1p1.samsung.com>
+	<20260604182419.GC2487554@ziepe.ca>
 
-On Sun, Jun 07, 2026 at 01:17:39PM -0700, Daniel Mentz wrote:
-> On Thu, Jun 4, 2026 at 12:18 AM Pranjal Shrivastava <praan@google.com> wrote:
-> >
-> > On Wed, Jun 03, 2026 at 03:18:32PM -0700, Daniel Mentz wrote:
-> > > On Thu, May 28, 2026 at 2:46 PM Pranjal Shrivastava <praan@google.com> wrote:
-> > > >
-> > > > On Thu, May 28, 2026 at 01:28:15PM -0700, Nicolin Chen wrote:
-> > > > > On Wed, May 27, 2026 at 10:14:06PM +0000, Pranjal Shrivastava wrote:
-> > > > > > TLB and CFG invalidations are
-> > > > > > elided if the SMMU is suspended by observing the CMDQ_PROD_STOP_FLAG via
-> > > > > > the arm_smmu_can_elide() helper.
-> > > > >
-[..]
-> > > Hi Pranjal,
-> > >
-> > > Have you observed unmap storms in a real-world use case, or is this a
-> > > preemptive optimization? I would not expect a high rate of map/unmap
-> > > operations while the SMMU is suspended. If a client device calls
-> > > iommu_map/iommu_unmap (directly or indirectly), it suggests the client
-> > > device is RPM_ACTIVE, meaning the SMMU should be active as well.
-> > >
-> > > I am in favor of removing arm_smmu_can_elide().
-> >
-> > I saw some with DMA_FQ (fq_timer does batched async invalidations) but
-> > the early ellision doesn't really help with perf which I agreed to in my
-> > reply to Nicolin as well.
-> >
-> > The early checks were dropped in v8 (except for invs_array and for the
-> > WARN_ON in inv_master).
-> 
-> Hi Pranjal,
-> 
-> Please correct me if I'm wrong, but in v8, I can see a call to
-> arm_smmu_cmdq_can_elide() at the very beginning of
-> arm_smmu_domain_inv_range(). Isn't this the path every iommu_unmap
-> goes through?
+On 04.06.2026 20:24, Jason Gunthorpe wrote:
+> On Thu, Jun 04, 2026 at 08:27:36PM +0530, Aneesh Kumar K.V wrote:
+>> I already sent a v6 in the hope of getting this merged for the next
+>> merge window. Should I send a v7, or would you prefer that I do the
+>> rename on top of v6?
+> I think it is too late for such a major change, but this should be
+> imaginged to be for rc2ish next cycle. You also have to spell out how
+> the pkvm patch will get sequenced as well, it would be best to push
+> that it gets picked up right away.
 
-That's correct. In v7 there were 4-5 callsites for these checks, most of
-which were dropped. This one (for invs array) was retained in v8 based on
-this discussion with Nicolin [1].
 
-Thanks,
-Praan
+I would like to give this a bit of time in linux-next so it is a bit too
+late for v7.2, but before merging it I would also like to have this code
+reviewed by someone with confidential computing knowledge.
 
-https://lore.kernel.org/all/ahjNYqe8hjPUQIQD@Asurada-Nvidia/
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
