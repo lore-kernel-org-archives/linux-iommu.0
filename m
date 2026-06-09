@@ -1,110 +1,189 @@
-Received: from mail-oo1-f48.google.com (mail-oo1-f48.google.com [209.85.161.48])
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B80A941C2FC
-	for <iommu@lists.linux.dev>; Tue,  9 Jun 2026 13:04:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57F3B4218A6
+	for <iommu@lists.linux.dev>; Tue,  9 Jun 2026 13:12:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781010262; cv=none; b=e6/Xg53piifYWfcJtFc+WOkDML3ShzYn60/wXKWJbDdUOQKBe298o4brgpP1WU5qDC8xFRDYlPp9O3irM7sWE/uJHYOb5iirqaOFpmwTyvR7WSybpDh5vWTNDi6rrA7PiAErw/OSJTfOy2fBbXc3EzSIIMXbLqA18NntBcQSpi4=
+	t=1781010756; cv=none; b=QBIi0CFTAAQGBWEeh3UHkUiOMN6ia+wZl+ry4gbe9qqf5OjDSR8lrG6gyYFwhfCk9FzokCh0NNpykKJQpczn0T/Jnvnr0ZjAyF1NK2aFezC/yHv7rUh5ojCE095WbDQVvAl/n7G1MXjsKRaGE3xaGH/1mMe/Ccau3gKSjex5V7Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781010262; c=relaxed/simple;
-	bh=0j4G3a5uw0h8NWKrxirXJa6aM0X5kRKkicKFHlR0YPA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Iy1/d21c6Z7Wg+vUjrIz5+QZEWXyLSe8WyeJk1saX/AoPrhWJ0vqt6pZi9CpwnmPYU/YjgCpvLuDDjqssIgjqDq3GoS3vFrrVK/hPIXUM5NgPGf78axfD2Hp4JXRcEk0rNcQMIF6ifkN0tvTuS2NRikXwoCMxABZR7H+kU9r07Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=JXmbioMW; arc=none smtp.client-ip=209.85.161.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1781010756; c=relaxed/simple;
+	bh=cRmrex5oPCwg42dkdhJaD73cEwhY7jfqwVZ+TJf7vSo=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=k/O9RYGBP5NFxqakZ87aAuzNcnFrel25gcO81K+TE2i6ZfS5g9UzEztHHoxjg+BNzdjAqff5H91l+8BNCIju5OZT4zkfujJGag+KFh29MEudmmqW36FvCBDiB38/bNvv/tZNLBhzf7OoCINZhrMO8MRV6ShkWIcg32IYRJds9aU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=VI+azN29; arc=none smtp.client-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="JXmbioMW"
-Received: by mail-oo1-f48.google.com with SMTP id 006d021491bc7-69de16f5e80so2383386eaf.0
-        for <iommu@lists.linux.dev>; Tue, 09 Jun 2026 06:04:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="VI+azN29"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-490d6730461so732695e9.3
+        for <iommu@lists.linux.dev>; Tue, 09 Jun 2026 06:12:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1781010260; x=1781615060; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=BVZI5mT3es8kfvtZchuw47hPTdSf/Ai//CNlNdsP0KI=;
-        b=JXmbioMWLm77WopQEfs06LkxiXmeDLAlNooX53CEDh2Utdsj8wa6VRHM8awNPFLK8u
-         NVKc9AI+QzyultZX0xp8Wf0KJmVjR8V+xWWdAUcyR68eLPXqAJkSW2SF1697WUUlSFsD
-         EEhE2lq70sBpix4nmf/xMDCXANY2ebNtmJsLTk9v4tuu64giPdGSM2coHmZ5RU6dBQ22
-         6DLHaSAwveygJq57EtgbC3EPMmydIM2x1TXIsHjdm3thQadh5I+PdKnBOU8JG6fqivWg
-         x5sBnLZlRuVSRdqqvJ/cwg8SSUv7CQ3kmQ50n4DjEJVKLZeD5iAYkfeXr7QgsDvTYB4K
-         0VaQ==
+        d=suse.com; s=google; t=1781010754; x=1781615554; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=jOb0YWdrCyqRf70PqWxcCcSyY2RJrYltX6EkSx4+w3M=;
+        b=VI+azN29saguK39X9YkY6UqcJLDr8c4i0hv1xEz2YNGH1PYV5dR2etPSGRS87CXsFB
+         +eSJc08/mfMBRJQoVgk151iSQ0kXz3TRCUMkpdWtsiZxtqEPtbdjDIhRpkZxDRxmpxNU
+         c2QSDMPPL7WOiNBw2UXyya1j7HHl8NLgzp9hmoY1qvxGIAtV7HM6vVW01xxQoXVKW410
+         F45bB+SGntGcBdn+7Tkq/qLUo29FgT7Fq1JXGBqmQTDuWdnmq9Mc+7x8SiFbckud4VMD
+         mhgKzFegKW/LVE9JRsya3uSBQV+DC8r/UoXjfXTE7lHUIx6pcGstjgq6f5GxFRzviQjh
+         +AJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781010260; x=1781615060;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=BVZI5mT3es8kfvtZchuw47hPTdSf/Ai//CNlNdsP0KI=;
-        b=mi/DQE+SsQL+PBx60Txcm1sjkgTPi/ai114kjj51MtnJmFRwDR4MGHxJI68aNjvzuQ
-         j76+3yMyO1s+Rkmdb5zgkURPTF8eBARfgeR6ZaCtVaK8ygFdZ8Nv0S20kmncUlAjA9sQ
-         jP3i+EQYRp5we2gYhc+h9lhJJff10Ke7woSRs4Vz1nBExMge96Gy3he3eHwXdS2mN0Xz
-         a5h0k+TEt46ZRyiO8xJ1TxirnUKjKA2/6tyQ8ZHCiaVsCR1aSJPSzoKdKzDj18XKZvTo
-         y40sXNb7Vn3+SUJl1UGZWo28MVS3oPTv8PWxJX6C7eGhbtgUnMgvilwumkyIKwVafeg7
-         BVuA==
-X-Forwarded-Encrypted: i=1; AFNElJ91UFZdKTdM/I1p5r/fWtqmi7EfgPZ/yw7LXSU6QH2t+PKf+NzAipvFRl1kxzO9Qn1jY6Oy0w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwQIb2yW+4WRpvAWNi4zTWVbx3ggcccfBXOVV0uL3kqtbH757Qu
-	H3MjAA92kvKWDaHdWo0Hto2yWaqY1eC/D+XsfvIlW3k+49Ai47DcMR1f7ss4FbttyzY=
-X-Gm-Gg: Acq92OGRElgMe5VinaknNcFZqYLJ7asnqFhd5PZ5JZ29yAYtCbfmdYe8apZG0AKLfmi
-	XiKMtJLUnZI7+4Tha8CHQvlLvh6y16DzWL8qUIDZ1vS7s3QHWag1xdJZzdUaxydiZJjx4I1YqQF
-	EfqkmL0EFTB1PePJzKSj3icluHeMbSvzLrYNPMZLGh0LBAOrncfWJVR9Oq5uTYRzDJpAGfL/td8
-	2HlXhZmDHWkrknpVZLb4Qq1NIjDrJ7k+ADKJmOfZuOmvE6N7cQbZBsTLN13OLUPFmnSKApwFL0V
-	c5fsj1I/PDVt5AZBPQ9YRHwUgoWZGcShguuEM9CYOVeJTOC3a1mMRSMapi+MAniEvfBa3FC+9JY
-	QT9Ik45etS9CLp4aXPlivWgrPMqVC4OIacndLLvoBOrKjfyvoxyuiYWrHapRAMgnasi1NyWp4ja
-	2xkYXjY/l9u6rq5TawhOghKQt6iUEyOXoL7I2Blu70OOFXMfU0w75HBr5y/fCY98gqaWs+7Ln9W
-	D5zvgM/GdDBM6Vr
-X-Received: by 2002:a05:6820:1529:b0:69d:e746:6ec9 with SMTP id 006d021491bc7-69e68b09a59mr9951509eaf.9.1781010259454;
-        Tue, 09 Jun 2026 06:04:19 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8cecd06d600sm203777536d6.35.2026.06.09.06.04.18
+        d=1e100.net; s=20251104; t=1781010754; x=1781615554;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=jOb0YWdrCyqRf70PqWxcCcSyY2RJrYltX6EkSx4+w3M=;
+        b=DnuafR4/jHqa1I73dn76a4Oy3q/AUvc0wZqhFsjtuvGUtf7YtAMpiouEJoh994VjDW
+         lcGBa/SqJJLTQqaI1rpZH8o2BfOuotMpTb9qT+YsXjC0OieNavGLg4eaHdvOJBO22vQ4
+         TLdhTtipFFRc7+7gxYXVU4v6lS9wW+wXtCFMe2DoEPlMIBoECAPm9T/qwh5EiKShZ4E0
+         QC3UXs8P0BjvvRSgoecdfoUnrgtrm8GypsWTeMzOH69gDlq1V0ir5yO2XTDLZDeYPLc1
+         FIzEVfmGfOPmGkpjwomh6Fy7OVxVS3nIMpNCOvTJHR8uRkItYhlQR93LJ9NCRbC1tSyL
+         TLow==
+X-Gm-Message-State: AOJu0Yw6o31L7K3bp3T3artPV+l9XGBqVrO7nKJ2g1Tuh0rMYH0Eb/6S
+	1D4cYYTatjVsOeGlIuJYD5HgtN3s5O6L4Eu6ANcd58dAZvh8spcH39DWKzfjvE+dVeY=
+X-Gm-Gg: Acq92OHLzAYQ3C3olHei+kUtLLhb10ko4BfkYxUMyREHuNMA96WiwU0ldGvPit1xrBs
+	VR0pKrtT8y2sM2+q4Gr+PV5WCXAHXaClhtEmDNjtXMd4xjWo1BCqFcDhoZ2A5rGN8g6u8vgR29C
+	qHASuVKvUyaMtcP8Vk0cCT/zq5vNSTLz4QsRMnqpLZiSOpuuFNi4wEi2H1HPh9l/im3DzashP/R
+	x40zJxrtxOvO0pZHndywW+68qG04HVKesf2QW/XyIddf7hdutjTHOImAkyjTatHldsqHty7dCtX
+	IdwJWdzeCahqNAscZbEBQutPWk0nxht7DuQz+PhVb/y6ew8Aj6a1/0OfOxD0kTXsSk638C7HJyj
+	l0UTpCtnGXzWfBZlIGCV9yzc5GmwAg1xLdyGWmA31worF8UwRfmZJQwuS6+9pnydZepdmEV8nlF
+	nun+/7gCQdzCjAKNDjQqKnsCg=
+X-Received: by 2002:a05:600c:8b65:b0:490:b4d4:5c16 with SMTP id 5b1f17b1804b1-490d72759f0mr16962775e9.8.1781010753634;
+        Tue, 09 Jun 2026 06:12:33 -0700 (PDT)
+Received: from mordecai ([62.77.90.70])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4601f351d69sm111677469f8f.29.2026.06.09.06.12.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Jun 2026 06:04:18 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wWw7u-00000001vgP-1tLR;
-	Tue, 09 Jun 2026 10:04:18 -0300
-Date: Tue, 9 Jun 2026 10:04:18 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Rik van Riel <riel@surriel.com>
-Cc: linux-kernel@vger.kernel.org, kernel-team@meta.com,
-	robin.murphy@arm.com, joro@8bytes.org, will@kernel.org,
-	iommu@lists.linux.dev, kyle@mcmartin.ca,
-	Rik van Riel <riel@meta.com>
-Subject: Re: [PATCH v3 3/3] iova: defer maple tree erase on GFP_ATOMIC failure
-Message-ID: <20260609130418.GI2764304@ziepe.ca>
-References: <20260603033653.4144138-1-riel@surriel.com>
- <20260603033653.4144138-4-riel@surriel.com>
+        Tue, 09 Jun 2026 06:12:26 -0700 (PDT)
+Date: Tue, 9 Jun 2026 15:12:22 +0200
+From: Petr Tesarik <ptesarik@suse.com>
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev, Robin Murphy
+ <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Will
+ Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Steven Price
+ <steven.price@arm.com>, Suzuki K Poulose <Suzuki.Poulose@arm.com>, Catalin
+ Marinas <catalin.marinas@arm.com>, Jiri Pirko <jiri@resnulli.us>, Jason
+ Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, Alexey
+ Kardashevskiy <aik@amd.com>, Dan Williams <dan.j.williams@intel.com>, Xu
+ Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
+ linux-s390@vger.kernel.org, Madhavan Srinivasan <maddy@linux.ibm.com>,
+ Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
+ "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, Alexander Gordeev
+ <agordeev@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+ Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle
+ <svens@linux.ibm.com>, x86@kernel.org, stable@vger.kernel.org, Michael
+ Kelley <mhklinux@outlook.com>
+Subject: Re: [PATCH v6 14/20] dma-direct: return struct page from
+ dma_direct_alloc_from_pool()
+Message-ID: <20260609151222.476a5521@mordecai>
+In-Reply-To: <20260604083959.1265923-15-aneesh.kumar@kernel.org>
+References: <20260604083959.1265923-1-aneesh.kumar@kernel.org>
+	<20260604083959.1265923-15-aneesh.kumar@kernel.org>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260603033653.4144138-4-riel@surriel.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Jun 02, 2026 at 11:35:48PM -0400, Rik van Riel wrote:
-> +/*
-> + * Remove an IOVA entry from the maple tree. Returns true on success.
-> + * On failure (maple tree node allocation under GFP_ATOMIC failed),
-> + * returns false — the entry remains in the tree and the caller must
-> + * not free the struct iova.
-> + */
-> +static bool remove_iova(struct iova_domain *iovad, struct iova *iova)
+On Thu,  4 Jun 2026 14:09:53 +0530
+"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> wrote:
+
+> Commit 5b138c534fda ("dma-direct: factor out a dma_direct_alloc_from_pool
+> helper") changed dma_direct_alloc_from_pool() to return the CPU address
+> from dma_alloc_from_pool(). That fits dma_direct_alloc(), but
+> dma_direct_alloc_pages() also uses the helper and expects a struct page *.
+> 
+> Fix this by making dma_direct_alloc_from_pool() return the struct page *
+> again, and pass the CPU address back through an out-parameter for the
+> dma_direct_alloc() caller.
+> 
+> Fixes: 5b138c534fda ("dma-direct: factor out a dma_direct_alloc_from_pool helper")
+> Cc: stable@vger.kernel.org
+
+While I totally agree with the reasoning and the fix, it's interesting
+that this bug has been apparently present in the kernel for 5+ years
+without anybody hitting nasty memory corruption bugs.
+
+How can it be? Is the buggy code path never actually used in practice?
+Does it hint at a missed opportunity to simplify the code?
+
+Anyway, these these thoughts are intended for a possible future
+cleanup. For now, let's apply the fix as is, of course.
+
+Petr T
+
+> Tested-by: Michael Kelley <mhklinux@outlook.com>
+> Tested-by: Mostafa Saleh <smostafa@google.com>
+> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+> ---
+>  kernel/dma/direct.c | 21 ++++++++++++---------
+>  1 file changed, 12 insertions(+), 9 deletions(-)
+> 
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index 4e446aa4130e..e0ab9ff3f1d6 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -157,24 +157,24 @@ static bool dma_direct_use_pool(struct device *dev, gfp_t gfp)
+>  	return !gfpflags_allow_blocking(gfp) && !is_swiotlb_for_alloc(dev);
+>  }
+>  
+> -static void *dma_direct_alloc_from_pool(struct device *dev, size_t size,
+> -		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
+> +static struct page *dma_direct_alloc_from_pool(struct device *dev, size_t size,
+> +		dma_addr_t *dma_handle, void **cpu_addr, gfp_t gfp,
+> +		unsigned long attrs)
 >  {
->  	MA_STATE(mas, &iovad->mtree, iova->pfn_lo, iova->pfn_hi);
+>  	struct page *page;
+>  	u64 phys_limit;
+> -	void *ret;
 >  
-> @@ -165,7 +175,36 @@ static void remove_iova(struct iova_domain *iovad, struct iova *iova)
->  	if (iova->pfn_lo < iovad->dma_32bit_pfn)
->  		iovad->max32_alloc_size = iovad->dma_32bit_pfn;
+>  	if (WARN_ON_ONCE(!IS_ENABLED(CONFIG_DMA_COHERENT_POOL)))
+>  		return NULL;
 >  
-> -	mas_store_gfp(&mas, NULL, GFP_ATOMIC);
-> +	if (mas_store_gfp(&mas, NULL, GFP_ATOMIC))
-> +		return false;
+>  	gfp |= dma_direct_optimal_gfp_mask(dev, &phys_limit);
+> -	page = dma_alloc_from_pool(dev, size, &ret, gfp, attrs,
+> +	page = dma_alloc_from_pool(dev, size, cpu_addr, gfp, attrs,
+>  				   dma_coherent_ok);
+>  	if (!page)
+>  		return NULL;
+>  	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page),
+>  					 !!(attrs & DMA_ATTR_CC_SHARED));
+> -	return ret;
+> +	return page;
+>  }
+>  
+>  static void *dma_direct_alloc_no_mapping(struct device *dev, size_t size,
+> @@ -270,9 +270,12 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+>  	 * the atomic pools instead if we aren't allowed block.
+>  	 */
+>  	if ((remap || (attrs & DMA_ATTR_CC_SHARED)) &&
+> -	    dma_direct_use_pool(dev, gfp))
+> -		return dma_direct_alloc_from_pool(dev, size, dma_handle,
+> -						  gfp, attrs);
+> +	    dma_direct_use_pool(dev, gfp)) {
+> +		page = dma_direct_alloc_from_pool(dev, size,
+> +					dma_handle, &cpu_addr,
+> +					gfp, attrs);
+> +		return page ? cpu_addr : NULL;
+> +	}
+>  
+>  	if (is_swiotlb_for_alloc(dev)) {
+>  		page = dma_direct_alloc_swiotlb(dev, size, attrs);
+> @@ -445,7 +448,7 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
+>  
+>  	if ((attrs & DMA_ATTR_CC_SHARED) && dma_direct_use_pool(dev, gfp))
+>  		return dma_direct_alloc_from_pool(dev, size, dma_handle,
+> -						  gfp, attrs);
+> +						  &cpu_addr, gfp, attrs);
+>  
+>  	if (is_swiotlb_for_alloc(dev)) {
+>  		page = dma_direct_alloc_swiotlb(dev, size, attrs);
 
-But why does it use mas_store(NULL) instead of mas_erase()? I thought
-the iova alloc/free has to be pair wise, we don't split allocations?
-
-Jason
