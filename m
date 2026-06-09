@@ -1,117 +1,147 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5790740D598
-	for <iommu@lists.linux.dev>; Tue,  9 Jun 2026 20:11:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5398F346FA0
+	for <iommu@lists.linux.dev>; Tue,  9 Jun 2026 20:26:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781035915; cv=none; b=FaaQ6z/H3p2+Zj0Wa9si2QLiMrHagxCH80LmLOhzWRgcCsJbv2FNUIKVxI6l3LFRNQEEkKZdGKuhxPufeO0z6UKI//6yChxbGPundAdevBySxDdcE0j8sL6m4FsB6gX7G4F0Gbgy96zfhpTbGrhVIg42ThEyRvmLj8Q96MsFKZQ=
+	t=1781036788; cv=none; b=fPTDUbz73c3OWO0eREfZeCTE/SbjUfo06zEhIz2orQKwO3zMYu3HIkFNsMmO7dST27TjWtv994y83hQK3DTnecIrdSNlUs+jMB/9nqoJ/2xrHoDJeXoXwlMjpA6K/oHn6zZ4DrPfzgOG/qozHGC0gWPeo9pkSmdTVhzAn6FLAkk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781035915; c=relaxed/simple;
-	bh=wvrIltXBMg2/EmxZ7IhSgdix5pdMivDZLU1DH9W3b10=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UJMD0I6KYQ8Jgt5YyFv5BnP+FSpzcMknaYLF9mVQRPXXdT1kW+PsRjAVY4WVVMGLHZfhfQqGlu+YOY6ldHKjXOtyMBDh1Jlkb/T18hw6yDPqMi4fAZxr4BEUMZOVPXG//uslHVFOeV/BBk2tj+X9rzNsqJgVBxKD8J1bBxB5uN4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=q8eS23tB; arc=none smtp.client-ip=209.85.214.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1781036788; c=relaxed/simple;
+	bh=LpJw5/rR2o/yiUMFjEdd7DjoRvMJ/o5BY/vX0A5fvVs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=MhsAnjw87OmVi0DugsCsPLHHXHqnSz+RI8go7lno6hK/nZMihMf4Jh7he7KH5Xa8iHjZGYR75sb7JOqHG/oPBp7elwDerWq3BpkHMt5gAR/znOb8Q4P/xzDxPvOu/1/rAWN5tFLCjxVMj+3EzGFJWFYWTi/GWNz9miSZqtY3F6w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=OdMJeTZx; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="q8eS23tB"
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2c0b1a48855so1455ad.0
-        for <iommu@lists.linux.dev>; Tue, 09 Jun 2026 13:11:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1781035913; x=1781640713; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=nS7IcpZWz3b5YwmqEgZ6XKILf3MOjCp/zrLboq3oDIk=;
-        b=q8eS23tBzc9ACMmJUjL4uUCf5MFLBb3X5R42OzxqFbusH68UWtH1SBIdQlHIVuSZFz
-         5qaolwsPXvtjXFZmEEkkeRWRoJHUax2DwDxVK0clZO3BqaXKOKN5besL2eypQNWW2sHV
-         sitl9XqnCwoyYaYQeUIuznEFWZczHVLirOFDDlzbLlMrUPJwATeXEwHPP9d80RNGsxAa
-         pOK6i+EBBXm0CjxAShX0SauLE14eo6ZeR3HlPMXiZFaRAp9QaG4YWgr+5dMBga49lkSU
-         o6BHgLW3fGB97W6/2UURKvlcik2qlAnVJ+swrxmbQVnIHIJCWcTErHI188U+DAPbOOPT
-         YX7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781035913; x=1781640713;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nS7IcpZWz3b5YwmqEgZ6XKILf3MOjCp/zrLboq3oDIk=;
-        b=jIBNHkH5Fy9L3sPm0eQUZ4GvUzxFt2/1Uuzlg05DkrmIKgppMdd1i0aFzd2vW7qCUY
-         IJAElAzP6amWjkeBITDOFoiGqbyL206KEJR8x7afh7W0/OjWeAbIE3beyvj2lZpKiGYj
-         S0elR2HaH4vMloIQPz9tNGbnNwUosZQwrXoj1ucLjOY3LMJQywQPtbpVn5CZ17em7eKW
-         x9dIU1wrJeK50BJ+1Fuvkd2PLAghFMQlggW9jaJ/+ltuAMn3EfwA5hu+zfs2dX2YDDv/
-         kNAc6X/h2HN0zjt8zs9Tafove3YoucyZcWIfLCEAUWaCvOJs+vvhQoxoGkZzJ68sJHTq
-         ErMA==
-X-Gm-Message-State: AOJu0Yz0UySGixWopaYygEHXnOLuF1qg8wsdwxZtkmGRxgBuhAYSG2Xv
-	IsvBRN3DlyFb3ynXjem456AVPa0yLGPAKFuXhbC5YXrpysZ3a7qL6G+RbuXDDhAI1g==
-X-Gm-Gg: Acq92OHRk51jvj6uuflk1LMIBh8ptJfy04KTc2pnXF8f4QyybEQGXrSQ8p321WaL3/0
-	5imqLfrKS0xOpO/fyQzf0IlnI7rcgfvU38Fl0eCkzRIzxuXp+qLgnvOtA0TnajCuHAaiwePTcKH
-	1idtF/SM6Gx4AWxuZT5Ouu9LE5ijpBfrk/rBWR3rJyfOW6UtXjo1YOaR1cmsWxEViONUW5GD4wa
-	nue5x4aMFR9mBI9cpm1yl4NOCNjNc/LG6nH8A98tRH2fK8eLfVNs6ZHxe/E0bNdQQbjIhq0kPv4
-	abErvd5nqvSevHWrdSCGl0Pp9/oj8/CzwaLuafoPxmd5RzmLBUPbuFkeLD3UhbCaOYHAljt2X0k
-	5h/ja+7svhp5yg1aVLZ3P9L8EwY377cxY4ug3SIllGc4e/828jZYldskj5eMNw+Ffw2+8EuSL1P
-	TPESrmzyrmpHm4qYs2vY/SWUkJ0RUHGbf8y1tLoZ0Zk6olZUAMEQ6cTQw+l+IG2QRxzRRSlLw=
-X-Received: by 2002:a17:903:2349:b0:2bd:a61:8536 with SMTP id d9443c01a7336-2c1eb74103fmr6509495ad.6.1781035912985;
-        Tue, 09 Jun 2026 13:11:52 -0700 (PDT)
-Received: from google.com (199.255.142.34.bc.googleusercontent.com. [34.142.255.199])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-842828fa877sm22581227b3a.51.2026.06.09.13.11.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Jun 2026 13:11:52 -0700 (PDT)
-Date: Tue, 9 Jun 2026 20:11:46 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Daniel Mentz <danielmentz@google.com>
-Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Ashish Mhetre <amhetre@nvidia.com>,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v8 11/12] iommu/arm-smmu-v3: Invoke pm_runtime before hw
- access
-Message-ID: <aihzgtczL99fM-1c@google.com>
-References: <20260601215909.3958732-1-praan@google.com>
- <20260601215909.3958732-12-praan@google.com>
- <CAE2F3rCPgnFU=d5At1zrOLhsuVEbsweogOHGz9gDddRx73zRtw@mail.gmail.com>
- <aiEawEFsnG-LIahW@google.com>
- <CAE2F3rAWZ4Ac23D8eyAHfmaVVkHv8pz45+_dpMO1M4D7+RVCoA@mail.gmail.com>
- <aifsSxEXX64J1Etq@google.com>
- <CAE2F3rAGLH7si2S4aYhSUWyL-zZL7B_uo+WLE4zKY9SqKVi8zQ@mail.gmail.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="OdMJeTZx"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260609202624euoutp01aa876e3cac28b8f2e7e2c781baafb644~3g4TXWL9l0598405984euoutp01H
+	for <iommu@lists.linux.dev>; Tue,  9 Jun 2026 20:26:24 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260609202624euoutp01aa876e3cac28b8f2e7e2c781baafb644~3g4TXWL9l0598405984euoutp01H
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1781036784;
+	bh=57bbvLEAqcBhGE8t67ZvZajQ3mKi7qJur7Og6R467TI=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=OdMJeTZxDv2kDWMqxEnZy1IVY+qbiCiN3huzI7tnYXA0SDzHXHPz+m0MngV0QyL/O
+	 +7NXZRoHGYly3KjWLRlrgEoIyZZ2xffgx88P7FR05far+qsaYJSPhyneY2JG7v7Jtr
+	 l01Rt2Qq8ObgULm5P0Or4wflv+ihp/wc1wPzPfZg=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20260609202623eucas1p2c778d0a0de063740109d0e23aa94be57~3g4SvX7Ps0695906959eucas1p2-;
+	Tue,  9 Jun 2026 20:26:23 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20260609202622eusmtip2010977d9f71c2e150648808310a6047a~3g4SCJQ9i1572815728eusmtip2I;
+	Tue,  9 Jun 2026 20:26:22 +0000 (GMT)
+Message-ID: <574ad256-8004-45f6-a226-ad2c74be5060@samsung.com>
+Date: Tue, 9 Jun 2026 22:26:22 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAE2F3rAGLH7si2S4aYhSUWyL-zZL7B_uo+WLE4zKY9SqKVi8zQ@mail.gmail.com>
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH rc] iommu/dma: Do not try to iommu_map a 0 length region
+ in swiotlb
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev, "Joerg Roedel
+ (AMD)" <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon
+	<will@kernel.org>
+Cc: Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>, Leon
+	Romanovsky <leonro@nvidia.com>, Luis Chamberlain <mcgrof@kernel.org>, Mark
+	Lord <mlord@pobox.com>, patches@lists.linux.dev, stable@vger.kernel.org
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <0-v1-8536728bc89f+469-swiotlb_warn_jgg@nvidia.com>
+Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20260609202623eucas1p2c778d0a0de063740109d0e23aa94be57
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260608181015eucas1p241dfd8c16072125dc760072a080d4cd2
+X-EPHeader: CA
+X-CMS-RootMailID: 20260608181015eucas1p241dfd8c16072125dc760072a080d4cd2
+References: <CGME20260608181015eucas1p241dfd8c16072125dc760072a080d4cd2@eucas1p2.samsung.com>
+	<0-v1-8536728bc89f+469-swiotlb_warn_jgg@nvidia.com>
 
-On Tue, Jun 09, 2026 at 11:34:42AM -0700, Daniel Mentz wrote:
-> On Tue, Jun 9, 2026 at 3:34 AM Pranjal Shrivastava <praan@google.com> wrote:
-> > > I'm not sure if I have a good suggestion here. Have you considered the
-> > > following: Do not call arm_smmu_handle_gerror() from
-> > > arm_smmu_runtime_suspend(). Instead, call disable_irq() at the end of
-> > > the suspend handler (and enable_irq() at the beginning of the resume
-> > > handler)?
-> >
-> > I thought about using disable_irq(), but I think doing it at the
-> > hardware level (IRQ_CTRL) is better.
-> >
-> > By disabling in IRQ_CTRL and keeping the manual arm_smmu_handle_gerror()
-> > call at the end of suspend, we ensure that we don't lose any gerror info
-> > We catch and handle any errors that occurred during the drain/quiesce
-> > phase right before the power-down.
-> 
-> I think the beauty of disable_irq() is that it synchronizes any
-> potentially running hard IRQ handler, which helps avoid races.
+On 08.06.2026 20:10, Jason Gunthorpe wrote:
+> iommu_dma_iova_link_swiotlb() processes a mapping that is unaligned in three
+> parts, the head, middle and trailer. If the middle is empty because there
+> are no aligned pages it will call down to iommu_map() with a 0 size
+> which the iommupt implementation will fail as illegal.
+>
+> It then tries to do an error unwind and starts from the wrong spot
+> corrupting the mapping so the eventual destruction triggers a WARN_ON.
+>
+> Check for 0 length and avoid mapping and use offset not 0 as the starting
+> point to unlink.
+>
+> This is frequently triggered by using some kinds of thunderbolt NVMe
+> drives that trigger forced SWIOTLB for unaligned memory. NVMe seems to
+> pass in oddly aligned buffers for the passthrough commands from smartctl
+> that hit this condition.
+>
+> Cc: stable@vger.kernel.org
+> Fixes: 433a76207dcf ("dma-mapping: Implement link/unlink ranges API")
+> Reported-by: Mark Lord <mlord@pobox.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 
-Alright, I guess we could:
+Applied to dma-mapping-fixes, thanks!
 
-1. SMMUEN=0
-2. IRQ_CTRL.gerror=0
-3. disable_irq();
-4. handle_gerror(); at the end of suspend
 
-Thanks,
-Praan
+> ---
+>  drivers/iommu/dma-iommu.c | 19 +++++++++++++------
+>  1 file changed, 13 insertions(+), 6 deletions(-)
+>
+> This was discovered because iommupt errors on mapping length=0 instead of
+> making it a NOP, so it is an became an issue since commit d6c65b0fd621
+> ("iommupt: Avoid rewalking during map") making it a regression this merge
+> window.
+>
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 54d96e847f161b..381b60d9e7ceaf 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -1918,12 +1918,18 @@ static int iommu_dma_iova_link_swiotlb(struct device *dev,
+>  			return 0;
+>  	}
+>  
+> +	/*
+> +	 * After removing the partial head and tail, there may be no aligned
+> +	 * middle left to map.  The tail still gets bounced below.
+> +	 */
+>  	size -= iova_end_pad;
+> -	error = __dma_iova_link(dev, addr + mapped, phys + mapped, size, dir,
+> -			attrs);
+> -	if (error)
+> -		goto out_unmap;
+> -	mapped += size;
+> +	if (size) {
+> +		error = __dma_iova_link(dev, addr + mapped, phys + mapped,
+> +				size, dir, attrs);
+> +		if (error)
+> +			goto out_unmap;
+> +		mapped += size;
+> +	}
+>  
+>  	if (iova_end_pad) {
+>  		error = iommu_dma_iova_bounce_and_link(dev, addr + mapped,
+> @@ -1936,7 +1942,8 @@ static int iommu_dma_iova_link_swiotlb(struct device *dev,
+>  	return 0;
+>  
+>  out_unmap:
+> -	dma_iova_unlink(dev, state, 0, mapped, dir, attrs);
+> +	if (mapped)
+> +		dma_iova_unlink(dev, state, offset, mapped, dir, attrs);
+>  	return error;
+>  }
+>  
+>
+> base-commit: 4549871118cf616eecdd2d939f78e3b9e1dddc48
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
