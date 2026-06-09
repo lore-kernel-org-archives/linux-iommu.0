@@ -1,63 +1,63 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57F3B4218A6
-	for <iommu@lists.linux.dev>; Tue,  9 Jun 2026 13:12:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C449A2C158A
+	for <iommu@lists.linux.dev>; Tue,  9 Jun 2026 13:25:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781010756; cv=none; b=QBIi0CFTAAQGBWEeh3UHkUiOMN6ia+wZl+ry4gbe9qqf5OjDSR8lrG6gyYFwhfCk9FzokCh0NNpykKJQpczn0T/Jnvnr0ZjAyF1NK2aFezC/yHv7rUh5ojCE095WbDQVvAl/n7G1MXjsKRaGE3xaGH/1mMe/Ccau3gKSjex5V7Y=
+	t=1781011522; cv=none; b=ZGYD3uGfj1PpasDdOnb5Wa3autJoZ0SmQMm7jCD+ekS7Ty9HA360C4oZfbjZhOefJ0wix0up30x7NEsKdHjAkt5B3cXH4YsX7L6/lj/N9pxZ1ozJN8JGjLLZ5lKUBCrmzPyaqOFkVFvduEMTh6/PbioAdmECm8DOi90Gq7Btw/I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781010756; c=relaxed/simple;
-	bh=cRmrex5oPCwg42dkdhJaD73cEwhY7jfqwVZ+TJf7vSo=;
+	s=arc-20240116; t=1781011522; c=relaxed/simple;
+	bh=5ykcnLagaTLgxx9r2hXBNJ7fmnjaYdIjCpGctAQoeIc=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=k/O9RYGBP5NFxqakZ87aAuzNcnFrel25gcO81K+TE2i6ZfS5g9UzEztHHoxjg+BNzdjAqff5H91l+8BNCIju5OZT4zkfujJGag+KFh29MEudmmqW36FvCBDiB38/bNvv/tZNLBhzf7OoCINZhrMO8MRV6ShkWIcg32IYRJds9aU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=VI+azN29; arc=none smtp.client-ip=209.85.128.41
+	 MIME-Version:Content-Type; b=Zcde/xWtTVMrLnOm/XBSq60XRfEI8nE3n+Jolzb3WsAKqwNDlUchn80SbkN0RjoyXd4ujO7xZWD2DsRdt+mICuSnWoD4oyJCOfjbLBhQWql8CAdjy5NrS3IiqI6wjk2rInhhe8c4ddv3mcuWJmmhSs4Iql6LrLbj964stPB8oFw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=eMldlTp/; arc=none smtp.client-ip=209.85.128.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="VI+azN29"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-490d6730461so732695e9.3
-        for <iommu@lists.linux.dev>; Tue, 09 Jun 2026 06:12:35 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="eMldlTp/"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-490c737bcafso2162755e9.3
+        for <iommu@lists.linux.dev>; Tue, 09 Jun 2026 06:25:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1781010754; x=1781615554; darn=lists.linux.dev;
+        d=suse.com; s=google; t=1781011519; x=1781616319; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:subject:cc:to:from:date:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=jOb0YWdrCyqRf70PqWxcCcSyY2RJrYltX6EkSx4+w3M=;
-        b=VI+azN29saguK39X9YkY6UqcJLDr8c4i0hv1xEz2YNGH1PYV5dR2etPSGRS87CXsFB
-         +eSJc08/mfMBRJQoVgk151iSQ0kXz3TRCUMkpdWtsiZxtqEPtbdjDIhRpkZxDRxmpxNU
-         c2QSDMPPL7WOiNBw2UXyya1j7HHl8NLgzp9hmoY1qvxGIAtV7HM6vVW01xxQoXVKW410
-         F45bB+SGntGcBdn+7Tkq/qLUo29FgT7Fq1JXGBqmQTDuWdnmq9Mc+7x8SiFbckud4VMD
-         mhgKzFegKW/LVE9JRsya3uSBQV+DC8r/UoXjfXTE7lHUIx6pcGstjgq6f5GxFRzviQjh
-         +AJg==
+        bh=k7v0vfpWbXL2tO4K5nU3J31VniWsuUDENERYOQ4A7IA=;
+        b=eMldlTp/1Sbx8nYCDqX7JesB0IuglCCTfV5jRsnpg4MpW0o+V4mP9Aq+iq/pXb2FY4
+         RkrpvX1894zFdG/mwc/h0TSv0pXz/31VYNmUHC9e4KPr3Aems6rryn9a6F3UnV3ZS6pT
+         X1U8OfF5oRKPYR6SWJBqTbE4sTfk25msZRvXvYWT8uDvG4Anz2aO4pibpW/nC97Gu9hb
+         o6g8mCHiKEOJGVsyFPizj/i7b68WKb17RijMuoegipE8CKVc+Rgl1bKf5Wzp+sNzBC3E
+         TdNvCmOKVRVra99/8JP6YVGe8ITVYT5gNj2BnjHY618EqcPT8iX2F1f2JeSu/RazoWeo
+         7v2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781010754; x=1781615554;
+        d=1e100.net; s=20251104; t=1781011519; x=1781616319;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=jOb0YWdrCyqRf70PqWxcCcSyY2RJrYltX6EkSx4+w3M=;
-        b=DnuafR4/jHqa1I73dn76a4Oy3q/AUvc0wZqhFsjtuvGUtf7YtAMpiouEJoh994VjDW
-         lcGBa/SqJJLTQqaI1rpZH8o2BfOuotMpTb9qT+YsXjC0OieNavGLg4eaHdvOJBO22vQ4
-         TLdhTtipFFRc7+7gxYXVU4v6lS9wW+wXtCFMe2DoEPlMIBoECAPm9T/qwh5EiKShZ4E0
-         QC3UXs8P0BjvvRSgoecdfoUnrgtrm8GypsWTeMzOH69gDlq1V0ir5yO2XTDLZDeYPLc1
-         FIzEVfmGfOPmGkpjwomh6Fy7OVxVS3nIMpNCOvTJHR8uRkItYhlQR93LJ9NCRbC1tSyL
-         TLow==
-X-Gm-Message-State: AOJu0Yw6o31L7K3bp3T3artPV+l9XGBqVrO7nKJ2g1Tuh0rMYH0Eb/6S
-	1D4cYYTatjVsOeGlIuJYD5HgtN3s5O6L4Eu6ANcd58dAZvh8spcH39DWKzfjvE+dVeY=
-X-Gm-Gg: Acq92OHLzAYQ3C3olHei+kUtLLhb10ko4BfkYxUMyREHuNMA96WiwU0ldGvPit1xrBs
-	VR0pKrtT8y2sM2+q4Gr+PV5WCXAHXaClhtEmDNjtXMd4xjWo1BCqFcDhoZ2A5rGN8g6u8vgR29C
-	qHASuVKvUyaMtcP8Vk0cCT/zq5vNSTLz4QsRMnqpLZiSOpuuFNi4wEi2H1HPh9l/im3DzashP/R
-	x40zJxrtxOvO0pZHndywW+68qG04HVKesf2QW/XyIddf7hdutjTHOImAkyjTatHldsqHty7dCtX
-	IdwJWdzeCahqNAscZbEBQutPWk0nxht7DuQz+PhVb/y6ew8Aj6a1/0OfOxD0kTXsSk638C7HJyj
-	l0UTpCtnGXzWfBZlIGCV9yzc5GmwAg1xLdyGWmA31worF8UwRfmZJQwuS6+9pnydZepdmEV8nlF
-	nun+/7gCQdzCjAKNDjQqKnsCg=
-X-Received: by 2002:a05:600c:8b65:b0:490:b4d4:5c16 with SMTP id 5b1f17b1804b1-490d72759f0mr16962775e9.8.1781010753634;
-        Tue, 09 Jun 2026 06:12:33 -0700 (PDT)
+        bh=k7v0vfpWbXL2tO4K5nU3J31VniWsuUDENERYOQ4A7IA=;
+        b=dUEw9FNgT7qcLDPvO6651zyD+Bti0KrKVXve72IEbbUNX5iUly9UD54091RqieDk3n
+         hAFdpV3tlm9RK7a6Lr/0d8dLyo1YkJeLV8SKoNhzLSHlZZwNHQEVbABsP7Z3HpRCs2lh
+         qeI6kHKJd0w6Md0JA1u/PrwgrNJ1prJYtpZUZxuItRKl+Du06VdadQWsrgdMChDDZCaE
+         IJo/ZwZRYMfOKntWsymqCff77FtWPcUsgaPGa9OU+Pb5V7hHjYGGKBAyX4NwIfXTLUh4
+         OL7WSmbNkiHDqE6R2E9U0Y57CO5kKErvnWry1MxQx0iIb65XymUtetjLGOuD88aWkeFT
+         myFA==
+X-Gm-Message-State: AOJu0YzjJb+355nvM6ACfQkao8qn/nRO/5D7uaWPyifE3jd1F9u1ymK0
+	gBWkbSAeKHhQ2fi3JV3Kti5+fAcxbmkn6c4sYzBe97WeWOTyLM0BQEQ2fC5cTKzCRvY=
+X-Gm-Gg: Acq92OFXRKuiU+KOh6lvlil+uFDwa4m7FrMaDjvhfr8OipmzeJOlhszepJ9YBrTr2Tj
+	yTgAb3hDQ0c+kz6Kc6Kl7W+RfOI3DGGjX05l76o+nB/gTtk+69UFUE5R3sGkboaBBMKBSr1mJy7
+	VGNxVlr7BI4ovxwAb92pdC+AKaVbYKuhFIJSlja9OkgqR+J6rBgc146XqGS9/OtQTslNvJhgzW3
+	wwaIpnXmvbkF4hdOHipwKinZtJ9DB60LHuyZ8xHRpyDtNwdEF9riVO6qdACxsEwISMpAKgJs+QM
+	3o/n3KzJuovvM0Z10lEsNEs7M5dk4aJgjg951LRZBeoxt2QruFF9DJf/YvMEwcSW+j3oFJS5/W7
+	wJZVob5fBWp/Ro2XIEaxjP4mRfGQ2btcQeWyu95CAqUFUbGmsCLNjEbgW7NfLjY1Nx5VCdyA+2S
+	a+EJK1wKlNL0LJtPYCkmS7r98=
+X-Received: by 2002:a05:600c:1c1e:b0:48a:56d4:7274 with SMTP id 5b1f17b1804b1-490c25e7e1amr167118665e9.3.1781011519006;
+        Tue, 09 Jun 2026 06:25:19 -0700 (PDT)
 Received: from mordecai ([62.77.90.70])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4601f351d69sm111677469f8f.29.2026.06.09.06.12.24
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-490bc3cc140sm574197205e9.9.2026.06.09.06.25.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Jun 2026 06:12:26 -0700 (PDT)
-Date: Tue, 9 Jun 2026 15:12:22 +0200
+        Tue, 09 Jun 2026 06:25:18 -0700 (PDT)
+Date: Tue, 9 Jun 2026 15:23:53 +0200
 From: Petr Tesarik <ptesarik@suse.com>
 To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
 Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
@@ -75,14 +75,14 @@ Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
  <agordeev@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
  Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
  Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle
- <svens@linux.ibm.com>, x86@kernel.org, stable@vger.kernel.org, Michael
- Kelley <mhklinux@outlook.com>
-Subject: Re: [PATCH v6 14/20] dma-direct: return struct page from
- dma_direct_alloc_from_pool()
-Message-ID: <20260609151222.476a5521@mordecai>
-In-Reply-To: <20260604083959.1265923-15-aneesh.kumar@kernel.org>
+ <svens@linux.ibm.com>, x86@kernel.org, Michael Kelley
+ <mhklinux@outlook.com>
+Subject: Re: [PATCH v6 16/20] dma: swiotlb: free dynamic pools from process
+ context
+Message-ID: <20260609152353.6a9f60f8@mordecai>
+In-Reply-To: <20260604083959.1265923-17-aneesh.kumar@kernel.org>
 References: <20260604083959.1265923-1-aneesh.kumar@kernel.org>
-	<20260604083959.1265923-15-aneesh.kumar@kernel.org>
+	<20260604083959.1265923-17-aneesh.kumar@kernel.org>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -93,97 +93,125 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu,  4 Jun 2026 14:09:53 +0530
+On Thu,  4 Jun 2026 14:09:55 +0530
 "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> wrote:
 
-> Commit 5b138c534fda ("dma-direct: factor out a dma_direct_alloc_from_pool
-> helper") changed dma_direct_alloc_from_pool() to return the CPU address
-> from dma_alloc_from_pool(). That fits dma_direct_alloc(), but
-> dma_direct_alloc_pages() also uses the helper and expects a struct page *.
+> swiotlb_dyn_free() is used after removing a dynamic swiotlb pool from
+> RCU-protected lists. It can call swiotlb_free_tlb(), which may need to
+> restore the encryption state of an unencrypted pool with
+> set_memory_encrypted() before freeing the pages.
 > 
-> Fix this by making dma_direct_alloc_from_pool() return the struct page *
-> again, and pass the CPU address back through an out-parameter for the
-> dma_direct_alloc() caller.
-> 
-> Fixes: 5b138c534fda ("dma-direct: factor out a dma_direct_alloc_from_pool helper")
-> Cc: stable@vger.kernel.org
+> RCU callbacks run in atomic context, but set_memory_encrypted() is not
+> guaranteed to be atomic-safe on all architectures. For example, page
+> attribute updates may allocate page tables or take sleeping locks.
 
-While I totally agree with the reasoning and the fix, it's interesting
-that this bug has been apparently present in the kernel for 5+ years
-without anybody hitting nasty memory corruption bugs.
+Good catch!
 
-How can it be? Is the buggy code path never actually used in practice?
-Does it hint at a missed opportunity to simplify the code?
+> Use queue_rcu_work() for dynamic pool freeing instead. This keeps the RCU
+> grace period before freeing a published pool, while running the actual pool
+> teardown from workqueue context. Use the same helper for the transient-pool
+> error path, since that path may also be reached from atomic DMA mapping
+> context.
 
-Anyway, these these thoughts are intended for a possible future
-cleanup. For now, let's apply the fix as is, of course.
+Strictly speaking, it's not necessary, because this is in the error
+path just after allocating a transient pool. There are only two
+possible scenarios:
 
-Petr T
+a. The transient buffer was allocated from a sleeping context, and then
+   it's also OK to decrypt memory.
+
+b. The transient buffer was allocated in atomic context, but then it was
+   allocated from a coherent pool and it is returned to that pool
+   rather than decrypted.
+
+However, it's also fine to queue an RCU work. The logic is definitely
+cleaner and easier to maintain.
 
 > Tested-by: Michael Kelley <mhklinux@outlook.com>
 > Tested-by: Mostafa Saleh <smostafa@google.com>
 > Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+
+Reviewed-by: Petr Tesarik <ptesarik@suse.com>
+
+Petr T
+
 > ---
->  kernel/dma/direct.c | 21 ++++++++++++---------
->  1 file changed, 12 insertions(+), 9 deletions(-)
+>  include/linux/swiotlb.h |  4 ++--
+>  kernel/dma/swiotlb.c    | 19 +++++++++++--------
+>  2 files changed, 13 insertions(+), 10 deletions(-)
 > 
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 4e446aa4130e..e0ab9ff3f1d6 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -157,24 +157,24 @@ static bool dma_direct_use_pool(struct device *dev, gfp_t gfp)
->  	return !gfpflags_allow_blocking(gfp) && !is_swiotlb_for_alloc(dev);
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index 4dcbf3931be1..526f82e9da45 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -64,7 +64,7 @@ extern void __init swiotlb_update_mem_attributes(void);
+>   * @areas:	Array of memory area descriptors.
+>   * @slots:	Array of slot descriptors.
+>   * @node:	Member of the IO TLB memory pool list.
+> - * @rcu:	RCU head for swiotlb_dyn_free().
+> + * @dyn_free:	RCU work item used to free the pool from process context.
+>   * @transient:  %true if transient memory pool.
+>   */
+>  struct io_tlb_pool {
+> @@ -79,7 +79,7 @@ struct io_tlb_pool {
+>  	struct io_tlb_slot *slots;
+>  #ifdef CONFIG_SWIOTLB_DYNAMIC
+>  	struct list_head node;
+> -	struct rcu_head rcu;
+> +	struct rcu_work dyn_free;
+>  	bool transient;
+>  	bool unencrypted;
+>  #endif
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index f4e8b241a1c4..4c56f64602ea 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -774,13 +774,10 @@ static void swiotlb_dyn_alloc(struct work_struct *work)
+>  	add_mem_pool(mem, pool);
 >  }
 >  
-> -static void *dma_direct_alloc_from_pool(struct device *dev, size_t size,
-> -		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
-> +static struct page *dma_direct_alloc_from_pool(struct device *dev, size_t size,
-> +		dma_addr_t *dma_handle, void **cpu_addr, gfp_t gfp,
-> +		unsigned long attrs)
+> -/**
+> - * swiotlb_dyn_free() - RCU callback to free a memory pool
+> - * @rcu:	RCU head in the corresponding struct io_tlb_pool.
+> - */
+> -static void swiotlb_dyn_free(struct rcu_head *rcu)
+> +static void swiotlb_dyn_free_work(struct work_struct *work)
 >  {
->  	struct page *page;
->  	u64 phys_limit;
-> -	void *ret;
+> -	struct io_tlb_pool *pool = container_of(rcu, struct io_tlb_pool, rcu);
+> +	struct io_tlb_pool *pool =
+> +		container_of(to_rcu_work(work), struct io_tlb_pool, dyn_free);
+>  	size_t slots_size = array_size(sizeof(*pool->slots), pool->nslabs);
+>  	size_t tlb_size = pool->end - pool->start;
 >  
->  	if (WARN_ON_ONCE(!IS_ENABLED(CONFIG_DMA_COHERENT_POOL)))
->  		return NULL;
->  
->  	gfp |= dma_direct_optimal_gfp_mask(dev, &phys_limit);
-> -	page = dma_alloc_from_pool(dev, size, &ret, gfp, attrs,
-> +	page = dma_alloc_from_pool(dev, size, cpu_addr, gfp, attrs,
->  				   dma_coherent_ok);
->  	if (!page)
->  		return NULL;
->  	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page),
->  					 !!(attrs & DMA_ATTR_CC_SHARED));
-> -	return ret;
-> +	return page;
+> @@ -789,6 +786,12 @@ static void swiotlb_dyn_free(struct rcu_head *rcu)
+>  	kfree(pool);
 >  }
 >  
->  static void *dma_direct_alloc_no_mapping(struct device *dev, size_t size,
-> @@ -270,9 +270,12 @@ void *dma_direct_alloc(struct device *dev, size_t size,
->  	 * the atomic pools instead if we aren't allowed block.
->  	 */
->  	if ((remap || (attrs & DMA_ATTR_CC_SHARED)) &&
-> -	    dma_direct_use_pool(dev, gfp))
-> -		return dma_direct_alloc_from_pool(dev, size, dma_handle,
-> -						  gfp, attrs);
-> +	    dma_direct_use_pool(dev, gfp)) {
-> +		page = dma_direct_alloc_from_pool(dev, size,
-> +					dma_handle, &cpu_addr,
-> +					gfp, attrs);
-> +		return page ? cpu_addr : NULL;
-> +	}
+> +static void swiotlb_schedule_dyn_free(struct io_tlb_pool *pool)
+> +{
+> +	INIT_RCU_WORK(&pool->dyn_free, swiotlb_dyn_free_work);
+> +	queue_rcu_work(system_wq, &pool->dyn_free);
+> +}
+> +
+>  /**
+>   * __swiotlb_find_pool() - find the IO TLB pool for a physical address
+>   * @dev:        Device which has mapped the DMA buffer.
+> @@ -835,7 +838,7 @@ static void swiotlb_del_pool(struct device *dev, struct io_tlb_pool *pool)
+>  	list_del_rcu(&pool->node);
+>  	spin_unlock_irqrestore(&dev->dma_io_tlb_lock, flags);
 >  
->  	if (is_swiotlb_for_alloc(dev)) {
->  		page = dma_direct_alloc_swiotlb(dev, size, attrs);
-> @@ -445,7 +448,7 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
+> -	call_rcu(&pool->rcu, swiotlb_dyn_free);
+> +	swiotlb_schedule_dyn_free(pool);
+>  }
 >  
->  	if ((attrs & DMA_ATTR_CC_SHARED) && dma_direct_use_pool(dev, gfp))
->  		return dma_direct_alloc_from_pool(dev, size, dma_handle,
-> -						  gfp, attrs);
-> +						  &cpu_addr, gfp, attrs);
+>  #endif	/* CONFIG_SWIOTLB_DYNAMIC */
+> @@ -1276,7 +1279,7 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+>  	index = swiotlb_search_pool_area(dev, pool, 0, orig_addr, tbl_dma_addr,
+>  					 alloc_size, alloc_align_mask);
+>  	if (index < 0) {
+> -		swiotlb_dyn_free(&pool->rcu);
+> +		swiotlb_schedule_dyn_free(pool);
+>  		return -1;
+>  	}
 >  
->  	if (is_swiotlb_for_alloc(dev)) {
->  		page = dma_direct_alloc_swiotlb(dev, size, attrs);
 
