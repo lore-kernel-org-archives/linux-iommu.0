@@ -1,158 +1,103 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E4F53B19CD
-	for <iommu@lists.linux.dev>; Tue,  9 Jun 2026 17:03:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E65A48B38A
+	for <iommu@lists.linux.dev>; Tue,  9 Jun 2026 17:07:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781024621; cv=none; b=FWOWW39dEL8Rr2on0LZNXfNtakKW4rJD0mpDilxxSCoa5LYk2vucH9VRKDMllrevNg5RLAMvNBH8zgu2KxmPR6DnJn2zwuqrKAvXX/VKJ6aoMRRepCvjSEwv1fMjIo8CwKJFyM3iYX4WMIRO+PJN2z2mmdZ2jIVdV9fKtzBH62o=
+	t=1781024837; cv=none; b=Fwk+1R4GScbP2TBD0Feo05X8NugSUc/Q5su40eTxRgTuTAw9wPgMHktHMtH5smK4SmcqHJzD2PeQdSwbBK13SUnv5zKCnTMpOtmuVH9X1HrkBMrboKJvpFolW9DHQwZpM7vhjdOgJY0g97d7WPsyorKAlDiH2Jhb8PmJFQ/W9DQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781024621; c=relaxed/simple;
-	bh=S+ORIibTBKQ0pFdjGliKCIE3wa/sE73a0IDa+NYkQBE=;
+	s=arc-20240116; t=1781024837; c=relaxed/simple;
+	bh=RFvWghnlKdtFZoSnaeTAwrwguE/F1fpnRlI47Dca2n8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pmMsx6rR8NicTXt3A76h7ljtcg5MQYmMC5i8mw6eGgXuaWUfsgvkHAcmCY0CqklJMggFWsCTW6W6lIy14YbghygE/y0oEeM+VRKcH8fX4DWyJTfSDBKzZdQyvEEaFrIHoQ8X3dHB2Xq7QV8mERf2gDNEtow/ACXXO6wV8TP3GFM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=cRAKbirO; arc=none smtp.client-ip=209.85.214.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=bhtl7iuI0cUKbG2ENspf0JNgUGpL7SFER4FJGrOX9n8DjkoI0lpgUgkzo+1AYC+5ji7GSf16BPZlHz3dKzjc9fUSghtGyBIjEhkCMfFP5PXQyAUPee74742NE76vWloN0A2UiFflEcv7DrBXLaGHa1dQNs58i+O5LrZBitI7nSA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Q6W5Vw6M; arc=none smtp.client-ip=209.85.160.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="cRAKbirO"
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2bf22c18ad3so551825ad.0
-        for <iommu@lists.linux.dev>; Tue, 09 Jun 2026 10:03:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Q6W5Vw6M"
+Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-517dc520840so1275391cf.3
+        for <iommu@lists.linux.dev>; Tue, 09 Jun 2026 10:07:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1781024619; x=1781629419; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1781024834; x=1781629634; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=S2CN/F+xLRpEvDTUPWxMr6FI2U9i+V7+WZC6JlOTISM=;
-        b=cRAKbirOblT/a2V9ipsycFxgWBWGFzRCCXF395Et5rLrYGG9sejIuGXE2ofTCJ05ha
-         W3vSq102fT2pBWdp7gqC6b4iaoKKe2yilyEmunxeMUDay28lz4w5Cbq4ViSucnAlyrgh
-         hM7hMmX2DriCEDNg09y8qfXv8uEgK+vCN4cl6tgASMxVjKG69XuU2tRqTL62k1xFkPkd
-         eEysYAZYCAjXl2N6xaitXnfW/C0PHc52a4Wp7e13P6QXaMfWkxTSX3ufare4ZuZYEPA8
-         vmGrVhTEfD0oIb2VonTlivIhChfBEZ87hT6z0VJub9TPpjBiTCrB/4MWaJX45b6Za5J4
-         7aTg==
+        bh=/g68/vwtxQJn0VXkFA+3HliWO9dvMA4L/BKpylMlbCs=;
+        b=Q6W5Vw6Mu0ZAUdzBOmfyEHnM2SETSO7OqDS0avE9Ruu0da2yYDAtdBqmtKO/61Kuko
+         60gAeJSF+Y9Z9M2cjU6lehU7G/gLL8H2eUkX5a1GVBnSUk+ibCU3R7ciqYm1IL6X81Qf
+         3zjNYba7KZXOygE4IT8KbPGFMA+7E4OTu5GEpL4r2oMMyWw+Rb5NQLipGismNh/biSF0
+         5x7HYn8F5kELL4j+1bW1EPERS6oHea/1dnf4Tgk5vkD2VCqqbSunQziftso8Lk5zRC5+
+         RxHBm/6AFFXozM4qpM8B5uQphMVwzK0nUmH8PuoUKX3vHvDCrGFWN3ZqZIkQ6xpI3Hlh
+         qxGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781024619; x=1781629419;
+        d=1e100.net; s=20251104; t=1781024834; x=1781629634;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=S2CN/F+xLRpEvDTUPWxMr6FI2U9i+V7+WZC6JlOTISM=;
-        b=qJUVC8nZoQQaJujr7M/7UF7jey4Ktb2iJfJbTfsm/GrcA7w6N6gqkRdahdPUuClMrB
-         9TvlEe+1aD3ubd2xeiYcAxA4tcHWCdwyujkPVtUcf1aQ20Cgq3N1CZi658pF9UUUmDHr
-         lOyz/N5MrE2i0Z926+TRZNmV4dPkjyOHoiKzsEINmJ6EW6+D1gPtWhBOyXxnngFr4ISI
-         fT/F5iSHc2JstXauUkMMgWjuofttwPDm59DgF/OZJ5l7ZjTQM0wVXKxRCozDcyyPxsbN
-         U0DDeVka4Qs67qfI4V4uHBeAMb58RroOvXliu4qCui9/GGEBCJr4z8+qIDW42dsHyZry
-         FphA==
-X-Gm-Message-State: AOJu0YxzjlI82QgIW7nh7wevvknx/N03kzu+HaOf5GjMML5UhYMrbfpf
-	Zd/+52nEe2X1RXfh4tBOUfHFlncX7UDQcuNhFp0TZ6YzZzFWnmFt37rfbI7/QbNwhLSbyedaZAu
-	8rx66mw==
-X-Gm-Gg: Acq92OG8HC69zB6h4tEHXnc/6HziUb2GbZLkBc+hj37DzZZwVXyx3eha3+TTtiKGYZc
-	LCWgrcsc4cTqobfVKilMirBoNf0gj8OYUKCmSFuvsngDgFweLkalq3VuAi0XAjIsVjxGTTvhO+y
-	uEhFjhfj5fGP1GXdZNiOpwgDeFGcou7g3tCM7b8JSC2Y3/bnciy4xLF4WTOY3SrYXQe4T5Ehcjd
-	yIPxz22bVEr1rneKZ9VEb71zfQCHP5noHNkgQNUOB5q4QsicwsJbkSTVuhI5rnkRVa9encZDMJk
-	CyUwJAraJX1MSVZEN4mBbOxYQDJOMckh7G0O54IdzQTh3by1H6WhbdvmORlg1JDqJVGt0Okgekc
-	gxsLXFT38EdjNn/swIlgtVctvT5yrNSFm3skPEq3Y/QpiT2mLJ1+9/ZRvGI7ODhCH2eXsGvjpRO
-	iQhw0sqNYQbBAYqeA2KUvwUimYkRbVTqYfryQwvy+I2PJtULYfOBCuIbDNECvuFEFEAGGG5/hXX
-	cYveIM3emPYgkWycuzqfJc41dYdFw==
-X-Received: by 2002:a17:903:3d10:b0:2bd:6dad:3dfa with SMTP id d9443c01a7336-2c1eb9443abmr8784635ad.24.1781024618140;
-        Tue, 09 Jun 2026 10:03:38 -0700 (PDT)
-Received: from google.com (25.75.145.34.bc.googleusercontent.com. [34.145.75.25])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c86151154a8sm10528937a12.22.2026.06.09.10.03.37
+        bh=/g68/vwtxQJn0VXkFA+3HliWO9dvMA4L/BKpylMlbCs=;
+        b=gxGzEYv8SxCceUeWI6uv1oB3rdRswJAUGP741OHldftoxp2G0HyPE7ftv9eKLDJwLJ
+         f8j6BjnZ/WK+RajK2+mphOFXmmpEP4rhnKZ1yiPTQTx+tOUNPrULmUhrJTcy+Mh9uqfF
+         PpXIiX/fm5Jq7c0+2MP+4ki4nocTujGj4OthWZ/Y/sZjxhc8VKMWwHksgmINmgwS8Cdt
+         QnsepymNSqQMK9U1NB8eOCO5Cylg+/2oWOWRg+arUxXrPv34/+9Y6JwxnGz9ZIDgmXX6
+         qJ/0IJwhy/C5ewj0XlKt6mVzlyF2pEBpweX+jla2fqdC4/uSke4IefzK6pg3isEtE+8o
+         bcdQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/3Lt7tQA9sK75/pAn5e3XlWBKkSJSOELV6p3idi/rIZesMVniI9lcGlDzFXRCVLg4BpDqqLg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzxjcENBm0fTQw1S/S5xKsj5JaykP0a3SQzvROllHT7WgpOlLZN
+	6VLn+Cy+p6+nvFumvAlFK79bdoSigDxjjp/DihIA4pOqU1YHApj441cNTXoyGbYumps=
+X-Gm-Gg: Acq92OHG5MGN5SrG8s5nYt5HfJYjCq7ExHi2p/RKPadcAJ4LaJNkhB0ITV7xMFVZ0ss
+	Pe7/Ccv6IVWHxDsVZiViyi74N/fXCsasuyy4YEIevtACYOkDfYc6pb57opyJkBJE08PLb+RbDI+
+	2uVU9tVzpEk7t6Hp4FyDLWNKJr/+xnnj8D3bBZcw3Nuxb4e5DklvVTUIp8lDVuAMHGy0w8TpbaT
+	5Qy3vYsvfzh4VBxwwIUH5svpO/v6mfmSTImyqryLz9B+VACxmZwTW4nQHb0yKoY18zjRNyblIO7
+	lO8Z7ZYyadJVdULmZleEGDheC+cUEYt2JgiRv06Aq02TH3vvivi2Nv9pNi+j3/tfOOvURZd9jaj
+	ykWMHLhs3UF/klXLPAr95O5GKUMC+aGi1IkPbDlaKKLUGX6+nZRkcJHGLup4bmC758ozTRWfQcn
+	Hit3h+KzOke1w3yJXSdF3hyRBDa/ZDHZNKW0UlogwGKhRlOW1B4Y1XOJCzcANP6jRPmEthkLye0
+	FG97qhcFdekETd8
+X-Received: by 2002:a05:622a:114c:b0:517:1481:54a with SMTP id d75a77b69052e-51795ca0588mr328689211cf.53.1781024834216;
+        Tue, 09 Jun 2026 10:07:14 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-51789407da8sm162209711cf.19.2026.06.09.10.07.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Jun 2026 10:03:37 -0700 (PDT)
-Date: Tue, 9 Jun 2026 17:03:34 +0000
-From: Samiullah Khawaja <skhawaja@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Jens Axboe <axboe@kernel.dk>, 
-	Christoph Hellwig <hch@lst.de>, Leon Romanovsky <leonro@nvidia.com>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Luis Chamberlain <mcgrof@kernel.org>, 
-	Mark Lord <mlord@pobox.com>, patches@lists.linux.dev, stable@vger.kernel.org
-Subject: Re: [PATCH rc] iommu/dma: Do not try to iommu_map a 0 length region
- in swiotlb
-Message-ID: <aihHRieLr9oEaNEK@google.com>
-References: <0-v1-8536728bc89f+469-swiotlb_warn_jgg@nvidia.com>
+        Tue, 09 Jun 2026 10:07:13 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wWzuz-00000002IEI-0OsB;
+	Tue, 09 Jun 2026 14:07:13 -0300
+Date: Tue, 9 Jun 2026 14:07:13 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Wentao Liang <vulab@iscas.ac.cn>
+Cc: kevin.tian@intel.com, joro@8bytes.org, will@kernel.org,
+	robin.murphy@arm.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] iommufd: fix refcount leak in iommufd_object_remove()
+Message-ID: <20260609170713.GM2764304@ziepe.ca>
+References: <20260609032243.182433-1-vulab@iscas.ac.cn>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0-v1-8536728bc89f+469-swiotlb_warn_jgg@nvidia.com>
+In-Reply-To: <20260609032243.182433-1-vulab@iscas.ac.cn>
 
-On Mon, Jun 08, 2026 at 03:10:04PM -0300, Jason Gunthorpe wrote:
->iommu_dma_iova_link_swiotlb() processes a mapping that is unaligned in three
->parts, the head, middle and trailer. If the middle is empty because there
->are no aligned pages it will call down to iommu_map() with a 0 size
->which the iommupt implementation will fail as illegal.
->
->It then tries to do an error unwind and starts from the wrong spot
->corrupting the mapping so the eventual destruction triggers a WARN_ON.
->
->Check for 0 length and avoid mapping and use offset not 0 as the starting
->point to unlink.
->
->This is frequently triggered by using some kinds of thunderbolt NVMe
->drives that trigger forced SWIOTLB for unaligned memory. NVMe seems to
->pass in oddly aligned buffers for the passthrough commands from smartctl
->that hit this condition.
->
->Cc: stable@vger.kernel.org
->Fixes: 433a76207dcf ("dma-mapping: Implement link/unlink ranges API")
->Reported-by: Mark Lord <mlord@pobox.com>
->Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
->---
-> drivers/iommu/dma-iommu.c | 19 +++++++++++++------
-> 1 file changed, 13 insertions(+), 6 deletions(-)
->
->This was discovered because iommupt errors on mapping length=0 instead of
->making it a NOP, so it is an became an issue since commit d6c65b0fd621
->("iommupt: Avoid rewalking during map") making it a regression this merge
->window.
->
->diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->index 54d96e847f161b..381b60d9e7ceaf 100644
->--- a/drivers/iommu/dma-iommu.c
->+++ b/drivers/iommu/dma-iommu.c
->@@ -1918,12 +1918,18 @@ static int iommu_dma_iova_link_swiotlb(struct device *dev,
-> 			return 0;
-> 	}
->
->+	/*
->+	 * After removing the partial head and tail, there may be no aligned
->+	 * middle left to map.  The tail still gets bounced below.
->+	 */
-> 	size -= iova_end_pad;
->-	error = __dma_iova_link(dev, addr + mapped, phys + mapped, size, dir,
->-			attrs);
->-	if (error)
->-		goto out_unmap;
->-	mapped += size;
->+	if (size) {
->+		error = __dma_iova_link(dev, addr + mapped, phys + mapped,
->+				size, dir, attrs);
->+		if (error)
->+			goto out_unmap;
->+		mapped += size;
->+	}
->
-> 	if (iova_end_pad) {
-> 		error = iommu_dma_iova_bounce_and_link(dev, addr + mapped,
->@@ -1936,7 +1942,8 @@ static int iommu_dma_iova_link_swiotlb(struct device *dev,
-> 	return 0;
->
-> out_unmap:
->-	dma_iova_unlink(dev, state, 0, mapped, dir, attrs);
->+	if (mapped)
->+		dma_iova_unlink(dev, state, offset, mapped, dir, attrs);
-> 	return error;
-> }
->
->
->base-commit: 4549871118cf616eecdd2d939f78e3b9e1dddc48
->-- 
->2.43.0
->
->
+On Tue, Jun 09, 2026 at 03:22:43AM +0000, Wentao Liang wrote:
 
-Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
+> diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
+> index 8c6d43601afb..2fe790c2c69e 100644
+> --- a/drivers/iommu/iommufd/main.c
+> +++ b/drivers/iommu/iommufd/main.c
+> @@ -266,8 +266,10 @@ int iommufd_object_remove(struct iommufd_ctx *ictx,
+>  	 */
+>  	if (!zerod_wait_cnt) {
+>  		ret = iommufd_object_dec_wait(ictx, obj);
+> -		if (WARN_ON(ret))
+> +		if (WARN_ON(ret)) {
+> +			refcount_dec(&obj->wait_cnt);
+>  			return ret;
+> +		}
+
+The WARN_ON is a big clue here that the leak was intentional. If we
+free the memory we know is still in use something worse will happen.
+
+Jason
