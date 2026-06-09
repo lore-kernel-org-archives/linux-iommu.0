@@ -1,187 +1,158 @@
-Received: from mail-qt1-f202.google.com (mail-qt1-f202.google.com [209.85.160.202])
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA5953A874B
-	for <iommu@lists.linux.dev>; Tue,  9 Jun 2026 16:40:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E4F53B19CD
+	for <iommu@lists.linux.dev>; Tue,  9 Jun 2026 17:03:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781023252; cv=none; b=X1DJ8fztPZ4qBYXniWqWcV42b1RkL01aan79UhiTlKcG4x9yD6SVU63tstQ6gaqvpZve82kWTV5tOPrgA1lM4caUcEJ/ZkOl6lzzX+F9zzJuX1Syj6u2OIZcZPZFs9TMmVuknwNXecpPbaAgW8681JdN1zmTp8t4iaMelgsRkqw=
+	t=1781024621; cv=none; b=FWOWW39dEL8Rr2on0LZNXfNtakKW4rJD0mpDilxxSCoa5LYk2vucH9VRKDMllrevNg5RLAMvNBH8zgu2KxmPR6DnJn2zwuqrKAvXX/VKJ6aoMRRepCvjSEwv1fMjIo8CwKJFyM3iYX4WMIRO+PJN2z2mmdZ2jIVdV9fKtzBH62o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781023252; c=relaxed/simple;
-	bh=mRpuGl0D1H2bzUSwzdITFxJNbHejE1me4vdFfTd/szY=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=bJ33UEm7vMwLtnhpls7vGC7f1A59GkMx1Yh7ShpIvq5229/Phit2EC9Z3Aw88Cs+kRLQEhEw+baFu6TBD70HwY1kmdBRv1Mgnmkmubi+qeDOVNYTlD95pTNqYxvdrJCXkmVrHHfm/5T9s7NsprIl2sKQsIo6aPdG0/ZyuPhCoEA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--xuehaohu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=BxT3j8mB; arc=none smtp.client-ip=209.85.160.202
+	s=arc-20240116; t=1781024621; c=relaxed/simple;
+	bh=S+ORIibTBKQ0pFdjGliKCIE3wa/sE73a0IDa+NYkQBE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=pmMsx6rR8NicTXt3A76h7ljtcg5MQYmMC5i8mw6eGgXuaWUfsgvkHAcmCY0CqklJMggFWsCTW6W6lIy14YbghygE/y0oEeM+VRKcH8fX4DWyJTfSDBKzZdQyvEEaFrIHoQ8X3dHB2Xq7QV8mERf2gDNEtow/ACXXO6wV8TP3GFM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=cRAKbirO; arc=none smtp.client-ip=209.85.214.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--xuehaohu.bounces.google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="BxT3j8mB"
-Received: by mail-qt1-f202.google.com with SMTP id d75a77b69052e-51772325a64so78092951cf.2
-        for <iommu@lists.linux.dev>; Tue, 09 Jun 2026 09:40:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="cRAKbirO"
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2bf22c18ad3so551825ad.0
+        for <iommu@lists.linux.dev>; Tue, 09 Jun 2026 10:03:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1781023250; x=1781628050; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=1z3n2byYHJNT9ADexfLlseOwhmDm+N+V4xdURWkL6nU=;
-        b=BxT3j8mBFMBy7wcJEadvrb1A/SgLuzlfHM0xhJ33WWMYF2LPJa4sHs3wJgn+By++4I
-         QOMM+3YxLGCNBSF+uiS5QpAWMs4E1cvSsnz9hOhc1YYvG5RwSSrFiHp2pyCOBLPIhDLh
-         nbX2Rl9WmfieNWFNg3nFKNunF5LP7U+hOuL96W+/HwjKq1bTvciJ4tslushhEMkk/dii
-         ZH8ykUIQ7B4sLq2fDxcvv7SeI0SqirRGS5fyyqlUEl+Gnw0LoYqZj4xpzKzw17rtkUxD
-         rooes7TlY8wS8MWDJEGPkxFBAgwjRoPra7+TEichBn4GYPcHGJK0a4ONu7jiLYKMwdV/
-         dnlQ==
+        d=google.com; s=20251104; t=1781024619; x=1781629419; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=S2CN/F+xLRpEvDTUPWxMr6FI2U9i+V7+WZC6JlOTISM=;
+        b=cRAKbirOblT/a2V9ipsycFxgWBWGFzRCCXF395Et5rLrYGG9sejIuGXE2ofTCJ05ha
+         W3vSq102fT2pBWdp7gqC6b4iaoKKe2yilyEmunxeMUDay28lz4w5Cbq4ViSucnAlyrgh
+         hM7hMmX2DriCEDNg09y8qfXv8uEgK+vCN4cl6tgASMxVjKG69XuU2tRqTL62k1xFkPkd
+         eEysYAZYCAjXl2N6xaitXnfW/C0PHc52a4Wp7e13P6QXaMfWkxTSX3ufare4ZuZYEPA8
+         vmGrVhTEfD0oIb2VonTlivIhChfBEZ87hT6z0VJub9TPpjBiTCrB/4MWaJX45b6Za5J4
+         7aTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781023250; x=1781628050;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=1z3n2byYHJNT9ADexfLlseOwhmDm+N+V4xdURWkL6nU=;
-        b=eHWN3k0FQGmwYKtN8vGtciaAP3vSsftg5Y4je44D+DyEFyCTvSe8CHudbnHsXINn8I
-         4X1OHLXy2XqDnCdq/6R5h3/fZ/hksbEs9kB3VxtyhO2BegNvQqQjie9tIZ+B5ZReDF4O
-         MBp5b27Fn+mcBnP8ViZQeIsI+fwXcsCwvglb8mbPWA0hI2hQ7TCOZUpEwz88BTphM4bT
-         Z8IaO+004xLYcnBQ63DmzmbrcW8e/q/pe+NsgjBSHHm+DKBaoWW+rqfQkHST85qFEUBA
-         JQcZFYNKvBYuxbULW4vrQZojRYxdrK0/0Lr6uZQGZbad4/glZr9nerkoIRgQBsvDpUme
-         prtA==
-X-Forwarded-Encrypted: i=1; AFNElJ+Vbp2cQlQC/ENZurp0mUnewHIsU3gjC8AFc+m0+hru5+s75Y1t5Zow9T89EziNXhZFr7zBXQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwZAk+BWc4ndnRYni79QxRjaj24xIPEi95wX+0+12Gd8hM5OHdm
-	elHon7bFv1ArvgNOiKAsSpo1SXdMSHfhT2N1IeXw3a3IcuEigzQ1NgNklTm7m6y7JN3zRJa1ct/
-	Ul1f7vFiU0ElR
-X-Received: from qtlp5.prod.google.com ([2002:ac8:4085:0:b0:517:58ba:db97])
- (user=xuehaohu job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:622a:1794:b0:517:899b:7f73 with SMTP id d75a77b69052e-51795be1395mr297673871cf.30.1781023249210;
- Tue, 09 Jun 2026 09:40:49 -0700 (PDT)
-Date: Tue,  9 Jun 2026 16:40:47 +0000
+        d=1e100.net; s=20251104; t=1781024619; x=1781629419;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=S2CN/F+xLRpEvDTUPWxMr6FI2U9i+V7+WZC6JlOTISM=;
+        b=qJUVC8nZoQQaJujr7M/7UF7jey4Ktb2iJfJbTfsm/GrcA7w6N6gqkRdahdPUuClMrB
+         9TvlEe+1aD3ubd2xeiYcAxA4tcHWCdwyujkPVtUcf1aQ20Cgq3N1CZi658pF9UUUmDHr
+         lOyz/N5MrE2i0Z926+TRZNmV4dPkjyOHoiKzsEINmJ6EW6+D1gPtWhBOyXxnngFr4ISI
+         fT/F5iSHc2JstXauUkMMgWjuofttwPDm59DgF/OZJ5l7ZjTQM0wVXKxRCozDcyyPxsbN
+         U0DDeVka4Qs67qfI4V4uHBeAMb58RroOvXliu4qCui9/GGEBCJr4z8+qIDW42dsHyZry
+         FphA==
+X-Gm-Message-State: AOJu0YxzjlI82QgIW7nh7wevvknx/N03kzu+HaOf5GjMML5UhYMrbfpf
+	Zd/+52nEe2X1RXfh4tBOUfHFlncX7UDQcuNhFp0TZ6YzZzFWnmFt37rfbI7/QbNwhLSbyedaZAu
+	8rx66mw==
+X-Gm-Gg: Acq92OG8HC69zB6h4tEHXnc/6HziUb2GbZLkBc+hj37DzZZwVXyx3eha3+TTtiKGYZc
+	LCWgrcsc4cTqobfVKilMirBoNf0gj8OYUKCmSFuvsngDgFweLkalq3VuAi0XAjIsVjxGTTvhO+y
+	uEhFjhfj5fGP1GXdZNiOpwgDeFGcou7g3tCM7b8JSC2Y3/bnciy4xLF4WTOY3SrYXQe4T5Ehcjd
+	yIPxz22bVEr1rneKZ9VEb71zfQCHP5noHNkgQNUOB5q4QsicwsJbkSTVuhI5rnkRVa9encZDMJk
+	CyUwJAraJX1MSVZEN4mBbOxYQDJOMckh7G0O54IdzQTh3by1H6WhbdvmORlg1JDqJVGt0Okgekc
+	gxsLXFT38EdjNn/swIlgtVctvT5yrNSFm3skPEq3Y/QpiT2mLJ1+9/ZRvGI7ODhCH2eXsGvjpRO
+	iQhw0sqNYQbBAYqeA2KUvwUimYkRbVTqYfryQwvy+I2PJtULYfOBCuIbDNECvuFEFEAGGG5/hXX
+	cYveIM3emPYgkWycuzqfJc41dYdFw==
+X-Received: by 2002:a17:903:3d10:b0:2bd:6dad:3dfa with SMTP id d9443c01a7336-2c1eb9443abmr8784635ad.24.1781024618140;
+        Tue, 09 Jun 2026 10:03:38 -0700 (PDT)
+Received: from google.com (25.75.145.34.bc.googleusercontent.com. [34.145.75.25])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c86151154a8sm10528937a12.22.2026.06.09.10.03.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Jun 2026 10:03:37 -0700 (PDT)
+Date: Tue, 9 Jun 2026 17:03:34 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Jens Axboe <axboe@kernel.dk>, 
+	Christoph Hellwig <hch@lst.de>, Leon Romanovsky <leonro@nvidia.com>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Luis Chamberlain <mcgrof@kernel.org>, 
+	Mark Lord <mlord@pobox.com>, patches@lists.linux.dev, stable@vger.kernel.org
+Subject: Re: [PATCH rc] iommu/dma: Do not try to iommu_map a 0 length region
+ in swiotlb
+Message-ID: <aihHRieLr9oEaNEK@google.com>
+References: <0-v1-8536728bc89f+469-swiotlb_warn_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.54.0.1064.gd145956f57-goog
-Message-ID: <20260609164047.486227-1-xuehaohu@google.com>
-Subject: [PATCH v7] dma-buf: Fix silent overflow for phys vec to sgt
-From: David Hu <xuehaohu@google.com>
-To: Sumit Semwal <sumit.semwal@linaro.org>, 
-	"=?UTF-8?q?Christian=20K=C3=B6nig?=" <christian.koenig@amd.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>, Leon Romanovsky <leon@kernel.org>, 
-	Kevin Tian <kevin.tian@intel.com>, Ankit Agrawal <ankita@nvidia.com>, 
-	Alex Williamson <alex@shazbot.org>, linux-media@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, jmoroni@google.com, 
-	praan@google.com, David Hu <xuehaohu@google.com>, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <0-v1-8536728bc89f+469-swiotlb_warn_jgg@nvidia.com>
 
-In case MMIO size is bigger than 4G and peer2peer DMA goes
-through host bridge, we trigger a code path that assigns the
-total linked IOVA (which is greater than 4G) to mapped_len.
+On Mon, Jun 08, 2026 at 03:10:04PM -0300, Jason Gunthorpe wrote:
+>iommu_dma_iova_link_swiotlb() processes a mapping that is unaligned in three
+>parts, the head, middle and trailer. If the middle is empty because there
+>are no aligned pages it will call down to iommu_map() with a 0 size
+>which the iommupt implementation will fail as illegal.
+>
+>It then tries to do an error unwind and starts from the wrong spot
+>corrupting the mapping so the eventual destruction triggers a WARN_ON.
+>
+>Check for 0 length and avoid mapping and use offset not 0 as the starting
+>point to unlink.
+>
+>This is frequently triggered by using some kinds of thunderbolt NVMe
+>drives that trigger forced SWIOTLB for unaligned memory. NVMe seems to
+>pass in oddly aligned buffers for the passthrough commands from smartctl
+>that hit this condition.
+>
+>Cc: stable@vger.kernel.org
+>Fixes: 433a76207dcf ("dma-mapping: Implement link/unlink ranges API")
+>Reported-by: Mark Lord <mlord@pobox.com>
+>Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+>---
+> drivers/iommu/dma-iommu.c | 19 +++++++++++++------
+> 1 file changed, 13 insertions(+), 6 deletions(-)
+>
+>This was discovered because iommupt errors on mapping length=0 instead of
+>making it a NOP, so it is an became an issue since commit d6c65b0fd621
+>("iommupt: Avoid rewalking during map") making it a regression this merge
+>window.
+>
+>diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>index 54d96e847f161b..381b60d9e7ceaf 100644
+>--- a/drivers/iommu/dma-iommu.c
+>+++ b/drivers/iommu/dma-iommu.c
+>@@ -1918,12 +1918,18 @@ static int iommu_dma_iova_link_swiotlb(struct device *dev,
+> 			return 0;
+> 	}
+>
+>+	/*
+>+	 * After removing the partial head and tail, there may be no aligned
+>+	 * middle left to map.  The tail still gets bounced below.
+>+	 */
+> 	size -= iova_end_pad;
+>-	error = __dma_iova_link(dev, addr + mapped, phys + mapped, size, dir,
+>-			attrs);
+>-	if (error)
+>-		goto out_unmap;
+>-	mapped += size;
+>+	if (size) {
+>+		error = __dma_iova_link(dev, addr + mapped, phys + mapped,
+>+				size, dir, attrs);
+>+		if (error)
+>+			goto out_unmap;
+>+		mapped += size;
+>+	}
+>
+> 	if (iova_end_pad) {
+> 		error = iommu_dma_iova_bounce_and_link(dev, addr + mapped,
+>@@ -1936,7 +1942,8 @@ static int iommu_dma_iova_link_swiotlb(struct device *dev,
+> 	return 0;
+>
+> out_unmap:
+>-	dma_iova_unlink(dev, state, 0, mapped, dir, attrs);
+>+	if (mapped)
+>+		dma_iova_unlink(dev, state, offset, mapped, dir, attrs);
+> 	return error;
+> }
+>
+>
+>base-commit: 4549871118cf616eecdd2d939f78e3b9e1dddc48
+>-- 
+>2.43.0
+>
+>
 
-Previously, `mapped_len` was declared as 32-bit `unsigned int`.
-When accumulating `size_t` lengths, this leads to a silent wrap-around.
-This truncation causes truncated lengths to be passed to functions
-like `fill_sg_entry()`.
-
-Fix this by changing `mapped_len` to `size_t` (64-bit). While
-at it, fix similar potential overflow issues in `calc_sg_nents`
-by using `check_add_overflow()` for `nents` and using
-`unsigned int` for the loop iterator in `fill_sg_entry` to match.
-
-Fixes: 3aa31a8bb11e ("dma-buf: provide phys_vec to scatter-gather mapping routine")
-Cc: stable@vger.kernel.org
-Cc: iommu@lists.linux.dev
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Leon Romanovsky <leon@kernel.org>
-Signed-off-by: David Hu <xuehaohu@google.com>
----
-Changes in v7:
- - Added a missing blank line after local variable declaration in
-   `calc_sg_nents()` (Leon).
- - Collected Reviewed-by from Leon Romanovsky.
-
-Changes in v6:
- - Used `check_add_overflow()` in `calc_sg_nents()` for safer
-   accumulation (Leon).
- - Dropped explicit `!nents` check and added a comment noting that
-   `sg_alloc_table` handles `nents == 0` (Leon).
- - Collected Reviewed-by from Kevin Tian.
-
-Changes in v5:
- - Removed WARN_ON_ONCE from calc_sg_nents() to avoid log noise (Jason).
- - Added explicit check for `!nents` in dma_buf_phys_vec_to_sgt() to
-   cleanly return -EINVAL on overflow (Jason).
-
-Changes in v4:
- - Added WARN_ON_ONCE() to the nents overflow check to prevent silent
-   failures (Claude Bot).
-
-Changes in v3:
- - Removed leftover sentence fragment from the commit message.
- - Kept `nents = 0` initialization (previously stated as removed in the
-   v2 changelog) as it is strictly required for the `+=` accumulation
-   loop in `calc_sg_nents()`.
-
-Changes in v2:
- - Fixed 'IVOA' -> 'IOVA' typo and expanded commit message (Claude Bot).
- - Added Reverse Xmas tree formatting (Pranjal).
- - Folded in extra bounds checking for calc_sg_nents() (Pranjal).
- - Folded in type consistency fix for fill_sg_entry() (Pranjal).
- - Collected Reviewed-by from Pranjal Shrivastava.
-
- drivers/dma-buf/dma-buf-mapping.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/dma-buf/dma-buf-mapping.c b/drivers/dma-buf/dma-buf-mapping.c
-index 794acff2546a..80f6ab2f4809 100644
---- a/drivers/dma-buf/dma-buf-mapping.c
-+++ b/drivers/dma-buf/dma-buf-mapping.c
-@@ -5,12 +5,13 @@
-  */
- #include <linux/dma-buf-mapping.h>
- #include <linux/dma-resv.h>
-+#include <linux/overflow.h>
- 
- static struct scatterlist *fill_sg_entry(struct scatterlist *sgl, size_t length,
- 					 dma_addr_t addr)
- {
- 	unsigned int len, nents;
--	int i;
-+	unsigned int i;
- 
- 	nents = DIV_ROUND_UP(length, UINT_MAX);
- 	for (i = 0; i < nents; i++) {
-@@ -40,8 +41,12 @@ static unsigned int calc_sg_nents(struct dma_iova_state *state,
- 	size_t i;
- 
- 	if (!state || !dma_use_iova(state)) {
--		for (i = 0; i < nr_ranges; i++)
--			nents += DIV_ROUND_UP(phys_vec[i].len, UINT_MAX);
-+		for (i = 0; i < nr_ranges; i++) {
-+			unsigned int added = DIV_ROUND_UP(phys_vec[i].len, UINT_MAX);
-+
-+			if (check_add_overflow(nents, added, &nents))
-+				return 0;
-+		}
- 	} else {
- 		/*
- 		 * In IOVA case, there is only one SG entry which spans
-@@ -95,9 +100,10 @@ struct sg_table *dma_buf_phys_vec_to_sgt(struct dma_buf_attachment *attach,
- 					 size_t nr_ranges, size_t size,
- 					 enum dma_data_direction dir)
- {
--	unsigned int nents, mapped_len = 0;
- 	struct dma_buf_dma *dma;
- 	struct scatterlist *sgl;
-+	size_t mapped_len = 0;
-+	unsigned int nents;
- 	dma_addr_t addr;
- 	size_t i;
- 	int ret;
-@@ -133,6 +139,8 @@ struct sg_table *dma_buf_phys_vec_to_sgt(struct dma_buf_attachment *attach,
- 	}
- 
- 	nents = calc_sg_nents(dma->state, phys_vec, nr_ranges, size);
-+
-+	/* sg_alloc_table will cleanly fail and return -EINVAL if nents == 0 */
- 	ret = sg_alloc_table(&dma->sgt, nents, GFP_KERNEL | __GFP_ZERO);
- 	if (ret)
- 		goto err_free_state;
--- 
-2.54.0.1064.gd145956f57-goog
-
+Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
