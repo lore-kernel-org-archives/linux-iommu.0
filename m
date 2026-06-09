@@ -1,63 +1,64 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5471936D512
-	for <iommu@lists.linux.dev>; Tue,  9 Jun 2026 12:18:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04F0341362A
+	for <iommu@lists.linux.dev>; Tue,  9 Jun 2026 12:21:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781007506; cv=none; b=aF1q7HqXWf74cG8RKTR9VjIoMOKsq1MKX7F6K5IvB3P7xeXVYijIJ3FvfKnbOKUEsJiSMraDELHbguTKkIczVDx8qfZN8VOu73F2Jqt34jaoIuhOtH2YqJ2F+uNlCQ5ZGGAEnKhGOaIBpVVQ3fdR5Q3pLsIY3d1pg9RB1VBYjuk=
+	t=1781007700; cv=none; b=uETfWpPoc9My+mB8YrNX2k6ShHMhcNUDQAAK6z31a8JOXD8V8N1EbHut+qsX64D+5ti+Vmuzgf9Yt+QI50y4Hj+AsPYvLVyauhrBLrzVN1c8XF7dAyA+oD1x6lB4q7ZUN6uoaWVk8HBPnkffp3tVRZA9w65dgrz5LbSiTY9/wxg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781007506; c=relaxed/simple;
-	bh=AWet2x3HjRD8h6Y0eGbnk+I6u0raEbNWeeBz8Mgsei8=;
+	s=arc-20240116; t=1781007700; c=relaxed/simple;
+	bh=Rl8HUjA4aTjCFQhj+HDrB9xZW8uuYTv5x9JyXO2I/rU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=tyOc8WJhXA72VtQTZciDQyGQcvgwLj6coill0X7OEh4/r2nU6RDoCKWqIVXu4d0FGQwDDJwmyYpm3smJy1MS1Ayfa/iILLMYyPL2QJt2OD3MhG/jnIP+qlmyK8c3jfK0jaQORKpfIajs8mfF2HHQBv8kOmcxm7VuT43lyODCSQE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=dPyEeshT; arc=none smtp.client-ip=209.85.221.46
+	 MIME-Version:Content-Type; b=dJkP5DyUaH3U//l0Jvf9+uhhY0vxToeCjMLAGIclFpFztNQD+NjRVtG6sgXQKnLpogs+ZjjyG245lfq068j4dQTQ2i3RoEa3pgpSJuT+RlVl+KKHH5NwG3kljCVZbrizWX/G7WZTxJ+cAuytTayJ1CGR+Ep69nH+62nrNF7c36c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=G4+A4I4a; arc=none smtp.client-ip=209.85.221.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="dPyEeshT"
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-45ef93a0b0fso360521f8f.2
-        for <iommu@lists.linux.dev>; Tue, 09 Jun 2026 05:18:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="G4+A4I4a"
+Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-45ef4332d89so339914f8f.3
+        for <iommu@lists.linux.dev>; Tue, 09 Jun 2026 05:21:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1781007504; x=1781612304; darn=lists.linux.dev;
+        d=suse.com; s=google; t=1781007696; x=1781612496; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:subject:cc:to:from:date:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=5cgmjA35OZT82unFdAfj17g91mhG8pXqbVF134yH8ow=;
-        b=dPyEeshTh1m0a0yinTGJlL72vV8JmtvaWM6RyWiQ55kW6qTZqBPKZ/iHrOxKt5jroB
-         t9RXYE4OxMI+WPZn67crwJ4PCYXNZDADCyvgeMW/CNduMEviGno/mK0PYYG6OHJZLlJL
-         4ahA/pTBV6aRBo4gWfdyosKedHdoXnjbGJMw+MtLNtTvhKZky+JKiWKHNuXmnI34WJtb
-         fT2qpwEECyyXytZWksViH49k4E8uqqafHaFbXuGmncDIYOdjRCCVJjITHifSANImWbMM
-         QGXmNR7kRoGhIcHbJxPbI7LspD82EiFfJj8CLxAQ0KS2JTSM/wXU/3o5iCi1XPQEPFrm
-         /x4Q==
+        bh=y47BTKkIONM0+RQeKdRPDrTRuu7HqPM7iSbtp8PzT1o=;
+        b=G4+A4I4ao1+Vg9yOllE4VPpUXYN8T3MepKWjkDsKyX7wFtc7w23355e9mvcYCBFsEg
+         73jHR/xi0UiFUbH4W/Ir3/E7UFDx2CTWfywXCf79Rur8w0D5h7gb9GpmvBvJLN2CP8OT
+         0cEkYrup6+4WD4Z/BIDiuvRH6ywaPA+tFQZtu0F3f8yqXwKpWg+DqwDinIubgqLm+PX+
+         LtHWDK7i8/CatO7LxAEBplQijwm7IJ8Kisy4iNRDVjnntsDZ1vpAToh/dk/YrWEjft85
+         qH9zx7wUEOjVF2lnbOc9lW7wbUWd5Hf2rAjhsHMKarQjCmv9igzPc+IeXVsftT/4WEhR
+         zxEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781007504; x=1781612304;
+        d=1e100.net; s=20251104; t=1781007696; x=1781612496;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=5cgmjA35OZT82unFdAfj17g91mhG8pXqbVF134yH8ow=;
-        b=DS0+KhZr7g4+O61NhqYk9lUHdAgEPSS7A+b6K5P99tCQ2lk0i7cBrykSxypXNq+Mex
-         kMvDkhHqgFjyXksVzGX4PPqTm+X00YHEwVoktiFD8ECYm/CDZfwpXdkSo9uYPHCYbOKK
-         GzXsgrzwNbZIkovgiuydIWVeHQtR9FmCUmAAlGA9MQtuFhLImet/+J0AFHCZBFtqekkH
-         pxL6zRiSkzHREBW8Ronorarx1w7BLmPDTm4oe7pQgXMnKwUkNU7CD5kA8SlcghAVJoVL
-         pd5hBIQy4XvzOzA6UAGX7pxdljwqh6EaYNtX4BAviQafnVaxI3BFPFc5a0Depyrj/QWX
-         izeg==
-X-Gm-Message-State: AOJu0Yz50MnRSB2rmooVqqfvhBa82z7k/nvshshZHdBNR+vnu3VLmvjo
-	3c9xc+MhST6NcLD7j7SXkhLdWjqz5b+L9nRcprHDBA3FcrywlOprvmD41gqLbADE5Jg=
-X-Gm-Gg: Acq92OHVO2kI5V1LlXVgM36iFGmWKVEZhJtEdXYIHrGxsSioJ7XBk5H8LZVevZMi22Q
-	RHj/9AT4LL+73T57SSJL9EoJbqLiTVnp+L05w4gd8jtY/xP/+6V/1055FNcxb7WZgDhnFpBYOVn
-	Drr2+xcjCyk39sIvqOBZXSWPkQ9Azb8zF3Ri6ZXeDwS6lkumTfODOi6d3SI0WrHcx2AdRQZTV57
-	688ZxZhqlA21nYteSfHYWB90aoPCAi+Oh+e3t7DeQWiDNV91vPFzjug1sJypEC35fmw0QU1wt2h
-	3jI9B49ZLjlUx0r9HLpZBa7VMiDdM/Ji0z7wNhRDe0+O82+Ymkpdq2yF86q2I9Nt+XhJVQGRzKm
-	9K2Nyo+cGV5UqeU/WaorByJosOnmqRth1fV4tLxUw+CDhdLFSImQMgoLQNLjBFKL1Nft0RFWVM8
-	K/DocrzaXu4rwMzi+L+EjnciY=
-X-Received: by 2002:a05:600c:6990:b0:490:c123:3b7a with SMTP id 5b1f17b1804b1-490c25f5864mr145239965e9.4.1781007503651;
-        Tue, 09 Jun 2026 05:18:23 -0700 (PDT)
+        bh=y47BTKkIONM0+RQeKdRPDrTRuu7HqPM7iSbtp8PzT1o=;
+        b=EevZe5R2mJBVHpR2G5jRsNLYVuGNOWt/egT/jpltyOFkjgm0ObL28BQEzGtxauhMSg
+         qL/i0f6+H8NQksFwvpEroYJ66dfGvw7GF5VUKmDilt91lkzKm1uc1O82+Rd1fMXA2bp+
+         u9G+/cfv/yDdBf/dHjC2W9oixcste6G+dR831e/bYfKRut9P01CZ2TEmU+fLduo1IZ5r
+         KtXmg3OBqcQu9p9igak+DIBjLVfR8oTGGA1dpQWHODaWhgiqAbFscCOksLfGffHJ/1mv
+         UCvRtRLe/4A7RJRKKKJy3PYv7ltJte/hE6IgQiqGiwq/0uMYpPr9cIkg9fl6stFruZyK
+         9BiQ==
+X-Gm-Message-State: AOJu0YwRvgwPICjB8CtKT15RiKNC+KdSzkwCZBas8qzfTrDrTPtwoAgD
+	iRcsISPUqYh9TtWZbXVVJLnVz5zRB1caG+MQU0tN0uv4FWV+xpEb+DO+0pn9yfmPR2Lf/oipPZF
+	eXZOhEj4=
+X-Gm-Gg: Acq92OFGkT14FmXEcj5VxOzU3yAea4heZCxzU31BK650uEzpRgQzm6aFcx1VCW6UUuW
+	lFQ+J/T9AUXrsStwqFusuy1O5rQCPNApz2pm4A/vjnnwZdCEM3ESudfTaZALTHnpWO8wwiTncVJ
+	2ct1fKyEykUDeh18nYk/+hZeutya4ZS+I9Z2fr3rRLWeGJpDwvKdzSxodXrE1oPdCXkjVycMO4b
+	FkSyC9XeQ7F+H4hvoyytoAnnyIPJcllsEC3QUhyy84MuPFSS5u9v/loZMzTzWetZxdKflH+MaP7
+	+e5wIFLvlNqJaY9zUuSKY+6z2AhODHLk5KLnI7r8DqpHUXDITCnPF4cVu1EdXf8sPkgTjkYl95P
+	odGbX9AA5PBGb51AJxy8wkqWXW36oBlmfFdoa9BxEyZXRZCsWiU2qu85WlwFD8xzd9Ev1ThFVgS
+	dvRlHJbT45VJbEMy3KFTvEQkM=
+X-Received: by 2002:a05:6000:1a88:b0:460:11ac:d58 with SMTP id ffacd0b85a97d-4603064331fmr16626567f8f.3.1781007696224;
+        Tue, 09 Jun 2026 05:21:36 -0700 (PDT)
 Received: from mordecai ([62.77.90.70])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4601f3444fesm61851766f8f.20.2026.06.09.05.18.21
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4601f2ec711sm60125048f8f.12.2026.06.09.05.21.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Jun 2026 05:18:22 -0700 (PDT)
-Date: Tue, 9 Jun 2026 14:18:14 +0200
+        Tue, 09 Jun 2026 05:21:35 -0700 (PDT)
+Date: Tue, 9 Jun 2026 14:21:22 +0200
 From: Petr Tesarik <ptesarik@suse.com>
 To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
 Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
@@ -75,14 +76,14 @@ Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
  <agordeev@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
  Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
  Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle
- <svens@linux.ibm.com>, x86@kernel.org, Jiri Pirko <jiri@nvidia.com>,
- Michael Kelley <mhklinux@outlook.com>
-Subject: Re: [PATCH v6 03/20] dma-direct: use DMA_ATTR_CC_SHARED in
- alloc/free paths
-Message-ID: <20260609141814.413c1f2f@mordecai>
-In-Reply-To: <20260604083959.1265923-4-aneesh.kumar@kernel.org>
+ <svens@linux.ibm.com>, x86@kernel.org, Michael Kelley
+ <mhklinux@outlook.com>
+Subject: Re: [PATCH v6 05/20] dma: swiotlb: pass mapping attributes by
+ reference
+Message-ID: <20260609142122.7e721621@mordecai>
+In-Reply-To: <20260604083959.1265923-6-aneesh.kumar@kernel.org>
 References: <20260604083959.1265923-1-aneesh.kumar@kernel.org>
-	<20260604083959.1265923-4-aneesh.kumar@kernel.org>
+	<20260604083959.1265923-6-aneesh.kumar@kernel.org>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -93,132 +94,102 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu,  4 Jun 2026 14:09:42 +0530
+On Thu,  4 Jun 2026 14:09:44 +0530
 "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> wrote:
 
-> Propagate force_dma_unencrypted() into DMA_ATTR_CC_SHARED in the
-> dma-direct allocation path and use the attribute to drive the related
-> decisions.
+> Change swiotlb_tbl_map_single() to take the DMA mapping attributes by
+> reference and update the direct callers accordingly.
 > 
-> This updates dma_direct_alloc(), dma_direct_free(), and
-> dma_direct_alloc_pages() to fold the forced unencrypted case into attrs.
+> This is a preparatory change for a follow-up patch which updates the
+> attributes based on the selected swiotlb pool. Keeping the signature change
+> separate makes the follow-up patch easier to review.
 > 
-> Tested-by: Jiri Pirko <jiri@nvidia.com>
+> No functional change in this patch.
+> 
 > Tested-by: Michael Kelley <mhklinux@outlook.com>
 > Tested-by: Mostafa Saleh <smostafa@google.com>
 > Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 
 Reviewed-by: Petr Tesarik <ptesarik@suse.com>
 
+Thanks
 Petr T
 
 > ---
->  kernel/dma/direct.c | 53 +++++++++++++++++++++++++++++++++++++--------
->  1 file changed, 44 insertions(+), 9 deletions(-)
+>  drivers/iommu/dma-iommu.c | 2 +-
+>  drivers/xen/swiotlb-xen.c | 2 +-
+>  include/linux/swiotlb.h   | 2 +-
+>  kernel/dma/swiotlb.c      | 6 +++---
+>  4 files changed, 6 insertions(+), 6 deletions(-)
 > 
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index a741c8a2ee66..90dc5057a0c0 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -193,16 +193,31 @@ void *dma_direct_alloc(struct device *dev, size_t size,
->  		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
->  {
->  	bool remap = false, set_uncached = false;
-> -	bool mark_mem_decrypt = true;
-> +	bool mark_mem_decrypt = false;
->  	struct page *page;
->  	void *ret;
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index c2595bee3d41..725c7adb0a8d 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -1180,7 +1180,7 @@ static phys_addr_t iommu_dma_map_swiotlb(struct device *dev, phys_addr_t phys,
+>  	trace_swiotlb_bounced(dev, phys, size);
 >  
-> +	/*
-> +	 * DMA_ATTR_CC_SHARED is not a caller-visible dma_alloc_*()
-> +	 * attribute. The direct allocator uses it internally after it has
-> +	 * decided that the backing pages must be shared/decrypted, so the
-> +	 * rest of the allocation path can consistently select DMA addresses,
-> +	 * choose compatible pools and restore encryption on free.
-> +	 */
-> +	if (attrs & DMA_ATTR_CC_SHARED)
-> +		return NULL;
-> +
-> +	if (force_dma_unencrypted(dev)) {
-> +		attrs |= DMA_ATTR_CC_SHARED;
-> +		mark_mem_decrypt = true;
-> +	}
-> +
->  	size = PAGE_ALIGN(size);
->  	if (attrs & DMA_ATTR_NO_WARN)
->  		gfp |= __GFP_NOWARN;
+>  	phys = swiotlb_tbl_map_single(dev, phys, size, iova_mask(iovad), dir,
+> -			attrs);
+> +				      &attrs);
 >  
-> -	if ((attrs & DMA_ATTR_NO_KERNEL_MAPPING) &&
-> -	    !force_dma_unencrypted(dev) && !is_swiotlb_for_alloc(dev))
-> +	if (((attrs & (DMA_ATTR_NO_KERNEL_MAPPING | DMA_ATTR_CC_SHARED)) ==
-> +	     DMA_ATTR_NO_KERNEL_MAPPING) && !is_swiotlb_for_alloc(dev))
->  		return dma_direct_alloc_no_mapping(dev, size, dma_handle, gfp);
->  
->  	if (!dev_is_dma_coherent(dev)) {
-> @@ -236,7 +251,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
->  	 * Remapping or decrypting memory may block, allocate the memory from
->  	 * the atomic pools instead if we aren't allowed block.
+>  	/*
+>  	 * Untrusted devices should not see padding areas with random leftover
+> diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+> index 2cbf2b588f5b..8c4abe65cd49 100644
+> --- a/drivers/xen/swiotlb-xen.c
+> +++ b/drivers/xen/swiotlb-xen.c
+> @@ -243,7 +243,7 @@ static dma_addr_t xen_swiotlb_map_phys(struct device *dev, phys_addr_t phys,
 >  	 */
-> -	if ((remap || force_dma_unencrypted(dev)) &&
-> +	if ((remap || (attrs & DMA_ATTR_CC_SHARED)) &&
->  	    dma_direct_use_pool(dev, gfp))
->  		return dma_direct_alloc_from_pool(dev, size, dma_handle, gfp);
+>  	trace_swiotlb_bounced(dev, dev_addr, size);
 >  
-> @@ -312,12 +327,24 @@ void dma_direct_free(struct device *dev, size_t size,
->  		void *cpu_addr, dma_addr_t dma_addr, unsigned long attrs)
+> -	map = swiotlb_tbl_map_single(dev, phys, size, 0, dir, attrs);
+> +	map = swiotlb_tbl_map_single(dev, phys, size, 0, dir, &attrs);
+>  	if (map == (phys_addr_t)DMA_MAPPING_ERROR)
+>  		return DMA_MAPPING_ERROR;
+>  
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index 133bb8ca9032..29187cec90d8 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -238,7 +238,7 @@ static inline phys_addr_t default_swiotlb_limit(void)
+>  
+>  phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t phys,
+>  		size_t mapping_size, unsigned int alloc_aligned_mask,
+> -		enum dma_data_direction dir, unsigned long attrs);
+> +		enum dma_data_direction dir, unsigned long *attrs);
+>  dma_addr_t swiotlb_map(struct device *dev, phys_addr_t phys,
+>  		size_t size, enum dma_data_direction dir, unsigned long attrs);
+>  
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index be4d418d92ac..78ce05857c00 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -1391,7 +1391,7 @@ static unsigned long mem_used(struct io_tlb_mem *mem)
+>   */
+>  phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+>  		size_t mapping_size, unsigned int alloc_align_mask,
+> -		enum dma_data_direction dir, unsigned long attrs)
+> +		enum dma_data_direction dir, unsigned long *attrs)
 >  {
->  	phys_addr_t phys;
-> -	bool mark_mem_encrypted = true;
-> +	bool mark_mem_encrypted = false;
->  	struct io_tlb_pool *swiotlb_pool;
->  	unsigned int page_order = get_order(size);
+>  	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
+>  	unsigned int offset;
+> @@ -1425,7 +1425,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+>  	size = ALIGN(mapping_size + offset, alloc_align_mask + 1);
+>  	index = swiotlb_find_slots(dev, orig_addr, size, alloc_align_mask, &pool);
+>  	if (index == -1) {
+> -		if (!(attrs & DMA_ATTR_NO_WARN))
+> +		if (!(*attrs & DMA_ATTR_NO_WARN))
+>  			dev_warn_ratelimited(dev,
+>  	"swiotlb buffer is full (sz: %zd bytes), total %lu (slots), used %lu (slots)\n",
+>  				 size, mem->nslabs, mem_used(mem));
+> @@ -1604,7 +1604,7 @@ dma_addr_t swiotlb_map(struct device *dev, phys_addr_t paddr, size_t size,
 >  
-> -	if ((attrs & DMA_ATTR_NO_KERNEL_MAPPING) &&
-> -	    !force_dma_unencrypted(dev) && !is_swiotlb_for_alloc(dev)) {
-> +	/* see dma_direct_alloc() for details */
-> +	WARN_ON(attrs & DMA_ATTR_CC_SHARED);
-> +
-> +	/*
-> +	 * if the device had requested for an unencrypted buffer,
-> +	 * convert it to encrypted on free
-> +	 */
-> +	if (force_dma_unencrypted(dev)) {
-> +		attrs |= DMA_ATTR_CC_SHARED;
-> +		mark_mem_encrypted = true;
-> +	}
-> +
-> +	if (((attrs & (DMA_ATTR_NO_KERNEL_MAPPING | DMA_ATTR_CC_SHARED)) ==
-> +	     DMA_ATTR_NO_KERNEL_MAPPING) && !is_swiotlb_for_alloc(dev)) {
->  		/* cpu_addr is a struct page cookie, not a kernel address */
->  		dma_free_contiguous(dev, cpu_addr, size);
->  		return;
-> @@ -366,10 +393,14 @@ void dma_direct_free(struct device *dev, size_t size,
->  struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
->  		dma_addr_t *dma_handle, enum dma_data_direction dir, gfp_t gfp)
->  {
-> +	unsigned long attrs = 0;
->  	struct page *page;
->  	void *ret;
+>  	trace_swiotlb_bounced(dev, phys_to_dma(dev, paddr), size);
 >  
-> -	if (force_dma_unencrypted(dev) && dma_direct_use_pool(dev, gfp))
-> +	if (force_dma_unencrypted(dev))
-> +		attrs |= DMA_ATTR_CC_SHARED;
-> +
-> +	if ((attrs & DMA_ATTR_CC_SHARED) && dma_direct_use_pool(dev, gfp))
->  		return dma_direct_alloc_from_pool(dev, size, dma_handle, gfp);
+> -	swiotlb_addr = swiotlb_tbl_map_single(dev, paddr, size, 0, dir, attrs);
+> +	swiotlb_addr = swiotlb_tbl_map_single(dev, paddr, size, 0, dir, &attrs);
+>  	if (swiotlb_addr == (phys_addr_t)DMA_MAPPING_ERROR)
+>  		return DMA_MAPPING_ERROR;
 >  
->  	if (is_swiotlb_for_alloc(dev)) {
-> @@ -403,7 +434,11 @@ void dma_direct_free_pages(struct device *dev, size_t size,
->  	phys_addr_t phys;
->  	void *vaddr = page_address(page);
->  	struct io_tlb_pool *swiotlb_pool;
-> -	bool mark_mem_encrypted = true;
-> +	/*
-> +	 * if the device had requested for an unencrypted buffer,
-> +	 * convert it to encrypted on free
-> +	 */
-> +	bool mark_mem_encrypted = force_dma_unencrypted(dev);
->  
->  	/* If cpu_addr is not from an atomic pool, dma_free_from_pool() fails */
->  	if (IS_ENABLED(CONFIG_DMA_COHERENT_POOL) &&
 
