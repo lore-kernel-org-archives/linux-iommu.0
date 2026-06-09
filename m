@@ -1,160 +1,159 @@
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from pdx-out-015.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-015.esa.us-west-2.outbound.mail-perimeter.amazon.com [50.112.246.219])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 858BE345CD3
-	for <iommu@lists.linux.dev>; Tue,  9 Jun 2026 14:32:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 586C332B126
+	for <iommu@lists.linux.dev>; Tue,  9 Jun 2026 14:38:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=50.112.246.219
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781015567; cv=none; b=TgiFXV78LpkWkeppQEsO3v2xkwkyZrOX1P++IZVgKwFjOAq/rnCvAY0VMPtC/CXRe+zzF3Boiv6ac4djdqlM4gqTzS/y/Ux8Ju+3PlnLPn4qjL3q0mmyDU8jSJ8eafCvPO7slFMc68VXyy1Lcagp+IOWcxe+b1a5t1fh872eMEY=
+	t=1781015902; cv=none; b=im2syLTjC6AIgRyzRrwp4zFvW5lFAISs+jAowvcicXiw3qV1XCApIo0jEOUE5qmrUzbXhKnLRbzbCJpAoJSDFDgKToxdfgApKq+NC1KcaAb2Aj4j4r5cicPnKfCbfBQKq9bmHPolhmYakGbs8cuJA71plDEEO/rT6NEB113QwZc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781015567; c=relaxed/simple;
-	bh=HZyPOuiNCQ2/FcFDihBMt8c7vcnJQS9bgoylFwsrqHw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=g/l0pCGpP2g91jPavIZYgnemKR4MWk3Pt5SdLHCi4Tc3gvAVXHaqD3dBb+iX3oneDHdxECnA/upLe1KPZc1OBDH0mt+ny+R5kqQ1Vnf4Tv2gO9z5wcbFAZS1meBOBZQ3izlzGJshBriyJzs9HfrR5p38gn5I3RI0C+3FN934yh8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=l4ulVzMc; arc=none smtp.client-ip=209.85.222.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1781015902; c=relaxed/simple;
+	bh=fGZdfV443xZ0rmCD2u6DNSY8eqZeMqIX1mRQdL5h6A8=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=rZ9eC/w8kO5quTY2KFUXIvpWMHxAHdOp3YztmocJ1BAtMHxDyv+vP2oH/2TJggpnGJMSUKJfsHwM2UWzU4cueCpdV/ifjRbuXaYpGWxmtK7T7DXzIHDZgseVYW9Zdq+Xbx2De2UcXscYipMv4qht1+uYNrIxMY63J/1O6AIg4VM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.de; spf=pass smtp.mailfrom=amazon.de; dkim=pass (2048-bit key) header.d=amazon.de header.i=@amazon.de header.b=g8f4e0ps; arc=none smtp.client-ip=50.112.246.219
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="l4ulVzMc"
-Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-915c48e6ae2so234032485a.2
-        for <iommu@lists.linux.dev>; Tue, 09 Jun 2026 07:32:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=amazon.de header.i=@amazon.de header.b="g8f4e0ps"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1781015564; x=1781620364; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=D9KAUhO8tYdZLzMRayCE9PmCg2//sOlzvRLMvdEyREI=;
-        b=l4ulVzMcJs2+BxlBOD7AFkOYRSvnOzZHDn+UbVr/SfYOogdxfJID3kjbF7ldxRLxVa
-         OPg/nTmFit9A5CKQuVSuEyZ1kYV2ExSvsm23RTktAcSzzmbE/Oo0nvFOHsBU5X/mc6qL
-         xe4o9oDGvC7DVpQ5n7W18KScEnjbJADW+3+meAMSE2MMDd3EtCXMJx/KPr5oGHCV98mg
-         smkVpHV7g9kTMdKEPlNJQFi6OFoGjz+GorabCQ0EKSQFfbLL180RCyyBhRON04TAp1hp
-         Lw4MEcewpPPyMn0ryUZGUA1z6ly+d+apPrDYAzUd+3VcaD3QRTJhAewzGPN/RYCeSS/Y
-         tWCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781015564; x=1781620364;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=D9KAUhO8tYdZLzMRayCE9PmCg2//sOlzvRLMvdEyREI=;
-        b=Hf7N3Hs3lgq2GkrGHkJMtE0+Su4oW4tzQ6wO2LYQz8hfrIbSaA4ajxruqivXkgTbjh
-         PQcU4RrfE6T2XncqjKI4N2khcDj6XDCxpoRaivkLYtTBbByK6h90WQc3Ez9wf5l5JCk9
-         RPXVLS1Wb9uOo9eSeKyh/JhSf4+/X7lbwceAiAEP5xcm8Y1tWA/Oz6+lHEmxtWm3ILdo
-         bTLGAPbeyFAEJqnxHMHPhS3eXpI9alpKLyog63PUcoAyEJvuIkqJmRJuB9MOsBAzJXFR
-         ZL8RnCwCy7cnL4N+YwxoBt99ZjjXRyiJmgPJ1V1rsYVmgWOuZHcCs5t0bOf5qvdNb9EZ
-         XzJQ==
-X-Gm-Message-State: AOJu0YyPc0Y7AkjFo6DP4STruwDul80WSmNO+VFXGcQJC7Gz+e0fXFEU
-	EeM6s/gp04pqsle6jr9ElimrGVtBuEGyoD1cGa1vcwlDwdwBoSLCyxoAL0S+bstapWA=
-X-Gm-Gg: Acq92OFarfll9cROQZMtNw8FRlgMho6r3nZJ1Hnq4Z8KDwKuglM7fV7iT+bSpdE/E0s
-	duc+xUHHkDA43I2buc6Ox9ZFUorzSruIoETqQSa9TJfgK2T6asvaNv3nVT8Ci5sHT8MzZsfzvgh
-	kqJjtXASAGtBNBW3eSZs07eJJzepOztkB6e9OThvvwkN5CZK7gMzDznpMfr3xZKXD+Lr24SYEdA
-	JBXf1ZKSDo/NdTJ+3PwGI7H9hBr+PmaBOfP/gCctO5Uica1NB2X5rFLoTcCDCKU8B8wHQJ2qk37
-	uk2IwCyIUzpQHoAEYuzgBJvKiZrowRG87rUP7X0opzdMHnX3ZvxOy4w/ek+NAeV8HF+vrN7IRoy
-	SKFTmgLKFbQ3jj65v1YHOOztP6pzlazsbY7UjZqUSlz6NDkKQ8oklwtXBUKESw9hppaEDubqsAN
-	+QghoUCFYDhCci3olHGGbZmtPFuzAMEvngjQwXJ+nnNgca5bi06NnGRJs6EmxkyrEkP2/MWZgX2
-	YcI2voCFsobGkIT
-X-Received: by 2002:a05:620a:c46:b0:915:9f28:6748 with SMTP id af79cd13be357-915a9cdcf02mr3443110085a.23.1781015564257;
-        Tue, 09 Jun 2026 07:32:44 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-9158a00afafsm2106743685a.2.2026.06.09.07.32.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Jun 2026 07:32:43 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wWxVS-0000000241b-3Vv0;
-	Tue, 09 Jun 2026 11:32:42 -0300
-Date: Tue, 9 Jun 2026 11:32:42 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
-	Jiri Pirko <jiri@nvidia.com>, Michael Kelley <mhklinux@outlook.com>
-Subject: Re: [PATCH v6 04/20] dma-pool: track decrypted atomic pools and
- select them via attrs
-Message-ID: <20260609143242.GK2764304@ziepe.ca>
-References: <20260604083959.1265923-1-aneesh.kumar@kernel.org>
- <20260604083959.1265923-5-aneesh.kumar@kernel.org>
+  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazoncorp2;
+  t=1781015901; x=1812551901;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=BBjZPbNaSisUm/wByxwrCqk7wBHMbCoX8PBhpFvmoUc=;
+  b=g8f4e0ps49r+1uDSDgMqhaYKMlkumMVw7gVvSteXUkZxNHeJEaB4ognW
+   lfXApoD8TKn8kQyMVABLD9+QNA3cxXaFWAW4PEmx43K2n/UC8x/m4fwCs
+   Mkqbj2Jt9GlcwH/XK2oovnGBIcR3tHLP0yJqxeeyX2cAR1ydL6Ld/6DSc
+   1cG3JCE6CVoatbvwVGivs7Xd9RYuMZi8Y/maWnOK4QnX4QTWhvap6Y3vy
+   hDyw2v58Vdpm/t+mmwg7yRzuVTvraO8PDiHiVXkrELX/VAszF1CuCljXx
+   zrz1VWoS8opQ+mpuHAD4mhwu+M/uwpoFufngxSbFWGy/PUj07DoYHeKeS
+   A==;
+X-CSE-ConnectionGUID: 62R0+7UoTDq4QqXJIz5Gfg==
+X-CSE-MsgGUID: D1VSAX60QnaAS5P1eK3Jcg==
+X-IronPort-AV: E=Sophos;i="6.24,196,1774310400"; 
+   d="scan'208";a="21211664"
+Received: from ip-10-5-0-115.us-west-2.compute.internal (HELO smtpout.naws.us-west-2.prod.farcaster.email.amazon.dev) ([10.5.0.115])
+  by internal-pdx-out-015.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2026 14:38:18 +0000
+Received: from EX19MTAUWA001.ant.amazon.com [205.251.233.236:20973]
+ by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.31.226:2525] with esmtp (Farcaster)
+ id 008b3bdd-8535-4bf3-9185-dc16399fa4ea; Tue, 9 Jun 2026 14:38:18 +0000 (UTC)
+X-Farcaster-Flow-ID: 008b3bdd-8535-4bf3-9185-dc16399fa4ea
+Received: from EX19D001UWA001.ant.amazon.com (10.13.138.214) by
+ EX19MTAUWA001.ant.amazon.com (10.250.64.204) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.37;
+ Tue, 9 Jun 2026 14:38:18 +0000
+Received: from dev-dsk-araoof-1b-23e02486.eu-west-1.amazon.com (10.253.65.187)
+ by EX19D001UWA001.ant.amazon.com (10.13.138.214) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.37;
+ Tue, 9 Jun 2026 14:38:16 +0000
+From: Ahmed Abdelraoof <araoof@amazon.de>
+To: David Woodhouse <dwmw2@infradead.org>, Lu Baolu
+	<baolu.lu@linux.intel.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, "Will
+ Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Ahmed
+ Abdelraoof" <araoof@amazon.com>
+CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] iommu/vt-d: Make DMA-fault page-table dump user-selectable
+Date: Tue, 9 Jun 2026 14:37:59 +0000
+Message-ID: <20260609143806.69403-1-araoof@amazon.de>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260604083959.1265923-5-aneesh.kumar@kernel.org>
+X-ClientProxiedBy: EX19D042UWA003.ant.amazon.com (10.13.139.44) To
+ EX19D001UWA001.ant.amazon.com (10.13.138.214)
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-On Thu, Jun 04, 2026 at 02:09:43PM +0530, Aneesh Kumar K.V (Arm) wrote:
->  struct page *dma_alloc_from_pool(struct device *dev, size_t size,
-> -		void **cpu_addr, gfp_t gfp,
-> +		void **cpu_addr, gfp_t gfp, unsigned long attrs,
->  		bool (*phys_addr_ok)(struct device *, phys_addr_t, size_t))
->  {
-> -	struct gen_pool *pool = NULL;
-> +	struct dma_gen_pool *dma_pool = NULL;
->  	struct page *page;
->  	bool pool_found = false;
->  
-> -	while ((pool = dma_guess_pool(pool, gfp))) {
-> +	while ((dma_pool = dma_guess_pool(dma_pool, gfp))) {
-> +
-> +		if (dma_pool->unencrypted != !!(attrs & DMA_ATTR_CC_SHARED))
-> +			continue;
+From: Ahmed Abdelraoof <araoof@amazon.com>
 
-I don't think you should be overloading DMA_ATTR_CC_SHARED like this.
+The page-table dump was gated behind the hidden CONFIG_DMAR_DEBUG
+symbol, only reachable by enabling the full INTEL_IOMMU_DEBUGFS
+interface. That interface is explicitly flagged as not for production
+and exposes far more IOMMU internals than a fault dump needs, so there
+was no way to get this diagnostic from menuconfig on production kernel
+without taking on the rest.
 
-	/*
-	 * DMA_ATTR_CC_SHARED is not a caller-visible dma_alloc_*()
-	 * attribute. The direct allocator uses it internally after it has
-	 * decided that the backing pages must be shared/decrypted, so the
-	 * rest of the allocation path can consistently select DMA addresses,
-	 * choose compatible pools and restore encryption on free.
-	 */
-	if (attrs & DMA_ATTR_CC_SHARED)
-		return NULL;
+This patch renames it to CONFIG_DMAR_FAULT_DEBUG with a prompt and help
+text so the fault dump can be enabled on its own, and updates all
+references in iommu.c and dmar.h. INTEL_IOMMU_DEBUGFS still selects it,
+so existing configs are unaffected; no functional change otherwise.
 
-	if (force_dma_unencrypted(dev)) {
-		attrs |= DMA_ATTR_CC_SHARED;
-		mark_mem_decrypt = true;
-	}
+Signed-off-by: Ahmed Abdelraoof <araoof@amazon.com>
+---
+ drivers/iommu/intel/Kconfig | 11 ++++++++---
+ drivers/iommu/intel/iommu.c |  2 +-
+ include/linux/dmar.h        |  2 +-
+ 3 files changed, 10 insertions(+), 5 deletions(-)
 
-It is fine to have a bit inside the attrs that is only used by the
-internal logic, but it needs to have a clearer name
-__DMA_ATTR_REQUIRE_CC_SHARED perhaps.
+diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+index 5471f814e073..59a05cefa728 100644
+--- a/drivers/iommu/intel/Kconfig
++++ b/drivers/iommu/intel/Kconfig
+@@ -6,8 +6,13 @@ config DMAR_TABLE
+ config DMAR_PERF
+ 	bool
+ 
+-config DMAR_DEBUG
+-	bool
++config DMAR_FAULT_DEBUG
++	bool "Dump Intel IOMMU page tables on DMA fault"
++	depends on INTEL_IOMMU
++	help
++	  On a DMA Remapping (DMAR) fault, walk the Root / Context /
++	  PASID / second-level page-table entries for the faulting
++	  source-id and IOVA and emit them via pr_info.
+ 
+ config INTEL_IOMMU
+ 	bool "Support for Intel IOMMU using DMA Remapping Devices"
+@@ -39,7 +44,7 @@ config INTEL_IOMMU_DEBUGFS
+ 	bool "Export Intel IOMMU internals in Debugfs"
+ 	depends on IOMMU_DEBUGFS
+ 	select DMAR_PERF
+-	select DMAR_DEBUG
++	select DMAR_FAULT_DEBUG
+ 	help
+ 	  !!!WARNING!!!
+ 
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 4d0e65bc131d..7c28ef700dda 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -549,7 +549,7 @@ static void free_context_table(struct intel_iommu *iommu)
+ 	iommu->root_entry = NULL;
+ }
+ 
+-#ifdef CONFIG_DMAR_DEBUG
++#ifdef CONFIG_DMAR_FAULT_DEBUG
+ static void pgtable_walk(struct intel_iommu *iommu, unsigned long pfn,
+ 			 u8 bus, u8 devfn, struct dma_pte *parent, int level)
+ {
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index 692b2b445761..199cf01284fe 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -126,7 +126,7 @@ static inline int dmar_res_noop(struct acpi_dmar_header *hdr, void *arg)
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_DMAR_DEBUG
++#ifdef CONFIG_DMAR_FAULT_DEBUG
+ void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
+ 			  unsigned long long addr, u32 pasid);
+ #else
+-- 
+2.47.3
 
-The sashiko note does look legit though:
 
-	if (IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
-	    !gfpflags_allow_blocking(gfp) && !coherent) {
-		page = dma_alloc_from_pool(dev, PAGE_ALIGN(size), &cpu_addr,
-					   gfp, attrs, NULL);
-		if (!page)
-			return NULL;
 
-I don't see anything doing the force_dma_unencrypted test along this
-callchain..
 
-I guess it should be done one step up in dma_alloc_attrs() instead of
-in dma_direct_alloc()?
+Amazon Web Services Development Center Germany GmbH
+Tamara-Danz-Str. 13
+10243 Berlin
+Geschaeftsfuehrung: Christof Hellmis, Andreas Stieger
+Eingetragen am Amtsgericht Charlottenburg unter HRB 257764 B
+Sitz: Berlin
+Ust-ID: DE 365 538 597
 
-Jason
