@@ -1,179 +1,243 @@
-Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011038.outbound.protection.outlook.com [40.93.194.38])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E8573CEBA6
-	for <iommu@lists.linux.dev>; Tue,  9 Jun 2026 10:34:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781001300; cv=none; b=idEkv7uGK/yx+PDc9D0xDnAxiCtZjAIZHutDwPllv5+xffTIfpbyQJ0hRDLyAP4vdCKRnJ5GtAWDLqlm72bq79BTeWdfGxW9FF0J+j5AdKpoSRBynzvhrF1EhYpKvuSUfUD/sta9NBZV9MN3ePT1RYY2JABZVpgL0zDofesln4s=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781001300; c=relaxed/simple;
-	bh=8Wk1fB5os/Kv1+D9oeE6QQDje2+IhFdcf5zZqMWo4Fg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=h0t+ExuSIrece0EJ34h3eSUU56fxlZgFmkXY2e9521feLVZPgR7dFd7YkbKGnYKyHtdHwoQermr5Pj3Q0piVLoKVB/ikrhaGr5tz75ttnDlwo3EEDzbwt4NhiD5tVw59z3Xb34t/6SdPMeFogrK55NfvqY7RyCYfm69rlc7uC5A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=YNDJV18x; arc=none smtp.client-ip=209.85.214.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 920633F9F2B;
+	Tue,  9 Jun 2026 10:50:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.194.38
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781002218; cv=fail; b=VwPvhbhW9uc7j0pUPA48yeSfHl0XJGFV3jEFNcKGJyk54VnVir3Oecgjsbf1bml4VYt6SMfDnM1ckTIgdlmPpOGLNeyGBjaf1zOZszbfTfTCjOAGBXKi6301GMPMONGkT5YtlX4VuaQUTbnrAB919XuRcZi2+kzS1P5EeHpLox4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781002218; c=relaxed/simple;
+	bh=8CSS5rHs67eDcABqRumKNUCRusfcH45GW0+0TySuvDo=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=FT747dHP5ECfJs1+nVmfMCx7GFVc0Ysj4o2gwzR51R/AmVK4eboKKQoAMTs15RwSGxSTteMqxecmRhx/XrFJWJoDX2d9Su9lgg353E6WphYiP7XMtdtGZ4argRkcKE3MKMzlxhXLfvRJL/Wvv+ZOMDfocxGou+LVnR9y9Z0E8K4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=eYpjfPIx; arc=fail smtp.client-ip=40.93.194.38
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="YNDJV18x"
-Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2bf2911f93cso417655ad.1
-        for <iommu@lists.linux.dev>; Tue, 09 Jun 2026 03:34:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1781001298; x=1781606098; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=L+0aulJsKApTkmvzLBaKjR8wqqZe/Gm2cYIiLhYavTY=;
-        b=YNDJV18xpBu6cSM5GUjv3RImpu3KpeSvwTPSGJUBXFwahsc7EGSqRYHTZKM7sQwf13
-         v0/yWn5UbojxY1FwbLJnDip8m060zg8r2VRWoiLefIHCL6/C6BITp7uCUT24TdA7mgKh
-         GPrZNC7h8aY5nf7THSOlVF2AxEijpY+v9rhKt6jI63vkyzWeYClDjzkWbCm1OmnEDh+d
-         sIniWZ5VeUYyqzj9GOnDdNxbq7vZS4CjYwlnW4Rt4meOc3XBtmMKd34PXtQzb4eohgg0
-         otbS0Xt7mOpdyxStMbd/TCoYLnGj+mmKhP3Ofy41s9U9qpgdD31blVOchAqZlU2feetn
-         W9ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781001298; x=1781606098;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=L+0aulJsKApTkmvzLBaKjR8wqqZe/Gm2cYIiLhYavTY=;
-        b=UW7KQln6KMSGkouJuJBe1vxsbI8ZmF5I+D9iC6x5iL2vyW4ppZzCrOF+uv2SnDL6w5
-         rd9lI4rBTk0r9hTXt83+ctVD/WAFJbjLKL2/y7JiozbqmKFE+H1UxLn6fy9lIenxrf6B
-         N8qQEIUjDttbC8fTcbtfAw1/TjGUrD0RU4EXfYSY7DDEj/6BPOXYycW6/OAltrzDf+RS
-         kgbQ6KnnnQviotAU+PsBnxyupt8f/qo0TQFkbaYHDjLZOkqwY51sYSBcebIbmG1lsLI3
-         F/jqqEEzLIUkbI4Mxa1jtYW8autoyvRbVicPHyUssngOBjlK136lalb2sO3eHy+tpQmt
-         9RgQ==
-X-Gm-Message-State: AOJu0Yz0gxBDczoz6bdeQsGi8zM5JCE+Fp3arDnJvte+wkquLe2sPYhR
-	Kbk9JCFIejUjJ/paFk/+Bef05IPiBdpNCoQG/J6/btZ+xcW9bkNwidPwcdUdRV3GGw==
-X-Gm-Gg: Acq92OE3gc+z6Sh+VcZUhpxSUBk9sjQ7+MzsjeXqQLPpgkkV1an+VKiEOM78R/vEq7E
-	0fxoH15IgIMxXIfyaJhRQpvRlPy+riRj0FUxOBHRbEqFpKZGJy+FgsBaXQ1aYflMKMT52SFX3TU
-	AAxXjLBRUDKWLU7unA0meHwywT0oH89o7HDO8BXvPPBQSk6xuRobT4MuhOXIkeVgWEuqXRVuj+u
-	foypYdOzNHYCf3hm2nD3x6MU2VP/JG6TS8rm/dnZjUefn9JZUccIdeIrZZas6Dv7cQhs4LkzDYA
-	2P+jZ4fKkNlEuTixnOnSl7gRmMEte4bxrBJDO9f0e0GFB2fQor4oUPwM1jYbcBJPHghqKoaIY+6
-	Bs3MM1wO7MowwLknMrogeXSPG3KDpJhmiZqxqHiMU5v31iL6ZKD9RF719vJA6GzE7cbiKi/f+As
-	JwZM/Q3WZJKlvTWN9P79cUWr+smH6Qfm4z55ouY6Ff2Y1lVx8vrN7IIVKmNPRC43MtniM4fxA=
-X-Received: by 2002:a17:902:e5d0:b0:2b4:58ad:e987 with SMTP id d9443c01a7336-2c1eb6258c0mr8084515ad.17.1781001297678;
-        Tue, 09 Jun 2026 03:34:57 -0700 (PDT)
-Received: from google.com (199.255.142.34.bc.googleusercontent.com. [34.142.255.199])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84282220d1bsm22390753b3a.12.2026.06.09.03.34.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Jun 2026 03:34:57 -0700 (PDT)
-Date: Tue, 9 Jun 2026 10:34:51 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Daniel Mentz <danielmentz@google.com>
-Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Ashish Mhetre <amhetre@nvidia.com>,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v8 11/12] iommu/arm-smmu-v3: Invoke pm_runtime before hw
- access
-Message-ID: <aifsSxEXX64J1Etq@google.com>
-References: <20260601215909.3958732-1-praan@google.com>
- <20260601215909.3958732-12-praan@google.com>
- <CAE2F3rCPgnFU=d5At1zrOLhsuVEbsweogOHGz9gDddRx73zRtw@mail.gmail.com>
- <aiEawEFsnG-LIahW@google.com>
- <CAE2F3rAWZ4Ac23D8eyAHfmaVVkHv8pz45+_dpMO1M4D7+RVCoA@mail.gmail.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="eYpjfPIx"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=BTWNudhYWjfutfxTi/Hv+AXl2jSH0pSPyct5mBdAVlZvoPD/5iLh1a4VPCscTIlOvg/tDC1JMdq42TggPz+R6ymvxVTMStuOjot+rE+y7K9q2Vefe7QYHs1uF0fQHu+ozJKFfMn0sY2DOTEdi42tZg6+o3UpYTSFxvjdF1KNaWoEQCc39FnmX/n+OXxCVzjXNkMc+6zofaF3/REbveqS5vJMlydQZAj86DOsth2LBxmFwFRTlyGjiUb9rS2aI8sAYUykedQkbpW8Xnp6RwacshGmbra42WvAvKyvCGpvYz94H+NqM4vnzaAiVV6XDxUNqKi76Rd19oD4HOvKvfl2/A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ibGxpec8CzwR+uSYcLZMIxVM/tHYqjR2DOTIM3yJJyQ=;
+ b=Hfj/IA87NADGOn0L1tpFDHIkfvnm18PTk1Gfu+ACOYr2XEg6X7zmAsJi610Hbt6fb1ZSmjjqcrVx6dXtJ6ZTBQYAEy4RBuJb1adgruakdZPZPgLdeUNNcLmwpMFxDPb+N4u67wsPuoTWI0XwKr4F5x1SkX1RRQFdrdyn7pKFsy/SGaNt/3pORwxibhIRSG4ULevWJCCZMOH6A+HmPUM1inS+GWZgrFe31qFVR9rXaSCEiYBcqr14FkFwEQre05kDkBBz5JKISs8HWC9Wxsraxzuhnk1thLM65AW6mCscLEyj+1jMw9GIozy2sCzLjGS1IaYalNc/PbYuxnajSHWvbA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ibGxpec8CzwR+uSYcLZMIxVM/tHYqjR2DOTIM3yJJyQ=;
+ b=eYpjfPIxPRzdDjZ+EIwdzZcOKhWjTosvFovinANiqhhYLFy/P6rrmYY8hDeGHrAkfy5LwaIZxNcfCAnmU/z+F8V2piq/mcrwnPowXGvIFXmKrJHxGTctCZLBP3nJOANZy/QbNGzEz11FA/l0D2DPpWcX2zTOJAH/Mh2vgf9+XTA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from SA1PR12MB999228.namprd12.prod.outlook.com
+ (2603:10b6:806:4db::10) by DS4PR12MB9820.namprd12.prod.outlook.com
+ (2603:10b6:8:2a7::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.92.13; Tue, 9 Jun 2026
+ 10:50:13 +0000
+Received: from SA1PR12MB999228.namprd12.prod.outlook.com
+ ([fe80::4dba:119e:8e7c:37b3]) by SA1PR12MB999228.namprd12.prod.outlook.com
+ ([fe80::4dba:119e:8e7c:37b3%4]) with mapi id 15.21.0092.011; Tue, 9 Jun 2026
+ 10:50:13 +0000
+Message-ID: <bd069b7c-696b-4e9c-b09f-4b3709f47ef5@amd.com>
+Date: Tue, 9 Jun 2026 20:49:58 +1000
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 5/5] iommufd/vdevice: add TSM request ioctl
+To: "Dan Williams (nvidia)" <djbw@kernel.org>,
+ "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, linux-coco@lists.linux.dev,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc: Bjorn Helgaas <helgaas@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Joerg Roedel <joro@8bytes.org>, Jonathan Cameron <jic23@kernel.org>,
+ Kevin Tian <kevin.tian@intel.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ Samuel Ortiz <sameo@rivosinc.com>, Steven Price <steven.price@arm.com>,
+ Suzuki K Poulose <Suzuki.Poulose@arm.com>, Will Deacon <will@kernel.org>,
+ Xu Yilun <yilun.xu@linux.intel.com>,
+ Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+ Paolo Bonzini <pbonzini@redhat.com>, Tony Krowiak <akrowiak@linux.ibm.com>,
+ Halil Pasic <pasic@linux.ibm.com>, Jason Herne <jjherne@linux.ibm.com>,
+ Harald Freudenberger <freude@linux.ibm.com>,
+ Holger Dengler <dengler@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>,
+ Vasily Gorbik <gor@linux.ibm.com>, Alexander Gordeev
+ <agordeev@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>,
+ Sven Schnelle <svens@linux.ibm.com>, Alex Williamson <alex@shazbot.org>,
+ Matthew Rosato <mjrosato@linux.ibm.com>, Farhan Ali <alifm@linux.ibm.com>,
+ Eric Farman <farman@linux.ibm.com>, linux-s390@vger.kernel.org
+References: <20260525154816.1029642-1-aneesh.kumar@kernel.org>
+ <20260525154816.1029642-6-aneesh.kumar@kernel.org>
+ <becd865d-09a4-4ac3-b719-4a0deae2692a@amd.com>
+ <6a168c8ea7d10_2129b2100e@djbw-dev.notmuch> <yq5apl2gsw6y.fsf@kernel.org>
+ <yq5aldd4spyc.fsf@kernel.org> <6a1774dd80f74_19737610095@djbw-dev.notmuch>
+ <yq5aik81sf22.fsf@kernel.org> <6a272cebec4af_4fa7810048@djbw-dev.notmuch>
+Content-Language: en-US
+From: Alexey Kardashevskiy <aik@amd.com>
+In-Reply-To: <6a272cebec4af_4fa7810048@djbw-dev.notmuch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SYCPR01CA0023.ausprd01.prod.outlook.com
+ (2603:10c6:10:31::35) To SA1PR12MB999228.namprd12.prod.outlook.com
+ (2603:10b6:806:4db::10)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAE2F3rAWZ4Ac23D8eyAHfmaVVkHv8pz45+_dpMO1M4D7+RVCoA@mail.gmail.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SA1PR12MB999228:EE_|DS4PR12MB9820:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9268f2aa-d119-41bf-1dcb-08dec614e211
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|366016|376014|7416014|6133799003|18002099003|22082099003|56012099006|3023799007|4143699003|11063799006;
+X-Microsoft-Antispam-Message-Info:
+	cf90o3uCUNn8bMsmWjmx50c++rg3iET/C11yu/nXxPP3ewv5+/yDkY713Oe4wRS2S9reZq1sXA2T3QIfBDBo4kZJ+DzZ9oi2ltJpXRwd1/3dbP0MreZaazuFpSN8XsKEcfWgLEiZRbqeGstFiCzPeeFfWXfLrYebARq9w6Wlu7ZL2Qh/21uLHfvrXWeb5jW14OzlV2kNqWAAftm/x6EhtpH2TwHGvcDm1BYTshXVxCQu25OCWzlbK3ta0da8ajFHGaOC/5xWhrh/XFdMrnb7BeS28qUTpDdNlfRVSybyN7ntoXiTP+LmzG3zMQB35di9AwC5HTCGSXBjUPS/OPC325EPrnvliIbaNHmUxKiPS+mdDEX9b5SXD8eqgKA1UDxJ6x+3A5TRpS9YWH+aiJWWW+r+6+S4QaW+hxmorkgdFuKp2tW5PdFXQ58A39I3laLH8enwRSViVm19QZcLadbBF32DdrR327hmQ4RV90ith/ospAhF38iwTTyvnB7pQK2VuW+/24btz50cjmk6vHaGrZLodnxccIJKgu4vL85LvfOht8Uk0qdALqRdyCkojIGxovsXFDTTYYdLjsOEGTYkhBOyrN1tF55u7LDdQxo3PoBH08o7ZZKXR2bac64WvfDZHjZdIcJB8vvVMU8yJRCsZaute9AhvUidbJzvWN8F1H/skz2hG2iRfWu5VgqU8vqrqj7NeWg4VqRtKoWPKbQ0tQ==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR12MB999228.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014)(6133799003)(18002099003)(22082099003)(56012099006)(3023799007)(4143699003)(11063799006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?TncyaVJpK1N1OEZzY1lpMlRtdkcza2hWZFZFb2JMZGFWUnpoMVp3TGMyRHZP?=
+ =?utf-8?B?T2dzOVJmQTZxb2grYkhuZVBTNWI2NlBEYnVCcXhaTVcvb1lLZEhvUUxscDBz?=
+ =?utf-8?B?ZDFlZWZvZnN1L3IzdzJPZThTcjRGUFdob2ZxaVFlMm1NZFVYaVl1NWlucys5?=
+ =?utf-8?B?TDV0UjdsY3VEOGVGd3NpdkFrbFhYQS9BS0l5bGlwMkVrcEZaUjM4VW5GOHNl?=
+ =?utf-8?B?VUh4aEoveVJVbWZiYU5oODRkOU5ZaFRJOGV5RjI3UGlaK21xa0hQOGZQSEZQ?=
+ =?utf-8?B?b0ZJSENOWlZ2bWJrZkVOUldmOHdqMnNSeHNnRDZUNE93SG56ZkVGR3lpNnp4?=
+ =?utf-8?B?RTUyN3lEQWhsdExOblNGaG0wS3gyYW05TTBhV0YvdjZOcm0rVG1VU2UrZU8r?=
+ =?utf-8?B?YlkwRXF4MHpsa21xTzVPVTVZQS9uNU13amFSV0FjZ0ZremdpZ2VzQ2pTUENG?=
+ =?utf-8?B?TU1qZU5yU25SNWdjQlE0TzM1VWtwNFJ5TG5pdVlTMjFwVXBIeWg2WUNvdTd0?=
+ =?utf-8?B?UllrS1FmUmFUVXEyWlRpRE5xckxzWXpCR1pyMmVxL3pJY1Nxdmx6QUtHeUFE?=
+ =?utf-8?B?cVlVVmN6RUNFVUJNcUc2dWt1SmEvV3JWRnlJemgvQmwxNFdQYnA4cmk5NGt0?=
+ =?utf-8?B?YTkzZTg5UmE5NXpzRkxmbkEvNFY4VndpbXorT0ZpTERHamZVQ0UvdzJkTkk3?=
+ =?utf-8?B?NisyQ0lUbmJUQzRKM3VrUFNLL3NrU2ZlczZhWUlTRWtRMDhMYzlUNGw3WjNo?=
+ =?utf-8?B?NXpiQzVWSHprMytFZFJ2S0prVE5hRVVMbkNSckgyUkViNWEwMzkvKzJtUFRW?=
+ =?utf-8?B?cWFvZHNiMlRCQVY0amJhR0RJZ3FLdHlic09qVjIwS2duT0M1cG80K2k1QmF3?=
+ =?utf-8?B?Q2hYM0VCdzBITnprM1JsakErMmw4QXExZ2dwNEt4YW5OWFpLQitsV2ZZbHFP?=
+ =?utf-8?B?dWxlQ3pxdS90VlZFQnU1bHc4bXUvVS9iTVRzVHdod3gvUzhIK250SUZGdFli?=
+ =?utf-8?B?SStYdGRGaDVaRjhxMDhNRDBiTzJDbVNiWGNpZUdtdDJmN1o4cDMzbVBvYVZz?=
+ =?utf-8?B?c2lkVmVxQzExRmxzdURDb0FkTFB1aUlaWU9EelJzeExyL09QRElRSjloT0Nu?=
+ =?utf-8?B?SFJ1MVhhbHN5eTZ6WUxuNkZJU0dzbXRmUE9CVGVBVFdBd1JURkxQZVFKMjdF?=
+ =?utf-8?B?ZjZrRGI4NXlhR2o2c05iNmpTK0c0UGZmMVYraURWNklVanpZY05Ib0JsU2pD?=
+ =?utf-8?B?V2hUUU1mRTlXR042a09qazRhZ0wwT0d0b2oxcjZWR1J2SGErN1lZQ3UvdzJ4?=
+ =?utf-8?B?M1BheFFxZ09VN1BXR0E5OHREaXo1NkFqakMvRHlqenFvOTgvUjlLdjNpaTgz?=
+ =?utf-8?B?VVZUcmEySW1pV0dYRGw3TFhKaDVrSTNCRHlpN1ZSNXJUdFd1VFY4bWM1MDdW?=
+ =?utf-8?B?TC9ySHU1RGp0aFJPcnN2My9GMDJOOTZZSXYvbDUrZktZVmR2TGVRMjhWYjhW?=
+ =?utf-8?B?UjhQek1Mam13YlQ0NW1EL2NwZVI0a2s4WVdHdGo5WXhybmVPYkhHeG0rSlVP?=
+ =?utf-8?B?NEZMWmkzU0JoUmNkdXQ5ZlIxcDRaMDJrOUR5VVRsVFBJcXZXM2kwUU1abkw2?=
+ =?utf-8?B?R0FRamVnUlJiNlFRMW9jR0FVQittalBqZEJpK0tlS3ZaR3lGU3VIeUdOUXRT?=
+ =?utf-8?B?and6Tm1CM2xSL3ArVlFsanJmMjdvWjJVeUNVVVVHMkpOc3ZnclI3QVpPVHBz?=
+ =?utf-8?B?SGxPbWxIT3U2TlFNQVdoVEg0UlU1aEtrUlVoVmdyajRGWDE5b3EvVFgxM1ZW?=
+ =?utf-8?B?K1N3akNTbFNMbFVOZGIvZTkwVWVkRXh5Y0xwSDJ1cHRpVVQvSmRGTUlTU0Jx?=
+ =?utf-8?B?bUErRnB2OUM5ZUJCK05QaGxvRkd1VW9KSTVXcFMzZDl3NWdMR0lVYW9tejdx?=
+ =?utf-8?B?VEZFL3lQS09pNGRvbVVKUzBNemFSUENjRFVxb3VNWXhRbndkbzZranZlSHNy?=
+ =?utf-8?B?aU81d3kyV1B1VkRNNDVuVHR0VTZGaGRRbjdSRCtWWENrYkM2TlZ3d3ozN2xN?=
+ =?utf-8?B?QXI4dEhMc253TkJFRThaSjFnMlEybDk3bkFVdktxcXJxemNlWXoxbHZCQ1Bo?=
+ =?utf-8?B?Y3BzWDNkdFU2dHROcjM4SEZmVm1HcnUwU3l5clJDM3c0VjQxUkFEUUZ3NS9k?=
+ =?utf-8?B?M2Ria3BYQTZRSFErRWRreEZVVHo2b3UwalkxUDZLb05wNmMvREd3ekYrV3N1?=
+ =?utf-8?B?UTg3WEtTakZJT3dDWkUwTUNGbDQ2R0ZyTTJZZ05qb2VwcGYrUTNzNzZtNm9h?=
+ =?utf-8?B?MU5yMVQvOU12WVFPV3RCRE55c2ptYlNGRnV4S0dGOWFseEpYVm5MUT09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9268f2aa-d119-41bf-1dcb-08dec614e211
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR12MB999228.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2026 10:50:13.0004
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: mj0eOriTIFDCFBQWwtCIlQJYqdXciabLdE7LBvfGqcmiB3jg+zp+SlCz6rbxIaXXEDdVcBY9gQT4IB2jXVO6RQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS4PR12MB9820
 
-On Sun, Jun 07, 2026 at 03:22:19PM -0700, Daniel Mentz wrote:
-> On Wed, Jun 3, 2026 at 11:27 PM Pranjal Shrivastava <praan@google.com> wrote:
-> >
-> > On Wed, Jun 03, 2026 at 01:28:19PM -0700, Daniel Mentz wrote:
-> > > On Mon, Jun 1, 2026 at 2:59 PM Pranjal Shrivastava <praan@google.com> wrote:
-> > > > @@ -2361,8 +2394,33 @@ static irqreturn_t arm_smmu_handle_gerror(struct arm_smmu_device *smmu)
-> > > >  static irqreturn_t arm_smmu_gerror_handler(int irq, void *dev)
-> > > >  {
-> > > >         struct arm_smmu_device *smmu = dev;
-> > > > +       irqreturn_t ret;
-> > > > +
-> > > > +       /*
-> > > > +        * Global Errors are only processed if the SMMU is active.
-> > > > +        *
-> > > > +        * If the STOP_FLAG is set (can_elide == true), the hardware is
-> > > > +        * either already disabled or in the process of being disabled.
-> > > > +        * Any errors captured during the quiesce/drain phase will be
-> > > > +        * handled by the explicit arm_smmu_handle_gerror() call at the
-> > > > +        * end of arm_smmu_runtime_suspend() callback. On resume, the
-> > > > +        * STOP_FLAG is cleared before interrupts are re-enabled, ensuring
-> > > > +        * no valid errors are missed.
-> > > > +        *
-> > > > +        * A lockless check is favoured here over a dynamic PM core check
-> > > > +        * since the runtime_pm_get_if_active would return false during
-> > > > +        * transient states like RPM_RESUMING & ignore level-triggered
-> > > > +        * interrupts.
-> > > > +        */
-> > > > +       if (arm_smmu_cmdq_can_elide(smmu)) {
-> > > > +               dev_err(smmu->dev,
-> > > > +                       "Ignoring gerror interrupt because the SMMU is suspended\n");
-> > > > +               return IRQ_NONE;
-> > > > +       }
-> > >
-> > > Have you considered using arm_smmu_rpm_get() here instead?
-> > > I can see two issues with the currenlty proposal:
-> > >  * Returning IRQ_NONE when an interrupt is indeed active and needs to
-> > > be handled. This might be interpreted as a spurious interrupt
-> > >  * Nothing is preventing the suspend handler from running while
-> > > arm_smmu_gerror_handler is in the middle of handling an interrupt
-> > >
-> > > I understand that using arm_smmu_rpm_get() also has downsides,
-> > > including an unnecessary resume operation when the SMMU is already in
-> > > RPM_SUSPENDING state. However, using arm_smmu_rpm_get() would make it
-> > > easier to ensure correctness.
-> > >
-> >
-> > I don't think using arm_smmu_rpm_get() here is possible..
-> >
-> > GERROR is registered as a hard IRQ handler, so calling rpm_get (which
-> > can sleep) would be wrong.
+
+
+On 9/6/26 06:58, Dan Williams (nvidia) wrote:
+
+> Aneesh Kumar K.V wrote:
+> [..]
+>>> I think we can wait to move it to its own IOMMU operation unless/until
+>>> there is a need to set RUN outside of an explicit guest request, right?
+>>
+>> Something like the below? (the diff against this series)
+>>
+>> I have not yet integrated this into the full CCA patchset for testing,
+>> but I wanted to make sure we are aligned on the UAPI.
+> [..]
+>> -static bool iommufd_vdevice_tsm_req_scope_valid(u32 scope)
+>> +static bool iommufd_vdevice_tsm_req_arch_valid(u32 tvm_arch)
+>>   {
+>> -     if (scope > IOMMU_VDEVICE_TSM_REQ_SCOPE_PCI_LAST)
+>> +     switch (tvm_arch) {
+>> +     case IOMMU_VDEVICE_TSM_TVM_ARCH_CCA:
+>> +     case IOMMU_VDEVICE_TSM_TVM_ARCH_SEV:
+>> +     case IOMMU_VDEVICE_TSM_TVM_ARCH_TDX:
 > 
-> You're right. Sorry, I missed that arm_smmu_gerror_handler is
-> registered as a hard irq handler.
+> Makes sense for any command that needs tunneling. However, see below, what is
+> that set, and do we need a IOMMU_VDEVICE_TSM_COMMON when architecture
+> differentiation is not required?
+
+
+I still do not follow why making these arches checks in runtime, should be caught at the build time (ARM vs x86 vs RiscV) or at the TSM modprobe (AMD vs Intel).
+
+The scope becomes just IOMMU_VDEVICE_TSM_REQ_SCOPE_TUNNEL imho.
+
+
 > 
-> > Regarding the race, the STOP_FLAG is set at the very beginning of the
-> > suspend sequence. If an IRQ fires after that, we return IRQ_NONE and
-> > let the explicit arm_smmu_handle_gerror() call at the end of
-> > runtime_suspend catch and clear it. After CMDQEN, PRIQEN, EVTQEN &
-> > SMMUEN are all cleared, getting a Gerror should be treated as spurious
-> >
-> > That said, I understand your concerns about a real IRQ being interpreted
-> > as a spurious one, and creating an IRQ storm since the gerror register
-> > isn't really written. I have 2 ideas here:
-> >
-> > 1. We could have a "suspended" flag and check it with can_elide here:
-> > arm_smmu_cmdq_can_elide() && is_suspended() to correctly return IRQ_NONE
-> >
-> > 2. We could explicitly disable Gerror in IRQ_CTRL write after setting
-> > the CMDQ_STOP_FLAG. Even if there are Gerrors during the CMDQ drain,
-> > we'll catcup to those at the end of our suspend callback.
-> >
-> > I'm more inclined towards 2 as it prevents potential races (execution of
-> > an IRQ handler with handle_gerror calls at the end of the suspend).
-> >
-> > WDYT?
+>> +             return true;
+>> +     default:
+>>                return false;
+>> +     }
+>> +}
+>>
+>> -     switch (scope) {
+>> -     case IOMMU_VDEVICE_TSM_REQ_PCI_INFO:
+>> -     case IOMMU_VDEVICE_TSM_REQ_PCI_STATE_CHANGE:
+>> -     case IOMMU_VDEVICE_TSM_REQ_PCI_DEBUG_READ:
+>> -     case IOMMU_VDEVICE_TSM_REQ_PCI_DEBUG_WRITE:
+>> +static bool iommufd_vdevice_tsm_req_op_valid(u32 op, u32 tvm_arch)
+>> +{
+>> +     switch (op) {
+>> +     case TSM_REQ_READ_OBJECT:
+>> +     case TSM_REQ_REGEN_OBJECT:
+>> +     case TSM_REQ_OBJECT_INFO:
 > 
-> I'm not sure if I have a good suggestion here. Have you considered the
-> following: Do not call arm_smmu_handle_gerror() from
-> arm_smmu_runtime_suspend(). Instead, call disable_irq() at the end of
-> the suspend handler (and enable_irq() at the beginning of the resume
-> handler)?
+> The design goal of the netlink device-evidence interface is to be able
+> to respond to all shapes of requests for evidence. So netlink caches
+> objects that the hypercall handler can fill responses from.
+> 
+> It eliminates a class of commands that need tunneling.
 
-I thought about using disable_irq(), but I think doing it at the
-hardware level (IRQ_CTRL) is better.
++1.
 
-By disabling in IRQ_CTRL and keeping the manual arm_smmu_handle_gerror()
-call at the end of suspend, we ensure that we don't lose any gerror info
-We catch and handle any errors that occurred during the drain/quiesce 
-phase right before the power-down.
+> 
+>> +     case TSM_REQ_VALIDATE_MMIO:
+>> +     case TSM_REQ_SET_TDI_STATE:
+> 
+> Are these potentially candidates for a IOMMU_VDEVICE_TSM_COMMON? The
+> handler knows how to do the arch-specific response from the common
+> iommufd result, or is there TSM-specific payload beyond @tsm_code for
+> these.
 
-Thanks,
-Praan
+These are not common to put in IOMMUFD - it is either TSM (for TDI states) or KVM (for MMIO validate) on AMD and other arches won't share much either, right?
+
+> Make it the case that guest_req only needs non-common arch for
+> operations that are implementation unique, or where the response payload
+> exceeds what can be conveyed via @tsm_code.
+> 
+>>                return true;
+>> +     case TSM_REQ_SEV_ENABLE_DMA:
+>> +     case TSM_REQ_SEV_DISABLE_DMA:
+>> +             return tvm_arch == IOMMU_VDEVICE_TSM_TVM_ARCH_SEV;
+> Right, this appears to be the only case where the command is
+> implementation unique. The handler can only ask iommufd to take
+> arch-specific action.
+
+There are 2 arch-specific actions - one is calling TSM to execute actual guest request, the other one is notifying the host IOMMU driver about the device going secure. Like this:
+
+https://github.com/AMDESE/linux-kvm/blob/tsm/drivers/iommu/iommufd/viommu.c#L603
+
+I can tuck domain->ops->tsm_enable into my TSM but rather would not. Thanks,
+
+
+-- 
+Alexey
+
