@@ -1,79 +1,168 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD0C6391E4C;
-	Wed, 10 Jun 2026 08:45:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BB001DED5C;
+	Wed, 10 Jun 2026 08:46:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781081113; cv=none; b=a9X8b/kzoOVcLkpTNYHt+MIKhRiD3Q/TwmBqInxWUl38MKETQeQNQ0YRQqkCf2NupGqpYDzNoZYjccEfoebsoR/AusLkD/mkkKfQ9BHwSMkAt5V1T9G63k8T1yb4/iT/D5eJgcrrhwC24fLVv1R9ar8E4BYlWWa1fTd/SbTssPg=
+	t=1781081192; cv=none; b=hkV9tEkfqisSol5X365Jexd+JqBE+AxTg22jX6shGda5ZLfaGvz0sO/JMLWzSIAOgsJ8Bp1x0EMftKMdKlSY2Sfy6keZcDQOcNl5caz1B8Z1np+pPCQRF8hj78X2Mtj53L/0vZT75TdY2gipxl80Zi/q511iJGcPCnCCMeroJWE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781081113; c=relaxed/simple;
-	bh=79dR3ec1X7G4Pv+5qYv3XvdOClyoQArgLr1CO+yrC54=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=gwGlG+xoV9Y7XekPJu9o6+MR3v5tFPjT1WruI8IPtoLbeeuaDVpz5xAXSlzo9wQaNeGVMph5EueGEE2Bszp+ugXX6yeumPYScXxQFJPg0JQwvQn8dnXJJgLxr4zYMI/EWMBSDBL97RYLbNMygxM/J/X3EPrwRdRxHMV/tuoOCpw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jJpAL0cV; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1781081192; c=relaxed/simple;
+	bh=CW7D2KmFoUyODNxdFyyPKcB7Pvi/YhHuRsdONjhmuQg=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=YCyPkjD7pD7sZFif8nJ2b98vPpicJEJ/tSkbJ/aE6UJBsbAJic4szDwKVh1YoAA05kt+zAuu6trurHsLnCmHezciT0THVAwMFPd44J+PHGk9vbjbDQUolbN8OHxb3sqtnm9vq8toRGyrb54VnWTUlhs4qLxE12/c+H10OeH6qBM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gqceO5Wt; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jJpAL0cV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FB0B1F00893;
-	Wed, 10 Jun 2026 08:45:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gqceO5Wt"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 954211F00893;
+	Wed, 10 Jun 2026 08:46:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781081111;
-	bh=v1jCvYF1UWZxDV4ocmTiPKKrNLTz98XdwDOkWa7eeJU=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=jJpAL0cVq8UgMWLY6pGq+xoa61xoIbMPFZvg3QdEK23OCroaoMmRWD7IZ9VEWVA7L
-	 VNvwCTHr5z3gtQ9Edx6Qob2Lqj6XfMUPx2UBvFtBlAI63Qf0+nDe04MRdGWCgtCJKB
-	 O03xK8gtjVMhTK9lxhc0X+LrBBtKfJFbcWPfisgwmp/GgQ3v93pRG8Hpbzk06sOoBO
-	 0XUYhwMNNffUSnAC+zmEq0SJxFlV0ATENZJEwp9aS7ftk4RaoFGmGzHeePkpfiUfb3
-	 OjefkVn4IBC9QzMOAphXIfzOxOcVMwaEYzpDk8L34aIA5zirvNPS96wZsE4TeAOYRP
-	 An+vun2QHkSZA==
-Message-ID: <383dddd5-be5d-4c8d-bbf0-f889b83af374@kernel.org>
-Date: Wed, 10 Jun 2026 09:44:59 +0100
+	s=k20260515; t=1781081191;
+	bh=GIu5mk7+fDzBkFE8LUyyxyRKu1YjSQcW0/cQDtsXGSI=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=gqceO5WtU+8o4iRLg+54E8X01VwOX/Pcl7CIT39DQ0pqmrHHo/vBxeK7jsaOAcCaS
+	 YBgcKllYIQj1HWF/hPyROXVFlBBcsVf7biqD1SoLBFLlOCDPz2cSZKwrkPq2JjJeON
+	 Ktk7ZoQL/je6Tm7V0x4WHLl6FPfnSFgfRLowvXIjL0V6x/Z73L5zTuiKuUCUObt8VJ
+	 vIsqW9AMwRWNEkg0dDhmgKSYTJ0+WlZY+fHkDiYP/mNT/IAr5DJi+PSaHxr1QXu7ax
+	 U6yoqsWAiXT9wxpMsRUn8xlVD4N61bGUJO8A/UMw01rLgt/SDu1HpcZ4IbOjfgm+V1
+	 vidQTXP2nKKgg==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Petr Tesarik <ptesarik@suse.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Mostafa Saleh <smostafa@google.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
+	Jiri Pirko <jiri@nvidia.com>,
+	Michael Kelley <mhklinux@outlook.com>
+Subject: Re: [PATCH v6 06/20] dma: swiotlb: track pool encryption state and
+ honor DMA_ATTR_CC_SHARED
+In-Reply-To: <20260609144836.4ecea34e@mordecai>
+References: <20260604083959.1265923-1-aneesh.kumar@kernel.org>
+ <20260604083959.1265923-7-aneesh.kumar@kernel.org>
+ <20260609144836.4ecea34e@mordecai>
+Date: Wed, 10 Jun 2026 14:16:17 +0530
+Message-ID: <yq5acxxyzsti.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v8 11/12] arm64: dts: qcom: glymur: Add iris video node
-To: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
- Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
- Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
- Abhinav Kumar <abhinav.kumar@linux.dev>,
- Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
- Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org
-References: <20260610-glymur-v8-0-1c79b9d51fc0@oss.qualcomm.com>
- <ml_9sjHrXhEekEoq2gGpd-TK18TRhfINS8p6Nvz54Vsic2kRx3LrHye0pdi-i2RbEDkaFxaUI8cLNtSc3wGK4w==@protonmail.internalid>
- <20260610-glymur-v8-11-1c79b9d51fc0@oss.qualcomm.com>
-Content-Language: en-US
-From: Bryan O'Donoghue <bod@kernel.org>
-In-Reply-To: <20260610-glymur-v8-11-1c79b9d51fc0@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
-On 10/06/2026 07:29, Vishnu Reddy wrote:
-> +			memory-region = <&video_mem>;
+Petr Tesarik <ptesarik@suse.com> writes:
 
-What about the 600 MB limit ?
+> On Thu,  4 Jun 2026 14:09:45 +0530
+> "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> wrote:
+>
 
-Lads - please stop pushing new bindings until there's a solution in 
-place for that.
+...
 
-Either codify the block Daniel has - which TBH I think is wrong because 
-it prohibits allocation < 600 MB for pixel buffers.
+>>  /*
+>>   * If memory encryption is supported, phys_to_dma will set the memory encryption
+>>   * bit in the DMA address, and dma_to_phys will clear it.
+>> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+>> index 29187cec90d8..4dcbf3931be1 100644
+>> --- a/include/linux/swiotlb.h
+>> +++ b/include/linux/swiotlb.h
+>> @@ -81,6 +81,7 @@ struct io_tlb_pool {
+>>  	struct list_head node;
+>>  	struct rcu_head rcu;
+>>  	bool transient;
+>> +	bool unencrypted;
+>
+> IIUC this is a copy of the unencrypted member in the corresponding
+> struct io_tlb_mem. In other words, if pools are allocated dynamically,
+> all pools must have the same encryption state, correct?
+>
 
-Or restrict the IOVAs in the driver _or_ via syntax magic in DT.
+That is correct. The reason we have the unencrypted member in struct
+io_tlb_pool is that we need it in swiotlb_dyn_free().
 
-Either way we know this is buggy !
+When freeing memory from an unencrypted pool, we need to convert the
+memory back to private/encrypted
 
----
-bod
+>
+>>  #endif
+>>  };
+>>  
+>> @@ -111,6 +112,7 @@ struct io_tlb_mem {
+>>  	struct dentry *debugfs;
+>>  	bool force_bounce;
+>>  	bool for_alloc;
+>> +	bool unencrypted;
+>>  #ifdef CONFIG_SWIOTLB_DYNAMIC
+>>  	bool can_grow;
+>>  	u64 phys_limit;
+>> @@ -282,7 +284,8 @@ static inline void swiotlb_sync_single_for_cpu(struct device *dev,
+>>  extern void swiotlb_print_info(void);
+
+....
+
+>> @@ -604,30 +621,26 @@ static struct page *alloc_dma_pages(gfp_t gfp, size_t bytes, u64 phys_limit)
+>>   * @dev:	Device for which a memory pool is allocated.
+>>   * @bytes:	Size of the buffer.
+>>   * @phys_limit:	Maximum allowed physical address of the buffer.
+>> + * @attrs:	DMA attributes for the allocation.
+>>   * @gfp:	GFP flags for the allocation.
+>>   *
+>>   * Return: Allocated pages, or %NULL on allocation failure.
+>>   */
+>>  static struct page *swiotlb_alloc_tlb(struct device *dev, size_t bytes,
+>> -		u64 phys_limit, gfp_t gfp)
+>> +		u64 phys_limit, unsigned long attrs, gfp_t gfp)
+>
+> If my assumption above is correct, then I prefer to add a struct
+> io_tlb_mem *mem parameter here and calculate the allocation attributes
+> inside this function, so you don't have to repeat it in the callers.
+>
+
+Will switch to that. That is, we will use struct io_tlb_mem->unencrypted
+to determine the pool attribute instead of using unsigned long attrs
+
+>
+>>  {
+>>  	struct page *page;
+>> -	unsigned long attrs = 0;
+>>  
+>>  	/*
+>>  	 * Allocate from the atomic pools if memory is encrypted and
+>>  	 * the allocation is atomic, because decrypting may block.
+>>  	 */
+>> -	if (!gfpflags_allow_blocking(gfp) && dev && force_dma_unencrypted(dev)) {
+>> +	if (!gfpflags_allow_blocking(gfp) && (attrs & DMA_ATTR_CC_SHARED)) {
+>
+> You're removing the check that dev is non-NULL. This is fine, because
+> the only call with dev == NULL is from swiotlb_dyn_alloc(), and that one
+> uses GFP_KERNEL (i.e. allows blocking). However, if this is an intended
+> optimization, I'd rather have it in a separate commit, with this
+> explanation why it's OK to do it.
+>
+> The rest of the patch looks good to me.
+>
+
+I'll add that back.
+
+-aneesh
