@@ -1,78 +1,101 @@
-Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
+Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42B6933D6EE
-	for <iommu@lists.linux.dev>; Wed, 10 Jun 2026 16:37:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D81F34845C
+	for <iommu@lists.linux.dev>; Wed, 10 Jun 2026 16:41:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781109474; cv=none; b=NUf8cA5GpH/pmVF1QBf1TzOt6kbFUL6O8MPALoT6Y65mh2E6D4Cc5zlYibSukuw+kGnJOwGUTprgBkGqZyFpNRRqvSlC5pIR+hw2heAzx9dzS3hpq+SSBNOH/haje5QnghnUGYCsF4+cYgZP3ngLHL2tgVTF6ZfQN8WNBFw7x68=
+	t=1781109719; cv=none; b=juHAdVzpYOm7e7GTxQjGLJiOhNEu81AO/t8sEPVIseE/xUQVB+1OG1EPXAFXU1gogaIhJx+d10Cf6VJ9fQXejB6i8ZHUvmjW6qRhHO9qXf8sIUXoC8jVqJlH+60LuhA7W5v16QxKSVqS5PqYjiAnWiOukaBPPmMJnhwjhNfS6Nc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781109474; c=relaxed/simple;
-	bh=ETUY4qwRGcpk7zuC4smh2HXgcfeYT29cBZRhCkov9iE=;
+	s=arc-20240116; t=1781109719; c=relaxed/simple;
+	bh=aoQpijLFpdT37b0Bpmvd//AN2Bj/cbJFhcJiveomuZs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kg6OZnHpeQ97YNVSfsSBhAqoZayNwNnnxi1HRSbqH7kDTj7jxqmKVtFpoESKbUv28BOVs0/0XuO16Bkqfl7Vuna2PVD2j0AStuHmz7LFv5xVAPgRPAFhUWXVrtBbLkBRGuRr0Ajk3fNDtBn77rRDqLO9aZ9BvyM2/WwgVVNaGKs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=TksMJ7oe; arc=none smtp.client-ip=209.85.222.181
+	 Content-Type:Content-Disposition:In-Reply-To; b=ljEyBSB1x4rLTt1h/RL4vZD8BFZxj63bRIZNUGHZbaVcfYYsa6OCpk7zQyd1gk31Am6qVAXMSsv4yNQB1Q7BdlHxFEW1GAVHzDhIynWp5wGjQv7CKc60nqA4sgHHuGjsDwqERkMQKrPFyMNHPyKKijnVD0ETRhtcb2LLCb800e4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=IPaNqlas; arc=none smtp.client-ip=209.85.222.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="TksMJ7oe"
-Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-915bf8800a2so489020885a.0
-        for <iommu@lists.linux.dev>; Wed, 10 Jun 2026 09:37:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="IPaNqlas"
+Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-91587626ae1so785793185a.3
+        for <iommu@lists.linux.dev>; Wed, 10 Jun 2026 09:41:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1781109472; x=1781714272; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1781109715; x=1781714515; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=kUgz7K4XsF7x64fY0xkZv2cjrDr/QVedQTqwT5jvCKY=;
-        b=TksMJ7oe49eFEGD0oBOWQVHkJioArKAcnWtSHuPSbgjq/gt1NnXR3a9NI8K85OeCjP
-         uCxZYgv8N80AkTTFoHhYvnbzmK2FrGj5z/xs5h2jn0PCZ4qp6we1/lgowzZiTfq3ru61
-         FLu2Ossc18StHpHQxg6G0Tqj8snXv976YH5Q4qiLp5WQJaQYunoYBsR8goV18A/ZUfNe
-         /wS1SEYEN5xNVenhkWdSHO7Rd0ipRIh0HqDD7gDWvOVeUAT5hiMQkidD/GLDhdJOv0x+
-         LA4JzgaoI5M18Ol4tUCOi6vfX0+HcQAlQHEucKygRXgM+6fG2o8HA1oVChl3tSNVRw45
-         Yxrg==
+        bh=DeYS8psnLhx+0nTbu07Q/N5cf93jt28LjVA9fcxz2cA=;
+        b=IPaNqlasS91c9E8D6tMIAELiF5MWobZ8ZeO9AQPUltCmblqZ0QiTbmPVRtbefStpSs
+         N4roP++GYEUVqMvzXdb0+bqmtG/60LEzcMJsnsZdluXc0PsJSUQAEtRx+bdfDzGObTb4
+         uf1HIjJaAKFXLFpPt3PzWB1dvEAFH0IyJ9OrTUOevVg0EKc+I7QIlgt/56LlRgCwBkLu
+         sVOlBNr5uiDzUKuPFEh2ReNQCk3hvW10n8SDRzxI17a6VbjrGp/39ybOi/k6Ubt0qCeK
+         hlI74Wak+sV2JJSpoy0UCCmCISVeQ4MKhAYbUolFANVssP/iU4wKuc+h2e/rLhPc6Q+Z
+         Krkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781109472; x=1781714272;
+        d=1e100.net; s=20251104; t=1781109715; x=1781714515;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=kUgz7K4XsF7x64fY0xkZv2cjrDr/QVedQTqwT5jvCKY=;
-        b=edD0jf/NowJ2L9tr6XXebo/kRSQSEKLV8QXVl4Fv1iLI2UBZX8i/CjGzcX+cAn3OV0
-         p01hslNCu5O1qwmu0Tr5Xfi6xP9yxaN9T95ggl7YM0BT9eab1tl0d5vd9pDB8PlnAyr8
-         kFpDXdbGEz95ciQAAAPyr44z92IarcGYKEgE/GrUTpWTFcOoxbxW4xUEE9Pcv0RY1RJ+
-         MD1PhBldwx9RO59h2RX4PAPwEJvini0L5fzVU7Hq7bhtBwvGWgIwsR8vDT26gQ6zqWOl
-         6F4OWqjtjjIf3uALU5zKEUiK25iH+bZqv/lUp+Lc+erEXV0US1s0BBhyVVd4XvVwaRqa
-         w3hQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/Ln1yYw0d1iq7WlrL5qNcwlYJ3MrcCOLstERU7clXVY215hKHiBFRDFMdpFGPeZU05qHkTUQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxnblXhmdorwaAZn+u/2G7Mzx6jl+7dsSV5EU7hXqERjG5XgpV3
-	VfFWYVXRJNcB/5FDcq73itLyVz9k/dlXxwFJS/gW23fFuYhefliW9YVDClrlYn9fW3s=
-X-Gm-Gg: Acq92OE0cY6fN5tDew8Dj6LqJlM1IgR4WWhlzaDFVXy8lIgfLd4U+qipUCxmIMMYJtl
-	iCTwL73Hw3NeNx+5e+P+GKe9wzqzGuqX6a3WgVMO/VVuVD5m7eFWM/NMSFivjp9V0xJvK2hGSoL
-	gACxiFSeYPgMCX1OIdI3at8MPeLC83nR+sqoRRVyhGx9scFXARYIVnZBhowTFTIck3dlXzi4auT
-	sqDJ2rsf8DabCaLlVSLDNx23GUszlzf/DmogJySFsKNZIrlSolWkhbjKAWMb0nyONpcX7WrwdZo
-	Q0lAUjGCPirQxmkc9gAJgU8Wg/J7yBVTB/cVtWJCY/RpxkFuwAm26S3fgeg1sg0LK6OfvhQonUh
-	eKAsq+H9Lr0U0UlrS4JTNpWhTEa5BPCMOH5fTG0ZuNQa4QM8sK0zvfK49jW53HIzM01X4tzDMjU
-	p42BiKNR6ry5iHvUgIaHA/Qji7nKn4/kAymw3uOQnciurIZHrKvuWfQ1oklDSfrI4mKx+91vM0a
-	ysewYYJI101kNMB
-X-Received: by 2002:a05:620a:701b:b0:915:96e4:e49a with SMTP id af79cd13be357-915a9c373a4mr4004813885a.1.1781109472207;
-        Wed, 10 Jun 2026 09:37:52 -0700 (PDT)
+        bh=DeYS8psnLhx+0nTbu07Q/N5cf93jt28LjVA9fcxz2cA=;
+        b=bsha/xh7xMnkQBPMAK335jCTenAQpO10SELTekSqNU2CM2INJynQS1fJN1y08pETfP
+         7BDsuoaOn/FCqBcZ8U8zCddjFO5BOhHHjdetfVbrh4VXOIoquN5sotKaeD2WFjwRNjia
+         aT67Fu+p5sip3bI8jhUGmBtKAAdBFeGO6pHNkONcXfFJ3VOLg3M912ieAlBj5/lBAbh4
+         IR0blraLfKViledRffUc+W9mw7mIhbf9pa00K0bdkN8VY16L9pGpAHOtYTsI3FJdljdC
+         JH2OXCWoL66Qw7cYQtKQ3sjJrZgViHPmY4LBoTKujcwPfvZE4D4axa6XoBVTCGzADI95
+         WgHQ==
+X-Gm-Message-State: AOJu0Yy2zQxkfuBRFRVZSjjG14Aars7SV1LluDhLKc0s95/pCYJ/B8y9
+	c8jdjfavRnS0dSowtoiUJDlYOfvbzlQswlEDWpiKVBG+Tqi7RFqD+6wbej6lQPnsg9o=
+X-Gm-Gg: Acq92OE80cukm5Nzb9kpVpXbNHdkkaww4xAHxfQr4HhrjOyYcHmNp7/04NNBffcgeFT
+	9w99drLLXSla3m3R7rmsV0OzaGNhFOXMDVKzucx8SQd9f5SGSFHlqoY6MYfXAkrUQhg1MOOWzeQ
+	BVegkAh6grE2/XMZP6MT5TOIVbfu63ZrZvsewCdFRQlrwyXxaUqwn74dmq5Gvi6muYKGr7ibfPM
+	LPDu7WCwqWb6jYYBh/7iQtMxxcJ+x5KAUx9Yq8MtRm5WF6OPyQSJZNhHwMHXna/EP1IAHoa7/A+
+	EDfv/51LC1KhFneHC3PDT9g4GBPcDPMp/UUYwTS164I/LKXoiIJnj2lMLWEIbIRkQ4yOMWJJDOE
+	/uJA48U9M3a/7sQMiHhRaEYeUoxnC9Wk8c3v5T/260HJLWjCyq5mo/AbhIamwKbQD1hFhyM0Raj
+	TXNlDeNawsHeba+Oa9Uk5QyIvCipQ1SjRLncHPtfwvixFgxi+kQeVVYm0NasNeooovTEH+xqn5a
+	OBJINknrlFsFvr7
+X-Received: by 2002:a05:620a:a414:20b0:914:afc1:c66d with SMTP id af79cd13be357-915a9c75c96mr3039706285a.11.1781109715064;
+        Wed, 10 Jun 2026 09:41:55 -0700 (PDT)
 Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-91589ea0bcfsm2492548385a.0.2026.06.10.09.37.51
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-9158a22dbbesm2438570085a.13.2026.06.10.09.41.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Jun 2026 09:37:51 -0700 (PDT)
+        Wed, 10 Jun 2026 09:41:54 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1wXLw6-000000048Ns-2Eex;
-	Wed, 10 Jun 2026 13:37:50 -0300
-Date: Wed, 10 Jun 2026 13:37:50 -0300
+	id 1wXM01-000000048i4-3DtT;
+	Wed, 10 Jun 2026 13:41:53 -0300
+Date: Wed, 10 Jun 2026 13:41:53 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Samuel Moelius <sam.moelius@trailofbits.com>
-Cc: Kevin Tian <kevin.tian@intel.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	"open list:IOMMUFD" <iommu@lists.linux.dev>,
-	open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] iommu/iommufd: avoid selftest dirty bitmap size wrap
-Message-ID: <20260610163750.GP2764304@ziepe.ca>
-References: <20260610002351.1672863.5f5d62d5e4be.iommufd-test-dirty-bitmap-size-wrap@trailofbits.com>
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
+	linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
+	Jiri Pirko <jiri@nvidia.com>, Michael Kelley <mhklinux@outlook.com>
+Subject: Re: [PATCH v6 04/20] dma-pool: track decrypted atomic pools and
+ select them via attrs
+Message-ID: <20260610164153.GQ2764304@ziepe.ca>
+References: <20260604083959.1265923-1-aneesh.kumar@kernel.org>
+ <20260604083959.1265923-5-aneesh.kumar@kernel.org>
+ <20260609143242.GK2764304@ziepe.ca>
+ <yq5afr2uzum9.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -81,20 +104,69 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260610002351.1672863.5f5d62d5e4be.iommufd-test-dirty-bitmap-size-wrap@trailofbits.com>
+In-Reply-To: <yq5afr2uzum9.fsf@kernel.org>
 
-On Wed, Jun 10, 2026 at 12:23:52AM +0000, Samuel Moelius wrote:
+On Wed, Jun 10, 2026 at 01:37:26PM +0530, Aneesh Kumar K.V wrote:
+> Jason Gunthorpe <jgg@ziepe.ca> writes:
+> 
+> > On Thu, Jun 04, 2026 at 02:09:43PM +0530, Aneesh Kumar K.V (Arm) wrote:
+> >>  struct page *dma_alloc_from_pool(struct device *dev, size_t size,
+> >> -		void **cpu_addr, gfp_t gfp,
+> >> +		void **cpu_addr, gfp_t gfp, unsigned long attrs,
+> >>  		bool (*phys_addr_ok)(struct device *, phys_addr_t, size_t))
+> >>  {
+> >> -	struct gen_pool *pool = NULL;
+> >> +	struct dma_gen_pool *dma_pool = NULL;
+> >>  	struct page *page;
+> >>  	bool pool_found = false;
+> >>  
+> >> -	while ((pool = dma_guess_pool(pool, gfp))) {
+> >> +	while ((dma_pool = dma_guess_pool(dma_pool, gfp))) {
+> >> +
+> >> +		if (dma_pool->unencrypted != !!(attrs & DMA_ATTR_CC_SHARED))
+> >> +			continue;
+> >
+> > I don't think you should be overloading DMA_ATTR_CC_SHARED like this.
+> >
+> > 	/*
+> > 	 * DMA_ATTR_CC_SHARED is not a caller-visible dma_alloc_*()
+> > 	 * attribute. The direct allocator uses it internally after it has
+> > 	 * decided that the backing pages must be shared/decrypted, so the
+> > 	 * rest of the allocation path can consistently select DMA addresses,
+> > 	 * choose compatible pools and restore encryption on free.
+> > 	 */
+> > 	if (attrs & DMA_ATTR_CC_SHARED)
+> > 		return NULL;
+> >
+> > 	if (force_dma_unencrypted(dev)) {
+> > 		attrs |= DMA_ATTR_CC_SHARED;
+> > 		mark_mem_decrypt = true;
+> > 	}
+> >
+> > It is fine to have a bit inside the attrs that is only used by the
+> > internal logic, but it needs to have a clearer name
+> > __DMA_ATTR_REQUIRE_CC_SHARED perhaps.
+> >
+> 
+> Are you suggesting adding another attribute in addition to
+> DMA_ATTR_CC_SHARED?
+> 
+> Is the idea that __DMA_ATTR_REQUIRE_CC_SHARED would be used in the
+> allocation path to request a CC_SHARED allocation, while
+> DMA_ATTR_CC_SHARED would be used in the mapping path to describe the
+> attribute of the address?
 
-> @@ -1705,6 +1707,13 @@ static int iommufd_test_dirty(struct iommufd_ucmd *ucmd, unsigned int mockpt_id,
->  		goto out_put;
->  	}
->  
-> +	if (check_mul_overflow((unsigned long)SZ_16M, page_size, &max_length))
-> +		max_length = ULONG_MAX;
+Yeah, it is a thought at least
 
-You should never have a cast in a check_.._overflow like this.
+Maybe a comment is good enough.
 
-Also just fail, something is really wrong if page size is so large
-this doesn't succeed.
+I just find it hard to follow when we have this dual usage. Like the
+code above for dma_pool->unencrypted is completely wrong if it is an
+"attribute of an address". Easy to cut & paste that into the wrong
+context.
+
+Especially if you move things up higher.. having the alloc set both
+CC_SHARED and REQUIRE_CC_SHARED or maybe ALLOC_CC_SHARED would make it
+clearer that the alloc code lives under that callchain
 
 Jason
