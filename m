@@ -1,138 +1,144 @@
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail-m19731104.qiye.163.com (mail-m19731104.qiye.163.com [220.197.31.104])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D55EE18E025
-	for <iommu@lists.linux.dev>; Wed, 10 Jun 2026 00:25:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1A8C1459FA
+	for <iommu@lists.linux.dev>; Wed, 10 Jun 2026 01:19:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.104
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781051149; cv=none; b=uIprtEdLMt+Sqv+PfuWqPIsdPMZ5W/pREr3UuOcENH3jeTeON0ziWqJvMxNM5ZkTQY0mGCtIS49wyvqDMdTfcOMjEvSlXjPEJtW8TrcxJYLOl//78GpsSsl0GwqeJF39j5gD9/eh8oSE6CNzZWtiw7CKkveAgoEMX8S1CpjnY1M=
+	t=1781054367; cv=none; b=r71NdqKuaeiK4l7J8m193KMfU43cIWYPjlfbGbI/kOW6ZWX+yVeUw7WAZVp1hMUYiy2HqnV7mEbS41z+TpDgqUbqyZKz5/473glkGSbDd49/KN33TUxPgFJWhsbxDt6mZwGtgv0l7Q4L3P5V3L651f3JUPu6lnMywgYC5oLsJDU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781051149; c=relaxed/simple;
-	bh=jQ8rpJPP8MPzEUWil8NSu9IYQD7Fxt3cyljH+Liy1SE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=c37NPuD9I2l1OpPJkdld26j4b2jONW+A9doTNWxzKs74qUvhumfdZ9W7U5iwIoNP8Cu0f5Nxdo8F5VtlCTeS8ZMqMLO3cSPsQCWGeSUvUZtPghrDakIxXMLYv8EZ4KFEbMYh1GMMwMME2r1BjbzlHanxiIAO6aO+KmAWwxcd4pU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=trailofbits.com; spf=pass smtp.mailfrom=trailofbits.com; dkim=pass (2048-bit key) header.d=trailofbits.com header.i=@trailofbits.com header.b=YhnzY0hT; arc=none smtp.client-ip=209.85.160.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=trailofbits.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=trailofbits.com
+	s=arc-20240116; t=1781054367; c=relaxed/simple;
+	bh=fqfLMJY/chnkgj0kUutKJERe3LT9Zo86vEHEspY85FQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=silxov5XfLVtfLLOxEXJEdIO/W8aoZXcJLWTGlsaspLIDrhpVSjq7/UZG804ZUZeLERq52i0zWiCE5C81DAZZoDh7avWtVkoy9sELpTjUk0z9zwj0jn8Rq6X32ohro/DcQCLZTwehoO9Tq7Ewcaz9QyM6pn8i95tH0s5FvImFrc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=JMc/acb2; arc=none smtp.client-ip=220.197.31.104
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=trailofbits.com header.i=@trailofbits.com header.b="YhnzY0hT"
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-517b1f2c6adso30916331cf.2
-        for <iommu@lists.linux.dev>; Tue, 09 Jun 2026 17:25:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=trailofbits.com; s=google; t=1781051147; x=1781655947; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=iPD9/1geSMgRX6H4K6RRuedeClxy0eObAyWFQ0djRVo=;
-        b=YhnzY0hTvNbHA0+Ur2pUEqL3N+3trr3I+f/ieunoNwzkS+rytJEs+aWxUy/PpGU/LB
-         T3uSBLxTKX4+WYmIdT67t6Fwjq/ewPsDjCG+EStOOmjM35Od5dzwkMw2Yqptoj16tyiV
-         lk2zLeFF9LFpNZJcSV1ByriL4StiHzHqZShicjczhYXbYa+n2jY1mSvRNrvnUdeAtiGW
-         EanAOZYFxp9r1xoFxRCev1hnNGYFDxVInIr6tD+ytPsPE1jMZMUTZ3U/9hLKH+5GAUtH
-         hdRyzdqXe+/UTVOMH1T/uPrPc8PddQAwP2p2eWUHm0/1FcDlagFW8HliTaYk0IOdZ3Xw
-         5piw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781051147; x=1781655947;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=iPD9/1geSMgRX6H4K6RRuedeClxy0eObAyWFQ0djRVo=;
-        b=bHNOuP85sMW4uQm9HU8j9Up1kdDDOnMU4zlEXcTYcQv6WyTA6K9yiGW3IJuvVB/djd
-         WqL1zKtrfuu/59C9COF/lBNTkcKaur6R1SFpuhbzsFLa4FaW6lRNJTpLT0k822slbtD9
-         HXaRFt+VcEnTXePhEK5dv4zJfPZYV4x4pVKbq2N6l8qFACUw7Zg3rSz286K7xS3tmjdK
-         B0eQdfQemGnMcQcb1VYL2FN9AKKJEOgetM4QCDB79nWlbcML745XGv5p2bfQr2UZOPUQ
-         jORRv1G4TIA7CDEEA02n2RRWBJwZ5SnNNcpTy3kPttU6h5LousRGh+qmri6AzyJLb4Ab
-         QSVA==
-X-Forwarded-Encrypted: i=1; AFNElJ+mNgAm4NuJkO23m0+oktPGVPPrdVMwomk6FHExTbv/fw/zKZlAMykh5zwb3eYfyW8myZeniw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwX7kZAhx49QigqhPziE8Ubqnz73zOg4nK/u1LLgP75WcfnVBkC
-	2vya7g1+L4mvDfyD9NrZs9yRid/eInOzpMgww/ZsnIE8l1ZyDu/U88nCuQE3pMu/ACM=
-X-Gm-Gg: Acq92OH0zUYPoGDPriA/qGMr31pdmqkhUrVJjqY6R7ZyvD1NodZTH05AnBmztP2RCUs
-	hLnxNuonf0wKYYDlV0B9CdTq86vGTgEjjaEST2EjX8SmderPUWJsoBUmrM2DFbtTrXFh+CXZrYX
-	ugY1aCVxaaLhnEYqrSjhBJb2J/plhkru2KZheLe5dg6lflhj1BLZnrbWxcNqEaZs1hkbYQsWBks
-	7l9lPyz7XhJwdR8rR/g1Ue1+wfuqBeIqzymbxMXgy1JLMpCwa0BceQgWwS1U2z453B14/o6kfxA
-	isZ0vw5b/fCXnUOCCD5Q2ozk1muJ5u3NFwRkQD9SirBezEXFrtmc+R2+u/DYSfpHZmHRbGDNVRd
-	ju/vHYZZyH7vc+TkDomT5XLMuIuXVQR9lHTLg52kFgMhb0A80s0m9K+cSPYq1TDIG5iXgd66URB
-	eVqx974+Qo2J/FmzyxB2JeS/kHwmOtlSYYwvpeqg==
-X-Received: by 2002:a05:622a:1801:b0:517:6ef7:f6e0 with SMTP id d75a77b69052e-51795bbdc18mr326913491cf.46.1781051146693;
-        Tue, 09 Jun 2026 17:25:46 -0700 (PDT)
-Received: from localhost ([161.35.96.86])
-        by smtp.gmail.com with UTF8SMTPSA id d75a77b69052e-517af149fa5sm97583471cf.3.2026.06.09.17.25.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Jun 2026 17:25:45 -0700 (PDT)
-From: Samuel Moelius <sam.moelius@trailofbits.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Samuel Moelius <sam.moelius@trailofbits.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev (open list:IOMMUFD),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2] iommu/iommufd: avoid selftest dirty bitmap size wrap
-Date: Wed, 10 Jun 2026 00:23:52 +0000
-Message-ID: <20260610002351.1672863.5f5d62d5e4be.iommufd-test-dirty-bitmap-size-wrap@trailofbits.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="JMc/acb2"
+Received: from [172.16.12.90] (unknown [61.154.14.86])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 41bfeee6e;
+	Wed, 10 Jun 2026 09:14:04 +0800 (GMT+08:00)
+Message-ID: <b05f7154-e85f-4207-80ae-f080282ba780@rock-chips.com>
+Date: Wed, 10 Jun 2026 09:14:02 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH v3 0/9] accel: rocket: Add RK3568 NPU support
+To: Midgy Balon <midgy971@gmail.com>
+Cc: tomeu@tomeuvizoso.net, ogabbay@kernel.org, heiko@sntech.de,
+ robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, joro@8bytes.org,
+ will@kernel.org, robin.murphy@arm.com, dri-devel@lists.freedesktop.org,
+ linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, Simon Xue <xxm@rock-chips.com>,
+ Finley Xiao <finley.xiao@rock-chips.com>
+References: <20260604135255.62682-1-midgy971@gmail.com>
+ <3d99569e-9c3a-49d1-93fb-1335382523e9@rock-chips.com>
+ <CA+GS1Y1s78PwN63X2YJoS8VEGp7CpTERo_K65yKs00U4VRAw4Q@mail.gmail.com>
+ <e5058919-9485-4de5-8eea-331ebfc2987c@rock-chips.com>
+ <CA+GS1Y3ysdWZ3qCq3ip_Pbw+v4LxHZd95aBo=jwB+orYaMBBNw@mail.gmail.com>
+ <CA+GS1Y0kAM_XGLQuKPTphif2HcQg18ZXhd8RHHr2xPOEMCDvXA@mail.gmail.com>
+ <bcedaff0-abf8-4585-a0ea-057062cd0411@rock-chips.com>
+ <CA+GS1Y2-hRqpGgsknh+oOX+-uZ3DZtdekdP9viTP6a40zhhUhg@mail.gmail.com>
+Content-Language: en-US
+From: Chaoyi Chen <chaoyi.chen@rock-chips.com>
+In-Reply-To: <CA+GS1Y2-hRqpGgsknh+oOX+-uZ3DZtdekdP9viTP6a40zhhUhg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-HM-Tid: 0a9eaf17f7ca03a7kunm086ddc0f265e19
+X-HM-MType: 1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVkaTkIaVhgaT0JNSExLGhoeQlYVFA
+	kWGhdVEwETFhoSFyQUDg9ZV1kYEgtZQVlNSlVKTk9VSk9VQ01ZV1kWGg8SFR0UWUFZT0tIVUpLSE
+	pKQk1VSktLVUpCWQY+
+DKIM-Signature: a=rsa-sha256;
+	b=JMc/acb2P5/j0WDgBoNYDEgabsrTG6UUouYskrbbIrI3+e1FIjV+cY3SVNG0i6tQBYa65TADufI1IrcgOpVVxNrpxG7VhU9HVuUDORdfhEobuPvJC/wPn9SI+ziLIe3dHBTZ3H2EfowPzM3i1R4/7UXBr2WSPouPPyabXZj+Hlc=; c=relaxed/relaxed; s=default; d=rock-chips.com; v=1;
+	bh=xT9TRXqNVQ4NrOZ7G30C+sE2EpbR+Jn/B+pjkgNcIuw=;
+	h=date:mime-version:subject:message-id:from;
 
-IOMMU_TEST_OP_DIRTY sizes its temporary dirty bitmap from
-length / page_size.  Very large selftest ranges can make the
-DIV_ROUND_UP() additions wrap before allocation, producing a
-zero-length allocation while the later test_bit() loop still walks the
-original number of bits.
+Hi Midgy,
 
-The selftest helper does not need to support unbounded dirty bitmap
-sizes.  Limit the requested range to SZ_16M pages before converting it
-to bitmap allocation and copy sizes.  If the maximum range calculation
-overflows, treat the representable length limit as ULONG_MAX so that a
-large page size is not rejected solely because the mathematical cap is
-above the type limit.
+On 6/9/2026 7:11 PM, Midgy Balon wrote:
+> Hello Chaoyi,
+> 
+> You were right - building rocket as a module fixes it. Thanks for the pointer.
+> 
+> I rebuilt with CONFIG_DRM_ACCEL_ROCKET=m (everything else the same:
+> need_regulator on
+> the RK3568 NPU power domain via a DOMAIN_M_R variant, domain-supply =
+> <&vdd_npu>, and the
+> regulator-always-on workaround dropped). The board now boots cleanly
+> and, more importantly,
+> an NPU job submit no longer hangs: I ran the test workload five times
+> with no RCU stall and
+> no freeze.
+> 
+> So with rocket=m the need_regulator approach works on RK3568, and I'll
+> keep it for v4
+> (domain-supply + need_regulator, instead of marking vdd_npu
+> always-on). rocket=m is the
+> normal configuration anyway; my earlier hang came from building it =y
+> in a self-contained
+> image, so it probed in the initcalls (around 2 s) and the genpd ->
+> I2C-PMIC regulator
+> transition ran before the system was ready. As a module it loads from
+> udev much later
+> (~6.8 s here), after the I2C controller and regulator core are fully up.
+> 
+> On your question of when the device-link error is printed - it is at
+> power-domain
+> controller probe, not at the rocket probe:
+> 
+>   [    2.700618] vdd_npu: Bringing 500000uV into 825000-825000uV
+>   [    2.749637] rockchip-pm-domain fdd90000.power-management:power-controller:
+>                  Failed to create device link (0x180) with supplier 0-0020 for
+>                  /power-management@fdd90000/power-controller/power-domain@6
+>   [    2.945955] platform fde40000.npu: Adding to iommu group 3
+>   ...
+>   [    6.840374] rocket: loading out-of-tree module taints kernel.
+>   [    6.877647] [drm] Initialized rocket 0.0.0 for rknn on minor 0
+>   [    6.879950] rocket fde40000.npu: Rockchip NPU core 0 version: 0
+> 
+> So the device-link to the rk809 PMIC (0-0020) fails to form at ~2.75
+> s, well before rocket
+> loads at ~6.8 s. It is non-fatal here - the vdd_npu rail is brought up
+> by the regulator core
+> and all jobs run - and there is no "failed to get ack on domain npu"
+> NoC warning this boot
+> (the always-on kernel had one). The complete boot log is attached.
+> 
+> Two notes / one question:
+> - This boot used fw_devlink=permissive on the command line. Is the
+> "Failed to create device
+>   link ... supplier 0-0020" at pmdomain probe expected/benign, or is
+> there a clean way to make
+>   it order correctly (so it also works without permissive, and a =y
+> build wouldn't deadlock in
+>   the initcalls)?
 
-Assisted-by: Codex:gpt-5.5-cyber-preview
-Signed-off-by: Samuel Moelius <sam.moelius@trailofbits.com>
----
-Changes in v2:
-  - Adjust how length is checked
+We encountered the same issue on the RK3588 NPU before. And it was
+resolved with the following patch at that time.
 
- drivers/iommu/iommufd/selftest.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+https://lore.kernel.org/all/20251216055247.13150-1-rmxpzlb@gmail.com/
 
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index af07c642a526..4ff6fce362ef 100644
---- a/drivers/iommu/iommufd/selftest.c
-+++ b/drivers/iommu/iommufd/selftest.c
-@@ -12,6 +12,7 @@
- #include <linux/iommu.h>
- #include <linux/platform_device.h>
- #include <linux/slab.h>
-+#include <linux/sizes.h>
- #include <linux/xarray.h>
- #include <uapi/linux/iommufd.h>
- #include <linux/generic_pt/iommu.h>
-@@ -1686,6 +1687,7 @@ static int iommufd_test_dirty(struct iommufd_ucmd *ucmd, unsigned int mockpt_id,
- 			      u32 flags)
- {
- 	unsigned long i, max;
-+	unsigned long max_length;
- 	struct iommu_test_cmd *cmd = ucmd->cmd;
- 	struct iommufd_hw_pagetable *hwpt;
- 	struct mock_iommu_domain *mock;
-@@ -1705,6 +1707,13 @@ static int iommufd_test_dirty(struct iommufd_ucmd *ucmd, unsigned int mockpt_id,
- 		goto out_put;
- 	}
- 
-+	if (check_mul_overflow((unsigned long)SZ_16M, page_size, &max_length))
-+		max_length = ULONG_MAX;
-+	if (length > max_length) {
-+		rc = -EOVERFLOW;
-+		goto out_put;
-+	}
-+
- 	max = length / page_size;
- 	tmp = kvzalloc(DIV_ROUND_UP(max, BITS_PER_LONG) * sizeof(unsigned long),
- 		       GFP_KERNEL_ACCOUNT);
+Please compare the differences in NPU pmdomain and DTS configuration
+between the RK3568 and RK3588.
+
+> - (The convolution output is still uniform zero-point / the job times
+> out - that is the
+>   separate NPU compute-completion issue, unrelated to the power-domain
+> work. Finley, that is
+>   the one I flagged earlier re PVTPLL/NoC.)
+> 
+> Kind regards,
+> Midgy
+> 
+
 -- 
-2.43.0
-
+Best, 
+Chaoyi
