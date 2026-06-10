@@ -1,119 +1,132 @@
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD50532BF41
-	for <iommu@lists.linux.dev>; Wed, 10 Jun 2026 19:03:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.48
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781118188; cv=pass; b=bRdxAgdkTsburW4+MqOqx5+PNCZNnAXU9LWFx36vVa2tHRCSbWi9t07a14FSp7EE44GS+dA8CGP6gJL8ewtOD5ieYbO8kAZksWmZV9sO8k+MIdNT/3B9s0lPa+IjzcZKppODpQA6IyT4WKfWs3Tp5Fa0Sh6/fWlOynCGA4XlTfg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781118188; c=relaxed/simple;
-	bh=ieW780M6xxJCMBWPwe2Wo6G767M73YI/jsW5RA6v7tI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=azCIFyrenkuZ9lcOaHR7s+0SH8HGvoOZPSWKoOEFsKwAZodZkPKB/5QZZi4y7JFeYijUGr5Z5mMmCEs49a058EAJX1g0Pyv0BxfS8Vqd5+/sxWSbw3V8J1oMB3Cu9Ks+zw0Nkj+cTyAZINWUOV9wUc8Vk547j7jFFVm6Ewo60pw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=trailofbits.com; spf=pass smtp.mailfrom=trailofbits.com; dkim=pass (2048-bit key) header.d=trailofbits.com header.i=@trailofbits.com header.b=SDjI2Gby; arc=pass smtp.client-ip=209.85.167.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=trailofbits.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=trailofbits.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BFE23EFD21
+	for <iommu@lists.linux.dev>; Wed, 10 Jun 2026 20:44:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=67.231.153.30
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781124301; cv=none; b=ltRT+eUg9u9OC64buhLqcHZB4PCqDEciBlMJKRTA3XC3sShDQRmjInVp/f49l6ZPVs5t/06Y9mwa8h08qglrrv3Q5WYPEyJQcLL2JcJ63cG0cYkg1eu++XJYImX42Ts3wwbzYBkmv3PfvcixtXZED0q3ylvm1BtHvSoEjrBLBI0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781124301; c=relaxed/simple;
+	bh=R67AcRpblotU3L8crGoc2LVkZrZx3YT15sU7R96KHgg=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:To:CC; b=juW7YhQt3DYv9k33wKiYnGvISWP4o+aIFBWU9WfR3SsQNg8h145f1n+uanzunibVy4C3ixuaalxao+mJjxH6TOKkItH8fxDE6Rh9Ulqd+onIF45xNztZ8Q04YZ4J+8kW967H7/Cuwq5NzqIDvLftlyVvo3rcYs/JJ+BVywF9qyI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fb.com; spf=pass smtp.mailfrom=meta.com; dkim=pass (2048-bit key) header.d=fb.com header.i=@fb.com header.b=FrOphyqj; arc=none smtp.client-ip=67.231.153.30
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fb.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=meta.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=trailofbits.com header.i=@trailofbits.com header.b="SDjI2Gby"
-Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-5aa68cf03bfso7739747e87.0
-        for <iommu@lists.linux.dev>; Wed, 10 Jun 2026 12:03:06 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1781118185; cv=none;
-        d=google.com; s=arc-20240605;
-        b=PqDaF8R9eqK+j8vp7qGDq2Tk2SnaBIK2V9HsYeYIYZ/CpYmeXLZnnQ/R/Erf9mzASJ
-         q6hmxb0Dyiu489qDDvodiYWuo8dxgd0N/HfL9J1Krgww021/iZhrJGcXQ8bDafi6hWZa
-         Fwq7Pg9xLO9Yef65/9E0hBGG/NngrUS/kUAgDdsZvHxMVdhqepipOT1dyis70rd5I7rh
-         +pnXJCEI1wn/pxcghoYamRBntby7j/qgBuNnXx1plKn4UZWYevMkQ7NshkdcX54dQet2
-         LsWwxz42c8fD3tD5b6gyA0mpu0vab3w3uUKyLLD0u8OHSvp6pCLbUCCYK3D+KKVgthcU
-         T1dA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=aUXpPgzCrGF8iLPRq4NB5gtEtNYbqOaVXfoC6RA//PY=;
-        fh=NeID/3nrR6jTW4ZjmBQb7Fbn/9cE3UQIVFGRQpfyw9g=;
-        b=hA3FkgRs/cuCHKuV04hv8A/CktHoXQ69JZPnglyJKQVrbhN3k4//BC5nIImjJ/BPzf
-         Bgsg8utyOeZnEXD+hiP6yC7ExfEZoj2BhH5qCwqH7Gf2znLH5mwg0CpPrdTOFUMud+Ex
-         gmW9MtdG28WjVAnrU/hZZoHpNp68JaBqKPXkqZQWFvh2vuROyEeSfajTymQf9XwS520d
-         JsQqC2y9qs5bJi7TWupJJwlEOfmWQPV7MbqqaLu/iB6RV3y1bAA8A6A3yMEOyvsozP3a
-         eauxpO3VuPGI1FwtGyFfO+n1u1vY4J2WxqwGsUD0iCiJJevUBAtm63ws/4J26g1P5zlc
-         O2UA==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=trailofbits.com; s=google; t=1781118185; x=1781722985; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=aUXpPgzCrGF8iLPRq4NB5gtEtNYbqOaVXfoC6RA//PY=;
-        b=SDjI2GbyNGnX4MzFUvjdSu6rie3vALLfu1wSHxbD/BgFXkZCAFl+BoTG29e3vkclXh
-         oZVz6Iu85vAeOfdtlcwu2iOwHGA1Zd+dGgFbzPhYKCAbtARFDTBnl0B0kaAmcQfzVA07
-         nAwvjAbcxiWAdqIINE+uFeO1jZHrESR5aCM2IhRtIGPAxtE7XB763IWztutj100u8TnD
-         nZ59RY5s+tt0FoBVyDs5efd4TYKcVEOAOgVPQ81uKIHcV4E5W++jj9l/WwWa87xu1zA0
-         DPsiS78p8rPDHL0hAJD5VGCcu9U6kdmbvC/ezvYuuLo0PDd9gLk31cZfz9ct8bdWwwBI
-         eewg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781118185; x=1781722985;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=aUXpPgzCrGF8iLPRq4NB5gtEtNYbqOaVXfoC6RA//PY=;
-        b=lpb/raDL71W2q1dVlqVASVri3k7O6V3gNRhxigg6j4iJ+UiZAwuRJ0YhOzj41x4UDA
-         T5/zDklRclDw/o5xR7w/fSPyTZSiydq91Z5ng+I07GQzU+SkCeRCajlhS5mWhE9wyJDa
-         +LOTZA/2r2DahRSFurpgW8mYPZy5EbslR4DwR0oQ1gdiiv0mn0pMnXCZwPDELNVprfog
-         GIdG1jQ7Re5yNySI3rVUjo2owoHacic2M460mK6Sp2bOIALyy7S5K2yxXoux0KFDNi1B
-         BIkl3BsPe1RW5cJ9Sk+gMKyfpdRLV9VpxqFyNRYL/rya/QslYnlCcsi02fT5mOwGc+yJ
-         nKKw==
-X-Forwarded-Encrypted: i=1; AFNElJ/b2CDQbmph5Anwq8hKFpG8fLaz73+wFP/z7/93jzSv2o+Ud5ZFQqZvaNLLcTsCon15IZWLhw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzkVF8GCdhTX2B5nPIUNlTXuBqYlHWRSFSw3nJFnJWBJRgGFsiH
-	XNNJ+1AuOuBYoOct4LM1rgjn+1/8gfgp+Clj5hCmkoEncVPYvHmc5adUlMuMOEugU2prQ3jifUx
-	5UCtEmLSrd/lftBF7QojNU8RHMMqGNFvJWvaKPvTH9w==
-X-Gm-Gg: Acq92OGTy3OfU+7PBwct4oIjwLpaF3rUq1l4j9QxrVovtYWsP4DOg48dKOi/YRCjJi2
-	szt+Cq2XFV92Xk/8uJEc0UofLOxFeJxg9U61ehwNm8GOkhmzjs6p1rTp41oTRDy25XIMXTMcaLG
-	K3gpRyIkXLZvxgcw2xRt0sWJqj0xuhHxDUNSSCxMWXbfiJIg5uN4kkZE9TcFu3E+pzkCcnk6+TM
-	GMUAKXMAfIjv8JRTMriAksUt+nevUlngmTG4tV4F4q6/YTe5mKNLGEC7QBR6mlALZg2tGi78J4R
-	Cslf74xy0QtNve/I
-X-Received: by 2002:a05:6512:3193:b0:5aa:6c05:f0e with SMTP id
- 2adb3069b0e04-5acf680fbf2mr2990127e87.7.1781118184883; Wed, 10 Jun 2026
- 12:03:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=fb.com header.i=@fb.com header.b="FrOphyqj"
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+	by mx0a-00082601.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65AJZ9VM1447728;
+	Wed, 10 Jun 2026 13:44:56 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=s2048-2025-q2; bh=OpTomHEXw1QzlpOeYK
+	Rn9JzGdCmvTV1650ciQ/ve/Po=; b=FrOphyqjKcEOeC2wQviIU6pxTrjArtaIaS
+	oN2phIgI/JhNs1sIk2f3vmsgXlwKcoaLCg86hcerWLGOvfnE3JiqlxmbSxpWEuul
+	SGNMCF50Dh5Gv5C6doSLJNV6Q7MMRRu+rxBzgDeg3u+mlkR69AT7gSNw5VjbTB1s
+	Ik85UJbi/qRg+T5nfFSm5WxRKlUbZ+zKhG+dddgVE3gYUmUjRkqUJapK1nQJ59Gi
+	Z43ln8c1oufmEnoNdfQquC4cJM/4b7emuGB+jSeJX6SaLiJNcEzzxzOelj/FEo36
+	1Eh8qSJa/fMb6SEXRDHYQQCHGB2099/sBXFeRAVY72C/o8/isTRQ==
+Received: from maileast.thefacebook.com ([163.114.135.16])
+	by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 4eqe788ep8-7
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+	Wed, 10 Jun 2026 13:44:56 -0700 (PDT)
+Received: from devgpu015.cco6.facebook.com (2620:10d:c0a8:1b::8e35) by
+ mail.thefacebook.com (2620:10d:c0a9:6f::8fd4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.2.2562.41; Wed, 10 Jun 2026 20:44:54 +0000
+From: Alex Mastro <amastro@fb.com>
+Date: Wed, 10 Jun 2026 13:44:41 -0700
+Subject: [PATCH] iommufd: Clarify IOAS_MAP_FILE dma-buf support
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260610002351.1672863.5f5d62d5e4be.iommufd-test-dirty-bitmap-size-wrap@trailofbits.com>
- <20260610163750.GP2764304@ziepe.ca>
-In-Reply-To: <20260610163750.GP2764304@ziepe.ca>
-From: Samuel Moelius <sam.moelius@trailofbits.com>
-Date: Wed, 10 Jun 2026 15:02:53 -0400
-X-Gm-Features: AVVi8CcJET_qZy5oebdGiLOxwg3BQsvkHSiyHzpoCh4YeZ1vsbmb0B2N1bdIWVQ
-Message-ID: <CAE+C+DazFYXJYsgzv5yGyy3kky0y-bQdP6_u3v4SVZ2BAm54rA@mail.gmail.com>
-Subject: Re: [PATCH v2] iommu/iommufd: avoid selftest dirty bitmap size wrap
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Kevin Tian <kevin.tian@intel.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, "open list:IOMMUFD" <iommu@lists.linux.dev>, 
-	open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-ID: <20260610-tmp-v1-1-b8ccbf557391@fb.com>
+X-B4-Tracking: v=1; b=H4sIALjMKWoC/yXMQQ5FMBRG4a3c/GNNWkSiW3kx0LrlSnjSIhKxd
+ 8HwDL5zInEUTrB0IvIuSf4zLJmM4Id27llJB0vIdV7pymi1TotyRe3qkr0JoURGWCIHOd7Lr/k
+ 6bW5kvz4U13UD4KGnMGcAAAA=
+X-Change-ID: 20260610-tmp-b39b94ec1ff4
+To: Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+        "Nicolin Chen" <nicolinc@nvidia.com>
+CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        Alex Mastro
+	<amastro@fb.com>
+X-Mailer: b4 0.15.2
+X-Proofpoint-ORIG-GUID: Mm7YS-qetCs5kko5-KHMXQs_Ay2thPiz
+X-Proofpoint-GUID: Mm7YS-qetCs5kko5-KHMXQs_Ay2thPiz
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjEwMDE5NyBTYWx0ZWRfX6MyyBfl+1x/o
+ KsXPt0UAW1f8QOcc15/OxRwON5pGReVS/B1IkVz4os3uUhdebDIHtKhTvphTDVqY26eMoxYxrgV
+ uN9he3n8nTA2cTaRHwfATzcMj5OHNTC9kEwWUBiI3BO+aJGPV/8V6o9sc4vvGzdtKeoUdR0WZD3
+ YFRfjnznUNsjD4dpEjVGQvMspr6CCg4fHc6u8ivFbk4ofDgDabOrwD/YsWuYrtZfmeXgktWISpe
+ lysRDCw1gV8a+F7CzJbX0F852x0o2q5HIUOZgTCXksyi4RZiFrzuZ5NubFR7oad/XIwIs5aSIoo
+ XJk5AxX8KYG4spiBikZYNRzD0vJZQd6iJ1jP78lvNX9QDhS2kIm0SmkWvEkLlUxC58gC2f17CQq
+ u/fCCyM32UfDPO/oLWSvkMKbtydNEG3cc+MJnw09Z3xnvRuEPmzX3dBMFxV4BUFuKujUidLBKWE
+ tQ6m7MpR3loyon6awuA==
+X-Authority-Analysis: v=2.4 cv=L98theT8 c=1 sm=1 tr=0 ts=6a29ccc8 cx=c_pps
+ a=MfjaFnPeirRr97d5FC5oHw==:117 a=MfjaFnPeirRr97d5FC5oHw==:17
+ a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=7x6HtfJdh03M6CCDgxCd:22 a=JnKecZnUtZousrUlYMGU:22 a=FOH2dFAWAAAA:8
+ a=GWgnRoNsezHk-5W0228A:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNjEwMDE5NyBTYWx0ZWRfX3mrfgfoKnly3
+ CfrI3hKkc3KvB7pALR0ng9/AGrSB6T3HQKySW8lSp3M+7zhvE/gnaIjsXISeeviXsRZlNALaK1E
+ pI/jEDdi1D7j6F3AuQ/jt09PrbpU+30=
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
+ definitions=2026-06-10_04,2026-06-09_02,2025-10-01_01
 
-On Wed, Jun 10, 2026 at 12:37=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca> wro=
-te:
->
-> On Wed, Jun 10, 2026 at 12:23:52AM +0000, Samuel Moelius wrote:
->
-> > @@ -1705,6 +1707,13 @@ static int iommufd_test_dirty(struct iommufd_ucm=
-d *ucmd, unsigned int mockpt_id,
-> >               goto out_put;
-> >       }
-> >
-> > +     if (check_mul_overflow((unsigned long)SZ_16M, page_size, &max_len=
-gth))
-> > +             max_length =3D ULONG_MAX;
->
-> You should never have a cast in a check_.._overflow like this.
->
-> Also just fail, something is really wrong if page size is so large
-> this doesn't succeed.
+IOMMU_IOAS_MAP_FILE is documented as mapping a memfd, but the
+implementation first tries to resolve the fd as a dma-buf and has a
+special path for supported dma-buf exporters. In particular, VFIO PCI
+dma-bufs exported through VFIO_DEVICE_FEATURE_DMA_BUF can be mapped when
+they describe a single DMA range.
 
-I am getting ready to travel and I will address this when I return in
-about two weeks. Thank you for understanding.
+Update the UAPI comment so userspace understands that certain kinds of
+dma-buf are supported in addition to memfd.
+
+Fixes: 44ebaa1744fd ("iommufd: Accept a DMABUF through IOMMU_IOAS_MAP_FILE")
+Signed-off-by: Alex Mastro <amastro@fb.com>
+Assisted-by: Codex:gpt-5.5-high
+---
+ include/uapi/linux/iommufd.h | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+index e998dfbd6960..0425d452d41e 100644
+--- a/include/uapi/linux/iommufd.h
++++ b/include/uapi/linux/iommufd.h
+@@ -224,13 +224,17 @@ struct iommu_ioas_map {
+  * @size: sizeof(struct iommu_ioas_map_file)
+  * @flags: same as for iommu_ioas_map
+  * @ioas_id: same as for iommu_ioas_map
+- * @fd: the memfd to map
+- * @start: byte offset from start of file to map from
++ * @fd: the memfd or supported dma-buf file to map
++ * @start: byte offset from start of the file to map from
+  * @length: same as for iommu_ioas_map
+  * @iova: same as for iommu_ioas_map
+  *
+- * Set an IOVA mapping from a memfd file.  All other arguments and semantics
+- * match those of IOMMU_IOAS_MAP.
++ * Set an IOVA mapping from a memfd file. On kernels with dma-buf support,
++ * supported dma-buf files may also be accepted. This is not a generic
++ * dma-buf import path; currently supported dma-bufs include single-range
++ * VFIO PCI dma-bufs exported through VFIO_DEVICE_FEATURE_DMA_BUF, and
++ * other dma-bufs may be rejected. All other arguments and semantics match
++ * those of IOMMU_IOAS_MAP.
+  */
+ struct iommu_ioas_map_file {
+ 	__u32 size;
+
+---
+base-commit: 61d525d96ade3367ce65e340b33aa2f1fd5a3602
+change-id: 20260610-tmp-b39b94ec1ff4
+
+Best regards,
+--  
+Alex Mastro <amastro@fb.com>
+
