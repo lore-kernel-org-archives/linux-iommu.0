@@ -1,311 +1,299 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from out-186.mta1.migadu.com (out-186.mta1.migadu.com [95.215.58.186])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 059E13382FC
-	for <iommu@lists.linux.dev>; Wed, 10 Jun 2026 14:27:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65B07334692
+	for <iommu@lists.linux.dev>; Wed, 10 Jun 2026 14:28:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.186
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781101681; cv=none; b=XI08U6lnUv18812ix/HpVD36wJW8jCEb4y4MoMLiRetNiHr+4sZNYbUeSd59xisdzbh7DUtjKtOKU2yOj/HEJOFe6J1SXEYLUL62Ys0JeWugjrLMaXWXAPPPOvfB5kiO1pnx7Mg+9v+lQ+87PXQWcWi/AKyB8bDjiBJ+uPdf/L4=
+	t=1781101712; cv=none; b=Xgn2PV/ZXCvxcUc5d0bbOu2RJxZFTVbN+uor0oAnN5DKtLn6HXz2oMf4a10afxPsCAR3JXT5j8zpUPGi6DMq8plszYv4+HsoGhxO5GqUw7GJDgv3eoZSyaPJqw97Un8CC6cbSNen6WMyBSlVXlsHOfSpGLgJy344n0EqQSYMDzg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781101681; c=relaxed/simple;
-	bh=ZDMr1KkMuid1/5JtT6zI9SV1IV3OBy8MAYDcq/h+gVc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=opI4fIziMxqiz8wH+RFKnvmdhQjmSvCpBdOrmXByvAnUuNN4YBLqVgDvvDvs8NQvHbkVOh3mwSrohOulSl7b6cLQR9wEqKghApnI22NeSRB0RJ9Kuhj+cQDdvRjhTkSXqfbSoTSUa7N8kYxV8F38XUscO9/FlJkJsmEtxBEvPRY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=hUuafbk6; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=P5wXeaGT; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1781101712; c=relaxed/simple;
+	bh=c6R0JTbj+5VsxDTHpRq3vL/TbhDnzh5/oe8YCzkiny8=;
+	h=Mime-Version:Content-Type:Date:Message-Id:To:Cc:Subject:From:
+	 References:In-Reply-To; b=fL7MqQK5wp6FyYkx4Dc9IPJh3MGTg8kKuINfqqU4iCmJAZFU+5PHeeyNzWKkzsHR0PSOcFawrC3qLC4ERKeJTtEeNcyq7W3DBs7+Wucq5Ji+tSK+i6l+x2qCYFpVDvxnjqRobh0N2yTw19d6skUOrJyTE8DK5iEaAjdxhuFpYhM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cknow-tech.com; spf=pass smtp.mailfrom=cknow-tech.com; dkim=pass (2048-bit key) header.d=cknow-tech.com header.i=@cknow-tech.com header.b=VhFcql5D; arc=none smtp.client-ip=95.215.58.186
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cknow-tech.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cknow-tech.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="hUuafbk6";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="P5wXeaGT"
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65ACCpsE1598846
-	for <iommu@lists.linux.dev>; Wed, 10 Jun 2026 14:27:58 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	ZDMr1KkMuid1/5JtT6zI9SV1IV3OBy8MAYDcq/h+gVc=; b=hUuafbk6XbDXfklH
-	nDxKc46oRgpXMyGRmH4nTXsxLZWIQXLz7nnY8hvoz7Ab/CVbBAY++3hawv19zWM4
-	eqWns/hzxNX79laWU1kXFSZ9XVVHzed/rCck4nOko6cFkyaACpcnBuW2ERcgEVy2
-	iCOWg3HhoKqehPRk5k/RIwgK4d1X8P8zDNyCCRZK9a1YGQPCD4EgldRZ6TjR0kxb
-	QfFxbNS5TRZ7Wh696BUFrHDTTONhcgJ5nNtYCjvkw5BT5DOtNZDPXVkbd1OuzM3G
-	ywi8Hvnr2uYFeEOGQAAnM0Fe4Jq2IN4OjSS4O3yLNmxT6opxfwTHQPrV0tV7Irh2
-	JsKeOA==
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com [209.85.216.70])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4eq2sehu62-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Wed, 10 Jun 2026 14:27:57 +0000 (GMT)
-Received: by mail-pj1-f70.google.com with SMTP id 98e67ed59e1d1-36bb6c41341so7583956a91.3
-        for <iommu@lists.linux.dev>; Wed, 10 Jun 2026 07:27:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1781101677; x=1781706477; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ZDMr1KkMuid1/5JtT6zI9SV1IV3OBy8MAYDcq/h+gVc=;
-        b=P5wXeaGT+Pjz+nG8mE5lFjIGmOgv1uKM5qvTAJtmn+xkEnSohCNM+AuRpe56Yc1gse
-         HfblsONQtt9tj1DayKn+i3rZRkP5X8njsjfkqWzlRmNVmMwstNSlbYTixNJ65o/PQfai
-         3LZu5Irp+g97xrsypF0HlEGiTnWb03Kw81joK0upPRMh2MTZFRpNuVOX+E/c43FzpNYi
-         jV2E2JPnTkeV5MzjHmsJfS/9EQiVOhCOAUfXVaePxTgfdSLeiXsuZtKzx/0TXS3bLF3g
-         VLHWhIe2BTaFnqD/1xEGefBVUtnyyE3Feqcw7E6t6O/pzGcwVQPGaUmc69hKz0cE3DPI
-         ST4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781101677; x=1781706477;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ZDMr1KkMuid1/5JtT6zI9SV1IV3OBy8MAYDcq/h+gVc=;
-        b=ZPBlOHF8CLm2eiRunmpzAct85na72eBJscewuPJ5hRUrYt0eIQtPEe3eS3IGLzCzik
-         LxW0s/+Lq9RXzvp0bRpWNa1jBCs+fM4BGauQT9IbYXuW86176Be+Qt7fWd5+uMSV2wyi
-         AD0kyFxVtfbV5Jc2/aOAlZWMD5+l/FejQxyXyslm+n97qpcakDsd6GnYAWR93PUuvM0+
-         0B8Rlal05e/BE0ajKT4gqRF5t55WBiHXmYHpULy4gVZc7d+r/uZ0y78yN8ZYAlKxHPqx
-         TrNKe77OieD4DzarrieF7uh2/tdT5LU3HOa9sFo8veUoNhDBEZXPCe16pnweawBVupV1
-         uJfQ==
-X-Gm-Message-State: AOJu0YzNOzZmHVCMIGtbW3hQB5iSL31TV7tJ2l2JAjdR9RgSaw89tcGG
-	kaiRQm/TnaDZXBsKI3f5DDfs0mqrwvP+oYkhLoXpU9vvtDggHPHc8n2RAPXSt7D9xB/ExQKMEbr
-	ljLnBZeMJ7iscH6EJeUXJMcQGx0T95vLAsGxIKWCH9oO72NxHNEGrjm/g3YukmqhnYw==
-X-Gm-Gg: Acq92OElY8qw33p3V3Pq3NjOeZBzwv1+fN/v0d3XXZqjTIXV4fL++hLP248hYgzyknt
-	L4QnxhDtUaDW8uvyY1lnl/W1UgzOeGamqgwacbiBxw7EfypPTZLp0HgKhxD1qTSqpV5rHmp0Ddn
-	BohH5R+Es/w1EBjALJb+HgqoPaHMhPGaZdju8K9Be2OvvzabrskAwIN9g+tLVIJjzLssb0SG6J8
-	FezzdZcErsg2E+g4OwLhahBAAyTCLcnxwjRgEAGWdhllxYUvgH1rwVNKJq5VwcfJVBl53HPsfrE
-	5lOHNPAlGuy/AE2Iu3PJYRbZ+BHRcYUrLg1ExFqBNmEZAPl2cQ3yAwhci/lOnw7n558KtGrqWe6
-	QFtvaBMJdP6Vp4hcic8AQ5kx3O1Xd1D5ledzNXg3zpyyOo5GpoYsU9qyjzWPcujQO
-X-Received: by 2002:a17:90b:5106:b0:36b:afa0:c53d with SMTP id 98e67ed59e1d1-370ee82fd0dmr27039656a91.2.1781101676379;
-        Wed, 10 Jun 2026 07:27:56 -0700 (PDT)
-X-Received: by 2002:a17:90b:5106:b0:36b:afa0:c53d with SMTP id 98e67ed59e1d1-370ee82fd0dmr27039612a91.2.1781101675823;
-        Wed, 10 Jun 2026 07:27:55 -0700 (PDT)
-Received: from [10.206.105.200] ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-37645a2c6a9sm1984838a91.1.2026.06.10.07.27.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Jun 2026 07:27:55 -0700 (PDT)
-Message-ID: <bb59f07e-ca7e-f012-6a4b-0a148350b69c@oss.qualcomm.com>
-Date: Wed, 10 Jun 2026 19:57:50 +0530
+	dkim=pass (2048-bit key) header.d=cknow-tech.com header.i=@cknow-tech.com header.b="VhFcql5D"
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH] dma-iommu: Introduce API to reserve IOVA regions for
- dynamically created devices
-To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org,
-        m.szyprowski@samsung.com
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-        vikash.garodia@oss.qualcomm.com, dikshita.agarwal@oss.qualcomm.com
-References: <20260119054936.3350128-1-busanna.reddy@oss.qualcomm.com>
- <cfd23f75-8952-4463-abd5-815b995031b0@arm.com>
-Content-Language: en-US
-From: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-In-Reply-To: <cfd23f75-8952-4463-abd5-815b995031b0@arm.com>
+Mime-Version: 1.0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cknow-tech.com;
+	s=key1; t=1781101707;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=KIoAahAV4CuoU8RbqIQS/+Rbt/OxgplfKmIf4NRFcyo=;
+	b=VhFcql5DYudJf2O1tHGaMXlSFbta4Hk/KSAZdvHEIwHdxAevssxXYmt1DQFTU2wg59pr/Z
+	Jxh4OBD23Smk9eRs5uoR+Ysku8D1mqYpwZdQnU6IiH4tPqCDOwU8YfyBTWm4TWlHvJNIZr
+	Nc+AXrTI011Jg4KyWK8V+kIc+InaporAeG2xb5FBCDO9eHm7UV0w/1/Za+FaNTKF/3wtwN
+	3G2FYV3RqMj7tKuBU2TMA8gpfATvlp1ScRWi9g4BtOn7NfLUudpryRB8CrrojBwhwGhTqR
+	7hUOW6IaelyYgrpdLchs+sqF226D35NbMxGeKWnN8yT0aPNVH1QO2SSR1Ta9Ag==
+Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: fc-kDE1XTVBLsm-ZnL2KUnGdxaJGAWhU
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjEwMDEzOCBTYWx0ZWRfXzodxkso154Z4
- 9yozVX2zCvFd/L1sHzJDuoJ5TC/S4k+dWG38OxgRAA3msLnP0IKpsF87dowbZvrjq6ft2FHUx95
- PJX7IYKoRQ4cE/FcA01KZN3UI372DT3K7S9T7ZrPBTWF1kNOD8sE7I4VE41yffk3gjOFDD3xg+m
- UbYfnEaaEmfcMBzd4h8iTMVsWHuPmcW/G1c0JmC9LCxjbPLpyXAnQ+nsaevVkg/BDZnl2fjVwqR
- RT22qx7y8I6LHgr8cixlmnd8iR27nfMNJzr8itFLQZvGBP2ruGM0DQEJiAw+HnS9IJnC2VbzDF/
- 4znarOwIK0KKxueEwv6RtFhyi2oU720i017d8+juPMaQAMbS6piQ7jW1G6Pmz++8T0+kQeacHf1
- uvcwSFvyoN/PWEOgHtFEXM496qv+5Ixf4ccMxRdxDVE4wjfch+PMl2vwwJjRIew+9cbfyj7+/A/
- iB1CFgYiQVJSeWYCD2w==
-X-Proofpoint-ORIG-GUID: fc-kDE1XTVBLsm-ZnL2KUnGdxaJGAWhU
-X-Authority-Analysis: v=2.4 cv=Md1cfZ/f c=1 sm=1 tr=0 ts=6a29746d cx=c_pps
- a=0uOsjrqzRL749jD1oC5vDA==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
- a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_glEPmIy2e8OvE2BGh3C:22
- a=e5mUnYsNAAAA:8 a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=ALB7cA6TA5vMt6cBXkgA:9
- a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=mQ_c8vxmzFEMiUWkPHU9:22
- a=Vxmtnl_E_bksehYqCbjh:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
- definitions=2026-06-10_03,2026-06-09_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- lowpriorityscore=0 phishscore=0 priorityscore=1501 adultscore=0 bulkscore=0
- impostorscore=0 spamscore=0 malwarescore=0 clxscore=1015 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2605210000 definitions=main-2606100138
+Date: Wed, 10 Jun 2026 16:28:17 +0200
+Message-Id: <DJ5FUW50YM2N.6ZTY4WK27ZP5@cknow-tech.com>
+To: "Midgy Balon" <midgy971@gmail.com>, "Diederik de Haas"
+ <diederik@cknow-tech.com>
+Cc: "Chaoyi Chen" <chaoyi.chen@rock-chips.com>, <tomeu@tomeuvizoso.net>,
+ <ogabbay@kernel.org>, <heiko@sntech.de>, <robh@kernel.org>,
+ <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <joro@8bytes.org>,
+ <will@kernel.org>, <robin.murphy@arm.com>,
+ <dri-devel@lists.freedesktop.org>, <linux-rockchip@lists.infradead.org>,
+ <devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+ <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>, "Simon Xue"
+ <xxm@rock-chips.com>, "Finley Xiao" <finley.xiao@rock-chips.com>, "Jonas
+ Karlman" <jonas@kwiboo.se>
+Subject: Re: [RFC PATCH v3 0/9] accel: rocket: Add RK3568 NPU support
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: "Diederik de Haas" <diederik@cknow-tech.com>
+References: <20260604135255.62682-1-midgy971@gmail.com>
+ <3d99569e-9c3a-49d1-93fb-1335382523e9@rock-chips.com>
+ <CA+GS1Y1s78PwN63X2YJoS8VEGp7CpTERo_K65yKs00U4VRAw4Q@mail.gmail.com>
+ <e5058919-9485-4de5-8eea-331ebfc2987c@rock-chips.com>
+ <CA+GS1Y3ysdWZ3qCq3ip_Pbw+v4LxHZd95aBo=jwB+orYaMBBNw@mail.gmail.com>
+ <CA+GS1Y0kAM_XGLQuKPTphif2HcQg18ZXhd8RHHr2xPOEMCDvXA@mail.gmail.com>
+ <bcedaff0-abf8-4585-a0ea-057062cd0411@rock-chips.com>
+ <CA+GS1Y2-hRqpGgsknh+oOX+-uZ3DZtdekdP9viTP6a40zhhUhg@mail.gmail.com>
+ <b05f7154-e85f-4207-80ae-f080282ba780@rock-chips.com>
+ <DJ5A9XL183RZ.20J3ASQ3EWUZ6@cknow-tech.com>
+ <CA+GS1Y1xAq-9eMyMmoVE6NG9KLG7XRxgPoSr5RkW=6fT5D820g@mail.gmail.com>
+In-Reply-To: <CA+GS1Y1xAq-9eMyMmoVE6NG9KLG7XRxgPoSr5RkW=6fT5D820g@mail.gmail.com>
+X-Migadu-Flow: FLOW_OUT
 
-
-On 1/19/2026 7:43 PM, Robin Murphy wrote:
-> On 19/01/2026 5:49 am, Vishnu Reddy wrote:
->> Drivers can create child devices dynamically. These child devices often
->> inherit parent device tree node, including its reserved iommu-address
->> ranges.
+On Wed Jun 10, 2026 at 3:36 PM CEST, Midgy Balon wrote:
+> Hello Chaoyi & Diederik,
 >
-> Which frankly sounds entirely wrong. If there are distinct devices with
-> distinct hardware properties, then they should be properly described as such,
-> and handled by a proper bus driver. And if different devices have different
-> DMA restrictions, that should be described by "dma-ranges", not by abusing
-> reserved regions.
+> I compared the RK3568 and RK3588 NPU power-domain + DTS as you
+> suggested, and it lines up
+> exactly with what you described.
 >
-
-Hi Robin,
-
-The VPU is a single hardware unit, but internally it consists of
-multiple functional blocks. Each block has its own distinct Stream ID
-(SID) and operates with a different IOVA range requirement:
-
-  +--------------------------------------------------+
-  |                  VPU Hardware                    |
-  |                                                  |
-  |  +------------+   SID-0   IOVA: 600MB - 3500MB   |
-  |  |  Block 0   |                                  |
-  |  +------------+                                  |
-  |                                                  |
-  |  +------------+   SID-1   IOVA: 0MB  - 3500MB    |
-  |  |  Block 1   |                                  |
-  |  +------------+                                  |
-  |                                                  |
-  |  +------------+   SID-2   IOVA: 16MB - 600MB     |
-  |  |  Block 2   |                                  |
-  |  +------------+                                  |
-  +--------------------------------------------------+
-
-Each Stream ID maps to a distinct IOMMU context bank, and each context
-bank enforces a different IOVA range.
-
-The upper boundary can be enforced via dma_set_mask_and_coherent. However,
-enforcing the lower boundary (e.g., blocking 0 to 600MB for Block 0,
-and 0 to 16MB for Block 2) requires explicit IOVA reservation,
-which is what dma_iova_set_resv_region() provides in this patch.
-
-These are synthetic child devices created at runtime and do not have their
-own of_node. Inheriting the parent of_node might not be the correct way.
-
-A crash was observed on one of the platforms due to the absence of
-reserved regions. This API would help avoid such crashes by allowing
-drivers to explicitly reserve the restricted IOVA range.
-https://gitlab.freedesktop.org/drm/msm/-/work_items/100
-
-Thanks,
-Vishnu Reddy.
-
-> Thanks,
-> Robin.
+> The difference is the `need_regulator` capability. RK3588's NPU domain is
+> `DOMAIN_RK3588("npu", =E2=80=A6, false, true)` =E2=80=94 the trailing `tr=
+ue` is
+> `regulator`/`need_regulator`.
+> The mainline RK3568 macro `DOMAIN_RK3568(name, pwr, req, wakeup)` has
+> no regulator parameter at
+> all, so `RK3568_PD_NPU` can't be marked need_regulator. My v4 adds
+> that: a regulator-capable
+> RK3568 NPU domain (need_regulator =3D true) plus `domain-supply =3D
+> <&vdd_npu>` on the NPU node =E2=80=94
+> i.e. the same shape as RK3588.
 >
->> While device tree can declare the multiple iommu-address ranges,
->> they still apply uniformly to any child inheriting the parent OF node.
->>
->> This creates a limitation when child requires a different iommu-address
->> range than its parent, as device tree cannot express the reservation per
->> child.
->>
->> Example layout and use case:
->> ----------------------------
->> A multimedia subsystem with multiple child devices and distinct ranges:
->>
->>      +-----------------------------------------------------------+
->>      | Device A reserved region (256 MB)                         |
->>      | 0x00000000 - 0x10000000                                   |
->>      +-----------------------------------------------------------+
->>      | Device B reserved region (512 MB)                         |
->>      | 0x00000000 - 0x20000000                                   |
->>      +-----------------------------------------------------------+
->>      | Device C reserved region (600 MB)                         |
->>      | 0x00000000 - 0x25800000                                   |
->>      +-----------------------------------------------------------+
->>      | Other reserved regions                                    |
->>      +-----------------------------------------------------------+
->>
->> If we add Device C's reserved range (0x0 to 0x025800000) into iommu
->> address range into device tree and assign that OF node to Device B
->> and C, it wastes memory:
->> - Device A wastes ~344 MB
->> - Device B wastes ~88 MB
->>
->> To avoid this, drivers can use the introduced API to set their device
->> specific IOVA region at runtime, ensuring the DMA mapping without
->> unnecessary address space reservation.
->>
->> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
->> Link:
->> https://lore.kernel.org/all/20251220023555.3017456-1-busanna.reddy@oss.qualcomm.com/
->> ---
->>   drivers/iommu/dma-iommu.c   | 44 +++++++++++++++++++++++++++++++++++++
->>   include/linux/dma-mapping.h |  7 ++++++
->>   2 files changed, 51 insertions(+)
->>
->> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->> index aeaf8fad985c3..baee119e1c277 100644
->> --- a/drivers/iommu/dma-iommu.c
->> +++ b/drivers/iommu/dma-iommu.c
->> @@ -1743,6 +1743,50 @@ size_t iommu_dma_max_mapping_size(struct device *dev)
->>       return SIZE_MAX;
->>   }
->>   +/**
->> + * dma_iova_set_resv_region - Set a reserved region in the IOVA space
->> + * @dev: Device to set the reserved region for
->> + * @start: Start of the reserved region
->> + * @length: Length of the reserved region
->> + *
->> + * This function enables drivers to set device specific reservations at
->> + * runtime, which is particularly useful for dynamically created child
->> + * devices that requires distinct IOVA ranges than parent.
->> + *
->> + * Returns:
->> + *  0        - Success
->> + *  -ENODEV  - No valid IOMMU DMA domain for the device
->> + *  -EINVAL  - Invalid domain or cookie type for this operation
->> + *  -ENOMEM  - Failed to reserve the requested range
->> + */
->> +int dma_iova_set_resv_region(struct device *dev, unsigned long start,
->> +                 unsigned long length)
->> +{
->> +    struct iommu_dma_cookie *cookie;
->> +    struct iommu_domain *domain;
->> +    struct iova_domain *iovad;
->> +    unsigned long lo, hi;
->> +
->> +    domain = iommu_get_dma_domain(dev);
->> +    if (!domain || domain->type != IOMMU_DOMAIN_DMA)
->> +        return -ENODEV;
->> +
->> +    cookie = domain->iova_cookie;
->> +    if (!cookie || domain->cookie_type != IOMMU_COOKIE_DMA_IOVA)
->> +        return -EINVAL;
->> +
->> +    iovad = &cookie->iovad;
->> +
->> +    lo = iova_pfn(iovad, start);
->> +    hi = iova_pfn(iovad, start + length - 1);
->> +
->> +    if (!reserve_iova(iovad, lo, hi))
->> +        return -ENOMEM;
->> +
->> +    return 0;
->> +}
->> +EXPORT_SYMBOL_GPL(dma_iova_set_resv_region);
->> +
->>   /**
->>    * dma_iova_try_alloc - Try to allocate an IOVA space
->>    * @dev: Device to allocate the IOVA space for
->> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
->> index 29973baa05816..75b65160a37f3 100644
->> --- a/include/linux/dma-mapping.h
->> +++ b/include/linux/dma-mapping.h
->> @@ -347,6 +347,8 @@ static inline bool dma_use_iova(struct dma_iova_state
->> *state)
->>       return state->__size != 0;
->>   }
->>   +int dma_iova_set_resv_region(struct device *dev, unsigned long start,
->> +                 unsigned long length);
->>   bool dma_iova_try_alloc(struct device *dev, struct dma_iova_state *state,
->>           phys_addr_t phys, size_t size);
->>   void dma_iova_free(struct device *dev, struct dma_iova_state *state);
->> @@ -366,6 +368,11 @@ static inline bool dma_use_iova(struct dma_iova_state
->> *state)
->>   {
->>       return false;
->>   }
->> +static inline int dma_iova_set_resv_region(struct device *dev, unsigned long
->> start,
->> +                       unsigned long length)
->> +{
->> +    return -ENODEV;
->> +}
->>   static inline bool dma_iova_try_alloc(struct device *dev,
->>           struct dma_iova_state *state, phys_addr_t phys, size_t size)
->>   {
+> And the fix you referenced (Frank Zhang's "pmdomain: rockchip: Fix init g=
+enpd as
+> GENPD_STATE_ON before regulator ready", plus "quiet regulator error on
+> -EPROBE_DEFER") is
+> already in my base (v7.1-rc6), so the `if (need_regulator)
+> rockchip_pd_power(pd, false)`
+> default-off path is in effect. That's what resolves the actual problem
+> for me: with rocket
+> built as a module (the normal config), need_regulator on the NPU
+> domain, and those pmdomain
+> patches in place, the board boots cleanly and NPU jobs run with no RCU
+> stall / no deadlock. My
+> earlier hang was an artifact of a self-contained rocket=3Dy image
+> probing in the initcalls before
+> the I2C regulator core was up =E2=80=94 as a module it loads ~6.8 s in, w=
+ell
+> after, so it's gone.
 >
+> I also went back and checked the `fw_devlink=3Dpermissive` question
+> myself =E2=80=94 and good news, it
+> turns out it is NOT needed. I rebooted the exact same kernel with
+> permissive removed from the
+> cmdline (strict fw_devlink, the default), and the board boots cleanly,
+> the NPU probes
+> (`rocket fde40000.npu: Rockchip NPU core 0 version: 0`), and NPU jobs
+> submit and run five times
+> in a row with no deadlock and no RCU stall. So strict fw_devlink
+> resolves the NPU/PMIC ordering
+> fine via deferred probe.
+>
+> The one remaining thing is cosmetic: at power-domain-controller probe
+> (~2.94 s) I still get,
+> in BOTH modes (with or without permissive):
+>
+>   rockchip-pm-domain =E2=80=A6: Failed to create device link (0x180) with
+> supplier 0-0020 =E2=80=A6power-domain@6
+>
+> i.e. genpd can't form the link to the rk809 (the I2C PMIC supplying
+> vdd_npu) because the PMIC
+> isn't registered yet at that point. It's non-fatal =E2=80=94 the domain
+> defaults off (Frank's patch),
+> the rail comes up via the regulator core, the NPU probes a few seconds
+> later, and all jobs run.
+>
+> One question: on RK3588 with need_regulator, do you also see that
+> "Failed to create device
+> link =E2=80=A6 supplier <pmic>" line at pmdomain probe, or does it order
+> cleanly? If RK3588 is clean,
+> is there a DTS detail (e.g. the regulator's bus/probe order) I should
+> mirror on RK3568 to make
+> the link form in time =E2=80=94 or is this line just expected/harmless an=
+d
+> best left as-is?
+
+[    2.110935] rockchip-pm-domain fd8d8000.power-management:power-controlle=
+r: Failed to create device link (0x180) with supplier 2-0042 for /power-man=
+agement@fd8d8000/power-controller/power-domain@8
+[    2.557459] sdhci-dwcmshc fe2e0000.mmc: Can't reduce the clock below 52M=
+Hz in HS200/HS400 mode
+[    2.647174] rockchip-pm-domain fd8d8000.power-management:power-controlle=
+r: Failed to create device link (0x180) with supplier 2-0042 for /power-man=
+agement@fd8d8000/power-controller/power-domain@8
+[    2.945089] rockchip-pm-domain fd8d8000.power-management:power-controlle=
+r: Failed to create device link (0x180) with supplier spi2.0 for /power-man=
+agement@fd8d8000/power-controller/power-domain@12
+
+8 =3D NPU; 12 =3D GPU
+
+on both nanopc-t6-lts and nanopc-t6-plus (both RK3588).
+And on a 6.18 dmesg output I have for Rock 5B, I see the ~ same, but then
+it's 1-0042 instead of 2-0042.=20
+
+I don't know if it's bad or harmless, but it is consistent.
+
+HTH,
+  Diederik
+
+> @Diederik =E2=80=94 thanks; the DCDC_REG2 change and Jonas's USB-suspend
+> series look like generally
+> useful RK356x robustness fixes, though for this specific NPU
+> device-link the need_regulator +
+> Frank's pmdomain patches seem to be the relevant piece. I'll keep them
+> in mind for suspend.
+>
+> The convolution-output / compute-completion issue is still separate
+> and open (@Finley =E2=80=94 that's
+> the PVTPLL/NoC one); the power-domain side is in good shape for v4.
+>
+> Thanks y'all for your help :)
+>
+> Kind regards,
+> Midgy
+>
+> Le mer. 10 juin 2026 =C3=A0 12:05, Diederik de Haas
+> <diederik@cknow-tech.com> a =C3=A9crit :
+>>
+>> Hi,
+>>
+>> On Wed Jun 10, 2026 at 3:14 AM CEST, Chaoyi Chen wrote:
+>> > Hi Midgy,
+>> >
+>> > On 6/9/2026 7:11 PM, Midgy Balon wrote:
+>> >> Hello Chaoyi,
+>> >>
+>> >> You were right - building rocket as a module fixes it. Thanks for the=
+ pointer.
+>> >>
+>> >> I rebuilt with CONFIG_DRM_ACCEL_ROCKET=3Dm (everything else the same:
+>> >> need_regulator on
+>> >> the RK3568 NPU power domain via a DOMAIN_M_R variant, domain-supply =
+=3D
+>> >> <&vdd_npu>, and the
+>> >> regulator-always-on workaround dropped). The board now boots cleanly
+>> >> and, more importantly,
+>> >> an NPU job submit no longer hangs: I ran the test workload five times
+>> >> with no RCU stall and
+>> >> no freeze.
+>> >>
+>> >> So with rocket=3Dm the need_regulator approach works on RK3568, and I=
+'ll
+>> >> keep it for v4
+>> >> (domain-supply + need_regulator, instead of marking vdd_npu
+>> >> always-on). rocket=3Dm is the
+>> >> normal configuration anyway; my earlier hang came from building it =
+=3Dy
+>> >> in a self-contained
+>> >> image, so it probed in the initcalls (around 2 s) and the genpd ->
+>> >> I2C-PMIC regulator
+>> >> transition ran before the system was ready. As a module it loads from
+>> >> udev much later
+>> >> (~6.8 s here), after the I2C controller and regulator core are fully =
+up.
+>> >>
+>> >> On your question of when the device-link error is printed - it is at
+>> >> power-domain
+>> >> controller probe, not at the rocket probe:
+>> >>
+>> >>   [    2.700618] vdd_npu: Bringing 500000uV into 825000-825000uV
+>> >>   [    2.749637] rockchip-pm-domain fdd90000.power-management:power-c=
+ontroller:
+>> >>                  Failed to create device link (0x180) with supplier 0=
+-0020 for
+>> >>                  /power-management@fdd90000/power-controller/power-do=
+main@6
+>> >>   [    2.945955] platform fde40000.npu: Adding to iommu group 3
+>> >>   ...
+>> >>   [    6.840374] rocket: loading out-of-tree module taints kernel.
+>> >>   [    6.877647] [drm] Initialized rocket 0.0.0 for rknn on minor 0
+>> >>   [    6.879950] rocket fde40000.npu: Rockchip NPU core 0 version: 0
+>> >>
+>> >> So the device-link to the rk809 PMIC (0-0020) fails to form at ~2.75
+>> >> s, well before rocket
+>> >> loads at ~6.8 s. It is non-fatal here - the vdd_npu rail is brought u=
+p
+>> >> by the regulator core
+>> >> and all jobs run - and there is no "failed to get ack on domain npu"
+>> >> NoC warning this boot
+>> >> (the always-on kernel had one). The complete boot log is attached.
+>> >>
+>> >> Two notes / one question:
+>> >> - This boot used fw_devlink=3Dpermissive on the command line. Is the
+>> >> "Failed to create device
+>> >>   link ... supplier 0-0020" at pmdomain probe expected/benign, or is
+>> >> there a clean way to make
+>> >>   it order correctly (so it also works without permissive, and a =3Dy
+>> >> build wouldn't deadlock in
+>> >>   the initcalls)?
+>> >
+>> > We encountered the same issue on the RK3588 NPU before. And it was
+>> > resolved with the following patch at that time.
+>> >
+>> > https://lore.kernel.org/all/20251216055247.13150-1-rmxpzlb@gmail.com/
+>> >
+>> > Please compare the differences in NPU pmdomain and DTS configuration
+>> > between the RK3568 and RK3588.
+>>
+>> About a month ago on #linux-rockchip we were discussing PM 'stuff':
+>> https://libera.catirclogs.org/linux-rockchip/2026-05-15#39939137;
+>> which references this paste
+>> https://paste.sr.ht/~diederik/89d9f84e22474e837b55286d213b67f03859ce2e
+>> I've since removed the DCDC_REG2 for PineTab2 and the 'fix' should likel=
+y
+>> be extended to cover all RK3566/RK3568 devices though.
+>>
+>> It's what I made at the time hoping to fix a suspend/resume issue when
+>> trying upstream TF-A. It didn't fix the issue at the time, but may still
+>> be useful/needed and I think it's what Chaoyi hinted at.
+>>
+>> Just yesterday, Jonas posted this patch which may be useful/needed too:
+>> https://lore.kernel.org/linux-rockchip/20260609154124.445182-1-jonas@kwi=
+boo.se/
+>>
+>> HTH,
+>>   Diederik
+>>
+>> >> - (The convolution output is still uniform zero-point / the job times
+>> >> out - that is the
+>> >>   separate NPU compute-completion issue, unrelated to the power-domai=
+n
+>> >> work. Finley, that is
+>> >>   the one I flagged earlier re PVTPLL/NoC.)
+>> >>
+>> >> Kind regards,
+>> >> Midgy
+>> >>
+>>
+>
+> _______________________________________________
+> Linux-rockchip mailing list
+> Linux-rockchip@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-rockchip
+
