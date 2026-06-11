@@ -1,168 +1,158 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 798D61A6806
-	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 08:49:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B3483E8335
+	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 11:30:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781167795; cv=none; b=cwMwbwofjc5LlFwJPj/dwMin1oq7+62/2hxuwylpKfEaK2S8oE3ISiW66xqdqYm8R0HIylM2qwQY6UI5iTse0GIE7nxsQn8kh+lLqpLV2gYzzSStsZEKcJpxptmFGuLXswYYc8dhe3oeFiRtIekBp+ZaSNKsAQN/woAR0pLer0E=
+	t=1781177447; cv=none; b=N+hO8X+AfRL3wRZf8js5eaWdS6CORtTEhFl6Ch0xEe9e4p22LHUsI2Hpu9kagUMWQzW0orpiV2bDzoKHdaIQMLuc/Jbhq9NUxpnPQA6SN73uluTBFznOIgw27iL8BgrXeSsESPVqRNacWEIw/XwtoENoyKggLcOD0sajcFflgVI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781167795; c=relaxed/simple;
-	bh=6tYVvnGZKasWDm9BXemM4cAOIkZRfGZJvPRQFKV7xYg=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=MEDRfRxazPCu/lhHZn3mcN1XpgpR6XbWWvQqsVeFtk4/NPlQnUDhvq4zI0uCLGE5uh3AO4smjCdQtucfvrh1hbyPop+th586z+COY6tpHjA2zHpYls54SWJ3C4a1Zb4hzvVm8T9BmPyZ35usvkXmR9K7DCrHozx7APbF+UFtAcQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aJpfUkGS; arc=none smtp.client-ip=198.175.65.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1781177447; c=relaxed/simple;
+	bh=haH/H6OcYua3Z5rTl0sktjLmKVSLqKAqacU21OYuo/8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=SWTdZStjrceKMMuzCCqXFG57V+6K47bPAeneh/l/2bLRlRec2Ua/FT1KsSWjq92Y2/bigibiHjyMUy+MeWJY6EOUVzAzstUQe+qgJxWTX7tMM8rAcVeA4hU0hUStTIfQA5AzPFPkmRBPmDkYkSBf/HGmqNFNSKRRv/B6rtHvfFc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Iq1lOZ8R; arc=none smtp.client-ip=209.85.160.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aJpfUkGS"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1781167794; x=1812703794;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=6tYVvnGZKasWDm9BXemM4cAOIkZRfGZJvPRQFKV7xYg=;
-  b=aJpfUkGSp8Z9MFxTR3OAjtG089e4O+AzRqruH3X5K1pj8DtWBJxLlUQC
-   QgRPrhxkj/doLzpPxh3gJg7m/u4WI9Dm+m3BiUZAeg03clTVOjcGMnA04
-   YfroUhZZGtH8XNVSW9Er5d2H5+iNBaFQOXafLxPpyEyXwcjae2Tm9SmRi
-   lNwX5x6Y6BEQ0AOLjjryVzFyfDq+RuVS0m8rZykb/BHH0pQTx5enuE8ho
-   EcVMmf5Vpwnm3h7CLq8xmMnacTyAhZ+OgMPfZwBgGXxRwBnkLUZf4MGkR
-   F8NXpx6EX5+S4WpdHefw1C8lj7V1hepIOB+nMtqcHOdgnHtxrDihOapAq
-   g==;
-X-CSE-ConnectionGUID: lSHTzCIOTM+U8ExL0UssUQ==
-X-CSE-MsgGUID: xl06SRsUS4aRL7xsmPHcJA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11813"; a="81717070"
-X-IronPort-AV: E=Sophos;i="6.24,198,1774335600"; 
-   d="scan'208";a="81717070"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2026 01:49:54 -0700
-X-CSE-ConnectionGUID: bdbt8xryTHO0R6bsoiZm2g==
-X-CSE-MsgGUID: iesS4LovSL6Mdrv0RskxqA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,198,1774335600"; 
-   d="scan'208";a="251515866"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.248.249]) ([10.124.248.249])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2026 01:49:50 -0700
-Message-ID: <9f79de94-01ac-4504-baf6-f5d59e77a954@linux.intel.com>
-Date: Thu, 11 Jun 2026 16:49:47 +0800
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Iq1lOZ8R"
+Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-517583cb07aso84173731cf.2
+        for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 04:30:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1781177445; x=1781782245; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=haH/H6OcYua3Z5rTl0sktjLmKVSLqKAqacU21OYuo/8=;
+        b=Iq1lOZ8RZe0moH5N0hb8bGIYJ5WBFM1t8JVsBtHxKlPsiHD0Gr0dIrlJCiwojYNRkh
+         VDz4dSAX9eecKRgoatYAXLehJH8G2D1Fme7UYQzQjz4h7ird5OZP9GqvxiKBMKpb4glR
+         HRAxeATB3+0R36u+cNQO9ZgkSWUqPlP25GvHfeoHyRiM39DRJyQjXdcNrtorIVkz3ofV
+         140Qd28Mlqx2fADbxp5uI+h0Fpg4AtKkWYyzxBVOh7SDA8rFPsjj21vOKw0ou7VidhAf
+         /CWzWnWzAXP3ZsQSFqH/JNLmKhU3lo6O7fXr9EHHaV0TDJpq6Ce9643H06i9eQV/AYeA
+         tBQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781177445; x=1781782245;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=haH/H6OcYua3Z5rTl0sktjLmKVSLqKAqacU21OYuo/8=;
+        b=S3eJdRJOmOOemctRiVcYrwskXWWsy/kAjvUXeGcEiwIG5YX0S0hvPsvMJO9NT5l6hD
+         Vmo/A778GxeHyohWzdOZPPfZNSXtDzAtX+z4VseN8SveQjgEjznCqR5k5gzEjwVYvKWG
+         cfwRXx0vJw5zT9vOw5w6G7VGj76y5+SRTjHpqnAXs4BWh6x8bKeREmhL6EkA6OFKhEAU
+         BTHhTy+5BEhTmYvhGUcilhwOQFFVaswtgftR5MHGzCd0cdjBgDm7Tiw5vq1ODJXcC8MW
+         myEekpYbKr5AgESTJZK6yblFyEREPqi0iQwGUhL1PBOu8i9WqKzrRn1tEWAwB5hCOhw8
+         8hvg==
+X-Gm-Message-State: AOJu0Yz0uGr9Z7oNgn/tiCvtqv5E+D2SuwNowl9PDFU1tSLxzFvNn6dd
+	WBBH3/IyrCKfVZ7ca1yVnF8yVJwL/JB0CzG+JWJ27YDRm3OQtxuy2Nc+JmoL0++mD90=
+X-Gm-Gg: Acq92OE8OO7YSyD3xC9z1oPNX9SsPOM+MZw+E8IXTFx+AlMPktkFxqoKpX3t3vADd2H
+	uOlvwqymu83Zf5Cj+5LDSeoFdXG6zJ1WppkWfiZrIqoh6M4Dp5W9APJHfI0zChSizfUS5stCNYT
+	Pfmjc0uk8o4MKHw7E9Io2WIUl8E0qgXBFzeitiu09f2Z4TITWUG4QS0rVsdCD9GlyRHHOosNhI4
+	zCwRZVsh/Zlg0DGYgEVMuUWJG47l73nr3mOfNtvRKekkXj3VMlEb18bhGZiVpWUFkxB421Fm1oJ
+	meQrGBScDeo0BI6I63VHiz5cecwkU/0gF3xw69uXmWgRPrPj6KGvetsIWdchQtoAh9dnQLYc/Sk
+	8j2Gk9pCe2XY0nGd60BOwtSqOjsvWyZpgX5j4YGnbkNG3nf2+SW2d7Fv8s140XI8bprV/Ohs7cp
+	m9eV9dBU5tjSPY46xbINWSTk5vGVsfXT5lZVyjItEdHsN+3oEkXeoKWfWwn+WVwgKJeCu/8awLq
+	S6lxRwCaGf3g2L9
+X-Received: by 2002:a05:622a:354:b0:517:875a:d619 with SMTP id d75a77b69052e-517ede4125cmr35159281cf.6.1781177440327;
+        Thu, 11 Jun 2026 04:30:40 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-517ef61dfeasm14521801cf.24.2026.06.11.04.30.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Jun 2026 04:30:39 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wXdcM-00000005deq-1WZO;
+	Thu, 11 Jun 2026 08:30:38 -0300
+Date: Thu, 11 Jun 2026 08:30:38 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
+	linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
+	Jiri Pirko <jiri@nvidia.com>, Michael Kelley <mhklinux@outlook.com>
+Subject: Re: [PATCH v6 04/20] dma-pool: track decrypted atomic pools and
+ select them via attrs
+Message-ID: <20260611113038.GA1066031@ziepe.ca>
+References: <20260604083959.1265923-1-aneesh.kumar@kernel.org>
+ <20260604083959.1265923-5-aneesh.kumar@kernel.org>
+ <20260609143242.GK2764304@ziepe.ca>
+ <yq5afr2uzum9.fsf@kernel.org>
+ <20260610164153.GQ2764304@ziepe.ca>
+ <yq5acxxxn0gp.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, x86@kernel.org, iommu@lists.linux.dev,
- tboot-devel@lists.sourceforge.net, linux-kernel@vger.kernel.org,
- Mateusz Mowka <mateusz.mowka@intel.com>,
- Adam Pawlicki <adamx.pawlicki@intel.com>,
- Pawel Randzio <pawel.randzio@intel.com>
-Subject: Re: [PATCH v1 2/2] iommu/vt-d: Disable PMRs and skip force-IOMMU when
- TXT TPRs are active
-To: Michal Camacho Romero <michal.camacho.romero@intel.com>,
- Ning Sun <ning.sun@intel.com>, Thomas Gleixner <tglx@kernel.org>
-References: <20260603114500.2771319-1-michal.camacho.romero@intel.com>
- <20260603114500.2771319-3-michal.camacho.romero@intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20260603114500.2771319-3-michal.camacho.romero@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <yq5acxxxn0gp.fsf@kernel.org>
 
-On 6/3/2026 7:45 PM, Michal Camacho Romero wrote:
-> When Intel TXT Protection Regions (TPRs) are present in the DTPR table,
-> hardware-level DMA protection is already enforced by the SINIT ACM.
-> In this case:
-> 
-> - Skip forcing IOMMU enablement in tboot_force_iommu(), since TPRs
->    already provide DMA protection.
-> - Tear down PMRs during intel_iommu_init() when TPRs are active,
->    while PMRs are redundant with TPR-based protection.
-> - Call tboot_parse_dtpr_table() from parse_dmar_table() to disable
->    TPR regions early, allowing the kernel to manage DMA protection
->    prior to the OS boot.
-> 
-> Link: https://uefi.org/sites/default/files/resources/633933_Intel_TXT_DMA_Protection_Ranges_rev_0p73.pdf
-> Link: https://cdrdv2-public.intel.com/315168/315168_TXT_MLE_DG_rev_017_7.pdf
-> Signed-off-by: Michal Camacho Romero <michal.camacho.romero@intel.com>
-> ---
->   drivers/iommu/intel/dmar.c  | 12 ++++++++++++
->   drivers/iommu/intel/iommu.c |  8 +++++++-
->   2 files changed, 19 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-> index d33c119a935e..3ab09117c79e 100644
-> --- a/drivers/iommu/intel/dmar.c
-> +++ b/drivers/iommu/intel/dmar.c
-> @@ -635,6 +635,8 @@ static int __init
->   parse_dmar_table(void)
->   {
->   	struct acpi_table_dmar *dmar;
-> +	struct acpi_table_dtpr *dtpr;
-> +	void                   *txt_heap;
+On Thu, Jun 11, 2026 at 10:21:50AM +0530, Aneesh Kumar K.V wrote:
 
-Please avoid using extra whitespace before the variable name. Just use:
+> If we are adding DMA_ATTR_ALLOC_SHARED, should we also allow
+> dma_alloc_attrs() to take that attribute value?
 
-	void *txt_heap;
+I don't think we should..
 
->   	int drhd_count = 0;
->   	int ret;
->   	struct dmar_res_callback cb = {
-> @@ -670,6 +672,16 @@ parse_dmar_table(void)
->   		return -EINVAL;
->   	}
->   
-> +	dtpr = tboot_get_dtpr_table(&txt_heap);
-> +	if (dtpr) {
-> +		/* TPR is enabled
-> +		 * This will also tell not to establish IOMMU PMRs
-> +		 */
+It is hard to see any reason to allocate shared memory through the DMA
+API. The way the DMA API works only the device that it is allocated
+for can access that memory, so it is effectively private to the
+device. Thus what purpose is shared device private memory?
 
-Please use the standard kernel multiple-line comment format:
-
-	/*
-	 * TPR is enabled. This will also tell not to establish IOMMU
-	 * PMRs.
-	 */
-
-> +		tboot_parse_dtpr_table(dtpr);
-> +		iounmap(txt_heap);
-> +	}
+> +DMA_ATTR_CC_SHARED
+> +------------------
 > +
-> +	txt_heap = NULL;
->   	pr_info("Host address width %d\n", dmar->width + 1);
->   	ret = dmar_walk_dmar_table(dmar, &cb);
->   	if (ret == 0 && drhd_count == 0)
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 4d0e65bc131d..486693a13dc6 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -2540,6 +2540,12 @@ static __init int tboot_force_iommu(void)
->   	if (!tboot_enabled())
->   		return 0;
->   
-> +	/* If TPR is enabled we don't need to force IOMMU,
-> +	 * TPR set by SINIT ACM will take care of DMA protection
-> +	 */
-
-Ditto.
-
-> +	if (tboot_is_tpr_enabled())
-> +		return 0;
+> +This attribute indicates that a DMA mapping is shared, or decrypted, for
+> +confidential computing guests. For normal system memory, the caller must
+> +already have marked the memory decrypted with set_memory_decrypted(). CPU
+> +PTEs for the mapping must use pgprot_decrypted(), and the same shared
+> +semantic may be passed to a vIOMMU when it sets up the IOPTE.
 > +
->   	if (no_iommu || dmar_disabled)
->   		pr_warn("Forcing Intel-IOMMU to enabled\n");
->   
-> @@ -2597,7 +2603,7 @@ int __init intel_iommu_init(void)
->   		 * calling SENTER, but the kernel is expected to reset/tear
->   		 * down the PMRs.
->   		 */
-> -		if (intel_iommu_tboot_noforce) {
-> +		if (intel_iommu_tboot_noforce || tboot_is_tpr_enabled()) {
->   			for_each_iommu(iommu, drhd)
->   				iommu_disable_protect_mem_regions(iommu);
->   		}
+> +This attribute describes an existing mapping. It does not allocate shared
+> +backing pages and must not be passed to dma_alloc_attrs(). For MMIO, use
+> +this together with DMA_ATTR_MMIO to indicate shared MMIO. Unless
+> +DMA_ATTR_MMIO is provided, the mapping requires a struct page.
 
-With these nits fixed:
+Yes, though we need to fix a few ATTR_MMIO users to make this
+statement true
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> +DMA_ATTR_ALLOC_CC_SHARED
+> +------------------------
+> +
+> +This attribute indicates that a dma_alloc_attrs() allocation must use
+> +shared, or decrypted, backing pages for confidential computing guests.
+> +Allocation paths use this request when they select shared DMA pools,
+> +decrypt newly allocated pages or restore encryption on free.
+> +
+> +DMA_ATTR_ALLOC_CC_SHARED differs from DMA_ATTR_CC_SHARED in that it
+> +requests shared backing memory from the allocation path. DMA_ATTR_CC_SHARED
+> +describes an already-shared mapping and requires the caller to have
+> +prepared normal system memory before mapping it. Callers that need shared
+> +memory from dma_alloc_attrs() should request DMA_ATTR_ALLOC_CC_SHARED
+> +instead of DMA_ATTR_CC_SHARED.
+
+The semantic is right, but I would make it a private attribute since
+no driver should use it.
+
+Jason
