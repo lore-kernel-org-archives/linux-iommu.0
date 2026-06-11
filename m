@@ -1,92 +1,45 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5E3E3FC5DE
-	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 13:01:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DA0513B14B1
+	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 13:43:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781182914; cv=none; b=J46BYakkPLt/cUwgjm/qIm6psCUs1Ibl+e2S48fZNimfZGn7HxpOQZ7g7Ghn2+qRRAYm58Y60ACO9UmBLwlrpJBYNub+/s2z7OV/uePnhs6I1ud7XOHElxaUN2IdLVf1FdLKhf/9LA7vGeJtrxcO9znwfGdjuyltZk6GhEfXP0g=
+	t=1781185399; cv=none; b=HNNGxo6MTUIW6u5zaOU4rQORFt7zA9sgeuApbdUGXrMUqK264ccvkDmpjwvVKzdzQmxcq8wFRDMdrIR9IUPbt3tCyMwmnOAdy8MjWeqnoPPBaG5R75VVzca33rZ4ihUi02wUzEL5pMN5X2kx3Ulgucb+HBknXz4toeTs//O5bgk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781182914; c=relaxed/simple;
-	bh=dxtzzd8ZdpD5pq1vA/GOSoUSAYH9K65OMoFmKECPM+w=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Hm3O8nxgEz9M3NzpHihDjhfGqO61eKyvpf0kmH81sZQhQzw4lHeTbH8Dlk1/fpKMcNzN3RvXqnXeJ7IhGY0+jww1GM/Fxm9vFlMQQ6lTJLnr/7xJ3cr+CPJXGWoZE8aLs4HBwGf6xb9IElvAAKSYWc675kZbTPW6ElZeJDAD9Fw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Blk/EA7K; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Blk/EA7K"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 609C41F0089F
-	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 13:01:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781182912;
-	bh=S/PaI/bw+VuuG55BNgAn27yXdiH77TYjTv4aXLlbWog=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=Blk/EA7Ki8FhZPKTVwAbrly0vGRvkggV7PJk6BBQb3Q/3eVpfUNWRK75IjQSg5mg+
-	 7uHt657Ji294n3R06rLbAdxoea6f4jWQYjwajkIXwZqLZJjjExN42xRW6SC2gdrZsZ
-	 C9VnY5LyPbYQi8FvA8rODXYw3FUk3vQGurkb3cdYMFL0Pc8QH5oiNZXxtmG2FBN9Xg
-	 JT9jIpO+oSYJzOw36mYDd6YRo3Wia4Z3CQmustlvjWg0JZ7WoFJC0akTyjjVD7H7/6
-	 Hs4FE13hXn99EOGod6oLnDnYPjCCpClfOSFtyyRTHAYfS0Uz666PxYzeCreBgmQDTL
-	 1RXl/OM0QNK+Q==
-Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-5aa68e66128so8299620e87.2
-        for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 06:01:52 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ8kj8PAh6fPtQW4rd2V0GwnPISvYr/uiQhPL8rwXQx4o5/U0YbqjsS99i+ctFqirfOVZGn5HQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwJNYs8Idhj9u5QksodghsencnV2bTV2IqtWkF71hKZYwbbrAz4
-	DtfRfGdqhQ5plXppNGZC7tEL0KXzkdowWEUQezFJ7dKFHxdH5v0QRNpFp2KerSacyb7unPwBeMV
-	AjO5TnKnp15qskbZ00HygPd8T0JVsW4s=
-X-Received: by 2002:a05:6512:1152:b0:5aa:63a8:c78e with SMTP id
- 2adb3069b0e04-5ad27ac4ebbmr1039822e87.15.1781182911091; Thu, 11 Jun 2026
- 06:01:51 -0700 (PDT)
+	s=arc-20240116; t=1781185399; c=relaxed/simple;
+	bh=wPMW9s0uIZQy8ipFqXmd9+biKUeSwPXSECsVixU9xmQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=pyMccyw7So328vADxlVaLsAEDgJSHn3aWNM4KUA+u7LLF6hbfVqj1CLl9uDrOMXqnVJfJFe7FPpCSe9cx9kTlsUrBWfUDLfZ9cONvQ2grDP7JffUzW+NdmT6scbRts7pyKaWyF/97tKXwfWIZG1rqOZZ9vq5IsfPP/DAfDAYFlU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
+Received: from 8bytes.org (p4ffe1d30.dip0.t-ipconnect.de [79.254.29.48])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id C59541C0F90;
+	Thu, 11 Jun 2026 15:43:16 +0200 (CEST)
+Date: Thu, 11 Jun 2026 15:43:15 +0200
+From: "Joerg Roedel (AMD)" <joro@8bytes.org>
+To: Ethan Nelson-Moore <enelsonmoore@gmail.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>, Neal Gompa <neal@gompa.dev>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu/apple-dart: correct CONFIG_PCIE_APPLE macro name
+ in comment
+Message-ID: <aiq7YZlMhw4divmN@8bytes.org>
+References: <20260609195605.149650-1-enelsonmoore@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260519-mainline-send-v1-sending-v3-0-3dd7aa125353@alex-min.fr> <20260519-mainline-send-v1-sending-v3-3-3dd7aa125353@alex-min.fr>
-In-Reply-To: <20260519-mainline-send-v1-sending-v3-3-3dd7aa125353@alex-min.fr>
-From: Linus Walleij <linusw@kernel.org>
-Date: Thu, 11 Jun 2026 15:01:38 +0200
-X-Gmail-Original-Message-ID: <CAD++jLk91JoT=EdsUErcdXsQiY6vbaacNM0k1kRFZSnMrb5=BA@mail.gmail.com>
-X-Gm-Features: AVVi8CedkAYnUTjUGO8FTTgdtbuc-hXcCSM9t-36jlw6P4qpvJQbaTo5hy8aBXM
-Message-ID: <CAD++jLk91JoT=EdsUErcdXsQiY6vbaacNM0k1kRFZSnMrb5=BA@mail.gmail.com>
-Subject: Re: [PATCH v3 3/8] pinctrl: qcom: Register functions before enabling pinctrl
-To: contact@alex-min.fr
-Cc: Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	MyungJoo Ham <myungjoo.ham@samsung.com>, Chanwoo Choi <cw00.choi@samsung.com>, 
-	Guru Das Srinagesh <linux@gurudas.dev>, Rob Clark <robin.clark@oss.qualcomm.com>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>, 
-	"Guilherme G. Piccoli" <gpiccoli@igalia.com>, linux-arm-msm@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, iommu@lists.linux.dev, 
-	phone-devel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260609195605.149650-1-enelsonmoore@gmail.com>
 
-On Tue, May 19, 2026 at 9:16=E2=80=AFAM Alexandre MINETTE via B4 Relay
-<devnull+contact.alex-min.fr@kernel.org> wrote:
+On Tue, Jun 09, 2026 at 12:56:04PM -0700, Ethan Nelson-Moore wrote:
+>  drivers/iommu/apple-dart.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-> From: Alexandre MINETTE <contact@alex-min.fr>
->
-> pinctrl consumers can request states while the pinctrl core enables the
-> controller. On Qualcomm pinctrl drivers this can happen before the SoC
-> function list has been registered, which leaves the function table
-> incomplete during state lookup.
->
-> On APQ8064 this can fail while claiming pinctrl hogs:
->
->    apq8064-pinctrl 800000.pinctrl: invalid function ps_hold in map table
->    apq8064-pinctrl 800000.pinctrl: error claiming hogs: -22
->    apq8064-pinctrl 800000.pinctrl: could not claim hogs: -22
->
-> Register Qualcomm pinctrl with devm_pinctrl_register_and_init(), add the
-> SoC pin functions, and only then enable the pinctrl device.
->
-> Signed-off-by: Alexandre MINETTE <contact@alex-min.fr>
-
-This v3 patch applied, I saw there is a v4 and Sashiko is whining
-about it so check if there is anything to it, but the AI is a bit noisy
-so I just don't care now that I have a review tag from Konrad.
-
-Yours,
-Linus Walleij
+Applied, thanks.
