@@ -1,152 +1,150 @@
-Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9D733E717C
-	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 11:37:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 890283BA24E
+	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 11:50:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781177864; cv=none; b=ZttuLY/oR06X8jdjoiXk8XKqlyY0u24imEBJbZbIE89Dfy6bOLVnMCe+vVH0MK89J7AB01x3AkK73IwNvB9qiTaVTBs4NYaPEmv2ltB4xin/b76ftP4zr9NNByoevnBEZzGOfL5Gcn24sBvXOdJrm6RL3wUEdsZVfjtno/rfL/k=
+	t=1781178618; cv=none; b=Upv+7lqdkxVt83qfjhnYMAIfY1pir/m8a3YcyDFfkFMCz2P55NsgY0HKp9k5drZwhAzV9dKTbZSqCMkOUEZGzilyg5sDcmAkQEgPluHIpffEyA6LCCMo58dJnM45JAwO9rheH5UGFVT4Y8iP/lMbjRUKuUOpUVph8pBhrWU9d10=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781177864; c=relaxed/simple;
-	bh=orxD3R+xslULBC2Qa+4Si7LAvHUVQFpXJKWY1Fr3wjE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uPfNSKGbkdvMBjLvK/YHchzA3cJN6qQuIQyGWClF9gDFJ0uLo9NdhACb6SMI26XTNPgqIeb7uGYM1l9tRMzTSiMBzOgVn8ETloqRvraxR5FPZ/innA0BtS4fxTANGRaObK1MWyBvghiE5Z4V+8p9L1A14lIgwksmZjgmTSsFouU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=TFVdIrHZ; arc=none smtp.client-ip=209.85.219.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1781178618; c=relaxed/simple;
+	bh=UmW9Vbd3ZtejVIzFUGtLzNmEE0KC+mhPuzfVyC+exsY=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=HwbJIz3yzh/QYpZRqlnRgso4BPhsPWJVCnZ9ZErGtufEPIrx3crFXSE8Godh0Nq1c3SBHt4KTJDirZT08N0Hx6Na3BfKh5x9E0SUsjG5FsOTS1zC9FidIjEHKZIhv5UwZOiQ0hhuF7443Si3fDBtL+xO4Q4VpSMWpXxakumtdYw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=SU0EPj2U; arc=none smtp.client-ip=209.85.221.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="TFVdIrHZ"
-Received: by mail-qv1-f50.google.com with SMTP id 6a1803df08f44-8ccea53f35cso78707546d6.1
-        for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 04:37:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="SU0EPj2U"
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-45ee224f5fdso837652f8f.0
+        for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 04:50:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1781177862; x=1781782662; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=4CsqKJTBvj+SobIiLXzFxApwnBR8BVsF1yARBI6K1lw=;
-        b=TFVdIrHZ0tS320SxQ3wdg/Yk2Ti1PxH7+EYUWiKtzEJ6WFor87OkFs4m1bY+JMfQ2D
-         +X2YkrL2tDbhOcW4mOBXZf+WqkMachSwO3tJIQNbCmFjsEBF2A9f/K7izt9XhAAFUac3
-         E3xEw51Vs1u501ehM8sIK8K9cOhiyu/YuMURiuJ41C6X2OKMBViYLBfgnqnpfnclj68i
-         6VDNW2LV18Vvv30RNqps7eKXgjG+1xvu9Ovgc74+U3b/poGZwZ44mEKH+bpcwpUxdvW4
-         nD4CtZxs1aab6oU7IMuABiS/OMWrQ8sgpZH/GbiWaxSLScUY0q8VW5d/QnIF+xjvvjFT
-         BCOg==
+        d=suse.com; s=google; t=1781178615; x=1781783415; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=By5jxDRfMhWNJ3zdMqbqgKEuQjBAiR2dgY0SOpXrO1o=;
+        b=SU0EPj2Us0ceCJ8TbEnR7titiyNlHBxJio35+26/Badcm/cdAIj448XyQbxNHQK/uv
+         1X8wre3N7niaBtTspFNz2FWoFyepI1J6GNE9bHH23pTl+bwJM2WVnPH7l0dXFrT3XL/x
+         lDP4LXRehOJpvyksiCOBPOqvqfzFWK3ARx93/3cPXtUzHcd902N3kKmL70AEtmkcNCUB
+         s5NjZS2Ri9pA7ERIdTJmpC3WNQJJzhtWb97NuRoAXFzguAiYcueDJUZUUjEXB8z8sZgc
+         VFH01dFyaiTf76b7kiYoiQTWL5czDpHHyWEiyWyHlYUsQyrtET2lWsxgcKxZiPewPOWc
+         +ckA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781177862; x=1781782662;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=4CsqKJTBvj+SobIiLXzFxApwnBR8BVsF1yARBI6K1lw=;
-        b=mw2OuNPq/ZEOMv7Q4JvYViOTZk6/m5pA9hcocc5vd4b8lwn6bURRlBYC5ZO2tE7Upm
-         hPsl/59rJ/fD31UHJu+88b+m0vdQhyN3qqxOk+wF/rblv5BvdEUXluWPDa8tss7Cr+Uh
-         zsRpNmzFARGfQYteoagjMlQ9sVziKwhZ86Kusc7IKRwgtsFSS3tR+MG9ohOQWndUdK/W
-         8EE41ye8T5EKdXp1SPc9R+lnFMk0BB4CHAlq8E3NtuD0AAzdRsIY5eMhzRb/MXnfU8y1
-         10WJnCxngqhszNqlc1am1y/xzVUxHgfZKcJb+9W4rh/7+HLWnW+xM3VnZ1m2c+cUlna8
-         rsaA==
-X-Gm-Message-State: AOJu0Yxbd9NOX0jEn1GDQM5XmNdvOHo92SCxtXlFB7D4r8muRIxanPsj
-	IMYFIFXthOEto1BJjAjvchSFvGBAWUdz4jchVbeezwVZMKiDeZBWhb1kxTWXgr5DmmdJ0pRAxc0
-	FuEuc
-X-Gm-Gg: Acq92OH2Q0xAs4L5KadcNFsCncRohFl6qjKr+8+pxE+W1/gRabeiq7ryTBQWBHF8htO
-	y/gybc8z3r0zxC/r6kzcAQY73qQ2/CAv8DQX1IgIIJ+9kN3Zdx1f6PiAGFy/8TXoLlI1kx+Fui7
-	6xMXSl9qbFDoZQx8mPg2GIgaVfNSPBemCvUGvudCK6y6Z5MU3ch3B1vO86x9Njho7qvOJsiIPLp
-	54SGp8uL13ANkln0HCZAbhraPUeW8J2soAKW+MLyp9Vj5lAUDec2JTTq77x8oAxTeDOeuvgROoL
-	4Wh0IwThXWzjTJUYD68Ah6Olb6mHQW66+PAX5RRbI9JTBBiJDt9Nmp0gbKbeqVUULmggkCnpDup
-	pVLRIwu4DsRp24MumwGVV+Y3qRRrF+1BqppqOyLAwLOtrjz20l4sEM832esYhRxxdPwclO7O1rJ
-	qkyl2QI3qDQ/tvaJgYvsp7zdBB599wWSRg3C4PuNTX72rb6KCTLtvkrFsmZhHxh2wcpbRcgp2Gn
-	FPVx9Bq7gkfO5Gg
-X-Received: by 2002:a05:6214:410b:b0:8ce:b2e9:a4c1 with SMTP id 6a1803df08f44-8d1d8cfbdc0mr38674016d6.14.1781177861623;
-        Thu, 11 Jun 2026 04:37:41 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8d1e838f586sm15478786d6.20.2026.06.11.04.37.40
+        d=1e100.net; s=20251104; t=1781178615; x=1781783415;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=By5jxDRfMhWNJ3zdMqbqgKEuQjBAiR2dgY0SOpXrO1o=;
+        b=smDFP9NWRGkn7G3Q4NIafie26ef3HJsk+n/yIJc7y/w4JNsFHeEBEHTEy0zw6SRwNp
+         gNIPxaQ9JwVC38CJ2XsnGOjxG8uNVEWMMZvO32eSo5kR6Wpv0/FlBG/NzOtNJMqWdWwb
+         cCjCGiO4cbnElsRjBTiCW+HE01VC+ramDY2BroTXBdVzjMzX5WRE3POzaYx2qErWxSlt
+         DObmgDuuyMs3FaLqysJ85KjLPhtGKV6aRbJYYCp9tiLNGE4c7vGe93mc8RPL95UN8KNT
+         tZtJbCrrTF8Gjw+n4mNlbaaCERLEfPp5FPUjVlm2QfMyAALwwgZ5CAOT/X+nn8lHO8zp
+         ruzg==
+X-Forwarded-Encrypted: i=1; AFNElJ+sp3IpDooS9uNJoowxC7HXpG+PHMFKH7rNAzoqcjLjHGMJbWFSNzleqtmcztG+cUUxiBiyFw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyiFkMu69wUwPCsFnXiLUSGFgHZQdJHJjY2GCf4jr7JIlMXtvU/
+	21DUsKDlvV18mmwAbectoxB6UCvrftUEHnc5b8rAabIt1kp++qLO83+FOzcNxJdVKfQ=
+X-Gm-Gg: Acq92OG2afJa0YVsOy28w+cPW+s9CAZJSlcSrk4Ke0LV1Hx1sCMO/2r0wD79jJLryUQ
+	bJ553+IcA0VDzoHDhFKOP6bA0d/Drj/UQ0n3MasaAAJD13hkqYdhvNuEPHBwECL4fyl/j5s3NR0
+	+4/yDugkOBDKHqxUclJnotn4chUXbijcA9aVC+TkGLbXB7Ddm10FoS3BqzNcczZaUu9P9q8Xw4P
+	JCyBkBfTdFJtat3nhBqz/f7kiDtEEmykDLZKuSV3QT/HYaMctJWMPsEqt7gDO2StcE7rxSCcWKG
+	vZ+GrJ+ELzuPObn/nrcod+U1x+Haj2gfdt2Nmxt+vJzSXlbX0UyzJq6ONjoi7adNzqFPaqOY1R8
+	pSV0aL5Qzsaxx1M0dY5gnR2FvK/q7htN6cET+VF2FKIBUh8PhStODV8JKgR9WmEEc9zXXPbgkkn
+	b9cJwaHBskJ+DGhwAHR3GPe0nsLnr+Hd4p7V1BtdQ7T8fFMFFPqclH5xKj/KREeiCn1U2JC4YoK
+	tm8clSMjV4xngpJ/A7Yaxc/zx5PmevBYM1B5A==
+X-Received: by 2002:a05:6000:2508:b0:460:1bf8:c959 with SMTP id ffacd0b85a97d-460673e3ae5mr1690022f8f.0.1781178614930;
+        Thu, 11 Jun 2026 04:50:14 -0700 (PDT)
+Received: from mordecai (dynamic-2a00-1028-83b8-1e7a-3010-3bd6-8521-caf1.ipv6.o2.cz. [2a00:1028:83b8:1e7a:3010:3bd6:8521:caf1])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4601f2ed944sm83042430f8f.13.2026.06.11.04.50.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Jun 2026 04:37:40 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wXdjA-00000005ezW-0ftx;
-	Thu, 11 Jun 2026 08:37:40 -0300
-Date: Thu, 11 Jun 2026 08:37:40 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
-	Jiri Pirko <jiri@nvidia.com>, Michael Kelley <mhklinux@outlook.com>
+        Thu, 11 Jun 2026 04:50:14 -0700 (PDT)
+Date: Thu, 11 Jun 2026 13:50:04 +0200
+From: Petr Tesarik <ptesarik@suse.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-coco@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>, Marek
+ Szyprowski <m.szyprowski@samsung.com>, Will Deacon <will@kernel.org>, Marc
+ Zyngier <maz@kernel.org>, Steven Price <steven.price@arm.com>, Suzuki K
+ Poulose <Suzuki.Poulose@arm.com>, Catalin Marinas
+ <catalin.marinas@arm.com>, Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh
+ <smostafa@google.com>, Alexey Kardashevskiy <aik@amd.com>, Dan Williams
+ <dan.j.williams@intel.com>, Xu Yilun <yilun.xu@linux.intel.com>,
+ linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Madhavan
+ Srinivasan <maddy@linux.ibm.com>, Michael Ellerman <mpe@ellerman.id.au>,
+ Nicholas Piggin <npiggin@gmail.com>, "Christophe Leroy (CS GROUP)"
+ <chleroy@kernel.org>, Alexander Gordeev <agordeev@linux.ibm.com>, Gerald
+ Schaefer <gerald.schaefer@linux.ibm.com>, Heiko Carstens
+ <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, Christian
+ Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle
+ <svens@linux.ibm.com>, x86@kernel.org, Jiri Pirko <jiri@nvidia.com>,
+ Michael Kelley <mhklinux@outlook.com>
 Subject: Re: [PATCH v6 04/20] dma-pool: track decrypted atomic pools and
  select them via attrs
-Message-ID: <20260611113740.GB1066031@ziepe.ca>
+Message-ID: <20260611135004.70d48daa@mordecai>
+In-Reply-To: <20260611113740.GB1066031@ziepe.ca>
 References: <20260604083959.1265923-1-aneesh.kumar@kernel.org>
- <20260604083959.1265923-5-aneesh.kumar@kernel.org>
- <20260609143242.GK2764304@ziepe.ca>
- <yq5aa4t1myw4.fsf@kernel.org>
+	<20260604083959.1265923-5-aneesh.kumar@kernel.org>
+	<20260609143242.GK2764304@ziepe.ca>
+	<yq5aa4t1myw4.fsf@kernel.org>
+	<20260611113740.GB1066031@ziepe.ca>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <yq5aa4t1myw4.fsf@kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, Jun 11, 2026 at 10:55:47AM +0530, Aneesh Kumar K.V wrote:
-> Jason Gunthorpe <jgg@ziepe.ca> writes:
+On Thu, 11 Jun 2026 08:37:40 -0300
+Jason Gunthorpe <jgg@ziepe.ca> wrote:
+
+> On Thu, Jun 11, 2026 at 10:55:47AM +0530, Aneesh Kumar K.V wrote:
+> > Jason Gunthorpe <jgg@ziepe.ca> writes:
+> >   
+> > > The sashiko note does look legit though:
+> > >
+> > > 	if (IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
+> > > 	    !gfpflags_allow_blocking(gfp) && !coherent) {
+> > > 		page = dma_alloc_from_pool(dev, PAGE_ALIGN(size), &cpu_addr,
+> > > 					   gfp, attrs, NULL);
+> > > 		if (!page)
+> > > 			return NULL;
+> > >
+> > > I don't see anything doing the force_dma_unencrypted test along this
+> > > callchain..
+> > >
+> > > I guess it should be done one step up in dma_alloc_attrs() instead of
+> > > in dma_direct_alloc()?
+> > >  
+> > 
+> > I think we should do something similar to what dma_map_phys() does here,
+> > considering that we only support DMA direct with DMA_ATTR_CC_SHARED/DMA_ATTR_ALLOC_CC_SHARED.  
 > 
-> > The sashiko note does look legit though:
-> >
-> > 	if (IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
-> > 	    !gfpflags_allow_blocking(gfp) && !coherent) {
-> > 		page = dma_alloc_from_pool(dev, PAGE_ALIGN(size), &cpu_addr,
-> > 					   gfp, attrs, NULL);
-> > 		if (!page)
-> > 			return NULL;
-> >
-> > I don't see anything doing the force_dma_unencrypted test along this
-> > callchain..
-> >
-> > I guess it should be done one step up in dma_alloc_attrs() instead of
-> > in dma_direct_alloc()?
-> >
+> Yeah, I think that's the right idea for now..
 > 
-> I think we should do something similar to what dma_map_phys() does here,
-> considering that we only support DMA direct with DMA_ATTR_CC_SHARED/DMA_ATTR_ALLOC_CC_SHARED.
+> > +	if (force_dma_unencrypted(dev))
+> > +		attrs |= DMA_ATTR_ALLOC_CC_SHARED;
+> > +
+> > +	is_cc_shared = attrs & DMA_ATTR_CC_SHARED;
+> > +
+> >  	if (dma_alloc_direct(dev, ops) || arch_dma_alloc_direct(dev)) {
+> >  		cpu_addr = dma_direct_alloc(dev, size, dma_handle, flag, attrs);
+> > +	} else if (is_cc_shared) {
+> > +		trace_dma_alloc(dev, NULL, 0, size, DMA_BIDIRECTIONAL, flag,
+> > +				attrs);  
+> 
+> But it would be clearer to put the test in the iommu_ functions I
+> think, since they are the ones that have the issue. We will need to
+> fix it someday..
+> 
+> I think we can ignore the op-> functions, arches cannot support CC and
+> still use dma_map_ops..
 
-Yeah, I think that's the right idea for now..
+Hm, sounds reasonable. Should we probably enforce this at configure or
+build time?
 
-> +	if (force_dma_unencrypted(dev))
-> +		attrs |= DMA_ATTR_ALLOC_CC_SHARED;
-> +
-> +	is_cc_shared = attrs & DMA_ATTR_CC_SHARED;
-> +
->  	if (dma_alloc_direct(dev, ops) || arch_dma_alloc_direct(dev)) {
->  		cpu_addr = dma_direct_alloc(dev, size, dma_handle, flag, attrs);
-> +	} else if (is_cc_shared) {
-> +		trace_dma_alloc(dev, NULL, 0, size, DMA_BIDIRECTIONAL, flag,
-> +				attrs);
-
-But it would be clearer to put the test in the iommu_ functions I
-think, since they are the ones that have the issue. We will need to
-fix it someday..
-
-I think we can ignore the op-> functions, arches cannot support CC and
-still use dma_map_ops..
-
-Jason
+Petr T
