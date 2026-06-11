@@ -1,109 +1,100 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5845019DF62
-	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 17:41:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D6323A3E9C
+	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 20:57:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781199698; cv=none; b=ZJECWIOCFAtx0o4+42nihX8uAVossTo6xQs/X1SAXwqoJjreXCv0UnG8tyWnFB8h22R5mSFwHZvlF4PFVqY1nPTqtSHWQMgacfjBPfG3l7q4KPhuvi0+HVxQBYCAF67uG7SSw/oGN1tKocHJrex7sOMN1M9B5azT7++7zORKuKM=
+	t=1781211480; cv=none; b=THz8NMtCL3Jg8MpSUj23VbBNjlZQt7rwB747reYMYGHJYW+YzHBPUHv6ZqhRtPY2eVx10LBJ6qKkJNlk4sMh6rwwSW5LVGqzvndhH+M6SpptwR06EqlHBDfl130xTH8UCaFwdQ85iEFCNBjtPFB3LhM3Yzvpz0BHEXsUMJE5i+A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781199698; c=relaxed/simple;
-	bh=ZQ35rJLHLW1jXAUlhy2d2leDWzpFtZe37OKVVTzyHpU=;
-	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=Lsue61ji3zGUqkIa1D5aB5eIPqWtDlcyn0/M36aADgVMW0yUcrMSRagrUOqUKvkAFwf4vd5MGrICvg5Xg0OzRnRaWarbVq3YIFGSN4jeiq5HIo5NuB1/aw7IRUUW/9ZrJrzpzcf0X7PBqMFYpbVQUk2EyXJEsxHXdZmvTs8Nvzk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=UP7j+GVw; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1781211480; c=relaxed/simple;
+	bh=1KXny064JMbTKdMn35Ss31JthCSlYjxPv4E4M/PQvm8=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 References; b=KY3oHTIkYz49tvbWkRcHp/oen6wjeEyxPglwnJ6o6Bk1fo0TQyWeOyC9w38M9B5hV/F+RfJBXb5e/E/d8XWYu0ckDSyiXaZSp7gjKqkg54qrYphGhagoTrcLGArpnb8J5OAYJWy8+XZnXDD+fw/h3GAeaan4GJ9jODbyK24O35Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=HIr45SoA; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="UP7j+GVw"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1781199696;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:mime-version:mime-version:content-type:content-type;
-	bh=2ppUvXGKmFYTgYMs1sXvehexVKSQifrverZBp16Sx60=;
-	b=UP7j+GVwXs1jLIBgzn8ofN8t//yUPwCSzj1JZg/Eldz9tsQVBMM0sXIIXZBPAUo9dz+gEf
-	n8h3KEGgnSFsaegIO+Mhe0am6B6Z/gs1PaXIMhdnJX/MyMMqapbvN3QhalsCNxbv5g8ySj
-	Ci6BWca1SJtlgnTR+QEa4Tpe1DGbtBE=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-609-x-kIfqtDN-e2MW8GSgN-Bg-1; Thu, 11 Jun 2026 13:41:35 -0400
-X-MC-Unique: x-kIfqtDN-e2MW8GSgN-Bg-1
-X-Mimecast-MFC-AGG-ID: x-kIfqtDN-e2MW8GSgN-Bg_1781199694
-Received: by mail-qt1-f197.google.com with SMTP id d75a77b69052e-5178ae66ff3so671341cf.1
-        for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 10:41:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781199694; x=1781804494;
-        h=content-disposition:mime-version:message-id:subject:to:from:date
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=2ppUvXGKmFYTgYMs1sXvehexVKSQifrverZBp16Sx60=;
-        b=F9bOqkjZO6q9SNgbmkbc83sONUCYrdXI6FDpyQEBhin6oX/LN2iAdcaZZiVHt7dgqe
-         c5pq+bdF96iehmO1pRTTeVJ2geC0NAmqqDUxG3D8ZnOKWftlaCBDkePN3sM/WUcezoDZ
-         6sBuKDty1Jn2GKDJW+JFYUAdl3fCsMESsIn9E3yWh6dH2NfAIM3fizofIteWnBdiYXMm
-         9uIqetf5zG/tzjna0gsuSdWvVd+jDbiQ89J3XyoBpRtSea3hQfMdF2fGETkc7LwU1fXq
-         16wInr/tX5l1+hk4vU8aS31Tprbr1OpYpVrDYmpPwz7ONSLVQGCi6sCzm2LfLwDu9IJv
-         GdyQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+sLI5R03lqFsFHDSJaQu7wgRvdkycpEAQyJKeBIJxWb1j1PegI/WMa9QgHUMR5rWwriEWp4g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwALwkCDRCg3RJ1rnCY85dkZY30a2ekQfNpuI3+ltw/xHTPRAqH
-	1hgqd8pgxW9G1CF3TbHgKXLEdCtM2iY5mLrgxSZB8jfV/pEngy86FOvSvo5r2d1Qu1ZZTJP/z7F
-	oPTVkcGJWe4r0zYl5Zifrbc3QyZ3/ChjYrpgDkEbli7MHML6Geym+tRBM
-X-Gm-Gg: Acq92OHAl7WymedN1S6gTTo/1zOlHtpCNBMRUZU2joZoStKwoI8e5NZGIvTRXgi7NFV
-	SGLFt4mtBSjFihYhFl4QoOeoJiSvIl6JaPVd3EDbwI7B9w8DJpCL62xpb12jTPWuMAMSskT2BpS
-	Y0BOgAQJAuQQYREvChlM/doZUvLtY1fuZKtlj9+MG71MDg8nDXxf33rA0YaLuhzfO1utQyUgPEl
-	zy+8+6Y5xYnfO+FdNK7EO6MKyBbAKgX7d6bOz4JyrxgUayq31koHqiJXHjD8Jw0XC8VX7viswe8
-	wLmksonOWDvPAYvDZZs3yfau0ZCVQlKW2q+sR2WhzFejpsYcoAuJZiMEFz9zbAVYRXn7gd71ssJ
-	eoDfkFY5N4LX+cznBLeeMbAM=
-X-Received: by 2002:a05:620a:488c:b0:915:d322:c46c with SMTP id af79cd13be357-9160aaefa93mr565634285a.7.1781199694331;
-        Thu, 11 Jun 2026 10:41:34 -0700 (PDT)
-X-Received: by 2002:a05:620a:488c:b0:915:d322:c46c with SMTP id af79cd13be357-9160aaefa93mr565628485a.7.1781199693857;
-        Thu, 11 Jun 2026 10:41:33 -0700 (PDT)
-Received: from localhost ([2600:8800:1593:b400:1e8c:ec8f:1337:fb26])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-9160ac86221sm245543485a.8.2026.06.11.10.41.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Jun 2026 10:41:32 -0700 (PDT)
-Date: Thu, 11 Jun 2026 10:41:31 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>, 
-	suravee.suthikulpanit@amd.com, Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev
-Subject: AMD iopt levels question
-Message-ID: <airgbnJLPm3tnNig@jsnitsel-thinkpadt14sgen2i.remote.csb>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="HIr45SoA"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260611205756euoutp02426894b1b3a045491083ae8149a6ea82~4ImaXFv2O0479504795euoutp02E
+	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 20:57:56 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260611205756euoutp02426894b1b3a045491083ae8149a6ea82~4ImaXFv2O0479504795euoutp02E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1781211476;
+	bh=dEj+Su9/O0o9wMdUznySdnSbHcj9VmwjMYgGBWcbvSg=;
+	h=From:To:Cc:Subject:Date:References:From;
+	b=HIr45SoAg/PuorUp1Sj/mJ9cBzbOhjMIz+y1n2gDHkbV66lU1ftizkdnlvgt2f9BR
+	 7FIv7e9XSyn35wDbHSGPJvUQodTp4XoJTJF3wG/7q8Xnm5EGLwsyptaVcJJOoTlLHC
+	 Aj0CG/nCthTN4hOcy6jTaGi5AzOQC0NSTJa4taMo=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20260611205755eucas1p2a4d68c135aab6b232fa3ce6ac7d8a369~4ImZXrxSg0357603576eucas1p2H;
+	Thu, 11 Jun 2026 20:57:55 +0000 (GMT)
+Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20260611205755eusmtip20d1d527a5a0cc1c37b844f1884a525a4~4ImZBOy-X1324713247eusmtip2D;
+	Thu, 11 Jun 2026 20:57:55 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski
+	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Jason
+	Gunthorpe <jgg@ziepe.ca>, Li RongQing <lirongqing@baidu.com>
+Subject: [GIT PULL] dma-mapping fixes for Linux 7.1
+Date: Thu, 11 Jun 2026 22:57:51 +0200
+Message-Id: <20260611205751.1255411-1-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: IXb4pdWQkCMTUwKILLkN7YHDAM-0C_BVX8VK1dqWPvE_1781199694
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20260611205755eucas1p2a4d68c135aab6b232fa3ce6ac7d8a369
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260611205755eucas1p2a4d68c135aab6b232fa3ce6ac7d8a369
+X-EPHeader: CA
+X-CMS-RootMailID: 20260611205755eucas1p2a4d68c135aab6b232fa3ce6ac7d8a369
+References: <CGME20260611205755eucas1p2a4d68c135aab6b232fa3ce6ac7d8a369@eucas1p2.samsung.com>
 
-I don't recall, is there a reason amd_iommu doesn't initialize the io
-page tables to the number of levels supported on the system?
+The following changes since commit af0c3f05866237f7592219bfe05387bc3bfc99b5:
 
-I was looking at an issue recently with an i40e controller where
-someone had a set of them in a bond. When it would fail over to
-another device, the device would make a request to map as part of
-that, and the domain would transition into the 64-bit iova address
-space. When that happens the i40e would start generating requests
-causing io page faults to monotonically increasing addresses starting
-at 0x0, repeatedly causing event log resets.
+  dma-mapping: move dma_map_resource() sanity check into debug code (2026-05-18 09:04:59 +0200)
 
-I didn't have a system where I could reproduce with bonded group of
-them, but I could induce the behavior of the i40e generating the dma
-requests by doing horrible things like throwing a bunch of io at it
-from a remote system, and then mess with ring buffer sizes for the
-device. I was able to capture a vmcore, and near as I could tell it is
-during a window where the DTE gets updated as part of increasing the
-io page table levels, a UR would be sent back to the i40e in response
-to a request, and the controller would start sending these dma
-requests.
+are available in the Git repository at:
 
-With the HATS support in the kernel now would it make sense to
-initialize pgtable->mode to amd_iommu_hpt_level if it is set? 
+  https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-7.1-2026-06-11
 
-Regards,
-Jerry
+for you to fetch changes up to 6ec91df8aff77e2e8fe3179c1f3fc15b43a40ba3:
+
+  iommu/dma: Do not try to iommu_map a 0 length region in swiotlb (2026-06-09 22:23:42 +0200)
+
+----------------------------------------------------------------
+dma-mapping fixes for Linux 7.1
+
+Three more fixes for the DMA-mapping code, related to PCI P2PDMA, DMA
+debug and DMA link ranges API (Li RongQing and Jason Gunthorpe).
+
+----------------------------------------------------------------
+Jason Gunthorpe (1):
+      iommu/dma: Do not try to iommu_map a 0 length region in swiotlb
+
+Li RongQing (2):
+      dma-mapping: direct: fix missing mapping for THRU_HOST_BRIDGE segments
+      dma-debug: fix physical address retrieval in debug_dma_sync_sg_for_device
+
+ drivers/iommu/dma-iommu.c | 19 +++++++++++++------
+ kernel/dma/debug.c        |  2 +-
+ kernel/dma/direct.c       |  2 +-
+ 3 files changed, 15 insertions(+), 8 deletions(-)
+
+----------------------------------------------------------------
+
+Thanks!
+
+Best regards
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
