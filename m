@@ -1,77 +1,87 @@
-Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACFC93BF69C
-	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 11:56:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F13533EDAB6
+	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 11:59:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781178975; cv=none; b=mK6/+BVi/V0HysKxOFrSw4xvQOnvTOXr0brPjuRqpNhWFZwm+hvPE6Nma1gKDptjY+vW3Lsv/edEjaEKJ+2oxFDA5FvNMZLxqqOiJ/MNV1qY8f/sY6p8BSGyJ0IevdFNU7FXCEEx1/NQ/lu9qxh4jPSdO0GEgokXfQ8diaSyZt8=
+	t=1781179183; cv=none; b=Yk+IUOIwheOxheFGJalYUBmGdteqRQsBADAj+/hzcjjTBpeVtKM8fTKkxulhiLUCfPUeYJQfaAMjy3Hxjh70S58PnQTMNEeDiVT5YNO5dh+o4RWkoBBvLGsjEDFWgAnbhVK3laA6ZteuXWy1e/B8eraCak5LBTwqyi2sKDsTHr8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781178975; c=relaxed/simple;
-	bh=Iq4WLN3UdQuYTUuisLYn2W2X+Ndr+qrOMlfb30nqMdg=;
+	s=arc-20240116; t=1781179183; c=relaxed/simple;
+	bh=HXI+6KUA5mCzTZAPeYkUL5Bgn+onXknGZaQEl5FIVI8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iGzBFpq9Gron0pbFMS20UceSL2rqUBFPtKEXj2jfGIlHFZ4pcUrIUarWrZOFNA3kdcq9PfHprrZKtB0Z6J3yNV7RmnKa9u7O25UJN9SPv5jLpxPZwaUXvEKMqS4/o60kZ47uXtRrywsBholPh3HsY+qQzGVyEK3ijWuGTgT8rpM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Hs3K5SpP; arc=none smtp.client-ip=209.85.219.45
+	 Content-Type:Content-Disposition:In-Reply-To; b=L5bC9pPwmJI/fvERzvWvAEcq82NrvwzNfwkTlHp0/GvMNw3sF1Yvq2+2VY/g3YaW1ShJSxpbi30Aq7IM/gLCnTmOdItAOmChqgEUCEtCavfUzTC0QNkG5WLJ0Epxl9wJQkzcXJMAjwwmIM4dwdqnPqyKoF8RLEd2YKCSbXmGOYo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=MNx8ytfX; arc=none smtp.client-ip=209.85.222.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Hs3K5SpP"
-Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-8ccdf8d4ac5so83468836d6.1
-        for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 04:56:13 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="MNx8ytfX"
+Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-91562bf6c12so947229085a.2
+        for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 04:59:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1781178973; x=1781783773; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1781179180; x=1781783980; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=1yyl63jb1xDe2p0em50yKYVQR6uYI/TfEklW/8AWTuk=;
-        b=Hs3K5SpPCQLOg42kMSOh/cH0Xm7gcumC28qvBN5SnC/idwJ1YHizK/AfKIgEtzsaKV
-         FfnDAUDORthwXPXAeSNq/tsOORCc9p3jG64QZCGbWj2qguAG6j4PZG4uIIbGtZpp+P9v
-         YbwXD38ZaqGmvuECgP1MLy2tNPHtdTzu7Bouyhlhw/WdN26meR9maR6lTCrYOiEfDYDG
-         hweKElP5FJ99qwC8uxySpIqSMqFwZG4BezDl8SaGiaYKy7XaDKnUi2DnPzQiZR8MGM2M
-         3ZFTR+PWsTVI22+/0Z8YwvPKxc1ImQhADWFt1udCMlpKFhSim9Ku0PI43PJryE7284d7
-         dhdQ==
+        bh=tvizeKh300V4RgKQE8JEUwSI0zRPQK5L8Dj7T0K8bjs=;
+        b=MNx8ytfXkpk9nJsCrSJVTi+sKKiCQ0gREHxI1gW1OooINCqI/q+Gm1qE6nd+X0H9dw
+         KGlr0dO7uYMSVjxh+09pJKVd0zs5SD/8xEVIjITsFIeT0HiphuJTrMoYEIp+94mwh4Yp
+         CZJhbWVo1UfXIKv5nr5cEDmeedfao3WsNurzz8i1/mYiBXTtPOtMIW0YiYpsJRQvrsqO
+         1Bz1HzjN1fUJkGEmik736XfSUMdrRleQjkuTkg0dqB4m7AG7LEjqZblF5gH7MTJHqkha
+         TH8E8uzDbd0/tnXcsuHfcoiavP/MfopuFi8Ube/5bnBO4Ow0k8U3sfCgo+sCJlk2hyBA
+         Bj8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781178973; x=1781783773;
+        d=1e100.net; s=20251104; t=1781179180; x=1781783980;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=1yyl63jb1xDe2p0em50yKYVQR6uYI/TfEklW/8AWTuk=;
-        b=rkrEnaSq31vk4XK6N/HZxWw0vC7JdbNtK+hIV/0dsofiZiu//8RdsX86kE+FVn/ddR
-         0RqZbQsLQCRRh0wcKx+2y8LX6ZyQ1ggzBvaVDV138KSVPbpHeLTVeF8tCCYG8mdMvX05
-         6cd1TADZjQF7WYt/sfWB/t+SxY4bdFNY3BE0baBfdBPzgpO5feKSWNBFtj6BWuB0iFtD
-         +prULmyFSqyubwjKFZb/OoH9N9Jom29m1UBHVYOUSe5912p2nKRtWSATy6mTszSvctpn
-         B6yYviB4qtooe+39+v2BKwpFuRgLCBGNKzAm/AHVuQAXIY9/Xtw53JKZe8bo7LOg7w+x
-         dV4Q==
-X-Gm-Message-State: AOJu0YyZkH4iO0bwmKTuHahH4I2n1tJB099v22KdD6TRsT/iAs1ZUOGb
-	KAGwMbW+QlCye9CdeaAC7Qk5Hf7P1njdM/d5jbF7vZWA5WgraBIBM7YoHprHbC02TsM=
-X-Gm-Gg: Acq92OGg+kV37u1dpvYlgYAdaMHksf+6C4kVUQnM4orDrspRQxs2+DE2qh0/XRvdDon
-	Kpwc1DDl3mQWbx5/iUOdmsTsgMCiqZopGIRkAXeu8JaQooSrJhX9AJkXk0trVYwqgVD4IcNENqj
-	h69SvZqcdbte4AARvDGEdMj6ng56ksLCV5p9BRctuu8s951N5Vedm1D/uLHANUj05bfhcsPE9hr
-	iIveityUrGngnTsKJlcALtdIY+iRGJ8zKKMDq4rmjajmChYDi/xF8N9AeIyF1foCjVP0CrA8AtJ
-	Iwb0rSBYQ2rgtzL6+wKAzObAH3fxkcB+zL/41ZYRJfNjDb9nhzENlI/1VNrIF/MhImjMkSxgnUr
-	kpZnhp8NcyduqkHchvnI7N6z04ZerVAJzo7219d/XwlGmwYNPOdaKTU8XaCCr+rGkwcIe51pfpU
-	SI5kwW7ggRPB3E5Jpr4u0JMuoaIAfrjrseeSlr09/KyW6/ceVw2u6N2HD3xW1mufFCYcy510W7q
-	aVZSf10pditwIDv
-X-Received: by 2002:a05:6214:2a86:b0:8cc:ea7f:d3c8 with SMTP id 6a1803df08f44-8d1da5623a5mr39488366d6.30.1781178972636;
-        Thu, 11 Jun 2026 04:56:12 -0700 (PDT)
+        bh=tvizeKh300V4RgKQE8JEUwSI0zRPQK5L8Dj7T0K8bjs=;
+        b=bkjvIZHsu8l+GIyf7QhvAivSN+5ig88e7txyNSOparJq+EeEOyrEe8cpphydTfuMF5
+         G8ZZ3zwp/LfPFDNyYLz9SqFiYFrLiaxASyqnoOtRg3RDD9uxGBylkdZjbKNDo1b/tuIv
+         NPLndzqohnoVYt4lsFT+J4WbXWOmSTIpUoBSjV/R9PI2Xc3EUpM2N0wdojZ0VF8OUsTG
+         LDpuGK0/64CriviDzMrCjoNcW4jHKF0hubkqyUXepgpbo1ZUfDHBc4OuPBCrMQmlbP36
+         3V7th+zi7OX2YdgOX2HTTvSrWBGa1/e6KhxLiCEt6gZGXGJRRE0keWWK1r1xh1mBEjfq
+         RzHQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+QTGAe3zSbVXzZt9natfKgOu2X7t7rgcguJsAO2qZ389VCPaHTefDUQR4yMfh8hcv4J8SI5A==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy2Z7VswP7Qr3gzT6Wjv80inyR25EB0OdHbFE0XkTHMOqapBrnv
+	8Tg/7NLNj7P6Zu+Y3OuPDLGOkL8dYUExSwqfiQuQSTV0rZuqvaxRxn0KN3MsjlUk5eU=
+X-Gm-Gg: Acq92OEWtP2Uqy26jS7MSkgsGWHygzTARRDCcOGaRuaTdcBY6uz33+CSwRTt2SWlrb8
+	dcGUXkeaDPxxL2c//r3POAFzWnlsBnsapZk98gpasYb0fyhkmVGSPk72nNK2/btfhe9v0ymEkuM
+	ybn2Jx872IQ2bHYu6rDBcYxyETah3SxgI58+FbOjvBtGp4K4FM19evzX4vYFI6a4kI93j4PNBZJ
+	XmPkNaVOdqJd4kq8MuLCG2kdezIvyBTGNRE+kTBWBFky9E4GR/trB/8ykhLS0mcqMZRuTkZR8xC
+	jHqtzuSv5zsZCveO0Gy8r7824XbhZbIyED/JnH7TGDhg3dLFasr6nFj7pkV1yMzyrFWJstaVz3e
+	vBsdizUo5Z5aKVSp7dMgn5VcNl9ttxb179+n7IIFtXPA1gfCBmyGNx0/qPHLNo5BfZ+caW8MeBF
+	GxoYPyiEvxSmkot3cd9mcjdXNvZldrk20M+Xxi7O6ijG3u/Dk2i5tRU0yn1/u+CNFFkWEhY9KIM
+	4yR2MG6GAPwiMczCZcZBeTGYyA=
+X-Received: by 2002:a05:620a:2681:b0:914:b65f:6abe with SMTP id af79cd13be357-9160ac976ffmr356715185a.5.1781179179928;
+        Thu, 11 Jun 2026 04:59:39 -0700 (PDT)
 Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8d1e838f3a5sm16144646d6.18.2026.06.11.04.56.11
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-9160adf5832sm163280985a.31.2026.06.11.04.59.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Jun 2026 04:56:12 -0700 (PDT)
+        Thu, 11 Jun 2026 04:59:39 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1wXe15-00000005gzM-2D5R;
-	Thu, 11 Jun 2026 08:56:11 -0300
-Date: Thu, 11 Jun 2026 08:56:11 -0300
+	id 1wXe4Q-00000005hL0-1GzB;
+	Thu, 11 Jun 2026 08:59:38 -0300
+Date: Thu, 11 Jun 2026 08:59:38 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Srivastava, Dheeraj Kumar" <dhsrivas@amd.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Will Deacon <will@kernel.org>, patches@lists.linux.dev
-Subject: Re: [PATCH 0/5] Improve the invalidation path in AMD
-Message-ID: <20260611115611.GE1066031@ziepe.ca>
-References: <0-v1-a7b77c25974e+115bf-iommupt_inv_amd_jgg@nvidia.com>
- <83b8a0f3-2409-464d-a9e4-59b9eea926cd@amd.com>
+To: Logan Gunthorpe <logang@deltatee.com>
+Cc: "Li,Rongqing" <lirongqing@baidu.com>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+	Luis Chamberlain <mcgrof@kernel.org>,
+	Leon Romanovsky <leon@kernel.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"hch@lst.de" <hch@lst.de>
+Subject: Re: =?utf-8?B?562U5aSNOiBb5aSW6YOo6YKu5Lu2?=
+ =?utf-8?Q?=5D_Re=3A_=5BPATCH=5D_iommu=2Fdma-iommu?= =?utf-8?Q?=3A?= Fix
+ wrong scatterlist length assignment in P2PDMA path
+Message-ID: <20260611115938.GF1066031@ziepe.ca>
+References: <20260530112852.2321-1-lirongqing@baidu.com>
+ <c666e384-b365-4891-a01d-736948b995bc@deltatee.com>
+ <5e2f30a4121e4672ab309460630d011b@baidu.com>
+ <c441256c-e4f6-427f-9f25-7570c991a420@deltatee.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -80,49 +90,46 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <83b8a0f3-2409-464d-a9e4-59b9eea926cd@amd.com>
+In-Reply-To: <c441256c-e4f6-427f-9f25-7570c991a420@deltatee.com>
 
-On Tue, Jun 02, 2026 at 12:36:18PM +0530, Srivastava, Dheeraj Kumar wrote:
-> Hi Jason,
+On Tue, Jun 02, 2026 at 09:42:40AM -0600, Logan Gunthorpe wrote:
+> Hi Li,
 > 
-> On 3/27/2026 8:53 PM, Jason Gunthorpe wrote:
-> > Auditing this path reveals some unnecessary complexity and some
-> > confusion around end/size/last and types that may cause issues at the
-> > ULONG_MAX limit.
+> On 2026-06-02 00:12, Li,Rongqing wrote:
+> >>> Fixes: a25e7962db ("PCI/P2PDMA: Refactor the p2pdma mapping helpers")
+> >>> Signed-off-by: Li RongQing <lirongqing@baidu.com>
+> >>
+> >> Hmm, I thought I had tested this stuff pretty thoroughly so I'm surprised I
+> >> missed that. But I guess seeing the users of these specifically don't allow
+> >> mixing with anonymous memory the vast majority of tests would only have
+> >> one segment.
+> >>
+> >> Can you confirm that you've reproduced and tested this and it actually fixes a
+> >> bug? Not just seeing something that looks strange. I have a vague feeling it
+> >> was intentional but looking at the code it looks wrong to me too.
+> >>
+> >> Thanks,
+> >>
+> > Cc: Christoph Hellwig
 > > 
-> > First, fix up the call chains so that the gather start/last is
-> > retained faithfully throughout. This avoids converting to a
-> > start/size, and avoids various type conversions along this path. Fix
-> > everything so the theoretical cases like start=0 last=U64_MAX work
-> > correctly.
+> > Thanks for your feedback!
 > > 
-> > Simplify all the calculations for alignment/etc to use trivial bit
-> > maths instead of the complicated versions. These are all intended to
-> > be no functional change.
+> > This was found via code inspection. You are right that if nents == 1, or if nents > 1 but all segments happen to have the exact same length, this typo remains benign by pure coincidence.
 > > 
-> > Finally, add support for PDE=0, deriving it from the gather. PDE=0
-> > allows the HW to avoid scanning the page directory cache and
-> > supporting it should improve performance.
+> > However, for a multi-segment scatterlist with varying lengths (e.g., a short 2KB head segment followed by standard 4KB segments), sg_dma_len(s) will mistakenly assign the 2KB head length to all subsequent 4KB segments. This will inevitably lead to silent data truncation or IOMMU page faults.
 > > 
-> > Jason Gunthorpe (5):
-> >    iommu/amd: Simplify build_inv_address()
-> >    iommu/amd: Pass last in through to build_inv_address()
-> >    iommu/amd: Have amd_iommu_domain_flush_pages() use last
-> >    iommu/amd: Make CMD_INV_IOMMU_ALL_PAGES_ADDRESS match the spec
-> >    iommu/amd: Control INVALIDATE_IOMMU_PAGES PDE from the gather
+> > Since sg_phys(s) correctly takes the current segment's address, sg_dma_len(s) should definitely use s->length to match it.
 > > 
-> >   drivers/iommu/amd/amd_iommu.h       |   4 +-
-> >   drivers/iommu/amd/amd_iommu_types.h |   2 +-
-> >   drivers/iommu/amd/iommu.c           | 175 +++++++++++++---------------
-> >   drivers/iommu/amd/pasid.c           |   2 +-
-> >   4 files changed, 87 insertions(+), 96 deletions(-)
-> > 
+> > I don't have a specific P2PDMA test rig to force multi-segment lists on hand right now, but the typo and its impact on varied segment lengths seem deterministic.
 > 
-> Tested across multiple IOMMU modes; no regressions were detected for this
-> series.
+> Ok, yeah, I think you are correct. My tests that ran multiple segments
+> happened to all have the same length. But I don't have the hardware I
+> used at the moment so I can't test it either.
 > 
-> Tested-by: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
+> Reviewed-by: Logan Gunthorpe <logang@deltatee.com>
 
-Joerg?
+Rongqing can you please send a proper series with both of these fixes
+without threading so Joerg can pick them up?
 
+Thanks,
 Jason
