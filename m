@@ -1,342 +1,109 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 83E084968FD
-	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 17:27:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5845019DF62
+	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 17:41:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781198835; cv=none; b=bTtv8GLdOMdqumeT4jheggN4WbQ4CqAIU2uTxWZJfM4YYjrKYokf/WNW0Knl7ihcCOIMujc6fp7q36V4xHiJk21QaXdzg0RJIWshTH2jIwrZ1PP6rl2i4jK1YqrFWvB6pmffPXHz0V86lCYYTf6LuFiarlUylqCTMV999nX4oM8=
+	t=1781199698; cv=none; b=ZJECWIOCFAtx0o4+42nihX8uAVossTo6xQs/X1SAXwqoJjreXCv0UnG8tyWnFB8h22R5mSFwHZvlF4PFVqY1nPTqtSHWQMgacfjBPfG3l7q4KPhuvi0+HVxQBYCAF67uG7SSw/oGN1tKocHJrex7sOMN1M9B5azT7++7zORKuKM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781198835; c=relaxed/simple;
-	bh=2MLKAMn4/r9dYB7HdmL0QXKrBukYFN+DSEy7AzJ4wY8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=OomPpqKmk8hOhg9FKI/PjIdM6bvh+sNSuE51nq3UWTLxRB756AYbumGwQouabKpehk3ZRWD8S/3n/otL96k4J8tsm2imlA6sgm9HhqpY5A4WwHBd6aGQk55C88e/UswgDb0JHQsEjnLszOLhf7i4TEpfEjVxATrNXcz7EZYTiN8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=TKfGPIZL; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1781199698; c=relaxed/simple;
+	bh=ZQ35rJLHLW1jXAUlhy2d2leDWzpFtZe37OKVVTzyHpU=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=Lsue61ji3zGUqkIa1D5aB5eIPqWtDlcyn0/M36aADgVMW0yUcrMSRagrUOqUKvkAFwf4vd5MGrICvg5Xg0OzRnRaWarbVq3YIFGSN4jeiq5HIo5NuB1/aw7IRUUW/9ZrJrzpzcf0X7PBqMFYpbVQUk2EyXJEsxHXdZmvTs8Nvzk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=UP7j+GVw; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="TKfGPIZL"
-Received: from administrator-PowerEdge-R660.corp.microsoft.com (unknown [131.107.1.135])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 07FAF20B716C;
-	Thu, 11 Jun 2026 10:26:46 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 07FAF20B716C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1781198806;
-	bh=fEP0np8sx/+YmO0RPNh20eFJrWg4Bf9qkhrLNllOiX4=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=TKfGPIZLa4fyyxIL/b3ItXP/imkmFU3AnGzCHOZQGueM8aQe7K+EmKZQdQBT1QwVX
-	 7jaXDLFhDwpqhuzUzcGcV7MaqNig8NIL22zzR9vfIXzUY4QF3c68ASUDeFiDK74ZKB
-	 H7Z7I6lO52vWkqJ+93YZkwLIXCmIG9kqYh7LopFk=
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: linux-kernel@vger.kernel.org,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Alex Williamson <alex@shazbot.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Mostafa Saleh <smostafa@google.com>,
-	David Matlack <dmatlack@google.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>,
-	Yi Liu <yi.l.liu@intel.com>,
-	Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Saurabh Sengar <ssengar@linux.microsoft.com>,
-	skhawaja@google.com,
-	pasha.tatashin@soleen.com,
-	Will Deacon <will@kernel.org>,
-	Jacob Pan <jacob.pan@linux.microsoft.com>
-Subject: [PATCH v9 4/6] iommufd: Add an ioctl to query PA from IOVA for noiommu mode
-Date: Thu, 11 Jun 2026 10:26:56 -0700
-Message-ID: <20260611172658.3421138-5-jacob.pan@linux.microsoft.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260611172658.3421138-1-jacob.pan@linux.microsoft.com>
-References: <20260611172658.3421138-1-jacob.pan@linux.microsoft.com>
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="UP7j+GVw"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1781199696;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:mime-version:mime-version:content-type:content-type;
+	bh=2ppUvXGKmFYTgYMs1sXvehexVKSQifrverZBp16Sx60=;
+	b=UP7j+GVwXs1jLIBgzn8ofN8t//yUPwCSzj1JZg/Eldz9tsQVBMM0sXIIXZBPAUo9dz+gEf
+	n8h3KEGgnSFsaegIO+Mhe0am6B6Z/gs1PaXIMhdnJX/MyMMqapbvN3QhalsCNxbv5g8ySj
+	Ci6BWca1SJtlgnTR+QEa4Tpe1DGbtBE=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-609-x-kIfqtDN-e2MW8GSgN-Bg-1; Thu, 11 Jun 2026 13:41:35 -0400
+X-MC-Unique: x-kIfqtDN-e2MW8GSgN-Bg-1
+X-Mimecast-MFC-AGG-ID: x-kIfqtDN-e2MW8GSgN-Bg_1781199694
+Received: by mail-qt1-f197.google.com with SMTP id d75a77b69052e-5178ae66ff3so671341cf.1
+        for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 10:41:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781199694; x=1781804494;
+        h=content-disposition:mime-version:message-id:subject:to:from:date
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=2ppUvXGKmFYTgYMs1sXvehexVKSQifrverZBp16Sx60=;
+        b=F9bOqkjZO6q9SNgbmkbc83sONUCYrdXI6FDpyQEBhin6oX/LN2iAdcaZZiVHt7dgqe
+         c5pq+bdF96iehmO1pRTTeVJ2geC0NAmqqDUxG3D8ZnOKWftlaCBDkePN3sM/WUcezoDZ
+         6sBuKDty1Jn2GKDJW+JFYUAdl3fCsMESsIn9E3yWh6dH2NfAIM3fizofIteWnBdiYXMm
+         9uIqetf5zG/tzjna0gsuSdWvVd+jDbiQ89J3XyoBpRtSea3hQfMdF2fGETkc7LwU1fXq
+         16wInr/tX5l1+hk4vU8aS31Tprbr1OpYpVrDYmpPwz7ONSLVQGCi6sCzm2LfLwDu9IJv
+         GdyQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+sLI5R03lqFsFHDSJaQu7wgRvdkycpEAQyJKeBIJxWb1j1PegI/WMa9QgHUMR5rWwriEWp4g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwALwkCDRCg3RJ1rnCY85dkZY30a2ekQfNpuI3+ltw/xHTPRAqH
+	1hgqd8pgxW9G1CF3TbHgKXLEdCtM2iY5mLrgxSZB8jfV/pEngy86FOvSvo5r2d1Qu1ZZTJP/z7F
+	oPTVkcGJWe4r0zYl5Zifrbc3QyZ3/ChjYrpgDkEbli7MHML6Geym+tRBM
+X-Gm-Gg: Acq92OHAl7WymedN1S6gTTo/1zOlHtpCNBMRUZU2joZoStKwoI8e5NZGIvTRXgi7NFV
+	SGLFt4mtBSjFihYhFl4QoOeoJiSvIl6JaPVd3EDbwI7B9w8DJpCL62xpb12jTPWuMAMSskT2BpS
+	Y0BOgAQJAuQQYREvChlM/doZUvLtY1fuZKtlj9+MG71MDg8nDXxf33rA0YaLuhzfO1utQyUgPEl
+	zy+8+6Y5xYnfO+FdNK7EO6MKyBbAKgX7d6bOz4JyrxgUayq31koHqiJXHjD8Jw0XC8VX7viswe8
+	wLmksonOWDvPAYvDZZs3yfau0ZCVQlKW2q+sR2WhzFejpsYcoAuJZiMEFz9zbAVYRXn7gd71ssJ
+	eoDfkFY5N4LX+cznBLeeMbAM=
+X-Received: by 2002:a05:620a:488c:b0:915:d322:c46c with SMTP id af79cd13be357-9160aaefa93mr565634285a.7.1781199694331;
+        Thu, 11 Jun 2026 10:41:34 -0700 (PDT)
+X-Received: by 2002:a05:620a:488c:b0:915:d322:c46c with SMTP id af79cd13be357-9160aaefa93mr565628485a.7.1781199693857;
+        Thu, 11 Jun 2026 10:41:33 -0700 (PDT)
+Received: from localhost ([2600:8800:1593:b400:1e8c:ec8f:1337:fb26])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-9160ac86221sm245543485a.8.2026.06.11.10.41.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Jun 2026 10:41:32 -0700 (PDT)
+Date: Thu, 11 Jun 2026 10:41:31 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>, 
+	suravee.suthikulpanit@amd.com, Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev
+Subject: AMD iopt levels question
+Message-ID: <airgbnJLPm3tnNig@jsnitsel-thinkpadt14sgen2i.remote.csb>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: IXb4pdWQkCMTUwKILLkN7YHDAM-0C_BVX8VK1dqWPvE_1781199694
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-To support no-IOMMU mode where userspace drivers perform unsafe DMA
-using physical addresses, introduce a new API to retrieve the
-physical address of a user-allocated DMA buffer that has been mapped to
-an IOVA via IOMMU_IOAS_MAP. The mapping is backed by SW-only I/O page
-tables maintained by the GENERIC_PT framework.
+I don't recall, is there a reason amd_iommu doesn't initialize the io
+page tables to the number of levels supported on the system?
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-Co-developed-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
----
-v9
-   - Make no-IOMMU GET_PA length a real upper bound and reject zero length,
-    avoiding an unbounded scan while holding IOAS locks. This matches the
-    bounded-range semantics expected by the incoming
-    iommu_iova_to_phys_length() helper.
-v8:
-   - Fix comment on start IOVA range (Kevin)
-v7:
-   - Fix commit message (Yi)
-   - Avoid duplicated tmp_length settting (yi)
-   - Handle race with dma-buf revoke pages (Sashiko)
-v6:
-   - Limit search length (Baolu, Jason)
-v5:
-   - Fix next_iova exceeds iopt_area_last_iova (Alex)
-   - Rename IOCTL more specific to NOIOMMU, i.e.
-	 IOMMUFD_CMD_IOAS_NOIOMMU_GET_PA (Kevin)
-   - Add header stubs for iopt_get_phys()
-v4:
-   - Fix ioctl return type (Yi Liu)
----
- drivers/iommu/iommufd/io_pagetable.c    | 78 +++++++++++++++++++++++++
- drivers/iommu/iommufd/ioas.c            | 36 ++++++++++++
- drivers/iommu/iommufd/iommufd_private.h | 18 ++++++
- drivers/iommu/iommufd/main.c            |  3 +
- include/uapi/linux/iommufd.h            | 28 +++++++++
- 5 files changed, 163 insertions(+)
+I was looking at an issue recently with an i40e controller where
+someone had a set of them in a bond. When it would fail over to
+another device, the device would make a request to map as part of
+that, and the domain would transition into the 64-bit iova address
+space. When that happens the i40e would start generating requests
+causing io page faults to monotonically increasing addresses starting
+at 0x0, repeatedly causing event log resets.
 
-diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
-index 24d4917105d9..6a8573dc206a 100644
---- a/drivers/iommu/iommufd/io_pagetable.c
-+++ b/drivers/iommu/iommufd/io_pagetable.c
-@@ -859,6 +859,84 @@ int iopt_unmap_iova(struct io_pagetable *iopt, unsigned long iova,
- 	return iopt_unmap_iova_range(iopt, iova, iova_last, unmapped);
- }
- 
-+#ifdef CONFIG_IOMMUFD_NOIOMMU
-+int iopt_get_phys(struct io_pagetable *iopt, unsigned long iova, u64 *paddr,
-+		  u64 *length)
-+{
-+	struct iopt_area *area;
-+	struct iopt_pages *pages;
-+	u64 max_length = *length;
-+	u64 tmp_length = 0;
-+	u64 tmp_paddr = 0;
-+	int rc = 0;
-+
-+	if (!max_length)
-+		return -EINVAL;
-+
-+	down_read(&iopt->iova_rwsem);
-+	area = iopt_area_iter_first(iopt, iova, iova);
-+	if (!area || !area->pages) {
-+		rc = -ENOENT;
-+		goto unlock_exit;
-+	}
-+
-+	pages = area->pages;
-+	mutex_lock(&pages->mutex);
-+	if (iopt_dmabuf_revoked(pages)) {
-+		rc = -EINVAL;
-+		goto unlock_pages;
-+	}
-+
-+	if (!area->storage_domain ||
-+	    area->storage_domain->owner != &iommufd_noiommu_ops) {
-+		rc = -EOPNOTSUPP;
-+		goto unlock_pages;
-+	}
-+
-+	*paddr = iommu_iova_to_phys(area->storage_domain, iova);
-+	tmp_length = min_t(u64, PAGE_SIZE - offset_in_page(iova),
-+			   iopt_area_last_iova(area) - iova + 1);
-+	tmp_paddr = *paddr;
-+	/*
-+	 * Return the physically contiguous length, capped by the caller
-+	 * supplied range length.
-+	 */
-+	while (iova < iopt_area_last_iova(area)) {
-+		unsigned long next_iova;
-+		u64 next_paddr;
-+
-+		if (tmp_length >= max_length)
-+			break;
-+
-+		if (check_add_overflow(iova, PAGE_SIZE, &next_iova))
-+			break;
-+
-+		if (next_iova > iopt_area_last_iova(area))
-+			break;
-+
-+		next_paddr = iommu_iova_to_phys(area->storage_domain, next_iova);
-+
-+		if (!next_paddr || next_paddr != tmp_paddr + PAGE_SIZE)
-+			break;
-+
-+		iova = next_iova;
-+		tmp_paddr += PAGE_SIZE;
-+		tmp_length += PAGE_SIZE;
-+	}
-+
-+	if (tmp_length > max_length)
-+		tmp_length = max_length;
-+	*length = tmp_length;
-+
-+unlock_pages:
-+	mutex_unlock(&pages->mutex);
-+unlock_exit:
-+	up_read(&iopt->iova_rwsem);
-+
-+	return rc;
-+}
-+#endif
-+
- int iopt_unmap_all(struct io_pagetable *iopt, unsigned long *unmapped)
- {
- 	/* If the IOVAs are empty then unmap all succeeds */
-diff --git a/drivers/iommu/iommufd/ioas.c b/drivers/iommu/iommufd/ioas.c
-index fed06c2b728e..1a18cee7456b 100644
---- a/drivers/iommu/iommufd/ioas.c
-+++ b/drivers/iommu/iommufd/ioas.c
-@@ -375,6 +375,42 @@ int iommufd_ioas_unmap(struct iommufd_ucmd *ucmd)
- 	return rc;
- }
- 
-+#ifdef CONFIG_IOMMUFD_NOIOMMU
-+int iommufd_ioas_noiommu_get_pa(struct iommufd_ucmd *ucmd)
-+{
-+	struct iommu_ioas_noiommu_get_pa *cmd = ucmd->cmd;
-+	struct iommufd_ioas *ioas;
-+	int rc;
-+
-+	if (!capable(CAP_SYS_RAWIO))
-+		return -EPERM;
-+
-+	if (cmd->flags || cmd->__reserved)
-+		return -EOPNOTSUPP;
-+
-+	if (!cmd->length)
-+		return -EINVAL;
-+
-+	if (cmd->iova >= ULONG_MAX)
-+		return -EOVERFLOW;
-+
-+	ioas = iommufd_get_ioas(ucmd->ictx, cmd->ioas_id);
-+	if (IS_ERR(ioas))
-+		return PTR_ERR(ioas);
-+
-+	rc = iopt_get_phys(&ioas->iopt, cmd->iova, &cmd->out_phys,
-+			   &cmd->length);
-+	if (rc)
-+		goto out_put;
-+
-+	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
-+out_put:
-+	iommufd_put_object(ucmd->ictx, &ioas->obj);
-+
-+	return rc;
-+}
-+#endif
-+
- static void iommufd_release_all_iova_rwsem(struct iommufd_ctx *ictx,
- 					   struct xarray *ioas_list)
- {
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index c8ed612e896a..15909ba75c18 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -118,6 +118,16 @@ int iopt_map_pages(struct io_pagetable *iopt, struct list_head *pages_list,
- int iopt_unmap_iova(struct io_pagetable *iopt, unsigned long iova,
- 		    unsigned long length, unsigned long *unmapped);
- int iopt_unmap_all(struct io_pagetable *iopt, unsigned long *unmapped);
-+#ifdef CONFIG_IOMMUFD_NOIOMMU
-+int iopt_get_phys(struct io_pagetable *iopt, unsigned long iova, u64 *paddr,
-+		  u64 *length);
-+#else
-+static inline int iopt_get_phys(struct io_pagetable *iopt, unsigned long iova,
-+				u64 *paddr, u64 *length)
-+{
-+	return -EOPNOTSUPP;
-+}
-+#endif
- 
- int iopt_read_and_clear_dirty_data(struct io_pagetable *iopt,
- 				   struct iommu_domain *domain,
-@@ -346,6 +356,14 @@ int iommufd_ioas_map_file(struct iommufd_ucmd *ucmd);
- int iommufd_ioas_change_process(struct iommufd_ucmd *ucmd);
- int iommufd_ioas_copy(struct iommufd_ucmd *ucmd);
- int iommufd_ioas_unmap(struct iommufd_ucmd *ucmd);
-+#ifdef CONFIG_IOMMUFD_NOIOMMU
-+int iommufd_ioas_noiommu_get_pa(struct iommufd_ucmd *ucmd);
-+#else
-+static inline int iommufd_ioas_noiommu_get_pa(struct iommufd_ucmd *ucmd)
-+{
-+	return -EOPNOTSUPP;
-+}
-+#endif
- int iommufd_ioas_option(struct iommufd_ucmd *ucmd);
- int iommufd_option_rlimit_mode(struct iommu_option *cmd,
- 			       struct iommufd_ctx *ictx);
-diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-index f6ae60bd3f70..a4668995269c 100644
---- a/drivers/iommu/iommufd/main.c
-+++ b/drivers/iommu/iommufd/main.c
-@@ -424,6 +424,7 @@ union ucmd_buffer {
- 	struct iommu_ioas_alloc alloc;
- 	struct iommu_ioas_allow_iovas allow_iovas;
- 	struct iommu_ioas_copy ioas_copy;
-+	struct iommu_ioas_noiommu_get_pa noiommu_get_pa;
- 	struct iommu_ioas_iova_ranges iova_ranges;
- 	struct iommu_ioas_map map;
- 	struct iommu_ioas_unmap unmap;
-@@ -482,6 +483,8 @@ static const struct iommufd_ioctl_op iommufd_ioctl_ops[] = {
- 	IOCTL_OP(IOMMU_IOAS_MAP, iommufd_ioas_map, struct iommu_ioas_map, iova),
- 	IOCTL_OP(IOMMU_IOAS_MAP_FILE, iommufd_ioas_map_file,
- 		 struct iommu_ioas_map_file, iova),
-+	IOCTL_OP(IOMMU_IOAS_NOIOMMU_GET_PA, iommufd_ioas_noiommu_get_pa, struct iommu_ioas_noiommu_get_pa,
-+		 out_phys),
- 	IOCTL_OP(IOMMU_IOAS_UNMAP, iommufd_ioas_unmap, struct iommu_ioas_unmap,
- 		 length),
- 	IOCTL_OP(IOMMU_OPTION, iommufd_option, struct iommu_option, val64),
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index e998dfbd6960..1cd3395620e9 100644
---- a/include/uapi/linux/iommufd.h
-+++ b/include/uapi/linux/iommufd.h
-@@ -57,6 +57,7 @@ enum {
- 	IOMMUFD_CMD_IOAS_CHANGE_PROCESS = 0x92,
- 	IOMMUFD_CMD_VEVENTQ_ALLOC = 0x93,
- 	IOMMUFD_CMD_HW_QUEUE_ALLOC = 0x94,
-+	IOMMUFD_CMD_IOAS_NOIOMMU_GET_PA = 0x95,
- };
- 
- /**
-@@ -219,6 +220,33 @@ struct iommu_ioas_map {
- };
- #define IOMMU_IOAS_MAP _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_MAP)
- 
-+/**
-+ * struct iommu_ioas_noiommu_get_pa - ioctl(IOMMU_IOAS_NOIOMMU_GET_PA)
-+ * @size: sizeof(struct iommu_ioas_noiommu_get_pa)
-+ * @flags: Reserved, must be 0 for now
-+ * @ioas_id: IOAS ID to query IOVA to PA mapping from
-+ * @__reserved: Must be 0
-+ * @iova: IOVA to query
-+ * @length: On input, non-zero maximum number of bytes to query starting from
-+ *          @iova. On output, number of physically contiguous bytes starting
-+ *          from @out_phys, capped by the input length.
-+ * @out_phys: Output physical address the IOVA maps to
-+ *
-+ * Query the physical address backing an IOVA range. The beginning of the
-+ * range must be mapped already and length must be non-zero. For noiommu
-+ * devices doing unsafe DMA only.
-+ */
-+struct iommu_ioas_noiommu_get_pa {
-+	__u32 size;
-+	__u32 flags;
-+	__u32 ioas_id;
-+	__u32 __reserved;
-+	__aligned_u64 iova;
-+	__aligned_u64 length;
-+	__aligned_u64 out_phys;
-+};
-+#define IOMMU_IOAS_NOIOMMU_GET_PA _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_NOIOMMU_GET_PA)
-+
- /**
-  * struct iommu_ioas_map_file - ioctl(IOMMU_IOAS_MAP_FILE)
-  * @size: sizeof(struct iommu_ioas_map_file)
--- 
-2.43.0
+I didn't have a system where I could reproduce with bonded group of
+them, but I could induce the behavior of the i40e generating the dma
+requests by doing horrible things like throwing a bunch of io at it
+from a remote system, and then mess with ring buffer sizes for the
+device. I was able to capture a vmcore, and near as I could tell it is
+during a window where the DTE gets updated as part of increasing the
+io page table levels, a UR would be sent back to the i40e in response
+to a request, and the controller would start sending these dma
+requests.
+
+With the HATS support in the kernel now would it make sense to
+initialize pgtable->mode to amd_iommu_hpt_level if it is set? 
+
+Regards,
+Jerry
 
