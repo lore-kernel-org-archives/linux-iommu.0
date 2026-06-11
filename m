@@ -1,135 +1,182 @@
-Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out-177.mta0.migadu.com (out-177.mta0.migadu.com [91.218.175.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F13533EDAB6
-	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 11:59:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 322523EDAB6
+	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 12:04:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781179183; cv=none; b=Yk+IUOIwheOxheFGJalYUBmGdteqRQsBADAj+/hzcjjTBpeVtKM8fTKkxulhiLUCfPUeYJQfaAMjy3Hxjh70S58PnQTMNEeDiVT5YNO5dh+o4RWkoBBvLGsjEDFWgAnbhVK3laA6ZteuXWy1e/B8eraCak5LBTwqyi2sKDsTHr8=
+	t=1781179466; cv=none; b=h8pNTpBwtcu2BztwKBRNIpYG1FQSZ2tCajzzM25yvvmATFWxplRgnZbqnRidK1IPtcxB8ix6SexI8ChaBGyrfxUBMkkA+M4g/VN6nw9CVhjAloJQ3llbkPis0y3BOEYs6esueOlezD2fOhlrStmainRu42dtNkMfq/zlsG4gMG4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781179183; c=relaxed/simple;
-	bh=HXI+6KUA5mCzTZAPeYkUL5Bgn+onXknGZaQEl5FIVI8=;
+	s=arc-20240116; t=1781179466; c=relaxed/simple;
+	bh=sEAiz1VLA18B6EqKeEzrbhdLCmp9xlqT08l2BvnWjsw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=L5bC9pPwmJI/fvERzvWvAEcq82NrvwzNfwkTlHp0/GvMNw3sF1Yvq2+2VY/g3YaW1ShJSxpbi30Aq7IM/gLCnTmOdItAOmChqgEUCEtCavfUzTC0QNkG5WLJ0Epxl9wJQkzcXJMAjwwmIM4dwdqnPqyKoF8RLEd2YKCSbXmGOYo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=MNx8ytfX; arc=none smtp.client-ip=209.85.222.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=QK8JlZ/NtzyXD8pvjIWcZQoaKzKlF36QBIo1PmmiqYlI97w1Cp5ow/WLZgP6yg2TwW330bQWfC3+l3SkoakBdExqL0stNJvO/tYUcM3IWkjddLKjqkZnUrzzWiPjQXRPZg9LxLCPYxIUwtVGrUyfCHdJ7sVOcJmbR969M379fXc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=C7VD/ntP; arc=none smtp.client-ip=91.218.175.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="MNx8ytfX"
-Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-91562bf6c12so947229085a.2
-        for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 04:59:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1781179180; x=1781783980; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=tvizeKh300V4RgKQE8JEUwSI0zRPQK5L8Dj7T0K8bjs=;
-        b=MNx8ytfXkpk9nJsCrSJVTi+sKKiCQ0gREHxI1gW1OooINCqI/q+Gm1qE6nd+X0H9dw
-         KGlr0dO7uYMSVjxh+09pJKVd0zs5SD/8xEVIjITsFIeT0HiphuJTrMoYEIp+94mwh4Yp
-         CZJhbWVo1UfXIKv5nr5cEDmeedfao3WsNurzz8i1/mYiBXTtPOtMIW0YiYpsJRQvrsqO
-         1Bz1HzjN1fUJkGEmik736XfSUMdrRleQjkuTkg0dqB4m7AG7LEjqZblF5gH7MTJHqkha
-         TH8E8uzDbd0/tnXcsuHfcoiavP/MfopuFi8Ube/5bnBO4Ow0k8U3sfCgo+sCJlk2hyBA
-         Bj8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781179180; x=1781783980;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tvizeKh300V4RgKQE8JEUwSI0zRPQK5L8Dj7T0K8bjs=;
-        b=bkjvIZHsu8l+GIyf7QhvAivSN+5ig88e7txyNSOparJq+EeEOyrEe8cpphydTfuMF5
-         G8ZZ3zwp/LfPFDNyYLz9SqFiYFrLiaxASyqnoOtRg3RDD9uxGBylkdZjbKNDo1b/tuIv
-         NPLndzqohnoVYt4lsFT+J4WbXWOmSTIpUoBSjV/R9PI2Xc3EUpM2N0wdojZ0VF8OUsTG
-         LDpuGK0/64CriviDzMrCjoNcW4jHKF0hubkqyUXepgpbo1ZUfDHBc4OuPBCrMQmlbP36
-         3V7th+zi7OX2YdgOX2HTTvSrWBGa1/e6KhxLiCEt6gZGXGJRRE0keWWK1r1xh1mBEjfq
-         RzHQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+QTGAe3zSbVXzZt9natfKgOu2X7t7rgcguJsAO2qZ389VCPaHTefDUQR4yMfh8hcv4J8SI5A==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy2Z7VswP7Qr3gzT6Wjv80inyR25EB0OdHbFE0XkTHMOqapBrnv
-	8Tg/7NLNj7P6Zu+Y3OuPDLGOkL8dYUExSwqfiQuQSTV0rZuqvaxRxn0KN3MsjlUk5eU=
-X-Gm-Gg: Acq92OEWtP2Uqy26jS7MSkgsGWHygzTARRDCcOGaRuaTdcBY6uz33+CSwRTt2SWlrb8
-	dcGUXkeaDPxxL2c//r3POAFzWnlsBnsapZk98gpasYb0fyhkmVGSPk72nNK2/btfhe9v0ymEkuM
-	ybn2Jx872IQ2bHYu6rDBcYxyETah3SxgI58+FbOjvBtGp4K4FM19evzX4vYFI6a4kI93j4PNBZJ
-	XmPkNaVOdqJd4kq8MuLCG2kdezIvyBTGNRE+kTBWBFky9E4GR/trB/8ykhLS0mcqMZRuTkZR8xC
-	jHqtzuSv5zsZCveO0Gy8r7824XbhZbIyED/JnH7TGDhg3dLFasr6nFj7pkV1yMzyrFWJstaVz3e
-	vBsdizUo5Z5aKVSp7dMgn5VcNl9ttxb179+n7IIFtXPA1gfCBmyGNx0/qPHLNo5BfZ+caW8MeBF
-	GxoYPyiEvxSmkot3cd9mcjdXNvZldrk20M+Xxi7O6ijG3u/Dk2i5tRU0yn1/u+CNFFkWEhY9KIM
-	4yR2MG6GAPwiMczCZcZBeTGYyA=
-X-Received: by 2002:a05:620a:2681:b0:914:b65f:6abe with SMTP id af79cd13be357-9160ac976ffmr356715185a.5.1781179179928;
-        Thu, 11 Jun 2026 04:59:39 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-9160adf5832sm163280985a.31.2026.06.11.04.59.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Jun 2026 04:59:39 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wXe4Q-00000005hL0-1GzB;
-	Thu, 11 Jun 2026 08:59:38 -0300
-Date: Thu, 11 Jun 2026 08:59:38 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Logan Gunthorpe <logang@deltatee.com>
-Cc: "Li,Rongqing" <lirongqing@baidu.com>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Leon Romanovsky <leon@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"hch@lst.de" <hch@lst.de>
-Subject: Re: =?utf-8?B?562U5aSNOiBb5aSW6YOo6YKu5Lu2?=
- =?utf-8?Q?=5D_Re=3A_=5BPATCH=5D_iommu=2Fdma-iommu?= =?utf-8?Q?=3A?= Fix
- wrong scatterlist length assignment in P2PDMA path
-Message-ID: <20260611115938.GF1066031@ziepe.ca>
-References: <20260530112852.2321-1-lirongqing@baidu.com>
- <c666e384-b365-4891-a01d-736948b995bc@deltatee.com>
- <5e2f30a4121e4672ab309460630d011b@baidu.com>
- <c441256c-e4f6-427f-9f25-7570c991a420@deltatee.com>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="C7VD/ntP"
+Date: Thu, 11 Jun 2026 20:03:53 +0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1781179452;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=f/j69pXYfj34ZmqA6bJCKc0nePFg+h49mJ8/N7zh1iA=;
+	b=C7VD/ntPHBl4YIG9Watr5T2GZLCvEmAzup5tfdjNbozip65PyigVCCrPseQbQKMgC2+M7G
+	fYJkNSWFsX/dRktAsP7CNtY62sQ3fk1oEHQwJa+H4KpymFRmYbGmZ4jTCJo6jBN0nw2upe
+	Z54mPkCYOx99N+izHFLdL+L2Fx6cijE=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Baoquan He <baoquan.he@linux.dev>
+To: Wandun <chenwandun1@gmail.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	loongarch@lists.linux.dev, linux-riscv@lists.infradead.org,
+	devicetree@vger.kernel.org, kexec@lists.infradead.org,
+	iommu@lists.linux.dev, zhaomeijing@lixiang.com,
+	Rob Herring <robh@kernel.org>, saravanak@kernel.org, bhe@redhat.com,
+	rppt@kernel.org, pjw@kernel.org, palmer@dabbelt.com,
+	aou@eecs.berkeley.edu, chenhuacai@kernel.org, kernel@xen0n.name,
+	catalin.marinas@arm.com, will@kernel.org, alex@ghiti.fr,
+	akpm@linux-foundation.org, pasha.tatashin@soleen.com,
+	pratyush@kernel.org, ruirui.yang@linux.dev,
+	m.szyprowski@samsung.com, robin.murphy@arm.com
+Subject: Re: [PATCH v3 00/11] kdump: reduce vmcore size and capture time
+Message-ID: <aiqkKe1gXPZ5LZ7t@MiWiFi-R3L-srv>
+References: <20260527032917.3385849-1-chenwandun1@gmail.com>
+ <7ed207fa-4c86-426a-8570-495902ce04c3@gmail.com>
+ <a3993db0-6975-455d-9674-4fd7cfcf80fc@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <c441256c-e4f6-427f-9f25-7570c991a420@deltatee.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a3993db0-6975-455d-9674-4fd7cfcf80fc@gmail.com>
+X-Migadu-Flow: FLOW_OUT
 
-On Tue, Jun 02, 2026 at 09:42:40AM -0600, Logan Gunthorpe wrote:
-> Hi Li,
+On 06/11/26 at 11:09am, Wandun wrote:
 > 
-> On 2026-06-02 00:12, Li,Rongqing wrote:
-> >>> Fixes: a25e7962db ("PCI/P2PDMA: Refactor the p2pdma mapping helpers")
-> >>> Signed-off-by: Li RongQing <lirongqing@baidu.com>
-> >>
-> >> Hmm, I thought I had tested this stuff pretty thoroughly so I'm surprised I
-> >> missed that. But I guess seeing the users of these specifically don't allow
-> >> mixing with anonymous memory the vast majority of tests would only have
-> >> one segment.
-> >>
-> >> Can you confirm that you've reproduced and tested this and it actually fixes a
-> >> bug? Not just seeing something that looks strange. I have a vague feeling it
-> >> was intentional but looking at the code it looks wrong to me too.
-> >>
-> >> Thanks,
-> >>
-> > Cc: Christoph Hellwig
-> > 
-> > Thanks for your feedback!
-> > 
-> > This was found via code inspection. You are right that if nents == 1, or if nents > 1 but all segments happen to have the exact same length, this typo remains benign by pure coincidence.
-> > 
-> > However, for a multi-segment scatterlist with varying lengths (e.g., a short 2KB head segment followed by standard 4KB segments), sg_dma_len(s) will mistakenly assign the 2KB head length to all subsequent 4KB segments. This will inevitably lead to silent data truncation or IOMMU page faults.
-> > 
-> > Since sg_phys(s) correctly takes the current segment's address, sg_dma_len(s) should definitely use s->length to match it.
-> > 
-> > I don't have a specific P2PDMA test rig to force multi-segment lists on hand right now, but the typo and its impact on varied segment lengths seem deterministic.
 > 
-> Ok, yeah, I think you are correct. My tests that ran multiple segments
-> happened to all have the same length. But I don't have the hardware I
-> used at the moment so I can't test it either.
+> On 6/11/26 10:09, Wandun wrote:
+> > 
+> > 
+> > On 5/27/26 11:29, Wandun Chen wrote:
+> >> From: Wandun Chen <chenwandun@lixiang.com>
+> >>
+> >> On SoCs that carve out large firmware-owned reserved memory (GPU
+> >> firmware, DSP, modem, camera ISP, NPU, ...), kdump currently dumps
+> >> those carveouts as part of system RAM even though their contents are
+> >> firmware state that is not useful for kernel crash analysis.
+> >>
+> >> This series introduces an opt-in 'dumpable' flag [1] on struct
+> >> reserved_mem and uses it to filter the elfcorehdr PT_LOAD ranges on
+> >> DT-based architectures (arm64, riscv, loongarch). By default reserved
+> >> regions are treated as non-dumpable; CMA regions are explicitly opted
+> >> in because their pages are returned to the buddy allocator and may
+> >> carry key crash-analysis data.
+> >>
+> >> The series is organized as follows:
+> >> Patches 1-3: Pre-existing fixes and a small prep change.
+> >> Patches 4-5: Restructure to allow appending /memreserve/ entries.
+> >> Patches 6-7: Add a dumpable flag and append /memreserve/ entries.
+> >> Patch 8: Add generic kdump helpers.
+> >> Patches 9-11: Wire the helpers into arm64, riscv and loongarch kdump
+> >>                elfcorehdr preparation.
+> > Hi,
+> > 
+> > Gentle ping on this series.
+> > 
+> > Status summary:
+> > -patch 03: respun separately per Rob's suggestion, picked up for 7.2
+> > -patch 06: Acked-by: Marek Szyprowski -patch 09: Acked-by: Will Deacon
+> > The remaining patches (01, 02, 04, 05, 07, 08, 10, 11) are still
+> > awaiting review. your feedback would be greately appreciated. I know we
+> > are at the end of 7.1 -rc cycle, I don't want to rush this series, just
+> > collecting more feedback, and will send next version based on 7.2-rc1.
+> > If spliting the series into smaller logical group would make review
+> > easier, please let me know. Best regards, Wandun
 > 
-> Reviewed-by: Logan Gunthorpe <logang@deltatee.com>
+> Apologies for the formatting issue in my previous email.
+> Here is the properly formatted version.
+> 
+> Gentle ping on this series.
 
-Rongqing can you please send a proper series with both of these fixes
-without threading so Joerg can pick them up?
+Thanks for the effort, the overral looks good to me at 1st glance. I will
+check if there's concern on generic part. And meanwhile, I am wondering
+if there's any chance x86 or other ARCH-es w/o OF/FDT can also choose to
+not dump some areas, e.g GPU stolen memory. Surely, that's another story.
 
-Thanks,
-Jason
+> 
+> Status summary:
+> - patch 03: respun separately per Rob's suggestion, picked up for 7.2
+> - patch 06: Acked-by: Marek Szyprowski
+> - patch 09: Acked-by: Will Deacon
+> 
+> The remaining patches (01, 02, 04, 05, 07, 08, 10, 11) are still
+> awaiting review. Your feedback would be greatly appreciated.
+> 
+> I know we are at the end of 7.1-rc cycle, I don't want to rush this
+> series, just collecting more feedback, and will send next version based
+> on 7.2-rc1.
+> 
+> If splitting the series into smaller logical groups would make review
+> easier, please let me know.
+> 
+> Best regards,
+> Wandun
+> 
+> 
+> >>
+> >> v2 --> v3:
+> >> 1. Fix out-of-bounds issue if device tree lacks /reserved-memory node.[2]
+> >> 2. Fix UAF issue when alloc_reserved_mem_array() fails.
+> >> 3. Add some prepare patches.
+> >>
+> >> v1 --> v2:
+> >> 1. v1 added an opt-out DT property ('linux,no-dump'). Per Rob's
+> >>     feedback [1], v2 drop that property and exclude reserve memory
+> >>     by default.
+> >> 2. Split some prepared patches from the original patches.
+> >> 3. Address coding-style comments on patch 5 from Rob.
+> >>
+> >> [1] https://lore.kernel.org/lkml/20260506144542.GA2072596-
+> >> robh@kernel.org/
+> >> [2] https://sashiko.dev/#/patchset/20260520091844.592753-1-
+> >> chenwandun%40lixiang.com?part=4
+> >>
+> >> Wandun Chen (11):
+> >>    of: reserved_mem: handle NULL name in of_reserved_mem_lookup()
+> >>    kexec/crash: provide crash_exclude_mem_range() stub when
+> >>      CONFIG_CRASH_DUMP=n
+> >>    of: reserved_mem: avoid post-init UAF when alloc_reserved_mem_array()
+> >>      fails
+> >>    of: reserved_mem: zero total_reserved_mem_cnt if no valid
+> >>      /reserved-memory entry
+> >>    of: reserved_mem: split alloc_reserved_mem_array() from
+> >>      fdt_scan_reserved_mem_late()
+> >>    of: reserved_mem: add dumpable flag to opt-in vmcore
+> >>    of: reserved_mem: save /memreserve/ entries into the reserved_mem
+> >>      array
+> >>    of: reserved_mem: add kdump helpers to exclude non-dumpable regions
+> >>    arm64: kdump: exclude non-dumpable reserved memory regions from vmcore
+> >>    riscv: kdump: exclude non-dumpable reserved memory regions from vmcore
+> >>    loongarch: kdump: exclude non-dumpable reserved memory regions from
+> >>      vmcore
+> >>
+> >>   arch/arm64/kernel/machine_kexec_file.c     |   6 ++
+> >>   arch/loongarch/kernel/machine_kexec_file.c |   6 ++
+> >>   arch/riscv/kernel/machine_kexec_file.c     |   4 +
+> >>   drivers/of/fdt.c                           |  11 +-
+> >>   drivers/of/of_private.h                    |   3 +
+> >>   drivers/of/of_reserved_mem.c               | 117 +++++++++++++++++++--
+> >>   include/linux/crash_core.h                 |   6 ++
+> >>   include/linux/of_reserved_mem.h            |  15 +++
+> >>   kernel/dma/contiguous.c                    |   1 +
+> >>   9 files changed, 157 insertions(+), 12 deletions(-)
+> >>
+> > 
+> 
