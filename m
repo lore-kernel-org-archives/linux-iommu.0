@@ -1,150 +1,132 @@
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 890283BA24E
-	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 11:50:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CDFC3A3822
+	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 11:52:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781178618; cv=none; b=Upv+7lqdkxVt83qfjhnYMAIfY1pir/m8a3YcyDFfkFMCz2P55NsgY0HKp9k5drZwhAzV9dKTbZSqCMkOUEZGzilyg5sDcmAkQEgPluHIpffEyA6LCCMo58dJnM45JAwO9rheH5UGFVT4Y8iP/lMbjRUKuUOpUVph8pBhrWU9d10=
+	t=1781178780; cv=none; b=lPMylAI8qL9qHqP38VR3u/+DUVAahsS6ZEcC2m5CIJnvGtlDEi+jCyEpkwa8a5wDXYLq73HHFQsTL4GlD1CdOjR6EoKOB/Jh6o1f7Bynw5XgNe6eVUZUQ1T85X7KtErWEDcmDFSdoJixdNtJaOkActQIaGo/NRLy+Bl4zAeEjew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781178618; c=relaxed/simple;
-	bh=UmW9Vbd3ZtejVIzFUGtLzNmEE0KC+mhPuzfVyC+exsY=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=HwbJIz3yzh/QYpZRqlnRgso4BPhsPWJVCnZ9ZErGtufEPIrx3crFXSE8Godh0Nq1c3SBHt4KTJDirZT08N0Hx6Na3BfKh5x9E0SUsjG5FsOTS1zC9FidIjEHKZIhv5UwZOiQ0hhuF7443Si3fDBtL+xO4Q4VpSMWpXxakumtdYw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=SU0EPj2U; arc=none smtp.client-ip=209.85.221.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1781178780; c=relaxed/simple;
+	bh=WUyQGEg3IhjjI903PicK5vtKZGQFTCTKRuYYQ7A3Gfc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DefBYl59XVTZpS8zy1ZGvViysL+vwx+/Fn8+55itutc+CwcupvUEekHrL/Jr6DDiUNUcUxRlTtcoEkvy10dsKZvrcGnDHyzKLdWSgr3UfHaBmbXIGb41Rg1QmjzgccPXiQq+VjYFY00tQGozR3dNePrTryG+kf+8Xlq7Whya61U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=NGbZp9PZ; arc=none smtp.client-ip=209.85.222.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="SU0EPj2U"
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-45ee224f5fdso837652f8f.0
-        for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 04:50:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="NGbZp9PZ"
+Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-9156b74006aso566857885a.0
+        for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 04:52:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1781178615; x=1781783415; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=By5jxDRfMhWNJ3zdMqbqgKEuQjBAiR2dgY0SOpXrO1o=;
-        b=SU0EPj2Us0ceCJ8TbEnR7titiyNlHBxJio35+26/Badcm/cdAIj448XyQbxNHQK/uv
-         1X8wre3N7niaBtTspFNz2FWoFyepI1J6GNE9bHH23pTl+bwJM2WVnPH7l0dXFrT3XL/x
-         lDP4LXRehOJpvyksiCOBPOqvqfzFWK3ARx93/3cPXtUzHcd902N3kKmL70AEtmkcNCUB
-         s5NjZS2Ri9pA7ERIdTJmpC3WNQJJzhtWb97NuRoAXFzguAiYcueDJUZUUjEXB8z8sZgc
-         VFH01dFyaiTf76b7kiYoiQTWL5czDpHHyWEiyWyHlYUsQyrtET2lWsxgcKxZiPewPOWc
-         +ckA==
+        d=ziepe.ca; s=google; t=1781178779; x=1781783579; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=LaGF/LBsgX/NMMW/EFlhJVd5spivYjK32XED/7Qltow=;
+        b=NGbZp9PZgQFFc3Cx3W+P5Wev/arTMNvlJCtbMjz5WtKN3NiORHiBMv4hsPP0gItZXK
+         rjnUj+6zgIMMB+8ZZOk09BLkQtA4Cg9fe5gTZO4cIAuLj9w1VKU+ixYHVt5gzeTNtGre
+         R75LpTpyhMMdvKWY/RoI9cMHAdIz9fQcGDc+zxvIZkJ86xknC89jykkWODxvWtFw3XTY
+         PRzbfa66PoBtz0MqniBlOtHQfXQjde958UqwVkiuBa5PmVwuQ6sSlS8rpZtbyL6OkagH
+         Cg9ueb1kr/5SI9tdRg0vAsy13LSn9oie0VcKWAyoexD44Fp+4yJe0qU5fYALCmJAGqV2
+         yhRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781178615; x=1781783415;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=By5jxDRfMhWNJ3zdMqbqgKEuQjBAiR2dgY0SOpXrO1o=;
-        b=smDFP9NWRGkn7G3Q4NIafie26ef3HJsk+n/yIJc7y/w4JNsFHeEBEHTEy0zw6SRwNp
-         gNIPxaQ9JwVC38CJ2XsnGOjxG8uNVEWMMZvO32eSo5kR6Wpv0/FlBG/NzOtNJMqWdWwb
-         cCjCGiO4cbnElsRjBTiCW+HE01VC+ramDY2BroTXBdVzjMzX5WRE3POzaYx2qErWxSlt
-         DObmgDuuyMs3FaLqysJ85KjLPhtGKV6aRbJYYCp9tiLNGE4c7vGe93mc8RPL95UN8KNT
-         tZtJbCrrTF8Gjw+n4mNlbaaCERLEfPp5FPUjVlm2QfMyAALwwgZ5CAOT/X+nn8lHO8zp
-         ruzg==
-X-Forwarded-Encrypted: i=1; AFNElJ+sp3IpDooS9uNJoowxC7HXpG+PHMFKH7rNAzoqcjLjHGMJbWFSNzleqtmcztG+cUUxiBiyFw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyiFkMu69wUwPCsFnXiLUSGFgHZQdJHJjY2GCf4jr7JIlMXtvU/
-	21DUsKDlvV18mmwAbectoxB6UCvrftUEHnc5b8rAabIt1kp++qLO83+FOzcNxJdVKfQ=
-X-Gm-Gg: Acq92OG2afJa0YVsOy28w+cPW+s9CAZJSlcSrk4Ke0LV1Hx1sCMO/2r0wD79jJLryUQ
-	bJ553+IcA0VDzoHDhFKOP6bA0d/Drj/UQ0n3MasaAAJD13hkqYdhvNuEPHBwECL4fyl/j5s3NR0
-	+4/yDugkOBDKHqxUclJnotn4chUXbijcA9aVC+TkGLbXB7Ddm10FoS3BqzNcczZaUu9P9q8Xw4P
-	JCyBkBfTdFJtat3nhBqz/f7kiDtEEmykDLZKuSV3QT/HYaMctJWMPsEqt7gDO2StcE7rxSCcWKG
-	vZ+GrJ+ELzuPObn/nrcod+U1x+Haj2gfdt2Nmxt+vJzSXlbX0UyzJq6ONjoi7adNzqFPaqOY1R8
-	pSV0aL5Qzsaxx1M0dY5gnR2FvK/q7htN6cET+VF2FKIBUh8PhStODV8JKgR9WmEEc9zXXPbgkkn
-	b9cJwaHBskJ+DGhwAHR3GPe0nsLnr+Hd4p7V1BtdQ7T8fFMFFPqclH5xKj/KREeiCn1U2JC4YoK
-	tm8clSMjV4xngpJ/A7Yaxc/zx5PmevBYM1B5A==
-X-Received: by 2002:a05:6000:2508:b0:460:1bf8:c959 with SMTP id ffacd0b85a97d-460673e3ae5mr1690022f8f.0.1781178614930;
-        Thu, 11 Jun 2026 04:50:14 -0700 (PDT)
-Received: from mordecai (dynamic-2a00-1028-83b8-1e7a-3010-3bd6-8521-caf1.ipv6.o2.cz. [2a00:1028:83b8:1e7a:3010:3bd6:8521:caf1])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4601f2ed944sm83042430f8f.13.2026.06.11.04.50.12
+        d=1e100.net; s=20251104; t=1781178779; x=1781783579;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=LaGF/LBsgX/NMMW/EFlhJVd5spivYjK32XED/7Qltow=;
+        b=Nd3n1j2+FDC0fYrY4O3KCt1zg2yg91ppCE8BmLHXuf8Q7kxWab8ZSDMArUPKx+sDXq
+         E0KE8We5jnvyxcwGiIzTtFDcPBIYrkVmfaDjDLDcz2KX4fkzTz3oVzJ+6y+qvpSFz5aP
+         5QdyV0GXr9vwXualBBUiMvojPwxuk29EsHBYTZF4snyhjlf/ZPTRMZZV5UaFlXx48qD/
+         gPT8N8Ckpjl7JdwL9nyjwtrWeBRAQz7RTixzjKdBDFZSqWZgFT04B1V5uARFTEfXy5hg
+         /BZTnkD3i6g2YHYBPHpLPymgWVnGRVaILTKZtLUuuaW7lhyACxm8B/9vp0lIDTmPF3wC
+         6dIw==
+X-Forwarded-Encrypted: i=1; AFNElJ84yPRZFtzf7E2val/evasfuYHRY1AY/7JKkq139YGjF/26UqKBrBXNlldNwovJQ3EjDc+8zA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzJRs1uZTX8AR6n0GVUIua48h/wpGrpb05WFoJU8aGJP550b3rS
+	/OAjTVhEUzJZretMUxAmBT9Z0pjhU0W/sJBVqeHwUBpe8eZncuOYaOWnVVvjpF8sfSo=
+X-Gm-Gg: Acq92OEKYnwxFkxdvSEyOveMPqEhZiwEuxWl2P9f/0qOjEYNGks+6Hx14wqwkbG3f41
+	AxX2C7VaOLyd4B7nk0ZErmtCBupu5v552kjzENS3X8C8p35mdwtr3avSedX7GEcyYe9douJzC74
+	y2XvGlTbo0soHe/sX209Cjus5q9d0LLUCiOkcIlaBbt9XxPpQePJsYzRGuyPvhHNww7jrTZk8ia
+	VIhagJpgVTpAkLk3DrHOqWaix0xwsoPQyyA58j5zncTFG7l2pqICmXOP2bem9wq6NwYbJvb/bsQ
+	WPXVlNNWZwezhxhw4ZNmk2nYPEuLgOTYpFLlpAX4cnWn1ILyGmzT5IZFgAW/+9+umezaFkvpFiX
+	qMud8Q7iAEeNT9m+hceP22x3avnFUH8mAd80KwxjfvhBw/3yKXM5pFezWAsOi6NtGZJWIagCp//
+	t4NSexgVd/JVaUIvyiMgB3+oa7eeKWVS1WljyJwMWNovmG/wWNKU/w062c26OsoCcB+boUACHKk
+	BLDJMmPJvddYSIg
+X-Received: by 2002:a05:620a:27d4:b0:915:fad5:90a5 with SMTP id af79cd13be357-9160ad933fdmr349598985a.54.1781178778581;
+        Thu, 11 Jun 2026 04:52:58 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8d1eaf99e53sm15615096d6.41.2026.06.11.04.52.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Jun 2026 04:50:14 -0700 (PDT)
-Date: Thu, 11 Jun 2026 13:50:04 +0200
-From: Petr Tesarik <ptesarik@suse.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-coco@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>, Marek
- Szyprowski <m.szyprowski@samsung.com>, Will Deacon <will@kernel.org>, Marc
- Zyngier <maz@kernel.org>, Steven Price <steven.price@arm.com>, Suzuki K
- Poulose <Suzuki.Poulose@arm.com>, Catalin Marinas
- <catalin.marinas@arm.com>, Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh
- <smostafa@google.com>, Alexey Kardashevskiy <aik@amd.com>, Dan Williams
- <dan.j.williams@intel.com>, Xu Yilun <yilun.xu@linux.intel.com>,
- linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Madhavan
- Srinivasan <maddy@linux.ibm.com>, Michael Ellerman <mpe@ellerman.id.au>,
- Nicholas Piggin <npiggin@gmail.com>, "Christophe Leroy (CS GROUP)"
- <chleroy@kernel.org>, Alexander Gordeev <agordeev@linux.ibm.com>, Gerald
- Schaefer <gerald.schaefer@linux.ibm.com>, Heiko Carstens
- <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, Christian
- Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle
- <svens@linux.ibm.com>, x86@kernel.org, Jiri Pirko <jiri@nvidia.com>,
- Michael Kelley <mhklinux@outlook.com>
-Subject: Re: [PATCH v6 04/20] dma-pool: track decrypted atomic pools and
- select them via attrs
-Message-ID: <20260611135004.70d48daa@mordecai>
-In-Reply-To: <20260611113740.GB1066031@ziepe.ca>
-References: <20260604083959.1265923-1-aneesh.kumar@kernel.org>
-	<20260604083959.1265923-5-aneesh.kumar@kernel.org>
-	<20260609143242.GK2764304@ziepe.ca>
-	<yq5aa4t1myw4.fsf@kernel.org>
-	<20260611113740.GB1066031@ziepe.ca>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-suse-linux-gnu)
+        Thu, 11 Jun 2026 04:52:58 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wXdxx-00000005gee-1rIy;
+	Thu, 11 Jun 2026 08:52:57 -0300
+Date: Thu, 11 Jun 2026 08:52:57 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Michael Bommarito <michael.bommarito@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/vt-d: Clear Present bit before tearing down
+ scalable-mode context entry
+Message-ID: <20260611115257.GD1066031@ziepe.ca>
+References: <20260528025557.3209367-1-michael.bommarito@gmail.com>
+ <b0278f4d-681c-4731-bc8d-130a56e6d935@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b0278f4d-681c-4731-bc8d-130a56e6d935@linux.intel.com>
 
-On Thu, 11 Jun 2026 08:37:40 -0300
-Jason Gunthorpe <jgg@ziepe.ca> wrote:
-
-> On Thu, Jun 11, 2026 at 10:55:47AM +0530, Aneesh Kumar K.V wrote:
-> > Jason Gunthorpe <jgg@ziepe.ca> writes:
-> >   
-> > > The sashiko note does look legit though:
-> > >
-> > > 	if (IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
-> > > 	    !gfpflags_allow_blocking(gfp) && !coherent) {
-> > > 		page = dma_alloc_from_pool(dev, PAGE_ALIGN(size), &cpu_addr,
-> > > 					   gfp, attrs, NULL);
-> > > 		if (!page)
-> > > 			return NULL;
-> > >
-> > > I don't see anything doing the force_dma_unencrypted test along this
-> > > callchain..
-> > >
-> > > I guess it should be done one step up in dma_alloc_attrs() instead of
-> > > in dma_direct_alloc()?
-> > >  
+On Mon, Jun 01, 2026 at 01:35:08PM +0800, Baolu Lu wrote:
+> On 5/28/26 10:55, Michael Bommarito wrote:
+> > device_pasid_table_teardown() zeroes the 128-bit scalable-mode context
+> > entry with context_clear_entry() while the Present bit is still set. This
+> > creates a window where the hardware can fetch a torn entry, with some
+> > fields already zeroed while Present is still set, leading to unpredictable
+> > behavior or spurious faults. The context-cache invalidation is issued only
+> > after the entry has been zeroed, and intel_pasid_free_table() then frees
+> > the PASID directory pages, so the IOMMU can keep walking a stale Present=1
+> > entry that points at freed memory.
 > > 
-> > I think we should do something similar to what dma_map_phys() does here,
-> > considering that we only support DMA direct with DMA_ATTR_CC_SHARED/DMA_ATTR_ALLOC_CC_SHARED.  
+> > While x86 provides strong write ordering, the compiler may reorder the two
+> > 64-bit writes to the entry, and the hardware fetch is not guaranteed to be
+> > atomic with respect to multiple CPU writes.
+> > 
+> > Commit c1e4f1dccbe9d ("iommu/vt-d: Clear Present bit before tearing down
+> > context entry") fixed this exact pattern in domain_context_clear_one() and
+> > the copied-context path, but device_pasid_table_teardown() was not
+> > converted.
+> > 
+> > Align it with the "Guidance to Software for Invalidations" in the VT-d
+> > spec, Section 6.5.3.3, using the same ownership handshake as the sibling
+> > fix: clear only the Present bit, flush it to the IOMMU, perform the
+> > context-cache invalidation, and only then zero the rest of the entry.
+> > 
+> > Fixes: 81e921fd32161 ("iommu/vt-d: Fix NULL domain on device release")
+> > Signed-off-by: Michael Bommarito<michael.bommarito@gmail.com>
+> > Assisted-by:Claude:claude-opus-4-7
+> > ---
+> > Found by static analysis while auditing the callers of context_clear_entry()
+> > for the same teardown ordering that c1e4f1dccbe9d addressed. This site is
+> > reachable only in scalable mode, so it does not manifest on the legacy-mode
+> > hardware available to me; I could not trigger a runtime fault and the change
+> > is verified by code inspection only, on the same basis as the sibling fix.
+> > Compile-tested on x86_64 with CONFIG_INTEL_IOMMU; no new warnings.
+> > 
+> >   drivers/iommu/intel/pasid.c | 4 +++-
+> >   1 file changed, 3 insertions(+), 1 deletion(-)
 > 
-> Yeah, I think that's the right idea for now..
-> 
-> > +	if (force_dma_unencrypted(dev))
-> > +		attrs |= DMA_ATTR_ALLOC_CC_SHARED;
-> > +
-> > +	is_cc_shared = attrs & DMA_ATTR_CC_SHARED;
-> > +
-> >  	if (dma_alloc_direct(dev, ops) || arch_dma_alloc_direct(dev)) {
-> >  		cpu_addr = dma_direct_alloc(dev, size, dma_handle, flag, attrs);
-> > +	} else if (is_cc_shared) {
-> > +		trace_dma_alloc(dev, NULL, 0, size, DMA_BIDIRECTIONAL, flag,
-> > +				attrs);  
-> 
-> But it would be clearer to put the test in the iommu_ functions I
-> think, since they are the ones that have the issue. We will need to
-> fix it someday..
-> 
-> I think we can ignore the op-> functions, arches cannot support CC and
-> still use dma_map_ops..
+> Queued for linux-next. Thank you!
 
-Hm, sounds reasonable. Should we probably enforce this at configure or
-build time?
+What happened to your work to move over to the ARM updator that
+doesn't have any of these bugs? :)
 
-Petr T
+Jason
