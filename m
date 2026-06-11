@@ -1,80 +1,77 @@
-Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
+Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CDFC3A3822
-	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 11:52:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACFC93BF69C
+	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 11:56:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781178780; cv=none; b=lPMylAI8qL9qHqP38VR3u/+DUVAahsS6ZEcC2m5CIJnvGtlDEi+jCyEpkwa8a5wDXYLq73HHFQsTL4GlD1CdOjR6EoKOB/Jh6o1f7Bynw5XgNe6eVUZUQ1T85X7KtErWEDcmDFSdoJixdNtJaOkActQIaGo/NRLy+Bl4zAeEjew=
+	t=1781178975; cv=none; b=mK6/+BVi/V0HysKxOFrSw4xvQOnvTOXr0brPjuRqpNhWFZwm+hvPE6Nma1gKDptjY+vW3Lsv/edEjaEKJ+2oxFDA5FvNMZLxqqOiJ/MNV1qY8f/sY6p8BSGyJ0IevdFNU7FXCEEx1/NQ/lu9qxh4jPSdO0GEgokXfQ8diaSyZt8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781178780; c=relaxed/simple;
-	bh=WUyQGEg3IhjjI903PicK5vtKZGQFTCTKRuYYQ7A3Gfc=;
+	s=arc-20240116; t=1781178975; c=relaxed/simple;
+	bh=Iq4WLN3UdQuYTUuisLYn2W2X+Ndr+qrOMlfb30nqMdg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DefBYl59XVTZpS8zy1ZGvViysL+vwx+/Fn8+55itutc+CwcupvUEekHrL/Jr6DDiUNUcUxRlTtcoEkvy10dsKZvrcGnDHyzKLdWSgr3UfHaBmbXIGb41Rg1QmjzgccPXiQq+VjYFY00tQGozR3dNePrTryG+kf+8Xlq7Whya61U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=NGbZp9PZ; arc=none smtp.client-ip=209.85.222.181
+	 Content-Type:Content-Disposition:In-Reply-To; b=iGzBFpq9Gron0pbFMS20UceSL2rqUBFPtKEXj2jfGIlHFZ4pcUrIUarWrZOFNA3kdcq9PfHprrZKtB0Z6J3yNV7RmnKa9u7O25UJN9SPv5jLpxPZwaUXvEKMqS4/o60kZ47uXtRrywsBholPh3HsY+qQzGVyEK3ijWuGTgT8rpM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Hs3K5SpP; arc=none smtp.client-ip=209.85.219.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="NGbZp9PZ"
-Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-9156b74006aso566857885a.0
-        for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 04:52:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Hs3K5SpP"
+Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-8ccdf8d4ac5so83468836d6.1
+        for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 04:56:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1781178779; x=1781783579; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1781178973; x=1781783773; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=LaGF/LBsgX/NMMW/EFlhJVd5spivYjK32XED/7Qltow=;
-        b=NGbZp9PZgQFFc3Cx3W+P5Wev/arTMNvlJCtbMjz5WtKN3NiORHiBMv4hsPP0gItZXK
-         rjnUj+6zgIMMB+8ZZOk09BLkQtA4Cg9fe5gTZO4cIAuLj9w1VKU+ixYHVt5gzeTNtGre
-         R75LpTpyhMMdvKWY/RoI9cMHAdIz9fQcGDc+zxvIZkJ86xknC89jykkWODxvWtFw3XTY
-         PRzbfa66PoBtz0MqniBlOtHQfXQjde958UqwVkiuBa5PmVwuQ6sSlS8rpZtbyL6OkagH
-         Cg9ueb1kr/5SI9tdRg0vAsy13LSn9oie0VcKWAyoexD44Fp+4yJe0qU5fYALCmJAGqV2
-         yhRw==
+        bh=1yyl63jb1xDe2p0em50yKYVQR6uYI/TfEklW/8AWTuk=;
+        b=Hs3K5SpPCQLOg42kMSOh/cH0Xm7gcumC28qvBN5SnC/idwJ1YHizK/AfKIgEtzsaKV
+         FfnDAUDORthwXPXAeSNq/tsOORCc9p3jG64QZCGbWj2qguAG6j4PZG4uIIbGtZpp+P9v
+         YbwXD38ZaqGmvuECgP1MLy2tNPHtdTzu7Bouyhlhw/WdN26meR9maR6lTCrYOiEfDYDG
+         hweKElP5FJ99qwC8uxySpIqSMqFwZG4BezDl8SaGiaYKy7XaDKnUi2DnPzQiZR8MGM2M
+         3ZFTR+PWsTVI22+/0Z8YwvPKxc1ImQhADWFt1udCMlpKFhSim9Ku0PI43PJryE7284d7
+         dhdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781178779; x=1781783579;
+        d=1e100.net; s=20251104; t=1781178973; x=1781783773;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=LaGF/LBsgX/NMMW/EFlhJVd5spivYjK32XED/7Qltow=;
-        b=Nd3n1j2+FDC0fYrY4O3KCt1zg2yg91ppCE8BmLHXuf8Q7kxWab8ZSDMArUPKx+sDXq
-         E0KE8We5jnvyxcwGiIzTtFDcPBIYrkVmfaDjDLDcz2KX4fkzTz3oVzJ+6y+qvpSFz5aP
-         5QdyV0GXr9vwXualBBUiMvojPwxuk29EsHBYTZF4snyhjlf/ZPTRMZZV5UaFlXx48qD/
-         gPT8N8Ckpjl7JdwL9nyjwtrWeBRAQz7RTixzjKdBDFZSqWZgFT04B1V5uARFTEfXy5hg
-         /BZTnkD3i6g2YHYBPHpLPymgWVnGRVaILTKZtLUuuaW7lhyACxm8B/9vp0lIDTmPF3wC
-         6dIw==
-X-Forwarded-Encrypted: i=1; AFNElJ84yPRZFtzf7E2val/evasfuYHRY1AY/7JKkq139YGjF/26UqKBrBXNlldNwovJQ3EjDc+8zA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzJRs1uZTX8AR6n0GVUIua48h/wpGrpb05WFoJU8aGJP550b3rS
-	/OAjTVhEUzJZretMUxAmBT9Z0pjhU0W/sJBVqeHwUBpe8eZncuOYaOWnVVvjpF8sfSo=
-X-Gm-Gg: Acq92OEKYnwxFkxdvSEyOveMPqEhZiwEuxWl2P9f/0qOjEYNGks+6Hx14wqwkbG3f41
-	AxX2C7VaOLyd4B7nk0ZErmtCBupu5v552kjzENS3X8C8p35mdwtr3avSedX7GEcyYe9douJzC74
-	y2XvGlTbo0soHe/sX209Cjus5q9d0LLUCiOkcIlaBbt9XxPpQePJsYzRGuyPvhHNww7jrTZk8ia
-	VIhagJpgVTpAkLk3DrHOqWaix0xwsoPQyyA58j5zncTFG7l2pqICmXOP2bem9wq6NwYbJvb/bsQ
-	WPXVlNNWZwezhxhw4ZNmk2nYPEuLgOTYpFLlpAX4cnWn1ILyGmzT5IZFgAW/+9+umezaFkvpFiX
-	qMud8Q7iAEeNT9m+hceP22x3avnFUH8mAd80KwxjfvhBw/3yKXM5pFezWAsOi6NtGZJWIagCp//
-	t4NSexgVd/JVaUIvyiMgB3+oa7eeKWVS1WljyJwMWNovmG/wWNKU/w062c26OsoCcB+boUACHKk
-	BLDJMmPJvddYSIg
-X-Received: by 2002:a05:620a:27d4:b0:915:fad5:90a5 with SMTP id af79cd13be357-9160ad933fdmr349598985a.54.1781178778581;
-        Thu, 11 Jun 2026 04:52:58 -0700 (PDT)
+        bh=1yyl63jb1xDe2p0em50yKYVQR6uYI/TfEklW/8AWTuk=;
+        b=rkrEnaSq31vk4XK6N/HZxWw0vC7JdbNtK+hIV/0dsofiZiu//8RdsX86kE+FVn/ddR
+         0RqZbQsLQCRRh0wcKx+2y8LX6ZyQ1ggzBvaVDV138KSVPbpHeLTVeF8tCCYG8mdMvX05
+         6cd1TADZjQF7WYt/sfWB/t+SxY4bdFNY3BE0baBfdBPzgpO5feKSWNBFtj6BWuB0iFtD
+         +prULmyFSqyubwjKFZb/OoH9N9Jom29m1UBHVYOUSe5912p2nKRtWSATy6mTszSvctpn
+         B6yYviB4qtooe+39+v2BKwpFuRgLCBGNKzAm/AHVuQAXIY9/Xtw53JKZe8bo7LOg7w+x
+         dV4Q==
+X-Gm-Message-State: AOJu0YyZkH4iO0bwmKTuHahH4I2n1tJB099v22KdD6TRsT/iAs1ZUOGb
+	KAGwMbW+QlCye9CdeaAC7Qk5Hf7P1njdM/d5jbF7vZWA5WgraBIBM7YoHprHbC02TsM=
+X-Gm-Gg: Acq92OGg+kV37u1dpvYlgYAdaMHksf+6C4kVUQnM4orDrspRQxs2+DE2qh0/XRvdDon
+	Kpwc1DDl3mQWbx5/iUOdmsTsgMCiqZopGIRkAXeu8JaQooSrJhX9AJkXk0trVYwqgVD4IcNENqj
+	h69SvZqcdbte4AARvDGEdMj6ng56ksLCV5p9BRctuu8s951N5Vedm1D/uLHANUj05bfhcsPE9hr
+	iIveityUrGngnTsKJlcALtdIY+iRGJ8zKKMDq4rmjajmChYDi/xF8N9AeIyF1foCjVP0CrA8AtJ
+	Iwb0rSBYQ2rgtzL6+wKAzObAH3fxkcB+zL/41ZYRJfNjDb9nhzENlI/1VNrIF/MhImjMkSxgnUr
+	kpZnhp8NcyduqkHchvnI7N6z04ZerVAJzo7219d/XwlGmwYNPOdaKTU8XaCCr+rGkwcIe51pfpU
+	SI5kwW7ggRPB3E5Jpr4u0JMuoaIAfrjrseeSlr09/KyW6/ceVw2u6N2HD3xW1mufFCYcy510W7q
+	aVZSf10pditwIDv
+X-Received: by 2002:a05:6214:2a86:b0:8cc:ea7f:d3c8 with SMTP id 6a1803df08f44-8d1da5623a5mr39488366d6.30.1781178972636;
+        Thu, 11 Jun 2026 04:56:12 -0700 (PDT)
 Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8d1eaf99e53sm15615096d6.41.2026.06.11.04.52.57
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8d1e838f3a5sm16144646d6.18.2026.06.11.04.56.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Jun 2026 04:52:58 -0700 (PDT)
+        Thu, 11 Jun 2026 04:56:12 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1wXdxx-00000005gee-1rIy;
-	Thu, 11 Jun 2026 08:52:57 -0300
-Date: Thu, 11 Jun 2026 08:52:57 -0300
+	id 1wXe15-00000005gzM-2D5R;
+	Thu, 11 Jun 2026 08:56:11 -0300
+Date: Thu, 11 Jun 2026 08:56:11 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Michael Bommarito <michael.bommarito@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/vt-d: Clear Present bit before tearing down
- scalable-mode context entry
-Message-ID: <20260611115257.GD1066031@ziepe.ca>
-References: <20260528025557.3209367-1-michael.bommarito@gmail.com>
- <b0278f4d-681c-4731-bc8d-130a56e6d935@linux.intel.com>
+To: "Srivastava, Dheeraj Kumar" <dhsrivas@amd.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>, patches@lists.linux.dev
+Subject: Re: [PATCH 0/5] Improve the invalidation path in AMD
+Message-ID: <20260611115611.GE1066031@ziepe.ca>
+References: <0-v1-a7b77c25974e+115bf-iommupt_inv_amd_jgg@nvidia.com>
+ <83b8a0f3-2409-464d-a9e4-59b9eea926cd@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -83,50 +80,49 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b0278f4d-681c-4731-bc8d-130a56e6d935@linux.intel.com>
+In-Reply-To: <83b8a0f3-2409-464d-a9e4-59b9eea926cd@amd.com>
 
-On Mon, Jun 01, 2026 at 01:35:08PM +0800, Baolu Lu wrote:
-> On 5/28/26 10:55, Michael Bommarito wrote:
-> > device_pasid_table_teardown() zeroes the 128-bit scalable-mode context
-> > entry with context_clear_entry() while the Present bit is still set. This
-> > creates a window where the hardware can fetch a torn entry, with some
-> > fields already zeroed while Present is still set, leading to unpredictable
-> > behavior or spurious faults. The context-cache invalidation is issued only
-> > after the entry has been zeroed, and intel_pasid_free_table() then frees
-> > the PASID directory pages, so the IOMMU can keep walking a stale Present=1
-> > entry that points at freed memory.
-> > 
-> > While x86 provides strong write ordering, the compiler may reorder the two
-> > 64-bit writes to the entry, and the hardware fetch is not guaranteed to be
-> > atomic with respect to multiple CPU writes.
-> > 
-> > Commit c1e4f1dccbe9d ("iommu/vt-d: Clear Present bit before tearing down
-> > context entry") fixed this exact pattern in domain_context_clear_one() and
-> > the copied-context path, but device_pasid_table_teardown() was not
-> > converted.
-> > 
-> > Align it with the "Guidance to Software for Invalidations" in the VT-d
-> > spec, Section 6.5.3.3, using the same ownership handshake as the sibling
-> > fix: clear only the Present bit, flush it to the IOMMU, perform the
-> > context-cache invalidation, and only then zero the rest of the entry.
-> > 
-> > Fixes: 81e921fd32161 ("iommu/vt-d: Fix NULL domain on device release")
-> > Signed-off-by: Michael Bommarito<michael.bommarito@gmail.com>
-> > Assisted-by:Claude:claude-opus-4-7
-> > ---
-> > Found by static analysis while auditing the callers of context_clear_entry()
-> > for the same teardown ordering that c1e4f1dccbe9d addressed. This site is
-> > reachable only in scalable mode, so it does not manifest on the legacy-mode
-> > hardware available to me; I could not trigger a runtime fault and the change
-> > is verified by code inspection only, on the same basis as the sibling fix.
-> > Compile-tested on x86_64 with CONFIG_INTEL_IOMMU; no new warnings.
-> > 
-> >   drivers/iommu/intel/pasid.c | 4 +++-
-> >   1 file changed, 3 insertions(+), 1 deletion(-)
+On Tue, Jun 02, 2026 at 12:36:18PM +0530, Srivastava, Dheeraj Kumar wrote:
+> Hi Jason,
 > 
-> Queued for linux-next. Thank you!
+> On 3/27/2026 8:53 PM, Jason Gunthorpe wrote:
+> > Auditing this path reveals some unnecessary complexity and some
+> > confusion around end/size/last and types that may cause issues at the
+> > ULONG_MAX limit.
+> > 
+> > First, fix up the call chains so that the gather start/last is
+> > retained faithfully throughout. This avoids converting to a
+> > start/size, and avoids various type conversions along this path. Fix
+> > everything so the theoretical cases like start=0 last=U64_MAX work
+> > correctly.
+> > 
+> > Simplify all the calculations for alignment/etc to use trivial bit
+> > maths instead of the complicated versions. These are all intended to
+> > be no functional change.
+> > 
+> > Finally, add support for PDE=0, deriving it from the gather. PDE=0
+> > allows the HW to avoid scanning the page directory cache and
+> > supporting it should improve performance.
+> > 
+> > Jason Gunthorpe (5):
+> >    iommu/amd: Simplify build_inv_address()
+> >    iommu/amd: Pass last in through to build_inv_address()
+> >    iommu/amd: Have amd_iommu_domain_flush_pages() use last
+> >    iommu/amd: Make CMD_INV_IOMMU_ALL_PAGES_ADDRESS match the spec
+> >    iommu/amd: Control INVALIDATE_IOMMU_PAGES PDE from the gather
+> > 
+> >   drivers/iommu/amd/amd_iommu.h       |   4 +-
+> >   drivers/iommu/amd/amd_iommu_types.h |   2 +-
+> >   drivers/iommu/amd/iommu.c           | 175 +++++++++++++---------------
+> >   drivers/iommu/amd/pasid.c           |   2 +-
+> >   4 files changed, 87 insertions(+), 96 deletions(-)
+> > 
+> 
+> Tested across multiple IOMMU modes; no regressions were detected for this
+> series.
+> 
+> Tested-by: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
 
-What happened to your work to move over to the ARM updator that
-doesn't have any of these bugs? :)
+Joerg?
 
 Jason
