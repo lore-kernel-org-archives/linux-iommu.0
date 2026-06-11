@@ -1,203 +1,198 @@
-Received: from mail-pj1-f65.google.com (mail-pj1-f65.google.com [209.85.216.65])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15071289E13
-	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 03:09:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.65
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30D74313545;
+	Thu, 11 Jun 2026 04:52:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781147376; cv=none; b=TgXKZKGRc3DSVZPSLygwgUIkJx7f3DWTZLq2m5NDWZDt+MliiPavhOzvgecq094GgvIS4JzSw967bf4y3iHd9Ln9thjwZbKorGfsRj13EkJ7Vv1wGXNIYN2a0seeq/HCHNH+A7hcCd25NYoW0WBmpBEOCT7eID5f+s+BdEwoed0=
+	t=1781153526; cv=none; b=FuQOHC6m5/rkeHh47AqmQ4emVCz2tsqWzejJXQuvzdBdvpPuu76hMuJJ1avKgveWVvgG95XhCUj2LJBXrXEbhQj/zhRdNEPWoIRQZkRnkjuyIr2E1E+Dgcg9Ue/8CQ5XQoqh0nekzWZAmZ36H/Q1J+DUY6r+bE7XlHTnN4fogrw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781147376; c=relaxed/simple;
-	bh=oKZuciULY9JBG2l4enUy3YkyVqstZ1dofPhvmB1PDVk=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=YB43kn8462MId0MBJZ5Vi6Lm6696HbCSUFKl2vvbmXfHtP+8npIejiQE7f0dMlMV+/n5Sx0XrU2/gq4zf2zm2ffgS3M4xDa9l/DFYXGz9ba85zQw5DSfHLh3hD1spR2Fh8VYiglDn5O6uqAaTg6vPrQrpmAeBc+uCVKwRsra7zM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hsronQRh; arc=none smtp.client-ip=209.85.216.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1781153526; c=relaxed/simple;
+	bh=TQqRWe0+FozeEzR6uKVYnrV5UOI3yegwRRbHf1TS3FA=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=X6kfdFE6npJJXamM5xNn0aOL2oYwPLkkoY+FmfpcYSJTEmhUkUbWs+Sidfo6Xc1EEeO3HjMhF78T4R8bsy3l9r5MKj1UwsZ8px1vV5phBnPZI/VU8xVSwbzMRJ/3VcFa3w+0EwJJIAvWzCUrv/pwEeI+N9gR+a+CPgZSZw1Xe0s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ts3BC0lk; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hsronQRh"
-Received: by mail-pj1-f65.google.com with SMTP id 98e67ed59e1d1-36b903567fdso7640367a91.1
-        for <iommu@lists.linux.dev>; Wed, 10 Jun 2026 20:09:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781147373; x=1781752173; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=ZYAsuub7tjh5DE2NtRU43cs+1enZX+YMETetqa3OJBs=;
-        b=hsronQRhavmpXWFjgTJ2pMPNjEapZBgMrOPSEERZn5u10Vf38St3ARU4Rcog9G3Knz
-         Nx7i2RtVrTScpx2UH3Vzi31HwjVcUFs4vIpKHjNhyOPlSLA6lRNIH7bPshQCcjBfVlUE
-         R8clFKudQcXD+QhvHcpRPky+AFACHPl6Oo1c8322YoVFr1wFit3+7TF1qDhIfzngMauS
-         3R7RWU2K1ncJIjmSMPA3ebA7TY1bI6Ai3kqVH1rq4vfLZouKOisBXpLbXnepTUG9Nl5U
-         uss7upViAADLdQJWsCl7zOoJN9o8cx5gOovQfQXWIzoZilQhN3N/brO4rPmwUg51YEUn
-         HdVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781147373; x=1781752173;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZYAsuub7tjh5DE2NtRU43cs+1enZX+YMETetqa3OJBs=;
-        b=IsAn8MF8eE25/SgD2Qg0UbmJGhqrSKHgfdtx0bYDfQiwumYKuNtTEhEPYsNLWQyDig
-         EQj2CUy5Ocrk1JKCJPXPkny2RSnbpZCmrl5qZKPv5cYY/ZWzFvyjeEzDYjk6EOAZjBAE
-         qKmgeP9+gLL/qJEcgHI+xbdtZ4Kpc4U9kuV/SawlflnV7fSgMMZ0lgymSY0+0f0xkBVa
-         02qr5Wvqz/l3MQ5YmPvRecZmqglfLY+dB+gpn3YTW1agODy/MzdGAOw1hXRwenKOnujQ
-         mlTVaBwoU8EUcevNaDBDMm0iq5YOpK4NlXZDnBWKctft9jecf6vVk7Ia9ZCjEm8dkBX5
-         p94w==
-X-Forwarded-Encrypted: i=1; AFNElJ/DmVOIrPy28x4e+GpGSWYYDYIzVlFjdWgkIIqapx0Xm1/3WM89Q9RvGRmA0S81umR0AONeSQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy2FNLPZqL6k0pmuf4ZBARku1Sh7JfF11Kn1xs9aGrLDE3M58gC
-	K6mYKBcCxcRwpiIjJ+qH/eO8VLn+uZWMIbVAT2ADa8VvSp2mig3AlxqV
-X-Gm-Gg: Acq92OG1KEoKcw7uR4lwL7KE/Nrw0FBIg0NoNVDD9l+Z/iGPUZ2JBQJmFuSokIzMpxJ
-	dN5nVgJlw5Ghrm1DzwyMjlRamHrBaoQI47bVXR4XPhC/PUQN0MBebu5pEuVbWuZRB2uM52l/di8
-	Td/8oOzS0mxyx/S61YEnuB4SCdXCSCGvxQ7Dtn3gBwxveIFjeF4UnH5yorJeU34nXB+f7h9U7qb
-	0ifPyrqUoq6CMtsJ8XRFIdKJoyUz6nprWUzskNGCtkLXtNMHL5v8tQBN5AwkOaerYjNTz2zCM01
-	5yuJOZVpO6hT0NkH4OCuUoQlGQzAAFoARk8UeRnF7Vp7AxbQp0YEdyYr1eFLKkM2zktmj4f3lx1
-	iAeiOwjDOI9rYiJangGymQ+KpUgR+feoUo3rAvBcg5sB7bWpKE7kCkRYy1BwhSw0WO+VL7wQyIq
-	yhkjJNwgiCHC/heq9gIRN28B09EODvnXIEeyO+i73g6g==
-X-Received: by 2002:a17:90b:570e:b0:36d:df4f:ab2 with SMTP id 98e67ed59e1d1-377a75cc2b7mr1151650a91.13.1781147373379;
-        Wed, 10 Jun 2026 20:09:33 -0700 (PDT)
-Received: from [10.125.112.20] ([210.184.73.204])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c86585b5356sm107409a12.14.2026.06.10.20.09.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Jun 2026 20:09:32 -0700 (PDT)
-Message-ID: <a3993db0-6975-455d-9674-4fd7cfcf80fc@gmail.com>
-Date: Thu, 11 Jun 2026 11:09:22 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ts3BC0lk"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E7F91F00893;
+	Thu, 11 Jun 2026 04:51:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781153524;
+	bh=wBiy+4NJTiyF3LHnq3yC4vQA0dZTq2HR/NSC6xodkWE=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=Ts3BC0lkCTucNM5739E2sZWz64sGR4ecSh89snHNUabM8DL3qL/i5Kq+0zSdhZxPE
+	 3IZAI7m2ZKxzRkXYvD0cOOn1kHucsWMKFDN2YQCOWL2HCAGBQJRJYdYgdhuXgQDoB0
+	 xS76QAA6BADLXCd8Uk9rx8RDBZWdltgbcZD/G/g9NCSJg3YPNIf09a1hOZb5YsaWNW
+	 cTHImEPPmMXXBur/QKqsc2TV1/RXePiFHwN1KlK7PzRnOpzDixMzwOgpz7B2Xc9BNt
+	 b2S6KKPd/v/Y8W+d40YF35LmJhBqAvMdRQd3T+uCEhgOq+dTseOnBJ3ptzf22P8UiP
+	 EzBsszicXXFaA==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>,
+	Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
+	Jiri Pirko <jiri@nvidia.com>,
+	Michael Kelley <mhklinux@outlook.com>
+Subject: Re: [PATCH v6 04/20] dma-pool: track decrypted atomic pools and
+ select them via attrs
+In-Reply-To: <20260610164153.GQ2764304@ziepe.ca>
+References: <20260604083959.1265923-1-aneesh.kumar@kernel.org>
+ <20260604083959.1265923-5-aneesh.kumar@kernel.org>
+ <20260609143242.GK2764304@ziepe.ca> <yq5afr2uzum9.fsf@kernel.org>
+ <20260610164153.GQ2764304@ziepe.ca>
+Date: Thu, 11 Jun 2026 10:21:50 +0530
+Message-ID: <yq5acxxxn0gp.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 00/11] kdump: reduce vmcore size and capture time
-From: Wandun <chenwandun1@gmail.com>
-To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- loongarch@lists.linux.dev, linux-riscv@lists.infradead.org,
- devicetree@vger.kernel.org, kexec@lists.infradead.org,
- iommu@lists.linux.dev, zhaomeijing@lixiang.com, Rob Herring
- <robh@kernel.org>, saravanak@kernel.org, bhe@redhat.com, rppt@kernel.org,
- pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu,
- chenhuacai@kernel.org, kernel@xen0n.name
-Cc: catalin.marinas@arm.com, will@kernel.org, alex@ghiti.fr,
- akpm@linux-foundation.org, pasha.tatashin@soleen.com, pratyush@kernel.org,
- ruirui.yang@linux.dev, m.szyprowski@samsung.com, robin.murphy@arm.com
-References: <20260527032917.3385849-1-chenwandun1@gmail.com>
- <7ed207fa-4c86-426a-8570-495902ce04c3@gmail.com>
-Content-Language: en-US
-In-Reply-To: <7ed207fa-4c86-426a-8570-495902ce04c3@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
+Jason Gunthorpe <jgg@ziepe.ca> writes:
 
+> On Wed, Jun 10, 2026 at 01:37:26PM +0530, Aneesh Kumar K.V wrote:
+>> Jason Gunthorpe <jgg@ziepe.ca> writes:
+>> 
+>> > On Thu, Jun 04, 2026 at 02:09:43PM +0530, Aneesh Kumar K.V (Arm) wrote:
+>> >>  struct page *dma_alloc_from_pool(struct device *dev, size_t size,
+>> >> -		void **cpu_addr, gfp_t gfp,
+>> >> +		void **cpu_addr, gfp_t gfp, unsigned long attrs,
+>> >>  		bool (*phys_addr_ok)(struct device *, phys_addr_t, size_t))
+>> >>  {
+>> >> -	struct gen_pool *pool = NULL;
+>> >> +	struct dma_gen_pool *dma_pool = NULL;
+>> >>  	struct page *page;
+>> >>  	bool pool_found = false;
+>> >>  
+>> >> -	while ((pool = dma_guess_pool(pool, gfp))) {
+>> >> +	while ((dma_pool = dma_guess_pool(dma_pool, gfp))) {
+>> >> +
+>> >> +		if (dma_pool->unencrypted != !!(attrs & DMA_ATTR_CC_SHARED))
+>> >> +			continue;
+>> >
+>> > I don't think you should be overloading DMA_ATTR_CC_SHARED like this.
+>> >
+>> > 	/*
+>> > 	 * DMA_ATTR_CC_SHARED is not a caller-visible dma_alloc_*()
+>> > 	 * attribute. The direct allocator uses it internally after it has
+>> > 	 * decided that the backing pages must be shared/decrypted, so the
+>> > 	 * rest of the allocation path can consistently select DMA addresses,
+>> > 	 * choose compatible pools and restore encryption on free.
+>> > 	 */
+>> > 	if (attrs & DMA_ATTR_CC_SHARED)
+>> > 		return NULL;
+>> >
+>> > 	if (force_dma_unencrypted(dev)) {
+>> > 		attrs |= DMA_ATTR_CC_SHARED;
+>> > 		mark_mem_decrypt = true;
+>> > 	}
+>> >
+>> > It is fine to have a bit inside the attrs that is only used by the
+>> > internal logic, but it needs to have a clearer name
+>> > __DMA_ATTR_REQUIRE_CC_SHARED perhaps.
+>> >
+>> 
+>> Are you suggesting adding another attribute in addition to
+>> DMA_ATTR_CC_SHARED?
+>> 
+>> Is the idea that __DMA_ATTR_REQUIRE_CC_SHARED would be used in the
+>> allocation path to request a CC_SHARED allocation, while
+>> DMA_ATTR_CC_SHARED would be used in the mapping path to describe the
+>> attribute of the address?
+>
+> Yeah, it is a thought at least
+>
+> Maybe a comment is good enough.
+>
+> I just find it hard to follow when we have this dual usage. Like the
+> code above for dma_pool->unencrypted is completely wrong if it is an
+> "attribute of an address". Easy to cut & paste that into the wrong
+> context.
+>
+> Especially if you move things up higher.. having the alloc set both
+> CC_SHARED and REQUIRE_CC_SHARED or maybe ALLOC_CC_SHARED would make it
+> clearer that the alloc code lives under that callchain
+>
+> Jason
+>
 
-On 6/11/26 10:09, Wandun wrote:
-> 
-> 
-> On 5/27/26 11:29, Wandun Chen wrote:
->> From: Wandun Chen <chenwandun@lixiang.com>
->>
->> On SoCs that carve out large firmware-owned reserved memory (GPU
->> firmware, DSP, modem, camera ISP, NPU, ...), kdump currently dumps
->> those carveouts as part of system RAM even though their contents are
->> firmware state that is not useful for kernel crash analysis.
->>
->> This series introduces an opt-in 'dumpable' flag [1] on struct
->> reserved_mem and uses it to filter the elfcorehdr PT_LOAD ranges on
->> DT-based architectures (arm64, riscv, loongarch). By default reserved
->> regions are treated as non-dumpable; CMA regions are explicitly opted
->> in because their pages are returned to the buddy allocator and may
->> carry key crash-analysis data.
->>
->> The series is organized as follows:
->> Patches 1-3: Pre-existing fixes and a small prep change.
->> Patches 4-5: Restructure to allow appending /memreserve/ entries.
->> Patches 6-7: Add a dumpable flag and append /memreserve/ entries.
->> Patch 8: Add generic kdump helpers.
->> Patches 9-11: Wire the helpers into arm64, riscv and loongarch kdump
->>                elfcorehdr preparation.
-> Hi,
-> 
-> Gentle ping on this series.
-> 
-> Status summary:
-> -patch 03: respun separately per Rob's suggestion, picked up for 7.2
-> -patch 06: Acked-by: Marek Szyprowski -patch 09: Acked-by: Will Deacon
-> The remaining patches (01, 02, 04, 05, 07, 08, 10, 11) are still
-> awaiting review. your feedback would be greately appreciated. I know we
-> are at the end of 7.1 -rc cycle, I don't want to rush this series, just
-> collecting more feedback, and will send next version based on 7.2-rc1.
-> If spliting the series into smaller logical group would make review
-> easier, please let me know. Best regards, Wandun
+If we are adding DMA_ATTR_ALLOC_SHARED, should we also allow
+dma_alloc_attrs() to take that attribute value?
 
-Apologies for the formatting issue in my previous email.
-Here is the properly formatted version.
+Does this look okay? 
+(Note: Parts of the documentation text were updated using Codex.)
 
-Gentle ping on this series.
-
-Status summary:
-- patch 03: respun separately per Rob's suggestion, picked up for 7.2
-- patch 06: Acked-by: Marek Szyprowski
-- patch 09: Acked-by: Will Deacon
-
-The remaining patches (01, 02, 04, 05, 07, 08, 10, 11) are still
-awaiting review. Your feedback would be greatly appreciated.
-
-I know we are at the end of 7.1-rc cycle, I don't want to rush this
-series, just collecting more feedback, and will send next version based
-on 7.2-rc1.
-
-If splitting the series into smaller logical groups would make review
-easier, please let me know.
-
-Best regards,
-Wandun
-
-
->>
->> v2 --> v3:
->> 1. Fix out-of-bounds issue if device tree lacks /reserved-memory node.[2]
->> 2. Fix UAF issue when alloc_reserved_mem_array() fails.
->> 3. Add some prepare patches.
->>
->> v1 --> v2:
->> 1. v1 added an opt-out DT property ('linux,no-dump'). Per Rob's
->>     feedback [1], v2 drop that property and exclude reserve memory
->>     by default.
->> 2. Split some prepared patches from the original patches.
->> 3. Address coding-style comments on patch 5 from Rob.
->>
->> [1] https://lore.kernel.org/lkml/20260506144542.GA2072596-
->> robh@kernel.org/
->> [2] https://sashiko.dev/#/patchset/20260520091844.592753-1-
->> chenwandun%40lixiang.com?part=4
->>
->> Wandun Chen (11):
->>    of: reserved_mem: handle NULL name in of_reserved_mem_lookup()
->>    kexec/crash: provide crash_exclude_mem_range() stub when
->>      CONFIG_CRASH_DUMP=n
->>    of: reserved_mem: avoid post-init UAF when alloc_reserved_mem_array()
->>      fails
->>    of: reserved_mem: zero total_reserved_mem_cnt if no valid
->>      /reserved-memory entry
->>    of: reserved_mem: split alloc_reserved_mem_array() from
->>      fdt_scan_reserved_mem_late()
->>    of: reserved_mem: add dumpable flag to opt-in vmcore
->>    of: reserved_mem: save /memreserve/ entries into the reserved_mem
->>      array
->>    of: reserved_mem: add kdump helpers to exclude non-dumpable regions
->>    arm64: kdump: exclude non-dumpable reserved memory regions from vmcore
->>    riscv: kdump: exclude non-dumpable reserved memory regions from vmcore
->>    loongarch: kdump: exclude non-dumpable reserved memory regions from
->>      vmcore
->>
->>   arch/arm64/kernel/machine_kexec_file.c     |   6 ++
->>   arch/loongarch/kernel/machine_kexec_file.c |   6 ++
->>   arch/riscv/kernel/machine_kexec_file.c     |   4 +
->>   drivers/of/fdt.c                           |  11 +-
->>   drivers/of/of_private.h                    |   3 +
->>   drivers/of/of_reserved_mem.c               | 117 +++++++++++++++++++--
->>   include/linux/crash_core.h                 |   6 ++
->>   include/linux/of_reserved_mem.h            |  15 +++
->>   kernel/dma/contiguous.c                    |   1 +
->>   9 files changed, 157 insertions(+), 12 deletions(-)
->>
-> 
-
+modified   Documentation/core-api/dma-attributes.rst
+@@ -179,3 +179,32 @@ interface when building their uAPIs, when possible.
+ 
+ It must never be used in an in-kernel driver that only works with
+ kernel memory.
++
++DMA_ATTR_CC_SHARED
++------------------
++
++This attribute indicates that a DMA mapping is shared, or decrypted, for
++confidential computing guests. For normal system memory, the caller must
++already have marked the memory decrypted with set_memory_decrypted(). CPU
++PTEs for the mapping must use pgprot_decrypted(), and the same shared
++semantic may be passed to a vIOMMU when it sets up the IOPTE.
++
++This attribute describes an existing mapping. It does not allocate shared
++backing pages and must not be passed to dma_alloc_attrs(). For MMIO, use
++this together with DMA_ATTR_MMIO to indicate shared MMIO. Unless
++DMA_ATTR_MMIO is provided, the mapping requires a struct page.
++
++DMA_ATTR_ALLOC_CC_SHARED
++------------------------
++
++This attribute indicates that a dma_alloc_attrs() allocation must use
++shared, or decrypted, backing pages for confidential computing guests.
++Allocation paths use this request when they select shared DMA pools,
++decrypt newly allocated pages or restore encryption on free.
++
++DMA_ATTR_ALLOC_CC_SHARED differs from DMA_ATTR_CC_SHARED in that it
++requests shared backing memory from the allocation path. DMA_ATTR_CC_SHARED
++describes an already-shared mapping and requires the caller to have
++prepared normal system memory before mapping it. Callers that need shared
++memory from dma_alloc_attrs() should request DMA_ATTR_ALLOC_CC_SHARED
++instead of DMA_ATTR_CC_SHARED.
+modified   include/linux/dma-mapping.h
+@@ -103,6 +103,13 @@
+  */
+ #define DMA_ATTR_CC_SHARED	(1UL << 13)
+ 
++/*
++ * DMA_ATTR_ALLOC_CC_SHARED: Allocates DMA memory as shared (decrypted) for
++ * confidential computing guests. Unlike DMA_ATTR_CC_SHARED, this attribute
++ * is used by dma_alloc_attrs() paths that create shared backing pages;
++ * DMA_ATTR_CC_SHARED describes an already-shared mapping.
++ */
++#define DMA_ATTR_ALLOC_CC_SHARED	(1UL << 14)
+ /*
+  * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
+  * be given to a device to use as a DMA source or target.  It is specific to a
