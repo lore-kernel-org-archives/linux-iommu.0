@@ -1,103 +1,202 @@
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC9561BD9C9
-	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 16:33:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A73143F20FC
+	for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 17:26:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781195601; cv=none; b=pXf89ofSAratepFp1mf5MviZIkY+KEg1uCqVIPPu6j2KCc0j86pHNAUirpjlyTCxFq5ZhV8vVx8jauYVBxcOsOw0eO5YLUlJfv53ZsDFKHpynqbDVcJNcqN7xuDEF4cS5RMA8vEEuJyKw9SAjHruhps4SMFUX/sfqoa/6LGo+Jo=
+	t=1781198825; cv=none; b=rYcSKIkkUHecQGrd2h8EIEeTBagxeiXV/2wDvUtQzvWkutgkTKlOiWs2uqG1wQSXdURI52ukC/5kRS38h47elXQL4pNiA1c83rURcvdM1KwoQLjrRYEeT6GhURzKzEq4UTohkgX7ptqtlB8/eF7fXN69r4G6czo4aeZ4vK3Yr18=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781195601; c=relaxed/simple;
-	bh=7Rz/uck9FemFjrxC3sfBD1FDGz5n0wMB+PX/5/B2crY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jVKXZUlKJpzC5TvJiJwtmPx+/KXCBTKeQPVTGPXaBRot6i9Elox/RGYphZncScRcafId/NGmK3YWU5q2ugJeb7abE6MSZkj7yqN/OLhMqrJCZcXI5M6DZkL5xGasCN1jdFTgs8RL+AztaX+Wqw65snDfnwruUWovbNTkyeWgrzY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Pr/EKjls; arc=none smtp.client-ip=209.85.160.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1781198825; c=relaxed/simple;
+	bh=1wKlgfhMxVt+Sg/2xA8mMh1jGy7zJTEKgkNokJcHLTY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=qINOjoYiTI8ZqlC+LdPwPzPh78Id7GjLUPzRLz0X4coNiOvZC98KM6e0xonrVbP80RCp9EQNWQSrBqTETfyHsG0+e8m/EJc2/v12RtlvCoDc9kAt+sYvWYyENdFAPNNS3DMLnFNP768vw0gCChCZRwLQ6EItY9TyCygjxgpU8I8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=MlnLFgqn; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Pr/EKjls"
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-51761d27612so94821381cf.3
-        for <iommu@lists.linux.dev>; Thu, 11 Jun 2026 09:33:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1781195599; x=1781800399; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=tf3FfoqnJ9+cjTccQxxTp03MxEBoO3jeV0rLfBYktsU=;
-        b=Pr/EKjlsqiVd5I87oAC3n0jALYSDi/8N+EVBZf+wM1Dxn18LVewvMZqecfxygYlDvI
-         vUAYgHxeYuz8hY4R5F5+/QFnomJkN1JbNeeM7jzOLYg1bk0ZsK9+plr0boVU6mmM8mBi
-         5oAoNq/Is7AAdwBhsLjC/N3fERuFq3ZtpPBhEjBsEEO0P4/eS5ntr9sdzmo6umQGoovP
-         WG5a6RqyfEAdZ4k2QU+1dsin40fvc0ZMukQAOV1SWwjo3hD8aY+GCo/zVMzAob3A1f+h
-         osQElW3Jbneimw53fTyLAcfoJ1I54GOTa4XWPBTTuSNKiAOvwV80zIppQ0VhZYENOWyp
-         HDrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781195599; x=1781800399;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tf3FfoqnJ9+cjTccQxxTp03MxEBoO3jeV0rLfBYktsU=;
-        b=e5Vg13VAM4kWcN9H1NoDlleoYbMMFVHr/ZpP5q8ODC9LdLNRafS8YEISlibOPXELjV
-         GMpJQjT9kdTkWxY4MjDGTd1Yz5NqDk2CSjoYd8X/SRv7E6D8iF1H1keK+Xu9TklKkxmZ
-         JIHt59AMusO7BGw7J/QB4C/T4CJt6ubQzSznDC+X8ENaU7UoDAJITxHWxCX6oe5+dhji
-         5+XTaG9kC3G7o6H3SaNqFrqjTK5qSMcmOBJRWUREzynrAGKWmMOKZx8aWG9JZPk77LZN
-         tY2CVxsyGY2wuXs/uZbcYRR9qW4+JWYwb/MG4egF8jgMMCeQK/NzodzzGnGp3ysrXcdF
-         yzKw==
-X-Forwarded-Encrypted: i=1; AFNElJ9dYOsw2dcpgfXMLAQ3JC2hwtEfwEAcwAt5S0zxeXmCWJjIlTks5HMLhk37bW7mIvqsXXNsFQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy6qdeLh7rCQCmgYGrzyplsjsaK2XuPf4cISztl8LGTDPVHipsl
-	mA4wsfWRKvTNbCudE641pWymxTiVADCPme8Djf87F2hsuigdqRUpWLDxfBYicdG3IDE=
-X-Gm-Gg: Acq92OEArhaDVZCvEzmNV74IkdOoJEt0vwdF548i6WeuXGNZcZnbkEZRtOlXDxYMsRD
-	oinZMHk91V+3Bbl0O6oe3dc48VjIAic94eaq+3dGI9A1Kn0c66rRNf40CXdWQz5SGK/ZT7MBxD1
-	g81pTua+ah+zS+1Fj+d7EZnRdSFCdCFiHYigLbbRbRwyBFDOzzfWvwPhTxx9fgkNKLx8k1SSNHS
-	E6+MrRZZvUwez4BpN/b26cbItA50sr5K51f4T/U1+bk6YPFdWE5Y0OVU21AZlBTC8UhrogQIPk9
-	cvcnuy59w0D0J1SjVwUy3ttOlWSMCaZqub5H/UP5C7RvtF50FdzeXlf9fMRIyPcw7izwbPB3CTR
-	ocZVBJbAl7XP0t+WWE9DCCdIA7yL9M9XzgeN9vx+E+i/9m+a3g7zUHcyjzNCh4P7yb3B3GjkeIM
-	kzAyAaxzIpmh119epzVeNC3jd+XNNPKfU4kp1sToibUTs8yPr1d5gQ2uZTYVGoGh05Bxv0kl0JF
-	Eyg4w==
-X-Received: by 2002:a05:622a:3c6:b0:516:ed02:c85d with SMTP id d75a77b69052e-517edccccf5mr55036161cf.3.1781195598504;
-        Thu, 11 Jun 2026 09:33:18 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-517ef3ea534sm21939251cf.5.2026.06.11.09.33.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Jun 2026 09:33:17 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wXiLF-000000066Hg-0vrF;
-	Thu, 11 Jun 2026 13:33:17 -0300
-Date: Thu, 11 Jun 2026 13:33:17 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: "Srivastava, Dheeraj Kumar" <dhsrivas@amd.com>, iommu@lists.linux.dev,
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="MlnLFgqn"
+Received: from administrator-PowerEdge-R660.corp.microsoft.com (unknown [131.107.1.135])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 03F1C20B7167;
+	Thu, 11 Jun 2026 10:26:40 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 03F1C20B7167
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1781198800;
+	bh=dKaLlukVe5A3rMFeFuKLVfEhwRVP6fVhzJdPH9pQOqs=;
+	h=From:To:Cc:Subject:Date:From;
+	b=MlnLFgqnsybYLczjujxyKTZfRGz40icAT0jgplt5eUreYIEJaKqOzjKTnzBB7wbeq
+	 sj+EyDM/e/XJeQ2B3y/nRZA1kU8EZXDYZmDWMY1mg8W2ws5OyG5ASt+cS5epvIEfaU
+	 7CLCDseYHgNuHZvl3SEyQy5KFGNZac8EEj+4A3sE=
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: linux-kernel@vger.kernel.org,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Alex Williamson <alex@shazbot.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	Mostafa Saleh <smostafa@google.com>,
+	David Matlack <dmatlack@google.com>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Will Deacon <will@kernel.org>, patches@lists.linux.dev
-Subject: Re: [PATCH 0/5] Improve the invalidation path in AMD
-Message-ID: <20260611163317.GA1453429@ziepe.ca>
-References: <0-v1-a7b77c25974e+115bf-iommupt_inv_amd_jgg@nvidia.com>
- <83b8a0f3-2409-464d-a9e4-59b9eea926cd@amd.com>
- <20260611115611.GE1066031@ziepe.ca>
- <airU7xpucwkZMAo7@8bytes.org>
+	Nicolin Chen <nicolinc@nvidia.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	Yi Liu <yi.l.liu@intel.com>,
+	Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Saurabh Sengar <ssengar@linux.microsoft.com>,
+	skhawaja@google.com,
+	pasha.tatashin@soleen.com,
+	Will Deacon <will@kernel.org>,
+	Jacob Pan <jacob.pan@linux.microsoft.com>
+Subject: [PATCH v9 0/6] iommufd: Enable noiommu mode for cdev
+Date: Thu, 11 Jun 2026 10:26:52 -0700
+Message-ID: <20260611172658.3421138-1-jacob.pan@linux.microsoft.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <airU7xpucwkZMAo7@8bytes.org>
+Content-Transfer-Encoding: 8bit
 
-On Thu, Jun 11, 2026 at 05:32:27PM +0200, Joerg Roedel wrote:
-> On Thu, Jun 11, 2026 at 08:56:11AM -0300, Jason Gunthorpe wrote:
-> > Joerg?
-> 
-> This waits for regression test results from Vasant.
+VFIO's unsafe_noiommu_mode has long provided a way for userspace drivers
+to operate on platforms lacking a hardware IOMMU. Today, IOMMUFD also
+supports No-IOMMU mode for group-based devices under vfio_compat mode.
+However, IOMMUFD's native character device (cdev) does not yet support
+No-IOMMU mode, which is the purpose of this patch.
 
-I understood he delegated this to Dheerja and this email from him is
-confirming the regression tests?
+In summary, we have:
 
-https://lore.kernel.org/all/83b8a0f3-2409-464d-a9e4-59b9eea926cd@amd.com/
+|-------------------------+------+---------------|
+| Device access mode      | VFIO | IOMMUFD       |
+|-------------------------+------+---------------|
+| group /dev/vfio/$GROUP  | Yes  | Yes           |
+|-------------------------+------+---------------|
+| cdev /dev/vfio/devices/ | No   | This patch    |
+|-------------------------+------+---------------|
 
-Vasant reviewed it here:
+Beyond enabling cdev for IOMMUFD, this patch also addresses the following
+deficiencies in the current No-IOMMU mode suggested by Jason[1]:
+- Devices operating under No-IOMMU mode are limited to device-level UAPI
+  access, without container or IOAS-level capabilities. Consequently,
+  user-space drivers lack structured mechanisms for page pinning and often
+  resort to mlock(), which is less robust than pin_user_pages() used for
+  devices backed by a physical IOMMU. For example, mlock() does not prevent
+  page migration.
+- There is no architectural mechanism for obtaining physical addresses for
+  DMA. As a workaround, user-space drivers frequently rely on /proc/pagemap
+  tricks or hardcoded values.
 
-https://lore.kernel.org/all/4cc8368d-3972-47c6-bd60-7fc8b9c7be3e@amd.com/
+By allowing noiommu device access to IOMMUFD IOAS and HWPT objects, this
+patch brings No-IOMMU mode closer to full citizenship within the IOMMU
+subsystem. In addition to addressing the two deficiencies mentioned above,
+the expectation is that it will also enable No-IOMMU devices to seamlessly
+participate in live update sessions via KHO [2].
 
-Jason
+Furthermore, these devices will use the IOMMUFD-based ownership checking model for
+VFIO_DEVICE_PCI_HOT_RESET, eliminating the need for an iommufd_access object
+as required in a previous attempt [3].
+
+ChangeLog:
+v9:
+  - Leave device->device.devt unset for no-IOMMU dev so cdev_device_add()
+    registers only the struct device and does not expose an unsupported
+    cdev. (Alex, Sashiko)
+  - Clarify VFIO cdev no-IOMMU Kconfig limits in documentation
+  - Hold registration while checking cdev no-IOMMU access (Sashiko)
+  - Make no-IOMMU GET_PA length a real upper bound and reject zero length,
+    avoiding an unbounded scan while holding IOAS locks. This matches the
+    bounded-range semantics expected by the incoming
+    iommu_iova_to_phys_length() helper.
+  - Guard replace path for noiommu device (Sashiko)
+v8:
+  - Guard noiommu for vdevice viommu alloc (Kevin)
+v7: 
+  - Handle Sashiko reviews.
+  - Dropped selftest for now, will submit separately for v7.2 to use
+    new lib helpers
+v6: Undo CDEV-GROUP NOIOMMU split, use Kconfig to restrict unwanted
+    combo.
+V5:
+  - Split CONFIG_VFIO_NOIOMMU into CONFIG_VFIO_GROUP_NOIOMMU and
+    CONFIG_VFIO_CDEV_NOIOMMU so cdev noiommu is independent of
+    VFIO_GROUP (Alex)
+  - Add CAP_SYS_RAWIO check for cdev open and bind under noiommu,
+    security parity with group noiommu (Alex)
+  - Add IS_ENABLED(CONFIG_IOMMUFD_NOIOMMU) guard in
+    iommufd_device_is_noiommu() to prevent noiommu bind when feature
+    is disabled
+  - Add prep patch to tolerate NULL group for cdev noiommu devices
+    when CONFIG_VFIO_GROUP_NOIOMMU is not set [7/9]
+  - Rename IOCTL to IOMMUFD_CMD_IOAS_NOIOMMU_GET_PA to be more
+    specific (Kevin)
+  - Simplify iommufd_device_is_noiommu, use iommufd_bind_noiommu
+    helper (Kevin, Yi)
+  - Move IOMMU cap check under iommufd_bind_iommu() (Yi)
+  - Fix next_iova exceeding iopt_area_last_iova in GET_PA (Alex)
+  - Fix const hwpt, copyright date, typo in moved comment (Kevin)
+  - Add Reviewed-by tags
+  - Squash noiommu cdev selftest fix into selftest patch
+  - Drop DSA selftest patch
+  - Details in each patch changelog.
+
+V4:
+  - Fix various corner cases pointed out by (Sashiko)
+    Details in each patch changelog.
+
+V3:
+  - Improve error handling [3/10] (Mostafa)
+  - Simplify vfio_device_is_noiommu logic and merged in [6/10] (Mostafa)
+  - Add comment to explain the design difference over the legacy noiommu
+    VFIO code.[1/10]
+
+V2:
+  - Fix build dependency by adding IOMMU_SUPPORT in [8/11]
+  - Add an optimization to scan beyond the first page for a contiguous
+    physical address range and return its length instead of a single
+    page.[4/11]
+
+Since RFC[4]:
+  - Abandoned dummy iommu driver approach as patch 1-3 absorbed the
+    changes into iommufd.
+
+[1] https://lore.kernel.org/linux-iommu/20250603175403.GA407344@nvidia.com/
+[2] https://lore.kernel.org/linux-pci/20251027134430.00007e46@linux.microsoft.com/
+[3] https://lore.kernel.org/kvm/20230522115751.326947-1-yi.l.liu@intel.com/
+[4] https://lore.kernel.org/linux-iommu/20251201173012.18371-1-jacob.pan@linux.microsoft.com/
+
+Future cleanup: consolidate all CONFIG_IOMMUFD_NOIOMMU code
+(iopt_get_phys, iommufd_ioas_noiommu_get_pa, iommufd_noiommu_ops) into
+hwpt_noiommu.c to eliminate #ifdef guards from ioas.c and io_pagetable.c.
+
+Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+
+
+---
+      3	Jacob Pan
+      3	Jason Gunthorpe
+
+  iommufd: Support a HWPT without an iommu driver for noiommu
+  iommufd: Move igroup allocation to a function
+  iommufd: Allow binding to a noiommu device
+  iommufd: Add an ioctl to query PA from IOVA for noiommu mode
+  vfio: Enable cdev noiommu mode under iommufd
+  Documentation: Update VFIO NOIOMMU mode
+
+ Documentation/driver-api/vfio.rst       |  89 +++++++++++++-
+ drivers/iommu/iommufd/Kconfig           |  12 ++
+ drivers/iommu/iommufd/Makefile          |   1 +
+ drivers/iommu/iommufd/device.c          | 201 +++++++++++++++++++++++---------
+ drivers/iommu/iommufd/hw_pagetable.c    |  19 ++-
+ drivers/iommu/iommufd/hwpt_noiommu.c    | 105 +++++++++++++++++
+ drivers/iommu/iommufd/io_pagetable.c    |  78 +++++++++++++
+ drivers/iommu/iommufd/ioas.c            |  36 ++++++
+ drivers/iommu/iommufd/iommufd_private.h |  30 +++++
+ drivers/iommu/iommufd/main.c            |   4 +
+ drivers/iommu/iommufd/viommu.c          |  14 ++-
+ drivers/vfio/Kconfig                    |   7 +-
+ drivers/vfio/device_cdev.c              |   9 ++
+ drivers/vfio/iommufd.c                  |  12 +-
+ drivers/vfio/vfio.h                     |  23 ++--
+ drivers/vfio/vfio_main.c                |  26 ++++-
+ include/linux/vfio.h                    |   1 +
+ include/uapi/linux/iommufd.h            |  28 +++++
+ 18 files changed, 609 insertions(+), 86 deletions(-)
+
+-- 
+2.43.0
