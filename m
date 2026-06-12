@@ -1,76 +1,82 @@
-Received: from mail-vk1-f182.google.com (mail-vk1-f182.google.com [209.85.221.182])
+Received: from mail-vk1-f169.google.com (mail-vk1-f169.google.com [209.85.221.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B800337C927
-	for <iommu@lists.linux.dev>; Fri, 12 Jun 2026 17:31:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 140221D61B7
+	for <iommu@lists.linux.dev>; Fri, 12 Jun 2026 18:03:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781285490; cv=none; b=Q1+NDghZzGyq9eTPwG4KuLkM/Hw55OHjBbJNMVjvVhIumAxAprIFPwEZ9oiDfpClTEhtCjS9uC2b8qBD7agpsW2tFwjWA1/b/KEePNrqW6pCpapZ9Ytnn3WkESp/8OCH2xtRIriNpuIU1qIahxQskkz+qgcE8Qw4UqscCJAm3j4=
+	t=1781287387; cv=none; b=UWlSjb3UZ9SUesw7H5UGz6A5Zj8n1FU77l2dPZcV60LsC+L4R1c1jiaeHHaBz1eHoUIIoqWirm12ZRoXbfXvckpD+EVEOsdHGcqqmBqk3Ve78yThT6BTZ7L7KfnLeA6kxLllFhjWDg6vjAG1dgLaM8mxphGH++khoq7YYVNb/3s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781285490; c=relaxed/simple;
-	bh=s1uCSJlrOQlubB9uNonltXnNviPAjZLUm3vums7MWf4=;
+	s=arc-20240116; t=1781287387; c=relaxed/simple;
+	bh=mn3yVOv7qKPFWYBvFnk75CZs9rsQ7cExwWlUYRYxI2M=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jFqT3qcA/s1Y6+fB2CNd3WnJHDQkibth62Ii+CU9xiwkrW0Csl2+hcLzJKQu5rntyqF2G7YKTJCCyNAHg40jShb+4wnKb33d3CD75DSU6xKQCT18vLiqMtIie99iFUO6oYWvMlLQ8UFi+OQ6FtwJtP4LvV/D11e59T+6Vo26+EQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=YV1rJqDb; arc=none smtp.client-ip=209.85.221.182
+	 Content-Type:Content-Disposition:In-Reply-To; b=GHJZQiFRiL5vd+AHwRu844tcqYJ/t+UgZvSdXvD3ZBvIUmfhFiowNCcp2yubGjGSj7HfoiPkW3A+oCyNiWxH1WXsmoZbAam1rsbYhS98YgSf+vQ9Qs+TuaLReKHr8X6aJiYrUym/1IYT+ND53+r9nIp/6dj9zwOfodS1sxhySlQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Bkl2qHJk; arc=none smtp.client-ip=209.85.221.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="YV1rJqDb"
-Received: by mail-vk1-f182.google.com with SMTP id 71dfb90a1353d-59e23d70dfaso533741e0c.2
-        for <iommu@lists.linux.dev>; Fri, 12 Jun 2026 10:31:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Bkl2qHJk"
+Received: by mail-vk1-f169.google.com with SMTP id 71dfb90a1353d-59d6e44e5c8so850567e0c.2
+        for <iommu@lists.linux.dev>; Fri, 12 Jun 2026 11:03:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1781285488; x=1781890288; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1781287385; x=1781892185; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=s1uCSJlrOQlubB9uNonltXnNviPAjZLUm3vums7MWf4=;
-        b=YV1rJqDbBOkOs3EDenZ6V41ubbgIpvIYIEm55Le84E3LHwCBG+MmIqt5FVDNuz8ATt
-         PDB6y9t56wmzr5zuatyRRwFayqhfPbCqcJ6r5XcxUHvGt1cS22erFJlHhLZdMPtIoFVX
-         qEfyBDXdzizj1dGVmpqDmlnUVEOCjVwnZT+ApsF7Gk/CpXfarSzknUC3rtMCC7koLNxD
-         X2TdYf+RfIceGkHy1aVEnEH4mxq8D5nM7F1zQf4qg+8RIIjNIqT4PS+aQUF2Yn9EF3ik
-         wbRwCXL5qCSCnLgwAWUxMn9HesElfYkwgMsD7nEMSx0Q5kjddoE1dqjA+5s4ojP4SZFg
-         kscg==
+        bh=fTSufejrrgKqac3GQqcQTlYgn8yTYKUBIBFNWIyXYbU=;
+        b=Bkl2qHJk5fAmMrYVh8FOwdnTrdDWtYa4lS9797a4cfjB19e+jjsn8AQwCl+L1AoFvF
+         opNdWlYU4yQqwdw/XLk3hS/fPVfxORMpdiMX5apD6+q9GKvnu0C2GxIiO5s64B6LM/13
+         L/8Pk9+kBgtDcME5xdKvr7EWwaQswV2YS5hjNaQ3iIMgCkzrWM8p1Fju6a8cJ1XX6Sus
+         FA/PG3f8h8y4fyONNRzU+asQTIVXMtaO87AEKNX8NVV7iY9eaLw6SmA4rSru3xGJgkcc
+         z84x4S9T2eeGuaolhB2cNlugQo8S/v17N4jvwF/uQ6aJbXKn0xQHRRYNmZNajHmqk1jQ
+         yGPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781285488; x=1781890288;
+        d=1e100.net; s=20251104; t=1781287385; x=1781892185;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=s1uCSJlrOQlubB9uNonltXnNviPAjZLUm3vums7MWf4=;
-        b=O0wmP5Xnp2nzhjLN2FyiphjE1GZMQ10zSpL22EBqyXm86ooQTcEeX8eFXdfkcj0hkL
-         PgjWGBNTwZrBXYHLpX3ocRO3MZnfYtzweQvTH/wwf1ygQh+P4GJYClUyP0I2Hyeaprsg
-         KHS+ULSd8jD/60MDksAGWAwSqw1VMrmOY+k1VMpWzVu0gR6RwUqW9R5eJBLvCQEjUoTE
-         +DOGIDGq//gHLIZIr3C3t9jdxWLYXxVGaEDxDPJ1hAuPHOUabc455hi7pm059ENqO1Au
-         3UQfilqZ66v+gW69LeKY8JP/SW14tzGolPAbdqm8r5cIEueOVX5kghqDLLYLgrybKIUk
-         3vyA==
-X-Forwarded-Encrypted: i=1; AFNElJ9g0GOse84dYUwRr1wRCQjz7Q7H474FXz56KQAS4O2BwT4tVdiI4zvg6Jt9wTADU50qKjRO8w==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw0S2jOihrYC18bMaXEoFXbdW5Juy1Cfb1G4xUv0BKj3abEZPG/
-	xU+ETxOOEYkaTYTPh56tmq1vmlYcKdO3cyIEG7B1nvdV5XacsdXTWJjJRbZAy8sT4MY=
-X-Gm-Gg: Acq92OE2HJMBdSyJrlgDNF+YVzTcsPflQyxduT43iuTr0tR/Tn1rgrxYShHzQ6e5uCp
-	3sc1u/+TxU9llUcrlOtwqhcF5cYHtr6K69Uo9rPMuypx4HWK//HGFgXrrWOPrguHD9TWII9z5EE
-	M68H5psBYub8PKrepwwyjBgi+HeqHk/tQbnAYinsHeXhisqMpAZ7x5yoMOI2fsrMQP1qgqbcFsX
-	yYDIursjiSTJm/ktZshCWa0VpNw+oyl2jBqXUStb4SNwlPeQqi/tjPlvJ1Tm0O39OYKRUTVeUj2
-	CvOPTXuRq5vV7NzNrhQvXI6V2d9EozAZsgV72H7MrOwp6nQpj8NKAAg7wY83mBUelnUCHSGjztK
-	dtN2wfrwE2c8YjR2L/a+01m4zwv6xydL5MV1d3M27LLFUxafiWjKOV9AyBO7smcrQWNHWBwSWNa
-	CZ4Kc/0d3RqVsiAbUB7SXE9NaJc+RgfMh0c70KVeBt5GvFFxtvK/hEEcj8D/GJVapm7722bvJx0
-	YYRP547mr9vqF+t
-X-Received: by 2002:a05:6102:6115:10b0:6d3:aad5:6d2d with SMTP id ada2fe7eead31-71e88c3d33fmr1963086137.18.1781285488502;
-        Fri, 12 Jun 2026 10:31:28 -0700 (PDT)
+        bh=fTSufejrrgKqac3GQqcQTlYgn8yTYKUBIBFNWIyXYbU=;
+        b=G+R4AxPS6WIJEVEox/cX+BEyGP32V0rZ9Py4k8imVLYHsE01PgoxIs3RIVCUiyo76h
+         2bzRhdGko4Y+NTYAalo1Wgpo+ts0lPEOHfSJyHzTLeXKrLVgVpfvawX3+dJx/ZgRsSO4
+         DbU1Axh24nXjAg4Dow3wTeYwGt88QOXmfssLklw95NwYiko1TjaKz7C+XEa+SPFUHkQY
+         pQgB3P6IlC9spDAbMyY6jRp8Vsq+sVPhfTE9W8hUb321sEBip9cb0zz5W/O1L8SmGWqz
+         4AMVVjNX3KRTW1VH7lgo/aHejBlVCwuuXS8QuS+QArqRcI/O59/6XPfs2cVBNfjeAnc6
+         fNrg==
+X-Forwarded-Encrypted: i=1; AFNElJ/hZaaUFNFAZVT1R0BUuUGkzzxC6nUzCaCX2RGdamUA0rInuBv8hoyoq92hu2Ky7Asj+51bgg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyo1Y/IQTK5NJpuyltqR8yjG25ZunoaLz6+1yO5LPVvBB2XKclL
+	FydYa9FVft+wkGdgG6ps1QaPDBjJI1itSqnXe69BuptvBYx3FFE4b50qnnkrqfX7FEY=
+X-Gm-Gg: Acq92OE/YlrSpoZBSwxJLJJ1waLebhf1Hpg3TUo4p/60jukgBT7azyhI6Ogb4+vMFKW
+	ghTJrCJnQyC+RUOG6dnr908jgWRVnW7ms10z3f0hYNqYGq2E4Ua9gYUVDJpZVDKwLrmpmpUi5KH
+	f1v9001nYkSdvGcYBnEOW14VPlST7+iInXjNdrRjgu9XuTc4VTJiQhutRnjlzYNDC48jh7rBTKM
+	ut0nouS1iCBkvsp59ysg9YJaM5csjSz69e1X2M4o+6u80w9pHoGrhgd1GBteFEiVNtEHsT38MOY
+	OpwJ6RoX2SRa70TjKeoVazQshM/sbkIwnTpAuLPVCr3dDvEKOHjopN3mDui9nVRm3cmvdl4uQkQ
+	O9Hgeo8NwsEl8X8RrsVcGVex0ubhkiRpGFf2AwCzgsAOhPKNXF6lSXAWQJfF568lmUMaGcKkEVH
+	U5eZgVwyT5r2pj0NU8qrP7kP4UkCSNVeUZIpyZSPvdFPlNl63JhYe8FHKiaBJfx9H2fNl6ugTJB
+	TZIXQ==
+X-Received: by 2002:a05:6122:3c4c:b0:5a0:9ad4:700e with SMTP id 71dfb90a1353d-5bb6bfaae71mr2720111e0c.3.1781287384899;
+        Fri, 12 Jun 2026 11:03:04 -0700 (PDT)
 Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-9161a074850sm268102985a.47.2026.06.12.10.31.27
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8d304b5f833sm28994906d6.38.2026.06.12.11.03.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Jun 2026 10:31:28 -0700 (PDT)
+        Fri, 12 Jun 2026 11:03:04 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1wY5j5-000000089sX-23vR;
-	Fri, 12 Jun 2026 14:31:27 -0300
-Date: Fri, 12 Jun 2026 14:31:27 -0300
+	id 1wY6Df-00000008DO2-3Bki;
+	Fri, 12 Jun 2026 15:03:03 -0300
+Date: Fri, 12 Jun 2026 15:03:03 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Jerry Snitselaar <jsnitsel@redhat.com>
-Cc: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>,
-	suravee.suthikulpanit@amd.com, Vasant Hegde <vasant.hegde@amd.com>,
-	iommu@lists.linux.dev
-Subject: Re: AMD iopt levels question
-Message-ID: <20260612173127.GN1066031@ziepe.ca>
-References: <airgbnJLPm3tnNig@jsnitsel-thinkpadt14sgen2i.remote.csb>
+To: Rik van Riel <riel@surriel.com>
+Cc: "Liam R. Howlett" <liam@infradead.org>, linux-kernel@vger.kernel.org,
+	kernel-team@meta.com, robin.murphy@arm.com, joro@8bytes.org,
+	will@kernel.org, iommu@lists.linux.dev, kyle@mcmartin.ca,
+	Rik van Riel <riel@meta.com>
+Subject: Re: [PATCH v3 3/3] iova: defer maple tree erase on GFP_ATOMIC failure
+Message-ID: <20260612180303.GO1066031@ziepe.ca>
+References: <20260603033653.4144138-1-riel@surriel.com>
+ <20260603033653.4144138-4-riel@surriel.com>
+ <20260609130418.GI2764304@ziepe.ca>
+ <61d51d4b5779d80145ceb38e9632a7cc8a79dbec.camel@surriel.com>
+ <20260612164852.GL1066031@ziepe.ca>
+ <ff5f9e09edbcb9c87feac6af00a1d835c783be4f.camel@surriel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -79,25 +85,53 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <airgbnJLPm3tnNig@jsnitsel-thinkpadt14sgen2i.remote.csb>
+In-Reply-To: <ff5f9e09edbcb9c87feac6af00a1d835c783be4f.camel@surriel.com>
 
-On Thu, Jun 11, 2026 at 10:41:31AM -0700, Jerry Snitselaar wrote:
+On Fri, Jun 12, 2026 at 01:23:58PM -0400, Rik van Riel wrote:
+> On Fri, 2026-06-12 at 13:48 -0300, Jason Gunthorpe wrote:
+> > On Fri, Jun 12, 2026 at 12:02:55PM -0400, Rik van Riel wrote:
+> > > 
+> > > The mas_erase() function calls mas_nomem(mas, GFP_KERNEL),
+> > > which is not safe to call while holding a spinlock.
+> > 
+> > Oh, the kdoc doesn't say that, it doesn't return any error code if it
+> > can't allocate memory, and not a single caller checks for erase
+> > failures.
+> > 
+> > I assumed internally it "somehow worked out" even though there are
+> > allocations in the callchains..
+> > 
+> > This is probably a better question for Liam? Can mtree_erase actually
+> > fail ENOMEM? Is it safe to call it in an atomic context?
+> 
+> Yes, it can fail.
 
-> I didn't have a system where I could reproduce with bonded group of
-> them, but I could induce the behavior of the i40e generating the dma
-> requests by doing horrible things like throwing a bunch of io at it
-> from a remote system, and then mess with ring buffer sizes for the
-> device. I was able to capture a vmcore, and near as I could tell it is
-> during a window where the DTE gets updated as part of increasing the
-> io page table levels, a UR would be sent back to the i40e in response
-> to a request, and the controller would start sending these dma
-> requests.
+Currently it never returns a failure to the caller. Look at mas_erase():
 
-IIRC there were some bugs around this flow that were races with the
-DTE/IOPTE changes and concurrent DMA. I belive the current upstream
-kernel has fixed them all.
+	entry = mas_state_walk(mas);
+	if (!entry)
+		return NULL;
+[..]
+	if (mas_is_err(mas))
+		goto out;
+[..]
+out:
+	mas_destroy(mas);
+	return entry;
 
-You shouldn't get an kind of UR during the increasing process for any
-in-use valid dma_addr_t.
+There is no propogation of ENOMEM, it returns success. No caller
+checks for any error here either.
+
+So I think the intention is that it cannot fail, yet it does have the
+memory allocations and busted failure path. Hence asking Liam what it
+should be, and what about an atomic context.
+
+Perhaps this might be relying on the modern kernels "small allocations
+never fail", meaning mas_erase never fails, but then you can't
+call it from an atomic context..
+
+In any case, it does look like you can't use mas_erase from an atomic
+context anyhow so your prior option with the mas_store_gfp() and
+failure handling seems reasonable.
 
 Jason
