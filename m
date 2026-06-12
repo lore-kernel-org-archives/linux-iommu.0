@@ -1,183 +1,272 @@
-Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010010.outbound.protection.outlook.com [52.101.56.10])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7122939D3D3
-	for <iommu@lists.linux.dev>; Fri, 12 Jun 2026 19:11:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.10
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781291510; cv=fail; b=h4Sn4Wbwo6RtNIQIQS+xZj2pySUBXDwDPUsaEMTcGW0CrSondQmZEQ+Dw4vA0TgHyVVRcSJr0dk6V25duqSDEBwoRxPOyNa2dObz/H+YFAMd0nrPf1qzxT3GAemH0jKZOXVQHhjvW9g4h0k88Y96yQfOSTSZuBtzH963Vs5+vYA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781291510; c=relaxed/simple;
-	bh=CGFL7rcRNPgduubjpfFDdmcgw7sIdhpNPa9VfO2YJrI=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SO2tMSFtAqAYfNK2zfwKL4dDtUyeYHF4m4BvWAfaxvM1kSAM3c8WF20mIvqp2PeYlX+p4uLqjFp59oE25CfDI8PXDoDg4vlixWkM2A0o+y8RFSpg+FTH0IP3hugRFQ5OnwpiPmG3ysHQ4zb8Fuo4pnnXizg/pfEvXTOKy9/yjQw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=BjFXa9ML; arc=fail smtp.client-ip=52.101.56.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8231034A3A5
+	for <iommu@lists.linux.dev>; Fri, 12 Jun 2026 19:52:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781293958; cv=none; b=ZI9INig6mthjuIF2CVTJkSmGv/7gSVSK9vsfDzbzkuV30Xo6d5zKql3EuaPhXHyrKWDjhHvngjTLzdokYF/O4JQwFqOeElCT1anfHFQlukGD34/TxIH70w/hSM9XXzQYMmFiZ2mPHbUUu+Sw/vHPFwQj2DeifSNiVUSTdlw3Wk4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781293958; c=relaxed/simple;
+	bh=Yly7LzUgthuLqHrlDI0LmOOXFBdyVkf+DYyn4bXOPRs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 In-Reply-To:Content-Type:Content-Disposition; b=UhMfXIabU2rfTGsE2u2nyPvYDzz1ozY0gQLZKNqNERHGhkyx9QqkfpV1STL4yQlCPo+7vIy16KBPedjkTWDkqmSE1DjuEBtf03VJ5zKDwnINo+nudZromlFE12IlKc5eyJ1ipqADLGL6wVK+c8sUoN+iinmuwEfMfI1G3WuR6sA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=UEe1CN5N; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="BjFXa9ML"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=lWkgdHDVRwL72Uya+woVioZpY8nF/yU11VQVa/iGd9q7x379TDneCFnVPrL65ywdNDzfe1IudE5uYfYhknsAAh7/iYqC/xl+3pyxU/KxIfc7c5zot6im1gJVQSOmmmlpgfgxrhu9irjw8OboOIfkMrnTZHCxNGcn3EX0f+GG/wNtSLtc2KfGXPWKupzpsC4vmX8OzvDuXK//0rpuc5yl9pNcIRJvOeUN2EMS3MiA9lCuLwWH9tnZVaxM+A9ieIK6llyQERJGJDL0HnZGVt2gkmQEz3ayHFNnrIXQgX01/pNDrtllgQM9aXtrCPekuk10jhkjtpOpaT8X1C/fIsi/ag==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=j8JizqIbPHlIecuV91nZmZXGP9oW0pqG3tLusttFP/g=;
- b=dqI+Cb+chRlvu2NMZtveQcfpYmZbUvcdzwAM5ISASyzEGLBkzmNScm+DdsR5h4EIryLmbfRbi9JQ747uP/BzrshjAOUjiG7W15XFi4eD2g+o5dEg2KdSYmvvTZs1SPQxqnEJIgmLangaHeie4qfTO5gnggyBTVlhU++UvQmz0QSDJrXm4zzp9mw0223KaLKRLrsYQH6rB6fsDWfnWqX0q2lA0kCt5IedLf3x/HeVaqw+jG6lnZvXWYOZpZMUDCuh8WMWhsoakEvo6bLD5yQLjB+Q3EJHxc9aDoOCeAd8ISliuKIrBQQndVJXVVI8G1+TqABCdGVkHlPBo2Ru5j7HCA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=j8JizqIbPHlIecuV91nZmZXGP9oW0pqG3tLusttFP/g=;
- b=BjFXa9MLKyumQWxIz/dLUaImtr9kycynoarnny0Bua4sBrqEaVq+zjQPYGyalwAs4P+fijYiVZQ8HVOiKjgx7wOkpTOy+fO36mxeD5WUpTtY6qyZcXpD2wczOrGMjPeNyqbZH5S7N2ejXgiD0szepdIl4LAW1yoE7Q3w4PcRMfvWK6p4SZpWCDtjpVsr7OXpkBmE07MiEpRWXIr722xViWQM6qD7ePkEkBJvA0GPYyDXsvyUJLeed1lRM6wf43c1+UiUlYEJZR8UcbrfutERwemTvqc+vM2VRuGNkwUZx/Z/D4X0DoJvRUJyG2+2m4jrTX6UvbRvijonL4tD57XcBA==
-Received: from MN2PR16CA0066.namprd16.prod.outlook.com (2603:10b6:208:234::35)
- by PH8PR12MB7445.namprd12.prod.outlook.com (2603:10b6:510:217::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.113.14; Fri, 12 Jun
- 2026 19:11:38 +0000
-Received: from BL02EPF00021F6F.namprd02.prod.outlook.com
- (2603:10b6:208:234:cafe::25) by MN2PR16CA0066.outlook.office365.com
- (2603:10b6:208:234::35) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.113.14 via Frontend Transport; Fri,
- 12 Jun 2026 19:11:38 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- BL02EPF00021F6F.mail.protection.outlook.com (10.167.249.11) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.113.7 via Frontend Transport; Fri, 12 Jun 2026 19:11:38 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 12 Jun
- 2026 12:11:19 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.20; Fri, 12 Jun 2026 12:11:13 -0700
-Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.126.190.181)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Fri, 12 Jun 2026 12:11:12 -0700
-Date: Fri, 12 Jun 2026 12:11:10 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Will Deacon <will@kernel.org>, Kevin Tian <kevin.tian@intel.com>, "Robin
- Murphy" <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Shuah Khan
-	<shuah@kernel.org>, Pranjal Shrivastava <praan@google.com>, Kees Cook
-	<kees@kernel.org>, Yi Liu <yi.l.liu@intel.com>, Eric Auger
-	<eric.auger@redhat.com>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH v1 4/4] iommu/arm-smmu-v3: Process vIOMMU invalidations
- in batches
-Message-ID: <aixZzvVWmAFEDQZI@nvidia.com>
-References: <cover.1780521606.git.nicolinc@nvidia.com>
- <00748c5cbea95a938d032269001a598203b06bbc.1780521606.git.nicolinc@nvidia.com>
- <20260612135409.GI1962447@nvidia.com>
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="UEe1CN5N"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1781293955;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=hRZXfFWF9iKY2a6Bx+nI5XFI0/QDokZ5tF4e29mYuZ4=;
+	b=UEe1CN5N1rpCBaQn09OMa8REqxWnOSt0xG5h3MJ0lRVoiJfavdUbpgpOnc5yK7m+rJlDLO
+	kD6RJEq9v36+/UloCLINSJKk/cBPkmjpB0XHw1SB6w87RwmnDL68QbxUd0hjPtIS5c/2jz
+	XYI7Nc94tFSQtqvaK7dLm3qk5GShTNk=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-367-INKd6TArOsOvkkQ7nore4Q-1; Fri, 12 Jun 2026 15:52:34 -0400
+X-MC-Unique: INKd6TArOsOvkkQ7nore4Q-1
+X-Mimecast-MFC-AGG-ID: INKd6TArOsOvkkQ7nore4Q_1781293953
+Received: by mail-qt1-f199.google.com with SMTP id d75a77b69052e-51776d4355cso53091971cf.0
+        for <iommu@lists.linux.dev>; Fri, 12 Jun 2026 12:52:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781293953; x=1781898753;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=hRZXfFWF9iKY2a6Bx+nI5XFI0/QDokZ5tF4e29mYuZ4=;
+        b=mj1Qk54epK53p6mES8eEf/xxfnxrO7ZyrI1WfS8MlbbLxjkDW8W800/tmPes6fSoew
+         yxHVmzoxv0ikUK00FBbZ7yIVgM1BOT++HAtQYYF/byr1KLMYAwH3xJWMBMVoGg2KDk8t
+         KcO34gIKjVgvq94ZqZR9ytjFkNIGPhllG0aEhMETIQqchbAMlfaawywTtHQjAUS4AbJV
+         WK8gmvmIKaOn9a1Vsi0WFBjrvrnQb/Pmn2I3UHmERcoymi8k0f2o9AtVz57AuwKPmZ1D
+         zyv6OnqZxbbOoDCgLymRTkiQN+/24eIpfgHEGvRHGkZxQ2i+hbfBO/iVZksL4yyQQ0BC
+         1+hw==
+X-Forwarded-Encrypted: i=1; AFNElJ95wh38zO8++vgvZiN2Nt1W1g5VlTuPO56RdQwWZGjzNbx2iPdGrYfxevn8LZTEAQG2mJxNYw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzpEiJTvrRmI2XyvmTieGT5TmMkQVOPF3H8x1mbcYVcTXQY1UQA
+	TKbs4hYWv5V0FlFHXFGoY8o1fNsJfiMd2X1ye3oWZ+7At0YwMMWHIeRPm103K/mMROxYStoZ3YL
+	cDhZGX/fW+vL6sKI76QrGrwqo2otI3NkI91fiHiFhqmFJDpRbHQzzPQ6M
+X-Gm-Gg: Acq92OEAIP/rXSv7m5z9ybxhUb0yw3MxkOJTjYyY3Y440X4X8lNr0SVyqReqxjsffB9
+	A28ILxQVFg0CIejzbAQgJu8EgQWCRGa5nJQhzKvVtpP3tuNGhvN8MsdJRQqauEzhpTm5/qhy4JL
+	MTJbXPcZEdpHfw1mr994ZHkqYPANaEGAqkb9xeNK2UehwxD/iNgzJQonN2z3ma8MIwa1dNxRcKk
+	49XKTxw41SR/EInp1fuE+ZD6kuqtHpYNfHLZpjZ+uuwSC1dpSl/CuQmL5PTVkHu0K+vLisiTxKV
+	/W5ceJHx8BmTWFMgi1YYF4B2rzIlAfryQnqdUScNa9Q2y9UVEz7VcQLL6uUVnAMlUE6/xlDsmQw
+	eKwxPYhF2UgQVGtYabMeqzPQ=
+X-Received: by 2002:ac8:5cd3:0:b0:517:7871:693f with SMTP id d75a77b69052e-517fbc8c7b2mr65917741cf.8.1781293953203;
+        Fri, 12 Jun 2026 12:52:33 -0700 (PDT)
+X-Received: by 2002:ac8:5cd3:0:b0:517:7871:693f with SMTP id d75a77b69052e-517fbc8c7b2mr65917421cf.8.1781293952642;
+        Fri, 12 Jun 2026 12:52:32 -0700 (PDT)
+Received: from localhost ([2600:8800:1593:b400:1e8c:ec8f:1337:fb26])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8d300f6b1c5sm33140946d6.3.2026.06.12.12.52.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Jun 2026 12:52:31 -0700 (PDT)
+Date: Fri, 12 Jun 2026 12:52:30 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>, 
+	suravee.suthikulpanit@amd.com, iommu@lists.linux.dev
+Subject: Re: AMD iopt levels question
+Message-ID: <aiwzB5AyEXi3SbL5@jsnitsel-thinkpadt14sgen2i.remote.csb>
+References: <airgbnJLPm3tnNig@jsnitsel-thinkpadt14sgen2i.remote.csb>
+ <95921d73-f108-4383-88b5-e706f10da047@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <95921d73-f108-4383-88b5-e706f10da047@amd.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: 9T-9mzz1G8RXu9G9lgm2IRpKLRtWemvH1PycN-FTqRU_1781293953
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260612135409.GI1962447@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF00021F6F:EE_|PH8PR12MB7445:EE_
-X-MS-Office365-Filtering-Correlation-Id: 19e48bcc-a773-4144-6578-08dec8b66df9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|7416014|376014|36860700016|82310400026|23010399003|18002099003|22082099003|6133799003|5023799004|56012099006|11063799006|4143699003|3023799007;
-X-Microsoft-Antispam-Message-Info:
-	JrxbLH5Dn1Uo8f34umaVZ5yFm4L9bzT9qjhMqGM9ez6MfatFcNrzsTzZWXiZLwet28fqSMjVkr70ArkVrdkupqtkRRkuhTCRIyd+dEIBjM85Y6F8C1E+nt+8HDWP3fiHX+NaqDOfDoqPblPHUD1Q4y8FgY2I0R+DLOu/h6Zw77IqH14M1CCRaEY3RPXthLLgHEWPIf88zgigK7rhsGVoj9OZhTLeoDU/hd+ZYWkJuHkms07mLLxYNI04LJxzSngLhxyxnOND6EZcbxxi7BFd1yoWlwS65NZyj4HMv58/Slmq1QF4NYnlvPqH8qS/XOOvdarUAGcBvA9cygvKtV1xJmuBrJ6jjQnnscCnFQRaQaUxGbwJZtzEBPKV28SOjKpVzusXsgfLbyVI9GeTPmQhyvXm1tRRxmpeCSNTUl+bB0AmtNIluZZZCtCrfum+qyS9s8k3eXUGj+b0SohZQiufHW0YoDZkUZ3ssevHkDHY+NkZixBtHZ+lA6rN3PQa5mQ0VSoOOPNzH2Ft2bdAvNC2RoBWAyPSpreYR8IRVPX9U1Aj4Jp7IJbEYPQ3UnQhXumYo9N6Q7os354ekwHO6hAh1zLoptmY3ObVVLAa7HxvJXyFTs2Z6n+pRLrKFpGHZRCXSXc9gYWlqMFIFbIqhpK8yClDzvO/5TbocXNWROfOQaM4hgubvy4EG3RZJXIpLolG0IdaytcFpO+7Msi5NijkNWHTT9gpf7RQw+gkTa5uk+o=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(36860700016)(82310400026)(23010399003)(18002099003)(22082099003)(6133799003)(5023799004)(56012099006)(11063799006)(4143699003)(3023799007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	tIV9YIc6h4Da6WRZ0WUGbB4Nj/tysvLVpBawvzVhvLF/DlESpCDNclrpLd2b2JaP4St/fTvRMDKtQcsWybMJjq+RrZM4koXkICupsTdRlkfvlb23vCqbPhTi8p7wsKvMo8RMJlmm/R1IBqIni/NN1r8ahOGxLII8zJuTuyy+5pQ8ywLBLhPNP5gRE8Ekr44FVt513An9lGZoxredjjItC81E2b/F2+V1W4U1Daspp6oZpo1NPAJwc4abdyEY/4+ueUJqbb8eOFq1OGh25Y8mx2L5AZOT/6/S67po6F4hvv2yX+AOEo2xcDwANPfMXjah3U+tpuuFdnCTBvwWKl+N1+/Dct9TZohGobn4MrKwA+9LNmX8bYZaWbRfVhFKos3nIMvSqDW5Dm2o4jsUjNCb8ZtXx1ABhcpBd9MQox9jHKu+0CENy0x8gEPoMwXmUwgk
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jun 2026 19:11:38.5909
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 19e48bcc-a773-4144-6578-08dec8b66df9
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL02EPF00021F6F.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7445
 
-On Fri, Jun 12, 2026 at 10:54:09AM -0300, Jason Gunthorpe wrote:
-> On Wed, Jun 03, 2026 at 02:26:56PM -0700, Nicolin Chen wrote:
-> > +int arm_vsmmu_cache_invalidate(struct iommufd_viommu *viommu,
-> > +			       struct iommu_user_data_array *array)
-> > +{
-> > +	struct arm_vsmmu *vsmmu = container_of(viommu, struct arm_vsmmu, core);
-> > +	u32 issued = 0;
-> > +	int ret = 0;
-> > +
-> > +	if (array->type != IOMMU_VIOMMU_INVALIDATE_DATA_ARM_SMMUV3) {
-> > +		array->entry_num = 0;
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	while (issued != array->entry_num) {
-> > +		/* Process and issue the command(s) in batch */
-> > +		ret = arm_vsmmu_cache_invalidate_batch(vsmmu, array, &issued);
-> > +		if (ret)
-> > +			break;
-> > +	}
-> > +
-> > +	array->entry_num = issued;
-> >  	return ret;
+On Fri, Jun 12, 2026 at 03:22:05PM +0530, Vasant Hegde wrote:
+> Hi Jerry,
 > 
-> I think every driver will have this same problem, how about lifting
-> this loop to the core code?
-
-Sure. I think that makes things a bit cleaner. I'll try that. Then,
-this would become another iommufd series.
-
-> Also not sure I like the validation flow, I think it will be easier to
-> understand for everything if either num is 0 and nothing was done with
-> an error code
+> On 6/11/2026 11:11 PM, Jerry Snitselaar wrote:
+> > I don't recall, is there a reason amd_iommu doesn't initialize the io
+> > page tables to the number of levels supported on the system?
 > 
-> Or num is non zero and no error code.
+> Its because HW supports increasing level dynamically and for performance reason
+> we start w/ 3 level.
 > 
-> Like it doesn't make sense to fail immediately if zero pad is nonzero
-> in iommu_copy_struct_from_full_user_array() but then to try to
-> partially continue if arm_vsmmu_convert_user_cmd() finds illegal data
-> in the very same buffer. Be consistent, validate the user buffer, if
-> it is not valid fail immeidately. Then execute a fully valid user buffer.
+> > 
+> > I was looking at an issue recently with an i40e controller where
+> > someone had a set of them in a bond. When it would fail over to
+> > another device, the device would make a request to map as part of
+> > that, and the domain would transition into the 64-bit iova address
+> > space. When that happens the i40e would start generating requests
+> > causing io page faults to monotonically increasing addresses starting
+> > at 0x0, repeatedly causing event log resets.
+> 
+> I didn't get the problem. Why will it start from address 0x0? Our default is  3
+> level. Even when its increasing the page table level, it shouldn't hit fault for
+> existing maps.
+>
 
-I don't think fully validating the user buffer is correct..
+I don't think the 0x0 is from the iova management code, but
+potentially the firmware on these controllers, and I don't think it is
+generating faults from any valid dma addresses, except potentially for
+permission errors. It is just into this state where it clears some
+register, and it is walking the entire iova address space for the
+domain. The vast majority of the callbacks are suppressed, plus the
+event log needs to keep restarting, but in one of the logs it had
+walked up past the 32-bit boundary with the requests before they dealt
+with the system. To be clear I think the problem is with the
+controller, not the iommu code. Using iommu.forcedac works around the
+issue. I tried to see if I could make it happen with some other
+controller, and had no luck with that. It was just a thought that
+there is the window when it is doing the DTE update due to the page
+level increase where the IOMMU will reject requests.
 
-VMM would have to know which command failed, to flag it in the CONS
-register, indicating: a) commands prior to the CONS are issued, and
-b) command pointed by the CONS is illegal.
+> 
+> > 
+> > I didn't have a system where I could reproduce with bonded group of
+> > them, but I could induce the behavior of the i40e generating the dma
+> > requests by doing horrible things like throwing a bunch of io at it
+> > from a remote system, and then mess with ring buffer sizes for the
+> > device. I was able to capture a vmcore, and near as I could tell it is
+> > during a window where the DTE gets updated as part of increasing the
+> > io page table levels, a UR would be sent back to the i40e in response
+> > to a request, and the controller would start sending these dma
+> > requests.
+> > 
+> > With the HATS support in the kernel now would it make sense to
+> > initialize pgtable->mode to amd_iommu_hpt_level if it is set? 
+> 
+> Are you referring to upstream code with generic page table support?
+> 
+> -Vasant
+> 
 
-Then, guest kernel reads the CONS register to pinpoint this illegal
-command and swap it with a CMD_SYNC (__arm_smmu_cmdq_skip_err).
+The dangers of looking at a downstream issue, and writing email. Sorry
+about that. The original reported issue was a downstream release with
+earlier code. I'd reproduced the behavior from the i40e with a build
+of 7.0-rc1 at the time, but I'm verifying now if it still happens with
+a current build. So with the generic_pt code it would be
+cfg->starting_level. Really though this is something for Intel to look
+into with that controller. Console log below to show what it looks
+like when the i40e goes off the rails.
 
-E.g., if the 16th command in a 64-command array is illegal, kernel
-should issue the first 15 commands, returns -EIO; then, VMM should
-flag illegal at CONS pointing to the 16th command.
+Regards,
+Jerry
 
-The design in this patch is implemented in this way. And arguably,
-I think the nonzero-padding case is VMM violating the ABI, in which
-case the return code would be different than -EIO. And VMM should
-fix itself instead of flagging illegal in the CONS register.
+---
 
-Do you agree?
+    [root@lenovo-sd535v3-04 ~]# uname -r
+    7.1.0-0.rc7.260611g9716c086c8e8.50.eln157.x86_64
 
-Thanks
-Nicolin
+    start sending traffic to the system
+    mess with the mtu and tx/rx ring sizes
+
+    ...
+
+    [ 3175.119566] i40e 0000:81:00.0 ens1f0np0: Changing Tx descriptor count from 512 to 8160.
+    [ 3175.133364] i40e 0000:81:00.0 ens1f0np0: Changing Rx descriptor count from 512 to 8160
+    [ 3175.264538] i40e 0000:81:00.0: Using 64-bit DMA addresses
+    [ 3175.270271] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x14 flags=0x0000]
+    [ 3175.281573] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x1014 flags=0x0000]
+    [ 3175.292722] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x2014 flags=0x0050]
+    [ 3175.303870] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x3014 flags=0x0050]
+    [ 3175.315017] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x3214 flags=0x0050]
+    [ 3175.326166] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x3414 flags=0x0050]
+    [ 3175.337313] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x3614 flags=0x0050]
+    [ 3175.410119] i40e 0000:81:00.0: VSI seid 390 Tx ring 0 disable timeout
+    [root@lenovo-sd535v3-04 ~]# [ 3193.727720] i40e 0000:81:00.0 ens1f0np0: NETDEV WATCHDOG: CPU: 128: transmit queue 86 timed out 5504 ms
+    [ 3193.738292] i40e 0000:81:00.0 ens1f0np0: tx_timeout: VSI_seid: 390, Q 86, NTC: 0x0, HWB: 0x0, NTU: 0x2, TAIL: 0x0, INT: 0x1
+    [ 3193.750798] i40e 0000:81:00.0 ens1f0np0: tx_timeout recovery level 1, txqueue 86
+    [ 3193.811965] i40e 0000:81:00.0: VSI seid 390 Tx ring 0 disable timeout
+    [ 3194.033833] i40e 0000:81:00.0: VSI seid 392 Tx ring 767 disable timeout
+    [ 3194.274965] i40e 0000:81:00.1: VSI seid 391 Tx ring 0 disable timeout
+    [ 3194.341842] i40e 0000:81:00.1: VSI seid 393 Tx ring 767 disable timeout
+    [ 3197.343334] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x3814 flags=0x0000]
+    [ 3197.354485] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x4014 flags=0x0000]
+    [ 3197.365633] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x5014 flags=0x0000]
+    [ 3197.376781] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x6014 flags=0x0000]
+    [ 3197.387929] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x7014 flags=0x0000]
+    [ 3197.399076] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x8014 flags=0x0000]
+    [ 3197.410227] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x8a14 flags=0x0000]
+    [ 3197.421376] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x9014 flags=0x0000]
+    [ 3197.432523] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x9a14 flags=0x0000]
+    [ 3197.443670] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0xa014 flags=0x0000]
+    [ 3197.457770] AMD-Vi: IOMMU Event log restarting
+    [ 3197.465917] AMD-Vi: IOMMU Event log restarting
+    [ 3197.474064] AMD-Vi: IOMMU Event log restarting
+    [ 3197.482210] AMD-Vi: IOMMU Event log restarting
+    [ 3197.490358] AMD-Vi: IOMMU Event log restarting
+    [ 3197.498504] AMD-Vi: IOMMU Event log restarting
+    [ 3197.506644] AMD-Vi: IOMMU Event log restarting
+    [ 3197.514793] AMD-Vi: IOMMU Event log restarting
+    [ 3197.522941] AMD-Vi: IOMMU Event log restarting
+    [ 3197.531086] AMD-Vi: IOMMU Event log restarting
+    [ 3200.145031] i40e 0000:81:00.0: capability discovery failed, err -EIO aq_err LIBIE_AQ_RC_OK
+    [ 3200.410262] i40e 0000:81:00.0: ignoring delete macvlan error on PF, err -EIO, aq_err LIBIE_AQ_RC_OK
+    [ 3202.343533] amd_iommu_report_page_fault: 815972 callbacks suppressed
+    [ 3202.343535] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x94b843014 flags=0x0000]
+    [ 3202.363252] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x94b843814 flags=0x0000]
+    [ 3202.391691] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x94b844014 flags=0x0000]
+    [ 3202.420100] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x94b844814 flags=0x0000]
+    [ 3202.443571] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x94b845014 flags=0x0000]
+    [ 3202.455260] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x94b845814 flags=0x0000]
+    [ 3202.466946] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x94b846014 flags=0x0000]
+    [ 3202.478627] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x94b846814 flags=0x0000]
+    [ 3202.490307] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x94b847014 flags=0x0000]
+    [ 3202.501987] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x94b847c14 flags=0x0000]
+
+    ... lots of event log restarts and io page fault messages ...
+
+    [ 3242.351205] amd_iommu_report_page_fault: 802222 callbacks suppressed
+    [ 3242.351206] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x53b3cb8814 flags=0x0000]
+    [ 3242.386829] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x53b3cb9014 flags=0x0000]
+    [ 3242.415291] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x53b3cb9814 flags=0x0000]
+    [ 3242.431241] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x53b3cba014 flags=0x0000]
+    [ 3242.443004] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x53b3cba814 flags=0x0000]
+    [ 3242.454768] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x53b3cbb014 flags=0x0000]
+    [ 3242.466529] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x53b3cbbe14 flags=0x0000]
+    [ 3242.478292] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x53b3cbc014 flags=0x0000]
+    [ 3242.490054] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x53b3cbc614 flags=0x0000]
+    [ 3242.501821] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x53b3cbce14 flags=0x0000]
+    [ 3242.529911] amd_iommu_restart_log: 1502 callbacks suppressed
+    [ 3242.529912] AMD-Vi: IOMMU Event log restarting
+    [ 3242.544484] AMD-Vi: IOMMU Event log restarting
+    [ 3242.552667] AMD-Vi: IOMMU Event log restarting
+    [ 3242.560844] AMD-Vi: IOMMU Event log restarting
+    [ 3242.569018] AMD-Vi: IOMMU Event log restarting
+    [ 3242.577193] AMD-Vi: IOMMU Event log restarting
+    [ 3242.585368] AMD-Vi: IOMMU Event log restarting
+    [ 3242.593543] AMD-Vi: IOMMU Event log restarting
+    [ 3242.601719] AMD-Vi: IOMMU Event log restarting
+    [ 3242.609892] AMD-Vi: IOMMU Event log restarting
+    [ 3247.352164] amd_iommu_report_page_fault: 802273 callbacks suppressed
+    [ 3247.352165] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x5d0163f814 flags=0x0000]
+    [ 3247.387790] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x5d01640014 flags=0x0000]
+    [ 3247.416251] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x5d01640814 flags=0x0000]
+    [ 3247.431201] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x5d01641014 flags=0x0000]
+    [ 3247.442964] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x5d01641814 flags=0x0000]
+    [ 3247.454729] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x5d01642014 flags=0x0000]
+    [ 3247.466492] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x5d01642814 flags=0x0000]
+    [ 3247.478255] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x5d01643014 flags=0x0000]
+    [ 3247.490016] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x5d01643814 flags=0x0000]
+    [ 3247.501779] i40e 0000:81:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0011 address=0x5d01644014 flags=0x0000]
+
+
+With forcedac set:
+
+    [root@lenovo-sd535v3-04 ~]# uname -r
+    7.1.0-0.rc7.260611g9716c086c8e8.50.eln157.x86_64
+    [root@lenovo-sd535v3-04 ~]# ip link set ens1f0np0 mtu 9000
+
+    start scp of iso on remote system to i40e system
+
+    [root@lenovo-sd535v3-04 ~]# ethtool -G ens1f0np0 rx 8160 tx 8160
+    [   80.033523] i40e 0000:81:00.0 ens1f0np0: Changing Tx descriptor count from 512 to 8160.
+    [   80.047691] i40e 0000:81:00.0 ens1f0np0: Changing Rx descriptor count from 512 to 8160
+    [root@lenovo-sd535v3-04 ~]#
+    [root@lenovo-sd535v3-04 ~]# cat /proc/cmdline
+    BOOT_IMAGE=(hd0,gpt2)/vmlinuz-7.1.0-0.rc7.260611g9716c086c8e8.50.eln157.x86_64 root=/dev/mapper/rhel_lenovo--sd535v3--04-root ro crashkernel=2G-64G:256M,64G-:512M resume=UUID=12da0907-a209-4e4a-a294-ea9a06817efe rd.lvm.lv=rhel_lenovo-sd535v3-04/root rd.lvm.lv=rhel_lenovo-sd535v3-04/swap console=tty0 console=ttyS0,115200n81 iommu.forcedac=1
+
