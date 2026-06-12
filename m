@@ -1,82 +1,51 @@
-Received: from mail-vk1-f169.google.com (mail-vk1-f169.google.com [209.85.221.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 140221D61B7
-	for <iommu@lists.linux.dev>; Fri, 12 Jun 2026 18:03:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6847130FC27;
+	Fri, 12 Jun 2026 18:44:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781287387; cv=none; b=UWlSjb3UZ9SUesw7H5UGz6A5Zj8n1FU77l2dPZcV60LsC+L4R1c1jiaeHHaBz1eHoUIIoqWirm12ZRoXbfXvckpD+EVEOsdHGcqqmBqk3Ve78yThT6BTZ7L7KfnLeA6kxLllFhjWDg6vjAG1dgLaM8mxphGH++khoq7YYVNb/3s=
+	t=1781289855; cv=none; b=MyILs3bxzHS3/7tYzr4qBXyV+Of56StnG3IiS2+fqbFQvV/4WDvAB9AJvnFCLdLXzJHZWJLsiKQeyK+VhwFFnAzCVZnyWxzgSr+0G9HKNHVNH6dUl+/TA7xsASJzqljtXk1gEu3MA8DWrDBLEFbmT10G9NzzadYX1xWi5A13qbo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781287387; c=relaxed/simple;
-	bh=mn3yVOv7qKPFWYBvFnk75CZs9rsQ7cExwWlUYRYxI2M=;
+	s=arc-20240116; t=1781289855; c=relaxed/simple;
+	bh=QG23j8pGHy1yeWe2sd5i15l313O4whPFG8zCiwSDvCQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GHJZQiFRiL5vd+AHwRu844tcqYJ/t+UgZvSdXvD3ZBvIUmfhFiowNCcp2yubGjGSj7HfoiPkW3A+oCyNiWxH1WXsmoZbAam1rsbYhS98YgSf+vQ9Qs+TuaLReKHr8X6aJiYrUym/1IYT+ND53+r9nIp/6dj9zwOfodS1sxhySlQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Bkl2qHJk; arc=none smtp.client-ip=209.85.221.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=nZqcLaOABEVOuPrV3QBQUAF1ylVaGwA4fdhvvMt6j7mZuQKjWOgQo4gWE70IQWQ6tEcTw+vhX/lGo57ub9R08suxuM3SOXtR/l7mYGUGYJ7Crwx63SavJv+4T+I41cIVybGqBpE0smiO5OOfPwoMgDrns6v0I0uh9yZH3rT65/8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=pass smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=c4SRP2W6; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Bkl2qHJk"
-Received: by mail-vk1-f169.google.com with SMTP id 71dfb90a1353d-59d6e44e5c8so850567e0c.2
-        for <iommu@lists.linux.dev>; Fri, 12 Jun 2026 11:03:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1781287385; x=1781892185; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=fTSufejrrgKqac3GQqcQTlYgn8yTYKUBIBFNWIyXYbU=;
-        b=Bkl2qHJk5fAmMrYVh8FOwdnTrdDWtYa4lS9797a4cfjB19e+jjsn8AQwCl+L1AoFvF
-         opNdWlYU4yQqwdw/XLk3hS/fPVfxORMpdiMX5apD6+q9GKvnu0C2GxIiO5s64B6LM/13
-         L/8Pk9+kBgtDcME5xdKvr7EWwaQswV2YS5hjNaQ3iIMgCkzrWM8p1Fju6a8cJ1XX6Sus
-         FA/PG3f8h8y4fyONNRzU+asQTIVXMtaO87AEKNX8NVV7iY9eaLw6SmA4rSru3xGJgkcc
-         z84x4S9T2eeGuaolhB2cNlugQo8S/v17N4jvwF/uQ6aJbXKn0xQHRRYNmZNajHmqk1jQ
-         yGPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781287385; x=1781892185;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=fTSufejrrgKqac3GQqcQTlYgn8yTYKUBIBFNWIyXYbU=;
-        b=G+R4AxPS6WIJEVEox/cX+BEyGP32V0rZ9Py4k8imVLYHsE01PgoxIs3RIVCUiyo76h
-         2bzRhdGko4Y+NTYAalo1Wgpo+ts0lPEOHfSJyHzTLeXKrLVgVpfvawX3+dJx/ZgRsSO4
-         DbU1Axh24nXjAg4Dow3wTeYwGt88QOXmfssLklw95NwYiko1TjaKz7C+XEa+SPFUHkQY
-         pQgB3P6IlC9spDAbMyY6jRp8Vsq+sVPhfTE9W8hUb321sEBip9cb0zz5W/O1L8SmGWqz
-         4AMVVjNX3KRTW1VH7lgo/aHejBlVCwuuXS8QuS+QArqRcI/O59/6XPfs2cVBNfjeAnc6
-         fNrg==
-X-Forwarded-Encrypted: i=1; AFNElJ/hZaaUFNFAZVT1R0BUuUGkzzxC6nUzCaCX2RGdamUA0rInuBv8hoyoq92hu2Ky7Asj+51bgg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyo1Y/IQTK5NJpuyltqR8yjG25ZunoaLz6+1yO5LPVvBB2XKclL
-	FydYa9FVft+wkGdgG6ps1QaPDBjJI1itSqnXe69BuptvBYx3FFE4b50qnnkrqfX7FEY=
-X-Gm-Gg: Acq92OE/YlrSpoZBSwxJLJJ1waLebhf1Hpg3TUo4p/60jukgBT7azyhI6Ogb4+vMFKW
-	ghTJrCJnQyC+RUOG6dnr908jgWRVnW7ms10z3f0hYNqYGq2E4Ua9gYUVDJpZVDKwLrmpmpUi5KH
-	f1v9001nYkSdvGcYBnEOW14VPlST7+iInXjNdrRjgu9XuTc4VTJiQhutRnjlzYNDC48jh7rBTKM
-	ut0nouS1iCBkvsp59ysg9YJaM5csjSz69e1X2M4o+6u80w9pHoGrhgd1GBteFEiVNtEHsT38MOY
-	OpwJ6RoX2SRa70TjKeoVazQshM/sbkIwnTpAuLPVCr3dDvEKOHjopN3mDui9nVRm3cmvdl4uQkQ
-	O9Hgeo8NwsEl8X8RrsVcGVex0ubhkiRpGFf2AwCzgsAOhPKNXF6lSXAWQJfF568lmUMaGcKkEVH
-	U5eZgVwyT5r2pj0NU8qrP7kP4UkCSNVeUZIpyZSPvdFPlNl63JhYe8FHKiaBJfx9H2fNl6ugTJB
-	TZIXQ==
-X-Received: by 2002:a05:6122:3c4c:b0:5a0:9ad4:700e with SMTP id 71dfb90a1353d-5bb6bfaae71mr2720111e0c.3.1781287384899;
-        Fri, 12 Jun 2026 11:03:04 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8d304b5f833sm28994906d6.38.2026.06.12.11.03.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Jun 2026 11:03:04 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wY6Df-00000008DO2-3Bki;
-	Fri, 12 Jun 2026 15:03:03 -0300
-Date: Fri, 12 Jun 2026 15:03:03 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Rik van Riel <riel@surriel.com>
-Cc: "Liam R. Howlett" <liam@infradead.org>, linux-kernel@vger.kernel.org,
-	kernel-team@meta.com, robin.murphy@arm.com, joro@8bytes.org,
-	will@kernel.org, iommu@lists.linux.dev, kyle@mcmartin.ca,
-	Rik van Riel <riel@meta.com>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="c4SRP2W6"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=/Rs3piD1obkr4E1lwxUpi/km6OaloDV8jShDRtjgSBw=; b=c4SRP2W6VW67SW55gDANoo9Jew
+	qd1FW5W+fiDj4/4TDcxUHkf6bP/aHogRAQCE4sVxD5CrCEJ002kD1KflZ2LXW6JTr+W1vb4T2LnPs
+	/Jl+yKz9SoGVy6ZRi7XUxf4yA+fI3APS4Rce2xJNRQpKum/hMTnoBwlKKWDwk4/2oZ44MO6EmBx36
+	8Q5jiWvyOOSZ7IjKu+jDl3cdjs7BEhnCZIDWKkIjt5fjpJml8+jVhaAYcVnAy/z5w5gRR51XgwE5/
+	/TuWbGXNK70jJaGO2LSXHC+XyL/7bt+dyTUn0DFclkqygJ/K/ObxvLnUFkLX2Hfq80t/DtaxGcdp1
+	+gs1x1AQ==;
+Received: from [38.23.173.23] (helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
+	id 1wY6rT-0000000BPtq-2sx1;
+	Fri, 12 Jun 2026 18:44:11 +0000
+Date: Fri, 12 Jun 2026 14:44:06 -0400
+From: "Liam R. Howlett" <liam@infradead.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Rik van Riel <riel@surriel.com>, linux-kernel@vger.kernel.org, 
+	kernel-team@meta.com, robin.murphy@arm.com, joro@8bytes.org, will@kernel.org, 
+	iommu@lists.linux.dev, kyle@mcmartin.ca, Rik van Riel <riel@meta.com>, 
+	maple-tree@lists.infradead.org
 Subject: Re: [PATCH v3 3/3] iova: defer maple tree erase on GFP_ATOMIC failure
-Message-ID: <20260612180303.GO1066031@ziepe.ca>
+Message-ID: <iv7sxqezzz42xieytbf3lskutricz7ltkr3wii3w4jbnbzto7f@2tz5hwa43l37>
 References: <20260603033653.4144138-1-riel@surriel.com>
  <20260603033653.4144138-4-riel@surriel.com>
  <20260609130418.GI2764304@ziepe.ca>
  <61d51d4b5779d80145ceb38e9632a7cc8a79dbec.camel@surriel.com>
  <20260612164852.GL1066031@ziepe.ca>
  <ff5f9e09edbcb9c87feac6af00a1d835c783be4f.camel@surriel.com>
+ <20260612180303.GO1066031@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -85,53 +54,101 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ff5f9e09edbcb9c87feac6af00a1d835c783be4f.camel@surriel.com>
+In-Reply-To: <20260612180303.GO1066031@ziepe.ca>
 
-On Fri, Jun 12, 2026 at 01:23:58PM -0400, Rik van Riel wrote:
-> On Fri, 2026-06-12 at 13:48 -0300, Jason Gunthorpe wrote:
-> > On Fri, Jun 12, 2026 at 12:02:55PM -0400, Rik van Riel wrote:
++Cc maple-tree list.
+
+On 26/06/12 03:03PM, Jason Gunthorpe wrote:
+> On Fri, Jun 12, 2026 at 01:23:58PM -0400, Rik van Riel wrote:
+> > On Fri, 2026-06-12 at 13:48 -0300, Jason Gunthorpe wrote:
+> > > On Fri, Jun 12, 2026 at 12:02:55PM -0400, Rik van Riel wrote:
+> > > > 
+> > > > The mas_erase() function calls mas_nomem(mas, GFP_KERNEL),
+> > > > which is not safe to call while holding a spinlock.
 > > > 
-> > > The mas_erase() function calls mas_nomem(mas, GFP_KERNEL),
-> > > which is not safe to call while holding a spinlock.
+> > > Oh, the kdoc doesn't say that, it doesn't return any error code if it
+> > > can't allocate memory, and not a single caller checks for erase
+> > > failures.
+
+I should fix that.
+
+> > > 
+> > > I assumed internally it "somehow worked out" even though there are
+> > > allocations in the callchains..
+> > > 
+> > > This is probably a better question for Liam? Can mtree_erase actually
+> > > fail ENOMEM? Is it safe to call it in an atomic context?
 > > 
-> > Oh, the kdoc doesn't say that, it doesn't return any error code if it
-> > can't allocate memory, and not a single caller checks for erase
-> > failures.
-> > 
-> > I assumed internally it "somehow worked out" even though there are
-> > allocations in the callchains..
-> > 
-> > This is probably a better question for Liam? Can mtree_erase actually
-> > fail ENOMEM? Is it safe to call it in an atomic context?
+> > Yes, it can fail.
 > 
-> Yes, it can fail.
+> Currently it never returns a failure to the caller. Look at mas_erase():
+> 
+> 	entry = mas_state_walk(mas);
+> 	if (!entry)
+> 		return NULL;
+> [..]
+> 	if (mas_is_err(mas))
+> 		goto out;
+> [..]
+> out:
+> 	mas_destroy(mas);
+> 	return entry;
+> 
+> There is no propogation of ENOMEM, it returns success. No caller
+> checks for any error here either.
 
-Currently it never returns a failure to the caller. Look at mas_erase():
+At one point this was considered to be impossible to fail, and it is
+documented to return the entry or null.
 
-	entry = mas_state_walk(mas);
-	if (!entry)
-		return NULL;
-[..]
-	if (mas_is_err(mas))
-		goto out;
-[..]
-out:
-	mas_destroy(mas);
-	return entry;
+> 
+> So I think the intention is that it cannot fail, yet it does have the
+> memory allocations and busted failure path. Hence asking Liam what it
+> should be, and what about an atomic context.
+> 
+> Perhaps this might be relying on the modern kernels "small allocations
+> never fail", meaning mas_erase never fails, but then you can't
+> call it from an atomic context..
 
-There is no propogation of ENOMEM, it returns success. No caller
-checks for any error here either.
+It _can_ fail, but right now that error will not be propagated to the
+caller.  The caller could infer the failure due to the return of NULL...
+if that's what would happen, so there's very much an issue on failure
+that I need to investigate and fix.
 
-So I think the intention is that it cannot fail, yet it does have the
-memory allocations and busted failure path. Hence asking Liam what it
-should be, and what about an atomic context.
+It is possible that it fails with -ENOMEM.  And the spinlock can be
+dropped if you are not using an external lock and the gfp flag allows
+blocking.  On failure to allocate and the lock is dropped, we retry the
+operation from the start in case there was a race with another writer.
 
-Perhaps this might be relying on the modern kernels "small allocations
-never fail", meaning mas_erase never fails, but then you can't
-call it from an atomic context..
+I think I should probably change this to return -ENOMEM, fix the docs on
+it, and probably audit the callers (most use external locks or are
+early-boot-so-don't-worry-about-it).  Any issue here should also be
+caught by lockdep pretty quickly.
 
-In any case, it does look like you can't use mas_erase from an atomic
-context anyhow so your prior option with the mas_store_gfp() and
-failure handling seems reasonable.
+> 
+> In any case, it does look like you can't use mas_erase from an atomic
+> context anyhow so your prior option with the mas_store_gfp() and
+> failure handling seems reasonable.
 
-Jason
+mas_store_gfp() works if you know the range of your entry.  You could
+also write the XA_ZERO_ENTRY over the entry so that there is no internal
+node changes - just a value swap.  If you do this, you have to be
+careful when reading things back when using the mas_ interface.
+
+I think, in your case, hitting an XA_ZERO_ENTRY would be necessary to
+indicate that we cannot reuse this particular location until it is
+correctly dealt with?  Or is the maple tree the only reason it is
+considered unusable?
+
+One thing to remember is that each write can cause allocations to occur,
+so if you have a list of items being overwritten then you are causing
+the tree to do each write and potentially rebalancing (as you shrink the
+data beyond the lower limit of the node).
+
+One way around that is to write XA_ZERO_ENTRY over each one as you
+deal with your entry.  Then, when you are done you do a single
+mas_store_gfp() of NULL over the whole range.  It will be a larger tree
+operation, but smaller than the incremental steps.
+
+Thanks,
+Liam
+
