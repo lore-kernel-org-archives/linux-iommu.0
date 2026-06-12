@@ -1,63 +1,132 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A7E92ECEA5;
-	Fri, 12 Jun 2026 15:55:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AA1E2F28FC;
+	Fri, 12 Jun 2026 16:03:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=96.67.55.147
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781279737; cv=none; b=ANbLnsNgaFvR9jlNu7xd77i1mSUfs+aZeblVga8kyBi7g0teIGdEw7O+M8BIPJdbADusCQBtuArRFI3WFRI7FgA1n2/CENSGW+omfeRRN8B/E/AC7QNhVrg6nnM/rlYKMxIz+h2t2Q4l+h0ar9cb5aNkjUdMOu/v0PGlDINxvfA=
+	t=1781280183; cv=none; b=sGjfp9ByCYEsbDEpbt3RFdy7IHsxOSYA3oUK5bnoaxqnEjSQv3Qaa3PzbIBlUg6WoWpN0W4+A8oNgqaxtscQfe3dsfbcbM04RI3urxfGeUNTcH9SKfch8PtcyMuNrsoELmvUvGgMPBl0NI+HRmZCnN3+KrB9xG4VfhB4gx2U038=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781279737; c=relaxed/simple;
-	bh=pb6ew1hdYE3Bc25XzqBoe5D3z10OJ59yjoYLy/YOKjY=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=SrlDKeZFjYKkH6/wZkjQ42LoyPDOF3F9jaUTCcwNlnqm5yurAbF67QLvA2ehfyA4TxsUic6pCZARg6G/AKHv7XavRyJEsU3PmoYsYYfQsVTWXZQ0OF5Yr+5eMpMoOCfKQDFFCzjmCWpc76RLJD9+qZfciW2deaGyccRoCI+xd0s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UdipM/RG; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1781280183; c=relaxed/simple;
+	bh=o2Mb3U5iJ+gab+LMPM9bwoop7DarHyItelrKJnVtPco=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=WgUICBdONK2mhSW7Dfp9hTyAxV6kXOBLuFoeb3+/eHQeWlrGCILa84KiM76BgjH+/d8nGCl9ye0TlE3+lwszMIq/8M1mbZ2oG0BBJJ1EO1jj7Ccv9xDnsdDp7bcS6avQvUOd6VKPy5vqRUQU3nL9z4CDGfP66RK2fl0lHP96I+0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com; spf=pass smtp.mailfrom=surriel.com; dkim=pass (2048-bit key) header.d=surriel.com header.i=@surriel.com header.b=NfpFtrmg; arc=none smtp.client-ip=96.67.55.147
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=surriel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UdipM/RG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 115351F000E9;
-	Fri, 12 Jun 2026 15:55:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781279736;
-	bh=hOFB9hIseyhg8wvevsdnVaHErr/EH1bVSNhdMmFWUcc=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc;
-	b=UdipM/RGYelhAss4mXTxBd3RV6KI+8WEoQ71DT2C8pLlrXCx3bZWOCOlbcxFSXlZo
-	 78jYqrmShszbgEYa285O2wr3IXyIvex9v6o59QEsfZ5bLOcSFkTw6UeXDT0xFoMg5t
-	 mb+BMg4Xoy565ZtqIZlar+zaWxTZqye/UHQmxW9H5JVhtv35MYBCkbHGDaGlpGz17f
-	 u5CNDG1WPpBXRMwelH7tinlYtqcGb5NS59msiQftvSQvJ2WKAaekIFw9vFD9q6DKCe
-	 4ahjAd3v8VBemZ8x1mEKbPE+iSLp6sMj9fUxJQZi6iSoO6ewi7wUwcCkMWDJrqbx1o
-	 wHmgPQm8DPsag==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 19A3E3931092;
-	Fri, 12 Jun 2026 15:55:34 +0000 (UTC)
-Subject: Re: [GIT PULL] dma-mapping fixes for Linux 7.1
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <20260611205751.1255411-1-m.szyprowski@samsung.com>
-References: <CGME20260611205755eucas1p2a4d68c135aab6b232fa3ce6ac7d8a369@eucas1p2.samsung.com> <20260611205751.1255411-1-m.szyprowski@samsung.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20260611205751.1255411-1-m.szyprowski@samsung.com>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-7.1-2026-06-11
-X-PR-Tracked-Commit-Id: 6ec91df8aff77e2e8fe3179c1f3fc15b43a40ba3
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: f51cae6603c05b4b1fac65c773592e5bc8037251
-Message-Id: <178127973260.723498.10313878544889388228.pr-tracker-bot@kernel.org>
-Date: Fri, 12 Jun 2026 15:55:32 +0000
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Li RongQing <lirongqing@baidu.com>
+	dkim=pass (2048-bit key) header.d=surriel.com header.i=@surriel.com header.b="NfpFtrmg"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=surriel.com
+	; s=mail; h=MIME-Version:Content-Transfer-Encoding:Content-Type:References:
+	In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=0R9XO6B8XInWgdVPDHra7e0deMWtmEYsAlDeHSEisVo=; b=NfpFtrmggPUvwFjk4lydPwKswn
+	QnnbJArr+KIjImC2xYOJeK350lA/edfVZNLpfRKX8CRMF6ZSkriAkrwkE6912rAVP+NMXUlI5rD/i
+	jXTGM2S9+Jn2Z7Qs5nX8rNRsP6JK0bBWhkK6cAiJRScSg66qFFF18aSoNrMLlSIHz0nL6yYTvVXID
+	7iA3OaZxJiv+qgs++xOHpI9dmvdWGOQZVcQJjj8tVAfRluy15u4E6PjpRCYvu68flIouWbw9qFcVj
+	c1RghbhSr+Zr6y+MtXISRdmeDYGambXgW/VSOag/o7Fz0qpeqvy9jt/2XNBG+/xOEhRrb2G5nL1W6
+	ptMNYdmA==;
+Received: from fangorn.home.surriel.com ([10.0.13.7])
+	by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.97.1)
+	(envelope-from <riel@surriel.com>)
+	id 1wY4LP-0000000043b-30vL;
+	Fri, 12 Jun 2026 12:02:55 -0400
+Message-ID: <61d51d4b5779d80145ceb38e9632a7cc8a79dbec.camel@surriel.com>
+Subject: Re: [PATCH v3 3/3] iova: defer maple tree erase on GFP_ATOMIC
+ failure
+From: Rik van Riel <riel@surriel.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: linux-kernel@vger.kernel.org, kernel-team@meta.com,
+ robin.murphy@arm.com, 	joro@8bytes.org, will@kernel.org,
+ iommu@lists.linux.dev, kyle@mcmartin.ca, Rik van Riel <riel@meta.com>
+Date: Fri, 12 Jun 2026 12:02:55 -0400
+In-Reply-To: <20260609130418.GI2764304@ziepe.ca>
+References: <20260603033653.4144138-1-riel@surriel.com>
+	 <20260603033653.4144138-4-riel@surriel.com>
+	 <20260609130418.GI2764304@ziepe.ca>
+Autocrypt: addr=riel@surriel.com; prefer-encrypt=mutual;
+ keydata=mQENBFIt3aUBCADCK0LicyCYyMa0E1lodCDUBf6G+6C5UXKG1jEYwQu49cc/gUBTTk33A
+ eo2hjn4JinVaPF3zfZprnKMEGGv4dHvEOCPWiNhlz5RtqH3SKJllq2dpeMS9RqbMvDA36rlJIIo47
+ Z/nl6IA8MDhSqyqdnTY8z7LnQHqq16jAqwo7Ll9qALXz4yG1ZdSCmo80VPetBZZPw7WMjo+1hByv/
+ lvdFnLfiQ52tayuuC1r9x2qZ/SYWd2M4p/f5CLmvG9UcnkbYFsKWz8bwOBWKg1PQcaYHLx06sHGdY
+ dIDaeVvkIfMFwAprSo5EFU+aes2VB2ZjugOTbkkW2aPSWTRsBhPHhV6dABEBAAG0HlJpayB2YW4gU
+ mllbCA8cmllbEByZWRoYXQuY29tPokBHwQwAQIACQUCW5LcVgIdIAAKCRDOed6ShMTeg05SB/986o
+ gEgdq4byrtaBQKFg5LWfd8e+h+QzLOg/T8mSS3dJzFXe5JBOfvYg7Bj47xXi9I5sM+I9Lu9+1XVb/
+ r2rGJrU1DwA09TnmyFtK76bgMF0sBEh1ECILYNQTEIemzNFwOWLZZlEhZFRJsZyX+mtEp/WQIygHV
+ WjwuP69VJw+fPQvLOGn4j8W9QXuvhha7u1QJ7mYx4dLGHrZlHdwDsqpvWsW+3rsIqs1BBe5/Itz9o
+ 6y9gLNtQzwmSDioV8KhF85VmYInslhv5tUtMEppfdTLyX4SUKh8ftNIVmH9mXyRCZclSoa6IMd635
+ Jq1Pj2/Lp64tOzSvN5Y9zaiCc5FucXtB9SaWsgdmFuIFJpZWwgPHJpZWxAc3VycmllbC5jb20+iQE
+ +BBMBAgAoBQJSLd2lAhsjBQkSzAMABgsJCAcDAgYVCAIJCgsEFgIDAQIeAQIXgAAKCRDOed6ShMTe
+ g4PpB/0ZivKYFt0LaB22ssWUrBoeNWCP1NY/lkq2QbPhR3agLB7ZXI97PF2z/5QD9Fuy/FD/jddPx
+ KRTvFCtHcEzTOcFjBmf52uqgt3U40H9GM++0IM0yHusd9EzlaWsbp09vsAV2DwdqS69x9RPbvE/Ne
+ fO5subhocH76okcF/aQiQ+oj2j6LJZGBJBVigOHg+4zyzdDgKM+jp0bvDI51KQ4XfxV593OhvkS3z
+ 3FPx0CE7l62WhWrieHyBblqvkTYgJ6dq4bsYpqxxGJOkQ47WpEUx6onH+rImWmPJbSYGhwBzTo0Mm
+ G1Nb1qGPG+mTrSmJjDRxrwf1zjmYqQreWVSFEt26tBpSaWsgdmFuIFJpZWwgPHJpZWxAZmIuY29tP
+ okBPgQTAQIAKAUCW5LbiAIbIwUJEswDAAYLCQgHAwIGFQgCCQoLBBYCAwECHgECF4AACgkQznneko
+ TE3oOUEQgAsrGxjTC1bGtZyuvyQPcXclap11Ogib6rQywGYu6/Mnkbd6hbyY3wpdyQii/cas2S44N
+ cQj8HkGv91JLVE24/Wt0gITPCH3rLVJJDGQxprHTVDs1t1RAbsbp0XTksZPCNWDGYIBo2aHDwErhI
+ omYQ0Xluo1WBtH/UmHgirHvclsou1Ks9jyTxiPyUKRfae7GNOFiX99+ZlB27P3t8CjtSO831Ij0Ip
+ QrfooZ21YVlUKw0Wy6Ll8EyefyrEYSh8KTm8dQj4O7xxvdg865TLeLpho5PwDRF+/mR3qi8CdGbkE
+ c4pYZQO8UDXUN4S+pe0aTeTqlYw8rRHWF9TnvtpcNzZw==
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
 
-The pull request you sent on Thu, 11 Jun 2026 22:57:51 +0200:
+On Tue, 2026-06-09 at 10:04 -0300, Jason Gunthorpe wrote:
+> On Tue, Jun 02, 2026 at 11:35:48PM -0400, Rik van Riel wrote:
+> > +/*
+> > + * Remove an IOVA entry from the maple tree. Returns true on
+> > success.
+> > + * On failure (maple tree node allocation under GFP_ATOMIC
+> > failed),
+> > + * returns false =E2=80=94 the entry remains in the tree and the calle=
+r
+> > must
+> > + * not free the struct iova.
+> > + */
+> > +static bool remove_iova(struct iova_domain *iovad, struct iova
+> > *iova)
+> > =C2=A0{
+> > =C2=A0	MA_STATE(mas, &iovad->mtree, iova->pfn_lo, iova->pfn_hi);
+> > =C2=A0
+> > @@ -165,7 +175,36 @@ static void remove_iova(struct iova_domain
+> > *iovad, struct iova *iova)
+> > =C2=A0	if (iova->pfn_lo < iovad->dma_32bit_pfn)
+> > =C2=A0		iovad->max32_alloc_size =3D iovad->dma_32bit_pfn;
+> > =C2=A0
+> > -	mas_store_gfp(&mas, NULL, GFP_ATOMIC);
+> > +	if (mas_store_gfp(&mas, NULL, GFP_ATOMIC))
+> > +		return false;
+>=20
+> But why does it use mas_store(NULL) instead of mas_erase()? I thought
+> the iova alloc/free has to be pair wise, we don't split allocations?
+>=20
+I just looked into this some more, and I was
+confused earlier this week.
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-7.1-2026-06-11
+The mas_erase() function calls mas_nomem(mas, GFP_KERNEL),
+which is not safe to call while holding a spinlock.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/f51cae6603c05b4b1fac65c773592e5bc8037251
+The remove_iova() function holds a spinlock, with
+interrupts blocked, and needs to run like that because
+it could be called from places like IO completion
+handlers.
 
-Thank you!
+That leaves the option of either having slightly
+uglier maple tree code, or going back to the
+augmented rbtree (but cleaning that up a little).
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Just let me know what you prefer, I'm happy to do
+either.
+
+--=20
+All Rights Reversed.
