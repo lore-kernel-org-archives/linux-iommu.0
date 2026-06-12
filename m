@@ -1,154 +1,232 @@
-Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010035.outbound.protection.outlook.com [40.93.198.35])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f195.google.com (mail-pf1-f195.google.com [209.85.210.195])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0350E23395F
-	for <iommu@lists.linux.dev>; Fri, 12 Jun 2026 01:15:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.35
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781226953; cv=fail; b=CkUo7TLwh9+O0vkIKeaOk+iiTS6g20XZ2UR47+iI1DQlPdEs7kIaxbCPtEZ4ROYFsYGeNXGxlbHGO4ouWrrrWuEhj40Ouzni+moAyqEDa+GLd30sQRYSUIQKxVud0UD+IAm343uUF02jlWVgtAYOl2WOMvNVwwbvRe7aVjVn/Zg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781226953; c=relaxed/simple;
-	bh=ObnHdG0WmKX5o05Fm047j+b1gSIGlObWBCaZSHpYzow=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JnWfeS6y7SdvoskAUXOydjo+5YYI0MiT71+ggsrAXsJXrrwaBHsaU6wDedaNZT3kXehs4Iu4catIJjeDIxvZ4Nd2SMhyUN5UNMq3ZPp8+Iv0hfcaSGWW9z7VCETQ47QsScdBiEYRv+Re7Um4DMOoMBKH5fTTfMbVtLWq2YsTPdE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=pVbvdoJu; arc=fail smtp.client-ip=40.93.198.35
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5834A3D9DB9
+	for <iommu@lists.linux.dev>; Fri, 12 Jun 2026 07:28:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.195
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781249320; cv=none; b=ntZcEVCPR+DHR8EuCS22YdToYrpWf3w7O3pXv6BVpDc8RMQCBLshIcJ++N3CYFWHEoBHjTIH8xPxnGNVNXkCQbV4A13PHW0i15WtYjVhAvV8usnAkzmY2W+ZXgW+B0Wt1ht28Yuq5W+N2Fg4pxoGwOTnOkBDCAbEVtiJb6S/gy8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781249320; c=relaxed/simple;
+	bh=kAPiUCLyMJWjlb7fejuBmEvQIEXoZ8B6yNmVTGMkDN0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=XQVp7Ycd6pP9HCIH7/MNkC/Mc3LDn1rIL4+JEtGQXOEeEOIem61lce8IBRbScWdPVzhqtfwi2M6eJibFhJcPH8j8+u1BZoIns+BiwQRmuzdp2foxt8/lJMebyczgKsQ4qWoadxZRGF6OnRSnYoSLIEfYpZIu1FCiEr3xo2+jO+Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LOuAS5wh; arc=none smtp.client-ip=209.85.210.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="pVbvdoJu"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=hmG3ZThJysWQyXfb1+CqTLotfFN4HBds+gTRM/vvSpiyj7np2Z2K0Wga0Y/KkhqUbKYdOXPyWq2FJtnN7zpMhaBaYBtwBdz0UVXRHrUDXkzl/BH+OMliLHaKnK8Tn1UED49aIWIYGXRhJeDovBTz1AdIakLYXPJlbAff2lXZw9MSGr3gq5o1EDGffYg0UT0mq/TuNwhl4GPzO8GWG/CT9SYO2rlSHOn22dWTtwAGSheBeLjuH2jaEnua7lwZzna7pGerIRJpHc6I3m5iU68P2a2h0n+jnthqDroMOQTBuu4wW2eRsbb5pX9JQlXapo8h19cZcB+lObBL6a4yvtIEAQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rPGVEufbrB/qEFzX77GPu/92Ova1BiUYa25cj4Hszqg=;
- b=E+/0cMolfEalUKZcdy5BrQJemSPQ4bnYkPJlfeX/4Nh9wB87d6Jp1w2LqlcNFKyH64sXT31s5h4+s/dus0XCIqp2oqbVfCAqwQesCAQM8JwXEI2w57MgQGWLoWwGELmmebcLWgGaTuDPGng7nF7vd85SP+ijTq4DfxaB8Fd1lOKQHGOzWLC9L86vZoNK9MmiUxe34DLAanlFwX+jRIApuFN49nYoA6C+M9inB6kntdcp0lvJxSqyvs7WFp7H1CCqwvcEDny+xqQYf7ar5WmX5nJFhn1RvvcGPTIx3W8WpSp+UkDHr/YUp+vqNOxDl63N1A1VnDr5KA9/vAxZqvfoVQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rPGVEufbrB/qEFzX77GPu/92Ova1BiUYa25cj4Hszqg=;
- b=pVbvdoJu+KnGOf7KvtlmHCWCrRCw84rhzS2vffvPGqwHahbHb8glihbliVXvy1p7sO/61EQFUzG39iq0LitykCdiokDssFFY/KJr7VaRDByHIvDS1zh/Xj/HhHRYCXc7LpeYL9uK+EUNQSDjICbIMefMDwMHV5CyOOoOjcDJ0pe3k8tvWRr3kvuFrPPzpLCH1Lg5blLPJvS/OTiYlcu+xe8rXCQeZ35u17exlzHNn3SGD/ziRh/yyBdXy02mWQJtNzOUt9/mq12qWjd6UYVHLruZUowKE9s6Kidb38jNrEwCvq4hH+EIfmkZeBLML96SLTz6GsGZ9D2oWIITHkYu3w==
-Received: from DS7PR03CA0023.namprd03.prod.outlook.com (2603:10b6:5:3b8::28)
- by CY8PR12MB8216.namprd12.prod.outlook.com (2603:10b6:930:78::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.92.17; Fri, 12 Jun
- 2026 01:15:46 +0000
-Received: from CH3PEPF00000018.namprd21.prod.outlook.com
- (2603:10b6:5:3b8:cafe::3b) by DS7PR03CA0023.outlook.office365.com
- (2603:10b6:5:3b8::28) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.113.13 via Frontend Transport; Fri,
- 12 Jun 2026 01:15:46 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- CH3PEPF00000018.mail.protection.outlook.com (10.167.244.123) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.139.1 via Frontend Transport; Fri, 12 Jun 2026 01:15:46 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 11 Jun
- 2026 18:15:27 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.20; Thu, 11 Jun 2026 18:15:26 -0700
-Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.126.190.181)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Thu, 11 Jun 2026 18:15:25 -0700
-Date: Thu, 11 Jun 2026 18:15:25 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Shameer Kolothum <skolothumtho@nvidia.com>
-CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <jgg@ziepe.ca>, <joro@8bytes.org>,
-	<will@kernel.org>, <robin.murphy@arm.com>, <nathanc@nvidia.com>,
-	<mochs@nvidia.com>
-Subject: Re: [PATCH v2 1/2] iommu/arm-smmu-v3: Manage teardown with devm
-Message-ID: <aitdrRk/3Y7TZdUm@nvidia.com>
-References: <20260611084205.686559-1-skolothumtho@nvidia.com>
- <20260611084205.686559-2-skolothumtho@nvidia.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LOuAS5wh"
+Received: by mail-pf1-f195.google.com with SMTP id d2e1a72fcca58-8423f869421so579101b3a.3
+        for <iommu@lists.linux.dev>; Fri, 12 Jun 2026 00:28:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1781249317; x=1781854117; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=66pdCW0yOW5Nk6MUhQzAUTYI58FQ4Ifcfuf+SyuK5QE=;
+        b=LOuAS5whNAZtJaqflUhV6OA3K8m5SqW6UF4KCcQCUxvudfEbJTcskJWKjZiqZDCv1a
+         LR5L8xueBA8gy/8T1CaF8+/g16Gz1rhFwUGhnpVg4zS96fp9dbh+ZhlQbFty01uE+Sgn
+         XtUtLHF7bJED2v3p+I59+zcyUMUAcWMWKrnsW9B3WgA/gMb3GCPN0wd9nAMsekBsvcoX
+         4f1f2Yt0mgQd7Og1hl5YXH7KTZk4cpcZJcgEVzyPYVICDbO4QWbMOb33BFetg27WiG+v
+         tyeLhN47e6SM/ZnyMrsK4Jz2cWcNUoPwkbh8cbrEkZ+oAwWMx1HedKPah5mbmFIJx1Nb
+         yJdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781249317; x=1781854117;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=66pdCW0yOW5Nk6MUhQzAUTYI58FQ4Ifcfuf+SyuK5QE=;
+        b=dojLIAd4QMXddSgpScuvgQXFZghitbKZnintho7ytfxCeoA/DTjb195FHiMUZ6Jy4f
+         VpSbgJ1SsGklsT4EALLiQOkhrXUNHKHjy/sor0V4sM4DOQmU68wrlMroV5ghenu8j9tB
+         osb4f3+L5EZadVjei8mqUTGOSawLvdl4qvPRqi2nMWEf2xlPyFWxdIBdmHwwGE0La1l4
+         iunq9wlqyOWBfNj9dOPEz+4DGMYm3Qm+2p0yceTk8SyNeYSgVwQ4Q/ZipUlrc0ZgRbih
+         8sL+f+Czu4gU7ZaJ9V0suT9nObGrueT7aUWcxJuw3sRyYEZCysDUiF+UR4Z3djQ7ziXx
+         K0zQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/ZPD5XG32D08vLP9tmjs9qkyRlagpS8NsZUV5HqocOo/5rI1dHWY3RBG0zivEdctsWZJl9pw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy2HgSKJ1fQV8182C9aBbsSNYAChsaZlk6EPZh1eTiXaDk36KfA
+	Spw2ULXANcekxtklAEO0B1zNrLy2+0OB2XwOzo7iKPf5HcZQl3bofAl3
+X-Gm-Gg: Acq92OGnO229W+LvgSOiGQolOyQE8wlMGBK1aqz5uxbjzEIINISsiN1oYe74+BPY8jd
+	XodmoQg6AT+HOPQ1YTJk0fXXGegmSA9TIrVsi/YuK5u4dE6QJFDR5cDDLdbGHDWmiU92VLt6oep
+	ofKTPDD/unYBgppx2w4Bf9ZjqMJMK37RVKqBVF/Ad/nr+OBFYCZujvb71xDr57R5UuNFsjfdez0
+	t3K6mfb9/kBcuRTMmF/40KIopZOEBQ7FVo9bX9xZzOjJH1Q2/4HDXbN3K8TS0PnypC1/tcZZ146
+	iFhtcrgiYRXosuC/Ln7NtsL79DlEnxIiV7/KZZegDTjpW6yBPLANALqNgSdkonaGPj4PbQRDUt3
+	CPVqOXcUmCQUIxAne4KZBpD7SDaLTDYvv/7wWSwzpxyBN/Ha7OhhhXKWcmlYySKvsqIvsc10SSR
+	B0IQ2SxirdQnDxcm4xy2EAFXsr1mbdoTeRdI5uG7yUiQ==
+X-Received: by 2002:a05:6a00:218c:b0:842:708f:39a6 with SMTP id d2e1a72fcca58-8434cc08379mr1646577b3a.10.1781249316540;
+        Fri, 12 Jun 2026 00:28:36 -0700 (PDT)
+Received: from [10.125.112.20] ([210.184.73.204])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8434afc8a9bsm1278464b3a.31.2026.06.12.00.28.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 12 Jun 2026 00:28:35 -0700 (PDT)
+Message-ID: <27a06e00-ac47-4e5f-8033-4e89f15d0411@gmail.com>
+Date: Fri, 12 Jun 2026 15:28:24 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20260611084205.686559-2-skolothumtho@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PEPF00000018:EE_|CY8PR12MB8216:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4359258e-e2d8-4c50-0d0d-08dec82021a0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|376014|82310400026|36860700016|1800799024|56012099006|4143699003|11063799006|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	1t7uXyy/WyqRUIsyoOMrMsNQCXfk9C/adqAst68i9LMmJ/QgfVG4gePmaPFmxKSzLP3mNdZ9aiPpdhzyIVzJbfzT2+u7N0bBpU+AVbXkhjZnHNnmk+vN0AqRp+gpUQJuSwzoGorPfjRLVDBqVJg3ezV7cutIFH7mQCByhlhG20Pg3EYl/2NVNKqGUJcKPbUmamVkZzxNaSaqt3xXfy3aYQbGqsTnCxKpN4huE7tg5w13xPIougpnknYl0Vq0PTnF2OcHFbr3Ao68WGNSHxRf0gGlICthQpNRAYE34vognj/ZCcWijhjtSSm4PAc3wuRra2pTZPXC0Na0iIYcV7hi0BfKHuKgYppvDnCTTlT9or0Tpnda3r1X91R+Dgo1eP2MBDIsY47jW6hR9f0+qCpiYHBqgvc4pxjdxYe4VayByhjAuW8m834uspZpavvYk+xg+bmEQIqTWaoDGCRt/qYnpdogBYc4LXMXQDyECYzZ2ytm7kd2cfMo8MTWQNPuLxYAAx2QiqUpaK8E13z6Ne/4i/I8poPkL4wykbFQ6YATURwSUobBbHMoKwCPAKRh/77oAa7IICaNeDvfptmjvBuQjWP7V/he/zxJ1SZFkLNkSuj9L/P2mfTbxsvVKdG5lDsrDvlot0ccYqxwVmlX6iO0qDjp/Wf6hbV7jRri2OAZYs8abh+L4uZXQqRA+PcIszMJqOKJKQJIj7rjlKMMO1WH/UugVRT2RAttcJdKQYK3s9k=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(23010399003)(376014)(82310400026)(36860700016)(1800799024)(56012099006)(4143699003)(11063799006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	wdX/L+zx5YgaMONNPSSxgtNSuS8FCBd6wpVJpxoSQEhCMEP1WZsurLv2pYZQeofP0/2856Z2jjZPtwzB/QmK+RnY2qKFrKR5kXNOoVsf3/EZvIdWwF9A4P0BUOVvKNQmCtvzHg6p5FtzcV9WuOnVdcRlUppTbq774lt5IQZFIl+s0imM9FMsmg20vyXMz1A81YTT0B+P3UjxIKh1Ul9ZWAG4YeG18lyCyzYLYpvzHArh93xbqjRKFqCBMWEQXF6TLnXTMZEfkrgQuYy3z0GkQa4WcyWeDMVAVGwBh2ZIiRb+dghpNUPqqN4DBNZehgCbMmV5QWBMAyJXBsCl3u7N3D8WDEx0vFwF5k29mtXMfeAaDa28gWM0+95gf5Inuh/TQYuUYT5Rtl0Ix9fpuzK68Gh0LWHz29R4QEZNabWZTDxBWmbr8OTJnSMYF/6UIqyF
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jun 2026 01:15:46.0327
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4359258e-e2d8-4c50-0d0d-08dec82021a0
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CH3PEPF00000018.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB8216
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 00/11] kdump: reduce vmcore size and capture time
+To: Baoquan He <baoquan.he@linux.dev>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ loongarch@lists.linux.dev, linux-riscv@lists.infradead.org,
+ devicetree@vger.kernel.org, kexec@lists.infradead.org,
+ iommu@lists.linux.dev, zhaomeijing@lixiang.com, Rob Herring
+ <robh@kernel.org>, saravanak@kernel.org, bhe@redhat.com, rppt@kernel.org,
+ pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu,
+ chenhuacai@kernel.org, kernel@xen0n.name, catalin.marinas@arm.com,
+ will@kernel.org, alex@ghiti.fr, akpm@linux-foundation.org,
+ pasha.tatashin@soleen.com, pratyush@kernel.org, ruirui.yang@linux.dev,
+ m.szyprowski@samsung.com, robin.murphy@arm.com
+References: <20260527032917.3385849-1-chenwandun1@gmail.com>
+ <7ed207fa-4c86-426a-8570-495902ce04c3@gmail.com>
+ <a3993db0-6975-455d-9674-4fd7cfcf80fc@gmail.com>
+ <aiqkKe1gXPZ5LZ7t@MiWiFi-R3L-srv>
+Content-Language: en-US
+From: Wandun <chenwandun1@gmail.com>
+In-Reply-To: <aiqkKe1gXPZ5LZ7t@MiWiFi-R3L-srv>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Thu, Jun 11, 2026 at 09:42:04AM +0100, Shameer Kolothum wrote:
-> arm_smmu_device_remove() manually frees the IOPF queue, destroys the
-> vmid_map and disables the device, while the IRQs and queues are devm
-> managed. devm unwinds only after remove() returns, so the cleanup runs
-> in the wrong order. The IOPF queue is freed before the event-queue IRQ
-> whose handler uses it.
+
+
+On 6/11/26 20:03, Baoquan He wrote:
+> On 06/11/26 at 11:09am, Wandun wrote:
+>>
+>>
+>> On 6/11/26 10:09, Wandun wrote:
+>>>
+>>>
+>>> On 5/27/26 11:29, Wandun Chen wrote:
+>>>> From: Wandun Chen <chenwandun@lixiang.com>
+>>>>
+>>>> On SoCs that carve out large firmware-owned reserved memory (GPU
+>>>> firmware, DSP, modem, camera ISP, NPU, ...), kdump currently dumps
+>>>> those carveouts as part of system RAM even though their contents are
+>>>> firmware state that is not useful for kernel crash analysis.
+>>>>
+>>>> This series introduces an opt-in 'dumpable' flag [1] on struct
+>>>> reserved_mem and uses it to filter the elfcorehdr PT_LOAD ranges on
+>>>> DT-based architectures (arm64, riscv, loongarch). By default reserved
+>>>> regions are treated as non-dumpable; CMA regions are explicitly opted
+>>>> in because their pages are returned to the buddy allocator and may
+>>>> carry key crash-analysis data.
+>>>>
+>>>> The series is organized as follows:
+>>>> Patches 1-3: Pre-existing fixes and a small prep change.
+>>>> Patches 4-5: Restructure to allow appending /memreserve/ entries.
+>>>> Patches 6-7: Add a dumpable flag and append /memreserve/ entries.
+>>>> Patch 8: Add generic kdump helpers.
+>>>> Patches 9-11: Wire the helpers into arm64, riscv and loongarch kdump
+>>>>                elfcorehdr preparation.
+>>> Hi,
+>>>
+>>> Gentle ping on this series.
+>>>
+>>> Status summary:
+>>> -patch 03: respun separately per Rob's suggestion, picked up for 7.2
+>>> -patch 06: Acked-by: Marek Szyprowski -patch 09: Acked-by: Will Deacon
+>>> The remaining patches (01, 02, 04, 05, 07, 08, 10, 11) are still
+>>> awaiting review. your feedback would be greately appreciated. I know we
+>>> are at the end of 7.1 -rc cycle, I don't want to rush this series, just
+>>> collecting more feedback, and will send next version based on 7.2-rc1.
+>>> If spliting the series into smaller logical group would make review
+>>> easier, please let me know. Best regards, Wandun
+>>
+>> Apologies for the formatting issue in my previous email.
+>> Here is the properly formatted version.
+>>
+>> Gentle ping on this series.
 > 
-> Manage all of it with devm so the unwind order is correct. Free the IOPF
-> queue and vmid_map via devm actions, and disable the device from one
-> registered after arm_smmu_device_reset().
+> Thanks for the effort, the overral looks good to me at 1st glance. I will
+> check if there's concern on generic part. And meanwhile, I am wondering
+> if there's any chance x86 or other ARCH-es w/o OF/FDT can also choose to
+> not dump some areas, e.g GPU stolen memory. Surely, that's another story.
+
+Thanks for the review, Baoquan.
+
+IIUC, reserved memory is already excluded from vmcore on x86.
+
+Reserved memory is typed as E820_TYPE_RESERVED in the e820 table, and
+insert into iomem resource tree with IORESOURCE_MEM flag. The x86 kdump
+patch uses walk_system_ram_res() which scan iomem resource tree, and
+only collects ranges with IORESOURCE_SYSTEM_RAM flag, so reserved
+regions are excluded.
+
+
+Best regards,
+Wandun
 > 
-> This is also a prerequisite for fixing a Tegra241 CMDQV CMD_SYNC
-> use-after-free in the subsequent patch.
-> 
-> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
-> Signed-off-by: Shameer Kolothum <skolothumtho@nvidia.com>
+>>
+>> Status summary:
+>> - patch 03: respun separately per Rob's suggestion, picked up for 7.2
+>> - patch 06: Acked-by: Marek Szyprowski
+>> - patch 09: Acked-by: Will Deacon
+>>
+>> The remaining patches (01, 02, 04, 05, 07, 08, 10, 11) are still
+>> awaiting review. Your feedback would be greatly appreciated.
+>>
+>> I know we are at the end of 7.1-rc cycle, I don't want to rush this
+>> series, just collecting more feedback, and will send next version based
+>> on 7.2-rc1.
+>>
+>> If splitting the series into smaller logical groups would make review
+>> easier, please let me know.
+>>
+>> Best regards,
+>> Wandun
+>>
+>>
+>>>>
+>>>> v2 --> v3:
+>>>> 1. Fix out-of-bounds issue if device tree lacks /reserved-memory node.[2]
+>>>> 2. Fix UAF issue when alloc_reserved_mem_array() fails.
+>>>> 3. Add some prepare patches.
+>>>>
+>>>> v1 --> v2:
+>>>> 1. v1 added an opt-out DT property ('linux,no-dump'). Per Rob's
+>>>>     feedback [1], v2 drop that property and exclude reserve memory
+>>>>     by default.
+>>>> 2. Split some prepared patches from the original patches.
+>>>> 3. Address coding-style comments on patch 5 from Rob.
+>>>>
+>>>> [1] https://lore.kernel.org/lkml/20260506144542.GA2072596-
+>>>> robh@kernel.org/
+>>>> [2] https://sashiko.dev/#/patchset/20260520091844.592753-1-
+>>>> chenwandun%40lixiang.com?part=4
+>>>>
+>>>> Wandun Chen (11):
+>>>>    of: reserved_mem: handle NULL name in of_reserved_mem_lookup()
+>>>>    kexec/crash: provide crash_exclude_mem_range() stub when
+>>>>      CONFIG_CRASH_DUMP=n
+>>>>    of: reserved_mem: avoid post-init UAF when alloc_reserved_mem_array()
+>>>>      fails
+>>>>    of: reserved_mem: zero total_reserved_mem_cnt if no valid
+>>>>      /reserved-memory entry
+>>>>    of: reserved_mem: split alloc_reserved_mem_array() from
+>>>>      fdt_scan_reserved_mem_late()
+>>>>    of: reserved_mem: add dumpable flag to opt-in vmcore
+>>>>    of: reserved_mem: save /memreserve/ entries into the reserved_mem
+>>>>      array
+>>>>    of: reserved_mem: add kdump helpers to exclude non-dumpable regions
+>>>>    arm64: kdump: exclude non-dumpable reserved memory regions from vmcore
+>>>>    riscv: kdump: exclude non-dumpable reserved memory regions from vmcore
+>>>>    loongarch: kdump: exclude non-dumpable reserved memory regions from
+>>>>      vmcore
+>>>>
+>>>>   arch/arm64/kernel/machine_kexec_file.c     |   6 ++
+>>>>   arch/loongarch/kernel/machine_kexec_file.c |   6 ++
+>>>>   arch/riscv/kernel/machine_kexec_file.c     |   4 +
+>>>>   drivers/of/fdt.c                           |  11 +-
+>>>>   drivers/of/of_private.h                    |   3 +
+>>>>   drivers/of/of_reserved_mem.c               | 117 +++++++++++++++++++--
+>>>>   include/linux/crash_core.h                 |   6 ++
+>>>>   include/linux/of_reserved_mem.h            |  15 +++
+>>>>   kernel/dma/contiguous.c                    |   1 +
+>>>>   9 files changed, 157 insertions(+), 12 deletions(-)
+>>>>
+>>>
+>>
 
-Given that the PATCH-2 adds new code to arm_smmu_disable_action()
-which is introduced here, should this patch also cc stable tree?
-
-> +static void arm_smmu_free_iopf_action(void *data)
-> +{
-> +	iopf_queue_free(data);
-> +}
-> +
-> +static void arm_smmu_destroy_vmid_map(void *data)
-> +{
-> +	ida_destroy(data);
-> +}
-[...]
-> +static void arm_smmu_disable_action(void *data)
-> +{
-> +	arm_smmu_device_disable(data);
-> +}
-
-Jason prefers casting.
-
-Otherwise,
-
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
