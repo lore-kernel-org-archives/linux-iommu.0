@@ -1,77 +1,63 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4764938888C
-	for <iommu@lists.linux.dev>; Fri, 12 Jun 2026 15:49:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A7E92ECEA5;
+	Fri, 12 Jun 2026 15:55:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781279357; cv=none; b=pvM/yUifH1eTH42UEwQwgDDq5yImqF42+lPlSa5uhYneRSP/E+laVKZJh+xbW1s7Cl+ZGjnFU3RV+s9Ju9XNU/sgRdu4Jyntd+9DS4SaL6daGdUDNMvi1arVvdgk37WGPzS8+QUdFjkvCAffQvPnyRsDGYMCZ+klhLGOczHZaZ0=
+	t=1781279737; cv=none; b=ANbLnsNgaFvR9jlNu7xd77i1mSUfs+aZeblVga8kyBi7g0teIGdEw7O+M8BIPJdbADusCQBtuArRFI3WFRI7FgA1n2/CENSGW+omfeRRN8B/E/AC7QNhVrg6nnM/rlYKMxIz+h2t2Q4l+h0ar9cb5aNkjUdMOu/v0PGlDINxvfA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781279357; c=relaxed/simple;
-	bh=cmuWdLZnmzJuZ8tXKo4lxxPTQfJsAC0PwDxyx65gUu8=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=W+JyAkUxwvlfnKPHm+G1XTkANLiArqCqMxOcmmK9B3UsYNFJdVp4HOshKKeV0VEwpk3zQXbXp5eUkDGFWeGW4wZhEfkn3HmKODliR5XWcNzxqZxziJvcT4yhSsdzP5PYbKtDbgq/M1iwpDoVhZWqB3hq4Tsd7W2/vDsuX5f1hFs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=JgA7DWi7; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1781279737; c=relaxed/simple;
+	bh=pb6ew1hdYE3Bc25XzqBoe5D3z10OJ59yjoYLy/YOKjY=;
+	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=SrlDKeZFjYKkH6/wZkjQ42LoyPDOF3F9jaUTCcwNlnqm5yurAbF67QLvA2ehfyA4TxsUic6pCZARg6G/AKHv7XavRyJEsU3PmoYsYYfQsVTWXZQ0OF5Yr+5eMpMoOCfKQDFFCzjmCWpc76RLJD9+qZfciW2deaGyccRoCI+xd0s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UdipM/RG; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="JgA7DWi7"
-Received: from [192.168.201.246] (unknown [4.194.122.170])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 14F1A20B716A;
-	Fri, 12 Jun 2026 08:48:46 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 14F1A20B716A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1781279330;
-	bh=ybPZw5yBtrj6GVFw2KVnqqBTS8qRsLDltQqfValjFxw=;
-	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-	b=JgA7DWi7ZLWaGC2D7GogwAo1CIXnmwCqMg3eHKeMj6UqY4+ZxFbiSvVrbmA92sk9T
-	 xCHcYeACw33e3x+pT0S+bAMp4AfX4iLXKTQXdBwQEQb8TEv9xctkfcyXYRKxV4KF1a
-	 fdPmHBqUEgNb7gCblCZhN+NHqoLb0k9e9gCqNo5s=
-Message-ID: <4d7fee09-a71c-4158-820b-54d0ab5a5fa8@linux.microsoft.com>
-Date: Fri, 12 Jun 2026 08:49:03 -0700
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UdipM/RG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 115351F000E9;
+	Fri, 12 Jun 2026 15:55:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781279736;
+	bh=hOFB9hIseyhg8wvevsdnVaHErr/EH1bVSNhdMmFWUcc=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc;
+	b=UdipM/RGYelhAss4mXTxBd3RV6KI+8WEoQ71DT2C8pLlrXCx3bZWOCOlbcxFSXlZo
+	 78jYqrmShszbgEYa285O2wr3IXyIvex9v6o59QEsfZ5bLOcSFkTw6UeXDT0xFoMg5t
+	 mb+BMg4Xoy565ZtqIZlar+zaWxTZqye/UHQmxW9H5JVhtv35MYBCkbHGDaGlpGz17f
+	 u5CNDG1WPpBXRMwelH7tinlYtqcGb5NS59msiQftvSQvJ2WKAaekIFw9vFD9q6DKCe
+	 4ahjAd3v8VBemZ8x1mEKbPE+iSLp6sMj9fUxJQZi6iSoO6ewi7wUwcCkMWDJrqbx1o
+	 wHmgPQm8DPsag==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 19A3E3931092;
+	Fri, 12 Jun 2026 15:55:34 +0000 (UTC)
+Subject: Re: [GIT PULL] dma-mapping fixes for Linux 7.1
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <20260611205751.1255411-1-m.szyprowski@samsung.com>
+References: <CGME20260611205755eucas1p2a4d68c135aab6b232fa3ce6ac7d8a369@eucas1p2.samsung.com> <20260611205751.1255411-1-m.szyprowski@samsung.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20260611205751.1255411-1-m.szyprowski@samsung.com>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-7.1-2026-06-11
+X-PR-Tracked-Commit-Id: 6ec91df8aff77e2e8fe3179c1f3fc15b43a40ba3
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: f51cae6603c05b4b1fac65c773592e5bc8037251
+Message-Id: <178127973260.723498.10313878544889388228.pr-tracker-bot@kernel.org>
+Date: Fri, 12 Jun 2026 15:55:32 +0000
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Li RongQing <lirongqing@baidu.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- easwar.hariharan@linux.microsoft.com, mhklinux@outlook.com,
- wei.liu@kernel.org, zhangyu1@linux.microsoft.com,
- jacob.pan@linux.microsoft.com, schakrabarti@linux.microsoft.com
-Subject: Re: [PATCH V2] iommu/hyperv: Create hyperv subdirectory under
- drivers/iommu
-To: Mukesh R <mrathor@linux.microsoft.com>
-References: <20260603225010.1347623-1-mrathor@linux.microsoft.com>
-From: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-Content-Language: en-US
-In-Reply-To: <20260603225010.1347623-1-mrathor@linux.microsoft.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 
-On 6/3/2026 15:50, Mukesh R wrote:
-> Create hyperv subdirectory under drivers/iommu in anticipation of more
-> hyperv related files from upcoming PCI passthru and pv-IOMMU patches.
-> Also, the current file hyperv-iommu.c actually implements irq remapping on
-> x86, so rename to more appropriate hv-irq-remap-x86.c and move it under
-> the new hyperv subdirectory. Since this file implements irq_remap_ops
-> exposed by drivers/iommu/irq_remapping.h, it cannot be relocated to the
-> irq directory. This is in sync with other backend directories like amd
-> and intel there.
-> 
-> Lastly, this file should not be tied to CONFIG_HYPERV_IOMMU, but to
-> CONFIG_HYPERV and CONFIG_IRQ_REMAP.
-> 
-> Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
-> ---
-> V2: rename hv-irq-remap.c to hv-irq-remap-x86.c
-> ---
->  MAINTAINERS                                              | 2 +-
->  drivers/iommu/Kconfig                                    | 9 ---------
->  drivers/iommu/Makefile                                   | 2 +-
->  drivers/iommu/hyperv/Makefile                            | 2 ++
->  .../iommu/{hyperv-iommu.c => hyperv/hv-irq-remap-x86.c}  | 8 +-------
->  drivers/iommu/irq_remapping.c                            | 2 +-
->  6 files changed, 6 insertions(+), 19 deletions(-)
->  create mode 100644 drivers/iommu/hyperv/Makefile
->  rename drivers/iommu/{hyperv-iommu.c => hyperv/hv-irq-remap-x86.c} (99%)
-Reviewed-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+The pull request you sent on Thu, 11 Jun 2026 22:57:51 +0200:
+
+> https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-7.1-2026-06-11
+
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/f51cae6603c05b4b1fac65c773592e5bc8037251
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
