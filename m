@@ -1,102 +1,157 @@
-Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2263B369D47
-	for <iommu@lists.linux.dev>; Fri, 12 Jun 2026 13:11:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2971A3D3D03
+	for <iommu@lists.linux.dev>; Fri, 12 Jun 2026 13:16:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781269894; cv=none; b=uBnJbgVb/tyU7IhAxgkkxRz7L5zzyLfUyF9T1Zr/8c8z6Dojx6avQ6C+UsTeDEqnhNInRqe7ICLk3wyEk7Fyr/TgVDhthMbPIrRCSa2GflFjJ+3HDBlnKFr3npcZdxLa4+kJ8Mo2EQJQCjI3AXYwoRB2QSjJPLgVfBNVz1+Ahyk=
+	t=1781270207; cv=none; b=aQDWn0V2BUY9Npl4KRRFZL/CC32SWRcOzj1oylw9C/TeZpUKJQT67ncl6RNXUO7fAJmBztstlN5bJI9CXcUmyT+5barfFXgCq00qyxQCPFnlAPh8Jv+j9KPX5T/TL5X/UyLQGFfO7G13ABUMO6vfMo49LfdeWu3kHGR+CslIbkg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781269894; c=relaxed/simple;
-	bh=6RLM95tVXhhqTEAI3bs8f9Td4O4dFxD+RZMu3o1Spsk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IQ2UwZUAdW5psWlkl5hl16VAhiZn2bdN6+fQ12G7utSba8liJuoTmt/f3kxOfVG9BNtm4udv7XS2nztsrQT909FJvnCzI9SmehQOU41IF2lvEntc/7gLmb/HJGtw9rzTE9Bi/bFViNCFJZ68z8ZBQ7Bmt8KuHwGziQo9wDzOXqw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=hXpoMCnW; arc=none smtp.client-ip=209.85.222.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1781270207; c=relaxed/simple;
+	bh=+emU+da1/I9FlSN2/d5Li8V1EGT6RkbzKGs5pKZJdgY=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=Ks+FT2LGUrKlGesg2U0eDua1QW5/SfXUUp5PkB/9PNSq4/0WVmQx8R3tMJBI4/IrIgNR66clABXtbhRq1rdohmJmMOiPP2tRV26RLIXGuZG3GYanYjzVD+4+Oighl1OYqT5E4ryqgqvLLFZZdh82SXGJCoHGESCkINx6H5PgTOw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LZ3z0nl2; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="hXpoMCnW"
-Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-915e1354934so100128985a.1
-        for <iommu@lists.linux.dev>; Fri, 12 Jun 2026 06:11:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1781269892; x=1781874692; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=SY1qh2EzoD4lSSqxBaYm2zj05JXfJ1AIWyiIERVGfUQ=;
-        b=hXpoMCnWQJNOQ7y/C2rwPXt5220c+UDumSXxeKxrVU+nym6jNI1gxKgRv/IF435R7y
-         tcvj4lYm8qB/2k1ezmlUwediEAr9jhmGdc5DhsCUvKMnPcakbtSgRDImtC83XISvPt/R
-         QarlibJSIkaGjd4geiu4WDQX7PR1FczCR69cKD0ZWyJfkOh+thmPr2OrETNkODm01fnZ
-         86RJK0xc/Jtpb+yCwOrkQ7r+f8k1fCdA4I3ocIN2YXwbzBEjN3I0uIT8mKBjDwBxA6zR
-         jkV+QZNClRsRvvmjyfmomWCkW+iIczinfm/MRHmsqaFyeFJPYbX8aJUm2HDGAMRowyeC
-         3IsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781269892; x=1781874692;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=SY1qh2EzoD4lSSqxBaYm2zj05JXfJ1AIWyiIERVGfUQ=;
-        b=maLt42ESpCGDP5pcp27KTxtOo2w0Z7zUoZKXk9zw7WrRZE/kst/naxT563da0aN7c5
-         nIE5N2cLNDaPFxaYYoHG6VvQO4xgKUjCNnBSXMVKCr7nAjHwNyFXr7yby4LcpEQjmJOz
-         GWIWzzbJD0OJUkm1jRqdhz3AHQA0HZzbkIh0V5NE2T/ZUzM/GyyCQRrfnJLdEvRNvTIk
-         KMiUKOZS9qOV/XaPOYZMZ9UK8YfPD4lXzEcQgO2q3zeL/2HpNxv4XzWGWUIwhvdtMDQc
-         MUkAQSAMCpaU8BFYI5wFOaWALNU2gr+yHYO+jsSBSPYCVXEnoW8uAeRBk3Dym4u50qWt
-         Qq+A==
-X-Forwarded-Encrypted: i=1; AFNElJ8Eqb3celHo/J7vcFInipOFHGOzWBtwt9mONa7HCvBjAUVnIlwSwIj5uusSreXnTN0hbF7Bvg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzgRU8YWHBL+fUymdVRulxOIdLSgW61wJKgmoapVx+xs2h/yio5
-	xBT0Mfwp1FVeKW3rGQT7GT7zjM9b70HoWohp9oNaxrtZskjEN90Wa7dzCeEqsew8KJE=
-X-Gm-Gg: Acq92OE6y8iycddV8wgWNV3uaO25C948zUCqx3xPD9wBQsN6hz6tiS1L/XFkPwIMuU7
-	vxXRWqOeaxKdsEn0E/nC9dQSgKfqkxJ/KM/uKNCAAX0GYi/q18uTczZV/afu13Nb9fHl9Un0Dp6
-	Sb99Mef/5Tb0oSarsmsDI7VN/7ayfeo1xtv+OmvlmbevBVo0YUxKNF/EuUbUIN+DuQgzK2iZ9IN
-	+M4HyvEsLG8CAKeFCE81nXXsz9WzgEXjpbFW63U5jLZTTQNkxMTINbtuRocEz6T6oJpQYvGu+N7
-	WfIsRG+6WFeIQe8PC8aLIxSf2TX7A0xz6yIQytZiSfTLjqJ5rgb9rn+d4Dt8Cubb6j9QlJA48a9
-	1wKVPFsRxV51f3rZSim2hk1r/eauSuvMkFol1jxkfgUXPked64s+7ACOgHWX2P7VKXgt5FO265Y
-	nFn9pFhto4gi1JiC51+tgSPRCHYI/XaAoGEKpf3V7Rz5AL3W1J02Za3AnH9fsswsuxps0zXPEFc
-	UdzXg==
-X-Received: by 2002:a05:620a:2987:b0:915:cda5:27fa with SMTP id af79cd13be357-9161bfad4e8mr354973885a.58.1781269891895;
-        Fri, 12 Jun 2026 06:11:31 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-9161a055046sm203238485a.41.2026.06.12.06.11.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Jun 2026 06:11:31 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wY1fW-00000007mFT-2jeB;
-	Fri, 12 Jun 2026 10:11:30 -0300
-Date: Fri, 12 Jun 2026 10:11:30 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Alex Mastro <amastro@fb.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, Nicolin Chen <nicolinc@nvidia.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommufd: Clarify IOAS_MAP_FILE dma-buf support
-Message-ID: <20260612131130.GK1066031@ziepe.ca>
-References: <20260610-tmp-v1-1-b8ccbf557391@fb.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LZ3z0nl2"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1781270206; x=1812806206;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=+emU+da1/I9FlSN2/d5Li8V1EGT6RkbzKGs5pKZJdgY=;
+  b=LZ3z0nl2jrouZJsK4tygrT02gOsg0wWr2ZzRfJ9vBcBal6vzC0LEbXVZ
+   E6VPPSCdDNYP7153HSrjKVZIL+04ahv7Hf+r/WBjgCTioT1C8JCwKj+gM
+   GcU3Vqa6iVNCMXUULPiuTe5TuI3hJ0hx3ksqjxImmloOecqcAutc6C9G/
+   8T1a83AmgU4jo2hwzX6kE4Ahjw7+/EyM/zkHhb7b8QAp5RjkjX1iaUU9m
+   PuEgHhCq7VF05C5mS4u8K1+L5m0p/8XuGnBjWFL6bEZ2paIvEbekw1u6R
+   Xqda9oSBlnMDDNA77otAuQIH8f0rCSYJKMDGwLtymjrelMrm7ceGXK5EA
+   Q==;
+X-CSE-ConnectionGUID: Bv2vdzXnSviOSGtqXiugbQ==
+X-CSE-MsgGUID: WrffYEwxQvSpSkFGiL0sgw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11813"; a="84667738"
+X-IronPort-AV: E=Sophos;i="6.24,200,1774335600"; 
+   d="scan'208";a="84667738"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2026 06:16:45 -0700
+X-CSE-ConnectionGUID: Vl7A8WVUQU2oPikLAxuQww==
+X-CSE-MsgGUID: MQFv22YZQDKutH/T3KaGQw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,200,1774335600"; 
+   d="scan'208";a="246883010"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.248.249]) ([10.124.248.249])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2026 06:16:43 -0700
+Message-ID: <6832298a-0d2d-4d45-92c6-b1e081b73cf1@linux.intel.com>
+Date: Fri, 12 Jun 2026 21:16:39 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260610-tmp-v1-1-b8ccbf557391@fb.com>
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <jroedel@suse.de>,
+ Mika Westerberg <mika.westerberg@linux.intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Chris Wright <chrisw@sous-sol.org>,
+ Jesse Barnes <jbarnes@virtuousgeek.org>,
+ Asit Mallick <asit.k.mallick@intel.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 5/9] iommu/vt-d: Use dmar_can_force_on() for platform
+ optin
+To: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+References: <20260604051540.592925-1-kevin.tian@intel.com>
+ <20260604051540.592925-6-kevin.tian@intel.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20260604051540.592925-6-kevin.tian@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Jun 10, 2026 at 01:44:41PM -0700, Alex Mastro wrote:
-> IOMMU_IOAS_MAP_FILE is documented as mapping a memfd, but the
-> implementation first tries to resolve the fd as a dma-buf and has a
-> special path for supported dma-buf exporters. In particular, VFIO PCI
-> dma-bufs exported through VFIO_DEVICE_FEATURE_DMA_BUF can be mapped when
-> they describe a single DMA range.
+On 6/4/2026 1:15 PM, Kevin Tian wrote:
+> So the policy of requesting ACS in detect_intel_iommu() is consistent
+> with that in platform_optin_force_iommu().
 > 
-> Update the UAPI comment so userspace understands that certain kinds of
-> dma-buf are supported in addition to memfd.
+> While at it, remove no_platform_optin which is unnecessary now.
 > 
-> Fixes: 44ebaa1744fd ("iommufd: Accept a DMABUF through IOMMU_IOAS_MAP_FILE")
-> Signed-off-by: Alex Mastro <amastro@fb.com>
-> Assisted-by: Codex:gpt-5.5-high
+> Signed-off-by: Kevin Tian <kevin.tian@intel.com>
 > ---
->  include/uapi/linux/iommufd.h | 12 ++++++++----
->  1 file changed, 8 insertions(+), 4 deletions(-)
+>   drivers/iommu/intel/iommu.c | 14 +++++++-------
+>   1 file changed, 7 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 0fc131a34963..edf01261a41d 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -58,7 +58,6 @@ static int rwbf_quirk;
+>    */
+>   static int force_on = 0;
+>   int intel_iommu_tboot_noforce;
+> -static int no_platform_optin;
+>   
+>   #define ROOT_ENTRY_NR (VTD_PAGE_SIZE/sizeof(struct root_entry))
+>   
+> @@ -248,7 +247,6 @@ static int __init intel_iommu_setup(char *str)
+>   		} else if (!strncmp(str, "off", 3)) {
+>   			dmar_state = DMAR_DISABLED_USER;
+>   			dmar_disabled = 1;
+> -			no_platform_optin = 1;
+>   			pr_info("IOMMU disabled\n");
+>   		} else if (!strncmp(str, "igfx_off", 8)) {
+>   			disable_igfx_iommu = 1;
+> @@ -2486,20 +2484,22 @@ static bool has_external_pci(void)
+>   
+>   static int __init platform_optin_force_iommu(void)
+>   {
+> -	if (no_iommu || !dmar_platform_optin() || no_platform_optin ||
+> -	    !has_external_pci())
+> +	if (!dmar_platform_optin() || !dmar_can_force_on(DMAR_FORCEON_PLATFORM))
+>   		return 0;
+>   
+> -	if (dmar_disabled)
+> -		pr_info("Intel-IOMMU force enabled due to platform opt in\n");
+> +	if (!has_external_pci())
+> +		return 0;
 
-Applied thanks
+Moving has_external_pci() down here seems to be an optimization. :-)
 
-Jason
+Scanning the PCI fabric for external-facing ports can be costly, and now
+we could skip it entirely if platform force-on is unnecessary.
+
+>   
+>   	/*
+>   	 * If Intel-IOMMU is disabled by default, we will apply identity
+>   	 * map for all devices except those marked as being untrusted.
+>   	 */
+> -	if (dmar_disabled)
+> +	if (dmar_is_disabled()) {
+> +		pr_info("Intel-IOMMU force enabled due to platform opt in\n");
+>   		iommu_set_default_passthrough(false);
+> +	}
+>   
+> +	dmar_state = DMAR_ENABLED_FORCE;
+
+I was initially wondering if we needed a lock to protect dmar_state
+here, but since this runs during early boot in a single-threaded
+environment (indicated by the __init prefix), concurrent access isn't a
+concern.
+
+However, changing dmar_state here does mean that any logic calling
+dmar_is_enabled() before this point will see a "disabled" state, while
+subsequent calls will see an "enabled" state.
+
+While I don't see a real problem right now, this state volatility is
+something we should document. Could we add a brief comment here to
+clarify this intentional state upgrade?
+
+
+>   	dmar_disabled = 0;
+>   
+>   	return 1;
+
+The rest looks good to me.
+
+Thanks,
+baolu
