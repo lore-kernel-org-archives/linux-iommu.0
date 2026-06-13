@@ -1,63 +1,63 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3973384CEC
-	for <iommu@lists.linux.dev>; Sat, 13 Jun 2026 06:58:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 230C938239B
+	for <iommu@lists.linux.dev>; Sat, 13 Jun 2026 06:58:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781333915; cv=none; b=h1bUEDGRGvwFvTB4jMbMM0GOrSuXJDH58Id3FPiDrh7UmDIGL+hIGMMdH5glZbs7vy9C2QVjbVXMbGaCQtZHzFAeBaTJ85+/PaE0x/DBvuQhxKeqPPd0kj+M+ExuOFzci2gZF9Fj6HgBXhAiObdJ8HK4cfAjZcW9U5eb1K2I3N0=
+	t=1781333918; cv=none; b=JL90YvritDAFEm4UfpIKuU3hYOdTBmJyl1Uc2iBoN3PRTxpdMe1VLk/fkze9UepBLPO+F2qpvYrM/qPTXekMJLIMgUuZhsE/QbN9US63tAHMQcKYWf+R60U8ANJR9y4/m2eaXFc3PKpIXjl2ZRbV3s+RAYEWmf5tUi/SGF4E+YU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781333915; c=relaxed/simple;
-	bh=DeWG1uBjzQKbTfUIz2n8sQDA8/VxiIMWnBV+69O9kJM=;
+	s=arc-20240116; t=1781333918; c=relaxed/simple;
+	bh=tLGf4/Fx611dZ3uiJyqt+wb9ZRWGswCt3ouClEW4dU0=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=O/JLIqwZOeuVvWmPXx4NYNtfHAkOHzff2yjMCYuzhzN/nIbE+AT9Mh3H8nWnOoFoDojtClS06erIS/fd/uZcpr8049mSH12ds0j22RTgOUEHyp444qnBk3XOS3IBz1fiGJhN2W7KOuKVVsN8Bae8OYE8F0hS5fKBaiXPQQSfbA0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=P42C9PiI; arc=none smtp.client-ip=209.85.128.53
+	 MIME-Version; b=g9eApVWJKtBqUFXS5Kpaut//kOyuspuD0FJ4o4ISvfiG0b4EdiCjFyZhTxq/NUDGOWGaVrRCvWZCjGfq9NKk9QU+yKS4b+xzjTthRIR6CIye/4DePSZ7L+FpjkaXsGftJqrK2+WsaWs2em4PFmRkGhet0fPTPGagp+gvvD0Aq5Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=N8Rg/ymw; arc=none smtp.client-ip=209.85.128.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="P42C9PiI"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-490ace40f4bso15819655e9.3
-        for <iommu@lists.linux.dev>; Fri, 12 Jun 2026 23:58:33 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="N8Rg/ymw"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-490cdae130cso8533545e9.0
+        for <iommu@lists.linux.dev>; Fri, 12 Jun 2026 23:58:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781333912; x=1781938712; darn=lists.linux.dev;
+        d=gmail.com; s=20251104; t=1781333915; x=1781938715; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=q9lCT5hFuQlBjQqDnDlpEFs50IBGKZjmVIr8JFjJQzU=;
-        b=P42C9PiID/j5fsYWDoZb4KwN9Z43lTdIXWTCHWf5/bpKyZVmq6si71FG1XhkE3hZAv
-         r1OPZDE1yBlSbi9SSp4hqOsOWjFsUKzpTNJ7T2lGmJ7V/8hEhGcmFIKj2lNj1ciLvsCn
-         iVZW3fKRZRLOBp9f8qfjFSclg+FuPcTi//nQaqERvvBufi2QN/ATnWJHI8w1INuAwZPS
-         08U7ruChDgAAZSOCw6JfFZT16ozSx7RozvDo0xl35/jsob1IGPd6xKrg/MgEqdO5U/Jn
-         fmhMxoxTxjr94YGql5kBXmuAp6TK0uJ0ymx6u5Fm5yPyaZ88m729owYEJ1DxUmnAjaEI
-         V8Rg==
+        bh=VKXNGySjUJiX6/3GllpQ7O9YCp87EzXF/WJp8p9p0Qc=;
+        b=N8Rg/ymwSc+RKFDUCttG23cIRNnOxlOCIEhR7piwwu1pFLDWR/3051ArYccfx+c0NS
+         w5ASF2SelGi+VpcxAHS3sFkAczoAcBFd5ZsamUynQaTEkdK4Rveh0qO68q7aG5JdD8Jd
+         mL9G9YzCAXua/LDBN9CuE0gfPN8+G+RdnryJvpR73YHSTI/84sfE+T4v/6JxESq9oGVE
+         ar3HdziUCIClFoMdSY8Bhge9BT5w3IKnTAGiUFLSylNuRkBafdcwj2AGpx7XCkRRQD7x
+         90zDrOkhSNXoCfFkunbxvRqgG6ThqtAThdsl2k58FVX93GO/UnTBFVGpQNy9vTbqepyW
+         9boA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781333912; x=1781938712;
+        d=1e100.net; s=20251104; t=1781333915; x=1781938715;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=q9lCT5hFuQlBjQqDnDlpEFs50IBGKZjmVIr8JFjJQzU=;
-        b=leQ2V73PMxHahB0zaPocFognBLNlKHRDCDBM4SKPj7HjjgJdrKl5PA5rjwwQQfc16q
-         RvfUpHhZmnIAyMVDjQ08MFYz/xiFh7fl5EIg35mTJJTOX0ib+YhdTh+WSAvUoRwdTeb1
-         Ah+Nxj2Z7Nsq6PSvoxKgMRxKz3MJ2tndSOC3xMbe6bo36sE+gt2c9vkOPYSUm1BhGUjX
-         FJMFNftfRtJ4dlhASv0UJhr8qqLJjutwDPRuRhpzcJ7vzOK7MGAHdoc41BIEDQDkTVhJ
-         WKAAM9vahEwO298ZMRJhu/uVK5KMzZKTYtgc6unTaNDP0nwS7P/HI9vSPOVnm4/DoLrI
-         bbbA==
-X-Forwarded-Encrypted: i=1; AFNElJ+vw2W1T2U/moOMw24CiQlePZ9Ojrarmx4Otr4mIS9yWSB1nWn2AOPO/KA4PTcwPuirxDMc/Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywpznq1w0Q+aVqLy+k+PiFQjSWeGEfxhCIiJ9slpgrBV8T7Fu0C
-	bsRZxBMHi7i33fy0/7zNH7f2tlNdSWz3OHuWn+M2IzyOCXwsyw/IvWXF
-X-Gm-Gg: Acq92OG2PBlOjnW0KUNx3Si65pNub5cOaLfFErYWCt7bXOv3Rxl9RZr7nBbM95Y40lC
-	08hZSnkdrkcPjuJuGMN76TStKkPIUsNOvOx/zD4bKhTlsMayZhUPd/mgFiDwT7V9Cm7k9bxsR7u
-	vBL/BfUACZtDsM/JkN3NnGo7sidTtNNMcElZGRsIjnIQUbqBFkjdXHUGjFkvayzYyFRcg9VvZz+
-	Q4Gx2UeQcprw3RrM7F3lrHhGEwOCkos4tc69fOqvDhJVeIazhtroUze2BifJR/T1XmZ4XXDH51g
-	f6sP2e4KCimmQgl5KLJ1Z2wl72+9iGqQ5CBW3uOOscZFDUDxlNBd5agd8vXsH4ynTlorS3zbPHE
-	I901Rkn4XZe3HR6vQvF7n7wtWdb1m3lmdnBtNIpjadgIPEhtq0z4YU6xIMpHPf3jFWphClNImo+
-	m6AmSqDkPj+WsstpjX9xM1CiblHAFMhF2+5CYP6nyyNNFL9mJKnSST
-X-Received: by 2002:a05:600c:4709:b0:490:5057:f5f7 with SMTP id 5b1f17b1804b1-4922007472cmr28836405e9.11.1781333912286;
-        Fri, 12 Jun 2026 23:58:32 -0700 (PDT)
+        bh=VKXNGySjUJiX6/3GllpQ7O9YCp87EzXF/WJp8p9p0Qc=;
+        b=IFMCF6EuXYGWFPfaq7tWtDup16nPc88L7KHQmN7B2JDddPuk5xZCO2aiIrOsWXubvp
+         MEdQyRDZ3eOOpEY94acq7ENVjEJVZE68MqfIGKqQlLXTUso/QmUF/It2pMdE8r1vIRlb
+         JFKfFIlePXSIQu+3MGJxD9nBKzpuPcdbPEgDApdyII0PICH6sTbmJGv0elrmYWfNpj9L
+         /Gm5xhULOg6NRr4bBzRm6M/ziJNPq9Tur4lQ9wcLJUkx0vXJ4XWqYgBqW3sFkkEoc7dz
+         TjY6aYArukxLihoeDgJysPk5HVRUqs7+25AcO7xNXWqi37UHbQEo4zPuzKrOUADsH1Bh
+         seyg==
+X-Forwarded-Encrypted: i=1; AFNElJ/w0IfBg0//oKlekcj6RWjelcJS+EkwOF0EbG0S5DjRGUiLT6CQVg0EvJIivDSYQCSqDPUspg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyCLbG/2zw8wdqfdmSXwnAtNW0y+cZs9xT0PnVcFjOGb7F/PajD
+	Cu006xy4hpeqZqmdqJqTRxKozhGmtomxvnjQZkEUdAGqebo2tRyV2H/F
+X-Gm-Gg: Acq92OHmlTxNDurdE6tsPI3wyVC6iNt23rEO4NTiaT2QRtlBDIXqDNfdcx4ACsgN2tu
+	VPzkEVSttjuNbq/SedHqs84u0/yJhHmZB5KEsue9zCvCVtY5XSf3gyzBF6K+fUF3sATmYRgJoAJ
+	9ZXE+sxyIsLaAcVor0LWOYZOSh+oINs0/BteQqq3u5ysQ6kG0U5VYsnioPuFuHWPjBJNBc/q8bS
+	SFjKn1ygrfZczvJbB4BSifn246j/YV18eNTuN2+8sknJFYePAgzSoqAv1GA3DjdO9UMZcIvR54C
+	bc6npSM3MTPqUaeEOG4Yvrna+t3s+WHGE6gcV7GX4kCdy7aMBXFkV9RoIJNjg03b9t82uE26dcO
+	4Cq08dTeDPqgBSCfgdOJ+cmavK6JRJBldmctF+GXvTnvm+N4kxEnxuLUgtzhLlQWmB69IsNQIdy
+	+iDesJFpXWyEGI9HWneEoywpFl6b7f/Fe2EBQurpSvmKwTKw77t84k
+X-Received: by 2002:a05:600c:6287:b0:485:9a50:3370 with SMTP id 5b1f17b1804b1-492200516d4mr27804035e9.8.1781333915366;
+        Fri, 12 Jun 2026 23:58:35 -0700 (PDT)
 Received: from debian.tailb81abf.ts.net ([2a01:e0a:104a:4d80:14c0:9448:1c38:77df])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-492202e5cbasm42917705e9.2.2026.06.12.23.58.31
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-492202e5cbasm42917705e9.2.2026.06.12.23.58.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Jun 2026 23:58:31 -0700 (PDT)
+        Fri, 12 Jun 2026 23:58:34 -0700 (PDT)
 From: MidG971 <midgy971@gmail.com>
 To: tomeu@tomeuvizoso.net,
 	ogabbay@kernel.org,
@@ -79,9 +79,9 @@ Cc: dri-devel@lists.freedesktop.org,
 	diederik@cknow-tech.com,
 	jonas@kwiboo.se,
 	Midgy BALON <midgy971@gmail.com>
-Subject: [RFC PATCH v4 3/9] accel: rocket: Add RK3568 SoC support
-Date: Sat, 13 Jun 2026 09:01:10 +0200
-Message-Id: <20260613070116.438906-4-midgy971@gmail.com>
+Subject: [RFC PATCH v4 4/9] accel: rocket: Reset the NPU before detaching the IOMMU on timeout
+Date: Sat, 13 Jun 2026 09:01:11 +0200
+Message-Id: <20260613070116.438906-5-midgy971@gmail.com>
 X-Mailer: git-send-email 2.39.5
 In-Reply-To: <20260613070116.438906-1-midgy971@gmail.com>
 References: <20260613070116.438906-1-midgy971@gmail.com>
@@ -95,120 +95,56 @@ Content-Transfer-Encoding: 8bit
 
 From: Midgy BALON <midgy971@gmail.com>
 
-The RK3568 has a single core of the same NVDLA-derived NPU IP as the
-RK3588, with a 32-bit AXI master.  Add rk3568_soc_data and its
-compatible.
+On a job timeout the NPU AXI master can be left wedged with
+outstanding transactions. rocket_reset() detached the IOMMU group
+before resetting the hardware, so iommu_detach_group() ->
+__iommu_group_set_core_domain() asked the rk_iommu to stall and wait
+for the in-flight transactions to drain. They never did, the stall
+request timed out (-ETIMEDOUT) and the IOMMU core WARNed:
 
-Unlike the RK3588, the RK3568 NPU's compute clock is a PVTPLL managed by
-TF-A via SCMI; start it from an noc_init callback with a real rate change
-(an intermediate rate defeats the clock framework's unchanged-rate
-shortcut).  Powering on and de-idling the NPU NoC are left to the power
-domain (genpd), which performs them when the IOMMU supplier is resumed,
-so the driver does not poke the PMU directly.
+  WARNING: drivers/iommu/iommu.c:157 __iommu_group_set_core_domain
+    iommu_detach_group
+    rocket_reset
+    rocket_job_timedout
 
-If noc_init fails, unwind through rocket_core_fini() so the core is torn
-down completely rather than leaking the runtime-PM and IOMMU state.
+Assert the core reset first: it quiesces the AXI master so the
+following IOMMU detach completes cleanly. Move the detach after
+rocket_core_reset() and out of the job_lock (it does not touch
+in_flight_job).
 
 Signed-off-by: Midgy BALON <midgy971@gmail.com>
 ---
- drivers/accel/rocket/rocket_core.c |  9 +++++++++
- drivers/accel/rocket/rocket_core.h |  3 +++
- drivers/accel/rocket/rocket_drv.c  | 31 ++++++++++++++++++++++++++++++
- 3 files changed, 43 insertions(+)
+ drivers/accel/rocket/rocket_job.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/accel/rocket/rocket_core.c b/drivers/accel/rocket/rocket_core.c
-index 09c445af7de73..779e951596a15 100644
---- a/drivers/accel/rocket/rocket_core.c
-+++ b/drivers/accel/rocket/rocket_core.c
-@@ -88,6 +88,15 @@ int rocket_core_init(struct rocket_core *core)
- 		return err;
+diff --git a/drivers/accel/rocket/rocket_job.c b/drivers/accel/rocket/rocket_job.c
+index ac51bff39833f..e25234261536b 100644
+--- a/drivers/accel/rocket/rocket_job.c
++++ b/drivers/accel/rocket/rocket_job.c
+@@ -364,14 +364,20 @@ rocket_reset(struct rocket_core *core, struct drm_sched_job *bad)
+ 		if (core->in_flight_job)
+ 			pm_runtime_put_noidle(core->dev);
+ 
+-		iommu_detach_group(NULL, core->iommu_group);
+-
+ 		core->in_flight_job = NULL;
  	}
  
-+	if (core->soc_data->noc_init) {
-+		err = core->soc_data->noc_init(core);
-+		if (err) {
-+			pm_runtime_put_sync(dev);
-+			rocket_core_fini(core);
-+			return err;
-+		}
-+	}
-+
- 	version = rocket_pc_readl(core, VERSION);
- 	version += rocket_pc_readl(core, VERSION_NUM) & 0xffff;
+-	/* Proceed with reset now. */
++	/*
++	 * Reset the NPU hardware before detaching the IOMMU. A timed-out job
++	 * leaves the NPU AXI master wedged; detaching the IOMMU then issues a
++	 * stall request that never drains and times out (warning in the IOMMU
++	 * core). Asserting the core reset first quiesces the master so the
++	 * detach completes cleanly.
++	 */
+ 	rocket_core_reset(core);
  
-diff --git a/drivers/accel/rocket/rocket_core.h b/drivers/accel/rocket/rocket_core.h
-index d6421251670dc..5a145ba8c5a92 100644
---- a/drivers/accel/rocket/rocket_core.h
-+++ b/drivers/accel/rocket/rocket_core.h
-@@ -18,10 +18,13 @@ struct rocket_core;
-  * struct rocket_soc_data - per-SoC configuration data
-  * @num_cores: Number of NPU cores in this SoC.
-  * @dma_bits: Physical address width reachable by the NPU's AXI master.
-+ * @noc_init: Optional callback to bring up the NPU before it is reachable.
-+ *            Used on RK3568 to start the PVTPLL compute clock via SCMI.
-  */
- struct rocket_soc_data {
- 	unsigned int num_cores;
- 	unsigned int dma_bits;
-+	int (*noc_init)(struct rocket_core *core);
- };
++	iommu_detach_group(NULL, core->iommu_group);
++
+ 	/* NPU has been reset, we can clear the reset pending bit. */
+ 	atomic_set(&core->reset.pending, 0);
  
- #define rocket_pc_readl(core, reg) \
-diff --git a/drivers/accel/rocket/rocket_drv.c b/drivers/accel/rocket/rocket_drv.c
-index f0beed2d522c7..86484110ad6f0 100644
---- a/drivers/accel/rocket/rocket_drv.c
-+++ b/drivers/accel/rocket/rocket_drv.c
-@@ -10,6 +10,7 @@
- #include <linux/err.h>
- #include <linux/iommu.h>
- #include <linux/of.h>
-+#include <linux/of_clk.h>
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
- 
-@@ -223,12 +224,42 @@ static void rocket_remove(struct platform_device *pdev)
- 	}
- }
- 
-+/*
-+ * The NPU compute clock is a PVTPLL managed by TF-A via SCMI; spin it up
-+ * with a real rate change (an intermediate rate defeats the clock
-+ * framework's unchanged-rate shortcut).  Powering on and de-idling the NPU
-+ * NoC are handled by the power domain (genpd) before the NPU is accessed.
-+ */
-+static int rk3568_noc_init(struct rocket_core *core)
-+{
-+	struct clk *npu_clk;
-+
-+	npu_clk = of_clk_get_by_name(core->dev->of_node, "npu");
-+	if (IS_ERR(npu_clk))
-+		return dev_err_probe(core->dev, PTR_ERR(npu_clk),
-+				     "failed to get the NPU SCMI clock\n");
-+
-+	if (clk_set_rate(npu_clk, 600000000UL) ||
-+	    clk_set_rate(npu_clk, 1000000000UL))
-+		dev_warn(core->dev, "failed to set the NPU compute clock rate\n");
-+	clk_put(npu_clk);
-+
-+	return 0;
-+}
-+
-+static const struct rocket_soc_data rk3568_soc_data = {
-+	.num_cores = 1,
-+	.dma_bits = 32,
-+	.noc_init = rk3568_noc_init,
-+};
-+
- static const struct rocket_soc_data rk3588_soc_data = {
- 	.num_cores = 3,
- 	.dma_bits = 40,
- };
- 
- static const struct of_device_id dt_match[] = {
-+	{ .compatible = "rockchip,rk3568-rknn-core", .data = &rk3568_soc_data },
- 	{ .compatible = "rockchip,rk3588-rknn-core", .data = &rk3588_soc_data },
- 	{}
- };
 -- 
 2.39.5
 
