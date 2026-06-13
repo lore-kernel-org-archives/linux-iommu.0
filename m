@@ -1,152 +1,118 @@
-Received: from sender4-op-o11.zoho.com (sender4-op-o11.zoho.com [136.143.188.11])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D28DA370ACA
-	for <iommu@lists.linux.dev>; Fri, 12 Jun 2026 21:17:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.11
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781299080; cv=pass; b=RuCC97HkASOWAlrk/Fzatuqpmp4vmRMRmFvgFgfjygKRyF0tl7vsgNMm71OKLxevPthZsjtYnB6fNSc86LaQmF523QnGhZdPFtXX+E0dPHTP4icFpYMiewraPPrPf85LLedtS/tFKE0QsXcCwE4TWULbVwmqKFl6Dh+BI5dAhDA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781299080; c=relaxed/simple;
-	bh=x0BaGOsSHLNzJ4cRGNFS/1rXU88Jh9P3Rb3NtyQrVv4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=C+nskj9InHp7T1WKtFGO97ig7qRVKcG0044MgvyVD2sv4i9b2/Z4jw5hrVKiuzkci8Z49/4ap9tNcHyRn+rHhHofL3ljlPICcHCPrq6341jdelRdeDhrUEmIPEdyuhIhRTo4npqb5HMg1a1ZPujpxbNWSLbpSOZcuvh7WnLMDPI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=sebastian.reichel@collabora.com header.b=M6v8BK5v; arc=pass smtp.client-ip=136.143.188.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8957E25487C
+	for <iommu@lists.linux.dev>; Sat, 13 Jun 2026 01:52:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781315529; cv=none; b=KPgQWBfi0gMxke+5ghV3dSHuuuRBRtPncqDyggChlQdoqEfwX8sqc3W9IrlOPklKMMgqkn0e3A4gNNfUR1WkG0ZBZtsi5hp+kN0gTTnllKQkOxQVBedUvtXuqXOaSe4tICpFM06/BCPFp2XAgGqZpm0LHu0q7PqYCIX2fbK8eIs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781315529; c=relaxed/simple;
+	bh=LH5UCGkTZwk7d4AfxlGMEsn46QiMb+z5xWZRSkNt3LU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=YBe0CdgOqRrjHFBgQBmVwzeE/wHKSQJRbt4I5Li50UnI+Y1+mUslvIw5sJJ4JOI2u9Z2NiHctsPXex10slIaSUMUEg9g0JOKOmPoi4ly/XZc1hVbZUvNt4zHHy+HN4aTampVRxtc9logP5dFy04omhvRkAkeET2cEdOnwOTpyKU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZY5QSkp8; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=sebastian.reichel@collabora.com header.b="M6v8BK5v"
-ARC-Seal: i=1; a=rsa-sha256; t=1781298940; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=OKS40WmHs9HXccer99KYn6oZOd3s7A/QcRyaoSg61l8t/e7/tucKewZS3PjGEb51f1QDfNRq1j6o2EzPQ60ZsxkLkl8tfK7BdcwjWn/idwkDYas2VQ8K/Uv8C3Sy4tVeF+L5iKTH+2cBq6K4m684P//duvIajUSHyz/h48uHfYg=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1781298940; h=Content-Type:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=tv6LplnDGDFs2tsuGoRHCdXAYO7jI7MN//DIkYHWNuY=; 
-	b=MNzNQk69za9Qm2cSQJjVXXgqym5J4Sc5mNe79Ajt9yQHQalaVah+IFLVPRtuRe4T1JQxTr0Z//Zt/vxlz1jUQHyRusAU67ZW2Wmo7J8YZwIa+Po20ZuPntfURGbIe5ZeeG/n/9CWaL8boObo0ZnhrZcqoTp8Gyzvf1GqzFGrr4E=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=sebastian.reichel@collabora.com;
-	dmarc=pass header.from=<sebastian.reichel@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1781298940;
-	s=zohomail; d=collabora.com; i=sebastian.reichel@collabora.com;
-	h=Date:Date:From:From:To:To:Cc:Cc:Subject:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To:Message-Id:Reply-To;
-	bh=tv6LplnDGDFs2tsuGoRHCdXAYO7jI7MN//DIkYHWNuY=;
-	b=M6v8BK5vtjyj0S/NYEsQvgb9mF43z2OvICcosRQ+DQPiPzgBLXD7nzwVSZMAbbCL
-	SGrCvnllAHVCxUC+DlrWRahMKKSy7ohP2m6o4vJpEjLMp5aLA2V9Hj+HdyPldQEH6+U
-	MZ2QxYCzXtsj8E+IVm+alsZV3gSxsGWOetKsyUic=
-Received: by mx.zohomail.com with SMTPS id 1781298939699370.6870059309615;
-	Fri, 12 Jun 2026 14:15:39 -0700 (PDT)
-Received: by venus (Postfix, from userid 1000)
-	id 5638C180674; Fri, 12 Jun 2026 23:15:34 +0200 (CEST)
-Date: Fri, 12 Jun 2026 23:15:34 +0200
-From: Sebastian Reichel <sebastian.reichel@collabora.com>
-To: Diederik de Haas <diederik@cknow-tech.com>
-Cc: Midgy Balon <midgy971@gmail.com>, 
-	Chaoyi Chen <chaoyi.chen@rock-chips.com>, tomeu@tomeuvizoso.net, ogabbay@kernel.org, heiko@sntech.de, 
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, joro@8bytes.org, 
-	will@kernel.org, robin.murphy@arm.com, dri-devel@lists.freedesktop.org, 
-	linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, Simon Xue <xxm@rock-chips.com>, 
-	Finley Xiao <finley.xiao@rock-chips.com>, Jonas Karlman <jonas@kwiboo.se>
-Subject: Re: [RFC PATCH v3 0/9] accel: rocket: Add RK3568 NPU support
-Message-ID: <aixze8zFboY3huSf@venus>
-References: <CA+GS1Y1s78PwN63X2YJoS8VEGp7CpTERo_K65yKs00U4VRAw4Q@mail.gmail.com>
- <e5058919-9485-4de5-8eea-331ebfc2987c@rock-chips.com>
- <CA+GS1Y3ysdWZ3qCq3ip_Pbw+v4LxHZd95aBo=jwB+orYaMBBNw@mail.gmail.com>
- <CA+GS1Y0kAM_XGLQuKPTphif2HcQg18ZXhd8RHHr2xPOEMCDvXA@mail.gmail.com>
- <bcedaff0-abf8-4585-a0ea-057062cd0411@rock-chips.com>
- <CA+GS1Y2-hRqpGgsknh+oOX+-uZ3DZtdekdP9viTP6a40zhhUhg@mail.gmail.com>
- <b05f7154-e85f-4207-80ae-f080282ba780@rock-chips.com>
- <DJ5A9XL183RZ.20J3ASQ3EWUZ6@cknow-tech.com>
- <CA+GS1Y1xAq-9eMyMmoVE6NG9KLG7XRxgPoSr5RkW=6fT5D820g@mail.gmail.com>
- <DJ5FUW50YM2N.6ZTY4WK27ZP5@cknow-tech.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZY5QSkp8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1781315528; x=1812851528;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=LH5UCGkTZwk7d4AfxlGMEsn46QiMb+z5xWZRSkNt3LU=;
+  b=ZY5QSkp8E6EIzILsN5G9PSeC4p3NTi9X2POifVt14pJgoZuw0NV8Y33s
+   NHHVapOqb7nb7RdWALYf2K9Qpik4npzQ0BiAOW+/TCh9YhUZZEgZySJ/s
+   PKjY8NGSvNH23FTras/7oEgSAihMprNCFVSfRgDgoC0Kh9lYZxfjLP5LE
+   V3DLgzfcEo0kkgVXwQ5uL+a3/twM1CAbny7xSZruhXk6GSnGW3oAWM0Kd
+   7GeXVa8AGm7GoBl0272yoMUESE9W2StonhGx5B8cXwJKx/1AvMFEx55T3
+   zVTqxDZV1qXDH0veqCqN7H/PBNDyzSQMnTayEyv00diM/hylVf+dAAZsC
+   w==;
+X-CSE-ConnectionGUID: 9DSYGfaBQyGr3NAhFZ0pMw==
+X-CSE-MsgGUID: FQyowTn9SuuU7YYmk26lYg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11815"; a="99571403"
+X-IronPort-AV: E=Sophos;i="6.24,201,1774335600"; 
+   d="scan'208";a="99571403"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2026 18:52:07 -0700
+X-CSE-ConnectionGUID: R5kgLqjgRrKGpyBcsJp/0w==
+X-CSE-MsgGUID: p4uuJ7rTS1qCSiS3nRRq/g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,201,1774335600"; 
+   d="scan'208";a="246998757"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2026 18:52:05 -0700
+Message-ID: <80702799-cb99-47c0-8d25-8867ab1ea69d@linux.intel.com>
+Date: Sat, 13 Jun 2026 09:50:52 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="73c7cnokjssbpj3q"
-Content-Disposition: inline
-In-Reply-To: <DJ5FUW50YM2N.6ZTY4WK27ZP5@cknow-tech.com>
-X-Zoho-Virus-Status: 1
-X-Zoho-AV-Stamp: zmail-av-0.2.10.1.5.2/281.294.11
-X-ZohoMailClient: External
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/vt-d: Clear Present bit before tearing down
+ scalable-mode context entry
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Michael Bommarito <michael.bommarito@gmail.com>,
+ David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20260528025557.3209367-1-michael.bommarito@gmail.com>
+ <b0278f4d-681c-4731-bc8d-130a56e6d935@linux.intel.com>
+ <20260611115257.GD1066031@ziepe.ca>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20260611115257.GD1066031@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
+On 6/11/26 19:52, Jason Gunthorpe wrote:
+> On Mon, Jun 01, 2026 at 01:35:08PM +0800, Baolu Lu wrote:
+>> On 5/28/26 10:55, Michael Bommarito wrote:
+>>> device_pasid_table_teardown() zeroes the 128-bit scalable-mode context
+>>> entry with context_clear_entry() while the Present bit is still set. This
+>>> creates a window where the hardware can fetch a torn entry, with some
+>>> fields already zeroed while Present is still set, leading to unpredictable
+>>> behavior or spurious faults. The context-cache invalidation is issued only
+>>> after the entry has been zeroed, and intel_pasid_free_table() then frees
+>>> the PASID directory pages, so the IOMMU can keep walking a stale Present=1
+>>> entry that points at freed memory.
+>>>
+>>> While x86 provides strong write ordering, the compiler may reorder the two
+>>> 64-bit writes to the entry, and the hardware fetch is not guaranteed to be
+>>> atomic with respect to multiple CPU writes.
+>>>
+>>> Commit c1e4f1dccbe9d ("iommu/vt-d: Clear Present bit before tearing down
+>>> context entry") fixed this exact pattern in domain_context_clear_one() and
+>>> the copied-context path, but device_pasid_table_teardown() was not
+>>> converted.
+>>>
+>>> Align it with the "Guidance to Software for Invalidations" in the VT-d
+>>> spec, Section 6.5.3.3, using the same ownership handshake as the sibling
+>>> fix: clear only the Present bit, flush it to the IOMMU, perform the
+>>> context-cache invalidation, and only then zero the rest of the entry.
+>>>
+>>> Fixes: 81e921fd32161 ("iommu/vt-d: Fix NULL domain on device release")
+>>> Signed-off-by: Michael Bommarito<michael.bommarito@gmail.com>
+>>> Assisted-by:Claude:claude-opus-4-7
+>>> ---
+>>> Found by static analysis while auditing the callers of context_clear_entry()
+>>> for the same teardown ordering that c1e4f1dccbe9d addressed. This site is
+>>> reachable only in scalable mode, so it does not manifest on the legacy-mode
+>>> hardware available to me; I could not trigger a runtime fault and the change
+>>> is verified by code inspection only, on the same basis as the sibling fix.
+>>> Compile-tested on x86_64 with CONFIG_INTEL_IOMMU; no new warnings.
+>>>
+>>>    drivers/iommu/intel/pasid.c | 4 +++-
+>>>    1 file changed, 3 insertions(+), 1 deletion(-)
+>> Queued for linux-next. Thank you!
+> What happened to your work to move over to the ARM updator that
+> doesn't have any of these bugs? 🙂
 
---73c7cnokjssbpj3q
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [RFC PATCH v3 0/9] accel: rocket: Add RK3568 NPU support
-MIME-Version: 1.0
+I am working on that series, but since this is a fix that should be
+backported, I queued it for this merge cycle.
 
-Hi,
-
-On Wed, Jun 10, 2026 at 04:28:17PM +0200, Diederik de Haas wrote:
-> On Wed Jun 10, 2026 at 3:36 PM CEST, Midgy Balon wrote:
-> [    2.110935] rockchip-pm-domain fd8d8000.power-management:power-control=
-ler: Failed to create device link (0x180) with supplier 2-0042 for /power-m=
-anagement@fd8d8000/power-controller/power-domain@8
-> [    2.557459] sdhci-dwcmshc fe2e0000.mmc: Can't reduce the clock below 5=
-2MHz in HS200/HS400 mode
-> [    2.647174] rockchip-pm-domain fd8d8000.power-management:power-control=
-ler: Failed to create device link (0x180) with supplier 2-0042 for /power-m=
-anagement@fd8d8000/power-controller/power-domain@8
-> [    2.945089] rockchip-pm-domain fd8d8000.power-management:power-control=
-ler: Failed to create device link (0x180) with supplier spi2.0 for /power-m=
-anagement@fd8d8000/power-controller/power-domain@12
->=20
-> 8 =3D NPU; 12 =3D GPU
->=20
-> on both nanopc-t6-lts and nanopc-t6-plus (both RK3588).
-> And on a 6.18 dmesg output I have for Rock 5B, I see the ~ same, but then
-> it's 1-0042 instead of 2-0042.=20
->=20
-> I don't know if it's bad or harmless, but it is consistent.
-
-The fw_devlink framework tries to figure out a sensible probe order
-by analyzing links between devices. The warning is because there is
-a cyclic dependency. This happens because all power domains are
-provided by one device (power-controller).
-
-Now if you want to probe the I2C regulator 2-0042, you need the
-I2C controller and to probe the I2C controller you need the I2C
-power domain and for that you need the power-controller. But for
-the power-controller you need 2-0042 (for the NPU power-domain).
-At this point fw_devlink gives up and prints the warning.
-
-Apart from the warning this results in the kernel missing dependency
-information, so there might be some extra probe calls ending in
--EPROBE_DEFER (which wastes CPU power and delays the boot process).
-
-So it's neither super bad, nor completely harmless. Fixing this
-properly requires some heavy restructuring of the Rockchip
-power-controller driver.
-
-Greetings,
-
--- Sebastian
-
---73c7cnokjssbpj3q
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmosdvIACgkQ2O7X88g7
-+poq+Q//WNiAZeCgn2HpeHzvi+tZUbRlCrs91vnfbyyp+MgI5k47fApfmuGuVIcL
-a7FntM6Sm6vK5x1JfXt5tL6Zcvmhpm0YVz3FNvIMn6XMaq25w+qoyyD+Cah7iazS
-hdYmaxEfOq6AaQmAJ0DIvg98xzBovOhk5j94r/CymBTfskaVGJ0kvnleQe4xmTUS
-HOUKdwQSz4BJ8xEIamPZ6kDCyDroQkqgbSlS6T+JjrhYtEYuj4K3B9eYNRZQTYN9
-cdpKUZCoiJz0pRtoi+SKNS7KRYBNPtqHD6KZgctqhjjTB/ZBkwpkawQcct0/JUR1
-2JFNz8EsoYsJdqEvHeFhcpCJYUc6E4+/5tQRPZUaeDW9774A005T6iDbohCKWynG
-fW5i+psb3BOmTyTYFaLduwo9tmGnOX4h13de38FGuGmZX5VrOxLU2urruLVXAeoQ
-gsldVMOQ3ptd47lBH4d7rHe+oRZqs9Qhc9dgg0qFdC705L8tL9vxVsTdySk2zW7V
-N0ojS11VP/1RVFOVcrl9NXFWFojuAKTLlXvEj0u80JHyP1OjjaGTKr2BPGS4G0kI
-5LFZZdwSLbsTpUsXbUyRvz++myq/HlepUhpUTu9RriXFmWRbcXvxfOE84EtvPST9
-fv7vfqWZrycpFf4hqNwXFsEzP8iWPacUFw+Bbn0KW5waxsnQqRI=
-=xMTH
------END PGP SIGNATURE-----
-
---73c7cnokjssbpj3q--
+Thanks,
+baolu
