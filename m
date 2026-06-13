@@ -1,173 +1,156 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from smtp.forwardemail.net (smtp.forwardemail.net [121.127.44.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA9C039B959
-	for <iommu@lists.linux.dev>; Sat, 13 Jun 2026 06:58:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF27E35DA5B
+	for <iommu@lists.linux.dev>; Sat, 13 Jun 2026 07:40:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=121.127.44.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781333931; cv=none; b=pC9yIkQ4Y8QsJw4DFZ9RGLZ5IfztWBTQahJ+J9NRU70mxDwAieecawJPL3A3CPa8UEfzwTLVgTHs7uy6CAr9/AmKTIZUZyprRJNYiyHyc12yFiGRrTtVQ4hNAl+AmmE5/zLNH80m6L8gfePKQDG9/0soMRNBT992f8bFJ+xNx8Q=
+	t=1781336460; cv=none; b=PlvL++dQP3SoorjzwH0hjDYCjnSJhLCUqQgU79cNWtnPAbjNRzrXpMlX5O4s810S1ZMSBm2OvvXER4zGN8a2lIMKHcDweGw031KbWfQ3mX5olMgwe1nqlTlWVoiIwE+SgcOzTFnyn7DNQzZYyYZTLpkbgXCyF3to8b/kPZLx3KI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781333931; c=relaxed/simple;
-	bh=+oC/cphUq61z1tUYe/It2wm8zgDiOcsdp+YquhThWMc=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=K6qme0wMb0hGCj9zFZZlLSfyqQdwz9JhThfCqZqv/muvoQvdO6WRlTC6LdFeab77gXqdUKmkXCo29KCO2zt7FyWB6eG8aZFXfD8/zl0FW0s23NmiBdsjOULJNYrszx+q/LTMsq4rIZtv7bqQ9y3LQvoj0u0dOsgUrmwXpryaiVA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ghx1c80F; arc=none smtp.client-ip=209.85.128.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1781336460; c=relaxed/simple;
+	bh=vKxsuOnHElxYLABaCL+A4fJkjVhRZLYiku7c7WLPJOM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=h4cl7Qf1T5LwFmAbmx7k5s/E/pdTRjFRWvov4RJQ7yvbMwBEMrY/oD+H+ORyX9r4wdBnDYlTGY+bQEEJa0eCH1LpXQhxV2kQjU2IAWJoa2I7rLzAA/yL4NYbVOh8YOWKS5C2/LCPdRR4KrLkV5Y8B+z1i3u7k7d2ecs7WrQBB0U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=kwiboo.se; spf=pass smtp.mailfrom=fe-bounces.kwiboo.se; dkim=pass (2048-bit key) header.d=kwiboo.se header.i=@kwiboo.se header.b=j96W15M5; arc=none smtp.client-ip=121.127.44.66
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=kwiboo.se
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fe-bounces.kwiboo.se
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ghx1c80F"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-491609cdd8fso7680135e9.2
-        for <iommu@lists.linux.dev>; Fri, 12 Jun 2026 23:58:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781333924; x=1781938724; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6qXDWY05NWH/jJuuAS5m9EpuxlsKXS/Zj0XFrGsO4MM=;
-        b=ghx1c80F3LhN83lv5gTlsJWyixxvawZhExNjXLC4OC2EuGXPcaaTBq49y0Zca2zLVS
-         u02iuEkl8ewQRQ3wGB6sNlj3u2Zc7V2BPcmVUQSpxYGPHcv6I5MDbshERO2i/sVBInml
-         MEJhyRGgxSxRRMkPABwaD4PoD05Ac6E9rN58wH6xskjbUgQFPnQKbAzxKEZRIzKWqiFP
-         2M128QxRQmttJDdhRUKC12UlOBsV61vaTXXrw17eaw17KKOVriTdxTcFRqrzGq71o4eC
-         4imsDdDoG6zN3X0Y7iuXtRDJAcfZjYWrwqdkAPV66H6oDkp32A4Doy68B4SiRfhsrccK
-         hJFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781333924; x=1781938724;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=6qXDWY05NWH/jJuuAS5m9EpuxlsKXS/Zj0XFrGsO4MM=;
-        b=kTZv9pUnWJKzM5l5KS5co+w92Grc/ye8QcDcH1br1WZcpqpyxvKFO0v0a2NMkWLWwE
-         wUVEYshsMDNvXsSc5Rz2oQX789lfyXJg3gDqRg3bPbeNsWztb97M1+Ze0p8pwY/snWj6
-         +J0oveNexIofvn9f9js7fx0TnTbjUYORfQtvf1AvsVGxGHmeLidJuCrtV7jYTsv2Uqv8
-         GCQHH+S68891uakWaXnruiFM+NHF9gm6CuAcUksVA2q33uuGeWKV+EIICdF7yerZ1f7L
-         ftsoTrD+b3Vc8anKdfQumCnBj2BLQuZIhNyvxDSKzmcJJx7s2cgVGVwuB0qHBuzU3jm6
-         MirQ==
-X-Forwarded-Encrypted: i=1; AFNElJ8UbwAVVfxEUKOija+9EJj4foq9t92mSoe/hUdwXVqpbgloQhEOX5ZpkJ5uySDGvO6Ufpt7uw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw8Cou2JTL3Bc/Yavl5p9aLu4wQRTK8tWBeVM46AiAUOKN70mr1
-	0a0n3OTeqiCyA6uDMM1QEieDqXcX/LjEKYPS9LCVoCh1ciwfkKl9Qr88
-X-Gm-Gg: Acq92OFgqV0v1SE01ba0ALWpqQikCJWVkN4/HjPZLVqAYXKD0RttLYFlSZcxs8iIqmo
-	Dp42dexG363EW5RS4XJHQYEI/ocxhZF67Dj9Wt6sDIUAafFe2jz9rA4OtCdHBlIdb0sDkZmUXND
-	6zgmAuQ55OJUnT4v2qXdM8QY8d1vZ9nS7hTCYkvuFCewB6qtgNU29d/fsp96dzyf54Qzh+9pv0h
-	i4174W5YlPxbioE/admcG96R+L3eDm0Uqy+lSB9+ueNvGYZLgvXuF8mahB8qkZ5YPARbX0ffBCo
-	PGW+MTOt36IMqQ8+ogpWD/CBogiPTn6KMg1mVZ2I0A8Jew0rbIgoJhoJx7y8VkBHfd/FMJZ3G9N
-	YuVBkS5ey5EttItPBntim9VSeR1MV4D8v4Vwt/c8Bh7fCxzd9UEAzaVL3PDDaC5xLYUL++33MqR
-	N+V9I7tb5OZeiVX4SLy87c0SJauSMpSbydam1QvMkP/A==
-X-Received: by 2002:a05:600c:46c4:b0:490:b355:9c8c with SMTP id 5b1f17b1804b1-490ec4fbcb7mr81233115e9.23.1781333924116;
-        Fri, 12 Jun 2026 23:58:44 -0700 (PDT)
-Received: from debian.tailb81abf.ts.net ([2a01:e0a:104a:4d80:14c0:9448:1c38:77df])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-492202e5cbasm42917705e9.2.2026.06.12.23.58.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Jun 2026 23:58:43 -0700 (PDT)
-From: MidG971 <midgy971@gmail.com>
-To: tomeu@tomeuvizoso.net,
-	ogabbay@kernel.org,
-	heiko@sntech.de,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	ulf.hansson@linaro.org
-Cc: dri-devel@lists.freedesktop.org,
-	linux-rockchip@lists.infradead.org,
-	devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-pm@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	xxm@rock-chips.com,
-	chaoyi.chen@rock-chips.com,
-	finley.xiao@rock-chips.com,
-	diederik@cknow-tech.com,
-	jonas@kwiboo.se,
-	Midgy BALON <midgy971@gmail.com>
-Subject: [RFC PATCH v4 9/9] pmdomain: rockchip: Add a regulator to the RK3568 NPU power domain
-Date: Sat, 13 Jun 2026 09:01:16 +0200
-Message-Id: <20260613070116.438906-10-midgy971@gmail.com>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20260613070116.438906-1-midgy971@gmail.com>
-References: <20260613070116.438906-1-midgy971@gmail.com>
+	dkim=pass (2048-bit key) header.d=kwiboo.se header.i=@kwiboo.se header.b="j96W15M5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kwiboo.se;
+ h=Content-Transfer-Encoding: Content-Type: In-Reply-To: From: References:
+ Cc: To: Subject: MIME-Version: Date: Message-ID; q=dns/txt;
+ s=fe-e1b5cab7be; t=1781336458;
+ bh=qHK4xcuZuyY3VWkKdAkc6bfYV2q4RPDKWtvw4p7wT+w=;
+ b=j96W15M5CI6OuzDSXfCWwYrh721XiWVI5wc8/V2W9UreeBNlYYNCqZ7ptRddTOQuCU2BqG6c9
+ PiV/GTZH9Kl18sl+5GyqQkrnT1ZJhTQ5JPO6J4oFA/SjSa9qjGMDN3q1BBbe2iYy6Koh5f3kiVE
+ fhNcDl+S+vobCmQjS1g9giM+8blgKd5pzU9VvKrmoNTfITkoMGoVwWWhEZ5xTEGVxTBFEcnBr6X
+ Oy8wlPe1d1My/oq5o0efqMn0C7KDsEpm9WGRIjE43g8DbEohL4kAeuGBzsR1ct50lfgiO1pAZyH
+ S29BZa9LYyzrZAWk1swpmmcLd7dZs+ziHb3mBsj+3Dmg==
+X-Forward-Email-ID: 6a2d09837f2a6d9c19af5dbd
+X-Forward-Email-Sender: rfc822; jonas@kwiboo.se, smtp.forwardemail.net,
+ 121.127.44.66
+X-Forward-Email-Version: 2.8.26
+X-Forward-Email-Website: https://forwardemail.net
+X-Complaints-To: abuse@forwardemail.net
+X-Report-Abuse: abuse@forwardemail.net
+X-Report-Abuse-To: abuse@forwardemail.net
+Message-ID: <e0f044df-9d34-4e6e-aa48-9e4227b4bdf7@kwiboo.se>
+Date: Sat, 13 Jun 2026 09:40:46 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH v4 8/9] arm64: dts: rockchip: rk3568-rock-3b: Enable
+ the NPU
+To: MidG971 <midgy971@gmail.com>
+Cc: "tomeu@tomeuvizoso.net" <tomeu@tomeuvizoso.net>,
+ "ogabbay@kernel.org" <ogabbay@kernel.org>, "heiko@sntech.de"
+ <heiko@sntech.de>, "robh@kernel.org" <robh@kernel.org>,
+ "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+ "conor+dt@kernel.org" <conor+dt@kernel.org>,
+ "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
+ "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+ "linux-rockchip@lists.infradead.org" <linux-rockchip@lists.infradead.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>,
+ "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "xxm@rock-chips.com" <xxm@rock-chips.com>,
+ "chaoyi.chen@rock-chips.com" <chaoyi.chen@rock-chips.com>,
+ "finley.xiao@rock-chips.com" <finley.xiao@rock-chips.com>,
+ "diederik@cknow-tech.com" <diederik@cknow-tech.com>
+References: <20260613070116.438906-1-midgy971@gmail.com>
+ <20260613070116.438906-9-midgy971@gmail.com>
+Content-Language: en-US
+From: Jonas Karlman <jonas@kwiboo.se>
+In-Reply-To: <20260613070116.438906-9-midgy971@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-From: Midgy BALON <midgy971@gmail.com>
+Hi Midgy,
 
-The RK3568 NPU rail (vdd_npu) needs to be enabled before the domain is
-powered on and disabled after it is powered off. Give DOMAIN_RK3568 a
-regulator parameter (like DOMAIN_RK3588 already has) so the NPU domain
-can set need_regulator, letting genpd manage the rail wired up as the
-domain's domain-supply instead of marking it always-on in DT.
+On 6/13/2026 9:01 AM, MidG971 wrote:
+> From: Midgy BALON <midgy971@gmail.com>
+> 
+> Enable the NPU and its IOMMU on ROCK 3B and wire vdd_npu as the NPU
+> power domain's domain-supply, so genpd brings the rail up and down with
+> the domain (the domain is marked need_regulator). The PVTPLL compute
+> clock is brought up later by the driver.
+> 
+> The rail is no longer kept always-on, so pin it to 1000 mV (the NPU's
+> 1 GHz operating voltage; the driver runs a fixed compute rate with no
+> devfreq voltage scaling) and mark it boot-on, so it is up before the
+> power domain de-idles the NPU NoC at power-on.
+> 
+> Signed-off-by: Midgy BALON <midgy971@gmail.com>
+> ---
+>  .../arm64/boot/dts/rockchip/rk3568-rock-3b.dts | 18 ++++++++++++++++--
+>  1 file changed, 16 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm64/boot/dts/rockchip/rk3568-rock-3b.dts b/arch/arm64/boot/dts/rockchip/rk3568-rock-3b.dts
+> index 69001e453732e..d3f9776c2bdc3 100644
+> --- a/arch/arm64/boot/dts/rockchip/rk3568-rock-3b.dts
+> +++ b/arch/arm64/boot/dts/rockchip/rk3568-rock-3b.dts
+> @@ -330,9 +330,10 @@ regulator-state-mem {
+>  
+>  			vdd_npu: DCDC_REG4 {
+>  				regulator-name = "vdd_npu";
+> +				regulator-boot-on;
 
-Suggested-by: Chaoyi Chen <chaoyi.chen@rock-chips.com>
-Signed-off-by: Midgy BALON <midgy971@gmail.com>
----
- drivers/pmdomain/rockchip/pm-domains.c | 36 ++++++++++++++++++--------
- 1 file changed, 25 insertions(+), 11 deletions(-)
+There is no need for the NPU in the bootloader, do not use DT as a
+workaround for software issues.
 
-diff --git a/drivers/pmdomain/rockchip/pm-domains.c b/drivers/pmdomain/rockchip/pm-domains.c
-index 490bbb1d1d8e8..19db307e3811d 100644
---- a/drivers/pmdomain/rockchip/pm-domains.c
-+++ b/drivers/pmdomain/rockchip/pm-domains.c
-@@ -138,6 +138,20 @@ struct rockchip_pmu {
- 	.active_wakeup = wakeup,			\
- }
- 
-+#define DOMAIN_M_R(_name, pwr, status, req, idle, ack, wakeup, regulator)	\
-+{							\
-+	.name = _name,				\
-+	.pwr_w_mask = (pwr) << 16,			\
-+	.pwr_mask = (pwr),				\
-+	.status_mask = (status),			\
-+	.req_w_mask = (req) << 16,			\
-+	.req_mask = (req),				\
-+	.idle_mask = (idle),				\
-+	.ack_mask = (ack),				\
-+	.active_wakeup = wakeup,			\
-+	.need_regulator = regulator,			\
-+}
-+
- #define DOMAIN_M_G(_name, pwr, status, req, idle, ack, g_mask, wakeup, keepon)	\
- {							\
- 	.name = _name,					\
-@@ -241,8 +255,8 @@ struct rockchip_pmu {
- #define DOMAIN_RK3562(name, pwr, req, g_mask, mem, wakeup)		\
- 	DOMAIN_M_G_SD(name, pwr, pwr, req, req, req, g_mask, mem, wakeup, false)
- 
--#define DOMAIN_RK3568(name, pwr, req, wakeup)		\
--	DOMAIN_M(name, pwr, pwr, req, req, req, wakeup)
-+#define DOMAIN_RK3568(name, pwr, req, wakeup, regulator)		\
-+	DOMAIN_M_R(name, pwr, pwr, req, req, req, wakeup, regulator)
- 
- #define DOMAIN_RK3576(name, p_offset, pwr, status, r_status, r_offset, req, idle, g_mask, wakeup)	\
- 	DOMAIN_M_O_R_G(name, p_offset, pwr, status, 0, r_status, r_status, r_offset, req, idle, idle, g_mask, wakeup)
-@@ -1274,15 +1288,15 @@ static const struct rockchip_domain_info rk3562_pm_domains[] = {
- };
- 
- static const struct rockchip_domain_info rk3568_pm_domains[] = {
--	[RK3568_PD_NPU]		= DOMAIN_RK3568("npu",  BIT(1), BIT(2),  false),
--	[RK3568_PD_GPU]		= DOMAIN_RK3568("gpu",  BIT(0), BIT(1),  false),
--	[RK3568_PD_VI]		= DOMAIN_RK3568("vi",   BIT(6), BIT(3),  false),
--	[RK3568_PD_VO]		= DOMAIN_RK3568("vo",   BIT(7), BIT(4),  false),
--	[RK3568_PD_RGA]		= DOMAIN_RK3568("rga",  BIT(5), BIT(5),  false),
--	[RK3568_PD_VPU]		= DOMAIN_RK3568("vpu",  BIT(2), BIT(6),  false),
--	[RK3568_PD_RKVDEC]	= DOMAIN_RK3568("vdec", BIT(4), BIT(8),  false),
--	[RK3568_PD_RKVENC]	= DOMAIN_RK3568("venc", BIT(3), BIT(7),  false),
--	[RK3568_PD_PIPE]	= DOMAIN_RK3568("pipe", BIT(8), BIT(11), false),
-+	[RK3568_PD_NPU]		= DOMAIN_RK3568("npu",  BIT(1), BIT(2),  false, true),
-+	[RK3568_PD_GPU]		= DOMAIN_RK3568("gpu",  BIT(0), BIT(1),  false, false),
-+	[RK3568_PD_VI]		= DOMAIN_RK3568("vi",   BIT(6), BIT(3),  false, false),
-+	[RK3568_PD_VO]		= DOMAIN_RK3568("vo",   BIT(7), BIT(4),  false, false),
-+	[RK3568_PD_RGA]		= DOMAIN_RK3568("rga",  BIT(5), BIT(5),  false, false),
-+	[RK3568_PD_VPU]		= DOMAIN_RK3568("vpu",  BIT(2), BIT(6),  false, false),
-+	[RK3568_PD_RKVDEC]	= DOMAIN_RK3568("vdec", BIT(4), BIT(8),  false, false),
-+	[RK3568_PD_RKVENC]	= DOMAIN_RK3568("venc", BIT(3), BIT(7),  false, false),
-+	[RK3568_PD_PIPE]	= DOMAIN_RK3568("pipe", BIT(8), BIT(11), false, false),
- };
- 
- static const struct rockchip_domain_info rk3576_pm_domains[] = {
--- 
-2.39.5
+This series mention the PVTPLL NPU clk and seem to contains some
+workarounds related to how the PVTPLL clock is handled in TF-A.
+
+The PVTPLL block typically require the pclk and power domain enabled to
+function, and this series seem to add workarounds to try and ensure this,
+e.g. with noc_init to activate PVTPLL usage.
+
+I would suggest that you do not involve the PVTPLL clock in this initial
+NPU support for RK3568, set CLK_NPU to 400 MHz and use it instead of the
+SCMI clock, or keep SCMI clk rate less than or equal to 400 MHz to
+disable PVTPLL_NEED mode in TF-A.
+
+In a future series you can extend Linux with a proper PVTPLL clk driver
+and OPP support for the rocket driver to correctly ensure pclk and pd is
+enabled when a PVTPLL clock is managed.
+
+>  				regulator-initial-mode = <0x2>;
+> -				regulator-min-microvolt = <500000>;
+> -				regulator-max-microvolt = <1350000>;
+> +				regulator-min-microvolt = <1000000>;
+> +				regulator-max-microvolt = <1000000>;
+
+Please describe the HW, do not add workarounds for software issues or
+shortcomings.
+
+Regards,
+Jonas
+
+>  				regulator-ramp-delay = <6001>;
+>  
+>  				regulator-state-mem {
+> @@ -787,3 +788,16 @@ vp0_out_hdmi: endpoint@ROCKCHIP_VOP2_EP_HDMI0 {
+>  		remote-endpoint = <&hdmi_in_vp0>;
+>  	};
+>  };
+> +
+> +&pd_npu {
+> +	domain-supply = <&vdd_npu>;
+> +};
+> +
+> +&rknn_core_0 {
+> +	npu-supply = <&vdd_npu>;
+> +	status = "okay";
+> +};
+> +
+> +&rknn_mmu_0 {
+> +	status = "okay";
+> +};
 
