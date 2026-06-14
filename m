@@ -1,54 +1,54 @@
 Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D52A3909B3
-	for <iommu@lists.linux.dev>; Sun, 14 Jun 2026 23:37:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94C5C38E8C1
+	for <iommu@lists.linux.dev>; Sun, 14 Jun 2026 23:37:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781480266; cv=none; b=vBhzhpXvJhAghZnSKKKtByfHQ+P4UgneyguICKDompC+BojJkZ7WRKPAu2xFlZZLJWbQmMoHw25OXfP4avHlwI1tvHiSKGrWuOsICPIGtalWP/APL5tzemx0WT4rTGSDob5U5GxIOI9uChTJRV7Uq5g7idFUCETMX3qW5Br0dAg=
+	t=1781480267; cv=none; b=ZDazDfSK4OUwZojyqEFBpHnxMhXnDtSGgoeFvG47g1gjDAS/voG0Im/XnhLvhaFPmCQ4DXeNayDPTctkuBbVhgkFRqQ18K5fl1PQRZXJ73UmtYGhpFWGjJ48SyOGO/lH7qWuQNf0izI88iAq+8kPzN57taqFWo3cmhPUZMSwxno=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781480266; c=relaxed/simple;
-	bh=sHmdBPgUy64h0nomxRMYZgtzGsV7LcN1Y2jthOewPfQ=;
+	s=arc-20240116; t=1781480267; c=relaxed/simple;
+	bh=w1Nrt1DPDRflTkd7XZpFoQm8H8bCpYk151oEiyENXZw=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=fNIBNu4f/Jvq1Y/f0Bor3RhYMYxO+yGhgpSBjxXvKP2AZl956OiFPU3+tLCKEgdODKJ1w1j8BIo+YM/q7DTc9OO7kQx/C9YT1x6Be5cvBjkkMKFOSZMmzg60JVVWQnovTqu8t7ccBfdk5OfVSdc9tqmTrJ5NGFwUG8rT3cjbITw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=HJN0UEvi; arc=none smtp.client-ip=209.85.210.202
+	 To:Cc:Content-Type; b=g9q8wZqdzqn/scQAgaLgrRwhFVPWNSVgN9n40tfEa2k/1T+ASeUOJFazZE41+Erxh2ZYwiYbtOqgZqDov9c1xlklzAHuFdGHRe74a6CCXzFRZKZ/75G6fijb+yIrfDN0q3aRBbqpUNhcOgdq2PErMlcfAralCu3PCopSA3oRYv0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=HfbTnHVG; arc=none smtp.client-ip=209.85.210.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="HJN0UEvi"
-Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-842211d6e48so3425076b3a.0
-        for <iommu@lists.linux.dev>; Sun, 14 Jun 2026 16:37:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="HfbTnHVG"
+Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-842cb4c62f9so2199418b3a.0
+        for <iommu@lists.linux.dev>; Sun, 14 Jun 2026 16:37:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1781480264; x=1782085064; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1781480263; x=1782085063; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=4W8djzLKUJavR0ZWbxIExIzqg4vveKv4bLWIrwQxGcQ=;
-        b=HJN0UEvizmKKBHKXY48po08KCXyNn5ztuf1tSXhPeuZ4t3j/oFTawZ03YzpjGkGb1e
-         1YB2pCE9CS/nMdVMWEBrD9f66LtYZdg13YiLZp9A68nj2bXMzzetXo5bGvfwwixh4SOj
-         jYD185XEO3ZiLzw0LIxl99ecEakhKtvR8NMFusNQXlXdoVlfZoR7ZnmbqeuDM7/xKoCA
-         3yu+7ZWsX2DHFPBmMPybNHLdKlsfq7Jh1nQDGts7dSuWjU+TZ+rz9C2X2d55lPwe26Fa
-         BU9SJxv9PHxlqhswnex69CMvsppxC44IqETxugN7sFKJuaNrVwYOn5Q75gCpRn37cRLI
-         WN2w==
+        bh=Gjm+J/sDlpbKzFCPRSBGIw0iFcduYCgoTrVDKBULpsY=;
+        b=HfbTnHVGRjRs+vd+2M8HGZfVwPgQ9eCkPe+nuNdxIHTYq/q2MBMhGHLdd2y8xlVfgN
+         XJQIUqUlcLj2iCZrhPtHJsp8grDHoOMt6BZGWzPc6jVOKihBLw/kst0sBp2pDW3Vi7b1
+         Blw1OaVeUd2NiwTpVEElhM28lfvISBUlqYXBPQMu4Hu/zUKIH/Cvc0Y5tn8cAIbE8T3v
+         PWbd5f1bRe4zvN1EQlDf+kG+kN1m04pj18msjzbAn9V2U3wnEpGDVxW11B3tpTukKDsp
+         DXXm0HOahfx7B+l10iK8J4bZF7fVZRxHnPXmz7NhwnvQNIzOzxTxEYGNVTkawxAG4XZc
+         wSdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781480264; x=1782085064;
+        d=1e100.net; s=20251104; t=1781480263; x=1782085063;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=4W8djzLKUJavR0ZWbxIExIzqg4vveKv4bLWIrwQxGcQ=;
-        b=j+K18Z2WLLMv+ffEzd5xNCcEgtyERAHhsNMMegoeV5fS6RJREl0Ttvu+7tgDO6rnLT
-         Q/BZ84MyxwaD5+nyOSlSaO7xZDjuItqL4z4WKcDhDePlB7gt13E0qK60uWfcAroU6R8V
-         hUdGl36M6nx2oNtWibFw0S6o1Ww9WD/OhfJEhBrPBFuJAEIh3yhRa4fVia2AxVEU/Bbt
-         J7wAz/KjkVWeUiumisgxRD08pDMwZI8jkx6k0PiXSuFbGiC5kTGnjM+w4IAQhy6MG1Ep
-         AWLhvwsA0xlz1Z2F1Bp+vawNGbIv658NV0eXcpuXleX9Q5hkZ9aPuyxPdGQ3PfC/XkRJ
-         xmFQ==
-X-Forwarded-Encrypted: i=1; AFNElJ907DDGo1bOULkicbIeFUFqXv0UGBp9d8nfq0qooRZYO0IgtO5opjl/Ksk0IYDqqSD4uMQgMw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxWO2vWpmfFlZKpv9xHZgQ7aA+QniW/7WK7EeaRuHoNkj5YJka3
-	RzZ+hEU4o7mKdgXgKjnluUoA2caN+b7xWOBNQ+JHqS8vtzrsDV8yV7V5chkEQS9ILmMYOzk2M9I
-	vOanFvbNcJUOr4A==
-X-Received: from pfbfm11.prod.google.com ([2002:a05:6a00:2f8b:b0:83e:b5cc:11c3])
+        bh=Gjm+J/sDlpbKzFCPRSBGIw0iFcduYCgoTrVDKBULpsY=;
+        b=iEsygZ9RG/9FpO6Q0Pz+yMEmpvKCCsISn0GK8gtEhrQ8aaE1mkSyqZ+7qdGnV3ytjg
+         EQP84nH+AeTQUWpQS4moMyTWW7dEE4tPjlx70NA5xKHAd203jBZEmTKXMDEnIywA2e3K
+         5qhRAuP7v9Ft7hKy5nSCnxYCgGHIK+93kTpeZ6yJLbpe0RRwzmHZK2OmnpDjIHLoS+pN
+         V4Vx283/+RO55JhX6EUCmXQF/R84msBJfC1mP1sNZO2Z29M4jK5Zy6g06/ER4D7QUjnR
+         QkDz/+rCQ+JbN9C1z/+x8wdo4G7vEbr0jMl0tuLE4F/C0uowDDAotgNxeVmBDIkTHGkv
+         qKIg==
+X-Forwarded-Encrypted: i=1; AFNElJ/u2vxW+iAyop+4fRumwOZ7Bq4/DbolISiIc2YalngDxXRuu/QvnKIR9gAgz/4tG77XKmzhCg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy/AmdhQGDZuQc64dVHd1yT9K6rGQVH5lpM241iTJEUYISCoNWx
+	6J1AFoucwF+LETLFGfg8qZsOrH/whTNKIxeUjfDhigUWPfq1xWg+6yq7TQUd0Qw5j1QgCW+iGue
+	rFcCW5Lov/j20LQ==
+X-Received: from pfw3.prod.google.com ([2002:a05:6a00:a263:b0:82f:4d28:b8c5])
  (user=skhawaja job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6a00:2d17:b0:842:6004:3fce with SMTP id d2e1a72fcca58-8434cdeeedbmr12308751b3a.26.1781480263617;
- Sun, 14 Jun 2026 16:37:43 -0700 (PDT)
-Date: Sun, 14 Jun 2026 23:37:27 +0000
+ 2002:a05:6a00:3993:b0:835:51fd:b7ea with SMTP id d2e1a72fcca58-8434975254bmr9961638b3a.19.1781480262726;
+ Sun, 14 Jun 2026 16:37:42 -0700 (PDT)
+Date: Sun, 14 Jun 2026 23:37:26 +0000
 In-Reply-To: <20260614233728.2212104-1-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -58,8 +58,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20260614233728.2212104-1-skhawaja@google.com>
 X-Mailer: git-send-email 2.54.0.1136.gdb2ca164c4-goog
-Message-ID: <20260614233728.2212104-18-skhawaja@google.com>
-Subject: [PATCH v3 17/18] vfio/pci: Preserve the iommufd state of the vfio cdev
+Message-ID: <20260614233728.2212104-17-skhawaja@google.com>
+Subject: [PATCH v3 16/18] iommufd: Add APIs to preserve/unpreserve a vfio cdev
 From: Samiullah Khawaja <skhawaja@google.com>
 To: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
 	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
@@ -71,125 +71,207 @@ Cc: Samiullah Khawaja <skhawaja@google.com>, Robin Murphy <robin.murphy@arm.com>
 	Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-If the vfio cdev is attached to an iommufd, preserve the state of the
-attached iommufd also. Basically preserve the iommu specific state of
-the device and also the attach iommu HW unit.
+Add APIs that can be used to preserve and unpreserve a vfio cdev. Use
+the APIs exported by the IOMMU core to preserve/unpreserve device.
 
-Once the device and its iommufd attachment is preserved, it cannot be
-detached or attached to another IOAS until it is unpreserved.
+The LUO token of the preserved iommufd is fetched and returned back to
+the caller as that can be used during restore to get the restored
+iommufd. Handle to the preserved state of the device is also returned to
+reassociate with the restored state after live update kexec.
 
 Reviewed-by: Pranjal Shrivastava <praan@google.com>
 Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
 ---
- drivers/vfio/device_cdev.c             | 10 +++++++
- drivers/vfio/pci/vfio_pci_liveupdate.c | 37 +++++++++++++++++++++++++-
- 2 files changed, 46 insertions(+), 1 deletion(-)
+ drivers/iommu/iommufd/device.c          | 102 ++++++++++++++++++++++++
+ drivers/iommu/iommufd/iommufd_private.h |   3 +
+ include/linux/iommufd.h                 |  29 +++++++
+ 3 files changed, 134 insertions(+)
 
-diff --git a/drivers/vfio/device_cdev.c b/drivers/vfio/device_cdev.c
-index 0050f0fe456b..844f1473d875 100644
---- a/drivers/vfio/device_cdev.c
-+++ b/drivers/vfio/device_cdev.c
-@@ -275,6 +275,11 @@ int vfio_df_ioctl_attach_pt(struct vfio_device_file *df,
- 	}
+diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+index 170a7005f0bc..d19fece00da3 100644
+--- a/drivers/iommu/iommufd/device.c
++++ b/drivers/iommu/iommufd/device.c
+@@ -2,6 +2,7 @@
+ /* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
+  */
+ #include <linux/iommu.h>
++#include <linux/iommu-liveupdate.h>
+ #include <linux/iommufd.h>
+ #include <linux/pci-ats.h>
+ #include <linux/slab.h>
+@@ -610,6 +611,10 @@ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
+ 	int rc;
  
- 	mutex_lock(&device->dev_set->lock);
-+	if (iommufd_device_is_preserved(device->iommufd_device)) {
-+		ret = -EBUSY;
-+		goto out_unlock;
+ 	mutex_lock(&igroup->lock);
++	if (iommufd_device_is_preserved(idev)) {
++		rc = -EBUSY;
++		goto err_unlock;
++	}
+ 
+ 	attach = xa_cmpxchg(&igroup->pasid_attach, pasid, NULL,
+ 			    XA_ZERO_ENTRY, GFP_KERNEL);
+@@ -1665,3 +1670,100 @@ int iommufd_get_hw_info(struct iommufd_ucmd *ucmd)
+ 	iommufd_put_object(ucmd->ictx, &idev->obj);
+ 	return rc;
+ }
++
++#ifdef CONFIG_IOMMU_LIVEUPDATE
++static bool _iommufd_device_has_pasid_attachments(struct iommufd_device *idev)
++{
++	struct iommufd_group *igroup = idev->igroup;
++	unsigned long start = IOMMU_NO_PASID;
++
++	if (xa_find_after(&igroup->pasid_attach,
++			  &start, UINT_MAX, XA_PRESENT))
++		return true;
++
++	return false;
++}
++
++int iommufd_device_preserve(struct liveupdate_session *s,
++			    struct iommufd_device *idev,
++			    u64 *iommufd_tokenp,
++			    u64 *preserved_state)
++{
++	struct iommufd_group *igroup = idev->igroup;
++	struct iommufd_hwpt_paging *hwpt_paging;
++	struct iommufd_hw_pagetable *hwpt;
++	struct iommufd_attach *attach;
++	int ret;
++
++	mutex_lock(&igroup->lock);
++	if (_iommufd_device_has_pasid_attachments(idev)) {
++		ret = -EOPNOTSUPP;
++		goto out;
 +	}
 +
- 	if (attach.flags & VFIO_DEVICE_ATTACH_PASID)
- 		ret = device->ops->pasid_attach_ioas(device,
- 						     attach.pasid,
-@@ -333,6 +338,11 @@ int vfio_df_ioctl_detach_pt(struct vfio_device_file *df,
- 	}
- 
- 	mutex_lock(&device->dev_set->lock);
-+	if (iommufd_device_is_preserved(device->iommufd_device)) {
-+		mutex_unlock(&device->dev_set->lock);
-+		return -EBUSY;
++	attach = xa_load(&igroup->pasid_attach, IOMMU_NO_PASID);
++	if (!attach) {
++		ret = -ENOENT;
++		goto out;
 +	}
 +
- 	if (detach.flags & VFIO_DEVICE_DETACH_PASID)
- 		device->ops->pasid_detach_ioas(device, detach.pasid);
- 	else
-diff --git a/drivers/vfio/pci/vfio_pci_liveupdate.c b/drivers/vfio/pci/vfio_pci_liveupdate.c
-index 7b841a1e7fcc..37d327f82d5a 100644
---- a/drivers/vfio/pci/vfio_pci_liveupdate.c
-+++ b/drivers/vfio/pci/vfio_pci_liveupdate.c
-@@ -106,6 +106,7 @@
++	hwpt = attach->hwpt;
++	hwpt_paging = find_hwpt_paging(hwpt);
++	if (!hwpt_paging || !hwpt_paging->liveupdate_preserved) {
++		ret = -EINVAL;
++		goto out;
++	}
++
++	ret = liveupdate_get_token_outgoing(s, idev->ictx->file, iommufd_tokenp);
++	if (ret)
++		goto out;
++
++	ret = iommu_preserve_device(hwpt_paging->common.domain,
++				    idev->dev,
++				    preserved_state);
++
++	if (!ret)
++		igroup->liveupdate_preserved = true;
++out:
++	mutex_unlock(&igroup->lock);
++	return ret;
++}
++EXPORT_SYMBOL_NS_GPL(iommufd_device_preserve, "IOMMUFD");
++
++void iommufd_device_unpreserve(struct liveupdate_session *s,
++			       struct iommufd_device *idev)
++{
++	struct iommufd_group *igroup = idev->igroup;
++	struct iommufd_hwpt_paging *hwpt_paging;
++	struct iommufd_hw_pagetable *hwpt;
++	struct iommufd_attach *attach;
++
++	mutex_lock(&igroup->lock);
++	attach = xa_load(&igroup->pasid_attach, IOMMU_NO_PASID);
++	if (!attach) {
++		WARN(1, "IOMMU_NO_PASID attachment not found");
++		igroup->liveupdate_preserved = false;
++		goto out;
++	}
++
++	hwpt = attach->hwpt;
++	hwpt_paging = find_hwpt_paging(hwpt);
++	if (!hwpt_paging || !hwpt_paging->liveupdate_preserved) {
++		WARN(1, "Attached domain is not preserved");
++		igroup->liveupdate_preserved = false;
++		goto out;
++	}
++
++	iommu_unpreserve_device(hwpt_paging->common.domain, idev->dev);
++	igroup->liveupdate_preserved = false;
++out:
++	mutex_unlock(&igroup->lock);
++}
++EXPORT_SYMBOL_NS_GPL(iommufd_device_unpreserve, "IOMMUFD");
++
++bool iommufd_device_is_preserved(struct iommufd_device *idev)
++{
++	return idev && idev->igroup && idev->igroup->liveupdate_preserved;
++}
++EXPORT_SYMBOL_NS_GPL(iommufd_device_is_preserved, "IOMMUFD");
++#endif
+diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+index 9e0e46f1f7ed..c217d00e2b6d 100644
+--- a/drivers/iommu/iommufd/iommufd_private.h
++++ b/drivers/iommu/iommufd/iommufd_private.h
+@@ -486,6 +486,9 @@ struct iommufd_group {
+ 	struct xarray pasid_attach;
+ 	struct iommufd_sw_msi_maps required_sw_msi;
+ 	phys_addr_t sw_msi_start;
++#ifdef CONFIG_IOMMU_LIVEUPDATE
++	bool liveupdate_preserved;
++#endif
+ };
  
+ /*
+diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
+index 6e7efe83bc5d..d1fd5d71e0fd 100644
+--- a/include/linux/iommufd.h
++++ b/include/linux/iommufd.h
+@@ -9,6 +9,7 @@
+ #include <linux/err.h>
  #include <linux/errno.h>
- #include <linux/file.h>
-+#include <linux/iommufd.h>
- #include <linux/kexec_handover.h>
- #include <linux/kho/abi/vfio_pci.h>
- #include <linux/liveupdate.h>
-@@ -114,6 +115,8 @@
- 
- #include "vfio_pci_priv.h"
- 
-+MODULE_IMPORT_NS("IOMMUFD");
-+
- static bool vfio_pci_liveupdate_can_preserve(struct liveupdate_file_handler *handler,
- 					     struct file *file)
- {
-@@ -155,9 +158,26 @@ static int vfio_pci_liveupdate_preserve(struct liveupdate_file_op_args *args)
- 	vdev = container_of(device, struct vfio_pci_core_device, vdev);
- 	pdev = vdev->pdev;
+ #include <linux/iommu.h>
++#include <linux/liveupdate.h>
+ #include <linux/refcount.h>
+ #include <linux/types.h>
+ #include <linux/xarray.h>
+@@ -71,6 +72,34 @@ void iommufd_device_detach(struct iommufd_device *idev, ioasid_t pasid);
+ struct iommufd_ctx *iommufd_device_to_ictx(struct iommufd_device *idev);
+ u32 iommufd_device_to_id(struct iommufd_device *idev);
  
 +#ifdef CONFIG_IOMMU_LIVEUPDATE
-+	/* If iommufd is attached, preserve the underlying domain */
-+	mutex_lock(&device->dev_set->lock);
-+	if (device->iommufd_attached) {
-+		u64 token, preserved_state;
++int iommufd_device_preserve(struct liveupdate_session *s,
++			    struct iommufd_device *idev,
++			    u64 *iommufd_tokenp,
++			    u64 *preserved_state);
++void iommufd_device_unpreserve(struct liveupdate_session *s,
++			       struct iommufd_device *idev);
++bool iommufd_device_is_preserved(struct iommufd_device *idev);
++#else
++static inline int iommufd_device_preserve(struct liveupdate_session *s,
++					  struct iommufd_device *idev,
++					  u64 *iommufd_tokenp,
++					  u64 *preserved_state)
++{
++	return -EOPNOTSUPP;
++}
 +
-+		ret = iommufd_device_preserve(args->session,
-+					      device->iommufd_device,
-+					      &token, &preserved_state);
-+		if (ret) {
-+			mutex_unlock(&device->dev_set->lock);
-+			return ret;
-+		}
-+	}
-+	mutex_unlock(&device->dev_set->lock);
++static inline void iommufd_device_unpreserve(struct liveupdate_session *s,
++					     struct iommufd_device *idev)
++{
++}
++
++static inline bool iommufd_device_is_preserved(struct iommufd_device *idev)
++{
++	return false;
++}
 +#endif
 +
- 	ret = pci_liveupdate_preserve(pdev);
- 	if (ret)
--		return ret;
-+		goto err_iommufd_unpreserve;
- 
- 	ser = kho_alloc_preserve(sizeof(*ser));
- 	if (IS_ERR(ser)) {
-@@ -173,12 +193,27 @@ static int vfio_pci_liveupdate_preserve(struct liveupdate_file_op_args *args)
- 
- err_unpreserve:
- 	pci_liveupdate_unpreserve(pdev);
-+
-+err_iommufd_unpreserve:
-+	mutex_lock(&device->dev_set->lock);
-+	if (device->iommufd_attached)
-+		iommufd_device_unpreserve(args->session,
-+					  device->iommufd_device);
-+	mutex_unlock(&device->dev_set->lock);
- 	return ret;
- }
- 
- static void vfio_pci_liveupdate_unpreserve(struct liveupdate_file_op_args *args)
- {
- 	struct vfio_device *device = vfio_device_from_file(args->file);
-+	struct vfio_pci_core_device_ser *ser;
-+
-+	ser = phys_to_virt(args->serialized_data);
-+	mutex_lock(&device->dev_set->lock);
-+	if (device->iommufd_attached)
-+		iommufd_device_unpreserve(args->session,
-+					  device->iommufd_device);
-+	mutex_unlock(&device->dev_set->lock);
- 
- 	pci_liveupdate_unpreserve(to_pci_dev(device->dev));
- 	kho_unpreserve_free(phys_to_virt(args->serialized_data));
+ struct iommufd_access_ops {
+ 	u8 needs_pin_pages : 1;
+ 	void (*unmap)(void *data, unsigned long iova, unsigned long length);
 -- 
 2.54.0.1136.gdb2ca164c4-goog
 
