@@ -1,151 +1,75 @@
-Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012057.outbound.protection.outlook.com [52.101.53.57])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 992C42DFA3A
-	for <iommu@lists.linux.dev>; Mon, 15 Jun 2026 05:14:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.53.57
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781500479; cv=fail; b=FzbEMsJ5nyQglq5sX8zk/RTcJj5J9LWekRNdDu3EFPTTiBOIr4rdUHL8ITzAjTqlCyxpErUuyBUs/hEZJZ3/Hyrq08vIhlvk8gEPFfDoUDZ67Y70Xn2mLEDBLueVBZcvS/MLq0jdFaqqg7z6CTIrmjmuSdLRrSMmu1gMBRa2fjw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781500479; c=relaxed/simple;
-	bh=K7wQ2xahSk4kHEe7eoDbkXol3MsE3TqTQDDBBV2mJPA=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HVTDiqFOSch8HeP/ygmXL9f3IHkZ/GqQRxXahmkMXgiYXpuV/w5AnNJ/EDFZrBg3qv4R0lDwlxC73e79H4CNkNWKHVJ3fPbj3BP7Qdtb/Gkg8as3IxGaMXZQ4hE9T848i0gp5j06zBeHaBozcka51nHloB+YtKsrdpFGV89ruag=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=0fHrjPWV; arc=fail smtp.client-ip=52.101.53.57
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72C442F83A2;
+	Mon, 15 Jun 2026 06:03:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781503390; cv=none; b=D2acaFv1f2NUveeiHoSLk2TwHTP9gcHDk8CsiDicV37D7qAbHU0sS5FqVxhYly5o48dT1+TArT07lHaaLNjEFtrrFricA0Hz5//whrvbOZ68auSVHd4xRXlQtpQEHwVtLM62wVpa4uKKb/J5X/x9yPAdlJQi4npwGETa1gATveg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781503390; c=relaxed/simple;
+	bh=Z+fkan5wigI8iAtffGnN82eGFFsPPZ5SA5LYevo1zKc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=cO5zfEFXhgspJVf0+NWb+Rxrxw+0l0CT+Ks769hFvy/1NKK0rBVS1/koUekC38K/G01Pwg3rV7gbQEP6awa0t1I3LqGjZDx2OsMVdG6SuLWxyqxVlUdBuXAP0DjmVGX9sRdDABB/78IRblbneN55AJfMiZ2xLosgcoSp00LOnCs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oeSMN76Q; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="0fHrjPWV"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=CQaxGcv7JUSHVKdumRmS17BpzAbesBsORWg7uxqMQAEIfuSrzKxyYDxyFXPbedW1TwdU01FkbaJPpzNkl0pqDIMMuS7Oxr/zY8k22YhPkm371XRGRxxnTvlvCloS1qKb1bcd/6iMOwldK7riM1H5QeL14GFx+BhmMVodQX+34L+Dz+7IN7Yl+tAN5yxsvd4dIY5uwPktjHcB3d00p2afrukjvjl9Wtf/nyAoM5mc7N1iNkMbeCKcOesGbs51U1tOTh0sW3EyiLEUH7/x4XrBSuMc1Box09sMtBXcwO96sZGhwFrf5bU7Q08G9QbAeK0n9FRbNRBVsvDlawajiyTd8Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lhmh1n//nssUOK+u3NEOxcYDWnidnotIfi9ITpU8y1c=;
- b=Otkw4eWMVFF9ZHGhxp4POk/fGWCu6f1oReAFMghBKLc0QX9+97+WQMzFUS1vkqPeHnOlJ6AopbPAv1rZMYcg+gqkYI5ZvgtwveqkThK1Zamyf7Rz0EDlpR84nrnPzjETsIh3hoP5dTlP3VNmhJGrYxz9AUgo0aBuXmIU6TSRnDzy+HgfWFY7hjLS8uUtLLbWnvaAqi2yYhI6gQotZCOzPV4GQ+tGoKDdhNX+T9tr7SrzCoIuJCEAXho/ITwi9fd/IFRRBtIBE/0qaplo+8ol96Ea6V8RHW2KWFIj0bPwWcOMFsAdAAjdUlSQmvPLjnuwc3nJzwypz51OCg6z5/bF/Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=google.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lhmh1n//nssUOK+u3NEOxcYDWnidnotIfi9ITpU8y1c=;
- b=0fHrjPWVmEru8xOcW+hVk1FIdBRyf0R++oI0+9lIbtrilWEF/ldx62/d6b6upKmfCIBJvkL0Sp+nKFQJNTGhnUo7C+0LF01lkRDc8H6LzfB76ecEtHuKU7uJgr4RbGSTYet++W9OyGML03H6cETK9dRdhaeBGwJk+YgpK7F8fgg=
-Received: from PH7PR17CA0031.namprd17.prod.outlook.com (2603:10b6:510:323::14)
- by DS5PPF5A66AFD1C.namprd12.prod.outlook.com (2603:10b6:f:fc00::64d) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.113.14; Mon, 15 Jun
- 2026 05:14:33 +0000
-Received: from CY4PEPF0000EDD5.namprd03.prod.outlook.com
- (2603:10b6:510:323:cafe::6) by PH7PR17CA0031.outlook.office365.com
- (2603:10b6:510:323::14) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.113.18 via Frontend Transport; Mon,
- 15 Jun 2026 05:14:33 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
-Received: from satlexmb08.amd.com (165.204.84.17) by
- CY4PEPF0000EDD5.mail.protection.outlook.com (10.167.241.201) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.139.8 via Frontend Transport; Mon, 15 Jun 2026 05:14:32 +0000
-Received: from satlexmb07.amd.com (10.181.42.216) by satlexmb08.amd.com
- (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Mon, 15 Jun
- 2026 00:14:32 -0500
-Received: from amd.com (10.180.168.240) by satlexmb07.amd.com (10.181.42.216)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41 via Frontend
- Transport; Mon, 15 Jun 2026 00:14:27 -0500
-Date: Mon, 15 Jun 2026 05:14:21 +0000
-From: Ankit Soni <Ankit.Soni@amd.com>
-To: Samiullah Khawaja <skhawaja@google.com>
-CC: David Woodhouse <dwmw2@infradead.org>, Lu Baolu
-	<baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
-	<will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy
-	<robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, Alex Williamson
-	<alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>, Pratyush Yadav
-	<pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, David
- Matlack <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>,
-	Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>
-Subject: Re: [PATCH v3 01/18] memfd: export memfd_get_seals()
-Message-ID: <wth5g4v6usr23ufcm35lt37bt6ei625j7wmdq2grlcjiplcp7z@kdw6kevdhs22>
-References: <20260614233728.2212104-1-skhawaja@google.com>
- <20260614233728.2212104-2-skhawaja@google.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oeSMN76Q"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF33D1F000E9;
+	Mon, 15 Jun 2026 06:03:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781503389;
+	bh=NH91vhgtpim2mvTKLEXlcggfytTmn9NzXEfuRjaO5Q0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=oeSMN76QlgQpFNDQ9ZPs97txznTmGvIYY10j/7nHqew76rsgUzAdF3HKX/zNtettd
+	 W96YkR/xavSqS7/9H5conjE9VOzTCZaUQN2aZhs80VnT8sj/EvHMTi716P8Q0B8x8h
+	 rk6zLDKBnSylGlM+U7txGlav+5I7I8TlSndqWzW3jLspx7NnFgODc7yxR2NlARYukm
+	 30Kfa6fhqS0jGn6tpUX94n3t6xh/FycJl1CwOJPSvWH5tU+Qm8AEzZTrRZnIfvfN1i
+	 C7K8cxTIQ77oKFV8XecAv/hdwlNGncM/5yX3uCiUfW9RNQOKRwvTQAa7OxzUTD4te+
+	 7UPX4idfRPqew==
+Date: Mon, 15 Jun 2026 08:03:05 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+Cc: Rob Clark <robin.clark@oss.qualcomm.com>, Sean Paul <sean@poorly.run>, 
+	Konrad Dybcio <konradybcio@kernel.org>, Dmitry Baryshkov <lumag@kernel.org>, 
+	Abhinav Kumar <abhinav.kumar@linux.dev>, Jessica Zhang <jesszhan0024@gmail.com>, 
+	Marijn Suijten <marijn.suijten@somainline.org>, David Airlie <airlied@gmail.com>, 
+	Simona Vetter <simona@ffwll.ch>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
+	Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>, linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+	freedreno@lists.freedesktop.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+Subject: Re: [PATCH v2 3/3] dt-bindings: arm-smmu: Document GPU SMMU for
+ Shikra SoC
+Message-ID: <20260615-quirky-horned-chital-543dce@quoll>
+References: <20260615-shikra-gpu-v2-0-2f2d1347c3fb@oss.qualcomm.com>
+ <20260615-shikra-gpu-v2-3-2f2d1347c3fb@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260614233728.2212104-2-skhawaja@google.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000EDD5:EE_|DS5PPF5A66AFD1C:EE_
-X-MS-Office365-Filtering-Correlation-Id: 62bc8c04-466a-425f-4bd4-08deca9cfc4a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|82310400026|7416014|23010399003|376014|36860700016|22082099003|18002099003|4143699003|56012099006|11063799006;
-X-Microsoft-Antispam-Message-Info:
-	vCUNZw+PhZH9Nm08frAi842lxzSDhaWRa79OlKCcdy7Ehjl/9shDhJnKY0JzAh+dy72qI5jwH12AOXA3fspEPojM7uWem4CUiyzvqI7kw8mY0T5JQlME4aC2dcCclSYrKL30Wq7v+tum1BzlyVh51ajWvlc8BaWoj96AJLd/msezzsJ4advdpXgMYfFY2uXuLAhMv79AAXew4S46vbiIqVHI+LWsmq8NmmdGAXcvTNao0R+2nGMb6Wn3kIrpmYEdHu0fTMowiTIa6pdBbXSBIfFdKImJOQBPwAOSA1+I2e+8lk7gPPWv1VJ5X3Hn9rQKMN4xyHduBRrAf3hQkJoyhdI0taqAsMlkGYg/ZaViHzcp+ePJ0klGvPbFEKmH+XL3msSzMLQtFe36ccbqKMXGc+jMAN6A0ymLm1LgJPjSJLXbV/jPb6ivTcVJbjntBOMiZJ2HpvIMCYwTnlXVSmMgV96ry4IWBc1hxKZVuuLxnh43uAsOZB2fVBqmCHJX9C9kxUgqzx9ybNmfVlVP5S+Si/WdeZNCXJE4LfNRx+PiR7MMBFqItfPYKMK4ieSjFoieeJA/bzoCWKkxoEXFN3WSZTTDZbggJklz/yw+zayqvWJ+l9YY8rcMpKdZ1AuL3rVd56YQatHzFMI1lZbJ0nG+8qM2hsIRbJmnRHRsdtc0YHaM9quUKwAbItMM2W4zBBByS1523syrpaswoMZP+a0d9nmtzRNuAn3zEStXLyk8+Us=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(7416014)(23010399003)(376014)(36860700016)(22082099003)(18002099003)(4143699003)(56012099006)(11063799006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	kXihONv5IPrQtQ1iaVkCktG455cutOApavq2pAV+5hJg+yHxDQWWIyVxHa+gRS6y7Nv/S/R1ZCOyEAf3PtrnKV8bnXMDwATfUo4rpJ4I3yq0Rb1pAbyC6w3Ix5qgSY2+bBiWqsV3AkhmDhDHWSM1/i/Y1yhxjQGlMmTumcee5mITCko0vyFNcSyUXOYb0tzZf1BJp2OYJImcwGMWBAMNKSx6zQ/Suz1nYnKcCsyPsAnb6EhGwZQM5EH1w3nM5ojMzgleRJDgjxqWLfFJ/hm4LciR3qK2AHtV9P9c5KHIPiepYSiZxWIF220eYiB5vG0+wKQ5TFrnQN6OLqX2jHVhstSD3cMjEyRgSc6noJEcdMkIogqD2cNjCZ4o3EtDg09lFuP74enq7w2t6eli1KUso62wQ50QBOtsyEBhQe+F1nTkHIeobJLBnt7qdDRYGu0p
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2026 05:14:32.8752
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 62bc8c04-466a-425f-4bd4-08deca9cfc4a
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000EDD5.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS5PPF5A66AFD1C
+In-Reply-To: <20260615-shikra-gpu-v2-3-2f2d1347c3fb@oss.qualcomm.com>
 
-On Sun, Jun 14, 2026 at 11:37:11PM +0000, Samiullah Khawaja wrote:
-> memfd_get_seals() is used by iommufd during preservation to make sure
-> that he preserved memfd was sealed when it was mapped into iommufd.
-
-Hi,
-Minor nit s/he/the
-
-> Since iommufd can be built as a module, export memfd_get_seals() to
-> avoid linker error.
+On Mon, Jun 15, 2026 at 03:02:59AM +0530, Akhil P Oommen wrote:
+> From: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
 > 
-> Cc: Hugh Dickins <hughd@google.com>
-> Cc: Baolin Wang <baolin.wang@linux.alibaba.com>
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: linux-mm@kvack.org
+> Add specific compatible strings to document the GPU SMMU present
+> in the Shikra SoC.
 > 
-
-Reviewed-by: Ankit Soni <Ankit.Soni@amd.com>
-
-> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+> Signed-off-by: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
+> Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
 > ---
->  mm/memfd.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/mm/memfd.c b/mm/memfd.c
-> index fb425f4e315f..1f45fa6d4e9c 100644
-> --- a/mm/memfd.c
-> +++ b/mm/memfd.c
-> @@ -315,6 +315,7 @@ int memfd_get_seals(struct file *file)
->  
->  	return seals ? *seals : -EINVAL;
->  }
-> +EXPORT_SYMBOL_GPL(memfd_get_seals);
->  
->  long memfd_fcntl(struct file *file, unsigned int cmd, unsigned int arg)
->  {
-> -- 
-> 2.54.0.1136.gdb2ca164c4-goog
-> 
+>  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+
+Best regards,
+Krzysztof
+
