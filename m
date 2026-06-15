@@ -1,137 +1,191 @@
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09E4837E314
-	for <iommu@lists.linux.dev>; Mon, 15 Jun 2026 13:21:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C40523AB46F
+	for <iommu@lists.linux.dev>; Mon, 15 Jun 2026 13:23:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.43
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781529719; cv=pass; b=Y1o1V6MqLzvXi4+AwWEIFsxyOKf3pba8AT8w2ijnEZ4zk2BVr+Nkxm65AmAp/u3G5qtEZRILzK0TL/VqwRRDos+Ekw6HdFX3vZzoHAsmwR+pBYQ4Dwv2u5e9FJwY+13mrbxLNVzsUT+HmlGKRiPPq1xuvpTGCsbQ3yWP+mOSLQs=
+	t=1781529793; cv=pass; b=NMku4elB6UyNMUuluipkw+W0IA69RbUb4XVEVs0c4mU6fK02DM8KgaPjCiDPhdiHvDt0jnwSUFmMEVD4kyxhU6q4ITH0x6LdnpkswtWTANpRCvoXMolfGCRDJeqFmQ7jYHrp/9NiYcMD7yqj1DCtdXcbvM1lhIbTo1WxeBLGIDc=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781529719; c=relaxed/simple;
-	bh=xSFePTrYn0i0duWqY4Rac1mt5Z8jJM6Bfpkdt8ojZBs=;
-	h=References:In-Reply-To:From:Mime-Version:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=pGnAyix9Bl/cX0U45WnJgpy40bttHQBzzATYet134Nig3bGbN0eAIMMM4NOdJIlPo+1FMjxcClT4dDPCCwfhig0NNyC9X0rG6kw4r2Oz0in4hHvLorzyBptOUXoUJ/JtrbKUtxvq0u+qqMm0uyrPt7Zyts6SchNvf+ScCXzvBp4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=D5WgXR7U; arc=pass smtp.client-ip=209.85.167.50
+	s=arc-20240116; t=1781529793; c=relaxed/simple;
+	bh=RracDr99YGEkyuEzsb2CCcrm9Kwzatx7RzWk7uryVJU=;
+	h=From:In-Reply-To:Mime-Version:References:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=GmrIWSvRRWME3BJiUzGwiDbpFyMb8pDzSfETae9sUWpoLYMlrjNgatgG2GLZDf9gEmJ/E+pRYLBdRbi5DCmyxGaG8D61108m8gACXkw2HSJznIn+UWXSE2sLtWPbJ46GzAKYwDQ47DbewQRz/VEWBBCxgu1lNayh0kuKe195gpE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=SsONvAmK; arc=pass smtp.client-ip=209.85.167.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="D5WgXR7U"
-Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-5aa7bf3d512so4236225e87.2
-        for <iommu@lists.linux.dev>; Mon, 15 Jun 2026 06:21:55 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1781529714; cv=none;
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="SsONvAmK"
+Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-5ad0abf1f7bso2529736e87.3
+        for <iommu@lists.linux.dev>; Mon, 15 Jun 2026 06:23:11 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1781529790; cv=none;
         d=google.com; s=arc-20240605;
-        b=Ty6GqPUyV4YOTfoxkqgRMqbbphHsZ8d5Gd8WSp2DXjreRXDJth48BxUunApu3ArxDf
-         Y40TrnYoTTPatnJrUXOpfWtnC8E7T+wb7oAt8Sv7pBmajDxBPNOaKMffsgccTpTXSXjl
-         4kartYrbUo6xIy2AlNNMDYrL3DyDDvhOoN7lACMnC/5vVf8HuDeoGVdyPANMuNa8ulBU
-         j4FjeG0fIF77CGkvefvqWn2cmdqqpeUL9+qZtObu7cvPZTdY2lFYd7I6IwVp3aMt7rhb
-         m+buzf1033nSu6S1HHxqqm8zl3IjFiBFHEbmHeL8RG6Se/Cws6OtUoaVwULFFfZ/xPzg
-         tJyg==
+        b=coxMk+kBRTAeQmNejOntRj0NCfmTNtNrW5/CMpElejg0HI2pVDaP89ZdCkg23zvCO7
+         +bEO8IOmNBxxd1H9TvYKdTZN9cCGZ4bHnDmKIRL0M2gXwk4vW/uE+9aOUJqZQTWHMdab
+         Q8rx0zZCwIsO9Rpiyp5AKsZ2gEw/W4zI91FjI1dXZuixwW1KKDNNi3Re3G4vrIJMTvCj
+         KL9+R+GiCbeUEepT8ifsUnQ/bEt4Dh0+aSOvHe8bVOBmK968ly8DMagOg5OfLeIqhOw/
+         Duh1RQUMW1ky/NoQmNjo0IYMz6P9FVW0wW+eFVj9wW3K+9ldaIm301eYzb7JlAx2FjQS
+         3p0g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date
-         :mime-version:from:in-reply-to:references:dkim-signature;
-        bh=xSFePTrYn0i0duWqY4Rac1mt5Z8jJM6Bfpkdt8ojZBs=;
-        fh=hlnPFMWSDVHCQcocgiIgj2Uwz23LXwUHPddny8/bz78=;
-        b=hXQJ+9DcrIggf5fUxiYqNqYzHvJLCLMF04DCmGkt7zF5/G8Wi9tTS2CYayqBjBnf+3
-         BUn5bAIp/3YvTGpPdADLHSpKlEx6ZHKpH4fLiy4dU67mnJ2WZoA19djlmmjh5ibmefLp
-         NCsq2gHyCcS2qv6lXlvvt2rSYOH2ooBcQmgOl0hy9MlBxAl6imuPHCox/iTjrS1pvZQL
-         J5ITF4Vbjgp0E8pRmQcyLuGWNSt9eAbq9IUVra04pk0Cv4beqcRXz31FpkgremsQDEKc
-         f1nxaURth6zN8vAWzZ0xlWvOZPztTpTnY0+13UNIRX5yanPDVZ8H80+HQFLQUjgMQCDC
-         9WmQ==;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:references
+         :mime-version:in-reply-to:from:dkim-signature;
+        bh=RracDr99YGEkyuEzsb2CCcrm9Kwzatx7RzWk7uryVJU=;
+        fh=mJv0ig/pVpvjTRLhCjnkwQoxiPiZnJmCeDy0J1vxR8E=;
+        b=ag7caKamksBURNpVqYFGFtUdVUZhCk+rU1nSB7dKSRp5HlTDMsbfSb6pjLuoh6AkMm
+         r7RZ09lBkmkUccDsODiD+t6YUsYH2udQeyPH3mxwA0654bRVGwlvLdjjZG/17OTMHZ38
+         D21GdNxbs1bw+o9PDvTGJ3qsqa8CSrEii3Po8A+j05T6tQLht4THFgNv7d219oDlQLn2
+         FYM8hKtBBsmSFfE5GrOrhlEp6WmNZE8O30nGVdXpCK7+AZjlfyShLoyGrOZwF67uzPTS
+         ar+sWGNCLXjQ+oFkJvq1oHORTTv2G3QJ74DM4KZlWgrw6MiKd0kpeQoxS3o+lVg/peg+
+         dp5w==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1781529714; x=1782134514; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date
-         :mime-version:from:in-reply-to:references:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xSFePTrYn0i0duWqY4Rac1mt5Z8jJM6Bfpkdt8ojZBs=;
-        b=D5WgXR7Uj7KTrih5ooXNLkNn9AAI1hWLJyUs0gV/Ikwf+3f+Wa4RTMJn6NMWg02qRW
-         ajmJ1HGXTZbb1IomSDN+fYH644Ddhtopvomy60HxbJJviUwISk+cPeS508t3YrL3lST6
-         2yyxWgFji8WxItg7eh5gCWtSRDfGP0QV8zn/MtFeRy+7iSdBb1tobMTR7JQi3csSf07D
-         9WCZsZjVZSOnvzv8b25sU0L0rR6jQK0UKnx1aVNdMcZpmDr+igJ9i0FaNJwKrkYsrRC1
-         TpU09/91ccDIs1ruJgXzusdfRu4wtvNEGbf8LCPzfDiOf0xKzZ+3yrwNDDi3Hv6lNWl4
-         uKew==
+        d=bytedance.com; s=google; t=1781529790; x=1782134590; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:references
+         :mime-version:in-reply-to:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=RracDr99YGEkyuEzsb2CCcrm9Kwzatx7RzWk7uryVJU=;
+        b=SsONvAmKL0Wy6/5zwQmU451eT3qynybovWXZVCNaheedyIG5Bia+pTxqvBaQD4hTUx
+         WHKXdEJJBaCquMYFTAYhh/pUkrKDZwRB12DYQdAuGpVbMU70LRH5xXyZVVgxnvRTyd3F
+         xr2M/4xB/VqlplRsuGS75zLs5in2vvp2+vyv4EBImjPPK5ZKN1pK25bfQO0YJPdMCset
+         LvZoKDAsDEj51HCUh9jtvaXoxgj9D4rVQmNwHFZjBlp0EqICZbteshft3B0fQ9ZkqAQR
+         WO5gKG0mPWLGQETxKg1kPX6MFG5y/vNdt4KMr8C+rlptOw23KGXrWvs+QagpKTN8R7Af
+         R6bg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781529714; x=1782134514;
-        h=content-transfer-encoding:cc:to:subject:message-id:date
-         :mime-version:from:in-reply-to:references:x-gm-gg:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=xSFePTrYn0i0duWqY4Rac1mt5Z8jJM6Bfpkdt8ojZBs=;
-        b=liyot7VnNvptrNJOB8owUUmr66m4DMGAeLOZmDyxc1W6OhbOYZa4xZh/tsDGhFTZgh
-         GvoP1ZqXwwWhN4NHJ+n2yZZs8S3Nv/T68NaL+ZXQfEs6YERFNW497t59+R3lEOiaxHNn
-         00oVmBjvD9BPBPEJkeDc5M6g4JABklSMoqXViZJEXME+PS08dCHCbquDZfBrO3AUz0j4
-         fztr6Xe6FXzl22WcaSilKfZnR/REiWxNu2t2P5EA4rY2pYZXIAWeJeG3Rabdsn7JvO1o
-         qNOuQZnNYlDhcmcdDSvlYIEOQF5cp6nfSTidrTe6ERRacPEd3/qINSfI+K4+lWQanyBl
-         FZ2A==
-X-Forwarded-Encrypted: i=1; AFNElJ+d4NqhdvBM4kJk/Zx6rIfcvxvBMSlFisK+tAk/NLYF4+Mi2/Co0eVtPgpo5yRXiE8S6jaR0Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwS3j5vGOiEGKPVsFZOGPYvBswSj/zrARKA8rD3oL5KO9ypfG+X
-	zFA07LkxIhCafoJjnCOVSHX/xI7vZLEJCvYQcysS3OZdICrzMBKy2EvJ6oJqvWsJ3kJWB6RVklG
-	fIJzTyvL+1exqP+KbJv68nXDwM4pUUPO1vgcrT+vN2g==
-X-Gm-Gg: Acq92OEqoJhDB2kGrS3WYVeIPrig8NVmCO+RVOJHNrQsJu6SLn6hhk0UP/JM77EShR1
-	bA692uVmBRSES5uIGdzLd4KFUsv0b5l9b5CNBgmZ51zCQ0q/wIm3j72QkCmbty64pkhtnh+qL0L
-	/QghEuWk3+YGBYd1ZnuQq1ROBgai5AeyQZMoHUpeCiKA0KHZ0+JvLlfCA9muyk5jBoqPB/cLczH
-	Y8btCsjjQX79KTWktL3LDonf+/acCi49hNF9o0ohZAxFLRpqclh6Zw6D/W6QHWYQXPHe/LqudMz
-	Y0lJ+EZg
-X-Received: by 2002:ac2:4564:0:b0:5ad:a04:e62a with SMTP id
- 2adb3069b0e04-5ad2db7b41bmr2549151e87.33.1781529714093; Mon, 15 Jun 2026
- 06:21:54 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1781529790; x=1782134590;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:references
+         :mime-version:in-reply-to:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=RracDr99YGEkyuEzsb2CCcrm9Kwzatx7RzWk7uryVJU=;
+        b=cWtWg+WkAgwPvUSDCFOiluuB1ngeXuPchLKi9OHTaq15s/xRWBJk4c5BdGlk3ypN57
+         0lmT7LemQfZQwzN5jftrawSF4PLBZZd2a6oq38dVZBPJNe2ZQq1q0FTGTFIGQNTuLGWj
+         xtZ4H7U0JbdFt5Kbt5jBwJnSx9xRk2TlUQio+h55ipK14ui5pdYkeZ4fACwbpsYYNQvB
+         Z03419wDpzL43aIdtOLBYPJ/n0qFQKq4aY9ND8t9SMHRNK7QYAtJKJJZY06vb5UG4CRQ
+         Au4IDFLMJ2h02u/3I+CB4ZXrlh03kWf0MfQeZoY8ad1rUIC/eZvNWQpF6AyGbKIFQhrU
+         Ycig==
+X-Forwarded-Encrypted: i=1; AFNElJ/zbYa2nvEPvjuMMUTbseKBOToAgOcLFNc+2yapnr6YtGpS3cvy+wl4SJT4yM1sufDUy12D/A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxUIINwp8u5/DCnMBagI58rP/V91kmXHjq9AwL5v3vh7tNxJhz8
+	Nv/f1fvXxODv9ki5CTPn2snBhaVEjQ+LX+kBehx9VDmTIC/FwB6NpolH2iqBIEZQ0T/vgjSvI41
+	j0LtA67pK8orDAfS+dR93FJ8MZyDRlXLlyDMsqAUygQ==
+X-Gm-Gg: Acq92OF4FyaJcXM3kJBmgFxbVfv+AtY3GY3okcwmPF/s2UoL4tlVzst0zx5hGNp8MYG
+	DTrLlW5+qZ8fnQyG9jOKfahBbhhYAJ2DhgiAaAJPVm1fwBqkbo8TRVfX87hEs/xpTvy06Kd2+tl
+	p4casZwPKRSYZwE8NVmpBXvH+CvAZCwshBoBSG5pYXabs01JOl3spOM0e/0ZqFEv1ly+r07hoyu
+	V7gVrWUBlJA04snt7txpxSK8oFXuOMF/sYm758DXFZcnZxo3DZkpqGipFI7hkHcYXaUdu+sfuPB
+	zAwo78s=
+X-Received: by 2002:a05:6512:230e:b0:5ad:3035:b350 with SMTP id
+ 2adb3069b0e04-5ad3035b3eamr3410309e87.50.1781529789846; Mon, 15 Jun 2026
+ 06:23:09 -0700 (PDT)
 Received: from 44278815321 named unknown by gmailapi.google.com with HTTPREST;
- Mon, 15 Jun 2026 06:21:52 -0700
+ Mon, 15 Jun 2026 06:23:08 -0700
 Received: from 44278815321 named unknown by gmailapi.google.com with HTTPREST;
- Mon, 15 Jun 2026 06:21:52 -0700
-References: <20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com> <20260615105959.136698e8@pumpkin>
-In-Reply-To: <20260615105959.136698e8@pumpkin>
+ Mon, 15 Jun 2026 06:23:07 -0700
 From: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
+In-Reply-To: <20260615123821.373248-1-guoren@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
-Date: Mon, 15 Jun 2026 06:21:52 -0700
-X-Gm-Features: AVVi8CemA-VQ3ru42sjMqAtJHBnInWyFz3gCO42JMupJXaZSETmNLhovgshvRdY
-Message-ID: <CACnXVndGA+A1Uu1qZ0=AaEuJGrNQZx6iiuRWgLYAZpirE=UfNQ@mail.gmail.com>
+References: <20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com> <20260615123821.373248-1-guoren@kernel.org>
+Date: Mon, 15 Jun 2026 06:23:07 -0700
+X-Gm-Features: AVVi8CcvQzFdtR3DKRmDScb4fYB6iqDRAptHcEOI7gqPhYIkL0fqhV5X8bnObgw
+Message-ID: <CACnXVnd-DsP2XGrnDFjuZmm4NOpZ0Hd+5BLpoCsDTTtmuFZHMg@mail.gmail.com>
 Subject: Re: [External] Re: [PATCH v1] iommu/riscv: Support 32-bit register accesses
-To: David Laight <david.laight.linux@gmail.com>
-Cc: tjeznach <tjeznach@rivosinc.com>, joro <joro@8bytes.org>, will <will@kernel.org>, 
-	"robin.murphy" <robin.murphy@arm.com>, pjw <pjw@kernel.org>, palmer <palmer@dabbelt.com>, 
-	aou <aou@eecs.berkeley.edu>, alex <alex@ghiti.fr>, iommu <iommu@lists.linux.dev>, 
-	linux-riscv <linux-riscv@lists.infradead.org>, 
-	linux-kernel <linux-kernel@vger.kernel.org>, Xu Lu <luxu.kernel@bytedance.com>, 
-	cuiyunhui@bytedance.com, yuanzhu@bytedance.com, 
-	"guoren@kernel.org" <guoren@kernel.org>
+To: Guo Ren <guoren@kernel.org>
+Cc: alex@ghiti.fr, aou@eecs.berkeley.edu, cuiyunhui@bytedance.com, 
+	iommu@lists.linux.dev, joro@8bytes.org, linux-kernel@vger.kernel.org, 
+	linux-riscv@lists.infradead.org, luxu.kernel@bytedance.com, 
+	palmer@dabbelt.com, pjw@kernel.org, robin.murphy@arm.com, 
+	tjeznach@rivosinc.com, will@kernel.org, yuanzhu@bytedance.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi David,
+Hi Guo Ren,
 
-Thanks, I agree with your point about the lock and the relaxed accessors.
+Thanks for the pointer, and sorry that I missed the earlier discussion.
 
-Guo Ren also pointed me to the earlier discussion on this topic, and I thin=
-k the
-right next step is to align with that thread rather than continue this sepa=
-rate
-Kconfig-based patch.
+I agree with your concerns. The lock in my v1 is not the right approach, an=
+d
+David also pointed out the same issue. More importantly, after reading your
+comments, I agree that this should not be handled as a separate Kconfig-sel=
+ected
+path.
 
-So I will drop this patch.
+If the RISC-V IOMMU specification allows 64-bit registers to be accessed wi=
+th
+32-bit MMIO operations, then a generic kernel should be able to support tha=
+t
+without requiring a platform-specific build-time option. So I will drop my =
+v1
+and will not continue this separate patch.
 
-Thanks,
+I will take a closer look at your earlier proposal and the previous discuss=
+ion.
+If the preferred direction is to make 32-bit register accesses part of the
+driver's common register access model, I am happy to help test, review, or
+rework patches in that direction.
+
+Best Regards,
 Zhanpeng
 
-> From: "David Laight"<david.laight.linux@gmail.com>
-> Date:=C2=A0 Mon, Jun 15, 2026, 18:00
+> From: "Guo Ren"<guoren@kernel.org>
+> Date:=C2=A0 Mon, Jun 15, 2026, 20:38
 > Subject:=C2=A0 [External] Re: [PATCH v1] iommu/riscv: Support 32-bit regi=
 ster accesses
-> To: "Zhanpeng Zhang"<zhangzhanpeng.jasper@bytedance.com>
-> Cc: "Tomasz Jeznach"<tjeznach@rivosinc.com>, "Joerg Roedel"<joro@8bytes.o=
-rg>, "Will Deacon"<will@kernel.org>, "Robin Murphy"<robin.murphy@arm.com>, =
-"Paul Walmsley"<pjw@kernel.org>, "Palmer Dabbelt"<palmer@dabbelt.com>, "Alb=
-ert Ou"<aou@eecs.berkeley.edu>, "Alexandre Ghiti"<alex@ghiti.fr>, <iommu@li=
-sts.linux.dev>, <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kerne=
-l.org>, "Xu Lu"<luxu.kernel@bytedance.com>, <cuiyunhui@bytedance.com>, <yua=
-nzhu@bytedance.com>
-> On Mon, 15 Jun 2026 14:48:55 +0800
-> Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com> wrote:
+> To: <zhangzhanpeng.jasper@bytedance.com>
+> Cc: <alex@ghiti.fr>, <aou@eecs.berkeley.edu>, <cuiyunhui@bytedance.com>, =
+<iommu@lists.linux.dev>, <joro@8bytes.org>, <linux-kernel@vger.kernel.org>,=
+ <linux-riscv@lists.infradead.org>, <luxu.kernel@bytedance.com>, <palmer@da=
+bbelt.com>, <pjw@kernel.org>, <robin.murphy@arm.com>, <tjeznach@rivosinc.co=
+m>, <will@kernel.org>, <yuanzhu@bytedance.com>
+> Hi Zhanpeng Zhang,
+>
+> I noticed you posted a similar fix recently. However, I had already
+> submitted a similar solution back in September 2025 [1]. It would be
+> great if you could review it. A few concerns with the current patch:
+>
+> 1. Using spin_lock_irqsave in such a small semantic structure is
+> unnecessary. IRQ protection should be provided by the higher-level
+> IOMMU driver interfaces. Many existing call sites already handle IRQ
+> disabling, so adding it here feels redundant and adds avoidable
+> overhead.
+>
+> 2. More critically, the RISCV_IOMMU_32BIT_ACCESS Kconfig option is
+> problematic. According to the RISC-V IOMMU specification (Software
+> Guidelines, =E2=80=9CReading and writing IOMMU registers=E2=80=9D):
+>
+> > Registers that are 64-bit wide may be accessed using either a 32-bit
+> > or a 64-bit access.
+>
+> This clearly requires that any hardware supporting 64-bit MMIO access
+> must also support 32-bit MMIO access. Therefore, the IOMMU driver should
+> be built on a 32-bit access base for maximum hardware compatibility.
+>
+> 3. Only performance-monitoring counters require 64-bit IO access or the
+> high-low-high do-while retry strategy. For ordinary status and control
+> MMIO registers, a single read is sufficient.
+>
+> 4. Introducing a compile-time Kconfig that forces 32-bit splitting (or
+> 64-bit access) across the entire driver is unnecessary for the vast
+> majority of registers and would prevent a single kernel Image (or .ko)
+> from working across all compliant platforms.
+>
+> I believe the correct approach is to keep the driver on a 32-bit access
+> foundation (as required by the spec) and apply special 64-bit or
+> high-low-high handling only to performance-monitoring counters when
+> justified by data. This preserves broad hardware support without
+> unnecessary complexity.
+>
+> What do you think? I=E2=80=99m happy to discuss or collaborate on a clean=
+er
+> solution based on the earlier patch [1].
+>
+> [1]: https://lore.kernel.org/linux-riscv/20250903144217.837448-1-guoren@k=
+ernel.org/
+>
+> Best Regards
+> =C2=A0 GUO Ren
 >
 > > Some RISC-V IOMMU implementations cannot perform 64-bit MMIO accesses
 > > to the IOMMU register file. The RISC-V IOMMU architecture allows 64-bit
@@ -281,16 +335,6 @@ elaxed(addr);
 of(u32)));
 > > + =C2=A0 =C2=A0 =C2=A0 =C2=A0raw_spin_unlock_irqrestore(&riscv_iommu_32=
 bit_access_lock, flags);
->
-> Why the lock and the loop?
-> If you need the loop (for places where the hardware might be changing
-> both words?) then there is no need to read 'hi' twice when you loop.
->
-> But does it make any sense to be reading the value either while the hardw=
-are
-> is updating it (does that happen?) or concurrently with a write.
->
->
 > > +
 > > + =C2=A0 =C2=A0 =C2=A0 =C2=A0return ((u64)hi << 32) | (u64)lo;
 > > +}
@@ -307,19 +351,6 @@ sizeof(u32));
 > > + =C2=A0 =C2=A0 =C2=A0 =C2=A0writel_relaxed((u32)value, addr);
 > > + =C2=A0 =C2=A0 =C2=A0 =C2=A0raw_spin_unlock_irqrestore(&riscv_iommu_32=
 bit_access_lock, flags);
->
-> What are you actually locking against?
-> I'm pretty sure it doesn't make any sense for two cpu to be writing to th=
-e
-> same entry at the same time.
->
-> Can't the writel_relaxed() be re-ordered, so you aren't guaranteeing they=
-'ll
-> be done high-low.
-> Same with the reads.
->
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 David
->
 > > +}
 > > +
 > > +#define riscv_iommu_readq(iommu, addr) \
@@ -339,4 +370,6 @@ axed, (iommu)->reg + (addr), \
 > > +#endif /* CONFIG_RISCV_IOMMU_32BIT_ACCESS */
 > >
 > > =C2=A0#endif
+> > --
+> > 2.50.1 (Apple Git-155)
 >
