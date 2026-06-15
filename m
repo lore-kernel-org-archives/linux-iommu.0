@@ -1,363 +1,179 @@
-Received: from mail-pg1-f202.google.com (mail-pg1-f202.google.com [209.85.215.202])
+Received: from mail-pg1-f195.google.com (mail-pg1-f195.google.com [209.85.215.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B558391855
-	for <iommu@lists.linux.dev>; Sun, 14 Jun 2026 23:37:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 743681D89F4
+	for <iommu@lists.linux.dev>; Mon, 15 Jun 2026 03:33:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781480268; cv=none; b=fwM4nunt7LrZO3lr+EDn9NK8mdKsa7KJMfF3tC8qesv/zhJbRAfXxlwu0zFfMDeN2LViZsA1RzyKkG7ptQM53KaPe/UFkbroJ4SdReivgubIwfd8k/4VAOBU5/o3WXssxg3DM2qosZGoUcH3tnXhkd0lY0ak6lUGLNeTlpDq8G0=
+	t=1781494442; cv=none; b=g877nFHE6o0F+Md+5yS6sdrj+jYWJqKN2/Wqkh1cj6Fegz5gIyW+GGTll2k/RRNUNu2Wn427nHanhTrw3KAQAGgVveTc0p7fHoXEcgxm9WL/t7b64SC3ytFVgWorhnz5RMBD7SfD18+6EMfUfjpJRbAp4utBmE3dmeS1RWCYPt8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781480268; c=relaxed/simple;
-	bh=5hUu3KFhkP7DvZBYB/hUfHcBgF16R1LS/gWFonG+v/w=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=Y9cK1Qx+Qp+fsm7qWt+GeO5CCxWszIVq3QFI68tmgbpKmJqihvzBsDFxtcePKez1lcVdAzK7/PL1MiGP35LtUtIhsvsXmiFn2BgEWTnjT7lxnNVxUh1acmPa/fFAysYmzI+nyrRCEWR4dh3p5MiiLRlLK6RvIeSm5ePZJj40PAs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=KjIG72DC; arc=none smtp.client-ip=209.85.215.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com
+	s=arc-20240116; t=1781494442; c=relaxed/simple;
+	bh=7CYnTAuVR8rZg2/zzNHVJX1whHtFmlFtEUUksdZQ1Ds=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=fXgEGmYEaP1/7QFHmphdu5Dtc/CFGOYJ7eil6D4EpWIB4xbW4Z/73AEUUJKp6ZnfDStkWyPseDanVfcz4ZxctetICbRP1Fio/mxMalcqM5nvT3dTlmUVU1+sTghxP13W9b+SWBU3cdpozAz/3/WHiztxx61ssSjlP2uIUkFTueE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EUxMefHb; arc=none smtp.client-ip=209.85.215.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="KjIG72DC"
-Received: by mail-pg1-f202.google.com with SMTP id 41be03b00d2f7-c85a2c129b3so1235269a12.1
-        for <iommu@lists.linux.dev>; Sun, 14 Jun 2026 16:37:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EUxMefHb"
+Received: by mail-pg1-f195.google.com with SMTP id 41be03b00d2f7-c85a2c012e5so790661a12.1
+        for <iommu@lists.linux.dev>; Sun, 14 Jun 2026 20:33:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1781480265; x=1782085065; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=grb6HHhPIzmf1hx+hSMc1RRJd40fP6fG+oOQ9Pagjsg=;
-        b=KjIG72DCV+5hwdvQOYYvQBGrWx99i9RbqyDlX2H6sTZJBSfvFPFWOquoEJ6f8pkCqm
-         PrRZUEViqT9xgDYolyfHH0nKLXCc+bf8ay+Bd6KDGvwR+mTo8iAyhf5lnR/bIcpYaNkG
-         57ZVJcmNAx5LVNZjTeV1DnkPfyukgWgS/vQRAqy+UiCHN+HNGgUF/yaln0PCPVR1X193
-         Rn9aYAoDhfqsgf+fGmaFXhMMYXipssNa7v1zVm5wES9qXTBw+EUA32ySQ7bxWU3epgpf
-         rJm0RUI+iRvm5JcU8iv3RSJMNruDYU5BwR9TLYlQquVAMSF5m7JzV+sCxT9PkSKa8FPa
-         iT8w==
+        d=gmail.com; s=20251104; t=1781494437; x=1782099237; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=4N4VN4U8dWKYBPdGLpmGB0dN8xMC6v/gON67oih3Zak=;
+        b=EUxMefHb88YeHHJLQbFK/XWA2Zlr9+OZ80tCZ9VBX6bn/kymlBDVhbYNnoHd+pWtUD
+         vBCa96GX3H0yH/LTRxJVPmLMtk5XhMtdQJGUzzr75x8V93qUBOalSlGyqVxcDwt2Q0Io
+         blXJY6QVdV0hT1RaTyOBTiQSyMw9x6bATQeFH6YRW/hm6aXEFiZ8tQ5dToyun7uO3V9Z
+         Gpg1pE2hjZ++HD65e8FoHlC0Z8PzUf45wyDP6qlU3Uoc33swrvEAVCe/DuuUWI8Upk23
+         u07ETmhE+2a0pdL4XuB99c/8YZnyFGYyoRMIhIbEgM8GBnBRYSmxONojA8bvBa0QKOrh
+         hbVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781480265; x=1782085065;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=grb6HHhPIzmf1hx+hSMc1RRJd40fP6fG+oOQ9Pagjsg=;
-        b=GvksDKX9mBD/HxW8tUCHpXqbCO4orkYZTtIZLnmwa8o5yYACPJbgj3cbFTmMaLDaXP
-         VxtEcQ+gU9dEL2paSFDutrWGi/Fv1YXkd6n9aDTlsyZKo+Ymabj3IGgjzaoqgRJOcT7F
-         B/rWu8V53OEQRUpXlXQg4mX3EwvXTwrcwYdpxU/1GkZQx/PlL8RXEQ65mOD3rWbaaQym
-         klNX0oThvKtYz/1Gqrmj3umN1yjCdORz56z8dkQxC2rvnIrNiMBAj5tbA6R7s86KcPGX
-         GryGFSia/hu6Zi+fd37PWYlyR67wY6eDuuS/9+Xnaxo9dbtkCh80lSGxZQjNin9b/JjA
-         NeLQ==
-X-Forwarded-Encrypted: i=1; AFNElJ8ZQaDyaCUtdNbw2SQrseXyXW36WXZTRKXYgHsndO7D6x2wFUMT8ZRLUeGGpVPJxAhUQWyndw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx9eTIwLXyxEoeLDK2EcMJuOO3kZSlMoZZcx8gUbmIfJvt073GY
-	+wJi+tBs0hmycaSIz5qZajuq8eMcosfKXnjM/aqhb2foAUzjBYV6vDLXi8V4tbb3OoLdM7kE5+M
-	KTUegUNGQXv3+Eg==
-X-Received: from pgac18.prod.google.com ([2002:a05:6a02:2952:b0:c79:8315:4734])
- (user=skhawaja job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6a21:3208:b0:3b4:8f2c:6805 with SMTP id adf61e73a8af0-3b784075d7fmr12502192637.42.1781480264518;
- Sun, 14 Jun 2026 16:37:44 -0700 (PDT)
-Date: Sun, 14 Jun 2026 23:37:28 +0000
-In-Reply-To: <20260614233728.2212104-1-skhawaja@google.com>
+        d=1e100.net; s=20251104; t=1781494437; x=1782099237;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=4N4VN4U8dWKYBPdGLpmGB0dN8xMC6v/gON67oih3Zak=;
+        b=PuDzaRl8iYkH3Mun2wjRgvq/rUb041AI0y1C3kb/9QSYE3XvB8W+rbYxYnPfTlRcSG
+         zRIZqJ2OIBSGQOwiHmH3jPtjLd4QLfmO74+vyOLyQ8mkZ9zDyVG9n/Qvswev3uImmy1r
+         9doTNgoj1+iXZ+Cw76Zy//vItDVGfYfBSn6PXiRrb7cS+0HceDwCHyarVMWRC1Ax5T5R
+         PZCC7aqHix9r46LH/R/+lz3F1ZetoeVi4lhKyvhFCAXcck0Z41s+b/sgzprbIRp2c/Tf
+         4e5IJXifpCvj+gFxFsZ5Wc9MCYRD3L0PqR/CRxMH+oNdeO3hvVF9WTzSHaOEkX1IA2je
+         g02w==
+X-Forwarded-Encrypted: i=1; AFNElJ864bJ+uvg7TXARP12cETxdtKjS0eysR8sKjvsRmss88TCV1UxBj7LukAnJB6HbdqtLnG09AA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyGoiByYgB3fEBvnsXQddeL79Exk5qN+05VJHG8BUPJvotxLTkJ
+	m83bNXfcSjQSf3Sd5Wl5Kkr5Fj6LAUgz6Q4TC1jnh2aLUxxASQwHvChO
+X-Gm-Gg: Acq92OGjoK6dmmPhoP8CGAdAXDTSTJxn/fax0KtPq+2sV7t6JLGk2iBbj6lpR4SryXK
+	v9BCo0uXZqUk+zgxedPbvDjFnq0XUUJhl8LZl4raTP3zI3LPQ8k8zFlQ/ItzzNZOvltJ2OSfQlJ
+	+MuGhnZH0nik3aNAUZaU59QSiZYb7oHEVIitUbU0Hl8suuhxWK97JRxUGjTbzH8mW+z79EsQeZ7
+	udVXEVzT5dh243Ay9MsH+pTra4PUDXM8W+UGadiI83YDTDBZRDC61FUnQiD2eJaQDhIKXuoA3DR
+	PrV6/XAWvOoy172wN5tUpzziKwMzfZ1rSutc0e4965IpSEStveecDHliztlP4x4drfIO17fyI1z
+	NWe2NeKB569qG4cqo6PBz03gqWB11Fc3zQecIn+HxzqiNdqQRPb+qLR5Xuw80+Ng5f9OZZRekaa
+	tWz0wqdRsB/KneGTGZCb4thqWNOvuh9Gb2H3N6jaWn4w==
+X-Received: by 2002:a05:6a21:6813:b0:3a2:d629:16a2 with SMTP id adf61e73a8af0-3b783b757e9mr14493609637.10.1781494436758;
+        Sun, 14 Jun 2026 20:33:56 -0700 (PDT)
+Received: from [10.125.112.20] ([210.184.73.204])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8434b035ce6sm8650381b3a.49.2026.06.14.20.33.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 14 Jun 2026 20:33:56 -0700 (PDT)
+Message-ID: <894d7c33-8e14-4ba5-b774-14062ece39f2@gmail.com>
+Date: Mon, 15 Jun 2026 11:33:34 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20260614233728.2212104-1-skhawaja@google.com>
-X-Mailer: git-send-email 2.54.0.1136.gdb2ca164c4-goog
-Message-ID: <20260614233728.2212104-19-skhawaja@google.com>
-Subject: [PATCH v3 18/18] iommufd/selftest: Add test to verify iommufd preservation
-From: Samiullah Khawaja <skhawaja@google.com>
-To: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Samiullah Khawaja <skhawaja@google.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, 
-	Pratyush Yadav <pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	David Matlack <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
-	Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 05/11] of: reserved_mem: split
+ alloc_reserved_mem_array() from fdt_scan_reserved_mem_late()
+To: Rob Herring <robh@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ loongarch@lists.linux.dev, linux-riscv@lists.infradead.org,
+ devicetree@vger.kernel.org, kexec@lists.infradead.org,
+ iommu@lists.linux.dev, zhaomeijing@lixiang.com, catalin.marinas@arm.com,
+ will@kernel.org, chenhuacai@kernel.org, kernel@xen0n.name, pjw@kernel.org,
+ palmer@dabbelt.com, aou@eecs.berkeley.edu, alex@ghiti.fr,
+ saravanak@kernel.org, akpm@linux-foundation.org, bhe@redhat.com,
+ rppt@kernel.org, pasha.tatashin@soleen.com, pratyush@kernel.org,
+ ruirui.yang@linux.dev, m.szyprowski@samsung.com, robin.murphy@arm.com,
+ quic_obabatun@quicinc.com
+References: <20260527032917.3385849-1-chenwandun1@gmail.com>
+ <20260527032917.3385849-6-chenwandun1@gmail.com>
+ <20260612144122.GA974326-robh@kernel.org>
+Content-Language: en-US
+From: Wandun <chenwandun1@gmail.com>
+In-Reply-To: <20260612144122.GA974326-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Test iommufd preservation by setting up an iommufd and vfio cdev and
-preserve it across live update. Test takes VFIO cdev path of a device
-bound to vfio-pci driver and binds it to an iommufd being preserved. It
-also preserves the vfio cdev so the iommufd state associated with it is
-also preserved.
 
-The restore path is tested by restoring the preserved vfio cdev only. On
-restore, test verifies that the bind with a new iommufd fails as the
-device is attached to the restored IOMMU domain. Also the LUO session
-finish fails as the preserved iommufd is not restored.
 
-Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
-Signed-off-by: YiFei Zhu <zhuyifei@google.com>
----
- tools/testing/selftests/iommu/Makefile        |  12 +
- .../iommu/iommufd_liveupdate_kexec_test.c     | 241 ++++++++++++++++++
- 2 files changed, 253 insertions(+)
- create mode 100644 tools/testing/selftests/iommu/iommufd_liveupdate_kexec_test.c
+On 6/12/26 22:41, Rob Herring wrote:
+> On Wed, May 27, 2026 at 11:29:11AM +0800, Wandun Chen wrote:
+>> From: Wandun Chen <chenwandun@lixiang.com>
+>>
+>> Prepare for storing /memreserve/ entries in the reserved_mem array.
+>> alloc_reserved_mem_array is skipped if the device tree lacks a
+>> /reserved-memory node, pointer 'reserved_mem' continues to reference
+>> the reserved_mem_array which lives in __initdata, storing
+>> /memreserve/ entries into reserved_mem_array would result in metadata
+>> loss, and an out-of-bounds memory access will occur if the device
+>> tree contains more than MAX_RESERVED_REGIONS /memreserve/ entries.
+>>
+>> So split alloc_reserved_mem_array() from fdt_scan_reserved_mem_late(),
+>> and call alloc_reserved_mem_array() whether or not there is a
+>> /reserved-memory node.
+>>
+>> No functional change.
+>> The actual /memreserve/ population is added in a follow-up patch.
+>>
+>> Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
+>> ---
+>>  drivers/of/fdt.c             | 7 +++++--
+>>  drivers/of/of_private.h      | 1 +
+>>  drivers/of/of_reserved_mem.c | 6 +-----
+>>  3 files changed, 7 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+>> index 82f7327c59ea..83a2a474831e 100644
+>> --- a/drivers/of/fdt.c
+>> +++ b/drivers/of/fdt.c
+>> @@ -1284,8 +1284,11 @@ void __init unflatten_device_tree(void)
+>>  {
+>>  	void *fdt = initial_boot_params;
+>>  
+>> -	/* Save the statically-placed regions in the reserved_mem array */
+>> -	fdt_scan_reserved_mem_late();
+>> +	/* Attempt dynamic allocation of a new reserved_mem array */
+>> +	if (fdt && alloc_reserved_mem_array()) {
+>> +		/* Save the statically-placed regions in the reserved_mem array */
+>> +		fdt_scan_reserved_mem_late();
+> 
+> Can we make this just:
+> 
+> alloc_reserved_mem_array();
+> fdt_scan_reserved_mem_late();
+> 
+> We already check !fdt in fdt_scan_reserved_mem_late().
 
-diff --git a/tools/testing/selftests/iommu/Makefile b/tools/testing/selftests/iommu/Makefile
-index 84abeb2f0949..ab35e8b21580 100644
---- a/tools/testing/selftests/iommu/Makefile
-+++ b/tools/testing/selftests/iommu/Makefile
-@@ -7,4 +7,16 @@ TEST_GEN_PROGS :=
- TEST_GEN_PROGS += iommufd
- TEST_GEN_PROGS += iommufd_fail_nth
- 
-+TEST_GEN_PROGS_EXTENDED += iommufd_liveupdate_kexec_test
-+
- include ../lib.mk
-+include ../liveupdate/lib/libliveupdate.mk
-+
-+CFLAGS += -I$(top_srcdir)/tools/include
-+CFLAGS += -MD
-+CFLAGS += $(EXTRA_CFLAGS)
-+
-+$(TEST_GEN_PROGS_EXTENDED): %: %.o $(LIBLIVEUPDATE_O)
-+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH) $< $(LIBLIVEUPDATE_O) $(LDLIBS) -o $@
-+
-+EXTRA_CLEAN += $(LIBLIVEUPDATE_O)
-diff --git a/tools/testing/selftests/iommu/iommufd_liveupdate_kexec_test.c b/tools/testing/selftests/iommu/iommufd_liveupdate_kexec_test.c
-new file mode 100644
-index 000000000000..26c7e15b6187
---- /dev/null
-+++ b/tools/testing/selftests/iommu/iommufd_liveupdate_kexec_test.c
-@@ -0,0 +1,241 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+/*
-+ * Copyright (c) 2026, Google LLC.
-+ * Samiullah Khawaja <skhawaja@google.com>
-+ */
-+
-+#include <fcntl.h>
-+#include <sys/ioctl.h>
-+#include <sys/mman.h>
-+#include <stdbool.h>
-+#include <unistd.h>
-+#include <limits.h>
-+
-+#define __EXPORTED_HEADERS__
-+#include <linux/iommufd.h>
-+#include <linux/types.h>
-+#include <linux/vfio.h>
-+#include <linux/sizes.h>
-+#include <libliveupdate.h>
-+
-+#include "../kselftest.h"
-+
-+#define ksft_assert(condition) \
-+	do { \
-+		if (!(condition)) \
-+			fail_exit("Failed: %s", #condition); \
-+	} while (0)
-+
-+static const char *device_cdev_path;
-+static char state_session[LIVEUPDATE_SESSION_NAME_LENGTH];
-+static char iommufd_session[LIVEUPDATE_SESSION_NAME_LENGTH];
-+
-+static const uint64_t STATE_TOKEN;
-+static const uint64_t IOMMUFD_TOKEN = 0x123456;
-+static const uint64_t CDEV_TOKEN = 0x654321;
-+static const uint64_t HWPT_TOKEN = 0x789012;
-+static const uint64_t MEMFD_TOKEN = 0x890123;
-+
-+static int open_cdev(const char *vfio_cdev_path)
-+{
-+	int cdev_fd;
-+
-+	cdev_fd = open(vfio_cdev_path, O_RDWR);
-+	if (cdev_fd < 0)
-+		ksft_exit_skip("Failed to open VFIO cdev: %s\n", vfio_cdev_path);
-+
-+	return cdev_fd;
-+}
-+
-+static int open_iommufd(void)
-+{
-+	int iommufd;
-+
-+	iommufd = open("/dev/iommu", O_RDWR);
-+	if (iommufd < 0)
-+		ksft_exit_skip("Failed to open /dev/iommu. IOMMUFD support not enabled.\n");
-+
-+	return iommufd;
-+}
-+
-+static int create_sealed_memfd(size_t size)
-+{
-+	int fd, ret;
-+
-+	fd = memfd_create("buffer", MFD_ALLOW_SEALING);
-+	if (fd < 0)
-+		fail_exit("memfd_create failed");
-+
-+	ret = ftruncate(fd, size);
-+	if (ret)
-+		fail_exit("ftruncate failed");
-+
-+	ret = fcntl(fd, F_ADD_SEALS, F_SEAL_GROW | F_SEAL_SHRINK | F_SEAL_SEAL);
-+	if (ret)
-+		fail_exit("fcntl F_ADD_SEALS failed");
-+
-+	return fd;
-+}
-+
-+#define test_ioctl(fd, cmd, arg) \
-+	do { \
-+		if (ioctl(fd, cmd, arg)) \
-+			fail_exit("ioctl(%s) failed", #cmd); \
-+	} while (0)
-+
-+#define test_luo_session_preserve_fd(session, fd, token) \
-+	do { \
-+		if (luo_session_preserve_fd(session, fd, token)) \
-+			fail_exit("luo_session_preserve_fd(%s) failed", #token); \
-+	} while (0)
-+
-+#define test_luo_session_retrieve_fd(session, token) \
-+	({ \
-+		int _fd = luo_session_retrieve_fd(session, token); \
-+		if (_fd < 0) \
-+			fail_exit("luo_session_retrieve_fd(%s) failed", #token); \
-+		_fd; \
-+	})
-+
-+static void setup_iommufd(int iommufd, int memfd, int cdev_fd)
-+{
-+	struct vfio_device_bind_iommufd bind = {
-+		.argsz = sizeof(bind),
-+		.flags = 0,
-+		.iommufd = iommufd,
-+	};
-+	struct iommu_ioas_alloc alloc_data = {
-+		.size = sizeof(alloc_data),
-+		.flags = 0,
-+	};
-+	struct iommu_hwpt_alloc hwpt_alloc = {
-+		.size = sizeof(hwpt_alloc),
-+		.flags = 0,
-+	};
-+	struct vfio_device_attach_iommufd_pt attach_data = {
-+		.argsz = sizeof(attach_data),
-+		.flags = 0,
-+	};
-+	struct iommu_hwpt_liveupdate_mark_preserve mark_preserve = {
-+		.size = sizeof(mark_preserve),
-+		.hwpt_token = HWPT_TOKEN,
-+	};
-+	struct iommu_ioas_map_file map_file = {
-+		.size = sizeof(map_file),
-+		.length = SZ_1M,
-+		.flags = IOMMU_IOAS_MAP_WRITEABLE |
-+				IOMMU_IOAS_MAP_READABLE |
-+				IOMMU_IOAS_MAP_FIXED_IOVA,
-+		.iova = SZ_4G,
-+		.fd = memfd,
-+		.start = 0,
-+	};
-+
-+	test_ioctl(cdev_fd, VFIO_DEVICE_BIND_IOMMUFD, &bind);
-+
-+	test_ioctl(iommufd, IOMMU_IOAS_ALLOC, &alloc_data);
-+
-+	hwpt_alloc.dev_id = bind.out_devid;
-+	hwpt_alloc.pt_id = alloc_data.out_ioas_id;
-+	test_ioctl(iommufd, IOMMU_HWPT_ALLOC, &hwpt_alloc);
-+
-+	attach_data.pt_id = hwpt_alloc.out_hwpt_id;
-+	test_ioctl(cdev_fd, VFIO_DEVICE_ATTACH_IOMMUFD_PT, &attach_data);
-+
-+	map_file.ioas_id = alloc_data.out_ioas_id;
-+	test_ioctl(iommufd, IOMMU_IOAS_MAP_FILE, &map_file);
-+
-+	mark_preserve.hwpt_id = attach_data.pt_id;
-+	test_ioctl(iommufd, IOMMU_HWPT_LIVEUPDATE_MARK_PRESERVE, &mark_preserve);
-+}
-+
-+static void before_kexec(int luo_fd)
-+{
-+	int iommufd, cdev_fd, memfd, session;
-+
-+	create_state_file(luo_fd, state_session, STATE_TOKEN, /*next_stage=*/2);
-+
-+	session = luo_create_session(luo_fd, iommufd_session);
-+	if (session < 0)
-+		fail_exit("luo_create_session failed");
-+
-+	iommufd = open_iommufd();
-+	memfd = create_sealed_memfd(SZ_1M);
-+	cdev_fd = open_cdev(device_cdev_path);
-+
-+	setup_iommufd(iommufd, memfd, cdev_fd);
-+
-+	/* Cannot preserve cdev without iommufd */
-+	if (!luo_session_preserve_fd(session, cdev_fd, CDEV_TOKEN))
-+		fail_exit("Preserving cdev without iommufd should fail");
-+
-+	/* Cannot preserve iommufd without preserving memfd. */
-+	if (!luo_session_preserve_fd(session, iommufd, IOMMUFD_TOKEN))
-+		fail_exit("Preserving iommufd without memfd should fail");
-+
-+	test_luo_session_preserve_fd(session, memfd, MEMFD_TOKEN);
-+	test_luo_session_preserve_fd(session, iommufd, IOMMUFD_TOKEN);
-+	test_luo_session_preserve_fd(session, cdev_fd, CDEV_TOKEN);
-+
-+	close(session);
-+	session = luo_create_session(luo_fd, iommufd_session);
-+	if (session < 0)
-+		fail_exit("luo_create_session failed");
-+
-+	test_luo_session_preserve_fd(session, memfd, MEMFD_TOKEN);
-+	test_luo_session_preserve_fd(session, iommufd, IOMMUFD_TOKEN);
-+	test_luo_session_preserve_fd(session, cdev_fd, CDEV_TOKEN);
-+
-+	close(luo_fd);
-+	daemonize_and_wait();
-+}
-+
-+static void after_kexec(int luo_fd, int state_session_fd)
-+{
-+	int iommufd, cdev_fd, session, stage;
-+	struct vfio_device_bind_iommufd bind = {
-+		.argsz = sizeof(bind),
-+		.flags = 0,
-+	};
-+
-+	restore_and_read_stage(state_session_fd, STATE_TOKEN, &stage);
-+	ksft_assert(stage == 2);
-+
-+	session = luo_retrieve_session(luo_fd, iommufd_session);
-+	if (session < 0)
-+		fail_exit("luo_retrieve_session failed");
-+
-+	cdev_fd = test_luo_session_retrieve_fd(session, CDEV_TOKEN);
-+
-+	iommufd = luo_session_retrieve_fd(session, IOMMUFD_TOKEN);
-+	if (iommufd >= 0)
-+		fail_exit("iommufd should not be retrievable yet");
-+
-+	iommufd = open_iommufd();
-+
-+	bind.iommufd = iommufd;
-+	if (ioctl(cdev_fd, VFIO_DEVICE_BIND_IOMMUFD, &bind) == 0 || errno != EPERM)
-+		fail_exit("Binding cdev to new iommufd should fail with EPERM");
-+
-+	/* Should fail */
-+	if (luo_session_finish(session) == 0)
-+		fail_exit("luo_session_finish should fail if iommufd is not restored");
-+
-+	close(iommufd);
-+	close(cdev_fd);
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+	if (argc < 2) {
-+		printf("Usage: %s <vfio_cdev_path>\n", argv[0]);
-+		return 1;
-+	}
-+
-+	device_cdev_path = argv[1];
-+	sprintf(iommufd_session, "iommufd-test-%s", "cdev");
-+	sprintf(state_session, "state-%s", "iommufd-cdev");
-+
-+	return luo_test(argc, argv, state_session, before_kexec, after_kexec);
-+}
--- 
-2.54.0.1136.gdb2ca164c4-goog
+Thanks for you review, Rob.
+
+The reason I kept the fdt check is that total_reserved_mem_cnt is wrong
+when fdt is NULL, early_init_fdt_scan_reserved_mem() returns early in
+that case, so fdt_scan_reserved_mem() never runs, and
+total_reserved_mem_cnt stays at MAX_RESERVED_REGIONS. Calling
+alloc_reserved_mem_array() unconditionally would allocate unnecessarily
+memory.
+
+A better fix might be to make total_reserved_mem_cnt always correct, add
+a !fdt check at the top of fdt_scan_reserved_mem() that sets
+total_reserved_mem_cnt to 0, and let early_init_fdt_scan_reserved_mem()
+call it even when initial_boot_params is NULL. Then
+alloc_reserved_mem_array() could naturally skip allcation when that
+count is 0, and we can drop the outer fdt guard.
+
+
+There is still separate UAF issue (fixed in patch3) if we don't check
+the return value of alloc_reserved_mem_array().
+
+
+With the fdt_scan_reserved_mem() fix for total_reserved_mem_cnt, the
+call site in unflatten_device_tree() becomes:
+
+if (alloc_reserved_mem_array()) {
+        fdt_scan_reserved_mem_late();
+}
+
+How does that sound?
+
+
+Best regards,
+Wandun
+
+> 
+> Rob
 
