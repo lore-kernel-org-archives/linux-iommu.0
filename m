@@ -1,151 +1,249 @@
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99D883E3179
-	for <iommu@lists.linux.dev>; Mon, 15 Jun 2026 11:56:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D4F632BF52;
+	Mon, 15 Jun 2026 12:38:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781524599; cv=none; b=XIBq01d2wPgVh4WQYqPvSwaiCI1orxGq+CFsANee4dnV/4b8LeOrBs+NWsrInR+gSWw44rrcoQ3P3QZU2kyb+wblSauu+aN40U9a5wrJ54Fsyd9UIh0dU4WR4YPMKcHgmGYIZgeWd3dRpx1XlrQtOF0e8y3/l841wdlhXUdrso0=
+	t=1781527113; cv=none; b=M0EdoHLOevteRXwxBBoZLpGaEI5KvotR9cYLx+A4OKQz+rSMB679UgGAxoL6/E//BiaD4BxRixjyTro/GPosNxs4NFekzzhlDJEDsofA/la8u2C0ohzcuNqtqb2/evZ9pY/MzmxrD23mIKO1L2KH+KAeMO9qM5e3+ifmqpojpXw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781524599; c=relaxed/simple;
-	bh=yH/SeGpcFCGHDV1706BiW8+nnaI5iZ/9LbVzaKn0iQ8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pMHJ49uwvy/6XOjtE+phruNg8nwyhSZaWtZ5eK9pEem3Y23scIXbuvD4wzDE3UroV5Tl3hrJCC+H124ueTDnw0ObUf3BGsMCMei++IGqWlToVOsrQcxHjCVEqaJYO0JHuI66LzltEZ3c5RQ7JJMfkFa4KF4qU++6b/8M93Koc3I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=kUDU7Jr+; arc=none smtp.client-ip=209.85.160.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1781527113; c=relaxed/simple;
+	bh=tzz0JSf1ZF0tUw8LwKVRiKptKJkeiPYuIws2VpU0R1Q=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=O58x3ndiqzWDXRylBP4VTb2W7rvTieyG1xLBiFMRma4+MMigKwNRxvLWZQqdL4bRyYu0IYMpjMuZcUZuWhS7R38+PfXpfvy62d41GE0VjVCkqQASpuS0VmuVmguQg/PwHODpyFxYmb0MNbb0D9hbrhf+slNtaFmHJ9iDdbLBnVo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=j3BmglUb; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="kUDU7Jr+"
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-5176d4c14f5so25910651cf.0
-        for <iommu@lists.linux.dev>; Mon, 15 Jun 2026 04:56:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1781524596; x=1782129396; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=mvdiJGH6VduHx66JQFq45JNy4dIs0P8Ux+SLclbZRcY=;
-        b=kUDU7Jr+GImYX2CO5f/bR3PZlRR8u6AF22wQoeHfJEZDWXIscu2WBUGqYEwMYChHOs
-         zRPAcwGa0l97GsgsvKI+aTDg4svCQxlN7PXnG4i66frr+E14lpr3Gerioc6+tm0PdqFp
-         I24rgwTFT5FfkyeTN0SrPb+wLKyc4cjo3BLnh2+U3huJKlNY0GCmgx1O+gQoV4n6uKFX
-         cicADAqjL6zwbySdtdoBOC1mlit4q4MNsMcqonaObBiwE4eTJNKXaIx/8cbHb4mjDNgX
-         iZehEtc76qXg5MRTrD9D4OuMrqQ2+WH/PaSBcO19Mr/O721ojF/oR+BmJQATpPnjKEMp
-         Ib1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781524596; x=1782129396;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mvdiJGH6VduHx66JQFq45JNy4dIs0P8Ux+SLclbZRcY=;
-        b=jS/plA6C7UvHNOa/T6/2e2dbGesWTmThavSsjGSVbJpdNFh7Qu+imgJJopqn9k/33u
-         xUM0OgYXYJWgl0Z8cC9JZ2HfLmRCVfT+CKYJKLoUsLC3+OxMHFslr9TcwQIB7EZrY0PV
-         LZU1AFBjy5c9KtdBotOx6XMfDJi6kTHHKxgcJ7j30spqut2QlyABAw00yHP9mlb0zg6d
-         6Wen0amYqR6qUFQoeKU0AoCkEBHK9xsZolA5aaYvYcoPgeW0i/tlxjB72FSHFTBhiPcq
-         M4NhsBSsqFQT8GAj6fRDYv3dPJfQcYzlP8jvjWwfqgoX1hYAlMOq2M+bvG4xjR9STj0V
-         HoCQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9llvFcRbIDGqsFbXA3rw4DtYQKiv8GxRI9lqiZ7ngVhnewDEvMqSRbWkfFM1E/Hz8rkqQx0Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzljzzsQDnHXPrJeQjG5IGV9kuHQL592hLdxHSnQ5FwmcWvl8S4
-	wAckLBJPk/0Th5+7A3j98OuQNkWWlLT39RGkaNzcWoHLmb2FCvK06pbOOg4V55OKBdI=
-X-Gm-Gg: Acq92OEnRT3g4x0cFP1t8dZZkT046hk4s7PRVOKSNXoVo0+2P0JmyhfjUsFORdZOyEs
-	uFPVibjxebtuD5wL/nZSQv2KStXGav+NbTQyWanrt4yJpXf//FU6N19VfiaX7b4603rprR/jFC9
-	GMgN6ZDNIt7+ag05K5iG/OvRqHuffFPfLjdorcyaSc/4IM1YabupUvWEQRy5/zBiUCSLKis685k
-	OTglfAEV2zp/uPks1DZx/6uzreFVSQ00b98RCbH9k83OlAQnNyMODXs/0xRVX3v789ZLF+sYztx
-	RVQs2iOLqkXs1X5/SWWtb7IC9PWTK+x0jX1pnLF2Gn6m4Yj8+K01O2mZAxaMTAQZ669tZprzoqp
-	liZmxgFMoTJMWkIhLPSY3fY0DZvtbuEiMSrg8JgKZIGoblG5XV3nLFkUDAa3rEDaRC+9ulxbhP3
-	7CHcofxsvH3+TFoheUFnOX1io+ro+1HVWoODwaDXB70MmRUpY6BxC2nmPAMCMWDEZB3FaJnPyf/
-	groWA==
-X-Received: by 2002:a05:622a:7d10:b0:50b:526c:541c with SMTP id d75a77b69052e-517fe57de6amr152450211cf.50.1781524596452;
-        Mon, 15 Jun 2026 04:56:36 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-517fb6428a6sm123465161cf.12.2026.06.15.04.56.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Jun 2026 04:56:33 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wZ5vd-0000000DJeM-0SSJ;
-	Mon, 15 Jun 2026 08:56:33 -0300
-Date: Mon, 15 Jun 2026 08:56:33 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Liam R. Howlett" <liam@infradead.org>
-Cc: Rik van Riel <riel@surriel.com>, linux-kernel@vger.kernel.org,
-	kernel-team@meta.com, robin.murphy@arm.com, joro@8bytes.org,
-	will@kernel.org, iommu@lists.linux.dev, kyle@mcmartin.ca,
-	Rik van Riel <riel@meta.com>, maple-tree@lists.infradead.org
-Subject: Re: [PATCH v3 3/3] iova: defer maple tree erase on GFP_ATOMIC failure
-Message-ID: <20260615115633.GQ1066031@ziepe.ca>
-References: <20260603033653.4144138-1-riel@surriel.com>
- <20260603033653.4144138-4-riel@surriel.com>
- <20260609130418.GI2764304@ziepe.ca>
- <61d51d4b5779d80145ceb38e9632a7cc8a79dbec.camel@surriel.com>
- <20260612164852.GL1066031@ziepe.ca>
- <ff5f9e09edbcb9c87feac6af00a1d835c783be4f.camel@surriel.com>
- <20260612180303.GO1066031@ziepe.ca>
- <iv7sxqezzz42xieytbf3lskutricz7ltkr3wii3w4jbnbzto7f@2tz5hwa43l37>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="j3BmglUb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28BF01F000E9;
+	Mon, 15 Jun 2026 12:38:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781527112;
+	bh=INa7GhoaDabxSDGA5GIOXW3gtQQqTT3ikXo5/4MfYq0=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=j3BmglUb18g/fkPeaFFodkzF5td/9xsvfn5SdWuF2utMETdx4GtCDlw+Uj5WhCrox
+	 plZjRQ+Slao5FoB3Gao+aJHnBI+50NfZe3q3ySWtOeqGpDnlR5+W6lMHHooQg8b3zm
+	 MC/t03gDaS4dHjO66Mb+SW2EjVtiNHW/LUVXsAqf5jg6S1WVnzTXZK500XeUuc9X/N
+	 XcvirrIjkEt29Ps/iql/ezNnrz4h9udC7rUqsmNVfYkn4VkGqbS4pmSNzyP5wzGcC6
+	 X1r09qvFdtZwZig1+l1xUa4QhijVRdD7dqLmXgWaUm/M01jGfwCbjLCW41EaHuMI9y
+	 dKwBCX7CaIlcQ==
+From: Guo Ren <guoren@kernel.org>
+To: zhangzhanpeng.jasper@bytedance.com
+Cc: alex@ghiti.fr,
+	aou@eecs.berkeley.edu,
+	cuiyunhui@bytedance.com,
+	iommu@lists.linux.dev,
+	joro@8bytes.org,
+	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	luxu.kernel@bytedance.com,
+	palmer@dabbelt.com,
+	pjw@kernel.org,
+	robin.murphy@arm.com,
+	tjeznach@rivosinc.com,
+	will@kernel.org,
+	yuanzhu@bytedance.com
+Subject: Re: [PATCH v1] iommu/riscv: Support 32-bit register accesses
+Date: Mon, 15 Jun 2026 12:38:17 +0000
+Message-ID: <20260615123821.373248-1-guoren@kernel.org>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com>
+References: <20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <iv7sxqezzz42xieytbf3lskutricz7ltkr3wii3w4jbnbzto7f@2tz5hwa43l37>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Fri, Jun 12, 2026 at 02:44:06PM -0400, Liam R. Howlett wrote:
-> > Currently it never returns a failure to the caller. Look at mas_erase():
-> > 
-> > 	entry = mas_state_walk(mas);
-> > 	if (!entry)
-> > 		return NULL;
-> > [..]
-> > 	if (mas_is_err(mas))
-> > 		goto out;
-> > [..]
-> > out:
-> > 	mas_destroy(mas);
-> > 	return entry;
-> > 
-> > There is no propogation of ENOMEM, it returns success. No caller
-> > checks for any error here either.
+Hi Zhanpeng Zhang,
+
+I noticed you posted a similar fix recently. However, I had already
+submitted a similar solution back in September 2025 [1]. It would be
+great if you could review it. A few concerns with the current patch:
+
+1. Using spin_lock_irqsave in such a small semantic structure is
+unnecessary. IRQ protection should be provided by the higher-level
+IOMMU driver interfaces. Many existing call sites already handle IRQ
+disabling, so adding it here feels redundant and adds avoidable
+overhead.
+
+2. More critically, the RISCV_IOMMU_32BIT_ACCESS Kconfig option is
+problematic. According to the RISC-V IOMMU specification (Software
+Guidelines, “Reading and writing IOMMU registers”):
+
+> Registers that are 64-bit wide may be accessed using either a 32-bit
+> or a 64-bit access.
+
+This clearly requires that any hardware supporting 64-bit MMIO access
+must also support 32-bit MMIO access. Therefore, the IOMMU driver should
+be built on a 32-bit access base for maximum hardware compatibility.
+
+3. Only performance-monitoring counters require 64-bit IO access or the
+high-low-high do-while retry strategy. For ordinary status and control
+MMIO registers, a single read is sufficient.
+
+4. Introducing a compile-time Kconfig that forces 32-bit splitting (or
+64-bit access) across the entire driver is unnecessary for the vast
+majority of registers and would prevent a single kernel Image (or .ko)
+from working across all compliant platforms.
+
+I believe the correct approach is to keep the driver on a 32-bit access
+foundation (as required by the spec) and apply special 64-bit or
+high-low-high handling only to performance-monitoring counters when
+justified by data. This preserves broad hardware support without
+unnecessary complexity.
+
+What do you think? I’m happy to discuss or collaborate on a cleaner
+solution based on the earlier patch [1].
+
+[1]: https://lore.kernel.org/linux-riscv/20250903144217.837448-1-guoren@kernel.org/
+
+Best Regards
+  GUO Ren
+
+> Some RISC-V IOMMU implementations cannot perform 64-bit MMIO accesses
+> to the IOMMU register file. The RISC-V IOMMU architecture allows 64-bit
+> registers to be accessed using 32-bit accesses, provided the accesses are
+> properly aligned and do not span multiple registers.
 > 
-> At one point this was considered to be impossible to fail, and it is
-> documented to return the entry or null.
-
-I think that is the right API design..
-
-> I think I should probably change this to return -ENOMEM, fix the docs on
-> it, and probably audit the callers (most use external locks or are
-> early-boot-so-don't-worry-about-it).  Any issue here should also be
-> caught by lockdep pretty quickly.
-
-Locking aside, I don't think most of the callers can handle an -ENOMEM
-return at all..
-
-> mas_store_gfp() works if you know the range of your entry.  You could
-> also write the XA_ZERO_ENTRY over the entry so that there is no internal
-> node changes - just a value swap.  If you do this, you have to be
-> careful when reading things back when using the mas_ interface.
-
-That's probably a good option. Try to store NULL, if that ENOMEM's
-then drop a ZERO_ENTRY and set a bit someplace so that the next
-allocation has to sweep the tree and clean the ZERO's. At least that
-shifts the ENOMEM to an alloc side operation where it can be handled.
-
-> I think, in your case, hitting an XA_ZERO_ENTRY would be necessary to
-> indicate that we cannot reuse this particular location until it is
-> correctly dealt with?  Or is the maple tree the only reason it is
-> considered unusable?
-
-Yeah, it would be be a maple tree issue only. Defered rebalancing
-leave space unavailable.
-
-This is a case where there is no sane way to handle destroy
-failure. You can't return an error code from dma_unmap() for
-example. So the only reason for this complexity is because maple tree
-exposes a failable erase to it's caller..
-
-IDK, could it handle it internally somehow? Or at least document a
-reasonable pattern with some helpers?
-
-Eg _iommufd_destroy_mmap() is in trouble too, it cargo culted the
-no-check mt_erase.
-
-Jason
+> Add a config option for such implementations and access 64-bit IOMMU
+> registers as paired 32-bit MMIO operations when it is enabled. Serialize
+> the paired accesses so the high and low halves cannot interleave with
+> another CPU. Full 64-bit register programming writes the high half before
+> the low half.
+> 
+> This option describes the register access width. It is not an RV32 kernel
+> mode and does not describe a 32-bit IOMMU architecture.
+> 
+> Co-developed-by: Xu Lu <luxu.kernel@bytedance.com>
+> Signed-off-by: Xu Lu <luxu.kernel@bytedance.com>
+> Signed-off-by: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
+> ---
+> This is needed for platforms whose RISC-V IOMMU register window does not
+> support naturally aligned 64-bit MMIO accesses.
+> 
+>  drivers/iommu/riscv/Kconfig | 11 ++++++++
+>  drivers/iommu/riscv/iommu.c |  4 +++
+>  drivers/iommu/riscv/iommu.h | 55 +++++++++++++++++++++++++++++++++----
+>  3 files changed, 64 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iommu/riscv/Kconfig b/drivers/iommu/riscv/Kconfig
+> index b86e5ab94183..54d624b9b2ef 100644
+> --- a/drivers/iommu/riscv/Kconfig
+> +++ b/drivers/iommu/riscv/Kconfig
+> @@ -22,3 +22,14 @@ config RISCV_IOMMU_PCI
+>  	def_bool y if RISCV_IOMMU && PCI_MSI
+>  	help
+>  	  Support for the PCIe implementation of RISC-V IOMMU architecture.
+> +
+> +config RISCV_IOMMU_32BIT_ACCESS
+> +	bool "Use 32-bit accesses for RISC-V IOMMU registers"
+> +	depends on RISCV_IOMMU
+> +	help
+> +	  Say Y when the RISC-V IOMMU MMIO window cannot be accessed
+> +	  using naturally aligned 64-bit loads and stores.
+> +
+> +	  When enabled, 64-bit IOMMU registers are accessed as paired
+> +	  32-bit MMIO operations. This option does not describe an RV32
+> +	  kernel or a 32-bit IOMMU architecture.
+> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+> index a31f50bbad35..7fa1721b5728 100644
+> --- a/drivers/iommu/riscv/iommu.c
+> +++ b/drivers/iommu/riscv/iommu.c
+> @@ -53,6 +53,10 @@ struct riscv_iommu_devres {
+>  	void *addr;
+>  };
+>  
+> +#ifdef CONFIG_RISCV_IOMMU_32BIT_ACCESS
+> +DEFINE_RAW_SPINLOCK(riscv_iommu_32bit_access_lock);
+> +#endif
+> +
+>  static void riscv_iommu_devres_pages_release(struct device *dev, void *res)
+>  {
+>  	struct riscv_iommu_devres *devres = res;
+> diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
+> index 46df79dd5495..ba78ef1858c5 100644
+> --- a/drivers/iommu/riscv/iommu.h
+> +++ b/drivers/iommu/riscv/iommu.h
+> @@ -14,6 +14,9 @@
+>  #include <linux/iommu.h>
+>  #include <linux/types.h>
+>  #include <linux/iopoll.h>
+> +#ifdef CONFIG_RISCV_IOMMU_32BIT_ACCESS
+> +#include <linux/spinlock.h>
+> +#endif
+>  
+>  #include "iommu-bits.h"
+>  
+> @@ -69,21 +72,61 @@ void riscv_iommu_disable(struct riscv_iommu_device *iommu);
+>  #define riscv_iommu_readl(iommu, addr) \
+>  	readl_relaxed((iommu)->reg + (addr))
+>  
+> -#define riscv_iommu_readq(iommu, addr) \
+> -	readq_relaxed((iommu)->reg + (addr))
+> -
+>  #define riscv_iommu_writel(iommu, addr, val) \
+>  	writel_relaxed((val), (iommu)->reg + (addr))
+>  
+> +#define riscv_iommu_readl_timeout(iommu, addr, val, cond, delay_us, timeout_us) \
+> +	readx_poll_timeout(readl_relaxed, (iommu)->reg + (addr), val, cond, \
+> +			   delay_us, timeout_us)
+> +
+> +#ifndef CONFIG_RISCV_IOMMU_32BIT_ACCESS
+> +#define riscv_iommu_readq(iommu, addr) \
+> +	readq_relaxed((iommu)->reg + (addr))
+> +
+>  #define riscv_iommu_writeq(iommu, addr, val) \
+>  	writeq_relaxed((val), (iommu)->reg + (addr))
+>  
+>  #define riscv_iommu_readq_timeout(iommu, addr, val, cond, delay_us, timeout_us) \
+>  	readx_poll_timeout(readq_relaxed, (iommu)->reg + (addr), val, cond, \
+>  			   delay_us, timeout_us)
+> +#else /* CONFIG_RISCV_IOMMU_32BIT_ACCESS */
+>  
+> -#define riscv_iommu_readl_timeout(iommu, addr, val, cond, delay_us, timeout_us) \
+> -	readx_poll_timeout(readl_relaxed, (iommu)->reg + (addr), val, cond, \
+> -			   delay_us, timeout_us)
+> +extern raw_spinlock_t riscv_iommu_32bit_access_lock;
+> +
+> +static inline u64 __riscv_iommu_readq_relaxed(void __iomem *addr)
+> +{
+> +	u32 lo, hi;
+> +	unsigned long flags;
+> +
+> +	raw_spin_lock_irqsave(&riscv_iommu_32bit_access_lock, flags);
+> +	do {
+> +		hi = readl_relaxed(addr + sizeof(u32));
+> +		lo = readl_relaxed(addr);
+> +	} while (hi != readl_relaxed(addr + sizeof(u32)));
+> +	raw_spin_unlock_irqrestore(&riscv_iommu_32bit_access_lock, flags);
+> +
+> +	return ((u64)hi << 32) | (u64)lo;
+> +}
+> +
+> +static inline void __riscv_iommu_writeq_relaxed(u64 value, void __iomem *addr)
+> +{
+> +	unsigned long flags;
+> +
+> +	raw_spin_lock_irqsave(&riscv_iommu_32bit_access_lock, flags);
+> +	writel_relaxed((u32)(value >> 32), addr + sizeof(u32));
+> +	writel_relaxed((u32)value, addr);
+> +	raw_spin_unlock_irqrestore(&riscv_iommu_32bit_access_lock, flags);
+> +}
+> +
+> +#define riscv_iommu_readq(iommu, addr) \
+> +	__riscv_iommu_readq_relaxed((iommu)->reg + (addr))
+> +
+> +#define riscv_iommu_writeq(iommu, addr, val) \
+> +	__riscv_iommu_writeq_relaxed((val), (iommu)->reg + (addr))
+> +
+> +#define riscv_iommu_readq_timeout(iommu, addr, val, cond, delay_us, timeout_us) \
+> +	readx_poll_timeout(__riscv_iommu_readq_relaxed, (iommu)->reg + (addr), \
+> +			   val, cond, delay_us, timeout_us)
+> +#endif /* CONFIG_RISCV_IOMMU_32BIT_ACCESS */
+>  
+>  #endif
+> -- 
+> 2.50.1 (Apple Git-155)
