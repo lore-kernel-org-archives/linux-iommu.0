@@ -1,346 +1,342 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD7A73EB0F2
-	for <iommu@lists.linux.dev>; Mon, 15 Jun 2026 13:07:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781528841; cv=none; b=ouhlkJh80qg7jWL2j+z4yxYB1zNefIDKNWXX6UovWQypIMndRYk8iOFO8ZVijBh5/isBQgR2BjMO7q02ZTfQ9AhABrorfR/eWr6nPFBQyx5434gbJEK/zP4lUo2HXnIipTcgxZcWXtt4Uh2p+3nfeN3wGoOaBMf2Euuj/B2XcX4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781528841; c=relaxed/simple;
-	bh=mM80Ae8XxnzS51Dw4Pw58HMVr5lZn9bOwL/mMk9poQo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=HQ/taXEHWq7jkfdSica26tgyvaGUgbKIlYcxTmpVFY7XGIIf23n7PuVVMDtrJklTVa+jlL7OvAOtrcsj45enBKokSs74Xx/UPnL7XDiBEbaDWuh+pBtpb9oEeQSz5JAvl31lQcuAkb9CUFv/6JA34cUeLYyPB7AtRNHBAGEBPW0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=k2NnFh8O; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=RwTLMdKt; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09E4837E314
+	for <iommu@lists.linux.dev>; Mon, 15 Jun 2026 13:21:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.50
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781529719; cv=pass; b=Y1o1V6MqLzvXi4+AwWEIFsxyOKf3pba8AT8w2ijnEZ4zk2BVr+Nkxm65AmAp/u3G5qtEZRILzK0TL/VqwRRDos+Ekw6HdFX3vZzoHAsmwR+pBYQ4Dwv2u5e9FJwY+13mrbxLNVzsUT+HmlGKRiPPq1xuvpTGCsbQ3yWP+mOSLQs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781529719; c=relaxed/simple;
+	bh=xSFePTrYn0i0duWqY4Rac1mt5Z8jJM6Bfpkdt8ojZBs=;
+	h=References:In-Reply-To:From:Mime-Version:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=pGnAyix9Bl/cX0U45WnJgpy40bttHQBzzATYet134Nig3bGbN0eAIMMM4NOdJIlPo+1FMjxcClT4dDPCCwfhig0NNyC9X0rG6kw4r2Oz0in4hHvLorzyBptOUXoUJ/JtrbKUtxvq0u+qqMm0uyrPt7Zyts6SchNvf+ScCXzvBp4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=D5WgXR7U; arc=pass smtp.client-ip=209.85.167.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="k2NnFh8O";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="RwTLMdKt"
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65FCbhXO568171
-	for <iommu@lists.linux.dev>; Mon, 15 Jun 2026 13:07:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	HvxVu7ZMj0GrNYVnvEx5o+aB0JEz3pjwUB8+jM1GNAE=; b=k2NnFh8OTE87IxoX
-	b/yqlUzI6TGw5uqop0QKf2e8vEKKI3wI9Zf4QbFK6n4wJgBORCv0KyBBZ4kU1GVT
-	sj++RiR35ktuXs4SxZ4JGm4gXyGXFn0kZqL7F6wd34eaznVEwTfp5Tcim/UAKlMf
-	xth0XqvsvdYNODjm6FgT5cIHw3naQ6IBgZdoE+KMlPvOr2zcP7dAyMsWURP4uArf
-	y03G5nwbEuoi0hWdojyAA9buhKBcqPmKwA1stx3KMUwH4pcGleWeCfZMXJLdaLPD
-	vnFYhroCkcRegNCDnvd9LJ1eX1BrDYVMoSEVAz1zu5b5s8JJlifQgpldjI0wqGZ2
-	cLli9w==
-Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com [209.85.210.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4etgvhg94x-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Mon, 15 Jun 2026 13:07:18 +0000 (GMT)
-Received: by mail-pf1-f198.google.com with SMTP id d2e1a72fcca58-842208d5b0eso2696885b3a.3
-        for <iommu@lists.linux.dev>; Mon, 15 Jun 2026 06:07:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="D5WgXR7U"
+Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-5aa7bf3d512so4236225e87.2
+        for <iommu@lists.linux.dev>; Mon, 15 Jun 2026 06:21:55 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1781529714; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Ty6GqPUyV4YOTfoxkqgRMqbbphHsZ8d5Gd8WSp2DXjreRXDJth48BxUunApu3ArxDf
+         Y40TrnYoTTPatnJrUXOpfWtnC8E7T+wb7oAt8Sv7pBmajDxBPNOaKMffsgccTpTXSXjl
+         4kartYrbUo6xIy2AlNNMDYrL3DyDDvhOoN7lACMnC/5vVf8HuDeoGVdyPANMuNa8ulBU
+         j4FjeG0fIF77CGkvefvqWn2cmdqqpeUL9+qZtObu7cvPZTdY2lFYd7I6IwVp3aMt7rhb
+         m+buzf1033nSu6S1HHxqqm8zl3IjFiBFHEbmHeL8RG6Se/Cws6OtUoaVwULFFfZ/xPzg
+         tJyg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date
+         :mime-version:from:in-reply-to:references:dkim-signature;
+        bh=xSFePTrYn0i0duWqY4Rac1mt5Z8jJM6Bfpkdt8ojZBs=;
+        fh=hlnPFMWSDVHCQcocgiIgj2Uwz23LXwUHPddny8/bz78=;
+        b=hXQJ+9DcrIggf5fUxiYqNqYzHvJLCLMF04DCmGkt7zF5/G8Wi9tTS2CYayqBjBnf+3
+         BUn5bAIp/3YvTGpPdADLHSpKlEx6ZHKpH4fLiy4dU67mnJ2WZoA19djlmmjh5ibmefLp
+         NCsq2gHyCcS2qv6lXlvvt2rSYOH2ooBcQmgOl0hy9MlBxAl6imuPHCox/iTjrS1pvZQL
+         J5ITF4Vbjgp0E8pRmQcyLuGWNSt9eAbq9IUVra04pk0Cv4beqcRXz31FpkgremsQDEKc
+         f1nxaURth6zN8vAWzZ0xlWvOZPztTpTnY0+13UNIRX5yanPDVZ8H80+HQFLQUjgMQCDC
+         9WmQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1781528838; x=1782133638; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=HvxVu7ZMj0GrNYVnvEx5o+aB0JEz3pjwUB8+jM1GNAE=;
-        b=RwTLMdKtCkieULYUPpG87aHYjGU+8WB8vtPFNhTttnPCeLjZBUfv6o0aq36G+c/0It
-         2SJpiNhmyFmav82MN3d2sce1mZ401ApfXBZD8QAMZ7ec2IiVXxo2HVomoVnkLSssdbJ5
-         P9k3sMHyb/dg/jDNVQLpIIV3E0wg8mUC1Zfe4WnsRMG6EW05mlxiQDqCiHq3yT3b64mY
-         nSkFqpLp9pBEd1GveS4/mlhkDJW8P1Sf5p/bogK3T1k4+cz3aQP0SPr+UtG8ub2I9SlB
-         30BJ3InMp6ft78okwDBBN8lyawlhz/OKjbEsAWb71VN8mNlQMzkHbhwpfSNyCI50jEC9
-         gYeQ==
+        d=bytedance.com; s=google; t=1781529714; x=1782134514; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date
+         :mime-version:from:in-reply-to:references:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xSFePTrYn0i0duWqY4Rac1mt5Z8jJM6Bfpkdt8ojZBs=;
+        b=D5WgXR7Uj7KTrih5ooXNLkNn9AAI1hWLJyUs0gV/Ikwf+3f+Wa4RTMJn6NMWg02qRW
+         ajmJ1HGXTZbb1IomSDN+fYH644Ddhtopvomy60HxbJJviUwISk+cPeS508t3YrL3lST6
+         2yyxWgFji8WxItg7eh5gCWtSRDfGP0QV8zn/MtFeRy+7iSdBb1tobMTR7JQi3csSf07D
+         9WCZsZjVZSOnvzv8b25sU0L0rR6jQK0UKnx1aVNdMcZpmDr+igJ9i0FaNJwKrkYsrRC1
+         TpU09/91ccDIs1ruJgXzusdfRu4wtvNEGbf8LCPzfDiOf0xKzZ+3yrwNDDi3Hv6lNWl4
+         uKew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781528838; x=1782133638;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=HvxVu7ZMj0GrNYVnvEx5o+aB0JEz3pjwUB8+jM1GNAE=;
-        b=gqhvB3dSfO0zCdDsanEucDiYMadCjb656i20pRbaCC0nojlimQZ64WZfHuwK6xUAiO
-         q4TLLZ+stpKSFAyGa631viTuPZ4hbG/rVIwPMrPzhSvIe58Pf2/J50hIUUWDUVtRx//I
-         /4htH8qnx6ZlzFkZDHTY2vYKPxeRKf9U/WLHL+s8XV1zGPej/ZnAO3Ihvp+26Duzi2rJ
-         oV026G3TGPtwibKSiER4eXPblEWX6Eg4D72N3YxSMNfw1jpHoZwATBvPC1l9YvyMzQje
-         +YKqISd336xZGeFlGDSJAstYr1aTu47XyTWi4NcoHLBqa6nJboqzXMasPz2ewkfQFdtz
-         v5iQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9CVgw+esjaPY6WbwZwbrgkdAxBnCEASkokxaJDvXBLgkVLYORa4zyMMIHK6pUv80dm+kWCBw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz8NUOS7wsiihKW40N+abur8+wH0UWaBJvJh/iuzQ9O5IoqtkgV
-	fTD9wLayU1HNODjqIUCyWciVUcUHs5IwEQymkXiXCjX3hfaNBLiM8T2moV6zP821BBagg62AfBZ
-	WrEXBBsa2P1+B+CbOoHPFTnXoS4VuEW/5oDAKkjNGtFHUeW7gw5P13NsxrA==
-X-Gm-Gg: Acq92OHxj+Igg9ADj0SA/CYbAng2M67leqYocm4mWQGT840eSYN8pL0nMnMR/Wl/SeW
-	jBzeo6zK/WqpUu8UYwd/AJMZN6g8c2kdNb/IkW765AOeQhQDEJL5H6UX82m2Vr3LY7auPe0lMDu
-	SSUVZWLJjogTj/T+nwI32DisDq6/+8qg87Ns1AXbEwvYlRYTRJ9N3mXorKRzrFlTPKO47aiAfmP
-	cww3tvkgp4DsHCpMvXhg4pEpQplLD2t3Yvh1PTnqALqBQWckrgXuJhrE1h9t8IBatDItwWhrlZw
-	g80YCY9o8lzeXDCnlDqd5bc20eA0xQvP0SchtZue8bTOx1VtAoY+D8ELDlNhjmWE/+ShLqnuE9m
-	kPpI9uRip7VDlkwqrIM80Zwu+VqFr4aEWo0UR/qdQgfjjTlveuA==
-X-Received: by 2002:a05:6a00:4fc7:b0:842:54c1:8e15 with SMTP id d2e1a72fcca58-8434ce42058mr15689262b3a.29.1781528837806;
-        Mon, 15 Jun 2026 06:07:17 -0700 (PDT)
-X-Received: by 2002:a05:6a00:4fc7:b0:842:54c1:8e15 with SMTP id d2e1a72fcca58-8434ce42058mr15689210b3a.29.1781528837300;
-        Mon, 15 Jun 2026 06:07:17 -0700 (PDT)
-Received: from [10.219.57.228] ([202.46.23.19])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8434b04808dsm10116612b3a.52.2026.06.15.06.07.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Jun 2026 06:07:16 -0700 (PDT)
-Message-ID: <d25f24ca-5bb3-4276-ac8f-8340e8fb4ce8@oss.qualcomm.com>
-Date: Mon, 15 Jun 2026 18:36:51 +0530
+        d=1e100.net; s=20251104; t=1781529714; x=1782134514;
+        h=content-transfer-encoding:cc:to:subject:message-id:date
+         :mime-version:from:in-reply-to:references:x-gm-gg:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=xSFePTrYn0i0duWqY4Rac1mt5Z8jJM6Bfpkdt8ojZBs=;
+        b=liyot7VnNvptrNJOB8owUUmr66m4DMGAeLOZmDyxc1W6OhbOYZa4xZh/tsDGhFTZgh
+         GvoP1ZqXwwWhN4NHJ+n2yZZs8S3Nv/T68NaL+ZXQfEs6YERFNW497t59+R3lEOiaxHNn
+         00oVmBjvD9BPBPEJkeDc5M6g4JABklSMoqXViZJEXME+PS08dCHCbquDZfBrO3AUz0j4
+         fztr6Xe6FXzl22WcaSilKfZnR/REiWxNu2t2P5EA4rY2pYZXIAWeJeG3Rabdsn7JvO1o
+         qNOuQZnNYlDhcmcdDSvlYIEOQF5cp6nfSTidrTe6ERRacPEd3/qINSfI+K4+lWQanyBl
+         FZ2A==
+X-Forwarded-Encrypted: i=1; AFNElJ+d4NqhdvBM4kJk/Zx6rIfcvxvBMSlFisK+tAk/NLYF4+Mi2/Co0eVtPgpo5yRXiE8S6jaR0Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwS3j5vGOiEGKPVsFZOGPYvBswSj/zrARKA8rD3oL5KO9ypfG+X
+	zFA07LkxIhCafoJjnCOVSHX/xI7vZLEJCvYQcysS3OZdICrzMBKy2EvJ6oJqvWsJ3kJWB6RVklG
+	fIJzTyvL+1exqP+KbJv68nXDwM4pUUPO1vgcrT+vN2g==
+X-Gm-Gg: Acq92OEqoJhDB2kGrS3WYVeIPrig8NVmCO+RVOJHNrQsJu6SLn6hhk0UP/JM77EShR1
+	bA692uVmBRSES5uIGdzLd4KFUsv0b5l9b5CNBgmZ51zCQ0q/wIm3j72QkCmbty64pkhtnh+qL0L
+	/QghEuWk3+YGBYd1ZnuQq1ROBgai5AeyQZMoHUpeCiKA0KHZ0+JvLlfCA9muyk5jBoqPB/cLczH
+	Y8btCsjjQX79KTWktL3LDonf+/acCi49hNF9o0ohZAxFLRpqclh6Zw6D/W6QHWYQXPHe/LqudMz
+	Y0lJ+EZg
+X-Received: by 2002:ac2:4564:0:b0:5ad:a04:e62a with SMTP id
+ 2adb3069b0e04-5ad2db7b41bmr2549151e87.33.1781529714093; Mon, 15 Jun 2026
+ 06:21:54 -0700 (PDT)
+Received: from 44278815321 named unknown by gmailapi.google.com with HTTPREST;
+ Mon, 15 Jun 2026 06:21:52 -0700
+Received: from 44278815321 named unknown by gmailapi.google.com with HTTPREST;
+ Mon, 15 Jun 2026 06:21:52 -0700
+References: <20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com> <20260615105959.136698e8@pumpkin>
+In-Reply-To: <20260615105959.136698e8@pumpkin>
+From: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/6] iommu/arm-smmu: Add interconnect bandwidth voting
- support
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-References: <20260526-smmu_interconnect_addition-v2-0-2a6d8ca30d63@oss.qualcomm.com>
- <20260526-smmu_interconnect_addition-v2-2-2a6d8ca30d63@oss.qualcomm.com>
- <7xfxlxfqjcqdzl6gckaoyy2ioefglc7bgi66yv5khrbl6fi2zc@ivtiukdaj4jv>
-Content-Language: en-US
-From: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
-In-Reply-To: <7xfxlxfqjcqdzl6gckaoyy2ioefglc7bgi66yv5khrbl6fi2zc@ivtiukdaj4jv>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNjE1MDEzOCBTYWx0ZWRfX6tfMgc7QhVB6
- Bs2VRJc/lN0GaeeiI29y6mntPIhzkUkFCBNoZii823fSORvPrZuuEtgcginRgqoqNqQhXXi6/hO
- 97dBF23XwHHV87IL+/Ld4WgGU+uWu04=
-X-Authority-Analysis: v=2.4 cv=Zqnd7d7G c=1 sm=1 tr=0 ts=6a2ff906 cx=c_pps
- a=m5Vt/hrsBiPMCU0y4gIsQw==:117 a=j4ogTh8yFefVWWEFDRgCtg==:17
- a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_glEPmIy2e8OvE2BGh3C:22
- a=EUspDBNiAAAA:8 a=fh4Lr3tRg7ETXUjdBf0A:9 a=QEXdDO2ut3YA:10
- a=IoOABgeZipijB_acs4fv:22
-X-Proofpoint-GUID: DkRPkKjjfZJtl8GYfWLS5ZmLXwWuROVW
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjE1MDEzOCBTYWx0ZWRfX4AZKRbVJ4fQu
- ocpkkjqq2fpKCfO2nS/U7yyQqbpkcgWr6qPGum/lWJ8BptFSudYAbZd+r10fMV2C5v4SpIHOyWU
- dgMJWXt46Jq64lSsh5guzEMBzu2se9UwfadhJf6v5Q/8GI0TGDN4z0zirS6hNDeRZkUp6pXX3eF
- 5Md7Ym5wT5YMKSZfZ3UN+2tDSnwBQuCI+zd9khj8dTqKz7dKQZr60JF35k16dPnWkJbbNw5swdl
- nPqpcjmF+sx+7ZZqgRUE64etjyNlw7443UM7/cEa4Eeno0G0nB8DRRgrOGXPyun2IrFsFRj6NUK
- rOLOqI1R4A2lHQrLrOQD186bpVIKbjpvfVVn/5Sj3SyJeSjnxH+Sd2xUSD/pl2FkF4mM5ld+DkG
- E4ss5ZfiLm0zR9wZpSYhBtYMxXUIf51kaAcjMt37xAiXK6MEKDWyZqwzQQgYRUk7qg6mnGeM6pj
- Bdis0qBeDqKw++D//Eg==
-X-Proofpoint-ORIG-GUID: DkRPkKjjfZJtl8GYfWLS5ZmLXwWuROVW
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
- definitions=2026-06-15_03,2026-06-15_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 spamscore=0 priorityscore=1501 suspectscore=0 lowpriorityscore=0
- adultscore=0 malwarescore=0 clxscore=1015 impostorscore=0 bulkscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606040000 definitions=main-2606150138
+Mime-Version: 1.0
+Date: Mon, 15 Jun 2026 06:21:52 -0700
+X-Gm-Features: AVVi8CemA-VQ3ru42sjMqAtJHBnInWyFz3gCO42JMupJXaZSETmNLhovgshvRdY
+Message-ID: <CACnXVndGA+A1Uu1qZ0=AaEuJGrNQZx6iiuRWgLYAZpirE=UfNQ@mail.gmail.com>
+Subject: Re: [External] Re: [PATCH v1] iommu/riscv: Support 32-bit register accesses
+To: David Laight <david.laight.linux@gmail.com>
+Cc: tjeznach <tjeznach@rivosinc.com>, joro <joro@8bytes.org>, will <will@kernel.org>, 
+	"robin.murphy" <robin.murphy@arm.com>, pjw <pjw@kernel.org>, palmer <palmer@dabbelt.com>, 
+	aou <aou@eecs.berkeley.edu>, alex <alex@ghiti.fr>, iommu <iommu@lists.linux.dev>, 
+	linux-riscv <linux-riscv@lists.infradead.org>, 
+	linux-kernel <linux-kernel@vger.kernel.org>, Xu Lu <luxu.kernel@bytedance.com>, 
+	cuiyunhui@bytedance.com, yuanzhu@bytedance.com, 
+	"guoren@kernel.org" <guoren@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+Hi David,
 
+Thanks, I agree with your point about the lock and the relaxed accessors.
 
-On 6/8/2026 7:25 PM, Dmitry Baryshkov wrote:
-> On Tue, May 26, 2026 at 08:12:03PM +0530, Bibek Kumar Patro wrote:
->> On some SoCs the SMMU registers require an active interconnect
->> bandwidth vote to be accessible. While other clients typically
->> satisfy this requirement implicitly, certain corner cases (e.g.
->> during sleep/wakeup transitions) can leave the SMMU without a
->> vote, causing intermittent register access failures.
->>
->> Add support for an optional interconnect path to the arm-smmu
->> driver and vote for bandwidth while the SMMU is active. The path
->> is acquired from DT if present and ignored otherwise.
->>
->> The bandwidth vote is enabled before accessing SMMU registers
->> during probe and runtime resume, and released during runtime
->> suspend and on error paths.
->>
->> Generally, from an architectural perspective, GEM_NOC and DDR are
->> expected to have an active vote whenever the adreno_smmu block is
->> powered on. In most common use cases, this requirement is implicitly
->> satisfied because other GPU-related clients (for example, the GMU
->> device) already hold a GEM_NOC vote when adreno_smmu is enabled.
->>
->> However, there are certain corner cases, such as during sleep/wakeup
->> transitions, where the GEM_NOC vote can be removed before adreno_smmu
->> is powered down. If adreno_smmu is then accessed while the interconnect
->> vote is missing, it can lead to the observed failures. Because of the
->> precise ordering involved, this scenario is difficult to reproduce
->> consistently.
->> (also GDSC is involved in adreno usecases can have an independent vote)
->>
->> Signed-off-by: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
->> ---
->>   drivers/iommu/arm/arm-smmu/arm-smmu.c | 57 +++++++++++++++++++++++++++++++++--
->>   drivers/iommu/arm/arm-smmu/arm-smmu.h |  2 ++
->>   2 files changed, 57 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
->> index 0bd21d206eb3e75c3b9fb1364cdc92e82c5aa499..07c7e44ec6a5bd1488f00f87d859a20495e46601 100644
->> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
->> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
->> @@ -53,6 +53,11 @@
->>   #define MSI_IOVA_BASE			0x8000000
->>   #define MSI_IOVA_LENGTH			0x100000
->>   
->> +/* Interconnect bandwidth vote values for the SMMU register access path */
->> +#define ARM_SMMU_ICC_AVG_BW		0
->> +#define ARM_SMMU_ICC_PEAK_BW_HIGH	1000
-> 
-> totally random numbers, which might be different for non-Qualcomm platform.
-> 
+Guo Ren also pointed me to the earlier discussion on this topic, and I thin=
+k the
+right next step is to align with that thread rather than continue this sepa=
+rate
+Kconfig-based patch.
 
-Ideally, any non-zero value would be enough to keep the path active.
-Here 1 Would be enough to keep the path active, but might be too small 
-to reliably keep the bus active.
-Other is UINT_MAX, which will reliably keep the bus active but might 
-cause a power penalty.
+So I will drop this patch.
 
-#define ARM_SMMU_ICC_PEAK_BW_HIGH	UINT_MAX
+Thanks,
+Zhanpeng
 
-seems to be suitable here to reliably keep the bus active by BCM
-for both Qualcomm and non-Qualcomm platforms (with some power penalty).
-
-LMK, if you feel otherwise.
-
-
->> +#define ARM_SMMU_ICC_PEAK_BW_LOW	0
->> +
->>   static int force_stage;
->>   module_param(force_stage, int, S_IRUGO);
->>   MODULE_PARM_DESC(force_stage,
->> @@ -86,6 +91,36 @@ static inline void arm_smmu_rpm_put(struct arm_smmu_device *smmu)
->>   	}
->>   }
->>   
->> +static int arm_smmu_icc_get(struct arm_smmu_device *smmu)
->> +{
->> +	smmu->icc_path = devm_of_icc_get(smmu->dev, NULL);
-> 
-> Is there always only one bus / path in question?
-> 
->> +	if (IS_ERR(smmu->icc_path)) {
-> 
-> if (!IS_ERR(smmu->icc_path))
-> 	return 0;
-> 
-> int err = PTR_ERR();
-> if (err == -ENODEV) {
-> 	icc_path = NULL;
-> 	return 0;
-> }
-> 
-> return dev_err_probe();
-> 
-> 
->> +		int err = PTR_ERR(smmu->icc_path);
->> +
->> +		if (err == -ENODEV) {
->> +			smmu->icc_path = NULL;
->> +			return 0;
->> +		}
->> +		return dev_err_probe(smmu->dev, err,
->> +				     "failed to get interconnect path\n");
->> +	}
->> +	return 0;
->> +}
->> +
->> +static void arm_smmu_icc_enable(struct arm_smmu_device *smmu)
->> +{
->> +	if (smmu->icc_path)
-> 
-> Drop the if.
-> 
-
-Ack, will address it in next revision
-
->> +		WARN_ON(icc_set_bw(smmu->icc_path, ARM_SMMU_ICC_AVG_BW,
->> +				   ARM_SMMU_ICC_PEAK_BW_HIGH));
-> 
-> WARN_ON_ONCE()?
-> 
-> Pass the error to the caller.
-> 
-> 
-
-Ack, would be better to pass. Thanks for pointing this.
-
->> +}
->> +
->> +static void arm_smmu_icc_disable(struct arm_smmu_device *smmu)
->> +{
->> +	if (smmu->icc_path)
-> 
-> Drop the if.
-> 
-
-Ack.
-
->> +		WARN_ON(icc_set_bw(smmu->icc_path, ARM_SMMU_ICC_AVG_BW,
->> +				   ARM_SMMU_ICC_PEAK_BW_LOW));
-> 
-> Pass the error to the caller.
-> 
-
-Ack.
-
->> +}
->> +
->>   static void arm_smmu_rpm_use_autosuspend(struct arm_smmu_device *smmu)
->>   {
->>   	/*
->> @@ -2189,6 +2224,17 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->>   	if (err)
->>   		return err;
->>   
->> +	/*
->> +	 * Acquire and vote the interconnect path before accessing any SMMU
->> +	 * registers (including ARM_SMMU_GR0_ID0 in arm_smmu_device_cfg_probe).
->> +	 */
->> +	err = arm_smmu_icc_get(smmu);
->> +	if (err) {
->> +		clk_bulk_disable_unprepare(smmu->num_clks, smmu->clks);
->> +		return err;
->> +	}
->> +	arm_smmu_icc_enable(smmu);
-> 
-> Handle the error.
-> 
-
-Ack, will address this in next revision. to disable the clocks here as well.
-
-+       err = arm_smmu_icc_enable(smmu);
-+       if (err) {
-+               clk_bulk_disable_unprepare(smmu->num_clks, smmu->clks);
-+               return err;
-+       }
-
->> +
->>   	err = arm_smmu_device_cfg_probe(smmu);
->>   	if (err)
->>   		return err;
->> @@ -2273,8 +2319,10 @@ static void arm_smmu_device_shutdown(struct platform_device *pdev)
->>   
->>   	if (pm_runtime_enabled(smmu->dev))
->>   		pm_runtime_force_suspend(smmu->dev);
->> -	else
->> +	else {
->>   		clk_bulk_disable(smmu->num_clks, smmu->clks);
->> +		arm_smmu_icc_disable(smmu);
-> 
-> Handle the error.
-> 
-> etc.
-> 
-
-Ack, will address the if(), and error handling suggestion in next iteration.
-
-Thanks & regards,
-Bibek
-
->> +	}
->>   
->>   	clk_bulk_unprepare(smmu->num_clks, smmu->clks);
->>   }
-> 
-
+> From: "David Laight"<david.laight.linux@gmail.com>
+> Date:=C2=A0 Mon, Jun 15, 2026, 18:00
+> Subject:=C2=A0 [External] Re: [PATCH v1] iommu/riscv: Support 32-bit regi=
+ster accesses
+> To: "Zhanpeng Zhang"<zhangzhanpeng.jasper@bytedance.com>
+> Cc: "Tomasz Jeznach"<tjeznach@rivosinc.com>, "Joerg Roedel"<joro@8bytes.o=
+rg>, "Will Deacon"<will@kernel.org>, "Robin Murphy"<robin.murphy@arm.com>, =
+"Paul Walmsley"<pjw@kernel.org>, "Palmer Dabbelt"<palmer@dabbelt.com>, "Alb=
+ert Ou"<aou@eecs.berkeley.edu>, "Alexandre Ghiti"<alex@ghiti.fr>, <iommu@li=
+sts.linux.dev>, <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kerne=
+l.org>, "Xu Lu"<luxu.kernel@bytedance.com>, <cuiyunhui@bytedance.com>, <yua=
+nzhu@bytedance.com>
+> On Mon, 15 Jun 2026 14:48:55 +0800
+> Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com> wrote:
+>
+> > Some RISC-V IOMMU implementations cannot perform 64-bit MMIO accesses
+> > to the IOMMU register file. The RISC-V IOMMU architecture allows 64-bit
+> > registers to be accessed using 32-bit accesses, provided the accesses a=
+re
+> > properly aligned and do not span multiple registers.
+> >
+> > Add a config option for such implementations and access 64-bit IOMMU
+> > registers as paired 32-bit MMIO operations when it is enabled. Serializ=
+e
+> > the paired accesses so the high and low halves cannot interleave with
+> > another CPU. Full 64-bit register programming writes the high half befo=
+re
+> > the low half.
+> >
+> > This option describes the register access width. It is not an RV32 kern=
+el
+> > mode and does not describe a 32-bit IOMMU architecture.
+> >
+> > Co-developed-by: Xu Lu <luxu.kernel@bytedance.com>
+> > Signed-off-by: Xu Lu <luxu.kernel@bytedance.com>
+> > Signed-off-by: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
+> > ---
+> > This is needed for platforms whose RISC-V IOMMU register window does no=
+t
+> > support naturally aligned 64-bit MMIO accesses.
+> >
+> > =C2=A0drivers/iommu/riscv/Kconfig | 11 ++++++++
+> > =C2=A0drivers/iommu/riscv/iommu.c | =C2=A04 +++
+> > =C2=A0drivers/iommu/riscv/iommu.h | 55 ++++++++++++++++++++++++++++++++=
++----
+> > =C2=A03 files changed, 64 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/drivers/iommu/riscv/Kconfig b/drivers/iommu/riscv/Kconfig
+> > index b86e5ab94183..54d624b9b2ef 100644
+> > --- a/drivers/iommu/riscv/Kconfig
+> > +++ b/drivers/iommu/riscv/Kconfig
+> > @@ -22,3 +22,14 @@ config RISCV_IOMMU_PCI
+> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0def_bool y if RISCV_IOMMU && PCI_MSI
+> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0help
+> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Support for the PCIe implement=
+ation of RISC-V IOMMU architecture.
+> > +
+> > +config RISCV_IOMMU_32BIT_ACCESS
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0bool "Use 32-bit accesses for RISC-V IOMMU=
+ registers"
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0depends on RISCV_IOMMU
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0help
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Say Y when the RISC-V IOMMU MMIO wi=
+ndow cannot be accessed
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0using naturally aligned 64-bit load=
+s and stores.
+> > +
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0When enabled, 64-bit IOMMU register=
+s are accessed as paired
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A032-bit MMIO operations. This option=
+ does not describe an RV32
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0kernel or a 32-bit IOMMU architectu=
+re.
+> > diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+> > index a31f50bbad35..7fa1721b5728 100644
+> > --- a/drivers/iommu/riscv/iommu.c
+> > +++ b/drivers/iommu/riscv/iommu.c
+> > @@ -53,6 +53,10 @@ struct riscv_iommu_devres {
+> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0void *addr;
+> > =C2=A0};
+> >
+> > +#ifdef CONFIG_RISCV_IOMMU_32BIT_ACCESS
+> > +DEFINE_RAW_SPINLOCK(riscv_iommu_32bit_access_lock);
+> > +#endif
+> > +
+> > =C2=A0static void riscv_iommu_devres_pages_release(struct device *dev, =
+void *res)
+> > =C2=A0{
+> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0struct riscv_iommu_devres *devres =3D=
+ res;
+> > diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
+> > index 46df79dd5495..ba78ef1858c5 100644
+> > --- a/drivers/iommu/riscv/iommu.h
+> > +++ b/drivers/iommu/riscv/iommu.h
+> > @@ -14,6 +14,9 @@
+> > =C2=A0#include <linux/iommu.h>
+> > =C2=A0#include <linux/types.h>
+> > =C2=A0#include <linux/iopoll.h>
+> > +#ifdef CONFIG_RISCV_IOMMU_32BIT_ACCESS
+> > +#include <linux/spinlock.h>
+> > +#endif
+> >
+> > =C2=A0#include "iommu-bits.h"
+> >
+> > @@ -69,21 +72,61 @@ void riscv_iommu_disable(struct riscv_iommu_device =
+*iommu);
+> > =C2=A0#define riscv_iommu_readl(iommu, addr) \
+> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0readl_relaxed((iommu)->reg + (addr))
+> >
+> > -#define riscv_iommu_readq(iommu, addr) \
+> > - =C2=A0 =C2=A0 =C2=A0 =C2=A0readq_relaxed((iommu)->reg + (addr))
+> > -
+> > =C2=A0#define riscv_iommu_writel(iommu, addr, val) \
+> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0writel_relaxed((val), (iommu)->reg + =
+(addr))
+> >
+> > +#define riscv_iommu_readl_timeout(iommu, addr, val, cond, delay_us, ti=
+meout_us) \
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0readx_poll_timeout(readl_relaxed, (iommu)-=
+>reg + (addr), val, cond, \
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 delay_us, timeout_us)
+> > +
+> > +#ifndef CONFIG_RISCV_IOMMU_32BIT_ACCESS
+> > +#define riscv_iommu_readq(iommu, addr) \
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0readq_relaxed((iommu)->reg + (addr))
+> > +
+> > =C2=A0#define riscv_iommu_writeq(iommu, addr, val) \
+> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0writeq_relaxed((val), (iommu)->reg + =
+(addr))
+> >
+> > =C2=A0#define riscv_iommu_readq_timeout(iommu, addr, val, cond, delay_u=
+s, timeout_us) \
+> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0readx_poll_timeout(readq_relaxed, (io=
+mmu)->reg + (addr), val, cond, \
+> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 delay_us, timeout_us)
+> > +#else /* CONFIG_RISCV_IOMMU_32BIT_ACCESS */
+> >
+> > -#define riscv_iommu_readl_timeout(iommu, addr, val, cond, delay_us, ti=
+meout_us) \
+> > - =C2=A0 =C2=A0 =C2=A0 =C2=A0readx_poll_timeout(readl_relaxed, (iommu)-=
+>reg + (addr), val, cond, \
+> > - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 delay_us, timeout_us)
+> > +extern raw_spinlock_t riscv_iommu_32bit_access_lock;
+> > +
+> > +static inline u64 __riscv_iommu_readq_relaxed(void __iomem *addr)
+> > +{
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0u32 lo, hi;
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0unsigned long flags;
+> > +
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0raw_spin_lock_irqsave(&riscv_iommu_32bit_a=
+ccess_lock, flags);
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0do {
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0hi =3D readl_r=
+elaxed(addr + sizeof(u32));
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0lo =3D readl_r=
+elaxed(addr);
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0} while (hi !=3D readl_relaxed(addr + size=
+of(u32)));
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0raw_spin_unlock_irqrestore(&riscv_iommu_32=
+bit_access_lock, flags);
+>
+> Why the lock and the loop?
+> If you need the loop (for places where the hardware might be changing
+> both words?) then there is no need to read 'hi' twice when you loop.
+>
+> But does it make any sense to be reading the value either while the hardw=
+are
+> is updating it (does that happen?) or concurrently with a write.
+>
+>
+> > +
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0return ((u64)hi << 32) | (u64)lo;
+> > +}
+> > +
+> > +static inline void __riscv_iommu_writeq_relaxed(u64 value, void __iome=
+m *addr)
+> > +{
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0unsigned long flags;
+> > +
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0raw_spin_lock_irqsave(&riscv_iommu_32bit_a=
+ccess_lock, flags);
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0writel_relaxed((u32)(value >> 32), addr + =
+sizeof(u32));
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0writel_relaxed((u32)value, addr);
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0raw_spin_unlock_irqrestore(&riscv_iommu_32=
+bit_access_lock, flags);
+>
+> What are you actually locking against?
+> I'm pretty sure it doesn't make any sense for two cpu to be writing to th=
+e
+> same entry at the same time.
+>
+> Can't the writel_relaxed() be re-ordered, so you aren't guaranteeing they=
+'ll
+> be done high-low.
+> Same with the reads.
+>
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 David
+>
+> > +}
+> > +
+> > +#define riscv_iommu_readq(iommu, addr) \
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0__riscv_iommu_readq_relaxed((iommu)->reg +=
+ (addr))
+> > +
+> > +#define riscv_iommu_writeq(iommu, addr, val) \
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0__riscv_iommu_writeq_relaxed((val), (iommu=
+)->reg + (addr))
+> > +
+> > +#define riscv_iommu_readq_timeout(iommu, addr, val, cond, delay_us, ti=
+meout_us) \
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0readx_poll_timeout(__riscv_iommu_readq_rel=
+axed, (iommu)->reg + (addr), \
+> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 val, cond, delay_us, timeout_us)
+> > +#endif /* CONFIG_RISCV_IOMMU_32BIT_ACCESS */
+> >
+> > =C2=A0#endif
+>
