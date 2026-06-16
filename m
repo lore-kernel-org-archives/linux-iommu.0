@@ -1,157 +1,128 @@
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E0534219EA
-	for <iommu@lists.linux.dev>; Tue, 16 Jun 2026 09:49:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.180
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781603356; cv=pass; b=Jq5eDno/L2jcOyPWp8HTHO64/M+5CdAGyYh4Utp1cCMX84wQCv/cSPJQF4+spYOmns52EMmn42YwBAeCOS+CjX8d6WHiKpg4eX5fWYXJCMwLQPzbM0c1t983yw9l20V8i8VJPlmBmOwhoa4Uq7hggIeYykqf7ZcXtAl2K5DkXJM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781603356; c=relaxed/simple;
-	bh=QjEqLU00etgxuyHhjOjo1O1DD6A8WJ0GvFeC5XpYtfg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=dpCG3tsrUo6GgnpvJV+qskHSq+yDZJQQ1z5eSoIWxAEFesMRn2g+wyfnLPm0pccSutHMlxNHDE9drEjHsrUVMGgA1a2mRA92Pt8Jko7ubCWxMYdqtjbAkUSb7L9IHMLu4XysU+5JuH01WwdZP5R9/0ig0Fpuh+1F6wVoXva/ETc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=tUGtd67k; arc=pass smtp.client-ip=209.85.160.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D229423A7B
+	for <iommu@lists.linux.dev>; Tue, 16 Jun 2026 09:51:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781603508; cv=none; b=TPYhre0VmTLVSarD+6q30UeSI+KpWz4SIB0NMchzYLfuzsAUifU3CeVn1UNisLsTfOIcYEmgeuU0wwbM8fH1rI98t40QN3c9Rrl3nUJrN5tcKwvs0MPagj8bIpqirimfpCIK8zFEEXmaDzkKujLWJfgUaPG3A7fzA2Gv/VOhJ+Q=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781603508; c=relaxed/simple;
+	bh=rKN6Dquf9JjEmoiOojbev5G9ca2XqPvpxKtiKVWHsuA=;
+	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=R6en2O841/EaQFFjIIbhjvIj88+9q+oTgXrS6mNXEWOatR8BOXNmM+6P6EIfiGnNEkIXig/t2GpXqh65hSf7KCG0xshZ19d+t2cIvmu01ivtDu5fSu9ps3GlZzBSQfmKR6DH1lLW16V19AgdHjnWUN9viyglchBtbu6o93oOT2g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F88UFqux; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="tUGtd67k"
-Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-5177d1ff061so52781cf.1
-        for <iommu@lists.linux.dev>; Tue, 16 Jun 2026 02:49:14 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1781603354; cv=none;
-        d=google.com; s=arc-20240605;
-        b=ckUvqNZwlv7NAtHc67gtVhHFBAMcIyRFlGzAj7DeU5HLTc+WzKlWSu60XlLg5K3P1V
-         RlrIOGPwTYNzIwiMpSpjbEVnWxJV2NZi3zP3g2kkSCwWJTqiPTkwnR9dMSIfGG2sHr1q
-         rEXVbz5STjnCLeHe2+Oj48B+yMM96wfD6CY3dJmVl/WF3Lo5hAtYiMt/u4ozICJJT856
-         xxLFreeYOK6KzgpbaQosCL9EOF6oUv5etFt27REEw1w2c7f65iPg4Bpnv5CQMIUNLWP1
-         fHWDSvBAc4K/+nMK0hoE7aA3z7l9r/6vg8rhSXZuv3LlYE7RMnUZARZ24E3AB2mdNVgD
-         c07w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=2/X+IQDU5vWc0Utt9YT+71W3AhmdLwN2v6pALPN9Aqg=;
-        fh=MKtkNdTld7NAgGJ2qZj/XtvY9HmKftTDW0wFiMCe70s=;
-        b=f3div3XWaj96E7UDBZOhYJbC+LK7hRsvFJWnhXCZ/Z+9+gNbbCSAmp6R65VYCsurJp
-         lBUkH8SGRKjs09xt68Gux3dPQOD8VIZgSouxSvkzWzm+hykDODs/m+rLnkssXOn3DteH
-         COJ60+NZhUT4wDa22BkR6Si8CDnK/4/ga8hrlzMZ7AdfNKcv4GkipdTGFXsrr02MKabC
-         m+FRfdl3Nm8GROqhGUraEjXf06ge8RXiyoqgTmBhTGMEotOmm6exnG43tSavsotn1dLJ
-         7X4b3x8msJ8dMM9Fmsxi16tHfRTU3Kxvk5hjTdP9gwbL62Caq9yo69vV0TOi6efCHN5z
-         5Hug==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1781603354; x=1782208154; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2/X+IQDU5vWc0Utt9YT+71W3AhmdLwN2v6pALPN9Aqg=;
-        b=tUGtd67kqJ2cyUSjhkw93Ahu+/Tj8T8pHGJJO+o21fpPi3tOBkWR9hGsZZlv48UdId
-         676OXb1B0lkUmL+pEDtal0I7TLfcZa9ClUkbysp2G6rJJm3WWTDZUovOOBs5oX6OoKGg
-         +BCBUyeJo6FLKotAOxB3Gghme2BqT6ltQWsSY648lA92AG9iiJBst6uOnj4XbDTWTxWF
-         sL0Z6jnfKxs5Y6az0dmXPZnBAoTCY3aTjClLccLMoyZ0KJ6BWJJdb3+8DeLMxP8tlGSY
-         3FQn4ICOR/w0aqpnyTQkLtGjyzf+UPKBJ0FZ/yqUqWmGfBhuzhR0XYkQYLYE4pHZJzuH
-         WR+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781603354; x=1782208154;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=2/X+IQDU5vWc0Utt9YT+71W3AhmdLwN2v6pALPN9Aqg=;
-        b=DQq1Lk4B29zRO5VTa+yIxAQ94ExL/hn0pfvIG8zHaW0pp5kJKCQO6r3nS1V1YoGD6v
-         YuQmrNFjvvwW0vYexRGrigoXkb4XsXREs/2zC6ubofx+UzXdVr0VIPc3aKW9OPvm3ois
-         9R6LG0V/TGuIUHcwzuJrMKCBW8Aj+HEgDLsTXF5Mbft7Us8THLRzgtXbFMrOebEhyGBI
-         Ixr7aL9L9vG3IzO/nmbvw6cm5Sl6UontuerTa0fyeMHulCWZWezg3Za1ivRwUnsuk6J4
-         uLlAJeI5YcR3SRLyPyE2eV20FMcDQkYtHoNjMsbB2fkvLQ0uLCtUGGUB90B3DPML/YNk
-         3+YQ==
-X-Forwarded-Encrypted: i=1; AFNElJ8JpSxpt0Ny98jO4HRdat5YCzFYa6M8rs8INmXph2m0wAQzfzAjd/wGgxbr70UEssjpqn/EeA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw+k3iVFh683Y5S+Kwm7+S8AFM8yBc9T8aVkMqgSkixFf2Ausl8
-	s9b9WjR+78z239G8ZpwMI+4wYc5XtSqv/F/92uXuUPIbpTUBbjjRKdW8mHoM6Kdjstjg3FYEkGu
-	GVBM1KpTYCkybNxj4RfZH2H3hvZp0CNHZ0UtfVnQt
-X-Gm-Gg: Acq92OHpiFdbryEe001tApwfycmAPBVbh/Ik7XN0JYenOVcuKMUPulV/JUCmzrFjuzG
-	ZWSnyTZqUXUS7IGlq5FpyGEsAm4LLBHkTUYt3y+/mMelJADkvMLzfdlnra+ZqJzuCBx7jOKtO4W
-	AwB5cEE9qMwPjUVOzJtr59Q5Wps4iUqc3LWjXKildbYr8C/l6KmrSnBgPFcFgtLogLQfXQBoqLA
-	QPPzbgDZKAs5T0OSFeYgwjF+WjPKB/RXexy3gm5W6krUgzu09taMk4rpDlqy1M3gUEw60oZ9Kx0
-	GI1Jr3vc
-X-Received: by 2002:ac8:7f83:0:b0:510:f9b:fb5f with SMTP id
- d75a77b69052e-519904708a9mr8164151cf.16.1781603353313; Tue, 16 Jun 2026
- 02:49:13 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F88UFqux"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50E451F00A3E
+	for <iommu@lists.linux.dev>; Tue, 16 Jun 2026 09:51:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781603507;
+	bh=rKN6Dquf9JjEmoiOojbev5G9ca2XqPvpxKtiKVWHsuA=;
+	h=From:In-Reply-To:References:Date:Subject:To:Cc;
+	b=F88UFquxP6GLTDnZndksxQH93yb7LMcZiAKfOmWMrZWnPbMsihpEeRj3B3ypIx14N
+	 epvt/Fduq7ggo+VV9WejL+g7Sr8uUgpEwhUghrJOHV2dDu2cJpMGZAwcafnTN6Kwbp
+	 a15VxT0oN1UFkqIjBTBPuz+ANyeGrSPc9cwc/Ba8wgMItVhAx1/RhWdSYi9MNN5EZL
+	 /pngyeY6RoI0nwh7Z3R16ElAujbM26xlreosWrdgb2Uz0O09Yj8qqnp6vFlSetlLKF
+	 BXjILI+uuZq84yMv33tltQiFi5KpHo5Cw4g55Nz/0ylLV1OUjYGEAN3Ht6BNupLR3T
+	 h4rEOtybtCu8w==
+Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-3967725a77fso40019741fa.1
+        for <iommu@lists.linux.dev>; Tue, 16 Jun 2026 02:51:47 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ8oXyn2yjOMc3Ie2im8XMZlNvLHy3IbCP4x6fApbfSSDgwyp2+YGzZWwCmJZK292G6uvArpeA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx7q33G+t5vaw3RCVeiR0J4TwOqTg4+rm4SrWM8mEk4Of/p5j+E
+	1q35Npmg3GgcysF/2OvljXRX6o6EZOIpaehLL1Cu9JYDonvviFtcUHAJuV0YRjG3yfatPhVFPMY
+	2bM8ekLnvtyzcIpqC+9WrPGaZU4UicewnJxfu1Dv6ng==
+X-Received: by 2002:ac2:5597:0:b0:5aa:6aac:3f7f with SMTP id
+ 2adb3069b0e04-5ad4277bed7mr670959e87.22.1781603505619; Tue, 16 Jun 2026
+ 02:51:45 -0700 (PDT)
+Received: from 969154062570 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 16 Jun 2026 05:51:44 -0400
+Received: from 969154062570 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 16 Jun 2026 05:51:43 -0400
+From: Bartosz Golaszewski <brgl@kernel.org>
+In-Reply-To: <ajEcDq0S067wMFaK@black.igk.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260615234220.3946885-1-lrizzo@google.com> <ajESl4osXP7roz5q@pedro-suse.lan>
-In-Reply-To: <ajESl4osXP7roz5q@pedro-suse.lan>
-From: Luigi Rizzo <lrizzo@google.com>
-Date: Tue, 16 Jun 2026 11:48:36 +0200
-X-Gm-Features: AVVi8CcHZ3OPXbKC4trSPNuaSPbYaO79J7ToG8S7bAu191E2DonWT9FNgV4gu7M
-Message-ID: <CAMOZA0+L2+=FEQ5ORvv07JaJix0R+6Q6u01CyMKCbd842To9nA@mail.gmail.com>
-Subject: Re: [PATCH] swiotlb: avoid double copy with swiotlb on tx socket
-To: Pedro Falcato <pfalcato@suse.de>
-Cc: rizzo.unipi@gmail.com, m.szyprowski@samsung.com, robin.murphy@arm.com, 
-	willemb@google.com, kuniyu@google.com, davem@davemloft.net, 
-	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, 
-	gregkh@linuxfoundation.org, rafael@kernel.org, akpm@linux-foundation.org, 
-	david@kernel.org, netdev@vger.kernel.org, linux-mm@kvack.org, 
-	iommu@lists.linux.dev, driver-core@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, Jesper Dangaard Brouer <hawk@kernel.org>, 
-	Ilias Apalodimas <ilias.apalodimas@linaro.org>
+References: <20260521-pdev-fwnode-ref-v1-0-88c324a1b8d2@oss.qualcomm.com>
+ <20260521-pdev-fwnode-ref-v1-7-88c324a1b8d2@oss.qualcomm.com>
+ <ah9OIVyrHEhcMHzN@ashevche-desk.local> <CAMRc=McLN9Ovoqo3om-3uC=q+=rcKCoiWMctC=yvwiaHacU0PQ@mail.gmail.com>
+ <ajEcDq0S067wMFaK@black.igk.intel.com>
+Date: Tue, 16 Jun 2026 05:51:43 -0400
+X-Gmail-Original-Message-ID: <CAMRc=MfY3k4a9KdPE-4pmMUEH4KADYaO8ZY+Md9sMzgFr0-s9A@mail.gmail.com>
+X-Gm-Features: AVVi8Ccfi9fNZx5anc5Hh9w27iqbKs4Mv-ef0kQk9lnbNaF9SR74KH4RoJVGW8U
+Message-ID: <CAMRc=MfY3k4a9KdPE-4pmMUEH4KADYaO8ZY+Md9sMzgFr0-s9A@mail.gmail.com>
+Subject: Re: [PATCH 07/23] driver core: platform: provide platform_device_set_fwnode()
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Lee Jones <lee@kernel.org>, Mark Brown <broonie@opensource.wolfsonmicro.com>, 
+	Thierry Reding <thierry.reding@avionic-design.de>, 
+	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Andrew Lunn <andrew+netdev@lunn.ch>, 
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	Srinivas Kandagatla <srini@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Vinod Koul <vkoul@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>, 
+	Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@kernel.org>, 
+	Madhavan Srinivasan <maddy@linux.ibm.com>, Michael Ellerman <mpe@ellerman.id.au>, 
+	Nicholas Piggin <npiggin@gmail.com>, "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, 
+	Andi Shyti <andi.shyti@kernel.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Doug Berger <opendmb@gmail.com>, 
+	Florian Fainelli <florian.fainelli@broadcom.com>, 
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, Ulf Hansson <ulfh@kernel.org>, 
+	Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>, 
+	Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, 
+	Matthew Brost <matthew.brost@intel.com>, 
+	=?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, 
+	Rodrigo Vivi <rodrigo.vivi@intel.com>, David Airlie <airlied@gmail.com>, 
+	Simona Vetter <simona@ffwll.ch>, Peter Chen <peter.chen@kernel.org>, 
+	Paul Cercueil <paul@crapouillou.net>, Bin Liu <b-liu@ti.com>, 
+	Philipp Zabel <p.zabel@pengutronix.de>, Maximilian Luz <luzmaximilian@gmail.com>, 
+	Hans de Goede <hansg@kernel.org>, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	Krzysztof Kozlowski <krzk@kernel.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linux-kernel@vger.kernel.org, 
+	netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
+	linux-sound@vger.kernel.org, driver-core@lists.linux.dev, 
+	devicetree@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
+	linux-i2c@vger.kernel.org, iommu@lists.linux.dev, linux-pm@vger.kernel.org, 
+	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	intel-xe@lists.freedesktop.org, dri-devel@lists.freedesktop.org, 
+	linux-usb@vger.kernel.org, linux-mips@vger.kernel.org, 
+	platform-driver-x86@vger.kernel.org, 
+	Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>, 
+	Bartosz Golaszewski <brgl@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 16, 2026 at 11:20=E2=80=AFAM Pedro Falcato <pfalcato@suse.de> w=
-rote:
+On Tue, 16 Jun 2026 11:49:02 +0200, Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> said:
+> On Thu, Jun 04, 2026 at 05:32:27AM -0700, Bartosz Golaszewski wrote:
+>> On Tue, 2 Jun 2026 23:41:53 +0200, Andy Shevchenko
+>> <andriy.shevchenko@linux.intel.com> said:
+>> > On Thu, May 21, 2026 at 10:36:30AM +0200, Bartosz Golaszewski wrote:
+>> >> Provide a helper function encapsulating the logic of assigning firmware
+>> >> nodes to platform devices created with platform_device_alloc(). Make the
+>> >> kerneldoc state that this is the proper interface for assigning firmware
+>> >> nodes to dynamically allocated platform devices. This will allow us to
+>> >> switch to counting the references of the device's firmware nodes in the
+>> >> future, not only the OF nodes.
+>> >
+>> > But why different for of_node and fwnode to begin with?!
+>>
+>> I'm not following. What are you suggesting?
 >
-> (+cc page pool maintainers)
-> On Mon, Jun 15, 2026 at 11:42:20PM +0000, Luigi Rizzo wrote:
-> > The use of swiotlb causes an extra data copy on I/O.  For tx sockets,
-> > especially with greedy senders, this has a high chance of happening in
-> > the softirq handler for tx network interrupts, creating a significant
-> > performance bottleneck.
-> >
-> > Allow tx sockets to allocate socket buffers directly from the bounce
-> > buffers. This avoids the second copy and removes the above bottleneck.
-> > The fraction of swiotlb buffers allowed for this feature is set with
-> >    /sys/module/swiotlb/parameters/zerocopy_tx_percent
-> > (0 means disabled, 90 is the maximum, to avoid persistent I/O failures)=
-.
-> >
-> > Implementation:
-> > - define a new page type to unambiguously identify bounce buffers used
-> >   as backing storage for socket buffers
-> > - modify skb_page_frag_refill to perform the modified allocation
-> > - modify the destructors __free_frozen_pages(), free_unref_folio() to
-> >   handle those pages and return them to the pool.
-> >
-> > The savings are especially visible with fewer queues. In synthetic
-> > benchmarks, senders with 1-2 queues would cap around 50Gbps with
-> > conventional swiotlb, and reach over 170Gbps with the feature enabled.
+> After re-reading of this thread, I think I'm suggesting the same what you have
+> in plans to do in the future as you put it as "This will allow us to switch to
+> counting the references of the device's firmware nodes in the future, not only
+> the OF nodes."
 >
-> I could be wrong, but I genuinely think that the way to go about this is
-> using page_pool for regular TX as well. page_pool pages are all dma-mappe=
-d
-> (so whatever swiotlb optimization you want can be done there), and the ne=
-t
-> stack already has awareness of these special pages and special skbs, so i=
-t
-> won't Just Return Them back to the page allocator.
+> // Offtopic
+> I haven't heard from you for more than a month on this:
+> https://lore.kernel.org/r/af18zdP5HF3_P9Vo@black.igk.intel.com
+> Anything should I do? Please, answer to that thread.
+>
 
-I am not sure I follow your comment above, can you expand/clarify?
+Eek, sorry, must have flown under the radar.
 
-The problem I am dealing with is that the copy from the socket buffer
-to the bounce buffer is done in the device xmit function. Under high
-it is almost always done by the tx softirq.
-This means that even if we move the copy outside the HARD_TX_LOCK(),
-it would still be almost completely serialized.
-Hence the proposed method to make skb_page_frag_refill() allocate
-directly a bounce buffer (under specific conditions) so there is a single c=
-opy
-done directly to the dma-able buffer, and ii is done  in the user threads/C=
-PUs
-and is not seriallized in the softirq thread.
+I'll pull it now, I will do a second PR for this merge window anyway.
 
-I am not sure how page_pool on tx could help here.
-
-cheers
-luigi
+Bart
