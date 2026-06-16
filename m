@@ -1,116 +1,123 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DCF53B14B4;
-	Tue, 16 Jun 2026 11:22:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781608940; cv=none; b=NHqOCjegpvve4lpp/GaAKTfJ/HZnxQ+SMU7VAmlw/QwDE4Fm7kIX5ZQRL+2uvM2NVs7PzofqMGVYzI/6nBAGNt8T9Q5ekepcJpPnA9xC0O2285HUJElNC3mlNTjuZr2Rjt2a+3pfLz4U6J1lJcbGEQ30z9omoslrZWRbLMOALjs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781608940; c=relaxed/simple;
-	bh=nohL65ROZIqtmEJOb8WOvehUuPoWHPtjZtI1TlTx0/Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NKe8G9uxoMf2eBp8phREcf98Bx8tbqUOUCS2BP76KtZociG1xEJLVGWgo84xqaq7t896ejiA+FmvaIWM6lOKBTfSZx0tdVTPp0lm1x3n80ktErnxl5PNiRC3qb6l3aAfwyJIYDTEGd+VMA/xxHq5UwQUUDSqUqYiJq9pJYBTf5s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gYVH7dtK; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BD6F36F42B
+	for <iommu@lists.linux.dev>; Tue, 16 Jun 2026 15:08:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.173
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781622481; cv=pass; b=D9jFVZ47uAGb7LP1W5XPYq4PzYTbuJxHsrDUU82YI25YXz97DJnKmc06L84E6agy7iGf2rpkQLR8fD8MluzQ1t5CP/gbvtKmkGnHQOnItEblqPnDfYvFBSl1GHIu07y2nDSz4Vjkil4q3SfP6sqsM8r3UjAgvYvRfJ2a7BwZgoE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781622481; c=relaxed/simple;
+	bh=tgJVBXAPvKOADMatPH6dObPtPwnXbB9HGcTOWlZ+8D0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=nZd+Y2qSGkKw8koTZqnoFIz5RjsJ2gqRDCxAYS3Z3L/UMgvXmAMsvCSPZoI+CyMB/IZj9Ppmyr3UwQiu4MITbF6q+4qicuriCdvYbtqg7nRyKbjGeOPH+khWVEeAPGjPEXPSqL7295MWZswm+BW8O3yZ5mBvmttZ/OJe4rTeaXE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=MpyjXWYI; arc=pass smtp.client-ip=209.85.160.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gYVH7dtK"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1781608939; x=1813144939;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=nohL65ROZIqtmEJOb8WOvehUuPoWHPtjZtI1TlTx0/Y=;
-  b=gYVH7dtKfdgg3Eo22nsb/iHWy0tGFgJjCp7cgmXALfVh6mrmv71da5o6
-   env9lj7QaJmZEws/3zYKV2X1taZYCUoOLfGZHmy0tNSAOJ6UYoZi2OoOu
-   qZxzPWPQoZBuDYa0RcNx0lNO+uH/UjYE0HnQieYKtP48rWovtTit0jnxA
-   HfmNWH/5ZLudKhxENwICwsJZdxr3LEza/eR7bZyANDWNeFpokO0mGa6iX
-   h7mMvjRZCqBSKnyxDL2Gpf7kttdOh26FDL1MPTaIHlvD6PvwSd06atiQI
-   fyDDLbaHrWYcf29pJrzKHvpWjWz0VuP/sU0f+daAAjjB/ITr7QXzrCqrS
-   w==;
-X-CSE-ConnectionGUID: GOw9ThizQ12brdW69eTWyA==
-X-CSE-MsgGUID: ilfeQifjSEeYdQUsM+ev2Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11818"; a="82271780"
-X-IronPort-AV: E=Sophos;i="6.24,208,1774335600"; 
-   d="scan'208";a="82271780"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2026 04:22:18 -0700
-X-CSE-ConnectionGUID: yuoDe4CTQU+HO5V73soi0g==
-X-CSE-MsgGUID: ccB/ruOPR8KdguyS4qxCSw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,208,1774335600"; 
-   d="scan'208";a="244860539"
-Received: from lkp-server01.sh.intel.com (HELO f0d55cb201f0) ([10.239.97.150])
-  by fmviesa007.fm.intel.com with ESMTP; 16 Jun 2026 04:22:14 -0700
-Received: from kbuild by f0d55cb201f0 with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1wZRrv-00000000T66-2F3Z;
-	Tue, 16 Jun 2026 11:22:11 +0000
-Date: Tue, 16 Jun 2026 19:21:11 +0800
-From: kernel test robot <lkp@intel.com>
-To: Luigi Rizzo <lrizzo@google.com>, rizzo.unipi@gmail.com,
-	m.szyprowski@samsung.com, robin.murphy@arm.com, willemb@google.com,
-	kuniyu@google.com, davem@davemloft.net, edumazet@google.com,
-	kuba@kernel.org, pabeni@redhat.com
-Cc: oe-kbuild-all@lists.linux.dev, gregkh@linuxfoundation.org,
-	rafael@kernel.org, akpm@linux-foundation.org, david@kernel.org,
-	netdev@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux.dev,
-	driver-core@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] swiotlb: avoid double copy with swiotlb on tx socket
-Message-ID: <202606161921.OPkgBApm-lkp@intel.com>
-References: <20260615234220.3946885-1-lrizzo@google.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="MpyjXWYI"
+Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-5177d1ff061so144731cf.1
+        for <iommu@lists.linux.dev>; Tue, 16 Jun 2026 08:08:00 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1781622479; cv=none;
+        d=google.com; s=arc-20240605;
+        b=iWK4/sT8002y8VWjsb9uIR3Nn+IN7UZ2cXXkJvlFMCXwpM/zdTnGICh5pPlxZrjBtq
+         mjFHvT45GH3GThviUxKZ9RpDQPGp5bdKBKHV6bDabUm/hAyuDPVocQONzqcmUP/VgV7M
+         6Ii6HVPLfINKMv4x+C5tAuDgOiqMzLsKxktdLTaIA1DjRZococ/6hdkfoUmDaFeH1aKQ
+         38EAMTEVPnpBuEGlSG2JfJAxLBbSPmVBPLQAUgSoJ4XUMyfNg+QnXepbjuM8PghbWj7o
+         5wSaDx9JQ0tK+u2wmyt7gXgBCEsILj+Ck2ebal9X85h6gXF5OixORRxmUWD1piXRfL1W
+         ioYQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=fqq5dKUgw8U/2JqRQThbBU/bf6oLY395y2woLL4ZjX8=;
+        fh=Xs6bssNm0S1EWlhHWyv9EHYZuuMlZXgHDEWP94jUKqs=;
+        b=UiYaNg3SZFtBtPq6ExxBHaEJrVyc/wSvrjJuzQbUMu3IGj6fSAETfDqJWFWOg+5UtQ
+         P6GxkUR/aYFse/ImkKxVtxs3+2YVixgcHLgl4HqmFxI1rIgZikBUPmX73vMbBi2hbBED
+         DuoHdm4NkcUs8L0g/AMi/m7ZhFQZLQt6c0NNk6i4h1+mHV8tQZwo6TJ18cJ9PpNdpgA+
+         ionJl0ACSpVcFTv+9K6zs04aDqQqDlmNPPbIw5AIS4lX3P8f6rVhOoh7CvnpsVBsflB8
+         7OmdHHgHy8DPjF0d+ZrUdoWKQht9WmLHwAz7GczbZ2v8muy+w4Xjr2vje2BQdri1Ntsv
+         7xtA==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1781622479; x=1782227279; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fqq5dKUgw8U/2JqRQThbBU/bf6oLY395y2woLL4ZjX8=;
+        b=MpyjXWYI9MiUczp9nKmb8/OaaREUYrbbDzBNwbiol6nTluhlQIJFDgHq+AP7YwDnzk
+         3EDuDRn1CKbVBgQsxabDi2xjqkH4wSVL43sO0OrjUB62hEoL/G7mFT9hrpde49AcrK8F
+         Eq+Ox4T/3O/tautRz1KhgGFlxDdYgqAl+boLMklIFzRV/s228jWQS1k3K0BV+A//t2v4
+         qzJKZUJmtY1cI205YnoeicYqv6/y9IQt8k5hyb++LKHdnXCCSIu6GwluD7hd0XmioaJH
+         BausjJT+X2vl6LdX2aY/DkV6DJak2ubv8XE3sNp03FBrSVuxpMLQG6gRiiNMW8In8Rug
+         LMhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781622479; x=1782227279;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=fqq5dKUgw8U/2JqRQThbBU/bf6oLY395y2woLL4ZjX8=;
+        b=dZ2IbFkQmnZM0C/xlctI72Pbczp+fsuOTtrxPLzhpMZU7XuWAljWfjrgqopObf8E/Y
+         WVhK1+EEy9DRg8LOGG3/6kq9VAZxye0B4If68ZZLnqLfzSCMTsZ5MBDGA6n7SX69YTWa
+         Cy4IGw7ZTgABwoSKrY2A83Bn0fgdAnzpvtHKUtknywQ4dgU9o+k1U55cNUi2trqZUedO
+         OuctbPRC/IFUmybCB9bYt5HTWvDMtDFy0z06t46/XEQ6tbQmkO1ScENORmJb9V5Ogkdd
+         S34Wot29Ht2Kc20SD5bsLkvxZY0oZA97pmCL0DDXxCJ47AuT5BU5aPBMTD2cSznVCCI7
+         4AYg==
+X-Forwarded-Encrypted: i=1; AFNElJ/Coo1MZlbjcpoVxttem9EE5r3SaFi0NdKXZW70ij3+e26mJ3ihSd1OHdiOzEeWLa+69EpFyA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx80ng159Nj28bGpoGbwPSu4dcOEVRj84J5UMZAIOT7oNXv6/Fb
+	ZHJcfjf5One4UmGa4YGIg2fHBOj0ZeYgTzpQ9aVYm2gxwj6INeD+YoT9oGuKL2Dx7o4Zx3Qcufd
+	ofjwmGFLYEzLOohUc+QOnVN11OduQLkIwqJGRiWbK
+X-Gm-Gg: Acq92OFuUxq42NgwQvOHPzYt4XBp9+tROEBX410WhN7gu4SvF6eQRb6srXAm0ceaDj/
+	eN4HOxllR35q/pe7sBY8pT8JqYeAAu+b53Zit+LKO3yx8q2/AblurxH6ZcQD7uppZNf++ZJMZBw
+	ve4ATDy6KerWPUDT4irPuKRu52mRi2VEMFXPzZ90haoZYlz0CBzvO5FXQb3RdY4mIJjPExKRYmo
+	S6C6nXJONaK3D4eHKoYAxpwZxUfie/TPYhUFifkql3WVG5i//AEbjdbgpDgTAI9CwsADMbrp+bB
+	oCuens8zjcYnKxE=
+X-Received: by 2002:a05:622a:8c0e:b0:516:4f62:85e8 with SMTP id
+ d75a77b69052e-519a34e7b85mr2617721cf.19.1781622478631; Tue, 16 Jun 2026
+ 08:07:58 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260615234220.3946885-1-lrizzo@google.com>
+References: <20260601215909.3958732-1-praan@google.com> <20260601215909.3958732-10-praan@google.com>
+ <ajBCazla1VoJX9Ms@google.com> <ajBWGSs6RrkRTcSY@google.com>
+In-Reply-To: <ajBWGSs6RrkRTcSY@google.com>
+From: Daniel Mentz <danielmentz@google.com>
+Date: Tue, 16 Jun 2026 08:07:44 -0700
+X-Gm-Features: AVVi8CfqcSeUYuDAEnTPMC0DtKy0TtaDLxdPPAnI0OHRksFAMPBLMu228VtVFLM
+Message-ID: <CAE2F3rCmGS0Q+fZkJXRfStQt0MuoRGE8Nk4PCtvFb5Vj5ZxKEg@mail.gmail.com>
+Subject: Re: [PATCH v8 09/12] iommu/arm-smmu-v3: Implement pm_runtime & system
+ sleep ops
+To: Pranjal Shrivastava <praan@google.com>
+Cc: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev, 
+	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>, Ashish Mhetre <amhetre@nvidia.com>, 
+	linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Luigi,
+On Mon, Jun 15, 2026 at 12:44=E2=80=AFPM Pranjal Shrivastava <praan@google.=
+com> wrote:
+>
+> On Mon, Jun 15, 2026 at 06:20:27PM +0000, Mostafa Saleh wrote:
+> > On Mon, Jun 01, 2026 at 09:59:06PM +0000, Pranjal Shrivastava wrote:
+> > > Implement pm_runtime and system sleep ops for arm-smmu-v3.
 
-kernel test robot noticed the following build warnings:
+> > > +   /* Clear any flags from the previous life */
 
-[auto build test WARNING on akpm-mm/mm-everything]
-[also build test WARNING on linus/master v7.1 next-20260615]
-[cannot apply to driver-core/driver-core-testing driver-core/driver-core-next driver-core/driver-core-linus]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+I'm wondering if this comment can be improved. You are clearing a very
+specific flag, not just any random one. How about "Resume command
+queue insertion by clearing STOP_FLAG"?
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Luigi-Rizzo/swiotlb-avoid-double-copy-with-swiotlb-on-tx-socket/20260616-074655
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-everything
-patch link:    https://lore.kernel.org/r/20260615234220.3946885-1-lrizzo%40google.com
-patch subject: [PATCH] swiotlb: avoid double copy with swiotlb on tx socket
-config: arm-randconfig-r122-20260616 (https://download.01.org/0day-ci/archive/20260616/202606161921.OPkgBApm-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 16.1.0
-sparse: v0.6.5-rc1
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260616/202606161921.OPkgBApm-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202606161921.OPkgBApm-lkp@intel.com/
-
-sparse warnings: (new ones prefixed by >>)
-   kernel/dma/swiotlb.c: note: in included file (through include/linux/dma-direct.h):
->> include/linux/swiotlb.h:229:65: sparse: sparse: Using plain integer as NULL pointer
->> include/linux/swiotlb.h:229:65: sparse: sparse: Using plain integer as NULL pointer
-
-vim +229 include/linux/swiotlb.h
-
-   224	
-   225	static inline bool is_zerocopy_swiotlb_folio(struct page *page)
-   226	{
-   227		struct folio *folio = page_folio(page);
-   228	
- > 229		return folio_test_zcswiotlb(folio) && folio->private != 0;
-   230	}
-   231	
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+> > > +   atomic_andnot(CMDQ_PROD_STOP_FLAG, &smmu->cmdq.owner_prod);
+> > > +   atomic_andnot(CMDQ_PROD_STOP_FLAG, &smmu->cmdq.q.llq.atomic.prod)=
+;
+> >
+> > Should not that be done from the suspend call?
+>
+> I'm not sure if I understand? We're just clearing the flag here?
+> We set the flag in suspend to close the gate and clear it in resume
+> to re-open it. Clearing it at the end of suspend would be wrong as it
+> would allow new submissions while the SMMU is off..
