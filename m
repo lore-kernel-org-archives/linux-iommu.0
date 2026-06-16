@@ -1,63 +1,64 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8DAB3955EE
-	for <iommu@lists.linux.dev>; Tue, 16 Jun 2026 21:40:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88E0D3563E8
+	for <iommu@lists.linux.dev>; Tue, 16 Jun 2026 22:03:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781646027; cv=none; b=PS4PmdPDCPqc7GDmnDFQNVE+D5RocTovoUuFqKsKtEr84/192KMr6AhTsmGMipCdJmcCf6j6j0FQJFpqt7BDBlEGBhoQVRc84LO0Q73zph55B2BQ6rSBxMg/gmrkRzRP2kKXKogQWF6PrsWPRePEVJ/wdTUNfJlRYqY8cWwuDIk=
+	t=1781647407; cv=none; b=CfKeOLN791ZJZ+roq7YYzxxcLogiMft7eksSDcedUY4IAQW0DPgBECdDLOcpvmUQOfPTnXhoM51VXh4dSWDsLcZBlRf2rWOiVLSWNjlNhn1CMJE5nUlWZ6PT0dpuJFTiPVbwc3YwYl2Uc5iDvAEbuWcJaW2q8rFuLxEeT+MyBiw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781646027; c=relaxed/simple;
-	bh=cf38p7/480zhJLlTa5tSMMqpYgTmy8ye4F4mLRnk9e8=;
+	s=arc-20240116; t=1781647407; c=relaxed/simple;
+	bh=n+DrKzVlK4Vo1TC5awVrKdPz1JHSoXcF53SqsJK9/YU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VBy77JFBW3D5PMUGL5n7KM4ETI9w7/6Vwtvfjcbtg3/IWzSXBpC8ttwTnhLE/ow4d3EpD04ShM7gTzuIP7TQgGi863LC+qlfkCyDqLXBfgWimRMpIJmIJwo4ZMhh0lUZC9uuiy/7iEYaZfhMqfswLV0QFos+ddXQzuV6jbd0IyE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=PmJN1T3w; arc=none smtp.client-ip=209.85.214.180
+	 Content-Type:Content-Disposition:In-Reply-To; b=iDEQNqK3T7xR+ZXltjXAIM1VhZsAuxNQuE0eW3jIsSu22w6nVkIKYO0x8ljOmW94jaXHsmiMu1BPDeaI3rI0sRToJuKZVxPYiV5Z0VCNJTt4YrWVTFdu17hGdmehYqvzbuFggQxh748j3C3EekDREcJ8QmxyowziBe1jo31Xohk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=BiLg0Ad/; arc=none smtp.client-ip=209.85.214.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="PmJN1T3w"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2c69fa0b1f8so21955ad.0
-        for <iommu@lists.linux.dev>; Tue, 16 Jun 2026 14:40:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="BiLg0Ad/"
+Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2bf2d865383so8995ad.1
+        for <iommu@lists.linux.dev>; Tue, 16 Jun 2026 15:03:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1781646026; x=1782250826; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1781647406; x=1782252206; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=NTvGNCNlXhAU22YZdcNpEpd5dGKKVfzL8A+xoJlmFiY=;
-        b=PmJN1T3wQuju2dVT0o2n6wADLzOzBaSeTc0F468G6wtqLucxbQVJbzdu+6jCWmO3HT
-         0z/eBsREQ6/rPC/YmDF90TRXEO7T8LuZVeYXYAsB8uYkMCxCwiS1c715UMtrbt2uhoFZ
-         D/6sMzoh0hK/1wGIEttpgUKJNwdSTOXeOv2QyuqbyaBiXdxNRvW1lHbDhkpJQHUNiFRq
-         /jJFkglKsPxJ8fB6wLW4YhD0dgTuCpx0QOWFIrRU9vokDuwtbHJcLwbf5zRZLtdPTH0m
-         4eUNqYs2BIPUv/2fVDMYzwtIJiqGxVQ5uB9WxSgg8DuXMmvrlpkf7R5GY91952nTjDIA
-         3yEg==
+        bh=NoLcumEN/kPT7/CRK96A5RBRgsnrugeYjsKegpzlXQg=;
+        b=BiLg0Ad/T7SjDoO4k4pJBucmpB00gryFpATRrK53pZFElLIdxeJBFVIDlzJsgiG21a
+         /wT/AQJS2t0XWFjEqAcM7hgcrjFrpFwLceHUhT8SwWFpqWkL4VSHa8mIt4NnSoRI2Kom
+         L02Te2uYBLNYjotB87rNF/Ea2Tt3ioJThTZpUs3ErOtS+g0CWua0mYXSYK5jsbx+mdiB
+         x8PXnZEtulIEmjO6aJgetm007lsU9JP6weosx4pGUxwo8eSGuExqQsjT4qouZh3zyy/H
+         fW0EWBBpbuu7ABRdJRkzKVWGUcT/jgflbKKwQZHokDZxXp05ffg66fZgnZEJ2FWBojqV
+         NdNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781646026; x=1782250826;
+        d=1e100.net; s=20251104; t=1781647406; x=1782252206;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=NTvGNCNlXhAU22YZdcNpEpd5dGKKVfzL8A+xoJlmFiY=;
-        b=aFv+IjOPmz1XeNtW/DER0BupEC2+Xg1FCvB5kC/soNnDoiNJOgIhUAAuFH425+xUaD
-         giAqKo0Kga4u+dsgBqKISl8P+Agg1aTYoXPnvNYLLLYnR97MgSGW71JmfoI46FC/9NTp
-         Af0jiBzaTl/h0vkp1QBkKvkXpAmZC/w7zA7UITRcBmdTWGlYup+lD0HBa5EZhP5wZQ0F
-         N/lAxanAXpG+p21WH6Br+r7XzaSCo/rCO7uQPOWi5fWk0YnnioJz1h/e1aJ7haYcMK/5
-         hqAoFJob9NC6gwp6LlIRbx/aBVbC2nPOSQbHGcBj9kZrfWus6vcYvz/NVdpZHzymYGh3
-         N+sQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9YqqhXj8NvRpewbmg7zwm56SneSw5euX18lpOioApqsEbSPWlTkzFGFZv+v1qmYyMR2H45Gw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwtXWCWVZZww2x2R1E9ejCgBZ8IavfClkt7JdQ+yo8HOUnAa/uf
-	0t6DwChHXLR/macsaYqpEXdHbAiXSjBziCnQSnR0giG6Ms+MkCb5h4V+4tzyIREaWw==
-X-Gm-Gg: AfdE7cl2rZ3w7A4FU32SVpg18xZWE8Zt8H5bjV9+C8l/uMDGoci1Ts5MAppO3Qxb9VY
-	beOaCCAtX/rQUFesCjN1jrbf2LtFIr2mb7HtBanyAuX/yp/S9Ks9U0a0ZtzhlVDA5Zg4O8lbQ/9
-	dTIX23CMfeZyyesubSVBkjtQEOJ6iCzK4VtU7gyEQ3RVnb0aGv8lHEs4xcmi/ynNA7fCriIJQ8I
-	HXU3UfBm13sHCAhe29xcDz4Qlg6fidxAhlqZ9FG1nxS5dwKwthVH7jOln26yTR40b7GrMzEeO5M
-	ioFfq38GlESDxK43HhTDEc0x0DJfr+88KT+AbrB5c4t5HHOmQbV9qIjR77WpnKbLMpAia6VfO2k
-	zCkC/3vsE+A1K/+Glh31D2ZvCNPbD0mk7efrfSMeuyRaLr/YqjdFUhjmyFNfvYPtFmz3myUvxfr
-	eG5vx1gnFM1UDmMLtrXRF/GQPKi3GurOvg/5ym7HVU7Q8UbdTYWLXoo3xTlOY3
-X-Received: by 2002:a17:902:da82:b0:2bd:7bec:f0e6 with SMTP id d9443c01a7336-2c6bd35a632mr428915ad.1.1781646025596;
-        Tue, 16 Jun 2026 14:40:25 -0700 (PDT)
+        bh=NoLcumEN/kPT7/CRK96A5RBRgsnrugeYjsKegpzlXQg=;
+        b=sHlLtNa8JuOOAIoEMMHIqH9nUBkyaE5zl9GKW1cdQ8YiHxX74WOzKfFGxRUqjuciJM
+         Mbucu5yrOOHOkxEv65b41yv3zDvZsHQn6lNlRXyq9JzPS6e5kwMBIT4Y28WxP3nkrMH4
+         VB4DQZt+cW5v41jRO7YDouElWL0An0KzS67s7kTFPjjJLhElK2YL2hFRmf6LGvyNV/7I
+         BBDKikAMBaLZ7aPCnpMkr3gkdl5+GxFytALLqrg2c8AsThaRcbSHnYawdhGXfjVbvw70
+         FbpfLr8xHlVcBnTe4y00vODXy1gURJvsntC+e/OGzZjAo/fTQRC4Zi/K/WCVclLADfwc
+         hzMw==
+X-Forwarded-Encrypted: i=1; AFNElJ99ykGbAqX2HA4QteLY2ovoGCCTEDvRs0Mu3ylBewZrQaZ783YnjqVRh9BSYZokgQQFNsgl8w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyAxhh2jtLw42+XnygyhZ73TQi08Pt8PPj0Dh+J0eA8px9dmNe0
+	Hg1XX3H2F+qW2wIrz3ip9kCg+k4hqDxVA3GUBZSzai0TEfWS8zNLfVRnVNYInP5QAPmVvECnaHQ
+	DtbZWUA==
+X-Gm-Gg: AfdE7cnO2owzxSKXrr2pOtbEbMdIMeSOuetX7LmYzldXmUPvtJYKaRf2F8iEORfubKC
+	+gPQwclHcAvZ7paQG2CFESOP4ea2YmFOis1CakuKdA03NihSDjT92NrnoUkaIXjYDuchh0KtEWN
+	IbiE6QkLLsrS7x+ejlU91w+cIUzSTn1RmAreY0AunlBtUwRwMMFuILfrakhSpnviMF6QJKSys/H
+	XxXa0VGhq12dzFlzChAue8SXYONLznPrrB7wESSZhY1bVgCULOkpt6XujbKmYz7Frux6nLvGgBu
+	e06RU1cRMijOQaS9elnRMJZlQilGmUPxVHKuDvryl3cNhGKzG1zY0/EZVmmFm3mr3Zk3466sIre
+	vUn9dA03ObY2YIxPUmJk4L90RiB26cDdbWcH/1hLpJ0QdagAYjntXQBj47+klJJ+kmQk+ybt+0j
+	L7AhQgDGDRmSsFdoE3wPdcCrCtq7OUGGCUhluTWvqylBSVuiO5XtvEY3jU6+aE
+X-Received: by 2002:a17:902:e94e:b0:2c1:ee6e:be1e with SMTP id d9443c01a7336-2c6bbb0fb90mr786055ad.28.1781647405537;
+        Tue, 16 Jun 2026 15:03:25 -0700 (PDT)
 Received: from google.com (199.255.142.34.bc.googleusercontent.com. [34.142.255.199])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c42f1f0f31sm139126615ad.2.2026.06.16.14.40.21
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c4330782b2sm153062475ad.67.2026.06.16.15.03.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Jun 2026 14:40:25 -0700 (PDT)
-Date: Tue, 16 Jun 2026 21:40:18 +0000
+        Tue, 16 Jun 2026 15:03:24 -0700 (PDT)
+Date: Tue, 16 Jun 2026 22:03:17 +0000
 From: Pranjal Shrivastava <praan@google.com>
 To: Jacob Pan <jacob.pan@linux.microsoft.com>
 Cc: linux-kernel@vger.kernel.org,
@@ -72,11 +73,10 @@ Cc: linux-kernel@vger.kernel.org,
 	Baolu Lu <baolu.lu@linux.intel.com>,
 	Saurabh Sengar <ssengar@linux.microsoft.com>, skhawaja@google.com,
 	pasha.tatashin@soleen.com, Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v9 4/6] iommufd: Add an ioctl to query PA from IOVA for
- noiommu mode
-Message-ID: <ajHCwqHUcWl2dqCF@google.com>
+Subject: Re: [PATCH v9 5/6] vfio: Enable cdev noiommu mode under iommufd
+Message-ID: <ajHIJfV_oSvpooT6@google.com>
 References: <20260611172658.3421138-1-jacob.pan@linux.microsoft.com>
- <20260611172658.3421138-5-jacob.pan@linux.microsoft.com>
+ <20260611172658.3421138-6-jacob.pan@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -85,20 +85,14 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260611172658.3421138-5-jacob.pan@linux.microsoft.com>
+In-Reply-To: <20260611172658.3421138-6-jacob.pan@linux.microsoft.com>
 
-On Thu, Jun 11, 2026 at 10:26:56AM -0700, Jacob Pan wrote:
-> To support no-IOMMU mode where userspace drivers perform unsafe DMA
-> using physical addresses, introduce a new API to retrieve the
-> physical address of a user-allocated DMA buffer that has been mapped to
-> an IOVA via IOMMU_IOAS_MAP. The mapping is backed by SW-only I/O page
-> tables maintained by the GENERIC_PT framework.
+On Thu, Jun 11, 2026 at 10:26:57AM -0700, Jacob Pan wrote:
+> Now that devices under noiommu mode can bind with IOMMUFD and perform
+> IOAS operations, lift restrictions on cdev from VFIO side.
+> Use cases are documented in Documentation/driver-api/vfio.rst
 > 
-> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 > Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> Co-developed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
 
 Reviewed-by: Pranjal Shrivastava <praan@google.com>
