@@ -1,103 +1,129 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7808E3B71DD
-	for <iommu@lists.linux.dev>; Tue, 16 Jun 2026 10:36:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A968426D02
+	for <iommu@lists.linux.dev>; Tue, 16 Jun 2026 11:07:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781606216; cv=none; b=svHTzT0f2U8dBJbcM2SvtPOfNd8VVdTzAWWu0Qgdcy00SDTQJ/2l7h1UjXYgqmwRVfJ22uzBfrd3OBqgOqs/N2yxZJrKHXa8o2XY4VCkB23MMQDHTy5IPRMzFoS7CV/hyb3r4D3/G9kX17r/zWxvjgbk6Ub2/kKA6Byt3ldBi6w=
+	t=1781608025; cv=none; b=EFip02YxPpB69XYnE7i72JWmuUPouCh7yK/3uroJltgnd78IZSIO73EpjXqqgaEhmEi0OtdpA57oC4KWKaSQ4+fLaWvWJyUwbSyyc7Dg96QZkMpgCIgDnPpIS/mKiZW5pTz2mFQmYph/SFnviW/JEJjni4k8tE3OOZmpfxkdMW4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781606216; c=relaxed/simple;
-	bh=mham4oXiC8G0ze0UEophqelkPV9RF5TD4W4HCfUq19Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=LbM2FcEl11Im8zK6i0EjHr1QlKbM+jejZZjKpMWAFSAh62iI9SyUv5OonCqh0L9f+9YjenrZklC6vKlBX/ozCk1G9Iqi1kjUnEMjA/VKeUgyQfeLBCmiKstl2wedHNUHaSU2tl2vhjrGjIm+ubUJVkmcIAeDX0SqiM+/jTNmw5I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NaCi9L9S; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1781608025; c=relaxed/simple;
+	bh=8L7LN5GWKaXLjw308PhIswoJMOtulW5cOuUEITh9aLI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Hhg8IhD/8r8O+Riwq+rfryG21Ls7Mhu6ztj7nP2aTl0NQr5n7V5eqEPBfXpsHsXkX1UeHw0VA0HFTd/iHHqXOiajx/Uz5Nh+0NVITbK5QlSOJTWwlB9hwBpV4ibfnNwNsPj2qDDegqboSPn2saCUQc1+h68uCb77MC4VP+w8ag0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=CRwXOtLF; arc=none smtp.client-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NaCi9L9S"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4908b92904fso54091165e9.0
-        for <iommu@lists.linux.dev>; Tue, 16 Jun 2026 03:36:55 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="CRwXOtLF"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-490b23c828aso34135e9.1
+        for <iommu@lists.linux.dev>; Tue, 16 Jun 2026 04:07:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781606214; x=1782211014; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YCN4z+iPY+eriaEkOl+rtItlbIIjfyx0HCk1gZxOhtg=;
-        b=NaCi9L9SrMq/j4OIMfN1wfX3i7jPKc/S01kwmVmX3IocWw+oxfcoFtGD9qozok6tER
-         KDCkMVMt0Vj1OS8WaW9XEs1ajBfhAyeuW+cIfbCz4Mu3fyUYYrrAN4tJ8xEwcgzCGvyX
-         OsuzzHABhSaAmCtlNm3McO/qXYM9M6PQ8B1UrXgmTkfdaU1VYyjzCV2HdhZAhjg0VCsE
-         BPjPbR6JVJhidoqGMS5FM0/brmktOYsd8vzfe1P2u5PaJsetOQo9MQ39554Wbxr3vZnW
-         es6CyZVksspbuBiReo1SHSBL+iG5umBmYJRlUQn1cMkT1lyh8zHNf+ahqTIU/p8m+g5m
-         Ccfg==
+        d=google.com; s=20251104; t=1781608023; x=1782212823; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=eJ3fUZ+/EYmTkDXUK4ZNvux/ajtwZf6cg0AECRGmMnI=;
+        b=CRwXOtLF/kZh58vZCaOAdZFVIUC/3ZIaiWpJR4OwIN2LUDK4KxumSM8TmWgPkbUwml
+         kiIRhyDP2oCF3hchtpOt1imxpYKjqg3hi1cBUE0zNLdYuuwmxxIUVpoDJUuSQs7EE6TT
+         zFBENmtv3jMXIRRzpcnWdDsZi1eEICSg5teNwaHW5cjUMQt52n/VrFrfega7/qNRqA/q
+         XfdwU7PVb82UX7PGed7eSxb4GDtk1d/Dw7ANDRnEsA2tCTCilwPiZwzLmU9/kyACoqHG
+         +kgvxA/Ts7K6WN/xGjpa4yKrloHagG3hfk9fQlsy+P0f1r23pSIU2F42e/EUet5BXN9A
+         vPmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781606214; x=1782211014;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=YCN4z+iPY+eriaEkOl+rtItlbIIjfyx0HCk1gZxOhtg=;
-        b=r66K2KDPnEUfIor7tLNGz4lZ8/lfkU3G0oE+ppTzpGjG/OCznTBkLQUfZvWobEhGpi
-         YjmjR1gSZaEIFtHz1Guumm4BoWAN2udSqBtVB/WN4TChVcIl3ev9JqJAZ3Puq2WrKlqx
-         vzQxPEFcBxSsUQGzrk6Wtzb7Bzk7SiwxtRG7VkQMQLH9ypfA6Q2GujJKz++kh3RWBtlT
-         qHbmliICQWB7pahDLA7D3BU2ijA6ILmsxTkX2P71iGnnV3JopI6F37zaTGuC0Wc2U9LL
-         yRbPQ7SrJk00Ko6aJcz68GguPy2N37t1p++Ddbt7LfaJv8frNh8Qz7J2zvvHj5sEG/dQ
-         WVXw==
-X-Forwarded-Encrypted: i=1; AFNElJ9moymglc2blFevvwmjy9Z21kyU5nWKDGfqrGTmb3gviH75YsCZj1PKI7H1ubWKKq/Yfq2Jow==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyi2/ticgEL4PuXiYpf0780vqDxKOUY9oGJigl4Vi86QdxNaGiu
-	Xpw8XSPGwW+apXPrByaCafHGMpPzdnecdXss+2H7AAsCrEV2qIy3V3Zl
-X-Gm-Gg: Acq92OHhcuKq6P+O5jXaSEvDDyCtsa+pu+75q4BPnbO4VrGZdkbX0BnNVRHDuTEP089
-	JaVisRUaO7CBeRGd7g6Atd2kA5KIhsCE3ibdIQLzj8y6TKbouCxIsnbRVzr18SW+lNto0chB7Yk
-	7sINRUSBZlFphwACWYSN1KM2voEzc0Hfhi7xob5gffpX5mQI6tDNiIgziCwSY4czPiYoV1SZwLP
-	U+BjtXEpX8zqtRG1wnwt0ZZbu+tgCllS4r6b4BrkuBdXhvc8vJXWqzHyyqq+9ZAs1qMAykVUwM8
-	CixsNiPw1WjxDuSpkYOeOcVLTJmvkZGsqySOQNn5CDHT6hh/pHqPwuGr2zT7NFtwSG7x9ypEuP/
-	d2y5NjCd2W7xibQr1j4YsPR+gXDNGCGMUWlG11Uq+BQ94uQwEN84PQQ9kTUz7UwGI8/6REFQEQw
-	J6w651PDEBg3V/fk0yogGqKBNnssSoJFrr1PC3hcR39BiKkuB6/DJD2QSQSVKXTlr+IEp38Ec=
-X-Received: by 2002:a05:600c:4743:b0:492:1e36:bafd with SMTP id 5b1f17b1804b1-4921e36bb83mr216605415e9.37.1781606213522;
-        Tue, 16 Jun 2026 03:36:53 -0700 (PDT)
-Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4606f26392esm42544726f8f.3.2026.06.16.03.36.52
+        d=1e100.net; s=20251104; t=1781608023; x=1782212823;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=eJ3fUZ+/EYmTkDXUK4ZNvux/ajtwZf6cg0AECRGmMnI=;
+        b=XtekdHIB9pZ4UAPXQ0Oot/j6MzhIQKpLeGXZO3kM7iYpFMLKgP+FPjoC/2KgKIT5/Q
+         y5fdMeSQXnB3zLPZpOkwkuzipP2pnO+Qu4a1bvPlmrA36OYwR+B6RF8jZrjXeef1W47t
+         OizhUzoCZI6s43Cw3dkpiAdmmFAzyxjrkXlCPoUFfC1ub6A/jx4Rf+4c+peq3eCDGvf1
+         TOKmh/DhEJz4WXwz4wN1gGnKTm3P+AVLLqgb5hL1LaZ6ooIZZPxjByvnVpgfsZ1tapz2
+         58eBrSAigW8+bzNXhXpkk9PbxNEWB6L/x3BnsOiQ1Q891byD1jNtx3YBiF6fmiO1SlFP
+         FJcg==
+X-Forwarded-Encrypted: i=1; AFNElJ8y7hLgWBZOS7kyeOEIqvA6WZKxIqAjuC1Otghi9txzDJpZqOveVfu8gkyWaN8bmv96UHTkcg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yzi2cb4LyQbs3ZQuH6AKIpvDJfT1S1+glo6hu3hv6OmlyeAWII5
+	pOrdXn+Na5SByqhQ+fEu0lSGoVPX3dEhUyGiOJiUMicKg/OibAG1qVcDqXnogcTVIw==
+X-Gm-Gg: Acq92OHvI+nV6wXx2dWScqD8EVnDJVDaO3M7lGCe3SY9KJgrZkfh15jck70zd/DDNrA
+	Hu+htFfQSdaatniGcSTmJpFgsegHb53bRgsW6CcIgTQMoJv1s3VHdC1JHtRMxwlkkkLuZTj6IeX
+	XuNX/2AZY2Ey2HMrvy45mnsjrl37UKt6WKOoU+lYoLgXX7xh5einwjzN9DTE9/hjE/n7gdi6aCi
+	vjaIWi6d2AYTVSkHt+jZ5idU3ZD5tDv9rPV9WF95ts0J5iJFFBDYcacnkMhYJtTz8loqeUGpjyx
+	DJCyJbRFl8FNctaov44KM1ufCSHvAPT/nv6peu+0p/IeZH2w0+QvFWTB077SvTZkQUxHMiCtte5
+	kz9ox8Akydz/fMDaiillD+j58XGDvEaIq8hxiR3e4K1H3ihN+hsm1bHx5uDo72TVLBAw5mPndZc
+	vHasUXsxTINQRSaQvPNUbCHrHrMzPUiihUfvWJCQuhzmprnbfBOJAbA0xiPvu5hw==
+X-Received: by 2002:a05:600c:c059:10b0:48a:5aa3:ac1e with SMTP id 5b1f17b1804b1-4923088e313mr879485e9.3.1781608022038;
+        Tue, 16 Jun 2026 04:07:02 -0700 (PDT)
+Received: from google.com (140.240.76.34.bc.googleusercontent.com. [34.76.240.140])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4606f26393asm46289637f8f.5.2026.06.16.04.07.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Jun 2026 03:36:53 -0700 (PDT)
-Date: Tue, 16 Jun 2026 11:36:51 +0100
-From: David Laight <david.laight.linux@gmail.com>
-To: Guo Ren <guoren@kernel.org>
-Cc: zhangzhanpeng.jasper@bytedance.com, alex@ghiti.fr,
- aou@eecs.berkeley.edu, cuiyunhui@bytedance.com, iommu@lists.linux.dev,
- joro@8bytes.org, linux-kernel@vger.kernel.org,
- linux-riscv@lists.infradead.org, luxu.kernel@bytedance.com,
- palmer@dabbelt.com, pjw@kernel.org, robin.murphy@arm.com,
- tjeznach@rivosinc.com, will@kernel.org, yuanzhu@bytedance.com
-Subject: Re: [PATCH v1] iommu/riscv: Support 32-bit register accesses
-Message-ID: <20260616113651.1048a19a@pumpkin>
-In-Reply-To: <20260615123821.373248-1-guoren@kernel.org>
-References: <20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com>
-	<20260615123821.373248-1-guoren@kernel.org>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
+        Tue, 16 Jun 2026 04:07:01 -0700 (PDT)
+Date: Tue, 16 Jun 2026 11:06:57 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Luigi Rizzo <lrizzo@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>, rizzo.unipi@gmail.com,
+	m.szyprowski@samsung.com, robin.murphy@arm.com, willemb@google.com,
+	kuniyu@google.com, davem@davemloft.net, edumazet@google.com,
+	pabeni@redhat.com, gregkh@linuxfoundation.org, rafael@kernel.org,
+	akpm@linux-foundation.org, david@kernel.org, netdev@vger.kernel.org,
+	linux-mm@kvack.org, iommu@lists.linux.dev,
+	driver-core@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] swiotlb: avoid double copy with swiotlb on tx socket
+Message-ID: <ajEuUZMgS_NRmDcp@google.com>
+References: <20260615234220.3946885-1-lrizzo@google.com>
+ <20260615172535.080cf94f@kernel.org>
+ <CAMOZA0KAHKsvA9yRcdrjG13S+=rJhw-Cvnw2WdLjGGY0azG0kw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAMOZA0KAHKsvA9yRcdrjG13S+=rJhw-Cvnw2WdLjGGY0azG0kw@mail.gmail.com>
 
-On Mon, 15 Jun 2026 12:38:17 +0000
-Guo Ren <guoren@kernel.org> wrote:
+On Tue, Jun 16, 2026 at 02:33:52AM +0200, Luigi Rizzo wrote:
+> On Tue, Jun 16, 2026 at 2:25 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Mon, 15 Jun 2026 23:42:20 +0000 Luigi Rizzo wrote:
+> > > The use of swiotlb causes an extra data copy on I/O.  For tx sockets,
+> > > especially with greedy senders, this has a high chance of happening in
+> > > the softirq handler for tx network interrupts, creating a significant
+> > > performance bottleneck.
+> >
+> > What's the use case? I associate swiotlb with debug / testing mostly,
+> > so it'd be useful for people like me to explain why you care.
+> 
+> Ah sorry, I forgot to mention.
+> swiotlb is used in guest kernels for confidential computing VMs.
+> Ordinary memory pages are encrypted and the host or devices
+> have no way to decrypt them, so the kernel must use
+> unencrypted bounce buffers to exchange data with I/O devices.
 
-> Hi Zhanpeng Zhang,
-..
-> 3. Only performance-monitoring counters require 64-bit IO access or the
-> high-low-high do-while retry strategy. For ordinary status and control
-> MMIO registers, a single read is sufficient.
+I started looking into the same problem recently, to reduce the
+bouncing in protected KVM (pKVM) confidential guests.
+My first attempt was to update dma_direct_map_phys() to skip
+bouncing and do inline memory decryption (for pKVM that is a hypercall
+which updates the stage-2 page tables), however, that was really slow
+compared to the memcpy in bouncing even for massive pages.
+My conclusion was similar that we need to solve this at construction
+by making this memory allocated from a pre-decrypted pool (which
+does not have to be part of the SWIOTLB)
+My initial idea was to teach some of the kernel subsystems (SKB,
+BLK, SLAB) about "CoCo allocators" that allocate decrypted memory,
+as this is not a net specific problem.
 
-Actually this sequence should be enough for a counter:
-	hi = read_hi();
-	lo = read_lo();
-	if (hi != read_hi()) {
-		// Pick a value that happened while doing the reads.
-		hi++;
-		lo = 0;
-	}
+I am still looking into this, I was planning to bring this up in the
+upcoming LPC.
+I will give this patch a try. However, I believe that we need a more
+generalised concept for CoCo pre-decrypted allocators in the kernel.
 
--- David
+Thanks,
+Mostafa
+
+> 
+> cheers
+> luigi
+> 
