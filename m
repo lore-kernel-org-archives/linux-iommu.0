@@ -1,63 +1,63 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8034F389104
-	for <iommu@lists.linux.dev>; Tue, 16 Jun 2026 20:18:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E53037EFEB
+	for <iommu@lists.linux.dev>; Tue, 16 Jun 2026 20:24:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781641096; cv=none; b=bl9oH7LXo75t7N4NWktRK84+a58sicRfX0PRrqVjPmJ1NKI7+2DotKYnFx5bWwOEvQzW+MRAArCa5ws+6KT1pcJqmVv0MhRSQZw3yqeQkbnKY+yw9XM/F6NeLPgaHQwWJm+LIm9s07s7uezYPHDvemRD+qLZcGhFrVdEIxdHQuo=
+	t=1781641447; cv=none; b=gyA1GDZFkNPWSwDgacYPkMf/tRrxtTHEMZ/E41cAF+OROYmvMsWk1f8avE7Kb4TDaVJRZ0/6dGRBTyyKFiO9GncykHkyHuQpi5oZhrB1Gc9atp8SkWJ42to99dyvOuBscqSmBT6SSTRCQ3p/nd7eKYa7tFaDDT+ObZ8U5kSysIw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781641096; c=relaxed/simple;
-	bh=Y3MG0dey+WorwLfZ/iABdp39TkDt/9ppHxmDi9BUIAU=;
+	s=arc-20240116; t=1781641447; c=relaxed/simple;
+	bh=wJ4jATmZAaYHYCiMTe56z06RxcEqjzIUlyvbNzhT0IE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IuA6lLEZ0pI3PjdL8dEUzpyIAwvryyOM+1IXdHtsOnTDFUCN43LG2sN2wdUV5zcf2TznFOo1ndE//BKszZlUNYzeQoheGjaP/eJd991VdRKX+LfLdQMLe5P+ZamsydFSFbr6ktxzWE/QoNEYURgHlm4SjHmnG2Fql2xQ+53nDRA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=MyE7FD/L; arc=none smtp.client-ip=209.85.214.170
+	 Content-Type:Content-Disposition:In-Reply-To; b=INorrl/DPOC9WZ+GFeaCESDW9IUW4Q8PBulrnI7labfC0ubgF+C5ws2LEAgCuDEoRLYBEIfB0EBYA4fjQodqQd6hrL4VYOwKNYSBX/cervqcBqDfueUbEuXphVxuhOGgBulXCTxIbCwPDI9rTnMzAqUmjickJJdKb1CN2p1wvZI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=qlDSDjMa; arc=none smtp.client-ip=209.85.214.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="MyE7FD/L"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2c6a4eccab1so2935ad.1
-        for <iommu@lists.linux.dev>; Tue, 16 Jun 2026 13:18:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="qlDSDjMa"
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2bf2d865383so4275ad.1
+        for <iommu@lists.linux.dev>; Tue, 16 Jun 2026 13:24:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1781641095; x=1782245895; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1781641445; x=1782246245; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ekeo93H4IkViidGXaNTVyvKiJzNOYNB42Mr4fQp0DLo=;
-        b=MyE7FD/LzzJQu/ovv/xS9eKxtBPs05pJ+5YqNDgup21t0IJkaBBazkN9s66xmmzOdA
-         /69mjfRJDYcdyhJJESnW5pmDEPAsNqHCc9Jz+WU9BbNVOldU11ZJ6sZD0iT4IwU9/CNb
-         QE6dklpHBa6vAEJEnu9lQpTIy9Yoi3AB/NZh+SRO50Teqp16I1T7udzaUNG6Hf1DOG3H
-         lKwsSwco5lnDy93hQHVRPOS8Iy3u+6DU22L5iCcIXOlmYg9y+AmCfC8fng1ImRo8L9Kk
-         cwlOlUAbFMfKOt0esvOLgX5sO70tSB0IvqxKJv9W5sAGV23pMDOqGGKuy5cUhm1iUxol
-         kdzg==
+        bh=qM0oSfMYs+BER1k9auvbtpQ8dGe9BcnZ1e4yBJcikTU=;
+        b=qlDSDjMaO9sZCSdl8WYVAy7cjQtwNJwa9y+vE8/gEBjPj//EK81Yrv/xTitwWs62ZQ
+         HaX17bVDfEWYgcz2uvBStvmIfhPZcgiodT0EYaOU8YLNwX+UaqrLXu22P0DX+QiP34BN
+         qoEmO8d5aSHDLh0AY6XRxWnAuNUIrP8waSFFl+pa+p+Sy852XHUjC/OLhLIZF1uZcDpJ
+         Yrg8CpZoB1ClOMbNLR6uLLXtX+OmhFxNhGIAuDjCpVJBehnDXr7NpbgPsCoJn66+DZa9
+         8/xi/H8IAO1qLkBua8oG3iXerx5KLE7rGTY3OMEja5gt65uaL/sFnqEj+gBlVu7jxXsc
+         AVtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781641095; x=1782245895;
+        d=1e100.net; s=20251104; t=1781641445; x=1782246245;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=ekeo93H4IkViidGXaNTVyvKiJzNOYNB42Mr4fQp0DLo=;
-        b=NNR0ziXQGQJ1lY/CZVlsiEJWjkWh7XKLfVMqKUY/N9DKu750CvEe6linDNbGR2tcQS
-         w/Bi6nkx3JDRUmRyDQMtvgbSZFV1E2nl5101Gxcz1WRNCuWK9cV4H82Iq9d/TSmZiMsP
-         MzLRGxfGtrCbzZ9lgZw6YmwBEsH7z1T7/Ul2n+uysMlSdvid1zZ2AuoFVd3M0pHpULb/
-         T85u8c71IUY6AnG4o/q6e3lhyEm2PLmC9fUAd5Xz/kUT3HVSwp9yJgL1psxOgauUUwhp
-         Z3atx87zqQdmk3OFuuXO2TEWrhHQqbHCt3EPsmNH5wjp0W0AsVmAVB8F7hS/2xnib6gJ
-         dILA==
-X-Forwarded-Encrypted: i=1; AFNElJ/p5mckmtzae/bhPvCBWeAaNlX84nMfrfnqh9dZ/EjqXSxlS1sGFxd6KhFt++fNfTxKlobAgg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywdkvv6sc8EisuXj6xHLzIbZm/+RHW+mkiGU5tBMoMoGd+OPhEh
-	K2pvpYUY6mlIUGS5ITfrFBfx+iHIo6SvlCba9m5MQ+k5vvIs6S8bLjL4jtAYrXZ4oA==
-X-Gm-Gg: AfdE7cl92z/Tw2vnr+MOqd5o60hahHitxb7QbJ0CtOiaPcbODERtNnrgh6qaiQVlmh9
-	fQRHod6fuw7T1WAL3ZW+l3D/dFC3cln7WD9xhcSYpKvtd4Yr/XUjWyc/QvpZr/a1toIC3JDtw3O
-	UObOvS3zXhs4bERJkvac9hVl5n101b6TuTCnrYooTdIL7yFZPX+c8F6Aq0yHuOpNlVfkbXtOswP
-	oKhl213z/OykDAo64dzGEc9CwbL8nV4g/ql3o+raOe0CARqBozN/MkStpIQvvLA5r2XzVEs8pg9
-	+nGZpri3dR3kj/qhFlkrtI7fbg0R3rTp0IoKXoUzqzCsUaYN5rEWBnMvywuZcNPGcWiEjgGX5sB
-	z1nMbalShR+WkNzH3JSi+dGxpDNUqJzNfln98Aw6QtKnaWKaA3SQwSgHXUM3zNMWcIhQTq9KPX9
-	r5aV4K9wV1GSurkTXhZpeavxDYcTe2jN1yDLD4t37jzKMjKlqZFrtWT7YngElJ
-X-Received: by 2002:a17:902:da8b:b0:2c0:c14c:bf37 with SMTP id d9443c01a7336-2c6bb8be5a4mr583025ad.16.1781641094236;
-        Tue, 16 Jun 2026 13:18:14 -0700 (PDT)
+        bh=qM0oSfMYs+BER1k9auvbtpQ8dGe9BcnZ1e4yBJcikTU=;
+        b=HGdSQEDDKKSeErvP2tWVQz1NNQbsboaiilmtbtJFyRhw/LIqktAtMAncPE+IscW3m9
+         cR38QitKA9hGUNjRwiT2iFAeUD7z54cOUPTKKOWK5CO0WiFo91pp0FWSE8c3gy1fG4Wp
+         uGkxV5a/UGOHL3NGbJe2/N7XvBETCwPuJ3Ppdm22XtXQL/F+hsrys0a1bMEj+r8BwR+n
+         SvusYNh+KZ8v6iafdaZwIslPFC/1rfu7IAA/S3WbxqMb0UEEEJ21tzmLsjrevAeHkcXo
+         fv72fbeTNKl0XS31tKmpnYw09Q9lhRe0Gb6KbiwOIp3vGdgMuG5E1F42dG3lbUS3oQkz
+         VcmA==
+X-Forwarded-Encrypted: i=1; AFNElJ9q7vmGvisjZKWwrJMWLYQXYlnGvecDzbTnNh9u3yumx/5kphXqBClwbjk0Odz8+OkEM6TD0w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxdzBKbzLLAme0dOjoqkMiLZOauM4CC3nU0nL7Ecq5fGlwm/rja
+	8zFDJ7mAOFrzcRtPNNDCVBvZUzX69uK2QW9wLBr67FP6u1ZwtNkJ1D0/p9uow4XOUg==
+X-Gm-Gg: AfdE7cl7lDko+AvHULWTiWByk2qbxFZvZH4pexp7PeO1XvTuDHRqffkWfhadBNxiPky
+	uO7yz2vs4gbLTDI//5+WTU6jVNfIVs2jlkeVCiYP6cVUEFOqYpnpfcBzAN/sXuDYxDnFNHFfkmu
+	tpMWTbuxdQzOqYqjFaXWOvYsxglMwt/VzV+6rMt6vwE62L8TuadqltD98xO3jCaVwgA85qwi/WU
+	2NUD9CprDYc3rHht90ym0XeB89FqBdSUhGUqIrKiF3R8eDSgZ4zcXe/9wmvEih46TrU105OeUFK
+	NuUUEMXqGxmZ5QzEWh1D4mk2Jsw/ZxTgzp+Pv1mvneb4VvIbko4Ape1cwoMuci4MgfpN2pcK9MP
+	7rnlnbDszjmKOEdbj2glcX4SzDgs4QpepjMt5Ykfrv4HoKghuNk+vKmb9HqFGq7QBcotH33WQXJ
+	mu+9Bj/K2yfHko3J5ng+S7+9jeAeEB38ovRPEAYLQoDTQVGOBpQthWcB6P/MTgQzhPjFrIBlo=
+X-Received: by 2002:a17:903:388f:b0:2bf:3579:cdaa with SMTP id d9443c01a7336-2c6bb8b0caamr605145ad.10.1781641444107;
+        Tue, 16 Jun 2026 13:24:04 -0700 (PDT)
 Received: from google.com (199.255.142.34.bc.googleusercontent.com. [34.142.255.199])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c86651af0edsm11921031a12.32.2026.06.16.13.18.10
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8434afc9fa8sm14375404b3a.32.2026.06.16.13.23.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Jun 2026 13:18:13 -0700 (PDT)
-Date: Tue, 16 Jun 2026 20:18:06 +0000
+        Tue, 16 Jun 2026 13:24:03 -0700 (PDT)
+Date: Tue, 16 Jun 2026 20:23:56 +0000
 From: Pranjal Shrivastava <praan@google.com>
 To: Jacob Pan <jacob.pan@linux.microsoft.com>
 Cc: linux-kernel@vger.kernel.org,
@@ -72,11 +72,10 @@ Cc: linux-kernel@vger.kernel.org,
 	Baolu Lu <baolu.lu@linux.intel.com>,
 	Saurabh Sengar <ssengar@linux.microsoft.com>, skhawaja@google.com,
 	pasha.tatashin@soleen.com, Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v9 1/6] iommufd: Support a HWPT without an iommu driver
- for noiommu
-Message-ID: <ajGvfqjkZ3I1E-hA@google.com>
+Subject: Re: [PATCH v9 2/6] iommufd: Move igroup allocation to a function
+Message-ID: <ajGw3KZ60dUrvdiZ@google.com>
 References: <20260611172658.3421138-1-jacob.pan@linux.microsoft.com>
- <20260611172658.3421138-2-jacob.pan@linux.microsoft.com>
+ <20260611172658.3421138-3-jacob.pan@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -85,86 +84,21 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260611172658.3421138-2-jacob.pan@linux.microsoft.com>
+In-Reply-To: <20260611172658.3421138-3-jacob.pan@linux.microsoft.com>
 
-On Thu, Jun 11, 2026 at 10:26:53AM -0700, Jacob Pan wrote:
+On Thu, Jun 11, 2026 at 10:26:54AM -0700, Jacob Pan wrote:
 > From: Jason Gunthorpe <jgg@nvidia.com>
 > 
-> Create just a little part of a real iommu driver, enough to
-> slot in under the dev_iommu_ops() and allow iommufd to call
-> domain_alloc_paging_flags() and fail everything else.
+> So it can be reused in the next patch which allows binding to noiommu
+> device.
 > 
-> This allows explicitly creating a HWPT under an IOAS.
-> 
-> A new Kconfig option IOMMUFD_NOIOMMU is introduced to differentiate
-> from the VFIO group/container based noiommu mode.
-> 
-> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 > Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
+> Reviewed-by: Yi Liu <yi.l.liu@intel.com>
 > Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
-> ---
-> V8:
->   - Guard vIOMMU and vDevice allocation paths for noiommu (Sashiko)
-> v7:
->   - Drain no-IOMMU generic-PT freelist (Sashiko)
->   - Import generic-PT IOMMU namespace (Sashiko)
-> v6: (Yi)
->   - Sort includes alphabetically (iommu.h after generic_pt/iommu.h)
->   - Fix comment: s/mock page table/SW-only page table/ to avoid confusion
->     with selftest mock
->   - Rewrite noiommu_amdv1_ops comment: explain why AMDV1 format is chosen
->     (multi-page size options), remove references to group-container mode distinction
-> v5:
->    - Use the new IOMMUFD_NOIOMMU Kconfig instead of VFIO_NOIOMMU
->    - Use consistent wording referring to VFIO noiommu mode (Kevin)
->    - Copyright date fix (Kevin)
-> v4:
->    - Make iommufd_noiommu_ops const
-> v3:
->    - Add comment to explain the design difference over the
->      legacy noiommu VFIO code.
-> ---
->  drivers/iommu/iommufd/Kconfig           |  12 +++
->  drivers/iommu/iommufd/Makefile          |   1 +
->  drivers/iommu/iommufd/hw_pagetable.c    |  19 ++++-
->  drivers/iommu/iommufd/hwpt_noiommu.c    | 105 ++++++++++++++++++++++++
->  drivers/iommu/iommufd/iommufd_private.h |  12 +++
->  drivers/iommu/iommufd/main.c            |   1 +
->  drivers/iommu/iommufd/viommu.c          |  14 +++-
->  7 files changed, 158 insertions(+), 6 deletions(-)
->  create mode 100644 drivers/iommu/iommufd/hwpt_noiommu.c
-> 
-> diff --git a/drivers/iommu/iommufd/Kconfig b/drivers/iommu/iommufd/Kconfig
-> index 455bac0351f2..6c3bea83631b 100644
-> --- a/drivers/iommu/iommufd/Kconfig
-> +++ b/drivers/iommu/iommufd/Kconfig
-> @@ -16,6 +16,18 @@ config IOMMUFD
->  	  If you don't know what to do here, say N.
->  
->  if IOMMUFD
-> +config IOMMUFD_NOIOMMU
-> +	bool
-> +	depends on !GENERIC_ATOMIC64 # IOMMU_PT_AMDV1 requires cmpxchg64
 
-Nit: Should we explicitly depend on 64BIT here?
-I see further in the patch we assume 64-bit addresses:
-
-+	cfg.common.hw_max_vasz_lg2 = 64;
-+	cfg.common.hw_max_oasz_lg2 = 52;
-
-> +	select GENERIC_PT
-> +	select IOMMU_PT
-> +	select IOMMU_PT_AMDV1
-> +	help
-> +	  Provides a SW-only IO page table for devices without hardware
-> +	  IOMMU backing. This uses the AMDV1 page table format for
-> +	  IOVA-to-PA lookups only, not for hardware DMA translation.
-> +	  To be selected by VFIO_NOIOMMU when VFIO_DEVICE_CDEV is enabled.
-> +
-
-Apart from that,
 Reviewed-by: Pranjal Shrivastava <praan@google.com>
 
 Thanks,
