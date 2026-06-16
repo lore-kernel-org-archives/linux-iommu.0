@@ -1,119 +1,164 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90D703271FD
-	for <iommu@lists.linux.dev>; Tue, 16 Jun 2026 09:16:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D11A3423147
+	for <iommu@lists.linux.dev>; Tue, 16 Jun 2026 09:20:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781601414; cv=none; b=n5vgYIML9wWnhzGNPR6shUzqGA95PSfqb5Eg3edjeJ1IKHFk11ZGmajkHLr6tdw7MllKDiRNsrsB+UgxKNxSFEgETqEluBbvChteuUKqPgp9wFELpelrSs9f9lx4iwURXg7DRbEmTWcu78eGhXLAgl0woVhaqfI+E1juwt7mpHA=
+	t=1781601632; cv=none; b=rMGoXSVYEEeXKhIb8HsScsnHwrnMGxX8pa1nSR55+7u6+sClRxJI1FlczFJBNYAGQAoeQWKJsjxniVSopIVIejmc4+/Rf/bmpDTSQ8MuJW+5/AZCmb3+YK7/o8gRXLU1Vx6nXGiPZ1JfmFQs43v0yllxDUjW/v0eYNY4umykhl8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781601414; c=relaxed/simple;
-	bh=63rm0mBZGYwR2UFVL+QYsHYDnRBFGfQ0BEmLJhEDchM=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type:
-	 References; b=YnvGUNqUHG4SBk/1/lFeytiMLXGIuARk0JELwTtfQH3U4ogsp6j2WeG1Cx+CD8rcCbjew4SUl5hxOhbk/UAddzuJtqIi4UMg4C7CS1Ai/++GgRIE2PFkB0pYThvZR3NaAJ2Q7fIIkgnuuDMrdIPKvf7GNs6a+xuRLdZzt0XjFEc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=hyyVvWLf; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1781601632; c=relaxed/simple;
+	bh=i0DVo8L4z7bKXdFdqTZAdPKP4ihP4U+9EZ39XGunM3s=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=aOJv2Sy4TJN/MeuVK/rWeFzbx4r0o4XTxbljEb47uVFAqyfMgrFRk4fWyC/exOWM+9VLkdxdcgnTLgE0viMz00LUMfEWVOJOubq6YP3YsbJJGRDrEFLdWT+iAe0qZL8ebaqVKY4P1Yuj4PZdPGHzixgl3uXgelJBrYyEVox0k3M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=GG1VgaOa; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=OmMcESaN; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=GG1VgaOa; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=OmMcESaN; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="hyyVvWLf"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260616091643euoutp02ae5e01ab8965f4796e6361d632cd1f90~5hQmOjy882331023310euoutp02p
-	for <iommu@lists.linux.dev>; Tue, 16 Jun 2026 09:16:43 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260616091643euoutp02ae5e01ab8965f4796e6361d632cd1f90~5hQmOjy882331023310euoutp02p
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1781601403;
-	bh=DjoQEyarF9JrLCbyzCNw8e2dKPdDYwYziR1t+5QKSP4=;
-	h=From:To:Cc:Subject:Date:References:From;
-	b=hyyVvWLftmhe71/o5jI8spEqTGeZkbHsgCiuNBKcchH1w2ZbjdNSI79pkKd5Ft0Ba
-	 DstY/mylSqlL1cvAtLcRPajqxZSgIoYxFtqYe+Az9QIZdDeqVUxyaN8MdkOXh9IJis
-	 0XTSeQ0XVds/lvW/af4amq/O2NgBkZxUDA4ky0u4=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20260616091643eucas1p2a8cbfd992db37b6863c2ce7e30a5b9f5~5hQl52H7c1281012810eucas1p26;
-	Tue, 16 Jun 2026 09:16:43 +0000 (GMT)
-Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20260616091642eusmtip27eb540c879b3db32ad0ae69185f95655~5hQlgehB12518025180eusmtip2a;
-	Tue, 16 Jun 2026 09:16:42 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski
-	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Leon
-	Romanovsky <leon@kernel.org>, Feng Tang <feng.tang@linux.alibaba.com>, Rosen
-	Penev <rosenp@gmail.com>
-Subject: [GIT PULL] dma-mapping updates for Linux 7.2
-Date: Tue, 16 Jun 2026 11:16:30 +0200
-Message-Id: <20260616091630.3261096-1-m.szyprowski@samsung.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="GG1VgaOa";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="OmMcESaN";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="GG1VgaOa";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="OmMcESaN"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 013356C6B9;
+	Tue, 16 Jun 2026 09:20:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1781601629; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=1yCvhH13gtBfeltjB9Ohv+Zzo8kfs8ztYt0Jc+FSMBg=;
+	b=GG1VgaOa/mxsWhVtWBV31CGGeWvEvBjcmIQ4YxWXPZlesczPS6DWMrswsTUIBiF6h94qwP
+	/2TxhAtMBz+2kO/VUK6sPjpaJ+aFe74HPKE8TTAn7qdfPycnqY6Vp35gtB1E4bmdbbDtTw
+	Pc2gOKpO9CNRiLXWBteAsxn7qhglsZE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1781601629;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=1yCvhH13gtBfeltjB9Ohv+Zzo8kfs8ztYt0Jc+FSMBg=;
+	b=OmMcESaNOU9hK6UE4bKh79NId7JOMOXXy4UlXza8smGwMf85+9pPvCj6A94Z1iiEXfUrt2
+	+MDehBtltHZH8ACw==
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=GG1VgaOa;
+	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=OmMcESaN
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1781601629; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=1yCvhH13gtBfeltjB9Ohv+Zzo8kfs8ztYt0Jc+FSMBg=;
+	b=GG1VgaOa/mxsWhVtWBV31CGGeWvEvBjcmIQ4YxWXPZlesczPS6DWMrswsTUIBiF6h94qwP
+	/2TxhAtMBz+2kO/VUK6sPjpaJ+aFe74HPKE8TTAn7qdfPycnqY6Vp35gtB1E4bmdbbDtTw
+	Pc2gOKpO9CNRiLXWBteAsxn7qhglsZE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1781601629;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=1yCvhH13gtBfeltjB9Ohv+Zzo8kfs8ztYt0Jc+FSMBg=;
+	b=OmMcESaNOU9hK6UE4bKh79NId7JOMOXXy4UlXza8smGwMf85+9pPvCj6A94Z1iiEXfUrt2
+	+MDehBtltHZH8ACw==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 9D3D9779A8;
+	Tue, 16 Jun 2026 09:20:27 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id JOUNI1sVMWoTMAAAD6G6ig
+	(envelope-from <pfalcato@suse.de>); Tue, 16 Jun 2026 09:20:27 +0000
+Date: Tue, 16 Jun 2026 10:20:25 +0100
+From: Pedro Falcato <pfalcato@suse.de>
+To: Luigi Rizzo <lrizzo@google.com>
+Cc: rizzo.unipi@gmail.com, m.szyprowski@samsung.com, robin.murphy@arm.com, 
+	willemb@google.com, kuniyu@google.com, davem@davemloft.net, edumazet@google.com, 
+	kuba@kernel.org, pabeni@redhat.com, gregkh@linuxfoundation.org, rafael@kernel.org, 
+	akpm@linux-foundation.org, david@kernel.org, netdev@vger.kernel.org, linux-mm@kvack.org, 
+	iommu@lists.linux.dev, driver-core@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Jesper Dangaard Brouer <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Subject: Re: [PATCH] swiotlb: avoid double copy with swiotlb on tx socket
+Message-ID: <ajESl4osXP7roz5q@pedro-suse.lan>
+References: <20260615234220.3946885-1-lrizzo@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20260616091643eucas1p2a8cbfd992db37b6863c2ce7e30a5b9f5
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260616091643eucas1p2a8cbfd992db37b6863c2ce7e30a5b9f5
-X-EPHeader: CA
-X-CMS-RootMailID: 20260616091643eucas1p2a8cbfd992db37b6863c2ce7e30a5b9f5
-References: <CGME20260616091643eucas1p2a8cbfd992db37b6863c2ce7e30a5b9f5@eucas1p2.samsung.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260615234220.3946885-1-lrizzo@google.com>
+X-Spam-Flag: NO
+X-Rspamd-Action: no action
+X-Spam-Level: 
+X-Spamd-Result: default: False [-3.01 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	SUSPICIOUS_RECIPS(1.50)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	FUZZY_RATELIMITED(0.00)[rspamd.com];
+	ARC_NA(0.00)[];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	RCPT_COUNT_TWELVE(0.00)[21];
+	MIME_TRACE(0.00)[0:+];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	RCVD_TLS_ALL(0.00)[];
+	TO_DN_SOME(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	DWL_DNSWL_BLOCKED(0.00)[suse.de:dkim];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	FREEMAIL_CC(0.00)[gmail.com,samsung.com,arm.com,google.com,davemloft.net,kernel.org,redhat.com,linuxfoundation.org,linux-foundation.org,vger.kernel.org,kvack.org,lists.linux.dev,linaro.org];
+	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	TAGGED_RCPT(0.00)[];
+	DKIM_TRACE(0.00)[suse.de:+];
+	MISSING_XM_UA(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,suse.de:dkim]
+X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
+X-Rspamd-Queue-Id: 013356C6B9
+X-Spam-Score: -3.01
 
-The following changes since commit 254f49634ee16a731174d2ae34bc50bd5f45e731:
+(+cc page pool maintainers)
+On Mon, Jun 15, 2026 at 11:42:20PM +0000, Luigi Rizzo wrote:
+> The use of swiotlb causes an extra data copy on I/O.  For tx sockets,
+> especially with greedy senders, this has a high chance of happening in
+> the softirq handler for tx network interrupts, creating a significant
+> performance bottleneck.
+> 
+> Allow tx sockets to allocate socket buffers directly from the bounce
+> buffers. This avoids the second copy and removes the above bottleneck.
+> The fraction of swiotlb buffers allowed for this feature is set with
+>    /sys/module/swiotlb/parameters/zerocopy_tx_percent
+> (0 means disabled, 90 is the maximum, to avoid persistent I/O failures).
+> 
+> Implementation:
+> - define a new page type to unambiguously identify bounce buffers used
+>   as backing storage for socket buffers
+> - modify skb_page_frag_refill to perform the modified allocation
+> - modify the destructors __free_frozen_pages(), free_unref_folio() to
+>   handle those pages and return them to the pool.
+> 
+> The savings are especially visible with fewer queues. In synthetic
+> benchmarks, senders with 1-2 queues would cap around 50Gbps with
+> conventional swiotlb, and reach over 170Gbps with the feature enabled.
 
-  Linux 7.1-rc1 (2026-04-26 14:19:00 -0700)
+I could be wrong, but I genuinely think that the way to go about this is
+using page_pool for regular TX as well. page_pool pages are all dma-mapped
+(so whatever swiotlb optimization you want can be done there), and the net
+stack already has awareness of these special pages and special skbs, so it
+won't Just Return Them back to the page allocator.
 
-are available in the Git repository at:
+Otherwise you can easily go all over the place, and that's just not great.
+Also this could possibly benefit setups that use IOMMU as well.
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-7.2-2026-06-16
-
-for you to fetch changes up to 7318301e060e3f1207a34f2fca6cd86770dd9160:
-
-  dma: map_benchmark: turn dma_sg_map_param buf into a flexible array (2026-06-03 08:20:02 +0200)
-
-----------------------------------------------------------------
-dma-mapping updates for Linux 7.2:
-
-- added more checks for DMA attributes in the debug code, especially
-  to ensure that mappings are created and released with matching
-  attributes (Leon Romanovsky)
-
-- better default configuration for CMA on NUMA machines (Feng Tang)
-
-- little code cleanup in dma benchmark tool (Rosen Penev)
-
-----------------------------------------------------------------
-Feng Tang (2):
-      dma-contiguous: add kconfig option to setup numa cma area if not configured explicitly
-      dma-contiguous: simplify numa cma area handling
-
-Leon Romanovsky (6):
-      ntb: Store original DMA address for future release
-      ntb: Use consistent DMA attributes when freeing DMA mappings
-      dma-debug: Remove unused DMA attribute parameter
-      dma-debug: Record DMA attributes in debug entry
-      dma-debug: Feed DMA attribute for unmapping flows too
-      dma-debug: Ensure mappings are created and released with matching attributes
-
-Rosen Penev (1):
-      dma: map_benchmark: turn dma_sg_map_param buf into a flexible array
-
- Documentation/admin-guide/kernel-parameters.txt |  4 ++
- drivers/ntb/ntb_transport.c                     | 10 +--
- kernel/dma/Kconfig                              | 14 +++-
- kernel/dma/contiguous.c                         | 58 +++++++----------
- kernel/dma/debug.c                              | 87 +++++++++++++++++--------
- kernel/dma/debug.h                              | 25 +++----
- kernel/dma/map_benchmark.c                      | 27 ++++----
- kernel/dma/mapping.c                            | 10 +--
- 8 files changed, 136 insertions(+), 99 deletions(-)
-
-----------------------------------------------------------------
-
-Thanks!
-
-Best regards
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+-- 
+Pedro
