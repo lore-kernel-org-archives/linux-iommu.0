@@ -1,207 +1,143 @@
-Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011055.outbound.protection.outlook.com [40.107.208.55])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6390B31E823
-	for <iommu@lists.linux.dev>; Wed, 17 Jun 2026 17:31:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.55
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781717464; cv=fail; b=MsmtXDGGPOLSm4lwZ7iuKoNUNJi3Z3oTaLWdk8N5f5dNjNRGrf6rFRmUausER8gv2YETAhQJAZIxejZ+qTJnkbJmoO4RhA4mzkDvFdFZBHS1yH5clnA+STzWypvErUdnlTXa4o+XhOPR0e/hqee913+LuwiwNgGAu4A5U6OmSyw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781717464; c=relaxed/simple;
-	bh=PqfPNIf7Jhah4RzrQBUuxaWPgXC9B9xY9dou8oGOdfk=;
-	h=Date:From:To:Cc:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=tjeKvx5tziJtnhHBrxIWCBiiLSepCjGNQIS8on3ATBDQtJsVAqJHQFRuqLFtveLPQymDWLeI2wHT65gYSDZctYeDw4USoR4U/TxYgig3oFnyd9GYsijbo8h+wAKJLdEezDm9wwEeupzMrEm5HmE4vwc9yZggcrmAn9PZvdLzQns=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ZkuMdfpe; arc=fail smtp.client-ip=40.107.208.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2351712CDBE;
+	Wed, 17 Jun 2026 17:45:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781718342; cv=none; b=EFCtCA6r75yqsZ0ZMiTTrmwuu7iV/kS/dRZT9EoUTVznotgEjq5cHoqZ61ot42xM71H3EZIMOnavHRXP0gL1LCXQeopK3d3sA0ZGg0vH4j3AD/vGpVHsk1uZHXHhAN2Z8RMYuDww7AUcLilYT5y8EiXYBKIzyVQWQq5ymSWvVj0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781718342; c=relaxed/simple;
+	bh=GaqLs8AhcqT15C0nXU4xIJ7TgZI0PVs8GPF5zA3sFSc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=eI8rs3dKSnGUw2liRNsBYcFCPbaEonwubD9c6/ECQjJyAys+kY1qs+zhZtue4XnX2QruwznsIsrHxt1RZftLf0I4Mq/Y8och/LVOvddHbJsIAeFzyDmZvbxawNXACLJd8CPQsG8WEMGi21Q+CsYzc4dkBBeQtuzXJC/3X0cYpTg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=pass smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=zIJYYVZL; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ZkuMdfpe"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Id9p7JmcL2A6eI5LGd3swjXdADd+XxkTiNqR+8n3XtshNInGyGd7+d6y9qvPrVrkh1yKF53jhK/QJOaiAE6zexvoYdLdJpaMl8GlKb4nra5EagkSkqn7PBhbC/XawrVU4sQd46U8t3M8gg0M8ZDPAX/WSTgdk+1BQwRjzsY01C2rc971ri1drUpfYB2vYCxg2s4rECPTLLaFjjU5friL7wE2ezPkwBaZhEzoz0qY0AbltUT2ZrWXbytIbFTJz1vMpkDCKCV48Fq/qD9tXdGxJMB1Ch5xBV1gvSWrP2XqzHCbDQWNIhczOlO1Q57zPOM6QEP2gcgbtX12FZbcEFdG8w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dZ8GiQg4q6ClyL7B1gc+Nyul3vAA2lQWak8agEc+QJ8=;
- b=yOFq1wnRjSgXfhdiOKpf+72We05rC45SZi3hY72dXQa6t0ZdfzSJ7/1r8Z8hPxGNsDZXR9KiRQmNpwqBKGC1FIKAMJE0zvxn/YUzjNKiSZw/LNr4noNf/r2/qYposjrL45dIl3uBIAU6SKR0VnwT8Rjdx/obSo8s63kcTZQMk+u1iKYgcWgpQYw/VGmXu3sKhiMK7fY3PFhgiqxYvgkfQtNGeFovKJq7OCu433xt/z/Bms48XNzh2d5UeLJj506k1hVwk1vU331cckVxEf97iAykTZh4kCW0ukXU2KZCfmxRrmfpdCUZSgM8QQk02xDL97EaTuVl9Hts03AoAyjFgw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dZ8GiQg4q6ClyL7B1gc+Nyul3vAA2lQWak8agEc+QJ8=;
- b=ZkuMdfpeyIeDuElUVIVWGDony5MbrCzm+VQOnkdCr0uoc6bL1kUYDS88MwDQ3hsdzU+4dYlbyfDh863tAYI4ySFFwVx47SoeMT2FYRK5iQhK6GtVexOwWc6nmQ4X4IN6qNyx6kIyQ5GmFUZr35C/iTuPI37Ti37KLSkWN16lL9Nko3chxQuUCvLj20xVEXkeckxDIShoD2rhoMe09TKG+VRtoZPGgNDPrTw+F1zGdFWGJTv/G+D+YjtH3pmaPMu2wUW2v8z8nbXjOzrKecKrwlUzCk9lXXPxXD3AaYdAjoGR+YxbtqVkOxKaz7pmGAee1FQbhjyumKcFeqG+9HkAaQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by IA1PR12MB6017.namprd12.prod.outlook.com (2603:10b6:208:3d7::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.139.11; Wed, 17 Jun
- 2026 17:30:56 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%4]) with mapi id 15.21.0113.015; Wed, 17 Jun 2026
- 17:30:56 +0000
-Date: Wed, 17 Jun 2026 14:30:54 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: iommu@lists.linux.dev, kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>
-Subject: [GIT PULL] Please pull IOMMUFD subsystem changes
-Message-ID: <20260617173054.GA235044@nvidia.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="E+mLk7NhQjau+58f"
-Content-Disposition: inline
-X-ClientProxiedBy: MN2PR03CA0020.namprd03.prod.outlook.com
- (2603:10b6:208:23a::25) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="zIJYYVZL"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=qSBAr+QtUf/2oc19koOX30hO6YtA2doYTNx7ezc75y8=; b=zIJYYVZLaxxpFbc9tIDnu3DxxH
+	KWxsymGYanHLF2flRaNlDinWNStKEal33QhF+kupkXX3H73hldUYRLU/f9W2I3jkhZR6D/Mino8mk
+	P2tBmWFkiYmcGo7r+Mjf+/6Xf1hKQO/Icy/8463l74X9ekV4vSq3ASD17NWFAN7rTP7tIe0Ccyyej
+	QsIr3xN5zMTFj2cESRzrxZe5jX7Ukbr6FVj4VpvehF46A9NNVu2CHIp/DCzkbf82njCr5TioKYmOn
+	6hyzt0+ZEu+WxXTYlW8XN60rSqgobOs0kkGEX8a8UsMImqcA9hJGvX0nmKHbBlSYLaQ+Dl63dfGID
+	i8ea+z/Q==;
+Received: from [38.23.173.23] (helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
+	id 1wZuKS-0000000084p-2Uzn;
+	Wed, 17 Jun 2026 17:45:32 +0000
+Date: Wed, 17 Jun 2026 13:45:27 -0400
+From: "Liam R. Howlett" <liam@infradead.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Rik van Riel <riel@surriel.com>, linux-kernel@vger.kernel.org, 
+	kernel-team@meta.com, robin.murphy@arm.com, joro@8bytes.org, will@kernel.org, 
+	iommu@lists.linux.dev, kyle@mcmartin.ca, Rik van Riel <riel@meta.com>, 
+	maple-tree@lists.infradead.org
+Subject: Re: [PATCH v3 3/3] iova: defer maple tree erase on GFP_ATOMIC failure
+Message-ID: <vbtql77uf65vyxl4smefpol75x3opa7vnixdbzwg7ylxgre6j4@emvlfmdus4kj>
+References: <20260603033653.4144138-1-riel@surriel.com>
+ <20260603033653.4144138-4-riel@surriel.com>
+ <20260609130418.GI2764304@ziepe.ca>
+ <61d51d4b5779d80145ceb38e9632a7cc8a79dbec.camel@surriel.com>
+ <20260612164852.GL1066031@ziepe.ca>
+ <ff5f9e09edbcb9c87feac6af00a1d835c783be4f.camel@surriel.com>
+ <20260612180303.GO1066031@ziepe.ca>
+ <iv7sxqezzz42xieytbf3lskutricz7ltkr3wii3w4jbnbzto7f@2tz5hwa43l37>
+ <20260615115633.GQ1066031@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|IA1PR12MB6017:EE_
-X-MS-Office365-Filtering-Correlation-Id: ec0e2102-d48a-4075-5268-08decc96301e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|366016|376014|1800799024|56012099006|11063799006|6133799003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	yCg7sY/GgbDfKSakexV1+BvchGnUj0VVinghzFrjMdhJDXpCucvbhqwM8x8m2ZSLLAN07lqCAcm2EZ3BXNH0/WVe6oMlDRyua1tYAJsaxOb90+yW0dcPReOMHVGUVVj9qNqGLB7WXU/LTOl0XZdJHngRLvbKHBiUml2UgZa4KE18pdTZ/LXE64nSG9ZqdMuodwQpMt2tiMhuCTRQTB4ztjXzPd4A1nWNfHJX9hMn9ZBUPv9yAv02FHymCQxZAxELodx4erwsus9Iy24so99P7ysgvGh153Axt45zBkbYeFUMGE3b+l7CJbu8Dxw28RP1FnI0hXW2KwUutAd6ZmMzgE5L4AUX5VB0ZASJoEA87EBiWHQATQtX9yztWpofXMbbGz2LCIGNnWkJ/LVY+/XuI4tcVZjPjQJOGtutNIs3lEyx72Yzspez4Y6n1xdwe1eqs608jfutQdaUYFtBAVQo54Ulg1Gs4hatR/VsYRnTBlaJrExFMWEYQwV5AXPvTcGF6x4fkeP5v4Q1hh/8zKPwK7ZLJ1CHVCL0CHa7einf+uEXKKNKCplGNHfDnS14wVnZxvMxq4nFrZpcL5NTfarfMagHeHDB/8zfwlC6ZPe3CF/HuRI0KhM6dX+8cx4U7UTQuZCIa4D4UQha0PEkkGaWsWAoXe9FKmuhFcw28uHYAoGWuywPovkQ5eCHXJxelBFv
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(366016)(376014)(1800799024)(56012099006)(11063799006)(6133799003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?yDDxe1XKkaPkm7/sRLNMIlRw7uX0cOkYCh0vpy66diz0zqL6YXODkYHKADW1?=
- =?us-ascii?Q?EWckZC7zZHlq5Zx8u1+04hEcqpRd07GIbT1cwnssfT9wkmP+y/K7TbjTBnQ6?=
- =?us-ascii?Q?NeNiE3YRLzebzgAJf7XLfmwjmz0ikFAeU7SxcGepUSXus9W4hL9YvTJHMqHQ?=
- =?us-ascii?Q?EyPlT7i0PIhZP2si74OA4Gn3cGS0AaK5TDY3rkARUIYziwbpZ8toXxEasrmM?=
- =?us-ascii?Q?XfTw2rdmbunupLeUk52cZzm77zqMa1LWpXZPU1hySczySsymyinvqi5gUUW0?=
- =?us-ascii?Q?Iwd14oxMCQNMJi7eH5ZKJPA5OpG/Mzmwtf18ShNelfmXaQMucIflSbADS14z?=
- =?us-ascii?Q?sN3PyYGRtP4A+7IHWqFp+2YX/CapcNDK9N2t1zELkuE4mJtLBmAj4xPJq3C5?=
- =?us-ascii?Q?EghFU454EHVg9AYttvUP26ecdbMHQlKOeAtkf6xkboTN+gQRfyROG6j4HJUG?=
- =?us-ascii?Q?8LF1kI9AuuiMT1nUfvIEWeq15449XAP25ZtMgv6BtHdlZ2npXbIDExc2TKLu?=
- =?us-ascii?Q?Zsjt8TJ6LRpgNJ1UCcZ6baVHrLbWtz5nXqSkHxch9348Y8GDZsvKFBF1vXPL?=
- =?us-ascii?Q?SLIwSRl/Ok7zfGM5BIP1u6lokon91ENGDV581/B0qWYtiVMyA8I2S/7w8Eb8?=
- =?us-ascii?Q?28AsY+YzYgzHSNKbb+i3RcpJCiTTyBXsLXJ6r4U38tl4Vs9CdwLcZW+jZl4Q?=
- =?us-ascii?Q?32djDzRd0yJw5Ypmvmc9mcU2JsCFnJQDwPCErpsUyVQEAPQGmeW6hVv28MgA?=
- =?us-ascii?Q?o9+ufoxnAgGgd6yeM5HwHQV7NsVLFagu1xN+Woq4r8Fdu1Wf2eSq5KElyLHy?=
- =?us-ascii?Q?6e4J+B9vSTRwJKbr6v7QhK/PvaiYhbft6igKzuo253SB5z6FrNNXvtiuPxUs?=
- =?us-ascii?Q?nYrZI1O4o2RnqiY2tSNbRNCEBeKHf9tbJ2mPW0eGYup8+EoCQ4ytKd0cPGjB?=
- =?us-ascii?Q?vk5NyUYYxSxCqwtNLiZJaSCIJHoBovA38gOO7oo4Iq0ClB+SprWTSTJQLune?=
- =?us-ascii?Q?D9oOXJ6atDDD5sTtsiJrciCrhGkZ72FPTP+ChB9iwq+txaS+ytW5Y+rSxHsm?=
- =?us-ascii?Q?7dpd4hiD2+9Tz9iOU08S9CPgFaeAd+75oGf8PFH5P/hiV0a2agtJblqaMBTx?=
- =?us-ascii?Q?TpsgujCcTUSZXIBcKHLX3x/BDyvIYJihgUYrSzwCnh6lp2uodmPYrPJLLdQE?=
- =?us-ascii?Q?b20ZmIqtrdrnnjiRr1pW7Yn9GLnLnjQuE2XJJAKDfDGDQ/wFVh0znLk8hgFy?=
- =?us-ascii?Q?h9UvqgaUHpYxcGkkHXfO90mTMCLXMS/SSv4Ib2UAYb7wq2iofXbf5COegVMf?=
- =?us-ascii?Q?z5d179M3EEuwxqx4nU4f6K0NqZcQ3RvORwBL2H8X9PBBKwJHQfc7sorTIvpf?=
- =?us-ascii?Q?mivl2bfJMyPICajiwBnbC6HjOFdWhaDVKoqPh2bY0FctyK++69UJIpZnIVia?=
- =?us-ascii?Q?TZLnesUBTWZ2FlArANyCaAeNimvnxEfGLjNeIN967oSGBLu1EXt8zJgzC9YP?=
- =?us-ascii?Q?A4dyc/jYmf3BA2FymRnADVt7bP1GeiGf0mRgG40tfiUOh29lQjJgkSy4FkKC?=
- =?us-ascii?Q?XkTs2Q61COErLExmZ0QZ60CdgEx7Btip/7fvkWM9sBk4RCOgX0QzwXIlbiH3?=
- =?us-ascii?Q?1ek19Ag868OSk8UiwosLqa6+eLvTJsaVEaQl+GFuodFOICV//On001QzCavz?=
- =?us-ascii?Q?xS8gqA2TU6+Y1SQCI7kwLG3ihuarMyO+j4BMczOThcqR94Vj?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ec0e2102-d48a-4075-5268-08decc96301e
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2026 17:30:56.0274
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gKfDmPQImz5AEjBkOFDmVUwxPzR8r2nEl/ySp4BVH4WLj8Rh+73HQ0Uig8s2PdpK
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6017
-
---E+mLk7NhQjau+58f
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20260615115633.GQ1066031@ziepe.ca>
 
-Hi Linus,
+On 26/06/15 08:56AM, Jason Gunthorpe wrote:
+> On Fri, Jun 12, 2026 at 02:44:06PM -0400, Liam R. Howlett wrote:
+> > > Currently it never returns a failure to the caller. Look at mas_erase():
+> > > 
+> > > 	entry = mas_state_walk(mas);
+> > > 	if (!entry)
+> > > 		return NULL;
+> > > [..]
+> > > 	if (mas_is_err(mas))
+> > > 		goto out;
+> > > [..]
+> > > out:
+> > > 	mas_destroy(mas);
+> > > 	return entry;
+> > > 
+> > > There is no propogation of ENOMEM, it returns success. No caller
+> > > checks for any error here either.
+> > 
+> > At one point this was considered to be impossible to fail, and it is
+> > documented to return the entry or null.
+> 
+> I think that is the right API design..
 
-A bunch of fixes for AI found bugs.
+Callers can check mas_is_err() and check for xa_err(mas) == -ENOMEM.
+I'm going to add a note about it to the documentation of the erase
+function.
+
+> 
+> > I think I should probably change this to return -ENOMEM, fix the docs on
+> > it, and probably audit the callers (most use external locks or are
+> > early-boot-so-don't-worry-about-it).  Any issue here should also be
+> > caught by lockdep pretty quickly.
+> 
+> Locking aside, I don't think most of the callers can handle an -ENOMEM
+> return at all..
+> 
+> > mas_store_gfp() works if you know the range of your entry.  You could
+> > also write the XA_ZERO_ENTRY over the entry so that there is no internal
+> > node changes - just a value swap.  If you do this, you have to be
+> > careful when reading things back when using the mas_ interface.
+> 
+> That's probably a good option. Try to store NULL, if that ENOMEM's
+> then drop a ZERO_ENTRY and set a bit someplace so that the next
+> allocation has to sweep the tree and clean the ZERO's. At least that
+> shifts the ENOMEM to an alloc side operation where it can be handled.
+
+Why is the retry GFP_ATOMIC on a timer of 10ms?
+
+Also, why is this patch set using an external spinlock only created to
+manage the tree?  Why isn't it using an internal lock?  Is it just to
+avoid the possibility of the unlock?
+
+> 
+> > I think, in your case, hitting an XA_ZERO_ENTRY would be necessary to
+> > indicate that we cannot reuse this particular location until it is
+> > correctly dealt with?  Or is the maple tree the only reason it is
+> > considered unusable?
+> 
+> Yeah, it would be be a maple tree issue only. Defered rebalancing
+> leave space unavailable.
+> 
+> This is a case where there is no sane way to handle destroy
+> failure. You can't return an error code from dma_unmap() for
+> example. So the only reason for this complexity is because maple tree
+> exposes a failable erase to it's caller..
+
+I think this is even more complicated by the contexts it is called in -
+that is, we cannot preallocate prior to going into this state either?
+
+> 
+> IDK, could it handle it internally somehow? Or at least document a
+> reasonable pattern with some helpers?
+> 
+> Eg _iommufd_destroy_mmap() is in trouble too, it cargo culted the
+> no-check mt_erase.
+
+Are you sure that's not okay?  The mt_mmap tree is allocated with an
+internal spinlock.  In this case, the lock will be dropped, the
+allocation will be satisfied and the erase operation will retry.
 
 Thanks,
-Jason
+Liam
 
-The following changes since commit 7fd2df204f342fc17d1a0bfcd474b24232fb0f32:
-
-  Linux 7.1-rc2 (2026-05-03 14:21:25 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
-
-for you to fetch changes up to e28bee5b445178390d63f7a93a5a219063c6434e:
-
-  iommu: Avoid copying the user array twice in the full-array copy helper (2026-06-12 10:44:44 -0300)
-
-----------------------------------------------------------------
-iommufd v7.2 merge window pull request
-
-All various fixes:
-
-- Typo breaking the veventq uAPI for 32 bit userspace
-
-- Several Sashiko found errors in the veventq and fault fd paths
-
-- Fix incorrect use of dmabuf locks, and possible races with iommufd
-  destroy and dmabuf revoke
-
-- Sashiko errors found in the uAPI validation for IOMMU_HWPT_INVALIDATE
-
-----------------------------------------------------------------
-Alex Mastro (1):
-      iommufd: Clarify IOAS_MAP_FILE dma-buf support
-
-Ankit Soni (1):
-      iommufd: Take dma_resv lock before dma_buf_unpin() in release path
-
-Jason Gunthorpe (1):
-      iommufd: Destroy the pages content after detaching from dmabuf
-
-Kai Aizen (1):
-      iommufd: Use sizeof(*hdr) instead of sizeof(hdr) in veventq read
-
-Nicolin Chen (14):
-      iommufd: Fix data_len byte-count vs element-count mismatch
-      iommufd: Move vevent memory allocation outside spinlock
-      iommufd: Set veventq_depth upper bound
-      iommufd/selftest: Add boundary tests for veventq_depth
-      iommufd: Rewind header length in done if iommufd_veventq_fops_read() fails
-      iommufd: Reject invalid read count in iommufd_veventq_fops_read()
-      iommufd: Propagate allocation failure in iommufd_veventq_deliver_fetch()
-      iommufd: Reject invalid read count in iommufd_fault_fops_read()
-      iommufd: Break the loop on failure in iommufd_fault_fops_read()
-      iommufd: Avoid partial fault group delivery in iommufd_fault_fops_read()
-      iommufd/selftest: Cover invalid read counts on vEVENTQ FD
-      iommufd: Set upper bounds on cache invalidation entry_num and entry_len
-      iommufd/selftest: Add invalidation entry_num and entry_len boundary tests
-      iommu: Avoid copying the user array twice in the full-array copy helper
-
- drivers/iommu/iommufd/driver.c                   | 13 +++---
- drivers/iommu/iommufd/eventq.c                   | 36 ++++++++++++++---
- drivers/iommu/iommufd/hw_pagetable.c             | 11 ++++-
- drivers/iommu/iommufd/iommufd_private.h          |  2 +-
- drivers/iommu/iommufd/pages.c                    | 10 +++--
- include/linux/iommu.h                            |  1 +
- include/uapi/linux/iommufd.h                     | 12 ++++--
- tools/testing/selftests/iommu/iommufd.c          | 51 +++++++++++++++++++++++-
- tools/testing/selftests/iommu/iommufd_fail_nth.c |  2 +-
- tools/testing/selftests/iommu/iommufd_utils.h    | 17 ++++----
- 10 files changed, 124 insertions(+), 31 deletions(-)
-
---E+mLk7NhQjau+58f
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRRRCHOFoQz/8F5bUaFwuHvBreFYQUCajLZygAKCRCFwuHvBreF
-YbiAAQDkNukrx8BLvqF131f/FfYquUknxjTEJksSxRGN1K5gYAEA0uL2x9OonsSz
-6df1Hx9qwYoQN/2EY9tTKXrulEelNAM=
-=Kl5h
------END PGP SIGNATURE-----
-
---E+mLk7NhQjau+58f--
