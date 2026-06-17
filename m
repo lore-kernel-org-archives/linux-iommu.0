@@ -1,61 +1,61 @@
-Received: from mail-pl1-f193.google.com (mail-pl1-f193.google.com [209.85.214.193])
+Received: from mail-pj1-f66.google.com (mail-pj1-f66.google.com [209.85.216.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A182E3128BE
-	for <iommu@lists.linux.dev>; Wed, 17 Jun 2026 08:53:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.193
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB4CB3806AF
+	for <iommu@lists.linux.dev>; Wed, 17 Jun 2026 09:01:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781686417; cv=none; b=V5ec/cunjev5h9SUuYZLzOO2FB8++EF7BmXBqOBR2l+ANelQWl9ArhBbZkyXK7FXyioAYRoEGFxZqriaTWnjC8pPA5uunShwWheWe6LnLIEU+75fgwC81pZbsLiANytB6tdPNU+DjGdOBCSSHVDTU5F3T90V9O7vI1DxnDpRfoY=
+	t=1781686886; cv=none; b=nqQV0d3pQ+BDaZLmaKMmX3a/E4NFFJcyU5i4lbnIdhoZ+mqC/PjQwM5QkG60+ykG/S96xb6avGjNaYH2a6bE3Ga5b8BEsA7EdIYNMvyiRAGftiTs3zv+oPOx/QYBnlypygl+oBSaCEj0dhoOUnVS14kE7eI4wG+R1sEsSvx0CG4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781686417; c=relaxed/simple;
-	bh=YlQiRI0I3rQXIqltSqCQaMA+9ego2mL2EhLAofohYC4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=HKRW7Juznd8bv/3KbiT9de5tyGF3Rjtf+m1/2QaUBA0yq/QudxpNKWw4wCrluQ5suLgGCe4ixlPzhdyjqJv1XjZs23a3tZZu+tNmptEc5/+m0Jtp9ddSdIWwfgsfm+MklAla/OvCN9VaF5Y8bdIwOFAwASWDOGrDhqZ6FYmlHok=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jwk2TA4p; arc=none smtp.client-ip=209.85.214.193
+	s=arc-20240116; t=1781686886; c=relaxed/simple;
+	bh=ZjlsCd86E7tWUYW1VVba9V12naTTj6a558Spolw6q+s=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=UW16NGDgmpP8EqLCaPp2VGngMTEX4AF87aCsVEWuz3pLc2ODv3sJk0vEA794I1iUkhjnJ59ZWiM/m7YuhX2Ap92Er/k4gPIQ758MyLye87oKGSPjgwnrjp0qZW5ZTmgTnchLBOQyXndLhek4yjzsWU0nlvAikQVF7ttesiwjGTQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QBYeDjtb; arc=none smtp.client-ip=209.85.216.66
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jwk2TA4p"
-Received: by mail-pl1-f193.google.com with SMTP id d9443c01a7336-2c6ab886da6so8337675ad.0
-        for <iommu@lists.linux.dev>; Wed, 17 Jun 2026 01:53:35 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QBYeDjtb"
+Received: by mail-pj1-f66.google.com with SMTP id 98e67ed59e1d1-37c64d34032so358364a91.0
+        for <iommu@lists.linux.dev>; Wed, 17 Jun 2026 02:01:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781686415; x=1782291215; darn=lists.linux.dev;
+        d=gmail.com; s=20251104; t=1781686884; x=1782291684; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=XPoIdSxPiHpFkUlzncj6j+gI/obpi78irdYlkn3dmZM=;
-        b=jwk2TA4pk8xOFpgMHpZCWmWA1E5tR6RGs0nsDMV7W1nau5fqFd8pUQMN7/0Ofi8KnI
-         fsCZ1UrOszhU6y4BnVH1r11zRbg+mFfbgfw782AoMAt82j2LZ8hTRjYRDYxcHohC9N7G
-         ey6iuELsqOVHNhKE1jgx710pUeE/JF/uh2GHmvQmFtwSqUP4sJynjoPAwfa5+OMMoCz2
-         eNSXsP4uKeu9GrEumJyflyoy8TYG8I2IdyM8dzze3jI6AtsUJijrJeG9a2RjzoEAE99d
-         9VFrISFBafQhZEy8shED51Ltwk+RJTp4qkZlagjbCNihuoyqHa3uqKIfdUbCCUmGkds0
-         3RkA==
+        bh=nYt7f7++DHT88YL2TbGqisJsV/V1sQ3OoW1wFp8IqnE=;
+        b=QBYeDjtbhKJltviwi9s4U8A9k2WJIUbfLZQNMxpUrvp0HGT1WAY4OAHnlvoDgWQoXG
+         opF1jntBEa4lhjEpQTAS1s9+5jlcyqYBKO7dkI1PlzEXEqd4oZoygg2Ffv+02i1KAupK
+         zNnX/g3MFfVQkMNWfymltkUTP2iAkx+sXZqVLs4gee5rAGonD3pX+ng2r8ZIAVTBWhF2
+         i+n4Iwg2AEjpuOa/VqevmVtNAgm4jS0fYFVEoLmPkWknoxJkGkaR8SNkPUTxkEvq2JRN
+         Gr05E8bbkw51C4h/w7TA6tYaR2TbWRiM7RJAHTzC+EX0Iezw+5QUO8VyOzwcg9VM9Ep6
+         MW8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781686415; x=1782291215;
+        d=1e100.net; s=20251104; t=1781686884; x=1782291684;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=XPoIdSxPiHpFkUlzncj6j+gI/obpi78irdYlkn3dmZM=;
-        b=Lpk/hNwjtqFABkNevUgj/MUmiIWVTGeZQnlutt1zDGBkgiOR50jchXAqgFlNCm5dg3
-         3fDQZZG/+PdyenDdVBKLVNXeTa0Tp49ENrTiQIajpxgg3puRAU1ojZp8apetcTPEvlu0
-         aKISJEJ3Bzk0SVeUsS64hG9JRaYzQHqY0CcVVbomizjwwD+ym6Neo5g7zb7azWwxnfFl
-         Jgs5vDouNYF5adRKTwwQB03vlw1u2lQCmjS6kNSy/lWFCJ0WjAnTSxxOpndqb8/eC2af
-         9ERgvvmk4DShVb1FA2XIPOKCFSTCTDoZm5cnx7SrOCFDI3OpB9DWrq/+Aw2o9/JcRl09
-         FcIg==
-X-Forwarded-Encrypted: i=1; AFNElJ/G8DQPJNPoL7CX1fdva6tJunq9cV2TpZ+az9vekM1xpA1Xk2URH6tMiQHbVHcknMtCT+EKKA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxKnLosiuYNRFghycDljwQyQ2vjCdfGx/W4uus7Z0gzquFsbglb
-	Z3QMFt5W8ypOLKA37yJsd+p+Eks96U29Vc8Z+xXnYMVy4BqPu9FcjAJQ
-X-Gm-Gg: AfdE7clTgVuSIeXYFblk2ubPis4AprJ9zvdEaUzQ7qXg8uNxaLDeldlDbKGk40yudFD
-	OwBoGbyQ1NSii4ib89meV1Zw7+yrY1c1KSHUjZo5i4tClI8xPiVzfU2ndnqnoWY/TvFJ38sLfzi
-	4CB+sg7PGrK8ZbFCec7NsLFKOm6Fs/gF4fa9vaJs+sCFGjs5TTbGJHKtqqLGAijgfrB5h7xmjis
-	Vj4ZMgTJZexC3gg1q6BcE9gzuxv0qBAVjf0kxhVPAYoRjs/uipQgDtF6zJwO+keGks1EFwE8P84
-	flJQg69jjHuQYcWWm/RDiFOS80NwqPRktax7JVII5jZMsbTgjk8NFVIEcgqL5K5SO7P8Bh/WV3F
-	Yjt21i+lIYG7RawBDrT/4zHsd/+jmfJipVlv4x7K4Homm+KWHj/2+odwU6L67Wa3nCjT07rAOdd
-	uVfxAuEZxCz0c0BUXGnf0xFrfGlIw=
-X-Received: by 2002:a17:903:1a6b:b0:2c0:a9b3:bdc6 with SMTP id d9443c01a7336-2c6bc258777mr28016185ad.30.1781686414772;
-        Wed, 17 Jun 2026 01:53:34 -0700 (PDT)
+        bh=nYt7f7++DHT88YL2TbGqisJsV/V1sQ3OoW1wFp8IqnE=;
+        b=Cjt+GsX6T8xHX2xPiIWvKjgnhRnGRIDKFdpAkhmOwYw504TlsJIo44kGn2GO1Dpafj
+         BU405QGdS93O1O2wwsnosQ5BSrcbRtFT93qV/fm1SDza1RcoSJlOaH2AxvGSJdQqx4dC
+         m2HJGIGtJdzz5dAWQNGvMzLo2SBTUJw3YhN878dDcPKzk/g5XGB+Pv9Y6SKeJuY+TNyM
+         7InaTQHNFDVtMbEDsBzmpXdMGjyDmuejP34sDQChcarWt2XcdueFx9YlKxQ6bBkx6VSL
+         hjp6dDNPE8cPtdbldBB68JHeUSoYkftaQ3pAutp5dzrj6Sb8eudZdNtTC8eIardroBu/
+         8Y1g==
+X-Forwarded-Encrypted: i=1; AFNElJ8kla9dyx0Taf3fg2ABrHpW0lvKrErG4me9mB6PzSmB8gWYrkgfjF3Vz4xkH0de9ULaYu6hvQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz/+pZgydFM5WVMjAKNb0CAjLnhTgUhVx788Cwx4OpFrmfQn+FV
+	sqqOaYphU7/sbpoxKgs3+5JzM2GZuuZf9oWvitOP8/FqFgUCSxIxFFxM
+X-Gm-Gg: AfdE7cku0hoWLZ19WWcA/sn/EuU2DWPtKHjlfxTuwxXISKULOepTL3YreKupLpauO6g
+	pfv6cnOmKnS+SXLEi0b9mfHqgKEzfV+tRB/YmJv+yFGLUiEboJxd4iq49MR9QVLXT6RXMDJBXDN
+	+F4jiBLwkeVGWiDtGEY9pY+ZBzretmxevEva3/ZFEJ/Eg2oLLmyybSpDkRZ76SltP9iXjpGSwY7
+	TT1/SuQKCUkzqKCY0L+gqzOWF3Oa6b5XWEFpBBmXiN+3sjh/i1FzUdkQBFRgvYa3kriWH/Fxv6/
+	XnB7QHbC1fzH8yCWp1JPg6HRVHmY6j5KH/zcjT76d3aPp5W8bvzlyN/Dh0S9gwAflv89jRnlb+w
+	xcKGavrSgPeeG6fgkIDRaDGd7EuzOwgIoD8eTcuEjvkciNFMZBvY9fCOCH5yRa/imWSNGrFANHg
+	8RCcH71YBaPh8NrHAMAHZk7TN5Ia0=
+X-Received: by 2002:a17:90b:3ecd:b0:36a:8254:8eb1 with SMTP id 98e67ed59e1d1-37ca6a6c890mr1520866a91.6.1781686883958;
+        Wed, 17 Jun 2026 02:01:23 -0700 (PDT)
 Received: from q-System-Product-Name ([129.227.183.200])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c42fca9f44sm164897795ad.37.2026.06.17.01.53.31
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-37ca1dbc8c9sm1195929a91.2.2026.06.17.02.01.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Jun 2026 01:53:34 -0700 (PDT)
+        Wed, 17 Jun 2026 02:01:23 -0700 (PDT)
 From: "bingyu.xian" <shanbeeyoo@gmail.com>
 To: Tomasz Jeznach <tomasz.jeznach@linux.dev>,
 	Joerg Roedel <joro@8bytes.org>,
@@ -68,11 +68,11 @@ Cc: Robin Murphy <robin.murphy@arm.com>,
 	iommu@lists.linux.dev,
 	linux-riscv@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
-	"bingyu.xian" <shanbeenyoo@gmail.com>,
+	"bingyu.xian" <shanbeeyoo@gmail.com>,
 	Quan Zhou <zhouquan@iscas.ac.cn>
 Subject: [PATCH v1] iommu/riscv: Add page request queue and IOPF support
-Date: Wed, 17 Jun 2026 16:52:26 +0800
-Message-ID: <20260617085226.3189819-1-shanbeeyoo@gmail.com>
+Date: Wed, 17 Jun 2026 17:01:16 +0800
+Message-ID: <20260617090116.3254505-1-shanbeeyoo@gmail.com>
 X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -81,8 +81,6 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-
-From: "bingyu.xian" <shanbeenyoo@gmail.com>
 
 The RISC-V IOMMU Architecture Specification, Version 1.0, Chapter 3.3
 defines a Page-request Queue (PQ) for handling PCIe Page Request
@@ -234,7 +232,7 @@ Test logs:
 Assisted-by: YuanSheng: deepseek-v4-pro
 Co-developed-by: Quan Zhou <zhouquan@iscas.ac.cn>
 Signed-off-by: Quan Zhou <zhouquan@iscas.ac.cn>
-Signed-off-by: bingyu.xian <shanbeenyoo@gmail.com>
+Signed-off-by: bingyu.xian <shanbeeyoo@gmail.com>
 ---
  drivers/iommu/riscv/Kconfig |   1 +
  drivers/iommu/riscv/iommu.c | 178 +++++++++++++++++++++++++++++++++++-
