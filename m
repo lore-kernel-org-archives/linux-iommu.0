@@ -1,141 +1,269 @@
-Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AD614949EB
-	for <iommu@lists.linux.dev>; Wed, 17 Jun 2026 15:41:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE51A307AC7
+	for <iommu@lists.linux.dev>; Wed, 17 Jun 2026 16:13:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781710879; cv=none; b=cTj6rM9h+C0Rq6Q1z3OgKmFUhQSkxgG78LSoyR9npCZKDXzdYOifRtc4tuKtlECBm97nj6z+qTBvRoKDGhjLKvNxFPUmvzB2jcLz88RoR/8F+IRmop3PGN4pA2NnnZa6q6CDqkd62nF3KTLJm36/4tHKf9R90Vu8R28Joy/ySKg=
+	t=1781712829; cv=none; b=TRSneYL5j/gzLOIpaOgZB1O2nys6oILZ07c8jEpzJK8KXdt21kG0gJXWmWajcwFLxthKOpW/muQ5QJAAY2pYzGjv83gvoP7U/8vemLgwT6zQgvvTTspNDvP+fuvVmdvaszq8cG17lYtfWlawpEcnPWPDlvOvMvT5bEXBx/v73j8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781710879; c=relaxed/simple;
-	bh=9QIEPp5EWbcjDNMKHBFL5JldJkQ5+OL5Nn42Ql7e+rM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Kywpk9y/4x2NJ41b5w2+63RHQYr+3LDB7uTWrCqabPdjJYPewwb4povcSssQGCC6Lsj2O+RVKT52YniNKDjshJbTssm3A89JTJs19lsp6BcqhgazBT/Qn1TOR1an6sDKhhfiIRrKBRniPL5j5QDmf7P7srqI9s9NRLWLYNeFuBw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=IWFEjX/m; arc=none smtp.client-ip=209.85.160.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1781712829; c=relaxed/simple;
+	bh=VndfbIpPwbVRR9kgReMPg2FppcVxf5dvVDw8DC4+jFM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=GEpXCe8gvi/2R48xKRpgGLmGjlmkKQaUjybkqjiAA3nDMXYbXOohHeo+QVzDEDjzBWKJjFc2vR7KC/jdtK31Wua7OkG8r7i3hsds+udslvc9w2qA6J4I8dM9uquTeC4vKFGzcv39CKguGXZRgWjEqxQPVBgRd4YOF5eb9K9qbUY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=M3KjLKXQ; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=R5lCGFYD; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="IWFEjX/m"
-Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-51758478240so32773551cf.2
-        for <iommu@lists.linux.dev>; Wed, 17 Jun 2026 08:41:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="M3KjLKXQ";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="R5lCGFYD"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65HG4VXO3297580
+	for <iommu@lists.linux.dev>; Wed, 17 Jun 2026 16:13:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	1Fymbf6PKyafYj/na3W/ZlVJ43rZNNl0dvGx9jrs41Q=; b=M3KjLKXQfAKWyeLS
+	e+WIlVluUjt3z+srXdLF3bCAQaPN7673hxzzWXRy45BYM84y2DxW+RXkfEHikfXO
+	xBSt4PvGTu93+Vp7IwY24ZJHWyhUHAyHk7N+mnZfcrUeClnSdY1Evjh4lo2rn+ob
+	T4UiJN16oCY3IQceshFICJJ6Y+06+gVKbfUIc04eg1ZSbC+KXac3Uj8mter308u6
+	ooN6VDRq/t3xV74wyq8H267G2lEI6Cm/z0EHCrsGSCCTJFrC9SM3d6ai4WwDPdhM
+	xcZzaBDjBPSUcj+IoDqf5X6yeMboTegr6cqL3BXp4rkVHmeywuegOlTf3uke8B2y
+	d5WKBQ==
+Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com [209.85.210.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4eux2jr9qc-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 17 Jun 2026 16:13:39 +0000 (GMT)
+Received: by mail-pf1-f199.google.com with SMTP id d2e1a72fcca58-8423efbfb61so4282231b3a.0
+        for <iommu@lists.linux.dev>; Wed, 17 Jun 2026 09:13:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1781710864; x=1782315664; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ElWjBVhbO2IQzO43OlPWnTyijSop9myiCxf+4rjWyeA=;
-        b=IWFEjX/m+dBcDweoZ3io4TEymCPU99r3gA0NCsdiLiogjkklZuUBo+cm4O+0/GFVl7
-         n2WPSXTh55L9ttWu2fxPm3hZQ2NhW2nrLA2t6NaK6CtXHnZdEcsrC4Gkz5PeBm14d74A
-         QuEx1ELyW1MUuQLTqgP/NWoWgWwgWr5EWbX8ZwHP5FHO+06rw1SNJgZ5rV6aVIpjATED
-         f+j3Ic/25TTnuXvi4TZmHjNwJuEdNVr/9k94C9PejX3Df4Sj8X69kBvBAiNBYI3tJKAW
-         dpcqQJVYvaqIBnW2TSwjZs7akEtnCM3n/1TTJj67DSwdxhLTaFNwlGGBB1tdDUljFByV
-         950A==
+        d=oss.qualcomm.com; s=google; t=1781712818; x=1782317618; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=1Fymbf6PKyafYj/na3W/ZlVJ43rZNNl0dvGx9jrs41Q=;
+        b=R5lCGFYDsY8sUgdRcCv8ebjxWWs0PgQXt6WWrQb04xZFUC5vpZgeBNZrfa1EJ3YjLI
+         s95xpbz7rHBnTQNhPeGoSxJTWi88JY3c04R65bseAN9FyYR6TIYyuTekhQ1H91Tfycmt
+         o7BSUjJY6EzVYiCDrkWduSiO+mgQJxDqMMMcZFCtWzqM7XGgLmSf4uNAl42xUkep5pNC
+         Med73cPVbKdgbibLZVvxxdrreMlwPg8190KMKVD5ZHJiUBP4iVfubosRAljO9hJRRPtv
+         E7APZ14hNeOF34DMNwy1+J4BosgBe8YAwup/o3nqRN4DVIBJGkFE9e7bQhssra21KOTQ
+         9fLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781710864; x=1782315664;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ElWjBVhbO2IQzO43OlPWnTyijSop9myiCxf+4rjWyeA=;
-        b=pqRRLZI0/tDKElHIYvjXd7WdRqneOZnckudUBFlHMPXCCJ2pz8sxkzG1LUlKwdgiXS
-         CVZutO74cVuvVSptwDfweyUEhJ5DjnhjmocOB7d8QyIULN24EBa8xwresEJJsIChm0wC
-         gyv29Rf8pGS9OAuwXbLzqJNDnzhSgyI/ucVmc1IOGn2djtAGVhhZiltmRMNRNtQAbhtC
-         t1ChUVVq+6bfn8vkPLxrXGsAUebp2fADZaYQvdAIl/qqSt5/9K6VOMkuLXQcUvfV2WkX
-         gYUL00W7hSip0dM5gHFC5ggeiufiiQmNDlQN80Ben2Q95ISBDkgphQbSgyjGovF2NRgF
-         CqfA==
-X-Forwarded-Encrypted: i=1; AFNElJ8nqskYZlWeKfUepUT9u/UT3e5lPU1CMDoLywq7qUT36Ejy9/V5Hhoqc47s7NmMcTKwCG8FGw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwFUw2GRpEsLtNDo+ONyXszzu3w/HyqpVnlPHUwOszxk57gHRnI
-	Em/c6dcZMjboqozDekP8dkf9JBjkIN8f3KnfKMEPf1rSH88heaMsYsXRgLmAM3uLnBs=
-X-Gm-Gg: Acq92OE3AoAcBx1kenGWvSHfmqEuCLgQK595FdS22jraviweZ3yD9tWJOkLCrCw5xX7
-	dduTxt8e7o2+1RYNCCUver8pmykq6pM3mfN/bHg41wzLxThCFNOp8EWh1PT6Yq1pX8ZpnO8F6Cr
-	80QDSGCsWSvZNFesgQrqETI1jerUnzYjEmYJ+QgJ4qMyRKA4srlg1O+HodGJ6eX9lk/LDmucy4E
-	SunvR3/K8kgZpOu6xYdrhv/c1Qt/qKZ12Pfw89Y83bWyV/ry3IdThN0GDS0GzP2NlyRC7XoYvQY
-	XDllZ4F/jqA0SqX9+M1/R8iWbWVf/Txz/g+RJdBpvc5QBUL8GcPq8IbQtfeZK1fzcsk3d6bxOCF
-	hcf8weUYUdXaQVx6k5igw+mKurFqp+Yl0Mnerda2JeBI3WSRMs8Z5ucMyudIfltEbV5mNd/3GJd
-	zvnJfqB0G+1Dtzbz7pQeLvEBpEbozZkFuyY96raEiRENWuVE+nOJdFOqvQoX+gPUb3/edWa/Cf0
-	f4uWA==
-X-Received: by 2002:ac8:638b:0:b0:517:7620:20f9 with SMTP id d75a77b69052e-519a8e01895mr53967651cf.19.1781710863733;
-        Wed, 17 Jun 2026 08:41:03 -0700 (PDT)
-Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-517fb7a3c4asm171544001cf.14.2026.06.17.08.41.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Jun 2026 08:41:02 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1wZsNx-00000000iiO-3Q8i;
-	Wed, 17 Jun 2026 12:41:01 -0300
-Date: Wed, 17 Jun 2026 12:41:01 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Alexey Kardashevskiy <aik@amd.com>
-Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org,
-	Jiri Pirko <jiri@nvidia.com>, Michael Kelley <mhklinux@outlook.com>,
-	"Cheloha, Scott" <Scott.Cheloha@amd.com>
-Subject: Re: [PATCH v6 03/20] dma-direct: use DMA_ATTR_CC_SHARED in
- alloc/free paths
-Message-ID: <20260617154101.GE3577091@ziepe.ca>
-References: <20260604083959.1265923-1-aneesh.kumar@kernel.org>
- <20260604083959.1265923-4-aneesh.kumar@kernel.org>
- <845d0c8a-6d51-47aa-8e0b-8381e733444a@amd.com>
+        d=1e100.net; s=20251104; t=1781712818; x=1782317618;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=1Fymbf6PKyafYj/na3W/ZlVJ43rZNNl0dvGx9jrs41Q=;
+        b=h+FRvt6NM7B9Py1+eyfmhORqp6tDHxjZIsJZGCDzeUNX8UZzGqEmsQvZQ8bAWUBMMs
+         97chgWipsfi5cC03J4qhxryySPcK1wSAHLhWhXbdYoTKYvInyyYWVuvOBDkThxDEcgM5
+         ZvamQFuB1q0QLPNMrCaR4u7GxjGUOElOL/QJjiYh1Yy0hBFohJ3O2J5YkqmzWOlpCmB9
+         nNBh81F9DYIJW7zKTIkch2Q8/IXb96gh5itQXywNlY3PGdS8wnlzb5rwqvDUS0y5Uys/
+         cHezXjZ7rmb+TEMK/WTGck+vik4ttjCYJ8fqsSdQ42Nlz7u/FiVUroyviWmSgmTtUZ6Q
+         1Smw==
+X-Forwarded-Encrypted: i=1; AFNElJ/XZrAlG92jSyyWMa4wYOC1UdYbPOJPaOwZtIzuN31yqChdxfoaUVWg5mVKzcBXPxnkV4d5bA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy2bRyR7djQb87NmjKp5HqyRH5jrmM87GHJjQFplafQPSWG6+9v
+	F5VFSLqkRvRWlCbT4rlSAtJ5JvMYLEFP1R3KAQxItdqcv/6/008yu7XlKl7bCPRqNPdr3cA/Z2N
+	j4Oga9efd89AQ9uvEBLc4c0pTiqWtdLUIHLPqpW9yLkR6CVAXdlu25I2QKQ==
+X-Gm-Gg: Acq92OGWWn5caYfQuEgLKSjsCx7BbECv89uFkyGTM88syEqXwuyfAiGgUkJMOm6oycf
+	sSGjsnexXI54hOreUae4pwi2VcXeBolfOvfi1iwwfhO58f+erOuCR1movITUWdV1+6fk3fOlQ2b
+	WX40yYn1gKtNk8Vr1Z6c1szwRIeK38vm+sMQwN5E6Kenxf+5lQoZQ4UDIxmz64fd1WbzoWoIoMw
+	wxZdfWMnijKtMyei30bEBxEZujAmzRQ4bIuK4S7q5SUpHmmxLzxcY/x8k5Zr8GA0+nwBoDwtjbu
+	KtvSIf9oSV7Bqg9nh6KZ4YO+ipq5IEvdZb7WRCW7xTurKmMP67cBW0nVQv6gjGRsUDiTGpLidnQ
+	9qxCrwVzbMX4fTopAX8sjXXTwH+OiafLwbJRH//E=
+X-Received: by 2002:a05:6a00:2a0e:b0:842:5a8d:3036 with SMTP id d2e1a72fcca58-845245808femr5259207b3a.35.1781712818183;
+        Wed, 17 Jun 2026 09:13:38 -0700 (PDT)
+X-Received: by 2002:a05:6a00:2a0e:b0:842:5a8d:3036 with SMTP id d2e1a72fcca58-845245808femr5259167b3a.35.1781712817730;
+        Wed, 17 Jun 2026 09:13:37 -0700 (PDT)
+Received: from [10.219.57.228] ([202.46.23.19])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8434ad0118asm15320349b3a.27.2026.06.17.09.13.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 17 Jun 2026 09:13:37 -0700 (PDT)
+Message-ID: <6cbf7d5b-cf7c-4b31-b60e-06e508c633ca@oss.qualcomm.com>
+Date: Wed, 17 Jun 2026 21:43:21 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <845d0c8a-6d51-47aa-8e0b-8381e733444a@amd.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] swiotlb: introduce Kconfig option for compile-time
+ default pool size
+To: Mostafa Saleh <smostafa@google.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org,
+        Jagadeesh Pagadala <jpagadal@qti.qualcomm.com>
+References: <20260617-swiotlb-v1-1-abfee3faf4ea@oss.qualcomm.com>
+ <CAFgf54r0oXgaFMQeBOV+jm70XoMUKFAOkRhNLM2FrFa_JhmwKA@mail.gmail.com>
+Content-Language: en-US
+From: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
+In-Reply-To: <CAFgf54r0oXgaFMQeBOV+jm70XoMUKFAOkRhNLM2FrFa_JhmwKA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjE3MDE1NiBTYWx0ZWRfXwxZwP7rZrZBc
+ XE1jAJQQGIPiZF3aPIeSp7cz+SKigkKxnBqXaKCIJiDhqD0CDUtVkIWBCTmcR9IkhoB+4Ca8FGz
+ d7CDLMnMCK1eTyZB9nLUBdQdt0uMrTsWaO6xMo8Xx6bUYKqnGunh2DgwYjAfQz7xwtKXceGlv4s
+ WwyF1rP6LZRyopjOAkdsHfoDxRExLPRll5dKeN02LWH9hLhsSTTfagXecy0B09aWyDR6f8ltvSA
+ zVZ+Ji2g7J+kSph54r1anjobgMLuL5pcr9ZrmBExT5lMUFm9CFfego9dsz+Lgy9RxMeSZYvx/lp
+ YSR3UAoFEsEVAWuPyk50lzSCvupWUcgM9H1fl9E2emG3qQ9NrrWESQvkb9Vcf1VPqCXdm1EVSNi
+ Dpc9J12lGVVf0B3S46JvEXyGSoQ1IcOBXjNf2aj6HpFJsbF4O80BewN1BDIAUZjZcrdJVKaFDn3
+ HrCCTKBRgJiPx9qfFjQ==
+X-Authority-Analysis: v=2.4 cv=Fsg1OWrq c=1 sm=1 tr=0 ts=6a32c7b3 cx=c_pps
+ a=WW5sKcV1LcKqjgzy2JUPuA==:117 a=j4ogTh8yFefVWWEFDRgCtg==:17
+ a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_glEPmIy2e8OvE2BGh3C:22
+ a=EUspDBNiAAAA:8 a=9ljbhfWoGXrtH4PsthoA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=OpyuDcXvxspvyRM73sMx:22
+X-Proofpoint-ORIG-GUID: AciPlNyPP9nIfvgdAzoT2kdbQEhY-AGr
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNjE3MDE1NiBTYWx0ZWRfX0i+AGPVcg1Vl
+ xSY1qruyAn6Sw281bZNI5nhNcS55pjxl/lm/toBbB87pj4W0Jp9dr5w/rvqCfPnFLco0cAd+th8
+ StrbR1YI2VKmEOkT9aqFlEVvSggcsbo=
+X-Proofpoint-GUID: AciPlNyPP9nIfvgdAzoT2kdbQEhY-AGr
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
+ definitions=2026-06-17_02,2026-06-17_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 bulkscore=0 suspectscore=0 spamscore=0 phishscore=0
+ lowpriorityscore=0 malwarescore=0 adultscore=0 priorityscore=1501
+ impostorscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
+ definitions=main-2606170156
 
-On Wed, Jun 17, 2026 at 10:50:39AM +1000, Alexey Kardashevskiy wrote:
-> > @@ -193,16 +193,31 @@ void *dma_direct_alloc(struct device *dev, size_t size,
-> >   		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
-> >   {
-> >   	bool remap = false, set_uncached = false;
-> > -	bool mark_mem_decrypt = true;
-> > +	bool mark_mem_decrypt = false;
-> >   	struct page *page;
-> >   	void *ret;
-> > +	/*
-> > +	 * DMA_ATTR_CC_SHARED is not a caller-visible dma_alloc_*()
-> > +	 * attribute. The direct allocator uses it internally after it has
-> > +	 * decided that the backing pages must be shared/decrypted, so the
-> > +	 * rest of the allocation path can consistently select DMA addresses,
-> > +	 * choose compatible pools and restore encryption on free.
+
+
+On 6/17/2026 2:17 PM, Mostafa Saleh wrote:
+> On Tue, Jun 16, 2026 at 10:36 PM <bibek.patro@oss.qualcomm.com> wrote:
+>>
+>> From: Jagadeesh Pagadala <jpagadal@qti.qualcomm.com>
+>>
+>> The SWIOTLB bounce buffer pool size is hardcoded at 64 MB via
+>> IO_TLB_DEFAULT_SIZE with no compile-time knob to adjust it. On
+>> memory-constrained embedded or mobile platforms equipped with a
+>> hardware IOMMU (e.g., ARM SMMU) covering most DMA-capable devices,
+>> reserving 64 MB at boot is unnecessarily wasteful — the SWIOTLB is
+>> only exercised for devices that bypass the IOMMU or have restricted
+>> DMA address ranges.
+>>
+>> Introduce CONFIG_SWIOTLB_DEFAULT_SIZE_MB, an integer Kconfig option
+>> (range 1–64 MB, default 64) that allows platforms to set a smaller
+>> compile-time default. IO_TLB_DEFAULT_SIZE is updated to derive from
+>> this value when CONFIG_SWIOTLB is enabled, preserving the existing
+>> 64 MB default when the option is not configured.
+>>
+>> The runtime "swiotlb=<nslabs>" kernel parameter override remains
+>> fully supported and takes precedence over the compile-time default.
+>>
 > 
-> Why this limit?
+> Just curious, why is not "swiotlb=" enough in your case?
 > 
-> Context: I am looking for a memory pool for a few shared pages (to
-> do some guest<->host communication), SWIOTLB seems like the right
-> fit but swiotlb_alloc() is not exported and
-> dma_direct_alloc(DMA_ATTR_CC_SHARED) is not allowed.  Thanks,
 
-Then setup your struct device so that the DMA API knows the
-guest<->host channel requires unecrypted and it will work correctly.
+We are looking for an approach where we can set a default value of
+IO_TLB_DEFAULT_SIZE to maintain and sustain it for a
+specific platform or a kernel configuration.
 
-I think this is a reasonable API to use for that, and I was just
-advocating that hyperv should be using it too.
+So introducing a Kconfig tunable seemed to be a maintainable approach
+compared to "swiotlb=" runtime variable.
+(since defconfig is the right mechanism for platform specific 
+compile-time defaults)
 
-But it all relies on a properly setup struct device.
+Further in case of any bootloader constraints - to make default runtime 
+parameter, it might require firmware changes on production devices as 
+well. (since in embedded/mobile platforms the kernel command line is 
+typically managed by the bootloader)
 
-Jason
+Thanks & regards,
+Bibek
+
+> Thanks,
+> Mostafa
+> 
+>> Signed-off-by: Jagadeesh Pagadala <jpagadal@qti.qualcomm.com>
+>> Signed-off-by: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
+>> ---
+>> The SWIOTLB bounce buffer pool size is hardcoded at 64 MB. On
+>> memory-constrained platforms with a hardware IOMMU (e.g., ARM SMMU),
+>> this reservation is wasteful as SWIOTLB is only needed for devices
+>> that bypass the IOMMU or have restricted DMA address ranges.
+>>
+>> Introduce CONFIG_SWIOTLB_DEFAULT_SIZE_MB (range 1–64 MB, default 64)
+>> to allow a smaller compile-time default. The runtime "swiotlb="
+>> parameter override remains supported and takes precedence.
+>>
+>> Before (default 64 MB):
+>>    [    0.000000] software IO TLB: area num 8.
+>>    [    0.000000] software IO TLB: mapped [mem 0x00000000fbfff000-0x00000000fffff000] (64MB)
+>>
+>> After (CONFIG_SWIOTLB_DEFAULT_SIZE_MB=2):
+>>    [    0.000000] software IO TLB: area num 8.
+>>    [    0.000000] software IO TLB: SWIOTLB bounce buffer size roundup to 2MB
+>>    [    0.000000] software IO TLB: mapped [mem 0x00000000ffdff000-0x00000000fffff000] (2MB)
+>> ---
+>>   include/linux/swiotlb.h |  8 ++++++--
+>>   kernel/dma/Kconfig      | 22 ++++++++++++++++++++++
+>>   2 files changed, 28 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+>> index 3dae0f592063..1665a9ce8f94 100644
+>> --- a/include/linux/swiotlb.h
+>> +++ b/include/linux/swiotlb.h
+>> @@ -32,8 +32,12 @@ struct scatterlist;
+>>   #define IO_TLB_SHIFT 11
+>>   #define IO_TLB_SIZE (1 << IO_TLB_SHIFT)
+>>
+>> -/* default to 64MB */
+>> -#define IO_TLB_DEFAULT_SIZE (64UL<<20)
+>> +/* compile-time default; overridable via CONFIG_SWIOTLB_DEFAULT_SIZE_MB */
+>> +#ifdef CONFIG_SWIOTLB
+>> +#define IO_TLB_DEFAULT_SIZE ((unsigned long)CONFIG_SWIOTLB_DEFAULT_SIZE_MB << 20)
+>> +#else
+>> +#define IO_TLB_DEFAULT_SIZE (64UL << 20)
+>> +#endif
+>>
+>>   unsigned long swiotlb_size_or_default(void);
+>>   void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
+>> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+>> index 0a4ba21a57a7..3830a63ae032 100644
+>> --- a/kernel/dma/Kconfig
+>> +++ b/kernel/dma/Kconfig
+>> @@ -86,6 +86,28 @@ config SWIOTLB
+>>          bool
+>>          select NEED_DMA_MAP_STATE
+>>
+>> +config SWIOTLB_DEFAULT_SIZE_MB
+>> +       int "Default SWIOTLB bounce buffer size in MB"
+>> +       depends on SWIOTLB
+>> +       range 1 64
+>> +       default 64
+>> +       help
+>> +         Sets the default size of the software IO TLB (SWIOTLB) bounce buffer
+>> +         pool allocated at boot time. The default is 64 MB.
+>> +
+>> +         On memory-constrained embedded or mobile platforms (e.g., those with
+>> +         a hardware IOMMU such as ARM SMMU covering most DMA-capable devices),
+>> +         a smaller value such as 4 or 8 MB may be sufficient. The SWIOTLB is
+>> +         then only needed for devices that bypass the IOMMU or have restricted
+>> +         DMA address ranges.
+>> +
+>> +         The minimum allowed value is 1 MB. This compile-time default can be
+>> +         overridden at runtime using the "swiotlb=<nslabs>" kernel command line
+>> +         parameter. Refer to Documentation/admin-guide/kernel-parameters.txt
+>> +         for details.
+>> +
+>> +         If unsure, leave at the default value of 64.
+>> +
+>>   config SWIOTLB_DYNAMIC
+>>          bool "Dynamic allocation of DMA bounce buffers"
+>>          default n
+>>
+>> ---
+>> base-commit: 4fa3f5fabb30bf00d7475d5a33459ea83d639bf9
+>> change-id: 20260617-swiotlb-c215ce0b23f7
+>>
+>> Best regards,
+>> --
+>> Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
+>>
+>>
+
