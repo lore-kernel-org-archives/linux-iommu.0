@@ -1,183 +1,332 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 18FDF3BBFA4
+	for <iommu@lists.linux.dev>; Wed, 17 Jun 2026 07:26:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781681165; cv=none; b=fxbu+/1OixHYFBdO+nmRBsarFpnpiOFgmvlbnbUsPacNmD6vqd5wk35XTeBxeyaiZd0bNI1D/FWTAijTxvqf+LEQ+RVYzCRdXTqmK4nSecfAm1aBivoz9Qnxjk+u0cQ4CP6aGy8OGh2CurW2y6ENo6rcuIQ7OuKb78Lj+RxpIqY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781681165; c=relaxed/simple;
+	bh=1Tdp7ieZpJE8YUxn3oCZBrRzyVGXSHKWj3Y1QzfSCX4=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=ANuvq4+Rq+QweipbxjnoPUbt1tRW7c2syUYnakHbBLZl4FXoRIWAxBnthwtB8JZM1fr0p7jEHWsmL6xa5FilX+OfV6mYlrwAD47NGuvStPXiDzV1yxIJxvWy6dudA1JDkaiaUNIRoCYSm79JoiNonGDkugPT6IicAbU5l7ZRWkM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
+Received: from 8bytes.org (p4ffe1d30.dip0.t-ipconnect.de [79.254.29.48])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9F683ACF15
-	for <iommu@lists.linux.dev>; Wed, 17 Jun 2026 07:23:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.13
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781681016; cv=fail; b=OPeUS/4Sg0CaxAY1bpXA5Qa9H9oO19DuD299ocwKDr9nU0HhVNrKgD0kNbKFT2QWpsp+IZ9T0Pq6NVzf294YaOXs6DSXtSvaVtA57YNTE7yFmS2466nJ0WUnKX2l5l/l5d+DQkHYbyM2FxR5iUOdeYS4e5MAXDhhc37rNwMANSk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781681016; c=relaxed/simple;
-	bh=gceaGi1/jhdYb1vH5RVnk2lpvhjaJbbBeDg1VtshvL0=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=T5uam4Awe+jG0uVviZX7dNZMMR/zCOucg5RSnBZIVMQRWAw6oUdxkOaAC0hLduU6ZzraWhd3TwnPJi7laMNZi26PbfFm/0jSkI8jZkd5UcMrQZWiCSp5V1X/kzWIRHRXLCtzFHysYRtbZrbBS9mloXMO34TDIWcuSSBTxHddGvM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kDAW5pm0; arc=fail smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kDAW5pm0"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1781681016; x=1813217016;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=gceaGi1/jhdYb1vH5RVnk2lpvhjaJbbBeDg1VtshvL0=;
-  b=kDAW5pm0onlD+BPaY+n3g00V8WOgHX84DltKX32c0e8o2iA1E0sU7HD3
-   7DO880PuzRf+r3wBKTOEAEcBt4N4XmA/mfmtInHe+eiVxx68MEYlTZWb/
-   htHH0x9WOxYwrJLSrJiC/aybK7hvqfTN4vGIaVPg3hoPcDLBOBxtyiLc9
-   3H8og7reg2kIAe7PkeYyZ6S9ot5S6FfNOZweVTMV3xdxh6OoyZ8/AZ9hD
-   5YLwgFVVgipMr2iXyayM34OxqoHryGe7sg5GHQkqbTUWTSu/+dH5PrEY3
-   b49wGjA1BzxK8Cpqi38wAN+5a788WPN+D2AdPjdYp6HwoM1VsaHh8Qs5D
-   A==;
-X-CSE-ConnectionGUID: e2Pu58+FTZqEtMBZL4GRgQ==
-X-CSE-MsgGUID: 2Nckpa4jSIiEwCNjhzmjXA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11819"; a="93581842"
-X-IronPort-AV: E=Sophos;i="6.24,209,1774335600"; 
-   d="scan'208";a="93581842"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2026 00:23:35 -0700
-X-CSE-ConnectionGUID: vb/Rtgw6TYWdyhHGYZqSfg==
-X-CSE-MsgGUID: mLeoSUveTVC98+Xao9QZPw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,209,1774335600"; 
-   d="scan'208";a="271710593"
-Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
-  by fmviesa002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2026 00:23:35 -0700
-Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
- ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Wed, 17 Jun 2026 00:23:34 -0700
-Received: from ORSEDG902.ED.cps.intel.com (10.7.248.12) by
- ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Wed, 17 Jun 2026 00:23:34 -0700
-Received: from SN4PR2101CU001.outbound.protection.outlook.com (40.93.195.64)
- by edgegateway.intel.com (134.134.137.112) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Wed, 17 Jun 2026 00:23:34 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=mJx+3kuUnTKpsKXvGzTIg8cV2NNy81ShIw4ccOiZBkkvthwGK26llZ+EBc9DMgfvpaTFTtsUfp2Csydo3urAVEKhvxUuOfeaFfaO7YorLT4ej/V2ILV7ytlGR+IeBwQFuRiK6xa86o+fRzQ8Uiwt1p9KMNQnjNFsTx5L4vqPAXZr5xIG5X5hxdHwH7TmMIpwgJ7tPbN/BAe4A+R0Lu/3HiUa43QoOockrlRciHG0cbxwzim6TEcA0RHzF9BBsh69gZB2+nMCMAYe9xBjzYIcELvVORpp0jQAL+rYJyDTTyJEjkEWxxyKu3xtTsNyT/Y/MSeAGo5DN2hPonNXRgfPiA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gceaGi1/jhdYb1vH5RVnk2lpvhjaJbbBeDg1VtshvL0=;
- b=wLjO7pUHma+ZFCUKrmMYsyGHlziz6DgbyvDeymlIRc+XVdxsO5SmLzE5MTb2zej5s1buJLgcHLW7RRSxL9RP4sqs4WC6pJwQDNA+LeCR9O2loh2uv7vWBL7ygm8RQOrJy/ipJWsg/aVyms/QBoiXHZ8kwg0AZWgtvRGlUMxIrSZydNaFxmZmQxg9Lz6EpE5b86LUeCR40dhlwlX32WbNnYmzotvSYoMXR6qFX31CXTVtEbL6LKKmXtcnM3M6QJF+T4kNylBSUZTrcJgIoRea0Bi2ttx76DMd8B3kglCV5YRcAYQyv75jeRQ8yVUlpr6sjIWgp6g2I2NwTchwGVP0Sw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from DM6PR11MB3690.namprd11.prod.outlook.com (2603:10b6:5:13d::32)
- by IA3PR11MB8987.namprd11.prod.outlook.com (2603:10b6:208:574::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.113.18; Wed, 17 Jun
- 2026 07:23:31 +0000
-Received: from DM6PR11MB3690.namprd11.prod.outlook.com
- ([fe80::7db8:f6b3:30f8:ee4b]) by DM6PR11MB3690.namprd11.prod.outlook.com
- ([fe80::7db8:f6b3:30f8:ee4b%4]) with mapi id 15.21.0139.009; Wed, 17 Jun 2026
- 07:23:31 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Will
- Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-CC: Joerg Roedel <jroedel@suse.de>, Mika Westerberg
-	<mika.westerberg@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, "Chris
- Wright" <chrisw@sous-sol.org>, Jesse Barnes <jbarnes@virtuousgeek.org>,
-	"Mallick, Asit K" <asit.k.mallick@intel.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 8/9] iommu/vt-d: Remove dmar_disabled
-Thread-Topic: [PATCH 8/9] iommu/vt-d: Remove dmar_disabled
-Thread-Index: AQHc89/x3BTpsvtW1kS8TQVSXNxglbY7BxeAgAdlWnA=
-Date: Wed, 17 Jun 2026 07:23:31 +0000
-Message-ID: <DM6PR11MB3690CCD68389CAE3BBCEE3598CE42@DM6PR11MB3690.namprd11.prod.outlook.com>
-References: <20260604051540.592925-1-kevin.tian@intel.com>
- <20260604051540.592925-9-kevin.tian@intel.com>
- <c9c6b903-f62b-448c-82e0-c8b40d13df0a@linux.intel.com>
-In-Reply-To: <c9c6b903-f62b-448c-82e0-c8b40d13df0a@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DM6PR11MB3690:EE_|IA3PR11MB8987:EE_
-x-ms-office365-filtering-correlation-id: de21306e-d4a9-4751-ce97-08decc4155cc
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|23010399003|376014|7416014|366016|56012099006|6133799003|11063799006|4143699003|38070700021|22082099003|18002099003;
-x-microsoft-antispam-message-info: rn9ky+6Le+VP9aw5+DjfgyJ9D4oLIjQnrShbduWpg1VpKTm7xcRQdg8oUNOP4aS9WOZxPe/zGlUOFVWLPIpWprRcULaUurbOt+sELPHS5n99YvVVimloMX47XmV0AEx3HPTNiGwLhY8AvXzAKrjifxdhNHVP7jxJ6R11Q00J2xLauxat8EDLdu0UNU/dowLxsJFzX+Ssa9CyzsDKyrH/tmvPQwHN+1Yu17r9cmC21l7HImTSVMZ7Fcamz4t56OQVNrGB894vSuXYw9JjCrAjaQBslD1Spy/GgqR0K//Mm8Oxht50eZqUdPwGn8i0L+SGkyj3Wtb1uE7g8e9P8+ou73AzckC9lvUTpo9XwrolMsVM4PrPeFiW/Ayi3NyOahWF9IUu+Qy9q/cqXjD4f9BGzd82ZlTQcMIf2CW1dL/UHN7ULSdgewpiBc29IScPHAUxBifPLkVQW4BzDZ5Kqwz4t2XokJH2Xqkk2X1w10QTEwkBT2WRuf2UlxnDxzod8h6clPqD5CpuJyFGwlkd3vIiTKwxrHOSPmgW3ii9VqYSV2aGeqh4VKaPu0D+gU12WfzduJM0TUwmUeq7HVYBwoLqQ9JJOEp1NZuXDWk0SLEOjtxNNggTIrF0AiTLspv5POnFX66HGKc2EDoOgQlN8Dra+mS8CDUiru0Bvx5jWRCTqH7DB0aYI3jVbk0ttIDFiNPIF1UUyi7mPKsvqCf576qiG8r74jApskPPzL/9X2jbcdgClMqYTZO/ro23Z4gmu1NP
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3690.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(376014)(7416014)(366016)(56012099006)(6133799003)(11063799006)(4143699003)(38070700021)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?aXhpbk1oWDR0VWdVSGdZMnFZOVgvZDZaaEF1KytPMmpITDFKTDFHcjJ5UnpE?=
- =?utf-8?B?ODVJWVprT1Y3aDZOSVp3VG0zVy9kVHlTUVZ2MlBqb0ZZYkFnMXE4aENTa2Jl?=
- =?utf-8?B?bXpyUWR3VTR4dWlVQ3d0Z1lBUlE5M0Jtb0VNMFlpWXI1TGp5SFNTK2pkVmZU?=
- =?utf-8?B?NmVMeXExMFBOdEs3c1hNTlpMdE5Md21yNXErTWtacVRsTmU3UDdGVlRKaDBS?=
- =?utf-8?B?L3VzdFdHSjNiMDhSaUJWUkkrd2tQN0ZqSWk5WWdxS3JoL09jRGw2YitWYWtw?=
- =?utf-8?B?ejhkdEVzKzBNVzFrZmZFVWVaaEdwZ2lXSEZuLzU1Q2F2YkRPYWhtUlQyN2ll?=
- =?utf-8?B?UmJXajdDcVJQZEYzWmNDaHNCRDExZmlVMlEzVUVrZTVWM2N2UnJ3Qk1Td1g1?=
- =?utf-8?B?SDRqRk1GajlKQ0l3aCswdFVGOUR5QUNqak5wOHJKa054SHF0dDZyQUxKOW82?=
- =?utf-8?B?dXh4R2w0dzlPNnBNajZQNGRvYnJuNDFpMld4ZU1uL1lvaHVSOHVBTGR2NDJY?=
- =?utf-8?B?VVN4T0p0MVY0SUd6TnQxS2xFVDBiVk1uUy9zdkFZSUlVWXhVRzNDKzdXTVFM?=
- =?utf-8?B?c3pvZkJ5TXZORXhlOW9BQ3IyVkZ2STBJTXg5NU1JL2IzN1RueFhpcU0vQ2N0?=
- =?utf-8?B?R1IwSlhrdkZQSHk4VU1uUVVpT1pjaHpnem9ULzRDTkVRcG5PdFNKUnJSTUFL?=
- =?utf-8?B?ZUF3S0tkajU2V3BnR2hIYmZwY0dPSjhjdGt4LzVaTjZ6ZHpPSW5MSTYvdEda?=
- =?utf-8?B?VG5KNWtQTG1ZUWY3ZmNQbzlYYkxzWmIyQlhmMnRkdTB4QktCNWd6VG5CdSs3?=
- =?utf-8?B?VCswSzF4bThZYUE0TERTbnRVTVVrS2t1QjZZUDJNVHhxNXdKWjdOQW1ReVpy?=
- =?utf-8?B?Q09FS0REOEJQVHh6UUc3aS9YRXpsazh4RStNUzcrbjlxSUZHeE9OdlBZZUNV?=
- =?utf-8?B?U2V6YnovWXlJZmtGY3g2cjJnQ2pMYXlJYlpHWXI4c2V6RFBYckQvam1rTmgy?=
- =?utf-8?B?Zm84bTE1cGRuM1ZNMWRGTUkwSmJ2VnhDVkkxdnNmNlJpKzJ5MEZwMkozOHFj?=
- =?utf-8?B?MjJiRzlPaFlELzR2bFpOS3htdGNZZFRVVFkrM05PYU1Fa1JFd3BYK2Q1NEQx?=
- =?utf-8?B?Z2NNMXJqZ05HVGU1bkQrYjJlYThLWGxTMWlWd3JRQUtNWDRPU0g4T1JGSmtZ?=
- =?utf-8?B?dkJyUHNrQnJQbzVnSDN2M0pzdXRLZEU5N002Y1RYNlRjRHJGaUZOVXh0NE1X?=
- =?utf-8?B?US9TbHVHYm5IVkRhK1ZKaUtUSEN4MDZmYnd6VGdsVURwWFFRZi9kUm5JaEt4?=
- =?utf-8?B?anR2aWhMdHkrc0l6Y1dsMFdvL3JkOFhYVnlEU0FHTWhSU1duUXNxVDM2M0Zk?=
- =?utf-8?B?Qmk4SisrQXd3ODE5c0dBdUh4cVpFSEFUdktFclVuSTJHd0lTVXl1VFZBNDQy?=
- =?utf-8?B?R3V2VHJHTzVmRldnVWxneUxUT3d4a1pWSW81WnFtTzhady8vWlhJbjFHTkU1?=
- =?utf-8?B?cE53Skx0TlBWUmhaSnFtc3dnY3N6ZDk5L1dISm90ZENhMVprTnBHdmFuVmdJ?=
- =?utf-8?B?SjRESXl2eWE3WGpxYUZYWXE5d3JqYzBrcnJXb0tMOGwvYTFDTjM1Tzkwenl4?=
- =?utf-8?B?UlR3QmIwck41R0Ntb21aSWZCWnFpYU9xQVJWTnJtSkJqa1U2Mk0xWDQzVWdv?=
- =?utf-8?B?c09nVjhDZ3NjeWh0TVYwZTlpRTd2T0ZnR2xCcG92OFJqenJTdk5KR2QwZWFG?=
- =?utf-8?B?bGgzRnExZ2RnU3ducVZ4elpoSHNJRDl4SDhCY3o1T2dOUHNDV1ZwRWhrUEd0?=
- =?utf-8?B?aTNVcndHeDluOXJ0SVNnWkQ2SFQzNTc5cVNCOVBIcThVYWZaK0ozZHJLdkNF?=
- =?utf-8?B?SE8zSVVaUG4yWTJqdkpnUmZERVdoZ1dMVmhLeDVsd1M0c1F5SkFucUhGelF5?=
- =?utf-8?B?TVF2VGFVRDFCZXZ1TEtzWHN6amp2czdVV1JicCtOd1RFTFROTFV2SVJBYlpr?=
- =?utf-8?B?c2wvU29Gak5CMkttdkd6bHJnU2tKN1YrRG5jaWRPa3J5aUhOZDVpTStTelhn?=
- =?utf-8?B?V1BaZk9uNTRaRTdITDN6eGZrUE0vT1UyR3V0ajlveTNsek0zRDcyVGFSODJh?=
- =?utf-8?B?TGl2NnJ5ZDd4TXVrTDhwTTF0eFgxcnM3eEhjRGMwbWF3QkdNY1BzSHcwSzNY?=
- =?utf-8?B?aHQ5Qy9rOXVaRlFhTWVaczBMemJrcXcyVjR6QjAwK1lSbHFpWVJ6bXFFL0dT?=
- =?utf-8?B?STdXeldWMlRqYktueHRSU1hEOXlIQ0k4Rk54dDgzYjdkRWYrZm9rNll2czda?=
- =?utf-8?B?dFllNkRqSEJ4S005ZHJuMVhFMUkrVHMyWjU1Z2JXRGhjQU8zUXBlZz09?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	by mail.8bytes.org (Postfix) with ESMTPSA id EF588202483;
+	Wed, 17 Jun 2026 09:26:02 +0200 (CEST)
+Date: Wed, 17 Jun 2026 09:26:01 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev
+Subject: [git pull] IOMMU Updates for Linux v7.2
+Message-ID: <ajJL1Jx3bTh1EaVV@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Exchange-RoutingPolicyChecked: qmc0J3nDeyzG7zqzKcIKgtZmNSIMadyphU5EqK7MaS9ctcogh3niZaXcqvZOyPam9HFsYfM2XPuBLdxiNNQ31SuAsnEtRypIwGfjKojM8C09GYYSLT9UWxDQNznjpgxRsg/sd6JDH4egjPvwkxaP88w6EXHxq3BqO0PKownxVUSFenUyl0rdd2jxvciZ5kQmTcO456muQRaPp+nwlPEgpWtdXj47yQg2DP29YRC+W4nRHEnTznuG0n7mAYGlyDFajAWZUydrCSgKTIxxG7PdtM5VmUsua+1yOyTG3CisQGCHjARQsBh6Hv6OlVyDOTCXt+i26EoA1v72AEx+vL+4Ag==
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3690.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: de21306e-d4a9-4751-ce97-08decc4155cc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jun 2026 07:23:31.7423
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: YCQRQtyYOTwzqeoWKhu9/iBK6IRRRBVJhlWQvXevetYsIUD+++NKa2qeQjlO91DaiRlZ5lxCQ8Mem+SA5PTeyQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA3PR11MB8987
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
-PiBGcm9tOiBCYW9sdSBMdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiBTZW50OiBGcmlk
-YXksIEp1bmUgMTIsIDIwMjYgMTA6MjYgUE0NCj4gDQo+IE9uIDYvNC8yMDI2IDE6MTUgUE0sIEtl
-dmluIFRpYW4gd3JvdGU6DQo+ID4gSXQncyByZXBsYWNlZCBieSBkbWFyX2lzX2Rpc2FibGVkKCkg
-bm93LCBjb3ZlcmluZyBib3RoICJpb21tdT1vZmYiDQo+ID4gYW5kICJpbnRlbF9pb21tdT1vZmYi
-LiBBbHNvIHJlbW92ZSB1bm5lY2Vzc2FyeSBjaGVja3Mgb24gbm9faW9tbXUsDQo+ID4gbGVhdmlu
-ZyBvbmx5IG9uZSBleGNlcHRpb24gaW4gaW50ZWxfaW9tbXVfaW5pdCgpIHdoaWNoIHNraXBzIGRl
-YnVnZnMNCj4gPiBpbml0IGZvciAiaW9tbXU9b2ZmIiBidXQgbm90ICJpbnRlbF9pb21tdT1vZmYi
-LiBLZWVwIGl0IHRvIGF2b2lkDQo+ID4gc3VycHJpc2UgZm9yIG5vdy4NCj4gDQo+IEFzIG1lbnRp
-b25lZCBpbiB0aGUgcHJldmlvdXMgcGF0Y2gsIGRtYXJfaXNfZGlzYWJsZWQoKSBvbmx5IGJlY29t
-ZXMNCj4gbWVhbmluZ2Z1bCBmb3Igd2lkZXIgdXNhZ2UgYWZ0ZXIgdGhlIGZvcmNlX29uIGxvZ2lj
-IGhhcyBiZWVuIGV4ZWN1dGVkLA0KPiByaWdodD8gV291bGQgaXQgYmUgYmV0dGVyIHRvIGFkZCBh
-IGNoZWNrIHRvIG1ha2UgaXQgc2FmZT8NCj4gDQoNCmFzIHJlcGxpZWQgZWFybGllciBJIHRoaW5r
-IHRoaXMgcGFydCBpcyBvYnZpb3VzLiB3cm9uZyByZWZlcmVuY2UgdG8gaXQgYmVmb3JlDQpmb3Jj
-ZV9vbiBpcyBjb21wbGV0ZWQgY2FuIGJlIGVhc2lseSBjYXVnaHQuDQo=
+Hi Linus,
+
+The following changes since commit 4549871118cf616eecdd2d939f78e3b9e1dddc48:
+
+  Linux 7.1-rc7 (2026-06-07 15:37:58 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-updates-v7.2
+
+for you to fetch changes up to dd8a3c6cd531dca5917111a94fa3074077f6ba5a:
+
+  Merge branches 'apple/dart', 'arm/smmu/updates', 'arm/smmu/bindings', 'rockchip', 'verisilicon', 'riscv', 'intel/vt-d', 'amd/amd-vi' and 'core' into next (2026-06-12 14:57:23 +0200)
+
+----------------------------------------------------------------
+IOMMU Updates for Linux v7.2
+
+Including:
+
+Core Code:
+
+  - Fix dma-iommu scatterlist length handling in the P2PDMA path.
+
+  - Extend the generic IOMMU page-table code with detailed gather
+    support for more precise invalidations.
+
+  - Add pending-gather tracking to generic page-table invalidation
+    handling.
+
+  - Add support for smaller virtual address sizes in the generic AMDv1
+    page-table format, including KUnit coverage.
+
+  - Fix page-size bitmap calculation for smaller VA configurations.
+
+  - Rework Arm io-pgtable allocation/freeing to consistently use the
+    iommu-pages API and address-conversion helpers.
+
+  - Add PCI ATS infrastructure for devices that require ATS, including
+    always-on ATS handling for pre-CXL devices.
+
+AMD IOMMU:
+
+  - Fix several IOTLB invalidation details, including PDE handling,
+    flush-all behavior, and command address encoding.
+
+  - Honor IVINFO[VASIZE] when deriving address limits.
+
+  - Fix premature loop termination in init_iommu_one().
+
+  - Add Hygon family 18h model 4h IOAPIC support.
+
+  - Clean up legacy-mode handling, stale comments, dead IVMD
+    exclusion-range code, and unused address-size macros.
+
+Arm SMMU / Arm SMMU v3:
+
+  - SMMUv2:
+    - Device-tree binding updates for Qualcomm Hawi, Nord and Shikra
+      SoCs.
+    - Constain the clocks which can be specified for recent Qualcomm
+      SoCs.
+    - Fix broken compatible string for Qualcomm prefetcher
+      configuration an add new entry for the Glymur MDSS.
+    - Ensure SMMU is powered-up when writing context bank for Adreno
+      client.
+
+  - SMMUv3:
+    - Fix off-by-one in queue allocation retry loop.
+    - Enable hardware update of access/dirty bits from the SMMU.
+    - Re-jig command construction to use separate inline helpers for
+      each command type.
+
+Intel VT-d:
+
+  - Add the PCI segment number to DMA fault messages.
+
+  - Improve support for non-PRI mode SVA.
+
+  - Ensure atomicity during context entry teardown.
+
+  - Fix RB-tree corruption in the probe error path.
+
+RISC-V IOMMU:
+
+  - Add NAPOT range invalidation support.
+
+  - Use detailed gather information for invalidation decisions.
+
+  - Compute the best stride for single invalidations.
+
+  - Advertise Svpbmt support to the generic page-table code.
+
+  - Add capability definitions and clean up command macro encoding.
+
+VeriSilicon IOMMU:
+
+  - Add a new VeriSilicon IOMMU driver.
+
+  - Add devicetree binding documentation and MAINTAINERS coverage.
+
+  - Add the RK3588 VeriSilicon IOMMU node.
+
+  - Apply small cleanups and warning fixes in the new driver.
+
+Rockchip IOMMU:
+
+  - Disable the fetch DTE time limit.
+
+Apple DART:
+
+  - Correct a stale CONFIG_PCIE_APPLE macro name in a comment.
+
+----------------------------------------------------------------
+Akhil P Oommen (1):
+      dt-bindings: arm-smmu: Update the description for Glymur GPU SMMU
+
+Ankit Soni (4):
+      iommu_pt: Fix pgsize_bitmap calculation in get_info for smaller vasz's
+      iommu_pt: support small VA for AMDv1
+      iommu_pt: add kunit config for 32-bit VA (amdv1_cfg_1)
+      iommu/amd: Adhere to IVINFO[VASIZE] for address limits
+
+Anna Maniscalco (1):
+      iommu: arm-smmu-qcom: Ensure smmu is powered up in set_ttbr0_cfg
+
+Arnd Bergmann (1):
+      iommu: vsi: avoid -Wformat-security warning
+
+Benjamin Gaignard (3):
+      dt-bindings: iommu: verisilicon: Add binding for VSI IOMMU
+      iommu: Add verisilicon IOMMU driver
+      arm64: dts: rockchip: Add verisilicon IOMMU node on RK3588
+
+Bibek Kumar Patro (1):
+      iommu/arm-smmu-qcom: Fix fastrpc compatible string in ACTLR client match table
+
+Dan Carpenter (1):
+      iommu/vsi: Use list_for_each_entry()
+
+Ethan Nelson-Moore (1):
+      iommu/apple-dart: correct CONFIG_PCIE_APPLE macro name in comment
+
+Fangyu Yu (3):
+      iommu/riscv: Advertise Svpbmt support to generic page table
+      iommupt: Encode IOMMU_MMIO/IOMMU_CACHE via RISC-V Svpbmt bits
+      iommupt: Fixup build warning by using BIT_ULL() for RISCVPT_NC/IO
+
+Fu Hao (1):
+      iommu/amd: Add support for Hygon family 18h model 4h IOAPIC
+
+Guanghui Feng (1):
+      iommu/vt-d: Improve IOMMU fault information
+
+Jason Gunthorpe (22):
+      iommu: Split the kdoc comment for struct iommu_iotlb_gather
+      iommupt: Add struct iommupt_pending_gather
+      iommupt: Add PT_FEAT_DETAILED_GATHER
+      iommu/riscv: Enable PT_FEAT_DETAILED_GATHER and pass gather to iotlb_inval
+      iommu/riscv: Compute best stride for single invalidation
+      iommu/riscv: Add RISCV_IOMMU_CAPABILITIES_NL
+      iommu/riscv: Include the dword number in RISCV_IOMMU_CMD macros
+      iommu/riscv: Add NAPOT range invalidation support
+      iommu/arm-smmu-v3: Add struct arm_smmu_cmd to represent the HW format command
+      iommu/arm-smmu-v3: Use the HW arm_smmu_cmd in cmdq selection functions
+      iommu/arm-smmu-v3: Use the HW arm_smmu_cmd in cmdq submission functions
+      iommu/arm-smmu-v3: Convert arm_smmu_cmdq_batch cmds to struct arm_smmu_cmd
+      iommu/arm-smmu-v3: Remove CMDQ_OP_CFGI_CD_ALL from arm_smmu_cmdq_build_cmd()
+      iommu/arm-smmu-v3: Directly encode simple commands
+      iommu/arm-smmu-v3: Directly encode CMDQ_OP_ATC_INV
+      iommu/arm-smmu-v3: Directly encode CMDQ_OP_SYNC
+      iommu/arm-smmu-v3: Directly encode TLBI commands
+      iommu/amd: Simplify build_inv_address()
+      iommu/amd: Pass last in through to build_inv_address()
+      iommu/amd: Have amd_iommu_domain_flush_pages() use last
+      iommu/amd: Make CMD_INV_IOMMU_ALL_PAGES_ADDRESS match the spec
+      iommu/amd: Control INVALIDATE_IOMMU_PAGES PDE from the gather
+
+Joerg Roedel (1):
+      Merge branches 'apple/dart', 'arm/smmu/updates', 'arm/smmu/bindings', 'rockchip', 'verisilicon', 'riscv', 'intel/vt-d', 'amd/amd-vi' and 'core' into next
+
+Komal Bajaj (1):
+      dt-bindings: arm-smmu: qcom: Add compatible for Qualcomm Shikra SoC
+
+Krzysztof Kozlowski (2):
+      dt-bindings: arm-smmu: Constrain clocks for newer Qualcomm variants
+      dt-bindings: arm-smmu: Correct and add constraints for Hawi, Shikra and Kaanapali
+
+Leo Jiang (1):
+      iommu/arm-smmu-v3: Limit queue allocation retry boundary to PAGE_SIZE
+
+Li RongQing (1):
+      iommu/dma-iommu: Fix wrong scatterlist length assignment in P2PDMA path
+
+Lokanadha M R (1):
+      iommu/arm-smmu-qcom: Add glymur MDSS to ACTLR client table
+
+Lu Baolu (1):
+      iommu/vt-d: Avoid WARNING in sva unbind path
+
+Michael Bommarito (1):
+      iommu/vt-d: Clear Present bit before tearing down scalable-mode context entry
+
+Michał Grzelak (1):
+      iommu/vt-d: Remove typo from pasid_pte_config_nested()
+
+Mostafa Saleh (3):
+      iommu/io-pgtable-arm: Use consistent sizes for page allocation and freeing
+      iommu/io-pgtable-arm: Rework to use the iommu-pages API
+      iommu/io-pgtable-arm: Use address conversion consistently
+
+Mukesh Ojha (1):
+      dt-bindings: arm-smmu: qcom: Add Hawi compatible for Application processor
+
+Nicolin Chen (4):
+      iommu/arm-smmu-v3-sva: Enable Hardware Access and Hardware Dirty bits
+      PCI: Add pci_ats_required() for CXL.cache capable devices
+      PCI: Allow ATS to be always on for pre-CXL devices
+      iommu/arm-smmu-v3: Allow ATS to be always on
+
+Pranjal Shrivastava (1):
+      iommu/vt-d: Fix RB-tree corruption in probe error path
+
+Sean Christopherson (2):
+      iommu/amd: Explicitly bail from enable_iommus_vapic() when in legacy mode
+      iommu/amd: Fix a stale comment about which legacy mode is user visible
+
+Shawn Guo (1):
+      dt-bindings: arm-smmu: Add compatible for Qualcomm Nord SoC
+
+Simon Xue (1):
+      iommu/rockchip: disable fetch dte time limit
+
+Vasant Hegde (1):
+      iommu/amd: Fix premature break in init_iommu_one()
+
+Wei Wang (1):
+      iommu/amd: Remove unused IOMMU_IN/OUT_ADDR_BIT_SIZE macros
+
+Weinan Liu (1):
+      iommu/amd: Don't split flush for amd_iommu_domain_flush_all()
+
+Yu Zhang (1):
+      iommu/amd: Remove dead code for exclusion ranges in IVMD
+
+ .../devicetree/bindings/iommu/arm,smmu.yaml        |  44 +-
+ .../bindings/iommu/verisilicon,iommu.yaml          |  71 ++
+ MAINTAINERS                                        |   8 +
+ arch/arm64/boot/dts/rockchip/rk3588-base.dtsi      |  11 +
+ drivers/iommu/Kconfig                              |  11 +
+ drivers/iommu/Makefile                             |   1 +
+ drivers/iommu/amd/amd_iommu.h                      |   6 +-
+ drivers/iommu/amd/amd_iommu_types.h                |  29 +-
+ drivers/iommu/amd/init.c                           |  63 +-
+ drivers/iommu/amd/iommu.c                          | 181 +++--
+ drivers/iommu/amd/pasid.c                          |   2 +-
+ drivers/iommu/apple-dart.c                         |   2 +-
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c    |  24 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c    |  10 +
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        | 558 +++++++--------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h        | 249 ++++---
+ drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c     |  16 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |  13 +-
+ drivers/iommu/dma-iommu.c                          |   2 +-
+ drivers/iommu/generic_pt/fmt/amdv1.h               |   1 +
+ drivers/iommu/generic_pt/fmt/iommu_riscv64.c       |   4 +-
+ drivers/iommu/generic_pt/fmt/riscv.h               |  11 +-
+ drivers/iommu/generic_pt/iommu_pt.h                | 110 ++-
+ drivers/iommu/generic_pt/kunit_generic_pt.h        |  10 +-
+ drivers/iommu/generic_pt/kunit_iommu_pt.h          |   5 +-
+ drivers/iommu/intel/dmar.c                         |   9 +-
+ drivers/iommu/intel/iommu.c                        |   6 +-
+ drivers/iommu/intel/iommu.h                        |  11 +
+ drivers/iommu/intel/pasid.c                        |  16 +-
+ drivers/iommu/intel/svm.c                          |  12 +-
+ drivers/iommu/io-pgtable-arm.c                     |  88 ++-
+ drivers/iommu/riscv/iommu-bits.h                   | 123 ++--
+ drivers/iommu/riscv/iommu.c                        | 162 ++++-
+ drivers/iommu/rockchip-iommu.c                     |   8 +
+ drivers/iommu/vsi-iommu.c                          | 791 +++++++++++++++++++++
+ drivers/pci/ats.c                                  |  47 ++
+ drivers/pci/pci.h                                  |   9 +
+ drivers/pci/quirks.c                               |  42 ++
+ include/linux/generic_pt/common.h                  |   9 +
+ include/linux/iommu.h                              |  42 +-
+ include/linux/pci-ats.h                            |   3 +
+ include/uapi/linux/pci_regs.h                      |   1 +
+ 42 files changed, 2055 insertions(+), 766 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iommu/verisilicon,iommu.yaml
+ create mode 100644 drivers/iommu/vsi-iommu.c
+
+Please pull.
+
+Thanks,
+
+	Joerg
