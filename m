@@ -1,136 +1,123 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5403431E846
-	for <iommu@lists.linux.dev>; Thu, 18 Jun 2026 16:41:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2482523BD05;
+	Thu, 18 Jun 2026 17:27:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781800865; cv=none; b=kfi774+MGpeuh1yZiw7b0jy+UYJd9q4rsDEhAERg2AzT/Uag6Jm4rrj8/jxvijuInk9zdOBdqDB24v8/XPfLYZagIxEErinYXgfxSuXLHQgBxLTLUM1SykA0DvIJ7D1zW5WJVw90k3nLzhxt6F6CqbhTH3YBdNVKngPe1hhWT5s=
+	t=1781803635; cv=none; b=Iji/iE20bg0jEpTbfhEs3Vv3uZWt+kJUzTYDDPHW0FBAJY59EHXFQsNWhoqrIw3SWp/FcdPk6P47SISLacyp5gqXKuAENjrVHZOFoBOvMwjDht4Z+BCVO8NW2q8bjAS+Qa8Az6mvZJKLmcZrMRQBn1fzEO3iJ9AKwTiKT5S3uWI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781800865; c=relaxed/simple;
-	bh=rFnw8/k0KaPy2GE/tkk9L/t9ucw33GSuDgOBVzNPtZE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=H4EpXz1/8c4XalASpCBS63RVlSCLQLDQ+Hr0T56fLqrLpu+1OU0ZI/hm+ZUoppHAMZcLp+U6UT0MNOPu8X5uMmjbgWGNkg+Yds2+6gLbsrV1shY5Q3BmE+F+E03RWlaVBOYOtO6+ZwZpNF/Mh8j7ymwf5c+jDVIxZFa3kFHt68g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K87pGkq7; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1781803635; c=relaxed/simple;
+	bh=1Ph9VLFh06GOUAb1sQ+lnoC51nH0fW/uL1EVfN569rs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lq/OJVCaHLMD6CKdbC5DYWYN+pNxTKCODJ/+2/lcaowVdPnJOPXM14daHzS/xzqrr+aYYakk9VXycEtuwU8Y5/XCMoF3ISU5cYIsX27aKSRlePYmrJFfN2bp08hebxRmx7HAQ4wCVLkpFyOLUih1D/nJMgWr/n1wghDxBBXNcgc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=pass smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=VTFfDe8Z; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K87pGkq7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECB7C1F01558
-	for <iommu@lists.linux.dev>; Thu, 18 Jun 2026 16:41:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781800864;
-	bh=DwKsFa5RJnYwBMeG4/pXUjfZncf00tGOLypqlsoEZ3I=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=K87pGkq7XxQ8/poADvsiimC/0anxG7pNT8Fa8JKBz6TALlt5T1vk3N2J5kF2lo9mJ
-	 /7BZe6s5WyGnUTqwZbZMxTOaA1zACu+iS4KPN91rlyzqlKUK2qIBgez77UjQxQeQjo
-	 ZqZxMTDVosKwxw+OtN9bkskaskx30n+RCixV+cdi2iSBgLIaVN6c012O52a/XlDSry
-	 UbtFzpvI+s4YXNuyHGBtSF9kK8H+OEKqt32lJDvTMh049mqb4G37A6kvLWTSpLgu0t
-	 oR3cIPcXGmVeLWEsDOVS+xeiwXGyrbF01YGvxxMdcYgT5GcLnUowwHVRj2Jrb1bp9q
-	 vlViEmPhD8WSA==
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-490afc47455so4691275e9.2
-        for <iommu@lists.linux.dev>; Thu, 18 Jun 2026 09:41:03 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ8zn8s1C0nFRr85N7CSe6uIgnkOqHsf+Tq6/1Y8CymBm0vRha4DM3+uenjS7ha2G6GqTffLWA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzdBUGw4uORgWkEGn0DVm2f48KQaV1GIrio1JMrUG1bNQiL4C5T
-	XsMKFDa4czyUVQA4K08NYr2B9QuIbPy9gvqxFGLDuezn0IMiwRZFWUgsYEmm99xHwpoTYZQWlZq
-	JLqxDPj1Kx7elwVwYz92nl8WAfJ0XQFc=
-X-Received: by 2002:a05:600c:8b23:b0:490:9bc2:bf8b with SMTP id
- 5b1f17b1804b1-4923ef4c619mr7649625e9.5.1781800862561; Thu, 18 Jun 2026
- 09:41:02 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="VTFfDe8Z"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=KGrsI+dalE9OyOLIFDk4ChpIP1PuLViz+3eauB50DgU=; b=VTFfDe8ZYJE6WeiHk7MkI/wbqC
+	b4utRVM3Yy55xe7SYyLuRI/EEbYnFu3rR2U772DqUwKgDbvDXuXlGpQ6MTwkGMDCUodZBNjqMVJ43
+	sAZ8DW2Xa9xj0Vtq3qbahB4wkUdorWiPesH1gykbAhOcmG2HFPJFR6V13dwQCMYX4YdUstQ5oKauZ
+	h71lNudZybUlW7f/kaM02SOpwMF6zVrZxsf/jXG71jH2HvReHWWhCZ7bKIHswvFsUr4VAILkyySXZ
+	MRNs+AJzcHHDp0Ggj1HH1vQSE9sxpmKYx3vBmy/pLW+ZDMGRH3hK8VqPaiyN+dDxjpn5jJNzry8B4
+	G9xp5ggA==;
+Received: from [38.23.173.23] (helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
+	id 1waGWD-00000001eCr-3pQB;
+	Thu, 18 Jun 2026 17:27:10 +0000
+Date: Thu, 18 Jun 2026 13:27:02 -0400
+From: "Liam R. Howlett" <liam@infradead.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Rik van Riel <riel@surriel.com>, linux-kernel@vger.kernel.org, 
+	kernel-team@meta.com, robin.murphy@arm.com, joro@8bytes.org, will@kernel.org, 
+	iommu@lists.linux.dev, kyle@mcmartin.ca, Rik van Riel <riel@meta.com>, 
+	maple-tree@lists.infradead.org
+Subject: Re: [PATCH v3 3/3] iova: defer maple tree erase on GFP_ATOMIC failure
+Message-ID: <r4jlbi3hbtvv6vrenarz6i7n6cu3vfqqdz2jfenkwsuv3fkadi@nq5u5txbtso6>
+References: <61d51d4b5779d80145ceb38e9632a7cc8a79dbec.camel@surriel.com>
+ <20260612164852.GL1066031@ziepe.ca>
+ <ff5f9e09edbcb9c87feac6af00a1d835c783be4f.camel@surriel.com>
+ <20260612180303.GO1066031@ziepe.ca>
+ <iv7sxqezzz42xieytbf3lskutricz7ltkr3wii3w4jbnbzto7f@2tz5hwa43l37>
+ <20260615115633.GQ1066031@ziepe.ca>
+ <vbtql77uf65vyxl4smefpol75x3opa7vnixdbzwg7ylxgre6j4@emvlfmdus4kj>
+ <20260617180419.GA231643@ziepe.ca>
+ <hsojwfbi5e6mpgtzd6rupod4xkviaehj4uo4xo7k2qmmswrc3v@odf2osyjxehw>
+ <20260618152451.GE231643@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com>
- <20260615123821.373248-1-guoren@kernel.org> <7c490aeb-a3d9-4fe9-81de-f9662577851d@iscas.ac.cn>
- <CAJF2gTQ+-gpvUDtOh99aKP2-iDJy3MYOWti9k2Ntd0-J0MXqxQ@mail.gmail.com>
- <e051d822-d0be-4a88-ba86-ec9b5905fd1e@iscas.ac.cn> <CAJF2gTRH6x78A3J5HJ5kUM47aDv8R0yFr8LRP+7jiLX4GL3ssg@mail.gmail.com>
- <20260618143634.7f3dd6c5@pumpkin>
-In-Reply-To: <20260618143634.7f3dd6c5@pumpkin>
-From: Guo Ren <guoren@kernel.org>
-Date: Fri, 19 Jun 2026 00:40:47 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTQqnpHPrE-df_kDZ-Y9g7sSfTQco3jKKnDzkuJfOEKmxQ@mail.gmail.com>
-X-Gm-Features: AVVi8CcZhG0mWJZmtdZAhMmhoQz5zhsKhOiiURUGK7ccGb-9Zpcy9ToqnAL-Dt0
-Message-ID: <CAJF2gTQqnpHPrE-df_kDZ-Y9g7sSfTQco3jKKnDzkuJfOEKmxQ@mail.gmail.com>
-Subject: Re: [PATCH v1] iommu/riscv: Support 32-bit register accesses
-To: David Laight <david.laight.linux@gmail.com>
-Cc: Vivian Wang <wangruikang@iscas.ac.cn>, zhangzhanpeng.jasper@bytedance.com, 
-	alex@ghiti.fr, aou@eecs.berkeley.edu, cuiyunhui@bytedance.com, 
-	iommu@lists.linux.dev, joro@8bytes.org, linux-kernel@vger.kernel.org, 
-	linux-riscv@lists.infradead.org, luxu.kernel@bytedance.com, 
-	palmer@dabbelt.com, pjw@kernel.org, robin.murphy@arm.com, 
-	tjeznach@rivosinc.com, will@kernel.org, yuanzhu@bytedance.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260618152451.GE231643@ziepe.ca>
 
-On Thu, Jun 18, 2026 at 9:36=E2=80=AFPM David Laight
-<david.laight.linux@gmail.com> wrote:
->
-> On Thu, 18 Jun 2026 17:51:34 +0800
-> Guo Ren <guoren@kernel.org> wrote:
->
-> > Hi Vivian,
-> >
-> > As noted in the RISC-V IOMMU Specification, Chapter 6:
-> > > Whether an 8-byte access to an IOMMU register is single-copy atomic i=
-s UNSPECIFIED, and such an access may appear, internally to the IOMMU, as i=
-f two separate 4-byte accesses =E2=80=94 first to the high half and second =
-to the low half =E2=80=94 were performed.
-> >
-> > Therefore, the atomicity of 64-bit MMIO accesses is UNSPECIFIED and
-> > not clearly defined in the current ratified RISC-V IOMMU
-> > specification. To handle this correctly, the Linux RISC-V IOMMU driver
-> > should fall back to 32-bit MMIO accesses when reading 64-bit registers
-> > (e.g., performance counters). The behavior of 32-bit MMIO accesses is
-> > more precisely defined in the RISC-V IOMMU specification.
-> >
-> > Thus, many hardware vendors implement 32-bit MMIO (rather than 64-bit
-> > MMIO) based on the current ratified RISC-V IOMMU specification, and
-> > this driver does not appear to benefit from 64-bit MMIO access either.
-> > Performance is fundamentally constrained by bus latency; assuming that
-> > simply reducing the number of accesses will improve performance is an
-> > oversimplification that ignores the underlying hardware
-> > characteristics.
->
-> If the bus latency is significant it is almost certainly worth using
-> memory accesses to avoid re-reading the hi register.
->
-> Something like this might work:
->
-> static volatile u32 hi_prev, lo_prev;
->
->         u32 hi =3D read_reg_hi();
->         u32 lo =3D read_reg_lo();
->
->         if (lo <=3D lo_prev || hi !=3D hi_prev) {
->                 u32 hi_tmp =3D read_reg_hi;
->                 if (hi_tmp !=3D hi) {
->                         hi =3D hi_tmp;
->                         lo =3D 0;
->                 }
->                 lo_prev =3D ~0u;
->                 hi_prev =3D hi;
->         }
->         lo_prev =3D lo;
->         return (u64)hi << 32 | lo;
->
-> It shouldn't need any locking but the accesses do need to be ordered.
-Thank you for the suggestion. However, I believe this feedback is more
-relevant to the RISC-V IOMMU HPM patchset [1], as no counter registers
-are involved in the current patchset. That said, the idea of improving
-the hi-lo-hi slow-path mechanism to better handle high-latency
-hardware scenarios is well taken and worth discussing in the
-appropriate thread.
-[1]: https://lore.kernel.org/linux-riscv/20260208063848.3547817-2-zong.li@s=
-ifive.com/
+On 26/06/18 12:24PM, Jason Gunthorpe wrote:
+> On Thu, Jun 18, 2026 at 10:50:56AM -0400, Liam R. Howlett wrote:
+> 
+> > > If that's the case it should be documented like this too :)
+> > 
+> > Yeah, very much should add some notes here... but also maybe stop them
+> > from doing it by adding this to mas_erase():
+> > 
+> > if (mt_external_lock(mas->tree))
+> >         might_alloc(GFP_KERNEL);
+> 
+> Yeah, and then I'd add a might_alloc() to mtree_erase() as well, it
+> can always sleep..
 
-P.S. The hardware I have at hand exhibits very low interconnect
-latency. And I have never observed the slow path where hi_tmp !=3D hi
-being triggered =E2=80=94 my approach was to remove the retry mechanism
-directly in 32-bit mmio mode and run stress tests to check whether
-perf stat produced incorrect results. That said, I may have simply
-been lucky instead of hw guarantee.
+mtree_erase() calls mas_erase(), so I think the one should be enough.
 
---=20
-Best Regards
- Guo Ren
+> 
+> > Otherwise, I'll just be telling people they didn't read the docs.
+> 
+> Okay, so to summarize:
+> 
+> - mas_erase, mtree_erase cannot fail with ENOMEM. The check for ENOMEM
+>   inside should be changed to a WARN_ON to document this.
+>   Rational: in a GFP_KERNEL context it will sleep forever until it
+>   gets memory "too small to fail"
+
+The ENOMEM check inside mas_nomem() is still possible because we try
+NOWAIT first, so it is possible that we hit a retry.
+
+The return from mas_nomem() without allocations should be impossible.
+So if (!mas->sheaf && !mas->alloc) should be a WARN_ON_ONCE().
+
+I believe this is what you meant anyways?
+
+> 
+> - External locks must be sleepable, add a might_alloc() to check for
+>   that and document. mtree_erase must be sleepable
+> 
+> - I like your idea for Rik to try to store NULL to erase, on failure
+>   store ZERO_ENTRY, and then set a note on the next alloc to clean the
+>   ZERO_ENTRYs?
+
+The ZERO_ENTRY can be found by mas_* functions and will cause issues
+with the gap searching.  You also have to be careful to handle these
+entries in mas_for_each() loops - you don't want to treat them as valid
+entries.
+
+So cleaning them up should be handled sooner rather than later.  I'm
+trying to figure out the best place to do this as I do not like the
+retry with the timer idea.
+
+Setting a bit to clear them later makes sense, but I am concerned that
+leaving reserved space for a prolonged period may cause other failures?
+I guess we could ensure that the tree is 'clean of reserved space' prior
+to searching for space to but new entries?
+
+We probably don't really need to worry about speed since this is an
+error recovery situation that will happen rarely, so correct is all we
+need.
+
+Thanks,
+Liam
