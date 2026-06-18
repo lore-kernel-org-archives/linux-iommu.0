@@ -1,181 +1,110 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from cstnet.cn (smtp21.cstnet.cn [159.226.251.21])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49D453E6390
-	for <iommu@lists.linux.dev>; Thu, 18 Jun 2026 09:51:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A6641F30BB
+	for <iommu@lists.linux.dev>; Thu, 18 Jun 2026 10:01:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781776311; cv=none; b=XmORGx90VGLbgOESy1xjb8r4mwD+TtU8QoQhD6dd/zWI8qQThTVSRh9ZsMZRJJeJNFHKhTMsFDVKBnE6SKnilmEmjc5Z7VZUKuUVKdFQIVn1NGh0RVs7kyxvLHErSYhtAAZJfWwJlp7OZZbB76l3/HlL8CdiAZEzQBKPfVEskXo=
+	t=1781776921; cv=none; b=qM+lRwX1yMTRuGXE2AX0pzX29+5gudkzaIU434YtgnDyvzDJZE6y0+qLEKd92mWBy3VGpRM2P7QuPSCfKLfT6074XhL7NHTpsbzIELSVY/I9qqg/AR9MjBZXu8zhDqqD/6hm59pOY7KeLKHWnuSekXktxr0D9FaqeQ0XeR7vp68=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781776311; c=relaxed/simple;
-	bh=FQnRLrPkW5EQtEhmwTyQGrHFTaFRacfjuW2DKadWRJk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=aUajlb58++wo34hO2aM6dndMOh56wagNwHCf+WdYIRudH1q475qbTz92wszZ888CmDsjwbqBY+lzPulrTiVKSS7F/5iuCNV5RM/AK4oAWh/IysDwJy9GbqgbXoQRIi5TBE/Vbqx1c3jWRfHwCRx2YwnSdwOj98X0q8UCOfW+vkM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cpGm0ZjS; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cpGm0ZjS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A9E51F01559
-	for <iommu@lists.linux.dev>; Thu, 18 Jun 2026 09:51:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781776309;
-	bh=5WBnHo66G1Z7kP1ps9fkGG5FNnxRZK0tyCX5GLx+Nbo=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=cpGm0ZjSP3N4uwVtWpmuSnM96r5rT1Z5oKO2hL1HENahHADeiaMm9pJo+gw01emuo
-	 i/J1Cr0v7nhzFy8/Lanpia9/aDWf67Mb6iryXe8fOyGmV7NgAbD4d6ChQTaPLMGQii
-	 16NZoKXmGboUa9jKqUOwZCohs2je7MChs4/S3SoLqRS8tL326Y3fC6LiBWiEngRdIW
-	 MIQVY7AG0TqjEdWdxKaU2eMCQnILvhuFWc7KYvLbp4Pjj1u+rFdXhHk3mgTzCoVHig
-	 TR1QuhVddbePIszIIBQ0mh0CF4zqBQt2NxeuJvkpGmrpcddnI8xlUE1ILT4h7zGZm2
-	 za1UTEkafDgpg==
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-4631679f204so778339f8f.0
-        for <iommu@lists.linux.dev>; Thu, 18 Jun 2026 02:51:49 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ/jAML6kYkoJ0GM6MmJ8msgdojGaVe0BuLZxgZsGbgFa5l4tX2ekEUvvB6nbImPwS1csLv3Ag==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyKYnWfnq/uPGMeD32laiDHwnSlV8/CtmL2wZZEZSl7mPQEx2KD
-	cFhQYcgFpfpkSoYB01GPPjU6AvGpPDfOo0bfvI1fgOpqWrM+foXb6tOCT5My3uKkXdiR3Xet4IC
-	Of8TbEScqrbIYirUJ25llqkgnzBPY7Cs=
-X-Received: by 2002:a5d:5651:0:b0:461:a15a:4160 with SMTP id
- ffacd0b85a97d-463978b2374mr3919774f8f.13.1781776307962; Thu, 18 Jun 2026
- 02:51:47 -0700 (PDT)
+	s=arc-20240116; t=1781776921; c=relaxed/simple;
+	bh=snWj25CZu4UlLlKljPv183c00k8IgTzMBpQr00K8YuA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=XesVQPiedWolHxuRg7hbMaX+ApSGQJHFXfVUdONbqBILpFE5wAlzybiM/c6aelG9fpSPKNN2CCuuSNZtPZw+nqC4UvUpQbMdjLeK4LN6LGZjGSZwfbO5no9ozb5GOYknWNzJTkNrswTWf8mm83ZqAuzKqSbIuCNO0P8w48igF8c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
+Received: from [192.168.0.107] (unknown [123.118.218.239])
+	by APP-01 (Coremail) with SMTP id qwCowAC3WtMHwjNqx7MxAg--.8767S2;
+	Thu, 18 Jun 2026 18:01:43 +0800 (CST)
+Message-ID: <ce3c80ae-fca0-4728-a93c-778dcbab32f2@iscas.ac.cn>
+Date: Thu, 18 Jun 2026 18:01:43 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com>
- <20260615123821.373248-1-guoren@kernel.org> <7c490aeb-a3d9-4fe9-81de-f9662577851d@iscas.ac.cn>
- <CAJF2gTQ+-gpvUDtOh99aKP2-iDJy3MYOWti9k2Ntd0-J0MXqxQ@mail.gmail.com> <e051d822-d0be-4a88-ba86-ec9b5905fd1e@iscas.ac.cn>
-In-Reply-To: <e051d822-d0be-4a88-ba86-ec9b5905fd1e@iscas.ac.cn>
-From: Guo Ren <guoren@kernel.org>
-Date: Thu, 18 Jun 2026 17:51:34 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTRH6x78A3J5HJ5kUM47aDv8R0yFr8LRP+7jiLX4GL3ssg@mail.gmail.com>
-X-Gm-Features: AVVi8CcuSWc4MKvQ8rcvmy1iBZVy1e7sFg0-ZToAG3k3v5HDIXUflW0rEu43oHo
-Message-ID: <CAJF2gTRH6x78A3J5HJ5kUM47aDv8R0yFr8LRP+7jiLX4GL3ssg@mail.gmail.com>
+User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v1] iommu/riscv: Support 32-bit register accesses
-To: Vivian Wang <wangruikang@iscas.ac.cn>, zhangzhanpeng.jasper@bytedance.com
-Cc: alex@ghiti.fr, aou@eecs.berkeley.edu, cuiyunhui@bytedance.com, 
-	iommu@lists.linux.dev, joro@8bytes.org, linux-kernel@vger.kernel.org, 
-	linux-riscv@lists.infradead.org, luxu.kernel@bytedance.com, 
-	palmer@dabbelt.com, pjw@kernel.org, robin.murphy@arm.com, 
-	tjeznach@rivosinc.com, will@kernel.org, yuanzhu@bytedance.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+To: Guo Ren <guoren@kernel.org>, zhangzhanpeng.jasper@bytedance.com
+Cc: alex@ghiti.fr, aou@eecs.berkeley.edu, cuiyunhui@bytedance.com,
+ iommu@lists.linux.dev, joro@8bytes.org, linux-kernel@vger.kernel.org,
+ linux-riscv@lists.infradead.org, luxu.kernel@bytedance.com,
+ palmer@dabbelt.com, pjw@kernel.org, robin.murphy@arm.com,
+ tjeznach@rivosinc.com, will@kernel.org, yuanzhu@bytedance.com
+References: <20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com>
+ <20260615123821.373248-1-guoren@kernel.org>
+ <7c490aeb-a3d9-4fe9-81de-f9662577851d@iscas.ac.cn>
+ <CAJF2gTQ+-gpvUDtOh99aKP2-iDJy3MYOWti9k2Ntd0-J0MXqxQ@mail.gmail.com>
+ <e051d822-d0be-4a88-ba86-ec9b5905fd1e@iscas.ac.cn>
+ <CAJF2gTRH6x78A3J5HJ5kUM47aDv8R0yFr8LRP+7jiLX4GL3ssg@mail.gmail.com>
+Content-Language: en-US
+From: Vivian Wang <wangruikang@iscas.ac.cn>
+In-Reply-To: <CAJF2gTRH6x78A3J5HJ5kUM47aDv8R0yFr8LRP+7jiLX4GL3ssg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:qwCowAC3WtMHwjNqx7MxAg--.8767S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7CF1UKry8tw1UGFyxZF17trb_yoW8ur47pF
+	4DWFnFgF4DJr1IvwnFvw47ZFWfCaySkrZ8CryUK34kurn5uFy8tr47tay5Ww1kGw4kCw1r
+	KF42g343Ca1vkFJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUvmb7Iv0xC_KF4lb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I2
+	0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+	A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xII
+	jxv20xvEc7CjxVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwV
+	C2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC
+	0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr
+	1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcVAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7
+	MxkF7I0En4kS14v26r1q6r43MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r
+	4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF
+	67AKxVW8ZVWrXwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2I
+	x0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2
+	z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnU
+	UI43ZEXa7IU8IJPtUUUUU==
+X-CM-SenderInfo: pzdqw2pxlnt03j6l2u1dvotugofq/
 
-Hi Vivian,
 
-As noted in the RISC-V IOMMU Specification, Chapter 6:
-> Whether an 8-byte access to an IOMMU register is single-copy atomic is UN=
-SPECIFIED, and such an access may appear, internally to the IOMMU, as if tw=
-o separate 4-byte accesses =E2=80=94 first to the high half and second to t=
-he low half =E2=80=94 were performed.
-
-Therefore, the atomicity of 64-bit MMIO accesses is UNSPECIFIED and
-not clearly defined in the current ratified RISC-V IOMMU
-specification. To handle this correctly, the Linux RISC-V IOMMU driver
-should fall back to 32-bit MMIO accesses when reading 64-bit registers
-(e.g., performance counters). The behavior of 32-bit MMIO accesses is
-more precisely defined in the RISC-V IOMMU specification.
-
-Thus, many hardware vendors implement 32-bit MMIO (rather than 64-bit
-MMIO) based on the current ratified RISC-V IOMMU specification, and
-this driver does not appear to benefit from 64-bit MMIO access either.
-Performance is fundamentally constrained by bus latency; assuming that
-simply reducing the number of accesses will improve performance is an
-oversimplification that ignores the underlying hardware
-characteristics.
-
-Hi Zhang,
-
-The hardware targeted by the 32-bit MMIO access in your patch is
-precisely the kind that deserves the official ACPI HID RSCV0004 and
-Devicetree compatible string (riscv,iommu). It is rather the hardware
-that supports only 64-bit MMIO access =E2=80=94 whose atomicity is explicit=
-ly
-left as UNSPECIFIED by the RISC-V IOMMU specification =E2=80=94 that should=
- be
-relegated to a non-standard ACPI ID. That is what truly constitutes
-poor hardware design.
-
-I will consistently support your position of adopting 32-bit MMIO
-access in this patch, and will advocate for making it the default
-behavior in the Linux RISC-V IOMMU driver, as it better aligns with
-the intent of the RISC-V IOMMU specification.
-
---
-Best Regards
- Guo Ren
-
-On Thu, Jun 18, 2026 at 3:33=E2=80=AFPM Vivian Wang <wangruikang@iscas.ac.c=
-n> wrote:
+On 6/18/26 17:51, Guo Ren wrote:
+> Hi Vivian,
 >
-> On 6/18/26 11:45, Guo Ren wrote:
-> > On Thu, Jun 18, 2026 at 11:20=E2=80=AFAM Vivian Wang <wangruikang@iscas=
-.ac.cn> wrote:
-> >> On 6/15/26 20:38, Guo Ren wrote:
-> >>> Hi Zhanpeng Zhang,
-> >>>
-> >>> I noticed you posted a similar fix recently. However, I had already
-> >>> submitted a similar solution back in September 2025 [1]. It would be
-> >>> great if you could review it. A few concerns with the current patch:
-> >>>
-> >>> 1. Using spin_lock_irqsave in such a small semantic structure is
-> >>> unnecessary. IRQ protection should be provided by the higher-level
-> >>> IOMMU driver interfaces. Many existing call sites already handle IRQ
-> >>> disabling, so adding it here feels redundant and adds avoidable
-> >>> overhead.
-> >>>
-> >>> 2. More critically, the RISCV_IOMMU_32BIT_ACCESS Kconfig option is
-> >>> problematic. According to the RISC-V IOMMU specification (Software
-> >>> Guidelines, =E2=80=9CReading and writing IOMMU registers=E2=80=9D):
-> >>>
-> >>>> Registers that are 64-bit wide may be accessed using either a 32-bit
-> >>>> or a 64-bit access.
-> >>> This clearly requires that any hardware supporting 64-bit MMIO access
-> >>> must also support 32-bit MMIO access. Therefore, the IOMMU driver sho=
-uld
-> >>> be built on a 32-bit access base for maximum hardware compatibility.
-> >> I agree that the driver should be build with 32-bit accesses to suppor=
-t
-> >> these hardware. However there's one minor thing that I want to propose
-> >> regarding this, for the sake of clarity:
-> >>
-> >> RISC-V IOMMU implementations that do not support 64-bit accesses are n=
-ot
-> >> fully compliant with the RISC-V IOMMU specification and should not use
-> >> the standard RISC-V identifiers, namely:
-> >>
-> >> - Devicetree compatible riscv,iommu
-> >> - ACPI HID RSCV0004
-> >>
-> >> This, in my opinion, is not only the right thing to do (not claiming t=
-o
-> >> be standard hardware without actually being standard hardware), but al=
-so
-> >> saves a lot of trouble for operating system developers (yes, there are
-> >> RISC-V operating systems other than Linux out there), since invalid IO
-> >> accesses usually manifest as mysterious access faults (that would
-> >> usually suggest an incorrect IOMMU address), or worse, system hangs.
-> >>
-> >> I would appreciate if the hardware vendors shipping 32-bit-access-only
-> >> IOMMUs would consider this.
-> >>
-> >> Vivian "dramforever" Wang
-> >>
-> > 32-bit MMIO access is explicitly supported by the RISC-V IOMMU
-> > specification and is a valid choice (64-bit MMIO access is optional).
+> As noted in the RISC-V IOMMU Specification, Chapter 6:
+>> Whether an 8-byte access to an IOMMU register is single-copy atomic is UNSPECIFIED, and such an access may appear, internally to the IOMMU, as if two separate 4-byte accesses — first to the high half and second to the low half — were performed.
+> Therefore, the atomicity of 64-bit MMIO accesses is UNSPECIFIED and
+> not clearly defined in the current ratified RISC-V IOMMU
+> specification. To handle this correctly, the Linux RISC-V IOMMU driver
+> should fall back to 32-bit MMIO accesses when reading 64-bit registers
+> (e.g., performance counters). The behavior of 32-bit MMIO accesses is
+> more precisely defined in the RISC-V IOMMU specification.
 >
-> Hmm... I think it's optional in software but not optional in hardware,
-> but the specs are not super clear on this. I've opened a GitHub issue to
-> ask:
+> Thus, many hardware vendors implement 32-bit MMIO (rather than 64-bit
+> MMIO) based on the current ratified RISC-V IOMMU specification, and
+> this driver does not appear to benefit from 64-bit MMIO access either.
+> Performance is fundamentally constrained by bus latency; assuming that
+> simply reducing the number of accesses will improve performance is an
+> oversimplification that ignores the underlying hardware
+> characteristics.
+
+Just as a clarification, I had never said that the driver *should* use
+64-bit accesses. In fact, I said:
+
+    I agree that the driver should be build with 32-bit accesses to support
+    these hardware.
+
+Perhaps I wasn't clear enough. I meant that I agree that the RISC-V
+IOMMU driver should use 32-bit accesses. At *no* point had I claimed
+that 64-bit accesses are better.
+
+> Hi Zhang,
 >
->     https://github.com/riscv-non-isa/riscv-iommu/issues/765
->
-> > 64-bit MMIO access is not "free" =E2=80=94 it consumes additional inter=
-connect
-> > hardware resources.
-> >
-> > Could you elaborate on the concrete benefit of using 64-bit MMIO
-> > access in this driver, for these non-PMU registers? A clear
-> > justification would help evaluate whether the trade-off is worthwhile.
-> >
-> >
->
+> The hardware targeted by the 32-bit MMIO access in your patch is
+> precisely the kind that deserves the official ACPI HID RSCV0004 and
+> Devicetree compatible string (riscv,iommu). It is rather the hardware
+> that supports only 64-bit MMIO access — whose atomicity is explicitly
+> [...]
+
+IOMMU Hardware that supports only 64-bit MMIO access for 8-byte
+registers has never come up in this discussion. If they ever show up
+we'll talk about them then.
+
+Vivian "dramforever" Wang
+
