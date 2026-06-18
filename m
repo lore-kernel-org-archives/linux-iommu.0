@@ -1,513 +1,209 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 200CC3793A2
-	for <iommu@lists.linux.dev>; Thu, 18 Jun 2026 09:02:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28BED3BBFB3
+	for <iommu@lists.linux.dev>; Thu, 18 Jun 2026 09:26:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781773350; cv=none; b=TdKdn8xXeTjwUZm/L9VTedVmHE/I5c7uxXqp6eDxk/248Q2NiqBgZK/+7J1ZTAthw5rma/UgHqrGiiFmpUckGRH7m3iWJCDpsfRSClZyPRMbrCqkqh7FwhE94obK0gZ2yjMG2hEeH0sHWg1rSM3Ck0nO9ByrebDFKR69htWodQo=
+	t=1781774801; cv=none; b=kq1p1T9ufSJ+EEERuoe7nmXgZS49slSCWiSpzvS+TjMDTlWxJpDdcd2nHj9z9gHnSUHaJYeOMQFb1aj0Q/ireKPCYVMGdLsVG7PhHU/bm/WfYpxTNYRmmdxma4SpthLwoUPCce8WmtmuyX0tDqncCMUDO5Y4lAzynvMIaF4DDv8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781773350; c=relaxed/simple;
-	bh=goWwt4ufRDfEhhA0Tj8nkxEuYH+b7UabtZQ0Y2NUmDM=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=A+8RULuezBc4FDXjd+si9aZmUo0I/7XNRF6+VCxcfTXqkVl1d/dAgd3ZqUw4odKfDSqf01NGRgw+1wmRLRRK2qsv+/1h7wAca01nxgjvR37bnLR6Ce5Ug2hHf5Kfj5DlzSJf11kC5VxaJPIcqIi3p3hZZ3p3gOi8Noi5WqJkn1g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=T6ACa/PN; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=U4ZG3ZN9; arc=none smtp.client-ip=205.220.180.131
+	s=arc-20240116; t=1781774801; c=relaxed/simple;
+	bh=PQFzKq4u1Zz/DS7sc8HllALi6A+WiTA8yxPA4PvNbK4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=DX0IBe1nRu44Hc/jaAi58LM3T49VDYB8NlQFeLE0Oiq5ViPdCgBvssAv3zII4kt7WHz24E2tVlCa8ysD82G42l8sZWDBQ6TqV747SQj2icMhSvyT7dlJhf46BgpQjgkjFMfEHJOHapjVpklSuNJ6iAIXwn8IeoFg1stL0G1uegU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=iaLU2eiK; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=WiuEiJqn; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="T6ACa/PN";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="U4ZG3ZN9"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65I8FRE1975747
-	for <iommu@lists.linux.dev>; Thu, 18 Jun 2026 09:02:28 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="iaLU2eiK";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="WiuEiJqn"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65I8FudW1252624
+	for <iommu@lists.linux.dev>; Thu, 18 Jun 2026 09:26:38 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=qcppdkim1; bh=HPT/qvsIlzbU0wG9iW7WVZ
-	Y5cZKw1RR5KoJ88EMr3FM=; b=T6ACa/PNPg7RnPIfRkcN2JqoJyC824mvzD2p0E
-	O2GMmqRILqZ9TvqrHCDDlluXal88jrHbcoBmAI61yJMOxq6ZkCV/7qPiOR2cFgmJ
-	7j9ygM+CBGFzNxd6M7UrNu+lWo8OMokiWKYHk/AQ4XUsaC3xRwujW4DLo6oSdPG7
-	Ubdfq1+dAkEgX1vdlyaN+bkp+kOzxdiMEqb9ngAs9idk9zxl2nYnuzA9lKKC3dyC
-	G+QcIhOT5R/7GAxrSHkHBOKGLEMpRRnqlEJXEJ8CQmWAa2Nm8lNUgXkaodBg+4N1
-	+RZe8O+JICckvmzfdmVV967sRbS6pK3Pb1FLBlShMORDEJHQ==
-Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com [209.85.210.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ev1wc2ete-1
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	ce3Ew1kgGBzVv6bcwdm6x/HblgO4rzUZSXd+QkZ2/04=; b=iaLU2eiKyGioQKfF
+	/1fGySA5k47KEhF5b7rmC+ewjIjlpA8gHmg1f2K1rynLSajU8h3loDZFIzXimb7U
+	5Td/y5PXvhBxvY7hi0F0W7TOoNeJsCTT3O8mfhL8d7pLvup+prt1hIiqJcn6cUmY
+	OU17XVNl3Uevnom7ONAipUD/sFYQTqDwTrJI8K2SSViWZqze7un2V+JaK1/E18Ef
+	JKwKRR5OVCcSvbUX8UkMQq7IGCWNAX8d3xtojTjKDlgouxO6hmsQ7F9yFHb04HJt
+	fN+1MT/OC5Nt/WWguR4EMqsV8IqhFPFc3zk9Jmzp4XRq0yJ1UuCau4T8T/GDxd16
+	ER0Jzg==
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com [209.85.222.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ev0g7k07x-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 18 Jun 2026 09:02:27 +0000 (GMT)
-Received: by mail-pf1-f198.google.com with SMTP id d2e1a72fcca58-845319bb97bso699425b3a.0
-        for <iommu@lists.linux.dev>; Thu, 18 Jun 2026 02:02:27 -0700 (PDT)
+	for <iommu@lists.linux.dev>; Thu, 18 Jun 2026 09:26:37 +0000 (GMT)
+Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-915976b2dffso15148785a.3
+        for <iommu@lists.linux.dev>; Thu, 18 Jun 2026 02:26:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1781773347; x=1782378147; darn=lists.linux.dev;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=HPT/qvsIlzbU0wG9iW7WVZY5cZKw1RR5KoJ88EMr3FM=;
-        b=U4ZG3ZN9Jrp+e3rHs0BUXoJtrO47mdeX+NQrf/ogX+PmEno8FB1wMRwxcyq2q2j7Fk
-         5hHAIgkI5GzcphdprTFYlDq63gtqZtrg5tK810/DgkVe7h0qnj7wizrk7WyDQuilNtYF
-         uxnMSouFM8jVEpYmMtxez9yFBvUsEpRlC892MtRS99OGI+0dNRz8gi3Q9ebnO2uAy9J7
-         bbL5swqnIVaunWq1NxOQiwNmaO+OQ7vr7xCXjX+nh+F/o/Tb5Ai342qwLo4tCb4FEdGL
-         TB28Q3Hdh64xanba3/f3rp4OKKhRsLdyz8v2Fulj9+XT7JOIBtcDvMq/cCa+vW0Oivjm
-         rDLQ==
+        d=oss.qualcomm.com; s=google; t=1781774797; x=1782379597; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ce3Ew1kgGBzVv6bcwdm6x/HblgO4rzUZSXd+QkZ2/04=;
+        b=WiuEiJqnu2+M9dzrBJqDcXKK18sGFseYIpUArBnSJZcUMTRn0SaqrvMpDOr/1QxpaG
+         1YcPdSk0YbdLRyVmUZe+NRNeeKp7swhJ36v0rGHZJCFQPac/bbvrVC1lN/CMTslsbbiu
+         k6f6vMLkCtSrXDWHTE8UtLPhGRzeFHNeWcrScCutVzovHQ+a3r5mteHCN7ro4HBFmLf4
+         +UwQWA1mN7BuJOnLKLgUTAsFy0xROy70LRFeHObs4iG7y07BRA/imEoTXn2XgfP30Nex
+         eRLKkCCYXOhAxbZDLvYYwgBLJtoRhofxw+K5X9b2RDFl4eWLFKN1ZYF2ZKpF3Puht2wJ
+         49yA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781773347; x=1782378147;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=HPT/qvsIlzbU0wG9iW7WVZY5cZKw1RR5KoJ88EMr3FM=;
-        b=qTvojxp795fOF69/SX9J6wYeuq0uXSajkLJ0QfNIoI4Vqus4/AErwfBO2MwgFaB8dL
-         mOvEs2fIWUVc6QbQ3mrzxLfbynjB3iIB5qExs7G2ui7aKvIEyQuR8rgukqsWckRgIrh/
-         pGyLxT4syyZGElPT0ri/o1Zn04Ohn5W3pZQCODjPgry9m7mouobXRGm2IuhGBXYIcxT8
-         mel+WnjqeTYLi34U3oYzu5kjvgkJckRr3SacscSmkhFN/gc65CXdnl4c96oFz6kpqc7P
-         8vFZDek5rs8wJbzF0VGWwrE+mqlnl3IF1Wpk0tyEToROUfBMgfI271p5wVU7w8T8Qk1f
-         W1Wg==
-X-Forwarded-Encrypted: i=1; AFNElJ91h0LlJK3BJe4Gji7OKuHPk3lrJdtabuV9tgkNlDKej9VXNpo59qJSSfrF0gYkj71d8FfQiw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwXEbvusHz/wDe+7ZOOrEop2zQgzIncNJN0U7BFHdzUVUTCLVaW
-	2oGHABbgoBtm11wuyEe+MrgDBHNzhB9fHRT4GeWOIT3WMR24G42YbVaQRT+d5J/Cai6HDV7sYxr
-	h1GWvC35nItha7CWON1E0vA8+b7O1dxqUoj6ex6QuEBPLLa079tRdse/oog==
-X-Gm-Gg: Acq92OFld+BZmKubK+88v8Wmj0tRlSqQNxE3yu9xfz1ElD99kfkr0ka6GEUg6HYEFvH
-	5j3mtYrKzPcmNRvGGhVp5iFCGH+ykj9ci8l4MzyP+S4qy/cwRPgiPZhWEiWeW0j2Xxq7wRZqgB6
-	FLkO9fVzi8qSNmQECSOis8Illd7GAoZLqClYzSNzNJ9QpvlVOV4IONitlWoBGn5n77iS5SsjUKM
-	ZziX+soICx1TEifwwiVDqAe0hN9fRJERx0ZejTvyFom0wbR1VQy9MWnCtt6UnyPxGsDD/7kuX08
-	7Oq+wS/rwVWuzyZhE4w+IYVJDzFqd4ne3UIsV5A/mi9PtlH6XdMor5WZq3Kf/JS/SbG9P1O4U1v
-	Ivl0mUTNMbP76nCJbXnSJeBy5CJ5fX8faQa5ZWh/WUb9bGw==
-X-Received: by 2002:a05:6a00:760a:b0:845:286d:4675 with SMTP id d2e1a72fcca58-845286d4993mr5891049b3a.10.1781773346596;
-        Thu, 18 Jun 2026 02:02:26 -0700 (PDT)
-X-Received: by 2002:a05:6a00:760a:b0:845:286d:4675 with SMTP id d2e1a72fcca58-845286d4993mr5890993b3a.10.1781773345898;
-        Thu, 18 Jun 2026 02:02:25 -0700 (PDT)
-Received: from hu-vjitta-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8453a8c9770sm2012769b3a.40.2026.06.18.02.02.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Jun 2026 02:02:25 -0700 (PDT)
-From: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
-Date: Thu, 18 Jun 2026 14:32:09 +0530
-Subject: [PATCH] iommu/io-pgtable-arm: Add support for contiguous hint bit
+        d=1e100.net; s=20251104; t=1781774797; x=1782379597;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ce3Ew1kgGBzVv6bcwdm6x/HblgO4rzUZSXd+QkZ2/04=;
+        b=PH5gih0CXP/2LKtMwDB4f9CUX6YiRePKCZsJVI8zMw+1qrEr54m+KcHdDutcOCP4YL
+         Q2C6ql3E5F6njiWKNZhBz9W9ULtHIBZPO31EnJr2Z6FdbqvP02DN94xvMjgibdm1sJpz
+         NXGoDZl9XdkQ4PblA3GBoZa8SzaHO/4UmPQVtQWwmnjhElgpxeQwSnWd2gC7v+rd/iE/
+         C50xNIdOpkhakfB+jclyVJ8NVX/jMVoI84c8NF4L/KYPQuDrMRUq4YFnsIW/6zPKxieK
+         3Ff7iDQzpMcue2z2YcjnrQpDmBB3PQBzTBRHW9CfTYSCVaXlqDD1O8AFGCY47YYz6UBR
+         Ii2Q==
+X-Forwarded-Encrypted: i=1; AFNElJ+hUCmTupa8E91gEQc5hBx5UZ1FUpPAQ9f+qHw0p1zYQ1x658Fxz5hWUaZcawJVj07MDV8Xkg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxYrSIgrdx8CGOGP3404mvVBAC+1ohCL9hJpO23W2ZCkr7viPJl
+	C7zbmziUzk6hP+36cH0C343Bm4KfYkhvUn6r1nvZgjF6KTk3IrsZIHmmfZqzl5mHyZcjYm7qnvt
+	pXs4Efuv4dgTlUqExt+xVYkFBSXFyUrCMKZmmOp9TFJrJgKGOIJmx/VPQag==
+X-Gm-Gg: Acq92OErmfmaBDk4HKWMhqzlcdVcqwNoiKbSLyJ6BspDs9ZwKHvm8L+za6is+M82TI0
+	+b2YMfhY/nBxw7jy8zHpAQlHdO18pEanUQRDAHX9L69tkv/bKFcx3EyEaMOBd/zzdpieUIvza5z
+	wxfI/KRNJqWrcF3rJeJCuLdIhcfFb1esapj0PLvrCpehSyFv9m8V95k268bYtWMwdKBlZ/4JNHe
+	ZGbbvQ57b+92k/EkfeH3zgzpmuNgEw9Hw6TuL2ZMLcm97K6uz7/cOcW8Ttu+ooELZM9BbJrRfn1
+	+yOpkClTEQVTaMEsSehEHQRnjNHPvWTsuHD6SOq00b985jCiJ3JoaB3yRtlf+0iuUzZ+LP4nCx8
+	6TUlL6UU4FO+hmg1E4THSEllG0LCjWFZ2rAQ=
+X-Received: by 2002:a05:620a:458a:b0:90d:11b2:80f3 with SMTP id af79cd13be357-91f2b477d71mr290818085a.7.1781774797394;
+        Thu, 18 Jun 2026 02:26:37 -0700 (PDT)
+X-Received: by 2002:a05:620a:458a:b0:90d:11b2:80f3 with SMTP id af79cd13be357-91f2b477d71mr290814085a.7.1781774796807;
+        Thu, 18 Jun 2026 02:26:36 -0700 (PDT)
+Received: from [192.168.120.170] ([178.235.128.140])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bfdb83428a8sm925516266b.44.2026.06.18.02.26.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Jun 2026 02:26:35 -0700 (PDT)
+Message-ID: <3384ecdf-599f-4862-a3c4-9f54b4ddfe63@oss.qualcomm.com>
+Date: Thu, 18 Jun 2026 11:26:33 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260618-iommu_contig_hint-v1-1-4502a59e6388@oss.qualcomm.com>
-X-B4-Tracking: v=1; b=H4sIABC0M2oC/yXMTQqAIBBA4avErBNS+r9KRKRNNUEaahFEd89q+
- S3eu8ChJXRQRxdYPMiR0QE8jkDNvZ6Q0RAMIhF5kvOSkVnXvVNGe5q6mbRnBe8xrfgoZSYgdJv
- Fkc7v2bS/3S4XVP4dwX0/TJZ6HnUAAAA=
-X-Change-ID: 20260618-iommu_contig_hint-71ae491fbb52
-To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>
-Cc: linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Prakash Gupta <prakash.gupta@oss.qualcomm.com>,
-        Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1781773342; l=13018;
- i=vijayanand.jitta@oss.qualcomm.com; s=20260301; h=from:subject:message-id;
- bh=KqqlwykCZOolpKs5ikihTyrCjA8PeTCq94/xbXaFyZU=;
- b=KbyZoxjGDXs5AUE5GEivZvb5w5JJwxA9MviXPcwtkZdZFZBtO5oeJH53M2sceO48NHznVYCzy
- qfXRYJh3NbRA/prljT9BiArQ6eSf3DAAZWhigTlmcU2ola5YdvQW6ZW
-X-Developer-Key: i=vijayanand.jitta@oss.qualcomm.com; a=ed25519;
- pk=Lpi7Cs3wHe8KZtqvyci7FTOLzsKpEHKGCaPNZw+1zRI=
-X-Authority-Analysis: v=2.4 cv=TMt1jVla c=1 sm=1 tr=0 ts=6a33b423 cx=c_pps
- a=m5Vt/hrsBiPMCU0y4gIsQw==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 3/6] arm64: dts: qcom: kodiak: Add GEM_NOC interconnect
+ for adreno SMMU
+To: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+ <conor+dt@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+References: <20260526-smmu_interconnect_addition-v2-0-2a6d8ca30d63@oss.qualcomm.com>
+ <20260526-smmu_interconnect_addition-v2-3-2a6d8ca30d63@oss.qualcomm.com>
+ <p4xnrkcpbufkkbv4kq5civbt6hiwv3warrz7jiyinsfkihfedh@jfa7sgyzot6j>
+ <26d51cbb-2d87-4564-b3c6-cc61ab900e19@oss.qualcomm.com>
+Content-Language: en-US
+From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+In-Reply-To: <26d51cbb-2d87-4564-b3c6-cc61ab900e19@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjE4MDA4NiBTYWx0ZWRfX+1LpMaYTK9pf
+ EZIm2bamfyG6rrKsRisOzglIWKu1Te7H6TjDB1jcZ6MnUplJzrSiQPGFs64SECR6mlh4qu85OeC
+ qQw+VlQR7tgn96LT6jcMMeEpPRMIqxURy+D+3Kh6+3PnJAQ/65JZoWNt9u4DU7t+e4gz/A6Pmve
+ Kg7NieMshH9PlHDITZgt1D0dsY76u0/Ax37cF+CE8DAQHz1DtyZT+kkcRXybK514MX1/JsnxjzI
+ 1EBnTsb+ZjB08YAG+lGhPSWKGqtOEbjo3IJS/ncMhEOxBsnSC/dgdXwMudDo9Sim3u3XbIzC6K7
+ 1DvuJGl/1nCY80muAFyzF5AzuvwdnuKl5E+F95yy8QgywuYRucynSG9VKM7K1cYA2k5cLqyMZ/K
+ eQImnr77Zl0BdYV2KA9YBbYMtmhPcLcR4sFkKXnrBOV1L5IoLjH5a8jUuKgXljHmSm3kS/VyatR
+ AEIn8gjw5l2kET+L+TQ==
+X-Proofpoint-GUID: NLx3jYPsFQ1LlzxPotOXg5sS77xjniMC
+X-Proofpoint-ORIG-GUID: NLx3jYPsFQ1LlzxPotOXg5sS77xjniMC
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNjE4MDA4NiBTYWx0ZWRfX8npcJo95OK5M
+ ftF7maoY6yphT0NtN63WRsZT32hWQ9+QLhePkE9aQoKU9Q5stbvD4p0B6/gi6tnPleIIpZKwEUB
+ OMizVgQkGGuNkviQU1waKu3iKbd3rOg=
+X-Authority-Analysis: v=2.4 cv=YrI/gYYX c=1 sm=1 tr=0 ts=6a33b9ce cx=c_pps
+ a=50t2pK5VMbmlHzFWWp8p/g==:117 a=PRfkaYvzSr8QmIIGAkY2Sg==:17
  a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
- a=EUspDBNiAAAA:8 a=ood6XOM2BuclmvQ8xa4A:9 a=QEXdDO2ut3YA:10
- a=IoOABgeZipijB_acs4fv:22
-X-Proofpoint-GUID: B-y01CIadOh6Ks68lZltmGcR8Awrerw4
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNjE4MDA4MSBTYWx0ZWRfXwUzEPNgD37qZ
- yVD8PPhZVjbvtMef/+oZHDUsTt4XR9+BJOqh/mYlwQgIBa+672VCImsm3CQSh6uHA7fdcC4le8F
- /Yh08SWGQP7CwHr66Ov3zdyBdzADSn0=
-X-Proofpoint-ORIG-GUID: B-y01CIadOh6Ks68lZltmGcR8Awrerw4
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjE4MDA4MSBTYWx0ZWRfX1zCgwnDO07gp
- /d3hw9NfttxJSHTtE+j/1LbVI0UXwSxGUAQrH4bKjsJ8vmsSHXzpP3ZS3XNnyFWQwBd4m7YNuw4
- iKG5sr76Jc4Xq35xHDzHotHnWquE+u+CY5TgGf4GKXnv2n2VokJO/NW/NqMDP9a69FHUP28TBhV
- XgElDIIE3YTwq0YEISfjPb+OuUoop4VRxr9IhbHnqCix42GVEpD/Wr8+6ALXtUD/kSzYx5r2QQX
- YDkW37Shyy+VNU33bPjeY0kawYCtpX1lcRZI5Ck/pT90GjnatTfGIjBrPurjgXHyJ4IqI5qkBww
- 44GtgRBRv2Xb3xGo6dY4d8xulIhUbowHF1SYzwe2wWj8zvfXp3YN73yAlH99VxY7yJhMi/DC7Cv
- Xq7w1Ghsh7lt7A1NASwR8/xnMdn5HkmBAi84rYIKw+138Pb6TIYWs3SjttZ3S+rTcGGDt/UaT7y
- agMRdJ5KNM29+tnuShQ==
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=gowsoOTTUOVcmtlkKump:22
+ a=EUspDBNiAAAA:8 a=HaZQysj9wVKA4b69cM0A:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=IoWCM6iH3mJn3m4BftBB:22
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
  definitions=2026-06-18_01,2026-06-17_03,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 bulkscore=0 adultscore=0 impostorscore=0 priorityscore=1501
- suspectscore=0 lowpriorityscore=0 spamscore=0 clxscore=1015 malwarescore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2606180081
+ adultscore=0 clxscore=1015 malwarescore=0 bulkscore=0 suspectscore=0
+ priorityscore=1501 impostorscore=0 phishscore=0 spamscore=0
+ lowpriorityscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
+ definitions=main-2606180086
 
-From: Prakash Gupta <prakash.gupta@oss.qualcomm.com>
+On 6/8/26 4:37 PM, Bibek Kumar Patro wrote:
+> 
+> 
+> On 6/8/2026 7:27 PM, Dmitry Baryshkov wrote:
+>> On Tue, May 26, 2026 at 08:12:04PM +0530, Bibek Kumar Patro wrote:
+>>> On Kodiak platforms, the Adreno SMMU requires a bandwidth vote on
+>>> the GEM_NOC path (MASTER_GPU_TCU -> SLAVE_EBI1) before its registers
+>>> are accessible. Without this vote, the SMMU may become unreachable,
+>>> leading to intermittent probe failures and runtime issues.
+>>>
+>>> Add the required interconnect to ensure reliable register access.
+>>
+>> Does it only concern the GPU SMMU? What about the APPS SMMU? Should it
+>> be voting on other interconnects too? I guess so, because currently I
+>> see that TBUs vote for various interconnects. BTW: should apps_smmu also
+>> vote on the power domains?
+>>
+> 
+> This race mainly occurs in GPU SMMU, where the GDSC can have an
 
-Add support for the contiguous hint (CONT) bit in ARM LPAE page tables.
-When a set of consecutive PTEs map a naturally-aligned contiguous block
-of memory, the CONT bit can be set on all entries in the group to allow
-the hardware to combine them into a single TLB entry, improving TLB
-utilization.
+Mainly or exclusively?
 
-The contiguous hint sizes per granule are:
+Konrad
 
-  Page Size | CONT PTE |  PMD  | CONT PMD
-  ----------+----------+-------+---------
-      4K    |   64K    |   2M  |   32M
-     16K    |    2M    |  32M  |    1G
-     64K    |    2M    | 512M  |   16G
-
-Contiguous hint sizes are advertised in pgsize_bitmap, analogous to
-how the CPU MMU advertises them via hugetlb hstates, so that IOMMU API
-users (e.g. __iommu_dma_alloc_pages()) can align allocations to these
-sizes and benefit from the TLB optimization automatically.
-
-Support is gated behind CONFIG_IOMMU_IO_PGTABLE_CONTIG_HINT, which
-provides a compile-time opt-out for hardware affected by SMMU errata
-related to the contiguous bit.
-
-On the mapping side, __arm_lpae_map() detects when the requested size
-matches a contiguous range at the next level, sets the CONT bit on all
-PTEs in the group, then recurses with the base block size and an
-adjusted pgcount.
-
-On the unmapping side, the CONT bit is cleared from all PTEs in the
-affected contiguous group before any individual entry is invalidated,
-following the Break-Before-Make requirement of the architecture.
-
-Tested on QEMU (arm64/SMMUv3) with iommu_map()/iommu_unmap() of
-contiguous hint sizes; verified the CONT bit is correctly set on map
-and cleared on unmap via page table walk.
-
-Co-developed-by: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
-Signed-off-by: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
-Signed-off-by: Prakash Gupta <prakash.gupta@oss.qualcomm.com>
----
- drivers/iommu/Kconfig          |  16 +++
- drivers/iommu/io-pgtable-arm.c | 216 +++++++++++++++++++++++++++++++++++++++--
- 2 files changed, 226 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 6e07bd69467a3..1c514361c5c9e 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -50,6 +50,22 @@ config IOMMU_IO_PGTABLE_LPAE_KUNIT_TEST
- 
- 	  If unsure, say N here.
- 
-+config IOMMU_IO_PGTABLE_CONTIG_HINT
-+	bool "Enable contiguous hint"
-+	depends on IOMMU_IO_PGTABLE_LPAE
-+	default y
-+	help
-+	  Enable contiguous hint (CONT bit) support for the ARM LPAE page
-+	  table allocator. Contiguous hint sizes are advertised in the
-+	  pgsize_bitmap so that IOMMU API users can align allocations to
-+	  these sizes and benefit from improved TLB utilization, analogous
-+	  to how the CPU MMU advertises contiguous sizes via hugetlb.
-+
-+	  Disabling this option provides a compile-time opt-out for
-+	  hardware affected by SMMU errata related to the contiguous bit.
-+
-+	  If unsure, say Y here.
-+
- config IOMMU_IO_PGTABLE_ARMV7S
- 	bool "ARMv7/v8 Short Descriptor Format"
- 	select IOMMU_IO_PGTABLE
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 476c0e25631af..9fc60520177f1 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -86,6 +86,21 @@
- /* Software bit for solving coherency races */
- #define ARM_LPAE_PTE_SW_SYNC		(((arm_lpae_iopte)1) << 55)
- 
-+/* PTE Contiguous Bit */
-+#define ARM_LPAE_PTE_CONT		(((arm_lpae_iopte)1) << 52)
-+
-+/*
-+ * CONTIG HINT SUPPORT TABLE
-+ *
-+ *---------------------------------------------------
-+ *| Page Size | CONT PTE |  PMD  | CONT PMD |  PUD  |
-+ *---------------------------------------------------
-+ *|     4K    |   64K    |   2M  |    32M   |   1G  |
-+ *|    16K    |    2M    |  32M  |     1G   |       |
-+ *|    64K    |    2M    | 512M  |    16G   |       |
-+ *---------------------------------------------------
-+ */
-+
- /* Stage-1 PTE */
- #define ARM_LPAE_PTE_AP_UNPRIV		(((arm_lpae_iopte)1) << 6)
- #define ARM_LPAE_PTE_AP_RDONLY_BIT	7
-@@ -453,6 +468,111 @@ static arm_lpae_iopte arm_lpae_install_table(arm_lpae_iopte *table,
- 	return old;
- }
- 
-+#ifdef CONFIG_IOMMU_IO_PGTABLE_CONTIG_HINT
-+static inline int arm_lpae_cont_ptes(unsigned long size)
-+{
-+	if (size == SZ_4K)
-+		return 16;
-+	if (size == SZ_16K)
-+		return 128;
-+	if (size == SZ_64K)
-+		return 32;
-+	return 1;
-+}
-+
-+static inline unsigned long arm_lpae_cont_pte_size(unsigned long size)
-+{
-+	return arm_lpae_cont_ptes(size) * size;
-+}
-+
-+static inline int arm_lpae_cont_pmds(unsigned long size)
-+{
-+	if (size == SZ_2M)
-+		return 16;
-+	if (size == SZ_32M)
-+		return 32;
-+	if (size == SZ_512M)
-+		return 32;
-+	return 1;
-+}
-+
-+static inline unsigned long arm_lpae_cont_pmd_size(unsigned long size)
-+{
-+	return arm_lpae_cont_pmds(size) * size;
-+}
-+
-+static unsigned long arm_lpae_get_cont_sizes(struct io_pgtable_cfg *cfg)
-+{
-+	unsigned long pg_size, pmd_size;
-+	int pg_shift, bits_per_level;
-+
-+	if (!cfg->pgsize_bitmap)
-+		return 0;
-+
-+	pg_shift = __ffs(cfg->pgsize_bitmap);
-+	bits_per_level = pg_shift - ilog2(sizeof(arm_lpae_iopte));
-+	pg_size = (1UL << pg_shift);
-+	pmd_size = (pg_size << bits_per_level);
-+
-+	return (arm_lpae_cont_pte_size(pg_size) | arm_lpae_cont_pmd_size(pmd_size));
-+}
-+
-+static u32 arm_lpae_find_num_cont(struct arm_lpae_io_pgtable *data, int lvl)
-+{
-+	if (lvl == ARM_LPAE_MAX_LEVELS - 2)
-+		return arm_lpae_cont_pmds(ARM_LPAE_BLOCK_SIZE(lvl, data));
-+	else if (lvl == ARM_LPAE_MAX_LEVELS - 1)
-+		return arm_lpae_cont_ptes(ARM_LPAE_BLOCK_SIZE(lvl, data));
-+	else
-+		return 1;
-+}
-+
-+static u32 arm_lpae_check_num_cont(struct arm_lpae_io_pgtable *data, size_t size, int lvl)
-+{
-+	int num_cont;
-+
-+	num_cont = arm_lpae_find_num_cont(data, lvl);
-+	if (size == num_cont * ARM_LPAE_BLOCK_SIZE(lvl, data))
-+		return num_cont;
-+	else
-+		return 1;
-+}
-+
-+static bool arm_lpae_pte_is_contiguous_range(struct arm_lpae_io_pgtable *data,
-+					     unsigned long size,
-+					     int lvl, u32 *num_cont)
-+{
-+	unsigned long block_size;
-+
-+	*num_cont = arm_lpae_find_num_cont(data, lvl);
-+	block_size = ARM_LPAE_BLOCK_SIZE(lvl, data);
-+
-+	return (size == ((*num_cont) * block_size));
-+}
-+#else
-+static unsigned long arm_lpae_get_cont_sizes(struct io_pgtable_cfg *cfg)
-+{
-+	return 0;
-+}
-+
-+static u32 arm_lpae_find_num_cont(struct arm_lpae_io_pgtable *data, int lvl)
-+{
-+	return 1;
-+}
-+
-+static u32 arm_lpae_check_num_cont(struct arm_lpae_io_pgtable *data, size_t size, int lvl)
-+{
-+	return 1;
-+}
-+
-+static bool arm_lpae_pte_is_contiguous_range(struct arm_lpae_io_pgtable *data,
-+					     unsigned long size,
-+					     int lvl, u32 *num_cont)
-+{
-+	return false;
-+}
-+#endif
-+
- static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
- 			  phys_addr_t paddr, size_t size, size_t pgcount,
- 			  arm_lpae_iopte prot, int lvl, arm_lpae_iopte *ptep,
-@@ -463,6 +583,7 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
- 	size_t tblsz = ARM_LPAE_GRANULE(data);
- 	struct io_pgtable_cfg *cfg = &data->iop.cfg;
- 	int ret = 0, num_entries, max_entries, map_idx_start;
-+	u32 num_cont = 1;
- 
- 	/* Find our entry at the current level */
- 	map_idx_start = ARM_LPAE_LVL_IDX(iova, lvl, data);
-@@ -505,6 +626,24 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
- 		return -EEXIST;
- 	}
- 
-+	if (arm_lpae_pte_is_contiguous_range(data, size, lvl + 1, &num_cont)) {
-+		size_t ct_size = ARM_LPAE_BLOCK_SIZE(lvl + 1, data);
-+
-+		/* Set cont bit */
-+		prot |= ARM_LPAE_PTE_CONT;
-+
-+		/*
-+		 * Since size here would be of CONT_PTE or CONT_PMD (e.g. SZ_64K/SZ_32M
-+		 * in case of 4K PAGE_SIZE), but actual mappings are in multiples of
-+		 * SZ_4K/SZ_2M, call __arm_lpae_map with ct_size and update pgcount
-+		 * accordingly by num_cont * pgcount.
-+		 */
-+		ret = __arm_lpae_map(data, iova, paddr, ct_size,
-+				     num_cont * pgcount,
-+				     prot, lvl + 1, cptep, gfp, mapped);
-+		return ret;
-+	}
-+
- 	/* Rinse, repeat */
- 	return __arm_lpae_map(data, iova, paddr, size, pgcount, prot, lvl + 1,
- 			      cptep, gfp, mapped);
-@@ -653,6 +792,48 @@ static void arm_lpae_free_pgtable(struct io_pgtable *iop)
- 	kfree(data);
- }
- 
-+#ifdef CONFIG_IOMMU_IO_PGTABLE_CONTIG_HINT
-+static void arm_lpae_cont_clear(struct arm_lpae_io_pgtable *data,
-+				unsigned long iova, int lvl,
-+				arm_lpae_iopte *ptep, size_t num_entries)
-+{
-+	struct io_pgtable_cfg *cfg = &data->iop.cfg;
-+	u32 num_cont = arm_lpae_find_num_cont(data, lvl);
-+	arm_lpae_iopte *cont_ptep;
-+	arm_lpae_iopte *cont_ptep_start;
-+	unsigned long cont_iova;
-+	int offset, itr;
-+
-+	cont_ptep = ptep - ARM_LPAE_LVL_IDX(iova, lvl, data);
-+	cont_iova = round_down(iova,
-+			       ARM_LPAE_BLOCK_SIZE(lvl, data) * num_cont);
-+	cont_ptep += ARM_LPAE_LVL_IDX(cont_iova, lvl, data);
-+	cont_ptep_start = cont_ptep;
-+
-+	/*
-+	 * iova may not be aligned to the contiguous group boundary; include
-+	 * any leading entries so round_up() covers all overlapping groups.
-+	 */
-+	offset = ARM_LPAE_LVL_IDX(iova, lvl, data) -
-+		 ARM_LPAE_LVL_IDX(cont_iova, lvl, data);
-+	num_entries = round_up(offset + num_entries, num_cont);
-+
-+	for (itr = 0; itr < num_entries; itr++) {
-+		WRITE_ONCE(*cont_ptep, READ_ONCE(*cont_ptep) & ~ARM_LPAE_PTE_CONT);
-+		cont_ptep++;
-+	}
-+
-+	if (!cfg->coherent_walk)
-+		__arm_lpae_sync_pte(cont_ptep_start, num_entries, cfg);
-+}
-+#else
-+static void arm_lpae_cont_clear(struct arm_lpae_io_pgtable *data,
-+				unsigned long iova, int lvl,
-+				arm_lpae_iopte *ptep, size_t num_entries)
-+{
-+}
-+#endif
-+
- static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 			       struct iommu_iotlb_gather *gather,
- 			       unsigned long iova, size_t size, size_t pgcount,
-@@ -660,7 +841,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- {
- 	arm_lpae_iopte pte;
- 	struct io_pgtable *iop = &data->iop;
--	int i = 0, num_entries, max_entries, unmap_idx_start;
-+	int i = 0, num_cont = 1, num_entries, max_entries, unmap_idx_start;
- 
- 	/* Something went horribly wrong and we ran out of page table */
- 	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
-@@ -675,9 +856,15 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 	}
- 
- 	/* If the size matches this level, we're in the right place */
--	if (size == ARM_LPAE_BLOCK_SIZE(lvl, data)) {
-+	if (size == ARM_LPAE_BLOCK_SIZE(lvl, data) ||
-+	    (size == arm_lpae_find_num_cont(data, lvl) *
-+		     ARM_LPAE_BLOCK_SIZE(lvl, data))) {
-+		size_t pte_size;
-+
- 		max_entries = arm_lpae_max_entries(unmap_idx_start, data);
--		num_entries = min_t(int, pgcount, max_entries);
-+		num_cont = arm_lpae_check_num_cont(data, size, lvl);
-+		num_entries = min_t(int, num_cont * pgcount, max_entries);
-+		pte_size = size / num_cont;
- 
- 		/* Find and handle non-leaf entries */
- 		for (i = 0; i < num_entries; i++) {
-@@ -687,11 +874,27 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 				break;
- 			}
- 
-+			/*
-+			 * Break-Before-Make: before invalidating any leaf
-+			 * entry, clear the CONT bit from every entry in the
-+			 * contiguous group(s) and flush the TLB, as required
-+			 * by the architecture.  arm_lpae_cont_clear() covers
-+			 * the full [iova, iova + num_entries * pte_size) range
-+			 * via round_up(), so subsequent entries read back
-+			 * CONT=0 and skip this block.
-+			 */
-+			if (pte & ARM_LPAE_PTE_CONT) {
-+				arm_lpae_cont_clear(data, iova, lvl, ptep, num_entries);
-+				io_pgtable_tlb_flush_walk(iop, iova,
-+							  num_entries * pte_size,
-+							  ARM_LPAE_GRANULE(data));
-+			}
-+
- 			if (!iopte_leaf(pte, lvl, iop->fmt)) {
- 				__arm_lpae_clear_pte(&ptep[i], &iop->cfg, 1);
- 
- 				/* Also flush any partial walks */
--				io_pgtable_tlb_flush_walk(iop, iova + i * size, size,
-+				io_pgtable_tlb_flush_walk(iop, iova + i * pte_size, pte_size,
- 							  ARM_LPAE_GRANULE(data));
- 				__arm_lpae_free_pgtable(data, lvl + 1, iopte_deref(pte, data));
- 			}
-@@ -702,9 +905,9 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 
- 		if (gather && !iommu_iotlb_gather_queued(gather))
- 			for (int j = 0; j < i; j++)
--				io_pgtable_tlb_add_page(iop, gather, iova + j * size, size);
-+				io_pgtable_tlb_add_page(iop, gather, iova + j * pte_size, pte_size);
- 
--		return i * size;
-+		return i * pte_size;
- 	} else if (iopte_leaf(pte, lvl, iop->fmt)) {
- 		WARN_ONCE(true, "Unmap of a partial large IOPTE is not allowed");
- 		return 0;
-@@ -943,6 +1146,7 @@ static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
- 	}
- 
- 	cfg->pgsize_bitmap &= page_sizes;
-+	cfg->pgsize_bitmap |= arm_lpae_get_cont_sizes(cfg);
- 	cfg->ias = min(cfg->ias, max_addr_bits);
- 	cfg->oas = min(cfg->oas, max_addr_bits);
- }
-
----
-base-commit: 4fa3f5fabb30bf00d7475d5a33459ea83d639bf9
-change-id: 20260618-iommu_contig_hint-71ae491fbb52
-
-Best regards,
---  
-Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
-
+> independent vote on the Adreno SMMU. However, the GEM_NOC vote may
+> already have been removed by the GPU (or any consumer of adreno_smmu,
+> e.g gmu), unless it is explicitly voted by the GPU SMMU (which acts as a
+> supplier for the GPU). This mismatch can lead to SHUB timeouts or NoC
+> errors.
+> 
+> Mostly this race reported in suspend/resume cycle (when gpu/gmu devices moves to slumber/suspend state before adreno_smmu powers down
+> and the later doesn't have explicit interconnect voting).
+> 
+> In the case of APPS SMMU, such a race is not expected for any known
+> use case. APPS SMMU is part of a shared infrastructure block, and its
+> power is typically kept enabled as long as attached master devices are
+> active. Therefore, explicit power-domain voting from APPS SMMU may not
+> be required.
+> 
+> Thanks,
+> Bibek
+> 
+> 
+>>>
+>>> Signed-off-by: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
+>>> ---
+>>>   arch/arm64/boot/dts/qcom/kodiak.dtsi | 2 ++
+>>>   1 file changed, 2 insertions(+)
+>>>
+>>> diff --git a/arch/arm64/boot/dts/qcom/kodiak.dtsi b/arch/arm64/boot/dts/qcom/kodiak.dtsi
+>>> index fa540d8c2615dc02d941eb16bc7253204c2750bd..eefa4b836a81374ff437ab4bbcbc3fecc1590ab6 100644
+>>> --- a/arch/arm64/boot/dts/qcom/kodiak.dtsi
+>>> +++ b/arch/arm64/boot/dts/qcom/kodiak.dtsi
+>>> @@ -3386,6 +3386,8 @@ adreno_smmu: iommu@3da0000 {
+>>>                 power-domains = <&gpucc GPU_CC_CX_GDSC>;
+>>>               dma-coherent;
+>>> +            interconnects = <&gem_noc MASTER_GPU_TCU QCOM_ICC_TAG_ALWAYS
+>>> +                     &mc_virt SLAVE_EBI1 QCOM_ICC_TAG_ALWAYS>;
+>>>           };
+>>>             gfx_0_tbu: tbu@3dd9000 {
+>>>
+>>> -- 
+>>> 2.34.1
+>>>
+>>
+> 
+> 
