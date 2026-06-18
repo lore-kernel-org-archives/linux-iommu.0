@@ -1,107 +1,153 @@
-Received: from cstnet.cn (smtp21.cstnet.cn [159.226.251.21])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1A6C24728F
-	for <iommu@lists.linux.dev>; Thu, 18 Jun 2026 03:20:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 497C135838A
+	for <iommu@lists.linux.dev>; Thu, 18 Jun 2026 03:36:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781752828; cv=none; b=edXdVGEw7+rjFsRFtwzQLxOXWehoUil9oINNDB3jHyhhNETLa/sjH2V4B+Cn845m0OtYEW9ayPU4YUFzm/OTuaBoSE3mNLEKfrJrg5JOFEATioyilYaPMz1PFzcuuuNbFm2RQL32PBH8xyvbtpq+ep+yZ4GiQLNYML7GDun7NBw=
+	t=1781753809; cv=none; b=YoA91D0GbglsO4tARmqrnKiqmFoODnZL3ZpR2sMvz5E6FbZY5FbmRCbP6hB8ENkPO71HuHQwqbO70TuQmqStmoMZlOKSyQS14IRAIaCLmGXgVQyVeMnjZvcmRLJ446rQKSlIetEKps+3YNQ8vFd6yHFcK17vwPG1FiwriDG0Rew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781752828; c=relaxed/simple;
-	bh=sS/uXH0TWU9Zssjp2gft/unmNLmHp7xVeqDhEH2vs9c=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=WEA4VTW4c/6dLm0osx/50ynFw8hhZIKe2mtwGd8SK7CK8D56HBP8d8D76CRG7WPfcdt637GmJ+b8ZfPbjrWi8hj6W8c+Nb1VAZ69FkJ2yyDsB689nVAEoOLh3fPwJ7HVGODq0vEKTraEGdbAcJlX1hbg+2RcDf3t72loqLh16+8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
-Received: from [192.168.0.107] (unknown [123.118.218.239])
-	by APP-01 (Coremail) with SMTP id qwCowABX_NTnYzNqAuclAg--.5980S2;
-	Thu, 18 Jun 2026 11:20:07 +0800 (CST)
-Message-ID: <7c490aeb-a3d9-4fe9-81de-f9662577851d@iscas.ac.cn>
-Date: Thu, 18 Jun 2026 11:20:07 +0800
+	s=arc-20240116; t=1781753809; c=relaxed/simple;
+	bh=M/E+TxMPhhpktK3gAh2DyefpDp3F14uaAn9jUykrT/U=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Sv2V/npoUPLQr6QHTip5N2Fjm0uCMMwkd0Mqph7kwseFsQTjE3iTqBJENyTxJzhq4AvIr8V9eKXXjp+g68KcBRZyhG/OO66JtOTh5tyhMf3OzpDpwhqRIUehYrnJA/1l43R4t3Vb3SBMi1Yol9T0GelLW6JV6+aAD5ggZkxZtzE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VMkt5vik; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VMkt5vik"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C0F71F00ADF
+	for <iommu@lists.linux.dev>; Thu, 18 Jun 2026 03:36:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781753807;
+	bh=cVPtGl+4x1G2BzK1t22g1Zkxuy6feBMfhbG2c8gY4Pw=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=VMkt5vikDcoBFpWSVzO8XUIgCDm4BWZzH1GXjZY/zMKg2s59KOah6U335ifJK/sT4
+	 ISjqbvnUSNRFEJL3RcDN+aVPjKQQV6Jdjr8rGdV3nDvKsqASKT/bFdMTpp2hhuzKVK
+	 J3vHgqgLvKswcS01OSJ7DHG9A9sIqrz+I7l18H6YwZLlRzXD1h6Xz7ppK6XP+KR0nG
+	 YAFBERZ2BQkH1hxFchDTVD8Wdm/XWSYeXqnxYGAdwkgWBz4WgbKCOyQRtAXzO81n06
+	 Rat9pxycgscV8HJ9pbEhxd0zpU0X8CuJlEim/yutmRnnj350U/l+a2ehyHJaRdhnYn
+	 wrEZKcyZgVvlw==
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-45eeea039ebso245337f8f.1
+        for <iommu@lists.linux.dev>; Wed, 17 Jun 2026 20:36:46 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ9jqjm62+uTD96HdBPp8Gq3zYotrlLHqLgxlW5sl6mVj6IKivBVndT4XrSK/yWy8iotuOpjTA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwRvMxh7qGMm9sfWHfjtP/IoAu1Id8ApqFG0LO4ElsTJDBw7VR6
+	i7ZcZwHGP624eQhUO0ZvD92Kj6/KpoZrIo13fSbW1znEU//c0sk67HmOZQXPr6XI6AthMtopZF8
+	40wZRiCFZEoUV7O0Tg/YthXkKVpEfNjM=
+X-Received: by 2002:a05:6000:1866:b0:43f:e990:2f5d with SMTP id
+ ffacd0b85a97d-463ad6c8e67mr3103096f8f.35.1781753805618; Wed, 17 Jun 2026
+ 20:36:45 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1] iommu/riscv: Support 32-bit register accesses
-To: Guo Ren <guoren@kernel.org>, zhangzhanpeng.jasper@bytedance.com
-Cc: alex@ghiti.fr, aou@eecs.berkeley.edu, cuiyunhui@bytedance.com,
- iommu@lists.linux.dev, joro@8bytes.org, linux-kernel@vger.kernel.org,
- linux-riscv@lists.infradead.org, luxu.kernel@bytedance.com,
- palmer@dabbelt.com, pjw@kernel.org, robin.murphy@arm.com,
- tjeznach@rivosinc.com, will@kernel.org, yuanzhu@bytedance.com
 References: <20260615064855.90316-1-zhangzhanpeng.jasper@bytedance.com>
- <20260615123821.373248-1-guoren@kernel.org>
-Content-Language: en-US
-From: Vivian Wang <wangruikang@iscas.ac.cn>
-In-Reply-To: <20260615123821.373248-1-guoren@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:qwCowABX_NTnYzNqAuclAg--.5980S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Ww4kuw1UZF4kXw4rJryxXwb_yoW8ur4rpa
-	n8Ww4UKF4ktF18Kw1qva1xZFW5G34vkayUCr4rKr9FvwnxZ3W3twnIgrW5u3WDJwn8uw1F
-	qFW2qw1xuFWDuFJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUvmb7Iv0xC_Kw4lb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I2
-	0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
-	A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xII
-	jxv20xvEc7CjxVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwV
-	C2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC
-	0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr
-	1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcVAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7
-	MxkF7I0En4kS14v26r1q6r43MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r
-	4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF
-	67AKxVW8ZVWrXwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2I
-	x0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2
-	z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnU
-	UI43ZEXa7IU56yI5UUUUU==
-X-CM-SenderInfo: pzdqw2pxlnt03j6l2u1dvotugofq/
+ <20260615123821.373248-1-guoren@kernel.org> <20260616113651.1048a19a@pumpkin>
+ <CAJF2gTTh1zyAZkKt7AQNZptG_H=-8xSum6PVTyxEmw23pN6-9g@mail.gmail.com>
+ <20260616205147.6aa7df98@pumpkin> <CAJF2gTTCLKCnTcY=K9hsepRgKwDRXqg5eqJBPxBPqTp98zqFKw@mail.gmail.com>
+ <20260617225416.0c5a79b0@pumpkin>
+In-Reply-To: <20260617225416.0c5a79b0@pumpkin>
+From: Guo Ren <guoren@kernel.org>
+Date: Thu, 18 Jun 2026 11:36:33 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTTwjtAs997XC1A9FEH68pGMqiwoOd9wcBMs5j_E0gSvQQ@mail.gmail.com>
+X-Gm-Features: AVVi8Cfxgwh3LbRZ4Q0RGPr7kIJ24k88PyG19lGYoK5JM7Kn2nepfc8_5HQoi6M
+Message-ID: <CAJF2gTTwjtAs997XC1A9FEH68pGMqiwoOd9wcBMs5j_E0gSvQQ@mail.gmail.com>
+Subject: Re: [PATCH v1] iommu/riscv: Support 32-bit register accesses
+To: David Laight <david.laight.linux@gmail.com>
+Cc: zhangzhanpeng.jasper@bytedance.com, alex@ghiti.fr, aou@eecs.berkeley.edu, 
+	cuiyunhui@bytedance.com, iommu@lists.linux.dev, joro@8bytes.org, 
+	linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org, 
+	luxu.kernel@bytedance.com, palmer@dabbelt.com, pjw@kernel.org, 
+	robin.murphy@arm.com, tjeznach@rivosinc.com, will@kernel.org, 
+	yuanzhu@bytedance.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 6/15/26 20:38, Guo Ren wrote:
-> Hi Zhanpeng Zhang,
+On Thu, Jun 18, 2026 at 5:54=E2=80=AFAM David Laight
+<david.laight.linux@gmail.com> wrote:
 >
-> I noticed you posted a similar fix recently. However, I had already
-> submitted a similar solution back in September 2025 [1]. It would be
-> great if you could review it. A few concerns with the current patch:
+> On Thu, 18 Jun 2026 00:24:12 +0800
+> Guo Ren <guoren@kernel.org> wrote:
 >
-> 1. Using spin_lock_irqsave in such a small semantic structure is
-> unnecessary. IRQ protection should be provided by the higher-level
-> IOMMU driver interfaces. Many existing call sites already handle IRQ
-> disabling, so adding it here feels redundant and adds avoidable
-> overhead.
+> > On Wed, Jun 17, 2026 at 3:51=E2=80=AFAM David Laight
+> > <david.laight.linux@gmail.com> wrote:
+> > >
+> > > On Tue, 16 Jun 2026 23:47:05 +0800
+> > > Guo Ren <guoren@kernel.org> wrote:
+> > >
+> > > > On Tue, Jun 16, 2026 at 6:36=E2=80=AFPM David Laight
+> > > > <david.laight.linux@gmail.com> wrote:
+> > > > >
+> > > > > On Mon, 15 Jun 2026 12:38:17 +0000
+> > > > > Guo Ren <guoren@kernel.org> wrote:
+> > > > >
+> > > > > > Hi Zhanpeng Zhang,
+> > > > > ..
+> > > > > > 3. Only performance-monitoring counters require 64-bit IO acces=
+s or the
+> > > > > > high-low-high do-while retry strategy. For ordinary status and =
+control
+> > > > > > MMIO registers, a single read is sufficient.
+> > > > >
+> > > > > Actually this sequence should be enough for a counter:
+> > > > >         hi =3D read_hi();
+> > > > >         lo =3D read_lo();
+> > > > >         if (hi !=3D read_hi()) {
+> > > > >                 // Pick a value that happened while doing the rea=
+ds.
+> > > > >                 hi++;
+> > > > >                 lo =3D 0;
+> > > > >         }
+> > > > This is not a free optimization =E2=80=94 it does not preserve the =
+same
+> > > > semantics as an atomic 64-bit read. There are at least two correctn=
+ess
+> > > > issues:
+> > > >
+> > > > 1. Loss of precision: If hi changed during the read, setting lo =3D=
+ 0
+> > > > discards the actual lo value. The correct approach is to re-read lo
+> > > > after detecting the change, not fabricate a value.
+> > > >
+> > > > 2. Multiple overflows: This assumes at most one overflow occurs
+> > > > between reads. If two overflows happen (e.g., due to interrupt
+> > > > injection), hi++ will produce an incorrect result, silently corrupt=
+ing
+> > > > the counter value.
+> > > >
+> > > > Negligible benefit: hi changing between reads is an extremely rare
+> > > > event. Optimizing away the retry loop for such a rare case provides=
+ no
+> > > > meaningful performance gain. And if hi never stabilizes, that
+> > > > indicates a hardware failure =E2=80=94 in which case hanging in the=
+ retry loop
+> > > > is actually the more appropriate behavior, as it makes the failure
+> > > > visible rather than silently producing garbage values.
+> > > >
+> > > > The high-low-high do-while retry strategy exists precisely to handl=
+e
+> > > > these cases correctly. I don't think this proposed sequence is a va=
+lid
+> > > > replacement.
+> > > >
+> > >
+> > > The point is that if the value is an incrementing counter (of some fo=
+rm)
+> > > then the value is stale by the time the reading sequence completes.
+> > > So all the code can be assumed to do is return a value the counter ha=
+d
+> > > sometime between when the code started and when it finished.
+> > > If hi changes then hi+1:0 must have happened while the code was runni=
+ng
+> > > so it is a safe return value.
+> > You're right =E2=80=94 (hi + 1):0 is enough for hi-lo-hi. Thank you for
+> > sticking to your point; it helped me think more carefully and
+> > understand the subtlety.
 >
-> 2. More critically, the RISCV_IOMMU_32BIT_ACCESS Kconfig option is
-> problematic. According to the RISC-V IOMMU specification (Software
-> Guidelines, “Reading and writing IOMMU registers”):
->
->> Registers that are 64-bit wide may be accessed using either a 32-bit
->> or a 64-bit access.
-> This clearly requires that any hardware supporting 64-bit MMIO access
-> must also support 32-bit MMIO access. Therefore, the IOMMU driver should
-> be built on a 32-bit access base for maximum hardware compatibility.
+> Don't worry, I'll have written the loop in the past.
+> Probably best is read old_hi-lo-hi then if (hi !=3D old_hi) lo =3D 0
+This is more conservative than (hi + 1):0.
 
-I agree that the driver should be build with 32-bit accesses to support
-these hardware. However there's one minor thing that I want to propose
-regarding this, for the sake of clarity:
-
-RISC-V IOMMU implementations that do not support 64-bit accesses are not
-fully compliant with the RISC-V IOMMU specification and should not use
-the standard RISC-V identifiers, namely:
-
-- Devicetree compatible riscv,iommu
-- ACPI HID RSCV0004
-
-This, in my opinion, is not only the right thing to do (not claiming to
-be standard hardware without actually being standard hardware), but also
-saves a lot of trouble for operating system developers (yes, there are
-RISC-V operating systems other than Linux out there), since invalid IO
-accesses usually manifest as mysterious access faults (that would
-usually suggest an incorrect IOMMU address), or worse, system hangs.
-
-I would appreciate if the hardware vendors shipping 32-bit-access-only
-IOMMUs would consider this.
-
-Vivian "dramforever" Wang
-
+--=20
+Best Regards
+ Guo Ren
