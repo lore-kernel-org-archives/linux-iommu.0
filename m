@@ -1,33 +1,67 @@
-Received: from outbound.baidu.com (mx20.baidu.com [111.202.115.85])
-	by smtp.subspace.kernel.org (Postfix) with SMTP id 8ED403ACA4C
-	for <iommu@lists.linux.dev>; Thu, 18 Jun 2026 08:00:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=111.202.115.85
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18BBF276049;
+	Thu, 18 Jun 2026 08:37:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781769608; cv=none; b=gb3Tb4+44XgmuWP70Ed5V904QA7B51Sz6+Yv84zW8vdrSmB9kjTQ7E37NJLexNjqagAiN8g2iQQtWHRyvlbhh64WCWSw7KizwqTK3N0fxsBvF9JED9rMSS4fz3mxxnF4YbKtFcWfnyY9UO9YFqzw0lLK6okOSUdhZvw5P6CXa00=
+	t=1781771853; cv=none; b=LIeyk/IBtu4oqA3VzJL74bUPduqWYLeJfwAjIRgZkFq5fdSH8n32Xwm8bDWd608BF9LZ77J1dpRxAODkiCYQ5I4F2CWELDEmjXCpNdGAbCQZQcjGSIp7IXhUQUkBtY8wv1H/KmwaPBOPnZA2mp+m8oa/EXuY8j6MWqIoDpmZmm4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781769608; c=relaxed/simple;
-	bh=qhqTlhNmOg8vSyRYZQcakEeel5znjMbKAhzTU73N1Gk=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=oTO1iiXgSyvpq1kF0dIxLqTrb60SndHUYJFVQWyqLWzZy33bTWmWq1tBEwEBD/vxeph2WXdXUGN2GaRoqJud5ZuulRziSqNVM/vEqADbq6Hs+lAVAeeBSs9l0Q3BC4CicQIO+HHwOWT5FlnftXCLgEI0mo9lW9Iu8Ek2o62qS0w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com; spf=pass smtp.mailfrom=baidu.com; dkim=pass (2048-bit key) header.d=baidu.com header.i=@baidu.com header.b=MDNDMRre; arc=none smtp.client-ip=111.202.115.85
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baidu.com
+	s=arc-20240116; t=1781771853; c=relaxed/simple;
+	bh=2p8Tyh/UWigSfVM1Alp/U1v3F1IYe71ZRicsBMgPa0w=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=LpvhNLDfo3FDN0+JKJjC48n5JsK6BAIfOpLcdxFq0fTicyPamqrCAZxcrA4i62ihh/3GTcfjx3YBEq6BDzWcCpJUyzO6UnCVtD6MBF0xXZZcthlpvvmV0RLQzBDj+dq9K9ad4zp50/N7eglFl/B6IRz4mgHDsMjsRcc1ZpAX42Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bJYmurEU; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baidu.com header.i=@baidu.com header.b="MDNDMRre"
-X-MD-Sfrom: lirongqing@baidu.com
-X-MD-SrcIP: 172.31.50.47
-From: lirongqing <lirongqing@baidu.com>
-To: Thierry Reding <thierry.reding@kernel.org>, Krishna Reddy
-	<vdumpa@nvidia.com>, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Jonathan Hunter
-	<jonathanh@nvidia.com>, Nicolin Chen <nicolinc@nvidia.com>, Nate Watterson
-	<nwatterson@nvidia.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	<linux-tegra@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-CC: Li RongQing <lirongqing@baidu.com>
-Subject: [PATCH] iommu/arm-smmu-v3: Fix VCMDQ indexing in tegra241_vintf0_handle_error
-Date: Thu, 18 Jun 2026 15:59:45 +0800
-Message-ID: <20260618075945.2217-1-lirongqing@baidu.com>
-X-Mailer: git-send-email 2.17.1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bJYmurEU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 334ED1F000E9;
+	Thu, 18 Jun 2026 08:37:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781771851;
+	bh=Tjfp3FF0f+SxzpFBuG9E9B1amsn/loCXBkKBhFITWIo=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=bJYmurEUTf4p9ddXp1VSCskBHjygy+xD/oNjB9s2Ep/Uu73ZeAFn3grah/ZH/26bC
+	 Z2IKNbkJrX3SQyniq2V3c43nApViK8ptRc8Gz9vZ5aBx3WYWws6jmsSQ1n8wC/ZhsC
+	 aPXbP4vBO9+s7L7Gu2B1QTaU30Q3lwF3YsxuWM4vVa7T2kphUxDrfVTBh2RPbtKviM
+	 f3h5f4VrWfNGB2xgQRFYm9r1q8fBv53E49ns83ljI6VaL3Opsq3DE6buX9d8xYbXtu
+	 r9HlAXaeEfYUQ5HKSssJFRAz7y8WVKnEyAfSl5fBP2P87RedjDBY2R+S227cOm339+
+	 HGR07rvOMXPTg==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Alexey Kardashevskiy <aik@amd.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Catalin Marinas <catalin.marinas@arm.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>,
+	Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, x86@kernel.org
+Subject: Re: [PATCH v6 00/20] dma-mapping: Use DMA_ATTR_CC_SHARED through
+ direct, pool and swiotlb paths
+In-Reply-To: <2ecfa1a8-6202-4319-9692-a6ffeb5a3dbf@amd.com>
+References: <20260604083959.1265923-1-aneesh.kumar@kernel.org>
+ <aigYbK12D8uKQvJF@arm.com> <20260609144746.GL2764304@ziepe.ca>
+ <2ecfa1a8-6202-4319-9692-a6ffeb5a3dbf@amd.com>
+Date: Thu, 18 Jun 2026 09:37:22 +0100
+Message-ID: <yq5aqzm4dz25.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,65 +69,98 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-ClientProxiedBy: bjkjy-exc5.internal.baidu.com (172.31.50.49) To
- bjkjy-exc3.internal.baidu.com (172.31.50.47)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=baidu.com;
-	s=selector1; t=1781769595;
-	bh=jTDLB1azfarwF5n/5KTJzb1SYDTKLL2v2/t9vmMWvFU=;
-	h=From:To:CC:Subject:Date:Message-ID:Content-Type;
-	b=MDNDMRreDvxOTeIPpXBFfo8K9BpR69P+Sum2hHLZFAiFWIJ4cDubAu4l9YQczlECA
-	 365yLLDM+91Wusj528f6z0CGu9KdVNpi2Lbb1sijjh9lXwkuNBoqUKxCcJ4zlUllpP
-	 CfYRIU9Lb+tk0BKe2V4/Ms+PCOoV3tsYIY+kPgxfZKYFZe7L3b+DDEq3sx1eCt3OGj
-	 bsdJ5/AxjB1Hjn7bP1I5LEMYhXhnm18kmj6XO6595R5xtlK/wgEP8UtINYbRBtBF6d
-	 aJDv+4Jux7oUAQbtaEObmNkX8zqc+TznnQIgONeo75VQshaoab3rRzsNVNGJsnXTSE
-	 hQ2baI8RBpkCQ==
 
-From: Li RongQing <lirongqing@baidu.com>
+Alexey Kardashevskiy <aik@amd.com> writes:
 
-In tegra241_vintf0_handle_error(), the driver loops through the
-LVCMDQ_ERR_MAP_64(i) registers to detect and handle error flags for
-each virtual command queue (VCMDQ).
+> On 10/6/26 00:47, Jason Gunthorpe wrote:
+>> On Tue, Jun 09, 2026 at 02:43:08PM +0100, Catalin Marinas wrote:
+>>> On Thu, Jun 04, 2026 at 02:09:39PM +0530, Aneesh Kumar K.V (Arm) wrote:
+>>>> This series propagates DMA_ATTR_CC_SHARED through the dma-direct,
+>>>> dma-pool, and swiotlb paths so that encrypted and decrypted DMA buffers
+>>>> are handled consistently.
+>>>>
+>>>> Today, the direct DMA path mostly relies on force_dma_unencrypted() for
+>>>> shared/decrypted buffer handling. This series consolidates the
+>>>> force_dma_unencrypted() checks in the top-level functions and ensures
+>>>> that the remaining DMA interfaces use DMA attributes to make the correct
+>>>> decisions.
+>>>
+>>> Please check Sashiko's reports, it has some good points:
+>>>
+>>> https://sashiko.dev/#/patchset/20260604083959.1265923-1-aneesh.kumar@kernel.org
+>>>
+>>> I think the main one is the swiotlb_tbl_map_single() changes which break
+>>> AMD SME host support. There cc_platform_has(CC_ATTR_MEM_ENCRYPT) is true
+>>> but force_dma_unencrypted() is false. Normally you'd not end up on this
+>>> path but you can have swiotlb=force.
+>> 
+>> IMHO that's an AMD issue, not with the design of this series..
+>> 
+>> The series is right, a device that is !force_dma_decrypted() must be
+>> considerd to be a trusted device and we must never place any DMA
+>> mappings for a trusted device into shared memory.
+>
+>
+> swiotlb=force forces swiotlb, not decryption.
+>
+>> That AMD has done somethine insane:
+>> 
+>> bool force_dma_unencrypted(struct device *dev)
+>> {
+>> 	/*
+>> 	 * For SEV, all DMA must be to unencrypted addresses.
+>> 	 */
+>> 	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
+>> 		return true;
+>> 
+>> 	/*
+>> 	 * For SME, all DMA must be to unencrypted addresses if the
+>> 	 * device does not support DMA to addresses that include the
+>> 	 * encryption mask.
+>> 	 */
+>> 	if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT)) {
+>> 		u64 dma_enc_mask = DMA_BIT_MASK(__ffs64(sme_me_mask));
+>> 		u64 dma_dev_mask = min_not_zero(dev->coherent_dma_mask,
+>> 						dev->bus_dma_limit);
+>> 
+>> 		if (dma_dev_mask <= dma_enc_mask)
+>> 			return true;
+>> 	}
+>
+>
+> So when I try "mem_encrypt=on iommu=pt swiotlb=force" with this patchset, it fails to boot. But it boots with a hack like this:
+>
+> ===
+> @@ -39,7 +41,7 @@ bool force_dma_unencrypted(struct device *dev)
+>                          return true;
+>          }
+>   
+> -       return false;
+> +       return swiotlb_force_bounce;
+>   }
+> ===
+>
+> Or we say "mem_encrypt=on iommu=pt swiotlb=force" combo is just weird and we won't be supporting which bit in this? Thanks,
+>
 
-However, the code erroneously uses the register-local bit offset
-returned by __ffs64(map) directly as the global logical queue index
-(lidx) into the vintf->lvcmdqs[] array. When 'i' is greater than 0
-(i.e., handling queues 64 and above), this logic incorrectly targets
-the queues in the first block (0-63) instead of the intended queues
-(i * 64 + bit). This leads to handling errors on the wrong VCMDQ
-structures and clearing the wrong hardware error status.
+Something like?
 
-Fix this by properly decoupling the register-local bit offset from the
-global array index. Use the local bit offset to clear the local map
-snapshot, and use 'i * 64 + bit' to correctly index the global
-vintf->lvcmdqs[] array.
-
-Fixes: 918eb5c856f6 ("iommu/arm-smmu-v3: Add in-kernel support for NVIDIA Tegra241 (Grace) CMDQV")
-Signed-off-by: Li RongQing <lirongqing@baidu.com>
----
- drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
-index 67be62a..33ec466 100644
---- a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
-@@ -317,13 +317,14 @@ static void tegra241_vintf0_handle_error(struct tegra241_vintf *vintf)
- 		u64 map = readq_relaxed(REG_VINTF(vintf, LVCMDQ_ERR_MAP_64(i)));
+modified   arch/x86/mm/mem_encrypt.c
+@@ -34,6 +34,13 @@ bool force_dma_unencrypted(struct device *dev)
+ 		u64 dma_enc_mask = DMA_BIT_MASK(__ffs64(sme_me_mask));
+ 		u64 dma_dev_mask = min_not_zero(dev->coherent_dma_mask,
+ 						dev->bus_dma_limit);
++		/*
++		 * With memory encryption enabled, SWIOTLB is marked decrypted.
++		 * If SWIOTLB bouncing is forced, treat the device as requiring
++		 * decrypted DMA.
++		 */
++		if (is_swiotlb_force_bounce(dev))
++			return true;
  
- 		while (map) {
--			unsigned long lidx = __ffs64(map);
-+			unsigned long bit = __ffs64(map);
-+			unsigned long lidx = i * 64 + bit;
- 			struct tegra241_vcmdq *vcmdq = vintf->lvcmdqs[lidx];
- 			u32 gerror = readl_relaxed(REG_VCMDQ_PAGE0(vcmdq, GERROR));
- 
- 			__arm_smmu_cmdq_skip_err(&vintf->cmdqv->smmu, &vcmdq->cmdq);
- 			writel(gerror, REG_VCMDQ_PAGE0(vcmdq, GERRORN));
--			map &= ~BIT_ULL(lidx);
-+			map &= ~BIT_ULL(bit);
- 		}
- 	}
- }
--- 
-2.9.4
+ 		if (dma_dev_mask <= dma_enc_mask)
+ 			return true;
 
+
+
+-aneesh
